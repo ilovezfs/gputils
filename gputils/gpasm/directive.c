@@ -599,8 +599,6 @@ static gpasmVal do_config(gpasmVal r,
 
   state.lst.line.linetype = config;
 
-  p = HEAD(parms);
-
   switch(arity) {
   case 1:
     if(_16bit_core) {
@@ -609,12 +607,12 @@ static gpasmVal do_config(gpasmVal r,
     } else {
       ca = state.device.config_address;
     }
+    p = HEAD(parms);
     break;
 
   case 2:
-    ca = maybe_evaluate(p);
+    ca = maybe_evaluate(HEAD(parms));
     p = HEAD(TAIL(parms));
-
     break;
 
   default:
