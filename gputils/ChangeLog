@@ -1,3 +1,8 @@
+2003-12-20 Craig Franklin <craigfranklin@comcast.net>
+  * Fixed i_memory allocation so memory beyond 32k words is initialized to 0.
+  * Fixed memory map in gpasm list files for 18xx devices.  The map is now 
+    in byte format.
+
 2003-12-18 Craig Franklin <craigfranklin@comcast.net>
   * Changed gpasm classification to beta, gpal to pre-alpha, and all
     others to alpha.

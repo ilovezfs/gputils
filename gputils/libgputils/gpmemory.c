@@ -92,7 +92,7 @@ MemBlock * i_memory_new(MemBlock *m, MemBlock *mbp, int base_address)
 
   base = base_address >> I_MEM_BITS;
 
-  mbp->memory = (unsigned int *)malloc(MAX_I_MEM * sizeof(unsigned int));
+  mbp->memory = (unsigned int *)calloc(MAX_I_MEM, sizeof(unsigned int));
   mbp->base   = base;
 
   do {
