@@ -1,3 +1,7 @@
+2003-11-29 Craig Franklin <craigfranklin@comcast.net>
+  * Fixed gpasm bug that prevented some symbols from being substitued with
+    macro parameters and #defines.
+
 2003-11-23 Craig Franklin <craigfranklin@comcast.net>
   * Fixed gpasm bug that caused the relocation to be omitted if the macro
     argument is complex.
