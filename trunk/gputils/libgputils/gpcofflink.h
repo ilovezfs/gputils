@@ -69,7 +69,7 @@ struct coffsymbol {
   char              *filename; /* the name of the object file */
 };
 
-int gp_link_add_symbols(struct symbol_table *definition,
+int gp_link_add_symbols(struct symbol_table *,
                         struct symbol_table *missing,
                         struct objectfile *object);
 

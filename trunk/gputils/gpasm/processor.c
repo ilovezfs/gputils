@@ -20,10 +20,9 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gpasm.h"
 #include "directive.h"
-#include "gpprocessor.h"
-#include "gpsymbol.h"
 #include "gperror.h"
 
 extern int _16bit_core;

@@ -26,6 +26,7 @@ CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include -DGPASM
 
 libgpasm_a_SOURCES=\
 	cod.c \
+	coff.c \
 	directive.c \
 	evaluate.c \
 	gpasm.c \
@@ -38,6 +39,7 @@ libgpasm_a_SOURCES=\
 	special.c \
 	util.c \
 	cod.h \
+	coff.h \
 	directive.h \
 	evaluate.h \
 	gpasm.h \

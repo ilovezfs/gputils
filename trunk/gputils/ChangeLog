@@ -1,3 +1,8 @@
+2002-12-22 Craig Franklin <craigfranklin@attbi.com>
+  * Added coff file support to gpasm.
+  * Added UPPER operator.
+  * Removed invalid parts. 
+
 2002-12-04 Craig Franklin <craigfranklin@attbi.com>
   * Fixed incorrect range warning on 18xx gotos.
   * Fixed parse error for << operators > in the comment.

@@ -20,10 +20,11 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gpasm.h"
 #include "gperror.h"
-#include "gpsymbol.h"
 #include "directive.h"
+#include "coff.h"
 
 static struct file_context *last = NULL;
 
@@ -65,7 +66,9 @@ void set_global(char *name,
     var = malloc(sizeof(*var));
     annotate_symbol(sym, var);
     var->value = value;
+    var->coff_num = state.obj.symbol_num;
     var->type = type;
+    var->previous_type = type;  /* coff symbols can be changed to global */
   } else if (lifetime == TEMPORARY) {
     /*
      * TSD - the following embarrassing piece of code is a hack
@@ -80,17 +83,39 @@ void set_global(char *name,
      */
      var->value = value;
 
-  } else {
-    if ((state.pass == 2) &&
-	(var->value != value)) {
+  } else if (state.pass == 2) {
+    if (var->value != value) {
       char message[BUFSIZ];
 
       sprintf(message,
-	      "Value of symbol \"%s\" differs on second pass\n pass 1=%d,  pass 2=%d",
-	      name,var->value,value);
-      gperror(GPE_DIFFLAB, message);
+              "Value of symbol \"%s\" differs on second pass\n pass 1=%d,  pass 2=%d",
+              name,var->value,value);
+      gperror(GPE_DIFFLAB, message);      
+    }
+    /* write coff symbol */ 
+    if (var->type == gvt_extern) {
+      coff_add_sym(name, value, 0, T_NULL, C_EXT);
+    } else if (var->type == gvt_global) {
+      coff_add_sym(name, value, state.obj.section_num, T_NULL, C_EXT);
+    } else if (var->type == gvt_static) {
+      coff_add_sym(name, value, state.obj.section_num, T_NULL, C_STAT);
+    } else if (var->type == gvt_address) {
+      coff_add_sym(name, value, state.obj.section_num, T_NULL, C_LABEL);
     }
   }
+
+  /* increment the index into the coff symbol table for the relocations */
+  switch(type) {
+  case gvt_extern:
+  case gvt_global:
+  case gvt_static:
+  case gvt_address:
+    state.obj.symbol_num++;
+    break;
+  default:
+    break;
+  }
+
 }
 
 void select_errorlevel(int level)
@@ -337,4 +362,39 @@ void free_files(void)
     free(old);
   } 
 
+}
+
+void hex_init(void)
+{
+  int num_errors;
+
+  /* FIXME: Must delete hex file when suppressed.  Find a better way. */
+  if (state.codfile == suppress)
+    num_errors = 1;
+  else
+    num_errors = state.num.errors;  
+
+  if (check_writehex(state.i_memory, state.hex_format)) {
+    gperror(GPE_IHEX,NULL); 
+  } else {
+    int byte_words;
+  
+    if (state.device.core_size > 0xff) {
+      byte_words = 0;
+    } else {
+      byte_words = 1;
+      if (state.hex_format != inhx8m) {
+        gpwarning(GPW_UNKNOWN,"Must use inhx8m format for EEPROM8");
+        state.hex_format = inhx8m;
+      }
+    }
+  
+    if (writehex(state.basefilename, state.i_memory, 
+                 state.hex_format, num_errors,
+                 byte_words, state.dos_newlines)) {
+      gperror(GPE_UNKNOWN,"Error generating hex file");
+    }
+  }
+  
+  return;
 }

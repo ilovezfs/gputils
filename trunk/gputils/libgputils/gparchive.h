@@ -95,7 +95,7 @@ struct coff_archive *read_coff_archive(char *filename,
                                        char *message);
 
 int gp_archive_make_index(struct coff_archive *archive, 
-                          struct symbol_table *definition,
+                          struct symbol_table *,
 			  char *message);
 struct coff_archive *gp_archive_add_index(struct symbol_table *table,
                                           struct coff_archive *archive, 

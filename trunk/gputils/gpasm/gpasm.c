@@ -20,14 +20,15 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gpasm.h"
 #include "gperror.h"
 #include "scan.h"
-#include "gpsymbol.h"
 #include "directive.h"
 #include "lst.h"
 #include "cod.h"
 #include "processor.h"
+#include "coff.h"
 
 struct gpasm_state state;
 
@@ -39,18 +40,19 @@ char *processor_name = NULL;
 
 int yyparse(void);
 
-#define GET_OPTIONS "?D:I:La:cd:e:hlmno:p:qr:vw:"
+#define GET_OPTIONS "?D:I:La:cd:e:hilmno:p:qr:vw:"
 
-/* Used: acdDehIlmopqrwv */
+/* Used: acdDehiIlmopqrwv */
 static struct option longopts[] =
 {
   { "define",      1, 0, 'D' },
   { "include",     1, 0, 'I' },
   { "hex-format",  1, 0, 'a' },
-  { "case",        0, 0, 'c' },
+  { "object",      0, 0, 'c' },
   { "define",      1, 0, 'd' },
   { "expand",      1, 0, 'e' },
   { "help",        0, 0, 'h' },
+  { "ignore-case", 0, 0, 'i' },
   { "force-list",  0, 0, 'L' },
   { "list-chips",  0, 0, 'l' },
   { "dump",        0, 0, 'm' },
@@ -67,6 +69,8 @@ static struct option longopts[] =
 void init(void)
 {
   /* restore gpasm to its initialized state */
+  state.mode = absolute;
+
   state.radix = 16;
   state.hex_format = inhx32;
   state.case_insensitive = 0;
@@ -86,9 +90,10 @@ void init(void)
   state.memory_dump = 0;
   state.maxram = (MAX_RAM - 1);
 
-  state.lstfile = normal;
-  state.hexfile = normal;
   state.codfile = normal;
+  state.hexfile = normal;
+  state.lstfile = normal;
+  state.objfile = suppress;
 
   state.num.errors    = 0;
   state.num.warnings  = 0;
@@ -98,6 +103,9 @@ void init(void)
   
   state.processor = no_processor;
   state.processor_chosen = 0;
+
+  state.obj.section_num = 0;
+  state.obj.symbol_num = 0;
 
   n_include_paths = 0;
 
@@ -118,10 +126,11 @@ void show_usage(void)
   printf("Usage: gpasm [options] file\n");
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -a FMT, --hex-format FMT       Select hex file format. [inhx32]\n");
-  printf("  -c, --case                     Case insensitive.\n");
+  printf("  -c, --object                   Output relocatable object.\n");
   printf("  -D SYM=VAL, --define SYM=VAL   Define SYM with value VAL.\n");
   printf("  -e [ON|OFF], --expand [ON|OFF] Macro expansion.\n");
   printf("  -h, --help                     Show this usage message.\n");
+  printf("  -i, --ignore-case              Case insensitive.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
   printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -l, --list-chips               List supported processors.\n");
@@ -129,7 +138,7 @@ void show_usage(void)
   #ifndef __MSDOS__
   printf("  -n, --dos                      Use DOS newlines in hex file.\n");
   #endif
-  printf("  -o FILE, --output FILE         Alternate name of hex file.\n");
+  printf("  -o FILE, --output FILE         Alternate name of output file.\n");
   printf("  -p PROC, --processor PROC      Select processor.\n");
   printf("  -q, --quiet                    Quiet.\n");
   printf("  -r RADIX, --radix RADIX        Select radix. [hex]\n");
@@ -157,7 +166,7 @@ void process_args( int argc, char *argv[])
      defines are read */
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
     switch (c) {
-    case 'c':
+    case 'i':
       state.case_insensitive = 1;
       break;
     }
@@ -180,7 +189,11 @@ void process_args( int argc, char *argv[])
       state.cmd_line.hex_format = 1;
       break;
     case 'c':
-      state.case_insensitive = 1;
+      state.mode    = relocatable;
+      state.codfile = suppress;
+      state.hexfile = suppress;
+      state.lstfile = normal;
+      state.objfile = normal;
       break;
     case 'D':
     case 'd':
@@ -214,6 +227,9 @@ void process_args( int argc, char *argv[])
         exit(1);
       }
       break;    
+    case 'i':
+      state.case_insensitive = 1;
+      break;
     case 'L':
       state.cmd_line.lst_force = 1;
       break;  
@@ -305,40 +321,22 @@ int assemble(void)
   yyparse();
  
   state.pass++;
-  open_src(state.srcfilename, 0);
   state.org = 0;
   state.cblock = 0;
   if (state.cmd_line.radix != 1)
     state.radix = 16;
+  state.obj.symbol_num = 0;
+  coff_init();
   cod_init();
   lst_init();
+  open_src(state.srcfilename, 0);
   yyparse();
 
   assert(state.pass == 2);
   
   pop_symbol_table(state.stBuiltin);
   
-  if (check_writehex(state.i_memory, state.hex_format)) {
-    gperror(GPE_IHEX,NULL); 
-  } else {
-    int byte_words;
-    
-    if (state.device.core_size > 0xff) {
-      byte_words = 0;
-    } else {
-      byte_words = 1;
-      if (state.hex_format != inhx8m) {
-        gpwarning(GPW_UNKNOWN,"Must use inhx8m format for EEPROM8");
-        state.hex_format = inhx8m;
-      }
-    }
-    
-    if (writehex(state.basefilename, state.i_memory, 
-                 state.hex_format, state.num.errors,
-                 byte_words, state.dos_newlines)) {
-      gperror(GPE_UNKNOWN,"Error generating hex file");
-    }
-  }
+  hex_init();
 
   if(state.memory_dump)
     print_i_memory(state.i_memory);
@@ -355,7 +353,8 @@ int assemble(void)
     lst_memory_map(state.i_memory);
   }
   
-  /* Finish off the listing and symbol files*/
+  /* Finish off the object, listing, and symbol files*/
+  coff_close_file();
   lst_close();
   if (state.processor_info)
     cod_close_file();

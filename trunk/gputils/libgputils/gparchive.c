@@ -19,11 +19,7 @@ the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
-#include "gpcoff.h"
-#include "gpreadobj.h"
-#include "gpsymbol.h"
-#include "gparchive.h"
-#include "gpcofflink.h"
+#include "libgputils.h"
 
 /* FIXME: member headers always start on an even-byte boundary. A newline
    character is often used to fill the gap. */

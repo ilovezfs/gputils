@@ -18,10 +18,7 @@
 # the Free Software Foundation, 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-bin_PROGRAMS = gpvc gpdasm
-
-# gplib and gpvo are still being developed, so don't install them
-noinst_PROGRAMS = gplib gpvo
+bin_PROGRAMS = gpdasm gplib gpvc gpvo
 
 CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
 

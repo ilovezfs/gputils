@@ -56,7 +56,6 @@ enum pic_processor {
   pic16cxx,
   pic16c432,
   pic16c433,
-  pic16c461,
   pic16c505,
   pic16c54,
   pic16c52,
@@ -72,7 +71,6 @@ enum pic_processor {
   pic16c56a,
   pic16c57,
   pic16c57c,
-  pic16c58,
   pic16c58a,
   pic16c58b, 
   pic16c61,
@@ -89,18 +87,14 @@ enum pic_processor {
   pic16c63a,
   pic16c64,
   pic16c64a,
-  pic16c641,
   pic16c642,
   pic16c65,
   pic16c65a,   
   pic16c65b,
   pic16c66,
-  pic16c661,
   pic16c662,
   pic16c67,
-  pic16c70,
   pic16c71,
-  pic16c71a,
   pic16c710,
   pic16c711,
   pic16c712,
@@ -125,10 +119,7 @@ enum pic_processor {
   pic16c774,
   pic16c781,
   pic16c782,
-  pic16c83,
   pic16c84,
-  pic16c85, 
-  pic16c86,   
   pic16c923,
   pic16c924,
   pic16c925,
@@ -140,7 +131,6 @@ enum pic_processor {
   pic16cr54a,
   pic16cr54b,
   pic16cr54c,
-  pic16cr56,
   pic16cr56a,
   pic16cr57a,
   pic16cr57b,
@@ -170,8 +160,6 @@ enum pic_processor {
   pic16f819,
   pic16f83,
   pic16f84,
-  pic16f85,
-  pic16f86,
   pic16f87,
   pic16f84a,
   pic16f870,
@@ -187,7 +175,6 @@ enum pic_processor {
   pic16f877a,
   pic16f88,
   pic16hv540,
-  pic16lc74b,
   pic17cxx,
   pic17c42,
   pic17c42a,
@@ -209,10 +196,6 @@ enum pic_processor {
   pic18c658,
   pic18c801,
   pic18c858,
-  pic18f010,
-  pic18f012,
-  pic18f020,
-  pic18f022,
   pic18f1220,
   pic18f1320,
   pic18f2220,
@@ -244,6 +227,7 @@ struct px {
   enum pic_processor tag;
   char *defined_as;
   char *names[MAX_NAMES];
+  unsigned long coff_type; 
 };
 
 /* CONFIG addresses for the 18cxxx parts */
@@ -276,5 +260,8 @@ struct px {
 void gp_dump_processor_list(void);
 struct px *gp_find_processor(char *name);
 enum proc_class gp_processor_class(enum pic_processor);
+unsigned long gp_processor_coff_type(enum pic_processor processor);
+enum pic_processor gp_processor_coff_proc(unsigned long coff_type);
+char *gp_processor_coff_name(unsigned long coff_type, unsigned int choice);
 
 #endif

@@ -20,12 +20,11 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gpasm.h"
-
 #include "directive.h"
 #include "evaluate.h"
 #include "gperror.h"
-#include "gpsymbol.h"
 #include "macro.h"
 
 /* Create a new defines table and place the macro parms in it. */

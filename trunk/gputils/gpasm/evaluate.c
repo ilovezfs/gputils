@@ -20,13 +20,13 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gpasm.h"
-
 #include "evaluate.h"
 #include "directive.h"
 #include "gperror.h"
-#include "gpsymbol.h"
 #include "parse.h"
+#include "coff.h"
 
 extern int _16bit_core;
 
@@ -221,6 +221,8 @@ gpasmVal evaluate(struct pnode *p)
       return -evaluate(p->value.unop.p0);
     case '~':
       return ~evaluate(p->value.unop.p0);
+    case UPPER:
+      return (evaluate(p->value.unop.p0) >> 16) & 0x3f;
     case HIGH:
       return (evaluate(p->value.unop.p0) >> 8) & 0xff;
     case LOW:
@@ -285,6 +287,208 @@ gpasmVal maybe_evaluate(struct pnode *p)
     r = 0;
   }
 
+  return r;
+}
+
+/* count the number of relocatable addesses in the expression */
+
+static int count_reloc(struct pnode *p)
+{
+  struct symbol *s;
+  struct variable *var;
+  char *string;
+
+  if ((p->tag == binop) && (p->value.binop.op == CONCAT)) {
+    string = evaluate_concatenation(p);
+    s = get_symbol(state.stTop, string);
+    if (s != NULL) {
+      var = get_symbol_annotation(s);
+      assert(var != NULL);
+      switch(var->type) {
+      case gvt_extern:
+      case gvt_global:
+      case gvt_static:
+      case gvt_address:
+        return 1;
+      default:
+        return 0;        
+      }      
+    }
+    return 0;
+  }
+  switch (p->tag) {
+  case constant:
+    return 0;
+  case symbol:
+    s = get_symbol(state.stTop, p->value.symbol);
+    if (s != NULL) {
+      var = get_symbol_annotation(s);
+      if (var != NULL) {
+        switch(var->type) {
+        case gvt_extern:
+        case gvt_global:
+        case gvt_static:
+        case gvt_address:
+          return 1;
+        default:
+          return 0;        
+        }
+      }
+    }  
+    return 0;
+  case unop:
+    return count_reloc(p->value.unop.p0);
+  case binop:
+    return count_reloc(p->value.binop.p0) + count_reloc(p->value.binop.p1);
+  default:
+    assert(0);
+  }
+
+  return 0;
+}
+
+/* When generating object files, operands with relocatable addresses can only be 
+   [HIGH|LOW]([<relocatable address>] + [<offset>]) */
+
+static void
+add_reloc(struct pnode *p, short offset, unsigned short type)
+{
+  char *string;
+  struct symbol *s;
+  struct variable *var;
+
+  if ((p->tag == binop) && (p->value.binop.op == CONCAT)) {
+    string = evaluate_concatenation(p);
+    s = get_symbol(state.stTop, string);
+    if (s != NULL) {
+      var = get_symbol_annotation(s);
+      assert(var != NULL);
+      switch(var->type) {
+      case gvt_extern:
+      case gvt_global:
+      case gvt_static:
+      case gvt_address:
+        coff_reloc(var->coff_num, offset, type);
+        return;
+      default:
+        return;        
+      }      
+    }
+    return;
+  }
+  switch (p->tag) {
+  case symbol:
+    s = get_symbol(state.stTop, p->value.symbol);
+    if (s != NULL) {
+      var = get_symbol_annotation(s);
+      if (var != NULL) {
+        switch(var->type) {
+        case gvt_extern:
+        case gvt_global:
+        case gvt_static:
+        case gvt_address:
+          coff_reloc(var->coff_num, offset, type);
+          return;
+        default:
+          return;        
+        }
+      }
+    }  
+    return;
+  case unop:
+    switch (p->value.unop.op) {
+    case UPPER:
+      add_reloc(p->value.unop.p0, offset, RELOCT_UPPER);
+      return;
+    case HIGH:
+      add_reloc(p->value.unop.p0, offset, RELOCT_HIGH);
+      return;
+    case LOW:
+      add_reloc(p->value.unop.p0, offset, RELOCT_LOW);
+      return;
+    case '!':
+    case '+':
+    case '-':
+    case '~':
+    case INCREMENT:  
+    case DECREMENT:          
+      gperror(GPE_UNRESOLVABLE, NULL);
+      return;
+    default:
+      assert(0);
+    }
+  case binop:
+    switch (p->value.binop.op) {
+    case '+':
+      /* The symbol can be in either position */
+      if (count_reloc(p->value.binop.p0) == 1) {
+        add_reloc(p->value.binop.p0, maybe_evaluate(p->value.binop.p1), type);
+      } else {
+        add_reloc(p->value.binop.p1, maybe_evaluate(p->value.binop.p0), type);
+      }
+      return;
+    case '-':
+      /* The symbol has to be first */
+      if (count_reloc(p->value.binop.p0) == 1) {
+        add_reloc(p->value.binop.p0, -maybe_evaluate(p->value.binop.p1), type);
+      } else {
+        gperror(GPE_UNRESOLVABLE, NULL);
+      }
+      return;
+    case '*':
+    case '/':
+    case '%':
+    case '&':
+    case '|':
+    case '^':
+    case LSH:
+    case RSH:
+    case EQUAL:
+    case '<':
+    case '>':
+    case NOT_EQUAL:
+    case GREATER_EQUAL:
+    case LESS_EQUAL:
+    case LOGICAL_AND:
+    case LOGICAL_OR:
+    case '=': 
+      gperror(GPE_UNRESOLVABLE, NULL);
+      return;
+    default:
+      assert(0); /* Unhandled binary operator */
+    }
+    return;
+  case constant:
+  default:
+    assert(0);
+  }
+
+  return;
+}
+
+gpasmVal reloc_evaluate(struct pnode *p, unsigned short type)
+{
+  gpasmVal r = 0;
+  int count = 0;
+
+  if (state.mode == absolute) {
+    r = maybe_evaluate(p);
+  } else {
+    count = count_reloc(p);
+    if (count == 0) {
+      /* no relocatable addresses */
+      r = maybe_evaluate(p);
+    } else if (count > 1) {
+      /* too many relocatable addresses */
+      gperror(GPE_UNRESOLVABLE, NULL);
+      r = 0;
+    } else {
+      /* add the coff relocation */
+      add_reloc(p, 0, type);
+      r = 0;
+    }
+  }
+  
   return r;
 }
 

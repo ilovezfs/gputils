@@ -60,7 +60,9 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 %defattr(-, root, root)
 %{_bindir}/gpasm
 %{_bindir}/gpdasm
+%{_bindir}/gplib
 %{_bindir}/gpvc
+%{_bindir}/gpvo
 %{_mandir}/man1/*
 %{_datadir}/gputils/header/*
 %doc AUTHORS COPYING ChangeLog INSTALL NEWS README 

@@ -18,13 +18,8 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-#if !defined(__GPASM_H)
-#define __GPASM_H
-
-#include <stdio.h>
-#include "gpprocessor.h"
-#include "gpmemory.h"
-#include "gpwritehex.h"
+#ifndef __GPASM_H__
+#define __GPASM_H__
 
 #define GPASM_VERSION_STRING ("gpasm-" VERSION " alpha")
 
@@ -37,14 +32,17 @@ Boston, MA 02111-1307, USA.  */
 			 strcmp((s1), (s2)))
 			 
 typedef int gpasmVal; 		/* The type that internal arithmetic uses */
-enum gpasmValTypes {gvt_constant, gvt_cblock, gvt_org, gvt_address};
-enum state_types { _exitmacro, _nochange, _macro, _while, 
-                   _substitution, _include };
+enum gpasmValTypes {gvt_constant, gvt_cblock, gvt_org, gvt_address, gvt_extern,
+                    gvt_global, gvt_static};
+enum state_types { _exitmacro, _include, _macro, _nochange, _section,
+                   _substitution, _while };
 
 enum outfile { normal, suppress, named };
 enum file_types { ft_src, ft_hex, ft_lst, ft_cod, ft_other }; /* allowed file types */
+enum gpasm_modes { absolute, relocatable };
 
 extern struct gpasm_state {
+  enum gpasm_modes mode;
   int radix;
   enum formats hex_format;
   int case_insensitive;
@@ -64,9 +62,10 @@ extern struct gpasm_state {
   int memory_dump;		/* Dump instruction memory to standard output */
   unsigned int maxram;		/* Highest legal memory location */
   enum outfile
-    lstfile,			/* List output file control */
+    codfile,			/* Symbol output file control */
     hexfile,			/* Hex output file control */
-    codfile;			/* Symbol output file control */
+    lstfile,			/* List output file control */
+    objfile;			/* Relocatable object file control */
   struct {			/* Totals for errors, warnings, messages */
     int errors;
     int warnings;
@@ -96,9 +95,10 @@ extern struct gpasm_state {
   MemBlock *i_memory;		/* Instruction memory linked list */
   char *srcfilename,		/* Source (.asm) file name */
     basefilename[BUFSIZ],	/* basename for generating hex,list,symbol filenames */
+    codfilename[BUFSIZ],	/* Symbol (.cod) file name */
     hexfilename[BUFSIZ],	/* Hex (.hex) file name */
     lstfilename[BUFSIZ],	/* List (.lst) file name */
-    codfilename[BUFSIZ];	/* Symbol (.cod) file name */
+    objfilename[BUFSIZ];	/* Object (.o) file name */
   struct {			/* List file state: */
     FILE *f;			/*   List file output */
     unsigned int
@@ -117,6 +117,8 @@ extern struct gpasm_state {
 	     idlocs,		/*     ID locations for 12 and 14 bit cores */
 	     insn,		/*     Some other instruction or pseudo */
 	     equ,		/*     An equate */
+	     res,               /*     reserve memory */
+	     sec,		/*     new coff section */
 	     set,		/*     A SET or '=' */
 	     config }           /*     A __config line */
         linetype;
@@ -136,6 +138,16 @@ extern struct gpasm_state {
     int enabled;		/*   nonzero if symbol file is enabled */
     int emitting;               /*   flag indicating when an opcode is emitted */
   } cod;
+  struct {			/* Object file state: */
+    gp_object_type *object;	/*   Object file */
+    gp_section_type *section;	/*   Current section */
+    int enabled;		/*   nonzero if object file is enabled */
+    char new_sec_name[80];	/*   new section name */
+    int new_sec_addr;		/*   new section name */
+    int new_sec_flags;		/*   new section name */
+    int section_num;		/*   Current section number */
+    int symbol_num;		/*   Current symbol number */
+  } obj;
   struct source_context *src;	/* Top of the stack of source files */
   struct file_context *files;   /* Top of the stack of all files */
   struct amode *astack;		/* Stack of amodes (macros, etc) */
@@ -153,7 +165,9 @@ extern struct gpasm_state {
 
 struct variable {
   int value;
+  int coff_num;
   enum gpasmValTypes type;
+  enum gpasmValTypes previous_type; /* can change from static to global */
 };
 
 #define MAX_INCLUDE_PATHS 100
@@ -228,6 +242,7 @@ void select_radix(char *name);
 struct file_context *add_file(unsigned int type, char *name);
 void free_files(void);
 void macro_append(void);
+void hex_init(void);
 
 /************************************************************************/
 

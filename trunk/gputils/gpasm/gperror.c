@@ -20,6 +20,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gpasm.h"
 #include "gperror.h"
 #include "lst.h"
@@ -133,6 +134,16 @@ char *gp_geterror(unsigned int code)
     return "WHILE must terminate within 256 iterations.";
   case GPE_UNMATCHED_ENDM:
     return "Unmatched ENDM.";
+  case GPE_OBJECT_ONLY:
+    return "Directive only allowed when generating an object file.";
+  case GPE_UNRESOLVABLE:
+    return "Operand contains unresolvable labels or is too complex.";
+  case GPE_WRONG_SECTION:
+    return "Executable code and data must be defined in an appropriate section.";
+  case GPE_CONTIG_SECTION:
+    return "Each object file section must be contiguous.";
+  case GPE_MUST_BE_LABEL:
+    return "Operand must be an address label.";
   case GPE_FILL_ODD:
     return "Cannot use FILL Directive with odd number of bytes.";
   case GPE_UNKNOWN:

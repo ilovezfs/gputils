@@ -19,8 +19,7 @@ the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
-
-#include "gpsymbol.h"
+#include "libgputils.h"
 
 /* Base the hash func on the 1st, 2nd, 3rd and last characters of the
    string, and its length. */
