@@ -185,7 +185,7 @@ void next_line(int value)
 
     case _section:
       /* create a new coff section */
-      new_coff_section(state.obj.new_sec_name, 
+      coff_new_section(state.obj.new_sec_name, 
                        state.obj.new_sec_addr, 
                        state.obj.new_sec_flags);
       break;

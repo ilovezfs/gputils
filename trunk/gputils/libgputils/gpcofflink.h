@@ -78,4 +78,7 @@ gp_object_type *gp_link_combine(struct objectlist *list,
                                 char *name, 
                                 enum pic_processor processor);
 
+void gp_cofflink_remove_dupsecsyms(gp_object_type *object);
+void gp_cofflink_combine_overlay(gp_object_type *object);
+
 #endif

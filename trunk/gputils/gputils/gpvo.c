@@ -127,10 +127,12 @@ void print_linenum_list(gp_linenum_type *linenumbers)
 
 }
 
-void print_data(MemBlock *data, int org)
+void print_data(MemBlock *data, int org, int disassemble)
 {
   int memory;
   char buffer[BUFSIZ];
+  
+  buffer[0] = '\0';
   
   printf("Data\n");
   while (1) {
@@ -138,7 +140,9 @@ void print_data(MemBlock *data, int org)
     if ((memory && MEM_USED_MASK) == 0)
       break;
     
-    gp_disassemble(data, &org, state.class, buffer);
+    if (disassemble)
+      gp_disassemble(data, &org, state.class, buffer);
+
     printf("%06x:  %04x  %s\n", org, memory & 0xffff, buffer);
     org++;
   }
@@ -202,7 +206,9 @@ void print_sec_list(gp_section_type *section)
     print_sec_header(&section->header);
 
     if ((section->header.s_size) && (section->header.s_scnptr)) {
-      print_data(section->data, section->header.s_paddr);
+      print_data(section->data, 
+                 section->header.s_paddr, 
+                 section->header.s_flags & STYP_TEXT);
     }
     if ((section->header.s_nreloc) && (section->header.s_relptr)) {
       print_reloc_list(section->relocations);

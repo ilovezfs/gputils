@@ -189,7 +189,9 @@ gp_coffgen_fetch_section_name(gp_object_type *object,
 }
 
 gp_section_type *
-gp_coffgen_findsection(gp_object_type *object, char *name)
+gp_coffgen_findsection(gp_object_type *object, 
+                       gp_section_type *start,
+                       char *name)
 {
   gp_section_type *current = NULL;
   gp_section_type *found = NULL;
@@ -198,7 +200,7 @@ gp_coffgen_findsection(gp_object_type *object, char *name)
   if (object == NULL)
     return NULL;
 
-  current = object->sections;
+  current = start;
 
   while (current != NULL) {
     gp_coffgen_fetch_section_name(object, &current->header, &current_name[0]);
@@ -463,16 +465,40 @@ gp_coffgen_addsymbol(gp_object_type *object, char *name, int num_aux)
 }
 
 int
+gp_coffgen_free_section(gp_section_type *section)
+{
+  gp_reloc_type *relocation;
+  gp_linenum_type *line_number;
+  gp_reloc_type *old_relocation;
+  gp_linenum_type *old_line_number;
+
+  i_memory_free(section->data);
+
+  relocation = section->relocations;
+  while (relocation != NULL) {
+    old_relocation = relocation;
+    relocation = relocation->next;
+    free(old_relocation);
+  }  
+
+  line_number = section->line_numbers;
+  while (line_number != NULL) {
+    old_line_number = line_number;
+    line_number = line_number->next;
+    free(old_line_number);
+  } 
+
+  free(section);
+
+  return 0;
+}
+
+int
 gp_coffgen_free(gp_object_type *object)
 {
   gp_section_type *section;
-  gp_reloc_type *relocation;
-  gp_linenum_type *line_number;
   gp_symbol_type *symbol;
-
   gp_section_type *old_section;
-  gp_reloc_type *old_relocation;
-  gp_linenum_type *old_line_number;
   gp_symbol_type *old_symbol;
   
   if (object == NULL)
@@ -482,25 +508,9 @@ gp_coffgen_free(gp_object_type *object)
   
   section = object->sections;
   while (section != NULL) {
-    i_memory_free(section->data);
-
-    relocation = section->relocations;
-    while (relocation != NULL) {
-      old_relocation = relocation;
-      relocation = relocation->next;
-      free(old_relocation);
-    }  
-
-    line_number = section->line_numbers;
-    while (line_number != NULL) {
-      old_line_number = line_number;
-      line_number = line_number->next;
-      free(old_line_number);
-    }  
-  
     old_section = section;
     section = section->next;
-    free(old_section);
+    gp_coffgen_free_section(old_section);
   }
   
   symbol = object->sym_table;

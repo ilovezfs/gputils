@@ -328,3 +328,147 @@ gp_link_combine(struct objectlist *list,
 
   return new;
 }
+
+/* renumber relocations because symbol table was changed */
+
+static void
+_renumber_relocs(gp_object_type *object, int number)
+{
+  gp_section_type *section;
+  gp_reloc_type *relocation;
+
+  section = object->sections;
+  while (section != NULL) {
+    relocation = section->relocations;
+    while (relocation != NULL) {
+      if (relocation->relocation.r_symndx > number) {
+        relocation->relocation.r_symndx -= 2;
+      }
+      relocation = relocation->next;
+    }
+    section = section->next;
+  }
+
+}
+
+/* remove duplicate section symbol table entries */
+
+void
+gp_cofflink_remove_dupsecsyms(gp_object_type *object)
+{
+  gp_symbol_type *first = NULL;
+  gp_symbol_type *second = NULL;
+  gp_symbol_type *previous = NULL;
+  gp_symbol_type *aux = NULL;
+  int first_num = 0;
+  int second_num = 0;
+
+  first = object->sym_table;
+  
+  while (first != NULL) {
+    if (first->symbol.st_class == C_SECTION) {
+      previous = first;
+      second_num = first_num +1;
+      second = first->next;
+      while (second != NULL) {
+        if ((second->symbol.sec_num == first->symbol.sec_num) &&
+            (second->symbol.st_class == C_SECTION)) {
+          assert(second->symbol.num_auxsym == 1);
+          aux = second->next;
+          previous->next = aux->next;
+          free(aux);
+          free(second);
+          object->file_header.f_nsyms -= 2;
+          _renumber_relocs(object, second_num);          
+          gp_cofflink_remove_dupsecsyms(object);
+          return;
+        }
+        previous = second;
+        second_num++;
+        second = second->next;
+      }   
+    }
+    first_num++;
+    first = first->next;
+  }
+
+  return;
+}
+
+/* combine overlay sections in an object file */
+
+void
+gp_cofflink_combine_overlay(gp_object_type *object)
+{
+  gp_section_type *first = NULL;
+  char first_name[BUFSIZ];
+  gp_section_type *second = NULL;
+  gp_section_type *list = NULL;
+  gp_symbol_type  *symbol;
+
+  first = object->sections;
+  
+  while (first != NULL) {
+    if (first->header.s_flags & STYP_OVERLAY) {
+      gp_coffgen_fetch_section_name(object, &first->header, first_name);
+      second = gp_coffgen_findsection(object, first->next, first_name);    
+      if (second != NULL) {
+        /* The only way we should have two sections with the same
+           name is if they are both overlay. */
+        assert(second->header.s_flags & STYP_OVERLAY);
+
+        /* The sections must have the same properties or they cann't be 
+           combined. */
+        if ((first->header.s_flags != second->header.s_flags) ||
+            (first->header.s_paddr != second->header.s_paddr)) {
+          continue;
+        }
+
+        /* Set the size of the first section to the larger of the two */
+        if (second->header.s_size > first->header.s_size)
+          first->header.s_size = second->header.s_size;
+
+        /* Update the symbol table */
+        symbol = object->sym_table;
+        while (symbol != NULL) {
+          if (symbol->symbol.sec_num == second->number) {
+            /* Change all symbols located in the second section to the 
+               first. */
+            symbol->symbol.sec_num = first->number;
+          } else if (symbol->symbol.sec_num > second->number) {
+            /* Decrement the section number for any symbol in a section above the
+               second. */
+            symbol->symbol.sec_num--;
+          } 
+          symbol = symbol->next;
+        }
+        
+        /* Decrement section numbers for all sections after the second. */ 
+        object->file_header.f_nscns--;
+        list = second->next;
+        while (list != NULL) {
+          list->number--;
+          list = list->next;
+        }
+                
+        /* Remove the second section*/
+        list = object->sections;
+        while(list != NULL) {
+          if (list->next == second) {
+            list->next = second->next;
+            break;
+          }
+          list = list->next;
+        }
+        gp_coffgen_free_section(second);
+        
+        /* Take another pass */
+        gp_cofflink_combine_overlay(object);
+        return;
+      }
+    }
+    first = first->next;
+  }
+
+  return;
+}

@@ -205,6 +205,7 @@ _read_sections(gp_object_type *object, char *file)
         } else {
           current_reloc->next = (gp_reloc_type *)malloc(sizeof(*current_reloc));
           current_reloc = current_reloc->next;
+          current_reloc->next = NULL;
         }
         _read_reloc(&current_reloc->relocation, loc);
         loc += RELOC_SIZ;
@@ -224,6 +225,7 @@ _read_sections(gp_object_type *object, char *file)
           current_linenum->next = 
             (gp_linenum_type *)malloc(sizeof(*current_linenum));
           current_linenum = current_linenum->next;
+          current_linenum->next = NULL;
         }
         _read_lineno(&current_linenum->linenumber, loc);
         loc += LINENO_SIZ;

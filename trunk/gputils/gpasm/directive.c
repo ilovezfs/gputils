@@ -46,9 +46,8 @@ void execute_body(struct macro_head *h);
 #define PACKING_BYTES    (1<<30)
 #define SPLIT_PACK       (1<<29)
 
-/* We really should really think about using glib for this: */
 struct sllist {
-  int value;
+  struct pnode *p;
   struct sllist *next;
 };
 
@@ -227,84 +226,39 @@ static int off_or_on(struct pnode *p)
   return ret;
 }
 
-#if 0     /* deprecated data( ) */
-static void data(struct pnode *L, int flavor, int lit_mask)
-{
-  static int  k = 0;
-  int packing_bytes;
-
-
-  if (L) {
-
-    struct pnode *p;
-
-    packing_bytes = (lit_mask & PACKING_BYTES) ? 1 : 0;
-
-    p = HEAD(L);
-    if (p->tag == string) {
-      char *pc = p->value.string;
-      
-      while (*pc) {
-
-	if(packing_bytes) 
-	  emit_packed(*pc | flavor, lit_mask);
-	else 
-	  emit((*pc & lit_mask) | flavor);
-
-	pc++;
-
-      }
-
-    } else {
-      k  = maybe_evaluate(p);
-
-      if(packing_bytes) 
-	emit_packed(k | flavor, lit_mask);
-      else 
-	emit((k&lit_mask) | flavor);
-
-    }
-    data(TAIL(L), flavor, lit_mask);
-
-    if(packed_hi_lo) 
-      emit_packed(flavor, lit_mask);
-
-  }
-
-}
-
-#endif
-
 static void data(struct sllist *L, int flavor, int lit_mask)
 {
 
 
   if (L) {
 
-    struct sllist *p,*q;
+    struct sllist *list,*previous;
+    int value;
 
-    p = L->next;
+    list = L->next;
     
-    while(p) {
+    while(list) {
+
+      value = reloc_evaluate(list->p, RELOCT_ALL);
 
       if(lit_mask & PACKING_BYTES)
-	emit_packed(p->value | flavor, lit_mask);
+	emit_packed(value | flavor, lit_mask);
       else {
-	if((p->value > lit_mask) || (p->value < 0)) {
+	if((value > lit_mask) || (value < 0)) {
           gpwarning(GPW_RANGE,NULL);
 	}
       
         if(lit_mask & SPLIT_PACK) {
-	  emit(p->value & 0xff);
-	  emit((p->value >> 8) & 0xff);
+	  emit(value & 0xff);
+	  emit((value >> 8) & 0xff);
         } else {
-	  emit((p->value & lit_mask) | flavor);
+	  emit((value & lit_mask) | flavor);
         }
       }
 
-      q = p;
-      p = p->next;
-      free(q);
+      previous = list;
+      list = list->next;
+      free(previous);
 
     }
 
@@ -319,12 +273,12 @@ static void data(struct sllist *L, int flavor, int lit_mask)
 /* If we convert to glib, we can use the built in library call g_slist_append */
 
 struct sllist *sllist_append(struct sllist   *list,
-			     int value)
+			     struct pnode *p)
 {
   struct sllist *new;
 
   new = malloc(sizeof(*new));
-  new->value = value;
+  new->p = p;
   new->next  = NULL;
   list->next = new;
 
@@ -371,13 +325,13 @@ static void simplify_data(struct pnode *L, struct sllist *list, int packing_stri
             if(_16bit_core) {
               v = endian_swap_word(v);
             }   	    
-	    list = sllist_append(list, v);
+	    list = sllist_append(list, mk_constant(v));
 	    v = 0;
 	  } else
 	    v = (1<<31) | *pc++;
 	  
 	} else {
-	  list = sllist_append(list, *pc++);
+	  list = sllist_append(list, mk_constant(*pc++));
 	}
       }
 
@@ -386,11 +340,11 @@ static void simplify_data(struct pnode *L, struct sllist *list, int packing_stri
         if(_16bit_core) {
           v = endian_swap_word(v);
         }        
-	list = sllist_append(list, v);
+	list = sllist_append(list, mk_constant(v));
       }
 
     } else {
-      list = sllist_append(list,maybe_evaluate(p));
+      list = sllist_append(list, p);
 
     }
     simplify_data(TAIL(L), list, packing_strings);
@@ -589,66 +543,6 @@ static gpasmVal do_banksel(gpasmVal r,
   return r;
 }
 
-/*-------------------------------------------------------------------------
- *
- * configuration memory
- * 
- * In addition to memory for storing instructions, each pic has memory for
- * storing configuration data (e.g. code protection, wdt enable, etc.). Each
- * family of the pic microcontrollers treats this memory slightly different.
- * gpasm handles these differences with the following functions:
- *
- * cfg_evaluate_address(struct pnode *p) - Given a pointer to a node that
- *       presumably contains the configuration address, this function will
- *       ensure that the address is valid.
- * cfg_write(int address, int value) - Store the contents of 'value' at the
- *       configuration address 'address'
- * do_config( ) - Called by the parser when a __CONFIG assembler directive
- *       is encountered.
- *
- */
-
-static int cfg_evaluate_address(struct pnode *p)
-{
-  int address;
-
-  if(can_evaluate(p)) {
-    address = evaluate(p);
-
-    if(_16bit_core) {
-      switch(address) {
-      case CONFIG1L:
-      case CONFIG1H:
-      case CONFIG2L:
-      case CONFIG2H:
-      case CONFIG3L:
-      case CONFIG3H:
-      case CONFIG4L:
-      case CONFIG4H:
-      case CONFIG5L:
-      case CONFIG5H:
-      case CONFIG6L:
-      case CONFIG6H:
-      case CONFIG7L:
-      case CONFIG7H:
-      case DEVID1:
-      case DEVID2:
-	return address;
-      default:
-	gperror(GPE_RANGE,NULL);
-	return CONFIG1L;
-      }
-    }
-    else {
-      if(address != state.device.config_address)
-	gperror(GPE_RANGE,NULL);
-      return state.device.config_address;
-    }
-  }
-
-  return state.device.config_address;
-}
-
 static gpasmVal do_code(gpasmVal r,
 		        char *name,
 		        int arity,
@@ -716,6 +610,66 @@ static gpasmVal do_constant(gpasmVal r,
   return r;
 }
 
+/*-------------------------------------------------------------------------
+ *
+ * configuration memory
+ * 
+ * In addition to memory for storing instructions, each pic has memory for
+ * storing configuration data (e.g. code protection, wdt enable, etc.). Each
+ * family of the pic microcontrollers treats this memory slightly different.
+ * gpasm handles these differences with the following functions:
+ *
+ * cfg_evaluate_address(struct pnode *p) - Given a pointer to a node that
+ *       presumably contains the configuration address, this function will
+ *       ensure that the address is valid.
+ * cfg_write(int address, int value) - Store the contents of 'value' at the
+ *       configuration address 'address'
+ * do_config( ) - Called by the parser when a __CONFIG assembler directive
+ *       is encountered.
+ *
+ */
+
+static int cfg_evaluate_address(struct pnode *p)
+{
+  int address;
+
+  if(can_evaluate(p)) {
+    address = evaluate(p);
+
+    if(_16bit_core) {
+      switch(address) {
+      case CONFIG1L:
+      case CONFIG1H:
+      case CONFIG2L:
+      case CONFIG2H:
+      case CONFIG3L:
+      case CONFIG3H:
+      case CONFIG4L:
+      case CONFIG4H:
+      case CONFIG5L:
+      case CONFIG5H:
+      case CONFIG6L:
+      case CONFIG6H:
+      case CONFIG7L:
+      case CONFIG7H:
+      case DEVID1:
+      case DEVID2:
+	return address;
+      default:
+	gperror(GPE_RANGE,NULL);
+	return CONFIG1L;
+      }
+    }
+    else {
+      if(address != state.device.config_address)
+	gperror(GPE_RANGE,NULL);
+      return state.device.config_address;
+    }
+  }
+
+  return state.device.config_address;
+}
+
 static gpasmVal do_config(gpasmVal r,
 			  char *name,
 			  int arity,
@@ -750,26 +704,21 @@ static gpasmVal do_config(gpasmVal r,
     enforce_arity(arity,2);
     return r;
   }
-  state.lst.config_address = ca;
-  state.org = ca;
 
   if (state.mode == relocatable) {
-    int temp;
-    
     if(_16bit_core) {
-      /* FIXME: added config support for 18xx devices */
+      /* FIXME: add config support for 18xx devices */
       state.pass = 2; /* Ensure error actually gets displayed */
       gperror(GPE_UNKNOWN, "gpasm does not yet support __config in 18xx COFF files");
       exit(1);
+    } else {
+      coff_new_section(".config", ca, STYP_ABS | STYP_TEXT);
     }
-    new_coff_section(".config", ca, STYP_ABS | STYP_TEXT);
-    
-    /* FIXME: fix this hack */
-    temp = state.lst.line.was_org;
-    state.lst.line.was_org = ca;
-    coff_linenum(1);
-    state.lst.line.was_org = temp;
   }
+
+  state.lst.config_address = ca;
+  state.lst.line.was_org = ca;
+  state.org = ca;
 
   if (can_evaluate(p)) { 
 
@@ -793,11 +742,13 @@ static gpasmVal do_config(gpasmVal r,
 
     } else {
       emit(evaluate(p));
+      coff_linenum(1);
     }
   }
-  /* return to the org before the config was called */
+
   if (state.mode == absolute) {
-    state.org = org;
+    /* return to the org before the config was called */
+    state.lst.line.was_org = state.org = org;
   }
         
   return r;
@@ -1335,89 +1286,98 @@ static gpasmVal do_idlocs(gpasmVal r,
   int curvalue;
   int mask;
 
+  if (_17cxx_core) {
+    gperror(GPE_ILLEGAL_DIR, NULL);
+    return r;
+  }
+
   /* save the current org to restore to later */
   org = state.org;
 
-  if (_17cxx_core) {
-    gperror(GPE_ILLEGAL_DIR, NULL);
+  if (_16bit_core) {
+    if (enforce_arity(arity,2)) {
+      idreg = maybe_evaluate(HEAD(parms));
+      value = maybe_evaluate(HEAD(TAIL(parms)));
+    } else {
+      gperror(GPW_EXPECTED,"18cxxx devices should specify __IDLOC address");
+      return r;
+    }
+  } else {
+    if (enforce_arity(arity,1)) {
+      idreg = state.device.id_location;
+      value = maybe_evaluate(HEAD(parms));
+    } else {
+      return r;
+    }
+  }
 
-  } else if (_16bit_core) {
+  if (state.mode == relocatable) {
+    if (_16bit_core) {
+      /* FIXME: add idlocs support for 18xx devices */
+      state.pass = 2; /* Ensure error actually gets displayed */
+      gperror(GPE_UNKNOWN, "gpasm does not yet support __idlocs in 18xx COFF files");
+      exit(1);
+    } else {
+      coff_new_section(".idlocs", idreg, STYP_ABS | STYP_TEXT);
+    }
+  }
+
+  state.lst.config_address = idreg;
+  state.device.id_location = idreg;
+  state.lst.line.was_org = idreg;
+  state.org = idreg;
+
+  if (_16bit_core) {
     state.lst.line.linetype = config;
 
-    if (enforce_arity(arity, 2)) {
-
-      idreg = maybe_evaluate(HEAD(parms));
-
-      if (idreg > 0x200007 || idreg < 0x200000) {
-        gperror(GPE_RANGE,NULL);
-      } else {
-
-        state.device.id_location = idreg;
-        state.lst.config_address = idreg;
-        state.org = idreg;
-      
-        if (state.mode == relocatable) {
-          /* FIXME: added idlocs support for 18xx devices */
-          state.pass = 2; /* Ensure error actually gets displayed */
-          gperror(GPE_UNKNOWN, "gpasm does not yet support __idlocs in 18xx COFF files");
-          exit(1);
-        }
-
-        value = maybe_evaluate(HEAD(TAIL(parms)));
-        
-        if(value > 0xff) {
-          gpwarning(GPW_RANGE, NULL);
-	}
-        curvalue = i_memory_get(state.i_memory, idreg>>1);
-        mask = 0xff <<((idreg&1) ? 0 : 8);
-	
-        /* If the address is even, then this byte goes in LSB position */
-        value = (value & 0xff) << ((idreg&1) ? 8 : 0)  | MEM_USED_MASK; 
-
-        if(curvalue & MEM_USED_MASK)
-          curvalue &= mask;
-        else
-          curvalue |= mask;
-
-        i_memory_put(state.i_memory, idreg>>1,  curvalue | value);
-
+    if (idreg > 0x200007 || idreg < 0x200000) {
+      gperror(GPE_RANGE,NULL);
+    } else {
+      if(value > 0xff) {
+        gpwarning(GPW_RANGE, NULL);
       }
+      curvalue = i_memory_get(state.i_memory, idreg>>1);
+      mask = 0xff <<((idreg&1) ? 0 : 8);
+	
+      /* If the address is even, then this byte goes in LSB position */
+      value = (value & 0xff) << ((idreg&1) ? 8 : 0)  | MEM_USED_MASK; 
 
+      if(curvalue & MEM_USED_MASK)
+        curvalue &= mask;
+      else
+        curvalue |= mask;
+
+      i_memory_put(state.i_memory, idreg>>1,  curvalue | value);
     }
 
   } else {
+    state.lst.line.linetype = idlocs;
 
-    if (enforce_arity(arity, 1)) {
-      state.org = state.device.id_location;
-      state.lst.line.linetype = idlocs;
-      if (state.mode == relocatable) {
-        new_coff_section(".idlocs", state.device.id_location, STYP_ABS | STYP_TEXT);
-      }
-      value = maybe_evaluate(HEAD(parms));
-      if (value > 0xffff) {
-        gpmessage(GPM_IDLOC, NULL);
-	value &= 0xffff;
-      }     
+    if (value > 0xffff) {
+      gpmessage(GPM_IDLOC, NULL);
+      value &= 0xffff;
+    }     
 
-      /* FIXME: Clean up the line number generation */
-      state.lst.line.was_org = state.org;
-      emit((value & 0xf000) >> 12);
-      coff_linenum(1);
-      state.lst.line.was_org = state.org;
-      emit((value & 0x0f00) >> 8);
-      coff_linenum(1);
-      state.lst.line.was_org = state.org;
-      emit((value & 0x00f0) >> 4);
-      coff_linenum(1);
-      state.lst.line.was_org = state.org;
-      emit((value & 0x000f));
-      coff_linenum(1);
-    }
+    /* FIXME: Clean up the line number generation */
+    state.lst.line.was_org = state.org;
+    emit((value & 0xf000) >> 12);
+    coff_linenum(1);
+    state.lst.line.was_org = state.org;
+    emit((value & 0x0f00) >> 8);
+    coff_linenum(1);
+    state.lst.line.was_org = state.org;
+    emit((value & 0x00f0) >> 4);
+    coff_linenum(1);
+    state.lst.line.was_org = state.org;
+    emit((value & 0x000f));
+    coff_linenum(1);
 
   }
 
   /* return to the org before the __idlocs was called */
-  state.org = org;
+  if (state.mode == absolute) {
+    state.org = org;
+  }
  
   return r;
 }
@@ -3074,8 +3034,6 @@ void execute_body(struct macro_head *h)
     }
     if (expand && (b->src_line != NULL)) {
       lst_format_line(b->src_line, r);
-    } else if (state.mode == relocatable) {
-      coff_linenum(state.org - state.lst.line.was_org);
     }
   }
 
