@@ -266,7 +266,7 @@ process_args( int argc, char *argv[])
     case 'd':
       {
         extern int yydebug;
-//        yydebug = 1;
+        yydebug = 1;
         gp_debug_disable = 0;
       }
       break;

@@ -44,7 +44,8 @@ void codegen_unop(struct variable *var,
                   gp_boolean constant_offset,
                   int offset,
                   tree *offset_expr,
-                  tree *unop);
+                  tree *unop,
+                  enum size_tag size);
 void codegen_indirect(tree *offset,
                       struct variable *var,
                       int element_size,

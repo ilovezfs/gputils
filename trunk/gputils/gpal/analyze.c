@@ -792,7 +792,7 @@ analyze_expr(tree *expr)
   unop = optimize_unop_expr(var, left, right);
   if (unop) {
     /* write the simplified expression */
-    codegen_unop(var, constant_offset, offset, SYM_OFST(left), unop);
+    codegen_unop(var, constant_offset, offset, SYM_OFST(left), unop, size);
   } else {
     /* write the expression */
     codegen_expr(right, size);
