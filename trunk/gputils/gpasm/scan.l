@@ -184,7 +184,6 @@ list		     	 {
 			 }
 #?if			 {
 			   /* #if and if can appear in column 1 */
-			   quoted = 1;
 			   yylval.s = strdup(yytext);
 			   return IDENTIFIER;
 			 }
