@@ -425,8 +425,7 @@ coff_add_sym(char *name, int value, enum gpasmValTypes type)
     sym_type = C_LABEL;
     break;
   default:
-    assert(0);
-    break;
+    return;
   }
 
   new = gp_coffgen_findsymbol(state.obj.object, name);
