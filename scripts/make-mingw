@@ -305,6 +305,7 @@ echo "copying gputils icon... gputils.ico"
 # convert the remaining project data to dos format
 unix2dos -q $dist_dir/gputils/header/*
 unix2dos -q $dist_dir/gputils/lkr/*
+unix2dos -q $dist_dir/gputils/pub/*
 echo "converting project data to DOS format... done"
 
 ################################################################################
