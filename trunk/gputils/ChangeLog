@@ -1,3 +1,6 @@
+2004-06-16 Craig Franklin <craigfranklin@comcast.net>
+  * Allow duplicate extern directives in gpasm.
+
 2004-06-15 Craig Franklin <craigfranklin@comcast.net>
   * Fixed relocations in idata sections.
 

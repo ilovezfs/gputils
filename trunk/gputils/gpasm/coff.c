@@ -397,16 +397,52 @@ coff_linenum(int emitted)
    increment the global symbol number. */
 
 void
-coff_add_sym(char *name, int value, int section_number, int type, int class)
+coff_add_sym(char *name, int value, enum gpasmValTypes type)
 {
   gp_symbol_type *new;
   char message[BUFSIZ];
+  int section_number = 0;
+  int sym_type = C_EXT; 
 
   if(!state.obj.enabled)
     return;
 
+  switch (type) {
+  case gvt_extern:
+    section_number = 0;
+    sym_type = C_EXT;
+    break;
+  case gvt_global:
+    section_number = state.obj.section_num;
+    sym_type = C_EXT;
+    break;
+  case gvt_static:
+    section_number = state.obj.section_num;
+    sym_type = C_STAT;
+    break;
+  case gvt_address:
+    section_number = state.obj.section_num;
+    sym_type = C_LABEL;
+    break;
+  default:
+    assert(0);
+    break;
+  }
+
   new = gp_coffgen_findsymbol(state.obj.object, name);
-  if (new != NULL) {
+
+  /* verify the duplicate extern has the same properties */
+  if ((new != NULL) && (type == gvt_extern))  {
+    if ((new->type != sym_type) || 
+        (new->section_number != section_number)) {
+      sprintf(message,
+              "Duplicate label or redefining symbol that cannot be redefined. (%s)",
+              name);    
+      gperror(GPE_UNKNOWN, message);
+    }
+  }
+
+  if ((new != NULL) && (type != gvt_extern))  {
     sprintf(message,
             "Duplicate label or redefining symbol that cannot be redefined. (%s)",
             name);    
@@ -417,8 +453,8 @@ coff_add_sym(char *name, int value, int section_number, int type, int class)
     new->value          = value;
     new->section_number = section_number;
     new->section        = state.obj.section;
-    new->type           = type;
-    new->class          = class;
+    new->type           = sym_type;
+    new->class          = T_NULL;
   }
  
   return;
