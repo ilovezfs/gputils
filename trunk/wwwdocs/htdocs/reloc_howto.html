@@ -6,7 +6,7 @@
 	<META NAME="AUTHOR" CONTENT=" ">
 	<META NAME="CREATED" CONTENT="20030408;1072000">
 	<META NAME="CHANGEDBY" CONTENT=" ">
-	<META NAME="CHANGED" CONTENT="20030408;1210300">
+	<META NAME="CHANGED" CONTENT="20030408;1330200">
 	<STYLE>
 	<!--
 		@page { size: 8.5in 10.96in; margin-left: 1.25in; margin-right: 1.25in; margin-top: 1in; margin-bottom: 1in }
@@ -18,15 +18,13 @@
 <P STYLE="margin-bottom: 0in"><A HREF="mailto:craigfranklin@attbi.com">Craig
 Franklin</A></P>
 <P STYLE="margin-bottom: 0in">April 8, 2003</P>
-<ADDRESS><BR>
+<ADDRESS STYLE="margin-bottom: 0.2in"><BR><BR>
 </ADDRESS>
 <H2>1. Introduction</H2>
 <P STYLE="margin-bottom: 0in">This is a quick description of how to
 use gputils to generate relocatable objects and how to link those
-objects to generate an executable.  This 
-</P>
-<P STYLE="margin-bottom: 0in">document is very brief.  It is no
-substitute for the <A HREF="http://gputils.sourceforge.net/33014g.pdf">Microchip
+objects to generate an executable. This document is very brief. It is
+no substitute for the <A HREF="http://gputils.sourceforge.net/33014g.pdf">Microchip
 document</A>.</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
@@ -36,32 +34,26 @@ into the gputils manual at some point in the future.</P>
 </P>
 <H2>2. What are relocatable objects?</H2>
 <P STYLE="margin-bottom: 0in">They are files which contain machine
-code, symbols, and relocation information.  The relocation
-information allows the file to be placed 
-</P>
-<P STYLE="margin-bottom: 0in">&quot;anywhere&quot; in memory. gputils
-uses Common Object File Format (COFF).  A good book describing COFF
-is &quot;Understanding and Using COFF&quot; by Gircys.  It is out of
-print, but you can still buy used copies.  gputils users shouldn't
+code, symbols, and relocation information. The relocation information
+allows the file to be placed &quot;anywhere&quot; in memory. gputils
+uses Common Object File Format (COFF). A good book describing COFF is
+&quot;Understanding and Using COFF&quot; by Gircys. It is out of
+print, but you can still buy used copies. gputils users shouldn't
 need the book, but the developers might.</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
 <H2>3. How are they used?</H2>
-<P STYLE="margin-bottom: 0in">The code is assembled into a COFF. 
-After all the code is compiled, the coff are input into the linker. 
-Symbols are resolved, addresses are assigned, 
-</P>
-<P STYLE="margin-bottom: 0in">and the machine code is patched with
-the new addresses.  The output from the linker is an absolute
-executable object.</P>
+<P STYLE="margin-bottom: 0in">The code is assembled into a COFF.
+After all the code is compiled, the coff are input into the linker.
+Symbols are resolved, addresses are assigned, and the machine code is
+patched with the new addresses. The output from the linker is an
+absolute executable object.</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
 <H2>4. Why relocatable objects?</H2>
 <P STYLE="margin-bottom: 0in">Most development tools create then link
 relocatable objects to generate an executable. The exception is some
-tools for microcontrollers. The 
-</P>
-<P STYLE="margin-bottom: 0in">applications are relatively small so
+tools for microcontrollers. The applications are relatively small so
 creating one big file isn't impractical.</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
@@ -101,8 +93,7 @@ directive and uninitialized data memory using udata.</P>
 segment:</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace"><FONT FACE="courier, monospace">
- </FONT>udata</FONT></P>
+<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">udata</FONT></P>
 <P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">mem1
 res 1</FONT></P>
 <P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">mem2
@@ -117,7 +108,7 @@ symbols from other modules</FONT></P>
 _main</FONT></P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">  code</FONT></P>
+<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">code</FONT></P>
 <P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">_init</FONT></P>
 <P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">banksel
 mem1</FONT></P>
@@ -167,10 +158,8 @@ it is only initialized and never used.</P>
 </P>
 <P STYLE="margin-bottom: 0in">You can assign the section address in
 the assembler by adding an address to the section directive (udata or
-code). This is not recomended. You don't 
-</P>
-<P STYLE="margin-bottom: 0in">want to assign the address at assembly
-time, that would defeat the purpose.</P>
+code). This is not recomended. You don't want to assign the address
+at assembly time, that would defeat the purpose.</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
 <P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">code
@@ -195,8 +184,7 @@ _main</FONT></P>
 </P>
 <P STYLE="margin-bottom: 0in">Multiple sections can exist in the same
 file, but they must have different names. The section name proceeds
-the section directive. If no name is</P>
-<P STYLE="margin-bottom: 0in">provided a default name is used.</P>
+the section directive. If no name is provided a default name is used.</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
 <P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">code</FONT></P>
@@ -226,8 +214,7 @@ mem1, f</FONT></P>
 </P>
 <P STYLE="margin-bottom: 0in">Other types of sections exist, it is
 beyond the scope of this document to describe them all. See the
-document in the intro for a more detailed</P>
-<P STYLE="margin-bottom: 0in">description.</P>
+document in the intro for a more detailed description.</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
 <H2>4. Viewing objects</H2>
@@ -246,10 +233,9 @@ programming. gplink takes care of this.</P>
 </P>
 <P STYLE="margin-bottom: 0in">gplink only requires the objects and a
 linker script to build the required output files. A set of scripts
-are included in /usr/share/gputils/lkr. These</P>
-<P STYLE="margin-bottom: 0in">scripts were generated by Microchip.
-They were intended to cutomized by the user, but for many
-applications they can work as is.</P>
+are included in /usr/share/gputils/lkr. These scripts were generated
+by Microchip. They were intended to cutomized by the user, but for
+many applications they can work as is.</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
 <P STYLE="margin-bottom: 0in">Commanding:</P>
@@ -261,11 +247,10 @@ applications they can work as is.</P>
 </P>
 <P STYLE="margin-bottom: 0in">Will result in a map file (-m) to be
 output. This file contains the final addresses assigned to the data
-and program memory. An executable coff (-c)</P>
-<P STYLE="margin-bottom: 0in">that is good for reference and
-simulation in MPLAB. Also a set of output files a.hex and a.cod. The
-default base filename is &quot;a&quot;. It is best to specify your
-own output name using &quot;-o&quot;.</P>
+and program memory. An executable coff (-c) that is good for
+reference and simulation in MPLAB. Also a set of output files a.hex
+and a.cod. The default base filename is &quot;a&quot;. It is best to
+specify your own output name using &quot;-o&quot;.</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
 <P STYLE="margin-bottom: 0in">In the future the path to the scripts
@@ -286,8 +271,7 @@ exp.o</P>
 </P>
 <P STYLE="margin-bottom: 0in">Creates a new archive math.a. The name
 is arbitary. It could be called &quot;math.lib&quot; or &quot;math&quot;.
-gputils doesn't use file extensions to determine file</P>
-<P STYLE="margin-bottom: 0in">types.</P>
+gputils doesn't use file extensions to determine file types.</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
 <P STYLE="margin-bottom: 0in">Then when you link the application add
@@ -300,14 +284,13 @@ math.a to the list of objects</P>
 </P>
 <P STYLE="margin-bottom: 0in">gplink will only extract those archive
 members that are required to resolve external references. So the
-application won't necessarily contain the code</P>
-<P STYLE="margin-bottom: 0in">of all the archive members.</P>
+application won't necessarily contain the code of all the archive
+members.</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
 <H2>7. Makefiles</H2>
 <P STYLE="margin-bottom: 0in">Here is one of the Makefiles I have
-been working with. It can be a template</P>
-<P STYLE="margin-bottom: 0in">for you:</P>
+been working with. It can be a template for you:</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
 <P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">SCRIPT
@@ -352,9 +335,8 @@ isr.asm common.inc</FONT></P>
 <H2>8. The Future</H2>
 <P STYLE="margin-bottom: 0in">There is still a lot of work to do. So
 far only 14 bits devices have been linked. There are many features
-that are planned. Linker optimizations,</P>
-<P STYLE="margin-bottom: 0in">assembler extensions for high level
-languages. ...</P>
+that are planned. Linker optimizations, assembler extensions for high
+level languages. ...</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
 <P STYLE="margin-bottom: 0in">I will try to keep this document
