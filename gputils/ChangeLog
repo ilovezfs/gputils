@@ -1,3 +1,10 @@
+2002-10-19 Craig Franklin <craigfranklin@attbi.com>
+  * Added new processors: 12f629 12f675 16c557 16f627a 16f628a 16f630 
+    16f676 16f72 16f76 16f77 16f818 16f819 16f87 16f873a 16f874a 16f876a 
+    16f88 18f1220 18f1320 18f2220 18f2320 18f4220 18f4320 18f6620 18f6720 
+    18f8620 18f8720 rf509af rf509ag
+  * Updated header files
+
 2002-10-12 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.10.4 Released.
   * Fixed bug that caused assertion when macro calls procede definition.
