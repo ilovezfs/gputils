@@ -1,0 +1,49 @@
+gputils scripts
+===============
+
+This directory contains scripts for maintaining gputils.  
+
+make-mingw - Build a binary mingw32 gputils distribution.
+
+ 
+1.0 make-mingw
+==============
+
+This script provides an automated method for generating a binary mingw 
+distribution of gputils.  The distribution is built using a cross compiler on 
+a linux system.  Some of the variables may have to be changed when a new
+maintainer takes over.
+
+1.1 Script Options
+==================
+
+The script has many options.  To review the script options run "./make-mingw
+--help". Typically, the only option required is to specify the source archive.
+
+./make-mingw --source=gputils-0.10.0.tar.gz
+
+Additionally, the builder of the script should specify their name and email
+address.  That can be accomplished by setting the environmental variables as 
+shown in the table below:
+ 
+VARIABLE  	DESCRIPTION			EXAMPLE
+--------        -----------                     -------
+NAME		Name of the Packager		Craig Franklin
+EMAIL		Email address of Packager	<craigfranklin@attbi.com>
+
+These variable may also be specified by options to the script (--name="Craig 
+Franklin")
+
+1.2  Patches
+============
+
+Any patch applied to the source must be provided with the distribution.  Specify
+the patch using --patch="file name".
+
+The patches should be in unified format.  They should also not be compressed. To
+work, the scripts must be generated from the directory containing the base
+gputils directory name.  An example of how to generate the patch is shown below:
+
+diff -ur gputils-0.10.0.orig gputils-0.10.0 > mypatch.diff
+
+In this case "--patch=mypatch.diff" would be added to the make-mingw arguments.
