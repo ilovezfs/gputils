@@ -1,4 +1,8 @@
 2004-11-09 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [gpal] Write a newline before eof in deps output.
+  * [gpal] Require a public file for the module being compiled.
+
+2004-11-09 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gpal] Generate Make compatible dependency lists.
   * [gpal] Attempt to open <public>.pub file if <public> isn't in memory.
   * [gpal] Use extended coff directives in gpal output files.
