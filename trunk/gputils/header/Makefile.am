@@ -5,6 +5,7 @@ pkgdatadir = @GPASM_HEADER_PATH@
 EXTRA_DIST =\
 	mcp250xx.inc \
 	memory.inc \
+	migrate.inc \
 	p12c508a.inc \
 	p12c508.inc \
 	p12c509a.inc \
@@ -95,6 +96,7 @@ EXTRA_DIST =\
 	p16f648a.inc \
 	p16f676.inc \
 	p16f684.inc \
+	p16f688.inc \
 	p16f716.inc \
 	p16f72.inc \
 	p16f737.inc \
@@ -188,11 +190,11 @@ EXTRA_DIST =\
 	p18f8621.inc \
 	p18f8680.inc \
 	p18f8720.inc \
-	p18macro.inc \
+	ps500.inc \
 	rf509af.inc \
 	rf509ag.inc \
 	rf675f.inc \
 	rf675h.inc \
 	rf675k.inc
 
-pkgdata_DATA= $(EXTRA_DIST)
+pkgdata_DATA = $(EXTRA_DIST)

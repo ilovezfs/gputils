@@ -1,8 +1,5 @@
-        NOLIST
-; Based on P18F4320_A0.INC, and 18F1220/1320 advance DS - GK 6/3/02
-
         LIST
-; P18F1220.INC  Standard Header File, Version 0.1   Microchip Technology, Inc.
+; P18F1220.INC  Standard Header File, Version 1.0   Microchip Technology, Inc.
         NOLIST
 
 ; This header file defines configurations, registers, and other useful
@@ -34,7 +31,32 @@
 ;                    Maintains compatability to 18F4320
 ;0.23  29Jan2003     Changed from BAUDCTL:W4E to WUE                 BD
 ;0.24  04Feb2003     Changed ECCPAS EQU from H'0FB8' to H'0FB6'      BD
+;0.25   1 Oct 2003  Bit names changed                                BD
+;                      LVVn   to LVDLn     IVRST to IRVST
+;                      FSCMEN to FSCM
+;                   Bit names removed - EPWM1M1,EPWM1M0,EDC1B1,
+;                      EDC1B0,ECCP1M3,ECCP1M2,ECCP1M1,ECCP1M0,
+;                   Removed redundant bit names
+;                      RCIO6 use RCIO      INTIO7   use INTIO1
+;                      ECIO6 use ECIO      INTIO67  use INTIO2
+;                      BKBUG use DEBUG     SWDTE    use SWDTEN
+;                      T0IE  use TMR0IE    INT0E    use INT0IE
+;                      T0IF  use TMR0IF    INT0F    use INT0IE
+;                      BGST  use IRVST     T1INSYNC use T1SYNC
+;                      TXD8  use TX9D      T3INSYNC use T3SYNC
+;                      TX8_9 use TX9       NOT_TX8  use TX9
+;                      RC9   use RX9       NOT_RC8  use RX9
+;                      RC8_9 use RX9       RCD8     use RX9D
+;                      INT2P use INT2IP    INT1P    use INT1IP
+;                      INT2E use INT2IE    INT1E    use INT1IE
+;                      INT2F use INT2IF    INT1F    use INT1IF
+;                      FLTS  use IOFS      STKOVF   use STKFUL
+;                   Added equates for PIC16 Compatability
+;                      ADRES, INTF, INTE, CCPnX, CCPnY
+;                   General clean-up (removed some comments)
 
+;=======================================================================
+;
 ;       Verify Processor
 ;
 ;=======================================================================
@@ -62,23 +84,15 @@ BANKED          EQU 1
 ;       16Cxxx/17Cxxx Substitutions
 ;=======================================================================
 
-  #define clrw clrf WREG       ; PIC16Cxxx code substitution
-  #define CLRW CLRF WREG       ; PIC16Cxxx code substitution
-  #define negw negf WREG       ; PIC16Cxxx code substitution
-  #define NEGW NEGF WREG       ; PIC16Cxxx code substitution
-  #define movpf movff          ; PIC17Cxxx code substitution
-  #define MOVPF MOVFF          ; PIC17Cxxx code substitution
-  #define movfp movff          ; PIC17Cxxx code substitution
-  #define MOVFP MOVFF          ; PIC17Cxxx code substitution
-  #define lcall call           ; PIC17Cxxx code substitution
-  #define LCALL CALL           ; PIC17Cxxx code substitution
-  #define lgoto goto           ; PIC17Cxxx code substitution
-  #define LGOTO GOTO           ; PIC17Cxxx code substitution
   #define DDRA  TRISA          ; PIC17Cxxx SFR substitution
   #define DDRB  TRISB          ; PIC17Cxxx SFR substitution
-;  #define DDRC  TRISC          ; PIC17Cxxx SFR substitution
-;  #define DDRD  TRISD          ; PIC17Cxxx SFR substitution
-;  #define DDRE  TRISE          ; PIC17Cxxx SFR substitution
+  #define ADRES ADRESH         ; PIC16     SFR substitution
+  #define INTE  INT0IE         ; PIC16     bit substitution
+  #define INTF  INT0IF         ; PIC16     bit substitution
+  #define CCP1X DC1B1          ; PIC16     bit substitution
+  #define CCP1Y DC1B0          ; PIC16     bit substitution
+  #define SCS   SCS0           ; PIC18     bit substitution
+
 
 ;=======================================================================
 ;
@@ -132,7 +146,7 @@ STATUS          EQU  H'0FD8'
 TMR0H           EQU  H'0FD7'
 TMR0L           EQU  H'0FD6'
 T0CON           EQU  H'0FD5'
-; reserved           H'0FD4'
+; reserved      EQU  H'0FD4'
 OSCCON          EQU  H'0FD3'
 LVDCON          EQU  H'0FD2'
 WDTCON          EQU  H'0FD1'
@@ -144,11 +158,11 @@ T1CON           EQU  H'0FCD'
 TMR2            EQU  H'0FCC'
 PR2             EQU  H'0FCB'
 T2CON           EQU  H'0FCA'
-;reserved            H'0FC9'
-;reserved            H'0FC8'
-;reserved            H'0FC7'
-;reserved            H'0FC6'
-;reserved            H'0FC5'
+; reserved      EQU  H'0FC9'
+; reserved      EQU  H'0FC8'
+; reserved      EQU  H'0FC7'
+; reserved      EQU  H'0FC6'
+; reserved      EQU  H'0FC5'
 ADRESH          EQU  H'0FC4'
 ADRESL          EQU  H'0FC3'
 ADCON0          EQU  H'0FC2'
@@ -158,15 +172,15 @@ ADCON2          EQU  H'0FC0'
 CCPR1H          EQU  H'0FBF'
 CCPR1L          EQU  H'0FBE'
 CCP1CON         EQU  H'0FBD'
-;reserved            H'0FBC'
-;reserved            H'0FBB'
-;reserved            H'0FBA'
-; reserved           H'0FB9'
-; reserved           H'0FB8'
+; reserved      EQU  H'0FBC'
+; reserved      EQU  H'0FBB'
+; reserved      EQU  H'0FBA'
+; reserved      EQU  H'0FB9'
+; reserved      EQU  H'0FB8'
 PWM1CON         EQU  H'0FB7'
-ECCPAS          EQU  H'0FB6'		; change from H'0FB8' to H'0FB6' - BD 4Feb2003
-;reserved            H'0FB5'
-;reserved            H'0FB4'
+ECCPAS          EQU  H'0FB6'
+; reserved      EQU  H'0FB5'
+; reserved      EQU  H'0FB4'
 TMR3H           EQU  H'0FB3'
 TMR3L           EQU  H'0FB2'
 T3CON           EQU  H'0FB1'
@@ -182,9 +196,9 @@ EEADR           EQU  H'0FA9'
 EEDATA          EQU  H'0FA8'
 EECON2          EQU  H'0FA7'
 EECON1          EQU  H'0FA6'
-; reserved           H'0FB5'
-; reserved           H'0FB4'
-; reserved           H'0FB3'
+; reserved      EQU  H'0FB5'
+; reserved      EQU  H'0FB4'
+; reserved      EQU  H'0FB3'
 IPR2            EQU  H'0FA2'
 PIR2            EQU  H'0FA1'
 PIE2            EQU  H'0FA0'
@@ -192,15 +206,15 @@ PIE2            EQU  H'0FA0'
 IPR1            EQU  H'0F9F'
 PIR1            EQU  H'0F9E'
 PIE1            EQU  H'0F9D'
-;reserved            H'0F9C'
+; reserved      EQU  H'0F9C'
 OSCTUNE         EQU  H'0F9B'
-; reserved           H'0F9A'
-; reserved           H'0F99'
-; reserved           H'0F98'
-; reserved           H'0F97'
-; reserved           H'0F96'
-; reserved           H'0F95'
-; reserved           H'0F94'
+; reserved      EQU  H'0F9A'
+; reserved      EQU  H'0F99'
+; reserved      EQU  H'0F98'
+; reserved      EQU  H'0F97'
+; reserved      EQU  H'0F96'
+; reserved      EQU  H'0F95'
+; reserved      EQU  H'0F94'
 TRISB           EQU  H'0F93'
 TRISA           EQU  H'0F92'
 ; reserved      EQU  H'0F91'
@@ -208,25 +222,23 @@ TRISA           EQU  H'0F92'
 
 ; reserved      EQU  H'0F8F'
 ; reserved      EQU  H'0F8E'
-; reserved           H'0F8D'
-; reserved           H'0F8C'
-; reserved           H'0F8B'
+; reserved      EQU  H'0F8D'
+; reserved      EQU  H'0F8C'
+; reserved      EQU  H'0F8B'
 LATB            EQU  H'0F8A'
 LATA            EQU  H'0F89'
 ; reserved      EQU  H'0F88'
 ; reserved      EQU  H'0F87'
 ; reserved      EQU  H'0F86'
 ; reserved      EQU  H'0F85'
-; reserved           H'0F84'
-; reserved           H'0F83'
-; reserved           H'0F82'
+; reserved      EQU  H'0F84'
+; reserved      EQU  H'0F83'
+; reserved      EQU  H'0F82'
 PORTB           EQU  H'0F81'
 PORTA           EQU  H'0F80'
 
-
 ;----- STKPTR Bits -----------------------------------------------------
-STKFUL          EQU  H'0007'    ;For backward compatibilty
-STKOVF          EQU  H'0007'
+STKFUL          EQU  H'0007'
 STKUNF          EQU  H'0006'
 
 ;----- INTCON Bits -----------------------------------------------------
@@ -235,14 +247,10 @@ GIEH            EQU  H'0007'
 PEIE            EQU  H'0006'
 GIEL            EQU  H'0006'
 TMR0IE          EQU  H'0005'
-T0IE            EQU  H'0005'      ; For backward compatibility
-INT0E           EQU  H'0004'
-INT0IE          EQU  H'0004'      ; For backward compatibility
+INT0IE          EQU  H'0004'
 RBIE            EQU  H'0003'
 TMR0IF          EQU  H'0002'
-T0IF            EQU  H'0002'      ; For backward compatibility
-INT0IF          EQU  H'0001'      ; For backward compatibility
-INT0F           EQU  H'0001'
+INT0IF          EQU  H'0001'
 RBIF            EQU  H'0000'
 
 ;----- INTCON2 Bits ----------------------------------------------------
@@ -252,22 +260,16 @@ INTEDG0         EQU  H'0006'
 INTEDG1         EQU  H'0005'
 INTEDG2         EQU  H'0004'
 TMR0IP          EQU  H'0002'
-T0IP            EQU  H'0002'      ; For compatibility with T0IE and T0IF
+T0IP            EQU  H'0002'
 RBIP            EQU  H'0000'
 
 ;----- INTCON3 Bits ----------------------------------------------------
-INT2P           EQU  H'0007'
 INT2IP          EQU  H'0007'
-INT1P           EQU  H'0006'
-INT1IP          EQU  H'0006'      ; For backward compatibility
-INT2E           EQU  H'0004'
-INT2IE          EQU  H'0004'      ; For compatibility
-INT1E           EQU  H'0003'
-INT1IE          EQU  H'0003'      ; For backward compatibility
-INT2F           EQU  H'0001'
-INT2IF          EQU  H'0001'      ; For compatibility
-INT1F           EQU  H'0000'
-INT1IF          EQU  H'0000'      ; For backward compatibility
+INT1IP          EQU  H'0006'
+INT2IE          EQU  H'0004'
+INT1IE          EQU  H'0003'
+INT2IF          EQU  H'0001'
+INT1IF          EQU  H'0000'
 
 ;----- STATUS Bits -----------------------------------------------------
 N               EQU  H'0004'
@@ -291,28 +293,20 @@ IDLEN           EQU  H'0007'
 IRCF2           EQU  H'0006'
 IRCF1           EQU  H'0005'
 IRCF0           EQU  H'0004'
-OSTS            EQU  H'0003'    ; bit name was wrong - BD 5/23/02
-FLTS            EQU  H'0002'
+OSTS            EQU  H'0003'
+IOFS            EQU  H'0002'
 SCS1            EQU  H'0001'
 SCS0            EQU  H'0000'
-SCS             EQU  H'0000'      ; For backward compatibility
 
 ;----- LVDCON Bits -----------------------------------------------------
-BGST            EQU  H'0005'    ;For backward compatibilty
-IVRST           EQU  H'0005'
+IRVST           EQU  H'0005'
 LVDEN           EQU  H'0004'
-LVV3            EQU  H'0003'    ;For backward compatibility
 LVDL3           EQU  H'0003'
-LVV2            EQU  H'0002'    ;For backward compatibility
 LVDL2           EQU  H'0002'
-LVV1            EQU  H'0001'    ;For backward compatibility
 LVDL1           EQU  H'0001'
-LVV0            EQU  H'0000'    ;For backward compatibility
 LVDL0           EQU  H'0000'
 
-
 ;----- WDTCON Bits -----------------------------------------------------
-SWDTE           EQU  H'0000'
 SWDTEN          EQU  H'0000'
 
 ;----- RCON Bits -------------------------------------------------------
@@ -336,7 +330,6 @@ T1CKPS0         EQU  H'0004'
 T1OSCEN         EQU  H'0003'
 NOT_T1SYNC      EQU  H'0002'
 T1SYNC          EQU  H'0002'
-T1INSYNC        EQU  H'0002'    ; Backward compatibility only
 TMR1CS          EQU  H'0001'
 TMR1ON          EQU  H'0000'
 
@@ -348,7 +341,6 @@ TOUTPS0         EQU  H'0003'
 TMR2ON          EQU  H'0002'
 T2CKPS1         EQU  H'0001'
 T2CKPS0         EQU  H'0000'
-
 
 ;----- ADCON0 Bits -----------------------------------------------------
 VCFG1           EQU  H'0007'
@@ -381,28 +373,16 @@ ADCS1           EQU  H'0001'
 ADCS0           EQU  H'0000'
 
 ;----- CCP1CON Bits ----------------------------------------------------
-EPWM1M1         EQU  H'0007'
-P1M1            EQU  H'0007'      ; For backward compatibility
-EPWM1M0         EQU  H'0006'
-P1M0            EQU  H'0006'      ; For backward compatibility
-EDC1B1          EQU  H'0005'
-CCP1X           EQU  H'0005'      ; For backward compatibility
-DC1B1           EQU  H'0005'      ; For backward compatibility
-EDC1B0          EQU  H'0004'
-CCP1Y           EQU  H'0004'      ; For backward compatibility
-DC1B0           EQU  H'0004'      ; For backward compatibility
-ECCP1M3         EQU  H'0003'
-CCP1M3          EQU  H'0003'      ; For backward compatibility
-ECCP1M2         EQU  H'0002'
-CCP1M2          EQU  H'0002'      ; For backward compatibility
-ECCP1M1         EQU  H'0001'
-CCP1M1          EQU  H'0001'      ; For backward compatibility
-ECCP1M0         EQU  H'0000'
-CCP1M0          EQU  H'0000'      ; For backward compatibility
-
+P1M1            EQU  H'0007'
+P1M0            EQU  H'0006'
+DC1B1           EQU  H'0005'
+DC1B0           EQU  H'0004'
+CCP1M3          EQU  H'0003'
+CCP1M2          EQU  H'0002'
+CCP1M1          EQU  H'0001'
+CCP1M0          EQU  H'0000'
 
 ;----- PWM1CON bits ----------------------------------------------------
-; replaces ECCP1DEL register by adding a control bit - BD 03/22/2002
 PRSEN           EQU  H'0007'
 PDC6            EQU  H'0006'
 PDC5            EQU  H'0005'
@@ -413,7 +393,6 @@ PDC1            EQU  H'0001'
 PDC0            EQU  H'0000'
 
 ;----- ECCPAS Bits -----------------------------------------------------
-; register name matched bit name - changed register name - BD 01/21/2002
 ECCPASE         EQU  H'0007'
 ECCPAS2         EQU  H'0006'
 ECCPAS1         EQU  H'0005'
@@ -431,46 +410,35 @@ T3CKPS0         EQU  H'0004'
 T3CCP1          EQU  H'0003'
 NOT_T3SYNC      EQU  H'0002'
 T3SYNC          EQU  H'0002'
-T3INSYNC        EQU  H'0002'    ; Backward compatibility only
 TMR3CS          EQU  H'0001'
 TMR3ON          EQU  H'0000'
-
 
 ;----- TXSTA Bits ------------------------------------------------------
 CSRC            EQU  H'0007'
 TX9             EQU  H'0006'
-NOT_TX8         EQU  H'0006'    ; Backward compatibility only
-TX8_9           EQU  H'0006'    ; Backward compatibility only
 TXEN            EQU  H'0005'
 SYNC            EQU  H'0004'
 SENDB           EQU  H'0003'
 BRGH            EQU  H'0002'
 TRMT            EQU  H'0001'
 TX9D            EQU  H'0000'
-TXD8            EQU  H'0000'    ; Backward compatibility only
 
 ;----- RCSTA Bits ------------------------------------------------------
 SPEN            EQU  H'0007'
 RX9             EQU  H'0006'
-RC9             EQU  H'0006'    ; Backward compatibility only
-NOT_RC8         EQU  H'0006'    ; Backward compatibility only
-RC8_9           EQU  H'0006'    ; Backward compatibility only
 SREN            EQU  H'0005'
 CREN            EQU  H'0004'
 ADDEN           EQU  H'0003'
 FERR            EQU  H'0002'
 OERR            EQU  H'0001'
 RX9D            EQU  H'0000'
-RCD8            EQU  H'0000'    ; Backward compatibility only
-
 
 ;----- BAUDCTL Bits ------------------------------------------------------
 RCIDL           EQU  H'0006'
 SCKP            EQU  H'0004'
 BRG16           EQU  H'0003'
-WUE             EQU  H'0001'	; changed from W4E to WUE - BD 1/29/2003
+WUE             EQU  H'0001'
 ABDEN           EQU  H'0000'
-
 
 ;----- EECON1 Bits -----------------------------------------------------
 EEPGD           EQU  H'0007'
@@ -487,20 +455,17 @@ EEIP            EQU  H'0004'
 LVDIP           EQU  H'0002'
 TMR3IP          EQU  H'0001'
 
-
 ;----- PIR2 Bits -------------------------------------------------------
 OSCFIF          EQU  H'0007'
 EEIF            EQU  H'0004'
 LVDIF           EQU  H'0002'
 TMR3IF          EQU  H'0001'
 
-
 ;----- PIE2 Bits -------------------------------------------------------
 OSCFIE          EQU  H'0007'
 EEIE            EQU  H'0004'
 LVDIE           EQU  H'0002'
 TMR3IE          EQU  H'0001'
-
 
 ;----- IPR1 Bits -------------------------------------------------------
 ADIP            EQU  H'0006'
@@ -534,12 +499,6 @@ TUN2            EQU  H'0002'
 TUN1            EQU  H'0001'
 TUN0            EQU  H'0000'
 
-;----- TRISA Bits ------------------------------------------------------
-TRISA7          EQU  H'0007'
-TRISA6          EQU  H'0006'
-
-
-
 ;=======================================================================
 ;
 ;       I/O Pin Name Definitions
@@ -554,8 +513,7 @@ AN1             EQU  1
 LVDIN           EQU  1
 RA2             EQU  2
 AN2             EQU  2
-VREFM           EQU  2          ;For backward compatibility
-VREFN           EQU  2
+VREFM           EQU  2
 RA3             EQU  3
 AN3             EQU  3
 VREFP           EQU  3
@@ -588,8 +546,6 @@ RB4             EQU  4
 KBI0            EQU  4
 AN6             EQU  4
 RX              EQU  4
-;****DT              EQU  4      ;*** Not Available due to conflict with
-                                 ;***    Define Table (DT) directive
 RB5             EQU  5
 KBI1            EQU  5
 PGM             EQU  5
@@ -604,12 +560,6 @@ KBI3            EQU  7
 T1OSI           EQU  7
 PGD             EQU  7
 P1D             EQU  7
-
-
-
-
-
-
 
 ;=======================================================================
 ;
@@ -679,44 +629,41 @@ _CONFIG6H       EQU    H'30000B'
 _CONFIG7L       EQU    H'30000C'
 _CONFIG7H       EQU    H'30000D'
 
-; To use the Configuration Bits, place the following lines in your
-; source code in the following format, and change the configuration
-; value to the desired setting (such as WDT_OFF to WDT_ON).  These are
-; currently commented out here and each __CONFIG line should have the
-; preceding semicolon removed when pasted into your source code.
+; To embed the Configuration Bits in your source code, paste the
+; following lines into your source code in the following format,
+; and change the configuration value to the desired setting (such
+; as WDT_OFF to WDT_ON).
+; These lines are commented out - each __CONFIG line should have the
+; preceding semicolon (;) removed when pasted into your source code.
 
-;    __CONFIG  _CONFIG1H, _IESO_ON_1H & _FSCMEN_OFF_1H & _RC_OSC_1H
-;    __CONFIG  _CONFIG2L, _BORV_20_2L & _BOR_ON_2L & _PWRT_ON_2L
-;    __CONFIG  _CONFIG2H, _WDT_ON_2H & _WDTPS_32K_2H
-;    __CONFIG  _CONFIG3H, _MCLRE_ON_3H & _PBAD_DIG_3H & _CCP2MX_C1_3H
-;    __CONFIG  _CONFIG4L, _BKBUG_OFF_4L & _LVP_ON_4L & _STVR_ON_4L
+;    __CONFIG  _CONFIG1H, _IESO_ON_1H & _FSCM_OFF_1H & _RC_OSC_1H
+;    __CONFIG  _CONFIG2L, _PWRT_ON_2L & _BOR_OFF_2L & _BORV_20_2L
+;    __CONFIG  _CONFIG2H, _WDT_OFF_2H & _WDTPS_32K_2H
+;    __CONFIG  _CONFIG3H, _MCLRE_ON_3H
+;    __CONFIG  _CONFIG4L, _DEBUG_OFF_4L & _LVP_ON_4L & _STVR_ON_4L
+
 ;    __CONFIG  _CONFIG5L, _CP0_OFF_5L & _CP1_OFF_5L
 ;    __CONFIG  _CONFIG5H, _CPB_OFF_5H & _CPD_OFF_5H
-;    __CONFIG  _CONFIG6L, _WRT0_OFF_6L & _WRT1_OFF_6L & _WRT2_OFF_6L & _WRT3_OFF_6L
+;    __CONFIG  _CONFIG6L, _WRT0_OFF_6L & _WRT1_OFF_6L
 ;    __CONFIG  _CONFIG6H, _WRTC_OFF_6H & _WRTB_OFF_6H & _WRTD_OFF_6H
-;    __CONFIG  _CONFIG7L, _EBTR0_OFF_7L & _EBTR1_OFF_7L & _EBTR2_OFF_7L & _EBTR3_OFF_7L
+;    __CONFIG  _CONFIG7L, _EBTR0_OFF_7L & _EBTR1_OFF_7L
 ;    __CONFIG  _CONFIG7H, _EBTRB_OFF_7H
 
 ;Configuration Byte 1H Options
 _IESO_ON_1H       EQU  H'FF' ; Internal External Oscillator Switch Over mode enabled
 _IESO_OFF_1H      EQU  H'7F' ; Internal External Oscillator Switch Over mode disabled
-_FSCMEN_ON_1H     EQU  H'FF' ; Fail Safe Clock Monitor enabled
-_FSCMEN_OFF_1H    EQU  H'BF' ; Fail Safe Clock Monitor disabled
+_FSCM_ON_1H       EQU  H'FF' ; Fail Safe Clock Monitor enabled
+_FSCM_OFF_1H      EQU  H'BF' ; Fail Safe Clock Monitor disabled
 _RC_OSC_1H        EQU  H'FF' ; External RC on OSC1, OSC2 as Fosc/4
-;_RCIO6_OSC_1H     EQU  H'F7' ; External RC on OSC1, OSC2 as RA6        - commented 23Jan2003 - BD
+_RCIO_OSC_1H      EQU  H'F7' ; External RC on OSC1, OSC2 as RA6
 _LP_OSC_1H        EQU  H'F0' ; LP Oscillator
 _XT_OSC_1H        EQU  H'F1' ; XT Oscillator
 _HS_OSC_1H        EQU  H'F2' ; HS Oscillator
 _HSPLL_OSC_1H     EQU  H'F6' ; HS + PLL
 _EC_OSC_1H        EQU  H'F4' ; External Clock on OSC1, OSC2 as Fosc/4
-;_ECIO6_OSC_1H     EQU  H'F5' ; External Clock on OSC1, OSC2 as RA6     - commented 23Jan2003 - BD
-;_INTIO7_OSC_1H    EQU  H'F9' ; Internal RC, OSC1 as RA7, OSC2 as Fosc/4 - commented 23Jan2003 - BD
-;_INTIO67_OSC_1H   EQU  H'F8' ; Internal RC, OSC1 as RA7, OSC2 as RA6   - commented 23Jan2003 - BD
-
-_RCIO_OSC_1H      EQU  H'F7' ; External RC on OSC1, OSC2 as RA6         - added 23Jan2003 - BD
-_ECIO_OSC_1H      EQU  H'F5' ; External Clock on OSC1, OSC2 as RA6      - added 23Jan2003 - BD
-_INTIO1_OSC_1H    EQU  H'F9' ; Internal RC, OSC1 as RA7, OSC2 as Fosc/4 - added 23Jan2003 - BD
-_INTIO2_OSC_1H    EQU  H'F8' ; Internal RC, OSC1 as RA7, OSC2 as RA6    - added 23Jan2003 - BD
+_ECIO_OSC_1H      EQU  H'F5' ; External Clock on OSC1, OSC2 as RA6
+_INTIO1_OSC_1H    EQU  H'F9' ; Internal RC, OSC1 as RA7, OSC2 as Fosc/4
+_INTIO2_OSC_1H    EQU  H'F8' ; Internal RC, OSC1 as RA7, OSC2 as RA6
 
 ;Configuration Byte 2L Options
 _BORV_20_2L       EQU  H'FF' ; BOR Voltage - 2.0v
@@ -752,10 +699,9 @@ _WDTPS_1_2H       EQU  H'E1' ;   1:     1
 _MCLRE_ON_3H      EQU  H'FF' ; MCLR enabled, RA5 input disabled
 _MCLRE_OFF_3H     EQU  H'7F' ; MCLR disabled, RA5 input enabled
 
-
 ;Configuration Byte 4L Options
-_BKBUG_ON_4L      EQU  H'7F' ; BacKground deBUGger enabled
-_BKBUG_OFF_4L     EQU  H'FF' ; BacKground deBUGger disabled
+_DEBUG_ON_4L      EQU  H'7F' ; BacKground deBUGger enabled
+_DEBUG_OFF_4L     EQU  H'FF' ; BacKground deBUGger disabled
 _LVP_ON_4L        EQU  H'FF' ; Low Voltage Prgramming enabled
 _LVP_OFF_4L       EQU  H'FB' ; Low Voltage Prgramming disabled
 _STVR_ON_4L       EQU  H'FF' ; Stack over/underflow Reset enabled
@@ -769,21 +715,21 @@ _CP1_ON_5L        EQU  H'FD' ; Block 1 protected
 _CP1_OFF_5L       EQU  H'FF' ; Block 1 readable/ may be writable
 
 ;Configuration Byte 5H Options
-;  Protect blocks from programmer reads and writes (see Config Byte 6H)
+; Protect blocks from programmer reads and writes (see Config Byte 6H)
 _CPB_ON_5H        EQU  H'BF' ; Boot Block protected
 _CPB_OFF_5H       EQU  H'FF' ; Boot Block readable / may be writable
 _CPD_ON_5H        EQU  H'7F' ; Data EE memory protected
 _CPD_OFF_5H       EQU  H'FF' ; Data EE memory readable / may be writable
 
 ;Configuration Byte 6L Options
-;  Protect program memory blocks from table writes and programmer writes
+; Protect program memory blocks from table writes and programmer writes
 _WRT0_ON_6L       EQU  H'FE' ; Block 0 write protected
 _WRT0_OFF_6L      EQU  H'FF' ; Block 0 writable
 _WRT1_ON_6L       EQU  H'FD' ; Block 1 write protected
 _WRT1_OFF_6L      EQU  H'FF' ; Block 1 writable
 
 ;Configuration Byte 6H Options
-;  Protect blocks from table writes and programmer writes
+; Protect blocks from table writes and programmer writes
 _WRTC_ON_6H       EQU  H'DF' ; Config registers write protected
 _WRTC_OFF_6H      EQU  H'FF' ; Config registers writable
 _WRTB_ON_6H       EQU  H'BF' ; Boot block write protected
@@ -792,14 +738,14 @@ _WRTD_ON_6H       EQU  H'7F' ; Data EE write protected
 _WRTD_OFF_6H      EQU  H'FF' ; Data EE writable
 
 ;Configuration Byte 7L Options
-;  Protect program memory blocks from table reads executed from other blocks
+; Protect program memory blocks from table reads executed from other blocks
 _EBTR0_ON_7L      EQU  H'FE' ; Block 0 protected
 _EBTR0_OFF_7L     EQU  H'FF' ; Block 0 readable
 _EBTR1_ON_7L      EQU  H'FD' ; Block 1 protected
 _EBTR1_OFF_7L     EQU  H'FF' ; Block 1 readable
 
 ;Configuration Byte 7H Options
-;  Protect block from table reads executed in other blocks
+; Protect block from table reads executed in other blocks
 _EBTRB_ON_7H      EQU  H'BF' ; Boot block read protected
 _EBTRB_OFF_7H     EQU  H'FF' ; Boot block readable
 

@@ -1,6 +1,6 @@
 // $Id$
 // File: 18f1220i.lkr
-// Sample linker script for the PIC18F1220 processor
+// Sample ICD2 linker script for the PIC18F1220 processor
 
 LIBPATH .
 

@@ -1,5 +1,5 @@
         LIST
-; P16F684.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+; P16F684.INC  Standard Header File, Version 1.03    Microchip Technology, Inc.
         NOLIST
 
 ; This header file defines configurations, registers, and other useful bits of
@@ -21,7 +21,9 @@
 ;
 ;==========================================================================
 ;1.00   03/20/03 Original
-
+;1.01	08/04/03 Updated CMCON1 address
+;1.02	08/05/03 Updated names to match datasheet
+;1.03	08/11/03 Updated ULPWUE bit name to match datasheet
 ;==========================================================================
 ;
 ;       Verify Processor
@@ -61,14 +63,14 @@ TMR1H			                   EQU     H'000F'
 T1CON	  	                   EQU     H'0010'		
 TMR2                         EQU     H'0011'
 T2CON                        EQU     H'0012'
-CCPRL                        EQU     H'0013'
-CCPRH                        EQU     H'0014'
-ECCPCON                      EQU     H'0015'
-PWMCON                       EQU     H'0016'
+CCPR1L                        EQU     H'0013'
+CCPR1H                        EQU     H'0014'
+CCP1CON                      EQU     H'0015'
+PWM1CON                       EQU     H'0016'
 ECCPAS                       EQU     H'0017'
 WDTCON                       EQU     H'0018'
 CMCON0		                   EQU     H'0019'		
-CMCON1		                   EQU     H'0020'		
+CMCON1		                   EQU     H'001A'		
 
 ADRESH			                 EQU     H'001E'		
 ADCON0			                 EQU     H'001F'		
@@ -93,7 +95,7 @@ IOC			                     EQU     H'0096'
 IOCA			                   EQU     H'0096'
 
 VRCON			                   EQU     H'0099'
-EEDATA		                   EQU     H'009A'	
+EEDAT		                   EQU     H'009A'	
 EEADR			                   EQU     H'009B'	
 EECON1			                 EQU     H'009C'
 EECON2			                 EQU     H'009D'
@@ -127,7 +129,7 @@ RAIF                         EQU     H'0000'
 
 EEIF                         EQU     H'0007'
 ADIF                         EQU     H'0006'
-ECCPIF                       EQU     H'0005'
+CCP1IF                       EQU     H'0005'
 C2IF                         EQU     H'0004'
 C1IF                         EQU     H'0003'
 OSFIF                        EQU     H'0002'
@@ -157,18 +159,18 @@ TMR2ON                       EQU     H'0002'
 T2CKPS1                      EQU     H'0001'
 T2CKPS0                      EQU     H'0000'
 
-;----- ECCPCON Bits -------------------------------------------------------
+;----- CCP1CON Bits -------------------------------------------------------
 
-PM1                          EQU     H'0007'
-PM0                          EQU     H'0006'
-CCPX                         EQU     H'0005'
-CCPY                         EQU     H'0004'
-CCPM3                        EQU     H'0003'
-CCPM2                        EQU     H'0002'
-CCPM1                        EQU     H'0001'
-CCPM0                        EQU     H'0000'
+P1M1                         EQU     H'0007'
+P1M0                         EQU     H'0006'
+DC1B1                        EQU     H'0005'
+DC1B0                        EQU     H'0004'
+CCP1M3                       EQU     H'0003'
+CCP1M2                       EQU     H'0002'
+CCP1M1                       EQU     H'0001'
+CCP1M0                       EQU     H'0000'
 
-;----- PWMCON Bits -------------------------------------------------------
+;----- PWM1CON Bits -------------------------------------------------------
 
 PRSEN                        EQU     H'0007'
 PDC6                         EQU     H'0006'
@@ -177,7 +179,7 @@ PDC4                         EQU     H'0004'
 PDC3                         EQU     H'0003'
 PDC2                         EQU     H'0002'
 PDC1                         EQU     H'0001'
-PDC0                         EQU     H'0006'
+PDC0                         EQU     H'0000'
 
 ;----- ECCPAS Bits --------------------------------------------------------
 
@@ -187,8 +189,8 @@ ECCPAS1                      EQU     H'0005'
 ECCPAS0                      EQU     H'0004'
 PSSAC1                       EQU     H'0003'
 PSSAC0                       EQU     H'0002'
-PSSAD1                       EQU     H'0001'
-PSSAD0                       EQU     H'0000'
+PSSBD1                       EQU     H'0001'
+PSSBD0                       EQU     H'0000'
 
 ;----- WDTCON Bits --------------------------------------------------------
 
@@ -228,7 +230,7 @@ ADON                         EQU     H'0000'
 
 ;----- OPTION Bits --------------------------------------------------------
 
-NOT_RAPU	            	     EQU     H'0007'
+NOT_RAPU            	     EQU     H'0007'
 INTEDG                       EQU     H'0006'
 T0CS                         EQU     H'0005'
 T0SE                         EQU     H'0004'
@@ -241,7 +243,7 @@ PS0                          EQU     H'0000'
 
 EEIE                         EQU     H'0007'
 ADIE                         EQU     H'0006'
-ECCPIE                       EQU     H'0005'
+CCP1IE                       EQU     H'0005'
 C2IE                         EQU     H'0004'
 C1IE                         EQU     H'0003'
 OSFIE                        EQU     H'0002'
@@ -252,20 +254,20 @@ TMR1IE                       EQU     H'0000'
 
 ;----- PCON Bits ----------------------------------------------------------
 
-ULPWU                        EQU     H'0005'
+ULPWUE                       EQU     H'0005'
 SBODEN                       EQU     H'0004'
 NOT_POR                      EQU     H'0001'
 NOT_BOD                      EQU     H'0000'
 
 ;----- OSCCON Bits --------------------------------------------------------
 
-IOSCF2                       EQU     H'0007'
-IOSCF1                       EQU     H'0006'
-IOSCF0                       EQU     H'0005'
-OSTS                         EQU     H'0004'
-HTS1                         EQU     H'0003'
-LTS                          EQU     H'0002'
-SCS                          EQU     H'0001'
+IRCF2                        EQU     H'0006'
+IRCF1                        EQU     H'0005'
+IRCF0                        EQU     H'0004'
+OSTS                         EQU     H'0003'
+HTS                          EQU     H'0002'
+LTS                          EQU     H'0001'
+SCS                          EQU     H'0000'
 
 ;----- OSCTUNE Bits -------------------------------------------------------
 
@@ -341,7 +343,7 @@ ADCS0                        EQU     H'0004'
 ;       Configuration Bits
 ;
 ;==========================================================================
-
+		
 _FCMEN_ON                    EQU     H'3FFF'
 _FCMEN_OFF                   EQU     H'37FF'
 _IESO_ON                     EQU     H'3FFF'

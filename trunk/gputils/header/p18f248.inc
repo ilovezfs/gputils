@@ -55,18 +55,6 @@ BANKED		EQU 1
 ;       16Cxxx/17Cxxx Substitutions
 ;==========================================================================
 
-  #define clrw clrf WREG       ; PIC16Cxxx code substitution (WREG is addressable)
-  #define CLRW CLRF WREG       ; PIC16Cxxx code substitution (WREG is addressable)
-  #define negw negf WREG       ; PIC16Cxxx code substitution (WREG is addressable)
-  #define NEGW NEGF WREG       ; PIC16Cxxx code substitution (WREG is addressable)
-  #define movpf movff          ; PIC17Cxxx code substitution
-  #define MOVPF MOVFF          ; PIC17Cxxx code substitution
-  #define movfp movff          ; PIC17Cxxx code substitution
-  #define MOVFP MOVFF          ; PIC17Cxxx code substitution
-  #define lcall call           ; PIC17Cxxx code substitution
-  #define LCALL CALL           ; PIC17Cxxx code substitution
-  #define lgoto goto           ; PIC17Cxxx code substitution
-  #define LGOTO GOTO           ; PIC17Cxxx code substitution
   #define DDRA  TRISA          ; PIC17Cxxx SFR substitution
   #define DDRB  TRISB          ; PIC17Cxxx SFR substitution
   #define DDRC  TRISC          ; PIC17Cxxx SFR substitution
@@ -1345,6 +1333,12 @@ RX              EQU  7
 ;     CONFIG2L    = Configuration Byte 2L         300002h
 ;     CONFIG2H    = Configuration Byte 2H         300003h
 ;     CONFIG4L    = Configuration Byte 4L         300006h
+;     CONFIG5L    = Configuration Byte 5L         300008h
+;     CONFIG5H    = Configuration Byte 5H         300009h
+;     CONFIG6L    = Configuration Byte 6L         30000Ah
+;     CONFIG6H    = Configuration Byte 6H         30000Bh
+;     CONFIG7L    = Configuration Byte 7L         30000Ch
+;     CONFIG7H    = Configuration Byte 7H         30000Dh
 ;
 ;==========================================================================
 

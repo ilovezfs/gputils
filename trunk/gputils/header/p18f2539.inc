@@ -52,18 +52,6 @@ BANKED          EQU 1
 ;==========================================================================
 ;       16Cxxx/17Cxxx Substitutions
 ;==========================================================================
-  #define clrw clrf WREG   ; PIC16Cxxx code substitution (WREG is addressable)
-  #define CLRW CLRF WREG   ; PIC16Cxxx code substitution (WREG is addressable)
-  #define negw negf WREG   ; PIC16Cxxx code substitution (WREG is addressable)
-  #define NEGW NEGF WREG   ; PIC16Cxxx code substitution (WREG is addressable)
-  #define movpf movff      ; PIC17Cxxx code substitution
-  #define MOVPF MOVFF      ; PIC17Cxxx code substitution
-  #define movfp movff      ; PIC17Cxxx code substitution
-  #define MOVFP MOVFF      ; PIC17Cxxx code substitution
-  #define lcall call       ; PIC17Cxxx code substitution
-  #define LCALL CALL       ; PIC17Cxxx code substitution
-  #define lgoto goto       ; PIC17Cxxx code substitution
-  #define LGOTO GOTO       ; PIC17Cxxx code substitution
   #define DDRA  TRISA      ; PIC17Cxxx SFR substitution
   #define DDRB  TRISB      ; PIC17Cxxx SFR substitution
   #define DDRC  TRISC      ; PIC17Cxxx SFR substitution
@@ -87,8 +75,8 @@ DDRA             EQU  H'0F92'
 TRISA            EQU  H'0F92'
 DDRB             EQU  H'0F93'
 TRISB            EQU  H'0F93'
-TRISC            EQU  H'0F94'
 DDRC             EQU  H'0F94'
+TRISC            EQU  H'0F94'
 PIE1             EQU  H'0F9D'
 PIR1             EQU  H'0F9E'
 IPR1             EQU  H'0F9F'
@@ -118,8 +106,8 @@ CCPR1L           EQU  H'0FBE'
 CCPR1H           EQU  H'0FBF'
 ADCON1           EQU  H'0FC1'
 ADCON0           EQU  H'0FC2'
-ADRESL           EQU  H'0FC3'
 ADRES            EQU  H'0FC3'
+ADRESL           EQU  H'0FC3'
 ADRESH           EQU  H'0FC4'
 SSPCON2          EQU  H'0FC5'
 SSPCON1          EQU  H'0FC6'
@@ -130,8 +118,8 @@ T2CON            EQU  H'0FCA'
 PR2              EQU  H'0FCB'
 TMR2             EQU  H'0FCC'
 T1CON            EQU  H'0FCD'
-TMR1L            EQU  H'0FCE'
 TMR1             EQU  H'0FCE'
+TMR1L            EQU  H'0FCE'
 TMR1H            EQU  H'0FCF'
 RCON             EQU  H'0FD0'
 WDTCON           EQU  H'0FD1'
@@ -168,21 +156,21 @@ INDF0            EQU  H'0FEF'
 INTCON3          EQU  H'0FF0'
 INTCON2          EQU  H'0FF1'
 INTCON           EQU  H'0FF2'
-PRODL            EQU  H'0FF3'
 PROD             EQU  H'0FF3'
+PRODL            EQU  H'0FF3'
 PRODH            EQU  H'0FF4'
 TABLAT           EQU  H'0FF5'
 TBLPTR           EQU  H'0FF6'
 TBLPTRL          EQU  H'0FF6'
 TBLPTRH          EQU  H'0FF7'
 TBLPTRU          EQU  H'0FF8'
-PCL              EQU  H'0FF9'
 PC               EQU  H'0FF9'
+PCL              EQU  H'0FF9'
 PCLATH           EQU  H'0FFA'
 PCLATU           EQU  H'0FFB'
 STKPTR           EQU  H'0FFC'
-TOSL             EQU  H'0FFD'
 TOS              EQU  H'0FFD'
+TOSL             EQU  H'0FFD'
 TOSH             EQU  H'0FFE'
 TOSU             EQU  H'0FFF'
 
@@ -330,17 +318,6 @@ TRISB6           EQU  H'0006'
 TRISB7           EQU  H'0007'
 
 
-;----- TRISC Bits -----------------------------------------------------
-TRISC0           EQU  H'0000'
-TRISC1           EQU  H'0001'
-TRISC2           EQU  H'0002'
-TRISC3           EQU  H'0003'
-TRISC4           EQU  H'0004'
-TRISC5           EQU  H'0005'
-TRISC6           EQU  H'0006'
-TRISC7           EQU  H'0007'
-
-
 ;----- DDRC Bits -----------------------------------------------------
 RC0              EQU  H'0000'
 RC1              EQU  H'0001'
@@ -350,6 +327,17 @@ RC4              EQU  H'0004'
 RC5              EQU  H'0005'
 RC6              EQU  H'0006'
 RC7              EQU  H'0007'
+
+
+;----- TRISC Bits -----------------------------------------------------
+TRISC0           EQU  H'0000'
+TRISC1           EQU  H'0001'
+TRISC2           EQU  H'0002'
+TRISC3           EQU  H'0003'
+TRISC4           EQU  H'0004'
+TRISC5           EQU  H'0005'
+TRISC6           EQU  H'0006'
+TRISC7           EQU  H'0007'
 
 
 ;----- PIE1 Bits -----------------------------------------------------
@@ -724,42 +712,42 @@ _CONFIG7L        EQU  H'30000C'
 _CONFIG7H        EQU  H'30000D'
 
 ;----- CONFIG1H Options --------------------------------------------------
+_OSC_LP_1H           EQU  H'F8'    ; LP
+_OSC_XT_1H           EQU  H'F9'    ; XT
+_OSC_HS_1H           EQU  H'FA'    ; HS
+_OSC_RC_1H           EQU  H'FB'    ; RC
 _OSC_EC_1H           EQU  H'FC'    ; EC-OSC2 as Clock Out
 _OSC_ECIO_1H         EQU  H'FD'    ; EC-OSC2 as RA6
-_OSC_HS_1H           EQU  H'FA'    ; HS
 _OSC_HSPLL_1H        EQU  H'FE'    ; HS-PLL Enabled
-_OSC_LP_1H           EQU  H'F8'    ; LP
-_OSC_RC_1H           EQU  H'FB'    ; RC
 _OSC_RCIO_1H         EQU  H'FF'    ; RC-OSC2 as RA6
-_OSC_XT_1H           EQU  H'F9'    ; XT
 
-_OSCS_OFF_1H         EQU  H'FF'    ; Disabled
 _OSCS_ON_1H          EQU  H'DF'    ; Enabled
+_OSCS_OFF_1H         EQU  H'FF'    ; Disabled
 
 ;----- CONFIG2L Options --------------------------------------------------
-_PWRT_OFF_2L         EQU  H'FF'    ; Disabled
 _PWRT_ON_2L          EQU  H'FE'    ; Enabled
+_PWRT_OFF_2L         EQU  H'FF'    ; Disabled
 
 _BOR_OFF_2L          EQU  H'FD'    ; Disabled
 _BOR_ON_2L           EQU  H'FF'    ; Enabled
 
-_BORV_25_2L          EQU  H'FF'    ; 2.5V
-_BORV_27_2L          EQU  H'FB'    ; 2.7V
-_BORV_42_2L          EQU  H'F7'    ; 4.2V
 _BORV_45_2L          EQU  H'F3'    ; 4.5V
+_BORV_42_2L          EQU  H'F7'    ; 4.2V
+_BORV_27_2L          EQU  H'FB'    ; 2.7V
+_BORV_25_2L          EQU  H'FF'    ; 2.5V
 
 ;----- CONFIG2H Options --------------------------------------------------
 _WDT_OFF_2H          EQU  H'FE'    ; Disabled
 _WDT_ON_2H           EQU  H'FF'    ; Enabled
 
 _WDTPS_1_2H          EQU  H'F1'    ; 1:1
-_WDTPS_128_2H        EQU  H'FF'    ; 1:128
-_WDTPS_16_2H         EQU  H'F9'    ; 1:16
 _WDTPS_2_2H          EQU  H'F3'    ; 1:2
-_WDTPS_32_2H         EQU  H'FB'    ; 1:32
 _WDTPS_4_2H          EQU  H'F5'    ; 1:4
-_WDTPS_64_2H         EQU  H'FD'    ; 1:64
 _WDTPS_8_2H          EQU  H'F7'    ; 1:8
+_WDTPS_16_2H         EQU  H'F9'    ; 1:16
+_WDTPS_32_2H         EQU  H'FB'    ; 1:32
+_WDTPS_64_2H         EQU  H'FD'    ; 1:64
+_WDTPS_128_2H        EQU  H'FF'    ; 1:128
 
 ;----- CONFIG3H Options --------------------------------------------------
 _CCP2MUX_OFF_3H      EQU  H'FE'    ; Disable (RB3)
@@ -772,68 +760,68 @@ _STVR_ON_4L          EQU  H'FF'    ; Enabled
 _LVP_OFF_4L          EQU  H'FB'    ; Disabled
 _LVP_ON_4L           EQU  H'FF'    ; Enabled
 
-_DEBUG_OFF_4L        EQU  H'FF'    ; Disabled
 _DEBUG_ON_4L         EQU  H'7F'    ; Enabled
+_DEBUG_OFF_4L        EQU  H'FF'    ; Disabled
 
 ;----- CONFIG5L Options --------------------------------------------------
-_CP0_OFF_5L          EQU  H'FF'    ; Disabled
 _CP0_ON_5L           EQU  H'FE'    ; Enabled
+_CP0_OFF_5L          EQU  H'FF'    ; Disabled
 
-_CP1_OFF_5L          EQU  H'FF'    ; Disabled
 _CP1_ON_5L           EQU  H'FD'    ; Enabled
+_CP1_OFF_5L          EQU  H'FF'    ; Disabled
 
-_CP2_OFF_5L          EQU  H'FF'    ; Disabled
 _CP2_ON_5L           EQU  H'FB'    ; Enabled
+_CP2_OFF_5L          EQU  H'FF'    ; Disabled
 
-_CP3_OFF_5L          EQU  H'FF'    ; Disabled
 _CP3_ON_5L           EQU  H'F7'    ; Enabled
+_CP3_OFF_5L          EQU  H'FF'    ; Disabled
 
 ;----- CONFIG5H Options --------------------------------------------------
-_CPB_OFF_5H          EQU  H'FF'    ; Disabled
 _CPB_ON_5H           EQU  H'BF'    ; Enabled
+_CPB_OFF_5H          EQU  H'FF'    ; Disabled
 
-_CPD_OFF_5H          EQU  H'FF'    ; Disabled
 _CPD_ON_5H           EQU  H'7F'    ; Enabled
+_CPD_OFF_5H          EQU  H'FF'    ; Disabled
 
 ;----- CONFIG6L Options --------------------------------------------------
-_WRT0_OFF_6L         EQU  H'FF'    ; Disabled
 _WRT0_ON_6L          EQU  H'FE'    ; Enabled
+_WRT0_OFF_6L         EQU  H'FF'    ; Disabled
 
-_WRT1_OFF_6L         EQU  H'FF'    ; Disabled
 _WRT1_ON_6L          EQU  H'FD'    ; Enabled
+_WRT1_OFF_6L         EQU  H'FF'    ; Disabled
 
-_WRT2_OFF_6L         EQU  H'FF'    ; Disabled
 _WRT2_ON_6L          EQU  H'FB'    ; Enabled
+_WRT2_OFF_6L         EQU  H'FF'    ; Disabled
 
-_WRT3_OFF_6L         EQU  H'FF'    ; Disabled
 _WRT3_ON_6L          EQU  H'F7'    ; Enabled
+_WRT3_OFF_6L         EQU  H'FF'    ; Disabled
 
 ;----- CONFIG6H Options --------------------------------------------------
-_WPC_OFF_6H          EQU  H'FF'    ; Disabled
-_WPC_ON_6H           EQU  H'DF'    ; Enabled
-
-_WPB_OFF_6H          EQU  H'FF'    ; Disabled
 _WPB_ON_6H           EQU  H'BF'    ; Enabled
+_WPB_OFF_6H          EQU  H'FF'    ; Disabled
 
-_WPD_OFF_6H          EQU  H'FF'    ; Disabled
+_WPC_ON_6H           EQU  H'DF'    ; Enabled
+_WPC_OFF_6H          EQU  H'FF'    ; Disabled
+
 _WPD_ON_6H           EQU  H'7F'    ; Enabled
+_WPD_OFF_6H          EQU  H'FF'    ; Disabled
 
 ;----- CONFIG7L Options --------------------------------------------------
-_EBTR0_OFF_7L        EQU  H'FF'    ; Disabled
 _EBTR0_ON_7L         EQU  H'FE'    ; Enabled
+_EBTR0_OFF_7L        EQU  H'FF'    ; Disabled
 
-_EBTR1_OFF_7L        EQU  H'FF'    ; Disabled
 _EBTR1_ON_7L         EQU  H'FD'    ; Enabled
+_EBTR1_OFF_7L        EQU  H'FF'    ; Disabled
 
-_EBTR2_OFF_7L        EQU  H'FF'    ; Disabled
 _EBTR2_ON_7L         EQU  H'FB'    ; Enabled
+_EBTR2_OFF_7L        EQU  H'FF'    ; Disabled
 
-_EBTR3_OFF_7L        EQU  H'FF'    ; Disabled
 _EBTR3_ON_7L         EQU  H'F7'    ; Enabled
+_EBTR3_OFF_7L        EQU  H'FF'    ; Disabled
 
 ;----- CONFIG7H Options --------------------------------------------------
-_EBTRB_OFF_7H        EQU  H'FF'    ; Disabled
 _EBTRB_ON_7H         EQU  H'BF'    ; Enabled
+_EBTRB_OFF_7H        EQU  H'FF'    ; Disabled
 
 
 _DEVID1          EQU  H'3FFFFE'
