@@ -101,7 +101,8 @@ void dasm(MemBlock *memory)
 {
   MemBlock *m = memory;
   int i, maximum;
-  int lastloc = 0;
+  int last_loc = 0;
+  int num_words;
   char buffer[80];
   int byte_addr = 0;
 
@@ -120,10 +121,10 @@ void dasm(MemBlock *memory)
       if (((i_memory_get(memory, i)) & MEM_USED_MASK) == 0) {
         i++;
       } else {
-        if (lastloc != i - 1){
+        if (last_loc != i - 1){
           writeorg(i << byte_addr);
         }
-        lastloc = i;
+        last_loc = i;
         if (state.format) {
           printf("%06x:  %04x  ",
                  i << byte_addr,
@@ -131,15 +132,20 @@ void dasm(MemBlock *memory)
         } else {
           printf("        ");
         }
-        gp_disassemble(memory, &i, state.class, buffer, sizeof(buffer));
+        num_words = gp_disassemble(memory, 
+                                   i,
+                                   state.class,
+                                   buffer,
+                                   sizeof(buffer));
         printf("%s\n", buffer);
-        if ((state.format) && (i != lastloc)) {
+        i++;
+        if ((state.format) && (num_words != 1)) {
           /* some 18xx instructions use two words */
           printf("%06x:  %04x\n",
                  i << byte_addr,
                  (i_memory_get(memory, i) & 0xffff));
+          i++;
         }        
-        i++;
       } 
     }
     

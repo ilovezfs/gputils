@@ -125,8 +125,9 @@ write_src(int last_line)
   char *pc;
   gp_linenum_type *line = NULL;
   gp_boolean first_time;
-  int org;
+  int org = 0;
   int data;
+  int num_words;
 
   /* if the source file wasn't found, can't write it to the list file */
   if (state.lst.src->missing_source)
@@ -164,22 +165,36 @@ write_src(int last_line)
           /* only print the source line the first time */
           linebuf[0] = '\0';
         }
+        state.cod.emitting = 1;
         org = line->address >> state.byte_addr;
         data = i_memory_get(line_section->data, org);
         assert(data & MEM_USED_MASK);
-        gp_disassemble(line_section->data,
-                       &org,
-                       state.class,
-                       dasmbuf,
-                       sizeof(dasmbuf));
+        num_words = gp_disassemble(line_section->data,
+                                   org,
+                                   state.class,
+                                   dasmbuf,
+                                   sizeof(dasmbuf));
         lst_line("%06lx   %04x     %-24s %s",
                  line->address,
                  data & 0xffff, 
                  dasmbuf,
                  linebuf);
-        state.cod.emitting = 1;
-        org++;
         cod_lst_line(COD_NORMAL_LST_LINE);
+        org++;
+        if (num_words != 1) {
+          state.lst.was_org = org;
+          data = i_memory_get(line_section->data, org);
+          assert(data & MEM_USED_MASK);
+          lst_line("%06lx   %04x",
+                   org << state.byte_addr,
+                   data & 0xffff);
+          cod_lst_line(COD_NORMAL_LST_LINE);
+          org++;
+          if (line->next) {
+            /* skip the line number for the other half of this instruction */
+            line = line->next;
+          }
+        }
         first_time = false;
         line = line->next;
       }
