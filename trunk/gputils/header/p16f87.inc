@@ -27,7 +27,7 @@
 ;1.01	09/18/02 Changed name of bit-2 in the OSCCON register to IOFS
 ;1.02	01/10/03 Added bit names for TXSTA & RCSTA registers.
 ;1.03	01/24/03 Changed Config bit CCP1_RB2 to CCP1_RB0
-;1.04	03/12/03 Changed code example Config bit CCP1_RB2 to CCP1_RB0
+;1.04	12/02/03 Modified the WRT1:WRT0 bit definition in Config Word 1.
 
 ;==========================================================================
 ;
@@ -114,11 +114,9 @@ C                            EQU     H'0000'
 GIE                          EQU     H'0007'
 PEIE                         EQU     H'0006'
 TMR0IE                       EQU     H'0005'
-T0IE                         EQU     H'0005'
 INTE                         EQU     H'0004'
 RBIE                         EQU     H'0003'
 TMR0IF                       EQU     H'0002'
-T0IF                         EQU     H'0002'
 INTF                         EQU     H'0001'
 RBIF                         EQU     H'0000'
 
@@ -328,9 +326,10 @@ _CCP1_RB0		     		 EQU     H'3FFF'
 _CCP1_RB3                    EQU     H'2FFF'
 _DEBUG_OFF                   EQU     H'3FFF'
 _DEBUG_ON                    EQU     H'37FF'
-_WRT_ENABLE_OFF              EQU     H'3FFF'
-_WRT_ENABLE_512              EQU     H'3DFF'
-_WRT_ENABLE_1024             EQU     H'3BFF'
+_WRT_PROTECT_OFF             EQU     H'3FFF'	;No program memory write protection
+_WRT_PROTECT_256             EQU     H'3DFF'	;First 256 program memory protected
+_WRT_PROTECT_2048            EQU     H'3BFF'	;First 2048 program memory protected
+_WRT_PROTECT_ALL             EQU     H'39FF'	;All of program memory protected
 _CPD_ON                      EQU     H'3EFF'
 _CPD_OFF                     EQU     H'3FFF'
 _LVP_ON                      EQU     H'3FFF'
@@ -367,7 +366,7 @@ _FCMEN_OFF                   EQU     H'3FFE'
 ;  pasted into your source code.
 
 ;Program Configuration Register 1
-;		__CONFIG    _CONFIG1, _CP_OFF & _CCP1_RB0 & _DEBUG_OFF & _WRT_ENABLE_OFF & _CPD_OFF & _LVP_OFF & _BODEN_OFF & _MCLR_OFF & _PWRTE_OFF & _WDT_OFF & _HS_OSC
+;		__CONFIG    _CONFIG1, _CP_OFF & _CCP1_RB2 & _DEBUG_OFF & _WRT_PROTECT_OFF & _CPD_OFF & _LVP_OFF & _BODEN_OFF & _MCLR_OFF & _PWRTE_OFF & _WDT_OFF & _HS_OSC
 
 ;Program Configuration Register 2
 ;		__CONFIG    _CONFIG2, _IESO_OFF & _FCMEN_OFF

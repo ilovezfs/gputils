@@ -4,7 +4,7 @@
 ;  $Id$
 ;  MPASM PIC18F8621 processor include
 ; 
-;  (c) Copyright 1999-2003 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2004 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -67,10 +67,10 @@ BANKED          EQU 1
 ;----- Register Files -----------------------------------------------------
 ECCP2DEL         EQU  H'0F67'
 PWM2CON          EQU  H'0F67'
-ECCPAS2          EQU  H'0F68'
+ECCP2AS          EQU  H'0F68'
 ECCP3DEL         EQU  H'0F69'
 PWM3CON          EQU  H'0F69'
-ECCPAS3          EQU  H'0F6A'
+ECCP3AS          EQU  H'0F6A'
 RCSTA2           EQU  H'0F6B'
 TXSTA2           EQU  H'0F6C'
 TXREG2           EQU  H'0F6D'
@@ -158,12 +158,11 @@ SPBRG            EQU  H'0FAF'
 SPBRG1           EQU  H'0FAF'
 PSPCON           EQU  H'0FB0'
 T3CON            EQU  H'0FB1'
-TMR3             EQU  H'0FB2'
 TMR3L            EQU  H'0FB2'
 TMR3H            EQU  H'0FB3'
 CMCON            EQU  H'0FB4'
 CVRCON           EQU  H'0FB5'
-ECCPAS1          EQU  H'0FB6'
+ECCP1AS          EQU  H'0FB6'
 CCP3CON          EQU  H'0FB7'
 CCPR3            EQU  H'0FB8'
 CCPR3L           EQU  H'0FB8'
@@ -191,7 +190,6 @@ T2CON            EQU  H'0FCA'
 PR2              EQU  H'0FCB'
 TMR2             EQU  H'0FCC'
 T1CON            EQU  H'0FCD'
-TMR1             EQU  H'0FCE'
 TMR1L            EQU  H'0FCE'
 TMR1H            EQU  H'0FCF'
 RCON             EQU  H'0FD0'
@@ -199,7 +197,6 @@ WDTCON           EQU  H'0FD1'
 LVDCON           EQU  H'0FD2'
 OSCCON           EQU  H'0FD3'
 T0CON            EQU  H'0FD5'
-TMR0             EQU  H'0FD6'
 TMR0L            EQU  H'0FD6'
 TMR0H            EQU  H'0FD7'
 STATUS           EQU  H'0FD8'
@@ -269,15 +266,15 @@ PDC6             EQU  H'0006'
 PRSEN            EQU  H'0007'
 
 
-;----- ECCPAS2 Bits -----------------------------------------------------
+;----- ECCP2AS Bits -----------------------------------------------------
 PSSBD0           EQU  H'0000'
 PSSBD1           EQU  H'0001'
 PSSAC0           EQU  H'0002'
 PSSAC1           EQU  H'0003'
-ECCPAS20         EQU  H'0004'
-ECCPAS21         EQU  H'0005'
-ECCPAS22         EQU  H'0006'
-ECCPAS2E         EQU  H'0007'
+ECCP2AS0         EQU  H'0004'
+ECCP2AS1         EQU  H'0005'
+ECCP2AS2         EQU  H'0006'
+ECCP2ASE         EQU  H'0007'
 
 
 ;----- ECCP3DEL Bits -----------------------------------------------------
@@ -302,15 +299,15 @@ PDC6             EQU  H'0006'
 PRSEN            EQU  H'0007'
 
 
-;----- ECCPAS3 Bits -----------------------------------------------------
+;----- ECCP3AS Bits -----------------------------------------------------
 PSSBD0           EQU  H'0000'
 PSSBD1           EQU  H'0001'
 PSSAC0           EQU  H'0002'
 PSSAC1           EQU  H'0003'
-ECCPAS30         EQU  H'0004'
-ECCPAS31         EQU  H'0005'
-ECCPAS32         EQU  H'0006'
-ECCPAS3E         EQU  H'0007'
+ECCP3AS0         EQU  H'0004'
+ECCP3AS1         EQU  H'0005'
+ECCP3AS2         EQU  H'0006'
+ECCP3ASE         EQU  H'0007'
 
 
 ;----- RCSTA2 Bits -----------------------------------------------------
@@ -939,7 +936,7 @@ TMR1IE           EQU  H'0000'
 TMR2IE           EQU  H'0001'
 CCP1IE           EQU  H'0002'
 SSPIE            EQU  H'0003'
-TXBIE            EQU  H'0004'
+TXIE             EQU  H'0004'
 RCIE             EQU  H'0005'
 ADIE             EQU  H'0006'
 PSPIE            EQU  H'0007'
@@ -950,7 +947,7 @@ TMR1IF           EQU  H'0000'
 TMR2IF           EQU  H'0001'
 CCP1IF           EQU  H'0002'
 SSPIF            EQU  H'0003'
-TXBIF            EQU  H'0004'
+TXIF             EQU  H'0004'
 RCIF             EQU  H'0005'
 ADIF             EQU  H'0006'
 PSPIF            EQU  H'0007'
@@ -1117,15 +1114,15 @@ CVROE            EQU  H'0006'
 CVREN            EQU  H'0007'
 
 
-;----- ECCPAS1 Bits -----------------------------------------------------
+;----- ECCP1AS Bits -----------------------------------------------------
 PSSBD0           EQU  H'0000'
 PSSBD1           EQU  H'0001'
 PSSAC0           EQU  H'0002'
 PSSAC1           EQU  H'0003'
-ECCPAS10         EQU  H'0004'
-ECCPAS11         EQU  H'0005'
-ECCPAS12         EQU  H'0006'
-ECCPAS1E         EQU  H'0007'
+ECCP1AS0         EQU  H'0004'
+ECCP1AS1         EQU  H'0005'
+ECCP1AS2         EQU  H'0006'
+ECCP1ASE         EQU  H'0007'
 
 
 ;----- CCP3CON Bits -----------------------------------------------------

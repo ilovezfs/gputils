@@ -79,6 +79,7 @@ IOC			     EQU     H'0096'
 
 VRCON			     EQU     H'0099'
 EEDATA			     EQU     H'009A'	
+EEDAT			     EQU     H'009A'	
 EEADR			     EQU     H'009B'	
 EECON1			     EQU     H'009C'
 EECON2			     EQU     H'009D'
@@ -134,7 +135,8 @@ CM0                          EQU     H'0000'
 
 ;----- OPTION Bits --------------------------------------------------------
 
-NOT_GPPU		     EQU     H'0007'
+NOT_GPPU            		     EQU     H'0007'
+NOT_RAPU		                 EQU     H'0007'
 INTEDG                       EQU     H'0006'
 T0CS                         EQU     H'0005'
 T0SE                         EQU     H'0004'

@@ -68,6 +68,8 @@
 ;                      ADRES, INTF, INTE, CCPnX, CCPnY
 ;                   General clean-up (removed some comments)
 ;                   Corrected RAM space definitions
+;
+;0.23  30 Mar 2004  References to RE3 removed, badram adjusted       BD
 
 ;=======================================================================
 ;
@@ -246,7 +248,7 @@ LATA            EQU  H'0F89'
 ; reserved      EQU  H'0F87'
 ; reserved      EQU  H'0F86'
 ; reserved      EQU  H'0F85'
-PORTE           EQU  H'0F84'
+; reserved      EQU  H'0F84'
 ; reserved      EQU  H'0F83'
 PORTC           EQU  H'0F82'
 PORTB           EQU  H'0F81'
@@ -640,10 +642,6 @@ CK              EQU  6
 RC7             EQU  7
 RX              EQU  7
 
-;----- PORTE -----------------------------------------------------------
-RE3             EQU  3
-MCLR            EQU  3
-
 ;=======================================================================
 ;
 ;       RAM Definition
@@ -652,7 +650,7 @@ MCLR            EQU  3
 
      __MAXRAM H'FFF'
      __BADRAM H'200'-H'F7F'
-     __BADRAM H'F83',H'F85'-H'F88',H'F8C'-H'F91',H'F95'-H'F9A',H'F9C'
+     __BADRAM H'F83'-H'F88',H'F8C'-H'F91',H'F95'-H'F9A',H'F9C'
      __BADRAM H'FA3'-H'FA5',H'FAA',H'FB0',H'FB6'-H'FB9'
 
 ;=======================================================================
@@ -777,8 +775,8 @@ _WDTPS_2_2H       EQU  H'E3' ;   1:     2
 _WDTPS_1_2H       EQU  H'E1' ;   1:     1
 
 ;Configuration Byte 3H Options
-_MCLRE_ON_3H      EQU  H'FF' ; MCLR enabled, RE3 input disabled
-_MCLRE_OFF_3H     EQU  H'7F' ; MCLR disabled, RE3 input enabled
+_MCLRE_ON_3H      EQU  H'FF' ; MCLR enabled
+_MCLRE_OFF_3H     EQU  H'7F' ; MCLR disabled
 _PBAD_ANA_3H      EQU  H'FF' ; PORTB<4:0> pins reset as analog pins
 _PBAD_DIG_3H      EQU  H'FD' ; PORTB<4:0> pins reset as digital pins
 _CCP2MX_ON_3H     EQU  H'FF' ; CCP2 pin function on RC1

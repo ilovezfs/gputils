@@ -4,7 +4,7 @@
 ;  $Id$
 ;  MPASM PIC18F4610 processor include
 ; 
-;  (c) Copyright 1999-2003 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2004 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -101,19 +101,19 @@ RCREG            EQU  H'0FAE'
 SPBRG            EQU  H'0FAF'
 SPBRGH           EQU  H'0FB0'
 T3CON            EQU  H'0FB1'
-TMR3             EQU  H'0FB2'
 TMR3L            EQU  H'0FB2'
 TMR3H            EQU  H'0FB3'
 CMCON            EQU  H'0FB4'
 CVRCON           EQU  H'0FB5'
 ECCPAS           EQU  H'0FB6'
 PWM1CON          EQU  H'0FB7'
+BAUDCON          EQU  H'0FB8'
 BAUDCTL          EQU  H'0FB8'
 CCP2CON          EQU  H'0FBA'
 CCPR2            EQU  H'0FBB'
 CCPR2L           EQU  H'0FBB'
 CCPR2H           EQU  H'0FBC'
-ECCP1CON         EQU  H'0FBD'
+CCP1CON          EQU  H'0FBD'
 CCPR1            EQU  H'0FBE'
 CCPR1L           EQU  H'0FBE'
 CCPR1H           EQU  H'0FBF'
@@ -132,7 +132,6 @@ T2CON            EQU  H'0FCA'
 PR2              EQU  H'0FCB'
 TMR2             EQU  H'0FCC'
 T1CON            EQU  H'0FCD'
-TMR1             EQU  H'0FCE'
 TMR1L            EQU  H'0FCE'
 TMR1H            EQU  H'0FCF'
 RCON             EQU  H'0FD0'
@@ -141,7 +140,6 @@ LVDCON           EQU  H'0FD2'
 OSCCON           EQU  H'0FD3'
 DEBUG            EQU  H'0FD4'
 T0CON            EQU  H'0FD5'
-TMR0             EQU  H'0FD6'
 TMR0L            EQU  H'0FD6'
 TMR0H            EQU  H'0FD7'
 STATUS           EQU  H'0FD8'
@@ -475,7 +473,8 @@ TUN1             EQU  H'0001'
 TUN2             EQU  H'0002'
 TUN3             EQU  H'0003'
 TUN4             EQU  H'0004'
-TUN5             EQU  H'0005'
+PLLEN            EQU  H'0006'
+INTSRC           EQU  H'0007'
 
 
 ;----- PIE1 Bits -----------------------------------------------------
@@ -630,6 +629,14 @@ PDC6             EQU  H'0006'
 PRSEN            EQU  H'0007'
 
 
+;----- BAUDCON Bits -----------------------------------------------------
+ABDEN            EQU  H'0000'
+WUE              EQU  H'0001'
+BRG16            EQU  H'0003'
+SCKP             EQU  H'0004'
+RCMT             EQU  H'0006'
+
+
 ;----- BAUDCTL Bits -----------------------------------------------------
 ABDEN            EQU  H'0000'
 WUE              EQU  H'0001'
@@ -647,7 +654,7 @@ CCP2Y            EQU  H'0004'
 CCP2X            EQU  H'0005'
 
 
-;----- ECCP1CON Bits -----------------------------------------------------
+;----- CCP1CON Bits -----------------------------------------------------
 CCP1M0           EQU  H'0000'
 CCP1M1           EQU  H'0001'
 CCP1M2           EQU  H'0002'
@@ -787,6 +794,7 @@ LVDL2            EQU  H'0002'
 LVDL3            EQU  H'0003'
 LVDEN            EQU  H'0004'
 IRVST            EQU  H'0005'
+VDIRMAG          EQU  H'0007'
 
 IVRST            EQU  H'0005'
 
@@ -806,13 +814,11 @@ IDLEN            EQU  H'0007'
 T0PS0            EQU  H'0000'
 T0PS1            EQU  H'0001'
 T0PS2            EQU  H'0002'
-T0PS3            EQU  H'0003'
+PSA              EQU  H'0003'
 T0SE             EQU  H'0004'
 T0CS             EQU  H'0005'
 T016BIT          EQU  H'0006'
 TMR0ON           EQU  H'0007'
-
-PSA              EQU  H'0003'
 
 
 ;----- STATUS Bits -----------------------------------------------------
