@@ -1,3 +1,11 @@
+2004-12-24 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [gputils] Updated header files and linker scripts.
+  * [gputils] Added new processors: p10f200, p10f202, p10f204, p10f206,
+    p16f59, p16f639, p16f685, p16f687, p16f689, p16f690 p18f6310, p18f6390,
+    p18f64j15, p18f65j10, p18f65j15, p18f6627, p18f66j10, p18f66j15,
+    p18f6722, p18f67j10, p18f8310, p18f8390, p18f84j15, p18f85j10, p18f85j15,
+    p18f8627, p18f86j10, p18f86j15, p18f8722, p18f87j10
+
 2004-11-28 Robert Kaes <rjkaes@users.sourceforge.net>
   * [gpal] Improved context save during isr.
   * [gpal] Simplified symbol offsets in the code generator.
@@ -38,7 +46,7 @@
   * Allow conditionals in gpal subprogram declaration region.
 
 2004-10-24 Craig Franklin <craigfranklin@users.sourceforge.net>
-  * Allow complex alias expresions in gpal.
+  * Allow complex alias expressions in gpal.
   * Allow pragmas in gpal subprograms.
   * Add second pass to gpal optimizer.
 
