@@ -609,6 +609,134 @@ _IDLOC7         EQU    H'200007'
 ;    __IDLOCS  _IDLOC6, <expression>
 ;    __IDLOCS  _IDLOC7, <expression>
 
+
+;==========================================================================
+;
+;   IMPORTANT: For the PIC18 devices, the __CONFIG directive has been
+;              superseded by the CONFIG directive.  The following settings
+;              are available for this device.
+;
+;   Oscillator Selection:
+;     OSC = LP             LP Oscillator
+;     OSC = XT             XT Oscillator
+;     OSC = HS             HS Oscillator
+;     OSC = EC             External Clock on OSC1, OSC2 as Fosc/4
+;     OSC = ECIO           External Clock on OSC1, OSC2 as RA6
+;     OSC = HSPLL          HS + PLL
+;     OSC = RCIO           External RC on OSC1, OSC2 as RA6
+;     OSC = INTIO2         Internal RC, OSC1 as RA7, OSC2 as RA6
+;     OSC = INTIO1         Internal RC, OSC1 as RA7, OSC2 as Fosc/4
+;     OSC = RC             External RC on OSC1, OSC2 as Fosc/4
+;
+;   Fail Safe Clock Monitor:
+;     FSCM = OFF           Fail Safe Clock Monitor disabled
+;     FSCM = ON            Fail Safe Clock Monitor enabled
+;
+;   Internal External Switch Over mode:
+;     IESO = OFF           Internal External Switch Over mode disabled
+;     IESO = ON            Internal External Switch Over mode enabled
+;
+;   Power-Up Timer:
+;     PWRT = ON            Enabled
+;     PWRT = OFF           Disabled
+;
+;   Brown-Out Reset:
+;     BOR = OFF            Disabled
+;     BOR = ON             Enabled
+;
+;   Brown Out Voltage:
+;     BORV = 45            4.5V
+;     BORV = 42            4.2V
+;     BORV = 27            2.7V
+;     BORV = 20            2.0V
+;
+;   Watchdog Timer:
+;     WDT = OFF            Disabled
+;     WDT = ON             Enabled
+;
+;   Watchdog Postscaler:
+;     WDTPS = 1            1:1
+;     WDTPS = 2            1:2
+;     WDTPS = 4            1:4
+;     WDTPS = 8            1:8
+;     WDTPS = 16           1:16
+;     WDTPS = 32           1:32
+;     WDTPS = 64           1:64
+;     WDTPS = 128          1:128
+;     WDTPS = 256          1:256
+;     WDTPS = 512          1:512
+;     WDTPS = 1024         1:1024
+;     WDTPS = 2048         1:2048
+;     WDTPS = 4096         1:4096
+;     WDTPS = 8192         1:8192
+;     WDTPS = 16384        1:16384
+;     WDTPS = 32768        1:32768
+;
+;   MCLR Enable:
+;     MCLRE = OFF          Disabled
+;     MCLRE = ON           Enabled
+;
+;   Stack Full/Overflow Reset:
+;     STVR = OFF           Disabled
+;     STVR = ON            Enabled
+;
+;   Low Voltage ICSP:
+;     LVP = OFF            Disabled
+;     LVP = ON             Enabled
+;
+;   Background Debugger Enable:
+;     DEBUG = ON           Enabled
+;     DEBUG = OFF          Disabled
+;
+;   Code Protection Block 0:
+;     CP0 = ON             Enabled
+;     CP0 = OFF            Disabled
+;
+;   Code Protection Block 1:
+;     CP1 = ON             Enabled
+;     CP1 = OFF            Disabled
+;
+;   Boot Block Code Protection:
+;     CPB = ON             Enabled
+;     CPB = OFF            Disabled
+;
+;   Data EEPROM Code Protection:
+;     CPD = ON             Enabled
+;     CPD = OFF            Disabled
+;
+;   Write Protection Block 0:
+;     WRT0 = ON            Enabled
+;     WRT0 = OFF           Disabled
+;
+;   Write Protection Block 1:
+;     WRT1 = ON            Enabled
+;     WRT1 = OFF           Disabled
+;
+;   Boot Block Write Protection:
+;     WRTB = ON            Enabled
+;     WRTB = OFF           Disabled
+;
+;   Configuration Register Write Protection:
+;     WRTC = ON            Enabled
+;     WRTC = OFF           Disabled
+;
+;   Data EEPROM Write Protection:
+;     WRTD = ON            Enabled
+;     WRTD = OFF           Disabled
+;
+;   Table Read Protection Block 0:
+;     EBTR0 = ON           Enabled
+;     EBTR0 = OFF          Disabled
+;
+;   Table Read Protection Block 1:
+;     EBTR1 = ON           Enabled
+;     EBTR1 = OFF          Disabled
+;
+;   Boot Block Table Read Protection:
+;     EBTRB = ON           Enabled
+;     EBTRB = OFF          Disabled
+;
+;==========================================================================
 ;=======================================================================
 ;
 ;       Configuration Bits

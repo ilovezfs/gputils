@@ -4,7 +4,7 @@
 ;  $Id$
 ;  MPASM PIC18F6680 processor include
 ; 
-;  (c) Copyright 1999-2004 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2005 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -4148,6 +4148,158 @@ STKOVF           EQU  H'0007'
        __BADRAM  H'0FB7'-H'0FB9'
        __BADRAM  H'0FD4'
 
+;==========================================================================
+;
+;   IMPORTANT: For the PIC18 devices, the __CONFIG directive has been
+;              superseded by the CONFIG directive.  The following settings
+;              are available for this device.
+;
+;   Oscillator Selection bits:
+;     OSC = LP             LP
+;     OSC = XT             XT
+;     OSC = HS             HS
+;     OSC = RC             RC with OSC2 as divide by 4 clock out
+;     OSC = EC             EC with OSC2 as divide by 4 clock out
+;     OSC = ECIO           EC with OSC2 as RA6
+;     OSC = HSPLL          HS with HW enabled 4xPLL
+;     OSC = RCIO           RC with OSC2 as RA6
+;     OSC = ECIOPLL        EC with OSC2 as RA6 and HW enabled 4xPLL
+;     OSC = ECIOSWPLL      EC with OSC2 as RA6 and SW enabled 4xPLL
+;     OSC = HSSWPLL        HS with SW enabled 4xPLL
+;
+;   Osc. Switch Enable:
+;     OSCS = ON            Enabled
+;     OSCS = OFF           Disabled
+;
+;   Power Up Timer:
+;     PWRT = ON            Enabled
+;     PWRT = OFF           Disabled
+;
+;   Brown Out Reset:
+;     BOR = OFF            Disabled
+;     BOR = ON             Enabled
+;
+;   Brown Out Voltage:
+;     BORV = 45            4.5V
+;     BORV = 42            4.2V
+;     BORV = 27            2.7V
+;     BORV = 20            2.0V
+;
+;   Watchdog Timer:
+;     WDT = OFF            HW Disabled - SW Controlled
+;     WDT = ON             HW Enabled - SW Disabled
+;
+;   Watchdog Postscaler:
+;     WDTPS = 1            1:1
+;     WDTPS = 2            1:2
+;     WDTPS = 4            1:4
+;     WDTPS = 8            1:8
+;     WDTPS = 16           1:16
+;     WDTPS = 32           1:32
+;     WDTPS = 64           1:64
+;     WDTPS = 128          1:128
+;     WDTPS = 256          1:256
+;     WDTPS = 512          1:512
+;     WDTPS = 1024         1:1024
+;     WDTPS = 2048         1:2048
+;     WDTPS = 4096         1:4096
+;     WDTPS = 8192         1:8192
+;     WDTPS = 16384        1:16384
+;     WDTPS = 32768        1:32768
+;
+;   MCLR Enable:
+;     MCLRE = OFF          Disabled
+;     MCLRE = ON           Enabled
+;
+;   CCP2 Mux bit:
+;     CCP2MX = OFF         CCP2 input/output is multiplexed with RE7
+;     CCP2MX = ON          CCP2 input/output is multiplexed with RC1
+;
+;   Stack Overflow Reset:
+;     STVR = OFF           Disabled
+;     STVR = ON            Enabled
+;
+;   Low Voltage ICSP:
+;     LVP = OFF            Disabled
+;     LVP = ON             Enabled
+;
+;   Background Debugger Enable:
+;     DEBUG = ON           Enabled
+;     DEBUG = OFF          Disabled
+;
+;   Code Protection Block 0:
+;     CP0 = ON             Enabled
+;     CP0 = OFF            Disabled
+;
+;   Code Protection Block 1:
+;     CP1 = ON             Enabled
+;     CP1 = OFF            Disabled
+;
+;   Code Protection Block 2:
+;     CP2 = ON             Enabled
+;     CP2 = OFF            Disabled
+;
+;   Code Protection Block 3:
+;     CP3 = ON             Enabled
+;     CP3 = OFF            Disabled
+;
+;   Boot Block Code Protection:
+;     CPB = ON             Enabled
+;     CPB = OFF            Disabled
+;
+;   Data EEPROM Code Protection:
+;     CPD = ON             Enabled
+;     CPD = OFF            Disabled
+;
+;   Write Protection Block 0:
+;     WRT0 = ON            Enabled
+;     WRT0 = OFF           Disabled
+;
+;   Write Protection Block 1:
+;     WRT1 = ON            Enabled
+;     WRT1 = OFF           Disabled
+;
+;   Write Protection Block 2:
+;     WRT2 = ON            Enabled
+;     WRT2 = OFF           Disabled
+;
+;   Write Protection Block 3:
+;     WRT3 = ON            Enabled
+;     WRT3 = OFF           Disabled
+;
+;   Boot Block Write Protection:
+;     WRTB = ON            Enabled
+;     WRTB = OFF           Disabled
+;
+;   Configuration Register Write Protection:
+;     WRTC = ON            Enabled
+;     WRTC = OFF           Disabled
+;
+;   Data EEPROM Write Protection:
+;     WRTD = ON            Enabled
+;     WRTD = OFF           Disabled
+;
+;   Table Read Protection Block 0:
+;     EBTR0 = ON           Enabled
+;     EBTR0 = OFF          Disabled
+;
+;   Table Read Protection Block 1:
+;     EBTR1 = ON           Enabled
+;     EBTR1 = OFF          Disabled
+;
+;   Table Read Protection Block 2:
+;     EBTR2 = ON           Enabled
+;     EBTR2 = OFF          Disabled
+;
+;   Table Read Protection Block 3:
+;     EBTR3 = ON           Enabled
+;     EBTR3 = OFF          Disabled
+;
+;   Boot Block Table Read Protection:
+;     EBTRB = ON           Enabled
+;     EBTRB = OFF          Disabled
+;
+;==========================================================================
 ;==========================================================================
 ;
 ;       Configuration Bits

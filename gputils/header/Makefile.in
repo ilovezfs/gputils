@@ -167,6 +167,8 @@ HEADER_FILES = \
 	p10f202.inc \
 	p10f204.inc \
 	p10f206.inc \
+	p10f220.inc \
+	p10f222.inc \
 	p12c508a.inc \
 	p12c508.inc \
 	p12c509a.inc \
@@ -179,6 +181,7 @@ HEADER_FILES = \
 	p12ce674.inc \
 	p12f508.inc \
 	p12f509.inc \
+	p12f510.inc \
 	p12f629.inc \
 	p12f635.inc \
 	p12f675.inc \
@@ -253,6 +256,7 @@ HEADER_FILES = \
 	p16cr83.inc \
 	p16cr84.inc \
 	p16f505.inc \
+	p16f506.inc \
 	p16f5x.inc \
 	p16f627a.inc \
 	p16f627.inc \
@@ -336,6 +340,7 @@ HEADER_FILES = \
 	p18f2455.inc \
 	p18f2480.inc \
 	p18f248.inc \
+	p18f24j10.inc \
 	p18f2510.inc \
 	p18f2515.inc \
 	p18f2520.inc \
@@ -346,6 +351,7 @@ HEADER_FILES = \
 	p18f2580.inc \
 	p18f2585.inc \
 	p18f258.inc \
+	p18f25j10.inc \
 	p18f2610.inc \
 	p18f2620.inc \
 	p18f2680.inc \
@@ -361,6 +367,7 @@ HEADER_FILES = \
 	p18f4455.inc \
 	p18f4480.inc \
 	p18f448.inc \
+	p18f44j10.inc \
 	p18f4510.inc \
 	p18f4515.inc \
 	p18f4520.inc \
@@ -371,6 +378,7 @@ HEADER_FILES = \
 	p18f4580.inc \
 	p18f4585.inc \
 	p18f458.inc \
+	p18f45j10.inc \
 	p18f4610.inc \
 	p18f4620.inc \
 	p18f4680.inc \
@@ -382,11 +390,13 @@ HEADER_FILES = \
 	p18f64j15.inc \
 	p18f6520.inc \
 	p18f6525.inc \
+	p18f6527.inc \
 	p18f6585.inc \
 	p18f65j10.inc \
 	p18f65j15.inc \
 	p18f6620.inc \
 	p18f6621.inc \
+	p18f6622.inc \
 	p18f6627.inc \
 	p18f6680.inc \
 	p18f66j10.inc \
@@ -401,11 +411,13 @@ HEADER_FILES = \
 	p18f84j15.inc \
 	p18f8520.inc \
 	p18f8525.inc \
+	p18f8527.inc \
 	p18f8585.inc \
 	p18f85j10.inc \
 	p18f85j15.inc \
 	p18f8620.inc \
 	p18f8621.inc \
+	p18f8622.inc \
 	p18f8627.inc \
 	p18f8680.inc \
 	p18f86j10.inc \

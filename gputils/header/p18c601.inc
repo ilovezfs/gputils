@@ -676,6 +676,46 @@ BA0             EQU  4
        __MAXROM H'1FFFFF'
        __BADROM H'40000' - H'1FFDFF'
 
+
+;==========================================================================
+;
+;   IMPORTANT: For the PIC18 devices, the __CONFIG directive has been
+;              superseded by the CONFIG directive.  The following settings
+;              are available for this device.
+;
+;   Oscillator Selection:
+;     OSC = LP             LP Oscillator
+;     OSC = EC             EC Oscillator
+;     OSC = HS             HS Oscillator
+;     OSC = RC             RC Oscillator
+;
+;   Power-up Timer:
+;     PWRT = ON            Enable
+;     PWRT = OFF           Disable
+;
+;   External Bus Data Width:
+;     BW = 8               8-bit external bus mode
+;     BW = 16              16-bit external bus mode
+;
+;   Watchdog Timer:
+;     WDT = OFF            Disabled
+;     WDT = ON             Enabled
+;
+;   Watchdog Timer Postscale Selection:
+;     WDTPS = 1            1:1
+;     WDTPS = 2            1:2
+;     WDTPS = 4            1:4
+;     WDTPS = 8            1:8
+;     WDTPS = 16           1:16
+;     WDTPS = 32           1:32
+;     WDTPS = 64           1:64
+;     WDTPS = 128          1:128
+;
+;   Stack Full/Underflow RESET:
+;     STVR = OFF           Disabled
+;     STVR = ON            Enabled
+;
+;==========================================================================
 ;==========================================================================
 ;
 ;       Configuration Bits
