@@ -32,14 +32,18 @@ struct archivelist {
   struct archivelist  *next;
 };
 
-enum modes { _hex, _object};
+enum outfile { normal, suppress, named };
 
 extern struct gplink_state {
-  enum modes mode;                 /* default mode */ 
   enum formats hex_format;         /* format of the output */
   char *paths[MAX_PATHS];          /* the list of include paths */
   int numpaths;                    /* number of paths in the list */
   enum pic_processor processor;
+  enum outfile
+    codfile,			   /* Symbol output file control */
+    hexfile,			   /* Hex output file control */
+    mapfile,			   /* Map output file control */
+    objfile;			   /* Executable object file control */
   char  *srcfilename,		   /* Script file name */
     basefilename[BUFSIZ],	   /* basename for generating hex,list,symbol filenames */
     codfilename[BUFSIZ],	   /* Symbol (.cod) file name */
@@ -48,10 +52,14 @@ extern struct gplink_state {
     objfilename[BUFSIZ];	   /* Object (.o) file name */
   struct source_context *src;	   /* Top of the stack of the script files */
   struct {			   /* Map file state: */
-    FILE *f;			   /*   Map file output */
-    char startdate[80];		/*   When assembly started */
-    int enabled;		/*   nonzero if map is enabled */
+    FILE *f;			     /*   Map file output */
+    char startdate[80];		     /*   When assembly started */
   } map;
+  struct {			   /* Symbol file state: */
+    FILE *f;			     /*   Symbol file output */
+    int enabled;		     /*   nonzero if symbol file is enabled */
+    int emitting;                    /*   flag indicating when an opcode is emitted */
+  } cod;
   struct {
     struct symbol_table *definition; /* section definitions from script */
     struct symbol_table *logical;    /* logical definitions from script */
@@ -63,6 +71,7 @@ extern struct gplink_state {
   } symbol;
   struct archivelist    *archives;
   gp_object_type        *object;     /* object files */
+  MemBlock              *i_memory;   /* Instruction memory linked list */
 } state;
 
 struct source_context {

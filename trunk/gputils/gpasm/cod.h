@@ -1,4 +1,4 @@
-/* .cod file output
+/* ".COD" file output for gpasm
    Copyright (C) 2001, 2002, 2003
    Craig Franklin
 

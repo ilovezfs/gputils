@@ -82,6 +82,7 @@ extern struct gpasm_state {
     int core_size;		/* Processor core size  */
     int config_address;		/* configuration address */
     int id_location;		/* location for idlocs for 12 and 14 bit proc */
+    int bsr_boundary;		/* 18xx bsr boundary location */
   } device;
   unsigned int c_memory_base;	/* Base address of configuration memory */
   char badram[MAX_RAM];		/* nonzero indicates illegal memory */

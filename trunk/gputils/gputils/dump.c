@@ -21,8 +21,8 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gpvc.h"
-#include "gpcod.h"
 #include "dump.h"
 #include "block.h"
 
@@ -42,49 +42,6 @@ int ptr_offset(char *a, char *b)
 {
 
   return(  ( (long int)a) - ((long int)b) );
-
-}
-
-/*
- * get_short_int, put_short_int, and put_int
- * utility routines for accessing the cod blocks (char *)
- * using the proper endianess. (Using a union would be
- * cleaner, but less portable.
- */
-
-unsigned short get_short_int( char * buff)
-{
-  return ( (unsigned char)buff[0] + ((unsigned char)buff[1] << 8));
-}
-
-void put_short_int(char * buff, int value)
-{
-
-  buff[0] = value & 0xff;
-  buff[1] = (value >> 8) & 0xff;
-}
-
-void put_int(char * buff, int value)
-{
-
-  buff[0] = value & 0xff;
-  buff[1] = (value >> 8) & 0xff;
-  buff[2] = (value >> 16) & 0xff;
-  buff[3] = (value >> 24) & 0xff;
-}
-
-/* reverse the endian type (big to little or little to big)
-   note: there's probably a wonderful macro nestled deep in
-   the bowels of the os that nicely handles this conversion... */
-
-unsigned int endian_swap(unsigned int a)
-{
-
-  return
-    ( (a>>24) & 0x000000ff) | 
-    ( (a>>8)  & 0x0000ff00) |
-    ( (a<<8)  & 0x00ff0000) |
-    ( (a<<24) & 0xff000000);
 
 }
 
@@ -148,12 +105,12 @@ void dump_memmap( void)
 
   do {
 
-    _64k_base = get_short_int(&dbi->dir.block[COD_DIR_HIGHADDR]) << 16;
-    start_block = get_short_int(&dbi->dir.block[COD_DIR_MEMMAP]);
+    _64k_base = gp_getl16(&dbi->dir.block[COD_DIR_HIGHADDR]) << 16;
+    start_block = gp_getl16(&dbi->dir.block[COD_DIR_MEMMAP]);
 
     if(start_block) {
 
-      end_block   = get_short_int(&dbi->dir.block[COD_DIR_MEMMAP+2]);
+      end_block   = gp_getl16(&dbi->dir.block[COD_DIR_MEMMAP+2]);
 
       if(first) {
 	printf("\n\nROM Usage\n");
@@ -177,11 +134,11 @@ void dump_memmap( void)
                position then the .start and .last indicators are both zero, 
                just like they are for an empty block. So, let's read the 
                actual block and see if there's any information there... */
-	    char t[BLOCK_SIZE];
-	    int index = get_short_int(&dbi->dir.block[2*(COD_DIR_CODE)]);
+	    char t[COD_BLOCK_SIZE];
+	    int index = gp_getl16(&dbi->dir.block[2*(COD_DIR_CODE)]);
 	    if (index != 0) {
 	      read_block(t, index);
-	      if( get_short_int(&t[0]) )
+	      if( gp_getl16(&t[0]) )
 		printf("using ROM 0x%06x to 0x%06x\n",addrsize*_64k_base/2,addrsize*_64k_base/2);
 
 	    }
@@ -214,9 +171,9 @@ void dump_code(void)
   dbi = &main_dir;
 
   do {
-    _64k_base = get_short_int(&dbi->dir.block[COD_DIR_HIGHADDR]) << 15;
+    _64k_base = gp_getl16(&dbi->dir.block[COD_DIR_HIGHADDR]) << 15;
     for (k = 0; k <= 127; k++) {
-      index = get_short_int(&dbi->dir.block[2*(COD_DIR_CODE + k)]);
+      index = gp_getl16(&dbi->dir.block[2*(COD_DIR_CODE + k)]);
       if (index != 0) {
 	read_block(temp, index);
 
@@ -226,7 +183,7 @@ void dump_code(void)
 	do {
 
 	  for(j=0, all_zero_line=1; j<8; j++)
-	    if( get_short_int(&temp[(i+j)*2]) ) all_zero_line = 0;
+	    if( gp_getl16(&temp[(i+j)*2]) ) all_zero_line = 0;
 
 	  if(all_zero_line)
 	    i+=8;
@@ -234,10 +191,10 @@ void dump_code(void)
 	    printf("\n%06x:  ",addrsize*(_64k_base+i+k*256));
 
 	    for(j=0; j<8; j++)
-	      printf("%04x ",get_short_int(&temp[2*i++]));
+	      printf("%04x ",gp_getl16(&temp[2*i++]));
 	  }
 
-	}while (i<BLOCK_SIZE/2);
+	}while (i<COD_BLOCK_SIZE/2);
 
 	printf("\n");
       }
@@ -256,8 +213,8 @@ void dump_code(void)
 
 void dump_symbols( void )
 {
-#define SYMBOL_SIZE  16
-#define SYMBOLS_PER_BLOCK BLOCK_SIZE/SYMBOL_SIZE
+#define SSYMBOL_SIZE  16
+#define SYMBOLS_PER_BLOCK COD_BLOCK_SIZE/SSYMBOL_SIZE
 
 #define SR_LEN       0
 #define SR_NAME      1
@@ -267,11 +224,11 @@ void dump_symbols( void )
   int i,j,start_block,end_block;
   char b[16];
 
-  start_block = get_short_int(&directory_block_data[COD_DIR_SYMTAB]);
+  start_block = gp_getl16(&directory_block_data[COD_DIR_SYMTAB]);
 
   if(start_block) {
 
-    end_block   = get_short_int(&directory_block_data[COD_DIR_SYMTAB+2]);
+    end_block = gp_getl16(&directory_block_data[COD_DIR_SYMTAB+2]);
 
     printf("\nSymbol Table Information\n");
     printf("------------------------\n\n");
@@ -282,11 +239,11 @@ void dump_symbols( void )
 
       for(i=0; i<SYMBOLS_PER_BLOCK; i++) {
 
-	if(temp[i*SYMBOL_SIZE + SR_NAME])
-	  printf("%s = %d, type = %s\n",
-		 substr(b,&temp[i*SYMBOL_SIZE + SR_NAME],12), 
-		 get_short_int(&temp[i*SYMBOL_SIZE + SR_VALUE]), 
-		 SymbolType4[(unsigned char)temp[i*SYMBOL_SIZE + SR_TYPE]]
+	if(temp[i*SSYMBOL_SIZE + SR_NAME])
+	  printf("%s = %x, type = %s\n",
+		 substr(b,&temp[i*SSYMBOL_SIZE + SR_NAME],12), 
+		 gp_getl16(&temp[i*SSYMBOL_SIZE + SR_VALUE]), 
+		 SymbolType4[(unsigned char)temp[i*SSYMBOL_SIZE + SR_TYPE]]
 		 );
       }
     }
@@ -309,11 +266,11 @@ void dump_lsymbols( void )
   int i,j,start_block,end_block, value;
   char b[256];
 
-  start_block = get_short_int(&directory_block_data[COD_DIR_LSYMTAB]);
+  start_block = gp_getl16(&directory_block_data[COD_DIR_LSYMTAB]);
 
   if(start_block) {
 
-    end_block   = get_short_int(&directory_block_data[COD_DIR_LSYMTAB+2]);
+    end_block = gp_getl16(&directory_block_data[COD_DIR_LSYMTAB+2]);
 
     printf("\nLong Symbol Table Information\n");
     printf("------------------------\n\n");
@@ -322,7 +279,7 @@ void dump_lsymbols( void )
 
       read_block(temp, j);
 
-      for(i=0; i<BLOCK_SIZE;) {
+      for(i=0; i<COD_BLOCK_SIZE;) {
 	s =  &temp[i];
 
 	if(*s==0)
@@ -332,8 +289,8 @@ void dump_lsymbols( void )
 	type  = *(short *)&s[length+1];
 	if(type>128)
 	  type = 0;
-	value = *(int *)&s[length+3];
-	value = endian_swap(value);
+	/* read big endian */
+	value = gp_getb32(&s[length+3]);
 
 	printf("%s = %x, type = %s\n",
 	       substr(b,&s[1],length),
@@ -355,16 +312,16 @@ void dump_lsymbols( void )
 void dump_source_files( void )
 {
 #define FILE_SIZE  64
-#define FILES_PER_BLOCK BLOCK_SIZE/FILE_SIZE
+#define FILES_PER_BLOCK COD_BLOCK_SIZE/FILE_SIZE
 
   int i,j,start_block,end_block,offset;
   char b[FILE_SIZE];
 
-  start_block = get_short_int(&directory_block_data[COD_DIR_NAMTAB]);
+  start_block = gp_getl16(&directory_block_data[COD_DIR_NAMTAB]);
 
   if(start_block) {
 
-    end_block   = get_short_int(&directory_block_data[COD_DIR_NAMTAB+2]);
+    end_block = gp_getl16(&directory_block_data[COD_DIR_NAMTAB+2]);
 
     printf("\nSource File Information\n");
     printf("------------------------\n\n");
@@ -432,11 +389,11 @@ void dump_line_symbols(void)
 
   LineSymbol *ls;
 
-  start_block = get_short_int(&directory_block_data[COD_DIR_LSTTAB]);
+  start_block = gp_getl16(&directory_block_data[COD_DIR_LSTTAB]);
 
   if(start_block) {
 
-    end_block   = get_short_int(&directory_block_data[COD_DIR_LSTTAB+2]);
+    end_block = gp_getl16(&directory_block_data[COD_DIR_LSTTAB+2]);
 
     printf("\n\nLine Number Information\n");
     printf(" LstLn  SrcLn  Addr   Flags         FileName\n");
@@ -484,11 +441,11 @@ void dump_message_area(void)
 
   j=0;
 
-  start_block = get_short_int(&directory_block_data[COD_DIR_MESSTAB]);
+  start_block = gp_getl16(&directory_block_data[COD_DIR_MESSTAB]);
 
   if(start_block) {
 
-    end_block   = get_short_int(&directory_block_data[COD_DIR_MESSTAB+2]);
+    end_block = gp_getl16(&directory_block_data[COD_DIR_MESSTAB+2]);
 
     printf("\n\nDebug Message area\n");
     printf("------------------\n\n");
@@ -502,7 +459,8 @@ void dump_message_area(void)
 	  break;
 	}
 
-	laddress = endian_swap(*(int *)&temp[j]);
+	/* read big endian */
+	laddress = gp_getb32(&temp[j]);
 
 	DebugType = temp[j++];
 
@@ -523,8 +481,8 @@ void dump_message_area(void)
 
 void dump_local_vars(void)
 {
-#define SYMBOL_SIZE  16
-#define SYMBOLS_PER_BLOCK BLOCK_SIZE/SYMBOL_SIZE
+#define SSYMBOL_SIZE  16
+#define SYMBOLS_PER_BLOCK COD_BLOCK_SIZE/SSYMBOL_SIZE
 
   typedef struct symbol_record {
     char name_strlen;
@@ -547,11 +505,11 @@ void dump_local_vars(void)
 
   j=0;
 
-  start_block = get_short_int(&directory_block_data[COD_DIR_LOCALVAR]);
+  start_block = gp_getl16(&directory_block_data[COD_DIR_LOCALVAR]);
 
   if(start_block) {
 
-    end_block   = get_short_int(&directory_block_data[COD_DIR_LOCALVAR+2]);
+    end_block = gp_getl16(&directory_block_data[COD_DIR_LOCALVAR+2]);
 
     printf("\n\nLocal Symbol Scoping Information\n");
     printf("--------------------------------\n");
@@ -560,7 +518,7 @@ void dump_local_vars(void)
       read_block(temp, i);
 
       for(i=0; i<SYMBOLS_PER_BLOCK; i++) {
-	sh = (scope_head *)&temp[i*SYMBOL_SIZE];
+	sh = (scope_head *)&temp[i*SSYMBOL_SIZE];
 
 	if(sh->name[0]) {
 	  if( 0 == strncmp(sh->name,"__LOCAL",7)) {

@@ -27,19 +27,18 @@ Boston, MA 02111-1307, USA.  */
 
 #define GPVC_VERSION_STRING ("gpvc-" VERSION " alpha")
 #define BUFFER_LENGTH 256
-#define BLOCK_SIZE    512
 #define MAX_SOURCE_FILES 100 
 
 extern FILE *codefile;  
 extern char filename[BUFFER_LENGTH];
-extern char temp[BLOCK_SIZE];
+extern char temp[COD_BLOCK_SIZE];
 extern char *source_file_names[MAX_SOURCE_FILES];
 extern FILE *source_files[MAX_SOURCE_FILES];
 extern DirBlockInfo main_dir;
 
 extern int addrsize;
 
-extern char directory_block_data[BLOCK_SIZE];
+extern char directory_block_data[COD_BLOCK_SIZE];
 extern char * SymbolType4[154];
 
 #endif

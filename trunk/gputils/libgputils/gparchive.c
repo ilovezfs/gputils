@@ -480,14 +480,14 @@ gp_archive_add_index(struct symbol_table *table,
   
   /* write the number of symbols to the member */
   ptr = archive->file;
-  _put_32(ptr, table->count);
+  gp_putl32(ptr, table->count);
   ptr += 4;
   
   /* write the offsets to the member */
   for (i = 0; i < table->count; i++) {
     var = get_symbol_annotation(lst[i]);
     member = gp_archive_find_member(archive, var->file->filename);
-    _put_32(ptr, member->offset);
+    gp_putl32(ptr, member->offset);
     ptr += 4;
   }
 
@@ -542,7 +542,7 @@ gp_archive_read_index(struct symbol_table *table,
   file = archive->file;
   
   /* read the number of symbols */
-  number = _get_32(file);  
+  number = gp_getl32(file);  
   
   /* set the pointers to the offsets and symbol names */
   offset = &file[AR_INDEX_NUMBER_SIZ];
@@ -550,7 +550,7 @@ gp_archive_read_index(struct symbol_table *table,
   
   for (i = 0; i < number; i++) {
     /* get the symbol offset from the symbol index */
-    offset_value = _get_32(offset); 
+    offset_value = gp_getl32(offset); 
 
     /* Locate the object file the symbol is defined in.  The both should
        have the same offset */

@@ -23,12 +23,16 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gplink.h"
+#include "cod.h"
 #include "scan.h"
 #include "map.h"
 
 struct gplink_state state;
 
 int yyparse(void);
+
+/* The 16bit core is handled differently in some instances. */
+int _16bit_core = 0;
 
 /* return the number of missing symbols */
 int count_missing(void)
@@ -298,12 +302,14 @@ int main(int argc, char *argv[])
   char *pc;
 
   /* initialize */
-  state.mode = _hex;
   state.hex_format = inhx32;
   state.srcfilename = NULL;
   state.object  = NULL;
   state.archives = NULL;
-  state.map.enabled = 0;
+  state.codfile = normal;
+  state.hexfile = normal;
+  state.mapfile = normal;
+  state.objfile = suppress;
 
   /* The symbols are case sensitive */
   state.symbol.definition = push_symbol_table(NULL, 0);
@@ -321,10 +327,19 @@ int main(int argc, char *argv[])
   while ((c = GETOPT_FUNC) != EOF) {
     switch (c) {
     case 'a':
-
+      if (strcasecmp(optarg, "inhx8m") == 0) {
+        state.hex_format = inhx8m;
+      } else if (strcasecmp(optarg, "inhx16") == 0) {
+        state.hex_format = inhx16;
+      } else if (strcasecmp(optarg, "inhx32") == 0) {
+        state.hex_format = inhx32;
+      } else {
+        gp_error("invalid hex format \"%s\", expected inhx8m, inhx16, or inhx32",
+                 optarg);
+      }
       break;
     case 'c':
-      state.mode = _object;
+      state.objfile = normal;
       break;
     case 'd':
       gp_debug_disable = 0;
@@ -337,7 +352,7 @@ int main(int argc, char *argv[])
       gplink_add_path(optarg);
       break;
     case 'm':
-      state.map.enabled = 1;
+      state.objfile = normal;
       break;
     case 'o':
       strcpy(state.basefilename, optarg);
@@ -394,6 +409,9 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE; 
   }
 
+  if (state.object->class == PROC_CLASS_PIC16E)
+    _16bit_core = 1;
+
   /* Read the script */
   if (state.srcfilename != NULL) {
     open_src(state.srcfilename, 0);
@@ -423,29 +441,29 @@ int main(int argc, char *argv[])
   state.object->filename = strdup(state.objfilename);
   state.object->flags |= F_EXEC;
 
-  /* write output file */
-  if (state.mode == _object) {
+  if (state.objfile == normal) {
     /* write the executable object in memory */
     gp_write_coff(state.object, gp_num_errors);
-  } else {
-    MemBlock *m;
-     
-    /* convert the executable object into a hex file */
-    m = gp_cofflink_make_memory(state.object);
-    writehex(state.basefilename,
-             m,
-             state.hex_format,
-             gp_num_errors,
-             0,
-             0);
-    i_memory_free(m);
-
-    /* convert the executable object into a cod file */
-
   }
+
+  /* convert the executable object into a hex file */
+  state.i_memory = gp_cofflink_make_memory(state.object);
+  
+  /* write hex file */
+  writehex(state.basefilename,
+           state.i_memory,
+           state.hex_format,
+           gp_num_errors,
+           0,
+           0);
+
+  /* convert the executable object into a cod file */
+  write_cod();
 
   /* write map file */
   make_map();
+
+  i_memory_free(state.i_memory);
   
   if (gp_num_errors > 0)
     return EXIT_FAILURE;

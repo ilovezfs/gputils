@@ -24,11 +24,13 @@ bin_PROGRAMS = gplink
 CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 gplink_SOURCES=\
+	cod.c \
 	gplink.c \
 	map.c \
 	script.c \
 	parse.y \
 	scan.l \
+	cod.h \
 	gplink.h \
 	map.h \
 	script.h

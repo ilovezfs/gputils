@@ -217,7 +217,7 @@ _write_symbols(void)
 void 
 make_map(void)
 {
-  if ((gp_num_errors) || (!state.map.enabled)) {
+  if ((gp_num_errors) || (state.mapfile == suppress)) {
     unlink(state.mapfilename);
     return;
   }

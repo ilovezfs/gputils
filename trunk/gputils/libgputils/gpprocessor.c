@@ -476,6 +476,53 @@ gp_processor_class(enum pic_processor processor)
   return core;
 }
 
+/* 18xx bsr boundary location */
+
+int
+gp_processor_bsr_boundary(enum pic_processor processor)
+{
+  int bsr_boundary = 0;
+
+  switch(processor)
+    {
+    case pic18cxx:
+    case pic18c242:
+    case pic18c252:
+    case pic18c442:
+    case pic18c452:
+    case pic18c601:
+    case pic18c658:
+    case pic18c801:
+    case pic18c858:
+    case pic18f1220:
+    case pic18f1320:
+    case pic18f2220:
+    case pic18f2320:
+    case pic18f242:
+    case pic18f248:
+    case pic18f252:
+    case pic18f258:
+    case pic18f4220:
+    case pic18f4320:
+    case pic18f442:
+    case pic18f448:
+    case pic18f452:
+    case pic18f458:
+      bsr_boundary = 0x80;
+      break;
+    case pic18f6620:
+    case pic18f6720:
+    case pic18f8620:
+    case pic18f8720:
+      bsr_boundary = 0x60;
+      break;
+    default:
+      assert (0);
+    }
+
+  return bsr_boundary;
+}
+
 unsigned long
 gp_processor_coff_type(enum pic_processor processor)
 {

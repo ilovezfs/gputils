@@ -26,9 +26,6 @@ Boston, MA 02111-1307, USA.  */
 
 void directory_block(void);
 void read_block(char * block, int block_number);
-void clear_block(Block *b);
-void create_block(Block *b);
-void delete_block(Block *b);
 void read_directory(void);
 
 #endif
