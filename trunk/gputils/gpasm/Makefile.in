@@ -94,6 +94,7 @@ GPUTILS_MINOR_VERSION = @GPUTILS_MINOR_VERSION@
 GPUTILS_VERSION = @GPUTILS_VERSION@
 LEX = @LEX@
 LIBGPUTILS = @LIBGPUTILS@
+LIBIBERTY = @LIBIBERTY@
 MAKEINFO = @MAKEINFO@
 MAKE_SUBDIRS = @MAKE_SUBDIRS@
 OBJEXT = @OBJEXT@
@@ -113,7 +114,7 @@ gpasm_SOURCES = \
 	special.h
 
 
-gpasm_LDADD = ${top_builddir}/@LIBGPUTILS@
+gpasm_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 
 YFLAGS = -dvt
 LFLAGS = -i
@@ -132,7 +133,8 @@ LIBS = @LIBS@
 gpasm_OBJECTS =  cod.$(OBJEXT) directive.$(OBJEXT) gpasm.$(OBJEXT) \
 parse.$(OBJEXT) scan.$(OBJEXT) gperror.$(OBJEXT) lst.$(OBJEXT) \
 processor.$(OBJEXT) special.$(OBJEXT) util.$(OBJEXT)
-gpasm_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@
+gpasm_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@ \
+${top_builddir}/@LIBIBERTY@
 gpasm_LDFLAGS = 
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LEXLIB = @LEXLIB@

@@ -20,4 +20,8 @@
 
 SUBDIRS = @MAKE_SUBDIRS@
 
-EXTRA_DIST = include config.h.in stamp-h.in
+EXTRA_DIST =\
+	./include/stdhdr.h \
+	./include/getopt.h \
+	config.h.in \
+	stamp-h.in

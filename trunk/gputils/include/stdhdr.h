@@ -35,11 +35,7 @@ Boston, MA 02111-1307, USA.  */
 #include <unistd.h>
 #endif
 
-#ifdef HAVE_GETOPT_H
-#include <getopt.h>
-#else
-#undef HAVE_GETOPT_LONG
-#endif
+#include "getopt.h"
 
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>

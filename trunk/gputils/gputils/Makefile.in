@@ -94,6 +94,7 @@ GPUTILS_MINOR_VERSION = @GPUTILS_MINOR_VERSION@
 GPUTILS_VERSION = @GPUTILS_VERSION@
 LEX = @LEX@
 LIBGPUTILS = @LIBGPUTILS@
+LIBIBERTY = @LIBIBERTY@
 MAKEINFO = @MAKEINFO@
 MAKE_SUBDIRS = @MAKE_SUBDIRS@
 OBJEXT = @OBJEXT@
@@ -113,26 +114,28 @@ gpdasm_SOURCES = \
 	gpdasm.h
 
 
-gpdasm_LDADD = ${top_builddir}/@LIBGPUTILS@
+gpdasm_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 
 gplib_SOURCES = \
 	gplib.c \
 	gplib.h
 
 
-gplib_LDADD = ${top_builddir}/@LIBGPUTILS@
+gplib_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 
 gpvc_SOURCES = \
 	block.c dump.c gpvc.c \
 	block.h dump.h gpvc.h
 
 
+gpvc_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
+
 gpvo_SOURCES = \
 	gpvo.c \
 	gpvo.h
 
 
-gpvo_LDADD = ${top_builddir}/@LIBGPUTILS@
+gpvo_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
@@ -145,17 +148,20 @@ DEFS = @DEFS@ -I. -I$(srcdir) -I..
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 gpvc_OBJECTS =  block.$(OBJEXT) dump.$(OBJEXT) gpvc.$(OBJEXT)
-gpvc_LDADD = $(LDADD)
-gpvc_DEPENDENCIES = 
+gpvc_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@ \
+${top_builddir}/@LIBIBERTY@
 gpvc_LDFLAGS = 
 gpdasm_OBJECTS =  gpdasm.$(OBJEXT)
-gpdasm_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@
+gpdasm_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@ \
+${top_builddir}/@LIBIBERTY@
 gpdasm_LDFLAGS = 
 gplib_OBJECTS =  gplib.$(OBJEXT)
-gplib_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@
+gplib_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@ \
+${top_builddir}/@LIBIBERTY@
 gplib_LDFLAGS = 
 gpvo_OBJECTS =  gpvo.$(OBJEXT)
-gpvo_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@
+gpvo_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@ \
+${top_builddir}/@LIBIBERTY@
 gpvo_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)

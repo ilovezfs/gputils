@@ -30,7 +30,7 @@ gplink_SOURCES=\
 	gplink.h \
 	script.h
 
-gplink_LDADD = ${top_builddir}/@LIBGPUTILS@
+gplink_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 
 YFLAGS = -dvt
 LFLAGS = -i

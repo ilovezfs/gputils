@@ -82,7 +82,6 @@ void show_usage(void)
 {
   printf("Usage: gpdasm <options> <filename>\n");
   printf("Where <options> are:\n");
-  #ifdef HAVE_GETOPT_LONG  
   printf("  -a, --all          Display all information in .cod file\n");
   printf("  -d, --directory    Display directory header\n");
   printf("  -l, --listing      Display source listing cross\n");
@@ -91,16 +90,6 @@ void show_usage(void)
   printf("  -r, --rom          Display rom\n");
   printf("  -s, --symbols      Display symbols\n");
   printf("  -v, --version      Show version\n");
-  #else
-  printf("  -a    Display all information in .cod file\n");
-  printf("  -d    Display directory header\n");
-  printf("  -l    Display source listing cross\n");
-  printf("  -m    Display debug message area\n");
-  printf("  -h    Show this usage message \n");
-  printf("  -r    Display rom\n");
-  printf("  -s    Display symbols\n");
-  printf("  -v    Show version\n");
-  #endif
   printf("\n");
   printf("Report bugs to:\n");
   printf("%s\n", BUG_REPORT_URL);
@@ -108,8 +97,6 @@ void show_usage(void)
 }
 
 #define GET_OPTIONS "?adhlmrsv"
-
-#ifdef HAVE_GETOPT_LONG
 
   /* Used: adhlmrsv */
   static struct option longopts[] =
@@ -125,17 +112,10 @@ void show_usage(void)
     { 0, 0, 0, 0 }
   };
 
-  #define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
-
-#else
-
-  #define GETOPT_FUNC getopt(argc, argv, GET_OPTIONS)
-
-#endif
+#define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
 
 int main(int argc, char *argv[])
 {
-  extern char *optarg;
   extern int optind;
   unsigned int buffer_size;
   int c,usage=0;

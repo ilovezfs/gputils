@@ -46,9 +46,6 @@
 /* Define if you have the strtol function.  */
 #undef HAVE_STRTOL
 
-/* Define if you have the <getopt.h> header file.  */
-#undef HAVE_GETOPT_H
-
 /* Define if you have the <malloc.h> header file.  */
 #undef HAVE_MALLOC_H
 
@@ -66,9 +63,6 @@
 
 /* Version number of package */
 #undef VERSION
-
-/* Define if you have the getopt_long function.  */
-#undef HAVE_GETOPT_LONG
 
 /* Define if you want to enable GPUTILS debug features.  */
 #undef __DEBUG__

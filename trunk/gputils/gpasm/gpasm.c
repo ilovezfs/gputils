@@ -46,7 +46,6 @@ void show_usage(void)
 {
   printf("Usage: gpasm <options> <filename>\n");
   printf("Where <options> are:\n");
-  #ifdef HAVE_GETOPT_LONG
   printf("  -a FMT, --hex-format FMT       Select hex file format.\n");
   printf("  -c, --case                     Case insensitive.\n");
   printf("  -D SYM=VAL, --define SYM=VAL   Define SYM with value VAL.\n");
@@ -64,25 +63,6 @@ void show_usage(void)
   printf("  -r RADIX, --radix RADIX        Select radix.\n");
   printf("  -w [0|1|2], --warning [0|1|2]  Set message level.\n");
   printf("  -v, --version                  Show version.\n");
-  #else
-  printf("  -a FMT      Select hex file format.\n");
-  printf("  -c          Case insensitive.\n");
-  printf("  -D SYM=VAL  Define SYM with value VAL.\n");
-  printf("  -e [ON|OFF] Macro expansion.\n");
-  printf("  -h          Show this usage message.\n");
-  printf("  -I DIR      Specify include directory.\n");
-  printf("  -l          List supported processors.\n");
-  printf("  -m          Memory dump.\n");
-  #ifndef __MSDOS__
-  printf("  -n          Use DOS newlines in hex file.\n");
-  #endif
-  printf("  -o FILE     Alternate name of hex file.\n");
-  printf("  -p PROC     Select processor.\n");
-  printf("  -q          Quiet.\n");
-  printf("  -r RADIX    Select radix.\n");
-  printf("  -w [0|1|2]  Set message level.\n");
-  printf("  -v          Show version.\n");
-  #endif
   printf("\n");
   #ifdef USE_GPASM_HEADER_PATH
   printf("Reading header files from %s\n", include_paths[0]);
@@ -94,8 +74,6 @@ void show_usage(void)
 }
 
 #define GET_OPTIONS "?D:I:a:cd:e:hlmno:p:qr:vw:"
-
-#ifdef HAVE_GETOPT_LONG
 
   /* Used: acdDehIlmopqrwv */
   static struct option longopts[] =
@@ -119,13 +97,8 @@ void show_usage(void)
     { 0, 0, 0, 0 }
   };
 
-  #define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
+#define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
 
-#else
-
-  #define GETOPT_FUNC getopt(argc, argv, GET_OPTIONS)
-
-#endif
 
 int main( int argc, char *argv[] )
 {

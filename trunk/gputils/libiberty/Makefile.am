@@ -1,5 +1,5 @@
 # Makefile.am
-# Copyright (C) 2000,2001 Craig Franklin
+# Copyright (C) 2002 Craig Franklin
 # 
 # This file is part of gputils.
 # 
@@ -18,32 +18,14 @@
 # the Free Software Foundation, 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-bin_PROGRAMS = gpvc gpdasm
+AUTOMAKE_OPTIONS = foreign
 
-noinst_PROGRAMS = gplib gpvo
+CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/include
 
-CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
+noinst_LIBRARIES = libiberty.a
 
-gpdasm_SOURCES=\
-	gpdasm.c\
-	gpdasm.h
+libiberty_a_SOURCES =\
+	getopt.c \
+	getopt1.c
 
-gpdasm_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
-
-gplib_SOURCES=\
-	gplib.c \
-	gplib.h
-
-gplib_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
-
-gpvc_SOURCES=\
-	block.c dump.c gpvc.c \
-	block.h dump.h gpvc.h
-
-gpvc_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
-
-gpvo_SOURCES=\
-	gpvo.c \
-	gpvo.h
-
-gpvo_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
+EXTRA_DIST = README

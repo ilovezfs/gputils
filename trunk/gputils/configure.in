@@ -17,7 +17,8 @@ GPUTILS_MINOR_VERSION=10
 GPUTILS_MICRO_VERSION=0
 GPUTILS_VERSION=$GPUTILS_MAJOR_VERSION.$GPUTILS_MINOR_VERSION.$GPUTILS_MICRO_VERSION
 LIBGPUTILS=libgputils/libgputils.a
-MAKE_SUBDIRS="libgputils gpasm header lkr doc"
+LIBIBERTY=libiberty/libiberty.a
+MAKE_SUBDIRS="libgputils libiberty gpasm header lkr doc"
 
 # Initialize automake
 AM_INIT_AUTOMAKE(gputils, $GPUTILS_VERSION)
@@ -51,7 +52,6 @@ AC_CHECK_TOOL(AR, ar, :)
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(getopt.h, [found_getopt_h=yes], [found_getopt_h=no])  
 AC_CHECK_HEADERS(malloc.h unistd.h string.h strings.h)
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -61,19 +61,6 @@ AC_STRUCT_TM
 # Checks for library functions.
 AC_FUNC_ALLOCA
 AC_CHECK_FUNCS(strdup strtol strcasecmp stricmp)
-
-if test x$found_getopt_h = xyes; then
-  AC_SEARCH_LIBS(getopt_long, iberty gnugetopt, 
-    [use_getopt_long=yes], [use_getopt_long=no])  
-else
-  use_getopt_long=no
-fi
-
-if test x$use_getopt_long = xno; then
-  # mingw32 getopt is in iberty
-  AC_SEARCH_LIBS(getopt, iberty, [], 
-    [AC_MSG_ERROR(no options parser (getopt))])  
-fi
 
 # Check for mingw32
 AC_MINGW32
@@ -117,11 +104,6 @@ if test x$enable_gputils = xyes; then
   MAKE_SUBDIRS="$MAKE_SUBDIRS gputils"
 fi
 
-if test x$use_getopt_long = xyes; then
-  AC_DEFINE(HAVE_GETOPT_LONG, 1,
-    [Define if you have the getopt_long function. ])
-fi
-
 if test x$enable_gputils_debug = xyes; then
   AC_DEFINE(__DEBUG__, 1, 
     [Define if you want to enable GPUTILS debug features. ])
@@ -145,12 +127,13 @@ AC_SUBST(GPUTILS_MINOR_VERSION)
 AC_SUBST(GPUTILS_MICRO_VERSION)
 AC_SUBST(GPUTILS_VERSION)
 AC_SUBST(LIBGPUTILS)
+AC_SUBST(LIBIBERTY)
 AC_SUBST(MAKE_SUBDIRS)
 
 # Generate Makefiles
 AC_OUTPUT( Makefile doc/Makefile gpasm/Makefile gplink/Makefile 
            gputils/Makefile header/Makefile libgputils/Makefile 
-	   lkr/Makefile)
+	   libiberty/Makefile lkr/Makefile)
 
 AC_MSG_RESULT([
 
