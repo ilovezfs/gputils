@@ -1418,30 +1418,52 @@ analyze_type(tree *file, tree *type, gp_boolean add_alias)
 
 }
 
+typedef void analyze_func_type(tree *file);
+#define ANALYZE_FUNC (*(analyze_func_type*)func_ptr)
+
 static void
-analyze_module(tree *file)
+analyze_preprocess(tree *cond, long int func_ptr)
 {
-  tree *current;
+
+  if (COND_TEST(cond)) {
+    if (maybe_evaluate(COND_TEST(cond))) {
+      /* the test condition is true, process the body and return */
+      ANALYZE_FUNC(COND_BODY(cond));
+    } else if (COND_NEXT(cond)) { 
+      /* the test condition is false, process the next clause and return */
+      analyze_preprocess(COND_NEXT(cond), func_ptr);
+    }
+  } else {
+    /* there is no test, else equivalent, process the body */
+    ANALYZE_FUNC(COND_BODY(cond));
+  }
+  
+  return;
+}
+
+static void
+analyze_module(tree *current)
+{
   char *name;
   char *alias;
   struct variable *var;
 
-  state.module = file;
-
-  current = FILE_BODY(file);
   while (current) {
     switch (current->tag) {
     case node_alias:
       break;
+    case node_cond:
+      analyze_preprocess(current, (long int)analyze_module);
+      break;
     case node_pragma:
-      analyze_pragma(current->value.pragma, FILE_TYPE(file));
+      analyze_pragma(current->value.pragma, FILE_TYPE(state.module));
       break;
     case node_type:
-      analyze_type(file, current, true);
+      analyze_type(state.module, current, true);
       break;
     case node_decl:
       alias = DECL_NAME(current);
-      name = mangle_name2(FILE_NAME(file), alias);
+      name = mangle_name2(FILE_NAME(state.module), alias);
       if (DECL_CONSTANT(current)) {
         if (DECL_INIT(current)) {
           var = add_constant(name,
@@ -1470,7 +1492,7 @@ analyze_module(tree *file)
       break;
     case node_proc:
       alias = find_node_name(current);
-      name = mangle_name2(FILE_NAME(file), alias);
+      name = mangle_name2(FILE_NAME(state.module), alias);
       var = add_global_symbol(name, current, sym_proc, storage_private, NULL);
       add_symbol_alias(alias, current, var);
       if (PROC_BODY(current) == NULL) {
@@ -1480,7 +1502,7 @@ analyze_module(tree *file)
       break;
     case node_func:
       alias = find_node_name(current);
-      name = mangle_name2(FILE_NAME(file), alias);
+      name = mangle_name2(FILE_NAME(state.module), alias);
       var = add_global_symbol(name, current, sym_func, storage_private, NULL);
       add_symbol_alias(alias, current, var);
       if (FUNC_BODY(current) == NULL) {
@@ -1498,66 +1520,47 @@ analyze_module(tree *file)
 }
 
 static void
-analyze_public(tree *file)
+analyze_public(tree *current)
 {
-  tree *current;
   char *name;
   char *alias;
   struct variable *var;
 
-  state.module = file;
-
-  current = FILE_BODY(file);
-  while (current) {
-    switch (current->tag) {
-    case node_alias:
-      break;
-    case node_pragma:
-      analyze_pragma(current->value.pragma,  FILE_TYPE(file));
-      break;
-    case node_type:
-      if (FILE_TYPE(file) == source_public) {
-        analyze_type(file, current, true);
-      } else {
-        analyze_type(file, current, false);
-      }
-      break;
-    case node_decl:
-    case node_proc:
-    case node_func:
-      break;
-    default:
-      assert(0);
-    }
-    current = current->next;
-  }
-
-  current = FILE_BODY(file);
   while (current) {
     switch (current->tag) {
     case node_alias:
       var = get_global(ALIAS_NAME(current));
       add_symbol_alias(ALIAS_ALIAS(current), current, var);
       break;
+    case node_cond:
+      analyze_preprocess(current, (long int)analyze_public);
+      break;
     case node_pragma:
+      analyze_pragma(current->value.pragma,  FILE_TYPE(state.module));
+      break;
     case node_type:
+      if (FILE_TYPE(state.module) == source_public) {
+        analyze_type(state.module, current, true);
+      } else {
+        analyze_type(state.module, current, false);
+      }
       break;
     case node_decl:
       alias = find_node_name(current);
-      name = mangle_name2(FILE_NAME(file), alias);
+      name = mangle_name2(FILE_NAME(state.module), alias);
       if (DECL_CONSTANT(current)) {
         if (DECL_INIT(current)) {
           var = add_constant(name,
                              maybe_evaluate(DECL_INIT(current)),
                              current,
                              DECL_TYPE(current));
-          if (FILE_TYPE(file) == source_with) {
+          if (FILE_TYPE(state.module) == source_with) {
             add_symbol_alias(alias, current, var);
           }
         } else {
           analyze_error(current, "missing constant value");
         }
-      } else if (FILE_TYPE(file) == source_public) {
+      } else if (FILE_TYPE(state.module) == source_public) {
         var = get_global(name);
         if (var) {
           var->storage = storage_public;       
@@ -1572,11 +1575,11 @@ analyze_public(tree *file)
         if (DECL_INIT(current)) {
           analyze_error(current, "declarations can not be initialized");
         }
-      } else if (FILE_TYPE(file) == source_with) {
+      } else if (FILE_TYPE(state.module) == source_with) {
         var = add_global_symbol(name,
                                 current,
                                 sym_udata,
-                                FILE_UDATA(file),
+                                FILE_UDATA(state.module),
                                 DECL_TYPE(current));
         if (DECL_INIT(current)) {
           analyze_error(current, "declarations can not be initialized");
@@ -1591,27 +1594,27 @@ analyze_public(tree *file)
       break;
     case node_proc:
       alias = find_node_name(current);
-      name = mangle_name2(FILE_NAME(file), alias);
+      name = mangle_name2(FILE_NAME(state.module), alias);
       if (PROC_BODY(current)) {
         analyze_error(current,
                       "only procedure declarations are allowed in a public");
       }
-      if (FILE_TYPE(file) == source_public) {
+      if (FILE_TYPE(state.module) == source_public) {
         var = get_global(name);
         if (var) {
           make_proc_public(var, current);
         } else {
           analyze_error(current, "missing definition for %s", name); 
         }
-      } else if (FILE_TYPE(file) == source_with) {
+      } else if (FILE_TYPE(state.module) == source_with) {
         var = add_global_symbol(name,
                                 current,
                                 sym_proc,
-                                FILE_CODE(file),
+                                FILE_CODE(state.module),
                                 NULL);
         add_arg_symbols(current,
                         var->name,
-                        FILE_UDATA(file),
+                        FILE_UDATA(state.module),
                         false);
       } else {
         assert(0);
@@ -1619,27 +1622,27 @@ analyze_public(tree *file)
       break;
     case node_func:
       alias = find_node_name(current);
-      name = mangle_name2(FILE_NAME(file), alias);
+      name = mangle_name2(FILE_NAME(state.module), alias);
       if (FUNC_BODY(current)) {
         analyze_error(current,
                       "only function declarations are allowed in a public");
       }
-      if (FILE_TYPE(file) == source_public) {
+      if (FILE_TYPE(state.module) == source_public) {
         var = get_global(name);
         if (var) {
           make_proc_public(var, current);
         } else {
           analyze_error(current, "missing definition for %s", name); 
         }
-      } else if (FILE_TYPE(file) == source_with) {
+      } else if (FILE_TYPE(state.module) == source_with) {
         var = add_global_symbol(name,
                                 current,
                                 sym_func,
-                                FILE_CODE(file),
+                                FILE_CODE(state.module),
                                 NULL);
         add_arg_symbols(current,
                         var->name,
-                        FILE_UDATA(file),
+                        FILE_UDATA(state.module),
                         false);
       } else {
         assert(0);
@@ -1656,9 +1659,8 @@ analyze_public(tree *file)
 }
 
 static void
-analyze_module_contents(tree *file)
+analyze_module_contents(tree *current)
 {
-  tree *current = FILE_BODY(file);
   struct variable *var;
 
   while (current) {
@@ -1666,6 +1668,9 @@ analyze_module_contents(tree *file)
     case node_alias:
       var = get_global(ALIAS_NAME(current));
       add_symbol_alias(ALIAS_ALIAS(current), current, var);
+      break;
+    case node_cond:
+      analyze_preprocess(current, (long int)analyze_module_contents);
       break;
     case node_pragma:
     case node_decl:
@@ -1705,7 +1710,8 @@ analyze(void)
       if (found_module) {
         analyze_error(current, "found multiple modules in one file");
       } else {
-        analyze_module(current);
+        state.module = current;
+        analyze_module(FILE_BODY(current));
         module = current;
       }
       found_module = true;
@@ -1718,7 +1724,8 @@ analyze(void)
   while (current) {
     if ((FILE_TYPE(current) == source_public) ||
         (FILE_TYPE(current) == source_with)) {
-      analyze_public(current);
+      state.module = current;
+      analyze_public(FILE_BODY(current));
     }
     current = current->next;
   }
@@ -1738,7 +1745,7 @@ analyze(void)
   codegen_init_asm();
 
   /* scan the module */
-  analyze_module_contents(module);
+  analyze_module_contents(FILE_BODY(module));
 
   /* finish the assembly output */
   codegen_init_data();

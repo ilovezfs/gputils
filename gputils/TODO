@@ -18,14 +18,11 @@ gpal
     feature to gpal.  gpal main.pal it figures out what needs to be
     compiled.   
   * Prevent the same With from being read multiple times.
-  * Implement exit.
   * Clean up the test expressions code generator.  Keep the result in W not
     the working register.
   * Add backend for each family.
   * Create a stdlib.  Add assert function and use it for simulation. newlib
   * Figure out how to do pointers.  Maybe a new "pointer" type?
-  * Do we need a preprocessor?  I don't think so.  Use normal if statements,
-    but use constants for conditionals.
   * Implement "rom" to go with variable and constant. dt "my string\0"
   * Create icode in codegen and peep it.  Write that to asm file.
   * Remove dead code.

@@ -131,8 +131,10 @@ static tree *case_ident = NULL;
 
 /* types */
 %type <s> entity
+%type <t> element_start
 %type <t> element_list
 %type <t> element
+%type <t> element_cond
 %type <t> type
 %type <t> head
 %type <t> arg_list
@@ -197,16 +199,28 @@ entity:
 	  open_src($2, source_with);
 	}
 	|
-	MODULE IDENT IS element_list END MODULE ';'
+	MODULE IDENT IS element_start END MODULE ';'
 	{
 	  add_entity(mk_file($4, $2, state.src->type));
 	}
 	|
-	PUBLIC IDENT IS element_list END PUBLIC ';'
+	PUBLIC IDENT IS element_start END PUBLIC ';'
 	{
 	  add_entity(mk_file($4, $2, state.src->type));
 	}
         ;
+
+element_start:
+	/* empty */
+	{
+	  $$ = NULL;
+	}
+	|
+	element_list
+	{
+          $$ = $1;
+	}
+	;
 
 element_list:
 	element
@@ -260,6 +274,35 @@ element:
 	{ 
 	  $$ = mk_func($2, $4, NULL);
 	}
+	|
+	IF expr THEN element_start END IF ';'
+	{
+	  $$ = mk_cond($2, $4, NULL);
+	}
+	|
+	IF expr THEN element_start element_cond END IF ';'
+	{
+	  $$ = mk_cond($2, $4, $5);
+	}
+	;
+
+element_cond:
+	ELSIF expr THEN element_start
+	{
+	  /* last statement is elsif */
+	  $$ = mk_cond($2, $4, NULL);
+	}
+	|
+	ELSIF expr THEN element_start element_cond
+	{
+	  $$ = mk_cond($2, $4, $5);
+	}
+	|
+	ELSE element_start
+	{
+	  /* last statement is else */
+	  $$ = mk_cond(NULL, $2, NULL);
+	}	
 	;
 
 type:
