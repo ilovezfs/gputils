@@ -48,6 +48,7 @@ void
 gp_disassemble(MemBlock *m, int *org, enum proc_class class, char *buffer)
 {
   int i;
+  int value;
   long int opcode;
   struct insn *instruction = NULL;
 
@@ -124,10 +125,20 @@ gp_disassemble(MemBlock *m, int *org, enum proc_class class, char *buffer)
       DECODE_ARG1(opcode & 0x1fff); 
       break;
     case INSN_CLASS_RBRA8:
-      DECODE_ARG1((((opcode & 0xff) + (*org + 1)) * 2)); 
+      value = opcode & 0xff;
+      /* twos complement number */
+      if (value & 0x80) {
+        value = -((value ^ 0xff) + 1);
+      }
+      DECODE_ARG1((unsigned long)(*org + value + 1) * 2); 
       break;
     case INSN_CLASS_RBRA11:
-      DECODE_ARG1((((opcode & 0x7ff) + (*org + 1)) * 2)); 
+      value = opcode  & 0x7ff;
+      /* twos complement number */
+      if (value & 0x400) {
+        value = -((value ^ 0x7ff) + 1);
+      }      
+      DECODE_ARG1((unsigned long)(*org + value + 1) * 2); 
       break;
     case INSN_CLASS_LIT20:
       {

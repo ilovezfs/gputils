@@ -1,3 +1,6 @@
+2004-02-09 Craig Franklin <craigfranklin@comcast.net>
+  * Fixed bug in gpdasm relative branches.
+
 2004-02-07 Craig Franklin <craigfranklin@comcast.net>
   * Fixed uninitialized memory in escape character conversion.
 
