@@ -1,3 +1,6 @@
+2004-04-28 Craig Franklin <craigfranklin@comcast.net>
+  * Update gpal example.
+
 2003-12-15 Craig Franklin <craigfranklin@comcast.net>
   * Remove the community nature of gputils-extra.
   * Updated scripts to automake-1.6 and autoconf-2.57.
