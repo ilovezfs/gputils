@@ -117,6 +117,12 @@ codegen_write_label(char *label)
   fprintf(state.output.f, "%s:\n", label);
 }
 
+void
+codegen_write_equ(char *label, int value)
+{
+  fprintf(state.output.f, "%-30s equ %#x\n", label, value);
+}
+
 /****************************************************************************/
 /* Common directives and instructions                                       */
 /****************************************************************************/
