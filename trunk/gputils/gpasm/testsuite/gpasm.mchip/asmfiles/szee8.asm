@@ -3,7 +3,7 @@
 ; This file tests for the processor-specific items for the selected
 ; processor.
 
-	LIST	P=EEPROM8, R=HEX
+	LIST	P=EEPROM8, R=HEX, F=INHX8M
 
 MAXROM	EQU	007F
 ;MAXRAM	EQU	001F
