@@ -1,3 +1,7 @@
+2003-10-03 Craig Franklin <craigfranklin@comcast.net>
+  * Added 18xx config and idlocs sections to gpasm coff outputs.
+  * Cleaned up gplink script error reporting.
+
 2003-09-28 Craig Franklin <craigfranklin@comcast.net>
   * Fixed gplink bug in 18xx absolute sections.
   * Fixed gplink memory allocation bug in 18xx devices.

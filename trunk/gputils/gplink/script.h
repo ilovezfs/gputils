@@ -22,17 +22,6 @@ Boston, MA 02111-1307, USA.  */
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
-#define SCRIPT_ERROR1(x) gp_error("%s:%d:Error %s", \
-                                  state.src->name,\
-                                  state.src->line_number,\
-                                  x);
-
-#define SCRIPT_ERROR2(x, y) gp_error("%s:%d:Error %s (%s)", \
-                                     state.src->name,\
-                                     state.src->line_number,\
-                                     x,\
-                                     y);
-
 /* Parse node: created by the parser, interpreted by the 'backend' */
 
 struct pnode {
@@ -55,7 +44,8 @@ struct pnode {
   } value;
 };
 
-void gplkrscr_error(char *messg, char *detail);
+void script_error(char *messg, char *detail);
+int add_path(struct pnode *parms);
 int execute_command(char *name, struct pnode *parms);
 
 #endif

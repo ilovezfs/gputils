@@ -36,12 +36,38 @@ struct command {
 
 typedef int lkrfunc(char *name, struct pnode *parms);
 
+void
+script_error(char *messg, char *detail)
+{
+
+  gp_num_errors++;
+  if (gp_quiet == 0) {
+    if (state.src == NULL) {
+      printf("%s\n", messg); 
+    } else if (detail == NULL) {
+      printf("%s:%d:Error %s\n", 
+             state.src->name, 
+             state.src->line_number, 
+             messg); 
+    } else {
+      printf("%s:%d:Error %s (%s)\n", 
+             state.src->name, 
+             state.src->line_number, 
+             messg,
+             detail);      
+    }
+  }
+
+  return;
+}
+
+
 static int enforce_simple(struct pnode *p)
 {
   if (p->tag == symbol) {
     return 1;
   } else {
-    SCRIPT_ERROR1("illegal argument");
+    script_error("illegal argument", NULL);
     return 0;
   }
 }
@@ -53,7 +79,7 @@ static int evaluate(struct pnode *p)
   case constant:
     return p->value.constant;
   default:
-    SCRIPT_ERROR1("illegal argument");
+    script_error("illegal argument", NULL);
     return 0;
   }
 
@@ -86,7 +112,8 @@ static int do_include(char *name, struct pnode *parms)
   return 0;
 }
 
-static int do_path(char *name, struct pnode *parms)
+int
+add_path(struct pnode *parms)
 {
   struct pnode *p;
   
@@ -144,34 +171,34 @@ static int do_logsec(char *name, struct pnode *parms)
             section_name = strdup(p->value.binop.p1->value.symbol);
 	  }
         } else {
-          SCRIPT_ERROR2("illegal argument", lhs);        
+          script_error("illegal argument", lhs);        
         }       
       }
     } else {
       if (enforce_simple(p)) {
-        SCRIPT_ERROR2("illegal argument", p->value.symbol);      
+        script_error("illegal argument", p->value.symbol);      
       }
     }
   }
 
   /* process the options */ 
   if (found_secname == 0) {
-    SCRIPT_ERROR2("missing argument", "name");   
+    script_error("missing argument", "name");   
   } else if ((found_rom == 1) && (found_ram == 1)) {
-    SCRIPT_ERROR2("too many arguments", "ram or rom");
+    script_error("too many arguments", "ram or rom");
   } else if ((found_rom == 0) && (found_ram == 0)) {
-    SCRIPT_ERROR2("missing argument", "ram or rom");
+    script_error("missing argument", "ram or rom");
   } else {
     sym = get_symbol(state.section.definition, section_name);      
     if (sym == NULL) {
-      SCRIPT_ERROR2("undefined section", section_name);
+      script_error("undefined section", section_name);
     } else {
       section = get_symbol_annotation(sym);
       assert(section != NULL);
       if ((found_ram == 1) && (section->type == codepage)) {
-        SCRIPT_ERROR2("invalid argument", "ram");
+        script_error("invalid argument", "ram");
       } else if ((found_rom == 1) && (section->type != codepage)) {
-        SCRIPT_ERROR2("invalid argument", "rom");      
+        script_error("invalid argument", "rom");      
       } else {
         sym = add_symbol(state.section.logical, logical_section_name);
         annotate_symbol(sym, section_name);	       
@@ -222,7 +249,7 @@ static int do_secdef(char *name, struct pnode *parms)
           found_fill = 1;
           fill = evaluate(p->value.binop.p1);
         } else {
-          SCRIPT_ERROR2("illegal argument", lhs);        
+          script_error("illegal argument", lhs);        
         }       
       
       }
@@ -231,7 +258,7 @@ static int do_secdef(char *name, struct pnode *parms)
 	if (strcasecmp(p->value.symbol, "protected") == 0) {
           found_protected = 1; 	   
 	} else {
-          SCRIPT_ERROR2("illegal argument", p->value.symbol);
+          script_error("illegal argument", p->value.symbol);
         }
       }    
     }
@@ -239,11 +266,11 @@ static int do_secdef(char *name, struct pnode *parms)
 
   /* process the options */
   if (found_secname == 0) {
-    SCRIPT_ERROR2("missing argument", "name");
+    script_error("missing argument", "name");
   } else if (found_start == 0) {
-    SCRIPT_ERROR2("missing argument", "start");
+    script_error("missing argument", "start");
   } else if (found_end == 0) {
-    SCRIPT_ERROR2("missing argument", "end");
+    script_error("missing argument", "end");
   } else {
     sym = get_symbol(state.section.definition, section_name);      
     if (sym == NULL) {
@@ -253,7 +280,7 @@ static int do_secdef(char *name, struct pnode *parms)
 
       if (strcasecmp(name, "accessbank") == 0) {
         if (state.class != PROC_CLASS_PIC16E) {
-          SCRIPT_ERROR2("accessbank only valid with 18xx devices", name);      
+          script_error("accessbank only valid with 18xx devices", name);      
         }        
         section_def->type = accessbank;
       } else if (strcasecmp(name, "codepage") == 0) {
@@ -263,7 +290,7 @@ static int do_secdef(char *name, struct pnode *parms)
       } else if (strcasecmp(name, "sharebank") == 0) {
         section_def->type = sharebank;
       } else {
-        SCRIPT_ERROR2("invalid definition type", name);      
+        script_error("invalid definition type", name);      
       }
 
       section_def->start = start;
@@ -279,10 +306,10 @@ static int do_secdef(char *name, struct pnode *parms)
           section_def->use_fill = 1;
         }
       } else if (found_fill == 1) {
-        SCRIPT_ERROR2("illegal argument", "fill");        
+        script_error("illegal argument", "fill");        
       }
     } else if (strcasecmp(name, "sharebank") != 0) {
-      SCRIPT_ERROR2("duplicate section definition", section_name);
+      script_error("duplicate section definition", section_name);
     }
 
   }
@@ -319,19 +346,19 @@ static int do_stack(char *name, struct pnode *parms)
             ramname = p->value.binop.p1->value.symbol;   
           }
         } else {
-          SCRIPT_ERROR2("illegal argument", lhs);        
+          script_error("illegal argument", lhs);        
         }       
       }
     } else {
       if (enforce_simple(p)) {
-        SCRIPT_ERROR2("illegal argument", p->value.symbol);
+        script_error("illegal argument", p->value.symbol);
       }
     }
   }
 
   /* process the options */
   if (found_size == 0) {
-    SCRIPT_ERROR2("missing argument", "size");
+    script_error("missing argument", "size");
   } else {
 
   }
@@ -346,8 +373,6 @@ static struct command commands[] = {
   { "databank",   (long int)do_secdef     },
   { "files",      (long int)do_files      },
   { "include",    (long int)do_include    },
-  { "libpath",    (long int)do_path       },
-  { "lkrpath",    (long int)do_path       },
   { "section",    (long int)do_logsec     },
   { "sharebank",  (long int)do_secdef     },
   { "stack",	  (long int)do_stack      }
@@ -370,7 +395,7 @@ int execute_command(char *name, struct pnode *parms)
   }
 
   if (found_command == 0) {
-    SCRIPT_ERROR2("invalid script command", name);
+    script_error("invalid script command", name);
   } else {
     value = (*(lkrfunc*)commands[i].address)(name, parms);
   }

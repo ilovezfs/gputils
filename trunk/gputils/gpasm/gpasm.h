@@ -65,6 +65,9 @@ extern struct gpasm_state {
   unsigned int org;		/* Current code-generation point */
   int dos_newlines;		/* Use DOS newlines in hex file */
   int memory_dump;		/* Dump instruction memory to standard output */
+  int found_config;		/* config directive in source code */
+  int found_devid;		/* config directive in source code */
+  int found_idlocs;		/* idlocs directive in source code */
   unsigned int maxram;		/* Highest legal memory location */
   enum outfile
     codfile,			/* Symbol output file control */
@@ -99,6 +102,7 @@ extern struct gpasm_state {
     *stTopDefines,		/* Macro #defines (stDefines is base) */
     *stMacros;			/* Macros */
   MemBlock *i_memory;		/* Instruction memory linked list */
+  MemBlock *c_memory;		/* Configuration memory linked list (shadow) */
   char *srcfilename,		/* Source (.asm) file name */
     basefilename[BUFSIZ],	/* basename for generating hex,list,symbol filenames */
     codfilename[BUFSIZ],	/* Symbol (.cod) file name */

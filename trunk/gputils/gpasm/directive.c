@@ -642,10 +642,7 @@ static gpasmVal do_config(gpasmVal r,
 {
   struct pnode *p;
   int ca = state.device.config_address;
-  int org;
-  
-  /* save the current org to restore to later */
-  org = state.org;
+  int value;
 
   state.lst.line.linetype = config;
 
@@ -655,7 +652,7 @@ static gpasmVal do_config(gpasmVal r,
   case 1:
     if(_16bit_core) {
       gpwarning(GPW_EXPECTED,"18cxxx devices should specify __CONFIG address");
-      ca =  CONFIG1L;
+      ca = CONFIG1L;
     }
     break;
 
@@ -670,50 +667,51 @@ static gpasmVal do_config(gpasmVal r,
     return r;
   }
 
+  state.lst.config_address = ca;
+
   if (state.mode == relocatable) {
-    if(_16bit_core) {
-      /* FIXME: add config support for 18xx devices */
-      state.pass = 2; /* Ensure error actually gets displayed */
-      gperror(GPE_UNKNOWN, "gpasm does not yet support __config in 18xx COFF files");
-      exit(1);
-    } else {
-      coff_new_section(".config", ca, STYP_ABS | STYP_TEXT);
+    if ((state.found_devid == 0) && ((ca == DEVID1) || (ca == DEVID2))) {
+      coff_new_section(".devid", ca >> _16bit_core, STYP_ABS | STYP_TEXT);
+      state.found_devid = 1;
+    } else if (state.found_config == 0) {
+      coff_new_section(".config", ca >> _16bit_core, STYP_ABS | STYP_TEXT);
+      state.found_config = 1;
     }
   }
 
-  state.lst.config_address = ca;
-  state.lst.line.was_org = ca;
-  state.org = ca;
-
-  if (can_evaluate(p)) { 
+  if ((can_evaluate(p)) && (state.pass == 2)) { 
+    value = evaluate(p);
 
     if(_16bit_core) {
-      int val = evaluate(p);
-      int curval = i_memory_get(state.i_memory, ca>>1);
+      int curval = i_memory_get(state.c_memory, ca>>1);
       int mask = 0xff <<((ca&1) ? 0 : 8);
 
-      if(val > 0xff) {
+      if(value > 0xff) {
 	gpwarning(GPW_RANGE,0);
       }
       /* If the config address is even, then this byte goes in LSB position */
-      val = (val & 0xff) << ((ca&1) ? 8 : 0)  | MEM_USED_MASK; 
+      value = (value & 0xff) << ((ca&1) ? 8 : 0)  | MEM_USED_MASK; 
 
       if(curval & MEM_USED_MASK)
 	curval &= mask;
       else
 	curval |= mask;
 
-      i_memory_put(state.i_memory, ca>>1,  curval | val);
+      i_memory_put(state.c_memory, ca>>1,  curval | value);
 
     } else {
-      emit(evaluate(p));
-      coff_linenum(1);
-    }
-  }
+      if(value > state.device.core_size) {
+        gpmessage(GPM_RANGE,NULL);
+        value &= state.device.core_size;
+      }
 
-  if (state.mode == absolute) {
-    /* return to the org before the config was called */
-    state.lst.line.was_org = state.org = org;
+      if (i_memory_get(state.c_memory, ca) & MEM_USED_MASK) {
+        gperror(GPE_ADDROVR, NULL);
+      }
+
+      i_memory_put(state.c_memory, ca, MEM_USED_MASK | value);
+      /* FIXME: need line_number? this one will be wrong coff_linenum(1) */
+    }
   }
         
   return r;
@@ -1244,8 +1242,6 @@ static gpasmVal do_idlocs(gpasmVal r,
 		          int arity,
 		          struct pnode *parms)
 {
-
-  int org;
   int value;
   int idreg;
   int curvalue;
@@ -1255,9 +1251,6 @@ static gpasmVal do_idlocs(gpasmVal r,
     gperror(GPE_ILLEGAL_DIR, NULL);
     return r;
   }
-
-  /* save the current org to restore to later */
-  org = state.org;
 
   if (_16bit_core) {
     if (enforce_arity(arity,2)) {
@@ -1276,74 +1269,62 @@ static gpasmVal do_idlocs(gpasmVal r,
     }
   }
 
-  if (state.mode == relocatable) {
-    if (_16bit_core) {
-      /* FIXME: add idlocs support for 18xx devices */
-      state.pass = 2; /* Ensure error actually gets displayed */
-      gperror(GPE_UNKNOWN, "gpasm does not yet support __idlocs in 18xx COFF files");
-      exit(1);
-    } else {
-      coff_new_section(".idlocs", idreg, STYP_ABS | STYP_TEXT);
-    }
+  if ((state.mode == relocatable) && (state.found_idlocs == 0)) {
+    coff_new_section(".idlocs", idreg >> _16bit_core, STYP_ABS | STYP_TEXT);
+    state.found_idlocs = 1;
   }
 
   state.lst.config_address = idreg;
   state.device.id_location = idreg;
-  state.lst.line.was_org = idreg;
-  state.org = idreg;
 
-  if (_16bit_core) {
-    state.lst.line.linetype = config;
+  if (state.pass == 2) {
+    if (_16bit_core) {
+      state.lst.line.linetype = config;
 
-    if (idreg > 0x200007 || idreg < 0x200000) {
-      gperror(GPE_RANGE,NULL);
-    } else {
-      if(value > 0xff) {
-        gpwarning(GPW_RANGE, NULL);
-      }
-      curvalue = i_memory_get(state.i_memory, idreg>>1);
-      mask = 0xff <<((idreg&1) ? 0 : 8);
+      if (idreg > IDLOC7 || idreg < IDLOC0) {
+        gperror(GPE_RANGE,NULL);
+      } else {
+        if(value > 0xff) {
+          gpwarning(GPW_RANGE, NULL);
+        }
+        curvalue = i_memory_get(state.c_memory, idreg>>1);
+        mask = 0xff <<((idreg&1) ? 0 : 8);
 	
-      /* If the address is even, then this byte goes in LSB position */
-      value = (value & 0xff) << ((idreg&1) ? 8 : 0)  | MEM_USED_MASK; 
+        /* If the address is even, then this byte goes in LSB position */
+        value = (value & 0xff) << ((idreg&1) ? 8 : 0)  | MEM_USED_MASK; 
 
-      if(curvalue & MEM_USED_MASK)
-        curvalue &= mask;
-      else
-        curvalue |= mask;
+        if(curvalue & MEM_USED_MASK)
+          curvalue &= mask;
+        else
+          curvalue |= mask;
 
-      i_memory_put(state.i_memory, idreg>>1,  curvalue | value);
+        i_memory_put(state.c_memory, idreg>>1,  curvalue | value);
+      }
+
+    } else {
+      state.lst.line.linetype = idlocs;
+
+      if (value > 0xffff) {
+        gpmessage(GPM_IDLOC, NULL);
+        value &= 0xffff;
+      }     
+      
+      if (i_memory_get(state.c_memory, idreg) & MEM_USED_MASK) {
+        gperror(GPE_ADDROVR, NULL);
+      }
+
+      i_memory_put(state.c_memory, idreg,     
+                   ((value & 0xf000) >> 12) | MEM_USED_MASK);
+      i_memory_put(state.c_memory, idreg + 1,
+                   ((value & 0x0f00) >> 8) | MEM_USED_MASK);
+      i_memory_put(state.c_memory, idreg + 2,
+                   ((value & 0x00f0) >> 4) | MEM_USED_MASK);
+      i_memory_put(state.c_memory, idreg + 3,
+                   (value & 0x000f) | MEM_USED_MASK);
+
     }
-
-  } else {
-    state.lst.line.linetype = idlocs;
-
-    if (value > 0xffff) {
-      gpmessage(GPM_IDLOC, NULL);
-      value &= 0xffff;
-    }     
-
-    /* FIXME: Clean up the line number generation */
-    state.lst.line.was_org = state.org;
-    emit((value & 0xf000) >> 12);
-    coff_linenum(1);
-    state.lst.line.was_org = state.org;
-    emit((value & 0x0f00) >> 8);
-    coff_linenum(1);
-    state.lst.line.was_org = state.org;
-    emit((value & 0x00f0) >> 4);
-    coff_linenum(1);
-    state.lst.line.was_org = state.org;
-    emit((value & 0x000f));
-    coff_linenum(1);
-
   }
-
-  /* return to the org before the __idlocs was called */
-  if (state.mode == absolute) {
-    state.org = org;
-  }
- 
+  
   return r;
 }
 
