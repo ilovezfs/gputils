@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-pkgdatadir = @GPASM_HEADER_PATH@
+pkgdatadir = @GPUTILS_HEADER_PATH@
 
 EXTRA_DIST =\
 	mcp250xx.inc \

@@ -70,8 +70,8 @@ AR = @AR@
 AWK = @AWK@
 CC = @CC@
 DEPDIR = @DEPDIR@
-GPASM_HEADER_PATH = @GPASM_HEADER_PATH@
-GPLINK_LKR_PATH = @GPLINK_LKR_PATH@
+GPUTILS_HEADER_PATH = @GPUTILS_HEADER_PATH@
+GPUTILS_LKR_PATH = @GPUTILS_LKR_PATH@
 IBERTYOBJS = @IBERTYOBJS@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LEX = @LEX@
@@ -94,7 +94,7 @@ bin_PROGRAMS = gpasm
 
 noinst_LIBRARIES = libgpasm.a
 
-CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include -DGPASM_HEADER_PATH=\"@GPASM_HEADER_PATH@\"
+CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 libgpasm_a_SOURCES = \
 	cod.c \

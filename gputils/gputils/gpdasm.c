@@ -1,5 +1,5 @@
 /* Disassembles ".HEX" files
-   Copyright (C) 2001, 2002, 2003
+   Copyright (C) 2001, 2002, 2003, 2004
    Craig Franklin
 
 This file is part of gputils.
@@ -193,6 +193,8 @@ int main(int argc, char *argv[])
   int usage = 0;
   int memory_dump = 0;
   char *filename = 0;
+
+  gp_init();
 
   state.i_memory = i_memory_create();
 

@@ -1,5 +1,5 @@
 /* top level functions for gpal
-   Copyright (C) 2003
+   Copyright (C) 2003, 2004
    Craig Franklin
 
 This file is part of gputils.
@@ -215,14 +215,6 @@ show_usage(void)
   printf("  -t, --save-temps               Do not delete intermediate files.\n");
   printf("  -v, --version                  Show version.\n");
   printf("\n");
-  #ifdef USE_DEFAULT_PATHS
-    #ifdef HAVE_DOS_BASED_FILE_SYSTEM
-      printf("Reading header files from %s\n", DOS_HEADER_PATH);    
-    #else
-      printf("Reading header files from %s\n", GPASM_HEADER_PATH);
-    #endif
-    printf("\n");    
-  #endif
   printf("Report bugs to:\n");
   printf("%s\n", BUG_REPORT_URL);
   exit(0);
@@ -319,16 +311,6 @@ process_args( int argc, char *argv[])
   if (usage) {
     show_usage();
   }
-
-  /* Add the header path to the include paths list last, so that the user
-     specified directories are searched first */
-  #ifdef USE_DEFAULT_PATHS
-    #ifdef HAVE_DOS_BASED_FILE_SYSTEM
-      add_path(DOS_HEADER_PATH);
-    #else
-      add_path(GPASM_HEADER_PATH);
-    #endif
-  #endif
 
 }
 
@@ -515,6 +497,8 @@ combine_output(void)
 static void
 init(void)
 {
+
+  gp_init();
 
   /* restore gpal to its initialized state */
   state.compile_only = false;

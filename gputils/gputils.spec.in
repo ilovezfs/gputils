@@ -13,8 +13,7 @@ Buildroot: %{_tmppath}/%{name}-%{version}-root
 
 %description
 This is a collection of development tools for Microchip (TM) PIC (TM) 
-microcontrollers. It's intended to be compatible with the manufacturer's 
-tools, MPASM, MPLINK,and MPLIB.
+microcontrollers.
 
 This is ALPHA software: there may be serious bugs in it, and it's
 nowhere near complete.  gputils currently only implements a subset of
@@ -36,6 +35,7 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 
 %files
 %defattr(-, root, root)
+%{_bindir}/gpal
 %{_bindir}/gpasm
 %{_bindir}/gpdasm
 %{_bindir}/gplib

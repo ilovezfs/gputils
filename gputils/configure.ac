@@ -16,8 +16,8 @@ AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 
 # Defaults
-GPASM_HEADER_PATH="\$(datadir)/gputils/header"
-GPLINK_LKR_PATH="\$(datadir)/gputils/lkr"
+GPUTILS_HEADER_PATH="\$(datadir)/gputils/header"
+GPUTILS_LKR_PATH="\$(datadir)/gputils/lkr"
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
 MAKE_SUBDIRS="libgputils libiberty gpasm header lkr doc"
@@ -94,7 +94,6 @@ case "${host}" in
     fi
     ;;
   *mingw* )
-    CFLAGS="-s -O2"
     ;;
   *-pc-os2_emx | *-pc-os2-emx )
     EXEEXT=".exe"
@@ -139,8 +138,8 @@ if test x$enable_gputils_path = xyes; then
 fi
 
 # Substitute configuration variables
-AC_SUBST(GPASM_HEADER_PATH)
-AC_SUBST(GPLINK_LKR_PATH)
+AC_SUBST(GPUTILS_HEADER_PATH)
+AC_SUBST(GPUTILS_LKR_PATH)
 AC_SUBST(IBERTYOBJS)
 AC_SUBST(LIBGPUTILS)
 AC_SUBST(LIBIBERTY)

@@ -1,5 +1,5 @@
 /* GNU PIC Librarian
-   Copyright (C) 2001, 2002, 2003
+   Copyright (C) 2001, 2002, 2003, 2004
    Craig Franklin
 
 This file is part of gputils.
@@ -89,6 +89,8 @@ int main(int argc, char *argv[])
   int update_archive = 0;
   int  no_index = 0;
   gp_archive_type *object = NULL;
+
+  gp_init();
 
   /* symbols are case sensitive */
   definition_tbl = push_symbol_table(NULL, 0);

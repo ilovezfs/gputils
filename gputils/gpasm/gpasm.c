@@ -1,5 +1,5 @@
 /* top level functions for gpasm
-   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004
    James Bowman, Craig Franklin
 
 This file is part of gputils.
@@ -68,6 +68,9 @@ static struct option longopts[] =
 void
 init(void)
 {
+
+  gp_init();
+
   /* restore gpasm to its initialized state */
   state.mode = absolute;
 
@@ -147,9 +150,9 @@ show_usage(void)
   printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -l, --list-chips               List supported processors.\n");
   printf("  -m, --dump                     Memory dump.\n");
-  #ifndef HAVE_DOS_BASED_FILE_SYSTEM
+#ifndef HAVE_DOS_BASED_FILE_SYSTEM
   printf("  -n, --dos                      Use DOS newlines in hex file.\n");
-  #endif
+#endif
   printf("  -o FILE, --output FILE         Alternate name of output file.\n");
   printf("  -p PROC, --processor PROC      Select processor.\n");
   printf("  -q, --quiet                    Quiet.\n");
@@ -157,14 +160,14 @@ show_usage(void)
   printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n");
   printf("  -v, --version                  Show version.\n");
   printf("\n");
-  #ifdef USE_DEFAULT_PATHS
-    #ifdef HAVE_DOS_BASED_FILE_SYSTEM
-      printf("Reading header files from %s\n", DOS_HEADER_PATH);    
-    #else
-      printf("Reading header files from %s\n", GPASM_HEADER_PATH);
-    #endif
-    printf("\n");    
-  #endif
+#ifdef USE_DEFAULT_PATHS
+  if (gp_header_path) {
+    printf("Default header file path %s\n", gp_header_path);
+  } else {
+    printf("Default header file path NOT SET\n");
+  }
+  printf("\n");
+#endif
   printf("Report bugs to:\n");
   printf("%s\n", BUG_REPORT_URL);
   exit(0);
@@ -302,13 +305,9 @@ process_args( int argc, char *argv[])
 
   /* Add the header path to the include paths list last, so that the user
      specified directories are searched first */
-  #ifdef USE_DEFAULT_PATHS
-    #ifdef HAVE_DOS_BASED_FILE_SYSTEM
-      add_path(DOS_HEADER_PATH);
-    #else
-      add_path(GPASM_HEADER_PATH);
-    #endif
-  #endif
+  if (gp_header_path) {
+    add_path(gp_header_path);
+  }
 
 }
 

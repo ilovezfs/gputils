@@ -2,7 +2,7 @@
 
 bin_PROGRAMS = gplink
 
-CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include -DGPLINK_LKR_PATH=\"@GPLINK_LKR_PATH@\"
+CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 gplink_SOURCES=\
 	cod.c \

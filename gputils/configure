@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE YACC LEX LEXLIB LEX_OUTPUT_ROOT RANLIB ac_ct_RANLIB AR ac_ct_AR CPP EGREP ALLOCA LIBOBJS GPASM_HEADER_PATH GPLINK_LKR_PATH IBERTYOBJS LIBGPUTILS LIBIBERTY MAKE_SUBDIRS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE YACC LEX LEXLIB LEX_OUTPUT_ROOT RANLIB ac_ct_RANLIB AR ac_ct_AR CPP EGREP ALLOCA LIBOBJS GPUTILS_HEADER_PATH GPUTILS_LKR_PATH IBERTYOBJS LIBGPUTILS LIBIBERTY MAKE_SUBDIRS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1754,8 +1754,8 @@ host_os=`echo $ac_cv_host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 
 
 # Defaults
-GPASM_HEADER_PATH="\$(datadir)/gputils/header"
-GPLINK_LKR_PATH="\$(datadir)/gputils/lkr"
+GPUTILS_HEADER_PATH="\$(datadir)/gputils/header"
+GPUTILS_LKR_PATH="\$(datadir)/gputils/lkr"
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
 MAKE_SUBDIRS="libgputils libiberty gpasm header lkr doc"
@@ -5287,7 +5287,6 @@ case "${host}" in
     fi
     ;;
   *mingw* )
-    CFLAGS="-s -O2"
     ;;
   *-pc-os2_emx | *-pc-os2-emx )
     EXEEXT=".exe"
@@ -6052,8 +6051,8 @@ s,@CPP@,$CPP,;t t
 s,@EGREP@,$EGREP,;t t
 s,@ALLOCA@,$ALLOCA,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
-s,@GPASM_HEADER_PATH@,$GPASM_HEADER_PATH,;t t
-s,@GPLINK_LKR_PATH@,$GPLINK_LKR_PATH,;t t
+s,@GPUTILS_HEADER_PATH@,$GPUTILS_HEADER_PATH,;t t
+s,@GPUTILS_LKR_PATH@,$GPUTILS_LKR_PATH,;t t
 s,@IBERTYOBJS@,$IBERTYOBJS,;t t
 s,@LIBGPUTILS@,$LIBGPUTILS,;t t
 s,@LIBIBERTY@,$LIBIBERTY,;t t

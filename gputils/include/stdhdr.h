@@ -1,5 +1,5 @@
 /* standard defines and includes
-   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004
    James Bowman, Craig Franklin
    
 This file is part of gputils.
@@ -69,13 +69,6 @@ Boston, MA 02111-1307, USA.  */
 #else
   #define PATH_CHAR '/'
   #define COPY_CHAR "/"
-#endif
-
-#ifndef DOS_HEADER_PATH
-  #define DOS_HEADER_PATH "c:\\gputils\\header"
-#endif
-#ifndef DOS_LKR_PATH
-  #define DOS_LKR_PATH "c:\\gputils\\lkr"
 #endif
 
 #define BUG_REPORT_URL "<URL:http://gputils.sourceforge.net/>"

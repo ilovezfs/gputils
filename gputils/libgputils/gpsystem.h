@@ -1,5 +1,5 @@
 /* General system functions
-   Copyright (C) 2003
+   Copyright (C) 2003, 2004
    Craig Franklin
 
 This file is part of gputils.
@@ -21,6 +21,12 @@ Boston, MA 02111-1307, USA.  */
 
 #ifndef __GPSYSTEM_H__
 #define __GPSYSTEM_H__
+
+extern char *gp_header_path;
+extern char *gp_lkr_path;
+extern char *gp_lib_path;
+
+void gp_init(void);
 
 void  gp_fputl16(short data, FILE *fp);
 void  gp_fputl32(long data, FILE *fp); 

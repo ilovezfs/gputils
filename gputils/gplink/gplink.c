@@ -1,5 +1,5 @@
 /* GNU PIC Linker
-   Copyright (C) 2001, 2002, 2003
+   Copyright (C) 2001, 2002, 2003, 2004
    Craig Franklin
 
 This file is part of gputils.
@@ -337,14 +337,14 @@ void show_usage(void)
   printf("  -s FILE, --script FILE         Linker script.\n");
   printf("  -v, --version                  Show version.\n");
   printf("\n");
-  #ifdef USE_DEFAULT_PATHS
-    #ifdef HAVE_DOS_BASED_FILE_SYSTEM
-      printf("Default linker script path %s\n", DOS_LKR_PATH);
-    #else
-      printf("Default linker script path %s\n", GPLINK_LKR_PATH);
-    #endif
-  #endif
+#ifdef USE_DEFAULT_PATHS
+  if (gp_lkr_path) {
+    printf("Default linker script path %s\n", gp_lkr_path);
+  } else {
+    printf("Default linker script path NOT SET\n");
+  }
   printf("\n");    
+#endif
   printf("Report bugs to:\n");
   printf("%s\n", BUG_REPORT_URL);
   exit(0);
@@ -377,6 +377,8 @@ int main(int argc, char *argv[])
   int c;
   int usage = 0;
   char *pc;
+
+  gp_init();
 
   /* initialize */
   state.hex_format = inhx32;
@@ -497,11 +499,11 @@ int main(int argc, char *argv[])
   }
 
   /* Read the script */
-  if (state.srcfilename != NULL) {
+  if (state.srcfilename) {
     open_src(state.srcfilename, 0);
     yyparse();
 #ifdef USE_DEFAULT_PATHS
-  } else if (state.object != NULL) {
+  } else if ((state.object) && (gp_lkr_path)) {
     /* The processor is known because an object was on the command line. So
        use one of the default scripts that are distributed with gputils. */
     char file_name[BUFSIZ];
@@ -513,11 +515,7 @@ int main(int argc, char *argv[])
       gp_error("linker script not specified and can't determine default script");
       return EXIT_FAILURE; 
     }
-    #ifdef HAVE_DOS_BASED_FILE_SYSTEM
-      strcpy(file_name, DOS_LKR_PATH);    
-    #else
-      strcpy(file_name, GPLINK_LKR_PATH);
-    #endif
+    strcpy(file_name, gp_lkr_path);    
     strcat(file_name, COPY_CHAR);
     strcat(file_name, script_name);
     gp_message("using default linker script \"%s\"", file_name);
