@@ -26,13 +26,13 @@
 
 \layout Title
 \added_space_top vfill \added_space_bottom vfill 
-gputils 0.12.0
+gputils 0.12.1
 \layout Author
 
 James Bowman and Craig Franklin 
 \layout Date
 
-January 20, 2004
+April 6, 2004
 \layout Standard
 
 
@@ -3131,10 +3131,10 @@ any     macro parm
 A more useful example of some macros in use is:
 \layout LyX-Code
 
-; Shift reg left, result (w or f) in 'dst'
+; Shift reg left
 \layout LyX-Code
 
-slf     macro   reg,dst
+slf     macro   reg
 \layout LyX-Code
 
         clrc
