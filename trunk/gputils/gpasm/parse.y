@@ -223,33 +223,85 @@ void next_line(int value)
 
 %token <s> LABEL
 %token <s> IDENTIFIER
-%token <s> CBLOCK, ENDC, FILL
+%token <s> CBLOCK
+%token <s> ENDC
+%token <s> FILL
 %token <i> NUMBER
 %token <s> STRING
 %token <s> INCLUDE
 %token <i> UPPER
 %token <i> HIGH
 %token <i> LOW
-%token <i> LSH, RSH
-%token <i> GREATER_EQUAL, LESS_EQUAL, EQUAL, NOT_EQUAL, '<', '>'
-%token <i> '&', '|', '^'
-%token <i> LOGICAL_AND, LOGICAL_OR
-%token <i> '=', ASSIGN_PLUS, ASSIGN_MINUS, ASSIGN_MULTIPLY, ASSIGN_DIVIDE
-%token <i> ASSIGN_MODULUS, ASSIGN_LSH, ASSIGN_RSH
-%token <i> ASSIGN_AND, ASSIGN_OR, ASSIGN_XOR, INCREMENT, DECREMENT
-%token <i> TBL_NO_CHANGE, TBL_POST_INC, TBL_POST_DEC, TBL_PRE_INC
-%token <i> CONCAT, VAR
-%token <i> DEBUG_FILE, DEBUG_LINE
-%token <s> VARLAB_BEGIN, VAR_BEGIN, VAR_END
+%token <i> LSH
+%token <i> RSH
+%token <i> GREATER_EQUAL
+%token <i> LESS_EQUAL
+%token <i> EQUAL
+%token <i> NOT_EQUAL
+%token <i> '<'
+%token <i> '>'
+%token <i> '&'
+%token <i> '|'
+%token <i> '^'
+%token <i> LOGICAL_AND
+%token <i> LOGICAL_OR
+%token <i> '='
+%token <i> ASSIGN_PLUS
+%token <i> ASSIGN_MINUS
+%token <i> ASSIGN_MULTIPLY
+%token <i> ASSIGN_DIVIDE
+%token <i> ASSIGN_MODULUS
+%token <i> ASSIGN_LSH
+%token <i> ASSIGN_RSH
+%token <i> ASSIGN_AND
+%token <i> ASSIGN_OR
+%token <i> ASSIGN_XOR
+%token <i> INCREMENT
+%token <i> DECREMENT
+%token <i> TBL_NO_CHANGE
+%token <i> TBL_POST_INC
+%token <i> TBL_POST_DEC
+%token <i> TBL_PRE_INC
+%token <i> CONCAT
+%token <i> VAR
+%token <i> DEBUG_FILE
+%token <i> DEBUG_LINE
+%token <s> VARLAB_BEGIN
+%token <s> VAR_BEGIN
+%token <s> VAR_END
 
-%type <i> '+', '-', '*', '/', '%', '!', '~'
+%type <i> '+'
+%type <i> '-'
+%type <i> '*'
+%type <i> '/'
+%type <i> '%'
+%type <i> '!'
+%type <i> '~'
 %type <s> line
 %type <s> label_concat
 %type <i> statement
 %type <p> parameter_list
-%type <p> expr, e0, e1, e2, e3, e4, e5, e6, e7, e8, e9
+%type <p> expr
+%type <p> e0
+%type <p> e1
+%type <p> e2
+%type <p> e3
+%type <p> e4
+%type <p> e5
+%type <p> e6
+%type <p> e7
+%type <p> e8
+%type <p> e9
 %type <p> cidentifier
-%type <i> e1op, e2op, e3op, e4op, e5op, e6op, e7op, e8op, e9op
+%type <i> e1op
+%type <i> e2op
+%type <i> e3op
+%type <i> e4op
+%type <i> e5op
+%type <i> e6op
+%type <i> e7op
+%type <i> e8op
+%type <i> e9op
 %type <i> assign_equal_ops
 
 %%
@@ -460,19 +512,39 @@ statement:
 	  }
 	}
 	|
-	CBLOCK expr '\n' { begin_cblock($2); next_line(0); }
+	CBLOCK expr '\n'
+	{
+	  if (!state.mac_prev) {
+	    begin_cblock($2);
+	  } else {
+	    macro_append();
+	  }
+	  next_line(0);
+	}
         const_block
 	ENDC '\n'
 	{
+	  if (state.mac_prev) {
+	    macro_append();
+	  }
 	  $$ = 0;
 	}
-        |
-        CBLOCK '\n' { next_line(0); }
-        const_block
-        ENDC '\n'
-        {
-           $$ = 0;
-        }
+	|
+	CBLOCK '\n'
+	{
+	  if (state.mac_prev) {
+	    macro_append();
+	  }
+	  next_line(0);
+	}
+	const_block
+	ENDC '\n'
+	{
+	  if (state.mac_prev) {
+	    macro_append();
+	  }
+	  $$ = 0;
+	}
 	|
 	CBLOCK error ENDC '\n'
 	{
@@ -492,15 +564,28 @@ const_line:
 	'\n'
 	|
 	const_def_list '\n'
+	{
+	  if (state.mac_prev) {
+	    macro_append();
+	  }
+	}
 	|
 	label_concat '\n'
 	{
-	  cblock_expr(mk_symbol($1));
+	  if (!state.mac_prev) {
+	    cblock_expr(mk_symbol($1));
+	  } else {
+	    macro_append();
+	  }
 	}
 	|
 	label_concat expr '\n'
 	{
-	  cblock_expr_incr(mk_symbol($1), $2);
+	  if (!state.mac_prev) {
+	    cblock_expr_incr(mk_symbol($1), $2);
+	  } else {
+	    macro_append();
+	  }
 	}
 	;
 
@@ -513,12 +598,16 @@ const_def_list:
 const_def:
 	cidentifier
 	{
-	  cblock_expr($1);
+	  if (!state.mac_prev) {
+	    cblock_expr($1);
+	  }
 	}
 	|
 	cidentifier ':' expr
 	{
-	  cblock_expr_incr($1, $3);
+	  if (!state.mac_prev) {
+	    cblock_expr_incr($1, $3);
+	  }
 	}
 	;
 

@@ -1,5 +1,6 @@
 2004-06-25 Craig Franklin <craigfranklin@comcast.net>
   * Fixed gpasm regression.  Duplicate extern feature can cause assertions.
+  * Allow cblocks in gpasm macros.
 
 2004-06-16 Craig Franklin <craigfranklin@comcast.net>
   * Allow duplicate extern directives in gpasm.
