@@ -7,7 +7,8 @@
 # define	LIBPATH	258
 # define	LKRPATH	259
 # define	PATH	260
-# define	NUMBER	261
+# define	LEXEOF	261
+# define	NUMBER	262
 
 #line 1 "parse.y"
 
@@ -125,23 +126,23 @@ typedef union {
 
 
 
-#define	YYFINAL		28
+#define	YYFINAL		32
 #define	YYFLAG		-32768
-#define	YYNTBASE	11
+#define	YYNTBASE	12
 
 /* YYTRANSLATE(YYLEX) -- Bison token number corresponding to YYLEX. */
-#define YYTRANSLATE(x) ((unsigned)(x) <= 261 ? yytranslate[x] : 19)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 262 ? yytranslate[x] : 20)
 
 /* YYTRANSLATE[YYLEX] -- Bison token number corresponding to YYLEX. */
 static const char yytranslate[] =
 {
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       9,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      10,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,    10,
-       2,     8,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,    11,
+       2,     9,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -161,22 +162,25 @@ static const char yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     3,     4,     5,
-       6,     7
+       6,     7,     8
 };
 
 #if YYDEBUG
 static const short yyprhs[] =
 {
-       0,     0,     1,     2,     6,    10,    12,    16,    20,    24,
-      26,    30,    32,    35,    37,    41,    43,    45
+       0,     0,     1,     2,     6,    10,    12,    14,    18,    22,
+      26,    30,    34,    38,    40,    44,    46,    49,    51,    55,
+      57,    59
 };
 static const short yyrhs[] =
 {
-      -1,     0,    11,    12,    13,     0,    11,     1,     9,     0,
-       9,     0,     4,    14,     9,     0,     5,    14,     9,     0,
-       3,    15,     9,     0,     3,     0,     3,    10,    14,     0,
-      16,     0,    16,    15,     0,    18,     0,    16,    17,    18,
-       0,     8,     0,     3,     0,     7,     0
+      -1,     0,    12,    13,    14,     0,    12,     1,    10,     0,
+      10,     0,     7,     0,     4,    15,    10,     0,     4,    15,
+       7,     0,     5,    15,    10,     0,     5,    15,     7,     0,
+       3,    16,    10,     0,     3,    16,     7,     0,     3,     0,
+       3,    11,    15,     0,    17,     0,    17,    16,     0,    19,
+       0,    17,    18,    19,     0,     9,     0,     3,     0,     8,
+       0
 };
 
 #endif
@@ -185,8 +189,9 @@ static const short yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined. */
 static const short yyrline[] =
 {
-       0,   122,   124,   124,   129,   135,   140,   145,   150,   157,
-     162,   169,   174,   181,   183,   190,   192,   197
+       0,   123,   125,   125,   130,   136,   141,   146,   151,   157,
+     162,   168,   173,   181,   186,   193,   198,   205,   207,   214,
+     216,   221
 };
 #endif
 
@@ -197,23 +202,25 @@ static const short yyrline[] =
 static const char *const yytname[] =
 {
   "$", "error", "$undefined.", "SYMBOL", "LIBPATH", "LKRPATH", "PATH", 
-  "NUMBER", "'='", "'\\n'", "';'", "program", "@1", "line", "path_list", 
-  "parameter_list", "e1", "e1op", "e0", 0
+  "LEXEOF", "NUMBER", "'='", "'\\n'", "';'", "program", "@1", "line", 
+  "path_list", "parameter_list", "e1", "e1op", "e0", 0
 };
 #endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives. */
 static const short yyr1[] =
 {
-       0,    11,    12,    11,    11,    13,    13,    13,    13,    14,
-      14,    15,    15,    16,    16,    17,    18,    18
+       0,    12,    13,    12,    12,    14,    14,    14,    14,    14,
+      14,    14,    14,    15,    15,    16,    16,    17,    17,    18,
+      19,    19
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN. */
 static const short yyr2[] =
 {
-       0,     0,     0,     3,     3,     1,     3,     3,     3,     1,
-       3,     1,     2,     1,     3,     1,     1,     1
+       0,     0,     0,     3,     3,     1,     1,     3,     3,     3,
+       3,     3,     3,     1,     3,     1,     2,     1,     3,     1,
+       1,     1
 };
 
 /* YYDEFACT[S] -- default rule to reduce with in state S when YYTABLE
@@ -221,44 +228,48 @@ static const short yyr2[] =
    error. */
 static const short yydefact[] =
 {
-       1,     0,     0,     0,     4,     0,     0,     0,     5,     3,
-      16,    17,     0,    11,    13,     9,     0,     0,     8,    15,
-      12,     0,     0,     6,     7,    14,    10,     0,     0
+       1,     0,     0,     0,     4,     0,     0,     0,     6,     5,
+       3,    20,    21,     0,    15,    17,    13,     0,     0,    12,
+      11,    19,    16,     0,     0,     8,     7,    10,     9,    18,
+      14,     0,     0
 };
 
 static const short yydefgoto[] =
 {
-       1,     3,     9,    16,    12,    13,    21,    14
+       1,     3,    10,    17,    13,    14,    23,    15
 };
 
 static const short yypact[] =
 {
-  -32768,     1,    -6,     4,-32768,    11,     8,     8,-32768,-32768,
-  -32768,-32768,    10,     9,-32768,    12,    14,    15,-32768,-32768,
-  -32768,    11,     8,-32768,-32768,-32768,-32768,    20,-32768
+  -32768,     1,    -1,     9,-32768,    15,    19,    19,-32768,-32768,
+  -32768,-32768,-32768,     0,    12,-32768,    -8,    17,    18,-32768,
+  -32768,-32768,-32768,    15,    19,-32768,-32768,-32768,-32768,-32768,
+  -32768,    26,-32768
 };
 
 static const short yypgoto[] =
 {
-  -32768,-32768,-32768,    -7,    13,-32768,-32768,     0
+  -32768,-32768,-32768,    -7,    16,-32768,-32768,     6
 };
 
 
-#define	YYLAST		26
+#define	YYLAST		30
 
 
 static const short yytable[] =
 {
-      17,    27,     2,     4,    -2,    -2,    -2,     5,     6,     7,
-      -2,    15,    10,     8,    10,    26,    11,    19,    11,    18,
-      28,    25,    22,    23,    24,     0,    20
+      18,    31,     2,    24,    -2,    -2,    -2,    19,    -2,     4,
+      20,    -2,     5,     6,     7,    11,     8,    30,    11,     9,
+      12,    21,    16,    12,    25,    27,    32,    26,    28,    29,
+      22
 };
 
 static const short yycheck[] =
 {
-       7,     0,     1,     9,     3,     4,     5,     3,     4,     5,
-       9,     3,     3,     9,     3,    22,     7,     8,     7,     9,
-       0,    21,    10,     9,     9,    -1,    13
+       7,     0,     1,    11,     3,     4,     5,     7,     7,    10,
+      10,    10,     3,     4,     5,     3,     7,    24,     3,    10,
+       8,     9,     3,     8,     7,     7,     0,    10,    10,    23,
+      14
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
 #line 3 "/usr/share/bison/bison.simple"
@@ -968,79 +979,106 @@ yyreduce:
   switch (yyn) {
 
 case 2:
-#line 126 "parse.y"
+#line 127 "parse.y"
 { 
           /* do nothing */
         }
     break;
 case 4:
-#line 130 "parse.y"
+#line 131 "parse.y"
 { 
           /* do nothing */
 	}
     break;
 case 5:
-#line 137 "parse.y"
+#line 138 "parse.y"
 {
           /* do nothing */
 	}
     break;
 case 6:
-#line 142 "parse.y"
+#line 143 "parse.y"
 {
-	  add_path(yyvsp[-1].p);
+	  YYACCEPT;
 	}
     break;
 case 7:
-#line 147 "parse.y"
+#line 148 "parse.y"
 {
 	  add_path(yyvsp[-1].p);
 	}
     break;
 case 8:
-#line 152 "parse.y"
+#line 153 "parse.y"
 {
-	  execute_command(yyvsp[-2].s, yyvsp[-1].p);
-        }
+	  add_path(yyvsp[-1].p);
+	  YYACCEPT;
+	}
     break;
 case 9:
 #line 159 "parse.y"
 {
-	  yyval.p = mk_list(mk_symbol(yyvsp[0].s), NULL);
+	  add_path(yyvsp[-1].p);
 	}
     break;
 case 10:
 #line 164 "parse.y"
 {
-	  yyval.p = mk_list(mk_symbol(yyvsp[-2].s), yyvsp[0].p);
+	  add_path(yyvsp[-1].p);
+	  YYACCEPT;
 	}
     break;
 case 11:
-#line 171 "parse.y"
+#line 170 "parse.y"
+{
+	  execute_command(yyvsp[-2].s, yyvsp[-1].p);
+        }
+    break;
+case 12:
+#line 175 "parse.y"
+{
+	  execute_command(yyvsp[-2].s, yyvsp[-1].p);
+	  YYACCEPT;
+        }
+    break;
+case 13:
+#line 183 "parse.y"
+{
+	  yyval.p = mk_list(mk_symbol(yyvsp[0].s), NULL);
+	}
+    break;
+case 14:
+#line 188 "parse.y"
+{
+	  yyval.p = mk_list(mk_symbol(yyvsp[-2].s), yyvsp[0].p);
+	}
+    break;
+case 15:
+#line 195 "parse.y"
 {
 	  yyval.p = mk_list(yyvsp[0].p, NULL);
 	}
     break;
-case 12:
-#line 176 "parse.y"
+case 16:
+#line 200 "parse.y"
 {
 	  yyval.p = mk_list(yyvsp[-1].p, yyvsp[0].p);
 	}
     break;
-case 14:
-#line 185 "parse.y"
+case 18:
+#line 209 "parse.y"
 {
 	  yyval.p = mk_2op(yyvsp[-1].i, yyvsp[-2].p, yyvsp[0].p);
 	}
     break;
-case 16:
-#line 194 "parse.y"
+case 20:
+#line 218 "parse.y"
 {
 	  yyval.p = mk_symbol(yyvsp[0].s);
         }
     break;
-case 17:
-#line 199 "parse.y"
+case 21:
+#line 223 "parse.y"
 {
 	  yyval.p = mk_constant(yyvsp[0].i);
 	}
@@ -1278,5 +1316,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 204 "parse.y"
+#line 228 "parse.y"
 

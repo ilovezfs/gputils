@@ -14,7 +14,8 @@ typedef union {
 # define	LIBPATH	258
 # define	LKRPATH	259
 # define	PATH	260
-# define	NUMBER	261
+# define	LEXEOF	261
+# define	NUMBER	262
 
 
 extern YYSTYPE yylval;
