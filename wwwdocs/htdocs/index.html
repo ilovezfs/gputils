@@ -1,0 +1,252 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.78 [en] (X11; U; Linux 2.4.7-10 i586) [Netscape]">
+   <meta name="AUTHOR" content="Craig Franklin">
+   <meta name="CREATED" content="20010305;1020400">
+   <meta name="CHANGEDBY" content="Craig Franklin">
+   <meta name="CHANGED" content="20011120;13470900">
+   <title>GPUTILS - GNU PIC Utilities</title>
+</head>
+<body bgcolor="#FFFFFF" link="#008080" vlink="#483D8B">
+&nbsp;
+<br>&nbsp;
+<center>
+<h1>
+gputils</h1></center>
+
+<center>
+<h1 STYLE="font-weight: medium">
+<font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=+3>GNU
+PIC Utilities</font></font></h1></center>
+
+<table BORDER=0 CELLSPACING=0 CELLPADDING=2 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<caption>&nbsp;</caption>
+
+<tr VALIGN=TOP>
+<td ROWSPAN="16" WIDTH="12%"><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><a href="#What">What</a></font></i>
+<p><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><a href="#Who">Who</a></font></i>
+<p><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><a href="#History">History</a></font></i>
+<p><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><a href="#Platforms">Platforms</a></font></i>
+<p><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><a href="#Download">Download</a></font></i>
+<p><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><a href="#News">News</a></font></i>
+<p><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><a href="#Support">Support</a></font></i></td>
+
+<td COLSPAN="4" WIDTH="88%" BGCOLOR="#00B8FF"><a NAME="What"></a><b><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">What
+is GPUTILS ?</font></i></b></td>
+</tr>
+
+<tr>
+<td COLSPAN="4" WIDTH="88%"><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>GPUTILS
+is a collection of tools for the <a href="http://www.microchip.com/">Microchip</a>
+(TM) PIC microcontrollers.&nbsp; It includes gpasm, gplink, and gplib.
+It's distributed under the terms of the <a href="COPYING">GNU Public License</a>.
+See the <a href="http://www.gnupic.org/">gnupic</a> page for other GNU
+PIC tools such as <a href="http://www.dattalo.com/gnupic/gpsim.html">gpsim</a>,
+a gputils compatible simulator.</font></font></td>
+</tr>
+
+<tr>
+<td VALIGN=TOP COLSPAN="4" WIDTH="88%" BGCOLOR="#00B8FF"><a NAME="Who"></a><b><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Who
+is GPUTILS ?</font></i></b></td>
+</tr>
+
+<tr>
+<td COLSPAN="4" WIDTH="88%"><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>Currently,
+it is primarily supported by Craig Franklin &lt;<a href="mailto:craigfranklin@attbi.com">craigfranklin@attbi.com</a>>
+and Scott Dattalo &lt;<a href="mailto:scott@dattalo.com">scott@dattalo.com</a>>.</font></font></td>
+</tr>
+
+<tr>
+<td VALIGN=TOP COLSPAN="4" WIDTH="88%" BGCOLOR="#00B8FF"><a NAME="History"></a><b><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">A
+Brief History</font></i></b></td>
+</tr>
+
+<tr>
+<td COLSPAN="4" WIDTH="88%"><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>In
+1997,&nbsp; James Bowman &lt;<a href="mailto:jamesbowman@users.sourceforge.net">jamesbowman@users.sourceforge.net</a>>
+started gpasm.&nbsp; The objective was to create an open source replacement
+for <a href="http://www.microchip.com/">Microchip's</a> MPASM.&nbsp; During
+this time many people contributed to gpasm.</font></font>
+<ul><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="mailto:scott@datallo.com">Scott
+Dattalo &lt;</a><a href="mailto:scott@dattalo.com">scott@dattalo.com</a><a href="mailto:scott@dattalo.cm">></a></font></font>
+<br><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="mailto:james.cameron@digital.com">James
+Cameron &lt;james.cameron@digital.com></a></font></font>
+<br><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="mailto:spe@stacken.kth.se">Stefan
+Petersen &lt;spe@stacken.kth.se></a></font></font>
+<br><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="mailto:eric@brouhaha.com">Eric
+Smith &lt;eric@brouhaha.com></a></font></font>
+<br><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="mailto:azummo@ita.flashnet.it">Alessandro
+Zummo &lt;azummo@ita.flashnet.it></a></font></font>
+<br><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="mailto:aab@cichlid.com">Andrew
+Burgess &lt;aab@cichlid.com></a></font></font>
+<br><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="mailto:sbs@wavefront.com">Bruce
+Stough &lt;sbs@wavefront.com></a></font></font>
+<br><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="mailto:thorn@acm.org">Tommy
+Thorn &lt;thorn@acm.org></a></font></font>
+<br><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="mailto:scott@datallo.com">Charlie
+Krauter &lt;</a><a href="mailto:charlie@mother.com">charlie@mother.com</a><a href="mailto:scott@datallo.com">></a></font></font></ul>
+<font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>At
+the end of 2000, Craig Franklin &lt;<a href="mailto:craigfranklin@attbi.com">craigfranklin@attbi.com</a>>
+became the primary gpasm developer.&nbsp; Through most of 2000 the focus
+was compatiblity with MPASM.&nbsp; This was made much easiler by a contribution
+of MPASM test files to the project by <a href="http://www.microchip.com/">Microchip</a>.</font></font>
+<p><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>In
+2001, work started on relocatable object tools for gpasm.&nbsp; A new package,
+gputils, containing gpasm and the new tools was created.</font></font>
+<br><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>&nbsp;</font></font></td>
+</tr>
+
+<tr>
+<td VALIGN=TOP COLSPAN="4" WIDTH="88%" BGCOLOR="#00B8FF"><a NAME="Platforms"></a><b><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">What
+Platforms are Supported ?</font></i></b></td>
+</tr>
+
+<tr>
+<td COLSPAN="4" WIDTH="88%"><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>Linux
+(and other unices) and MS-Windows are supported. GPUTILS will compile natively
+on Linux using <a href="http://www.gnu.org/">gcc</a>. Windows 98/NT users
+will need <a href="http://www.mingw.org">MinGW32</a>.</font></font></td>
+</tr>
+
+<tr>
+<td VALIGN=TOP COLSPAN="4" WIDTH="88%" BGCOLOR="#00B8FF"><a NAME="Download"></a><b><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Downloading
+GPUTILS</font></i></b></td>
+</tr>
+
+<tr>
+<td COLSPAN="4" WIDTH="88%"><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>The
+GPUTILS source tree is currently located at <a href="http://www.sourceforge.net/">SourceForge</a>.</font></font>
+<p><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>A
+release of GPUTILS has not been made.&nbsp; Please see <a href="http://gpasm.sourceforge.net">gpasm</a>
+for a current release.</font></font>
+<p><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>Work
+continues in CVS. If you have CVS capability, the following will get you
+the latest sources.</font></font>
+<p><font face="Courier New, Courier, Monaco"><font size=-1>cvs -d:pserver:anonymous@cvs.gputils.sourceforge.net:/cvsroot/gputils
+login</font></font>
+<p><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>The
+password is empty and pressing [ENTER] will get you in.&nbsp;</font></font>
+<p><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>The
+following command will checkout all of the sources and place them in a
+gpasm subdirectory.</font></font>
+<p><font face="Courier New, Courier, Monaco"><font size=-1>cvs -z3 -d:pserver:anonymous@cvs.gputils.sourceforge.net:/cvsroot/gputils
+co gputils</font></font>
+<p><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>You
+can browse our CVS tree <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/gputils/">here</a>.&nbsp;</font></font>
+<p><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>SourceForge
+has further documentation on accessing a CVS tree <a href="http://sourceforge.net/docman/?group_id=1">here</a>.</font></font></td>
+</tr>
+
+<tr>
+<td VALIGN=TOP COLSPAN="4" WIDTH="88%" BGCOLOR="#00B8FF"><a NAME="News"></a><b><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Recent
+NEWS</font></i></b></td>
+</tr>
+
+<tr>
+<td COLSPAN="4" WIDTH="88%"><b><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>December
+12, 2001 -- gputils package created</font></font></i></b>
+
+<p STYLE="font-style: normal; font-weight: medium"><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>A
+new linker and lib tool are under development.&nbsp; These new tools along
+with gpasm will be distributed in a new package gputils, GNU PIC Utilities.</font></font></td>
+</tr>
+
+<tr>
+<td VALIGN=TOP COLSPAN="4" WIDTH="88%" BGCOLOR="#00B8FF"><a NAME="Support"></a><b><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Support
+for GPUTILS</font></i></b></td>
+</tr>
+
+<tr>
+<td COLSPAN="4" WIDTH="88%"><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><b>GPUTILS</b>
+comes with some documentation and examples. When that isn't enough, you
+can find help in the following places:</font></font>
+<ul>
+<div STYLE="margin-bottom: 0in">
+<li>
+<font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="gputils.pdf">User
+Manual</a> - for information on the tools in <a href="http://www.adobe.com/">Acrobat</a>
+format. You might also want to take a look at <a href="http://www.microchip.com/">Microchip's</a>
+MPASM <a href="http://www.microchip.com/10/Tools/PICmicro/Code/MPASM/33014g\index.htm">manual</a>.</font></font>&nbsp;</li>
+
+<br>&nbsp;</div>
+
+<div STYLE="margin-bottom: 0in">
+<li>
+<font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="mailto:gnupic@linuxhacker.org">Mailing
+list</a> - if you have a general question about PIC micro controllers or
+the tools.&nbsp; Subscribe to the <a href="http://www.gnupic.org/">GNUPIC</a>
+mailing list by sending a message to:</font></font></li>
+
+<br>&nbsp;
+<p>&nbsp;
+<p><a href="mailto:gnupic-subscribe@linuxhacker.org">gnupic-subscribe@linuxhacker.org</a>
+<p><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>with
+the word <b>subscribe</b> in the body.</font></font>
+<p><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="mailto:gnupic@linuxhacker.org">gnupic@linuxhacker.org</a>
+is the address of the list.&nbsp;</font></font>
+<p><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1>There's
+also the <a href="http://www.linuxhacker.org/cgi-bin/ezmlm-cgi/1">gnupic
+archive</a>.</font></font></div>
+</ul>
+
+<ul>
+<li STYLE="margin-bottom: 0in">
+<font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="https://sourceforge.net/tracker/?atid=431665&group_id=41924&func=browse">Bug
+Reporting</a> - if you have a problem using GPUTILS, we need to hear about
+it.</font></font></li>
+</ul>
+
+<ul>
+<li STYLE="margin-bottom: 0in">
+<font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="https://sourceforge.net/tracker/?atid=431668&group_id=41924&func=browse">Feature
+Requests</a> - if you would like to see a new feature</font></font>&nbsp;</li>
+</ul>
+
+<ul>
+<li STYLE="margin-bottom: 0in">
+<font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="https://sourceforge.net/projects/gputils/">Source
+Forge Website</a> - for further information.</font></font></li>
+</ul>
+
+<ul>
+<li STYLE="margin-bottom: 0in">
+<font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><font size=-1><a href="http://www.dattalo.com/gnupic/gpsim.html">GPSIM
+Information</a> - for information on the gputils compatible simulator.</font></font>&nbsp;
+<hr SIZE="1"></li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP WIDTH="2%"></td>
+
+<td WIDTH="40%"><i><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">This
+Site Hosted by</font></i>
+<p><A href="http://sourceforge.net"> <IMG
+                       src="http://sourceforge.net/sflogo.php?group_id=41924"
+                       width="88" height="31" border="0" alt="SourceForge
+                       Logo"></A></td>
+
+<td WIDTH="45%">
+<div align=right><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><a href="mailto:craigfranklin@attbi.com">Webmaster</a></font>
+<p><font face="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Last updated:
+December 12, 2001</font></div>
+</td>
+
+<td VALIGN=TOP WIDTH="1%"></td>
+
+<td VALIGN=TOP></td>
+</tr>
+
+<tr>
+<td COLSPAN="4" WIDTH="88%"></td>
+
+<td VALIGN=TOP></td>
+</tr>
+</table>
+
+<br>&nbsp;
+</body>
+</html>
