@@ -44,6 +44,6 @@ void i_memory_free(MemBlock *m);
 int i_memory_get(MemBlock *m, unsigned int address);
 void i_memory_put(MemBlock *i_memory, unsigned int address, unsigned int value);
 int i_memory_used(MemBlock *m);
-void print_i_memory(MemBlock *m);
+void print_i_memory(MemBlock *m, int byte_addr);
 
 #endif

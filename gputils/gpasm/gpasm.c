@@ -363,7 +363,8 @@ assemble(void)
   hex_init();
 
   if(state.memory_dump)
-    print_i_memory(state.i_memory);
+    print_i_memory(state.i_memory, 
+                   state.device.class == PROC_CLASS_PIC16E ? 1 : 0);
 
   /* Maybe produce a symbol table */
   if (state.lst.symboltable) {

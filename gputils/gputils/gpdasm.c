@@ -123,6 +123,7 @@ void dasm(MemBlock *memory)
         if (lastloc != i - 1){
           writeorg(i);
         }
+        lastloc = i;
         if (state.format) {
           printf("%06x:  %04x  ",
                  i << byte_addr,
@@ -132,7 +133,12 @@ void dasm(MemBlock *memory)
         }
         gp_disassemble(memory, &i, state.class, buffer);
         printf("%s\n", buffer);
-        lastloc = i;
+        if (i != lastloc) {
+          /* some 18xx instructions use two words */
+          printf("%06x:  %04x\n",
+                 i << byte_addr,
+                 (i_memory_get(memory, i) & 0xffff));
+        }        
         i++;
       } 
     }
@@ -256,7 +262,7 @@ int main(int argc, char *argv[])
   
   if (state.num.errors == 0) {
     if(memory_dump) {
-      print_i_memory(state.i_memory);
+      print_i_memory(state.i_memory, state.class == PROC_CLASS_PIC16E ? 1 : 0);
     } else {
       dasm(state.i_memory);
     }

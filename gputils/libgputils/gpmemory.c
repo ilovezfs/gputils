@@ -215,7 +215,7 @@ int i_memory_used(MemBlock *m)
  * 
  *
  ************************************************************************/
-void print_i_memory(MemBlock *m)
+void print_i_memory(MemBlock *m, int byte_addr)
 {
   int base,i,j,row_used;
   char c;
@@ -235,7 +235,7 @@ void print_i_memory(MemBlock *m)
 	  row_used = 1;
 
       if(row_used) {
-	printf("%08X  ",(base+i) );
+	printf("%08X  ",(base+i) << byte_addr );
 
 	for(j = 0; j<WORDS_IN_ROW; j++)
 	  printf("%04X ", m->memory[i+j] & 0xffff );

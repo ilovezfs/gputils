@@ -422,7 +422,7 @@ Boston, MA 02111-1307, USA.  */
 
 static void bad_char(char *character);
 
-#line 426 "lex.yy.c"
+#line 426 "scan.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -575,7 +575,7 @@ YY_DECL
 
 #line 43 "scan.l"
 
-#line 579 "lex.yy.c"
+#line 579 "scan.c"
 
 	if ( yy_init )
 		{
@@ -743,7 +743,7 @@ YY_RULE_SETUP
 #line 85 "scan.l"
 ECHO;
 	YY_BREAK
-#line 747 "lex.yy.c"
+#line 747 "scan.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -1123,6 +1123,7 @@ register char *yy_bp;
 #endif	/* ifndef YY_NO_UNPUT */
 
 
+#ifndef YY_NO_INPUT
 #ifdef __cplusplus
 static int yyinput()
 #else
@@ -1194,7 +1195,7 @@ static int input()
 
 	return c;
 	}
-
+#endif /* YY_NO_INPUT */
 
 #ifdef YY_USE_PROTOS
 void yyrestart( FILE *input_file )
@@ -1635,7 +1636,7 @@ static void bad_char(char *character)
       "Illegal character %#x in numeric constant",
     *character);
 
-  gplkrscr_error(&complaint[0], NULL);
+  SCRIPT_ERROR1(&complaint[0]);
 
   return;
 }
