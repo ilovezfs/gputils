@@ -36,8 +36,6 @@ gpasm
     /libgputils/opcode.c.
   * Move COD file generation to library.
   * Add macro names to symbol table in listing file.
-  * Add .ident for HLL tools 
-  * Add .def/.endef for embedding debug/optimization information
   * Undefined coff symbols are always at the end of the coff table.
   * Add relocations for the difference between symbols in the same section.
 
