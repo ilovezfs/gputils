@@ -1412,20 +1412,20 @@ YY_RULE_SETUP
 			     has_collon = 1;
 			   }
 			   yylval.s = strdup(yytext);
-                           if(asm_enabled()) {
-                             switch(identify(yytext)) {
-                               case defines:
-                                 sym = get_symbol(state.stTopDefines, yytext);
-                                 subst = get_symbol_annotation(sym);
-                                 push_string(subst);
-                                 break;
-                               case directives:
-			         gpwarning(GPW_DIR_COLUMN_ONE, NULL);
-                                 if (has_collon)
-                                   gperror(GPE_BADCHAR, "Illegal character (:)");
-			         return IDENTIFIER;
-                                 break;
-                               case macros:
+                           switch(identify(yytext)) {
+                             case defines:
+                               sym = get_symbol(state.stTopDefines, yytext);
+                               subst = get_symbol_annotation(sym);
+                               push_string(subst);
+                               break;
+                             case directives:
+                               gpwarning(GPW_DIR_COLUMN_ONE, NULL);
+                               if (has_collon)
+                                 gperror(GPE_BADCHAR, "Illegal character (:)");
+                               return IDENTIFIER;
+                               break;
+                             case macros:
+                               if(asm_enabled()) {
 			         /* make sure macro definition on second pass
                                     is ignored */
 			         sym = get_symbol(state.stMacros, yytext);
@@ -1439,24 +1439,24 @@ YY_RULE_SETUP
                                              "Illegal character (:)");
 			           return IDENTIFIER;
 			         }
-                                 break;
-                               case opcodes:
-			         gpwarning(GPW_OP_COLUMN_ONE, NULL);
-                                 if (has_collon)
-                                   gperror(GPE_BADCHAR, "Illegal character (:)");
-			         return IDENTIFIER;
-                                 break;
-                               case unknown:
-			         return LABEL;
-                               default:
-			         return LABEL;
-                             }			   
-			   } else {
-			     /* if assembly is not enabled don't issue warnings
-			        about macro calls in column 1, they could be
-				an alternate definition */ 
-			     return LABEL;			   
-			   }
+                               } else {
+                                 /* if assembly is not enabled don't issue 
+                                 warnings about macro calls in column 1, they 
+                                 could be an alternate definition */ 
+                                 return LABEL;			   
+                               }
+                               break;
+                             case opcodes:
+                               gpwarning(GPW_OP_COLUMN_ONE, NULL);
+                               if (has_collon)
+                                 gperror(GPE_BADCHAR, "Illegal character (:)");
+                               return IDENTIFIER;
+                               break;
+                             case unknown:
+                               return LABEL;
+                             default:
+                               return LABEL;
+                           }			   
 			 }
 	YY_BREAK
 case 26:
