@@ -10,10 +10,15 @@ MAN_PAGES =\
 	gpvc.1 \
 	gpvo.1
 
-gputils.pdf: gputils.ps
-	ps2pdf gputils.ps gputils.pdf
+gputils.ps: gputils.lyx
+	lyx -e ps gputils.lyx
+
+gputils.pdf: gputils.lyx
+	lyx -e pdf gputils.lyx
 
 man_MANS = $(MAN_PAGES)
 
 EXTRA_DIST = $(MAN_PAGES) gputils.lyx gputils.ps gputils.pdf
+
+MAINTAINERCLEANFILES = gputils.ps gputils.pdf
 
