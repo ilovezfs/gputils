@@ -70,6 +70,16 @@ _update_section_size(void)
       (state.org - state.obj.section->address);
   }
 
+  /* write data to the auxiliary section symbol */
+  state.obj.section->symbol->aux_list->_aux_symbol._aux_scn.length = 
+    state.obj.section->size;
+    
+  state.obj.section->symbol->aux_list->_aux_symbol._aux_scn.nreloc = 
+    state.obj.section->num_reloc;
+
+  state.obj.section->symbol->aux_list->_aux_symbol._aux_scn.nlineno = 
+    state.obj.section->num_lineno;
+
   return;
 }
 
@@ -185,11 +195,6 @@ coff_new_section(char *name, int addr, int flags)
 
   new_aux = gp_coffgen_addaux(state.obj.object, new);
   new_aux->type = AUX_SCN;
-  /* FIXME: finish the aux section symbol
-  new_aux->x_scnlen = 0;
-  new_aux->x_nreloc = 0;
-  new_aux->x_nlinno = 0;
-  */
   
   state.i_memory = state.obj.section->data;
   state.org = addr;
@@ -306,13 +311,11 @@ coff_add_filesym(char *name, int isinclude)
 
   new_aux = gp_coffgen_addaux(state.obj.object, new);
   new_aux->type = AUX_FILE;
-  new_aux->filename = strdup(name);
-
-  /* FIXME : finish the  auxilary symbol
+  new_aux->_aux_symbol._aux_file.filename = strdup(name);
   if (isinclude == 1)
-    aux->x_incline = state.src->line_number;
+    new_aux->_aux_symbol._aux_file.line_number = state.src->line_number - 1;
   else
-    aux->x_incline = 0; */
+    new_aux->_aux_symbol._aux_file.line_number = 0;
  
   return new;
 }

@@ -203,18 +203,33 @@ _gp_coffgen_write_linenum(gp_section_type *section, FILE *fp)
 static void 
 _gp_coffgen_write_auxsymbols(gp_aux_type *aux, char *table, FILE *fp) 
 {
+  unsigned int offset;
 
   while(aux != NULL) {
 
     switch (aux->type) {
     case AUX_FILE:
       /* add the filename to the string table */
-      _fput_32(_gp_coffgen_addstring(aux->filename, table), fp);
-      _fput_var(&aux->data[4], 14, fp);
+      offset = _gp_coffgen_addstring(aux->_aux_symbol._aux_file.filename, 
+                                     table);
+      _fput_32(offset, fp);
+      _fput_32(aux->_aux_symbol._aux_file.line_number, fp);
+      _fput_32(0, fp);
+      _fput_32(0, fp);
+      _fput_16(0, fp);
+      break;
+    case AUX_SCN:
+      /* write section auxilary symbol */
+      _fput_32(aux->_aux_symbol._aux_scn.length, fp);
+      _fput_16(aux->_aux_symbol._aux_scn.nreloc, fp);
+      _fput_16(aux->_aux_symbol._aux_scn.nlineno, fp);
+      _fput_32(0, fp);
+      _fput_32(0, fp);
+      _fput_16(0, fp);
       break;
     default:
       /* copy the data to the file */
-      _fput_var(&aux->data[0], 18, fp);
+      _fput_var(&aux->_aux_symbol.data[0], 18, fp);
     }
    
     aux = aux->next;

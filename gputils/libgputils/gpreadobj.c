@@ -139,9 +139,9 @@ _read_section_header(gp_object_type *object,
   char buffer[9];
   unsigned int offset;
 
-  if (_get_16(&file[0]) == 0) {
+  if (_get_32(&file[0]) == 0) {
     /* read name from the string table */
-    offset = _get_16(&file[4]);
+    offset = _get_32(&file[4]);
     section->name = strdup(&string_table[offset]);
   } else {
     strncpy(buffer, &file[0], 8);
@@ -277,11 +277,25 @@ _read_sections(gp_object_type *object, char *file)
 }
 
 static void
-_read_aux(gp_aux_type *aux, char *file, char *string_table)
+_read_aux(gp_aux_type *aux, int aux_type, char *file, char *string_table)
 {
-  /* FIXME: read the auxilary symbols correctly */
+  
+  aux->type = aux_type;
 
-  memcpy(&aux->data[0], file, SYMBOL_SIZE);
+  switch (aux_type) {
+    case AUX_FILE:
+      aux->_aux_symbol._aux_file.filename = 
+        strdup(&string_table[_get_32(&file[0])]);
+      aux->_aux_symbol._aux_file.line_number = _get_32(&file[4]);
+      break;
+    case AUX_SCN:
+      aux->_aux_symbol._aux_scn.length  = _get_32(&file[0]);
+      aux->_aux_symbol._aux_scn.nreloc  = _get_16(&file[4]);
+      aux->_aux_symbol._aux_scn.nlineno = _get_16(&file[6]);
+      break;
+    default:
+      memcpy(&aux->_aux_symbol.data[0], file, SYMBOL_SIZE);
+  }
 
 }
 
@@ -291,9 +305,9 @@ _read_symbol(gp_symbol_type *symbol, char *file, char *string_table)
   char buffer[9];
   unsigned int offset;
 
-  if (_get_16(&file[0]) == 0) {
+  if (_get_32(&file[0]) == 0) {
     /* read name from the string table */
-    offset = _get_16(&file[4]);
+    offset = _get_32(&file[4]);
     symbol->name = strdup(&string_table[offset]);
   } else {
     strncpy(buffer, &file[0], 8);
@@ -339,12 +353,16 @@ _read_symtbl(gp_object_type *object, char *file)
       file += SYMBOL_SIZE;
 
       if (current->num_auxsym != 0) {
+        int aux_type;
+        
         current->aux_list = gp_coffgen_blockaux(current->num_auxsym);
         current_aux = current->aux_list;
+        aux_type = gp_determine_aux(current);
         
         /* read the aux symbols */
         for (j = 0; j < current->num_auxsym; j++) {
-          _read_aux(current_aux, file, string_table);
+          _read_aux(current_aux, aux_type, file, string_table);
+          current_aux = current_aux->next;
           file += SYMBOL_SIZE;
           i++;
         }

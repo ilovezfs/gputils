@@ -467,3 +467,22 @@ gp_coffgen_free(gp_object_type *object)
 
   return 0;
 }
+
+int
+gp_determine_aux(gp_symbol_type *symbol)
+{
+  int aux_type = AUX_NONE;
+
+  switch (symbol->class) {
+  case C_FILE:
+    aux_type = AUX_FILE;
+    break;
+  case C_SECTION:
+    aux_type = AUX_SCN;
+    break;
+  default:
+    aux_type = AUX_NONE;
+  }
+
+  return aux_type;
+}

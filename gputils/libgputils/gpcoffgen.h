@@ -68,20 +68,24 @@ typedef struct gp_linenum_type
 
 /* auxilary symbol linked list */
 
-/* FIXME: The aux entries need some help.  A union defining all the possible
-   combinations would probably be better.  For now, only aux_file are 
-   handled. */
-
 typedef struct gp_aux_type 
 {
   /* auxilary symbol type */
   long type;
 
-  /* aux_file string */
-  char *filename;
-
-  /* aux data */
-  char data[SYMBOL_SIZE];
+  /* FIXME: Finish the aux entries. */
+  union {
+    struct {
+      char *filename;
+      unsigned long line_number; 
+    } _aux_file;
+    struct {
+      unsigned long  length; 
+      unsigned short nreloc; 
+      unsigned short nlineno;
+    } _aux_scn;
+    char data[SYMBOL_SIZE];
+  } _aux_symbol;
   
   struct gp_aux_type *next;
 } gp_aux_type;
@@ -246,5 +250,7 @@ int gp_coffgen_free_section(gp_section_type *section);
 int gp_coffgen_free_symbol(gp_symbol_type *symbol);
 int gp_coffgen_free(gp_object_type *object);
 int gp_coffgen_free(gp_object_type *object);
+
+int gp_determine_aux(gp_symbol_type *symbol);
 
 #endif

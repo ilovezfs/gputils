@@ -336,10 +336,12 @@ gp_cofflink_combine_overlay(gp_object_type *object)
         }
 
         /* Set the size of the first section to the larger of the two */
-        if (second->size > first->size)
+        if (second->size > first->size) {
           first->size = second->size;
+          first->symbol->aux_list->_aux_symbol._aux_scn.length = second->size;
+        }
 
-       /* Remove the section symbol */
+        /* Remove the section symbol */
         symbol = object->symbols;
         while (symbol != NULL) {
           if (symbol->next == second->symbol) {
