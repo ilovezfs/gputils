@@ -396,9 +396,8 @@ int main(int argc, char *argv[])
   gp_init();
 
   /* initalize */
-  state.quiet = 0;
   state.dump_flags = 0;
-  state.suppress_names = 0;
+  state.suppress_names = false;
 
   while ((c = GETOPT_FUNC) != EOF) {
     switch (c) {
@@ -413,7 +412,7 @@ int main(int argc, char *argv[])
       state.dump_flags |= PRINT_HEADER;
       break;
     case 'n':
-      state.suppress_names = 1;
+      state.suppress_names = true;
       break;
     case 's':
       state.dump_flags |= PRINT_SECTIONS;

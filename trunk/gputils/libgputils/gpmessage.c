@@ -26,12 +26,13 @@ Boston, MA 02111-1307, USA.  */
 #include <stdarg.h>
 #endif
 
-int gp_message_disable = 0;
-int gp_quiet = 0;     
+gp_boolean gp_message_disable = false;
+gp_boolean gp_quiet = false;
+gp_boolean gp_debug_disable = true;
+
 int gp_num_errors = 0;
 int gp_num_warnings = 0;
 int gp_num_messages = 0;
-int gp_debug_disable = 1;
 
 void 
 gp_error(const char *format, ...)
@@ -39,12 +40,12 @@ gp_error(const char *format, ...)
   va_list args;
   char buffer[BUFSIZ]; 
 
-  if (gp_message_disable != 0)
+  if (gp_message_disable)
     return;
 
   gp_num_errors++;
 
-  if (gp_quiet != 0)
+  if (gp_quiet)
     return;
 
   va_start(args, format);
@@ -62,12 +63,12 @@ gp_warning(const char *format, ...)
   va_list args;
   char buffer[BUFSIZ]; 
 
-  if (gp_message_disable != 0)
+  if (gp_message_disable)
     return;
 
   gp_num_warnings++;
 
-  if (gp_quiet != 0)
+  if (gp_quiet)
     return;
 
   va_start(args, format);
@@ -85,12 +86,12 @@ gp_message(const char *format, ...)
   va_list args;
   char buffer[BUFSIZ]; 
 
-  if (gp_message_disable != 0)
+  if (gp_message_disable)
     return;
 
   gp_num_messages++;
 
-  if (gp_quiet != 0)
+  if (gp_quiet)
     return;
 
   va_start(args, format);
@@ -108,10 +109,10 @@ gp_debug(const char *format, ...)
   va_list args;
   char buffer[BUFSIZ]; 
 
-  if (gp_debug_disable != 0)
+  if (gp_debug_disable)
     return;
 
-  if (gp_quiet != 0)
+  if (gp_quiet)
     return;
 
   va_start(args, format);

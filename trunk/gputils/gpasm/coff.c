@@ -38,17 +38,17 @@ coff_init(void)
   }
 
   if (state.objfile == suppress) {
-    state.obj.enabled = 0;
+    state.obj.enabled = false;
     unlink(state.objfilename);
   } else {
     if (state.processor_chosen == 0) {
-      state.obj.enabled = 0;
+      state.obj.enabled = false;
     } else {
       state.obj.object = gp_coffgen_init();
       state.obj.object->filename = strdup(state.objfilename);
       state.obj.object->processor = state.processor;
       state.obj.object->class = state.device.class;
-      state.obj.enabled = 1;
+      state.obj.enabled = true;
     }
   }
   
@@ -132,7 +132,7 @@ _copy_config(void)
   int start;
   int stop;
   int word;
-  int found_break;
+  gp_boolean found_break;
   
   if (state.obj.section == NULL)
     return;
@@ -196,7 +196,7 @@ _copy_config(void)
     if(_16bit_core) {
       start = config_section->address >> 1;
       stop = IDLOC7 >> 1;
-      found_break = 0;
+      found_break = false;
       for (i = start; i <= stop; i++) {
         printf("address = %x\n", i);
         word = i_memory_get(state.c_memory, i);
@@ -207,7 +207,7 @@ _copy_config(void)
           i_memory_put(config_section->data, i, word);
           config_section->size += 2;    
         } else {
-          found_break = 1;
+          found_break = true;
         }
       }
       

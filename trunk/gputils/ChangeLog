@@ -1,3 +1,8 @@
+2004-10-13 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * Delete gplink output files when errors occur.
+  * Use more boolean types.
+  * Clean up top level of gplink.
+
 2004-10-10 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Merged changes from cod-branch:
     - Fixed stop location error in directory map of COD files.

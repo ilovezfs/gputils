@@ -41,7 +41,7 @@ script_error(char *messg, char *detail)
 {
 
   gp_num_errors++;
-  if (gp_quiet == 0) {
+  if (!gp_quiet) {
     if (state.src == NULL) {
       printf("%s\n", messg); 
     } else if (detail == NULL) {
@@ -138,9 +138,9 @@ add_path(struct pnode *parms)
 static int do_logsec(char *name, struct pnode *parms)
 {
   struct pnode *p;
-  int found_secname   = 0;
-  int found_ram       = 0;
-  int found_rom       = 0;
+  gp_boolean found_secname   = false;
+  gp_boolean found_ram       = false;
+  gp_boolean found_rom       = false;
   char *logical_section_name = NULL;
   char *section_name = NULL;
   struct linker_section *section = NULL;
@@ -157,17 +157,17 @@ static int do_logsec(char *name, struct pnode *parms)
 	lhs = p->value.binop.p0->value.symbol;
 	if (strcasecmp(lhs, "name") == 0) {
           if (enforce_simple(p->value.binop.p1)) {
-            found_secname = 1;
+            found_secname = true;
             logical_section_name = p->value.binop.p1->value.symbol; 
           }
         } else if (strcasecmp(lhs, "ram") == 0) {
           if (enforce_simple(p->value.binop.p1)) {
-            found_ram = 1;
+            found_ram = true;
             section_name = strdup(p->value.binop.p1->value.symbol);
 	  }
         } else if (strcasecmp(lhs, "rom") == 0) {
           if (enforce_simple(p->value.binop.p1)) {
-            found_rom = 1;
+            found_rom = true;
             section_name = strdup(p->value.binop.p1->value.symbol);
 	  }
         } else {
@@ -182,11 +182,11 @@ static int do_logsec(char *name, struct pnode *parms)
   }
 
   /* process the options */ 
-  if (found_secname == 0) {
+  if (!found_secname) {
     script_error("missing argument", "name");   
-  } else if ((found_rom == 1) && (found_ram == 1)) {
+  } else if (found_rom && found_ram) {
     script_error("too many arguments", "ram or rom");
-  } else if ((found_rom == 0) && (found_ram == 0)) {
+  } else if ((!found_rom) && (!found_ram)) {
     script_error("missing argument", "ram or rom");
   } else {
     sym = get_symbol(state.section.definition, section_name);      
@@ -213,11 +213,11 @@ static int do_logsec(char *name, struct pnode *parms)
 static int do_secdef(char *name, struct pnode *parms)
 {
   struct pnode *p;
-  int found_secname   = 0;
-  int found_start     = 0;
-  int found_end       = 0;
-  int found_fill      = 0;
-  int found_protected = 0;
+  gp_boolean found_secname   = false;
+  gp_boolean found_start     = false;
+  gp_boolean found_end       = false;
+  gp_boolean found_fill      = false;
+  gp_boolean found_protected = false;
   char *section_name = NULL;
   int  start = 0;
   int  end = 0;
@@ -236,17 +236,17 @@ static int do_secdef(char *name, struct pnode *parms)
 	lhs = p->value.binop.p0->value.symbol;
 	if (strcasecmp(lhs, "name") == 0) {
           if (enforce_simple(p->value.binop.p1)) {
-            found_secname = 1;
+            found_secname = true;
             section_name = p->value.binop.p1->value.symbol; 
           }
         } else if (strcasecmp(lhs, "start") == 0) {
-          found_start = 1;
+          found_start = true;
           start = evaluate(p->value.binop.p1);
         } else if (strcasecmp(lhs, "end") == 0) {
-          found_end = 1;
+          found_end = true;
           end = evaluate(p->value.binop.p1);             
         } else if (strcasecmp(lhs, "fill") == 0) {
-          found_fill = 1;
+          found_fill = true;
           fill = evaluate(p->value.binop.p1);
         } else {
           script_error("illegal argument", lhs);        
@@ -256,7 +256,7 @@ static int do_secdef(char *name, struct pnode *parms)
     } else {
       if (enforce_simple(p)) {
 	if (strcasecmp(p->value.symbol, "protected") == 0) {
-          found_protected = 1; 	   
+          found_protected = true; 	   
 	} else {
           script_error("illegal argument", p->value.symbol);
         }
@@ -265,11 +265,11 @@ static int do_secdef(char *name, struct pnode *parms)
   }
 
   /* process the options */
-  if (found_secname == 0) {
+  if (!found_secname) {
     script_error("missing argument", "name");
-  } else if (found_start == 0) {
+  } else if (!found_start) {
     script_error("missing argument", "start");
-  } else if (found_end == 0) {
+  } else if (!found_end) {
     script_error("missing argument", "end");
   } else {
     sym = get_symbol(state.section.definition, section_name);      
@@ -298,12 +298,12 @@ static int do_secdef(char *name, struct pnode *parms)
       section_def->protected = found_protected;
 
       if (section_def->type == codepage) {
-        if ((state.fill_enable == 0) || (found_protected == 1)) {
+        if ((!state.fill_enable) || found_protected) {
           section_def->fill = fill;
           section_def->use_fill = found_fill;
         } else {
           section_def->fill = state.fill_value;
-          section_def->use_fill = 1;
+          section_def->use_fill = true;
         }
       } else if (found_fill == 1) {
         script_error("illegal argument", "fill");        
@@ -321,8 +321,8 @@ static int do_stack(char *name, struct pnode *parms)
 {
   struct pnode *p;
 
-  int found_size  = 0;
-  int found_ram   = 0;
+  gp_boolean found_size  = false;
+  gp_boolean found_ram   = false;
   char *ram_name = NULL;
   struct symbol *sym;
 
@@ -330,7 +330,7 @@ static int do_stack(char *name, struct pnode *parms)
     script_error("multiple stack definitions", NULL);
     return 0;
   } else {
-    state.has_stack = 1;
+    state.has_stack = true;
   }
 
   /* FIXME: simplify this.  There are only two arguments */
@@ -345,11 +345,11 @@ static int do_stack(char *name, struct pnode *parms)
 
 	lhs = p->value.binop.p0->value.symbol;
         if (strcasecmp(lhs, "size") == 0) {
-          found_size = 1;
+          found_size = true;
           state.stack_size = evaluate(p->value.binop.p1);
         } else if (strcasecmp(lhs, "ram") == 0) {
           if (enforce_simple(p->value.binop.p1)) {
-            found_ram = 1;
+            found_ram = true;
             ram_name = p->value.binop.p1->value.symbol;   
           }
         } else {
@@ -364,7 +364,7 @@ static int do_stack(char *name, struct pnode *parms)
   }
 
   /* process the options */
-  if (found_size == 0) {
+  if (!found_size) {
     script_error("missing argument", "size");
   } else if (ram_name != NULL) {
     sym = add_symbol(state.section.logical, strdup(".stack"));
@@ -392,17 +392,17 @@ int execute_command(char *name, struct pnode *parms)
 {
   int value = 0;
   int i = 0;
-  int found_command = 0;
+  gp_boolean found_command = false;
 
   while (i < NUM_COMMAND) {
     if (strcasecmp(name, commands[i].name) == 0) {
-      found_command = 1;
+      found_command = true;
       break;
     }
     i++;
   }
 
-  if (found_command == 0) {
+  if (!found_command) {
     script_error("invalid script command", name);
   } else {
     value = (*(lkrfunc*)commands[i].address)(name, parms);

@@ -85,7 +85,7 @@ assign_file_id(void)
   int *value;
   
   /* build a case sensitive file table */
-  file_table = push_symbol_table(NULL, 0);
+  file_table = push_symbol_table(NULL, false);
   
   symbol = state.object->symbols;
   while(symbol != NULL) {
@@ -127,9 +127,9 @@ cod_init(void)
     strncat(state.codfilename, ".cod", sizeof(state.codfilename));
   }
 
-  if (state.codfile == suppress) {
+  if ((gp_num_errors) || (state.codfile == suppress)) {
     state.cod.f = NULL;
-    state.cod.enabled = 0;
+    state.cod.enabled = false;
     unlink(state.codfilename);
   } else {
     state.cod.f = fopen(state.codfilename, "wb");
@@ -137,7 +137,7 @@ cod_init(void)
       perror(state.codfilename);
       exit(1);
     }
-    state.cod.enabled = 1;
+    state.cod.enabled = true;
   }
 
   if(!state.cod.enabled)

@@ -31,6 +31,7 @@ Boston, MA 02111-1307, USA.  */
 struct gplink_state state;
 
 int yyparse(void);
+extern int yydebug;
 
 /* return the number of missing symbols */
 int count_missing(void)
@@ -137,13 +138,13 @@ int scan_index(struct symbol_table *table, gp_archive_type *archive)
     
 int scan_archive(gp_archive_type *archive, char *name)
 {
-  state.symbol.archive = push_symbol_table(NULL, 0);
+  state.symbol.archive = push_symbol_table(NULL, false);
 
   /* If necessary, build a symbol index for the archive. */
   if (gp_archive_have_index(archive) == 0) {
     struct symbol_table *archive_tbl = NULL;
   
-    archive_tbl = push_symbol_table(NULL, 1);
+    archive_tbl = push_symbol_table(NULL, true);
     gp_archive_make_index(archive, archive_tbl);
     archive = gp_archive_add_index(archive_tbl, archive);
     gp_warning("\"%s\" is missing symbol index", name);
@@ -213,7 +214,7 @@ search_idata(void)
     section = list->sections;
     while (section != NULL) {
       if (section->flags & STYP_DATA) {
-        state.has_idata = 1;
+        state.has_idata = true;
         return;    
       }
       section = section->next;
@@ -342,6 +343,65 @@ void gplink_open_coff(char *name)
 
 }   
 
+#define GET_OPTIONS "?a:cdf:hI:lmo:qrs:t:v"
+
+  static struct option longopts[] =
+  {
+    { "hex-format",  1, 0, 'a' },
+    { "object",      0, 0, 'c' },
+    { "debug",       0, 0, 'd' },
+    { "fill",        1, 0, 'f' },
+    { "help",        0, 0, 'h' },
+    { "include",     1, 0, 'I' },
+    { "no-list",     0, 0, 'l' },
+    { "map",         0, 0, 'm' },
+    { "output",      1, 0, 'o' },
+    { "quiet",       0, 0, 'q' },
+    { "use-shared",  0, 0, 'r' },
+    { "script",      1, 0, 's' },
+    { "stack",       1, 0, 't' },
+    { "version",     0, 0, 'v' },
+    { 0, 0, 0, 0 }
+  };
+
+void
+init(void)
+{
+
+  gp_init();
+
+  /* initialize */
+  gp_date_string(state.startdate, sizeof(state.startdate));
+  state.hex_format = inhx32;
+  state.numpaths = 0;
+  state.byte_addr = 0;
+  state.processor = no_processor;
+  state.codfile = normal;
+  state.hexfile = normal;
+  state.lstfile = normal;
+  state.mapfile = suppress;
+  state.objfile = suppress;
+  state.fill_enable = false;
+  state.fill_value = 0;
+  state.has_stack = false;
+  state.stack_size = 0;
+  state.has_idata = false;
+  state.srcfilename = NULL;
+  state.object  = NULL;
+  state.archives = NULL;
+
+  /* set default output filename to be a.o, a.hex, a.cod, a.map */
+  strncpy(state.basefilename, "a", sizeof(state.basefilename));
+
+  /* The symbols are case sensitive */
+  state.symbol.definition = push_symbol_table(NULL, false);
+  state.symbol.missing = push_symbol_table(NULL, false);
+  state.section.definition = push_symbol_table(NULL, false);
+  state.section.logical = push_symbol_table(NULL, false);
+
+  return;
+}
+
 void gplink_add_path(char *path)
 {
   if(state.numpaths < MAX_PATHS) {
@@ -388,73 +448,16 @@ void show_usage(void)
   exit(0);
 }
 
-#define GET_OPTIONS "?a:cdf:hI:lmo:qrs:t:v"
-
-  static struct option longopts[] =
-  {
-    { "hex-format",  1, 0, 'a' },
-    { "object",      0, 0, 'c' },
-    { "debug",       0, 0, 'd' },
-    { "fill",        1, 0, 'f' },
-    { "help",        0, 0, 'h' },
-    { "include",     1, 0, 'I' },
-    { "no-list",     0, 0, 'l' },
-    { "map",         0, 0, 'm' },
-    { "output",      1, 0, 'o' },
-    { "quiet",       0, 0, 'q' },
-    { "use-shared",  0, 0, 'r' },
-    { "script",      1, 0, 's' },
-    { "stack",       1, 0, 't' },
-    { "version",     0, 0, 'v' },
-    { 0, 0, 0, 0 }
-  };
-
-#define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
-
-int main(int argc, char *argv[])
+void
+process_args( int argc, char *argv[])
 {
   extern char *optarg;
   extern int optind;
   int c;
-  int usage = 0;
+  gp_boolean usage = false;
   char *pc;
 
-  gp_init();
-
-  /* initialize */
-  gp_date_string(state.startdate, sizeof(state.startdate));
-  state.hex_format = inhx32;
-  state.numpaths = 0;
-  state.byte_addr = 0;
-  state.processor = no_processor;
-  state.codfile = normal;
-  state.hexfile = normal;
-  state.lstfile = normal;
-  state.mapfile = suppress;
-  state.objfile = suppress;
-  state.fill_enable = 0;
-  state.fill_value = 0;
-  state.has_stack = 0;
-  state.stack_size = 0;
-  state.has_idata = 0;
-  state.srcfilename = NULL;
-  state.object  = NULL;
-  state.archives = NULL;
-
-  /* The symbols are case sensitive */
-  state.symbol.definition = push_symbol_table(NULL, 0);
-  state.symbol.missing = push_symbol_table(NULL, 0);
-  state.section.definition = push_symbol_table(NULL, 0);
-  state.section.logical = push_symbol_table(NULL, 0);
-
-  #ifdef GPUTILS_DEBUG
-  {
-    extern int yydebug;
-    yydebug = 1; /* enable parse debug */
-  }
-  #endif
- 
-  while ((c = GETOPT_FUNC) != EOF) {
+  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
     switch (c) {
     case 'a':
       if (strcasecmp(optarg, "inhx8m") == 0) {
@@ -472,7 +475,8 @@ int main(int argc, char *argv[])
       state.objfile = normal;
       break;
     case 'd':
-      gp_debug_disable = 0;
+      gp_debug_disable = false;
+      yydebug = 1;
       break;
     case 'f':
       state.fill_value = strtol(optarg, &pc, 16);
@@ -481,12 +485,12 @@ int main(int argc, char *argv[])
       } else if (state.fill_value > 0xffff) {
         gp_error("fill value exceeds 0xffff", *pc);
       } else {
-        state.fill_enable = 1;
+        state.fill_enable = true;
       }
       break;
     case '?':
     case 'h':
-      usage = 1;
+      usage = true;
       break;
     case 'I':
       gplink_add_path(optarg);
@@ -504,7 +508,7 @@ int main(int argc, char *argv[])
         *pc = 0;
       break;
     case 'q':
-      gp_quiet = 1;
+      gp_quiet = true;
       break;
     case 'r':
       gp_relocate_to_shared = true;
@@ -517,7 +521,7 @@ int main(int argc, char *argv[])
       if ((pc == NULL) || (*pc != '\0')) {
         gp_error("invalid character %#x in number constant", *pc);
       } else {
-        state.has_stack = 1;
+        state.has_stack = true;
       }
       break;
     case 'v':
@@ -532,16 +536,11 @@ int main(int argc, char *argv[])
       (optind >= argc)) {
     /* No linker script was specified and no object filenames were provided,
        so print the usage */
-    usage = 1;
+    usage = true;
   }
 
   if (usage) {
     show_usage();
-  }
-
-  if(state.basefilename[0] == '\0') {
-    /* set default output filename to be a.o, a.hex, a.cod, a.map */
-    strncpy(state.basefilename, "a", sizeof(state.basefilename));
   }
 
   /* Add the library path to the include paths list last, so that the user
@@ -550,6 +549,18 @@ int main(int argc, char *argv[])
     gplink_add_path(gp_lib_path);
   }
 
+  /* Open all objects and archives in the file list. */ 
+  for ( ; optind < argc; optind++) {
+    gplink_open_coff(argv[optind]);
+  }
+
+}
+
+int
+linker(void)
+{
+  MemBlock *data, *program;
+
   /* setup output filenames */
   strncpy(state.hexfilename, state.basefilename, sizeof(state.hexfilename));
   strncat(state.hexfilename, ".hex", sizeof(state.hexfilename));
@@ -557,11 +568,6 @@ int main(int argc, char *argv[])
   strncat(state.mapfilename, ".map", sizeof(state.mapfilename));
   strncpy(state.objfilename, state.basefilename, sizeof(state.objfilename));
   strncat(state.objfilename, ".cof", sizeof(state.objfilename));
-
-  /* Open all objects and archives in the file list. */ 
-  for ( ; optind < argc; optind++) {
-    gplink_open_coff(argv[optind]);
-  }
 
   /* Read the script */
   if (state.srcfilename) {
@@ -606,7 +612,7 @@ int main(int argc, char *argv[])
   }
 
   /* Construct the symbol tables. Determine which archive members are 
-     required to resolve external references.  */
+     required to resolve external references. */
   build_tables();  
 
   /* add the stack section */
@@ -614,10 +620,80 @@ int main(int argc, char *argv[])
     gp_cofflink_make_stack(state.object, state.stack_size);
   }
 
-  /* relocate the sections */
-  gp_cofflink_reloc(state.object, 
-                    state.section.definition, 
-                    state.section.logical);
+  /* combine all object files into one object */
+  gp_cofflink_combine_objects(state.object);
+
+  /* combine overlay sections */
+  gp_cofflink_combine_overlay(state.object, 0);
+
+  /* combine all sections with the same name */
+  gp_cofflink_merge_sections(state.object, state.byte_addr);
+
+  /* create ROM data for initialized data sections */
+  gp_cofflink_make_idata(state.object);
+
+  /* create memory representing target memory */ 
+  data = i_memory_create();
+  program = i_memory_create();
+
+  /* allocate memory for absolute sections */
+  gp_debug("verifying absolute sections.");
+  gp_cofflink_reloc_abs(program, 
+                        state.byte_addr,
+                        state.object->sections,
+                        STYP_TEXT | STYP_DATA_ROM);
+  gp_cofflink_reloc_abs(data, 
+                        0,
+                        state.object->sections, 
+                        STYP_DATA | STYP_BSS | STYP_SHARED | 
+                        STYP_OVERLAY | STYP_ACCESS);
+
+  /* FIXME: allocate assigned stacks */ 
+
+  /* allocate memory for relocatable assigned sections */
+  gp_debug("relocating assigned sections.");
+  gp_cofflink_reloc_assigned(program, 
+                             state.byte_addr,
+                             state.object->sections,
+                             STYP_TEXT | STYP_DATA_ROM,
+                             state.section.definition,
+                             state.section.logical);
+  gp_cofflink_reloc_assigned(data, 
+                             0,
+                             state.object->sections, 
+                             STYP_DATA | STYP_BSS | STYP_SHARED | 
+                             STYP_OVERLAY | STYP_ACCESS,
+                             state.section.definition,
+                             state.section.logical);
+  
+  /* FIXME: allocate unassigned stacks */ 
+
+  /* allocate memory for relocatable unassigned sections */
+  gp_debug("relocating unassigned sections.");
+  gp_cofflink_reloc_unassigned(program, 
+                               state.byte_addr,
+                               state.object->sections,
+                               STYP_TEXT | STYP_DATA_ROM,
+                               state.section.definition);
+  gp_cofflink_reloc_unassigned(data, 
+                               0,
+                               state.object->sections, 
+                               STYP_DATA | STYP_BSS | STYP_SHARED | 
+                               STYP_OVERLAY | STYP_ACCESS,
+                               state.section.definition);
+
+  /* load the table with the relocated addresses */
+  gp_add_cinit_section(state.object, state.byte_addr);
+
+  gp_cofflink_update_table(state.object);
+
+  gp_cofflink_fill_pages(state.object,
+                         program,
+                         state.byte_addr,
+                         state.section.definition);
+
+  i_memory_free(data);
+  i_memory_free(program);
 
   if (state.has_idata) {
     add_linker_symbol("_cinit");
@@ -641,6 +717,8 @@ int main(int argc, char *argv[])
   if (state.objfile == normal) {
     /* write the executable object in memory */
     gp_write_coff(state.object, gp_num_errors);
+  } else {
+    unlink(state.object->filename);
   }
 
   /* convert the executable object into a hex file */
@@ -669,4 +747,13 @@ int main(int argc, char *argv[])
   else
     return EXIT_SUCCESS;
 
+}
+
+int 
+main(int argc, char *argv[])
+{
+  init();
+  process_args(argc, argv);
+
+  return linker();
 }

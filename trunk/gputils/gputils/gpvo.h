@@ -31,9 +31,8 @@ Boston, MA 02111-1307, USA.  */
 #define PRINT_BINARY   1 << 4
 
 extern struct gpvo_state {
-  int quiet;			/* suppress outputs when 1 */ 
   int dump_flags; 		/* when bit set then print that section */	
-  int suppress_names;		/* suppress filenames when 1 */ 
+  gp_boolean suppress_names;	/* suppress filenames when 1 */ 
   char *filename;		/* object file name */
   gp_object_type *object;	/* formatted object file */
   gp_binary_type *file;		/* binary object file */

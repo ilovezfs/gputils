@@ -570,7 +570,7 @@ _read_table_data(gp_section_type *section, int org)
 
 /* create ROM data for initialized data sections */
 
-static void
+void
 gp_cofflink_make_idata(gp_object_type *object)
 {
   gp_section_type *section = object->sections;
@@ -634,7 +634,7 @@ gp_cofflink_make_idata(gp_object_type *object)
 
 /* load the relocated sections addresses in the table */
 
-static void
+void
 gp_add_cinit_section(gp_object_type *object, int byte_addr)
 {
   gp_section_type *section;
@@ -773,7 +773,7 @@ gp_cofflink_reloc_abs(MemBlock *m,
 /* Search through all the sections in the object list.  Locate the biggest
    assigned section that has not been relocated. */
 
-gp_section_type *
+static gp_section_type *
 gp_cofflink_find_big_assigned(gp_section_type *section, 
                               unsigned long flags,
                               struct symbol_table *logical_sections)  
@@ -801,7 +801,7 @@ gp_cofflink_find_big_assigned(gp_section_type *section,
 /* Search through all the sections in the object list.  Locate the biggest
    section that has not been relocated. */
 
-gp_section_type *
+static gp_section_type *
 gp_cofflink_find_big_section(gp_section_type *section, 
                              unsigned long flags)
 {
@@ -1076,7 +1076,7 @@ next_pass:
       for (sym = sections->hash_table[i]; sym; sym = sym->next) {
         section_def = get_symbol_annotation(sym);
         if ((section_def->type == type) &&
-            (section_def->protected == 0)) {
+            (!section_def->protected)) {
           gp_debug("  section = %s", current->name);
           gp_debug("    size = %#x", current->size);
           gp_debug("    def start = %#x", section_def->start);
@@ -1134,8 +1134,8 @@ next_pass:
 
 /* update all symbols with their new relocated values  */
 
-static void 
-_update_table(gp_object_type *object)  
+void 
+gp_cofflink_update_table(gp_object_type *object)  
 {
   gp_symbol_type *symbol = object->symbols;
   gp_section_type *section = object->sections;
@@ -1188,7 +1188,7 @@ gp_cofflink_fill_pages(gp_object_type *object,
     for (sym = sections->hash_table[i]; sym; sym = sym->next) {
       section_def = get_symbol_annotation(sym);
       if ((section_def->type == codepage) &&
-          (section_def->use_fill == 1)) {
+          (section_def->use_fill)) {
         while (1) {
           found = _search_memory(m, 
                                  byte_addr,
@@ -1241,97 +1241,6 @@ gp_cofflink_fill_pages(gp_object_type *object,
   return;
 }
 
-/* relocate all sections in the object file */
-
-void 
-gp_cofflink_reloc(gp_object_type *object,
-                  struct symbol_table *sections,
-                  struct symbol_table *logical_sections)  
-{
-  MemBlock *data, *program;
-  int byte_addr;
-  
-  /* Enhanced 16 bit devices (18xx) use byte addressing */
-  if (object->class == PROC_CLASS_PIC16E)
-    byte_addr = 1;
-  else
-    byte_addr = 0;
-
-  /* create memory representing target memory */ 
-  data = i_memory_create();
-  program = i_memory_create();
-
-  /* combine all object files into one object */
-  gp_cofflink_combine_objects(object);
-
-  /* combine overlay sections */
-  gp_cofflink_combine_overlay(object, 0);
-
-  /* combine all sections with the same name */
-  gp_cofflink_merge_sections(object, byte_addr);
-
-  /* create ROM data for initialized data sections */
-  gp_cofflink_make_idata(object);
-
-  /* allocate memory for absolute sections */
-  gp_debug("verifying absolute sections.");
-  gp_cofflink_reloc_abs(program, 
-                        byte_addr,
-                        object->sections,
-                        STYP_TEXT | STYP_DATA_ROM);
-  gp_cofflink_reloc_abs(data, 
-                        0,
-                        object->sections, 
-                        STYP_DATA | STYP_BSS | STYP_SHARED | 
-                        STYP_OVERLAY | STYP_ACCESS);
-
-  /* FIXME: allocate assigned stacks */ 
-
-  /* allocate memory for relocatable assigned sections */
-  gp_debug("relocating assigned sections.");
-  gp_cofflink_reloc_assigned(program, 
-                             byte_addr,
-                             object->sections,
-                             STYP_TEXT | STYP_DATA_ROM,
-                             sections,
-                             logical_sections);
-  gp_cofflink_reloc_assigned(data, 
-                             0,
-                             object->sections, 
-                             STYP_DATA | STYP_BSS | STYP_SHARED | 
-                             STYP_OVERLAY | STYP_ACCESS,
-                             sections,
-                             logical_sections);
-  
-  /* FIXME: allocate unassigned stacks */ 
-
-  /* allocate memory for relocatable unassigned sections */
-  gp_debug("relocating unassigned sections.");
-  gp_cofflink_reloc_unassigned(program, 
-                               byte_addr,
-                               object->sections,
-                               STYP_TEXT | STYP_DATA_ROM,
-                               sections);
-  gp_cofflink_reloc_unassigned(data, 
-                               0,
-                               object->sections, 
-                               STYP_DATA | STYP_BSS | STYP_SHARED | 
-                               STYP_OVERLAY | STYP_ACCESS,
-                               sections);
-
-  /* load the table with the relocated addresses */
-  gp_add_cinit_section(object, byte_addr);
-
-  _update_table(object);
-
-  gp_cofflink_fill_pages(object, program, byte_addr, sections);
-
-  i_memory_free(data);
-  i_memory_free(program);
-
-  return;
-}
-
 static void
 check_relative(gp_section_type *section, int org, int argument, int range)
 {
@@ -1347,7 +1256,7 @@ check_relative(gp_section_type *section, int org, int argument, int range)
 
 /* patch one word with the relocated address */ 
 
-void 
+static void 
 gp_cofflink_patch_addr(enum proc_class class,
                        int num_pages,
                        int num_banks,

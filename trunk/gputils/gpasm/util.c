@@ -220,7 +220,7 @@ void set_global(char *name,
 
 void select_errorlevel(int level)
 {
-  if (state.cmd_line.error_level == 1) {
+  if (state.cmd_line.error_level) {
     gpmessage(GPM_SUPVAL, NULL);
   } else {
     if (level == 0) {
@@ -243,15 +243,15 @@ void select_errorlevel(int level)
 
 void select_expand(char *expand)
 {
-  if (state.cmd_line.macro_expand == 1) {
+  if (state.cmd_line.macro_expand) {
     gpmessage(GPM_SUPLIN, NULL);
   } else {
     if (strcasecmp(expand, "ON") == 0) {
-      state.lst.expand = 1;
+      state.lst.expand = true;
     } else if (strcasecmp(expand, "OFF") == 0) {
-      state.lst.expand = 0;
+      state.lst.expand = false;
     } else {
-      state.lst.expand = 1;
+      state.lst.expand = true;
       if (state.pass == 0) {
 	fprintf(stderr,
 		"Error: invalid option \"%s\"\n",
@@ -265,7 +265,7 @@ void select_expand(char *expand)
 
 void select_hexformat(char *format_name)
 {
-  if (state.cmd_line.hex_format == 1) {
+  if (state.cmd_line.hex_format) {
     gpwarning(GPW_CMDLINE_HEXFMT, NULL);
   } else {
     if (strcasecmp(format_name, "inhx8m") == 0) {
@@ -291,7 +291,7 @@ void select_hexformat(char *format_name)
 
 void select_radix(char *radix_name)
 {
-  if (state.cmd_line.radix == 1) {
+  if (state.cmd_line.radix) {
     gpwarning(GPW_CMDLINE_RADIX, NULL);
   } else {
     if (strcasecmp(radix_name, "hex") == 0) {

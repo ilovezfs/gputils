@@ -77,27 +77,27 @@ extern struct gpasm_state {
   enum gpasm_modes mode;
   int radix;
   enum formats hex_format;
-  int case_insensitive;
-  int quiet;
+  gp_boolean case_insensitive;
+  gp_boolean quiet;
   int error_level;		/* 0, 1, 2 */
-  int debug_info;		/* use debug directives for coff outputs */
+  gp_boolean debug_info;	/* use debug directives for coff outputs */
   int path_num;                 /* number of paths in the list */
   char *paths[MAX_PATHS];       /* the list of include paths */
   struct {			/* Command line override flags */
-    int radix;			/* When 1, the value is specified by the */
-    int hex_format;		/* command line */
-    int error_level;
-    int macro_expand;		
-    int processor;
-    int lst_force;
+    gp_boolean radix;		/* value is specified by the command line */
+    gp_boolean hex_format;		
+    gp_boolean error_level;
+    gp_boolean macro_expand;		
+    gp_boolean processor;
+    gp_boolean lst_force;
   } cmd_line;
   int pass;			/* 1 or 2 */
   unsigned int org;		/* Current code-generation point */
-  int dos_newlines;		/* Use DOS newlines in hex file */
-  int memory_dump;		/* Dump instruction memory to standard output */
-  int found_config;		/* config directive in source code */
-  int found_devid;		/* config directive in source code */
-  int found_idlocs;		/* idlocs directive in source code */
+  gp_boolean dos_newlines;	/* Use DOS newlines in hex file */
+  gp_boolean memory_dump;	/* Dump instruction memory to standard output */
+  gp_boolean found_config;	/* config directive in source code */
+  gp_boolean found_devid;	/* config directive in source code */
+  gp_boolean found_idlocs;	/* idlocs directive in source code */
   gp_boolean register_block;    /* detect header register blocks for gp2pub */
   unsigned int maxram;		/* Highest legal memory location */
   enum outfile
@@ -165,9 +165,9 @@ extern struct gpasm_state {
         linetype;
     } line;
     char startdate[80];		/*   When assembly started */
-    int enabled;		/*   nonzero if listing is enabled */
-    int expand;			/*   1 if the macro listings are expanded */
-    int force;                  /*   1 if ignoring nolist directives */
+    gp_boolean enabled;		/*   listing is enabled */
+    gp_boolean expand;		/*   macro listings are expanded */
+    gp_boolean force;		/*   ignoring nolist directives */
     int config_address;		/*   list config address for 16 bit devices */
     char title_name[80];	/*   given in TITLE directive */
     char subtitle_name[80];	/*   given in SUBTITLE directive */
@@ -175,7 +175,7 @@ extern struct gpasm_state {
   } lst;
   struct {			/* Symbol file state: */
     FILE *f;			/*   Symbol file output */
-    int enabled;		/*   nonzero if symbol file is enabled */
+    gp_boolean enabled;		/*   nonzero if symbol file is enabled */
     int emitting;               /*   flag indicating when an opcode is emitted */
   } cod;
   struct {			/* Object file state: */
@@ -183,7 +183,7 @@ extern struct gpasm_state {
     gp_section_type *section;	/*   Current section */
     int section_num;		/*   Current section number */
     int org_num;		/*   Current org number */
-    int enabled;		/*   nonzero if object file is enabled */
+    gp_boolean enabled;		/*   nonzero if object file is enabled */
     char new_sec_name[80];	/*   new section name */
     int new_sec_addr;		/*   new section name */
     int new_sec_flags;		/*   new section name */

@@ -48,11 +48,11 @@ extern struct gplink_state {
     lstfile,			   /* List output file control */
     mapfile,			   /* Map output file control */
     objfile;			   /* Executable object file control */
-  int fill_enable;		   /* Fill unused program memory with value */
+  gp_boolean fill_enable;	   /* Fill unused program memory with value */
   unsigned int fill_value;	   /* Value to fill program memory with */
-  int has_stack;                   /* Has stack directive in linker script */
+  gp_boolean has_stack;            /* Has stack directive in linker script */
   unsigned int stack_size;	   /* Value to fill program memory with */
-  int has_idata;                   /* Has initialized data memory */
+  gp_boolean has_idata;            /* Has initialized data memory */
   char  *srcfilename,		   /* Script file name */
     basefilename[BUFSIZ],	   /* basename for generating hex,list,symbol filenames */
     codfilename[BUFSIZ],	   /* Symbol (.cod) file name */
@@ -66,12 +66,12 @@ extern struct gplink_state {
   } map;
   struct {			   /* Symbol file state: */
     FILE *f;			     /*   Symbol file output */
-    int enabled;		     /*   nonzero if symbol file is enabled */
+    gp_boolean enabled;		     /*   symbol file is enabled */
     int emitting;                    /*   flag indicating when an opcode is emitted */
   } cod;
   struct {			   /* List file state: */
     FILE *f;			     /*   List file output */
-    int enabled;		     /*   nonzero if list file is enabled */
+    gp_boolean enabled;		     /*   list file is enabled */
     struct list_context *src;        /*   list file context */
     int was_org;                     /*   last address that generated code */
   } lst;

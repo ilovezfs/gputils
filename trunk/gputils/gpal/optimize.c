@@ -480,13 +480,13 @@ tree *
 optimize_expr(tree *expr)
 {
 
-  if (gp_debug_disable == 0) {
+  if (!gp_debug_disable) {
     gp_debug("====================================================");
     gp_debug("original:");
     print_node(expr, 0);
   }
   expr = opt_expr(expr);
-  if (gp_debug_disable == 0) {
+  if (!gp_debug_disable) {
     gp_debug("optimized:");
     print_node(expr, 0);
   }
@@ -546,7 +546,7 @@ optimize_unop_expr(struct variable *dest, tree *left, tree *right)
 
   /* i = i & 0xfe ==> bitclear(i, 0) */
 
-  if ((gp_debug_disable == 0) && (unop != NULL)) {
+  if ((!gp_debug_disable) && (unop != NULL)) {
     gp_debug("====================================================");
     gp_debug("original binop:");
     print_node(left, 0);

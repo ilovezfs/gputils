@@ -628,12 +628,12 @@ static gpasmVal do_config(gpasmVal r,
   state.lst.config_address = ca;
 
   if (state.mode == relocatable) {
-    if ((state.found_devid == 0) && ((ca == DEVID1) || (ca == DEVID2))) {
+    if ((!state.found_devid) && ((ca == DEVID1) || (ca == DEVID2))) {
       coff_new_section(".devid", ca >> _16bit_core, STYP_ABS | STYP_TEXT);
-      state.found_devid = 1;
-    } else if (state.found_config == 0) {
+      state.found_devid = true;
+    } else if (!state.found_config) {
       coff_new_section(".config", ca >> _16bit_core, STYP_ABS | STYP_TEXT);
-      state.found_config = 1;
+      state.found_config = true;
     }
   }
 
@@ -1309,11 +1309,11 @@ static gpasmVal do_expand(gpasmVal r,
 		       struct pnode *parms)
 {
   state.lst.line.linetype = dir;
-  if (state.cmd_line.macro_expand == 1){
+  if (state.cmd_line.macro_expand) {
     gpmessage(GPM_SUPLIN, NULL);
   } else {
     if (enforce_arity(arity, 0)) {
-      state.lst.expand = 1;
+      state.lst.expand = true;
     }
   }
   return r;
@@ -1541,9 +1541,9 @@ static gpasmVal do_idlocs(gpasmVal r,
     }
   }
 
-  if ((state.mode == relocatable) && (state.found_idlocs == 0)) {
+  if ((state.mode == relocatable) && (!state.found_idlocs)) {
     coff_new_section(".idlocs", idreg >> _16bit_core, STYP_ABS | STYP_TEXT);
-    state.found_idlocs = 1;
+    state.found_idlocs = true;
   }
 
   state.lst.config_address = idreg;
@@ -1741,7 +1741,7 @@ static gpasmVal do_list(gpasmVal r,
 {
   struct pnode *p;
 
-  state.lst.enabled = 1;
+  state.lst.enabled = true;
   state.lst.line.linetype = dir;
 
   for (; parms; parms = TAIL(parms)) {
@@ -1867,11 +1867,11 @@ static gpasmVal do_noexpand(gpasmVal r,
 		       struct pnode *parms)
 {
   state.lst.line.linetype = dir;
-  if (state.cmd_line.macro_expand == 1){
+  if (state.cmd_line.macro_expand) {
     gpmessage(GPM_SUPLIN, NULL);
   } else {
     if (enforce_arity(arity, 0)) {
-      state.lst.expand = 0;
+      state.lst.expand = false;
     }
   }
   return r;
@@ -1885,7 +1885,7 @@ static gpasmVal do_nolist(gpasmVal r,
   state.lst.line.linetype = dir;
   
   if (!state.lst.force)
-    state.lst.enabled = 0;
+    state.lst.enabled = false;
     
   coff_add_nolistsym();
   

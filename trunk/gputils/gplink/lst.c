@@ -224,9 +224,9 @@ lst_init(void)
     strncat(state.lstfilename, ".lst", sizeof(state.lstfilename));
   }
 
-  if (state.lstfile == suppress) {
+  if ((gp_num_errors) || (state.lstfile == suppress)) {
     state.lst.f = NULL;
-    state.lst.enabled = 0;
+    state.lst.enabled = false;
     unlink(state.lstfilename);
   } else {
     state.lst.f = fopen(state.lstfilename, "wt");
@@ -234,7 +234,7 @@ lst_init(void)
       perror(state.lstfilename);
       exit(1);
     }
-    state.lst.enabled = 1;
+    state.lst.enabled = true;
   }
 
   if(!state.lst.enabled)
