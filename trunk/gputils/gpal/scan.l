@@ -104,7 +104,7 @@ DECCHAR [0-9]
 			  yylval.s = strdup(yytext + 1);
                           return STRING;
 			}
-[a-z][_.0-9a-z]*	{
+[_.a-z][_.0-9a-z]*	{
 			  yylval.s = strdup(yytext);
 			  return IDENT;
 			}
