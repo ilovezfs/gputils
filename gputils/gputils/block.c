@@ -33,6 +33,7 @@ void directory_block(void)
   char *processor_name;
   struct px *processor_info;
   enum proc_class processor_class;
+  int time;
   int bytes_for_address;
   
   block = main_dir.dir.block;
@@ -45,9 +46,10 @@ void directory_block(void)
 	 &block[COD_DIR_SOURCE]);
   printf("Date              %s\n",
 	 substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_DATE],7));
-  printf("Time              %2d:%2d\n",
-	 gp_getl16(&block[COD_DIR_TIME]) / 100, 
-	 gp_getl16(&block[COD_DIR_DATE]) % 100);
+
+  time = gp_getl16(&block[COD_DIR_TIME]);
+  
+  printf("Time              %02d:%02d\n", time / 100, time % 100);
   printf("Compiler version  %s\n",
 	 substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_VERSION],19));
   printf("Compiler          %s\n",
@@ -64,9 +66,9 @@ void directory_block(void)
   processor_info = gp_find_processor(processor_name);
   processor_class = gp_processor_class(processor_info->tag);
   if (processor_class == PROC_CLASS_PIC16E) {
-    addrsize = 2;
+    byte_addr = 1;
   } else {
-    addrsize = 1;
+    byte_addr = 0;
   }
 
   bytes_for_address = gp_getl16(&block[COD_DIR_ADDRSIZE]);
