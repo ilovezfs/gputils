@@ -516,7 +516,7 @@ static gpasmVal do_code(gpasmVal r,
   struct pnode *p;
 
   state.lst.line.linetype = sec;
-  state.next_state = _section;
+  state.next_state = state_section;
   
   if (state.mode == absolute) {
     gperror(GPE_OBJECT_ONLY, NULL);
@@ -953,35 +953,18 @@ static gpasmVal do_endw(gpasmVal r,
 			int arity,
 			struct pnode *parms)
 {
-  int temp_expand;
-  int count = 1; 
+  state.lst.line.linetype = dir;
 
   assert(!state.mac_head);
-  if (state.mac_prev == NULL)
+  if (state.mac_prev == NULL) {
     gperror(GPE_ILLEGAL_COND, "Illegal condition (ENDW).");
-  else {
-    state.mac_prev = NULL;
-
-    temp_expand = state.lst.expand;
-    if (state.stGlobal != state.stTop) {
-      state.lst.expand = 0;      /* don't expand while loops within macros */
-    }
-
-    /* Now actually do the WHILE body */
-    while (maybe_evaluate(state.while_head->parms)) {
-      execute_body(state.while_head);
-      if (count > 255) {
-        gperror(GPE_BAD_WHILE_LOOP, NULL);
-        break;
-      }
-      count++;
-    }
-    
-    state.lst.expand = temp_expand;
+  } else if (maybe_evaluate(state.while_head->parms)) {
+    state.next_state = state_while;  
+    state.next_buffer.macro = state.while_head;
   }
 
-  state.lst.line.linetype = dir;
   state.mac_body = NULL;
+  state.mac_prev = NULL;
   state.while_head = NULL;
 
   return r;
@@ -1080,7 +1063,7 @@ static gpasmVal do_exitm(gpasmVal r,
     if (state.stGlobal == state.stTop) {
       gperror(GPE_UNKNOWN, "Attempt to use \"exitm\" outside of macro");
     } else {
-      state.next_state = _exitmacro;
+      state.next_state = state_exitmacro;
     }
   }
 
@@ -1210,7 +1193,7 @@ static gpasmVal do_idata(gpasmVal r,
   struct pnode *p;
 
   state.lst.line.linetype = sec;
-  state.next_state = _section;
+  state.next_state = state_section;
   
   if (state.mode == absolute) {
     gperror(GPE_OBJECT_ONLY, NULL);
@@ -1412,7 +1395,7 @@ static gpasmVal do_include(gpasmVal r,
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (p->tag == string) {
-      state.next_state = _include;  
+      state.next_state = state_include;  
       state.next_buffer.file = strdup(p->value.string);
     } else {
       gperror(GPE_ILLEGAL_ARGU, NULL);
@@ -1681,7 +1664,7 @@ static gpasmVal do_org(gpasmVal r,
         state.obj.new_sec_addr = r;
         state.obj.new_sec_flags = STYP_TEXT | STYP_ABS;
         state.lst.line.linetype = sec;
-        state.next_state = _section;
+        state.next_state = state_section;
       }
     }
   }
@@ -1892,7 +1875,7 @@ static gpasmVal do_udata(gpasmVal r,
   struct pnode *p;
 
   state.lst.line.linetype = sec;
-  state.next_state = _section;
+  state.next_state = state_section;
   
   if (state.mode == absolute) {
     gperror(GPE_OBJECT_ONLY, NULL);
@@ -1927,7 +1910,7 @@ static gpasmVal do_udata_acs(gpasmVal r,
   struct pnode *p;
 
   state.lst.line.linetype = sec;
-  state.next_state = _section;
+  state.next_state = state_section;
   
   if (state.mode == absolute) {
     gperror(GPE_OBJECT_ONLY, NULL);
@@ -1962,7 +1945,7 @@ static gpasmVal do_udata_ovr(gpasmVal r,
   struct pnode *p;
 
   state.lst.line.linetype = sec;
-  state.next_state = _section;
+  state.next_state = state_section;
   
   if (state.mode == absolute) {
     gperror(GPE_OBJECT_ONLY, NULL);
@@ -1997,7 +1980,7 @@ static gpasmVal do_udata_shr(gpasmVal r,
   struct pnode *p;
 
   state.lst.line.linetype = sec;
-  state.next_state = _section;
+  state.next_state = state_section;
   
   if (state.mode == absolute) {
     gperror(GPE_OBJECT_ONLY, NULL);
@@ -2087,7 +2070,7 @@ static gpasmVal do_while(gpasmVal r,
   struct macro_head *head = malloc(sizeof(*head));
   struct pnode *p;
 
-  if (state.while_head != NULL) {
+  if (state.src->type == src_while) {
     state.pass = 2; /* Ensure error actually gets displayed */
     gperror(GPE_UNKNOWN, "gpasm does not yet support nested while loops");
     exit (1);
@@ -2959,88 +2942,6 @@ gpasmVal do_insn(char *name, struct pnode *parms)
   }
 
   return r;
-}
-
-/* This is an old function which is no longer used for macros.  It is still 
-   used for while loops.  */
-
-void execute_body(struct macro_head *h)
-{	
-  struct source_context *new, *old; 
-  struct macro_body *b = h->body;
-  int expand;
-
-  /* determine if the macro listing is to be expanded */
-  if (state.pass == 2) {
-    if (state.stGlobal == state.stTop) {
-      expand = 1;      /* always expand while loops */
-    } else if (state.lst.expand == 1) {
-      expand = 1;      /* only expand macros when commanded */
-    } else {
-      expand = 0;
-    }
-  } else {
-    expand = 0;
-  }
-
-  if (expand) {
-    /* setup a new source context for the macro */
-    new = (struct source_context *)malloc(sizeof(*new));
-    new->name = strdup(h->src_name);  
-    new->line_number = h->line_number;
-    new->prev = state.src;
-    state.src = new;
-    state.src->fc = add_file(ft_src, new->name); /* scan list for fc */
-  }
-
-  /* Execute the body of the macro, line by line */
-  for (; b; b = b->next) {
-    gpasmVal r;
-
-    if (expand) {    
-      state.src->line_number++;
-      state.lst.line.linetype = none; /* default lst line type */
-      state.lst.line.was_org = state.org;
-    }    
-
-    if (b->op) {
-      /* Easy place to catch 'EXITM' */
-      if (strcasecmp(b->op, "EXITM") == 0)
-	break;
-      else {
-        r = do_or_append_insn(b->op, b->parms);
-      }
-    } else {
-      r = state.org;
-    }
-    if (asm_enabled() && b->label) {
-      if (state.mac_prev) {
-	state.mac_body->label = b->label;
-      } else {
-        if ((b->op != NULL) && strcasecmp(b->op, "SET") == 0) {
-	  set_global(b->label, r, TEMPORARY, gvt_constant);
-	} else {
-          set_global(b->label, r << _16bit_core, PERMANENT, gvt_constant);
-	}
-      }
-    }
-    if (expand && (b->src_line != NULL)) {
-      lst_format_line(b->src_line, r);
-    }
-  }
-
-  if (expand) {
-    /* restore conditions before the macro call */
-    state.lst.line.was_org = state.org;
-    old = state.src;
-    state.src = state.src->prev;
-    free(old);
-  
-    state.lst.line.linetype = none;
-  } else {
-    state.lst.line.linetype = insn;
-  }
-
 }
 
 /************************************************************************/

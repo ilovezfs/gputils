@@ -35,14 +35,45 @@ Boston, MA 02111-1307, USA.  */
 #define MAX_PATHS 100
 			 
 typedef int gpasmVal; 		/* The type that internal arithmetic uses */
-enum gpasmValTypes {gvt_constant, gvt_cblock, gvt_org, gvt_address, gvt_extern,
-                    gvt_global, gvt_static};
-enum state_types { _nochange, _exitmacro, _include, _macro, _section,
-                   _substitution, _while };
 
-enum outfile { normal, suppress, named };
-enum file_types { ft_src, ft_hex, ft_lst, ft_cod, ft_other }; /* allowed file types */
-enum gpasm_modes { absolute, relocatable };
+enum gpasmValTypes {
+  gvt_constant,
+  gvt_cblock,
+  gvt_org,
+  gvt_address,
+  gvt_extern,
+  gvt_global,
+  gvt_static
+};
+
+enum state_types { 
+  state_nochange,
+  state_exitmacro,
+  state_include,
+  state_macro,
+  state_section,
+  state_substitution,
+  state_while
+};
+
+enum outfile {
+  normal,
+  suppress,
+  named
+};
+
+enum file_types {
+  ft_src,
+  ft_hex,
+  ft_lst,
+  ft_cod,
+  ft_other
+};
+
+enum gpasm_modes {
+  absolute,
+  relocatable
+};
 
 extern struct gpasm_state {
   enum gpasm_modes mode;
@@ -221,16 +252,26 @@ struct file_context {
   struct file_context *next;      /* Next in list pointer */
 };
 
+enum src_types {
+  src_unknown,
+  src_file,
+  src_macro,
+  src_substitution,
+  src_while
+};
+
 struct source_context {
   char *name;
-  enum src_types { file, macro, substitution } type;
+  enum src_types type;
   FILE *f; 
+  struct macro_head *h;
   union {
-    FILE *f;                  
-    struct macro_body *m;  
-  } lst; 
+    FILE *f;
+    struct macro_body *m;
+  } lst;
   struct yy_buffer_state *yybuf;
   unsigned int line_number;
+  unsigned int loop_number;       /* Loop number for while loops */
   gp_symbol_type *file_symbol;
   struct file_context *fc;        /* Position in the file context stack */
   struct amode *astack;		  /* Stack of amodes when a macro was called */
@@ -270,9 +311,6 @@ struct macro_head {
 };
 
 struct macro_body {
-  char *label;			/* Label for the line */
-  char *op;			/* Operation (or NULL) */
-  struct pnode *parms;		/* Parameters for op (or NULL) */
   char *src_line;		/* Original source line - for listing */
   struct macro_body *next;	/* Next line in listing */
 };

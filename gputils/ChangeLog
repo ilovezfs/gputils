@@ -1,3 +1,6 @@
+2003-11-30 Craig Franklin <craigfranklin@comcast.net>
+  * Changed gpasm while loops to insert raw text instead of a parsed tree.
+
 2003-11-29 Craig Franklin <craigfranklin@comcast.net>
   * Fixed gpasm bug that prevented some symbols from being substitued with
     macro parameters and #defines.

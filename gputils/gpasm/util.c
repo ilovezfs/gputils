@@ -329,9 +329,6 @@ void macro_append(void)
 {
   struct macro_body *body = malloc(sizeof(*body));
 
-  body->label = NULL;
-  body->op = NULL;
-  body->parms = NULL;
   body->src_line = NULL;
 
   *state.mac_prev = body;	/* append this to the chain */
@@ -350,8 +347,6 @@ gpasmVal do_or_append_insn(char *op, struct pnode *parms)
     r = do_insn(op, parms);
   } else {
     macro_append();
-    state.mac_body->op = op;
-    state.mac_body->parms = parms;
     r = 0;
   }
 
@@ -394,14 +389,8 @@ void print_pnode(struct pnode *p)
 
 void print_macro_node(struct macro_body *mac)
 {
-  if(mac->label)
-    printf(" label = %s\n",mac->label);
-  if(mac->op)
-    printf(" op = %s\n",mac->op);
   if(mac->src_line)
     printf(" src_line = %s\n",mac->src_line);
-  if(mac->parms)
-    print_pnode(mac->parms);
 }
 
 void print_macro_body(struct macro_body *mac)
