@@ -1,7 +1,8 @@
 #!/bin/sh
 
 # make-mingw - build the mingw binary distribution
-# Copyright (C) 2002 Craig Franklin
+# Copyright (C) 2002, 2003
+# Craig Franklin
 # 
 # This file is part of gputils.
 # 
@@ -228,12 +229,31 @@ distname="gputils-$version-$release-$distname"
 # compile the project and install files to the distribution directory
 ################################################################################
 
-print_banner "Configuring and compiling project"
+print_banner "Configuring project"
 CC=$CC ./configure --prefix=$dist_dir/gputils --datadir=$dist_dir \
-  $config_options && \
-make && \
-make install && \
+  $config_options
+RETVAL=$?
+if [ $RETVAL -ne 0 ]; then
+  echo "error: configuring gputils failed"
+  exit 1
+fi
 
+print_banner "Compiling project"
+make
+RETVAL=$?
+if [ $RETVAL -ne 0 ]; then
+  echo "error: compiling gputils failed"
+  exit 1
+fi
+
+print_banner "Installing files"
+make install
+RETVAL=$?
+if [ $RETVAL -ne 0 ]; then
+  echo "error: gputils install failed"
+  exit 1
+fi
+ 
 print_banner "Copying project data to distribution directory"
 # copy the common files
 for x in $common
