@@ -26,6 +26,7 @@
 ;=======================================================================
 ;Rev:   Date:        Details:                                       Who:
 ;0.10  03 June 2002  Initial release                                GK
+;0.11    09/26/02   Include both names SWDTE and SWDTEN                pas
 ;
 ;       Verify Processor
 ;
@@ -303,6 +304,7 @@ LVDL0           EQU  H'0000'
 
 
 ;----- WDTCON Bits -----------------------------------------------------
+SWDTE           EQU  H'0000'
 SWDTEN          EQU  H'0000'
 
 ;----- RCON Bits -------------------------------------------------------

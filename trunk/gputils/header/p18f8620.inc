@@ -22,6 +22,7 @@
 ;
 ;==========================================================================
 ;Rev:   Date:      Details:                                           Who:
+; 1.08    09/26/02   Include both names SWDTE and SWDTEN                pas
 ; 1.07    11/16/2001 Changed CVREF_CVRCON => CVRSS, ADEN => ADDEN	pas
 ; 1.06    10/23/01   Corrected CONFIG bits/registers, LVDCON bits       tr/pas
 ; 1.05    10/08/01   Corrected names of T2CON and T4CON bits
@@ -342,6 +343,7 @@ LVDL0           EQU  H'0000'
 
 ;----- WDTCON Bits ---------------------------------------------------------
 SWDTE           EQU  H'0000'
+SWDTEN          EQU  H'0000'
 
 ;----- RCON Bits -----------------------------------------------------------
 IPEN            EQU  H'0007'

@@ -100,10 +100,10 @@ GIE                          EQU     H'0007'
 PEIE                         EQU     H'0006'
 T0IE                         EQU     H'0005'
 INTE                         EQU     H'0004'
-GPIE                         EQU     H'0003'
+RAIE                         EQU     H'0003'
 T0IF                         EQU     H'0002'
 INTF                         EQU     H'0001'
-GPIF                         EQU     H'0000'
+RAIF                         EQU     H'0000'
 
 ;----- PIR1 Bits ----------------------------------------------------------
 
