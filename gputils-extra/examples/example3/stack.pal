@@ -1,6 +1,6 @@
-with config;
-
 module stack is
+
+  with config;
 
   stack_size  : constant uint8 = 10;
   stack_start : constant uint8 = 1;
