@@ -74,6 +74,8 @@ AC_CHECK_FUNCS(memset strcasecmp strchr strdup strerror stricmp strrchr strtol s
 # Check for functions to compile into libiberty (getopt is always compiled).
 IBERTYOBJS=
 AC_CHECK_FUNC(bzero, , [IBERTYOBJS="$IBERTYOBJS bzero.o"])
+AC_CHECK_FUNC(vsnprintf, , [IBERTYOBJS="$IBERTYOBJS vasprintf.o vsnprintf.o"])
+AC_CHECK_FUNC(snprintf, , [IBERTYOBJS="$IBERTYOBJS snprintf.o"])
 
 AM_CFLAGS=
 AM_LDFLAGS=
