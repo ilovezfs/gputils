@@ -107,7 +107,7 @@ void show_usage(void)
   printf("  -v, --version              Show version.\n");
   printf("\n");
   printf("Report bugs to:\n");
-  printf("%s\n", BUG_REPORT_URL);
+  printf("%s\n", PACKAGE_BUGREPORT);
   exit(0);
 }
 

@@ -1586,7 +1586,7 @@ analyze_public(char *public_name)
                              maybe_evaluate(DECL_INIT(current)),
                              current,
                              DECL_TYPE(current));
-          if (FILE_TYPE(state.module) == source_with) {
+          if (FILE_TYPE(state.module) == source_public) {
             add_symbol_alias(alias, current, var);
           }
         } else {

@@ -1,3 +1,8 @@
+2004-10-19 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * Fixed bug in new linker script option.
+  * Use autoconf PACKAGE_BUGREPORT macro.
+  * Improvements in gpal's 18xx code generator.
+
 2004-10-17 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Added absolute path option on win32 hosts.
   * Allow the linker script to be specified on as first item of the object

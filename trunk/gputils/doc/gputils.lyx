@@ -2335,7 +2335,7 @@ Subprograms
 Procedure
 \layout LyX-Code
 
-procedure <name> ( [<arg name> : [in|out|inout] <type>]* ) is
+procedure <name> ( [<arg name> : [in|out|inout] <type>]* )? is
 \layout LyX-Code
 
   <declarations>
@@ -2372,7 +2372,7 @@ Local constants and variables are declared in <declarations>.
 Function
 \layout LyX-Code
 
-function <name> ( [<arg name> : [in|out|inout] <type>]* ) return type is
+function <name> ( [<arg name> : [in|out|inout] <type>]* )? return type is
 \layout LyX-Code
 
   <declarations>
