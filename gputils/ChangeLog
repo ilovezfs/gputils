@@ -1,3 +1,7 @@
+2003-06-04 Craig Franklin <craigfranklin@attbi.com>
+  * gputils 0.11.4 Released.
+  * Replaced or removed obsolete macros in configure.ac.
+
 2003-06-01 Craig Franklin <craigfranklin@attbi.com>
   * Added new processors:
     p16c557 p16c747 p16f648a p16f684 p16f737 p16f767 p16f777 p18f2331 
