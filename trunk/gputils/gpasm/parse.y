@@ -143,6 +143,7 @@ void next_line(int value)
 
   if (state.src->type == macro) {
     if ((state.lst.expand) && (state.lst.enabled) && (state.pass == 2)) {
+      assert(state.src->lst.m->src_line != NULL);
       lst_format_line(state.src->lst.m->src_line, value);
     }
     if (state.src->lst.m->next)
@@ -253,7 +254,7 @@ line:
 	  struct pnode *parms;
 	  int exp_result;
 
-          exp_result = do_or_append_insn("set", mk_list($3, NULL));          
+          exp_result = do_insn("set", mk_list($3, NULL));          
           parms = mk_list(mk_2op(return_op($2), 
                                  mk_symbol($1), 
                                  mk_constant(exp_result)), NULL);
