@@ -20,10 +20,9 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gpasm.h"
-#include "gpsymbol.h"
 #include "lst.h"
-#include "gpcod.h"
 #include "cod.h"
 
 DirBlockInfo main_dir;
@@ -176,16 +175,16 @@ void init_DirBlock(DirBlockInfo *a_dir)
 void cod_init(void)
 {
 
-  switch (state.codfile) {
-  case suppress:
+  if (state.codfile != named) {
+    strcpy(state.codfilename, state.basefilename);
+    strcat(state.codfilename, ".cod");  
+  }
+
+  if (state.codfile == suppress) {
     state.cod.f = NULL;
     state.cod.enabled = 0;
-    break;
-  case normal:
-    strcpy(state.codfilename, state.basefilename);
-    strcat(state.codfilename, ".cod");
-  case named:
-    /* Don't need to do anything - name is already set up */
+    unlink(state.codfilename);
+  } else {
     state.cod.f = fopen(state.codfilename, "w");
     if (state.cod.f == NULL) {
       perror(state.codfilename);

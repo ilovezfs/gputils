@@ -19,9 +19,7 @@ the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
-
-#include "gpmemory.h"
-#include "gpwritehex.h"
+#include "libgputils.h"
 
 /* mode flags */
 #define all   0

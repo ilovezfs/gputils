@@ -20,9 +20,9 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gpasm.h"
 #include "gperror.h"
-#include "gpopcode.h"
 #include "special.h"
 #include "directive.h"
 #include "evaluate.h"

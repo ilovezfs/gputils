@@ -21,14 +21,14 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gpasm.h"
-
 #include "evaluate.h"
-#include "gpsymbol.h"
 #include "gperror.h"
 #include "directive.h"
 #include "lst.h"
 #include "macro.h"
+#include "coff.h"
 #include "scan.h"
 
 void yyerror(char *message)
@@ -172,15 +172,22 @@ void next_line(int value)
       execute_exitm();
       break;
 
+    case _include:
+      open_src(state.next_buffer.file, 1);
+      free(state.next_buffer.file);
+      break;
+
     case _macro:
       /* push the label for local directive */
       state.stTop = push_macro_symbol_table(state.stTop);
       execute_macro(state.next_buffer.macro);
       break;
 
-    case _include:
-      open_src(state.next_buffer.file, 1);
-      free(state.next_buffer.file);
+    case _section:
+      /* create a new coff section */
+      new_coff_section(state.obj.new_sec_name, 
+                       state.obj.new_sec_addr, 
+                       state.obj.new_sec_flags);
       break;
 
     default:
@@ -207,6 +214,7 @@ void next_line(int value)
 %token <s> CBLOCK, ENDC, FILL
 %token <i> NUMBER
 %token <s> STRING
+%token <i> UPPER
 %token <i> HIGH
 %token <i> LOW
 %token <i> LSH, RSH
@@ -325,6 +333,9 @@ line:
 	    } else if (!state.mac_prev) {
 	      /* Outside a macro, just define the label. */
 	      switch (state.lst.line.linetype) {
+	      case sec:
+		strncpy(state.obj.new_sec_name, $1, 78);
+		break;
 	      case set:
 		set_global($1, $2, TEMPORARY, gvt_constant);
 		break;
@@ -335,6 +346,9 @@ line:
 	      case insn:
 		set_global($1, $2 << _16bit_core, PERMANENT, gvt_address);
 		break;
+	      case res:
+		set_global($1, $2, PERMANENT, gvt_static);
+                break;
 	      case dir:
                 gperror(GPE_ILLEGAL_LABEL, NULL);
                 break;
@@ -617,7 +631,7 @@ e1:
 	}
 	;
 
-e1op:	HIGH | LOW | '-' | '!' | '~' | '+';
+e1op:	UPPER | HIGH | LOW | '-' | '!' | '~' | '+';
 
 e0:
 	cidentifier

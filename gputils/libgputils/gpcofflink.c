@@ -19,11 +19,7 @@ the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
-#include "gpcoff.h"
-#include "gpreadobj.h"
-#include "gpsymbol.h"
-#include "gpcoffgen.h"
-#include "gpcofflink.h"
+#include "libgputils.h"
 
 /* Two symbol tables are constructed. The first contains the definitions of all
    external symbols in all the object files.  This symbol table is used for
@@ -308,8 +304,8 @@ struct objectfile *gp_link_combine(struct objectlist *list)
   int num_symbols  = 0;
   unsigned int strtbl_size  = 0;
 
-  if (list != NULL)
-     output = gp_coff_init("a.out");
+  /* if (list != NULL)
+     output = gp_coff_init("a.out"); */
 
   /* create a symbol table with the section names */
   section_names = push_symbol_table(NULL, 1);

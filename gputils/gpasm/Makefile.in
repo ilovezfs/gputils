@@ -107,6 +107,7 @@ CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include -DGPASM
 
 libgpasm_a_SOURCES = \
 	cod.c \
+	coff.c \
 	directive.c \
 	evaluate.c \
 	gpasm.c \
@@ -119,6 +120,7 @@ libgpasm_a_SOURCES = \
 	special.c \
 	util.c \
 	cod.h \
+	coff.h \
 	directive.h \
 	evaluate.h \
 	gpasm.h \
@@ -148,8 +150,8 @@ DEFS = @DEFS@ -I. -I$(srcdir) -I..
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 libgpasm_a_LIBADD = 
-libgpasm_a_OBJECTS =  cod.o directive.o evaluate.o gpasm.o parse.o \
-scan.o gperror.o lst.o macro.o processor.o special.o util.o
+libgpasm_a_OBJECTS =  cod.o coff.o directive.o evaluate.o gpasm.o \
+parse.o scan.o gperror.o lst.o macro.o processor.o special.o util.o
 bin_PROGRAMS =  gpasm$(EXEEXT)
 PROGRAMS =  $(bin_PROGRAMS)
 
@@ -170,7 +172,7 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/cod.P .deps/directive.P .deps/evaluate.P \
+DEP_FILES =  .deps/cod.P .deps/coff.P .deps/directive.P .deps/evaluate.P \
 .deps/gpasm.P .deps/gperror.P .deps/lst.P .deps/macro.P .deps/main.P \
 .deps/parse.P .deps/processor.P .deps/scan.P .deps/special.P \
 .deps/util.P

@@ -1,5 +1,5 @@
-/* libgputils header
-   Copyright (C) 2001 Craig Franklin
+/* Generate coff file
+   Copyright (C) 2002 Craig Franklin
 
 This file is part of gputils.
 
@@ -18,22 +18,19 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-#ifndef __LIBGPUTILS_H__
-#define __LIBGPUTILS_H__
+#ifndef __COFF_H__
+#define __COFF_H__
 
-#include <gptypes.h>
-#include <gpcod.h>
-#include <gpcoff.h>
-#include <gpopcode.h>
-#include <gpprocessor.h>
-#include <gpsymbol.h>
-#include <gpmemory.h>
-#include <gpreadobj.h>
-#include <gparchive.h>
-#include <gpcoffgen.h>
-#include <gpcofflink.h>
-#include <gpdis.h>
-#include <gpwritehex.h>
-#include <gpreadhex.h>
+void coff_init(void);
+void coff_close_file(void);
+void new_coff_section(char *name, int addr, int flags);
+void coff_add_sym(char *name, int value, int section, int type, int class);
+void coff_reloc(int symbol, short offset, unsigned short type);
+void coff_linenum(int emitted);
+void coff_add_filesym(char *name, int isinclude);
+void coff_add_eofsym(void);
+void coff_add_listsym(void);
+void coff_add_nolistsym(void);
+unsigned long coff_section_flags(void);
 
 #endif

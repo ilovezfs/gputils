@@ -26,6 +26,8 @@ Boston, MA 02111-1307, USA.  */
 
 #define OPTMAGIC 0x5678
 
+/* FIXME: change to typedefs */
+
 /* coff file header format */
 struct filehdr
 {
@@ -118,11 +120,6 @@ struct reloc
 };
 
 #define RELOC_SIZ 12
-
-/* FIXME: MCHIP defines r_offset as part of their relocation structure.  This
-doesn't seem to be standard coff.  It shouldn't be necessary.  I think this
-value should always be the section header's r_paddr value.  Including it
-is unneccesary.  Find out. */
 
 /* relocation for the CALL instruction (first word only on 18cxx) */
 #define     RELOCT_CALL     1

@@ -3,6 +3,8 @@ list is in no particular order.
 
   * Finish gplink and gplib.
   * Use dejagnu for testing.
+  * Add number of pages and banks to the processor definitions and use it.
+  * Clean up the byte verses word, data memory/program memory stuff.
   * grep the source for FIXME and fix.
   * Implement nested while loops.
   * Add object file generation to gpasm.
@@ -15,3 +17,6 @@ list is in no particular order.
   * Start migrating to the GNU coding style.
   * Add macro names to symbol table in listing file.
   * Clean up includes.  Use libgputils.h.
+  * Add .ident for HLL tools 
+  * Add .file/.line for debugger.
+  * Add .def/.endef for embedding debug/optimization information

@@ -27,19 +27,20 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gpasm.h"
 #include "parse.h"
 #include "scan.h"
 #include "gperror.h"
-#include "gpsymbol.h"
 #include "directive.h"
 #include "macro.h"
+#include "coff.h"
 
 #define OPERATOR(x)  return (yylval.i = (x))
 /* YY_UNPUT not used, suppress the warning */
 #define YY_NO_UNPUT
 
-enum identtype { defines, directives, globals, macros, opcodes, unknown };
+enum identtype { defines, directives, globals, macros, opcodes, unknown_type };
 enum identtype identify(char *);
 
 static void push_string(char *str);
@@ -150,6 +151,10 @@ fill[ \t]*\(     	 {
                            }
 			   BEGIN(INITIAL);
                          }
+upper			 {
+			   yylval.i = UPPER;
+			   return UPPER;
+			 }
 high			 {
 			   yylval.i = HIGH;
 			   return HIGH;
@@ -253,7 +258,7 @@ list		     	 {
                                  gperror(GPE_BADCHAR, "Illegal character (:)");
                                return IDENTIFIER;
                                break;
-                             case unknown:
+                             case unknown_type:
                                return LABEL;
                              default:
                                return LABEL;
@@ -494,6 +499,8 @@ void open_src(char *name, int isinclude)
   }
 #endif
 
+  coff_add_filesym(new->name, isinclude);
+
   new->type = file;
   new->line_number = 1;	/* Files start at line 1, for some reason */
   new->prev = state.src;
@@ -573,6 +580,7 @@ void close_file()
     if (old->lst.f != NULL)
       fclose(old->lst.f);
     free(old->name);
+    coff_add_eofsym();
   } else if (old->type == macro) {
     state.stTop = pop_symbol_table(state.stTop);
     state.stTopDefines = pop_symbol_table(state.stTopDefines);
@@ -664,7 +672,7 @@ enum identtype identify(char *text)
   } else if ((sym = get_symbol(state.stMacros, text)) != NULL) {
     type = macros;
   } else {
-    type = unknown;
+    type = unknown_type;
   }
 
   return type;

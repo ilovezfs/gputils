@@ -20,9 +20,10 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gpasm.h"
-#include "gpsymbol.h"
 #include "cod.h"
+#include "coff.h"
 
 extern int _16bit_core;
 
@@ -104,16 +105,16 @@ void lst_init()
   state.lst.subtitle_name[0] = '\0';  
   state.lst.tabstop = 8;	/* Default tabstop every 8 */
 
-  switch (state.lstfile) {
-  case suppress:
+  if (state.lstfile != named) {
+    strcpy(state.lstfilename, state.basefilename);
+    strcat(state.lstfilename, ".lst");  
+  }
+
+  if (state.lstfile == suppress) {
     state.lst.f = NULL;
     state.lst.enabled = 0;
-    break;
-  case normal:
-    strcpy(state.lstfilename, state.basefilename);
-    strcat(state.lstfilename, ".lst");
-  case named:
-    /* Don't need to do anything - name is already set up */
+    unlink(state.lstfilename);
+  } else {
     state.lst.f = fopen(state.lstfilename, "w");
     if (state.lst.f == NULL) {
       perror(state.lstfilename);
@@ -283,6 +284,8 @@ void lst_format_line(char *src_line, int value)
       e += strlen(e);
     }
     break;
+  case sec:
+  case res:
   case dir:
   case none:
   default:
@@ -326,6 +329,8 @@ void lst_format_line(char *src_line, int value)
   state.cod.emitting = emitted;
 
   lst_line(m);
+
+  coff_linenum(emitted);
 
 #ifdef PARSE_DEBUG
   fprintf(stderr, "%s\n\n", m);

@@ -80,13 +80,18 @@ void print_f_header(struct filehdr *fileheader)
 
 void print_opt_header(struct opthdr *optheader)
 {
+  char *name = gp_processor_coff_name(optheader->proc_type, 1);
+  
   printf("Optional Header\n");
   printf("Option Magic Number  %#x\n",  optheader->opt_magic);
   printf("Compiler Version     %#x\n",  optheader->vstamp);
-  printf("Processor Type       %#lx\n", optheader->proc_type);
+  printf("Processor Type       %#lx (%s)\n", 
+          optheader->proc_type, 
+          name != NULL ? name: " ");
   printf("ROM Width            %#lx\n", optheader->rom_width_bits);
   printf("RAM Width            %#lx\n", optheader->ram_width_bits);
   printf("\n");
+  
   return;
 }
 
@@ -201,13 +206,13 @@ void print_sec_list(struct section *sections, int number)
 
     print_sec_header(&current->header);
 
-    if (current->header.s_size) {
+    if ((current->header.s_size) && (current->header.s_scnptr)) {
       print_data(current->data, current->header.s_size);
     }
-    if (current->header.s_nreloc) {
+    if ((current->header.s_nreloc) && (current->header.s_relptr)) {
       print_reloc_list(current->relocations, current->header.s_nreloc);
     }
-    if (current->header.s_nlnno) {
+    if ((current->header.s_nlnno) && (current->header.s_lnnoptr)) {
       print_linenum_list(current->linenumbers, current->header.s_nlnno);
     }
     
@@ -224,6 +229,7 @@ void print_sym_table (struct syment *symbol, int number)
 
   for (i = 0; i < number; i++) {
     current = &symbol[i];
+    printf("[%i]\n", i);
     printf("Symbol            ");
     /* FIXME: use gp_fetch_symbol_name from gpreadobj.c */
     if (current->sym_name.ptr.s_zeros == 0) {

@@ -19,11 +19,7 @@ the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
-
-#include "gpopcode.h"
-#include "gpmemory.h"
-#include "gpprocessor.h"
-#include "gpdis.h"
+#include "libgputils.h"
 
 #define byte_op  0
 #define bit_op   1

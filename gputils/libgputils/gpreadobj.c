@@ -19,10 +19,7 @@ the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
-#include "gpcoff.h"
-#include "gpreadobj.h"
-#include "gpsymbol.h"
-#include "gparchive.h"
+#include "libgputils.h"
 
 unsigned short get_16(unsigned char *addr)
 {
@@ -161,7 +158,7 @@ void read_sections(struct objectfile *object, unsigned char *file)
 
     section_ptr += SEC_HDR_SIZ;
 
-    if (current->header.s_size) {
+    if ((current->header.s_size) && (current->header.s_scnptr)) {
       loc = &file[current->header.s_scnptr];
       number = current->header.s_size >> 1;
       current->data = (unsigned int *)malloc(number * sizeof(unsigned int)); 
@@ -169,7 +166,7 @@ void read_sections(struct objectfile *object, unsigned char *file)
         current->data[j] = (unsigned int)get_16(&loc[j * 2]); 
     }
 
-    if (current->header.s_nreloc) {
+    if ((current->header.s_nreloc) && (current->header.s_relptr)) {
       loc = &file[current->header.s_relptr];
       number = current->header.s_nreloc;
       current->relocations = (struct reloc *)malloc(number * 
@@ -180,7 +177,7 @@ void read_sections(struct objectfile *object, unsigned char *file)
       }
     }
 
-    if (current->header.s_nlnno) {
+    if ((current->header.s_nlnno) && (current->header.s_lnnoptr)) {
       loc = &file[current->header.s_lnnoptr];
       number = current->header.s_nlnno;
       current->linenumbers = (struct lineno *)malloc(number * 
@@ -328,7 +325,8 @@ struct objectfile *readobj(char *filename, char *message)
     return NULL;
 
   object = convert_object((unsigned char *)file->file, message);
-  object->filename = strdup(filename);
+  if (object != NULL)
+    object->filename = strdup(filename);
 
   return object;
 
