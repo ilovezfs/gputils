@@ -106,6 +106,16 @@ mk_node(enum node_tag tag)
 }
 
 tree *
+mk_alias(char *alias, char *name)
+{
+  tree *new = mk_node(node_alias);
+  new->value.alias.alias = alias;
+  new->value.alias.name = name;
+  
+  return new;
+}
+
+tree *
 mk_arg(char *name, enum node_dir dir, char *type)
 {
   tree *new = mk_node(node_arg);
@@ -396,6 +406,12 @@ print_node(tree *node, int level)
   case node_unknown:
     print_space(level);
     printf("node_unknown\n");
+    break;
+  case node_alias:
+    print_space(level);
+    printf("node_alias alias=%s, name=%s\n",
+            ALIAS_ALIAS(node),
+            ALIAS_NAME(node));
     break;
   case node_arg:
     print_space(level);

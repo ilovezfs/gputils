@@ -70,6 +70,7 @@ DECCHAR [0-9]
 	  		    exit(1);
 			  }
 			}
+"alias"			{ return ALIAS; }
 "array"			{ return ARRAY; }
 "begin"			{ return BEGIN_TOK; }
 "case"			{ return CASE; }

@@ -110,7 +110,7 @@ esac
 
 # Host filesystem options
 case "${host}" in
-  *mingw* | *-pc-os2_emx | *-pc-os2-emx )
+  *mingw* | *-pc-os2_emx | *-pc-os2-emx | *djgpp* )
     AC_DEFINE(HAVE_DOS_BASED_FILE_SYSTEM, 1, 
       [Define if your host uses a DOS based file system. ])
     ;;
