@@ -39,6 +39,7 @@ enum insn_class {
   INSN_CLASS_LIT1,	/* bit 0 contains a 1 bit literal		*/
   INSN_CLASS_LIT4S,     /* Bits 7:4 contain a 4 bit literal, bits 3:0 are unused   */
   INSN_CLASS_LIT8,	/* bits 7:0 contain an 8 bit literal		*/
+  INSN_CLASS_LIT8C,	/* bits 7:0 contain an 8 bit literal, CALL	*/
   INSN_CLASS_LIT9,	/* bits 8:0 contain a 9 bit literal		*/
   INSN_CLASS_LIT11,	/* bits 10:0 contain an 11 bit literal		*/
   INSN_CLASS_LIT13,	/* bits 12:0 contain an 11 bit literal		*/
@@ -1373,7 +1374,8 @@ static gpasmVal do_nolist(gpasmVal r,
 		       struct pnode *parms)
 {
   state.lst.line.linetype = dir;
-  state.lst.enabled = 0;
+  if (!state.lst.force)
+    state.lst.enabled = 0;
   return r;
 }
 
@@ -1669,8 +1671,41 @@ void file_ok(unsigned int file)
   if ((0 > file) || (file > state.maxram) || (state.badram[file])) {
     gpwarning(GPW_INVALID_RAM, NULL);
   }
-  /* Issue bank bit warning if necessary*/
+  
+  /* Issue bank message if necessary */
+  if (state.device.core_size == CORE_12BIT_MASK) {
+    if (file & (~0x1f))
+      gpmessage(GPM_BANK, NULL);   
+  } else if (state.device.core_size == CORE_14BIT_MASK) {
+    if (file & (~0x7f))
+      gpmessage(GPM_BANK, NULL);  
+  }
+
   return;
+}
+
+static void emit_check(int insn, int argument, int mask)
+{
+  int test = argument;
+
+  if (test < 0)
+    test = -test;
+
+  /* ones complement the mask and logical AND it with the argument */
+  if (test & (~mask))
+    gpwarning(GPW_RANGE, NULL);
+
+  emit(insn | (argument & mask));
+  
+  return;
+} 
+
+static int check_flag(int flag)
+{
+  if ((flag != 0) && (flag != 1))
+    gpwarning(GPW_RANGE, NULL);
+
+  return flag & 0x1;
 }
 
 gpasmVal do_insn(char *name, struct pnode *parms)
@@ -1699,15 +1734,13 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_LIT3_BANK:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
-	  emit(i->mask | ((maybe_evaluate(p) >> 5) & 0x07));
-	  /* should issue warning if out of range */
+	  emit_check(i->mask, (maybe_evaluate(p) >> 5), 0x07);
 	}
 	break;
       case INSN_CLASS_LIT3_PAGE:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
-	  emit(i->mask | ((maybe_evaluate(p) >> 9) & 0x07));
-	  /* should issue warning if out of range */
+	  emit_check(i->mask, (maybe_evaluate(p) >> 9), 0x07);
 	}
 	break;
       case INSN_CLASS_LIT1:
@@ -1715,7 +1748,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  int s = 0;
 	  switch (arity) {
 	  case 1:
-	    s = maybe_evaluate(HEAD(parms)) & 1;
+	    s = check_flag(maybe_evaluate(HEAD(parms)));
 	  case 0:
 	    emit(i->mask | s);
 	    break;
@@ -1727,53 +1760,93 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_LIT4:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
-	  emit(i->mask | (maybe_evaluate(p) & 0x0f));
-	  /* should issue warning if out of range */
+	  emit_check(i->mask, maybe_evaluate(p), 0x0f);
 	}
 	break;
       case INSN_CLASS_LIT4S:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
-	  emit(i->mask | ( (maybe_evaluate(p) & 0x0f) << 4) );
-	  /* should issue warning if out of range */
+	  emit_check(i->mask, (maybe_evaluate(p) << 4), 0xf0);
 	}
 	break;
       case INSN_CLASS_LIT8:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
-	  emit(i->mask | (maybe_evaluate(p) & 0xff));
+	  emit_check(i->mask, maybe_evaluate(p), 0xff);
+	}
+	break;
+      case INSN_CLASS_LIT8C:
+	if (enforce_arity(arity, 1)) {
+	  int value;
+
+	  p = HEAD(parms);
+	  value = maybe_evaluate(p);	  
+
+	  /* PC is 11 bits.  mpasm checks the maximum device address. */
+	  if (value & (~0x7ff))
+	    gperror(GPE_RANGE, NULL);
+
+	  if ((value & 0x600) != (state.org & 0x600))
+	    gpmessage(GPM_PAGE, NULL);	  
+
+	  if (value & 0x100)
+	    gperror(GPE_BAD_CALL_ADDR, NULL);
+	  	  
+	  emit(i->mask | (value & 0xff));	      
 	}
 	break;
       case INSN_CLASS_LIT9:
 	if (enforce_arity(arity, 1)) {
+	  int value;
+
 	  p = HEAD(parms);
-	  emit(i->mask | (maybe_evaluate(p) & 0x1ff));
+	  value = maybe_evaluate(p);
+
+	  /* PC is 11 bits.  mpasm checks the maximum device address. */
+	  if (value & (~0x7ff))
+	    gperror(GPE_RANGE, NULL); 	  
+	  
+	  if ((value & 0x600) != (state.org & 0x600))
+	    gpmessage(GPM_PAGE, NULL);	  
+	  	  
+	  emit(i->mask | (value & 0x1ff));
 	}
 	break;
       case INSN_CLASS_LIT11:
 	if (enforce_arity(arity, 1)) {
+	  int value;
+	  
 	  p = HEAD(parms);
-	  emit(i->mask | (maybe_evaluate(p) & 0x7ff));
+	  value = maybe_evaluate(p);
+	  
+	  /* PC is 13 bits.  mpasm checks the maximum device address. */
+	  if (value & (~0x1fff))
+	    gperror(GPE_RANGE, NULL); 	  
+	  
+	  if ((value & 0x1800) != (state.org & 0x1800))
+	    gpmessage(GPM_PAGE, NULL);
+	  
+	  emit(i->mask | (value & 0x7ff));
 	}
 	break;
       case INSN_CLASS_LIT13:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
-	  emit(i->mask | (maybe_evaluate(p) & 0x1fff));
+	  emit_check(i->mask, maybe_evaluate(p), 0x1fff);
 	}
 	break;
       case INSN_CLASS_RBRA8:
 	if (enforce_arity(arity, 1)) {
-	  emit(i->mask | 
-	       ((((maybe_evaluate( HEAD(parms)) ) - 
-		 ((state.org + 1)<<_16bit_core)) >> _16bit_core)  & 0xff));
+          emit_check(i->mask, 
+                  (((maybe_evaluate( HEAD(parms)) ) - 
+                   ((state.org + 1)<<_16bit_core)) >> _16bit_core), 0xff);
 	}
 	break;
       case INSN_CLASS_RBRA11:
 	if (enforce_arity(arity, 1)) {
-	  emit(i->mask | 
-	       ((((maybe_evaluate( HEAD(parms)) ) - 
-		 ((state.org + 1)<<_16bit_core)) >> _16bit_core)  & 0x7ff));
+          emit_check(i->mask, 
+                  (((maybe_evaluate( HEAD(parms)) ) - 
+                   ((state.org + 1)<<_16bit_core)) >> _16bit_core), 0x7ff);
 	}
 	break;
       case INSN_CLASS_LIT20:
@@ -1782,14 +1855,12 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  int dest;
 	  p = HEAD(parms);
 	  dest = maybe_evaluate(p) >> _16bit_core;
-	  emit(i->mask | (dest & 0xff));
-	  emit(0xf000 |  ( (dest>>8) & 0xfff));
+	  emit_check(i->mask, dest, 0xff);
+	  emit_check(0xf000, dest>>8, 0xfff);
 	}
 	break;
       case INSN_CLASS_CALL20:
 	{
-
-
 	  int dest;
 	  int s = 0; /* By default, fast push is not used */
 	  struct pnode *p2; /* second parameter */
@@ -1803,7 +1874,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 		(strcasecmp(p2->value.symbol, "s") == 0))
 	      s = 1;
 	    else
-	      s = maybe_evaluate(p2);
+	      s = check_flag(maybe_evaluate(p2));
 	    break;
 	  case 1:
 	    s = 0;
@@ -1812,9 +1883,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    enforce_arity(arity, 2);
 	  }
 	  dest = maybe_evaluate(p) >> _16bit_core;
-	  emit(i->mask | (s<<8) |(dest & 0xff));
-	  emit(0xf000 |  ( (dest>>8) & 0xfff));
-
+	  emit_check(i->mask | (s<<8), dest, 0xff);
+	  emit_check(0xf000, (dest>>8), 0xfff);
 	}
 	break;
       case INSN_CLASS_FLIT12:
@@ -1830,9 +1900,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    p = HEAD(TAIL(parms));
 	    k =  maybe_evaluate(p);
 
-	    emit(i->mask | ( ((file & 3) <<4) | ((k>>8) & 0xf) ) );
-	    emit(0xf000 |  (k & 0xff));
-
+	    emit_check(i->mask | ((file & 3) << 4), (k>>8), 0xf);
+	    emit_check(0xf000, k, 0xff);
 	  }
 	}
 	break;
@@ -1840,8 +1909,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_FF:
 	if (enforce_arity(arity, 2)) {
 
-	  emit(i->mask | (maybe_evaluate( HEAD(parms)) & 0xfff));
-	  emit(0xf000  | (maybe_evaluate( HEAD(TAIL(parms))) & 0xfff));
+	  emit_check(i->mask, maybe_evaluate(HEAD(parms)), 0xfff);
+	  emit_check(0xf000, maybe_evaluate(HEAD(TAIL(parms))), 0xfff);
 
 	}
 	break;
@@ -1885,7 +1954,6 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    break;
 	  }
 
-
 	  p = HEAD(parms);
 	  switch (arity) {
 	  case 2:
@@ -1898,7 +1966,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 		     (strcasecmp(p2->value.symbol, "w") == 0))
 	      d = 0;
 	    else
-	      d = maybe_evaluate(p2);
+	      d = check_flag(maybe_evaluate(p2));
 	    break;
 	  case 1:
             d = 1;
@@ -1991,7 +2059,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 		     (strcasecmp(p2->value.symbol, "w") == 0))
 	      d = 0;
 	    else
-	      d = maybe_evaluate(p2);
+	      d = check_flag(maybe_evaluate(p2));
 	    break;
 	  case 1:
             d = 1;
@@ -2028,7 +2096,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 		     (strcasecmp(p2->value.symbol, "w") == 0))
 	      d = 0;
 	    else
-	      d = maybe_evaluate(p2);
+	      d = check_flag(maybe_evaluate(p2));
 	    break;
 	  case 1:
             d = 1;
@@ -2070,7 +2138,6 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    break;
 	  }
 
-
 	  p = HEAD(parms);
 	  switch (arity) {
 	  case 2:
@@ -2080,7 +2147,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 		(strcasecmp(p2->value.symbol, "b") == 0))
 	      a = 1;
 	    else
-	      a = maybe_evaluate(p2);
+	      a = check_flag(maybe_evaluate(p2));
 	    break;
 	  case 1:
 	    /* use default a */
@@ -2107,7 +2174,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 		(strcasecmp(par->value.symbol, "b") == 0))
 	      a = 1;
 	    else
-	      a = maybe_evaluate(par);
+	      a = check_flag(maybe_evaluate(par));
 	    /* fall through */
 	  case 2:
 	    
@@ -2137,7 +2204,6 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    break;
 	  }
 
-
 	  p = HEAD(parms);
 	  switch (arity) {
 	  case 3:
@@ -2147,7 +2213,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 		(strcasecmp(par->value.symbol, "b") == 0))
 	      a = 1;
 	    else
-	      a = maybe_evaluate(par);
+	      a = check_flag(maybe_evaluate(par));
 	    /* fall through */
 	  case 2:
 	    par = HEAD(TAIL(parms));
@@ -2159,7 +2225,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 		     (strcasecmp(par->value.symbol, "w") == 0))
 	      d = 0;
 	    else
-	      d = maybe_evaluate(par);
+	      d = check_flag(maybe_evaluate(par));
 	    break;
 	  case 1:
             /* use default a and d */
@@ -2214,7 +2280,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
 	  /* "0" (lower byte) and "1" (upper byte) */
 	  p = HEAD(parms);
-	  t = maybe_evaluate(p);
+	  t = check_flag(maybe_evaluate(p));
 
 	  p2 = HEAD(TAIL(parms));
 	  file = maybe_evaluate(p2);
@@ -2232,11 +2298,11 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
 	  /* "0" (lower byte) and "1" (upper byte) */
 	  p = HEAD(parms);
-	  t = maybe_evaluate(p);
+	  t = check_flag(maybe_evaluate(p));
 
 	  /* "0" (no change) and "1" (postincrement) */
 	  p2 = HEAD(TAIL(parms));
-	  inc = maybe_evaluate(p2);
+	  inc = check_flag(maybe_evaluate(p2));
 
 	  p3 = HEAD(TAIL(TAIL(parms)));
 	  file = maybe_evaluate(p3);
@@ -2428,7 +2494,7 @@ static struct insn  op_12c5xx[] = {
   { "BSF",    0x500,	INSN_CLASS_B5 		},
   { "BTFSC",  0x600,	INSN_CLASS_B5 		},
   { "BTFSS",  0x700,	INSN_CLASS_B5		},
-  { "CALL",   0x900,	INSN_CLASS_LIT8 	},
+  { "CALL",   0x900,	INSN_CLASS_LIT8C 	},
   { "CLRF",   0x060,	INSN_CLASS_OPF5 	},
   { "CLRW",   0x040,	INSN_CLASS_IMPLICIT 	},
   { "CLRWDT", 0x004, 	INSN_CLASS_IMPLICIT 	},
@@ -2472,7 +2538,7 @@ static struct insn  op_sx[] = {
   { "BSF",    0x500,	INSN_CLASS_B5 		},
   { "BTFSC",  0x600,	INSN_CLASS_B5 		},
   { "BTFSS",  0x700,	INSN_CLASS_B5		},
-  { "CALL",   0x900,	INSN_CLASS_LIT8 	},
+  { "CALL",   0x900,	INSN_CLASS_LIT8C 	},
   { "CLRF",   0x060,	INSN_CLASS_OPF5 	},
   { "CLRW",   0x040,	INSN_CLASS_IMPLICIT 	},
   { "CLRWDT", 0x004, 	INSN_CLASS_IMPLICIT 	},

@@ -113,6 +113,7 @@ extern struct gpasm_state {
     char startdate[80];		/*   When assembly started */
     int enabled;		/*   nonzero if listing is enabled */
     int expand;			/*   1 if the macro listings are expanded */
+    int force;                  /*   1 if ignoring nolist directives */
     int config_address;		/*   list config address for 16 bit devices */
     char title_name[80];	/*   given in TITLE directive */
     char subtitle_name[80];	/*   given in SUBTITLE directive */

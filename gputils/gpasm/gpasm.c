@@ -44,14 +44,15 @@ int yyparse(void);
 
 void show_usage(void)
 {
-  printf("Usage: gpasm <options> <filename>\n");
-  printf("Where <options> are:\n");
-  printf("  -a FMT, --hex-format FMT       Select hex file format.\n");
+  printf("Usage: gpasm [options] file\n");
+  printf("Options: [defaults in brackets after descriptions]\n");
+  printf("  -a FMT, --hex-format FMT       Select hex file format. [inhx8m]\n");
   printf("  -c, --case                     Case insensitive.\n");
   printf("  -D SYM=VAL, --define SYM=VAL   Define SYM with value VAL.\n");
   printf("  -e [ON|OFF], --expand [ON|OFF] Macro expansion.\n");
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
+  printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -l, --list-chips               List supported processors.\n");
   printf("  -m, --dump                     Memory dump.\n");
   #ifndef __MSDOS__
@@ -60,8 +61,8 @@ void show_usage(void)
   printf("  -o FILE, --output FILE         Alternate name of hex file.\n");
   printf("  -p PROC, --processor PROC      Select processor.\n");
   printf("  -q, --quiet                    Quiet.\n");
-  printf("  -r RADIX, --radix RADIX        Select radix.\n");
-  printf("  -w [0|1|2], --warning [0|1|2]  Set message level.\n");
+  printf("  -r RADIX, --radix RADIX        Select radix. [hex]\n");
+  printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n");
   printf("  -v, --version                  Show version.\n");
   printf("\n");
   #ifdef USE_GPASM_HEADER_PATH
@@ -73,7 +74,7 @@ void show_usage(void)
   exit(0);
 }
 
-#define GET_OPTIONS "?D:I:a:cd:e:hlmno:p:qr:vw:"
+#define GET_OPTIONS "?D:I:La:cd:e:hlmno:p:qr:vw:"
 
   /* Used: acdDehIlmopqrwv */
   static struct option longopts[] =
@@ -85,6 +86,7 @@ void show_usage(void)
     { "define",      1, 0, 'd' },
     { "expand",      1, 0, 'e' },
     { "help",        0, 0, 'h' },
+    { "force-list",  0, 0, 'L' },
     { "list-chips",  0, 0, 'l' },
     { "dump",        0, 0, 'm' },
     { "dos",         0, 0, 'n' },
@@ -116,6 +118,7 @@ int main( int argc, char *argv[] )
   
   state.pass = 0;
   state.quiet = 0;
+  state.lst.force = 0;
 
   #ifdef PARSE_DEBUG
   {
@@ -186,7 +189,9 @@ int main( int argc, char *argv[] )
  	 exit(1);
        }
        break;    
- 
+    case 'L':
+      state.lst.force = 1;
+      break;  
     case 'l':
       dump_processor_list();
       exit(0);

@@ -54,6 +54,7 @@ enum GPE_codes {
   GPE_DIFFLAB          = 116,
   GPE_ADDROVF          = 117,  /* address overflow */
   GPE_ADDROVR          = 118,  /* overwriting a previously written address */
+  GPE_BAD_CALL_ADDR    = 120,
   GPE_ILLEGAL_LABEL    = 121,
   GPE_ILLEGAL_DIR      = 123,
   GPE_ILLEGAL_ARGU     = 124,

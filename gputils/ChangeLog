@@ -1,3 +1,15 @@
+2002-04-03 Craig Franklin <craigfranklin@attbi.com>
+  * Any argument to an instruction which exceeds its range will now generate
+    at least a warning.
+  * Bank warnings are now generated for access to register files that aren't 
+    in bank 0.
+  * Any goto or call which is to a page other than the current page will now
+    generate a page warning.
+  * Added --force-list option, so gpasm will ignore nolist directives.
+  * The default values for hex format, radix, and warning level are now 
+    displayed.
+  * Added description of the alternative number formats to documents. 
+  
 2002-02-28 Craig Franklin <craigfranklin@attbi.com>
   * Fixed a bug that inserted an extra NULL line in a macro definition when +=
     type ops are used.  The bug caused a seg fault.
