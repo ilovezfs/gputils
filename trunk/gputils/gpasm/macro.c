@@ -148,7 +148,7 @@ add_macro_table(struct symbol_table *table)
 {
   struct macro_table *new;
     
-  new = (struct macro_table *)malloc(sizeof(new));
+  new = (struct macro_table *)malloc(sizeof(*new));
   new->table = table;
   new->line_number = state.src->line_number;
   new->next = NULL;
