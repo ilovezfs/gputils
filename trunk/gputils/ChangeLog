@@ -1,3 +1,6 @@
+2003-08-08 Craig Franklin <craigfranklin@comcast.net>
+  * Fixed bug that could cause problems with comments on include directives.
+
 2003-08-01 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.11.6 Released.
   * Added support for idata sections in gplink.

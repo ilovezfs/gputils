@@ -63,7 +63,7 @@ NUMCHAR [0-9a-f]
 
 %%
 ^[ \t]*#?include[ \t]*[<"]? { BEGIN(incl); }
-<incl>[^<"\r\n]*[>"]?	 { /* got the include file name */
+<incl>[^<>";\r\n]*[>"]?	 { /* got the include file name */
 			   char *pc = &yytext[yyleng - 1];
 			   if ((*pc == '"') || (*pc == '>'))
 			     *pc = '\0';
