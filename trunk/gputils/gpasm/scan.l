@@ -459,6 +459,12 @@ A'{STR_QCHAR}'           {
 			   force_decimal = 0;
  			   return yytext[0];
 			 }
+^";----- Register".*     {
+			   state.register_block = true;
+			 }
+^";-----".*              {
+			   state.register_block = false;
+			 }
 ;.*			 {  }
 .			 { 
 			   yylval.i = yytext[0];

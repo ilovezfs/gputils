@@ -167,6 +167,7 @@ void set_global(char *name,
     var->value = value;
     var->coff_num = state.obj.symbol_num;
     var->coff_section_num = state.obj.section_num;
+    var->register_file = state.register_block;
     var->type = type;
     var->previous_type = type;  /* coff symbols can be changed to global */
   } else if (lifetime == TEMPORARY) {

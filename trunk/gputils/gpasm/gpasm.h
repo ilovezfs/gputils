@@ -100,6 +100,7 @@ extern struct gpasm_state {
   int found_config;		/* config directive in source code */
   int found_devid;		/* config directive in source code */
   int found_idlocs;		/* idlocs directive in source code */
+  gp_boolean register_block;    /* detect header register blocks for gp2pub */
   unsigned int maxram;		/* Highest legal memory location */
   enum outfile
     codfile,			/* Symbol output file control */
@@ -213,6 +214,7 @@ struct variable {
   int value;
   int coff_num;
   int coff_section_num;
+  gp_boolean register_file;
   enum gpasmValTypes type;
   enum gpasmValTypes previous_type; /* can change from static to global */
 };

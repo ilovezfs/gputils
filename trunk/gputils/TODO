@@ -11,6 +11,7 @@ gputils
     others.
 
 gpal
+  * Use "_" instead of "." in asm file to be compatible with C.
   * Add a macro/inline procedure feature.  Maybe a "pragma inline = true".
     It would then have to be placed in the public.   
   * Implement initialized data using idata sections.

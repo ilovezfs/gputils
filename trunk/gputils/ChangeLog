@@ -1,3 +1,6 @@
+2004-07-22 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * Define SFRs in pub files as uint8 instead of constant uint8.
+
 2004-07-18 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Allow multiple modules and publics in one gpal file.
 
