@@ -180,4 +180,5 @@ EXTRA_DIST =\
 	18f452.lkr \
 	18f458.lkr
 
+# Don't install the linker scripts until gplink is working
 # pkgdata_DATA= $(EXTRA_DIST)

@@ -363,6 +363,7 @@ distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
 
+# Don't install the linker scripts until gplink is working
 # pkgdata_DATA= $(EXTRA_DIST)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

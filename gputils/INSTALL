@@ -37,14 +37,14 @@ You should now be ready to assemble some PIC code by typing "gpasm".
 
 If you don't have root privleges on the system:
 
-  ./configure --prefix=/home/local/<username>
+  ./configure --prefix=/home/<username>/local
   make
   make install
 
-This will copy the executables into /home/local/<username>/bin and the shared 
-data into /home/local/<username>/share/gputils.  
+This will copy the executables into /home/<username>/local/bin and the shared 
+data into /home/<username>/local/share/gputils.  
 
-It is also a good idea to place /home/local/<username>/bin in your path.
+It is also a good idea to place /home/<username>/local/bin in your path.
 
 4.  Configure Options
 =====================
@@ -96,9 +96,8 @@ The gputils supported win32 compiler is MinGW32.  It is available at:
 
 http://www.mingw.org/
 
-MinGW32 was selected because it is based on the GNU C compiler.  It also 
-includes some libraries that gputils requires.  Additionally, it can easily be 
-used as a cross compiler on GNU systems.
+MinGW32 was selected because it is based on the GNU C compiler.  Additionally, 
+it can easily be used as a cross compiler on GNU systems.
 
 A native win32 version of MinGW32 is available.  However, the process for 
 compiling on a win32 system has not been developed.  This will be provided 

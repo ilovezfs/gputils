@@ -1,6 +1,7 @@
 This following list contains items that need to be completed.  This 
 list is in no particular order.
 
+  * Finish gplink and gplib.
   * Use dejagnu for testing.
   * grep the source for FIXME and fix.
   * Fix macro implementation so a simple text substitution is used.

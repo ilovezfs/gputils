@@ -20,6 +20,7 @@
 
 bin_PROGRAMS = gpvc gpdasm
 
+# gplib and gpvo are still being developed, so don't install them
 noinst_PROGRAMS = gplib gpvo
 
 CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
