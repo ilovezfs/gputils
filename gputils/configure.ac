@@ -63,7 +63,7 @@ AC_FUNC_ALLOCA
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(memset strcasecmp strchr strdup strerror stricmp strrchr strtol)
+AC_CHECK_FUNCS(memset strcasecmp strchr strdup strerror stricmp strrchr strtol strtoul)
 
 # Check for functions to compile into libiberty (getopt is always compiled).
 IBERTYOBJS=

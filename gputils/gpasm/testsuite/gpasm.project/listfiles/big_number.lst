@@ -1,0 +1,44 @@
+MPASM 03.50 Released                           BIG_NUMBER.ASM   10-21-2003  20:15:19         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; make sure big numbers can be used
+                      00002 
+                      00003   processor 16f877
+                      00004   radix dec
+                      00005 
+  9E3779B9            00006 POSITIVE  EQU 0x9E3779B9
+  80000000            00007 NEGATIVE  EQU -2147483648
+                      00008 
+0000   309E           00009   movlw (POSITIVE & 0xFF000000) >> 24
+0001   3080           00010   movlw (NEGATIVE & 0xFF000000) >> 24
+                      00011 
+                      00012   end
+MPASM 03.50 Released                           BIG_NUMBER.ASM   10-21-2003  20:15:19         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+NEGATIVE                          80000000
+POSITIVE                          9E3779B9
+__16F877                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XX-------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     2
+Program Memory Words Free:  8190
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+
