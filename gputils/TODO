@@ -11,6 +11,7 @@ gputils
   * Use dejagnu for testing.
 
 gpal
+  * pragma error/warning/message="string"
   * Nested subprograms.
   * Put data memory in order defined not pseudo alphabetical.
   * Don't use a stack so function pointers are a problem.  Can't have 
