@@ -1734,7 +1734,7 @@ yyreduce:
 	  if (state.mac_prev) {
 	    macro_append();
 	  }
-          yyval.i = 0;
+	  yyval.i = 0;
 	}
     break;
 
