@@ -183,7 +183,7 @@ write_file_block(void)
 
 }
 
-/* cod_write_line - add a lines of information that cross references the
+/* cod_write_line - add a line of information that cross references the
  * the opcode's address, the source file, and the list file.
  */
 

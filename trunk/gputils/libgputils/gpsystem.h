@@ -26,6 +26,7 @@ void  gp_fputl16(short data, FILE *fp);
 void  gp_fputl32(long data, FILE *fp); 
 void  gp_fputvar(char *data, int number, FILE *fp); 
 short gp_getl16(char *addr);
+unsigned short gp_getu16(char *addr);
 long  gp_getl32(char *addr);
 void  gp_putl16(char *addr, short data);
 void  gp_putl32(char *addr, long data);

@@ -1,5 +1,5 @@
 /* Displays contents of ".COD" files
-   Copyright (C) 2001, 2002, 2003
+   Copyright (C) 2001, 2002, 2003, 2004
    Scott Dattalo
 
 This file is part of gputils.
@@ -44,6 +44,48 @@ int ptr_offset(char *a, char *b)
   return(  ( (long int)a) - ((long int)b) );
 
 }
+
+/*
+  fget_line - read a line from a file.
+*/
+
+char *fget_line(int line, char *s, int size, FILE *pFile)
+{
+  static FILE *plastFile=NULL;
+  static int lastline=-1;
+  static long lastPos=-1;
+
+  if(!pFile)
+    return NULL;
+
+  /*
+    If we read a line from the same file the last time we were called
+    then see if we can take advantage of the file state:
+   */
+  if((pFile != plastFile) ||       /* if the file is the same */
+     (line < (lastline-1)) ||      /* and the line is past the previous */
+     (ftell(pFile) != lastPos) ) { /* and the file hasn't been touched */
+
+    plastFile = pFile;
+    lastline = 1;
+    rewind(pFile);
+    lastPos = -1;
+  }
+
+  while(line >= ++lastline) 
+    fgets(s, size, plastFile);
+
+  fgets(s, size, plastFile);
+
+  lastPos = ftell(plastFile);
+
+  return s;
+
+}
+
+/*
+
+*/
 
 void dump_hex(char *chunk, int length)
 {
@@ -94,23 +136,23 @@ void dump_memmap( void)
     unsigned short start, last;
   } _REC_maptab;
 
-  int _64k_base;
+  unsigned short _64k_base;
   DirBlockInfo *dbi;
 
   _REC_maptab *mt;
-  int i,j,start_block,end_block;
+  unsigned short i,j,start_block,end_block;
   int first = 1;
 
   dbi = &main_dir;
 
   do {
 
-    _64k_base = gp_getl16(&dbi->dir.block[COD_DIR_HIGHADDR]) << 16;
-    start_block = gp_getl16(&dbi->dir.block[COD_DIR_MEMMAP]);
+    _64k_base = gp_getu16(&dbi->dir.block[COD_DIR_HIGHADDR]) << 16;
+    start_block = gp_getu16(&dbi->dir.block[COD_DIR_MEMMAP]);
 
     if(start_block) {
 
-      end_block   = gp_getl16(&dbi->dir.block[COD_DIR_MEMMAP+2]);
+      end_block   = gp_getu16(&dbi->dir.block[COD_DIR_MEMMAP+2]);
 
       if(first) {
 	printf("\n\nROM Usage\n");
@@ -135,10 +177,10 @@ void dump_memmap( void)
                just like they are for an empty block. So, let's read the 
                actual block and see if there's any information there... */
 	    char t[COD_BLOCK_SIZE];
-	    int index = gp_getl16(&dbi->dir.block[2*(COD_DIR_CODE)]);
+	    unsigned short index = gp_getu16(&dbi->dir.block[2*(COD_DIR_CODE)]);
 	    if (index != 0) {
 	      read_block(t, index);
-	      if( gp_getl16(&t[0]) )
+	      if( gp_getu16(&t[0]) )
 		printf("using ROM 0x%06x to 0x%06x\n",addrsize*_64k_base/2,addrsize*_64k_base/2);
 
 	    }
@@ -159,8 +201,8 @@ void dump_memmap( void)
 
 void dump_code(void)
 {
-  int _64k_base;
-  int i,j,k,all_zero_line,index;
+  unsigned short _64k_base;
+  unsigned short i,j,k,all_zero_line,index;
   DirBlockInfo *dbi;
 
   dump_memmap();
@@ -171,9 +213,9 @@ void dump_code(void)
   dbi = &main_dir;
 
   do {
-    _64k_base = gp_getl16(&dbi->dir.block[COD_DIR_HIGHADDR]) << 15;
+    _64k_base = gp_getu16(&dbi->dir.block[COD_DIR_HIGHADDR]) << 15;
     for (k = 0; k <= 127; k++) {
-      index = gp_getl16(&dbi->dir.block[2*(COD_DIR_CODE + k)]);
+      index = gp_getu16(&dbi->dir.block[2*(COD_DIR_CODE + k)]);
       if (index != 0) {
 	read_block(temp, index);
 
@@ -183,7 +225,7 @@ void dump_code(void)
 	do {
 
 	  for(j=0, all_zero_line=1; j<8; j++)
-	    if( gp_getl16(&temp[(i+j)*2]) ) all_zero_line = 0;
+	    if( gp_getu16(&temp[(i+j)*2]) ) all_zero_line = 0;
 
 	  if(all_zero_line)
 	    i+=8;
@@ -191,7 +233,7 @@ void dump_code(void)
 	    printf("\n%06x:  ",addrsize*(_64k_base+i+k*256));
 
 	    for(j=0; j<8; j++)
-	      printf("%04x ",gp_getl16(&temp[2*i++]));
+	      printf("%04x ",gp_getu16(&temp[2*i++]));
 	  }
 
 	}while (i<COD_BLOCK_SIZE/2);
@@ -221,14 +263,14 @@ void dump_symbols( void )
 #define SR_TYPE      13
 #define SR_VALUE     14
 
-  int i,j,start_block,end_block;
+  unsigned short i,j,start_block,end_block;
   char b[16];
 
-  start_block = gp_getl16(&directory_block_data[COD_DIR_SYMTAB]);
+  start_block = gp_getu16(&directory_block_data[COD_DIR_SYMTAB]);
 
   if(start_block) {
 
-    end_block = gp_getl16(&directory_block_data[COD_DIR_SYMTAB+2]);
+    end_block = gp_getu16(&directory_block_data[COD_DIR_SYMTAB+2]);
 
     printf("\nSymbol Table Information\n");
     printf("------------------------\n\n");
@@ -242,7 +284,7 @@ void dump_symbols( void )
 	if(temp[i*SSYMBOL_SIZE + SR_NAME])
 	  printf("%s = %x, type = %s\n",
 		 substr(b,&temp[i*SSYMBOL_SIZE + SR_NAME],12), 
-		 gp_getl16(&temp[i*SSYMBOL_SIZE + SR_VALUE]), 
+		 gp_getu16(&temp[i*SSYMBOL_SIZE + SR_VALUE]), 
 		 SymbolType4[(unsigned char)temp[i*SSYMBOL_SIZE + SR_TYPE]]
 		 );
       }
@@ -263,14 +305,14 @@ void dump_lsymbols( void )
 {
   char *s,length;
   short type;
-  int i,j,start_block,end_block, value;
+  unsigned short i,j,start_block,end_block, value;
   char b[256];
 
-  start_block = gp_getl16(&directory_block_data[COD_DIR_LSYMTAB]);
+  start_block = gp_getu16(&directory_block_data[COD_DIR_LSYMTAB]);
 
   if(start_block) {
 
-    end_block = gp_getl16(&directory_block_data[COD_DIR_LSYMTAB+2]);
+    end_block = gp_getu16(&directory_block_data[COD_DIR_LSYMTAB+2]);
 
     printf("\nLong Symbol Table Information\n");
     printf("------------------------\n\n");
@@ -314,14 +356,14 @@ void dump_source_files( void )
 #define FILE_SIZE  64
 #define FILES_PER_BLOCK COD_BLOCK_SIZE/FILE_SIZE
 
-  int i,j,start_block,end_block,offset;
+  unsigned short i,j,start_block,end_block,offset;
   char b[FILE_SIZE];
 
-  start_block = gp_getl16(&directory_block_data[COD_DIR_NAMTAB]);
+  start_block = gp_getu16(&directory_block_data[COD_DIR_NAMTAB]);
 
   if(start_block) {
 
-    end_block = gp_getl16(&directory_block_data[COD_DIR_NAMTAB+2]);
+    end_block = gp_getu16(&directory_block_data[COD_DIR_NAMTAB+2]);
 
     printf("\nSource File Information\n");
     printf("------------------------\n\n");
@@ -384,16 +426,16 @@ void dump_line_symbols(void)
 {
   static int lst_line_number = 1;
   static int last_src_line = 0;
-  char buf[256];
-  int i,j,start_block,end_block;
+  char buf[2048];
+  unsigned short i,j,start_block,end_block;
 
   LineSymbol *ls;
 
-  start_block = gp_getl16(&directory_block_data[COD_DIR_LSTTAB]);
+  start_block = gp_getu16(&directory_block_data[COD_DIR_LSTTAB]);
 
   if(start_block) {
 
-    end_block = gp_getl16(&directory_block_data[COD_DIR_LSTTAB+2]);
+    end_block = gp_getu16(&directory_block_data[COD_DIR_LSTTAB+2]);
 
     printf("\n\nLine Number Information\n");
     printf(" LstLn  SrcLn  Addr   Flags         FileName\n");
@@ -418,7 +460,8 @@ void dump_line_symbols(void)
 		 source_file_names[ls[i].sfile]);
 	}
 	if(source_files[ls[i].sfile] && (ls[i].sline != last_src_line)) {
-	  fgets(buf, 256, source_files[ls[i].sfile]);
+	  /*fgets(buf, sizeof(buf), source_files[ls[i].sfile]);*/
+	  fget_line(ls[i].sline, buf, sizeof(buf), source_files[ls[i].sfile]);
 	  printf("%s",buf);
 	}
 	last_src_line = ls[i].sline;
@@ -436,16 +479,16 @@ void dump_message_area(void)
 {
   char DebugType,DebugMessage[64];
 
-  int i,j,start_block,end_block;
-  int laddress;
+  unsigned short i,j,start_block,end_block;
+  unsigned short laddress;
 
   j=0;
 
-  start_block = gp_getl16(&directory_block_data[COD_DIR_MESSTAB]);
+  start_block = gp_getu16(&directory_block_data[COD_DIR_MESSTAB]);
 
   if(start_block) {
 
-    end_block = gp_getl16(&directory_block_data[COD_DIR_MESSTAB+2]);
+    end_block = gp_getu16(&directory_block_data[COD_DIR_MESSTAB+2]);
 
     printf("\n\nDebug Message area\n");
     printf("------------------\n\n");
@@ -501,15 +544,15 @@ void dump_local_vars(void)
   symbol_record *sr;
   scope_head  *sh;
 
-  int i,j,start_block,end_block;
+  unsigned short i,j,start_block,end_block;
 
   j=0;
 
-  start_block = gp_getl16(&directory_block_data[COD_DIR_LOCALVAR]);
+  start_block = gp_getu16(&directory_block_data[COD_DIR_LOCALVAR]);
 
   if(start_block) {
 
-    end_block = gp_getl16(&directory_block_data[COD_DIR_LOCALVAR+2]);
+    end_block = gp_getu16(&directory_block_data[COD_DIR_LOCALVAR+2]);
 
     printf("\n\nLocal Symbol Scoping Information\n");
     printf("--------------------------------\n");

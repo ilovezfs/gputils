@@ -66,6 +66,12 @@ gp_getl16(char *addr)
   return value;
 }
 
+unsigned short 
+gp_getu16(char *addr)
+{
+  return (unsigned short) gp_getl16(addr);
+}
+
 long 
 gp_getl32(char *addr)
 {
