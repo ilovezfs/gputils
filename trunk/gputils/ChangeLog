@@ -1,3 +1,11 @@
+2003-06-01 Craig Franklin <craigfranklin@attbi.com>
+  * Added new processors:
+    p16c557 p16c747 p16f648a p16f684 p16f737 p16f767 p16f777 p18f2331 
+    p18f2431 p18f2439 p18f2539 p18f4331 p18f4431 p18f4439 p18f4539 
+    p18f6520 p18f6525 p18f6585 p18f6621 p18f6680 p18f8520 p18f8525
+    p18f8585 p18f8621 p18f8680 rf675f rf675h rf675k
+  * Updated header files and linker scripts.
+
 2003-05-20 Craig Franklin <craigfranklin@attbi.com>
   * Updated scripts to automake-1.6 and autoconf-2.57.
   * Ran autoscan and fixed reported problems.

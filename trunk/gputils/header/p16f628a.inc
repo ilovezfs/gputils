@@ -1,5 +1,5 @@
         LIST
-; P16F628A.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+; P16F628A.INC  Standard Header File, Version 1.10    Microchip Technology, Inc.
         NOLIST
 
 ; This header file defines configurations, registers, and other useful bits of
@@ -22,6 +22,7 @@
 ;==========================================================================
 
 ;Rev:   Date:    Reason:
+;1.01   14 Nov 2002 Updated to reflect BOD terminology changed to BOR
 ;1.00   22 Aug 2002 Initial Release
 
 ;==========================================================================
@@ -187,7 +188,7 @@ OSCF                         EQU     H'0003'
 NOT_POR                      EQU     H'0001'
 NOT_BO                       EQU     H'0000'
 NOT_BOR                      EQU     H'0000'
-NOT_BOD                      EQU     H'0000'
+NOT_BOD                      EQU     H'0000' ;Backwards compatability to 16F62X
 
 ;----- TXSTA Bits ----------------------------------------------------------
 CSRC                         EQU     H'0007'
@@ -232,8 +233,10 @@ VR0                          EQU     H'0000'
 ;
 ;==========================================================================
 
-_BODEN_ON                    EQU     H'3FFF'
-_BODEN_OFF                   EQU     H'3FBF'
+_BODEN_ON                    EQU     H'3FFF' ;Backwards compatability to 16F62X
+_BODEN_OFF                   EQU     H'3FBF' ;Backwards compatability to 16F62X
+_BOREN_ON                    EQU     H'3FFF'
+_BOREN_OFF                   EQU     H'3FBF'
 _CP_ON                       EQU     H'1FFF'
 _CP_OFF                      EQU     H'3FFF'
 _DATA_CP_ON                  EQU     H'3EFF'
@@ -248,11 +251,15 @@ _MCLRE_ON                    EQU     H'3FFF'
 _MCLRE_OFF                   EQU     H'3FDF'
 _RC_OSC_CLKOUT               EQU     H'3FFF'
 _RC_OSC_NOCLKOUT             EQU     H'3FFE'
+_ER_OSC_CLKOUT               EQU     H'3FFF' ;Backwards compatability to 16F62X
+_ER_OSC_NOCLKOUT             EQU     H'3FFE' ;Backwards compatability to 16F62X
 _INTOSC_OSC_CLKOUT   	     EQU     H'3FFD'
-_INTOSC_OSC_NOCLKOUT         EQU     H'3FFC'
+_INTOSC_OSC_NOCLKOUT         EQU     H'3FFC'    
+_INTRC_OSC_CLKOUT   	     EQU     H'3FFD' ;Backwards compatability to 16F62X
+_INTRC_OSC_NOCLKOUT	     EQU     H'3FFC' ;Backwards compatability to 16F62X
 _EXTCLK_OSC                  EQU     H'3FEF'
-_LP_OSC                      EQU     H'3FEC'
-_XT_OSC                      EQU     H'3FED'
 _HS_OSC                      EQU     H'3FEE'
+_XT_OSC                      EQU     H'3FED'
+_LP_OSC                      EQU     H'3FEC'
 
         LIST

@@ -602,6 +602,9 @@ CCP1IP          EQU  H'0002'
 TMR2IP          EQU  H'0001'
 TMR1IP          EQU  H'0000'
 
+RC1IP           EQU  H'0005'
+TX1IP           EQU  H'0004'
+
 ;----- PIR1 Bits ----------------------------------------------------------
 PSPIF           EQU  H'0007'
 ADIF            EQU  H'0006'
@@ -612,6 +615,9 @@ CCP1IF          EQU  H'0002'
 TMR2IF          EQU  H'0001'
 TMR1IF          EQU  H'0000'
 
+RC1IF           EQU  H'0005'
+TX1IF           EQU  H'0004'
+
 ;----- PIE1 Bits ----------------------------------------------------------
 PSPIE           EQU  H'0007'
 ADIE            EQU  H'0006'
@@ -621,6 +627,9 @@ SSPIE           EQU  H'0003'
 CCP1IE          EQU  H'0002'
 TMR2IE          EQU  H'0001'
 TMR1IE          EQU  H'0000'
+
+RC1IE           EQU  H'0005'
+TX1IE           EQU  H'0004'
 
 ;----- PSPCON Bits --------------------------------------------------------
 IBF             EQU  H'0007'

@@ -45,6 +45,7 @@
 ;0.20  27 Sep 2002  Add IOFS bit name to OSCCON register             BD
 ;                   Add ECIO, RCIO, INTIO1, INTIO2 bits to Config Reg 1H
 ;                   Add DEBUG bits to Config Reg 4L
+;0.21  21 Jan 2003  Changed _MCLRE_OFF_3H from 0xEF to 0x7F          BD
 
 ;=======================================================================
 ;
@@ -828,7 +829,7 @@ _WDTPS_1_2H       EQU  H'E1' ;   1:     1
 
 ;Configuration Byte 3H Options
 _MCLRE_ON_3H      EQU  H'FF' ; MCLR enabled, RE3 input disabled
-_MCLRE_OFF_3H     EQU  H'EF' ; MCLR disabled, RE3 input enabled
+_MCLRE_OFF_3H     EQU  H'7F' ; MCLR disabled, RE3 input enabled
 _PBAD_ANA_3H      EQU  H'FF' ; PORTB<4:0> pins reset as analog pins
 _PBAD_DIG_3H      EQU  H'FD' ; PORTB<4:0> pins reset as digital pins   incorrect bit was cleared - BD 5/30/2002
 _CCP2MX_ON_3H     EQU  H'FF' ; CCP2 pin function on RC1

@@ -1,5 +1,5 @@
         LIST
-; P18F252.INC  Standard Header File, Version 1.0   Microchip Technology, Inc.
+; P18F252.INC  Standard Header File, Version 1.4   Microchip Technology, Inc.
         NOLIST
 
 ; This header file defines configurations, registers, and other useful bits of

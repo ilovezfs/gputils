@@ -25,9 +25,16 @@
 ;
 ;=======================================================================
 ;Rev:   Date:        Details:                                       Who:
-;0.10  03 June 2002  Initial release                                GK
-;0.11    09/26/02   Include both names SWDTE and SWDTEN                pas
-;
+;0.10  03 June 2002  Initial release                                 GK
+;0.11  09/26/02      Include both names SWDTE and SWDTEN             pas
+;0.21  21 Jan 2003   Changed _MCLRE_OFF_3H from 0xEF to 0x7F         BD
+;                    Changed _MCLRE_()_3H description from RE3 to RA5
+;0.22  23Jan2003     Added RCIO, ECIO, INTIO1, INTIO2 OSC modes      BD
+;                    Commented out RCIO6, ECIO6, INTIO7, INTIO67
+;                    Maintains compatability to 18F4320
+;0.23  29Jan2003     Changed from BAUDCTL:W4E to WUE                 BD
+;0.24  04Feb2003     Changed ECCPAS EQU from H'0FB8' to H'0FB6'      BD
+
 ;       Verify Processor
 ;
 ;=======================================================================
@@ -157,7 +164,7 @@ CCP1CON         EQU  H'0FBD'
 ; reserved           H'0FB9'
 ; reserved           H'0FB8'
 PWM1CON         EQU  H'0FB7'
-ECCPAS          EQU  H'0FB8'
+ECCPAS          EQU  H'0FB6'		; change from H'0FB8' to H'0FB6' - BD 4Feb2003
 ;reserved            H'0FB5'
 ;reserved            H'0FB4'
 TMR3H           EQU  H'0FB3'
@@ -250,6 +257,7 @@ RBIP            EQU  H'0000'
 
 ;----- INTCON3 Bits ----------------------------------------------------
 INT2P           EQU  H'0007'
+INT2IP          EQU  H'0007'
 INT1P           EQU  H'0006'
 INT1IP          EQU  H'0006'      ; For backward compatibility
 INT2E           EQU  H'0004'
@@ -374,7 +382,9 @@ ADCS0           EQU  H'0000'
 
 ;----- CCP1CON Bits ----------------------------------------------------
 EPWM1M1         EQU  H'0007'
+P1M1            EQU  H'0007'      ; For backward compatibility
 EPWM1M0         EQU  H'0006'
+P1M0            EQU  H'0006'      ; For backward compatibility
 EDC1B1          EQU  H'0005'
 CCP1X           EQU  H'0005'      ; For backward compatibility
 DC1B1           EQU  H'0005'      ; For backward compatibility
@@ -458,7 +468,7 @@ RCD8            EQU  H'0000'    ; Backward compatibility only
 RCIDL           EQU  H'0006'
 SCKP            EQU  H'0004'
 BRG16           EQU  H'0003'
-W4E             EQU  H'0001'
+WUE             EQU  H'0001'	; changed from W4E to WUE - BD 1/29/2003
 ABDEN           EQU  H'0000'
 
 
@@ -680,7 +690,7 @@ _CONFIG7H       EQU    H'30000D'
 ;    __CONFIG  _CONFIG2H, _WDT_ON_2H & _WDTPS_32K_2H
 ;    __CONFIG  _CONFIG3H, _MCLRE_ON_3H & _PBAD_DIG_3H & _CCP2MX_C1_3H
 ;    __CONFIG  _CONFIG4L, _BKBUG_OFF_4L & _LVP_ON_4L & _STVR_ON_4L
-;    __CONFIG  _CONFIG5L, _CP0_OFF_5L & _CP1_OFF_5L & _CP2_OFF_5L & _CP3_OFF_5L
+;    __CONFIG  _CONFIG5L, _CP0_OFF_5L & _CP1_OFF_5L
 ;    __CONFIG  _CONFIG5H, _CPB_OFF_5H & _CPD_OFF_5H
 ;    __CONFIG  _CONFIG6L, _WRT0_OFF_6L & _WRT1_OFF_6L & _WRT2_OFF_6L & _WRT3_OFF_6L
 ;    __CONFIG  _CONFIG6H, _WRTC_OFF_6H & _WRTB_OFF_6H & _WRTD_OFF_6H
@@ -693,15 +703,20 @@ _IESO_OFF_1H      EQU  H'7F' ; Internal External Oscillator Switch Over mode dis
 _FSCMEN_ON_1H     EQU  H'FF' ; Fail Safe Clock Monitor enabled
 _FSCMEN_OFF_1H    EQU  H'BF' ; Fail Safe Clock Monitor disabled
 _RC_OSC_1H        EQU  H'FF' ; External RC on OSC1, OSC2 as Fosc/4
-_RCIO6_OSC_1H     EQU  H'F7' ; External RC on OSC1, OSC2 as RA6
+;_RCIO6_OSC_1H     EQU  H'F7' ; External RC on OSC1, OSC2 as RA6        - commented 23Jan2003 - BD
 _LP_OSC_1H        EQU  H'F0' ; LP Oscillator
 _XT_OSC_1H        EQU  H'F1' ; XT Oscillator
 _HS_OSC_1H        EQU  H'F2' ; HS Oscillator
 _HSPLL_OSC_1H     EQU  H'F6' ; HS + PLL
 _EC_OSC_1H        EQU  H'F4' ; External Clock on OSC1, OSC2 as Fosc/4
-_ECIO6_OSC_1H     EQU  H'F5' ; External Clock on OSC1, OSC2 as RA6
-_INTIO7_OSC_1H    EQU  H'F9' ; Internal RC, OSC1 as RA7, OSC2 as Fosc/4
-_INTIO67_OSC_1H   EQU  H'F8' ; Internal RC, OSC1 as RA7, OSC2 as RA6
+;_ECIO6_OSC_1H     EQU  H'F5' ; External Clock on OSC1, OSC2 as RA6     - commented 23Jan2003 - BD
+;_INTIO7_OSC_1H    EQU  H'F9' ; Internal RC, OSC1 as RA7, OSC2 as Fosc/4 - commented 23Jan2003 - BD
+;_INTIO67_OSC_1H   EQU  H'F8' ; Internal RC, OSC1 as RA7, OSC2 as RA6   - commented 23Jan2003 - BD
+
+_RCIO_OSC_1H      EQU  H'F7' ; External RC on OSC1, OSC2 as RA6         - added 23Jan2003 - BD
+_ECIO_OSC_1H      EQU  H'F5' ; External Clock on OSC1, OSC2 as RA6      - added 23Jan2003 - BD
+_INTIO1_OSC_1H    EQU  H'F9' ; Internal RC, OSC1 as RA7, OSC2 as Fosc/4 - added 23Jan2003 - BD
+_INTIO2_OSC_1H    EQU  H'F8' ; Internal RC, OSC1 as RA7, OSC2 as RA6    - added 23Jan2003 - BD
 
 ;Configuration Byte 2L Options
 _BORV_20_2L       EQU  H'FF' ; BOR Voltage - 2.0v
@@ -734,8 +749,8 @@ _WDTPS_2_2H       EQU  H'E3' ;   1:     2
 _WDTPS_1_2H       EQU  H'E1' ;   1:     1
 
 ;Configuration Byte 3H Options
-_MCLRE_ON_3H      EQU  H'FF' ; MCLR enabled, RE3 input disabled
-_MCLRE_OFF_3H     EQU  H'EF' ; MCLR disabled, RE3 input enabled
+_MCLRE_ON_3H      EQU  H'FF' ; MCLR enabled, RA5 input disabled
+_MCLRE_OFF_3H     EQU  H'7F' ; MCLR disabled, RA5 input enabled
 
 
 ;Configuration Byte 4L Options

@@ -78,8 +78,8 @@ RCREG                           EQU     H'0014'
 TXSTA                           EQU     H'0015'
 TXREG                           EQU     H'0016'
 SPBRG                           EQU     H'0017'
-PRODL                           EQU     H'0018'
-PRODH                           EQU     H'0019'
+; PRODL                           EQU     H'0018' ; not on the 17C42
+; PRODH                           EQU     H'0019' ; not on the 17C42
 
 DDRC                            EQU     H'0110'
 PORTC                           EQU     H'0111'

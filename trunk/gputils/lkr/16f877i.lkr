@@ -1,4 +1,4 @@
-// Sample linker command file for 16f876, 16f877 used with the ICD
+// Sample linker command file for 16f877 used with the ICD
 // $Id$
 
 LIBPATH  .
@@ -24,8 +24,8 @@ SHAREBANK  NAME=gprnobnk START=0x1F1    END=0x1FF
 DATABANK   NAME=gpr0     START=0x020    END=0x06F
 DATABANK   NAME=gpr1     START=0x0A0    END=0x0EF
 DATABANK   NAME=gpr2     START=0x110    END=0x16F
-DATABANK   NAME=gpr3     START=0x190    END=0x1EA
-DATABANK   NAME=dbggpr3  START=0x1EB    END=0x1EF    PROTECTED
+DATABANK   NAME=gpr3     START=0x190    END=0x1E4
+DATABANK   NAME=dbggpr3  START=0x1E5    END=0x1EF    PROTECTED
 
 DATABANK   NAME=sfr0     START=0x0      END=0x1F     PROTECTED
 DATABANK   NAME=sfr1     START=0x80     END=0x9F     PROTECTED

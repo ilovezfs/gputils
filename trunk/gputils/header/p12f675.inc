@@ -102,6 +102,21 @@ Z                            EQU     H'0002'
 DC                           EQU     H'0001'
 C                            EQU     H'0000'
 
+;----- GPIO Bits --------------------------------------------------------
+
+GP5			     EQU     H'0005'
+GPIO5			     EQU     H'0005'
+GP4			     EQU     H'0004'
+GPIO4			     EQU     H'0004'
+GP3			     EQU     H'0003'
+GPIO3			     EQU     H'0003'
+GP2			     EQU     H'0002'
+GPIO2			     EQU     H'0002'
+GP1			     EQU     H'0001'
+GPIO1			     EQU     H'0001'
+GP0			     EQU     H'0000'
+GPIO0			     EQU     H'0000'
+
 ;----- INTCON Bits --------------------------------------------------------
 
 GIE                          EQU     H'0007'

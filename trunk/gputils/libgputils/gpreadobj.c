@@ -120,10 +120,12 @@ _read_opt_header(gp_object_type *object, char *file)
     gp_error("invalid assembler version in \"%s\"", object->filename);
   
   object->processor = gp_processor_coff_proc(gp_getl32(&file[4]));
-  object->class = gp_processor_class(object->processor);
-  
   if (object->processor == no_processor)
-    gp_error("invalid processor type in \"%s\"", object->filename);
+    gp_error("invalid processor type %#04x in \"%s\"",
+             gp_getl32(&file[4]),
+             object->filename);
+
+  object->class = gp_processor_class(object->processor);
   
   if (gp_processor_rom_width(object->class) != gp_getl32(&file[8]))
     gp_error("invalid rom width for selected processor in \"%s\"", 
