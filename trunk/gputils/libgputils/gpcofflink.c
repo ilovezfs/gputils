@@ -137,18 +137,34 @@ gp_cofflink_combine_objects(gp_object_type *object)
   /* combine the symbol tables */
   list = object->next;
   while (list != NULL) {
-    object->num_symbols += list->num_symbols;
-    object->symbols_tail->next = list->symbols;
-    object->symbols_tail = list->symbols_tail;
+    if (list->num_symbols != 0) {
+      if (object->num_symbols == 0) {
+        /* The object has no symbols */
+        object->symbols = list->symbols;
+      } else {
+        /* Append the symbols from the second object to the first */
+        object->symbols_tail->next = list->symbols;
+      }
+      object->symbols_tail = list->symbols_tail;
+      object->num_symbols += list->num_symbols;
+    }
     list = list->next;
   }  
 
   /* append the sections onto the list */
   list = object->next;
   while (list != NULL) {
-    object->num_sections += list->num_sections;
-    object->sections_tail->next = list->sections;
-    object->sections_tail = list->sections_tail;
+    if (list->num_sections != 0) {
+      if (object->num_sections == 0) {
+        /* The object has no sections */
+        object->sections = list->sections;
+      } else {
+        /* Append the sections from the second object to the first */
+        object->sections_tail->next = list->sections;
+      }
+      object->sections_tail = list->sections_tail;
+      object->num_sections += list->num_sections;
+    }
     list = list->next;
   }
 
@@ -170,8 +186,6 @@ _update_line_numbers(gp_linenum_type *line_number, int offset)
   }
 
 }
-
-
 
 /* Combine overlay sections in an object file. */
 
@@ -502,26 +516,35 @@ _search_memory(MemBlock *m,
   unsigned int org;
   unsigned int current_address = 0;
   unsigned int current_size = 0;
+  int mem_used;
   int in_block = 0;
+  int end_block = 0;
   int success = 0;
 
   /* set the size to max value */
   *block_size = 0xffffffff;
 
   for (org = start; org <= stop; org++) {
-    if ((org == stop) || 
-        (i_memory_get(m, org) & MEM_USED_MASK)) {
+    mem_used = i_memory_get(m, org) & MEM_USED_MASK;
+    if (org == stop) { 
+      if (in_block == 1) {
+        /* end of the section definition */
+        end_block = 1;
+        /* increment for last address */
+        current_size++;
+      } else if (start == stop) {
+        /* special case, one word section */
+        if (!mem_used) {
+          end_block = 1;
+          current_address = start;
+          current_size = 1;
+        }
+      }
+      in_block = 0;
+    } else if (mem_used) {
       if (in_block == 1) {
         /* end of an unused block of memory */
-        gp_debug("    end unused block at %#x with size %#x", 
-                 org, 
-                 current_size);
-        if ((current_size >= size) &&
-            (current_size < *block_size)) {
-          *block_size = current_size;
-          *block_address = current_address;
-          success = 1;
-        }
+        end_block = 1;
       }
       in_block = 0;
     } else {
@@ -535,6 +558,19 @@ _search_memory(MemBlock *m,
         current_size++;
       }      
       in_block = 1;
+    }
+  
+    if (end_block == 1) {
+      gp_debug("    end unused block at %#x with size %#x", 
+               org, 
+               current_size);
+      if ((current_size >= size) &&
+          (current_size < *block_size)) {
+        *block_size = current_size;
+        *block_address = current_address;
+        success = 1;
+      }    
+      end_block = 0;
     }
   }
 
@@ -773,6 +809,83 @@ _update_table(gp_object_type *object)
 
 }
 
+/* Create sections to fill unused memory in the pages with constant data. */
+
+void 
+gp_cofflink_fill_pages(gp_object_type *object,
+                       MemBlock *m,
+                       struct symbol_table *sections)
+{
+  struct linker_section *section_def;
+  int i;
+  struct symbol *sym;
+  int found;
+  char fill_name[BUFSIZ];
+  int fill_number = 1;
+  gp_section_type *section = NULL;
+  unsigned int current_address;
+  unsigned int current_size;
+  int org;
+  int end;
+
+  gp_debug("adding fill sections");
+
+  /* search for any section definitions that have a fill */
+  for (i = 0; i < HASH_SIZE; i++) {
+    for (sym = sections->hash_table[i]; sym; sym = sym->next) {
+      section_def = get_symbol_annotation(sym);
+      if ((section_def->type == codepage) &&
+          (section_def->use_fill == 1)) {
+        while (1) {
+          found = _search_memory(m, 
+                                 section_def->start,
+                                 section_def->end,
+                                 1,
+                                 &current_address,
+                                 &current_size);
+          if (found == 1) {
+            sprintf(fill_name, ".fill_%i", fill_number++);
+            gp_debug("  new section \"%s\" at %#x with size %#x and data %#x", 
+                     fill_name,
+                     current_address,
+                     current_size,
+                     section_def->fill);
+            section = gp_coffgen_findsection(object, 
+                                             object->sections,
+                                             fill_name);
+            if (section != NULL) {
+              gp_error("fill section \"%s\" aready exists", fill_name);    
+              return;
+            } else {
+              /* create a new section for the fill data */
+              section = gp_coffgen_addsection(object, fill_name); 
+              section->address = current_address; 
+              section->size = current_size * 2; /* size in bytes */
+              section->flags = STYP_TEXT;
+              /* FIXME: do we really need a section symbol? */
+              
+              /* mark the memory as used */
+              _set_used(m, current_address, current_size);
+              
+              /* fill the section memory */
+              end = current_address + current_size;
+              for (org = current_address; org <= end; org++) {
+                i_memory_put(section->data,
+                             org,
+                             MEM_USED_MASK | section_def->fill);
+              }
+            }
+          } else {
+            break;
+          }
+        }
+      }
+    }
+  } 
+
+  return;
+}
+
 /* relocate all sections in the object file */
 
 void 
@@ -836,6 +949,8 @@ gp_cofflink_reloc(gp_object_type *object,
                                sections);
 
   _update_table(object);
+
+  gp_cofflink_fill_pages(object, program, sections);
 
   i_memory_free(data);
   i_memory_free(program);

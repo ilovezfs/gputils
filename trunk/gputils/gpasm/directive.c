@@ -1419,6 +1419,28 @@ static gpasmVal do_ifndef(gpasmVal r,
   return r;
 }
 
+static gpasmVal do_include(gpasmVal r,
+		           char *name,
+		           int arity,
+		           struct pnode *parms)
+{
+  struct pnode *p;
+
+  state.lst.line.linetype = dir;
+
+  if (enforce_arity(arity, 1)) {
+    p = HEAD(parms);
+    if (p->tag == string) {
+      state.next_state = _include;  
+      state.next_buffer.file = strdup(p->value.string);
+    } else {
+      gperror(GPE_ILLEGAL_ARGU, NULL);
+    }
+  }
+
+  return r;
+}
+
 /************************************************************************
  * do_list - parse the LIST directive
  *
@@ -3064,6 +3086,7 @@ struct insn op_0[] = {
   { "if",         0, (long int)do_if,        INSN_CLASS_FUNC,   ATTRIB_COND },
   { "ifdef",      0, (long int)do_ifdef,     INSN_CLASS_FUNC,   ATTRIB_COND },
   { "ifndef",     0, (long int)do_ifndef,    INSN_CLASS_FUNC,   ATTRIB_COND },
+  { "include",    0, (long int)do_include,   INSN_CLASS_FUNC,   0 },
   { "list",       0, (long int)do_list,	     INSN_CLASS_FUNC,   0 },
   { "local",      0, (long int)do_local,     INSN_CLASS_FUNC,   0 },
   { "macro",      0, (long int)do_macro,     INSN_CLASS_FUNC,	0 },

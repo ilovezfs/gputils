@@ -196,7 +196,7 @@ list		     	 {
 			   return IDENTIFIER;
 			 }
 #?ifndef		 {
-			   /* #ifndef and ifdef can appear in column 1 */
+			   /* #ifndef and ifndef can appear in column 1 */
 			   quoted = 1;
 			   yylval.s = strdup(yytext);
 			   return IDENTIFIER;
