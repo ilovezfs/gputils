@@ -97,7 +97,8 @@ void archive_append(gp_archive_type *file, char *name)
    Stop whenever a complete pass through the archive happens and no
    objects are added. */
 
-int scan_index(struct symbol_table *table, gp_archive_type *archive)
+gp_boolean
+scan_index(struct symbol_table *table, gp_archive_type *archive)
 {
   struct symbol *s;
   struct symbol *m;
@@ -107,6 +108,7 @@ int scan_index(struct symbol_table *table, gp_archive_type *archive)
   int num_added = 1; /* initalize to 1 so while loop can be entered */
   char *name;
   char *object_name;
+  gp_boolean modified = false;
 
   while (num_added != 0) {
     num_added = 0;
@@ -129,6 +131,7 @@ int scan_index(struct symbol_table *table, gp_archive_type *archive)
           /* The symbol tables have been modified.  Need to take another
 	     pass to make sure we get everything. */
           num_added++;
+          modified = true;
           free(object_name);
           /* This branch of the table has been modified. Go to the next one */
 	  break;
@@ -137,11 +140,14 @@ int scan_index(struct symbol_table *table, gp_archive_type *archive)
     }
   }
 
-  return 0;
+  return modified;
 }
     
-int scan_archive(gp_archive_type *archive, char *name)
+gp_boolean
+scan_archive(gp_archive_type *archive, char *name)
 {
+  gp_boolean modified;
+
   state.symbol.archive = push_symbol_table(NULL, false);
 
   /* If necessary, build a symbol index for the archive. */
@@ -160,11 +166,11 @@ int scan_archive(gp_archive_type *archive, char *name)
 
   /* Scan the symbol index for symbols in the missing symbol table.  If
      found, add the object to state.objects. */
-  scan_index(state.symbol.archive, archive);
+  modified = scan_index(state.symbol.archive, archive);
 
   state.symbol.archive = pop_symbol_table(state.symbol.archive);
 
-  return 0;
+  return modified;
 }
 
 /* Remove a symbol the linker created from the missing table */
@@ -235,7 +241,8 @@ search_idata(void)
 void build_tables(void)
 {
   gp_object_type *list = state.object;
-  struct archivelist *arlist = state.archives;
+  struct archivelist *arlist;
+  gp_boolean modified;
   int i;
   struct symbol *s;
   char *name;
@@ -251,13 +258,27 @@ void build_tables(void)
   /* All of the objects have been scanned.  If there are remaining references
      to symbols, then the archives must contain the missing references. */
   if (count_missing()) {
-    while (arlist != NULL) {
-      scan_archive(arlist->archive, arlist->name);
+    modified = false;
+    arlist = state.archives;
+    while (1) {
+      if (scan_archive(arlist->archive, arlist->name))
+        modified = true;
       if (count_missing() == 0) {
         /* No more missing references, no need to continue. */
         break;
+      } else if (arlist->next == NULL) {
+        if (modified) {
+          /* At least one object was loaded from an archive and there are
+             still missing symbols.  Scan all the archives again. */
+          modified = false;
+          arlist = state.archives;
+        } else {
+          /* Quit */
+          break;
+        }
+      } else {
+        arlist = arlist->next;
       }
-      arlist = arlist->next;
     }
   }
 
