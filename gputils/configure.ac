@@ -5,7 +5,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.57)
 
 # Initialization
-AC_INIT([gputils],[0.12.4])
+AC_INIT([gputils],[0.12.4], [<URL:http://gputils.sourceforge.net/>])
 AC_CONFIG_SRCDIR(gpasm/gpasm.c)
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
@@ -22,24 +22,12 @@ GPUTILS_LIB_PATH="\$(datadir)/gputils/lib"
 GPUTILS_PUB_PATH="\$(datadir)/gputils/pub"
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
-MAKE_SUBDIRS="libgputils libiberty gpasm header lkr pub doc"
+MAKE_SUBDIRS="libgputils libiberty gpal gpasm gplink gputils header lkr pub doc man"
 
 # Check for additional parameters
 AC_ARG_ENABLE(debug, 
   [  --enable-debug          enable gputils debug features],
   [enable_gputils_debug=yes])    
-
-AC_ARG_ENABLE(gpal,
-  [  --disable-gpal          disable the compiler],
-  [], [enable_gpal=yes])
-
-AC_ARG_ENABLE(gplink,
-  [  --disable-gplink        disable the linker],
-  [], [enable_gplink=yes])
-
-AC_ARG_ENABLE(gputils,
-  [  --disable-gputils       disable the utilities],
-  [], [enable_gputils=yes])
 
 AC_ARG_ENABLE(path,
   [  --disable-path          disable adding default search paths],
@@ -119,18 +107,6 @@ case "${host}" in
 esac
 
 # Process the options
-if test x$enable_gpal = xyes; then
-  MAKE_SUBDIRS="$MAKE_SUBDIRS gpal"
-fi
-
-if test x$enable_gplink = xyes; then
-  MAKE_SUBDIRS="$MAKE_SUBDIRS gplink"
-fi
-
-if test x$enable_gputils = xyes; then
-  MAKE_SUBDIRS="$MAKE_SUBDIRS gputils"
-fi
-
 if test x$enable_gputils_debug = xyes; then
   AC_DEFINE(GPUTILS_DEBUG, 1, 
     [Define if you want to enable GPUTILS debug features. ])

@@ -200,16 +200,12 @@ load_indirect16e(char *name,
 
   num_bytes = prim_size(size);
 
-
-  codegen_write_asm("banksel FSR0L");
   codegen_write_asm("movlw 0");
   for (i = 0; i < num_bytes; i++) {
     codegen_write_asm("movff INDF0, %s + %i", WORKING_LABEL, i);
     codegen_write_asm("incf FSR0L, f");
     codegen_write_asm("addwfc FSR0H, f");
   }
-  codegen_write_asm("banksel %s", WORKING_LABEL);
-
 }
 
 /* The byte address is in FSR.  Store the working register in memory. */
@@ -230,15 +226,12 @@ store_indirect16e(char *name,
 
   num_bytes = prim_size(size);
 
-  codegen_write_asm("banksel FSR0L");
   codegen_write_asm("movlw 0");
   for (i = 0; i < num_bytes; i++) {
     codegen_write_asm("movff %s + %i, INDF0", WORKING_LABEL, i);
     codegen_write_asm("incf FSR0L, f");
     codegen_write_asm("addwfc FSR0H, f");
   }
-  codegen_write_asm("banksel %s", WORKING_LABEL);
-
 }
 
 /* convert the working register into a boolean */
@@ -363,14 +356,11 @@ clr_indirect16e(char *name,
 
   num_bytes = prim_size(size);
 
-  codegen_write_asm("banksel FSR0L");
   for (i = 0; i < num_bytes; i++) {
     codegen_write_asm("clrf INDF");
     codegen_write_asm("incf FSR0L, f");
     codegen_write_asm("addwfc FSR0H, f");
   }
-  codegen_write_asm("banksel %s", WORKING_LABEL);
-
 }
 
 static void
@@ -414,10 +404,10 @@ inc_direct16e(char *name,
     ADD_BANKSEL(name);
     codegen_write_asm("incf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("goto %s", label);
+    codegen_write_asm("bra %s", label);
     codegen_write_asm("incf %s%s + 1, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("goto %s", label);
+    codegen_write_asm("bra %s", label);
     codegen_write_asm("incf %s%s + 2, f", name, offset_buffer);
     codegen_write_label(label);
     ADD_BANKSEL(LOCAL_DATA_LABEL);
@@ -428,13 +418,13 @@ inc_direct16e(char *name,
     ADD_BANKSEL(name);
     codegen_write_asm("incf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("goto %s", label);
+    codegen_write_asm("bra %s", label);
     codegen_write_asm("incf %s%s + 1, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("goto %s", label);
+    codegen_write_asm("bra %s", label);
     codegen_write_asm("incf %s%s + 2, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("goto %s", label);
+    codegen_write_asm("bra %s", label);
     codegen_write_asm("incf %s%s + 3, f", name, offset_buffer);
     codegen_write_label(label);
     ADD_BANKSEL(LOCAL_DATA_LABEL);
@@ -466,7 +456,7 @@ inc_indirect16e(char *name,
   for (i = 0; i < num_bytes; i++) {
     codegen_write_asm("incf INDF, f");
     codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("goto %s", label);
+    codegen_write_asm("bra %s", label);
     codegen_write_asm("incf FSR0L, f");
     codegen_write_asm("addwfc FSR0H, f");
   }
@@ -519,10 +509,10 @@ dec_direct16e(char *name,
     ADD_BANKSEL(name);
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("goto %s", label);
+    codegen_write_asm("bra %s", label);
     codegen_write_asm("decf %s%s + 1, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("goto %s", label);
+    codegen_write_asm("bra %s", label);
     codegen_write_asm("decf %s%s + 2, f", name, offset_buffer);
     codegen_write_label(label);
     ADD_BANKSEL(LOCAL_DATA_LABEL);
@@ -533,13 +523,13 @@ dec_direct16e(char *name,
     ADD_BANKSEL(name);
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("goto %s", label);
+    codegen_write_asm("bra %s", label);
     codegen_write_asm("decf %s%s + 1, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("goto %s", label);
+    codegen_write_asm("bra %s", label);
     codegen_write_asm("decf %s%s + 2, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("goto %s", label);
+    codegen_write_asm("bra %s", label);
     codegen_write_asm("decf %s%s + 3, f", name, offset_buffer);
     codegen_write_label(label);
     ADD_BANKSEL(LOCAL_DATA_LABEL);
@@ -571,7 +561,7 @@ dec_indirect16e(char *name,
   for (i = 0; i < num_bytes; i++) {
     codegen_write_asm("decf INDF, f");
     codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("goto %s", label);
+    codegen_write_asm("bra %s", label);
     codegen_write_asm("incf FSR0L, f");
     codegen_write_asm("addwfc FSR0H, f");
   }
@@ -1053,11 +1043,11 @@ do_lsh(enum size_tag size, gp_boolean is_const, int value, char *name)
       codegen_write_asm("movwf %s", reg2);
       codegen_write_label(label1);
       codegen_write_asm("btfsc STATUS, Z");
-      codegen_write_asm("goto %s", label2);
+      codegen_write_asm("bra %s", label2);
       codegen_write_asm("bcf STATUS, C");
       codegen_write_asm("rlf %s, f", reg1);
       codegen_write_asm("decf %s, f", reg2);
-      codegen_write_asm("goto %s", label1);
+      codegen_write_asm("bra %s", label1);
       codegen_write_label(label2);
       codegen_write_asm("movf %s, w", reg1);  /* move the result into w */
     }
@@ -1081,11 +1071,11 @@ do_lsh(enum size_tag size, gp_boolean is_const, int value, char *name)
     codegen_write_asm("movwf %s", reg1);
     codegen_write_label(label1);
     codegen_write_asm("btfsc STATUS, Z");
-    codegen_write_asm("goto %s", label2);
+    codegen_write_asm("bra %s", label2);
     codegen_write_asm("bcf STATUS, C");
     left_shift(size);
     codegen_write_asm("decf %s, f", reg1);
-    codegen_write_asm("goto %s", label1);
+    codegen_write_asm("bra %s", label1);
     codegen_write_label(label2);
     break;
   case size_float:
@@ -1169,7 +1159,7 @@ do_rsh(enum size_tag size, gp_boolean is_const, int value, char *name)
       codegen_write_asm("movwf %s", reg2);
       codegen_write_label(label1);
       codegen_write_asm("btfsc STATUS, Z");
-      codegen_write_asm("goto %s", label2);
+      codegen_write_asm("bra %s", label2);
       if (is_signed) {
         /* put the sign in the carry */
         codegen_write_asm("rlf %s, w", reg1);
@@ -1178,7 +1168,7 @@ do_rsh(enum size_tag size, gp_boolean is_const, int value, char *name)
       }
       codegen_write_asm("rrf %s, f", reg1);
       codegen_write_asm("decf %s, f", reg2);
-      codegen_write_asm("goto %s", label1);
+      codegen_write_asm("bra %s", label1);
       codegen_write_label(label2);
       codegen_write_asm("movf %s, w", reg1);  /* move the result into w */
     }
@@ -1204,11 +1194,11 @@ do_rsh(enum size_tag size, gp_boolean is_const, int value, char *name)
     codegen_write_asm("movwf %s", reg1);
     codegen_write_label(label1);
     codegen_write_asm("btfsc STATUS, Z");
-    codegen_write_asm("goto %s", label2);
+    codegen_write_asm("bra %s", label2);
     codegen_write_asm("bcf STATUS, C");
     right_shift(size, is_signed);
     codegen_write_asm("decf %s, f", reg1);
-    codegen_write_asm("goto %s", label1);
+    codegen_write_asm("bra %s", label1);
     codegen_write_label(label2);
     break;
   case size_float:

@@ -177,7 +177,7 @@ show_usage(void)
   printf("\n");
 #endif
   printf("Report bugs to:\n");
-  printf("%s\n", BUG_REPORT_URL);
+  printf("%s\n", PACKAGE_BUGREPORT);
   exit(0);
 }
 

@@ -330,6 +330,11 @@ head:
  	  $$ = mk_head($1, NULL);
      	}
 	|
+	IDENT '(' ')'
+	{
+ 	  $$ = mk_head($1, NULL);
+     	}
+	|
 	IDENT '(' arg_list ')'
 	{
  	  $$ = mk_head($1, $3);
