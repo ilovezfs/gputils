@@ -1,0 +1,144 @@
+#!/bin/bash
+
+#   tests gpdasm
+#   Copyright (C) 2001 Craig Franklin
+#
+# This file is part of gputils.
+#
+# gputils is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# gputils is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with gputils; see the file COPYING.  If not, write to
+# the Free Software Foundation, 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.  
+
+# Defines
+GPASMFLAGS=-q
+TESTDIR=./test
+GPDASMBIN=../gpdasm
+GPASMBIN=../../gpasm/gpasm
+
+# general functions
+
+function testfailed {
+  echo "TEST FAILED"
+  exit 1
+}
+
+binexists() {
+
+  # Test syntax.
+  if [ $# = 0 ] ; then
+    echo "Usage: binexists {program}"
+    return 1
+  fi
+  echo "testing for $1"
+  if !(test -e $1); then
+    echo "$1 not found.  Aborting."
+    return 1
+  else
+    $1 -v
+    echo "executable found."
+    echo
+    return 0
+  fi
+
+}
+
+printbanner() {
+  # Test syntax.
+  if [ $# = 0 ] ; then
+    echo "Usage: printbanner {message}"
+    return 1
+  fi
+  echo "-----------------------------------------------------------"
+  echo "$1"
+  echo "-----------------------------------------------------------"
+  echo
+  return 0
+}
+
+printheader () {
+  printversion
+  echo "NAME:      $NAME" 
+  echo "DATE:      $(date +%x)"
+  echo "TIME:      $(date +%r)"
+  echo "HOST:      $HOSTNAME"
+  echo "HOST TYPE: $HOSTTYPE"
+  echo "HOST OS:   $OSTYPE"
+  echo
+  return 0
+}
+
+  printbanner "Start of gpdasm testing" 
+  # Test for executable
+  binexists $GPDASMBIN
+  RETVAL=$?
+  if [ $RETVAL -eq 1 ]; then
+    exit 1
+  fi
+  # testing gpdasm requires gpasm
+  binexists $GPASMBIN
+  RETVAL=$?
+  if [ $RETVAL -eq 1 ]; then
+    exit 1
+  fi
+
+  # create the test directory if it doesn't already exist
+  cd gpdasm.project
+  test -d $TESTDIR || mkdir $TESTDIR || exit 1
+  # copy the test files to the test directory
+  cd $TESTDIR
+  # clean the directory
+  rm -Rf *
+  cp ../*.asm .
+
+  printbanner "testing 12 bit core"
+  ../../$GPASMBIN  -q op12.asm || testfailed
+  ../../$GPDASMBIN -p 12c508 -s op12.hex > op12.dis || testfailed
+  ../../$GPASMBIN -q -o op12.dis.hex op12.dis || testfailed
+  diff -us op12.hex op12.dis.hex || testfailed    
+  echo "12 bit core passed."
+  echo
+
+  printbanner "testing sx core"
+  ../../$GPASMBIN  -q sx.asm || testfailed
+  ../../$GPDASMBIN -p sx18 -s sx.hex > sx.dis || testfailed
+  ../../$GPASMBIN -q -o sx.dis.hex sx.dis || testfailed
+  diff -us sx.hex sx.dis.hex || testfailed    
+  echo "sx core passed."
+  echo
+
+  printbanner "testing 14 bit core"
+  ../../$GPASMBIN  -q op14.asm || testfailed
+  ../../$GPDASMBIN -p 16c84 -s op14.hex > op14.dis || testfailed
+  ../../$GPASMBIN -q -o op14.dis.hex op14.dis || testfailed
+  diff -us op14.hex op14.dis.hex || testfailed    
+  echo "14 bit core passed."
+  echo
+  
+  printbanner "testing 16 bit core"
+  ../../$GPASMBIN  -q op16.asm || testfailed
+  ../../$GPDASMBIN -p 17c44 -s op16.hex > op16.dis || testfailed
+  ../../$GPASMBIN -q -o op16.dis.hex op16.dis || testfailed
+  diff -us op16.hex op16.dis.hex || testfailed    
+  echo "16 bit core passed."
+  echo
+  
+  printbanner "testing enhanced 16 bit core"
+  ../../$GPASMBIN  -q op16e.asm || testfailed
+  ../../$GPDASMBIN -p 18c452 -s op16e.hex > op16e.dis || testfailed
+  ../../$GPASMBIN -q -o op16e.dis.hex op16e.dis || testfailed
+  diff -us op16e.hex op16e.dis.hex || testfailed    
+  echo "enhanced 16 bit core passed."
+  echo
+
+  printbanner "gpdasm testing sucessful"

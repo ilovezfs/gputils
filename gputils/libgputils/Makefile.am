@@ -31,6 +31,7 @@ libgputils_a_SOURCES =\
 	gpdis.c \
 	gpmemory.c \
 	gpopcode.c \
+	gpprocessor.c \
 	gpreadhex.c \
 	gpreadobj.c \
 	gpsymbol.c \
@@ -43,6 +44,7 @@ libgputils_a_SOURCES =\
 	gpdis.h \
 	gpmemory.h \
 	gpopcode.h \
+	gpprocessor.h \
 	gpreadhex.h \
 	gpreadobj.h \
 	gpsymbol.h \

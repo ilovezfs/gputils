@@ -22,7 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #define __GPASM_H
 
 #include <stdio.h>
-#include "processor.h"
+#include "gpprocessor.h"
 #include "gpmemory.h"
 #include "gpwritehex.h"
 

@@ -22,6 +22,8 @@ Boston, MA 02111-1307, USA.  */
 #include "gpcoff.h"
 #include "gpreadobj.h"
 #include "gpvo.h"
+#include "gpprocessor.h"
+#include "gpmemory.h"
 #include "gpdis.h"
 
 struct gpvo_state state = {

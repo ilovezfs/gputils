@@ -22,14 +22,19 @@ Boston, MA 02111-1307, USA.  */
 #define __GPDASM_H__
 
 #include "stdhdr.h"
+
+#include "gpprocessor.h"
+#include "gpopcode.h"
 #include "gpmemory.h"
 #include "gpwritehex.h"
 #include "gpreadhex.h"
+#include "gpdis.h"
 
 #define GPDASM_VERSION_STRING ("gpdasm-" VERSION " alpha")
 
 extern struct gpdasm_state {
-  enum { pic12, pic14 } processor;  /* processor family */
+  enum pic_processor processor; /* selected processor */
+  enum proc_class class;        /* processor class */
   int format;                   /* format of the output */
   int pass;                     /* 1 or 2 */
   MemBlock *i_memory;           /* Instruction memory linked list */
