@@ -224,6 +224,7 @@ void next_line(int value)
 %token <s> LABEL
 %token <s> IDENTIFIER
 %token <s> CBLOCK
+%token <s> DEBUG_LINE
 %token <s> ENDC
 %token <s> ERRORLEVEL
 %token <s> FILL
@@ -267,8 +268,6 @@ void next_line(int value)
 %token <i> TBL_PRE_INC
 %token <i> CONCAT
 %token <i> VAR
-%token <i> DEBUG_FILE
-%token <i> DEBUG_LINE
 %token <s> VARLAB_BEGIN
 %token <s> VAR_BEGIN
 %token <s> VAR_END
@@ -282,6 +281,7 @@ void next_line(int value)
 %type <i> '~'
 %type <s> line
 %type <s> label_concat
+%type <s> decimal_ops
 %type <i> statement
 %type <p> parameter_list
 %type <p> expr
@@ -328,22 +328,6 @@ program:
 	;
 
 line:
-	DEBUG_FILE STRING '\n'
-	{
-          if ((state.mode == relocatable) && (state.debug_info)) {
-	    state.obj.debug_file = coff_add_filesym($2, 0);
-          }
-	  next_line(0);
-	}
-	|
-	DEBUG_LINE NUMBER '\n'
-	{
-	  if ((state.mode == relocatable) && (state.debug_info)) {
-	    state.obj.debug_line = $2;
-          }
-          next_line(0);
-	}
-	|
 	label_concat assign_equal_ops expr '\n'
 	{
 	  struct pnode *parms;
@@ -460,6 +444,8 @@ line:
 	}
 	;
 
+decimal_ops: ERRORLEVEL | DEBUG_LINE; 
+
 statement:
 	'\n'
 	{
@@ -494,7 +480,7 @@ statement:
 	  force_decimal = 0;
 	}
 	|
-	ERRORLEVEL {  force_decimal = 1; }
+	decimal_ops {  force_decimal = 1; }
         parameter_list '\n'
 	{
 	  $$ = do_or_append_insn($1, $3);

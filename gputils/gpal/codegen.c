@@ -110,7 +110,7 @@ codegen_write_comment(const char *format, ...)
 void
 codegen_line_number(tree *node)
 {
-  fprintf(state.output.f, "#line %d\n", node->line_number);
+  fprintf(state.output.f, "  .line %d\n", node->line_number);
 }
 
 char *
@@ -633,7 +633,7 @@ codegen_init_asm()
           GPAL_VERSION_STRING,
           buffer);
 
-  fprintf(state.output.f, "#file \"%s\"\n\n", state.srcfilename);
+  fprintf(state.output.f, "  .file \"%s\"\n\n", state.srcfilename);
 
   if (state.processor_chosen) {
     fprintf(state.output.f, "  processor %s\n", 
@@ -711,7 +711,7 @@ codegen_close_asm(void)
     fprintf(state.output.f, "pclath_temp res 1\n\n");
   }
 
-  fprintf(state.output.f, "#eof\n\n");
+  fprintf(state.output.f, "  .eof\n\n");
   fprintf(state.output.f, "  end\n\n");
 
   fclose(state.output.f);

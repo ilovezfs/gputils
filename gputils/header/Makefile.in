@@ -150,6 +150,7 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 HEADER_FILES = \
+	coff.inc \
 	mcp250xx.inc \
 	memory.inc \
 	migrate.inc \

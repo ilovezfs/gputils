@@ -302,7 +302,7 @@ struct syment
 #define C_LIST      108  /* absoulte listing on or off */
 #define C_SECTION   109  /* section */
 
-/* Auxillary symbol table entry for a file */
+/* Auxiliary symbol table entry for a file */
 struct aux_file
 {
   unsigned long  x_offset;  /* String table offset for filename */
@@ -311,7 +311,7 @@ struct aux_file
   char _unused[10];
 };
 
-/* Auxillary symbol table entry for a section */
+/* Auxiliary symbol table entry for a section */
 struct aux_scn
 {
   unsigned long  x_scnlen;  /* Section Length */
@@ -320,7 +320,7 @@ struct aux_scn
   char _unused[10];
 };
 
-/* Auxillary symbol table entry for the tagname of a struct/union/enum */
+/* Auxiliary symbol table entry for the tagname of a struct/union/enum */
 struct aux_tag
 {
   char _unused[6];
@@ -331,7 +331,7 @@ struct aux_tag
   char _unused3[2];
 };
 
-/* Auxillary symbol table entry for an end of struct/union/enum */
+/* Auxiliary symbol table entry for an end of struct/union/enum */
 struct aux_eos
 {
   unsigned long x_tagndx;    /* Symbol index of struct/union/enum tag */
@@ -340,7 +340,7 @@ struct aux_eos
   char _unused2[10];
 };
 
-/* Auxillary symbol table entry for a function name */
+/* Auxiliary symbol table entry for a function name */
 struct aux_fcn
 {
   unsigned long x_tagndx;   /* Unused??  Tag Index */
@@ -351,7 +351,7 @@ struct aux_fcn
   unsigned short x_actsize; /* size of static activation record to allocate */
 };
 
-/* Auxillary symbol table entry for an array */
+/* Auxiliary symbol table entry for an array */
 struct aux_arr
 {
   unsigned long  x_tagndx;   /* Unused??  Tag Index */
@@ -360,7 +360,7 @@ struct aux_arr
   unsigned short x_dimen[4]; /* Size of first four dimensions */
 };
 
-/* Auxillary symbol table entry for the end of a block or function */
+/* Auxiliary symbol table entry for the end of a block or function */
 struct aux_eobf
 {
   char _unused[4];
@@ -369,7 +369,7 @@ struct aux_eobf
   char _unused2[12];
 };
 
-/* Auxillary symbol table entry for the beginning of a block or function */
+/* Auxiliary symbol table entry for the beginning of a block or function */
 struct aux_bobf
 {
   char _unused[4];
@@ -380,7 +380,7 @@ struct aux_bobf
   char _unused3[2];
 };
 
-/* Auxillary symbol table entry for a variable of type struct/union/enum */
+/* Auxiliary symbol table entry for a variable of type struct/union/enum */
 struct aux_var
 {
   unsigned long x_tagndx;  /* Symbol Index of struct/union/enum tagname */
@@ -389,7 +389,7 @@ struct aux_var
   char _unused2[10];
 };
 
-/* Auxillary entries */
+/* Auxiliary entries */
 #define X_DIMNUM   4
 #define AUX_NONE   0
 #define AUX_FILE   1  /* detail information for a source file */
@@ -442,11 +442,11 @@ typedef struct gp_linenum_type
   struct gp_linenum_type *next;
 } gp_linenum_type;
 
-/* auxilary symbol linked list */
+/* auxiliary symbol linked list */
 
 typedef struct gp_aux_type 
 {
-  /* auxilary symbol type */
+  /* auxiliary symbol type */
   long type;
 
   /* FIXME: Finish the aux entries. */
@@ -456,8 +456,8 @@ typedef struct gp_aux_type
       unsigned long line_number; 
     } _aux_file;
     struct {
-      unsigned long  length; 
-      unsigned short nreloc; 
+      unsigned long  length;
+      unsigned short nreloc;
       unsigned short nlineno;
     } _aux_scn;
     char data[SYMBOL_SIZE];
@@ -492,7 +492,7 @@ typedef struct gp_symbol_type
    /* number of auxiliary symbols */
   char num_auxsym;
 
-  /* auxilary symbols */
+  /* auxiliary symbols */
   struct gp_aux_type *aux_list;
 
   /* symbol number, only valid when writing coff or cod file */  

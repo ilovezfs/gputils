@@ -30,6 +30,9 @@ option controls which hex file format is used.  The default is inhx32.
 .B -c, --object 
 Output a relocatable object.
 .TP
+.B -d, --debug   
+Output debug messages.
+.TP
 .B -D SYM=VAL, --define SYM=VAL   
 Define SYM with value VAL. This is equivalent to placing "#define SYM VAL" in 
 the source.
@@ -39,6 +42,9 @@ Macro expansion in the listing file is controlled using the EXPAND and NOEXPAND
 directives.  This option can force either directive to be ignored.  When "ON"
 is selected the macros are always expanded regardless of the presence of 
 NOEXPAND.  Likewise, "OFF" will force macros not to be expanded. 
+.TP
+.B -g, --debug-info   
+Use debug directives for COFF.
 .TP
 .B -h, --help
 Show the usage message.
