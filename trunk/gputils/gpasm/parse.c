@@ -362,13 +362,13 @@ static const short yyrline[] =
      367,   380,   389,   394,   399,   415,   431,   431,   438,   438,
      445,   452,   453,   460,   462,   464,   469,   476,   478,   482,
      487,   494,   494,   494,   494,   495,   495,   495,   495,   496,
-     496,   498,   503,   509,   516,   518,   538,   540,   547,   549,
-     551,   558,   560,   562,   569,   571,   573,   580,   580,   580,
-     582,   584,   591,   591,   591,   591,   591,   591,   593,   595,
-     602,   602,   604,   606,   613,   613,   615,   617,   624,   624,
-     624,   626,   628,   635,   635,   635,   635,   635,   635,   635,
-     637,   642,   647,   652,   657,   662,   667,   672,   679,   684,
-     689,   697,   702,   710
+     496,   498,   503,   509,   516,   518,   525,   527,   534,   536,
+     538,   545,   547,   549,   556,   558,   560,   567,   567,   567,
+     569,   571,   578,   578,   578,   578,   578,   578,   580,   582,
+     589,   589,   591,   593,   600,   600,   602,   604,   611,   611,
+     611,   613,   615,   622,   622,   622,   622,   622,   622,   622,
+     624,   629,   634,   639,   644,   649,   654,   659,   666,   671,
+     676,   684,   689,   697
 };
 #endif
 
@@ -1536,151 +1536,138 @@ case 43:
 case 45:
 #line 520 "parse.y"
 {
-	  /* Cook up the string, replacing \X with its code. */
-	  char *ps, *pd;
-
-	  ps = pd = yyvsp[0].s;
-	  while (*ps) {
-	    if (*ps != '\\') {
-	      *pd++ = *ps++;
-	    } else {
-	      *pd++ = gpasm_magic(ps);
-	      ps += 2;
-	    }
-	  }
-	  *pd = 0;
 	  yyval.p = mk_string(yyvsp[0].s);
         }
     break;
 case 47:
-#line 542 "parse.y"
+#line 529 "parse.y"
 {
 	  yyval.p = mk_2op(yyvsp[-1].i, yyvsp[-2].p, yyvsp[0].p);
 	}
     break;
 case 50:
-#line 553 "parse.y"
+#line 540 "parse.y"
 {
 	  yyval.p = mk_2op(yyvsp[-1].i, yyvsp[-2].p, yyvsp[0].p);
 	}
     break;
 case 53:
-#line 564 "parse.y"
+#line 551 "parse.y"
 {
 	  yyval.p = mk_2op(yyvsp[-1].i, yyvsp[-2].p, yyvsp[0].p);
 	}
     break;
 case 56:
-#line 575 "parse.y"
+#line 562 "parse.y"
 {
 	  yyval.p = mk_2op(yyvsp[-1].i, yyvsp[-2].p, yyvsp[0].p);
 	}
     break;
 case 61:
-#line 586 "parse.y"
+#line 573 "parse.y"
 {
 	  yyval.p = mk_2op(yyvsp[-1].i, yyvsp[-2].p, yyvsp[0].p);
 	}
     break;
 case 69:
-#line 597 "parse.y"
+#line 584 "parse.y"
 {
 	  yyval.p = mk_2op(yyvsp[-1].i, yyvsp[-2].p, yyvsp[0].p);
 	}
     break;
 case 73:
-#line 608 "parse.y"
+#line 595 "parse.y"
 {
 	  yyval.p = mk_2op(yyvsp[-1].i, yyvsp[-2].p, yyvsp[0].p);
 	}
     break;
 case 77:
-#line 619 "parse.y"
+#line 606 "parse.y"
 {
 	  yyval.p = mk_2op(yyvsp[-1].i, yyvsp[-2].p, yyvsp[0].p);
 	}
     break;
 case 82:
-#line 630 "parse.y"
+#line 617 "parse.y"
 {
 	  yyval.p = mk_1op(yyvsp[-1].i, yyvsp[0].p);
 	}
     break;
 case 90:
-#line 639 "parse.y"
+#line 626 "parse.y"
 {
 	  yyval.p = yyvsp[0].p;
         }
     break;
 case 91:
-#line 644 "parse.y"
+#line 631 "parse.y"
 {
 	  yyval.p = mk_constant(yyvsp[0].i);
 	}
     break;
 case 92:
-#line 649 "parse.y"
+#line 636 "parse.y"
 {
 	  yyval.p = mk_symbol("$");
 	}
     break;
 case 93:
-#line 654 "parse.y"
+#line 641 "parse.y"
 {
 	  yyval.p = yyvsp[-1].p;
 	}
     break;
 case 94:
-#line 659 "parse.y"
+#line 646 "parse.y"
 {
 	  yyval.p = mk_constant(TBL_NO_CHANGE);
 	}
     break;
 case 95:
-#line 664 "parse.y"
+#line 651 "parse.y"
 {
 	  yyval.p = mk_constant(yyvsp[0].i);
 	}
     break;
 case 96:
-#line 669 "parse.y"
+#line 656 "parse.y"
 {
 	  yyval.p = mk_constant(yyvsp[0].i);
 	}
     break;
 case 97:
-#line 674 "parse.y"
+#line 661 "parse.y"
 {
 	  yyval.p = mk_constant(yyvsp[0].i);
 	}
     break;
 case 98:
-#line 681 "parse.y"
+#line 668 "parse.y"
 { 
           yyval.p = mk_symbol(yyvsp[0].s);
         }
     break;
 case 99:
-#line 686 "parse.y"
+#line 673 "parse.y"
 {
           yyval.p = mk_2op(CONCAT, mk_symbol(yyvsp[-2].s), mk_1op(VAR, yyvsp[-1].p));
         }
     break;
 case 100:
-#line 691 "parse.y"
+#line 678 "parse.y"
 {
           yyval.p = mk_2op(CONCAT, mk_symbol(yyvsp[-2].s), 
                         mk_2op(CONCAT, mk_1op(VAR, yyvsp[-1].p), mk_symbol(yyvsp[0].s)));
         }
     break;
 case 101:
-#line 699 "parse.y"
+#line 686 "parse.y"
 { 
           yyval.s = yyvsp[0].s;
         }
     break;
 case 102:
-#line 704 "parse.y"
+#line 691 "parse.y"
 {
           if (!state.mac_prev) {
 	    yyval.s = evaluate_concatenation(mk_2op(CONCAT,  mk_symbol(yyvsp[-2].s), 
@@ -1689,7 +1676,7 @@ case 102:
         }
     break;
 case 103:
-#line 712 "parse.y"
+#line 699 "parse.y"
 {
           if (!state.mac_prev) {
             yyval.s = evaluate_concatenation(mk_2op(CONCAT,  mk_symbol(yyvsp[-2].s), 
@@ -1930,5 +1917,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 720 "parse.y"
+#line 707 "parse.y"
 

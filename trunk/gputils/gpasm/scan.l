@@ -46,7 +46,6 @@ enum identtype identify(char *);
 static void push_string(char *str);
 static int found_end();
 static int found_eof();
-static int stringtolong(char *string, int radix);
 
 static struct symbol *current_definition;	/* Used in #define */
 static int quoted; /* Used to prevent #define expansion in ifdef and 
@@ -566,17 +565,6 @@ void close_file()
 
   if (old->type == file) {
     if (old->f != NULL) {
-      #ifndef __MSDOS__
-        fseek(old->f, -1, SEEK_END);
-        if (fgetc(old->f) != '\n') {
-          char complaint[BUFSIZ];
-
-          sprintf(complaint,
-                  "Missing newline before EOF in file \"%s\"",
-                  old->name);
-          gpwarning(GPW_UNKNOWN, complaint);
-        }
-      #endif
       fclose(old->f);
     }
     if (old->lst.f != NULL)
@@ -678,26 +666,5 @@ enum identtype identify(char *text)
   }
 
   return type;
-}
-
-static int
-stringtolong(char *string, int radix)
-{
-  char *endptr;
-  int value;
-  
-  value = strtol(string, &endptr, radix);                           
-  if ((endptr == NULL) || (*endptr != '\0')) {
-    char complaint[80];
-
-    sprintf(complaint,
-            isprint(*endptr) ?
-            "Illegal character '%c' in numeric constant " :
-            "Illegal character %#x in numeric constant" ,
-            *endptr);
-    gperror(GPE_UNKNOWN, complaint);
-  }
-
-  return value;
 }
 

@@ -230,7 +230,9 @@ struct source_context {
 enum globalLife { TEMPORARY, PERMANENT };
 
 void yyerror(char *s);
+int stringtolong(char *string, int radix);
 int gpasm_magic(char *);
+char *convert_escape_chars(char *ps, int *value);
 gpasmVal do_or_append_insn(char *op, struct pnode *parms);
 void set_global(char *name,
 		gpasmVal value,

@@ -28,22 +28,117 @@ Boston, MA 02111-1307, USA.  */
 
 static struct file_context *last = NULL;
 
+int
+stringtolong(char *string, int radix)
+{
+  char *endptr;
+  int value;
+  
+  value = strtol(string, &endptr, radix);                           
+  if ((endptr == NULL) || (*endptr != '\0')) {
+    char complaint[80];
+
+    sprintf(complaint,
+            isprint(*endptr) ?
+            "Illegal character '%c' in numeric constant " :
+            "Illegal character %#x in numeric constant" ,
+            *endptr);
+    gperror(GPE_UNKNOWN, complaint);
+  }
+
+  return value;
+}
+
 int gpasm_magic(char *c)
 {
   if (c[0] == '\\') {
     switch (c[1]) {
+    case 'a':
+      return '\a';
     case 'b':
       return '\b';
+    case 'f':
+      return '\f';
     case 'n':
       return '\n';
     case 'r':
       return '\r';
+    case 't':
+      return '\t';
+    case 'v':
+      return '\v';
     default:
       return c[1];
     }
   }
 
   return c[0];
+}
+
+/* Determine the value of the escape char pointed to by ps.  Return a pointer
+to the next character. */ 
+
+char *
+convert_escape_chars(char *ps, int *value)
+{
+  int count;
+  char buffer[3];
+  
+  if (*ps != '\\') {
+    *value = *ps++;
+  } else {
+    /* escape char, convert its value and write to the new string */    
+    switch (ps[1]) {
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+      /* octal number */
+      count = 0;
+      *value = 0;
+      ps++;
+
+      while (count < 3) {
+        if (*ps < '0' || *ps > '7')
+          break;
+        *value = (*value << 3) + *ps - '0';
+        ps++;
+        count++;
+      }        
+      break;
+    case 'x':
+      /* hex number */
+      if ((ps[2] == '\0') || (ps[3] == '\0')) {
+        gperror(GPE_UNKNOWN, "missing hex value in \\x escape character");
+        *value = 0;
+        /* return a NULL character */
+        ps[2] = '\0';
+        ps += 2;
+      } else {
+        strncpy(buffer, &ps[2], 2);
+        *value = stringtolong(buffer, 16);
+        ps += 4;
+      }
+      break;
+    default:
+      if (ps[1] == '\0') {
+        gperror(GPE_UNKNOWN, "missing value in \\ escape character");
+        *value = 0;
+        /* return a NULL character */
+        ps++;
+      } else {
+        *value = gpasm_magic(ps);
+        ps += 2;
+      }
+    }
+  }
+  
+  return ps;
+
 }
 
 void set_global(char *name,
