@@ -1440,7 +1440,7 @@ static gpasmVal do_list(gpasmVal r,
 	} else if (strcasecmp(lhs, "t") == 0) {
 	  ; /* Ignore this for now: always wrap long list lines */
 	} else if (strcasecmp(lhs, "w") == 0) {
-          select_errorlevel(p->value.binop.p1->value.constant);
+          select_errorlevel(maybe_evaluate(p->value.binop.p1));
 	} else if (strcasecmp(lhs, "x") == 0) {
 	  if (enforce_simple(p->value.binop.p1))
             select_expand(p->value.binop.p1->value.symbol);
