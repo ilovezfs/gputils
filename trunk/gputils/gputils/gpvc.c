@@ -27,8 +27,8 @@ Boston, MA 02111-1307, USA.  */
 FILE *codefile;  
 char filename[BUFFER_LENGTH];
 char temp[BLOCK_SIZE];
-char *source_file_names[20];
-FILE *source_files[20];
+char *source_file_names[MAX_SOURCE_FILES];
+FILE *source_files[MAX_SOURCE_FILES];
 DirBlockInfo main_dir;
 
 int addrsize;
