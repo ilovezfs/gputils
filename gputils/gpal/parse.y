@@ -140,9 +140,6 @@ static tree *case_ident = NULL;
 %type <t> arg
 %type <d> arg_direction
 %type <t> body
-%type <t> decl_start
-%type <t> decl_block
-%type <t> decl
 %type <t> statement_start
 %type <t> statement_block
 %type <t> statement
@@ -239,29 +236,59 @@ element:
 	  $$ = $1;
         }
 	|
-	decl
+	IDENT ':' IDENT ';'
+	{ 
+	  $$ = mk_decl($1, false, $3, NULL, NULL);
+        }
+	|
+	IDENT ':' IDENT AT expr ';'
+	{ 
+	  $$ = mk_decl($1, false, $3, NULL, $5);
+        }
+	|
+	IDENT ':' IDENT '=' expr ';'
+	{ 
+	  $$ = mk_decl($1, false, $3, $5, NULL);
+        }
+	|
+	IDENT ':' IDENT '=' expr AT expr ';'
+	{ 
+	  $$ = mk_decl($1, false, $3, $5, $7);
+        }
+	|
+	IDENT ':' CONSTANT IDENT '=' expr ';'
+	{ 
+	  $$ = mk_decl($1, true, $4, $6, NULL);
+        }
+	|
+	PRAGMA expr ';'
 	{
-	  $$ = $1;
+	  $$ = mk_pragma($2);
+	}
+	|
+	ALIAS IDENT expr ';'
+	{
+	  $$ = mk_alias($2, $3);
         }
 	|
 	PROCEDURE head body PROCEDURE ';'
 	{ 
-	  $$ = mk_proc($2, $3);
+	  $$ = mk_subprogram($2, NULL, $3);
      	}
 	|
 	PROCEDURE head ';'
 	{ 
-	  $$ = mk_proc($2, NULL);
+	  $$ = mk_subprogram($2, NULL, NULL);
 	}
 	|
 	FUNCTION head RETURN IDENT body FUNCTION ';'
 	{ 
-	  $$ = mk_func($2, $4, $5);
+	  $$ = mk_subprogram($2, $4, $5);
 	}
 	|
 	FUNCTION head RETURN IDENT ';'
 	{ 
-	  $$ = mk_func($2, $4, NULL);
+	  $$ = mk_subprogram($2, $4, NULL);
 	}
 	|
 	IF expr THEN element_start END IF ';'
@@ -357,71 +384,10 @@ arg_direction:
 	;
 
 body:
-	IS decl_start BEGIN_TOK statement_start END
+	IS element_start BEGIN_TOK statement_start END
 	{
 	  $$ = mk_body($2, $4);
 	}
-	;
-
-decl_start:
-	/* empty */
-	{
-	  $$ = NULL;
-	}
-	|
-	decl_block
-	{
-          $$ = $1;
-	}
-	;
-
-decl_block:
-	decl
-	{
-	  $$ = node_list($1, NULL);
-	}
-	|
-        decl decl_block
-	{
-	  $$ = node_list($1, $2);
-	}
-	;
-
-decl:
-	IDENT ':' IDENT ';'
-	{ 
-	  $$ = mk_decl($1, false, $3, NULL, NULL);
-        }
-	|
-	IDENT ':' IDENT AT expr ';'
-	{ 
-	  $$ = mk_decl($1, false, $3, NULL, $5);
-        }
-	|
-	IDENT ':' IDENT '=' expr ';'
-	{ 
-	  $$ = mk_decl($1, false, $3, $5, NULL);
-        }
-	|
-	IDENT ':' IDENT '=' expr AT expr ';'
-	{ 
-	  $$ = mk_decl($1, false, $3, $5, $7);
-        }
-	|
-	IDENT ':' CONSTANT IDENT '=' expr ';'
-	{ 
-	  $$ = mk_decl($1, true, $4, $6, NULL);
-        }
-	|
-	PRAGMA expr ';'
-	{
-	  $$ = mk_pragma($2);
-	}
-	|
-	ALIAS IDENT expr ';'
-	{
-	  $$ = mk_alias($2, $3);
-        }
 	;
 
 statement_start:

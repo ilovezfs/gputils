@@ -705,7 +705,7 @@ codegen_close_asm(void)
   struct variable *var;
 
   var = get_global("main");
-  if ((var) && (var->node->tag == node_proc)) {
+  if ((var) && (var->node->tag == node_subprogram)) {
     /* a procedure named "main" exists so add the startup code */
     codegen_write_comment("startup and interrupt vectors");
     fprintf(state.output.f, "RESET_VECTOR code 0x0\n");
@@ -716,7 +716,7 @@ codegen_close_asm(void)
   }
 
   var = get_global("isr");
-  if ((var) && (var->node->tag == node_proc)) {
+  if ((var) && (var->node->tag == node_subprogram)) {
     fprintf(state.output.f, "INT_VECTOR code 0x4\n");
     codegen_write_comment("store wreg and status");
     fprintf(state.output.f, "  movwf w_temp\n");

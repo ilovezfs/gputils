@@ -36,15 +36,14 @@ enum node_tag {
   node_cond,
   node_decl,
   node_file,
-  node_func,  
   node_goto,  
   node_head,  
   node_label,
   node_loop,
   node_pragma,
-  node_proc,
   node_return,
   node_string,
+  node_subprogram,
   node_symbol, 
   node_type,
   node_unop,
@@ -158,11 +157,6 @@ typedef struct node_struct {
       char *bank_address;
     } file;
     struct {
-      tree *head;
-      char *ret;
-      tree *body;
-    } func;
-    struct {
       char *name;
     } _goto;
     struct {
@@ -180,12 +174,13 @@ typedef struct node_struct {
       tree *body;
     } loop;
     tree *pragma;
-    struct {
-      tree *head;
-      tree *body;
-    } proc;
     tree *ret;
     char *string;
+    struct {
+      tree *head;
+      char *ret;
+      tree *body;
+    } subprogram;
     struct {
       char *name;
       tree *offset;
@@ -243,9 +238,6 @@ typedef struct node_struct {
 #define FILE_UDATA(F)      (F)->value.file.udata_default
 #define FILE_CODE_ADDR(F)  (F)->value.file.page_address
 #define FILE_DATA_ADDR(F)  (F)->value.file.bank_address
-#define FUNC_HEAD(F)       (F)->value.func.head
-#define FUNC_RET(F)        (F)->value.func.ret
-#define FUNC_BODY(F)       (F)->value.func.body
 #define GOTO_NAME(G)       (G)->value._goto.name
 #define HEAD_NAME(H)       (H)->value.head.name
 #define HEAD_ARGS(H)       (H)->value.head.args
@@ -254,8 +246,9 @@ typedef struct node_struct {
 #define LOOP_EXIT(L)       (L)->value.loop.exit
 #define LOOP_INCR(L)       (L)->value.loop.incr
 #define LOOP_BODY(L)       (L)->value.loop.body
-#define PROC_HEAD(P)       (P)->value.proc.head
-#define PROC_BODY(P)       (P)->value.proc.body
+#define SUB_HEAD(S)        (S)->value.subprogram.head
+#define SUB_RET(S)         (S)->value.subprogram.ret
+#define SUB_BODY(S)        (S)->value.subprogram.body
 #define SYM_NAME(T)        (T)->value.symbol.name
 #define SYM_OFST(T)        (T)->value.symbol.offset
 #define TYPE_TYPE(T)       (T)->value.type.type
@@ -289,15 +282,14 @@ tree *mk_decl(char *name,
               tree *init,
               tree *addr);
 tree *mk_file(tree *body, char *name, enum source_type type);
-tree *mk_func(tree *head, char *ret, tree *body);
 tree *mk_goto(char *name);
 tree *mk_head(char *name, tree *args);
 tree *mk_label(char *name);
 tree *mk_loop(tree *init, tree *exit, tree *incr, tree *body);
 tree *mk_pragma(tree *pragma);
-tree *mk_proc(tree *head, tree *body);
 tree *mk_return(tree *ret);
 tree *mk_string(char *value);
+tree *mk_subprogram(tree *head, char *ret, tree *body);
 tree *mk_symbol(char *name, tree *offset);
 tree *mk_type(char *type, tree *start, tree *end, tree *list, char *of);
 tree *mk_unop(enum node_op op, tree *p0);

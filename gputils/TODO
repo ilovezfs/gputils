@@ -2,31 +2,53 @@ This following list contains items that need to be completed.  This
 list is in no particular order.
 
 gputils
-  * Switch to xmalloc and obstacks.
-  * Start migrating to the GNU coding style.
   * grep the source for FIXME and fix.
-  * Add number of pages and banks to the processor definitions and use it.
-  * Use dejagnu for testing.
+  * Add a check for the version of flex.
+  * Start migrating to the GNU coding style.
   * Prefix all visible library functions with gp_. Add _ to all 
     others.
+  * Switch to xmalloc and obstacks.
+  * Use dejagnu for testing.
 
 gpal
   * Use "_" instead of "." in asm file to be compatible with C.
-  * Add a macro/inline procedure feature.  Maybe a "pragma inline = true".
-    It would then have to be placed in the public.   
-  * Implement initialized data using idata sections.
-  * Write a gpmake to auto generate Makefiles or add auto dependency
-    feature to gpal.  gpal main.pal it figures out what needs to be
-    compiled.   
-  * Prevent the same With from being read multiple times.
+  * Generate a make compatible dependency list.
   * Clean up the test expressions code generator.  Keep the result in W not
     the working register.
+  * Use the new COFF directives.
   * Add backend for each family.
-  * Create a stdlib.  Add assert function and use it for simulation. newlib
-  * Figure out how to do pointers.  Maybe a new "pointer" type?
+  * Finish 18xx devices.
+  * Simplify compiling a modules.  I don't like adding each file name to
+    the command line.  Either add an include directive or compile to 
+    a parsed library.
+  * Add a new analyze stage.  Traverse the call tree and count the number
+    of times a subprogramed is used.
+  * Remove dead subprograms if they are private and never called.
+  * Overlay memory on private subprograms that don't call each other
+  * Add a inline subprogram feature.  Maybe a "pragma inline" in the
+    declarations to enable.  It would then have to be placed in the public
+    to be global and inlined or accessed from a parsed library.   
+  * Auto inline subprograms that are private and called once.
+  * Generate an error if subprograms are recursive.
+  * Allow conditionals in subprogram declarations.
+  * Allow arrays to assigned with string values.
+  * Implement bit types.
+  * Implement records.
+  * Figure out how to do pointers.  Maybe a new "pointer" type? or "access"?
+  * Implement initialized data using idata sections.
   * Implement "rom" to go with variable and constant. dt "my string\0"
+  * Maybe use attribute instead of pragma.
+  * Convert float numbers to hex in scan.l.
+  * Allow subprograms to be defined in the public.  One copy of the subprogram
+    goes in each module.
+  * Support overloading subprograms.  Complicated, error prone, but powerful.
+  * Support user defined operators.  What to do about the parser?
+  * Move multibyte operations to a library if overloading and user defined
+    operators are supported.
   * Create icode in codegen and peep it.  Write that to asm file.
-  * Remove dead code.
+  * Create a stdlib with a configure script.  Compile to user directory.  Using
+    the full path to the source code.
+  * Finish testsuite.
     
 gpasm
   * Change to byte addressing in 18xx devices in COD files for MPLAB.
@@ -40,4 +62,8 @@ gpasm
   * Add relocations for the difference between symbols in the same section.
 
 gplink
-  * Check the 18xx relocations.
+  * Remove unused sections.
+  * Removed unnecessary page and bank switches.
+  * Peep-like optimization.  Consider using pcode from sdcc-pic14.
+  * Partial linking.
+  * Remove external symbols in an object that have no relocations.
