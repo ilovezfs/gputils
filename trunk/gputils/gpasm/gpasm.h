@@ -145,7 +145,6 @@ extern struct gpasm_state {
     char new_sec_name[80];	/*   new section name */
     int new_sec_addr;		/*   new section name */
     int new_sec_flags;		/*   new section name */
-    int section_num;		/*   Current section number */
     int symbol_num;		/*   Current symbol number */
     int flags;			/*   Current section flags */
   } obj;
@@ -223,7 +222,7 @@ struct source_context {
   } lst; 
   struct yy_buffer_state *yybuf;
   unsigned int line_number;
-  unsigned int coff_number;       /* COFF symbol number */
+  gp_symbol_type *file_symbol;
   struct file_context *fc;        /* Position in the file context stack */
   struct source_context *prev;
 };
@@ -255,7 +254,7 @@ struct macro_head {
   int defined;			/* 1 macro has been defined so calls are valid */ 
   char *src_name;
   unsigned int line_number;
-  unsigned int coff_number;
+  gp_symbol_type *file_symbol;
 };
 
 struct macro_body {

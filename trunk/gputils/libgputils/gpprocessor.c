@@ -506,6 +506,22 @@ gp_processor_coff_proc(unsigned long coff_type)
 }
 
 char *
+gp_processor_name(enum pic_processor processor, unsigned int choice)
+{
+  int i;
+
+  assert(!((choice < 0) || (choice > MAX_NAMES - 1)));
+
+  for (i = 0; i < NUM_PICS; i++) {
+    if (pics[i].tag == processor) {
+      return pics[i].names[choice];
+    }
+  }
+
+  return NULL;
+}
+
+char *
 gp_processor_coff_name(unsigned long coff_type, unsigned int choice)
 {
   int i;
@@ -522,4 +538,32 @@ gp_processor_coff_name(unsigned long coff_type, unsigned int choice)
   }
 
   return NULL;
+}
+
+int
+gp_processor_rom_width(enum proc_class class)
+{
+  int rom_width;
+
+  switch (class) {
+  case PROC_CLASS_GENERIC:
+  case PROC_CLASS_PIC12:
+  case PROC_CLASS_SX:
+    rom_width = 12;
+    break;
+  case PROC_CLASS_PIC14:
+    rom_width = 14;
+    break;
+  case PROC_CLASS_PIC16:
+    rom_width = 16;
+    break;
+  case PROC_CLASS_PIC16E:
+    rom_width = 8;
+    break;
+  case PROC_CLASS_EEPROM8:
+  default:
+    assert(0);
+  }
+
+  return rom_width;
 }

@@ -44,7 +44,6 @@ int count_missing(void)
 void object_append(gp_object_type *file, char *name)
 {
   struct objectlist *new;
-  enum pic_processor processor;
 
   /* make the new entry */  
   new = (struct objectlist *)malloc(sizeof(*new));
@@ -52,13 +51,11 @@ void object_append(gp_object_type *file, char *name)
   new->object = file;
   new->next = NULL;
   
-  processor = gp_processor_coff_proc(file->opt_header.proc_type);
-  
   /* append the entry to the list */
   if (state.objects == NULL) {
     state.objects = new;
     /* store the processor type from the first object file */
-    state.processor = processor;
+    state.processor = file->processor;
   } else {
     struct objectlist *list = state.objects;
 
@@ -71,7 +68,7 @@ void object_append(gp_object_type *file, char *name)
     }
     list->next = new;
     
-    if (processor != state.processor)
+    if (file->processor != state.processor)
       gp_error("processor mismatch in \"%s\"", file->filename);
   }
 
@@ -133,8 +130,7 @@ int scan_index(struct symbol_table *table, gp_archive_type *archive)
 	     file, and add the object to the object list */ 
           member = get_symbol_annotation(m);
           object_name = gp_archive_member_name(member);
-          object = gp_convert_file(member->file);
-          object->filename = strdup(object_name);
+          object = gp_convert_file(object_name, member->file);
           object_append(object, object_name);	
           gp_link_add_symbols(state.symbol.definition, 
                               state.symbol.missing, 
@@ -423,8 +419,7 @@ int main(int argc, char *argv[])
   /* write output file */
   if (state.mode == _object) {
     /* write the executable object in memory */
-    gp_coffgen_updateptr(state.output);
-    gp_coffgen_writecoff(state.output);
+    gp_write_coff(state.output);
   } else if (state.mode == _hex) {
     /* convert the executable object into a hex file */
 

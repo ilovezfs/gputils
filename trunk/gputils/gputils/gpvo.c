@@ -25,35 +25,34 @@ Boston, MA 02111-1307, USA.  */
 
 struct gpvo_state state;
 
-void print_f_header(struct filehdr *fileheader) 
+void print_header(gp_object_type *object) 
 {
-  char *time = ctime(&fileheader->f_timdat);
-
+  char *time = ctime(&object->time);
+  char *processor_name = gp_processor_name(object->processor, 2);
+  
   /* strip the newline from time */
   time[strlen(time)-1] = '\0';
 
-  printf("COFF File Header\n");
-  printf("Target Machine       %#x\n",  fileheader->f_magic);
-  printf("Number of Sections   %i\n",   fileheader->f_nscns);
-  printf("Time Stamp           %#lx (%s)\n", fileheader->f_timdat, time);
-  printf("Symbol Table Pointer %#lx\n", fileheader->f_symptr);
-  printf("Number of Symbols    %li\n",  fileheader->f_nsyms);
-  printf("Optional Header Size %#x\n",  fileheader->f_opthdr);
-  printf("Characteristics      %#x\n",  fileheader->f_flags);
+  printf("COFF File and Optional Headers\n");
+  printf("Processor Type       %s\n",   processor_name);
+  printf("Time Stamp           %s\n",   time);
+  printf("Number of Sections   %li\n",  object->num_sections);
+  printf("Number of Symbols    %li\n",  object->num_symbols);
+  printf("Characteristics      %#x\n",  object->flags);
 
-  if (fileheader->f_flags & F_RELFLG) {
+  if (object->flags & F_RELFLG) {
     printf("  Relocation info has been stripped.\n");
   }
-  if (fileheader->f_flags & F_EXEC) {
+  if (object->flags & F_EXEC) {
     printf("  File is executable.\n");
   }
-  if (fileheader->f_flags & F_LNNO) {
+  if (object->flags & F_LNNO) {
     printf("  Line numbers have been stripped.\n");
   }
-  if (fileheader->f_flags & L_SYMS) {
+  if (object->flags & L_SYMS) {
     printf("  Local symbols have been stripped.\n");
   }
-  if (fileheader->f_flags & F_GENERIC) {
+  if (object->flags & F_GENERIC) {
     printf("  Processor independant file for a core.\n");
   }
 
@@ -61,73 +60,46 @@ void print_f_header(struct filehdr *fileheader)
   return;
 }
 
-void print_opt_header(struct opthdr *optheader)
+void print_reloc_list(gp_reloc_type *relocation)
 {
-  printf("Optional Header\n");
-  printf("Option Magic Number  %#x\n",  optheader->opt_magic);
-  printf("Compiler Version     %#x\n",  optheader->vstamp);
-  printf("Processor Type       %#lx (%s)\n", 
-         optheader->proc_type,
-         state.processor_name);
-  printf("ROM Width            %li\n", optheader->rom_width_bits);
-  printf("RAM Width            %li\n", optheader->ram_width_bits);
-  printf("\n");
-  
-  return;
-}
-
-void print_reloc_list(gp_reloc_type *relocations)
-{
-  int i = 0;
-  struct reloc *current;
-
   printf("Relocations Table\n");
-  printf("Number   Address  Symbol   Offset   Type\n");
+  printf("Address    Offset     Type   Symbol\n");
 
-  while (relocations != NULL) {
-    current = &relocations->relocation;
-    printf("%-8i %#-8lx %-8li %#-8x %#-4x\n", 
-           i,
-           current->r_vaddr,
-           current->r_symndx,
-           current->r_offset,
-           current->r_type);
+  while (relocation != NULL) {
+    printf("%#-10lx %#-10x %#-6x %-s\n", 
+           relocation->address,
+           relocation->offset,
+           relocation->type,
+           relocation->symbol->name);
     
-    i++;
-    relocations = relocations->next;
+    relocation = relocation->next;
   }
 
   printf("\n");
 
 }
 
-void print_linenum_list(gp_linenum_type *linenumbers)
+void print_linenum_list(gp_linenum_type *linenumber)
 {
-  int i = 0;
-  struct lineno *current;
-
   printf("Line Number Table\n");
-  printf("Number   Symbol   Line     Address  Flags    Function\n");
+  printf("Line     Address  Symbol\n");
 
-  while (linenumbers != NULL) {
-    current = &linenumbers->linenumber;
-    printf("%-8i %-8li %-8i %#-8lx %#-8x %#-8lx\n", 
-           i,
-           current->l_srcndx,
-           current->l_lnno,
-           current->l_paddr,
-           current->l_flags,
-           current->l_fcnndx);
+  /* FIXME: output the correct file name */
+
+  while (linenumber != NULL) {
+    printf("%-8i %#-8lx %s\n", 
+           linenumber->line_number,
+           linenumber->address,
+           linenumber->symbol->name);
   
-    i++;
-    linenumbers = linenumbers->next;
+    linenumber = linenumber->next;
   }
 
   printf("\n");
 
 }
 
-void print_data(MemBlock *data, int org, int disassemble)
+void print_data(enum proc_class class, MemBlock *data, int org, int disassemble)
 {
   int memory;
   char buffer[BUFSIZ];
@@ -141,7 +113,7 @@ void print_data(MemBlock *data, int org, int disassemble)
       break;
     
     if (disassemble)
-      gp_disassemble(data, &org, state.class, buffer);
+      gp_disassemble(data, &org, class, buffer);
 
     printf("%06x:  %04x  %s\n", org, memory & 0xffff, buffer);
     org++;
@@ -150,48 +122,41 @@ void print_data(MemBlock *data, int org, int disassemble)
 
 }
 
-void print_sec_header(struct scnhdr *header)
+void print_sec_header(gp_section_type *section)
 {
-  char name[BUFSIZ];
-
-  gp_coffgen_fetch_section_name(state.object, header, &name[0]);
 
   printf("Section Header\n");
-  printf("Name                    %s\n",   name);
-  printf("Physical Address        %#lx\n", header->s_paddr);
-  printf("Virtual Address         %#lx\n", header->s_vaddr);
-  printf("Size of Section         %li\n",  header->s_size);
-  printf("File pointer to Data    %#lx\n", header->s_scnptr);
-  printf("Pointer to Relocations  %#lx\n", header->s_relptr);
-  printf("Pointer to Line Numbers %#lx\n", header->s_lnnoptr);
-  printf("Number of Relocations   %i\n",   header->s_nreloc);
-  printf("Number of Line Numbers  %i\n",   header->s_nlnno);
-  printf("Flags                   %#lx\n", header->s_flags); 
-  if (header->s_flags & STYP_TEXT) {
+  printf("Name                    %s\n",   section->name);
+  printf("Address                 %#lx\n", section->address);
+  printf("Size of Section         %li\n",  section->size);
+  printf("Number of Relocations   %i\n",   section->num_reloc);
+  printf("Number of Line Numbers  %i\n",   section->num_lineno);
+  printf("Flags                   %#lx\n", section->flags); 
+  if (section->flags & STYP_TEXT) {
     printf("  Executable code.\n");
   }
-  if (header->s_flags & STYP_DATA) {
+  if (section->flags & STYP_DATA) {
     printf("  Initialized data.\n");
   }
-  if (header->s_flags & STYP_BSS) {
+  if (section->flags & STYP_BSS) {
     printf("  Uninitialized data.\n");
   }
-  if (header->s_flags & STYP_DATA_ROM) {
+  if (section->flags & STYP_DATA_ROM) {
     printf("  Initialized data for ROM.\n");
   }
-  if (header->s_flags & STYP_ABS) {
+  if (section->flags & STYP_ABS) {
     printf("  Absolute.\n");
   }
-  if (header->s_flags & STYP_SHARED) {
+  if (section->flags & STYP_SHARED) {
     printf("  Shared across banks.\n");
   }
-  if (header->s_flags & STYP_OVERLAY) {
+  if (section->flags & STYP_OVERLAY) {
     printf("  Overlaid with other sections from different objects modules.\n");
   }
-  if (header->s_flags & STYP_ACCESS) {
+  if (section->flags & STYP_ACCESS) {
     printf("  Available using access bit.\n");
   }
-  if (header->s_flags & STYP_ACTREC) {
+  if (section->flags & STYP_ACTREC) {
     printf("  Contains the activation record for a function.\n");
   }
 
@@ -199,21 +164,23 @@ void print_sec_header(struct scnhdr *header)
 
 }
 
-void print_sec_list(gp_section_type *section)
+void print_sec_list(gp_object_type *object)
 {
+  gp_section_type *section = object->sections;
 
   while (section != NULL) {
-    print_sec_header(&section->header);
+    print_sec_header(section);
 
-    if ((section->header.s_size) && (section->header.s_scnptr)) {
-      print_data(section->data, 
-                 section->header.s_paddr, 
-                 section->header.s_flags & STYP_TEXT);
+    if (section->size) {
+      print_data(object->class,
+                 section->data,
+                 section->address,
+                 section->flags & STYP_TEXT);
     }
-    if ((section->header.s_nreloc) && (section->header.s_relptr)) {
+    if (section->num_reloc) {
       print_reloc_list(section->relocations);
     }
-    if ((section->header.s_nlnno) && (section->header.s_lnnoptr)) {
+    if (section->num_lineno) {
       print_linenum_list(section->line_numbers);
     }
     
@@ -222,60 +189,46 @@ void print_sec_list(gp_section_type *section)
 
 }
 
-void print_sym_table (gp_symbol_type *symbol)
+void print_sym_table (gp_object_type *object)
 {
-  int i = 0;
-  struct syment *current;
-  char name[BUFSIZ];
+  gp_symbol_type *symbol;
+  char *section;
+
+  symbol = object->symbols;
 
   printf("Symbol Table\n");
-  printf("Number   Value    Section  Type     StClass  NumAux   Name\n");
+  printf("Name                     Section          Value      Type  Class  NumAux \n");
 
   while (symbol != NULL) {
-    current = &symbol->symbol;
-    gp_coffgen_fetch_symbol_name(state.object, current, &name[0]);
-    printf("%-8i %#-8lx %-8i %#-8x %#-8x %-8i %s\n", 
-           i,
-           current->value,
-           current->sec_num,
-           current->type,
-           current->st_class,
-           current->num_auxsym,
-           name);
+    
+    if (symbol->section_number == N_DEBUG) {
+      section = "DEBUG";
+    } else if (symbol->section_number == N_ABS) {
+      section = "ABSOLUTE";
+    } else if (symbol->section_number == N_UNDEF) {
+      section = "UNDEFINED";
+    } else {
+      assert(symbol->section != NULL);
+      section = symbol->section->name;
+    }    
+    
+    printf("%-24s %-16s %#-10lx %-4i  %-4i   %-4i\n", 
+           symbol->name,
+           section,
+           symbol->value,
+           symbol->type,
+           symbol->class,
+           symbol->num_auxsym);
 
-    if (current->num_auxsym != 0) {
-      /* increment the index and print the auxillary symbol */
-      i += current->num_auxsym;
-      symbol = symbol->next;
+    /* FIXME: print the aux symbol */
+    if (symbol->num_auxsym != 0) {
 
-      /* FIXME: print the aux symbol */
     }
 
-    i++;
     symbol = symbol->next;
   }
 
   printf("\n"); 
-
-  return;
-}
-
-void print_strtbl(char *table)
-{
-  char *string;
-  unsigned long length; 
-  int address = 4;
-  
-  length = _get_32(table);
-    
-  printf("String Table\n");
-  printf("Offset   String\n");
-  while (address < length) {
-    string = &table[address];
-    printf("%#-8x %s\n", address, string);
-    address += strlen(string) + 1;
-  }
-  printf("\n");
 
   return;
 }
@@ -326,11 +279,9 @@ void show_usage(void)
 {
   printf("Usage: gpvo [options] file\n");
   printf("Options: [defaults in brackets after descriptions]\n");
-  printf("  -a, --auxilary             Auxilary record.\n");
   printf("  -b, --binary               Print binary data.\n");
   printf("  -f, --file                 File header.\n");
   printf("  -h, --help                 Show this usage message.\n");
-  printf("  -o, --optional             Optional header.\n");
   printf("  -s, --section              Section data.\n");
   printf("  -t  --symbol               Symbol table.\n");
   printf("  -v, --version              Show version.\n");
@@ -340,7 +291,7 @@ void show_usage(void)
   exit(0);
 }
 
-#define GET_OPTIONS "?bfhorstv"
+#define GET_OPTIONS "?bfhstv"
 
   /* Used: himpsv */
   static struct option longopts[] =
@@ -348,8 +299,6 @@ void show_usage(void)
     { "binary",      0, 0, 'b' },
     { "file",        0, 0, 'f' },
     { "help",        0, 0, 'h' },
-    { "optional",    0, 0, 'o' },
-    { "string",      0, 0, 'r' },
     { "section",     0, 0, 's' },
     { "symbol",      0, 0, 't' },
     { "version",     0, 0, 'v' },
@@ -363,10 +312,8 @@ int main(int argc, char *argv[])
   extern int optind;
   int c;
   int usage = 0;
-  unsigned long coff_type = 0;
 
   /* initalize */
-  state.processor = no_processor;
   state.quiet = 0;
   state.dump_flags = 0;
 
@@ -380,13 +327,7 @@ int main(int argc, char *argv[])
       state.dump_flags |= PRINT_BINARY;
       break;
     case 'f':
-      state.dump_flags |= PRINT_FILE_HEADER;
-      break;
-    case 'o':
-      state.dump_flags |= PRINT_OPT_HEADER;
-      break;
-    case 'r':
-      state.dump_flags |= PRINT_STRTBL;
+      state.dump_flags |= PRINT_HEADER;
       break;
     case 's':
       state.dump_flags |= PRINT_SECTIONS;
@@ -424,43 +365,23 @@ int main(int argc, char *argv[])
 
   state.object = gp_read_coff(state.filename);
   state.file = gp_read_file(state.filename);
-
-  /* determine the processor */
-  coff_type = state.object->opt_header.proc_type;
-  state.processor = gp_processor_coff_proc(coff_type);
-  if (state.processor == no_processor) {
-    /* FIXME: error invalid processor */  
-  }
-  state.class = gp_processor_class(state.processor);
-  state.processor_name = gp_processor_coff_name(coff_type, 1);
-  if (state.processor_name == NULL) {
-    /* FIXME: error invalid processor name*/  
-  }  
   
   if (state.dump_flags & PRINT_BINARY) {
     print_binary(state.file->file, state.file->size);
   }
 
-  if (state.dump_flags & PRINT_FILE_HEADER) {
-    print_f_header(&state.object->file_header);
-  }
-
-  if (state.dump_flags & PRINT_OPT_HEADER) {
-    print_opt_header(&state.object->opt_header);
+  if (state.dump_flags & PRINT_HEADER) {
+    print_header(state.object);
   }
 
   if (state.dump_flags & PRINT_SECTIONS) {
-    print_sec_list(state.object->sections);
+    print_sec_list(state.object);
   }
 
   if (state.dump_flags & PRINT_SYMTBL) {
-    print_sym_table(state.object->sym_table);
+    print_sym_table(state.object);
   }
 
-  if (state.dump_flags & PRINT_STRTBL) {
-    print_strtbl(&state.object->string_table[0]);
-  }
-
-  return 0;
+  return EXIT_SUCCESS;
 
 }

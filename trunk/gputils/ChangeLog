@@ -1,3 +1,7 @@
+2003-02-16 Craig Franklin <craigfranklin@attbi.com>
+  * Added pointers in object files to simplify linking operations.
+  * Added checks when reading object files.
+
 2003-02-02 Craig Franklin <craigfranklin@attbi.com>
   * Combined overlayed sections in gpasm coff outputs.
   * Append prefix on local variables that end up in coff file.  

@@ -256,8 +256,8 @@ int main(int argc, char *argv[])
   i_memory_free(state.i_memory);
 
   if (state.num.errors > 0)
-    return 1;
+    return EXIT_FAILURE;
   else
-    return 0;
+    return EXIT_SUCCESS;
 
 }

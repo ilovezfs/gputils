@@ -87,68 +87,119 @@ gp_free_file(gp_binary_type *file)
 } 
 
 static void 
-_read_file_header(struct filehdr *header, char *file)
+_read_file_header(gp_object_type *object, char *file)
 {
 
-  header->f_magic  = _get_16(&file[0]);
-  header->f_nscns  = _get_16(&file[2]);
-  header->f_timdat = _get_32(&file[4]);
-  header->f_symptr = _get_32(&file[8]);
-  header->f_nsyms  = _get_32(&file[12]);
-  header->f_opthdr = _get_16(&file[16]);
-  header->f_flags  = _get_16(&file[18]);
+  if (_get_16(&file[0]) != MICROCHIP_MAGIC)
+    gp_error("invalid magic number in \"%s\"", object->filename);
+
+  object->num_sections = _get_16(&file[2]);
+  object->time         = _get_32(&file[4]);
+  object->symbol_ptr   = _get_32(&file[8]);
+  object->num_symbols  = _get_32(&file[12]);
+  
+  if (_get_16(&file[16]) != OPT_HDR_SIZ)
+    gp_error("incorrect optional header size in \"%s\"", object->filename);
+    
+  object->flags = _get_16(&file[18]);
+
+}
+
+static void
+_read_opt_header(gp_object_type *object, char *file)
+{
+ 
+  if (_get_16(&file[0]) != OPTMAGIC)
+    gp_error("invalid optional magic number in \"%s\"", object->filename);
+  
+  if (_get_16(&file[2]) != 1)
+    gp_error("invalid assembler version in \"%s\"", object->filename);
+  
+  object->processor = gp_processor_coff_proc(_get_32(&file[4]));
+  object->class = gp_processor_class(object->processor);
+  
+  if (object->processor == no_processor)
+    gp_error("invalid processor type in \"%s\"", object->filename);
+  
+  if (gp_processor_rom_width(object->class) != _get_32(&file[8]))
+    gp_error("invalid rom width for selected processor in \"%s\"", 
+             object->filename);
+  
+  if (_get_32(&file[12]) != 8)
+    gp_error("invalid ram width in \"%s\"", object->filename);
+
 }
 
 static void 
-_read_opt_header(struct opthdr *header, char *file)
+_read_section_header(gp_object_type *object,
+                     gp_section_type *section, 
+                     char *file, 
+                     char *string_table)
 {
-  header->opt_magic      = _get_16(&file[0]);
-  header->vstamp         = _get_16(&file[2]);
-  header->proc_type      = _get_32(&file[4]);
-  header->rom_width_bits = _get_32(&file[8]);
-  header->ram_width_bits = _get_32(&file[12]);
+  char buffer[9];
+  unsigned int offset;
+
+  if (_get_16(&file[0]) == 0) {
+    /* read name from the string table */
+    offset = _get_16(&file[4]);
+    section->name = strdup(&string_table[offset]);
+  } else {
+    strncpy(buffer, &file[0], 8);
+    /* the name can occupy all 8 chars without a null terminator */
+    buffer[8] = '\0';
+    section->name = strdup(buffer);
+  }
+
+  section->symbol = gp_coffgen_findsymbol(object, section->name);
+  if (section->symbol == NULL)
+    gp_error("missing section symbol in \"%s\"", object->filename);
+  
+  section->address = _get_32(&file[8]);
+  if (section->address != _get_32(&file[12]))
+    gp_error("virtual address does not equal physical address in \"%s\"", 
+             object->filename);
+  
+  section->size       = _get_32(&file[16]);
+  section->data_ptr   = _get_32(&file[20]);
+  section->reloc_ptr  = _get_32(&file[24]);
+  section->lineno_ptr = _get_32(&file[28]);
+  section->num_reloc  = _get_16(&file[32]);
+  section->num_lineno = _get_16(&file[34]);
+  section->flags      = _get_32(&file[36]); 
+
+  section->data = i_memory_create();
+  section->relocations = NULL;
+  section->relocations_tail = NULL;
+  section->line_numbers = NULL;
+  section->line_numbers_tail = NULL;
 }
 
 static void 
-_read_sec_header(struct scnhdr *section, char *file)
+_read_reloc(gp_object_type *object,
+            gp_reloc_type *relocation,
+            char *file)
 {
-  section->s_name.name[0] = file[0];  
-  section->s_name.name[1] = file[1];
-  section->s_name.name[2] = file[2]; 
-  section->s_name.name[3] = file[3];
-  section->s_name.name[4] = file[4];  
-  section->s_name.name[5] = file[5];
-  section->s_name.name[6] = file[6]; 
-  section->s_name.name[7] = file[7]; 
-  section->s_paddr        = _get_32(&file[8]);
-  section->s_vaddr        = _get_32(&file[12]);
-  section->s_size         = _get_32(&file[16]);
-  section->s_scnptr       = _get_32(&file[20]);
-  section->s_relptr       = _get_32(&file[24]);
-  section->s_lnnoptr      = _get_32(&file[28]);
-  section->s_nreloc       = _get_16(&file[32]);
-  section->s_nlnno        = _get_16(&file[34]);
-  section->s_flags        = _get_32(&file[36]); 
+  relocation->address = _get_32(&file[0]);
+  relocation->symbol  = &object->symbols[_get_32(&file[4])];
+  relocation->offset  = _get_16(&file[8]);
+  relocation->type    = _get_16(&file[10]);
 }
 
 static void 
-_read_reloc(struct reloc *relocation, char *file)
-{
-  relocation->r_vaddr   = _get_32(&file[0]);
-  relocation->r_symndx  = _get_32(&file[4]);
-  relocation->r_offset  = _get_16(&file[8]);
-  relocation->r_type    = _get_16(&file[10]);
-}
-
-static void 
-_read_lineno(struct lineno *line, char *file)
+_read_lineno(gp_object_type *object,
+             gp_linenum_type *line_number,
+             char *file)
 {
 
-  line->l_srcndx = _get_32(&file[0]); 
-  line->l_lnno   = _get_16(&file[4]);
-  line->l_paddr  = _get_32(&file[6]); 
-  line->l_flags  = _get_16(&file[10]);
-  line->l_fcnndx = _get_32(&file[12]); 
+  line_number->symbol      = &object->symbols[_get_32(&file[0])];
+  line_number->line_number = _get_16(&file[4]);
+  line_number->address     = _get_32(&file[6]); 
+
+  /* FIXME: function index and flags are unused, so far.
+  line_number->l_flags  = _get_16(&file[10]);
+  line_number->l_fcnndx = _get_32(&file[12]); 
+  */
+
 }
 
 static void 
@@ -156,6 +207,7 @@ _read_sections(gp_object_type *object, char *file)
 {
   int i, j;
   char *section_ptr;
+  char *string_table;
   char *loc;
   gp_section_type *current = NULL;
   gp_reloc_type *current_reloc = NULL;
@@ -166,143 +218,209 @@ _read_sections(gp_object_type *object, char *file)
   /* move to the start of the section headers */
   section_ptr = file + FILE_HDR_SIZ + OPT_HDR_SIZ;
 
-  for (i = 0; i < object->file_header.f_nscns; i++) {
-    /* allocate memory for the section */
-    if (i == 0) {
-      /* initialize the linked list the first time */
-      current = object->sections = (gp_section_type *)malloc(sizeof(*current));
-    } else {
-      current->next = (gp_section_type *)malloc(sizeof(*current));
-      current = current->next;
-    }
+  /* setup pointer to string table */
+  string_table = &file[object->symbol_ptr + 
+                 (SYMBOL_SIZE * object->num_symbols)];
+
+  object->sections = gp_coffgen_blocksec(object->num_sections);
+  current = object->sections;
+
+  for (i = 0; i < object->num_sections; i++) {
+    _read_section_header(object, current, section_ptr, string_table);
 
     current->number = i + 1;
-    current->next = NULL;
-    
-    _read_sec_header(&current->header, section_ptr);
-
     section_ptr += SEC_HDR_SIZ;
 
     /* read the data */
-    if ((current->header.s_size) && (current->header.s_scnptr)) {
-      loc = &file[current->header.s_scnptr];
-      number = current->header.s_size >> 1;
-      current->data = i_memory_create();
+    if ((current->size) && (current->data_ptr)) {
+      loc = &file[current->data_ptr];
+      number = current->size >> 1;
+      /* FIXME: This probably doesn't read idata memory correctly */
       for (j = 0; j < number; j++) {
         value = MEM_USED_MASK | (unsigned int)_get_16(&loc[j * 2]);
-        i_memory_put(current->data, current->header.s_paddr + j, value);
+        i_memory_put(current->data, current->address + j, value);
       }
     }
 
     /* read the relocations */
-    if ((current->header.s_nreloc) && (current->header.s_relptr)) {
-      loc = &file[current->header.s_relptr];
-      number = current->header.s_nreloc;
+    if ((current->num_reloc) && (current->reloc_ptr)) {
+      loc = &file[current->reloc_ptr];
+      number = current->num_reloc;
+      current->relocations = gp_coffgen_blockrel(number);
+      current_reloc = current->relocations;
       for (j = 0; j < number; j++) {
-        if (j == 0) {
-          current->relocations = (gp_reloc_type *)malloc(sizeof(*current_reloc));
-          current_reloc = current->relocations;
-        } else {
-          current_reloc->next = (gp_reloc_type *)malloc(sizeof(*current_reloc));
-          current_reloc = current_reloc->next;
-          current_reloc->next = NULL;
-        }
-        _read_reloc(&current_reloc->relocation, loc);
+        _read_reloc(object, current_reloc, loc);
         loc += RELOC_SIZ;
+        current->relocations_tail = current_reloc;
+        current_reloc = current_reloc->next;
       }
     }
 
     /* read the line numbers */
-    if ((current->header.s_nlnno) && (current->header.s_lnnoptr)) {
-      loc = &file[current->header.s_lnnoptr];
-      number = current->header.s_nlnno;
+    if ((current->num_lineno) && (current->lineno_ptr)) {
+      loc = &file[current->lineno_ptr];
+      number = current->num_lineno;
+      current->line_numbers = gp_coffgen_blockline(number);
+      current_linenum = current->line_numbers;
       for (j = 0; j < number; j++) {
-        if (j == 0) {
-          current->line_numbers = 
-            (gp_linenum_type *)malloc(sizeof(*current_linenum));
-          current_linenum = current->line_numbers;
-        } else {
-          current_linenum->next = 
-            (gp_linenum_type *)malloc(sizeof(*current_linenum));
-          current_linenum = current_linenum->next;
-          current_linenum->next = NULL;
-        }
-        _read_lineno(&current_linenum->linenumber, loc);
+        _read_lineno(object, current_linenum, loc);
         loc += LINENO_SIZ;
+        current->line_numbers_tail = current_linenum;
+        current_linenum = current_linenum->next;
       }
     }
+    
+    object->sections_tail = current;
+    current = current->next;
   }
 
 }
 
-static void 
-_read_symbol(struct syment *symbol, char *file)
+static void
+_read_aux(gp_aux_type *aux, char *file, char *string_table)
 {
-  symbol->sym_name.name[0]    = file[0];
-  symbol->sym_name.name[1]    = file[1];
-  symbol->sym_name.name[2]    = file[2];
-  symbol->sym_name.name[3]    = file[3];
-  symbol->sym_name.name[4]    = file[4];
-  symbol->sym_name.name[5]    = file[5];
-  symbol->sym_name.name[6]    = file[6];
-  symbol->sym_name.name[7]    = file[7];
-  symbol->value      = _get_32(&file[8]);
-  symbol->sec_num    = _get_16(&file[12]);
-  symbol->type       = _get_16(&file[14]);
-  symbol->st_class   = file[16];
+  /* FIXME: read the auxilary symbols correctly */
+
+  memcpy(&aux->data[0], file, SYMBOL_SIZE);
+
+}
+
+static void 
+_read_symbol(gp_symbol_type *symbol, char *file, char *string_table)
+{
+  char buffer[9];
+  unsigned int offset;
+
+  if (_get_16(&file[0]) == 0) {
+    /* read name from the string table */
+    offset = _get_16(&file[4]);
+    symbol->name = strdup(&string_table[offset]);
+  } else {
+    strncpy(buffer, &file[0], 8);
+    /* the name can occupy all 8 chars without a null terminator */
+    buffer[8] = '\0';
+    symbol->name = strdup(buffer);
+  }
+
+  symbol->value = _get_32(&file[8]);
+  symbol->section_number = _get_16(&file[12]);
+  symbol->type = _get_16(&file[14]);
+  symbol->class = file[16];
   symbol->num_auxsym = file[17];
+
+  symbol->section = NULL;
+  symbol->aux_list = NULL;
 }
 
 static void 
 _read_symtbl(gp_object_type *object, char *file)
 {
   int i;
-  int number = object->file_header.f_nsyms;
+  int j;
+  int number = object->num_symbols;
   gp_symbol_type *current = NULL; 
+  gp_aux_type *current_aux = NULL; 
+  char *string_table;
 
   if (number != 0) {
-    file = &file[object->file_header.f_symptr];
+    /* create a block of symbols */
+    object->symbols = gp_coffgen_blocksym(number);
+
+    /* setup pointer to string table */
+    string_table = &file[object->symbol_ptr + (SYMBOL_SIZE * number)];
+
+    /* read the symbols */
+    file = &file[object->symbol_ptr];
+    current = object->symbols;
     for (i = 0; i < number; i++) {
-      if (i == 0) {
-        object->sym_table = (gp_symbol_type *)malloc(sizeof(*current));
-        current = object->sym_table;
-      } else {
-        current->next = (gp_symbol_type *)malloc(sizeof(*current));
-        current = current->next;
-      }         
-      _read_symbol(&current->symbol, file);
+      /* read the symbol */
+      _read_symbol(current, file, string_table);
+      current->number = i;
       file += SYMBOL_SIZE;
+
+      if (current->num_auxsym != 0) {
+        current->aux_list = gp_coffgen_blockaux(current->num_auxsym);
+        current_aux = current->aux_list;
+        
+        /* read the aux symbols */
+        for (j = 0; j < current->num_auxsym; j++) {
+          _read_aux(current_aux, file, string_table);
+          file += SYMBOL_SIZE;
+          i++;
+        }
+
+        /* advance the through the list */
+        for (j = 0; j < current->num_auxsym; j++) {
+          /* COFF places all symbols inluding auxilary, in the symbol table.
+             However, in memory, gputils attaches auxilary symbols to their
+             associated primary symbol.  When reading COFF, space is reserved
+             for the auxilary symbols but not used.  Later the space is 
+             freed.  This simplies assigning the pointer in the 
+             relocations. */
+          current = current->next;
+        }      
+
+      }
+
+      current = current->next;
     }
   }
 }
 
-static void 
-_read_strtbl(gp_object_type *object, char *file)
-{
-  unsigned int address;
-  unsigned int nbytes;
-  
-  address = object->file_header.f_symptr + 
-            (SYMBOL_SIZE * object->file_header.f_nsyms);
+/* remove space reserved for auxilary entries, add section pointers, and 
+   setup tail pointer */
 
-  nbytes = _get_32(&file[address]);
-  memcpy(&object->string_table[0], &file[address], nbytes);
+static void 
+_clean_symtbl(gp_object_type *object)
+{
+  gp_symbol_type *current = NULL; 
+  gp_symbol_type *next_symbol = NULL; 
+  gp_symbol_type *old_symbol = NULL; 
+  unsigned int i;
+
+  current = object->symbols;
+
+  while (current != NULL) {
+    /* assign section pointer, section numbers start at 1 not 0 */
+    if (current->section_number > 0)
+      current->section = &object->sections[current->section_number - 1];
+    else
+      current->section = NULL;
+    
+    if (current->num_auxsym != 0) {
+      next_symbol = current->next;
+      for (i = 0; i < current->num_auxsym; i++) {
+        old_symbol = next_symbol;
+        next_symbol = next_symbol->next;
+        /* FIXME: Can't free the single symbols because they were allocated
+           in blocks.  This won't be a problem once obstacks are used.
+        free(old_symbol);
+        */
+      }
+      current->next = next_symbol;
+    }
+    
+    object->symbols_tail = current;
+    current = current->next;
+  }
 
 }
 
 gp_object_type *
-gp_convert_file(char *file)
+gp_convert_file(char *filename, char *file)
 {
   gp_object_type *object;
 
-  /* allocate memory for the object file */
-  object = (gp_object_type *)malloc(sizeof(*object));
+  /* initialize object file */
+  object = gp_coffgen_init();
+  object->filename = strdup(filename);
 
-  _read_file_header(&object->file_header, file);
-  _read_opt_header(&object->opt_header, file + FILE_HDR_SIZ);
-  _read_sections(object, file);
+  /* read the object */
+  _read_file_header(object, file);
+  _read_opt_header(object, file + FILE_HDR_SIZ);
   _read_symtbl(object, file);
-  _read_strtbl(object, file);
+  _read_sections(object, file);
+  _clean_symtbl(object);
 
   return object;
 }
@@ -317,10 +435,7 @@ gp_read_coff(char *filename)
   if (file == NULL)
     return NULL;
 
-  object = gp_convert_file(file->file);
-  if (object != NULL)
-    object->filename = strdup(filename);
-
+  object = gp_convert_file(filename, file->file);
   gp_free_file(file);
 
   return object;

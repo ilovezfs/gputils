@@ -21,81 +21,230 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPCOFFGEN_H__
 #define __GPCOFFGEN_H__
 
-typedef struct gp_reloc_type {
-  struct reloc relocation;
-  struct gp_reloc_type *next;
-} gp_reloc_type;
-
-typedef struct gp_linenum_type {
-  struct lineno linenumber;
-  struct gp_linenum_type *next;
-} gp_linenum_type;
-
-typedef struct gp_symbol_type {
-  struct syment symbol;            /* symbol */
-  struct gp_symbol_type *next;
-} gp_symbol_type;
-
-typedef struct gp_section_type {
-  int              number;          /* section number */
-  struct scnhdr    header;
-  MemBlock        *data;            /* Memory linked list */
-  gp_reloc_type   *relocations;
-  gp_linenum_type *line_numbers;
-  struct gp_section_type *next;
-} gp_section_type;
+/* These definitions are for the COFF as stored in memory.  gpcoff.h defines
+   the COFF as stored in a file. */
 
 /* String table offsets are 16 bits so this coff has a limit on the 
    maximum string table size. */
 #define MAX_STRING_TABLE 0xffff
 
-typedef struct gp_object_type {
-  char            *filename;                        /* object filename */
-  struct filehdr   file_header;                     /* coff file header */
-  struct opthdr    opt_header;                      /* coff optional header */
-  gp_section_type *sections;                        /* sections */
-  gp_symbol_type  *sym_table;                       /* Symbol table */
-  char             string_table[MAX_STRING_TABLE];  /* String table */
+/* relocation linked list */
+
+typedef struct gp_reloc_type 
+{
+  /* entry relative address */
+  long address;
+
+  /* symbol */
+  struct gp_symbol_type *symbol;
+
+  /* symbol number, only valid when generating a coff file */
+  long symbol_number;
+
+  /* offset added to address of symbol */
+  short offset;
+
+  /* relocation type */
+  unsigned short type;
+
+  struct gp_reloc_type *next;
+} gp_reloc_type;
+
+/* line number linked list */
+
+typedef struct gp_linenum_type 
+{
+  /* source file symbol */
+  struct gp_symbol_type *symbol;
+
+  /* line number */
+  unsigned short line_number; 
+
+  /* address of code for this line number */
+  unsigned long address;     
+
+  struct gp_linenum_type *next;
+} gp_linenum_type;
+
+/* auxilary symbol linked list */
+
+/* FIXME: The aux entries need some help.  A union defining all the possible
+   combinations would probably be better.  For now, only aux_file are 
+   handled. */
+
+typedef struct gp_aux_type 
+{
+  /* auxilary symbol type */
+  long type;
+
+  /* aux_file string */
+  char *filename;
+
+  /* aux data */
+  char data[SYMBOL_SIZE];
+  
+  struct gp_aux_type *next;
+} gp_aux_type;
+
+/* symbol linked list */
+
+typedef struct gp_symbol_type 
+{
+  /* symbol name */
+  char *name;
+
+  /* symbol value */ 
+  long value;
+
+  /* section number, only for used for determining symbol type: 
+     N_DEBUG = -2, N_ABS = -1, N_UNDEF = 0, or N_SCNUM = 1 if defined */
+  short section_number;
+  
+  /* defining section */ 
+  struct gp_section_type *section;
+
+  /* type */
+  unsigned short type;
+
+  /* storage class */
+  char class;
+
+   /* number of auxiliary symbols */
+  char num_auxsym;
+
+  /* auxilary symbols */
+  struct gp_aux_type *aux_list;
+
+  /* symbol number, only valid when writing coff file */  
+  unsigned long number;
+
+  struct gp_symbol_type *next;
+} gp_symbol_type;
+
+/* section linked list */
+
+typedef struct gp_section_type 
+{
+  /* section name */
+  char *name;
+
+  /* section symbol */
+  struct gp_symbol_type *symbol;
+
+  /* flags */
+  unsigned long flags;
+  
+  /* section address */
+  unsigned long address;
+  
+  /* section size in bytes */
+  unsigned long size;
+  
+  /* memory linked list */
+  MemBlock *data;
+
+  /* number of relocations */
+  unsigned short num_reloc;
+
+  /* head of relocations */
+  gp_reloc_type *relocations;
+
+  /* tail of relocations */
+  gp_reloc_type *relocations_tail;
+
+  /* number of line numbers */
+  unsigned short num_lineno;
+
+  /* head of line numbers */
+  gp_linenum_type *line_numbers;
+
+  /* tail of line numbers */
+  gp_linenum_type *line_numbers_tail;
+
+  /* section number, only valid when writing coff file */  
+  unsigned long number;
+
+  /* data pointer, only valid when writing coff file */  
+  unsigned long data_ptr;
+
+  /* relocations pointer, only valid when writing coff file */  
+  unsigned long reloc_ptr;
+
+  /* linenumber pointer, only valid when writing coff file */  
+  unsigned long lineno_ptr;
+
+  struct gp_section_type *next;
+} gp_section_type;
+
+typedef struct gp_object_type 
+{
+  /* object filename */
+  char *filename;
+
+  /* processor */
+  enum pic_processor processor;
+  
+  /* processor class */
+  enum proc_class class;
+  
+  /* time object was created */
+  long time;
+  
+  /* flags */
+  unsigned short flags;
+  
+  /* number of sections */
+  long num_sections;
+
+  /* head of sections */
+  gp_section_type *sections;
+
+  /* tail of sections */
+  gp_section_type *sections_tail;
+
+  /* number of symbols */
+  long num_symbols;
+  
+  /* head of symbols */
+  gp_symbol_type *symbols;
+
+  /* tail of symbols */
+  gp_symbol_type *symbols_tail;
+
+  /* symbol table pointer, only valid when writing coff file */  
+  unsigned long symbol_ptr;
+
+  /* next object in the linked list */
+  struct gp_object_type *next;
 } gp_object_type;
 
 /* annotation for symbol tables used by the linker and archive tool */
 typedef struct gp_coffsymbol_type {
-  struct syment  *coffsym;  /* the coff symbol */
+  gp_symbol_type *symbol;   /* the coff symbol */
   gp_object_type *file;     /* the object file the symbol is defined in */
 } gp_coffsymbol_type;
 
-void _fput_16(short data, FILE *fp);
-void _fput_32(long data, FILE *fp); 
-short _get_16(char *addr);
-long _get_32(char *addr);
-void _put_16(char *addr, short data);
-void _put_32(char *addr, long data);
-gp_object_type *
-gp_coffgen_init(char * name, enum pic_processor processor);
-void gp_coffgen_fetch_symbol_name(gp_object_type *object, 
-                                  struct syment *symbol,
-			          char *string);
-void gp_coffgen_fetch_section_name(gp_object_type *object, 
-                                   struct scnhdr *header,
-			           char *string);
+gp_object_type *gp_coffgen_init(void);
 gp_section_type *gp_coffgen_findsection(gp_object_type *object, 
                                         gp_section_type *start,
                                         char *name);
-int gp_coffgen_addstring(gp_object_type *object, char *name);                                   
-void gp_coffgen_addname(gp_object_type *object, char *ptr, char *name);
 gp_section_type *gp_coffgen_addsection(gp_object_type *object, char *name);
 gp_reloc_type *gp_coffgen_addreloc(gp_section_type *section);
 gp_linenum_type *gp_coffgen_addlinenum(gp_section_type *section);
 gp_symbol_type *
 gp_coffgen_findsymbol(gp_object_type *object, char *name);
-gp_symbol_type *
-gp_coffgen_findsymbolnum(gp_object_type *object, unsigned int number);
-gp_symbol_type *
-gp_coffgen_addsymbol(gp_object_type *object, char *name, int num_aux);
+gp_aux_type *gp_coffgen_addaux(gp_object_type *object, gp_symbol_type *symbol);
+gp_symbol_type *gp_coffgen_addsymbol(gp_object_type *object);
+
+gp_section_type *gp_coffgen_blocksec(unsigned int number);
+gp_reloc_type *gp_coffgen_blockrel(unsigned int number);
+gp_linenum_type *gp_coffgen_blockline(unsigned int number);
+gp_symbol_type *gp_coffgen_blocksym(unsigned int number);
+gp_aux_type *gp_coffgen_blockaux(unsigned int number);
+
 int gp_coffgen_free_section(gp_section_type *section);
+int gp_coffgen_free_symbol(gp_symbol_type *symbol);
 int gp_coffgen_free(gp_object_type *object);
 int gp_coffgen_free(gp_object_type *object);
-int gp_coffgen_updateptr(gp_object_type *object);
-int gp_coffgen_writecoff(gp_object_type *object);
 
 #endif

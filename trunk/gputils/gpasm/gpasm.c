@@ -104,7 +104,8 @@ void init(void)
   state.processor = no_processor;
   state.processor_chosen = 0;
 
-  state.obj.section_num = 0;
+  state.obj.object = NULL;
+  state.obj.section = NULL;
   state.obj.symbol_num = 0;
 
   n_include_paths = 0;
@@ -325,7 +326,6 @@ int assemble(void)
   state.cblock = 0;
   if (state.cmd_line.radix != 1)
     state.radix = 16;
-  state.obj.section_num = 0;
   state.obj.symbol_num = 0;
   coff_init();
   cod_init();
@@ -362,7 +362,7 @@ int assemble(void)
   free_files();
 
   if (state.num.errors > 0)
-    return 1;
+    return EXIT_FAILURE;
   else
-    return 0;
+    return EXIT_SUCCESS;
 }

@@ -799,7 +799,7 @@ static gpasmVal do_data(gpasmVal r,
   simplify_data(parms, &list, 1);
 
   if ((state.mode == relocatable) &&
-      !(state.obj.flags & STYP_TEXT)) {
+      !(SECTION_FLAGS & STYP_TEXT)) {
     /* This is a data memory not program */
     state.lst.line.linetype = res;
 
@@ -832,12 +832,12 @@ static gpasmVal do_db(gpasmVal r,
   simplify_data(parms, &list,0);
 
   if ((state.mode == relocatable) &&
-      !(state.obj.flags & STYP_TEXT)) {
+      !(SECTION_FLAGS & STYP_TEXT)) {
     /* This is a data memory not program */
     state.lst.line.linetype = res;
  
     /* only valid in initialized data sections */
-    if (state.obj.flags & STYP_BSS)
+    if (SECTION_FLAGS & STYP_BSS)
       gperror(GPE_WRONG_SECTION, NULL);
 
     data(&list, 0, 0xff);
@@ -912,12 +912,12 @@ static gpasmVal do_dw(gpasmVal r,
   simplify_data(parms, &list, 1);
 
   if ((state.mode == relocatable) &&
-      !(state.obj.flags & STYP_TEXT)) {
+      !(SECTION_FLAGS & STYP_TEXT)) {
     /* This is a data memory not program */
     state.lst.line.linetype = res;
 
     /* only valid in initialized data sections */
-    if (state.obj.flags & STYP_BSS)
+    if (SECTION_FLAGS & STYP_BSS)
       gperror(GPE_WRONG_SECTION, NULL);
 
     /* data memory is byte sized so split the data */  
@@ -1684,7 +1684,7 @@ static gpasmVal do_macro(gpasmVal r,
   head->defined = 0;
   /* Record data for the list, cod, and coff files */
   head->line_number = state.src->line_number;
-  head->coff_number = state.src->coff_number;
+  head->file_symbol = state.src->file_symbol;
 
   head->src_name = strdup(state.src->name);
   
@@ -1852,7 +1852,7 @@ static gpasmVal do_res(gpasmVal r,
       } else {
         state.lst.line.linetype = res;
         for (i = 0; i < count; i++) {
-          if (state.obj.flags & STYP_TEXT) {
+          if (SECTION_FLAGS & STYP_TEXT) {
             /* For some reason program memory is filled with a different 
                value. */
             emit(state.device.core_size);     
@@ -2135,7 +2135,7 @@ static gpasmVal do_while(gpasmVal r,
   head->body = NULL;
   /* Record data for the list, cod, and coff files */
   head->line_number = state.src->line_number;
-  head->coff_number = state.src->coff_number;
+  head->file_symbol = state.src->file_symbol;
 
   head->src_name = strdup(state.src->name);
 

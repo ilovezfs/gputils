@@ -36,7 +36,9 @@ libgputils_a_SOURCES =\
 	gpreadhex.c \
 	gpreadobj.c \
 	gpsymbol.c \
+	gpsystem.c \
 	gpwritehex.c \
+	gpwriteobj.c \
 	gparchive.h \
 	gpcod.h \
         gpcoff.h \
@@ -50,6 +52,8 @@ libgputils_a_SOURCES =\
 	gpreadhex.h \
 	gpreadobj.h \
 	gpsymbol.h \
+	gpsystem.h \
 	gptypes.h \
 	gpwritehex.h \
+	gpwriteobj.h \
 	libgputils.h

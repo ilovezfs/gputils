@@ -260,8 +260,8 @@ int main(int argc, char *argv[])
   }
 
   if (gp_num_errors > 0)
-    return 1;
+    return EXIT_FAILURE;
   else
-    return 0;
+    return EXIT_SUCCESS;
 
 }

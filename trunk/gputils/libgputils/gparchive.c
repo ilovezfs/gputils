@@ -408,9 +408,8 @@ gp_archive_make_index(gp_archive_type *archive,
     end = strchr(&name[0], '/');
     if (end != NULL) 
       *end = '\0';
-    object = gp_convert_file(archive->file);
+    object = gp_convert_file(name, archive->file);
     assert(object != NULL);
-    object->filename = strdup(name); 
     gp_link_add_symbols(definition, NULL, object);
     archive = archive->next;  
   }

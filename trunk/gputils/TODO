@@ -12,10 +12,12 @@ list is in no particular order.
   * Move COD file generation to library.
   * Prefix all visible library functions with gp_. Add _ to all 
     others.
-  * Create an xmalloc function with error checking and use it.
+  * Switch to xmalloc and obstacks.
   * Start migrating to the GNU coding style.
   * Add macro names to symbol table in listing file.
   * Add .ident for HLL tools 
   * Add .file/.line for debugger.
   * Add .def/.endef for embedding debug/optimization information
   * Config and Idlocs for coff output of 18xx devices 
+  * Define auxilary coff symbols.
+  * Undefined coff symbols are always at the end of the coff table.

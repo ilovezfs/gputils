@@ -287,7 +287,7 @@ void lst_format_line(char *src_line, int value)
   case res:
     strcpy(e, "               ");
     e += 15;
-    if (state.obj.flags & STYP_TEXT) {
+    if (SECTION_FLAGS & STYP_TEXT) {
       /* generate line numbers for res directives in program memory */
       emitted = state.org - state.lst.line.was_org;
     }
