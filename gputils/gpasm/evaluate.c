@@ -324,18 +324,22 @@ int count_reloc(struct pnode *p)
   case constant:
     return 0;
   case symbol:
-    s = get_symbol(state.stTop, p->value.symbol);
-    if (s != NULL) {
-      var = get_symbol_annotation(s);
-      if (var != NULL) {
-        switch(var->type) {
-        case gvt_extern:
-        case gvt_global:
-        case gvt_static:
-        case gvt_address:
-          return 1;
-        default:
-          return 0;        
+    if (strcmp(p->value.symbol, "$") == 0) {
+      return 1;
+    } else {
+      s = get_symbol(state.stTop, p->value.symbol);
+      if (s != NULL) {
+        var = get_symbol_annotation(s);
+        if (var != NULL) {
+          switch(var->type) {
+          case gvt_extern:
+          case gvt_global:
+          case gvt_static:
+          case gvt_address:
+            return 1;
+          default:
+            return 0;        
+          }
         }
       }
     }  
@@ -357,9 +361,9 @@ int count_reloc(struct pnode *p)
 static void
 add_reloc(struct pnode *p, short offset, unsigned short type)
 {
-  char *string;
-  struct symbol *s;
-  struct variable *var;
+  char *string = NULL;
+  struct symbol *s = NULL;
+  struct variable *var = NULL;
 
   if ((p->tag == binop) && (p->value.binop.op == CONCAT)) {
     string = evaluate_concatenation(p);
@@ -382,7 +386,15 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
   }
   switch (p->tag) {
   case symbol:
-    s = get_symbol(state.stTop, p->value.symbol);
+    if (strcmp(p->value.symbol, "$") == 0) {
+      char buffer[BUFSIZ];
+      
+      sprintf(buffer, "_$_%06x", state.org << _16bit_core);
+      set_global(buffer, state.org << _16bit_core, PERMANENT, gvt_static);
+      s = get_symbol(state.stTop, buffer);
+    } else {
+      s = get_symbol(state.stTop, p->value.symbol);
+    }
     if (s != NULL) {
       var = get_symbol_annotation(s);
       if (var != NULL) {

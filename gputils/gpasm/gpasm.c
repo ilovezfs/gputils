@@ -108,6 +108,7 @@ init(void)
   state.obj.section = NULL;
   state.obj.symbol_num = 0;
   state.obj.section_num = 0;
+  state.obj.org_num = 0;
   
   return;
 }
@@ -348,6 +349,7 @@ assemble(void)
     state.radix = 16;
   state.obj.symbol_num = 0;
   state.obj.section_num = 0;
+  state.obj.org_num = 0;
   coff_init();
   cod_init();
   lst_init();

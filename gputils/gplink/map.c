@@ -116,13 +116,20 @@ _write_program_memory(void)
 
   while (section != NULL) {
     if ((section->flags & STYP_TEXT) && (section->size != 0)) {
-      size = section->size >> 1;
+      if (state.object->class == PROC_CLASS_PIC16E) {
+        size = section->size;
+      } else {
+        size = section->size >> 1;
+      }
       map_line("                            %#08x    %#08x",
                section->address,
                section->address + size - 1);
       prog_size += size;
     }
     section = section->next;  
+  }
+  if (state.object->class == PROC_CLASS_PIC16E) {
+    prog_size >>= 1;  
   }
   map_line(" ");
   map_line("                            %i program addresses used",

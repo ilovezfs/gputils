@@ -64,7 +64,7 @@ _update_section_size(void)
   if (state.obj.section->flags & STYP_TEXT) {
     /* the section is executable, so each word is two bytes */
     state.obj.section->size = 
-      (state.org - state.obj.section->address) * 2;
+      (state.org - (state.obj.section->address >> _16bit_core)) * 2;
   } else {
     /* the section is data, so each word is one byte */
     state.obj.section->size = 
@@ -138,6 +138,7 @@ coff_new_section(char *name, int addr, int flags)
   gp_section_type *found = NULL;
   gp_symbol_type *new = NULL;
   gp_aux_type *new_aux;
+  int section_addr;
 
   state.obj.symbol_num += 2;
 
@@ -177,14 +178,19 @@ coff_new_section(char *name, int addr, int flags)
     }
   }
 
+  if ((flags & STYP_TEXT) && (_16bit_core))
+    section_addr = addr << 1;
+  else
+    section_addr = addr;
+
   state.obj.section = gp_coffgen_addsection(state.obj.object, name);    
-  state.obj.section->address = addr; 
+  state.obj.section->address = section_addr; 
   state.obj.section->flags = flags;
   
   /* add a section symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
   new->name           = strdup(name);
-  new->value          = addr;
+  new->value          = section_addr;
   new->section_number = state.obj.section_num;  /* Modified later. */
   new->section        = state.obj.section;
   new->type           = T_NULL;
@@ -215,7 +221,10 @@ coff_reloc(int symbol, short offset, unsigned short type)
   if ((!state.obj.enabled) || (state.obj.section == NULL))
     return;
 
-  origin = state.org - state.obj.section->address;
+  if ((state.obj.section->flags & STYP_TEXT) && (_16bit_core))
+    origin = state.org - (state.obj.section->address >> 1);
+  else
+    origin = state.org - state.obj.section->address;
   
   new = gp_coffgen_addreloc(state.obj.section);
   new->address       = origin * 2;    /* byte address not word */
