@@ -444,7 +444,7 @@ void show_usage(void)
   printf("\n");    
 #endif
   printf("Report bugs to:\n");
-  printf("%s\n", BUG_REPORT_URL);
+  printf("%s\n", PACKAGE_BUGREPORT);
   exit(0);
 }
 
@@ -533,14 +533,16 @@ process_args( int argc, char *argv[])
   }
 
   /* check if the first file is the linker script */
-  pc = strrchr(argv[optind], '.');
-  if (strcasecmp(pc, ".lkr") == 0) {
-    if (state.srcfilename == NULL) {
-      state.srcfilename = argv[optind++];
-    } else {
-      gp_error("linker script specified twice (%s and %s)",
-               state.srcfilename,
-               argv[optind]);
+  if (argv[optind]) {
+    pc = strrchr(argv[optind], '.');
+    if (strcasecmp(pc, ".lkr") == 0) {
+      if (state.srcfilename == NULL) {
+        state.srcfilename = argv[optind++];
+      } else {
+        gp_error("linker script specified twice (%s and %s)",
+                 state.srcfilename,
+                 argv[optind]);
+      }
     }
   }
 
