@@ -27,6 +27,7 @@ noinst_LIBRARIES = libgputils.a
 
 libgputils_a_SOURCES =\
 	gparchive.c \
+	gpcod.c \
 	gpcoffgen.c \
 	gpcofflink.c \
 	gpdis.c \

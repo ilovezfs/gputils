@@ -261,6 +261,7 @@ struct px {
 void gp_dump_processor_list(void);
 struct px *gp_find_processor(char *name);
 enum proc_class gp_processor_class(enum pic_processor);
+int gp_processor_bsr_boundary(enum pic_processor processor);
 unsigned long gp_processor_coff_type(enum pic_processor processor);
 enum pic_processor gp_processor_coff_proc(unsigned long coff_type);
 char *gp_processor_name(enum pic_processor processor, unsigned int choice);

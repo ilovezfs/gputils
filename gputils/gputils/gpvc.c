@@ -21,20 +21,21 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gpvc.h"
 #include "dump.h"
 #include "block.h"
 
 FILE *codefile;  
 char filename[BUFFER_LENGTH];
-char temp[BLOCK_SIZE];
+char temp[COD_BLOCK_SIZE];
 char *source_file_names[MAX_SOURCE_FILES];
 FILE *source_files[MAX_SOURCE_FILES];
 DirBlockInfo main_dir;
 
 int addrsize;
 
-char directory_block_data[BLOCK_SIZE];
+char directory_block_data[COD_BLOCK_SIZE];
 char * SymbolType4[154] = {
   "a_reg          ", "x_reg          ", "c_short        ", "c_long         ",
   "c_ushort       ", "c_ulong        ", "c_pointer      ", "c_upointer     ",
@@ -174,7 +175,6 @@ int main(int argc, char *argv[])
   if(display_flags == DISPLAY_NOTHING)
     display_flags = DISPLAY_ALL;
 
-
   if (usage) {
     show_usage();
   }
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
   read_directory();
 
   fseek(codefile, 0,SEEK_SET);
-  buffer_size = fread(directory_block_data, 1, BLOCK_SIZE, codefile);
+  buffer_size = fread(directory_block_data, 1, COD_BLOCK_SIZE, codefile);
 
   if(display_flags & DISPLAY_DIR)
     directory_block();

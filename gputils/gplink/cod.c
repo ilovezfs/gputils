@@ -1,4 +1,4 @@
-/* ".COD" file output for gpasm
+/* ".COD" file output for gplink
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003
    James Bowman, Scott Dattalo
 
@@ -22,9 +22,12 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 
 #include "libgputils.h"
-#include "gpasm.h"
-#include "lst.h"
-#include "cod.h"
+#include "gplink.h"
+
+/* line types for cod_lst_line */
+#define COD_FIRST_LST_LINE  1
+#define COD_NORMAL_LST_LINE 2
+#define COD_LAST_LST_LINE   3
 
 static DirBlockInfo main_dir;
 static int cod_lst_line_number = 0;
@@ -53,10 +56,10 @@ init_DirBlock(DirBlockInfo *a_dir)
    * to the .cod file after everything else */
 
   gp_cod_strncpy(&a_dir->dir.block[COD_DIR_VERSION], 
-	         GPASM_VERSION_STRING,
+	         GPLINK_VERSION_STRING,
 	         COD_DIR_COMPILER - COD_DIR_VERSION);
   gp_cod_strncpy(&a_dir->dir.block[COD_DIR_COMPILER], 
-	         "gpasm",
+	         "gplink",
 	         COD_DIR_NOTICE - COD_DIR_COMPILER);
   gp_cod_strncpy(&a_dir->dir.block[COD_DIR_NOTICE], 
 	         "Copyright (c) 1998-2003 gnupic project",
@@ -89,7 +92,6 @@ cod_init(void)
       perror(state.codfilename);
       exit(1);
     }
-    add_file(ft_cod,state.codfilename);
     state.cod.enabled = 1;
   }
 
@@ -139,53 +141,38 @@ write_cod_block(DirBlockInfo *dbp,
 static void
 write_file_block(void)
 {
+  gp_symbol_type *symbol;
   Block fb;
 #define FILES_PER_BLOCK COD_BLOCK_SIZE/COD_FILE_SIZE
-  int id_number=0;
-
-  struct file_context *fc;
+  int id_number = 0;
 
   gp_cod_create(&fb, &blocks);
 
-  if(!state.files)
-    return;
+  symbol = state.object->symbols;
+  while(symbol != NULL) {
+    if (symbol->class == C_FILE) {
 
-  /* Find the head of the file list: */
+      /* The file id is used to define the index at which the file
+       * name is written within the file code block. (The id's are
+       * sequentially assigned when the files are opened.) If there
+       * are too many files, then gpasm will abort. note: .cod files 
+       * can handle larger file lists...
+       */
 
-  fc = state.files->prev;
-  while(fc->prev && id_number++ < 1000) {
-    fc = fc->prev;
-  }
+      gp_cod_strncpy(&fb.block[1 + COD_FILE_SIZE * id_number],
+                     symbol->aux_list->_aux_symbol._aux_file.filename,
+                     COD_FILE_SIZE-1);
 
-  if(id_number>=1000) {
-    /* Too many files to handle in the .cod file */
-    assert(0);
-  }
+      id_number++;
 
-  id_number = 0;
-
-  while(fc != NULL) {
-
-    /* The file id is used to define the index at which the file
-     * name is written within the file code block. (The id's are
-     * sequentially assigned when the files are opened.) If there
-     * are too many files, then gpasm will abort. note: .cod files 
-     * can handle larger file lists...
-     */
-
-    gp_cod_strncpy(&fb.block[1 + COD_FILE_SIZE * id_number],
-		   fc->name,
-		   COD_FILE_SIZE-1);
-
-    id_number++;
-
-    if(id_number >= FILES_PER_BLOCK) {
-      write_cod_block(&main_dir, COD_DIR_NAMTAB, COD_DIR_NAMTAB+2, &fb);
-      id_number = 0;
-      gp_cod_next(&fb, &blocks);
+      if(id_number >= FILES_PER_BLOCK) {
+        write_cod_block(&main_dir, COD_DIR_NAMTAB, COD_DIR_NAMTAB+2, &fb);
+        id_number = 0;
+        gp_cod_next(&fb, &blocks);
+      }
     }
-
-    fc = fc->next;
+    
+    symbol = symbol->next;
 
   }
 
@@ -196,78 +183,67 @@ write_file_block(void)
 
 }
 
-/* cod_lst_line - add a line of information that cross references the
+/* cod_write_line - add a lines of information that cross references the
  * the opcode's address, the source file, and the list file.
  */
 
 void
-cod_lst_line(int line_type)
+cod_write_line(void)
 {
-#define COD_LST_FIRST_LINE  7
+  gp_section_type *section = NULL;
+  gp_linenum_type *line = NULL;
   unsigned char smod_flag = 0xff;
-  static int first_time = 1;
-  static Block lb={NULL,0};
-  
+  int first_time = 1;
+  Block lb={NULL,0};
   int offset;
+  int previous_org = 0;
 
-  if(!state.cod.enabled)
-    return;
+  /* create a block */
+  gp_cod_create(&lb, &blocks);
 
-  switch(line_type) {
-  case COD_FIRST_LST_LINE:
-  case COD_NORMAL_LST_LINE:
+  section = state.object->sections;
+  while (section != NULL) {
+    line = section->line_numbers;
+    while (line != NULL) {
 
-    /* Don't start until after the source is open */
-    if(state.src == NULL)
-      return;
+      if(cod_lst_line_number >= COD_MAX_LINE_SYM) {
+        write_cod_block(&main_dir, COD_DIR_LSTTAB, COD_DIR_LSTTAB+2, &lb);
+        cod_lst_line_number = 0;
+        gp_cod_next(&lb, &blocks);
+      }
 
-    /* If we don't have a block yet then create one: */
-    if(lb.block == NULL)
-      gp_cod_create(&lb, &blocks);
+      offset = cod_lst_line_number++ * COD_LINE_SYM_SIZE;
+      lb.block[offset + COD_LS_SFILE] = line->symbol->number;
 
-    /* Ignore the first few line numbers */
-    if(state.lst.line_number < COD_LST_FIRST_LINE)
-      return;
+      if((line->address - previous_org) != 0)
+        smod_flag = 0x080;
+      else
+        smod_flag = 0x90;
 
-    if(cod_lst_line_number >= COD_MAX_LINE_SYM) {
-      write_cod_block(&main_dir, COD_DIR_LSTTAB, COD_DIR_LSTTAB+2, &lb);
-      cod_lst_line_number = 0;
-      gp_cod_next(&lb, &blocks);
+      if(first_time != 0) {
+        first_time = 0;
+        smod_flag  = 0xff;
+      }
+
+      lb.block[offset + COD_LS_SMOD] = smod_flag;
+
+      /* Write the source file line number corresponding to the list file line 
+         number */
+      gp_putl16(&lb.block[offset + COD_LS_SLINE], line->line_number);
+
+      /* Write the address of the opcode. */
+      gp_putl16(&lb.block[offset + COD_LS_SLOC], line->address);
+    
+      previous_org = line->address;
+      
+      line = line->next;
     }
+    section = section->next;
+  }
 
-    assert(state.src->fc != NULL);
-    offset = cod_lst_line_number++ * COD_LINE_SYM_SIZE;
-    lb.block[offset + COD_LS_SFILE] = state.src->fc->id;
-
-    if(state.cod.emitting != 0)
-      smod_flag = 0x080;
-    else
-      smod_flag = 0x90;
-
-    if(first_time != 0) {
-      first_time = 0;
-      smod_flag  = 0xff;
-    }
-
-    lb.block[offset + COD_LS_SMOD] = smod_flag;
-
-    /* Write the source file line number corresponding to the list file line 
-       number */
-    gp_putl16(&lb.block[offset + COD_LS_SLINE], state.src->line_number);
-
-    /* Write the address of the opcode. */
-    gp_putl16(&lb.block[offset + COD_LS_SLOC], state.lst.line.was_org);
-
-    break;
-  case COD_LAST_LST_LINE:
-    if(lb.block) {
-      write_cod_block(&main_dir, COD_DIR_LSTTAB, COD_DIR_LSTTAB+2, &lb);
-      gp_cod_delete(&lb);
-    }
-
-    break;
-  default:
-    assert(0);
+  if(lb.block) {
+    write_cod_block(&main_dir, COD_DIR_LSTTAB, COD_DIR_LSTTAB+2, &lb);
+    gp_cod_delete(&lb);
   }
 
 }
@@ -296,7 +272,7 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
 #define MAX_SYM_LEN   255 /* Maximum length of a symbol name */
 
   int i,offset,len,type;
-  struct variable *var;
+  gp_coffsymbol_type *var;
   char * s;
   Block sb;
 
@@ -323,25 +299,23 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
 
     gp_cod_strncpy(&sb.block[offset +1], s, MAX_SYM_LEN);
 
-    switch(var->type) {
-    case gvt_cblock:
-      type = COD_ST_C_SHORT;  /* byte craft's nomenclature for a memory byte. */
-      break;
-    case gvt_address:
+    assert(var->symbol != NULL);
+    assert(var->symbol->section != NULL);
+
+    if (var->symbol->section->flags & STYP_TEXT) {
       type = COD_ST_ADDRESS;
-      break;
-    case gvt_org:
-      type = COD_ST_ADDRESS;
-      break;
-    case gvt_constant:
-    default:
+    } else if (var->symbol->section->flags & STYP_DATA) {
+      type = COD_ST_C_SHORT;
+    } else if (var->symbol->section->flags & STYP_BSS) {
+      type = COD_ST_C_SHORT;
+    } else {
       type = COD_ST_CONSTANT;
     }
 
     gp_putl16(&sb.block[offset+len+COD_SYM_TYPE], type);
 
     /* write 32 bits, big endian */
-    gp_putb32(&sb.block[offset+len+COD_SYM_VALUE], var->value);
+    gp_putb32(&sb.block[offset+len+COD_SYM_VALUE], var->symbol->value);
     offset += (len+COD_SYM_EXTRA);
   }
 
@@ -538,25 +512,71 @@ write_directory(void)
   } while(dbi);
 }
 
-void
-cod_close_file(void)
+static void
+cod_symbol_table(struct symbol_table *table)
 {
+  int i;
+  struct symbol **sym, **ps, *s;
+
+  ps = sym = malloc(table->count * sizeof(sym[0]));
+
+  for (i = 0; i < HASH_SIZE; i++)
+    for (s = table->hash_table[i]; s; s = s->next) 
+      *ps++ = s;
+
+  assert(ps == &sym[table->count]);
+
+  qsort(sym, table->count, sizeof(sym[0]), symbol_compare);
+
+  cod_write_symbols(sym, table->count);
+}
+
+/* assign a unique file number */
+
+static void
+assign_file_id(void)
+{
+  gp_symbol_type *symbol;
+  int file_id = 0;
+  
+  symbol = state.object->symbols;
+  while(symbol != NULL) {
+    if (symbol->class == C_FILE) {
+      symbol->number = file_id;
+      file_id++;
+    }
+    symbol = symbol->next;
+  }
+
+}
+
+void
+write_cod(void)
+{
+  cod_init();
 
   if(!state.cod.enabled)
     return;
 
-  cod_lst_line(COD_LAST_LST_LINE);
+  assign_file_id();
+
+  /* write line numbers */
+  cod_write_line();
+
+  /* All the global symbols are written.  Need to figure out what to do about
+     the local symbols. */
+  cod_symbol_table(state.symbol.definition);
 
   write_file_block();
 
   cod_write_code();
 
   gp_cod_strncpy(&main_dir.dir.block[COD_DIR_PROCESSOR], 
-	         state.processor_info->names[2],
+	         gp_processor_name(state.processor, 2),
 	         COD_DIR_LSYMTAB - COD_DIR_PROCESSOR);
 
   write_directory();
   fclose(state.cod.f);
   free(main_dir.dir.block);
-}
 
+}

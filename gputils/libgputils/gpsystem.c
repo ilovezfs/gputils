@@ -22,8 +22,10 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
+/* little endian functions */
+
 void 
-_fput_16(short data, FILE *fp) 
+gp_fputl16(short data, FILE *fp) 
 {
   fputc((int)(data & 255), fp);
   fputc((int)((data >> 8) & 255), fp);
@@ -32,7 +34,7 @@ _fput_16(short data, FILE *fp)
 }
 
 void 
-_fput_32(long data, FILE *fp) 
+gp_fputl32(long data, FILE *fp) 
 {
   fputc((int)(data & 255), fp);
   fputc((int)((data >> 8) & 255), fp);
@@ -43,7 +45,7 @@ _fput_32(long data, FILE *fp)
 }
 
 void 
-_fput_var(char *data, int number, FILE *fp) 
+gp_fputvar(char *data, int number, FILE *fp) 
 {
   int i;
   
@@ -54,7 +56,7 @@ _fput_var(char *data, int number, FILE *fp)
 }
 
 short 
-_get_16(char *addr)
+gp_getl16(char *addr)
 {
   short value;
   
@@ -65,7 +67,7 @@ _get_16(char *addr)
 }
 
 long 
-_get_32(char *addr)
+gp_getl32(char *addr)
 {
   long value;
 
@@ -78,7 +80,7 @@ _get_32(char *addr)
 }
 
 void 
-_put_16(char *addr, short data)
+gp_putl16(char *addr, short data)
 {
   addr[1] = (data >> 8) & 0xff;
   addr[0] = data & 0xff;
@@ -87,12 +89,38 @@ _put_16(char *addr, short data)
 }
 
 void 
-_put_32(char *addr, long data)
+gp_putl32(char *addr, long data)
 {
   addr[0] = data & 0xff;
   addr[1] = (data >> 8)  & 0xff;
   addr[2] = (data >> 16) & 0xff;
   addr[3] = (data >> 24) & 0xff;
+
+  return;
+}
+
+/* big endian functions */
+
+long 
+gp_getb32(char *addr)
+{
+  long value;
+
+  value  = (unsigned char)addr[0] << 24;
+  value |= (unsigned char)addr[1] << 16;
+  value |= (unsigned char)addr[2] << 8;
+  value |= (unsigned char)addr[3];
+
+  return value;
+}
+
+void 
+gp_putb32(char *addr, long data)
+{
+  addr[0] = (data >> 24) & 0xff;
+  addr[1] = (data >> 16) & 0xff;
+  addr[2] = (data >> 8)  & 0xff;
+  addr[3] = data & 0xff;
 
   return;
 }
@@ -114,4 +142,5 @@ gp_data_string(char *buffer)
           now_tm->tm_min,
           now_tm->tm_sec);
 
+  return;
 }

@@ -495,7 +495,7 @@ typedef struct gp_symbol_type
   /* auxilary symbols */
   struct gp_aux_type *aux_list;
 
-  /* symbol number, only valid when writing coff file */  
+  /* symbol number, only valid when writing coff or cod file */  
   unsigned long number;
 
   struct gp_symbol_type *next;

@@ -2741,7 +2741,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  reloc_evaluate(p, RELOCT_ACCESS);
 
 	  /* Default access (use the BSR unless access is to special registers) */
-	  if ((file < 0x60) || (file > 0xf5f)) {
+	  if ((file < state.device.bsr_boundary) || 
+              (file >= (0xf00 + state.device.bsr_boundary))) {
             a = 0;
 	  } else {
 	    a = 1;
@@ -2822,7 +2823,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  reloc_evaluate(p, RELOCT_ACCESS);
 
 	  /* Default access (use the BSR unless access is to special registers) */
-	  if ((file < 0x60) || (file > 0xf5f)) {
+	  if ((file < state.device.bsr_boundary) || 
+              (file >= (0xf00 + state.device.bsr_boundary))) {
             a = 0;
 	  } else {
 	    a = 1;
@@ -3198,6 +3200,7 @@ void opcode_init(int stage)
       _16bit_core = 1;
       state.c_memory_base = CONFIG1L;
       state.device.config_address = CONFIG1L;
+      state.device.bsr_boundary = gp_processor_bsr_boundary(state.processor);
 
       /* The 16_bit core special macros are encoded directly into the
        * symbol table like regular instructions. */

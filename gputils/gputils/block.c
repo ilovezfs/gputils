@@ -21,8 +21,8 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gpvc.h"
-#include "gpcod.h"
 #include "dump.h"
 #include "block.h"
 
@@ -36,14 +36,14 @@ void directory_block(void)
   printf("directory block \n");
 
   printf("COD file version  %d\n",
-	 get_short_int(&block[COD_DIR_CODTYPE]));
+	 gp_getl16(&block[COD_DIR_CODTYPE]));
   printf("Source file       %s\n",
 	 &block[COD_DIR_SOURCE]);
   printf("Date              %s\n",
 	 substr(temp_buf,&block[COD_DIR_DATE],7));
   printf("Time              %2d:%2d\n",
-	 get_short_int(&block[COD_DIR_TIME]) / 100, 
-	 get_short_int(&block[COD_DIR_DATE]) % 100);
+	 gp_getl16(&block[COD_DIR_TIME]) / 100, 
+	 gp_getl16(&block[COD_DIR_DATE]) % 100);
   printf("Compiler version  %s\n",
 	 substr(temp_buf,&block[COD_DIR_VERSION],19));
   printf("Compiler          %s\n",
@@ -53,7 +53,7 @@ void directory_block(void)
   printf("Processor         %s\n",
 	 substr(temp_buf,&block[COD_DIR_PROCESSOR],8));
 
-  addrsize = get_short_int(&block[COD_DIR_ADDRSIZE]);
+  addrsize = gp_getl16(&block[COD_DIR_ADDRSIZE]);
   printf("Bytes for address: %d\n",addrsize);
   if ((addrsize > 2) || (addrsize == 0)) {
     addrsize = 1;
@@ -61,33 +61,33 @@ void directory_block(void)
   }
 
   printf("High word of 64k address %04x\n",
-	 get_short_int(&block[COD_DIR_HIGHADDR]));
+	 gp_getl16(&block[COD_DIR_HIGHADDR]));
 
   printf("Short symbol table start block:  0x%04x  end block:  0x%04x\n",
-	 get_short_int(&block[COD_DIR_SYMTAB]),
-	 get_short_int(&block[COD_DIR_SYMTAB+2]));
+	 gp_getl16(&block[COD_DIR_SYMTAB]),
+	 gp_getl16(&block[COD_DIR_SYMTAB+2]));
   printf("Long symbol table start block:   0x%04x  end block:  0x%04x\n",
-	 get_short_int(&block[COD_DIR_LSYMTAB]),
-	 get_short_int(&block[COD_DIR_LSYMTAB+2]));
+	 gp_getl16(&block[COD_DIR_LSYMTAB]),
+	 gp_getl16(&block[COD_DIR_LSYMTAB+2]));
   printf("File name table start block:     0x%04x  end block:  0x%04x\n",
-	 get_short_int(&block[COD_DIR_NAMTAB]),
-	 get_short_int(&block[COD_DIR_NAMTAB+2]));
+	 gp_getl16(&block[COD_DIR_NAMTAB]),
+	 gp_getl16(&block[COD_DIR_NAMTAB+2]));
   printf("Source info table start block:   0x%04x  end block:  0x%04x\n",
-	 get_short_int(&block[COD_DIR_LSTTAB]),
-	 get_short_int(&block[COD_DIR_LSTTAB+2]));
+	 gp_getl16(&block[COD_DIR_LSTTAB]),
+	 gp_getl16(&block[COD_DIR_LSTTAB+2]));
   printf("Rom table start block:           0x%04x  end block:  0x%04x\n",
-	 get_short_int(&block[COD_DIR_MEMMAP]),
-	 get_short_int(&block[COD_DIR_MEMMAP+2]));
+	 gp_getl16(&block[COD_DIR_MEMMAP]),
+	 gp_getl16(&block[COD_DIR_MEMMAP+2]));
   printf("Local scope table start block:   0x%04x  end block:  0x%04x\n",
-	 get_short_int(&block[COD_DIR_LOCALVAR]),
-	 get_short_int(&block[COD_DIR_LOCALVAR+2]));
+	 gp_getl16(&block[COD_DIR_LOCALVAR]),
+	 gp_getl16(&block[COD_DIR_LOCALVAR+2]));
   printf("Debug messages start block:      0x%04x  end block:  0x%04x\n",
-	 get_short_int(&block[COD_DIR_MESSTAB]),
-	 get_short_int(&block[COD_DIR_MESSTAB+2]));
+	 gp_getl16(&block[COD_DIR_MESSTAB]),
+	 gp_getl16(&block[COD_DIR_MESSTAB+2]));
 
   printf("\nNext directory block");
-  if(get_short_int(&block[COD_DIR_NEXTDIR]))
-    printf(":  %d\n",get_short_int(&block[COD_DIR_NEXTDIR]));
+  if(gp_getl16(&block[COD_DIR_NEXTDIR]))
+    printf(":  %d\n",gp_getl16(&block[COD_DIR_NEXTDIR]));
   else
     printf(" is empty\n");
 
@@ -113,17 +113,8 @@ void directory_block(void)
 void read_block(char * block, int block_number)
 {
 
-  fseek(codefile, block_number * BLOCK_SIZE, SEEK_SET);
-  fread(block, BLOCK_SIZE, 1, codefile);
-}
-
-void clear_block(Block *b)
-{
-
-  if(b && b->block)
-    bzero(b->block, BLOCK_SIZE);
-  else
-    assert(0);
+  fseek(codefile, block_number * COD_BLOCK_SIZE, SEEK_SET);
+  fread(block, COD_BLOCK_SIZE, 1, codefile);
 }
 
 void create_block(Block *b)
@@ -131,21 +122,9 @@ void create_block(Block *b)
 
   assert(b != NULL);
 
-  b->block = malloc(BLOCK_SIZE);
-  clear_block(b);
+  b->block = malloc(COD_BLOCK_SIZE);
+  gp_cod_clear(b);
   
-}
-
-void delete_block(Block *b)
-{
-
-  if(b && b->block) {
-    free(b->block);
-    b->block = NULL;
-  }
-  else
-    assert(0);
-
 }
 
 void read_directory(void)
@@ -158,7 +137,7 @@ void read_directory(void)
   dbi = &main_dir;
 
   do {
-    int next_dir_block = get_short_int(&dbi->dir.block[COD_DIR_NEXTDIR]);
+    int next_dir_block = gp_getl16(&dbi->dir.block[COD_DIR_NEXTDIR]);
 
     if(next_dir_block) {
       dbi->next_dir_block_info = (DirBlockInfo *)malloc(sizeof(DirBlockInfo));
