@@ -83,7 +83,7 @@ gpasmVal set_page_bits(int page)
 
 /**************************************************************************/
 
-extern gpasmVal do_addcf(gpasmVal r,
+static gpasmVal do_addcf(gpasmVal r,
 		         char *name,
 		         int arity,
 		         struct pnode *parms)
@@ -97,7 +97,7 @@ extern gpasmVal do_addcf(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_adddcf(gpasmVal r,
+static gpasmVal do_adddcf(gpasmVal r,
 		          char *name,
 		          int arity,
 		          struct pnode *parms)
@@ -109,7 +109,7 @@ extern gpasmVal do_adddcf(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_b(gpasmVal r,
+static gpasmVal do_b(gpasmVal r,
 		     char *name,
 		     int arity,
 		     struct pnode *parms)
@@ -120,7 +120,7 @@ extern gpasmVal do_b(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_bc(gpasmVal r,
+static gpasmVal do_bc(gpasmVal r,
 		      char *name,
 		      int arity,
 		      struct pnode *parms)
@@ -132,7 +132,7 @@ extern gpasmVal do_bc(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_bdc(gpasmVal r,
+static gpasmVal do_bdc(gpasmVal r,
 		       char *name,
 		       int arity,
 		       struct pnode *parms)
@@ -144,7 +144,7 @@ extern gpasmVal do_bdc(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_bz(gpasmVal r,
+static gpasmVal do_bz(gpasmVal r,
 		      char *name,
 		      int arity,
 		      struct pnode *parms)
@@ -156,7 +156,7 @@ extern gpasmVal do_bz(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_bnc(gpasmVal r,
+static gpasmVal do_bnc(gpasmVal r,
 		       char *name,
 		       int arity,
 		       struct pnode *parms)
@@ -168,7 +168,7 @@ extern gpasmVal do_bnc(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_bndc(gpasmVal r,
+static gpasmVal do_bndc(gpasmVal r,
 		        char *name,
 		        int arity,
 		        struct pnode *parms)
@@ -180,7 +180,7 @@ extern gpasmVal do_bndc(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_bnz(gpasmVal r,
+static gpasmVal do_bnz(gpasmVal r,
 		       char *name,
 		       int arity,
 		       struct pnode *parms)
@@ -192,7 +192,7 @@ extern gpasmVal do_bnz(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_clrc(gpasmVal r,
+static gpasmVal do_clrc(gpasmVal r,
 		        char *name,
 		        int arity,
 		        struct pnode *parms)
@@ -207,7 +207,7 @@ extern gpasmVal do_clrc(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_clrdc(gpasmVal r,
+static gpasmVal do_clrdc(gpasmVal r,
 		         char *name,
 		         int arity,
 		         struct pnode *parms)
@@ -222,7 +222,7 @@ extern gpasmVal do_clrdc(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_clrz(gpasmVal r,
+static gpasmVal do_clrz(gpasmVal r,
 		        char *name,
 		        int arity,
 		        struct pnode *parms)
@@ -237,7 +237,7 @@ extern gpasmVal do_clrz(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_lcall(gpasmVal r,
+static gpasmVal do_lcall(gpasmVal r,
 		         char *name,
 		         int arity,
 		         struct pnode *parms)
@@ -249,7 +249,7 @@ extern gpasmVal do_lcall(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_lgoto(gpasmVal r,
+static gpasmVal do_lgoto(gpasmVal r,
 		         char *name,
 		         int arity,
 		         struct pnode *parms)
@@ -261,7 +261,7 @@ extern gpasmVal do_lgoto(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_movfw(gpasmVal r,
+static gpasmVal do_movfw(gpasmVal r,
 		         char *name,
 		         int arity,
 		         struct pnode *parms)
@@ -272,7 +272,7 @@ extern gpasmVal do_movfw(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_negf(gpasmVal r,
+static gpasmVal do_negf(gpasmVal r,
 		        char *name,
 		        int arity,
 		        struct pnode *parms)
@@ -284,7 +284,7 @@ extern gpasmVal do_negf(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_setc(gpasmVal r,
+static gpasmVal do_setc(gpasmVal r,
 		        char *name,
 		        int arity,
 		        struct pnode *parms)
@@ -299,7 +299,7 @@ extern gpasmVal do_setc(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_setdc(gpasmVal r,
+static gpasmVal do_setdc(gpasmVal r,
 		         char *name,
 		         int arity,
 		         struct pnode *parms)
@@ -314,7 +314,7 @@ extern gpasmVal do_setdc(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_setz(gpasmVal r,
+static gpasmVal do_setz(gpasmVal r,
 		        char *name,
 		        int arity,
 		        struct pnode *parms)
@@ -329,7 +329,7 @@ extern gpasmVal do_setz(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_skpc(gpasmVal r,
+static gpasmVal do_skpc(gpasmVal r,
 		        char *name,
 		        int arity,
 		        struct pnode *parms)
@@ -344,7 +344,7 @@ extern gpasmVal do_skpc(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_skpdc(gpasmVal r,
+static gpasmVal do_skpdc(gpasmVal r,
 		         char *name,
 		         int arity,
 		         struct pnode *parms)
@@ -359,7 +359,7 @@ extern gpasmVal do_skpdc(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_skpz(gpasmVal r,
+static gpasmVal do_skpz(gpasmVal r,
 		        char *name,
 		        int arity,
 		        struct pnode *parms)
@@ -374,7 +374,7 @@ extern gpasmVal do_skpz(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_skpnc(gpasmVal r,
+static gpasmVal do_skpnc(gpasmVal r,
 		         char *name,
 		         int arity,
 		         struct pnode *parms)
@@ -389,7 +389,7 @@ extern gpasmVal do_skpnc(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_skpndc(gpasmVal r,
+static gpasmVal do_skpndc(gpasmVal r,
 		          char *name,
 		          int arity,
 		          struct pnode *parms)
@@ -404,7 +404,7 @@ extern gpasmVal do_skpndc(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_skpnz(gpasmVal r,
+static gpasmVal do_skpnz(gpasmVal r,
 		         char *name,
 		         int arity,
 		         struct pnode *parms)
@@ -419,7 +419,7 @@ extern gpasmVal do_skpnz(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_subcf(gpasmVal r,
+static gpasmVal do_subcf(gpasmVal r,
 		         char *name,
 		         int arity,
 		         struct pnode *parms)
@@ -431,7 +431,7 @@ extern gpasmVal do_subcf(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_subdcf(gpasmVal r,
+static gpasmVal do_subdcf(gpasmVal r,
 		         char *name,
 		         int arity,
 		         struct pnode *parms)
@@ -443,7 +443,7 @@ extern gpasmVal do_subdcf(gpasmVal r,
   return r;
 }
 
-extern gpasmVal do_tstf(gpasmVal r,
+static gpasmVal do_tstf(gpasmVal r,
 		        char *name,
 		        int arity,
 		        struct pnode *parms)
