@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+	<TITLE> GPUTILS Frequently Asked Questions </TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice/5.1 (Linux)">
+	<META NAME="CREATED" CONTENT="20020417;18324400">
+	<META NAME="CHANGEDBY" CONTENT=" ">
+	<META NAME="CHANGED" CONTENT="20020417;20193400">
+	<STYLE>
+	<!--
+		H1 { color: #000000 }
+		TD P { color: #000000 }
+		H2 { color: #000000 }
+		P { color: #000000 }
+		A:link { color: #1f00ff }
+		A:visited { color: #9900dd }
+	-->
+	</STYLE>
+</HEAD>
+<BODY TEXT="#000000" LINK="#1f00ff" VLINK="#9900dd" BGCOLOR="#ffffff">
+<P><BR><BR>
+</P>
+<H1 ALIGN=CENTER>GPUTILS Frequently Asked Questions 
+</H1>
+<P>The latest version of this document is always available at
+<A HREF="http://gputils/sourceforge.net/faq.html">http://gptuils.sourceforge.net/faq.html</A>.</P>
+<P>This FAQ tries to answer specific questions concerning GPUTILS.
+For general information regarding Microchip microcontrollers please
+check the <A HREF="http://www.microchip.com/">Microchip homepage</A>.</P>
+<HR>
+<H1 ALIGN=CENTER>Questions 
+</H1>
+<OL>
+	<LI><P ALIGN=LEFT STYLE="margin-bottom: 0in; line-height: 100%">What
+	is the history of GPUTILS?</P>
+	<LI><P ALIGN=LEFT STYLE="margin-bottom: 0in; line-height: 100%">Why
+	can't gpasm find &quot;P16F84.INC&quot; on my Linux system?</P>
+	<LI><P ALIGN=LEFT STYLE="margin-bottom: 0in; line-height: 100%">Why
+	can't gpasm find a processor header file on my win32 system?</P>
+	<LI><P ALIGN=LEFT STYLE="margin-bottom: 0in; line-height: 100%"><A NAME="incremental1"></A>
+	Will GPUTILS ever include relocatable object and linker support?</P>
+</OL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<HR>
+<H2><A NAME="gcc"></A>What is the history of GPUTILS?</H2>
+<P><FONT SIZE=3><FONT FACE="times, serif">In 1997, </FONT></FONT><A HREF="mailto:jamesbowman@users.sourceforge.net"><FONT SIZE=3><FONT FACE="times, serif">James
+Bowman</FONT></FONT></A><FONT SIZE=3><FONT FACE="times, serif">
+started gpasm. The objective was to create an open source replacement
+for </FONT></FONT><A HREF="http://www.microchip.com/"><FONT SIZE=3><FONT FACE="times, serif">Microchip's</FONT></FONT></A><FONT SIZE=3><FONT FACE="times, serif">
+MPASM. During this time many people contributed to gpasm. </FONT></FONT>
+</P>
+<UL>
+	<P><A HREF="mailto:scott@datallo.com"><FONT SIZE=3><FONT FACE="times, serif">Scott
+	Dattalo</FONT></FONT></A><FONT SIZE=3><FONT FACE="times, serif">
+	<BR></FONT></FONT><A HREF="mailto:james.cameron@digital.com"><FONT SIZE=3><FONT FACE="times, serif">James
+	Cameron</FONT></FONT></A><FONT SIZE=3><FONT FACE="times, serif">
+	<BR></FONT></FONT><A HREF="mailto:spe@stacken.kth.se"><FONT SIZE=3><FONT FACE="times, serif">Stefan
+	Petersen</FONT></FONT></A><FONT SIZE=3><FONT FACE="times, serif">
+	<BR></FONT></FONT><A HREF="mailto:eric@brouhaha.com"><FONT SIZE=3><FONT FACE="times, serif">Eric
+	Smith</FONT></FONT></A><FONT SIZE=3><FONT FACE="times, serif">
+	<BR></FONT></FONT><A HREF="mailto:azummo@ita.flashnet.it"><FONT SIZE=3><FONT FACE="times, serif">Alessandro
+	Zummo</FONT></FONT></A><FONT SIZE=3><FONT FACE="times, serif">
+	<BR></FONT></FONT><A HREF="mailto:aab@cichlid.com"><FONT SIZE=3><FONT FACE="times, serif">Andrew
+	Burgess</FONT></FONT></A><FONT SIZE=3><FONT FACE="times, serif">
+	<BR></FONT></FONT><A HREF="mailto:sbs@wavefront.com"><FONT SIZE=3><FONT FACE="times, serif">Bruce
+	Stough</FONT></FONT></A><FONT SIZE=3><FONT FACE="times, serif">
+	<BR></FONT></FONT><A HREF="mailto:thorn@acm.org"><FONT SIZE=3><FONT FACE="times, serif">Tommy
+	Thorn</FONT></FONT></A><FONT SIZE=3><FONT FACE="times, serif">
+	<BR></FONT></FONT><A HREF="mailto:scott@datallo.com"><FONT SIZE=3><FONT FACE="times, serif">Charlie
+	Krauter</FONT></FONT></A></P>
+</UL>
+<P><FONT SIZE=3><FONT FACE="times, serif">At the end of 2000, </FONT></FONT><A HREF="mailto:craigfranklin@attbi.com"><FONT SIZE=3><FONT FACE="times, serif">Craig
+Franklin</FONT></FONT></A><FONT SIZE=3><FONT FACE="times, serif">
+became the primary gpasm developer. Through most of 2001 the focus
+was compatiblity with MPASM. This was made much easiler by a
+contribution of MPASM test files to the project by </FONT></FONT><A HREF="http://www.microchip.com/"><FONT SIZE=3><FONT FACE="times, serif">Microchip</FONT></FONT></A><FONT SIZE=3><FONT FACE="times, serif">.
+Also during this time, work started on relocatable object tools for
+gpasm. </FONT></FONT>
+</P>
+<P><FONT SIZE=3>In 2002, A new package, gputils, containing gpasm and
+the new relocatable object tools was created</FONT>.</P>
+<HR>
+<H2>Why can't gpasm find &quot;P16F84.INC&quot; on my Linux system?</H2>
+<P>GPASM includes a complete set of processor header files. These
+files are identical to the files that Microchip distributes. Often,
+with source code developed on win32 systems, the INCLUDE directives
+are written without regard to case. Linux is case sensitive. To be
+consistent, the header file names were all converted to lower case.
+Accordingly, all include directives calling out processor header
+files should be lower case. 
+</P>
+<HR>
+<H2>Why can't gpasm find a processor header file on my win32 system?</H2>
+<P>The location of the processor header files is selected when gpasm
+is compiled. For the provided win32 binary, this location was
+selected as c:\gputils\header. This path can be reported by
+commanding &quot;gpasm&quot; with no options. If the gputils tree is
+moved, gpasm will not be able to locate the header files.</P>
+<HR>
+<H2><A NAME="incremental"></A>Will GPUTILS ever include relocatable
+object and linker support?</H2>
+<P>Yes. The work has been started. Hopefully the first versions will
+be available in a short time.</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<HR>
+<P><BR><BR>
+</P>
+<TABLE WIDTH=100% BORDER=0 CELLPADDING=2 CELLSPACING=2>
+	<TR>
+		<TD>
+			<P><I><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">This
+			Site Hosted by:</FONT></I> 
+			</P>
+			<P><A HREF="http://sourceforge.net/"><IMG SRC="http://sourceforge.net/sflogo.php?group_id=41924" NAME="Graphic1" ALT="SourceForge" ALIGN=BOTTOM WIDTH=88 HEIGHT=31 BORDER=0></A></P>
+		</TD>
+		<TD VALIGN=BOTTOM>
+			<P ALIGN=RIGHT><A HREF="mailto:craigfranklin@attbi.com"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Webmaster</FONT></A>
+						</P>
+			<P ALIGN=RIGHT><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Last
+			updated: April 17, 2002</FONT></P>
+		</TD>
+	</TR>
+</TABLE>
+<P><BR><BR>
+</P>
+</BODY>
+</HTML>
