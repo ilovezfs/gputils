@@ -1,0 +1,114 @@
+MPASM 03.20.02 Released      PAGESEL2.ASM   11-24-2002  13:30:15         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001   processor 16f877
+                      00002 
+                      00003 goto_macro macro
+                      00004        pagesel page0
+                      00005        goto page0
+                      00006        pagesel page1
+                      00007        goto page1
+                      00008        pagesel page2
+                      00009        goto page2
+                      00010        pagesel page3
+                      00011        goto page3
+                      00012        endm
+                      00013   
+0000                  00014 page0  org 0
+                      00015        goto_macro
+0000   118A 120A          M        pagesel page0
+0002   2800               M        goto page0
+0003   158A 120A          M        pagesel page1
+Message[306]: Crossing page boundary -- ensure page bits are set.
+0005   2801               M        goto page1
+0006   118A 160A          M        pagesel page2
+Message[306]: Crossing page boundary -- ensure page bits are set.
+0008   2801               M        goto page2
+0009   158A 160A          M        pagesel page3
+Message[306]: Crossing page boundary -- ensure page bits are set.
+000B   2801               M        goto page3
+                      00016 
+0801                  00017 page1  org 801
+                      00018        goto_macro
+0801   118A 120A          M        pagesel page0
+Message[306]: Crossing page boundary -- ensure page bits are set.
+0803   2800               M        goto page0
+0804   158A 120A          M        pagesel page1
+0806   2801               M        goto page1
+0807   118A 160A          M        pagesel page2
+Message[306]: Crossing page boundary -- ensure page bits are set.
+0809   2801               M        goto page2
+080A   158A 160A          M        pagesel page3
+Message[306]: Crossing page boundary -- ensure page bits are set.
+080C   2801               M        goto page3
+                      00019 
+1001                  00020 page2  org 1001
+                      00021        goto_macro
+1001   118A 120A          M        pagesel page0
+Message[306]: Crossing page boundary -- ensure page bits are set.
+1003   2800               M        goto page0
+1004   158A 120A          M        pagesel page1
+Message[306]: Crossing page boundary -- ensure page bits are set.
+1006   2801               M        goto page1
+1007   118A 160A          M        pagesel page2
+1009   2801               M        goto page2
+100A   158A 160A          M        pagesel page3
+Message[306]: Crossing page boundary -- ensure page bits are set.
+MPASM 03.20.02 Released      PAGESEL2.ASM   11-24-2002  13:30:15         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+100C   2801               M        goto page3
+                      00022   
+1801                  00023 page3  org 1801
+                      00024        goto_macro
+1801   118A 120A          M        pagesel page0
+Message[306]: Crossing page boundary -- ensure page bits are set.
+1803   2800               M        goto page0
+1804   158A 120A          M        pagesel page1
+Message[306]: Crossing page boundary -- ensure page bits are set.
+1806   2801               M        goto page1
+1807   118A 160A          M        pagesel page2
+Message[306]: Crossing page boundary -- ensure page bits are set.
+1809   2801               M        goto page2
+180A   158A 160A          M        pagesel page3
+180C   2801               M        goto page3
+                      00025  
+                      00026        end 
+MPASM 03.20.02 Released      PAGESEL2.ASM   11-24-2002  13:30:15         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16F877                          00000001
+goto_macro                        
+page0                             00000000
+page1                             00000801
+page2                             00001001
+page3                             00001801
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXX---- ---------------- ---------------- ----------------
+0800 : -XXXXXXXXXXXX--- ---------------- ---------------- ----------------
+1000 : -XXXXXXXXXXXX--- ---------------- ---------------- ----------------
+1800 : -XXXXXXXXXXXX--- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    48
+Program Memory Words Free:  8144
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :    12 reported,     0 suppressed
+
+

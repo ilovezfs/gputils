@@ -295,7 +295,7 @@ list		     	 {
 			     return IDENTIFIER;
 			   }
 			 }
-1[24678][CFHL0][CERV]?[0-9X][0-9X][0-9]?[ABC]? {
+1[24678][CFHL0][CERV]?[0-9X][0-9X][0-9]?[0-9ABC]? {
 /* Ugh.  As a special case, treat processor names, such as 16C84
 as identifiers rather than as hex numbers. */
                            yylval.s = strdup(yytext);

@@ -1,0 +1,81 @@
+MPASM 03.20.02 Released      BANKSEL4.ASM   11-24-2002  13:49:34         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001   processor 18f8720
+                      00002 
+  00000000            00003 reg1 equ 0x000
+  00000060            00004 reg2 equ 0x060
+  00000100            00005 reg3 equ 0x100
+  00000200            00006 reg4 equ 0x200
+  00000300            00007 reg5 equ 0x300
+  00000400            00008 reg6 equ 0x400
+  00000600            00009 reg7 equ 0x600
+  00000D00            00010 reg8 equ 0xd00
+  00000FFF            00011 reg9 equ 0xfff
+                      00012 
+000000                00013   org 0
+                      00014   
+000000 0102           00015   banksel reg4
+000002 6F00           00016   movwf reg4
+                      00017   
+000004 0100           00018   banksel reg2
+000006 6F60           00019   movwf reg2
+                      00020 
+000008 0101           00021   banksel reg3
+00000A 6F00           00022   movwf reg3
+                      00023 
+00000C 0100           00024   banksel reg1
+00000E 6E00           00025   movwf reg1
+                      00026 
+000010 010D           00027   banksel reg8
+000012 6F00           00028   movwf reg8
+                      00029   
+000014 0104           00030   banksel reg6
+000016 6F00           00031   movwf reg6
+                      00032 
+000018 0106           00033   banksel reg7
+00001A 6F00           00034   movwf reg7
+                      00035 
+00001C 0103           00036   banksel reg5
+00001E 6F00           00037   movwf reg5
+                      00038 
+000020 010F           00039   banksel reg9
+000022 6EFF           00040   movwf reg9
+                      00041 
+                      00042   end
+MPASM 03.20.02 Released      BANKSEL4.ASM   11-24-2002  13:49:34         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__18F8720                         00000001
+reg1                              00000000
+reg2                              00000060
+reg3                              00000100
+reg4                              00000200
+reg5                              00000300
+reg6                              00000400
+reg7                              00000600
+reg8                              00000D00
+reg9                              00000FFF
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXX------------ ----------------
+
+All other memory blocks unused.
+
+Program Memory Bytes Used:    36
+Program Memory Bytes Free: 2097116
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,88 @@
+MPASM 03.20.02 Released      BANKSEL3.ASM   11-24-2002  13:30:14         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001   processor 17c766
+                      00002 
+  00000010            00003 reg1 equ 0x010
+  00000110            00004 reg2 equ 0x110
+  00000210            00005 reg3 equ 0x210
+  00000310            00006 reg4 equ 0x310
+  00000410            00007 reg5 equ 0x410
+  00000510            00008 reg6 equ 0x510
+  00000610            00009 reg7 equ 0x610
+  00000710            00010 reg8 equ 0x710
+  00000810            00011 reg9 equ 0x810
+                      00012 
+0000                  00013   org 0
+                      00014   
+0000   B803           00015   banksel reg4
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0001   0110           00016   movwf reg4
+                      00017   
+0002   B801           00018   banksel reg2
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0003   0110           00019   movwf reg2
+                      00020 
+0004   B802           00021   banksel reg3
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0005   0110           00022   movwf reg3
+                      00023 
+0006   B800           00024   banksel reg1
+0007   0110           00025   movwf reg1
+                      00026 
+0008   B807           00027   banksel reg8
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0009   0110           00028   movwf reg8
+                      00029   
+000A   B805           00030   banksel reg6
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000B   0110           00031   movwf reg6
+                      00032 
+000C   B806           00033   banksel reg7
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000D   0110           00034   movwf reg7
+                      00035 
+000E   B804           00036   banksel reg5
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000F   0110           00037   movwf reg5
+                      00038 
+0010   B808           00039   banksel reg9
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0011   0110           00040   movwf reg9
+                      00041 
+                      00042   end
+MPASM 03.20.02 Released      BANKSEL3.ASM   11-24-2002  13:30:14         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__17C766                          00000001
+reg1                              00000010
+reg2                              00000110
+reg3                              00000210
+reg4                              00000310
+reg5                              00000410
+reg6                              00000510
+reg7                              00000610
+reg8                              00000710
+reg9                              00000810
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XX-------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    18
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     8 reported,     0 suppressed
+
+

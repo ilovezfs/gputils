@@ -1,0 +1,117 @@
+MPASM 03.20.02 Released      PAGESEL3.ASM   11-24-2002  13:30:15         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001   processor 17c766
+                      00002 
+                      00003 goto_macro macro
+                      00004        pagesel page0
+                      00005        lcall page0
+                      00006        pagesel page1
+                      00007        lcall page1
+                      00008        pagesel page2
+                      00009        lcall page2
+                      00010        pagesel page3
+                      00011        lcall page3
+                      00012        endm
+                      00013   
+0000                  00014 page0  org 0
+                      00015        goto_macro
+Message[316]: W Register modified. 
+0000   B000 0103          M        pagesel page0
+0002   B700               M        lcall page0
+Message[316]: W Register modified. 
+0003   B008 0103          M        pagesel page1
+0005   B701               M        lcall page1
+Message[316]: W Register modified. 
+0006   B010 0103          M        pagesel page2
+0008   B701               M        lcall page2
+Message[316]: W Register modified. 
+0009   B018 0103          M        pagesel page3
+000B   B701               M        lcall page3
+                      00016 
+0801                  00017 page1  org 801
+                      00018        goto_macro
+Message[316]: W Register modified. 
+0801   B000 0103          M        pagesel page0
+0803   B700               M        lcall page0
+Message[316]: W Register modified. 
+0804   B008 0103          M        pagesel page1
+0806   B701               M        lcall page1
+Message[316]: W Register modified. 
+0807   B010 0103          M        pagesel page2
+0809   B701               M        lcall page2
+Message[316]: W Register modified. 
+080A   B018 0103          M        pagesel page3
+080C   B701               M        lcall page3
+                      00019 
+1001                  00020 page2  org 1001
+                      00021        goto_macro
+Message[316]: W Register modified. 
+1001   B000 0103          M        pagesel page0
+1003   B700               M        lcall page0
+Message[316]: W Register modified. 
+1004   B008 0103          M        pagesel page1
+1006   B701               M        lcall page1
+Message[316]: W Register modified. 
+1007   B010 0103          M        pagesel page2
+MPASM 03.20.02 Released      PAGESEL3.ASM   11-24-2002  13:30:15         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+1009   B701               M        lcall page2
+Message[316]: W Register modified. 
+100A   B018 0103          M        pagesel page3
+100C   B701               M        lcall page3
+                      00022   
+1801                  00023 page3  org 1801
+                      00024        goto_macro
+Message[316]: W Register modified. 
+1801   B000 0103          M        pagesel page0
+1803   B700               M        lcall page0
+Message[316]: W Register modified. 
+1804   B008 0103          M        pagesel page1
+1806   B701               M        lcall page1
+Message[316]: W Register modified. 
+1807   B010 0103          M        pagesel page2
+1809   B701               M        lcall page2
+Message[316]: W Register modified. 
+180A   B018 0103          M        pagesel page3
+180C   B701               M        lcall page3
+                      00025  
+                      00026        end 
+MPASM 03.20.02 Released      PAGESEL3.ASM   11-24-2002  13:30:15         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__17C766                          00000001
+goto_macro                        
+page0                             00000000
+page1                             00000801
+page2                             00001001
+page3                             00001801
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXX---- ---------------- ---------------- ----------------
+0800 : -XXXXXXXXXXXX--- ---------------- ---------------- ----------------
+1000 : -XXXXXXXXXXXX--- ---------------- ---------------- ----------------
+1800 : -XXXXXXXXXXXX--- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    48
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :    16 reported,     0 suppressed
+
+
