@@ -68,7 +68,7 @@ void init(void)
 {
   /* restore gpasm to its initialized state */
   state.radix = 16;
-  state.hex_format = inhx8m;
+  state.hex_format = inhx32;
   state.case_insensitive = 0;
   state.quiet = 0;
   state.error_level = 0;
@@ -124,7 +124,7 @@ void show_usage(void)
 {
   printf("Usage: gpasm [options] file\n");
   printf("Options: [defaults in brackets after descriptions]\n");
-  printf("  -a FMT, --hex-format FMT       Select hex file format. [inhx8m]\n");
+  printf("  -a FMT, --hex-format FMT       Select hex file format. [inhx32]\n");
   printf("  -c, --case                     Case insensitive.\n");
   printf("  -D SYM=VAL, --define SYM=VAL   Define SYM with value VAL.\n");
   printf("  -e [ON|OFF], --expand [ON|OFF] Macro expansion.\n");

@@ -1,3 +1,10 @@
+2002-11-22 Craig Franklin <craigfranklin@attbi.com>
+  * gputils 0.10.6 Released.
+  * Fixed behavior of de directive for 18xxx devices. Data is now packed.
+  * Added new directives: banksel and pagesel
+  * Fixed default BSR behavior for 18xxx devices.
+  * Changed gpasm default hex file format to inhx32.
+
 2002-11-09  Scott Dattalo <scott@dattalo.com>
   * Invalid relative branches for 18xxx family were not generating errors. 
     eg: bc $+258, bc $-256, rcall $-2048, rcall $+2050 all now generate 

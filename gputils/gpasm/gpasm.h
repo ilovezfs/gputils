@@ -78,6 +78,7 @@ extern struct gpasm_state {
   struct px *processor_info;    /* Processor identifiers (e.g. name) */
   int processor_chosen;		/* Nonzero after processor-specific init */
   struct {			/* Processor data */
+    enum proc_class class;      /* Processor class */
     int core_size;		/* Processor core size  */
     int config_address;		/* configuration address */
     int id_location;		/* location for idlocs for 12 and 14 bit proc */

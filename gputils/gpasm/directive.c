@@ -133,37 +133,76 @@ static void emit_packed(unsigned int value, unsigned int mode)
 }
 
 /* determine which page of program memory the address is located */
-int check_page(struct pnode *p)
+int check_page(int address)
 {
-  int number, page;
+  int page;
 
-  number = maybe_evaluate(HEAD(p));
-
-  if (state.device.core_size == CORE_12BIT_MASK) {
-    if (number < 0x200) {
+  switch (state.device.class) {
+  case PROC_CLASS_EEPROM8:
+    assert(0);
+    break;
+  case PROC_CLASS_GENERIC:
+  case PROC_CLASS_PIC12:
+  case PROC_CLASS_SX:
+    if (address < 0x200) {
       page = 0;
-    } else if (number < 0x400) {
+    } else if (address < 0x400) {
       page = 1;
-    } else if (number < 0x600) {
+    } else if (address < 0x600) {
       page = 2;
     } else {
       page = 3;
-    } 
-  } else {
-    if (number < 0x800) {
+    }
+    break;
+  case PROC_CLASS_PIC14:
+    if (address < 0x800) {
       page = 0;
-    } else if (number < 0x1000) {
+    } else if (address < 0x1000) {
       page = 1;
-    } else if (number < 0x1800) {
+    } else if (address < 0x1800) {
       page = 2;
     } else {
       page = 3;
-    }   
+    }  
+    break;
+  case PROC_CLASS_PIC16:
+    page = (address >> 8) & 0xff;
+    break;
+  case PROC_CLASS_PIC16E:
+  default:
+    assert(0);
   }
-  
+
   return page;
 }
 
+/* determine which bank of data memory the address is located */
+int check_bank(int address)
+{
+  int bank;
+
+  switch (state.device.class) {
+  case PROC_CLASS_EEPROM8:
+    assert(0);
+    break;
+  case PROC_CLASS_GENERIC:
+  case PROC_CLASS_PIC12:
+  case PROC_CLASS_SX:
+    bank = (address >> 5) & 0x3;
+    break;
+  case PROC_CLASS_PIC14:
+    bank = (address >> 7) & 0x3;
+    break;
+  case PROC_CLASS_PIC16:
+  case PROC_CLASS_PIC16E:
+    bank = (address >> 8) & 0xff;
+    break;
+  default:
+    assert(0);
+  }
+
+  return bank;
+}
 
 static int off_or_on(struct pnode *p)
 {
@@ -463,6 +502,25 @@ static gpasmVal do_badram(gpasmVal r,
   return r;
 }
 
+static gpasmVal do_banksel(gpasmVal r,
+		           char *name,
+		           int arity,
+		           struct pnode *parms)
+{
+  struct pnode *p;
+
+  if (enforce_arity(arity, 1)) {
+    p = HEAD(parms);
+    if (p->tag != symbol) {
+      gperror(GPE_ILLEGAL_LABEL, NULL);
+    } else {
+      r = set_bank_bits(check_bank(maybe_evaluate(p)));
+    }
+  }
+
+  return r;
+}
+
 /*-------------------------------------------------------------------------
  *
  * configuration memory
@@ -707,7 +765,11 @@ static gpasmVal do_de(gpasmVal r,
 
   list.next = NULL;
   simplify_data(parms, &list,0);
-  data(&list, 0, 0xff);
+  if(_16bit_core) {
+    data(&list, 0, PACKING_BYTES);
+  } else {
+    data(&list, 0, 0xff);
+  }  
 
 
   return r;
@@ -1425,6 +1487,31 @@ static gpasmVal do_page(gpasmVal r,
   return r;
 }
 
+static gpasmVal do_pagesel(gpasmVal r,
+		           char *name,
+		           int arity,
+		           struct pnode *parms)
+{
+  struct pnode *p;
+  
+  if ((state.device.class == PROC_CLASS_EEPROM8) ||
+      (state.device.class == PROC_CLASS_PIC16E)) {
+    /* do nothing */
+    return r;
+  }
+
+  if (enforce_arity(arity, 1)) {
+    p = HEAD(parms);
+    if (p->tag != symbol) {
+      gperror(GPE_ILLEGAL_LABEL, NULL);
+    } else {
+      r = set_page_bits(check_page(maybe_evaluate(p)));
+    }
+  }
+
+  return r;
+}
+
 static gpasmVal do_processor(gpasmVal r,
 			     char *name,
 			     int arity,
@@ -1630,14 +1717,31 @@ void file_ok(unsigned int file)
   if ((0 > file) || (file > state.maxram) || (state.badram[file])) {
     gpwarning(GPW_INVALID_RAM, NULL);
   }
-  
+
   /* Issue bank message if necessary */
-  if (state.device.core_size == CORE_12BIT_MASK) {
+  switch (state.device.class) {
+  case PROC_CLASS_EEPROM8:
+    /* do nothing */
+    break;
+  case PROC_CLASS_GENERIC:
+  case PROC_CLASS_PIC12:
+  case PROC_CLASS_SX:
     if (file & (~0x1f))
       gpmessage(GPM_BANK, NULL);   
-  } else if (state.device.core_size == CORE_14BIT_MASK) {
+    break;
+  case PROC_CLASS_PIC14:
     if (file & (~0x7f))
       gpmessage(GPM_BANK, NULL);  
+    break;
+  case PROC_CLASS_PIC16:
+    if (file & (~0xff))
+      gpmessage(GPM_BANK, NULL);  
+    break;
+  case PROC_CLASS_PIC16E:
+    /* do nothing */
+    break;
+  default:
+    assert(0);
   }
 
   return;
@@ -1756,7 +1860,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  emit_check(i->opcode, maybe_evaluate(p), 0xff);
 	}
 	break;
-      case INSN_CLASS_LIT8C:
+      case INSN_CLASS_LIT8C12:
 	if (enforce_arity(arity, 1)) {
 	  int value;
 
@@ -1772,6 +1876,20 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
 	  if (value & 0x100)
 	    gperror(GPE_BAD_CALL_ADDR, NULL);
+	  	  
+	  emit(i->opcode | (value & 0xff));	      
+	}
+	break;
+      case INSN_CLASS_LIT8C16:
+	if (enforce_arity(arity, 1)) {
+	  int value;
+
+	  p = HEAD(parms);
+	  value = maybe_evaluate(p);	  
+
+	  /* PC is 16 bits.  mpasm checks the maximum device address. */
+	  if (value & (~0xffff))
+	    gperror(GPE_RANGE, NULL); 	  
 	  	  
 	  emit(i->opcode | (value & 0xff));	      
 	}
@@ -1812,8 +1930,19 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	break;
       case INSN_CLASS_LIT13:
 	if (enforce_arity(arity, 1)) {
+	  int value;
+
 	  p = HEAD(parms);
-	  emit_check(i->opcode, maybe_evaluate(p), 0x1fff);
+	  value = maybe_evaluate(p);
+
+	  /* PC is 16 bits.  mpasm checks the maximum device address. */
+	  if (value & (~0xffff))
+	    gperror(GPE_RANGE, NULL); 	  
+
+	  if ((value & 0xe000) != (state.org & 0xe000))
+	    gpmessage(GPM_PAGE, NULL);
+
+	  emit(i->opcode | (value & 0x1fff));
 	}
 	break;
       case INSN_CLASS_RBRA8:
@@ -2004,7 +2133,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
       case INSN_CLASS_OPF7:
 	if (enforce_arity(arity, 1)) {
-          if (i->name == "TRIS"){
+          if (strcasecmp(i->name, "tris") == 0) {
             gpwarning(GPW_NOT_RECOMMENDED, NULL);
           }
 	  p = HEAD(parms);
@@ -2116,7 +2245,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
       case INSN_CLASS_OPFA8:
 	{
-	  int a = 0; /* Default access (don't use the BSR) */
+	  int a = 0;
 	  struct pnode *p2; /* second parameter */
 
 	  if(arity == 0) {
@@ -2125,6 +2254,16 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  }
 
 	  p = HEAD(parms);
+	  file = maybe_evaluate(p);
+	  file_ok(file);
+
+	  /* Default access (use the BSR unless access is to special registers) */
+	  if ((file < 0x60) || (file > 0xf5f)) {
+            a = 0;
+	  } else {
+	    a = 1;
+	  }
+
 	  switch (arity) {
 	  case 2:
 	    p2 = HEAD(TAIL(parms));
@@ -2141,8 +2280,6 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  default:
 	    enforce_arity(arity, 2);
 	  }
-	  file = maybe_evaluate(p);
-	  file_ok(file);
 	  emit(i->opcode | (a << 8) | (file & 0xff));
 	}
 	break;
@@ -2182,7 +2319,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_OPWFA8:
 	{
 	  int d = 1; /* Default destination of 1 (file) */
-	  int a = 0; /* Default access bank (don't use BSR) */
+	  int a = 0;
 	  struct pnode *par; /* second parameter */
 	    
 	  if(arity == 0) {
@@ -2191,6 +2328,16 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  }
 
 	  p = HEAD(parms);
+	  file = maybe_evaluate(p);
+	  file_ok(file);
+
+	  /* Default access (use the BSR unless access is to special registers) */
+	  if ((file < 0x60) || (file > 0xf5f)) {
+            a = 0;
+	  } else {
+	    a = 1;
+	  }
+
 	  switch (arity) {
 	  case 3:
 	    par = HEAD(TAIL(TAIL(parms)));
@@ -2220,8 +2367,6 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  default:
             enforce_arity(arity, 3);
 	  }
-	  file = maybe_evaluate(p);
-	  file_ok(file);
 	  emit(i->opcode | (d << 9) | (a << 8) | (file & 0xff));
 	}
 	break;
@@ -2230,7 +2375,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	if (arity != 0) {
           gpwarning(GPW_EXTRANEOUS, NULL);
 	}
-        if ((i->name == "OPTION") && 
+	if ((strcasecmp(i->name, "option") == 0) &&
             (state.device.core_size != CORE_12BIT_MASK)){
           gpwarning(GPW_NOT_RECOMMENDED, NULL);
         }
@@ -2467,6 +2612,7 @@ struct insn op_1[] = {
   { "__fuses",    0, (long int)do_config,    INSN_CLASS_FUNC,   0 },
   { "__idlocs",   0, (long int)do_idlocs,    INSN_CLASS_FUNC,   0 },
   { "__maxram",   0, (long int)do_maxram,    INSN_CLASS_FUNC,   0 },
+  { "banksel",    0, (long int)do_banksel,   INSN_CLASS_FUNC,   0 },
   { "data",       0, (long int)do_data,      INSN_CLASS_FUNC,   0 },
   { "da",         0, (long int)do_da, 	     INSN_CLASS_FUNC,   0 },
   { "db",         0, (long int)do_db, 	     INSN_CLASS_FUNC,   0 },
@@ -2475,6 +2621,7 @@ struct insn op_1[] = {
   { "dw",         0, (long int)do_dw, 	     INSN_CLASS_FUNC,   0 },
   { "fill",       0, (long int)do_fill,      INSN_CLASS_FUNC,   0 },
   { "org",        0, (long int)do_org,       INSN_CLASS_FUNC,   0 },
+  { "pagesel",    0, (long int)do_pagesel,   INSN_CLASS_FUNC,   0 },
   { "res",        0, (long int)do_res,       INSN_CLASS_FUNC,   0 }
 };
 
@@ -2485,7 +2632,6 @@ void opcode_init(int stage)
   int i;
   int count = 0;
   struct insn *base = NULL;
-  enum proc_class class;
 
   switch (stage) {
   case 0:
@@ -2497,8 +2643,8 @@ void opcode_init(int stage)
     count = num_op_1;
     break;
   case 2:
-    class = gp_processor_class(state.processor);
-    switch (class) {
+    state.device.class = gp_processor_class(state.processor);
+    switch (state.device.class) {
     case PROC_CLASS_EEPROM8:
       base = 0;
       count = 0;

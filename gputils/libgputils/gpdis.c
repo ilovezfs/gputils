@@ -380,7 +380,8 @@ gp_disassemble(MemBlock *m, int *org, enum proc_class class, char *buffer)
       DECODE_ARG1((opcode & 0xf0) >> 4); 
       break;
     case INSN_CLASS_LIT8:
-    case INSN_CLASS_LIT8C:
+    case INSN_CLASS_LIT8C12:
+    case INSN_CLASS_LIT8C16:
       DECODE_ARG1(opcode & 0xff); 
       break;
     case INSN_CLASS_LIT9:

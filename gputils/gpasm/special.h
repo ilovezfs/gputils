@@ -24,4 +24,7 @@ Boston, MA 02111-1307, USA.  */
 extern struct insn special[];
 extern const int num_op_special;
 
+gpasmVal set_page_bits(int page);
+gpasmVal set_bank_bits(int bank);
+
 #endif

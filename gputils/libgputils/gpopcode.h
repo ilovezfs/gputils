@@ -26,7 +26,8 @@ enum insn_class {
   INSN_CLASS_LIT1,	/* bit 0 contains a 1 bit literal		*/
   INSN_CLASS_LIT4S,     /* Bits 7:4 contain a 4 bit literal, bits 3:0 are unused   */
   INSN_CLASS_LIT8,	/* bits 7:0 contain an 8 bit literal		*/
-  INSN_CLASS_LIT8C,	/* bits 7:0 contain an 8 bit literal, CALL	*/
+  INSN_CLASS_LIT8C12,	/* bits 7:0 contain an 8 bit literal, 12 bit CALL */
+  INSN_CLASS_LIT8C16,	/* bits 7:0 contain an 8 bit literal, 16 bit CALL */
   INSN_CLASS_LIT9,	/* bits 8:0 contain a 9 bit literal		*/
   INSN_CLASS_LIT11,	/* bits 10:0 contain an 11 bit literal		*/
   INSN_CLASS_LIT13,	/* bits 12:0 contain an 11 bit literal		*/

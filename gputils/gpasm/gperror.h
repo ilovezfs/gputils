@@ -130,6 +130,7 @@ enum GPM_codes {
   GPM_EXTPAGE          = 312,
   GPM_CBLOCK           = 313,
   GPM_UNKNOWN          = 314,
+  GPM_W_MODIFIED       = 316,
   GPM_SPECIAL_MNEMONIC = 318
 };
 

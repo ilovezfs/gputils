@@ -1,0 +1,59 @@
+MPASM 03.20.02 Released      BANKSEL2.ASM   11-24-2002  13:30:14         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001   processor 16f877a
+                      00002 
+  00000020            00003 reg1 equ 0x20
+  000000A0            00004 reg2 equ 0xa0
+  00000120            00005 reg3 equ 0x120
+  000001A0            00006 reg4 equ 0x1a0
+                      00007 
+0000                  00008   org 0
+                      00009   
+0000   1683 1703      00010   banksel reg4
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0002   00A0           00011   movwf reg4
+                      00012   
+0003   1683 1303      00013   banksel reg2
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0005   00A0           00014   movwf reg2
+                      00015 
+0006   1283 1703      00016   banksel reg3
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0008   00A0           00017   movwf reg3
+                      00018 
+0009   1283 1303      00019   banksel reg1
+000B   00A0           00020   movwf reg1
+                      00021 
+                      00022   end
+MPASM 03.20.02 Released      BANKSEL2.ASM   11-24-2002  13:30:14         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16F877A                         00000001
+reg1                              00000020
+reg2                              000000A0
+reg3                              00000120
+reg4                              000001A0
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXX---- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    12
+Program Memory Words Free:  8180
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     3 reported,     0 suppressed
+
+

@@ -302,6 +302,8 @@ char *gp_getmessage(unsigned int code)
     return "Page bits are not needed.";
   case GPM_CBLOCK:
     return "CBLOCK will begin at address 0.";
+  case GPM_W_MODIFIED:
+    return "W Register modified.";
   case GPM_SPECIAL_MNEMONIC:
     return "Special Instruction Mnemonic used."; 
   case GPM_UNKNOWN:

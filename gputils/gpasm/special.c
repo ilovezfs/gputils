@@ -25,6 +25,7 @@ Boston, MA 02111-1307, USA.  */
 #include "gpopcode.h"
 #include "special.h"
 #include "directive.h"
+#include "evaluate.h"
 
 extern struct pnode *mk_constant(int value);
 extern struct pnode *mk_list(struct pnode *head, struct pnode *tail);
@@ -42,39 +43,96 @@ struct pnode *add_symbol_constant(struct pnode *parms, int value)
 gpasmVal set_page_bits(int page)
 {
   gpasmVal r;
-  int location, page0, page1;
+  int location = 0, page0 = 0, page1 = 0;
 
-  if (state.device.core_size == CORE_12BIT_MASK) {
+  if ((state.device.class == PROC_CLASS_EEPROM8) ||
+      (state.device.class == PROC_CLASS_PIC16E)) {
+    assert(0);
+  } else if (state.device.class == PROC_CLASS_PIC16) {
     location = 0x3;
-    page0    = 5;
-    page1    = 6;
+    gpmessage(GPM_W_MODIFIED, NULL);
+    do_insn("movlw", mk_list(mk_constant(page), NULL));
+    r = do_insn("movwf", mk_list(mk_constant(location), NULL));
   } else {
-    location = 0xA;
-    page0    = 3;
-    page1    = 4;
+    if (state.device.class == PROC_CLASS_PIC14) {
+      location = 0xA;
+      page0 = 3;
+      page1 = 4;    
+    } else {
+      location = 0x3;
+      page0 = 5;
+      page1 = 6;    
+    }
+
+    switch(page) {
+    case 0:
+      do_insn("bcf", make_constant_list(location, page0));
+      r = do_insn("bcf", make_constant_list(location, page1));
+      break;
+    case 1:
+      do_insn("bsf", make_constant_list(location, page0));
+      r = do_insn("bcf", make_constant_list(location, page1));
+      break;
+    case 2:
+      do_insn("bcf", make_constant_list(location, page0));
+      r = do_insn("bsf", make_constant_list(location, page1));
+      break;
+    case 3:
+      do_insn("bsf", make_constant_list(location, page0));
+      r = do_insn("bsf", make_constant_list(location, page1));
+      break;
+    default:
+      assert(0);
+      break;  
+    }
   }
 
-  switch(page) {
-  case 0:
-    r = do_insn("bcf", make_constant_list(location, page0));
-    r = do_insn("bcf", make_constant_list(location, page1));
-    break;
-  case 1:
-    r = do_insn("bsf", make_constant_list(location, page0));
-    r = do_insn("bcf", make_constant_list(location, page1));
-    break;
-  case 2:
-    r = do_insn("bcf", make_constant_list(location, page0));
-    r = do_insn("bsf", make_constant_list(location, page1));
-    break;
-  case 3:
-    r = do_insn("bsf", make_constant_list(location, page0));
-    r = do_insn("bsf", make_constant_list(location, page1));
-    break;
-  default:
-    r = 0;
-    gperror(GPW_UNKNOWN, "Unknown page.");
-    break;  
+  return r;
+
+}
+
+gpasmVal set_bank_bits(int bank)
+{
+  gpasmVal r;
+  int location = 0, bank0 = 0, bank1 = 0;
+
+  if (state.device.class == PROC_CLASS_EEPROM8) {
+    assert(0);
+  } else if ((state.device.class == PROC_CLASS_PIC16E) ||
+             (state.device.class == PROC_CLASS_PIC16)){
+    r = do_insn("movlb", mk_list(mk_constant(bank), NULL));
+  } else {
+    if (state.device.class == PROC_CLASS_PIC14) {
+      location = 0x3;
+      bank0 = 5;
+      bank1 = 6;    
+    } else {
+      location = 0x4;
+      bank0 = 5;
+      bank1 = 6;    
+    }
+
+    switch(bank) {
+    case 0:
+      do_insn("bcf", make_constant_list(location, bank0));
+      r = do_insn("bcf", make_constant_list(location, bank1));
+      break;
+    case 1:
+      do_insn("bsf", make_constant_list(location, bank0));
+      r = do_insn("bcf", make_constant_list(location, bank1));
+      break;
+    case 2:
+      do_insn("bcf", make_constant_list(location, bank0));
+      r = do_insn("bsf", make_constant_list(location, bank1));
+      break;
+    case 3:
+      do_insn("bsf", make_constant_list(location, bank0));
+      r = do_insn("bsf", make_constant_list(location, bank1));
+      break;
+    default:
+      assert(0);
+      break;  
+    }
   }
 
   return r;
@@ -242,8 +300,9 @@ static gpasmVal do_lcall(gpasmVal r,
 		         int arity,
 		         struct pnode *parms)
 {
-
-  r = set_page_bits(check_page(parms));
+  int address = maybe_evaluate(HEAD(parms));
+ 
+  set_page_bits(check_page(address));
   r = do_insn("call", parms);
 
   return r;
@@ -254,8 +313,9 @@ static gpasmVal do_lgoto(gpasmVal r,
 		         int arity,
 		         struct pnode *parms)
 {
-
-  r = set_page_bits(check_page(parms));
+  int address = maybe_evaluate(HEAD(parms));
+ 
+  set_page_bits(check_page(address));
   r = do_insn("goto", parms);
 
   return r;
