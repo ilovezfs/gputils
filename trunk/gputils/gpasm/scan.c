@@ -1180,7 +1180,7 @@ case 2:
 YY_RULE_SETUP
 #line 69 "scan.l"
 { /* got the include file name */
-                           char *pc = &yytext[yyleng - 1];
+			   char *pc = &yytext[yyleng - 1];
 			   if ((*pc == '"') || (*pc == '>'))
 			     *pc = '\0';
 			   BEGIN(INITIAL);
@@ -2846,16 +2846,6 @@ void open_src(char *name, int isinclude)
   if (state.src) {
     yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
   }
-
-#ifdef GPUTILS_DEBUG
-  {
-    extern int yydebug;
-    if (state.pass == 2)
-      yydebug = 1;
-    else
-      yydebug = 0;
-  }
-#endif
 
   new->type = src_file;
   new->h = NULL;

@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 
 dnl Process this file with autoconf to produce a configure script.
 
@@ -19,6 +19,7 @@ AC_CANONICAL_HOST
 GPUTILS_HEADER_PATH="\$(datadir)/gputils/header"
 GPUTILS_LKR_PATH="\$(datadir)/gputils/lkr"
 GPUTILS_LIB_PATH="\$(datadir)/gputils/lib"
+GPUTILS_PUB_PATH="\$(datadir)/gputils/pub"
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
 MAKE_SUBDIRS="libgputils libiberty gpasm header lkr doc"
@@ -144,6 +145,7 @@ AC_SUBST(AM_LDFLAGS)
 AC_SUBST(GPUTILS_HEADER_PATH)
 AC_SUBST(GPUTILS_LKR_PATH)
 AC_SUBST(GPUTILS_LIB_PATH)
+AC_SUBST(GPUTILS_PUB_PATH)
 AC_SUBST(IBERTYOBJS)
 AC_SUBST(LIBGPUTILS)
 AC_SUBST(LIBIBERTY)

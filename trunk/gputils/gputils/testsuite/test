@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #   tests gpdasm
 #   Copyright (C) 2001, 2002, 2003

@@ -25,6 +25,7 @@ Boston, MA 02111-1307, USA.  */
 char *gp_header_path;
 char *gp_lkr_path;
 char *gp_lib_path;
+char *gp_pub_path;
 
 /* initialize the library */
 
@@ -37,6 +38,7 @@ gp_init(void)
   gp_header_path = getenv("GPUTILS_HEADER_PATH");
   gp_lkr_path = getenv("GPUTILS_LKR_PATH");
   gp_lib_path = getenv("GPUTILS_LIB_PATH");
+  gp_pub_path = getenv("GPUTILS_PUB_PATH");
 
   #ifndef HAVE_DOS_BASED_FILE_SYSTEM
     if (gp_header_path == NULL) {
@@ -48,12 +50,16 @@ gp_init(void)
     if (gp_lib_path == NULL) {
       gp_lib_path = strdup(LIB_PATH);
     }
+    if (gp_pub_path == NULL) {
+      gp_pub_path = strdup(PUB_PATH);
+    }
   #endif
 
 #else
   gp_header_path = NULL;
   gp_lkr_path = NULL;
   gp_lib_path = NULL;
+  gp_pub_path = NULL;
 #endif
 
 }

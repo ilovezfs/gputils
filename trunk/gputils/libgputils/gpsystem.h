@@ -25,6 +25,7 @@ Boston, MA 02111-1307, USA.  */
 extern char *gp_header_path;
 extern char *gp_lkr_path;
 extern char *gp_lib_path;
+extern char *gp_pub_path;
 
 void gp_init(void);
 

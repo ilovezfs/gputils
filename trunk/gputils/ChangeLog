@@ -1,6 +1,7 @@
 2004-04-17 Craig Franklin <craigfranklin@comcast.net>
   * Added support for #if directive and allow else in column 1.
   * Fixed malformed header files.  They were missing a NL before the EOF.
+  * Added interrupt context save to gpal.
 
 2004-03-13 Craig Franklin <craigfranklin@comcast.net>
   * Added gplink command line option to disable list file output.

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # generate Makefile.am from the directory contents
 

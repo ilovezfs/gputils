@@ -75,6 +75,7 @@ DEPDIR = @DEPDIR@
 GPUTILS_HEADER_PATH = @GPUTILS_HEADER_PATH@
 GPUTILS_LIB_PATH = @GPUTILS_LIB_PATH@
 GPUTILS_LKR_PATH = @GPUTILS_LKR_PATH@
+GPUTILS_PUB_PATH = @GPUTILS_PUB_PATH@
 IBERTYOBJS = @IBERTYOBJS@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LEX = @LEX@
@@ -97,7 +98,8 @@ AM_CPPFLAGS = \
 	-I${top_srcdir}/include \
 	-DHEADER_PATH=\"@GPUTILS_HEADER_PATH@\" \
 	-DLKR_PATH=\"@GPUTILS_LKR_PATH@\" \
-	-DLIB_PATH=\"@GPUTILS_LIB_PATH@\"
+	-DLIB_PATH=\"@GPUTILS_LIB_PATH@\" \
+	-DPUB_PATH=\"@GPUTILS_PUB_PATH@\"
 
 
 noinst_LIBRARIES = libgputils.a
@@ -183,7 +185,7 @@ all: all-am
 .SUFFIXES: .c .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am  $(top_srcdir)/configure.ac $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  libgputils/Makefile
+	  $(AUTOMAKE) --gnu  libgputils/Makefile
 Makefile: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
 

@@ -4,7 +4,8 @@ AM_CPPFLAGS =\
 	-I${top_srcdir}/include \
 	-DHEADER_PATH=\"@GPUTILS_HEADER_PATH@\" \
 	-DLKR_PATH=\"@GPUTILS_LKR_PATH@\" \
-	-DLIB_PATH=\"@GPUTILS_LIB_PATH@\"
+	-DLIB_PATH=\"@GPUTILS_LIB_PATH@\" \
+	-DPUB_PATH=\"@GPUTILS_PUB_PATH@\"
 
 noinst_LIBRARIES = libgputils.a
 

@@ -300,6 +300,7 @@ struct file_context *add_file(unsigned int type, char *name);
 void free_files(void);
 void macro_append(void);
 void hex_init(void);
+void add_path(char *path);
 
 /************************************************************************/
 
