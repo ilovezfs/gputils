@@ -25,55 +25,18 @@ Boston, MA 02111-1307, USA.  */
 
 struct gplib_state state = {
   ar_null,            /* default mode, do nothing */              
-  { 0 ,0 },           /* set the error counters to zero */
   0,                  /* number of objects */
-  0                   /* quiet */
 };
 
 struct symbol_table *definition_tbl = NULL;
 struct symbol_table *symbol_index = NULL;
-
-void gplib_error(char *messg)
-{
-  state.num.errors++;
-  if (state.quiet != 1)
-    printf("error: %s\n", messg); 
-
-  return;
-}
-
-void gplib_warning(char *messg)
-{
-  state.num.warnings++;
-  if (state.quiet != 1)
-    printf("warning: %s\n", messg); 
-
-  return;
-}
-
-/* called by the libgputils */
-void
-_duplicate_symbol(char *name, gp_object_type *first, gp_object_type *second)  
-{
-  char buffer[BUFSIZ];
-
-  sprintf(buffer, 
-          "duplicate symbol \"%s\" defined in \"%s\" and \"%s\"", 
-          name,
-          first->filename,
-          second->filename);
-
-  gplib_error(buffer);
-
-  return;
-}
 
 void select_mode(enum lib_modes mode)
 {
   if (state.mode == ar_null) { 
     state.mode = mode;
   } else {
-    gplib_error("multiple library operations selected");
+    gp_error("multiple library operations selected");
   }
 }
 
@@ -123,7 +86,6 @@ int main(int argc, char *argv[])
   int c;
   int usage = 0;
   int update_archive = 0;
-  char buffer[BUFSIZ];
   int  no_index = 0;
   gp_archive_type *object = NULL;
 
@@ -147,7 +109,7 @@ int main(int argc, char *argv[])
       no_index = 1;
       break;
     case 'q':
-      state.quiet = 1;
+      gp_quiet = 1;
       break;
     case 'r':
       select_mode(ar_replace);
@@ -178,7 +140,7 @@ int main(int argc, char *argv[])
     for ( ; optind < argc; optind++) {
       state.objectname[state.numobjects] = argv[optind];
       if (state.numobjects >= MAX_OBJ_NAMES) {
-        gplib_error("exceeded maximum number of object files");
+        gp_error("exceeded maximum number of object files");
         break;
       }
       state.numobjects++;
@@ -204,8 +166,7 @@ int main(int argc, char *argv[])
   /* if we are not creating a new archive, we have to read an existing one */
   if (state.mode != ar_create) {
     if (gp_identify_coff_file(state.filename) != archive_file) {
-      sprintf(buffer, "\"%s\" is not a valid archive file", state.filename);
-      gplib_error(buffer);
+      gp_error("\"%s\" is not a valid archive file", state.filename);
       exit(1);
     } else {
       state.archive = gp_archive_read(state.filename);
@@ -219,8 +180,7 @@ int main(int argc, char *argv[])
   case ar_replace:
     while (i < state.numobjects) {
       if (gp_identify_coff_file(state.objectname[i]) != object_file) {
-        sprintf(buffer, "\"%s\" is not a valid object file", state.objectname[i]);
-        gplib_error(buffer);
+        gp_error("\"%s\" is not a valid object file", state.objectname[i]);
         break;
       } else {
         state.archive = gp_archive_add_member(state.archive, 
@@ -235,8 +195,7 @@ int main(int argc, char *argv[])
     while (i < state.numobjects) {
       object = gp_archive_find_member(state.archive, state.objectname[i]);
       if (object == NULL) {
-        sprintf(buffer, "object \"%s\" not found", state.objectname[i]);  
-        gplib_error(buffer);
+        gp_error("object \"%s\" not found", state.objectname[i]);
         break;
       } else {
         state.archive = gp_archive_delete_member(state.archive, 
@@ -251,13 +210,11 @@ int main(int argc, char *argv[])
     while (i < state.numobjects) {
       object = gp_archive_find_member(state.archive, state.objectname[i]);
       if (object == NULL) {
-        sprintf(buffer, "object \"%s\" not found", state.objectname[i]);  
-        gplib_error(buffer);
+        gp_error("object \"%s\" not found", state.objectname[i]);
         break;
       } else {
         if (gp_archive_extract_member(state.archive, state.objectname[i])) {
-          sprintf(buffer, "can't write file \"%s\"", state.objectname[i]);  
-          gplib_error(buffer);
+          gp_error("can't write file \"%s\"", state.objectname[i]);
           break;
         }
       }
@@ -271,7 +228,7 @@ int main(int argc, char *argv[])
 
   case ar_symbols:
     if (gp_archive_have_index(state.archive) == 0) {
-      gplib_error("this archive has no symbol index");
+      gp_error("this archive has no symbol index");
     } else {
       gp_archive_read_index(symbol_index, state.archive);
       gp_archive_print_table(symbol_index);
@@ -297,12 +254,12 @@ int main(int argc, char *argv[])
   }
 
   /* write the new or modified archive */
-  if ((update_archive == 1) && (state.num.errors == 0)) {
+  if ((update_archive == 1) && (gp_num_errors == 0)) {
     if (gp_archive_write(state.archive, state.filename))
-      gplib_error("can't write the new archive file");
+      gp_error("can't write the new archive file");
   }
 
-  if (state.num.errors > 0)
+  if (gp_num_errors > 0)
     return 1;
   else
     return 0;

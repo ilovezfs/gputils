@@ -73,9 +73,6 @@ gp_link_remove_symbol(struct symbol_table *table, char *name)
    tables.  NOTE: The missing symbol table is optional. This feature is
    not used for generating symbol indexes for archives. */ 
 
-/* The calling app must provide an error reporting function */
-void _duplicate_symbol(char *name, gp_object_type *first, gp_object_type *second);  
-
 int 
 gp_link_add_symbols(struct symbol_table *definition,
                     struct symbol_table *missing,
@@ -83,7 +80,7 @@ gp_link_add_symbols(struct symbol_table *definition,
 {
   gp_symbol_type *list = NULL;
   struct syment *coffsym = NULL;
-  char name[256];
+  char name[BUFSIZ];
   struct symbol *sym; 
   gp_coffsymbol_type *var;
   int i;
@@ -113,7 +110,10 @@ gp_link_add_symbols(struct symbol_table *definition,
         if (sym != NULL) {
           /* duplicate symbol */
           var = get_symbol_annotation(sym);
-          _duplicate_symbol(&name[0], var->file, object);
+          gp_error("duplicate symbol \"%s\" defined in \"%s\" and \"%s\"", 
+                   name,
+                   var->file->filename,
+                   object->filename);
         } else {	
           gp_link_add_symbol(definition, &name[0], coffsym, object);
         }

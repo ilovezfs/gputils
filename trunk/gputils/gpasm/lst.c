@@ -284,8 +284,15 @@ void lst_format_line(char *src_line, int value)
       e += strlen(e);
     }
     break;
-  case sec:
   case res:
+    strcpy(e, "               ");
+    e += 15;
+    if (state.obj.flags & STYP_TEXT) {
+      /* generate line numbers for res directives in program memory */
+      emitted = state.org - state.lst.line.was_org;
+    }
+    break;
+  case sec:
   case dir:
   case none:
   default:
@@ -325,12 +332,16 @@ void lst_format_line(char *src_line, int value)
     *e = '\0';		/* terminate the new string */
   }
 
+  coff_linenum(emitted);
+
+  /* Don't write to file is list is disabled */
+  if (!state.lst.enabled)
+    return;
+
   /* Tell the .cod file that the next line(s) has an opcode(s) */
   state.cod.emitting = emitted;
 
   lst_line(m);
-
-  coff_linenum(emitted);
 
 #ifdef PARSE_DEBUG
   fprintf(stderr, "%s\n\n", m);

@@ -38,8 +38,8 @@ typedef int lkrfunc(char *name, struct pnode *parms);
 /* FIXME: rename this function. */
 void gplkrscr_error(char *messg, char *detail)
 {
-  state.num.errors++;
-  if (state.quiet != 1) {
+  gp_num_errors++;
+  if (gp_quiet == 0) {
     if (detail == NULL) {
       printf("%s:%d:Error %s\n", 
              state.src->name, 

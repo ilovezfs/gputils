@@ -1,5 +1,5 @@
-/* libgputils header
-   Copyright (C) 2001 Craig Franklin
+/* messaging functions
+   Copyright (C) 2003 Craig Franklin
 
 This file is part of gputils.
 
@@ -18,23 +18,16 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-#ifndef __LIBGPUTILS_H__
-#define __LIBGPUTILS_H__
+#ifndef __GPMESSAGE_H__
+#define __GPMESSAGE_H__
 
-#include <gptypes.h>
-#include <gpcod.h>
-#include <gpcoff.h>
-#include <gpopcode.h>
-#include <gpprocessor.h>
-#include <gpsymbol.h>
-#include <gpmemory.h>
-#include <gpmessage.h>
-#include <gpcoffgen.h>
-#include <gparchive.h>
-#include <gpreadobj.h>
-#include <gpcofflink.h>
-#include <gpdis.h>
-#include <gpwritehex.h>
-#include <gpreadhex.h>
+extern int gp_quiet;
+extern int gp_num_errors;
+extern int gp_num_warnings;
+extern int gp_num_messages;
+
+void gp_error(const char *format, ...);
+void gp_warning(const char *format, ...);
+void gp_message(const char *format, ...);
 
 #endif

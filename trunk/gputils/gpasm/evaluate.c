@@ -292,11 +292,14 @@ gpasmVal maybe_evaluate(struct pnode *p)
 
 /* count the number of relocatable addesses in the expression */
 
-static int count_reloc(struct pnode *p)
+int count_reloc(struct pnode *p)
 {
   struct symbol *s;
   struct variable *var;
   char *string;
+
+  if (state.mode == absolute)
+    return 0;
 
   if ((p->tag == binop) && (p->value.binop.op == CONCAT)) {
     string = evaluate_concatenation(p);
@@ -466,6 +469,42 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
   return;
 }
 
+/* Determine if the expression is the difference between two symbols in 
+   the same section */
+
+/* FIXME: This needs some help.  Need a better definition of what is legal
+   syntax.  Concatenations are not supported and should be. */
+
+static int
+same_section(struct pnode *p)
+{
+  struct pnode *p0;
+  struct pnode *p1;
+  int num0;
+  int num1;
+  
+  if ((p->tag != binop) ||
+      (p->value.binop.op != '-') ||
+      (count_reloc(p->value.binop.p0) != 1))
+    return 0;
+
+  p0 = p->value.binop.p0;
+  p1 = p->value.binop.p1;
+ 
+  if ((p0->tag != symbol) ||
+      (p1->tag != symbol))
+    return 0;
+  
+  num0 = coff_symbol_section(p0->value.symbol);
+  num1 = coff_symbol_section(p0->value.symbol);
+  
+  if ((num0 == 0) || (num0 != num1))
+    return 0;
+    
+  return 1;
+
+}
+
 gpasmVal reloc_evaluate(struct pnode *p, unsigned short type)
 {
   gpasmVal r = 0;
@@ -479,9 +518,15 @@ gpasmVal reloc_evaluate(struct pnode *p, unsigned short type)
       /* no relocatable addresses */
       r = maybe_evaluate(p);
     } else if (count > 1) {
-      /* too many relocatable addresses */
-      gperror(GPE_UNRESOLVABLE, NULL);
-      r = 0;
+      if ((count == 2) && (same_section(p))) {
+         /* It is valid to take the difference between two symbols in the same 
+           section.  Evaluate, but don't add a relocation. */
+        r = maybe_evaluate(p);
+      } else {
+        /* too many relocatable addresses */
+        gperror(GPE_UNRESOLVABLE, NULL);
+        r = 0;
+      }
     } else {
       /* add the coff relocation */
       add_reloc(p, 0, type);

@@ -511,6 +511,49 @@ static gpasmVal do_badram(gpasmVal r,
   return r;
 }
 
+static gpasmVal do_bankisel(gpasmVal r,
+		            char *name,
+		            int arity,
+		            struct pnode *parms)
+{
+  struct pnode *p;
+
+  if ((state.device.class != PROC_CLASS_PIC14) &&
+      (state.device.class != PROC_CLASS_PIC16)) {
+    gpmessage(GPM_EXTPAGE, NULL);
+    return r;
+  }
+
+  if (enforce_arity(arity, 1)) {
+    p = HEAD(parms);
+    if (state.mode == absolute) {
+      if (p->tag != symbol) {
+        gperror(GPE_ILLEGAL_LABEL, NULL);
+      } else if (state.device.class == PROC_CLASS_PIC14) {
+        if (maybe_evaluate(p) < 0x100) {
+           /* bcf 0x3, 0x7 */
+           emit(0x1383);
+        } else {
+           /* bsf 0x3, 0x7 */
+           emit(0x1783);
+        }
+      } else {
+        /* movlb bank */
+        emit(0xb800 | check_bank(maybe_evaluate(p)));
+      }
+    } else {
+      if (count_reloc(p) != 1) {
+        gperror(GPE_UNRESOLVABLE, NULL);
+      } else {
+        reloc_evaluate(p, RELOCT_IBANKSEL);
+        emit(0);
+      }
+    }
+  }
+
+  return r;
+}
+
 static gpasmVal do_banksel(gpasmVal r,
 		           char *name,
 		           int arity,
@@ -520,22 +563,27 @@ static gpasmVal do_banksel(gpasmVal r,
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
-    if (p->tag != symbol) {
-      gperror(GPE_ILLEGAL_LABEL, NULL);
-    } else if (state.mode == absolute) {
-      r = set_bank_bits(check_bank(maybe_evaluate(p)));
-    } else if (state.device.class == PROC_CLASS_PIC16) {
-      reloc_evaluate(p, RELOCT_MOVLR);
-      emit(0);
-    } else if (state.device.class == PROC_CLASS_PIC16E) {
-      reloc_evaluate(p, RELOCT_MOVLB);
-      emit(0);
+    if (state.mode == absolute) {
+      if (p->tag != symbol) {
+        gperror(GPE_ILLEGAL_LABEL, NULL);
+      } else {
+        r = set_bank_bits(check_bank(maybe_evaluate(p)));
+      }
     } else {
-      reloc_evaluate(p, RELOCT_BANKSEL);
-      emit(0);
-      emit(0);
+      if (count_reloc(p) != 1) {
+        gperror(GPE_UNRESOLVABLE, NULL);
+      } else if (state.device.class == PROC_CLASS_PIC16) {
+        reloc_evaluate(p, RELOCT_BANKSEL);
+        emit(0);
+      } else if (state.device.class == PROC_CLASS_PIC16E) {
+        reloc_evaluate(p, RELOCT_MOVLB);
+        emit(0);
+      } else {
+        reloc_evaluate(p, RELOCT_BANKSEL);
+        emit(0);
+        emit(0);
+      }
     }
-
   }
 
   return r;
@@ -706,12 +754,21 @@ static gpasmVal do_config(gpasmVal r,
   state.org = ca;
 
   if (state.mode == relocatable) {
+    int temp;
+    
     if(_16bit_core) {
+      /* FIXME: added config support for 18xx devices */
       state.pass = 2; /* Ensure error actually gets displayed */
       gperror(GPE_UNKNOWN, "gpasm does not yet support __config in 18xx COFF files");
       exit(1);
     }
     new_coff_section(".config", ca, STYP_ABS | STYP_TEXT);
+    
+    /* FIXME: fix this hack */
+    temp = state.lst.line.was_org;
+    state.lst.line.was_org = ca;
+    coff_linenum(1);
+    state.lst.line.was_org = temp;
   }
 
   if (can_evaluate(p)) { 
@@ -789,7 +846,17 @@ static gpasmVal do_data(gpasmVal r,
 
   list.next = NULL;
   simplify_data(parms, &list, 1);
-  data(&list, 0, DEFAULT_LIT_MASK);
+
+  if ((state.mode == relocatable) &&
+      !(state.obj.flags & STYP_TEXT)) {
+    /* This is a data memory not program */
+    state.lst.line.linetype = res;
+
+    /* data memory is byte sized so split the data */  
+    data(&list, 0, SPLIT_PACK);
+  } else {
+    data(&list, 0, DEFAULT_LIT_MASK);
+  } 
 
   return r;
 }
@@ -813,12 +880,13 @@ static gpasmVal do_db(gpasmVal r,
   list.next = NULL;
   simplify_data(parms, &list,0);
 
-  if (state.mode == relocatable) {
+  if ((state.mode == relocatable) &&
+      !(state.obj.flags & STYP_TEXT)) {
     /* This is a data memory not program */
     state.lst.line.linetype = res;
-
+ 
     /* only valid in initialized data sections */
-    if (coff_section_flags() & STYP_BSS)
+    if (state.obj.flags & STYP_BSS)
       gperror(GPE_WRONG_SECTION, NULL);
 
     data(&list, 0, 0xff);
@@ -892,12 +960,13 @@ static gpasmVal do_dw(gpasmVal r,
   list.next = NULL;
   simplify_data(parms, &list, 1);
 
-  if (state.mode == relocatable) {
+  if ((state.mode == relocatable) &&
+      !(state.obj.flags & STYP_TEXT)) {
     /* This is a data memory not program */
     state.lst.line.linetype = res;
 
     /* only valid in initialized data sections */
-    if (coff_section_flags() & STYP_BSS)
+    if (state.obj.flags & STYP_BSS)
       gperror(GPE_WRONG_SECTION, NULL);
 
     /* data memory is byte sized so split the data */  
@@ -1287,6 +1356,13 @@ static gpasmVal do_idlocs(gpasmVal r,
         state.lst.config_address = idreg;
         state.org = idreg;
       
+        if (state.mode == relocatable) {
+          /* FIXME: added idlocs support for 18xx devices */
+          state.pass = 2; /* Ensure error actually gets displayed */
+          gperror(GPE_UNKNOWN, "gpasm does not yet support __idlocs in 18xx COFF files");
+          exit(1);
+        }
+
         value = maybe_evaluate(HEAD(TAIL(parms)));
         
         if(value > 0xff) {
@@ -1295,7 +1371,7 @@ static gpasmVal do_idlocs(gpasmVal r,
         curvalue = i_memory_get(state.i_memory, idreg>>1);
         mask = 0xff <<((idreg&1) ? 0 : 8);
 	
-        /* If the config address is even, then this byte goes in LSB position */
+        /* If the address is even, then this byte goes in LSB position */
         value = (value & 0xff) << ((idreg&1) ? 8 : 0)  | MEM_USED_MASK; 
 
         if(curvalue & MEM_USED_MASK)
@@ -1314,15 +1390,28 @@ static gpasmVal do_idlocs(gpasmVal r,
     if (enforce_arity(arity, 1)) {
       state.org = state.device.id_location;
       state.lst.line.linetype = idlocs;
+      if (state.mode == relocatable) {
+        new_coff_section(".idlocs", state.device.id_location, STYP_ABS | STYP_TEXT);
+      }
       value = maybe_evaluate(HEAD(parms));
       if (value > 0xffff) {
         gpmessage(GPM_IDLOC, NULL);
 	value &= 0xffff;
       }     
+
+      /* FIXME: Clean up the line number generation */
+      state.lst.line.was_org = state.org;
       emit((value & 0xf000) >> 12);
+      coff_linenum(1);
+      state.lst.line.was_org = state.org;
       emit((value & 0x0f00) >> 8);
+      coff_linenum(1);
+      state.lst.line.was_org = state.org;
       emit((value & 0x00f0) >> 4);
+      coff_linenum(1);
+      state.lst.line.was_org = state.org;
       emit((value & 0x000f));
+      coff_linenum(1);
     }
 
   }
@@ -1527,7 +1616,10 @@ static gpasmVal do_list(gpasmVal r,
     }
   }
 
-  coff_add_listsym();
+  /* The .list symbol is only added to the COFF file if its only action is to turn on
+     the listing */
+  if (arity == 0)
+    coff_add_listsym();
 
   return r;
 }
@@ -1720,19 +1812,26 @@ static gpasmVal do_pagesel(gpasmVal r,
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
-    if (p->tag != symbol) {
-      gperror(GPE_ILLEGAL_LABEL, NULL);
-    } else if (state.mode == absolute) {
-      r = set_page_bits(check_page(maybe_evaluate(p)));
-    } else if (state.device.class == PROC_CLASS_PIC16) {
-      reloc_evaluate(p, RELOCT_PAGESEL_WREG);
-      emit(0);
-      emit(0);
+    if (state.mode == absolute) {
+      if (p->tag != symbol) {
+        gperror(GPE_ILLEGAL_LABEL, NULL);
+      } else {
+        r = set_page_bits(check_page(maybe_evaluate(p)));
+      }
     } else {
-      reloc_evaluate(p, RELOCT_PAGESEL_BITS);
-      emit(0);
-      emit(0);
+      if (count_reloc(p) != 1) {
+        gperror(GPE_ILLEGAL_LABEL, NULL);
+      } else if (state.device.class == PROC_CLASS_PIC16) {
+        reloc_evaluate(p, RELOCT_PAGESEL_WREG);
+        emit(0);
+        emit(0);
+      } else {
+        reloc_evaluate(p, RELOCT_PAGESEL_BITS);
+        emit(0);
+        emit(0);
+      }
     }
+
   }
 
   return r;
@@ -1792,8 +1891,15 @@ static gpasmVal do_res(gpasmVal r,
         state.org += count;
       } else {
         state.lst.line.linetype = res;
-        for (i = 0; i < count; i++)
-          emit(0);        
+        for (i = 0; i < count; i++) {
+          if (state.obj.flags & STYP_TEXT) {
+            /* For some reason program memory is filled with a different 
+               value. */
+            emit(state.device.core_size);     
+          } else {
+            emit(0);     
+          }
+        }
       }
     }
   }
@@ -2067,8 +2173,10 @@ static gpasmVal do_while(gpasmVal r,
   }
 
   head->body = NULL;
-  /* Record data for the list and cod files */
+  /* Record data for the list, cod, and coff files */
   head->line_number = state.src->line_number;
+  head->coff_number = state.src->coff_number;
+
   head->src_name = strdup(state.src->name);
 
   /* DON'T set up state.mac_head; this isn't a macro head. */
@@ -2231,13 +2339,17 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_LIT4S:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
-	  emit_check(i->opcode, (reloc_evaluate(p, RELOCT_F) << 4), 0xf0);
+	  emit_check(i->opcode, (reloc_evaluate(p, RELOCT_MOVLR) << 4), 0xf0);
 	}
 	break;
       case INSN_CLASS_LIT8:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
-	  emit_check(i->opcode, reloc_evaluate(p, RELOCT_F), 0xff);
+	  if (strcasecmp(i->name, "movlb") == 0) {
+	    emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), 0xff);
+	  } else {
+	    emit_check(i->opcode, reloc_evaluate(p, RELOCT_LOW), 0xff);
+	  }
 	}
 	break;
       case INSN_CLASS_LIT8C12:
@@ -2265,7 +2377,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  int value;
 
 	  p = HEAD(parms);
-	  value = reloc_evaluate(p, RELOCT_CALL);	  
+	  value = reloc_evaluate(p, RELOCT_LOW);	  
 
 	  /* PC is 16 bits.  mpasm checks the maximum device address. */
 	  if (value & (~0xffff))
@@ -2335,9 +2447,15 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	break;
       case INSN_CLASS_RBRA8:
 	if (enforce_arity(arity, 1)) {
-	  int offset = ((reloc_evaluate(HEAD(parms), RELOCT_CONDBRA)) - 
-			((state.org + 1)<<_16bit_core));
-	  offset >>= _16bit_core;
+	  int offset;
+
+	  p = HEAD(parms);
+	  if (count_reloc(p) == 0) {
+	    offset = maybe_evaluate(p) - ((state.org + 1)<<_16bit_core);
+	    offset >>= _16bit_core;
+	  } else {
+	    offset = reloc_evaluate(p, RELOCT_CONDBRA);
+	  }
 
 	  /* The offset for the relative branch must be 
 	     between -127 <= offset <= 127. */
@@ -2346,9 +2464,16 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	break;
       case INSN_CLASS_RBRA11:
 	if (enforce_arity(arity, 1)) {
-	  int offset = ((reloc_evaluate(HEAD(parms), RELOCT_BRA)) - 
-			((state.org + 1)<<_16bit_core));
-	  offset >>= _16bit_core;
+	  int offset;
+
+	  p = HEAD(parms);
+	  if (count_reloc(p) == 0) {
+	    offset = maybe_evaluate(p) - ((state.org + 1)<<_16bit_core);
+	    offset >>= _16bit_core;
+	  } else {
+	    offset = reloc_evaluate(p, RELOCT_BRA);
+	  }	  
+         
 	  emit_check_relative(i->opcode, offset, 0x7ff, 0x3ff);
 	}
 	break;
@@ -2397,13 +2522,14 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
 	  if (enforce_arity(arity, 2)) {
 	    p = HEAD(parms);
-	    file = reloc_evaluate(p, RELOCT_LFSR1);
+	    file = maybe_evaluate(p);
 	    if(file > 3)
 	      gperror(GPE_UNKNOWN, "FSR is out of range");
 
 	    p = HEAD(TAIL(parms));
-	    k = reloc_evaluate(p, RELOCT_LFSR2);
+	    k = reloc_evaluate(p, RELOCT_LFSR1);
 	    emit_check(i->opcode | ((file & 3) << 4), (k>>8), 0xf);
+	    reloc_evaluate(p, RELOCT_LFSR2); /* add the second relocation */
 	    emit(0xf000 | (k & 0xff));
 	  }
 	}
@@ -2431,8 +2557,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_PF:
         if (enforce_arity(arity, 2)) {
           int reg=0;
-          reg=reloc_evaluate(HEAD(parms), RELOCT_P);
           file=reloc_evaluate(HEAD(TAIL(parms)), RELOCT_F);
+          reg=reloc_evaluate(HEAD(parms), RELOCT_P);
           file_ok(file);
           file_ok(reg);
           emit(i->opcode | ( (reg & 0x1f) << 8) |
@@ -2442,7 +2568,11 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_OPF5:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
-	  file = reloc_evaluate(p, RELOCT_F);
+	  if (strcasecmp(i->name, "tris") == 0) {
+	    file = reloc_evaluate(p, RELOCT_TRIS);
+	  } else {
+	    file = reloc_evaluate(p, RELOCT_F);
+	  }
 	  file_ok(file);
 	  emit(i->opcode | (file & 0x1f));
 	}
@@ -2521,11 +2651,13 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
       case INSN_CLASS_OPF7:
 	if (enforce_arity(arity, 1)) {
-          if (strcasecmp(i->name, "tris") == 0) {
-            gpwarning(GPW_NOT_RECOMMENDED, NULL);
-          }
 	  p = HEAD(parms);
-	  file = reloc_evaluate(p, RELOCT_F);
+	  if (strcasecmp(i->name, "tris") == 0) {
+	    gpwarning(GPW_NOT_RECOMMENDED, NULL);
+	    file = reloc_evaluate(p, RELOCT_TRIS);
+	  } else {
+	    file = reloc_evaluate(p, RELOCT_F);
+	  }
 	  file_ok(file);
 	  emit(i->opcode | (file & 0x7f));
 	}
@@ -2645,6 +2777,9 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  file = reloc_evaluate(p, RELOCT_F);
 	  file_ok(file);
 
+	  /* add relocation for the access bit, if necessary */          
+	  reloc_evaluate(p, RELOCT_ACCESS);
+
 	  /* Default access (use the BSR unless access is to special registers) */
 	  if ((file < 0x60) || (file > 0xf5f)) {
             a = 0;
@@ -2692,6 +2827,10 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    f = HEAD(parms);
 	    b = HEAD(TAIL(parms));
 	    file = reloc_evaluate(f, RELOCT_F);
+
+	    /* add relocation for the access bit, if necessary */          
+	    reloc_evaluate(f, RELOCT_ACCESS);
+
 	    bit = maybe_evaluate(b);
 	    if (!((0 <= bit) && (bit <= 7)))
               gpwarning(GPW_RANGE, NULL);
@@ -2718,6 +2857,9 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  p = HEAD(parms);
 	  file = reloc_evaluate(p, RELOCT_F);
 	  file_ok(file);
+
+	  /* add relocation for the access bit, if necessary */          
+	  reloc_evaluate(p, RELOCT_ACCESS);
 
 	  /* Default access (use the BSR unless access is to special registers) */
 	  if ((file < 0x60) || (file > 0xf5f)) {
@@ -2867,6 +3009,9 @@ gpasmVal do_insn(char *name, struct pnode *parms)
   return r;
 }
 
+/* This is an old function which is no longer used for macros.  It is still 
+   used for while loops.  */
+
 void execute_body(struct macro_head *h)
 {	
   struct source_context *new, *old; 
@@ -2874,7 +3019,7 @@ void execute_body(struct macro_head *h)
   int expand;
 
   /* determine if the macro listing is to be expanded */
-  if (state.pass == 2 && state.lst.enabled == 1) {
+  if (state.pass == 2) {
     if (state.stGlobal == state.stTop) {
       expand = 1;      /* always expand while loops */
     } else if (state.lst.expand == 1) {
@@ -2929,7 +3074,9 @@ void execute_body(struct macro_head *h)
     }
     if (expand && (b->src_line != NULL)) {
       lst_format_line(b->src_line, r);
-    } 
+    } else if (state.mode == relocatable) {
+      coff_linenum(state.org - state.lst.line.was_org);
+    }
   }
 
   if (expand) {
@@ -3008,6 +3155,7 @@ struct insn op_1[] = {
   { "__fuses",    0, (long int)do_config,    INSN_CLASS_FUNC,   0 },
   { "__idlocs",   0, (long int)do_idlocs,    INSN_CLASS_FUNC,   0 },
   { "__maxram",   0, (long int)do_maxram,    INSN_CLASS_FUNC,   0 },
+  { "bankisel",   0, (long int)do_bankisel,  INSN_CLASS_FUNC,   0 },
   { "banksel",    0, (long int)do_banksel,   INSN_CLASS_FUNC,   0 },
   { "data",       0, (long int)do_data,      INSN_CLASS_FUNC,   0 },
   { "da",         0, (long int)do_da, 	     INSN_CLASS_FUNC,   0 },

@@ -36,12 +36,7 @@ enum lib_modes {
 
 extern struct gplib_state {
   enum lib_modes mode;          	/* operating mode */
-  struct {				/* Totals for errors, warnings, messages */
-    int errors;
-    int warnings;
-  } num;
   int numobjects;               	/* number of objects in the list */
-  int  quiet;                   	/* suppress outputs when 1 */ 
   char *filename;               	/* library file name */
   char *objectname[MAX_OBJ_NAMES];  	/* the list of object filenames */
   gp_archive_type *archive; 	        /* internal archive format */

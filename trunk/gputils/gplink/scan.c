@@ -1670,14 +1670,9 @@ void open_src(char *name, int isinclude)
 
   if (new->f == NULL) {
     if (state.src) {
-      char complaint[BUFSIZ];
-
-      sprintf(complaint,
-	      "Unable to open file \"%s\" - %s",
-	      name,
-	      strerror(errno)); 
-
-      gplink_error(&complaint[0]);    
+      gp_error("Unable to open file \"%s\" - %s",
+               name,
+               strerror(errno));    
     } else {
       perror(name);
     }

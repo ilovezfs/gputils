@@ -7,7 +7,6 @@ list is in no particular order.
   * Clean up the byte verses word, data memory/program memory stuff.
   * grep the source for FIXME and fix.
   * Implement nested while loops.
-  * Add object file generation to gpasm.
   * Move opcode generator from /gpasm/directive.c to 
     /libgputils/opcode.c.
   * Move COD file generation to library.
@@ -16,7 +15,6 @@ list is in no particular order.
   * Create an xmalloc function with error checking and use it.
   * Start migrating to the GNU coding style.
   * Add macro names to symbol table in listing file.
-  * Clean up includes.  Use libgputils.h.
   * Add .ident for HLL tools 
   * Add .file/.line for debugger.
   * Add .def/.endef for embedding debug/optimization information

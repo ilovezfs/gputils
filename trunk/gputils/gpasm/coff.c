@@ -25,6 +25,8 @@ Boston, MA 02111-1307, USA.  */
 #include "gperror.h"
 #include "coff.h"
 
+extern int _16bit_core;
+
 void coff_init(void)
 {
   if (state.objfile != named) {
@@ -102,6 +104,12 @@ void new_coff_section(char *name, int addr, int flags)
 
   state.obj.symbol_num += 2;
 
+  /* store the flags so they are available for pass 1 */
+  state.obj.flags = flags;
+
+  /* increment section number */
+  state.obj.section_num++;
+
   if(!state.obj.enabled) {
     state.org = addr;
     return;
@@ -115,15 +123,18 @@ void new_coff_section(char *name, int addr, int flags)
   found = gp_coffgen_findsection(state.obj.object, name);    
 
   if (found != NULL) {
-    gperror(GPE_CONTIG_SECTION, NULL);
-    return;
+    /* Overlayed sections can be duplicated.  This allows multiple code sections in the 
+       same source file to share the same data memory. */
+    if (!(flags & STYP_OVERLAY) || !(found->header.s_flags & STYP_OVERLAY)) {
+      gperror(GPE_CONTIG_SECTION, NULL);
+      return;
+    }
   }
      
   state.obj.section = gp_coffgen_addsection(state.obj.object, name);    
   state.obj.section->header.s_paddr = addr; 
   state.obj.section->header.s_vaddr = addr; 
   state.obj.section->header.s_flags = flags;
-  state.obj.section_num++;
   
   /* add a section symbol */
   new = gp_coffgen_addsymbol(state.obj.object, name, 1);
@@ -178,10 +189,10 @@ coff_linenum(int emitted)
 
   if (state.obj.section->header.s_flags & STYP_ABS) {
     /* If the section is absolute use the abolute address */
-    origin = state.lst.line.was_org;
+    origin = state.lst.line.was_org << _16bit_core;
   } else {
     /* use the relative address */
-    origin = state.lst.line.was_org - state.obj.section->header.s_paddr;
+    origin = (state.lst.line.was_org - state.obj.section->header.s_paddr) << _16bit_core;
   }
   
   for (i = 0; i < emitted; i++) {
@@ -189,7 +200,7 @@ coff_linenum(int emitted)
     new = gp_coffgen_addlinenum(state.obj.section);
     new->linenumber.l_srcndx = state.src->coff_number;
     new->linenumber.l_lnno   = state.src->line_number;
-    new->linenumber.l_paddr  = origin + i;
+    new->linenumber.l_paddr  = origin + (i << _16bit_core);
   }
 
   return;
@@ -319,14 +330,22 @@ coff_add_nolistsym(void)
   return;
 }
 
-unsigned long
-coff_section_flags(void)
+/* locate a symbol in the COFF table and return its section number */
+
+int
+coff_symbol_section(char *name)
 {
+  gp_symbol_type *symbol;
+  int number;
+
   if(!state.obj.enabled)
     return 0;
 
-  assert(state.obj.section != NULL);
+  symbol = gp_coffgen_findsymbol(state.obj.object, name);
+  if (symbol == NULL)
+    return 0;
+  
+  number = symbol->symbol.sec_num;
 
-  return state.obj.section->header.s_flags;
-
+  return number;
 }
