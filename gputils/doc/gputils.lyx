@@ -1487,12 +1487,20 @@ CBLOCK
 
 \layout LyX-Code
 
-CBLOCK <expression>
+CBLOCK [<expression>]
+\layout LyX-Code
+
+       <label>[:<increment>][,<label>[:<increment>]]
+\layout LyX-Code
+
+ENDC
 \layout Standard
 
-Marks the beginning of a block of constants.
- gpasm allocates values for symbols in the block starting at the value given
- to CBLOCK.
+Marks the beginning of a block of constants <label>.
+ gpasm allocates values for symbols in the block starting at the value <expressi
+on> given to CBLOCK.
+ An optional <increment> value leaves space after the <label> before the
+ next <label>.
 \layout Standard
 
 See also: EQU
@@ -3067,17 +3075,7 @@ RETURN
 Special macros
 \layout Standard
 
-There are also a number of standard additional macros that gpasm reads from
- the file 
-\begin_inset Quotes eld
-\end_inset 
-
-special.inc
-\begin_inset Quotes erd
-\end_inset 
-
-.
- Consult that file for more details.
+There are also a number of standard additional macros.
  These macros are:
 \layout Standard
 \LyXTable
