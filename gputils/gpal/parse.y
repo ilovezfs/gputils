@@ -78,6 +78,7 @@ static tree *case_ident = NULL;
 %token <i> END       "end"
 %token <i> FOR       "for"
 %token <i> FUNCTION  "function"
+%token <i> GOTO      "goto"
 %token <i> IF        "if"
 %token <i> IN        "in"
 %token <i> INOUT     "inout"
@@ -102,6 +103,7 @@ static tree *case_ident = NULL;
 /* general */
 %token <s> ASM       "asm"
 %token <s> IDENT     "symbol"
+%token <s> LABEL     "label"
 %token <i> NUMBER    "number"
 %token <s> STRING    "string"
 %token <i> ';'
@@ -361,6 +363,16 @@ statement:
 	NULL_TOK ';'
 	{
 	  $$ = mk_assembly(strdup("  nop"));
+	}
+	|
+	LABEL
+	{
+	  $$ = mk_label($1);
+	}
+	|
+	GOTO IDENT ';'
+	{
+	  $$ = mk_goto($2);
 	}
 	|
 	RETURN expr ';'

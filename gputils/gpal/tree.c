@@ -216,11 +216,29 @@ mk_func(tree *head, char *ret, tree *body)
 }
 
 tree *
+mk_goto(char *name)
+{
+  tree *new = mk_node(node_goto);
+  new->value._goto.name = name;
+
+  return new;
+}
+
+tree *
 mk_head(char *name, tree *args)
 {
   tree *new = mk_node(node_head);
   new->value.head.name = name;
   new->value.head.args = args;
+  return new;
+}
+
+tree *
+mk_label(char *name)
+{
+  tree *new = mk_node(node_label);
+  new->value.label.name = name;
+
   return new;
 }
 
@@ -461,6 +479,10 @@ print_node(tree *node, int level)
     if (FUNC_BODY(node) != NULL)
       print_node(FUNC_BODY(node), level);
     break;
+  case node_goto:
+    print_space(level);
+    printf("node_goto %s\n", GOTO_NAME(node));
+    break;
   case node_head:
     print_space(level);
     printf("node_head %s\n", HEAD_NAME(node));
@@ -469,6 +491,10 @@ print_node(tree *node, int level)
       printf("arguments\n");
       print_node(HEAD_ARGS(node), level);
     }
+    break;
+  case node_label:
+    print_space(level);
+    printf("node_label %s\n", LABEL_NAME(node));
     break;
   case node_loop:
     print_space(level);

@@ -828,6 +828,7 @@ analyze_assembly(tree *assembly)
 void
 analyze_statements(tree *statement)
 {
+  struct variable *label_var;
 
   if (statement == NULL)
     return;
@@ -843,6 +844,28 @@ analyze_statements(tree *statement)
     case node_cond:
       analyze_cond(statement, NULL);  
       break;
+    case node_goto:
+      label_var = get_global(GOTO_NAME(statement));
+      if (label_var != NULL) {
+        if (label_var->tag == sym_label) {
+          codegen_jump(label_var->name);
+        } else {
+          analyze_error(statement, "%s is not a label", GOTO_NAME(statement));  
+        }
+      } else {
+        analyze_error(statement, "unknown label %s", GOTO_NAME(statement));  
+      }
+      break;
+    case node_label:
+      label_var = get_global(LABEL_NAME(statement));
+      if (label_var != NULL) {
+        /* errors will be generated in scan_labels() */
+        codegen_write_label(label_var->name);
+        if (label_var->storage == storage_public) {
+          codegen_write_asm("global %s", label_var->name);
+        }
+      }
+      break; 
     case node_loop:
       analyze_loop(statement);
       break; 
@@ -853,7 +876,40 @@ analyze_statements(tree *statement)
       analyze_expr(statement);
     }
     statement = statement->next;
-  } 
+  }
+
+  return;
+}
+
+void
+scan_labels(tree *statement, char *base_name)
+{
+  char *label;
+  struct variable *label_var;
+
+  while(statement) {
+    switch(statement->tag) {
+    case node_cond:
+      scan_labels(COND_BODY(statement), base_name);  
+      break;
+    case node_label:
+      label = mangle_name2(base_name, LABEL_NAME(statement));      
+      label_var = add_global_symbol(label, 
+                                    statement,
+                                    sym_label,
+                                    storage_local,
+                                    NULL);
+      add_symbol_alias(LABEL_NAME(statement), statement, label_var);
+      break; 
+    case node_loop:
+      scan_labels(LOOP_BODY(statement), base_name);  
+      break; 
+    default:
+      /* do nothing */
+      break;
+    }
+    statement = statement->next;
+  }
 
   return;
 }
@@ -1037,6 +1093,7 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
     codegen_write_asm("banksel %s", LOCAL_DATA_LABEL);
     codegen_write_asm("bankisel %s", LOCAL_DATA_LABEL);
   }
+  scan_labels(statements, var->name);
   analyze_statements(statements);
   codegen_finish_proc(!generating_function);
 

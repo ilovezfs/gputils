@@ -79,6 +79,7 @@ DECCHAR [0-9]
 "end"			{ return END; }
 "for"			{ return FOR; }
 "function"		{ return FUNCTION; }
+"goto"			{ return GOTO; }
 "if"			{ return IF; }
 "in"			{ return IN; }
 "inout"			{ return INOUT; }
@@ -103,6 +104,11 @@ DECCHAR [0-9]
 			  yytext[yyleng - 1] = '\0';
 			  yylval.s = strdup(yytext + 1);
                           return STRING;
+			}
+[_.a-z][_.0-9a-z]*:	{
+			  yytext[strlen(yytext) - 1] = '\0';
+			  yylval.s = strdup(yytext);
+			  return LABEL;
 			}
 [_.a-z][_.0-9a-z]*	{
 			  yylval.s = strdup(yytext);
