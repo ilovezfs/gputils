@@ -26,7 +26,6 @@ EXTRA_DIST = \
 	examples/example3/main.pal \
 	examples/example3/main.pub \
 	examples/example3/Makefile \
-	examples/example3/p16f877.inc \
 	examples/example3/stack.pal \
 	examples/example3/stack.pub \
 	examples/example3/types.pub
