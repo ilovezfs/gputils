@@ -46,24 +46,25 @@ typedef void code_func(enum node_op op,
                        enum size_tag size,
                        gp_boolean is_const,
                        int value,
-                       char *name);
+                       char *name,
+                       char *bank_addr);
 
 /* data movement function pointers */
 typedef void code_unop(enum node_op op,
                        gp_boolean direct,
                        char *name,
+                       char *bank_addr,
                        enum size_tag size,
-                       int offset,
-                       char *bank_addr);
+                       int offset);
 
 /* load constant function pointer */
 typedef void data_func1(int value, enum size_tag size);
 
 /* data movement function pointers */
 typedef void data_func2(char *name,
+                        char *bank_addr,
                         enum size_tag size,
-                        int offset,
-                        char *bank_addr);
+                        int offset);
 
 /* Used for the RESET and INTERRUPT vectors.  The node is passed to them. */
 typedef void vector_func(struct variable *var);
@@ -77,6 +78,8 @@ typedef void vector_func(struct variable *var);
 #define STORE_INDIRECT (*(data_func2*)func_ptr->store_indirect)
 #define RESET_VECTOR (*(vector_func*)func_ptr->reset_vector)
 #define INT_VECTOR (*(vector_func*)func_ptr->interrupt_vector)
+
+#define LOCAL_BANK FILE_DATA_ADDR(state.module)
 
 /****************************************************************************/
 /* Common Assembly Functions                                                */
@@ -251,11 +254,11 @@ codegen_indirect(tree *offset,
   }
   if (var->type->start != 0) {
     /* shift the offset for the first element */
-    CODEGEN(op_add, state.pointer_size, true, 0 - var->type->start, NULL);
+    CODEGEN(op_add, state.pointer_size, true, 0 - var->type->start, NULL, NULL);
   }
   if (element_size != 1) {
     /* scale the offset by the element size */
-    CODEGEN(op_mult, state.pointer_size, true, element_size, NULL);
+    CODEGEN(op_mult, state.pointer_size, true, element_size, NULL, NULL);
   }
 
   switch (state.class) {
@@ -263,7 +266,7 @@ codegen_indirect(tree *offset,
     codegen_write_asm("addlw %s", var->name); 
     codegen_write_asm("banksel FSR");
     codegen_write_asm("movwf FSR"); 
-    codegen_set_bank(FILE_DATA_ADDR(state.module));
+    codegen_set_bank(LOCAL_BANK);
     break;
   case PROC_CLASS_PIC16E:
     codegen_write_asm("lfsr FSR0, %s", var->name);
@@ -297,17 +300,17 @@ codegen_load_file(tree *symbol, struct variable *var)
       if (can_evaluate(SYM_OFST(symbol), false)) {
         /* direct access */
         offset = analyze_check_array(symbol, var) * element_size;
-        LOAD_FILE(var->name, codegen_size, offset, bank_addr);
+        LOAD_FILE(var->name, bank_addr, codegen_size, offset);
       } else {
         codegen_indirect(SYM_OFST(symbol), var, element_size, false);
-        LOAD_INDIRECT(var->name, codegen_size, 0, bank_addr);
+        LOAD_INDIRECT(var->name, bank_addr, codegen_size, 0);
       }
     } else {
       analyze_error(symbol, "symbol %s is not an array",
                     SYM_NAME(symbol));
     }
   } else {
-    LOAD_FILE(var->name, codegen_size, 0, bank_addr);
+    LOAD_FILE(var->name, bank_addr, codegen_size, 0);
   }
 
   return;
@@ -325,12 +328,12 @@ codegen_store(struct variable *var,
 
   if (offset_expr) {
     if (constant_offset) {
-      STORE_FILE(var->name, codegen_size, offset, bank_addr);
+      STORE_FILE(var->name, bank_addr, codegen_size, offset);
     } else {
-      STORE_INDIRECT(var->name, codegen_size, 0, bank_addr);
+      STORE_INDIRECT(var->name, bank_addr, codegen_size, 0);
     }
   } else {
-    STORE_FILE(var->name, codegen_size, 0, bank_addr);
+    STORE_FILE(var->name, bank_addr, codegen_size, 0);
   }
 
 }
@@ -350,7 +353,7 @@ gen_unop_expr(tree *expr)
   case op_not:
   case op_neg:
   case op_com:
-    CODEGEN(expr->value.unop.op, codegen_size, true, 0, NULL);
+    CODEGEN(expr->value.unop.op, codegen_size, true, 0, NULL, NULL);
     break;
   default:
     assert(0);
@@ -364,38 +367,39 @@ gen_binop_expr(enum node_op op, tree *p0, tree *p1)
   char *reg1 = NULL;
   char *reg2 = NULL;
   struct variable *var;
+  char *local_bank_addr = LOCAL_BANK;
 
   gen_expr(p1);
 
   if (p0->tag == node_call) {
     reg1 = codegen_get_temp(codegen_size);
-    STORE_FILE(reg1, codegen_size, 0, FILE_DATA_ADDR(state.module));
+    STORE_FILE(reg1, local_bank_addr, codegen_size, 0);
     analyze_call(p0, true, codegen_size);    
-    CODEGEN(op, codegen_size, false, 0, reg1);
+    CODEGEN(op, codegen_size, false, 0, reg1, local_bank_addr);
   } else if (p0->tag == node_constant) {
-    CODEGEN(op, codegen_size, true, p0->value.constant, NULL);
+    CODEGEN(op, codegen_size, true, p0->value.constant, NULL, NULL);
   } else if (p0->tag == node_symbol) { 
     var = get_global(SYM_NAME(p0));
     if (var->tag == sym_const) {
-      CODEGEN(op, codegen_size, true, var->value, NULL);
+      CODEGEN(op, codegen_size, true, var->value, NULL, NULL);
     } else if (SYM_OFST(p0)) {
       /* it is a complex expression, so save temp data */
       reg1 = codegen_get_temp(codegen_size);
       reg2 = codegen_get_temp(codegen_size);
-      STORE_FILE(reg1, codegen_size, 0, FILE_DATA_ADDR(state.module));
+      STORE_FILE(reg1, local_bank_addr, codegen_size, 0);
       codegen_load_file(p0, var);
-      STORE_FILE(reg2, codegen_size, 0, FILE_DATA_ADDR(state.module));
-      LOAD_FILE(reg1, codegen_size, 0, FILE_DATA_ADDR(state.module));
-      CODEGEN(op, codegen_size, false, 0, reg2);
+      STORE_FILE(reg2, local_bank_addr, codegen_size, 0);
+      LOAD_FILE(reg1, local_bank_addr, codegen_size, 0);
+      CODEGEN(op, codegen_size, false, 0, reg2, local_bank_addr);
     } else {
-      CODEGEN(op, codegen_size, false, 0, var->name);
+      CODEGEN(op, codegen_size, false, 0, var->name, var_bank(var));
     }
   } else {
     /* it is a complex expression so save temp data */
     reg1 = codegen_get_temp(codegen_size);
-    STORE_FILE(reg1, codegen_size, 0, FILE_DATA_ADDR(state.module));
+    STORE_FILE(reg1, local_bank_addr, codegen_size, 0);
     gen_expr(p0);
-    CODEGEN(op, codegen_size, false, 0, reg1);
+    CODEGEN(op, codegen_size, false, 0, reg1, local_bank_addr);
   }
 
   if (reg1)
@@ -522,12 +526,12 @@ codegen_unop(struct variable *var,
 
   if (offset_expr) {
     if (constant_offset) {
-      UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, offset, bank_addr);
+      UNOPGEN(UNOP_OP(unop), true, var->name, bank_addr, codegen_size, offset);
     } else {
-      UNOPGEN(UNOP_OP(unop), false, var->name, codegen_size, 0, bank_addr);
+      UNOPGEN(UNOP_OP(unop), false, var->name, bank_addr, codegen_size, 0);
     }
   } else {
-    UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, 0, bank_addr);
+    UNOPGEN(UNOP_OP(unop), true, var->name, bank_addr, codegen_size, 0);
   }
 
   if (temp_number > max_temp_number)
@@ -590,8 +594,8 @@ codegen_init_data()
     }  
   }
 
-  codegen_write_label(FILE_DATA_ADDR(state.module));
-  codegen_write_asm("global %s", FILE_DATA_ADDR(state.module));
+  codegen_write_label(LOCAL_BANK);
+  codegen_write_asm("global %s", LOCAL_BANK);
 }
 
 void
