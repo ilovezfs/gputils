@@ -49,7 +49,7 @@ typedef void code_func(enum node_op op,
                        char *name,
                        char *bank_addr);
 
-/* data movement function pointers */
+/* unop code generation function pointer */
 typedef void code_unop(enum node_op op,
                        gp_boolean direct,
                        char *name,
@@ -66,8 +66,8 @@ typedef void data_func2(char *name,
                         enum size_tag size,
                         int offset);
 
-/* Used for the RESET and INTERRUPT vectors.  The node is passed to them. */
-typedef void vector_func(struct variable *var);
+/* variable operation function pointers */
+typedef void var_func(struct variable *var);
 
 #define CODEGEN (*(code_func*)func_ptr->codegen)
 #define UNOPGEN (*(code_unop*)func_ptr->unopgen)
@@ -76,8 +76,9 @@ typedef void vector_func(struct variable *var);
 #define STORE_FILE (*(data_func2*)func_ptr->store_file)
 #define LOAD_INDIRECT (*(data_func2*)func_ptr->load_indirect)
 #define STORE_INDIRECT (*(data_func2*)func_ptr->store_indirect)
-#define RESET_VECTOR (*(vector_func*)func_ptr->reset_vector)
-#define INT_VECTOR (*(vector_func*)func_ptr->interrupt_vector)
+#define RESET_VECTOR (*(var_func*)func_ptr->reset_vector)
+#define INT_VECTOR (*(var_func*)func_ptr->interrupt_vector)
+#define LOAD_FSR (*(var_func*)func_ptr->load_fsr)
 
 #define LOCAL_BANK FILE_DATA_ADDR(state.module)
 
@@ -252,33 +253,18 @@ codegen_indirect(tree *offset,
   } else {
     gen_expr(offset);
   }
+
   if (var->type->start != 0) {
     /* shift the offset for the first element */
     CODEGEN(op_add, state.pointer_size, true, 0 - var->type->start, NULL, NULL);
   }
+
   if (element_size != 1) {
     /* scale the offset by the element size */
     CODEGEN(op_mult, state.pointer_size, true, element_size, NULL, NULL);
   }
 
-  switch (state.class) {
-  case PROC_CLASS_PIC14:
-    codegen_write_asm("addlw %s", var->name); 
-    codegen_write_asm("banksel FSR");
-    codegen_write_asm("movwf FSR"); 
-    codegen_set_bank(LOCAL_BANK);
-    break;
-  case PROC_CLASS_PIC16E:
-    codegen_write_asm("lfsr FSR0, %s", var->name);
-    codegen_write_asm("movf %s, W", WORKING_LABEL);
-    codegen_write_asm("addwf FSR0L, F");
-    codegen_write_asm("movf %s + 1, W", WORKING_LABEL);
-    codegen_write_asm("addwfc FSR0H, F");
-    break;
-  default:
-    assert(0);
-  }
-
+  LOAD_FSR(var);
 
   return;
 }

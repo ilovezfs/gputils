@@ -1787,6 +1787,15 @@ interrupt_vector16e(struct variable *var)
   fprintf(state.output.f, "  retfie FAST\n\n");
 }
   
+static void
+load_fsr16e(struct variable *var)
+{
+  codegen_write_asm("lfsr FSR0, %s", var->name);
+  codegen_write_asm("movf %s, w", WORKING_LABEL);
+  codegen_write_asm("addwf FSR0L, f");
+  codegen_write_asm("movf %s + 1, w", WORKING_LABEL);
+  codegen_write_asm("addwfc FSR0H, f");
+}
 
 struct function_pointer_struct codegen16e_func = {
   (long int)codegen16e,
@@ -1797,5 +1806,6 @@ struct function_pointer_struct codegen16e_func = {
   (long int)load_indirect16e,
   (long int)store_indirect16e,
   (long int)reset_vector16e,
-  (long int)interrupt_vector16e
+  (long int)interrupt_vector16e,
+  (long int)load_fsr16e
 };

@@ -1802,6 +1802,12 @@ interrupt_vector14(struct variable *var)
   fprintf(state.output.f, "pclath_temp res 1\n\n");
 }
 
+static void
+load_fsr14(struct variable *var)
+{
+  codegen_write_asm("addlw %s", var->name); 
+  codegen_write_asm("movwf FSR"); 
+}
 
 struct function_pointer_struct codegen14_func = {
   (long int)codegen14,
@@ -1812,5 +1818,6 @@ struct function_pointer_struct codegen14_func = {
   (long int)load_indirect14,
   (long int)store_indirect14,
   (long int)reset_vector14,
-  (long int)interrupt_vector14
+  (long int)interrupt_vector14,
+  (long int)load_fsr14
 };
