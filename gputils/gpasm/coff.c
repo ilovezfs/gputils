@@ -27,6 +27,7 @@ Boston, MA 02111-1307, USA.  */
 #include "coff.h"
 
 extern int _16bit_core;
+extern int packed_hi_lo;
 
 void 
 coff_init(void)
@@ -350,6 +351,9 @@ coff_reloc(int symbol, short offset, unsigned short type)
     new->address     = origin;
   } else {
     new->address     = origin * 2;    /* byte address not word */
+    if (packed_hi_lo) {
+      new->address++;
+    }
   }
   new->symbol_number = symbol;
   new->offset        = offset;    

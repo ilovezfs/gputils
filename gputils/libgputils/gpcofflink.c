@@ -1357,7 +1357,9 @@ gp_cofflink_patch_addr(enum proc_class class,
                        gp_reloc_type *relocation)
 {
   int org;
-  int data;
+  int upper_byte;
+  int current_value;
+  int data = 0;
   int value;
   int offset;
   int write_data = 1;
@@ -1365,6 +1367,7 @@ gp_cofflink_patch_addr(enum proc_class class,
   if (section->flags & STYP_DATA) {
     /* It is an initialized data section, so everything is bytes */ 
     org = section->address + relocation->address;
+    upper_byte = 0;
   } else {
     /* section address are byte addresses */
     if (class == PROC_CLASS_PIC16E) {
@@ -1374,6 +1377,8 @@ gp_cofflink_patch_addr(enum proc_class class,
     }
     /* the relocation address is always a byte address */
     org += (relocation->address >> 1);
+    /* the address is odd so put the data in upper byte */
+    upper_byte = relocation->address & 1;
   }
   
   value = symbol->value + relocation->offset;
@@ -1384,8 +1389,8 @@ gp_cofflink_patch_addr(enum proc_class class,
            value);
   
   /* fetch the current contents of the memory */
-  data = i_memory_get(section->data, org);
-  assert(data & MEM_USED_MASK);
+  current_value = i_memory_get(section->data, org);
+  assert(current_value & MEM_USED_MASK);
 
   /* FIXME: Not sure if warnings should be generated for out of range 
             arguments. The linker should make sure values are within
@@ -1396,16 +1401,16 @@ gp_cofflink_patch_addr(enum proc_class class,
     switch(class) {
     case PROC_CLASS_PIC12:
     case PROC_CLASS_SX:
-      data = data | (value & 0xff);
+      data = value & 0xff;
       break;
     case PROC_CLASS_PIC14:
-      data = data | (value & 0x7ff);
+      data = value & 0x7ff;
       break;
     case PROC_CLASS_PIC16:
-      data = data | (value & 0x1fff);
+      data = value & 0x1fff;
       break;
     case PROC_CLASS_PIC16E:
-      data = data | ((value >> 1) & 0xff);
+      data = (value >> 1) & 0xff;
       break;
     default:
       assert(0);
@@ -1415,29 +1420,29 @@ gp_cofflink_patch_addr(enum proc_class class,
     switch(class) {
     case PROC_CLASS_PIC12:
     case PROC_CLASS_SX:
-      data = data | (value & 0x1ff);
+      data = value & 0x1ff;
       break;
     case PROC_CLASS_PIC14:
-      data = data | (value & 0x7ff);
+      data = value & 0x7ff;
       break;
     case PROC_CLASS_PIC16:
-      data = data | (value & 0x1fff);
+      data = value & 0x1fff;
       break;
     case PROC_CLASS_PIC16E:
-      data = data | ((value >> 1) & 0xff);
+      data = (value >> 1) & 0xff;
       break;
     default:
       assert(0);
     }
     break;
   case RELOCT_HIGH:
-    data = data | ((value >> 8) & 0xff);   
+    data = (value >> 8) & 0xff;   
     break; 
   case RELOCT_LOW:
-    data = data | (value & 0xff);   
+    data = value & 0xff;   
     break; 
   case RELOCT_P:
-    data = data | ((value & 0x1f) << 8);   
+    data = (value & 0x1f) << 8;   
     break; 
   case RELOCT_BANKSEL:
     {
@@ -1469,14 +1474,14 @@ gp_cofflink_patch_addr(enum proc_class class,
     switch(class) {
     case PROC_CLASS_PIC12:
     case PROC_CLASS_SX:
-      data = data | (value & 0x1f);
+      data = value & 0x1f;
       break;
     case PROC_CLASS_PIC14:
-      data = data | (value & 0x7f);
+      data = value & 0x7f;
       break;
     case PROC_CLASS_PIC16:
     case PROC_CLASS_PIC16E:
-      data = data | (value & 0xff);
+      data = value & 0xff;
       break;
     default:
       assert(0);
@@ -1486,51 +1491,51 @@ gp_cofflink_patch_addr(enum proc_class class,
     switch(class) {
     case PROC_CLASS_PIC12:
     case PROC_CLASS_SX:
-      data = data | (value & 0x1f);
+      data = value & 0x1f;
       break;
     case PROC_CLASS_PIC14:
-      data = data | (value & 0x7f);
+      data = value & 0x7f;
       break;
     default:
       assert(0);
     }
     break; 
   case RELOCT_MOVLR:
-    data = data | ((value << 4) & 0xf0);
+    data = (value << 4) & 0xf0;
     break;
   case RELOCT_MOVLB:
     /* The upper byte of the symbol is used for the BSR.  This is inconsistent
        with the datasheet and the assembler, but is done to maintain
        compatibility with mplink. */
-    data = data | ((value >> 8) & 0xff);
+    data = (value >> 8) & 0xff;
     break;
   case RELOCT_GOTO2:
-    data = data | ((value >> 9) & 0xfff);
+    data = (value >> 9) & 0xfff;
     break;
   case RELOCT_FF1:
-    data = data | (value & 0xfff);
+    data = value & 0xfff;
     break;
   case RELOCT_FF2:
-    data = data | (value & 0xfff);
+    data = value & 0xfff;
     break;
   case RELOCT_LFSR1:
-    data = data | ((value >> 8) & 0xf);
+    data = (value >> 8) & 0xf;
     break;
   case RELOCT_LFSR2:
-    data = data | (value & 0xff);
+    data = value & 0xff;
     break;
   case RELOCT_BRA:
     offset = (value - ((org + 1) << 1)) >> 1;
     check_relative(section, org, offset, 0x7ff);
-    data = data | (offset & 0x7ff);
+    data = offset & 0x7ff;
     break;
   case RELOCT_CONDBRA:
     offset = (value - ((org + 1) << 1)) >> 1;
     check_relative(section, org, offset, 127);
-    data = data | (offset & 0xff);
+    data = offset & 0xff;
     break;
   case RELOCT_UPPER:
-    data = data | ((value >> 16) & 0x3f);   
+    data = (value >> 16) & 0x3f;   
     break; 
   case RELOCT_ACCESS:
     {
@@ -1543,7 +1548,7 @@ gp_cofflink_patch_addr(enum proc_class class,
         a = 1;
       }
 
-      data = data | (a << 8);   
+      data = a << 8;   
     }
     break;
   case RELOCT_PAGESEL_WREG:
@@ -1572,9 +1577,12 @@ gp_cofflink_patch_addr(enum proc_class class,
     assert(0);
   }
 
+  if (upper_byte)
+    data <<= 8;
+
   /* update memory with the new value */
   if (write_data)
-    i_memory_put(section->data, org, data);
+    i_memory_put(section->data, org, current_value | data);
 
   return;
 }
