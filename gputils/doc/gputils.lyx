@@ -2009,10 +2009,6 @@ b=nnn
 \newline 
 Sets the tab spaces
 \newline 
-e=[ON|OFF]
-\newline 
-Macro expansion on or off
-\newline 
 f=<format>
 \newline 
 Set the hex file format.
@@ -2041,6 +2037,10 @@ Symbol table dump on or off
 w=[0 | 1| 2]
 \newline 
 Sets the message level.
+\newline 
+x=[ON|OFF]
+\newline 
+Macro expansion on or off
 \layout Standard
 
 See also: NOLIST, RADIX, PROCESSOR
