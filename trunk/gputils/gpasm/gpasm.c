@@ -38,7 +38,7 @@ static char *processor_name = NULL;
 
 int yyparse(void);
 
-#define GET_OPTIONS "?D:I:La:cd:e:hilmno:p:qr:vw:"
+#define GET_OPTIONS "?D:I:La:cd:e:ghilmno:p:qr:vw:"
 
 /* Used: acdDehiIlmopqrwv */
 static struct option longopts[] =
@@ -49,6 +49,7 @@ static struct option longopts[] =
   { "object",      0, 0, 'c' },
   { "define",      1, 0, 'd' },
   { "expand",      1, 0, 'e' },
+  { "debug-info",  0, 0, 'g' },
   { "help",        0, 0, 'h' },
   { "ignore-case", 0, 0, 'i' },
   { "force-list",  0, 0, 'L' },
@@ -75,6 +76,7 @@ init(void)
   state.case_insensitive = 0;
   state.quiet = 0;
   state.error_level = 0;
+  state.debug_info = 0;
   state.path_num = 0;
 
   state.cmd_line.radix = 0;
@@ -138,6 +140,7 @@ show_usage(void)
   printf("  -c, --object                   Output relocatable object.\n");
   printf("  -D SYM=VAL, --define SYM=VAL   Define SYM with value VAL.\n");
   printf("  -e [ON|OFF], --expand [ON|OFF] Macro expansion.\n");
+  printf("  -g, --debug-info               Use debug directives for COFF.\n");
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -i, --ignore-case              Case insensitive.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
@@ -232,6 +235,9 @@ process_args( int argc, char *argv[])
     case 'e':
       select_expand(optarg);
       state.cmd_line.macro_expand = 1;
+      break;
+    case 'g':
+      state.debug_info = 1;
       break;
     case 'I':
       add_path(optarg);

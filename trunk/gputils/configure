@@ -853,6 +853,7 @@ Optional Features:
   --enable-maintainer-mode enable make rules and dependencies not useful
                           (and sometimes confusing) to the casual installer
   --enable-debug          enable gputils debug features
+  --disable-gpal          disable the compiler
   --disable-gplink        disable the linker
   --disable-gputils       disable the utilities
   --disable-path          disable adding default search paths
@@ -1764,6 +1765,14 @@ MAKE_SUBDIRS="libgputils libiberty gpasm header lkr doc"
 if test "${enable_debug+set}" = set; then
   enableval="$enable_debug"
   enable_gputils_debug=yes
+fi;
+
+# Check whether --enable-gpal or --disable-gpal was given.
+if test "${enable_gpal+set}" = set; then
+  enableval="$enable_gpal"
+
+else
+  enable_gpal=yes
 fi;
 
 # Check whether --enable-gplink or --disable-gplink was given.
@@ -5303,6 +5312,10 @@ esac
 CFLAGS="$CFLAGS $XTRA_CFLAGS"
 
 # Process the options
+if test x$enable_gpal = xyes; then
+  MAKE_SUBDIRS="$MAKE_SUBDIRS gpal"
+fi
+
 if test x$enable_gplink = xyes; then
   MAKE_SUBDIRS="$MAKE_SUBDIRS gplink"
 fi
@@ -5336,7 +5349,7 @@ fi
 
 
 # Generate Makefiles
-                                                                                                    ac_config_files="$ac_config_files Makefile doc/Makefile gpasm/Makefile gplink/Makefile gputils/Makefile header/Makefile libgputils/Makefile libiberty/Makefile lkr/Makefile gputils.spec"
+                                                                                                              ac_config_files="$ac_config_files Makefile doc/Makefile gpal/Makefile gpasm/Makefile gplink/Makefile gputils/Makefile header/Makefile libgputils/Makefile libiberty/Makefile lkr/Makefile gputils.spec"
 
 
 cat >confcache <<\_ACEOF
@@ -5889,6 +5902,7 @@ do
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   "doc/Makefile" ) CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
+  "gpal/Makefile" ) CONFIG_FILES="$CONFIG_FILES gpal/Makefile" ;;
   "gpasm/Makefile" ) CONFIG_FILES="$CONFIG_FILES gpasm/Makefile" ;;
   "gplink/Makefile" ) CONFIG_FILES="$CONFIG_FILES gplink/Makefile" ;;
   "gputils/Makefile" ) CONFIG_FILES="$CONFIG_FILES gputils/Makefile" ;;

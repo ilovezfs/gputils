@@ -164,9 +164,11 @@ pop_file(struct file_stack *stack)
 {
   struct file_stack *old;
 
-  old = stack;
-  stack = stack->previous;
-  free(old);
+  if (stack) {
+    old = stack;
+    stack = stack->previous;
+    free(old);
+  }
 
   return stack;
 }

@@ -144,3 +144,46 @@ gp_date_string(char *buffer)
 
   return;
 }
+
+char *
+gp_lower_case(char *name)
+{
+  char *new;
+  char *ptr;
+
+  ptr = new = strdup(name);
+
+  while (*ptr != '\0') {
+    *ptr = tolower(*ptr);
+    ptr++;
+  }
+
+  return new;
+}
+
+/* linked list functions */
+
+gp_linked_list *
+gp_list_make(void)
+{
+  gp_linked_list *new;
+
+  new = malloc(sizeof(*new));
+  new->annotation = NULL;
+  new->prev = NULL;
+  new->next = NULL;
+
+  return new;
+}
+
+void
+gp_list_annotate(gp_linked_list *link, void *a)
+{
+  link->annotation = a;
+}
+
+void *
+gp_list_get(gp_linked_list *link)
+{
+  return link->annotation;
+}

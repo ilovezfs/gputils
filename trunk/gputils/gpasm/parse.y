@@ -239,6 +239,7 @@ void next_line(int value)
 %token <i> ASSIGN_AND, ASSIGN_OR, ASSIGN_XOR, INCREMENT, DECREMENT
 %token <i> TBL_NO_CHANGE, TBL_POST_INC, TBL_POST_DEC, TBL_PRE_INC
 %token <i> CONCAT, VAR
+%token <i> DEBUG_FILE, DEBUG_LINE
 %token <s> VARLAB_BEGIN, VAR_BEGIN, VAR_END
 
 %type <i> '+', '-', '*', '/', '%', '!', '~'
@@ -270,6 +271,22 @@ program:
 	;
 
 line:
+	DEBUG_FILE STRING '\n'
+	{
+          if ((state.mode == relocatable) && (state.debug_info)) {
+	    state.obj.debug_file = coff_add_filesym($2, 0);
+          }
+	  next_line(0);
+	}
+	|
+	DEBUG_LINE NUMBER '\n'
+	{
+	  if ((state.mode == relocatable) && (state.debug_info)) {
+	    state.obj.debug_line = $2;
+          }
+          next_line(0);
+	}
+	|
 	label_concat assign_equal_ops expr '\n'
 	{
 	  struct pnode *parms;

@@ -34,5 +34,18 @@ long  gp_getb32(char *addr);
 void  gp_putb32(char *addr, long data);
 
 void  gp_date_string(char *buffer);
+char *gp_lower_case(char *name);
+
+typedef struct gp_list_struct gp_linked_list;
+
+struct gp_list_struct {
+  void *annotation;
+  struct gp_list_struct *prev;
+  struct gp_list_struct *next;
+};
+
+gp_linked_list *gp_list_make(void);
+void gp_list_annotate(gp_linked_list *link, void *a);
+void *gp_list_get(gp_linked_list *link);
 
 #endif

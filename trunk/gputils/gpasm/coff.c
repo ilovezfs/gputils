@@ -377,9 +377,15 @@ coff_linenum(int emitted)
   for (i = 0; i < emitted; i++) {
      
     new = gp_coffgen_addlinenum(state.obj.section);
-    new->symbol      = state.src->file_symbol;
-    new->line_number = state.src->line_number;
-    new->address     = origin + (i << _16bit_core);
+    if (state.debug_info) {
+      assert(state.obj.debug_file != NULL);
+      new->symbol = state.obj.debug_file;
+      new->line_number = state.obj.debug_line;
+    } else {
+      new->symbol = state.src->file_symbol;
+      new->line_number = state.src->line_number;
+    }
+    new->address = origin + (i << _16bit_core);
   }
 
   return;
