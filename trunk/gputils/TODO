@@ -75,6 +75,7 @@ gpasm
   * Allow multiple symbols with the same name in different sections of COFF
     asm files.
   * generate dependencies
+  * Allow expressions in .direct.  Reduce to operators, numbers, and controls.
 
 gplink
   * Remove unused sections.
@@ -82,6 +83,7 @@ gplink
   * Peep-like optimization.  Consider using pcode from sdcc-pic14.
   * Partial linking.
   * Remove external symbols in an object that have no relocations.
+  * Use extended COD file types.
 
 gpvc
   * Use the disassembler to decode the program memory sections.

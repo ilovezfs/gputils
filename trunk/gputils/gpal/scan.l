@@ -4,7 +4,7 @@
 
 %{
 /* lexical analyser
-   Copyright (C) 2003, 2004
+   Copyright (C) 2003, 2004, 2005
    Craig Franklin
 
 This file is part of gputils.

@@ -1,5 +1,5 @@
 /* Main function for gpasm
-   Copyright (C) 2002, 2003, 2004
+   Copyright (C) 2002, 2003, 2004, 2005
    Craig Franklin
 
 This file is part of gputils.

@@ -1,3 +1,7 @@
+2005-01-03 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * gputils 0.13.0 Released.
+  * [gpdasm] Fixed error in decoding two word instructions.
+
 2004-12-31 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gputils] Added support for 18xx extended instruction set.
   * [gplink] Generate a warning if object processor names don't match.

@@ -1,5 +1,5 @@
 /* gplib - GNU PIC librarian
-   Copyright (C) 2001, 2002, 2003, 2004
+   Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
  
 This file is part of gputils.

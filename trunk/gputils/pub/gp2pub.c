@@ -1,5 +1,5 @@
 /* inc to pub file converter
-   Copyright (C) 2004
+   Copyright (C) 2004, 2005
    Craig Franklin
 
 This file is part of gputils.
