@@ -1,3 +1,6 @@
+2005-01-17 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [gpasm] Fix relocation error with LCALL and LGOTO directives.
+
 2005-01-14 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gpasm] Allow concatenation operators in extern and global directives.
 
