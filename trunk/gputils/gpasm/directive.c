@@ -435,11 +435,7 @@ static gpasmVal do_bankisel(gpasmVal r,
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (state.mode == absolute) {
-      if (p->tag != symbol) {
-        gperror(GPE_ILLEGAL_LABEL, NULL);
-      } else {
-        set_bankisel(maybe_evaluate(p));
-      }
+      set_bankisel(maybe_evaluate(p));
     } else {
       num_reloc = count_reloc(p);
  
@@ -471,17 +467,13 @@ static gpasmVal do_banksel(gpasmVal r,
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (state.mode == absolute) {
-      if (p->tag != symbol) {
-        gperror(GPE_ILLEGAL_LABEL, NULL);
-      } else {
-        address = maybe_evaluate(p);
-        bank = gp_processor_check_bank(state.device.class, address);
-        state.org += gp_processor_set_bank(state.device.class, 
-                                           state.processor_info->num_banks,
-                                           bank, 
-                                           state.i_memory, 
-                                           state.org);
-      }
+      address = maybe_evaluate(p);
+      bank = gp_processor_check_bank(state.device.class, address);
+      state.org += gp_processor_set_bank(state.device.class, 
+                                         state.processor_info->num_banks,
+                                         bank, 
+                                         state.i_memory, 
+                                         state.org);
     } else {
       num_reloc = count_reloc(p);
 
@@ -809,7 +801,12 @@ static gpasmVal do_def(gpasmVal r,
   struct pnode *p;
   char *symbol_name = NULL;
   gp_symbol_type *coff_symbol = NULL;
+  int shift = 0;
+  int eval;
   int value = 0;
+  int section_number = N_DEBUG;
+  int class = C_NULL;
+  int type = T_NULL;
 
   state.lst.line.linetype = dir;
 
@@ -824,32 +821,18 @@ static gpasmVal do_def(gpasmVal r,
     /* the first argument is the symbol name */
     p = HEAD(parms);
     if (enforce_simple(p)) {
-      /* lookup the symbol */
       symbol_name = p->value.symbol;
-      coff_symbol = gp_coffgen_findsymbol(state.obj.object, symbol_name);
+      coff_symbol = coff_add_sym(symbol_name, 0, gvt_debug);
+      state.obj.symbol_num++;
     } else {
       return r;
     }
     parms = TAIL(parms);
 
-    /* the second argument can be "new" */
-    p = HEAD(parms);
-    if ((p->tag == symbol) && (strcasecmp(p->value.symbol, "new") == 0)) {
-      coff_symbol = coff_add_sym(symbol_name, 0, gvt_debug);
-      state.obj.symbol_num++;
-      parms = TAIL(parms);
+    if ((SECTION_FLAGS & STYP_TEXT) && _16bit_core) {
+      shift = 1;
     }
-
-    if (coff_symbol == NULL) {
-      gperror(GPE_NOSYM, NULL);
-      return r;
-    }
-
-    /* wait for second pass to process options */
-    if (state.pass != 2) {
-      return r;
-    }
-
+    
     /* update the properties */
     for (; parms; parms = TAIL(parms)) {
       p = HEAD(parms);
@@ -860,20 +843,22 @@ static gpasmVal do_def(gpasmVal r,
 
 	  lhs = p->value.binop.p0->value.symbol;
           if (strcasecmp(lhs, "value") == 0) {
-          coff_symbol->value = maybe_evaluate(p->value.binop.p1);   
-    	  } else if (strcasecmp(lhs, "type") == 0) {
             value = maybe_evaluate(p->value.binop.p1);   
-            if ((value < 0) || (value > 0xffff)) {
+    	  } else if (strcasecmp(lhs, "size") == 0) {
+            state.org += (maybe_evaluate(p->value.binop.p1) >> shift);   
+    	  } else if (strcasecmp(lhs, "type") == 0) {
+            eval = maybe_evaluate(p->value.binop.p1);   
+            if ((eval < 0) || (eval > 0xffff)) {
               gperror(GPE_RANGE, NULL);
             } else {
-              coff_symbol->type = value;   
+              type = eval;   
             }
     	  } else if (strcasecmp(lhs, "class") == 0) {
-            value = maybe_evaluate(p->value.binop.p1);   
-            if ((value < -128) || (value > 127)) {
+            eval = maybe_evaluate(p->value.binop.p1);   
+            if ((eval < -128) || (eval > 127)) {
               gperror(GPE_RANGE, NULL);
             } else {
-              coff_symbol->class = value;   
+              class = eval;   
             }
           } else {
             gperror(GPE_ILLEGAL_ARGU, NULL);
@@ -881,17 +866,41 @@ static gpasmVal do_def(gpasmVal r,
         }
       } else {
         if (enforce_simple(p)) {
-  	  if (strcasecmp(p->value.symbol, "debug") == 0) {
-	    coff_symbol->section_number = N_DEBUG;
-	  } else if (strcasecmp(p->value.symbol, "absolute") == 0) {
-	    coff_symbol->section_number = N_ABS;
-	  } else if (strcasecmp(p->value.symbol, "new") == 0) {
-            gperror(GPE_UNKNOWN, "\"new\" only valid as second argument");
+	  if (strcasecmp(p->value.symbol, "absolute") == 0) {
+            value = 0;   
+	    section_number = N_ABS;
+  	  } else if (strcasecmp(p->value.symbol, "debug") == 0) {
+            value = 0;   
+	    section_number = N_DEBUG;
+	  } else if (strcasecmp(p->value.symbol, "extern") == 0) {
+            value = 0;   
+            section_number = N_UNDEF;
+            class = C_EXT;
+  	  } else if (strcasecmp(p->value.symbol, "global") == 0) {
+            value = state.org << shift;   
+            section_number = state.obj.section_num;
+            class = C_EXT;
+  	  } else if (strcasecmp(p->value.symbol, "static") == 0) {
+            value = state.org << shift;   
+            section_number = state.obj.section_num;
+            class = C_STAT;
   	  } else {
             gperror(GPE_ILLEGAL_ARGU, NULL);
           }
         }
       }
+    }
+  }
+
+  /* update the symbol with the values */
+  if (state.pass == 2) {
+    if (coff_symbol == NULL) {
+      gperror(GPE_NOSYM, NULL);
+    } else {
+      coff_symbol->value = value;   
+      coff_symbol->section_number = section_number;
+      coff_symbol->class = class;
+      coff_symbol->type = type;
     }
   }
 
@@ -984,6 +993,56 @@ static gpasmVal do_dim(gpasmVal r,
       list = list->next;
       free(previous);
     }
+  }
+
+  return r;
+}
+
+static gpasmVal do_direct(gpasmVal r,
+		          char *name,
+		          int arity,
+		          struct pnode *parms)
+{
+
+  struct pnode *p;
+  int value;
+  unsigned char direct_command = 0;
+  char *direct_string = NULL;
+
+  state.lst.line.linetype = dir;
+
+  if (state.mode == absolute) {
+    gperror(GPE_OBJECT_ONLY, NULL);
+  } else if (enforce_arity(arity, 2)) {
+    p = HEAD(parms);
+    value = maybe_evaluate(p);
+    if ((value < 0) || (value > 255)) {
+      gperror(GPE_RANGE, NULL);
+    } else {
+      direct_command = value;   
+    }
+
+    p= HEAD(TAIL(parms));
+    if (p->tag == string) {
+      if (strlen(p->value.string) < 255) {
+        direct_string = p->value.string;
+      } else {
+        gperror(GPE_UNKNOWN, "string must be less than 255 bytes long");
+      }
+    } else {
+      gperror(GPE_ILLEGAL_ARGU, NULL);
+    }  
+
+    if (direct_string == NULL) {
+      return r;
+    }
+
+    if (SECTION_FLAGS & STYP_TEXT) {
+      coff_add_directsym(direct_command, direct_string);
+    } else {
+      gperror(GPE_WRONG_SECTION, NULL);
+    }
+  
   }
 
   return r;
@@ -1428,6 +1487,28 @@ static gpasmVal do_idata(gpasmVal r,
   return r;
 }
 
+static gpasmVal do_ident(gpasmVal r,
+		         char *name,
+		         int arity,
+		         struct pnode *parms)
+{
+  struct pnode *p;
+  state.lst.line.linetype = dir;
+  
+  if (state.mode == absolute) {
+    gperror(GPE_OBJECT_ONLY, NULL);
+  } else if (enforce_arity(arity, 1)) {
+    p = HEAD(parms);
+    if (p->tag == string) {
+      coff_add_identsym(p->value.string);
+    } else {
+      gperror(GPE_ILLEGAL_ARGU, NULL);
+    }
+  }
+
+  return r;
+}
+
 static gpasmVal do_idlocs(gpasmVal r,
 		          char *name,
 		          int arity,
@@ -1622,7 +1703,9 @@ static gpasmVal do_line(gpasmVal r,
 
   state.lst.line.linetype = dir;
 
-  if (enforce_arity(arity, 1)) {
+  if (state.mode == absolute) {
+    gperror(GPE_OBJECT_ONLY, NULL);
+  } else if (enforce_arity(arity, 1)) {
     if (state.debug_info) {
       p = HEAD(parms);
       state.obj.debug_line = maybe_evaluate(p);
@@ -1934,18 +2017,13 @@ static gpasmVal do_pagesel(gpasmVal r,
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (state.mode == absolute) {
-      if (p->tag != symbol) {
-        gperror(GPE_ILLEGAL_LABEL, NULL);
-      } else {
-        address = maybe_evaluate(p);
-        page = gp_processor_check_page(state.device.class, address);
-
-        state.org += gp_processor_set_page(state.device.class, 
-                                           state.processor_info->num_pages,
-                                           page, 
-                                           state.i_memory, 
-                                           state.org);
-      }
+      address = maybe_evaluate(p);
+      page = gp_processor_check_page(state.device.class, address);
+      state.org += gp_processor_set_page(state.device.class, 
+                                         state.processor_info->num_pages,
+                                         page, 
+                                         state.i_memory, 
+                                         state.org);
     } else {
       num_reloc = count_reloc(p);
       
@@ -2100,6 +2178,43 @@ static gpasmVal do_space(gpasmVal r,
         break;
       default:
         enforce_arity(arity, 1);
+    }
+  }
+
+  return r;
+}
+
+static gpasmVal do_type(gpasmVal r,
+		        char *name,
+		        int arity,
+		        struct pnode *parms)
+{
+  struct pnode *p;
+  char *symbol_name = NULL;
+  gp_symbol_type *coff_symbol = NULL;
+  int value;
+
+  state.lst.line.linetype = dir;
+  
+  if (state.mode == absolute) {
+    gperror(GPE_OBJECT_ONLY, NULL);
+  } else if (enforce_arity(arity, 2)) {
+    /* the first argument is the symbol name */
+    p = HEAD(parms);
+    if (enforce_simple(p)) {
+      symbol_name = p->value.symbol;
+      coff_symbol = gp_coffgen_findsymbol(state.obj.object, symbol_name);
+      if (coff_symbol == NULL) {
+        gperror(GPE_NOSYM, NULL);
+      } else {
+        p = HEAD(TAIL(parms));
+        value = maybe_evaluate(p);   
+        if ((value < 0) || (value > 0xffff)) {
+          gperror(GPE_RANGE, NULL);
+        } else {
+          coff_symbol->type = value;   
+        }
+      }
     }
   }
 
@@ -3244,10 +3359,13 @@ struct insn op_0[] = {
   { "while",      0, (long int)do_while,     INSN_CLASS_FUNC,   0 },
   { ".def",       0, (long int)do_def, 	     INSN_CLASS_FUNC,   0 },
   { ".dim",       0, (long int)do_dim, 	     INSN_CLASS_FUNC,   0 },
+  { ".direct",    0, (long int)do_direct,    INSN_CLASS_FUNC,   0 },
   { ".eof",       0, (long int)do_eof,	     INSN_CLASS_FUNC,   0 },
   { ".file",      0, (long int)do_file,	     INSN_CLASS_FUNC,   0 },
+  { ".ident",     0, (long int)do_ident,     INSN_CLASS_FUNC,   0 },
   { ".line",      0, (long int)do_line,	     INSN_CLASS_FUNC,   0 },
   { ".set",       0, (long int)do_set, 	     INSN_CLASS_FUNC,   0 },
+  { ".type",      0, (long int)do_type,	     INSN_CLASS_FUNC,   0 },
   { "#if",        0, (long int)do_if,        INSN_CLASS_FUNC,   ATTRIB_COND },
   { "#else",      0, (long int)do_else,	     INSN_CLASS_FUNC,   ATTRIB_COND },
   { "#endif",     0, (long int)do_endif,     INSN_CLASS_FUNC,   ATTRIB_COND },

@@ -576,6 +576,65 @@ coff_add_nolistsym(void)
   return;
 }
 
+/* add a direct symbol to the coff symbol table */
+
+void
+coff_add_directsym(unsigned char command, char *string)
+{
+  gp_symbol_type *new = NULL;
+  gp_aux_type *new_aux;
+
+  state.obj.symbol_num += 2;
+
+  if(!state.obj.enabled)
+    return;
+
+  /* add .cod symbol */
+  new = gp_coffgen_addsymbol(state.obj.object);
+  new->name           = strdup(".direct");
+  new->value          = state.org << _16bit_core;
+  new->section_number = state.obj.section_num;
+  new->section        = state.obj.section;
+  new->type           = T_NULL;
+  new->class          = C_NULL;
+
+  new_aux = gp_coffgen_addaux(state.obj.object, new);
+  new_aux->type = AUX_DIRECT;
+  new_aux->_aux_symbol._aux_direct.command = command;
+  new_aux->_aux_symbol._aux_direct.string = strdup(string);
+ 
+  return;
+}
+
+/* add a cod symbol to the coff symbol table */
+
+void
+coff_add_identsym(char *string)
+{
+  gp_symbol_type *new = NULL;
+  gp_aux_type *new_aux;
+
+  state.obj.symbol_num += 2;
+
+  if(!state.obj.enabled)
+    return;
+
+  /* add .cod symbol */
+  new = gp_coffgen_addsymbol(state.obj.object);
+  new->name           = strdup(".ident");
+  new->value          = 0;
+  new->section_number = N_DEBUG;
+  new->section        = NULL;
+  new->type           = T_NULL;
+  new->class          = C_NULL;
+
+  new_aux = gp_coffgen_addaux(state.obj.object, new);
+  new_aux->type = AUX_IDENT;
+  new_aux->_aux_symbol._aux_ident.string = strdup(string);
+ 
+  return;
+}
+
 /* If the symbol is local, generate a modified name for the coff symbol 
    table. */
 

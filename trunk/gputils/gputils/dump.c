@@ -481,12 +481,11 @@ void dump_line_symbols(void)
 
 void dump_message_area(void)
 {
-  char DebugType,DebugMessage[64];
+#define MAX_STRING_LEN  255 /* Maximum length of a debug message */
+  char DebugType,DebugMessage[MAX_STRING_LEN];
 
-  unsigned short i,j,start_block,end_block;
+  unsigned short i,j,start_block,end_block, len;
   unsigned short laddress;
-
-  j=0;
 
   start_block = gp_getu16(&directory_block_data[COD_DIR_MESSTAB]);
 
@@ -495,26 +494,33 @@ void dump_message_area(void)
     end_block = gp_getu16(&directory_block_data[COD_DIR_MESSTAB+2]);
 
     printf("\n\nDebug Message area\n");
-    printf("------------------\n\n");
+    printf("     Addr  Cmd  Message\n");
+    printf(" --------  ---  -------------------------------------\n");
 
     for(i=start_block; i<=end_block; i++) {
       read_block(temp, i);
+    
+      j = 0;
 
       while (j < 504) {
-	if (temp[j + 6] == 0) {
-	  j = 512;   /* done */
-	  break;
-	}
 
 	/* read big endian */
 	laddress = gp_getb32(&temp[j]);
+        
+        j += 4;
 
 	DebugType = temp[j++];
 
-	substr(DebugMessage, sizeof(DebugMessage), &temp[j],64);
+	if (DebugType == 0) {
+	  break;
+	}
+
+	len = temp[j++];
+
+	substr(DebugMessage, sizeof(DebugMessage), &temp[j], MAX_STRING_LEN);
 	j += strlen(DebugMessage);
 
-	printf("%8x %2d %s\n",laddress, DebugType, DebugMessage);
+	printf(" %8x    %c  %s\n",laddress, DebugType, DebugMessage);
       }
     }
   } else

@@ -1,3 +1,9 @@
+2004-10-10 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * Added direct messaging from COFF and COD files to simulator.
+  * Added new COFF directives .ident and .type.
+  * Allow expressions as arguments to banksel, bankisel, and pagesel.
+  * Improved rpm spec file.
+
 2004-10-02 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Fixed error in disassembly of 18xx instuctions.
 

@@ -545,6 +545,79 @@ cod_write_code(void)
 
 }
 
+/* cod_write_debug - write debug symbols to the .cod file
+ */
+static void
+cod_write_debug(void)
+{
+  /* Each symbol is written as a dynamically sized structure to the 
+   * .cod file. Its format is like this:
+   * position  0               length of the symbol name
+   * positions 1 to len        the symbol name
+   * positions len+1 & len+2   Type of symbol (16 bits)
+   * positions len+3 to len+7  Value of symbol
+   */
+#define COD_DEBUG_ADDR  0   /* type info is first */
+#define COD_DEBUG_CMD   4   /* value info is 4 bytes after the address */
+#define COD_DEBUG_MSG   6   /* message is 6 bytes after the address */
+#define COD_DEBUG_EXTRA 6   /* symbol name length + 6 is total structure size */
+#define MAX_STRING_LEN  255 /* Maximum length of a debug message */
+  int offset;
+  int len;
+  gp_symbol_type *symbol;
+  gp_aux_type *aux;
+  Block db;
+  char command;
+  char *string;
+  
+  if(!state.cod.enabled)
+    return;
+
+  gp_cod_create(&db, &blocks);
+
+  offset = 0;
+
+  symbol = state.object->symbols;
+  
+  while (symbol) {
+    if (strcasecmp(".direct", symbol->name) == 0) {
+      assert(symbol->num_auxsym == 1);
+      aux = symbol->aux_list;
+      assert(aux != NULL);
+
+      command = aux->_aux_symbol._aux_direct.command;
+      string = aux->_aux_symbol._aux_direct.string;
+      
+      len = strlen(string);
+
+      /* If this message extends past the end of the cod block
+       * then write this block out */
+
+      if((offset + len + COD_DEBUG_EXTRA) >= COD_BLOCK_SIZE) {
+        write_cod_block(&main_dir, COD_DIR_MESSTAB, COD_DIR_MESSTAB+2, &db);
+        gp_cod_next(&db, &blocks);
+        offset = 0;
+      }
+
+      /* write 32 bits, big endian */
+      gp_putb32(&db.block[offset+COD_DEBUG_ADDR], symbol->value);
+      
+      db.block[offset + COD_DEBUG_CMD] = command;
+      gp_cod_strncpy(&db.block[offset + COD_DEBUG_MSG], string, MAX_STRING_LEN);
+
+
+      offset += (len + COD_DEBUG_EXTRA);
+    } 
+    symbol = symbol->next;  
+  }
+
+  if(offset)
+    write_cod_block(&main_dir, COD_DIR_MESSTAB, COD_DIR_MESSTAB+2, &db);
+
+  gp_cod_delete(&db);
+
+}
+
 static void
 write_directory(void)
 {
@@ -594,6 +667,8 @@ cod_close_file(void)
   write_file_block();
 
   cod_write_code();
+
+  cod_write_debug();
 
   gp_cod_strncpy(&main_dir.dir.block[COD_DIR_PROCESSOR], 
 	         gp_processor_name(state.processor, 2),

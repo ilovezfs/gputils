@@ -226,12 +226,32 @@ _gp_coffgen_write_auxsymbols(gp_aux_type *aux, char *table, FILE *fp)
   while(aux != NULL) {
 
     switch (aux->type) {
+    case AUX_DIRECT:
+      /* add the direct string to the string table */
+      offset = _gp_coffgen_addstring(aux->_aux_symbol._aux_direct.string, 
+                                     table);
+      gp_fputl32(aux->_aux_symbol._aux_direct.command, fp);
+      gp_fputl32(offset, fp);
+      gp_fputl32(0, fp);
+      gp_fputl32(0, fp);
+      gp_fputl16(0, fp);
+      break;
     case AUX_FILE:
       /* add the filename to the string table */
       offset = _gp_coffgen_addstring(aux->_aux_symbol._aux_file.filename, 
                                      table);
       gp_fputl32(offset, fp);
       gp_fputl32(aux->_aux_symbol._aux_file.line_number, fp);
+      gp_fputl32(0, fp);
+      gp_fputl32(0, fp);
+      gp_fputl16(0, fp);
+      break;
+    case AUX_IDENT:
+      /* add the ident string to the string table */
+      offset = _gp_coffgen_addstring(aux->_aux_symbol._aux_ident.string, 
+                                     table);
+      gp_fputl32(offset, fp);
+      gp_fputl32(0, fp);
       gp_fputl32(0, fp);
       gp_fputl32(0, fp);
       gp_fputl16(0, fp);

@@ -262,6 +262,12 @@ void print_sym_table (gp_object_type *object)
       aux = symbol->aux_list;
       
       switch (aux->type) {
+      case AUX_DIRECT:
+        printf("  command = \"%c\"\n", 
+               aux->_aux_symbol._aux_direct.command);
+        printf("  string = \"%s\"\n", 
+               aux->_aux_symbol._aux_direct.string);
+        break;
       case AUX_FILE:
         if (!state.suppress_names) {
           printf("  file = %s\n", 
@@ -269,6 +275,10 @@ void print_sym_table (gp_object_type *object)
         }
         printf("  line included = %li\n", 
                aux->_aux_symbol._aux_file.line_number);
+        break;
+      case AUX_IDENT:
+        printf("  string = \"%s\"\n", 
+               aux->_aux_symbol._aux_ident.string);
         break;
       case AUX_SCN:
         printf("  length = %li\n", 
