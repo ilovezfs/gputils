@@ -28,6 +28,10 @@ Boston, MA 02111-1307, USA.  */
 static struct px pics[] = {
   { eeprom8,     PROC_CLASS_EEPROM8, "__EEPROM8",  { "eeprom8",     "eeprom8",   "eeprom8"  }, 0x0,    0, 0, NULL },
   { generic,     PROC_CLASS_GENERIC, "__GEN",      { "generic",     "gen",       "unknown"  }, 0x0,    0, 0, NULL },
+  { pic10f200,   PROC_CLASS_PIC12,   "__10F200",   { "pic10f200",   "p10f200",   "10f200"   }, 0xf200, 1, 1, "10f200.lkr"   },
+  { pic10f202,   PROC_CLASS_PIC12,   "__10F202",   { "pic10f202",   "p10f202",   "10f202"   }, 0xf202, 1, 1, "10f202.lkr"   },
+  { pic10f204,   PROC_CLASS_PIC12,   "__10F204",   { "pic10f204",   "p10f204",   "10f204"   }, 0xf204, 1, 1, "10f204.lkr"   },
+  { pic10f206,   PROC_CLASS_PIC12,   "__10F206",   { "pic10f206",   "p10f206",   "10f206"   }, 0xf206, 1, 1, "10f206.lkr"   },
   { pic12c508,   PROC_CLASS_PIC12,   "__12C508",   { "pic12c508",   "p12c508",   "12c508"   }, 0x2508, 1, 1, "12c508.lkr"   },
   { pic12c508a,  PROC_CLASS_PIC12,   "__12C508A",  { "pic12c508a",  "p12c508a",  "12c508a"  }, 0x508a, 1, 1, "12c508a.lkr"  },
   { pic12c509,   PROC_CLASS_PIC12,   "__12C509",   { "pic12c509",   "p12c509",   "12c509"   }, 0x2509, 1, 2, "12c509.lkr"   },
@@ -143,16 +147,22 @@ static struct px pics[] = {
   { pic16f505,   PROC_CLASS_PIC12,   "__16F505",   { "pic16f505",   "p16f505",   "16f505"   }, 0x654f, 2, 4, "16f505.lkr"   },
   { pic16f54,    PROC_CLASS_PIC14,   "__16F54",    { "pic16f54",    "p16f54",    "16f54"    }, 0x654f, 1, 1, "16f54.lkr"    },
   { pic16f57,    PROC_CLASS_PIC14,   "__16F57",    { "pic16f57",    "p16f57",    "16f57"    }, 0x657f, 4, 4, "16f57.lkr"    },
+  { pic16f59,    PROC_CLASS_PIC14,   "__16F59",    { "pic16f59",    "p16f59",    "16f59"    }, 0x659f, 4, 4, "16f59.lkr"    },
   { pic16f627,   PROC_CLASS_PIC14,   "__16F627",   { "pic16f627",   "p16f627",   "16f627"   }, 0x6627, 1, 4, "16f627.lkr"   },
   { pic16f627a,  PROC_CLASS_PIC14,   "__16F627A",  { "pic16f627a",  "p16f627a",  "16f627a"  }, 0x627a, 1, 4, "16f627a.lkr"  },
   { pic16f628,   PROC_CLASS_PIC14,   "__16F628",   { "pic16f628",   "p16f628",   "16f628"   }, 0x6628, 1, 4, "16f628.lkr"   },  
   { pic16f628a,  PROC_CLASS_PIC14,   "__16F628A",  { "pic16f628a",  "p16f628a",  "16f628a"  }, 0x628a, 1, 4, "16f628a.lkr"  },
   { pic16f630,   PROC_CLASS_PIC14,   "__16F630",   { "pic16f630",   "p16f630",   "16f630"   }, 0x6630, 1, 2, "16f630.lkr"   },
   { pic16f636,   PROC_CLASS_PIC14,   "__16F636",   { "pic16f636",   "p16f636",   "16f636"   }, 0x6636, 1, 4, "16f636.lkr"   },
+  { pic16f639,   PROC_CLASS_PIC14,   "__16F639",   { "pic16f639",   "p16f639",   "16f639"   }, 0x6639, 1, 4, "16f639.lkr"   },
   { pic16f648a,  PROC_CLASS_PIC14,   "__16F648A",  { "pic16f648a",  "p16f648a",  "16f648a"  }, 0x648a, 2, 4, "16f648a.lkr"  },
   { pic16f676,   PROC_CLASS_PIC14,   "__16F676",   { "pic16f676",   "p16f676",   "16f676"   }, 0x6676, 1, 2, "16f676.lkr"   },
   { pic16f684,   PROC_CLASS_PIC14,   "__16F684",   { "pic16f684",   "p16f684",   "16f684"   }, 0x6684, 1, 2, "16f684.lkr"   },
+  { pic16f685,   PROC_CLASS_PIC14,   "__16F685",   { "pic16f685",   "p16f685",   "16f685"   }, 0x6685, 2, 4, "16f685.lkr"   },
+  { pic16f687,   PROC_CLASS_PIC14,   "__16F687",   { "pic16f687",   "p16f687",   "16f687"   }, 0x6687, 1, 4, "16f687.lkr"   },
   { pic16f688,   PROC_CLASS_PIC14,   "__16F688",   { "pic16f688",   "p16f688",   "16f688"   }, 0x6688, 2, 4, "16f688.lkr"   },
+  { pic16f689,   PROC_CLASS_PIC14,   "__16F689",   { "pic16f689",   "p16f689",   "16f689"   }, 0x6689, 2, 4, "16f689.lkr"   },
+  { pic16f690,   PROC_CLASS_PIC14,   "__16F690",   { "pic16f690",   "p16f690",   "16f690"   }, 0x6690, 2, 4, "16f690.lkr"   },
   { pic16f716,   PROC_CLASS_PIC14,   "__16F716",   { "pic16f716",   "p16f716",   "16f716"   }, 0x716f, 1, 2, "16f716.lkr"   },
   { pic16f72,    PROC_CLASS_PIC14,   "__16F72",    { "pic16f72",    "p16f72",    "16f72"    }, 0x672f, 1, 4, "16f72.lkr"    },
   { pic16f73,    PROC_CLASS_PIC14,   "__16F73",    { "pic16f73",    "p16f73",    "16f73"    }, 0x673f, 2, 4, "16f73.lkr"    },
@@ -259,24 +269,44 @@ static struct px pics[] = {
   { pic18f4620,  PROC_CLASS_PIC16E,  "__18F4620",  { "pic18f4620",  "p18f4620",  "18f4620"  }, 0xa462, 0, 0, "18f4620.lkr"  },
   { pic18f4680,  PROC_CLASS_PIC16E,  "__18F4680",  { "pic18f4680",  "p18f4680",  "18f4680"  }, 0x4680, 0, 0, "18f4680.lkr"  },
   { pic18f4681,  PROC_CLASS_PIC16E,  "__18F4681",  { "pic18f4681",  "p18f4681",  "18f4681"  }, 0x4681, 0, 0, "18f4681.lkr"  },
+  { pic18f6310,  PROC_CLASS_PIC16E,  "__18F6310",  { "pic18f6310",  "p18f6310",  "18f6310"  }, 0xa631, 0, 0, "18f6310.lkr"  },
+  { pic18f6390,  PROC_CLASS_PIC16E,  "__18F6390",  { "pic18f6390",  "p18f6390",  "18f6390"  }, 0xa639, 0, 0, "18f6390.lkr"  },
   { pic18f6410,  PROC_CLASS_PIC16E,  "__18F6410",  { "pic18f6410",  "p18f6410",  "18f6410"  }, 0xa641, 0, 0, "18f6410.lkr"  },
   { pic18f6490,  PROC_CLASS_PIC16E,  "__18F6490",  { "pic18f6490",  "p18f6490",  "18f6490"  }, 0xa649, 0, 0, "18f6490.lkr"  },
+  { pic18f64j15, PROC_CLASS_PIC16E,  "__18F64J15", { "pic18f64j15", "p18f64j15", "18f64j15" }, 0xb415, 0, 0, "18f64j15.lkr" },
   { pic18f6520,  PROC_CLASS_PIC16E,  "__18F6520",  { "pic18f6520",  "p18f6520",  "18f6520"  }, 0xa652, 0, 0, "18f6520.lkr"  },
   { pic18f6525,  PROC_CLASS_PIC16E,  "__18F6525",  { "pic18f6525",  "p18f6525",  "18f6525"  }, 0x6525, 0, 0, "18f6525.lkr"  },
   { pic18f6585,  PROC_CLASS_PIC16E,  "__18F6585",  { "pic18f6585",  "p18f6585",  "18f6585"  }, 0x6585, 0, 0, "18f6585.lkr"  },
+  { pic18f65j10, PROC_CLASS_PIC16E,  "__18F65J10", { "pic18f65j10", "p18f65j10", "18f65j10" }, 0xb510, 0, 0, "18f65j10.lkr" },
+  { pic18f65j15, PROC_CLASS_PIC16E,  "__18F65J15", { "pic18f65j15", "p18f65j15", "18f65j15" }, 0xb515, 0, 0, "18f65j15.lkr" },
   { pic18f6620,  PROC_CLASS_PIC16E,  "__18F6620",  { "pic18f6620",  "p18f6620",  "18f6620"  }, 0xa662, 0, 0, "18f6620.lkr"  },
   { pic18f6621,  PROC_CLASS_PIC16E,  "__18F6621",  { "pic18f6621",  "p18f6621",  "18f6621"  }, 0xa621, 0, 0, "18f6621.lkr"  },
+  { pic18f6627,  PROC_CLASS_PIC16E,  "__18F6627",  { "pic18f6627",  "p18f6627",  "18f6627"  }, 0xa627, 0, 0, "18f6627.lkr"  },
   { pic18f6680,  PROC_CLASS_PIC16E,  "__18F6680",  { "pic18f6680",  "p18f6680",  "18f6680"  }, 0x6680, 0, 0, "18f6680.lkr"  },
+  { pic18f66j10, PROC_CLASS_PIC16E,  "__18F66J10", { "pic18f66j10", "p18f66j10", "18f66j10" }, 0xb610, 0, 0, "18f66j10.lkr" },
+  { pic18f66j15, PROC_CLASS_PIC16E,  "__18F66J15", { "pic18f66j15", "p18f66j15", "18f66j15" }, 0xb615, 0, 0, "18f66j15.lkr" },
   { pic18f6720,  PROC_CLASS_PIC16E,  "__18F6720",  { "pic18f6720",  "p18f6720",  "18f6720"  }, 0xa672, 0, 0, "18f6720.lkr"  },
+  { pic18f6722,  PROC_CLASS_PIC16E,  "__18F6722",  { "pic18f6722",  "p18f6722",  "18f6722"  }, 0x6721, 0, 0, "18f6722.lkr"  },
+  { pic18f67j10, PROC_CLASS_PIC16E,  "__18F67J10", { "pic18f67j10", "p18f67j10", "18f67j10" }, 0xb710, 0, 0, "18f67j10.lkr" },
+  { pic18f8310,  PROC_CLASS_PIC16E,  "__18F8310",  { "pic18f8310",  "p18f8310",  "18f8310"  }, 0x8310, 0, 0, "18f8310.lkr"  },
+  { pic18f8390,  PROC_CLASS_PIC16E,  "__18F8390",  { "pic18f8390",  "p18f8390",  "18f8390"  }, 0x8390, 0, 0, "18f8390.lkr"  },
   { pic18f8410,  PROC_CLASS_PIC16E,  "__18F8410",  { "pic18f8410",  "p18f8410",  "18f8410"  }, 0x8410, 0, 0, "18f8410.lkr"  },
   { pic18f8490,  PROC_CLASS_PIC16E,  "__18F8490",  { "pic18f8490",  "p18f8490",  "18f8490"  }, 0x8490, 0, 0, "18f8490.lkr"  },
+  { pic18f84j15, PROC_CLASS_PIC16E,  "__18F84J15", { "pic18f84j15", "p18f84j15", "18f84j15" }, 0xc415, 0, 0, "18f84j15.lkr" },
   { pic18f8520,  PROC_CLASS_PIC16E,  "__18F8520",  { "pic18f8520",  "p18f8520",  "18f8520"  }, 0xa852, 0, 0, "18f8520.lkr"  },
   { pic18f8525,  PROC_CLASS_PIC16E,  "__18F8525",  { "pic18f8525",  "p18f8525",  "18f8525"  }, 0x8525, 0, 0, "18f8525.lkr"  },
   { pic18f8585,  PROC_CLASS_PIC16E,  "__18F8585",  { "pic18f8585",  "p18f8585",  "18f8585"  }, 0x8585, 0, 0, "18f8585.lkr"  },
+  { pic18f85j10, PROC_CLASS_PIC16E,  "__18F85J10", { "pic18f85j10", "p18f85j10", "18f85j10" }, 0xc510, 0, 0, "18f85j10.lkr" },
+  { pic18f85j15, PROC_CLASS_PIC16E,  "__18F85J15", { "pic18f85j15", "p18f85j15", "18f85j15" }, 0xc515, 0, 0, "18f85j15.lkr" },
   { pic18f8620,  PROC_CLASS_PIC16E,  "__18F8620",  { "pic18f8620",  "p18f8620",  "18f8620"  }, 0xa862, 0, 0, "18f8620.lkr"  },
   { pic18f8621,  PROC_CLASS_PIC16E,  "__18F8621",  { "pic18f8621",  "p18f8621",  "18f8621"  }, 0x8621, 0, 0, "18f8621.lkr"  },
+  { pic18f8627,  PROC_CLASS_PIC16E,  "__18F8627",  { "pic18f8627",  "p18f8627",  "18f8627"  }, 0x8627, 0, 0, "18f8627.lkr"  },
   { pic18f8680,  PROC_CLASS_PIC16E,  "__18F8680",  { "pic18f8680",  "p18f8680",  "18f8680"  }, 0x8680, 0, 0, "18f8680.lkr"  },
+  { pic18f86j10, PROC_CLASS_PIC16E,  "__18F86J10", { "pic18f86j10", "p18f86j10", "18f86j10" }, 0xc610, 0, 0, "18f86j10.lkr" },
+  { pic18f86j15, PROC_CLASS_PIC16E,  "__18F86J15", { "pic18f86j15", "p18f86j15", "18f86j15" }, 0xc615, 0, 0, "18f86j15.lkr" },
   { pic18f8720,  PROC_CLASS_PIC16E,  "__18F8720",  { "pic18f8720",  "p18f8720",  "18f8720"  }, 0xa872, 0, 0, "18f8720.lkr"  },
+  { pic18f8722,  PROC_CLASS_PIC16E,  "__18F8722",  { "pic18f8722",  "p18f8722",  "18f8722"  }, 0x8721, 0, 0, "18f8722.lkr"  },
+  { pic18f87j10, PROC_CLASS_PIC16E,  "__18F87J10", { "pic18f87j10", "p18f87j10", "18f87j10" }, 0xc710, 0, 0, "18f87j10.lkr" },
   { rf509af,     PROC_CLASS_PIC12,   "__RF509AF",  { "rf509af",     "rf509af",   "rf509af"  }, 0x6509, 0, 0, "rf509af.lkr"  },
   { rf509ag,     PROC_CLASS_PIC12,   "__RF509AG",  { "rf509ag",     "rf509ag",   "rf509ag"  }, 0x7509, 0, 0, "rf509ag.lkr"  },
   { rf675f,      PROC_CLASS_PIC14,   "__RF675F",   { "rf675f",      "rf675f",    "rf675f"   }, 0x3675, 0, 0, "rf675f.lkr"   },
@@ -369,6 +399,8 @@ gp_processor_bsr_boundary(enum pic_processor processor)
 {
   int bsr_boundary = 0;
 
+  /* FIXME: incorporate this data into the processor table */
+
   switch(processor)
     {
     case pic18cxx:
@@ -422,37 +454,57 @@ gp_processor_bsr_boundary(enum pic_processor processor)
     case pic18f8585:
     case pic18f8621:
     case pic18f8680:
-    /* These are future products.  The bsr location isn't known. */
-    case pic18f2480:
-    case pic18f2580:
-    case pic18f2681:
-    case pic18f4480:
-    case pic18f4580:
-    case pic18f4681:
-    case pic18f6490:
-    case pic18f8490:
       bsr_boundary = 0x80;
       break;
     case pic18f2331:
     case pic18f2431:
     case pic18f248:
+    case pic18f2480:
     case pic18f258:
+    case pic18f2580:
     case pic18f2585:
     case pic18f2680:
     case pic18f4331:
     case pic18f4431:
     case pic18f448:
+    case pic18f4480:
     case pic18f458:
+    case pic18f4580:
     case pic18f4585:
     case pic18f4680:
+    case pic18f6310:
+    case pic18f6390:
     case pic18f6410:
+    case pic18f6490:
     case pic18f6520:
     case pic18f6620:
+    case pic18f6627:
     case pic18f6720:
+    case pic18f6722:
+    case pic18f8310:
+    case pic18f8390:
     case pic18f8410:
+    case pic18f8490:
     case pic18f8520:
     case pic18f8620:
+    case pic18f8627:
     case pic18f8720:
+    case pic18f8722:
+    /* These are future products.  The bsr location isn't known. */
+    case pic18f2681:
+    case pic18f4681:
+    case pic18f64j15:
+    case pic18f65j10:
+    case pic18f65j15:
+    case pic18f66j10:
+    case pic18f66j15:
+    case pic18f67j10:
+    case pic18f84j15:
+    case pic18f85j10:
+    case pic18f85j15:
+    case pic18f86j10:
+    case pic18f86j15:
+    case pic18f87j10:
       bsr_boundary = 0x60;
       break;
     default:
