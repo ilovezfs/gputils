@@ -1,3 +1,6 @@
+2004-08-25 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * Allow "#" in gpasm labels.
+
 2004-08-23 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Fixed disassembly of clrwdt on 16xx processors.
 
