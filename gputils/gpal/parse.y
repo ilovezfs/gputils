@@ -50,6 +50,7 @@ yyerror(char *message)
 
 int yylex(void);
 
+static gp_linked_list *case_stack = NULL;
 static tree *case_ident = NULL;
 
 %}
@@ -146,6 +147,8 @@ static tree *case_ident = NULL;
 %type <r> range
 %type <t> if_body
 %type <t> case_body
+%type <t> case_element_list
+%type <t> case_element
 %type <t> loop_statement
 %type <t> parameter_list
 %type <i> '+'
@@ -425,15 +428,23 @@ statement:
 	|
 	CASE IDENT
 	{
-	  if (case_ident) {
-	    yyerror("nested case statements are not yet supported");
-	  }
+          gp_linked_list *new = gp_list_make();
+
+          new->prev = case_stack;
+          case_stack = new;
+
 	  case_ident = mk_symbol($2, NULL);
+          gp_list_annotate(case_stack, case_ident);
 	}
 	IS case_body END CASE ';'
 	{
 	  $$ = $5;
-	  case_ident = NULL;
+          case_stack = case_stack->prev;
+          if (case_stack) {
+            case_ident = gp_list_get(case_stack);
+          } else {
+            case_ident = NULL;
+          }
 	}
 	|
 	FOR IDENT IN range loop_statement
@@ -491,15 +502,15 @@ if_body:
 	;
 
 case_body:
-	WHEN e0 ARROW statement_start
+	WHEN case_element_list ARROW statement_start
 	{
 	  /* last statement is elsif equivalent */
-	  $$ = mk_cond(mk_binop(op_eq, case_ident, $2), $4, NULL);
+	  $$ = mk_cond($2, $4, NULL);
 	}
 	|
-	WHEN e0 ARROW statement_start case_body
+	WHEN case_element_list ARROW statement_start case_body
 	{
-	  $$ = mk_cond(mk_binop(op_eq, case_ident, $2), $4, $5);
+	  $$ = mk_cond($2, $4, $5);
 	}
 	|
 	WHEN OTHERS ARROW statement_start
@@ -507,6 +518,30 @@ case_body:
 	  /* last statement is else equivalent */
 	  $$ = mk_cond(NULL, $4, NULL);
 	}	
+	;
+
+case_element_list:
+        case_element
+	{
+	  $$ = mk_binop(op_eq, case_ident, $1);
+	}
+        |
+        case_element '|' case_element_list
+	{
+	  $$ = mk_binop(op_lor, mk_binop(op_eq, case_ident, $1), $3);
+	}
+	;
+
+case_element:
+	IDENT
+        {
+	  $$ = mk_symbol($1, NULL);
+        }
+	|
+	NUMBER
+	{
+	  $$ = mk_constant($1);
+	}
 	;
 
 loop_statement:

@@ -126,7 +126,7 @@
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 59 "parse.y"
+#line 60 "parse.y"
 typedef union YYSTYPE {
   int i;
   struct {

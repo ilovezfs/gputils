@@ -18,8 +18,6 @@ gpal
     feature to gpal.  gpal main.pal it figures out what needs to be
     compiled.   
   * Prevent the same With from being read multiple times.
-  * Implement nested case statements.
-  * Implement logical OR in case statements. "when INIT | DELAY =>"
   * Implement exit.
   * Clean up the test expressions code generator.  Keep the result in W not
     the working register.

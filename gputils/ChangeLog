@@ -1,3 +1,7 @@
+2004-07-04 Craig Franklin <craigfranklin@comcast.net>
+  * Added support for nested case statements in gpal.
+  * Added support for multiple switch elements in gpal case statements.
+
 2004-07-03 Craig Franklin <craigfranklin@comcast.net>
   * Added symbol alias feature to gpal.
 

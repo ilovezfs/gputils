@@ -9,7 +9,7 @@
 %DVIPSWebPage: (www.radicaleye.com)
 %DVIPSCommandLine: dvips -t letter -o gputils.ps gputils.dvi
 %DVIPSParameters: dpi=600, compressed
-%DVIPSSource:  TeX output 2004.07.03:2038
+%DVIPSSource:  TeX output 2004.07.04:0108
 %%BeginProcSet: texc.pro
 %!
 /TeXDict 300 dict def TeXDict begin/N{def}def/B{bind def}N/S{exch}N/X{S
@@ -1091,9 +1091,9 @@ b(Assembly)411 3350 y Fb(asm)510 3449 y(<asm)49 b(statements>)411
 b(The)26 b(syntax)g(of)f(<asm)i(statements>)203 3831
 y(must)20 b(be)h(compatible)d(with)j(gpasm.)203 4069
 y Fd(2.6.2)99 b(Case)411 4225 y Fb(case)49 b(<name>)f(is)411
-4324 y([when)h(<constant>)f(=>)510 4424 y(<statements>]*)411
-4523 y([when)h(others)f(=>)510 4623 y(<statements>]?)411
-4723 y(end)h(case;)p eop end
+4324 y([when)h(<constant>)f([)h(|)h(<constant>)e(]*)h(=>)510
+4424 y(<statements>]*)411 4523 y([when)g(others)f(=>)510
+4623 y(<statements>]?)411 4723 y(end)h(case;)p eop end
 %%Page: 13 14
 TeXDict begin 13 13 bop 203 42 a Fh(CHAPTER)21 b(2.)46
 b(GP)-8 b(AL)2694 b Fi(13)203 275 y(If)24 b(<name>)f(equals)g(an)o(y)g
@@ -1101,12 +1101,12 @@ b(GP)-8 b(AL)2694 b Fi(13)203 275 y(If)24 b(<name>)f(equals)g(an)o(y)g
 b(If)24 b(none)e(of)i(the)g(constants)f(match)203 375
 y(and)d(an)g(others)g(is)h(present,)e(the)h(others)g(statements)g(are)g
 (e)o(x)o(ecuted.)j(Here)d(is)h(an)g(e)o(xample:)411 557
-y Fb(case)49 b(input)g(is)510 657 y(when)g(MAXIMUM)g(=>)610
-757 y(output)g(=)g(8;)510 856 y(when)g(5)h(=>)610 956
-y(output)f(=)g(4;)510 1055 y(when)g(1)h(=>)610 1155 y(output)f(=)g(2;)
-510 1255 y(when)g(others)g(=>)610 1354 y(output)g(=)g(0;)411
-1454 y(end)g(case;)203 1692 y Fd(2.6.3)99 b(F)n(or)411
-1847 y Fb(for)49 b(<name>)g(in)g(<start_expression>)e(to)i
+y Fb(case)49 b(input)g(is)510 657 y(when)g(MAXIMUM)g(|)h(MINIMUM)e(=>)
+610 757 y(output)h(=)g(8;)510 856 y(when)g(5)h(|)g(3)f(|)h(2)g(=>)610
+956 y(output)f(=)g(4;)510 1055 y(when)g(1)h(=>)610 1155
+y(output)f(=)g(2;)510 1255 y(when)g(others)g(=>)610 1354
+y(output)g(=)g(0;)411 1454 y(end)g(case;)203 1692 y Fd(2.6.3)99
+b(F)n(or)411 1847 y Fb(for)49 b(<name>)g(in)g(<start_expression>)e(to)i
 (<end_expression>)510 1947 y(loop)610 2047 y(<statements>)510
 2146 y(end)h(loop;)203 2329 y Fi(<name>)15 b(is)j(set)f(to)f(<start_e)o
 (xpression>.)21 b(It)16 b(is)i(then)d(incremented)f(each)i(time)h(the)f
