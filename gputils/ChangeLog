@@ -1,3 +1,6 @@
+2002-04-09 Craig Franklin <craigfranklin@attbi.com>
+  * Updated header files and linker scripts. 
+
 2002-04-08 Craig Franklin <craigfranklin@attbi.com>
   * Fixed error that could cause a seg fault on AmigaOS.
   
