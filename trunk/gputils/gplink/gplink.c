@@ -339,7 +339,7 @@ int main(int argc, char *argv[])
   state.processor = no_processor;
   state.codfile = normal;
   state.hexfile = normal;
-  state.mapfile = normal;
+  state.mapfile = suppress;
   state.objfile = suppress;
   state.fill_enable = 0;
   state.fill_value = 0;

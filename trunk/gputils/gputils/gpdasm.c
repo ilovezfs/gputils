@@ -103,6 +103,11 @@ void dasm(MemBlock *memory)
   int i, maximum;
   int lastloc = 0;
   char buffer[80];
+  int byte_addr = 0;
+
+  if (state.class == PROC_CLASS_PIC16E) {
+    byte_addr = 1;
+  }
 
   writeheader();
 
@@ -113,19 +118,22 @@ void dasm(MemBlock *memory)
     
     while (i < maximum) {
       if (((i_memory_get(memory, i)) & MEM_USED_MASK) == 0) {
-        ++i;
+        i++;
       } else {
-	 if (lastloc != i - 1){
-	   writeorg(i);
-	 }
-         gp_disassemble(memory, &i, state.class, buffer);
-         if (state.format) {
-	   printf("%06x:  %04x  %s\n", i, (i_memory_get(memory, i) & 0xffff), buffer);
-	 } else {
-	   printf("        %s\n", buffer);	 
-         }
-	 lastloc = i;
-         ++i;
+        if (lastloc != i - 1){
+          writeorg(i);
+        }
+        if (state.format) {
+          printf("%06x:  %04x  ",
+                 i << byte_addr,
+                 (i_memory_get(memory, i) & 0xffff));
+        } else {
+          printf("        ");
+        }
+        gp_disassemble(memory, &i, state.class, buffer);
+        printf("%s\n", buffer);
+        lastloc = i;
+        i++;
       } 
     }
     

@@ -2773,9 +2773,16 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	{
 	  struct pnode *f, *b,*par;
 	  int bit,a=0;
-	    
-	  switch (arity) {
-	  case 3:
+
+	  if ((arity != 2) && (arity != 3)) {
+	    enforce_arity(arity, 3);
+	    break;
+	  }
+
+	  f = HEAD(parms);
+	  file = reloc_evaluate(f, RELOCT_F);
+
+	  if (arity == 3) {
 	    par = HEAD(TAIL(TAIL(parms)));
 
 	    if ((par->tag == symbol) &&
@@ -2783,33 +2790,26 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	      a = 1;
 	    else
 	      a = check_flag(maybe_evaluate(par));
-	    /* fall through */
-	  case 2:
-	    
-	    f = HEAD(parms);
-	    b = HEAD(TAIL(parms));
-	    file = reloc_evaluate(f, RELOCT_F);
-
-	    /* add relocation for the access bit, if necessary */          
-	    reloc_evaluate(f, RELOCT_ACCESS);
-
-	    /* Default access (use the BSR unless access is to special registers) */
+	  } else {
+	    /* Default access (use the BSR unless access is to special 
+               registers) */
 	    if ((file < state.device.bsr_boundary) || 
 		(file >= (0xf00 + state.device.bsr_boundary))) {
 	      a = 0;
 	    } else {
 	      a = 1;
-	    }
-
-	    bit = maybe_evaluate(b);
-	    if (!((0 <= bit) && (bit <= 7)))
-              gpwarning(GPW_RANGE, NULL);
-	    file_ok(file);
-	    emit(i->opcode | ( a << 8) | ((bit & 7) << 9) | (file & 0xff));
-	    break;
-	  default:
-	    enforce_arity(arity, 3);
+	    }          
 	  }
+	    
+	  /* add relocation for the access bit, if necessary */          
+	  reloc_evaluate(f, RELOCT_ACCESS);
+
+	  b = HEAD(TAIL(parms));
+	  bit = maybe_evaluate(b);
+	  if (!((0 <= bit) && (bit <= 7)))
+	    gpwarning(GPW_RANGE, NULL);
+	  file_ok(file);
+	  emit(i->opcode | ( a << 8) | ((bit & 7) << 9) | (file & 0xff));
 	}
 	break;
 
