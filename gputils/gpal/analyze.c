@@ -1134,12 +1134,16 @@ analyze_constants(void)
   for (i = 0; i < HASH_SIZE; i++) {
     for (sym = state.global->hash_table[i]; sym; sym = sym->next) {
       var = get_symbol_annotation(sym);
-      if (var && (var->tag == sym_const)) {
+      if (var && ((var->tag == sym_const) || var->is_absolute)) {
          if (first_time) {
            codegen_write_comment("constants");
            first_time = false;
          }
-         codegen_write_equ(var->name, var->value); 
+         if (var->tag == sym_const) {
+           codegen_write_equ(var->name, var->value);
+         } else if (var->is_absolute) {
+           codegen_write_equ(var->name, var->address);
+         }
       }      
     }
   }
@@ -1222,7 +1226,7 @@ analyze_declarations(void)
       assert(var != NULL);
       if (var && 
           ((var->is_used) || (var->is_assigned)) &&
-          is_extern(var)) {
+          is_extern(var) && !var->is_absolute) {
         if (first_time == true) {
           codegen_write_comment("external subprograms and data");
           first_time = false;
