@@ -1,0 +1,269 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice/5.1 (Linux)">
+	<META NAME="AUTHOR" CONTENT=" ">
+	<META NAME="CREATED" CONTENT="20020113;15184000">
+	<META NAME="CHANGEDBY" CONTENT=" ">
+	<META NAME="CHANGED" CONTENT="20020113;15184000">
+</HEAD>
+<BODY>
+<TABLE WIDTH=100% BORDER=0 CELLPADDING=2 CELLSPACING=0 BGCOLOR="#ffffff" STYLE="page-break-before: always">
+	<COL WIDTH=256*>
+	<TR>
+		<TD WIDTH=100% VALIGN=TOP BGCOLOR="#00b8ff">
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><I><B>Previous
+			NEWS</B></I></FONT></P>
+		</TD>
+	</TR>
+</TABLE>
+<TABLE WIDTH=100% BORDER=0 CELLPADDING=2 CELLSPACING=0 BGCOLOR="#ffffff">
+	<COL WIDTH=256*>
+	<TR>
+		<TD WIDTH=100%>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>November
+			20, 2001 -- gpasm-extra announced</B></I></FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>A
+			new package, gpasm-extra, is being put together. See the
+			description above for details.</FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>October
+			31, 2001 -- v0.9.14 Released</B></I></FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>The
+			path to the header files is automatically loaded into the include
+			paths list. This means that you no longer need to add &quot;-I
+			/usr/local/share/gpasm/header&quot; to gpasm to use the provided
+			header files. This feature can be disabled by adding
+			&quot;--disable-path&quot; when configuring. One key point, gpasm
+			always checks the local directory for includes before checking any
+			of the include paths.</FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>The
+			fill directive will now allow a line of assembly as an argument.
+			The argument must be enclosed by parentheses.</FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>fill
+			(goto start), NextBlock - $</FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>Several
+			bugs were fixed in the lexer. These were related to malformed
+			input files confusing gpasm about when pass 1 could be ended. One
+			of the file problems was a missing newline before the end of file
+			marker. The bugs have been fixed so they shouldn't cause any more
+			problems. Gpasm will warn the user when one of these files is
+			processed. If you receive the warning, open the input file in vi
+			and save it. Vi will fix the problem. The test has been disabled
+			on win32 systems because of inconsistencies in the editors and
+			file formats.</FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>October
+			6, 2001 -- v0.9.13 Released</B></I></FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>The
+			release is mainly to add several new processors. Additionally, new
+			header files to support the processors were added.</FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>A
+			new feature is &quot;list n=0&quot;. This will prevent page breaks
+			in the source code section of the list file. A related bug was
+			also fixed. All numeric arguments to the list directive are now
+			interpretted as decimal regardless of the current radix setting.</FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>September
+			8, 2001 -- v0.9.12 Released</B></I></FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>This
+			release makes more improvements to the preprocessor. A brief
+			description of the features are in the ChangeLog. A more
+			comprehensive explaination will be included in the updated
+			documentation in the next minor release.</FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>In
+			addition to the new features, several bug fixes were incorporated.
+			The most significant was the replacement of the old &quot;can't
+			evaluate expression&quot; error message with more meaningful
+			messages.</FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>I
+			was surprised to see that more than 400 people downloaded the
+			MinGW32 port of gpasm 0.9.11. No one has reported any bugs in the
+			port. Because of the large number of downloads, the MinGW32
+			distribution will continue to be generated.</FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>More
+			progress was made with the new macro implementation. With these
+			changes all of the known macro defiencies have been fixed. These
+			changes will be distributed in the next minor release (there might
+			be a couple more micros releases first). </FONT></FONT>
+			</P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>August
+			17, 2001 -- MinGW32 binary</B></I></FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>For
+			the next few releases a win32 binary will be provided. If this
+			distribution is popular the releases will continue. </FONT></FONT>
+			</P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>August
+			14, 2001 -- v0.9.11 Released</B></I></FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>This
+			release primarily fixes bugs and adds features to the gpasm
+			preprocessor. This is all ground work for the up coming macro
+			implementation changes. </FONT></FONT>
+			</P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>With
+			the changes in this release, gpasm should correctly identify any
+			opcode, directive, or macro incorrectly placed in column 1. It
+			will also substitute any symbol found in column 1 that appears in
+			the #defines table. </FONT></FONT>
+			</P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>August
+			4, 2001 -- v0.9.10 for win32 experiment</B></I></FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>A
+			gpasm user has decided to attempt a gpasm port to win32 using
+			Microsoft Visual C++ 6.0. To my knowledge this has never been
+			attempted. I have done this using the Borland compiler. In order
+			to help the user, the data from the Borland port has been added.
+			The data is available in the &quot;What Platforms are Supported?&quot;
+			section of this page. </FONT></FONT>
+			</P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>The
+			Borland data will be added to the distribution sometime in the
+			future. If Visual C port works that data could be added as well. </FONT></FONT>
+			</P>
+			<P><SPAN STYLE="font-weight: medium"><SPAN STYLE="font-style: normal"><FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Try
+			out the Borland port. If you have an opinion send me an email
+			&lt;craigfranklin@attbi.com&gt;</FONT></FONT></SPAN></SPAN>.</P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>July
+			30, 2001 -- v0.9.10 Released</B></I></FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>I
+			experienced a moment of terror on July 29<SUP>th</SUP>, when my
+			new 0.9.9 release generated a core dump. I made the 0.9.9 release
+			inactive and investigated the problem. It turned out to be a
+			really old bug. I had already stopped the presses, so I decided to
+			just make a new release that included the fix.</FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>July
+			28, 2001 -- v0.9.9 Released</B></I></FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>This
+			release fixes some minor bugs and cleans up some of the old code.
+			Most of the changes probably won't effect users who are not
+			writing new code. For those that are, several new tests should
+			help to catch some problems before they occur. For example, all
+			labels are checked to see if they are a resevered word. If they
+			are a warning is generated and the text is treated accordingly.
+			This test should help catch typos.</FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>July
+			17, 2001 -- v0.9.8 Released</B></I></FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>gpasm
+			will now expand macros in the listing and cod files. The real
+			advantage of this is gpsim will jump to the macro or while loop
+			source when stepping through the code. If you like the old way
+			that gpasm operated add a &quot;NOEXPAND&quot; or &quot;LIST
+			x=OFF&quot; to the top of your source code. Another way is to add
+			the argument &quot;e=OFF&quot; to gpasm.</FONT></FONT></P>
+			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>New
+			with this release is an optional i386 rpm distribution. Make sure
+			you uninstall any previous gpasm installation before installing
+			the rpm. This can be accomplished by running a &quot;make
+			uninstall&quot; on 0.9.7 or by removing the binaries from
+			/usr/local/bin and the data from /usr/local/share/gpasm. The only
+			difference the users should notice is the headers are now located
+			in /usr/share/gpasm/header.</FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>June
+			17, 2001 -- v0.9.7 Released</B></I></FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>This
+			one has some new features. New operators have been implemented.
+			i++, i--, i+=1 are some examples.</FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>There
+			is also some new eye candy in this one as well. A memory map is
+			now produced as part of the list file. The number of program words
+			used by the file is also reported.</FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>Some
+			work was done to make gpasm a little more friendly to non Linux
+			systems. More can probably be done in this area. If you have to
+			patch gpasm to compile it, please send me the data. I will
+			evaluate it for possible inclusion in future gpasm releases
+			&lt;craigfranklin@attbi.com&gt;. </FONT></FONT>
+			</P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>May
+			30, 2001 -- v0.9.6 Released</B></I></FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>This
+			release primarily fixes bugs submitted into the bug tracker. Most
+			of them are minor. The one some of you may have experienced is
+			failure of 0.9.5 to compile due to missing getopt_long(). This
+			problem occurs on Solaris and some BSDs. This version of gpasm
+			will configure around your system. If you don't have it, gpasm
+			won't use it. </FONT></FONT>
+			</P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>The
+			first version of the object file viewer is included in this
+			release. It is not a final version. Please hold off on the bug
+			reports for a few weeks at least. The basic functions of the
+			viewer work, but there are still some holes to fill. Completion of
+			this viewer will lead directly into object file generation for
+			gpasm.</FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>May
+			18, 2001 -- v0.9.5 Released</B></I></FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>The
+			release was completed on May 13th, so this is probably old news
+			for many of you.</FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>Much
+			was accomplished, but nothing that I planned for. The main changes
+			are related to getting some case sensitivity problems solved. The
+			problem was that the mneumonics in special.inc are implemented as
+			macros. This created some case sensitivity headaches. This release
+			solves all of the problems (at least the ones I know about). </FONT></FONT>
+			</P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>The
+			solution was to move the functionality of special.inc into the
+			source code. With 0.9.5 you can safely remove special.inc from
+			/usr/local/share/gpasm. This can also be accomplished be running a
+			&quot;make uninstall&quot; on 0.9.4 before installing 0.9.5. </FONT></FONT>
+			</P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>The
+			macro expansion and object file viewer are in about the same shape
+			they were a couple of weeks ago. They are still at the top of the
+			list. I will try to make finish them for the next release. I won't
+			make any promises though. </FONT></FONT>
+			</P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>April
+			22, 2001 -- v0.9.4 Released</B></I></FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>More
+			compatibility changes ... most are minor. 460 of 501 gpasm test
+			files are now passing. </FONT></FONT>
+			</P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>Many
+			things are in the queue for 0.9.5. Most are very close to being
+			complete, but weren't ready to make the 0.9.4 cut. These things
+			include: </FONT></FONT>
+			</P>
+			<UL>
+				<LI><P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>A
+				utility to view the contents of Microchip's object files. The
+				next step in adding object file support to gpasm.</FONT></FONT></P>
+				<LI><P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>Macro
+				expansion. It has been on the back burner for some time. I just
+				want to get it off of my &quot;To Do&quot; list.</FONT></FONT></P>
+			</UL>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>March
+			17, 2001 -- v0.9.3 Released</B></I></FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>The
+			work has continued on the Microchip test files. 431 of 501 gpasm
+			test files are now passing. </FONT></FONT>
+			</P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>March
+			4, 2001 -- v0.9.2 Released</B></I></FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>I
+			have spent most of the last week working on the Microchip test
+			files. They provided &gt; 500 asm files for testing MPASM. The
+			first time I tested gpasm, only 53 of the files passed. With the
+			changes made in 0.9.2 we are up to 387. Not 500, but much better
+			than 53. The rest of the 0.9.x series will concentrate on getting
+			closer to 500 files passing.</FONT></FONT></P>
+			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>The
+			linker support was put on hold when the Microchip test files came
+			in. I felt it was better to fix bugs than to add features. Not to
+			worry, I will pick it back up in a few weeks. Currently, the
+			linker can read Microchip's object files and combine the data into
+			one hex file. (All of the important steps in between are skipped.)
+			</FONT></FONT>
+			</P>
+			<P><FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><A HREF="mailto:cnieves@iname.com">Carlos
+			Nieves &lt;cnieves@iname.com&gt;</A> has provided a patch which
+			adds the 17cxx family. It will be part of 0.9.3.</FONT></FONT></P>
+		</TD>
+	</TR>
+</TABLE>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><A HREF="http://gputils.sourceforge.net/">Return
+to Main page</A></P>
+</BODY>
+</HTML>
