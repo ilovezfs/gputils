@@ -1,3 +1,9 @@
+2004-09-05 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * Added new error message to gplink to catch udata sections in devices
+    with only shared memory definitions.
+  * Allow udata sections to be relocated by gplink to shared sections if
+    no space is available.
+
 2004-08-29 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Add 18xx support to gpal.
   * Fix disassembly of multi-word 18xx instructions.

@@ -74,4 +74,6 @@ void gp_cofflink_clean_table(gp_object_type *object);
 
 MemBlock *gp_cofflink_make_memory(gp_object_type *object);
 
+extern gp_boolean gp_relocate_to_shared;
+
 #endif

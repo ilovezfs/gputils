@@ -22,6 +22,8 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
+gp_boolean gp_relocate_to_shared = false;
+
 /* Two symbol tables are constructed. The first contains the definitions of all
    external symbols in all the object files.  This symbol table is used for
    relocation and linking.  The second table contains all external symbols 
@@ -985,7 +987,7 @@ gp_cofflink_reloc_assigned(MemBlock *m,
     /* assign the address to this section */
     if (_search_memory(m, byte_addr, section_def->start, section_def->end,
                        size, &current_address, &current_size) == 1) {
-      gp_debug("    sucessful relocation to %#x", current_address);
+      gp_debug("    successful relocation to %#x", current_address);
       if (_has_data(current)) {
         _move_data(current->data, current->address, size, current_address);
       }
@@ -1020,7 +1022,9 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
   gp_section_type *current;
   enum section_type type;
   unsigned int size;
+  int first_time;
   int success;
+  int type_avail;
   int i;
   struct symbol *sym;
   struct linker_section *section_def;
@@ -1057,7 +1061,12 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
       gp_debug("  relocating data");
     }
 
+    first_time = 1;
+
+next_pass:
+
     success = 0;
+    type_avail = 0;
     smallest_address = 0;
     smallest_size = 0xffffffff;
 
@@ -1072,7 +1081,7 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
           gp_debug("    size = %#x", current->size);
           gp_debug("    def start = %#x", section_def->start);
           gp_debug("    def end = %#x", section_def->end);
-          
+          type_avail = 1;
           if (_search_memory(m, 
                              byte_addr,
                              section_def->start,
@@ -1092,7 +1101,7 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
 
     /* set the memory used flag for all words in the block */
     if (success == 1) {
-      gp_debug("    sucessful relocation to %#x", smallest_address);
+      gp_debug("    successful relocation to %#x", smallest_address);
       if (_has_data(current)) {
         _move_data(current->data, current->address, size, smallest_address);
       }
@@ -1104,7 +1113,16 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
 
       /* Set the relocated flag */
       current->flags |= STYP_RELOC;
-
+    } else if (gp_relocate_to_shared && (first_time == 1) && (type == databank)) {
+      first_time = 0;
+      type = sharebank;
+      gp_warning("relocation of section \"%s\" failed, relocating to a shared memory location",
+                 current->name);    
+      goto next_pass;
+    } else if (type_avail == 0) {
+      gp_error("linker script has no definition that matches the type of section \"%s\"",
+               current->name);    
+      return;
     } else {
       gp_error("no target memory available for section \"%s\"", current->name);    
       return;
