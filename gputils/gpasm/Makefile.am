@@ -41,3 +41,5 @@ AM_YFLAGS = -dvt
 AM_LFLAGS = -i
 
 EXTRA_DIST = parse.h
+
+CLEANFILES = parse.output
