@@ -9,8 +9,8 @@ gpasm - Assembleur GNU PIC
 .SH AVERTISSEMENT
 L'information de cette page de manuel est extraite de la documentation
 complète de gputils et est limitée à la signification des options. Pour une
-documentation complète, reportez-vous au fichier «\ gputils.ps\ » situé dans
-le répertoire doc de gputils.
+documentation complète, reportez-vous au fichier «\ gputils.ps\ » (en anglais)
+situé dans le répertoire doc de gputils.
 
 .SH DESCRIPTION
 .B gpasm
@@ -33,7 +33,7 @@ et inhx32. Cette option contrôle quel format de fichier hexadécimal est
 utilisé. La valeur par défaut est inhx32.
 .TP
 .B -c, --object 
-Produit en sortie un objet relogeable.
+Produire en sortie un objet relogeable.
 .TP
 .B -D SYM=VAL, --define SYM=VAL   
 Définir SYM avec la valeur VAL. Ceci est équivalent à placer
@@ -59,7 +59,7 @@ argument à gpasm. Ce fichier peut contenir des directives INCLUDE. Ces
 directives ouvrent les fichiers spécifiés et leurs contenus sont alors
 assemblés. GPASM recherche ces fichiers dans le répertoire courant. Si le
 fichier n'est pas localisé, le chemin par défaut des en-têtes est parcouru.
-Enfin, tous les chemins spécifiés par qcet argument sont parcourus.
+Enfin, tous les chemins spécifiés par cet argument sont parcourus.
 .TP
 .B -L, --force-list 
 Ignorer les directives NOLIST. Ceci force gpasm à afficher chaque ligne
@@ -89,14 +89,17 @@ Supprimer tout ce qui est envoyé sur la sortie standard.
 .B -r BASE, --radix BASE
 Les bases reconnues sont BIN, DEC, OCT, et HEX. La base par défaut est HEX.
 .TP
+.B -v, --version
+Afficher la version.
+.TP
 .B -w [0|1|2], --warning [0|1|2]
 Cette option configure le niveau d'affichage des messages. La valeur par défaut
 est «\ 0\ ». Elle permet l'affichage des messages, des avertissements et des
 erreurs. «\ 1\ » supprimera les messages. «\ 2\ » supprimera les messages et
 les avertissements.
 .TP
-.B -v, --version
-Afficher la version.
+.B -y, --extended
+Activer le mode étendu 18xx.
 
 .SH VOIR AUSSI
 gputils(1)
@@ -106,7 +109,15 @@ Craig Franklin <craigfranklin@users.sourceforge.net>
 
 .SH TRADUCTION
 .PP
-Alain Portal <aportal AT univ-montp2 DOT fr>, 14 octobre 2004
+Ce document est une traduction réalisée par Alain Portal
+<aportal AT univ-montp2 DOT fr> le 14 octobre 2004 et révisée
+le 6 janvier 2005.
+.PP
+L'équipe de traduction a fait le maximum pour réaliser une adaptation
+française de qualité. La version anglaise la plus à jour de ce document est
+toujours consultable via la commande\ : «\ \fBLANG=en\ man\ 1\ gpasm\fR\ ».
+N'hésitez pas à signaler à l'auteur ou au traducteur, selon le cas, toute
+erreur dans cette page de manuel.
 
 .SH COPYRIGHT
 Copyright (C) 2002, 2003, 2004, 2005 James Bowman, Craig Franklin

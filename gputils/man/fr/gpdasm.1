@@ -9,8 +9,8 @@ gpdasm - Désassembleur GNU PIC
 .SH AVERTISSEMENT
 L'information de cette page de manuel est extraite de la documentation
 complète de gputils et est limitée à la signification des options. Pour une
-documentation complète, reportez-vous au fichier «\ gputils.ps\ » situé dans
-le répertoire doc de gputils.
+documentation complète, reportez-vous au fichier «\ gputils.ps\ » (en anglais)
+situé dans le répertoire doc de gputils.
 
 .SH DESCRIPTION
 .B gpdasm
@@ -21,11 +21,14 @@ des détails sur les autres utilitaires GNU PIC.
 
 .SH OPTIONS
 .TP
+.B -c, --mnemonics
+Décoder les mnémoniques spéciales.
+.TP
 .B -h, --help
 Afficher un message d'usage.
 .TP
 .B -i, --hex-info
-Rapporter une information supplémentaire concernant le fichier hexadécimal
+Produire une information supplémentaire concernant le fichier hexadécimal
 d'entrée. Cette information inclut la taille du fichier et le format
 hexadécimal.
 .TP
@@ -43,6 +46,9 @@ Produire en sortie le format court. Ce format peut être réassemblé par gpasm.
 .TP
 .B -v, --version
 Afficher la version.
+.TP
+.B -y, --extended
+Activer le mode étendu 18xx.
 
 .SH VOIR AUSSI
 gputils(1)
@@ -52,7 +58,15 @@ Craig Franklin <craigfranklin@users.sourceforge.net>
 
 .SH TRADUCTION
 .PP
-Alain Portal <aportal AT univ-montp2 DOT fr>, 14 octobre 2004
+Ce document est une traduction réalisée par Alain Portal
+<aportal AT univ-montp2 DOT fr> le 14 octobre 2004 et révisée
+le 6 janvier 2005.
+.PP
+L'équipe de traduction a fait le maximum pour réaliser une adaptation
+française de qualité. La version anglaise la plus à jour de ce document est
+toujours consultable via la commande\ : «\ \fBLANG=en\ man\ 1\ gpdasm\fR\ ».
+N'hésitez pas à signaler à l'auteur ou au traducteur, selon le cas, toute
+erreur dans cette page de manuel.
 
 .SH COPYRIGHT
 Copyright (C) 2002, 2003, 2004, 2005 Craig Franklin
