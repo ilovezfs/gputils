@@ -1,4 +1,4 @@
-/* Main function for gpasm
+/* top level functions for gpasm
    Copyright (C) 1998,1999,2000,2001 James Bowman, Craig Franklin
 
 This file is part of gputils.
@@ -370,13 +370,4 @@ int assemble(void)
     return 1;
   else
     return 0;
-}
-
-int 
-main(int argc, char *argv[])
-{
-  init();
-  process_args(argc, argv);
-
-  return assemble();
 }

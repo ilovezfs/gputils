@@ -20,9 +20,11 @@
 
 bin_PROGRAMS = gpasm
 
+noinst_LIBRARIES = libgpasm.a
+
 CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include -DGPASM_HEADER_PATH=\"@GPASM_HEADER_PATH@\"
 
-gpasm_SOURCES=\
+libgpasm_a_SOURCES=\
 	cod.c \
 	directive.c \
 	evaluate.c \
@@ -40,12 +42,15 @@ gpasm_SOURCES=\
 	evaluate.h \
 	gpasm.h \
 	gperror.h \
+	libgpasm.h \
 	lst.h \
 	macro.h \
 	processor.h \
 	special.h
 
-gpasm_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
+gpasm_SOURCES = main.c
+
+gpasm_LDADD = libgpasm.a ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 
 YFLAGS = -dvt
 LFLAGS = -i

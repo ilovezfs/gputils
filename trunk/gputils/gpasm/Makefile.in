@@ -101,9 +101,11 @@ YACC = @YACC@
 
 bin_PROGRAMS = gpasm
 
+noinst_LIBRARIES = libgpasm.a
+
 CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include -DGPASM_HEADER_PATH=\"@GPASM_HEADER_PATH@\"
 
-gpasm_SOURCES = \
+libgpasm_a_SOURCES = \
 	cod.c \
 	directive.c \
 	evaluate.c \
@@ -121,13 +123,16 @@ gpasm_SOURCES = \
 	evaluate.h \
 	gpasm.h \
 	gperror.h \
+	libgpasm.h \
 	lst.h \
 	macro.h \
 	processor.h \
 	special.h
 
 
-gpasm_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
+gpasm_SOURCES = main.c
+
+gpasm_LDADD = libgpasm.a ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 
 YFLAGS = -dvt
 LFLAGS = -i
@@ -136,16 +141,20 @@ EXTRA_DIST = scan.h parse.h
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
-bin_PROGRAMS =  gpasm$(EXEEXT)
-PROGRAMS =  $(bin_PROGRAMS)
+LIBRARIES =  $(noinst_LIBRARIES)
 
 
 DEFS = @DEFS@ -I. -I$(srcdir) -I..
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-gpasm_OBJECTS =  cod.o directive.o evaluate.o gpasm.o parse.o scan.o \
-gperror.o lst.o macro.o processor.o special.o util.o
-gpasm_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@ \
+libgpasm_a_LIBADD = 
+libgpasm_a_OBJECTS =  cod.o directive.o evaluate.o gpasm.o parse.o \
+scan.o gperror.o lst.o macro.o processor.o special.o util.o
+bin_PROGRAMS =  gpasm$(EXEEXT)
+PROGRAMS =  $(bin_PROGRAMS)
+
+gpasm_OBJECTS =  main.o
+gpasm_DEPENDENCIES =  libgpasm.a ${top_builddir}/@LIBGPUTILS@ \
 ${top_builddir}/@LIBIBERTY@
 gpasm_LDFLAGS = 
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
@@ -162,10 +171,11 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/cod.P .deps/directive.P .deps/evaluate.P \
-.deps/gpasm.P .deps/gperror.P .deps/lst.P .deps/macro.P .deps/parse.P \
-.deps/processor.P .deps/scan.P .deps/special.P .deps/util.P
-SOURCES = $(gpasm_SOURCES)
-OBJECTS = $(gpasm_OBJECTS)
+.deps/gpasm.P .deps/gperror.P .deps/lst.P .deps/macro.P .deps/main.P \
+.deps/parse.P .deps/processor.P .deps/scan.P .deps/special.P \
+.deps/util.P
+SOURCES = $(libgpasm_a_SOURCES) $(gpasm_SOURCES)
+OBJECTS = $(libgpasm_a_OBJECTS) $(gpasm_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
@@ -177,6 +187,36 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
+
+mostlyclean-noinstLIBRARIES:
+
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+
+distclean-noinstLIBRARIES:
+
+maintainer-clean-noinstLIBRARIES:
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+libgpasm.a: $(libgpasm_a_OBJECTS) $(libgpasm_a_DEPENDENCIES)
+	-rm -f libgpasm.a
+	$(AR) cru libgpasm.a $(libgpasm_a_OBJECTS) $(libgpasm_a_LIBADD)
+	$(RANLIB) libgpasm.a
 
 mostlyclean-binPROGRAMS:
 
@@ -202,22 +242,6 @@ uninstall-binPROGRAMS:
 	list='$(bin_PROGRAMS)'; for p in $$list; do \
 	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
 	done
-
-.s.o:
-	$(COMPILE) -c $<
-
-.S.o:
-	$(COMPILE) -c $<
-
-mostlyclean-compile:
-	-rm -f *.o core *.core
-
-clean-compile:
-
-distclean-compile:
-	-rm -f *.tab.c
-
-maintainer-clean-compile:
 
 gpasm$(EXEEXT): $(gpasm_OBJECTS) $(gpasm_DEPENDENCIES)
 	@rm -f gpasm$(EXEEXT)
@@ -332,7 +356,7 @@ install-am: all-am
 install: install-am
 uninstall-am: uninstall-binPROGRAMS
 uninstall: uninstall-am
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile $(LIBRARIES) $(PROGRAMS)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
@@ -350,41 +374,45 @@ distclean-generic:
 
 maintainer-clean-generic:
 	-test -z "scanlparsehparsec" || rm -f scanl parseh parsec
-mostlyclean-am:  mostlyclean-binPROGRAMS mostlyclean-compile \
-		mostlyclean-tags mostlyclean-depend mostlyclean-generic
+mostlyclean-am:  mostlyclean-noinstLIBRARIES mostlyclean-compile \
+		mostlyclean-binPROGRAMS mostlyclean-tags \
+		mostlyclean-depend mostlyclean-generic
 
 mostlyclean: mostlyclean-am
 
-clean-am:  clean-binPROGRAMS clean-compile clean-tags clean-depend \
-		clean-generic mostlyclean-am
+clean-am:  clean-noinstLIBRARIES clean-compile clean-binPROGRAMS \
+		clean-tags clean-depend clean-generic mostlyclean-am
 
 clean: clean-am
 
-distclean-am:  distclean-binPROGRAMS distclean-compile distclean-tags \
-		distclean-depend distclean-generic clean-am
+distclean-am:  distclean-noinstLIBRARIES distclean-compile \
+		distclean-binPROGRAMS distclean-tags distclean-depend \
+		distclean-generic clean-am
 
 distclean: distclean-am
 
-maintainer-clean-am:  maintainer-clean-binPROGRAMS \
-		maintainer-clean-compile maintainer-clean-tags \
-		maintainer-clean-depend maintainer-clean-generic \
-		distclean-am
+maintainer-clean-am:  maintainer-clean-noinstLIBRARIES \
+		maintainer-clean-compile maintainer-clean-binPROGRAMS \
+		maintainer-clean-tags maintainer-clean-depend \
+		maintainer-clean-generic distclean-am
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 
 maintainer-clean: maintainer-clean-am
 
-.PHONY: mostlyclean-binPROGRAMS distclean-binPROGRAMS clean-binPROGRAMS \
-maintainer-clean-binPROGRAMS uninstall-binPROGRAMS install-binPROGRAMS \
+.PHONY: mostlyclean-noinstLIBRARIES distclean-noinstLIBRARIES \
+clean-noinstLIBRARIES maintainer-clean-noinstLIBRARIES \
 mostlyclean-compile distclean-compile clean-compile \
-maintainer-clean-compile tags mostlyclean-tags distclean-tags \
-clean-tags maintainer-clean-tags distdir mostlyclean-depend \
-distclean-depend clean-depend maintainer-clean-depend info-am info \
-dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
-install-exec install-data-am install-data install-am install \
-uninstall-am uninstall all-redirect all-am all installdirs \
-mostlyclean-generic distclean-generic clean-generic \
-maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+maintainer-clean-compile mostlyclean-binPROGRAMS distclean-binPROGRAMS \
+clean-binPROGRAMS maintainer-clean-binPROGRAMS uninstall-binPROGRAMS \
+install-binPROGRAMS tags mostlyclean-tags distclean-tags clean-tags \
+maintainer-clean-tags distdir mostlyclean-depend distclean-depend \
+clean-depend maintainer-clean-depend info-am info dvi-am dvi check \
+check-am installcheck-am installcheck install-exec-am install-exec \
+install-data-am install-data install-am install uninstall-am uninstall \
+all-redirect all-am all installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
