@@ -449,8 +449,11 @@ codegen_unop(struct variable *var,
              gp_boolean constant_offset,
              int offset,
              tree *offset_expr,
-             tree *unop)
+             tree *unop,
+             enum size_tag size)
 {
+
+  temp_number = codegen_setup(size);
 
   if (offset_expr) {
     if (constant_offset) {
@@ -473,6 +476,9 @@ codegen_unop(struct variable *var,
       UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, 0, false);
     }
   }
+
+  if (temp_number > max_temp_number)
+    max_temp_number = temp_number;
 
 }
 
