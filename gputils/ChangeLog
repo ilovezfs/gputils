@@ -1,3 +1,7 @@
+2003-06-23 Craig Franklin <craigfranklin@attbi.com>
+  * Extended the legal syntax for difference of coff symbols within the same
+    section.
+
 2003-06-22 Craig Franklin <craigfranklin@attbi.com>
   * Changed coff to use byte addressing for program memory of 18xx devices.
   * Changed absolute coff sections generated with org directive to use
@@ -11,7 +15,7 @@
   * Changed build directory for rpms.
 
 2003-06-14 Craig Franklin <craigfranklin@attbi.com>
-  * Fixed error in the range check for 17xx movpf anf movfp instructions.
+  * Fixed error in the range check for 17xx movpf and movfp instructions.
 
 2003-06-04 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.11.4 Released.

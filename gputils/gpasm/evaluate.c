@@ -502,7 +502,14 @@ same_section(struct pnode *p)
 
   if(!state.obj.enabled)
     return 0;
-  
+
+  if ((p->tag == unop) &&
+      ((p->value.unop.op == UPPER) || 
+       (p->value.unop.op == HIGH) || 
+       (p->value.unop.op == LOW))) {
+    p = p->value.unop.p0;
+  }
+
   if ((p->tag != binop) ||
       (p->value.binop.op != '-') ||
       (count_reloc(p->value.binop.p0) != 1))
