@@ -25,8 +25,13 @@ void gperror(unsigned int code, char *message);
 void gpwarning(unsigned int code, char *message);
 void gpmessage(unsigned int code, char *message);
 
+/* Alternate message functions. Only the prototypes are provided, the user
+   must link their own function into gpasm. */
+void user_error(unsigned int code, char *message);
+void user_warning(unsigned int code, char *message);
+void user_message(unsigned int code, char *message);
+
 void add_code(int code);
-void print_errorcodes(void);
 
 /* Error codes
  *

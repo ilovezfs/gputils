@@ -2268,7 +2268,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	      emit(i->mask | 3);
 	      break;
 	    default:
-	      printf("tbl: %x\n",maybe_evaluate(p));
+	      gperror(GPE_ILLEGAL_ARGU, NULL);
 	    }
 	}
 	break;

@@ -31,19 +31,6 @@ struct error_list {
 
 static struct error_list *errorcodes_list = NULL;
 
-/* debug code */
-void print_errorcodes(void)
-{
-  struct error_list *list = errorcodes_list;
-
-  printf("errorlevel values = ");
-  while(list) {
-    printf("%i ", list->value);
-    list = list->next;
-  }
-  printf("\n");
-}
-
 void add_code(int code)
 {
   struct error_list *new;
@@ -162,22 +149,30 @@ void gperror(unsigned int code,
   if (state.pass == 2) {
     if(message == NULL)
       message = gp_geterror(code);
-    if (state.src)
-      sprintf(full_message,
-	      "%s:%d:Error [%03d] %s",
-	      state.src->name,
-	      state.src->line_number,
-	      code,
-	      message);
-    else
-      sprintf(full_message,
-	      "Error [%03d] %s",
-	      code,
-	      message);
+
+#ifndef GP_USER_ERROR
+    /* standard output */
     if (!state.quiet) {
+      if (state.src)
+        sprintf(full_message,
+	        "%s:%d:Error [%03d] %s",
+	        state.src->name,
+	        state.src->line_number,
+	        code,
+	        message);
+      else
+        sprintf(full_message,
+	        "Error [%03d] %s",
+	        code,
+	        message);
+
       printf("%s\n", full_message);
     }
+#else
+    user_error(code, message);
+#endif
 
+    /* list file output */
     sprintf(full_message,
 	    "Error [%03d] : %s",
 	    code,
@@ -242,22 +237,30 @@ void gpwarning(unsigned int code,
     if ((state.error_level <= 1) && check_code(code)) {
       if(message == NULL)
         message = gp_getwarning(code);
-      if (state.src)
-        sprintf(full_message,
-	        "%s:%d:Warning [%03d] %s",
-	        state.src->name,
-	        state.src->line_number,
-	        code,
-	        message);
-      else
-        sprintf(full_message,
-	        "Warning [%03d] %s",
-	        code,
-	        message);
+
+#ifndef GP_USER_WARNING
+      /* standard output */
       if (!state.quiet) {
+        if (state.src)
+          sprintf(full_message,
+	          "%s:%d:Warning [%03d] %s",
+	          state.src->name,
+	          state.src->line_number,
+	          code,
+	          message);
+        else
+          sprintf(full_message,
+	          "Warning [%03d] %s",
+	          code,
+	          message);
+
         printf("%s\n", full_message);
       } 
+#else
+      user_warning(code, message);
+#endif
 
+      /* list file output */
       sprintf(full_message,
 	      "Warning [%03d] : %s",
 	      code,
@@ -271,7 +274,6 @@ void gpwarning(unsigned int code,
     }
   }
 }
-
 
 char *gp_getmessage(unsigned int code)
 {
@@ -318,22 +320,30 @@ void gpmessage(unsigned int code,
     if ((state.error_level == 0) && check_code(code)){
       if(message == NULL)
         message = gp_getmessage(code);
-      if (state.src)
-        sprintf(full_message,
-	        "%s:%d:Message [%03d] %s",
-	        state.src->name,
-	        state.src->line_number,
-	        code,
-	        message);
-      else
-        sprintf(full_message,
-	        "Message [%03d] %s",
-	        code,
-	        message);
+
+#ifndef GP_USER_MESSAGE
+      /* standard output */
       if (!state.quiet) {
+        if (state.src)
+          sprintf(full_message,
+	          "%s:%d:Message [%03d] %s",
+	          state.src->name,
+	          state.src->line_number,
+	          code,
+	          message);
+        else
+          sprintf(full_message,
+	          "Message [%03d] %s",
+	          code,
+	          message);
+
         printf("%s\n", full_message);
       }
+#else
+      user_message(code, message);
+#endif
 
+      /* list file output */
       sprintf(full_message,
 	      "Message [%03d] : %s",
 	      code,

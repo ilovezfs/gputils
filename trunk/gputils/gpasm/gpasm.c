@@ -63,8 +63,6 @@ static struct option longopts[] =
   { 0, 0, 0, 0 }
 };
 
-#define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
-
 void init(void)
 {
   /* restore gpasm to its initialized state */
@@ -161,7 +159,7 @@ void process_args( int argc, char *argv[])
   int usage = 0;
   char *pc;
 
-  while ((c = GETOPT_FUNC) != EOF) {
+  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
     switch (c) {
     case '?':
     case 'h':
@@ -174,7 +172,7 @@ void process_args( int argc, char *argv[])
     case 'c':
       state.case_insensitive = 1;
       if (state.stDefines != NULL) {
-        printf("Warning: The -c option must be called before the -d option.\n");
+        fprintf(stderr, "The -c option must be called before the -d option.\n");
       }
       break;
     case 'D':

@@ -230,10 +230,6 @@ gpasmVal evaluate(struct pnode *p)
     case DECREMENT:          
       return evaluate(p->value.unop.p0) - 1;
     default:
-     printf("Unhanded operator (%c) on line %i of %s\n", 
-             p->value.unop.op,
-             state.src->line_number,
-             state.src->name);
       assert(0);
     }
   case binop:
@@ -268,10 +264,6 @@ gpasmVal evaluate(struct pnode *p)
       gperror(GPE_BADCHAR, "Illegal character (=)");     
       return 0;
     default:
-      printf("Unhanded operator (%c) on line %i of %s\n", 
-             p->value.binop.op,
-             state.src->line_number,
-             state.src->name);
       assert(0); /* Unhandled binary operator */
     }
   default:
