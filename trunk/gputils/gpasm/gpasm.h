@@ -1,5 +1,6 @@
 /* Common definitions for gpasm
-   Copyright (C) 1998,1999,2000,2001 James Bowman, Craig Franklin
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003
+   James Bowman, Craig Franklin
 
 This file is part of gputils.
 
@@ -224,6 +225,7 @@ struct source_context {
   unsigned int line_number;
   gp_symbol_type *file_symbol;
   struct file_context *fc;        /* Position in the file context stack */
+  struct amode *astack;		  /* Stack of amodes when a macro was called */
   struct source_context *prev;
 };
 

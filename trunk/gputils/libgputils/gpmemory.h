@@ -1,5 +1,6 @@
 /* memory header file.
-   Copyright (C) 1998,1999,2000,2001 James Bowman, Scott Dattalo
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003
+   James Bowman, Scott Dattalo
 
 This file is part of gputils.
 

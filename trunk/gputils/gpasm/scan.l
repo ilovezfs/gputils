@@ -6,7 +6,8 @@
 
 %{
 /* lexical analyser for gpasm
-   Copyright (C) 1998,1999,2000,2001 James Bowman, Craig Franklin
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 
+   James Bowman, Craig Franklin
 
 This file is part of gputils.
 
@@ -515,6 +516,8 @@ void execute_macro(struct macro_head *h)
 
   assert(state.src != NULL);
   state.src->yybuf = YY_CURRENT_BUFFER;
+  /* store the stack so it can be returned when the macro is complete */
+  state.src->astack = state.astack;
 
   macro_src = make_macro_buffer(h);
   macro_src_size = strlen(macro_src) + 2;
@@ -574,6 +577,9 @@ void close_file()
   } else if (old->type == macro) {
     state.stTop = pop_symbol_table(state.stTop);
     state.stTopDefines = pop_symbol_table(state.stTopDefines);
+    if (state.src->astack != state.astack) {
+      gperror(GPE_ILLEGAL_NESTING, NULL);
+    }
     assert(state.stTop != NULL);
     assert(state.stTopDefines != NULL);
     free(old->name);
@@ -583,6 +589,18 @@ void close_file()
 
 void execute_exitm()
 {
+  struct amode *previous;
+  struct amode *old;
+
+  /* The macro is ended early, so return the stack to its previous state */
+  previous = state.src->prev->astack;
+  while ((state.astack != NULL) &&
+         (state.astack != previous)) {
+    old = state.astack;
+    state.astack = state.astack->prev; 
+    free(old);
+  }
+
   close_file();
   if (state.src) {
     yy_delete_buffer(YY_CURRENT_BUFFER);

@@ -1,5 +1,6 @@
 # Makefile.am
-# Copyright (C) 1998,1999,2000,2001 James Bowman, Craig Franklin
+# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 
+# James Bowman, Craig Franklin
 # 
 # This file is part of gputils.
 # 
@@ -21,12 +22,13 @@
 gputils.pdf: gputils.ps
 	ps2pdf gputils.ps gputils.pdf
 
-man_MANS = gpasm.1 gpdasm.1 gplib.1 gputils.1 gpvc.1 gpvo.1
+man_MANS = gpasm.1 gpdasm.1 gplib.1 gplink.1 gputils.1 gpvc.1 gpvo.1
 
 EXTRA_DIST =\
 	gpasm.1 \
 	gpdasm.1 \
 	gplib.1 \
+	gplink.1 \
 	gputils.1 \
 	gputils.lyx \
 	gputils.ps \

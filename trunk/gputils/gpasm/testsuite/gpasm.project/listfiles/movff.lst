@@ -1,0 +1,55 @@
+MPASM 03.20.02 Released         MOVFF.ASM   3-10-2003  2:14:01         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; this file tests for invalid movff destinations
+                      00002 
+                      00003   processor 18f242
+                      00004 
+  00000FFF            00005 TOSU            EQU  H'0FFF'
+  00000FFE            00006 TOSH            EQU  H'0FFE'
+  00000FFD            00007 TOSL            EQU  H'0FFD'
+  00000FF9            00008 PCL             EQU  H'0FF9'
+                      00009   
+000000                00010   org 0
+                      00011   
+Error[122]  : Illegal opcode (FFF9)
+000000 C100           00012   movff 0x100, PCL   
+Error[122]  : Illegal opcode (FFFF)
+000002 C100           00013   movff 0x100, TOSU  
+Error[122]  : Illegal opcode (FFFE)
+000004 C100           00014   movff 0x100, TOSH   
+Error[122]  : Illegal opcode (FFFD)
+000006 C100           00015   movff 0x100, TOSL   
+                      00016   
+                      00017   end
+MPASM 03.20.02 Released         MOVFF.ASM   3-10-2003  2:14:01         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PCL                               00000FF9
+TOSH                              00000FFE
+TOSL                              00000FFD
+TOSU                              00000FFF
+__18F242                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXX-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Bytes Used:     8
+Program Memory Bytes Free: 16376
+
+
+Errors   :     4
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

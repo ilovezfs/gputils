@@ -1,5 +1,6 @@
 /* Error handling
-   Copyright (C) 1998,1999,2000,2001 James Bowman, Craig Franklin
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 
+   James Bowman, Craig Franklin
 
 This file is part of gputils.
 
@@ -75,6 +76,7 @@ enum GPE_codes {
   GPE_NO_MACRO_NAME    = 135,
   GPE_DUPLICATE_MACRO  = 136,
   GPE_BAD_WHILE_LOOP   = 140,
+  GPE_ILLEGAL_NESTING  = 143,
   GPE_UNMATCHED_ENDM   = 145,
   GPE_OBJECT_ONLY      = 149,
   GPE_UNRESOLVABLE     = 151,

@@ -1,5 +1,6 @@
 /* top level functions for gpasm
-   Copyright (C) 1998,1999,2000,2001 James Bowman, Craig Franklin
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003
+   James Bowman, Craig Franklin
 
 This file is part of gputils.
 
@@ -176,7 +177,7 @@ void process_args( int argc, char *argv[])
   /* reset the getopt_long index for the next call */
   optind = 1;
 
-  /* initalize the defines table for command line argruments */
+  /* initalize the defines table for command line arguments */
   state.stDefines = push_symbol_table(NULL, state.case_insensitive);
 
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
@@ -291,7 +292,10 @@ void process_args( int argc, char *argv[])
 int assemble(void)
 {
   char *pc; 
+  struct symbol_table *cmd_defines;
 
+  /* store the command line defines to restore on second pass */
+  cmd_defines = state.stDefines;
   state.i_memory = i_memory_create();
 
   if(state.basefilename[0] == '\0') {
@@ -307,7 +311,8 @@ int assemble(void)
   state.stMacros = push_symbol_table(NULL, state.case_insensitive);
   state.stTop = 
     state.stGlobal = push_symbol_table(NULL, state.case_insensitive);
-  state.stTopDefines = state.stDefines;
+  state.stTopDefines = 
+    state.stDefines = push_symbol_table(cmd_defines, state.case_insensitive);
 
   opcode_init(0);
 
@@ -324,6 +329,9 @@ int assemble(void)
   state.pass++;
   state.org = 0;
   state.cblock = 0;
+  /* clean out defines for second pass */
+  state.stTopDefines = 
+    state.stDefines = push_symbol_table(cmd_defines, state.case_insensitive);
   if (state.cmd_line.radix != 1)
     state.radix = 16;
   state.obj.symbol_num = 0;

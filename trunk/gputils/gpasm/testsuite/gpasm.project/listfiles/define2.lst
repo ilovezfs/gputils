@@ -1,0 +1,58 @@
+MPASM 03.20.02 Released       DEFINE2.ASM   3-10-2003  2:14:35         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; This file tests for an error caused by the defines table not being
+                      00002 ; cleared after the first pass.
+                      00003 
+                      00004    processor 16f877
+                      00005 
+0000                  00006    org 0x0000 
+                      00007 
+0000   2804           00008    goto START 
+                      00009 
+                      00010 #IFNDEF temp
+                      00011 #DEFINE temp 
+                      00012 
+0001                  00013 FUNC 
+0001   0000           00014     nop 
+0002   0000           00015     nop 
+0003   0008           00016     return 
+                      00017 
+                      00018 #ENDIF 
+                      00019 
+0004                  00020 START 
+0004   0000           00021    nop 
+0005   0000           00022    nop 
+0006   2001           00023    call FUNC 
+0007   2804           00024    goto START 
+                      00025    end
+MPASM 03.20.02 Released       DEFINE2.ASM   3-10-2003  2:14:35         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FUNC                              00000001
+START                             00000004
+__16F877                          00000001
+temp                              
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXX-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     8
+Program Memory Words Free:  8184
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,5 +1,6 @@
 /* Symbol table support
-   Copyright (C) 1998,1999,2000,2001 James Bowman, Scott Dattalo
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003
+   James Bowman, Scott Dattalo
 
 This file is part of gputils.
 
@@ -161,7 +162,7 @@ void init_DirBlock(DirBlockInfo *a_dir)
 	      "gpasm",
 	      COD_DIR_NOTICE - COD_DIR_COMPILER);
   cod_strncpy(&a_dir->dir.block[COD_DIR_NOTICE], 
-	      "Copyright (c) 1998-2001 gnupic project",
+	      "Copyright (c) 1998-2003 gnupic project",
 	      COD_DIR_SYMTAB - COD_DIR_NOTICE);
 
   put_short_int(&a_dir->dir.block[COD_DIR_ADDRSIZE], 1 << _16bit_core);

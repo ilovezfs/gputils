@@ -1,5 +1,6 @@
 /* Implements special instruction mnemonics
-   Copyright (C) 2001 Craig Franklin
+   Copyright (C) 2001, 2002, 2003
+   Craig Franklin
 
 This file is part of gputils.
 

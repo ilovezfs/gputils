@@ -388,7 +388,8 @@ char *yytext;
 #define INITIAL 0
 #line 4 "scan.l"
 /* lexical analyser for gplink
-   Copyright (C) 2001 Craig Franklin
+   Copyright (C) 2001, 2002, 2003
+   Craig Franklin
 
 This file is part of gputils.
 
@@ -421,7 +422,7 @@ Boston, MA 02111-1307, USA.  */
 
 static void bad_char(char *character);
 
-#line 425 "lex.yy.c"
+#line 426 "lex.yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -572,9 +573,9 @@ YY_DECL
 	register char *yy_cp = NULL, *yy_bp = NULL;
 	register int yy_act;
 
-#line 42 "scan.l"
+#line 43 "scan.l"
 
-#line 578 "lex.yy.c"
+#line 579 "lex.yy.c"
 
 	if ( yy_init )
 		{
@@ -658,7 +659,7 @@ do_action:	/* This label is used only to access EOF actions. */
 			goto yy_find_action;
 
 case YY_STATE_EOF(INITIAL):
-#line 43 "scan.l"
+#line 44 "scan.l"
 {
 			   if (close_file())
 			     yyterminate();
@@ -666,21 +667,21 @@ case YY_STATE_EOF(INITIAL):
 	YY_BREAK
 case 1:
 YY_RULE_SETUP
-#line 47 "scan.l"
+#line 48 "scan.l"
 {
 			   return LIBPATH;
 			 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 50 "scan.l"
+#line 51 "scan.l"
 {
 			   return LKRPATH;
 			 }                         
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 53 "scan.l"
+#line 54 "scan.l"
 {
                            char *endptr;
 
@@ -693,7 +694,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 62 "scan.l"
+#line 63 "scan.l"
 {
                            char *endptr;
 
@@ -706,7 +707,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 71 "scan.l"
+#line 72 "scan.l"
 {
                            yylval.s = strdup(yytext);
                            return SYMBOL;
@@ -714,24 +715,24 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 75 "scan.l"
+#line 76 "scan.l"
 
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 76 "scan.l"
+#line 77 "scan.l"
 {
  			   return yytext[0];
 			 }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 79 "scan.l"
+#line 80 "scan.l"
 {  }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 80 "scan.l"
+#line 81 "scan.l"
 { 
 			   yylval.i = yytext[0];
 		           return yytext[0];
@@ -739,10 +740,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 84 "scan.l"
+#line 85 "scan.l"
 ECHO;
 	YY_BREAK
-#line 746 "lex.yy.c"
+#line 747 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -1621,7 +1622,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 84 "scan.l"
+#line 85 "scan.l"
 
 
 static void bad_char(char *character)

@@ -1,5 +1,6 @@
 /* gpasm library
-   Copyright (C) 2002 Craig Franklin
+   Copyright (C) 2002, 2003
+   Craig Franklin
 
 This file is part of gputils.
 

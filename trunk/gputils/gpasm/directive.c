@@ -1,5 +1,6 @@
 /* Implements directives, pseudo-ops and processor opcodes
-   Copyright (C) 1998,1999,2000,2001 James Bowman, Craig Franklin
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003
+   James Bowman, Craig Franklin
 
 This file is part of gputils.
 
@@ -396,12 +397,31 @@ static gpasmVal do_badram(gpasmVal r,
   return r;
 }
 
+static void
+set_bankisel(int address)
+{
+  if (state.device.class == PROC_CLASS_PIC14) {
+    if (address < 0x100) {
+      /* bcf 0x3, 0x7 */
+      emit(0x1383);
+    } else {
+      /* bsf 0x3, 0x7 */
+      emit(0x1783);
+    }
+  } else {
+    /* movlb bank */
+    emit(0xb800 | gp_processor_check_bank(state.device.class, address));
+  }
+
+}
+
 static gpasmVal do_bankisel(gpasmVal r,
 		            char *name,
 		            int arity,
 		            struct pnode *parms)
 {
   struct pnode *p;
+  int num_reloc;
 
   if ((state.device.class != PROC_CLASS_PIC14) &&
       (state.device.class != PROC_CLASS_PIC16)) {
@@ -414,21 +434,16 @@ static gpasmVal do_bankisel(gpasmVal r,
     if (state.mode == absolute) {
       if (p->tag != symbol) {
         gperror(GPE_ILLEGAL_LABEL, NULL);
-      } else if (state.device.class == PROC_CLASS_PIC14) {
-        if (maybe_evaluate(p) < 0x100) {
-           /* bcf 0x3, 0x7 */
-           emit(0x1383);
-        } else {
-           /* bsf 0x3, 0x7 */
-           emit(0x1783);
-        }
       } else {
-        /* movlb bank */
-        emit(0xb800 | gp_processor_check_bank(state.device.class,
-                                              maybe_evaluate(p)));
+        set_bankisel(maybe_evaluate(p));
       }
     } else {
-      if (count_reloc(p) != 1) {
+      num_reloc = count_reloc(p);
+ 
+      if (num_reloc == 0) {
+        /* it is an absolute address, generate the bankisel but no relocation */
+        set_bankisel(maybe_evaluate(p));
+      } else if (num_reloc != 1) {
         gperror(GPE_UNRESOLVABLE, NULL);
       } else {
         reloc_evaluate(p, RELOCT_IBANKSEL);
@@ -446,6 +461,9 @@ static gpasmVal do_banksel(gpasmVal r,
 		           struct pnode *parms)
 {
   struct pnode *p;
+  int address;
+  int bank;
+  int num_reloc;
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
@@ -453,16 +471,25 @@ static gpasmVal do_banksel(gpasmVal r,
       if (p->tag != symbol) {
         gperror(GPE_ILLEGAL_LABEL, NULL);
       } else {
-        int address = maybe_evaluate(p);
-        int bank = gp_processor_check_bank(state.device.class, address);
-  
+        address = maybe_evaluate(p);
+        bank = gp_processor_check_bank(state.device.class, address);
         state.org += gp_processor_set_bank(state.device.class, 
                                            bank, 
                                            state.i_memory, 
                                            state.org);
       }
     } else {
-      if (count_reloc(p) != 1) {
+      num_reloc = count_reloc(p);
+
+      if (num_reloc == 0) {
+        /* it is an absolute address, generate the banksel but no relocation */
+        address = maybe_evaluate(p);
+        bank = gp_processor_check_bank(state.device.class, address);
+        state.org += gp_processor_set_bank(state.device.class, 
+                                           bank, 
+                                           state.i_memory, 
+                                           state.org);
+      } else if (num_reloc != 1) {
         gperror(GPE_UNRESOLVABLE, NULL);
       } else if (state.device.class == PROC_CLASS_PIC16) {
         reloc_evaluate(p, RELOCT_BANKSEL);
@@ -1701,6 +1728,9 @@ static gpasmVal do_pagesel(gpasmVal r,
 		           struct pnode *parms)
 {
   struct pnode *p;
+  int address;
+  int page;
+  int num_reloc;
   
   if ((state.device.class == PROC_CLASS_EEPROM8) ||
       (state.device.class == PROC_CLASS_PIC16E)) {
@@ -1716,8 +1746,8 @@ static gpasmVal do_pagesel(gpasmVal r,
       if (p->tag != symbol) {
         gperror(GPE_ILLEGAL_LABEL, NULL);
       } else {
-        int address = maybe_evaluate(p);
-        int page = gp_processor_check_page(state.device.class, address);
+        address = maybe_evaluate(p);
+        page = gp_processor_check_page(state.device.class, address);
 
         state.org += gp_processor_set_page(state.device.class, 
                                            page, 
@@ -1725,7 +1755,18 @@ static gpasmVal do_pagesel(gpasmVal r,
                                            state.org);
       }
     } else {
-      if (count_reloc(p) != 1) {
+      num_reloc = count_reloc(p);
+      
+      if (num_reloc == 0) {
+        /* it is an absolute address, generate the pagesel but no relocation */
+        address = maybe_evaluate(p);
+        page = gp_processor_check_page(state.device.class, address);
+
+        state.org += gp_processor_set_page(state.device.class, 
+                                           page, 
+                                           state.i_memory, 
+                                           state.org);
+      } else if (num_reloc != 1) {
         gperror(GPE_ILLEGAL_LABEL, NULL);
       } else if (state.device.class == PROC_CLASS_PIC16) {
         reloc_evaluate(p, RELOCT_PAGESEL_WREG);
@@ -2443,7 +2484,16 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
       case INSN_CLASS_FF:
 	if (enforce_arity(arity, 2)) {
+          int dest = maybe_evaluate(HEAD(TAIL(parms)));
 
+          /* destination can't be PCL, TOSU, TOSH, TOSL */
+          if ((dest == 0xff9) ||
+              (dest == 0xfff) ||
+              (dest == 0xffe) ||
+              (dest == 0xffd)) {
+            gperror(GPE_UNKNOWN, "Invalid destination");
+          }
+          
 	  emit_check(i->opcode, reloc_evaluate(HEAD(parms), RELOCT_FF1), 0xfff);
 	  emit_check(0xf000, reloc_evaluate(HEAD(TAIL(parms)), RELOCT_FF2), 0xfff);
 
@@ -2455,7 +2505,9 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           file=reloc_evaluate(HEAD(parms), RELOCT_F);
           reg=reloc_evaluate(HEAD(TAIL(parms)), RELOCT_P);
           file_ok(file);
-          file_ok(reg);
+          if (reg & 0x1f) {
+            gpwarning(GPW_RANGE, NULL);
+          }
           emit(i->opcode | ( (reg  & 0x1f) << 8) |
               (file & 0xff) );
         }
@@ -2466,7 +2518,9 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           file=reloc_evaluate(HEAD(TAIL(parms)), RELOCT_F);
           reg=reloc_evaluate(HEAD(parms), RELOCT_P);
           file_ok(file);
-          file_ok(reg);
+          if (reg & 0x1f) {
+            gpwarning(GPW_RANGE, NULL);
+          }
           emit(i->opcode | ( (reg & 0x1f) << 8) |
               (file & 0xff) );
         }
