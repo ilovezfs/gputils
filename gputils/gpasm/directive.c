@@ -1650,10 +1650,32 @@ static void emit_check(int insn, int argument, int mask)
   if (test < 0)
     test = -test;
 
-  /* ones complement the mask and logical AND it with the argument */
+  /* If there are bits that shouldn't be set then issue a warning */
   if (test & (~mask)) {
     gpwarning(GPW_RANGE, NULL);
   }
+  emit(insn | (argument & mask));
+  
+  return;
+} 
+
+/* 
+   For relative branches, issue a warning if the absolute value of
+   argument is greater than range
+*/
+static void emit_check_relative(int insn, int argument, int mask, int range)
+{
+  char full_message[BUFSIZ];
+
+  /* If the branch is too far then issue an error */
+  if ((argument > range) || (argument < -(range+1))) {
+    sprintf(full_message,"Argument out of range (%d not between %d and %d)\n",
+	    argument,
+	    -(range+1),
+	    range);
+    gperror(GPE_RANGE, full_message);
+  }
+
   emit(insn | (argument & mask));
   
   return;
@@ -1799,7 +1821,10 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  int offset = ((maybe_evaluate( HEAD(parms)) ) - 
 			((state.org + 1)<<_16bit_core));
 	  offset >>= _16bit_core;
-          emit_check(i->opcode, offset, 0xff);
+
+	  /* The offset for the relative branch must be 
+	     between -127 <= offset <= 127. */
+	  emit_check_relative(i->opcode, offset, 0xff, 127);
 	}
 	break;
       case INSN_CLASS_RBRA11:
@@ -1807,7 +1832,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  int offset = ((maybe_evaluate( HEAD(parms)) ) - 
 			((state.org + 1)<<_16bit_core));
 	  offset >>= _16bit_core;
-          emit_check(i->opcode, offset, 0x7ff);
+	  emit_check_relative(i->opcode, offset, 0x7ff, 0x3ff);
 	}
 	break;
       case INSN_CLASS_LIT20:
@@ -1844,7 +1869,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    enforce_arity(arity, 2);
 	  }
 	  dest = maybe_evaluate(p) >> _16bit_core;
-	  emit_check(i->opcode | (s<<8), dest, 0xff);
+	  emit_check(i->opcode | (s<<8), (dest&0xff), 0xff);
 	  emit_check(0xf000, (dest>>8), 0xfff);
 	}
 	break;
@@ -1860,8 +1885,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
 	    p = HEAD(TAIL(parms));
 	    k =  maybe_evaluate(p);
-
 	    emit_check(i->opcode | ((file & 3) << 4), (k>>8), 0xf);
+	    k &= 0xff;
 	    emit_check(0xf000, k, 0xff);
 	  }
 	}
