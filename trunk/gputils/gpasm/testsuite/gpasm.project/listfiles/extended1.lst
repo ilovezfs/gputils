@@ -1,0 +1,45 @@
+MPASM 03.90 Released                            EXTENDED1.ASM   12-31-2004  17:18:19         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001   list pe=18f2455
+                      00002   
+000100                00003   org 100
+000100 E83F           00004   addfsr 0, 0x3f
+000102 E84F           00005   addfsr 1, 0xf
+000104 E88F           00006   addfsr 2, 0xf
+000106 E8FF           00007   addulnk 0x3f
+000108 0014           00008   callw
+00010A EB7F FF0F      00009   movsf [0x7f], 0xf0f
+00010E EBFF F07F      00010   movss [0x7f], [0x7f]
+000112 EA00           00011   pushl 0x00
+000114 E94F           00012   subfsr 1, 0xf
+000116 E9CF           00013   subulnk 0xf
+                      00014   
+                      00015   end
+MPASM 03.90 Released                            EXTENDED1.ASM   12-31-2004  17:18:19         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__18F2455                         00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0100 : XXXXXXXXXXXXXXXX XXXXXXXX-------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Bytes Used:    24
+Program Memory Bytes Free: 32744
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

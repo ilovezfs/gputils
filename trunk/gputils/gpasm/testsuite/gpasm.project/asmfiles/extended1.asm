@@ -1,0 +1,15 @@
+  list pe=18f2455
+  
+  org 100
+  addfsr 0, 0x3f
+  addfsr 1, 0xf
+  addfsr 2, 0xf
+  addulnk 0x3f
+  callw
+  movsf [0x7f], 0xf0f
+  movss [0x7f], [0x7f]
+  pushl 0x00
+  subfsr 1, 0xf
+  subulnk 0xf
+  
+  end
