@@ -217,5 +217,4 @@ EXTRA_DIST =\
 	rf509af.lkr \
 	rf509ag.lkr
 
-# Don't install the linker scripts until gplink is working
-# pkgdata_DATA= $(EXTRA_DIST)
+pkgdata_DATA= $(EXTRA_DIST)
