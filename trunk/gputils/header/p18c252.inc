@@ -581,6 +581,68 @@ RX              EQU  7
 
 ;       __MAXRAM H'5FF'
         
+
+;==========================================================================
+;
+;   IMPORTANT: For the PIC18 devices, the __CONFIG directive has been
+;              superseded by the CONFIG directive.  The following settings
+;              are available for this device.
+;
+;   Code Protect:
+;     CP = ON              Enabled
+;     CP = OFF             Disabled
+;
+;   Oscillator Selection:
+;     OSC = LP             LP
+;     OSC = XT             XT
+;     OSC = HS             HS
+;     OSC = RC             RC
+;     OSC = EC             EC-OSC2 as Clock Out
+;     OSC = ECIO           EC-OSC2 as RA6
+;     OSC = HSPLL          HS-PLL Enabled
+;     OSC = RCIO           RC-OSC2 as RA6
+;
+;   Osc. Switch Enable:
+;     OSCS = ON            Enabled
+;     OSCS = OFF           Disabled
+;
+;   Power Up Timer:
+;     PWRT = ON            Enabled
+;     PWRT = OFF           Disabled
+;
+;   Brown Out Reset:
+;     BOR = OFF            Disabled
+;     BOR = ON             Enabled
+;
+;   Brown Out Voltage:
+;     BORV = 45            4.5V
+;     BORV = 42            4.2V
+;     BORV = 27            2.7V
+;     BORV = 25            2.5V
+;
+;   Watchdog Timer:
+;     WDT = OFF            Disabled
+;     WDT = ON             Enabled
+;
+;   Watchdog Postscaler:
+;     WDTPS = 1            1:1
+;     WDTPS = 2            1:2
+;     WDTPS = 4            1:4
+;     WDTPS = 8            1:8
+;     WDTPS = 16           1:16
+;     WDTPS = 32           1:32
+;     WDTPS = 64           1:64
+;     WDTPS = 128          1:128
+;
+;   CCP2 Mux:
+;     CCP2MUX = OFF        Disable (RB3)
+;     CCP2MUX = ON         Enable (RC1)
+;
+;   Stack Overflow Reset:
+;     STVR = OFF           Disabled
+;     STVR = ON            Enabled
+;
+;==========================================================================
 ;==========================================================================
 ;
 ;       Configuration Bits

@@ -4,7 +4,7 @@
 ;  $Id$
 ;  MPASM PIC18F86J15 processor include
 ; 
-;  (c) Copyright 1999-2004 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2005 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -1522,6 +1522,99 @@ STKOVF           EQU  H'0007'
        __BADRAM  H'0FD2'
        __BADRAM  H'0FD4'
 
+;==========================================================================
+;
+;   IMPORTANT: For the PIC18 devices, the __CONFIG directive has been
+;              superseded by the CONFIG directive.  The following settings
+;              are available for this device.
+;
+;   Background Debugger Enable:
+;     DEBUG = ON           Enabled
+;     DEBUG = OFF          Disabled
+;
+;   Extended Instruction Set Enable:
+;     XINST = OFF          Disabled
+;     XINST = ON           Enabled
+;
+;   Stack Overflow Reset:
+;     STVR = OFF           Disabled
+;     STVR = ON            Enabled
+;
+;   Low Voltage ICSP:
+;     LVP = OFF            Disabled
+;     LVP = ON             Enabled
+;
+;   Watchdog Timer:
+;     WDT = OFF            Disabled
+;     WDT = ON             Enabled
+;
+;   Configuration Word Signature:
+;     SIGN = CLR           Clear
+;     SIGN = SET           Set
+;
+;   Code Protection:
+;     CP0 = ON             Enabled
+;     CP0 = OFF            Disabled
+;
+;   Fail Safe Clock Monitor:
+;     FCMEM = OFF          Disabled
+;     FCMEM = ON           Enabled
+;
+;   Internal/External Switch Over:
+;     IESO = OFF           Disabled
+;     IESO = ON            Enabled
+;
+;   Oscillator Selection bits:
+;     FOSC = HS            HS oscillator
+;     FOSC = HSPLL         HS oscillator, Software Controlled PLL
+;     FOSC = EC            External Clock
+;     FOSC = ECPLL         External Clock, Software Controlled PLL
+;
+;   Watchdog Postscaler:
+;     WDTPS = 1            1:1
+;     WDTPS = 2            1:2
+;     WDTPS = 4            1:4
+;     WDTPS = 8            1:8
+;     WDTPS = 16           1:16
+;     WDTPS = 32           1:32
+;     WDTPS = 64           1:64
+;     WDTPS = 128          1:128
+;     WDTPS = 256          1:256
+;     WDTPS = 512          1:512
+;     WDTPS = 1024         1:1024
+;     WDTPS = 2048         1:2048
+;     WDTPS = 4096         1:4096
+;     WDTPS = 8192         1:8192
+;     WDTPS = 16384        1:16384
+;     WDTPS = 32768        1:32768
+;
+;   External Bus Data Wait:
+;     WAIT = ON            Enabled
+;     WAIT = OFF           Disabled
+;
+;   Data Bus Width Select:
+;     BW = 8               8-bit external bus
+;     BW = 16              16-bit external bus
+;
+;   Processor Mode Selection:
+;     MODE = MM            Microcontroller Mode - External bus disabled
+;     MODE = XM12          Extended Microcontroller Mode - 12-bit address mode
+;     MODE = XM16          Extended Microcontroller Mode - 16-bit address mode
+;     MODE = XM20          Extended Microcontroller Mode - 20-bit address mode
+;
+;   External Address Bus Shift Enable:
+;     EASHIFT = OFF        External bus reflects PC value
+;     EASHIFT = ON         External bus starts at 000000h
+;
+;   ECCP Mux:
+;     ECCPMUX = OFF        Disabled
+;     ECCPMUX = ON         Enabled
+;
+;   CCP2 Mux:
+;     CCP2MUX = OFF        Disabled
+;     CCP2MUX = ON         Enabled
+;
+;==========================================================================
 ;==========================================================================
 ;
 ;       Configuration Bits

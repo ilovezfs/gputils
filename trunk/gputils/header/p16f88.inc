@@ -28,6 +28,7 @@
 ;1.02	01/10/03 Added bit names for TXSTA & RCSTA registers.
 ;1.03	01/24/03 Changed Config bit CCP1_RB2 to CCP1_RB0
 ;1.04	12/02/03 Modified the WRT1:WRT0 bit definition in Config Word 1.
+;1.05	02/08/04 Changed bit in _CONFIG1 example from CCP1_RB2 to CCP1_RB0.
 
 ;==========================================================================
 ;
@@ -390,7 +391,7 @@ _FCMEN_OFF                   EQU     H'3FFE'
 ;  pasted into your source code.
 
 ;Program Configuration Register 1
-;		__CONFIG    _CONFIG1, _CP_OFF & _CCP1_RB2 & _DEBUG_OFF & _WRT_PROTECT_OFF & _CPD_OFF & _LVP_OFF & _BODEN_OFF & _MCLR_OFF & _PWRTE_OFF & _WDT_OFF & _HS_OSC
+;		__CONFIG    _CONFIG1, _CP_OFF & _CCP1_RB0 & _DEBUG_OFF & _WRT_PROTECT_OFF & _CPD_OFF & _LVP_OFF & _BODEN_OFF & _MCLR_OFF & _PWRTE_OFF & _WDT_OFF & _HS_OSC
 
 ;Program Configuration Register 2
 ;		__CONFIG    _CONFIG2, _IESO_OFF & _FCMEN_OFF

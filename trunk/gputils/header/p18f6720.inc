@@ -798,6 +798,192 @@ CCP5            EQU  4
 	__BADRAM H'F79'-H'F7F'
 	__BADRAM H'F9B',H'FB6',H'FD4'
        
+
+;==========================================================================
+;
+;   IMPORTANT: For the PIC18 devices, the __CONFIG directive has been
+;              superseded by the CONFIG directive.  The following settings
+;              are available for this device.
+;
+;   Oscillator Selection:
+;     OSC = LP             LP
+;     OSC = XT             XT
+;     OSC = HS             HS
+;     OSC = RC             RC
+;     OSC = EC             EC-OSC2 as Clock Out
+;     OSC = ECIO           EC-OSC2 as RA6
+;     OSC = HSPLL          HS-PLL Enabled
+;     OSC = RCIO           RC-OSC2 as RA6
+;
+;   Osc. Switch Enable:
+;     OSCS = ON            Enabled
+;     OSCS = OFF           Disabled
+;
+;   Power Up Timer:
+;     PWRT = ON            Enabled
+;     PWRT = OFF           Disabled
+;
+;   Brown Out Reset:
+;     BOR = OFF            Disabled
+;     BOR = ON             Enabled
+;
+;   Brown Out Voltage:
+;     BORV = 45            4.5V
+;     BORV = 42            4.2V
+;     BORV = 27            2.7V
+;     BORV = 25            2.5V
+;
+;   Watchdog Timer:
+;     WDT = OFF            Disabled
+;     WDT = ON             Enabled
+;
+;   Watchdog Postscaler:
+;     WDTPS = 1            1:1
+;     WDTPS = 2            1:2
+;     WDTPS = 4            1:4
+;     WDTPS = 8            1:8
+;     WDTPS = 16           1:16
+;     WDTPS = 32           1:32
+;     WDTPS = 64           1:64
+;     WDTPS = 128          1:128
+;
+;   CCP2 Mux:
+;     CCP2MUX = OFF        Disabled
+;     CCP2MUX = ON         Enabled
+;
+;   Stack Overflow Reset:
+;     STVR = OFF           Disabled
+;     STVR = ON            Enabled
+;
+;   Low Voltage ICSP:
+;     LVP = OFF            Disabled
+;     LVP = ON             Enabled
+;
+;   Background Debugger Enable:
+;     DEBUG = ON           Enabled
+;     DEBUG = OFF          Disabled
+;
+;   Code Protection Block 0:
+;     CP0 = ON             Enabled
+;     CP0 = OFF            Disabled
+;
+;   Code Protection Block 1:
+;     CP1 = ON             Enabled
+;     CP1 = OFF            Disabled
+;
+;   Code Protection Block 2:
+;     CP2 = ON             Enabled
+;     CP2 = OFF            Disabled
+;
+;   Code Protection Block 3:
+;     CP3 = ON             Enabled
+;     CP3 = OFF            Disabled
+;
+;   Code Protection Block 4:
+;     CP4 = ON             Enabled
+;     CP4 = OFF            Disabled
+;
+;   Code Protection Block 5:
+;     CP5 = ON             Enabled
+;     CP5 = OFF            Disabled
+;
+;   Code Protection Block 6:
+;     CP6 = ON             Enabled
+;     CP6 = OFF            Disabled
+;
+;   Code Protection Block 7:
+;     CP7 = ON             Enabled
+;     CP7 = OFF            Disabled
+;
+;   Boot Block Code Protection:
+;     CPB = ON             Enabled
+;     CPB = OFF            Disabled
+;
+;   Data EEPROM Code Protection:
+;     CPD = ON             Enabled
+;     CPD = OFF            Disabled
+;
+;   Write Protection Block 0:
+;     WRT0 = ON            Enabled
+;     WRT0 = OFF           Disabled
+;
+;   Write Protection Block 1:
+;     WRT1 = ON            Enabled
+;     WRT1 = OFF           Disabled
+;
+;   Write Protection Block 2:
+;     WRT2 = ON            Enabled
+;     WRT2 = OFF           Disabled
+;
+;   Write Protection Block 3:
+;     WRT3 = ON            Enabled
+;     WRT3 = OFF           Disabled
+;
+;   Write Protection Block 4:
+;     WRT4 = ON            Enabled
+;     WRT4 = OFF           Disabled
+;
+;   Write Protection Block 5:
+;     WRT5 = ON            Enabled
+;     WRT5 = OFF           Disabled
+;
+;   Write Protection Block 6:
+;     WRT6 = ON            Enabled
+;     WRT6 = OFF           Disabled
+;
+;   Write Protection Block 7:
+;     WRT7 = ON            Enabled
+;     WRT7 = OFF           Disabled
+;
+;   Boot Block Write Protection:
+;     WRTB = ON            Enabled
+;     WRTB = OFF           Disabled
+;
+;   Configuration Register Write Protection:
+;     WRTC = ON            Enabled
+;     WRTC = OFF           Disabled
+;
+;   Data EEPROM Write Protection:
+;     WRTD = ON            Enabled
+;     WRTD = OFF           Disabled
+;
+;   Table Read Protection Block 0:
+;     EBTR0 = ON           Enabled
+;     EBTR0 = OFF          Disabled
+;
+;   Table Read Protection Block 1:
+;     EBTR1 = ON           Enabled
+;     EBTR1 = OFF          Disabled
+;
+;   Table Read Protection Block 2:
+;     EBTR2 = ON           Enabled
+;     EBTR2 = OFF          Disabled
+;
+;   Table Read Protection Block 3:
+;     EBTR3 = ON           Enabled
+;     EBTR3 = OFF          Disabled
+;
+;   Table Read Protection Block 4:
+;     EBTR4 = ON           Enabled
+;     EBTR4 = OFF          Disabled
+;
+;   Table Read Protection Block 5:
+;     EBTR5 = ON           Enabled
+;     EBTR5 = OFF          Disabled
+;
+;   Table Read Protection Block 6:
+;     EBTR6 = ON           Enabled
+;     EBTR6 = OFF          Disabled
+;
+;   Table Read Protection Block 7:
+;     EBTR7 = ON           Enabled
+;     EBTR7 = OFF          Disabled
+;
+;   Boot Block Table Read Protection:
+;     EBTRB = ON           Enabled
+;     EBTRB = OFF          Disabled
+;
+;==========================================================================
 ;==========================================================================
 ;
 ;       Configuration Bits

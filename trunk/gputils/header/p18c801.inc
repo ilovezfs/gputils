@@ -703,6 +703,46 @@ D7		EQU  7
        __BADRAM H'400'-H'F7F', H'F9B', H'FA3'-H'FA5'
        __BADRAM H'FA8'-H'FAA', H'FB4'-H'FB9', H'FD4'
         
+
+;==========================================================================
+;
+;   IMPORTANT: For the PIC18 devices, the __CONFIG directive has been
+;              superseded by the CONFIG directive.  The following settings
+;              are available for this device.
+;
+;   Oscillator Selection:
+;     OSC = LP             LP Oscillator
+;     OSC = EC             EC Oscillator
+;     OSC = HS             HS Oscillator
+;     OSC = RC             RC Oscillator
+;
+;   Power-up Timer:
+;     PWRT = ON            Enable
+;     PWRT = OFF           Disable
+;
+;   External Bus Data Width:
+;     BW = 8               8-bit external bus mode
+;     BW = 16              16-bit external bus mode
+;
+;   Watchdog Timer:
+;     WDT = OFF            Disabled
+;     WDT = ON             Enabled
+;
+;   Watchdog Timer Postscale Selection:
+;     WDTPS = 1            1:1
+;     WDTPS = 2            1:2
+;     WDTPS = 4            1:4
+;     WDTPS = 8            1:8
+;     WDTPS = 16           1:16
+;     WDTPS = 32           1:32
+;     WDTPS = 64           1:64
+;     WDTPS = 128          1:128
+;
+;   Stack Full/Underflow RESET:
+;     STVR = OFF           Disabled
+;     STVR = ON            Enabled
+;
+;==========================================================================
 ;==========================================================================
 ;
 ;       Configuration Bits

@@ -4,7 +4,7 @@
 ;  $Id$
 ;  MPASM PIC18F4585 processor include
 ; 
-;  (c) Copyright 1999-2004 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2005 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -4322,6 +4322,178 @@ STKFUL           EQU  H'0007'
        __BADRAM  H'0FB9'
        __BADRAM  H'0FD4'
 
+;==========================================================================
+;
+;   IMPORTANT: For the PIC18 devices, the __CONFIG directive has been
+;              superseded by the CONFIG directive.  The following settings
+;              are available for this device.
+;
+;   Oscillator Selection bits:
+;     OSC = LP             LP
+;     OSC = XT             XT
+;     OSC = HS             HS
+;     OSC = RC             External RC with OSC2 as divide by 4 clock out
+;     OSC = EC             EC with OSC2 as divide by 4 clock out
+;     OSC = ECIO           EC with OSC2 as RA6
+;     OSC = HSPLL          HS with HW enabled 4xPLL
+;     OSC = RCIO           External RC with OSC2 as RA6
+;     OSC = IRCIO67        Internal RC with OSC2 as RA6 and OSC1 as RA7
+;     OSC = IRCIO7         Internal RC with OSC1 as RA7 and OSC2 as divide by 4 clock out
+;     OSC = ERC1           External RC with OSC2 as divide by 4 clock out
+;     OSC = ERC            External RC with OSC2 as divide by 4 clock out
+;
+;   Fail Safe Clock Monitor:
+;     FCMENB = OFF         Disabled
+;     FCMENB = ON          Enabled
+;
+;   Internal External Osc. Switch:
+;     IESOB = OFF          Disabled
+;     IESOB = ON           Enabled
+;
+;   Power Up Timer:
+;     PWRT = ON            Enabled
+;     PWRT = OFF           Disabled
+;
+;   Brown Out Reset:
+;     BOR = OFF            Disabled
+;     BOR = SBORENCTRL     Controlled by SBOREN
+;     BOR = BOACTIVE       Enabled whenever Part is Active - SBOREN Disabled
+;     BOR = BOHW           Enabled in HW, SBOREN disabled
+;
+;   Brown Out Voltage:
+;     BORV = 45            4.5V
+;     BORV = 42            4.2V
+;     BORV = 27            2.7V
+;     BORV = 20            2.0V
+;
+;   Watchdog Timer:
+;     WDT = OFF            HW Disabled - SW Controlled
+;     WDT = ON             HW Enabled - SW Disabled
+;
+;   Watchdog Postscaler:
+;     WDTPS = 1            1:1
+;     WDTPS = 2            1:2
+;     WDTPS = 4            1:4
+;     WDTPS = 8            1:8
+;     WDTPS = 16           1:16
+;     WDTPS = 32           1:32
+;     WDTPS = 64           1:64
+;     WDTPS = 128          1:128
+;     WDTPS = 256          1:256
+;     WDTPS = 512          1:512
+;     WDTPS = 1024         1:1024
+;     WDTPS = 2048         1:2048
+;     WDTPS = 4096         1:4096
+;     WDTPS = 8192         1:8192
+;     WDTPS = 16384        1:16384
+;     WDTPS = 32768        1:32768
+;
+;   MCLR Enable:
+;     MCLRE = OFF          Disabled
+;     MCLRE = ON           Enabled
+;
+;   Low Power Timer1 Oscillator:
+;     LPT1OSC = OFF        Timer1 Low Power Oscillator disabled
+;     LPT1OSC = ON         Timer1 Low Power Oscillator Active
+;
+;   Port B Pins Configured for A/D:
+;     PBADEN = OFF         Port B<4> and Port B<1:0> Configured as Digital I/O Pins on Reset
+;     PBADEN = ON          Port B<4> and Port B<1:0> Configured as Analog Pins on Reset
+;
+;   BackGround Debug:
+;     DEBUG = ON           Enabled
+;     DEBUG = OFF          Disabled
+;
+;   Enhanced Instruction Set CPU:
+;     XINST = OFF          Disabled
+;     XINST = ON           Enabled
+;
+;   Boot Block Size:
+;     BBSIZ = 1024         1K words (2K bytes) Boot Block
+;     BBSIZ = 2048         2K words (4K bytes) Boot Block
+;     BBSIZ = 4096         4K words (8K bytes) Boot Block
+;
+;   Low Voltage Programming:
+;     LVP = OFF            Disabled
+;     LVP = ON             Enabled
+;
+;   Stack Overflow/Underflow Reset:
+;     STVREN = OFF         Disabled
+;     STVREN = ON          Enabled
+;
+;   Code Protection Block 0:
+;     CP0 = ON             Enabled
+;     CP0 = OFF            Disabled
+;
+;   Code Protection Block 1:
+;     CP1 = ON             Enabled
+;     CP1 = OFF            Disabled
+;
+;   Code Protection Block 2:
+;     CP2 = ON             Enabled
+;     CP2 = OFF            Disabled
+;
+;   Code Protection Block 3:
+;     CP3 = ON             Enabled
+;     CP3 = OFF            Disabled
+;
+;   Boot Block Code Protection:
+;     CPB = ON             Enabled
+;     CPB = OFF            Disabled
+;
+;   Data EEPROM Code Protection:
+;     CPD = ON             Enabled
+;     CPD = OFF            Disabled
+;
+;   Write Protection Block 0:
+;     WRT0 = ON            Enabled
+;     WRT0 = OFF           Disabled
+;
+;   Write Protection Block 1:
+;     WRT1 = ON            Enabled
+;     WRT1 = OFF           Disabled
+;
+;   Write Protection Block 2:
+;     WRT2 = ON            Enabled
+;     WRT2 = OFF           Disabled
+;
+;   Write Protection Block 3:
+;     WRT3 = ON            Enabled
+;     WRT3 = OFF           Disabled
+;
+;   Boot Block Write Protection:
+;     WRTB = ON            Enabled
+;     WRTB = OFF           Disabled
+;
+;   Configuration Register Write Protection:
+;     WRTC = ON            Enabled
+;     WRTC = OFF           Disabled
+;
+;   Data EEPROM Write Protection:
+;     WRTD = ON            Enabled
+;     WRTD = OFF           Disabled
+;
+;   Table Read Protection Block 0:
+;     EBTR0 = ON           Enabled
+;     EBTR0 = OFF          Disabled
+;
+;   Table Read Protection Block 1:
+;     EBTR1 = ON           Enabled
+;     EBTR1 = OFF          Disabled
+;
+;   Table Read Protection Block 2:
+;     EBTR2 = ON           Enabled
+;     EBTR2 = OFF          Disabled
+;
+;   Table Read Protection Block 3:
+;     EBTR3 = ON           Enabled
+;     EBTR3 = OFF          Disabled
+;
+;   Boot Block Table Read Protection:
+;     EBTRB = ON           Enabled
+;     EBTRB = OFF          Disabled
+;
+;==========================================================================
 ;==========================================================================
 ;
 ;       Configuration Bits
