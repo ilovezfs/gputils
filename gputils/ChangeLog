@@ -1,3 +1,6 @@
+2004-11-05 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * Moved gpal FSR code to device specific code generators.
+
 2004-11-05 Robert Kaes <rjkaes@users.sourceforge.net>
   * Improved gpal 16e code generator.
 
