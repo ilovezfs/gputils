@@ -178,6 +178,7 @@ else
   rm -Rf $src_dir
   tar -zxf $srcfilename
   # make the distribution directory
+  root_dir="`pwd`"
   dist_dir="`pwd`/dist"
   rm -Rf $dist_dir
   mkdir -p $dist_dir/gputils
@@ -268,7 +269,8 @@ print_banner "Copying project data to distribution directory"
 # copy the common files
 for x in $common
   do
-    cp $x $dist_dir/gputils
+    cp $x $dist_dir/gputils/$x.txt
+    unix2dos -q $dist_dir/gputils/$x.txt
   done
 echo "copying project data... $common"
 
@@ -288,8 +290,20 @@ for x in $delete_dir
 echo "removing directories... $delete_dir"
 
 # generate the binary distribution data file
-data_file > $dist_dir/gputils/DISTRIBUTION
-echo "creating binary data file... DISTRIBUTION"
+data_file > $dist_dir/gputils/DISTRIBUTION.txt
+unix2dos -q $dist_dir/gputils/DISTRIBUTION.txt
+echo "creating binary data file... DISTRIBUTION.txt"
+
+# copy the NSIS script and icon
+sed -e s/@VERSION@/$version/ $root_dir/gputils.nsi.in > $dist_dir/gputils/gputils.nsi
+echo "creating NSIS script... gputils.nsi"
+cp $root_dir/gputils.ico $dist_dir/gputils
+echo "copying gputils icon... gputils.ico"
+
+# convert the remaining project data to dos format
+unix2dos -q $dist_dir/gputils/header/*
+unix2dos -q $dist_dir/gputils/lkr/*
+echo "converting project data to DOS format... done"
 
 ################################################################################
 # make the archive
