@@ -64,29 +64,44 @@ gp_disassemble(MemBlock *m,
     snprintf(buffer, sizeof_buffer, "unsupported processor class");
     return;
   case PROC_CLASS_PIC12:
-    for(i = 0; i < num_op_12c5xx; i++)
-      if((op_12c5xx[i].mask & opcode) == op_12c5xx[i].opcode)
+    for(i = 0; i < num_op_12c5xx; i++) {
+      if((op_12c5xx[i].mask & opcode) == op_12c5xx[i].opcode) {
         instruction = &op_12c5xx[i];
+        break;
+      }
+    }
     break;
   case PROC_CLASS_SX:
-    for(i = 0; i < num_op_sx; i++)
-      if((op_sx[i].mask & opcode) == op_sx[i].opcode)
+    for(i = 0; i < num_op_sx; i++) {
+      if((op_sx[i].mask & opcode) == op_sx[i].opcode) {
         instruction = &op_sx[i];
+        break;
+      }
+    }
     break;
   case PROC_CLASS_PIC14:
-    for(i = 0; i < num_op_16cxx; i++)
-      if((op_16cxx[i].mask & opcode) == op_16cxx[i].opcode)
+    for(i = 0; i < num_op_16cxx; i++) {
+      if((op_16cxx[i].mask & opcode) == op_16cxx[i].opcode) {
         instruction = &op_16cxx[i];
+        break;
+      }
+    }
     break;
   case PROC_CLASS_PIC16:
-    for(i = 0; i < num_op_17cxx; i++)
-      if((op_17cxx[i].mask & opcode) == op_17cxx[i].opcode)
+    for(i = 0; i < num_op_17cxx; i++) {
+      if((op_17cxx[i].mask & opcode) == op_17cxx[i].opcode) {
         instruction = &op_17cxx[i];
+        break;
+      }
+    }
     break;
   case PROC_CLASS_PIC16E:
-    for(i = 0; i < num_op_18cxx; i++)
-      if((op_18cxx[i].mask & opcode) == op_18cxx[i].opcode)
+    for(i = 0; i < num_op_18cxx; i++) {
+      if((op_18cxx[i].mask & opcode) == op_18cxx[i].opcode) {
         instruction = &op_18cxx[i];
+        break;
+      }
+    }
     break;
   default:
     assert(0);
