@@ -29,4 +29,4 @@ gplink
   * Implement idata.
   * Complete protected features.
   * Check the 18xx relocations.
-  * Handle sharebank sections properly.
+  * Handle sharebank and accessbank sections properly.
