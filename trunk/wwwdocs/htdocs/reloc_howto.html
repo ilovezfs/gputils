@@ -6,7 +6,7 @@
 	<META NAME="AUTHOR" CONTENT=" ">
 	<META NAME="CREATED" CONTENT="20030408;1072000">
 	<META NAME="CHANGEDBY" CONTENT=" ">
-	<META NAME="CHANGED" CONTENT="20030408;20521500">
+	<META NAME="CHANGED" CONTENT="20030409;20043800">
 	<STYLE>
 	<!--
 		@page { size: 8.5in 10.96in; margin-left: 1.25in; margin-right: 1.25in; margin-top: 1in; margin-bottom: 1in }
@@ -17,7 +17,7 @@
 <H1>GPUTILS Relocatable Object HowTo</H1>
 <P STYLE="margin-bottom: 0in"><A HREF="mailto:craigfranklin@attbi.com">Craig
 Franklin</A></P>
-<P STYLE="margin-bottom: 0in">April 8, 2003</P>
+<P STYLE="margin-bottom: 0in">April 9, 2003</P>
 <ADDRESS STYLE="margin-bottom: 0.2in"><BR><BR>
 </ADDRESS>
 <H2>1. Introduction</H2>
@@ -264,7 +264,17 @@ will be added, just like the path to the headers for gpasm. For now,
 use the full path or copy the file to your working directory.</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
-<H2>6. Creating Libraries</H2>
+<H2 STYLE="margin-top: 0in; margin-bottom: 0in">6. Simulating the
+executable</H2>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in">Gplink outputs a COD file that is
+compatible with <A HREF="http://www.dattalo.com/gnupic/gpsim.html">gpsim</A>.
+ Gpsim will generate a few new warnings.  One will be about not
+finding a list file.  Others may be generated about not using gpasm. 
+These warnings can be ignored.  They will be fixed in a future
+release of gpsim.</P>
+<H2>7. Creating Libraries</H2>
 <P STYLE="margin-bottom: 0in">If you have a collection of objects
 they can be combined into one archive. The archive is a convient way
 to link an application against a common library. The tool is gplib.
@@ -294,7 +304,7 @@ application won't necessarily contain the code of all the archive
 members.</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
-<H2>7. Makefiles</H2>
+<H2>8. Makefiles</H2>
 <P STYLE="margin-bottom: 0in">Here is one of the Makefiles I have
 been working with. It can be a template for you:</P>
 <P STYLE="margin-bottom: 0in"><BR>
@@ -338,7 +348,7 @@ isr.asm common.inc</FONT></P>
 : startup.asm common.inc</FONT></P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
-<H2>8. The Future</H2>
+<H2>9. The Future</H2>
 <P STYLE="margin-bottom: 0in">There is still a lot of work to do. So
 far only 14 bits devices have been linked. There are many features
 that are planned. Linker optimizations, assembler extensions for high
