@@ -159,10 +159,16 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 LKR_FILES = \
+	10f200i.lkr \
 	10f200.lkr \
+	10f202i.lkr \
 	10f202.lkr \
+	10f204i.lkr \
 	10f204.lkr \
+	10f206i.lkr \
 	10f206.lkr \
+	10f220.lkr \
+	10f222.lkr \
 	12c508a.lkr \
 	12c508.lkr \
 	12c509a.lkr \
@@ -176,6 +182,7 @@ LKR_FILES = \
 	12cr509a.lkr \
 	12f508.lkr \
 	12f509.lkr \
+	12f510.lkr \
 	12f629i.lkr \
 	12f629.lkr \
 	12f635i.lkr \
@@ -277,6 +284,7 @@ LKR_FILES = \
 	16cr83.lkr \
 	16cr84.lkr \
 	16f505.lkr \
+	16f506.lkr \
 	16f54.lkr \
 	16f57.lkr \
 	16f59.lkr \
@@ -417,6 +425,8 @@ LKR_FILES = \
 	18f2480.lkr \
 	18f248i.lkr \
 	18f248.lkr \
+	18f24j10_e.lkr \
+	18f24j10.lkr \
 	18f2510_e.lkr \
 	18f2510i_e.lkr \
 	18f2510i.lkr \
@@ -451,6 +461,8 @@ LKR_FILES = \
 	18f2585.lkr \
 	18f258i.lkr \
 	18f258.lkr \
+	18f25j10_e.lkr \
+	18f25j10.lkr \
 	18f2610_e.lkr \
 	18f2610i_e.lkr \
 	18f2610i.lkr \
@@ -497,6 +509,8 @@ LKR_FILES = \
 	18f4480.lkr \
 	18f448i.lkr \
 	18f448.lkr \
+	18f44j10_e.lkr \
+	18f44j10.lkr \
 	18f4510_e.lkr \
 	18f4510i_e.lkr \
 	18f4510i.lkr \
@@ -531,6 +545,8 @@ LKR_FILES = \
 	18f4585.lkr \
 	18f458i.lkr \
 	18f458.lkr \
+	18f45j10_e.lkr \
+	18f45j10.lkr \
 	18f4610_e.lkr \
 	18f4610i_e.lkr \
 	18f4610i.lkr \
@@ -569,6 +585,8 @@ LKR_FILES = \
 	18f6520.lkr \
 	18f6525i.lkr \
 	18f6525.lkr \
+	18f6527_e.lkr \
+	18f6527.lkr \
 	18f6585i.lkr \
 	18f6585.lkr \
 	18f65j10_e.lkr \
@@ -579,7 +597,11 @@ LKR_FILES = \
 	18f6620.lkr \
 	18f6621i.lkr \
 	18f6621.lkr \
+	18f6622_e.lkr \
+	18f6622.lkr \
 	18f6627_e.lkr \
+	18f6627i_e.lkr \
+	18f6627i.lkr \
 	18f6627.lkr \
 	18f6680i.lkr \
 	18f6680.lkr \
@@ -590,8 +612,12 @@ LKR_FILES = \
 	18f6720i.lkr \
 	18f6720.lkr \
 	18f6722_e.lkr \
+	18f6722i_e.lkr \
+	18f6722i.lkr \
 	18f6722.lkr \
 	18f67j10_e.lkr \
+	18f67j10i_e.lkr \
+	18f67j10i.lkr \
 	18f67j10.lkr \
 	18f8310_e.lkr \
 	18f8310i_e.lkr \
@@ -615,6 +641,8 @@ LKR_FILES = \
 	18f8520.lkr \
 	18f8525i.lkr \
 	18f8525.lkr \
+	18f8527_e.lkr \
+	18f8527.lkr \
 	18f8585i.lkr \
 	18f8585.lkr \
 	18f85j10_e.lkr \
@@ -625,7 +653,11 @@ LKR_FILES = \
 	18f8620.lkr \
 	18f8621i.lkr \
 	18f8621.lkr \
+	18f8622_e.lkr \
+	18f8622.lkr \
 	18f8627_e.lkr \
+	18f8627i_e.lkr \
+	18f8627i.lkr \
 	18f8627.lkr \
 	18f8680i.lkr \
 	18f8680.lkr \
@@ -636,8 +668,12 @@ LKR_FILES = \
 	18f8720i.lkr \
 	18f8720.lkr \
 	18f8722_e.lkr \
+	18f8722i_e.lkr \
+	18f8722i.lkr \
 	18f8722.lkr \
 	18f87j10_e.lkr \
+	18f87j10i_e.lkr \
+	18f87j10i.lkr \
 	18f87j10.lkr \
 	hcs1365.lkr \
 	hcs1370.lkr \
