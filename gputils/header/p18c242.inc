@@ -33,6 +33,7 @@
 ;0.10  23 Sep 99   Compatibility with PIC18Cxx2 Data Sheet (Rev B)
 ;                  and Added I/O Pin definitions                        mp
 ;0.11  29 Jun 00   Added support for Device ID/Revision & ID locations  rr
+;0.12    09/26/02   Include both names SWDTE and SWDTEN                pas
 
 ;==========================================================================
 ;
@@ -306,6 +307,7 @@ LVDL1           EQU  H'0001'
 LVDL0           EQU  H'0000'
 
 ;----- WDTCON Bits ---------------------------------------------------------
+SWDTE           EQU  H'0000'
 SWDTEN          EQU  H'0000'
 
 ;----- RCON Bits -----------------------------------------------------------

@@ -22,7 +22,6 @@
 pkgdatadir = @GPASM_HEADER_PATH@
 
 EXTRA_DIST =\
-	ap7675.inc \
 	mcp250xx.inc \
 	memory.inc \
 	p12c508.inc \
@@ -40,10 +39,8 @@ EXTRA_DIST =\
 	p14000.inc \
 	p16c432.inc \
 	p16c433.inc \
-	p16c461.inc \
 	p16c505.inc \
 	p16c554.inc \
-	p16c557.inc \
 	p16c558.inc \
 	p16c5x.inc \
 	p16c61.inc \
@@ -59,17 +56,14 @@ EXTRA_DIST =\
 	p16c63.inc \
 	p16c63a.inc \
 	p16c64.inc \
-	p16c641.inc \
 	p16c642.inc \
 	p16c64a.inc \
 	p16c65.inc \
 	p16c65a.inc \
 	p16c65b.inc \
 	p16c66.inc \
-	p16c661.inc \
 	p16c662.inc \
 	p16c67.inc \
-	p16c70.inc \
 	p16c71.inc \
 	p16c710.inc \
 	p16c711.inc \
@@ -77,7 +71,6 @@ EXTRA_DIST =\
 	p16c715.inc \
 	p16c716.inc \
 	p16c717.inc \
-	p16c71a.inc \
 	p16c72.inc \
 	p16c72a.inc \
 	p16c73.inc \
@@ -127,8 +120,6 @@ EXTRA_DIST =\
 	p16f83.inc \
 	p16f84.inc \
 	p16f84a.inc \
-	p16f85.inc \
-	p16f86.inc \
 	p16f87.inc \
 	p16f870.inc \
 	p16f871.inc \
@@ -163,7 +154,6 @@ EXTRA_DIST =\
 	p18c801.inc \
 	p18c858.inc \
 	p18cxxx.inc \
-	p18f020.inc \
 	p18f1220.inc \
 	p18f1320.inc \
 	p18f2220.inc \

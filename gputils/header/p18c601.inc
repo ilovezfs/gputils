@@ -330,8 +330,8 @@ LVDL0           EQU  H'0000'
 WDPS2		EQU  H'0003'
 WDPS1		EQU  H'0002'
 WDPS0		EQU  H'0001'
-SWDTEN          EQU  H'0000'
 SWDTE           EQU  H'0000'
+SWDTEN          EQU  H'0000'
 
 ;----- RCON Bits -----------------------------------------------------------
 IPEN            EQU  H'0007'

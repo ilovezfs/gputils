@@ -26,7 +26,7 @@
 ;1.1	08/01/01   Added EECON1 bits, corrected code protect config bit inserts 
 ;1.2    09/17/01   Corrected MAXRAM,BADRAM                            tr
 ;1.3    10/23/01   Corrected CONFIG bits/registers		      tr/pas
-
+;1.4    09/26/02   Include both names SWDTE and SWDTEN                pas
 ;==========================================================================
 ;
 ;       Verify Processor
@@ -303,6 +303,7 @@ LVDL1           EQU  H'0001'
 LVDL0           EQU  H'0000'
 
 ;----- WDTCON Bits ---------------------------------------------------------
+SWDTE           EQU  H'0000'
 SWDTEN          EQU  H'0000'
 
 ;----- RCON Bits -----------------------------------------------------------
