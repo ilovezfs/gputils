@@ -37,6 +37,10 @@ AC_ARG_ENABLE(path,
 AC_PROG_CC
 AC_PROG_YACC
 AM_PROG_LEX
+set `$LEX -V`
+if test "${3}" != "2.5.4"; then
+  AC_MSG_WARN(gputils supports flex version 2.5.4)
+fi
 AC_PROG_INSTALL
 
 # append the host alias to the tools for cross compiling
