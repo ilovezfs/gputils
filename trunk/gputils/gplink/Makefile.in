@@ -66,11 +66,14 @@ EXEEXT = @EXEEXT@
 OBJEXT = @OBJEXT@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 AMTAR = @AMTAR@
+AM_CFLAGS = @AM_CFLAGS@
+AM_LDFLAGS = @AM_LDFLAGS@
 AR = @AR@
 AWK = @AWK@
 CC = @CC@
 DEPDIR = @DEPDIR@
 GPUTILS_HEADER_PATH = @GPUTILS_HEADER_PATH@
+GPUTILS_LIB_PATH = @GPUTILS_LIB_PATH@
 GPUTILS_LKR_PATH = @GPUTILS_LKR_PATH@
 IBERTYOBJS = @IBERTYOBJS@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
@@ -92,27 +95,30 @@ install_sh = @install_sh@
 
 bin_PROGRAMS = gplink
 
-CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
+AM_CPPFLAGS = -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 gplink_SOURCES = \
+	parse.y \
 	cod.c \
 	gplink.c \
+	lst.c \
 	map.c \
 	script.c \
-	parse.y \
 	scan.l \
 	cod.h \
 	gplink.h \
+	lst.h \
 	map.h \
+	scan.h \
 	script.h
 
 
 gplink_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 
-YFLAGS = -dvt
-LFLAGS = -i
+AM_YFLAGS = -dvt
+AM_LFLAGS = -i
 
-EXTRA_DIST = scan.h parse.h
+EXTRA_DIST = parse.h
 subdir = gplink
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
@@ -120,8 +126,8 @@ CONFIG_CLEAN_FILES =
 bin_PROGRAMS = gplink$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
-am_gplink_OBJECTS = cod.$(OBJEXT) gplink.$(OBJEXT) map.$(OBJEXT) \
-	script.$(OBJEXT) parse.$(OBJEXT) scan.$(OBJEXT)
+am_gplink_OBJECTS = parse.$(OBJEXT) cod.$(OBJEXT) gplink.$(OBJEXT) \
+	lst.$(OBJEXT) map.$(OBJEXT) script.$(OBJEXT) scan.$(OBJEXT)
 gplink_OBJECTS = $(am_gplink_OBJECTS)
 gplink_DEPENDENCIES = ${top_builddir}/@LIBGPUTILS@ \
 	${top_builddir}/@LIBIBERTY@
@@ -129,13 +135,15 @@ gplink_LDFLAGS =
 
 DEFS = @DEFS@
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
+CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/cod.Po ./$(DEPDIR)/gplink.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/map.Po ./$(DEPDIR)/parse.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/scan.Po ./$(DEPDIR)/script.Po
+@AMDEP_TRUE@	./$(DEPDIR)/lst.Po ./$(DEPDIR)/map.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/parse.Po ./$(DEPDIR)/scan.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/script.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -192,6 +200,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cod.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gplink.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lst.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/map.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scan.Po@am__quote@

@@ -531,7 +531,7 @@ void open_src(char *name, int isinclude)
     yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
   }
 
-#ifdef PARSE_DEBUG
+#ifdef GPUTILS_DEBUG
   {
     extern int yydebug;
     if (state.pass == 2)

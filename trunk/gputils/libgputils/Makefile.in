@@ -66,11 +66,14 @@ EXEEXT = @EXEEXT@
 OBJEXT = @OBJEXT@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 AMTAR = @AMTAR@
+AM_CFLAGS = @AM_CFLAGS@
+AM_LDFLAGS = @AM_LDFLAGS@
 AR = @AR@
 AWK = @AWK@
 CC = @CC@
 DEPDIR = @DEPDIR@
 GPUTILS_HEADER_PATH = @GPUTILS_HEADER_PATH@
+GPUTILS_LIB_PATH = @GPUTILS_LIB_PATH@
 GPUTILS_LKR_PATH = @GPUTILS_LKR_PATH@
 IBERTYOBJS = @IBERTYOBJS@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
@@ -90,9 +93,12 @@ am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
 
-AUTOMAKE_OPTIONS = foreign
+AM_CPPFLAGS = \
+	-I${top_srcdir}/include \
+	-DHEADER_PATH=\"@GPUTILS_HEADER_PATH@\" \
+	-DLKR_PATH=\"@GPUTILS_LKR_PATH@\" \
+	-DLIB_PATH=\"@GPUTILS_LIB_PATH@\"
 
-CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/include
 
 noinst_LIBRARIES = libgputils.a
 
@@ -149,6 +155,7 @@ libgputils_a_OBJECTS = $(am_libgputils_a_OBJECTS)
 
 DEFS = @DEFS@
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
+CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp

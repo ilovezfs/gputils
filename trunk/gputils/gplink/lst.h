@@ -1,5 +1,5 @@
-/* Read ".HEX" files and store it in memory
-   Copyright (C) 2001, 2002, 2003, 2004
+/* ".LST" file output for gplink
+   Copyright (C) 2004
    Craig Franklin
 
 This file is part of gputils.
@@ -19,15 +19,9 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-#ifndef __GPREADHEX_H__
-#define __GPREADHEX_H__
+#ifndef __LST_H__
+#define __LST_H__
 
-struct hex_data {
-  enum formats hex_format;
-  int          size;
-  int          error;
-};
-
-struct hex_data *readhex(char *filename, MemBlock *m);
+void write_lst(void);
 
 #endif

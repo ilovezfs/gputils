@@ -1,3 +1,11 @@
+2004-01-16 Craig Franklin <craigfranklin@comcast.net>
+  * Use install path for default when environmental variable isn't set.
+  * Added GPUTILS_LIB_PATH environmental variable for gplink.
+  * Added list file output to gplink and fixed bugs in cod file output.
+  * Added automake work around to fix compile order for bison outputs.
+  * Switched to AM_ flags in automake so users can specify additional
+    flags.
+
 2004-01-09 Craig Franklin <craigfranklin@comcast.net>
   * Allow full path to object file in gplib when creating an archive.
   * Always generate a warning when a source is missing an endif.

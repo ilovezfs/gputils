@@ -58,7 +58,7 @@ init_DirBlock(DirBlockInfo *a_dir)
 	         "gpasm",
 	         COD_DIR_NOTICE - COD_DIR_COMPILER);
   gp_cod_strncpy(&a_dir->dir.block[COD_DIR_NOTICE], 
-	         "Copyright (c) 1998-2004 gnupic project",
+	         GPUTILS_COPYRIGHT_STRING,
 	         COD_DIR_SYMTAB - COD_DIR_NOTICE);
 
   /* The address is always two shorts or 4 bytes long */

@@ -66,11 +66,14 @@ EXEEXT = @EXEEXT@
 OBJEXT = @OBJEXT@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 AMTAR = @AMTAR@
+AM_CFLAGS = @AM_CFLAGS@
+AM_LDFLAGS = @AM_LDFLAGS@
 AR = @AR@
 AWK = @AWK@
 CC = @CC@
 DEPDIR = @DEPDIR@
 GPUTILS_HEADER_PATH = @GPUTILS_HEADER_PATH@
+GPUTILS_LIB_PATH = @GPUTILS_LIB_PATH@
 GPUTILS_LKR_PATH = @GPUTILS_LKR_PATH@
 IBERTYOBJS = @IBERTYOBJS@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
@@ -92,7 +95,7 @@ install_sh = @install_sh@
 
 bin_PROGRAMS = gpdasm gplib gpvc gpvo
 
-CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
+AM_CPPFLAGS = -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 gpdasm_SOURCES = \
 	gpdasm.c\
@@ -152,6 +155,7 @@ gpvo_LDFLAGS =
 
 DEFS = @DEFS@
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
+CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp

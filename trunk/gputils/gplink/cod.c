@@ -23,11 +23,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gplink.h"
-
-/* line types for cod_lst_line */
-#define COD_FIRST_LST_LINE  1
-#define COD_NORMAL_LST_LINE 2
-#define COD_LAST_LST_LINE   3
+#include "cod.h"
 
 static DirBlockInfo main_dir;
 static int cod_lst_line_number = 0;
@@ -61,12 +57,55 @@ init_DirBlock(DirBlockInfo *a_dir)
 	         "gplink",
 	         COD_DIR_NOTICE - COD_DIR_COMPILER);
   gp_cod_strncpy(&a_dir->dir.block[COD_DIR_NOTICE], 
-	         "Copyright (c) 1998-2004 gnupic project",
+	         GPUTILS_COPYRIGHT_STRING,
 	         COD_DIR_SYMTAB - COD_DIR_NOTICE);
 
   /* The address is always two shorts or 4 bytes long */
   gp_putl16(&a_dir->dir.block[COD_DIR_ADDRSIZE], 4);
 
+}
+
+/* Assign each file name unique file number.  A file may appear in the
+   symbol table more than once.  */
+
+static void
+assign_file_id(void)
+{
+  struct symbol_table *file_table;
+  gp_symbol_type *symbol;
+  gp_aux_type *aux;
+  struct symbol *s;
+  int file_id = 0;
+  int *value;
+  
+  /* build a case sensitive file table */
+  file_table = push_symbol_table(NULL, 0);
+  
+  symbol = state.object->symbols;
+  while(symbol != NULL) {
+    if (symbol->class == C_FILE) {
+      aux = symbol->aux_list;
+      assert(aux != NULL);
+      s = get_symbol(file_table, aux->_aux_symbol._aux_file.filename);
+      if (s) {
+        /* fetch the file number */
+        value = get_symbol_annotation(s);
+      } else {
+        /* the file hasn't been assigned a value */      
+        value = malloc(sizeof(int));
+        *value = file_id++;
+        s = add_symbol(file_table, aux->_aux_symbol._aux_file.filename);
+        annotate_symbol(s, value);
+      }
+      symbol->number = *value;
+    }
+    symbol = symbol->next;
+  }
+
+  /* destory the table */
+  file_table = pop_symbol_table(file_table);
+
+  return;
 }
 
 /*
@@ -102,6 +141,8 @@ cod_init(void)
   assert(main_dir.dir.block_number == 0);
 
   fseek(state.cod.f, COD_BLOCK_SIZE, SEEK_SET);
+
+  assign_file_id();
 
 }
 
@@ -145,12 +186,15 @@ write_file_block(void)
   Block fb;
 #define FILES_PER_BLOCK COD_BLOCK_SIZE/COD_FILE_SIZE
   int id_number = 0;
+  int file_id = 0;
 
   gp_cod_create(&fb, &blocks);
 
   symbol = state.object->symbols;
   while(symbol != NULL) {
-    if (symbol->class == C_FILE) {
+    if ((symbol->class == C_FILE) && (symbol->number == file_id)) {
+      /* skip the duplicate file symbols */
+      file_id++;
 
       /* The file id is used to define the index at which the file
        * name is written within the file code block. (The id's are
@@ -183,81 +227,77 @@ write_file_block(void)
 
 }
 
-/* cod_write_line - add a line of information that cross references the
+/* cod_lst_line - add a line of information that cross references the
  * the opcode's address, the source file, and the list file.
  */
 
 void
-cod_write_line(void)
+cod_lst_line(int line_type)
 {
-  gp_section_type *section = NULL;
-  gp_linenum_type *line = NULL;
   unsigned char smod_flag = 0xff;
-  int first_time = 1;
-  Block lb={NULL,0};
+  static int first_time = 1;
+  static Block lb={NULL,0};
+  
   int offset;
-  int previous_org = 0;
-  int _16bit_core;
 
-  /* create a block */
-  gp_cod_create(&lb, &blocks);
+  if(!state.cod.enabled)
+    return;
 
-  if (state.class == PROC_CLASS_PIC16E) {
-    _16bit_core = 1;
-  } else {
-    _16bit_core = 0;
-  }
+  switch(line_type) {
+  case COD_FIRST_LST_LINE:
+  case COD_NORMAL_LST_LINE:
 
-  section = state.object->sections;
-  while (section != NULL) {
-    line = section->line_numbers;
-    while (line != NULL) {
+    /* If we don't have a block yet then create one: */
+    if(lb.block == NULL)
+      gp_cod_create(&lb, &blocks);
 
-      if(cod_lst_line_number >= COD_MAX_LINE_SYM) {
-        write_cod_block(&main_dir, COD_DIR_LSTTAB, COD_DIR_LSTTAB+2, &lb);
-        cod_lst_line_number = 0;
-        gp_cod_next(&lb, &blocks);
-      }
-
-      offset = cod_lst_line_number++ * COD_LINE_SYM_SIZE;
-      lb.block[offset + COD_LS_SFILE] = line->symbol->number;
-
-      if((line->address - previous_org) != 0)
-        smod_flag = 0x080;
-      else
-        smod_flag = 0x90;
-
-      if(first_time != 0) {
-        first_time = 0;
-        smod_flag  = 0xff;
-      }
-
-      lb.block[offset + COD_LS_SMOD] = smod_flag;
-
-      /* Write the source file line number corresponding to the list file line 
-         number */
-      gp_putl16(&lb.block[offset + COD_LS_SLINE], line->line_number);
-
-      /* Write the address of the opcode. */
-      gp_putl16(&lb.block[offset + COD_LS_SLOC], line->address >> _16bit_core);
-    
-      previous_org = line->address;
-      
-      line = line->next;
+    if(cod_lst_line_number >= COD_MAX_LINE_SYM) {
+      write_cod_block(&main_dir, COD_DIR_LSTTAB, COD_DIR_LSTTAB+2, &lb);
+      cod_lst_line_number = 0;
+      gp_cod_next(&lb, &blocks);
     }
-    section = section->next;
-  }
 
-  if(lb.block) {
-    write_cod_block(&main_dir, COD_DIR_LSTTAB, COD_DIR_LSTTAB+2, &lb);
-    gp_cod_delete(&lb);
+    offset = cod_lst_line_number++ * COD_LINE_SYM_SIZE;
+    assert(state.lst.src != NULL);
+    assert(state.lst.src->symbol != NULL);
+    lb.block[offset + COD_LS_SFILE] = state.lst.src->symbol->number;
+
+    if(state.cod.emitting != 0)
+      smod_flag = 0x080;
+    else
+      smod_flag = 0x90;
+
+    if(first_time != 0) {
+      first_time = 0;
+      smod_flag  = 0xff;
+    }
+
+    lb.block[offset + COD_LS_SMOD] = smod_flag;
+
+    /* Write the source file line number corresponding to the list file line 
+       number */
+    gp_putl16(&lb.block[offset + COD_LS_SLINE], state.lst.src->line_number);
+
+    /* Write the address of the opcode. */
+    gp_putl16(&lb.block[offset + COD_LS_SLOC], state.lst.was_org);
+
+    break;
+  case COD_LAST_LST_LINE:
+    if(lb.block) {
+      write_cod_block(&main_dir, COD_DIR_LSTTAB, COD_DIR_LSTTAB+2, &lb);
+      gp_cod_delete(&lb);
+    }
+
+    break;
+  default:
+    assert(0);
   }
 
 }
 
 /* cod_write_symbols - write the symbol table to the .cod file
  *
- * This routine will read the symbol table that gpasm has created
+ * This routine will read the symbol table that gplink has created
  * and convert it into a format suitable for .cod files. So far, only
  * three variable types are supported: address, register, and constants.
  *
@@ -538,37 +578,14 @@ cod_symbol_table(struct symbol_table *table)
   cod_write_symbols(sym, table->count);
 }
 
-/* assign a unique file number */
-
-static void
-assign_file_id(void)
-{
-  gp_symbol_type *symbol;
-  int file_id = 0;
-  
-  symbol = state.object->symbols;
-  while(symbol != NULL) {
-    if (symbol->class == C_FILE) {
-      symbol->number = file_id;
-      file_id++;
-    }
-    symbol = symbol->next;
-  }
-
-}
-
 void
-write_cod(void)
+cod_close_file(void)
 {
-  cod_init();
 
   if(!state.cod.enabled)
     return;
 
-  assign_file_id();
-
-  /* write line numbers */
-  cod_write_line();
+  cod_lst_line(COD_LAST_LST_LINE);
 
   /* All the global symbols are written.  Need to figure out what to do about
      the local symbols. */
@@ -585,5 +602,4 @@ write_cod(void)
   write_directory();
   fclose(state.cod.f);
   free(main_dir.dir.block);
-
 }

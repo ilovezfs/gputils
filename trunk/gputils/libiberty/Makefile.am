@@ -1,8 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-AUTOMAKE_OPTIONS = foreign
-
-CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/include
+AM_CPPFLAGS = -I${top_srcdir}/include
 
 noinst_LIBRARIES = libiberty.a
 

@@ -25,6 +25,7 @@ Boston, MA 02111-1307, USA.  */
 #include "gplink.h"
 #include "cod.h"
 #include "scan.h"
+#include "lst.h"
 #include "map.h"
 
 struct gplink_state state;
@@ -343,6 +344,11 @@ void show_usage(void)
   } else {
     printf("Default linker script path NOT SET\n");
   }
+  if (gp_lkr_path) {
+    printf("Default library path %s\n", gp_lib_path);
+  } else {
+    printf("Default library path NOT SET\n");
+  }
   printf("\n");    
 #endif
   printf("Report bugs to:\n");
@@ -381,11 +387,14 @@ int main(int argc, char *argv[])
   gp_init();
 
   /* initialize */
+  gp_date_string(state.startdate);
   state.hex_format = inhx32;
   state.numpaths = 0;
+  state.byte_addr = 0;
   state.processor = no_processor;
   state.codfile = normal;
   state.hexfile = normal;
+  state.lstfile = normal;
   state.mapfile = suppress;
   state.objfile = suppress;
   state.fill_enable = 0;
@@ -400,7 +409,7 @@ int main(int argc, char *argv[])
   state.section.definition = push_symbol_table(NULL, 0);
   state.section.logical = push_symbol_table(NULL, 0);
 
-  #ifdef PARSE_DEBUG
+  #ifdef GPUTILS_DEBUG
   {
     extern int yydebug;
     yydebug = 1; /* enable parse debug */
@@ -483,9 +492,13 @@ int main(int argc, char *argv[])
     strcpy(state.basefilename, "a");
   }
 
+  /* Add the library path to the include paths list last, so that the user
+     specified directories are searched first */
+  if (gp_lib_path) {
+    gplink_add_path(gp_lib_path);
+  }
+
   /* setup output filenames */
-  strcpy(state.codfilename, state.basefilename);
-  strcat(state.codfilename, ".cod");  
   strcpy(state.hexfilename, state.basefilename);
   strcat(state.hexfilename, ".hex");  
   strcpy(state.mapfilename, state.basefilename);
@@ -534,6 +547,12 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE; 
   }
 
+  if (state.class == PROC_CLASS_PIC16E) {
+    state.byte_addr = 1;
+  } else {
+    state.byte_addr = 0;
+  }
+
   /* Construct the symbol tables. Determine which archive members are 
      required to resolve external references.  */
   build_tables();  
@@ -571,8 +590,10 @@ int main(int argc, char *argv[])
            0,
            0);
 
-  /* convert the executable object into a cod file */
-  write_cod();
+  /* convert the executable object into a cod file and list file */
+  cod_init();
+  write_lst();
+  cod_close_file();
 
   /* write map file */
   make_map();

@@ -18,6 +18,7 @@ AC_CANONICAL_HOST
 # Defaults
 GPUTILS_HEADER_PATH="\$(datadir)/gputils/header"
 GPUTILS_LKR_PATH="\$(datadir)/gputils/lkr"
+GPUTILS_LIB_PATH="\$(datadir)/gputils/lib"
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
 MAKE_SUBDIRS="libgputils libiberty gpasm header lkr doc"
@@ -73,24 +74,27 @@ AC_CHECK_FUNCS(memset strcasecmp strchr strdup strerror stricmp strrchr strtol s
 IBERTYOBJS=
 AC_CHECK_FUNC(bzero, , [IBERTYOBJS="$IBERTYOBJS bzero.o"])
 
+AM_CFLAGS=
+AM_LDFLAGS=
+
 # Options for the system on which the package will run
 case "${host}" in
   *cygwin* )
     if test "x$GCC" = "xyes"; then
-      CFLAGS="$CFLAGS -Wall -pedantic"
-      LDFLAGS="$LDFLAGS -Wl,-warn-common -Wl,-warn-once"
+      AM_CFLAGS="-Wall -pedantic"
+      AM_LDFLAGS="-Wl,-warn-common -Wl,-warn-once"
     fi
     ;;
   *linux* )
     if test "x$GCC" = "xyes"; then
-      CFLAGS="$CFLAGS -Wall -pedantic"
-      LDFLAGS="$LDFLAGS -Wl,-warn-common -Wl,-warn-once"
+      AM_CFLAGS="-Wall -pedantic"
+      AM_LDFLAGS="-Wl,-warn-common -Wl,-warn-once"
     fi
     ;;
   *sun* )
     # sunos cc needs the -xCC flag for // comments
     if test "x$GCC" != "xyes"; then
-      CFLAGS="$CFLAGS -xCC" 
+      AM_CFLAGS="-xCC" 
     fi
     ;;
   *mingw* )
@@ -98,7 +102,7 @@ case "${host}" in
   *-pc-os2_emx | *-pc-os2-emx )
     EXEEXT=".exe"
     if test "x$GCC" = "xyes"; then
-      CFLAGS="-Zcrtdll -s -O2"
+      AM_CFLAGS="-Zcrtdll"
     fi
     ;;
 esac
@@ -110,9 +114,6 @@ case "${host}" in
       [Define if your host uses a DOS based file system. ])
     ;;
 esac
-
-# Add extra gcc flags when configuring 
-CFLAGS="$CFLAGS $XTRA_CFLAGS"
 
 # Process the options
 if test x$enable_gpal = xyes; then
@@ -128,7 +129,7 @@ if test x$enable_gputils = xyes; then
 fi
 
 if test x$enable_gputils_debug = xyes; then
-  AC_DEFINE(__DEBUG__, 1, 
+  AC_DEFINE(GPUTILS_DEBUG, 1, 
     [Define if you want to enable GPUTILS debug features. ])
 fi
 
@@ -138,8 +139,11 @@ if test x$enable_gputils_path = xyes; then
 fi
 
 # Substitute configuration variables
+AC_SUBST(AM_CFLAGS)
+AC_SUBST(AM_LDFLAGS)
 AC_SUBST(GPUTILS_HEADER_PATH)
 AC_SUBST(GPUTILS_LKR_PATH)
+AC_SUBST(GPUTILS_LIB_PATH)
 AC_SUBST(IBERTYOBJS)
 AC_SUBST(LIBGPUTILS)
 AC_SUBST(LIBIBERTY)
