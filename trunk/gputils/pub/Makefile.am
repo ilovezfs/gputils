@@ -92,10 +92,15 @@ PUB_FILES =\
 	p16f628a.pub \
 	p16f630.pub \
 	p16f636.pub \
+	p16f639.pub \
 	p16f648a.pub \
 	p16f676.pub \
 	p16f684.pub \
+	p16f685.pub \
+	p16f687.pub \
 	p16f688.pub \
+	p16f689.pub \
+	p16f690.pub \
 	p16f716.pub \
 	p16f72.pub \
 	p16f73.pub \
@@ -130,7 +135,105 @@ PUB_FILES =\
 	p16f917.pub \
 	rf675f.pub \
 	rf675h.pub \
-	rf675k.pub
+	rf675k.pub \
+	p18c658.pub \
+	p18c801.pub \
+	p18c858.pub \
+	p18f1220.pub \
+	p18f1320.pub \
+	p18f2220.pub \
+	p18c242.pub \
+	p18c252.pub \
+	p18c442.pub \
+	p18c452.pub \
+	p18c601.pub \
+	p18f2320.pub \
+	p18f2331.pub \
+	p18f2410.pub \
+	p18f242.pub \
+	p18f2420.pub \
+	p18f2431.pub \
+	p18f2439.pub \
+	p18f2455.pub \
+	p18f248.pub \
+	p18f2480.pub \
+	p18f2510.pub \
+	p18f2515.pub \
+	p18f252.pub \
+	p18f2520.pub \
+	p18f2525.pub \
+	p18f2539.pub \
+	p18f2550.pub \
+	p18f258.pub \
+	p18f2580.pub \
+	p18f2585.pub \
+	p18f2610.pub \
+	p18f2620.pub \
+	p18f2680.pub \
+	p18f2681.pub \
+	p18f4220.pub \
+	p18f4320.pub \
+	p18f4331.pub \
+	p18f4410.pub \
+	p18f442.pub \
+	p18f4420.pub \
+	p18f4431.pub \
+	p18f4439.pub \
+	p18f4455.pub \
+	p18f448.pub \
+	p18f4480.pub \
+	p18f4510.pub \
+	p18f4515.pub \
+	p18f452.pub \
+	p18f4520.pub \
+	p18f4525.pub \
+	p18f4539.pub \
+	p18f4550.pub \
+	p18f458.pub \
+	p18f4580.pub \
+	p18f4585.pub \
+	p18f4610.pub \
+	p18f4620.pub \
+	p18f4680.pub \
+	p18f4681.pub \
+	p18f6310.pub \
+	p18f6390.pub \
+	p18f6410.pub \
+	p18f6490.pub \
+	p18f64j15.pub \
+	p18f6520.pub \
+	p18f6525.pub \
+	p18f6585.pub \
+	p18f65j10.pub \
+	p18f65j15.pub \
+	p18f6620.pub \
+	p18f6621.pub \
+	p18f6627.pub \
+	p18f6680.pub \
+	p18f66j10.pub \
+	p18f66j15.pub \
+	p18f6720.pub \
+	p18f6722.pub \
+	p18f67j10.pub \
+	p18f8310.pub \
+	p18f8390.pub \
+	p18f8410.pub \
+	p18f8490.pub \
+	p18f84j15.pub \
+	p18f8520.pub \
+	p18f8525.pub \
+	p18f8585.pub \
+	p18f85j10.pub \
+	p18f85j15.pub \
+	p18f8620.pub \
+	p18f8621.pub \
+	p18f8627.pub \
+	p18f8680.pub \
+	p18f86j10.pub \
+	p18f86j15.pub \
+	p18f8720.pub \
+	p18f8722.pub \
+	p18f87j10.pub
 
 %.asm: ${top_srcdir}/header/%.inc
 	echo "  processor" `echo $@ | sed -e 's%.asm% %g'` > $@
@@ -140,9 +243,9 @@ PUB_FILES =\
 %.pub: %.asm
 	./gp2pub $<
 
-pkgdata_DATA = $(PUB_FILES)
+pkgdata_DATA = $(PUB_FILES) processor.pub
 
-EXTRA_DIST = $(PUB_FILES) Makefile.sh
+EXTRA_DIST = $(PUB_FILES) processor.pub Makefile.sh
 
 MAINTAINERCLEANFILES = $(PUB_FILES)
 

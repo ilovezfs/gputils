@@ -400,6 +400,20 @@ static gpasmVal do_badram(gpasmVal r,
   return r;
 }
 
+static gpasmVal do_badrom(gpasmVal r,
+			  char *name,
+			  int arity,
+			  struct pnode *parms)
+{
+
+  state.lst.line.linetype = dir;
+
+  /* FIXME: implement this directive */
+  gpwarning(GPW_UNKNOWN, "gpasm doesn't support the badrom directive yet"); 
+
+  return r;
+}
+
 static void
 set_bankisel(int address)
 {
@@ -1907,6 +1921,20 @@ static gpasmVal do_maxram(gpasmVal r,
     if (can_evaluate(p))
       state.maxram = evaluate(p);
   }
+
+  return r;
+}
+
+static gpasmVal do_maxrom(gpasmVal r,
+			  char *name,
+			  int arity,
+			  struct pnode *parms)
+{
+
+  state.lst.line.linetype = dir;
+
+  /* FIXME: implement this directive */
+  gpwarning(GPW_UNKNOWN, "gpasm doesn't support the maxrom directive yet"); 
 
   return r;
 }
@@ -3450,10 +3478,12 @@ const int num_op_0 = TABLE_SIZE(op_0);
 
 struct insn op_1[] = {
   { "__badram",   0, (long int)do_badram,    INSN_CLASS_FUNC,   0 },
+  { "__badrom",   0, (long int)do_badrom,    INSN_CLASS_FUNC,   0 },
   { "__config",   0, (long int)do_config,    INSN_CLASS_FUNC,   0 },
   { "__fuses",    0, (long int)do_config,    INSN_CLASS_FUNC,   0 },
   { "__idlocs",   0, (long int)do_idlocs,    INSN_CLASS_FUNC,   0 },
   { "__maxram",   0, (long int)do_maxram,    INSN_CLASS_FUNC,   0 },
+  { "__maxrom",   0, (long int)do_maxrom,    INSN_CLASS_FUNC,   0 },
   { "bankisel",   0, (long int)do_bankisel,  INSN_CLASS_FUNC,   0 },
   { "banksel",    0, (long int)do_banksel,   INSN_CLASS_FUNC,   0 },
   { "data",       0, (long int)do_data,      INSN_CLASS_FUNC,   0 },

@@ -241,6 +241,8 @@ char *gp_getwarning(unsigned int code)
     return "Redefining processor.";
   case GPW_NOT_RECOMMENDED:
     return "Use of this instruction is not recommended.";
+  case GPW_INVALID_ROM:
+    return "Invalid ROM location specified.";
   case GPW_UNKNOWN:
   default:
     return "UNKNOWN";

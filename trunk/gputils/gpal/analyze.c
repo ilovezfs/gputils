@@ -1478,7 +1478,6 @@ analyze_type(tree *type,
 {
   tree *list;
   char *name;
-  char *enum_name;
   int enum_num;
   struct variable *var;
   int start;
@@ -1509,11 +1508,7 @@ analyze_type(tree *type,
     while (list) {
       if (list->tag == tag_symbol) {
         /* add the constant to the global symbol table */
-        enum_name = mangle_name2(root_name, SYM_NAME(list));
-        var = add_constant(enum_name, enum_num++, list, name);
-        if (add_alias) {
-          add_symbol_pointer(SYM_NAME(list), list, var);
-        }
+        var = add_constant(SYM_NAME(list), enum_num++, list, name);
       } else {
         analyze_error(list, "enumerated list must be symbols");
       }
