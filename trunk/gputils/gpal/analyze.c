@@ -1134,7 +1134,8 @@ analyze_constants(void)
   for (i = 0; i < HASH_SIZE; i++) {
     for (sym = state.global->hash_table[i]; sym; sym = sym->next) {
       var = get_symbol_annotation(sym);
-      if (var && ((var->tag == sym_const) || var->is_absolute)) {
+      if (var && ((var->tag == sym_const) || 
+                  (var->is_absolute && is_extern(var)))) {
          if (first_time) {
            codegen_write_comment("constants");
            first_time = false;
