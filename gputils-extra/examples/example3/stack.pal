@@ -1,0 +1,56 @@
+with config;
+
+module stack is
+
+  constant stack_size  : uint8 = 10;
+  constant stack_start : uint8 = 1;
+  constant stack_stop  : uint8 = stack_size + stack_start - 1;
+  
+  type stack_type is array stack_start to stack_stop of uint8;
+  
+  variable stack : stack_type;
+  variable stack_index : uint8;
+
+  procedure init_stack is
+  
+  begin
+
+    -- clear the stack
+    for stack_index in stack_start to stack_stop
+      loop
+        stack[stack_index] = 0;
+      end loop; 
+  
+    stack_index = 1;
+  
+  end procedure;
+
+  function push_value(value: in uint8) return boolean is
+  
+  begin
+  
+    if (stack_index <= stack_stop) then
+      stack[stack_index] = value;
+      stack_index = stack_index + 1;
+      return false;    
+    else
+      return true;
+    end if;
+ 
+  end function;
+
+  function pop_value(value: out uint8) return boolean is
+  
+  begin
+  
+    if (stack_index >= stack_start) then
+      stack_index = stack_index - 1;
+      value = stack[stack_index];
+      return false;    
+    else
+      return true;
+    end if;
+ 
+  end function;
+
+end module;

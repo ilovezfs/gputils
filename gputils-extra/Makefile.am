@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = dist-zip foreign
 
-EXTRA_DIST = INDEX \
+EXTRA_DIST = \
 	data/nedit/gpasm.pats \
 	examples/example1/Makefile \
 	examples/example1/README \
@@ -18,7 +18,14 @@ EXTRA_DIST = INDEX \
 	examples/example2/init.asm \
 	examples/example2/mastri2c.asm \
 	examples/example2/mastri2c.inc \
-	src/header/mcp2510.inc \
-	src/memory/flags.asm \
-	src/memory/str.asm	
-	
+	examples/example3/16f877.lkr \
+	examples/example3/config.pub \
+	examples/example3/delay.pal \
+	examples/example3/delay.pub \
+	examples/example3/main.pal \
+	examples/example3/main.pub \
+	examples/example3/Makefile \
+	examples/example3/p16f877.inc \
+	examples/example3/stack.pal \
+	examples/example3/stack.pub \
+	examples/example3/types.pub

@@ -1,0 +1,9 @@
+public stack is
+
+  pragma code_section = "PROG2";
+
+  procedure init_stack;
+  function push_value(value: in uint8) return boolean;
+  function pop_value(value: out uint8) return boolean;
+  
+end public;

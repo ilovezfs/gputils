@@ -1,3 +1,9 @@
+2003-12-15 Craig Franklin <craigfranklin@comcast.net>
+  * Remove the community nature of gputils-extra.
+  * Updated scripts to automake-1.6 and autoconf-2.57.
+  * Added AM_MAINTAINER_MODE to autoconf.
+  * Removed assembly files and added gpal example.
+
 2002-05-12 Craig Franklin <craigfranklin@comcast.net>
   * gputils-extra 0.0.2 Released.
 
