@@ -378,7 +378,8 @@ void dump_source_files( void )
 	substr(b,&temp[offset+1],FILE_SIZE);
 
 	if(temp[offset]) {
-	  source_file_names[number_of_source_files] = (char *)malloc(strlen(b));
+	  source_file_names[number_of_source_files] = 
+	    (char *)malloc(strlen(b) + 1);
 	  strcpy(source_file_names[number_of_source_files],b);
 	  printf("%s\n",source_file_names[number_of_source_files]);
 	  source_files[number_of_source_files] = 
