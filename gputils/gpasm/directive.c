@@ -582,58 +582,11 @@ static gpasmVal do_constant(gpasmVal r,
  * In addition to memory for storing instructions, each pic has memory for
  * storing configuration data (e.g. code protection, wdt enable, etc.). Each
  * family of the pic microcontrollers treats this memory slightly different.
- * gpasm handles these differences with the following functions:
  *
- * cfg_evaluate_address(struct pnode *p) - Given a pointer to a node that
- *       presumably contains the configuration address, this function will
- *       ensure that the address is valid.
- * cfg_write(int address, int value) - Store the contents of 'value' at the
- *       configuration address 'address'
  * do_config( ) - Called by the parser when a __CONFIG assembler directive
  *       is encountered.
  *
  */
-
-static int cfg_evaluate_address(struct pnode *p)
-{
-  int address;
-
-  if(can_evaluate(p)) {
-    address = evaluate(p);
-
-    if(_16bit_core) {
-      switch(address) {
-      case CONFIG1L:
-      case CONFIG1H:
-      case CONFIG2L:
-      case CONFIG2H:
-      case CONFIG3L:
-      case CONFIG3H:
-      case CONFIG4L:
-      case CONFIG4H:
-      case CONFIG5L:
-      case CONFIG5H:
-      case CONFIG6L:
-      case CONFIG6H:
-      case CONFIG7L:
-      case CONFIG7H:
-      case DEVID1:
-      case DEVID2:
-	return address;
-      default:
-	gperror(GPE_RANGE,NULL);
-	return CONFIG1L;
-      }
-    }
-    else {
-      if(address != state.device.config_address)
-	gperror(GPE_RANGE,NULL);
-      return state.device.config_address;
-    }
-  }
-
-  return state.device.config_address;
-}
 
 static gpasmVal do_config(gpasmVal r,
 			  char *name,
@@ -641,7 +594,7 @@ static gpasmVal do_config(gpasmVal r,
 			  struct pnode *parms)
 {
   struct pnode *p;
-  int ca = state.device.config_address;
+  int ca;
   int value;
 
   state.lst.line.linetype = config;
@@ -653,11 +606,13 @@ static gpasmVal do_config(gpasmVal r,
     if(_16bit_core) {
       gpwarning(GPW_EXPECTED,"18cxxx devices should specify __CONFIG address");
       ca = CONFIG1L;
+    } else {
+      ca = state.device.config_address;
     }
     break;
 
   case 2:
-    ca = cfg_evaluate_address(p);
+    ca = maybe_evaluate(p);
     p = HEAD(TAIL(parms));
 
     break;
