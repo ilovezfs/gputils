@@ -264,6 +264,7 @@ void build_tables(void)
 
   if (state.has_stack) {
     remove_linker_symbol("_stack");
+    remove_linker_symbol("_stack_end");
   }
 
   /* All of the archives have been scanned.  If there are still missing
@@ -619,6 +620,7 @@ int main(int argc, char *argv[])
 
   if (state.has_stack) {
     add_linker_symbol("_stack");
+    add_linker_symbol("_stack_end");
   }
 
   /* patch raw data with the relocated symbol values */
