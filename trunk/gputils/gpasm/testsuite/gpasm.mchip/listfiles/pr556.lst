@@ -1,0 +1,43 @@
+MPASM Version 3.00 Beta Release   PR556.ASM   01/31/2001  12:13:33	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; PR556.ASM
+                        00002 
+                        00003 ; This file tests the processor directive.
+                        00004 
+Error[132]  : Unknown processor (16C556)
+                        00005         PROCESSOR       16C556
+                        00006 
+Warning[207]: Found label after column 1. (RETLW)
+Error[108]  : Illegal character (1)
+                        00007         RETLW   12              ; 0812 = 12-BIT
+                        00008                                 ; 3412 = 14-BIT
+                        00009                                 ; B612 = 16-BIT
+                        00010 
+                        00011         END
+Error[131]  : Processor type is undefined
+MPASM Version 3.00 Beta Release   PR556.ASM   01/31/2001  12:13:33	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+Program Memory Words Free:     1
+
+
+Errors   :     3
+Warnings :     1 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,62 @@
+MPASM Version 3.00 Beta Release   BNKISEL1.ASM   01/31/2001  12:43:31	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; BNKISEL1.ASM
+                        00002 
+                        00003 ; This file tests legal uses of the BANKISEL directives.
+                        00004 ; This file goes in the object file comparison test section.
+                        00005 
+                        00006         list    p=17c44
+                        00007 
+                        00008 UDATA1  UDATA
+                        00009 
+0000                    00010 Var1    res     1
+0001                    00011 Var2    res     1
+                        00012 
+                        00013 UDATA2  UDATA
+                        00014 
+0000                    00015 Var3    res     1
+0001                    00016 Var4    res     1
+0002                    00017 Var5    res     1
+                        00018 
+  0000                  00019         global  Var5
+  0000                  00020         extern  Var6
+                        00021 
+                        00022 
+                        00023         code
+                        00024 
+0000     ????           00025         bankisel        Var1            ; Normal
+                        00026 
+0001     ????           00027         bankisel        Var2 + 1        ; Plus offset
+                        00028 
+0002     ????           00029         BANKISEL        Var3            ; Upper case
+                        00030 
+0003     ????           00031         bankisel        Var3 - 1        ; Minus offset
+                        00032 
+0004     ????           00033         bankisel        Var5            ; Global variable
+                        00034 
+0005     ????           00035         bankisel        Var6            ; External variable
+                        00036 
+                        00037         end
+MPASM Version 3.00 Beta Release   BNKISEL1.ASM   01/31/2001  12:43:31	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Var1                              00000000
+Var2                              00000001
+Var3                              00000000
+Var4                              00000001
+Var5                              00000002
+Var6                              00000000
+__17C44                           00000001
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

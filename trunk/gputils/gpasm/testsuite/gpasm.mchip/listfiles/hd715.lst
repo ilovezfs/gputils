@@ -1,0 +1,215 @@
+MPASM Version 3.00 Beta Release   HD715.ASM   01/31/2001  12:12:04	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; HD715.ASM
+                        00002 
+                        00003 ; This file tests header file usage for the specified processor.
+                        00004 
+                        00005         LIST    P=16C715
+                        00006         INCLUDE "P16C715.INC"
+                        00001         LIST
+                        00002 ; P16C715.INC  Standard Header File, Version 1.01    Microchip Technology, Inc.
+                        00167         LIST
+                        00007 
+0000     00CF 00CF      00008         DATA    _CP_ALL, 0x00CF         ; This changes per device
+0002     15DF 15DF      00009         DATA    _CP_50, 0X15DF
+0004     3FFF 3FFF      00010         DATA    _CP_OFF, 0X3FFF
+0006     3FFF 3FFF      00011         DATA    _BODEN_ON, 0X3FFF
+0008     3FBF 3FBF      00012         DATA    _BODEN_OFF, 0X3FBF
+000A     3FF7 3FF7      00013         DATA    _PWRTE_ON, 0x3FF7       ; This changes per device
+000C     3FFF 3FFF      00014         DATA    _PWRTE_OFF, 0X3FFF
+000E     3FFF 3FFF      00015         DATA    _WDT_ON, 0X3FFF
+0010     3FFB 3FFB      00016         DATA    _WDT_OFF, 0X3FFB
+0012     3FFC 3FFC      00017         DATA    _LP_OSC, 0X3FFC
+0014     3FFD 3FFD      00018         DATA    _XT_OSC, 0X3FFD
+0016     3FFE 3FFE      00019         DATA    _HS_OSC, 0X3FFE
+0018     3FFF 3FFF      00020         DATA    _RC_OSC, 0X3FFF
+                        00021 
+                        00022 
+001A     0000 0000      00023         DATA    INDF, 0                 ;Register Files
+001C     0001 0001      00024         DATA    TMR0, 1
+001E     0002 0002      00025         DATA    PCL, 2
+0020     0003 0003      00026         DATA    STATUS, 3
+0022     0004 0004      00027         DATA    FSR, 4
+0024     0005 0005      00028         DATA    PORTA, 5
+0026     0006 0006      00029         DATA    PORTB, 6
+0028     000A 000A      00030         DATA    PCLATH, 0x0A
+002A     000B 000B      00031         DATA    INTCON, 0x0B
+002C     000C 000C      00032         DATA    PIR1, 0XC               ; Register Files
+002E     001E 001E      00033         DATA    ADRES, 0x1E             ; ADC_CONFIG 1 Reg. Files
+0030     001F 001F      00034         DATA    ADCON0, 0X1F
+                        00035 
+0032     0081 0081      00036         DATA    OPTION_REG, 0x81
+0034     0085 0085      00037         DATA    TRISA, 0X85
+0036     0086 0086      00038         DATA    TRISB, 0X86
+0038     008C 008C      00039         DATA    PIE1, 0X8C
+003A     008E 008E      00040         DATA    PCON, 0X8E
+003C     009F 009F      00041         DATA    ADCON1, 0X9F
+                        00042 
+                        00043 
+003E     0007 0007      00044         DATA    ADCS1, 7                ; ADCON0
+0040     0006 0006      00045         DATA    ADCS0, 6
+0042     0005 0005      00046         DATA    CHS2, 5
+0044     0004 0004      00047         DATA    CHS1, 4
+0046     0003 0003      00048         DATA    CHS0, 3
+0048     0002 0002      00049         DATA    GO, 2
+004A     0002 0002      00050         DATA    NOT_DONE, 2
+MPASM Version 3.00 Beta Release   HD715.ASM   01/31/2001  12:12:04	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+004C     0002 0002      00051         DATA    GO_DONE, 2
+004E     0000 0000      00052         DATA    ADON, 0
+                        00053 
+0050     0001 0001      00054         DATA    PCFG1, 1                ; ADCON1
+0052     0000 0000      00055         DATA    PCFG0, 0
+                        00056 
+0054     0006 0006      00057         DATA    ADIE, 6                 ; PIE1 and PIR1
+0056     0006 0006      00058         DATA    ADIF, 6 
+                        00059         
+0058     0002 0002      00060         DATA    NOT_MPE, 2 
+005A     0001 0001      00061         DATA    NOT_POR, 1              ; PCON
+005C     0000 0000      00062         DATA    NOT_BO, 0
+                        00063 
+005E     0007 0007      00064         DATA    GIE, 7                  ; INTCON
+0060     0006 0006      00065         DATA    PEIE, 6                 ; Finish INTCON Definition
+0062     0005 0005      00066         DATA    T0IE, 5
+0064     0004 0004      00067         DATA    INTE, 4
+0066     0003 0003      00068         DATA    RBIE, 3
+0068     0002 0002      00069         DATA    T0IF, 2
+006A     0001 0001      00070         DATA    INTF, 1
+006C     0000 0000      00071         DATA    RBIF, 0 
+                        00072 
+006E     0007 0007      00073         DATA    NOT_RBPU, 7             ; OPTION
+0070     0006 0006      00074         DATA    INTEDG, 6
+0072     0005 0005      00075         DATA    T0CS, 5
+0074     0004 0004      00076         DATA    T0SE, 4
+0076     0003 0003      00077         DATA    PSA, 3
+0078     0002 0002      00078         DATA    PS2, 2
+007A     0001 0001      00079         DATA    PS1, 1
+007C     0000 0000      00080         DATA    PS0, 0
+                        00081 
+                        00082 
+007E     0007 0007      00083         DATA    IRP, 7                  ;STATUS
+0080     0006 0006      00084         DATA    RP1, 6
+0082     0005 0005      00085         DATA    RP0, 5
+0084     0004 0004      00086         DATA    NOT_TO, 4
+0086     0003 0003      00087         DATA    NOT_PD, 3
+0088     0002 0002      00088         DATA    Z, 2
+008A     0001 0001      00089         DATA    DC, 1
+008C     0000 0000      00090         DATA    C, 0
+                        00091 
+                        00092         END
+MPASM Version 3.00 Beta Release   HD715.ASM   01/31/2001  12:12:04	   PAGE 3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRES                             0000001E
+C                                 00000000
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+DC                                00000001
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_MPE                           00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+PCFG0                             00000000
+PCFG1                             00000001
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RP0                               00000005
+RP1                               00000006
+STATUS                            00000003
+T0CS                              00000005
+MPASM Version 3.00 Beta Release   HD715.ASM   01/31/2001  12:12:04	   PAGE 4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TMR0                              00000001
+TRISA                             00000085
+TRISB                             00000086
+W                                 00000000
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_CP_50                            000015DF
+_CP_ALL                           000000CF
+_CP_OFF                           00003FFF
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_MPEEN_OFF                        00003F7F
+_MPEEN_ON                         00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16C715                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXX-- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   142
+Program Memory Words Free:  1906
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,228 @@
+MPASM Version 3.00 Beta Release   HD14000.ASM   01/31/2001  12:11:25	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; HD14000.ASM
+                        00002 
+                        00003 ; This file tests header file usage for the specified processor.
+                        00004 
+                        00005         LIST    P=14000
+                        00006         INCLUDE "P14000.INC"
+                        00001         LIST
+                        00002 ; P14000.INC  Standard Header File, Version 1.01    Microchip Technology, Inc.
+                        00262         LIST
+                        00007 
+0000     1E7F 1E7F      00008         DATA    _CPC_ON, 0x1E7F         ; This changes per device
+0002     2DDF 2DDF      00009         DATA    _CPU_ON, 0x2DDF
+0004     33EF 33EF      00010         DATA    _CPP_ON, 0x33EF
+0006     3FF7 3FF7      00011         DATA    _PWRTE_ON, 0x3FF7       ; This changes per device
+                        00012 
+0008     0001 0001      00013         DATA    TMR0, 1
+000A     0003 0003      00014         DATA    STATUS, 3
+000C     000A 000A      00015         DATA    PCLATH, 0x0A
+000E     000B 000B      00016         DATA    INTCON, 0x0B
+0010     0015 0015      00017         DATA    ADCAPL, 0x15
+0012     0081 0081      00018         DATA    OPTION_REG, 0x81
+                        00019 
+0014     0007 0007      00020         DATA    GIE, 7
+0016     0005 0005      00021         DATA    T0IE, 5
+                        00022 
+0018     0002 0002      00023         DATA    Z, 2
+001A     0001 0001      00024         DATA    DC, 1
+001C     0000 0000      00025         DATA    C, 0
+                        00026 
+                        00027         END
+MPASM Version 3.00 Beta Release   HD14000.ASM   01/31/2001  12:11:25	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACFG0                             00000000
+ACFG1                             00000001
+ACFG2                             00000002
+ACFG3                             00000003
+ADCAPH                            00000016
+ADCAPL                            00000015
+ADCIE                             00000001
+ADCIF                             00000001
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000004
+ADCS1                             00000005
+ADCS2                             00000006
+ADCS3                             00000007
+ADDAC0                            00000004
+ADDAC1                            00000005
+ADDAC2                            00000006
+ADDAC3                            00000007
+ADOFF                             00000000
+ADRST                             00000001
+ADTMRH                            0000000F
+ADTMRL                            0000000E
+ADZERO                            00000000
+AMUXOE                            00000002
+BF                                00000000
+BIASOFF                           00000004
+C                                 00000000
+CCAEN                             00000001
+CCBEN                             00000005
+CCOMPA                            00000002
+CCOMPB                            00000006
+CHGCON                            0000009D
+CKP                               00000004
+CMAOE                             00000001
+CMAOUT                            00000002
+CMBOE                             00000005
+CMBOUT                            00000006
+CMCON                             0000009D
+CMIE                              00000007
+CMIF                              00000007
+CMOFF                             00000002
+CPOLA                             00000000
+CPOLB                             00000004
+CWUOFF                            00000002
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+D_A                               00000005
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+HIBEN                             00000007
+I2CADD                            00000093
+MPASM Version 3.00 Beta Release   HD14000.ASM   01/31/2001  12:11:25	   PAGE 3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+I2CBUF                            00000013
+I2CCON                            00000014
+I2CEN                             00000005
+I2CIE                             00000003
+I2CIF                             00000003
+I2CM0                             00000000
+I2CM1                             00000001
+I2CM2                             00000002
+I2CM3                             00000003
+I2COV                             00000006
+I2CSEL                            00000004
+I2CSTAT                           00000094
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+INCLKEN                           00000002
+INDF                              00000000
+INTCON                            0000000B
+IRP                               00000007
+LDACA                             0000009B
+LDACB                             0000009C
+LSOFF                             00000004
+MISC                              0000009E
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_LVD                           00000000
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RCPU                          00000007
+NOT_TO                            00000004
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OPTION_REG                        00000081
+OSC1                              00000000
+OSC2                              00000001
+OSCOFF                            00000003
+OVFIE                             00000000
+OVFIF                             00000000
+P                                 00000004
+PBIE                              00000004
+PBIF                              00000004
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PORTA                             00000005
+PORTC                             00000007
+PORTD                             00000008
+MPASM Version 3.00 Beta Release   HD14000.ASM   01/31/2001  12:11:25	   PAGE 4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PREFA                             0000009B
+PREFB                             0000009C
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+R                                 00000002
+RCIE                              00000002
+RCIF                              00000002
+READ_WRITE                        00000002
+REFOFF                            00000005
+RP0                               00000005
+RP1                               00000006
+R_W                               00000002
+S                                 00000003
+SLPCON                            0000008F
+SMBUS                             00000003
+SMHOG                             00000007
+SPGNDA                            00000005
+SPGNDB                            00000006
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TEMPOFF                           00000001
+TMR0                              00000001
+TRISA                             00000085
+TRISC                             00000087
+TRISD                             00000088
+UA                                00000001
+W                                 00000000
+WCOL                              00000007
+WUIE                              00000007
+WUIF                              00000007
+Z                                 00000002
+_CPC_OFF                          00003FFF
+_CPC_ON                           00001E7F
+_CPP_OFF                          00003FFF
+_CPP_ON                           000033EF
+_CPU_OFF                          00003FFF
+_CPU_ON                           00002DDF
+_FOSC_HS                          00003FFE
+_FOSC_RC                          00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+__14000                           00000001
+MPASM Version 3.00 Beta Release   HD14000.ASM   01/31/2001  12:11:25	   PAGE 5
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXX-- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    30
+Program Memory Words Free:  4066
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

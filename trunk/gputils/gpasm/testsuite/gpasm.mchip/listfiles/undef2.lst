@@ -1,0 +1,42 @@
+MPASM Version 3.00 Beta Release   UNDEF2.ASM   01/31/2001  12:40:22	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; UNDEF2.ASM
+                        00002 
+                        00003 ; This file tests the illegal usage of the UNDEFINE directive.
+                        00004 
+                        00005         LIST    P=17C42
+                        00006 
+0000                    00007 undefine                        ; Just a label
+Error[128]  : Missing argument(s)
+0000                    00008 #undefine                       ; No parameters
+Warning[201]: Symbol not previously defined (Def1)
+                        00009 #undefine Def1                  ; Symbol not defined
+                        00010 
+                        00011         END
+MPASM Version 3.00 Beta Release   UNDEF2.ASM   01/31/2001  12:40:22	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__17C42                           00000001
+undefine                          00000000
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+
+
+Errors   :     1
+Warnings :     1 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

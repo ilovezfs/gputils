@@ -1,0 +1,48 @@
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; ALLMESS9.ASM
+                        00002 
+                        00003 ; This file tests for errors and messages when generating an object file.
+                        00004 
+                        00005         list    p=16c58a
+                        00006 
+Error[150]  : Labels must be defined in a code or data section when making an object file
+0000                    00007 Label1                          ; Error 150 Labels must be defined...
+                        00008 
+Error[147]  : Directive not allowed when generating an object file (ORG)
+                        00009         org     0               ; Error 147 Directive not allowed
+                        00010 
+Error[152]  : Executable code and data must be defined in an appropriate section
+0000                    00011         NOP                     ; Error 152 Executable code and data must...
+                        00012 
+                        00013 Code1   CODE
+                        00014 
+Error[151]  : Operand contains unresolvable labels or is too complex
+0000     0C00           00015         MOVLW   Label1 << 2     ; Error 151 Operand contains unresolvable...
+                        00016 
+Error[151]  : Operand contains unresolvable labels or is too complex
+0001     04A3 04C3      00017         PAGESEL Label1 << 2     ; Error 151 Operand contains unresolvable... (was 153)
+                        00018 
+                        00019 Code1   CODE                    ; Error 154 Each object file section...
+                        00020 
+                        00021 Over1   UDATA_OVR       0
+                        00022 
+Error[155]  : All overlayed sections of the same name must have the same starting address
+                        00023 Over1   UDATA_OVR       0x10    ; Error 155 All overlayed sections...
+                        00024 
+                        00025         END
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Label1                            00000000
+__16C58A                          00000001
+
+Errors   :     6
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+

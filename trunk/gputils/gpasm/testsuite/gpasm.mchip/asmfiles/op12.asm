@@ -1,0 +1,203 @@
+; OP12.ASM
+
+; This file tests all 12-bit opcodes at their max and min and, if
+; applicable, all possible values.  Note that the max and mins are
+; processor-dependent.  As long as the max and min values are set
+; correctly, which is tested elsewhere, this file tests that they are
+; used.
+
+	LIST	P=16C54,R=HEX
+
+MAXROM = 01FF
+MAXRAM = 001F
+
+	ADDWF	0
+	ADDWF	0,1
+	ADDWF	0,F
+	ADDWF	0,0
+	ADDWF	0,W
+	ADDWF	MAXRAM
+
+	ANDLW	0
+	ANDLW	'A'
+	ANDLW	"A"
+	ANDLW	0FF
+
+	ANDWF	0
+	ANDWF	0,1
+	ANDWF	0,F
+	ANDWF	0,0
+	ANDWF	0,W
+	ANDWF	MAXRAM
+
+	BCF	0,0
+	BCF	0,1
+	BCF	0,2
+	BCF	0,3
+	BCF	0,4
+	BCF	0,5
+	BCF	0,6
+	BCF	0,7
+	BCF	MAXRAM,0
+
+	BSF	0,0
+	BSF	0,1
+	BSF	0,2
+	BSF	0,3
+	BSF	0,4
+	BSF	0,5
+	BSF	0,6
+	BSF	0,7
+	BSF	MAXRAM,0
+
+	BTFSC	0,0
+	BTFSC	0,1
+	BTFSC	0,2
+	BTFSC	0,3
+	BTFSC	0,4
+	BTFSC	0,5
+	BTFSC	0,6
+	BTFSC	0,7
+	BTFSC	MAXRAM,0
+
+	BTFSS	0,0
+	BTFSS	0,1
+	BTFSS	0,2
+	BTFSS	0,3
+	BTFSS	0,4
+	BTFSS	0,5
+	BTFSS	0,6
+	BTFSS	0,7
+	BTFSS	MAXRAM,0
+
+	CALL	0
+	CALL	0FF
+
+	CLRF	0
+	CLRF	MAXRAM
+
+	CLRW
+
+	CLRWDT
+
+	COMF	0
+	COMF	0,1
+	COMF	0,F
+	COMF	0,0
+	COMF	0,W
+	COMF	MAXRAM
+
+	DECF	0
+	DECF	0,1
+	DECF	0,F
+	DECF	0,0
+	DECF	0,W
+	DECF	MAXRAM
+
+	DECFSZ	0
+	DECFSZ	0,1
+	DECFSZ	0,F
+	DECFSZ	0,0
+	DECFSZ	0,W
+	DECFSZ	MAXRAM
+
+	GOTO	0
+	GOTO	MAXROM
+
+	INCF	0
+	INCF	0,1
+	INCF	0,F
+	INCF	0,0
+	INCF	0,W
+	INCF	MAXRAM
+
+	INCFSZ	0
+	INCFSZ	0,1
+	INCFSZ	0,F
+	INCFSZ	0,0
+	INCFSZ	0,W
+	INCFSZ	MAXRAM
+
+	IORLW	0
+	IORLW	'A'
+	IORLW	"A"
+	IORLW	0FF
+
+	IORWF	0
+	IORWF	0,1
+	IORWF	0,F
+	IORWF	0,0
+	IORWF	0,W
+	IORWF	MAXRAM
+
+	MOVF	0
+	MOVF	0,1
+	MOVF	0,F
+	MOVF	0,0
+	MOVF	0,W
+	MOVF	MAXRAM
+
+	MOVLW	0
+	MOVLW	'A'
+	MOVLW	"A"
+	MOVLW	0FF
+
+	MOVWF	0
+	MOVWF	MAXRAM
+
+	NOP
+
+	OPTION
+
+	RETLW	0
+	RETLW	0FF
+
+	RLF	0
+	RLF	0,1
+	RLF	0,F
+	RLF	0,0
+	RLF	0,W
+	RLF	MAXRAM
+
+	RRF	0
+	RRF	0,1
+	RRF	0,F
+	RRF	0,0
+	RRF	0,W
+	RRF	MAXRAM
+
+	SLEEP
+
+	SUBWF	0
+	SUBWF	0,1
+	SUBWF	0,F
+	SUBWF	0,0
+	SUBWF	0,W
+	SUBWF	MAXRAM
+
+	SWAPF	0
+	SWAPF	0,1
+	SWAPF	0,F
+	SWAPF	0,0
+	SWAPF	0,W
+	SWAPF	MAXRAM
+
+	TRIS	5
+	TRIS	6
+	TRIS	7
+
+	XORLW	0
+	XORLW	'A'
+	XORLW	"A"
+	XORLW	0FF
+
+	XORWF	0
+	XORWF	0,1
+	XORWF	0,F
+	XORWF	0,0
+	XORWF	0,W
+	XORWF	MAXRAM
+
+	END
+
+

@@ -1,0 +1,96 @@
+MPASM Version 3.00 Beta Release   WARNLVL1.ASM   01/31/2001  12:40:23	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; WARNLVL1.ASM
+                        00002 
+                        00003 ; This file is used to test warning level setting in the list file.  It
+                        00004 ; uses both the LIST directive and the ERRORLEVEL directive.  Note that
+                        00005 ; the command line will override either of these.  Since warnings cannot
+                        00006 ; be explicitly generated, we will use a ROM specification to generate a
+                        00007 ; warning.
+                        00008 
+                        00009         LIST    P=16C54
+0200                    00010         ORG     0x200
+                        00011 
+                        00012 
+                        00013         MESSG   "A Message"
+0200     0000           00014         NOP
+Error[101]  : ERROR: (An Error)
+                        00015         ERROR   "An Error"
+                        00016 
+                        00017         LIST    W=0
+Message[301]: MESSAGE: (A Message)
+                        00018         MESSG   "A Message"
+Warning[220]: Address exceeds maximum range for this processor.
+0201     0000           00019         NOP
+Error[101]  : ERROR: (An Error)
+                        00020         ERROR   "An Error"
+                        00021 
+                        00022         LIST    W=1
+                        00023         MESSG   "A Message"
+Warning[220]: Address exceeds maximum range for this processor.
+0202     0000           00024         NOP
+Error[101]  : ERROR: (An Error)
+                        00025         ERROR   "An Error"
+                        00026 
+                        00027         LIST    W=2
+                        00028         MESSG   "A Message"
+0203     0000           00029         NOP
+Error[101]  : ERROR: (An Error)
+                        00030         ERROR   "An Error"
+                        00031 
+                        00032         ERRORLEVEL      0
+Message[301]: MESSAGE: (A Message)
+                        00033         MESSG   "A Message"
+Warning[220]: Address exceeds maximum range for this processor.
+0204     0000           00034         NOP
+Error[101]  : ERROR: (An Error)
+                        00035         ERROR   "An Error"
+                        00036 
+                        00037         ERRORLEVEL      1
+                        00038         MESSG   "A Message"
+Warning[220]: Address exceeds maximum range for this processor.
+0205     0000           00039         NOP
+Error[101]  : ERROR: (An Error)
+                        00040         ERROR   "An Error"
+                        00041 
+MPASM Version 3.00 Beta Release   WARNLVL1.ASM   01/31/2001  12:40:23	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00042         ERRORLEVEL      2
+                        00043         MESSG   "A Message"
+0206     0000           00044         NOP
+Error[101]  : ERROR: (An Error)
+                        00045         ERROR   "An Error"
+                        00046 
+                        00047         END
+MPASM Version 3.00 Beta Release   WARNLVL1.ASM   01/31/2001  12:40:23	   PAGE 3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0200 : XXXXXXX--------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+Program Memory Words Free:   512
+
+
+Errors   :     7
+Warnings :     4 reported,     3 suppressed
+Messages :     2 reported,     5 suppressed
+
+

@@ -1,0 +1,50 @@
+MPASM Version 3.00 Beta Release   MACRO8.ASM   01/31/2001  12:39:52	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ;MACRO8.ASM
+                        00002 
+                        00003 ; This file tests illegal parameter substitution in macros.
+                        00004 
+                        00005         LIST    P=17C42
+                        00006 
+                        00007 TEST    MACRO   NUM
+                        00008         ADDLW   NUM
+                        00009         ENDM
+                        00010 
+Error[128]  : Missing argument(s)
+                        00011         TEST            ;Missing parameter
+Error[113]  : Symbol not previously defined (NUM)
+0000     B100               M         ADDLW   NUM
+Error[127]  : Too many arguments
+                        00012         TEST    1, 2    ;Too many parameters.
+Error[113]  : Symbol not previously defined (NUM)
+0001     B100               M         ADDLW   NUM
+                        00013 
+                        00014         END
+MPASM Version 3.00 Beta Release   MACRO8.ASM   01/31/2001  12:39:52	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TEST                              
+__17C42                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XX-------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     2
+
+
+Errors   :     4
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

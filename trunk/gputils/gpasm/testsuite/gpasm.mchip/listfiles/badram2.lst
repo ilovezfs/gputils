@@ -1,0 +1,107 @@
+MPASM Version 3.00 Beta Release   BADRAM2.ASM   01/31/2001  12:39:37	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; BADRAM2.ASM
+                        00002 
+                        00003 ; This file tests legal usage of the __MAXRAM and __BADRAM directives.
+                        00004 
+                        00005         LIST    P=16C622
+                        00006 
+  0000007F              00007         __maxram        7f
+Message[310]: Superceding current maximum RAM and RAM map.
+  000000BF              00008         __MAXRAM        0bf
+                        00009 
+                        00010 
+                        00011         __badram        0
+                        00012         __BADRAM        1  -  1
+                        00013         __badram        2-3
+                        00014         __badram        4,5,6
+                        00015         __BADRAM        7 , 8 , 9
+                        00016         __BADRAM        0a,0b-0c
+  0000000D              00017 Hole = 0d
+                        00018         __BADRAM        Hole
+                        00019         
+  00000000              00020 i = 0
+                        00021         while i <= 0e   ; all warnings except last
+Warning[219]: Invalid RAM location specified.
+0000     0080           00022            movwf        i
+  00000001              00023 i++
+Warning[219]: Invalid RAM location specified.
+0001     0081           00022            movwf        i
+  00000002              00023 i++
+Warning[219]: Invalid RAM location specified.
+0002     0082           00022            movwf        i
+  00000003              00023 i++
+Warning[219]: Invalid RAM location specified.
+0003     0083           00022            movwf        i
+  00000004              00023 i++
+Warning[219]: Invalid RAM location specified.
+0004     0084           00022            movwf        i
+  00000005              00023 i++
+Warning[219]: Invalid RAM location specified.
+0005     0085           00022            movwf        i
+  00000006              00023 i++
+Warning[219]: Invalid RAM location specified.
+0006     0086           00022            movwf        i
+  00000007              00023 i++
+Warning[219]: Invalid RAM location specified.
+0007     0087           00022            movwf        i
+  00000008              00023 i++
+Warning[219]: Invalid RAM location specified.
+0008     0088           00022            movwf        i
+  00000009              00023 i++
+Warning[219]: Invalid RAM location specified.
+0009     0089           00022            movwf        i
+  0000000A              00023 i++
+Warning[219]: Invalid RAM location specified.
+MPASM Version 3.00 Beta Release   BADRAM2.ASM   01/31/2001  12:39:37	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000A     008A           00022            movwf        i
+  0000000B              00023 i++
+Warning[219]: Invalid RAM location specified.
+000B     008B           00022            movwf        i
+  0000000C              00023 i++
+Warning[219]: Invalid RAM location specified.
+000C     008C           00022            movwf        i
+  0000000D              00023 i++
+Warning[219]: Invalid RAM location specified.
+000D     008D           00022            movwf        i
+  0000000E              00023 i++
+000E     008E           00022            movwf        i
+  0000000F              00023 i++
+                        00024         endw
+                        00025 
+                        00026         END
+MPASM Version 3.00 Beta Release   BADRAM2.ASM   01/31/2001  12:39:37	   PAGE 3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Hole                              0000000D
+__16C622                          00000001
+i                                 0000000F
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXX- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    15
+Program Memory Words Free:  2033
+
+
+Errors   :     0
+Warnings :    14 reported,     0 suppressed
+Messages :     1 reported,     0 suppressed
+
+

@@ -1,0 +1,58 @@
+MPASM Version 3.00 Beta Release   PAGSEL1.ASM   01/31/2001  12:43:33	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; PAGSEL1.ASM
+                        00002 
+                        00003 ; This file tests legal uses of the PAGESEL directives.
+                        00004 ; This file goes in the object file comparison test section.
+                        00005 
+                        00006         list    p=17c44
+                        00007 
+  0000                  00008         extern  Addr1
+                        00009 
+                        00010 
+                        00011         code
+                        00012 
+0000                    00013 Addr2
+Message[316]: W Register modified. 
+0000     ???? ????      00014         pagesel Addr2           ; Normal
+                        00015 
+Message[316]: W Register modified. 
+0002     ???? ????      00016         pagesel Addr2 + 1       ; Plus offset
+0004                    00017 Addr3
+Message[316]: W Register modified. 
+0004     ???? ????      00018         PAGESEL Addr3           ; Upper case
+                        00019 
+Message[316]: W Register modified. 
+0006     ???? ????      00020         pagesel Addr3 - 1       ; Minus offset
+                        00021 
+0008                    00022 Addr4   
+  0000                  00023         global  Addr4
+                        00024 
+Message[316]: W Register modified. 
+0008     ???? ????      00025         pagesel Addr4           ; Global variable
+                        00026 
+Message[316]: W Register modified. 
+000A     ???? ????      00027         pagesel Addr1           ; External variable
+                        00028 
+                        00029         end
+MPASM Version 3.00 Beta Release   PAGSEL1.ASM   01/31/2001  12:43:33	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Addr1                             00000000
+Addr2                             00000000
+Addr3                             00000004
+Addr4                             00000008
+__17C44                           00000001
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     6 reported,     0 suppressed
+
+

@@ -1,0 +1,19 @@
+This following list contains items that need to be completed.  This 
+list is in no particular order.
+
+  * Use dejagnu for testing.
+  * grep the source for FIXME and fix.
+  * Fix macro implementation so a simple text substitution is used.
+  * Add object file generation to gpasm.
+  * Add an iberty lib so gputils always has getopt_long.
+  * Move opcode generator from /gpasm/directive.c to 
+    /libgputils/opcode.c.
+  * Add instruction mask to opcode definitions for disassembler.
+  * Add 17cxx and 18cxx support to disassembler.
+  * Move COD file generation to library.
+  * Prefix all visible library functions with gp_. Add _ to all 
+    others.
+  * Add instruction set type to processor definitions.  Use this to 
+    simplify instruction loading in directive.c.  
+  * Create an xmalloc function with error checking and use it.
+  * Start migrating to the GNU coding style.

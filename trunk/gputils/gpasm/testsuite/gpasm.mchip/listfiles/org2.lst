@@ -1,0 +1,49 @@
+MPASM Version 3.00 Beta Release   ORG2.ASM   01/31/2001  12:39:53	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; ORG2.ASM
+                        00002 
+                        00003 ; This file tests illegal usage of the ORG directive.
+                        00004 
+                        00005         LIST    P=16C54, R=HEX
+                        00006 
+Error[128]  : Missing argument(s)
+                        00007         ORG                     ; No value
+0000     0000           00008         DATA    $
+                        00009 
+Error[128]  : Missing argument(s)
+                        00010 Label   ORG     
+Error[113]  : Symbol not previously defined (Label)
+Error[118]  : Overwriting previous address contents (0000)
+Error[118]  : Overwriting previous address contents (0000)
+0000     0000           00011         DATA    Label           ; No value
+                        00012 
+                        00013         END
+MPASM Version 3.00 Beta Release   ORG2.ASM   01/31/2001  12:39:53	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_.code_0000                       00000000
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X--------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     1
+Program Memory Words Free:   511
+
+
+Errors   :     5
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

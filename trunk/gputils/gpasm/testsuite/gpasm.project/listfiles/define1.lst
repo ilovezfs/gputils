@@ -1,0 +1,74 @@
+MPASM 02.70 Released          DEFINE1.ASM   8-14-2001  21:08:22         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; this file tests the substitution of labels found in the defines table
+                      00002 
+                      00003   processor 16c84
+                      00004 
+                      00005 
+                      00006   ifdef __16C84
+0000   3001           00007     movlw 1
+                      00008   endif
+                      00009 
+                      00010   ifndef __16C72
+0001   3001           00011    movlw 1
+                      00012   endif
+                      00013 
+  00000003            00014 pie equ 3
+                      00015 
+                      00016 ; make sure comments don't make their way into #defines
+                      00017 #define apple pie   ; this is a comment
+                      00018 
+0002   3003           00019     movlw apple
+                      00020 
+0003   0003           00021     fill apple,pie
+                      00022 
+                      00023 #define oldlabel newlabel
+                      00024 
+0006   3405           00025 oldlabel retlw 5
+                      00026 
+                      00027 #undefine oldlabel
+                      00028 
+                      00029 #define oldlabel nextlabel
+                      00030 
+0007   3403           00031 oldlabel retlw 3
+                      00032 
+                      00033 #define empty
+                      00034 
+0008   2806           00035   goto newlabel
+0009   2807           00036   goto nextlabel
+                      00037 
+                      00038     end
+MPASM 02.70 Released          DEFINE1.ASM   8-14-2001  21:08:22         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C84                           00000001
+apple                             pie
+empty                             
+newlabel                          00000006
+nextlabel                         00000007
+oldlabel                          nextlabel
+pie                               00000003
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXX------ ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    10
+Program Memory Words Free:  1014
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

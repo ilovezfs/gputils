@@ -1,0 +1,56 @@
+MPASM Version 3.00 Beta Release   RELOC2.ASM   01/31/2001  12:43:34	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; RELOC2.ASM
+                        00002 
+                        00003 ; This file tests that assembler variables can be used to create
+                        00004 ; the offsets for relocation entries.
+                        00005 ; It also checks for the TRIS relocation entry, which can't be
+                        00006 ; done with the other file and the 17Cxx family.
+                        00007 
+                        00008         list    p=16c54
+                        00009 
+  00000001              00010 Offset  = 1
+                        00011 
+                        00012         code
+                        00013 
+0000                    00014 Here
+                        00015 
+0000     09??           00016         call    Here+Offset
+  00000002              00017 Offset ++
+0001     09??           00018         call    Here+Offset
+  00000003              00019 Offset ++
+0002     09??           00020         call    Here+Offset
+  00000004              00021 Offset ++
+0003     09??           00022         call    Here+Offset
+  00000005              00023 Offset ++
+0004     09??           00024         call    Here+Offset
+                        00025 
+0005     09??           00026         call    Here+(Offset+1)
+                        00027 
+0006     09??           00028         call    Offset+2+Here
+                        00029 
+  0000                  00030         extern  TrisDest
+                        00031 
+0007     000?           00032         tris    TrisDest
+                        00033 
+                        00034         end
+MPASM Version 3.00 Beta Release   RELOC2.ASM   01/31/2001  12:43:34	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Here                              00000000
+Offset                            00000005
+TrisDest                          00000000
+__16C54                           00000001
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

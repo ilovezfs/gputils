@@ -1,0 +1,82 @@
+MPASM Version 3.00 Beta Release   TESTOVR1.ASM   01/31/2001  12:43:34	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; TESTOVR1.ASM
+                        00002 ;
+                        00003 ; This file tests the udata_shr directive.  It is interspersed with other
+                        00004 ; section directives to verify that the sections are started and ended
+                        00005 ; properly.
+                        00006 
+                        00007         list    p=16c54
+                        00008 
+                        00009 Merge2  udata_ovr
+0000                    00010 Var5a   res     1
+                        00011 
+                        00012 First   udata
+0000                    00013 Var4    res     1
+                        00014 
+                        00015 Merge   udata_ovr
+0000                    00016 Var1a   res     1
+0001                    00017 Var1b   res     1
+                        00018 
+                        00019 Other   udata
+0000                    00020 Var3    res     1
+                        00021 
+                        00022 Merge   udata_ovr
+0000                    00023 Var2a   res     1
+0001                    00024 Var2b   res     1
+0002                    00025 Var2c   res     1
+                        00026 
+                        00027 Merge2  udata_ovr
+0000                    00028 Var6a   res     2
+                        00029 
+                        00030 Code1   code
+                        00031 
+0000     0040           00032         clrw
+0001     0040           00033         clrw
+0002     0040           00034         clrw
+0003     0040           00035         clrw
+                        00036 
+                        00037 Code2   code
+                        00038 
+0000     0004           00039         clrwdt
+0001     0004           00040         clrwdt
+0002     0004           00041         clrwdt
+0003     0004           00042         clrwdt
+0004     0004           00043         clrwdt
+                        00044 
+                        00045 Merge2  udata_ovr
+0000                    00046 Var7a   res     1
+                        00047 
+                        00048 Code3   code
+0000     00??           00049         clrf    Var4
+0001     00??           00050         clrf    Var1a
+0002     00??           00051         clrf    Var6a
+                        00052 
+                        00053         end
+MPASM Version 3.00 Beta Release   TESTOVR1.ASM   01/31/2001  12:43:34	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Var1a                             00000000
+Var1b                             00000001
+Var2a                             00000000
+Var2b                             00000001
+Var2c                             00000002
+Var3                              00000000
+Var4                              00000000
+Var5a                             00000000
+Var6a                             00000000
+Var7a                             00000000
+__16C54                           00000001
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

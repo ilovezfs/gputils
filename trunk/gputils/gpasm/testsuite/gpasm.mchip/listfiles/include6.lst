@@ -1,0 +1,44 @@
+MPASM Version 3.00 Beta Release   INCLUDE6.ASM   01/31/2001  12:39:47	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; INCLUDE6.ASM
+                        00002 
+                        00003 ; This file tests including source files.
+                        00004 
+                        00005         LIST    P=17C42
+                        00006 
+0000     496E 636C 7564 00007         DATA    "Include File 6"
+         6520 4669 6C65 
+         2036 
+                        00008 
+Message[301]: MESSAGE: (FILE 6)
+                        00009         MESSG   "FILE 6"
+                        00010 
+                        00011 ;       END
+Error[125]  : Illegal condition (EOF encountered before END or conditional end directive)
+MPASM Version 3.00 Beta Release   INCLUDE6.ASM   01/31/2001  12:39:47	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__17C42                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXX--------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     7
+
+
+Errors   :     1
+Warnings :     0 reported,     0 suppressed
+Messages :     1 reported,     0 suppressed
+
+

@@ -1,0 +1,46 @@
+MPASM Version 3.00 Beta Release   IF3.ASM   01/31/2001  12:39:45	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; IF3.ASM 
+                        00002 
+                        00003 ; This file tests illegal usage of the IF-ELSE-ENDIF directives.
+                        00004 
+                        00005         LIST    P=17C42
+                        00006 
+                        00007 ;***** Test for SSR #2566
+                        00008 
+  0000                  00009         Variable I = 0
+                        00010         WHILE I <= 5
+                        00011            IF I == 0
+0000     0000           00012               NOP
+Error[129]  : Expected (ENDW)
+Warning[212]: Expected (ENDIF)
+                        00013            END                          ; END instead of ENDIF
+Warning[228]: Text encountered after END directive
+MPASM Version 3.00 Beta Release   IF3.ASM   01/31/2001  12:39:45	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+I                                 00000000
+__17C42                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X--------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     1
+
+
+Errors   :     1
+Warnings :     2 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

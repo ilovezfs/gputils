@@ -1,0 +1,84 @@
+MPASM Version 3.00 Beta Release   LIST8.ASM   01/31/2001  12:39:51	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; LIST8.ASM
+                        00002 
+                        00003 ; This file tests legal usage of the LIST FIXED directive.
+                        00004 
+                        00005 ; LIST should give warning if in column 1
+                        00006         list fixed
+Warning[205]: Found directive in column 1. (list)
+                        00007 list    p=16c71
+                        00008 
+                        00009 ; #DEFINE should not give warnings.
+                        00010 #define Dummy1 1
+                        00011  #define Dummy2 2
+                        00012 
+0000                    00013 Label1                          ; OK
+0000     0000           00014 Label2  Nop                     ; OK
+                        00015 
+Warning[207]: Found label after column 1. (Label3)
+0001                    00016  Label3                         ; Warning
+Warning[207]: Found label after column 1. (Label4)
+0001     0000           00017  Label4 Nop                     ; Warning
+                        00018 
+Warning[203]: Found opcode in column 1. (Nop)
+0002     0000           00019 Nop                             ; Warning
+0003     0000           00020  Nop                            ; OK
+0004                    00021 Nep                             ; OK
+Warning[207]: Found label after column 1. (Nep)
+0004                    00022  Nep                            ; Warning
+                        00023 
+                        00024 DumbMac Macro
+                        00025         nop
+                        00026         endm
+                        00027 
+Warning[206]: Found call to macro in column 1. (DumbMac)
+                        00028 DumbMac                         ; Warning
+0004     0000               M         nop
+                        00029  DumbMac                        ; OK
+0005     0000               M         nop
+                        00030 
+                        00031 
+Message[318]: Special Instruction Mnemonic used. (Setc)
+Warning[204]: Found pseudo-op in column 1. (Setc)
+0006     1403           00032 Setc                            ; Warning
+Message[318]: Special Instruction Mnemonic used. (Setc)
+0007     1403           00033  Setc                           ; OK
+                        00034 
+                        00035         end
+MPASM Version 3.00 Beta Release   LIST8.ASM   01/31/2001  12:39:51	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+DumbMac                           
+Dummy1                            1
+Dummy2                            2
+Label1                            00000000
+Label2                            00000000
+Label3                            00000001
+Label4                            00000001
+Nep                               00000004
+__16C71                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXX-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     8
+Program Memory Words Free:  1016
+
+
+Errors   :     0
+Warnings :     7 reported,     0 suppressed
+Messages :     2 reported,     0 suppressed
+
+

@@ -1,0 +1,114 @@
+MPASM Version 3.00 Beta Release   DEF1.ASM   01/31/2001  12:11:14	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; DEF1.ASM
+                        00002 
+                        00003 ; This file test legal usage of DEFINE.
+                        00004 
+                        00005         LIST    P=16C71, R=HEX
+                        00006 
+                        00007 #DEFINE STATUS  3
+  00000000              00008 CARRY_BIT = 0
+                        00009 
+                        00010 #DEFINE Defined2
+                        00011 #DEFINE Number2 123
+                        00012 #DEFINE String2 "ABC"
+                        00013 #DEFINE Carry2  STATUS,CARRY_BIT
+                        00014 #DEFINE Yloc2( X , M , B )           ( M * X + B )
+                        00015 #DEFINE MyJump2( Addr )              GOTO  Addr
+                        00016 #DEFINE LoPrec2( A , B )             ( A + B )
+                        00017 
+Warning[205]: Found directive in column 1. (IFNDEF)
+                        00018 IFNDEF Defined2
+                        00019    ERROR "Symbol Not Defined"
+                        00020 ENDIF
+                        00021 
+0000     0123           00022         DATA    Number2
+0001     3441 3442 3443 00023         DT      String2
+0004     1803           00024         BTFSC   Carry2
+0005     000D           00025         DATA    Yloc2 ( 2, 5, 3 )       ; 0D
+0006     2808           00026         MyJump2 ( Bottom )
+0007     0009           00027         DATA    LoPrec2 ( 1 , 2 ) * 3   ; 9
+                        00028 
+0008                    00029 Bottom
+                        00030 
+                        00031 #DEFINE Subtract(v)     addlw -(v)
+                        00032 
+0008     3EFF           00033         Subtract        (1)             ; Using parens
+0009     3EFE           00034         Subtract        2               ; Not using parens
+000A     3EFD           00035         Subtract        3
+000B     3EFC           00036         Subtract        1+3
+000C     3E02           00037         Subtract        -2
+000D     280E           00038         MyJump2         Bottom2
+                        00039 
+000E                    00040 Bottom2
+                        00041 
+                        00042 ;***** Test for SSR 1618
+                        00043 
+                        00044 #DEFINE Nest(A, B)  A + B
+  00000006              00045 Nest1a EQU Nest(1, Nest(2, 3))
+  0000001A              00046 Nest1b EQU Nest( Nest( 5, 6 ), Nest(7,8) )
+  00000024              00047 Nest1c EQU Nest( Nest( Nest(1,2), Nest(3,4) ), Nest( Nest(5,6), Nest(7,8)) ) 
+000E     0006 001A 0024 00048         DATA    Nest1a, Nest1b, Nest1c
+                        00049 
+                        00050 ;***** End Test
+                        00051 
+                        00052 ;***** Test for SSR 2143
+MPASM Version 3.00 Beta Release   DEF1.ASM   01/31/2001  12:11:14	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00053 
+                        00054 #define MACRO   NOP
+                        00055 
+0011     0000           00056         MACRO           ; Should generate a NOP instruction
+                        00057 
+                        00058 ;***** End Test
+                        00059 
+                        00060         END
+MPASM Version 3.00 Beta Release   DEF1.ASM   01/31/2001  12:11:14	   PAGE 3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Bottom                            00000008
+Bottom2                           0000000E
+CARRY_BIT                         00000000
+Carry2                            STATUS,CARRY_BIT
+Defined2                          
+LoPrec2                           ( A + B )
+MACRO                             NOP
+MyJump2                           GOTO  Addr
+Nest                              A + B
+Nest1a                            00000006
+Nest1b                            0000001A
+Nest1c                            00000024
+Number2                           123
+STATUS                            3
+String2                           "ABC"
+Subtract                          addlw -(v)
+Yloc2                             ( M * X + B )
+__16C71                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XX-------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    18
+Program Memory Words Free:  1006
+
+
+Errors   :     0
+Warnings :     1 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

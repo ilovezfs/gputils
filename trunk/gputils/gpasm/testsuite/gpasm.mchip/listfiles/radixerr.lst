@@ -1,0 +1,56 @@
+MPASM Version 3.00 Beta Release   RADIXERR.ASM   01/31/2001  12:39:56	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; RADIXERR.ASM
+                        00002 
+                        00003 ; This file tests errors in radix specification.
+                        00004 
+                        00005         LIST    P=16C54
+                        00006 
+0000     0010           00007         DATA    10
+                        00008 
+                        00009         RADIX   OCTAL
+0001     0008           00010         DATA    10
+                        00011         RADIX   DECIMAL
+0002     000A           00012         DATA    10
+                        00013         RADIX   HEX
+0003     0010           00014         DATA    10
+                        00015 
+Error[121]  : Illegal label (Label)
+                        00016 Label   RADIX   OCTAL
+0004     0008           00017         DATA    10
+Warning[218]: Expected DEC, OCT, HEX.  Will use HEX
+                        00018         RADIX   DECAMAL
+0005     0010           00019         DATA    10
+Warning[218]: Expected DEC, OCT, HEX.  Will use HEX
+                        00020         RADIX   STUPID
+0006     0010           00021         DATA    10
+                        00022 
+                        00023         END
+MPASM Version 3.00 Beta Release   RADIXERR.ASM   01/31/2001  12:39:56	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXX--------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     7
+Program Memory Words Free:   505
+
+
+Errors   :     1
+Warnings :     2 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

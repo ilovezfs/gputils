@@ -1,0 +1,40 @@
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; UDATAO2.ASM
+                        00002 
+                        00003 ; This file tests illegal usage of the UDATA_OVR directive.
+                        00004 ; It should be placed in the list comparison section for
+                        00005 ; object files.
+                        00006 
+                        00007         list    p=17c44
+                        00008 
+                        00009 Data1   udata_ovr       0x10            ; Two segments, different address
+0010                    00010         res             1
+Error[155]  : All overlayed sections of the same name must have the same starting address
+                        00011 Data1   udata_ovr       0x20
+0020                    00012         res             1
+                        00013 
+Error[113]  : Symbol not previously defined (xyz)
+                        00014 Data2   udata_ovr       xyz             ; Illegal address
+                        00015 
+                        00016 Data3   udata_ovr
+Error[152]  : Executable code and data must be defined in an appropriate section
+0000                    00017         nop                             ; Program code
+Error[152]  : Executable code and data must be defined in an appropriate section
+0000                    00018         db              1               ; Data byte
+                        00019 
+                        00020         end
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__17C44                           00000001
+
+Errors   :     4
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+

@@ -1,0 +1,137 @@
+MPASM Version 3.00 Beta Release   ALLMESS5.ASM   01/31/2001  12:39:32	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ;ALLMESS5.ASM
+                        00002 ;       Tests generation of warnings.
+                        00003 
+                        00004         list    p=16c71, r=dec, fixed
+                        00005         
+Warning[201]: Symbol not previously defined (NotDefined)
+                        00006 #undefine NotDefined                    ; Warning 201 Symbol not previously defined
+                        00007 
+Warning[202]: Argument out of range.  Least significant bits used.
+0000     3E23           00008         addlw   0x123                   ; Warning 202 Argument out of range.  Least...
+                        00009 
+Warning[203]: Found opcode in column 1. (nop)
+0001     0000           00010 nop                                     ; Warning 203 Found opcode in column 1.
+                        00011 
+Message[318]: Special Instruction Mnemonic used. (b)
+Warning[204]: Found pseudo-op in column 1. (b)
+0002     2800           00012 b       0                               ; Warning 204 Found pseudo-op in column 1.
+                        00013 
+Warning[205]: Found directive in column 1. (expand)
+                        00014 expand                                  ; Warning 205 Found directive in column 1.
+                        00015 
+                        00016 Mac1    macro
+                        00017         nop
+                        00018         endm
+                        00019 
+Warning[206]: Found call to macro in column 1. (Mac1)
+                        00020 Mac1                                    ; Warning 206 Found call to macro in column 1.
+0003     0000               M         nop
+                        00021 
+Warning[207]: Found label after column 1. (Label1)
+0004                    00022         Label1                          ; Warning 207 Found label after column 1.
+                        00023 
+Warning[208]: Label truncated at 32 characters. (This_Label_Is_Just_A_Bit_Too_Long)
+0004                    00024 This_Label_Is_Just_A_Bit_Too_Long       ; Warning 208 Label truncated at 32 characters.
+                        00025 
+                        00026                                         ; Warning 209 Missing quote
+Warning[209]: Missing quote
+0004     3132 3300      00027         data    "123
+                        00028 
+Message[313]: CBLOCK constants will start with a value of 0.
+                        00029         cblock  
+Warning[210]: Extra ","
+  00000000              00030            Val1, Val2,                  ; Warning 210 Extra ","
+                        00031         endc
+                        00032 
+Warning[211]: Extraneous arguments on the line.
+0006     0000           00033         nop     1                       ; Warning 211 Extra arguments on the line.
+                        00034 
+Warning[214]: Unmatched (
+0007     28             00035         fill    (goto 0, 5              ; Warning 214 Unmatched (
+                        00036 
+Warning[218]: Expected DEC, OCT, HEX.  Will use HEX
+                        00037         radix   abc                     ; Warning 218 Expected DEC, OCT...
+MPASM Version 3.00 Beta Release   ALLMESS5.ASM   01/31/2001  12:39:32	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00038 
+  0000002F              00039         __MAXRAM        0x2f
+                        00040         __BADRAM        20
+Warning[219]: Invalid RAM location specified.
+000C     00A0           00041         movwf           20              ; Warning 219 Invalid RAM location specified
+                        00042 
+1000                    00043         org     0x1000
+Warning[220]: Address exceeds maximum range for this processor.
+1000     0000           00044         nop                             ; Warning 220 Address exceeds maximum range...
+0010                    00045         org     0x10
+                        00046 
+Warning[221]: Invalid message number (999)
+                        00047         errorlevel      -999            ; Warning 221 Invalid message number
+                        00048 
+Warning[222]: Error messages cannot be disabled.
+                        00049         errorlevel      -101            ; Warning 222 Error messages cannot be disabled
+                        00050 
+Warning[223]: Redefining processor.
+                        00051         processor       16c71           ; Warning 223 Redefining processor
+                        00052 
+Warning[224]: Use of this instruction is not recommended.
+0010     0066           00053         tris    6                       ; Warning 224 Use of this instruction is not recommended
+Warning[224]: Use of this instruction is not recommended.
+0011     0062           00054         option                          ; Warning 224 Use of this instruction is not recommended
+                        00055 
+                        00056 ;***** Test for SSR 2074
+                        00057 
+                        00058 MyMacro macro
+                        00059         nop
+                        00060         endm
+                        00061 
+Warning[225]: Invalid label in operand (MyMacro)
+0012     2001           00062         call    MyMacro                 ; Warning 225 Invalid label in operand
+Warning[225]: Invalid label in operand (MyMacro)
+0013     0001           00063         data    MyMacro                 ; Warning 225 Invalid label in operand
+                        00064 
+                        00065 ;***** End Test
+                        00066 
+                        00067         if Label1
+Warning[212]: Expected (ENDIF)
+                        00068         end                             ; Warning 212 Expected...
+MPASM Version 3.00 Beta Release   ALLMESS5.ASM   01/31/2001  12:39:32	   PAGE 3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Label1                            00000004
+Mac1                              
+MyMacro                           
+This_Label_Is_Just_A_Bit_Too_Lon  00000004
+Val1                              00000000
+Val2                              00000001
+__16C71                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXX--- XXXX------------ ---------------- ----------------
+1000 : X--------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    17
+Program Memory Words Free:  1007
+
+
+Errors   :     0
+Warnings :    23 reported,     0 suppressed
+Messages :     2 reported,     0 suppressed
+
+

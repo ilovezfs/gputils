@@ -1,0 +1,51 @@
+MPASM Version 3.00 Beta Release   RES1.ASM   01/31/2001  12:14:17	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; RES1.ASM
+                        00002 
+                        00003 ; This file tests legal usage of the RES directive.
+                        00004 
+                        00005         LIST    P=16C54
+                        00006 
+0000                    00007         ORG     0
+0000                    00008         RES     10
+0010     0111           00009         DATA    111
+                        00010 
+0011                    00011         RES     0
+0011     0222           00012         DATA    222
+                        00013 
+0012                    00014         RES     1
+0013     0333           00015         DATA    333
+                        00016 
+0014                    00017 Label   RES     20
+0034     0444           00018         DATA    444
+                        00019 
+                        00020         END
+MPASM Version 3.00 Beta Release   RES1.ASM   01/31/2001  12:14:17	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Label                             00000014
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : ---------------- XX-X------------ ---------------- ----X-----------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     4
+Program Memory Words Free:   508
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

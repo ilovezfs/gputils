@@ -1,0 +1,55 @@
+MPASM Version 3.00 Beta Release   MESSAGES.ASM   01/31/2001  12:13:14	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; MESSAGES.ASM
+                        00002 
+                        00003 ; This file is used to generate files with messages, as well as
+                        00004 ; information suitable for each file type.
+                        00005 
+                        00006         LIST    P=16C54
+                        00007 
+0000     0000           00008 TOP     NOP
+                        00009 
+  00000001              00010 OneReference = 1
+                        00011 
+Message[301]: MESSAGE: (This is a message)
+                        00012         MESSG   "This is a message"
+Error[101]  : ERROR: (This is an error)
+                        00013         ERROR   "This is an error"
+                        00014 
+  00000002              00015 AnotherReference = 2
+                        00016 
+  00000003              00017 ThirdReference = OneReference + AnotherReference
+                        00018 
+                        00019         END
+MPASM Version 3.00 Beta Release   MESSAGES.ASM   01/31/2001  12:13:14	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+AnotherReference                  00000002
+OneReference                      00000001
+TOP                               00000000
+ThirdReference                    00000003
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X--------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     1
+Program Memory Words Free:   511
+
+
+Errors   :     1
+Warnings :     0 reported,     0 suppressed
+Messages :     1 reported,     0 suppressed
+
+

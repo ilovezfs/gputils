@@ -1,0 +1,108 @@
+MPASM 02.61 Released            DATA1.ASM   3-8-2001  1:52:12         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001      list p=12c508
+0200   0001 0002 0003 00002      __idlocs h'1234' 
+       0004 
+                      00003 
+Message[303]: Program word too large.  Truncated to core size. (6162)
+Message[303]: Program word too large.  Truncated to core size. (6364)
+Message[303]: Program word too large.  Truncated to core size. (6566)
+Message[303]: Program word too large.  Truncated to core size. (6700)
+0000   0162 0364 0566 00004      da "abcdefg"
+       0700 
+Message[303]: Program word too large.  Truncated to core size. (3132)
+Message[303]: Program word too large.  Truncated to core size. (3334)
+Message[303]: Program word too large.  Truncated to core size. (3536)
+Message[303]: Program word too large.  Truncated to core size. (3738)
+0004   0132 0334 0536 00005      da "12345678",0
+       0738 0000 
+Message[303]: Program word too large.  Truncated to core size. (FFFF)
+0009   0FFF           00006      da 0xFFFF
+                      00007 
+Message[303]: Program word too large.  Truncated to core size. (6162)
+Message[303]: Program word too large.  Truncated to core size. (6364)
+Message[303]: Program word too large.  Truncated to core size. (6566)
+Message[303]: Program word too large.  Truncated to core size. (6700)
+000A   0162 0364 0566 00008      data "abcdefg"
+       0700 
+Message[303]: Program word too large.  Truncated to core size. (3132)
+Message[303]: Program word too large.  Truncated to core size. (3334)
+Message[303]: Program word too large.  Truncated to core size. (3536)
+Message[303]: Program word too large.  Truncated to core size. (3738)
+Message[303]: Program word too large.  Truncated to core size. (1421)
+000E   0132 0334 0536 00009      data "12345678",0x1421,2,3,4
+       0738 0421 0002 
+       0003 0004 
+Message[303]: Program word too large.  Truncated to core size. (FFFF)
+0016   0FFF           00010      data 0xFFFF
+                      00011 
+Message[303]: Program word too large.  Truncated to core size. (740F)
+Message[303]: Program word too large.  Truncated to core size. (650F)
+Message[303]: Program word too large.  Truncated to core size. (730F)
+Message[303]: Program word too large.  Truncated to core size. (740A)
+0017   040F 050F 030F 00012      db 't',0x0f,'e',0x0f,'s',0x0f,'t','\n'
+       040A 
+                      00013 
+001B   004D 0079 0020 00014      de "My Program, v1.0",0
+       0050 0072 006F 
+       0067 0072 0061 
+       006D 002C 0020 
+       0076 0031 002E 
+       0030 0000 
+                      00015 
+Message[303]: Program word too large.  Truncated to core size. (6162)
+Message[303]: Program word too large.  Truncated to core size. (6364)
+Message[303]: Program word too large.  Truncated to core size. (6566)
+MPASM 02.61 Released            DATA1.ASM   3-8-2001  1:52:12         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Message[303]: Program word too large.  Truncated to core size. (6700)
+002C   0162 0364 0566 00016      dw "abcdefg"
+       0700 
+Message[303]: Program word too large.  Truncated to core size. (3132)
+Message[303]: Program word too large.  Truncated to core size. (3334)
+Message[303]: Program word too large.  Truncated to core size. (3536)
+Message[303]: Program word too large.  Truncated to core size. (3738)
+0030   0132 0334 0536 00017      dw "12345678",0
+       0738 0000 
+Message[303]: Program word too large.  Truncated to core size. (FFFF)
+0035   0FFF           00018      dw 0xFFFF
+                      00019 
+0036   0841 0820 084D 00020      dt "A Message",0
+       0865 0873 0873 
+       0861 0867 0865 
+       0800 
+                      00021 
+                      00022      end
+MPASM 02.61 Released            DATA1.ASM   3-8-2001  1:52:12         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__12C508                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0200 : XXXX------------ ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    64
+Program Memory Words Free:   448
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :    32 reported,     0 suppressed
+
+

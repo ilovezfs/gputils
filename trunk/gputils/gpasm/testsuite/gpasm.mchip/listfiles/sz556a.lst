@@ -1,0 +1,69 @@
+MPASM Version 3.00 Beta Release   SZ556A.ASM   01/31/2001  12:40:02	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; SZ556A.ASM
+                        00002 
+                        00003 ; This file tests for the processor-specific items for the selected
+                        00004 ; processor.
+                        00005 
+Error[132]  : Unknown processor (16C556A)
+                        00006         LIST    P=16C556A, R=HEX
+                        00007 
+  000003FF              00008 MAXROM  EQU     03FF
+  0000006F              00009 MAXRAM  EQU     006F
+                        00010 
+Warning[207]: Found label after column 1. (RETLW)
+Error[108]  : Illegal character (1)
+                        00011         RETLW   12              ; 0812 = 12-BIT
+                        00012                                 ; 3412 = 14-BIT
+                        00013                                 ; B612 = 16-BIT
+                        00014 
+Warning[207]: Found label after column 1. (MOVWF)
+Error[122]  : Illegal opcode (MAXRAM)
+                        00015         MOVWF   MAXRAM          ; OK
+Warning[207]: Found label after column 1. (MOVWF)
+Error[122]  : Illegal opcode (MAXRAM)
+                        00016         MOVWF   MAXRAM+1        ; MESSAGE
+                        00017 
+03FF                    00018         ORG     MAXROM
+Warning[207]: Found label after column 1. (NOP)
+03FF                    00019         NOP                     ; OK
+Warning[207]: Found label after column 1. (NOP)
+03FF                    00020         NOP                     ; ERROR
+                        00021 
+                        00022    IFDEF __16C84                ; EE Processors
+                        00023         ORG     2100
+                        00024         FILL    33, 40          ; OK
+                        00025         DE      44              ; ERROR
+                        00026    ENDIF
+                        00027 
+                        00028         END
+Error[131]  : Processor type is undefined
+MPASM Version 3.00 Beta Release   SZ556A.ASM   01/31/2001  12:40:02	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+MAXRAM                            0000006F
+MAXROM                            000003FF
+NOP                               000003FF
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+Program Memory Words Free:     1
+
+
+Errors   :     5
+Warnings :     5 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

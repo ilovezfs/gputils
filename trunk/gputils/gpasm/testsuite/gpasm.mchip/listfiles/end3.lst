@@ -1,0 +1,37 @@
+MPASM Version 3.00 Beta Release   END3.ASM   01/31/2001  12:39:40	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; END3.ASM
+                        00002 
+                        00003 ; This file tests illegal usage of the END directive.
+                        00004 
+                        00005         LIST    P=16C54, R=HEX
+                        00006 
+Error[121]  : Illegal label (MyLabel)
+                        00007 MyLabel END
+MPASM Version 3.00 Beta Release   END3.ASM   01/31/2001  12:39:40	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+Program Memory Words Free:   512
+
+
+Errors   :     1
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

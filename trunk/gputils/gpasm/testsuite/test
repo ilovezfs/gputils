@@ -1,0 +1,256 @@
+#!/bin/bash
+
+# test tests gpasm
+# Copyright (C) 2001 Craig Franklin
+#
+# This file is part of gputils.
+#
+# gputils is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# gputils is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with gputils; see the file COPYING.  If not, write to
+# the Free Software Foundation, 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.  
+
+# FIXME: This is a poorly written script created from the old set of gpasm
+# tests.  This is temporary.  In the future, dejagnu will be used to replace
+# this script.
+
+# Defines
+version=1.0
+GPASMFLAGS=-q
+TESTDIR=./test
+HEADER=../../header
+GPASMBIN=../gpasm
+
+# general functions
+
+function testfailed {
+  echo "TEST FAILED"
+  exit 1
+}
+
+binexists() {
+
+  # Test syntax.
+  if [ $# = 0 ] ; then
+    echo "Usage: binexists {program}"
+    return 1
+  fi
+  echo "testing for $1"
+  if !(test -e $1); then
+    echo "$1 not found.  Aborting."
+    return 1
+  else
+    $1 -v
+    echo "executable found."
+    echo
+    return 0
+  fi
+
+}
+
+printbanner() {
+  # Test syntax.
+  if [ $# = 0 ] ; then
+    echo "Usage: printbanner {message}"
+    return 1
+  fi
+  echo "-----------------------------------------------------------"
+  echo "$1"
+  echo "-----------------------------------------------------------"
+  echo
+  return 0
+}
+
+printversion() {
+  printbanner " gptest v$version - gputils test script."
+  return 0
+}
+
+printheader () {
+  printversion
+  echo "NAME:      $NAME" 
+  echo "DATE:      $(date +%x)"
+  echo "TIME:      $(date +%r)"
+  echo "HOST:      $HOSTNAME"
+  echo "HOST TYPE: $HOSTTYPE"
+  echo "HOST OS:   $OSTYPE"
+  echo
+  return 0
+}
+
+# gpasm test functions
+
+test_gpasm_sub() {
+
+  let tested=0
+  let compiled=0
+  let passed=0
+  let errortested=0
+  let notcompiled=0
+
+  #Test syntax.
+  if [ $# = 0 ] ; then
+    echo "Usage: test_gpasm_sub {subdirectory}"
+    return 1
+  fi
+
+  if !(test -d $1); then
+    echo "$1 not found.  Aborting."
+    return 1
+  fi
+
+  if (test $1 = "old"); then
+    echo "$1 is a special test directory.  Aborting."
+    return 1
+  fi
+
+  printbanner "Running ./$1 gpasm tests"
+
+  cd $1
+
+  # create the test directory if it doesn't already exist
+  test -d $TESTDIR || mkdir $TESTDIR || exit 1
+  cd $TESTDIR
+  rm -f *.asm
+  cp ../asmfiles/* .
+
+  # test all of the asm files
+  for x in `ls *.asm`
+    do
+      # split the base file name from the extension
+      for basefilename in `echo $x | tr -s "." " "`
+        do
+          if [ $basefilename = "asm" ]; then
+            # do nothing for the extension
+            echo
+          elif (test -e ../hexfiles/$basefilename.hex); then 
+            # a hex file exists so these files must not have errors
+            let tested=tested+1
+            echo "Compiling $basefilename.asm"
+            echo "../../$GPASMBIN -q -I ../../$HEADER $basefilename.asm"
+            ../../$GPASMBIN -q -I ../../$HEADER $basefilename.asm 
+            if (test -e $basefilename.hex); then
+              let compiled=compiled+1
+              diff -s ../hexfiles/$basefilename.hex $basefilename.hex
+              if (diff -q ../hexfiles/$basefilename.hex $basefilename.hex); then 
+                let passed=passed+1
+                echo "$basefilename.asm tested successfully"	
+              fi
+            else
+              echo "$basefilename.asm failed to compile"	
+            fi
+          else
+            # a hex file doesn't exit so these files must have intentional
+            # errors
+            let errortested=errortested+1
+            echo "Compiling $basefilename.asm"
+            ../../$GPASMBIN -q -I ../../$HEADER $basefilename.asm 
+            if (test -e $basefilename.hex); then
+              echo "$basefilename.asm failed to generate an error"	
+            else
+              let notcompiled=notcompiled+1
+              echo "$basefilename.asm tested successfully"	
+            fi
+          fi
+        done
+    done
+  cd ..
+  cd ..
+  printbanner "./$1 testing complete"
+  echo "$tested files tested without intentional errors"
+  echo "$compiled compiled without errors"  
+  echo "$passed generated identical hex files"  
+  echo
+  echo "$errortested files tested with intentional errors"  
+  echo "$notcompiled generated errors during compilation"  
+  echo
+  if !(test $tested=$passed); then
+    return 1  
+  elif !(test $errrortested=$notcompiled); then
+    return 1
+  else
+    return 0
+  fi
+}
+
+test_gpasm_old() {
+  printbanner "Running old gpasm tests..."
+  cd gpasm.old
+  ./testall clean || testfailed
+  ./testall all || testfailed
+  cd ..
+  echo
+  printbanner "old gpasm testing successful"
+  return 0
+}
+
+test_gpasm() {
+  printbanner "Start of gpasm testing"
+  binexists $GPASMBIN
+  RETVAL=$?
+  if [ $RETVAL -eq 0 ]; then
+    test_gpasm_old || testfailed
+    test_gpasm_sub gpasm.project || testfailed
+    test_gpasm_sub gpasm.mchip || testfailed
+    echo
+    printbanner "gpasm testing successful"
+  fi
+  return 0
+}
+
+# top level
+if [ ! $1 ]; then
+  echo "Not enough arguments. Try \"$0 help\" for help."
+  exit 1
+fi
+
+case "$1" in
+
+  all)
+    printheader
+    test_gpasm
+    RETVAL=$?
+    if [ $RETVAL -eq 1 ]; then
+      exit 1
+    else
+      printbanner "All testing sucessful"    
+    fi
+    exit
+    ;;
+  clean)
+    rm -Rf ./gpasm.mchip/test
+    rm -Rf ./gpasm.project/test
+    cd gpasm.old 
+    ./testall clean
+    cd ..
+    ;;
+  help)
+    printversion
+    echo "Usage: $0 <option>"
+    echo
+    echo "Options:"
+    echo "       all                = run all tests"
+    echo "       clean              = clean all test directories"
+    echo "       help               = display this help message"
+    echo
+    echo
+    exit
+    ;;
+  *)
+    echo "$0: Invalid argument. Try \"$0 help\" for help."
+    exit 1  
+
+esac
+
+exit
+

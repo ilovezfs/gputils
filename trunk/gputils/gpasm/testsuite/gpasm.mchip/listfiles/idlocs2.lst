@@ -1,0 +1,40 @@
+MPASM Version 3.00 Beta Release   IDLOCS2.ASM   01/31/2001  12:12:53	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; IDLOCS2.ASM
+                        00002 
+                        00003 ; This file tests the __IDLOCS directive for 14-bit core.
+                        00004 
+                        00005         LIST    P=16C61, R=HEX
+                        00006 
+2000     0001 0002 0003 00007         __IDLOCS        1234
+         0004 
+                        00008 
+                        00009         END
+MPASM Version 3.00 Beta Release   IDLOCS2.ASM   01/31/2001  12:12:53	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C61                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+2000 : XXXX------------ ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+Program Memory Words Free:  1024
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

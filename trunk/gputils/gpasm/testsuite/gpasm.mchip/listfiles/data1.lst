@@ -1,0 +1,196 @@
+MPASM Version 3.00 Beta Release   DATA1.ASM   01/31/2001  12:11:13	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; DATA1.ASM
+                        00002 
+                        00003 ; This file tests general legal uses of the various data directives.
+                        00004 
+                        00005         LIST    P=17C44, R=HEX
+                        00006 
+Warning[205]: Found directive in column 1. (CONSTANT)
+  0055                  00007 CONSTANT        CONST1 = 55
+Warning[205]: Found directive in column 1. (VARIABLE)
+  0066                  00008 VARIABLE        VAR1 = 66
+                        00009 #DEFINE         DEF1 77
+                        00010 
+0000     0001           00011         DATA    1
+0001     0001 0002 0003 00012         DATA    1, 2, 3
+0004     4142 4300      00013         DATA    "ABC"
+0006     2745 4647 2700 00014         DATA    "'EFG'"
+0009     0001 0002 0003 00015         DATA    1, 2, 3, "abc"
+         6162 6300 
+000E     5465 7374 2053 00016         DATA    "Test String\n", 0
+         7472 696E 670A 
+         0000 
+0015     0708 0C0A 0D09 00017         DATA    "\a\b\f\n\r\t\v\\\'\"\?\0"
+         0B5C 2722 3F00 
+001B     0053 9CFF      00018         DATA    "\000\123\234\377"
+001D     1111 2222 EEEE 00019         DATA    1111, 2222, 0EEEE, 0FFFF
+         FFFF 
+0021     0055 0066 0077 00020         DATA    CONST1, VAR1, DEF1
+0024     0024 0025 0026 00021         DATA    $, $, $
+0027     0027 0027 0027 00022         DATA    $, $ - 1, $-2
+002A     0079           00023         DATA    'y'
+002B     7900           00024         DATA    "y"
+002C     0028           00025         DATA    '('
+002D     0029           00026         DATA    ')'
+002E     002C 005C 0027 00027         DATA    ',', '\\', '\'', '\"', "\""
+         0022 2200 
+                        00028 
+0033     0001           00029         DW      1
+0034     0001 0002 0003 00030         DW      1, 2, 3
+0037     4142 4300      00031         DW      "ABC"
+0039     2745 4647 2700 00032         DW      "'EFG'"
+003C     0001 0002 0003 00033         DW      1, 2, 3, "abc"
+         6162 6300 
+0041     5465 7374 2053 00034         DW      "Test String\n", 0
+         7472 696E 670A 
+         0000 
+0048     0708 0C0A 0D09 00035         DW      "\a\b\f\n\r\t\v\\\'\"\?\0"
+         0B5C 2722 3F00 
+004E     0053 9CFF      00036         DW      "\000\123\234\377"
+0050     1111 2222 EEEE 00037         DW      1111, 2222, 0EEEE, 0FFFF
+         FFFF 
+0054     0055 0066 0077 00038         DW      CONST1, VAR1, DEF1
+0057     0057 0058 0059 00039         DW      $, $, $
+005A     005A 005A 005A 00040         DW      $, $ - 1, $-2
+MPASM Version 3.00 Beta Release   DATA1.ASM   01/31/2001  12:11:13	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+005D     0079           00041         DW      'y'
+005E     7900           00042         DW      "y"
+005F     0028           00043         DW      '('
+0060     0029           00044         DW      ')'
+0061     002C 005C 0027 00045         DW      ',', '\\', '\'', '\"', "\""
+         0022 2200 
+                        00046 
+0066     0100           00047         DB      1
+0067     0102 0300      00048         DB      1, 2, 3
+0069     4142 4300      00049         DB      "ABC"
+006B     2745 4647 2700 00050         DB      "'EFG'"
+006E     0102 0361 6263 00051         DB      1, 2, 3, "abc"
+0071     5465 7374 2053 00052         DB      "Test String\n", 0
+         7472 696E 670A 
+         0000 
+0078     0708 0C0A 0D09 00053         DB      "\a\b\f\n\r\t\v\\\'\"\?\0"
+         0B5C 2722 3F00 
+007E     0053 9CFF      00054         DB      "\000\123\234\377"
+0080     1122 EEFF      00055         DB      11, 22, 0EE, 0FF
+0082     5566 7700      00056         DB      CONST1, VAR1, DEF1
+0084     7900           00057         DB      'y'
+0085     7900           00058         DB      "y"
+0086     2800           00059         DB      '('
+0087     2900           00060         DB      ')'
+0088     2C5C 2722 2200 00061         DB      ',', '\\', '\'', '\"', "\""
+                        00062 
+008B     0001           00063         DE      1
+008C     0001 0002 0003 00064         DE      1, 2, 3
+008F     0041 0042 0043 00065         DE      "ABC"
+0092     0027 0045 0046 00066         DE      "'EFG'"
+         0047 0027 
+0097     0001 0002 0003 00067         DE      1, 2, 3, "abc"
+         0061 0062 0063 
+009D     0054 0065 0073 00068         DE      "Test String\n", 0
+         0074 0020 0053 
+         0074 0072 0069 
+         006E 0067 000A 
+         0000 
+00AA     0007 0008 000C 00069         DE      "\a\b\f\n\r\t\v\\\'\"\?\0"
+         000A 000D 0009 
+         000B 005C 0027 
+         0022 003F 0000 
+00B6     0000 0053 009C 00070         DE      "\000\123\234\377"
+         00FF 
+00BA     0011 0022 00EE 00071         DE      11, 22, 0EE, 0FF
+         00FF 
+00BE     0055 0066 0077 00072         DE      CONST1, VAR1, DEF1
+00C1     0079           00073         DE      'y'
+00C2     0079           00074         DE      "y"
+00C3     0028           00075         DE      '('
+00C4     0029           00076         DE      ')'
+00C5     002C 005C 0027 00077         DE      ',', '\\', '\'', '\"', "\""
+         0022 0022 
+MPASM Version 3.00 Beta Release   DATA1.ASM   01/31/2001  12:11:13	   PAGE 3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00078 
+00CA     B601           00079         DT      1
+00CB     B601 B602 B603 00080         DT      1, 2, 3
+00CE     B641 B642 B643 00081         DT      "ABC"
+00D1     B627 B645 B646 00082         DT      "'EFG'"
+         B647 B627 
+00D6     B601 B602 B603 00083         DT      1, 2, 3, "abc"
+         B661 B662 B663 
+00DC     B654 B665 B673 00084         DT      "Test String\n", 0
+         B674 B620 B653 
+         B674 B672 B669 
+         B66E B667 B60A 
+         B600 
+00E9     B607 B608 B60C 00085         DT      "\a\b\f\n\r\t\v\\\'\"\?\0"
+         B60A B60D B609 
+         B60B B65C B627 
+         B622 B63F B600 
+00F5     B600 B653 B69C 00086         DT      "\000\123\234\377"
+         B6FF 
+00F9     B611 B622 B6EE 00087         DT      11, 22, 0EE, 0FF
+         B6FF 
+00FD     B655 B666 B677 00088         DT      CONST1, VAR1, DEF1
+0100     B679           00089         DT      'y'
+0101     B679           00090         DT      "y"
+0102     B628           00091         DT      '('
+0103     B629           00092         DT      ')'
+0104     B62C B65C B627 00093         DT      ',', '\\', '\'', '\"', "\""
+         B622 B622 
+                        00094 
+                        00095         END
+MPASM Version 3.00 Beta Release   DATA1.ASM   01/31/2001  12:11:13	   PAGE 4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CONST1                            00000055
+DEF1                              77
+VAR1                              00000066
+_.code_0024                       00000024
+_.code_0025                       00000025
+_.code_0026                       00000026
+_.code_0027                       00000027
+_.code_0028                       00000028
+_.code_0029                       00000029
+_.code_0057                       00000057
+_.code_0058                       00000058
+_.code_0059                       00000059
+_.code_005A                       0000005A
+_.code_005B                       0000005B
+_.code_005C                       0000005C
+__17C44                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXX------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   265
+
+
+Errors   :     0
+Warnings :     2 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

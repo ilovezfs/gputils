@@ -1,0 +1,463 @@
+MPASM Version 3.00 Beta Release   HDR65.ASM   01/31/2001  12:12:42	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; HDR65.ASM
+                        00002 
+                        00003 ; This file tests header file usage for the specified processor.
+                        00004 
+                        00005         LIST    P=16CR65
+                        00006         INCLUDE "P16CR65.INC"
+                        00001         LIST
+                        00002 ; P16CR65.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+                        00299         LIST
+                        00007 
+0000     00CF 00CF      00008         DATA    _CP_ALL, 0x00CF         ; This changes per device
+0002     15DF 15DF      00009         DATA    _CP_75, 0X15DF
+0004     2AEF 2AEF      00010         DATA    _CP_50, 0X2AEF
+0006     3FFF 3FFF      00011         DATA    _CP_OFF, 0X3FFF
+0008     3FFF 3FFF      00012         DATA    _BODEN_ON, 0X3FFF
+000A     3FBF 3FBF      00013         DATA    _BODEN_OFF, 0X3FBF
+000C     3FF7 3FF7      00014         DATA    _PWRTE_ON, 0x3FF7       ; This changes per device
+000E     3FFF 3FFF      00015         DATA    _PWRTE_OFF, 0X3FFF
+0010     3FFF 3FFF      00016         DATA    _WDT_ON, 0X3FFF
+0012     3FFB 3FFB      00017         DATA    _WDT_OFF, 0X3FFB
+0014     3FFC 3FFC      00018         DATA    _LP_OSC, 0X3FFC
+0016     3FFD 3FFD      00019         DATA    _XT_OSC, 0X3FFD
+0018     3FFE 3FFE      00020         DATA    _HS_OSC, 0X3FFE
+001A     3FFF 3FFF      00021         DATA    _RC_OSC, 0X3FFF
+                        00022 
+001C     0000 0000      00023         DATA    INDF, 0                 ;Register Files
+001E     0001 0001      00024         DATA    TMR0, 1
+0020     0002 0002      00025         DATA    PCL, 2
+0022     0003 0003      00026         DATA    STATUS, 3
+0024     0004 0004      00027         DATA    FSR, 4
+0026     0005 0005      00028         DATA    PORTA, 5
+0028     0006 0006      00029         DATA    PORTB, 6
+002A     0007 0007      00030         DATA    PORTC, 7                ; Processor Specific
+002C     0008 0008      00031         DATA    PORTD, 8                ; Register Files
+002E     0009 0009      00032         DATA    PORTE, 9
+0030     000A 000A      00033         DATA    PCLATH, 0x0A
+0032     000B 000B      00034         DATA    INTCON, 0x0B
+0034     000C 000C      00035         DATA    PIR1, 0XC
+0036     000D 000D      00036         DATA    PIR2, 0XD
+0038     000E 000E      00037         DATA    TMR1L, 0XE
+003A     000F 000F      00038         DATA    TMR1H, 0XF
+003C     0010 0010      00039         DATA    T1CON, 0X10
+003E     0011 0011      00040         DATA    TMR2, 0X11
+0040     0012 0012      00041         DATA    T2CON, 0X12
+0042     0013 0013      00042         DATA    SSPBUF, 0X13
+0044     0014 0014      00043         DATA    SSPCON, 0X14
+0046     0015 0015      00044         DATA    CCPR1L, 0X15
+0048     0016 0016      00045         DATA    CCPR1H, 0X16
+004A     0017 0017      00046         DATA    CCP1CON, 0X17
+004C     0018 0018      00047         DATA    RCSTA, 0X18
+004E     0019 0019      00048         DATA    TXREG, 0X19
+0050     001A 001A      00049         DATA    RCREG, 0X1A
+0052     001B 001B      00050         DATA    CCPR2L, 0X1B
+MPASM Version 3.00 Beta Release   HDR65.ASM   01/31/2001  12:12:42	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0054     001C 001C      00051         DATA    CCPR2H, 0X1C
+0056     001D 001D      00052         DATA    CCP2CON, 0X1D
+                        00053 
+0058     0081 0081      00054         DATA    OPTION_REG, 0x81
+005A     0085 0085      00055         DATA    TRISA, 0X85
+005C     0086 0086      00056         DATA    TRISB, 0X86
+005E     0087 0087      00057         DATA    TRISC, 0X87
+0060     0088 0088      00058         DATA    TRISD, 0X88
+0062     0089 0089      00059         DATA    TRISE, 0X89
+0064     008C 008C      00060         DATA    PIE1, 0X8C
+0066     008D 008D      00061         DATA    PIE2, 0X8D
+0068     008E 008E      00062         DATA    PCON, 0X8E
+006A     0092 0092      00063         DATA    PR2, 0X92
+006C     0093 0093      00064         DATA    SSPADD, 0X93
+006E     0094 0094      00065         DATA    SSPSTAT, 0X94
+0070     0098 0098      00066         DATA    TXSTA, 0X98
+0072     0099 0099      00067         DATA    SPBRG, 0X99
+                        00068 
+                        00069         
+0074     0007 0007      00070         DATA    IRP, 7                  ;STATUS
+0076     0006 0006      00071         DATA    RP1, 6
+0078     0005 0005      00072         DATA    RP0, 5
+007A     0004 0004      00073         DATA    NOT_TO, 4
+007C     0003 0003      00074         DATA    NOT_PD, 3
+007E     0002 0002      00075         DATA    Z, 2
+0080     0001 0001      00076         DATA    DC, 1
+0082     0000 0000      00077         DATA    C, 0
+                        00078 
+0084     0007 0007      00079         DATA    GIE, 7                  ; INTCON
+0086     0006 0006      00080         DATA    PEIE, 6
+0088     0005 0005      00081         DATA    T0IE, 5
+008A     0004 0004      00082         DATA    INTE, 4
+008C     0003 0003      00083         DATA    RBIE, 3
+008E     0002 0002      00084         DATA    T0IF, 2
+0090     0001 0001      00085         DATA    INTF, 1
+0092     0000 0000      00086         DATA    RBIF, 0 
+                        00087 
+0094     0007 0007      00088         DATA    PSPIF, 7                ; PIR1
+0096     0005 0005      00089         DATA    RCIF, 5
+0098     0004 0004      00090         DATA    TXIF, 4
+009A     0003 0003      00091         DATA    SSPIF, 3
+009C     0002 0002      00092         DATA    CCP1IF, 2
+009E     0001 0001      00093         DATA    TMR2IF, 1
+00A0     0000 0000      00094         DATA    TMR1IF, 0
+                        00095 
+00A2     0000 0000      00096         DATA    CCP2IF, 0               ; PIR2
+                        00097 
+00A4     0005 0005      00098         DATA    T1CKPS1, 5              ; T1CON
+00A6     0004 0004      00099         DATA    T1CKPS0, 4
+00A8     0003 0003      00100         DATA    T1OSCEN, 3
+00AA     0002 0002      00101         DATA    T1INSYNC, 2
+00AC     0001 0001      00102         DATA    TMR1CS, 1
+00AE     0000 0000      00103         DATA    TMR1ON, 0
+MPASM Version 3.00 Beta Release   HDR65.ASM   01/31/2001  12:12:42	   PAGE 3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00104 
+00B0     0006 0006      00105         DATA    TOUTPS3, 6              ; T2CON
+00B2     0005 0005      00106         DATA    TOUTPS2, 5
+00B4     0004 0004      00107         DATA    TOUTPS1, 4
+00B6     0003 0003      00108         DATA    TOUTPS0, 3
+00B8     0002 0002      00109         DATA    TMR2ON, 2
+00BA     0001 0001      00110         DATA    T2CKPS1, 1
+00BC     0000 0000      00111         DATA    T2CKPS0, 0
+                        00112 
+00BE     0007 0007      00113         DATA    WCOL, 7                 ; SSPCON
+00C0     0006 0006      00114         DATA    SSPOV, 6        
+00C2     0005 0005      00115         DATA    SSPEN, 5
+00C4     0004 0004      00116         DATA    CKP, 4
+00C6     0003 0003      00117         DATA    SSPM3, 3
+00C8     0002 0002      00118         DATA    SSPM2, 2
+00CA     0001 0001      00119         DATA    SSPM1, 1
+00CC     0000 0000      00120         DATA    SSPM0, 0
+                        00121 
+00CE     0005 0005      00122         DATA    CCP1X, 5                ; CCP1CON
+00D0     0004 0004      00123         DATA    CCP1Y, 4
+00D2     0003 0003      00124         DATA    CCP1M3, 3
+00D4     0002 0002      00125         DATA    CCP1M2, 2
+00D6     0001 0001      00126         DATA    CCP1M1, 1
+00D8     0000 0000      00127         DATA    CCP1M0, 0
+                        00128 
+00DA     0007 0007      00129         DATA    SPEN, 7                 ; RCSTA
+00DC     0006 0006      00130         DATA    RC9, 6
+00DE     0006 0006      00131         DATA    NOT_RC8, 6
+00E0     0006 0006      00132         DATA    RC8_9, 6
+00E2     0005 0005      00133         DATA    SREN, 5
+00E4     0004 0004      00134         DATA    CREN, 4
+00E6     0002 0002      00135         DATA    FERR, 2
+00E8     0001 0001      00136         DATA    OERR, 1
+00EA     0000 0000      00137         DATA    RCD8, 0
+                        00138 
+00EC     0005 0005      00139         DATA    CCP2X, 5                ; CCP2CON
+00EE     0004 0004      00140         DATA    CCP2Y, 4
+00F0     0003 0003      00141         DATA    CCP2M3, 3
+00F2     0002 0002      00142         DATA    CCP2M2, 2
+00F4     0001 0001      00143         DATA    CCP2M1, 1
+00F6     0000 0000      00144         DATA    CCP2M0, 0
+                        00145 
+                        00146 
+00F8     0007 0007      00147         DATA    NOT_RBPU, 7             ; OPTION
+00FA     0006 0006      00148         DATA    INTEDG, 6
+00FC     0005 0005      00149         DATA    T0CS, 5
+00FE     0004 0004      00150         DATA    T0SE, 4
+0100     0003 0003      00151         DATA    PSA, 3
+0102     0002 0002      00152         DATA    PS2, 2
+0104     0001 0001      00153         DATA    PS1, 1
+0106     0000 0000      00154         DATA    PS0, 0
+                        00155 
+0108     0007 0007      00156         DATA    IBF, 7                  ; TRISE
+MPASM Version 3.00 Beta Release   HDR65.ASM   01/31/2001  12:12:42	   PAGE 4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+010A     0006 0006      00157         DATA    OBF, 6
+010C     0005 0005      00158         DATA    IBOV, 5
+010E     0004 0004      00159         DATA    PSPMODE, 4
+0110     0002 0002      00160         DATA    TRISE2, 2
+0112     0001 0001      00161         DATA    TRISE1, 1
+0114     0000 0000      00162         DATA    TRISE0, 0
+                        00163 
+0116     0007 0007      00164         DATA    PSPIE, 7                ; PIE1
+0118     0005 0005      00165         DATA    RCIE, 5
+011A     0004 0004      00166         DATA    TXIE, 4
+011C     0003 0003      00167         DATA    SSPIE, 3
+011E     0002 0002      00168         DATA    CCP1IE, 2
+0120     0001 0001      00169         DATA    TMR2IE, 1
+0122     0000 0000      00170         DATA    TMR1IE, 0
+                        00171 
+0124     0000 0000      00172         DATA    CCP2IE, 0               ; PIE2
+                        00173 
+0126     0001 0001      00174         DATA    NOT_POR, 1              ; PCON
+0128     0000 0000      00175         DATA    NOT_BO, 0
+                        00176 
+012A     0005 0005      00177         DATA    D, 5                    ; SSPSTAT
+012C     0005 0005      00178         DATA    I2C_DATA, 5
+012E     0005 0005      00179         DATA    NOT_A, 5
+0130     0005 0005      00180         DATA    NOT_ADDRESS, 5
+0132     0005 0005      00181         DATA    D_A, 5
+0134     0005 0005      00182         DATA    DATA_ADDRESS, 5
+0136     0004 0004      00183         DATA    P, 4
+0138     0004 0004      00184         DATA    I2C_STOP, 4
+013A     0003 0003      00185         DATA    S, 3
+013C     0003 0003      00186         DATA    I2C_START, 3
+013E     0002 0002      00187         DATA    R, 2
+0140     0002 0002      00188         DATA    I2C_READ, 2
+0142     0002 0002      00189         DATA    NOT_W, 2
+0144     0002 0002      00190         DATA    NOT_WRITE, 2
+0146     0002 0002      00191         DATA    R_W, 2
+0148     0002 0002      00192         DATA    READ_WRITE, 2
+014A     0001 0001      00193         DATA    UA, 1
+014C     0000 0000      00194         DATA    BF, 0
+                        00195 
+014E     0007 0007      00196         DATA    CSRC, 7                 ; TXSTA
+0150     0006 0006      00197         DATA    TX9, 6
+0152     0006 0006      00198         DATA    NOT_TX8, 6
+0154     0006 0006      00199         DATA    TX8_9, 6
+0156     0005 0005      00200         DATA    TXEN, 5
+0158     0004 0004      00201         DATA    SYNC, 4
+015A     0002 0002      00202         DATA    BRGH, 2
+015C     0001 0001      00203         DATA    TRMT, 1
+015E     0000 0000      00204         DATA    TXD8, 0
+                        00205 
+                        00206         END
+MPASM Version 3.00 Beta Release   HDR65.ASM   01/31/2001  12:12:42	   PAGE 5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+BF                                00000000
+BRGH                              00000002
+C                                 00000000
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CKP                               00000004
+CREN                              00000004
+CSRC                              00000007
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+D_A                               00000005
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GIE                               00000007
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_PD                            00000003
+MPASM Version 3.00 Beta Release   HDR65.ASM   01/31/2001  12:12:42	   PAGE 6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OBF                               00000006
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+R                                 00000002
+RBIE                              00000003
+RBIF                              00000000
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+RX9                               00000006
+RX9D                              00000000
+R_W                               00000002
+S                                 00000003
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+MPASM Version 3.00 Beta Release   HDR65.ASM   01/31/2001  12:12:42	   PAGE 7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISB                             00000086
+TRISC                             00000087
+TRISD                             00000088
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+MPASM Version 3.00 Beta Release   HDR65.ASM   01/31/2001  12:12:42	   PAGE 8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+W                                 00000000
+WCOL                              00000007
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_CP_50                            00002AEF
+_CP_75                            000015DF
+_CP_ALL                           000000CF
+_CP_OFF                           00003FFF
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16CR65                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   352
+Program Memory Words Free:  3744
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,230 @@
+MPASM 02.70 Released         PSEUDO12.ASM   5-7-2001  22:14:37         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; PSEUDO12.ASM
+                      00002 
+                      00003 ; This file tests the special instructions for the 12-bit core.
+                      00004 
+                      00005         LIST    P=16C5X,R=HEX
+                      00006 
+0000   0403           00007         CLRC
+0001   0403           00008         BCF      3,0
+                      00009 
+0002   0503           00010         SETC
+0003   0503           00011         BSF      3,0
+                      00012 
+0004   0423           00013         CLRDC
+0005   0423           00014         BCF      3,1
+                      00015 
+0006   0523           00016         SETDC
+0007   0523           00017         BSF      3,1
+                      00018 
+0008   0443           00019         CLRZ
+0009   0443           00020         BCF      3,2
+                      00021 
+000A   0543           00022         SETZ
+000B   0543           00023         BSF      3,2
+                      00024 
+000C   0703           00025         SKPC
+000D   0703           00026         BTFSS    3,0
+                      00027 
+000E   0603           00028         SKPNC
+000F   0603           00029         BTFSC    3,0
+                      00030 
+0010   0723           00031         SKPDC
+0011   0723           00032         BTFSS    3,1
+                      00033 
+0012   0623           00034         SKPNDC
+0013   0623           00035         BTFSC    3,1
+                      00036 
+0014   0743           00037         SKPZ
+0015   0743           00038         BTFSS    3,2
+                      00039 
+0016   0643           00040         SKPNZ
+0017   0643           00041         BTFSC    3,2
+                      00042 
+0018   0225           00043         TSTF 5
+0019   0225           00044         MOVF     5,1
+                      00045 
+001A   0206           00046         MOVFW 6
+001B   0206           00047         MOVF     6,0
+                      00048 
+001C   0267 02A7      00049         NEGF 7,1
+001E   0267           00050         COMF     7,1
+001F   02A7           00051         INCF     7,1
+                      00052 
+0020   0603 0288      00053         ADDCF 8,0
+MPASM 02.70 Released         PSEUDO12.ASM   5-7-2001  22:14:37         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0022   0603           00054         BTFSC    3,0
+0023   0288           00055         INCF     8,0
+                      00056 
+0024   0603 00E9      00057         SUBCF 9,1
+0026   0603           00058         BTFSC    3,0
+0027   00E9           00059         DECF     9,1
+                      00060 
+0028   0623 0282      00061         ADDDCF 2,0
+002A   0623           00062         BTFSC    3,1
+002B   0282           00063         INCF     2,0
+                      00064 
+002C   0623 00E3      00065         SUBDCF 3,1
+002E   0623           00066         BTFSC    3,1
+002F   00E3           00067         DECF     3,1
+                      00068 
+0030   0B00           00069         B 100
+0031   0B00           00070         GOTO     100
+                      00071 
+0032   0603 0B10      00072         BC 110
+0034   0603           00073         BTFSC    3,0
+0035   0B10           00074         GOTO     110
+                      00075 
+0036   0703 0B20      00076         BNC 120
+0038   0703           00077         BTFSS    3,0
+0039   0B20           00078         GOTO     120
+                      00079 
+003A   0623 0B30      00080         BDC 130
+003C   0623           00081         BTFSC    3,1
+003D   0B30           00082         GOTO     130
+                      00083 
+003E   0723 0B40      00084         BNDC 140
+0040   0723           00085         BTFSS    3,1
+0041   0B40           00086         GOTO     140
+                      00087 
+0042   0643 0B50      00088         BZ 150
+0044   0643           00089         BTFSC    3,2
+0045   0B50           00090         GOTO     150
+                      00091 
+0046   0743 0B60      00092         BNZ 160
+0048   0743           00093         BTFSS    3,2
+0049   0B60           00094         GOTO     160
+                      00095 
+Message[307]: Setting page bits.
+004A   04A3 04C3 0901 00096         LCALL    01
+004D   04A3           00097         BCF 3,5
+004E   04C3           00098         BCF 3,6
+004F   0901           00099         CALL     01
+                      00100 
+Message[307]: Setting page bits.
+0050   05A3 04C3 0934 00101         LCALL    234
+0053   05A3           00102         BSF 3,5
+0054   04C3           00103         BCF 3,6
+Message[306]: Crossing page boundary -- ensure page bits are set.
+MPASM 02.70 Released         PSEUDO12.ASM   5-7-2001  22:14:37         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0055   0934           00104         CALL     234
+                      00105 
+Message[307]: Setting page bits.
+0056   04A3 05C3 0956 00106         LCALL    456
+0059   04A3           00107         BCF 3,5
+005A   05C3           00108         BSF 3,6
+Message[306]: Crossing page boundary -- ensure page bits are set.
+005B   0956           00109         CALL     456
+                      00110 
+Message[307]: Setting page bits.
+005C   05A3 05C3 0978 00111         LCALL    678
+005F   05A3           00112         BSF 3,5
+0060   05C3           00113         BSF 3,6
+Message[306]: Crossing page boundary -- ensure page bits are set.
+0061   0978           00114         CALL     678
+                      00115 
+                      00116 ;***** Test for SSR 2061 **************************************************
+                      00117 
+Message[307]: Setting page bits.
+0062   04A3 04C3 0A01 00118         LGOTO   01
+0065   04A3           00119         BCF 3,5
+0066   04C3           00120         BCF 3,6
+0067   0A01           00121         GOTO    01
+                      00122 
+Message[307]: Setting page bits.
+0068   04A3 04C3 0B23 00123         LGOTO   123
+006B   04A3           00124         BCF 3,5
+006C   04C3           00125         BCF 3,6
+006D   0B23           00126         GOTO    123
+                      00127 
+Message[307]: Setting page bits.
+006E   05A3 04C3 0A34 00128         LGOTO   234
+0071   05A3           00129         BSF 3,5
+0072   04C3           00130         BCF 3,6
+Message[306]: Crossing page boundary -- ensure page bits are set.
+0073   0A34           00131         GOTO    234
+                      00132 
+Message[307]: Setting page bits.
+0074   05A3 04C3 0B45 00133         LGOTO   345
+0077   05A3           00134         BSF 3,5
+0078   04C3           00135         BCF 3,6
+Message[306]: Crossing page boundary -- ensure page bits are set.
+0079   0B45           00136         GOTO    345
+                      00137 
+Message[307]: Setting page bits.
+007A   04A3 05C3 0A56 00138         LGOTO   456
+007D   04A3           00139         BCF 3,5
+007E   05C3           00140         BSF 3,6
+Message[306]: Crossing page boundary -- ensure page bits are set.
+007F   0A56           00141         GOTO    456
+                      00142 
+Message[307]: Setting page bits.
+0080   04A3 05C3 0B67 00143         LGOTO   567
+MPASM 02.70 Released         PSEUDO12.ASM   5-7-2001  22:14:37         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0083   04A3           00144         BCF 3,5
+0084   05C3           00145         BSF 3,6
+Message[306]: Crossing page boundary -- ensure page bits are set.
+0085   0B67           00146         GOTO    567
+                      00147 
+Message[307]: Setting page bits.
+0086   05A3 05C3 0A78 00148         LGOTO   678
+0089   05A3           00149         BSF 3,5
+008A   05C3           00150         BSF 3,6
+Message[306]: Crossing page boundary -- ensure page bits are set.
+008B   0A78           00151         GOTO    678
+                      00152 
+                      00153 ;***** End Test ***********************************************************
+                      00154 
+                      00155 ;     05/06/01 Craig Franklin - removed microchip internal tests
+                      00156 ;       HALT
+                      00157 
+Warning[227]: Substituting RETLW 0 for RETURN pseudo-op
+008C   0800           00158         RETURN
+                      00159 
+                      00160         END
+MPASM 02.70 Released         PSEUDO12.ASM   5-7-2001  22:14:37         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C5X                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXX--- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   141
+Program Memory Words Free:  1907
+
+
+Errors   :     0
+Warnings :     1 reported,     0 suppressed
+Messages :    19 reported,     0 suppressed
+
+

@@ -1,0 +1,49 @@
+MPASM Version 3.00 Beta Release   DEFINE3.ASM   01/31/2001  12:11:16	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; DEFINE3.ASM
+                        00002 
+                        00003 ; This file tests to make sure one symbol has been defined on the
+                        00004 ; command line.  It should be called with the command line:
+                        00005 
+                        00006 ;       MPASM DEFINE3.ASM /dSYMBOL3="abc"
+                        00007 
+                        00008         LIST    P=17C42
+                        00009 
+                        00010         ifdef SYMBOL3
+                        00011            MESSG        "Symbol defined correctly"
+                        00012         else
+Error[101]  : ERROR: (Symbol not defined)
+                        00013            ERROR        "Symbol not defined"
+                        00014         endif
+                        00015 
+Error[113]  : Symbol not previously defined (SYMBOL3)
+0000     0000           00016         DATA    SYMBOL3
+                        00017 
+                        00018         end
+MPASM Version 3.00 Beta Release   DEFINE3.ASM   01/31/2001  12:11:16	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__17C42                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X--------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     1
+
+
+Errors   :     2
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

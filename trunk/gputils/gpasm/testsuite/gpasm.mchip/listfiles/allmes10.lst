@@ -1,0 +1,36 @@
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; ALLMES10.ASM
+                        00002 
+                        00003 ; This file generates more messages that are created when assembly an
+                        00004 ; object file.
+                        00005 
+                        00006         list    p=16c54
+                        00007 
+                        00008         udata
+0000                    00009 Var     res     1
+                        00010 
+                        00011         code
+0000                    00012 Label
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                        00013         pagesel Label           ; Message 312 Page or Bank selection...
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                        00014         banksel Var             ; Message 312 Page or Bank selection...
+                        00015 
+                        00016         end
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Label                             00000000
+Var                               00000000
+__16C54                           00000001
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     2 reported,     0 suppressed
+

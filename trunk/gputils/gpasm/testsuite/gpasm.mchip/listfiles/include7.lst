@@ -1,0 +1,150 @@
+MPASM Version 3.00 Beta Release   INCLUDE7.ASM   01/31/2001  12:39:47	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; INCLUDE7.ASM
+                        00002 
+                        00003 ; This file tests including source files.
+                        00004 
+                        00005         LIST    P=17C42
+                        00006 
+0000     496E 636C 7564 00007         DATA    "Include File 7"
+         6520 4669 6C65 
+         2037 
+                        00008 
+Error[128]  : Missing argument(s)
+                        00009         INCLUDE                 ; No file name
+Error[121]  : Illegal label (Label)
+                        00010 Label   INCLUDE "INCLUDE6.ASM"  ; Illegal label
+                        00001 ; INCLUDE6.ASM
+                        00002 
+                        00003 ; This file tests including source files.
+                        00004 
+Warning[223]: Redefining processor.
+                        00005         LIST    P=17C42
+                        00006 
+0007     496E 636C 7564 00007         DATA    "Include File 6"
+         6520 4669 6C65 
+         2036 
+                        00008 
+Message[301]: MESSAGE: (FILE 6)
+                        00009         MESSG   "FILE 6"
+                        00010 
+                        00011 ;       END
+Error[105]  : Cannot open file (Include File "MISSING.ASM" not found)
+                        00011         INCLUDE "MISSING.ASM"   ; File not found
+                        00012 
+Message[301]: MESSAGE: (FILE 7 - TOO MANY)
+                        00013         MESSG   "FILE 7 - TOO MANY"
+                        00014         INCLUDE "INCLUDE1.ASM"
+                        00001 ; INCLUDE1.ASM
+                        00002 
+                        00003 ; This file tests including source files.
+                        00004 
+Warning[223]: Redefining processor.
+                        00005         LIST    P=17C42
+                        00006 
+000E     496E 636C 7564 00007         DATA    "Include File 1"
+         6520 4669 6C65 
+         2031 
+                        00008 
+Message[301]: MESSAGE: (FILE 1)
+                        00009         MESSG   "FILE 1"
+                        00010         INCLUDE "INCLUDE2.ASM"
+                        00001 ; INCLUDE2.ASM
+                        00002 
+                        00003 ; This file tests including source files.
+                        00004 
+MPASM Version 3.00 Beta Release   INCLUDE7.ASM   01/31/2001  12:39:47	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[223]: Redefining processor.
+                        00005         LIST    P=17C42
+                        00006 
+0015     496E 636C 7564 00007         DATA    "Include File 2"
+         6520 4669 6C65 
+         2032 
+                        00008 
+Message[301]: MESSAGE: (FILE 2)
+                        00009         MESSG   "FILE 2"
+                        00010         INCLUDE "INCLUDE3.ASM"
+                        00001 ; INCLUDE3.ASM
+                        00002 
+                        00003 ; This file tests including source files.
+                        00004 
+Warning[223]: Redefining processor.
+                        00005         LIST    P=17C42
+                        00006 
+001C     496E 636C 7564 00007         DATA    "Include File 3"
+         6520 4669 6C65 
+         2033 
+                        00008 
+Message[301]: MESSAGE: (FILE 3)
+                        00009         MESSG   "FILE 3"
+                        00010         INCLUDE "INCLUDE4.ASM"
+                        00001 ; INCLUDE4.ASM
+                        00002 
+                        00003 ; This file tests including source files.
+                        00004 
+Warning[223]: Redefining processor.
+                        00005         LIST    P=17C42
+                        00006 
+0023     496E 636C 7564 00007         DATA    "Include File 4"
+         6520 4669 6C65 
+         2034 
+                        00008 
+Message[301]: MESSAGE: (FILE 4)
+                        00009         MESSG   "FILE 4"
+                        00010         INCLUDE "INCLUDE5.ASM"
+                        00001 ; INCLUDE5.ASM
+                        00002 
+                        00003 ; This file tests including source files.
+                        00004 
+Warning[223]: Redefining processor.
+                        00005         LIST    P=17C42
+                        00006 
+002A     496E 636C 7564 00007         DATA    "Include File 5"
+         6520 4669 6C65 
+         2035 
+                        00008 
+Message[301]: MESSAGE: (FILE 5)
+                        00009         MESSG   "FILE 5"
+Warning[223]: Redefining processor.
+Message[301]: MESSAGE: (FILE 6)
+MPASM Version 3.00 Beta Release   INCLUDE7.ASM   01/31/2001  12:39:47	   PAGE 3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00011 
+                        00012         END
+Warning[228]: Text encountered after END directive
+MPASM Version 3.00 Beta Release   INCLUDE7.ASM   01/31/2001  12:39:47	   PAGE 4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__17C42                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXX--------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    56
+
+
+Errors   :     3
+Warnings :     8 reported,     0 suppressed
+Messages :     8 reported,     0 suppressed
+
+

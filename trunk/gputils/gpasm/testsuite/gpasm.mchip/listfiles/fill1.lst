@@ -1,0 +1,70 @@
+MPASM Version 3.00 Beta Release   FILL1.ASM   01/31/2001  12:11:20	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; FILL1.ASM
+                        00002 
+                        00003 ; This file tests legal usage of the FILL directive.
+                        00004 
+                        00005         LIST    P=16C54, R=HEX
+                        00006 
+  00000456              00007 Value1  = 456
+  00000008              00008 Size1   = 8
+                        00009 
+0000                    00010 Start
+0000     0123           00011         FILL    123, 5
+0005     0456           00012         FILL    Value1, Size1
+000D     0450           00013         FILL    Value1 - 6, Size1 - 2
+                        00014 
+                        00015 ;***** Test for SSR 2089 **************************************************
+0013     0013           00016         FILL    $, 5
+                        00017 ;***** End Test ***********************************************************
+                        00018 
+                        00019 ;***** Test for SSR 3117 **************************************************
+0018     04             00020         FILL    (BCF 3, 4), 5
+                        00021 ;***** End Test ***********************************************************
+                        00022 
+                        00023 
+001D     0A             00024         FILL    (GOTO Start), NextBlock-$
+                        00025 
+0100                    00026 NextBlock       ORG     0x100
+                        00027         END
+MPASM Version 3.00 Beta Release   FILL1.ASM   01/31/2001  12:11:20	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+NextBlock                         00000100
+Size1                             00000008
+Start                             00000000
+Value1                            00000456
+_.code_0013                       00000013
+_.code_0014                       00000014
+_.code_0015                       00000015
+_.code_0016                       00000016
+_.code_0017                       00000017
+_.code_001D                       0000001D
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+
+All other memory blocks unused.
+
+Program Memory Words Used:   256
+Program Memory Words Free:   256
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

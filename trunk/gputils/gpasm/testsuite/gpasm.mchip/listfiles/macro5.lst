@@ -1,0 +1,85 @@
+MPASM Version 3.00 Beta Release   MACRO5.ASM   01/31/2001  12:39:52	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; MACRO5.ASM
+                        00002 
+                        00003 ; This file tests using EXITM from within a macro.
+                        00004 
+                        00005         LIST    P=16C54
+                        00006 
+                        00007 Mac1    MACRO
+                        00008         NOP
+                        00009         EXITM
+                        00010         ENDM
+                        00011 
+                        00012 Mac2    MACRO   Num
+                        00013         IF Num > 5
+                        00014            EXITM
+                        00015         ELSE
+                        00016            NOP
+                        00017         ENDIF
+                        00018         ENDM
+                        00019 
+                        00020 Mac3    MACRO   Num
+                        00021         WHILE Num > 0
+                        00022 Num--
+                        00023            EXITM
+                        00024         ENDW
+                        00025         ENDM
+                        00026 
+                        00027         Mac1
+0000     0000               M         NOP
+                            M         EXITM
+                        00028         Mac2    3
+                            M         IF 3   > 5
+                            M            EXITM
+                            M         ELSE
+0001     0000               M            NOP
+                            M         ENDIF
+                        00029         Mac2    8
+                            M         IF 8   > 5
+                            M            EXITM
+  00000000              00030 OtherNum = 0
+                        00031         Mac3    OtherNum
+                            M         WHILE OtherNum > 0
+                            M Num--
+                            M            EXITM
+                            M         ENDW
+  00000002              00032 OtherNum = 2
+                        00033         Mac3    OtherNum
+                            M         WHILE OtherNum > 0
+  00000001                  M OtherNum--
+                            M            EXITM
+                        00034 
+                        00035         END
+MPASM Version 3.00 Beta Release   MACRO5.ASM   01/31/2001  12:39:52	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Mac1                              
+Mac2                              
+Mac3                              
+OtherNum                          00000001
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XX-------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     2
+Program Memory Words Free:   510
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,56 @@
+MPASM 02.70 Released              IF1.ASM   9-7-2001  22:30:28         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; numbers not assigned a value are evaluated as 0 in IF statements 
+                      00002 
+                      00003   processor 16c84
+                      00004 
+                      00005 test macro
+                      00006   local novalue
+                      00007 
+                      00008   if novalue
+                      00009     error "novalue evaluated"
+                      00010   else
+                      00011     movlw 1
+                      00012   endif
+                      00013   endm
+                      00014 
+                      00015   test
+  0000                    M   local novalue
+                          M 
+                          M   if novalue
+                          M     error "novalue evaluated"
+                          M   else
+0000   3001               M     movlw 1
+                          M   endif
+                      00016 
+                      00017 
+                      00018   end
+MPASM 02.70 Released              IF1.ASM   9-7-2001  22:30:28         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C84                           00000001
+test                              
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X--------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     1
+Program Memory Words Free:  1023
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

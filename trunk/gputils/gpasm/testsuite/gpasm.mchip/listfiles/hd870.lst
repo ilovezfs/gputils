@@ -1,0 +1,486 @@
+MPASM Version 3.00 Beta Release   HD870.ASM   01/31/2001  12:12:23	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; HD870.ASM
+                        00002 
+                        00003 ; This file tests header file usage for the specified processor.
+                        00004 
+                        00005         LIST    P=16F870
+                        00006         INCLUDE "P16F870.INC"
+                        00001         LIST
+                        00002 ; P16F870.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+                        00290         LIST
+                        00007 
+0000     0FCF 0FCF      00008         DATA _CP_ALL,           0x0FCF
+0002     3FFF 3FFF      00009         DATA _CP_OFF,           0x3FFF
+0004     37FF 37FF      00010         DATA _DEBUG_ON,         0x37FF
+0006     3FFF 3FFF      00011         DATA _DEBUG_OFF,        0x3FFF
+0008     3FFF 3FFF      00012         DATA _WRT_ENABLE_ON,    0x3FFF
+000A     3DFF 3DFF      00013         DATA _WRT_ENABLE_OFF,   0x3DFF
+000C     3EFF 3EFF      00014         DATA _CPD_ON,           0x3EFF
+000E     3FFF 3FFF      00015         DATA _CPD_OFF,          0x3FFF
+0010     3FFF 3FFF      00016         DATA _LVP_ON,           0x3FFF 
+0012     3F7F 3F7F      00017         DATA _LVP_OFF,          0x3F7F 
+0014     3FFF 3FFF      00018         DATA _BODEN_ON,         0x3FFF
+0016     3FBF 3FBF      00019         DATA _BODEN_OFF,        0x3FBF
+0018     3FFF 3FFF      00020         DATA _PWRTE_OFF,        0x3FFF
+001A     3FF7 3FF7      00021         DATA _PWRTE_ON,         0x3FF7
+001C     3FFF 3FFF      00022         DATA _WDT_ON,           0x3FFF
+001E     3FFB 3FFB      00023         DATA _WDT_OFF,          0x3FFB
+0020     3FFC 3FFC      00024         DATA _LP_OSC,           0x3FFC
+0022     3FFD 3FFD      00025         DATA _XT_OSC,           0x3FFD
+0024     3FFE 3FFE      00026         DATA _HS_OSC,           0x3FFE
+0026     3FFF 3FFF      00027         DATA _RC_OSC,           0x3FFF
+                        00028 
+                        00029 
+0028     0000 0000      00030         DATA    INDF,           0       ; Register Files
+002A     0001 0001      00031         DATA    TMR0,           1
+002C     0002 0002      00032         DATA    PCL,            2
+002E     0003 0003      00033         DATA    STATUS,         3
+0030     0004 0004      00034         DATA    FSR,            4
+0032     0005 0005      00035         DATA    PORTA,          5
+0034     0006 0006      00036         DATA    PORTB,          6
+0036     0007 0007      00037         DATA    PORTC,          7       ; Processor-specific
+                        00038 ;       DATA    PORTD,          8
+                        00039 ;       DATA    PORTE,          9
+                        00040 
+0038     000A 000A      00041         DATA    PCLATH,         0x0A
+003A     000B 000B      00042         DATA    INTCON,         0x0B
+003C     000C 000C      00043         DATA    PIR1,           0X0C
+003E     000D 000D      00044         DATA    PIR2,           0X0D
+0040     000E 000E      00045         DATA    TMR1L,          0X0E
+0042     000F 000F      00046         DATA    TMR1H,          0X0F
+0044     0010 0010      00047         DATA    T1CON,          0X10
+0046     0011 0011      00048         DATA    TMR2,           0X11
+0048     0012 0012      00049         DATA    T2CON,          0X12
+004A     0015 0015      00050         DATA    CCPR1L,         0X15
+MPASM Version 3.00 Beta Release   HD870.ASM   01/31/2001  12:12:23	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+004C     0016 0016      00051         DATA    CCPR1H,         0X16
+004E     0017 0017      00052         DATA    CCP1CON,        0X17
+0050     009E 001E      00053         DATA    ADRESL,         0x1E
+0052     001E 009E      00054         DATA    ADRESH,         0x9E
+0054     001F 001F      00055         DATA    ADCON0,         0x1F
+                        00056 
+0056     0081 0081      00057         DATA    OPTION_REG,     0x81
+                        00058 
+0058     0085 0085      00059         DATA    TRISA,          0X85
+005A     0086 0086      00060         DATA    TRISB,          0X86
+005C     0087 0087      00061         DATA    TRISC,          0X87
+                        00062 ;       DATA    TRISD,          0x88
+                        00063 ;       DATA    TRISE,          0x89
+                        00064  
+005E     008C 008C      00065         DATA    PIE1,           0X8C
+0060     008D 008D      00066         DATA    PIE2,           0X8D
+0062     008E 008E      00067         DATA    PCON,           0X8E
+                        00068 
+0064     0092 0092      00069         DATA   PR2,             0x92
+0066     0098 0098      00070         DATA   TXSTA,           0x98
+0068     0099 0099      00071         DATA   SPBRG,           0x99
+                        00072 
+006A     009F 009F      00073         DATA    ADCON1,         0x9F
+                        00074 
+                        00075 
+006C     010C 010C      00076         DATA    EEDATA,         0x10C
+006E     010D 010D      00077         DATA    EEADR,          0x10D
+0070     010E 010E      00078         DATA    EEDATH,         0x10E
+0072     010F 010F      00079         DATA    EEADRH,         0x10F
+                        00080 
+0074     018C 018C      00081         DATA    EECON1,         0x18C
+0076     018D 018D      00082         DATA    EECON2,         0x18D
+                        00083 
+                        00084 
+                        00085 ;----- STATUS Bits --------------------------------------------------------
+                        00086 
+0078     0007 0007      00087         DATA    IRP,            7       ; STATUS
+007A     0006 0006      00088         DATA    RP1,            6
+007C     0005 0005      00089         DATA    RP0,            5
+007E     0004 0004      00090         DATA    NOT_TO,         4
+0080     0003 0003      00091         DATA    NOT_PD,         3
+0082     0002 0002      00092         DATA    Z,              2
+0084     0001 0001      00093         DATA    DC,             1
+0086     0000 0000      00094         DATA    C,              0
+                        00095 
+                        00096 ;----- INTCON Bits --------------------------------------------------------
+                        00097 
+0088     0007 0007      00098         DATA    GIE,            7       ; INTCON
+008A     0006 0006      00099         DATA    PEIE,           6
+008C     0005 0005      00100         DATA    T0IE,           5
+008E     0004 0004      00101         DATA    INTE,           4
+0090     0003 0003      00102         DATA    RBIE,           3
+0092     0002 0002      00103         DATA    T0IF,           2
+MPASM Version 3.00 Beta Release   HD870.ASM   01/31/2001  12:12:23	   PAGE 3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0094     0001 0001      00104         DATA    INTF,           1
+0096     0000 0000      00105         DATA    RBIF,           0
+                        00106 
+                        00107 ;----- PIR1 Bits ----------------------------------------------------------
+                        00108 
+0098     0006 0006      00109         DATA    ADIF,           6       ; PIR1 Bits
+009A     0005 0005      00110         DATA    RCIF,           5
+009C     0004 0004      00111         DATA    TXIF,           4
+009E     0002 0002      00112         DATA    CCP1IF,         2
+00A0     0001 0001      00113         DATA    TMR2IF,         1
+00A2     0000 0000      00114         DATA    TMR1IF,         0
+                        00115 
+                        00116 ;----- PIE2 Bits ----------------------------------------------------------
+                        00117 
+00A4     0004 0004      00118         DATA    EEIE,           4   
+                        00119 
+                        00120 ;----- PIR2 Bits ----------------------------------------------------------
+                        00121 
+00A6     0004 0004      00122         DATA    EEIF,           4   
+                        00123 
+                        00124 ;----- T1CON Bits ---------------------------------------------------------
+                        00125 
+                        00126 
+00A8     0005 0005      00127         DATA    T1CKPS1,        5       ; T1CON
+00AA     0004 0004      00128         DATA    T1CKPS0,        4
+00AC     0003 0003      00129         DATA    T1OSCEN,        3
+00AE     0002 0002      00130         DATA    NOT_T1SYNC,     2
+00B0     0002 0002      00131         DATA    T1INSYNC,       2
+00B2     0001 0001      00132         DATA    TMR1CS,         1
+00B4     0000 0000      00133         DATA    TMR1ON,         0
+                        00134 
+                        00135 ;----- T2CON Bits ---------------------------------------------------------
+                        00136 
+00B6     0006 0006      00137         DATA    TOUTPS3,        6       ; T2CON
+00B8     0005 0005      00138         DATA    TOUTPS2,        5
+00BA     0004 0004      00139         DATA    TOUTPS1,        4
+00BC     0003 0003      00140         DATA    TOUTPS0,        3
+00BE     0002 0002      00141         DATA    TMR2ON,         2
+00C0     0001 0001      00142         DATA    T2CKPS1,        1
+00C2     0000 0000      00143         DATA    T2CKPS0,        0
+                        00144 
+                        00145 ;----- CCP1CON Bits -------------------------------------------------------
+                        00146 
+00C4     0005 0005      00147         DATA    CCP1X,          5       ; CCP1CON
+00C6     0004 0004      00148         DATA    CCP1Y,          4
+00C8     0003 0003      00149         DATA    CCP1M3,         3
+00CA     0002 0002      00150         DATA    CCP1M2,         2
+00CC     0001 0001      00151         DATA    CCP1M1,         1
+00CE     0000 0000      00152         DATA    CCP1M0,         0
+                        00153 
+                        00154 
+                        00155 ;----- RCSTA Bits ---------------------------------------------------------
+                        00156 
+MPASM Version 3.00 Beta Release   HD870.ASM   01/31/2001  12:12:23	   PAGE 4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00D0     0007 0007      00157         DATA    SPEN,           7       ; RCSTA
+00D2     0006 0006      00158         DATA    RX9,            6
+00D4     0006 0006      00159         DATA    RC9,            6
+00D6     0006 0006      00160         DATA    NOT_RC8,        6
+00D8     0006 0006      00161         DATA    RC8_9,          6
+00DA     0005 0005      00162         DATA    SREN,           5
+00DC     0004 0004      00163         DATA    CREN,           4
+00DE     0002 0002      00164         DATA    FERR,           2
+00E0     0001 0001      00165         DATA    OERR,           1
+00E2     0000 0000      00166         DATA    RX9D,           0
+00E4     0000 0000      00167         DATA    RCD8,           0
+                        00168 
+                        00169 ;----- ADCON0 Bits --------------------------------------------------------
+                        00170 
+00E6     0007 0007      00171         DATA    ADCS1,          7       ; ADCON0
+00E8     0006 0006      00172         DATA    ADCS0,          6
+00EA     0005 0005      00173         DATA    CHS2,           5
+00EC     0004 0004      00174         DATA    CHS1,           4
+00EE     0003 0003      00175         DATA    CHS0,           3
+00F0     0002 0002      00176         DATA    GO,             2
+00F2     0002 0002      00177         DATA    NOT_DONE,       2
+00F4     0002 0002      00178         DATA    GO_DONE,        2
+00F6     0000 0000      00179         DATA    ADON,           0
+                        00180 
+                        00181 ;----- OPTION_REG Bits ----------------------------------------------------
+                        00182 
+00F8     0007 0007      00183         DATA    NOT_RBPU,       7       ; OPTION
+00FA     0006 0006      00184         DATA    INTEDG,         6
+00FC     0005 0005      00185         DATA    T0CS,           5
+00FE     0004 0004      00186         DATA    T0SE,           4
+0100     0003 0003      00187         DATA    PSA,            3
+0102     0002 0002      00188         DATA    PS2,            2
+0104     0001 0001      00189         DATA    PS1,            1
+0106     0000 0000      00190         DATA    PS0,            0
+                        00191 
+                        00192 
+                        00193 ;----- PIE1 Bits ----------------------------------------------------------
+                        00194 
+0108     0006 0006      00195         DATA    ADIE,           6
+010A     0005 0005      00196         DATA    RCIE,           5
+010C     0004 0004      00197         DATA    TXIE,           4
+010E     0002 0002      00198         DATA    CCP1IE,         2
+0110     0001 0001      00199         DATA    TMR2IE,         1
+0112     0000 0000      00200         DATA    TMR1IE,         0
+                        00201 
+                        00202 ;----- PCON Bits ----------------------------------------------------------
+                        00203 
+0114     0001 0001      00204         DATA    NOT_POR,        1       ; PCON
+0116     0000 0000      00205         DATA    NOT_BO,         0
+0118     0000 0000      00206         DATA    NOT_BOR,        0
+                        00207 
+                        00208 ;----- EECON1 Bits --------------------------------------------------------
+                        00209 
+MPASM Version 3.00 Beta Release   HD870.ASM   01/31/2001  12:12:23	   PAGE 5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+011A     0007 0007      00210         DATA    EEPGD,          7
+011C     0003 0003      00211         DATA    WRERR,          3
+011E     0002 0002      00212         DATA    WREN,           2
+0120     0001 0001      00213         DATA    WR,             1
+0122     0000 0000      00214         DATA    RD,             0
+                        00215 
+                        00216 
+                        00217 ;----- TXSTA Bits ---------------------------------------------------------
+                        00218 
+0124     0007 0007      00219         DATA    CSRC,           7       ; TXSTA
+0126     0006 0006      00220         DATA    TX9,            6
+0128     0006 0006      00221         DATA    NOT_TX8,        6
+012A     0006 0006      00222         DATA    TX8_9,          6
+012C     0005 0005      00223         DATA    TXEN,           5
+012E     0004 0004      00224         DATA    SYNC,           4
+0130     0002 0002      00225         DATA    BRGH,           2
+0132     0001 0001      00226         DATA    TRMT,           1
+0134     0000 0000      00227         DATA    TX9D,           0
+0136     0000 0000      00228         DATA    TXD8,           0
+                        00229 
+                        00230 ;----- ADCON1 Bits --------------------------------------------------------
+                        00231 
+0138     0007 0005      00232         DATA    ADFM,           5       ;ADCON1
+013A     0003 0003      00233         DATA    PCFG3,          3
+013C     0002 0002      00234         DATA    PCFG2,          2
+013E     0001 0001      00235         DATA    PCFG1,          1
+0140     0000 0000      00236         DATA    PCFG0,          0
+                        00237 
+                        00238         END
+MPASM Version 3.00 Beta Release   HD870.ASM   01/31/2001  12:12:23	   PAGE 6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+BRGH                              00000002
+C                                 00000000
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCPR1H                            00000016
+CCPR1L                            00000015
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CREN                              00000004
+CSRC                              00000007
+DC                                00000001
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_BO                            00000000
+NOT_BOR                           00000000
+MPASM Version 3.00 Beta Release   HD870.ASM   01/31/2001  12:12:23	   PAGE 7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+OERR                              00000001
+OPTION_REG                        00000081
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+RX9                               00000006
+RX9D                              00000000
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+MPASM Version 3.00 Beta Release   HD870.ASM   01/31/2001  12:12:23	   PAGE 8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISB                             00000086
+TRISC                             00000087
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00000FCF
+_CP_OFF                           00003FFF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+MPASM Version 3.00 Beta Release   HD870.ASM   01/31/2001  12:12:23	   PAGE 9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_ENABLE_OFF                   00003DFF
+_WRT_ENABLE_ON                    00003FFF
+_XT_OSC                           00003FFD
+__16F870                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XX-------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   322
+Program Memory Words Free:  1726
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,106 @@
+MPASM Version 3.00 Beta Release   MACRO3.ASM   01/31/2001  12:13:12	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; MACRO3.ASM
+                        00002 
+                        00003 ; This file tests how local variables are handled within macros.
+                        00004 
+                        00005         LIST    P=16C54
+                        00006 
+  0022                  00007         VARIABLE        X = 22
+                        00008 
+                        00009 LocMac  MACRO   Num
+                        00010         LOCAL   X
+                        00011         X = Num
+                        00012         WHILE X > 0
+                        00013            DATA X
+                        00014            X--
+                        00015         ENDW
+                        00016         ENDM
+                        00017 
+0000     0022           00018         DATA    X
+                        00019         LocMac  2
+  0000                      M         LOCAL   X
+Warning[207]: Found label after column 1. (X)
+  00000002                  M         X = 2
+                            M         WHILE X > 0
+0001     0002               M            DATA X
+Warning[207]: Found label after column 1. (X)
+  00000001                  M            X--
+0002     0001               M            DATA X
+Warning[207]: Found label after column 1. (X)
+  00000000                  M            X--
+                            M         ENDW
+0003     0022           00020         DATA    X
+                        00021         LocMac  4
+  0000                      M         LOCAL   X
+Warning[207]: Found label after column 1. (X)
+  00000004                  M         X = 4
+                            M         WHILE X > 0
+0004     0004               M            DATA X
+Warning[207]: Found label after column 1. (X)
+  00000003                  M            X--
+0005     0003               M            DATA X
+Warning[207]: Found label after column 1. (X)
+  00000002                  M            X--
+0006     0002               M            DATA X
+Warning[207]: Found label after column 1. (X)
+  00000001                  M            X--
+0007     0001               M            DATA X
+Warning[207]: Found label after column 1. (X)
+  00000000                  M            X--
+                            M         ENDW
+0008     0022           00022         DATA    X
+                        00023         LocMac  3
+  0000                      M         LOCAL   X
+Warning[207]: Found label after column 1. (X)
+MPASM Version 3.00 Beta Release   MACRO3.ASM   01/31/2001  12:13:12	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+  00000003                  M         X = 3
+                            M         WHILE X > 0
+0009     0003               M            DATA X
+Warning[207]: Found label after column 1. (X)
+  00000002                  M            X--
+000A     0002               M            DATA X
+Warning[207]: Found label after column 1. (X)
+  00000001                  M            X--
+000B     0001               M            DATA X
+Warning[207]: Found label after column 1. (X)
+  00000000                  M            X--
+                            M         ENDW
+000C     0022           00024         DATA    X
+                        00025 
+                        00026         END
+MPASM Version 3.00 Beta Release   MACRO3.ASM   01/31/2001  12:13:12	   PAGE 3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+LocMac                            
+X                                 00000022
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXX--- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    13
+Program Memory Words Free:   499
+
+
+Errors   :     0
+Warnings :    12 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,131 @@
+MPASM Version 3.00 Beta Release   OPERAT1.ASM   01/31/2001  12:13:18	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; OPERAT1.ASM
+                        00002 
+                        00003 ; This file tests all operators for legal usage.
+                        00004 
+                        00005         LIST    P=16C54,R=HEX
+                        00006 
+0000     0001           00007         DATA    (1)                     ; 1
+0001     0000           00008         DATA    !1                      ; 0
+0002     0001           00009         DATA    !0                      ; 1
+0003     0FFE           00010         DATA    -2                      ; -2
+0004     0FF8           00011         DATA    ~7                      ; FFF8
+0005     0012           00012         DATA    HIGH 1234               ; 12
+0006     0034           00013         DATA    LOW 1234                ; 34
+0007     0006           00014         DATA    2*3                     ; 6
+0008     000C           00015         DATA    3 * 4                   ; 0C
+0009     0003           00016         DATA    9/3                     ; 3
+000A     0004           00017         DATA    8 / 2                   ; 4
+000B     0001           00018         DATA    9%4                     ; 1
+000C     0002           00019         DATA    7 % 5                   ; 2
+000D     0003           00020         DATA    1+2                     ; 3
+000E     0007           00021         DATA    3 + 4                   ; 7
+000F     0005           00022         DATA    8-3                     ; 5
+0010     0006           00023         DATA    7 - 1                   ; 6
+0011     0004           00024         DATA    1<<2                    ; 4
+0012     0008           00025         DATA    2 << 2                  ; 8
+0013     0002           00026         DATA    8>>2                    ; 2
+0014     0004           00027         DATA    8 >> 1                  ; 4
+0015     0001           00028         DATA    2>=1                    ; 1
+0016     0000           00029         DATA    3 >= 5                  ; 0
+0017     0001           00030         DATA    5>4                     ; 1
+0018     0000           00031         DATA    5 > 6                   ; 0
+0019     0001           00032         DATA    7<9                     ; 1
+001A     0000           00033         DATA    4 < 3                   ; 0
+001B     0001           00034         DATA    8<=8                    ; 1
+001C     0000           00035         DATA    9 <= 3                  ; 0
+001D     0001           00036         DATA    3==3                    ; 1
+001E     0000           00037         DATA    7 == 5                  ; 0
+001F     0001           00038         DATA    7!=9                    ; 1
+0020     0000           00039         DATA    8 != 8                  ; 0
+0021     0004           00040         DATA    7&4                     ; 4
+0022     0000           00041         DATA    8 & 2                   ; 0
+0023     000A           00042         DATA    8^2                     ; 0a
+0024     0006           00043         DATA    7 ^ 1                   ; 6
+0025     0003           00044         DATA    2|1                     ; 3
+0026     0005           00045         DATA    4 | 1                   ; 5
+0027     0001           00046         DATA    1&&1                    ; 1
+0028     0000           00047         DATA    1 && 0                  ; 0
+0029     0001           00048         DATA    1||0                    ; 1
+002A     0000           00049         DATA    0 || 0                  ; 0
+                        00050 
+Warning[207]: Found label after column 1. (I)
+  00000004              00051         I = 4
+002B     0004           00052         DATA    I                       ; 4
+MPASM Version 3.00 Beta Release   OPERAT1.ASM   01/31/2001  12:13:18	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[207]: Found label after column 1. (I)
+  00000005              00053         I += 1
+002C     0005           00054         DATA    I                       ; 5
+Warning[207]: Found label after column 1. (I)
+  00000003              00055         I -= 2
+002D     0003           00056         DATA    I                       ; 3
+Warning[207]: Found label after column 1. (I)
+  00000006              00057         I *= 2
+002E     0006           00058         DATA    I                       ; 6
+Warning[207]: Found label after column 1. (I)
+  00000002              00059         I /= 3
+002F     0002           00060         DATA    I                       ; 2
+Warning[207]: Found label after column 1. (I)
+  00000003              00061         I++
+0030     0003           00062         DATA    I                       ; 3
+Warning[207]: Found label after column 1. (I)
+  00000001              00063         I %= 2
+0031     0001           00064         DATA    I                       ; 1
+Warning[207]: Found label after column 1. (I)
+  00000008              00065         I <<= 3
+0032     0008           00066         DATA    I                       ; 8
+Warning[207]: Found label after column 1. (I)
+  00000004              00067         I >>= 1
+0033     0004           00068         DATA    I                       ; 4
+Warning[207]: Found label after column 1. (I)
+  00000003              00069         I--
+0034     0003           00070         DATA    I                       ; 3
+Warning[207]: Found label after column 1. (I)
+  00000002              00071         I &= 2
+0035     0002           00072         DATA    I                       ; 2
+Warning[207]: Found label after column 1. (I)
+  00000006              00073         I |= 4
+0036     0006           00074         DATA    I                       ; 6
+Warning[207]: Found label after column 1. (I)
+  00000001              00075         I ^= 7
+0037     0001           00076         DATA    I                       ; 1
+                        00077 
+0038     0038           00078         DATA    $
+                        00079 
+                        00080         END
+MPASM Version 3.00 Beta Release   OPERAT1.ASM   01/31/2001  12:13:18	   PAGE 3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+I                                 00000001
+_.code_0038                       00000038
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXX-------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    57
+Program Memory Words Free:   455
+
+
+Errors   :     0
+Warnings :    13 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

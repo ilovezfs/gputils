@@ -1,0 +1,46 @@
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; PAGSEL2.ASM
+                        00002 
+                        00003 ; This file tests illegal uses of the PAGESEL directives.
+                        00004 ; It should be placed in the list comparison section for
+                        00005 ; object files.
+                        00006 
+                        00007         list    p=17c44
+                        00008 
+Message[316]: W Register modified. 
+Error[152]  : Executable code and data must be defined in an appropriate section
+Error[152]  : Executable code and data must be defined in an appropriate section
+0000                    00009         pagesel Addr1           ; Outside code section
+                        00010 
+                        00011 
+                        00012         code
+0000                    00013 Addr1
+Error[128]  : Missing argument(s)
+0000                    00014         pagesel                         ; No label specified
+0000                    00015 Addr2
+Message[316]: W Register modified. 
+Error[151]  : Operand contains unresolvable labels or is too complex
+0000     B000 0103      00016         pagesel         Addr1+Addr2     ; Too complex
+                        00017 
+Message[316]: W Register modified. 
+Error[113]  : Symbol not previously defined (Addr3)
+0002     B000 0103      00018         pagesel         Addr3           ; Undefined label
+                        00019 
+                        00020         end
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Addr1                             00000000
+Addr2                             00000000
+__17C44                           00000001
+
+Errors   :     5
+Warnings :     0 reported,     0 suppressed
+Messages :     3 reported,     0 suppressed
+

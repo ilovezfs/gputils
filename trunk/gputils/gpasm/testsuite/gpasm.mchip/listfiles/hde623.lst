@@ -1,0 +1,215 @@
+MPASM Version 3.00 Beta Release   HDE623.ASM   01/31/2001  12:12:31	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; HDE623.ASM
+                        00002 
+                        00003 ; This file tests header file usage for the specified processor.
+                        00004 
+                        00005         LIST    P=16CE623
+                        00006         INCLUDE "P16CE623.INC"
+                        00001         LIST
+                        00002 ; P16CE623.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+                        00172         LIST
+                        00007 
+0000     00CF 00CF      00008         DATA    _CP_ON, 0x00CF          ; This changes per device
+0002     3FFF 3FFF      00009         DATA    _CP_OFF, 0X3FFF
+0004     3FFF 3FFF      00010         DATA    _BODEN_ON, 0X3FFF
+0006     3FBF 3FBF      00011         DATA    _BODEN_OFF, 0X3FBF
+0008     3FF7 3FF7      00012         DATA    _PWRTE_ON, 0x3FF7       ; This changes per device
+000A     3FFF 3FFF      00013         DATA    _PWRTE_OFF, 0X3FFF
+000C     3FFF 3FFF      00014         DATA    _WDT_ON, 0X3FFF
+000E     3FFB 3FFB      00015         DATA    _WDT_OFF, 0X3FFB
+0010     3FFC 3FFC      00016         DATA    _LP_OSC, 0X3FFC
+0012     3FFD 3FFD      00017         DATA    _XT_OSC, 0X3FFD
+0014     3FFE 3FFE      00018         DATA    _HS_OSC, 0X3FFE
+0016     3FFF 3FFF      00019         DATA    _RC_OSC, 0X3FFF 
+                        00020 
+0018     0000 0000      00021         DATA    INDF, 0                 ;Register Files
+001A     0001 0001      00022         DATA    TMR0, 1
+001C     0002 0002      00023         DATA    PCL, 2
+001E     0003 0003      00024         DATA    STATUS, 3
+0020     0004 0004      00025         DATA    FSR, 4
+0022     0005 0005      00026         DATA    PORTA, 5
+0024     0006 0006      00027         DATA    PORTB, 6
+0026     000A 000A      00028         DATA    PCLATH, 0x0A
+0028     000B 000B      00029         DATA    INTCON, 0x0B
+002A     000C 000C      00030         DATA    PIR1, 0XC               ; Processor Specific
+002C     001F 001F      00031         DATA    CMCON, 0X1F             ; Register Files
+                        00032 
+002E     0081 0081      00033         DATA    OPTION_REG, 0x81
+0030     0085 0085      00034         DATA    TRISA, 0X85
+0032     0086 0086      00035         DATA    TRISB, 0X86
+0034     008C 008C      00036         DATA    PIE1, 0X8C
+0036     008E 008E      00037         DATA    PCON, 0X8E
+0038     009F 009F      00038         DATA    VRCON, 0X9F
+                        00039         
+                        00040 
+003A     0007 0007      00041         DATA    IRP, 7                  ;STATUS
+003C     0006 0006      00042         DATA    RP1, 6
+003E     0005 0005      00043         DATA    RP0, 5
+0040     0004 0004      00044         DATA    NOT_TO, 4
+0042     0003 0003      00045         DATA    NOT_PD, 3
+0044     0002 0002      00046         DATA    Z, 2
+0046     0001 0001      00047         DATA    DC, 1
+0048     0000 0000      00048         DATA    C, 0
+                        00049 
+004A     0007 0007      00050         DATA    GIE, 7                  ; INTCON
+MPASM Version 3.00 Beta Release   HDE623.ASM   01/31/2001  12:12:31	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+004C     0006 0006      00051         DATA    PEIE, 6 
+004E     0005 0005      00052         DATA    T0IE, 5
+0050     0004 0004      00053         DATA    INTE, 4
+0052     0003 0003      00054         DATA    RBIE, 3
+0054     0002 0002      00055         DATA    T0IF, 2
+0056     0001 0001      00056         DATA    INTF, 1
+0058     0000 0000      00057         DATA    RBIF, 0 
+                        00058 
+005A     0006 0006      00059         DATA    CMIF, 6                 ; PIR1
+                        00060 
+005C     0007 0007      00061         DATA    C2OUT, 7                ; CMCON
+005E     0006 0006      00062         DATA    C1OUT, 6
+0060     0003 0003      00063         DATA    CIS, 3
+0062     0002 0002      00064         DATA    CM2, 2
+0064     0001 0001      00065         DATA    CM1, 1
+0066     0000 0000      00066         DATA    CM0, 0
+                        00067 
+                        00068 
+0068     0007 0007      00069         DATA    NOT_RBPU, 7             ; OPTION
+006A     0006 0006      00070         DATA    INTEDG, 6
+006C     0005 0005      00071         DATA    T0CS, 5
+006E     0004 0004      00072         DATA    T0SE, 4
+0070     0003 0003      00073         DATA    PSA, 3
+0072     0002 0002      00074         DATA    PS2, 2
+0074     0001 0001      00075         DATA    PS1, 1
+0076     0000 0000      00076         DATA    PS0, 0
+                        00077 
+0078     0006 0006      00078         DATA    CMIE, 6                 ; PIE1
+                        00079 
+007A     0001 0001      00080         DATA    NOT_POR, 1              ; PCON
+007C     0000 0000      00081         DATA    NOT_BO, 0
+                        00082 
+007E     0007 0007      00083         DATA    VREN, 7                 ; VRCON
+0080     0006 0006      00084         DATA    VROE, 6
+0082     0005 0005      00085         DATA    VRR, 5
+0084     0003 0003      00086         DATA    VR3, 3
+0086     0002 0002      00087         DATA    VR2, 2
+0088     0001 0001      00088         DATA    VR1, 1
+008A     0000 0000      00089         DATA    VR0, 0
+                        00090 
+                        00091         END
+MPASM Version 3.00 Beta Release   HDE623.ASM   01/31/2001  12:12:31	   PAGE 3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+C1OUT                             00000006
+C2OUT                             00000007
+CIS                               00000003
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             0000001F
+CMIE                              00000006
+CMIF                              00000006
+DC                                00000001
+EEINTF                            00000090
+EESCL                             00000002
+EESDA                             00000001
+EEVDD                             00000000
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RP0                               00000005
+RP1                               00000006
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TMR0                              00000001
+MPASM Version 3.00 Beta Release   HDE623.ASM   01/31/2001  12:12:31	   PAGE 4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TRISA                             00000085
+TRISB                             00000086
+VR0                               00000000
+VR1                               00000001
+VR2                               00000002
+VR3                               00000003
+VRCON                             0000009F
+VREN                              00000007
+VROE                              00000006
+VRR                               00000005
+W                                 00000000
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_CP_OFF                           00003FFF
+_CP_ON                            000000CF
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16CE623                         00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXX---- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   140
+Program Memory Words Free:   372
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

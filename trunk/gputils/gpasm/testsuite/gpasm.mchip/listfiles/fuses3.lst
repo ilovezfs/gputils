@@ -1,0 +1,38 @@
+MPASM Version 3.00 Beta Release   FUSES3.ASM   01/31/2001  12:11:23	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; FUSES3.ASM
+                        00002 
+                        00003 ; This file tests the __FUSES directive for 16-bit core.
+                        00004 
+                        00005         LIST    P=17C44, R=HEX, F=INHX32
+                        00006 
+FE00     1234           00007         __FUSES 1234
+                        00008 
+                        00009         END
+MPASM Version 3.00 Beta Release   FUSES3.ASM   01/31/2001  12:11:23	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__17C44                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+FE00 : X--------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     1
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+
