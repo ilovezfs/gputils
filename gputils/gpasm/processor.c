@@ -33,7 +33,7 @@ void select_processor(char *name)
 {
   struct px *found = NULL;
 
-  if (state.cmd_line.processor == 1) {
+  if (state.cmd_line.processor) {
     gpwarning(GPW_CMDLINE_PROC, NULL);
   } else {
     found = gp_find_processor(name);
@@ -60,7 +60,7 @@ void select_processor(char *name)
         (state.processor != no_processor)) {
       opcode_init(1);	/* General directives */
       /* seperate the directives from the opcodes */
-      state.stBuiltin = push_symbol_table(state.stBuiltin, 1);      
+      state.stBuiltin = push_symbol_table(state.stBuiltin, true);      
       opcode_init(2);	/* Processor-specific */
       if (!_16bit_core && !_17cxx_core) {
         opcode_init(3);   /* Special pseudo ops for 12 and 14 bit devices */

@@ -53,7 +53,7 @@ static int hashfunc(struct symbol_table *t, char *s)
 }
 
 struct symbol_table *push_symbol_table(struct symbol_table * table,
-				       int case_insensitive)
+				       gp_boolean case_insensitive)
 {
   struct symbol_table *new = calloc(sizeof(*new), 1);
 

@@ -46,8 +46,8 @@ struct linker_section {
   int start;
   int end;
   int fill;
-  int use_fill;
-  int protected;
+  gp_boolean use_fill;
+  gp_boolean protected;
 };
 
 void gp_link_add_symbol(struct symbol_table *table,
@@ -60,13 +60,42 @@ int gp_link_add_symbols(struct symbol_table *,
                         struct symbol_table *missing,
                         gp_object_type *object);
 
+void gp_cofflink_combine_objects(gp_object_type *object);
+
 void gp_cofflink_combine_overlay(gp_object_type *object, int remove_symbol);
 
 void gp_cofflink_make_stack(gp_object_type *object, int num_bytes);
 
-void gp_cofflink_reloc(gp_object_type *object,
-                       struct symbol_table *sections,
-                       struct symbol_table *logical_sections);
+void gp_cofflink_merge_sections(gp_object_type *object, int byte_addr);
+
+void gp_cofflink_make_idata(gp_object_type *object);
+
+void gp_add_cinit_section(gp_object_type *object, int byte_addr);
+
+void gp_cofflink_reloc_abs(MemBlock *m,
+                           int byte_addr,
+                           gp_section_type *section,
+                           unsigned long flags);
+
+void gp_cofflink_reloc_assigned(MemBlock *m,
+                                int byte_addr,
+                                gp_section_type *section,
+                                unsigned long flags,
+                                struct symbol_table *sections,
+                                struct symbol_table *logical_sections);
+
+void gp_cofflink_reloc_unassigned(MemBlock *m,
+                                  int byte_addr,
+                                  gp_section_type *section,
+                                  unsigned long flags,
+                                  struct symbol_table *sections);
+
+void gp_cofflink_update_table(gp_object_type *object);
+
+void gp_cofflink_fill_pages(gp_object_type *object,
+                            MemBlock *m,
+                            int byte_addr,
+                            struct symbol_table *sections);
 
 void gp_cofflink_patch(gp_object_type *object, struct symbol_table *symbols);
 

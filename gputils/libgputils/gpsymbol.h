@@ -33,13 +33,14 @@ struct symbol {
 
 struct symbol_table {
   int count;
-  int case_insensitive;
+  gp_boolean case_insensitive;
   int (*compare)(const char *__s1, const char *__s2);
   struct symbol *hash_table[HASH_SIZE];
   struct symbol_table *prev;
 };
 
-struct symbol_table *push_symbol_table(struct symbol_table *, int case_insensitive);
+struct symbol_table *push_symbol_table(struct symbol_table *, 
+                                       gp_boolean case_insensitive);
 struct symbol_table *pop_symbol_table(struct symbol_table *);
 
 struct symbol *add_symbol(struct symbol_table *, char *name);

@@ -34,7 +34,7 @@ yyerror(char *message)
 
   gp_num_errors++;
 
-  if (gp_quiet != 0)
+  if (gp_quiet)
     return;
 
   assert(message != NULL);

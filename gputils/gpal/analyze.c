@@ -49,7 +49,7 @@ analyze_error(tree *node, const char *format, ...)
 
   gp_num_errors++;
 
-  if (gp_quiet != 0)
+  if (gp_quiet)
     return;
 
   va_start(args, format);
@@ -76,7 +76,7 @@ analyze_warning(tree *node, const char *format, ...)
 
   gp_num_warnings++;
 
-  if (gp_quiet != 0)
+  if (gp_quiet)
     return;
 
   va_start(args, format);
@@ -1019,7 +1019,7 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
   tree *statements;
 
   /* local symbol alias table */
-  state.top = push_symbol_table(state.top, 1);
+  state.top = push_symbol_table(state.top, true);
   found_return = false;
   init = NULL;  
 

@@ -86,7 +86,7 @@ void show_usage(void)
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -a, --all          Display all information in .cod file.\n");
   printf("  -d, --directory    Display directory header.\n");
-  printf("  -l, --listing      Display source listing cross.\n");
+  printf("  -l, --listing      Display source listing.\n");
   printf("  -m, --message      Display debug message area.\n");
   printf("  -h, --help         Show this usage message.\n");
   printf("  -r, --rom          Display rom.\n");

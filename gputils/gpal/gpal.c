@@ -299,7 +299,7 @@ process_args( int argc, char *argv[])
       {
         extern int yydebug;
         yydebug = 1;
-        gp_debug_disable = 0;
+        gp_debug_disable = false;
       }
       break;
     case '?':
@@ -326,7 +326,7 @@ process_args( int argc, char *argv[])
       /* do nothing */
       break;
     case 'q':
-      gp_quiet = 1;
+      gp_quiet = true;
       break;
     case 'S':
       state.compile_only = true;
@@ -366,13 +366,13 @@ compile(tree *module)
   state.basefilename = FILE_NAME(module);
 
   /* create the global symbol table that is case insensitive */
-  state.global = push_symbol_table(NULL, 1);
+  state.global = push_symbol_table(NULL, true);
   
   /* create a top symbol table for the symbol alias */
-  state.top = push_symbol_table(state.global, 1);
+  state.top = push_symbol_table(state.global, true);
 
   /* create the type symbol table that is case insensitive */
-  state.type = push_symbol_table(NULL, 1);
+  state.type = push_symbol_table(NULL, true);
   
   add_type_prims();  
 
@@ -589,8 +589,8 @@ main(int argc, char *argv[])
   state.root = NULL;
 
   /* create the symbol tables for the modules and publics */ 
-  state.modules = push_symbol_table(NULL, 1);
-  state.publics = push_symbol_table(NULL, 1);
+  state.modules = push_symbol_table(NULL, true);
+  state.publics = push_symbol_table(NULL, true);
 
   for ( ; optind < argc; optind++) {
     /* open input file */

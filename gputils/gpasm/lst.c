@@ -78,14 +78,14 @@ void lst_init()
   /* Determine state.startdate */
   gp_date_string(state.lst.startdate, sizeof(state.lst.startdate));
 
-  if (state.cmd_line.macro_expand == 0){
-    state.lst.expand = 1;
+  if (!state.cmd_line.macro_expand){
+    state.lst.expand = true;
   }  
   
-  if (state.cmd_line.lst_force == 1)
-    state.lst.force = 1; 
+  if (state.cmd_line.lst_force)
+    state.lst.force = true; 
   else
-    state.lst.force = 0;
+    state.lst.force = false;
 
   state.lst.config_address = 0;
   state.lst.title_name[0] = '\0';
@@ -99,7 +99,7 @@ void lst_init()
 
   if (state.lstfile == suppress) {
     state.lst.f = NULL;
-    state.lst.enabled = 0;
+    state.lst.enabled = false;
     unlink(state.lstfilename);
   } else {
     state.lst.f = fopen(state.lstfilename, "wt");
@@ -107,7 +107,7 @@ void lst_init()
       perror(state.lstfilename);
       exit(1);
     }
-    state.lst.enabled = 1;
+    state.lst.enabled = true;
   }
 
   cod_lst_line(COD_FIRST_LST_LINE);

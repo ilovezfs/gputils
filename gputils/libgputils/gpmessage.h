@@ -22,11 +22,12 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPMESSAGE_H__
 #define __GPMESSAGE_H__
 
-extern int gp_quiet;
+extern gp_boolean gp_quiet;
+extern gp_boolean gp_debug_disable;
+
 extern int gp_num_errors;
 extern int gp_num_warnings;
 extern int gp_num_messages;
-extern int gp_debug_disable;
 
 void gp_error(const char *format, ...);
 void gp_warning(const char *format, ...);

@@ -117,22 +117,22 @@ int main(int argc, char *argv[])
   extern int optind;
   int i = 0;
   int c;
-  int usage = 0;
-  int update_archive = 0;
-  int  no_index = 0;
+  gp_boolean usage = false;
+  gp_boolean update_archive = false;
+  gp_boolean no_index = false;
   gp_archive_type *object = NULL;
 
   gp_init();
 
   /* symbols are case sensitive */
-  definition_tbl = push_symbol_table(NULL, 0);
-  symbol_index = push_symbol_table(NULL, 0);
+  definition_tbl = push_symbol_table(NULL, false);
+  symbol_index = push_symbol_table(NULL, false);
 
   while ((c = GETOPT_FUNC) != EOF) {
     switch (c) {
     case '?':
     case 'h':
-      usage = 1;
+      usage = true;
       break;
     case 'c':
       select_mode(ar_create);
@@ -141,10 +141,10 @@ int main(int argc, char *argv[])
       select_mode(ar_delete);
       break;
     case 'n':
-      no_index = 1;
+      no_index = true;
       break;
     case 'q':
-      gp_quiet = 1;
+      gp_quiet = true;
       break;
     case 'r':
       select_mode(ar_replace);
@@ -180,19 +180,19 @@ int main(int argc, char *argv[])
       state.numobjects++;
     }
   } else {
-    usage = 1;
+    usage = true;
   }
 
   /* User did not select an operation */
   if (state.mode == ar_null) {
-    usage = 1;
+    usage = true;
   }
 
   /* User did not provide object names */
   if ((state.mode != ar_list) && 
       (state.mode != ar_symbols) && 
       (state.numobjects == 0)) {
-    usage = 1;
+    usage = true;
   }
 
   if (usage) {
@@ -225,7 +225,7 @@ int main(int argc, char *argv[])
       }
       i++;
     }
-    update_archive = 1;
+    update_archive = true;
     break;
 
   case ar_delete: 
@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
       }
       i++;
     }
-    update_archive = 1;
+    update_archive = true;
     break;
 
   case ar_extract:
@@ -286,7 +286,7 @@ int main(int argc, char *argv[])
   }
 
   /* If the archive is being modified remove the old symbol index */
-  if (update_archive == 1) {
+  if (update_archive) {
     state.archive = gp_archive_remove_index(state.archive);
   }
 
@@ -294,12 +294,12 @@ int main(int argc, char *argv[])
   gp_archive_make_index(state.archive, definition_tbl);
 
   /* add the symbol index to the archive */      
-  if ((update_archive == 1) && (no_index == 0)) {
+  if (update_archive && (!no_index)) {
     state.archive = gp_archive_add_index(definition_tbl, state.archive);
   }
 
   /* write the new or modified archive */
-  if ((update_archive == 1) && (gp_num_errors == 0)) {
+  if (update_archive && (gp_num_errors == 0)) {
     if (gp_archive_write(state.archive, state.filename))
       gp_error("can't write the new archive file");
   }

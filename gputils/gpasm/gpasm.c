@@ -33,7 +33,7 @@ Boston, MA 02111-1307, USA.  */
 
 struct gpasm_state state;
 
-static int cmd_processor = 0;
+static gp_boolean cmd_processor = false;
 static char *processor_name = NULL;
 
 int yyparse(void);
@@ -77,26 +77,26 @@ init(void)
 
   state.radix = 16;
   state.hex_format = inhx32;
-  state.case_insensitive = 0;
-  state.quiet = 0;
+  state.case_insensitive = false;
+  state.quiet = false;
   state.error_level = 0;
-  state.debug_info = 0;
+  state.debug_info = false;
   state.path_num = 0;
 
-  state.cmd_line.radix = 0;
-  state.cmd_line.hex_format = 0;
-  state.cmd_line.error_level = 0;
-  state.cmd_line.macro_expand = 0;
-  state.cmd_line.processor = 0;
-  state.cmd_line.lst_force = 0;
+  state.cmd_line.radix = false;
+  state.cmd_line.hex_format = false;
+  state.cmd_line.error_level = false;
+  state.cmd_line.macro_expand = false;
+  state.cmd_line.processor = false;
+  state.cmd_line.lst_force = false;
 
   state.pass = 0;
   state.org = 0;
-  state.dos_newlines = 0;
-  state.memory_dump = 0;
-  state.found_config = 0;
-  state.found_devid = 0;
-  state.found_idlocs = 0;
+  state.dos_newlines = false;
+  state.memory_dump = false;
+  state.found_config = false;
+  state.found_devid = false;
+  state.found_idlocs = false;
   state.register_block = false;
   state.maxram = (MAX_RAM - 1);
 
@@ -184,15 +184,15 @@ process_args( int argc, char *argv[])
   extern char *optarg;
   extern int optind;
   int c;
-  int usage = 0;
+  gp_boolean usage = false;
   char *pc;
 
-  /* Scan through the options for the -c flag.  It must be set before the 
+  /* Scan through the options for the -i flag.  It must be set before the 
      defines are read */
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
     switch (c) {
     case 'i':
-      state.case_insensitive = 1;
+      state.case_insensitive = true;
       break;
     }
   }
@@ -207,11 +207,11 @@ process_args( int argc, char *argv[])
     switch (c) {
     case '?':
     case 'h':
-      usage = 1;
+      usage = true;
       break;
     case 'a':
       select_hexformat(optarg);
-      state.cmd_line.hex_format = 1;
+      state.cmd_line.hex_format = true;
       break;
     case 'c':
       state.mode    = relocatable;
@@ -221,7 +221,7 @@ process_args( int argc, char *argv[])
       state.objfile = normal;
       break;
     case 'd':
-      gp_debug_disable = 0;
+      gp_debug_disable = false;
       break;
     case 'D':
       if ((optarg != NULL) && (strlen(optarg) > 0)) {
@@ -244,30 +244,30 @@ process_args( int argc, char *argv[])
       break;
     case 'e':
       select_expand(optarg);
-      state.cmd_line.macro_expand = 1;
+      state.cmd_line.macro_expand = true;
       break;
     case 'g':
-      state.debug_info = 1;
+      state.debug_info = true;
       break;
     case 'I':
       add_path(optarg);
       break;    
     case 'i':
-      state.case_insensitive = 1;
+      state.case_insensitive = true;
       break;
     case 'L':
-      state.cmd_line.lst_force = 1;
+      state.cmd_line.lst_force = true;
       break;  
     case 'l':
       gp_dump_processor_list(true, 0);
       exit(0);
       break;
     case 'm':
-      state.memory_dump = 1;
+      state.memory_dump = true;
       break;
     case 'n':
       #ifndef HAVE_DOS_BASED_FILE_SYSTEM
-        state.dos_newlines = 1;
+        state.dos_newlines = true;
       #endif
       break;
     case 'o':
@@ -278,19 +278,19 @@ process_args( int argc, char *argv[])
         *pc = 0;
       break;
     case 'p':
-      cmd_processor = 1;
+      cmd_processor = true;
       processor_name = optarg;
       break;
     case 'q':
-      state.quiet = 1;
+      state.quiet = true;
       break;
     case 'r':
       select_radix(optarg);
-      state.cmd_line.radix = 1;
+      state.cmd_line.radix = true;
       break;
     case 'w':
       select_errorlevel(atoi(optarg));
-      state.cmd_line.error_level = 1;
+      state.cmd_line.error_level = true;
       break;
     case 'v':
       fprintf(stderr, "%s\n", GPASM_VERSION_STRING);
@@ -304,7 +304,7 @@ process_args( int argc, char *argv[])
   if ((optind + 1) == argc)
     state.srcfilename = argv[optind];
   else
-    usage = 1;
+    usage = true;
 
   if (usage) {
     show_usage();
@@ -336,7 +336,7 @@ assemble(void)
   }
 
   /* Builtins are always case insensitive */
-  state.stBuiltin = push_symbol_table(NULL, 1);
+  state.stBuiltin = push_symbol_table(NULL, true);
   state.stDirective = state.stBuiltin;
   state.stMacros = push_symbol_table(NULL, state.case_insensitive);
   state.stTop = 
@@ -349,7 +349,7 @@ assemble(void)
   /* the tables are built, select the processor if -p was used */
   if (cmd_processor) {
     select_processor(processor_name);
-    state.cmd_line.processor = 1;
+    state.cmd_line.processor = true;
   }
 
   state.pass = 1;
@@ -362,19 +362,19 @@ assemble(void)
   /* clean out defines for second pass */
   state.stTopDefines = 
     state.stDefines = push_symbol_table(cmd_defines, state.case_insensitive);
-  if (state.cmd_line.radix != 1)
+  if (!state.cmd_line.radix)
     state.radix = 16;
   state.obj.symbol_num = 0;
   state.obj.section_num = 0;
   state.obj.org_num = 0;
-  state.found_config = 0;
-  state.found_devid = 0;
-  state.found_idlocs = 0;
+  state.found_config = false;
+  state.found_devid = false;
+  state.found_idlocs = false;
   coff_init();
   cod_init();
   lst_init();
   open_src(state.srcfilename, 0);
-  if (gp_debug_disable == 0) {
+  if (!gp_debug_disable) {
     yydebug = 1;
   } else {
     yydebug = 0;

@@ -89,7 +89,7 @@ cod_init(void)
 
   if (state.codfile == suppress) {
     state.cod.f = NULL;
-    state.cod.enabled = 0;
+    state.cod.enabled = false;
     unlink(state.codfilename);
   } else {
     state.cod.f = fopen(state.codfilename, "wb");
@@ -97,7 +97,7 @@ cod_init(void)
       perror(state.codfilename);
       exit(1);
     }
-    state.cod.enabled = 1;
+    state.cod.enabled = true;
   }
 
   if(!state.cod.enabled)
