@@ -1,6 +1,5 @@
 public types is
 
-  type boolean is (false, true);
-
+  debug : constant boolean = true;
 
 end public;
