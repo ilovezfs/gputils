@@ -9,7 +9,7 @@ Packager: Craig Franklin <craigfranklin@attbi.com>
 Vendor: Craig Franklin <craigfranklin@attbi.com>
 Distribution: Red Hat Linux
 URL: http://gputils.sourceforge.net
-Buildroot: %{_builddir}/%{name}-%{version}-root
+Buildroot: %{_tmppath}/%{name}-%{version}-root
 
 %description
 This is a collection of development tools for Microchip (TM) PIC (TM) 
@@ -28,11 +28,11 @@ an up-to-date list of what gputils can do.
 ./configure --prefix=/usr --mandir=/usr/share/man
 make
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
 %install
 make DESTDIR="$RPM_BUILD_ROOT" install
+
+%clean
+[ ${RPM_BUILD_ROOT} != "/" ] && rm -rf ${RPM_BUILD_ROOT}
 
 %files
 %defattr(-, root, root)

@@ -110,6 +110,12 @@ void print_data(enum proc_class class, MemBlock *data, int org, int disassemble)
 {
   int memory;
   char buffer[BUFSIZ];
+  int byte_addr = 0;
+  
+  if (class == PROC_CLASS_PIC16E) {
+    org = org >> 1;
+    byte_addr = 1;
+  }
   
   buffer[0] = '\0';
   
@@ -122,7 +128,7 @@ void print_data(enum proc_class class, MemBlock *data, int org, int disassemble)
     if (disassemble)
       gp_disassemble(data, &org, class, buffer);
 
-    printf("%06x:  %04x  %s\n", org, memory & 0xffff, buffer);
+    printf("%06x:  %04x  %s\n", org << byte_addr, memory & 0xffff, buffer);
     org++;
   }
   printf("\n");

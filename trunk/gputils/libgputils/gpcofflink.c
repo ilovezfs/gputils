@@ -393,14 +393,15 @@ gp_cofflink_merge_sections(gp_object_type *object)
 /* Set the memory used flags in a block of words */
 
 static void
-_set_used(MemBlock *m, unsigned int address, unsigned int size)
+_set_used(MemBlock *m, int byte_addr, unsigned int address, unsigned int size)
 {
   unsigned int org;
   unsigned int stop;
   unsigned int data;
 
-  stop = address + size;
-  for (org = address; org < stop; org++) {
+  org = address >> byte_addr;
+  stop = org + size;
+  for ( ; org < stop; org++) {
     data = i_memory_get(m, org);
     if (data & MEM_USED_MASK) {
       gp_error("multiple sections using address %#lx", org);
@@ -417,10 +418,12 @@ _set_used(MemBlock *m, unsigned int address, unsigned int size)
 
 void
 gp_cofflink_reloc_abs(MemBlock *m,
+                      int byte_addr,
                       gp_section_type *section,
                       unsigned long flags)
 {
   unsigned int size;
+  unsigned int addr;
 
   while (section != NULL) {
     if ((section->flags & STYP_ABS) &&
@@ -431,7 +434,9 @@ gp_cofflink_reloc_abs(MemBlock *m,
       } else {
         size = section->size;
       }
-      _set_used(m, section->address, size);
+
+      addr = section->address >> byte_addr;
+      _set_used(m, byte_addr, addr, size);
 
       /* Set the relocated flag */
       section->flags |= STYP_RELOC;
@@ -506,7 +511,8 @@ gp_cofflink_find_big_section(gp_section_type *section,
    block */
 
 static int
-_search_memory(MemBlock *m, 
+_search_memory(MemBlock *m,
+               int byte_addr, 
                unsigned int start,
                unsigned int stop,
                unsigned int size,
@@ -520,6 +526,10 @@ _search_memory(MemBlock *m,
   int in_block = 0;
   int end_block = 0;
   int success = 0;
+
+  /* data is stored as words in memory */
+  start = start >> byte_addr;
+  stop = stop >> byte_addr;
 
   /* set the size to max value */
   *block_size = 0xffffffff;
@@ -582,6 +592,7 @@ _search_memory(MemBlock *m,
 
 static void
 _move_data(MemBlock *m, 
+           int byte_addr,
            unsigned int address, 
            unsigned int size,
            unsigned int new_address) 
@@ -596,6 +607,10 @@ _move_data(MemBlock *m,
            size,
            address,
            new_address);
+
+  /* data is stored as words in memory */
+  address = address >> byte_addr;
+  new_address = new_address >> byte_addr;
 
   for (org = address + size - 1; org >= 0; org--) {
     data = i_memory_get(m, org);
@@ -613,6 +628,7 @@ _move_data(MemBlock *m,
 
 void
 gp_cofflink_reloc_assigned(MemBlock *m,
+                           int byte_addr,
                            gp_section_type *section,
                            unsigned long flags,
                            struct symbol_table *sections,
@@ -651,17 +667,18 @@ gp_cofflink_reloc_assigned(MemBlock *m,
     assert(section_def != NULL);
         
     /* assign the address to this section */
-    if (_search_memory(m, section_def->start, section_def->end, size,
-                       &current_address, &current_size) == 1) {
+    if (_search_memory(m, byte_addr, section_def->start, section_def->end,
+                       size, &current_address, &current_size) == 1) {
       gp_debug("    sucessful relocation to %#x", current_address);
       if (_has_data(current)) {
-        _move_data(current->data, current->address, size, current_address);
+        _move_data(current->data, byte_addr, current->address, size, 
+	           current_address);
       }
       current->address = current_address;
-      _set_used(m, current_address, size);
+      _set_used(m, byte_addr, current_address, size);
 
       /* Update the line number offsets */
-      _update_line_numbers(current->line_numbers, current_address);
+      _update_line_numbers(current->line_numbers, current_address >> byte_addr);
 
       /* Set the relocated flag */
       current->flags |= STYP_RELOC;
@@ -679,6 +696,7 @@ gp_cofflink_reloc_assigned(MemBlock *m,
 
 void
 gp_cofflink_reloc_unassigned(MemBlock *m,
+                             int byte_addr,
                              gp_section_type *section,
                              unsigned long flags,
                              struct symbol_table *sections)  
@@ -741,6 +759,7 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
           gp_debug("    def end = %#x", section_def->end);
           
           if (_search_memory(m, 
+                             byte_addr,
                              section_def->start,
                              section_def->end,
                              size,
@@ -760,13 +779,14 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
     if (success == 1) {
       gp_debug("    sucessful relocation to %#x", smallest_address);
       if (_has_data(current)) {
-        _move_data(current->data, current->address, size, smallest_address);
+        _move_data(current->data, byte_addr, current->address, size, 
+	           smallest_address);
       }
       current->address = smallest_address;
-      _set_used(m, smallest_address, size);
+      _set_used(m, byte_addr, smallest_address, size);
 
       /* Update the line number offsets */
-      _update_line_numbers(current->line_numbers, smallest_address);
+      _update_line_numbers(current->line_numbers, smallest_address >> byte_addr);
 
       /* Set the relocated flag */
       current->flags |= STYP_RELOC;
@@ -814,6 +834,7 @@ _update_table(gp_object_type *object)
 void 
 gp_cofflink_fill_pages(gp_object_type *object,
                        MemBlock *m,
+                       int byte_addr,
                        struct symbol_table *sections)
 {
   struct linker_section *section_def;
@@ -838,6 +859,7 @@ gp_cofflink_fill_pages(gp_object_type *object,
           (section_def->use_fill == 1)) {
         while (1) {
           found = _search_memory(m, 
+                                 byte_addr,
                                  section_def->start,
                                  section_def->end,
                                  1,
@@ -865,11 +887,12 @@ gp_cofflink_fill_pages(gp_object_type *object,
               /* FIXME: do we really need a section symbol? */
               
               /* mark the memory as used */
-              _set_used(m, current_address, current_size);
+              _set_used(m, byte_addr, current_address, current_size);
               
               /* fill the section memory */
-              end = current_address + current_size;
-              for (org = current_address; org <= end; org++) {
+              org = current_address >> byte_addr;
+              end = org + current_size;
+              for ( ; org <= end; org++) {
                 i_memory_put(section->data,
                              org,
                              MEM_USED_MASK | section_def->fill);
@@ -894,6 +917,13 @@ gp_cofflink_reloc(gp_object_type *object,
                   struct symbol_table *logical_sections)  
 {
   MemBlock *data, *program;
+  int byte_addr;
+  
+  /* Enhanced 16 bit devices (18xx) use byte addressing */
+  if (object->class == PROC_CLASS_PIC16E)
+    byte_addr = 1;
+  else
+    byte_addr = 0;
 
   /* create memory representing target memory */ 
   data = i_memory_create();
@@ -911,9 +941,11 @@ gp_cofflink_reloc(gp_object_type *object,
   /* allocate memory for absolute sections */
   gp_debug("verifying absolute sections.");
   gp_cofflink_reloc_abs(program, 
+                        byte_addr,
                         object->sections,
                         STYP_TEXT);
   gp_cofflink_reloc_abs(data, 
+                        0,
                         object->sections, 
                         STYP_DATA | STYP_BSS | STYP_SHARED | 
                         STYP_OVERLAY | STYP_ACCESS);
@@ -923,11 +955,13 @@ gp_cofflink_reloc(gp_object_type *object,
   /* allocate memory for relocatable assigned sections */
   gp_debug("relocating assigned sections.");
   gp_cofflink_reloc_assigned(program, 
+                             byte_addr,
                              object->sections,
                              STYP_TEXT,
                              sections,
                              logical_sections);
   gp_cofflink_reloc_assigned(data, 
+                             0,
                              object->sections, 
                              STYP_DATA | STYP_BSS | STYP_SHARED | 
                              STYP_OVERLAY | STYP_ACCESS,
@@ -939,10 +973,12 @@ gp_cofflink_reloc(gp_object_type *object,
   /* allocate memory for relocatable unassigned sections */
   gp_debug("relocating unassigned sections.");
   gp_cofflink_reloc_unassigned(program, 
+                               byte_addr,
                                object->sections,
                                STYP_TEXT,
                                sections);
   gp_cofflink_reloc_unassigned(data, 
+                               0,
                                object->sections, 
                                STYP_DATA | STYP_BSS | STYP_SHARED | 
                                STYP_OVERLAY | STYP_ACCESS,
@@ -950,7 +986,7 @@ gp_cofflink_reloc(gp_object_type *object,
 
   _update_table(object);
 
-  gp_cofflink_fill_pages(object, program, sections);
+  gp_cofflink_fill_pages(object, program, byte_addr, sections);
 
   i_memory_free(data);
   i_memory_free(program);
@@ -958,21 +994,41 @@ gp_cofflink_reloc(gp_object_type *object,
   return;
 }
 
+static void
+check_relative(gp_section_type *section, int org, int argument, int range)
+{
+  /* If the branch is too far then issue a warning */
+  if ((argument > range) || (argument < -(range+1))) {
+    gp_warning("relative branch out of range in at %#x of section \"%s\"",
+               org,
+	       section->name);
+  }
+
+  return;
+} 
+
 /* patch one word with the relocated address */ 
 
 void 
 gp_cofflink_patch_addr(enum proc_class class,
+                       int bsr_boundary,
                        gp_section_type *section, 
                        gp_symbol_type *symbol,
                        gp_reloc_type *relocation)
 {
-  unsigned int org;
-  unsigned int data;
-  unsigned int value;
+  int org;
+  int data;
+  int value;
+  int offset;
   int write_data = 1;
 
   /* section address are byte addresses */
-  org = section->address + (relocation->address >> 1);
+  if (class == PROC_CLASS_PIC16E)
+    org = section->address >> 1;
+  else
+    org = section->address;
+  
+  org += (relocation->address >> 1);
   
   value = symbol->value + relocation->offset;
 
@@ -1100,7 +1156,7 @@ gp_cofflink_patch_addr(enum proc_class class,
     data = data | (value & 0xff);
     break;
   case RELOCT_GOTO2:
-    data = data | ((value >> 8) & 0xfff);
+    data = data | ((value >> 9) & 0xfff);
     break;
   case RELOCT_FF1:
     data = data | (value & 0xfff);
@@ -1115,10 +1171,14 @@ gp_cofflink_patch_addr(enum proc_class class,
     data = data | (value & 0xff);
     break;
   case RELOCT_BRA:
-    data = data | (value & 0x7ff);
+    offset = (value - ((org + 1) << 1)) >> 1;
+    check_relative(section, org, offset, 0x7ff);
+    data = data | (offset & 0x7ff);
     break;
   case RELOCT_CONDBRA:
-    data = data | (value & 0xff);
+    offset = (value - ((org + 1) << 1)) >> 1;
+    check_relative(section, org, offset, 127);
+    data = data | (offset & 0xff);
     break;
   case RELOCT_UPPER:
     data = data | ((value >> 16) & 0x3f);   
@@ -1127,7 +1187,8 @@ gp_cofflink_patch_addr(enum proc_class class,
     {
       int a;
       
-      if ((value < 0x60) || (value > 0xf5f)) {
+      if ((value < bsr_boundary) || 
+          (value >= (0xf00 + bsr_boundary))) {
         a = 0;
       } else {
         a = 1;
@@ -1181,6 +1242,10 @@ gp_cofflink_patch(gp_object_type *object,
   gp_symbol_type     *symbol;
   gp_coffsymbol_type *var;
   struct symbol      *sym;
+  int bsr_boundary = 0;
+  
+  if (object->class == PROC_CLASS_PIC16E)  
+    bsr_boundary = gp_processor_bsr_boundary(object->processor);
 
   gp_debug("patching data with relocated symbols");
 
@@ -1199,7 +1264,11 @@ gp_cofflink_patch(gp_object_type *object,
           assert(var != NULL);	  
           symbol = var->symbol;
         }
-        gp_cofflink_patch_addr(object->class, section, symbol, relocation);
+        gp_cofflink_patch_addr(object->class,
+	                       bsr_boundary,
+			       section,
+			       symbol,
+			       relocation);
 
         relocation = relocation->next;
       }
@@ -1264,9 +1333,14 @@ gp_cofflink_make_memory(gp_object_type *object)
   while (section != NULL) {
     if ((section->flags & STYP_TEXT) ||
         (section->flags & STYP_DATA_ROM)) {
-      stop = section->address + (section->size / 2);
+      if (object->class == PROC_CLASS_PIC16E)
+        org = section->address >> 1;
+      else
+        org = section->address;
       
-      for (org = section->address; org < stop; org++) {
+      stop = org + (section->size / 2);
+            
+      for ( ; org < stop; org++) {
         /* fetch the current contents of the memory */
         data = i_memory_get(section->data, org);
         assert(data & MEM_USED_MASK);

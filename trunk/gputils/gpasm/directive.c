@@ -1694,9 +1694,9 @@ static gpasmVal do_org(gpasmVal r,
       if (state.mode == absolute) {
         state.org = r;
       }	else {
-	/* Default section name, this will be overwritten if a label is present.
-	   MPASM sequentially numbers the orgs, that seems like trouble. */
-        sprintf(state.obj.new_sec_name, ".org_%04X", r);
+        /* Default section name, this will be overwritten if a label is 
+           present. */
+        sprintf(state.obj.new_sec_name, ".org_%d", state.obj.org_num++);
         state.obj.new_sec_addr = r;
         state.obj.new_sec_flags = STYP_TEXT | STYP_ABS;
         state.lst.line.linetype = sec;

@@ -135,20 +135,25 @@ _gp_coffgen_write_scnhdr(gp_section_type *section, char *table, FILE *fp)
 
 /* write the section data */
 static void 
-_gp_coffgen_write_data(gp_section_type *section, FILE *fp) 
+_gp_coffgen_write_data(enum proc_class class, 
+                       gp_section_type *section, 
+                       FILE *fp) 
 {
   unsigned int org;
   unsigned int last;
   unsigned int data;
 
-  org = section->address;
+  if ((class == PROC_CLASS_PIC16E) && (section->flags & STYP_TEXT))
+    org = section->address >> 1;
+  else
+    org = section->address;
 
   if (section->flags & STYP_TEXT) {
     /* the section is executable, so each word is two bytes */
-    last = section->address + (section->size / 2);
+    last = org + (section->size / 2);
   } else {
     /* the section is data, so each word is one byte */
-    last = section->address + section->size;
+    last = org + section->size;
   }
 
 #ifdef __DEBUG__
@@ -156,7 +161,7 @@ _gp_coffgen_write_data(gp_section_type *section, FILE *fp)
   print_i_memory(section->data);
 #endif
 
-  for (org = section->address; org < last; org++) {
+  for ( ; org < last; org++) {
     data = i_memory_get(section->data, org);
     assert(data & MEM_USED_MASK);
 
@@ -402,7 +407,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
   section = object->sections;
   while (section != NULL) {
     if (_has_data(section)) {
-      _gp_coffgen_write_data(section, coff); 
+      _gp_coffgen_write_data(object->class, section, coff); 
     }
     section = section->next;
   }

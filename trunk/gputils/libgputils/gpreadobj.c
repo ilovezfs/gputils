@@ -218,6 +218,7 @@ _read_sections(gp_object_type *object, char *file)
   gp_linenum_type *current_linenum = NULL;
   unsigned int number;
   unsigned int value;
+  int org;
 
   /* move to the start of the section headers */
   section_ptr = file + FILE_HDR_SIZ + OPT_HDR_SIZ;
@@ -237,6 +238,11 @@ _read_sections(gp_object_type *object, char *file)
 
     /* read the data */
     if ((current->size) && (current->data_ptr)) {
+      if ((object->class == PROC_CLASS_PIC16E) && (current->flags & STYP_TEXT))
+        org = current->address >> 1;
+      else
+        org = current->address;
+
       loc = &file[current->data_ptr];
       if (current->flags & STYP_TEXT) {
         /* size is in bytes, but words are stored in memory */
@@ -250,7 +256,7 @@ _read_sections(gp_object_type *object, char *file)
         } else {
           value = (unsigned int)loc[j];
         }        
-        i_memory_put(current->data, current->address + j, MEM_USED_MASK | value);
+        i_memory_put(current->data, org + j, MEM_USED_MASK | value);
       }
     }
 
