@@ -1,15 +1,15 @@
-2003-06-28 Craig Franklin <craigfranklin@attbi.com>
+2003-06-28 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.11.5 Released.
   * Fixed byte count when RES directive is used in 18xx data sections.
   * Display help when multiple files are passed to gpasm, gpdasm, gpvo, 
     and gpvc on the command line.
   * Check for lower case filename if include file is not found.
 
-2003-06-23 Craig Franklin <craigfranklin@attbi.com>
+2003-06-23 Craig Franklin <craigfranklin@comcast.net>
   * Extended the legal syntax for difference of coff symbols within the same
     section.
 
-2003-06-22 Craig Franklin <craigfranklin@attbi.com>
+2003-06-22 Craig Franklin <craigfranklin@comcast.net>
   * Changed coff to use byte addressing for program memory of 18xx devices.
   * Changed absolute coff sections generated with org directive to use
     org_"number" for a name instead of org_"address".
@@ -21,14 +21,14 @@
     gpasm. 
   * Changed build directory for rpms.
 
-2003-06-14 Craig Franklin <craigfranklin@attbi.com>
+2003-06-14 Craig Franklin <craigfranklin@comcast.net>
   * Fixed error in the range check for 17xx movpf and movfp instructions.
 
-2003-06-04 Craig Franklin <craigfranklin@attbi.com>
+2003-06-04 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.11.4 Released.
   * Replaced or removed obsolete macros in configure.ac.
 
-2003-06-01 Craig Franklin <craigfranklin@attbi.com>
+2003-06-01 Craig Franklin <craigfranklin@comcast.net>
   * Added new processors:
     p16c557 p16c747 p16f648a p16f684 p16f737 p16f767 p16f777 p18f2331 
     p18f2431 p18f2439 p18f2539 p18f4331 p18f4431 p18f4439 p18f4539 
@@ -36,12 +36,12 @@
     p18f8585 p18f8621 p18f8680 rf675f rf675h rf675k
   * Updated header files and linker scripts.
 
-2003-05-20 Craig Franklin <craigfranklin@attbi.com>
+2003-05-20 Craig Franklin <craigfranklin@comcast.net>
   * Updated scripts to automake-1.6 and autoconf-2.57.
   * Ran autoscan and fixed reported problems.
   * Added AM_MAINTAINER_MODE to autoconf.
 
-2003-05-10 Craig Franklin <craigfranklin@attbi.com>
+2003-05-10 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.11.3 Released.  
   * Fixed seg fault in gpasm when difference between coff symbols is 
     calculated. 
@@ -51,7 +51,7 @@
     memory.
   * Added gplink testsuite.
 
-2003-05-06 Craig Franklin <craigfranklin@attbi.com>
+2003-05-06 Craig Franklin <craigfranklin@comcast.net>
   * Fixed conditional assembly of INCLUDE directives in gpasm. 
   * Fixed seg fault in gplink when object has no sections or symbols.
   * Fixed target memory allocation in gplink when section size = page size
@@ -61,7 +61,7 @@
 2003-05-03  Scott Dattalo  <scott@dattalo.com>
   * 18f Bit instructions were not handling the Access bit properly
 
-2003-04-19 Craig Franklin <craigfranklin@attbi.com>
+2003-04-19 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.11.2 Released.
   * Fixed section size bug in org directives when used in gpasm coff outputs.
   * Fixed bug in cod file address size that confused MPLAB.
@@ -76,27 +76,27 @@
   * Modified lexer to allow [.][a-z][a-z0-9]* labels.
   * Moved gpasm default header path to last in the search list.
 
-2003-04-02 Craig Franklin <craigfranklin@attbi.com>
+2003-04-02 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.11.1 Released.
 
-2003-03-23 Craig Franklin <craigfranklin@attbi.com>
+2003-03-23 Craig Franklin <craigfranklin@comcast.net>
   * Moved common cod functions into libgputils.
   * Added cod file output to gplink.
   * Updated config scripts.
   * Added variable bsr boundary location for default access bit on 18xx
     devices.
 
-2003-03-21 Craig Franklin <craigfranklin@attbi.com>
+2003-03-21 Craig Franklin <craigfranklin@comcast.net>
   * Check status of all fopens to prevent file io problems.
 
-2003-03-14 Craig Franklin <craigfranklin@attbi.com>
+2003-03-14 Craig Franklin <craigfranklin@comcast.net>
   * Specified fopen() mode to prevent CRLF conversion on binary files when
     using the mingw port.
   * Fixed gplink bug that causes some symbols to be incorrect after section
     merging.
   * Report symbol names when resolving external references in gplink fails.
 
-2003-03-14 Craig Franklin <craigfranklin@attbi.com>
+2003-03-14 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.11.0 Released.
   * Fixed bug that caused amode stack to be incorrect when exitm was used.
   * The P value for movpf and movfp instructions is now checked.
@@ -104,55 +104,55 @@
   * Cleared defines table at the start of second pass.
   * Generate a warning for macros only invoked on pass 2.
 
-2003-03-09 Craig Franklin <craigfranklin@attbi.com>
+2003-03-09 Craig Franklin <craigfranklin@comcast.net>
   * Fixed segmentation fault in gplink.
   * Fixed a parse error in the sharebank definitions in linker scripts.
   * Moved COFF definitions to gpcoff.h.
 
-2003-03-03 Craig Franklin <craigfranklin@attbi.com>
+2003-03-03 Craig Franklin <craigfranklin@comcast.net>
   * Finished relocation patching.
   * Added map and hex file outputs to gplink.
 
-2003-02-27 Craig Franklin <craigfranklin@attbi.com>
+2003-02-27 Craig Franklin <craigfranklin@comcast.net>
   * Added relocation and linking functions to gplink.
 
-2003-02-22 Craig Franklin <craigfranklin@attbi.com>
+2003-02-22 Craig Franklin <craigfranklin@comcast.net>
   * Removed nuisance warning about malformed asm files.
   * Fixed errors when using escape characters in strings.
 
-2003-02-17 Craig Franklin <craigfranklin@attbi.com>
+2003-02-17 Craig Franklin <craigfranklin@comcast.net>
   * Added auxilary coff symbols.
 
-2003-02-16 Craig Franklin <craigfranklin@attbi.com>
+2003-02-16 Craig Franklin <craigfranklin@comcast.net>
   * Added pointers in object files to simplify linking operations.
   * Added checks when reading object files.
 
-2003-02-02 Craig Franklin <craigfranklin@attbi.com>
+2003-02-02 Craig Franklin <craigfranklin@comcast.net>
   * Combined overlayed sections in gpasm coff outputs.
   * Append prefix on local variables that end up in coff file.  
   * Fixed error that prevented using $ with data directives.
 
-2003-01-19 Craig Franklin <craigfranklin@attbi.com>
+2003-01-19 Craig Franklin <craigfranklin@comcast.net>
   * Added object test files.
   * Fixed errors found by running new test files.  
   * Added bankisel directive.
 
-2003-01-05 Craig Franklin <craigfranklin@attbi.com>
+2003-01-05 Craig Franklin <craigfranklin@comcast.net>
   * Converted to new object structures.
   * Fixed errors in gpasm, gplib, and gplink.  
   * Changed gpvo output format.
 
-2002-12-22 Craig Franklin <craigfranklin@attbi.com>
+2002-12-22 Craig Franklin <craigfranklin@comcast.net>
   * Added coff file support to gpasm.
   * Added UPPER operator.
   * Removed invalid parts. 
 
-2002-12-04 Craig Franklin <craigfranklin@attbi.com>
+2002-12-04 Craig Franklin <craigfranklin@comcast.net>
   * Fixed incorrect range warning on 18xx gotos.
   * Fixed parse error for << operators > in the comment.
   * Cleaned up parse debug output.
 
-2002-11-22 Craig Franklin <craigfranklin@attbi.com>
+2002-11-22 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.10.6 Released.
   * Fixed behavior of de directive for 18xxx devices. Data is now packed.
   * Added new directives: banksel and pagesel
@@ -164,21 +164,21 @@
     eg: bc $+258, bc $-256, rcall $-2048, rcall $+2050 all now generate 
     appropriate errors.
 
-2002-11-07 Craig Franklin <craigfranklin@attbi.com>
+2002-11-07 Craig Franklin <craigfranklin@comcast.net>
   * Added support for sx, 17xx, and 18xx devices in gpdasm.
   * Fixed config directive for 18xx devices with address > 0x300007
 
-2002-10-27 Craig Franklin <craigfranklin@attbi.com>
+2002-10-27 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.10.5 Released.
 
-2002-10-19 Craig Franklin <craigfranklin@attbi.com>
+2002-10-19 Craig Franklin <craigfranklin@comcast.net>
   * Added new processors: 12f629 12f675 16c557 16f627a 16f628a 16f630 
     16f676 16f72 16f76 16f77 16f818 16f819 16f87 16f873a 16f874a 16f876a 
     16f88 18f1220 18f1320 18f2220 18f2320 18f4220 18f4320 18f6620 18f6720 
     18f8620 18f8720 rf509af rf509ag
   * Updated header files
 
-2002-10-12 Craig Franklin <craigfranklin@attbi.com>
+2002-10-12 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.10.4 Released.
   * Fixed bug that caused assertion when macro calls procede definition.
   * Fixed bug that required gpasm arguments be in a specific order.
@@ -192,20 +192,20 @@
   * gpasm - arithmetic for negative relative branches on a 16bit core
     was loosing the sign bit.
 	
-2002-05-12 Craig Franklin <craigfranklin@attbi.com>
+2002-05-12 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.10.3 Released.
 
-2002-04-27 Craig Franklin <craigfranklin@attbi.com>
+2002-04-27 Craig Franklin <craigfranklin@comcast.net>
   * Added Code Warrior changes. 
 
-2002-04-09 Craig Franklin <craigfranklin@attbi.com>
+2002-04-09 Craig Franklin <craigfranklin@comcast.net>
   * Updated header files and linker scripts. 
   * Added manpages.
 
-2002-04-08 Craig Franklin <craigfranklin@attbi.com>
+2002-04-08 Craig Franklin <craigfranklin@comcast.net>
   * Fixed error that could cause a seg fault on AmigaOS.
   
-2002-04-03 Craig Franklin <craigfranklin@attbi.com>
+2002-04-03 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.10.2 Released.
   * Any argument to an instruction which exceeds its range will now generate
     at least a warning.
@@ -218,14 +218,14 @@
     displayed.
   * Added description of the alternative number formats to documents. 
   
-2002-02-28 Craig Franklin <craigfranklin@attbi.com>
+2002-02-28 Craig Franklin <craigfranklin@comcast.net>
   * Fixed a bug that inserted an extra NULL line in a macro definition when +=
     type ops are used.  The bug caused a seg fault.
 
-2002-02-23 Craig Franklin <craigfranklin@attbi.com>
+2002-02-23 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.10.1 Released.
 
-2002-02-23 Craig Franklin <craigfranklin@attbi.com>
+2002-02-23 Craig Franklin <craigfranklin@comcast.net>
   * Macros are now implemented as a text substitution at the input to the 
     lexer.  All macro arguments are preprocessor substitutions like #define.
   * Fixed a bug that caused i = i + 1 type expressions to be evaluated twice
@@ -242,30 +242,30 @@
   * Fixed a bug that could cause a segmentation fault with a bad text 
     substitution.
 
-2002-01-27 Craig Franklin <craigfranklin@attbi.com>
+2002-01-27 Craig Franklin <craigfranklin@comcast.net>
   * added rpm spec file.
 
-2002-01-20 Craig Franklin <craigfranklin@attbi.com>
+2002-01-20 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.10.0 Released.
 
-2002-01-17 Craig Franklin <craigfranklin@attbi.com>
+2002-01-17 Craig Franklin <craigfranklin@comcast.net>
   * Removed target detection from configure.  Target is always a PIC so it
     doesn't make any sense to run the test.
   * Removed unnecessary object extension from Makefiles.
   * Added bzero.c to libiberty for mingw32 port.
 
-2002-01-16 Craig Franklin <craigfranklin@attbi.com>
+2002-01-16 Craig Franklin <craigfranklin@comcast.net>
   * Added missing () in gplink lexer. 
   * Added a subset of libiberty so getopt_long is always available.
 
-2002-01-15 Craig Franklin <craigfranklin@attbi.com>
+2002-01-15 Craig Franklin <craigfranklin@comcast.net>
   * Fixed a bug in gpasm that causes a nuisance warning when multiple macro
     definitions are selected using conditional assembly.
 
-2002-01-13 Craig Franklin <craigfranklin@attbi.com>
+2002-01-13 Craig Franklin <craigfranklin@comcast.net>
   * Fixed a bug in gpvc that could cause a segmentation fault.
 
-2002-01-10 Craig Franklin <craigfranklin@attbi.com>
+2002-01-10 Craig Franklin <craigfranklin@comcast.net>
   * Renamed gpasm package to gputils.
   * Changed library from libgpasm.a to libgputils.a
   * Renamed mem2asm.c to dis.c
@@ -279,14 +279,14 @@
   * Corrected many problems with gplib.
   * Continued work on gplink.  
 
-2001-12-07 Craig Franklin <craigfranklin@attbi.com>
+2001-12-07 Craig Franklin <craigfranklin@comcast.net>
   * Added linker scripts.
 
-2001-12-06 Craig Franklin <craigfranklin@attbi.com>
+2001-12-06 Craig Franklin <craigfranklin@comcast.net>
   * Fixed cygwin warnings with -Wall -pedantic flags.
   * Updated maintainer information.
 
-2001-11-26 Craig Franklin <craigfranklin@attbi.com>
+2001-11-26 Craig Franklin <craigfranklin@comcast.net>
   * Fixed a bug that could cause a core dump when expanding macros.
   * Fixed a bug that cause labels inside of macros for 18cxx devices
     to be off by 2X.
@@ -296,15 +296,15 @@
   * Moved symbol table functions to library for use with gplink.
   * Added extra warning flags to cygwin.
 
-2001-11-24 Craig Franklin <craigfranklin@attbi.com>
+2001-11-24 Craig Franklin <craigfranklin@comcast.net>
   * Added new tool gplink.  This tool is intended to be compatible with mplink.
     This is a development version.  It is not complete.  
 
-2001-11-17 Craig Franklin <craigfranklin@attbi.com>
+2001-11-17 Craig Franklin <craigfranklin@comcast.net>
   * Added new tool gplib.  This tool is intended to be compatible with mplib.
     This is a development version.  It is not complete.  
 
-2001-10-31 Craig Franklin <craigfranklin@attbi.com>
+2001-10-31 Craig Franklin <craigfranklin@comcast.net>
   * gpasm 0.9.14 Released.
   * The path to the header files is now searched when including files.  This  
     means the "-I /usr/local/share/gpasm/header" argument to gpasm is no  
@@ -312,18 +312,18 @@
     This path may be disabled at compile time using the "--disable-path" 
     configuration option.
   
-2001-10-25 Craig Franklin <craigfranklin@attbi.com>
+2001-10-25 Craig Franklin <craigfranklin@comcast.net>
   * implemented "fill (<expression>),number", where <expression> is a line of
     assembly.  example: "fill (goto start), 10" 
   * fixed bug #423204, infinite loop when missing new line before EOF in a file
     without the END directive
   * parser debug is enabled when PARSE_DEBUG is defined
 
-2001-10-09 Craig Franklin <craigfranklin@attbi.com>
+2001-10-09 Craig Franklin <craigfranklin@comcast.net>
   * removed all // comments to satisfy --pedantic flag
   * fixed several errors in gpvo
 
-2001-10-06 Craig Franklin <craigfranklin@attbi.com>
+2001-10-06 Craig Franklin <craigfranklin@comcast.net>
   * gpasm 0.9.13 Released.
   * Added new processors:
     p16c432 p16c433 p16c781 p16c782 p16c925 p16c926 p16cr620a p16f73	
@@ -335,7 +335,7 @@
     p18c801.inc p18f020.inc p18f242.inc p18f248.inc p18f252.inc p18f258.inc
     p18f442.inc p18f448.inc p18f452.inc p18f458.inc
 
-2001-10-02 Craig Franklin <craigfranklin@attbi.com>
+2001-10-02 Craig Franklin <craigfranklin@comcast.net>
   * "list n=0" may now be used to prevent page breaks in the listing file.  
     This feature was provided by Reto Felix <reto.felix@bluewin.ch>.
   * All arguments to the list directive are now processed as decimal regardless
@@ -390,7 +390,7 @@ is treated accordingly.
 2.  Symbols may now be assigned values when declared using the local directive.
 As in "local i, j=15, k".
 
-3.  The extended ASCII character set (ü) may now be used for labels and 
+3.  The extended ASCII character set (Ã¼) may now be used for labels and 
 symbols.  
 
 4.  gpasm now tests for infinite while loops.  In this condition, an error is
@@ -805,10 +805,10 @@ when Micorchip's include file for 16c5x devices is used.
 	use 'rpm -ta gpasm-0.8.13.tar.gz'.  Added missing newline to
 	gperror.h.
 
-0.8.12	TSD Patch from Craig Franklin mailto:craigfranklin@attbi.com that 
+0.8.12	TSD Patch from Craig Franklin mailto:craigfranklin@comcast.net that 
 	implements the ERRORLEVEL directive.
 
-0.8.11  TSD Patch from Craig Franklin mailto:craigfranklin@attbi.com to fix command
+0.8.11  TSD Patch from Craig Franklin mailto:craigfranklin@comcast.net to fix command
 	line options (the -o option was missing, and the -e and -w options weren't
 	being used). Also applied patch from Craig that implements the subtitle 
 	directive.

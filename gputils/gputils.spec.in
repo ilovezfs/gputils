@@ -5,8 +5,8 @@ Summary: Development utilities for Microchip (TM) PIC (TM) microcontrollers
 Copyright: GPL
 Group: Development/Languages
 Source: http://prdownloads.sourceforge.net/gputils/gputils-%{version}.tar.gz
-Packager: Craig Franklin <craigfranklin@attbi.com>
-Vendor: Craig Franklin <craigfranklin@attbi.com>
+Packager: Craig Franklin <craigfranklin@comcast.net>
+Vendor: Craig Franklin <craigfranklin@comcast.net>
 Distribution: Red Hat Linux
 URL: http://gputils.sourceforge.net
 Buildroot: %{_tmppath}/%{name}-%{version}-root
