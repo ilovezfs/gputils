@@ -112,6 +112,8 @@ char *gp_geterror(unsigned int code)
     return "Address wrapped around 0. ";
   case GPE_ADDROVR:
     return "Overwriting previous address contents.";
+  case GPE_BAD_CALL_ADDR:
+    return "Call or jump not allowed at this address (must be in low half of page)";
   case GPE_ILLEGAL_LABEL:
     return "Illegal label.";
   case GPE_ILLEGAL_DIR:
@@ -277,7 +279,7 @@ char *gp_getmessage(unsigned int code)
   case GPM_USER:
     return "MESSAGE:";
   case GPM_BANK:
-    return "Argument out of range. Least significant bits used.";
+    return "Register in operand not in bank 0. Ensure bank bits are correct.";
   case GPM_RANGE:
     return "Program word too large. Truncated to core size.";
   case GPM_IDLOC:
@@ -285,7 +287,7 @@ char *gp_getmessage(unsigned int code)
   case GPM_NOF:
     return "Using default destination of 1 (file).";
   case GPM_PAGE:
-    return "Crossing page boundary - ensure page bits are set.";
+    return "Crossing page boundary -- ensure page bits are set.";
   case GPM_PAGEBITS:
     return "Setting page bits.";
   case GPM_SUPVAL:

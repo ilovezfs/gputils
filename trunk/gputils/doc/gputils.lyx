@@ -26,13 +26,13 @@
 
 \layout Title
 \added_space_top vfill \added_space_bottom vfill 
-gputils 0.10.1
+gputils 0.10.2
 \layout Author
 
 James Bowman 
 \layout Date
 
-February 24 2002
+April 3 2002
 \layout Standard
 
 
@@ -115,12 +115,13 @@ Where options can be one of:
 \layout Standard
 \added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
 multicol5
-19 2 0 0 -1 -1 -1 -1
+20 2 0 0 -1 -1 -1 -1
 1 1 0 0
 1 0 0 0
 1 0 0 0
 0 0 1 0
 0 0 1 0
+1 0 0 0
 1 0 0 0
 1 0 0 0
 1 0 0 0
@@ -145,6 +146,8 @@ multicol5
 0 2 1 0 1 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
 0 2 1 0 1 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
@@ -251,6 +254,10 @@ l
 \newline 
 List the supported processors.
 \newline 
+L
+\newline 
+Ignore nolist directives.
+\newline 
 m
 \newline 
 Memory dump.
@@ -319,7 +326,7 @@ hex
 
 .
 \newline 
--w [ 0 | 1 | 2]
+w [ 0 | 1 | 2]
 \newline 
 Set the message level.
 \newline 
@@ -1021,6 +1028,99 @@ When you write a number without a specifying prefix such as
 
 Case is not significant when interpreting numbers: 0ca, 0CA, h'CA' and H'ca'
  are all equivalent.
+\layout Standard
+
+Several legacy mpasm number formats are also supported.
+ These formats have various shortcomings, but are still supported.
+ The table below summarizes them.
+ 
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+8 3 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+8 1 0 "" ""
+8 1 0 "" ""
+8 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+base
+\newline 
+general syntax
+\newline 
+21 decimal written as
+\newline 
+binary
+\newline 
+[01]*b
+\newline 
+10101b
+\newline 
+octal
+\newline 
+q'[0-7]*'
+\newline 
+q'25'
+\newline 
+octal
+\newline 
+[0-7]*o
+\newline 
+25o
+\newline 
+octal
+\newline 
+[0-7]*q
+\newline 
+25q
+\newline 
+decimal
+\newline 
+0-9]*d
+\newline 
+21d
+\newline 
+decimal
+\newline 
+.[0-9]*
+\newline 
+.21
+\newline 
+hex
+\newline 
+[0-F]*h
+\newline 
+15h
 \layout Standard
 
 You can write the 
