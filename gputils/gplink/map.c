@@ -240,7 +240,7 @@ make_map(void)
   }
 
   /* Determine start date */
-  gp_data_string(state.map.startdate);
+  gp_date_string(state.map.startdate);
 
   map_line("%s", GPLINK_VERSION_STRING);
   map_line("Map File - Created %s", state.map.startdate);

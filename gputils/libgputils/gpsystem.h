@@ -33,6 +33,6 @@ void  gp_putl32(char *addr, long data);
 long  gp_getb32(char *addr);
 void  gp_putb32(char *addr, long data);
 
-void  gp_data_string(char *buffer);
+void  gp_date_string(char *buffer);
 
 #endif

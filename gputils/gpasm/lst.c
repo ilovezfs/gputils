@@ -76,7 +76,7 @@ void lst_init()
   state.lst.symboltable = 1;
 
   /* Determine state.startdate */
-  gp_data_string(state.lst.startdate);
+  gp_date_string(state.lst.startdate);
 
   if (state.cmd_line.macro_expand == 0){
     state.lst.expand = 1;

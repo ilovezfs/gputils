@@ -1,3 +1,8 @@
+2003-07-07 Craig Franklin <craigfranklin@comcast.net>
+  * Changed extension of gplink object output from ".o" to ".out"
+  * Fixed error in RES directive when used for data sections.
+  * Fixed typo in gp_date_string.
+
 2003-06-28 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.11.5 Released.
   * Fixed byte count when RES directive is used in 18xx data sections.

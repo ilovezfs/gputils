@@ -126,7 +126,7 @@ gp_putb32(char *addr, long data)
 }
 
 void
-gp_data_string(char *buffer)
+gp_date_string(char *buffer)
 {
   time_t now;
   struct tm *now_tm;
