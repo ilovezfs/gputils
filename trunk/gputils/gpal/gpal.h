@@ -24,6 +24,8 @@ Boston, MA 02111-1307, USA.  */
 
 #define GPAL_VERSION_STRING ("gpal-" VERSION " pre-alpha")
 
+#define GPAL_DEFAULT_LIB ("work.a")
+
 #ifdef STDC_HEADERS
 #include <stdarg.h>
 #endif
@@ -65,6 +67,8 @@ extern struct gpal_state {
     gp_boolean udata_addr_valid;	/* is udata address valid? */
   } section;
   struct symbol_table
+    *modules,				/* Table of modules */
+    *publics,				/* Table of publics */
     *global,				/* Base of Global symbols */
     *top,				/* Top of Global symbols */
     *type;				/* Symbol Types */
@@ -82,7 +86,6 @@ extern struct gpal_state {
 
 struct source_context {
   char *name;
-  enum source_type type;
   int file_id;
   FILE *f;
   struct yy_buffer_state *yybuf;

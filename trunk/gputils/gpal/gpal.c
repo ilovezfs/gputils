@@ -27,9 +27,11 @@ Boston, MA 02111-1307, USA.  */
 #include "scan.h"
 #include "analyze.h"
 
+int yyparse(void);
+
 struct gpal_state state;
 
-int yyparse(void);
+static gp_boolean lib_exists = false;
 
 static gp_linked_list *last_path;
 
@@ -119,14 +121,43 @@ static tree *last_node;
 void
 add_entity(tree *node)
 {
+  struct symbol *sym;
+  tree *def;
 
-  if (state.root == NULL) {
-    state.root = node;
-    last_node = node;
+  if (FILE_TYPE(node) == source_module) {
+    sym = get_symbol(state.modules, FILE_NAME(node));
+  } else if (FILE_TYPE(node) == source_with) {
+    sym = get_symbol(state.publics, FILE_NAME(node));
   } else {
-    node->prev = last_node;
-    last_node->next = node;
-    last_node = node;
+    assert(0);
+  }
+  
+  if (sym == NULL) {
+    if (state.root == NULL) {
+      state.root = node;
+      last_node = node;
+    } else {
+      node->prev = last_node;
+      last_node->next = node;
+      last_node = node;
+    }
+    if (FILE_TYPE(node) == source_module) {
+      sym = add_symbol(state.modules, FILE_NAME(node));
+    } else if (FILE_TYPE(node) == source_with) {
+      sym = add_symbol(state.publics, FILE_NAME(node));
+    }
+    if (sym) {
+      annotate_symbol(sym, node);
+    } else {
+      analyze_error(node, "unknown public or module %s", FILE_NAME(node));
+    }
+  } else {
+    def = get_symbol_annotation(sym);
+    analyze_error(node,
+                  "redefinition of %s,\n\talso defined in %s:%i:",
+                  FILE_NAME(node),
+                  get_file_name(def->file_id),
+                  def->line_number);
   }
 
 }
@@ -329,8 +360,10 @@ process_args( int argc, char *argv[])
 }
 
 static void
-compile(void)
+compile(tree *module)
 {
+  state.basefilename = FILE_NAME(module);
+
   /* create the global symbol table that is case insensitive */
   state.global = push_symbol_table(NULL, 1);
   
@@ -341,9 +374,6 @@ compile(void)
   state.type = push_symbol_table(NULL, 1);
   
   add_type_prims();  
-  
-  init_nodes();
-  state.root = NULL;
 
   /* initialize the compile */
   state.section.code = NULL;
@@ -353,31 +383,14 @@ compile(void)
   state.section.udata = NULL;
   state.section.udata_addr = 0;
   state.section.udata_addr_valid = false;
- 
-  /* open and parse the source public file */
-  state.src = NULL;
-  open_src(state.basefilename, source_public);
-  if (state.src)
-    yyparse();
-
-  /* open input file */
-  open_src(state.srcfilename, source_module);
-
-  /* parse the input file */
-  yyparse();
 
   /* check for semantic errors and write the code, if there are no errors */
-  if (!gp_num_errors) {
-    analyze();
-  }
+  analyze(module);
 
   /* destory symbol table for the current module */
   state.top = pop_symbol_table(state.top);
   state.global = pop_symbol_table(state.global);
   state.type = pop_symbol_table(state.type);
-
-  /* free all the memory */
-  free_nodes();
 
   if (!gp_num_errors) {
     if (state.compile_only == true) {
@@ -391,7 +404,7 @@ compile(void)
 }
 
 static void
-assemble(gp_boolean debug_info)
+assemble(void)
 {
   char command[BUFSIZ];
 
@@ -403,11 +416,7 @@ assemble(gp_boolean debug_info)
     exit(1);
   }
 
-  strcpy(command, "gpasm -c ");
-
-  if (debug_info) {
-    strcat(command, "-g ");
-  }
+  strcpy(command, "gpasm -c -g ");
 
   if (gp_quiet) {
     strcat(command, "-q ");
@@ -434,6 +443,26 @@ assemble(gp_boolean debug_info)
   return;
 }
 
+static void
+check_lib(void)
+{
+  enum gp_coff_type type;
+
+  if (state.outfilename == NULL) {
+    type = gp_identify_coff_file(state.outfilename);
+  } else {
+    type = gp_identify_coff_file(GPAL_DEFAULT_LIB);
+  }
+
+  if (type == archive_file) {
+    lib_exists = true;
+  } else {
+    lib_exists = false;
+  }
+  
+  return;
+}
+
 /* Either link or archive the objects */
 
 static void
@@ -452,7 +481,12 @@ combine_output(void)
     return;
 
   if (state.archive == true) {
-    strcpy(command, "gplib -c ");
+    check_lib();
+    if (lib_exists) {
+      strcpy(command, "gplib -r ");
+    } else {
+      strcpy(command, "gplib -c ");
+    }
   } else {
     strcpy(command, "gplink ");
   }
@@ -468,8 +502,8 @@ combine_output(void)
 
   if (state.outfilename == NULL) {
     if (state.archive == true) {
-      gp_message("using \"library.a\" for archive name");
-      strcat(command, "library.a ");
+      strcat(command, GPAL_DEFAULT_LIB);
+      strcat(command, " ");
     }
   } else {
     if (state.archive == false) {
@@ -479,13 +513,16 @@ combine_output(void)
     strcat(command, " ");
   }
 
-  list = state.path;
-  while(list) {
-    strcat(command, "-I ");    
-    strcat(command, gp_list_get(list)); 
-    strcat(command, " ");
-    list = list->next;
-  }  
+  
+  if (state.archive == false) {
+    list = state.path;
+    while(list) {
+      strcat(command, "-I ");    
+      strcat(command, gp_list_get(list)); 
+      strcat(command, " ");
+      list = list->next;
+    }  
+  }
   
   list = state.file;
   while(list) {
@@ -540,47 +577,44 @@ main(int argc, char *argv[])
 {
   extern char *optarg;
   extern int optind;
-  char *pc;
   gp_linked_list *list;
   struct file_struct *file_data;
+  tree *node;
 
   init();
   process_args(argc, argv);
 
+  init_nodes();
+  state.root = NULL;
+
+  /* create the symbol tables for the modules and publics */ 
+  state.modules = push_symbol_table(NULL, 1);
+  state.publics = push_symbol_table(NULL, 1);
+
   for ( ; optind < argc; optind++) {
+    /* open input file */
+    state.src = NULL;
     state.srcfilename = argv[optind];
-    state.basefilename = strdup(state.srcfilename);
-    pc = strrchr(state.basefilename, '.');
-    if (pc) {
-      *pc++ = 0;
+    open_src(argv[optind]);
 
-      if (strcasecmp(pc, "pal") == 0) {
-        /* compile it */
-        compile();
-        assemble(true);
-      } else if (strcasecmp(pc, "pub") == 0) {
-        gp_error("public files are not compiled %s", state.srcfilename);
-      } else if (strcasecmp(pc, "asm") == 0) {
-        /* assemble it */
-        assemble(false);
-      } else if (strcasecmp(pc, "o") == 0) {
-        /* add the object to the list for linking */
-        add_file(state.basefilename, "o", false, true);
-      } else if (strcasecmp(pc, "a") == 0) {
-        /* add the archive to the list for linking */
-        add_file(state.basefilename, "a", false, true);
-      } else {
-        gp_error("unknown extension of %s", state.srcfilename);
-        exit(1);
-      }
-    } else {
-      gp_error("file name %s is missing an extension", state.srcfilename);
+    /* parse the input file */
+    if (state.src)
+      yyparse();
+
+    /* exit if there are parse errors */
+    if (gp_num_errors) {
+      exit(1);
     }
+  }
 
-    /* free the new filename */
-    if (state.basefilename)
-      free(state.basefilename);
- 
+  /* compile all the modules */
+  node = state.root;
+  while (node) {
+    if (FILE_TYPE(node) == source_module) {
+      compile(node);
+      assemble();
+    }  
+    node = node->next;
   }
 
   combine_output();
@@ -596,6 +630,9 @@ main(int argc, char *argv[])
       list = list->next;
     }    
   }
+
+  /* free all the memory */
+  free_nodes();
 
   if (gp_num_errors > 0)
     return EXIT_FAILURE;

@@ -1441,6 +1441,8 @@ analyze_preprocess(tree *cond, long int func_ptr)
   return;
 }
 
+static void analyze_public(char *public_name);
+
 static void
 analyze_module(tree *current)
 {
@@ -1510,6 +1512,9 @@ analyze_module(tree *current)
                       "only function definitions are allowed in a module");
       }
       break;
+    case node_with:
+      analyze_public(WITH_NAME(current));
+      break;
     default:
       assert(0);
     }
@@ -1520,11 +1525,27 @@ analyze_module(tree *current)
 }
 
 static void
-analyze_public(tree *current)
+analyze_public(char *public_name)
 {
+  tree *current = NULL;
   char *name;
   char *alias;
   struct variable *var;
+  struct symbol *sym;
+  tree *public = NULL;
+  tree *last_module = NULL;
+
+  sym = get_symbol(state.publics, public_name);
+  if (sym) {
+    public = get_symbol_annotation(sym);
+    assert(public != NULL);
+    last_module = state.module;
+    state.module = public;
+    current = FILE_BODY(public);
+  } else {
+    analyze_error(current, "unknown public %s", public_name);
+    return;
+  }
 
   while (current) {
     switch (current->tag) {
@@ -1649,11 +1670,16 @@ analyze_public(tree *current)
       }
 
       break;
+    case node_with:
+      analyze_public(WITH_NAME(current));
+      break;
     default:
       assert(0);
     }
     current = current->next;
   }
+
+  state.module = last_module;
 
   return;
 }
@@ -1683,6 +1709,8 @@ analyze_module_contents(tree *current)
     case node_func:
       analyze_procedure(current, 1);
       break;
+    case node_with:
+      break;
     default:
       assert(0);
     }
@@ -1692,42 +1720,48 @@ analyze_module_contents(tree *current)
   return;
 }
 
+/* reset all of the publics to far, allow pragmas to make some near */
+
 void
-analyze(void)
+analyze_setfar(void)
 {
-  tree *current;
-  tree *module = NULL;
-  gp_boolean found_module = false;
+  tree *node;
+
+  node = state.root;
+  while (node) {
+    if (FILE_TYPE(node) == source_with) {
+      FILE_CODE(node) = storage_far;
+      FILE_UDATA(node) = storage_far;
+    }  
+    node = node->next;
+  }
+}
+
+void
+analyze(tree *module)
+{
+  struct symbol *sym;
+  tree *public = NULL;
 
   generating_function = false;
   found_return = false;
   return_size = size_unknown;
 
-  /* add all procedures and data to the global symbol table */
-  current = state.root;
-  while (current) {
-    if (FILE_TYPE(current) == source_module) {
-      if (found_module) {
-        analyze_error(current, "found multiple modules in one file");
-      } else {
-        state.module = current;
-        analyze_module(FILE_BODY(current));
-        module = current;
-      }
-      found_module = true;
-    }
-    current = current->next;
+  analyze_setfar();
+
+  /* locate the public for the module being compiled */ 
+  sym = get_symbol(state.publics, state.basefilename);
+  if (sym) {
+    public = get_symbol_annotation(sym);
+    FILE_TYPE(public) = source_public;
   }
 
-  /* add all prototypes and externs to global symbol table */
-  current = state.root;
-  while (current) {
-    if ((FILE_TYPE(current) == source_public) ||
-        (FILE_TYPE(current) == source_with)) {
-      state.module = current;
-      analyze_public(FILE_BODY(current));
-    }
-    current = current->next;
+  /* add all procedures and data to the global symbol table */
+  state.module = module;
+  analyze_module(FILE_BODY(module));
+
+  if (public) {
+    analyze_public(state.basefilename);
   }
 
   if (!state.processor_chosen) {
@@ -1738,8 +1772,6 @@ analyze(void)
   /* don't bother generating code if there are errors */
   if (gp_num_errors)
     return;
-
-  state.module = module;
 
   /* open the output file */
   codegen_init_asm();
@@ -1752,6 +1784,11 @@ analyze(void)
   analyze_declarations();
   analyze_constants();
   codegen_close_asm();
+
+  if (public) {
+    /* return the public to with */
+    FILE_TYPE(public) = source_with;
+  }
 
   return;
 }

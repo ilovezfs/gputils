@@ -1,3 +1,6 @@
+2004-07-18 Craig Franklin <craigfranklin@comcast.net>
+  * Allow multiple modules and publics in one gpal file.
+
 2004-07-17 Craig Franklin <craigfranklin@comcast.net>
   * Added _stack_end symbol to gplink to simplify downward growing stacks.
 

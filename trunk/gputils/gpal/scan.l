@@ -165,41 +165,24 @@ search_pathes(struct source_context *new, char *name)
   return; 
 }
 
-void open_src(char *name, enum source_type type)
+void open_src(char *name)
 {
   extern FILE *yyin;
   struct source_context *new = malloc(sizeof(*new));
   char *file_name;
-  int length;
 
-  if ((type == source_with) || (type == source_public)) {
-    /* construct the public file name */
-    length = strlen(name);
-    length += strlen(".pub") + 1;
-    file_name = malloc(length);
-    strcpy(file_name, name);
-    strcat(file_name, ".pub");
-  } else {
-    file_name = strdup(name);
-  }
+  file_name = strdup(name);
 
   if (state.src)
     state.src->yybuf = YY_CURRENT_BUFFER;
 
   new->f = fopen(file_name, "rt");
   if (new->f == NULL) {
-    if (type == source_public) {
-      /* source files aren't required to have public files */
-      free(new);
-      free(file_name);
-      return;
-    } else {
-      /* search the include pathes */
-      search_pathes(new, file_name);
-      if (new->f == NULL) {
-        perror(file_name);
-        exit(1);
-      }
+    /* search the include pathes */
+    search_pathes(new, file_name);
+    if (new->f == NULL) {
+      perror(file_name);
+      exit(1);
     }
   } else {
     new->name = file_name;
@@ -211,7 +194,6 @@ void open_src(char *name, enum source_type type)
     yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
   }
 
-  new->type = type;
   new->file_id = add_file(file_name, NULL, false, false);
   new->line_number = 1;
   new->prev = state.src;
