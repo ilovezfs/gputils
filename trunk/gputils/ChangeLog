@@ -1,3 +1,6 @@
+2004-11-05 Robert Kaes <rjkaes@users.sourceforge.net>
+  * Improved gpal 16e code generator.
+
 2004-10-29 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Fixed bugs in gpal banksels, code generation, and optimizer.
 

@@ -305,11 +305,9 @@ void gp_dump_processor_list(gp_boolean list_all, enum proc_class class)
   int longest = 0;
   
   for(i = 0; i < NUM_PICS; i++) {
-    if (list_all || (pics[i].class == class)) { 
-      length = strlen(pics[i].names[FAVORITE]);
-      if (length > longest)
-        longest = length;
-    }
+    length = strlen(pics[i].names[FAVORITE]);
+    if (length > longest)
+      longest = length;
   }
 
   for(i = 0; i < NUM_PICS; i++) {

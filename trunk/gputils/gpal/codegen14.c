@@ -290,6 +290,7 @@ move_to_working(enum size_tag size)
   case 2:
     codegen_write_asm("clrf %s + 1", WORKING_LABEL);
     codegen_write_asm("movwf %s", WORKING_LABEL);
+    codegen_write_asm("xorlw 0"); /* set the Z flag properly */
   }
 
 }
