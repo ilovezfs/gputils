@@ -110,8 +110,8 @@ int endian_swap_word(int x)
  * packed. When two bytes are packed, then the word is emitted.
  */
 
-static int packed_hi_lo = 0;
-static int packed_byte  = 0;
+int packed_hi_lo = 0;
+static int packed_byte = 0;
 
 static void emit_packed(unsigned int value, unsigned int mode)
 {
