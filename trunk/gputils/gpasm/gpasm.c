@@ -159,6 +159,22 @@ void process_args( int argc, char *argv[])
   int usage = 0;
   char *pc;
 
+  /* Scan through the options for the -c flag.  It must be set before the 
+     defines are read */
+  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
+    switch (c) {
+    case 'c':
+      state.case_insensitive = 1;
+      break;
+    }
+  }
+
+  /* reset the getopt_long index for the next call */
+  optind = 1;
+
+  /* initalize the defines table for command line argruments */
+  state.stDefines = push_symbol_table(NULL, state.case_insensitive);
+
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
     switch (c) {
     case '?':
@@ -171,20 +187,12 @@ void process_args( int argc, char *argv[])
       break;
     case 'c':
       state.case_insensitive = 1;
-      if (state.stDefines != NULL) {
-        fprintf(stderr, "The -c option must be called before the -d option.\n");
-      }
       break;
     case 'D':
     case 'd':
       if ((optarg != NULL) && (strlen(optarg) > 0)) {
 	struct symbol *sym;
 	char *lhs, *rhs;
-
-        /* the Defines symbol table is not yet defined*/
-        if (state.stDefines == NULL) {
-          state.stDefines = push_symbol_table(NULL, state.case_insensitive);
-        }
 
 	lhs = strdup(optarg);
 	rhs = strchr(lhs, '=');
@@ -280,11 +288,6 @@ int assemble(void)
     pc = strrchr(state.basefilename, '.');
     if (pc)
       *pc = 0;
-  }
-
-  /* the Defines symbol table is not yet defined*/
-  if (state.stDefines == NULL) {
-    state.stDefines = push_symbol_table(NULL, state.case_insensitive);
   }
 
   /* Builtins are always case insensitive */
