@@ -25,11 +25,15 @@ Boston, MA 02111-1307, USA.  */
 int enforce_arity(int arity, int must_be);
 int enforce_simple(struct pnode *p);
 int list_length(struct pnode *L);
+
 int can_evaluate_concatenation(struct pnode *p);
-int can_evaluate(struct pnode *p);
 char *evaluate_concatenation(struct pnode *p);
+char *maybe_evaluate_concat(struct pnode *p);
+
+int can_evaluate(struct pnode *p);
 gpasmVal evaluate(struct pnode *p);
 gpasmVal maybe_evaluate(struct pnode *p);
+
 int count_reloc(struct pnode *p);
 gpasmVal reloc_evaluate(struct pnode *p, unsigned short type);
 int eval_fill_number(struct pnode *p);

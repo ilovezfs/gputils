@@ -1324,18 +1324,16 @@ static gpasmVal do_extern(gpasmVal r,
 		          int arity,
 		          struct pnode *parms)
 {
-  struct pnode *p;
+  char *p;
   state.lst.line.linetype = dir;
   
   if (state.mode == absolute) {
     gperror(GPE_OBJECT_ONLY, NULL);
   } else {
     for (; parms; parms = TAIL(parms)) {
-      p = HEAD(parms);
-      if (p->tag == symbol) {
-        set_global(p->value.symbol, 0, PERMANENT, gvt_extern);
-      } else {
-        gperror(GPE_ILLEGAL_ARGU, NULL);
+      p = maybe_evaluate_concat(HEAD(parms));
+      if (p) {
+        set_global(p, 0, PERMANENT, gvt_extern);
       }
     }
   }
@@ -1398,7 +1396,7 @@ static gpasmVal do_global(gpasmVal r,
 		          int arity,
 		          struct pnode *parms)
 {
-  struct pnode *p;
+  char *p;
   char buf[BUFSIZ];
   struct symbol *s;
   struct variable *var;
@@ -1409,14 +1407,14 @@ static gpasmVal do_global(gpasmVal r,
     gperror(GPE_OBJECT_ONLY, NULL);
   } else {
     for (; parms; parms = TAIL(parms)) {
-      p = HEAD(parms);
-      if (p->tag == symbol) {
-        s = get_symbol(state.stTop, p->value.symbol);
+      p = maybe_evaluate_concat(HEAD(parms));
+      if (p) {
+        s = get_symbol(state.stTop, p);
         if (s == NULL) {
           snprintf(buf,
                    sizeof(buf),
                    "Symbol not previously defined (%s).",
-                   p->value.symbol);
+                   p);
           gperror(GPE_NOSYM, buf);    
 	} else {
           var = get_symbol_annotation(s);
@@ -1424,7 +1422,7 @@ static gpasmVal do_global(gpasmVal r,
             snprintf(buf,
                      sizeof(buf),
                      "Symbol not assigned a value (%s).",
-                     p->value.symbol);
+                     p);
             gpwarning(GPW_UNKNOWN, buf);    
           } else {
             if ((var->previous_type == gvt_address) || 
@@ -1438,7 +1436,7 @@ static gpasmVal do_global(gpasmVal r,
               snprintf(buf,
                        sizeof(buf),
                        "Operand must be an address label (%s).", 
-                       p->value.symbol);
+                       p);
               gperror(GPE_MUST_BE_LABEL, buf);    
             } 
           }         
