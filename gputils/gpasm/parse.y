@@ -322,6 +322,7 @@ line:
 		annotate_symbol(mac, state.mac_head);
 		h = state.mac_head;
 		h->line_number = state.src->line_number;
+		h->coff_number = state.src->coff_number;
 	      }
 	      h->pass = state.pass;
  	      

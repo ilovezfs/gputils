@@ -20,17 +20,8 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gplib.h"
-#include "gpsymbol.h"
-#include "gparchive.h"
-#include "gpcofflink.h"
-
-/* FIXME:  It seems that Mchip lib files do not use a symbol table as the
-first entry in the library.  Mplib does check to make sure the same symbol
-name doesn't appear more than once.  For now, gplib will do the same.  In
-the future, a symbol table should help reduce the link time */ 
-
-/* FIXME:  check for duplicate symbols */
 
 struct gplib_state state = {
   ar_null,            /* default mode, do nothing */              
@@ -42,8 +33,6 @@ struct gplib_state state = {
 struct symbol_table *definition_tbl = NULL;
 struct symbol_table *symbol_index = NULL;
 
-
-/* FIXME: replace with functions from gpmessage.c */
 void gplib_error(char *messg)
 {
   state.num.errors++;
@@ -62,6 +51,23 @@ void gplib_warning(char *messg)
   return;
 }
 
+/* called by the libgputils */
+void
+_duplicate_symbol(char *name, gp_object_type *first, gp_object_type *second)  
+{
+  char buffer[BUFSIZ];
+
+  sprintf(buffer, 
+          "duplicate symbol \"%s\" defined in \"%s\" and \"%s\"", 
+          name,
+          first->filename,
+          second->filename);
+
+  gplib_error(buffer);
+
+  return;
+}
+
 void select_mode(enum lib_modes mode)
 {
   if (state.mode == ar_null) { 
@@ -73,18 +79,18 @@ void select_mode(enum lib_modes mode)
 
 void show_usage(void)
 {
-  printf("Usage: gplib <options> library <member>\n");
-  printf("Where <options> are:\n");
-  printf("  -c, --create               Create a new library \n");
-  printf("  -d, --delete               Delete member from library \n");
-  printf("  -h, --help                 Show this usage message \n");
-  printf("  -n, --no-index             Don't add symbol index \n");
-  printf("  -q, --quiet                Quiet mode \n");
-  printf("  -r, --replace              Add or replace member from library \n");
-  printf("  -s, --symbols              List global symbols in library \n");
-  printf("  -t, --list                 List members in library \n");
-  printf("  -v, --version              Show version \n");
-  printf("  -x, --extract              Extract member from library \n");
+  printf("Usage: gplib [options] library [member]\n");
+  printf("Options: [defaults in brackets after descriptions]\n");
+  printf("  -c, --create               Create a new library.\n");
+  printf("  -d, --delete               Delete member from library.\n");
+  printf("  -h, --help                 Show this usage message.\n");
+  printf("  -n, --no-index             Don't add symbol index.\n");
+  printf("  -q, --quiet                Quiet mode.\n");
+  printf("  -r, --replace              Add or replace member from library.\n");
+  printf("  -s, --symbols              List global symbols in library.\n");
+  printf("  -t, --list                 List members in library.\n");
+  printf("  -v, --version              Show version.\n");
+  printf("  -x, --extract              Extract member from library.\n");
   printf("\n");
   printf("Report bugs to:\n");
   printf("%s\n", BUG_REPORT_URL);
@@ -119,10 +125,11 @@ int main(int argc, char *argv[])
   int update_archive = 0;
   char buffer[BUFSIZ];
   int  no_index = 0;
+  gp_archive_type *object = NULL;
 
-  /* FIXME: are the symbols case insensitive? */
-  definition_tbl = push_symbol_table(NULL, 1);
-  symbol_index = push_symbol_table(NULL, 1);
+  /* symbols are case sensitive */
+  definition_tbl = push_symbol_table(NULL, 0);
+  symbol_index = push_symbol_table(NULL, 0);
 
   while ((c = GETOPT_FUNC) != EOF) {
     switch (c) {
@@ -170,7 +177,7 @@ int main(int argc, char *argv[])
     /* some operations require object filenames or membernames */
     for ( ; optind < argc; optind++) {
       state.objectname[state.numobjects] = argv[optind];
-      if (state.numobjects >= MAX_NAMES) {
+      if (state.numobjects >= MAX_OBJ_NAMES) {
         gplib_error("exceeded maximum number of object files");
         break;
       }
@@ -185,7 +192,8 @@ int main(int argc, char *argv[])
     usage = 1;
 
   /* User did not provide object names */
-  if ((state.mode != ar_list) && (state.mode != ar_symbols) && 
+  if ((state.mode != ar_list) && 
+      (state.mode != ar_symbols) && 
       (state.numobjects == 0))
     usage = 1;
 
@@ -195,26 +203,28 @@ int main(int argc, char *argv[])
 
   /* if we are not creating a new archive, we have to read an existing one */
   if (state.mode != ar_create) {
-    state.archive = read_coff_archive(state.filename, &buffer[0]);
-    if (state.archive == NULL) {
-      gplib_error(&buffer[0]);
-      return 1;
+    if (gp_identify_coff_file(state.filename) != archive_file) {
+      sprintf(buffer, "\"%s\" is not a valid archive file", state.filename);
+      gplib_error(buffer);
+      exit(1);
+    } else {
+      state.archive = gp_archive_read(state.filename);
     }
   }
-
-  /* FIXME: Process the options when argv's read, like gplink does.  */
     
   /* process the option */
   i = 0;
   switch (state.mode) {
   case ar_create: 
+  case ar_replace:
     while (i < state.numobjects) {
-      state.archive = add_archive_member(state.archive, 
-                                         state.objectname[i],
-                                         &buffer[0]);
-      if (state.archive == NULL) {
-        gplib_error(&buffer[0]);
-        break;      
+      if (gp_identify_coff_file(state.objectname[i]) != object_file) {
+        sprintf(buffer, "\"%s\" is not a valid object file", state.objectname[i]);
+        gplib_error(buffer);
+        break;
+      } else {
+        state.archive = gp_archive_add_member(state.archive, 
+                                              state.objectname[i]);
       }
       i++;
     }
@@ -223,12 +233,14 @@ int main(int argc, char *argv[])
 
   case ar_delete: 
     while (i < state.numobjects) {
-      state.archive = delete_archive_member(state.archive, 
-                                            state.objectname[i],
-                                            &buffer[0]);
-      if (state.archive == NULL) {
-        gplib_error(&buffer[0]);
-        break;      
+      object = gp_archive_find_member(state.archive, state.objectname[i]);
+      if (object == NULL) {
+        sprintf(buffer, "object \"%s\" not found", state.objectname[i]);  
+        gplib_error(buffer);
+        break;
+      } else {
+        state.archive = gp_archive_delete_member(state.archive, 
+                                                 state.objectname[i]);
       }
       i++;
     }
@@ -237,37 +249,33 @@ int main(int argc, char *argv[])
 
   case ar_extract:
     while (i < state.numobjects) {
-      if (extract_archive_member(state.archive, 
-                                 state.objectname[i],
-                                 &buffer[0])) {
-        gplib_error(&buffer[0]);
+      object = gp_archive_find_member(state.archive, state.objectname[i]);
+      if (object == NULL) {
+        sprintf(buffer, "object \"%s\" not found", state.objectname[i]);  
+        gplib_error(buffer);
         break;
+      } else {
+        if (gp_archive_extract_member(state.archive, state.objectname[i])) {
+          sprintf(buffer, "can't write file \"%s\"", state.objectname[i]);  
+          gplib_error(buffer);
+          break;
+        }
       }
       i++;
     } 
     break;
 
   case ar_list:
-    list_archive_members(state.archive);
+    gp_archive_list_members(state.archive);
     break;
 
-  case ar_replace:
-    while (i < state.numobjects) {
-      state.archive = add_archive_member(state.archive, 
-                                         state.objectname[i],
-                                         &buffer[0]);
-      if (state.archive == NULL) {
-        gplib_error(&buffer[0]);
-        break;      
-      }
-      i++;
-    }
-    update_archive = 1;
-    break; 
-
   case ar_symbols:
-    gp_archive_read_index(symbol_index, state.archive);
-    gp_archive_print_table(symbol_index);
+    if (gp_archive_have_index(state.archive) == 0) {
+      gplib_error("this archive has no symbol index");
+    } else {
+      gp_archive_read_index(symbol_index, state.archive);
+      gp_archive_print_table(symbol_index);
+    }
     break;
 
   case ar_null:
@@ -281,21 +289,17 @@ int main(int argc, char *argv[])
   }
 
   /* check for duplicate symbols */
-  if (gp_archive_make_index(state.archive, definition_tbl, &buffer[0])) {
-    gplib_error(&buffer[0]);
-  }
+  gp_archive_make_index(state.archive, definition_tbl);
 
   /* add the symbol index to the archive */      
   if ((update_archive == 1) && (no_index == 0)) {
-      state.archive = gp_archive_add_index(definition_tbl, 
-                                           state.archive, 
-					   &buffer[0]);
+    state.archive = gp_archive_add_index(definition_tbl, state.archive);
   }
 
   /* write the new or modified archive */
   if ((update_archive == 1) && (state.num.errors == 0)) {
-    if (write_archive(state.archive, state.filename, &buffer[0]))
-      gplib_error(&buffer[0]);
+    if (gp_archive_write(state.archive, state.filename))
+      gplib_error("can't write the new archive file");
   }
 
   if (state.num.errors > 0)

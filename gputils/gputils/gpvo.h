@@ -29,15 +29,17 @@ Boston, MA 02111-1307, USA.  */
 #define PRINT_SECTIONS    1 << 3
 #define PRINT_SYMTBL      1 << 4
 #define PRINT_BINARY      1 << 5
-#define PRINT_AUXREC      1 << 6
+#define PRINT_STRTBL      1 << 6
 
 extern struct gpvo_state {
-  enum { pic12, pic14 } processor;  /* processor family */
+  enum pic_processor processor;	/* selected processor */
+  char *processor_name;		/* processor name */
+  enum proc_class class;	/* processor class */
   int quiet;			/* suppress outputs when 1 */ 
   int dump_flags; 		/* when bit set then print that section */	
   char *filename;		/* object file name */
-  struct objectfile *object;    /* formatted object file */
-  struct binaryfile *file;      /* binary object file */
+  gp_object_type *object;	/* formatted object file */
+  gp_binary_type *file;		/* binary object file */
 } state;
 
 #endif

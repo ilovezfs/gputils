@@ -366,13 +366,17 @@ void free_files(void)
 
 void hex_init(void)
 {
-  int num_errors;
 
-  /* FIXME: Must delete hex file when suppressed.  Find a better way. */
-  if (state.codfile == suppress)
-    num_errors = 1;
-  else
-    num_errors = state.num.errors;  
+  if (state.hexfile == suppress) {
+    /* Must delete hex file when suppressed. */
+    writehex(state.basefilename, 
+             state.i_memory, 
+             state.hex_format, 
+             1,
+             0, 
+             state.dos_newlines);
+    return;
+  }
 
   if (check_writehex(state.i_memory, state.hex_format)) {
     gperror(GPE_IHEX,NULL); 
@@ -390,7 +394,7 @@ void hex_init(void)
     }
   
     if (writehex(state.basefilename, state.i_memory, 
-                 state.hex_format, num_errors,
+                 state.hex_format, state.num.errors,
                  byte_words, state.dos_newlines)) {
       gperror(GPE_UNKNOWN,"Error generating hex file");
     }

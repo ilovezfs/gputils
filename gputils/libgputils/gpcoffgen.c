@@ -21,29 +21,38 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
-
-#if 0
-
-/* FIXME: Use it or make it global to remove the warning */
-
-static short 
-_get_16(char *addr)
+void 
+_fput_16(short data, FILE *fp) 
 {
-  return (addr[1] << 8) | addr[0];
-}
-
-static void 
-_put_16(char *addr, short data)
-{
-  addr[1] = (data >> 8) & 0xff;
-  addr[0] = data & 0xff;
+  fputc((int)(data & 255), fp);
+  fputc((int)((data >> 8) & 255), fp);
 
   return;
 }
 
-#endif
+void 
+_fput_32(long data, FILE *fp) 
+{
+  fputc((int)(data & 255), fp);
+  fputc((int)((data >> 8) & 255), fp);
+  fputc((int)((data >> 16) & 255), fp);
+  fputc((int)((data >> 24) & 255), fp);
 
-static long 
+  return;
+}
+
+short 
+_get_16(char *addr)
+{
+  short value;
+  
+  value  = (unsigned char)addr[0];
+  value |= (unsigned char)addr[1] << 8;
+  
+  return value;
+}
+
+long 
 _get_32(char *addr)
 {
   long value;
@@ -56,7 +65,16 @@ _get_32(char *addr)
   return value;
 }
 
-static void 
+void 
+_put_16(char *addr, short data)
+{
+  addr[1] = (data >> 8) & 0xff;
+  addr[0] = data & 0xff;
+
+  return;
+}
+
+void 
 _put_32(char *addr, long data)
 {
   addr[0] = data & 0xff;
@@ -373,6 +391,30 @@ gp_coffgen_findsymbol(gp_object_type *object, char *name)
 }
 
 gp_symbol_type *
+gp_coffgen_findsymbolnum(gp_object_type *object, unsigned int number)
+{
+  gp_symbol_type *current = NULL;
+  gp_symbol_type *found = NULL;
+  unsigned int count = 0;
+
+  if (object == NULL)
+    return NULL;
+  
+  current = object->sym_table;
+
+  while (current != NULL) {
+    if (count == number) {
+      found = current;
+      break;
+    }
+    count++;
+    current = current->next;
+  }
+
+  return found;
+}
+
+gp_symbol_type *
 gp_coffgen_addsymbol(gp_object_type *object, char *name, int num_aux)
 {
   gp_symbol_type *new = NULL;
@@ -463,26 +505,6 @@ gp_coffgen_free(gp_object_type *object)
   free(object);
 
   return 0;
-}
-
-static void 
-_fput_16 (int data, FILE *fp) 
-{
-  fputc((int)(data & 255), fp);
-  fputc((int)((data >> 8) & 255), fp);
-
-  return;
-}
-
-static void 
-_fput_32(long data, FILE *fp) 
-{
-  fputc((int)(data & 255), fp);
-  fputc((int)((data >> 8) & 255), fp);
-  fputc((int)((data >> 16) & 255), fp);
-  fputc((int)((data >> 24) & 255), fp);
-
-  return;
 }
 
 /* write the file header */

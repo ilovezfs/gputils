@@ -23,13 +23,13 @@ Boston, MA 02111-1307, USA.  */
 
 struct objectlist {
   char              *name;
-  struct objectfile *object;
+  gp_object_type    *object;
   struct objectlist *next;
 };
 
 struct archivelist {
   char                *name;
-  struct coff_archive *archive;
+  gp_archive_type     *archive;
   struct archivelist  *next;
 };
 
@@ -63,15 +63,9 @@ struct linker_section {
   int next_address;
 };
 
-struct coffsymbol {
-  struct syment     *coffsym;  /* the coff symbol */
-  struct objectfile *file;     /* the object file the symbol is defined in */
-  char              *filename; /* the name of the object file */
-};
-
 int gp_link_add_symbols(struct symbol_table *,
                         struct symbol_table *missing,
-                        struct objectfile *object);
+                        gp_object_type *object);
 
 void gp_link_reloc(struct objectlist *list,
                    struct symbol_table *sections,
@@ -80,6 +74,8 @@ void gp_link_reloc(struct objectlist *list,
 void gp_link_patch(struct objectlist *list,
                    struct symbol_table *symbols);
 
-struct objectfile *gp_link_combine(struct objectlist *list);
+gp_object_type *gp_link_combine(struct objectlist *list, 
+                                char *name, 
+                                enum pic_processor processor);
 
 #endif

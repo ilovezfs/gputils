@@ -19,6 +19,8 @@ the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
+
+#include "libgputils.h"
 #include "gpdasm.h"
 
 char *processor_name = NULL;
@@ -135,8 +137,8 @@ void dasm(MemBlock *memory)
 
 void show_usage(void)
 {
-  printf("Usage: gpdasm <options> <filename>\n");
-  printf("Where <options> are:\n");
+  printf("Usage: gpdasm [options] file\n");
+  printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -i, --hex-info                 Information on input hex file.\n");
   printf("  -l, --list-chips               List supported processors.\n");

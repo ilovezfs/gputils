@@ -37,8 +37,12 @@ void coff_init(void)
     state.obj.enabled = 0;
     unlink(state.objfilename);
   } else {
-    state.obj.object = gp_coffgen_init(state.objfilename, state.processor);
-    state.obj.enabled = 1;
+    if (state.processor_chosen == 0) {
+      state.obj.enabled = 0;
+    } else {
+      state.obj.object = gp_coffgen_init(state.objfilename, state.processor);
+      state.obj.enabled = 1;
+    }
   }
      
   state.obj.section = NULL;
@@ -183,22 +187,22 @@ coff_linenum(int emitted)
   for (i = 0; i < emitted; i++) {
      
     new = gp_coffgen_addlinenum(state.obj.section);
-    new->linenumber.l_lnno  = state.src->line_number;
-    new->linenumber.l_paddr = origin + i;
+    new->linenumber.l_srcndx = state.src->coff_number;
+    new->linenumber.l_lnno   = state.src->line_number;
+    new->linenumber.l_paddr  = origin + i;
   }
 
   return;
 }
 
-/* add a symbol to the coff symbol table */
+/* Add a symbol to the coff symbol table.  The calling function must
+   increment the global symbol number. */
 
 void
 coff_add_sym(char *name, int value, int section, int type, int class)
 {
   gp_symbol_type *new;
   char message[BUFSIZ];
-
-  state.obj.symbol_num++;
 
   if(!state.obj.enabled)
     return;

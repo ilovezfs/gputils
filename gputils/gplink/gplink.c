@@ -19,13 +19,10 @@ the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
-#include "gpcoff.h"
+
+#include "libgputils.h"
 #include "gplink.h"
 #include "scan.h"
-#include "gpreadobj.h"
-#include "gpsymbol.h"
-#include "gparchive.h"
-#include "gpcofflink.h"
 
 /* FIXME:  Strip out all of the linker functions and place them in the 
            library.  */
@@ -73,9 +70,11 @@ void gplink_debug(char *messg)
   return;
 }
 
-void object_append(struct objectfile *file, char *name)
+void object_append(gp_object_type *file, char *name)
 {
   struct objectlist *new;
+  enum pic_processor processor;
+  char buffer[BUFSIZ];
 
   /* make the new entry */  
   new = (struct objectlist *)malloc(sizeof(*new));
@@ -83,9 +82,13 @@ void object_append(struct objectfile *file, char *name)
   new->object = file;
   new->next = NULL;
   
+  processor = gp_processor_coff_proc(file->opt_header.proc_type);
+  
   /* append the entry to the list */
   if (state.objects == NULL) {
     state.objects = new;
+    /* store the processor type from the first object file */
+    state.processor = processor;
   } else {
     struct objectlist *list = state.objects;
 
@@ -97,12 +100,18 @@ void object_append(struct objectfile *file, char *name)
       list = list->next;
     }
     list->next = new;
+    
+    if (processor != state.processor) {
+      sprintf(buffer, "processor mismatch in \"%s\"",
+              file->filename);
+      gplink_error(buffer);
+    }
   }
 
   return;
 }
 
-void archive_append(struct coff_archive *file, char *name)
+void archive_append(gp_archive_type *file, char *name)
 {
   struct archivelist *new;
 
@@ -133,16 +142,15 @@ void archive_append(struct coff_archive *file, char *name)
    Stop whenever a complete pass through the archive happens and no
    objects are added. */
 
-int scan_index(struct symbol_table *table, struct coff_archive *archive)
+int scan_index(struct symbol_table *table, gp_archive_type *archive)
 {
   struct symbol *s;
   struct symbol *m;
-  struct coff_archive *member;
-  struct objectfile *object;
+  gp_archive_type *member;
+  gp_object_type *object;
   int i;
   int num_added = 1; /* initalize to 1 so while loop can be entered */
   char *name;
-  char buffer[BUFSIZ];
   char *object_name;
 
   while (num_added != 0) {
@@ -156,20 +164,17 @@ int scan_index(struct symbol_table *table, struct coff_archive *archive)
         if (m != NULL) {
           /* Fetch the archive member, convert its binary data to an object 
 	     file, and add the object to the object list */ 
-	  member = get_symbol_annotation(m);
+          member = get_symbol_annotation(m);
           object_name = gp_archive_member_name(member);
-	  object = convert_object((unsigned char *)member->file, &buffer[0]);
-          if (object == NULL) {
-	    gplink_error(&buffer[0]);
-	  } else {
-            object_append(object, object_name);	
-            gp_link_add_symbols(state.symbol.definition, 
-	                        state.symbol.missing, 
-				object);		
-            /* The symbol tables have been modified.  Need to take another
-	       pass to make sure we get everything. */
-	    num_added++;
-	  }      
+          object = gp_convert_file(member->file);
+          object->filename = strdup(object_name);
+          object_append(object, object_name);	
+          gp_link_add_symbols(state.symbol.definition, 
+                              state.symbol.missing, 
+			      object);		
+          /* The symbol tables have been modified.  Need to take another
+	     pass to make sure we get everything. */
+          num_added++;
           free(object_name);
           /* This branch of the table has been modified. Go to the next one */
 	  break;
@@ -180,23 +185,37 @@ int scan_index(struct symbol_table *table, struct coff_archive *archive)
 
   return 0;
 }
-    
-int scan_archive(struct coff_archive *archive, char *name)
+
+/* called by the libgputils */
+void
+_duplicate_symbol(char *name, gp_object_type *first, gp_object_type *second)  
 {
   char buffer[BUFSIZ];
 
-  /* FIXME: are the symbols case insensitive? */
-  state.symbol.archive = push_symbol_table(NULL, 1);
+  sprintf(buffer, 
+          "duplicate symbol \"%s\" defined in \"%s\" and \"%s\"", 
+          name,
+          first->filename,
+          second->filename);
+
+  gplink_error(buffer);
+
+  return;
+}
+    
+int scan_archive(gp_archive_type *archive, char *name)
+{
+  char buffer[BUFSIZ];
+
+  state.symbol.archive = push_symbol_table(NULL, 0);
 
   /* If necessary, build a symbol index for the archive. */
   if (gp_archive_have_index(archive) == 0) {
     struct symbol_table *archive_tbl = NULL;
   
     archive_tbl = push_symbol_table(NULL, 1);
-    if (gp_archive_make_index(archive, archive_tbl, &buffer[0])) {
-      gplink_error(&buffer[0]);
-    }
-    archive = gp_archive_add_index(archive_tbl, archive, &buffer[0]);
+    gp_archive_make_index(archive, archive_tbl);
+    archive = gp_archive_add_index(archive_tbl, archive);
     sprintf(buffer, "\"%s\" is missing symbol index", name);
     gplink_warning(&buffer[0]);
     archive_tbl = pop_symbol_table(archive_tbl);
@@ -257,37 +276,29 @@ void build_tables(void)
 
 void gplink_open_coff(char *name)
 {
-  struct objectfile *object_file;
-  struct coff_archive *archive_file;
+  gp_object_type *object;
+  gp_archive_type *archive;
   char buffer[BUFSIZ];
   
   /* FIXME:  need to add include pathes to this search */
 
-  switch(identify_coff_file(name)) {
-  case object:
+  switch(gp_identify_coff_file(name)) {
+  case object_file:
     /* read the object */  
-    object_file = readobj(name, &buffer[0]);
-    if (object_file == NULL) {
-      gplink_error(&buffer[0]);
-    } else {
-      object_append(object_file, name);
-    }
+    object = gp_read_coff(name);
+    object_append(object, name);
     break;
-  case archive:
+  case archive_file:
     /* read the archive */  
-    archive_file = read_coff_archive(name, &buffer[0]);
-    if (archive_file == NULL) {
-      gplink_error(&buffer[0]);
-    } else {
-      archive_append(archive_file, name);
-    }
+    archive = gp_archive_read(name);
+    archive_append(archive, name);
     break;
-  case sys_err:
+  case sys_err_file:
     sprintf(&buffer[0], "can't open file \"%s\"",
             name);
     gplink_error(&buffer[0]);     
     break;
-  case unknown:
+  case unknown_file:
     sprintf(&buffer[0], "\"%s\" is not a valid coff object or archive",
             name);
     gplink_error(&buffer[0]);     
@@ -310,13 +321,13 @@ void gplink_add_path(char *path)
 
 void show_usage(void)
 {
-  printf("Usage: gplink <options> [ <object> | <library> ] \n");
-  printf("Where <options> are:\n");
+  printf("Usage: gplink [options] [object] [library] \n");
+  printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -a FMT, --hex-format FMT       Select hex file format.\n");
   printf("  -c, --object                   Output executable object file.\n");
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
-  printf("  -o FILE, --output FILE         Alternate name of hex file.\n");
+  printf("  -o FILE, --output FILE         Alternate name of output file.\n");
   printf("  -q, --quiet                    Quiet.\n");
   printf("  -s FILE, --script FILE         Linker script.\n");
   printf("  -v, --version                  Show version.\n");
@@ -350,17 +361,18 @@ int main(int argc, char *argv[])
   extern int optind;
   int c;
   int usage = 0;
+  char *pc;
 
   /* initialize */
   state.srcfilename = NULL;
   state.objects  = NULL;
   state.archives = NULL;
 
-  /* FIXME: are the symbols case insensitive? */
-  state.symbol.definition = push_symbol_table(NULL, 1);
-  state.symbol.missing = push_symbol_table(NULL, 1);
-  state.section.definition = push_symbol_table(NULL, 1);
-  state.section.logical = push_symbol_table(NULL, 1);
+  /* The symbols are case sensitive */
+  state.symbol.definition = push_symbol_table(NULL, 0);
+  state.symbol.missing = push_symbol_table(NULL, 0);
+  state.section.definition = push_symbol_table(NULL, 0);
+  state.section.logical = push_symbol_table(NULL, 0);
 
   #ifdef PARSE_DEBUG
   {
@@ -389,7 +401,10 @@ int main(int argc, char *argv[])
       gplink_add_path(optarg);
       break;
     case 'o':
-      state.basefilename = optarg;
+      strcpy(state.basefilename, optarg);
+      pc = strrchr(state.basefilename, '.');
+      if (pc)
+        *pc = 0;
       break;
     case 'q':
       state.quiet = 1;
@@ -414,6 +429,21 @@ int main(int argc, char *argv[])
   if (usage) {
     show_usage();
   }
+
+  if(state.basefilename[0] == '\0') {
+    /* set default output filename to be a.o, a.hex, a.cod, a.map */
+    strcpy(state.basefilename, "a");
+  }
+
+  /* setup output filenames */
+  strcpy(state.codfilename, state.basefilename);
+  strcat(state.codfilename, ".cod");  
+  strcpy(state.hexfilename, state.basefilename);
+  strcat(state.hexfilename, ".hex");  
+  strcpy(state.mapfilename, state.basefilename);
+  strcat(state.mapfilename, ".map");  
+  strcpy(state.objfilename, state.basefilename);
+  strcat(state.objfilename, ".o");  
 
   /* Open all objects and archives in the file list. */ 
   for ( ; optind < argc; optind++) {
@@ -444,15 +474,17 @@ int main(int argc, char *argv[])
                 state.symbol.definition); 
 
   /* create the output object file */
-  state.output = gp_link_combine(state.objects);
+  state.output = gp_link_combine(state.objects, 
+                                 state.objfilename,
+                                 state.processor);
 
   /* write output file */
   if (state.mode == _object) {
     /* write the executable object in memory */
-
+    gp_coffgen_updateptr(state.output);
+    gp_coffgen_writecoff(state.output);
   } else if (state.mode == _hex) {
     /* convert the executable object into a hex file */
-
 
     /* convert the executable object into a cod file */
 

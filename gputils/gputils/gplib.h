@@ -32,19 +32,19 @@ enum lib_modes {
 };
 
 #define GPLIB_VERSION_STRING ("gplib-" VERSION " pre-alpha")
-#define MAX_NAMES 256
+#define MAX_OBJ_NAMES 256
 
 extern struct gplib_state {
-  enum lib_modes mode;          /* operating mode */
-  struct {			/* Totals for errors, warnings, messages */
+  enum lib_modes mode;          	/* operating mode */
+  struct {				/* Totals for errors, warnings, messages */
     int errors;
     int warnings;
   } num;
-  int numobjects;               /* number of objects in the list */
-  int  quiet;                   /* suppress outputs when 1 */ 
-  char *filename;               /* library file name */
-  char *objectname[MAX_NAMES];  /* the list of object filenames */
-  struct coff_archive *archive; /* internal archive format */
+  int numobjects;               	/* number of objects in the list */
+  int  quiet;                   	/* suppress outputs when 1 */ 
+  char *filename;               	/* library file name */
+  char *objectname[MAX_OBJ_NAMES];  	/* the list of object filenames */
+  gp_archive_type *archive; 	        /* internal archive format */
 } state;
 
 #endif

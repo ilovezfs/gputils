@@ -2788,11 +2788,13 @@ void open_src(char *name, int isinclude)
   }
 #endif
 
+  new->type = file;
+  new->line_number = 1;
+  new->coff_number = state.obj.symbol_num;
+  new->prev = state.src;
+
   coff_add_filesym(new->name, isinclude);
 
-  new->type = file;
-  new->line_number = 1;	/* Files start at line 1, for some reason */
-  new->prev = state.src;
   state.src = new;
   state.src->fc = add_file(ft_src, new->name); 
 }
@@ -2813,6 +2815,7 @@ void execute_macro(struct macro_head *h)
   new->name = strdup(h->src_name);
   new->type = macro;
   new->line_number = h->line_number + 1;
+  new->coff_number = h->coff_number;
   new->f = NULL;
   new->lst.m = h->body;
   
@@ -2834,6 +2837,7 @@ static void push_string(char *str)
   new->name = strdup(state.src->name);
   new->type = substitution;
   new->line_number = state.src->line_number;
+  new->coff_number = state.src->coff_number;
   new->f = NULL;
   new->lst.f = NULL;
   new->fc = add_file(ft_src, new->name); /* scan list for fc */
