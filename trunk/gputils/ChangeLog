@@ -1,4 +1,4 @@
-2003-03-10 Craig Franklin <craigfranklin@attbi.com>
+2003-03-14 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.11.0 Released.
   * Fixed bug that caused amode stack to be incorrect when exitm was used.
   * The P value for movpf and movfp instructions is now checked.
