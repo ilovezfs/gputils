@@ -106,7 +106,6 @@ static tree *case_ident = NULL;
 /* general */
 %token <s> ASM       "asm"
 %token <s> IDENT     "symbol"
-%token <s> LABEL     "label"
 %token <i> NUMBER    "number"
 %token <s> STRING    "string"
 %token <i> ';'
@@ -450,7 +449,7 @@ statement:
 	  $$ = mk_assembly(strdup("  nop"));
 	}
 	|
-	LABEL
+	IDENT ':'
 	{
 	  $$ = mk_label($1);
 	}

@@ -107,11 +107,6 @@ DECCHAR [0-9]
 			  yylval.s = strdup(yytext + 1);
                           return STRING;
 			}
-[_.a-z][_.0-9a-z]*:	{
-			  yytext[strlen(yytext) - 1] = '\0';
-			  yylval.s = strdup(yytext);
-			  return LABEL;
-			}
 [_.a-z][_.0-9a-z]*	{
 			  yylval.s = strdup(yytext);
 			  return IDENT;
