@@ -28,19 +28,98 @@ Boston, MA 02111-1307, USA.  */
 #include "lst.h"
 #include "cod.h"
 
-struct gpasm_state state = {
-    16,			/* radix */
-    inhx8m,		/* hex_format */
-    0,			/* case_insensitive */
-    0,			/* quiet */
-    0,			/* show all messages, warnings, and errors */
-    {0, 0, 0, 0, 0}	/* Clear all of the cmd_line flags */
-};
+struct gpasm_state state;
 
 char *include_paths[MAX_INCLUDE_PATHS];
 int n_include_paths = 0;
 
+int  cmd_processor = 0;
+char *processor_name = NULL;
+
 int yyparse(void);
+
+#define GET_OPTIONS "?D:I:La:cd:e:hlmno:p:qr:vw:"
+
+/* Used: acdDehIlmopqrwv */
+static struct option longopts[] =
+{
+  { "define",      1, 0, 'D' },
+  { "include",     1, 0, 'I' },
+  { "hex-format",  1, 0, 'a' },
+  { "case",        0, 0, 'c' },
+  { "define",      1, 0, 'd' },
+  { "expand",      1, 0, 'e' },
+  { "help",        0, 0, 'h' },
+  { "force-list",  0, 0, 'L' },
+  { "list-chips",  0, 0, 'l' },
+  { "dump",        0, 0, 'm' },
+  { "dos",         0, 0, 'n' },
+  { "output",      1, 0, 'o' },
+  { "processor",   1, 0, 'p' },
+  { "quiet",       0, 0, 'q' },
+  { "radix",       1, 0, 'r' },
+  { "version",     0, 0, 'v' },
+  { "warning",     1, 0, 'w' },
+  { 0, 0, 0, 0 }
+};
+
+#define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
+
+void init(void)
+{
+  /* restore gpasm to its initialized state */
+  state.radix = 16;
+  state.hex_format = inhx8m;
+  state.case_insensitive = 0;
+  state.quiet = 0;
+  state.error_level = 0;
+
+  state.cmd_line.radix = 0;
+  state.cmd_line.hex_format = 0;
+  state.cmd_line.error_level = 0;
+  state.cmd_line.macro_expand = 0;
+  state.cmd_line.processor = 0;
+  state.cmd_line.lst_force = 0;
+
+  state.pass = 0;
+  state.org = 0;
+  state.dos_newlines = 0;
+  state.memory_dump = 0;
+  state.maxram = (MAX_RAM - 1);
+
+  state.lstfile = normal;
+  state.hexfile = normal;
+  state.codfile = normal;
+
+  state.num.errors    = 0;
+  state.num.warnings  = 0;
+  state.num.messages  = 0;
+  state.num.warnings_suppressed = 0;
+  state.num.messages_suppressed = 0;
+  
+  state.processor = no_processor;
+  state.processor_chosen = 0;
+    
+  #ifdef PARSE_DEBUG
+  {
+    extern int yydebug;
+    yydebug = 1; /* enable parse debug */
+  }
+  #endif
+
+  n_include_paths = 0;
+
+  #ifdef USE_GPASM_HEADER_PATH
+    /* add the header path to the include paths list */
+    #ifndef __MSDOS__
+      include_paths[n_include_paths++] = GPASM_HEADER_PATH;
+    #else
+      include_paths[n_include_paths++] = "c:\\gputils\\header";    
+    #endif
+  #endif
+  
+  return;
+}
 
 void show_usage(void)
 {
@@ -74,67 +153,13 @@ void show_usage(void)
   exit(0);
 }
 
-#define GET_OPTIONS "?D:I:La:cd:e:hlmno:p:qr:vw:"
-
-  /* Used: acdDehIlmopqrwv */
-  static struct option longopts[] =
-  {
-    { "define",      1, 0, 'D' },
-    { "include",     1, 0, 'I' },
-    { "hex-format",  1, 0, 'a' },
-    { "case",        0, 0, 'c' },
-    { "define",      1, 0, 'd' },
-    { "expand",      1, 0, 'e' },
-    { "help",        0, 0, 'h' },
-    { "force-list",  0, 0, 'L' },
-    { "list-chips",  0, 0, 'l' },
-    { "dump",        0, 0, 'm' },
-    { "dos",         0, 0, 'n' },
-    { "output",      1, 0, 'o' },
-    { "processor",   1, 0, 'p' },
-    { "quiet",       0, 0, 'q' },
-    { "radix",       1, 0, 'r' },
-    { "version",     0, 0, 'v' },
-    { "warning",     1, 0, 'w' },
-    { 0, 0, 0, 0 }
-  };
-
-#define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
-
-
-int main( int argc, char *argv[] )
+void process_args( int argc, char *argv[])
 {
   extern char *optarg;
   extern int optind;
   int c;
   int usage = 0;
-  int memory_dump = 0;
-  int dos_newlines = 0;
   char *pc;
-  int  cmd_processor = 0;
-  char *processor_name = NULL;
-
-  state.i_memory = i_memory_create();
-  
-  state.pass = 0;
-  state.quiet = 0;
-  state.lst.force = 0;
-
-  #ifdef PARSE_DEBUG
-  {
-    extern int yydebug;
-    yydebug = 1; /* enable parse debug */
-  }
-  #endif
-
-  #ifdef USE_GPASM_HEADER_PATH
-    /* add the header path to the include paths list */
-    #ifndef __MSDOS__
-      include_paths[n_include_paths++] = GPASM_HEADER_PATH;
-    #else
-      include_paths[n_include_paths++] = "c:\\gputils\\header";    
-    #endif
-  #endif
 
   while ((c = GETOPT_FUNC) != EOF) {
     switch (c) {
@@ -182,34 +207,34 @@ int main( int argc, char *argv[] )
       state.cmd_line.macro_expand = 1;
       break;
     case 'I':
-       if(n_include_paths < MAX_INCLUDE_PATHS) {
- 	 include_paths[n_include_paths++] = optarg;
-       } else {
- 	 fprintf(stderr, "too many -I paths\n");
- 	 exit(1);
-       }
-       break;    
+      if (n_include_paths < MAX_INCLUDE_PATHS) {
+         include_paths[n_include_paths++] = optarg;
+      } else {
+        fprintf(stderr, "too many -I paths\n");
+        exit(1);
+      }
+      break;    
     case 'L':
-      state.lst.force = 1;
+      state.cmd_line.lst_force = 1;
       break;  
     case 'l':
       dump_processor_list();
       exit(0);
       break;
     case 'm':
-      memory_dump = 1;
+      state.memory_dump = 1;
       break;
     case 'n':
       #ifndef __MSDOS__
-        dos_newlines = 1;
+        state.dos_newlines = 1;
       #endif
       break;
     case 'o':
-	    strcpy(state.hexfilename, optarg);
-	    strcpy(state.basefilename, optarg);
-	    pc = strrchr(state.basefilename, '.');
-	    if (pc)
-		   *pc = 0;
+      strcpy(state.hexfilename, optarg);
+      strcpy(state.basefilename, optarg);
+      pc = strrchr(state.basefilename, '.');
+      if (pc)
+        *pc = 0;
       break;
     case 'p':
       cmd_processor = 1;
@@ -244,11 +269,19 @@ int main( int argc, char *argv[] )
     show_usage();
   }
 
+}
+
+int assemble(void)
+{
+  char *pc; 
+
+  state.i_memory = i_memory_create();
+
   if(state.basefilename[0] == '\0') {
-	  strcpy(state.basefilename, state.srcfilename);
-	  pc = strrchr(state.basefilename, '.');
-	  if (pc)
-		  *pc = 0;
+    strcpy(state.basefilename, state.srcfilename);
+    pc = strrchr(state.basefilename, '.');
+    if (pc)
+      *pc = 0;
   }
 
   /* the Defines symbol table is not yet defined*/
@@ -271,8 +304,6 @@ int main( int argc, char *argv[] )
     select_processor(processor_name);
     state.cmd_line.processor = 1;
   }
-
-  state.maxram = (MAX_RAM - 1);
 
   open_src(state.srcfilename, 0);
   state.pass = 1;
@@ -309,12 +340,12 @@ int main( int argc, char *argv[] )
     
     if (writehex(state.basefilename, state.i_memory, 
                  state.hex_format, state.num.errors,
-                 byte_words, dos_newlines)) {
+                 byte_words, state.dos_newlines)) {
       gperror(GPE_UNKNOWN,"Error generating hex file");
     }
   }
 
-  if(memory_dump)
+  if(state.memory_dump)
     print_i_memory(state.i_memory);
 
   /* Maybe produce a symbol table */
@@ -339,4 +370,13 @@ int main( int argc, char *argv[] )
     return 1;
   else
     return 0;
+}
+
+int 
+main(int argc, char *argv[])
+{
+  init();
+  process_args(argc, argv);
+
+  return assemble();
 }

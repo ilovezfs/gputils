@@ -440,14 +440,6 @@ void open_src(char *name, int isinclude)
   if (state.src)
     state.src->yybuf = YY_CURRENT_BUFFER;
 
-  #ifdef __MSDOS__
-    #define PATH_CHAR '\\'
-    #define COPY_CHAR "\\"
-  #else
-    #define PATH_CHAR '/'
-    #define COPY_CHAR "/"
-  #endif
-
   new->f = fopen(name, "r");
   if(new->f)
 	  new->name = strdup(name);
@@ -470,9 +462,6 @@ void open_src(char *name, int isinclude)
   }
   if(new->f)
     new->lst.f = fopen(new->name, "r");
-
-  #undef PATH_CHAR
-  #undef COPY_CHAR
 
   yyin = new->f;
   if (new->f == NULL) {

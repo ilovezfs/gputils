@@ -66,14 +66,43 @@ void lst_line(char *line)
 
 void lst_init()
 {
-
+  state.lst.lineofpage = 0;
+  state.lst.page = 0;
   state.lst.linesperpage = 60;
+  state.lst.line_number = 1;
   state.lst.memorymap = 1;
   state.lst.symboltable = 1;
+
+  /* Determine state.startdate */
+  {
+    time_t now;
+    struct tm *now_tm;
+
+    time(&now);
+    now_tm = localtime(&now);
+    sprintf(state.lst.startdate,
+	    "%d-%d-%d  %02d:%02d:%02d",
+	    now_tm->tm_mon + 1,
+	    now_tm->tm_mday,
+	    1900 + now_tm->tm_year,
+	    now_tm->tm_hour,
+	    now_tm->tm_min,
+	    now_tm->tm_sec);
+  }
 
   if (state.cmd_line.macro_expand == 0){
     state.lst.expand = 1;
   }  
+  
+  if (state.cmd_line.lst_force == 1)
+    state.lst.force = 1; 
+  else
+    state.lst.force = 0;
+
+  state.lst.config_address = 0;
+  state.lst.title_name[0] = '\0';
+  state.lst.subtitle_name[0] = '\0';  
+  state.lst.tabstop = 8;	/* Default tabstop every 8 */
 
   switch (state.lstfile) {
   case suppress:
@@ -93,26 +122,6 @@ void lst_init()
     state.lst.fc = add_file(ft_lst,state.lstfilename);
     state.lst.enabled = 1;
   }
-
-  /* Determine state.startdate */
-  {
-    time_t now;
-    struct tm *now_tm;
-
-    time(&now);
-    now_tm = localtime(&now);
-    sprintf(state.lst.startdate,
-	    "%d-%d-%d  %02d:%02d:%02d",
-	    now_tm->tm_mon + 1,
-	    now_tm->tm_mday,
-	    1900 + now_tm->tm_year,
-	    now_tm->tm_hour,
-	    now_tm->tm_min,
-	    now_tm->tm_sec);
-  }
-
-  state.lst.tabstop = 8;	/* Default tabstop every 8 */
-  state.lst.line_number = 1;
 
   cod_lst_line(COD_FIRST_LST_LINE);
 
