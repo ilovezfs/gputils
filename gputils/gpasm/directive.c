@@ -804,12 +804,11 @@ static gpasmVal do_def(gpasmVal r,
   int shift = 0;
   int eval;
   int value = 0;
-  int section_number = N_DEBUG;
   gp_boolean new_class = false;
   int coff_class = C_NULL;
   gp_boolean new_type = false;
   int coff_type = T_NULL;
-  enum gpasmValTypes type;
+  enum gpasmValTypes type = gvt_debug;
 
   state.lst.line.linetype = dir;
 
