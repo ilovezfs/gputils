@@ -502,9 +502,9 @@ static gpasmVal do_badram(gpasmVal r,
 
 	loc = evaluate(p);
 	if ((loc < 0) ||
-	    (MAX_RAM <= loc))
+	    (MAX_RAM <= loc)) {
 	  gpwarning(GPW_INVALID_RAM, NULL);
-	else
+	 } else
 	  state.badram[loc] = 1;
       }
     }
@@ -640,9 +640,9 @@ static gpasmVal do_config(gpasmVal r,
       int curval = i_memory_get(state.i_memory, ca>>1);
       int mask = 0xff <<((ca&1) ? 0 : 8);
 
-      if(val > 0xff)
+      if(val > 0xff) {
 	gpwarning(GPW_RANGE,0);
-	
+      }
       /* If the config address is even, then this byte goes in LSB position */
       val = (val & 0xff) << ((ca&1) ? 8 : 0)  | MEM_USED_MASK; 
 
@@ -1071,9 +1071,9 @@ static gpasmVal do_idlocs(gpasmVal r,
       
         value = maybe_evaluate(HEAD(TAIL(parms)));
         
-        if(value > 0xff)
+        if(value > 0xff) {
           gpwarning(GPW_RANGE, NULL);
-	
+	}
         curvalue = i_memory_get(state.i_memory, idreg>>1);
         mask = 0xff <<((idreg&1) ? 0 : 8);
 	
@@ -1692,9 +1692,9 @@ static void emit_check(int insn, int argument, int mask)
     test = -test;
 
   /* ones complement the mask and logical AND it with the argument */
-  if (test & (~mask))
+  if (test & (~mask)) {
     gpwarning(GPW_RANGE, NULL);
-
+  }
   emit(insn | (argument & mask));
   
   return;
@@ -1837,16 +1837,18 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	break;
       case INSN_CLASS_RBRA8:
 	if (enforce_arity(arity, 1)) {
-          emit_check(i->mask, 
-                  (((maybe_evaluate( HEAD(parms)) ) - 
-                   ((state.org + 1)<<_16bit_core)) >> _16bit_core), 0xff);
+	  int offset = ((maybe_evaluate( HEAD(parms)) ) - 
+			((state.org + 1)<<_16bit_core));
+	  offset >>= _16bit_core;
+          emit_check(i->mask, offset, 0xff);
 	}
 	break;
       case INSN_CLASS_RBRA11:
 	if (enforce_arity(arity, 1)) {
-          emit_check(i->mask, 
-                  (((maybe_evaluate( HEAD(parms)) ) - 
-                   ((state.org + 1)<<_16bit_core)) >> _16bit_core), 0x7ff);
+	  int offset = ((maybe_evaluate( HEAD(parms)) ) - 
+			((state.org + 1)<<_16bit_core));
+	  offset >>= _16bit_core;
+          emit_check(i->mask, offset, 0x7ff);
 	}
 	break;
       case INSN_CLASS_LIT20:
