@@ -141,17 +141,18 @@ static struct px pics[] = {
   { pic16f628,  "__16F628",   { "pic16f628",   "p16f628",   "16f628"   }, 0x6628, "16f628.lkr"   },  
   { pic16f628a, "__16F628A",  { "pic16f628a",  "p16f628a",  "16f628a"  }, 0x628a, "16f628a.lkr"  },
   { pic16f630,  "__16F630",   { "pic16f630",   "p16f630",   "16f630"   }, 0x6630, "16f630.lkr"   },
-  { pic16f648a, "__16F648A",  { "pic16f648a",  "p16f648a",  "16f648a"  }, 0x648a, "16f648a.lkr"   },
+  { pic16f648a, "__16F648A",  { "pic16f648a",  "p16f648a",  "16f648a"  }, 0x648a, "16f648a.lkr"  },
   { pic16f676,  "__16F676",   { "pic16f676",   "p16f676",   "16f676"   }, 0x6676, "16f676.lkr"   },
   { pic16f684,  "__16F684",   { "pic16f684",   "p16f684",   "16f684"   }, 0x6684, "16f684.lkr"   },
+  { pic16f716,  "__16F716",   { "pic16f716",   "p16f716",   "16f716"   }, 0x716f, "16f716.lkr"   },
   { pic16f72,   "__16F72",    { "pic16f72",    "p16f72",    "16f72"    }, 0x672f, "16f72.lkr"    },
   { pic16f73,   "__16F73",    { "pic16f73",    "p16f73",    "16f73"    }, 0x673f, "16f73.lkr"    },
-  { pic16f737,  "__16F737",   { "pic16f737",   "p16f737",   "16f737"   }, 0x737f, "16f737.lkr"    },
+  { pic16f737,  "__16F737",   { "pic16f737",   "p16f737",   "16f737"   }, 0x737f, "16f737.lkr"   },
   { pic16f74,   "__16F74",    { "pic16f74",    "p16f74",    "16f74"    }, 0x674f, "16f74.lkr"    },
   { pic16f76,   "__16F76",    { "pic16f76",    "p16f76",    "16f76"    }, 0x676f, "16f76.lkr"    },
-  { pic16f767,  "__16F767",   { "pic16f767",   "p16f767",   "16f767"   }, 0x767f, "16f767.lkr"    },
+  { pic16f767,  "__16F767",   { "pic16f767",   "p16f767",   "16f767"   }, 0x767f, "16f767.lkr"   },
   { pic16f77,   "__16F77",    { "pic16f77",    "p16f77",    "16f77"    }, 0x677f, "16f77.lkr"    },
-  { pic16f777,  "__16F777",   { "pic16f777",   "p16f777",   "16f777"   }, 0x777f, "16f777.lkr"    },
+  { pic16f777,  "__16F777",   { "pic16f777",   "p16f777",   "16f777"   }, 0x777f, "16f777.lkr"   },
   { pic16f818,  "__16F818",   { "pic16f818",   "p16f818",   "16f818"   }, 0x818f, "16f818.lkr"   },
   { pic16f819,  "__16F819",   { "pic16f819",   "p16f819",   "16f819"   }, 0x819f, "16f819.lkr"   },
   { pic16f83,   "__16F83",    { "pic16f83",    "p16f83",    "16f83"    }, 0x6c83, "16f83.lkr"    },
@@ -204,6 +205,7 @@ static struct px pics[] = {
   { pic18f252,  "__18F252",   { "pic18f252",   "p18f252",   "18f252"   }, 0x252f, "18f252.lkr"   },
   { pic18f2539, "__18F2539",  { "pic18f2539",  "p18f2539",  "18f2539"  }, 0x2539, "18f2539.lkr"  },
   { pic18f258,  "__18F258",   { "pic18f258",   "p18f258",   "18f258"   }, 0x8258, "18f258.lkr"   },
+  { pic18f2620, "__18F2620",  { "pic18f2620",  "p18f2620",  "18f2620"  }, 0xa262, "18f2620.lkr"  },
   { pic18f4220, "__18F4220",  { "pic18f4220",  "p18f4220",  "18f4220"  }, 0xa422, "18f4220.lkr"  },
   { pic18f4320, "__18F4320",  { "pic18f4320",  "p18f4320",  "18f4320"  }, 0xa432, "18f4320.lkr"  },
   { pic18f4331, "__18F4331",  { "pic18f4331",  "p18f4331",  "18f4331"  }, 0x4331, "18f4331.lkr"  },
@@ -214,6 +216,7 @@ static struct px pics[] = {
   { pic18f452,  "__18F452",   { "pic18f452",   "p18f452",   "18f452"   }, 0x452f, "18f452.lkr"   },
   { pic18f4539, "__18F4539",  { "pic18f4539",  "p18f4539",  "18f4539"  }, 0x4539, "18f4539.lkr"  },
   { pic18f458,  "__18F458",   { "pic18f458",   "p18f458",   "18f458"   }, 0x8458, "18f458.lkr"   },
+  { pic18f4620, "__18F4620",  { "pic18f4620",  "p18f4620",  "18f4620"  }, 0xa462, "18f4620.lkr"  },
   { pic18f6520, "__18F6520",  { "pic18f6520",  "p18f6520",  "18f6520"  }, 0xa652, "18f6520.lkr"  },
   { pic18f6525, "__18F6525",  { "pic18f6525",  "p18f6525",  "18f6525"  }, 0x6525, "18f6525.lkr"  },
   { pic18f6585, "__18F6585",  { "pic18f6585",  "p18f6585",  "18f6585"  }, 0x6585, "18f6585.lkr"  },
@@ -230,9 +233,9 @@ static struct px pics[] = {
   { pic18f8720, "__18F8720",  { "pic18f8720",  "p18f8720",  "18f8720"  }, 0xa872, "18f8720.lkr"  },
   { rf509af,    "__RF509AF",  { "rf509af",     "rf509af",   "rf509af"  }, 0x6509, "rf509af.lkr"  },
   { rf509ag,    "__RF509AG",  { "rf509ag",     "rf509ag",   "rf509ag"  }, 0x7509, "rf509ag.lkr"  },
-  { rf675f,     "__RF675F",   { "rf675f",      "rf675f",    "rf675f"   }, 0x3675, "rf675f.lkr"  },
-  { rf675h,     "__RF675H",   { "rf675h",      "rf675h",    "rf675h"   }, 0x4675, "rf675h.lkr"  },
-  { rf675k,     "__RF675K",   { "rf675k",      "rf675k",    "rf675k"   }, 0x5675, "rf675k.lkr"  },
+  { rf675f,     "__RF675F",   { "rf675f",      "rf675f",    "rf675f"   }, 0x3675, "rf675f.lkr"   },
+  { rf675h,     "__RF675H",   { "rf675h",      "rf675h",    "rf675h"   }, 0x4675, "rf675h.lkr"   },
+  { rf675k,     "__RF675K",   { "rf675k",      "rf675k",    "rf675k"   }, 0x5675, "rf675k.lkr"   },
   { sx18,       "__SX18",     { "sx18ac",      "sx18",      "sx18"     }, 0x0018, NULL           },
   { sx20,       "__SX20",     { "sx20ac",      "sx20",      "sx20"     }, 0x0020, NULL           },
   { sx28,       "__SX28",     { "sx28ac",      "sx28",      "sx28"     }, 0x0028, NULL           }
@@ -431,6 +434,7 @@ gp_processor_class(enum pic_processor processor)
     case pic16f648a:
     case pic16f676:
     case pic16f684:
+    case pic16f716:
     case pic16f72:
     case pic16f73:
     case pic16f737:
@@ -497,6 +501,7 @@ gp_processor_class(enum pic_processor processor)
     case pic18f252:
     case pic18f2539:
     case pic18f258:
+    case pic18f2620:
     case pic18f4220:
     case pic18f4320:
     case pic18f4331:
@@ -507,6 +512,7 @@ gp_processor_class(enum pic_processor processor)
     case pic18f452:
     case pic18f4539:
     case pic18f458:
+    case pic18f4620:
     case pic18f6520:
     case pic18f6525:
     case pic18f6585:
@@ -560,6 +566,7 @@ gp_processor_bsr_boundary(enum pic_processor processor)
     case pic18f252:
     case pic18f2539:
     case pic18f258:
+    case pic18f2620:
     case pic18f4220:
     case pic18f4320:
     case pic18f4331:
@@ -570,6 +577,7 @@ gp_processor_bsr_boundary(enum pic_processor processor)
     case pic18f452:
     case pic18f4539:
     case pic18f458:
+    case pic18f4620:
     case pic18f6525:
     case pic18f6585:
     case pic18f6621:

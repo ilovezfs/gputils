@@ -1,4 +1,6 @@
 2003-07-20 Craig Franklin <craigfranklin@comcast.net>
+  * Added new processors: 16f716, 18f2620, 18f4620
+  * Update header files and linker scripts.
   * Fixed gplink error that caused the map file to always be generated.
   * Fixed bug in gpasm that caused 18xx access bank bit to be ignored if it
     was specified on some instructions.

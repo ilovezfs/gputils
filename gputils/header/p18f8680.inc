@@ -3129,7 +3129,7 @@ RXB1D77          EQU  H'0007'
 ;----- RXB0CON Bits -----------------------------------------------------
 FILHIT0          EQU  H'0000'
 JTOFF            EQU  H'0001'
-RXBODBEN         EQU  H'0002'
+RXB0DBEN         EQU  H'0002'
 RXRTRRO          EQU  H'0003'
 RXM0             EQU  H'0005'
 RXM1             EQU  H'0006'

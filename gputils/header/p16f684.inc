@@ -286,6 +286,24 @@ ANS2                         EQU     H'0002'
 ANS1                         EQU     H'0001'
 ANS0                         EQU     H'0000'
 
+;----- IOC --------------------------------------------------------------
+
+IOC5                         EQU     H'0005'
+IOC4                         EQU     H'0004'
+IOC3                         EQU     H'0003'
+IOC2                         EQU     H'0002'
+IOC1                         EQU     H'0001'
+IOC0                         EQU     H'0000'
+
+;----- IOCA --------------------------------------------------------------
+
+IOCA5                         EQU     H'0005'
+IOCA4                         EQU     H'0004'
+IOCA3                         EQU     H'0003'
+IOCA2                         EQU     H'0002'
+IOCA1                         EQU     H'0001'
+IOCA0                         EQU     H'0000'
+
 ;----- VRCON Bits ---------------------------------------------------------
 
 VREN                         EQU     H'0007'
@@ -324,17 +342,17 @@ ADCS0                        EQU     H'0004'
 ;
 ;==========================================================================
 
-_FCMEN                       EQU     H'3FFF'
-_FCMEM_OFF                   EQU     H'37FF'
-_IESO                        EQU     H'3FFF'
+_FCMEN_ON                    EQU     H'3FFF'
+_FCMEN_OFF                   EQU     H'37FF'
+_IESO_ON                     EQU     H'3FFF'
 _IESO_OFF                    EQU     H'3BFF'
 _BOD_ON                      EQU     H'3FFF'
 _BOD_NSLEEP                  EQU     H'3EFF'
 _BOD_SBODEN                  EQU     H'3DFF'
 _BOD_OFF                     EQU     H'3CFF'
-_CPD                         EQU     H'3F7F'
+_CPD_ON                      EQU     H'3F7F'
 _CPD_OFF                     EQU     H'3FFF'
-_CP                          EQU     H'3FBF'
+_CP_ON                       EQU     H'3FBF'
 _CP_OFF                      EQU     H'3FFF'
 _MCLRE_ON                    EQU     H'3FFF'
 _MCLRE_OFF                   EQU     H'3FDF'
