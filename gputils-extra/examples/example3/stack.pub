@@ -1,3 +1,4 @@
+
 public stack is
 
   pragma code_section = "PROG2";

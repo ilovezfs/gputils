@@ -11,12 +11,13 @@ module main is
 
   procedure main is
 
-    variable state : state_type;
-    variable counter : uint8;
-    variable led_shadow: uint8;
+    state : state_type;
+    counter : uint8;
+    led_shadow: uint8;
 
   begin
 
+    led_shadow = 0;
     state = INIT;
     stack.init_stack();
 
@@ -38,7 +39,7 @@ module main is
 
         when OUTPUT =>
           led_shadow = led_shadow - 1;
-          PORTA = led_shadow;
+          p16f877.PORTA = led_shadow;
           state = INIT;
 
         when others =>

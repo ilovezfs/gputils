@@ -2,14 +2,14 @@ with config;
 
 module stack is
 
-  constant stack_size  : uint8 = 10;
-  constant stack_start : uint8 = 1;
-  constant stack_stop  : uint8 = stack_size + stack_start - 1;
+  stack_size  : constant uint8 = 10;
+  stack_start : constant uint8 = 1;
+  stack_stop  : constant uint8 = stack_size + stack_start - 1;
   
   type stack_type is array stack_start to stack_stop of uint8;
   
-  variable stack : stack_type;
-  variable stack_index : uint8;
+  stack : stack_type;
+  stack_index : uint8;
 
   procedure init_stack is
   
