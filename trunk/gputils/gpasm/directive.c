@@ -22,6 +22,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include "gpasm.h"
 #include "gpsymbol.h"
+#include "gpopcode.h"
 #include "directive.h"
 #include "evaluate.h"
 #include "parse.h"
@@ -34,51 +35,6 @@ Boston, MA 02111-1307, USA.  */
 /* Forward declarations */
 void execute_body(struct macro_head *h);
 
-/* XXXPRO: new class of processor may require new instruction classes */
-enum insn_class {
-  INSN_CLASS_LIT1,	/* bit 0 contains a 1 bit literal		*/
-  INSN_CLASS_LIT4S,     /* Bits 7:4 contain a 4 bit literal, bits 3:0 are unused   */
-  INSN_CLASS_LIT8,	/* bits 7:0 contain an 8 bit literal		*/
-  INSN_CLASS_LIT8C,	/* bits 7:0 contain an 8 bit literal, CALL	*/
-  INSN_CLASS_LIT9,	/* bits 8:0 contain a 9 bit literal		*/
-  INSN_CLASS_LIT11,	/* bits 10:0 contain an 11 bit literal		*/
-  INSN_CLASS_LIT13,	/* bits 12:0 contain an 11 bit literal		*/
-  INSN_CLASS_IMPLICIT,	/* instruction has no variable bits at all	*/
-  INSN_CLASS_OPF5,	/* bits 4:0 contain a register address		*/
-  INSN_CLASS_OPWF5,	/* as above, but bit 5 has a destination flag	*/
-  INSN_CLASS_B5,	/* as for OPF5, but bits 7:5 have bit number	*/
-  INSN_CLASS_OPF7,	/* bits 6:0 contain a register address		*/
-  INSN_CLASS_OPWF7,	/* as above, but bit 7 has destination flag	*/
-  INSN_CLASS_B7,	/* as for OPF7, but bits 9:7 have bit number	*/
-
-  INSN_CLASS_OPF8,	/* bits 7:0 contain a register address 	*/
-  INSN_CLASS_OPFA8,	/* bits 7:0 contain a register address & bit has access flag  */
-  INSN_CLASS_OPWF8,	/* as above, but bit 8 has dest flag	*/
-  INSN_CLASS_OPWFA8,	/* as above, but bit 9 has dest flag & bit 8 has access flag		*/
-  INSN_CLASS_B8,	/* like OPF7, but bits 9:11 have bit number	*/
-  INSN_CLASS_BA8,	/* like OPF7, but bits 9:11 have bit number & bit 8 has access flag	*/
-  INSN_CLASS_LIT20,	/* 20bit lit, bits 7:0 in first word bits 19:8 in second		*/
-  INSN_CLASS_CALL20,	/* Like LIT20, but bit 8 has fast push flag			 	*/
-  INSN_CLASS_RBRA8,	/* Bits 7:0 contain a relative branch address			 	*/
-  INSN_CLASS_RBRA11,	/* Bits 10:0 contain a relative branch address			 	*/
-  INSN_CLASS_FLIT12,	/* LFSR, 12bit lit loaded into 1 of 4 FSRs				*/
-  INSN_CLASS_FF,	/* two 12bit file addresses						*/
-  INSN_CLASS_FP,        /* Bits 7:0 contain a register address, bits 12:8 contains a peripheral address    */
-  INSN_CLASS_PF,        /* Bits 7:0 contain a register address, bits 12:8 contains a peripheral address    */
-  INSN_CLASS_TBL,	/* a table read or write instruction	      	*/
-  INSN_CLASS_TBL2,	/* a table read or write instruction. 
-			   Bits 7:0 contains a register address; Bit 8 is unused;
-			   Bit 9, table byte select. (0:lower ; 1:upper) */
-  INSN_CLASS_TBL3,	/* a table read or write instruction. 
-			   Bits 7:0 contains a register address; 
-			   Bit 8, 1 if increment pointer, 0 otherwise;
-			   Bit 9, table byte select. (0:lower ; 1:upper) */
-  INSN_CLASS_FUNC,	/* instruction is an assembler function		*/
-  INSN_CLASS_LIT3_BANK, /* SX: bits 3:0 contain a 3 bit literal, shifted 5 bits */
-  INSN_CLASS_LIT3_PAGE, /* SX: bits 3:0 contain a 3 bit literal, shifted 9 bits */
-  INSN_CLASS_LIT4       /* SX: bits 3:0 contain a 4 bit literal         */
-};
-
 #define ATTRIB_COND 1
 
 /************************************************************************/
@@ -88,13 +44,6 @@ enum insn_class {
 #define DEFAULT_LIT_MASK 0xffff
 #define ENDIAN_SWAP      (1<<31)
 #define PACKING_BYTES    (1<<30)
-
-struct insn {
-  char *name;
-  long int mask;
-  enum insn_class class;
-  int attribs;
-};
 
 /* We really should really think about using glib for this: */
 struct sllist {
@@ -772,7 +721,7 @@ static gpasmVal do_dt(gpasmVal r,
 
   list.next = NULL;
   simplify_data(parms, &list, 0);
-  data(&list, i->mask, 0xff);
+  data(&list, i->opcode, 0xff);
 
   return r;
 }
@@ -1734,13 +1683,13 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_LIT3_BANK:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
-	  emit_check(i->mask, (maybe_evaluate(p) >> 5), 0x07);
+	  emit_check(i->opcode, (maybe_evaluate(p) >> 5), 0x07);
 	}
 	break;
       case INSN_CLASS_LIT3_PAGE:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
-	  emit_check(i->mask, (maybe_evaluate(p) >> 9), 0x07);
+	  emit_check(i->opcode, (maybe_evaluate(p) >> 9), 0x07);
 	}
 	break;
       case INSN_CLASS_LIT1:
@@ -1750,7 +1699,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  case 1:
 	    s = check_flag(maybe_evaluate(HEAD(parms)));
 	  case 0:
-	    emit(i->mask | s);
+	    emit(i->opcode | s);
 	    break;
 	  default:
 	    enforce_arity(arity, 1);
@@ -1760,19 +1709,19 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_LIT4:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
-	  emit_check(i->mask, maybe_evaluate(p), 0x0f);
+	  emit_check(i->opcode, maybe_evaluate(p), 0x0f);
 	}
 	break;
       case INSN_CLASS_LIT4S:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
-	  emit_check(i->mask, (maybe_evaluate(p) << 4), 0xf0);
+	  emit_check(i->opcode, (maybe_evaluate(p) << 4), 0xf0);
 	}
 	break;
       case INSN_CLASS_LIT8:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
-	  emit_check(i->mask, maybe_evaluate(p), 0xff);
+	  emit_check(i->opcode, maybe_evaluate(p), 0xff);
 	}
 	break;
       case INSN_CLASS_LIT8C:
@@ -1792,7 +1741,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  if (value & 0x100)
 	    gperror(GPE_BAD_CALL_ADDR, NULL);
 	  	  
-	  emit(i->mask | (value & 0xff));	      
+	  emit(i->opcode | (value & 0xff));	      
 	}
 	break;
       case INSN_CLASS_LIT9:
@@ -1809,7 +1758,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  if ((value & 0x600) != (state.org & 0x600))
 	    gpmessage(GPM_PAGE, NULL);	  
 	  	  
-	  emit(i->mask | (value & 0x1ff));
+	  emit(i->opcode | (value & 0x1ff));
 	}
 	break;
       case INSN_CLASS_LIT11:
@@ -1826,13 +1775,13 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  if ((value & 0x1800) != (state.org & 0x1800))
 	    gpmessage(GPM_PAGE, NULL);
 	  
-	  emit(i->mask | (value & 0x7ff));
+	  emit(i->opcode | (value & 0x7ff));
 	}
 	break;
       case INSN_CLASS_LIT13:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
-	  emit_check(i->mask, maybe_evaluate(p), 0x1fff);
+	  emit_check(i->opcode, maybe_evaluate(p), 0x1fff);
 	}
 	break;
       case INSN_CLASS_RBRA8:
@@ -1840,7 +1789,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  int offset = ((maybe_evaluate( HEAD(parms)) ) - 
 			((state.org + 1)<<_16bit_core));
 	  offset >>= _16bit_core;
-          emit_check(i->mask, offset, 0xff);
+          emit_check(i->opcode, offset, 0xff);
 	}
 	break;
       case INSN_CLASS_RBRA11:
@@ -1848,7 +1797,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  int offset = ((maybe_evaluate( HEAD(parms)) ) - 
 			((state.org + 1)<<_16bit_core));
 	  offset >>= _16bit_core;
-          emit_check(i->mask, offset, 0x7ff);
+          emit_check(i->opcode, offset, 0x7ff);
 	}
 	break;
       case INSN_CLASS_LIT20:
@@ -1857,7 +1806,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  int dest;
 	  p = HEAD(parms);
 	  dest = maybe_evaluate(p) >> _16bit_core;
-	  emit_check(i->mask, dest, 0xff);
+	  emit_check(i->opcode, dest, 0xff);
 	  emit_check(0xf000, dest>>8, 0xfff);
 	}
 	break;
@@ -1885,7 +1834,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    enforce_arity(arity, 2);
 	  }
 	  dest = maybe_evaluate(p) >> _16bit_core;
-	  emit_check(i->mask | (s<<8), dest, 0xff);
+	  emit_check(i->opcode | (s<<8), dest, 0xff);
 	  emit_check(0xf000, (dest>>8), 0xfff);
 	}
 	break;
@@ -1902,7 +1851,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    p = HEAD(TAIL(parms));
 	    k =  maybe_evaluate(p);
 
-	    emit_check(i->mask | ((file & 3) << 4), (k>>8), 0xf);
+	    emit_check(i->opcode | ((file & 3) << 4), (k>>8), 0xf);
 	    emit_check(0xf000, k, 0xff);
 	  }
 	}
@@ -1911,7 +1860,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_FF:
 	if (enforce_arity(arity, 2)) {
 
-	  emit_check(i->mask, maybe_evaluate(HEAD(parms)), 0xfff);
+	  emit_check(i->opcode, maybe_evaluate(HEAD(parms)), 0xfff);
 	  emit_check(0xf000, maybe_evaluate(HEAD(TAIL(parms))), 0xfff);
 
 	}
@@ -1923,7 +1872,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           reg=maybe_evaluate(HEAD(TAIL(parms)));
           file_ok(file);
           file_ok(reg);
-          emit(i->mask | ( (reg  & 0x1f) << 8) |
+          emit(i->opcode | ( (reg  & 0x1f) << 8) |
               (file & 0xff) );
         }
         break;
@@ -1934,7 +1883,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           file=maybe_evaluate(HEAD(TAIL(parms)));
           file_ok(file);
           file_ok(reg);
-          emit(i->mask | ( (reg & 0x1f) << 8) |
+          emit(i->opcode | ( (reg & 0x1f) << 8) |
               (file & 0xff) );
         }
         break;
@@ -1943,7 +1892,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  p = HEAD(parms);
 	  file = maybe_evaluate(p);
 	  file_ok(file);
-	  emit(i->mask | (file & 0x1f));
+	  emit(i->opcode | (file & 0x1f));
 	}
 	break;
       case INSN_CLASS_OPWF5:
@@ -1979,7 +1928,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  }
 	  file = maybe_evaluate(p);
 	  file_ok(file);
-	  emit(i->mask | (d << 5) | (file & 0x1f));
+	  emit(i->opcode | (d << 5) | (file & 0x1f));
 	}
 	break;
       case INSN_CLASS_B5:
@@ -1995,7 +1944,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    if (!((0 <= bit) && (bit <= 7)))
               gpwarning(GPW_RANGE, NULL);
 	    file_ok(file);
-	    emit(i->mask | ((bit & 7) << 5) |(file & 0x1f));
+	    emit(i->opcode | ((bit & 7) << 5) |(file & 0x1f));
 	  }
 	}
 	break;
@@ -2013,7 +1962,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    if (!((0 <= bit) && (bit <= 7)))
               gpwarning(GPW_RANGE, NULL);
 	    file_ok(file);
-	    emit(i->mask | ((bit & 7) << 8) | (file & 0xff));
+	    emit(i->opcode | ((bit & 7) << 8) | (file & 0xff));
 	  }
 	}
 	break;
@@ -2026,7 +1975,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  p = HEAD(parms);
 	  file = maybe_evaluate(p);
 	  file_ok(file);
-	  emit(i->mask | (file & 0x7f));
+	  emit(i->opcode | (file & 0x7f));
 	}
 	break;
 
@@ -2035,7 +1984,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  p = HEAD(parms);
 	  file = maybe_evaluate(p);
 	  file_ok(file);
-	  emit(i->mask | (file & 0xff));
+	  emit(i->opcode | (file & 0xff));
 	}
 	break;
 
@@ -2072,7 +2021,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  }
 	  file = maybe_evaluate(p);
 	  file_ok(file);
-	  emit(i->mask | (d << 7) | (file & 0x7f));
+	  emit(i->opcode | (d << 7) | (file & 0x7f));
 	}
 	break;
 
@@ -2109,7 +2058,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  }
 	  file = maybe_evaluate(p);
 	  file_ok(file);
-	  emit(i->mask | (d << 8) | (file & 0xff));
+	  emit(i->opcode | (d << 8) | (file & 0xff));
 	}
 	break;
       case INSN_CLASS_B7:
@@ -2125,7 +2074,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    if (!((0 <= bit) && (bit <= 7)))
               gpwarning(GPW_RANGE, NULL);
 	    file_ok(file);
-	    emit(i->mask | ((bit & 7) << 7) | (file & 0x7f));
+	    emit(i->opcode | ((bit & 7) << 7) | (file & 0x7f));
 	  }
 	}
 	break;
@@ -2159,7 +2108,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  }
 	  file = maybe_evaluate(p);
 	  file_ok(file);
-	  emit(i->mask | (a << 8) | (file & 0xff));
+	  emit(i->opcode | (a << 8) | (file & 0xff));
 	}
 	break;
 
@@ -2187,7 +2136,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    if (!((0 <= bit) && (bit <= 7)))
               gpwarning(GPW_RANGE, NULL);
 	    file_ok(file);
-	    emit(i->mask | ( a << 8) | ((bit & 7) << 9) | (file & 0xff));
+	    emit(i->opcode | ( a << 8) | ((bit & 7) << 9) | (file & 0xff));
 	    break;
 	  default:
 	    enforce_arity(arity, 3);
@@ -2238,7 +2187,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  }
 	  file = maybe_evaluate(p);
 	  file_ok(file);
-	  emit(i->mask | (d << 9) | (a << 8) | (file & 0xff));
+	  emit(i->opcode | (d << 9) | (a << 8) | (file & 0xff));
 	}
 	break;
 
@@ -2250,7 +2199,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             (state.device.core_size != CORE_12BIT_MASK)){
           gpwarning(GPW_NOT_RECOMMENDED, NULL);
         }
-	emit(i->mask);
+	emit(i->opcode);
 	break;
       case INSN_CLASS_TBL:
 	if (enforce_arity(arity, 1)) {
@@ -2258,16 +2207,16 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  switch(maybe_evaluate(p))
 	    {
 	    case TBL_NO_CHANGE:
-	      emit(i->mask);
+	      emit(i->opcode);
 	      break;
 	    case TBL_POST_INC:
-	      emit(i->mask | 1);
+	      emit(i->opcode | 1);
 	      break;
 	    case TBL_POST_DEC:
-	      emit(i->mask | 2);
+	      emit(i->opcode | 2);
 	      break;
 	    case TBL_PRE_INC:
-	      emit(i->mask | 3);
+	      emit(i->opcode | 3);
 	      break;
 	    default:
 	      gperror(GPE_ILLEGAL_ARGU, NULL);
@@ -2288,7 +2237,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  file = maybe_evaluate(p2);
 
 	  file_ok(file);
-          emit(i->mask | (t << 9) | (file & 0xff));
+          emit(i->opcode | (t << 9) | (file & 0xff));
 	}
 	break;
 
@@ -2310,12 +2259,12 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  file = maybe_evaluate(p3);
 
 	  file_ok(file);          
-          emit(i->mask | (t << 9) | (inc << 8) | (file & 0xff));
+          emit(i->opcode | (t << 9) | (inc << 8) | (file & 0xff));
 	}
 	break;
 
       case INSN_CLASS_FUNC:
-	r = (*(opfunc*)i->mask)(r, name, arity, parms);
+	r = (*(opfunc*)i->opcode)(r, name, arity, parms);
 	break;
       }
     }
@@ -2431,7 +2380,7 @@ void execute_body(struct macro_head *h)
 
 /* Note that instructions within each group are sorted alphabetically */
 
-static struct insn  op_0[] = {
+struct insn op_0[] = {
   { "constant", (long int)do_constant,  INSN_CLASS_FUNC,	0 },
   { "else",	(long int)do_else, 	INSN_CLASS_FUNC,	ATTRIB_COND },
   { "endif",	(long int)do_endif,	INSN_CLASS_FUNC,	ATTRIB_COND },
@@ -2468,7 +2417,9 @@ static struct insn  op_0[] = {
   { "#undefine", (long int)do_undefine,	INSN_CLASS_FUNC,	0 }
 };
 
-static struct insn  op_1[] = {
+const int num_op_0 = TABLE_SIZE(op_0);
+
+struct insn op_1[] = {
   { "__badram", (long int)do_badram,    INSN_CLASS_FUNC,	0 },
   { "__config", (long int)do_config,    INSN_CLASS_FUNC,	0 },
   { "__fuses",  (long int)do_config,    INSN_CLASS_FUNC,	0 },
@@ -2485,352 +2436,7 @@ static struct insn  op_1[] = {
   { "res",	(long int)do_res,       INSN_CLASS_FUNC,	0 }
 };
 
-/* XXXPRO: Need to add a struct here for any extra processor classes. */
-
-/* PIC 12-bit instruction set */
-static struct insn  op_12c5xx[] = {
-  { "ADDWF",  0x1c0,	INSN_CLASS_OPWF5 	},
-  { "ANDLW",  0xe00,	INSN_CLASS_LIT8 	},
-  { "ANDWF",  0x140,	INSN_CLASS_OPWF5 	},
-  { "BCF",    0x400,	INSN_CLASS_B5 		},
-  { "BSF",    0x500,	INSN_CLASS_B5 		},
-  { "BTFSC",  0x600,	INSN_CLASS_B5 		},
-  { "BTFSS",  0x700,	INSN_CLASS_B5		},
-  { "CALL",   0x900,	INSN_CLASS_LIT8C 	},
-  { "CLRF",   0x060,	INSN_CLASS_OPF5 	},
-  { "CLRW",   0x040,	INSN_CLASS_IMPLICIT 	},
-  { "CLRWDT", 0x004, 	INSN_CLASS_IMPLICIT 	},
-  { "COMF",   0x240,	INSN_CLASS_OPWF5 	},
-  { "DECF",   0x0c0,	INSN_CLASS_OPWF5 	},
-  { "DECFSZ", 0x2c0,	INSN_CLASS_OPWF5 	},
-  { "GOTO",   0xa00,	INSN_CLASS_LIT9 	},
-  { "INCF",   0x280,	INSN_CLASS_OPWF5 	},
-  { "INCFSZ", 0x3c0,	INSN_CLASS_OPWF5 	},
-  { "IORLW",  0xd00,	INSN_CLASS_LIT8 	},
-  { "IORWF",  0x100,	INSN_CLASS_OPWF5 	},
-  { "MOVF",   0x200,	INSN_CLASS_OPWF5 	},
-  { "MOVLW",  0xc00,	INSN_CLASS_LIT8 	},
-  { "MOVWF",  0x020,	INSN_CLASS_OPF5 	},
-  { "NOP",    0x000,	INSN_CLASS_IMPLICIT 	},
-  { "OPTION", 0x002,	INSN_CLASS_IMPLICIT 	},
-  { "RETLW",  0x800,	INSN_CLASS_LIT8 	},
-  { "RETURN", 0x800,	INSN_CLASS_IMPLICIT 	}, /* special mnemonic */
-  { "RLF",    0x340,	INSN_CLASS_OPWF5 	},
-  { "RRF",    0x300,	INSN_CLASS_OPWF5 	},
-  { "SLEEP",  0x003,	INSN_CLASS_IMPLICIT 	},
-  { "SUBWF",  0x080,	INSN_CLASS_OPWF5 	},
-  { "SWAPF",  0x380,	INSN_CLASS_OPWF5 	},
-  { "TRIS",   0x000,	INSN_CLASS_OPF5 	}, /* not optimal */
-  { "XORLW",  0xf00,	INSN_CLASS_LIT8 	},
-  { "XORWF",  0x180,	INSN_CLASS_OPWF5 	}
-};
-
-/* Scenix SX has a superset of the PIC 12-bit instruction set */
-/*
- * It would be nice if there was a more elegant way to do this,
- * either by adding a flags field to struct insn, or by allowing a
- * processor to have more than one associated table.
- */
-static struct insn  op_sx[] = {
-  { "ADDWF",  0x1c0,	INSN_CLASS_OPWF5 	},
-  { "ANDLW",  0xe00,	INSN_CLASS_LIT8 	},
-  { "ANDWF",  0x140,	INSN_CLASS_OPWF5 	},
-  { "BANK",   0x018,    INSN_CLASS_LIT3_BANK    }, /* SX only */
-  { "BCF",    0x400,	INSN_CLASS_B5 		},
-  { "BSF",    0x500,	INSN_CLASS_B5 		},
-  { "BTFSC",  0x600,	INSN_CLASS_B5 		},
-  { "BTFSS",  0x700,	INSN_CLASS_B5		},
-  { "CALL",   0x900,	INSN_CLASS_LIT8C 	},
-  { "CLRF",   0x060,	INSN_CLASS_OPF5 	},
-  { "CLRW",   0x040,	INSN_CLASS_IMPLICIT 	},
-  { "CLRWDT", 0x004, 	INSN_CLASS_IMPLICIT 	},
-  { "COMF",   0x240,	INSN_CLASS_OPWF5 	},
-  { "DECF",   0x0c0,	INSN_CLASS_OPWF5 	},
-  { "DECFSZ", 0x2c0,	INSN_CLASS_OPWF5 	},
-  { "GOTO",   0xa00,	INSN_CLASS_LIT9 	},
-  { "INCF",   0x280,	INSN_CLASS_OPWF5 	},
-  { "INCFSZ", 0x3c0,	INSN_CLASS_OPWF5 	},
-  { "IORLW",  0xd00,	INSN_CLASS_LIT8 	},
-  { "IORWF",  0x100,	INSN_CLASS_OPWF5 	},
-  { "IREAD",  0x041,    INSN_CLASS_IMPLICIT     }, /* SX only */
-  { "MODE",   0x050,    INSN_CLASS_LIT4         }, /* SX only */
-  { "MOVF",   0x200,	INSN_CLASS_OPWF5 	},
-  { "MOVLW",  0xc00,	INSN_CLASS_LIT8 	},
-  { "MOVMW",  0x042,    INSN_CLASS_IMPLICIT     }, /* SX only */
-  { "MOVWF",  0x020,	INSN_CLASS_OPF5 	},
-  { "MOVWM",  0x043,    INSN_CLASS_IMPLICIT     }, /* SX only */
-  { "NOP",    0x000,	INSN_CLASS_IMPLICIT 	},
-  { "OPTION", 0x002,	INSN_CLASS_IMPLICIT 	},
-  { "PAGE",   0x010,    INSN_CLASS_LIT3_PAGE    }, /* SX only */
-  { "RETI",   0x00e,    INSN_CLASS_IMPLICIT     }, /* SX only */
-  { "RETIW",  0x00f,    INSN_CLASS_IMPLICIT     }, /* SX only */
-  { "RETLW",  0x800,	INSN_CLASS_LIT8 	},
-  { "RETP",   0x00d,    INSN_CLASS_IMPLICIT     }, /* SX only */
-  { "RETURN", 0x00c,    INSN_CLASS_IMPLICIT     }, /* SX only */
-  { "RLF",    0x340,	INSN_CLASS_OPWF5 	},
-  { "RRF",    0x300,	INSN_CLASS_OPWF5 	},
-  { "SLEEP",  0x003,	INSN_CLASS_IMPLICIT 	},
-  { "SUBWF",  0x080,	INSN_CLASS_OPWF5 	},
-  { "SWAPF",  0x380,	INSN_CLASS_OPWF5 	},
-  { "TRIS",   0x000,	INSN_CLASS_OPF5 	}, /* not optimal */
-  { "XORLW",  0xf00,	INSN_CLASS_LIT8 	},
-  { "XORWF",  0x180,	INSN_CLASS_OPWF5 	}
-};
-
-/* PIC 14-bit instruction set */
-static struct insn  op_16cxx[] = {
-  { "ADDLW",  0x3e00, 	INSN_CLASS_LIT8 	},
-  { "ADDWF",  0x0700,	INSN_CLASS_OPWF7 	},
-  { "ANDLW",  0x3900,	INSN_CLASS_LIT8 	},
-  { "ANDWF",  0x0500,	INSN_CLASS_OPWF7 	},
-  { "BCF",    0x1000,	INSN_CLASS_B7 		},
-  { "BSF",    0x1400,	INSN_CLASS_B7 		},
-  { "BTFSC",  0x1800,	INSN_CLASS_B7 		},
-  { "BTFSS",  0x1c00,	INSN_CLASS_B7		},
-  { "CALL",   0x2000,	INSN_CLASS_LIT11 	},
-  { "CLRF",   0x0180,	INSN_CLASS_OPF7		},
-  { "CLRW",   0x0103,	INSN_CLASS_IMPLICIT 	},
-  { "CLRWDT", 0x0064, 	INSN_CLASS_IMPLICIT 	},
-  { "COMF",   0x0900,	INSN_CLASS_OPWF7 	},
-  { "DECF",   0x0300,	INSN_CLASS_OPWF7 	},
-  { "DECFSZ", 0x0b00,	INSN_CLASS_OPWF7 	},
-  { "GOTO",   0x2800,	INSN_CLASS_LIT11 	},
-  { "INCF",   0x0a00,	INSN_CLASS_OPWF7 	},
-  { "INCFSZ", 0x0f00,	INSN_CLASS_OPWF7 	},
-  { "IORLW",  0x3800,	INSN_CLASS_LIT8 	},
-  { "IORWF",  0x0400,	INSN_CLASS_OPWF7 	},
-  { "MOVF",   0x0800,	INSN_CLASS_OPWF7 	},
-  { "MOVLW",  0x3000,	INSN_CLASS_LIT8 	},
-  { "MOVWF",  0x0080,	INSN_CLASS_OPF7 	},
-  { "NOP",    0x0000,	INSN_CLASS_IMPLICIT 	},
-  { "OPTION", 0x0062,	INSN_CLASS_IMPLICIT 	},
-  { "RETFIE", 0x0009,	INSN_CLASS_IMPLICIT 	},
-  { "RETLW",  0x3400,	INSN_CLASS_LIT8 	},
-  { "RETURN", 0x0008,	INSN_CLASS_IMPLICIT 	},
-  { "RLF",    0x0d00,	INSN_CLASS_OPWF7 	},
-  { "RRF",    0x0c00,	INSN_CLASS_OPWF7 	},
-  { "SLEEP",  0x0063,	INSN_CLASS_IMPLICIT 	},
-  { "SUBLW",  0x3c00,	INSN_CLASS_LIT8 	},
-  { "SUBWF",  0x0200,	INSN_CLASS_OPWF7 	},
-  { "SWAPF",  0x0e00,	INSN_CLASS_OPWF7 	},
-  { "TRIS",   0x0060,	INSN_CLASS_OPF7		},
-  { "XORLW",  0x3a00,	INSN_CLASS_LIT8 	},
-  { "XORWF",  0x0600,	INSN_CLASS_OPWF7 	}
-};
-
-/* PIC 16-bit instruction set */
-static struct insn  op_17cxx[] = {
-  { "ADDLW",  0xb100,   INSN_CLASS_LIT8         },
-  { "ADDWF",  0x0e00,   INSN_CLASS_OPWF8        },
-  { "ADDWFC", 0x1000,   INSN_CLASS_OPWF8        },
-  { "ANDLW",  0xb500,   INSN_CLASS_LIT8         },
-  { "ANDWF",  0x0a00,   INSN_CLASS_OPWF8        },
-  { "BCF",    0x8800,   INSN_CLASS_B8           },
-  { "BSF",    0x8000,   INSN_CLASS_B8           },
-  { "BTFSC",  0x9800,   INSN_CLASS_B8           },
-  { "BTFSS",  0x9000,   INSN_CLASS_B8           },
-  { "BTG",    0x3800,   INSN_CLASS_B8           },
-  { "CALL",   0xe000,   INSN_CLASS_LIT13        },
-  { "CLRF",   0x2800,   INSN_CLASS_OPWF8        },
-  { "CLRWDT", 0x0004,   INSN_CLASS_IMPLICIT     },
-  { "COMF",   0x1200,   INSN_CLASS_OPWF8        },
-  { "CPFSEQ", 0x3100,   INSN_CLASS_OPF8         },
-  { "CPFSGT", 0x3200,   INSN_CLASS_OPF8         },
-  { "CPFSLT", 0x3000,   INSN_CLASS_OPF8         },
-  { "DAW",    0x2e00,   INSN_CLASS_OPWF8        },
-  { "DECF",   0x0600,   INSN_CLASS_OPWF8        },
-  { "DECFSZ", 0x1600,   INSN_CLASS_OPWF8        },
-  { "DCFSNZ", 0x2600,   INSN_CLASS_OPWF8        },
-  { "GOTO",   0xc000,   INSN_CLASS_LIT13        },
-  { "INCF",   0x1400,   INSN_CLASS_OPWF8        },
-  { "INCFSZ", 0x1e00,   INSN_CLASS_OPWF8        },
-  { "INFSNZ", 0x2400,   INSN_CLASS_OPWF8        },
-  { "IORLW",  0xb300,   INSN_CLASS_LIT8         },
-  { "IORWF",  0x0800,   INSN_CLASS_OPWF8        },
-  { "LCALL",  0xb700,   INSN_CLASS_LIT8         },
-  { "MOVFP",  0x6000,   INSN_CLASS_FP           },
-  { "MOVPF",  0x4000,   INSN_CLASS_PF           },
-  { "MOVLB",  0xb800,   INSN_CLASS_LIT8         },
-  { "MOVLR",  0xba00,   INSN_CLASS_LIT4S        },
-  { "MOVLW",  0xb000,   INSN_CLASS_LIT8         },
-  { "MOVWF",  0x0100,   INSN_CLASS_OPF8         },
-  { "MULLW",  0xbc00,   INSN_CLASS_LIT8         },
-  { "MULWF",  0x3400,   INSN_CLASS_OPF8         },
-  { "NEGW",   0x2c00,   INSN_CLASS_OPWF8        },
-  { "NOP",    0x0000,   INSN_CLASS_IMPLICIT     },
-  { "RETFIE", 0x0005,   INSN_CLASS_IMPLICIT     },
-  { "RETLW",  0xb600,   INSN_CLASS_LIT8         },
-  { "RETURN", 0x0002,   INSN_CLASS_IMPLICIT     },
-  { "RLCF",   0x1a00,   INSN_CLASS_OPWF8        },
-  { "RLNCF",  0x2200,   INSN_CLASS_OPWF8        },
-  { "RRCF",   0x1800,   INSN_CLASS_OPWF8        },
-  { "RRNCF",  0x2000,   INSN_CLASS_OPWF8        },
-  { "SETF",   0x2a00,   INSN_CLASS_OPWF8        },
-  { "SLEEP",  0x0003,   INSN_CLASS_IMPLICIT     },
-  { "SUBLW",  0xb200,   INSN_CLASS_LIT8         },
-  { "SUBWF",  0x0400,   INSN_CLASS_OPWF8        },
-  { "SUBWFB", 0x0200,   INSN_CLASS_OPWF8        },
-  { "SWAPF",  0x1c00,   INSN_CLASS_OPWF8        },
-  { "TABLRD", 0xa800,   INSN_CLASS_TBL3         },
-  { "TABLWT", 0xac00,   INSN_CLASS_TBL3         },
-  { "TLRD",   0xa000,   INSN_CLASS_TBL2         },
-  { "TLWT",   0xa400,   INSN_CLASS_TBL2         },
-  { "TSTFSZ", 0x3300,   INSN_CLASS_OPF8         },
-  { "XORLW",  0xb400,   INSN_CLASS_LIT8         },
-  { "XORWF",  0x0c00,   INSN_CLASS_OPWF8        }
-};
-
-static struct insn  op_18cxx[] = {
-  { "ADDLW",  0x0f00, 	INSN_CLASS_LIT8 	},
-  { "ADDWF",  0x2400,	INSN_CLASS_OPWFA8 	},
-  { "ADDWFC", 0x2000,	INSN_CLASS_OPWFA8 	},
-  { "ANDLW",  0x0b00,	INSN_CLASS_LIT8 	},
-  { "ANDWF",  0x1400,	INSN_CLASS_OPWFA8 	},
-  { "BC",     0xe200,	INSN_CLASS_RBRA8       	},
-  { "BCF",    0x9000,	INSN_CLASS_BA8 		},
-  { "BN",     0xe600,	INSN_CLASS_RBRA8       	},
-  { "BNC",    0xe300,	INSN_CLASS_RBRA8       	},
-  { "BNN",    0xe700,	INSN_CLASS_RBRA8       	},
-  { "BNOV",   0xe500,	INSN_CLASS_RBRA8       	},
-  { "BNZ",    0xe100,	INSN_CLASS_RBRA8       	},
-  { "BRA",    0xd000,	INSN_CLASS_RBRA11	},
-  { "BSF",    0x8000,	INSN_CLASS_BA8 		},
-  { "BTFSC",  0xb000,	INSN_CLASS_BA8 		},
-  { "BTFSS",  0xa000,	INSN_CLASS_BA8		},
-  { "BTG",    0x7000,	INSN_CLASS_BA8		},
-  { "BOV",    0xe400,	INSN_CLASS_RBRA8       	},
-  { "BZ",     0xe000,	INSN_CLASS_RBRA8       	},
-  { "CALL",   0xec00,	INSN_CLASS_CALL20 	},
-  { "CLRF",   0x6a00,	INSN_CLASS_OPFA8	},
-  { "CLRWDT", 0x0004, 	INSN_CLASS_IMPLICIT 	},
-  { "COMF",   0x1c00,	INSN_CLASS_OPWFA8 	},
-  { "CPFSEQ", 0x6200,	INSN_CLASS_OPFA8 	},
-  { "CPFSGT", 0x6400,	INSN_CLASS_OPFA8 	},
-  { "CPFSLT", 0x6000,	INSN_CLASS_OPFA8 	},
-  { "DAW",    0x0007,	INSN_CLASS_IMPLICIT 	},
-  { "DECF",   0x0400,	INSN_CLASS_OPWFA8 	},
-  { "DECFSZ", 0x2c00,	INSN_CLASS_OPWFA8 	},
-  { "DCFSNZ", 0x4c00,	INSN_CLASS_OPWFA8 	},
-  { "GOTO",   0xef00,	INSN_CLASS_LIT20 	},
-  { "INCF",   0x2800,	INSN_CLASS_OPWFA8 	},
-  { "INCFSZ", 0x3c00,	INSN_CLASS_OPWFA8 	},
-  { "INFSNZ", 0x4800,	INSN_CLASS_OPWFA8 	},
-  { "IORLW",  0x0900,	INSN_CLASS_LIT8 	},
-  { "IORWF",  0x1000,	INSN_CLASS_OPWFA8 	},
-  { "LFSR",   0xee00,	INSN_CLASS_FLIT12 	},
-  { "MOVF",   0x5000,	INSN_CLASS_OPWFA8 	},
-  { "MOVFF",  0xc000,	INSN_CLASS_FF 		},
-  { "MOVLB",  0x0100,	INSN_CLASS_LIT8 	},
-  { "MOVLW",  0x0e00,	INSN_CLASS_LIT8 	},
-  { "MOVWF",  0x6e00,	INSN_CLASS_OPFA8 	},
-  { "MULLW",  0x0d00,	INSN_CLASS_LIT8 	},
-  { "MULWF",  0x0200,	INSN_CLASS_OPFA8 	},
-  { "NEGF",   0x6c00,	INSN_CLASS_OPFA8 	},
-  { "NOP",    0x0000,	INSN_CLASS_IMPLICIT 	},
-  { "POP",    0x0006,	INSN_CLASS_IMPLICIT 	},
-  { "PUSH",   0x0005,	INSN_CLASS_IMPLICIT 	},
-  { "RCALL",  0xd800,	INSN_CLASS_RBRA11 	},
-  { "RESET",  0x00ff,	INSN_CLASS_IMPLICIT 	}, 
-  { "RETFIE", 0x0010,	INSN_CLASS_LIT1 	},
-  { "RETLW",  0x0c00,	INSN_CLASS_LIT8 	},
-  { "RETURN", 0x0012,	INSN_CLASS_LIT1 	},
-  { "RLCF",   0x3400,	INSN_CLASS_OPWFA8 	},
-  { "RLNCF",  0x4400,	INSN_CLASS_OPWFA8 	},
-  { "RRCF",   0x3000,	INSN_CLASS_OPWFA8 	},
-  { "RRNCF",  0x4000,	INSN_CLASS_OPWFA8 	},
-  { "SETF",   0x6800,	INSN_CLASS_OPFA8 	},
-  { "SLEEP",  0x0003,	INSN_CLASS_IMPLICIT 	},
-  { "SUBFWB", 0x5400,	INSN_CLASS_OPWFA8 	},
-  { "SUBLW",  0x0800,	INSN_CLASS_LIT8 	},
-  { "SUBWF",  0x5c00,	INSN_CLASS_OPWFA8 	},
-  { "SUBWFB", 0x5800,	INSN_CLASS_OPWFA8 	},
-  { "SWAPF",  0x3800,	INSN_CLASS_OPWFA8 	},
-  { "TBLRD",  0x0008,	INSN_CLASS_TBL 		},
-  { "TBLWT",  0x000c,	INSN_CLASS_TBL 		},
-  { "TSTFSZ", 0x6600,	INSN_CLASS_OPFA8	},
-  { "XORLW",  0x0a00,	INSN_CLASS_LIT8 	},
-  { "XORWF",  0x1800,	INSN_CLASS_OPWFA8	}
-};
-
-/* PIC 16-bit "Special" instruction set */
-static struct insn  op_18cxx_sp[] = {
-  { "CLRC",  0x90d8,	INSN_CLASS_IMPLICIT 	},
-  { "CLRDC", 0x92d8,	INSN_CLASS_IMPLICIT 	},
-  { "CLRN",  0x98d8,	INSN_CLASS_IMPLICIT 	},
-  { "CLROV", 0x96d8,	INSN_CLASS_IMPLICIT 	},
-  { "CLRW",  0x6ae8,	INSN_CLASS_IMPLICIT 	},
-  { "CLRZ",  0x94d8,	INSN_CLASS_IMPLICIT 	},
-
-  { "SETC",  0x80d8,	INSN_CLASS_IMPLICIT 	},
-  { "SETDC", 0x82d8,	INSN_CLASS_IMPLICIT 	},
-  { "SETN",  0x88d8,	INSN_CLASS_IMPLICIT 	},
-  { "SETOV", 0x86d8,	INSN_CLASS_IMPLICIT 	},
-  { "SETZ",  0x84d8,	INSN_CLASS_IMPLICIT 	},
-
-  { "SKPC",  0xa0d8,	INSN_CLASS_IMPLICIT 	},
-  { "SKPDC", 0xa2d8,	INSN_CLASS_IMPLICIT 	},
-  { "SKPN",  0xa8d8,	INSN_CLASS_IMPLICIT 	},
-  { "SKPOV", 0xa6d8,	INSN_CLASS_IMPLICIT 	},
-  { "SKPZ",  0xa4d8,	INSN_CLASS_IMPLICIT 	},
-
-  { "SKPNC", 0xb0d8,	INSN_CLASS_IMPLICIT 	},
-  { "SKPNDC",0xb2d8,	INSN_CLASS_IMPLICIT 	},
-  { "SKPNN", 0xb8d8,	INSN_CLASS_IMPLICIT 	},
-  { "SKPNOV",0xb6d8,	INSN_CLASS_IMPLICIT 	},
-  { "SKPNZ", 0xb4d8,	INSN_CLASS_IMPLICIT 	},
-
-  { "TGC",   0x70d8,	INSN_CLASS_IMPLICIT 	},
-  { "TGDC",  0x72d8,	INSN_CLASS_IMPLICIT 	},
-  { "TGN",   0x78d8,	INSN_CLASS_IMPLICIT 	},
-  { "TGOV",  0x76d8,	INSN_CLASS_IMPLICIT 	},
-  { "TGZ",   0x74d8,	INSN_CLASS_IMPLICIT 	}
-
-};
-
-/* PIC 12-bit and 14-bit "Special" instruction set */
-static struct insn special[] = {
-  { "addcf",    (long int)do_addcf,  INSN_CLASS_FUNC,        0 },
-  { "adddcf",   (long int)do_adddcf, INSN_CLASS_FUNC,        0 },
-  { "b",        (long int)do_b,      INSN_CLASS_FUNC,        0 },
-  { "bc",       (long int)do_bc,     INSN_CLASS_FUNC,        0 },
-  { "bdc",      (long int)do_bdc,    INSN_CLASS_FUNC,        0 },
-  { "bz",       (long int)do_bz,     INSN_CLASS_FUNC,        0 },
-  { "bnc",      (long int)do_bnc,    INSN_CLASS_FUNC,        0 },
-  { "bndc",     (long int)do_bndc,   INSN_CLASS_FUNC,        0 },
-  { "bnz",      (long int)do_bnz,    INSN_CLASS_FUNC,        0 },
-  { "clrc",     (long int)do_clrc,   INSN_CLASS_FUNC,        0 },
-  { "clrdc",    (long int)do_clrdc,  INSN_CLASS_FUNC,        0 },
-  { "clrz",     (long int)do_clrz,   INSN_CLASS_FUNC,        0 },
-  { "lcall",    (long int)do_lcall,  INSN_CLASS_FUNC,        0 },
-  { "lgoto",    (long int)do_lgoto,  INSN_CLASS_FUNC,        0 },
-  { "movfw",    (long int)do_movfw,  INSN_CLASS_FUNC,        0 },
-  { "negf",     (long int)do_negf,   INSN_CLASS_FUNC,        0 },
-  { "setc",     (long int)do_setc,   INSN_CLASS_FUNC,        0 },
-  { "setdc",    (long int)do_setdc,  INSN_CLASS_FUNC,        0 },
-  { "setz",     (long int)do_setz,   INSN_CLASS_FUNC,        0 }, 
-  { "skpc",     (long int)do_skpc,   INSN_CLASS_FUNC,        0 },
-  { "skpdc",    (long int)do_skpdc,  INSN_CLASS_FUNC,        0 },
-  { "skpz",     (long int)do_skpz,   INSN_CLASS_FUNC,        0 },
-  { "skpnc",    (long int)do_skpnc,  INSN_CLASS_FUNC,        0 },
-  { "skpndc",   (long int)do_skpndc, INSN_CLASS_FUNC,        0 },
-  { "skpnz",    (long int)do_skpnz,  INSN_CLASS_FUNC,        0 },
-  { "subcf",    (long int)do_subcf,  INSN_CLASS_FUNC,        0 },
-  { "subdcf",   (long int)do_subdcf, INSN_CLASS_FUNC,        0 },
-  { "tstf",     (long int)do_tstf,   INSN_CLASS_FUNC,        0 }
-
-};
-
-/* XXXPRO: Need to add a line here for any extra processors. */
-
-#define NUM_OP_0	(sizeof(op_0) / sizeof(op_0[0]))
-#define NUM_OP_1	(sizeof(op_1) / sizeof(op_1[0]))
-#define NUM_OP_12C5XX	(sizeof(op_12c5xx) / sizeof(op_12c5xx[0]))
-#define NUM_OP_16CXX	(sizeof(op_16cxx) / sizeof(op_16cxx[0]))
-#define NUM_OP_SX	(sizeof(op_sx) / sizeof(op_sx[0]))
-#define NUM_OP_17CXX    (sizeof(op_17cxx) / sizeof(op_17cxx[0]))
-#define NUM_OP_18CXX	(sizeof(op_18cxx) / sizeof(op_18cxx[0]))
-#define NUM_OP_18CXX_SP	(sizeof(op_18cxx_sp) / sizeof(op_18cxx_sp[0]))
-#define NUM_OP_SPECIAL	(sizeof(special) / sizeof(special[0]))
+const int num_op_1 = TABLE_SIZE(op_1);
 
 void opcode_init(int stage)
 {
@@ -2841,11 +2447,11 @@ void opcode_init(int stage)
   switch (stage) {
   case 0:
     base = op_0;
-    count = NUM_OP_0;
+    count = num_op_0;
     break;
   case 1:
     base = op_1;
-    count = NUM_OP_1;
+    count = num_op_1;
     break;
   case 2:
 
@@ -2902,7 +2508,7 @@ void opcode_init(int stage)
     case pic16cr58b:
     case pic16hv540:
       base = op_12c5xx;
-      count = NUM_OP_12C5XX;
+      count = num_op_12c5xx;
       state.device.core_size = CORE_12BIT_MASK;
       state.device.config_address = CONFIG_ADDRESS_12;
       state.device.id_location = IDLOC_ADDRESS_12;
@@ -2911,7 +2517,7 @@ void opcode_init(int stage)
     case sx20:
     case sx28:
       base = op_sx;
-      count = NUM_OP_SX;
+      count = num_op_sx;
       state.device.core_size = CORE_12BIT_MASK;
       state.device.config_address = CONFIG_ADDRESS_12;
       state.device.id_location = IDLOC_ADDRESS_12;
@@ -3017,7 +2623,7 @@ void opcode_init(int stage)
     case pic16f877a:
     case pic16lc74b:
       base = op_16cxx;
-      count = NUM_OP_16CXX;
+      count = num_op_16cxx;
       state.device.core_size = CORE_14BIT_MASK;
       state.device.config_address = CONFIG_ADDRESS_14;
       state.device.id_location = IDLOC_ADDRESS_14;
@@ -3035,7 +2641,7 @@ void opcode_init(int stage)
     case pic17cr42:
     case pic17cr43:
       base = op_17cxx;
-      count = NUM_OP_17CXX;
+      count = num_op_17cxx;
       state.device.core_size = CORE_16BIT_MASK;
       _17cxx_core = 1;
       state.device.config_address = CONFIG_17CXX;
@@ -3062,7 +2668,7 @@ void opcode_init(int stage)
     case pic18f452:
     case pic18f458:
       base = op_18cxx;
-      count = NUM_OP_18CXX;
+      count = num_op_18cxx;
       state.device.core_size = CORE_16BIT_MASK;
       _16bit_core = 1;
       state.c_memory_base = CONFIG1L;
@@ -3070,7 +2676,7 @@ void opcode_init(int stage)
 
       /* The 16_bit core special macros are encoded directly into the
        * symbol table like regular instructions. */
-      for (i = 0; i < NUM_OP_18CXX_SP; i++)
+      for (i = 0; i < num_op_18cxx_sp; i++)
 	annotate_symbol( add_symbol(state.stBuiltin, op_18cxx_sp[i].name), 
 			 &op_18cxx_sp[i]);
 
@@ -3083,7 +2689,7 @@ void opcode_init(int stage)
   case 3:
     /* add 12 and 14 bit special macros */
     base = special;
-    count = NUM_OP_SPECIAL;
+    count = num_op_special;
     break;
   default:
     assert(0);

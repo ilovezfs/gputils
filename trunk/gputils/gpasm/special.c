@@ -22,6 +22,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include "gpasm.h"
 #include "gperror.h"
+#include "gpopcode.h"
 #include "special.h"
 #include "directive.h"
 
@@ -452,3 +453,38 @@ extern gpasmVal do_tstf(gpasmVal r,
 
   return r;
 }
+
+/* PIC 12-bit and 14-bit "Special" instruction set */
+struct insn special[] = {
+  { "addcf",    (long int)do_addcf,  INSN_CLASS_FUNC,        0 },
+  { "adddcf",   (long int)do_adddcf, INSN_CLASS_FUNC,        0 },
+  { "b",        (long int)do_b,      INSN_CLASS_FUNC,        0 },
+  { "bc",       (long int)do_bc,     INSN_CLASS_FUNC,        0 },
+  { "bdc",      (long int)do_bdc,    INSN_CLASS_FUNC,        0 },
+  { "bz",       (long int)do_bz,     INSN_CLASS_FUNC,        0 },
+  { "bnc",      (long int)do_bnc,    INSN_CLASS_FUNC,        0 },
+  { "bndc",     (long int)do_bndc,   INSN_CLASS_FUNC,        0 },
+  { "bnz",      (long int)do_bnz,    INSN_CLASS_FUNC,        0 },
+  { "clrc",     (long int)do_clrc,   INSN_CLASS_FUNC,        0 },
+  { "clrdc",    (long int)do_clrdc,  INSN_CLASS_FUNC,        0 },
+  { "clrz",     (long int)do_clrz,   INSN_CLASS_FUNC,        0 },
+  { "lcall",    (long int)do_lcall,  INSN_CLASS_FUNC,        0 },
+  { "lgoto",    (long int)do_lgoto,  INSN_CLASS_FUNC,        0 },
+  { "movfw",    (long int)do_movfw,  INSN_CLASS_FUNC,        0 },
+  { "negf",     (long int)do_negf,   INSN_CLASS_FUNC,        0 },
+  { "setc",     (long int)do_setc,   INSN_CLASS_FUNC,        0 },
+  { "setdc",    (long int)do_setdc,  INSN_CLASS_FUNC,        0 },
+  { "setz",     (long int)do_setz,   INSN_CLASS_FUNC,        0 }, 
+  { "skpc",     (long int)do_skpc,   INSN_CLASS_FUNC,        0 },
+  { "skpdc",    (long int)do_skpdc,  INSN_CLASS_FUNC,        0 },
+  { "skpz",     (long int)do_skpz,   INSN_CLASS_FUNC,        0 },
+  { "skpnc",    (long int)do_skpnc,  INSN_CLASS_FUNC,        0 },
+  { "skpndc",   (long int)do_skpndc, INSN_CLASS_FUNC,        0 },
+  { "skpnz",    (long int)do_skpnz,  INSN_CLASS_FUNC,        0 },
+  { "subcf",    (long int)do_subcf,  INSN_CLASS_FUNC,        0 },
+  { "subdcf",   (long int)do_subdcf, INSN_CLASS_FUNC,        0 },
+  { "tstf",     (long int)do_tstf,   INSN_CLASS_FUNC,        0 }
+
+};
+
+const int num_op_special = TABLE_SIZE(special);
