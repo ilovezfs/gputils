@@ -1,3 +1,9 @@
+2003-07-20 Craig Franklin <craigfranklin@comcast.net>
+  * Fixed gplink error that caused the map file to always be generated.
+  * Fixed bug in gpasm that caused 18xx access bank bit to be ignored if it
+    was specified on some instructions.
+  * Changed gpdasm 18xx address format from word to byte. 
+
 2003-07-07 Craig Franklin <craigfranklin@comcast.net>
   * Changed extension of gplink object output from ".o" to ".out"
   * Fixed error in RES directive when used for data sections.
