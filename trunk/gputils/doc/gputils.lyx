@@ -1994,7 +1994,7 @@ Case
 case <name> is
 \layout LyX-Code
 
-[when <constant> =>
+[when <constant> [ | <constant> ]* =>
 \layout LyX-Code
 
   <statements>]*
@@ -2018,13 +2018,13 @@ If <name> equals any of the <constants> the <statements> are executed.
 case input is
 \layout LyX-Code
 
-  when MAXIMUM =>
+  when MAXIMUM | MINIMUM =>
 \layout LyX-Code
 
     output = 8;
 \layout LyX-Code
 
-  when 5 =>
+  when 5 | 3 | 2 =>
 \layout LyX-Code
 
     output = 4;
