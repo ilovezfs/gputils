@@ -6,8 +6,10 @@ dist-hook:
 	cp gputils.spec $(distdir)     
 
 EXTRA_DIST =\
-	./include/stdhdr.h \
+	./include/ansidecl.h \
 	./include/getopt.h \
+	./include/libiberty.h \
+	./include/stdhdr.h \
 	config.h.in \
 	gputils.spec.in \
 	stamp-h.in \

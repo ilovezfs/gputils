@@ -172,8 +172,10 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 SUBDIRS = @MAKE_SUBDIRS@
 EXTRA_DIST = \
-	./include/stdhdr.h \
+	./include/ansidecl.h \
 	./include/getopt.h \
+	./include/libiberty.h \
+	./include/stdhdr.h \
 	config.h.in \
 	gputils.spec.in \
 	stamp-h.in \
