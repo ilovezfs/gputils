@@ -1,3 +1,6 @@
+2004-07-17 Craig Franklin <craigfranklin@comcast.net>
+  * Added _stack_end symbol to gplink to simplify downward growing stacks.
+
 2004-07-13 Craig Franklin <craigfranklin@comcast.net>
   * gputils 0.12.2 Released.
 

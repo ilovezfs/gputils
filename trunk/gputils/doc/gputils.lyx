@@ -8883,7 +8883,7 @@ Where options can be one of:
 \added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
 
 \begin_inset  Tabular
-<lyxtabular version="3" rows="12" columns="2">
+<lyxtabular version="3" rows="14" columns="2">
 <features>
 <column alignment="left" valignment="top" leftline="true" width="0pt">
 <column alignment="block" valignment="top" leftline="true" rightline="true" width="4in">
@@ -9020,6 +9020,24 @@ Specify an include directory.
 
 \layout Standard
 
+l
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Disable the list file output.
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
 m
 \end_inset 
 </cell>
@@ -9086,6 +9104,24 @@ Specify linker script.
 \end_inset 
 </cell>
 </row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+-t <value>
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Create a stack section.
+\end_inset 
+</cell>
+</row>
 <row topline="true" bottomline="true">
 <cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -9100,7 +9136,7 @@ v
 
 \layout Standard
 
-Print gplib version information and exit
+Print gplink version information and exit
 \end_inset 
 </cell>
 </row>
@@ -9148,6 +9184,17 @@ gplink requires a linker script.
 If the user does not specify a linker script, gplink will attempt to use
  the default script for the processor reported in the object file.
  The default location of the scripts is reported in the gplink help message.
+\layout Section
+
+Stacks
+\layout Standard
+
+gplink can create a stack section at link time using a stack directive in
+ the linker script.
+ The same feature can be utilized with a -t option on the command line.
+ gplink will create the section and two symbols.
+ _stack points to the beginning of the stack section and _stack_end points
+ to the end.
 \layout Chapter
 
 gplib

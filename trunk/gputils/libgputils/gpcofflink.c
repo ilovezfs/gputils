@@ -290,7 +290,7 @@ gp_cofflink_make_stack(gp_object_type *object, int num_bytes)
     i_memory_put(new->data, i, MEM_USED_MASK);
   }
 
-  /* create the symbol for the start address of the table */
+  /* create the symbol for the start address of the stack */
   symbol = gp_coffgen_findsymbol(object, "_stack");
   if ((symbol != NULL) && (symbol->section_number > 0)) {
     gp_error("_stack symbol already exists");
@@ -298,6 +298,20 @@ gp_cofflink_make_stack(gp_object_type *object, int num_bytes)
     symbol = gp_coffgen_addsymbol(object);
     symbol->name           = strdup("_stack");
     symbol->value          = 0;
+    symbol->section_number = 1;
+    symbol->section        = new;
+    symbol->type           = T_NULL;
+    symbol->class          = C_EXT;
+  }
+
+  /* create the symbol for the end of the stack */
+  symbol = gp_coffgen_findsymbol(object, "_stack_end");
+  if ((symbol != NULL) && (symbol->section_number > 0)) {
+    gp_error("_stack_end symbol already exists");
+  } else {
+    symbol = gp_coffgen_addsymbol(object);
+    symbol->name           = strdup("_stack_end");
+    symbol->value          = num_bytes - 1;
     symbol->section_number = 1;
     symbol->section        = new;
     symbol->type           = T_NULL;
