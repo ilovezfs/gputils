@@ -2453,6 +2453,59 @@ The public declares which portions of its module will be visible to other
  the declarations in the file match its subprograms and data.
 \layout Section
 
+Vectors
+\layout Subsection
+
+Reset
+\layout Standard
+
+A reset vector and the associated startup code is generated on any procedure
+ with the name 
+\begin_inset Quotes eld
+\end_inset 
+
+main
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ It can reside in any module, but there can be only one procedure with the
+ name 
+\begin_inset Quotes eld
+\end_inset 
+
+main
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Subsection
+
+Interrupt
+\layout Standard
+
+An interrupt vector and the associated context saving code is generated
+ on any procedure with the name 
+\begin_inset Quotes eld
+\end_inset 
+
+isr
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ It can reside in any module, but there can be only one procedure with the
+ name 
+\begin_inset Quotes eld
+\end_inset 
+
+isr
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Section
+
 Code Generation
 \layout Subsection
 
@@ -4393,7 +4446,11 @@ When you write a number without a specifying prefix such as
 \end_inset 
 
  option on gpasm's command-line.
- If you do not start hexadecimal numbers with a digit, gpasm will attempt
+ The default radix is hexadecimal.
+ 
+\layout Standard
+
+If you do not start hexadecimal numbers with a digit, gpasm will attempt
  to interpret what you've written as an identifier.
  For example, instead of writing C2, write either 0C2, 0xC2 or H'C2'.
 \layout Standard
