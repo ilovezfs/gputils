@@ -659,7 +659,7 @@ do_action:	/* This label is used only to access EOF actions. */
 case YY_STATE_EOF(INITIAL):
 #line 42 "scan.l"
 {
-			   if (close_file)
+			   if (close_file())
 			     yyterminate();
 			 }
 	YY_BREAK

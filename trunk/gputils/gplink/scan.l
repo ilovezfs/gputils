@@ -40,7 +40,7 @@ SYM [a-z0-9_./\\:]*
 
 %%
 <<EOF>>		 	 {
-			   if (close_file)
+			   if (close_file())
 			     yyterminate();
 			 }
 libpath			 {
