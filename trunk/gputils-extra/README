@@ -31,7 +31,7 @@ General:
     by a person other than the author. 
 2.  All files shall use unix format. No DOS style CRLF newlines.
 3.  No line shall exceed 78 characters.
-4.  No tab charaters shall be used.
+4.  No tab characters shall be used.
 5.  The filenames must be lower case alphanumeric characters, underscores("_"),
     and periods (".").
 6.  The natural language of the package is English.
@@ -42,7 +42,7 @@ PIC Code:
 1.  Only assembly source files shall be distributed.  No hex files.
 2.  Files shall use syntax which is compatible with gputils.
 3.  No High level language source code will be distributed.
-4.  All resevered words must be in lower case. (movlw, fill)
+4.  All reserved words must be in lower case. (movlw, fill)
 5.  .inc extension shall be reserved for files with definitions only. These 
     files should only contain equs and #defines.
 6.  .asm extension shall be reserved for files with machine code.  These files
@@ -84,7 +84,7 @@ Templates
 =========
 
 In the future, templates will be generated to reduce the amount of work
-required to make a contribution.  Until then, use your best judgement.
+required to make a contribution.  Until then, use your best judgment.
 
 Contributions
 =============
