@@ -16,7 +16,7 @@
 <BODY LANG="en-US">
 <H1>GPUTILS Relocatable Object HowTo</H1>
 <P><A HREF="mailto:craigfranklin@comcast.net">Craig Franklin</A></P>
-<P>April 9, 2003</P>
+<P>May 3, 2004</P>
 <H2>1. Introduction</H2>
 <P>This is a quick description of how to use gputils to generate
 relocatable objects and how to link those objects to generate an
@@ -44,16 +44,19 @@ generate an executable. The exception is some tools for
 microcontrollers. The applications are relatively small so creating
 one big file isn't impractical.</P>
 <P>Using relocatable objects does have advantages:</P>
-<P>1. Code can be written without regard to addresses. This makes it
-easier to write and reuse.</P>
-<P>2. The objects can be archived to create a library, which also
-simplifies reuse.</P>
-<P>3. Recompiling a project can be faster, because you only compile
-the portions that have changed.</P>
-<P>4. Files can have local name spaces. The user chooses what symbols
-are global.</P>
+<ol>
+<li>Files can have local name spaces. The user chooses what symbols
+are global.</li>
+<li>Code can be written without regard to addresses. This makes it
+easier to write and reuse.</li>
+<li>The objects can be archived to create a library, which also
+simplifies reuse.</li>
+<li>Recompiling a project can be faster, because you only compile
+the portions that have changed.</li>
+</ol>
 <P>For PICs, it has one big disadvantage. The bank and page control
 is a challenge.</P>
+
 <H2>5. Generating objects</H2>
 <P>You are interested in data memory and program memory. In absolute
 code, you have orgs to assign the start address of program memory and
@@ -61,74 +64,90 @@ cblock to generate a block of data memory. In relocatable code,
 program memory is created using the code directive and uninitialized
 data memory using udata.</P>
 <P>Take a look at the following code segment:</P>
-<P><FONT FACE="Courier, monospace">processor 16f877</FONT></P>
-<P><FONT FACE="Courier, monospace">include &quot;p16f877.inc&quot;</FONT></P>
-<P><FONT FACE="Courier, monospace">udata</FONT></P>
-<P><FONT FACE="Courier, monospace">mem1 res 1</FONT></P>
-<P><FONT FACE="Courier, monospace">mem2 res 2</FONT></P>
-<P><FONT FACE="Courier, monospace">mem3 res 1</FONT></P>
-<P><FONT FACE="Courier, monospace">; symbols from other modules</FONT></P>
-<P><FONT FACE="Courier, monospace">extern _main</FONT></P>
-<P><FONT FACE="Courier, monospace">code</FONT></P>
-<P><FONT FACE="Courier, monospace">_init</FONT></P>
-<P><FONT FACE="Courier, monospace">banksel mem1</FONT></P>
-<P><FONT FACE="Courier, monospace">movlw 0</FONT></P>
-<P><FONT FACE="Courier, monospace">movwf mem1</FONT></P>
-<P><FONT FACE="Courier, monospace">movwf mem2</FONT></P>
-<P><FONT FACE="Courier, monospace">movwf mem2 + 1</FONT></P>
-<P><FONT FACE="Courier, monospace">movwf mem3</FONT></P>
-<P><FONT FACE="Courier, monospace">pagesel _main</FONT></P>
-<P><FONT FACE="Courier, monospace">goto _main</FONT></P>
-<P><FONT FACE="Courier, monospace">; global symbols in this module</FONT></P>
-<P><FONT FACE="Courier, monospace">global mem1</FONT></P>
-<P><FONT FACE="Courier, monospace">global mem2</FONT></P>
-<P><FONT FACE="Courier, monospace">global _init</FONT></P>
-<P><FONT FACE="Courier, monospace">end</FONT></P>
+<pre>
+	processor 16f877
+	include &quot;p16f877.inc&quot;
+
+	udata
+mem1	res	1
+mem2	res	2
+mem3	res	1
+; symbols from other modules
+
+	extern	_main
+
+	code
+_init
+	banksel	mem1
+	movlw	0
+	movwf	mem1
+	movwf	mem2
+	movwf	mem2 + 1
+	movwf	mem3
+	pagesel	_main
+	goto	_main
+; global symbols in this module
+	global	mem1
+	global	mem2
+	global	_init
+	end
+</pre>
+
 <P>4 bytes of uninitialized data are reserved. A code segment to
 initialize the data starts at symbol _init. Once complete the code
 branches to _main. Mem1 and mem2 are global file registers. mem3 is
 static, which is a waste considering it is only initialized and never
 used.</P>
 <P>This file would be assembled by gpasm:</P>
-<P>gpasm -c init.asm</P>
-<P>gpasm would output a COFF, init.o.</P>
+<pre>
+gpasm -c init.asm
+</pre>
+gpasm would output a COFF, init.o.
+
 <P>You can assign the section address in the assembler by adding an
 address to the section directive (udata or code). This is not
 recomended. You don't want to assign the address at assembly time,
 that would defeat the purpose.</P>
-<P><FONT FACE="Courier, monospace">code 0x100</FONT></P>
-<P><FONT FACE="Courier, monospace">_init</FONT></P>
-<P><FONT FACE="Courier, monospace">banksel mem1</FONT></P>
-<P><FONT FACE="Courier, monospace">movlw 0</FONT></P>
-<P><FONT FACE="Courier, monospace">movwf mem1</FONT></P>
-<P><FONT FACE="Courier, monospace">movwf mem2</FONT></P>
-<P><FONT FACE="Courier, monospace">movwf mem2 + 1</FONT></P>
-<P><FONT FACE="Courier, monospace">movwf mem3</FONT></P>
-<P><FONT FACE="Courier, monospace">pagesel _main</FONT></P>
-<P><FONT FACE="Courier, monospace">goto _main</FONT></P>
+<pre>
+	code	0x100
+_init
+	banksel	mem1
+	movlw	0
+	movwf	mem1
+	movwf	mem2
+	movwf	mem2 + 1
+	movwf	mem3
+	pagesel	_main
+	goto	_main
+</pre>
 <P>Multiple sections can exist in the same file, but they must have
 different names. The section name proceeds the section directive. If
 no name is provided a default name is used.</P>
-<P><FONT FACE="Courier, monospace">code</FONT></P>
-<P><FONT FACE="Courier, monospace">_init</FONT></P>
-<P><FONT FACE="Courier, monospace">banksel mem1</FONT></P>
-<P><FONT FACE="Courier, monospace">movlw 0</FONT></P>
-<P><FONT FACE="Courier, monospace">movwf mem1</FONT></P>
-<P><FONT FACE="Courier, monospace">movwf mem2</FONT></P>
-<P><FONT FACE="Courier, monospace">movwf mem2 + 1</FONT></P>
-<P><FONT FACE="Courier, monospace">movwf mem3</FONT></P>
-<P><FONT FACE="Courier, monospace">pagesel _main</FONT></P>
-<P><FONT FACE="Courier, monospace">goto _main</FONT></P>
-<P><FONT FACE="Courier, monospace">mycode code</FONT></P>
-<P><FONT FACE="Courier, monospace">banksel mem1</FONT></P>
-<P><FONT FACE="Courier, monospace">incf mem1, f</FONT></P>
+<pre>
+	code
+_init
+	banksel	mem1
+	movlw	0
+	movwf	mem1
+	movwf	mem2
+	movwf	mem2 + 1
+	movwf	mem3
+	pagesel	_main
+	goto	_main
+
+mycode	code
+	banksel	mem1
+	incf	mem1, f
+</pre>
 <P>Other types of sections exist, it is beyond the scope of this
 document to describe them all. See the document in the intro for a
 more detailed description.</P>
 <H2>6. Viewing objects</H2>
 <P>gpvo is a tool for viewing objects. If you are interested in
 seeing how things work, use it.</P>
-<P>gpvo init.o | less</P>
+<pre>
+gpvo init.o | less
+</pre>
 <H2>7. Linking objects</H2>
 <P>So you have assembled several objects and now you need to make a
 COD file for simulation and a hex file for programming. gplink takes
@@ -139,8 +158,9 @@ required output files. A set of scripts are included in
 They were intended to cutomized by the user, but for many
 applications they can work as is.</P>
 <P>Commanding:</P>
-<P>gplink -m -c -s /usr/share/gputils/lkr/16f877.lkr main.o init.o
-isr.o</P>
+<pre>
+gplink -m -c -s /usr/share/gputils/lkr/16f877.lkr main.o init.o isr.o
+</pre>
 <P>Will result in a map file (-m) to be output. This file contains
 the final addresses assigned to the data and program memory. An
 executable coff (-c) that is good for reference and simulation in
@@ -160,39 +180,49 @@ gpsim.</P>
 <P>If you have a collection of objects they can be combined into one
 archive. The archive is a convient way to link an application against
 a common library. The tool is gplib. It is very easy to use.</P>
-<P>gplib -c math.a mult.o add.o sub.o exp.o</P>
+<pre>
+gplib -c math.a mult.o add.o sub.o exp.o
+</pre>
 <P>Creates a new archive math.a. The name is arbitary. It could be
 called &quot;math.lib&quot; or &quot;math&quot;. gputils doesn't use
 file extensions to determine file types.</P>
 <P>Then when you link the application add math.a to the list of
 objects</P>
-<P>gplink -m -c -s /usr/share/gputils/lkr/16f877.lkr main.o init.o
-isr.o math.a</P>
+<pre>
+gplink -m -c -s /usr/share/gputils/lkr/16f877.lkr main.o init.o isr.o math.a
+</pre>
 <P>gplink will only extract those archive members that are required
 to resolve external references. So the application won't necessarily
 contain the code of all the archive members.</P>
 <H2>10. Makefiles</H2>
 <P>Here is one of the Makefiles I have been working with. It can be a
 template for you:</P>
-<P><FONT FACE="Courier, monospace">SCRIPT = 16f877.lkr</FONT></P>
-<P><FONT FACE="Courier, monospace">OBJECTS = main.o startup.o isr.o
-i2c.o</FONT></P>
-<P><FONT FACE="Courier, monospace">OUTPUT = example.hex</FONT></P>
-<P><FONT FACE="Courier, monospace">all : $(OUTPUT)</FONT></P>
-<P><FONT FACE="Courier, monospace">$(OUTPUT) : $(OBJECTS) $(SCRIPT)</FONT></P>
-<P><FONT FACE="Courier, monospace">gplink --map -c -s $(SCRIPT) -o
-$(OUTPUT) $(OBJECTS)</FONT></P>
-<P><FONT FACE="Courier, monospace">%.o : %.asm</FONT></P>
-<P><FONT FACE="Courier, monospace">gpasm -c $&lt;</FONT></P>
-<P><FONT FACE="Courier, monospace">clean:</FONT></P>
-<P><FONT FACE="Courier, monospace">rm -f *.o *.lst *.map *.hex</FONT></P>
-<P><FONT FACE="Courier, monospace">i2c.o : i2c.asm common.inc</FONT></P>
-<P><FONT FACE="Courier, monospace">isr.o : isr.asm common.inc</FONT></P>
-<P><FONT FACE="Courier, monospace">main.o : main.asm common.inc</FONT></P>
-<P><FONT FACE="Courier, monospace">startup.o : startup.asm common.inc</FONT></P>
+<pre>
+SCRIPT = 16f877.lkr
+OBJECTS = main.o startup.o isr.o i2c.o
+OUTPUT = example.hex
+
+all:		$(OUTPUT)
+
+$(OUTPUT):	$(OBJECTS) $(SCRIPT)
+	gplink --map -c -s $(SCRIPT) -o $(OUTPUT) $(OBJECTS)
+
+%.o:		%.asm
+	gpasm -c $&lt;
+
+clean:
+	rm -f *.o *.lst *.map *.hex
+
+i2c.o:		i2c.asm common.inc
+
+isr.o:		isr.asm common.inc
+
+main.o:		main.asm common.inc
+
+startup.o:	startup.asm common.inc
+</pre>
 <H2>11. The Future</H2>
-<P>There is still a lot of work to do. So far only 14 bits devices
-have been linked. There are many features that are planned. Linker
+<P>There are many features that are planned. Linker
 optimizations, assembler extensions for high level languages. ...</P>
 <P>I will try to keep this document updated. Please send me your
 comments and questions.</P>
