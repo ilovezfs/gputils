@@ -178,6 +178,7 @@ ADDEN                        EQU     H'0003'
 FERR                         EQU     H'0002'
 OERR                         EQU     H'0001'
 RX9D                         EQU     H'0000'
+
 ;----- WDTCON Bits --------------------------------------------------------
 
 WDTPS3                       EQU     H'0004'

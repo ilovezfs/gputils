@@ -65,10 +65,6 @@ BANKED          EQU 1
 ;==========================================================================
 
 ;----- Register Files -----------------------------------------------------
-SPPDATA          EQU  H'0F62'
-SPPCFG           EQU  H'0F63'
-SPPEPS           EQU  H'0F64'
-SPPCON           EQU  H'0F65'
 UFRM             EQU  H'0F66'
 UFRML            EQU  H'0F66'
 UFRMH            EQU  H'0F67'
@@ -162,6 +158,7 @@ TMR1H            EQU  H'0FCF'
 RCON             EQU  H'0FD0'
 WDTCON           EQU  H'0FD1'
 HLVDCON          EQU  H'0FD2'
+LVDCON           EQU  H'0FD2'
 OSCCON           EQU  H'0FD3'
 T0CON            EQU  H'0FD5'
 TMR0L            EQU  H'0FD6'
@@ -210,32 +207,6 @@ TOS              EQU  H'0FFD'
 TOSL             EQU  H'0FFD'
 TOSH             EQU  H'0FFE'
 TOSU             EQU  H'0FFF'
-
-;----- SPPCFG Bits -----------------------------------------------------
-WS0              EQU  H'0000'
-WS1              EQU  H'0001'
-WS2              EQU  H'0002'
-WS3              EQU  H'0003'
-CLK1EN           EQU  H'0004'
-CSEN             EQU  H'0005'
-CLKCFG0          EQU  H'0006'
-CLKCFG1          EQU  H'0007'
-
-
-;----- SPPEPS Bits -----------------------------------------------------
-ADDR0            EQU  H'0000'
-ADDR1            EQU  H'0001'
-ADDR2            EQU  H'0002'
-ADDR3            EQU  H'0003'
-BUSY             EQU  H'0004'
-WRSPP            EQU  H'0006'
-RDSPP            EQU  H'0007'
-
-
-;----- SPPCON Bits -----------------------------------------------------
-SPPEN            EQU  H'0000'
-USBOWN           EQU  H'0001'
-
 
 ;----- UIR Bits -----------------------------------------------------
 URSTIF           EQU  H'0000'
@@ -304,8 +275,8 @@ ADDR6            EQU  H'0006'
 
 
 ;----- UCFG Bits -----------------------------------------------------
-UPP0             EQU  H'0000'
-UPP1             EQU  H'0001'
+PPB0             EQU  H'0000'
+PPB1             EQU  H'0001'
 FSEN             EQU  H'0002'
 UTRDIS           EQU  H'0003'
 UPUEN            EQU  H'0004'
@@ -458,9 +429,11 @@ T0CKI            EQU  H'0004'
 AN4              EQU  H'0005'
 OSC2             EQU  H'0006'
 
-VREFM            EQU  H'0003'
-VREFP            EQU  H'0004'
-LVDIN            EQU  H'0006'
+VREFM            EQU  H'0002'
+VREFP            EQU  H'0003'
+LVDIN            EQU  H'0005'
+
+HLVDIN           EQU  H'0005'
 
 
 ;----- PORTB Bits -----------------------------------------------------
@@ -644,6 +617,8 @@ USBIE            EQU  H'0005'
 CMIE             EQU  H'0006'
 OSCFIE           EQU  H'0007'
 
+HLVDIE           EQU  H'0002'
+
 
 ;----- PIR2 Bits -----------------------------------------------------
 CCP2IF           EQU  H'0000'
@@ -655,6 +630,8 @@ USBIF            EQU  H'0005'
 CMIF             EQU  H'0006'
 OSCFIF           EQU  H'0007'
 
+HLVDIF           EQU  H'0002'
+
 
 ;----- IPR2 Bits -----------------------------------------------------
 CCP2IP           EQU  H'0000'
@@ -665,6 +642,8 @@ EEIP             EQU  H'0004'
 USBIP            EQU  H'0005'
 CMIP             EQU  H'0006'
 OSCFIP           EQU  H'0007'
+
+HLVDIP           EQU  H'0002'
 
 
 ;----- EECON1 Bits -----------------------------------------------------
@@ -681,11 +660,13 @@ EEPGD            EQU  H'0007'
 RX9D             EQU  H'0000'
 OERR             EQU  H'0001'
 FERR             EQU  H'0002'
-ADEN             EQU  H'0003'
+ADDEN            EQU  H'0003'
 CREN             EQU  H'0004'
 SREN             EQU  H'0005'
 RX9              EQU  H'0006'
 SPEN             EQU  H'0007'
+
+ADEN             EQU  H'0003'
 
 
 ;----- TXSTA Bits -----------------------------------------------------
@@ -757,8 +738,10 @@ ABDEN            EQU  H'0000'
 WUE              EQU  H'0001'
 BRG16            EQU  H'0003'
 SCKP             EQU  H'0004'
-RCMT             EQU  H'0006'
+RCIDL            EQU  H'0006'
 ABDOVF           EQU  H'0007'
+
+RCMT             EQU  H'0006'
 
 
 ;----- CCP2CON Bits -----------------------------------------------------
@@ -867,10 +850,10 @@ D                EQU  H'0005'
 T2CKPS0          EQU  H'0000'
 T2CKPS1          EQU  H'0001'
 TMR2ON           EQU  H'0002'
-TOUTPS0          EQU  H'0003'
-TOUTPS1          EQU  H'0004'
-TOUTPS2          EQU  H'0005'
-TOUTPS3          EQU  H'0006'
+T2OUTPS0         EQU  H'0003'
+T2OUTPS1         EQU  H'0004'
+T2OUTPS2         EQU  H'0005'
+T2OUTPS3         EQU  H'0006'
 
 
 ;----- T1CON Bits -----------------------------------------------------
@@ -916,7 +899,6 @@ LVDL2            EQU  H'0002'
 LVDL3            EQU  H'0003'
 LVDEN            EQU  H'0004'
 IRVST            EQU  H'0005'
-VDIRMAG          EQU  H'0007'
 
 LVV0             EQU  H'0000'
 LVV1             EQU  H'0001'
@@ -924,23 +906,58 @@ LVV2             EQU  H'0002'
 LVV3             EQU  H'0003'
 BGST             EQU  H'0005'
 
+HLVDL0           EQU  H'0000'
+HLVDL1           EQU  H'0001'
+HLVDL2           EQU  H'0002'
+HLVDL3           EQU  H'0003'
+HLVDEN           EQU  H'0004'
+VDIRMAG          EQU  H'0007'
+
+IVRST            EQU  H'0005'
+
+
+;----- LVDCON Bits -----------------------------------------------------
+LVDL0            EQU  H'0000'
+LVDL1            EQU  H'0001'
+LVDL2            EQU  H'0002'
+LVDL3            EQU  H'0003'
+LVDEN            EQU  H'0004'
+IRVST            EQU  H'0005'
+
+LVV0             EQU  H'0000'
+LVV1             EQU  H'0001'
+LVV2             EQU  H'0002'
+LVV3             EQU  H'0003'
+BGST             EQU  H'0005'
+
+HLVDL0           EQU  H'0000'
+HLVDL1           EQU  H'0001'
+HLVDL2           EQU  H'0002'
+HLVDL3           EQU  H'0003'
+HLVDEN           EQU  H'0004'
+VDIRMAG          EQU  H'0007'
+
+IVRST            EQU  H'0005'
+
 
 ;----- OSCCON Bits -----------------------------------------------------
 SCS0             EQU  H'0000'
 SCS1             EQU  H'0001'
-FLTS             EQU  H'0002'
+IOFS             EQU  H'0002'
 OSTS             EQU  H'0003'
 IRCF0            EQU  H'0004'
 IRCF1            EQU  H'0005'
 IRCF2            EQU  H'0006'
 IDLEN            EQU  H'0007'
 
+FLTS             EQU  H'0002'
+
 
 ;----- T0CON Bits -----------------------------------------------------
 T0PS0            EQU  H'0000'
 T0PS1            EQU  H'0001'
 T0PS2            EQU  H'0002'
-T0PS3            EQU  H'0003'
+PSA              EQU  H'0003'
 T0SE             EQU  H'0004'
 T0CS             EQU  H'0005'
 T08BIT           EQU  H'0006'
@@ -1008,7 +1025,7 @@ STKPTR2          EQU  H'0002'
 STKPTR3          EQU  H'0003'
 STKPTR4          EQU  H'0004'
 STKUNF           EQU  H'0006'
-STKOVF           EQU  H'0007'
+STKFUL           EQU  H'0007'
 
 
 
@@ -1065,22 +1082,22 @@ _CONFIG7L        EQU  H'30000C'
 _CONFIG7H        EQU  H'30000D'
 
 ;----- CONFIG1L Options --------------------------------------------------
-_PLLDIV_1_1L         EQU  H'F8'    ; Oscillator not divided
-_PLLDIV_2_1L         EQU  H'F9'    ; Oscillator divided by 2
-_PLLDIV_3_1L         EQU  H'FA'    ; Oscillator divided by 3
-_PLLDIV_4_1L         EQU  H'FB'    ; Oscillator divided by 4
-_PLLDIV_5_1L         EQU  H'FC'    ; Oscillator divided by 5
-_PLLDIV_6_1L         EQU  H'FD'    ; Oscillator divided by 6
-_PLLDIV_10_1L        EQU  H'FE'    ; Oscillator divided by 10
-_PLLDIV_12_1L        EQU  H'FF'    ; Oscillator divided by 12
+_PLLDIV_1_1L         EQU  H'F8'    ; No devide (4MHz input)
+_PLLDIV_2_1L         EQU  H'F9'    ; Divide by 2 (8MHz input)
+_PLLDIV_3_1L         EQU  H'FA'    ; Divide by 3 (12MHz input)
+_PLLDIV_4_1L         EQU  H'FB'    ; Divide by 4 (16MHz input)
+_PLLDIV_5_1L         EQU  H'FC'    ; Divide by 5 (20MHz input)
+_PLLDIV_6_1L         EQU  H'FD'    ; Divide by 6 (24MHz input)
+_PLLDIV_10_1L        EQU  H'FE'    ; Divide by 10 (40MHz input)
+_PLLDIV_12_1L        EQU  H'FF'    ; Divide by 12 (48MHz input)
 
-_CPUDIV_1_1L         EQU  H'E7'    ; CPU system clock not divided
-_CPUDIV_2_1L         EQU  H'EF'    ; CPU system clock divided by 2
-_CPUDIV_3_1L         EQU  H'F7'    ; CPU system clock divided by 3
-_CPUDIV_4_1L         EQU  H'FF'    ; CPU system clock divided by 4
+_CPUDIV_OSC1_PLL2_1L EQU  H'E7'    ; [OSC1/OSC2 Src: /1][96MHz PLL Src: /2]
+_CPUDIV_OSC2_PLL3_1L EQU  H'EF'    ; [OSC1/OSC2 Src: /2][96MHz PLL Src: /3]
+_CPUDIV_OSC3_PLL4_1L EQU  H'F7'    ; [OSC1/OSC2 Src: /3][96MHz PLL Src: /4]
+_CPUDIV_OSC4_PLL6_1L EQU  H'FF'    ; [OSC1/OSC2 Src: /4][96MHz PLL Src: /6]
 
-_USBDIV_1_1L         EQU  H'DF'    ; USB system clock not divided
-_USBDIV_2_1L         EQU  H'FF'    ; USB system clock divided by 2 w/ PLL
+_USBDIV_1_1L         EQU  H'DF'    ; Clock source from OSC1/OSC2
+_USBDIV_2_1L         EQU  H'FF'    ; Clock source from 96MHz PLL/2
 
 ;----- CONFIG1H Options --------------------------------------------------
 _FOSC_XT_XT_1H       EQU  H'F0'    ; XT oscillator, XT used by USB
@@ -1111,10 +1128,10 @@ _BOR_SOFT_2L         EQU  H'FB'    ; Controled by SBOREN
 _BOR_ON_ACTIVE_2L    EQU  H'FD'    ; Enabled when the device is not in SLEEP, SBOREN bit is disabled
 _BOR_ON_2L           EQU  H'FF'    ; Enabled, SBOREN bit is disabled
 
-_BORV_45_2L          EQU  H'E7'    ; 4.6V
-_BORV_42_2L          EQU  H'EF'    ; 4.3V
-_BORV_27_2L          EQU  H'F7'    ; 2.8V
-_BORV_20_2L          EQU  H'FF'    ; 2.1V
+_BORV_46_2L          EQU  H'E7'    ; 4.6V
+_BORV_43_2L          EQU  H'EF'    ; 4.3V
+_BORV_28_2L          EQU  H'F7'    ; 2.8V
+_BORV_21_2L          EQU  H'FF'    ; 2.1V
 
 _VREGEN_OFF_2L       EQU  H'DF'    ; Disabled
 _VREGEN_ON_2L        EQU  H'FF'    ; Enabled

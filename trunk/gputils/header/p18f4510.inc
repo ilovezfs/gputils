@@ -109,7 +109,7 @@ TMR3H            EQU  H'0FB3'
 CMCON            EQU  H'0FB4'
 CVRCON           EQU  H'0FB5'
 ECCP1AS          EQU  H'0FB6'
-ECCP1DEL         EQU  H'0FB7'
+PWM1CON          EQU  H'0FB7'
 BAUDCON          EQU  H'0FB8'
 BAUDCTL          EQU  H'0FB8'
 CCP2CON          EQU  H'0FBA'
@@ -139,9 +139,9 @@ TMR1L            EQU  H'0FCE'
 TMR1H            EQU  H'0FCF'
 RCON             EQU  H'0FD0'
 WDTCON           EQU  H'0FD1'
+HLVDCON          EQU  H'0FD2'
 LVDCON           EQU  H'0FD2'
 OSCCON           EQU  H'0FD3'
-DEBUG            EQU  H'0FD4'
 T0CON            EQU  H'0FD5'
 TMR0L            EQU  H'0FD6'
 TMR0H            EQU  H'0FD7'
@@ -636,7 +636,7 @@ ECCPAS2          EQU  H'0006'
 ECCPASE          EQU  H'0007'
 
 
-;----- ECCP1DEL Bits -----------------------------------------------------
+;----- PWM1CON Bits -----------------------------------------------------
 PDC0             EQU  H'0000'
 PDC1             EQU  H'0001'
 PDC2             EQU  H'0002'
@@ -807,6 +807,30 @@ SWDTEN           EQU  H'0000'
 SWDTE            EQU  H'0000'
 
 
+;----- HLVDCON Bits -----------------------------------------------------
+LVDL0            EQU  H'0000'
+LVDL1            EQU  H'0001'
+LVDL2            EQU  H'0002'
+LVDL3            EQU  H'0003'
+LVDEN            EQU  H'0004'
+IRVST            EQU  H'0005'
+
+LVV0             EQU  H'0000'
+LVV1             EQU  H'0001'
+LVV2             EQU  H'0002'
+LVV3             EQU  H'0003'
+BGST             EQU  H'0005'
+
+HLVDL0           EQU  H'0000'
+HLVDL1           EQU  H'0001'
+HLVDL2           EQU  H'0002'
+HLVDL3           EQU  H'0003'
+HLVDEN           EQU  H'0004'
+VDIRMAG          EQU  H'0007'
+
+IVRST            EQU  H'0005'
+
+
 ;----- LVDCON Bits -----------------------------------------------------
 LVDL0            EQU  H'0000'
 LVDL1            EQU  H'0001'
@@ -814,6 +838,21 @@ LVDL2            EQU  H'0002'
 LVDL3            EQU  H'0003'
 LVDEN            EQU  H'0004'
 IRVST            EQU  H'0005'
+
+LVV0             EQU  H'0000'
+LVV1             EQU  H'0001'
+LVV2             EQU  H'0002'
+LVV3             EQU  H'0003'
+BGST             EQU  H'0005'
+
+HLVDL0           EQU  H'0000'
+HLVDL1           EQU  H'0001'
+HLVDL2           EQU  H'0002'
+HLVDL3           EQU  H'0003'
+HLVDEN           EQU  H'0004'
+VDIRMAG          EQU  H'0007'
+
+IVRST            EQU  H'0005'
 
 
 ;----- OSCCON Bits -----------------------------------------------------
@@ -910,6 +949,7 @@ STKOVF           EQU  H'0007'
        __BADRAM  H'0F9C'
        __BADRAM  H'0FA3'-H'0FA5'
        __BADRAM  H'0FB9'
+       __BADRAM  H'0FD4'
 
 ;==========================================================================
 ;

@@ -7,6 +7,10 @@ HEADER_FILES =\
 	mcp250xx.inc \
 	memory.inc \
 	migrate.inc \
+	p10f200.inc \
+	p10f202.inc \
+	p10f204.inc \
+	p10f206.inc \
 	p12c508a.inc \
 	p12c508.inc \
 	p12c509a.inc \
@@ -100,10 +104,15 @@ HEADER_FILES =\
 	p16f628.inc \
 	p16f630.inc \
 	p16f636.inc \
+	p16f639.inc \
 	p16f648a.inc \
 	p16f676.inc \
 	p16f684.inc \
+	p16f685.inc \
+	p16f687.inc \
 	p16f688.inc \
+	p16f689.inc \
+	p16f690.inc \
 	p16f716.inc \
 	p16f72.inc \
 	p16f737.inc \
@@ -210,26 +219,47 @@ HEADER_FILES =\
 	p18f4620.inc \
 	p18f4680.inc \
 	p18f4681.inc \
+	p18f6310.inc \
+	p18f6390.inc \
 	p18f6410.inc \
 	p18f6490.inc \
+	p18f64j15.inc \
 	p18f6520.inc \
 	p18f6525.inc \
 	p18f6585.inc \
+	p18f65j10.inc \
+	p18f65j15.inc \
 	p18f6620.inc \
 	p18f6621.inc \
+	p18f6627.inc \
 	p18f6680.inc \
+	p18f66j10.inc \
+	p18f66j15.inc \
 	p18f6720.inc \
+	p18f6722.inc \
+	p18f67j10.inc \
+	p18f8310.inc \
+	p18f8390.inc \
 	p18f8410.inc \
 	p18f8490.inc \
+	p18f84j15.inc \
 	p18f8520.inc \
 	p18f8525.inc \
 	p18f8585.inc \
+	p18f85j10.inc \
+	p18f85j15.inc \
 	p18f8620.inc \
 	p18f8621.inc \
+	p18f8627.inc \
 	p18f8680.inc \
+	p18f86j10.inc \
+	p18f86j15.inc \
 	p18f8720.inc \
+	p18f8722.inc \
+	p18f87j10.inc \
 	p18macro.inc \
 	ps500.inc \
+	ps810.inc \
 	rf509af.inc \
 	rf509ag.inc \
 	rf675f.inc \

@@ -132,10 +132,14 @@ EECON2           EQU  H'0FA7'
 EEDATA           EQU  H'0FA8'
 EEADR            EQU  H'0FA9'
 EEADRH           EQU  H'0FAA'
+RCSTA            EQU  H'0FAB'
 RCSTA1           EQU  H'0FAB'
+TXSTA            EQU  H'0FAC'
 TXSTA1           EQU  H'0FAC'
+TXREG            EQU  H'0FAD'
 TXREG1           EQU  H'0FAD'
 RCREG1           EQU  H'0FAE'
+SPBRG            EQU  H'0FAF'
 SPBRG1           EQU  H'0FAF'
 PSPCON           EQU  H'0FB0'
 T3CON            EQU  H'0FB1'
@@ -333,7 +337,6 @@ KBI1             EQU  H'0005'
 KBI2             EQU  H'0006'
 KBI3             EQU  H'0007'
 
-CCP2B            EQU  H'0003'
 PGM              EQU  H'0005'
 PGC              EQU  H'0006'
 PGD              EQU  H'0007'
@@ -359,7 +362,6 @@ TX               EQU  H'0006'
 RX               EQU  H'0007'
 
 T13CKI           EQU  H'0000'
-CCP2C            EQU  H'0001'
 SCL              EQU  H'0003'
 SDA              EQU  H'0004'
 CK               EQU  H'0006'
@@ -409,7 +411,6 @@ RE7              EQU  H'0007'
 RD               EQU  H'0000'
 WR               EQU  H'0001'
 CS               EQU  H'0002'
-CCP2E            EQU  H'0007'
 
 AD8              EQU  H'0000'
 AD9              EQU  H'0001'
@@ -439,10 +440,6 @@ AN9              EQU  H'0004'
 AN10             EQU  H'0005'
 AN11             EQU  H'0006'
 SS               EQU  H'0007'
-
-C2OUTF           EQU  H'0001'
-C1OUTF           EQU  H'0002'
-CVREFF           EQU  H'0005'
 
 
 ;----- PORTG Bits -----------------------------------------------------
@@ -901,6 +898,19 @@ CFGS             EQU  H'0006'
 EEPGD            EQU  H'0007'
 
 
+;----- RCSTA Bits -----------------------------------------------------
+RX9D             EQU  H'0000'
+OERR             EQU  H'0001'
+FERR             EQU  H'0002'
+ADEN             EQU  H'0003'
+CREN             EQU  H'0004'
+SREN             EQU  H'0005'
+RX9              EQU  H'0006'
+SPEN             EQU  H'0007'
+
+ADDEN            EQU  H'0003'
+
+
 ;----- RCSTA1 Bits -----------------------------------------------------
 RX9D             EQU  H'0000'
 OERR             EQU  H'0001'
@@ -912,6 +922,16 @@ RX9              EQU  H'0006'
 SPEN             EQU  H'0007'
 
 ADDEN            EQU  H'0003'
+
+
+;----- TXSTA Bits -----------------------------------------------------
+TX9D             EQU  H'0000'
+TRMT             EQU  H'0001'
+BRGH             EQU  H'0002'
+SYNC             EQU  H'0004'
+TXEN             EQU  H'0005'
+TX9              EQU  H'0006'
+CSRC             EQU  H'0007'
 
 
 ;----- TXSTA1 Bits -----------------------------------------------------

@@ -524,6 +524,16 @@ ECCP1M2         EQU  H'0002'
 ECCP1M1         EQU  H'0001'
 ECCP1M0         EQU  H'0000'
 
+;----- ECCP1DEL Bits -----------------------------------------------------
+EPDC0            EQU  H'0000'
+EPDC1            EQU  H'0001'
+EPDC2            EQU  H'0002'
+EPDC3            EQU  H'0003'
+EPDC4            EQU  H'0004'
+EPDC5            EQU  H'0005'
+EPDC6            EQU  H'0006'
+EPDC7            EQU  H'0007'
+
 ;----- ECCPAS Bits --------------------------------------------------------
 ECCPASE         EQU  H'0007'
 ECCPAS2         EQU  H'0006'

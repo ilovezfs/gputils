@@ -22,6 +22,7 @@
 ;
 ;==========================================================================
 ;Rev:   Date:      Details:                                           Who:
+; 1.09    10/12/04   Added SPBRG, TXREG, TXSTA and RCSTA                src
 ; 1.08    09/26/02   Include both names SWDTE and SWDTEN                pas
 ; 1.07    11/16/2001 Changed CVREF_CVRCON => CVRSS, ADEN => ADDEN	pas
 ; 1.06    10/23/01   Corrected CONFIG bits/registers, LVDCON bits       tr/pas
@@ -179,10 +180,14 @@ T3CON           EQU  H'0FB1'
 
 PSPCON          EQU  H'0FB0'
 
+SPBRG           EQU  H'0FAF'
 SPBRG1          EQU  H'0FAF'
 RCREG1          EQU  H'0FAE'
+TXREG           EQU  H'0FAD'
 TXREG1          EQU  H'0FAD'
+TXSTA           EQU  H'0FAC'
 TXSTA1          EQU  H'0FAC'
+RCSTA           EQU  H'0FAB'
 RCSTA1          EQU  H'0FAB'
 
 EEADRH          EQU  H'0FAA'
@@ -506,7 +511,7 @@ TMR4ON          EQU  H'0002'
 T4CKPS1         EQU  H'0001'
 T4CKPS0         EQU  H'0000'
 
-;----- TXSTA1 and TXSTA2 Bits ---------------------------------------------
+;----- TXSTA, TXSTA1 and TXSTA2 Bits --------------------------------------
 CSRC            EQU  H'0007'
 TX9             EQU  H'0006'
 NOT_TX8         EQU  H'0006'      ; For backward compatibility
@@ -518,7 +523,7 @@ TRMT            EQU  H'0001'
 TX9D            EQU  H'0000'
 TXD8            EQU  H'0000'      ; For backward compatibility
 
-;----- RCSTA1 and RCSTA2 Bits ---------------------------------------------
+;----- RCSTA, RCSTA1 and RCSTA2 Bits --------------------------------------
 SPEN            EQU  H'0007'
 RX9             EQU  H'0006'
 RC9             EQU  H'0006'      ; For backward compatibility

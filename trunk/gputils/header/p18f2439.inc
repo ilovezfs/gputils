@@ -683,7 +683,6 @@ STKFUL           EQU  H'0007'
 ;   CONFIG1H        300001h
 ;   CONFIG2L        300002h
 ;   CONFIG2H        300003h
-;   CONFIG3H        300005h
 ;   CONFIG4L        300006h
 ;   CONFIG5L        300008h
 ;   CONFIG5H        300009h
@@ -699,7 +698,6 @@ STKFUL           EQU  H'0007'
 _CONFIG1H        EQU  H'300001'
 _CONFIG2L        EQU  H'300002'
 _CONFIG2H        EQU  H'300003'
-_CONFIG3H        EQU  H'300005'
 _CONFIG4L        EQU  H'300006'
 _CONFIG5L        EQU  H'300008'
 _CONFIG5H        EQU  H'300009'
@@ -717,9 +715,6 @@ _OSC_EC_1H           EQU  H'FC'    ; EC-OSC2 as Clock Out
 _OSC_ECIO_1H         EQU  H'FD'    ; EC-OSC2 as RA6
 _OSC_HSPLL_1H        EQU  H'FE'    ; HS-PLL Enabled
 _OSC_RCIO_1H         EQU  H'FF'    ; RC-OSC2 as RA6
-
-_OSCS_ON_1H          EQU  H'DF'    ; Enabled
-_OSCS_OFF_1H         EQU  H'FF'    ; Disabled
 
 ;----- CONFIG2L Options --------------------------------------------------
 _PWRT_ON_2L          EQU  H'FE'    ; Enabled
@@ -745,10 +740,6 @@ _WDTPS_16_2H         EQU  H'F9'    ; 1:16
 _WDTPS_32_2H         EQU  H'FB'    ; 1:32
 _WDTPS_64_2H         EQU  H'FD'    ; 1:64
 _WDTPS_128_2H        EQU  H'FF'    ; 1:128
-
-;----- CONFIG3H Options --------------------------------------------------
-_CCP2MUX_OFF_3H      EQU  H'FE'    ; Disable (RB3)
-_CCP2MUX_ON_3H       EQU  H'FF'    ; Enable (RC1)
 
 ;----- CONFIG4L Options --------------------------------------------------
 _STVR_OFF_4L         EQU  H'FE'    ; Disabled
@@ -782,14 +773,14 @@ _WRT1_ON_6L          EQU  H'FD'    ; Enabled
 _WRT1_OFF_6L         EQU  H'FF'    ; Disabled
 
 ;----- CONFIG6H Options --------------------------------------------------
-_WPB_ON_6H           EQU  H'BF'    ; Enabled
-_WPB_OFF_6H          EQU  H'FF'    ; Disabled
+_WRTB_ON_6H          EQU  H'BF'    ; Enabled
+_WRTB_OFF_6H         EQU  H'FF'    ; Disabled
 
-_WPC_ON_6H           EQU  H'DF'    ; Enabled
-_WPC_OFF_6H          EQU  H'FF'    ; Disabled
+_WRTC_ON_6H          EQU  H'DF'    ; Enabled
+_WRTC_OFF_6H         EQU  H'FF'    ; Disabled
 
-_WPD_ON_6H           EQU  H'7F'    ; Enabled
-_WPD_OFF_6H          EQU  H'FF'    ; Disabled
+_WRTD_ON_6H          EQU  H'7F'    ; Enabled
+_WRTD_OFF_6H         EQU  H'FF'    ; Disabled
 
 ;----- CONFIG7L Options --------------------------------------------------
 _EBTR0_ON_7L         EQU  H'FE'    ; Enabled

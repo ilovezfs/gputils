@@ -1,5 +1,5 @@
         LIST
-; P16F785.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+; P16F785.INC  Standard Header File, Version 1.10    Microchip Technology, Inc.
         NOLIST
 
 ; This header file defines configurations, registers, and other useful bits of
@@ -21,6 +21,11 @@
 ;
 ;==========================================================================
 ;1.00   03/26/04 Original
+;1.10	07/12/04 Updated for changes to REFCON and VRCON
+;1.20   08/26/04 Updated for changes from BOD to BOR
+;1.30   09/23/04 Corrected addresses for OPA1CON and OPA2CON
+;1.40   10/25/04 Added WPUA3 bit to WPUA register
+;                Deleted OVRLP bit from PWMCON1 register
 ;==========================================================================
 ;
 ;       Verify Processor
@@ -65,8 +70,6 @@ CCPR1H                       EQU     H'0014'
 CCP1CON                      EQU     H'0015'
 
 WDTCON                       EQU     H'0018'
-CMCON0                       EQU     H'0019'		
-CMCON1                       EQU     H'001A'		
 
 ADRESH                       EQU     H'001E'		
 ADCON0                       EQU     H'001F'		
@@ -113,8 +116,8 @@ PWMPH2                       EQU     H'0114'
 CM1CON0                      EQU     H'0119'
 CM2CON0                      EQU     H'011A'
 CM2CON1                      EQU     H'011B'
-OPA1CON                      EQU     H'011D'
-OPA2CON                      EQU     H'011E'
+OPA1CON                      EQU     H'011C'
+OPA2CON                      EQU     H'011D'
 
 ;----- STATUS Bits --------------------------------------------------------
 
@@ -229,10 +232,11 @@ TMR1IE                       EQU     H'0000'
 
 ;----- PCON Bits ----------------------------------------------------------
 
-ULPWUE                       EQU     H'0005'
 SBODEN                       EQU     H'0004'
+SBOREN                       EQU     H'0004'
 NOT_POR                      EQU     H'0001'
 NOT_BOD                      EQU     H'0000'
+NOT_BOR                      EQU     H'0000'
 
 ;----- OSCCON Bits --------------------------------------------------------
 
@@ -274,6 +278,7 @@ ANS8                         EQU     H'0000'
 
 WPUA5                        EQU     H'0005'
 WPUA4                        EQU     H'0004'
+WPUA3                        EQU     H'0003'
 WPUA2                        EQU     H'0002'
 WPUA1                        EQU     H'0001'
 WPUA0                        EQU     H'0000'
@@ -298,12 +303,16 @@ IOCA0                        EQU     H'0000'
 
 ;----- REFCON -------------------------------------------------------------
 
+BGST                         EQU     H'0005'
+VRBB                         EQU     H'0004'
 VREN                         EQU     H'0003'
 VROE                         EQU     H'0002'
+CVROE                        EQU     H'0001'
 
 ;----- VRCON Bits ---------------------------------------------------------
 
-CVREN                        EQU     H'0007'
+C1VREN                       EQU     H'0007'
+C2VREN                       EQU     H'0006'
 VRR                          EQU     H'0005'
 VR3                          EQU     H'0003'
 VR2                          EQU     H'0002'
@@ -325,7 +334,6 @@ ADCS0                        EQU     H'0004'
 
 ;----- PWMCON1 -------------------------------------------------------------
 
-OVRLP                        EQU     H'0007'
 COMOD1                       EQU     H'0006'
 COMOD0                       EQU     H'0005'
 CMDLY4                       EQU     H'0004'
@@ -399,13 +407,6 @@ C2SYNC                       EQU     H'0000'
 ;----- OPA1CON & OPA2CON ---------------------------------------------------
 
 OPAON                        EQU     H'0007'
-ANS6                         EQU     H'0006'
-ANS5                         EQU     H'0005'
-ANS4                         EQU     H'0004'
-ANS3                         EQU     H'0003'
-ANS2                         EQU     H'0002'
-ANS1                         EQU     H'0001'
-ANS0                         EQU     H'0000'
 
 ;==========================================================================
 ;
@@ -433,6 +434,10 @@ _BOD_ON                      EQU     H'3FFF'
 _BOD_NSLEEP                  EQU     H'3EFF'
 _BOD_SBODEN                  EQU     H'3DFF'
 _BOD_OFF                     EQU     H'3CFF'
+_BOR_ON                      EQU     H'3FFF'
+_BOR_NSLEEP                  EQU     H'3EFF'
+_BOR_SBOREN                  EQU     H'3DFF'
+_BOR_OFF                     EQU     H'3CFF'
 _CPD_ON                      EQU     H'3F7F'
 _CPD_OFF                     EQU     H'3FFF'
 _CP_ON                       EQU     H'3FBF'

@@ -23,7 +23,8 @@
 
 ;Rev:   Date:    Reason:
 ;1.00   06/11/04 Initial Release 
-;1.01	06/18/04 Corrected typo in 'bad ram' section 
+;1.01	06/18/04 Corrected typo in 'bad ram' section
+;1.02	08/16/04 Added EECON2
 
 ;==========================================================================
 ;
@@ -121,6 +122,8 @@ LCDSE0			     EQU     H'011C'
 LCDSE1			     EQU     H'011D'
 
 EECON1                       EQU     H'018C'
+EECON2			     EQU     H'018D'
+
 
 ;----- STATUS Bits --------------------------------------------------------
 

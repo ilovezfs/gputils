@@ -6,8 +6,6 @@ LIBPATH  .
 CODEPAGE   NAME=vectors  START=0x0      END=0x4      PROTECTED
 CODEPAGE   NAME=page0    START=0x5      END=0x7FF
 CODEPAGE   NAME=page1    START=0x800    END=0xFFF
-CODEPAGE   NAME=page2    START=0x1000   END=0x17FF
-CODEPAGE   NAME=page3    START=0x1800   END=0x1FFF
 CODEPAGE   NAME=.idlocs  START=0x2000   END=0x2003   PROTECTED
 CODEPAGE   NAME=.config  START=0x2007   END=0x2007   PROTECTED
 CODEPAGE   NAME=eedata   START=0x2100   END=0x21FF   PROTECTED
@@ -29,8 +27,6 @@ SHAREBANK  NAME=gprnobnk START=0x1F0    END=0x1FF
 SECTION    NAME=STARTUP  ROM=vectors    // Reset and interrupt vectors
 SECTION    NAME=PROG1    ROM=page0      // ROM code space - page0
 SECTION    NAME=PROG2    ROM=page1      // ROM code space - page1
-SECTION    NAME=PROG3    ROM=page2      // ROM code space - page2
-SECTION    NAME=PROG4    ROM=page3      // ROM code space - page3
 SECTION    NAME=IDLOCS   ROM=.idlocs    // ID locations
 SECTION    NAME=CONFIG   ROM=.config    // Configuration bits location
 SECTION    NAME=DEEPROM  ROM=eedata     // Data EEPROM
