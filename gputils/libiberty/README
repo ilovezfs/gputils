@@ -1,0 +1,5 @@
+This directory contains a subset of the GNU -liberty library.  The
+intent is to provide functions that gputils needs without doubling
+the size of the gputils package.  This directory may very well grow
+in the future.  If it does please make every effort to conform with
+the content and configuration of libiberty included with gcc.

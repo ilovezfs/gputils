@@ -87,21 +87,12 @@ void show_usage(void)
 {
   printf("Usage: gpdasm <options> <filename>\n");
   printf("Where <options> are:\n");
-  #ifdef HAVE_GETOPT_LONG
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -i, --hex-info                 Information on input hex file.\n");
   printf("  -m, --dump                     Memory dump hex file.\n");
   printf("  -p PROC, --processor PROC      Select processor.\n");
   printf("  -s, --short                    Print short format.\n");
   printf("  -v, --version                  Show version.\n");
-  #else
-  printf("  -h       Show this usage message.\n");
-  printf("  -i       Information on input hex file.\n");
-  printf("  -m       Memory dump hex file.\n");
-  printf("  -p PROC  Select processor.\n");
-  printf("  -s       Print short format.\n");
-  printf("  -v       Show version.\n");
-  #endif
   printf("\n");
   printf("Report bugs to:\n");
   printf("%s\n", BUG_REPORT_URL);
@@ -109,8 +100,6 @@ void show_usage(void)
 }
 
 #define GET_OPTIONS "?himp:sv"
-
-#ifdef HAVE_GETOPT_LONG
 
   /* Used: himpsv */
   static struct option longopts[] =
@@ -124,13 +113,7 @@ void show_usage(void)
     { 0, 0, 0, 0 }
   };
 
-  #define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
-
-#else
-
-  #define GETOPT_FUNC getopt(argc, argv, GET_OPTIONS)
-
-#endif
+#define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
 
 int main(int argc, char *argv[])
 {

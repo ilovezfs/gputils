@@ -28,7 +28,7 @@ gpasm_SOURCES=\
 	cod.h directive.h gpasm.h gperror.h lst.h processor.h \
 	special.h
 
-gpasm_LDADD = ${top_builddir}/@LIBGPUTILS@
+gpasm_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 
 YFLAGS = -dvt
 LFLAGS = -i

@@ -94,6 +94,7 @@ GPUTILS_MINOR_VERSION = @GPUTILS_MINOR_VERSION@
 GPUTILS_VERSION = @GPUTILS_VERSION@
 LEX = @LEX@
 LIBGPUTILS = @LIBGPUTILS@
+LIBIBERTY = @LIBIBERTY@
 MAKEINFO = @MAKEINFO@
 MAKE_SUBDIRS = @MAKE_SUBDIRS@
 OBJEXT = @OBJEXT@
@@ -115,7 +116,7 @@ gplink_SOURCES = \
 	script.h
 
 
-gplink_LDADD = ${top_builddir}/@LIBGPUTILS@
+gplink_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 
 YFLAGS = -dvt
 LFLAGS = -i
@@ -133,7 +134,8 @@ LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 gplink_OBJECTS =  gplink.$(OBJEXT) script.$(OBJEXT) parse.$(OBJEXT) \
 scan.$(OBJEXT)
-gplink_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@
+gplink_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@ \
+${top_builddir}/@LIBIBERTY@
 gplink_LDFLAGS = 
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LEXLIB = @LEXLIB@

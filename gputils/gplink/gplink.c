@@ -312,7 +312,6 @@ void show_usage(void)
 {
   printf("Usage: gplink <options> [ <object> | <library> ] \n");
   printf("Where <options> are:\n");
-  #ifdef HAVE_GETOPT_LONG
   printf("  -a FMT, --hex-format FMT       Select hex file format.\n");
   printf("  -c, --object                   Output executable object file.\n");
   printf("  -h, --help                     Show this usage message.\n");
@@ -321,16 +320,6 @@ void show_usage(void)
   printf("  -q, --quiet                    Quiet.\n");
   printf("  -s FILE, --script FILE         Linker script.\n");
   printf("  -v, --version                  Show version.\n");
-  #else
-  printf("  -a FMT      Select hex file format.\n");
-  printf("  -c          Output executable object file.\n");
-  printf("  -h          Show this usage message.\n");
-  printf("  -I DIR      Specify include directory.\n");
-  printf("  -o FILE     Alternate name of output file.\n");
-  printf("  -q          Quiet.\n");
-  printf("  -s FILE     Linker script.\n");
-  printf("  -v          Show version.\n");
-  #endif
   printf("\n");
   printf("Report bugs to:\n");
   printf("%s\n", BUG_REPORT_URL);
@@ -338,8 +327,6 @@ void show_usage(void)
 }
 
 #define GET_OPTIONS "?a:cdhI:o:qs:v"
-
-#ifdef HAVE_GETOPT_LONG
 
   static struct option longopts[] =
   {
@@ -355,13 +342,7 @@ void show_usage(void)
     { 0, 0, 0, 0 }
   };
 
-  #define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
-
-#else
-
-  #define GETOPT_FUNC getopt(argc, argv, GET_OPTIONS)
-
-#endif
+#define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
 
 int main(int argc, char *argv[])
 {

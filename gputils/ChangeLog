@@ -1,7 +1,10 @@
+2002-01-16 Craig Franklin <craigfranklin@attbi.com>
+  * Added missing () in gplink lexer. 
+  * Added a subset of libiberty so getopt_long is always available.
+
 2002-01-15 Craig Franklin <craigfranklin@attbi.com>
   * Fixed a bug in gpasm that causes a nuisance warning when multiple macro
     definitions are selected using conditional assembly.
-  * Added missing () in gplink lexer. 
 
 2002-01-13 Craig Franklin <craigfranklin@attbi.com>
   * Fixed a bug in gpvc that could cause a segmentation fault.

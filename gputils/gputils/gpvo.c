@@ -330,7 +330,6 @@ void show_usage(void)
 {
   printf("Usage: gpvo <options> <filename>\n");
   printf("Where <options> are:\n");
-  #ifdef HAVE_GETOPT_LONG
   printf("  -a, --auxilary             Auxilary record \n");
   printf("  -b, --binary               Print binary data \n");
   printf("  -f, --file                 File header \n");
@@ -340,17 +339,6 @@ void show_usage(void)
   printf("  -s, --section              Section data \n");
   printf("  -t  --symbol               Symbol table \n");
   printf("  -v, --version              Show version\n");
-  #else
-  printf("  -a               Auxilary record \n");
-  printf("  -b               Print binary data \n");
-  printf("  -f               File header \n");
-  printf("  -h               Show this usage message \n");
-  printf("  -o               Optional header \n");
-  printf("  -p PROC          Select processor family\n");
-  printf("  -s               Section data \n");
-  printf("  -t               Symbol table \n");
-  printf("  -v               Show version\n");
-  #endif
   printf("\n");
   printf("Report bugs to:\n");
   printf("%s\n", BUG_REPORT_URL);
@@ -358,8 +346,6 @@ void show_usage(void)
 }
 
 #define GET_OPTIONS "?abfhop:stv"
-
-#ifdef HAVE_GETOPT_LONG
 
   /* Used: himpsv */
   static struct option longopts[] =
@@ -376,14 +362,7 @@ void show_usage(void)
     { 0, 0, 0, 0 }
   };
 
-  #define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
-
-#else
-
-  #define GETOPT_FUNC getopt(argc, argv, GET_OPTIONS)
-
-#endif
-
+#define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
 
 int main(int argc, char *argv[])
 {
