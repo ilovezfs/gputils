@@ -1,0 +1,16 @@
+#! /bin/sh
+
+DATE=`date +%y%m%d`
+
+cvs checkout gputils && \
+cd gputils && \
+mv configure.ac configure.ac.old && \
+VERSION=`cat configure | grep PACKAGE_VERSION= | tr -d [:alpha:] | tr -d "_'="` && \
+sed -e s/$VERSION/$DATE/ configure.ac.old > configure.ac && \
+./configure --enable-maintainer-mode && \
+make && \
+make dist && \
+mv gputils*.tar.gz gputils.tar.gz && \
+scp gputils.tar.gz $SF_NAME@gputils.sourceforge.net:/home/groups/g/gp/gputils/htdocs/snapshots && \
+cd .. && \
+rm -Rf gputils

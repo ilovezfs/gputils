@@ -103,7 +103,7 @@ FunctionEnd
 
 Section -Common
   SetOutPath "$INSTDIR"
-  File ".\gputils.ico"
+  File "${GPUTILS_ROOT}\gputils.ico"
   File "${GPUTILS_ROOT}\COPYING.txt"
   File "${GPUTILS_ROOT}\ChangeLog.txt"
   File "${GPUTILS_ROOT}\README.txt"
