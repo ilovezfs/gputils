@@ -538,16 +538,6 @@ void open_src(char *name, int isinclude)
     yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
   }
 
-#ifdef GPUTILS_DEBUG
-  {
-    extern int yydebug;
-    if (state.pass == 2)
-      yydebug = 1;
-    else
-      yydebug = 0;
-  }
-#endif
-
   new->type = src_file;
   new->h = NULL;
   new->line_number = 1;

@@ -51,7 +51,7 @@ void select_processor(char *name)
         gperror(GPE_UNKNOWN_PROC, NULL);
       } else {
         printf("Didn't find any processor named: %s\nHere are the supported processors:\n",name);
-        gp_dump_processor_list();
+        gp_dump_processor_list(true, 0);
         exit(1);
       }
     }

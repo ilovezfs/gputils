@@ -37,8 +37,9 @@ static int cmd_processor = 0;
 static char *processor_name = NULL;
 
 int yyparse(void);
+extern int yydebug;
 
-#define GET_OPTIONS "?D:I:La:cd:e:ghilmno:p:qr:vw:"
+#define GET_OPTIONS "?D:I:La:cde:ghilmno:p:qr:vw:"
 
 /* Used: acdDehiIlmopqrwv */
 static struct option longopts[] =
@@ -47,7 +48,7 @@ static struct option longopts[] =
   { "include",     1, 0, 'I' },
   { "hex-format",  1, 0, 'a' },
   { "object",      0, 0, 'c' },
-  { "define",      1, 0, 'd' },
+  { "debug",       0, 0, 'd' },
   { "expand",      1, 0, 'e' },
   { "debug-info",  0, 0, 'g' },
   { "help",        0, 0, 'h' },
@@ -125,7 +126,7 @@ init(void)
   return;
 }
 
-static void 
+void 
 add_path(char *path)
 {
   if(state.path_num < MAX_PATHS) {
@@ -143,14 +144,15 @@ show_usage(void)
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -a FMT, --hex-format FMT       Select hex file format. [inhx32]\n");
   printf("  -c, --object                   Output relocatable object.\n");
+  printf("  -d, --debug                    Output debug messages.\n");
   printf("  -D SYM=VAL, --define SYM=VAL   Define SYM with value VAL.\n");
   printf("  -e [ON|OFF], --expand [ON|OFF] Macro expansion.\n");
   printf("  -g, --debug-info               Use debug directives for COFF.\n");
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -i, --ignore-case              Case insensitive.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
-  printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -l, --list-chips               List supported processors.\n");
+  printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -m, --dump                     Memory dump.\n");
 #ifndef HAVE_DOS_BASED_FILE_SYSTEM
   printf("  -n, --dos                      Use DOS newlines in hex file.\n");
@@ -217,8 +219,10 @@ process_args( int argc, char *argv[])
       state.lstfile = normal;
       state.objfile = normal;
       break;
-    case 'D':
     case 'd':
+      gp_debug_disable = 0;
+      break;
+    case 'D':
       if ((optarg != NULL) && (strlen(optarg) > 0)) {
 	struct symbol *sym;
 	char *lhs, *rhs;
@@ -254,7 +258,7 @@ process_args( int argc, char *argv[])
       state.cmd_line.lst_force = 1;
       break;  
     case 'l':
-      gp_dump_processor_list();
+      gp_dump_processor_list(true, 0);
       exit(0);
       break;
     case 'm':
@@ -369,6 +373,11 @@ assemble(void)
   cod_init();
   lst_init();
   open_src(state.srcfilename, 0);
+  if (gp_debug_disable == 0) {
+    yydebug = 1;
+  } else {
+    yydebug = 0;
+  }
   yyparse();
 
   assert(state.pass == 2);

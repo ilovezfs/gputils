@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #   testall tests gpasm, these are older tests
 #   Copyright (C) 2001 Craig Franklin

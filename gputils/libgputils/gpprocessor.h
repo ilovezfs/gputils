@@ -23,6 +23,7 @@ Boston, MA 02111-1307, USA.  */
 #define __GPPROCESSOR_H__
 
 enum proc_class {
+  PROC_CLASS_UNKNOWN,   /* Unknown device */
   PROC_CLASS_EEPROM8,   /* 8 bit EEPROM */
   PROC_CLASS_GENERIC,   /* 12 bit device */
   PROC_CLASS_PIC12,     /* 12 bit devices */
@@ -259,6 +260,7 @@ enum pic_processor {
 
 struct px {
   enum pic_processor tag;
+  enum proc_class class;
   char *defined_as;
   char *names[MAX_NAMES];
   unsigned long coff_type; 
@@ -302,7 +304,7 @@ struct px {
 #define IDLOC_ADDRESS_12  0x200
 #define IDLOC_ADDRESS_14  0x2000
 
-void gp_dump_processor_list(void);
+void gp_dump_processor_list(gp_boolean list_all, enum proc_class class);
 struct px *gp_find_processor(char *name);
 enum proc_class gp_processor_class(enum pic_processor);
 int gp_processor_bsr_boundary(enum pic_processor processor);

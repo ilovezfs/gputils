@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # test tests gpasm
 # Copyright (C) 2001, 2002, 2003
