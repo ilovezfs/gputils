@@ -27,6 +27,7 @@ Boston, MA 02111-1307, USA.  */
 #include "analyze.h" 
 #include "codegen.h"
 #include "codegen14.h"
+#include "codegen16e.h"
 
 /* prototypes */
 static void gen_expr(tree *expr);
@@ -175,26 +176,44 @@ codegen_indirect(tree *offset,
                  gp_boolean new_expr)
 {
 
-  /* FIXME: the default pointer size needs to be selected (size_uint8 for
-     now ) */
-
   /* indirect access */
   if (new_expr) {
-    codegen_expr(offset, size_uint8);
+    codegen_expr(offset, state.pointer_size);
   } else {
     gen_expr(offset);
   }
   if (var->type->start != 0) {
     /* shift the offset for the first element */
-    CODEGEN(op_add, size_uint8, true, 0 - var->type->start, NULL);
+    CODEGEN(op_add, state.pointer_size, true, 0 - var->type->start, NULL);
   }
   if (element_size != 1) {
     /* scale the offset by the element size */
-    CODEGEN(op_mult, size_uint8, true, element_size, NULL);
+    CODEGEN(op_mult, state.pointer_size, true, element_size, NULL);
   }
-  codegen_write_asm("addlw %s", var->name); 
-  codegen_write_asm("movwf FSR"); 
 
+  switch (state.class) {
+  case PROC_CLASS_PIC14:
+    codegen_write_asm("addlw %s", var->name); 
+    codegen_write_asm("banksel FSR");
+    codegen_write_asm("movwf FSR"); 
+    codegen_write_asm("banksel %s", WORKING_LABEL);
+    break;
+  case PROC_CLASS_PIC16E:
+    codegen_write_asm("movf %s, w", WORKING_LABEL);
+    codegen_write_asm("addlw LOW(%s)", var->name); 
+    codegen_write_asm("movff WREG, FSR0L");
+    codegen_write_asm("movf %s + 1, w", WORKING_LABEL);
+    codegen_write_asm("btfsc STATUS, C");
+    codegen_write_asm("addlw 1"); 
+    codegen_write_asm("addlw HIGH(%s)", var->name); 
+    codegen_write_asm("movff WREG, FSR0H");
+    break;
+  default:
+    assert(0);
+  }
+
+
+  return;
 }
 
 /* load the register file into the working register */
@@ -713,10 +732,14 @@ codegen_select(tree *expr)
     break;
   case PROC_CLASS_PIC14:
     func_ptr = &codegen14_func;
+    state.pointer_size = size_uint8;
     break;
   case PROC_CLASS_PIC16:
-  case PROC_CLASS_PIC16E:
     analyze_error(expr, "unsupported processor class");
+    break;
+  case PROC_CLASS_PIC16E:
+    func_ptr = &codegen16e_func;
+    state.pointer_size = size_uint16;
     break;
   default:
     assert(0);

@@ -31,6 +31,7 @@ Boston, MA 02111-1307, USA.  */
 #endif
 
 #include "tree.h"
+#include "symbol.h"
 
 extern struct gpal_state {
   gp_boolean compile_only;		/* compile, but don't assemble or link */
@@ -58,6 +59,7 @@ extern struct gpal_state {
   enum proc_class class;      		/* Processor class */
   struct px *processor_info;    	/* Processor identifiers (e.g. name) */
   gp_boolean processor_chosen;		/* Nonzero after processor-specific init */
+  enum size_tag pointer_size;		/* pointer size */
   struct {				/* Processor data */
     char *code;      			/* code section name */
     int code_addr;			/* absolute address of code section */

@@ -564,6 +564,7 @@ init(void)
   state.processor = no_processor;
   state.class = PROC_CLASS_GENERIC;
   state.processor_chosen = false;
+  state.pointer_size = size_unknown;
   state.outfilename = NULL;
 
   /* local data */
@@ -628,7 +629,7 @@ main(int argc, char *argv[])
         unlink(file_data->name);
       }
       list = list->next;
-    }    
+    }
   }
 
   /* free all the memory */
