@@ -1,21 +1,21 @@
-MPASM Version 3.00 Beta Release   PR242.ASM   01/31/2001  12:13:23	   PAGE 1
+MPASM 03.20.02 Released         PR242.ASM   11-21-2002  20:21:12         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; PRF242.ASM
-                        00002 
-                        00003 ; This file tests the processor directive.
-                        00004 
-                        00005         PROCESSOR       18c242  ;32-BIT 
-                        00006 
-000000 0C12             00007         RETLW   12      ; 0812 = 12-BIT
-                        00008                                 ; 3412 = 14-BIT
-                        00009                                 ; B612 = 16-BIT
-                        00010                                 ; 0C12 = 32-bit
-                        00011         END
-MPASM Version 3.00 Beta Release   PR242.ASM   01/31/2001  12:13:23	   PAGE 2
+                      00001 ; PRF242.ASM
+                      00002 
+                      00003 ; This file tests the processor directive.
+                      00004 
+                      00005         PROCESSOR       18c242  ;32-BIT 
+                      00006 
+000000 0C12           00007         RETLW   12      ; 0812 = 12-BIT
+                      00008                                 ; 3412 = 14-BIT
+                      00009                                 ; B612 = 16-BIT
+                      00010                                 ; 0C12 = 32-bit
+                      00011         END
+MPASM 03.20.02 Released         PR242.ASM   11-21-2002  20:21:12         PAGE  2
 
 
 SYMBOL TABLE
@@ -31,7 +31,7 @@ MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 All other memory blocks unused.
 
 Program Memory Bytes Used:     2
-Program Memory Bytes Free: 65534
+Program Memory Bytes Free: 16382
 
 
 Errors   :     0

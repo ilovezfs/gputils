@@ -1,108 +1,108 @@
-MPASM Version 3.00 Beta Release   FILES1.ASM   01/31/2001  12:11:19	   PAGE 1
+MPASM 03.20.02 Released        FILES1.ASM   11-21-2002  20:20:17         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; FILES1.ASM
-                        00002 
-                        00003 ; This file tests the generation of the various output files.  If you
-                        00004 ; are generating an object file, also assemble with the option /dMakeObj.
-                        00005 
-                        00006         LIST    P=16C54
-                        00007 
-                        00008 #define Def1    1
-                        00009 
-                        00010 #ifdef MakeObj
-                        00011         CODE
-                        00012 #endif
-                        00013 
-0000                    00014 Label1
-                        00015 
-                        00016 #ifdef MakeObj
-                        00017         EXTERN          Extern1
-                        00018 Global1 = 1
-                        00019 Global2 = 2
-                        00020         GLOBAL          Global1, Global2
-                        00021         DATA            Extern1, Global1, Global2
-                        00022 #endif
-                        00023 
-0000                    00024 Label2
-                        00025 
-                        00026 MyMac   MACRO   Label, Num
-                        00027         LOCAL   MacLoc=Num
-                        00028         WHILE MacLoc > 0
-                        00029 Label#v(MacLoc) DATA    Num, MacLoc
-                        00030            MacLoc--
-                        00031         ENDW
-                        00032         ENDM
-                        00033 
-                        00034 
-  0111                  00035         CONSTANT        Const1=111, Const2=222
-  0000                  00036         VARIABLE        Var1, Var2 = 22
-                        00037 
+                      00001 ; FILES1.ASM
+                      00002 
+                      00003 ; This file tests the generation of the various output files.  If you
+                      00004 ; are generating an object file, also assemble with the option /dMakeObj.
+                      00005 
+                      00006         LIST    P=16C54
+                      00007 
+                      00008 #define Def1    1
+                      00009 
+                      00010 #ifdef MakeObj
+                      00011         CODE
+                      00012 #endif
+                      00013 
+0000                  00014 Label1
+                      00015 
+                      00016 #ifdef MakeObj
+                      00017         EXTERN          Extern1
+                      00018 Global1 = 1
+                      00019 Global2 = 2
+                      00020         GLOBAL          Global1, Global2
+                      00021         DATA            Extern1, Global1, Global2
+                      00022 #endif
+                      00023 
+0000                  00024 Label2
+                      00025 
+                      00026 MyMac   MACRO   Label, Num
+                      00027         LOCAL   MacLoc=Num
+                      00028         WHILE MacLoc > 0
+                      00029 Label#v(MacLoc) DATA    Num, MacLoc
+                      00030            MacLoc--
+                      00031         ENDW
+                      00032         ENDM
+                      00033 
+                      00034 
+  0111                00035         CONSTANT        Const1=111, Const2=222
+  0000                00036         VARIABLE        Var1, Var2 = 22
+                      00037 
 Warning[207]: Found label after column 1. (Var3)
-  00000033              00038         Var3 = 33
-                        00039 
-0000     0001           00040         DATA    Def1
-0001     0111 0222      00041         DATA    Const1, Const2
-0003     0000 0022 0033 00042         DATA    Var1, Var2, Var3
-                        00043 
+  00000033            00038         Var3 = 33
+                      00039 
+0000   0001           00040         DATA    Def1
+0001   0111 0222      00041         DATA    Const1, Const2
+0003   0000 0022 0033 00042         DATA    Var1, Var2, Var3
+                      00043 
 Warning[207]: Found label after column 1. (Var3)
-  00000034              00044         Var3++
-0006     0034           00045         DATA    Var3
-                        00046 
-0007                    00047 Label3
-                        00048 
-                        00049         MyMac   CallOne, 3
-  0003                      M         LOCAL   MacLoc=3
-                            M         WHILE MacLoc > 0
-MPASM Version 3.00 Beta Release   FILES1.ASM   01/31/2001  12:11:19	   PAGE 2
+  00000034            00044         Var3++
+0006   0034           00045         DATA    Var3
+                      00046 
+0007                  00047 Label3
+                      00048 
+                      00049         MyMac   CallOne, 3
+  0003                    M         LOCAL   MacLoc=3
+                          M         WHILE MacLoc > 0
+MPASM 03.20.02 Released        FILES1.ASM   11-21-2002  20:20:17         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0007     0003 0003          M CallOne3        DATA    3,   MacLoc
+0007   0003 0003          M CallOne3        DATA    3,   MacLoc
 Warning[207]: Found label after column 1. (MacLoc)
-  00000002                  M            MacLoc--
-0009     0003 0002          M CallOne2        DATA    3,   MacLoc
+  00000002                M            MacLoc--
+0009   0003 0002          M CallOne2        DATA    3,   MacLoc
 Warning[207]: Found label after column 1. (MacLoc)
-  00000001                  M            MacLoc--
-000B     0003 0001          M CallOne1        DATA    3,   MacLoc
+  00000001                M            MacLoc--
+000B   0003 0001          M CallOne1        DATA    3,   MacLoc
 Warning[207]: Found label after column 1. (MacLoc)
-  00000000                  M            MacLoc--
-                            M         ENDW
-                        00050         MyMac   CallTwo, 2
-  0002                      M         LOCAL   MacLoc=2
-                            M         WHILE MacLoc > 0
-000D     0002 0002          M CallTwo2        DATA    2,   MacLoc
+  00000000                M            MacLoc--
+                          M         ENDW
+                      00050         MyMac   CallTwo, 2
+  0002                    M         LOCAL   MacLoc=2
+                          M         WHILE MacLoc > 0
+000D   0002 0002          M CallTwo2        DATA    2,   MacLoc
 Warning[207]: Found label after column 1. (MacLoc)
-  00000001                  M            MacLoc--
-000F     0002 0001          M CallTwo1        DATA    2,   MacLoc
+  00000001                M            MacLoc--
+000F   0002 0001          M CallTwo1        DATA    2,   MacLoc
 Warning[207]: Found label after column 1. (MacLoc)
-  00000000                  M            MacLoc--
-                            M         ENDW
-                        00051 
+  00000000                M            MacLoc--
+                          M         ENDW
+                      00051 
 Error[101]  : ERROR: (This is my error message)
-                        00052         ERROR   "This is my error message"
+                      00052         ERROR   "This is my error message"
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0011     01C0           00053         ADDWF   0x20, 0                 ; Generates a warning
+0011   01C0           00053         ADDWF   0x20, 0                 ; Generates a warning
 Message[301]: MESSAGE: ("This is my message)
-                        00054         MESSG   "This is my message
-                        00055 
-                        00056 ;***** Test for SSR 1553
-                        00057 
+                      00054         MESSG   "This is my message
+                      00055 
+                      00056 ;***** Test for SSR 1553
+                      00057 
 Error[105]  : Cannot open file (Include File "files1.inc" not found)
-                        00058 #include "files1.inc"
-                        00059 
+                      00058 #include "files1.inc"
+                      00059 
 Warning[207]: Found label after column 1. (OutSideMac)
-0012                    00060         OutSideMac
-                        00061 
-                        00062 ;***** End Test
-                        00063 
-                        00064         END
-MPASM Version 3.00 Beta Release   FILES1.ASM   01/31/2001  12:11:19	   PAGE 3
+0012                  00060         OutSideMac
+                      00061 
+                      00062 ;***** End Test
+                      00063 
+                      00064         END
+MPASM 03.20.02 Released        FILES1.ASM   11-21-2002  20:20:17         PAGE  3
 
 
 SYMBOL TABLE

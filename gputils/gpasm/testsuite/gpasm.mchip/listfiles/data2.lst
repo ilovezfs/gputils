@@ -1,54 +1,54 @@
-MPASM Version 3.00 Beta Release   DATA2.ASM   01/31/2001  12:11:13	   PAGE 1
+MPASM 03.20.02 Released         DATA2.ASM   11-21-2002  20:20:15         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; DATA2.ASM
-                        00002 
-                        00003 ; This file tests legal maximum uses of the various data directives.
-                        00004 
-                        00005         LIST    P=17C44, R=DEC
-                        00006 
-0000     0000           00007         DATA    0
-0001     7FFF           00008         DATA    32767
-0002     8000           00009         DATA    32768
-0003     8001           00010         DATA    -32767
+                      00001 ; DATA2.ASM
+                      00002 
+                      00003 ; This file tests legal maximum uses of the various data directives.
+                      00004 
+                      00005         LIST    P=17C44, R=DEC
+                      00006 
+0000   0000           00007         DATA    0
+0001   7FFF           00008         DATA    32767
+0002   8000           00009         DATA    32768
+0003   8001           00010         DATA    -32767
 Message[303]: Program word too large.  Truncated to core size. (FFFF8000)
-0004     8000           00011         DATA    -32768
-0005     FFFF           00012         DATA    65535
-                        00013 
-0006     0000           00014         DW      0
-0007     7FFF           00015         DW      32767
-0008     8000           00016         DW      32768
-0009     8001           00017         DW      -32767
+0004   8000           00011         DATA    -32768
+0005   FFFF           00012         DATA    65535
+                      00013 
+0006   0000           00014         DW      0
+0007   7FFF           00015         DW      32767
+0008   8000           00016         DW      32768
+0009   8001           00017         DW      -32767
 Message[303]: Program word too large.  Truncated to core size. (FFFF8000)
-000A     8000           00018         DW      -32768
-000B     FFFF           00019         DW      65535
-                        00020 
-000C     0000           00021         DB      0
-000D     7F00           00022         DB      127
-000E     8000           00023         DB      128
-000F     8100           00024         DB      -127
-0010     8000           00025         DB      -128
-0011     FF00           00026         DB      255
-                        00027 
-0012     0000           00028         DE      0
-0013     007F           00029         DE      127
-0014     0080           00030         DE      128
-0015     0081           00031         DE      -127
-0016     0080           00032         DE      -128
-0017     00FF           00033         DE      255
-                        00034 
-0018     B600           00035         DT      0
-0019     B67F           00036         DT      127
-001A     B680           00037         DT      128
-001B     B681           00038         DT      -127
-001C     B680           00039         DT      -128
-001D     B6FF           00040         DT      255
-                        00041 
-                        00042         END
-MPASM Version 3.00 Beta Release   DATA2.ASM   01/31/2001  12:11:13	   PAGE 2
+000A   8000           00018         DW      -32768
+000B   FFFF           00019         DW      65535
+                      00020 
+000C   0000           00021         DB      0
+000D   7F00           00022         DB      127
+000E   8000           00023         DB      128
+000F   8100           00024         DB      -127
+0010   8000           00025         DB      -128
+0011   FF00           00026         DB      255
+                      00027 
+0012   0000           00028         DE      0
+0013   007F           00029         DE      127
+0014   0080           00030         DE      128
+0015   0081           00031         DE      -127
+0016   0080           00032         DE      -128
+0017   00FF           00033         DE      255
+                      00034 
+0018   B600           00035         DT      0
+0019   B67F           00036         DT      127
+001A   B680           00037         DT      128
+001B   B681           00038         DT      -127
+001C   B680           00039         DT      -128
+001D   B6FF           00040         DT      255
+                      00041 
+                      00042         END
+MPASM 03.20.02 Released         DATA2.ASM   11-21-2002  20:20:15         PAGE  2
 
 
 SYMBOL TABLE

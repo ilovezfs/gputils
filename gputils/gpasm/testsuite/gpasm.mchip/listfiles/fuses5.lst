@@ -1,22 +1,22 @@
-MPASM Version 3.00 Beta Release   FUSES5.ASM   01/31/2001  12:39:42	   PAGE 1
+MPASM 03.20.02 Released        FUSES5.ASM   11-21-2002  20:20:19         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; FUSES5.ASM
-                        00002 
-                        00003 ; This file tests using the __FUSES directive twice.
-                        00004 
-                        00005         LIST    P=17C44, R=HEX, F=INHX32
-                        00006 
-FE00     1234           00007         __FUSES 1234
+                      00001 ; FUSES5.ASM
+                      00002 
+                      00003 ; This file tests using the __FUSES directive twice.
+                      00004 
+                      00005         LIST    P=17C44, R=HEX, F=INHX32
+                      00006 
+FE00   1234           00007         __FUSES 1234
 Error[118]  : Overwriting previous address contents (FE00)
 Error[118]  : Overwriting previous address contents (FE00)
-FE00     5678           00008         __FUSES 5678
-                        00009 
-                        00010         END
-MPASM Version 3.00 Beta Release   FUSES5.ASM   01/31/2001  12:39:42	   PAGE 2
+FE00   5678           00008         __FUSES 5678
+                      00009 
+                      00010         END
+MPASM 03.20.02 Released        FUSES5.ASM   11-21-2002  20:20:19         PAGE  2
 
 
 SYMBOL TABLE

@@ -1,75 +1,75 @@
-MPASM Version 3.00 Beta Release   MACRO1.ASM   01/31/2001  12:13:11	   PAGE 1
+MPASM 03.20.02 Released        MACRO1.ASM   11-21-2002  20:21:07         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; MACRO1.ASM
-                        00002 
-                        00003 ; This file tests how global labels can be generated from macros.
-                        00004 
-                        00005         LIST    P=16C54
-                        00006 
-                        00007 MakLab  MACRO   Num
-                        00008 Label#v(Num)
-                        00009         DATA    Num
-                        00010         ENDM
-                        00011 
+                      00001 ; MACRO1.ASM
+                      00002 
+                      00003 ; This file tests how global labels can be generated from macros.
+                      00004 
+                      00005         LIST    P=16C54
+                      00006 
+                      00007 MakLab  MACRO   Num
+                      00008 Label#v(Num)
+                      00009         DATA    Num
+                      00010         ENDM
+                      00011 
 Warning[207]: Found label after column 1. (I)
-  00000004              00012         I = 4
-                        00013         WHILE I > 0
-                        00014            MakLab       I
-0000                        M Label4
-0000     0004               M         DATA    I
+  00000004            00012         I = 4
+                      00013         WHILE I > 0
+                      00014            MakLab       I
+0000                      M Label4
+0000   0004               M         DATA    I
 Warning[207]: Found label after column 1. (I)
-  00000003              00015            I--
-                        00014            MakLab       I
-0001                        M Label3
-0001     0003               M         DATA    I
+  00000003            00015            I--
+                      00014            MakLab       I
+0001                      M Label3
+0001   0003               M         DATA    I
 Warning[207]: Found label after column 1. (I)
-  00000002              00015            I--
-                        00014            MakLab       I
-0002                        M Label2
-0002     0002               M         DATA    I
+  00000002            00015            I--
+                      00014            MakLab       I
+0002                      M Label2
+0002   0002               M         DATA    I
 Warning[207]: Found label after column 1. (I)
-  00000001              00015            I--
-                        00014            MakLab       I
-0003                        M Label1
-0003     0001               M         DATA    I
+  00000001            00015            I--
+                      00014            MakLab       I
+0003                      M Label1
+0003   0001               M         DATA    I
 Warning[207]: Found label after column 1. (I)
-  00000000              00015            I--
-                        00016         ENDW
-                        00017 
+  00000000            00015            I--
+                      00016         ENDW
+                      00017 
 Warning[207]: Found label after column 1. (I)
-  00000004              00018         I = 4
-                        00019         WHILE I > 0
-0004     0A00           00020            GOTO Label4
+  00000004            00018         I = 4
+                      00019         WHILE I > 0
+0004   0A00           00020            GOTO Label4
 Warning[207]: Found label after column 1. (I)
-  00000003              00021            I--
-0005     0A01           00020            GOTO Label3
+  00000003            00021            I--
+0005   0A01           00020            GOTO Label3
 Warning[207]: Found label after column 1. (I)
-  00000002              00021            I--
-0006     0A02           00020            GOTO Label2
+  00000002            00021            I--
+0006   0A02           00020            GOTO Label2
 Warning[207]: Found label after column 1. (I)
-  00000001              00021            I--
-0007     0A03           00020            GOTO Label1
+  00000001            00021            I--
+0007   0A03           00020            GOTO Label1
 Warning[207]: Found label after column 1. (I)
-  00000000              00021            I--
-                        00022         ENDW
-                        00023 
-MPASM Version 3.00 Beta Release   MACRO1.ASM   01/31/2001  12:13:11	   PAGE 2
+  00000000            00021            I--
+                      00022         ENDW
+                      00023 
+MPASM 03.20.02 Released        MACRO1.ASM   11-21-2002  20:21:07         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0008     0A03           00024         GOTO    Label1
-0009     0A02           00025         GOTO    Label2
-000A     0A01           00026         GOTO    Label3
-000B     0A00           00027         GOTO    Label4
-                        00028 
-                        00029         END
-MPASM Version 3.00 Beta Release   MACRO1.ASM   01/31/2001  12:13:11	   PAGE 3
+0008   0A03           00024         GOTO    Label1
+0009   0A02           00025         GOTO    Label2
+000A   0A01           00026         GOTO    Label3
+000B   0A00           00027         GOTO    Label4
+                      00028 
+                      00029         END
+MPASM 03.20.02 Released        MACRO1.ASM   11-21-2002  20:21:07         PAGE  3
 
 
 SYMBOL TABLE

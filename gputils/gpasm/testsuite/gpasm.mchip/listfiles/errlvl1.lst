@@ -1,46 +1,46 @@
-MPASM Version 3.00 Beta Release   ERRLVL1.ASM   01/31/2001  12:39:41	   PAGE 1
+MPASM 03.20.02 Released       ERRLVL1.ASM   11-21-2002  20:20:17         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ;ERRLVL1.ASM
-                        00002 ;   This file tests the enabling/disabling of a specific message
-                        00003 
-                        00004         list    p=17c42
-                        00005 
-                        00006         errorlevel      1, -201
-                        00007         radix   dec
-                        00008 
-                        00009 
-                        00010         messg   "This shouldn't appear anywhere"
-                        00011 
-                        00012 ; This should generate a suppressed warning
-                        00013 #undefine NotDefined
-                        00014 
-                        00015 ;This should generate a non-suppressed warning
+                      00001 ;ERRLVL1.ASM
+                      00002 ;   This file tests the enabling/disabling of a specific message
+                      00003 
+                      00004         list    p=17c42
+                      00005 
+                      00006         errorlevel      1, -201
+                      00007         radix   dec
+                      00008 
+                      00009 
+                      00010         messg   "This shouldn't appear anywhere"
+                      00011 
+                      00012 ; This should generate a suppressed warning
+                      00013 #undefine NotDefined
+                      00014 
+                      00015 ;This should generate a non-suppressed warning
 Warning[209]: Missing quote
-0000     4869 2074 6865 00016         data    "Hi there
-         7265 
-                        00017 
-                        00018 
-                        00019         errorlevel      +201
-                        00020 
-                        00021 ;This should generate a non-suppressed warning
+0000   4869 2074 6865 00016         data    "Hi there
+       7265 
+                      00017 
+                      00018 
+                      00019         errorlevel      +201
+                      00020 
+                      00021 ;This should generate a non-suppressed warning
 Warning[201]: Symbol not previously defined (NotDefined)
-                        00022 #undefine NotDefined
-                        00023 
-                        00024 ;This should generate a non-suppressed warning
+                      00022 #undefine NotDefined
+                      00023 
+                      00024 ;This should generate a non-suppressed warning
 Warning[209]: Missing quote
-0004     4869 2074 6865 00025         data    "Hi there
-         7265 
-                        00026 
-                        00027 ;This should generate a warning - errors cannot be suppressed
+0004   4869 2074 6865 00025         data    "Hi there
+       7265 
+                      00026 
+                      00027 ;This should generate a warning - errors cannot be suppressed
 Warning[222]: Error messages cannot be disabled.
-                        00028         errorlevel      -101
-                        00029 
-                        00030         end
-MPASM Version 3.00 Beta Release   ERRLVL1.ASM   01/31/2001  12:39:41	   PAGE 2
+                      00028         errorlevel      -101
+                      00029 
+                      00030         end
+MPASM 03.20.02 Released       ERRLVL1.ASM   11-21-2002  20:20:17         PAGE  2
 
 
 SYMBOL TABLE

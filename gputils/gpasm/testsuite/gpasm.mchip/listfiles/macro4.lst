@@ -1,88 +1,88 @@
-MPASM Version 3.00 Beta Release   MACRO4.ASM   01/31/2001  12:13:12	   PAGE 1
+MPASM 03.20.02 Released        MACRO4.ASM   11-21-2002  20:21:08         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; MACRO4.ASM
-                        00002 
-                        00003 ; This file tests parameter substitution in macros.
-                        00004 
-                        00005         LIST    P=17C42
-                        00006 
-                        00007 #define Def1    10
-                        00008 #define Def2    "ABC"
-                        00009 #define Def3    Var1
-                        00010 
-  00000001              00011 Var1    = 1
-  0002                  00012         VARIABLE Var2 = 2
-  0003                  00013         CONSTANT Const1 = 3
-                        00014 
-                        00015 MakDat  MACRO   Arg1, Arg2, Arg3
-                        00016         DATA    Arg1
-                        00017         DATA    Arg2
-                        00018         DATA    Arg3
-                        00019         ENDM
-                        00020 
-                        00021 Make1   MACRO   Arg
-                        00022         DATA    Arg
-                        00023         ENDM
-                        00024 
-                        00025         MakDat  1, 2, 3
-0000     0001               M         DATA    1
-0001     0002               M         DATA    2
-0002     0003               M         DATA    3
-                        00026         MakDat  Def1, Def2, Def3
-0003     0010               M         DATA    10
-0004     4142 4300          M         DATA    "ABC"
-0006     0001               M         DATA    Var1
-                        00027         MakDat  Var1, Var2, Const1
-0007     0001               M         DATA    Var1
-0008     0002               M         DATA    Var2
-0009     0003               M         DATA    Const1
-                        00028         MakDat  ',', ",", '\''
-000A     002C               M         DATA    ','
-000B     2C00               M         DATA    ","
-000C     0027               M         DATA    '\''
-                        00029         MakDat  "\'", '\"', "\""
-000D     2700               M         DATA    "\'"
-000E     0022               M         DATA    '\"'
-000F     2200               M         DATA    "\""
-                        00030 
-                        00031         Make1   ','
-0010     002C               M         DATA    ','
-                        00032         Make1   ","
-0011     2C00               M         DATA    ","
-                        00033         Make1   '\''
-0012     0027               M         DATA    '\''
-                        00034         Make1   "\'"
-0013     2700               M         DATA    "\'"
-MPASM Version 3.00 Beta Release   MACRO4.ASM   01/31/2001  12:13:12	   PAGE 2
+                      00001 ; MACRO4.ASM
+                      00002 
+                      00003 ; This file tests parameter substitution in macros.
+                      00004 
+                      00005         LIST    P=17C42
+                      00006 
+                      00007 #define Def1    10
+                      00008 #define Def2    "ABC"
+                      00009 #define Def3    Var1
+                      00010 
+  00000001            00011 Var1    = 1
+  0002                00012         VARIABLE Var2 = 2
+  0003                00013         CONSTANT Const1 = 3
+                      00014 
+                      00015 MakDat  MACRO   Arg1, Arg2, Arg3
+                      00016         DATA    Arg1
+                      00017         DATA    Arg2
+                      00018         DATA    Arg3
+                      00019         ENDM
+                      00020 
+                      00021 Make1   MACRO   Arg
+                      00022         DATA    Arg
+                      00023         ENDM
+                      00024 
+                      00025         MakDat  1, 2, 3
+0000   0001               M         DATA    1
+0001   0002               M         DATA    2
+0002   0003               M         DATA    3
+                      00026         MakDat  Def1, Def2, Def3
+0003   0010               M         DATA    10
+0004   4142 4300          M         DATA    "ABC"
+0006   0001               M         DATA    Var1
+                      00027         MakDat  Var1, Var2, Const1
+0007   0001               M         DATA    Var1
+0008   0002               M         DATA    Var2
+0009   0003               M         DATA    Const1
+                      00028         MakDat  ',', ",", '\''
+000A   002C               M         DATA    ','
+000B   2C00               M         DATA    ","
+000C   0027               M         DATA    '\''
+                      00029         MakDat  "\'", '\"', "\""
+000D   2700               M         DATA    "\'"
+000E   0022               M         DATA    '\"'
+000F   2200               M         DATA    "\""
+                      00030 
+                      00031         Make1   ','
+0010   002C               M         DATA    ','
+                      00032         Make1   ","
+0011   2C00               M         DATA    ","
+                      00033         Make1   '\''
+0012   0027               M         DATA    '\''
+                      00034         Make1   "\'"
+0013   2700               M         DATA    "\'"
+MPASM 03.20.02 Released        MACRO4.ASM   11-21-2002  20:21:08         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00035         Make1   '\"'
-0014     0022               M         DATA    '\"'
-                        00036         Make1   "\""
-0015     2200               M         DATA    "\""
-                        00037         Make1   '\\'
-0016     005C               M         DATA    '\\'
-                        00038         Make1   "\\"
-0017     5C00               M         DATA    "\\"
-                        00039 
-                        00040         Make1   "A \'big\' test."
-0018     4120 2762 6967     M         DATA    "A \'big\' test."
-         2720 7465 7374 
-         2E00 
-                        00041         Make1   "A \"big\" test."
-001F     4120 2262 6967     M         DATA    "A \"big\" test."
-         2220 7465 7374 
-         2E00 
-                        00042 
-                        00043         END
-MPASM Version 3.00 Beta Release   MACRO4.ASM   01/31/2001  12:13:12	   PAGE 3
+                      00035         Make1   '\"'
+0014   0022               M         DATA    '\"'
+                      00036         Make1   "\""
+0015   2200               M         DATA    "\""
+                      00037         Make1   '\\'
+0016   005C               M         DATA    '\\'
+                      00038         Make1   "\\"
+0017   5C00               M         DATA    "\\"
+                      00039 
+                      00040         Make1   "A \'big\' test."
+0018   4120 2762 6967     M         DATA    "A \'big\' test."
+       2720 7465 7374 
+       2E00 
+                      00041         Make1   "A \"big\" test."
+001F   4120 2262 6967     M         DATA    "A \"big\" test."
+       2220 7465 7374 
+       2E00 
+                      00042 
+                      00043         END
+MPASM 03.20.02 Released        MACRO4.ASM   11-21-2002  20:21:08         PAGE  3
 
 
 SYMBOL TABLE

@@ -1,439 +1,439 @@
-MPASM Version 3.00 Beta Release   OP32.ASM   01/31/2001  12:13:18	   PAGE 1
+MPASM 03.20.02 Released          OP32.ASM   11-21-2002  20:21:10         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; OP32.ASM
-                        00002 
-                        00003 ; This file tests all 32-bit extended opcodes at their max and min and, if
-                        00004 ; applicable, all possible values.  Note that the max and mins are
-                        00005 ; processor-dependent.  As long as the max and min values are set
-                        00006 ; correctly, which is tested elsewhere, this file tests that they are
-                        00007 ; used.
-                        00008 
-                        00009         LIST    P=18C452,R=HEX
-                        00010 
-  00003FFF              00011 MAXROM = 03FFF
-  00000FFF              00012 MAXRAM = 0FFF
-  00000001              00013 F       EQU     1
-  00000000              00014 W       EQU     0
-                        00015 
-000000 0F00             00016         ADDLW   0
-000002 0F41             00017         ADDLW   'A'
-000004 0F41             00018         ADDLW   "A"
-000006 0FFF             00019         ADDLW   0FF
-                        00020 
-000008 2600             00021         ADDWF   0
-00000A 2600             00022         ADDWF   0,1
-00000C 2600             00023         ADDWF   0,F
-00000E 2400             00024         ADDWF   0,0
-000010 2400             00025         ADDWF   0,W
-000012 26FF             00026         ADDWF   MAXRAM
-                        00027 
-000014 2200             00028         ADDWFC  0
-000016 2200             00029         ADDWFC  0,1
-000018 2200             00030         ADDWFC  0,F
-00001A 2000             00031         ADDWFC  0,0
-00001C 2000             00032         ADDWFC  0,W
-00001E 22FF             00033         ADDWFC  MAXRAM
-                        00034 
-000020 0B00             00035         ANDLW   0
-000022 0B41             00036         ANDLW   'A'
-000024 0B41             00037         ANDLW   "A"
-000026 0BFF             00038         ANDLW   0FF
-                        00039 
-000028 1600             00040         ANDWF   0
-00002A 1600             00041         ANDWF   0,1
-00002C 1600             00042         ANDWF   0,F
-00002E 1400             00043         ANDWF   0,0
-000030 1400             00044         ANDWF   0,W
-000032 16FF             00045         ANDWF   MAXRAM
-                        00046 
-000034 E2E5             00047         BC      0
-000036 E263             00048         BC      0FE
-                        00049 
-000038 9000             00050         BCF     0,0
-00003A 9200             00051         BCF     0,1
-00003C 9400             00052         BCF     0,2
-00003E 9600             00053         BCF     0,3
-MPASM Version 3.00 Beta Release   OP32.ASM   01/31/2001  12:13:18	   PAGE 2
+                      00001 ; OP32.ASM
+                      00002 
+                      00003 ; This file tests all 32-bit extended opcodes at their max and min and, if
+                      00004 ; applicable, all possible values.  Note that the max and mins are
+                      00005 ; processor-dependent.  As long as the max and min values are set
+                      00006 ; correctly, which is tested elsewhere, this file tests that they are
+                      00007 ; used.
+                      00008 
+                      00009         LIST    P=18C452,R=HEX
+                      00010 
+  00003FFF            00011 MAXROM = 03FFF
+  00000FFF            00012 MAXRAM = 0FFF
+  00000001            00013 F       EQU     1
+  00000000            00014 W       EQU     0
+                      00015 
+000000 0F00           00016         ADDLW   0
+000002 0F41           00017         ADDLW   'A'
+000004 0F41           00018         ADDLW   "A"
+000006 0FFF           00019         ADDLW   0FF
+                      00020 
+000008 2600           00021         ADDWF   0
+00000A 2600           00022         ADDWF   0,1
+00000C 2600           00023         ADDWF   0,F
+00000E 2400           00024         ADDWF   0,0
+000010 2400           00025         ADDWF   0,W
+000012 26FF           00026         ADDWF   MAXRAM
+                      00027 
+000014 2200           00028         ADDWFC  0
+000016 2200           00029         ADDWFC  0,1
+000018 2200           00030         ADDWFC  0,F
+00001A 2000           00031         ADDWFC  0,0
+00001C 2000           00032         ADDWFC  0,W
+00001E 22FF           00033         ADDWFC  MAXRAM
+                      00034 
+000020 0B00           00035         ANDLW   0
+000022 0B41           00036         ANDLW   'A'
+000024 0B41           00037         ANDLW   "A"
+000026 0BFF           00038         ANDLW   0FF
+                      00039 
+000028 1600           00040         ANDWF   0
+00002A 1600           00041         ANDWF   0,1
+00002C 1600           00042         ANDWF   0,F
+00002E 1400           00043         ANDWF   0,0
+000030 1400           00044         ANDWF   0,W
+000032 16FF           00045         ANDWF   MAXRAM
+                      00046 
+000034 E2E5           00047         BC      0
+000036 E263           00048         BC      0FE
+                      00049 
+000038 9000           00050         BCF     0,0
+00003A 9200           00051         BCF     0,1
+00003C 9400           00052         BCF     0,2
+00003E 9600           00053         BCF     0,3
+MPASM 03.20.02 Released          OP32.ASM   11-21-2002  20:21:10         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-000040 9800             00054         BCF     0,4
-000042 9A00             00055         BCF     0,5
-000044 9C00             00056         BCF     0,6
-000046 9E00             00057         BCF     0,7
-000048 90FF             00058         BCF     MAXRAM,0
-                        00059 
-00004A E6DA             00060         BN      0
-00004C E658             00061         BN      0FE
-                        00062 
-00004E E3D8             00063         BNC     0
-000050 E356             00064         BNC     0FE
-                        00065 
-000052 E7D6             00066         BNN     0
-000054 E754             00067         BNN     0FE     ;10
-                        00068 
-000056 E5D4             00069         BNOV    0
-000058 E552             00070         BNOV    0FE
-                        00071 
-00005A E1D2             00072         BNZ     0
-00005C E150             00073         BNZ     0FE
-                        00074 
-00005E E4D0             00075         BOV     0
-000060 E44E             00076         BOV     0FE
-                        00077 
-000062 D7CE             00078         BRA     0
-000064 D04C             00079         BRA     0FE
-                        00080 
-000066 8000             00081         BSF     0,0
-000068 8200             00082         BSF     0,1
-00006A 8400             00083         BSF     0,2
-00006C 8600             00084         BSF     0,3
-00006E 8800             00085         BSF     0,4
-000070 8A00             00086         BSF     0,5
-000072 8C00             00087         BSF     0,6
-000074 8E00             00088         BSF     0,7
-000076 80FF             00089         BSF     MAXRAM,0
-                        00090 
-000078 B000             00091         BTFSC   0,0
-00007A B200             00092         BTFSC   0,1
-00007C B400             00093         BTFSC   0,2
-00007E B600             00094         BTFSC   0,3
-000080 B800             00095         BTFSC   0,4
-000082 BA00             00096         BTFSC   0,5
-000084 BC00             00097         BTFSC   0,6
-000086 BE00             00098         BTFSC   0,7
-000088 B0FF             00099         BTFSC   MAXRAM,0
-                        00100 
-00008A A000             00101         BTFSS   0,0
-00008C A200             00102         BTFSS   0,1
-00008E A400             00103         BTFSS   0,2
-000090 A600             00104         BTFSS   0,3
-000092 A800             00105         BTFSS   0,4
-000094 AA00             00106         BTFSS   0,5
-MPASM Version 3.00 Beta Release   OP32.ASM   01/31/2001  12:13:18	   PAGE 3
+000040 9800           00054         BCF     0,4
+000042 9A00           00055         BCF     0,5
+000044 9C00           00056         BCF     0,6
+000046 9E00           00057         BCF     0,7
+000048 90FF           00058         BCF     MAXRAM,0
+                      00059 
+00004A E6DA           00060         BN      0
+00004C E658           00061         BN      0FE
+                      00062 
+00004E E3D8           00063         BNC     0
+000050 E356           00064         BNC     0FE
+                      00065 
+000052 E7D6           00066         BNN     0
+000054 E754           00067         BNN     0FE     ;10
+                      00068 
+000056 E5D4           00069         BNOV    0
+000058 E552           00070         BNOV    0FE
+                      00071 
+00005A E1D2           00072         BNZ     0
+00005C E150           00073         BNZ     0FE
+                      00074 
+00005E E4D0           00075         BOV     0
+000060 E44E           00076         BOV     0FE
+                      00077 
+000062 D7CE           00078         BRA     0
+000064 D04C           00079         BRA     0FE
+                      00080 
+000066 8000           00081         BSF     0,0
+000068 8200           00082         BSF     0,1
+00006A 8400           00083         BSF     0,2
+00006C 8600           00084         BSF     0,3
+00006E 8800           00085         BSF     0,4
+000070 8A00           00086         BSF     0,5
+000072 8C00           00087         BSF     0,6
+000074 8E00           00088         BSF     0,7
+000076 80FF           00089         BSF     MAXRAM,0
+                      00090 
+000078 B000           00091         BTFSC   0,0
+00007A B200           00092         BTFSC   0,1
+00007C B400           00093         BTFSC   0,2
+00007E B600           00094         BTFSC   0,3
+000080 B800           00095         BTFSC   0,4
+000082 BA00           00096         BTFSC   0,5
+000084 BC00           00097         BTFSC   0,6
+000086 BE00           00098         BTFSC   0,7
+000088 B0FF           00099         BTFSC   MAXRAM,0
+                      00100 
+00008A A000           00101         BTFSS   0,0
+00008C A200           00102         BTFSS   0,1
+00008E A400           00103         BTFSS   0,2
+000090 A600           00104         BTFSS   0,3
+000092 A800           00105         BTFSS   0,4
+000094 AA00           00106         BTFSS   0,5
+MPASM 03.20.02 Released          OP32.ASM   11-21-2002  20:21:10         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-000096 AC00             00107         BTFSS   0,6
-000098 AE00             00108         BTFSS   0,7
-00009A A0FF             00109         BTFSS   MAXRAM,0
-                        00110 
-00009C 7000             00111         BTG     0,0
-00009E 7200             00112         BTG     0,1
-0000A0 7400             00113         BTG     0,2
-0000A2 7600             00114         BTG     0,3
-0000A4 7800             00115         BTG     0,4
-0000A6 7A00             00116         BTG     0,5
-0000A8 7C00             00117         BTG     0,6
-0000AA 7E00             00118         BTG     0,7
-0000AC 70FF             00119         BTG     MAXRAM,0
-                        00120 
-0000AE E0A8             00121         BZ      0
-0000B0 E026             00122         BZ      0FE
-                        00123 
-0000B2 EC00 F000        00124         CALL    0
-0000B6 ECFF F01F        00125         CALL    MAXROM-1
-                        00126 
-0000BA 6A00             00127         CLRF    0
-0000BC 6B00             00128         CLRF    0,1
-0000BE 6B00             00129         CLRF    0,F
-0000C0 6A00             00130         CLRF    0,0
-0000C2 6A00             00131         CLRF    0,W
-0000C4 6AFF             00132         CLRF    MAXRAM
-                        00133 
-0000C6 0004             00134         CLRWDT     
-                        00135 
-0000C8 1E00             00136         COMF    0
-0000CA 1E00             00137         COMF    0,1
-0000CC 1E00             00138         COMF    0,F
-0000CE 1C00             00139         COMF    0,0
-0000D0 1C00             00140         COMF    0,W
-0000D2 1EFF             00141         COMF    MAXRAM
-                        00142 
-0000D4 6200             00143         CPFSEQ  0
-0000D6 62FF             00144         CPFSEQ  MAXRAM
-                        00145 
-0000D8 6400             00146         CPFSGT  0
-0000DA 64FF             00147         CPFSGT  MAXRAM
-                        00148 
-0000DC 6000             00149         CPFSLT  0
-0000DE 60FF             00150         CPFSLT  MAXRAM
-                        00151 
-0000E0 0007             00152         DAW     
-                        00153 
-0000E2 0600             00154         DECF    0
-0000E4 0600             00155         DECF    0,1
-0000E6 0600             00156         DECF    0,F
-0000E8 0400             00157         DECF    0,0
-0000EA 0400             00158         DECF    0,W
-0000EC 06FF             00159         DECF    MAXRAM
-MPASM Version 3.00 Beta Release   OP32.ASM   01/31/2001  12:13:18	   PAGE 4
+000096 AC00           00107         BTFSS   0,6
+000098 AE00           00108         BTFSS   0,7
+00009A A0FF           00109         BTFSS   MAXRAM,0
+                      00110 
+00009C 7000           00111         BTG     0,0
+00009E 7200           00112         BTG     0,1
+0000A0 7400           00113         BTG     0,2
+0000A2 7600           00114         BTG     0,3
+0000A4 7800           00115         BTG     0,4
+0000A6 7A00           00116         BTG     0,5
+0000A8 7C00           00117         BTG     0,6
+0000AA 7E00           00118         BTG     0,7
+0000AC 70FF           00119         BTG     MAXRAM,0
+                      00120 
+0000AE E0A8           00121         BZ      0
+0000B0 E026           00122         BZ      0FE
+                      00123 
+0000B2 EC00 F000      00124         CALL    0
+0000B6 ECFF F01F      00125         CALL    MAXROM-1
+                      00126 
+0000BA 6A00           00127         CLRF    0
+0000BC 6B00           00128         CLRF    0,1
+0000BE 6B00           00129         CLRF    0,F
+0000C0 6A00           00130         CLRF    0,0
+0000C2 6A00           00131         CLRF    0,W
+0000C4 6AFF           00132         CLRF    MAXRAM
+                      00133 
+0000C6 0004           00134         CLRWDT     
+                      00135 
+0000C8 1E00           00136         COMF    0
+0000CA 1E00           00137         COMF    0,1
+0000CC 1E00           00138         COMF    0,F
+0000CE 1C00           00139         COMF    0,0
+0000D0 1C00           00140         COMF    0,W
+0000D2 1EFF           00141         COMF    MAXRAM
+                      00142 
+0000D4 6200           00143         CPFSEQ  0
+0000D6 62FF           00144         CPFSEQ  MAXRAM
+                      00145 
+0000D8 6400           00146         CPFSGT  0
+0000DA 64FF           00147         CPFSGT  MAXRAM
+                      00148 
+0000DC 6000           00149         CPFSLT  0
+0000DE 60FF           00150         CPFSLT  MAXRAM
+                      00151 
+0000E0 0007           00152         DAW     
+                      00153 
+0000E2 0600           00154         DECF    0
+0000E4 0600           00155         DECF    0,1
+0000E6 0600           00156         DECF    0,F
+0000E8 0400           00157         DECF    0,0
+0000EA 0400           00158         DECF    0,W
+0000EC 06FF           00159         DECF    MAXRAM
+MPASM 03.20.02 Released          OP32.ASM   11-21-2002  20:21:10         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00160 
-0000EE 2E00             00161         DECFSZ  0
-0000F0 2E00             00162         DECFSZ  0,1
-0000F2 2E00             00163         DECFSZ  0,F
-0000F4 2C00             00164         DECFSZ  0,0
-0000F6 2C00             00165         DECFSZ  0,W
-0000F8 2EFF             00166         DECFSZ  MAXRAM
-                        00167 
-0000FA 4E00             00168         DCFSNZ  0
-0000FC 4E00             00169         DCFSNZ  0,1
-0000FE 4E00             00170         DCFSNZ  0,F
-000100 4C00             00171         DCFSNZ  0,0
-000102 4C00             00172         DCFSNZ  0,W
-000104 4EFF             00173         DCFSNZ  MAXRAM         ;30
-                        00174 
-000106 EF00 F000        00175         GOTO    0
-00010A EFFF F01F        00176         GOTO    MAXROM - 1
-                        00177 
-00010E 2A00             00178         INCF    0
-000110 2A00             00179         INCF    0,1
-000112 2A00             00180         INCF    0,F
-000114 2800             00181         INCF    0,0
-000116 2800             00182         INCF    0,W
-000118 2AFF             00183         INCF    MAXRAM
-                        00184 
-00011A 3E00             00185         INCFSZ  0
-00011C 3E00             00186         INCFSZ  0,1
-00011E 3E00             00187         INCFSZ  0,F
-000120 3C00             00188         INCFSZ  0,0
-000122 3C00             00189         INCFSZ  0,W
-000124 3EFF             00190         INCFSZ  MAXRAM
-                        00191 
-000126 4A00             00192         INFSNZ  0
-000128 4A00             00193         INFSNZ  0,1
-00012A 4A00             00194         INFSNZ  0,F
-00012C 4800             00195         INFSNZ  0,0
-00012E 4800             00196         INFSNZ  0,W
-000130 4AFF             00197         INFSNZ  MAXRAM
-                        00198 
-000132 0900             00199         IORLW   0
-000134 0941             00200         IORLW   'A'
-000136 0941             00201         IORLW   "A"
-000138 09FF             00202         IORLW   0FF
-                        00203 
-00013A 1200             00204         IORWF   0
-00013C 1200             00205         IORWF   0,1
-00013E 1200             00206         IORWF   0,F
-000140 1000             00207         IORWF   0,0
-000142 1000             00208         IORWF   0,W
-000144 12FF             00209         IORWF   MAXRAM
-                        00210 
-                        00211 
+                      00160 
+0000EE 2E00           00161         DECFSZ  0
+0000F0 2E00           00162         DECFSZ  0,1
+0000F2 2E00           00163         DECFSZ  0,F
+0000F4 2C00           00164         DECFSZ  0,0
+0000F6 2C00           00165         DECFSZ  0,W
+0000F8 2EFF           00166         DECFSZ  MAXRAM
+                      00167 
+0000FA 4E00           00168         DCFSNZ  0
+0000FC 4E00           00169         DCFSNZ  0,1
+0000FE 4E00           00170         DCFSNZ  0,F
+000100 4C00           00171         DCFSNZ  0,0
+000102 4C00           00172         DCFSNZ  0,W
+000104 4EFF           00173         DCFSNZ  MAXRAM         ;30
+                      00174 
+000106 EF00 F000      00175         GOTO    0
+00010A EFFF F01F      00176         GOTO    MAXROM - 1
+                      00177 
+00010E 2A00           00178         INCF    0
+000110 2A00           00179         INCF    0,1
+000112 2A00           00180         INCF    0,F
+000114 2800           00181         INCF    0,0
+000116 2800           00182         INCF    0,W
+000118 2AFF           00183         INCF    MAXRAM
+                      00184 
+00011A 3E00           00185         INCFSZ  0
+00011C 3E00           00186         INCFSZ  0,1
+00011E 3E00           00187         INCFSZ  0,F
+000120 3C00           00188         INCFSZ  0,0
+000122 3C00           00189         INCFSZ  0,W
+000124 3EFF           00190         INCFSZ  MAXRAM
+                      00191 
+000126 4A00           00192         INFSNZ  0
+000128 4A00           00193         INFSNZ  0,1
+00012A 4A00           00194         INFSNZ  0,F
+00012C 4800           00195         INFSNZ  0,0
+00012E 4800           00196         INFSNZ  0,W
+000130 4AFF           00197         INFSNZ  MAXRAM
+                      00198 
+000132 0900           00199         IORLW   0
+000134 0941           00200         IORLW   'A'
+000136 0941           00201         IORLW   "A"
+000138 09FF           00202         IORLW   0FF
+                      00203 
+00013A 1200           00204         IORWF   0
+00013C 1200           00205         IORWF   0,1
+00013E 1200           00206         IORWF   0,F
+000140 1000           00207         IORWF   0,0
+000142 1000           00208         IORWF   0,W
+000144 12FF           00209         IORWF   MAXRAM
+                      00210 
+                      00211 
 Message[314]: LFSR instruction is not supported on some versions of the 18Cxx2 devices.
-MPASM Version 3.00 Beta Release   OP32.ASM   01/31/2001  12:13:18	   PAGE 5
+MPASM 03.20.02 Released          OP32.ASM   11-21-2002  20:21:10         PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
 Message[315]: Please refer to Microchip document DS80058A for more details.
-000146 EE00 F000        00212         LFSR    0,0
+000146 EE00 F000      00212         LFSR    0,0
 Message[314]: LFSR instruction is not supported on some versions of the 18Cxx2 devices.
 Message[315]: Please refer to Microchip document DS80058A for more details.
-00014A EE0F F0FF        00213         LFSR    0,0FFF
+00014A EE0F F0FF      00213         LFSR    0,0FFF
 Message[314]: LFSR instruction is not supported on some versions of the 18Cxx2 devices.
 Message[315]: Please refer to Microchip document DS80058A for more details.
-00014E EE10 F000        00214         LFSR    1,0
+00014E EE10 F000      00214         LFSR    1,0
 Message[314]: LFSR instruction is not supported on some versions of the 18Cxx2 devices.
 Message[315]: Please refer to Microchip document DS80058A for more details.
-000152 EE1F F0FF        00215         LFSR    1,0FFF
+000152 EE1F F0FF      00215         LFSR    1,0FFF
 Message[314]: LFSR instruction is not supported on some versions of the 18Cxx2 devices.
 Message[315]: Please refer to Microchip document DS80058A for more details.
-000156 EE20 F000        00216         LFSR    2,0
+000156 EE20 F000      00216         LFSR    2,0
 Message[314]: LFSR instruction is not supported on some versions of the 18Cxx2 devices.
 Message[315]: Please refer to Microchip document DS80058A for more details.
-00015A EE2F F0FF        00217         LFSR    2,0FFF
-                        00218 
-00015E 52FF             00219         MOVF    MAXRAM, F
-000160 50FF             00220         MOVF    MAXRAM, W
-000162 5200             00221         MOVF    0,F
-000164 5000             00222         MOVF    0,W
-                        00223 
-000166 C000 F000        00224         MOVFF   0,0
-00016A CFFF F000        00225         MOVFF   MAXRAM,0
-                        00226 ;        MOVFF   0,MAXRAM               ;;Illegal operations on this device (movff TOS[U | H | L])  
-                        00227 ;        MOVFF   MAXRAM,MAXRAM
-                        00228 
-00016E 0100             00229         MOVLB   0
-000170 010F             00230         MOVLB   0F                ;40
-                        00231         
-000172 0E00             00232         MOVLW   0
-000174 0E41             00233         MOVLW   'A'
-000176 0E41             00234         MOVLW   "A"
-000178 0EFF             00235         MOVLW   0FF
-                        00236 
-00017A 6E00             00237         MOVWF   0
-00017C 6EFF             00238         MOVWF   MAXRAM
-                        00239 
-00017E 0D00             00240         MULLW   0
-000180 0D41             00241         MULLW   'A'
-000182 0D41             00242         MULLW   "A"
-000184 0DFF             00243         MULLW   0FF
-                        00244         
-000186 0200             00245         MULWF   0
-000188 02FF             00246         MULWF   MAXRAM
-                        00247 
-00018A 6C00             00248         NEGF    0
-00018C 6CFF             00249         NEGF    MAXRAM
-                        00250 
-00018E 0000             00251         NOP
-                        00252 
-000190 0006             00253         POP
-MPASM Version 3.00 Beta Release   OP32.ASM   01/31/2001  12:13:18	   PAGE 6
+00015A EE2F F0FF      00217         LFSR    2,0FFF
+                      00218 
+00015E 52FF           00219         MOVF    MAXRAM, F
+000160 50FF           00220         MOVF    MAXRAM, W
+000162 5200           00221         MOVF    0,F
+000164 5000           00222         MOVF    0,W
+                      00223 
+000166 C000 F000      00224         MOVFF   0,0
+00016A CFFF F000      00225         MOVFF   MAXRAM,0
+                      00226 ;        MOVFF   0,MAXRAM               ;;Illegal operations on this device (movff TOS[U | H | L])  
+                      00227 ;        MOVFF   MAXRAM,MAXRAM
+                      00228 
+00016E 0100           00229         MOVLB   0
+000170 010F           00230         MOVLB   0F                ;40
+                      00231         
+000172 0E00           00232         MOVLW   0
+000174 0E41           00233         MOVLW   'A'
+000176 0E41           00234         MOVLW   "A"
+000178 0EFF           00235         MOVLW   0FF
+                      00236 
+00017A 6E00           00237         MOVWF   0
+00017C 6EFF           00238         MOVWF   MAXRAM
+                      00239 
+00017E 0D00           00240         MULLW   0
+000180 0D41           00241         MULLW   'A'
+000182 0D41           00242         MULLW   "A"
+000184 0DFF           00243         MULLW   0FF
+                      00244         
+000186 0200           00245         MULWF   0
+000188 02FF           00246         MULWF   MAXRAM
+                      00247 
+00018A 6C00           00248         NEGF    0
+00018C 6CFF           00249         NEGF    MAXRAM
+                      00250 
+00018E 0000           00251         NOP
+                      00252 
+000190 0006           00253         POP
+MPASM 03.20.02 Released          OP32.ASM   11-21-2002  20:21:10         PAGE  6
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00254 
-000192 0005             00255         PUSH
-                        00256 
-000194 DF35             00257         RCALL   0
-000196 DB33             00258         RCALL   07FE
-                        00259 
-000198 00FF             00260         RESET           ;50         
-                        00261 
-00019A 0010             00262         RETFIE
-                        00263 
-00019C 0C00             00264         RETLW   0
-00019E 0C41             00265         RETLW   'A'
-0001A0 0C41             00266         RETLW   "A"
-0001A2 0CFF             00267         RETLW   0FF
-                        00268 
-0001A4 0012             00269         RETURN
-                        00270 
-0001A6 3600             00271         RLCF    0
-0001A8 3600             00272         RLCF    0,1
-0001AA 3600             00273         RLCF    0,F
-0001AC 3400             00274         RLCF    0,0
-0001AE 3400             00275         RLCF    0,W
-0001B0 36FF             00276         RLCF    MAXRAM
-                        00277 
-0001B2 4600             00278         RLNCF   0
-0001B4 4600             00279         RLNCF   0,1
-0001B6 4600             00280         RLNCF   0,F
-0001B8 4400             00281         RLNCF   0,0
-0001BA 4400             00282         RLNCF   0,W
-0001BC 46FF             00283         RLNCF   MAXRAM
-                        00284 
-0001BE 3200             00285         RRCF    0
-0001C0 3200             00286         RRCF    0,1
-0001C2 3200             00287         RRCF    0,F
-0001C4 3000             00288         RRCF    0,0
-0001C6 3000             00289         RRCF    0,W
-0001C8 32FF             00290         RRCF    MAXRAM
-                        00291 
-0001CA 4200             00292         RRNCF   0
-0001CC 4200             00293         RRNCF   0,1
-0001CE 4200             00294         RRNCF   0,F
-0001D0 4000             00295         RRNCF   0,0
-0001D2 4000             00296         RRNCF   0,W
-0001D4 42FF             00297         RRNCF   MAXRAM
-                        00298 
-0001D6 6800             00299         SETF    0
-0001D8 6900             00300         SETF    0,1
-0001DA 6900             00301         SETF    0,F
-0001DC 6800             00302         SETF    0,0
-0001DE 6800             00303         SETF    0,W
-0001E0 68FF             00304         SETF    MAXRAM
-                        00305 
-0001E2 0003             00306         SLEEP
-MPASM Version 3.00 Beta Release   OP32.ASM   01/31/2001  12:13:18	   PAGE 7
+                      00254 
+000192 0005           00255         PUSH
+                      00256 
+000194 DF35           00257         RCALL   0
+000196 DB33           00258         RCALL   07FE
+                      00259 
+000198 00FF           00260         RESET           ;50         
+                      00261 
+00019A 0010           00262         RETFIE
+                      00263 
+00019C 0C00           00264         RETLW   0
+00019E 0C41           00265         RETLW   'A'
+0001A0 0C41           00266         RETLW   "A"
+0001A2 0CFF           00267         RETLW   0FF
+                      00268 
+0001A4 0012           00269         RETURN
+                      00270 
+0001A6 3600           00271         RLCF    0
+0001A8 3600           00272         RLCF    0,1
+0001AA 3600           00273         RLCF    0,F
+0001AC 3400           00274         RLCF    0,0
+0001AE 3400           00275         RLCF    0,W
+0001B0 36FF           00276         RLCF    MAXRAM
+                      00277 
+0001B2 4600           00278         RLNCF   0
+0001B4 4600           00279         RLNCF   0,1
+0001B6 4600           00280         RLNCF   0,F
+0001B8 4400           00281         RLNCF   0,0
+0001BA 4400           00282         RLNCF   0,W
+0001BC 46FF           00283         RLNCF   MAXRAM
+                      00284 
+0001BE 3200           00285         RRCF    0
+0001C0 3200           00286         RRCF    0,1
+0001C2 3200           00287         RRCF    0,F
+0001C4 3000           00288         RRCF    0,0
+0001C6 3000           00289         RRCF    0,W
+0001C8 32FF           00290         RRCF    MAXRAM
+                      00291 
+0001CA 4200           00292         RRNCF   0
+0001CC 4200           00293         RRNCF   0,1
+0001CE 4200           00294         RRNCF   0,F
+0001D0 4000           00295         RRNCF   0,0
+0001D2 4000           00296         RRNCF   0,W
+0001D4 42FF           00297         RRNCF   MAXRAM
+                      00298 
+0001D6 6800           00299         SETF    0
+0001D8 6900           00300         SETF    0,1
+0001DA 6900           00301         SETF    0,F
+0001DC 6800           00302         SETF    0,0
+0001DE 6800           00303         SETF    0,W
+0001E0 68FF           00304         SETF    MAXRAM
+                      00305 
+0001E2 0003           00306         SLEEP
+MPASM 03.20.02 Released          OP32.ASM   11-21-2002  20:21:10         PAGE  7
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00307 
-0001E4 0800             00308         SUBLW   0
-0001E6 0841             00309         SUBLW   'A'
-0001E8 0841             00310         SUBLW   "A"
-0001EA 08FF             00311         SUBLW   0FF        ;60
-                        00312 
-0001EC 5E00             00313         SUBWF   0
-0001EE 5E00             00314         SUBWF   0,1
-0001F0 5E00             00315         SUBWF   0,F
-0001F2 5C00             00316         SUBWF   0,0
-0001F4 5C00             00317         SUBWF   0,W
-0001F6 5EFF             00318         SUBWF   MAXRAM
-                        00319 
-0001F8 5600             00320         SUBFWB  0
-0001FA 5600             00321         SUBFWB  0,1
-0001FC 5600             00322         SUBFWB  0,F
-0001FE 5400             00323         SUBFWB  0,0
-000200 5400             00324         SUBFWB  0,W
-000202 56FF             00325         SUBFWB  MAXRAM
-                        00326 
-000204 5A00             00327         SUBWFB  0
-000206 5A00             00328         SUBWFB  0,1
-000208 5A00             00329         SUBWFB  0,F
-00020A 5800             00330         SUBWFB  0,0
-00020C 5800             00331         SUBWFB  0,W
-00020E 5AFF             00332         SUBWFB  MAXRAM
-                        00333 
-                        00334 
-000210 3A00             00335         SWAPF   0
-000212 3A00             00336         SWAPF   0,1
-000214 3A00             00337         SWAPF   0,F
-000216 3800             00338         SWAPF   0,0
-000218 3800             00339         SWAPF   0,W
-00021A 3AFF             00340         SWAPF   MAXRAM
-                        00341 
-00021C 0008             00342         TBLRD *  
-00021E 0008             00343         TBLRD *  
-000220 0009             00344         TBLRD *+ 
-000222 0009             00345         TBLRD *+ 
-000224 000A             00346         TBLRD *- 
-000226 000A             00347         TBLRD *- 
-000228 000B             00348         TBLRD +* 
-00022A 000B             00349         TBLRD +* 
-                        00350 
-00022C 000C             00351         TBLWT *  
-00022E 000C             00352         TBLWT *  
-000230 000D             00353         TBLWT *+ 
-000232 000D             00354         TBLWT *+ 
-000234 000E             00355         TBLWT *- 
-000236 000E             00356         TBLWT *- 
-000238 000F             00357         TBLWT +* 
-00023A 000F             00358         TBLWT +* 
-                        00359         
-MPASM Version 3.00 Beta Release   OP32.ASM   01/31/2001  12:13:18	   PAGE 8
+                      00307 
+0001E4 0800           00308         SUBLW   0
+0001E6 0841           00309         SUBLW   'A'
+0001E8 0841           00310         SUBLW   "A"
+0001EA 08FF           00311         SUBLW   0FF        ;60
+                      00312 
+0001EC 5E00           00313         SUBWF   0
+0001EE 5E00           00314         SUBWF   0,1
+0001F0 5E00           00315         SUBWF   0,F
+0001F2 5C00           00316         SUBWF   0,0
+0001F4 5C00           00317         SUBWF   0,W
+0001F6 5EFF           00318         SUBWF   MAXRAM
+                      00319 
+0001F8 5600           00320         SUBFWB  0
+0001FA 5600           00321         SUBFWB  0,1
+0001FC 5600           00322         SUBFWB  0,F
+0001FE 5400           00323         SUBFWB  0,0
+000200 5400           00324         SUBFWB  0,W
+000202 56FF           00325         SUBFWB  MAXRAM
+                      00326 
+000204 5A00           00327         SUBWFB  0
+000206 5A00           00328         SUBWFB  0,1
+000208 5A00           00329         SUBWFB  0,F
+00020A 5800           00330         SUBWFB  0,0
+00020C 5800           00331         SUBWFB  0,W
+00020E 5AFF           00332         SUBWFB  MAXRAM
+                      00333 
+                      00334 
+000210 3A00           00335         SWAPF   0
+000212 3A00           00336         SWAPF   0,1
+000214 3A00           00337         SWAPF   0,F
+000216 3800           00338         SWAPF   0,0
+000218 3800           00339         SWAPF   0,W
+00021A 3AFF           00340         SWAPF   MAXRAM
+                      00341 
+00021C 0008           00342         TBLRD *  
+00021E 0008           00343         TBLRD *  
+000220 0009           00344         TBLRD *+ 
+000222 0009           00345         TBLRD *+ 
+000224 000A           00346         TBLRD *- 
+000226 000A           00347         TBLRD *- 
+000228 000B           00348         TBLRD +* 
+00022A 000B           00349         TBLRD +* 
+                      00350 
+00022C 000C           00351         TBLWT *  
+00022E 000C           00352         TBLWT *  
+000230 000D           00353         TBLWT *+ 
+000232 000D           00354         TBLWT *+ 
+000234 000E           00355         TBLWT *- 
+000236 000E           00356         TBLWT *- 
+000238 000F           00357         TBLWT +* 
+00023A 000F           00358         TBLWT +* 
+                      00359         
+MPASM 03.20.02 Released          OP32.ASM   11-21-2002  20:21:10         PAGE  8
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-00023C 6600             00360         TSTFSZ  0
-00023E 66FF             00361         TSTFSZ  MAXRAM
-                        00362 
-000240 0A00             00363         XORLW   0
-000242 0A41             00364         XORLW   'A'
-000244 0A41             00365         XORLW   "A"
-000246 0AFF             00366         XORLW   0FF
-                        00367 
-000248 1A00             00368         XORWF   0
-00024A 1A00             00369         XORWF   0,1
-00024C 1A00             00370         XORWF   0,F
-00024E 1800             00371         XORWF   0,0
-000250 1800             00372         XORWF   0,W
-000252 1AFF             00373         XORWF   MAXRAM
-                        00374 
-                        00375         END
-MPASM Version 3.00 Beta Release   OP32.ASM   01/31/2001  12:13:18	   PAGE 9
+00023C 6600           00360         TSTFSZ  0
+00023E 66FF           00361         TSTFSZ  MAXRAM
+                      00362 
+000240 0A00           00363         XORLW   0
+000242 0A41           00364         XORLW   'A'
+000244 0A41           00365         XORLW   "A"
+000246 0AFF           00366         XORLW   0FF
+                      00367 
+000248 1A00           00368         XORWF   0
+00024A 1A00           00369         XORWF   0,1
+00024C 1A00           00370         XORWF   0,F
+00024E 1800           00371         XORWF   0,0
+000250 1800           00372         XORWF   0,W
+000252 1AFF           00373         XORWF   MAXRAM
+                      00374 
+                      00375         END
+MPASM 03.20.02 Released          OP32.ASM   11-21-2002  20:21:10         PAGE  9
 
 
 SYMBOL TABLE
@@ -462,7 +462,7 @@ MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 All other memory blocks unused.
 
 Program Memory Bytes Used:   596
-Program Memory Bytes Free: 64940
+Program Memory Bytes Free: 32172
 
 
 Errors   :     0

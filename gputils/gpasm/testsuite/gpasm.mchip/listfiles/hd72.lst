@@ -1,206 +1,206 @@
-MPASM Version 3.00 Beta Release   HD72.ASM   01/31/2001  12:12:07	   PAGE 1
+MPASM 03.20.02 Released          HD72.ASM   11-21-2002  20:20:39         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; HD72.ASM
-                        00002 
-                        00003 ; This file tests header file usage for the specified processor.
-                        00004 
-                        00005         LIST    P=16C72
-                        00006         INCLUDE "P16C72.INC"
-                        00001         LIST
-                        00002 ; P16C72.INC  Standard Header File, Version 1.01    Microchip Technology, Inc.
-                        00249         LIST
-                        00007 
-0000     00CF 00CF      00008         DATA    _CP_ALL, 0x00CF         ; This changes per device
-0002     3FF7 3FF7      00009         DATA    _PWRTE_ON, 0x3FF7       ; This changes per device
-                        00010 
-0004     3FFF 3FFF      00011         DATA    _BODEN_ON, 0X3FFF
-0006     3FBF 3FBF      00012         DATA    _BODEN_OFF, 0X3FBF
-0008     15DF 15DF      00013         DATA    _CP_75, 0X15DF
-000A     2AEF 2AEF      00014         DATA    _CP_50, 0X2AEF
-000C     3FFF 3FFF      00015         DATA    _CP_OFF, 0X3FFF
-000E     3FFF 3FFF      00016         DATA    _PWRTE_OFF, 0X3FFF
-0010     3FFF 3FFF      00017         DATA    _WDT_ON, 0X3FFF
-0012     3FFB 3FFB      00018         DATA    _WDT_OFF, 0X3FFB
-0014     3FFC 3FFC      00019         DATA    _LP_OSC, 0X3FFC
-0016     3FFD 3FFD      00020         DATA    _XT_OSC, 0X3FFD
-0018     3FFE 3FFE      00021         DATA    _HS_OSC, 0X3FFE
-001A     3FFF 3FFF      00022         DATA    _RC_OSC, 0X3FFF
-                        00023 
-                        00024 
-001C     0000 0000      00025         DATA    INDF, 0                 ;Register Files
-001E     0001 0001      00026         DATA    TMR0, 1
-0020     0002 0002      00027         DATA    PCL, 2
-0022     0003 0003      00028         DATA    STATUS, 3
-0024     0004 0004      00029         DATA    FSR, 4
-0026     0005 0005      00030         DATA    PORTA, 5
-0028     0006 0006      00031         DATA    PORTB, 6
-002A     000A 000A      00032         DATA    PCLATH, 0x0A
-002C     000B 000B      00033         DATA    INTCON, 0x0B
-002E     0081 0081      00034         DATA    OPTION_REG, 0x81
-0030     0085 0085      00035         DATA    TRISA, 0X85
-0032     0086 0086      00036         DATA    TRISB, 0X86
-                        00037 
-0034     0007 0007      00038         DATA    PORTC, 7                ; Processor Specific
-                        00039 
-0036     000C 000C      00040         DATA    PIR1, 0XC               ; Register Files
-0038     000E 000E      00041         DATA    TMR1L, 0XE
-003A     000F 000F      00042         DATA    TMR1H, 0XF
-003C     0010 0010      00043         DATA    T1CON, 0X10
-003E     0011 0011      00044         DATA    TMR2, 0X11
-0040     0012 0012      00045         DATA    T2CON, 0X12
-0042     0013 0013      00046         DATA    SSPBUF, 0X13
-0044     0014 0014      00047         DATA    SSPCON, 0X14
-0046     0015 0015      00048         DATA    CCPR1L, 0X15
-0048     0016 0016      00049         DATA    CCPR1H, 0X16
-004A     0017 0017      00050         DATA    CCP1CON, 0X17
-MPASM Version 3.00 Beta Release   HD72.ASM   01/31/2001  12:12:07	   PAGE 2
+                      00001 ; HD72.ASM
+                      00002 
+                      00003 ; This file tests header file usage for the specified processor.
+                      00004 
+                      00005         LIST    P=16C72
+                      00006         INCLUDE "P16C72.INC"
+                      00001         LIST
+                      00002 ; P16C72.INC  Standard Header File, Version 1.01    Microchip Technology, Inc.
+                      00249         LIST
+                      00007 
+0000   00CF 00CF      00008         DATA    _CP_ALL, 0x00CF         ; This changes per device
+0002   3FF7 3FF7      00009         DATA    _PWRTE_ON, 0x3FF7       ; This changes per device
+                      00010 
+0004   3FFF 3FFF      00011         DATA    _BODEN_ON, 0X3FFF
+0006   3FBF 3FBF      00012         DATA    _BODEN_OFF, 0X3FBF
+0008   15DF 15DF      00013         DATA    _CP_75, 0X15DF
+000A   2AEF 2AEF      00014         DATA    _CP_50, 0X2AEF
+000C   3FFF 3FFF      00015         DATA    _CP_OFF, 0X3FFF
+000E   3FFF 3FFF      00016         DATA    _PWRTE_OFF, 0X3FFF
+0010   3FFF 3FFF      00017         DATA    _WDT_ON, 0X3FFF
+0012   3FFB 3FFB      00018         DATA    _WDT_OFF, 0X3FFB
+0014   3FFC 3FFC      00019         DATA    _LP_OSC, 0X3FFC
+0016   3FFD 3FFD      00020         DATA    _XT_OSC, 0X3FFD
+0018   3FFE 3FFE      00021         DATA    _HS_OSC, 0X3FFE
+001A   3FFF 3FFF      00022         DATA    _RC_OSC, 0X3FFF
+                      00023 
+                      00024 
+001C   0000 0000      00025         DATA    INDF, 0                 ;Register Files
+001E   0001 0001      00026         DATA    TMR0, 1
+0020   0002 0002      00027         DATA    PCL, 2
+0022   0003 0003      00028         DATA    STATUS, 3
+0024   0004 0004      00029         DATA    FSR, 4
+0026   0005 0005      00030         DATA    PORTA, 5
+0028   0006 0006      00031         DATA    PORTB, 6
+002A   000A 000A      00032         DATA    PCLATH, 0x0A
+002C   000B 000B      00033         DATA    INTCON, 0x0B
+002E   0081 0081      00034         DATA    OPTION_REG, 0x81
+0030   0085 0085      00035         DATA    TRISA, 0X85
+0032   0086 0086      00036         DATA    TRISB, 0X86
+                      00037 
+0034   0007 0007      00038         DATA    PORTC, 7                ; Processor Specific
+                      00039 
+0036   000C 000C      00040         DATA    PIR1, 0XC               ; Register Files
+0038   000E 000E      00041         DATA    TMR1L, 0XE
+003A   000F 000F      00042         DATA    TMR1H, 0XF
+003C   0010 0010      00043         DATA    T1CON, 0X10
+003E   0011 0011      00044         DATA    TMR2, 0X11
+0040   0012 0012      00045         DATA    T2CON, 0X12
+0042   0013 0013      00046         DATA    SSPBUF, 0X13
+0044   0014 0014      00047         DATA    SSPCON, 0X14
+0046   0015 0015      00048         DATA    CCPR1L, 0X15
+0048   0016 0016      00049         DATA    CCPR1H, 0X16
+004A   0017 0017      00050         DATA    CCP1CON, 0X17
+MPASM 03.20.02 Released          HD72.ASM   11-21-2002  20:20:39         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00051 
-004C     0087 0087      00052         DATA    TRISC, 0X87
-004E     008C 008C      00053         DATA    PIE1, 0X8C
-0050     008E 008E      00054         DATA    PCON, 0X8E
-0052     0092 0092      00055         DATA    PR2, 0X92
-0054     0093 0093      00056         DATA    SSPADD, 0X93
-0056     0094 0094      00057         DATA    SSPSTAT, 0X94
-                        00058 
-0058     001E 001E      00059         DATA    ADRES, 0x1E             ; ADC_CONFIG 1 Reg. Files
-005A     001F 001F      00060         DATA    ADCON0, 0X1F
-005C     009F 009F      00061         DATA    ADCON1, 0X9F
-                        00062 
-005E     0007 0007      00063         DATA    ADCS1, 7                ; ADCON0
-0060     0006 0006      00064         DATA    ADCS0, 6
-0062     0005 0005      00065         DATA    CHS2, 5
-0064     0004 0004      00066         DATA    CHS1, 4
-0066     0003 0003      00067         DATA    CHS0, 3
-0068     0002 0002      00068         DATA    GO, 2
-006A     0002 0002      00069         DATA    NOT_DONE, 2
-006C     0002 0002      00070         DATA    GO_DONE, 2
-006E     0000 0000      00071         DATA    ADON, 0
-                        00072 
-0070     0002 0002      00073         DATA    PCFG2, 2                ; ADCON1
-0072     0001 0001      00074         DATA    PCFG1, 1
-0074     0000 0000      00075         DATA    PCFG0, 0
-                        00076 
-0076     0005 0005      00077         DATA    CCP1X, 5                ; CCP1CON
-0078     0004 0004      00078         DATA    CCP1Y, 4
-007A     0003 0003      00079         DATA    CCP1M3, 3
-007C     0002 0002      00080         DATA    CCP1M2, 2
-007E     0001 0001      00081         DATA    CCP1M1, 1
-0080     0000 0000      00082         DATA    CCP1M0, 0
-                        00083 
-                        00084 
-0082     0001 0001      00085         DATA    NOT_POR, 1              ; PCON
-0084     0000 0000      00086         DATA    NOT_BO, 0
-                        00087 
-0086     0006 0006      00088         DATA    ADIE, 6                 ; PIE1
-0088     0003 0003      00089         DATA    SSPIE, 3
-008A     0002 0002      00090         DATA    CCP1IE, 2
-008C     0001 0001      00091         DATA    TMR2IE, 1
-008E     0000 0000      00092         DATA    TMR1IE, 0
-                        00093 
-                        00094 
-0090     0006 0006      00095         DATA    ADIF, 6                 ; PIR1
-0092     0003 0003      00096         DATA    SSPIF, 3
-0094     0002 0002      00097         DATA    CCP1IF, 2
-0096     0001 0001      00098         DATA    TMR2IF, 1
-0098     0000 0000      00099         DATA    TMR1IF, 0
-                        00100 
-                        00101 
-009A     0007 0007      00102         DATA    WCOL, 7                 ; SSPCON
-009C     0006 0006      00103         DATA    SSPOV, 6        
-MPASM Version 3.00 Beta Release   HD72.ASM   01/31/2001  12:12:07	   PAGE 3
+                      00051 
+004C   0087 0087      00052         DATA    TRISC, 0X87
+004E   008C 008C      00053         DATA    PIE1, 0X8C
+0050   008E 008E      00054         DATA    PCON, 0X8E
+0052   0092 0092      00055         DATA    PR2, 0X92
+0054   0093 0093      00056         DATA    SSPADD, 0X93
+0056   0094 0094      00057         DATA    SSPSTAT, 0X94
+                      00058 
+0058   001E 001E      00059         DATA    ADRES, 0x1E             ; ADC_CONFIG 1 Reg. Files
+005A   001F 001F      00060         DATA    ADCON0, 0X1F
+005C   009F 009F      00061         DATA    ADCON1, 0X9F
+                      00062 
+005E   0007 0007      00063         DATA    ADCS1, 7                ; ADCON0
+0060   0006 0006      00064         DATA    ADCS0, 6
+0062   0005 0005      00065         DATA    CHS2, 5
+0064   0004 0004      00066         DATA    CHS1, 4
+0066   0003 0003      00067         DATA    CHS0, 3
+0068   0002 0002      00068         DATA    GO, 2
+006A   0002 0002      00069         DATA    NOT_DONE, 2
+006C   0002 0002      00070         DATA    GO_DONE, 2
+006E   0000 0000      00071         DATA    ADON, 0
+                      00072 
+0070   0002 0002      00073         DATA    PCFG2, 2                ; ADCON1
+0072   0001 0001      00074         DATA    PCFG1, 1
+0074   0000 0000      00075         DATA    PCFG0, 0
+                      00076 
+0076   0005 0005      00077         DATA    CCP1X, 5                ; CCP1CON
+0078   0004 0004      00078         DATA    CCP1Y, 4
+007A   0003 0003      00079         DATA    CCP1M3, 3
+007C   0002 0002      00080         DATA    CCP1M2, 2
+007E   0001 0001      00081         DATA    CCP1M1, 1
+0080   0000 0000      00082         DATA    CCP1M0, 0
+                      00083 
+                      00084 
+0082   0001 0001      00085         DATA    NOT_POR, 1              ; PCON
+0084   0000 0000      00086         DATA    NOT_BO, 0
+                      00087 
+0086   0006 0006      00088         DATA    ADIE, 6                 ; PIE1
+0088   0003 0003      00089         DATA    SSPIE, 3
+008A   0002 0002      00090         DATA    CCP1IE, 2
+008C   0001 0001      00091         DATA    TMR2IE, 1
+008E   0000 0000      00092         DATA    TMR1IE, 0
+                      00093 
+                      00094 
+0090   0006 0006      00095         DATA    ADIF, 6                 ; PIR1
+0092   0003 0003      00096         DATA    SSPIF, 3
+0094   0002 0002      00097         DATA    CCP1IF, 2
+0096   0001 0001      00098         DATA    TMR2IF, 1
+0098   0000 0000      00099         DATA    TMR1IF, 0
+                      00100 
+                      00101 
+009A   0007 0007      00102         DATA    WCOL, 7                 ; SSPCON
+009C   0006 0006      00103         DATA    SSPOV, 6        
+MPASM 03.20.02 Released          HD72.ASM   11-21-2002  20:20:39         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-009E     0005 0005      00104         DATA    SSPEN, 5
-00A0     0004 0004      00105         DATA    CKP, 4
-00A2     0003 0003      00106         DATA    SSPM3, 3
-00A4     0002 0002      00107         DATA    SSPM2, 2
-00A6     0001 0001      00108         DATA    SSPM1, 1
-00A8     0000 0000      00109         DATA    SSPM0, 0
-                        00110 
-00AA     0005 0005      00111         DATA    D, 5                    ; SSPSTAT
-00AC     0005 0005      00112         DATA    I2C_DATA, 5
-00AE     0005 0005      00113         DATA    NOT_A, 5
-00B0     0005 0005      00114         DATA    NOT_ADDRESS, 5
-00B2     0005 0005      00115         DATA    D_A, 5
-00B4     0005 0005      00116         DATA    DATA_ADDRESS, 5
-00B6     0004 0004      00117         DATA    P, 4
-00B8     0004 0004      00118         DATA    I2C_STOP, 4
-00BA     0003 0003      00119         DATA    S, 3
-00BC     0003 0003      00120         DATA    I2C_START, 3
-00BE     0002 0002      00121         DATA    R, 2
-00C0     0002 0002      00122         DATA    I2C_READ, 2
-00C2     0002 0002      00123         DATA    NOT_W, 2
-00C4     0002 0002      00124         DATA    NOT_WRITE, 2
-00C6     0002 0002      00125         DATA    R_W, 2
-00C8     0002 0002      00126         DATA    READ_WRITE, 2
-00CA     0001 0001      00127         DATA    UA, 1
-00CC     0000 0000      00128         DATA    BF, 0
-                        00129 
-                        00130 
-00CE     0005 0005      00131         DATA    T1CKPS1, 5              ; T1CON
-00D0     0004 0004      00132         DATA    T1CKPS0, 4
-00D2     0003 0003      00133         DATA    T1OSCEN, 3
-00D4     0002 0002      00134         DATA    T1INSYNC, 2
-00D6     0001 0001      00135         DATA    TMR1CS, 1
-00D8     0000 0000      00136         DATA    TMR1ON, 0
-                        00137 
-00DA     0006 0006      00138         DATA    TOUTPS3, 6              ; T2CON
-00DC     0005 0005      00139         DATA    TOUTPS2, 5
-00DE     0004 0004      00140         DATA    TOUTPS1, 4
-00E0     0003 0003      00141         DATA    TOUTPS0, 3
-00E2     0002 0002      00142         DATA    TMR2ON, 2
-00E4     0001 0001      00143         DATA    T2CKPS1, 1
-00E6     0000 0000      00144         DATA    T2CKPS0, 0
-                        00145 
-                        00146 
-00E8     0007 0007      00147         DATA    GIE, 7                  ; INTCON
-00EA     0006 0006      00148         DATA    PEIE, 6
-00EC     0005 0005      00149         DATA    T0IE, 5
-00EE     0004 0004      00150         DATA    INTE, 4
-00F0     0003 0003      00151         DATA    RBIE, 3
-00F2     0002 0002      00152         DATA    T0IF, 2
-00F4     0001 0001      00153         DATA    INTF, 1
-00F6     0000 0000      00154         DATA    RBIF, 0 
-                        00155 
-00F8     0007 0007      00156         DATA    NOT_RBPU, 7             ; OPTION
-MPASM Version 3.00 Beta Release   HD72.ASM   01/31/2001  12:12:07	   PAGE 4
+009E   0005 0005      00104         DATA    SSPEN, 5
+00A0   0004 0004      00105         DATA    CKP, 4
+00A2   0003 0003      00106         DATA    SSPM3, 3
+00A4   0002 0002      00107         DATA    SSPM2, 2
+00A6   0001 0001      00108         DATA    SSPM1, 1
+00A8   0000 0000      00109         DATA    SSPM0, 0
+                      00110 
+00AA   0005 0005      00111         DATA    D, 5                    ; SSPSTAT
+00AC   0005 0005      00112         DATA    I2C_DATA, 5
+00AE   0005 0005      00113         DATA    NOT_A, 5
+00B0   0005 0005      00114         DATA    NOT_ADDRESS, 5
+00B2   0005 0005      00115         DATA    D_A, 5
+00B4   0005 0005      00116         DATA    DATA_ADDRESS, 5
+00B6   0004 0004      00117         DATA    P, 4
+00B8   0004 0004      00118         DATA    I2C_STOP, 4
+00BA   0003 0003      00119         DATA    S, 3
+00BC   0003 0003      00120         DATA    I2C_START, 3
+00BE   0002 0002      00121         DATA    R, 2
+00C0   0002 0002      00122         DATA    I2C_READ, 2
+00C2   0002 0002      00123         DATA    NOT_W, 2
+00C4   0002 0002      00124         DATA    NOT_WRITE, 2
+00C6   0002 0002      00125         DATA    R_W, 2
+00C8   0002 0002      00126         DATA    READ_WRITE, 2
+00CA   0001 0001      00127         DATA    UA, 1
+00CC   0000 0000      00128         DATA    BF, 0
+                      00129 
+                      00130 
+00CE   0005 0005      00131         DATA    T1CKPS1, 5              ; T1CON
+00D0   0004 0004      00132         DATA    T1CKPS0, 4
+00D2   0003 0003      00133         DATA    T1OSCEN, 3
+00D4   0002 0002      00134         DATA    T1INSYNC, 2
+00D6   0001 0001      00135         DATA    TMR1CS, 1
+00D8   0000 0000      00136         DATA    TMR1ON, 0
+                      00137 
+00DA   0006 0006      00138         DATA    TOUTPS3, 6              ; T2CON
+00DC   0005 0005      00139         DATA    TOUTPS2, 5
+00DE   0004 0004      00140         DATA    TOUTPS1, 4
+00E0   0003 0003      00141         DATA    TOUTPS0, 3
+00E2   0002 0002      00142         DATA    TMR2ON, 2
+00E4   0001 0001      00143         DATA    T2CKPS1, 1
+00E6   0000 0000      00144         DATA    T2CKPS0, 0
+                      00145 
+                      00146 
+00E8   0007 0007      00147         DATA    GIE, 7                  ; INTCON
+00EA   0006 0006      00148         DATA    PEIE, 6
+00EC   0005 0005      00149         DATA    T0IE, 5
+00EE   0004 0004      00150         DATA    INTE, 4
+00F0   0003 0003      00151         DATA    RBIE, 3
+00F2   0002 0002      00152         DATA    T0IF, 2
+00F4   0001 0001      00153         DATA    INTF, 1
+00F6   0000 0000      00154         DATA    RBIF, 0 
+                      00155 
+00F8   0007 0007      00156         DATA    NOT_RBPU, 7             ; OPTION
+MPASM 03.20.02 Released          HD72.ASM   11-21-2002  20:20:39         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-00FA     0006 0006      00157         DATA    INTEDG, 6
-00FC     0005 0005      00158         DATA    T0CS, 5
-00FE     0004 0004      00159         DATA    T0SE, 4
-0100     0003 0003      00160         DATA    PSA, 3
-0102     0002 0002      00161         DATA    PS2, 2
-0104     0001 0001      00162         DATA    PS1, 1
-0106     0000 0000      00163         DATA    PS0, 0
-                        00164 
-                        00165 
-0108     0007 0007      00166         DATA    IRP, 7                  ;STATUS
-010A     0006 0006      00167         DATA    RP1, 6
-010C     0005 0005      00168         DATA    RP0, 5
-010E     0004 0004      00169         DATA    NOT_TO, 4
-0110     0003 0003      00170         DATA    NOT_PD, 3
-0112     0002 0002      00171         DATA    Z, 2
-0114     0001 0001      00172         DATA    DC, 1
-0116     0000 0000      00173         DATA    C, 0
-                        00174 
-                        00175         END
-MPASM Version 3.00 Beta Release   HD72.ASM   01/31/2001  12:12:07	   PAGE 5
+00FA   0006 0006      00157         DATA    INTEDG, 6
+00FC   0005 0005      00158         DATA    T0CS, 5
+00FE   0004 0004      00159         DATA    T0SE, 4
+0100   0003 0003      00160         DATA    PSA, 3
+0102   0002 0002      00161         DATA    PS2, 2
+0104   0001 0001      00162         DATA    PS1, 1
+0106   0000 0000      00163         DATA    PS0, 0
+                      00164 
+                      00165 
+0108   0007 0007      00166         DATA    IRP, 7                  ;STATUS
+010A   0006 0006      00167         DATA    RP1, 6
+010C   0005 0005      00168         DATA    RP0, 5
+010E   0004 0004      00169         DATA    NOT_TO, 4
+0110   0003 0003      00170         DATA    NOT_PD, 3
+0112   0002 0002      00171         DATA    Z, 2
+0114   0001 0001      00172         DATA    DC, 1
+0116   0000 0000      00173         DATA    C, 0
+                      00174 
+                      00175         END
+MPASM 03.20.02 Released          HD72.ASM   11-21-2002  20:20:39         PAGE  5
 
 
 SYMBOL TABLE
@@ -259,7 +259,7 @@ NOT_PD                            00000003
 NOT_POR                           00000001
 NOT_RBPU                          00000007
 NOT_TO                            00000004
-MPASM Version 3.00 Beta Release   HD72.ASM   01/31/2001  12:12:07	   PAGE 6
+MPASM 03.20.02 Released          HD72.ASM   11-21-2002  20:20:39         PAGE  6
 
 
 SYMBOL TABLE
@@ -318,7 +318,7 @@ T1INSYNC                          00000002
 T1OSCEN                           00000003
 T2CKPS0                           00000000
 T2CKPS1                           00000001
-MPASM Version 3.00 Beta Release   HD72.ASM   01/31/2001  12:12:07	   PAGE 7
+MPASM 03.20.02 Released          HD72.ASM   11-21-2002  20:20:39         PAGE  7
 
 
 SYMBOL TABLE
@@ -370,7 +370,7 @@ MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
-MPASM Version 3.00 Beta Release   HD72.ASM   01/31/2001  12:12:07	   PAGE 8
+MPASM 03.20.02 Released          HD72.ASM   11-21-2002  20:20:39         PAGE  8
 
 
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)

@@ -1,39 +1,39 @@
-MPASM Version 3.00 Beta Release   CBLOCK2.ASM   01/31/2001  12:39:38	   PAGE 1
+MPASM 03.20.02 Released       CBLOCK2.ASM   11-21-2002  20:20:14         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; CBLOCK2.ASM
-                        00002 
-                        00003 ; This file tests illegal usage of CBLOCK.
-                        00004 
-                        00005         LIST    P=16C54,R=HEX
-                        00006 
+                      00001 ; CBLOCK2.ASM
+                      00002 
+                      00003 ; This file tests illegal usage of CBLOCK.
+                      00004 
+                      00005         LIST    P=16C54,R=HEX
+                      00006 
 Error[144]  : Unmatched ENDC
-                        00007         ENDC                    ; Unmatched
-                        00008 
-                        00009         CBLOCK  0
+                      00007         ENDC                    ; Unmatched
+                      00008 
+                      00009         CBLOCK  0
 Error[121]  : Illegal label (NOP)
-  00000000              00010                 NOP             ; Illegal symbol
-                        00011         ENDC
-                        00012 
-                        00013         CBLOCK  0x10
-  00000010              00014                 Symbol1
+  00000000            00010                 NOP             ; Illegal symbol
+                      00011         ENDC
+                      00012 
+                      00013         CBLOCK  0x10
+  00000010            00014                 Symbol1
 Error[121]  : Illegal label (#define TestBit Symbol1)
 Error[121]  : Illegal label (2)
-  00000011              00015 #define TestBit Symbol1,2       ; Embedded directive
-                        00016         ENDC
-                        00017 
-                        00018         CBLOCK  0x20            ; Missing ENDC
-  00000020              00019                 Symbol2
-                        00020 
+  00000011            00015 #define TestBit Symbol1,2       ; Embedded directive
+                      00016         ENDC
+                      00017 
+                      00018         CBLOCK  0x20            ; Missing ENDC
+  00000020            00019                 Symbol2
+                      00020 
 Error[121]  : Illegal label (END)
-  00000021              00021         END
-                        00022 
-                        00023                 
-Error[125]  : Illegal condition (EOF encountered before END or conditional end directive)
-MPASM Version 3.00 Beta Release   CBLOCK2.ASM   01/31/2001  12:39:38	   PAGE 2
+  00000021            00021         END
+                      00022 
+                      00023                 
+Error[129]  : Expected (END)
+MPASM 03.20.02 Released       CBLOCK2.ASM   11-21-2002  20:20:14         PAGE  2
 
 
 SYMBOL TABLE

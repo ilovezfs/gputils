@@ -1,75 +1,74 @@
-MPASM Version 3.00 Beta Release   INCLUDE3.ASM   01/31/2001  12:39:46	   PAGE 1
+MPASM 03.20.02 Released      INCLUDE3.ASM   11-21-2002  20:21:04         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; INCLUDE3.ASM
-                        00002 
-                        00003 ; This file tests including source files.
-                        00004 
-                        00005         LIST    P=17C42
-                        00006 
-0000     496E 636C 7564 00007         DATA    "Include File 3"
-         6520 4669 6C65 
-         2033 
-                        00008 
+                      00001 ; INCLUDE3.ASM
+                      00002 
+                      00003 ; This file tests including source files.
+                      00004 
+                      00005         LIST    P=17C42
+                      00006 
+0000   496E 636C 7564 00007         DATA    "Include File 3"
+       6520 4669 6C65 
+       2033 
+                      00008 
 Message[301]: MESSAGE: (FILE 3)
-                        00009         MESSG   "FILE 3"
-                        00010         INCLUDE "INCLUDE4.ASM"
-                        00001 ; INCLUDE4.ASM
-                        00002 
-                        00003 ; This file tests including source files.
-                        00004 
+                      00009         MESSG   "FILE 3"
+                      00010         INCLUDE "INCLUDE4.ASM"
+                      00001 ; INCLUDE4.ASM
+                      00002 
+                      00003 ; This file tests including source files.
+                      00004 
 Warning[223]: Redefining processor.
-                        00005         LIST    P=17C42
-                        00006 
-0007     496E 636C 7564 00007         DATA    "Include File 4"
-         6520 4669 6C65 
-         2034 
-                        00008 
+                      00005         LIST    P=17C42
+                      00006 
+0007   496E 636C 7564 00007         DATA    "Include File 4"
+       6520 4669 6C65 
+       2034 
+                      00008 
 Message[301]: MESSAGE: (FILE 4)
-                        00009         MESSG   "FILE 4"
-                        00010         INCLUDE "INCLUDE5.ASM"
-                        00001 ; INCLUDE5.ASM
-                        00002 
-                        00003 ; This file tests including source files.
-                        00004 
+                      00009         MESSG   "FILE 4"
+                      00010         INCLUDE "INCLUDE5.ASM"
+                      00001 ; INCLUDE5.ASM
+                      00002 
+                      00003 ; This file tests including source files.
+                      00004 
 Warning[223]: Redefining processor.
-                        00005         LIST    P=17C42
-                        00006 
-000E     496E 636C 7564 00007         DATA    "Include File 5"
-         6520 4669 6C65 
-         2035 
-                        00008 
+                      00005         LIST    P=17C42
+                      00006 
+000E   496E 636C 7564 00007         DATA    "Include File 5"
+       6520 4669 6C65 
+       2035 
+                      00008 
 Message[301]: MESSAGE: (FILE 5)
-                        00009         MESSG   "FILE 5"
-                        00010         INCLUDE "INCLUDE6.ASM"
-                        00001 ; INCLUDE6.ASM
-                        00002 
-                        00003 ; This file tests including source files.
-                        00004 
+                      00009         MESSG   "FILE 5"
+                      00010         INCLUDE "INCLUDE6.ASM"
+                      00001 ; INCLUDE6.ASM
+                      00002 
+                      00003 ; This file tests including source files.
+                      00004 
 Warning[223]: Redefining processor.
-                        00005         LIST    P=17C42
-                        00006 
-0015     496E 636C 7564 00007         DATA    "Include File 6"
-         6520 4669 6C65 
-         2036 
-                        00008 
+                      00005         LIST    P=17C42
+                      00006 
+0015   496E 636C 7564 00007         DATA    "Include File 6"
+       6520 4669 6C65 
+       2036 
+                      00008 
 Message[301]: MESSAGE: (FILE 6)
-MPASM Version 3.00 Beta Release   INCLUDE3.ASM   01/31/2001  12:39:46	   PAGE 2
+MPASM 03.20.02 Released      INCLUDE3.ASM   11-21-2002  20:21:04         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00009         MESSG   "FILE 6"
-                        00010 
-                        00011 ;       END
-                        00011 
-                        00012         END
-Warning[228]: Text encountered after END directive
-MPASM Version 3.00 Beta Release   INCLUDE3.ASM   01/31/2001  12:39:46	   PAGE 3
+                      00009         MESSG   "FILE 6"
+                      00010 
+                      00011 ;       END
+                      00011 
+                      00012         END
+MPASM 03.20.02 Released      INCLUDE3.ASM   11-21-2002  20:21:04         PAGE  3
 
 
 SYMBOL TABLE
@@ -88,7 +87,7 @@ Program Memory Words Used:    28
 
 
 Errors   :     0
-Warnings :     4 reported,     0 suppressed
+Warnings :     3 reported,     0 suppressed
 Messages :     4 reported,     0 suppressed
 
 

@@ -1,21 +1,21 @@
-MPASM Version 3.00 Beta Release   LABELS2.ASM   01/31/2001  12:39:48	   PAGE 1
+MPASM 03.20.02 Released       LABELS2.ASM   11-21-2002  20:21:05         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ;LABELS2.ASM
-                        00002 ;       This file tests for illegal labels.
-                        00003 
-                        00004         list    p=16c54,r=dec
-                        00005 
+                      00001 ;LABELS2.ASM
+                      00002 ;       This file tests for illegal labels.
+                      00003 
+                      00004         list    p=16c54,r=dec
+                      00005 
 Warning[208]: Label truncated at 32 characters. (ThisLabelIsTooLong_ByOneCharacter)
-  00000001              00006 ThisLabelIsTooLong_ByOneCharacter       equ     1
+  00000001            00006 ThisLabelIsTooLong_ByOneCharacter       equ     1
 Error[108]  : Illegal character (%)
-  00000001              00007 Illegal%Character                       equ     2
-                        00008 
-                        00009         end
-MPASM Version 3.00 Beta Release   LABELS2.ASM   01/31/2001  12:39:48	   PAGE 2
+  00000001            00007 Illegal%Character                       equ     2
+                      00008 
+                      00009         end
+MPASM 03.20.02 Released       LABELS2.ASM   11-21-2002  20:21:05         PAGE  2
 
 
 SYMBOL TABLE

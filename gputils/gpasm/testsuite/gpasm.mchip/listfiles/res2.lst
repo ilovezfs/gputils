@@ -1,22 +1,22 @@
-MPASM Version 3.00 Beta Release   RES2.ASM   01/31/2001  12:39:56	   PAGE 1
+MPASM 03.20.02 Released          RES2.ASM   11-21-2002  20:21:36         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; RES2.ASM
-                        00002 
-                        00003 ; This file tests illegal usage of the RES directive.
-                        00004 
-                        00005         LIST    P=16C54
-                        00006 
-0000                    00007         ORG     0
+                      00001 ; RES2.ASM
+                      00002 
+                      00003 ; This file tests illegal usage of the RES directive.
+                      00004 
+                      00005         LIST    P=16C54
+                      00006 
+0000                  00007         ORG     0
 Error[128]  : Missing argument(s)
-0000                    00008         RES                     ; No parameter
-0000     0111           00009         DATA    111
-                        00010 
-                        00011         END
-MPASM Version 3.00 Beta Release   RES2.ASM   01/31/2001  12:39:56	   PAGE 2
+0000                  00008         RES                     ; No parameter
+0000   0111           00009         DATA    111
+                      00010 
+                      00011         END
+MPASM 03.20.02 Released          RES2.ASM   11-21-2002  20:21:36         PAGE  2
 
 
 SYMBOL TABLE

@@ -1,35 +1,35 @@
-MPASM Version 3.00 Beta Release   HD58B.ASM   01/31/2001  12:11:45	   PAGE 1
+MPASM 03.20.02 Released         HD58B.ASM   11-21-2002  20:20:29         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; HD58B.ASM
-                        00002 
-                        00003 ; This file tests header file usage for the specified processor.
-                        00004 
-                        00005         LIST    P=16C58B
-                        00006         INCLUDE "P16C5X.INC"
-                        00001         LIST
-                        00002 ; P16C5X.INC  Standard Header File, Version 4.00    Microchip Technology, Inc.
-                        00313         LIST
-                        00007 
-0000     0007 0007      00008         DATA    _CP_ON, 0X0007          ; This changes per device
-                        00009 
-0002     0003 0003      00010         DATA    STATUS, 3
-0004     0005 0005      00011         DATA    PORTA, 5
-0006     0006 0006      00012         DATA    PORTB, 6
-                        00013 
-0008     0002 0002      00014         DATA    Z, 2
-000A     0001 0001      00015         DATA    DC, 1
-000C     0000 0000      00016         DATA    C, 0
-                        00017 
-000E     0005 0005      00018         DATA    T0CS, 5
-0010     0004 0004      00019         DATA    T0SE, 4
-0012     0003 0003      00020         DATA    PSA, 3
-                        00021 
-                        00022         END
-MPASM Version 3.00 Beta Release   HD58B.ASM   01/31/2001  12:11:45	   PAGE 2
+                      00001 ; HD58B.ASM
+                      00002 
+                      00003 ; This file tests header file usage for the specified processor.
+                      00004 
+                      00005         LIST    P=16C58B
+                      00006         INCLUDE "P16C5X.INC"
+                      00001         LIST
+                      00002 ; P16C5X.INC  Standard Header File, Version 4.00    Microchip Technology, Inc.
+                      00313         LIST
+                      00007 
+0000   0007 0007      00008         DATA    _CP_ON, 0X0007          ; This changes per device
+                      00009 
+0002   0003 0003      00010         DATA    STATUS, 3
+0004   0005 0005      00011         DATA    PORTA, 5
+0006   0006 0006      00012         DATA    PORTB, 6
+                      00013 
+0008   0002 0002      00014         DATA    Z, 2
+000A   0001 0001      00015         DATA    DC, 1
+000C   0000 0000      00016         DATA    C, 0
+                      00017 
+000E   0005 0005      00018         DATA    T0CS, 5
+0010   0004 0004      00019         DATA    T0SE, 4
+0012   0003 0003      00020         DATA    PSA, 3
+                      00021 
+                      00022         END
+MPASM 03.20.02 Released         HD58B.ASM   11-21-2002  20:20:29         PAGE  2
 
 
 SYMBOL TABLE

@@ -1,43 +1,43 @@
-MPASM Version 3.00 Beta Release   SZ17CXX.ASM   01/31/2001  12:39:57	   PAGE 1
+MPASM 03.20.02 Released       SZ17CXX.ASM   11-21-2002  20:21:37         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; SZ17CXX.ASM
-                        00002 
-                        00003 ; This file tests for the processor-specific items for the selected
-                        00004 ; processor.
-                        00005 
-                        00006         LIST    P=17CXX, R=HEX, F=INHX32
-                        00007 
-  0000FFFF              00008 MAXROM  EQU     0FFFF
-  000000FF              00009 MAXRAM  EQU     00FF
-                        00010 
-0000     B612           00011         RETLW   12              ; 0812 = 12-BIT
-                        00012                                 ; 3412 = 14-BIT
-                        00013                                 ; B612 = 16-BIT
-                        00014 
-0001     01FF           00015         MOVWF   MAXRAM          ; OK
+                      00001 ; SZ17CXX.ASM
+                      00002 
+                      00003 ; This file tests for the processor-specific items for the selected
+                      00004 ; processor.
+                      00005 
+                      00006         LIST    P=17CXX, R=HEX, F=INHX32
+                      00007 
+  0000FFFF            00008 MAXROM  EQU     0FFFF
+  000000FF            00009 MAXRAM  EQU     00FF
+                      00010 
+0000   B612           00011         RETLW   12              ; 0812 = 12-BIT
+                      00012                                 ; 3412 = 14-BIT
+                      00013                                 ; B612 = 16-BIT
+                      00014 
+0001   01FF           00015         MOVWF   MAXRAM          ; OK
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0002     0100           00016         MOVWF   MAXRAM+1        ; MESSAGE
-                        00017 
-FFFF                    00018         ORG     MAXROM
-FFFF     0000           00019         NOP                     ; OK
+0002   0100           00016         MOVWF   MAXRAM+1        ; MESSAGE
+                      00017 
+FFFF                  00018         ORG     MAXROM
+FFFF   0000           00019         NOP                     ; OK
 Warning[220]: Address exceeds maximum range for this processor.
 Error[117]  : Address wrapped around 0
 Error[118]  : Overwriting previous address contents (0000)
 Error[118]  : Overwriting previous address contents (0000)
-0000     0000           00020         NOP                     ; ERROR
-                        00021 
-                        00022    IFDEF __16C84                ; EE Processors
-                        00023         ORG     2100
-                        00024         FILL    33, 40          ; OK
-                        00025         DE      44              ; ERROR
-                        00026    ENDIF
-                        00027 
-                        00028         END
-MPASM Version 3.00 Beta Release   SZ17CXX.ASM   01/31/2001  12:39:57	   PAGE 2
+0000   0000           00020         NOP                     ; ERROR
+                      00021 
+                      00022    IFDEF __16C84                ; EE Processors
+                      00023         ORG     2100
+                      00024         FILL    33, 40          ; OK
+                      00025         DE      44              ; ERROR
+                      00026    ENDIF
+                      00027 
+                      00028         END
+MPASM 03.20.02 Released       SZ17CXX.ASM   11-21-2002  20:21:37         PAGE  2
 
 
 SYMBOL TABLE

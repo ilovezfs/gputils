@@ -1,28 +1,28 @@
-MPASM Version 3.00 Beta Release   CONSTNT2.ASM   01/31/2001  12:39:39	   PAGE 1
+MPASM 03.20.02 Released      CONSTNT2.ASM   11-21-2002  20:20:15         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; CONSTNT2.ASM
-                        00002 
-                        00003 ; This file tests illegal usage of the CONSTANT directive.
-                        00004 
-                        00005         LIST    P=16C54, R=HEX
-                        00006 
+                      00001 ; CONSTNT2.ASM
+                      00002 
+                      00003 ; This file tests illegal usage of the CONSTANT directive.
+                      00004 
+                      00005         LIST    P=16C54, R=HEX
+                      00006 
 Error[128]  : Missing argument(s)
-                        00007         CONSTANT                        ; No parameters
+                      00007         CONSTANT                        ; No parameters
 Error[128]  : Missing argument(s) (value for "Const1")
-                        00008         CONSTANT        Const1          ; No value
+                      00008         CONSTANT        Const1          ; No value
 Error[128]  : Missing argument(s)
-                        00009         CONSTANT        Const2=         ; Missing value
+                      00009         CONSTANT        Const2=         ; Missing value
 Error[128]  : Missing argument(s)
-  0000                  00010         CONSTANT        Const3 = 1 +    ; Illegal expression
+  0000                00010         CONSTANT        Const3 = 1 +    ; Illegal expression
 Error[113]  : Symbol not previously defined (Stupid)
-  0000                  00011         CONSTANT        Const4 = Stupid ; Undefined symbol
-                        00012 
-                        00013         END
-MPASM Version 3.00 Beta Release   CONSTNT2.ASM   01/31/2001  12:39:39	   PAGE 2
+  0000                00011         CONSTANT        Const4 = Stupid ; Undefined symbol
+                      00012 
+                      00013         END
+MPASM 03.20.02 Released      CONSTNT2.ASM   11-21-2002  20:20:15         PAGE  2
 
 
 SYMBOL TABLE

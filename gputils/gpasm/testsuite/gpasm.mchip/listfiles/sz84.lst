@@ -1,44 +1,44 @@
-MPASM Version 3.00 Beta Release   SZ84.ASM   01/31/2001  12:40:15	   PAGE 1
+MPASM 03.20.02 Released          SZ84.ASM   11-21-2002  20:21:51         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; SZ84.ASM
-                        00002 
-                        00003 ; This file tests for the processor-specific items for the selected
-                        00004 ; processor.
-                        00005 
-                        00006         LIST    P=16F84, R=HEX
-                        00007 
-  000003FF              00008 MAXROM  EQU     03FF
-  0000002F              00009 MAXRAM  EQU     002F
-                        00010 
-0000     3412           00011         RETLW   12              ; 0812 = 12-BIT
-                        00012                                 ; 3412 = 14-BIT
-                        00013                                 ; B612 = 16-BIT
-                        00014 
-0001     00AF           00015         MOVWF   MAXRAM          ; OK
-0002     00B0           00016         MOVWF   MAXRAM+1        ; MESSAGE
-                        00017 
-03FF                    00018         ORG     MAXROM
-03FF     0000           00019         NOP                     ; OK
+                      00001 ; SZ84.ASM
+                      00002 
+                      00003 ; This file tests for the processor-specific items for the selected
+                      00004 ; processor.
+                      00005 
+                      00006         LIST    P=16F84, R=HEX
+                      00007 
+  000003FF            00008 MAXROM  EQU     03FF
+  0000002F            00009 MAXRAM  EQU     002F
+                      00010 
+0000   3412           00011         RETLW   12              ; 0812 = 12-BIT
+                      00012                                 ; 3412 = 14-BIT
+                      00013                                 ; B612 = 16-BIT
+                      00014 
+0001   00AF           00015         MOVWF   MAXRAM          ; OK
+0002   00B0           00016         MOVWF   MAXRAM+1        ; MESSAGE
+                      00017 
+03FF                  00018         ORG     MAXROM
+03FF   0000           00019         NOP                     ; OK
 Warning[220]: Address exceeds maximum range for this processor.
-0400     0000           00020         NOP                     ; ERROR
-                        00021 
-                        00022    IFDEF __16F84                ; EE Processors
-20FF                    00023         ORG     20FF
+0400   0000           00020         NOP                     ; ERROR
+                      00021 
+                      00022    IFDEF __16F84                ; EE Processors
+20FF                  00023         ORG     20FF
 Warning[220]: Address exceeds maximum range for this processor.
-20FF     0022           00024         DE      22              ; ERROR
-                        00025 
-2100                    00026         ORG     2100
-2100     0033           00027         FILL    33, 40          ; OK
+20FF   0022           00024         DE      22              ; ERROR
+                      00025 
+2100                  00026         ORG     2100
+2100   0033           00027         FILL    33, 40          ; OK
 Warning[220]: Address exceeds maximum range for this processor.
-2140     0044           00028         DE      44              ; ERROR
-                        00029    ENDIF
-                        00030 
-                        00031         END
-MPASM Version 3.00 Beta Release   SZ84.ASM   01/31/2001  12:40:15	   PAGE 2
+2140   0044           00028         DE      44              ; ERROR
+                      00029    ENDIF
+                      00030 
+                      00031         END
+MPASM 03.20.02 Released          SZ84.ASM   11-21-2002  20:21:51         PAGE  2
 
 
 SYMBOL TABLE

@@ -1,26 +1,26 @@
-MPASM Version 3.00 Beta Release   CONSTEX2.ASM   01/31/2001  12:39:39	   PAGE 1
+MPASM 03.20.02 Released      CONSTEX2.ASM   11-21-2002  20:20:14         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; CONSTEX2.ASM
-                        00002 
-                        00003 ; This file tests for errors in constant expressions.
-                        00004 
-                        00005         list    p=16c54
-                        00006 
-                        00007 ;***** Test for SSR 2060 **************************************************
-                        00008 
+                      00001 ; CONSTEX2.ASM
+                      00002 
+                      00003 ; This file tests for errors in constant expressions.
+                      00004 
+                      00005         list    p=16c54
+                      00006 
+                      00007 ;***** Test for SSR 2060 **************************************************
+                      00008 
 Error[124]  : Illegal argument (expected single character)
-0000     00D0           00009         data    (90-'()') * 2           ; Two characters in quotes
+0000   00D0           00009         data    (90-'()') * 2           ; Two characters in quotes
 Error[124]  : Illegal argument (expected single character)
-0001     00D0           00010         data    (90-"()") * 2           ; Two characters in quotes
-                        00011 
-                        00012 ;***** End Test ***********************************************************
-                        00013 
-                        00014 ;***** Test for SSR 1861
-                        00015 
+0001   00D0           00010         data    (90-"()") * 2           ; Two characters in quotes
+                      00011 
+                      00012 ;***** End Test ***********************************************************
+                      00013 
+                      00014 ;***** Test for SSR 1861
+                      00015 
 Warning[209]: Missing quote
 Error[107]  : Illegal digit (" in binary)
 Error[107]  : Illegal digit (  in binary)
@@ -33,27 +33,26 @@ Error[107]  : Illegal digit (t in binary)
 Error[107]  : Illegal digit (u in binary)
 Error[107]  : Illegal digit (f in binary)
 Error[107]  : Illegal digit (f in binary)
-  00000002              00016 Var1    equ     b'10"   ; stuff
-                        00017 
-                        00018 ;***** End Test
-                        00019 
-                        00020 ;***** Test for SSR 3245
-                        00021 
-  00000000              00022 w       equ     0
+  00000002            00016 Var1    equ     b'10"   ; stuff
+                      00017 
+                      00018 ;***** End Test
+                      00019 
+                      00020 ;***** Test for SSR 3245
+                      00021 
+  00000000            00022 w       equ     0
 Error[112]  : Missing operator
-0002     0A00           00023         goto    $-9w
-                        00024 
-                        00025 ;***** End Test
-                        00026 
-                        00027         end
-MPASM Version 3.00 Beta Release   CONSTEX2.ASM   01/31/2001  12:39:39	   PAGE 2
+0002   0A00           00023         goto    $-9w
+                      00024 
+                      00025 ;***** End Test
+                      00026 
+                      00027         end
+MPASM 03.20.02 Released      CONSTEX2.ASM   11-21-2002  20:20:14         PAGE  2
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
 Var1                              00000002
-_.code_0002                       00000002
 __16C54                           00000001
 w                                 00000000
 

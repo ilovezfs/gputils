@@ -1,57 +1,55 @@
-MPASM Version 3.00 Beta Release   LIST1.ASM   01/31/2001  12:39:48	   PAGE 1
+MPASM 03.20.02 Released         LIST1.ASM   11-21-2002  20:21:05         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; LIST1.ASM
-                        00002 
-                        00003 ; This file tests legal formatting of the list file.
-                        00004 
-                        00005         LIST            P=17C44, R=DEC
-                        00006 
-                        00007         TITLE           "This is my list file title."
-                        00008         SUBTITLE        "This is my list file subtitle."
-MPASM Version 3.00 Beta Release   LIST1.ASM   01/31/2001  12:39:48	   PAGE 2
+                      00001 ; LIST1.ASM
+                      00002 
+                      00003 ; This file tests legal formatting of the list file.
+                      00004 
+                      00005         LIST            P=17C44, R=DEC
+                      00006 
+                      00007         TITLE           "This is my list file title."
+                      00008         SUBTITLE        "This is my list file subtitle."
+MPASM 03.20.02 Released         LIST1.ASM   11-21-2002  20:21:05         PAGE  2
 This is my list file title.
 This is my list file subtitle.
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00009         PAGE    
-                        00010         
-                        00011         SUBTITL         "This is my second subtitle."
-MPASM Version 3.00 Beta Release   LIST1.ASM   01/31/2001  12:39:48	   PAGE 3
+                      00009         PAGE    
+                      00010         
+                      00011         SUBTITL         "This is my second subtitle."
+MPASM 03.20.02 Released         LIST1.ASM   11-21-2002  20:21:05         PAGE  3
 This is my list file title.
 This is my second subtitle.
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00012         PAGE            
-                        00013 
-                        00014         STITLE          "This is my third subtitle."
-MPASM Version 3.00 Beta Release   LIST1.ASM   01/31/2001  12:39:48	   PAGE 4
+                      00012         PAGE            
+                      00013 
+                      00014         STITLE          "This is my third subtitle."
+MPASM 03.20.02 Released         LIST1.ASM   11-21-2002  20:21:05         PAGE  4
 This is my list file title.
 This is my third subtitle.
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00015         PAGE
-                        00016 
-                        00017 ; ***********************************
-                        00018         SPACE
-                        00019 ; ***********************************
-                        00020         SPACE   0
-                        00021 ; ***********************************
+                      00015         PAGE
+                      00016 
+                      00017 ; ***********************************
+                      00018         SPACE
+                      00019 ; ***********************************
+                      00020         SPACE   0
+                      00021 ; ***********************************
 
-                        00022         SPACE   1
-                        00023 ; ***********************************
-
-
-                        00024         SPACE   2
-                        00025 ; ***********************************
+                      00022         SPACE   1
+                      00023 ; ***********************************
 
 
+                      00024         SPACE   2
+                      00025 ; ***********************************
 
 
 
@@ -60,21 +58,23 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 
 
 
-                        00026         SPACE   10
-                        00027 ; ***********************************
-                        00028 
-MPASM Version 3.00 Beta Release   LIST1.ASM   01/31/2001  12:39:48	   PAGE 5
+
+
+                      00026         SPACE   10
+                      00027 ; ***********************************
+                      00028 
+MPASM 03.20.02 Released         LIST1.ASM   11-21-2002  20:21:05         PAGE  5
 This is my list file title.
 This is my third subtitle.
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00029         PAGE
-                        00032         LIST
-                        00033 ; This comment should appear in the list file.
-                        00034 
-                        00035         END
-MPASM Version 3.00 Beta Release   LIST1.ASM   01/31/2001  12:39:48	   PAGE 6
+                      00029         PAGE
+                      00032         LIST
+                      00033 ; This comment should appear in the list file.
+                      00034 
+                      00035         END
+MPASM 03.20.02 Released         LIST1.ASM   11-21-2002  20:21:05         PAGE  6
 This is my list file title.
 This is my third subtitle.
 SYMBOL TABLE

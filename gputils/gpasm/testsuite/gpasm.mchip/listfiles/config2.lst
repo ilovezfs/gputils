@@ -1,19 +1,19 @@
-MPASM Version 3.00 Beta Release   CONFIG2.ASM   01/31/2001  12:11:10	   PAGE 1
+MPASM 03.20.02 Released       CONFIG2.ASM   11-21-2002  20:20:14         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; CONFIG2.ASM
-                        00002 
-                        00003 ; This file tests the __CONFIG directive for 14-bit core.
-                        00004 
-                        00005         LIST    P=16C61, R=HEX
-                        00006 
-2007     1234           00007         __CONFIG        1234
-                        00008 
-                        00009         END
-MPASM Version 3.00 Beta Release   CONFIG2.ASM   01/31/2001  12:11:10	   PAGE 2
+                      00001 ; CONFIG2.ASM
+                      00002 
+                      00003 ; This file tests the __CONFIG directive for 14-bit core.
+                      00004 
+                      00005         LIST    P=16C61, R=HEX
+                      00006 
+2007   1234           00007         __CONFIG        1234
+                      00008 
+                      00009         END
+MPASM 03.20.02 Released       CONFIG2.ASM   11-21-2002  20:20:14         PAGE  2
 
 
 SYMBOL TABLE

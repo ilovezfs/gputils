@@ -1,27 +1,27 @@
-MPASM Version 3.00 Beta Release   RADIX.ASM   01/31/2001  12:14:16	   PAGE 1
+MPASM 03.20.02 Released         RADIX.ASM   11-21-2002  20:21:35         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; RADIX.ASM
-                        00002 
-                        00003 ; This file tests radix specification.  Note that command line selection
-                        00004 ; will override source file specifications.
-                        00005 
-                        00006         LIST    P=16C54
-                        00007 
-0000     0010           00008         DATA    10
-                        00009 
-                        00010         RADIX   OCTAL
-0001     0008           00011         DATA    10
-                        00012         RADIX   DECIMAL
-0002     000A           00013         DATA    10
-                        00014         RADIX   HEX
-0003     0010           00015         DATA    10
-                        00016 
-                        00017         END
-MPASM Version 3.00 Beta Release   RADIX.ASM   01/31/2001  12:14:16	   PAGE 2
+                      00001 ; RADIX.ASM
+                      00002 
+                      00003 ; This file tests radix specification.  Note that command line selection
+                      00004 ; will override source file specifications.
+                      00005 
+                      00006         LIST    P=16C54
+                      00007 
+0000   0010           00008         DATA    10
+                      00009 
+                      00010         RADIX   OCTAL
+0001   0008           00011         DATA    10
+                      00012         RADIX   DECIMAL
+0002   000A           00013         DATA    10
+                      00014         RADIX   HEX
+0003   0010           00015         DATA    10
+                      00016 
+                      00017         END
+MPASM 03.20.02 Released         RADIX.ASM   11-21-2002  20:21:35         PAGE  2
 
 
 SYMBOL TABLE

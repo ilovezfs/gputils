@@ -1,37 +1,37 @@
-MPASM Version 3.00 Beta Release   LABELS1.ASM   01/31/2001  12:39:48	   PAGE 1
+MPASM 03.20.02 Released       LABELS1.ASM   11-21-2002  20:21:04         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ;LABELS1.ASM
-                        00002 ;       This file tests valid label characters and lengths
-                        00003 
-                        00004         list    p=16c54, r=dec
-                        00005 
-  00000001              00006 a                                       equ     1       ; One character label, lower case
-  00000002              00007 A                                       equ     2       ; One character label, upper case, NO CONFLICT
-  00000003              00008 MixedCase                               equ     3       ; Mixed case label
-  00000004              00009 WithColon:                              equ     4       ; Trailing colon
-                        00010 
-  00000005              00011 Number42                                equ     5       ; Numeric included
-  00000006              00012 Number43:                               equ     6       ; Trailing colon
-                        00013 
-  00000007              00014 Here_Now                                equ     7       ; Special character included
-  00000008              00015 DoThis?                                 equ     8       ; Special character included
-  00000009              00016 Now?:                                   equ     9       ; Trailing colon
-                        00017 
-  0000000A              00018 _special                                equ     10      ; Leading special
-  0000000B              00019 ?What                                   equ     11      ; Leading special
-  0000000C              00020 _OK:                                    equ     12      ; Trailing colon
-                        00021 
-  0000000D              00022 ?HereIsA_BIG_MishMash?:                 equ     13      ; Mishmash
-  0000000E              00023 Führer                                  equ     14      ; Character above 128 ASCII
-                        00024 
-  0000000F              00025 ThisIsABigLongLabelOfMaxLength32        equ     15      ; Max length label
-                        00026 
-                        00027         end
-MPASM Version 3.00 Beta Release   LABELS1.ASM   01/31/2001  12:39:48	   PAGE 2
+                      00001 ;LABELS1.ASM
+                      00002 ;       This file tests valid label characters and lengths
+                      00003 
+                      00004         list    p=16c54, r=dec
+                      00005 
+  00000001            00006 a                                       equ     1       ; One character label, lower case
+  00000002            00007 A                                       equ     2       ; One character label, upper case, NO CONFLICT
+  00000003            00008 MixedCase                               equ     3       ; Mixed case label
+  00000004            00009 WithColon:                              equ     4       ; Trailing colon
+                      00010 
+  00000005            00011 Number42                                equ     5       ; Numeric included
+  00000006            00012 Number43:                               equ     6       ; Trailing colon
+                      00013 
+  00000007            00014 Here_Now                                equ     7       ; Special character included
+  00000008            00015 DoThis?                                 equ     8       ; Special character included
+  00000009            00016 Now?:                                   equ     9       ; Trailing colon
+                      00017 
+  0000000A            00018 _special                                equ     10      ; Leading special
+  0000000B            00019 ?What                                   equ     11      ; Leading special
+  0000000C            00020 _OK:                                    equ     12      ; Trailing colon
+                      00021 
+  0000000D            00022 ?HereIsA_BIG_MishMash?:                 equ     13      ; Mishmash
+  0000000E            00023 Führer                                  equ     14      ; Character above 128 ASCII
+                      00024 
+  0000000F            00025 ThisIsABigLongLabelOfMaxLength32        equ     15      ; Max length label
+                      00026 
+                      00027         end
+MPASM 03.20.02 Released       LABELS1.ASM   11-21-2002  20:21:04         PAGE  2
 
 
 SYMBOL TABLE

@@ -1,751 +1,745 @@
-MPASM Version 3.00 Beta Release   ALLMESS1.ASM   01/31/2001  12:39:29	   PAGE 1
+MPASM 03.20.02 Released      ALLMESS1.ASM   11-21-2002  20:20:11         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ;ALLMESS1.ASM
-                        00002 ;     This file generates as many errors as it can.
-                        00003 
+                      00001 ;ALLMESS1.ASM
+                      00002 ;     This file generates as many errors as it can.
+                      00003 
 Error[132]  : Unknown processor (P16C40)
-                        00004         processor p16c40        ; Error 132 Unknown processor
-                        00005 
-                        00006         list    p=16c57
-                        00007 
+                      00004         processor p16c40        ; Error 132 Unknown processor
+                      00005 
+                      00006         list    p=16c57
+                      00007 
 Error[101]  : ERROR: (User error)
-                        00008         error   User error      ; Error 101 ERROR: ...
-                        00009 
+                      00008         error   User error      ; Error 101 ERROR: ...
+                      00009 
 Error[105]  : Cannot open file (Include File "missing.inc" not found)
-                        00010 #include "missing.inc"          ; Error 105 Cannot open...
-                        00011 
-                        00012 #define a1 a2
-                        00013 #define a2 a3
-                        00014 #define a3 a4
-                        00015 #define a4 a5
-                        00016 #define a5 a6
-                        00017 #define a6 a7
-                        00018 #define a7 a8
-                        00019 #define a8 a9
-                        00020 #define a9 1
+                      00010 #include "missing.inc"          ; Error 105 Cannot open...
+                      00011 
+                      00012 #define a1 a2
+                      00013 #define a2 a3
+                      00014 #define a3 a4
+                      00015 #define a4 a5
+                      00016 #define a5 a6
+                      00017 #define a6 a7
+                      00018 #define a7 a8
+                      00019 #define a8 a9
+                      00020 #define a9 1
 Error[106]  : String substitution too complex
 Error[128]  : Missing argument(s)
-                        00021         data    a1              ; Error 106 String sub...
-                        00022 
+                      00021         data    a1              ; Error 106 String sub...
+                      00022 
 Error[107]  : Illegal digit (q in hexidecimal)
-0000     0012           00023         data    h'12q'          ; Error 107 Illegal digit
-                        00024 
+0000   0012           00023         data    h'12q'          ; Error 107 Illegal digit
+                      00024 
 Error[108]  : Illegal character (~)
-                        00025 Lab~el                          ; Error 108 Illegal character
-                        00026 
+                      00025 Lab~el                          ; Error 108 Illegal character
+                      00026 
 Error[109]  : Unmatched (
 Error[124]  : Illegal argument
-0001     0000           00027         data    (1+2            ; Error 109 Unmatched (
-                        00028 
+0001   0000           00027         data    (1+2            ; Error 109 Unmatched (
+                      00028 
 Error[110]  : Unmatched )
-0002     0000           00029         data    1+2)            ; Error 110 Unmatched )
-                        00030 
+0002   0000           00029         data    1+2)            ; Error 110 Unmatched )
+                      00030 
 Error[111]  : Missing symbol
-                        00031         equ     1               ; Error 111 Missing symbol
-                        00032 
+                      00031         equ     1               ; Error 111 Missing symbol
+                      00032 
 Error[112]  : Missing operator
-0003     0000           00033         data    1 2             ; Error 112 Missing operator
-                        00034 
+0003   0000           00033         data    1 2             ; Error 112 Missing operator
+                      00034 
 Error[113]  : Symbol not previously defined (stupid)
-0004     0000           00035         data    stupid          ; Error 113 Symbol not previously defined
-                        00036 
+0004   0000           00035         data    stupid          ; Error 113 Symbol not previously defined
+                      00036 
 Error[114]  : Divide by zero
-0005     0000           00037         data    4/0             ; Error 114 Divide by 0
-                        00038 
-  00000001              00039 DupLabel equ 1
-MPASM Version 3.00 Beta Release   ALLMESS1.ASM   01/31/2001  12:39:29	   PAGE 2
+0005   0000           00037         data    4/0             ; Error 114 Divide by 0
+                      00038 
+  00000001            00039 DupLabel equ 1
+MPASM 03.20.02 Released      ALLMESS1.ASM   11-21-2002  20:20:11         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
 Error[115]  : Duplicate label ("DupLabel" or redefining symbol that cannot be redefined)
-  00000002              00040 DupLabel equ 2                  ; Error 115 Duplicate label
-                        00041 
-0006     0000           00042 DupAdd  nop
+  00000002            00040 DupLabel equ 2                  ; Error 115 Duplicate label
+                      00041 
+0006   0000           00042 DupAdd  nop
 Error[116]  : Address label duplicated or different in second pass (DupAdd)
-0007                    00043 DupAdd                          ; Error 116 Address label duplicated...
-                        00044 
-0010                    00045         org     10
-0010     0000           00046         nop
-0010                    00047         org     10
+0007                  00043 DupAdd                          ; Error 116 Address label duplicated...
+                      00044 
+0010                  00045         org     10
+0010   0000           00046         nop
+0010                  00047         org     10
 Error[118]  : Overwriting previous address contents (0010)
 Error[118]  : Overwriting previous address contents (0010)
-0010     0000           00048         nop                     ; Error 118 Overwritting...
-                        00049 
+0010   0000           00048         nop                     ; Error 118 Overwritting...
+                      00049 
 Error[120]  : Call or jump not allowed at this address (must be in low half of page)
-0011     0900           00050         call    0x100           ; Error 120 Call or jump not allowed at this address
-                        00051 
+0011   0900           00050         call    0x100           ; Error 120 Call or jump not allowed at this address
+                      00051 
 Error[121]  : Illegal label (Dummy)
-                        00052 Dummy   if 0 == 0               ; Error 121 Illegal label
-                        00053         endif
-                        00054 
+                      00052 Dummy   if 0 == 0               ; Error 121 Illegal label
+                      00053         endif
+                      00054 
 Error[122]  : Illegal opcode (stupid)
-                        00055 Label   stupid                  ; Error 122 Illegal opcode
-                        00056 
+                      00055 Label   stupid                  ; Error 122 Illegal opcode
+                      00056 
 Error[124]  : Illegal argument (stupid)
-                        00057         list    stupid          ; Error 124 Illegal argument
-                        00058 
+                      00057         list    stupid          ; Error 124 Illegal argument
+                      00058 
 Error[125]  : Illegal condition (ENDIF)
-                        00059         endif                   ; Error 125 Illegal condition
-                        00060 
+                      00059         endif                   ; Error 125 Illegal condition
+                      00060 
 Error[126]  : Argument out of range (0010 not between 0005 and 0007)
-0012     0000           00061         tris    10              ; Error 126 Argument out of range
-                        00062 
-                        00063 DMac    macro
-                        00064         nop
-                        00065         endm
+0012   0000           00061         tris    10              ; Error 126 Argument out of range
+                      00062 
+                      00063 DMac    macro
+                      00064         nop
+                      00065         endm
 Error[127]  : Too many arguments
-                        00066         DMac    dummy           ; Error 127 Too many arguments
-0013     0000               M         nop
-                        00067 
+                      00066         DMac    dummy           ; Error 127 Too many arguments
+0013   0000               M         nop
+                      00067 
 Error[128]  : Missing argument(s)
-                        00068         andlw                   ; Error 128 Missing arguments
-                        00069 
+                      00068         andlw                   ; Error 128 Missing arguments
+                      00069 
 Error[129]  : Expected ("ON" or "OFF", got "DUMB")
-                        00070         list    x=dumb          ; Error 129 Expected...
-                        00071 
+                      00070         list    x=dumb          ; Error 129 Expected...
+                      00071 
 Warning[223]: Redefining processor.
 Error[130]  : Processor type previously defined
-                        00072         processor       16c71   ; Error 130 Processor type previously...
-                        00073 
+                      00072         processor       16c71   ; Error 130 Processor type previously...
+                      00073 
 Error[134]  : Illegal hex file format (INHX)
-                        00074         list    f=inhx          ; Error 134 Illegal hex...
-                        00075 
-MPASM Version 3.00 Beta Release   ALLMESS1.ASM   01/31/2001  12:39:29	   PAGE 3
+                      00074         list    f=inhx          ; Error 134 Illegal hex...
+                      00075 
+MPASM 03.20.02 Released      ALLMESS1.ASM   11-21-2002  20:20:11         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00076         list    f=inhx32
-FFFF                    00077         org     0ffff
+                      00076         list    f=inhx32
+FFFF                  00077         org     0ffff
 Warning[220]: Address exceeds maximum range for this processor.
-FFFF     0000           00078         nop
+FFFF   0000           00078         nop
 Warning[220]: Address exceeds maximum range for this processor.
 Error[117]  : Address wrapped around 0
 Error[118]  : Overwriting previous address contents (0000)
 Error[118]  : Overwriting previous address contents (0000)
-0000     0000           00079         nop                     ; Error 117 Address wrapped...
-0020                    00080         org     20
-                        00081 
+0000   0000           00079         nop                     ; Error 117 Address wrapped...
+0020                  00080         org     20
+                      00081 
 Error[135]  : Macro name missing
-                        00082         macro                   ; Error 135 Macro name missing
+                      00082         macro                   ; Error 135 Macro name missing
 Error[145]  : Unmatched ENDM
-                        00083         endm
-                        00084 
-                        00085 mac1    macro
-                        00086         mac2
-                        00087         endm
-                        00088 mac2    macro
-                        00089         mac3
-                        00090         endm
-                        00091 mac3    macro
-                        00092         mac4
-                        00093         endm
-                        00094 mac4    macro
-                        00095         mac5
-                        00096         endm
-                        00097 mac5    macro
-                        00098         mac6
-                        00099         endm
-                        00100 mac6    macro
-                        00101         mac7
-                        00102         endm
-                        00103 mac7    macro
-                        00104         mac8
-                        00105         endm
-                        00106 mac8    macro
-                        00107         mac9
-                        00108         endm
-                        00109 mac9    macro
-                        00110         mac10
-                        00111         endm
-                        00112 mac10   macro
-                        00113         mac11
-                        00114         endm
-                        00115 mac11   macro
-                        00116         mac12
-                        00117         endm
-                        00118 mac12   macro
-                        00119         mac13
-                        00120         endm
-                        00121 mac13   macro
-MPASM Version 3.00 Beta Release   ALLMESS1.ASM   01/31/2001  12:39:29	   PAGE 4
+                      00083         endm
+                      00084 
+                      00085 mac1    macro
+                      00086         mac2
+                      00087         endm
+                      00088 mac2    macro
+                      00089         mac3
+                      00090         endm
+                      00091 mac3    macro
+                      00092         mac4
+                      00093         endm
+                      00094 mac4    macro
+                      00095         mac5
+                      00096         endm
+                      00097 mac5    macro
+                      00098         mac6
+                      00099         endm
+                      00100 mac6    macro
+                      00101         mac7
+                      00102         endm
+                      00103 mac7    macro
+                      00104         mac8
+                      00105         endm
+                      00106 mac8    macro
+                      00107         mac9
+                      00108         endm
+                      00109 mac9    macro
+                      00110         mac10
+                      00111         endm
+                      00112 mac10   macro
+                      00113         mac11
+                      00114         endm
+                      00115 mac11   macro
+                      00116         mac12
+                      00117         endm
+                      00118 mac12   macro
+                      00119         mac13
+                      00120         endm
+                      00121 mac13   macro
+MPASM 03.20.02 Released      ALLMESS1.ASM   11-21-2002  20:20:11         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00122         mac14
-                        00123         endm
-                        00124 mac14   macro
-                        00125         mac15
-                        00126         endm
-                        00127 mac15   macro
-                        00128         mac16
-                        00129         endm
-                        00130 mac16   macro
-                        00131         mac17
-                        00132         endm
-                        00133 mac17   macro
-                        00134         nop
-                        00135         endm
-                        00136 
+                      00122         mac14
+                      00123         endm
+                      00124 mac14   macro
+                      00125         mac15
+                      00126         endm
+                      00127 mac15   macro
+                      00128         mac16
+                      00129         endm
+                      00130 mac16   macro
+                      00131         mac17
+                      00132         endm
+                      00133 mac17   macro
+                      00134         nop
+                      00135         endm
+                      00136 
 Warning[206]: Found call to macro in column 1. (mac17)
 Error[136]  : Duplicate macro name (mac17)
-                        00137 mac17   macro                   ; Error 136 Duplicate macro...
-0020     0000           00138         nop
+                      00137 mac17   macro                   ; Error 136 Duplicate macro...
+0020   0000           00138         nop
 Error[145]  : Unmatched ENDM
-                        00139         endm
-                        00140 
-                        00141         mac1                    ; Error 137 Macros nested...
-                            M         mac2
-                            M         mac3
-                            M         mac4
-                            M         mac5
-                            M         mac6
-                            M         mac7
-                            M         mac8
-                            M         mac9
-                            M         mac10
-                            M         mac11
-                            M         mac12
-                            M         mac13
-                            M         mac14
-                            M         mac15
-                            M         mac16
+                      00139         endm
+                      00140 
+                      00141         mac1                    ; Error 137 Macros nested...
+                          M         mac2
+                          M         mac3
+                          M         mac4
+                          M         mac5
+                          M         mac6
+                          M         mac7
+                          M         mac8
+                          M         mac9
+                          M         mac10
+                          M         mac11
+                          M         mac12
+                          M         mac13
+                          M         mac14
+                          M         mac15
+                          M         mac16
 Error[137]  : Macros nested too deep
-                            M         mac17
-                        00142 
-                        00143 #include "allmes1a.inc"         ; Error 138 Include files nested...
-                        00001 #include "allmes1b.inc"
-                        00001 #include "allmes1c.inc"
-                        00001 #include "allmes1d.inc"
-                        00001 #include "allmes1e.inc"
-                        00001 #include "allmes1f.inc"
-                        00001 #include "allmes1g.inc"
-0021     0000           00001         nop
-                        00144 
-  00000001              00145 i = 1
-  00000000              00146 j = 0
+                          M         mac17
+                      00142 
+Error[105]  : Cannot open file (Include File "allmes1a.inc" not found)
+                      00143 #include "allmes1a.inc"         ; Error 138 Include files nested...
+                      00144 
+  00000001            00145 i = 1
+  00000000            00146 j = 0
 Error[139]  : Maximum of 100 lines inside WHILE-ENDW
-MPASM Version 3.00 Beta Release   ALLMESS1.ASM   01/31/2001  12:39:29	   PAGE 5
+                      00147         while i > 0             ; Error 139 Maximum of... 
+                      00148 j++
+                      00149 j++
+                      00150 j++
+                      00151 j++
+                      00152 j++
+MPASM 03.20.02 Released      ALLMESS1.ASM   11-21-2002  20:20:11         PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00147         while i > 0             ; Error 139 Maximum of... 
-                        00148 j++
-                        00149 j++
-                        00150 j++
-                        00151 j++
-                        00152 j++
-                        00153 j++
-                        00154 j++
-                        00155 j++
-                        00156 j++
-                        00157 j++
-                        00158 j++
-                        00159 j++
-                        00160 j++
-                        00161 j++
-                        00162 j++
-                        00163 j++
-                        00164 j++
-                        00165 j++
-                        00166 j++
-                        00167 j++
-                        00168 j++
-                        00169 j++
-                        00170 j++
-                        00171 j++
-                        00172 j++
-                        00173 j++
-                        00174 j++
-                        00175 j++
-                        00176 j++
-                        00177 j++
-                        00178 j++
-                        00179 j++
-                        00180 j++
-                        00181 j++
-                        00182 j++
-                        00183 j++
-                        00184 j++
-                        00185 j++
-                        00186 j++
-                        00187 j++
-                        00188 j++
-                        00189 j++
-                        00190 j++
-                        00191 j++
-                        00192 j++
-                        00193 j++
-                        00194 j++
-                        00195 j++
-                        00196 j++
-                        00197 j++
-                        00198 j++
-                        00199 j++
-MPASM Version 3.00 Beta Release   ALLMESS1.ASM   01/31/2001  12:39:29	   PAGE 6
+                      00153 j++
+                      00154 j++
+                      00155 j++
+                      00156 j++
+                      00157 j++
+                      00158 j++
+                      00159 j++
+                      00160 j++
+                      00161 j++
+                      00162 j++
+                      00163 j++
+                      00164 j++
+                      00165 j++
+                      00166 j++
+                      00167 j++
+                      00168 j++
+                      00169 j++
+                      00170 j++
+                      00171 j++
+                      00172 j++
+                      00173 j++
+                      00174 j++
+                      00175 j++
+                      00176 j++
+                      00177 j++
+                      00178 j++
+                      00179 j++
+                      00180 j++
+                      00181 j++
+                      00182 j++
+                      00183 j++
+                      00184 j++
+                      00185 j++
+                      00186 j++
+                      00187 j++
+                      00188 j++
+                      00189 j++
+                      00190 j++
+                      00191 j++
+                      00192 j++
+                      00193 j++
+                      00194 j++
+                      00195 j++
+                      00196 j++
+                      00197 j++
+                      00198 j++
+                      00199 j++
+                      00200 j++
+                      00201 j++
+                      00202 j++
+                      00203 j++
+                      00204 j++
+                      00205 j++
+MPASM 03.20.02 Released      ALLMESS1.ASM   11-21-2002  20:20:11         PAGE  6
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00200 j++
-                        00201 j++
-                        00202 j++
-                        00203 j++
-                        00204 j++
-                        00205 j++
-                        00206 j++
-                        00207 j++
-                        00208 j++
-                        00209 j++
-                        00210 j++
-                        00211 j++
-                        00212 j++
-                        00213 j++
-                        00214 j++
-                        00215 j++
-                        00216 j++
-                        00217 j++
-                        00218 j++
-                        00219 j++
-                        00220 j++
-                        00221 j++
-                        00222 j++
-                        00223 j++
-                        00224 j++
-                        00225 j++
-                        00226 j++
-                        00227 j++
-                        00228 j++
-                        00229 j++
-                        00230 j++
-                        00231 j++
-                        00232 j++
-                        00233 j++
-                        00234 j++
-                        00235 j++
-                        00236 j++
-                        00237 j++
-                        00238 j++
-                        00239 j++
-                        00240 j++
-                        00241 j++
-                        00242 j++
-                        00243 j++
-                        00244 j++
-                        00245 j++
-                        00246 j++
-                        00247 j++
-                        00248 j++
-                        00249         endw
-                        00259 
-  00000200              00260 i=200
-                        00261         while i > 0
-MPASM Version 3.00 Beta Release   ALLMESS1.ASM   01/31/2001  12:39:29	   PAGE 7
+                      00206 j++
+                      00207 j++
+                      00208 j++
+                      00209 j++
+                      00210 j++
+                      00211 j++
+                      00212 j++
+                      00213 j++
+                      00214 j++
+                      00215 j++
+                      00216 j++
+                      00217 j++
+                      00218 j++
+                      00219 j++
+                      00220 j++
+                      00221 j++
+                      00222 j++
+                      00223 j++
+                      00224 j++
+                      00225 j++
+                      00226 j++
+                      00227 j++
+                      00228 j++
+                      00229 j++
+                      00230 j++
+                      00231 j++
+                      00232 j++
+                      00233 j++
+                      00234 j++
+                      00235 j++
+                      00236 j++
+                      00237 j++
+                      00238 j++
+                      00239 j++
+                      00240 j++
+                      00241 j++
+                      00242 j++
+                      00243 j++
+                      00244 j++
+                      00245 j++
+                      00246 j++
+                      00247 j++
+                      00248 j++
+                      00249         endw
+                      00259 
+  00000200            00260 i=200
+                      00261         while i > 0
+  000001FF            00262 i--
+  000001FE            00262 i--
+  000001FD            00262 i--
+  000001FC            00262 i--
+  000001FB            00262 i--
+  000001FA            00262 i--
+MPASM 03.20.02 Released      ALLMESS1.ASM   11-21-2002  20:20:11         PAGE  7
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-  000001FF              00262 i--
-  000001FE              00262 i--
-  000001FD              00262 i--
-  000001FC              00262 i--
-  000001FB              00262 i--
-  000001FA              00262 i--
-  000001F9              00262 i--
-  000001F8              00262 i--
-  000001F7              00262 i--
-  000001F6              00262 i--
-  000001F5              00262 i--
-  000001F4              00262 i--
-  000001F3              00262 i--
-  000001F2              00262 i--
-  000001F1              00262 i--
-  000001F0              00262 i--
-  000001EF              00262 i--
-  000001EE              00262 i--
-  000001ED              00262 i--
-  000001EC              00262 i--
-  000001EB              00262 i--
-  000001EA              00262 i--
-  000001E9              00262 i--
-  000001E8              00262 i--
-  000001E7              00262 i--
-  000001E6              00262 i--
-  000001E5              00262 i--
-  000001E4              00262 i--
-  000001E3              00262 i--
-  000001E2              00262 i--
-  000001E1              00262 i--
-  000001E0              00262 i--
-  000001DF              00262 i--
-  000001DE              00262 i--
-  000001DD              00262 i--
-  000001DC              00262 i--
-  000001DB              00262 i--
-  000001DA              00262 i--
-  000001D9              00262 i--
-  000001D8              00262 i--
-  000001D7              00262 i--
-  000001D6              00262 i--
-  000001D5              00262 i--
-  000001D4              00262 i--
-  000001D3              00262 i--
-  000001D2              00262 i--
-  000001D1              00262 i--
-  000001D0              00262 i--
-  000001CF              00262 i--
-  000001CE              00262 i--
-  000001CD              00262 i--
-  000001CC              00262 i--
-  000001CB              00262 i--
-MPASM Version 3.00 Beta Release   ALLMESS1.ASM   01/31/2001  12:39:29	   PAGE 8
+  000001F9            00262 i--
+  000001F8            00262 i--
+  000001F7            00262 i--
+  000001F6            00262 i--
+  000001F5            00262 i--
+  000001F4            00262 i--
+  000001F3            00262 i--
+  000001F2            00262 i--
+  000001F1            00262 i--
+  000001F0            00262 i--
+  000001EF            00262 i--
+  000001EE            00262 i--
+  000001ED            00262 i--
+  000001EC            00262 i--
+  000001EB            00262 i--
+  000001EA            00262 i--
+  000001E9            00262 i--
+  000001E8            00262 i--
+  000001E7            00262 i--
+  000001E6            00262 i--
+  000001E5            00262 i--
+  000001E4            00262 i--
+  000001E3            00262 i--
+  000001E2            00262 i--
+  000001E1            00262 i--
+  000001E0            00262 i--
+  000001DF            00262 i--
+  000001DE            00262 i--
+  000001DD            00262 i--
+  000001DC            00262 i--
+  000001DB            00262 i--
+  000001DA            00262 i--
+  000001D9            00262 i--
+  000001D8            00262 i--
+  000001D7            00262 i--
+  000001D6            00262 i--
+  000001D5            00262 i--
+  000001D4            00262 i--
+  000001D3            00262 i--
+  000001D2            00262 i--
+  000001D1            00262 i--
+  000001D0            00262 i--
+  000001CF            00262 i--
+  000001CE            00262 i--
+  000001CD            00262 i--
+  000001CC            00262 i--
+  000001CB            00262 i--
+  000001CA            00262 i--
+  000001C9            00262 i--
+  000001C8            00262 i--
+  000001C7            00262 i--
+  000001C6            00262 i--
+  000001C5            00262 i--
+MPASM 03.20.02 Released      ALLMESS1.ASM   11-21-2002  20:20:11         PAGE  8
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-  000001CA              00262 i--
-  000001C9              00262 i--
-  000001C8              00262 i--
-  000001C7              00262 i--
-  000001C6              00262 i--
-  000001C5              00262 i--
-  000001C4              00262 i--
-  000001C3              00262 i--
-  000001C2              00262 i--
-  000001C1              00262 i--
-  000001C0              00262 i--
-  000001BF              00262 i--
-  000001BE              00262 i--
-  000001BD              00262 i--
-  000001BC              00262 i--
-  000001BB              00262 i--
-  000001BA              00262 i--
-  000001B9              00262 i--
-  000001B8              00262 i--
-  000001B7              00262 i--
-  000001B6              00262 i--
-  000001B5              00262 i--
-  000001B4              00262 i--
-  000001B3              00262 i--
-  000001B2              00262 i--
-  000001B1              00262 i--
-  000001B0              00262 i--
-  000001AF              00262 i--
-  000001AE              00262 i--
-  000001AD              00262 i--
-  000001AC              00262 i--
-  000001AB              00262 i--
-  000001AA              00262 i--
-  000001A9              00262 i--
-  000001A8              00262 i--
-  000001A7              00262 i--
-  000001A6              00262 i--
-  000001A5              00262 i--
-  000001A4              00262 i--
-  000001A3              00262 i--
-  000001A2              00262 i--
-  000001A1              00262 i--
-  000001A0              00262 i--
-  0000019F              00262 i--
-  0000019E              00262 i--
-  0000019D              00262 i--
-  0000019C              00262 i--
-  0000019B              00262 i--
-  0000019A              00262 i--
-  00000199              00262 i--
-  00000198              00262 i--
-  00000197              00262 i--
-  00000196              00262 i--
-MPASM Version 3.00 Beta Release   ALLMESS1.ASM   01/31/2001  12:39:29	   PAGE 9
+  000001C4            00262 i--
+  000001C3            00262 i--
+  000001C2            00262 i--
+  000001C1            00262 i--
+  000001C0            00262 i--
+  000001BF            00262 i--
+  000001BE            00262 i--
+  000001BD            00262 i--
+  000001BC            00262 i--
+  000001BB            00262 i--
+  000001BA            00262 i--
+  000001B9            00262 i--
+  000001B8            00262 i--
+  000001B7            00262 i--
+  000001B6            00262 i--
+  000001B5            00262 i--
+  000001B4            00262 i--
+  000001B3            00262 i--
+  000001B2            00262 i--
+  000001B1            00262 i--
+  000001B0            00262 i--
+  000001AF            00262 i--
+  000001AE            00262 i--
+  000001AD            00262 i--
+  000001AC            00262 i--
+  000001AB            00262 i--
+  000001AA            00262 i--
+  000001A9            00262 i--
+  000001A8            00262 i--
+  000001A7            00262 i--
+  000001A6            00262 i--
+  000001A5            00262 i--
+  000001A4            00262 i--
+  000001A3            00262 i--
+  000001A2            00262 i--
+  000001A1            00262 i--
+  000001A0            00262 i--
+  0000019F            00262 i--
+  0000019E            00262 i--
+  0000019D            00262 i--
+  0000019C            00262 i--
+  0000019B            00262 i--
+  0000019A            00262 i--
+  00000199            00262 i--
+  00000198            00262 i--
+  00000197            00262 i--
+  00000196            00262 i--
+  00000195            00262 i--
+  00000194            00262 i--
+  00000193            00262 i--
+  00000192            00262 i--
+  00000191            00262 i--
+  00000190            00262 i--
+MPASM 03.20.02 Released      ALLMESS1.ASM   11-21-2002  20:20:11         PAGE  9
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-  00000195              00262 i--
-  00000194              00262 i--
-  00000193              00262 i--
-  00000192              00262 i--
-  00000191              00262 i--
-  00000190              00262 i--
-  0000018F              00262 i--
-  0000018E              00262 i--
-  0000018D              00262 i--
-  0000018C              00262 i--
-  0000018B              00262 i--
-  0000018A              00262 i--
-  00000189              00262 i--
-  00000188              00262 i--
-  00000187              00262 i--
-  00000186              00262 i--
-  00000185              00262 i--
-  00000184              00262 i--
-  00000183              00262 i--
-  00000182              00262 i--
-  00000181              00262 i--
-  00000180              00262 i--
-  0000017F              00262 i--
-  0000017E              00262 i--
-  0000017D              00262 i--
-  0000017C              00262 i--
-  0000017B              00262 i--
-  0000017A              00262 i--
-  00000179              00262 i--
-  00000178              00262 i--
-  00000177              00262 i--
-  00000176              00262 i--
-  00000175              00262 i--
-  00000174              00262 i--
-  00000173              00262 i--
-  00000172              00262 i--
-  00000171              00262 i--
-  00000170              00262 i--
-  0000016F              00262 i--
-  0000016E              00262 i--
-  0000016D              00262 i--
-  0000016C              00262 i--
-  0000016B              00262 i--
-  0000016A              00262 i--
-  00000169              00262 i--
-  00000168              00262 i--
-  00000167              00262 i--
-  00000166              00262 i--
-  00000165              00262 i--
-  00000164              00262 i--
-  00000163              00262 i--
-  00000162              00262 i--
-  00000161              00262 i--
-MPASM Version 3.00 Beta Release   ALLMESS1.ASM   01/31/2001  12:39:29	   PAGE 10
+  0000018F            00262 i--
+  0000018E            00262 i--
+  0000018D            00262 i--
+  0000018C            00262 i--
+  0000018B            00262 i--
+  0000018A            00262 i--
+  00000189            00262 i--
+  00000188            00262 i--
+  00000187            00262 i--
+  00000186            00262 i--
+  00000185            00262 i--
+  00000184            00262 i--
+  00000183            00262 i--
+  00000182            00262 i--
+  00000181            00262 i--
+  00000180            00262 i--
+  0000017F            00262 i--
+  0000017E            00262 i--
+  0000017D            00262 i--
+  0000017C            00262 i--
+  0000017B            00262 i--
+  0000017A            00262 i--
+  00000179            00262 i--
+  00000178            00262 i--
+  00000177            00262 i--
+  00000176            00262 i--
+  00000175            00262 i--
+  00000174            00262 i--
+  00000173            00262 i--
+  00000172            00262 i--
+  00000171            00262 i--
+  00000170            00262 i--
+  0000016F            00262 i--
+  0000016E            00262 i--
+  0000016D            00262 i--
+  0000016C            00262 i--
+  0000016B            00262 i--
+  0000016A            00262 i--
+  00000169            00262 i--
+  00000168            00262 i--
+  00000167            00262 i--
+  00000166            00262 i--
+  00000165            00262 i--
+  00000164            00262 i--
+  00000163            00262 i--
+  00000162            00262 i--
+  00000161            00262 i--
+  00000160            00262 i--
+  0000015F            00262 i--
+  0000015E            00262 i--
+  0000015D            00262 i--
+  0000015C            00262 i--
+  0000015B            00262 i--
+MPASM 03.20.02 Released      ALLMESS1.ASM   11-21-2002  20:20:11         PAGE 10
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-  00000160              00262 i--
-  0000015F              00262 i--
-  0000015E              00262 i--
-  0000015D              00262 i--
-  0000015C              00262 i--
-  0000015B              00262 i--
-  0000015A              00262 i--
-  00000159              00262 i--
-  00000158              00262 i--
-  00000157              00262 i--
-  00000156              00262 i--
-  00000155              00262 i--
-  00000154              00262 i--
-  00000153              00262 i--
-  00000152              00262 i--
-  00000151              00262 i--
-  00000150              00262 i--
-  0000014F              00262 i--
-  0000014E              00262 i--
-  0000014D              00262 i--
-  0000014C              00262 i--
-  0000014B              00262 i--
-  0000014A              00262 i--
-  00000149              00262 i--
-  00000148              00262 i--
-  00000147              00262 i--
-  00000146              00262 i--
-  00000145              00262 i--
-  00000144              00262 i--
-  00000143              00262 i--
-  00000142              00262 i--
-  00000141              00262 i--
-  00000140              00262 i--
-  0000013F              00262 i--
-  0000013E              00262 i--
-  0000013D              00262 i--
-  0000013C              00262 i--
-  0000013B              00262 i--
-  0000013A              00262 i--
-  00000139              00262 i--
-  00000138              00262 i--
-  00000137              00262 i--
-  00000136              00262 i--
-  00000135              00262 i--
-  00000134              00262 i--
-  00000133              00262 i--
-  00000132              00262 i--
-  00000131              00262 i--
-  00000130              00262 i--
-  0000012F              00262 i--
-  0000012E              00262 i--
-  0000012D              00262 i--
-  0000012C              00262 i--
-MPASM Version 3.00 Beta Release   ALLMESS1.ASM   01/31/2001  12:39:29	   PAGE 11
+  0000015A            00262 i--
+  00000159            00262 i--
+  00000158            00262 i--
+  00000157            00262 i--
+  00000156            00262 i--
+  00000155            00262 i--
+  00000154            00262 i--
+  00000153            00262 i--
+  00000152            00262 i--
+  00000151            00262 i--
+  00000150            00262 i--
+  0000014F            00262 i--
+  0000014E            00262 i--
+  0000014D            00262 i--
+  0000014C            00262 i--
+  0000014B            00262 i--
+  0000014A            00262 i--
+  00000149            00262 i--
+  00000148            00262 i--
+  00000147            00262 i--
+  00000146            00262 i--
+  00000145            00262 i--
+  00000144            00262 i--
+  00000143            00262 i--
+  00000142            00262 i--
+  00000141            00262 i--
+  00000140            00262 i--
+  0000013F            00262 i--
+  0000013E            00262 i--
+  0000013D            00262 i--
+  0000013C            00262 i--
+  0000013B            00262 i--
+  0000013A            00262 i--
+  00000139            00262 i--
+  00000138            00262 i--
+  00000137            00262 i--
+  00000136            00262 i--
+  00000135            00262 i--
+  00000134            00262 i--
+  00000133            00262 i--
+  00000132            00262 i--
+  00000131            00262 i--
+  00000130            00262 i--
+  0000012F            00262 i--
+  0000012E            00262 i--
+  0000012D            00262 i--
+  0000012C            00262 i--
+  0000012B            00262 i--
+  0000012A            00262 i--
+  00000129            00262 i--
+  00000128            00262 i--
+  00000127            00262 i--
+  00000126            00262 i--
+MPASM 03.20.02 Released      ALLMESS1.ASM   11-21-2002  20:20:11         PAGE 11
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-  0000012B              00262 i--
-  0000012A              00262 i--
-  00000129              00262 i--
-  00000128              00262 i--
-  00000127              00262 i--
-  00000126              00262 i--
-  00000125              00262 i--
-  00000124              00262 i--
-  00000123              00262 i--
-  00000122              00262 i--
-  00000121              00262 i--
-  00000120              00262 i--
-  0000011F              00262 i--
-  0000011E              00262 i--
-  0000011D              00262 i--
-  0000011C              00262 i--
-  0000011B              00262 i--
-  0000011A              00262 i--
-  00000119              00262 i--
-  00000118              00262 i--
-  00000117              00262 i--
-  00000116              00262 i--
-  00000115              00262 i--
-  00000114              00262 i--
-  00000113              00262 i--
-  00000112              00262 i--
-  00000111              00262 i--
-  00000110              00262 i--
-  0000010F              00262 i--
-  0000010E              00262 i--
-  0000010D              00262 i--
-  0000010C              00262 i--
-  0000010B              00262 i--
-  0000010A              00262 i--
-  00000109              00262 i--
-  00000108              00262 i--
-  00000107              00262 i--
-  00000106              00262 i--
-  00000105              00262 i--
-  00000104              00262 i--
-  00000103              00262 i--
-  00000102              00262 i--
-  00000101              00262 i--
-  00000100              00262 i--
+  00000125            00262 i--
+  00000124            00262 i--
+  00000123            00262 i--
+  00000122            00262 i--
+  00000121            00262 i--
+  00000120            00262 i--
+  0000011F            00262 i--
+  0000011E            00262 i--
+  0000011D            00262 i--
+  0000011C            00262 i--
+  0000011B            00262 i--
+  0000011A            00262 i--
+  00000119            00262 i--
+  00000118            00262 i--
+  00000117            00262 i--
+  00000116            00262 i--
+  00000115            00262 i--
+  00000114            00262 i--
+  00000113            00262 i--
+  00000112            00262 i--
+  00000111            00262 i--
+  00000110            00262 i--
+  0000010F            00262 i--
+  0000010E            00262 i--
+  0000010D            00262 i--
+  0000010C            00262 i--
+  0000010B            00262 i--
+  0000010A            00262 i--
+  00000109            00262 i--
+  00000108            00262 i--
+  00000107            00262 i--
+  00000106            00262 i--
+  00000105            00262 i--
+  00000104            00262 i--
+  00000103            00262 i--
+  00000102            00262 i--
+  00000101            00262 i--
+  00000100            00262 i--
 Error[140]  : WHILE must terminate within 256 iterations
-                        00263         endw                    ; Error 140 WHILE must terminate...
-                        00264 
-  00000001              00265 i = 1
-                        00266         while i
-                        00267         while i
-                        00268         while i
-                        00269         while i
-                        00270         while i
-MPASM Version 3.00 Beta Release   ALLMESS1.ASM   01/31/2001  12:39:29	   PAGE 12
-
-
-LOC  OBJECT CODE     LINE SOURCE TEXT
-  VALUE
-
-                        00271         while i
-                        00272         while i
-                        00273         while i
+                      00263         endw                    ; Error 140 WHILE must terminate...
+                      00264 
+  00000001            00265 i = 1
+                      00266         while i
+                      00267         while i
+                      00268         while i
+                      00269         while i
+                      00270         while i
+                      00271         while i
+                      00272         while i
+                      00273         while i
 Error[141]  : WHILEs nested too deep
-                        00274         while i                 ; Error 141 WHILEs nested too deep
-  00000000              00275 i = 0
-                        00276         endw
-                        00278         endw
-                        00279         endw
-                        00280         endw
-                        00281         endw
-                        00282         endw
-                        00283         endw
-                        00284         endw
-                        00285 
-  00000001              00286 i = 1
-                        00287         if i
-                        00288         if i
-                        00289         if i
-                        00290         if i
-                        00291         if i
-                        00292         if i
-                        00293         if i
-                        00294         if i
-                        00295         if i
-                        00296         if i
-                        00297         if i
-                        00298         if i
-                        00299         if i
-                        00300         if i
-                        00301         if i
-                        00302         if i
-Error[142]  : IFs nested too deep
-                        00303         if i                    ; Error 142 IFs nested too deep
-0022     0000           00304            nop
-  00000000              00305 i = 0
-                        00306         endif
-                        00307         endif
-                        00308         endif
-                        00309         endif
-                        00310         endif
-                        00311         endif
-                        00312         endif
-                        00313         endif
-                        00314         endif
-                        00315         endif
-                        00316         endif
-                        00317         endif
-                        00318         endif
-                        00319         endif
-                        00320         endif
-                        00321         endif
-Error[125]  : Illegal condition (ENDIF)
-MPASM Version 3.00 Beta Release   ALLMESS1.ASM   01/31/2001  12:39:29	   PAGE 13
+                      00274         while i                 ; Error 141 WHILEs nested too deep
+  00000000            00275 i = 0
+MPASM 03.20.02 Released      ALLMESS1.ASM   11-21-2002  20:20:11         PAGE 12
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00322         endif
-                        00323 
-                        00324 ;i = 1
-                        00325 ;j = 1
-                        00326 ;       if i
-                        00327 ;          while i
-                        00328 ;       else                    ; Error 143 Illegal nesting
-                        00329 ;          while j
-                        00330 ;       endif
-                        00331 ;i = 0
-                        00332 ;j = 0
-                        00333 ;          endw
-                        00334 
+                      00276         endw
+                      00278         endw
+                      00279         endw
+                      00280         endw
+                      00281         endw
+                      00282         endw
+                      00283         endw
+                      00284         endw
+                      00285 
+  00000001            00286 i = 1
+                      00287         if i
+                      00288         if i
+                      00289         if i
+                      00290         if i
+                      00291         if i
+                      00292         if i
+                      00293         if i
+                      00294         if i
+                      00295         if i
+                      00296         if i
+                      00297         if i
+                      00298         if i
+                      00299         if i
+                      00300         if i
+                      00301         if i
+                      00302         if i
+Error[142]  : IFs nested too deep
+                      00303         if i                    ; Error 142 IFs nested too deep
+0021   0000           00304            nop
+  00000000            00305 i = 0
+                      00306         endif
+                      00307         endif
+                      00308         endif
+                      00309         endif
+                      00310         endif
+                      00311         endif
+                      00312         endif
+                      00313         endif
+                      00314         endif
+                      00315         endif
+                      00316         endif
+                      00317         endif
+                      00318         endif
+                      00319         endif
+                      00320         endif
+                      00321         endif
+Error[125]  : Illegal condition (ENDIF)
+                      00322         endif
+                      00323 
+                      00324 ;i = 1
+                      00325 ;j = 1
+                      00326 ;       if i
+                      00327 ;          while i
+MPASM 03.20.02 Released      ALLMESS1.ASM   11-21-2002  20:20:11         PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00328 ;       else                    ; Error 143 Illegal nesting
+                      00329 ;          while j
+                      00330 ;       endif
+                      00331 ;i = 0
+                      00332 ;j = 0
+                      00333 ;          endw
+                      00334 
 Error[144]  : Unmatched ENDC
-                        00335         endc                    ; Error 144 Unmatched ENDC
-                        00336 
+                      00335         endc                    ; Error 144 Unmatched ENDC
+                      00336 
 Error[145]  : Unmatched ENDM
-                        00337         endm                    ; Error 145 Unmatched ENDM
-                        00338 
+                      00337         endm                    ; Error 145 Unmatched ENDM
+                      00338 
 Error[146]  : Unmatched EXITM
-                        00339         exitm                   ; Error 146 Unmatched EXITM
-                        00340 
-                        00341 #define x BigLongLabelName
-  00000001              00342 BigLongLabelName = 1            ; Error 148 Expanded source line exceeded ...
+                      00339         exitm                   ; Error 146 Unmatched EXITM
+                      00340 
+                      00341 #define x BigLongLabelName
+  00000001            00342 BigLongLabelName = 1            ; Error 148 Expanded source line exceeded ...
 Error[148]  : Expanded source line exceeded 200 characters.
 Error[113]  : Symbol not previously defined (Big)
-  0000000B              00343 TooLong = x+x+x+x+x+x+x+x+x+x+x+x+x+x+x+x+x+x+x+x
-                        00344 
+  0000000B            00343 TooLong = x+x+x+x+x+x+x+x+x+x+x+x+x+x+x+x+x+x+x+x
+                      00344 
 Error[149]  : Directive only allowed when generating an object file
-                        00345         extern  ExternVar       ; Error 149 Directive only allowed when generating an object file
-                        00346 
-                        00347 
-                        00348         end
-MPASM Version 3.00 Beta Release   ALLMESS1.ASM   01/31/2001  12:39:29	   PAGE 14
+                      00345         extern  ExternVar       ; Error 149 Directive only allowed when generating an object file
+                      00346 
+                      00347 
+                      00348         end
+MPASM 03.20.02 Released      ALLMESS1.ASM   11-21-2002  20:20:11         PAGE 14
 
 
 SYMBOL TABLE
@@ -790,22 +784,22 @@ x                                 BigLongLabelName
 
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 
-0000 : XXXXXXX--------- XXXX------------ XXX------------- ----------------
+0000 : XXXXXXX--------- XXXX------------ XX-------------- ----------------
 FFC0 : ---------------- ---------------- ---------------- ---------------X
 
 All other memory blocks unused.
 
-Program Memory Words Used:    14
-Program Memory Words Free:  2034
+Program Memory Words Used:    13
+Program Memory Words Free:  2035
 
 
-MPASM Version 3.00 Beta Release   ALLMESS1.ASM   01/31/2001  12:39:29	   PAGE 15
+MPASM 03.20.02 Released      ALLMESS1.ASM   11-21-2002  20:20:11         PAGE 15
 
 
 
 
 
-Errors   :    48
+Errors   :    49
 Warnings :     4 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 

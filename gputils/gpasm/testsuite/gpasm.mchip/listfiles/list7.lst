@@ -1,137 +1,137 @@
-MPASM Version 3.00 Beta Release   LIST7.ASM   01/31/2001  12:39:50	   PAGE 1
+MPASM 03.20.02 Released         LIST7.ASM   11-21-2002  20:21:06         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; LIST7.ASM
-                        00002 
-                        00003 ; This file tests illegal usage of the LIST directive.
-                        00004 
+                      00001 ; LIST7.ASM
+                      00002 
+                      00003 ; This file tests illegal usage of the LIST directive.
+                      00004 
 Error[132]  : Unknown processor (STUPID)
-                        00005         LIST    P=Stupid
-                        00006 
-                        00007 Mac     MACRO
-                        00008         NOP
-                        00009                         ; Comment line, next line blank
-                        00010         NOP
-                        00011         ENDM
-                        00012 
+                      00005         LIST    P=Stupid
+                      00006 
+                      00007 Mac     MACRO
+                      00008         NOP
+                      00009                         ; Comment line, next line blank
+                      00010         NOP
+                      00011         ENDM
+                      00012 
 Error[127]  : Too many arguments
-                        00013         LIST    WRAP=ON
-                        00014 ; This is a big long line that will need to be wrapped in the list file based on the default column wi
-                              dth, which is 132.
+                      00013         LIST    WRAP=ON
+                      00014 ; This is a big long line that will need to be wrapped in the list file based on the default column widt
+                            h, which is 132.
 Error[124]  : Illegal argument (NOWRAPPING)
-                        00015         LIST    NOWRAPPING
-                        00016 ; This is a big long line that will be truncated in the list file based on the default column width, w
-                              hich is 132.
-                        00017         LIST    WRAP
-                        00018 
+                      00015         LIST    NOWRAPPING
+                      00016 ; This is a big long line that will be truncated in the list file based on the default column width, whi
+                            ch is 132.
+                      00017         LIST    WRAP
+                      00018 
 Error[124]  : Illegal argument (B4)
-                        00019         LIST    B4
-                        00020 ; No tabs
-                        00021         ; One tab
-                        00022                 ; Two tabs
+                      00019         LIST    B4
+                      00020 ; No tabs
+                      00021         ; One tab
+                      00022                 ; Two tabs
 Error[128]  : Missing argument(s)
-                        00023         LIST    B
-                        00024 ; No tabs
-                        00025         ; One tab
-                        00026                 ; Two tabs
-                        00027 
+                      00023         LIST    B
+                      00024 ; No tabs
+                      00025         ; One tab
+                      00026                 ; Two tabs
+                      00027 
 Error[128]  : Missing argument(s)
-                        00028         LIST    C
-                        00029 ; This line will have to be wrapped.
-                        00030 ; This line will have to be wrapped twice because of the new column width.
+                      00028         LIST    C
+                      00029 ; This line will have to be wrapped.
+                      00030 ; This line will have to be wrapped twice because of the new column width.
 Error[128]  : Missing argument(s)
-                        00031         LIST    C =
+                      00031         LIST    C =
 Error[126]  : Argument out of range (0)
-                        00032         LIST    C=0
-                        00033 
-MPASM Version 3.00 Beta Release   LIST7.ASM   01/31/2001  12:39:50	   PAGE 2
+                      00032         LIST    C=0
+                      00033 
+MPASM 03.20.02 Released         LIST7.ASM   11-21-2002  20:21:06         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00034         PAGE
+                      00034         PAGE
 Error[128]  : Missing argument(s)
-                        00035         LIST    L
+                      00035         LIST    L
 Error[128]  : Missing argument(s)
-                        00036         LIST    L=
+                      00036         LIST    L=
 Error[126]  : Argument out of range (1)
-                        00037         LIST    L=1             ; Play with page length, 6 needed for header
-                        00038 ; Line 1
-                        00039 ; Line 2
-                        00040 ; Line 3
-                        00041 ; Line 4
-                        00042 ; Line 5
-                        00043 ; Line 6
-                        00044 ; Line 7
-                        00045 ; Line 8
-                        00046 ; Line 9
-                        00047 ; Line 10
-                        00048 ; Line 11
-                        00049 ; Line 12
-                        00050 ; Line 13
-                        00051 ;       LIST    N = 15
-                        00052 ;       Mac
-                        00053 ;       Mac
-                        00054 ;       Mac
-                        00055         LIST    N = 60
-                        00056 
+                      00037         LIST    L=1             ; Play with page length, 6 needed for header
+                      00038 ; Line 1
+                      00039 ; Line 2
+                      00040 ; Line 3
+                      00041 ; Line 4
+                      00042 ; Line 5
+                      00043 ; Line 6
+                      00044 ; Line 7
+                      00045 ; Line 8
+                      00046 ; Line 9
+                      00047 ; Line 10
+                      00048 ; Line 11
+                      00049 ; Line 12
+                      00050 ; Line 13
+                      00051 ;       LIST    N = 15
+                      00052 ;       Mac
+                      00053 ;       Mac
+                      00054 ;       Mac
+                      00055         LIST    N = 60
+                      00056 
 Error[128]  : Missing argument(s)
-                        00057         LIST    R
+                      00057         LIST    R
 Error[128]  : Missing argument(s)
-                        00058         LIST    R=
+                      00058         LIST    R=
 Warning[218]: Expected DEC, OCT, HEX.  Will use HEX
-                        00059         LIST    R=HE
+                      00059         LIST    R=HE
 Error[131]  : Processor type is undefined
-                        00060         DATA    10
+                      00060         DATA    10
 Warning[218]: Expected DEC, OCT, HEX.  Will use HEX
-                        00061         LIST    R=DECI
+                      00061         LIST    R=DECI
 Error[131]  : Processor type is undefined
-                        00062         DATA    10
+                      00062         DATA    10
 Warning[218]: Expected DEC, OCT, HEX.  Will use HEX
-                        00063         LIST    R=OO
+                      00063         LIST    R=OO
 Error[131]  : Processor type is undefined
-                        00064         DATA    10
-                        00065         LIST    R=HEX
-                        00066 
+                      00064         DATA    10
+                      00065         LIST    R=HEX
+                      00066 
 Error[128]  : Missing argument(s)
-                        00067         LIST    X
+                      00067         LIST    X
 Error[128]  : Missing argument(s)
-                        00068         LIST    X=
+                      00068         LIST    X=
 Error[129]  : Expected ("ON" or "OFF", got "O")
-                        00069         LIST    X=O
-                        00070         Mac
+                      00069         LIST    X=O
+                      00070         Mac
 Warning[207]: Found label after column 1. (NOP)
-0000                        M         NOP
-                            M                         ; Comment line, next line blank
-MPASM Version 3.00 Beta Release   LIST7.ASM   01/31/2001  12:39:50	   PAGE 3
+0000                      M         NOP
+                          M                         ; Comment line, next line blank
+MPASM 03.20.02 Released         LIST7.ASM   11-21-2002  20:21:06         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
 Warning[207]: Found label after column 1. (NOP)
-0000                        M         NOP
+0000                      M         NOP
 Error[129]  : Expected ("ON" or "OFF", got "ONN")
-                        00071         LIST    X=ONN
-                        00072         Mac
+                      00071         LIST    X=ONN
+                      00072         Mac
 Warning[207]: Found label after column 1. (NOP)
-0000                        M         NOP
-                            M                         ; Comment line, next line blank
+0000                      M         NOP
+                          M                         ; Comment line, next line blank
 Warning[207]: Found label after column 1. (NOP)
-0000                        M         NOP
+0000                      M         NOP
 Error[129]  : Expected ("ON" or "OFF", got "OF")
-                        00073         LIST    X=OF
-                        00074 
+                      00073         LIST    X=OF
+                      00074 
 Error[134]  : Illegal hex file format (ABC)
-                        00075         LIST    F=ABC
-                        00076 
-                        00077         END
+                      00075         LIST    F=ABC
+                      00076 
+                      00077         END
 Error[131]  : Processor type is undefined
-MPASM Version 3.00 Beta Release   LIST7.ASM   01/31/2001  12:39:50	   PAGE 4
+MPASM 03.20.02 Released         LIST7.ASM   11-21-2002  20:21:06         PAGE  4
 
 
 SYMBOL TABLE

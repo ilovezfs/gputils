@@ -1,62 +1,62 @@
-MPASM Version 3.00 Beta Release   HDR54.ASM   01/31/2001  12:12:36	   PAGE 1
+MPASM 03.20.02 Released         HDR54.ASM   11-21-2002  20:20:54         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; HDR54.ASM
-                        00002 
-                        00003 ; This file tests header file usage for the specified processor.
-                        00004 
-                        00005         LIST    P=16CR54
-                        00006         INCLUDE "P16C5X.INC"
-                        00001         LIST
-                        00002 ; P16C5X.INC  Standard Header File, Version 4.00    Microchip Technology, Inc.
-                        00313         LIST
-                        00007 
-                        00008 
-                        00009 
-0000     0FF7 0FF7      00010         DATA    _CP_ON, 0X0FF7                          
-0002     0FFF 0FFF      00011         DATA    _CP_OFF, 0X0FFF
-0004     0FFF 0FFF      00012         DATA    _WDT_ON, 0X0FFF
-0006     0FFB 0FFB      00013         DATA    _WDT_OFF, 0X0FFB
-0008     0FFC 0FFC      00014         DATA    _LP_OSC, 0X0FFC
-000A     0FFD 0FFD      00015         DATA    _XT_OSC, 0X0FFD
-000C     0FFE 0FFE      00016         DATA    _HS_OSC, 0X0FFE
-000E     0FFF 0FFF      00017         DATA    _RC_OSC, 0X0FFF
-                        00018         
-                        00019 
-                        00020 
-0010     0006 0006      00021         DATA    PORTB, 6        
-0012     0005 0005      00022         DATA    PORTA, 5
-0014     0004 0004      00023         DATA    FSR, 4  
-0016     0003 0003      00024         DATA    STATUS, 3
-0018     0002 0002      00025         DATA    PCL, 2
-001A     0001 0001      00026         DATA    TMR0, 1
-001C     0000 0000      00027         DATA    INDF, 0
-                        00028 
-                        00029 
-001E     0007 0007      00030         DATA    PA2, 7
-0020     0006 0006      00031         DATA    PA1, 6
-0022     0005 0005      00032         DATA    PA0, 5
-0024     0004 0004      00033         DATA    NOT_TO, 4
-0026     0003 0003      00034         DATA    NOT_PD, 3
-0028     0002 0002      00035         DATA    Z, 2
-002A     0001 0001      00036         DATA    DC, 1
-002C     0000 0000      00037         DATA    C, 0
-                        00038 
-002E     0005 0005      00039         DATA    T0CS, 5
-0030     0004 0004      00040         DATA    T0SE, 4
-0032     0003 0003      00041         DATA    PSA, 3
-0034     0002 0002      00042         DATA    PS2, 2
-0036     0001 0001      00043         DATA    PS1, 1
-0038     0000 0000      00044         DATA    PS0, 0
-                        00045 
-                        00046 
-                        00047 
-                        00048 
-                        00049         END
-MPASM Version 3.00 Beta Release   HDR54.ASM   01/31/2001  12:12:36	   PAGE 2
+                      00001 ; HDR54.ASM
+                      00002 
+                      00003 ; This file tests header file usage for the specified processor.
+                      00004 
+                      00005         LIST    P=16CR54
+                      00006         INCLUDE "P16C5X.INC"
+                      00001         LIST
+                      00002 ; P16C5X.INC  Standard Header File, Version 4.00    Microchip Technology, Inc.
+                      00313         LIST
+                      00007 
+                      00008 
+                      00009 
+0000   0FF7 0FF7      00010         DATA    _CP_ON, 0X0FF7                          
+0002   0FFF 0FFF      00011         DATA    _CP_OFF, 0X0FFF
+0004   0FFF 0FFF      00012         DATA    _WDT_ON, 0X0FFF
+0006   0FFB 0FFB      00013         DATA    _WDT_OFF, 0X0FFB
+0008   0FFC 0FFC      00014         DATA    _LP_OSC, 0X0FFC
+000A   0FFD 0FFD      00015         DATA    _XT_OSC, 0X0FFD
+000C   0FFE 0FFE      00016         DATA    _HS_OSC, 0X0FFE
+000E   0FFF 0FFF      00017         DATA    _RC_OSC, 0X0FFF
+                      00018         
+                      00019 
+                      00020 
+0010   0006 0006      00021         DATA    PORTB, 6        
+0012   0005 0005      00022         DATA    PORTA, 5
+0014   0004 0004      00023         DATA    FSR, 4  
+0016   0003 0003      00024         DATA    STATUS, 3
+0018   0002 0002      00025         DATA    PCL, 2
+001A   0001 0001      00026         DATA    TMR0, 1
+001C   0000 0000      00027         DATA    INDF, 0
+                      00028 
+                      00029 
+001E   0007 0007      00030         DATA    PA2, 7
+0020   0006 0006      00031         DATA    PA1, 6
+0022   0005 0005      00032         DATA    PA0, 5
+0024   0004 0004      00033         DATA    NOT_TO, 4
+0026   0003 0003      00034         DATA    NOT_PD, 3
+0028   0002 0002      00035         DATA    Z, 2
+002A   0001 0001      00036         DATA    DC, 1
+002C   0000 0000      00037         DATA    C, 0
+                      00038 
+002E   0005 0005      00039         DATA    T0CS, 5
+0030   0004 0004      00040         DATA    T0SE, 4
+0032   0003 0003      00041         DATA    PSA, 3
+0034   0002 0002      00042         DATA    PS2, 2
+0036   0001 0001      00043         DATA    PS1, 1
+0038   0000 0000      00044         DATA    PS0, 0
+                      00045 
+                      00046 
+                      00047 
+                      00048 
+                      00049         END
+MPASM 03.20.02 Released         HDR54.ASM   11-21-2002  20:20:54         PAGE  2
 
 
 SYMBOL TABLE

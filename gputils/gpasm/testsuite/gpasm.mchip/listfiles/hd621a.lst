@@ -1,112 +1,112 @@
-MPASM Version 3.00 Beta Release   HD621A.ASM   01/31/2001  12:11:48	   PAGE 1
+MPASM 03.20.02 Released        HD621A.ASM   11-21-2002  20:20:30         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; HD621A.ASM
-                        00002 
-                        00003 ; This file tests header file usage for the specified processor.
-                        00004 
-                        00005         LIST    P=16C621A
-                        00006         INCLUDE "P16C621A.INC"
-                        00001         LIST
-                        00002 ; P16C621A.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
-                        00164         LIST
-                        00007 
-0000     00CF 00CF      00008         DATA    _CP_ALL, 0x00CF         ; This changes per device
-0002     15DF 15DF      00009         DATA    _CP_50, 0X15DF
-0004     3FFF 3FFF      00010         DATA    _CP_OFF, 0X3FFF
-0006     3FFF 3FFF      00011         DATA    _BODEN_ON, 0X3FFF
-0008     3FBF 3FBF      00012         DATA    _BODEN_OFF, 0X3FBF
-000A     3FF7 3FF7      00013         DATA    _PWRTE_ON, 0x3FF7       ; This changes per device
-000C     3FFF 3FFF      00014         DATA    _PWRTE_OFF, 0X3FFF
-000E     3FFF 3FFF      00015         DATA    _WDT_ON, 0X3FFF
-0010     3FFB 3FFB      00016         DATA    _WDT_OFF, 0X3FFB
-0012     3FFC 3FFC      00017         DATA    _LP_OSC, 0X3FFC
-0014     3FFD 3FFD      00018         DATA    _XT_OSC, 0X3FFD
-0016     3FFE 3FFE      00019         DATA    _HS_OSC, 0X3FFE
-0018     3FFF 3FFF      00020         DATA    _RC_OSC, 0X3FFF
-                        00021 
-                        00022 
-001A     0000 0000      00023         DATA    INDF, 0                 ;Register Files
-001C     0001 0001      00024         DATA    TMR0, 1
-001E     0002 0002      00025         DATA    PCL, 2
-0020     0003 0003      00026         DATA    STATUS, 3
-0022     0004 0004      00027         DATA    FSR, 4
-0024     0005 0005      00028         DATA    PORTA, 5
-0026     0006 0006      00029         DATA    PORTB, 6
-0028     000A 000A      00030         DATA    PCLATH, 0x0A
-002A     000B 000B      00031         DATA    INTCON, 0x0B
-002C     000C 000C      00032         DATA    PIR1, 0XC               ; Processor Specific
-002E     001F 001F      00033         DATA    CMCON, 0X1F             ; Register Files
-                        00034 
-0030     0081 0081      00035         DATA    OPTION_REG, 0x81
-0032     0085 0085      00036         DATA    TRISA, 0X85
-0034     0086 0086      00037         DATA    TRISB, 0X86
-0036     008C 008C      00038         DATA    PIE1, 0X8C
-0038     008E 008E      00039         DATA    PCON, 0X8E
-003A     009F 009F      00040         DATA    VRCON, 0X9F
-                        00041 
-                        00042 
-003C     0007 0007      00043         DATA    IRP, 7                  ;STATUS
-003E     0006 0006      00044         DATA    RP1, 6
-0040     0005 0005      00045         DATA    RP0, 5
-0042     0004 0004      00046         DATA    NOT_TO, 4
-0044     0003 0003      00047         DATA    NOT_PD, 3
-0046     0002 0002      00048         DATA    Z, 2
-0048     0001 0001      00049         DATA    DC, 1
-004A     0000 0000      00050         DATA    C, 0
-MPASM Version 3.00 Beta Release   HD621A.ASM   01/31/2001  12:11:48	   PAGE 2
+                      00001 ; HD621A.ASM
+                      00002 
+                      00003 ; This file tests header file usage for the specified processor.
+                      00004 
+                      00005         LIST    P=16C621A
+                      00006         INCLUDE "P16C621A.INC"
+                      00001         LIST
+                      00002 ; P16C621A.INC  Standard Header File, Version 1.10    Microchip Technology, Inc.
+                      00166         LIST
+                      00007 
+0000   00CF 00CF      00008         DATA    _CP_ALL, 0x00CF         ; This changes per device
+0002   15DF 15DF      00009         DATA    _CP_50, 0X15DF
+0004   3FFF 3FFF      00010         DATA    _CP_OFF, 0X3FFF
+0006   3FFF 3FFF      00011         DATA    _BODEN_ON, 0X3FFF
+0008   3FBF 3FBF      00012         DATA    _BODEN_OFF, 0X3FBF
+000A   3FF7 3FF7      00013         DATA    _PWRTE_ON, 0x3FF7       ; This changes per device
+000C   3FFF 3FFF      00014         DATA    _PWRTE_OFF, 0X3FFF
+000E   3FFF 3FFF      00015         DATA    _WDT_ON, 0X3FFF
+0010   3FFB 3FFB      00016         DATA    _WDT_OFF, 0X3FFB
+0012   3FFC 3FFC      00017         DATA    _LP_OSC, 0X3FFC
+0014   3FFD 3FFD      00018         DATA    _XT_OSC, 0X3FFD
+0016   3FFE 3FFE      00019         DATA    _HS_OSC, 0X3FFE
+0018   3FFF 3FFF      00020         DATA    _RC_OSC, 0X3FFF
+                      00021 
+                      00022 
+001A   0000 0000      00023         DATA    INDF, 0                 ;Register Files
+001C   0001 0001      00024         DATA    TMR0, 1
+001E   0002 0002      00025         DATA    PCL, 2
+0020   0003 0003      00026         DATA    STATUS, 3
+0022   0004 0004      00027         DATA    FSR, 4
+0024   0005 0005      00028         DATA    PORTA, 5
+0026   0006 0006      00029         DATA    PORTB, 6
+0028   000A 000A      00030         DATA    PCLATH, 0x0A
+002A   000B 000B      00031         DATA    INTCON, 0x0B
+002C   000C 000C      00032         DATA    PIR1, 0XC               ; Processor Specific
+002E   001F 001F      00033         DATA    CMCON, 0X1F             ; Register Files
+                      00034 
+0030   0081 0081      00035         DATA    OPTION_REG, 0x81
+0032   0085 0085      00036         DATA    TRISA, 0X85
+0034   0086 0086      00037         DATA    TRISB, 0X86
+0036   008C 008C      00038         DATA    PIE1, 0X8C
+0038   008E 008E      00039         DATA    PCON, 0X8E
+003A   009F 009F      00040         DATA    VRCON, 0X9F
+                      00041 
+                      00042 
+003C   0007 0007      00043         DATA    IRP, 7                  ;STATUS
+003E   0006 0006      00044         DATA    RP1, 6
+0040   0005 0005      00045         DATA    RP0, 5
+0042   0004 0004      00046         DATA    NOT_TO, 4
+0044   0003 0003      00047         DATA    NOT_PD, 3
+0046   0002 0002      00048         DATA    Z, 2
+0048   0001 0001      00049         DATA    DC, 1
+004A   0000 0000      00050         DATA    C, 0
+MPASM 03.20.02 Released        HD621A.ASM   11-21-2002  20:20:30         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00051         
-004C     0007 0007      00052         DATA    GIE, 7                  ; INTCON
-004E     0006 0006      00053         DATA    PEIE, 6 
-0050     0005 0005      00054         DATA    T0IE, 5
-0052     0004 0004      00055         DATA    INTE, 4
-0054     0003 0003      00056         DATA    RBIE, 3
-0056     0002 0002      00057         DATA    T0IF, 2
-0058     0001 0001      00058         DATA    INTF, 1
-005A     0000 0000      00059         DATA    RBIF, 0 
-                        00060 
-005C     0006 0006      00061         DATA    CMIF, 6                 ; PIR1
-                        00062 
-005E     0007 0007      00063         DATA    C2OUT, 7                ; CMCON
-0060     0006 0006      00064         DATA    C1OUT, 6
-0062     0003 0003      00065         DATA    CIS, 3
-0064     0002 0002      00066         DATA    CM2, 2
-0066     0001 0001      00067         DATA    CM1, 1
-0068     0000 0000      00068         DATA    CM0, 0
-                        00069 
-                        00070 
-006A     0007 0007      00071         DATA    NOT_RBPU, 7             ; OPTION
-006C     0006 0006      00072         DATA    INTEDG, 6
-006E     0005 0005      00073         DATA    T0CS, 5
-0070     0004 0004      00074         DATA    T0SE, 4
-0072     0003 0003      00075         DATA    PSA, 3
-0074     0002 0002      00076         DATA    PS2, 2
-0076     0001 0001      00077         DATA    PS1, 1
-0078     0000 0000      00078         DATA    PS0, 0
-                        00079 
-007A     0006 0006      00080         DATA    CMIE, 6                 ; PIE1
-                        00081 
-007C     0001 0001      00082         DATA    NOT_POR, 1              ; PCON
-007E     0000 0000      00083         DATA    NOT_BO, 0
-                        00084 
-0080     0007 0007      00085         DATA    VREN, 7                 ; VRCON
-0082     0006 0006      00086         DATA    VROE, 6
-0084     0005 0005      00087         DATA    VRR, 5
-0086     0003 0003      00088         DATA    VR3, 3
-0088     0002 0002      00089         DATA    VR2, 2
-008A     0001 0001      00090         DATA    VR1, 1
-008C     0000 0000      00091         DATA    VR0, 0
-                        00092 
-                        00093         END
-MPASM Version 3.00 Beta Release   HD621A.ASM   01/31/2001  12:11:48	   PAGE 3
+                      00051         
+004C   0007 0007      00052         DATA    GIE, 7                  ; INTCON
+004E   0006 0006      00053         DATA    PEIE, 6 
+0050   0005 0005      00054         DATA    T0IE, 5
+0052   0004 0004      00055         DATA    INTE, 4
+0054   0003 0003      00056         DATA    RBIE, 3
+0056   0002 0002      00057         DATA    T0IF, 2
+0058   0001 0001      00058         DATA    INTF, 1
+005A   0000 0000      00059         DATA    RBIF, 0 
+                      00060 
+005C   0006 0006      00061         DATA    CMIF, 6                 ; PIR1
+                      00062 
+005E   0007 0007      00063         DATA    C2OUT, 7                ; CMCON
+0060   0006 0006      00064         DATA    C1OUT, 6
+0062   0003 0003      00065         DATA    CIS, 3
+0064   0002 0002      00066         DATA    CM2, 2
+0066   0001 0001      00067         DATA    CM1, 1
+0068   0000 0000      00068         DATA    CM0, 0
+                      00069 
+                      00070 
+006A   0007 0007      00071         DATA    NOT_RBPU, 7             ; OPTION
+006C   0006 0006      00072         DATA    INTEDG, 6
+006E   0005 0005      00073         DATA    T0CS, 5
+0070   0004 0004      00074         DATA    T0SE, 4
+0072   0003 0003      00075         DATA    PSA, 3
+0074   0002 0002      00076         DATA    PS2, 2
+0076   0001 0001      00077         DATA    PS1, 1
+0078   0000 0000      00078         DATA    PS0, 0
+                      00079 
+007A   0006 0006      00080         DATA    CMIE, 6                 ; PIE1
+                      00081 
+007C   0001 0001      00082         DATA    NOT_POR, 1              ; PCON
+007E   0000 0000      00083         DATA    NOT_BO, 0
+                      00084 
+0080   0007 0007      00085         DATA    VREN, 7                 ; VRCON
+0082   0006 0006      00086         DATA    VROE, 6
+0084   0005 0005      00087         DATA    VRR, 5
+0086   0003 0003      00088         DATA    VR3, 3
+0088   0002 0002      00089         DATA    VR2, 2
+008A   0001 0001      00090         DATA    VR1, 1
+008C   0000 0000      00091         DATA    VR0, 0
+                      00092 
+                      00093         END
+MPASM 03.20.02 Released        HD621A.ASM   11-21-2002  20:20:30         PAGE  3
 
 
 SYMBOL TABLE
@@ -165,7 +165,7 @@ TRISA                             00000085
 TRISB                             00000086
 VR0                               00000000
 VR1                               00000001
-MPASM Version 3.00 Beta Release   HD621A.ASM   01/31/2001  12:11:48	   PAGE 4
+MPASM 03.20.02 Released        HD621A.ASM   11-21-2002  20:20:30         PAGE  4
 
 
 SYMBOL TABLE
