@@ -422,6 +422,8 @@ gen_expr(tree *expr)
     var = get_global(SYM_NAME(expr));
     if (var->tag == sym_const) {
       LOAD_CONSTANT(var->value, codegen_size); 
+    } else if (var->tag == sym_alias) {
+      gen_expr(var->node);
     } else {
       codegen_load_file(expr, var);
     }

@@ -61,6 +61,7 @@ struct type {
 enum sym_tag {
   sym_unknown,
   sym_addr,				/* symbol address */
+  sym_alias,				/* symbol alias */
   sym_const,				/* constant */
   sym_func,				/* function */
   sym_idata,				/* initialized data */
@@ -85,10 +86,15 @@ struct variable {
   tree *module;				/* module the node was located in */
 };
 
-void add_symbol_alias(char *name, tree *symbol, struct variable *var);
+void add_symbol_pointer(char *name, tree *symbol, struct variable *var);
 char *mangle_name1(char *first);
 char *mangle_name2(char *first, char *second);
 char *mangle_name3(char *first, char *second, char *third);
+struct variable *add_top_symbol(char *name,
+                                tree *symbol,
+                                enum sym_tag tag,
+                                enum node_storage storage,
+                                char *type);
 struct variable *add_global_symbol(char *name,
                                    tree *symbol,
                                    enum sym_tag tag,

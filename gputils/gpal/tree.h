@@ -114,7 +114,7 @@ typedef struct node_struct {
   union {
     struct {
       char *alias;
-      char *name;
+      tree *expr;
     } alias;
     struct {
       char *name;
@@ -217,7 +217,7 @@ typedef struct node_struct {
 } node;
 
 #define ALIAS_ALIAS(A)     (A)->value.alias.alias
-#define ALIAS_NAME(A)      (A)->value.alias.name
+#define ALIAS_EXPR(A)      (A)->value.alias.expr
 #define ARG_NAME(A)        (A)->value.arg.name
 #define ARG_DIR(A)         (A)->value.arg.dir
 #define ARG_TYPE(A)        (A)->value.arg.type
@@ -275,7 +275,7 @@ void free_nodes(void);
 
 tree *mk_node(enum node_tag tag);
 
-tree *mk_alias(char *alias, char *name);
+tree *mk_alias(char *alias, tree *expr);
 tree *mk_arg(char *name, enum node_dir dir, char *type);
 tree *mk_assembly(char *assembly);
 tree *mk_body(tree *decl, tree *statements);
@@ -308,6 +308,6 @@ tree *node_list(tree *head, tree *tail);
 char *find_node_name(tree *node);
 tree *find_node(tree *search, char *name, enum node_tag tag);
 
-void print_node(tree *node, int level);
+void print_node(tree *node, int level, gp_boolean print_list);
 
 #endif

@@ -109,11 +109,11 @@ mk_node(enum node_tag tag)
 }
 
 tree *
-mk_alias(char *alias, char *name)
+mk_alias(char *alias, tree *expr)
 {
   tree *new = mk_node(node_alias);
   new->value.alias.alias = alias;
-  new->value.alias.name = name;
+  new->value.alias.expr = expr;
   
   return new;
 }
@@ -204,6 +204,7 @@ mk_decl(char *name,
 tree *
 mk_file(tree *body, char *name, enum source_type type)
 {
+  char buffer[BUFSIZ];
   tree *new = mk_node(node_file);
   new->value.file.body = body;
   new->value.file.name = name;
@@ -217,8 +218,11 @@ mk_file(tree *body, char *name, enum source_type type)
     new->value.file.udata_default = storage_far;
   }
 
-  new->value.file.page_address = mangle_name2(name, LOCAL_PROG_CAT);
-  new->value.file.bank_address = mangle_name2(name, LOCAL_DATA_CAT);
+  snprintf(buffer, sizeof(buffer), "_%s_%s", name, LOCAL_PROG_CAT);
+  new->value.file.page_address = gp_lower_case(buffer);
+
+  snprintf(buffer, sizeof(buffer), "_%s_%s", name, LOCAL_DATA_CAT);
+  new->value.file.bank_address = gp_lower_case(buffer);
  
   return new;
 }
@@ -413,200 +417,213 @@ print_space(int number)
 }
 
 void
-print_node(tree *node, int level)
+print_node(tree *node, int level, gp_boolean print_list)
 {
 
   /* indent this node */
   level += 2;
 
-  switch(node->tag) {
-  case node_unknown:
-    print_space(level);
-    printf("node_unknown\n");
-    break;
-  case node_alias:
-    print_space(level);
-    printf("node_alias alias=%s, name=%s\n",
-            ALIAS_ALIAS(node),
-            ALIAS_NAME(node));
-    break;
-  case node_arg:
-    print_space(level);
-    printf("node_arg name=%s, dir=%i, type=%s\n",
-            ARG_NAME(node),
-            ARG_DIR(node),
-            ARG_TYPE(node));
-    break;
-  case node_body:
-    print_space(level);
-    printf("node_body\n");
-    if (BODY_DECL(node) != NULL) {
+  while (node) {
+    switch(node->tag) {
+    case node_unknown:
       print_space(level);
-      printf("declarations\n");
-      print_node(BODY_DECL(node), level);
-    }
-    if (BODY_STATEMENTS(node) != NULL) {
+      printf("node_unknown\n");
+      break;
+    case node_alias:
       print_space(level);
-      printf("statements\n");
-      print_node(BODY_STATEMENTS(node), level);
-    }
-    break;
-  case node_binop:
-    print_space(level);
-    printf("node_binop %i \n", BINOP_OP(node));
-    print_space(level);
-    printf("arg 1\n");
-    print_node(BINOP_LEFT(node), level);
-    print_space(level);
-    printf("arg 2\n");
-    print_node(BINOP_RIGHT(node), level);
-    break;
-  case node_call:
-    print_space(level);
-    printf("node_call %s\n", CALL_NAME(node));
-    break;
-  case node_constant:
-    print_space(level);
-    printf("node_constant = %i\n", node->value.constant);
-    break;
-  case node_cond:
-    print_space(level);
-    printf("node_cond\n");
-    if (COND_TEST(node) != NULL) {
+      printf("node_alias alias=%s, expr=\n", ALIAS_ALIAS(node));
+      print_node(ALIAS_EXPR(node), level, true);
+      break;
+    case node_arg:
       print_space(level);
-      printf("condition\n");
-      print_node(COND_TEST(node), level);
-    }
-    if (COND_BODY(node) != NULL) {
+      printf("node_arg name=%s, dir=%i, type=%s\n",
+              ARG_NAME(node),
+              ARG_DIR(node),
+              ARG_TYPE(node));
+      break;
+    case node_body:
       print_space(level);
-      printf("body\n");
-      print_node(COND_BODY(node), level);
-    }
-    if (COND_NEXT(node) != NULL) {
+      printf("node_body\n");
+      if (BODY_DECL(node) != NULL) {
+        print_space(level);
+        printf("declarations\n");
+        print_node(BODY_DECL(node), level, true);
+      }
+      if (BODY_STATEMENTS(node) != NULL) {
+        print_space(level);
+        printf("statements\n");
+        print_node(BODY_STATEMENTS(node), level, true);
+      }
+      break;
+    case node_binop:
       print_space(level);
-      printf("next\n");
-      print_node(COND_NEXT(node), level);
-    }
-    break;
-  case node_decl:
-    print_space(level);
-    printf("node_decl name = %s, type =%s%s\n",
-           DECL_NAME(node),
-           DECL_CONSTANT(node) ? " constant " : " ",
-           DECL_TYPE(node));
-    if (DECL_INIT(node)) {
+      printf("node_binop %i \n", BINOP_OP(node));
       print_space(level);
-      printf("initial value:\n");
-      print_node(DECL_INIT(node), level);
-    }
-    if (DECL_ADDR(node)) {
+      printf("arg 1\n");
+      print_node(BINOP_LEFT(node), level, true);
       print_space(level);
-      printf("absolute address:\n");
-      print_node(DECL_ADDR(node), level);
-    }
-    break;
-  case node_file:
-    print_space(level);
-    printf("node_file %s\n", FILE_NAME(node));
-    if (FILE_BODY(node) != NULL)  
-      print_node(FILE_BODY(node), level);
-    break;
-  case node_func:
-    print_space(level);
-    printf("node_func that returns %s\n", node->value.func.ret);
-    if (FUNC_HEAD(node) != NULL)  
-      print_node(FUNC_HEAD(node), level);
-    if (FUNC_BODY(node) != NULL)
-      print_node(FUNC_BODY(node), level);
-    break;
-  case node_goto:
-    print_space(level);
-    printf("node_goto %s\n", GOTO_NAME(node));
-    break;
-  case node_head:
-    print_space(level);
-    printf("node_head %s\n", HEAD_NAME(node));
-    if (HEAD_ARGS(node) != NULL) {
+      printf("arg 2\n");
+      print_node(BINOP_RIGHT(node), level, true);
+      break;
+    case node_call:
       print_space(level);
-      printf("arguments\n");
-      print_node(HEAD_ARGS(node), level);
-    }
-    break;
-  case node_label:
-    print_space(level);
-    printf("node_label %s\n", LABEL_NAME(node));
-    break;
-  case node_loop:
-    print_space(level);
-    printf("node_loop\n");
-    if (LOOP_INIT(node) != NULL) {
+      printf("node_call %s\n", CALL_NAME(node));
+      break;
+    case node_constant:
       print_space(level);
-      printf("init\n");
-      print_node(LOOP_INIT(node), level);
-    }
-    if (LOOP_EXIT(node) != NULL) {
+      printf("node_constant = %i\n", node->value.constant);
+      break;
+    case node_cond:
       print_space(level);
-      printf("exit\n");
-      print_node(LOOP_EXIT(node), level);
-    }
-    if (LOOP_INCR(node) != NULL) {
+      printf("node_cond\n");
+      if (COND_TEST(node) != NULL) {
+        print_space(level);
+        printf("condition\n");
+        print_node(COND_TEST(node), level, true);
+      }
+      if (COND_BODY(node) != NULL) {
+        print_space(level);
+        printf("body\n");
+        print_node(COND_BODY(node), level, true);
+      }
+      if (COND_NEXT(node) != NULL) {
+        print_space(level);
+        printf("next\n");
+        print_node(COND_NEXT(node), level, true);
+      }
+      break;
+    case node_decl:
       print_space(level);
-      printf("increment\n");
-      print_node(LOOP_INCR(node), level);
-    }
-    if (LOOP_BODY(node) != NULL) {
+      printf("node_decl name = %s, type =%s%s\n",
+             DECL_NAME(node),
+             DECL_CONSTANT(node) ? " constant " : " ",
+             DECL_TYPE(node));
+      if (DECL_INIT(node)) {
+        print_space(level);
+        printf("initial value:\n");
+        print_node(DECL_INIT(node), level, true);
+      }
+      if (DECL_ADDR(node)) {
+        print_space(level);
+        printf("absolute address:\n");
+        print_node(DECL_ADDR(node), level, true);
+      }
+      break;
+    case node_file:
       print_space(level);
-      printf("body\n");
-      print_node(LOOP_BODY(node), level);
+      printf("node_file %s\n", FILE_NAME(node));
+      if (FILE_BODY(node) != NULL)  
+        print_node(FILE_BODY(node), level, true);
+      break;
+    case node_func:
+      print_space(level);
+      printf("node_func that returns %s\n", node->value.func.ret);
+      if (FUNC_HEAD(node) != NULL)  
+        print_node(FUNC_HEAD(node), level, true);
+      if (FUNC_BODY(node) != NULL)
+        print_node(FUNC_BODY(node), level, true);
+      break;
+    case node_goto:
+      print_space(level);
+      printf("node_goto %s\n", GOTO_NAME(node));
+      break;
+    case node_head:
+      print_space(level);
+      printf("node_head %s\n", HEAD_NAME(node));
+      if (HEAD_ARGS(node) != NULL) {
+        print_space(level);
+        printf("arguments\n");
+        print_node(HEAD_ARGS(node), level, true);
+      }
+      break;
+    case node_label:
+      print_space(level);
+      printf("node_label %s\n", LABEL_NAME(node));
+      break;
+    case node_loop:
+      print_space(level);
+      printf("node_loop\n");
+      if (LOOP_INIT(node) != NULL) {
+        print_space(level);
+        printf("init\n");
+        print_node(LOOP_INIT(node), level, true);
+      }
+      if (LOOP_EXIT(node) != NULL) {
+        print_space(level);
+        printf("exit\n");
+        print_node(LOOP_EXIT(node), level, true);
+      }
+      if (LOOP_INCR(node) != NULL) {
+        print_space(level);
+        printf("increment\n");
+        print_node(LOOP_INCR(node), level, true);
+      }
+      if (LOOP_BODY(node) != NULL) {
+        print_space(level);
+        printf("body\n");
+        print_node(LOOP_BODY(node), level, true);
+      }
+      break;
+    case node_pragma:
+      print_space(level);
+      printf("node_pragma\n");
+      print_node(node->value.pragma, level, true);
+      break;
+    case node_proc:
+      print_space(level);
+      printf("node_proc\n");
+      if (PROC_HEAD(node) != NULL)  
+        print_node(PROC_HEAD(node), level, true);
+      if (PROC_BODY(node) != NULL)
+         print_node(PROC_BODY(node), level, true);
+      break;
+    case node_return:
+      print_space(level);
+      printf("node_return\n");
+      print_node(node->value.ret, level, true);
+      break;
+    case node_string:
+      print_space(level);
+      printf("node_string %s\n", node->value.string);
+      break;
+    case node_symbol:
+      print_space(level);
+      printf("node_symbol %s\n", SYM_NAME(node));
+      if (SYM_OFST(node) != NULL)  
+        print_node(SYM_OFST(node), level, true);
+      break;
+    case node_type:
+      print_space(level);
+      if (TYPE_LIST(node)) {
+        printf("node_type %s is enumerated\n", TYPE_TYPE(node));
+        print_node(TYPE_LIST(node), level, true);
+      } else if (TYPE_START(node)) {
+        printf("node_type %s is array of %s\n", TYPE_TYPE(node), TYPE_OF(node));
+      } else {
+        printf("node_type %s is %s\n", TYPE_TYPE(node), TYPE_OF(node));
+      }
+      break;
+    case node_unop:
+      print_space(level);
+      printf("unop %i \n", UNOP_OP(node));
+      print_space(level);
+      printf("arg\n");
+      print_node(UNOP_ARG(node), level, true);
+      break;
+    case node_with:
+      print_space(level);
+      printf("with %s \n", WITH_NAME(node));
+      break;
+    default:
+      printf("unknown tag=%i\n", node->tag);
+      assert(0);
     }
-    break;
-  case node_proc:
-    print_space(level);
-    printf("node_proc\n");
-    if (PROC_HEAD(node) != NULL)  
-      print_node(PROC_HEAD(node), level);
-    if (PROC_BODY(node) != NULL)
-      print_node(PROC_BODY(node), level);
-    break;
-  case node_return:
-    print_space(level);
-    printf("node_return\n");
-    print_node(node->value.ret, level);
-    break;
-  case node_string:
-    print_space(level);
-    printf("node_string %s\n", node->value.string);
-    break;
-  case node_symbol:
-    print_space(level);
-    printf("node_symbol %s\n", SYM_NAME(node));
-    if (SYM_OFST(node) != NULL)  
-      print_node(SYM_OFST(node), level);
-    break;
-  case node_type:
-    print_space(level);
-    if (TYPE_LIST(node)) {
-      printf("node_type %s is enumerated\n", TYPE_TYPE(node));
-      print_node(TYPE_LIST(node), level);
-    } else if (TYPE_START(node)) {
-      printf("node_type %s is array of %s\n", TYPE_TYPE(node), TYPE_OF(node));
+
+    if (print_list) {
+      node = node->next;
     } else {
-      printf("node_type %s is %s\n", TYPE_TYPE(node), TYPE_OF(node));
+      node = NULL;
     }
-    break;
-  case node_unop:
-    print_space(level);
-    printf("unop %i \n", UNOP_OP(node));
-    print_space(level);
-    printf("arg\n");
-    print_node(UNOP_ARG(node), level);
-    break;
-  case node_with:
-    print_space(level);
-    printf("with %s \n", WITH_NAME(node));
-    break;
-  default:
-    assert(0);
   }
 
 }
