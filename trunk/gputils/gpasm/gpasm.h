@@ -37,7 +37,7 @@ Boston, MA 02111-1307, USA.  */
 typedef int gpasmVal; 		/* The type that internal arithmetic uses */
 enum gpasmValTypes {gvt_constant, gvt_cblock, gvt_org, gvt_address, gvt_extern,
                     gvt_global, gvt_static};
-enum state_types { _exitmacro, _include, _macro, _nochange, _section,
+enum state_types { _nochange, _exitmacro, _include, _macro, _section,
                    _substitution, _while };
 
 enum outfile { normal, suppress, named };

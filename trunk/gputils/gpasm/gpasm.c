@@ -113,6 +113,8 @@ init(void)
   state.obj.section_num = 0;
   state.obj.org_num = 0;
   
+  state.next_state = _nochange;
+  
   return;
 }
 
