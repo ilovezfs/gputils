@@ -146,6 +146,17 @@ Section "gputils lkr files"
   Call WriteEnvStr
 SectionEnd
 
+Section "gputils pub files"
+  SectionIn 1
+  SetOutPath "$INSTDIR\pub"
+  File "${DEV_ROOT}\pub\*.pub"
+
+  ; Set GPUTILS_PUB_PATH environment variable
+  Push "GPUTILS_PUB_PATH"  ; name
+  Push "$INSTDIR\pub"      ; value
+  Call WriteEnvStr
+SectionEnd
+
 Section -Icons
 !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE"
@@ -218,6 +229,8 @@ Section Uninstall
 
   Delete "$INSTDIR\lkr\*.lkr"
 
+  Delete "$INSTDIR\pub\*.pub"
+
   Delete "$INSTDIR\header\*.inc"
 
   Delete "$INSTDIR\bin\*.exe"
@@ -236,6 +249,8 @@ Section Uninstall
   RMDir "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE"
 
   RMDir "$INSTDIR\lkr"
+
+  RMDir "$INSTDIR\pub"
 
   RMDir "$INSTDIR\header"
 
