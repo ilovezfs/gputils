@@ -1,3 +1,6 @@
+2005-03-23 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [gputils] Updated header files and linker scripts.
+
 2005-03-11 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gplink] Fixed RELOCT_ALL relocation.
 
