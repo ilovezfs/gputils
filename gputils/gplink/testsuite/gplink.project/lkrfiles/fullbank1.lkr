@@ -1,0 +1,3 @@
+files fullbank1.o
+
+include 16f877a.lkr
