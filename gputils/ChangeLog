@@ -1,6 +1,16 @@
-Sun Aug 18 08:51:57 PDT 2002 Scott Dattalo <scott@dattalo.com>
-	* gpasm - arithmetic for negative relative branches on a 16bit core
-		was loosing the sign bit.
+2002-10-12 Craig Franklin <craigfranklin@attbi.com>
+  * gputils 0.10.4 Released.
+  * Fixed bug that caused assertion when macro calls procede definition.
+  * Fixed bug that required gpasm arguments be in a specific order.
+  * Moved opcode definitions into libgputils for future gpdasm improvments.
+  * Fixed bug that prevented conditional assembly directives in column 1 to be
+    missed if assembly had been previously disabled.
+  * Generate an error if endm is missing from a macro definition.
+  * Increased gpvc file number limit from 20 to 100.
+
+2002-08-18 Scott Dattalo <scott@dattalo.com>
+  * gpasm - arithmetic for negative relative branches on a 16bit core
+    was loosing the sign bit.
 	
 2002-05-12 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.10.3 Released.
