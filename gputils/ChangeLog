@@ -1,3 +1,11 @@
+2004-03-13 Craig Franklin <craigfranklin@comcast.net>
+  * Added gplink command line option to disable list file output.
+  * Fixed gplink bug that caused an error to be generated if a source file
+    wasn't found when generating a list file.
+  * Fixed gplink 18xx initialized data sections so retlw isn't used.
+  * Added support for stack sections in gplink.
+  * Use section type to determine format for gpvo disassembly output.
+
 2004-02-09 Craig Franklin <craigfranklin@comcast.net>
   * Fixed bug in gpdasm relative branches.
 

@@ -323,8 +323,15 @@ static int do_stack(char *name, struct pnode *parms)
 
   int found_size  = 0;
   int found_ram   = 0;
-  char *ramname;
-  int  size;
+  char *ram_name = NULL;
+  struct symbol *sym;
+
+  if (state.has_stack) {
+    script_error("multiple stack definitions", NULL);
+    return 0;
+  } else {
+    state.has_stack = 1;
+  }
 
   /* FIXME: simplify this.  There are only two arguments */
 
@@ -339,11 +346,11 @@ static int do_stack(char *name, struct pnode *parms)
 	lhs = p->value.binop.p0->value.symbol;
         if (strcasecmp(lhs, "size") == 0) {
           found_size = 1;
-          size = evaluate(p->value.binop.p1);
+          state.stack_size = evaluate(p->value.binop.p1);
         } else if (strcasecmp(lhs, "ram") == 0) {
           if (enforce_simple(p->value.binop.p1)) {
             found_ram = 1;
-            ramname = p->value.binop.p1->value.symbol;   
+            ram_name = p->value.binop.p1->value.symbol;   
           }
         } else {
           script_error("illegal argument", lhs);        
@@ -359,8 +366,9 @@ static int do_stack(char *name, struct pnode *parms)
   /* process the options */
   if (found_size == 0) {
     script_error("missing argument", "size");
-  } else {
-
+  } else if (ram_name != NULL) {
+    sym = add_symbol(state.section.logical, strdup(".stack"));
+    annotate_symbol(sym, ram_name);	       
   }
 
   return 0;

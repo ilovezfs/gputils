@@ -50,6 +50,9 @@ extern struct gplink_state {
     objfile;			   /* Executable object file control */
   int fill_enable;		   /* Fill unused program memory with value */
   unsigned int fill_value;	   /* Value to fill program memory with */
+  int has_stack;                   /* Has stack directive in linker script */
+  unsigned int stack_size;	   /* Value to fill program memory with */
+  int has_idata;                   /* Has initialized data memory */
   char  *srcfilename,		   /* Script file name */
     basefilename[BUFSIZ],	   /* basename for generating hex,list,symbol filenames */
     codfilename[BUFSIZ],	   /* Symbol (.cod) file name */
@@ -98,6 +101,7 @@ struct list_context {
   char *name;
   gp_symbol_type *symbol;
   FILE *f; 
+  gp_boolean missing_source;
   unsigned int line_number;
   struct list_context *prev;
 };
