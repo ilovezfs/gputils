@@ -610,7 +610,7 @@ void execute_macro(struct macro_head *h, int is_while)
   state.src = new;
 
   state.src->fc = add_file(ft_src, new->name); /* scan list for fc */
-  YY_CURRENT_BUFFER = yy_scan_buffer(macro_src, macro_src_size);
+  yy_scan_buffer(macro_src, macro_src_size);
 
 }
 
@@ -631,7 +631,7 @@ void repeat_while(void)
   state.src->lst.m = h->body;
 
   yy_delete_buffer(YY_CURRENT_BUFFER);
-  YY_CURRENT_BUFFER = yy_scan_buffer(macro_src, macro_src_size);
+  yy_scan_buffer(macro_src, macro_src_size);
 
 }
 
