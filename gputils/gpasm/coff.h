@@ -34,6 +34,8 @@ gp_symbol_type *coff_add_filesym(char *name, int isinclude);
 void coff_add_eofsym(void);
 void coff_add_listsym(void);
 void coff_add_nolistsym(void);
+void coff_add_directsym(unsigned char command, char *string);
+void coff_add_identsym(char *string);
 char *coff_local_name(char *name);
 
 #endif

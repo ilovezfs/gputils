@@ -489,6 +489,14 @@ gp_determine_aux(gp_symbol_type *symbol)
 {
   int aux_type = AUX_NONE;
 
+  if (strcasecmp(".direct", symbol->name) == 0) {
+    return AUX_DIRECT;  
+  }
+
+  if (strcasecmp(".ident", symbol->name) == 0) {
+    return AUX_IDENT;  
+  }
+
   switch (symbol->class) {
   case C_FILE:
     aux_type = AUX_FILE;

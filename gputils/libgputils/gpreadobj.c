@@ -303,10 +303,19 @@ _read_aux(gp_aux_type *aux, int aux_type, char *file, char *string_table)
   aux->type = aux_type;
 
   switch (aux_type) {
+    case AUX_DIRECT:
+      aux->_aux_symbol._aux_direct.command = file[0];
+      aux->_aux_symbol._aux_direct.string = 
+        strdup(&string_table[gp_getl32(&file[4])]);
+      break;
     case AUX_FILE:
       aux->_aux_symbol._aux_file.filename = 
         strdup(&string_table[gp_getl32(&file[0])]);
       aux->_aux_symbol._aux_file.line_number = gp_getl32(&file[4]);
+      break;
+    case AUX_IDENT:
+      aux->_aux_symbol._aux_ident.string = 
+        strdup(&string_table[gp_getl32(&file[0])]);
       break;
     case AUX_SCN:
       aux->_aux_symbol._aux_scn.length  = gp_getl32(&file[0]);

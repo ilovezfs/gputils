@@ -6637,18 +6637,16 @@ These features are advanced and require knowledge of how gputils relocatable
 
 \layout LyX-Code
 
-.DEF <symbol>, [ NEW ]? [, <expression> ]*
+.DEF <symbol> [, <expression> ]*
 \layout Standard
 
-Create or modify the contents of COFF <symbol>.
- If NEW is specified as the second argument create the symbol, otherwise
- modify an existing symbol.
- Other options are listed in the table below:
+Create a new COFF <symbol>.
+ Options are listed in the table below:
 \layout Standard
 \added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
 
 \begin_inset  Tabular
-<lyxtabular version="3" rows="6" columns="2">
+<lyxtabular version="3" rows="10" columns="2">
 <features>
 <column alignment="center" valignment="top" leftline="true" width="0pt">
 <column alignment="center" valignment="top" leftline="true" rightline="true" width="0pt">
@@ -6684,7 +6682,7 @@ absolute
 
 \layout Standard
 
-Make it an absolute symbol 
+Absolute symbol keyword 
 \end_inset 
 </cell>
 </row>
@@ -6720,7 +6718,79 @@ debug
 
 \layout Standard
 
-Make it a debug symbol 
+Debug symbol keyword 
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+extern
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+External symbol keyword
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+global
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Global symbol keyword
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+size=nnn
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Reserve words or bytes for the symbol
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+static
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Static Symbol keyword
 \end_inset 
 </cell>
 </row>
@@ -6775,6 +6845,16 @@ This directive gives the user good control of the symbol table.
  before modifying its contents.
 \layout Standard
 
+For best results, only one of the single keywords should be used.
+ The keyword should follow the symbol name.
+ The keyword should then be followed by any expressions that directly set
+ the values.
+ Here is an example:
+\layout Standard
+
+.def global_clock, global, type = T_ULONG, size = 4
+\layout Standard
+
 See also: .DIM
 \layout Subsection*
 
@@ -6786,7 +6866,7 @@ See also: .DIM
 
 \layout LyX-Code
 
-.DIM <symbol>, <number>, <expression> [ , <expression> ] *
+.DIM <symbol>, <number>, <expression> [, <expression> ] *
 \layout Standard
 
 Create <number> auxiliary symbols, attached to <symbol>.
@@ -6811,6 +6891,226 @@ gpasm does not use auxilary symbols.
 \layout Standard
 
 See also: .DEF
+\layout Subsection*
+
+.DIRECT
+\begin_inset LatexCommand \index{.DIRECT}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+.DIRECT <command>, <string>
+\layout Standard
+
+Provides a mechanism for direct communication from the program to the debugging
+ environment.
+ This method has no impact on the executable.
+ The symbols will appear in both the COFF files and the COD files.
+\layout Standard
+
+Each directive creates a new COFF symbol 
+\begin_inset Quotes eld
+\end_inset 
+
+.direct
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ An auxilary symbol is attached that contains <command> and <string>.
+ The string must be less than 256 bytes.
+ The command must have a value 0 to 255.
+ There are no restrictions on the content, however these messages must conform
+ to the debugging environment.
+ The typical values are summarized in the table below:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
+
+\begin_inset  Tabular
+<lyxtabular version="3" rows="9" columns="2">
+<features>
+<column alignment="center" valignment="top" leftline="true" width="0pt">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="0pt">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+ASCII command
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+description
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+a
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+User defined assert
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+A
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Assembler/Compiler defined assert
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+e
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+User defined emulator commands
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+E
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Assembler/Compiler defined emulator commands
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+f
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+User defined printf
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+F
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Assembler/Compiler defined printf
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+l
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+User defined log command
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+L
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Assembler/Compiler/Code verification generated log command
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Standard
+
+The symbols also contain the address where the message was inserted into
+ the assembly.
+ The symbols, with the final relocated addresses, are available in executable
+ COFF.
+ The symbols are also written to the COD file.
+ They can be viewed using gpvc.
+\layout Standard
+
+See also: .DEF, .DIM
 \layout Subsection*
 
 .EOF
@@ -6871,6 +7171,29 @@ This directive causes a file symbol to be placed in the symbol table.
 See also: .EOF, .FILE, .LINE
 \layout Subsection*
 
+.IDENT
+\begin_inset LatexCommand \index{.IDENT}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+.IDENT <string>
+\layout Standard
+
+Creates an .ident COFF symbol and appends an auxiliary symbol.
+ The auxiliary symbol points to an entry in the string table.
+ The entry contains <string>.
+ It is an ASCII comment of any length.
+ This symbol has no impact on the operation of gputils.
+ It is commonly used to store compiler versions.
+ 
+\layout Standard
+
+See also: .DEF, .DIM
+\layout Subsection*
+
 .LINE
 \begin_inset LatexCommand \index{.LINE}
 
@@ -6900,6 +7223,32 @@ This directive causes and COFF line number to be generated.
 \layout Standard
 
 See also: .EOF, .FILE, .LINE
+\layout Subsection*
+
+.TYPE
+\begin_inset LatexCommand \index{.TYPE}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+.TYPE <symbol>, <expression>
+\layout Standard
+
+This directive modifies the COFF type of an existing <symbol>.
+ The symbol must be defined.
+ The type must be 0 to 0xffff.
+ Common types are defined in coff.inc.
+ 
+\layout Standard
+
+COFF symbol types default to NULL in gpasm.
+ Although the type has no impact linking or generating an executable, it
+ does help in the debug environment.
+\layout Standard
+
+See also: .DEF
 \layout Section
 
 Instructions 

@@ -401,6 +401,8 @@ struct aux_var
 #define AUX_EOBF   7  /* end of block or function */
 #define AUX_BOBF   8  /* beginning of block or function */
 #define AUX_VAR    9  /* variable */
+#define AUX_DIRECT 10 /* direct message */
+#define AUX_IDENT  11 /* ident */
 
 /* These definitions are for the COFF as stored in memory. */
 
@@ -452,9 +454,16 @@ typedef struct gp_aux_type
   /* FIXME: Finish the aux entries. */
   union {
     struct {
+      unsigned char command;
+      char *string;
+    } _aux_direct;
+    struct {
       char *filename;
       unsigned long line_number; 
     } _aux_file;
+    struct {
+      char *string;
+    } _aux_ident;
     struct {
       unsigned long  length;
       unsigned short nreloc;

@@ -1,6 +1,6 @@
-        LIST
+  list
 ; coff.inc - gputils header file
-        NOLIST
+  nolist
 
 ; Copyright (C) 2004 Craig Franklin
 ;
@@ -96,4 +96,44 @@
 #define C_LIST      108  ; absoulte listing on or off 
 #define C_SECTION   109  ; section 
 
-        LIST
+; Begin Function Code
+.bf macro
+  .def ".bf", type = T_NULL, class = C_FCN
+  endm
+
+; End Function
+.ef macro
+  .def ".ef", type = T_NULL, class = C_FCN
+  endm
+
+; Begin Basic Block
+.bb macro
+  .def ".bb", type = T_NULL, class = C_BLOCK 
+  endm
+
+; End of Basic Block
+.eb macro
+  .def ".eb", type = T_NULL, class = C_BLOCK
+  endm
+
+; Assertion
+.assert macro x
+  .direct "a", x
+  endm
+
+; Simulator Command
+.sim macro x
+  .direct "e", x
+  endm
+
+; Printf Command
+.print macro x
+  .direct "f", x
+  endm
+
+; Log Command
+.log macro x
+  .direct "l", x
+  endm
+
+  list
