@@ -107,7 +107,6 @@ void lst_init()
       perror(state.lstfilename);
       exit(1);
     }
-    state.lst.fc = add_file(ft_lst,state.lstfilename);
     state.lst.enabled = 1;
   }
 

@@ -1,4 +1,9 @@
 2004-10-10 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * Merged changes from cod-branch:
+    - Fixed stop location error in directory map of COD files.
+    - Added time and date to COD files.
+    - Fixed error in gpvc time reporting.
+    - Changed to byte addressing for 18xx cod files.
   * Added direct messaging from COFF and COD files to simulator.
   * Added new COFF directives .ident and .type.
   * Allow expressions as arguments to banksel, bankisel, and pagesel.

@@ -49,9 +49,15 @@ init_DirBlock(DirBlockInfo *a_dir)
 
   /* Initialize the directory block with known data. It'll be written
    * to the .cod file after everything else */
-
+  gp_cod_strncpy(&a_dir->dir.block[COD_DIR_SOURCE], 
+	         state.codfilename,
+	         COD_DIR_DATE - COD_DIR_SOURCE);
+  gp_cod_date(&a_dir->dir.block[COD_DIR_DATE], 
+              COD_DIR_TIME - COD_DIR_DATE);
+  gp_cod_time(&a_dir->dir.block[COD_DIR_TIME], 
+              COD_DIR_VERSION - COD_DIR_TIME);
   gp_cod_strncpy(&a_dir->dir.block[COD_DIR_VERSION], 
-	         GPLINK_VERSION_STRING,
+	         VERSION,
 	         COD_DIR_COMPILER - COD_DIR_VERSION);
   gp_cod_strncpy(&a_dir->dir.block[COD_DIR_COMPILER], 
 	         "gplink",
@@ -279,7 +285,8 @@ cod_lst_line(int line_type)
     gp_putl16(&lb.block[offset + COD_LS_SLINE], state.lst.src->line_number);
 
     /* Write the address of the opcode. */
-    gp_putl16(&lb.block[offset + COD_LS_SLOC], state.lst.was_org);
+    gp_putl16(&lb.block[offset + COD_LS_SLOC],
+              state.lst.was_org << state.byte_addr);
 
     break;
   case COD_LAST_LST_LINE:
@@ -501,7 +508,7 @@ cod_write_code(void)
 	     is needed. This is done by writing the start and end address to
 	     the directory map. */
 	  gp_putl16(&rb.block[offset], 2*start_address);
-	  gp_putl16(&rb.block[offset+2], 2*(i-1));
+	  gp_putl16(&rb.block[offset+2], 2*(i-1) + 1);
 
 	  offset += 4;
 	  if(offset>=COD_BLOCK_SIZE) {

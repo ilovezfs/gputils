@@ -203,5 +203,7 @@ void gp_cod_clear(Block *b);
 void gp_cod_delete(Block *b);
 void gp_cod_next(Block *b, int *block_number);
 void gp_cod_create(Block *b, int *block_number);
+void gp_cod_date(char *buffer, size_t sizeof_buffer);
+void gp_cod_time(char *buffer, size_t sizeof_buffer);
 
 #endif

@@ -144,6 +144,13 @@ void dump_memmap( void)
   _REC_maptab *mt;
   unsigned short i,j,start_block,end_block;
   int first = 1;
+  int shift;
+
+  if (byte_addr) {
+    shift = 0;
+  } else {
+    shift = 1;
+  }
 
   dbi = &main_dir;
 
@@ -170,23 +177,8 @@ void dump_memmap( void)
 	for(i=0; i< 128; i++)
 	  if( !((mt[i].start == 0) && (mt[i].last == 0) ))
 	    printf("using ROM 0x%06x to 0x%06x\n",
-		   addrsize*(_64k_base+mt[i].start)/2,
-		   addrsize*(_64k_base+mt[i].last)/2  );
-	  else if( i == 0 ) {
-            /* The ROM Usage information in .cod files has a bug.
-               If you declare only one word in a block at the very first 
-               position then the .start and .last indicators are both zero, 
-               just like they are for an empty block. So, let's read the 
-               actual block and see if there's any information there... */
-	    char t[COD_BLOCK_SIZE];
-	    unsigned short index = gp_getu16(&dbi->dir.block[2*(COD_DIR_CODE)]);
-	    if (index != 0) {
-	      read_block(t, index);
-	      if( gp_getu16(&t[0]) )
-		printf("using ROM 0x%06x to 0x%06x\n",addrsize*_64k_base/2,addrsize*_64k_base/2);
-
-	    }
-	  }
+		   (_64k_base+mt[i].start) >> shift,
+		   (_64k_base+mt[i].last) >> shift);
       }
     } else if(first)
       printf("    No ROM usage information available.\n");
@@ -232,7 +224,7 @@ void dump_code(void)
 	  if(all_zero_line)
 	    i+=8;
 	  else {
-	    printf("\n%06x:  ",addrsize*(_64k_base+i+k*256));
+	    printf("\n%06x:  ", (_64k_base+i+k*256) << byte_addr);
 
 	    for(j=0; j<8; j++)
 	      printf("%04x ",gp_getu16(&temp[2*i++]));
@@ -458,7 +450,7 @@ void dump_line_symbols(void)
 	  printf(" %5d  %5d %06X   %2x %s   %-50s\n",
 		 lst_line_number++,
 		 ls[i].sline,
-		 ls[i].sloc*addrsize,
+		 ls[i].sloc,
 		 ls[i].smod,
 		 smod_flags(ls[i].smod),
 		 source_file_names[ls[i].sfile]);

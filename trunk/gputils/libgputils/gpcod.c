@@ -83,3 +83,52 @@ gp_cod_create(Block *b, int *block_number)
   *block_number = *block_number + 1;
 
 }
+
+void
+gp_cod_date(char *buffer, size_t sizeof_buffer)
+{
+  #define TEMP_SIZE 32
+  char temp[TEMP_SIZE];
+  int i;
+  time_t now;
+  struct tm *now_tm;
+
+  static const char mon_name[12][4] = {
+    "Jan\0", "Feb\0", "Mar\0", "Apr\0", "May\0", "Jun\0",
+    "Jul\0", "Aug\0", "Sep\0", "Oct\0", "Nov\0", "Dec\0"
+  };
+
+  time(&now);
+  now_tm = localtime(&now);
+  snprintf(temp, TEMP_SIZE,
+           "%02d%3s%02d",
+           now_tm->tm_mday,
+           &mon_name[now_tm->tm_mon][0],
+           now_tm->tm_year % 100);
+
+  /* copy the temporary buffer to the output */
+  for (i = 0; i < sizeof_buffer; i++) {
+    *buffer++ = temp[i];
+  }
+
+  return;
+}
+
+void
+gp_cod_time(char *buffer, size_t sizeof_buffer)
+{
+  time_t now;
+  struct tm *now_tm;
+  int value;
+
+  time(&now);
+  now_tm = localtime(&now);
+
+  value = ((now_tm->tm_hour) * 100) + now_tm->tm_min;
+  
+  buffer[0] = value & 0xff;
+  buffer[1] = (value >> 8) & 0xff;
+  buffer[2] = now_tm->tm_sec & 0xff;
+
+  return;
+}
