@@ -1,7 +1,7 @@
 #LyX 1.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 2.16
 \textclass book
-\language default
+\language english
 \inputencoding default
 \fontscheme times
 \graphics default
@@ -26,13 +26,13 @@
 
 \layout Title
 \added_space_top vfill \added_space_bottom vfill 
-gputils 0.10.3
+gputils 0.11.0
 \layout Author
 
 James Bowman 
 \layout Date
 
-May 12 2002
+February 24, 2003
 \layout Standard
 
 
@@ -115,12 +115,11 @@ Where options can be one of:
 \layout Standard
 \added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
 multicol5
-20 2 0 0 -1 -1 -1 -1
+19 2 0 0 -1 -1 -1 -1
 1 1 0 0
 1 0 0 0
 1 0 0 0
-0 0 1 0
-0 0 1 0
+1 0 0 0
 1 0 0 0
 1 0 0 0
 1 0 0 0
@@ -143,9 +142,7 @@ multicol5
 0 8 1 0 0 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
-0 2 1 0 1 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
-0 2 1 0 1 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
@@ -190,9 +187,33 @@ Produce
 
 \end_inset 
 
-hex file in one of four formats: inhx8m (the default), inhx8s, inhx16, inhx32.
+hex file in one of four formats: inhx8m, inhx8s, inhx16, inhx32 (the default).
 \newline 
 c
+\newline 
+Output a relocatable object
+\newline 
+d symbol[=value] 
+\newline 
+Equivalent to 
+\begin_inset Quotes eld
+\end_inset 
+
+#define <symbol> <value>
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\newline 
+e [ON|OFF]
+\newline 
+Expand macros in listing file.
+\newline 
+h
+\newline 
+Display the help message.
+\newline 
+i
 \newline 
 
 \begin_inset LatexCommand \index{case}
@@ -217,34 +238,6 @@ FOOYA
 \end_inset 
 
  as being different.
-\newline 
-
-\newline 
-
-\newline 
-
-\newline 
-
-\newline 
-d symbol[=value] 
-\newline 
-Equivalent to 
-\begin_inset Quotes eld
-\end_inset 
-
-#define <symbol> <value>
-\begin_inset Quotes erd
-\end_inset 
-
-.
-\newline 
-e [ON|OFF]
-\newline 
-Expand macros in listing file.
-\newline 
-h
-\newline 
-Display the help message.
 \newline 
 I <directory>
 \newline 
@@ -1459,6 +1452,43 @@ is the same as writing:
         rlf     tmp,f    ; tmp = 10 * W
 \layout Subsection
 
+$
+\layout Standard
+
+$ expands to the address of the instruction currently being assembled.
+ If it's used in a context other than an instruction, such as a conditional,
+ it expands to the address the next instruction would occupy, since the
+ assembler's idea of current address is incremented after an instruction
+ is assembled.
+  $ may be manipulated just like any other number:
+\layout LyX-Code
+
+$
+\layout LyX-Code
+
+$ + 1
+\layout LyX-Code
+
+$ - 2
+\layout Standard
+
+and can be used as a shortcut for writing loops without labels.
+\layout LyX-Code
+
+LOOP:  BTFSS flag,0x00
+\layout LyX-Code
+
+       GOTO LOOP
+\layout LyX-Code
+
+\layout LyX-Code
+
+       BTFSS flag,0x00
+\layout LyX-Code
+
+       GOTO  $ - 1
+\layout Subsection
+
 Suggestions for structuring your code
 \layout Standard
 
@@ -1554,9 +1584,9 @@ __IDLOCS <expression> or __IDLOCS <expression1>,<expression2>
 \layout Standard
 
 Sets the PIC processor's identification locations.
- For 12 and 14 bit processors, the four id locations are set to the hexidecimal
+ For 12 and 14 bit processors, the four id locations are set to the hexadecimal
  value of expression.
- For 18cxx devices idlocation expression1 is set to the hexidecimal value
+ For 18cxx devices idlocation expression1 is set to the hexadecimal value
  of expression2.
 \layout Subsection*
 
@@ -1577,6 +1607,51 @@ Instructs gpasm that an attempt to use any RAM location above the one specified
 \layout Standard
 
 See also: __BADRAM
+\layout Subsection*
+
+BANKISEL
+\begin_inset LatexCommand \index{BANKISEL}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+BANKISEL <label>
+\layout Standard
+
+This directive generates bank selecting code for indirect access of the
+ address specified by <label>.
+ The directive is not available for all devices.
+ It is only available for 14 bit and 16 bit devices.
+ For 14 bit devices, the bank selecting code will set/clear the IRP bit
+ of the STATUS register.
+ It will use MOVLB or MOVLR in 16 bit devices.
+\layout Standard
+
+See also: BANKSEL, PAGESEL
+\layout Subsection*
+
+BANKSEL
+\begin_inset LatexCommand \index{BANKSEL}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+BANKSEL <label>
+\layout Standard
+
+This directive generates bank selecting code to set the bank to the bank
+ containing <label>.
+ The bank selecting code will set/clear bits in the FSR for 12 bit devices.
+ It will set/clear bits in the STATUS register for 14 bit devices.
+ It will use MOVLB or MOVLR in 16 bit devices.
+ MOVLB will be used for enhanced 16 bit devices.
+\layout Standard
+
+See also: BANKISEL, PAGESEL
 \layout Subsection*
 
 CBLOCK
@@ -1617,11 +1692,12 @@ CONSTANT
 CONSTANT <label>=<expression> [, <label>=<expression>]*
 \layout Standard
 
-Delcares <label> equal to <expression>.
+Permanently assigns the value obtained by evaluating <expression> to thesymbol
+ <label>.
  Similar to SET and VARIABLE, except it can not be changed once assigned.
 \layout Standard
 
-See also: SET, VARIABLE
+See also: EQU, SET, VARIABLE
 \layout Subsection*
 
 DA
@@ -1689,7 +1765,7 @@ DE
 \layout Standard
 
 Define EEPROM data.
- Each character in a string is stored in a seperate word.
+ Each character in a string is stored in a separate word.
 \layout Standard
 
 See also: DA, DATA, DB, DW
@@ -1841,9 +1917,10 @@ EQU
 
 Permanently assigns the value obtained by evaluating <expression> to the
  symbol <label>.
+ Similar to SET and VARIABLE, except it can not be changed once assigned.
 \layout Standard
 
-See also: SET
+See also: CONSTANT, SET
 \layout Subsection*
 
 ERROR
@@ -1973,7 +2050,7 @@ FILL
 <label> FILL <expression>,<count>
 \layout Standard
 
-Generates <count> occurances of the program word or byte <expression>.
+Generates <count> occurrences of the program word or byte <expression>.
  If expression is enclosed by parentheses, expression is a line of assembly.
  
 \layout Standard
@@ -2060,7 +2137,7 @@ Enables output to the list (
 \end_inset 
 
 ) file.
- All arguments are interpretted as decimal regardless of the current radix
+ All arguments are interpreted as decimal regardless of the current radix
  setting.
  
 \begin_inset Quotes eld
@@ -2277,6 +2354,31 @@ Causes the list file to advance to the next page.
 See also: LIST
 \layout Subsection*
 
+PAGESEL
+\begin_inset LatexCommand \index{PAGESEL}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+PAGESEL <label>
+\layout LyX-Code
+
+GOTO <label>
+\layout Standard
+
+This directive will generate page selecting code to set the page bits to
+ the page containing the designated <label>.
+ The page selecting code will set/clear bits in the STATUS for 12 bit devices.
+ For 14 bit and 16 bit devices, it will generate MOVLW and MOVWF to modify
+ PCLATH.
+ The directive is ignored for enhanced 16 bit devices.
+\layout Standard
+
+See also: BANKISEL, BANKSEL
+\layout Subsection*
+
 PROCESSOR
 \begin_inset LatexCommand \index{PROCESSOR}
 
@@ -2354,7 +2456,7 @@ RES
 RES <mem_units>
 \layout Standard
 
-Causes the memory location pointer to be advanced <mem_unitsl>.
+Causes the memory location pointer to be advanced <mem_units>.
  Can be used to reserve data storage.
 \layout Standard
 
@@ -2429,8 +2531,8 @@ TITLE <string>
 
 This directive establishes a program header line for use as a title in the
  listing output.
- <stringt> is an ASCII string enclosed by double quotes, no longer than
- 60 characters.
+ <string> is an ASCII string enclosed by double quotes, no longer than 60
+ characters.
 \layout Standard
 
 See also: SUBTITLE
@@ -2487,82 +2589,88 @@ eeprom8    gen        p12c508    p12c508a   p12c509    p12c509a
 p12c671    p12c672    p12ce518   p12ce519   p12ce673   p12ce674
 \layout LyX-Code
 
-p12cr509a  p14000     p16c5x     p16cxx     p16c432    p16c433
+p12cr509a  p12f629    p12f675    p14000     p16c5x     p16cxx
 \layout LyX-Code
 
-p16c461    p16c505    p16c52     p16c54     p16c54a    p16c54b
+p16c432    p16c433    p16c505    p16c52     p16c54     p16c54a
 \layout LyX-Code
 
-p16c54c    p16c55     p16c55a    p16c554    p16c558    p16c56
+p16c54b    p16c54c    p16c55     p16c55a    p16c554    p16c557
 \layout LyX-Code
 
-p16c56a    p16c57     p16c57c    p16c58     p16c58a    p16c58b
+p16c558    p16c56     p16c56a    p16c57     p16c57c    p16c58a
 \layout LyX-Code
 
-p16c61     p16c62     p16c62a    p16c62b    p16c620    p16c620a
+p16c58b    p16c61     p16c62     p16c62a    p16c62b    p16c620
 \layout LyX-Code
 
-p16c621    p16c621a   p16c622    p16c622a   p16c63     p16c63a
+p16c620a   p16c621    p16c621a   p16c622    p16c622a   p16c63
 \layout LyX-Code
 
-p16c64     p16c64a    p16c641    p16c642    p16c65     p16c65a
+p16c63a    p16c64     p16c64a    p16c642    p16c65     p16c65a
 \layout LyX-Code
 
-p16c65b    p16c66     p16c661    p16c662    p16c67     p16c70
+p16c65b    p16c66     p16c662    p16c67     p16c71     p16c710
 \layout LyX-Code
 
-p16c71     p16c71a    p16c710    p16c711    p16c712    p16c715
+p16c711    p16c712    p16c715    p16c716    p16c717    p16c72
 \layout LyX-Code
 
-p16c716    p16c717    p16c72     p16c72a    p16c73     p16c73a
+p16c72a    p16c73     p16c73a    p16c73b    p16c74     p16c745
 \layout LyX-Code
 
-p16c73b    p16c74     p16c745    p16c74a    p16c74b    p16c76
+p16c74a    p16c74b    p16c76     p16c765    p16c77     p16c770
 \layout LyX-Code
 
-p16c765    p16c77     p16c770    p16c771    p16c773    p16c774
-\layout LyX-Code
-
-p16c781    p16c782    p16c83     p16c84     p16c85     p16c86
+p16c771    p16c773    p16c774    p16c781    p16c782    p16c84
 \layout LyX-Code
 
 p16c923    p16c924    p16c925    p16c926    p16ce623   p16ce624
 \layout LyX-Code
 
-p16ce625   p16cr54    p16cr54a   p16cr54b   p16cr54c   p16cr56
+p16ce625   p16cr54    p16cr54a   p16cr54b   p16cr54c   p16cr56a
 \layout LyX-Code
 
-p16cr56a   p16cr57a   p16cr57b   p16cr57c   p16cr58a   p16cr58b
+p16cr57a   p16cr57b   p16cr57c   p16cr58a   p16cr58b   p16cr62
 \layout LyX-Code
 
-p16cr62    p16cr620a  p16cr63    p16cr64    p16cr65    p16cr72
+p16cr620a  p16cr63    p16cr64    p16cr65    p16cr72    p16cr83
 \layout LyX-Code
 
-p16cr83    p16cr84    p16f73     p16f74     p16f83     p16f84
+p16cr84    p16f627    p16f627a   p16f628    p16f628a   p16f630
 \layout LyX-Code
 
-p16f85     p16f86     p16f84a    p16f627    p16f628    p16f870
+p16f676    p16f72     p16f73     p16f74     p16f76     p16f77
 \layout LyX-Code
 
-p16f871    p16f872    p16f873    p16f874    p16f876    p16f877
+p16f818    p16f819    p16f83     p16f84     p16f84a    p16f87
 \layout LyX-Code
 
-p16f877a   p16hv540   p16lc74b   p17cxx     p17c42     p17c42a
+p16f870    p16f871    p16f872    p16f873    p16f873a   p16f874
 \layout LyX-Code
 
-p17c43     p17c44     p17c752    p17c756    p17c756a   p17c762
+p16f874a   p16f876    p16f876a   p16f877    p16f877a   p16f88
 \layout LyX-Code
 
-p17c766    p17cr42    p17cr43    p18cxx2    p18c242    p18c252
+p16hv540   p17cxx     p17c42     p17c42a    p17c43     p17c44
 \layout LyX-Code
 
-p18c442    p18c452    p18c601    p18c658    p18c801    p18c858
+p17c752    p17c756    p17c756a   p17c762    p17c766    p17cr42
 \layout LyX-Code
 
-p18f010    p18f012    p18f020    p18f022    p18f242    p18f248
+p17cr43    p18cxx     p18c242    p18c252    p18c442    p18c452
 \layout LyX-Code
 
-p18f252    p18f258    p18f442    p18f448    p18f452    p18f458
+p18c601    p18c658    p18c801    p18c858    p18f1220   p18f1320
+\layout LyX-Code
+
+p18f2220   p18f2320   p18f242    p18f248    p18f252    p18f258
+\layout LyX-Code
+
+p18f4220   p18f4320   p18f442    p18f448    p18f452    p18f458
+\layout LyX-Code
+
+p18f6620   p18f6720   p18f8620   p18f8720   rf509af    rf509ag
 \layout LyX-Code
 
 sx18       sx20       sx28       
@@ -3405,7 +3513,7 @@ gpasm encountered an illegal argument in an expression.
 125 Illegal Condition
 \layout Standard
 
-An illegal condition like a missing endif or endw has been encountered.
+An illegal condition like a missing ENDIF or ENDW has been encountered.
 \layout Description
 
 126 Argument out of Range
@@ -3522,14 +3630,14 @@ The processor was specified on the command line and in the source file.
  The command line has precedence.
 \layout Description
 
-216 Radix superceded by command line
+216 Radix superseded by command line
 \layout Standard
 
 The radix was specified on the command line and in the source file.
  The command line has precedence.
 \layout Description
 
-217 Hex format superceded by command line
+217 Hex format superseded by command line
 \layout Standard
 
 The hex file format was specified on the command line and in the source
@@ -3666,8 +3774,9 @@ Where options can be one of:
 \layout Standard
 \added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
 multicol5
-7 2 0 0 -1 -1 -1 -1
+8 2 0 0 -1 -1 -1 -1
 1 1 0 0
+1 0 0 0
 1 0 0 0
 1 0 0 0
 1 0 0 0
@@ -3678,6 +3787,8 @@ multicol5
 2 1 1 "4in" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
@@ -3703,14 +3814,17 @@ i
 \newline 
 Display hex file information
 \newline 
+l
+\newline 
+List supported processors.
+\newline 
 m
 \newline 
 Memory dump hex file.
 \newline 
-p\SpecialChar ~
- [pic12|pic14] 
+p<processor>
 \newline 
-Select processor family.
+Select processor.
 \newline 
 s
 \newline 
@@ -3887,7 +4001,7 @@ Show the help message.
 \newline 
 r
 \newline 
-Display rom
+Display ROM
 \newline 
 l
 \newline 
@@ -3991,10 +4105,8 @@ Where options can be one of:
 \layout Standard
 \added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
 multicol5
-10 2 0 0 -1 -1 -1 -1
+8 2 0 0 -1 -1 -1 -1
 1 1 0 0
-1 0 0 0
-1 0 0 0
 1 0 0 0
 1 0 0 0
 1 0 0 0
@@ -4020,18 +4132,10 @@ multicol5
 0 2 1 0 0 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
 
 Option
 \newline 
 Meaning
-\newline 
-a
-\newline 
-Auxillary record
 \newline 
 b
 \newline 
@@ -4043,16 +4147,11 @@ File header
 \newline 
 h
 \newline 
-Show the help message.
+Show the help message
 \newline 
-o
+n
 \newline 
-Optional header
-\newline 
-p\SpecialChar ~
- [pic12|pic14] 
-\newline 
-Select processor 
+Suppress filenames
 \newline 
 s
 \newline 
@@ -4064,7 +4163,7 @@ Symbol data
 \newline 
 v
 \newline 
-Print gpvo version information and exit.
+Print gpvo version information and exit
 \layout Standard
 
 gpvo doesn't specifically create an output file.
