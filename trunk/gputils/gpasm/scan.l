@@ -49,6 +49,8 @@ static void push_string(char *str);
 static int found_end();
 static int found_eof();
 
+static char *check_defines(char *symbol);
+
 static struct symbol *current_definition;	/* Used in #define */
 static int quoted; /* Used to prevent #define expansion in ifdef and 
                       ifndef... */
@@ -208,8 +210,16 @@ list		     	 {
 			   return IDENTIFIER;
 			 }
 ^{IDENT}#v\(             {
+			   char *symbol;
+
                            yytext[strlen(yytext) - 3] = '\0';
-                           yylval.s = strdup(yytext);
+
+			   symbol = check_defines(yytext);
+			   if (symbol) {
+                             yylval.s = strdup(symbol);
+			   } else {
+                             yylval.s = strdup(yytext);
+			   }
                            return VARLAB_BEGIN;
                          }
 ^{IDENT}:?		 { 
@@ -270,40 +280,44 @@ list		     	 {
                            }			   
 			 }
 {IDENT}#v\(              {
+			   char *symbol;
+
                            yytext[strlen(yytext) - 3] = '\0';
-                           yylval.s = strdup(yytext);
+
+			   symbol = check_defines(yytext);
+			   if (symbol) {
+                             yylval.s = strdup(symbol);
+			   } else {
+                             yylval.s = strdup(yytext);
+			   }
                            return VAR_BEGIN;
                          }
 \)[a-z_0-9\x80-\xff?.]+  {
-                           yylval.s = strdup(yytext+1);
+			   char *symbol;
+
+			   symbol = check_defines(yytext+1);
+			   if (symbol) {
+                             yylval.s = strdup(symbol);
+			   } else {
+                             yylval.s = strdup(yytext+1);
+			   }
                            return VAR_END;
                          }
 {IDENT}			 {
-			   struct symbol *sym;
+			   char *symbol;
 
-			   /* If not quoted, check for #define substitution */
-			   if (!quoted &&
-                               (sym = get_symbol(state.stTopDefines, yytext)) != NULL) {
-			     char *subst = get_symbol_annotation(sym);
-			     assert(subst != NULL);
- 			     if (strcmp(yytext, subst) == 0) {
- 			       /* if check for bad subsitution */
- 			       yylval.s = strdup(yytext);
- 			       return IDENTIFIER;
- 			     } else {
- 			       char buffer[BUFSIZ];
+			   symbol = check_defines(yytext);
+			   if (symbol) {
+ 			     char buffer[BUFSIZ];
                                
-                               /* Make the substitution with a leading space,
-                                  that way it won't be a label */
-                               buffer[0] = ' ';
-                               buffer[1] = '\0';
-                               strcat(buffer, subst);
-                               push_string(buffer);
- 			     }
-			   } else {
+                             /* Make the substitution with a leading space,
+                                so it won't be a label */
+                             sprintf(buffer, " %s", symbol); 
+                             push_string(buffer);
+                           } else {
                              yylval.s = strdup(yytext);
 			     return IDENTIFIER;
-			   }
+                           }
 			 }
 1[24678][CFHL0][CERV]?[0-9X][0-9X][0-9]?[0-9ABC]? {
 /* Ugh.  As a special case, treat processor names, such as 16C84
@@ -720,3 +734,22 @@ enum identtype identify(char *text)
   return type;
 }
 
+static char *
+check_defines(char *symbol)
+{
+  struct symbol *sym;
+  char *subst = NULL;
+
+  /* If not quoted, check for #define substitution */
+  if (!quoted &&
+     (sym = get_symbol(state.stTopDefines, yytext)) != NULL) {
+    subst = get_symbol_annotation(sym);
+    assert(subst != NULL);
+    if (strcmp(yytext, subst) == 0) {
+      /* check for a bad subsitution */
+      subst = NULL;
+    }
+  }
+
+  return subst;
+}
