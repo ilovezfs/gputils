@@ -1,3 +1,6 @@
+2002-01-13 Craig Franklin <craigfranklin@attbi.com>
+  * Fixed a bug in gpvc that could cause a segmentation fault.
+
 2002-01-10 Craig Franklin <craigfranklin@attbi.com>
   * Renamed gpasm package to gputils.
   * Changed library from libgpasm.a to libgputils.a
