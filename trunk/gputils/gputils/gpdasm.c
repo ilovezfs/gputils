@@ -131,7 +131,7 @@ void dasm(MemBlock *memory)
         } else {
           printf("        ");
         }
-        gp_disassemble(memory, &i, state.class, buffer);
+        gp_disassemble(memory, &i, state.class, buffer, sizeof(buffer));
         printf("%s\n", buffer);
         if ((state.format) && (i != lastloc)) {
           /* some 18xx instructions use two words */

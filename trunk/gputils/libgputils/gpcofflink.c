@@ -498,8 +498,8 @@ _create_rom_section(gp_object_type *object, gp_section_type *section)
   char name[BUFSIZ];
   
   /* create the new section */
-  strcpy(name, section->name);
-  strcat(name, "_i");
+  strncpy(name, section->name, sizeof(name));
+  strncat(name, "_i", sizeof(name));
   new = gp_coffgen_newsection(name);
   if (object->class == PROC_CLASS_PIC16E) {
     new->size = section->size;
@@ -662,8 +662,8 @@ gp_add_cinit_section(gp_object_type *object, int byte_addr)
     while (section != NULL) {
       if (section->flags & STYP_DATA) {
         /* locate the rom table */
-        strcpy(prog_name, section->name);
-        strcat(prog_name, "_i");
+        strncpy(prog_name, section->name, sizeof(prog_name));
+        strncat(prog_name, "_i", sizeof(prog_name));
         prog_section = gp_coffgen_findsection(object, 
                                               object->sections, 
                                               prog_name);
@@ -1180,7 +1180,7 @@ gp_cofflink_fill_pages(gp_object_type *object,
                                  &current_address,
                                  &current_size);
           if (found == 1) {
-            sprintf(fill_name, ".fill_%i", fill_number++);
+            snprintf(fill_name, sizeof(fill_name), ".fill_%i", fill_number++);
             gp_debug("  new section \"%s\" at %#x with size %#x and data %#x", 
                      fill_name,
                      current_address,

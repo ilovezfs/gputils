@@ -39,11 +39,11 @@ stringtolong(char *string, int radix)
   if ((endptr == NULL) || (*endptr != '\0')) {
     char complaint[80];
 
-    sprintf(complaint,
-            isprint(*endptr) ?
-            "Illegal character '%c' in numeric constant " :
-            "Illegal character %#x in numeric constant" ,
-            *endptr);
+    snprintf(complaint, sizeof(complaint),
+             isprint(*endptr) ?
+             "Illegal character '%c' in numeric constant " :
+             "Illegal character %#x in numeric constant" ,
+             *endptr);
     gperror(GPE_UNKNOWN, complaint);
   }
 
@@ -190,9 +190,9 @@ void set_global(char *name,
     if (var->value != value) {
       char message[BUFSIZ];
 
-      sprintf(message,
-              "Value of symbol \"%s\" differs on second pass\n pass 1=%d,  pass 2=%d",
-              name,var->value,value);
+      snprintf(message, sizeof(message),
+               "Value of symbol \"%s\" differs on second pass\n pass 1=%d,  pass 2=%d",
+               name,var->value,value);
       gperror(GPE_DIFFLAB, message);      
     }
 

@@ -323,7 +323,10 @@ static int list_symbol_member(struct pnode *M, struct pnode *L)
     return 0;
   } else if (STRCMP(M->value.symbol, HEAD(L)->value.symbol) == 0) {
     char buf[BUFSIZ];
-    sprintf(buf, "Duplicate macro parameter (%s).", HEAD(L)->value.symbol);
+    snprintf(buf,
+             sizeof(buf), 
+             "Duplicate macro parameter (%s).", 
+             HEAD(L)->value.symbol);
     gperror(GPE_UNKNOWN, buf);
     return 1;
   } else {
@@ -524,14 +527,14 @@ static gpasmVal do_code(gpasmVal r,
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strcpy(state.obj.new_sec_name, ".code");
+      strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_TEXT;
       break;
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strcpy(state.obj.new_sec_name, ".code");
+      strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p) >> _16bit_core;
       state.obj.new_sec_flags = STYP_TEXT | STYP_ABS;
       break;
@@ -1107,12 +1110,18 @@ static gpasmVal do_global(gpasmVal r,
       if (p->tag == symbol) {
         s = get_symbol(state.stTop, p->value.symbol);
         if (s == NULL) {
-          sprintf(buf, "Symbol not previously defined (%s).", p->value.symbol);
+          snprintf(buf,
+                   sizeof(buf),
+                   "Symbol not previously defined (%s).",
+                   p->value.symbol);
           gperror(GPE_NOSYM, buf);    
 	} else {
           var = get_symbol_annotation(s);
           if (var == NULL) {
-            sprintf(buf, "Symbol not assigned a value (%s).", p->value.symbol);
+            snprintf(buf,
+                     sizeof(buf),
+                     "Symbol not assigned a value (%s).",
+                     p->value.symbol);
             gpwarning(GPW_UNKNOWN, buf);    
           } else {
             if ((var->previous_type == gvt_address) || 
@@ -1123,8 +1132,10 @@ static gpasmVal do_global(gpasmVal r,
             } else if (var->previous_type == gvt_extern) { 
               gperror(GPE_DUPLAB, NULL);    
             } else {
-              sprintf(buf, "Operand must be an address label (%s).", 
-                      p->value.symbol);
+              snprintf(buf,
+                       sizeof(buf),
+                       "Operand must be an address label (%s).", 
+                       p->value.symbol);
               gperror(GPE_MUST_BE_LABEL, buf);    
             } 
           }         
@@ -1154,14 +1165,14 @@ static gpasmVal do_idata(gpasmVal r,
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strcpy(state.obj.new_sec_name, ".idata");
+      strncpy(state.obj.new_sec_name, ".idata", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_DATA;
       break;
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strcpy(state.obj.new_sec_name, ".idata");
+      strncpy(state.obj.new_sec_name, ".idata", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p) >> _16bit_core;
       state.obj.new_sec_flags = STYP_DATA | STYP_ABS;
       break;
@@ -1613,7 +1624,7 @@ static gpasmVal do_org(gpasmVal r,
       }	else {
         /* Default section name, this will be overwritten if a label is 
            present. */
-        sprintf(state.obj.new_sec_name, ".org_%d", state.obj.org_num++);
+        snprintf(state.obj.new_sec_name, sizeof(state.obj.new_sec_name), ".org_%d", state.obj.org_num++);
         state.obj.new_sec_addr = r;
         state.obj.new_sec_flags = STYP_TEXT | STYP_ABS;
         state.lst.line.linetype = sec;
@@ -1836,14 +1847,14 @@ static gpasmVal do_udata(gpasmVal r,
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strcpy(state.obj.new_sec_name, ".udata");
+      strncpy(state.obj.new_sec_name, ".udata", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_BSS;
       break;
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strcpy(state.obj.new_sec_name, ".udata");
+      strncpy(state.obj.new_sec_name, ".udata", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS;
       break;
@@ -1871,14 +1882,18 @@ static gpasmVal do_udata_acs(gpasmVal r,
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strcpy(state.obj.new_sec_name, ".udata_acs");
+      strncpy(state.obj.new_sec_name,
+              ".udata_acs",
+              sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_BSS | STYP_ACCESS;
       break;
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strcpy(state.obj.new_sec_name, ".udata_acs");
+      strncpy(state.obj.new_sec_name,
+              ".udata_acs",
+              sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_ACCESS;
       break;
@@ -1906,14 +1921,18 @@ static gpasmVal do_udata_ovr(gpasmVal r,
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strcpy(state.obj.new_sec_name, ".udata_ovr");
+      strncpy(state.obj.new_sec_name,
+              ".udata_ovr",
+              sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_BSS | STYP_OVERLAY;
       break;
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strcpy(state.obj.new_sec_name, ".udata_ovr");
+      strncpy(state.obj.new_sec_name,
+              ".udata_ovr",
+              sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_OVERLAY;
       break;
@@ -1941,14 +1960,18 @@ static gpasmVal do_udata_shr(gpasmVal r,
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strcpy(state.obj.new_sec_name, ".udata_shr");
+      strncpy(state.obj.new_sec_name,
+              ".udata_shr",
+              sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_BSS | STYP_SHARED;
       break;
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strcpy(state.obj.new_sec_name, ".udata_shr");
+      strncpy(state.obj.new_sec_name,
+              ".udata_shr",
+              sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_SHARED;
       break;
@@ -2126,10 +2149,12 @@ static void emit_check_relative(int insn, int argument, int mask, int range)
 
   /* If the branch is too far then issue an error */
   if ((argument > range) || (argument < -(range+1))) {
-    sprintf(full_message,"Argument out of range (%d not between %d and %d)\n",
-	    argument,
-	    -(range+1),
-	    range);
+    snprintf(full_message,
+             sizeof(full_message),
+             "Argument out of range (%d not between %d and %d)\n",
+             argument,
+             -(range+1),
+             range);
     gperror(GPE_RANGE, full_message);
   }
 
@@ -2886,7 +2911,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           gperror(GPE_UNDEF_PROC, NULL);
         } else {
           char mesg[80];
-          sprintf(mesg, "Unknown opcode \"%.40s\"", name);
+          snprintf(mesg, sizeof(mesg), "Unknown opcode \"%.40s\"", name);
           gperror(GPE_UNKNOWN, mesg);
         }
       }

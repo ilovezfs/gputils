@@ -88,7 +88,7 @@ static void bad_char(char *character)
 {
   char complaint[80];
 			 
-  sprintf(complaint, 
+  snprintf(complaint, sizeof(complaint),
     isprint(*character) ?
       "Illegal character '%c' in numeric constant" :
       "Illegal character %#x in numeric constant",
@@ -115,9 +115,9 @@ void open_src(char *name, int isinclude)
     int i;
 
     for(i = 0; i < state.numpaths; i++) {
-      strcpy(tryname, state.paths[i]);
-      strcat(tryname, COPY_CHAR);
-      strcat(tryname, name);
+      strncpy(tryname, state.paths[i], sizeof(tryname));
+      strncat(tryname, COPY_CHAR, sizeof(tryname));
+      strncat(tryname, name, sizeof(tryname));
       new->f = fopen(tryname, "rt");
       if(new->f) {
         new->name = strdup(tryname);

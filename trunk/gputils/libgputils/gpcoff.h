@@ -568,7 +568,7 @@ typedef struct gp_object_type
   enum proc_class class;
   
   /* time object was created */
-  long time;
+  time_t time;
   
   /* flags */
   unsigned short flags;

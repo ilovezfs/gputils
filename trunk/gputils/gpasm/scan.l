@@ -86,8 +86,7 @@ end		         {
 <title>[^<"\r\n]*[>"]?   { /* got the title text */
 #define LEN sizeof(state.lst.title_name)
                            yytext[yyleng - 1] = '\0';
-                           strncpy(state.lst.title_name, yytext, LEN - 1);
-                           state.lst.title_name[LEN - 1] = '\0';
+                           strncpy(state.lst.title_name, yytext, LEN);
                            BEGIN(INITIAL);
 #undef LEN
                          }
@@ -97,8 +96,7 @@ end		         {
 <subtitle>[^<"\r\n]*[>"]?   { /* got the subtitle text */
 #define LEN sizeof(state.lst.subtitle_name)
                            yytext[yyleng - 1] = '\0';
-                           strncpy(state.lst.subtitle_name, yytext, LEN - 1);
-                           state.lst.subtitle_name[LEN - 1] = '\0';
+                           strncpy(state.lst.subtitle_name, yytext, LEN);
                            BEGIN(INITIAL);
 #undef LEN
                          }
@@ -479,9 +477,9 @@ search_pathes(struct source_context *new, char *name)
   int i;
 
   for(i = 0; i < state.path_num; i++) {
-    strcpy(tryname, state.paths[i]);
-    strcat(tryname, COPY_CHAR);
-    strcat(tryname, name);
+    strncpy(tryname, state.paths[i], sizeof(tryname));
+    strncat(tryname, COPY_CHAR, sizeof(tryname));
+    strncat(tryname, name, sizeof(tryname));
     new->f = fopen(tryname, "rt");
     if(new->f) {
       new->name = strdup(tryname);
@@ -527,10 +525,10 @@ void open_src(char *name, int isinclude)
     if (state.src) {
       char complaint[BUFSIZ];
 
-      sprintf(complaint,
-	      "Unable to open file \"%s\" - %s",
-	      name,
-	      strerror(errno));
+      snprintf(complaint, sizeof(complaint),
+               "Unable to open file \"%s\" - %s",
+               name,
+               strerror(errno));
       state.pass = 2; /* Ensure error actually gets displayed */
       gperror(GPE_UNKNOWN, complaint);
     } else {

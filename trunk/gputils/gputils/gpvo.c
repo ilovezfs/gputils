@@ -135,7 +135,7 @@ void print_data(enum proc_class class, gp_section_type *section)
       break;
 
     if (section->flags & STYP_TEXT) {
-      gp_disassemble(section->data, &org, class, buffer);
+      gp_disassemble(section->data, &org, class, buffer, sizeof(buffer));
       printf("%06x:  %04x  %s\n", org << byte_addr, memory & 0xffff, buffer);
     } else if (section->flags & STYP_DATA_ROM) {
       printf("%06x:  %04x\n", org << byte_addr, memory & 0xffff);

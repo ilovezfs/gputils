@@ -41,7 +41,7 @@ void  gp_putl32(char *addr, long data);
 long  gp_getb32(char *addr);
 void  gp_putb32(char *addr, long data);
 
-void  gp_date_string(char *buffer);
+void  gp_date_string(char *buffer, size_t sizeof_buffer);
 char *gp_lower_case(char *name);
 char *gp_upper_case(char *name);
 

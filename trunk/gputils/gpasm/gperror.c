@@ -172,17 +172,17 @@ void gperror(unsigned int code,
     /* standard output */
     if (!state.quiet) {
       if (state.src)
-        sprintf(full_message,
-	        "%s:%d:Error [%03d] %s",
-	        state.src->name,
-	        state.src->line_number,
-	        code,
-	        message);
+        snprintf(full_message, sizeof(full_message),
+                 "%s:%d:Error [%03d] %s",
+                 state.src->name,
+                 state.src->line_number,
+                 code,
+                 message);
       else
-        sprintf(full_message,
-	        "Error [%03d] %s",
-	        code,
-	        message);
+        snprintf(full_message, sizeof(full_message),
+                 "Error [%03d] %s",
+                 code,
+                 message);
 
       printf("%s\n", full_message);
     }
@@ -191,10 +191,10 @@ void gperror(unsigned int code,
 #endif
 
     /* list file output */
-    sprintf(full_message,
-	    "Error [%03d] : %s",
-	    code,
-	    message);
+    snprintf(full_message, sizeof(full_message),
+	     "Error [%03d] : %s",
+	     code,
+	     message);
 
     lst_line(full_message);
 
@@ -260,17 +260,17 @@ void gpwarning(unsigned int code,
       /* standard output */
       if (!state.quiet) {
         if (state.src)
-          sprintf(full_message,
-	          "%s:%d:Warning [%03d] %s",
-	          state.src->name,
-	          state.src->line_number,
-	          code,
-	          message);
+          snprintf(full_message, sizeof(full_message),
+                   "%s:%d:Warning [%03d] %s",
+                   state.src->name,
+                   state.src->line_number,
+                   code,
+                   message);
         else
-          sprintf(full_message,
-	          "Warning [%03d] %s",
-	          code,
-	          message);
+          snprintf(full_message, sizeof(full_message),
+                   "Warning [%03d] %s",
+                   code,
+                   message);
 
         printf("%s\n", full_message);
       } 
@@ -279,10 +279,10 @@ void gpwarning(unsigned int code,
 #endif
 
       /* list file output */
-      sprintf(full_message,
-	      "Warning [%03d] : %s",
-	      code,
-	      message);
+      snprintf(full_message, sizeof(full_message),
+	       "Warning [%03d] : %s",
+	       code,
+	       message);
 
       lst_line(full_message);
 
@@ -345,17 +345,17 @@ void gpmessage(unsigned int code,
       /* standard output */
       if (!state.quiet) {
         if (state.src)
-          sprintf(full_message,
-	          "%s:%d:Message [%03d] %s",
-	          state.src->name,
-	          state.src->line_number,
-	          code,
-	          message);
+          snprintf(full_message, sizeof(full_message),
+                   "%s:%d:Message [%03d] %s",
+                   state.src->name,
+                   state.src->line_number,
+                   code,
+                   message);
         else
-          sprintf(full_message,
-	          "Message [%03d] %s",
-	          code,
-	          message);
+          snprintf(full_message, sizeof(full_message),
+                   "Message [%03d] %s",
+                   code,
+                   message);
 
         printf("%s\n", full_message);
       }
@@ -364,10 +364,10 @@ void gpmessage(unsigned int code,
 #endif
 
       /* list file output */
-      sprintf(full_message,
-	      "Message [%03d] : %s",
-	      code,
-	      message);
+      snprintf(full_message, sizeof(full_message),
+               "Message [%03d] : %s",
+               code,
+               message);
 
       lst_line(full_message);
 

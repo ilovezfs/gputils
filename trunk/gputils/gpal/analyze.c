@@ -53,7 +53,7 @@ analyze_error(tree *node, const char *format, ...)
     return;
 
   va_start(args, format);
-  vsprintf(buffer, format, args);
+  vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
 
   if ((node) && (node->file_id)) {
@@ -80,7 +80,7 @@ analyze_warning(tree *node, const char *format, ...)
     return;
 
   va_start(args, format);
-  vsprintf(buffer, format, args);
+  vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
 
   if ((node) && (node->file_id)) {
