@@ -173,7 +173,7 @@ set_optimize_level(void)
   return;
 }
 
-#define GET_OPTIONS "?I:acdhH:k:lo:O:p:Stqv"
+#define GET_OPTIONS "?I:acdhk:lo:O:p:Stqv"
 
 /* Used: acdDehiIlmopqrwv */
 static struct option longopts[] =
@@ -183,7 +183,6 @@ static struct option longopts[] =
   { "debug",       0, 0, 'd' },
   { "include",     1, 0, 'I' },
   { "help",        0, 0, 'h' },
-  { "header",      1, 0, 'H' },
   { "options",     1, 0, 'k' },
   { "list-chips",  0, 0, 'l' },
   { "output",      1, 0, 'o' },
@@ -205,7 +204,6 @@ show_usage(void)
   printf("  -c, --object                   Compile or assemble, but don't link.\n");
   printf("  -d, --debug                    Output debug messages.\n");
   printf("  -h, --help                     Show this usage message.\n");
-  printf("  -H FILE, --header FILE         Scan the specified processor header file.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
   printf("  -k \"OPT\", --options \"OPT\"      Extra link or lib options.\n");
   printf("  -l, --list-chips               List supported processors.\n");
@@ -275,9 +273,6 @@ process_args( int argc, char *argv[])
     case '?':
     case 'h':
       usage = 1;
-      break;
-    case 'H':
-      scan_header(optarg);
       break;
     case 'I':
       add_path(optarg);

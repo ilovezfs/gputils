@@ -73,7 +73,6 @@ DECCHAR [0-9]
 "array"			{ return ARRAY; }
 "begin"			{ return BEGIN_TOK; }
 "case"			{ return CASE; }
-"constant"		{ return CONSTANT; }
 "else"			{ return ELSE; }
 "elsif"			{ return ELSIF; }
 "end"			{ return END; }
@@ -96,7 +95,6 @@ DECCHAR [0-9]
 "then"			{ return THEN; }
 "to"			{ return TO; }
 "type"			{ return TYPE; }
-"variable"		{ return VARIABLE; }
 "when"			{ return WHEN; }
 "while"			{ return WHILE; }
 "with"			{ return WITH; }
@@ -198,13 +196,10 @@ void open_src(char *name, enum source_type type)
     new->name = file_name;
   }
 
-  /* the header scan uses a seperate lexer/parser */
-  if (type != source_header) {
-    yyin = new->f;
+  yyin = new->f;
 
-    if (state.src) {
-      yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
-    }
+  if (state.src) {
+    yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
   }
 
   new->type = type;
@@ -272,87 +267,4 @@ stringtolong(char *string, int radix)
   }
 
   return value;
-}
-
-static int
-convert_number(char *string)
-{
-  int value = 0;
-
-  if ((string[0] == 'H') && (string[1] == '\'')) {
-    if (string[2] == '-') {
-      string = &string[3];
-    } else {
-      string = &string[2];
-    }
-    string[strlen(string) - 1] = '\0';
-    value = stringtolong(string, 16);
-  } else if ((string[0] == '0') && (string[1] == 'x')) {  
-    string = &string[2];
-    value = stringtolong(string, 16);
-  } else if (string[0] == '.') {  
-    string = &string[1];
-    value = stringtolong(string, 10);
-  } else {
-    gp_error("%s:%i:error unknown value \"%s\"",
-             state.src->name,
-             state.src->line_number,
-             string);
-  }
-
-  return value;
-}
-
-void
-scan_header(char *file_name)
-{
-  #define NUM_TOKENS 3
-  #define LINESIZ 520
-  char linebuf[LINESIZ];
-  char *linept = linebuf;
-  char *array[NUM_TOKENS];
-  int i;
-  int value;
-
-  open_src(file_name, source_header);
-
-  if (gp_debug_disable == 0) {
-    gp_debug("adding symbols from %s", file_name);
-  }
-
-  /* scan the file looking for the equates */
-  while(fgets(linept, LINESIZ, state.src->f)) {
-
-    array[0] = strtok(linebuf, " \t\r\n");
-    if (array[0]) {
-      for (i = 1; i < NUM_TOKENS; i++) {
-        array[i] = strtok(NULL, " \t\r\n");
-        if (array[i] == NULL)
-          break;      
-      }
-
-      if (array[0] && array[1] && array[2] && 
-          (array[0][0] != ';') &&
-          (strcasecmp(array[1], "equ") == 0)) {
-        value = convert_number(array[2]);
-        add_equ(array[0], value); 
-        gp_debug("  %s = %#x", array[0], value);
-      }
-    }
-
-    /* set the line pointer to the beginning of the line buffer */
-    linept = linebuf;
-    
-    state.src->line_number++;
-
-  }
-
-  if (state.processor_info) {
-    add_equ(state.processor_info->defined_as, 1);
-  }
-
-  close_file();
-
-  return;
-
 }

@@ -65,14 +65,12 @@ static tree *case_ident = NULL;
   char *s;
   tree *t;
   enum node_dir d;
-  enum node_key k;
   enum node_op o;
 }
 
 /* keywords */
 %token <i> ARRAY     "array"
 %token <i> CASE      "case"
-%token <i> CONSTANT  "constant"
 %token <i> BEGIN_TOK "begin"
 %token <i> ELSE      "else"
 %token <i> ELSIF     "elsif"
@@ -96,7 +94,6 @@ static tree *case_ident = NULL;
 %token <i> TO        "to"
 %token <i> TYPE      "type"
 %token <i> OUT       "out"
-%token <i> VARIABLE  "variable"
 %token <i> WHEN      "when"
 %token <i> WHILE     "while"
 %token <i> WITH      "with"
@@ -130,9 +127,6 @@ static tree *case_ident = NULL;
 %type <s> entity
 %type <t> element_list
 %type <t> element
-%type <i> '+', '-', '*', '/', '%', '!', '~'
-%type <t> expr, e0, e1, e2, e3, e4, e5, e6, e7, e8,
-%type <o> e1op, e2op, e3op, e4op, e5op, e6op, e7op, e8op
 %type <t> type
 %type <t> head
 %type <t> arg_list
@@ -142,7 +136,6 @@ static tree *case_ident = NULL;
 %type <t> decl_start
 %type <t> decl_block
 %type <t> decl
-%type <k> decl_key
 %type <t> statement_start
 %type <t> statement_block
 %type <t> statement
@@ -151,6 +144,9 @@ static tree *case_ident = NULL;
 %type <t> case_body
 %type <t> loop_statement
 %type <t> parameter_list
+%type <i> '+', '-', '*', '/', '%', '!', '~'
+%type <t> expr, e0, e1, e2, e3, e4, e5, e6, e7, e8,
+%type <o> e1op, e2op, e3op, e4op, e5op, e6op, e7op, e8op
 
 %start program
 
@@ -320,27 +316,15 @@ decl_block:
 	;
 
 decl:
-	decl_key IDENT ':' IDENT ';'
+	IDENT ':' IDENT ';'
 	{ 
-	  $$ = mk_decl($1, $4, $2, NULL);
+	  $$ = mk_decl($1, $3, NULL);
         }
 	|
-	decl_key IDENT ':' IDENT '=' expr ';'
+	IDENT ':' IDENT '=' expr ';'
 	{ 
-	  $$ = mk_decl($1, $4, $2, $6);
+	  $$ = mk_decl($1, $3, $5);
         }
-	;
-
-decl_key:
-	CONSTANT
-	{
-	  $$ = key_constant;
-	}
-	|
-	VARIABLE
-	{
-	  $$ = key_variable;
-	}
 	;
 
 statement_start:

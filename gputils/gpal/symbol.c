@@ -145,51 +145,6 @@ add_constant(char *name, int value, tree *node, char *type)
   return var;
 }
 
-void
-add_equ(char *name, int value)
-{
-  struct symbol *sym;
-  struct variable *var;
-  struct symbol *prim;
-  struct type *prim_type = NULL;
-
-  prim = get_symbol(state.type, "uint8");
-  if (prim == NULL) {
-    assert(0);
-  } else {
-    prim_type = get_symbol_annotation(prim);
-    assert(prim_type != NULL);
-  }
-
-  sym = get_symbol(state.top, name);
-  if (sym == NULL) {
-    sym = add_symbol(state.global, name);
-    var = malloc(sizeof(*var));
-    annotate_symbol(sym, var);
-    var->name = strdup(name);
-    var->alias = var->name;
-    var->tag = sym_equ;
-    var->storage = storage_far;  /* far so banksel is generated */
-    var->type = prim_type;
-    var->is_used = false;
-    var->is_assigned = true;
-    var->value = value;
-    var->file_id = state.src->file_id;
-    var->line_number = state.src->line_number;
-    var->node = NULL;
-  } else {
-    gp_num_errors++;
-    if (gp_quiet == 0) {
-      printf("%s:%d:error duplicate symbol %s\n",
-             state.src->name,
-             state.src->line_number,
-             name);
-    }
-  }
-
-  return;
-}
-
 static void
 add_type_prim(char *name, enum size_tag size)
 {
@@ -347,6 +302,9 @@ prim_size(enum size_tag size)
   case size_unknown:
     assert(0);
     break;
+  case size_constant:
+    byte_size = 0;
+    break;
   case size_bit:
     byte_size = 1;
     break;
@@ -437,16 +395,17 @@ type_size(struct type *type)
 void
 add_type_prims(void)
 {
-  add_type_prim("bit",    size_bit);
-  add_type_prim("uint8",  size_uint8);
-  add_type_prim("int8",   size_int8);
-  add_type_prim("uint16", size_uint16);
-  add_type_prim("int16",  size_int16);
-  add_type_prim("uint24", size_uint24);
-  add_type_prim("int24",  size_int24);
-  add_type_prim("uint32", size_uint32);
-  add_type_prim("int32",  size_int32);
-  add_type_prim("float",  size_float);
+  add_type_prim("constant", size_bit);
+  add_type_prim("bit",      size_bit);
+  add_type_prim("uint8",    size_uint8);
+  add_type_prim("int8",     size_int8);
+  add_type_prim("uint16",   size_uint16);
+  add_type_prim("int16",    size_int16);
+  add_type_prim("uint24",   size_uint24);
+  add_type_prim("int24",    size_int24);
+  add_type_prim("uint32",   size_uint32);
+  add_type_prim("int32",    size_int32);
+  add_type_prim("float",    size_float);
 
   return;
 }
@@ -461,7 +420,6 @@ has_address(struct variable *var)
   switch (var->tag) {
   case sym_unknown:
   case sym_const:
-  case sym_equ:
     return false;
   default:
     return true;
