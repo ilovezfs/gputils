@@ -1,281 +1,413 @@
-;----------------------------------------------------------------------
-;MCP2510.INC
-; Description:  This file contains the definitions for the MicroChip
-; standalone CANbus controller.
+;**********************************************************************
+; *   CAN MCP2510 definitions file                                    *
+; *********************************************************************
+; *   Filename:       MCP2510.inc                                     *
+; *   Date:           02 Month 1999                                   *
+; *   File Version:   0.90 (Beta)                                     *
+; *********************************************************************
+; *   Functions:                                                      *
+; *               Header file                                         *
+; *********************************************************************
+; *   Revision History:                                               *
+; *********************************************************************
 ;
-; 07/17/99 JPF Original Version
-; 09/11/99 JCT Modified for ASM
-;----------------------------------------------------------------------
+;
+;**********************************************************************
+; *                     Register Definitions                          *
+; *********************************************************************
 
-#define RXF0SIDH	0x00
-#define RXF0SIDL	0x01
-#define RXF0EID8	0x02
-#define RXF0EID0	0x03
-#define RXF1SIDH	0x04
-#define RXF1SIDL	0x05
-#define RXF1EID8	0x06
-#define RXF1EID0	0x07
-#define RXF2SIDH	0x08
-#define RXF2SIDL	0x09
-#define RXF2EID8	0x0A
-#define RXF2EID0	0x0B
-#define BFPCTRL	0x0C
-#define TXRTSCTRL	0x0D
-#define CANSTAT	0x0E
-#define CANCTRL	0x0F
+; Configuration Registers *
+CANSTAT         EQU    0x0E
+CANCTRL         EQU    0x0F
+BFPCTRL         EQU    0x0C
+TEC             EQU    0x1C
+REC             EQU    0x1D
+CNF3            EQU    0x28
+CNF2            EQU    0x29
+CNF1            EQU    0x2A
+CANINTE         EQU    0x2B
+CANINTF         EQU    0x2C
+EFLG            EQU    0x2D
+TXRTSCTRL       EQU    0x0D
 
-#define RXF3SIDH	0x10
-#define RXF3SIDL	0x11
-#define RXF3EID8	0x12
-#define RXF3EID0	0x13
-#define RXF4SIDH	0x14
-#define RXF4SIDL	0x15
-#define RXF4EID8	0x16
-#define RXF4EID0	0x17
-#define RXF5SIDH	0x18
-#define RXF5SIDL	0x19
-#define RXF5EID8	0x1A
-#define RXF5EID0	0x1B
-#define TEC	0x1C
-#define REC         0x1D
-#define CANSTAT1	0x1E
-#define CANCTRL1	0x1F
+; Receive Filters *
+RXF0SIDH        EQU    0x00
+RXF0SIDL        EQU    0x01
+RXF0EID8        EQU    0x02
+RXF0EID0        EQU    0x03
+RXF1SIDH        EQU    0x04
+RXF1SIDL        EQU    0x05
+RXF1EID8        EQU    0x06
+RXF1EID0        EQU    0x07
+RXF2SIDH        EQU    0x08
+RXF2SIDL        EQU    0x09
+RXF2EID8        EQU    0x0A
+RXF2EID0        EQU    0x0B
+RXF3SIDH        EQU    0x10
+RXF3SIDL        EQU    0x11
+RXF3EID8        EQU    0x12
+RXF3EID0        EQU    0x13
+RXF4SIDH        EQU    0x14
+RXF4SIDL        EQU    0x15
+RXF4EID8        EQU    0x16
+RXF4EID0        EQU    0x17
+RXF5SIDH        EQU    0x18
+RXF5SIDL        EQU    0x19
+RXF5EID8        EQU    0x1A
+RXF5EID0        EQU    0x1B
 
-#define RXM0SIDH	0x20
-#define RXM0SIDL	0x21
-#define RXM0EID8	0x22
-#define RXM0EID0	0x23
-#define RXM1SIDH	0x24
-#define RXM1SIDL	0x25
-#define RXM1EID8	0x26
-#define RXM1EID0	0x27
-#define CNF3	0x28
-#define CNF2	0x29
-#define CNF1	0x2A
-#define CANINTE	0x2B
-#define CANINTF	0x2C
-#define EFLG	0x2D
-#define CANSTAT2	0x2E
-#define CANCTRL2	0x2F
+; Receive Masks *
+RXM0SIDH        EQU    0x20
+RXM0SIDL        EQU    0x21
+RXM0EID8        EQU    0x22
+RXM0EID0        EQU    0x23
+RXM1SIDH        EQU    0x24
+RXM1SIDL        EQU    0x25
+RXM1EID8        EQU    0x26
+RXM1EID0        EQU    0x27
 
-#define TXB0CTRL	0x30
-#define TXB0SIDH	0x31
-#define TXB0SIDL	0x32
-#define TXB0EID8	0x33
-#define TXB0EID0	0x34
-#define TXB0DLC	0x35
-#define TXB0D0	0x36
-#define TXB0D1	0x37
-#define TXB0D2	0x38
-#define TXB0D3	0x39
-#define TXB0D4	0x3A
-#define TXB0D5	0x3B
-#define TXB0D6	0x3C
-#define TXB0D7	0x3D
-#define CANSTAT3	0x3E
-#define CANCTRL3	0x3F
+; Tx Buffer 0 *
+TXB0CTRL        EQU    0x30
+TXB0SIDH        EQU    0x31
+TXB0SIDL        EQU    0x32
+TXB0EID8        EQU    0x33
+TXB0EID0        EQU    0x34
+TXB0DLC         EQU    0x35
+TXB0D0          EQU    0x36
+TXB0D1          EQU    0x37
+TXB0D2          EQU    0x38
+TXB0D3          EQU    0x39
+TXB0D4          EQU    0x3A
+TXB0D5          EQU    0x3B
+TXB0D6          EQU    0x3C
+TXB0D7          EQU    0x3D
+                 
+; Tx Buffer 1 *
+TXB1CTRL        EQU    0x40
+TXB1SIDH        EQU    0x41
+TXB1SIDL        EQU    0x42
+TXB1EID8        EQU    0x43
+TXB1EID0        EQU    0x44
+TXB1DLC         EQU    0x45
+TXB1D0          EQU    0x46
+TXB1D1          EQU    0x47
+TXB1D2          EQU    0x48
+TXB1D3          EQU    0x49
+TXB1D4          EQU    0x4A
+TXB1D5          EQU    0x4B
+TXB1D6          EQU    0x4C
+TXB1D7          EQU    0x4D
 
-#define TXB1CTRL	0x40
-#define TXB1SIDH	0x41
-#define TXB1SIDL	0x42
-#define TXB1EID8	0x43
-#define TXB1EID0	0x44
-#define TXB1DLC	0x45
-#define TXB1D0	0x46
-#define TXB1D1	0x47
-#define TXB1D2	0x48
-#define TXB1D3	0x49
-#define TXB1D4	0x4A
-#define TXB1D5	0x4B
-#define TXB1D6	0x4C
-#define TXB1D7	0x4D
-#define CANSTAT4	0x4E
-#define CANCTRL4	0x4F
+; Tx Buffer 2 *
+TXB2CTRL        EQU    0x50
+TXB2SIDH        EQU    0x51
+TXB2SIDL        EQU    0x52
+TXB2EID8        EQU    0x53
+TXB2EID0        EQU    0x54
+TXB2DLC         EQU    0x55
+TXB2D0          EQU    0x56
+TXB2D1          EQU    0x57
+TXB2D2          EQU    0x58
+TXB2D3          EQU    0x59
+TXB2D4          EQU    0x5A
+TXB2D5          EQU    0x5B
+TXB2D6          EQU    0x5C
+TXB2D7          EQU    0x5D
+                 
+; Rx Buffer 0 *
+RXB0CTRL        EQU    0x60
+RXB0SIDH        EQU    0x61
+RXB0SIDL        EQU    0x62
+RXB0EID8        EQU    0x63
+RXB0EID0        EQU    0x64
+RXB0DLC         EQU    0x65
+RXB0D0          EQU    0x66
+RXB0D1          EQU    0x67
+RXB0D2          EQU    0x68
+RXB0D3          EQU    0x69
+RXB0D4          EQU    0x6A
+RXB0D5          EQU    0x6B
+RXB0D6          EQU    0x6C
+RXB0D7          EQU    0x6D
+                 
+; Rx Buffer 1 *
+RXB1CTRL        EQU    0x70
+RXB1SIDH        EQU    0x71
+RXB1SIDL        EQU    0x72
+RXB1EID8        EQU    0x73
+RXB1EID0        EQU    0x74
+RXB1DLC         EQU    0x75
+RXB1D0          EQU    0x76
+RXB1D1          EQU    0x77
+RXB1D2          EQU    0x78
+RXB1D3          EQU    0x79
+RXB1D4          EQU    0x7A
+RXB1D5          EQU    0x7B
+RXB1D6          EQU    0x7C
+RXB1D7          EQU    0x7D
+                         
 
-#define TXB2CTRL	0x50
-#define TXB2SIDH	0x51
-#define TXB2SIDL	0x52
-#define TXB2EID8	0x53
-#define TXB2EID0	0x54
-#define TXB2DLC	0x55
-#define TXB2D0	0x56
-#define TXB2D1	0x57
-#define TXB2D2	0x58
-#define TXB2D3	0x59
-#define TXB2D4	0x5A
-#define TXB2D5	0x5B
-#define TXB2D6	0x5C
-#define TXB2D7	0x5D
-#define CANSTAT5	0x5E
-#define CANCTRL5	0x5F
+; *******************************************************************
+; *               Bit register masks                                *
+; *******************************************************************
 
-#define RXB0CTRL	0x60
-#define RXB0SIDH	0x61
-#define RXB0SIDL	0x62
-#define RXB0EID8	0x63
-#define RXB0EID0	0x64
-#define RXB0DLC	0x65
-#define RXB0D0	0x66
-#define RXB0D1	0x67
-#define RXB0D2	0x68
-#define RXB0D3	0x69
-#define RXB0D4	0x6A
-#define RXB0D5	0x6B
-#define RXB0D6	0x6C
-#define RXB0D7	0x6D
-#define CANSTAT6	0x6E
-#define CANCTRL6	0x6F
+; TXBnCTRL *
+TXREQ           EQU    0x08
+TXP             EQU    0x03    
 
-#define RXB1CTRL	0x70
-#define RXB1SIDH	0x71
-#define RXB1SIDL	0x72
-#define RXB1EID8	0x73
-#define RXB1EID0	0x74
-#define RXB1DLC	0x75
-#define RXB1D0	0x76
-#define RXB1D1	0x77
-#define RXB1D2	0x78
-#define RXB1D3	0x79
-#define RXB1D4	0x7A
-#define RXB1D5	0x7B
-#define RXB1D6	0x7C
-#define RXB1D7	0x7D
-#define CANSTAT7	0x7E
-#define CANCTRL7	0x7F
+; RXBnCTRL *
+RXM             EQU    0x60
+BUKT            EQU    0x04
 
-;; Bit definitions
+; CANCTRL *
+REQOP           EQU    0xE0
+ABAT            EQU    0x10
+CLKEN           EQU    0x04
+CLKPRE          EQU    0x03
 
-;; Bit definitions BFPCTRL
-#define trB1BFS	BFPCTRL,5
-#define trB0BFS	BFPCTRL,4
-#define trB1BFE	BFPCTRL,3
-#define trB0BFE	BFPCTRL,2
-#define trB1BFM	BFPCTRL,1
-#define trB0BFM	BFPCTRL,0
+; CANSTAT *
+REQOP           EQU    0xE0
+ICOD            EQU    0x0E
 
-;; Bit definitions TXRTSCTRL
-#define trB2RTS	BFPCTRL,5
-#define trB1RTS	BFPCTRL,4
-#define trB0RTS	BFPCTRL,3
-#define trB2RTSM	BFPCTRL,2
-#define trB1RTSM	BFPCTRL,1
-#define trB0RTSM	BFPCTRL,0
+; CANINTE *   
+RX0IE           EQU    0x01
+RX1IE           EQU    0x02
+TX0IE           EQU    0x04
+TX1IE           EQU    0x80
+TX2IE           EQU    0x10
+ERRIE           EQU    0x20
+WAKIE           EQU    0x40
+IVMIE           EQU    0x80
 
-;; Bit definitions CANSTAT
-#define trOPMOD2	CANSTAT,7
-#define trOPMOD1	CANSTAT,6
-#define trOPMOD0	CANSTAT,5
-#define trICOD2	CANSTAT,3
-#define trICOD1	CANSTAT,2
-#define trICOD0	CANSTAT,1
+; CANINTF *   
+RX0IF           EQU    0x01
+RX1IF           EQU    0x02
+TX0IF           EQU    0x04
+TX1IF           EQU    0x80
+TX2IF           EQU    0x10
+ERRIF           EQU    0x20
+WAKIF           EQU    0x40
+IVMIF           EQU    0x80
 
-;; Bit definitions CANCTRL
-#define trREQOP2	CANCTRL,7
-#define trREQOP1	CANCTRL,6
-#define trREQOP0	CANCTRL,5
-#define trABAT	CANCTRL,4
-#define trCLKEN	CANCTRL,2
-#define trCLKPRE1	CANCTRL,1
-#define trCLKPRE0	CANCTRL,0
+; BFPCTRL *
+B1BFS           EQU    0x20
+B0BFS           EQU    0x10
+B1BFE           EQU    0x08
+B0BFE           EQU    0x04
+B1BFM           EQU    0x02
+B0BFM           EQU    0x01
 
-;; Dit definitions CNF3
-#define trWAKFIL	CNF3,6
-#define trPHSEG22	CNF3,2
-#define trPHSEG21	CNF3,1
-#define trPHSEG20	CNF3,0
+; CNF1 Masks *
+SJW             EQU    0xC0
+BRP             EQU    0x3F
 
-;; Bit definitions CNF2
-#define trBTLMODE	CNF2,7
-#define trSAM	CNF2,6
-#define trPHSEG12	CNF2,5
-#define trPHSEG11	CNF2,4
-#define trPHSEG10	CNF2,3
-#define trPHSEG2	CNF2,2
-#define trPHSEG1	CNF2,1
-#define trPHSEG0	CNF2,0
+; CNF2 Masks *
+BTLMODE         EQU    0x80
+SAM             EQU    0x40
+PHSEG1          EQU    0x38
+PRSEG           EQU    0x07
 
-;; Bit definitions CNF1
-#define trSJW1	CNF1,7
-#define trSJW0	CNF1,6
-#define trBRP5	CNF1,5
-#define trBRP4	CNF1,4
-#define trBRP3	CNF1,3
-#define trBRP2	CNF1,2
-#define trBRP1	CNF1,1
-#define trBRP0	CNF1,0
+; CNF3 Masks *
+WAKFIL          EQU    0x40
+PHSEG2          EQU    0x07
 
-;; Bit definitions CANINTE
-#define trMERRE	CANINTE,7
-#define trWAKIE	CANINTE,6
-#define trERRIE	CANINTE,5
-#define trTX2IE	CANINTE,4
-#define trTX1IE	CANINTE,3
-#define trTX0IE	CANINTE,2
-#define trRX1IE	CANINTE,1
-#define trRX0IE	CANINTE,0
-
-;; Bit definitions CANINTF
-#define trMERRF	CANINTF,7
-#define trWAKIF	CANINTF,6
-#define trERRIF	CANINTF,5
-#define trTX2IF	CANINTF,4
-#define trTX1IF	CANINTF,3
-#define trTX0IF	CANINTF,2
-#define trRX1IF	CANINTF,1
-#define trRX0IF	CANINTF,0
-
-;; Bit definitions EFLG
-#define trRX1OVR	EFLG,7
-#define trRX0OVR	EFLG,6
-#define trTXB0	EFLG,5
-#define trTXEP	EFLG,4
-#define trRXEP	EFLG,3
-#define trTXWAR	EFLG,2
-#define trRXWAR	EFLG,1
-#define trEWARN	EFLG,0
-
-;; Bit definitions TXB0CTRL
-#define trABTF0	TXB0CTRL,6
-#define trMLOA0	TXB0CTRL,5
-#define trTXERR0	TXB0CTRL,4
-#define trTXREQ0	TXB0CTRL,3
-#define trTXP10	TXB0CTRL,1
-#define trTXP00	TXB0CTRL,0
-
-;; Bit definitions TXB1CTRL
-#define trABTF1	TXB1CTRL,6
-#define trMLOA1	TXB1CTRL,5
-#define trTXERR1	TXB1CTRL,4
-#define trTXREQ1	TXB1CTRL,3
-#define trTXP11	TXB1CTRL,1
-#define trTXP01	TXB1CTRL,0
-
-;; Bit definitions TXB2CTRL
-#define trABTF2	TXB2CTRL,6
-#define trMLOA2	TXB2CTRL,5
-#define trTXERR2	TXB2CTRL,4
-#define trTXREQ2	TXB2CTRL,3
-#define trTXP12	TXB2CTRL,1
-#define trTXP02	TXB2CTRL,0
-
-;; Bit definitions RXB0CTRL
-#define trRXM10	RXB0CTRL,6
-#define trRXM00	RXB0CTRL,5
-#define trRXRTR0	RXB0CTRL,3
-#define trBUKT01	RXB0CTRL,2
-#define trBUKT00	RXB0CTRL,1
-#define trFILHIT00	RXB0CTRL,0
-
-;; Bit definitions RXB1CTRL
-#define trRXM11	RXB1CTRL,6
-#define trRXM01	RXB1CTRL,5
-#define trRXRTR1	RXB1CTRL,3
-#define trFILHIT12	RXB1CTRL,2
-#define trFILHIT11	RXB1CTRL,1
-#define trFILHIT10	RXB1CTRL,0
+; TXRTSCTRL Masks *
+TXB2RTS         EQU    0x04
+TXB1RTS         EQU    0x02
+TXB0RTS         EQU    0x01
 
 
-;; use with SPI_Rts function
-#define RTS0        0x01 
-#define RTS1        0x02
-#define RTS2        0x04
+; *******************************************************************
+; *                    Bit Timing Configuration                     *
+; *******************************************************************
+ 
+; CNF1 *
+SJW_1TQ         EQU    0x40
+SJW_2TQ         EQU    0x80
+SJW_3TQ         EQU    0x90
+SJW_4TQ         EQU    0xC0
+
+; CNF2 *
+BTLMODE_CNF3    EQU    0x80
+BTLMODE_PH1_IPT EQU    0x00
+
+SMPL_3X         EQU    0x40
+SMPL_1X         EQU    0x00
+
+PHSEG1_8TQ      EQU    0x38
+PHSEG1_7TQ      EQU    0x30
+PHSEG1_6TQ      EQU    0x28
+PHSEG1_5TQ      EQU    0x20
+PHSEG1_4TQ      EQU    0x18
+PHSEG1_3TQ      EQU    0x10
+PHSEG1_2TQ      EQU    0x08
+PHSEG1_1TQ      EQU    0x00
+
+PRSEG_8TQ       EQU    0x07
+PRSEG_7TQ       EQU    0x06
+PRSEG_6TQ       EQU    0x05
+PRSEG_5TQ       EQU    0x04
+PRSEG_4TQ       EQU    0x03
+PRSEG_3TQ       EQU    0x02
+PRSEG_2TQ       EQU    0x01
+PRSEG_1TQ       EQU    0x00
+
+; CNF3 *
+PHSEG2_8TQ      EQU    0x07
+PHSEG2_7TQ      EQU    0x06
+PHSEG2_6TQ      EQU    0x05
+PHSEG2_5TQ      EQU    0x04
+PHSEG2_4TQ      EQU    0x03
+PHSEG2_3TQ      EQU    0x02
+PHSEG2_2TQ      EQU    0x01
+PHSEG2_1TQ      EQU    0x00
+
+WAKFIL_ENABLED  EQU    0x40
+WAKFIL_DISABLED EQU    0x00    
+
+
+; *******************************************************************
+; *                  Control/Configuration Registers                *
+; *******************************************************************
+
+; CANINTE *
+RX0IE_ENABLED   EQU    0x01
+RX0IE_DISABLED  EQU    0x00
+RX1IE_ENABLED   EQU    0x02
+RX1IE_DISABLED  EQU    0x00
+G_RXIE_ENABLED  EQU    0x03
+G_RXIE_DISABLED EQU    0x00
+
+TX0IE_ENABLED   EQU    0x04
+TX0IE_DISABLED  EQU    0x00
+TX1IE_ENABLED   EQU    0x08
+TX2IE_DISABLED  EQU    0x00
+TX2IE_ENABLED   EQU    0x10
+TX2IE_DISABLED  EQU    0x00
+G_TXIE_ENABLED  EQU    0x1C
+G_TXIE_DISABLED EQU    0x00
+
+ERRIE_ENABLED   EQU    0x20
+ERRIE_DISABLED  EQU    0x00
+WAKIE_ENABLED   EQU    0x40
+WAKIE_DISABLED  EQU    0x00
+IVRE_ENABLED    EQU    0x80
+IVRE_DISABLED   EQU    0x00
+
+; CANINTF *
+RX0IF_SET       EQU    0x01
+RX0IF_RESET     EQU    0x00
+RX1IF_SET       EQU    0x02
+RX1IF_RESET     EQU    0x00
+TX0IF_SET       EQU    0x04
+TX0IF_RESET     EQU    0x00
+TX1IF_SET       EQU    0x08
+TX2IF_RESET     EQU    0x00
+TX2IF_SET       EQU    0x10
+TX2IF_RESET     EQU    0x00
+ERRIF_SET       EQU    0x20
+ERRIF_RESET     EQU    0x00
+WAKIF_SET       EQU    0x40
+WAKIF_RESET     EQU    0x00
+IVRF_SET        EQU    0x80
+IVRF_RESET      EQU    0x00
+
+; CANCTRL * 
+REQOP_CONFIG    EQU    0x80
+REQOP_LISTEN    EQU    0x60
+REQOP_LOOPBACK  EQU    0x40
+REQOP_SLEEP     EQU    0x20
+REQOP_NORMAL    EQU    0x00
+
+ABORT           EQU    0x10
+
+CLKOUT_ENABLED  EQU    0x04
+CLKOUT_DISABLED EQU    0x00
+CLKOUT_PRE_8    EQU    0x03
+CLKOUT_PRE_4    EQU    0x02
+CLKOUT_PRE_2    EQU    0x01
+CLKOUT_PRE_1    EQU    0x00
+
+; CANSTAT *
+OPMODE_CONFIG   EQU    0x80
+OPMODE_LISTEN   EQU    0x60
+OPMODE_LOOPBACK EQU    0x40
+OPMODE_SLEEP    EQU    0x20
+OPMODE_NORMAL   EQU    0x00
+
+
+; RXBnCTRL *
+RXM_RCV_ALL     EQU    0x60
+RXM_VALID_EXT   EQU    0x40
+RXM_VALID_STD   EQU    0x20
+RXM_VALID_ALL   EQU    0x00
+
+RXRTR_REMOTE    EQU    0x08
+RXRTR_NO_REMOTE EQU    0x00
+
+BUKT_ROLLOVER    EQU    0x04
+BUKT_NO_ROLLOVER EQU    0x00
+
+FILHIT0_FLTR_1  EQU    0x01
+FILHIT0_FLTR_0  EQU    0x00
+
+FILHIT1_FLTR_5  EQU    0x05
+FILHIT1_FLTR_4  EQU    0x04
+FILHIT1_FLTR_3  EQU    0x03
+FILHIT1_FLTR_2  EQU    0x02
+FILHIT1_FLTR_1  EQU    0x01
+FILHIT1_FLTR_0  EQU    0x00
+
+
+; TXBnCTRL *
+TXREQ_SEND      EQU    0x08
+TXREQ_ABORT     EQU    0x00
+
+TXP_HIGHEST     EQU    0x03
+TXP_INTER_HIGH  EQU    0x02
+TXP_INTER_LOW   EQU    0x01
+TXP_LOWEST      EQU    0x00
+    
+
+; *******************************************************************
+; *                  Register Bit Masks                             *
+; *******************************************************************
+ 
+DLC_0          EQU    0x00
+DLC_1          EQU    0x01
+DLC_2          EQU    0x02
+DLC_3          EQU    0x03
+DLC_4          EQU    0x04
+DLC_5          EQU    0x05
+DLC_6          EQU    0x06
+DLC_7          EQU    0x07    
+DLC_8          EQU    0x08
+ 
+
+; *******************************************************************
+; *                  CAN SPI commands                               * 
+; *******************************************************************
+
+CAN_RESET       EQU    0xC0
+CAN_READ        EQU    0x03
+CAN_WRITE       EQU    0x02
+CAN_RTS         EQU    0x80
+CAN_RTS_TXB0    EQU    0x81
+CAN_RTS_TXB1    EQU    0x82
+CAN_RTS_TXB2    EQU    0x83
+CAN_RD_STATUS   EQU    0xA0
+CAN_BIT_MODIFY  EQU    0x05    
+
+
+; *******************************************************************
+; *                  Miscellaneous                                  *
+; *******************************************************************
+
+DUMMY_BYTE      EQU    0x00
+TXB0            EQU    0x31
+TXB1            EQU    0x41
+TXB2            EQU    0x51
+RXB0            EQU    0x61
+RXB1            EQU    0x71
+EXIDE_SET       EQU    0x08
+EXIDE_RESET     EQU    0x00
