@@ -1,3 +1,6 @@
+2002-12-04 Craig Franklin <craigfranklin@attbi.com>
+  * Fixed incorrect range warning on 18xx gotos
+
 2002-11-22 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.10.6 Released.
   * Fixed behavior of de directive for 18xxx devices. Data is now packed.
