@@ -1,3 +1,8 @@
+2004-07-08 Craig Franklin <craigfranklin@comcast.net>
+  * Allow empty modules and publics in gpal.
+  * Allow if statements in a module or public, but outside of subprograms
+    in gpal.
+
 2004-07-07 Craig Franklin <craigfranklin@comcast.net>
   * Added support for manually assigned data memory addresses in gpal.
 
