@@ -1,3 +1,7 @@
+2003-10-08 Craig Franklin <craigfranklin@comcast.net>
+  * Fixed an initialization problem that causes a segfault when the first
+    line has a parse error.
+
 2003-10-03 Craig Franklin <craigfranklin@comcast.net>
   * Added 18xx config and idlocs sections to gpasm coff outputs.
   * Cleaned up gplink script error reporting.
