@@ -1392,49 +1392,56 @@ YY_RULE_SETUP
 			     has_collon = 1;
 			   }
 			   yylval.s = strdup(yytext);
-                           switch(identify(yytext)) {
-                             case defines:
-                               sym = get_symbol(state.stDefines, yytext);
-                               subst = get_symbol_annotation(sym);
-                               push_string(subst);
-                               break;
-                             case directives:
-			       gpwarning(GPW_DIR_COLUMN_ONE, NULL);
-                               if (has_collon)
-                                 gperror(GPE_BADCHAR, "Illegal character (:)");
-			       return IDENTIFIER;
-                               break;
-                             case macros:
-			       /* make sure macro definition on second pass
-                                  is ignored */
-			       sym = get_symbol(state.stMacros, yytext);
-			       h = get_symbol_annotation(sym);
-                               if (h->line_number == state.src->line_number) {
-			         return LABEL;
-			       } else {
-			         gpwarning(GPW_MACRO_COLUMN_ONE, NULL);
-			         if (has_collon)
-                                  gperror(GPE_BADCHAR, 
-                                           "Illegal character (:)");
+                           if(asm_enabled()) {
+                             switch(identify(yytext)) {
+                               case defines:
+                                 sym = get_symbol(state.stDefines, yytext);
+                                 subst = get_symbol_annotation(sym);
+                                 push_string(subst);
+                                 break;
+                               case directives:
+			         gpwarning(GPW_DIR_COLUMN_ONE, NULL);
+                                 if (has_collon)
+                                   gperror(GPE_BADCHAR, "Illegal character (:)");
 			         return IDENTIFIER;
-			       }
-                               break;
-                             case opcodes:
-			       gpwarning(GPW_OP_COLUMN_ONE, NULL);
-                               if (has_collon)
-                                 gperror(GPE_BADCHAR, "Illegal character (:)");
-			       return IDENTIFIER;
-                               break;
-                             case unknown:
-			       return LABEL;
-                             default:
-			       return LABEL;
-                           }			   
+                                 break;
+                               case macros:
+			         /* make sure macro definition on second pass
+                                    is ignored */
+			         sym = get_symbol(state.stMacros, yytext);
+			         h = get_symbol_annotation(sym);
+                                 if (h->line_number == state.src->line_number) {
+			           return LABEL;
+			         } else {
+			           gpwarning(GPW_MACRO_COLUMN_ONE, NULL);
+			           if (has_collon)
+                                    gperror(GPE_BADCHAR, 
+                                             "Illegal character (:)");
+			           return IDENTIFIER;
+			         }
+                                 break;
+                               case opcodes:
+			         gpwarning(GPW_OP_COLUMN_ONE, NULL);
+                                 if (has_collon)
+                                   gperror(GPE_BADCHAR, "Illegal character (:)");
+			         return IDENTIFIER;
+                                 break;
+                               case unknown:
+			         return LABEL;
+                               default:
+			         return LABEL;
+                             }			   
+			   } else {
+			     /* if assembly is not enabled don't issue warnings
+			        about macro calls in column 1, they could be
+				an alternate definition */ 
+			     return LABEL;			   
+			   }
 			 }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 256 "scan.l"
+#line 263 "scan.l"
 {
                            yytext[strlen(yytext) - 3] = '\0';
                            yylval.s = strdup(yytext);
@@ -1443,7 +1450,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 261 "scan.l"
+#line 268 "scan.l"
 {
                            yylval.s = strdup(yytext+1);
                            return VAR_END;
@@ -1451,7 +1458,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 265 "scan.l"
+#line 272 "scan.l"
 {
 			   struct symbol *sym;
 
@@ -1482,7 +1489,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 292 "scan.l"
+#line 299 "scan.l"
 {
 /* Ugh.  As a special case, treat processor names, such as 16C84
 as identifiers rather than as hex numbers. */
@@ -1492,7 +1499,7 @@ as identifiers rather than as hex numbers. */
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 298 "scan.l"
+#line 305 "scan.l"
 {
 			   yylval.i = gpasm_number(yytext);
 			   return NUMBER;
@@ -1500,7 +1507,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 302 "scan.l"
+#line 309 "scan.l"
 {
                            char *endptr;
 
@@ -1520,7 +1527,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 318 "scan.l"
+#line 325 "scan.l"
 {
                            /* If the number ends in b or d it is 
                            interpreted elsewhere */
@@ -1547,7 +1554,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 341 "scan.l"
+#line 348 "scan.l"
 {
                            char *endptr;
                            yylval.i = strtol(yytext + 1, &endptr, 10);
@@ -1566,7 +1573,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 356 "scan.l"
+#line 363 "scan.l"
 {
                            char *endptr;
 			   char *pc = &yytext[yyleng - 1];
@@ -1609,7 +1616,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 395 "scan.l"
+#line 402 "scan.l"
 {
                            yylval.i = gpasm_magic(yytext + 1);
 			   return NUMBER;
@@ -1617,7 +1624,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 399 "scan.l"
+#line 406 "scan.l"
 {
 			   char *pc = &yytext[yyleng - 1];
 			   if (*pc == '"')
@@ -1630,7 +1637,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 408 "scan.l"
+#line 415 "scan.l"
 {
                            yylval.i = gpasm_magic(yytext + 1);
 			   return NUMBER;
@@ -1638,7 +1645,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 412 "scan.l"
+#line 419 "scan.l"
 {
                            yylval.i = yytext[2];
 			   return NUMBER;
@@ -1646,127 +1653,127 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 416 "scan.l"
+#line 423 "scan.l"
 OPERATOR(LSH);
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 417 "scan.l"
+#line 424 "scan.l"
 OPERATOR(RSH);
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 418 "scan.l"
+#line 425 "scan.l"
 OPERATOR(GREATER_EQUAL);
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 419 "scan.l"
+#line 426 "scan.l"
 OPERATOR(LESS_EQUAL);
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 420 "scan.l"
+#line 427 "scan.l"
 OPERATOR(EQUAL);
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 421 "scan.l"
+#line 428 "scan.l"
 OPERATOR(NOT_EQUAL);
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 422 "scan.l"
+#line 429 "scan.l"
 OPERATOR(LOGICAL_AND);
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 423 "scan.l"
+#line 430 "scan.l"
 OPERATOR(LOGICAL_OR);
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 425 "scan.l"
+#line 432 "scan.l"
 OPERATOR(ASSIGN_PLUS);
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 426 "scan.l"
+#line 433 "scan.l"
 OPERATOR(ASSIGN_MINUS);
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 427 "scan.l"
+#line 434 "scan.l"
 OPERATOR(ASSIGN_MULTIPLY);
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 428 "scan.l"
+#line 435 "scan.l"
 OPERATOR(ASSIGN_DIVIDE);
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 429 "scan.l"
+#line 436 "scan.l"
 OPERATOR(ASSIGN_MODULUS);
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 430 "scan.l"
+#line 437 "scan.l"
 OPERATOR(ASSIGN_LSH);
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 431 "scan.l"
+#line 438 "scan.l"
 OPERATOR(ASSIGN_RSH);
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 432 "scan.l"
+#line 439 "scan.l"
 OPERATOR(ASSIGN_AND);
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 433 "scan.l"
+#line 440 "scan.l"
 OPERATOR(ASSIGN_OR);
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 434 "scan.l"
+#line 441 "scan.l"
 OPERATOR(ASSIGN_XOR);
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 436 "scan.l"
+#line 443 "scan.l"
 OPERATOR(INCREMENT);
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 437 "scan.l"
+#line 444 "scan.l"
 OPERATOR(DECREMENT);
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 439 "scan.l"
+#line 446 "scan.l"
 OPERATOR(TBL_POST_INC);
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 440 "scan.l"
+#line 447 "scan.l"
 OPERATOR(TBL_POST_DEC);
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 441 "scan.l"
+#line 448 "scan.l"
 OPERATOR(TBL_PRE_INC);
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 443 "scan.l"
+#line 450 "scan.l"
 
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 444 "scan.l"
+#line 451 "scan.l"
 {
 			   quoted = 0;
 			   force_decimal = 0;
@@ -1775,12 +1782,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 449 "scan.l"
+#line 456 "scan.l"
 {  }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 450 "scan.l"
+#line 457 "scan.l"
 { 
 			   yylval.i = yytext[0];
 		           return yytext[0];
@@ -1788,10 +1795,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 454 "scan.l"
+#line 461 "scan.l"
 ECHO;
 	YY_BREAK
-#line 1795 "lex.yy.c"
+#line 1802 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2672,7 +2679,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 454 "scan.l"
+#line 461 "scan.l"
 
 
 void open_src(char *name, int isinclude)

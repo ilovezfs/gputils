@@ -1,3 +1,7 @@
+2002-01-15 Craig Franklin <craigfranklin@attbi.com>
+  * Fixed a bug in gpasm that causes a nuisance warning when multiple macro
+    definitions are selected using conditional assembly.
+
 2002-01-13 Craig Franklin <craigfranklin@attbi.com>
   * Fixed a bug in gpvc that could cause a segmentation fault.
 
