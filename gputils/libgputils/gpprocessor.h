@@ -262,7 +262,7 @@ struct px {
   char *script;
 };
 
-/* CONFIG addresses for the 18cxxx parts */
+/* CONFIG addresses for the 18xx parts */
 #define CONFIG1L  0x300000
 #define CONFIG1H  0x300001
 #define CONFIG2L  0x300002
@@ -279,6 +279,16 @@ struct px {
 #define CONFIG7H  0x30000d
 #define DEVID1    0x3ffffe
 #define DEVID2    0x3fffff
+
+/* ID Locations for the 18xx parts */
+#define IDLOC0    0x200000
+#define IDLOC1    0x200001
+#define IDLOC2    0x200002
+#define IDLOC3    0x200003
+#define IDLOC4    0x200004
+#define IDLOC5    0x200005
+#define IDLOC6    0x200006
+#define IDLOC7    0x200007
 
 /* Config address for everything else */
 #define CONFIG_17CXX 0xfe00

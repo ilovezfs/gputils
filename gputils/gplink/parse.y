@@ -29,7 +29,7 @@ Boston, MA 02111-1307, USA.  */
 
 void yyerror(char *message)
 {
-  gp_error(message);
+  script_error(message, NULL);
 }
 
 int yylex(void);
@@ -140,12 +140,12 @@ line:
 	|
 	LIBPATH path_list '\n'
 	{
-
+	  add_path($2);
 	}
 	|
 	LKRPATH path_list '\n'
 	{
-
+	  add_path($2);
 	}
 	|
 	SYMBOL parameter_list '\n'

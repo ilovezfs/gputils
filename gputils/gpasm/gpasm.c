@@ -88,6 +88,9 @@ init(void)
   state.org = 0;
   state.dos_newlines = 0;
   state.memory_dump = 0;
+  state.found_config = 0;
+  state.found_devid = 0;
+  state.found_idlocs = 0;
   state.maxram = (MAX_RAM - 1);
 
   state.codfile = normal;
@@ -309,7 +312,7 @@ assemble(void)
 
   /* store the command line defines to restore on second pass */
   cmd_defines = state.stDefines;
-  state.i_memory = i_memory_create();
+  state.c_memory = state.i_memory = i_memory_create();
 
   if(state.basefilename[0] == '\0') {
     strcpy(state.basefilename, state.srcfilename);
@@ -350,6 +353,9 @@ assemble(void)
   state.obj.symbol_num = 0;
   state.obj.section_num = 0;
   state.obj.org_num = 0;
+  state.found_config = 0;
+  state.found_devid = 0;
+  state.found_idlocs = 0;
   coff_init();
   cod_init();
   lst_init();

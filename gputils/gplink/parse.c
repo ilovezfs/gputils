@@ -41,7 +41,7 @@ Boston, MA 02111-1307, USA.  */
 
 void yyerror(char *message)
 {
-  gp_error(message);
+  script_error(message, NULL);
 }
 
 int yylex(void);
@@ -988,13 +988,13 @@ case 5:
 case 6:
 #line 142 "parse.y"
 {
-
+	  add_path(yyvsp[-1].p);
 	}
     break;
 case 7:
 #line 147 "parse.y"
 {
-
+	  add_path(yyvsp[-1].p);
 	}
     break;
 case 8:

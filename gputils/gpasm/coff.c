@@ -55,6 +55,22 @@ coff_init(void)
 }
 
 static void
+_update_section_symbol(gp_section_type *section)
+{
+
+  /* write data to the auxiliary section symbol */
+  section->symbol->aux_list->_aux_symbol._aux_scn.length = 
+    section->size;
+    
+  section->symbol->aux_list->_aux_symbol._aux_scn.nreloc = 
+    section->num_reloc;
+
+  section->symbol->aux_list->_aux_symbol._aux_scn.nlineno = 
+    section->num_lineno;
+
+}
+
+static void
 _update_section_size(void)
 {
   
@@ -71,15 +87,7 @@ _update_section_size(void)
       (state.org - state.obj.section->address);
   }
 
-  /* write data to the auxiliary section symbol */
-  state.obj.section->symbol->aux_list->_aux_symbol._aux_scn.length = 
-    state.obj.section->size;
-    
-  state.obj.section->symbol->aux_list->_aux_symbol._aux_scn.nreloc = 
-    state.obj.section->num_reloc;
-
-  state.obj.section->symbol->aux_list->_aux_symbol._aux_scn.nlineno = 
-    state.obj.section->num_lineno;
+  _update_section_symbol(state.obj.section);
 
   return;
 }
@@ -110,6 +118,117 @@ _update_reloc_ptr(void)
   return;
 }
 
+/* Copy data from c_memory into the coff section.  This kludge is for the
+   18xx devices.  Their memory is byte addressable, but words are stored
+   in gpasm memory.  The user isn't guaranteed to put the config directives
+   in accending order.  They might also skip addresses.  */
+
+static void
+_copy_config(void)
+{
+  gp_section_type *config_section = NULL;
+  int i;
+  int start;
+  int stop;
+  int word;
+  int found_break;
+  
+  if (state.obj.section == NULL)
+    return;
+  
+  if (state.found_config) {
+    config_section = gp_coffgen_findsection(state.obj.object, 
+                                            state.obj.object->sections,
+                                            ".config");
+    
+    assert(config_section != NULL);
+
+    if(_16bit_core) {
+      start = config_section->address >> 1;
+      stop = CONFIG7H >> 1;
+      found_break = 0;
+      for (i = start; i <= stop; i++) {
+        word = i_memory_get(state.c_memory, i);
+        if (word & MEM_USED_MASK) {
+          if (found_break) {
+            gperror(GPE_CONTIG_CONFIG, NULL);
+          }
+          i_memory_put(config_section->data, i, word);
+          config_section->size += 2;    
+        } else {
+          found_break = 1;
+        }
+      }
+      
+    } else {
+      word = i_memory_get(state.c_memory, state.device.config_address);
+      assert(word & MEM_USED_MASK);
+      i_memory_put(config_section->data, state.device.config_address, word);
+      config_section->size = 2;    
+    }  
+
+    _update_section_symbol(config_section);
+  }
+
+  if (state.found_devid) {
+    config_section = gp_coffgen_findsection(state.obj.object, 
+                                            state.obj.object->sections,
+                                            ".devid");
+    
+    assert(config_section != NULL);
+    assert(_16bit_core);
+
+    i = DEVID1>>1;
+    word = i_memory_get(state.c_memory, i);
+    assert(word && MEM_USED_MASK);
+    i_memory_put(config_section->data, i, word);
+    config_section->size = 2;
+
+    _update_section_symbol(config_section);
+  }  
+
+  if (state.found_idlocs) {
+    config_section = gp_coffgen_findsection(state.obj.object, 
+                                            state.obj.object->sections,
+                                            ".idlocs");
+    
+    assert(config_section != NULL);  
+
+    if(_16bit_core) {
+      start = config_section->address >> 1;
+      stop = IDLOC7 >> 1;
+      found_break = 0;
+      for (i = start; i <= stop; i++) {
+        printf("address = %x\n", i);
+        word = i_memory_get(state.c_memory, i);
+        if (word & MEM_USED_MASK) {
+          if (found_break) {
+            gperror(GPE_CONTIG_IDLOC, NULL);
+          }
+          i_memory_put(config_section->data, i, word);
+          config_section->size += 2;    
+        } else {
+          found_break = 1;
+        }
+      }
+      
+    } else {
+      start = state.device.id_location;
+      stop = start + 4;
+      for (i = start; i < stop; i++) {
+        word = i_memory_get(state.c_memory, i);
+        assert(word & MEM_USED_MASK);
+        i_memory_put(config_section->data, i, word);
+      }
+      config_section->size = 8;    
+    }
+
+    _update_section_symbol(config_section);
+  }  
+
+  return;
+}
+
 void 
 coff_close_file(void)
 {
@@ -125,6 +244,8 @@ coff_close_file(void)
 
   /* combine overlayed sections */
   gp_cofflink_combine_overlay(state.obj.object, 1);
+
+  _copy_config();
 
   if (gp_write_coff(state.obj.object, (state.num.errors + gp_num_errors)) == 1)
     gperror(GPE_UNKNOWN, "system error while writing object file");
