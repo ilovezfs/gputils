@@ -576,6 +576,12 @@ _set_used(MemBlock *m, int byte_addr, unsigned int address, unsigned int size)
 
   org = address >> byte_addr;
   stop = org + size;
+
+  gp_debug("      marking %#x words from %#x to %#x as used", 
+           size,
+           org,
+           (stop - 1));
+
   for ( ; org < stop; org++) {
     data = i_memory_get(m, org);
     if (data & MEM_USED_MASK) {
@@ -598,7 +604,6 @@ gp_cofflink_reloc_abs(MemBlock *m,
                       unsigned long flags)
 {
   unsigned int size;
-  unsigned int addr;
 
   while (section != NULL) {
     if ((section->flags & STYP_ABS) &&
@@ -610,8 +615,7 @@ gp_cofflink_reloc_abs(MemBlock *m,
         size = section->size;
       }
 
-      addr = section->address >> byte_addr;
-      _set_used(m, byte_addr, addr, size);
+      _set_used(m, byte_addr, section->address, size);
 
       /* Set the relocated flag */
       section->flags |= STYP_RELOC;
@@ -767,7 +771,6 @@ _search_memory(MemBlock *m,
 
 static void
 _move_data(MemBlock *m, 
-           int byte_addr,
            unsigned int address, 
            unsigned int size,
            unsigned int new_address) 
@@ -782,10 +785,6 @@ _move_data(MemBlock *m,
            size,
            address,
            new_address);
-
-  /* data is stored as words in memory */
-  address = address >> byte_addr;
-  new_address = new_address >> byte_addr;
 
   for (org = address + size - 1; org >= 0; org--) {
     data = i_memory_get(m, org);
@@ -846,11 +845,10 @@ gp_cofflink_reloc_assigned(MemBlock *m,
                        size, &current_address, &current_size) == 1) {
       gp_debug("    sucessful relocation to %#x", current_address);
       if (_has_data(current)) {
-        _move_data(current->data, byte_addr, current->address, size, 
-	           current_address);
+        _move_data(current->data, current->address, size, current_address);
       }
-      current->address = current_address;
-      _set_used(m, byte_addr, current_address, size);
+      current->address = current_address << byte_addr;
+      _set_used(m, 0, current_address, size);
 
       /* Update the line number offsets */
       _update_line_numbers(current->line_numbers, current_address >> byte_addr);
@@ -954,11 +952,10 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
     if (success == 1) {
       gp_debug("    sucessful relocation to %#x", smallest_address);
       if (_has_data(current)) {
-        _move_data(current->data, byte_addr, current->address, size, 
-	           smallest_address);
+        _move_data(current->data, current->address, size, smallest_address);
       }
-      current->address = smallest_address;
-      _set_used(m, byte_addr, smallest_address, size);
+      current->address = smallest_address << byte_addr;
+      _set_used(m, 0, smallest_address, size);
 
       /* Update the line number offsets */
       _update_line_numbers(current->line_numbers, smallest_address >> byte_addr);
