@@ -754,11 +754,6 @@ analyze_expr(tree *expr)
     return;
   }
 
-  if (!is_data(var)) {
-    analyze_error(expr, "lvalue must be data memory");
-    return;
-  }
-
   /* fetch the symbol's primative type */
   assert(var->type != NULL);
   size = prim_type(var->type);
@@ -1059,6 +1054,32 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
   generating_function = false;
 
   return;
+}
+
+void
+analyze_constants(void)
+{
+  int i;
+  struct symbol *sym;
+  struct variable *var;
+  gp_boolean first_time = true;
+
+  for (i = 0; i < HASH_SIZE; i++) {
+    for (sym = state.global->hash_table[i]; sym; sym = sym->next) {
+      var = get_symbol_annotation(sym);
+      if (var && (var->tag == sym_const)) {
+         if (first_time) {
+           codegen_write_comment("constants");
+           first_time = false;
+         }
+         codegen_write_equ(var->name, var->value); 
+      }      
+    }
+  }
+
+  if (first_time == false)
+    fprintf(state.output.f, "\n");
+
 }
 
 void
@@ -1603,6 +1624,7 @@ analyze(void)
   /* finish the assembly output */
   codegen_init_data();
   analyze_declarations();
+  analyze_constants();
   codegen_close_asm();
 
   return;
