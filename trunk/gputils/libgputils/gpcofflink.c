@@ -438,6 +438,43 @@ gp_cofflink_merge_sections(gp_object_type *object, int byte_addr)
   return;
 }
 
+/* copy data from idata section to the ROM section */
+
+static void
+_copy_rom_section(gp_object_type *object,
+                  gp_section_type *idata,
+                  gp_section_type *rom)
+{
+  int insn;
+  int data;
+  int from;
+  int to;
+  int last;
+
+  if (object->class == PROC_CLASS_PIC16E) {
+    to = rom->address >> 1;
+  } else {
+    to = rom->address;
+  }
+  last = idata->address + idata->size; 
+  if (object->class == PROC_CLASS_PIC16E) {
+    insn = MEM_USED_MASK;
+    for (from = idata->address; from < last; from += 2) {
+      data =  (i_memory_get(idata->data, from) & 0xff);
+      data |= ((i_memory_get(idata->data, from + 1) & 0xff) << 8);
+      i_memory_put(rom->data, to++, insn | data);
+    }
+  } else {
+    /* select "retlw" instruction */  
+    insn = MEM_USED_MASK | gp_processor_retlw(object->class);
+    for (from = idata->address; from < last; from++) {
+      data = (i_memory_get(idata->data, from) & 0xff);
+      i_memory_put(rom->data, to++, insn | data);
+    }
+  }
+
+}
+
 /* create a program memory section to hold the data */
 
 static void
@@ -445,41 +482,26 @@ _create_rom_section(gp_object_type *object, gp_section_type *section)
 {
   gp_section_type *new = NULL;
   char name[BUFSIZ];
-  int insn;
-  int data;
-  int from;
-  int to;
-  int last;
   
   /* create the new section */
   strcpy(name, section->name);
   strcat(name, "_i");
   new = gp_coffgen_newsection(name);
-  /* create the ROM contents */
-  to = 0;
-  last = section->address + section->size; 
   if (object->class == PROC_CLASS_PIC16E) {
-    insn = MEM_USED_MASK;
-    for (from = section->address; from < last; from += 2) {
-      data =  (i_memory_get(section->data, from) & 0xff);
-      data |= ((i_memory_get(section->data, from + 1) & 0xff) << 8);
-      i_memory_put(new->data, to++, insn | data);
-    }
     new->size = section->size;
     /* force the section size to be an even number of bytes */ 
     if (section->size & 1) {
       new->size++;
     }
   } else {
-    /* select "retlw" instruction */  
-    insn = MEM_USED_MASK | gp_processor_retlw(object->class);
-    for (from = section->address; from < last; from++) {
-      data = (i_memory_get(section->data, from) & 0xff);
-      i_memory_put(new->data, to++, insn | data);
-    }
     new->size = section->size << 1;
   }
   new->flags = STYP_DATA_ROM;
+
+  /* Copy the data to get the MEM_USED_MASK correct.  It is
+     copied again later to ensure that any patched data is
+     updated in the ROM section */
+  _copy_rom_section(object, section, new);
 
   /* insert the new ROM section after the idata section */
   if (section == object->sections_tail) {
@@ -1306,13 +1328,19 @@ gp_cofflink_patch_addr(enum proc_class class,
   int offset;
   int write_data = 1;
 
-  /* section address are byte addresses */
-  if (class == PROC_CLASS_PIC16E)
-    org = section->address >> 1;
-  else
-    org = section->address;
-  
-  org += (relocation->address >> 1);
+  if (section->flags & STYP_DATA) {
+    /* It is an initialized data section, so everything is bytes */ 
+    org = section->address + relocation->address;
+  } else {
+    /* section address are byte addresses */
+    if (class == PROC_CLASS_PIC16E) {
+      org = section->address >> 1;
+    } else {
+      org = section->address;
+    }
+    /* the relocation address is always a byte address */
+    org += (relocation->address >> 1);
+  }
   
   value = symbol->value + relocation->offset;
 
@@ -1561,6 +1589,12 @@ gp_cofflink_patch(gp_object_type *object,
 			       relocation);
 
         relocation = relocation->next;
+      }
+
+      /* update the rom with the patched idata sections */
+      if ((section->flags & STYP_DATA) && (section->num_reloc != 0)) {
+        assert(section->next->flags & STYP_DATA_ROM);
+        _copy_rom_section(object, section, section->next);
       }
     
       /* strip the relocations from the section */

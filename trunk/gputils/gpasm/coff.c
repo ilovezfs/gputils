@@ -346,7 +346,11 @@ coff_reloc(int symbol, short offset, unsigned short type)
     origin = state.org - state.obj.section->address;
   
   new = gp_coffgen_addreloc(state.obj.section);
-  new->address       = origin * 2;    /* byte address not word */
+  if (state.obj.section->flags & STYP_DATA) {
+    new->address     = origin;
+  } else {
+    new->address     = origin * 2;    /* byte address not word */
+  }
   new->symbol_number = symbol;
   new->offset        = offset;    
   new->type          = type;    
