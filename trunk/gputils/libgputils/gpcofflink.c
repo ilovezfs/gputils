@@ -1492,12 +1492,12 @@ gp_cofflink_patch_addr(enum proc_class class,
     break;
   case RELOCT_BRA:
     offset = (value - ((org + 1) << 1)) >> 1;
-    check_relative(section, org, offset, 0x7ff);
+    check_relative(section, org, offset, 0x3ff);
     data = offset & 0x7ff;
     break;
   case RELOCT_CONDBRA:
     offset = (value - ((org + 1) << 1)) >> 1;
-    check_relative(section, org, offset, 127);
+    check_relative(section, org, offset, 0x7f);
     data = offset & 0xff;
     break;
   case RELOCT_UPPER:
