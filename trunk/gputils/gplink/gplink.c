@@ -250,6 +250,7 @@ void build_tables(void)
   int i;
   struct symbol *s;
   char *name;
+  gp_coffsymbol_type *var;
 
   /* Create the object file symbol tables */  
   while (list != NULL) {
@@ -261,12 +262,13 @@ void build_tables(void)
 
   /* All of the objects have been scanned.  If there are remaining references
      to symbols, then the archives must contain the missing references. */
-  if (count_missing()) {
+  if (count_missing() && (state.archives != NULL)) {
     modified = false;
     arlist = state.archives;
     while (1) {
-      if (scan_archive(arlist->archive, arlist->name))
+      if (scan_archive(arlist->archive, arlist->name)) {
         modified = true;
+      }
       if (count_missing() == 0) {
         /* No more missing references, no need to continue. */
         break;
@@ -304,8 +306,12 @@ void build_tables(void)
       for (s = state.symbol.missing->hash_table[i]; s; s = s->next) {
         name = get_symbol_name(s);
         assert(name != NULL);
-        gp_error("missing definition for symbol \"%s\"", name);
-      }      
+        var = get_symbol_annotation(s);
+        assert(var != NULL);
+        gp_error("missing definition for symbol \"%s\", required by \"%s\"",
+                 name,
+                 var->file->filename);
+      }
     }
     exit(1);
   }
