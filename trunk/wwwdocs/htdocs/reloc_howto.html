@@ -1,361 +1,361 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
 	<TITLE></TITLE>
-	<META NAME="GENERATOR" CONTENT="StarOffice/5.1 (Linux)">
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.0.2  (Linux)">
 	<META NAME="AUTHOR" CONTENT=" ">
 	<META NAME="CREATED" CONTENT="20030408;1072000">
-	<META NAME="CHANGEDBY" CONTENT=" ">
-	<META NAME="CHANGED" CONTENT="20030409;20043800">
+	<META NAME="CHANGED" CONTENT="20030522;21231100">
 	<STYLE>
 	<!--
-		@page { size: 8.5in 10.96in; margin-left: 1.25in; margin-right: 1.25in; margin-top: 1in; margin-bottom: 1in }
+		@page { size: 21.59cm 27.84cm; margin-left: 3.18cm; margin-right: 3.18cm; margin-top: 2.54cm; margin-bottom: 2.54cm }
 	-->
 	</STYLE>
 </HEAD>
-<BODY>
-<H1>GPUTILS Relocatable Object HowTo</H1>
-<P STYLE="margin-bottom: 0in"><A HREF="mailto:craigfranklin@attbi.com">Craig
+<BODY LANG="en-US">
+<H1><FONT FACE="">GPUTILS Relocatable Object HowTo</FONT></H1>
+<P STYLE="margin-bottom: 0cm"><A HREF="mailto:craigfranklin@attbi.com">Craig
 Franklin</A></P>
-<P STYLE="margin-bottom: 0in">April 9, 2003</P>
-<ADDRESS STYLE="margin-bottom: 0.2in"><BR><BR>
+<P STYLE="margin-bottom: 0cm">April 9, 2003</P>
+<ADDRESS STYLE="margin-bottom: 0.51cm"><BR><BR>
 </ADDRESS>
 <H2>1. Introduction</H2>
-<P STYLE="margin-bottom: 0in">This is a quick description of how to
+<P STYLE="margin-bottom: 0cm">This is a quick description of how to
 use gputils to generate relocatable objects and how to link those
 objects to generate an executable. This document is very brief. It is
 no substitute for the <A HREF="http://gputils.sourceforge.net/33014g.pdf">Microchip
 document</A>.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">This information will be incorporated
+<P STYLE="margin-bottom: 0cm">This information will be incorporated
 into the gputils manual at some point in the future.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
 <H2>2. What are relocatable objects?</H2>
-<P STYLE="margin-bottom: 0in">They are files which contain machine
+<P STYLE="margin-bottom: 0cm">They are files which contain machine
 code, symbols, and relocation information. The relocation information
 allows the file to be placed &quot;anywhere&quot; in memory. gputils
 uses Common Object File Format (COFF). A good book describing COFF is
 &quot;Understanding and Using COFF&quot; by Gircys. It is out of
 print, but you can still buy used copies. gputils users shouldn't
 need the book, but the developers might.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
 <H2>3. How are they used?</H2>
-<P STYLE="margin-bottom: 0in">The code is assembled into a COFF.
+<P STYLE="margin-bottom: 0cm">The code is assembled into a COFF.
 After all the code is compiled, the coff are input into the linker.
 Symbols are resolved, addresses are assigned, and the machine code is
 patched with the new addresses. The output from the linker is an
 absolute executable object.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
 <H2>4. Why relocatable objects?</H2>
-<P STYLE="margin-bottom: 0in">Most development tools create then link
+<P STYLE="margin-bottom: 0cm">Most development tools create then link
 relocatable objects to generate an executable. The exception is some
 tools for microcontrollers. The applications are relatively small so
 creating one big file isn't impractical.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">Using relocatable objects does have
+<P STYLE="margin-bottom: 0cm">Using relocatable objects does have
 advantages:</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">1. Code can be written without regard
+<P STYLE="margin-bottom: 0cm">1. Code can be written without regard
 to addresses. This makes it easier to write and reuse.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">2. The objects can be archived to
+<P STYLE="margin-bottom: 0cm">2. The objects can be archived to
 create a library, which also simplifies reuse.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">3. Recompiling a project can be faster,
+<P STYLE="margin-bottom: 0cm">3. Recompiling a project can be faster,
 because you only compile the portions that have changed.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">4. Files can have local name spaces.
+<P STYLE="margin-bottom: 0cm">4. Files can have local name spaces.
 The user chooses what symbols are global.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">For PICs, it has one big disadvantage.
+<P STYLE="margin-bottom: 0cm">For PICs, it has one big disadvantage.
 The bank and page control is a challenge.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
 <H2>5. Generating objects</H2>
-<P STYLE="margin-bottom: 0in">You are interested in data memory and
+<P STYLE="margin-bottom: 0cm">You are interested in data memory and
 program memory. In absolute code, you have orgs to assign the start
 address of program memory and cblock to generate a block of data
 memory. In relocatable code, program memory is created using the code
 directive and uninitialized data memory using udata.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">Take a look at the following code
+<P STYLE="margin-bottom: 0cm">Take a look at the following code
 segment:</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">processor
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">processor
 16f877</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">include
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">include
 &quot;p16f877.inc&quot;</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">udata</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">mem1
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">udata</FONT></P>
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">mem1
 res 1</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">mem2
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">mem2
 res 2</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">mem3
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">mem3
 res 1</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">;
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">;
 symbols from other modules</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">extern
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">extern
 _main</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">code</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">_init</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">banksel
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">code</FONT></P>
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">_init</FONT></P>
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">banksel
 mem1</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">movlw 0</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">movwf
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">movlw 0</FONT></P>
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">movwf
 mem1</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">movwf
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">movwf
 mem2</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">movwf
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">movwf
 mem2 + 1</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">movwf
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">movwf
 mem3</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">pagesel
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">pagesel
 _main</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">goto
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">goto
 _main</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">;
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">;
 global symbols in this module</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">global
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">global
 mem1</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">global
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">global
 mem2</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">global
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">global
 _init</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">end</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">end</FONT></P>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">4 bytes of uninitialized data are
+<P STYLE="margin-bottom: 0cm">4 bytes of uninitialized data are
 reserved. A code segment to initialize the data starts at symbol
 _init. Once complete the code branches to _main. Mem1 and mem2 are
 global file registers. mem3 is static, which is a waste considering
 it is only initialized and never used.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">This file would be assembled by gpasm:</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm">This file would be assembled by gpasm:</P>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">gpasm -c init.asm</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm">gpasm -c init.asm</P>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">gpasm would output a COFF, init.o.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm">gpasm would output a COFF, init.o.</P>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">You can assign the section address in
+<P STYLE="margin-bottom: 0cm">You can assign the section address in
 the assembler by adding an address to the section directive (udata or
 code). This is not recomended. You don't want to assign the address
 at assembly time, that would defeat the purpose.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">code
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">code
 0x100</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">_init</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">banksel
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">_init</FONT></P>
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">banksel
 mem1</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">movlw 0</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">movwf
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">movlw 0</FONT></P>
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">movwf
 mem1</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">movwf
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">movwf
 mem2</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">movwf
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">movwf
 mem2 + 1</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">movwf
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">movwf
 mem3</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">pagesel
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">pagesel
 _main</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">goto
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">goto
 _main</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">Multiple sections can exist in the same
+<P STYLE="margin-bottom: 0cm">Multiple sections can exist in the same
 file, but they must have different names. The section name proceeds
 the section directive. If no name is provided a default name is used.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">code</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">_init</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">banksel
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">code</FONT></P>
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">_init</FONT></P>
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">banksel
 mem1</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">movlw 0</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">movwf
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">movlw 0</FONT></P>
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">movwf
 mem1</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">movwf
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">movwf
 mem2</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">movwf
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">movwf
 mem2 + 1</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">movwf
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">movwf
 mem3</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">pagesel
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">pagesel
 _main</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">goto
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">goto
 _main</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">mycode
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">mycode
 code</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">banksel
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">banksel
 mem1</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">incf
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">incf
 mem1, f</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">Other types of sections exist, it is
+<P STYLE="margin-bottom: 0cm">Other types of sections exist, it is
 beyond the scope of this document to describe them all. See the
 document in the intro for a more detailed description.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
 <H2>4. Viewing objects</H2>
-<P STYLE="margin-bottom: 0in">gpvo is a tool for viewing objects. If
+<P STYLE="margin-bottom: 0cm">gpvo is a tool for viewing objects. If
 you are interested in seeing how things work, use it.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">gpvo init.o | less</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm">gpvo init.o | less</P>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
 <H2>5. Linking objects</H2>
-<P STYLE="margin-bottom: 0in">So you have assembled several objects
+<P STYLE="margin-bottom: 0cm">So you have assembled several objects
 and now you need to make a COD file for simulation and a hex file for
 programming. gplink takes care of this.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">gplink only requires the objects and a
+<P STYLE="margin-bottom: 0cm">gplink only requires the objects and a
 linker script to build the required output files. A set of scripts
 are included in /usr/share/gputils/lkr. These scripts were generated
 by Microchip. They were intended to cutomized by the user, but for
 many applications they can work as is.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">Commanding:</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm">Commanding:</P>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">gplink -m -c -s
+<P STYLE="margin-bottom: 0cm">gplink -m -c -s
 /usr/share/gputils/lkr/16f877.lkr main.o init.o isr.o</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">Will result in a map file (-m) to be
+<P STYLE="margin-bottom: 0cm">Will result in a map file (-m) to be
 output. This file contains the final addresses assigned to the data
 and program memory. An executable coff (-c) that is good for
 reference and simulation in MPLAB. Also a set of output files a.hex
 and a.cod. The default base filename is &quot;a&quot;. It is best to
 specify your own output name using &quot;-o&quot;.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">In the future the path to the scripts
+<P STYLE="margin-bottom: 0cm">In the future the path to the scripts
 will be added, just like the path to the headers for gpasm. For now,
 use the full path or copy the file to your working directory.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<H2 STYLE="margin-top: 0in; margin-bottom: 0in">6. Simulating the
+<H2 STYLE="margin-top: 0cm; margin-bottom: 0cm">6. Simulating the
 executable</H2>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">Gplink outputs a COD file that is
+<P STYLE="margin-bottom: 0cm">Gplink outputs a COD file that is
 compatible with <A HREF="http://www.dattalo.com/gnupic/gpsim.html">gpsim</A>.
- Gpsim will generate a few new warnings.  One will be about not
-finding a list file.  Others may be generated about not using gpasm. 
-These warnings can be ignored.  They will be fixed in a future
-release of gpsim.</P>
+Gpsim will generate a few new warnings. One will be about not finding
+a list file. Others may be generated about not using gpasm. These
+warnings can be ignored. They will be fixed in a future release of
+gpsim.</P>
 <H2>7. Creating Libraries</H2>
-<P STYLE="margin-bottom: 0in">If you have a collection of objects
+<P STYLE="margin-bottom: 0cm">If you have a collection of objects
 they can be combined into one archive. The archive is a convient way
 to link an application against a common library. The tool is gplib.
 It is very easy to use.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">gplib -c math.a mult.o add.o sub.o
+<P STYLE="margin-bottom: 0cm">gplib -c math.a mult.o add.o sub.o
 exp.o</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">Creates a new archive math.a. The name
+<P STYLE="margin-bottom: 0cm">Creates a new archive math.a. The name
 is arbitary. It could be called &quot;math.lib&quot; or &quot;math&quot;.
 gputils doesn't use file extensions to determine file types.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">Then when you link the application add
+<P STYLE="margin-bottom: 0cm">Then when you link the application add
 math.a to the list of objects</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">gplink -m -c -s
+<P STYLE="margin-bottom: 0cm">gplink -m -c -s
 /usr/share/gputils/lkr/16f877.lkr main.o init.o isr.o math.a</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">gplink will only extract those archive
+<P STYLE="margin-bottom: 0cm">gplink will only extract those archive
 members that are required to resolve external references. So the
 application won't necessarily contain the code of all the archive
 members.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
 <H2>8. Makefiles</H2>
-<P STYLE="margin-bottom: 0in">Here is one of the Makefiles I have
+<P STYLE="margin-bottom: 0cm">Here is one of the Makefiles I have
 been working with. It can be a template for you:</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">SCRIPT
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">SCRIPT
 = 16f877.lkr</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">OBJECTS
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">OBJECTS
 = main.o startup.o isr.o i2c.o</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">OUTPUT
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">OUTPUT
 = example.hex</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">all :
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">all :
 $(OUTPUT)</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">$(OUTPUT)
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">$(OUTPUT)
 : $(OBJECTS) $(SCRIPT)</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">gplink
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">gplink
 --map -c -s $(SCRIPT) -o $(OUTPUT) $(OBJECTS)</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">%.o :
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">%.o :
 %.asm</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">gpasm
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">gpasm
 -c $&lt;</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">clean:</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">rm -f
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">clean:</FONT></P>
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">rm -f
 *.o *.lst *.map *.hex</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">i2c.o :
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">i2c.o :
 i2c.asm common.inc</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">isr.o :
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">isr.o :
 isr.asm common.inc</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">main.o
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">main.o
 : main.asm common.inc</FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="courier, monospace">startup.o
+<P STYLE="margin-bottom: 0cm"><FONT FACE="courier, monospace">startup.o
 : startup.asm common.inc</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
 <H2>9. The Future</H2>
-<P STYLE="margin-bottom: 0in">There is still a lot of work to do. So
+<P STYLE="margin-bottom: 0cm">There is still a lot of work to do. So
 far only 14 bits devices have been linked. There are many features
 that are planned. Linker optimizations, assembler extensions for high
 level languages. ...</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0cm"><BR>
 </P>
-<P STYLE="margin-bottom: 0in">I will try to keep this document
+<P STYLE="margin-bottom: 0cm">I will try to keep this document
 updated. Please send me your comments and questions.</P>
 </BODY>
 </HTML>
