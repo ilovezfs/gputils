@@ -30,6 +30,7 @@ libgputils_a_SOURCES =\
 	gpcofflink.c \
 	gpdis.c \
 	gpmemory.c \
+	gpmessage.c \
 	gpopcode.c \
 	gpprocessor.c \
 	gpreadhex.c \
@@ -43,6 +44,7 @@ libgputils_a_SOURCES =\
 	gpcofflink.h \
 	gpdis.h \
 	gpmemory.h \
+	gpmessage.h \
 	gpopcode.h \
 	gpprocessor.h \
 	gpreadhex.h \

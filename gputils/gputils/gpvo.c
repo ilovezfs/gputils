@@ -412,7 +412,7 @@ int main(int argc, char *argv[])
   }
 
   if (gp_identify_coff_file(state.filename) != object_file) {
-    printf("error: \"%s\" is not a valid object file", state.filename);
+    gp_error("\"%s\" is not a valid object file", state.filename);
     exit(1);
   }
 

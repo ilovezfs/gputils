@@ -262,7 +262,7 @@ test_gpasm_obj() {
     done
   cd ..
   cd ..
-  printbanner "./$1 testing complete"
+  printbanner "./$1 object testing complete"
   echo "$tested files tested without intentional errors"
   echo "$compiled compiled without errors"  
   echo "$passed generated identical object files"  

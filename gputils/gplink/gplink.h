@@ -30,15 +30,9 @@ enum modes { _hex, _object};
 extern struct gplink_state {
   enum modes mode;                 /* default mode */ 
   enum formats hex_format;         /* format of the output */
-  int quiet;			   /* suppress linker outputs when 1 */ 
   int debug;                       /* enable gplink debug features */
   char *paths[MAX_PATHS];          /* the list of include paths */
   int numpaths;                    /* number of paths in the list */
-  struct {			   /* Totals for errors, warnings, messages */
-    int errors;
-    int warnings;
-    int messages;
-  } num;
   enum pic_processor processor;
   char  *srcfilename,		   /* Script file name */
     basefilename[BUFSIZ],	   /* basename for generating hex,list,symbol filenames */

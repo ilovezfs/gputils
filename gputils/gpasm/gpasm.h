@@ -147,6 +147,7 @@ extern struct gpasm_state {
     int new_sec_flags;		/*   new section name */
     int section_num;		/*   Current section number */
     int symbol_num;		/*   Current symbol number */
+    int flags;			/*   Current section flags */
   } obj;
   struct source_context *src;	/* Top of the stack of source files */
   struct file_context *files;   /* Top of the stack of all files */

@@ -1,0 +1,73 @@
+MPASM 03.20.02 Released      BANKIS~1.ASM   1-18-2003  21:08:58         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001   processor 16c58b
+                      00002 
+  00000000            00003 INDF equ  H'0000'
+  00000004            00004 FSR  equ  H'0004'
+                      00005 
+  00000010            00006 reg1 equ 0x10
+  00000030            00007 reg2 equ 0x30
+  00000050            00008 reg3 equ 0x50
+  00000070            00009 reg4 equ 0x70
+                      00010 
+0000                  00011   org 0
+                      00012   
+0000   0C70           00013   movlw reg4
+0001   0024           00014   movwf FSR
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00015   bankisel reg4
+0002   0020           00016   movwf INDF
+                      00017 
+0003   0C30           00018   movlw reg2
+0004   0024           00019   movwf FSR
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00020   bankisel reg2
+0005   0020           00021   movwf INDF
+                      00022 
+0006   0C50           00023   movlw reg3
+0007   0024           00024   movwf FSR
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00025   bankisel reg3
+0008   0020           00026   movwf INDF
+                      00027 
+0009   0C10           00028   movlw reg1
+000A   0024           00029   movwf FSR
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00030   bankisel reg1
+000B   0020           00031   movwf INDF
+                      00032 
+                      00033   end
+MPASM 03.20.02 Released      BANKIS~1.ASM   1-18-2003  21:08:58         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR                               00000004
+INDF                              00000000
+__16C58B                          00000001
+reg1                              00000010
+reg2                              00000030
+reg3                              00000050
+reg4                              00000070
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXX---- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    12
+Program Memory Words Free:  2036
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     4 reported,     0 suppressed
+
+

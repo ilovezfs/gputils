@@ -1,0 +1,121 @@
+MPASM 03.20.02 Released      BANKIS~3.ASM   1-18-2003  21:09:00         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001   processor 17c766
+                      00002 
+  00000000            00003 INDF0 equ H'0000'
+  00000001            00004 FSR0  equ H'0001'
+  00000008            00005 INDF1 equ H'0008'
+  00000009            00006 FSR1  equ H'0009'
+                      00007 
+  00000010            00008 reg1 equ 0x010
+  00000110            00009 reg2 equ 0x110
+  00000210            00010 reg3 equ 0x210
+  00000310            00011 reg4 equ 0x310
+  00000410            00012 reg5 equ 0x410
+  00000510            00013 reg6 equ 0x510
+  00000610            00014 reg7 equ 0x610
+  00000710            00015 reg8 equ 0x710
+  00000810            00016 reg9 equ 0x810
+                      00017 
+0000                  00018   org 0
+                      00019 
+Warning[202]: Argument out of range.  Least significant bits used.
+0000   B010           00020   movlw reg4
+0001   0109           00021   movwf FSR1
+0002   B803           00022   bankisel reg4
+0003   0108           00023   movwf INDF1
+                      00024 
+Warning[202]: Argument out of range.  Least significant bits used.
+0004   B010           00025   movlw reg2
+0005   0109           00026   movwf FSR1  
+0006   B801           00027   bankisel reg2
+0007   0108           00028   movwf INDF1
+                      00029 
+Warning[202]: Argument out of range.  Least significant bits used.
+0008   B010           00030   movlw reg3
+0009   0109           00031   movwf FSR1
+000A   B802           00032   bankisel reg3
+000B   0108           00033   movwf INDF1
+                      00034 
+000C   B010           00035   movlw reg1
+000D   0109           00036   movwf FSR1
+000E   B800           00037   bankisel reg1
+000F   0108           00038   movwf INDF1
+                      00039 
+Warning[202]: Argument out of range.  Least significant bits used.
+0010   B010           00040   movlw reg8
+0011   0101           00041   movwf FSR0
+0012   B807           00042   bankisel reg8
+0013   0100           00043   movwf INDF0
+                      00044 
+Warning[202]: Argument out of range.  Least significant bits used.
+0014   B010           00045   movlw reg6
+0015   0101           00046   movwf FSR0
+0016   B805           00047   bankisel reg6
+0017   0100           00048   movwf INDF0
+MPASM 03.20.02 Released      BANKIS~3.ASM   1-18-2003  21:09:00         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00049 
+Warning[202]: Argument out of range.  Least significant bits used.
+0018   B010           00050   movlw reg7
+0019   0101           00051   movwf FSR0
+001A   B806           00052   bankisel reg7
+001B   0100           00053   movwf INDF0
+                      00054 
+Warning[202]: Argument out of range.  Least significant bits used.
+001C   B010           00055   movlw reg5
+001D   0101           00056   movwf FSR0
+001E   B804           00057   bankisel reg5
+001F   0100           00058   movwf INDF0
+                      00059 
+Warning[202]: Argument out of range.  Least significant bits used.
+0020   B010           00060   movlw reg9
+0021   0101           00061   movwf FSR0
+0022   B808           00062   bankisel reg9
+0023   0100           00063   movwf INDF0
+                      00064 
+                      00065   end
+MPASM 03.20.02 Released      BANKIS~3.ASM   1-18-2003  21:09:00         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR0                              00000001
+FSR1                              00000009
+INDF0                             00000000
+INDF1                             00000008
+__17C766                          00000001
+reg1                              00000010
+reg2                              00000110
+reg3                              00000210
+reg4                              00000310
+reg5                              00000410
+reg6                              00000510
+reg7                              00000610
+reg8                              00000710
+reg9                              00000810
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXX------------ ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    36
+
+
+Errors   :     0
+Warnings :     8 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,134 @@
+MPASM 03.20.02 Released      BANKIS~4.ASM   1-18-2003  21:09:01         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001   processor 18f8720
+                      00002 
+  00000000            00003 FSR0  equ 0
+  00000001            00004 FSR1  equ 1
+  00000002            00005 FSR2  equ 2
+  00000FEF            00006 INDF0 equ H'0FEF'
+  00000FE7            00007 INDF1 equ H'0FE7'
+  00000FDF            00008 INDF2 equ H'0FDF'
+                      00009 
+  00000000            00010 reg1 equ 0x000
+  00000060            00011 reg2 equ 0x060
+  00000100            00012 reg3 equ 0x100
+  00000200            00013 reg4 equ 0x200
+  00000300            00014 reg5 equ 0x300
+  00000400            00015 reg6 equ 0x400
+  00000600            00016 reg7 equ 0x600
+  00000D00            00017 reg8 equ 0xd00
+  00000FFF            00018 reg9 equ 0xfff
+                      00019 
+000000                00020   org 0
+                      00021 
+Warning[202]: Argument out of range.  Least significant bits used.
+000000 0E00           00022   movlw reg4
+000002 6E00           00023   movwf FSR0
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00024   bankisel reg4
+000004 6EEF           00025   movwf INDF0
+                      00026 
+000006 0E60           00027   movlw reg2
+000008 6E00           00028   movwf FSR0
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00029   bankisel reg2
+00000A 6EEF           00030   movwf INDF0
+                      00031 
+Warning[202]: Argument out of range.  Least significant bits used.
+00000C 0E00           00032   movlw reg3
+00000E 6E01           00033   movwf FSR1
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00034   bankisel reg3
+000010 6EE7           00035   movwf INDF1
+                      00036 
+000012 0E00           00037   movlw reg1
+000014 6E01           00038   movwf FSR1
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00039   bankisel reg1
+000016 6EE7           00040   movwf INDF1
+                      00041 
+Warning[202]: Argument out of range.  Least significant bits used.
+000018 0E00           00042   movlw reg8
+00001A 6E02           00043   movwf FSR2
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00044   bankisel reg8
+00001C 6EDF           00045   movwf INDF2
+MPASM 03.20.02 Released      BANKIS~4.ASM   1-18-2003  21:09:01         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00046 
+Warning[202]: Argument out of range.  Least significant bits used.
+00001E 0E00           00047   movlw reg6
+000020 6E02           00048   movwf FSR2
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00049   bankisel reg6
+000022 6EDF           00050   movwf INDF2
+                      00051 
+Warning[202]: Argument out of range.  Least significant bits used.
+000024 0E00           00052   movlw reg7
+000026 6E00           00053   movwf FSR0
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00054   bankisel reg7
+000028 6EEF           00055   movwf INDF0
+                      00056 
+Warning[202]: Argument out of range.  Least significant bits used.
+00002A 0E00           00057   movlw reg5
+00002C 6E00           00058   movwf FSR0
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00059   bankisel reg5
+00002E 6EEF           00060   movwf INDF0
+                      00061 
+Warning[202]: Argument out of range.  Least significant bits used.
+000030 0EFF           00062   movlw reg9
+000032 6E00           00063   movwf FSR0
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00064   bankisel reg9
+000034 6EEF           00065   movwf INDF0
+                      00066 
+                      00067   end
+MPASM 03.20.02 Released      BANKIS~4.ASM   1-18-2003  21:09:01         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR0                              00000000
+FSR1                              00000001
+FSR2                              00000002
+INDF0                             00000FEF
+INDF1                             00000FE7
+INDF2                             00000FDF
+__18F8720                         00000001
+reg1                              00000000
+reg2                              00000060
+reg3                              00000100
+reg4                              00000200
+reg5                              00000300
+reg6                              00000400
+reg7                              00000600
+reg8                              00000D00
+reg9                              00000FFF
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXX----------
+
+All other memory blocks unused.
+
+Program Memory Bytes Used:    54
+Program Memory Bytes Free: 2097098
+
+
+Errors   :     0
+Warnings :     7 reported,     0 suppressed
+Messages :     9 reported,     0 suppressed
+
+

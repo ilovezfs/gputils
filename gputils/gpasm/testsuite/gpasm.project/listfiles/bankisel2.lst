@@ -1,0 +1,71 @@
+MPASM 03.20.02 Released      BANKIS~2.ASM   1-18-2003  21:08:59         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001   processor 16f877a
+                      00002 
+  00000000            00003 INDF equ H'0000'
+  00000004            00004 FSR  equ H'0004'
+                      00005 
+  00000020            00006 reg1 equ 0x20
+  000000A0            00007 reg2 equ 0xa0
+  00000120            00008 reg3 equ 0x120
+  000001A0            00009 reg4 equ 0x1a0
+                      00010 
+0000                  00011   org 0
+                      00012 
+Warning[202]: Argument out of range.  Least significant bits used.
+0000   30A0           00013   movlw reg4
+0001   0084           00014   movwf FSR
+0002   1783           00015   bankisel reg4
+0003   0080           00016   movwf INDF
+                      00017 
+0004   30A0           00018   movlw reg2
+0005   0084           00019   movwf FSR 
+0006   1383           00020   bankisel reg2
+0007   0080           00021   movwf INDF
+                      00022 
+Warning[202]: Argument out of range.  Least significant bits used.
+0008   3020           00023   movlw reg3
+0009   0084           00024   movwf FSR
+000A   1783           00025   bankisel reg3
+000B   0080           00026   movwf INDF
+                      00027 
+000C   3020           00028   movlw reg1
+000D   0084           00029   movwf FSR
+000E   1383           00030   bankisel reg1
+000F   0080           00031   movwf INDF
+                      00032 
+                      00033   end
+MPASM 03.20.02 Released      BANKIS~2.ASM   1-18-2003  21:08:59         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR                               00000004
+INDF                              00000000
+__16F877A                         00000001
+reg1                              00000020
+reg2                              000000A0
+reg3                              00000120
+reg4                              000001A0
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    16
+Program Memory Words Free:  8176
+
+
+Errors   :     0
+Warnings :     2 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -31,6 +31,6 @@ void coff_add_filesym(char *name, int isinclude);
 void coff_add_eofsym(void);
 void coff_add_listsym(void);
 void coff_add_nolistsym(void);
-unsigned long coff_section_flags(void);
+int  coff_symbol_section(char *name);
 
 #endif

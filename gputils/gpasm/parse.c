@@ -188,7 +188,7 @@ void next_line(int value)
 
 
   if (state.src->type == macro) {
-    if ((state.lst.expand) && (state.lst.enabled) && (state.pass == 2)) {
+    if ((state.lst.expand) && (state.pass == 2)) {
       assert(state.src->lst.m->src_line != NULL);
       lst_format_line(state.src->lst.m->src_line, value);
     }
@@ -205,7 +205,7 @@ void next_line(int value)
 	state.mac_body->src_line = strdup(l);
     }
 
-    if (state.lst.enabled && (state.pass == 2)) {
+    if (state.pass == 2) {
       lst_format_line(e, value);
     }
   }

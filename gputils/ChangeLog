@@ -1,3 +1,8 @@
+2003-01-19 Craig Franklin <craigfranklin@attbi.com>
+  * Added object test files.
+  * Fixed errors found by running new test files.  
+  * Added bankisel directive.
+
 2003-01-05 Craig Franklin <craigfranklin@attbi.com>
   * Converted to new object structures.
   * Fixed errors in gpasm, gplib, and gplink.  

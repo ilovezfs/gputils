@@ -177,6 +177,7 @@ _read_sections(gp_object_type *object, char *file)
     }
 
     current->number = i + 1;
+    current->next = NULL;
     
     _read_sec_header(&current->header, section_ptr);
 

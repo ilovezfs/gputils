@@ -40,7 +40,7 @@ Boston, MA 02111-1307, USA.  */
 
 void yyerror(char *message)
 {
-  gplink_error(message);
+  gp_error(message);
 }
 
 int yylex(void);

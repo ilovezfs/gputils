@@ -29,6 +29,7 @@ int can_evaluate(struct pnode *p);
 char *evaluate_concatenation(struct pnode *p);
 gpasmVal evaluate(struct pnode *p);
 gpasmVal maybe_evaluate(struct pnode *p);
+int count_reloc(struct pnode *p);
 gpasmVal reloc_evaluate(struct pnode *p, unsigned short type);
 int eval_fill_number(struct pnode *p);
 

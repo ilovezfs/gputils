@@ -29,8 +29,7 @@ Boston, MA 02111-1307, USA.  */
 
 struct gplink_state state = {
     _hex,               /* produce hex file by default */
-    inhx8m,		/* hex_format */
-    0,			/* quiet */
+    inhx32,		/* hex_format */
     0                   /* debug */
 };
 
@@ -42,39 +41,10 @@ int count_missing(void)
   return state.symbol.missing->count;
 }
 
-
-/* FIXME: replace these functions with gpmessage.c functions */
-void gplink_error(char *messg)
-{
-  state.num.errors++;
-  if (state.quiet != 1)
-    printf("error: %s\n", messg); 
-
-  return;
-}
-
-void gplink_warning(char *messg)
-{
-  state.num.warnings++;
-  if (state.quiet != 1)
-    printf("warning: %s\n", messg); 
-
-  return;
-}
-
-void gplink_debug(char *messg)
-{
-  if ((state.quiet != 1) && (state.debug == 1))
-    printf("debug: %s\n", messg);
-
-  return;
-}
-
 void object_append(gp_object_type *file, char *name)
 {
   struct objectlist *new;
   enum pic_processor processor;
-  char buffer[BUFSIZ];
 
   /* make the new entry */  
   new = (struct objectlist *)malloc(sizeof(*new));
@@ -101,11 +71,8 @@ void object_append(gp_object_type *file, char *name)
     }
     list->next = new;
     
-    if (processor != state.processor) {
-      sprintf(buffer, "processor mismatch in \"%s\"",
-              file->filename);
-      gplink_error(buffer);
-    }
+    if (processor != state.processor)
+      gp_error("processor mismatch in \"%s\"", file->filename);
   }
 
   return;
@@ -185,28 +152,9 @@ int scan_index(struct symbol_table *table, gp_archive_type *archive)
 
   return 0;
 }
-
-/* called by the libgputils */
-void
-_duplicate_symbol(char *name, gp_object_type *first, gp_object_type *second)  
-{
-  char buffer[BUFSIZ];
-
-  sprintf(buffer, 
-          "duplicate symbol \"%s\" defined in \"%s\" and \"%s\"", 
-          name,
-          first->filename,
-          second->filename);
-
-  gplink_error(buffer);
-
-  return;
-}
     
 int scan_archive(gp_archive_type *archive, char *name)
 {
-  char buffer[BUFSIZ];
-
   state.symbol.archive = push_symbol_table(NULL, 0);
 
   /* If necessary, build a symbol index for the archive. */
@@ -216,8 +164,7 @@ int scan_archive(gp_archive_type *archive, char *name)
     archive_tbl = push_symbol_table(NULL, 1);
     gp_archive_make_index(archive, archive_tbl);
     archive = gp_archive_add_index(archive_tbl, archive);
-    sprintf(buffer, "\"%s\" is missing symbol index", name);
-    gplink_warning(&buffer[0]);
+    gp_warning("\"%s\" is missing symbol index", name);
     archive_tbl = pop_symbol_table(archive_tbl);
   }
 
@@ -278,7 +225,6 @@ void gplink_open_coff(char *name)
 {
   gp_object_type *object;
   gp_archive_type *archive;
-  char buffer[BUFSIZ];
   
   /* FIXME:  need to add include pathes to this search */
 
@@ -294,14 +240,10 @@ void gplink_open_coff(char *name)
     archive_append(archive, name);
     break;
   case sys_err_file:
-    sprintf(&buffer[0], "can't open file \"%s\"",
-            name);
-    gplink_error(&buffer[0]);     
+    gp_error("can't open file \"%s\"", name);     
     break;
   case unknown_file:
-    sprintf(&buffer[0], "\"%s\" is not a valid coff object or archive",
-            name);
-    gplink_error(&buffer[0]);     
+    gp_error("\"%s\" is not a valid coff object or archive", name);     
     break; 
   default:
     assert(0);
@@ -314,7 +256,7 @@ void gplink_add_path(char *path)
   if(state.numpaths < MAX_PATHS) {
     state.paths[state.numpaths++] = strdup(path);
   } else {
-    gplink_error("too many -I paths");
+    gp_error("too many -I paths");
   }
 }
 
@@ -407,7 +349,7 @@ int main(int argc, char *argv[])
         *pc = 0;
       break;
     case 'q':
-      state.quiet = 1;
+      gp_quiet = 1;
       break;
     case 's':
       state.srcfilename = optarg;
@@ -457,7 +399,7 @@ int main(int argc, char *argv[])
   } else {
     /* FIXME: Maybe add a default script so a user supplied one isn't always 
        necessary. */ 
-    gplink_error("linker command file not specified");
+    gp_error("linker command file not specified");
   }
 
   /* Construct the symbol tables. Determine which archive members are 
@@ -493,7 +435,7 @@ int main(int argc, char *argv[])
     assert(0);
   }
 
-  if (state.num.errors > 0)
+  if (gp_num_errors > 0)
     return 1;
   else
     return 0;

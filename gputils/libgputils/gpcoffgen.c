@@ -106,8 +106,10 @@ gp_coffgen_init(char *name, enum pic_processor processor)
     rom_width = 14;
     break;
   case PROC_CLASS_PIC16:
-  case PROC_CLASS_PIC16E:
     rom_width = 16;
+    break;
+  case PROC_CLASS_PIC16E:
+    rom_width = 8;
     break;
   case PROC_CLASS_EEPROM8:
   default:
@@ -149,6 +151,9 @@ gp_coffgen_fetch_symbol_name(gp_object_type *object,
 {
   unsigned long index;
 
+  assert(object != NULL);
+  assert(symbol != NULL);
+
   if (symbol->sym_name.ptr.s_zeros == 0) {
     index = symbol->sym_name.ptr.s_offset;
     strncpy(string, &object->string_table[index], BUFSIZ);
@@ -167,6 +172,9 @@ gp_coffgen_fetch_section_name(gp_object_type *object,
 			      char *string)
 {
   unsigned long index;
+
+  assert(object != NULL);
+  assert(header != NULL);
 
   if (header->s_name.ptr.s_zeros == 0) {
     index = header->s_name.ptr.s_offset;

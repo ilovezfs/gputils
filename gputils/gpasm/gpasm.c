@@ -325,6 +325,7 @@ int assemble(void)
   state.cblock = 0;
   if (state.cmd_line.radix != 1)
     state.radix = 16;
+  state.obj.section_num = 0;
   state.obj.symbol_num = 0;
   coff_init();
   cod_init();
@@ -349,7 +350,7 @@ int assemble(void)
   }
 
   /* Maybe produce a memory map */
-  if (state.lst.memorymap) {
+  if ((state.mode == absolute) && (state.lst.memorymap)) {
     lst_memory_map(state.i_memory);
   }
   
