@@ -333,7 +333,46 @@ EXTRA_DIST = \
 	18f458i.lkr \
 	18f458.lkr \
 	18f4610.lkr \
-	18f4620_e.lkr
+	18f4620_e.lkr \
+	18f4620.lkr \
+	18f6520i.lkr \
+	18f6520.lkr \
+	18f6525i.lkr \
+	18f6525.lkr \
+	18f6585i.lkr \
+	18f6585.lkr \
+	18f6620i.lkr \
+	18f6620.lkr \
+	18f6621i.lkr \
+	18f6621.lkr \
+	18f6680i.lkr \
+	18f6680.lkr \
+	18f6720i.lkr \
+	18f6720.lkr \
+	18f8520i.lkr \
+	18f8520.lkr \
+	18f8525i.lkr \
+	18f8525.lkr \
+	18f8585i.lkr \
+	18f8585.lkr \
+	18f8620i.lkr \
+	18f8620.lkr \
+	18f8621i.lkr \
+	18f8621.lkr \
+	18f8680i.lkr \
+	18f8680.lkr \
+	18f8720i.lkr \
+	18f8720.lkr \
+	hcs1365.lkr \
+	hcs1370.lkr \
+	rf509af.lkr \
+	rf509ag.lkr \
+	rf675fi.lkr \
+	rf675f.lkr \
+	rf675hi.lkr \
+	rf675h.lkr \
+	rf675ki.lkr \
+	rf675k.lkr
 
 
 pkgdata_DATA = $(EXTRA_DIST)
@@ -477,45 +516,6 @@ uninstall-am: uninstall-info-am uninstall-pkgdataDATA
 	mostlyclean mostlyclean-generic uninstall uninstall-am \
 	uninstall-info-am uninstall-pkgdataDATA
 
-	18f4620.lkr \
-	18f6520i.lkr \
-	18f6520.lkr \
-	18f6525i.lkr \
-	18f6525.lkr \
-	18f6585i.lkr \
-	18f6585.lkr \
-	18f6620i.lkr \
-	18f6620.lkr \
-	18f6621i.lkr \
-	18f6621.lkr \
-	18f6680i.lkr \
-	18f6680.lkr \
-	18f6720i.lkr \
-	18f6720.lkr \
-	18f8520i.lkr \
-	18f8520.lkr \
-	18f8525i.lkr \
-	18f8525.lkr \
-	18f8585i.lkr \
-	18f8585.lkr \
-	18f8620i.lkr \
-	18f8620.lkr \
-	18f8621i.lkr \
-	18f8621.lkr \
-	18f8680i.lkr \
-	18f8680.lkr \
-	18f8720i.lkr \
-	18f8720.lkr \
-	hcs1365.lkr \
-	hcs1370.lkr \
-	rf509af.lkr \
-	rf509ag.lkr \
-	rf675fi.lkr \
-	rf675f.lkr \
-	rf675hi.lkr \
-	rf675h.lkr \
-	rf675ki.lkr \
-	rf675k.lkr
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -244,7 +244,7 @@ EXTRA_DIST =\
 	18f458i.lkr \
 	18f458.lkr \
 	18f4610.lkr \
-	18f4620_e.lkr
+	18f4620_e.lkr \
 	18f4620.lkr \
 	18f6520i.lkr \
 	18f6520.lkr \
