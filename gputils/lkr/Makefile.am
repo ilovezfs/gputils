@@ -33,6 +33,8 @@ EXTRA_DIST =\
 	12ce673.lkr \
 	12ce674.lkr \
 	12cr509a.lkr \
+	12f629.lkr \
+	12f675.lkr \
 	14000.lkr \
 	16c432.lkr \
 	16c433.lkr \
@@ -125,6 +127,7 @@ EXTRA_DIST =\
 	16cr83.lkr \
 	16cr84.lkr \
 	16f627.lkr \
+	16f627a.lkr \
 	16f628.lkr \
 	16f628a.lkr \
 	16f630.lkr \
@@ -134,11 +137,15 @@ EXTRA_DIST =\
 	16f74.lkr \
 	16f76.lkr \
 	16f77.lkr \
+	16f818.lkr \
+	16f819.lkr \
 	16f83.lkr \
 	16f84a.lkr \
 	16f84.lkr \
 	16f85.lkr \
 	16f86.lkr \
+	16f87.lkr \
+	16f88.lkr \
 	16f870i.lkr \
 	16f870.lkr \
 	16f871i.lkr \
@@ -179,8 +186,6 @@ EXTRA_DIST =\
 	18c801i.lkr \
 	18c801.lkr \
 	18c858.lkr \
-	18f010.lkr \
-	18f020.lkr \
 	18f1220.lkr \
 	18f1320.lkr \
 	18f2220.lkr \
@@ -211,9 +216,6 @@ EXTRA_DIST =\
 	18f8620i.lkr \
 	18f8720.lkr \
 	18f8720i.lkr \
-	ap7675.lkr \
-	hcs1365.lkr \
-	hcs1370.lkr \
 	rf509af.lkr \
 	rf509ag.lkr
 
