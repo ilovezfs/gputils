@@ -61,7 +61,7 @@ Var MUI_STARTMENUPAGE_VARIABLE
 
 Name "gputils"
 BrandingText ""
-OutFile "gputils-@VERSION@-@RELEASE@.exe"
+OutFile "@VERSION@-@RELEASE@.exe"
 InstallDir "$PROGRAMFILES\gputils"
 ShowInstDetails show
 ShowUnInstDetails show

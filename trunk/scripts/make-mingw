@@ -172,10 +172,9 @@ elif [ ! -f $srcfilename ]; then
   exit 1
 else
   # determine the src directory and version  and 
-  src_dir=`echo $srcfilename | sed -e 's%.tar.gz%%g'`  
-  version=`echo $src_dir | tr -d "-"| tr -d [:alpha:]`
+  version=`echo $srcfilename | sed -e 's%.tar.gz%%g'`  
   # extract the files
-  rm -Rf $src_dir
+  rm -Rf $version
   tar -zxf $srcfilename
   # make the distribution directory
   root_dir="`pwd`"
@@ -198,11 +197,11 @@ if [ $patch ]; then
 fi
 
 # change to the source directory
-if [ -d $src_dir ]; then
-  cd $src_dir
-  echo "changing to source directory... $src_dir"
+if [ -d $version ]; then
+  cd $version
+  echo "changing to source directory... $version"
 else  
-  echo "error: directory $src_dir not found"
+  echo "error: directory $version not found"
   exit 1
 fi
 
@@ -231,10 +230,10 @@ if [ ! $release ]; then
 fi
 echo "checking distribution dash number... $release"
 
-echo "checking distribution name... $distname"
-
 # generate the complete distribution name
-distname="gputils-$version-$release-$distname"
+distname="$version-$distname-$release"
+
+echo "checking distribution name... $distname"
 
 ################################################################################
 # compile the project and install files to the distribution directory
@@ -330,7 +329,7 @@ fi
 # clean the dist and src directories
 cd ..
 if test x$clean = xyes; then
-  rm -Rf $src_dir
+  rm -Rf $version
   rm -Rf $dist_dir 
 fi
 exit
