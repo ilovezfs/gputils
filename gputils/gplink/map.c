@@ -86,13 +86,15 @@ _write_sections(void)
 
     assert(section->name != NULL);
     
-    map_line("%25s %10s   %#08x %10s   %#08x",
-             section->name,
-             type,
-             section->address,
-             location,
-             section->size);
-
+    if (section->size != 0) {
+      map_line("%25s %10s   %#08x %10s   %#08x",
+               section->name,
+               type,
+               section->address,
+               location,
+               section->size);
+    }
+    
     section = section->next;  
   }
   map_line(" ");
@@ -104,7 +106,8 @@ static void
 _write_program_memory(void)
 {
   gp_section_type *section = NULL;
-  int size = 0;
+  int size;
+  int prog_size = 0;
 
   map_line("                              Program Memory Usage");
   map_line("                               Start         End");
@@ -112,17 +115,18 @@ _write_program_memory(void)
   section = state.object->sections;
 
   while (section != NULL) {
-    if (section->flags & STYP_TEXT) {
+    if ((section->flags & STYP_TEXT) && (section->size != 0)) {
+      size = section->size >> 1;
       map_line("                            %#08x    %#08x",
                section->address,
-               section->address + (section->size >> 1));
-      size += (section->size >> 1);
+               section->address + size - 1);
+      prog_size += size;
     }
     section = section->next;  
   }
   map_line(" ");
   map_line("                            %i program addresses used",
-           size);
+           prog_size);
   map_line(" ");
 }
 

@@ -7,12 +7,12 @@
 .code_reloc6 code
 reloc6:
   global reloc6
-  fill 0xff, (0x1100 - 0x1000)
+  fill 0x66, (0x10ff - 0x1000 + 1)
 
 ; start of fourth page
 .code_abs4 code 0x1800
 abs4:
   global abs4
-  fill 0xff, 0xff
+  fill 0x04, (0x18ff - 0x1800 + 1)
 
   end

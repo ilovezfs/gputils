@@ -7,18 +7,18 @@
 .code_reloc2 code
 reloc2:
   global reloc2
-  fill 0xff, (0x600 - 0x5)
+  fill 0x22, (0x5ff - 0x5 + 1)
 
 ; lower half of second page
 .code_abs2 code 0xd00
 abs2:
   global abs2
-  fill 0xff, 0xff
+  fill 0x02, (0xdff - 0xd00 + 1)
 
 ; third page
 .code_reloc3 code
 reloc3:
   global reloc3
-  fill 0xff, (0x17ff - 0x1100 - 0xff)
+  fill 0x33, (0xfff - 0xe00 +1)
 
   end

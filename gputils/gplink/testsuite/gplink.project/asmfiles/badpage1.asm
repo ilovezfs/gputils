@@ -4,6 +4,6 @@
   processor 16f877a
 
   code
-.code_badpage1  fill 0xff, 0x801
+  fill 0xff, 0x801
   
   end

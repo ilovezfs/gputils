@@ -1,3 +1,13 @@
+2003-05-10 Craig Franklin <craigfranklin@attbi.com>
+  * gputils 0.11.3 Released.  
+  * Fixed seg fault in gpasm when difference between coff symbols is 
+    calculated. 
+  * Fixed map file bug that caused the end section address to be reported
+    incorrectly.
+  * Added gplink command line option to fill unused unprotected program
+    memory.
+  * Added gplink testsuite.
+
 2003-05-06 Craig Franklin <craigfranklin@attbi.com>
   * Fixed conditional assembly of INCLUDE directives in gpasm. 
   * Fixed seg fault in gplink when object has no sections or symbols.

@@ -268,10 +268,6 @@ static int do_secdef(char *name, struct pnode *parms)
   } else if (found_end == 0) {
     gplkrscr_error("missing argument", "end");
   } else {
-
-    if ((strcasecmp(name, "codepage") != 0) && (found_fill == 1))
-      gplkrscr_error("illegal argument", "fill");
-
     sym = get_symbol(state.section.definition, section_name);      
     if ((sym != NULL) && (strcasecmp(name, "sharebank") != 0)) {
       gplkrscr_error("duplicate section definition", section_name);
@@ -279,12 +275,6 @@ static int do_secdef(char *name, struct pnode *parms)
       sym = add_symbol(state.section.definition, section_name);
       section_def = (struct linker_section *)malloc(sizeof(*section_def));
       annotate_symbol(sym, section_def);
-
-      section_def->start = start;
-      section_def->end = end;
-      section_def->fill = fill;
-      section_def->use_fill = found_fill;
-      section_def->protected = found_protected;
 
       if (strcasecmp(name, "accessbank") == 0) {
         /* FIXME: accessbank is only valid for 18cxx devices */
@@ -298,6 +288,23 @@ static int do_secdef(char *name, struct pnode *parms)
       } else {
         gplkrscr_error("invalid definition type", name);      
       }
+
+      section_def->start = start;
+      section_def->end = end;
+      section_def->protected = found_protected;
+
+      if (section_def->type == codepage) {
+        if ((state.fill_enable == 0) || (found_protected == 1)) {
+          section_def->fill = fill;
+          section_def->use_fill = found_fill;
+        } else {
+          section_def->fill = state.fill_value;
+          section_def->use_fill = 1;
+        }
+      } else if (found_fill == 1) {
+        gplkrscr_error("illegal argument", "fill");        
+      }
+
     }
   }
 

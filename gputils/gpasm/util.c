@@ -163,6 +163,7 @@ void set_global(char *name,
     annotate_symbol(sym, var);
     var->value = value;
     var->coff_num = state.obj.symbol_num;
+    var->coff_section_num = state.obj.section_num;
     var->type = type;
     var->previous_type = type;  /* coff symbols can be changed to global */
   } else if (lifetime == TEMPORARY) {
@@ -197,11 +198,11 @@ void set_global(char *name,
     if (var->type == gvt_extern) {
       coff_add_sym(coff_name, value, 0, T_NULL, C_EXT);
     } else if (var->type == gvt_global) {
-      coff_add_sym(coff_name, value, 1, T_NULL, C_EXT);
+      coff_add_sym(coff_name, value, state.obj.section_num, T_NULL, C_EXT);
     } else if (var->type == gvt_static) {
-      coff_add_sym(coff_name, value, 1, T_NULL, C_STAT);
+      coff_add_sym(coff_name, value, state.obj.section_num, T_NULL, C_STAT);
     } else if (var->type == gvt_address) {
-      coff_add_sym(coff_name, value, 1, T_NULL, C_LABEL);
+      coff_add_sym(coff_name, value, state.obj.section_num, T_NULL, C_LABEL);
     }
 
     if (coff_name != NULL)

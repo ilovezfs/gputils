@@ -474,15 +474,19 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
    the same section */
 
 /* FIXME: This needs some help.  Need a better definition of what is legal
-   syntax.  Concatenations are not supported and should be. */
+   syntax.  Concatenations are not supported and should be.  This could
+   cause some problems for an optimizer.  Need to disable it on any section
+   that has this type of difference.  */
 
 static int
 same_section(struct pnode *p)
 {
   struct pnode *p0;
   struct pnode *p1;
-  gp_symbol_type *symbol0;
-  gp_symbol_type *symbol1;
+  struct symbol *sym0;
+  struct symbol *sym1;
+  struct variable *var0;
+  struct variable *var1;
 
   if(!state.obj.enabled)
     return 0;
@@ -498,14 +502,17 @@ same_section(struct pnode *p)
   if ((p0->tag != symbol) ||
       (p1->tag != symbol))
     return 0;
-  
-  symbol0 = gp_coffgen_findsymbol(state.obj.object, p0->value.symbol);
-  symbol1 = gp_coffgen_findsymbol(state.obj.object, p1->value.symbol);
-  
-  if ((symbol0->section_number < 1) || 
-      (symbol0->section != symbol1->section))
+
+  sym0 = get_symbol(state.stTop, p0->value.symbol);
+  sym1 = get_symbol(state.stTop, p1->value.symbol);
+  var0 = get_symbol_annotation(sym0);
+  var1 = get_symbol_annotation(sym1);
+
+  /* They must come from the same section. Debug symbols are not placed
+     in the global symbol table, so don't worry about symbol type.  */  
+  if (var0->coff_section_num != var1->coff_section_num)
     return 0;
-    
+
   return 1;
 
 }
@@ -524,7 +531,7 @@ gpasmVal reloc_evaluate(struct pnode *p, unsigned short type)
       r = maybe_evaluate(p);
     } else if (count > 1) {
       if ((count == 2) && (same_section(p))) {
-         /* It is valid to take the difference between two symbols in the same 
+        /* It is valid to take the difference between two symbols in the same 
            section.  Evaluate, but don't add a relocation. */
         r = maybe_evaluate(p);
       } else {
