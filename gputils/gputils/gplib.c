@@ -41,6 +41,38 @@ void select_mode(enum lib_modes mode)
   }
 }
 
+/* return the object name without the path */
+
+static char *
+object_name(char *file_name)
+{
+  char *name;
+
+  name = strrchr(file_name, PATH_CHAR);
+  if (name) {
+    name++;
+  } else {
+    name = file_name;
+  }
+
+  return name;
+}
+
+static gp_boolean
+has_path(char *file_name)
+{
+  char *name;
+
+  name = strrchr(file_name, PATH_CHAR);
+
+  if (name) {
+    return true;
+  } else {
+    return false;  
+  }
+
+}
+
 void show_usage(void)
 {
   printf("Usage: gplib [options] library [member]\n");
@@ -137,8 +169,7 @@ int main(int argc, char *argv[])
 
   if (optind < argc) {
     /* fetch the library name */
-    state.filename = argv[optind];
-    optind++;
+    state.filename = argv[optind++];
     /* some operations require object filenames or membernames */
     for ( ; optind < argc; optind++) {
       state.objectname[state.numobjects] = argv[optind];
@@ -153,14 +184,16 @@ int main(int argc, char *argv[])
   }
 
   /* User did not select an operation */
-  if (state.mode == ar_null)
+  if (state.mode == ar_null) {
     usage = 1;
+  }
 
   /* User did not provide object names */
   if ((state.mode != ar_list) && 
       (state.mode != ar_symbols) && 
-      (state.numobjects == 0))
+      (state.numobjects == 0)) {
     usage = 1;
+  }
 
   if (usage) {
     show_usage();
@@ -187,7 +220,8 @@ int main(int argc, char *argv[])
         break;
       } else {
         state.archive = gp_archive_add_member(state.archive, 
-                                              state.objectname[i]);
+                                              state.objectname[i],
+                                              object_name(state.objectname[i]));
       }
       i++;
     }
@@ -196,6 +230,10 @@ int main(int argc, char *argv[])
 
   case ar_delete: 
     while (i < state.numobjects) {
+      if (has_path(state.objectname[i])) {
+        gp_error("invalid object name \"%s\"", state.objectname[i]);
+        break;
+      }
       object = gp_archive_find_member(state.archive, state.objectname[i]);
       if (object == NULL) {
         gp_error("object \"%s\" not found", state.objectname[i]);
@@ -211,6 +249,10 @@ int main(int argc, char *argv[])
 
   case ar_extract:
     while (i < state.numobjects) {
+      if (has_path(state.objectname[i])) {
+        gp_error("invalid object name \"%s\"", state.objectname[i]);
+        break;
+      }
       object = gp_archive_find_member(state.archive, state.objectname[i]);
       if (object == NULL) {
         gp_error("object \"%s\" not found", state.objectname[i]);

@@ -1,3 +1,9 @@
+2004-01-09 Craig Franklin <craigfranklin@comcast.net>
+  * Allow full path to object file in gplib when creating an archive.
+  * Always generate a warning when a source is missing an endif.
+  * Prevent #v label from being processed when assembly is disabled.
+  * Force list file to print blank space when assembly is disabled.
+
 2004-01-07 Craig Franklin <craigfranklin@comcast.net>
   * Use environmental variables GPUTILS_HEADER_PATH and GPUTILS_LKR_PATH
     for the default header and lkr paths.
