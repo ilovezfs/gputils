@@ -235,8 +235,10 @@ gp_archive_extract_member(gp_archive_type *archive,
     strcat(filename, ".o");
 
   output_file = fopen(filename, "wb");
-  if (output_file == NULL)
-    return 1;
+  if (output_file == NULL) {
+    perror(filename);
+    exit(1);
+  }
 
   sscanf(object->header.ar_size, "%il", &size);
   fwrite(object->file, 1, size, output_file);
@@ -258,8 +260,10 @@ gp_archive_write(gp_archive_type *archive,
   assert(archive != NULL);
 
   output_file = fopen(archivename, "wb");
-  if (output_file == NULL)
-    return 1;
+  if (output_file == NULL) {
+    perror(archivename);
+    exit(1);
+  }
 
   fputs(ARMAG, output_file); /* write the archive magic number */
 
@@ -309,7 +313,10 @@ gp_archive_read(char *filename)
   char buffer[SARMAG + 1];
 
   infile = fopen(filename,"rb");
-  assert(infile != NULL);
+  if (infile == NULL) {
+    perror(filename);
+    exit(1);
+  }
 
   fread(&buffer[0], 1, SARMAG, infile); /* read the magic number */
   if (strncmp(buffer, ARMAG, SARMAG) != 0) {

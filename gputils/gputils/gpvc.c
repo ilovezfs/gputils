@@ -181,10 +181,9 @@ int main(int argc, char *argv[])
 
   codefile = fopen(filename,"rb");
   if(codefile == NULL) {
-    printf("Unable to open %s\n",filename);
+    perror(filename);
     exit(1);
   }
-
 
   /* Start off by reading the directory block */
   read_directory();
