@@ -5,7 +5,6 @@ list is in no particular order.
   * grep the source for FIXME and fix.
   * Fix macro implementation so a simple text substitution is used.
   * Add object file generation to gpasm.
-  * Add an iberty lib so gputils always has getopt_long.
   * Move opcode generator from /gpasm/directive.c to 
     /libgputils/opcode.c.
   * Add instruction mask to opcode definitions for disassembler.
