@@ -1,3 +1,7 @@
+2004-11-28 Robert Kaes <rjkaes@users.sourceforge.net>
+  * [gpal] Improved context save during isr.
+  * [gpal] Simplified symbol offsets in the code generator.
+
 2004-11-26 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gpal] Added symbol attributes.
   * [gpal] Added access types.

@@ -81,15 +81,7 @@ load_file14(char *name,
             int offset)
 {
   int num_bytes;
-  char offset_buffer[64];
-  
-  if (offset == 0) {
-    offset_buffer[0] = '\0';
-  } else if (offset < 0) {
-    snprintf(offset_buffer, sizeof(offset_buffer), " - %#x", -offset);
-  } else {
-    snprintf(offset_buffer, sizeof(offset_buffer), " + %#x", offset);
-  }
+  char *offset_buffer = codegen_get_offset_buffer(offset);
   
   /* W is used as the working register for single byte types. */
   if ((size == size_int8) || (size == size_uint8)) {
@@ -137,15 +129,7 @@ store_file14(char *name,
              int offset)
 {
   int num_bytes;
-  char offset_buffer[64];
-  
-  if (offset == 0) {
-    offset_buffer[0] = '\0';
-  } else if (offset < 0) {
-    snprintf(offset_buffer, sizeof(offset_buffer), " - %#x", -offset);
-  } else {
-    snprintf(offset_buffer, sizeof(offset_buffer), " + %#x", offset);
-  }
+  char *offset_buffer = codegen_get_offset_buffer(offset);
   
   if ((size == size_int8) || (size == size_uint8)) {
     BANKSEL;
@@ -369,15 +353,7 @@ clr_direct14(char *name,
              enum size_tag size,
              int offset)
 {
-  char offset_buffer[64];
-  
-  if (offset == 0) {
-    offset_buffer[0] = '\0';
-  } else if (offset < 0) {
-    sprintf(offset_buffer, " - %#x", -offset);
-  } else {
-    sprintf(offset_buffer, " + %#x", offset);
-  }
+  char *offset_buffer = codegen_get_offset_buffer(offset);
 
   BANKSEL;
 
@@ -440,16 +416,8 @@ inc_direct14(char *name,
              enum size_tag size,
              int offset)
 {
-  char offset_buffer[64];
+  char *offset_buffer = codegen_get_offset_buffer(offset);
   char *label = NULL;
-  
-  if (offset == 0) {
-    offset_buffer[0] = '\0';
-  } else if (offset < 0) {
-    sprintf(offset_buffer, " - %#x", -offset);
-  } else {
-    sprintf(offset_buffer, " + %#x", offset);
-  }
 
   BANKSEL;
 
@@ -540,16 +508,8 @@ dec_direct14(char *name,
              enum size_tag size,
              int offset)
 {
-  char offset_buffer[64];
+  char *offset_buffer = codegen_get_offset_buffer(offset);
   char *label = NULL;
-  
-  if (offset == 0) {
-    offset_buffer[0] = '\0';
-  } else if (offset < 0) {
-    sprintf(offset_buffer, " - %#x", -offset);
-  } else {
-    sprintf(offset_buffer, " + %#x", offset);
-  }
 
   BANKSEL;
 
@@ -1841,8 +1801,10 @@ interrupt_vector14(struct variable *var)
   fprintf(state.output.f, "INT_VECTOR code 0x4\n");
   codegen_write_comment("store wreg and status");
   fprintf(state.output.f, "  movwf w_temp\n");
-  fprintf(state.output.f, "  movf STATUS, w\n");
+  fprintf(state.output.f, "  swapf STATUS, w\n");
   fprintf(state.output.f, "  movwf status_temp\n");
+  fprintf(state.output.f, "  movf FSR, w\n");
+  fprintf(state.output.f, "  movwf fsr_temp\n");
   fprintf(state.output.f, "  movf PCLATH, w\n");
   fprintf(state.output.f, "  movwf pclath_temp\n");
   
@@ -1853,7 +1815,9 @@ interrupt_vector14(struct variable *var)
   codegen_write_comment("restore wreg and status");
   fprintf(state.output.f, "  movf pclath_temp, w\n");
   fprintf(state.output.f, "  movwf PCLATH\n");
-  fprintf(state.output.f, "  movf status_temp, w\n");
+  fprintf(state.output.f, "  movf fsr_temp, w\n");
+  fprintf(state.output.f, "  movwf FSR\n");
+  fprintf(state.output.f, "  swapf status_temp, w\n");
   fprintf(state.output.f, "  movwf STATUS\n");
   fprintf(state.output.f, "  swapf w_temp, f\n");
   fprintf(state.output.f, "  swapf w_temp, w\n");
@@ -1862,6 +1826,7 @@ interrupt_vector14(struct variable *var)
   fprintf(state.output.f, "INT_VAR udata_shr\n");
   codegen_write_comment("FIXME: not all processors have shared memory");
   fprintf(state.output.f, "w_temp res 1\n");
+  fprintf(state.output.f, "fsr_temp res 1\n");
   fprintf(state.output.f, "status_temp res 1\n\n");
   fprintf(state.output.f, "pclath_temp res 1\n\n");
 }

@@ -81,21 +81,12 @@ load_file16e(char *name,
              int offset)
 {
   int num_bytes;
-  char offset_buffer[64];
-  
-  if (offset == 0) {
-    offset_buffer[0] = '\0';
-  } else if (offset < 0) {
-    snprintf(offset_buffer, sizeof(offset_buffer), " - %#x", -offset);
-  } else {
-    snprintf(offset_buffer, sizeof(offset_buffer), " + %#x", offset);
-  }
+  char *offset_buffer = codegen_get_offset_buffer(offset);
   
   /* W is used as the working register for single byte types. */
   if ((size == size_int8) || (size == size_uint8)) {
-    codegen_write_asm("movff %s%s, WREG",
-                      name,
-                      offset_buffer);
+    BANKSEL;
+    codegen_write_asm("movf %s%s, w", name, offset_buffer);
     return;
   }
 
@@ -138,20 +129,11 @@ store_file16e(char *name,
               int offset)
 {
   int num_bytes;
-  char offset_buffer[64];
-  
-  if (offset == 0) {
-    offset_buffer[0] = '\0';
-  } else if (offset < 0) {
-    snprintf(offset_buffer, sizeof(offset_buffer), " - %#x", -offset);
-  } else {
-    snprintf(offset_buffer, sizeof(offset_buffer), " + %#x", offset);
-  }
+  char *offset_buffer = codegen_get_offset_buffer(offset);
   
   if ((size == size_int8) || (size == size_uint8)) {
-    codegen_write_asm("movff WREG, %s%s",
-                      name,
-                      offset_buffer);
+    BANKSEL;
+    codegen_write_asm("movwf %s%s", name, offset_buffer);
     return;
   }
 
@@ -355,15 +337,7 @@ clr_direct16e(char *name,
               enum size_tag size,
               int offset)
 {
-  char offset_buffer[64];
-  
-  if (offset == 0) {
-    offset_buffer[0] = '\0';
-  } else if (offset < 0) {
-    sprintf(offset_buffer, " - %#x", -offset);
-  } else {
-    sprintf(offset_buffer, " + %#x", offset);
-  }
+  char *offset_buffer = codegen_get_offset_buffer(offset);
 
   BANKSEL;
 
@@ -423,16 +397,8 @@ inc_direct16e(char *name,
               enum size_tag size,
               int offset)
 {
-  char offset_buffer[64];
+  char *offset_buffer = codegen_get_offset_buffer(offset);
   char *label = NULL;
-  
-  if (offset == 0) {
-    offset_buffer[0] = '\0';
-  } else if (offset < 0) {
-    sprintf(offset_buffer, " - %#x", -offset);
-  } else {
-    sprintf(offset_buffer, " + %#x", offset);
-  }
 
   BANKSEL;
 
@@ -525,16 +491,8 @@ dec_direct16e(char *name,
               enum size_tag size,
               int offset)
 {
-  char offset_buffer[64];
+  char *offset_buffer = codegen_get_offset_buffer(offset);
   char *label = NULL;
-  
-  if (offset == 0) {
-    offset_buffer[0] = '\0';
-  } else if (offset < 0) {
-    sprintf(offset_buffer, " - %#x", -offset);
-  } else {
-    sprintf(offset_buffer, " + %#x", offset);
-  }
 
   BANKSEL;
 
@@ -1839,8 +1797,29 @@ interrupt_vector16e(struct variable *var)
   codegen_write_comment("hi-priority interrupt vector");
   fprintf(state.output.f, "HIPRI_INT_VECTOR code 0x8\n");
   codegen_line_number(var->node);
+
+  /*
+   * Save the FSR0 and PRODL:PRODH registers since they may be used
+   * in the ISR and are likely used in the mainline code as well.
+   */
+  fprintf(state.output.f, "  movff FSR0L, _saved_fsr0\n");
+  fprintf(state.output.f, "  movff FSR0H, _saved_fsr0 + 1\n");
+  fprintf(state.output.f, "  movff PRODL, _saved_mul\n");
+  fprintf(state.output.f, "  movff PRODH, _saved_mul + 1\n");
+  
   fprintf(state.output.f, "  call %s\n", var->name);
+
+  fprintf(state.output.f, "  movff _saved_fsr0, FSR0L\n");
+  fprintf(state.output.f, "  movff _saved_fsr0 + 1, FSR0H\n");
+  fprintf(state.output.f, "  movff _saved_mul, PRODL\n");
+  fprintf(state.output.f, "  movff _saved_mul + 1, PRODH\n");
+  
   fprintf(state.output.f, "  retfie FAST\n\n");
+
+  fprintf(state.output.f, "HIPRI_INT_VAR udata_shr\n");
+  codegen_write_comment("FIXME: not all processors have shared memory");
+  fprintf(state.output.f, "_saved_fsr0 res 2\n");
+  fprintf(state.output.f, "_saved_mul res 2\n");
 }
 
 target_type pic16e = {
