@@ -402,7 +402,7 @@ coff_add_sym(char *name, int value, enum gpasmValTypes type)
   gp_symbol_type *new;
   char message[BUFSIZ];
   int section_number = 0;
-  int sym_type = C_EXT; 
+  int class = C_EXT; 
 
   if(!state.obj.enabled)
     return;
@@ -410,19 +410,19 @@ coff_add_sym(char *name, int value, enum gpasmValTypes type)
   switch (type) {
   case gvt_extern:
     section_number = 0;
-    sym_type = C_EXT;
+    class = C_EXT;
     break;
   case gvt_global:
     section_number = state.obj.section_num;
-    sym_type = C_EXT;
+    class = C_EXT;
     break;
   case gvt_static:
     section_number = state.obj.section_num;
-    sym_type = C_STAT;
+    class = C_STAT;
     break;
   case gvt_address:
     section_number = state.obj.section_num;
-    sym_type = C_LABEL;
+    class = C_LABEL;
     break;
   default:
     return;
@@ -432,7 +432,7 @@ coff_add_sym(char *name, int value, enum gpasmValTypes type)
 
   /* verify the duplicate extern has the same properties */
   if ((new != NULL) && (type == gvt_extern))  {
-    if ((new->type != sym_type) || 
+    if ((new->type != class) || 
         (new->section_number != section_number)) {
       sprintf(message,
               "Duplicate label or redefining symbol that cannot be redefined. (%s)",
@@ -452,8 +452,8 @@ coff_add_sym(char *name, int value, enum gpasmValTypes type)
     new->value          = value;
     new->section_number = section_number;
     new->section        = state.obj.section;
-    new->type           = sym_type;
-    new->class          = T_NULL;
+    new->type           = T_NULL;
+    new->class          = class;
   }
  
   return;
