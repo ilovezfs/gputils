@@ -2515,6 +2515,8 @@ void opcode_init(int stage)
     case pic16cr58a:
     case pic16cr58b:
     case pic16hv540:
+    case rf509af:
+    case rf509ag:
       base = op_12c5xx;
       count = num_op_12c5xx;
       state.device.core_size = CORE_12BIT_MASK;
@@ -2536,12 +2538,15 @@ void opcode_init(int stage)
     case pic12c672:
     case pic12ce673:
     case pic12ce674:
+    case pic12f629:
+    case pic12f675:
     case pic14000:
     case pic16cxx:
     case pic16c432:
     case pic16c433:
     case pic16c461:
     case pic16c554:
+    case pic16c557:
     case pic16c558:
     case pic16c61:
     case pic16c62:
@@ -2613,22 +2618,36 @@ void opcode_init(int stage)
     case pic16cr83:
     case pic16cr84:
     case pic16f627:
+    case pic16f627a:
     case pic16f628:
+    case pic16f628a:
+    case pic16f630:
+    case pic16f676:
+    case pic16f72:
     case pic16f73:
     case pic16f74:
+    case pic16f76:
+    case pic16f77:
+    case pic16f818:
+    case pic16f819:
     case pic16f83:
     case pic16f84:
+    case pic16f84a:
     case pic16f85:
     case pic16f86:
-    case pic16f84a:
+    case pic16f87:
     case pic16f870:
     case pic16f871:
     case pic16f872:
     case pic16f873:
+    case pic16f873a:
     case pic16f874:
+    case pic16f874a:
     case pic16f876:
+    case pic16f876a:
     case pic16f877:
     case pic16f877a:
+    case pic16f88:
     case pic16lc74b:
       base = op_16cxx;
       count = num_op_16cxx;
@@ -2654,7 +2673,7 @@ void opcode_init(int stage)
       _17cxx_core = 1;
       state.device.config_address = CONFIG_17CXX;
       break;
-    case pic18cxx2:
+    case pic18cxx:
     case pic18c242:
     case pic18c252:
     case pic18c442:
@@ -2667,14 +2686,24 @@ void opcode_init(int stage)
     case pic18f012:
     case pic18f020:
     case pic18f022:
+    case pic18f1220:
+    case pic18f1320:
+    case pic18f2220:
+    case pic18f2320:
     case pic18f242:
     case pic18f248:
     case pic18f252:
     case pic18f258:
+    case pic18f4220:
+    case pic18f4320:
     case pic18f442:
     case pic18f448:
     case pic18f452:
     case pic18f458:
+    case pic18f6620:
+    case pic18f6720:
+    case pic18f8620:
+    case pic18f8720:
       base = op_18cxx;
       count = num_op_18cxx;
       state.device.core_size = CORE_16BIT_MASK;
