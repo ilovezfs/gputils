@@ -27,49 +27,6 @@ Boston, MA 02111-1307, USA.  */
 
 static struct file_context *last = NULL;
 
-/*
- * Parse a numeric constant
- */
-int gpasm_number(char *s)
-{
-  char *endptr;
-  int r = 0;
-
-  switch (tolower(s[0])) {
-  case 'd':
-    r = strtol(s + 2, &endptr, 10);
-    break;
-  case 'h':
-    r = strtol(s + 2, &endptr, 16);
-    break;
-  case 'o':
-    r = strtol(s + 2, &endptr, 8);
-    break;
-  case 'q':
-    r = strtol(s + 2, &endptr, 8);
-    break;
-  case 'b':
-    r = strtol(s + 2, &endptr, 2);
-    break;
-  default:
-    assert(0); /* This should have been caught in the lexical stage */
-  }
-
-  /* Check that the number was OK */
-  if (*endptr != '\'') {
-    char complaint[80];
-
-    sprintf(complaint,
-	    isprint(*endptr) ?
-	    "Illegal character '%c' in numeric constant" :
-	    "Illegal character %#x in numeric constant",
-	    *endptr);
-    gperror(GPE_UNKNOWN, complaint);
-  }
-
-  return r;
-}
-
 int gpasm_magic(char *c)
 {
   if (c[0] == '\\') {

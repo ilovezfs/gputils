@@ -23,9 +23,26 @@ bin_PROGRAMS = gpasm
 CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include -DGPASM_HEADER_PATH=\"@GPASM_HEADER_PATH@\"
 
 gpasm_SOURCES=\
-	cod.c directive.c gpasm.c parse.y scan.l gperror.c lst.c \
-	processor.c special.c util.c \
-	cod.h directive.h gpasm.h gperror.h lst.h processor.h \
+	cod.c \
+	directive.c \
+	evaluate.c \
+	gpasm.c \
+	parse.y \
+	scan.l \
+	gperror.c \
+	lst.c \
+	macro.c \
+	processor.c \
+	special.c \
+	util.c \
+	cod.h \
+	directive.h \
+	evaluate.h \
+	gpasm.h \
+	gperror.h \
+	lst.h \
+	macro.h \
+	processor.h \
 	special.h
 
 gpasm_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@

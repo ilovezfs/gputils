@@ -1,0 +1,52 @@
+MPASM 03.00 Released          CBLOCK1.ASM   2-24-2002  17:35:32         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001   processor 16c84
+                      00002 
+  00000006            00003 number1 equ 6
+                      00004 
+                      00005 
+                      00006   cblock 0x20
+  00000020            00007     sara
+  00000021            00008     my_var_3               : (3 * 4)  
+  0000002D            00009     my_var_8
+                      00010   
+                      00011   endc
+                      00012   
+0000                  00013   org 0
+                      00014   
+0000   00A1           00015   movwf my_var_3
+0001   00AD           00016   movwf my_var_8
+                      00017  
+                      00018   end
+MPASM 03.00 Released          CBLOCK1.ASM   2-24-2002  17:35:32         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C84                           00000001
+my_var_3                          00000021
+my_var_8                          0000002D
+number1                           00000006
+sara                              00000020
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XX-------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     2
+Program Memory Words Free:  1022
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

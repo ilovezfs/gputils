@@ -23,17 +23,16 @@ Boston, MA 02111-1307, USA.  */
 #include "gpasm.h"
 #include "gpsymbol.h"
 #include "directive.h"
+#include "evaluate.h"
 #include "parse.h"
 #include "lst.h"
+#include "macro.h"
 #include "gperror.h"
 #include "gpmemory.h"
 #include "special.h"
 
 /* Forward declarations */
-void execute_macro(struct macro_head *h, int arity, struct pnode *parms);
 void execute_body(struct macro_head *h);
-static gpasmVal evaluate(struct pnode *p);
-static gpasmVal maybe_evaluate(struct pnode *p);
 
 /* XXXPRO: new class of processor may require new instruction classes */
 enum insn_class {
@@ -180,263 +179,6 @@ static void emit_packed(unsigned int value, unsigned int mode)
   } else
     packed_hi_lo = 8;
 
-}
-
-static int list_length(struct pnode *L)
-{
-  if (L == NULL) {
-    return 0;
-  } else {
-    return 1 + list_length(TAIL(L));
-  }
-}
-
-static int can_evaluate_concatenation(struct pnode *p)
-{
-  char buf[BUFSIZ];
-
-  switch (p->tag) {
-  case constant:
-    return 1;
-  case symbol:
-    return 1;
-  case unop:
-    return can_evaluate_concatenation(p->value.unop.p0);
-  case binop:
-    return can_evaluate_concatenation(p->value.binop.p0) 
-           && can_evaluate_concatenation(p->value.binop.p1);
-  case string:
-    sprintf(buf, "Illegal argument (%s).", p->value.string);
-    gperror(GPE_ILLEGAL_ARGU, buf);
-    return 0;
-  default:
-    assert(0);
-  }
-
-  return 0;
-}
-
-static int can_evaluate(struct pnode *p)
-{
-  char buf[BUFSIZ];
-
-  if ((p->tag == binop) && (p->value.binop.op == CONCAT)) {
-    return can_evaluate_concatenation(p);
-  }
-  switch (p->tag) {
-  case constant:
-    return 1;
-  case symbol:
-    {
-      struct symbol *s;
-
-      /* '$' means current org, which we can always evaluate */
-      if (strcmp(p->value.symbol, "$") == 0) {
-	return 1;
-      } else {
-        struct variable *var = NULL;
-
-	/* Otherwise look it up */
-	s = get_symbol(state.stTop, p->value.symbol);
-
-        if (s == NULL) {
-          sprintf(buf, "Symbol not previously defined (%s).", p->value.symbol);
-          gperror(GPE_NOSYM, buf);    
-	} else {
-          var = get_symbol_annotation(s);
-
-          if (var == NULL) {
-            sprintf(buf, "Symbol not assigned a value (%s).", p->value.symbol);
-            gpwarning(GPW_UNKNOWN, buf);    
-          }
-        }  
- 
-	return ((s != NULL) && (var != NULL));
-      }
-    }
-  case unop:
-    return can_evaluate(p->value.unop.p0);
-  case binop:
-    return can_evaluate(p->value.binop.p0) && can_evaluate(p->value.binop.p1);
-  case string:
-    sprintf(buf, "Illegal argument (%s).", p->value.string);
-    gperror(GPE_ILLEGAL_ARGU, buf);
-    return 0;
-  default:
-    assert(0);
-  }
-
-  return 0;
-}
-
-char *evaluate_concatenation(struct pnode *p)
-{
-  switch (p->tag) {
-  case symbol:
-    return p->value.symbol;
-  case binop:
-    assert(p->value.binop.op == CONCAT);
-    {
-      char *s[2], *new;
-
-      s[0] = evaluate_concatenation(p->value.binop.p0);
-      s[1] = evaluate_concatenation(p->value.binop.p1);
-      new = malloc(strlen(s[0]) + 1 + strlen(s[1]) + 1);
-      strcpy(new, s[0]);
-      strcat(new, s[1]);
-      return new;
-    }
-  case unop:
-    assert(p->value.unop.op == VAR);
-    {
-      char buf[80];
-      sprintf(buf, "%d", maybe_evaluate(p->value.unop.p0));
-      return (strdup(buf));
-    }
-  default:
-    assert(0);
-  }
-
-  return NULL;
-}
-
-static gpasmVal evaluate(struct pnode *p)
-{
-  struct variable *var;
-  gpasmVal p0, p1;
-
-  if (((p->tag == binop) && (p->value.binop.op == CONCAT)) ||
-      ((p->tag == unop) && (p->value.unop.op == VAR))) {
-    char *string = evaluate_concatenation(p);
-    struct symbol *s;
-
-    s = get_symbol(state.stTop, string);
-    if (s == NULL) {
-      char buf[BUFSIZ];
-      sprintf(buf, "Symbol not previously defined (%s).", string);
-      gperror(GPE_NOSYM, buf); 
-      return 0;
-    } else {
-      var = get_symbol_annotation(s);
-      assert(var != NULL);
-      return var->value;
-    }
-  }
-  
-  switch (p->tag) {
-  case constant:
-    return p->value.constant;
-  case symbol:
-    {
-      struct symbol *s;
-
-      if (strcmp(p->value.symbol, "$") == 0) {
-	return state.org << _16bit_core;
-      } else {
-	s = get_symbol(state.stTop, p->value.symbol);
-	var = get_symbol_annotation(s);
-	assert(var != NULL);
-	return var->value;
-      }
-    }
-  case unop:
-    switch (p->value.unop.op) {
-    case '!':
-      return !evaluate(p->value.unop.p0);
-    case '+':
-      return  evaluate(p->value.unop.p0);
-    case '-':
-      return -evaluate(p->value.unop.p0);
-    case '~':
-      return ~evaluate(p->value.unop.p0);
-    case HIGH:
-      return (evaluate(p->value.unop.p0) >> 8) & 0xff;
-    case LOW:
-      return evaluate(p->value.unop.p0) & 0xff;
-    case INCREMENT:  
-      return evaluate(p->value.unop.p0) + 1;
-    case DECREMENT:          
-      return evaluate(p->value.unop.p0) - 1;
-    default:
-      assert(0);
-    }
-  case binop:
-    p0 = evaluate(p->value.binop.p0);
-    p1 = evaluate(p->value.binop.p1);
-    switch (p->value.binop.op) {
-    case '+':      return p0 + p1;
-    case '-':      return p0 - p1;
-    case '*':      return p0 * p1;
-    case '/':
-      if (p1 == 0){
-        gperror(GPE_DIVBY0, NULL);
-        return 0;
-      } else {
-        return p0 / p1;
-      }
-    case '%':      return p0 % p1;
-    case '&':      return p0 & p1;
-    case '|':      return p0 | p1;
-    case '^':      return p0 ^ p1;
-    case LSH:      return p0 << p1;
-    case RSH:      return p0 >> p1;
-    case EQUAL:    return p0 == p1;
-    case '<':      return p0 < p1;
-    case '>':      return p0 > p1;
-    case NOT_EQUAL:          return p0 != p1;
-    case GREATER_EQUAL:      return p0 >= p1;
-    case LESS_EQUAL:         return p0 <= p1;
-    case LOGICAL_AND:        return p0 && p1;
-    case LOGICAL_OR:         return p0 || p1;
-    case '=': 
-      gperror(GPE_BADCHAR, "Illegal character (=)");     
-      return 0;
-    default:
-      printf("Unhanded operator (%c) on line %i of %s\n", 
-             p->value.binop.op,
-             state.src->line_number,
-             state.src->name);
-      assert(0); /* Unhandled binary operator */
-    }
-  default:
-    assert(0); /* Unhandled parse node tag */
-  }
-  return (0); /* Should never reach here */
-}
-
-/* Attempt to evaluate expression 'p'.  Return its value if
- * successful, otherwise generate an error message and return 0.  */
-
-static gpasmVal maybe_evaluate(struct pnode *p)
-{
-  gpasmVal r;
-
-  if (p && can_evaluate(p)) {
-    r = evaluate(p);
-  } else {
-    r = 0;
-  }
-
-  return r;
-}
-
-/* evaluate the number of passes for the "fill" directive*/
-int eval_fill_number(struct pnode *p)
-{
-  int number;
-
-  number = maybe_evaluate(p);
-  if(_16bit_core) {
-    /* For 16 bit core devices number is bytes not words */ 
-    if ((number & 0x1) == 1){
-      /* The number is divided by two, so it can't be odd */
-      gperror(GPE_FILL_ODD, NULL);
-    } else {
-      number = number / 2;
-    }	
-  }
-
-  return number;
 }
 
 /* determine which page of program memory the address is located */
@@ -656,30 +398,6 @@ static void simplify_data(struct pnode *L, struct sllist *list, int packing_stri
 
   }
 
-}
-
-static int enforce_arity(int arity, int must_be)
-{
-  if (arity == must_be)
-    return 1;
-  else {
-    if (arity < must_be) {
-      gperror(GPE_MISSING_ARGU, NULL);
-    } else {
-      gperror(GPE_TOO_MANY_ARGU, NULL);
-    }
-    return 0;
-  }
-}
-
-static int enforce_simple(struct pnode *p)
-{
-  if (p->tag == symbol) {
-    return 1;
-  } else {
-    gperror(GPE_ILLEGAL_ARGU, NULL);
-    return 0;
-  }
 }
 
 /* Do the work for beginning a conditional assembly block.  Leave it
@@ -1260,6 +978,23 @@ static gpasmVal do_errlvl(gpasmVal r,
   return r;
 }
 
+static gpasmVal do_exitm(gpasmVal r,
+			 char *name,
+			 int arity,
+			 struct pnode *parms)
+{
+  state.lst.line.linetype = dir;
+  if (enforce_arity(arity, 0)) {
+    if (state.stGlobal == state.stTop) {
+      gperror(GPE_UNKNOWN, "Attempt to use \"exitm\" outside of macro");
+    } else {
+      state.next_state = _exitmacro;
+    }
+  }
+
+  return r;
+}
+
 static gpasmVal do_expand(gpasmVal r,
 		       char *name,
 		       int arity,
@@ -1450,6 +1185,33 @@ static gpasmVal do_ifndef(gpasmVal r,
 
   return r;
 }
+
+static gpasmVal do_include(gpasmVal r,
+		           char *name,
+		           int arity,
+		           struct pnode *parms)
+{
+  struct pnode *p;
+
+  state.lst.line.linetype = dir;
+
+  if (enforce_arity(arity, 1)) {
+    p = HEAD(parms);
+    if (p->tag == string) {
+      state.next_state = _include;  
+      state.next_buffer.file = strdup(p->value.string);
+    } else if (p->tag == symbol) {
+      /* This is a bad coding style. "" or <> should enclose all filenames */
+      state.next_state = _include;  
+      state.next_buffer.file = strdup(p->value.symbol);    
+    } else {
+      gperror(GPE_ILLEGAL_ARGU, NULL);
+    }
+  }
+
+  return r;
+}
+
 /************************************************************************
  * do_list - parse the LIST directive
  *
@@ -1578,7 +1340,7 @@ static gpasmVal do_local(gpasmVal r,
           set_global(lhs, value, TEMPORARY, gvt_constant);
         }
       } else if (p->tag == symbol) {
-        /* put the symbol in the Top table*/
+        /* put the symbol in the Top table */
         add_symbol(state.stTop, p->value.symbol);
       } else {
         gperror(GPE_ILLEGAL_ARGU, NULL);
@@ -2494,7 +2256,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
     if (s) {
       /* Found the macro: execute it */
       if (asm_enabled())
-	execute_macro(get_symbol_annotation(s), arity, parms);
+	setup_macro(get_symbol_annotation(s), arity, parms);
     } else {
 
       if (asm_enabled()) {
@@ -2592,76 +2354,6 @@ void execute_body(struct macro_head *h)
 
 }
 
-void execute_macro(struct macro_head *h, int arity, struct pnode *parms)
-{
-  if (enforce_arity(arity, list_length(h->parms))) {
-    state.stTop = push_symbol_table(state.stTop, state.case_insensitive);
-
-    /* Now add the macro's declared parameter list to the new local
-       symbol table.  Set the value of each expression to the
-       corresponding value in the macro call. */
-    if (arity > 0) {
-      gpasmVal *values, *pvalue;
-      struct pnode *pFrom, *pFromH;
-      struct pnode *pTo, *pToH;
-
-      /* First stage, evaluate macro parameters.  Do this BEFORE
-         creating the macro's local symbol table so that the
-         invokation does the right thing with names that appear in
-         both the caller and the callee. */
-      pvalue = values = malloc(arity * sizeof(gpasmVal));
-
-      for (pFrom = parms; pFrom; pFrom = TAIL(pFrom)) {
-	pFromH = HEAD(pFrom);
-	*pvalue++ = maybe_evaluate(pFromH);
-      }
-      assert((pvalue - values) == arity);
-
-      pvalue = values;
-      /* 'values' now holds our parameters.  Create the local symbol
-	 table and add the parameters to it. */
-      for (pTo = h->parms; pTo; pTo = TAIL(pTo)) {
-	struct symbol *sym;
-	struct variable *var;
-
-	pToH = HEAD(pTo);
-	assert(pToH->tag == symbol);
-	
-	sym = add_symbol(state.stTop, pToH->value.symbol);
-
-	/* This assert will fail if the declared parameter list
-	   contains non-unique entries.  do_macro should have already caught
-	   this problem, and prevented the declaration. */
-	assert(get_symbol_annotation(sym) == NULL);
-	var = malloc(sizeof(*var));
-	annotate_symbol(sym, var);
-	var->value = *pvalue++;
-      }
-      assert((pvalue - values) == arity);
-
-      free(values);
-    }
-
-    if (state.pass == 1) {
-      execute_body(h);
-    } else {
-      unsigned int org_copy;
-
-      org_copy = state.org;
-      state.pass = 1;
-      execute_body(h);
-
-      state.org = org_copy;
-      state.pass = 2;
-      execute_body(h);
-    }
-
-    state.stTop = pop_symbol_table(state.stTop);
-  }
-}
-
-/************************************************************************/
-
 /************************************************************************/
 
 /* There are several groups of operations that we handle here.  First
@@ -2679,11 +2371,13 @@ static struct insn  op_0[] = {
   { "endw",	(long int)do_endw,	INSN_CLASS_FUNC,	0 },
   { "equ",	(long int)do_equ,  	INSN_CLASS_FUNC,	0 },
   { "error",	(long int)do_error, 	INSN_CLASS_FUNC,	0 },
+  { "exitm",	(long int)do_exitm,     INSN_CLASS_FUNC,	0 },
   { "expand",	(long int)do_expand,    INSN_CLASS_FUNC,	0 },
   { "errorlevel", (long int)do_errlvl,  INSN_CLASS_FUNC,	0 },
   { "if",	(long int)do_if,   	INSN_CLASS_FUNC,	ATTRIB_COND },
   { "ifdef",	(long int)do_ifdef, 	INSN_CLASS_FUNC,	ATTRIB_COND },
   { "ifndef",	(long int)do_ifndef,	INSN_CLASS_FUNC,	ATTRIB_COND },
+  { "include",	(long int)do_include, 	INSN_CLASS_FUNC,	0 },
   { "list",	(long int)do_list, 	INSN_CLASS_FUNC,	0 },
   { "local",	(long int)do_local, 	INSN_CLASS_FUNC,	0 },
   { "macro",	(long int)do_macro,	INSN_CLASS_FUNC,	0 },
@@ -2702,6 +2396,7 @@ static struct insn  op_0[] = {
   { "#endif",	(long int)do_endif,	INSN_CLASS_FUNC,	ATTRIB_COND },
   { "#ifdef",	(long int)do_ifdef, 	INSN_CLASS_FUNC,	ATTRIB_COND },
   { "#ifndef",	(long int)do_ifndef,	INSN_CLASS_FUNC,	ATTRIB_COND },
+  { "#include",	(long int)do_include, 	INSN_CLASS_FUNC,	0 },
   { "#undefine", (long int)do_undefine,	INSN_CLASS_FUNC,	0 }
 };
 
@@ -3345,14 +3040,18 @@ void begin_cblock(struct pnode *c)
   state.cblock = maybe_evaluate(c);
 }
 
-void cblock_expr(char *s)
+void cblock_expr(struct pnode *s)
 {
-  set_global(s, state.cblock, PERMANENT, gvt_cblock);
-  state.cblock++;
+  if (can_evaluate_concatenation(s)) {
+    set_global(evaluate_concatenation(s), state.cblock, PERMANENT, gvt_cblock);
+    state.cblock++;
+  }
 }
 
-void cblock_expr_incr(char *s, struct pnode *incr)
+void cblock_expr_incr(struct pnode *s, struct pnode *incr)
 {
-  set_global(s, state.cblock, PERMANENT, gvt_cblock);
-  state.cblock += maybe_evaluate(incr);
+  if (can_evaluate_concatenation(s)) {
+    set_global(evaluate_concatenation(s), state.cblock, PERMANENT, gvt_cblock);
+    state.cblock += maybe_evaluate(incr);
+  }
 }

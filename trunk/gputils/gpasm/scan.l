@@ -1,5 +1,4 @@
 %option noyywrap
-%x incl
 %x define
 %x definition
 %x title
@@ -34,6 +33,7 @@ Boston, MA 02111-1307, USA.  */
 #include "gperror.h"
 #include "gpsymbol.h"
 #include "directive.h"
+#include "macro.h"
 
 #define OPERATOR(x)  return (yylval.i = (x))
 /* YY_UNPUT not used, suppress the warning */
@@ -45,6 +45,7 @@ enum identtype identify(char *);
 static void push_string(char *str);
 static int found_end();
 static int found_eof();
+static int stringtolong(char *string, int radix);
 
 static struct symbol *current_definition;	/* Used in #define */
 static int quoted; /* Used to prevent #define expansion in ifdef and 
@@ -56,16 +57,9 @@ static int force_decimal; /* Used to force decimal in errorlevel */
 IDENT  ([a-z_\x80-\xff?@][a-z_0-9\x80-\xff.?@]*)|([.][a-z_\x80-\xff.?@]*)
 ESCCH  \\([abfnrtv\\?'"]|0[0-7]{2}|x[0-9a-f]{2})
 STR_QCHAR  ([^"\n]|{ESCCH})
+NUMCHAR [0-9a-f]
 
 %%
-^[ \t]*#?include[ \t]*[<"]? { BEGIN(incl); }
-<incl>[^<"\r\n]*[>"]?	 { /* got the include file name */
-			   char *pc = &yytext[yyleng - 1];
-			   if ((*pc == '"') || (*pc == '>'))
-			     *pc = '\0';
-			   open_src(yytext, 1);
-			   BEGIN(INITIAL);
-			 }
 <<EOF>>		 	 {
 			   if (found_eof())
 			     yyterminate();
@@ -115,7 +109,7 @@ fill[ \t]*\(     	 {
                            BEGIN(define);
 			 }
 <define>{IDENT}		 {
-                           if(asm_enabled()) {
+                           if((asm_enabled()) && (!state.mac_prev)) {
 			     if ((get_symbol(state.stDefines, yytext) != NULL)
                                   && (state.pass == 1)) {
 			       /* FIXME: find a more elegant way to do this */
@@ -129,7 +123,7 @@ fill[ \t]*\(     	 {
 			   BEGIN(definition);
 			 }
 <definition>.*$	 	 {
-                           if(asm_enabled()) {
+                           if((asm_enabled()) && (!state.mac_prev)) {
 			     char *string_ptr = yytext;
 
 			     /* Should have a #define in progress */
@@ -192,6 +186,11 @@ list		     	 {
 			   yylval.s = strdup(yytext);
 			   return IDENTIFIER;
 			 }
+#?include   	 	 {
+			   /* #include and include can appear in column 1 */
+			   yylval.s = strdup(yytext);
+			   return IDENTIFIER;
+			 }
 #undefine 	 	 {
 			   /* #undefine can appear in column 1 */
 			   quoted = 1;
@@ -217,7 +216,7 @@ list		     	 {
                            if(asm_enabled()) {
                              switch(identify(yytext)) {
                                case defines:
-                                 sym = get_symbol(state.stDefines, yytext);
+                                 sym = get_symbol(state.stTopDefines, yytext);
                                  subst = get_symbol_annotation(sym);
                                  push_string(subst);
                                  break;
@@ -274,7 +273,7 @@ list		     	 {
 
 			   /* If not quoted, check for #define substitution */
 			   if (!quoted &&
-                               (sym = get_symbol(state.stDefines, yytext)) != NULL) {
+                               (sym = get_symbol(state.stTopDefines, yytext)) != NULL) {
 			     char *subst = get_symbol_annotation(sym);
 			     assert(subst != NULL);
  			     if (strcmp(yytext, subst) == 0) {
@@ -302,103 +301,70 @@ as identifiers rather than as hex numbers. */
                            yylval.s = strdup(yytext);
 			   return IDENTIFIER;
 			 }
-[bdhoq]'-?[0-9a-f]+'      {
-			   yylval.i = gpasm_number(yytext);
+0x{NUMCHAR}+             {
+                           yylval.i = stringtolong(yytext + 2, 16);
 			   return NUMBER;
 			 }
-0x[0-9a-f]+            {
-                           char *endptr;
-
-                           yylval.i = strtol(yytext + 2, &endptr, 16);
-                           if ((endptr == NULL) || (*endptr != '\0')) {
-    			     char complaint[80];
-			 
-    			     sprintf(complaint,
-				     isprint(*endptr) ?
-				     "Illegal character '%c' in numeric constant" :
-				     "Illegal character %#x in numeric constant",
-				     *endptr);
-                             gperror(GPE_UNKNOWN, complaint);
-                           }
+{NUMCHAR}+b              {
+                           if (state.radix == 16) {
+                             yylval.i = stringtolong(yytext, 16);                           
+			   } else {
+			     yytext[yyleng - 1] = '\0';
+                             yylval.i = stringtolong(yytext, 2);
+			   }
 			   return NUMBER;
 			 }
-[0-9a-f]+[0-9acef]?      {
-                           /* If the number ends in b or d it is 
-                           interpreted elsewhere */
-
-                           char *endptr;
-
-                           if (force_decimal) {
-                             yylval.i = strtol(yytext, &endptr, 10);
-                           }else {
-                             yylval.i = strtol(yytext, &endptr, state.radix);
-                           }
-                           if ((endptr == NULL) || (*endptr != '\0')) {
-    			     char complaint[80];
-			 
-    			     sprintf(complaint,
-				     isprint(*endptr) ?
-				     "Illegal character '%c' in numeric constant" :
-				     "Illegal character %#x in numeric constant",
-				     *endptr);
-                             gperror(GPE_UNKNOWN, complaint);
-                           }
-			   return NUMBER;
-			 }
-"."[0-9]+	         {
-                           char *endptr;
-                           yylval.i = strtol(yytext + 1, &endptr, 10);
-			   if ((endptr == NULL) || (*endptr != '\0')) {
-    			     char complaint[80];
-			 
-    			     sprintf(complaint,
-				     isprint(*endptr) ?
-				     "Illegal character '%c' in numeric constant" :
-				     "Illegal character %#x in numeric constant",
-				     *endptr);
-                             gperror(GPE_UNKNOWN, complaint);
-                           }
-			   return NUMBER;
-			 }
-[0-9a-f]+[bdhoq]         {
-                           char *endptr;
-			   char *pc = &yytext[yyleng - 1];
-                           int tempradix = 16;
-
-                           switch(tolower(pc[0])) {
-                             case 'b':
-                               tempradix = 2;
-                               break;
-                             case 'd':
-                               tempradix = 10;
-                               break;
-                             case 'h':
-                               tempradix = 16;
-                               break;
-                             case 'o':
-                               tempradix = 8;
-                               break;
-                             case 'q':
-                               tempradix = 8;
-                               break;
-                             default:
-                               assert(0); /* This should have been caught */
-                           }
-
+b'-?{NUMCHAR}+'          {
                            yytext[yyleng - 1] = '\0';
-                           yylval.i = strtol(yytext, &endptr, tempradix);                           
-                           if ((endptr == NULL) || (*endptr != '\0')) {
-                             char complaint[80];
-
-                             sprintf(complaint,
-                                     isprint(*endptr) ?
-                                     "Illegal character '%c' in numeric constant " :
-                                     "Illegal character %#x in numeric constant" ,
-                                     *endptr);
-                             gperror(GPE_UNKNOWN, complaint);
+			   yylval.i = stringtolong(yytext + 2, 2);
+			   return NUMBER;
+			 }
+{NUMCHAR}+[oq]           {			 
+                           yytext[yyleng - 1] = '\0';
+                           yylval.i = stringtolong(yytext, 8);
+			   return NUMBER;
+			 }
+[oq]'-?{NUMCHAR}+'       {
+                           yytext[yyleng - 1] = '\0';
+			   yylval.i = stringtolong(yytext + 2, 8);
+			   return NUMBER;
+			 }
+{NUMCHAR}+d              {
+                           if (state.radix == 16) {
+                             yylval.i = stringtolong(yytext, 16);                           
+			   } else {
+			     yytext[yyleng - 1] = '\0';
+                             yylval.i = stringtolong(yytext, 10);
+			   }
+			   return NUMBER;
+			 }
+d'-?{NUMCHAR}+'          {
+                           yytext[yyleng - 1] = '\0';
+			   yylval.i = stringtolong(yytext + 2, 10);
+			   return NUMBER;
+			 }			
+"."{NUMCHAR}+	         {
+                           yylval.i = stringtolong(yytext + 1, 10);
+			   return NUMBER;
+			 }
+{NUMCHAR}+h              {			 
+                           yytext[yyleng - 1] = '\0';
+                           yylval.i = stringtolong(yytext, 16);
+			   return NUMBER;
+			 }			 
+h'-?{NUMCHAR}+'          {
+                           yytext[yyleng - 1] = '\0';
+			   yylval.i = stringtolong(yytext + 2, 16);
+			   return NUMBER;
+			 }
+{NUMCHAR}+		 {
+                           if (force_decimal) {
+                             yylval.i = stringtolong(yytext, 10);
+                           }else {
+                             yylval.i = stringtolong(yytext, state.radix);
                            }
-                           return NUMBER;
-                         }
+   			   return NUMBER;
+			 }
 \"{STR_QCHAR}\"          {
                            yylval.i = gpasm_magic(yytext + 1);
 			   return NUMBER;
@@ -411,6 +377,13 @@ as identifiers rather than as hex numbers. */
 			     gpwarning(GPW_MISSING_QUOTE, NULL);                           
                            yylval.s = strdup(yytext + 1);
 			   return STRING;
+                         }
+\<{STR_QCHAR}*\>         {
+			   /* treat include pathes as strings */
+			   char *pc = &yytext[yyleng - 1];
+			   *pc = '\0';
+                            yylval.s = strdup(yytext + 1);
+ 			   return STRING;
                          }
 '{STR_QCHAR}'            {
                            yylval.i = gpasm_magic(yytext + 1);
@@ -496,7 +469,7 @@ void open_src(char *name, int isinclude)
 	  }
   }
   if(new->f)
-    new->f2 = fopen(new->name, "r");
+    new->lst.f = fopen(new->name, "r");
 
   #undef PATH_CHAR
   #undef COPY_CHAR
@@ -522,10 +495,38 @@ void open_src(char *name, int isinclude)
     yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
   }
 
+  new->type = file;
   new->line_number = 1;	/* Files start at line 1, for some reason */
   new->prev = state.src;
   state.src = new;
   state.src->fc = add_file(ft_src, new->name); 
+}
+
+void execute_macro(struct macro_head *h)
+{
+  struct source_context *new = malloc(sizeof(*new));
+  yy_size_t macro_src_size = 0;
+  char *macro_src;
+
+  assert(state.src != NULL);
+  state.src->yybuf = YY_CURRENT_BUFFER;
+
+  macro_src = make_macro_buffer(h);
+  macro_src_size = strlen(macro_src) + 2;
+
+  /* create new source_context */
+  new->name = strdup(h->src_name);
+  new->type = macro;
+  new->line_number = h->line_number + 1;
+  new->f = NULL;
+  new->lst.m = h->body;
+  
+  new->prev = state.src;
+  state.src = new;
+
+  state.src->fc = add_file(ft_src, new->name); /* scan list for fc */
+  YY_CURRENT_BUFFER = yy_scan_buffer(macro_src, macro_src_size);
+
 }
 
 static void push_string(char *str)
@@ -535,10 +536,12 @@ static void push_string(char *str)
   assert(state.src != NULL);
   state.src->yybuf = YY_CURRENT_BUFFER;
 
-  new->name = state.src->name;
+  new->name = strdup(state.src->name);
+  new->type = substitution;
   new->line_number = state.src->line_number;
   new->f = NULL;
-  new->f2 = NULL;
+  new->lst.f = NULL;
+  new->fc = add_file(ft_src, new->name); /* scan list for fc */
 
   yy_scan_string(str);
 
@@ -552,23 +555,43 @@ void close_file()
 
   old = state.src;
   state.src = state.src->prev;
-  if (old->f != NULL) {
-    #ifndef __MSDOS__
-      fseek(old->f, -1, SEEK_END);
-      if (fgetc(old->f) != '\n') {
-        char complaint[BUFSIZ];
 
-        sprintf(complaint,
-                "Missing newline before EOF in file \"%s\"",
-                old->name);
-        gpwarning(GPW_UNKNOWN, complaint);
-      }
-    #endif
-    fclose(old->f);
-    fclose(old->f2);
+  if (old->type == file) {
+    if (old->f != NULL) {
+      #ifndef __MSDOS__
+        fseek(old->f, -1, SEEK_END);
+        if (fgetc(old->f) != '\n') {
+          char complaint[BUFSIZ];
+
+          sprintf(complaint,
+                  "Missing newline before EOF in file \"%s\"",
+                  old->name);
+          gpwarning(GPW_UNKNOWN, complaint);
+        }
+      #endif
+      fclose(old->f);
+    }
+    if (old->lst.f != NULL)
+      fclose(old->lst.f);
     free(old->name);
-  }
+  } else if (old->type == macro) {
+    state.stTop = pop_symbol_table(state.stTop);
+    state.stTopDefines = pop_symbol_table(state.stTopDefines);
+    assert(state.stTop != NULL);
+    assert(state.stTopDefines != NULL);
+    free(old->name);
+  }  
   free(old);
+}
+
+void execute_exitm()
+{
+  close_file();
+  if (state.src) {
+    yy_delete_buffer(YY_CURRENT_BUFFER);
+    yy_switch_to_buffer(state.src->yybuf);
+  }
+
 }
 
 /* found end directive, close all files and stop the parser */
@@ -628,7 +651,7 @@ enum identtype identify(char *text)
   enum identtype type;  
   struct symbol *sym;
 
-  if ((sym = get_symbol(state.stDefines, text)) != NULL) {
+  if ((sym = get_symbol(state.stTopDefines, text)) != NULL) {
     type = defines;
   } else if ((sym = get_symbol(state.stDirective, text)) != NULL) {
     type = directives;
@@ -644,3 +667,25 @@ enum identtype identify(char *text)
 
   return type;
 }
+
+static int
+stringtolong(char *string, int radix)
+{
+  char *endptr;
+  int value;
+  
+  value = strtol(string, &endptr, radix);                           
+  if ((endptr == NULL) || (*endptr != '\0')) {
+    char complaint[80];
+
+    sprintf(complaint,
+            isprint(*endptr) ?
+            "Illegal character '%c' in numeric constant " :
+            "Illegal character %#x in numeric constant" ,
+            *endptr);
+    gperror(GPE_UNKNOWN, complaint);
+  }
+
+  return value;
+}
+

@@ -257,6 +257,7 @@ int main( int argc, char *argv[] )
   state.stMacros = push_symbol_table(NULL, state.case_insensitive);
   state.stTop = 
     state.stGlobal = push_symbol_table(NULL, state.case_insensitive);
+  state.stTopDefines = state.stDefines;
 
   opcode_init(0);
 

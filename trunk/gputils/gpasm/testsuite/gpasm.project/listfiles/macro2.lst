@@ -1,0 +1,107 @@
+MPASM 03.00 Released           MACRO2.ASM   2-24-2002  17:35:49         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001   processor 16c84
+                      00002 
+                      00003   list n=0
+                      00004 
+  00000005            00005 constant1 equ 5
+                      00006 
+                      00007 test1 macro number1, number2, number3, number4 
+                      00008   movlw number1
+                      00009   fill (movlw number2), number3
+                      00010   movlw number4
+                      00011   endm
+                      00012 
+                      00013 test2 macro string
+                      00014   messg string
+                      00015   endm
+                      00016 
+                      00017 test3 macro string
+                      00018 string equ 5
+                      00019   endm
+                      00020 
+                      00021 test4 macro number, value
+                      00022 label_#v(number) equ value
+                      00023   endm
+                      00024 
+                      00025 test5 macro number
+                      00026   if (number==1)
+                      00027     exitm
+                      00028   else
+                      00029     movlw 0
+                      00030   endif
+                      00031   movlw 0
+                      00032   endm
+                      00033 
+                      00034   #include "test.inc"
+                      00001 
+0000   3005           00002   movlw 5
+                      00035 
+                      00036   test1 1, 2, 3, constant1
+0001   3001               M   movlw 1
+0002   30                 M   fill (movlw 2),       3
+0005   3005               M   movlw constant1
+                      00037 
+                      00038   test2 "hello"
+Message[301]: MESSAGE: (hello)
+                          M   messg "hello"
+                      00039 
+                      00040   test3 myvar1
+  00000005                M myvar1 equ 5
+0006   3005           00041   movlw myvar1
+                      00042   
+                      00043   test4 3, 4
+  00000004                M label_3          equ 4
+0007   3004           00044   movlw label_3
+                      00045 
+                      00046   test5 0
+                          M   if (0==1)
+                          M     exitm
+                          M   else
+0008   3000               M     movlw 0
+                          M   endif
+0009   3000               M   movlw 0
+                      00047 
+                      00048   test5 1
+                          M   if (1==1)
+                          M     exitm
+                      00049 
+000A   3005           00050   movlw 5
+                      00051 
+                      00052   end
+MPASM 03.00 Released           MACRO2.ASM   2-24-2002  17:35:49         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C84                           00000001
+constant1                         00000005
+label_3                           00000004
+myvar1                            00000005
+test1                             
+test2                             
+test3                             
+test4                             
+test5                             
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXX----- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    11
+Program Memory Words Free:  1013
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     1 reported,     0 suppressed
+
+

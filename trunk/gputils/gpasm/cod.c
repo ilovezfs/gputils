@@ -331,6 +331,7 @@ void cod_lst_line(int line_type)
       get_next_block(&lb);
     }
 
+    assert(state.src->fc != NULL);
     offset = cod_lst_line_number++ * COD_LINE_SYM_SIZE;
     lb.block[offset + COD_LS_SFILE] = state.src->fc->id;
 

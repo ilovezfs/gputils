@@ -1,5 +1,5 @@
-/* Implements directives, pseudo-ops and processor opcodes
-   Copyright (C) 1998,1999,2000,2001 James Bowman, Craig Franklin
+/* Implements macros
+   Copyright (C) 2002 Craig Franklin
 
 This file is part of gputils.
 
@@ -18,23 +18,13 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-#ifndef __OPCODE_H__
-#define __OPCODE_H__
+#ifndef __MACRO_H__
+#define __MACRO_H__
 
-#define HEAD(L) (L)->value.list.head
-#define TAIL(L) (L)->value.list.tail
+void setup_macro(struct macro_head *h, int arity, struct pnode *parms);
+char *make_macro_buffer(struct macro_head *h);
 
-#define CORE_8BIT_MASK  0xff
-#define CORE_12BIT_MASK 0xfff
-#define CORE_14BIT_MASK 0x3fff
-#define CORE_16BIT_MASK 0xffff
-
-gpasmVal do_insn(char *name, struct pnode *parms);
-void opcode_init(int stage);
-void begin_cblock(struct pnode *c);
-void cblock_expr(struct pnode *s);
-void cblock_expr_incr(struct pnode *s, struct pnode *incr);
-int asm_enabled(void);
-int check_page(struct pnode *p);
+struct symbol_table *
+push_macro_symbol_table(struct symbol_table *table);
 
 #endif

@@ -1,0 +1,58 @@
+MPASM 03.00 Released           MACRO3.ASM   2-24-2002  17:36:07         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001   processor 16c84
+                      00002   
+                      00003   
+                      00004 nest1 macro string, number1
+                      00005   messg string
+                      00006   movlw  number1
+                      00007   endm
+                      00008   
+                      00009   
+                      00010 nest2 macro number
+                      00011   nest1 "Craig Franklin", number
+                      00012   endm
+                      00013   
+                      00014 test macro input
+                      00015   nest2 input
+                      00016   endm
+                      00017   
+                      00018   test 3
+                          M   nest2 3
+                          M   nest1 "Craig Franklin", 3
+Message[301]: MESSAGE: (Craig Franklin)
+                          M   messg "Craig Franklin"
+0000   3003               M   movlw  3
+                      00019   
+                      00020   end
+MPASM 03.00 Released           MACRO3.ASM   2-24-2002  17:36:07         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C84                           00000001
+nest1                             
+nest2                             
+test                              
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X--------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     1
+Program Memory Words Free:  1023
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     1 reported,     0 suppressed
+
+

@@ -4,7 +4,7 @@ list is in no particular order.
   * Finish gplink and gplib.
   * Use dejagnu for testing.
   * grep the source for FIXME and fix.
-  * Fix macro implementation so a simple text substitution is used.
+  * Implement nested while loops.
   * Add object file generation to gpasm.
   * Move opcode generator from /gpasm/directive.c to 
     /libgputils/opcode.c.
@@ -17,3 +17,4 @@ list is in no particular order.
     simplify instruction loading in directive.c.  
   * Create an xmalloc function with error checking and use it.
   * Start migrating to the GNU coding style.
+  * Add macro names to symbol table in listing file.

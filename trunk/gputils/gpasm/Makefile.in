@@ -104,9 +104,26 @@ bin_PROGRAMS = gpasm
 CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include -DGPASM_HEADER_PATH=\"@GPASM_HEADER_PATH@\"
 
 gpasm_SOURCES = \
-	cod.c directive.c gpasm.c parse.y scan.l gperror.c lst.c \
-	processor.c special.c util.c \
-	cod.h directive.h gpasm.h gperror.h lst.h processor.h \
+	cod.c \
+	directive.c \
+	evaluate.c \
+	gpasm.c \
+	parse.y \
+	scan.l \
+	gperror.c \
+	lst.c \
+	macro.c \
+	processor.c \
+	special.c \
+	util.c \
+	cod.h \
+	directive.h \
+	evaluate.h \
+	gpasm.h \
+	gperror.h \
+	lst.h \
+	macro.h \
+	processor.h \
 	special.h
 
 
@@ -126,8 +143,8 @@ PROGRAMS =  $(bin_PROGRAMS)
 DEFS = @DEFS@ -I. -I$(srcdir) -I..
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-gpasm_OBJECTS =  cod.o directive.o gpasm.o parse.o scan.o gperror.o \
-lst.o processor.o special.o util.o
+gpasm_OBJECTS =  cod.o directive.o evaluate.o gpasm.o parse.o scan.o \
+gperror.o lst.o macro.o processor.o special.o util.o
 gpasm_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@ \
 ${top_builddir}/@LIBIBERTY@
 gpasm_LDFLAGS = 
@@ -144,9 +161,9 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/cod.P .deps/directive.P .deps/gpasm.P .deps/gperror.P \
-.deps/lst.P .deps/parse.P .deps/processor.P .deps/scan.P \
-.deps/special.P .deps/util.P
+DEP_FILES =  .deps/cod.P .deps/directive.P .deps/evaluate.P \
+.deps/gpasm.P .deps/gperror.P .deps/lst.P .deps/macro.P .deps/parse.P \
+.deps/processor.P .deps/scan.P .deps/special.P .deps/util.P
 SOURCES = $(gpasm_SOURCES)
 OBJECTS = $(gpasm_OBJECTS)
 

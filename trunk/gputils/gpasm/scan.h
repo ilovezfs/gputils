@@ -23,5 +23,7 @@ Boston, MA 02111-1307, USA.  */
 
 void open_src(char *name, int is_include_file);
 void close_file();
+void execute_exitm();
+void execute_macro(struct macro_head *h);
 
 #endif
