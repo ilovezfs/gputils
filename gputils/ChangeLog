@@ -1,4 +1,7 @@
 2002-02-23 Craig Franklin <craigfranklin@attbi.com>
+  * gputils 0.10.1 Released.
+
+2002-02-23 Craig Franklin <craigfranklin@attbi.com>
   * Macros are now implemented as a text substitution at the input to the 
     lexer.  All macro arguments are preprocessor substitutions like #define.
   * Fixed a bug that caused i = i + 1 type expressions to be evaluated twice
