@@ -234,7 +234,7 @@ gp_archive_extract_member(gp_archive_type *archive,
   if (strrchr(filename, '.') == NULL)
     strcat(filename, ".o");
 
-  output_file = fopen(filename, "wt");
+  output_file = fopen(filename, "wb");
   if (output_file == NULL)
     return 1;
 
@@ -257,7 +257,7 @@ gp_archive_write(gp_archive_type *archive,
 
   assert(archive != NULL);
 
-  output_file = fopen(archivename, "wt");
+  output_file = fopen(archivename, "wb");
   if (output_file == NULL)
     return 1;
 

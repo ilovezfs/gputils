@@ -222,7 +222,7 @@ make_map(void)
     return;
   }
 
-  state.map.f = fopen(state.mapfilename, "w");
+  state.map.f = fopen(state.mapfilename, "wt");
   if (state.map.f == NULL) {
     perror(state.mapfilename);
     exit(1);

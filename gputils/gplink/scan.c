@@ -1647,7 +1647,7 @@ void open_src(char *name, int isinclude)
   if (state.src)
     state.src->yybuf = YY_CURRENT_BUFFER;
 
-  new->f = fopen(name, "r");
+  new->f = fopen(name, "rt");
   if(new->f)
     new->name = strdup(name);
   else if(isinclude && (strchr(name, PATH_CHAR) == 0)) { 
@@ -1659,7 +1659,7 @@ void open_src(char *name, int isinclude)
       strcpy(tryname, state.paths[i]);
       strcat(tryname, COPY_CHAR);
       strcat(tryname, name);
-      new->f = fopen(tryname, "r");
+      new->f = fopen(tryname, "rt");
       if(new->f) {
         new->name = strdup(tryname);
         break;

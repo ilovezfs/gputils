@@ -102,7 +102,7 @@ void lst_init()
     state.lst.enabled = 0;
     unlink(state.lstfilename);
   } else {
-    state.lst.f = fopen(state.lstfilename, "w");
+    state.lst.f = fopen(state.lstfilename, "wt");
     if (state.lst.f == NULL) {
       perror(state.lstfilename);
       exit(1);

@@ -186,7 +186,7 @@ void cod_init(void)
     state.cod.enabled = 0;
     unlink(state.codfilename);
   } else {
-    state.cod.f = fopen(state.codfilename, "w");
+    state.cod.f = fopen(state.codfilename, "wb");
     if (state.cod.f == NULL) {
       perror(state.codfilename);
       exit(1);
