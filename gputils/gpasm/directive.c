@@ -1354,6 +1354,7 @@ static gpasmVal do_macro(gpasmVal r,
 
   head->parms = parms;
   head->body = NULL;
+  head->defined = 0;
   /* Record data for the list and cod files */
   head->line_number = state.src->line_number;
   head->src_name = strdup(state.src->name);
@@ -2271,9 +2272,16 @@ gpasmVal do_insn(char *name, struct pnode *parms)
   } else {
     s = get_symbol(state.stMacros, name);
     if (s) {
+      struct macro_head *h = get_symbol_annotation(s);
+
       /* Found the macro: execute it */
-      if (asm_enabled())
-	setup_macro(get_symbol_annotation(s), arity, parms);
+      if (asm_enabled()) {
+	if ((h->defined != 1) && (state.pass == 2)) {
+	  gperror(GPE_UNKNOWN, "Forward references to macros are not allowed.");	
+	} else {
+	  setup_macro(h, arity, parms);
+	}
+      }
     } else {
 
       if (asm_enabled()) {

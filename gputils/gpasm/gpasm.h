@@ -234,6 +234,7 @@ struct macro_head {
   int pass;			/* Pass in which macro was defined: 1 or 2 */
   struct pnode *parms;
   struct macro_body *body;
+  int defined;			/* 1 macro has been defined so calls are valid */ 
   char *src_name;
   int line_number;
 };
