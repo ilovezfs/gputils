@@ -4,7 +4,7 @@
 ;  $Id$
 ;  MPASM PIC18F2331 processor include
 ; 
-;  (c) Copyright 1999-2003 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2004 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -108,15 +108,15 @@ PORTB            EQU  H'0F81'
 PORTC            EQU  H'0F82'
 PORTD            EQU  H'0F83'
 PORTE            EQU  H'0F84'
-GPTL             EQU  H'0F87'
-GPTH             EQU  H'0F88'
+TMR5L            EQU  H'0F87'
+TMR5H            EQU  H'0F88'
 LATA             EQU  H'0F89'
 LATB             EQU  H'0F8A'
 LATC             EQU  H'0F8B'
 LATD             EQU  H'0F8C'
 LATE             EQU  H'0F8D'
-GPTPRL           EQU  H'0F90'
-GPTPRH           EQU  H'0F91'
+PR5L             EQU  H'0F90'
+PR5H             EQU  H'0F91'
 DDRA             EQU  H'0F92'
 TRISA            EQU  H'0F92'
 DDRB             EQU  H'0F93'
@@ -149,7 +149,7 @@ TXREG            EQU  H'0FAD'
 RCREG            EQU  H'0FAE'
 SPBRG            EQU  H'0FAF'
 QEICON           EQU  H'0FB6'
-GPTCON           EQU  H'0FB7'
+T5CON            EQU  H'0FB7'
 ANSEL0           EQU  H'0FB8'
 CCP2CON          EQU  H'0FBA'
 CCPR2            EQU  H'0FBB'
@@ -165,7 +165,7 @@ ADCON0           EQU  H'0FC2'
 ADRES            EQU  H'0FC3'
 ADRESL           EQU  H'0FC3'
 ADRESH           EQU  H'0FC4'
-SSPCON1          EQU  H'0FC6'
+SSPCON           EQU  H'0FC6'
 SSPSTAT          EQU  H'0FC7'
 SSPADD           EQU  H'0FC8'
 SSPBUF           EQU  H'0FC9'
@@ -173,7 +173,6 @@ T2CON            EQU  H'0FCA'
 PR2              EQU  H'0FCB'
 TMR2             EQU  H'0FCC'
 T1CON            EQU  H'0FCD'
-TMR1             EQU  H'0FCE'
 TMR1L            EQU  H'0FCE'
 TMR1H            EQU  H'0FCF'
 RCON             EQU  H'0FD0'
@@ -181,7 +180,6 @@ WDTCON           EQU  H'0FD1'
 LVDCON           EQU  H'0FD2'
 OSCCON           EQU  H'0FD3'
 T0CON            EQU  H'0FD5'
-TMR0             EQU  H'0FD6'
 TMR0L            EQU  H'0FD6'
 TMR0H            EQU  H'0FD7'
 STATUS           EQU  H'0FD8'
@@ -697,7 +695,7 @@ OSFIP            EQU  H'0007'
 
 
 ;----- PIE3 Bits -----------------------------------------------------
-GPTIE            EQU  H'0000'
+TMR5IE           EQU  H'0000'
 IC1IE            EQU  H'0001'
 IC2QEIE          EQU  H'0002'
 IC3DRIE          EQU  H'0003'
@@ -705,7 +703,7 @@ PTIE             EQU  H'0004'
 
 
 ;----- PIR3 Bits -----------------------------------------------------
-GPTIF            EQU  H'0000'
+TMR5IF           EQU  H'0000'
 IC1IF            EQU  H'0001'
 IC2QEIF          EQU  H'0002'
 IC3DRIF          EQU  H'0003'
@@ -713,7 +711,7 @@ PTIF             EQU  H'0004'
 
 
 ;----- IPR3 Bits -----------------------------------------------------
-GPTIP            EQU  H'0000'
+TMR5IP           EQU  H'0000'
 IC1IP            EQU  H'0001'
 IC2QEIP          EQU  H'0002'
 IC3DRIP          EQU  H'0003'
@@ -758,7 +756,8 @@ QEIM0            EQU  H'0002'
 QEIM1            EQU  H'0003'
 QEIM2            EQU  H'0004'
 UP_DOWN          EQU  H'0005'
-GPTOV            EQU  H'0006'
+; ERROR is a reserved word
+; ERROR            EQU  H'0006'
 VELM             EQU  H'0007'
 
 UP               EQU  H'0005'
@@ -770,17 +769,17 @@ NOT_DOWN         EQU  H'0005'
 NOT_VELM         EQU  H'0007'
 
 
-;----- GPTCON Bits -----------------------------------------------------
-GPTON            EQU  H'0000'
-GPTCS            EQU  H'0001'
-GPTSYNC          EQU  H'0002'
-GPTPS0           EQU  H'0003'
-GPTPS1           EQU  H'0004'
-GPTMOD           EQU  H'0005'
+;----- T5CON Bits -----------------------------------------------------
+TMR5ON           EQU  H'0000'
+TMR5CS           EQU  H'0001'
+T5SYNC           EQU  H'0002'
+T5PS0            EQU  H'0003'
+T5PS1            EQU  H'0004'
+T5MOD            EQU  H'0005'
 RESEN            EQU  H'0006'
-GPTSEN           EQU  H'0007'
+T5SEN            EQU  H'0007'
 
-NOT_GPTSYNC      EQU  H'0002'
+NOT_T5SYNC       EQU  H'0002'
 NOT_RESEN        EQU  H'0006'
 
 
@@ -824,8 +823,9 @@ ADFM             EQU  H'0007'
 ;----- ADCON1 Bits -----------------------------------------------------
 ADPNT0           EQU  H'0000'
 ADPNT1           EQU  H'0001'
-FFOVFL           EQU  H'0002'
-FFEMT            EQU  H'0003'
+BFOVFL           EQU  H'0002'
+BFEMT            EQU  H'0003'
+FIFOEN           EQU  H'0004'
 VCFG0            EQU  H'0006'
 VCFG1            EQU  H'0007'
 
@@ -845,7 +845,7 @@ GO               EQU  H'0001'
 NOT_DONE         EQU  H'0001'
 
 
-;----- SSPCON1 Bits -----------------------------------------------------
+;----- SSPCON Bits -----------------------------------------------------
 SSPM0            EQU  H'0000'
 SSPM1            EQU  H'0001'
 SSPM2            EQU  H'0002'
@@ -930,8 +930,6 @@ WDT4             EQU  H'0005'
 WDT5             EQU  H'0006'
 WDT6             EQU  H'0007'
 
-SWDTE            EQU  H'0000'
-
 
 ;----- LVDCON Bits -----------------------------------------------------
 LVDL0            EQU  H'0000'
@@ -957,7 +955,9 @@ IDLEN            EQU  H'0007'
 T0PS0            EQU  H'0000'
 T0PS1            EQU  H'0001'
 T0PS2            EQU  H'0002'
-T0PS3            EQU  H'0003'
+PSA              EQU  H'0003'
+T0SE             EQU  H'0004'
+T0CS             EQU  H'0005'
 T016BIT          EQU  H'0006'
 TMR0ON           EQU  H'0007'
 
@@ -1033,7 +1033,6 @@ STKOVF           EQU  H'0007'
 ;
 ;==========================================================================
        __MAXRAM  H'0FFF'
-       __BADRAM  H'0060'-H'007F'
        __BADRAM  H'0300'-H'0F5F'
        __BADRAM  H'0F85'-H'0F86'
        __BADRAM  H'0F8E'-H'0F8F'
@@ -1116,8 +1115,8 @@ _BORV_20_2L          EQU  H'FF'    ; 2.0V
 _WDTEN_OFF_2H        EQU  H'FE'    ; Disabled
 _WDTEN_ON_2H         EQU  H'FF'    ; Enabled
 
-_WINEN_OFF_2H        EQU  H'DF'    ; Disabled
-_WINEN_ON_2H         EQU  H'FF'    ; Enabled
+_WINEN_ON_2H         EQU  H'DF'    ; Enabled
+_WINEN_OFF_2H        EQU  H'FF'    ; Disabled
 
 _WDPS_1_2H           EQU  H'E1'    ; 1:1
 _WDPS_2_2H           EQU  H'E3'    ; 1:2
@@ -1137,8 +1136,8 @@ _WDPS_16384_2H       EQU  H'FD'    ; 1:16384
 _WDPS_32768_2H       EQU  H'FF'    ; 1:32768
 
 ;----- CONFIG3L Options --------------------------------------------------
-_GPTREN_OFF_3L       EQU  H'DF'    ; Active
-_GPTREN_ON_3L        EQU  H'FF'    ; Inactive
+_T1OSCMX_OFF_3L      EQU  H'DF'    ; Active
+_T1OSCMX_ON_3L       EQU  H'FF'    ; Inactive
 
 _HPOL_LOW_3L         EQU  H'EF'    ; Active low
 _HPOL_HIGH_3L        EQU  H'FF'    ; Active high
@@ -1159,7 +1158,7 @@ _EXCLKMX_RD0_3H      EQU  H'FF'    ; MUXed with RD0
 _PWM4MX_RD5_3H       EQU  H'F7'    ; MUXed with RD5
 _PWM4MX_RB5_3H       EQU  H'FF'    ; MUXed with RB5
 
-_SSPMX_RC7_3H        EQU  H'BF'    ; SD0 output muxed with RC7
+_SSPMX_RC7_3H        EQU  H'FB'    ; SD0 output muxed with RC7
 _SSPMX_RD1_3H        EQU  H'FF'    ; SDO output muxed with RD1
 
 _FLTAMX_RD4_3H       EQU  H'FE'    ; MUXed with RD4
@@ -1172,8 +1171,8 @@ _STVREN_ON_4L        EQU  H'FF'    ; Enabled
 _LVP_OFF_4L          EQU  H'FB'    ; Disabled
 _LVP_ON_4L           EQU  H'FF'    ; Enabled
 
-_BKBUG_OFF_4L        EQU  H'7F'    ; Disabled
-_BKBUG_ON_4L         EQU  H'FF'    ; Enabled
+_DEBUG_ON_4L         EQU  H'7F'    ; Enabled
+_DEBUG_OFF_4L        EQU  H'FF'    ; Disabled
 
 ;----- CONFIG5L Options --------------------------------------------------
 _CP0_ON_5L           EQU  H'FE'    ; Enabled

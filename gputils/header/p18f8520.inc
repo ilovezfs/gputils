@@ -4,7 +4,7 @@
 ;  $Id$
 ;  MPASM PIC18F8520 processor include
 ; 
-;  (c) Copyright 1999-2003 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2004 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -139,7 +139,6 @@ RCREG1           EQU  H'0FAE'
 SPBRG1           EQU  H'0FAF'
 PSPCON           EQU  H'0FB0'
 T3CON            EQU  H'0FB1'
-TMR3             EQU  H'0FB2'
 TMR3L            EQU  H'0FB2'
 TMR3H            EQU  H'0FB3'
 CMCON            EQU  H'0FB4'
@@ -171,7 +170,6 @@ T2CON            EQU  H'0FCA'
 PR2              EQU  H'0FCB'
 TMR2             EQU  H'0FCC'
 T1CON            EQU  H'0FCD'
-TMR1             EQU  H'0FCE'
 TMR1L            EQU  H'0FCE'
 TMR1H            EQU  H'0FCF'
 RCON             EQU  H'0FD0'
@@ -179,7 +177,6 @@ WDTCON           EQU  H'0FD1'
 LVDCON           EQU  H'0FD2'
 OSCCON           EQU  H'0FD3'
 T0CON            EQU  H'0FD5'
-TMR0             EQU  H'0FD6'
 TMR0L            EQU  H'0FD6'
 TMR0H            EQU  H'0FD7'
 STATUS           EQU  H'0FD8'

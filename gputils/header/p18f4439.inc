@@ -4,7 +4,7 @@
 ;  $Id$
 ;  MPASM PIC18F4439 processor include
 ; 
-;  (c) Copyright 1999-2003 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2004 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -101,7 +101,6 @@ TXREG            EQU  H'0FAD'
 RCREG            EQU  H'0FAE'
 SPBRG            EQU  H'0FAF'
 T3CON            EQU  H'0FB1'
-TMR3             EQU  H'0FB2'
 TMR3L            EQU  H'0FB2'
 TMR3H            EQU  H'0FB3'
 CCP2CON          EQU  H'0FBA'
@@ -126,7 +125,6 @@ T2CON            EQU  H'0FCA'
 PR2              EQU  H'0FCB'
 TMR2             EQU  H'0FCC'
 T1CON            EQU  H'0FCD'
-TMR1             EQU  H'0FCE'
 TMR1L            EQU  H'0FCE'
 TMR1H            EQU  H'0FCF'
 RCON             EQU  H'0FD0'
@@ -134,7 +132,6 @@ WDTCON           EQU  H'0FD1'
 LVDCON           EQU  H'0FD2'
 OSCCON           EQU  H'0FD3'
 T0CON            EQU  H'0FD5'
-TMR0             EQU  H'0FD6'
 TMR0L            EQU  H'0FD6'
 TMR0H            EQU  H'0FD7'
 STATUS           EQU  H'0FD8'
@@ -441,9 +438,6 @@ RE5              EQU  H'0005'
 RE6              EQU  H'0006'
 RE7              EQU  H'0007'
 
-RE0              EQU  H'0000'
-RE1              EQU  H'0001'
-RE2              EQU  H'0002'
 PSPMODE          EQU  H'0004'
 IBOV             EQU  H'0005'
 OBF              EQU  H'0006'
@@ -460,9 +454,6 @@ TRISE5           EQU  H'0005'
 TRISE6           EQU  H'0006'
 TRISE7           EQU  H'0007'
 
-TRISE0           EQU  H'0000'
-TRISE1           EQU  H'0001'
-TRISE2           EQU  H'0002'
 PSPMODE          EQU  H'0004'
 IBOV             EQU  H'0005'
 OBF              EQU  H'0006'

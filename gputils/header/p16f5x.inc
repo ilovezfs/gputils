@@ -17,9 +17,9 @@
 ; included.  The processor may be selected the following ways:
 
 ;       1. Command line switch:
-;               C:\ MPASM MYFILE.ASM /P16C54A
+;               C:\ MPASM MYFILE.ASM /P16F54
 ;       2. LIST directive in the source file
-;               LIST   P=16C54A
+;               LIST   P=16F54
 ;       3. Processor Type entry in the MPASM full-screen interface
 
 ;==========================================================================
@@ -30,18 +30,7 @@
 
 ;Rev:   Date:   Reason:
 
-;5.00	06/09/03 Initial modification for the PIC16F5X series fo parts
-;4.12   12/02/02 Added 16CR57C
-;4.11   01/18/99 Added 54C, 55A, 57C for interim release
-;4.10   08/18/98 Added new processor for MPASM v2.16
-;4.00   06/05/97 Added new processors for MPASM v2.00
-;3.30   07/16/96 Aligned processors with MPASM v1.40
-;3.20	04/09/96 Added 16C54B, 16CR56B, 16C58B
-;3.10   12/14/95 Added 16C52
-;3.01   11/29/95 Removed 16CR55
-;3.00   10/16/95 Added new processors for MPASM v1.30
-;2.04   07/26/95 Reformatted for readability
-;2.03   06/21/95 Removed leading spaces
+;1.00	12/09/03 Initial release for the PIC16F54/F57
 
 
 ;==========================================================================

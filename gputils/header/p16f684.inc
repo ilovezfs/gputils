@@ -56,51 +56,52 @@ PORTC                        EQU     H'0007'
 
 PCLATH                       EQU     H'000A'
 INTCON                       EQU     H'000B'
-PIR1			                   EQU     H'000C'
+PIR1                         EQU     H'000C'
 
-TMR1L			                   EQU     H'000E'		
-TMR1H			                   EQU     H'000F'		
-T1CON	  	                   EQU     H'0010'		
+TMR1L                        EQU     H'000E'		
+TMR1H                        EQU     H'000F'		
+T1CON                        EQU     H'0010'		
 TMR2                         EQU     H'0011'
 T2CON                        EQU     H'0012'
-CCPR1L                        EQU     H'0013'
-CCPR1H                        EQU     H'0014'
+CCPR1L                       EQU     H'0013'
+CCPR1H                       EQU     H'0014'
 CCP1CON                      EQU     H'0015'
-PWM1CON                       EQU     H'0016'
+PWM1CON                      EQU     H'0016'
 ECCPAS                       EQU     H'0017'
 WDTCON                       EQU     H'0018'
-CMCON0		                   EQU     H'0019'		
-CMCON1		                   EQU     H'001A'		
+CMCON0                       EQU     H'0019'		
+CMCON1                       EQU     H'001A'		
 
-ADRESH			                 EQU     H'001E'		
-ADCON0			                 EQU     H'001F'		
+ADRESH                       EQU     H'001E'		
+ADCON0                       EQU     H'001F'		
 
 
-OPTION_REG	                 EQU     H'0081'
+OPTION_REG                   EQU     H'0081'
 
-TRISA		                     EQU     H'0085'
-TRISC			                   EQU     H'0087'
+TRISA                        EQU     H'0085'
+TRISC                        EQU     H'0087'
 
-PIE1			                   EQU     H'008C'
+PIE1                         EQU     H'008C'
 
-PCON			                   EQU     H'008E'
-OSCCON		                   EQU     H'008F'
+PCON                         EQU     H'008E'
+OSCCON                       EQU     H'008F'
 OSCTUNE	               	     EQU     H'0090'
-ANSEL		              	     EQU     H'0091'
+ANSEL                        EQU     H'0091'
 PR2                          EQU     H'0092'
 
-WPU		                 	     EQU     H'0095'
-WPUA		              	     EQU     H'0095'
-IOC			                     EQU     H'0096'
-IOCA			                   EQU     H'0096'
+WPU                          EQU     H'0095'
+WPUA                         EQU     H'0095'
+IOC                          EQU     H'0096'
+IOCA                         EQU     H'0096'
 
-VRCON			                   EQU     H'0099'
-EEDAT		                   EQU     H'009A'	
-EEADR			                   EQU     H'009B'	
-EECON1			                 EQU     H'009C'
-EECON2			                 EQU     H'009D'
-ADRESL			                 EQU     H'009E'		
-ADCON1			                 EQU     H'009F'
+VRCON                        EQU     H'0099'
+EEDAT                        EQU     H'009A'	
+EEDATA                       EQU     H'009A'	
+EEADR                        EQU     H'009B'	
+EECON1                       EQU     H'009C'
+EECON2                       EQU     H'009D'
+ADRESL                       EQU     H'009E'		
+ADCON1                       EQU     H'009F'
 
 
 ;----- STATUS Bits --------------------------------------------------------
@@ -213,8 +214,8 @@ CM0                          EQU     H'0000'
 
 ;----- COMCON1 Bits -------------------------------------------------------
 
-T1GSS                       EQU      H'0001'
-C2SYNC                      EQU      H'0000'
+T1GSS                        EQU      H'0001'
+C2SYNC                       EQU      H'0000'
 
 ;----- ADCON0 Bits --------------------------------------------------------
 
@@ -299,12 +300,12 @@ IOC0                         EQU     H'0000'
 
 ;----- IOCA --------------------------------------------------------------
 
-IOCA5                         EQU     H'0005'
-IOCA4                         EQU     H'0004'
-IOCA3                         EQU     H'0003'
-IOCA2                         EQU     H'0002'
-IOCA1                         EQU     H'0001'
-IOCA0                         EQU     H'0000'
+IOCA5                        EQU     H'0005'
+IOCA4                        EQU     H'0004'
+IOCA3                        EQU     H'0003'
+IOCA2                        EQU     H'0002'
+IOCA1                        EQU     H'0001'
+IOCA0                        EQU     H'0000'
 
 ;----- VRCON Bits ---------------------------------------------------------
 
@@ -370,5 +371,9 @@ _INTRC_OSC_NOCLKOUT          EQU     H'3FFC'
 _INTRC_OSC_CLKOUT            EQU     H'3FFD'
 _EXTRC_OSC_NOCLKOUT          EQU     H'3FFE'
 _EXTRC_OSC_CLKOUT            EQU     H'3FFF'
+_INTOSCIO                    EQU     H'3FFC'
+_INTOSC                      EQU     H'3FFD'
+_EXTRCIO                     EQU     H'3FFE'
+_EXTRC                       EQU     H'3FFF'
 
         LIST

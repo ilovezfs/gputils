@@ -16,8 +16,12 @@ HEADER_FILES =\
 	p12ce519.inc \
 	p12ce673.inc \
 	p12ce674.inc \
+	p12f508.inc \
+	p12f509.inc \
 	p12f629.inc \
+	p12f635.inc \
 	p12f675.inc \
+	p12f683.inc \
 	p14000.inc \
 	p16c432.inc \
 	p16c433.inc \
@@ -87,12 +91,14 @@ HEADER_FILES =\
 	p16cr72.inc \
 	p16cr83.inc \
 	p16cr84.inc \
+	p16f505.inc \
 	p16f5x.inc \
 	p16f627a.inc \
 	p16f627.inc \
 	p16f628a.inc \
 	p16f628.inc \
 	p16f630.inc \
+	p16f636.inc \
 	p16f648a.inc \
 	p16f676.inc \
 	p16f684.inc \
@@ -107,6 +113,7 @@ HEADER_FILES =\
 	p16f76.inc \
 	p16f777.inc \
 	p16f77.inc \
+	p16f785.inc \
 	p16f818.inc \
 	p16f819.inc \
 	p16f83.inc \
@@ -125,6 +132,10 @@ HEADER_FILES =\
 	p16f877.inc \
 	p16f87.inc \
 	p16f88.inc \
+	p16f913.inc \
+	p16f914.inc \
+	p16f916.inc \
+	p16f917.inc \
 	p16hv540.inc \
 	p17c42a.inc \
 	p17c42.inc \
@@ -151,31 +162,55 @@ HEADER_FILES =\
 	p18f2220.inc \
 	p18f2320.inc \
 	p18f2331.inc \
+	p18f2410.inc \
+	p18f2420.inc \
 	p18f242.inc \
 	p18f2431.inc \
 	p18f2439.inc \
+	p18f2455.inc \
+	p18f2480.inc \
 	p18f248.inc \
+	p18f2510.inc \
 	p18f2515.inc \
+	p18f2520.inc \
 	p18f2525.inc \
 	p18f252.inc \
 	p18f2539.inc \
+	p18f2550.inc \
+	p18f2580.inc \
+	p18f2585.inc \
 	p18f258.inc \
 	p18f2610.inc \
 	p18f2620.inc \
+	p18f2680.inc \
+	p18f2681.inc \
 	p18f4220.inc \
 	p18f4320.inc \
 	p18f4331.inc \
+	p18f4410.inc \
+	p18f4420.inc \
 	p18f442.inc \
 	p18f4431.inc \
 	p18f4439.inc \
+	p18f4455.inc \
+	p18f4480.inc \
 	p18f448.inc \
+	p18f4510.inc \
 	p18f4515.inc \
+	p18f4520.inc \
 	p18f4525.inc \
 	p18f452.inc \
 	p18f4539.inc \
+	p18f4550.inc \
+	p18f4580.inc \
+	p18f4585.inc \
 	p18f458.inc \
 	p18f4610.inc \
 	p18f4620.inc \
+	p18f4680.inc \
+	p18f4681.inc \
+	p18f6410.inc \
+	p18f6490.inc \
 	p18f6520.inc \
 	p18f6525.inc \
 	p18f6585.inc \
@@ -183,6 +218,8 @@ HEADER_FILES =\
 	p18f6621.inc \
 	p18f6680.inc \
 	p18f6720.inc \
+	p18f8410.inc \
+	p18f8490.inc \
 	p18f8520.inc \
 	p18f8525.inc \
 	p18f8585.inc \
@@ -190,6 +227,7 @@ HEADER_FILES =\
 	p18f8621.inc \
 	p18f8680.inc \
 	p18f8720.inc \
+	p18macro.inc \
 	ps500.inc \
 	rf509af.inc \
 	rf509ag.inc \
