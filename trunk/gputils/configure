@@ -5929,7 +5929,7 @@ fi
 
 
 # Generate Makefiles
-                                                                                                                        ac_config_files="$ac_config_files Makefile doc/Makefile gpal/Makefile gpasm/Makefile gplink/Makefile gputils/Makefile header/Makefile libgputils/Makefile libiberty/Makefile lkr/Makefile pub/Makefile gputils.spec"
+                                                                                                                                            ac_config_files="$ac_config_files Makefile doc/Makefile gpal/Makefile gpasm/Makefile gplink/Makefile gputils/Makefile header/Makefile libgputils/Makefile libiberty/Makefile lkr/Makefile man/Makefile man/fr/Makefile pub/Makefile gputils.spec"
 
 
 cat >confcache <<\_ACEOF
@@ -6498,6 +6498,8 @@ do
   "libgputils/Makefile" ) CONFIG_FILES="$CONFIG_FILES libgputils/Makefile" ;;
   "libiberty/Makefile" ) CONFIG_FILES="$CONFIG_FILES libiberty/Makefile" ;;
   "lkr/Makefile" ) CONFIG_FILES="$CONFIG_FILES lkr/Makefile" ;;
+  "man/Makefile" ) CONFIG_FILES="$CONFIG_FILES man/Makefile" ;;
+  "man/fr/Makefile" ) CONFIG_FILES="$CONFIG_FILES man/fr/Makefile" ;;
   "pub/Makefile" ) CONFIG_FILES="$CONFIG_FILES pub/Makefile" ;;
   "gputils.spec" ) CONFIG_FILES="$CONFIG_FILES gputils.spec" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
