@@ -26,13 +26,13 @@
 
 \layout Title
 \added_space_top vfill \added_space_bottom vfill 
-gputils 0.11.0
+gputils 0.11.7
 \layout Author
 
 James Bowman 
 \layout Date
 
-February 24, 2003
+October 19, 2003
 \layout Standard
 
 
@@ -41,7 +41,7 @@ February 24, 2003
 \end_inset 
 
 
-\layout Chapter*
+\layout Chapter
 
 Introduction
 \layout Standard
@@ -92,6 +92,67 @@ You should have received a copy of the GNU General Public License along
  with gpasm; see the file COPYING.
  If not, write to the Free Software Foundation, 59 Temple Place - Suite
  330, Boston, MA 02111-1307, USA.
+\layout Section
+
+Tool Flows
+\layout Standard
+
+gputils can be used in two different ways, absolute mode and relocatable
+ mode.
+\layout Standard
+
+In absolute mode, a source file is directly converted into a hex file by
+ gpasm.
+ This method is absolute because the final addresses are hard coded into
+ the source file.
+\layout Standard
+
+In relocatable mode, the microcontroller source code is divided into seperate
+ modules.
+ Each module is assembled into an object using gpasm.
+ That object can be placed 
+\begin_inset Quotes eld
+\end_inset 
+
+anywhere
+\begin_inset Quotes erd
+\end_inset 
+
+ in microcontroller's memory.
+ Then gplink is used to resolve symbols references, assign final address,
+ and to patch the machine code with the final addresses.
+ The output from gplink is an absolute executable object.
+\layout Section
+
+Which Tool Flow is best?
+\layout Standard
+
+Absolute mode is simple to understand and to use.
+ It only requires one tool, gpasm.
+ Most of the examples on Microchip's website use absolute mode.
+ So why use relocatable mode?
+\layout Itemize
+
+Code can be written without regard to addresses.
+ This makes it easier to write and reuse.
+\layout Itemize
+
+The objects can be archived to create a library, which also simplifies reuse.
+\layout Itemize
+
+Recompiling a project can be faster, because you only compile the portions
+ that have changed.
+\layout Itemize
+
+Files can have local name spaces.
+ The user chooses what symbols are global.
+\layout Standard
+
+Most develpment tools use relocatable objects for these reasons.
+ The few that don't are generally microcontroller tools.
+ Their applications are so small that absolute mode isn't impractical.
+ For PICs, relocatable mode has one big disadvantage.
+ The bank and page control is a challenge.
 \layout Chapter
 
 gpasm
@@ -108,7 +169,7 @@ Running gpasm
 The general syntax for running gpasm is
 \layout LyX-Code
 
-gpasm <options> <asm-file>
+gpasm [options] asm-file
 \layout Standard
 
 Where options can be one of:
@@ -380,6 +441,14 @@ gpasm always produces a
 \end_inset 
 
 .hex
+\begin_inset Quotes erd
+\end_inset 
+
+ file or a 
+\begin_inset Quotes eld
+\end_inset 
+
+.o
 \begin_inset Quotes erd
 \end_inset 
 
@@ -1261,6 +1330,20 @@ include
 \end_inset 
 
 .
+\layout Subsection
+
+Processor header files
+\layout Standard
+
+gputils distributes the Microchip processor header files.
+ These files contain processor specific data that is helpful in developing
+ PIC applications.
+ The location of these files is reported in the gpasm help message.
+ Use the INCLUDE directive to utilize the appropriate file in your source
+ code.
+ Only the name of the file is required.
+ gpasm will search the default path automatically.
+ 
 \layout Section
 
 Directives
@@ -1269,9 +1352,10 @@ Directives
 Code generation
 \layout Standard
 
-To set the PIC memory location where gpasm will start assembling code, use
- the ORG directive.
+In absolute mode, use the ORG directive to set the PIC memory location where
+ gpasm will start assembling code.
  If you don't specify an address with ORG, gpasm assumes 0x0000.
+ In relocatable mode, use the CODE directive.
 \layout Subsection
 
 Configuration
@@ -1681,6 +1765,36 @@ on> given to CBLOCK.
 See also: EQU
 \layout Subsection*
 
+CODE
+\begin_inset LatexCommand \index{CODE}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+<label> CODE <expression>
+\layout Standard
+
+Only for relocatable mode.
+ Creates a new machine code section in the output object file.
+ <label> specifies the name of the section.
+ If <label> is not specified the default name 
+\begin_inset Quotes eld
+\end_inset 
+
+.code
+\begin_inset Quotes erd
+\end_inset 
+
+ will be used.
+ <expression> is optional and specifies the absolute address of the section.
+ 
+\layout Standard
+
+See also: IDATA, UDATA
+\layout Subsection*
+
 CONSTANT
 \begin_inset LatexCommand \index{CONSTANT}
 
@@ -2005,6 +2119,24 @@ Enables the printing of message <msgnum>.
 See also: LIST
 \layout Subsection*
 
+EXTERN
+\begin_inset LatexCommand \index{EXTERN}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+EXTERN <symbol> [ , <symbol> ]*
+\layout Standard
+
+Only for relocatable mode.
+ Delcare a new symbol that is defined in another object file.
+\layout Standard
+
+See also: GLOBAL
+\layout Subsection*
+
 EXITM
 \begin_inset LatexCommand \index{EXITM}
 
@@ -2056,6 +2188,56 @@ Generates <count> occurrences of the program word or byte <expression>.
 \layout Standard
 
 See also: DATA DW ORG
+\layout Subsection*
+
+GLOBAL
+\begin_inset LatexCommand \index{GLOBAL}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+GLOBAL <symbol> [ , <symbol> ]*
+\layout Standard
+
+Only for relocatable mode.
+ Delcare a symbol as global.
+\layout Standard
+
+See also: GLOBAL
+\layout Subsection*
+
+IDATA
+\begin_inset LatexCommand \index{IDATA}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+<label> IDATA <expression>
+\layout Standard
+
+Only for relocatable mode.
+ Creates a new initialized data section in the output object file.
+ <label> specifies the name of the section.
+ If <label> is not specified the default name 
+\begin_inset Quotes eld
+\end_inset 
+
+.idata
+\begin_inset Quotes erd
+\end_inset 
+
+ will be used.
+ <expression> is optional and specifies the absolute address of the section.
+ Data memory is allocated and the initialization data is placed in ROM.
+ The user must provide the code to load the data into memory.
+ 
+\layout Standard
+
+See also: CODE, UDATA
 \layout Subsection*
 
 IF
@@ -2538,6 +2720,129 @@ This directive establishes a program header line for use as a title in the
 See also: SUBTITLE
 \layout Subsection*
 
+UDATA
+\begin_inset LatexCommand \index{UDATA}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+<label> UDATA <expression>
+\layout Standard
+
+Only for relocatable mode.
+ Creates a new uninitialized data section in the output object file.
+ <label> specifies the name of the section.
+ If <label> is not specified the default name 
+\begin_inset Quotes eld
+\end_inset 
+
+.udata
+\begin_inset Quotes erd
+\end_inset 
+
+ will be used.
+ <expression> is optional and specifies the absolute address of the section.
+ 
+\layout Standard
+
+See also: CODE, IDATA, UDATA_ACS, UDATA_OVR, UDATA_SHR
+\layout Subsection*
+
+UDATA_ACS
+\begin_inset LatexCommand \index{UDATA ACS}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+<label> UDATA_ACS <expression>
+\layout Standard
+
+Only for relocatable mode.
+ Creates a new uninitialized accessbank data section in the output object
+ file.
+ <label> specifies the name of the section.
+ If <label> is not specified the default name 
+\begin_inset Quotes eld
+\end_inset 
+
+.udata_acs
+\begin_inset Quotes erd
+\end_inset 
+
+ will be used.
+ <expression> is optional and specifies the absolute address of the section.
+ 
+\layout Standard
+
+See also: CODE, IDATA, UDATA
+\layout Subsection*
+
+UDATA_OVR
+\begin_inset LatexCommand \index{UDATA OVR}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+<label> UDATA_OVR <expression>
+\layout Standard
+
+Only for relocatable mode.
+ Creates a new uninitialized overlaid data section in the output object
+ file.
+ <label> specifies the name of the section.
+ If <label> is not specified the default name 
+\begin_inset Quotes eld
+\end_inset 
+
+.udata_ovr
+\begin_inset Quotes erd
+\end_inset 
+
+ will be used.
+ <expression> is optional and specifies the absolute address of the section.
+ 
+\layout Standard
+
+See also: CODE, IDATA, UDATA
+\layout Subsection*
+
+UDATA_SHR
+\begin_inset LatexCommand \index{UDATA SHR}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+<label> UDATA_SHR <expression>
+\layout Standard
+
+Only for relocatable mode.
+ Creates a new uninitialized sharebank data section in the output object
+ file.
+ <label> specifies the name of the section.
+ If <label> is not specified the default name 
+\begin_inset Quotes eld
+\end_inset 
+
+.udata_shr
+\begin_inset Quotes erd
+\end_inset 
+
+ will be used.
+ <expression> is optional and specifies the absolute address of the section.
+ 
+\layout Standard
+
+See also: CODE, IDATA, UDATA
+\layout Subsection*
+
 VARIABLE
 \begin_inset LatexCommand \index{VARIABLE}
 
@@ -2583,97 +2888,186 @@ Supported processors
 gpasm currently supports the following processors:
 \layout LyX-Code
 
+
+\lang american
 eeprom8    gen        p12c508    p12c508a   p12c509    p12c509a
 \layout LyX-Code
 
+
+\lang american
 p12c671    p12c672    p12ce518   p12ce519   p12ce673   p12ce674
 \layout LyX-Code
 
+
+\lang american
 p12cr509a  p12f629    p12f675    p14000     p16c5x     p16cxx
 \layout LyX-Code
 
+
+\lang american
 p16c432    p16c433    p16c505    p16c52     p16c54     p16c54a
 \layout LyX-Code
 
+
+\lang american
 p16c54b    p16c54c    p16c55     p16c55a    p16c554    p16c557
 \layout LyX-Code
 
+
+\lang american
 p16c558    p16c56     p16c56a    p16c57     p16c57c    p16c58a
 \layout LyX-Code
 
+
+\lang american
 p16c58b    p16c61     p16c62     p16c62a    p16c62b    p16c620
 \layout LyX-Code
 
+
+\lang american
 p16c620a   p16c621    p16c621a   p16c622    p16c622a   p16c63
 \layout LyX-Code
 
+
+\lang american
 p16c63a    p16c64     p16c64a    p16c642    p16c65     p16c65a
 \layout LyX-Code
 
+
+\lang american
 p16c65b    p16c66     p16c662    p16c67     p16c71     p16c710
 \layout LyX-Code
 
+
+\lang american
 p16c711    p16c712    p16c715    p16c716    p16c717    p16c72
 \layout LyX-Code
 
+
+\lang american
 p16c72a    p16c73     p16c73a    p16c73b    p16c74     p16c745
 \layout LyX-Code
 
-p16c74a    p16c74b    p16c76     p16c765    p16c77     p16c770
+
+\lang american
+p16c747    p16c74a    p16c74b    p16c76     p16c765    p16c77
 \layout LyX-Code
 
-p16c771    p16c773    p16c774    p16c781    p16c782    p16c84
+
+\lang american
+p16c770    p16c771    p16c773    p16c774    p16c781    p16c782
 \layout LyX-Code
 
-p16c923    p16c924    p16c925    p16c926    p16ce623   p16ce624
+
+\lang american
+p16c84     p16c923    p16c924    p16c925    p16c926    p16ce623
 \layout LyX-Code
 
-p16ce625   p16cr54    p16cr54a   p16cr54b   p16cr54c   p16cr56a
+
+\lang american
+p16ce624   p16ce625   p16cr54    p16cr54a   p16cr54b   p16cr54c
 \layout LyX-Code
 
-p16cr57a   p16cr57b   p16cr57c   p16cr58a   p16cr58b   p16cr62
+
+\lang american
+p16cr56a   p16cr57a   p16cr57b   p16cr57c   p16cr58a   p16cr58b
 \layout LyX-Code
 
-p16cr620a  p16cr63    p16cr64    p16cr65    p16cr72    p16cr83
+
+\lang american
+p16cr62    p16cr620a  p16cr63    p16cr64    p16cr65    p16cr72
 \layout LyX-Code
 
-p16cr84    p16f627    p16f627a   p16f628    p16f628a   p16f630
+
+\lang american
+p16cr83    p16cr84    p16f627    p16f627a   p16f628    p16f628a
 \layout LyX-Code
 
-p16f676    p16f72     p16f73     p16f74     p16f76     p16f77
+
+\lang american
+p16f630    p16f648a   p16f676    p16f684    p16f716    p16f72
 \layout LyX-Code
 
-p16f818    p16f819    p16f83     p16f84     p16f84a    p16f87
+
+\lang american
+p16f73     p16f737    p16f74     p16f76     p16f767    p16f77
 \layout LyX-Code
 
-p16f870    p16f871    p16f872    p16f873    p16f873a   p16f874
+
+\lang american
+p16f777    p16f818    p16f819    p16f83     p16f84     p16f84a
 \layout LyX-Code
 
-p16f874a   p16f876    p16f876a   p16f877    p16f877a   p16f88
+
+\lang american
+p16f87     p16f870    p16f871    p16f872    p16f873    p16f873a
 \layout LyX-Code
 
-p16hv540   p17cxx     p17c42     p17c42a    p17c43     p17c44
+
+\lang american
+p16f874    p16f874a   p16f876    p16f876a   p16f877    p16f877a
 \layout LyX-Code
 
-p17c752    p17c756    p17c756a   p17c762    p17c766    p17cr42
+
+\lang american
+p16f88     p16hv540   p17cxx     p17c42     p17c42a    p17c43
 \layout LyX-Code
 
-p17cr43    p18cxx     p18c242    p18c252    p18c442    p18c452
+
+\lang american
+p17c44     p17c752    p17c756    p17c756a   p17c762    p17c766
 \layout LyX-Code
 
-p18c601    p18c658    p18c801    p18c858    p18f1220   p18f1320
+
+\lang american
+p17cr42    p17cr43    p18cxx     p18c242    p18c252    p18c442
 \layout LyX-Code
 
-p18f2220   p18f2320   p18f242    p18f248    p18f252    p18f258
+
+\lang american
+p18c452    p18c601    p18c658    p18c801    p18c858    p18f1220
 \layout LyX-Code
 
-p18f4220   p18f4320   p18f442    p18f448    p18f452    p18f458
+
+\lang american
+p18f1320   p18f2220   p18f2320   p18f2331   p18f242    p18f2431
 \layout LyX-Code
 
-p18f6620   p18f6720   p18f8620   p18f8720   rf509af    rf509ag
+
+\lang american
+p18f2439   p18f248    p18f252    p18f2539   p18f258    p18f2620
 \layout LyX-Code
 
+
+\lang american
+p18f4220   p18f4320   p18f4331   p18f442    p18f4431   p18f4439
+\layout LyX-Code
+
+
+\lang american
+p18f448    p18f452    p18f4539   p18f458    p18f4620   p18f6520
+\layout LyX-Code
+
+
+\lang american
+p18f6525   p18f6585   p18f6620   p18f6621   p18f6680   p18f6720
+\layout LyX-Code
+
+
+\lang american
+p18f8520   p18f8525   p18f8585   p18f8620   p18f8621   p18f8680
+\layout LyX-Code
+
+
+\lang american
+p18f8720   rf509af    rf509ag    rf675f     rf675h     rf675k
+\layout LyX-Code
+
+
+\lang american
 sx18       sx20       sx28       
+\lang english
+    
 \layout LyX-Code
 
 \layout Subsection
@@ -3724,20 +4118,380 @@ Macro expansion was specified on the command line and in the source file.
  The command line has precedence.
 \layout Chapter
 
-gplib
-\layout Standard
-
-gplib is a new and incomplete tool.
- When complete, it will provide the ability to archive relocatable objects.
- These archives, or libraries, can be used to simplify linking.
-\layout Chapter
-
 gplink
 \layout Standard
 
-gplink is a new and incomplete tool.
- When complete, it will provide the ability to link relocatable objects
- to produce an executable object.
+gplink relocates and links gpasm COFF objects and generates an absolute
+ executable COFF.
+\layout Section
+
+Running gplink
+\begin_inset LatexCommand \index{Running gplink}
+
+\end_inset 
+
+
+\layout Standard
+
+The general syntax for running gplink is
+\layout LyX-Code
+
+gplink [options] [objects] [libraries]
+\layout Standard
+
+Where options can be one of:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+12 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+2 1 0 "" ""
+2 1 1 "4in" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+
+Option
+\newline 
+Meaning
+\newline 
+a
+\newline 
+Produce hex file in one of four formats: inhx8m, inhx8s, inhx16, inhx32
+ (the default).
+\newline 
+c
+\newline 
+Output an executable object.
+\newline 
+d
+\newline 
+Display debug messages
+\newline 
+f <value>
+\newline 
+Fill unused unprotected program memory with <value>.
+\newline 
+h
+\newline 
+Show the help message
+\newline 
+I <directory>
+\newline 
+Specify an include directory.
+\newline 
+m
+\newline 
+Output a map file.
+\newline 
+o <file>
+\newline 
+Alternate name of hex output file.
+\newline 
+q
+\newline 
+Quiet.
+\newline 
+s <file>
+\newline 
+Specify linker script.
+\newline 
+v
+\newline 
+Print gplib version information and exit
+\layout Section
+
+gplink outputs
+\layout Standard
+
+gplink creates an absolute executable COFF.
+ From this COFF a hex file and cod file are created.
+ The executable COFF is only written when the 
+\begin_inset Quotes eld
+\end_inset 
+
+-c
+\begin_inset Quotes erd
+\end_inset 
+
+ option is added.
+ This file is useful for simulating the design with mpsim.
+ The cod file is used for simulating with gpsim.
+\layout Standard
+
+gplink can also create a map file.
+ The map file reports the final addresses gplink has assigned to the COFF
+ sections.
+ This is the same data that can be viewed in the executable COFF with gpvo.
+\layout Section
+
+Linker scripts
+\layout Standard
+
+gplink requires a linker script.
+ This script tells gplink what memory is available in the target processor.
+ A set of Microchip generated scripts are installed with gputils.
+ These scripts were intended as a starting point, but for many applications
+ they will work as is.
+\layout Standard
+
+If the user does not specify a linker script, gplink will attempt to use
+ the default script for the processor reported in the object file.
+ The default location of the scripts is reported in the gplink help message.
+\layout Chapter
+
+gplib
+\layout Standard
+
+gplib creates, modifies and extracts COFF archives.
+ This allows a related group of objects to be combined into one file.
+ Then this one file is passed to gplink.
+ 
+\layout Section
+
+Running gplib
+\begin_inset LatexCommand \index{Running gplib}
+
+\end_inset 
+
+
+\layout Standard
+
+The general syntax for running gplib is
+\layout LyX-Code
+
+gplib [options] library [member]
+\layout Standard
+
+Where options can be one of:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+11 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+2 1 0 "" ""
+2 1 1 "4in" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+
+Option
+\newline 
+Meaning
+\newline 
+c
+\newline 
+Create a new library
+\newline 
+d
+\newline 
+Delete member from library
+\newline 
+h
+\newline 
+Show the help message
+\newline 
+n
+\newline 
+Don't add the symbol index
+\newline 
+q
+\newline 
+Quiet mode.
+\newline 
+r
+\newline 
+Add or replace member from library.
+\newline 
+s
+\newline 
+List global symbols in libary.
+\newline 
+t
+\newline 
+List member in library
+\newline 
+v
+\newline 
+Print gplib version information and exit
+\newline 
+x
+\newline 
+Extract member from library
+\layout Section
+
+Creating an archive
+\begin_inset LatexCommand \index{Creating an archive}
+
+\end_inset 
+
+
+\layout Standard
+
+The most common operation is to create a new archive: 
+\layout LyX-Code
+
+gplib -c math.a mult.o add.o sub.o
+\layout Standard
+
+This command will create a new archive 
+\begin_inset Quotes eld
+\end_inset 
+
+math.a
+\begin_inset Quotes erd
+\end_inset 
+
+ that contains 
+\begin_inset Quotes eld
+\end_inset 
+
+mult.o add.o sub.o
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ 
+\layout Standard
+
+The name of the archive 
+\begin_inset Quotes eld
+\end_inset 
+
+math.a
+\begin_inset Quotes erd
+\end_inset 
+
+ is arbitrary.
+ The tools do not use the file extension to determine file type.
+ It could just as easily been 
+\begin_inset Quotes eld
+\end_inset 
+
+math.lib
+\begin_inset Quotes erd
+\end_inset 
+
+ or 
+\begin_inset Quotes eld
+\end_inset 
+
+math
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Standard
+
+When you use the library, simply add it to the list of object passed to
+ gplink.
+ gplink will scan the library and only extract the archive members that
+ are required to resolve external references.
+ So the application won't necessarily contain the code of all the archive
+ members.
+\layout Section
+
+Other gplib operations
+\begin_inset LatexCommand \index{Other gplib operations}
+
+\end_inset 
+
+
+\layout Standard
+
+Most of the other are useful , but will be used much less often.
+ For example you can replace individual archive members, but most people
+ elect to delete the old archive and create a new one.
+\layout Section
+
+Archive format
+\begin_inset LatexCommand \index{Archive format}
+
+\end_inset 
+
+
+\layout Standard
+
+The file format is a standard COFF archive.
+ A header is added to each member and the unmodified object is copied into
+ the archive.
+\layout Standard
+
+Being a standard archive they do include a symbol index.
+ It provides a simple why to determine which member should be extract to
+ resolve external references.
+ This index is not included in mplib archives.
+ So using gplib archives with Microchip Tools will probably cause problems
+ unles the 
+\begin_inset Quotes eld
+\end_inset 
+
+-n
+\begin_inset Quotes erd
+\end_inset 
+
+ option is added when the archive is created.
 \layout Chapter
 
 Utilities
@@ -3751,9 +4505,9 @@ gpdasm
 
 \layout Standard
 
-gpdasm is open source disassembler for Microchip's popular PICmicro (TM)
- line of microcontrollers.
- gpdasm is part of gputils.
+gpdasm is a disassembler for gputils.
+ It converts hex files generated by gpasm and gplink into disassembled instructi
+ons.
 \layout Subsection
 
 Running gpdasm
@@ -3767,7 +4521,7 @@ Running gpdasm
 The general syntax for running gpdasm is
 \layout LyX-Code
 
-gpdasm <options> <hex-file>
+gpdasm [options] hex-file
 \layout Standard
 
 Where options can be one of:
@@ -3925,9 +4679,9 @@ gpvc
 
 \layout Standard
 
-gpvc is open source cod file viewer for Microchip's popular PICmicro (TM)
- line of microcontrollers.
- gpvc is part of gputils.
+gpvc is cod file viewer for gputils.
+ It provides an easy way to view the contents of the cod files generated
+ by gpasm and gplink.
 \layout Subsection
 
 Running gpvc
@@ -3938,10 +4692,10 @@ Running gpvc
 
 \layout Standard
 
-The general syntax for running gpdasm is
+The general syntax for running gpvc is
 \layout LyX-Code
 
-gpvc <options> <cod-file>
+gpvc [options] cod-file
 \layout Standard
 
 Where options can be one of:
@@ -4082,9 +4836,9 @@ gpvo
 
 \layout Standard
 
-gpvo is open source object file viewer for Microchip's popular PICmicro
- (TM) line of microcontrollers.
- gpvo is part of gputils.
+gpvo is COFF object file viewer for gputils.
+ It provides an easy way to view the contents of objects generated by gpasm
+ and gplink.
 \layout Subsection
 
 Running gpvo
@@ -4095,10 +4849,10 @@ Running gpvo
 
 \layout Standard
 
-The general syntax for running gpdasm is
+The general syntax for running gpvo is
 \layout LyX-Code
 
-gpvo <options> <object-file>
+gpvo [options] object-file
 \layout Standard
 
 Where options can be one of:
