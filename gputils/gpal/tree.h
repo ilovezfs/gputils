@@ -94,14 +94,13 @@ enum node_dir {
   dir_out
 };
 
-/* FIXME: maybe use near and far for bank and page storage key words */
-
 enum node_storage { 
   storage_unknown,
-  storage_public,  /* local data which is visible to other modules */
-  storage_private, /* local data which is not visible to other modules */
-  storage_local,   /* external data on the same page or bank with module */
-  storage_extern   /* external data which is on an unknown page or bank */
+  storage_public,  /* data which is visible to other modules */
+  storage_private, /* data which is not visible to other modules */
+  storage_local,   /* data which is local to current procedure */
+  storage_near,    /* external data on the same page or bank with module */
+  storage_far      /* external data which is on an unknown page or bank */
 };
 
 enum source_type {
@@ -152,6 +151,8 @@ typedef struct node_struct {
       tree *body;
       char *name;
       enum source_type type;
+      enum node_storage code_default;
+      enum node_storage udata_default;
     } file;
     struct {
       tree *head;
@@ -223,6 +224,8 @@ typedef struct node_struct {
 #define FILE_BODY(F)       (F)->value.file.body
 #define FILE_NAME(F)       (F)->value.file.name
 #define FILE_TYPE(F)       (F)->value.file.type
+#define FILE_CODE(F)       (F)->value.file.code_default
+#define FILE_UDATA(F)      (F)->value.file.udata_default
 #define FUNC_HEAD(F)       (F)->value.func.head
 #define FUNC_RET(F)        (F)->value.func.ret
 #define FUNC_BODY(F)       (F)->value.func.body

@@ -71,14 +71,14 @@ DECCHAR [0-9]
 			  }
 			}
 "array"			{ return ARRAY; }
-"begin"			{ return BEGIN_KEY; }
+"begin"			{ return BEGIN_TOK; }
 "case"			{ return CASE; }
-"constant"		{ return CONSTANT_KEY; }
+"constant"		{ return CONSTANT; }
 "else"			{ return ELSE; }
 "elsif"			{ return ELSIF; }
 "end"			{ return END; }
 "for"			{ return FOR; }
-"function"		{ return FUNCTION_TOK; }
+"function"		{ return FUNCTION; }
 "if"			{ return IF; }
 "in"			{ return IN; }
 "inout"			{ return INOUT; }
@@ -91,12 +91,12 @@ DECCHAR [0-9]
 "out"			{ return OUT; }
 "pragma"		{ return PRAGMA; }
 "procedure"		{ return PROCEDURE; }
-"public"		{ return PUBLIC_STORAGE; }
+"public"		{ return PUBLIC; }
 "return"		{ return RETURN; }
 "then"			{ return THEN; }
 "to"			{ return TO; }
 "type"			{ return TYPE; }
-"variable"		{ return VARIABLE_KEY; }
+"variable"		{ return VARIABLE; }
 "when"			{ return WHEN; }
 "while"			{ return WHILE; }
 "with"			{ return WITH; }

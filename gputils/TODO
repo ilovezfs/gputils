@@ -11,6 +11,33 @@ gputils
   * Prefix all visible library functions with gp_. Add _ to all 
     others.
 
+gpal
+  * Maybe remove the variable keyword from declarations. Leave the constant
+    or make constant a type.
+  * Add a macro/inline procedure feature.  Maybe a "pragma inline = true".
+    It would then have to be placed in the public.   
+  * Implement initialized data using idata sections.
+  * Write a gpmake to auto generate Makefiles or add auto dependency
+    feature to gpal.  gpal main.pal it figures out what needs to be
+    compiled.   
+  * Prevent the same With from being read multiple times.
+  * Implement nested case statements.
+  * Implement logical OR in case statements. "when INIT | DELAY =>"
+  * Implement exit.
+  * Implement labels and goto.
+  * Clean up the test expressions code generator.  Keep the result in W not
+    the working register.
+  * Add backend for each family.
+  * Create a stdlib.  Add assert function and use it for simulation. newlib
+  * Figure out how to do pointers.  Maybe a new "pointer" type?
+  * Do we need a preprocessor?  I don't think so.  Use normal if statements,
+    but use constants for conditionals.
+  * Create an alias directive. "alias newprocedure oldprocedure". Add name
+    to symbol table and point it to the same variable definition.
+  * Implement "rom" to go with variable and constant. dt "my string\0"
+  * Create icode in codegen and peep it.  Write that to asm file.
+  * Remove dead code.
+    
 gpasm
   * Implement nested while loops.
   * Clean up the byte verses word, data memory/program memory stuff.
@@ -19,9 +46,7 @@ gpasm
   * Move COD file generation to library.
   * Add macro names to symbol table in listing file.
   * Add .ident for HLL tools 
-  * Add .file/.line for debugger.
   * Add .def/.endef for embedding debug/optimization information
-  * Config and Idlocs for coff output of 18xx devices 
   * Undefined coff symbols are always at the end of the coff table.
   * Add relocations for the difference between symbols in the same section.
 

@@ -22,7 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPASM_H__
 #define __GPASM_H__
 
-#define GPASM_VERSION_STRING ("gpasm-" VERSION " alpha")
+#define GPASM_VERSION_STRING ("gpasm-" VERSION " beta")
 
 /* This symbol will get placed into the symbol table for the 16bit cores
  * and thus allow compile-time selection of the proper macro set */

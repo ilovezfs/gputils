@@ -266,7 +266,11 @@ process_args( int argc, char *argv[])
       state.no_link = true;
       break;    
     case 'd':
-      gp_debug_disable = 0;
+      {
+        extern int yydebug;
+        yydebug = 1;
+        gp_debug_disable = 0;
+      }
       break;
     case '?':
     case 'h':
@@ -347,12 +351,10 @@ compile(void)
   state.section.code = NULL;
   state.section.code_addr = 0;
   state.section.code_addr_valid = false;
-  state.section.code_default = storage_extern;
 
   state.section.udata = NULL;
   state.section.udata_addr = 0;
   state.section.udata_addr_valid = false;
-  state.section.udata_default = storage_extern;
  
   /* open and parse the source public file */
   state.src = NULL;
@@ -539,13 +541,6 @@ init(void)
   next_file_id = 1;
 
   add_type_prims();
-
-#ifdef PARSE_DEBUG
-  {
-    extern int yydebug;
-    yydebug = 1;
-  }
-#endif
    
   return;
 }

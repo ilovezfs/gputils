@@ -19,13 +19,13 @@ typedef union {
 #endif
 # define	ARRAY	257
 # define	CASE	258
-# define	CONSTANT_KEY	259
-# define	BEGIN_KEY	260
+# define	CONSTANT	259
+# define	BEGIN_TOK	260
 # define	ELSE	261
 # define	ELSIF	262
 # define	END	263
 # define	FOR	264
-# define	FUNCTION_TOK	265
+# define	FUNCTION	265
 # define	IF	266
 # define	IN	267
 # define	INOUT	268
@@ -37,13 +37,13 @@ typedef union {
 # define	OTHERS	274
 # define	PRAGMA	275
 # define	PROCEDURE	276
-# define	PUBLIC_STORAGE	277
+# define	PUBLIC	277
 # define	RETURN	278
 # define	THEN	279
 # define	TO	280
 # define	TYPE	281
 # define	OUT	282
-# define	VARIABLE_KEY	283
+# define	VARIABLE	283
 # define	WHEN	284
 # define	WHILE	285
 # define	WITH	286

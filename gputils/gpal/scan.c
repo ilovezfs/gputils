@@ -9,7 +9,6 @@
 #define YY_FLEX_MINOR_VERSION 5
 
 #include <stdio.h>
-#include <unistd.h>
 
 
 /* cfront 1.2 defines "c_plusplus" instead of "__cplusplus" */
@@ -23,6 +22,7 @@
 #ifdef __cplusplus
 
 #include <stdlib.h>
+#include <unistd.h>
 
 /* Use prototypes in function declarations. */
 #define YY_USE_PROTOS
@@ -656,7 +656,7 @@ YY_MALLOC_DECL
 YY_DECL
 	{
 	register yy_state_type yy_current_state;
-	register char *yy_cp = NULL, *yy_bp = NULL;
+	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
 #line 49 "scan.l"
@@ -791,7 +791,7 @@ YY_RULE_SETUP
 case 5:
 YY_RULE_SETUP
 #line 74 "scan.l"
-{ return BEGIN_KEY; }
+{ return BEGIN_TOK; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
@@ -801,7 +801,7 @@ YY_RULE_SETUP
 case 7:
 YY_RULE_SETUP
 #line 76 "scan.l"
-{ return CONSTANT_KEY; }
+{ return CONSTANT; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
@@ -826,7 +826,7 @@ YY_RULE_SETUP
 case 12:
 YY_RULE_SETUP
 #line 81 "scan.l"
-{ return FUNCTION_TOK; }
+{ return FUNCTION; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
@@ -891,7 +891,7 @@ YY_RULE_SETUP
 case 25:
 YY_RULE_SETUP
 #line 94 "scan.l"
-{ return PUBLIC_STORAGE; }
+{ return PUBLIC; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
@@ -916,7 +916,7 @@ YY_RULE_SETUP
 case 30:
 YY_RULE_SETUP
 #line 99 "scan.l"
-{ return VARIABLE_KEY; }
+{ return VARIABLE; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
@@ -1419,7 +1419,6 @@ register char *yy_bp;
 #endif	/* ifndef YY_NO_UNPUT */
 
 
-#ifndef YY_NO_INPUT
 #ifdef __cplusplus
 static int yyinput()
 #else
@@ -1491,7 +1490,7 @@ static int input()
 
 	return c;
 	}
-#endif /* YY_NO_INPUT */
+
 
 #ifdef YY_USE_PROTOS
 void yyrestart( FILE *input_file )
@@ -1602,6 +1601,11 @@ YY_BUFFER_STATE b;
 	}
 
 
+#ifndef YY_ALWAYS_INTERACTIVE
+#ifndef YY_NEVER_INTERACTIVE
+extern int isatty YY_PROTO(( int ));
+#endif
+#endif
 
 #ifdef YY_USE_PROTOS
 void yy_init_buffer( YY_BUFFER_STATE b, FILE *file )

@@ -27,7 +27,7 @@ void analyze_select_processor(tree *node, char *name);
 void analyze_error(tree *node, const char *format, ...);
 void analyze_warning(tree *node, const char *format, ...);
 
-int can_evaluate(tree *p, gp_boolean gen_errors);
+gp_boolean can_evaluate(tree *p, gp_boolean gen_errors);
 int evaluate(tree *p);
 int maybe_evaluate(tree *p);
 

@@ -60,11 +60,9 @@ extern struct gpal_state {
     char *code;      			/* code section name */
     int code_addr;			/* absolute address of code section */
     gp_boolean code_addr_valid;		/* is code address valid? */
-    enum node_storage code_default;	/* code storage from pub file */
     char *udata;      			/* uninitialized data section name */
     int udata_addr;			/* absolute address of udata section */
     gp_boolean udata_addr_valid;	/* is udata address valid? */
-    enum node_storage udata_default;	/* udata storage from pub file */
   } section;
   struct symbol_table
     *global,				/* Base of Global symbols */

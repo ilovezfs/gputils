@@ -26,6 +26,8 @@ Boston, MA 02111-1307, USA.  */
 #include "gpal.h"
 #include "scan.h"
 
+#define YYERROR_VERBOSE
+
 void
 yyerror(char *message)
 {
@@ -48,7 +50,7 @@ yyerror(char *message)
 
 int yylex(void);
 
-static tree *case_ident;
+static tree *case_ident = NULL;
 
 %}
 
@@ -68,24 +70,60 @@ static tree *case_ident;
 }
 
 /* keywords */
-%token <i> ARRAY, CASE, CONSTANT_KEY, BEGIN_KEY, ELSE, ELSIF
-%token <i> END, FOR, FUNCTION_TOK, IF, IN, INOUT, IS, LOOP
-%token <i> MODULE, NULL_TOK, OF, OTHERS, PRAGMA, PROCEDURE
-%token <i> PUBLIC_STORAGE, RETURN, THEN, TO, TYPE, OUT, VARIABLE_KEY
-%token <i> WHEN, WHILE, WITH
+%token <i> ARRAY     "array"
+%token <i> CASE      "case"
+%token <i> CONSTANT  "constant"
+%token <i> BEGIN_TOK "begin"
+%token <i> ELSE      "else"
+%token <i> ELSIF     "elsif"
+%token <i> END       "end"
+%token <i> FOR       "for"
+%token <i> FUNCTION  "function"
+%token <i> IF        "if"
+%token <i> IN        "in"
+%token <i> INOUT     "inout"
+%token <i> IS        "is"
+%token <i> LOOP      "loop"
+%token <i> MODULE    "module"
+%token <i> NULL_TOK  "null"
+%token <i> OF        "of"
+%token <i> OTHERS    "others"
+%token <i> PRAGMA    "pragma"
+%token <i> PROCEDURE "procedure"
+%token <i> PUBLIC    "public"
+%token <i> RETURN    "return"
+%token <i> THEN      "then"
+%token <i> TO        "to"
+%token <i> TYPE      "type"
+%token <i> OUT       "out"
+%token <i> VARIABLE  "variable"
+%token <i> WHEN      "when"
+%token <i> WHILE     "while"
+%token <i> WITH      "with"
 
 /* general */
 %token <s> ASM
 %token <s> IDENT
 %token <i> NUMBER
 %token <s> STRING
-%token <i> ';', ':'
+%token <i> ';'
+%token <i> ':'
 
 /* operators */
-%token <i> LSH, RSH, ARROW
-%token <i> GREATER_EQUAL, LESS_EQUAL, EQUAL, NOT_EQUAL, '<', '>'
-%token <i> '&', '|', '^'
-%token <i> LOGICAL_AND, LOGICAL_OR
+%token <i> LSH           "<<"
+%token <i> RSH           ">>"
+%token <i> ARROW         "=>"
+%token <i> GREATER_EQUAL ">="
+%token <i> LESS_EQUAL    "<="
+%token <i> EQUAL         "=="
+%token <i> NOT_EQUAL     "!="
+%token <i> '<'
+%token <i> '>'
+%token <i> '&'
+%token <i> '|'
+%token <i> '^'
+%token <i> LOGICAL_AND   "&&"
+%token <i> LOGICAL_OR    "||"
 %token <i> '='
 
 /* types */
@@ -101,9 +139,11 @@ static tree *case_ident;
 %type <t> arg
 %type <d> arg_direction
 %type <t> body
+%type <t> decl_start
 %type <t> decl_block
 %type <t> decl
 %type <k> decl_key
+%type <t> statement_start
 %type <t> statement_block
 %type <t> statement
 %type <r> range
@@ -118,7 +158,7 @@ static tree *case_ident;
 /* Grammar rules */
 
 program:
-	/* can be nothing */
+	/* empty */
 	|
 	program entity
 	| 
@@ -131,22 +171,12 @@ entity:
 	  open_src($2, source_with);
 	}
 	|
-	MODULE IDENT IS END MODULE ';'
-	{
-	  gp_warning("empty module");
-	}
-	|
 	MODULE IDENT IS element_list END MODULE ';'
 	{
 	  add_entity(mk_file($4, $2, state.src->type));
 	}
 	|
-	PUBLIC_STORAGE IDENT IS END PUBLIC_STORAGE ';'
-	{
-	  gp_warning("empty public");
-	}
-	|
-	PUBLIC_STORAGE IDENT IS element_list END PUBLIC_STORAGE ';'
+	PUBLIC IDENT IS element_list END PUBLIC ';'
 	{
 	  add_entity(mk_file($4, $2, state.src->type));
 	}
@@ -188,17 +218,17 @@ element:
 	PROCEDURE head ';'
 	{ 
 	  $$ = mk_proc($2, NULL);
-     	}
-        |
-	FUNCTION_TOK head RETURN IDENT body FUNCTION_TOK ';'
+	}
+	|
+	FUNCTION head RETURN IDENT body FUNCTION ';'
 	{ 
 	  $$ = mk_func($2, $4, $5);
-     	}
-        |
-	FUNCTION_TOK head RETURN IDENT ';'
+	}
+	|
+	FUNCTION head RETURN IDENT ';'
 	{ 
 	  $$ = mk_func($2, $4, NULL);
-     	}
+	}
 	;
 
 type:
@@ -259,16 +289,23 @@ arg_direction:
 	;
 
 body:
-	IS decl_block BEGIN_KEY statement_block END
+	IS decl_start BEGIN_TOK statement_start END
 	{
- 	  $$ = mk_body($2, $4);
-     	}
+	  $$ = mk_body($2, $4);
+	}
+	;
+
+decl_start:
+	/* empty */
+	{
+	  $$ = NULL;
+	}
 	|
-	IS BEGIN_KEY statement_block END
+	decl_block
 	{
- 	  $$ = mk_body(NULL, $3);
-     	}
-        ;
+          $$ = $1;
+	}
+	;
 
 decl_block:
 	decl
@@ -283,7 +320,6 @@ decl_block:
 	;
 
 decl:
-
 	decl_key IDENT ':' IDENT ';'
 	{ 
 	  $$ = mk_decl($1, $4, $2, NULL);
@@ -296,14 +332,26 @@ decl:
 	;
 
 decl_key:
-	CONSTANT_KEY
+	CONSTANT
 	{
 	  $$ = key_constant;
 	}
 	|
-	VARIABLE_KEY
+	VARIABLE
 	{
 	  $$ = key_variable;
+	}
+	;
+
+statement_start:
+	/* empty */
+	{
+	  $$ = NULL;
+	}
+	|
+	statement_block
+	{
+	  $$ = $1;
 	}
 	;
 
@@ -335,19 +383,27 @@ statement:
 	  $$ = mk_assembly($1);
 	}
 	|
-	IF expr THEN statement_block END IF ';'
+	IF expr THEN statement_start END IF ';'
 	{
 	  $$ = mk_cond($2, $4, NULL);
 	}
 	|
-	IF expr THEN statement_block if_body END IF ';'
+	IF expr THEN statement_start if_body END IF ';'
 	{
 	  $$ = mk_cond($2, $4, $5);
 	}
 	|
-	CASE IDENT { case_ident = mk_symbol($2, NULL); } IS case_body END CASE ';'
+	CASE IDENT
+	{
+	  if (case_ident) {
+	    yyerror("nested case statements are not yet supported");
+	  }
+	  case_ident = mk_symbol($2, NULL);
+	}
+	IS case_body END CASE ';'
 	{
 	  $$ = $5;
+	  case_ident = NULL;
 	}
 	|
 	FOR IDENT IN range loop_statement
@@ -383,21 +439,21 @@ statement:
 	{
 	  $$ = $1;
 	}
-	;
+        ;
 
 if_body:
-	ELSIF expr THEN statement_block
+	ELSIF expr THEN statement_start
 	{
 	  /* last statement is elsif */
 	  $$ = mk_cond($2, $4, NULL);
 	}
 	|
-	ELSIF expr THEN statement_block if_body
+	ELSIF expr THEN statement_start if_body
 	{
 	  $$ = mk_cond($2, $4, $5);
 	}
 	|
-	ELSE statement_block
+	ELSE statement_start
 	{
 	  /* last statement is else */
 	  $$ = mk_cond(NULL, $2, NULL);
@@ -405,18 +461,18 @@ if_body:
 	;
 
 case_body:
-	WHEN e0 ARROW statement_block
+	WHEN e0 ARROW statement_start
 	{
 	  /* last statement is elsif equivalent */
 	  $$ = mk_cond(mk_binop(op_eq, case_ident, $2), $4, NULL);
 	}
 	|
-	WHEN e0 ARROW statement_block case_body
+	WHEN e0 ARROW statement_start case_body
 	{
 	  $$ = mk_cond(mk_binop(op_eq, case_ident, $2), $4, $5);
 	}
 	|
-	WHEN OTHERS ARROW statement_block
+	WHEN OTHERS ARROW statement_start
 	{
 	  /* last statement is else equivalent */
 	  $$ = mk_cond(NULL, $4, NULL);
@@ -424,7 +480,7 @@ case_body:
 	;
 
 loop_statement:
-	LOOP statement_block END LOOP ';'
+	LOOP statement_start END LOOP ';'
 	{
 	  $$ = $2;
 	}

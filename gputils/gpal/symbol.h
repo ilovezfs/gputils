@@ -70,11 +70,13 @@ enum sym_tag {
 };
 
 struct variable {
-  char *alias;
+  char *name;				/* symbol name */
+  char *alias;				/* mangled name used in asm file */
   enum sym_tag tag;			/* symbol tag */
   enum node_storage storage;		/* storage class */
   struct type *type;			/* symbol type */
-  gp_boolean is_init;			/* the symbol has been initialized */
+  gp_boolean is_used;			/* is used in expr */
+  gp_boolean is_assigned;		/* has been assigned a value */
   int value;				/* value if constant symbol */
   int file_id;				/* file symbol was defined in */
   int line_number;			/* line number symbol was defined on */
@@ -105,6 +107,7 @@ int type_size(struct type *type);
 void add_type_prims(void);
 
 gp_boolean has_address(struct variable *var);
+gp_boolean in_module(struct variable *var);
 gp_boolean is_extern(struct variable *var);
 
 #define SYM_TYPE(x) (x->type->tag)

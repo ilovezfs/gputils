@@ -90,20 +90,20 @@ am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
 
-man_MANS = gpasm.1 gpdasm.1 gplib.1 gplink.1 gputils.1 gpvc.1 gpvo.1
-
-EXTRA_DIST = \
+MAN_PAGES = \
+	gpal.1 \
 	gpasm.1 \
 	gpdasm.1 \
 	gplib.1 \
 	gplink.1 \
 	gputils.1 \
-	gputils.lyx \
-	gputils.ps \
-	gputils.pdf \
 	gpvc.1 \
 	gpvo.1
 
+
+man_MANS = $(MAN_PAGES)
+
+EXTRA_DIST = $(MAN_PAGES) gputils.lyx gputils.ps gputils.pdf
 subdir = doc
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h

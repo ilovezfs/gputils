@@ -252,30 +252,30 @@ add_arg_symbols(tree *node,
 
 /* can the expression be evaluated at compile time */
 
-int
+gp_boolean
 can_evaluate(tree *p, gp_boolean gen_errors)
 {
   struct variable *var;
 
   switch (p->tag) {
   case node_constant:
-    return 1;
+    return true;
   case node_symbol:
     var = get_global(SYM_NAME(p));
     if (var) {
       if (var->tag == sym_const) {
-        return 1;
+        return true;
       } else {
         if (gen_errors) { 
           analyze_error(p, "symbol %s is not a constant", SYM_NAME(p));    
         }
-        return 0;
+        return false;
       }
     } else {
       if (gen_errors) {
         analyze_error(p, "symbol %s not previously defined", SYM_NAME(p));    
       }
-      return 0;
+      return false;
     }
   case node_unop:
     return can_evaluate(p->value.unop.p0, gen_errors);
@@ -286,7 +286,7 @@ can_evaluate(tree *p, gp_boolean gen_errors)
     if (gen_errors) {
       analyze_error(p, "illegal argument %s", p->value.string);
     }
-    return 0;
+    return false;
   default:
     assert(0);
   }
@@ -305,6 +305,7 @@ evaluate(tree *p)
     return p->value.constant;
   case node_symbol:
     var = get_global(SYM_NAME(p));
+    assert (var != NULL);
     return var->value;
   case node_unop:
     switch (p->value.unop.op) {
@@ -369,7 +370,7 @@ maybe_evaluate(tree *p)
   return r;
 }
 
-static int
+static gp_boolean
 test_symbol(tree *node, char *name, enum size_tag size)
 {
   struct variable *var;
@@ -377,37 +378,47 @@ test_symbol(tree *node, char *name, enum size_tag size)
   var = get_global(name);
   if (var == NULL) {
     analyze_error(node, "unknown symbol %s", name);
-    return 1;
+    return true;
   }
+
+  var->is_used = true;
 
   /* If it is not an unchecked conversion, verify the sizes of the types match */
   if ((size != size_unknown) && 
       (var->type) &&
       (prim_type(var->type) != size)) {
     analyze_error(node, "type mismatch in symbol %s", name);
-    return 1;
+    return true;
   }
 
-  /* Save the size for scanning expressions with an unknown type */
-  if ((size == size_unknown) && (var->type)) {     
-    enum size_tag temp_size = prim_type(var->type);
+  if ((var->tag == sym_idata) || (var->tag == sym_udata)) {
 
-    if (temp_size != size_unknown) {
-      scan_size = temp_size;
+    if ((var->is_assigned == false) && (var->storage == storage_local)) {
+      analyze_warning(node, "%s might be used uninitialized", name);
     }
+
+    /* Save the size for scanning expressions with an unknown type */
+    if ((size == size_unknown) && (var->type)) {     
+      enum size_tag temp_size = prim_type(var->type);
+
+      if (temp_size != size_unknown) {
+        scan_size = temp_size;
+      }
+    }
+
   }
 
-  return 0;
+  return false;
 }
 
 /* scan the tree and make sure all of the symbols are valid */
 
-static int
+static gp_boolean
 scan_tree(tree *expr, enum size_tag size)
 {
 
   if (expr == NULL)
-    return 1;
+    return true;
 
   switch (expr->tag) {
   case node_arg:
@@ -418,7 +429,7 @@ scan_tree(tree *expr, enum size_tag size)
   case node_call:
     return test_symbol(expr, CALL_NAME(expr), size);
   case node_constant:
-    return 0;
+    return false;
   case node_unop:
     return scan_tree(UNOP_ARG(expr), size);
   case node_symbol:
@@ -428,6 +439,51 @@ scan_tree(tree *expr, enum size_tag size)
   }
 
   return 1;
+}
+
+/* scan the test and make sure the expression returns a boolean */
+
+static gp_boolean
+scan_test(tree *p)
+{
+
+  if (p == NULL)
+    return true;
+
+  switch (p->tag) {
+  case node_arg:
+    return true;
+  case node_constant:
+    return true;
+  case node_symbol:
+    return true;
+  case node_unop:
+    if (p->value.unop.op == op_not) {
+      return scan_test(p->value.unop.p0);
+    } else {
+      return true;
+    }
+  case node_binop:
+    switch (p->value.binop.op) {
+    case op_eq:
+    case op_lt:
+    case op_gt:
+    case op_ne:
+    case op_gte:
+    case op_lte:
+      return false;
+    case op_land:
+    case op_lor:
+      return scan_test(p->value.binop.p0) && 
+             scan_test(p->value.binop.p1);
+    default:
+      return true;
+    }
+  default:
+    assert(0); /* Unhandled parse node tag */
+  }
+
+  return true;
 }
 
 int
@@ -518,15 +574,12 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
   /* local symbol table */
   state.top = push_symbol_table(state.top, 1);
 
-  /* FIXME: udata_default won't work because multiple publics could exist.
-            put the default in the file symbol. var->module.udata_default */
-
   /* add the function's arguments to the symbol table */
   add_arg_symbols(var->node,
                   var->alias,
                   NULL,
                   true,
-                  state.section.udata_default);
+                  FILE_UDATA(var->module));
 
   /* write data into the in/inout of the function or procedure */
   while (call_args) {
@@ -586,6 +639,9 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
   /* remove the local table */
   state.top = pop_symbol_table(state.top);
 
+  /* mark the procedure or function as used */
+  var->is_used = true;
+
   return;
 }
 
@@ -596,8 +652,8 @@ analyze_test(tree *test, char *end_label)
 
   scan_size = size_unknown;
 
-  /* Scan first to check for valid symbols and to determine what the
-     default size is. */
+  /* Scan to check for valid symbols and to determine what the default
+     size is. */
   if (scan_tree(test, size_unknown)) {
     return 1;
   }
@@ -605,12 +661,17 @@ analyze_test(tree *test, char *end_label)
   size = scan_size;
 
   if (size == size_unknown) {
-    /* the size couldn't be determined (i. e. 0 = 1), so use the default */
+    /* the size couldn't be determined (i. e. 0 == 1), so use the default */
     size = size_uint8;
   }
 
   /* check the symbol sizes */
   if (scan_tree(test, size)) {
+    return 1;
+  }
+
+  if (scan_test(test)) {
+    analyze_error(test, "expression doesn't return a boolean");
     return 1;
   }
 
@@ -644,7 +705,7 @@ analyze_cond(tree *cond, char *last_label)
   } else {
     local_label = codegen_next_label();
   }
-  
+
   /* else doesn't have a condition */
   if (COND_TEST(cond)) {
     end_label = codegen_next_label();
@@ -804,6 +865,9 @@ analyze_expr(tree *expr)
   /* put the result in memory */
   codegen_store(var, constant_offset, offset, SYM_OFST(left));
 
+  /* mark the symbol as having a valid value */
+  var->is_assigned = true;
+
 }
 
 static void
@@ -819,6 +883,7 @@ analyze_return(tree *ret)
     ret->value.ret = optimize_expr(ret->value.ret);
     codegen_expr(ret->value.ret, return_size);
     codegen_store(return_var, false, 0, NULL);
+    return_var->is_assigned = true;
     codegen_write_asm("return");
   } else {
     analyze_error(ret, "returns can only appear in a function body");
@@ -864,6 +929,38 @@ analyze_statements(tree *statement)
   return;
 }
 
+static tree *init;
+static tree *last_init;
+
+static void
+append_init(char *name, tree *expr)
+{
+  tree *constant;
+  tree *symbol;
+  tree *assignment;
+
+  constant = mk_constant(maybe_evaluate(expr));
+  COPY_DEBUG(expr, constant);
+  
+  symbol = mk_symbol(name, NULL);
+  COPY_DEBUG(expr, symbol);
+  
+  assignment = mk_binop(op_assign, symbol, constant);
+  COPY_DEBUG(expr, assignment);
+
+  if (init) {
+    /* append to existing list */
+    node_list(last_init, assignment);
+    last_init = assignment;
+  } else {
+    /* start of list */
+    init = assignment;
+    last_init = assignment;
+  }
+  
+  return;
+}
+
 void
 analyze_procedure(tree *procedure, gp_boolean is_func)
 {
@@ -879,7 +976,8 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
   /* local symbol table */
   state.top = push_symbol_table(state.top, 1);
   found_return = false;
-  
+  init = NULL;  
+
   if (is_func) {
     head = FUNC_HEAD(procedure);
     body = FUNC_BODY(procedure);
@@ -935,8 +1033,12 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
                         false,
                         decl,
                         sym_udata,
-                        storage_private,
+                        storage_local,
                         DECL_TYPE(decl));
+      if (DECL_INIT(decl)) {
+        /* initialize the local data */
+        append_init(DECL_NAME(decl), DECL_INIT(decl));
+      }
     } else if (DECL_KEY(decl) == key_constant) {
       if (DECL_INIT(decl)) {
         add_constant(DECL_NAME(decl),
@@ -951,6 +1053,11 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
     }
 
     decl = decl->next;
+  }
+
+  if (init) {
+    node_list(last_init, statements);
+    statements = init;
   }
 
   /* write the procedure to the assembly file */
@@ -985,6 +1092,7 @@ analyze_declarations(void)
   struct symbol *sym;
   struct variable *var;
   gp_boolean first_time;
+  gp_boolean write_mem;
 
   /* write the data memory section */
 
@@ -994,10 +1102,19 @@ analyze_declarations(void)
     for (sym = state.memory->hash_table[i]; sym; sym = sym->next) {
       var = get_symbol_annotation(sym);
       assert(var != NULL);
-      if ((var->storage == storage_public) || 
-          (var->storage == storage_private)) {
-        codegen_write_data(var->alias, type_size(var->type), var->storage);
-        first_time = false;
+      if (in_module(var)) {
+        write_mem = true;
+        if ((!var->is_used) && (var->storage != storage_public)) {
+          analyze_warning(var->node, "unused variable %s",
+                          var->name);
+          if ((state.optimize.unused_mem) && (!var->is_assigned)) {
+            write_mem = false;
+          }
+        }
+        if (write_mem) {
+          codegen_write_data(var->alias, type_size(var->type), var->storage);
+          first_time = false;
+        }
       }      
     }
   }
@@ -1017,11 +1134,13 @@ analyze_declarations(void)
       assert(var != NULL);
       if (((var->tag == sym_proc) || (var->tag == sym_func)) &&
           is_extern(var)) {
-        if (first_time == true)  {
-          codegen_write_comment("external procedures and functions");
-          first_time = false;
+        if (var->is_used) {
+          if (first_time == true) {
+            codegen_write_comment("external procedures and functions");
+            first_time = false;
+          }
+          fprintf(state.output.f, "  extern %s\n", var->alias);
         }
-        fprintf(state.output.f, "  extern %s\n", var->alias);
       }
     }
   }
@@ -1037,11 +1156,13 @@ analyze_declarations(void)
     for (sym = state.memory->hash_table[i]; sym; sym = sym->next) {
       var = get_symbol_annotation(sym);
       if (var && has_address(var) && is_extern(var)) {
-        if (first_time == true)  {
-          codegen_write_comment("external data memory");
-          first_time = false;
+        if ((var->is_used) || (var->is_assigned)) {
+          if (first_time == true) {
+            codegen_write_comment("external data memory");
+            first_time = false;
+          }
+          fprintf(state.output.f, "  extern %s\n", var->alias);
         }
-        fprintf(state.output.f, "  extern %s\n", var->alias);
       }
     }
   }
@@ -1104,7 +1225,7 @@ analyze_pragma(tree *expr, enum source_type type)
           state.section.code_addr = rhs->value.constant;
           state.section.code_addr_valid = true;
         } else {
-          analyze_error(expr, "udata section addresses can only be in modules");
+          analyze_error(expr, "code section addresses can only be in modules");
         }
       } else if (strcasecmp(SYM_NAME(lhs), "code_section") == 0) {
         if (rhs->tag != node_string) {
@@ -1113,9 +1234,7 @@ analyze_pragma(tree *expr, enum source_type type)
           if (type == source_with) {            
             if ((state.section.code) && 
                 (strcmp(rhs->value.string, state.section.code) == 0)) {
-              state.section.code_default = storage_local;
-            } else {
-              state.section.code_default = storage_extern;
+              FILE_CODE(state.module) = storage_near;
             }
           } else {
             if (type == source_module) {
@@ -1161,9 +1280,7 @@ analyze_pragma(tree *expr, enum source_type type)
           if (type == source_with) {            
             if ((state.section.udata) &&
                 (strcmp(rhs->value.string, state.section.udata) == 0)) {
-              state.section.udata_default = storage_local;
-            } else {
-              state.section.udata_default = storage_extern;
+              FILE_UDATA(state.module) = storage_near;
             }
           } else {
             if (type == source_module) {
@@ -1272,6 +1389,9 @@ analyze_module(tree *file)
                                 sym_udata,
                                 storage_private,
                                 DECL_TYPE(current));
+        if (DECL_INIT(current)) {
+          analyze_error(current, "initialized data not yet supported");
+        }
       } else {
         if (DECL_INIT(current)) {
           add_constant(DECL_NAME(current),
@@ -1368,13 +1488,14 @@ analyze_public(tree *file)
           analyze_error(current, "missing constant value");
         }
       } else if (FILE_TYPE(file) == source_public) {
-        if (DECL_KEY(current) == key_variable) {
-          var = get_global(name);
-          if (var) {
-            var->storage = storage_public;       
-          } else {
-            analyze_error(current, "missing definition for %s", name); 
-          }
+        var = get_global(name);
+        if (var) {
+          var->storage = storage_public;       
+        } else {
+          analyze_error(current, "missing definition for %s", name); 
+        }
+        if (DECL_INIT(current)) {
+          analyze_error(current, "declarations can not be initialized");
         }
       } else if (FILE_TYPE(file) == source_with) {
         add_global_symbol(name,
@@ -1383,8 +1504,11 @@ analyze_public(tree *file)
                           true,
                           current,
                           sym_udata,
-                          state.section.code_default,
+                          FILE_UDATA(file),
                           DECL_TYPE(current));
+        if (DECL_INIT(current)) {
+          analyze_error(current, "declarations can not be initialized");
+        }
       } else {
         assert(0);
       }
@@ -1409,7 +1533,7 @@ analyze_public(tree *file)
                           true,
                           current,
                           sym_proc,
-                          state.section.code_default,
+                          FILE_CODE(file),
                           NULL);
       } else {
         assert(0);
@@ -1435,7 +1559,7 @@ analyze_public(tree *file)
                           true,
                           current,
                           sym_func,
-                          state.section.code_default,
+                          FILE_CODE(file),
                           NULL);
       } else {
         assert(0);
