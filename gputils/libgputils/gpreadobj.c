@@ -277,7 +277,7 @@ _read_sections(gp_object_type *object, char *file)
         current_linenum = current_linenum->next;
       }
     }
-    
+
     object->sections_tail = current;
     current = current->next;
   }
@@ -340,6 +340,8 @@ _read_symtbl(gp_object_type *object, char *file)
   int i;
   int j;
   int number = object->num_symbols;
+  int num_auxsym;
+  int aux_type;
   gp_symbol_type *current = NULL; 
   gp_aux_type *current_aux = NULL; 
   char *string_table;
@@ -358,17 +360,16 @@ _read_symtbl(gp_object_type *object, char *file)
       /* read the symbol */
       _read_symbol(current, file, string_table);
       current->number = i;
+      num_auxsym = current->num_auxsym;
       file += SYMBOL_SIZE;
 
-      if (current->num_auxsym != 0) {
-        int aux_type;
-        
+      if (num_auxsym != 0) {
         current->aux_list = gp_coffgen_blockaux(current->num_auxsym);
         current_aux = current->aux_list;
         aux_type = gp_determine_aux(current);
         
         /* read the aux symbols */
-        for (j = 0; j < current->num_auxsym; j++) {
+        for (j = 0; j < num_auxsym; j++) {
           _read_aux(current_aux, aux_type, file, string_table);
           current_aux = current_aux->next;
           file += SYMBOL_SIZE;
@@ -376,15 +377,15 @@ _read_symtbl(gp_object_type *object, char *file)
         }
 
         /* advance the through the list */
-        for (j = 0; j < current->num_auxsym; j++) {
+        for (j = 0; j < num_auxsym; j++) {
           /* COFF places all symbols inluding auxilary, in the symbol table.
              However, in memory, gputils attaches auxilary symbols to their
              associated primary symbol.  When reading COFF, space is reserved
              for the auxilary symbols but not used.  Later the space is 
-             freed.  This simplies assigning the pointer in the 
+             freed.  This simplifies assigning the pointer in the 
              relocations. */
           current = current->next;
-        }      
+        }
 
       }
 

@@ -1,3 +1,8 @@
+2003-03-09 Craig Franklin <craigfranklin@attbi.com>
+  * Fixed segmentation fault in gplink.
+  * Fixed a parse error in the sharebank definitions in linker scripts.
+  * Moved COFF definitions to gpcoff.h.
+
 2003-03-03 Craig Franklin <craigfranklin@attbi.com>
   * Finished relocation patching.
   * Added map and hex file outputs to gplink.

@@ -21,6 +21,10 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
+/* String table offsets are 16 bits so this coff has a limit on the 
+   maximum string table size. */
+#define MAX_STRING_TABLE 0xffff
+
 /* write the symbol or section name into the string table */
 
 static int
