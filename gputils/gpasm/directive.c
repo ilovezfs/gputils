@@ -3098,7 +3098,7 @@ void cblock_expr(struct pnode *s)
 
 void cblock_expr_incr(struct pnode *s, struct pnode *incr)
 {
-  if ((asm_enabled()) &&(can_evaluate_concatenation(s))) {
+  if ((asm_enabled()) && (can_evaluate_concatenation(s))) {
     set_global(evaluate_concatenation(s), state.cblock, PERMANENT, gvt_cblock);
     state.cblock += maybe_evaluate(incr);
   }

@@ -106,7 +106,9 @@ static struct pnode *mk_1op(int op, struct pnode *p0)
   struct pnode *p;
 }
 
-%token <s> SYMBOL, LIBPATH, LKRPATH
+%token <s> SYMBOL
+%token <s> LIBPATH
+%token <s> LKRPATH
 %token <s> PATH
 %token <s> LEXEOF
 %token <i> NUMBER
@@ -114,8 +116,10 @@ static struct pnode *mk_1op(int op, struct pnode *p0)
 %type <i> e1op
 
 %type <s> line
-%type <p> e0, e1
-%type <p> parameter_list, path_list 
+%type <p> e0
+%type <p> e1
+%type <p> parameter_list
+%type <p> path_list 
 
 %%
 /* Grammar rules */
