@@ -51,8 +51,8 @@ static gpasmVal do_addcf(gpasmVal r,
 
   gpmessage(GPM_SPECIAL_MNEMONIC, NULL);
 
-  r = do_insn("btfsc", make_constant_list(3, 0));
-  r = do_insn("incf", parms);
+  do_insn("btfsc", make_constant_list(3, 0));
+  do_insn("incf", parms);
 
   return r;
 }
@@ -63,8 +63,8 @@ static gpasmVal do_adddcf(gpasmVal r,
 		          struct pnode *parms)
 {
 
-  r = do_insn("btfsc", make_constant_list(3, 1));
-  r = do_insn("incf", parms);
+  do_insn("btfsc", make_constant_list(3, 1));
+  do_insn("incf", parms);
 
   return r;
 }
@@ -75,7 +75,7 @@ static gpasmVal do_b(gpasmVal r,
 		     struct pnode *parms)
 {
 
-  r = do_insn("goto", parms);
+  do_insn("goto", parms);
 
   return r;
 }
@@ -86,8 +86,8 @@ static gpasmVal do_bc(gpasmVal r,
 		      struct pnode *parms)
 {
 
-  r = do_insn("btfsc", make_constant_list(3, 0));
-  r = do_insn("goto", parms);
+  do_insn("btfsc", make_constant_list(3, 0));
+  do_insn("goto", parms);
 
   return r;
 }
@@ -98,8 +98,8 @@ static gpasmVal do_bdc(gpasmVal r,
 		       struct pnode *parms)
 {
 
-  r = do_insn("btfsc", make_constant_list(3, 1));
-  r = do_insn("goto", parms);
+  do_insn("btfsc", make_constant_list(3, 1));
+  do_insn("goto", parms);
 
   return r;
 }
@@ -110,8 +110,8 @@ static gpasmVal do_bz(gpasmVal r,
 		      struct pnode *parms)
 {
 
-  r = do_insn("btfsc", make_constant_list(3, 2));
-  r = do_insn("goto", parms);
+  do_insn("btfsc", make_constant_list(3, 2));
+  do_insn("goto", parms);
 
   return r;
 }
@@ -122,8 +122,8 @@ static gpasmVal do_bnc(gpasmVal r,
 		       struct pnode *parms)
 {
 
-  r = do_insn("btfss", make_constant_list(3, 0));
-  r = do_insn("goto", parms);
+  do_insn("btfss", make_constant_list(3, 0));
+  do_insn("goto", parms);
 
   return r;
 }
@@ -134,8 +134,8 @@ static gpasmVal do_bndc(gpasmVal r,
 		        struct pnode *parms)
 {
 
-  r = do_insn("btfss", make_constant_list(3, 1));
-  r = do_insn("goto", parms);
+  do_insn("btfss", make_constant_list(3, 1));
+  do_insn("goto", parms);
 
   return r;
 }
@@ -146,8 +146,8 @@ static gpasmVal do_bnz(gpasmVal r,
 		       struct pnode *parms)
 {
 
-  r = do_insn("btfss", make_constant_list(3, 2));
-  r = do_insn("goto", parms);
+  do_insn("btfss", make_constant_list(3, 2));
+  do_insn("goto", parms);
 
   return r;
 }
@@ -162,7 +162,7 @@ static gpasmVal do_clrc(gpasmVal r,
     gperror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  r = do_insn("bcf", make_constant_list(3, 0));
+  do_insn("bcf", make_constant_list(3, 0));
 
   return r;
 }
@@ -177,7 +177,7 @@ static gpasmVal do_clrdc(gpasmVal r,
     gperror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  r = do_insn("bcf", make_constant_list(3, 1));
+  do_insn("bcf", make_constant_list(3, 1));
 
   return r;
 }
@@ -192,7 +192,7 @@ static gpasmVal do_clrz(gpasmVal r,
     gperror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  r = do_insn("bcf", make_constant_list(3, 2));
+  do_insn("bcf", make_constant_list(3, 2));
 
   return r;
 }
@@ -209,7 +209,7 @@ static gpasmVal do_lcall(gpasmVal r,
                                      page, 
                                      state.i_memory, 
                                      state.org);
-  r = do_insn("call", parms);
+  do_insn("call", parms);
 
   return r;
 }
@@ -226,7 +226,7 @@ static gpasmVal do_lgoto(gpasmVal r,
                                      page, 
                                      state.i_memory, 
                                      state.org);
-  r = do_insn("goto", parms);
+  do_insn("goto", parms);
 
   return r;
 }
@@ -237,7 +237,7 @@ static gpasmVal do_movfw(gpasmVal r,
 		         struct pnode *parms)
 {
 
-  r = do_insn("movf", add_symbol_constant(parms, 0));
+  do_insn("movf", add_symbol_constant(parms, 0));
 
   return r;
 }
@@ -248,8 +248,8 @@ static gpasmVal do_negf(gpasmVal r,
 		        struct pnode *parms)
 {
 
-  r = do_insn("comf", add_symbol_constant(parms, 1));
-  r = do_insn("incf", parms);
+  do_insn("comf", add_symbol_constant(parms, 1));
+  do_insn("incf", parms);
 
   return r;
 }
@@ -264,7 +264,7 @@ static gpasmVal do_setc(gpasmVal r,
     gperror(GPE_TOO_MANY_ARGU, NULL);
   }
   
-  r = do_insn("bsf", make_constant_list(3, 0));
+  do_insn("bsf", make_constant_list(3, 0));
 
   return r;
 }
@@ -279,7 +279,7 @@ static gpasmVal do_setdc(gpasmVal r,
     gperror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  r = do_insn("bsf", make_constant_list(3, 1));
+  do_insn("bsf", make_constant_list(3, 1));
 
   return r;
 }
@@ -294,7 +294,7 @@ static gpasmVal do_setz(gpasmVal r,
     gperror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  r = do_insn("bsf", make_constant_list(3, 2));
+  do_insn("bsf", make_constant_list(3, 2));
 
   return r;
 }
@@ -309,7 +309,7 @@ static gpasmVal do_skpc(gpasmVal r,
     gperror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  r = do_insn("btfss", make_constant_list(3, 0));
+  do_insn("btfss", make_constant_list(3, 0));
 
   return r;
 }
@@ -324,7 +324,7 @@ static gpasmVal do_skpdc(gpasmVal r,
     gperror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  r = do_insn("btfss", make_constant_list(3, 1));
+  do_insn("btfss", make_constant_list(3, 1));
 
   return r;
 }
@@ -339,7 +339,7 @@ static gpasmVal do_skpz(gpasmVal r,
     gperror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  r = do_insn("btfss", make_constant_list(3, 2));
+  do_insn("btfss", make_constant_list(3, 2));
 
   return r;
 }
@@ -354,7 +354,7 @@ static gpasmVal do_skpnc(gpasmVal r,
     gperror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  r = do_insn("btfsc", make_constant_list(3, 0));
+  do_insn("btfsc", make_constant_list(3, 0));
 
   return r;
 }
@@ -369,7 +369,7 @@ static gpasmVal do_skpndc(gpasmVal r,
     gperror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  r = do_insn("btfsc", make_constant_list(3, 1));
+  do_insn("btfsc", make_constant_list(3, 1));
 
   return r;
 }
@@ -384,7 +384,7 @@ static gpasmVal do_skpnz(gpasmVal r,
     gperror(GPE_TOO_MANY_ARGU, NULL);
   }
 
-  r = do_insn("btfsc", make_constant_list(3, 2));
+  do_insn("btfsc", make_constant_list(3, 2));
 
   return r;
 }
@@ -395,8 +395,8 @@ static gpasmVal do_subcf(gpasmVal r,
 		         struct pnode *parms)
 {
 
-  r = do_insn("btfsc", make_constant_list(3, 0));
-  r = do_insn("decf", parms);
+  do_insn("btfsc", make_constant_list(3, 0));
+  do_insn("decf", parms);
 
   return r;
 }
@@ -407,8 +407,8 @@ static gpasmVal do_subdcf(gpasmVal r,
 		         struct pnode *parms)
 {
 
-  r = do_insn("btfsc", make_constant_list(3, 1));
-  r = do_insn("decf", parms);
+  do_insn("btfsc", make_constant_list(3, 1));
+  do_insn("decf", parms);
 
   return r;
 }
@@ -419,7 +419,7 @@ static gpasmVal do_tstf(gpasmVal r,
 		        struct pnode *parms)
 {
 
-  r = do_insn("movf", add_symbol_constant(parms, 1));
+  do_insn("movf", add_symbol_constant(parms, 1));
 
   return r;
 }
