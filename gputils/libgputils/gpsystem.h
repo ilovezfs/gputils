@@ -57,4 +57,6 @@ gp_linked_list *gp_list_make(void);
 void gp_list_annotate(gp_linked_list *link, void *a);
 void *gp_list_get(gp_linked_list *link);
 
+char *gp_absolute_path(char *filename);
+
 #endif

@@ -205,7 +205,7 @@ set_optimize_level(void)
   return;
 }
 
-#define GET_OPTIONS "?I:acdhk:lo:O:p:Stqv"
+#define GET_OPTIONS "?I:acdhk:lo:O:p:Stquv"
 
 /* Used: acdDehiIlmopqrwv */
 static struct option longopts[] =
@@ -223,6 +223,7 @@ static struct option longopts[] =
   { "compile",     0, 0, 'S' },
   { "save-temps",  0, 0, 't' },
   { "quiet",       0, 0, 'q' },
+  { "absolute",    0, 0, 'u' },
   { "version",     0, 0, 'v' },
   { 0, 0, 0, 0 }
 };
@@ -245,6 +246,7 @@ show_usage(void)
   printf("  -q, --quiet                    Quiet.\n");
   printf("  -S, --compile                  Compile only, don't assemble or link.\n");
   printf("  -t, --save-temps               Do not delete intermediate files.\n");
+  printf("  -u, --absolute                 Use absolute pathes. \n");
   printf("  -v, --version                  Show version.\n");
   printf("\n");
 #ifdef USE_DEFAULT_PATHS
@@ -334,6 +336,9 @@ process_args( int argc, char *argv[])
     case 't':
       state.delete_temps = false;
       break;    
+    case 'u':
+      state.use_absolute_path = true;
+      break;
     case 'v':
       fprintf(stderr, "%s\n", GPAL_VERSION_STRING);
       exit(0);
@@ -556,6 +561,7 @@ init(void)
   state.no_link = false;
   state.archive = false;
   state.delete_temps = true;
+  state.use_absolute_path = false;
   state.options = NULL;
   state.optimize.level = 1;
   state.path = NULL;
@@ -596,7 +602,10 @@ main(int argc, char *argv[])
     /* open input file */
     state.src = NULL;
     state.srcfilename = argv[optind];
-    open_src(argv[optind]);
+    if (state.use_absolute_path) {
+      state.srcfilename = gp_absolute_path(state.srcfilename);
+    }    
+    open_src(state.srcfilename);
 
     /* parse the input file */
     if (state.src)

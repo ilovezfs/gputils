@@ -38,6 +38,7 @@ extern struct gpal_state {
   gp_boolean no_link;			/* compile and assemble, but don't link */
   gp_boolean archive;			/* compile and assemble, then link */
   gp_boolean delete_temps;		/* delete temporary files */
+  gp_boolean use_absolute_path;		/* Use absolute path on supported OS */
   char *options;			/* extra link or lib options */
   struct {
     int level;

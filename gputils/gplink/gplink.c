@@ -532,6 +532,18 @@ process_args( int argc, char *argv[])
       break;
   }
 
+  /* check if the first file is the linker script */
+  pc = strrchr(argv[optind], '.');
+  if (strcasecmp(pc, ".lkr") == 0) {
+    if (state.srcfilename == NULL) {
+      state.srcfilename = argv[optind++];
+    } else {
+      gp_error("linker script specified twice (%s and %s)",
+               state.srcfilename,
+               argv[optind]);
+    }
+  }
+
   if ((state.srcfilename == NULL) &&
       (optind >= argc)) {
     /* No linker script was specified and no object filenames were provided,

@@ -39,7 +39,7 @@ static char *processor_name = NULL;
 int yyparse(void);
 extern int yydebug;
 
-#define GET_OPTIONS "?D:I:La:cde:ghilmno:p:qr:vw:"
+#define GET_OPTIONS "?D:I:La:cde:ghilmno:p:qr:uvw:"
 
 /* Used: acdDehiIlmopqrwv */
 static struct option longopts[] =
@@ -61,6 +61,7 @@ static struct option longopts[] =
   { "processor",   1, 0, 'p' },
   { "quiet",       0, 0, 'q' },
   { "radix",       1, 0, 'r' },
+  { "absolute",    0, 0, 'u' },
   { "version",     0, 0, 'v' },
   { "warning",     1, 0, 'w' },
   { 0, 0, 0, 0 }
@@ -79,6 +80,7 @@ init(void)
   state.hex_format = inhx32;
   state.case_insensitive = false;
   state.quiet = false;
+  state.use_absolute_path = false;
   state.error_level = 0;
   state.debug_info = false;
   state.path_num = 0;
@@ -162,6 +164,7 @@ show_usage(void)
   printf("  -p PROC, --processor PROC      Select processor.\n");
   printf("  -q, --quiet                    Quiet.\n");
   printf("  -r RADIX, --radix RADIX        Select radix. [hex]\n");
+  printf("  -u, --absolute                 Use absolute pathes. \n");
   printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n");
   printf("  -v, --version                  Show version.\n");
   printf("\n");
@@ -288,6 +291,9 @@ process_args( int argc, char *argv[])
       select_radix(optarg);
       state.cmd_line.radix = true;
       break;
+    case 'u':
+      state.use_absolute_path = true;
+      break;
     case 'w':
       select_errorlevel(atoi(optarg));
       state.cmd_line.error_level = true;
@@ -314,6 +320,10 @@ process_args( int argc, char *argv[])
      specified directories are searched first */
   if (gp_header_path) {
     add_path(gp_header_path);
+  }
+
+  if (state.use_absolute_path) {
+    state.srcfilename = gp_absolute_path(state.srcfilename);
   }
 
 }

@@ -1,3 +1,8 @@
+2004-10-17 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * Added absolute path option on win32 hosts.
+  * Allow the linker script to be specified on as first item of the object
+    list in gplink.
+
 2004-10-15 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Delete gplink output files when errors occur.
   * Use more boolean types.
