@@ -1,3 +1,6 @@
+2002-04-08 Craig Franklin <craigfranklin@attbi.com>
+  * Fixed error that could cause a seg fault on AmigaOS.
+  
 2002-04-03 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.10.2 Released.
   * Any argument to an instruction which exceeds its range will now generate
