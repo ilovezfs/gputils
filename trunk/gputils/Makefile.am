@@ -20,9 +20,27 @@
 
 SUBDIRS = @MAKE_SUBDIRS@
 
+# generate the rpm spec file when "make spec" or "make dist" is commanded.
+
+SPECFILE = gputils-@VERSION@.spec
+
+dist-hook: $(SPECFILE)
+
+spec: $(SPECFILE)
+
+$(SPECFILE): ${top_srcdir}/gputils.spec
+	sed \
+	-e 's%\@VERSION\@%$(VERSION)%g' \
+	-e 's%\@NAME\@%$(NAME)%g' \
+	-e 's%\@EMAIL\@%$(EMAIL)%g' \
+	${top_srcdir}/gputils.spec > $(SPECFILE)
+
+CLEANFILES = $(SPECFILE)
+
 EXTRA_DIST =\
 	./include/stdhdr.h \
 	./include/getopt.h \
 	config.h.in \
+	gputils.spec \
 	stamp-h.in \
 	TODO
