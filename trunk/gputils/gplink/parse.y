@@ -108,6 +108,7 @@ static struct pnode *mk_1op(int op, struct pnode *p0)
 
 %token <s> SYMBOL, LIBPATH, LKRPATH
 %token <s> PATH
+%token <s> LEXEOF
 %token <i> NUMBER
 %type <i> '='
 %type <i> e1op
@@ -138,9 +139,20 @@ line:
           /* do nothing */
 	}
 	|
+	LEXEOF
+	{
+	  YYACCEPT;
+	}
+	|
 	LIBPATH path_list '\n'
 	{
 	  add_path($2);
+	}
+	|
+	LIBPATH path_list LEXEOF
+	{
+	  add_path($2);
+	  YYACCEPT;
 	}
 	|
 	LKRPATH path_list '\n'
@@ -148,10 +160,22 @@ line:
 	  add_path($2);
 	}
 	|
+	LKRPATH path_list LEXEOF
+	{
+	  add_path($2);
+	  YYACCEPT;
+	}
+	|
 	SYMBOL parameter_list '\n'
 	{
 	  execute_command($1, $2);
-        }
+	}
+	|
+	SYMBOL parameter_list LEXEOF
+	{
+	  execute_command($1, $2);
+	  YYACCEPT;
+	}
 	;
 
 path_list:

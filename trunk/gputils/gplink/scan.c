@@ -662,7 +662,7 @@ case YY_STATE_EOF(INITIAL):
 #line 44 "scan.l"
 {
 			   if (close_file())
-			     yyterminate();
+			     return LEXEOF;
 			 }
 	YY_BREAK
 case 1:

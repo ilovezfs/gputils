@@ -43,7 +43,7 @@ SYM [a-z0-9_./\\:]*
 %%
 <<EOF>>		 	 {
 			   if (close_file())
-			     yyterminate();
+			     return LEXEOF;
 			 }
 libpath			 {
 			   return LIBPATH;
