@@ -39,6 +39,7 @@ extern struct gplink_state {
   char *paths[MAX_PATHS];          /* the list of include paths */
   int numpaths;                    /* number of paths in the list */
   enum pic_processor processor;
+  enum proc_class class;
   enum outfile
     codfile,			   /* Symbol output file control */
     hexfile,			   /* Hex output file control */

@@ -1,3 +1,11 @@
+2003-07-23 Craig Franklin <craigfranklin@comcast.net>
+  * Fixed bsr boundary location for 18f248, 18f258,18f448, and 18f458.
+  * Changed gpasm, gpdasm, and gpvo memory dump address format from word to
+    byte for 18xx devices.
+  * Changed gplink processor check to be processor family instead of processor
+    name.
+  * Changed gpdasm to display the second word of 18xx two word instructions.
+
 2003-07-20 Craig Franklin <craigfranklin@comcast.net>
   * Added new processors: 16f716, 18f2620, 18f4620
   * Update header files and linker scripts.

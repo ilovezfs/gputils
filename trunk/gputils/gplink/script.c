@@ -36,35 +36,12 @@ struct command {
 
 typedef int lkrfunc(char *name, struct pnode *parms);
 
-/* FIXME: rename this function. */
-void gplkrscr_error(char *messg, char *detail)
-{
-  gp_num_errors++;
-  if (gp_quiet == 0) {
-    if (detail == NULL) {
-      printf("%s:%d:Error %s\n", 
-             state.src->name, 
-             state.src->line_number, 
-             messg); 
-    } else {
-      printf("%s:%d:Error %s (%s)\n", 
-             state.src->name, 
-             state.src->line_number, 
-             messg,
-             detail);      
-    }
-  }
-  
-
-  return;
-}
-
 static int enforce_simple(struct pnode *p)
 {
   if (p->tag == symbol) {
     return 1;
   } else {
-    gplkrscr_error("illegal argument", NULL);
+    SCRIPT_ERROR1("illegal argument");
     return 0;
   }
 }
@@ -76,7 +53,7 @@ static int evaluate(struct pnode *p)
   case constant:
     return p->value.constant;
   default:
-    gplkrscr_error("illegal argument", NULL);
+    SCRIPT_ERROR1("illegal argument");
     return 0;
   }
 
@@ -167,34 +144,34 @@ static int do_logsec(char *name, struct pnode *parms)
             section_name = strdup(p->value.binop.p1->value.symbol);
 	  }
         } else {
-          gplkrscr_error("illegal argument", lhs);        
+          SCRIPT_ERROR2("illegal argument", lhs);        
         }       
       }
     } else {
       if (enforce_simple(p)) {
-        gplkrscr_error("illegal argument", p->value.symbol);      
+        SCRIPT_ERROR2("illegal argument", p->value.symbol);      
       }
     }
   }
 
   /* process the options */ 
   if (found_secname == 0) {
-    gplkrscr_error("missing argument", "name");   
+    SCRIPT_ERROR2("missing argument", "name");   
   } else if ((found_rom == 1) && (found_ram == 1)) {
-    gplkrscr_error("too many arguments", "ram or rom");
+    SCRIPT_ERROR2("too many arguments", "ram or rom");
   } else if ((found_rom == 0) && (found_ram == 0)) {
-    gplkrscr_error("missing argument", "ram or rom");
+    SCRIPT_ERROR2("missing argument", "ram or rom");
   } else {
     sym = get_symbol(state.section.definition, section_name);      
     if (sym == NULL) {
-      gplkrscr_error("undefined section", section_name);
+      SCRIPT_ERROR2("undefined section", section_name);
     } else {
       section = get_symbol_annotation(sym);
       assert(section != NULL);
       if ((found_ram == 1) && (section->type == codepage)) {
-        gplkrscr_error("invalid argument", "ram");
+        SCRIPT_ERROR2("invalid argument", "ram");
       } else if ((found_rom == 1) && (section->type != codepage)) {
-        gplkrscr_error("invalid argument", "rom");      
+        SCRIPT_ERROR2("invalid argument", "rom");      
       } else {
         sym = add_symbol(state.section.logical, logical_section_name);
         annotate_symbol(sym, section_name);	       
@@ -245,7 +222,7 @@ static int do_secdef(char *name, struct pnode *parms)
           found_fill = 1;
           fill = evaluate(p->value.binop.p1);
         } else {
-          gplkrscr_error("illegal argument", lhs);        
+          SCRIPT_ERROR2("illegal argument", lhs);        
         }       
       
       }
@@ -254,7 +231,7 @@ static int do_secdef(char *name, struct pnode *parms)
 	if (strcasecmp(p->value.symbol, "protected") == 0) {
           found_protected = 1; 	   
 	} else {
-          gplkrscr_error("illegal argument", p->value.symbol);
+          SCRIPT_ERROR2("illegal argument", p->value.symbol);
         }
       }    
     }
@@ -262,22 +239,22 @@ static int do_secdef(char *name, struct pnode *parms)
 
   /* process the options */
   if (found_secname == 0) {
-    gplkrscr_error("missing argument", "name");
+    SCRIPT_ERROR2("missing argument", "name");
   } else if (found_start == 0) {
-    gplkrscr_error("missing argument", "start");
+    SCRIPT_ERROR2("missing argument", "start");
   } else if (found_end == 0) {
-    gplkrscr_error("missing argument", "end");
+    SCRIPT_ERROR2("missing argument", "end");
   } else {
     sym = get_symbol(state.section.definition, section_name);      
-    if ((sym != NULL) && (strcasecmp(name, "sharebank") != 0)) {
-      gplkrscr_error("duplicate section definition", section_name);
-    } else {
+    if (sym == NULL) {
       sym = add_symbol(state.section.definition, section_name);
       section_def = (struct linker_section *)malloc(sizeof(*section_def));
       annotate_symbol(sym, section_def);
 
       if (strcasecmp(name, "accessbank") == 0) {
-        /* FIXME: accessbank is only valid for 18cxx devices */
+        if (state.class != PROC_CLASS_PIC16E) {
+          SCRIPT_ERROR2("accessbank only valid with 18xx devices", name);      
+        }        
         section_def->type = accessbank;
       } else if (strcasecmp(name, "codepage") == 0) {
         section_def->type = codepage;
@@ -286,7 +263,7 @@ static int do_secdef(char *name, struct pnode *parms)
       } else if (strcasecmp(name, "sharebank") == 0) {
         section_def->type = sharebank;
       } else {
-        gplkrscr_error("invalid definition type", name);      
+        SCRIPT_ERROR2("invalid definition type", name);      
       }
 
       section_def->start = start;
@@ -302,10 +279,12 @@ static int do_secdef(char *name, struct pnode *parms)
           section_def->use_fill = 1;
         }
       } else if (found_fill == 1) {
-        gplkrscr_error("illegal argument", "fill");        
+        SCRIPT_ERROR2("illegal argument", "fill");        
       }
-
+    } else if (strcasecmp(name, "sharebank") != 0) {
+      SCRIPT_ERROR2("duplicate section definition", section_name);
     }
+
   }
 
   return 0;
@@ -340,19 +319,19 @@ static int do_stack(char *name, struct pnode *parms)
             ramname = p->value.binop.p1->value.symbol;   
           }
         } else {
-          gplkrscr_error("illegal argument", lhs);        
+          SCRIPT_ERROR2("illegal argument", lhs);        
         }       
       }
     } else {
       if (enforce_simple(p)) {
-        gplkrscr_error("illegal argument", p->value.symbol);
+        SCRIPT_ERROR2("illegal argument", p->value.symbol);
       }
     }
   }
 
   /* process the options */
   if (found_size == 0) {
-    gplkrscr_error("missing argument", "size");
+    SCRIPT_ERROR2("missing argument", "size");
   } else {
 
   }
@@ -391,7 +370,7 @@ int execute_command(char *name, struct pnode *parms)
   }
 
   if (found_command == 0) {
-    gplkrscr_error("invalid script command", name);
+    SCRIPT_ERROR2("invalid script command", name);
   } else {
     value = (*(lkrfunc*)commands[i].address)(name, parms);
   }

@@ -94,7 +94,7 @@ static void bad_char(char *character)
       "Illegal character %#x in numeric constant",
     *character);
 
-  gplkrscr_error(&complaint[0], NULL);
+  SCRIPT_ERROR1(&complaint[0]);
 
   return;
 }

@@ -44,6 +44,7 @@ void object_append(gp_object_type *file, char *name)
     state.object = file;
     /* store the processor type from the first object file */
     state.processor = file->processor;
+    state.class = file->class;
   } else {
     gp_object_type *list = state.object;
 
@@ -52,8 +53,8 @@ void object_append(gp_object_type *file, char *name)
     }
     list->next = file;
     
-    if (file->processor != state.processor)
-      gp_error("processor mismatch in \"%s\"", file->filename);
+    if (file->class != state.class)
+      gp_error("processor family mismatch in \"%s\"", file->filename);
   }
 
   return;
