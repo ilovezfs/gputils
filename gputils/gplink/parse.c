@@ -1032,14 +1032,14 @@ case 11:
 #line 170 "parse.y"
 {
 	  execute_command(yyvsp[-2].s, yyvsp[-1].p);
-        }
+	}
     break;
 case 12:
 #line 175 "parse.y"
 {
 	  execute_command(yyvsp[-2].s, yyvsp[-1].p);
 	  YYACCEPT;
-        }
+	}
     break;
 case 13:
 #line 183 "parse.y"
