@@ -1,3 +1,6 @@
+2003-06-14 Craig Franklin <craigfranklin@attbi.com>
+  * Fixed error in the range check for 17xx movpf anf movfp instructions.
+
 2003-06-04 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.11.4 Released.
   * Replaced or removed obsolete macros in configure.ac.

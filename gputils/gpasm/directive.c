@@ -2503,7 +2503,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           file=reloc_evaluate(HEAD(parms), RELOCT_F);
           reg=reloc_evaluate(HEAD(TAIL(parms)), RELOCT_P);
           file_ok(file);
-          if (reg & 0x1f) {
+          if (reg & ~0xf1f) {
             gpwarning(GPW_RANGE, NULL);
           }
           emit(i->opcode | ( (reg  & 0x1f) << 8) |
@@ -2516,7 +2516,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           file=reloc_evaluate(HEAD(TAIL(parms)), RELOCT_F);
           reg=reloc_evaluate(HEAD(parms), RELOCT_P);
           file_ok(file);
-          if (reg & 0x1f) {
+          if (reg & ~0xf1f) {
             gpwarning(GPW_RANGE, NULL);
           }
           emit(i->opcode | ( (reg & 0x1f) << 8) |
