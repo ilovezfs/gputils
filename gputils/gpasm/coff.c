@@ -146,21 +146,19 @@ _copy_config(void)
     if(_16bit_core) {
       start = config_section->address >> 1;
       stop = CONFIG7H >> 1;
-      found_break = 0;
       for (i = start; i <= stop; i++) {
         word = i_memory_get(state.c_memory, i);
         if (word & MEM_USED_MASK) {
-          if (found_break) {
-            gperror(GPE_CONTIG_CONFIG, NULL);
-          }
           i_memory_put(config_section->data, i, word);
-          config_section->size += 2;    
         } else {
-          found_break = 1;
+          /* fill undefined configuration registers with 0xff */
+          i_memory_put(config_section->data, i, 0xffff | MEM_USED_MASK);
         }
+        config_section->size += 2;    
       }
       
     } else {
+      /* FIXME: Some 16xx devices have two config words (16f88). */
       word = i_memory_get(state.c_memory, state.device.config_address);
       assert(word & MEM_USED_MASK);
       i_memory_put(config_section->data, state.device.config_address, word);
@@ -486,6 +484,9 @@ coff_add_listsym(void)
 {
   gp_symbol_type *new;
 
+  if (state.debug_info)
+    return;
+
   state.obj.symbol_num++;
 
   if(!state.obj.enabled)
@@ -507,6 +508,9 @@ void
 coff_add_nolistsym(void)
 {
   gp_symbol_type *new;
+
+  if (state.debug_info)
+    return;
 
   state.obj.symbol_num++;
 

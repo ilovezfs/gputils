@@ -214,6 +214,7 @@ list		     	 {
 			   return DEBUG_FILE;
 			 }
 ^#line			 {
+			   force_decimal = 1;
 			   return DEBUG_LINE;
 			 }
 ^#eof			 {

@@ -1,3 +1,14 @@
+2004-01-20 Craig Franklin <craigfranklin@comcast.net>
+  * gputils 0.12.0 Released.
+  * Fixed bug in gpdasm relative branches.
+  * Force decimal interpretation of debug line number directive in gpasm.
+  * Don't insert LIST or NOLIST symbols in gpasm COFF outputs if debug
+    directives are used.
+  * Fixed bug when concatenated symbols <string>_#v<expr> is used as a
+    macro argument.
+  * Fill missing 18xx config words in gpasm relocatable objects with 0xff
+    instead of generating an error.
+
 2004-01-16 Craig Franklin <craigfranklin@comcast.net>
   * Use install path for default when environmental variable isn't set.
   * Added GPUTILS_LIB_PATH environmental variable for gplink.
