@@ -103,19 +103,21 @@ FunctionEnd
 
 Section -Common
   SetOutPath "$INSTDIR"
-  File "${GPUTILS_ROOT}\gputils.ico"
   File "${GPUTILS_ROOT}\COPYING.txt"
   File "${GPUTILS_ROOT}\ChangeLog.txt"
   File "${GPUTILS_ROOT}\README.txt"
   File "${GPUTILS_ROOT}\AUTHORS.txt"
-  File "${GPUTILS_ROOT}\DISTRIBUTION.txt"
-  File "${GPUTILS_ROOT}\NEWS.txt"
 SectionEnd
 
 Section "gputils application files"
   SectionIn 1 2 RO
   SetOutPath "$INSTDIR\bin"
-  File "${GPUTILS_ROOT}\bin\*.exe"
+  File "${GPUTILS_ROOT}\gpal\gpal.exe"
+  File "${GPUTILS_ROOT}\gpasm\gpasm.exe"
+  File "${GPUTILS_ROOT}\gplink\gplink.exe"
+  File "${GPUTILS_ROOT}\gputils\gplib.exe"
+  File "${GPUTILS_ROOT}\gputils\gpvc.exe"
+  File "${GPUTILS_ROOT}\gputils\gpvo.exe"
 SectionEnd
 
 Section "gputils documentation"
@@ -162,9 +164,9 @@ Section -Icons
   CreateDirectory "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE"
   CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\gputils on the Web.lnk" "$INSTDIR\gputils.url"
   CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Uninstall gputils.lnk" "$INSTDIR\uninstall.exe"
-  CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Documentation.lnk" "$INSTDIR\doc\gputils.pdf" "" "$INSTDIR\gputils.ico" "" "" "" ""
-  CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\README.lnk" "$INSTDIR\README.TXT" "" "$INSTDIR\gputils.ico" "" "" "" ""
-  CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Change Log.lnk" "$INSTDIR\ChangeLog.txt" "" "$INSTDIR\gputils.ico" "" "" "" ""
+  CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Documentation.lnk" "$INSTDIR\doc\gputils.pdf"
+  CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\README.lnk" "$INSTDIR\README.TXT"
+  CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Change Log.lnk" "$INSTDIR\ChangeLog.txt"
   CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\GPL 2 License.lnk" "$INSTDIR\COPYING.txt"
 !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
@@ -216,6 +218,7 @@ Section Uninstall
   Delete "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Documentation.lnk"
   Delete "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Uninstall gputils.lnk"
   Delete "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\gputils on the Web.lnk"
+  RMDir "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE"
 
   ; Remove from PATH
   Push "$INSTDIR\bin"
@@ -227,37 +230,31 @@ Section Uninstall
   Push "GPUTILS_LKR_PATH"     ; name
   Call un.DeleteEnvStr
 
+  Delete "$INSTDIR\bin\gpal.exe"
+  Delete "$INSTDIR\bin\gpasm.exe"
+  Delete "$INSTDIR\bin\gplink.exe"
+  Delete "$INSTDIR\bin\gplib.exe"
+  Delete "$INSTDIR\bin\gpvc.exe"
+  Delete "$INSTDIR\bin\gpvo.exe"
+  RMDir "$INSTDIR\bin"
+
   Delete "$INSTDIR\lkr\*.lkr"
+  RMDir "$INSTDIR\lkr"
 
   Delete "$INSTDIR\pub\*.pub"
+  RMDir "$INSTDIR\pub"
 
   Delete "$INSTDIR\header\*.inc"
-
-  Delete "$INSTDIR\bin\*.exe"
+  RMDir "$INSTDIR\header"
 
   Delete "$INSTDIR\doc\*.pdf"
+  RMDir "$INSTDIR\doc"
 
   Delete "$INSTDIR\uninstall.exe"
   Delete "$INSTDIR\ChangeLog.txt"
   Delete "$INSTDIR\README.txt"
   Delete "$INSTDIR\AUTHORS.txt"
-  Delete "$INSTDIR\DISTRIBUTION.txt"
-  Delete "$INSTDIR\NEWS.txt"
   Delete "$INSTDIR\COPYING.txt"
-  Delete "$INSTDIR\gputils.ico"
-
-  RMDir "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE"
-
-  RMDir "$INSTDIR\lkr"
-
-  RMDir "$INSTDIR\pub"
-
-  RMDir "$INSTDIR\header"
-
-  RMDir "$INSTDIR\doc"
-
-  RMDir "$INSTDIR\bin"
-
   RMDir "$INSTDIR"
 
   SetAutoClose true
