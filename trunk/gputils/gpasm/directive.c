@@ -1837,7 +1837,7 @@ static gpasmVal do_res(gpasmVal r,
       } else {
         state.lst.line.linetype = res;
         if (SECTION_FLAGS & STYP_TEXT)
-          count >> _16bit_core;
+          count >>= _16bit_core;
 
         for (i = 0; i < count; i++) {
           if (SECTION_FLAGS & STYP_TEXT) {

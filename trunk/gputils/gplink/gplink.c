@@ -444,7 +444,7 @@ int main(int argc, char *argv[])
   strcpy(state.mapfilename, state.basefilename);
   strcat(state.mapfilename, ".map");  
   strcpy(state.objfilename, state.basefilename);
-  strcat(state.objfilename, ".o");  
+  strcat(state.objfilename, ".out");  
 
   /* Open all objects and archives in the file list. */ 
   for ( ; optind < argc; optind++) {
