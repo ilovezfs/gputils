@@ -378,7 +378,7 @@ h'-?{NUMCHAR}+'          {
                            yylval.s = strdup(yytext + 1);
 			   return STRING;
                          }
-\<{STR_QCHAR}*\>         {
+\<[^<"\r\n;]*\>          {
 			   /* treat include pathes as strings */
 			   char *pc = &yytext[yyleng - 1];
 			   *pc = '\0';
@@ -483,6 +483,16 @@ void open_src(char *name, int isinclude)
   if (state.src) {
     yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
   }
+
+#ifdef PARSE_DEBUG
+  {
+    extern int yydebug;
+    if (state.pass == 2)
+      yydebug = 1;
+    else
+      yydebug = 0;
+  }
+#endif
 
   new->type = file;
   new->line_number = 1;	/* Files start at line 1, for some reason */

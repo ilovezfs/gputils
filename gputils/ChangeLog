@@ -1,5 +1,7 @@
 2002-12-04 Craig Franklin <craigfranklin@attbi.com>
-  * Fixed incorrect range warning on 18xx gotos
+  * Fixed incorrect range warning on 18xx gotos.
+  * Fixed parse error for << operators > in the comment.
+  * Cleaned up parse debug output.
 
 2002-11-22 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.10.6 Released.
