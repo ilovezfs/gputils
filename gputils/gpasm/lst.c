@@ -201,6 +201,8 @@ void lst_format_line(char *src_line, int value)
   char *e;
   unsigned int emitted = 0;
 
+  assert(src_line != NULL);
+  
   e = m;
   switch (state.lst.line.linetype) {
   case equ: 

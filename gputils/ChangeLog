@@ -1,3 +1,7 @@
+2002-02-28 Craig Franklin <craigfranklin@attbi.com>
+  * Fixed a bug that inserted an extra NULL line in a macro definition when +=
+    type ops are used.  The bug caused a seg fault.
+
 2002-02-23 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.10.1 Released.
 
