@@ -25,8 +25,15 @@ Boston, MA 02111-1307, USA.  */
 #include "libgputils.h"
 #include "gpal.h"
 #include "scan.h"
+#include "analyze.h"
 
 #define YYERROR_VERBOSE
+
+int yylex(void);
+
+static gp_linked_list *case_stack = NULL;
+static tree *case_ident = NULL;
+static tree *last_node = NULL;
 
 void
 yyerror(char *message)
@@ -48,10 +55,50 @@ yyerror(char *message)
   return;
 }
 
-int yylex(void);
+static void
+add_entity(tree *node)
+{
+  struct symbol *sym;
+  tree *def;
 
-static gp_linked_list *case_stack = NULL;
-static tree *case_ident = NULL;
+  if (FILE_TYPE(node) == source_module) {
+    sym = get_symbol(state.modules, FILE_NAME(node));
+  } else if (FILE_TYPE(node) == source_with) {
+    sym = get_symbol(state.publics, FILE_NAME(node));
+  } else {
+    assert(0);
+  }
+  
+  if (sym == NULL) {
+    if (state.root == NULL) {
+      state.root = node;
+      last_node = node;
+    } else {
+      node->prev = last_node;
+      last_node->next = node;
+      last_node = node;
+    }
+    if (FILE_TYPE(node) == source_module) {
+      sym = add_symbol(state.modules, FILE_NAME(node));
+    } else if (FILE_TYPE(node) == source_with) {
+      sym = add_symbol(state.publics, FILE_NAME(node));
+    }
+    if (sym) {
+      annotate_symbol(sym, node);
+    } else {
+      analyze_error(node, "unknown public or module %s", FILE_NAME(node));
+    }
+  } else {
+    def = get_symbol_annotation(sym);
+    analyze_error(node,
+                  "redefinition of %s,\n\talso defined in %s:%i:",
+                  FILE_NAME(node),
+                  get_file_name(def->file_id),
+                  def->line_number);
+  }
+
+  return;
+}
 
 %}
 

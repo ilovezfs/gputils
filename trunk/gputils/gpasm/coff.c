@@ -432,6 +432,10 @@ coff_add_sym(char *name, int value, enum gpasmValTypes type)
     section_number = N_DEBUG;
     class = C_NULL;
     break;
+  case gvt_absolute:
+    section_number = N_ABS;
+    class = C_NULL;
+    break;
   default:
     return new;
   }

@@ -1,3 +1,10 @@
+2004-11-09 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [gpal] Generate Make compatible dependency lists.
+  * [gpal] Attempt to open <public>.pub file if <public> isn't in memory.
+  * [gpal] Use extended coff directives in gpal output files.
+  * [gpasm] Fixed errors in new COFF directives.
+  * [gplink] Sort sections in the map file.
+
 2004-11-05 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Moved gpal FSR code to device specific code generators.
 

@@ -52,9 +52,9 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_gpal_OBJECTS = parse.$(OBJEXT) analyze.$(OBJEXT) codegen.$(OBJEXT) \
-	codegen14.$(OBJEXT) codegen16e.$(OBJEXT) gpal.$(OBJEXT) \
-	optimize.$(OBJEXT) scan.$(OBJEXT) symbol.$(OBJEXT) \
-	tree.$(OBJEXT)
+	codegen14.$(OBJEXT) codegen16e.$(OBJEXT) deps.$(OBJEXT) \
+	gpal.$(OBJEXT) optimize.$(OBJEXT) scan.$(OBJEXT) \
+	symbol.$(OBJEXT) tree.$(OBJEXT)
 gpal_OBJECTS = $(am_gpal_OBJECTS)
 gpal_DEPENDENCIES = ${top_builddir}/@LIBGPUTILS@ \
 	${top_builddir}/@LIBIBERTY@
@@ -63,9 +63,10 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/analyze.Po ./$(DEPDIR)/codegen.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/codegen14.Po ./$(DEPDIR)/codegen16e.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/gpal.Po ./$(DEPDIR)/optimize.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/parse.Po ./$(DEPDIR)/scan.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/symbol.Po ./$(DEPDIR)/tree.Po
+@AMDEP_TRUE@	./$(DEPDIR)/deps.Po ./$(DEPDIR)/gpal.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/optimize.Po ./$(DEPDIR)/parse.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/scan.Po ./$(DEPDIR)/symbol.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/tree.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -183,6 +184,7 @@ gpal_SOURCES = \
 	codegen.c \
 	codegen14.c \
 	codegen16e.c \
+	deps.c \
 	gpal.c \
 	optimize.c \
 	scan.l \
@@ -193,6 +195,7 @@ gpal_SOURCES = \
 	codegen.h \
 	codegen14.h \
 	codegen16e.h \
+	deps.h \
 	gpal.h \
 	scan.h \
 	symbol.h \
@@ -274,6 +277,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codegen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codegen14.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codegen16e.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/deps.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optimize.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parse.Po@am__quote@

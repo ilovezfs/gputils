@@ -219,10 +219,10 @@ mk_file(tree *body, char *name, enum source_type type)
   }
 
   snprintf(buffer, sizeof(buffer), "_%s_%s", name, LOCAL_PROG_CAT);
-  new->value.file.page_address = gp_lower_case(buffer);
+  new->value.file.page_address = strdup(buffer);
 
   snprintf(buffer, sizeof(buffer), "_%s_%s", name, LOCAL_DATA_CAT);
-  new->value.file.bank_address = gp_lower_case(buffer);
+  new->value.file.bank_address = strdup(buffer);
  
   return new;
 }

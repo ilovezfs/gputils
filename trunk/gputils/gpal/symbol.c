@@ -52,7 +52,7 @@ add_symbol_pointer(char *name, tree *symbol, struct variable *var)
 char *
 mangle_name1(char *first)
 {
-  return gp_lower_case(first);
+  return strdup(first);
 }
 
 char *
@@ -62,7 +62,7 @@ mangle_name2(char *first, char *second)
 
   snprintf(buffer, sizeof(buffer), "%s.%s", first, second);
 
-  return gp_lower_case(buffer);
+  return strdup(buffer);
 }
 
 char *
@@ -72,7 +72,7 @@ mangle_name3(char *first, char *second, char *third)
 
   snprintf(buffer, sizeof(buffer), "%s.%s.%s", first, second, third);
 
-  return gp_lower_case(buffer);
+  return strdup(buffer);
 }
 
 
@@ -569,4 +569,79 @@ is_far(struct variable *var)
   } else {
     return false;
   }
+}
+
+static int
+prim_coff_type(struct type *type)
+{
+  int coff_type = T_NULL;
+
+  switch (type->tag) {
+  case type_prim:
+    switch (type->size) {
+    case size_unknown:
+      assert(0);
+      break;
+    case size_bit:
+      coff_type = T_NULL;
+      break;
+    case size_uint8:
+      coff_type = T_UCHAR;
+      break;
+    case size_int8:
+      coff_type = T_CHAR;
+      break;
+    case size_uint16:
+      coff_type = T_USHORT;
+      break;
+    case size_int16:
+      coff_type = T_SHORT;
+      break;
+    case size_uint24:
+      coff_type = T_USLONG;
+      break;
+    case size_int24:
+      coff_type = T_SLONG;
+      break;
+    case size_uint32:
+      coff_type = T_ULONG;
+      break;
+    case size_int32:
+      coff_type = T_LONG;
+      break;
+    case size_float:
+      coff_type = T_FLOAT;
+      break;
+    default:
+      assert(0);
+    }
+    break;
+  case type_array:
+    coff_type = (DT_ARY << 4) | prim_coff_type(type->prim);
+    break;
+  case type_enum:
+    coff_type = T_ENUM;
+    break;
+  default:
+    assert(0);
+  }
+
+  return coff_type;
+}
+
+int
+var_coff_type(struct variable *var)
+{
+  int coff_type = T_NULL;
+
+  assert(var != NULL);
+
+  if (var->tag == sym_subprogram)
+    return (DT_FCN << 4);
+
+  if (var->type == NULL)
+    return T_NULL;
+
+
+  return coff_type;
 }

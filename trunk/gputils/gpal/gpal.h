@@ -39,6 +39,7 @@ extern struct gpal_state {
   gp_boolean archive;			/* compile and assemble, then link */
   gp_boolean delete_temps;		/* delete temporary files */
   gp_boolean use_absolute_path;		/* Use absolute path on supported OS */
+  gp_boolean make_deps;			/* Output a dependency file */
   char *options;			/* extra link or lib options */
   struct {
     int level;
@@ -81,12 +82,10 @@ extern struct gpal_state {
   tree *root;				/* start of tree */
   tree *module;				/* current tree being processed  */
   struct source_context *src;		/* Top of the stack of source files */
-  char *basefilename;			/* base filename */
-  char *srcfilename;			/* source filename */
   char *outfilename;			/* output filename */
-  char asmfilename[BUFSIZ];		/* asm output filename */
   struct {
     FILE *f;  				/* output assembly file */
+    FILE *d;  				/* output dependency file */
   } output;
 } state;
 
@@ -106,11 +105,11 @@ struct file_struct {
   gp_boolean is_link;		/* a file to add to the link list */
 };
 
-void add_entity(tree *node);
 int add_file(char *name,
              char *extension,
              gp_boolean is_temp,
              gp_boolean is_link);
 char *get_file_name(int id);
+void parse(char *file_name);
 
 #endif

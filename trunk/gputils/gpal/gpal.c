@@ -117,52 +117,6 @@ get_file_name(int id)
   return NULL;
 }
 
-static tree *last_node;
-
-void
-add_entity(tree *node)
-{
-  struct symbol *sym;
-  tree *def;
-
-  if (FILE_TYPE(node) == source_module) {
-    sym = get_symbol(state.modules, FILE_NAME(node));
-  } else if (FILE_TYPE(node) == source_with) {
-    sym = get_symbol(state.publics, FILE_NAME(node));
-  } else {
-    assert(0);
-  }
-  
-  if (sym == NULL) {
-    if (state.root == NULL) {
-      state.root = node;
-      last_node = node;
-    } else {
-      node->prev = last_node;
-      last_node->next = node;
-      last_node = node;
-    }
-    if (FILE_TYPE(node) == source_module) {
-      sym = add_symbol(state.modules, FILE_NAME(node));
-    } else if (FILE_TYPE(node) == source_with) {
-      sym = add_symbol(state.publics, FILE_NAME(node));
-    }
-    if (sym) {
-      annotate_symbol(sym, node);
-    } else {
-      analyze_error(node, "unknown public or module %s", FILE_NAME(node));
-    }
-  } else {
-    def = get_symbol_annotation(sym);
-    analyze_error(node,
-                  "redefinition of %s,\n\talso defined in %s:%i:",
-                  FILE_NAME(node),
-                  get_file_name(def->file_id),
-                  def->line_number);
-  }
-
-}
-
 static void
 set_optimize_level(void)
 {
@@ -205,7 +159,7 @@ set_optimize_level(void)
   return;
 }
 
-#define GET_OPTIONS "?I:acdhk:lo:O:p:Stquv"
+#define GET_OPTIONS "?I:acdhk:lMo:O:p:Stquv"
 
 /* Used: acdDehiIlmopqrwv */
 static struct option longopts[] =
@@ -217,6 +171,7 @@ static struct option longopts[] =
   { "help",        0, 0, 'h' },
   { "options",     1, 0, 'k' },
   { "list-chips",  0, 0, 'l' },
+  { "deps",        0, 0, 'M' },
   { "output",      1, 0, 'o' },
   { "optimize",    1, 0, 'O' },
   { "processor",   1, 0, 'p' },
@@ -240,6 +195,7 @@ show_usage(void)
   printf("  -I DIR, --include DIR          Specify include directory.\n");
   printf("  -k \"OPT\", --options \"OPT\"      Extra link or lib options.\n");
   printf("  -l, --list-chips               List supported processors.\n");
+  printf("  -M, --deps                     Output dependency file.\n");
   printf("  -o FILE, --output FILE         Alternate name of output file.\n");
   printf("  -O OPT, --optimize OPT         Optimization level [1].\n");
   printf("  -p PROC, --processor PROC      Select processor.\n");
@@ -319,6 +275,9 @@ process_args( int argc, char *argv[])
       gp_dump_processor_list(false, PROC_CLASS_PIC16E);
       exit(0);
       break;
+    case 'M':
+      state.make_deps = true;
+      break;
     case 'o':
       state.outfilename = strdup(optarg);
       break;
@@ -366,10 +325,32 @@ process_args( int argc, char *argv[])
 
 }
 
+void
+parse(char *file_name)
+{
+  state.src = NULL;
+
+  if (state.use_absolute_path) {
+    file_name = gp_absolute_path(file_name);
+  }
+
+  /* open input file */
+  open_src(file_name);
+
+  /* parse the input file */
+  if (state.src)
+    yyparse();
+
+  /* exit if there are parse errors */
+  if (gp_num_errors) {
+    exit(1);
+  }
+
+}
+
 static void
 compile(tree *module)
 {
-  state.basefilename = FILE_NAME(module);
 
   /* create the global symbol table that is case insensitive */
   state.global = push_symbol_table(NULL, true);
@@ -401,9 +382,9 @@ compile(tree *module)
 
   if (!gp_num_errors) {
     if (state.compile_only == true) {
-      add_file(state.basefilename, "asm", false, false);
+      add_file(FILE_NAME(module), "asm", false, false);
     } else {
-      add_file(state.basefilename, "asm", true, false);
+      add_file(FILE_NAME(module), "asm", true, false);
     }
   }
 
@@ -411,7 +392,7 @@ compile(tree *module)
 }
 
 static void
-assemble(void)
+assemble(tree *module)
 {
   char command[BUFSIZ];
 
@@ -429,7 +410,7 @@ assemble(void)
     strncat(command, "-q ", sizeof(command));
   }
 
-  strncat(command, state.basefilename, sizeof(command));
+  strncat(command, FILE_NAME(module), sizeof(command));
   strncat(command, ".asm ", sizeof(command));
 
   if (!gp_debug_disable) {
@@ -439,11 +420,11 @@ assemble(void)
   if (system(command)) {
     gp_num_errors++;
   } else {
-    add_file(state.basefilename, "lst", true, false);  
+    add_file(FILE_NAME(module), "lst", true, false);  
     if (state.no_link == true) {
-      add_file(state.basefilename, "o", false, true);
+      add_file(FILE_NAME(module), "o", false, true);
     } else {
-      add_file(state.basefilename, "o", true, true);
+      add_file(FILE_NAME(module), "o", true, true);
     }
   }
 
@@ -455,7 +436,7 @@ check_lib(void)
 {
   enum gp_coff_type type;
 
-  if (state.outfilename == NULL) {
+  if (state.outfilename) {
     type = gp_identify_coff_file(state.outfilename);
   } else {
     type = gp_identify_coff_file(GPAL_DEFAULT_LIB);
@@ -563,6 +544,7 @@ init(void)
   state.archive = false;
   state.delete_temps = true;
   state.use_absolute_path = false;
+  state.make_deps = false;
   state.options = NULL;
   state.optimize.level = 1;
   state.path = NULL;
@@ -575,10 +557,17 @@ init(void)
   state.current_bank = NULL;
   state.current_ibank = NULL;
   state.current_page = NULL;
+  state.root = NULL;
   state.outfilename = NULL;
 
   /* local data */
   next_file_id = 1;
+
+  init_nodes();
+
+  /* create the symbol tables for the modules and publics */ 
+  state.modules = push_symbol_table(NULL, true);
+  state.publics = push_symbol_table(NULL, true);
    
   return;
 }
@@ -595,30 +584,9 @@ main(int argc, char *argv[])
   init();
   process_args(argc, argv);
 
-  init_nodes();
-  state.root = NULL;
-
-  /* create the symbol tables for the modules and publics */ 
-  state.modules = push_symbol_table(NULL, true);
-  state.publics = push_symbol_table(NULL, true);
-
+  /* parse all of the input files */
   for ( ; optind < argc; optind++) {
-    /* open input file */
-    state.src = NULL;
-    state.srcfilename = argv[optind];
-    if (state.use_absolute_path) {
-      state.srcfilename = gp_absolute_path(state.srcfilename);
-    }    
-    open_src(state.srcfilename);
-
-    /* parse the input file */
-    if (state.src)
-      yyparse();
-
-    /* exit if there are parse errors */
-    if (gp_num_errors) {
-      exit(1);
-    }
+    parse(argv[optind]);
   }
 
   /* compile all the modules */
@@ -626,7 +594,7 @@ main(int argc, char *argv[])
   while (node) {
     if (FILE_TYPE(node) == source_module) {
       compile(node);
-      assemble();
+      assemble(node);
     }  
     node = node->next;
   }
