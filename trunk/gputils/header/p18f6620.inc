@@ -427,9 +427,9 @@ PCFG0           EQU  H'0000'
 
 ;----- ADCON2 Bits --------------------------------------------------------
 ADFM            EQU  H'0007'
-ADSC2           EQU  H'0002'
-ADSC1           EQU  H'0001'
-ADSC0           EQU  H'0000'
+ADCS2           EQU  H'0002'
+ADCS1           EQU  H'0001'
+ADCS0           EQU  H'0000'
 
 ;----- CCP1CON Bits -------------------------------------------------------
 DCCP1X          EQU  H'0005'

@@ -25,6 +25,7 @@
 ;0.90  15 May 2001   Preliminary Release                               dzb
 ;0.99  29 June2001   Rev 1                                             dzb
 ;1.00  29 Oct.2001   Corrections & Additions			       cjh
+;1.10  25 Jun 2002   Addec CFGS as EECON1 bit 6 name                   pas
 ;==========================================================================
 ;
 ;       Verify Processor
@@ -599,7 +600,8 @@ RCD8            EQU  H'0000'    ; Backward compatibility only
 
 ;----- EECON1 Bits --------------------------------------------------------
 EEPGD           EQU  H'0007'
-EEFS            EQU  H'0006'
+EEFS            EQU  H'0006'    ; Backward compatibility only
+CFGS            EQU  H'0006'
 FREE            EQU  H'0004'
 WRERR           EQU  H'0003'
 WREN            EQU  H'0002'

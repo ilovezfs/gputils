@@ -3,16 +3,18 @@
         NOLIST
 
 ; This header file defines configurations, registers, and other useful bits of
-; information for the PIC16C620A microcontroller.  These names are taken to match 
+; information for the PIC16C620A and PIC16CR620A microcontrollers.  These names are taken to match 
 ; the data sheets as closely as possible.  
 
 ; Note that the processor must be selected before this file is 
 ; included.  The processor may be selected the following ways:
 
 ;       1. Command line switch:
-;               C:\ MPASM MYFILE.ASM /PIC16C620A
+;               C:\ MPASM MYFILE.ASM /PIC16C620A   or
+;               C:\ MPASM MYFILE.ASM /PIC16CR620A
 ;       2. LIST directive in the source file
-;               LIST   P=PIC16C620A
+;               LIST   P=PIC16C620A   or
+;               LIST   P=PIC16CR620A
 ;       3. Processor Type entry in the MPASM full-screen interface
 
 ;==========================================================================
@@ -25,6 +27,7 @@
 
 ;1.00   05/28/97 Initial Release
 ;1.10   16/08/99 Added unbanked RAM at 70-7F 
+;1.20   06/12/02 Verification now includes the PIC16CR620A (pas)
 
 ;==========================================================================
 ;
@@ -33,8 +36,10 @@
 ;==========================================================================
 
         IFNDEF __16C620A
+	IFNDEF __16CR620A
            MESSG "Processor-header file mismatch.  Verify selected processor."
         ENDIF
+	ENDIF
 
 ;==========================================================================
 ;

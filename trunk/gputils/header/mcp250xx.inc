@@ -1,5 +1,5 @@
        LIST
-; MCP250XX.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+; MCP250XX.INC  Standard Header File, Version 2.00    Microchip Technology, Inc.
 	NOLIST
 
 ; This header file is used to define the configuration for MCP250XX devices.
@@ -21,6 +21,9 @@
 ;
 ;11/14/01 PKR Version 1.00
 ;- Initial release
+;
+;06/25/02 PKR Version 2.00
+;- Added the ability to configure the Configuration Word
 ;*******************************************************************************
 ;	Quick Reference
 ;
@@ -52,6 +55,21 @@
 
 	LIST	P=EEPROM16, M=0x100
 	NOEXPAND
+
+;*******************************************************************************
+; __config
+;
+; Configuration bits
+;
+; Reset Setting & Osc Setting
+; Example: __config _RST_ON & _HS_OSC
+;
+_RST_ON                      EQU     H'3FFF'
+_RST_OFF                     EQU     H'3FFB'
+_LP_OSC                      EQU     H'3FFC'
+_XT_OSC                      EQU     H'3FFD'
+_HS_OSC                      EQU     H'3FFF'
+
 
 ;*******************************************************************************
 ;*******************************************************************************
