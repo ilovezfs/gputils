@@ -55,8 +55,12 @@ void object_append(gp_object_type *file, char *name)
     }
     list->next = file;
     
-    if (file->class != state.class)
+    if (file->class != state.class) {
       gp_error("processor family mismatch in \"%s\"", file->filename);
+    } else if (file->processor != state.processor) {
+      gp_warning("processor mismatch in \"%s\"", file->filename);
+    }
+
   }
 
   return;

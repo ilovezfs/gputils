@@ -160,6 +160,7 @@ void show_usage(void)
 {
   printf("Usage: gpdasm [options] file\n");
   printf("Options: [defaults in brackets after descriptions]\n");
+  printf("  -c, --mnemonics                Decode special mnemonics.\n");
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -i, --hex-info                 Information on input hex file.\n");
   printf("  -l, --list-chips               List supported processors.\n");
@@ -167,17 +168,19 @@ void show_usage(void)
   printf("  -p PROC, --processor PROC      Select processor.\n");
   printf("  -s, --short                    Print short format.\n");
   printf("  -v, --version                  Show version.\n");
+  printf("  -y, --extended                 Enable 18xx extended mode.\n");
   printf("\n");
   printf("Report bugs to:\n");
   printf("%s\n", PACKAGE_BUGREPORT);
   exit(0);
 }
 
-#define GET_OPTIONS "?hilmp:sv"
+#define GET_OPTIONS "?chilmp:svy"
 
   /* Used: himpsv */
   static struct option longopts[] =
   {
+    { "mnemonics",   0, 0, 'c' },
     { "help",        0, 0, 'h' },
     { "hex-info",    0, 0, 'i' },
     { "list-chips",  0, 0, 'l' },
@@ -185,6 +188,7 @@ void show_usage(void)
     { "processor",   1, 0, 'p' },
     { "short",       0, 0, 's' },
     { "version",     0, 0, 'v' },
+    { "extended",    0, 0, 'y' },
     { 0, 0, 0, 0 }
   };
 
@@ -210,6 +214,9 @@ int main(int argc, char *argv[])
     case 'h':
       usage = 1;
       break;
+    case 'c':
+      gp_decode_mnemonics = true;
+      break;
     case 'i':
       print_hex_info = 1;
       break;
@@ -225,6 +232,9 @@ int main(int argc, char *argv[])
       break;
     case 's':
       state.format = 0;
+      break;
+    case 'y':
+      gp_decode_extended = true;
       break;
     case 'v':
       fprintf(stderr, "%s\n", GPDASM_VERSION_STRING);

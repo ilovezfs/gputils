@@ -24,8 +24,6 @@ Boston, MA 02111-1307, USA.  */
 
 /* FIXME: use const struct */
 
-/* XXXPRO: Need to add a struct here for any extra processor classes. */
-
 /* PIC 12-bit instruction set */
 struct insn  op_12c5xx[] = {
   { "addwf",  0xfc0, 0x1c0,     INSN_CLASS_OPWF5 	},
@@ -333,3 +331,19 @@ struct insn  op_18cxx_sp[] = {
 };
 
 const int num_op_18cxx_sp = TABLE_SIZE(op_18cxx_sp);
+
+/* PIC 16-bit Extended instruction set */
+struct insn  op_18cxx_ext[] = {
+  { "addfsr",  0xff00, 0xe800,	INSN_CLASS_LITFSR 	},
+  { "addulnk", 0xffc0, 0xe8c0,	INSN_CLASS_LIT6 	},
+  { "callw",   0xffff, 0x0014,	INSN_CLASS_IMPLICIT 	},
+  { "movsf",   0xff80, 0xeb00,	INSN_CLASS_SF 		},
+  { "movss",   0xff80, 0xeb80,	INSN_CLASS_SS 		},
+  { "pushl",   0xff00, 0xea00,	INSN_CLASS_LIT8 	},
+  { "subfsr",  0xff00, 0xe900,	INSN_CLASS_LITFSR	},
+  { "subulnk", 0xffc0, 0xe9c0,	INSN_CLASS_LIT6 	}
+
+};
+
+const int num_op_18cxx_ext = TABLE_SIZE(op_18cxx_ext);
+

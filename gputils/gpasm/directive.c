@@ -2063,6 +2063,28 @@ static gpasmVal do_pagesel(gpasmVal r,
   return r;
 }
 
+#if 0
+
+static gpasmVal do_pe(gpasmVal r,
+		      char *name,
+		      int arity,
+		      struct pnode *parms)
+{
+  state.lst.line.linetype = dir;
+
+  /* FIXME: This directive is mentioned in the 18f2480 documentation.  However, it is not
+     supported with current version of MPASM. It is also not documented in the current
+     version of MPLAB.  */
+
+  if (enforce_arity(arity, 0)) {
+    state.extended_pic16e = true;
+  }
+
+  return r;
+}
+
+#endif
+
 static gpasmVal do_processor(gpasmVal r,
 			     char *name,
 			     int arity,
@@ -2622,6 +2644,13 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  emit_check(i->opcode, (reloc_evaluate(p, RELOCT_MOVLR) << 4), 0xf0);
 	}
 	break;
+      case INSN_CLASS_LIT6:
+	if (enforce_arity(arity, 1)) {
+	  p = HEAD(parms);
+	  /* The literal cannot be a relocatable address */
+          emit_check(i->opcode, maybe_evaluate(p), 0x3f);
+	}
+	break;
       case INSN_CLASS_LIT8:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
@@ -2723,6 +2752,25 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    gpmessage(GPM_PAGE, NULL);
 
 	  emit(i->opcode | (value & 0x1fff));
+	}
+	break;
+      case INSN_CLASS_LITFSR:
+	if (enforce_arity(arity, 2)) {
+	  int value;
+          int fsr;
+
+	  p = HEAD(parms);
+          fsr = maybe_evaluate(p);
+	  if ((fsr < 0) || (fsr > 2))
+            gperror(GPE_RANGE, NULL); 	  
+
+          p = HEAD(TAIL(parms));
+	  /* the offset cannot be a relocatable address */
+          value = maybe_evaluate(p);
+	  if (value & (~0x3f))
+            gperror(GPE_RANGE, NULL); 	  
+
+	  emit(i->opcode | ((fsr & 0x3) << 6) | (value & 0x3f));
 	}
 	break;
       case INSN_CLASS_RBRA8:
@@ -2856,6 +2904,50 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           }
           emit(i->opcode | ( (reg & 0x1f) << 8) |
               (file & 0xff) );
+        }
+        break;
+      case INSN_CLASS_SF:
+        if (enforce_arity(arity, 2)) {
+          int source;
+	  int dest;
+
+	  p = HEAD(parms);
+          if (p->tag != offset)
+	    gperror(GPE_MISSING_BRACKET, NULL);
+          source = maybe_evaluate(p);
+
+          p = HEAD(TAIL(parms));
+          dest = maybe_evaluate(p);
+
+          /* destination can't be PCL, TOSU, TOSH, TOSL */
+          if ((dest == 0xff9) ||
+              (dest == 0xfff) ||
+              (dest == 0xffe) ||
+              (dest == 0xffd)) {
+            gperror(GPE_UNKNOWN, "Invalid destination");
+          }
+          
+	  emit_check(i->opcode, source, 0x7f);
+	  emit_check(0xf000, reloc_evaluate(HEAD(TAIL(parms)), RELOCT_FF2), 0xfff);
+        }
+        break;
+      case INSN_CLASS_SS:
+        if (enforce_arity(arity, 2)) {
+          int source;
+	  int dest;
+
+	  p = HEAD(parms);
+          if (p->tag != offset)
+	    gperror(GPE_MISSING_BRACKET, NULL);
+          source = maybe_evaluate(p);
+
+          p = HEAD(TAIL(parms));
+          if (p->tag != offset)
+	    gperror(GPE_MISSING_BRACKET, NULL);
+          dest = maybe_evaluate(p);
+
+	  emit_check(i->opcode, source, 0x7f);
+	  emit_check(0xf000, dest, 0x7f);
         }
         break;
       case INSN_CLASS_OPF5:
@@ -3393,6 +3485,9 @@ struct insn op_1[] = {
   { "fill",       0, (long int)do_fill,      INSN_CLASS_FUNC,   0 },
   { "org",        0, (long int)do_org,       INSN_CLASS_FUNC,   0 },
   { "pagesel",    0, (long int)do_pagesel,   INSN_CLASS_FUNC,   0 },
+#if 0
+  { "pe",         0, (long int)do_pe,        INSN_CLASS_FUNC,   0 },
+#endif
   { "res",        0, (long int)do_res,       INSN_CLASS_FUNC,   0 }
 };
 
@@ -3474,6 +3569,13 @@ void opcode_init(int stage)
       for (i = 0; i < num_op_18cxx_sp; i++)
 	annotate_symbol( add_symbol(state.stBuiltin, op_18cxx_sp[i].name), 
 			 &op_18cxx_sp[i]);
+
+      if (state.extended_pic16e) {
+        /* Some 18xx devices have an extended instruction set. */
+        for (i = 0; i < num_op_18cxx_ext; i++)
+	  annotate_symbol( add_symbol(state.stBuiltin, op_18cxx_ext[i].name), 
+                           &op_18cxx_ext[i]);
+      }
 
       break;
 

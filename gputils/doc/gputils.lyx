@@ -182,130 +182,145 @@ Supported processors
 gputils currently supports the following processors:
 \layout LyX-Code
 
-eeprom8    gen        p12c508    p12c508a   p12c509    p12c509a   
+eeprom8    gen        p10f200    p10f202    p10f204    p10f206    
 \layout LyX-Code
 
-p12c671    p12c672    p12ce518   p12ce519   p12ce673   p12ce674   
+p12c508    p12c508a   p12c509    p12c509a   p12c671    p12c672    
 \layout LyX-Code
 
-p12cr509a  p12f508    p12f509    p12f629    p12f635    p12f675    
+p12ce518   p12ce519   p12ce673   p12ce674   p12cr509a  p12f508    
 \layout LyX-Code
 
-p12f683    p14000     p16c5x     p16cxx     p16c432    p16c433    
+p12f509    p12f629    p12f635    p12f675    p12f683    p14000     
 \layout LyX-Code
 
-p16c505    p16c52     p16c54     p16c54a    p16c54b    p16c54c    
+p16c5x     p16cxx     p16c432    p16c433    p16c505    p16c52     
 \layout LyX-Code
 
-p16c55     p16c55a    p16c554    p16c557    p16c558    p16c56     
+p16c54     p16c54a    p16c54b    p16c54c    p16c55     p16c55a    
 \layout LyX-Code
 
-p16c56a    p16c57     p16c57c    p16c58a    p16c58b    p16c61     
+p16c554    p16c557    p16c558    p16c56     p16c56a    p16c57     
 \layout LyX-Code
 
-p16c62     p16c62a    p16c62b    p16c620    p16c620a   p16c621    
+p16c57c    p16c58a    p16c58b    p16c61     p16c62     p16c62a    
 \layout LyX-Code
 
-p16c621a   p16c622    p16c622a   p16c63     p16c63a    p16c64     
+p16c62b    p16c620    p16c620a   p16c621    p16c621a   p16c622    
 \layout LyX-Code
 
-p16c64a    p16c642    p16c65     p16c65a    p16c65b    p16c66     
+p16c622a   p16c63     p16c63a    p16c64     p16c64a    p16c642    
 \layout LyX-Code
 
-p16c662    p16c67     p16c71     p16c710    p16c711    p16c712    
+p16c65     p16c65a    p16c65b    p16c66     p16c662    p16c67     
 \layout LyX-Code
 
-p16c715    p16c716    p16c717    p16c72     p16c72a    p16c73     
+p16c71     p16c710    p16c711    p16c712    p16c715    p16c716    
 \layout LyX-Code
 
-p16c73a    p16c73b    p16c74     p16c745    p16c747    p16c74a    
+p16c717    p16c72     p16c72a    p16c73     p16c73a    p16c73b    
 \layout LyX-Code
 
-p16c74b    p16c76     p16c765    p16c77     p16c770    p16c771    
+p16c74     p16c745    p16c747    p16c74a    p16c74b    p16c76     
 \layout LyX-Code
 
-p16c773    p16c774    p16c781    p16c782    p16c84     p16c923    
+p16c765    p16c77     p16c770    p16c771    p16c773    p16c774    
 \layout LyX-Code
 
-p16c924    p16c925    p16c926    p16ce623   p16ce624   p16ce625   
+p16c781    p16c782    p16c84     p16c923    p16c924    p16c925    
 \layout LyX-Code
 
-p16cr54    p16cr54a   p16cr54b   p16cr54c   p16cr56a   p16cr57a   
+p16c926    p16ce623   p16ce624   p16ce625   p16cr54    p16cr54a   
 \layout LyX-Code
 
-p16cr57b   p16cr57c   p16cr58a   p16cr58b   p16cr62    p16cr620a  
+p16cr54b   p16cr54c   p16cr56a   p16cr57a   p16cr57b   p16cr57c   
 \layout LyX-Code
 
-p16cr63    p16cr64    p16cr65    p16cr72    p16cr83    p16cr84    
+p16cr58a   p16cr58b   p16cr62    p16cr620a  p16cr63    p16cr64    
 \layout LyX-Code
 
-p16f505    p16f54     p16f57     p16f627    p16f627a   p16f628    
+p16cr65    p16cr72    p16cr83    p16cr84    p16f505    p16f54     
 \layout LyX-Code
 
-p16f628a   p16f630    p16f636    p16f648a   p16f676    p16f684    
+p16f57     p16f59     p16f627    p16f627a   p16f628    p16f628a   
 \layout LyX-Code
 
-p16f688    p16f716    p16f72     p16f73     p16f737    p16f74     
+p16f630    p16f636    p16f639    p16f648a   p16f676    p16f684    
 \layout LyX-Code
 
-p16f76     p16f767    p16f77     p16f777    p16f785    p16f818    
+p16f685    p16f687    p16f688    p16f689    p16f690    p16f716    
 \layout LyX-Code
 
-p16f819    p16f83     p16f84     p16f84a    p16f87     p16f870    
+p16f72     p16f73     p16f737    p16f74     p16f76     p16f767    
 \layout LyX-Code
 
-p16f871    p16f872    p16f873    p16f873a   p16f874    p16f874a   
+p16f77     p16f777    p16f785    p16f818    p16f819    p16f83     
 \layout LyX-Code
 
-p16f876    p16f876a   p16f877    p16f877a   p16f88     p16f913    
+p16f84     p16f84a    p16f87     p16f870    p16f871    p16f872    
 \layout LyX-Code
 
-p16f914    p16f916    p16f917    p16hv540   p17cxx     p17c42     
+p16f873    p16f873a   p16f874    p16f874a   p16f876    p16f876a   
 \layout LyX-Code
 
-p17c42a    p17c43     p17c44     p17c752    p17c756    p17c756a   
+p16f877    p16f877a   p16f88     p16f913    p16f914    p16f916    
 \layout LyX-Code
 
-p17c762    p17c766    p17cr42    p17cr43    p18cxx     p18c242    
+p16f917    p16hv540   p17cxx     p17c42     p17c42a    p17c43     
 \layout LyX-Code
 
-p18c252    p18c442    p18c452    p18c601    p18c658    p18c801    
+p17c44     p17c752    p17c756    p17c756a   p17c762    p17c766    
 \layout LyX-Code
 
-p18c858    p18f1220   p18f1320   p18f2220   p18f2320   p18f2331   
+p17cr42    p17cr43    p18cxx     p18c242    p18c252    p18c442    
 \layout LyX-Code
 
-p18f2410   p18f242    p18f2420   p18f2431   p18f2439   p18f2455   
+p18c452    p18c601    p18c658    p18c801    p18c858    p18f1220   
 \layout LyX-Code
 
-p18f248    p18f2480   p18f2510   p18f2515   p18f252    p18f2520   
+p18f1320   p18f2220   p18f2320   p18f2331   p18f2410   p18f242    
 \layout LyX-Code
 
-p18f2525   p18f2539   p18f2550   p18f258    p18f2580   p18f2585   
+p18f2420   p18f2431   p18f2439   p18f2455   p18f248    p18f2480   
 \layout LyX-Code
 
-p18f2610   p18f2620   p18f2680   p18f2681   p18f4220   p18f4320   
+p18f2510   p18f2515   p18f252    p18f2520   p18f2525   p18f2539   
 \layout LyX-Code
 
-p18f4331   p18f4410   p18f442    p18f4420   p18f4431   p18f4439   
+p18f2550   p18f258    p18f2580   p18f2585   p18f2610   p18f2620   
 \layout LyX-Code
 
-p18f4455   p18f448    p18f4480   p18f4510   p18f4515   p18f452    
+p18f2680   p18f2681   p18f4220   p18f4320   p18f4331   p18f4410   
 \layout LyX-Code
 
-p18f4520   p18f4525   p18f4539   p18f4550   p18f458    p18f4580   
+p18f442    p18f4420   p18f4431   p18f4439   p18f4455   p18f448    
 \layout LyX-Code
 
-p18f4585   p18f4610   p18f4620   p18f4680   p18f4681   p18f6410   
+p18f4480   p18f4510   p18f4515   p18f452    p18f4520   p18f4525   
 \layout LyX-Code
 
-p18f6490   p18f6520   p18f6525   p18f6585   p18f6620   p18f6621   
+p18f4539   p18f4550   p18f458    p18f4580   p18f4585   p18f4610   
 \layout LyX-Code
 
-p18f6680   p18f6720   p18f8410   p18f8490   p18f8520   p18f8525   
+p18f4620   p18f4680   p18f4681   p18f6310   p18f6390   p18f6410   
 \layout LyX-Code
 
-p18f8585   p18f8620   p18f8621   p18f8680   p18f8720   rf509af    
+p18f6490   p18f64j15  p18f6520   p18f6525   p18f6585   p18f65j10  
+\layout LyX-Code
+
+p18f65j15  p18f6620   p18f6621   p18f6627   p18f6680   p18f66j10  
+\layout LyX-Code
+
+p18f66j15  p18f6720   p18f6722   p18f67j10  p18f8310   p18f8390   
+\layout LyX-Code
+
+p18f8410   p18f8490   p18f84j15  p18f8520   p18f8525   p18f8585   
+\layout LyX-Code
+
+p18f85j10  p18f85j15  p18f8620   p18f8621   p18f8627   p18f8680   
+\layout LyX-Code
+
+p18f86j10  p18f86j15  p18f8720   p18f8722   p18f87j10  rf509af    
 \layout LyX-Code
 
 rf509ag    rf675f     rf675h     rf675k     sx18       sx20       
@@ -314,7 +329,7 @@ rf509ag    rf675f     rf675h     rf675k     sx18       sx20
 sx28       
 \layout LyX-Code
 
-         
+             
 \layout Chapter
 
 gpal
@@ -395,7 +410,7 @@ a
 
 \layout Standard
 
-Compile or assemble, then archive.
+Compile or assemble, then archive
 \end_inset 
 </cell>
 </row>
@@ -413,7 +428,7 @@ c
 
 \layout Standard
 
-Compile or assemble, but don't link.
+Compile or assemble, but don't link
 \end_inset 
 </cell>
 </row>
@@ -431,7 +446,7 @@ d
 
 \layout Standard
 
-Output debug messages.
+Output debug messages
 \end_inset 
 </cell>
 </row>
@@ -449,7 +464,7 @@ h
 
 \layout Standard
 
-Show the usage message.
+Show the usage message
 \end_inset 
 </cell>
 </row>
@@ -467,7 +482,7 @@ H
 
 \layout Standard
 
-Scan the specified processor header file.
+Scan the specified processor header file
 \end_inset 
 </cell>
 </row>
@@ -485,7 +500,7 @@ I <directory>
 
 \layout Standard
 
-Specify an include directory.
+Specify an include directory
 \end_inset 
 </cell>
 </row>
@@ -511,7 +526,7 @@ k
 
 \layout Standard
 
-Extra link or lib options.
+Extra link or lib options
 \end_inset 
 </cell>
 </row>
@@ -529,7 +544,7 @@ l
 
 \layout Standard
 
-List supported processors.
+List supported processors
 \end_inset 
 </cell>
 </row>
@@ -547,7 +562,7 @@ M
 
 \layout Standard
 
-Generate a Make compatible dependency list.
+Generate a Make compatible dependency list
 \end_inset 
 </cell>
 </row>
@@ -565,7 +580,7 @@ o <file>
 
 \layout Standard
 
-Alternate name of hex output file.
+Alternate name of hex output file
 \end_inset 
 </cell>
 </row>
@@ -583,7 +598,7 @@ O<level>
 
 \layout Standard
 
-Optimization level.
+Optimization level
 \end_inset 
 </cell>
 </row>
@@ -601,7 +616,7 @@ p<processor>
 
 \layout Standard
 
-Select target processor.
+Select target processor
 \end_inset 
 </cell>
 </row>
@@ -637,11 +652,11 @@ S
 
 \layout Standard
 
-Compile only, don't assemble or link.
+Compile only, don't assemble or link
 \end_inset 
 </cell>
 </row>
-<row topline="true" bottomline="true">
+<row topline="true">
 <cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -655,7 +670,7 @@ t
 
 \layout Standard
 
-Do not delete intermediate files.
+Do not delete intermediate files
 \end_inset 
 </cell>
 </row>
@@ -673,7 +688,7 @@ v
 
 \layout Standard
 
-Print gpal version information and exit.
+Print gpal version information and exit
 \end_inset 
 </cell>
 </row>
@@ -2656,7 +2671,7 @@ Parse
 
 The input files are parsed and stored in memory in a tree format.
  Constructs are replaced with common structures.
- For example for and while loops are converted into conditional loops with
+ For example, for and while loops are converted into conditional loops with
  initialization statements and increment statements.
 \layout Subsubsection
 
@@ -2667,18 +2682,17 @@ The syntax and semantics of the tree are checked.
  Most of the errors are generated during this phase.
 \layout Subsubsection
 
-Optimize
+Optimize Tree
 \layout Standard
 
 The tree is modified to generate better code.
+ This is a high level optimization.
 \layout Subsubsection
 
 Code Generation
 \layout Standard
 
-The tree is written to an asm file, so it can be assembled and linked.
- In the future, this stage will generate a low level icode.
- That code will be further optimized before it is written to the asm file.
+The icode is written to an asm file, so it can be assembled and linked.
 \layout Subsection
 
 Expression Evaluation
@@ -2916,7 +2930,7 @@ Where options can be one of:
 \added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
 
 \begin_inset  Tabular
-<lyxtabular version="3" rows="20" columns="2">
+<lyxtabular version="3" rows="21" columns="2">
 <features>
 <column alignment="left" valignment="top" leftline="true" width="0pt">
 <column alignment="block" valignment="top" leftline="true" rightline="true" width="4in">
@@ -3019,7 +3033,7 @@ Equivalent to
 \begin_inset Quotes erd
 \end_inset 
 
-.
+
 \end_inset 
 </cell>
 </row>
@@ -3037,7 +3051,7 @@ e [ON|OFF]
 
 \layout Standard
 
-Expand macros in listing file.
+Expand macros in listing file
 \end_inset 
 </cell>
 </row>
@@ -3055,7 +3069,7 @@ g
 
 \layout Standard
 
-Use debug directives for COFF.
+Use debug directives for COFF
 \end_inset 
 </cell>
 </row>
@@ -3073,7 +3087,7 @@ h
 
 \layout Standard
 
-Display the help message.
+Display the help message
 \end_inset 
 </cell>
 </row>
@@ -3131,7 +3145,7 @@ I <directory>
 
 \layout Standard
 
-Specify an include directory.
+Specify an include directory
 \end_inset 
 </cell>
 </row>
@@ -3149,7 +3163,7 @@ l
 
 \layout Standard
 
-List the supported processors.
+List the supported processors
 \end_inset 
 </cell>
 </row>
@@ -3167,7 +3181,7 @@ L
 
 \layout Standard
 
-Ignore nolist directives.
+Ignore nolist directives
 \end_inset 
 </cell>
 </row>
@@ -3185,7 +3199,7 @@ m
 
 \layout Standard
 
-Memory dump.
+Memory dump
 \end_inset 
 </cell>
 </row>
@@ -3222,7 +3236,7 @@ o <file>
 
 \layout Standard
 
-Alternate name of hex output file.
+Alternate name of hex output file
 \end_inset 
 </cell>
 </row>
@@ -3240,7 +3254,7 @@ p<processor>
 
 \layout Standard
 
-Select target processor.
+Select target processor
 \end_inset 
 </cell>
 </row>
@@ -3262,7 +3276,7 @@ Quiet
 \end_inset 
 </cell>
 </row>
-<row topline="true" bottomline="true">
+<row topline="true">
 <cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -3326,6 +3340,24 @@ hex
 
 \layout Standard
 
+v
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Print gpasm version information and exit
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
 w [ 0 | 1 | 2]
 \end_inset 
 </cell>
@@ -3334,7 +3366,7 @@ w [ 0 | 1 | 2]
 
 \layout Standard
 
-Set the message level.
+Set the message level
 \end_inset 
 </cell>
 </row>
@@ -3344,7 +3376,7 @@ Set the message level.
 
 \layout Standard
 
-v
+y
 \end_inset 
 </cell>
 <cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -3352,7 +3384,7 @@ v
 
 \layout Standard
 
-Print gpasm version information and exit.
+Enable 18xx extended mode
 \end_inset 
 </cell>
 </row>
@@ -9692,7 +9724,7 @@ a
 \layout Standard
 
 Produce hex file in one of four formats: inhx8m, inhx8s, inhx16, inhx32
- (the default).
+ (the default)
 \end_inset 
 </cell>
 </row>
@@ -9710,7 +9742,7 @@ c
 
 \layout Standard
 
-Output an executable object.
+Output an executable object
 \end_inset 
 </cell>
 </row>
@@ -9746,7 +9778,7 @@ f <value>
 
 \layout Standard
 
-Fill unused unprotected program memory with <value>.
+Fill unused unprotected program memory with <value>
 \end_inset 
 </cell>
 </row>
@@ -9782,7 +9814,7 @@ I <directory>
 
 \layout Standard
 
-Specify an include directory.
+Specify an include directory
 \end_inset 
 </cell>
 </row>
@@ -9800,7 +9832,7 @@ l
 
 \layout Standard
 
-Disable the list file output.
+Disable the list file output
 \end_inset 
 </cell>
 </row>
@@ -9818,7 +9850,7 @@ m
 
 \layout Standard
 
-Output a map file.
+Output a map file
 \end_inset 
 </cell>
 </row>
@@ -9836,7 +9868,7 @@ o <file>
 
 \layout Standard
 
-Alternate name of hex output file.
+Alternate name of hex output file
 \end_inset 
 </cell>
 </row>
@@ -9854,7 +9886,7 @@ q
 
 \layout Standard
 
-Quiet.
+Quiet
 \end_inset 
 </cell>
 </row>
@@ -9873,7 +9905,7 @@ r
 \layout Standard
 
 Attempt to relocate unshared data sections to shared memory if relocation
- fails.
+ fails
 \end_inset 
 </cell>
 </row>
@@ -9891,7 +9923,7 @@ s <file>
 
 \layout Standard
 
-Specify linker script.
+Specify linker script
 \end_inset 
 </cell>
 </row>
@@ -9909,7 +9941,7 @@ Specify linker script.
 
 \layout Standard
 
-Create a stack section.
+Create a stack section
 \end_inset 
 </cell>
 </row>
@@ -10124,7 +10156,7 @@ q
 
 \layout Standard
 
-Quiet mode.
+Quiet mode
 \end_inset 
 </cell>
 </row>
@@ -10142,7 +10174,7 @@ r
 
 \layout Standard
 
-Add or replace member from library.
+Add or replace member from library
 \end_inset 
 </cell>
 </row>
@@ -10160,7 +10192,7 @@ s
 
 \layout Standard
 
-List global symbols in libary.
+List global symbols in libary
 \end_inset 
 </cell>
 </row>
@@ -10373,7 +10405,7 @@ Where options can be one of:
 \added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
 
 \begin_inset  Tabular
-<lyxtabular version="3" rows="8" columns="2">
+<lyxtabular version="3" rows="10" columns="2">
 <features>
 <column alignment="left" valignment="top" leftline="true" width="0pt">
 <column alignment="block" valignment="top" leftline="true" rightline="true" width="4in">
@@ -10401,6 +10433,24 @@ Meaning
 
 \layout Standard
 
+c
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Decode special mnemonics
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
 h
 \end_inset 
 </cell>
@@ -10409,7 +10459,7 @@ h
 
 \layout Standard
 
-Display the help message.
+Display the help message
 \end_inset 
 </cell>
 </row>
@@ -10445,7 +10495,7 @@ l
 
 \layout Standard
 
-List supported processors.
+List supported processors
 \end_inset 
 </cell>
 </row>
@@ -10463,7 +10513,7 @@ m
 
 \layout Standard
 
-Memory dump hex file.
+Memory dump hex file
 \end_inset 
 </cell>
 </row>
@@ -10481,7 +10531,7 @@ p<processor>
 
 \layout Standard
 
-Select processor.
+Select processor
 \end_inset 
 </cell>
 </row>
@@ -10503,7 +10553,7 @@ Print short form output
 \end_inset 
 </cell>
 </row>
-<row topline="true" bottomline="true">
+<row topline="true">
 <cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -10517,7 +10567,25 @@ v
 
 \layout Standard
 
-Print gpasm version information and exit.
+Print gpdasm version information and exit
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+y
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Enable 18xx extended mode
 \end_inset 
 </cell>
 </row>
@@ -10804,7 +10872,7 @@ v
 
 \layout Standard
 
-Print gpvc version information and exit.
+Print gpvc version information and exit
 \end_inset 
 </cell>
 </row>
@@ -10905,7 +10973,7 @@ Where options can be one of:
 \added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
 
 \begin_inset  Tabular
-<lyxtabular version="3" rows="8" columns="2">
+<lyxtabular version="3" rows="10" columns="2">
 <features>
 <column alignment="left" valignment="top" leftline="true" width="0pt">
 <column alignment="block" valignment="top" leftline="true" rightline="true" width="4in">
@@ -10942,6 +11010,24 @@ b
 \layout Standard
 
 Binary data
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+c
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Decode special mnemonics
 \end_inset 
 </cell>
 </row>
@@ -11035,7 +11121,7 @@ Symbol data
 \end_inset 
 </cell>
 </row>
-<row topline="true" bottomline="true">
+<row topline="true">
 <cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -11050,6 +11136,24 @@ v
 \layout Standard
 
 Print gpvo version information and exit
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+y
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Enable 18xx extended mode
 \end_inset 
 </cell>
 </row>

@@ -22,16 +22,17 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPOPCODE_H__
 #define __GPOPCODE_H__
 
-/* XXXPRO: new class of processor may require new instruction classes */
 enum insn_class {
   INSN_CLASS_LIT1,	/* bit 0 contains a 1 bit literal		*/
   INSN_CLASS_LIT4S,     /* Bits 7:4 contain a 4 bit literal, bits 3:0 are unused   */
+  INSN_CLASS_LIT6,	/* bits 5:0 contain an 6 bit literal		*/
   INSN_CLASS_LIT8,	/* bits 7:0 contain an 8 bit literal		*/
   INSN_CLASS_LIT8C12,	/* bits 7:0 contain an 8 bit literal, 12 bit CALL */
   INSN_CLASS_LIT8C16,	/* bits 7:0 contain an 8 bit literal, 16 bit CALL */
   INSN_CLASS_LIT9,	/* bits 8:0 contain a 9 bit literal		*/
   INSN_CLASS_LIT11,	/* bits 10:0 contain an 11 bit literal		*/
   INSN_CLASS_LIT13,	/* bits 12:0 contain an 11 bit literal		*/
+  INSN_CLASS_LITFSR,	/* bits 5:0 contain an 6 bit literal for fsr 7:6 */
   INSN_CLASS_IMPLICIT,	/* instruction has no variable bits at all	*/
   INSN_CLASS_OPF5,	/* bits 4:0 contain a register address		*/
   INSN_CLASS_OPWF5,	/* as above, but bit 5 has a destination flag	*/
@@ -54,6 +55,10 @@ enum insn_class {
   INSN_CLASS_FF,	/* two 12bit file addresses						*/
   INSN_CLASS_FP,        /* Bits 7:0 contain a register address, bits 12:8 contains a peripheral address    */
   INSN_CLASS_PF,        /* Bits 7:0 contain a register address, bits 12:8 contains a peripheral address    */
+
+  INSN_CLASS_SF,	/* 7 bit offset added to FSR2, fetched memory placed at 12 bit address */
+  INSN_CLASS_SS,	/* two 7 bit offsets, memory moved using FSR2 */
+
   INSN_CLASS_TBL,	/* a table read or write instruction	      	*/
   INSN_CLASS_TBL2,	/* a table read or write instruction. 
 			   Bits 7:0 contains a register address; Bit 8 is unused;
@@ -95,5 +100,8 @@ extern const int num_op_18cxx;
 
 extern struct insn op_18cxx_sp[];
 extern const int num_op_18cxx_sp;
+
+extern struct insn op_18cxx_ext[];
+extern const int num_op_18cxx_ext;
 
 #endif

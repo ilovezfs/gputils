@@ -153,6 +153,8 @@ char *gp_geterror(unsigned int code)
     return "__CONFIG directives must be contiguous.";
   case GPE_CONTIG_IDLOC:
     return "__IDLOC directives must be contiguous.";
+  case GPE_MISSING_BRACKET:
+    return "Square brackets required around offset operand.";
   case GPE_UNKNOWN:
   default:
     return "UNKNOWN";

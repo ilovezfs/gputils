@@ -71,6 +71,8 @@ int can_evaluate_concatenation(struct pnode *p)
   switch (p->tag) {
   case constant:
     return 1;
+  case offset:
+    return can_evaluate_concatenation(p->value.offset);
   case symbol:
     return 1;
   case unop:
@@ -99,6 +101,11 @@ int can_evaluate(struct pnode *p)
   switch (p->tag) {
   case constant:
     return 1;
+  case offset:
+    if (state.extended_pic16e == false) {
+      gperror(GPE_BADCHAR, "Illegal character ([)");
+    }
+    return can_evaluate(p->value.offset);
   case symbol:
     {
       struct symbol *s;
@@ -209,6 +216,8 @@ gpasmVal evaluate(struct pnode *p)
   switch (p->tag) {
   case constant:
     return p->value.constant;
+  case offset:
+    return evaluate(p->value.offset);
   case symbol:
     {
       struct symbol *s;
@@ -333,6 +342,8 @@ int count_reloc(struct pnode *p)
   switch (p->tag) {
   case constant:
     return 0;
+  case offset:
+    return count_reloc(p->value.offset);
   case symbol:
     if (strcmp(p->value.symbol, "$") == 0) {
       return 1;

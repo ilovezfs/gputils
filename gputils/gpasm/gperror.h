@@ -86,7 +86,8 @@ enum GPE_codes {
   GPE_UNKNOWN          = 157,
   GPE_FILL_ODD         = 159,
   GPE_CONTIG_CONFIG    = 163,
-  GPE_CONTIG_IDLOC     = 164
+  GPE_CONTIG_IDLOC     = 164,
+  GPE_MISSING_BRACKET  = 168
 };
 
 /* Warning codes

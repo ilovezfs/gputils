@@ -76,6 +76,7 @@ enum gpasm_modes {
 
 extern struct gpasm_state {
   enum gpasm_modes mode;
+  gp_boolean extended_pic16e;
   int radix;
   enum formats hex_format;
   gp_boolean case_insensitive;
@@ -223,9 +224,10 @@ struct variable {
 /* Parse node: created by the parser, interpreted by the 'backend' */
 
 struct pnode {
-  enum pnode_tag { constant, symbol, string, list, binop, unop } tag;
+  enum pnode_tag { constant, offset, symbol, string, list, binop, unop } tag;
   union {
     int constant;
+    struct pnode *offset;
     char *symbol;
     struct {
       struct pnode *head, *tail;
