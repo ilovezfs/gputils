@@ -2,6 +2,9 @@
   * Use environmental variables GPUTILS_HEADER_PATH and GPUTILS_LKR_PATH
     for the default header and lkr paths.
   * Removed CFLAGS from mingw port.
+  * Fixed COFF line number bugs in gplink.
+  * Fixed 18xx symbol offset bug when merging sections in gplink.
+  * Fixed segfault in gplink when sections missing relocations are merged.
 
 2004-01-01 Scott Dattalo <scott@dattalo.com>
   * libgputils/gpsystem.c - added unsigned short gp_getu16(char *addr)

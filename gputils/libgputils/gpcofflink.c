@@ -312,6 +312,20 @@ gp_cofflink_merge_sections(gp_object_type *object)
         relocation = relocation->next;
       }
 
+      /* Update the line number offsets */
+      _update_line_numbers(second->line_numbers, first->size);
+
+      /* Update the symbol table */
+      symbol = object->symbols;
+      while (symbol != NULL) {
+        if ((symbol->section_number > 0) &&  
+            (symbol->section == second)) {
+          symbol->section = first;
+          symbol->value += first->size;
+        }
+        symbol = symbol->next;
+      }
+
       /* Update the section symbol for the section symbol */
       second->symbol->value = first->size;
 
@@ -332,22 +346,21 @@ gp_cofflink_merge_sections(gp_object_type *object)
           i_memory_put(first->data, org + offset, data);
         }      
       }
-      
-      /* Update the line number offsets */
-      _update_line_numbers(second->line_numbers, offset);
 
       /* Add section sizes */
       first->size += second->size;
 
       /* Append the relocations from the second section to the first */
-      if (first->num_reloc == 0) {
-        first->relocations = second->relocations;
-      } else {
-        first->relocations_tail->next = second->relocations;
+      if (second->num_reloc != 0) {
+        if (first->num_reloc == 0) {
+          first->relocations = second->relocations;
+        } else {
+          first->relocations_tail->next = second->relocations;
+        }
+        first->num_reloc += second->num_reloc;
+        first->relocations_tail = second->relocations_tail;
       }
-      first->num_reloc += second->num_reloc;
-      first->relocations_tail = second->relocations_tail;
-      
+
       /* Append the line numbers from the second section to the first. */
       if (first->num_lineno == 0) {
         first->line_numbers = second->line_numbers;
@@ -356,17 +369,6 @@ gp_cofflink_merge_sections(gp_object_type *object)
       }
       first->num_lineno += second->num_lineno;
       first->line_numbers_tail = second->line_numbers_tail;
-
-      /* Update the symbol table */
-      symbol = object->symbols;
-      while (symbol != NULL) {
-        if ((symbol->section_number > 0) &&  
-            (symbol->section == second)) {
-          symbol->section = first;
-          symbol->value += offset;
-        }
-        symbol = symbol->next;
-      }
       
       /* Remove the second section*/
       list = object->sections;
@@ -851,7 +853,7 @@ gp_cofflink_reloc_assigned(MemBlock *m,
       _set_used(m, 0, current_address, size);
 
       /* Update the line number offsets */
-      _update_line_numbers(current->line_numbers, current_address >> byte_addr);
+      _update_line_numbers(current->line_numbers, current->address);
 
       /* Set the relocated flag */
       current->flags |= STYP_RELOC;
@@ -958,7 +960,7 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
       _set_used(m, 0, smallest_address, size);
 
       /* Update the line number offsets */
-      _update_line_numbers(current->line_numbers, smallest_address >> byte_addr);
+      _update_line_numbers(current->line_numbers, current->address);
 
       /* Set the relocated flag */
       current->flags |= STYP_RELOC;

@@ -197,9 +197,16 @@ cod_write_line(void)
   Block lb={NULL,0};
   int offset;
   int previous_org = 0;
+  int _16bit_core;
 
   /* create a block */
   gp_cod_create(&lb, &blocks);
+
+  if (state.class == PROC_CLASS_PIC16E) {
+    _16bit_core = 1;
+  } else {
+    _16bit_core = 0;
+  }
 
   section = state.object->sections;
   while (section != NULL) {
@@ -232,7 +239,7 @@ cod_write_line(void)
       gp_putl16(&lb.block[offset + COD_LS_SLINE], line->line_number);
 
       /* Write the address of the opcode. */
-      gp_putl16(&lb.block[offset + COD_LS_SLOC], line->address);
+      gp_putl16(&lb.block[offset + COD_LS_SLOC], line->address >> _16bit_core);
     
       previous_org = line->address;
       
