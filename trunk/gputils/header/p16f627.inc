@@ -3,10 +3,10 @@
         NOLIST
 
 ; This header file defines configurations, registers, and other useful bits of
-; information for the PIC16F627 microcontroller.  These names are taken to match 
-; the data sheets as closely as possible.  
+; information for the PIC16F627 microcontroller.  These names are taken to match
+; the data sheets as closely as possible.
 
-; Note that the processor must be selected before this file is 
+; Note that the processor must be selected before this file is
 ; included.  The processor may be selected the following ways:
 
 ;       1. Command line switch:
@@ -22,7 +22,7 @@
 ;==========================================================================
 
 ;Rev:   Date:    Reason:
-
+;1.01   13 Sept 2001   Added _DATA_CP_ON and _DATA_CP_OFF
 ;1.00   10 Feb 1999 Initial Release
 
 ;==========================================================================
@@ -222,10 +222,10 @@ VR0                          EQU     H'0000'
 ;==========================================================================
 
     __MAXRAM H'01FF'
-    __BADRAM H'07'-H'09', H'0D', H'13'-H'14', H'1B'-H'1E' 
-	__BADRAM H'87'-H'89', H'8D', H'8F'-H'91', H'93'-H'97', H'9E'
-	__BADRAM H'105', H'107'-H'109', H'10C'-H'11F', H'150'-H'16F' 
-	__BADRAM H'185', H'187'-H'189', H'18C'-H'1EF'
+    __BADRAM H'07'-H'09', H'0D', H'13'-H'14', H'1B'-H'1E'
+    __BADRAM H'87'-H'89', H'8D', H'8F'-H'91', H'93'-H'97', H'9E'
+    __BADRAM H'105', H'107'-H'109', H'10C'-H'11F', H'150'-H'16F'
+    __BADRAM H'185', H'187'-H'189', H'18C'-H'1EF'
 
 ;==========================================================================
 ;
@@ -239,6 +239,8 @@ _CP_ALL                      EQU     H'03FF'
 _CP_75                       EQU     H'17FF'
 _CP_50                       EQU     H'2BFF'
 _CP_OFF                      EQU     H'3FFF'
+_DATA_CP_ON                  EQU     H'3EFF'
+_DATA_CP_OFF                 EQU     H'3FFF'
 _PWRTE_OFF                   EQU     H'3FFF'
 _PWRTE_ON                    EQU     H'3FF7'
 _WDT_ON                      EQU     H'3FFF'

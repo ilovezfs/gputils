@@ -30,6 +30,7 @@
 ;1.02   03/02/01 PORTF, PORTG, TRISF, and TRISG addresses corrected.
 ;1.03   03/06/01 RD bit in PMCON1 defined.
 ;1.04   03/12/01 Locations of PMDATH and PMADR restored to before v1.01.
+;1.05	10/19/01 Locations of PMDATH and PMADR restored to before v1.04.
 
 ;==========================================================================
 ;
@@ -118,8 +119,8 @@ LCDD15                       EQU     H'011F'
 TRISF                        EQU     H'0187'
 TRISG                        EQU     H'0188'
 PMDATA			     EQU     H'018C'
-PMADR			     EQU     H'018D'
-PMDATH			     EQU     H'018E'
+PMDATH			     EQU     H'018D'
+PMADR			     EQU     H'018E'
 PMADRH                       EQU     H'018F'
 
 

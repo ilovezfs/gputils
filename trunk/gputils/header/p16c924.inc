@@ -23,6 +23,7 @@
 
 ;Rev:   Date:    Reason:
 
+;1.03   09/13/01 Added the SSPSTAT bits CKE and SMP 
 ;1.02	04/23/00 Added LCD controller bits
 ;1.01   05/12/97 Corrected ports F and G addresses
 ;1.00   04/10/96 Initial Release
@@ -231,6 +232,8 @@ NOT_POR                      EQU     H'0001'
 
 ;----- SSPSTAT Bits -------------------------------------------------------
 
+SMP			     EQU     H'0007'
+CKE			     EQU     H'0006'
 D                            EQU     H'0005'
 I2C_DATA                     EQU     H'0005'
 NOT_A                        EQU     H'0005'

@@ -1,5 +1,5 @@
-// File: 17c43.lkr
 // Sample linker command file for 17C43
+// $Id$
 
 LIBPATH  .
 

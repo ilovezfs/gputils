@@ -100,6 +100,8 @@ YACC = @YACC@
 pkgdatadir = @GPASM_HEADER_PATH@
 
 EXTRA_DIST = \
+	ap7675.inc \
+	mcp250xx.inc \
 	memory.inc \
 	p12c508.inc \
 	p12c508a.inc \
@@ -199,8 +201,11 @@ EXTRA_DIST = \
 	p16f871.inc \
 	p16f872.inc \
 	p16f873.inc \
+	p16f873a.inc \
 	p16f874.inc \
+	p16f874a.inc \
 	p16f876.inc \
+	p16f876a.inc \
 	p16f877.inc \
 	p16f877a.inc \
 	p16hv540.inc \
@@ -223,6 +228,7 @@ EXTRA_DIST = \
 	p18c658.inc \
 	p18c801.inc \
 	p18c858.inc \
+	p18cxxx.inc \
 	p18f020.inc \
 	p18f242.inc \
 	p18f248.inc \
@@ -231,7 +237,14 @@ EXTRA_DIST = \
 	p18f442.inc \
 	p18f448.inc \
 	p18f452.inc \
-	p18f458.inc
+	p18f458.inc \
+	p18f6620.inc \
+	p18f6720.inc \
+	p18f8620.inc \
+	p18f8720.inc \
+	p18macro.inc \
+	rf509af.inc \
+	rf509ag.inc	
 
 
 pkgdata_DATA = $(EXTRA_DIST)

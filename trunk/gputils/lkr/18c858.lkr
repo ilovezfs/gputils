@@ -1,5 +1,5 @@
-// File: 18c858.lkr
 // Sample linker command file for 18C858
+// $Id$
 
 LIBPATH  .
 

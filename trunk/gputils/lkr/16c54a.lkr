@@ -1,5 +1,5 @@
-// File: 16c54a.lkr
 // Sample linker command file for 16C54A
+// $Id$
 
 LIBPATH  .
 

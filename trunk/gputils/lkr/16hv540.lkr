@@ -1,5 +1,5 @@
-// File: 16hv540.lkr
 // Sample linker command file for 16HV540
+// $Id$
 
 LIBPATH  .
 

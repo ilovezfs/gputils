@@ -1514,21 +1514,9 @@ RH7             EQU  7
 
 ;----- PORTJ ------------------------------------------------------------------
 RJ0             EQU  0
-AD8             EQU  0
 RJ1             EQU  1
-AD9             EQU  1
 RJ2             EQU  2
-AD10            EQU  2
 RJ3             EQU  3
-AD11            EQU  3
-RJ4             EQU  4
-AD12            EQU  4
-RJ5             EQU  5
-AD13            EQU  5
-RJ6             EQU  6
-AD14            EQU  6
-RJ7             EQU  7
-AD15            EQU  7
 
 
 ;----- PORTK ------------------------------------------------------------------
