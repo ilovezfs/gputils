@@ -29,6 +29,7 @@ gpal
   * Remove dead code.
     
 gpasm
+  * Change to byte addressing in 18xx devices in COD files for MPLAB.
   * Implement nested while loops.
   * Clean up the byte verses word, data memory/program memory stuff.
   * Move opcode generator from /gpasm/directive.c to 
