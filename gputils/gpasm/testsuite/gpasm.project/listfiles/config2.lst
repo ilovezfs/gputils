@@ -1,26 +1,39 @@
-MPASM 02.61 Released          CONFIG2.ASM   3-8-2001  1:52:42         PAGE  1
+MPASM 03.20.02 Released       CONFIG2.ASM   11-22-2002  11:18:03         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-Warning[217]: Hex file format specified on command line.
                       00001      list p=16c74,f=inhx8m
-0000                  00002      org 0
-0000   30AA           00003      movlw 0Xaa
+                      00002 
+0000                  00003      org 0
                       00004 
-2007   3FFB           00005      __config 0x3ffb
+0000   30AA           00005      movlw 0Xaa
                       00006 
-0001   3005           00007      movlw 0x5
+                      00007 
                       00008 
-0100                  00009      org 0x100
+2007   3FFB           00009      __config 0x3ffb
                       00010 
-0100   0023           00011      fill 0x23, 14
-0114   00FF           00012      fill 0xff, 58
-016C   1534           00013      fill 0x1534, 0x400
-                      00014      
-                      00015      end
-MPASM 02.61 Released          CONFIG2.ASM   3-8-2001  1:52:42         PAGE  2
+                      00011 
+                      00012 
+0001   3005           00013      movlw 0x5
+                      00014 
+                      00015 
+                      00016 
+0100                  00017      org 0x100
+                      00018 
+                      00019 
+                      00020 
+0100   0023           00021      fill 0x23, 14
+                      00022 
+0114   00FF           00023      fill 0xff, 58
+                      00024 
+016C   1534           00025      fill 0x1534, 0x400
+                      00026 
+                      00027      
+                      00028 
+                      00029      end
+MPASM 03.20.02 Released       CONFIG2.ASM   11-22-2002  11:18:03         PAGE  2
 
 
 SYMBOL TABLE
@@ -59,7 +72,7 @@ Program Memory Words Free:  2962
 
 
 Errors   :     0
-Warnings :     1 reported,     0 suppressed
+Warnings :     0 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 
 

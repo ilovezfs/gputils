@@ -1,4 +1,4 @@
-MPASM 03.00 Released           MACRO3.ASM   2-24-2002  17:36:07         PAGE  1
+MPASM 03.20.02 Released        MACRO3.ASM   11-22-2002  11:18:05         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -29,7 +29,7 @@ Message[301]: MESSAGE: (Craig Franklin)
 0000   3003               M   movlw  3
                       00019   
                       00020   end
-MPASM 03.00 Released           MACRO3.ASM   2-24-2002  17:36:07         PAGE  2
+MPASM 03.20.02 Released        MACRO3.ASM   11-22-2002  11:18:05         PAGE  2
 
 
 SYMBOL TABLE

@@ -1,4 +1,4 @@
-MPASM 02.70 Released         MACRO_~1.ASM   7-17-2001  17:57:30         PAGE  1
+MPASM 03.20.02 Released      MACRO_~2.ASM   11-22-2002  11:18:06         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -53,27 +53,56 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00037 ; start the test
                       00038 
 0000                  00039 begin
-Message[309]: Macro expansion superceded by command line.
                       00040        expand
                       00041        
 0000   3001           00042        movlw 1
-MPASM 02.70 Released         MACRO_~1.ASM   7-17-2001  17:57:30         PAGE  2
+                      00043        ; test expanded nested macros
+MPASM 03.20.02 Released      MACRO_~2.ASM   11-22-2002  11:18:06         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00043        ; test expanded nested macros
                       00044 label1 test1
+  0000                    M        local label2
+0001   3002               M        movlw 2
+0002                      M label2
+0002   3003               M        movlw 3
+                          M        ; this is a comment
+                          M        nest
+0003   300F               M        movlw 0xf
+0004   3004               M        movlw 4
+0005   3005               M        movlw 5
 0006   3000           00045        movlw 0
                       00046        ; test expand macro with while loop inside
                       00047        test2
+0007   3000               M        movlw 0
+  00000001                M j = 1
+                          M        while (j<5) 
+0008   3001               M          movlw j
+0009   3002               M          movlw j+1
+  00000002                M j++
+000A   3002               M          movlw j
+000B   3003               M          movlw j+1
+  00000003                M j++
+000C   3003               M          movlw j
+000D   3004               M          movlw j+1
+  00000004                M j++
+000E   3004               M          movlw j
+000F   3005               M          movlw j+1
+  00000005                M j++
+                          M        endw
+0010   3000               M        movlw 0
 0011   3000           00048        movlw 0
                       00049        ; test expanded nested macros that reside in different source files
                       00050        test3
+0012   3005               M       movlw 5
+0013   3004               M       movlw 4
+                          M       nest
+0014   300F               M        movlw 0xf
+0015   3001               M       movlw 1
                       00051 
 0016   3000           00052        movlw 0
-Message[309]: Macro expansion superceded by command line.
                       00053        noexpand
                       00054 
 0017   3001           00055        movlw 1
@@ -87,8 +116,13 @@ Message[309]: Macro expansion superceded by command line.
                       00063        test3
                       00064 
                       00065 ; verify that EXPAND and NOEXPAND don't effect while loops
+MPASM 03.20.02 Released      MACRO_~2.ASM   11-22-2002  11:18:06         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
                       00066 
-Message[309]: Macro expansion superceded by command line.
                       00067        expand
                       00068 
   00000000            00069 i = 0
@@ -112,16 +146,9 @@ Message[309]: Macro expansion superceded by command line.
                       00075 
 0037   3000           00076        movlw 0
                       00077 
-Message[309]: Macro expansion superceded by command line.
                       00078        noexpand
                       00079 
   00000000            00080 i = 0
-MPASM 02.70 Released         MACRO_~1.ASM   7-17-2001  17:57:30         PAGE  3
-
-
-LOC  OBJECT CODE     LINE SOURCE TEXT
-  VALUE
-
                       00081        while (i<5) 
 0038   3000           00082          movlw i
 0039   3001           00083          movlw i+1
@@ -140,13 +167,12 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
   00000005            00084 i++
                       00085        endw
                       00086 
-Message[309]: Macro expansion superceded by command line.
                       00087        expand
                       00088 
 0042   2800           00089        goto begin
                       00090 
                       00091        end
-MPASM 02.70 Released         MACRO_~1.ASM   7-17-2001  17:57:30         PAGE  4
+MPASM 03.20.02 Released      MACRO_~2.ASM   11-22-2002  11:18:06         PAGE  4
 
 
 SYMBOL TABLE
@@ -177,6 +203,6 @@ Program Memory Words Free:   957
 
 Errors   :     0
 Warnings :     0 reported,     0 suppressed
-Messages :     5 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
 
 

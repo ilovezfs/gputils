@@ -1,4 +1,4 @@
-MPASM 02.70 Released         MAC_LA~1.ASM   7-17-2001  17:56:06         PAGE  1
+MPASM 03.20.02 Released      MAC_LA~1.ASM   11-22-2002  11:18:06         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -15,10 +15,12 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00009 
 0000   3001           00010        movlw 1
                       00011 label1 failed
+0001   3002               M        movlw 2
+                          M        list
 0002   3003           00012        movlw 3
                       00013      
                       00014        end
-MPASM 02.70 Released         MAC_LA~1.ASM   7-17-2001  17:56:06         PAGE  2
+MPASM 03.20.02 Released      MAC_LA~1.ASM   11-22-2002  11:18:06         PAGE  2
 
 
 SYMBOL TABLE

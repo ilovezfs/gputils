@@ -1,47 +1,48 @@
-MPASM 02.61 Released         MACLABEL.ASM   3-4-2001  13:33:20         PAGE  1
+MPASM 03.20.02 Released      MACLABEL.ASM   11-22-2002  11:18:05         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00001         LIST P=16F877
-                      00002         include <p16f877.inc>
+                      00001 ; This file tests the fix for Bug Report 233207.
+                      00002 
+                      00003         LIST P=16F877
+                      00004         include <p16f877.inc>
                       00001         LIST
                       00002 ; P16F877.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
                       00373         LIST
-                      00003 
-  00000005            00004 ENCLL EQU 5
-  00000007            00005 ENCLH EQU 7
-                      00006 
-                      00007 INC_LEFT macro
-                      00008         local DONE_LINC
-                      00009         ;; increment the 16bit encoder count for the left side
-                      00010         incfsz ENCLL,f ; increment lower byte
-                      00011         goto DONE_LINC ; we havn't rolled over
-                      00012         incf ENCLH,f ; increment high byte because we rolled over
-                      00013 DONE_LINC
-                      00014         endm
-                      00015 
-                      00016 
-0000                  00017         ORG 0
-                      00018         INC_LEFT
+                      00005 
+  00000005            00006 ENCLL EQU 5
+  00000007            00007 ENCLH EQU 7
+                      00008 
+                      00009 INC_LEFT macro
+                      00010         local DONE_LINC
+                      00011         ;; increment the 16bit encoder count for the left side
+                      00012         incfsz ENCLL,f ; increment lower byte
+                      00013         goto DONE_LINC ; we havn't rolled over
+                      00014         incf ENCLH,f ; increment high byte because we rolled over
+                      00015 DONE_LINC
+                      00016         endm
+                      00017 
+0000                  00018         ORG 0
+                      00019         INC_LEFT
   0000                    M         local DONE_LINC
                           M         ;; increment the 16bit encoder count for the left side
 0000   0F85               M         incfsz ENCLL,f ; increment lower byte
 0001   2803               M         goto DONE_LINC ; we havn't rolled over
 0002   0A87               M         incf ENCLH,f ; increment high byte because we rolled over
 0003                      M DONE_LINC
-0003   3005           00019 DONE_LINC movlw 5
-                      00020         INC_LEFT
+0003   3005           00020 DONE_LINC movlw 5
+                      00021         INC_LEFT
   0000                    M         local DONE_LINC
                           M         ;; increment the 16bit encoder count for the left side
 0004   0F85               M         incfsz ENCLL,f ; increment lower byte
 0005   2807               M         goto DONE_LINC ; we havn't rolled over
 0006   0A87               M         incf ENCLH,f ; increment high byte because we rolled over
 0007                      M DONE_LINC
-0007   2803           00021         goto DONE_LINC
-                      00022         end
-MPASM 02.61 Released         MACLABEL.ASM   3-4-2001  13:33:20         PAGE  2
+0007   2803           00022         goto DONE_LINC
+                      00023         end
+MPASM 03.20.02 Released      MACLABEL.ASM   11-22-2002  11:18:05         PAGE  2
 
 
 SYMBOL TABLE
@@ -100,7 +101,7 @@ DATA_ADDRESS                      00000005
 DC                                00000001
 DONE_LINC                         00000003
 D_A                               00000005
-MPASM 02.61 Released         MACLABEL.ASM   3-4-2001  13:33:20         PAGE  3
+MPASM 03.20.02 Released      MACLABEL.ASM   11-22-2002  11:18:05         PAGE  3
 
 
 SYMBOL TABLE
@@ -159,7 +160,7 @@ PCFG0                             00000000
 PCFG1                             00000001
 PCFG2                             00000002
 PCFG3                             00000003
-MPASM 02.61 Released         MACLABEL.ASM   3-4-2001  13:33:20         PAGE  4
+MPASM 03.20.02 Released      MACLABEL.ASM   11-22-2002  11:18:05         PAGE  4
 
 
 SYMBOL TABLE
@@ -218,7 +219,7 @@ SSPCON                            00000014
 SSPCON2                           00000091
 SSPEN                             00000005
 SSPIE                             00000003
-MPASM 02.61 Released         MACLABEL.ASM   3-4-2001  13:33:20         PAGE  5
+MPASM 03.20.02 Released      MACLABEL.ASM   11-22-2002  11:18:05         PAGE  5
 
 
 SYMBOL TABLE
@@ -277,7 +278,7 @@ TXD8                              00000000
 TXEN                              00000005
 TXIE                              00000004
 TXIF                              00000004
-MPASM 02.61 Released         MACLABEL.ASM   3-4-2001  13:33:20         PAGE  6
+MPASM 03.20.02 Released      MACLABEL.ASM   11-22-2002  11:18:05         PAGE  6
 
 
 SYMBOL TABLE

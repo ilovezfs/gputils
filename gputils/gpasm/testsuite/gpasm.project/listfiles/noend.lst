@@ -1,26 +1,38 @@
-gpasm-0.9.5 alpha               noend.asm   5-28-2001  12:28:25          PAGE  1
+MPASM 03.20.02 Released         NOEND.ASM   11-22-2002  11:18:06         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
- 
-               00001 ; tests for bug #423204, missing END
-               00002 
-               00003      list p=16c84
-               00004           
-0000 3005      00005      movlw 5
-               00006      
-               00007 ; missing an END     
-Error [125] : Illegal condition (EOF encountered before END)
-gpasm-0.9.5 alpha               noend.asm   5-28-2001  12:28:25          PAGE  2
+
+                      00001 ; tests for bug #423204, missing END
+                      00002 
+                      00003      list p=16c84
+                      00004           
+0000   3005           00005      movlw 5
+                      00006      
+                      00007 ; missing an END     
+Error[129]  : Expected (END)
+MPASM 03.20.02 Released         NOEND.ASM   11-22-2002  11:18:06         PAGE  2
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+__16C84                           00000001
 
 
-Errors   :       1
-Warnings :       0 reported,       0 suppressed
-Messages :       0 reported,       0 suppressed
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X--------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     1
+Program Memory Words Free:  1023
+
+
+Errors   :     1
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
 

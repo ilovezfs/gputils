@@ -1,4 +1,4 @@
-MPASM 03.00 Released             SET1.ASM   2-24-2002  17:09:13         PAGE  1
+MPASM 03.20.02 Released          SET1.ASM   11-22-2002  11:18:06         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -25,7 +25,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0002   3403               M   retlw number
                       00014 
                       00015   end
-MPASM 03.00 Released             SET1.ASM   2-24-2002  17:09:13         PAGE  2
+MPASM 03.20.02 Released          SET1.ASM   11-22-2002  11:18:06         PAGE  2
 
 
 SYMBOL TABLE

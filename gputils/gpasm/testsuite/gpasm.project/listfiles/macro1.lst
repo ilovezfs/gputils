@@ -1,4 +1,4 @@
-MPASM 02.70 Released           MACRO1.ASM   8-14-2001  21:08:36         PAGE  1
+MPASM 03.20.02 Released        MACRO1.ASM   11-22-2002  11:18:05         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -17,7 +17,7 @@ Warning[206]: Found call to macro in column 1. (test)
 0000   3400               M     retlw 0
                       00010 
                       00011    end
-MPASM 02.70 Released           MACRO1.ASM   8-14-2001  21:08:36         PAGE  2
+MPASM 03.20.02 Released        MACRO1.ASM   11-22-2002  11:18:05         PAGE  2
 
 
 SYMBOL TABLE

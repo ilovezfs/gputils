@@ -1,4 +1,4 @@
-MPASM 03.00 Released          CBLOCK1.ASM   2-24-2002  17:35:32         PAGE  1
+MPASM 03.20.02 Released       CBLOCK1.ASM   11-22-2002  11:18:03         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -22,7 +22,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0001   00AD           00016   movwf my_var_8
                       00017  
                       00018   end
-MPASM 03.00 Released          CBLOCK1.ASM   2-24-2002  17:35:32         PAGE  2
+MPASM 03.20.02 Released       CBLOCK1.ASM   11-22-2002  11:18:03         PAGE  2
 
 
 SYMBOL TABLE
