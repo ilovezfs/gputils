@@ -470,6 +470,7 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
   tree *call_args;
   tree *assignment;
   char *return_name;
+  struct variable *return_var;
   enum size_tag call_size;
   gp_boolean load_result = false;
 
@@ -562,6 +563,11 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
     tree *symbol;
 
     return_name = mangle_name2(var->name, "return");
+
+    return_var = get_global(return_name);
+    assert(return_var != NULL);
+    return_var->is_used = true;
+ 
     symbol = mk_symbol(return_name, NULL);
     COPY_DEBUG(call, symbol);
     codegen_expr(symbol, codegen_size);
@@ -1666,6 +1672,11 @@ analyze_public(char *public_name)
                                 sym_func,
                                 FILE_CODE(state.module),
                                 NULL);
+        add_global_symbol(mangle_name2(var->name, "return"),
+                          current,
+                          sym_udata,
+                          FILE_UDATA(state.module),
+                          FUNC_RET(current));
         add_arg_symbols(current,
                         var->name,
                         FILE_UDATA(state.module),
