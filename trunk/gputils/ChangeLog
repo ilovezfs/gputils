@@ -1,3 +1,7 @@
+2003-10-21 Craig Franklin <craigfranklin@comcast.net>
+  * Fixed string to long conversion in gpasm so 32 bit numbers
+    could be used.
+
 2003-10-19 Craig Franklin <craigfranklin@comcast.net>
   * Updated documentation.
 
