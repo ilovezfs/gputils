@@ -27,6 +27,163 @@ Boston, MA 02111-1307, USA.  */
 #include "evaluate.h"
 #include "gperror.h"
 #include "macro.h"
+#include "parse.h"
+
+#define BUFFER_SIZE 520
+static char arg_buffer[BUFFER_SIZE];
+static int index;
+
+static void
+cat_string(char *string)
+{
+  char *ptr;
+  int length;
+  
+  ptr = &arg_buffer[index];
+  length = strlen(string);
+  if (index + length + 1 < BUFFER_SIZE) {
+    strcpy(ptr, string);
+    index += length;
+  } else {
+    gperror(GPE_UNKNOWN, "macro argument exceeds buffer size");  
+  }
+
+}
+
+static void
+cat_symbol(int op)
+{
+  switch (op) {
+  case '+':
+    cat_string("+");
+    break;  
+  case '-':
+    cat_string("-");
+    break;  
+  case '*':
+    cat_string("*");
+    break;  
+  case '/':
+    cat_string("/");
+    break;  
+  case '%':
+    cat_string("%");
+    break;  
+  case '&':
+    cat_string("&");
+    break;  
+  case '|':
+    cat_string("|");
+    break;  
+  case '^':
+    cat_string("^");
+    break;  
+  case LSH:
+    cat_string("<<");
+    break;  
+  case RSH:
+    cat_string(">>");
+    break;  
+  case '<':
+    cat_string("<");
+    break;  
+  case '>':
+    cat_string(">");
+    break;
+  case '!':
+    cat_string("!");
+    break;
+  case '~':
+    cat_string("~");
+    break;
+  case EQUAL:
+    cat_string("==");
+    break;
+  case NOT_EQUAL:
+    cat_string("!=");
+    break;
+  case GREATER_EQUAL:
+    cat_string(">=");
+    break;
+  case LESS_EQUAL:
+    cat_string("<=");
+    break;
+  case LOGICAL_AND:
+    cat_string("&&");
+    break;
+  case LOGICAL_OR:
+    cat_string("||");
+    break;
+  case '=': 
+    cat_string("=");
+    break;
+  case UPPER:
+    cat_string("UPPER");
+    break;
+  case HIGH:
+    cat_string("HIGH");
+    break;
+  case LOW:
+    cat_string("LOW");
+    break;
+  case INCREMENT:  
+    cat_string("++");
+    break;
+  case DECREMENT:          
+    cat_string("--");
+    break;
+  default:
+    assert(0);
+  }
+
+} 
+
+/* Must convert the parm to a plain string, this will allow substitutions
+   of labels and strings.  This is a kludge.  It would be better to store
+   a copy of the raw string in the parse node. */
+
+static void
+node_to_string(struct pnode *p)
+{
+  char constant_buffer[64];
+
+  switch(p->tag) {
+  case constant:
+    if (p->value.constant < 0) {
+      sprintf(constant_buffer, "-%#x", -p->value.constant);
+    } else {
+      sprintf(constant_buffer, "%#x", p->value.constant);
+    }
+    cat_string(constant_buffer);
+    break;
+  case symbol:
+    cat_string(p->value.symbol);
+    break;
+  case unop:
+    cat_string("(");
+    cat_symbol(p->value.unop.op);
+    node_to_string(p->value.unop.p0);
+    cat_string(")");
+    break;
+  case binop:
+    cat_string("(");
+    node_to_string(p->value.binop.p0);
+    cat_symbol(p->value.binop.op);
+    node_to_string(p->value.binop.p1);
+    cat_string(")");
+    break;
+  case string:
+    cat_string("\"");
+    cat_string(p->value.string);
+    cat_string("\"");
+    break;
+  case list:
+  default:
+    assert(0);
+  }
+
+  return; 
+}
 
 /* Create a new defines table and place the macro parms in it. */
 
@@ -43,7 +200,6 @@ void setup_macro(struct macro_head *h, int arity, struct pnode *parms)
       struct pnode *pFrom, *pFromH;
       struct pnode *pTo, *pToH;
       struct symbol *sym;
-      char buffer[BUFSIZ];
 
       pTo = parms;
 
@@ -52,25 +208,11 @@ void setup_macro(struct macro_head *h, int arity, struct pnode *parms)
 	pFromH = HEAD(pFrom);
 	assert(pFromH->tag == symbol);
  
+        index = 0;
+        arg_buffer[0] = '\0';
+        node_to_string(pToH);
         sym = add_symbol(state.stTopDefines, pFromH->value.symbol);	
-
-        /* must convert the parm to a plain string, this will allow
-           subsitutions of labels and strings */
-        if (pToH->tag == symbol) {
-          annotate_symbol(sym, strdup(pToH->value.symbol));
-        } else if (pToH->tag == string) {
-          sprintf(buffer, "\"%s\"", pToH->value.string);
-          annotate_symbol(sym, strdup(buffer));
-        } else {
-          int value = maybe_evaluate(pToH);
-
-	  if (value < 0)
-	    sprintf(buffer, "-%#x", -value);
-          else
-	    sprintf(buffer, "%#x", value);	  
-	  annotate_symbol(sym, strdup(buffer));
-        }
-    
+        annotate_symbol(sym, strdup(arg_buffer));
         pTo = TAIL(pTo);
       }
     }

@@ -438,15 +438,15 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
     case '+':
       /* The symbol can be in either position */
       if (count_reloc(p->value.binop.p0) == 1) {
-        add_reloc(p->value.binop.p0, maybe_evaluate(p->value.binop.p1), type);
+        add_reloc(p->value.binop.p0, offset + maybe_evaluate(p->value.binop.p1), type);
       } else {
-        add_reloc(p->value.binop.p1, maybe_evaluate(p->value.binop.p0), type);
+        add_reloc(p->value.binop.p1, offset + maybe_evaluate(p->value.binop.p0), type);
       }
       return;
     case '-':
       /* The symbol has to be first */
       if (count_reloc(p->value.binop.p0) == 1) {
-        add_reloc(p->value.binop.p0, -maybe_evaluate(p->value.binop.p1), type);
+        add_reloc(p->value.binop.p0, offset - maybe_evaluate(p->value.binop.p1), type);
       } else {
         gperror(GPE_UNRESOLVABLE, NULL);
       }
