@@ -401,6 +401,10 @@ gp_cofflink_reloc_abs(MemBlock *m,
         size = section->size;
       }
       _set_used(m, section->address, size);
+
+      /* Set the relocated flag */
+      section->flags |= STYP_RELOC;
+
     }
     section = section->next;
   }
@@ -422,7 +426,7 @@ gp_cofflink_find_big_assigned(gp_section_type *section,
     sym = get_symbol(logical_sections, section->name);
     if ((sym != NULL) &&
         (section->flags & flags) &&
-        (section->address == 0)) {
+        !(section->flags & STYP_RELOC)) {
       /* This section has not been relocated */
       if ((biggest == NULL) ||
           (section->size > biggest->size)) {
@@ -446,7 +450,7 @@ gp_cofflink_find_big_section(gp_section_type *section,
 
   while (section != NULL) {
     if ((section->flags & flags) &&
-        (section->address == 0)) {
+        !(section->flags & STYP_RELOC)) {
       /* This section has not been relocated */
       if ((biggest == NULL) ||
           (section->size > biggest->size)) {
@@ -603,6 +607,9 @@ gp_cofflink_reloc_assigned(MemBlock *m,
       /* Update the line number offsets */
       _update_line_numbers(current->line_numbers, current_address);
 
+      /* Set the relocated flag */
+      current->flags |= STYP_RELOC;
+
     } else {
       gp_error("no target memory available for section \"%s\"", current->name);    
       return;
@@ -705,6 +712,9 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
       /* Update the line number offsets */
       _update_line_numbers(current->line_numbers, smallest_address);
 
+      /* Set the relocated flag */
+      current->flags |= STYP_RELOC;
+
     } else {
       gp_error("no target memory available for section \"%s\"", section->name);    
       return;
@@ -719,8 +729,8 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
 static void 
 _update_table(gp_object_type *object)  
 {
-
   gp_symbol_type *symbol = object->symbols;
+  gp_section_type *section = object->sections;
 
   gp_debug("updating symbols with their new relocated values");
 
@@ -731,6 +741,13 @@ _update_table(gp_object_type *object)
     }
 
     symbol = symbol->next;
+  }
+
+  gp_debug("stripping section relocated flag");
+
+  while (section != NULL) {
+    section->flags &= ~(STYP_RELOC);
+    section = section->next;
   }
 
 }

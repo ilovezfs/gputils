@@ -21,6 +21,9 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPCOFF_H__
 #define __GPCOFF_H__
 
+
+/* These definitions are for the COFF as stored in a file. */
+
 /* define the typical values, if they aren't found warn the user */
 #define MICROCHIP_MAGIC 0x1234
 
@@ -106,6 +109,8 @@ struct scnhdr
 #define STYP_ACCESS   0x8000
 /* Section contains the activation record for a function */
 #define STYP_ACTREC   0x10000
+/* Section has been relocated.  This is a temporary flag used by the linker */
+#define STYP_RELOC    0x20000
 
 /* relocation entry */
 struct reloc
@@ -395,5 +400,201 @@ struct aux_var
 #define AUX_EOBF   7  /* end of block or function */
 #define AUX_BOBF   8  /* beginning of block or function */
 #define AUX_VAR    9  /* variable */
+
+/* These definitions are for the COFF as stored in memory. */
+
+/* relocation linked list */
+
+typedef struct gp_reloc_type 
+{
+  /* entry relative address */
+  long address;
+
+  /* symbol */
+  struct gp_symbol_type *symbol;
+
+  /* symbol number, only valid when generating a coff file */
+  long symbol_number;
+
+  /* offset added to address of symbol */
+  short offset;
+
+  /* relocation type */
+  unsigned short type;
+
+  struct gp_reloc_type *next;
+} gp_reloc_type;
+
+/* line number linked list */
+
+typedef struct gp_linenum_type 
+{
+  /* source file symbol */
+  struct gp_symbol_type *symbol;
+
+  /* line number */
+  unsigned short line_number; 
+
+  /* address of code for this line number */
+  unsigned long address;     
+
+  struct gp_linenum_type *next;
+} gp_linenum_type;
+
+/* auxilary symbol linked list */
+
+typedef struct gp_aux_type 
+{
+  /* auxilary symbol type */
+  long type;
+
+  /* FIXME: Finish the aux entries. */
+  union {
+    struct {
+      char *filename;
+      unsigned long line_number; 
+    } _aux_file;
+    struct {
+      unsigned long  length; 
+      unsigned short nreloc; 
+      unsigned short nlineno;
+    } _aux_scn;
+    char data[SYMBOL_SIZE];
+  } _aux_symbol;
+  
+  struct gp_aux_type *next;
+} gp_aux_type;
+
+/* symbol linked list */
+
+typedef struct gp_symbol_type 
+{
+  /* symbol name */
+  char *name;
+
+  /* symbol value */ 
+  long value;
+
+  /* section number, only for used for determining symbol type: 
+     N_DEBUG = -2, N_ABS = -1, N_UNDEF = 0, or N_SCNUM = 1 if defined */
+  short section_number;
+  
+  /* defining section */ 
+  struct gp_section_type *section;
+
+  /* type */
+  unsigned short type;
+
+  /* storage class */
+  char class;
+
+   /* number of auxiliary symbols */
+  char num_auxsym;
+
+  /* auxilary symbols */
+  struct gp_aux_type *aux_list;
+
+  /* symbol number, only valid when writing coff file */  
+  unsigned long number;
+
+  struct gp_symbol_type *next;
+} gp_symbol_type;
+
+/* section linked list */
+
+typedef struct gp_section_type 
+{
+  /* section name */
+  char *name;
+
+  /* section symbol */
+  struct gp_symbol_type *symbol;
+
+  /* flags */
+  unsigned long flags;
+  
+  /* section address */
+  unsigned long address;
+  
+  /* section size in bytes */
+  unsigned long size;
+  
+  /* memory linked list */
+  MemBlock *data;
+
+  /* number of relocations */
+  unsigned short num_reloc;
+
+  /* head of relocations */
+  gp_reloc_type *relocations;
+
+  /* tail of relocations */
+  gp_reloc_type *relocations_tail;
+
+  /* number of line numbers */
+  unsigned short num_lineno;
+
+  /* head of line numbers */
+  gp_linenum_type *line_numbers;
+
+  /* tail of line numbers */
+  gp_linenum_type *line_numbers_tail;
+
+  /* section number, only valid when writing coff file */  
+  unsigned long number;
+
+  /* data pointer, only valid when writing coff file */  
+  unsigned long data_ptr;
+
+  /* relocations pointer, only valid when writing coff file */  
+  unsigned long reloc_ptr;
+
+  /* linenumber pointer, only valid when writing coff file */  
+  unsigned long lineno_ptr;
+
+  struct gp_section_type *next;
+} gp_section_type;
+
+typedef struct gp_object_type 
+{
+  /* object filename */
+  char *filename;
+
+  /* processor */
+  enum pic_processor processor;
+  
+  /* processor class */
+  enum proc_class class;
+  
+  /* time object was created */
+  long time;
+  
+  /* flags */
+  unsigned short flags;
+  
+  /* number of sections */
+  long num_sections;
+
+  /* head of sections */
+  gp_section_type *sections;
+
+  /* tail of sections */
+  gp_section_type *sections_tail;
+
+  /* number of symbols */
+  long num_symbols;
+  
+  /* head of symbols */
+  gp_symbol_type *symbols;
+
+  /* tail of symbols */
+  gp_symbol_type *symbols_tail;
+
+  /* symbol table pointer, only valid when writing coff file */  
+  unsigned long symbol_ptr;
+
+  /* next object in the linked list */
+  struct gp_object_type *next;
+} gp_object_type;
 
 #endif

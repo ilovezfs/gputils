@@ -349,10 +349,13 @@ gp_coffgen_blocksym(unsigned int number)
   number--;
 
   /* initialize the pointers to create the linked list */  
-  for(i = 0; i < number; i++)
+  for(i = 0; i < number; i++) {
+    new[i].name = NULL;
     new[i].next = &new[i+1];
+  }
   
   /* assign the tail of the list */
+  new[number].name = NULL;
   new[number].next = NULL;
 
   return new;

@@ -273,7 +273,7 @@ static int do_secdef(char *name, struct pnode *parms)
       gplkrscr_error("illegal argument", "fill");
 
     sym = get_symbol(state.section.definition, section_name);      
-    if (sym != NULL) {
+    if ((sym != NULL) && (strcasecmp(name, "sharebank") != 0)) {
       gplkrscr_error("duplicate section definition", section_name);
     } else {
       sym = add_symbol(state.section.definition, section_name);
