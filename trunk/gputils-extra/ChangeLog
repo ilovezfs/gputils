@@ -1,3 +1,7 @@
+2002-02-25 Craig Franklin <craigfranklin@attbi.com>
+  * Changed NEdit patterns to include *.inc and *.lst in addition to *.asm.
+  * Added IORWF instruction to NEdit pattern.
+
 2002-01-24 Craig Franklin <craigfranklin@attbi.com>
   * gputils-extra 0.0.1 Released.
 

@@ -29,14 +29,15 @@ nedit.highlightPatterns: GPASM:1:0{\n\
 		special macros:"<(?i(ADDCF|B|BC|BZ|BNC|BNZ|CLRC|CLRZ|SETC|SETZ|MOVFW|NEGF|SKPC|SKPZ|SKPNC|SKPNZ|SUBCF|TSTF))>":::Macros::D\n\
 		config bits:"<(?i(_MCLRE_ON|_MCLRE_OFF|_CP_ON|_CP_OFF|_WDT_ON|_WDT_OFF|_LP_OSC|_XT_OSC|_IntRC_OSC|_ExtRC_OSC))>":::Preprocessor::D\n\
 	}
-nedit.languageModes: 	GPASM:.asm::::::".,/\\`'!|@#%^&*()-=+{}[]"":;<>?~"
+nedit.languageModes: 	GPASM:.asm .inc .lst::::::".,/\\`'!|@#%^&*()-=+{}[]"":;<>?~"
 nedit.styles: 	Pic instruction:darkviolet:Plain\n\
 	Macros:darkviolet:Italic
 
 ! generated with nxlang.pl 1.00
 
 0.90   First release
-0.91   INTCON register error corrected; was INITCON
+0.91   INTCON register error corrected; was INITCON (thanks to ???)
 0.92   Added IORWF instruction (thanks to Anthony Tekatch)
+0.93   .inc and .lst file extension added
 
 by <frederic.mantegazza@wanadoo.fr>
