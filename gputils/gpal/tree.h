@@ -76,9 +76,9 @@ enum node_op {
   op_gt,       /* branch if greater than */
   op_gte,      /* branch if greater than or equal */
   /* valid only during code generation */
-  op_incf,     /* increment memory */
-  op_decf      /* decrement memory */
-
+  op_clr,      /* zero memory */
+  op_inc,      /* increment memory */
+  op_dec       /* decrement memory */
   /* add assign ops from gpasm/scan.l */
 };
 

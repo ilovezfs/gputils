@@ -734,6 +734,7 @@ analyze_expr(tree *expr)
   gp_boolean constant_offset = true;
   int element_size;
   int offset = 0;
+  tree *unop = NULL;
 
   if ((expr->tag != node_binop) || (BINOP_OP(expr) != op_assign)) {
     analyze_error(expr, "expression is missing =");
@@ -788,11 +789,17 @@ analyze_expr(tree *expr)
   /* optimize the expression */
   right = optimize_expr(right);
 
-  /* write the expression */
-  codegen_expr(right, size);
+  unop = optimize_unop_expr(var, left, right);
+  if (unop) {
+    /* write the simplified expression */
+    codegen_unop(var, constant_offset, offset, SYM_OFST(left), unop);
+  } else {
+    /* write the expression */
+    codegen_expr(right, size);
 
-  /* put the result in memory */
-  codegen_store(var, constant_offset, offset, SYM_OFST(left));
+    /* put the result in memory */
+    codegen_store(var, constant_offset, offset, SYM_OFST(left));
+  }
 
   /* mark the symbol as having a valid value */
   var->is_assigned = true;

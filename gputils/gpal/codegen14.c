@@ -287,6 +287,298 @@ move_to_working(enum size_tag size)
 }
 
 /****************************************************************************/
+/* Unops                                                                    */
+/****************************************************************************/
+
+static void
+clr_direct14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
+{
+  char offset_buffer[64];
+  
+  if (offset == 0) {
+    offset_buffer[0] = '\0';
+  } else if (offset < 0) {
+    sprintf(offset_buffer, " - %#x", -offset);
+  } else {
+    sprintf(offset_buffer, " + %#x", offset);
+  }
+
+  switch (size) {
+  case size_bit:
+    assert(0);
+    break;
+  case size_uint8:
+  case size_int8:
+    ADD_BANKSEL(name);
+    codegen_write_asm("clrf %s%s", name, offset_buffer);
+    ADD_BANKSEL(LOCAL_DATA_LABEL);
+    break;
+  case size_uint16:
+  case size_int16:
+    ADD_BANKSEL(name);
+    codegen_write_asm("clrf %s%s", name, offset_buffer);
+    codegen_write_asm("clrf %s%s + 1", name, offset_buffer);
+    ADD_BANKSEL(LOCAL_DATA_LABEL);
+    break;
+  case size_uint24:
+  case size_int24:
+    ADD_BANKSEL(name);
+    codegen_write_asm("clrf %s%s", name, offset_buffer);
+    codegen_write_asm("clrf %s%s + 1", name, offset_buffer);
+    codegen_write_asm("clrf %s%s + 2", name, offset_buffer);
+    ADD_BANKSEL(LOCAL_DATA_LABEL);
+    break;
+  case size_uint32:
+  case size_int32:
+    ADD_BANKSEL(name);
+    codegen_write_asm("clrf %s%s", name, offset_buffer);
+    codegen_write_asm("clrf %s%s + 1", name, offset_buffer);
+    codegen_write_asm("clrf %s%s + 2", name, offset_buffer);
+    codegen_write_asm("clrf %s%s + 3", name, offset_buffer);
+    ADD_BANKSEL(LOCAL_DATA_LABEL);
+    break;
+  case size_float:
+  default:
+    assert(0);
+  }
+
+}
+
+static void
+clr_indirect14(char *name,
+               enum size_tag size,
+               int offset,
+               gp_boolean add_bankisel)
+{
+  int num_bytes;
+  int i;
+
+  if (add_bankisel) {
+    codegen_write_asm("bankisel %s", name);
+  }
+
+  num_bytes = prim_size(size);
+
+  for (i = 0; i < num_bytes; i++) {
+    codegen_write_asm("clrf INDF");
+    codegen_write_asm("incf FSR, f");
+  }
+
+}
+
+
+static void
+inc_direct14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
+{
+  char offset_buffer[64];
+  char *label = NULL;
+  
+  if (offset == 0) {
+    offset_buffer[0] = '\0';
+  } else if (offset < 0) {
+    sprintf(offset_buffer, " - %#x", -offset);
+  } else {
+    sprintf(offset_buffer, " + %#x", offset);
+  }
+
+  switch (size) {
+  case size_bit:
+    assert(0);
+    break;
+  case size_uint8:
+  case size_int8:
+    ADD_BANKSEL(name);
+    codegen_write_asm("incf %s%s, f", name, offset_buffer);
+    ADD_BANKSEL(LOCAL_DATA_LABEL);
+    break;
+  case size_uint16:
+  case size_int16:
+    ADD_BANKSEL(name);
+    codegen_write_asm("incf %s%s, f", name, offset_buffer);
+    codegen_write_asm("btfsc STATUS, C");
+    codegen_write_asm("incf %s%s + 1, f", name, offset_buffer);
+    ADD_BANKSEL(LOCAL_DATA_LABEL);
+    break;
+  case size_uint24:
+  case size_int24:
+    label = codegen_next_label();
+    ADD_BANKSEL(name);
+    codegen_write_asm("incf %s%s, f", name, offset_buffer);
+    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("goto %s", label);
+    codegen_write_asm("incf %s%s + 1, f", name, offset_buffer);
+    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("goto %s", label);
+    codegen_write_asm("incf %s%s + 2, f", name, offset_buffer);
+    codegen_write_label(label);
+    ADD_BANKSEL(LOCAL_DATA_LABEL);
+    break;
+  case size_uint32:
+  case size_int32:
+    label = codegen_next_label();
+    ADD_BANKSEL(name);
+    codegen_write_asm("incf %s%s, f", name, offset_buffer);
+    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("goto %s", label);
+    codegen_write_asm("incf %s%s + 1, f", name, offset_buffer);
+    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("goto %s", label);
+    codegen_write_asm("incf %s%s + 2, f", name, offset_buffer);
+    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("goto %s", label);
+    codegen_write_asm("incf %s%s + 3, f", name, offset_buffer);
+    codegen_write_label(label);
+    ADD_BANKSEL(LOCAL_DATA_LABEL);
+    break;
+  case size_float:
+  default:
+    assert(0);
+  }
+
+  if (label)
+    free(label);
+
+}
+
+static void
+inc_indirect14(char *name,
+               enum size_tag size,
+               int offset,
+               gp_boolean add_bankisel)
+{
+  int num_bytes;
+  int i;
+  char *label = NULL;
+
+  if (add_bankisel) {
+    codegen_write_asm("bankisel %s", name);
+  }
+
+  num_bytes = prim_size(size);
+
+  label = codegen_next_label();
+
+  for (i = 0; i < num_bytes; i++) {
+    codegen_write_asm("incf INDF, f");
+    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("goto %s", label);
+    codegen_write_asm("incf FSR, f");
+  }
+
+  codegen_write_label(label);
+
+  if (label)
+    free(label);
+
+}
+
+static void
+dec_direct14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
+{
+  char offset_buffer[64];
+  char *label = NULL;
+  
+  if (offset == 0) {
+    offset_buffer[0] = '\0';
+  } else if (offset < 0) {
+    sprintf(offset_buffer, " - %#x", -offset);
+  } else {
+    sprintf(offset_buffer, " + %#x", offset);
+  }
+
+  switch (size) {
+  case size_bit:
+    assert(0);
+    break;
+  case size_uint8:
+  case size_int8:
+    ADD_BANKSEL(name);
+    codegen_write_asm("decf %s%s, f", name, offset_buffer);
+    ADD_BANKSEL(LOCAL_DATA_LABEL);
+    break;
+  case size_uint16:
+  case size_int16:
+    ADD_BANKSEL(name);
+    codegen_write_asm("decf %s%s, f", name, offset_buffer);
+    codegen_write_asm("btfsc STATUS, C");
+    codegen_write_asm("decf %s%s + 1, f", name, offset_buffer);
+    ADD_BANKSEL(LOCAL_DATA_LABEL);
+    break;
+  case size_uint24:
+  case size_int24:
+    label = codegen_next_label();
+    ADD_BANKSEL(name);
+    codegen_write_asm("decf %s%s, f", name, offset_buffer);
+    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("goto %s", label);
+    codegen_write_asm("decf %s%s + 1, f", name, offset_buffer);
+    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("goto %s", label);
+    codegen_write_asm("decf %s%s + 2, f", name, offset_buffer);
+    codegen_write_label(label);
+    ADD_BANKSEL(LOCAL_DATA_LABEL);
+    break;
+  case size_uint32:
+  case size_int32:
+    label = codegen_next_label();
+    ADD_BANKSEL(name);
+    codegen_write_asm("decf %s%s, f", name, offset_buffer);
+    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("goto %s", label);
+    codegen_write_asm("decf %s%s + 1, f", name, offset_buffer);
+    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("goto %s", label);
+    codegen_write_asm("decf %s%s + 2, f", name, offset_buffer);
+    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("goto %s", label);
+    codegen_write_asm("decf %s%s + 3, f", name, offset_buffer);
+    codegen_write_label(label);
+    ADD_BANKSEL(LOCAL_DATA_LABEL);
+    break;
+  case size_float:
+  default:
+    assert(0);
+  }
+
+  if (label)
+    free(label);
+
+}
+
+static void
+dec_indirect14(char *name,
+               enum size_tag size,
+               int offset,
+               gp_boolean add_bankisel)
+{
+  int num_bytes;
+  int i;
+  char *label = NULL;
+
+  if (add_bankisel) {
+    codegen_write_asm("bankisel %s", name);
+  }
+
+  num_bytes = prim_size(size);
+
+  label = codegen_next_label();
+
+  for (i = 0; i < num_bytes; i++) {
+    codegen_write_asm("decf INDF, f");
+    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("goto %s", label);
+    codegen_write_asm("incf FSR, f");
+  }
+
+  codegen_write_label(label);
+
+  if (label)
+    free(label);
+
+}
+
+
+/****************************************************************************/
 /* Arithmetic                                                               */
 /****************************************************************************/
 
@@ -1303,14 +1595,57 @@ codegen14(enum node_op op,
   case op_mod:
     do_mod(size, is_const, value, name);
     break;
+  case op_clr:
+  case op_inc:
+  case op_dec:
+    /* Shoud use unopgen14.*/
+    assert(0);
+    break;
   default:
     assert(0); /* Unhandled binary operator */
   }
 
 }
 
+static void
+unopgen14(enum node_op op, 
+          gp_boolean direct,
+          char *name,
+          enum size_tag size,
+          int offset,
+          gp_boolean add_banksel)
+{
+  switch (op) {
+  case op_clr:
+    if (direct) {
+      clr_direct14(name, size, offset, add_banksel);
+    } else {
+      clr_indirect14(name, size, offset, add_banksel);
+    }
+    break;
+  case op_inc:
+    if (direct) {
+      inc_direct14(name, size, offset, add_banksel);
+    } else {
+      inc_indirect14(name, size, offset, add_banksel);
+    }
+   break;
+  case op_dec:
+    if (direct) {
+      dec_direct14(name, size, offset, add_banksel);
+    } else {
+      dec_indirect14(name, size, offset, add_banksel);
+    }
+    break;
+  default:
+    assert(0); /* Unhandled unary operator */
+  }
+
+}
+
 struct function_pointer_struct codegen14_func = {
   (long int)codegen14,
+  (long int)unopgen14,
   (long int)load_constant14,
   (long int)load_file14,
   (long int)store_file14,

@@ -47,6 +47,14 @@ typedef void code_func(enum node_op op,
                        int value,
                        char *name);
 
+/* data movement function pointers */
+typedef void code_unop(enum node_op op,
+                       gp_boolean direct,
+                       char *name,
+                       enum size_tag size,
+                       int offset,
+                       gp_boolean add_banksel);
+
 /* load constant function pointer */
 typedef void data_func1(int value, enum size_tag size);
 
@@ -57,6 +65,7 @@ typedef void data_func2(char *name,
                         gp_boolean add_banksel);
 
 #define CODEGEN (*(code_func*)func_ptr->codegen)
+#define UNOPGEN (*(code_unop*)func_ptr->unopgen)
 #define LOAD_CONSTANT (*(data_func1*)func_ptr->load_constant)
 #define LOAD_FILE (*(data_func2*)func_ptr->load_file)
 #define STORE_FILE (*(data_func2*)func_ptr->store_file)
@@ -431,6 +440,40 @@ codegen_expr(tree *statement, enum size_tag size)
     max_temp_number = temp_number;
 
   return;
+}
+
+/* perform the unop on the file register not the working register */
+
+void
+codegen_unop(struct variable *var,
+             gp_boolean constant_offset,
+             int offset,
+             tree *offset_expr,
+             tree *unop)
+{
+
+  if (offset_expr) {
+    if (constant_offset) {
+      if (var->storage == storage_far) {
+        UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, offset, true);
+      } else {
+        UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, offset, false);
+      }    
+    } else {
+      if (var->storage == storage_far) {
+        UNOPGEN(UNOP_OP(unop), false, var->name, codegen_size, 0, true);
+      } else {
+        UNOPGEN(UNOP_OP(unop), false, var->name, codegen_size, 0, false);
+      }
+    }
+  } else {
+    if (var->storage == storage_far) {
+      UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, 0, true);
+    } else {
+      UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, 0, false);
+    }
+  }
+
 }
 
 /****************************************************************************/

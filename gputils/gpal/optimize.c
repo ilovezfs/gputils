@@ -491,14 +491,69 @@ optimize_expr(tree *expr)
     print_node(expr, 0);
   }
 
-  /* i = i + 1 ==> i++ */
+  return expr;
+}
 
-  /* i = i - 1 ==> i-- */
+/* Test if the expression can be expressed as an unop */ 
+
+tree *
+optimize_unop_expr(struct variable *dest, tree *left, tree *right)
+{
+  tree *binop_left;
+  tree *binop_right;
+  tree *unop = NULL;
+  struct variable *arg;
+
+  if ((right->tag == node_constant) && (right->value.constant == 0)) {
+    /* i = 0 */
+    unop = mk_unop(op_clr, left);
+  } else if (right->tag == node_binop) {
+     binop_left = BINOP_LEFT(right);
+     binop_right = BINOP_RIGHT(right);
+     
+     if (BINOP_OP(right) == op_add) {
+       if ((binop_left->tag == node_constant) && 
+           (binop_left->value.constant == 1) &&
+           (binop_right->tag == node_symbol)) {
+         /* i = 1 + i ==> i++ */
+         arg = get_global(SYM_NAME(binop_right));
+         if (arg == dest) {
+           unop = mk_unop(op_inc, left);
+         }
+       } else if ((binop_right->tag == node_constant) && 
+                  (binop_right->value.constant == 1) &&
+                  (binop_left->tag == node_symbol)) {
+         /* i = i + 1 ==> i++ */
+         arg = get_global(SYM_NAME(binop_left));
+         if (arg == dest) {
+           unop = mk_unop(op_inc, left);
+         }
+       }
+     } else if (BINOP_OP(right) == op_sub) {
+       /* i = i - 1 ==> i-- */
+       if ((binop_right->tag == node_constant) && 
+           (binop_right->value.constant == 1) &&
+           (binop_left->tag == node_symbol)) {
+         arg = get_global(SYM_NAME(binop_left));
+         if (arg == dest) {
+           unop = mk_unop(op_dec, left);
+         }
+       }
+     }
+   }
 
   /* i = i | 0x1 ==> bitset(i, 0) */
 
   /* i = i & 0xfe ==> bitclear(i, 0) */
 
-  return expr;
+  if ((gp_debug_disable == 0) && (unop != NULL)) {
+    gp_debug("====================================================");
+    gp_debug("original binop:");
+    print_node(left, 0);
+    print_node(right, 0);
+    gp_debug("optimized unop:");
+    print_node(unop, 0);
+  }
+  
+  return unop;
 }
-
