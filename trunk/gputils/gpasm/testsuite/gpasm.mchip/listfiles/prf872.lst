@@ -1,0 +1,41 @@
+MPASM 03.20.02 Released        PRF872.ASM   11-21-2002  20:21:29         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; PRF872.ASM
+                      00002 
+                      00003 ; This file tests the processor directive.
+                      00004 
+                      00005         PROCESSOR       16F872  ; 14-bit core
+                      00006 
+0000   3412           00007         RETLW   12      ; 0812 = 12-BIT
+                      00008                                 ; 3412 = 14-BIT
+                      00009                                 ; B612 = 16-BIT
+                      00010 
+                      00011         END
+MPASM 03.20.02 Released        PRF872.ASM   11-21-2002  20:21:29         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16F872                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X--------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     1
+Program Memory Words Free:  2047
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+
