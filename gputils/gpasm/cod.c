@@ -29,7 +29,6 @@ Boston, MA 02111-1307, USA.  */
 static DirBlockInfo main_dir;
 static int cod_lst_line_number = 0;
 static int blocks = 0;
-extern int _16bit_core;
 
 static void
 init_DirBlock(DirBlockInfo *a_dir)
@@ -62,8 +61,9 @@ init_DirBlock(DirBlockInfo *a_dir)
 	         "Copyright (c) 1998-2003 gnupic project",
 	         COD_DIR_SYMTAB - COD_DIR_NOTICE);
 
-  gp_putl16(&a_dir->dir.block[COD_DIR_ADDRSIZE], 1 << _16bit_core);
-  
+  /* The address is always two shorts or 4 bytes long */
+  gp_putl16(&a_dir->dir.block[COD_DIR_ADDRSIZE], 4);
+
 }
 
 /*

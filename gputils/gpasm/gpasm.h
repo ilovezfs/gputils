@@ -31,6 +31,8 @@ Boston, MA 02111-1307, USA.  */
 #define STRCMP(s1, s2)	(state.case_insensitive ? \
 			 strcasecmp((s1), (s2)) : \
 			 strcmp((s1), (s2)))
+
+#define MAX_PATHS 100
 			 
 typedef int gpasmVal; 		/* The type that internal arithmetic uses */
 enum gpasmValTypes {gvt_constant, gvt_cblock, gvt_org, gvt_address, gvt_extern,
@@ -49,6 +51,8 @@ extern struct gpasm_state {
   int case_insensitive;
   int quiet;
   int error_level;		/* 0, 1, 2 */
+  int path_num;                 /* number of paths in the list */
+  char *paths[MAX_PATHS];       /* the list of include paths */
   struct {			/* Command line override flags */
     int radix;			/* When 1, the value is specified by the */
     int hex_format;		/* command line */
@@ -171,10 +175,6 @@ struct variable {
   enum gpasmValTypes type;
   enum gpasmValTypes previous_type; /* can change from static to global */
 };
-
-#define MAX_INCLUDE_PATHS 100
-extern char *include_paths[];
-extern int n_include_paths;
 
 /************************************************************************/
 

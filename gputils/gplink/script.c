@@ -109,9 +109,6 @@ static int do_include(char *name, struct pnode *parms)
   return 0;
 }
 
-/* FIXME: gplink doesn't distinguish between lib pathes and lkr pathes.  There
-   is one pathes list.  This shouldn't cause any problems. */
-
 static int do_path(char *name, struct pnode *parms)
 {
   struct pnode *p;
@@ -119,6 +116,8 @@ static int do_path(char *name, struct pnode *parms)
   for (; parms != NULL; parms = TAIL(parms)) {
     p = HEAD(parms);
     if (enforce_simple(p)) {
+      /* gplink doesn't distinguish between lib pathes and lkr pathes.  There
+         is one pathes list.  This shouldn't cause any problems. */
       gplink_add_path(p->value.symbol);
     }
   }

@@ -166,7 +166,6 @@ void next_line(int value)
   }
 
   state.src->line_number++;
-  
 
   switch (state.next_state) {
     case _exitmacro:
@@ -215,6 +214,7 @@ void next_line(int value)
 %token <s> CBLOCK, ENDC, FILL
 %token <i> NUMBER
 %token <s> STRING
+%token <s> INCLUDE
 %token <i> UPPER
 %token <i> HIGH
 %token <i> LOW
@@ -386,6 +386,13 @@ statement:
 	  } else {
 	    macro_append();
 	  }
+	}
+	|
+	INCLUDE '\n'
+	{
+          state.next_state = _include;  
+          state.next_buffer.file = strdup($1);
+          $$ = 0;
 	}
 	|
 	IDENTIFIER '\n'

@@ -1419,32 +1419,6 @@ static gpasmVal do_ifndef(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_include(gpasmVal r,
-		           char *name,
-		           int arity,
-		           struct pnode *parms)
-{
-  struct pnode *p;
-
-  state.lst.line.linetype = dir;
-
-  if (enforce_arity(arity, 1)) {
-    p = HEAD(parms);
-    if (p->tag == string) {
-      state.next_state = _include;  
-      state.next_buffer.file = strdup(p->value.string);
-    } else if (p->tag == symbol) {
-      /* This is a bad coding style. "" or <> should enclose all filenames */
-      state.next_state = _include;  
-      state.next_buffer.file = strdup(p->value.symbol);    
-    } else {
-      gperror(GPE_ILLEGAL_ARGU, NULL);
-    }
-  }
-
-  return r;
-}
-
 /************************************************************************
  * do_list - parse the LIST directive
  *
@@ -1694,8 +1668,10 @@ static gpasmVal do_org(gpasmVal r,
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (can_evaluate(p)) {
-      r = state.org = evaluate(p) >> _16bit_core;
-      if (state.mode == relocatable) {
+      r = evaluate(p) >> _16bit_core;
+      if (state.mode == absolute) {
+        state.org = r;
+      }	else {
 	/* Default section name, this will be overwritten if a label is present.
 	   MPASM sequentially numbers the orgs, that seems like trouble. */
         sprintf(state.obj.new_sec_name, ".org_%04X", r);
@@ -1703,7 +1679,7 @@ static gpasmVal do_org(gpasmVal r,
         state.obj.new_sec_flags = STYP_TEXT | STYP_ABS;
         state.lst.line.linetype = sec;
         state.next_state = _section;
-      }	
+      }
     }
   }
 
@@ -3080,7 +3056,6 @@ struct insn op_0[] = {
   { "if",         0, (long int)do_if,        INSN_CLASS_FUNC,   ATTRIB_COND },
   { "ifdef",      0, (long int)do_ifdef,     INSN_CLASS_FUNC,   ATTRIB_COND },
   { "ifndef",     0, (long int)do_ifndef,    INSN_CLASS_FUNC,   ATTRIB_COND },
-  { "include",    0, (long int)do_include,   INSN_CLASS_FUNC,   0 },
   { "list",       0, (long int)do_list,	     INSN_CLASS_FUNC,   0 },
   { "local",      0, (long int)do_local,     INSN_CLASS_FUNC,   0 },
   { "macro",      0, (long int)do_macro,     INSN_CLASS_FUNC,	0 },
@@ -3103,7 +3078,6 @@ struct insn op_0[] = {
   { "#endif",     0, (long int)do_endif,     INSN_CLASS_FUNC,   ATTRIB_COND },
   { "#ifdef",     0, (long int)do_ifdef,     INSN_CLASS_FUNC,   ATTRIB_COND },
   { "#ifndef",    0, (long int)do_ifndef,    INSN_CLASS_FUNC,   ATTRIB_COND },
-  { "#include",   0, (long int)do_include,   INSN_CLASS_FUNC,   0 },
   { "#undefine",  0, (long int)do_undefine,  INSN_CLASS_FUNC,   0 }
 };
 

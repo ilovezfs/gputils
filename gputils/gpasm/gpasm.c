@@ -33,11 +33,8 @@ Boston, MA 02111-1307, USA.  */
 
 struct gpasm_state state;
 
-char *include_paths[MAX_INCLUDE_PATHS];
-int n_include_paths = 0;
-
-int  cmd_processor = 0;
-char *processor_name = NULL;
+static int cmd_processor = 0;
+static char *processor_name = NULL;
 
 int yyparse(void);
 
@@ -67,7 +64,8 @@ static struct option longopts[] =
   { 0, 0, 0, 0 }
 };
 
-void init(void)
+void
+init(void)
 {
   /* restore gpasm to its initialized state */
   state.mode = absolute;
@@ -77,6 +75,7 @@ void init(void)
   state.case_insensitive = 0;
   state.quiet = 0;
   state.error_level = 0;
+  state.path_num = 0;
 
   state.cmd_line.radix = 0;
   state.cmd_line.hex_format = 0;
@@ -108,22 +107,23 @@ void init(void)
   state.obj.object = NULL;
   state.obj.section = NULL;
   state.obj.symbol_num = 0;
-
-  n_include_paths = 0;
-
-  #ifdef USE_GPASM_HEADER_PATH
-    /* add the header path to the include paths list */
-    #ifndef __MSDOS__
-      include_paths[n_include_paths++] = GPASM_HEADER_PATH;
-    #else
-      include_paths[n_include_paths++] = "c:\\gputils\\header";    
-    #endif
-  #endif
   
   return;
 }
 
-void show_usage(void)
+static void 
+add_path(char *path)
+{
+  if(state.path_num < MAX_PATHS) {
+    state.paths[state.path_num++] = strdup(path);
+  } else {
+    fprintf(stderr, "too many -I paths\n");
+    exit(1);
+  }
+}
+
+static void
+show_usage(void)
 {
   printf("Usage: gpasm [options] file\n");
   printf("Options: [defaults in brackets after descriptions]\n");
@@ -137,7 +137,7 @@ void show_usage(void)
   printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -l, --list-chips               List supported processors.\n");
   printf("  -m, --dump                     Memory dump.\n");
-  #ifndef __MSDOS__
+  #ifndef HAVE_DOS_BASED_FILE_SYSTEM
   printf("  -n, --dos                      Use DOS newlines in hex file.\n");
   #endif
   printf("  -o FILE, --output FILE         Alternate name of output file.\n");
@@ -147,16 +147,21 @@ void show_usage(void)
   printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n");
   printf("  -v, --version                  Show version.\n");
   printf("\n");
-  #ifdef USE_GPASM_HEADER_PATH
-  printf("Reading header files from %s\n", include_paths[0]);
-  printf("\n");    
+  #ifdef USE_DEFAULT_PATHS
+    #ifdef HAVE_DOS_BASED_FILE_SYSTEM
+      printf("Reading header files from %s\n", DOS_HEADER_PATH);    
+    #else
+      printf("Reading header files from %s\n", GPASM_HEADER_PATH);
+    #endif
+    printf("\n");    
   #endif
   printf("Report bugs to:\n");
   printf("%s\n", BUG_REPORT_URL);
   exit(0);
 }
 
-void process_args( int argc, char *argv[])
+void
+process_args( int argc, char *argv[])
 {
   extern char *optarg;
   extern int optind;
@@ -222,12 +227,7 @@ void process_args( int argc, char *argv[])
       state.cmd_line.macro_expand = 1;
       break;
     case 'I':
-      if (n_include_paths < MAX_INCLUDE_PATHS) {
-         include_paths[n_include_paths++] = optarg;
-      } else {
-        fprintf(stderr, "too many -I paths\n");
-        exit(1);
-      }
+      add_path(optarg);
       break;    
     case 'i':
       state.case_insensitive = 1;
@@ -243,7 +243,7 @@ void process_args( int argc, char *argv[])
       state.memory_dump = 1;
       break;
     case 'n':
-      #ifndef __MSDOS__
+      #ifndef HAVE_DOS_BASED_FILE_SYSTEM
         state.dos_newlines = 1;
       #endif
       break;
@@ -287,9 +287,20 @@ void process_args( int argc, char *argv[])
     show_usage();
   }
 
+  /* Add the header path to the include paths list last, so that the user
+     specified directories are searched first */
+  #ifdef USE_DEFAULT_PATHS
+    #ifdef HAVE_DOS_BASED_FILE_SYSTEM
+      add_path(DOS_HEADER_PATH);
+    #else
+      add_path(GPASM_HEADER_PATH);
+    #endif
+  #endif
+
 }
 
-int assemble(void)
+int
+assemble(void)
 {
   char *pc; 
   struct symbol_table *cmd_defines;

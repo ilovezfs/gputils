@@ -63,12 +63,20 @@ Boston, MA 02111-1307, USA.  */
 #include <ctype.h>
 #include <errno.h>
 
-#ifdef __MSDOS__
+#ifdef HAVE_DOS_BASED_FILE_SYSTEM
   #define PATH_CHAR '\\'
   #define COPY_CHAR "\\"
 #else
   #define PATH_CHAR '/'
   #define COPY_CHAR "/"
+#endif
+
+/* relative path to header files and linker scripts */
+#ifndef DOS_HEADER_PATH
+  #define DOS_HEADER_PATH "..\\header"
+#endif
+#ifndef DOS_LKR_PATH
+  #define DOS_LKR_PATH "..\\lkr"
 #endif
 
 #define BUG_REPORT_URL "<URL:http://gputils.sourceforge.net/>"

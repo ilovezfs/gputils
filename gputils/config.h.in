@@ -64,12 +64,12 @@
 /* Version number of package */
 #undef VERSION
 
+/* Define if your host uses a DOS based file system.  */
+#undef HAVE_DOS_BASED_FILE_SYSTEM
+
 /* Define if you want to enable GPUTILS debug features.  */
 #undef __DEBUG__
 
-/* Define if you want to add the header path to the include paths list.  */
-#undef USE_GPASM_HEADER_PATH
-
-/* Define if you are cross compiling to an MSDOS system.  */
-#undef __MSDOS__
+/* Define if you want to add default search paths.  */
+#undef USE_DEFAULT_PATHS
 

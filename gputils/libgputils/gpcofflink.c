@@ -284,7 +284,7 @@ gp_cofflink_merge_sections(gp_object_type *object)
           (strcmp(first->name, ".idlocs") == 0)) {
         gp_error("section \"%s\" is absolute but occurs in more than one file",
                  first->name);
-        continue;
+        exit(1);
       }
 
       gp_debug("  merging section \"%s\" with section \"%s\"", 
