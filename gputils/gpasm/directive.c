@@ -1077,7 +1077,7 @@ static gpasmVal do_if(gpasmVal r,
   if (state.astack->prev_enabled) {
     if (enforce_arity(arity, 1)) {
       p = HEAD(parms);
-      state.astack->enabled = maybe_evaluate(p); /* FIXME: could be 2?? */
+      state.astack->enabled = maybe_evaluate(p);
     }
   }
 

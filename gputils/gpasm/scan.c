@@ -2864,8 +2864,7 @@ static int found_end()
     gperror(GPE_EXPECTED, "Expected (ENDW)");
   }
 
-  if (state.astack != NULL &&
-    state.astack->enabled == 1) {
+  if ((state.astack != NULL) && (state.astack->enabled)) {
     struct amode *old;
 
     while (state.astack) {
