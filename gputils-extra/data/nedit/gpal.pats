@@ -15,8 +15,8 @@ nedit.highlightPatterns:\
 		Based Numeric Literals:"<(?:\\d+(?:_\\d+)*)#(?:[\\da-fA-F]+(?:_[\\da-fA-F]+)*)(?:\\.[\\da-fA-F]+(?:_[\\da-fA-F]+)*)?#(?iE[+\\-]?(?:\\d+(?:_\\d+)*))?>":::Numeric Const::\n\
 		Numeric Literals:"<(?:\\d+(?:_\\d+)*)(?:\\.\\d+(?:_\\d+)*)?(?iE[+\\-]?(?:\\d+(?:_\\d+)*))?>":::Numeric Const::\n\
 		Pragma:"(?n(?ipragma)\\s+\\l[\\l\\d]*(?:_\\l[\\l\\d]*)*\\s*\\([^)]*\\)\\s*;)":::Preprocessor::\n\
-		Predefined Types:"(?i(?=[fiu]))<(?iint8|uint8|int16|uint16|int24|uint24|int32|uint32|float)>":::Storage Type::D\n\
-		Reserved Words:"(?i(?=[a-gil-pr-uwx]))<(?iand|asm|array|begin|case|constant|else|elsif|end|for|function|if|in|inout|is|loop|mod|module|not|null|of|or|others|out|pragma|procedure|public|return|then|to|type|variable|when|while|with|xor)>":::Keyword::D\n\
+		Predefined Types:"(?i(?=[bcfiu]))<(?iboolean|constant|int8|uint8|int16|uint16|int24|uint24|int32|uint32|float)>":::Storage Type::D\n\
+		Reserved Words:"(?i(?=[a-gil-pr-uwx]))<(?iand|asm|array|begin|case|else|elsif|end|for|function|if|in|inout|is|loop|mod|module|not|null|of|or|others|out|pragma|procedure|public|return|then|to|type|when|while|with|xor)>":::Keyword::D\n\
 		Identifiers:"<(?:\\l[\\l\\d]*(?:_[\\l\\d]+)*)>":::Identifier::D\n\
 	}
 nedit.languageModes: 	gpal:.pal .pub::::::

@@ -1,6 +1,7 @@
 AUTOMAKE_OPTIONS = dist-zip foreign
 
 EXTRA_DIST = \
+	data/nedit/gpal.pats \
 	data/nedit/gpasm.pats \
 	examples/example1/Makefile \
 	examples/example1/README \
