@@ -28,9 +28,8 @@ Boston, MA 02111-1307, USA.  */
            library.  */
 
 struct gplink_state state = {
-    _hex,               /* produce hex file by default */
+    _object,            /* produce hex file by default */
     inhx32,		/* hex_format */
-    0                   /* debug */
 };
 
 int yyparse(void);
@@ -43,30 +42,18 @@ int count_missing(void)
 
 void object_append(gp_object_type *file, char *name)
 {
-  struct objectlist *new;
-
-  /* make the new entry */  
-  new = (struct objectlist *)malloc(sizeof(*new));
-  new->name = strdup(name); 
-  new->object = file;
-  new->next = NULL;
-  
   /* append the entry to the list */
-  if (state.objects == NULL) {
-    state.objects = new;
+  if (state.object == NULL) {
+    state.object = file;
     /* store the processor type from the first object file */
     state.processor = file->processor;
   } else {
-    struct objectlist *list = state.objects;
+    gp_object_type *list = state.object;
 
-    /* Locate the end of the list.  It is critical that the list appears in 
-       the same order as the file arguments.  It can have an impact on the
-       executable if some information is not specified and has to be 
-       inferred. */
     while(list->next != NULL){
       list = list->next;
     }
-    list->next = new;
+    list->next = file;
     
     if (file->processor != state.processor)
       gp_error("processor mismatch in \"%s\"", file->filename);
@@ -181,14 +168,14 @@ int scan_archive(gp_archive_type *archive, char *name)
     
 void build_tables(void)
 {
-  struct objectlist *list = state.objects;
+  gp_object_type *list = state.object;
   struct archivelist *arlist = state.archives;
 
   /* Create the object file symbol tables */  
   while (list != NULL) {
     gp_link_add_symbols(state.symbol.definition, 
                         state.symbol.missing, 
-			list->object);
+			list);
     list = list->next;
   }
 
@@ -206,7 +193,7 @@ void build_tables(void)
   }
 
   if (count_missing()) {
-    /* FIXME: generate an error. Missing definitions for external references */
+    gp_error("missing definitions for external references");
     exit(1);
   }
 
@@ -256,13 +243,13 @@ void gplink_add_path(char *path)
   }
 }
 
-
 void show_usage(void)
 {
   printf("Usage: gplink [options] [object] [library] \n");
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -a FMT, --hex-format FMT       Select hex file format.\n");
   printf("  -c, --object                   Output executable object file.\n");
+  printf("  -d, --debug                    Output debug messages.\n");
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
   printf("  -o FILE, --output FILE         Alternate name of output file.\n");
@@ -303,7 +290,7 @@ int main(int argc, char *argv[])
 
   /* initialize */
   state.srcfilename = NULL;
-  state.objects  = NULL;
+  state.object  = NULL;
   state.archives = NULL;
 
   /* The symbols are case sensitive */
@@ -318,7 +305,6 @@ int main(int argc, char *argv[])
     yydebug = 1; /* enable parse debug */
   }
   #endif
-
  
   while ((c = GETOPT_FUNC) != EOF) {
     switch (c) {
@@ -329,7 +315,7 @@ int main(int argc, char *argv[])
       state.mode = _object;
       break;
     case 'd':
-      state.debug = 1;
+      gp_debug_disable = 0;
       break;
     case '?':
     case 'h':
@@ -402,37 +388,37 @@ int main(int argc, char *argv[])
      required to resolve external references.  */
   build_tables();  
 
-  /* relocate sections */
-  gp_link_reloc(state.objects, 
-                state.section.definition,
-	        state.section.logical);
+  /* relocate the sections */
+  gp_cofflink_reloc(state.object, 
+                    state.section.definition, 
+                    state.section.logical);  
 	
   /* patch raw data with the relocated symbol values */
-  gp_link_patch(state.objects,
-                state.symbol.definition); 
+  gp_cofflink_patch(state.object, state.symbol.definition);
 
-  /* create the output object file */
-  state.output = gp_link_combine(state.objects, 
-                                 state.objfilename,
-                                 state.processor);
+  /* clean up symbol table */
+  gp_cofflink_clean_table(state.object);
+
+  /* modify the executable object data */
+  state.object->filename = strdup(state.objfilename);
+  state.object->flags |= F_EXEC;
 
   /* write output file */
-  if (state.mode == _object) {
-    /* write the executable object in memory */
-    gp_write_coff(state.output);
-  } else if (state.mode == _hex) {
-    /* convert the executable object into a hex file */
+  if (gp_num_errors == 0) {
+    if (state.mode == _object) {
+      /* write the executable object in memory */
+      gp_write_coff(state.object);
+    } else {
+      /* convert the executable object into a hex file */
 
-    /* convert the executable object into a cod file */
+      /* convert the executable object into a cod file */
 
-
-  } else {
-    assert(0);
+    }
   }
 
   if (gp_num_errors > 0)
-    return 1;
+    return EXIT_FAILURE;
   else
-    return 0;
+    return EXIT_SUCCESS;
 
 }

@@ -18,8 +18,7 @@
 # the Free Software Foundation, 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-# gplink is still be developed, so don't install it
-noinst_PROGRAMS = gplink
+bin_PROGRAMS = gplink
 
 CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
 

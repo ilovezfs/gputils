@@ -21,20 +21,6 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPCOFFLINK_H__
 #define __GPCOFFLINK_H__
 
-/* FIXME: remove object list, gp_object_type takes care of it */
-
-struct objectlist {
-  char              *name;
-  gp_object_type    *object;
-  struct objectlist *next;
-};
-
-struct archivelist {
-  char                *name;
-  gp_archive_type     *archive;
-  struct archivelist  *next;
-};
-
 /*
 
 accessbank - used for access registers in internal ram for 18CXX
@@ -61,26 +47,20 @@ struct linker_section {
   int fill;
   int use_fill;
   int protected;
-  /* working data */
-  int next_address;
 };
 
 int gp_link_add_symbols(struct symbol_table *,
                         struct symbol_table *missing,
                         gp_object_type *object);
 
-void gp_link_reloc(struct objectlist *list,
-                   struct symbol_table *sections,
-                   struct symbol_table *logical_sections);
+void gp_cofflink_combine_overlay(gp_object_type *object, int remove_symbol);
 
-void gp_link_patch(struct objectlist *list,
-                   struct symbol_table *symbols);
+void gp_cofflink_reloc(gp_object_type *object,
+                       struct symbol_table *sections,
+                       struct symbol_table *logical_sections);
 
-gp_object_type *gp_link_combine(struct objectlist *list, 
-                                char *name, 
-                                enum pic_processor processor);
+void gp_cofflink_patch(gp_object_type *object, struct symbol_table *symbols);
 
-void gp_cofflink_remove_dupsecsyms(gp_object_type *object);
-void gp_cofflink_combine_overlay(gp_object_type *object);
+void gp_cofflink_clean_table(gp_object_type *object);
 
 #endif

@@ -234,11 +234,19 @@ _read_sections(gp_object_type *object, char *file)
     /* read the data */
     if ((current->size) && (current->data_ptr)) {
       loc = &file[current->data_ptr];
-      number = current->size >> 1;
-      /* FIXME: This probably doesn't read idata memory correctly */
+      if (current->flags & STYP_TEXT) {
+        /* size is in bytes, but words are stored in memory */
+        number = current->size / 2;
+      } else {
+        number = current->size;
+      }
       for (j = 0; j < number; j++) {
-        value = MEM_USED_MASK | (unsigned int)_get_16(&loc[j * 2]);
-        i_memory_put(current->data, current->address + j, value);
+        if (current->flags & STYP_TEXT) {
+          value = (unsigned int)_get_16(&loc[j * 2]);
+        } else {
+          value = (unsigned int)loc[j];
+        }        
+        i_memory_put(current->data, current->address + j, MEM_USED_MASK | value);
       }
     }
 
