@@ -1,3 +1,7 @@
+2003-09-28 Craig Franklin <craigfranklin@comcast.net>
+  * Fixed gplink bug in 18xx absolute sections.
+  * Fixed gplink memory allocation bug in 18xx devices.
+
 2003-08-08 Craig Franklin <craigfranklin@comcast.net>
   * Fixed bug that could cause problems with comments on include directives.
 
