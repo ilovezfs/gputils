@@ -193,23 +193,26 @@ void lst_memory_map(MemBlock *m)
 void lst_close()
 {
   cod_lst_line(COD_LAST_LST_LINE);
-  fprintf(state.lst.f,
-	  "\n\n");
-  fprintf(state.lst.f,
-	  "Errors   : %7d\n",
-	  state.num.errors);
-  fprintf(state.lst.f,
-	  "Warnings : %7d reported, %7d suppressed\n",
-	  state.num.warnings,
-          state.num.warnings_suppressed);
-  fprintf(state.lst.f,
-	  "Messages : %7d reported, %7d suppressed\n",
-	  state.num.messages,
-          state.num.messages_suppressed);
-  fprintf(state.lst.f,
-	  "\f\n");
 
-  fclose(state.lst.f);
+  if (state.lst.f) {
+    fprintf(state.lst.f,
+	    "\n\n");
+    fprintf(state.lst.f,
+	    "Errors   : %7d\n",
+	    state.num.errors);
+    fprintf(state.lst.f,
+	    "Warnings : %7d reported, %7d suppressed\n",
+	    state.num.warnings,
+            state.num.warnings_suppressed);
+    fprintf(state.lst.f,
+	    "Messages : %7d reported, %7d suppressed\n",
+	    state.num.messages,
+            state.num.messages_suppressed);
+    fprintf(state.lst.f,
+	    "\f\n");
+  
+    fclose(state.lst.f);
+  }
 }
 
 void lst_format_line(char *src_line, int value)
