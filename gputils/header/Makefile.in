@@ -76,6 +76,7 @@ DEPDIR = @DEPDIR@
 GPUTILS_HEADER_PATH = @GPUTILS_HEADER_PATH@
 GPUTILS_LIB_PATH = @GPUTILS_LIB_PATH@
 GPUTILS_LKR_PATH = @GPUTILS_LKR_PATH@
+GPUTILS_PUB_PATH = @GPUTILS_PUB_PATH@
 IBERTYOBJS = @IBERTYOBJS@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LEX = @LEX@
@@ -94,7 +95,7 @@ am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
 
-EXTRA_DIST = \
+HEADER_FILES = \
 	mcp250xx.inc \
 	memory.inc \
 	migrate.inc \
@@ -290,84 +291,25 @@ EXTRA_DIST = \
 	rf675k.inc
 
 
-pkgdata_DATA = $(EXTRA_DIST)
+pkgdata_DATA = $(HEADER_FILES)
 
-noinst_PROGRAMS = header_check
-
-AM_CPPFLAGS = -I${top_srcdir}/include
-
-header_check_SOURCES = header_check.c
+EXTRA_DIST = $(HEADER_FILES) Makefile.sh header_check.c
 subdir = header
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-noinst_PROGRAMS = header_check$(EXEEXT)
-PROGRAMS = $(noinst_PROGRAMS)
-
-am_header_check_OBJECTS = header_check.$(OBJEXT)
-header_check_OBJECTS = $(am_header_check_OBJECTS)
-header_check_LDADD = $(LDADD)
-header_check_DEPENDENCIES =
-header_check_LDFLAGS =
-
-DEFS = @DEFS@
-DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
-CPPFLAGS = @CPPFLAGS@
-LDFLAGS = @LDFLAGS@
-LIBS = @LIBS@
-depcomp = $(SHELL) $(top_srcdir)/depcomp
-am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/header_check.Po
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-CCLD = $(CC)
-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-CFLAGS = @CFLAGS@
-DIST_SOURCES = $(header_check_SOURCES)
+DIST_SOURCES =
 DATA = $(pkgdata_DATA)
 
 DIST_COMMON = Makefile.am Makefile.in
-SOURCES = $(header_check_SOURCES)
-
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am  $(top_srcdir)/configure.ac $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
 	  $(AUTOMAKE) --gnu  header/Makefile
 Makefile: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
-
-clean-noinstPROGRAMS:
-	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
-header_check$(EXEEXT): $(header_check_OBJECTS) $(header_check_DEPENDENCIES) 
-	@rm -f header_check$(EXEEXT)
-	$(LINK) $(header_check_LDFLAGS) $(header_check_OBJECTS) $(header_check_LDADD) $(LIBS)
-
-mostlyclean-compile:
-	-rm -f *.$(OBJEXT) core *.core
-
-distclean-compile:
-	-rm -f *.tab.c
-
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/header_check.Po@am__quote@
-
-distclean-depend:
-	-rm -rf ./$(DEPDIR)
-
-.c.o:
-@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(COMPILE) -c `test -f '$<' || echo '$(srcdir)/'`$<
-
-.c.obj:
-@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(COMPILE) -c `cygpath -w $<`
-CCDEPMODE = @CCDEPMODE@
 uninstall-info-am:
 pkgdataDATA_INSTALL = $(INSTALL_DATA)
 install-pkgdataDATA: $(pkgdata_DATA)
@@ -387,42 +329,9 @@ uninstall-pkgdataDATA:
 	  echo " rm -f $(DESTDIR)$(pkgdatadir)/$$f"; \
 	  rm -f $(DESTDIR)$(pkgdatadir)/$$f; \
 	done
-
-ETAGS = etags
-ETAGSFLAGS =
-
 tags: TAGS
+TAGS:
 
-ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
-	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-	unique=`for i in $$list; do \
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-	  done | \
-	  $(AWK) '    { files[$$0] = 1; } \
-	       END { for (i in files) print i; }'`; \
-	mkid -fID $$unique
-
-TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
-		$(TAGS_FILES) $(LISP)
-	tags=; \
-	here=`pwd`; \
-	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
-	unique=`for i in $$list; do \
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-	  done | \
-	  $(AWK) '    { files[$$0] = 1; } \
-	       END { for (i in files) print i; }'`; \
-	test -z "$(ETAGS_ARGS)$$tags$$unique" \
-	  || $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
-	     $$tags $$unique
-
-GTAGS:
-	here=`$(am__cd) $(top_builddir) && pwd` \
-	  && cd $(top_srcdir) \
-	  && gtags -i $(GTAGS_ARGS) $$here
-
-distclean-tags:
-	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
 top_distdir = ..
@@ -451,7 +360,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) $(DATA)
+all-am: Makefile $(DATA)
 
 installdirs:
 	$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)
@@ -482,12 +391,11 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-noinstPROGRAMS mostlyclean-am
+clean-am: clean-generic mostlyclean-am
 
 distclean: distclean-am
 
-distclean-am: clean-am distclean-compile distclean-depend \
-	distclean-generic distclean-tags
+distclean-am: clean-am distclean-generic
 
 dvi: dvi-am
 
@@ -513,26 +421,19 @@ maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-compile mostlyclean-generic
+mostlyclean-am: mostlyclean-generic
 
 uninstall-am: uninstall-info-am uninstall-pkgdataDATA
 
-.PHONY: GTAGS all all-am check check-am clean clean-generic \
-	clean-noinstPROGRAMS distclean distclean-compile \
-	distclean-depend distclean-generic distclean-tags distdir dvi \
-	dvi-am info info-am install install-am install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-pkgdataDATA install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic tags uninstall uninstall-am \
+.PHONY: all all-am check check-am clean clean-generic distclean \
+	distclean-generic distdir dvi dvi-am info info-am install \
+	install-am install-data install-data-am install-exec \
+	install-exec-am install-info install-info-am install-man \
+	install-pkgdataDATA install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic uninstall uninstall-am \
 	uninstall-info-am uninstall-pkgdataDATA
 
-
-check:
-	list='$(EXTRA_DIST)'; for file in $$list; do \
-	  echo Testing $$file; ./header_check $$file; \
-	done;
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

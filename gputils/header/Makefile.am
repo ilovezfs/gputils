@@ -2,7 +2,7 @@
 
 pkgdatadir = @GPUTILS_HEADER_PATH@
 
-EXTRA_DIST =\
+HEADER_FILES =\
 	mcp250xx.inc \
 	memory.inc \
 	migrate.inc \
@@ -197,15 +197,6 @@ EXTRA_DIST =\
 	rf675h.inc \
 	rf675k.inc
 
-pkgdata_DATA = $(EXTRA_DIST)
+pkgdata_DATA = $(HEADER_FILES)
 
-noinst_PROGRAMS = header_check
-
-AM_CPPFLAGS = -I${top_srcdir}/include
-
-header_check_SOURCES = header_check.c
-
-check:
-	list='$(EXTRA_DIST)'; for file in $$list; do \
-	  echo Testing $$file; ./header_check $$file; \
-	done;
+EXTRA_DIST = $(HEADER_FILES) Makefile.sh header_check.c
