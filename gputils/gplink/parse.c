@@ -12,7 +12,8 @@
 #line 1 "parse.y"
 
 /* Parser for linker scripts
-   Copyright (C) 2001 Craig Franklin
+   Copyright (C) 2001, 2002, 2003
+   Craig Franklin
 
 This file is part of gputils.
 
@@ -108,7 +109,7 @@ static struct pnode *mk_1op(int op, struct pnode *p0)
 */
 
 
-#line 102 "parse.y"
+#line 103 "parse.y"
 #ifndef YYSTYPE
 typedef union {
   int i;
@@ -184,8 +185,8 @@ static const short yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined. */
 static const short yyrline[] =
 {
-       0,   121,   123,   123,   128,   134,   139,   144,   149,   156,
-     161,   168,   173,   180,   182,   189,   191,   196
+       0,   122,   124,   124,   129,   135,   140,   145,   150,   157,
+     162,   169,   174,   181,   183,   190,   192,   197
 };
 #endif
 
@@ -967,79 +968,79 @@ yyreduce:
   switch (yyn) {
 
 case 2:
-#line 125 "parse.y"
+#line 126 "parse.y"
 { 
           /* do nothing */
         }
     break;
 case 4:
-#line 129 "parse.y"
+#line 130 "parse.y"
 { 
           /* do nothing */
 	}
     break;
 case 5:
-#line 136 "parse.y"
+#line 137 "parse.y"
 {
           /* do nothing */
 	}
     break;
 case 6:
-#line 141 "parse.y"
+#line 142 "parse.y"
 {
 
 	}
     break;
 case 7:
-#line 146 "parse.y"
+#line 147 "parse.y"
 {
 
 	}
     break;
 case 8:
-#line 151 "parse.y"
+#line 152 "parse.y"
 {
 	  execute_command(yyvsp[-2].s, yyvsp[-1].p);
         }
     break;
 case 9:
-#line 158 "parse.y"
+#line 159 "parse.y"
 {
 	  yyval.p = mk_list(mk_symbol(yyvsp[0].s), NULL);
 	}
     break;
 case 10:
-#line 163 "parse.y"
+#line 164 "parse.y"
 {
 	  yyval.p = mk_list(mk_symbol(yyvsp[-2].s), yyvsp[0].p);
 	}
     break;
 case 11:
-#line 170 "parse.y"
+#line 171 "parse.y"
 {
 	  yyval.p = mk_list(yyvsp[0].p, NULL);
 	}
     break;
 case 12:
-#line 175 "parse.y"
+#line 176 "parse.y"
 {
 	  yyval.p = mk_list(yyvsp[-1].p, yyvsp[0].p);
 	}
     break;
 case 14:
-#line 184 "parse.y"
+#line 185 "parse.y"
 {
 	  yyval.p = mk_2op(yyvsp[-1].i, yyvsp[-2].p, yyvsp[0].p);
 	}
     break;
 case 16:
-#line 193 "parse.y"
+#line 194 "parse.y"
 {
 	  yyval.p = mk_symbol(yyvsp[0].s);
         }
     break;
 case 17:
-#line 198 "parse.y"
+#line 199 "parse.y"
 {
 	  yyval.p = mk_constant(yyvsp[0].i);
 	}
@@ -1277,5 +1278,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 203 "parse.y"
+#line 204 "parse.y"
 

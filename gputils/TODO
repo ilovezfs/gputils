@@ -23,8 +23,12 @@ gpasm
   * Add .def/.endef for embedding debug/optimization information
   * Config and Idlocs for coff output of 18xx devices 
   * Undefined coff symbols are always at the end of the coff table.
+  * Add relocations for the difference between symbols in the same section.
 
 gplink
   * Implement idata.
   * Added fill function.
   * Complete protected features.
+  * Check the 18xx relocations.
+  * Handle sharebank sections properly.
+  * Add COD output.

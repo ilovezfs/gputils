@@ -2,7 +2,8 @@
 #
 # Generated automatically from gputils.spec by make.
 #
-# Copyright (C) 2001,2002 Craig Franklin
+# Copyright (C) 2001, 2002, 2003
+# Craig Franklin
 # 
 # This file is part of gputils.
 # 
@@ -62,9 +63,11 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 %{_bindir}/gpasm
 %{_bindir}/gpdasm
 %{_bindir}/gplib
+%{_bindir}/gplink
 %{_bindir}/gpvc
 %{_bindir}/gpvo
 %{_mandir}/man1/*
 %{_datadir}/gputils/header/*
+%{_datadir}/gputils/lkr/*
 %doc AUTHORS COPYING ChangeLog INSTALL NEWS README 
 %doc doc/gputils.lyx doc/gputils.pdf doc/gputils.ps

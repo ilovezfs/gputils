@@ -1,51 +1,53 @@
-.TH gplib 1 "(c) 2002, 2003 James Bowman, Craig Franklin"
+.TH gplink 1 "(c) 2002, 2003 James Bowman, Craig Franklin"
 .SH NAME
-gplib - GNU PIC Librarian
+gplink - GNU PIC Linker
 .SH SYNOPSIS
-.B gplib [options] library [member]
+.B gplink [options] [objects] [libraries]
 .SH WARNING
 The information in this man page is an extract from the full documentation of
 gputils and is limited to the meaning of the options.  For complete and 
 current documentation, refer to "gputils.ps" located in the gputils docs 
 directory.
 .SH DESCRIPTION
-.B gplib
-creates, modifies, and extracts from COFF archives for Microchip (TM) PIC 
-(TM) micro-controllers.
-.B gplib
+.B gplink
+combines a number of object and archive files, relocates their data, and
+ties up their symbol references.  It outputs and executable for Microchip (TM) 
+PIC (TM) micro-controllers.
+.B gplink
 is part of gputils.  Check the gputils(1) manpage for details on other GNU 
 PIC utilities.
 .SH OPTIONS
 .TP
-.B -c, --create
-Create a new library.
+.B -a FMT, --hex-format FMT       
+gplink supports inhx8m, inhx8s, inhx16, and inhx32 hex file formats.  This 
+option controls which hex file format is used.  The default is inhx32.
 .TP
-.B -d, --delete
-Delete member from library.
+.B -c, --object 
+Output an executable object.
+.TP
+.B -d, --debug 
+Display debug messages.
 .TP
 .B -h, --help
 Show the usage message. 
 .TP
-.B -n, --no-index
-Don't add symbol index.
+.B -I DIR, --include DIR
+Specify include directory.
+.TP
+.B -m, --map
+Output a map file.
+.TP
+.B -o FILE, --output FILE
+Alternate name of the output file.
 .TP
 .B -q, --quiet
-Quiet mode.
+Suppress anything sent to standard output.
 .TP
-.B -r, --replace
-Add or replace member from library.
-.TP
-.B -s, --symbols
-List global symbols in library.
-.TP
-.B -t, --list
-List members in library.
+.B -s FILE, --script FILE
+Linker script.
 .TP
 .B -v, --version
 Show the version.
-.TP
-.B -x, --extract
-Extract member from library.
 .SH SEE ALSO
 gputils(1)
 .SH AUTHOR

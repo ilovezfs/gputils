@@ -1,5 +1,6 @@
 /* Error handling for gpasm
-   Copyright (C) 1998,1999,2000,2001 James Bowman, Craig Franklin
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003
+   James Bowman, Craig Franklin
 
 This file is part of gputils.
 
@@ -132,6 +133,8 @@ char *gp_geterror(unsigned int code)
     return "Duplicate macro name.";
   case GPE_BAD_WHILE_LOOP:
     return "WHILE must terminate within 256 iterations.";
+  case GPE_ILLEGAL_NESTING:
+    return "Illegal nesting.";
   case GPE_UNMATCHED_ENDM:
     return "Unmatched ENDM.";
   case GPE_OBJECT_ONLY:

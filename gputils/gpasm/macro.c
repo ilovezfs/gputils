@@ -1,5 +1,6 @@
 /* Implements macros
-   Copyright (C) 2002 Craig Franklin
+   Copyright (C) 2002, 2003 
+   Craig Franklin
 
 This file is part of gputils.
 
@@ -172,9 +173,16 @@ push_macro_symbol_table(struct symbol_table *table)
   if (state.pass == 1) {
     new = push_symbol_table(table, state.case_insensitive);
     add_macro_table(new);
+  } else if (macro_table_list->line_number != state.src->line_number) {
+    /* The user must have conditionally assembled a macro using a forward
+       reference to a label.  This is a very bad practice. It means that
+       a macro wasn't executed on the first pass, but it was on the second.
+       Probably errors will be generated.  Forward references to local 
+       symbols probably won't be correct.  */
+    new = push_symbol_table(table, state.case_insensitive);
+    gpwarning(GPW_UNKNOWN, "macro not executed on pass 1");
   } else {
     assert(macro_table_list != NULL);
-    assert(macro_table_list->line_number == state.src->line_number);
     new = macro_table_list->table;
     new->prev = table;
     macro_table_list = macro_table_list->next; /* setup for next macro */

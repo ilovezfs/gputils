@@ -1,5 +1,6 @@
 /* GNU PIC coff linker functions
-   Copyright (C) 2001 Craig Franklin
+   Copyright (C) 2001, 2002, 2003
+   Craig Franklin
 
 This file is part of gputils.
 
@@ -286,6 +287,10 @@ gp_cofflink_merge_sections(gp_object_type *object)
         continue;
       }
 
+      gp_debug("  merging section \"%s\" with section \"%s\"", 
+               first->name,
+               second->name);
+
       /* Update the addresses in the relocation table */
       relocation = second->relocations;
       while (relocation != NULL) {
@@ -306,12 +311,14 @@ gp_cofflink_merge_sections(gp_object_type *object)
         last = second->size;
         offset = first->size;
       }
-      for (org = 0; org < last; org++) {
-        data = i_memory_get(second->data, org);
-        assert((data & MEM_USED_MASK) != 0);
-        i_memory_put(first->data, org + offset, data);
-      }      
-
+      if(_has_data(second)) {
+        for (org = 0; org < last; org++) {
+          data = i_memory_get(second->data, org);
+          assert((data & MEM_USED_MASK) != 0);
+          i_memory_put(first->data, org + offset, data);
+        }      
+      }
+      
       /* Update the line number offsets */
       _update_line_numbers(second->line_numbers, offset);
 
@@ -319,13 +326,21 @@ gp_cofflink_merge_sections(gp_object_type *object)
       first->size += second->size;
 
       /* Append the relocations from the second section to the first */
+      if (first->num_reloc == 0) {
+        first->relocations = second->relocations;
+      } else {
+        first->relocations_tail->next = second->relocations;
+      }
       first->num_reloc += second->num_reloc;
-      first->relocations_tail->next = second->relocations;
       first->relocations_tail = second->relocations_tail;
       
       /* Append the line numbers from the second section to the first. */
+      if (first->num_lineno == 0) {
+        first->line_numbers = second->line_numbers;
+      } else {
+        first->line_numbers_tail->next = second->line_numbers;
+      }
       first->num_lineno += second->num_lineno;
-      first->line_numbers_tail->next = second->line_numbers;
       first->line_numbers_tail = second->line_numbers_tail;
 
       /* Update the symbol table */
@@ -499,7 +514,7 @@ _search_memory(MemBlock *m,
         gp_debug("    end unused block at %#x with size %#x", 
                  org, 
                  current_size);
-        if ((current_size > size) &&
+        if ((current_size >= size) &&
             (current_size < *block_size)) {
           *block_size = current_size;
           *block_address = current_address;
@@ -535,6 +550,9 @@ _move_data(MemBlock *m,
 {
   int org;
   unsigned int data;
+
+  if (address == new_address)
+    return;
 
   gp_debug("    moving %#x words from %#x to %#x", 
            size,
@@ -716,7 +734,7 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
       current->flags |= STYP_RELOC;
 
     } else {
-      gp_error("no target memory available for section \"%s\"", section->name);    
+      gp_error("no target memory available for section \"%s\"", current->name);    
       return;
     }
   }
@@ -1049,28 +1067,30 @@ gp_cofflink_patch(gp_object_type *object,
   gp_debug("patching data with relocated symbols");
 
   while (section != NULL) {
-    /* patch raw data with relocation entries */
-    relocation = section->relocations;
-    while (relocation != NULL) {
-      symbol = relocation->symbol;
-      if ((symbol->class == C_EXT) && 
-          (symbol->section_number == 0)) {
-        /* This is an external symbol defined elsewhere */
-        sym = get_symbol(symbols, symbol->name);
-        assert(sym != NULL);
-        var = get_symbol_annotation(sym);
-        assert(var != NULL);	  
-        symbol = var->symbol;
+    if (_has_data(section)) {
+      /* patch raw data with relocation entries */
+      relocation = section->relocations;
+      while (relocation != NULL) {
+        symbol = relocation->symbol;
+        if ((symbol->class == C_EXT) && 
+            (symbol->section_number == 0)) {
+          /* This is an external symbol defined elsewhere */
+          sym = get_symbol(symbols, symbol->name);
+          assert(sym != NULL);
+          var = get_symbol_annotation(sym);
+          assert(var != NULL);	  
+          symbol = var->symbol;
+        }
+        gp_cofflink_patch_addr(object->class, section, symbol, relocation);
+
+        relocation = relocation->next;
       }
-      gp_cofflink_patch_addr(object->class, section, symbol, relocation);
-
-      relocation = relocation->next;
+    
+      /* strip the relocations from the section */
+      section->num_reloc = 0;
+      section->relocations = NULL;
+      section->relocations_tail = NULL;
     }
-
-    /* strip the relocations from the section */
-    section->num_reloc = 0;
-    section->relocations = NULL;
-    section->relocations_tail = NULL;
 
     section = section->next;
   }

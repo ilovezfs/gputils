@@ -1,5 +1,6 @@
 /* Map file generation
-   Copyright (C) 2003 Craig Franklin
+   Copyright (C) 2003
+   Craig Franklin
  
 This file is part of gputils.
  

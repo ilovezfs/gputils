@@ -1,5 +1,6 @@
 /* GNU PIC Linker
-   Copyright (C) 2001 Craig Franklin
+   Copyright (C) 2001, 2002, 2003
+   Craig Franklin
 
 This file is part of gputils.
 
@@ -240,7 +241,7 @@ void gplink_add_path(char *path)
 
 void show_usage(void)
 {
-  printf("Usage: gplink [options] [object] [library] \n");
+  printf("Usage: gplink [options] [objects] [libraries] \n");
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -a FMT, --hex-format FMT       Select hex file format.\n");
   printf("  -c, --object                   Output executable object file.\n");

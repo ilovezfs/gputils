@@ -1,3 +1,11 @@
+2003-03-10 Craig Franklin <craigfranklin@attbi.com>
+  * gputils 0.11.0 Released.
+  * Fixed bug that caused amode stack to be incorrect when exitm was used.
+  * The P value for movpf and movfp instructions is now checked.
+  * Added check for invalid destinations with movff instructions.
+  * Cleared defines table at the start of second pass.
+  * Generate a warning for macros only invoked on pass 2.
+
 2003-03-09 Craig Franklin <craigfranklin@attbi.com>
   * Fixed segmentation fault in gplink.
   * Fixed a parse error in the sharebank definitions in linker scripts.

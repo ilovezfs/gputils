@@ -1,5 +1,6 @@
 /* Definitions for functions exported by the lexical analyser
-   Copyright (C) 1998,1999,2000,2001 James Bowman, Craig Franklin
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 
+   James Bowman, Craig Franklin
 
 This file is part of gputils.
 
