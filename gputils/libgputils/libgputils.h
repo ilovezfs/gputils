@@ -26,9 +26,9 @@ Boston, MA 02111-1307, USA.  */
 #include <gpcoff.h>
 #include <gpsystem.h>
 #include <gpopcode.h>
+#include <gpmemory.h>
 #include <gpprocessor.h>
 #include <gpsymbol.h>
-#include <gpmemory.h>
 #include <gpmessage.h>
 #include <gpcoffgen.h>
 #include <gparchive.h>

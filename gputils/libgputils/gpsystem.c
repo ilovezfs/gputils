@@ -95,3 +95,22 @@ _put_32(char *addr, long data)
 
   return;
 }
+
+void
+gp_data_string(char *buffer)
+{
+  time_t now;
+  struct tm *now_tm;
+
+  time(&now);
+  now_tm = localtime(&now);
+  sprintf(buffer,
+          "%d-%d-%d  %02d:%02d:%02d",
+          now_tm->tm_mon + 1,
+          now_tm->tm_mday,
+          1900 + now_tm->tm_year,
+          now_tm->tm_hour,
+          now_tm->tm_min,
+          now_tm->tm_sec);
+
+}

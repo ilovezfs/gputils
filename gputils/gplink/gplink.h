@@ -46,7 +46,11 @@ extern struct gplink_state {
     mapfilename[BUFSIZ],	   /* List (.map) file name */
     objfilename[BUFSIZ];	   /* Object (.o) file name */
   struct source_context *src;	   /* Top of the stack of the script files */
-  struct archivelist    *archives;
+  struct {			   /* Map file state: */
+    FILE *f;			   /*   Map file output */
+    char startdate[80];		/*   When assembly started */
+    int enabled;		/*   nonzero if map is enabled */
+  } map;
   struct {
     struct symbol_table *definition; /* section definitions from script */
     struct symbol_table *logical;    /* logical definitions from script */
@@ -56,7 +60,8 @@ extern struct gplink_state {
     struct symbol_table *missing;    /* missing external symbols */
     struct symbol_table *archive;    /* archive symbol index */
   } symbol;
-  gp_object_type *object;            /* object files */
+  struct archivelist    *archives;
+  gp_object_type        *object;     /* object files */
 } state;
 
 struct source_context {

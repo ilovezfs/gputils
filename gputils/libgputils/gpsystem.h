@@ -28,5 +28,6 @@ short _get_16(char *addr);
 long _get_32(char *addr);
 void _put_16(char *addr, short data);
 void _put_32(char *addr, long data);
+void gp_data_string(char *buffer);
 
 #endif

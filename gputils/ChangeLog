@@ -1,3 +1,7 @@
+2003-03-03 Craig Franklin <craigfranklin@attbi.com>
+  * Finished relocation patching.
+  * Added map and hex file outputs to gplink.
+
 2003-02-27 Craig Franklin <craigfranklin@attbi.com>
   * Added relocation and linking functions to gplink.
 

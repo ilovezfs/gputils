@@ -105,10 +105,12 @@ CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 gplink_SOURCES = \
 	gplink.c \
+	map.c \
 	script.c \
 	parse.y \
 	scan.l \
 	gplink.h \
+	map.h \
 	script.h
 
 
@@ -128,7 +130,7 @@ PROGRAMS =  $(bin_PROGRAMS)
 DEFS = @DEFS@ -I. -I$(srcdir) -I..
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-gplink_OBJECTS =  gplink.o script.o parse.o scan.o
+gplink_OBJECTS =  gplink.o map.o script.o parse.o scan.o
 gplink_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@ \
 ${top_builddir}/@LIBIBERTY@
 gplink_LDFLAGS = 
@@ -145,7 +147,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/gplink.P .deps/parse.P .deps/scan.P .deps/script.P
+DEP_FILES =  .deps/gplink.P .deps/map.P .deps/parse.P .deps/scan.P \
+.deps/script.P
 SOURCES = $(gplink_SOURCES)
 OBJECTS = $(gplink_OBJECTS)
 

@@ -567,3 +567,246 @@ gp_processor_rom_width(enum proc_class class)
 
   return rom_width;
 }
+
+/* determine which page of program memory the address is located */
+int 
+gp_processor_check_page(enum proc_class class, int address)
+{
+  int page;
+
+  switch (class) {
+  case PROC_CLASS_EEPROM8:
+    assert(0);
+    break;
+  case PROC_CLASS_GENERIC:
+  case PROC_CLASS_PIC12:
+  case PROC_CLASS_SX:
+    if (address < 0x200) {
+      page = 0;
+    } else if (address < 0x400) {
+      page = 1;
+    } else if (address < 0x600) {
+      page = 2;
+    } else {
+      page = 3;
+    }
+    break;
+  case PROC_CLASS_PIC14:
+    if (address < 0x800) {
+      page = 0;
+    } else if (address < 0x1000) {
+      page = 1;
+    } else if (address < 0x1800) {
+      page = 2;
+    } else {
+      page = 3;
+    }  
+    break;
+  case PROC_CLASS_PIC16:
+    page = (address >> 8) & 0xff;
+    break;
+  case PROC_CLASS_PIC16E:
+  default:
+    assert(0);
+  }
+
+  return page;
+}
+
+/* determine which bank of data memory the address is located */
+int 
+gp_processor_check_bank(enum proc_class class, int address)
+{
+  int bank;
+
+  switch (class) {
+  case PROC_CLASS_EEPROM8:
+    assert(0);
+    break;
+  case PROC_CLASS_GENERIC:
+  case PROC_CLASS_PIC12:
+  case PROC_CLASS_SX:
+    bank = (address >> 5) & 0x3;
+    break;
+  case PROC_CLASS_PIC14:
+    bank = (address >> 7) & 0x3;
+    break;
+  case PROC_CLASS_PIC16:
+  case PROC_CLASS_PIC16E:
+    bank = (address >> 8) & 0xff;
+    break;
+  default:
+    assert(0);
+  }
+
+  return bank;
+}
+
+/* Set the page bits, return the number of instructions required. */
+
+int 
+gp_processor_set_page(enum proc_class class, 
+                      int page,
+                      MemBlock *m, 
+                      int address)
+{
+  unsigned int data;
+  int bcf_insn;
+  int bsf_insn;
+  int location;
+  int page0;
+  int page1;
+  int count = 2;
+
+  if ((class == PROC_CLASS_EEPROM8) || (class == PROC_CLASS_PIC16E)) {
+    assert(0);
+  } else if (class == PROC_CLASS_PIC16) {
+    /* movlw <page> */
+    data = MEM_USED_MASK | (0xb000 | (page & 0xff));
+    i_memory_put(m, address, data);
+    /* movwf 0x3 */
+    data = MEM_USED_MASK | 0x0100 | 0x3;
+    i_memory_put(m, address + 1, data);
+  } else {
+    if (class == PROC_CLASS_PIC14) {
+      bcf_insn = MEM_USED_MASK | 0x1000;
+      bsf_insn = MEM_USED_MASK | 0x1400;
+      location = 0xa;
+      page0 = 3 << 7;
+      page1 = 4 << 7;    
+    } else {
+      bcf_insn = MEM_USED_MASK | 0x400;
+      bsf_insn = MEM_USED_MASK | 0x500;
+      location = 0x3;
+      page0 = 5 << 5;
+      page1 = 6 << 5;    
+    }
+
+    switch(page) {
+    case 0:
+      /* bcf location, page0 */
+      data = bcf_insn | page0 | location;
+      i_memory_put(m, address, data);
+      /* bcf location, page1 */
+      data = bcf_insn | page1 | location;
+      i_memory_put(m, address + 1, data);
+      break;
+    case 1:
+      /* bsf location, page0 */
+      data = bsf_insn | page0 | location;
+      i_memory_put(m, address, data);
+      /* bcf location, page1 */
+      data = bcf_insn | page1 | location;
+      i_memory_put(m, address + 1, data);
+      break;
+    case 2:
+      /* bcf location, page0 */
+      data = bcf_insn | page0 | location;
+      i_memory_put(m, address, data);
+      /* bsf location, page1 */
+      data = bsf_insn | page1 | location;
+      i_memory_put(m, address + 1, data);
+      break;
+    case 3:
+      /* bsf location, page0 */
+      data = bsf_insn | page0 | location;
+      i_memory_put(m, address, data);
+      /* bsf location, page1 */
+      data = bsf_insn | page1 | location;
+      i_memory_put(m, address + 1, data);
+      break;
+    default:
+      assert(0);
+      break;  
+    }
+  }
+
+  return count;
+}
+
+/* Set the bank bits, return the number of instructions required. */
+
+int 
+gp_processor_set_bank(enum proc_class class, 
+                      int bank,
+                      MemBlock *m, 
+                      int address)
+{
+  unsigned int data;
+  int bcf_insn;
+  int bsf_insn;
+  int location;
+  int bank0;
+  int bank1;
+  int count;
+
+  if (class == PROC_CLASS_EEPROM8) {
+    assert(0);
+  } else if (class == PROC_CLASS_PIC16E) {
+    /* movlb bank */
+    data = MEM_USED_MASK | 0x0100 | (bank & 0xff);
+    i_memory_put(m, address, data);
+    count = 1;
+  } else if (class == PROC_CLASS_PIC16) {
+    /* movlb bank */
+    data = MEM_USED_MASK | 0xb800 | (bank & 0xff);
+    i_memory_put(m, address, data);
+    count = 1;
+  } else {
+    if (class == PROC_CLASS_PIC14) {
+      bcf_insn = MEM_USED_MASK | 0x1000;
+      bsf_insn = MEM_USED_MASK | 0x1400;
+      location = 0x3;
+      bank0 = 5 << 7;
+      bank1 = 6 << 7;    
+    } else {
+      bcf_insn = MEM_USED_MASK | 0x400;
+      bsf_insn = MEM_USED_MASK | 0x500;
+      location = 0x4;
+      bank0 = 5 << 5;
+      bank1 = 6 << 5;    
+    }
+
+    switch(bank) {
+    case 0:
+      /* bcf location, bank0 */
+      data = bcf_insn | bank0 | location;
+      i_memory_put(m, address, data);
+      /* bcf location, bank1 */
+      data = bcf_insn | bank1 | location;
+      i_memory_put(m, address + 1, data);
+      break;
+    case 1:
+      /* bsf location, bank0 */
+      data = bsf_insn | bank0 | location;
+      i_memory_put(m, address, data);
+      /* bcf location, bank1 */
+      data = bcf_insn | bank1 | location;
+      i_memory_put(m, address + 1, data);
+      break;
+    case 2:
+      /* bcf location, bank0 */
+      data = bcf_insn | bank0 | location;
+      i_memory_put(m, address, data);
+      /* bsf location, bank1 */
+      data = bsf_insn | bank1 | location;
+      i_memory_put(m, address + 1, data);
+      break;
+    case 3:
+      /* bcf location, bank0 */
+      data = bsf_insn | bank0 | location;
+      i_memory_put(m, address, data);
+      /* bcf location, bank1 */
+      data = bsf_insn | bank1 | location;
+      i_memory_put(m, address + 1, data);
+      break;
+    default:
+      assert(0);
+      break;  
+    }
+
+    count = 2;
+  }
+
+  return count;
+}

@@ -135,78 +135,6 @@ static void emit_packed(unsigned int value, unsigned int mode)
 
 }
 
-/* determine which page of program memory the address is located */
-int check_page(int address)
-{
-  int page;
-
-  switch (state.device.class) {
-  case PROC_CLASS_EEPROM8:
-    assert(0);
-    break;
-  case PROC_CLASS_GENERIC:
-  case PROC_CLASS_PIC12:
-  case PROC_CLASS_SX:
-    if (address < 0x200) {
-      page = 0;
-    } else if (address < 0x400) {
-      page = 1;
-    } else if (address < 0x600) {
-      page = 2;
-    } else {
-      page = 3;
-    }
-    break;
-  case PROC_CLASS_PIC14:
-    if (address < 0x800) {
-      page = 0;
-    } else if (address < 0x1000) {
-      page = 1;
-    } else if (address < 0x1800) {
-      page = 2;
-    } else {
-      page = 3;
-    }  
-    break;
-  case PROC_CLASS_PIC16:
-    page = (address >> 8) & 0xff;
-    break;
-  case PROC_CLASS_PIC16E:
-  default:
-    assert(0);
-  }
-
-  return page;
-}
-
-/* determine which bank of data memory the address is located */
-int check_bank(int address)
-{
-  int bank;
-
-  switch (state.device.class) {
-  case PROC_CLASS_EEPROM8:
-    assert(0);
-    break;
-  case PROC_CLASS_GENERIC:
-  case PROC_CLASS_PIC12:
-  case PROC_CLASS_SX:
-    bank = (address >> 5) & 0x3;
-    break;
-  case PROC_CLASS_PIC14:
-    bank = (address >> 7) & 0x3;
-    break;
-  case PROC_CLASS_PIC16:
-  case PROC_CLASS_PIC16E:
-    bank = (address >> 8) & 0xff;
-    break;
-  default:
-    assert(0);
-  }
-
-  return bank;
-}
-
 static int off_or_on(struct pnode *p)
 {
   int had_error = 0, ret = 0;
@@ -496,7 +424,8 @@ static gpasmVal do_bankisel(gpasmVal r,
         }
       } else {
         /* movlb bank */
-        emit(0xb800 | check_bank(maybe_evaluate(p)));
+        emit(0xb800 | gp_processor_check_bank(state.device.class,
+                                              maybe_evaluate(p)));
       }
     } else {
       if (count_reloc(p) != 1) {
@@ -524,7 +453,13 @@ static gpasmVal do_banksel(gpasmVal r,
       if (p->tag != symbol) {
         gperror(GPE_ILLEGAL_LABEL, NULL);
       } else {
-        r = set_bank_bits(check_bank(maybe_evaluate(p)));
+        int address = maybe_evaluate(p);
+        int bank = gp_processor_check_bank(state.device.class, address);
+  
+        state.org += gp_processor_set_bank(state.device.class, 
+                                           bank, 
+                                           state.i_memory, 
+                                           state.org);
       }
     } else {
       if (count_reloc(p) != 1) {
@@ -1771,6 +1706,8 @@ static gpasmVal do_pagesel(gpasmVal r,
       (state.device.class == PROC_CLASS_PIC16E)) {
     /* do nothing */
     return r;
+  } else if (state.device.class == PROC_CLASS_PIC16) {
+    gpmessage(GPM_W_MODIFIED, NULL);
   }
 
   if (enforce_arity(arity, 1)) {
@@ -1779,7 +1716,13 @@ static gpasmVal do_pagesel(gpasmVal r,
       if (p->tag != symbol) {
         gperror(GPE_ILLEGAL_LABEL, NULL);
       } else {
-        r = set_page_bits(check_page(maybe_evaluate(p)));
+        int address = maybe_evaluate(p);
+        int page = gp_processor_check_page(state.device.class, address);
+
+        state.org += gp_processor_set_page(state.device.class, 
+                                           page, 
+                                           state.i_memory, 
+                                           state.org);
       }
     } else {
       if (count_reloc(p) != 1) {

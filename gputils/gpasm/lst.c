@@ -75,21 +75,7 @@ void lst_init()
   state.lst.symboltable = 1;
 
   /* Determine state.startdate */
-  {
-    time_t now;
-    struct tm *now_tm;
-
-    time(&now);
-    now_tm = localtime(&now);
-    sprintf(state.lst.startdate,
-	    "%d-%d-%d  %02d:%02d:%02d",
-	    now_tm->tm_mon + 1,
-	    now_tm->tm_mday,
-	    1900 + now_tm->tm_year,
-	    now_tm->tm_hour,
-	    now_tm->tm_min,
-	    now_tm->tm_sec);
-  }
+  gp_data_string(state.lst.startdate);
 
   if (state.cmd_line.macro_expand == 0){
     state.lst.expand = 1;

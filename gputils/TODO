@@ -1,22 +1,30 @@
 This following list contains items that need to be completed.  This 
 list is in no particular order.
 
-  * Finish gplink and gplib.
-  * Use dejagnu for testing.
-  * Add number of pages and banks to the processor definitions and use it.
-  * Clean up the byte verses word, data memory/program memory stuff.
+gputils
+  * Switch to xmalloc and obstacks.
+  * Add gpinit.c to library and use it for user defined variables and pathes.
+  * Start migrating to the GNU coding style.
   * grep the source for FIXME and fix.
+  * Add number of pages and banks to the processor definitions and use it.
+  * Use dejagnu for testing.
+  * Prefix all visible library functions with gp_. Add _ to all 
+    others.
+
+gpasm
   * Implement nested while loops.
+  * Clean up the byte verses word, data memory/program memory stuff.
   * Move opcode generator from /gpasm/directive.c to 
     /libgputils/opcode.c.
   * Move COD file generation to library.
-  * Prefix all visible library functions with gp_. Add _ to all 
-    others.
-  * Switch to xmalloc and obstacks.
-  * Start migrating to the GNU coding style.
   * Add macro names to symbol table in listing file.
   * Add .ident for HLL tools 
   * Add .file/.line for debugger.
   * Add .def/.endef for embedding debug/optimization information
   * Config and Idlocs for coff output of 18xx devices 
   * Undefined coff symbols are always at the end of the coff table.
+
+gplink
+  * Implement idata.
+  * Added fill function.
+  * Complete protected features.

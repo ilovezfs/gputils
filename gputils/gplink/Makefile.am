@@ -24,10 +24,12 @@ CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 gplink_SOURCES=\
 	gplink.c \
+	map.c \
 	script.c \
 	parse.y \
 	scan.l \
 	gplink.h \
+	map.h \
 	script.h
 
 gplink_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
