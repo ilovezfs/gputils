@@ -23,14 +23,9 @@ Boston, MA 02111-1307, USA.  */
 #include "libgputils.h"
 #include "gplink.h"
 #include "scan.h"
+#include "map.h"
 
-/* FIXME:  Strip out all of the linker functions and place them in the 
-           library.  */
-
-struct gplink_state state = {
-    _object,            /* produce hex file by default */
-    inhx32,		/* hex_format */
-};
+struct gplink_state state;
 
 int yyparse(void);
 
@@ -252,6 +247,7 @@ void show_usage(void)
   printf("  -d, --debug                    Output debug messages.\n");
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
+  printf("  -m, --map                      Output a map file.\n");
   printf("  -o FILE, --output FILE         Alternate name of output file.\n");
   printf("  -q, --quiet                    Quiet.\n");
   printf("  -s FILE, --script FILE         Linker script.\n");
@@ -262,7 +258,7 @@ void show_usage(void)
   exit(0);
 }
 
-#define GET_OPTIONS "?a:cdhI:o:qs:v"
+#define GET_OPTIONS "?a:cdhI:mo:qs:v"
 
   static struct option longopts[] =
   {
@@ -271,6 +267,7 @@ void show_usage(void)
     { "debug",       0, 0, 'd' },
     { "help",        0, 0, 'h' },
     { "include",     1, 0, 'I' },
+    { "map",         0, 0, 'm' },
     { "output",      1, 0, 'o' },
     { "quiet",       0, 0, 'q' },
     { "script",      1, 0, 'r' },
@@ -289,9 +286,12 @@ int main(int argc, char *argv[])
   char *pc;
 
   /* initialize */
+  state.mode = _hex;
+  state.hex_format = inhx32;
   state.srcfilename = NULL;
   state.object  = NULL;
   state.archives = NULL;
+  state.map.enabled = 0;
 
   /* The symbols are case sensitive */
   state.symbol.definition = push_symbol_table(NULL, 0);
@@ -323,6 +323,9 @@ int main(int argc, char *argv[])
       break;
     case 'I':
       gplink_add_path(optarg);
+      break;
+    case 'm':
+      state.map.enabled = 1;
       break;
     case 'o':
       strcpy(state.basefilename, optarg);
@@ -404,18 +407,29 @@ int main(int argc, char *argv[])
   state.object->flags |= F_EXEC;
 
   /* write output file */
-  if (gp_num_errors == 0) {
-    if (state.mode == _object) {
-      /* write the executable object in memory */
-      gp_write_coff(state.object);
-    } else {
-      /* convert the executable object into a hex file */
+  if (state.mode == _object) {
+    /* write the executable object in memory */
+    gp_write_coff(state.object, gp_num_errors);
+  } else {
+    MemBlock *m;
+     
+    /* convert the executable object into a hex file */
+    m = gp_cofflink_make_memory(state.object);
+    writehex(state.basefilename,
+             m,
+             state.hex_format,
+             gp_num_errors,
+             0,
+             0);
+    i_memory_free(m);
 
-      /* convert the executable object into a cod file */
+    /* convert the executable object into a cod file */
 
-    }
   }
 
+  /* write map file */
+  make_map();
+  
   if (gp_num_errors > 0)
     return EXIT_FAILURE;
   else

@@ -293,6 +293,9 @@ gp_cofflink_merge_sections(gp_object_type *object)
         relocation = relocation->next;
       }
 
+      /* Update the section symbol for the section symbol */
+      second->symbol->value = first->size;
+
       /* Copy the section data */
       if (second->flags & STYP_TEXT) {
         /* the section is executable, so each word is two bytes */
@@ -722,15 +725,13 @@ _update_table(gp_object_type *object)
   gp_debug("updating symbols with their new relocated values");
 
   while (symbol != NULL) {
-    if ((symbol->section_number > 0) &&
-        (symbol->class != C_SECTION)) {
+    if (symbol->section_number > 0) {
       assert(symbol->section != NULL);
       symbol->value += symbol->section->address;
     }
 
     symbol = symbol->next;
   }
-
 
 }
 
@@ -804,18 +805,18 @@ gp_cofflink_reloc(gp_object_type *object,
   return;
 }
 
-/* FIXME: finish defining patch operations */
-
 /* patch one word with the relocated address */ 
 
 void 
-gp_cofflink_patch_addr(gp_section_type *section, 
+gp_cofflink_patch_addr(enum proc_class class,
+                       gp_section_type *section, 
                        gp_symbol_type *symbol,
                        gp_reloc_type *relocation)
 {
   unsigned int org;
   unsigned int data;
   unsigned int value;
+  int write_data = 1;
 
   /* section address are byte addresses */
   org = section->address + (relocation->address >> 1);
@@ -831,38 +832,186 @@ gp_cofflink_patch_addr(gp_section_type *section,
   data = i_memory_get(section->data, org);
   assert(data & MEM_USED_MASK);
 
+  /* FIXME: Not sure if warnings should be generated for out of range 
+            arguments. The linker should make sure values are within
+            ranges in the linker scripts. */
+
   switch (relocation->type) {
   case RELOCT_CALL:
-    /* lowest eleven bits contain address */
-    if (value > 0x7ff) {
-      /* issue a warning */
+    switch(class) {
+    case PROC_CLASS_PIC12:
+    case PROC_CLASS_SX:
+      data = data | (value & 0xff);
+      break;
+    case PROC_CLASS_PIC14:
+      data = data | (value & 0x7ff);
+      break;
+    case PROC_CLASS_PIC16:
+      data = data | (value & 0x1fff);
+      break;
+    case PROC_CLASS_PIC16E:
+      data = data | ((value >> 1) & 0xff);
+      break;
+    default:
+      assert(0);
     }
-    data = data | (value & 0x7ff);
     break;
   case RELOCT_GOTO:
-    /* lowest eleven bits contain address */
-    if (value > 0x7ff) {
-      /* issue a warning */
+    switch(class) {
+    case PROC_CLASS_PIC12:
+    case PROC_CLASS_SX:
+      data = data | (value & 0x1ff);
+      break;
+    case PROC_CLASS_PIC14:
+      data = data | (value & 0x7ff);
+      break;
+    case PROC_CLASS_PIC16:
+      data = data | (value & 0x1fff);
+      break;
+    case PROC_CLASS_PIC16E:
+      data = data | ((value >> 1) & 0xff);
+      break;
+    default:
+      assert(0);
     }
-    data = data | (value & 0x7ff);   
     break;
-  case RELOCT_BANKSEL:
-  
-    break;
-  case RELOCT_F:
-    /* lowest seven bits contain address */
-    if (value > 0x7F) {
-      /* issue a warning */
-    }
-    data = data | (value & 0x7f);   
+  case RELOCT_HIGH:
+    data = data | ((value >> 8) & 0xff);   
     break; 
+  case RELOCT_LOW:
+    data = data | (value & 0xff);   
+    break; 
+  case RELOCT_P:
+    data = data | ((value & 0x1f) << 8);   
+    break; 
+  case RELOCT_BANKSEL:
+    {
+      int bank = gp_processor_check_bank(class, value);
+      gp_processor_set_bank(class, bank, section->data, org);
+      write_data = 0;
+    }
+    break;
+  case RELOCT_IBANKSEL:
+    switch(class) {
+    case PROC_CLASS_PIC14:
+      if (value < 0x100) {
+        /* bcf 0x3, 0x7 */
+        data = MEM_USED_MASK | 0x1383;
+      } else {
+        /* bsf 0x3, 0x7 */
+        data = MEM_USED_MASK | 0x1783;
+      }
+      break;
+    case PROC_CLASS_PIC16:
+      /* movlb bank */
+      data = MEM_USED_MASK | 0xb800 | gp_processor_check_bank(class, value);
+      break;
+    default:
+      assert(0);
+    }
+    break; 
+  case RELOCT_F:
+    switch(class) {
+    case PROC_CLASS_PIC12:
+    case PROC_CLASS_SX:
+      data = data | (value & 0x1f);
+      break;
+    case PROC_CLASS_PIC14:
+      data = data | (value & 0x7f);
+      break;
+    case PROC_CLASS_PIC16:
+    case PROC_CLASS_PIC16E:
+      data = data | (value & 0xff);
+      break;
+    default:
+      assert(0);
+    }
+    break; 
+  case RELOCT_TRIS:
+    switch(class) {
+    case PROC_CLASS_PIC12:
+    case PROC_CLASS_SX:
+      data = data | (value & 0x1f);
+      break;
+    case PROC_CLASS_PIC14:
+      data = data | (value & 0x7f);
+      break;
+    default:
+      assert(0);
+    }
+    break; 
+  case RELOCT_MOVLR:
+    data = data | ((value << 4) & 0xf0);
+    break;
+  case RELOCT_MOVLB:
+    data = data | (value & 0xff);
+    break;
+  case RELOCT_GOTO2:
+    data = data | ((value >> 8) & 0xfff);
+    break;
+  case RELOCT_FF1:
+    data = data | (value & 0xfff);
+    break;
+  case RELOCT_FF2:
+    data = data | (value & 0xfff);
+    break;
+  case RELOCT_LFSR1:
+    data = data | ((value >> 8) & 0xf);
+    break;
+  case RELOCT_LFSR2:
+    data = data | (value & 0xff);
+    break;
+  case RELOCT_BRA:
+    data = data | (value & 0x7ff);
+    break;
+  case RELOCT_CONDBRA:
+    data = data | (value & 0xff);
+    break;
+  case RELOCT_UPPER:
+    data = data | ((value >> 16) & 0x3f);   
+    break; 
+  case RELOCT_ACCESS:
+    {
+      int a;
+      
+      if ((value < 0x60) || (value > 0xf5f)) {
+        a = 0;
+      } else {
+        a = 1;
+      }
+
+      data = data | (a << 8);   
+    }
+    break;
+  case RELOCT_PAGESEL_WREG:
+  case RELOCT_PAGESEL_BITS:
+    {
+      int page = gp_processor_check_page(class, value);
+      gp_processor_set_page(class, page, section->data, org);
+      write_data = 0;
+    }
+    break;
+  /* unimplemented relocations */
+  case RELOCT_PAGESEL:
+  case RELOCT_ALL:
+  case RELOCT_SCNSZ_LOW:
+  case RELOCT_SCNSZ_HIGH:
+  case RELOCT_SCNSZ_UPPER:
+  case RELOCT_SCNEND_LOW:
+  case RELOCT_SCNEND_HIGH:
+  case RELOCT_SCNEND_UPPER:
+  case RELOCT_SCNEND_LFSR1:
+  case RELOCT_SCNEND_LFSR2:
   default:
-    gp_error("unimplemented relocation = %i\n", relocation->type);
+    gp_error("unimplemented relocation = %i in section \"%s\"", 
+             relocation->type,
+             section->name);
     assert(0);
   }
 
   /* update memory with the new value */
-  i_memory_put(section->data, org, data);
+  if (write_data)
+    i_memory_put(section->data, org, data);
 
   return;
 }
@@ -896,7 +1045,7 @@ gp_cofflink_patch(gp_object_type *object,
         assert(var != NULL);	  
         symbol = var->symbol;
       }
-      gp_cofflink_patch_addr(section, symbol, relocation);
+      gp_cofflink_patch_addr(object->class, section, symbol, relocation);
 
       relocation = relocation->next;
     }
@@ -942,4 +1091,36 @@ gp_cofflink_clean_table(gp_object_type *object)
   }
 
   return;
+}
+
+/* copy all executatable data to new memory */
+
+MemBlock * 
+gp_cofflink_make_memory(gp_object_type *object)
+{
+  gp_section_type *section = object->sections;
+  MemBlock *m;
+  unsigned int org;
+  unsigned int stop;
+  unsigned int data;
+
+  m = i_memory_create();
+
+  while (section != NULL) {
+    if ((section->flags & STYP_TEXT) ||
+        (section->flags & STYP_DATA_ROM)) {
+      stop = section->address + (section->size / 2);
+      
+      for (org = section->address; org < stop; org++) {
+        /* fetch the current contents of the memory */
+        data = i_memory_get(section->data, org);
+        assert(data & MEM_USED_MASK);
+        /* write data to new memory */
+        i_memory_put(m, org, data);
+      }
+    }
+    section = section->next;
+  }
+ 
+ return m;
 }

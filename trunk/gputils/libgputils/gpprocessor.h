@@ -265,5 +265,15 @@ enum pic_processor gp_processor_coff_proc(unsigned long coff_type);
 char *gp_processor_name(enum pic_processor processor, unsigned int choice);
 char *gp_processor_coff_name(unsigned long coff_type, unsigned int choice);
 int gp_processor_rom_width(enum proc_class class);
+int gp_processor_check_page(enum proc_class class, int address);
+int gp_processor_check_bank(enum proc_class class, int address);
+int gp_processor_set_page(enum proc_class class, 
+                          int page,
+                          MemBlock *m, 
+                          int address);
+int gp_processor_set_bank(enum proc_class class, 
+                          int bank,
+                          MemBlock *m, 
+                          int address);
 
 #endif

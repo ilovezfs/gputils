@@ -353,11 +353,16 @@ _gp_updateptr(gp_object_type *object)
 
 /* write the coff file */
 int
-gp_write_coff(gp_object_type *object)
+gp_write_coff(gp_object_type *object, int numerrors)
 {
   FILE *coff;
   gp_section_type *section = NULL;
   char table[MAX_STRING_TABLE]; /* string table */
+
+  if (numerrors) {
+    unlink(object->filename);
+    return 0;
+  }
   
   coff = fopen(object->filename, "w");
   if (coff == NULL) {

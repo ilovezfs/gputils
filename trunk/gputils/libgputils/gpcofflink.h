@@ -63,4 +63,6 @@ void gp_cofflink_patch(gp_object_type *object, struct symbol_table *symbols);
 
 void gp_cofflink_clean_table(gp_object_type *object);
 
+MemBlock *gp_cofflink_make_memory(gp_object_type *object);
+
 #endif
