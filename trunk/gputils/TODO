@@ -82,7 +82,6 @@ gplink
   * Removed unnecessary page and bank switches.
   * Peep-like optimization.  Consider using pcode from sdcc-pic14.
   * Partial linking.
-  * Remove external symbols in an object that have no relocations.
   * Use extended COD file types.
 
 gpvc

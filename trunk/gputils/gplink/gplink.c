@@ -63,6 +63,10 @@ void object_append(gp_object_type *file, char *name)
 
   }
 
+  if (state.optimize.weak_symbols) {
+    gp_cofflink_remove_weak(file);
+  }
+
   return;
 }
 
@@ -368,7 +372,31 @@ void gplink_open_coff(char *name)
 
 }   
 
-#define GET_OPTIONS "?a:cdf:hI:lmo:qrs:t:v"
+static void
+set_optimize_level(void)
+{
+
+  /* default */
+  state.optimize.weak_symbols = false;
+
+  switch(state.optimize.level) {
+  case 3:
+    /* fall through */
+  case 2:
+    /* fall through */
+  case 1:
+    state.optimize.weak_symbols = true;
+    /* fall through */
+  case 0:
+    break;
+  default:
+    gp_error("invalid optimization level");
+  }
+
+  return;
+}
+
+#define GET_OPTIONS "?a:cdf:hI:lmo:O:qrs:t:v"
 
   static struct option longopts[] =
   {
@@ -381,6 +409,7 @@ void gplink_open_coff(char *name)
     { "no-list",     0, 0, 'l' },
     { "map",         0, 0, 'm' },
     { "output",      1, 0, 'o' },
+    { "optimize",    1, 0, 'O' },
     { "quiet",       0, 0, 'q' },
     { "use-shared",  0, 0, 'r' },
     { "script",      1, 0, 's' },
@@ -401,6 +430,7 @@ init(void)
   state.numpaths = 0;
   state.byte_addr = 0;
   state.processor = no_processor;
+  state.optimize.level = 1;
   state.codfile = normal;
   state.hexfile = normal;
   state.lstfile = normal;
@@ -449,6 +479,7 @@ void show_usage(void)
   printf("  -l, --no-list                  Disable list file output.\n");
   printf("  -m, --map                      Output a map file.\n");
   printf("  -o FILE, --output FILE         Alternate name of output file.\n");
+  printf("  -O OPT, --optimize OPT         Optimization level [1].\n");
   printf("  -q, --quiet                    Quiet.\n");
   printf("  -r, --use-shared               Use shared memory if necessary.\n");
   printf("  -s FILE, --script FILE         Linker script.\n");
@@ -482,6 +513,21 @@ process_args( int argc, char *argv[])
   gp_boolean usage = false;
   char *pc;
 
+  /* first pass through options */
+  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
+    switch (c) {
+    case 'O':
+      state.optimize.level = atoi(optarg);
+      break;
+    }
+  }
+
+  /* reset the getopt_long index for the next call */
+  optind = 1;
+
+  set_optimize_level();
+
+  /* second pass through options */
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
     switch (c) {
     case 'a':
@@ -531,6 +577,9 @@ process_args( int argc, char *argv[])
       pc = strrchr(state.basefilename, '.');
       if (pc)
         *pc = 0;
+      break;
+    case 'O':
+      /* do nothing */
       break;
     case 'q':
       gp_quiet = true;
