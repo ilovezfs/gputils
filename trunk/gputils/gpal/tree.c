@@ -193,6 +193,13 @@ mk_file(tree *body, char *name, enum source_type type)
   new->value.file.body = body;
   new->value.file.name = name;
   new->value.file.type = type;
+  if ((type == source_module) || (type == source_public)) {
+    new->value.file.code_default = storage_private;
+    new->value.file.udata_default = storage_private;
+  } else {
+    new->value.file.code_default = storage_far;
+    new->value.file.udata_default = storage_far;
+  }
   
   return new;
 }

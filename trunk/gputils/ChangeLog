@@ -1,3 +1,10 @@
+2003-12-18 Craig Franklin <craigfranklin@comcast.net>
+  * Changed gpasm classification to beta, gpal to pre-alpha, and all
+    others to alpha.
+  * Updated gputils manual to include gpal.
+  * Added gpal man page.
+  * Fixed many gpal bugs.
+
 2003-12-15 Craig Franklin <craigfranklin@comcast.net>
   * Added a new tool called gpal.
   * Added debug-info feature to gpasm, so HLL linenumbers can be inserted

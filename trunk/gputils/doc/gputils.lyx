@@ -29,10 +29,10 @@
 gputils 0.11.8
 \layout Author
 
-James Bowman 
+James Bowman and Craig Franklin 
 \layout Date
 
-October 19, 2003
+December 18, 2003
 \layout Standard
 
 
@@ -51,7 +51,7 @@ gputils is a collection of tools for Microchip (
 TM
 \shape default 
 ) PIC microcontrollers.
- It includes gpasm, gplink, and gplib.
+ It includes gpal, gpasm, gplink, and gplib.
  Each tool is intended to be an open source replacement for a corresponding
  Microchip (TM) tool.
  This manual covers the basics of running the tools.
@@ -97,18 +97,24 @@ You should have received a copy of the GNU General Public License along
 Tool Flows
 \layout Standard
 
-gputils can be used in two different ways, absolute mode and relocatable
- mode.
+gputils can be used in three different ways: absolute asm mode, relocatable
+ asm mode, and HLL mode.
+\layout Subsection
+
+Absolute Asm Mode
 \layout Standard
 
-In absolute mode, a source file is directly converted into a hex file by
- gpasm.
+In absolute asm mode, an assembly language source file is directly converted
+ into a hex file by gpasm.
  This method is absolute because the final addresses are hard coded into
  the source file.
+\layout Subsection
+
+Relocatable Asm Mode
 \layout Standard
 
-In relocatable mode, the microcontroller source code is divided into seperate
- modules.
+In relocatable asm mode, the microcontroller assembly source code is divided
+ into separate modules.
  Each module is assembled into an object using gpasm.
  That object can be placed 
 \begin_inset Quotes eld
@@ -122,7 +128,17 @@ anywhere
  Then gplink is used to resolve symbols references, assign final address,
  and to patch the machine code with the final addresses.
  The output from gplink is an absolute executable object.
-\layout Section
+\layout Subsection
+
+HLL Mode
+\layout Standard
+
+In HLL (High Level Language) mode, the source code is written in a Ada like
+ language.
+ gpal then converts that file into a relocatable assembly file.
+ It then automatically invokes gpasm and gplink to generate an absolute
+ executable object.
+\layout Subsection
 
 Which Tool Flow is best?
 \layout Standard
@@ -153,13 +169,1725 @@ Most develpment tools use relocatable objects for these reasons.
  Their applications are so small that absolute mode isn't impractical.
  For PICs, relocatable mode has one big disadvantage.
  The bank and page control is a challenge.
+ To overcome that, HLL mode can be used.
+ It helps to hide these details from the user.
+ 
+\layout Section
+
+Supported processors 
+\layout LyX-Code
+
+gputils currently supports the following processors:
+\layout LyX-Code
+
+eeprom8    gen        p12c508    p12c508a   p12c509    p12c509a
+\layout LyX-Code
+
+p12c671    p12c672    p12ce518   p12ce519   p12ce673   p12ce674
+\layout LyX-Code
+
+p12cr509a  p12f629    p12f675    p14000     p16c5x     p16cxx
+\layout LyX-Code
+
+p16c432    p16c433    p16c505    p16c52     p16c54     p16c54a
+\layout LyX-Code
+
+p16c54b    p16c54c    p16c55     p16c55a    p16c554    p16c557
+\layout LyX-Code
+
+p16c558    p16c56     p16c56a    p16c57     p16c57c    p16c58a
+\layout LyX-Code
+
+p16c58b    p16c61     p16c62     p16c62a    p16c62b    p16c620
+\layout LyX-Code
+
+p16c620a   p16c621    p16c621a   p16c622    p16c622a   p16c63
+\layout LyX-Code
+
+p16c63a    p16c64     p16c64a    p16c642    p16c65     p16c65a
+\layout LyX-Code
+
+p16c65b    p16c66     p16c662    p16c67     p16c71     p16c710
+\layout LyX-Code
+
+p16c711    p16c712    p16c715    p16c716    p16c717    p16c72
+\layout LyX-Code
+
+p16c72a    p16c73     p16c73a    p16c73b    p16c74     p16c745
+\layout LyX-Code
+
+p16c747    p16c74a    p16c74b    p16c76     p16c765    p16c77
+\layout LyX-Code
+
+p16c770    p16c771    p16c773    p16c774    p16c781    p16c782
+\layout LyX-Code
+
+p16c84     p16c923    p16c924    p16c925    p16c926    p16ce623
+\layout LyX-Code
+
+p16ce624   p16ce625   p16cr54    p16cr54a   p16cr54b   p16cr54c
+\layout LyX-Code
+
+p16cr56a   p16cr57a   p16cr57b   p16cr57c   p16cr58a   p16cr58b
+\layout LyX-Code
+
+p16cr62    p16cr620a  p16cr63    p16cr64    p16cr65    p16cr72
+\layout LyX-Code
+
+p16cr83    p16cr84    p16f627    p16f627a   p16f628    p16f628a
+\layout LyX-Code
+
+p16f630    p16f648a   p16f676    p16f684    p16f716    p16f72
+\layout LyX-Code
+
+p16f73     p16f737    p16f74     p16f76     p16f767    p16f77
+\layout LyX-Code
+
+p16f777    p16f818    p16f819    p16f83     p16f84     p16f84a
+\layout LyX-Code
+
+p16f87     p16f870    p16f871    p16f872    p16f873    p16f873a
+\layout LyX-Code
+
+p16f874    p16f874a   p16f876    p16f876a   p16f877    p16f877a
+\layout LyX-Code
+
+p16f88     p16hv540   p17cxx     p17c42     p17c42a    p17c43
+\layout LyX-Code
+
+p17c44     p17c752    p17c756    p17c756a   p17c762    p17c766
+\layout LyX-Code
+
+p17cr42    p17cr43    p18cxx     p18c242    p18c252    p18c442
+\layout LyX-Code
+
+p18c452    p18c601    p18c658    p18c801    p18c858    p18f1220
+\layout LyX-Code
+
+p18f1320   p18f2220   p18f2320   p18f2331   p18f242    p18f2431
+\layout LyX-Code
+
+p18f2439   p18f248    p18f252    p18f2539   p18f258    p18f2620
+\layout LyX-Code
+
+p18f4220   p18f4320   p18f4331   p18f442    p18f4431   p18f4439
+\layout LyX-Code
+
+p18f448    p18f452    p18f4539   p18f458    p18f4620   p18f6520
+\layout LyX-Code
+
+p18f6525   p18f6585   p18f6620   p18f6621   p18f6680   p18f6720
+\layout LyX-Code
+
+p18f8520   p18f8525   p18f8585   p18f8620   p18f8621   p18f8680
+\layout LyX-Code
+
+p18f8720   rf509af    rf509ag    rf675f     rf675h     rf675k
+\layout LyX-Code
+
+sx18       sx20       sx28           
+\layout Chapter
+
+gpal
+\layout Section
+
+Introduction
+\layout Standard
+
+gpal is a compiler for Microchip (
+\shape smallcaps 
+TM
+\shape default 
+) PIC microcontrollers.
+ Unlike most of the other tools in gputils, there is no corresponding Microchip
+ tool that it replaces.
+ It is a new tool and language specifically designed to to simplify software
+ development for PICs.
+ The language to very similar to the Pascal family of languages, specifically
+ Ada.
+\layout Standard
+
+gpal was inspired by Jal <http://jal.sourceforge.net>.
+ That language was created by Wouter Van Ooijen.
+\layout Section
+
+Running gpal
+\begin_inset LatexCommand \index{gpal options}
+
+\end_inset 
+
+
+\layout Standard
+
+The general syntax for running gpal is
+\layout LyX-Code
+
+gpal [options] input-files
+\layout Standard
+
+Where options can be one of:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+17 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+0 0 1 0
+1 1 0 0
+2 1 0 "" ""
+2 1 1 "4in" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 1 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+
+Option
+\newline 
+Meaning
+\newline 
+a
+\newline 
+Compile or assemble, then archive.
+\newline 
+c
+\newline 
+Compile or assemble, but don't link.
+\newline 
+d
+\newline 
+Output debug messages.
+\newline 
+h
+\newline 
+Show the usage message.
+\newline 
+H
+\newline 
+Scan the specified processor header file.
+\newline 
+I <directory>
+\newline 
+Specify an include directory.
+\newline 
+k
+\begin_inset Quotes erd
+\end_inset 
+
+<options>
+\begin_inset Quotes erd
+\end_inset 
+
+
+\newline 
+Extra link or lib options.
+\newline 
+l
+\newline 
+List supported processors.
+\newline 
+o <file>
+\newline 
+Alternate name of hex output file.
+\newline 
+O<level>
+\newline 
+Optimization level.
+\newline 
+p<processor> 
+\newline 
+Select target processor.
+\newline 
+q
+\newline 
+Quiet
+\newline 
+S
+\newline 
+Compile only, don't assemble or link.
+\newline 
+t
+\newline 
+Do not delete intermediate files.
+\newline 
+
+\newline 
+
+\newline 
+v
+\newline 
+Print gpal version information and exit.
+\layout Subsection
+
+Operations
+\layout Standard
+
+gpal only converts .pal source files into .asm files.
+ However, as a convience it can automatically invoke gpasm to convert the
+ .asm file into an object file with a .o extension.
+ It can also invoke gplink to produce a PIC executable or gplib to produce
+ an archive of objects.
+ The operations are selected using the options -S, -a, and -c.
+\layout Standard
+
+gpal will automatically remove any temporary file generated by its operation
+ or by an tool it invokes.
+ That behavior can be controlled using the -t option.
+\layout Standard
+
+Currently there is no difference between invoking gpal with a complete list
+ of input files, verses invoking multiple times, once for each file.
+ In the future, that will probably change.
+\layout Subsection
+
+Input files
+\layout Standard
+
+The following tables summarizes the types of input files gpal will accept
+ and the operations it performs:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+5 5 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+8 1 0 "" ""
+8 1 0 "" ""
+8 1 0 "" ""
+8 1 0 "" ""
+8 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+File Extension
+\newline 
+Description
+\newline 
+Compile
+\newline 
+Assembly
+\newline 
+Link
+\newline 
+.pal
+\newline 
+gpal source file
+\newline 
+Yes
+\newline 
+Yes
+\newline 
+Yes
+\newline 
+.asm
+\newline 
+relocatable gpasm assembly file
+\newline 
+No
+\newline 
+Yes
+\newline 
+Yes
+\newline 
+.o
+\newline 
+COFF object generated by gpasm
+\newline 
+No
+\newline 
+No
+\newline 
+Yes
+\newline 
+.a
+\newline 
+COFF archive generated by glib
+\newline 
+No
+\newline 
+No
+\newline 
+Yes
+\layout Section
+
+Basics
+\layout Subsection
+
+Free-format 
+\layout Standard
+
+So this statement:
+\layout LyX-Code
+
+if a>b then 
+\layout LyX-Code
+
+  timer = 0;
+\layout LyX-Code
+
+end if;
+\layout Standard
+
+is equivalent to:
+\layout LyX-Code
+
+if a>b then timer = 0; end if;
+\layout Standard
+
+although not recommended.
+\layout Subsection
+
+Statement terminator
+\layout Standard
+
+The semicolon is used to terminate all statements and subprograms.
+ 
+\layout Subsection
+
+Comments
+\layout Standard
+
+Comments are proceeded by a double minus (--) and continue until the end
+ of the current line.
+ 
+\layout Section
+
+Types
+\layout Subsection
+
+Builtin Types
+\layout Standard
+
+The following table defines the built in types:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+9 4 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+8 1 0 "" ""
+8 1 0 "" ""
+8 1 0 "" ""
+8 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+Name
+\newline 
+Size in bytes
+\newline 
+Minimum Value
+\newline 
+Maximum Value
+\newline 
+uint8
+\newline 
+1
+\newline 
+0
+\newline 
+255
+\newline 
+int8
+\newline 
+1
+\newline 
+-128
+\newline 
+127
+\newline 
+uint16
+\newline 
+2
+\newline 
+0
+\newline 
+65,535
+\newline 
+int16
+\newline 
+2
+\newline 
+-32,768
+\newline 
+32,767
+\newline 
+uint24
+\newline 
+3
+\newline 
+0
+\newline 
+16,777,215
+\newline 
+int24
+\newline 
+3
+\newline 
+-8,388,608
+\newline 
+8,388,607
+\newline 
+uint32
+\newline 
+4
+\newline 
+0
+\newline 
+4,294,967,295
+\newline 
+int32
+\newline 
+4
+\newline 
+-2,147,483,648
+\newline 
+2,147,483,647
+\layout Standard
+
+None of the ranges are checked at run time.
+ The user must ensure that any assignment expression won't overflow or underflow
+ the type.
+ 
+\layout Subsection
+
+Arrays
+\layout LyX-Code
+
+type <name> is array <expression> to <expression> of <type>;
+\layout Standard
+
+The following example will create an array type of 10 unsigned bytes:
+\layout LyX-Code
+
+type buffer_type is array 1 to 10 of uint8;
+\layout LyX-Code
+
+variable buffer : buffer_type;
+\layout Subsection
+
+Enumerated
+\layout LyX-Code
+
+type <name> is ( <name> [, <name>]*);
+\layout Standard
+
+The following code will create and enumerated type: 
+\layout LyX-Code
+
+type main_state is (INIT, DELAY, OUTPUT);
+\layout Standard
+
+This will create a new type that can take on one of three values.
+ Each symbol in the list is assigned a value starting at 0.
+ Each symbol value pair is added to the global symbol table.
+ All enumerated types use the uint8 size.
+ So there for the maximum list size is 256 members.
+\layout Subsection
+
+Alias
+\layout Standard
+
+Types can be given new names to suit the user's preference.
+ 
+\layout LyX-Code
+
+type <name> is <type>;
+\layout Standard
+
+This example will create an alias of int16 with the name short.
+\layout LyX-Code
+
+type short is int16;
+\layout Section
+
+Expressions
+\layout Subsection
+
+Symbols
+\layout Standard
+
+Symbols must match the following rule:
+\layout LyX-Code
+
+[a-z][_.0-9a-z]*
+\layout Standard
+
+All symbols are case insensitive.
+ So the following two statements are equivalent.
+ 
+\layout LyX-Code
+
+Timer = 0; 
+\layout LyX-Code
+
+tImEr = 0;
+\layout Standard
+
+The only exception is symbols that used to generate filenames.
+ 
+\layout LyX-Code
+
+with time;
+\layout Standard
+
+This statement will open the file 
+\begin_inset Quotes eld
+\end_inset 
+
+time.pub
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ If the host operating system uses a case sensitive file system, the case
+ of the with is important.
+ To maintain portability across different operating systems, it is best
+ to keep the with statements and filenames lower case.
+\layout Subsection
+
+Numbers
+\layout Standard
+
+gpal uses decimal as its default radix.
+ The following table summarizes other supported numeric formats.
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+3 3 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 1 0 0
+8 1 0 "" ""
+8 1 0 "" ""
+8 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+base
+\newline 
+general syntax
+\newline 
+21 decimal written as
+\newline 
+decimal
+\newline 
+[0-9]*
+\newline 
+21
+\newline 
+hex
+\newline 
+0x[0-F]*
+\newline 
+0x15
+\layout Subsection
+
+Operators
+\layout Standard
+
+gpal supports a full set of operators, based on the C operator set.
+ The operators in the following table are arranged in groups of equal precedence
+, but the groups are arranged in order of increasing precedence.
+ When gpal encounters operators of equal precedence, it always evaluates
+ from left to right.
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+23 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 1 0 0
+1 1 0 0
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+1 0 0 0
+1 1 0 0
+1 0 0 0
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+8 1 0 "" ""
+8 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+Operator
+\newline 
+Description
+\newline 
+=
+\newline 
+assignment
+\newline 
+||
+\newline 
+logical or
+\newline 
+&&
+\newline 
+logical and
+\newline 
+&
+\newline 
+bitwise and
+\newline 
+|
+\newline 
+bitwise or
+\newline 
+^
+\newline 
+bitwise exclusive-or
+\newline 
+<
+\newline 
+less than
+\newline 
+>
+\newline 
+greater than
+\newline 
+==
+\newline 
+equals
+\newline 
+!=
+\newline 
+not equals
+\newline 
+>=
+\newline 
+greater than or equal
+\newline 
+<=
+\newline 
+less than or equal
+\newline 
+<<
+\newline 
+left shift
+\newline 
+>>
+\newline 
+right shift
+\newline 
++
+\newline 
+addition
+\newline 
+-
+\newline 
+subtraction
+\newline 
+*
+\newline 
+multiplication
+\newline 
+/
+\newline 
+division
+\newline 
+%
+\newline 
+modulo
+\newline 
+-
+\newline 
+negation
+\newline 
+!
+\newline 
+logical not
+\newline 
+~
+\newline 
+bitwise no
+\layout Subsection
+
+Assignment
+\layout LyX-Code
+
+<name>['[' <expression> ']']? = <expression>;
+\layout Standard
+
+Assignment statements can appear in any statement block.
+ <name> must be a variable.
+ If the bracket enclosed expression is added it must be an array.
+\layout Subsection
+
+Test
+\layout LyX-Code
+
+<expression> [ <comparison operator> <expression>]*;
+\layout Standard
+
+Test statements can only appear in the expressions of if statements and
+ while loops.
+ They must evaluate to a boolean.
+\layout Section
+
+Statements
+\layout Subsection
+
+If
+\layout LyX-Code
+
+if <expression> then 
+\layout LyX-Code
+
+  <statements> 
+\layout LyX-Code
+
+[elsif <expression> then 
+\layout LyX-Code
+
+  <statements>]*
+\layout LyX-Code
+
+[else 
+\layout LyX-Code
+
+  <statements>]? 
+\layout LyX-Code
+
+end if;
+\layout Standard
+
+The statements in each block are executed if the expression is true.
+ Here is an example:
+\layout LyX-Code
+
+if i < 10 then
+\layout LyX-Code
+
+  j = 5;
+\layout LyX-Code
+
+elsif i > 12 then
+\layout LyX-Code
+
+  j = 10;
+\layout LyX-Code
+
+elsif i > 14 then
+\layout LyX-Code
+
+  j = 14;
+\layout LyX-Code
+
+else 
+\layout LyX-Code
+
+  j = 0;
+\layout LyX-Code
+
+end if;
+\layout Subsection
+
+Case
+\layout LyX-Code
+
+case <name> is
+\layout LyX-Code
+
+[when <constant> =>
+\layout LyX-Code
+
+  <statements>]*
+\layout LyX-Code
+
+[when others =>
+\layout LyX-Code
+
+  <statements>]?
+\layout LyX-Code
+
+end case;
+\layout Standard
+
+If <name> equals any of the <constants> the <statements> are executed.
+ If none of the constants match and an others is present, the others statements
+ are executed.
+ Here is an example:
+\layout LyX-Code
+
+case input is
+\layout LyX-Code
+
+  when MAXIMUM =>
+\layout LyX-Code
+
+    output = 8;
+\layout LyX-Code
+
+  when 5 =>
+\layout LyX-Code
+
+    output = 4;
+\layout LyX-Code
+
+  when 1 =>
+\layout LyX-Code
+
+    output = 2;
+\layout LyX-Code
+
+  when others => 
+\layout LyX-Code
+
+    output = 0;
+\layout LyX-Code
+
+end case;
+\layout Subsection
+
+Loop
+\layout LyX-Code
+
+loop 
+\layout LyX-Code
+
+  <statements> 
+\layout LyX-Code
+
+end loop;
+\layout Standard
+
+The statements in the block are executed in an infinite loop.
+ Here is an example:
+\layout LyX-Code
+
+loop
+\layout LyX-Code
+
+  j = j + 1;
+\layout LyX-Code
+
+  if j = 100 then
+\layout LyX-Code
+
+    return 0;
+\layout LyX-Code
+
+  end if;
+\layout LyX-Code
+
+end loop;
+\layout Subsection
+
+While
+\layout LyX-Code
+
+while <expression>
+\layout LyX-Code
+
+  loop 
+\layout LyX-Code
+
+    <statements> 
+\layout LyX-Code
+
+  end loop;
+\layout Standard
+
+The statements in the block are executed while <expression> is true.
+ Here is an example:
+\layout LyX-Code
+
+while j < 10
+\layout LyX-Code
+
+  loop
+\layout LyX-Code
+
+    j = j + 1;
+\layout LyX-Code
+
+  end loop;
+\layout Subsection
+
+For
+\layout LyX-Code
+
+for <name> in <start_expression> to <end_expression>
+\layout LyX-Code
+
+  loop 
+\layout LyX-Code
+
+    <statements> 
+\layout LyX-Code
+
+  end loop;
+\layout Standard
+
+<name> is set to <start_expression>.
+ It is then incremented each time the block of statements are executed.
+ It continues until <name> reaches <end_expression>.
+ Here is an example:
+\layout LyX-Code
+
+for i in 0 to 10
+\layout LyX-Code
+
+  loop
+\layout LyX-Code
+
+    buffer[i] = 0;
+\layout LyX-Code
+
+  end loop;
+\layout Subsection
+
+Assembly
+\layout LyX-Code
+
+asm 
+\layout LyX-Code
+
+  <asm statements> 
+\layout LyX-Code
+
+end asm;
+\layout Standard
+
+Unmodified <asm statements> are copied to the assembly file output.
+ The syntax of <asm statements> must be compatible with gpasm.
+\layout Subsection
+
+Return
+\layout LyX-Code
+
+return <expression>;
+\layout Standard
+
+Evaluate the <expression>, place it in the return register, and return from
+ the function.
+\layout Subsection
+
+Null
+\layout LyX-Code
+
+null;
+\layout Standard
+
+Execute a NOP.
+ This is a little different from NULL statements in most languages.
+ It is typically is used in statement block that was intentionally left
+ blank and no code is generated.
+ 
+\layout Subsection
+
+Pragma
+\layout LyX-Code
+
+pragma <anything>;
+\layout Standard
+
+Pragmas provide data to compiler which is outside of its legal syntax.
+ The table below summarizes the pragmas available:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+7 3 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+8 1 0 "" ""
+8 1 0 "" ""
+8 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+Name
+\newline 
+Format
+\newline 
+Description
+\newline 
+Code Address
+\newline 
+code_address = <constant>
+\newline 
+Make the code section absolute at address <constant>.
+\newline 
+Code Section
+\newline 
+code_section = 
+\begin_inset Quotes eld
+\end_inset 
+
+<name>
+\begin_inset Quotes eld
+\end_inset 
+
+
+\newline 
+Set the code section name to <name>.
+\newline 
+Header
+\newline 
+header = 
+\begin_inset Quotes eld
+\end_inset 
+
+<name>
+\begin_inset Quotes eld
+\end_inset 
+
+
+\newline 
+Scan the processor header file and add the EQU symbols.
+\newline 
+Processor
+\newline 
+processor = 
+\begin_inset Quotes eld
+\end_inset 
+
+<name>
+\begin_inset Quotes eld
+\end_inset 
+
+
+\newline 
+Set the processor name to <name>.
+\newline 
+Udata Address
+\newline 
+udata_address = <constant>
+\newline 
+Make the udata section absolute at address <constant>.
+\newline 
+Udata Section
+\newline 
+udata_section= 
+\begin_inset Quotes eld
+\end_inset 
+
+<name>
+\begin_inset Quotes eld
+\end_inset 
+
+
+\newline 
+Set the udata section name to <name>.
+\layout Section
+
+Declarations
+\layout Subsection
+
+Variables
+\layout Standard
+
+Symbols whose values change during runtime are referred to as variables.
+ Because variables change value during run time they are stored in data
+ memory.
+ An expression specifies its initial value.
+ A variable is declared as follows:
+\layout LyX-Code
+
+variable <name> : <type> [= <expression>]?;
+\layout Standard
+
+Here is an example:
+\layout LyX-Code
+
+variable gain : short = 10;
+\layout Subsection
+
+Constants
+\layout Standard
+
+Compile time symbols whose values do not change are referred to as constants.
+ A constant is declared as follows:
+\layout LyX-Code
+
+constant <name> : <type> = <expression>;
+\layout Standard
+
+Here is an example:
+\layout LyX-Code
+
+constant filter_offset : int16 = 0x1434;
+\layout Section
+
+Subprograms
+\layout Subsection
+
+Procedure
+\layout LyX-Code
+
+procedure <name> ( [<arg name> : [in|out|inout] <type>]* ) is
+\layout LyX-Code
+
+  <declarations>
+\layout LyX-Code
+
+begin
+\layout LyX-Code
+
+  <statements>
+\layout LyX-Code
+
+end procedure;
+\layout Standard
+
+This creates a block of executable code that starts at <name>.
+ The procedure can be called from other subprograms within any statement
+ block, but they can not be called from within an expression.
+\layout Standard
+
+Permanent storage is allocated for each procedure argument.
+ Data is passed to and from the procedure through that storage.
+ The calling subprogram puts data into the arguments and reads from the
+ arguments based the direction specified in the procedure definition.
+ The direction is ignored by the procedure.
+ All the arguments can be read from and written to.
+ 
+\layout Standard
+
+Local constants and variables are declared in <declarations>.
+ Any variables declared in this region may be permanent or overlayed with
+ data from other subprograms.
+\layout Subsection
+
+Function
+\layout LyX-Code
+
+function <name> ( [<arg name> : [in|out|inout] <type>]* ) return type is
+\layout LyX-Code
+
+  <declarations>
+\layout LyX-Code
+
+begin
+\layout LyX-Code
+
+  <statements>
+\layout LyX-Code
+
+end function;
+\layout Standard
+
+This creates a block of executable code that starts at <name>.
+ The function can only be called from within expressions.
+\layout Standard
+
+Like procedures in many respects, except a value is returned.
+ This value is used in the expression.
+\layout Section
+
+Files
+\layout Subsection
+
+Module
+\layout LyX-Code
+
+module <name> is
+\layout LyX-Code
+
+  <subprogram definitions|variable definitions|constants|types>
+\layout LyX-Code
+
+end module;
+\layout Standard
+
+The module defines a related group of subprograms and data that will be
+ placed in the same page or bank.
+ One module is placed in each .pal file.
+ Typically the filename will be the same as <name> with the .pal extension
+ added.
+ Groups of modules are compiled and linked to gather to make the executable.
+\layout Subsection
+
+Public
+\layout LyX-Code
+
+\layout LyX-Code
+
+public <name> is
+\layout LyX-Code
+
+  <subprograms declarations|variable declarations|constants|types>
+\layout LyX-Code
+
+end public;
+\layout Standard
+
+The public declares which portions of its module will be public.
+ It also provides information about the interface to the module's subprograms
+ and data.
+ One public is placed in each .pub file.
+ The filename must be the same as <name> with the .pub extension added.
+ The <name> must also match the <name> of its module if one exists.
+ When the module is compiled, it will scan its public file to verify that
+ the declarations in the file match its subprograms and data.
+\layout Subsection
+
+With
+\layout LyX-Code
+
+with <name>;
+\layout LyX-Code
+
+\layout Standard
+
+The with statement is the only statement allowed outside a module or public.
+ It tells the compiler to add the data from the public in the file <name>.pub
+ to its symbol tables.
+ This will allow access to that module's subprograms and data.
+\layout Section
+
+Code Generation
+\layout Subsection
+
+Phases
+\layout Subsubsection
+
+Parse
+\layout Standard
+
+The input files are parsed and stored in memory in a tree format.
+ Constructs are replaced with common structures.
+ For example for and while loops are converted into conditional loops with
+ initialization statements and increment statements.
+\layout Subsubsection
+
+Analyze
+\layout Standard
+
+The syntax and semantics of the tree are checked.
+ Most of the errors are generated during this phase.
+\layout Subsubsection
+
+Optimize
+\layout Standard
+
+The tree is modified to generate better code.
+\layout Subsubsection
+
+Code Generation
+\layout Standard
+
+The tree is written to an asm file, so it can be assembled and linked.
+ In the future, this stage will generate a low level icode.
+ That code will be further optimized before it is written to the asm file.
+\layout Subsection
+
+Expression Evaluation
+\layout Standard
+
+Most compilers are a stack machine, accumulator machine, or a register machine.
+ Not all of the machines are good for every target processor.
+ Some options either won't work or aren't optimal.
+ Because of the limited resources on PICs, the absence of stack manipulation
+ instructions, and the fact that some instructions can only target the Wreg.
+ An accumulator machine is the best choice for PICs.
+ It is the choice that gpal uses.
+ For example:
+\layout LyX-Code
+
+i = (x + 3) & 4;
+\layout Standard
+
+will generate the following pseudo code:
+\layout LyX-Code
+
+Wreg = x;
+\layout LyX-Code
+
+Wreg = Wreg + 3;
+\layout LyX-Code
+
+Wreg = Wreg & 4;
+\layout LyX-Code
+
+i = Wreg;
+\layout Standard
+
+If necessary, intermediate values are stored in data memory.
+ For byte sized operations the Wreg is used.
+ For larger sized operations, a section of data memory is used as the accumulato
+r.
+ 
+\layout Subsection
+
+COFF sections
+\layout Standard
+
+All the executable code in a module is placed in one COFF section.
+ This guarantees that code will be on the same page, so no page switching
+ is required.
+ the code section name is specified using the code_section pragma.
+ If that pragma isn't used a default name is used.
+\layout Standard
+
+Similarly all data memory is placed in one COFF section.
+ This too reduces the number of bank switches when accessing local data.
+\layout Subsection
+
+Name mangling
+\layout Standard
+
+gpal uses a hierarchical name space.
+ The module name is specified in all inter-module accesses.
+ So to write to memory 
+\begin_inset Quotes eld
+\end_inset 
+
+clock
+\begin_inset Quotes erd
+\end_inset 
+
+ in the local module: 
+\layout LyX-Code
+
+clock = 0;
+\layout Standard
+
+to write to memory 
+\begin_inset Quotes eld
+\end_inset 
+
+clock
+\begin_inset Quotes erd
+\end_inset 
+
+ in module 
+\begin_inset Quotes eld
+\end_inset 
+
+time
+\begin_inset Quotes erd
+\end_inset 
+
+:
+\layout LyX-Code
+
+time.clock = 0;
+\layout Standard
+
+To prevent collisions when compiling and linking all symbols are mangled
+ in the asm output of gpal.
+ It takes the form:
+\layout LyX-Code
+
+<module>.<subprogram>.<local data>
+\layout Standard
+
+So, local data 
+\begin_inset Quotes eld
+\end_inset 
+
+index
+\begin_inset Quotes erd
+\end_inset 
+
+ in procedure 
+\begin_inset Quotes eld
+\end_inset 
+
+pop_stack
+\begin_inset Quotes erd
+\end_inset 
+
+ in module 
+\begin_inset Quotes eld
+\end_inset 
+
+stack
+\begin_inset Quotes erd
+\end_inset 
+
+ is given the name 
+\begin_inset Quotes eld
+\end_inset 
+
+stack.pop_stack.index
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Section
+
+Coding Suggestions
+\layout Standard
+
+The following suggestions will help to generate smaller faster target code.
+ 
+\layout Subsection
+
+Use uint8 types
+\layout Standard
+
+PICs are unsigned 8 bit machines.
+ To do anything beyond that requires more memory and more instruction cycles.
+ So use uint8 for as many arguments and data as possible.
+ 
+\layout Subsection
+
+Keep data private
+\layout Standard
+
+Any subprogram or data in the public file will make the corresponding object
+ public.
+ When an object is public fewer compile time optimizations can be done.
+ For example, if public data is defined in a module, but not used in that
+ module, it can't be removed.
+ Another module may access that data.
+ So put as few subprogram and data declarations in the public file as possible.
+ 
+\layout Subsection
+
+Group related subprograms and data in one module
+\layout Standard
+
+Any time data is accessed in another module, it could require a bank switch.
+ Minimizing switches will help to reduce code size and increase speed.
+ 
+\layout Subsection
+
+Name COFF sections
+\layout Standard
+
+Before relocating sections, gplink will combine all like named sections
+ into one larger section.
+ Sections can not cross page or bank boundaries, so inter section accesses
+ don't require bank or page switches.
+ To name the sections use the code_section and udata_section pragmas.
+ This will group the code together.
+ If the code is needed on a specific page or bank, create a logical definition
+ in your linker script.
+\layout Subsection
+
+Don' t use absolute sections
+\layout Standard
+
+gpal provides the ability to specify the address of the code or udata of
+ the current module.
+ The feature is provided for a limited set of cases were the address must
+ be known.
+ Unfortunately, it limits the choices the linker can make when relocating
+ sections.
+ At worst it may make the design not fit in the available memory.
+ It also requires extra effort on the part of the user.
+\layout Subsection
+
+Use multiple module implementations
+\layout Standard
+
+The public file defines the interface to a module.
+ The name of the public and its file must match, so it can be found.
+ There is no requirement of module name to match the file name.
+ This makes it possible for multiple modules with the same interface to
+ exist.
+ You select the module to use when the project is linked.
+ For example you could have math_fast.pal and math_small.pal that both contain
+ a math module.
+ One written to execute fast and the other written to be small in memory.
 \layout Chapter
 
 gpasm
 \layout Section
 
 Running gpasm
-\begin_inset LatexCommand \index{options}
+\begin_inset LatexCommand \index{gpasm options}
 
 \end_inset 
 
@@ -685,7 +2413,7 @@ operators, based on the C operator set.
 \layout Standard
 \added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
 multicol5
-25 2 0 0 -1 -1 -1 -1
+26 2 0 0 -1 -1 -1 -1
 1 1 0 0
 1 1 0 0
 1 1 0 0
@@ -706,6 +2434,7 @@ multicol5
 1 0 0 0
 1 0 0 0
 1 1 0 0
+1 0 0 0
 1 0 0 0
 1 0 0 0
 1 0 0 0
@@ -713,6 +2442,8 @@ multicol5
 1 1 0 0
 8 1 0 "" ""
 8 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
@@ -843,6 +2574,10 @@ division
 %
 \newline 
 modulo
+\newline 
+UPPER
+\newline 
+upper byte
 \newline 
 HIGH
 \newline 
@@ -2880,194 +4615,6 @@ See also: ENDW
 \layout Section
 
 Instructions 
-\layout Subsection
-
-Supported processors 
-\layout LyX-Code
-
-gpasm currently supports the following processors:
-\layout LyX-Code
-
-
-\lang american
-eeprom8    gen        p12c508    p12c508a   p12c509    p12c509a
-\layout LyX-Code
-
-
-\lang american
-p12c671    p12c672    p12ce518   p12ce519   p12ce673   p12ce674
-\layout LyX-Code
-
-
-\lang american
-p12cr509a  p12f629    p12f675    p14000     p16c5x     p16cxx
-\layout LyX-Code
-
-
-\lang american
-p16c432    p16c433    p16c505    p16c52     p16c54     p16c54a
-\layout LyX-Code
-
-
-\lang american
-p16c54b    p16c54c    p16c55     p16c55a    p16c554    p16c557
-\layout LyX-Code
-
-
-\lang american
-p16c558    p16c56     p16c56a    p16c57     p16c57c    p16c58a
-\layout LyX-Code
-
-
-\lang american
-p16c58b    p16c61     p16c62     p16c62a    p16c62b    p16c620
-\layout LyX-Code
-
-
-\lang american
-p16c620a   p16c621    p16c621a   p16c622    p16c622a   p16c63
-\layout LyX-Code
-
-
-\lang american
-p16c63a    p16c64     p16c64a    p16c642    p16c65     p16c65a
-\layout LyX-Code
-
-
-\lang american
-p16c65b    p16c66     p16c662    p16c67     p16c71     p16c710
-\layout LyX-Code
-
-
-\lang american
-p16c711    p16c712    p16c715    p16c716    p16c717    p16c72
-\layout LyX-Code
-
-
-\lang american
-p16c72a    p16c73     p16c73a    p16c73b    p16c74     p16c745
-\layout LyX-Code
-
-
-\lang american
-p16c747    p16c74a    p16c74b    p16c76     p16c765    p16c77
-\layout LyX-Code
-
-
-\lang american
-p16c770    p16c771    p16c773    p16c774    p16c781    p16c782
-\layout LyX-Code
-
-
-\lang american
-p16c84     p16c923    p16c924    p16c925    p16c926    p16ce623
-\layout LyX-Code
-
-
-\lang american
-p16ce624   p16ce625   p16cr54    p16cr54a   p16cr54b   p16cr54c
-\layout LyX-Code
-
-
-\lang american
-p16cr56a   p16cr57a   p16cr57b   p16cr57c   p16cr58a   p16cr58b
-\layout LyX-Code
-
-
-\lang american
-p16cr62    p16cr620a  p16cr63    p16cr64    p16cr65    p16cr72
-\layout LyX-Code
-
-
-\lang american
-p16cr83    p16cr84    p16f627    p16f627a   p16f628    p16f628a
-\layout LyX-Code
-
-
-\lang american
-p16f630    p16f648a   p16f676    p16f684    p16f716    p16f72
-\layout LyX-Code
-
-
-\lang american
-p16f73     p16f737    p16f74     p16f76     p16f767    p16f77
-\layout LyX-Code
-
-
-\lang american
-p16f777    p16f818    p16f819    p16f83     p16f84     p16f84a
-\layout LyX-Code
-
-
-\lang american
-p16f87     p16f870    p16f871    p16f872    p16f873    p16f873a
-\layout LyX-Code
-
-
-\lang american
-p16f874    p16f874a   p16f876    p16f876a   p16f877    p16f877a
-\layout LyX-Code
-
-
-\lang american
-p16f88     p16hv540   p17cxx     p17c42     p17c42a    p17c43
-\layout LyX-Code
-
-
-\lang american
-p17c44     p17c752    p17c756    p17c756a   p17c762    p17c766
-\layout LyX-Code
-
-
-\lang american
-p17cr42    p17cr43    p18cxx     p18c242    p18c252    p18c442
-\layout LyX-Code
-
-
-\lang american
-p18c452    p18c601    p18c658    p18c801    p18c858    p18f1220
-\layout LyX-Code
-
-
-\lang american
-p18f1320   p18f2220   p18f2320   p18f2331   p18f242    p18f2431
-\layout LyX-Code
-
-
-\lang american
-p18f2439   p18f248    p18f252    p18f2539   p18f258    p18f2620
-\layout LyX-Code
-
-
-\lang american
-p18f4220   p18f4320   p18f4331   p18f442    p18f4431   p18f4439
-\layout LyX-Code
-
-
-\lang american
-p18f448    p18f452    p18f4539   p18f458    p18f4620   p18f6520
-\layout LyX-Code
-
-
-\lang american
-p18f6525   p18f6585   p18f6620   p18f6621   p18f6680   p18f6720
-\layout LyX-Code
-
-
-\lang american
-p18f8520   p18f8525   p18f8585   p18f8620   p18f8621   p18f8680
-\layout LyX-Code
-
-
-\lang american
-p18f8720   rf509af    rf509ag    rf675f     rf675h     rf675k
-\layout LyX-Code
-
-
-\lang american
-sx18       sx20       sx28       
-\lang english
-    
 \layout LyX-Code
 
 \layout Subsection

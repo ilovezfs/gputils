@@ -131,7 +131,7 @@ void
 codegen_call(char *label, enum node_storage storage)
 {
  
-  if (storage == storage_extern) {
+  if (storage == storage_far) {
     codegen_write_asm("pagesel %s", label);
   }
   codegen_write_asm("call %s", label);
@@ -198,14 +198,14 @@ codegen_load_file(tree *symbol, struct variable *var)
       if (can_evaluate(SYM_OFST(symbol), false)) {
         /* direct access */
         offset = analyze_check_array(symbol, var) * element_size;
-        if (var->storage == storage_extern) {
+        if (var->storage == storage_far) {
           LOAD_FILE(var->alias, codegen_size, offset, true);
         } else {
           LOAD_FILE(var->alias, codegen_size, offset, false);
         }
       } else {
         codegen_indirect(SYM_OFST(symbol), var, element_size, false);
-        if (var->storage == storage_extern) {
+        if (var->storage == storage_far) {
           LOAD_INDIRECT(var->alias, codegen_size, 0, true);
         } else {
           LOAD_INDIRECT(var->alias, codegen_size, 0, false);
@@ -216,7 +216,7 @@ codegen_load_file(tree *symbol, struct variable *var)
                     SYM_NAME(symbol));
     }
   } else {
-    if (var->storage == storage_extern) {
+    if (var->storage == storage_far) {
       LOAD_FILE(var->alias, codegen_size, 0, true);
     } else {
       LOAD_FILE(var->alias, codegen_size, 0, false);
@@ -237,20 +237,20 @@ codegen_store(struct variable *var,
 
   if (offset_expr) {
     if (constant_offset) {
-      if (var->storage == storage_extern) {
+      if (var->storage == storage_far) {
         STORE_FILE(var->alias, codegen_size, offset, true);
       } else {
         STORE_FILE(var->alias, codegen_size, offset, false);
       }    
     } else {
-      if (var->storage == storage_extern) {
+      if (var->storage == storage_far) {
         STORE_INDIRECT(var->alias, codegen_size, 0, true);
       } else {
         STORE_INDIRECT(var->alias, codegen_size, 0, false);
       }
     }
   } else {
-    if (var->storage == storage_extern) {
+    if (var->storage == storage_far) {
       STORE_FILE(var->alias, codegen_size, 0, true);
     } else {
       STORE_FILE(var->alias, codegen_size, 0, false);

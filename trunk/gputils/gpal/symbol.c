@@ -76,6 +76,7 @@ add_global_symbol(char *name,
     sym = add_symbol(state.top, symbol_name);
     var = malloc(sizeof(*var));
     annotate_symbol(sym, var);
+    var->name = strdup(symbol_name);
     var->alias = gp_lower_case(buffer);
     var->tag = tag;
     var->storage = storage;
@@ -87,7 +88,8 @@ add_global_symbol(char *name,
     } else {
       var->type = NULL;
     }
-    var->is_init = false;
+    var->is_used = false;
+    var->is_assigned = false;
     var->value = 0;
     var->file_id = symbol->file_id;
     var->line_number = symbol->line_number;
@@ -164,11 +166,13 @@ add_equ(char *name, int value)
     sym = add_symbol(state.global, name);
     var = malloc(sizeof(*var));
     annotate_symbol(sym, var);
-    var->alias = strdup(name);
+    var->name = strdup(name);
+    var->alias = var->name;
     var->tag = sym_equ;
-    var->storage = storage_extern;  /* extern so banksel is generated */
+    var->storage = storage_far;  /* far so banksel is generated */
     var->type = prim_type;
-    var->is_init = true;
+    var->is_used = false;
+    var->is_assigned = true;
     var->value = value;
     var->file_id = state.src->file_id;
     var->line_number = state.src->line_number;
@@ -465,6 +469,24 @@ has_address(struct variable *var)
 
 }
 
+/* return true if the symbol is in the current module */
+
+gp_boolean
+in_module(struct variable *var)
+{
+  assert(var != NULL);
+
+  switch (var->storage) {
+  case storage_public:
+  case storage_private:
+  case storage_local:
+    return true;
+  default:
+    return false;
+  }
+
+}
+
 /* return true if the symbol is external to current module */
 
 gp_boolean
@@ -473,8 +495,8 @@ is_extern(struct variable *var)
   assert(var != NULL);
 
   switch (var->storage) {
-  case storage_local:
-  case storage_extern:
+  case storage_near:
+  case storage_far:
     return true;
   default:
     return false;

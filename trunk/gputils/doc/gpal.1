@@ -1,0 +1,87 @@
+.TH gpal 1 "(c)  2003 Craig Franklin"
+.SH NAME
+gpal - GNU PIC Algorithmic Language
+.SH SYNOPSIS
+.B gpal [options] file
+.SH WARNING
+The information in this man page is an extract from the full documentation of
+gputils and is limited to the meaning of the options.  For complete and 
+current documentation, refer to "gputils.ps" located in the gputils docs 
+directory.
+.SH DESCRIPTION
+.B gpal
+is a compiler for Microchip (TM) PIC (TM) micro-controllers.
+.B gpal
+is part of gputils.  Check the gputils(1) manpage for details on other GNU 
+PIC utilities.
+.SH OPTIONS
+Below is a summary of the
+.B gpal 
+options.
+.B gpal
+options always supersede any settings in the source code.
+.TP
+.B -a, --archive
+Compile or assemble, then archive.
+.TP
+.B -c, --object
+Compile or assemble, but don't link.
+.TP
+.B -d, --debug
+Output debug messages.
+.TP
+.B -h, --help
+Show this usage message.
+.TP
+.B -H FILE, --header FILE
+Scan the specified processor header file.
+.TP
+.B -I DIR, --include DIR
+Specify include directory.
+.TP
+.B -k "OPT", --options "OPT"
+Extra link or lib options.
+.TP
+.B -l, --list-chips
+List supported processors.
+.TP
+.B -o FILE, --output FILE
+Alternate name of output file.
+.TP
+.B -O OPT, --optimize OPT
+Optimization level [1].
+.TP
+.B -p PROC, --processor PROC
+Select processor.
+.TP
+.B -q, --quiet
+Quiet.
+.TP
+.B -S, --compile
+Compile only, don't assemble or link.
+.TP
+.B -t, --save-temps
+Do not delete intermediate files.
+.TP
+.B -v, --version
+Show version.
+.SH SEE ALSO
+gputils(1)
+.SH AUTHOR
+Craig Franklin <craigfranklin@comcast.net>
+.SH COPYRIGHT
+Copyright (C) 2003 Craig Franklin
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
