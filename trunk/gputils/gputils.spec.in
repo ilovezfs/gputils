@@ -9,7 +9,7 @@ Packager: Craig Franklin <craigfranklin@attbi.com>
 Vendor: Craig Franklin <craigfranklin@attbi.com>
 Distribution: Red Hat Linux
 URL: http://gputils.sourceforge.net
-Buildroot: /var/tmp/%{name}-%{version}-root
+Buildroot: %{_builddir}/%{name}-%{version}-root
 
 %description
 This is a collection of development tools for Microchip (TM) PIC (TM) 

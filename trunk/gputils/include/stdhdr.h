@@ -71,12 +71,11 @@ Boston, MA 02111-1307, USA.  */
   #define COPY_CHAR "/"
 #endif
 
-/* relative path to header files and linker scripts */
 #ifndef DOS_HEADER_PATH
-  #define DOS_HEADER_PATH "..\\header"
+  #define DOS_HEADER_PATH "c:\\gputils\\header"
 #endif
 #ifndef DOS_LKR_PATH
-  #define DOS_LKR_PATH "..\\lkr"
+  #define DOS_LKR_PATH "c:\\gputils\\lkr"
 #endif
 
 #define BUG_REPORT_URL "<URL:http://gputils.sourceforge.net/>"
