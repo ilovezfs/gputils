@@ -5,10 +5,11 @@ dnl Process this file with autoconf to produce a configure script.
 # Initialization
 AC_INIT(gpasm/directive.c)
 AM_CONFIG_HEADER(config.h)
+AM_MAINTAINER_MODE
 
 # Determine the host and build type. The target is always a PIC.
-AC_CANONICAL_HOST
 AC_CANONICAL_BUILD
+AC_CANONICAL_HOST
 
 # Defaults
 GPASM_HEADER_PATH="\$(datadir)/gputils/header"
@@ -58,10 +59,14 @@ AC_CHECK_HEADERS(malloc.h unistd.h string.h strings.h)
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_STRUCT_TM
+AC_TYPE_SIZE_T 
 
 # Checks for library functions.
 AC_FUNC_ALLOCA
-AC_CHECK_FUNCS(strdup strtol strcasecmp stricmp)
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
+AC_FUNC_VPRINTF
+AC_CHECK_FUNCS(memset strcasecmp strchr strdup strerror stricmp strrchr strtol)
 
 # Check for functions to compile into libiberty (getopt is always compiled).
 IBERTYOBJS=
