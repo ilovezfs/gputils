@@ -1,0 +1,40 @@
+! Syntax highlighting patterns for GPASM
+!
+! INSTALLATION
+!
+! Load this pattern by starting nedit with:
+!
+!       nedit -import <name of this file>
+!
+! Then, check that the patterns were loaded correctly, and choose Save Defaults
+! from the Preferences menu.  The new patterns will now be incorporated into
+! your own .nedit file, so the next time you start NEdit, you will no longer
+! need to use -import.
+!
+! These comments will not appear in your ~/.nedit
+!
+nedit.fileVersion: 5.2
+nedit.highlightPatterns: GPASM:1:0{\n\
+		comment:";":"$"::Comment::\n\
+		preprocessor line:"^[ \\t]*#":"$"::Preprocessor::\n\
+		preprocessor cmdes:"<(?i(INCLUDE))>":::Preprocessor::D\n\
+		caracter constant:"'":"'":"[^\\\\][^']":Character Const::\n\
+		numeric constant:"<((B'[01]*')|(O'[0-7]*')|(D'[0-9]*')|(H'[0-9a-fA-F]*')|(0(x|X)[0-9a-fA-F]*)|([0-9a-fA-F]*H)|(([0-9]+\\.?[0-9]*)))?>":::Numeric Const::\n\
+		directives:"<(?i(__BADRAM|__CONFIG|__IDLOCS|__MAXRAM|CBLOCK|CONSTANT|DA|DATA|DB|DE|DT|DW|ELSE|END|ENDC|ENDIF|ENDM|ENDW|EQU|ERROR|ERRORLEVEL|EXITM|EXPAND|FILL|IF|IFDEF|IFNDEF|LIST|LOCAL|MACRO|MESSG|NOEXPAND|NOLIST|ORG|PAGE|PROCESSOR|RADIX|RES|SET|SPACE|SUBTITLE|TITLE|VARIABLE|WHILE))>":::Keyword::D\n\
+		labels:"^[ \\t]*":"[ \\t\\n]"::Label::\n\
+		registers:"<(?i(TMR[02]|PCL|INDF|OSCCAL|GPIO|FSR|STATUS|PORT[ABCDE]|PCLATH|INTCON|PIR[12]|TMR1[LH]|T[12]CON|SSPBUF|SSPCON|CCPR[12][LH]|CCP[12]CON|RCSTA|TXREG|RCREG|ADRES[HL]|ADCON[01]|OPTION_REG|TRIS[ABCDE]|PIE[12]|PCON|SSPCON2|PR2|SSPADD|SSPSTAT|TXSTA|SPBRG|EEDATA|EEADR|EEDATH|EEADRH|EECON[12]))>":::Storage Type::D\n\
+		bits:"<(?i(IRP|RP[01]|(NOT_)?TO|(NOT_)?PD|Z|DC|C|RE[0-2]|GIE|PEIE|T0I[EF]|INT[EF]|RBI[EF]|PSPI[EF]|ADI[EF]|RCI[EF]|TXI[EF]|SSPI[EF]|CCP1I[EF]|TMR[12]I[EF]|EEI[EF]|BCLI[EF]|CCP2I[EF]|T[12]CKPS[01]|T1OSCEN|T1SYNC|TMR1CS|TMR[12]ON|TOUTPS[0-3]|WCOL|SSPOV|SSPEN|CKP|SSPM[0-3]|CCP[12][XY]|CCP[12]M[0-3]|SPEN|RX9|SREN|CREN|ADDEN|FERR|OERR|RX9D|ADCS[01]|CHS[0-2]|GO|(NOT_)?DONE|GO/(NOT_)?DONE||ADON|(NOT_)?RBPU|INTEDG|T0CS|T0SE|PSA|PS[0-2]|IBF|OBF|IBOV|PSPMODE|(NOT_)?POR|(NOT_)?BOR|GCEN|ACKSTAT|ACKDT|ACKEN|RCEN|PEN|RSEN|SEN|SMP|CKE|D|(NOT_)?A|D/(NOT_)?A|P|S|R|(NOT_)?W|R/(NOT_)?W|UA|BF|CSRC|TX9|TXEN|SYNC|BRGH|TRMT|TX9D|ADFM|PCFG[0-3]|EEPGD|WRERR|WREN|WR|RD|GPWUF|PA[0-2]|R[A-C][0-7]|(NOT_)?GP[WP]U|CAL[0-5]))>":::Storage Type::D\n\
+		pic-scenix instr:"<(?i(ADDLW|ADDWF|ANDLW|ANDWF|BANK|BCF|BSF|BTFSC|BTFSS|CALL|CLRF|CLRW|CLRWDT|COMF|DECF|DECFSZ|GOTO|INCF|INCFSZ|IORLW|IREAD|MODE|MOVF|MOVMW|MOVLW|MOVWF|MOVWM|NOP|OPTION|PAGE|RETFIE|RETI|RETIW|RETP|RETLW|RETURN|RLF|RRF|SLEEP|SUBLW|SUBWF|SWAPF|TRIS|XORLW|XORWF))>":::Function::D\n\
+		special macros:"<(?i(ADDCF|B|BC|BZ|BNC|BNZ|CLRC|CLRZ|SETC|SETZ|MOVFW|NEGF|SKPC|SKPZ|SKPNC|SKPNZ|SUBCF|TSTF))>":::Macros::D\n\
+		config bits:"<(?i(_MCLRE_ON|_MCLRE_OFF|_CP_ON|_CP_OFF|_WDT_ON|_WDT_OFF|_LP_OSC|_XT_OSC|_IntRC_OSC|_ExtRC_OSC))>":::Preprocessor::D\n\
+	}
+nedit.languageModes: 	GPASM:.asm::::::".,/\\`'!|@#%^&*()-=+{}[]"":;<>?~"
+nedit.styles: 	Macros:darkviolet:Italic\n\
+	Function:darkviolet:Plain
+
+! generated with nxlang.pl 1.00
+
+0.90	First release
+0.91	INTCON register error corrected (was INITCON)
+
+by <mantegazza@ill.fr>

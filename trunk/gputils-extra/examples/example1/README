@@ -1,0 +1,13 @@
+This project is an example of how to use gpasm with Makefiles.  The source 
+code is Microchip Appnote 00555.  GPASM must be successfully compiled and 
+installed for the example to work.  
+
+Command     	Function
+------------------------------------------------
+"make"		compile the project, if necessary
+"make clean"    clean the project
+"make diasm"	disassemble the hex file
+"make viewcod"  view the contents of the cod file
+"make archive"  tar and zip the project
+
+
