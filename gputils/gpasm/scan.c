@@ -2876,6 +2876,10 @@ static int found_end()
     gpwarning(GPW_EXPECTED, "Expected (ENDIF)");
   }
 
+  if (state.mac_prev != NULL) {
+    gperror(GPW_EXPECTED,"Expected (ENDM)");
+  }
+
   /* close all open files */
   while(state.src) {
     close_file();
