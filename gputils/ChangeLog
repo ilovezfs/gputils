@@ -1,3 +1,7 @@
+2003-12-01 Craig Franklin <craigfranklin@comcast.net>
+  * Changed gpasm behavior so cblocks are only processed when assembly is
+    enabled. 
+
 2003-11-30 Craig Franklin <craigfranklin@comcast.net>
   * Changed gpasm while loops to insert raw text instead of a parsed tree.
 
