@@ -1,4 +1,5 @@
 2002-04-03 Craig Franklin <craigfranklin@attbi.com>
+  * gputils 0.10.2 Released.
   * Any argument to an instruction which exceeds its range will now generate
     at least a warning.
   * Bank warnings are now generated for access to register files that aren't 
