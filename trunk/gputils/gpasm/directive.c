@@ -1891,7 +1891,7 @@ static gpasmVal do_udata(gpasmVal r,
       /* new absolute section */
       p = HEAD(parms);
       strcpy(state.obj.new_sec_name, ".udata");
-      state.obj.new_sec_addr = maybe_evaluate(p) >> _16bit_core;
+      state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS;
       break;
     default:
@@ -1926,7 +1926,7 @@ static gpasmVal do_udata_acs(gpasmVal r,
       /* new absolute section */
       p = HEAD(parms);
       strcpy(state.obj.new_sec_name, ".udata_acs");
-      state.obj.new_sec_addr = maybe_evaluate(p) >> _16bit_core;
+      state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_ACCESS;
       break;
     default:
@@ -1961,7 +1961,7 @@ static gpasmVal do_udata_ovr(gpasmVal r,
       /* new absolute section */
       p = HEAD(parms);
       strcpy(state.obj.new_sec_name, ".udata_ovr");
-      state.obj.new_sec_addr = maybe_evaluate(p) >> _16bit_core;
+      state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_OVERLAY;
       break;
     default:
@@ -1996,7 +1996,7 @@ static gpasmVal do_udata_shr(gpasmVal r,
       /* new absolute section */
       p = HEAD(parms);
       strcpy(state.obj.new_sec_name, ".udata_shr");
-      state.obj.new_sec_addr = maybe_evaluate(p) >> _16bit_core;
+      state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_SHARED;
       break;
     default:
