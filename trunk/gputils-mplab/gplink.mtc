@@ -1,0 +1,81 @@
+// Microchip Language Tools Configuration File
+// gplink
+// Craig Franklin
+
+[Tool]
+Tool=gplink
+ScriptExtension=lkr
+DefaultOptions=
+MultipleNodes=1
+SpaceBetweenSwitchAndData=1
+
+[0]
+Description=Output filename
+Switch=-o
+Data=1
+MultipleOptions=0
+OutputNameSwitch=Switch
+Hidden=1
+
+[1]
+Description=Map file
+Switch=-m
+Data=0
+MultipleOptions=0
+
+[2]
+Description=COFF File
+Switch=-c
+Data=0
+MultipleOptions=0
+
+[3]
+Description=Hex Format
+OptionList=INHX8M;INHX8S;INHX32
+INHX8M=-a INHX8M
+INHX8S=-a INHX8S
+INHX32=-a INHX32
+Data=0
+
+[4]
+Description=Quiet mode
+Switch=-q
+Data=0
+
+[5]
+Description=Library directories
+Switch=-I
+Data=1
+MultipleOptions=0
+LibrarySwitch=Switch
+Hidden=1
+
+[6]
+Description=Linker script directories
+Switch=-I
+Data=1
+MultipleOptions=0
+LinkerScriptSwitch=Switch
+Hidden=1
+
+[7]
+Description=Use Shared Memory
+Switch=-r
+Data=0
+
+[8]
+Description=Fill Value
+Switch=-f
+MultipleOptions=0
+Data=1
+
+[9]
+Description=Stack Size
+Switch=-t
+MultipleOptions=0
+Data=1
+
+[10]
+Description=No List File
+switch=-l
+Data=0
