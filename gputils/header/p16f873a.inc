@@ -22,6 +22,7 @@
 ;==========================================================================
 
 ;Rev:   Date:    Reason:
+;1.02	05/28/02 Corrected values for _CP_ALL and _CP_OFF in Configuration Bits section.
 ;1.01   10/03/01 Added the PIR2 bit CMIF and the PIE2 bit CMIE
 ;1.00   04/19/01 Initial Release (BD - generated from PIC16F877a.inc)
 
@@ -353,8 +354,8 @@ RD                           EQU     H'0000'
 ;
 ;==========================================================================
 
-_CP_ALL                      EQU     H'3FFF'
-_CP_OFF                      EQU     H'1FFF'
+_CP_ALL                      EQU     H'1FFF'
+_CP_OFF                      EQU     H'3FFF'
 _DEBUG_OFF                   EQU     H'3FFF'
 _DEBUG_ON                    EQU     H'37FF'
 _WRT_OFF                     EQU     H'3FFF'    ; No prog memmory write protection

@@ -3,16 +3,18 @@
 	NOLIST
 
 ; This header file defines configurations, registers, and other useful bits of
-; information for the PIC12C509A microcontroller.  These names are taken to match 
+; information for the PIC12C509A and PIC12CR509A microcontrollers.  These names are taken to match 
 ; the data sheets as closely as possible.  
 
 ; Note that the processor must be selected before this file is 
 ; included.  The processor may be selected the following ways:
 
 ;       1. Command line switch:
-;               C:\ MPASM MYFILE.ASM /P12C509A
+;               C:\ MPASM MYFILE.ASM /P12C509A    or
+;               C:\ MPASM MYFILE.ASM /P12CR509A
 ;       2. LIST directive in the source file
-;               LIST   P=12C509A
+;               LIST   P=12C509A    or
+;               LIST   P=12CR509A
 ;       3. Processor Type entry in the MPASM full-screen interface
 
 ;==========================================================================
@@ -22,8 +24,8 @@
 ;==========================================================================
 
 ;Rev:   Date:    Reason:
-
 ;1.00   05/28/97 Initial Release
+;1.10   06/12/02 Verification now includes the PIC12CR509A (pas)
 
 ;==========================================================================
 ;
@@ -32,8 +34,10 @@
 ;==========================================================================
 
         IFNDEF __12C509A
+	IFNDEF __12CR509A
            MESSG "Processor-header file mismatch.  Verify selected processor."
         ENDIF
+	ENDIF
 
 ;==========================================================================
 ;

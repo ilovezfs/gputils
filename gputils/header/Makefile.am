@@ -34,12 +34,15 @@ EXTRA_DIST =\
 	p12ce519.inc \
 	p12ce673.inc \
 	p12ce674.inc \
+	p12f629.inc \
+	p12f675.inc \
 	p14000.inc \
 	p16c432.inc \
 	p16c433.inc \
 	p16c461.inc \
 	p16c505.inc \
 	p16c554.inc \
+	p16c557.inc \
 	p16c558.inc \
 	p16c5x.inc \
 	p16c61.inc \
@@ -108,16 +111,24 @@ EXTRA_DIST =\
 	p16cr83.inc \
 	p16cr84.inc \
 	p16f627.inc \
+	p16f627a.inc \
 	p16f628.inc \
+	p16f628a.inc \
+	p16f630.inc \
+	p16f676.inc \
+	p16f72.inc \
 	p16f73.inc \
 	p16f74.inc \
 	p16f76.inc \
 	p16f77.inc \
+	p16f818.inc \
+	p16f819.inc \
 	p16f83.inc \
 	p16f84.inc \
+	p16f84a.inc \
 	p16f85.inc \
 	p16f86.inc \
-	p16f84a.inc \
+	p16f87.inc \
 	p16f870.inc \
 	p16f871.inc \
 	p16f872.inc \
@@ -129,6 +140,7 @@ EXTRA_DIST =\
 	p16f876a.inc \
 	p16f877.inc \
 	p16f877a.inc \
+	p16f88.inc \
 	p16hv540.inc \
 	p17c42.inc \
 	p17c42a.inc \
@@ -151,10 +163,16 @@ EXTRA_DIST =\
 	p18c858.inc \
 	p18cxxx.inc \
 	p18f020.inc \
+	p18f1220.inc \
+	p18f1320.inc \
+	p18f2220.inc \
+	p18f2320.inc \
 	p18f242.inc \
 	p18f248.inc \
 	p18f252.inc \
 	p18f258.inc \
+	p18f4220.inc \
+	p18f4320.inc \
 	p18f442.inc \
 	p18f448.inc \
 	p18f452.inc \
