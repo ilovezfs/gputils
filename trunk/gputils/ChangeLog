@@ -1,3 +1,8 @@
+2004-10-24 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * Allow complex alias expresions in gpal.
+  * Allow pragmas in gpal subprograms.
+  * Add second pass to gpal optimizer.
+
 2004-10-21 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Reduced number of gpal banksels.
 

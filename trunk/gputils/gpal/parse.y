@@ -234,11 +234,6 @@ element:
 	  $$ = mk_with($2);
 	}
 	|
-	PRAGMA expr ';'
-	{
-	  $$ = mk_pragma($2);
-	}
-	|
 	type
 	{
 	  $$ = $1;
@@ -247,11 +242,6 @@ element:
 	decl
 	{
 	  $$ = $1;
-        }
-	|
-	ALIAS IDENT IDENT ';'
-	{
-	  $$ = mk_alias($2, $3);
         }
 	|
 	PROCEDURE head body PROCEDURE ';'
@@ -307,7 +297,7 @@ element_cond:
 type:
 	TYPE IDENT IS IDENT ';'
 	{
-	  /* alias */
+	  /* type alias */
 	  $$ = mk_type($2, NULL, NULL, NULL, $4);
         }
 	|
@@ -421,6 +411,16 @@ decl:
 	IDENT ':' CONSTANT IDENT '=' expr ';'
 	{ 
 	  $$ = mk_decl($1, true, $4, $6, NULL);
+        }
+	|
+	PRAGMA expr ';'
+	{
+	  $$ = mk_pragma($2);
+	}
+	|
+	ALIAS IDENT expr ';'
+	{
+	  $$ = mk_alias($2, $3);
         }
 	;
 

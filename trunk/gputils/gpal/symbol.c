@@ -26,10 +26,10 @@ Boston, MA 02111-1307, USA.  */
 #include "symbol.h"
 #include "analyze.h"
 
-/* Add an alias to an existing symbol at the top of the symbol table stack */
+/* Add an pointer to an existing symbol at the top of the symbol table stack */
 
 void
-add_symbol_alias(char *name, tree *symbol, struct variable *var)
+add_symbol_pointer(char *name, tree *symbol, struct variable *var)
 {
   struct symbol *sym;
 
@@ -75,7 +75,77 @@ mangle_name3(char *first, char *second, char *third)
   return gp_lower_case(buffer);
 }
 
-/* Add one symbol to the global table to the base of the symbol table
+
+static struct variable *
+default_var(char *name,
+            tree *symbol,
+            enum sym_tag tag,
+            enum node_storage storage,
+            char *type)
+{
+  struct variable *var;
+
+  var = malloc(sizeof(*var));
+  var->name = name;
+  var->tag = tag;
+  var->storage = storage;
+  if (type) {
+    var->type = get_type(type);   
+    if (var->type == NULL) {
+      analyze_error(symbol, "unknown symbol type %s", type);
+    }
+  } else {
+    var->type = NULL;
+  }
+  var->is_used = false;
+  var->is_assigned = false;
+  var->is_absolute = false;
+  var->value = 0;
+  var->address = 0;
+  if (symbol) {
+    var->file_id = symbol->file_id;
+    var->line_number = symbol->line_number;
+  } else {
+    var->file_id = 0;
+    var->line_number = 0;
+  }
+  var->node = symbol;
+  var->module = state.module;
+
+  return var;
+}
+
+/* Add one symbol to the top table at the top of the symbol table
+   stack.  */
+
+struct variable *
+add_top_symbol(char *name,
+               tree *symbol,
+               enum sym_tag tag,
+               enum node_storage storage,
+               char *type)
+{
+  struct symbol *sym;
+  struct variable *var;
+
+  sym = get_symbol(state.top, name);
+  if (sym == NULL) {
+    sym = add_symbol(state.top, name);
+    var = default_var(name, symbol, tag, storage, type);
+    annotate_symbol(sym, var);
+  } else {
+    var = get_symbol_annotation(sym);
+    analyze_error(symbol,
+                  "redefinition of %s,\n\talso defined in %s:%i:",
+                  name,
+                  get_file_name(var->file_id),
+                  var->line_number);
+  }
+
+  return var;
+}
+
+/* Add one symbol to the global table at the base of the symbol table
    stack.  */
 
 struct variable *
@@ -91,33 +161,8 @@ add_global_symbol(char *name,
   sym = get_symbol(state.global, name);
   if (sym == NULL) {
     sym = add_symbol(state.global, name);
-    var = malloc(sizeof(*var));
+    var = default_var(name, symbol, tag, storage, type);
     annotate_symbol(sym, var);
-    var->name = name;
-    var->tag = tag;
-    var->storage = storage;
-    if (type) {
-      var->type = get_type(type);   
-      if (var->type == NULL) {
-        analyze_error(symbol, "unknown symbol type %s", type);
-      }
-    } else {
-      var->type = NULL;
-    }
-    var->is_used = false;
-    var->is_assigned = false;
-    var->is_absolute = false;
-    var->value = 0;
-    var->address = 0;
-    if (symbol) {
-      var->file_id = symbol->file_id;
-      var->line_number = symbol->line_number;
-    } else {
-      var->file_id = 0;
-      var->line_number = 0;
-    }
-    var->node = symbol;
-    var->module = state.module;
   } else {
     var = get_symbol_annotation(sym);
     analyze_error(symbol,

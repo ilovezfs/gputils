@@ -1167,25 +1167,6 @@ time.pub
  to keep the with statements and filenames lower case.
 \layout Subsection
 
-Symbol Alias
-\layout Standard
-
-Symbols can be given new names to suit the user's preference.
- 
-\layout LyX-Code
-
-alias <new name> <old name>;
-\layout Standard
-
-This example will create an alias of p16f877.porta with the name vdata.
-\layout LyX-Code
-
-type vdata p16f877.porta;
-\layout Standard
-
-An alias can be defined inside a public or module, but not inside a subprogram.
-\layout Subsection
-
 Numbers
 \layout Standard
 
@@ -2327,6 +2308,22 @@ Here is an example:
 \layout LyX-Code
 
 filter_offset : constant = 0x1434;
+\layout Subsection
+
+Alias
+\layout Standard
+
+An alias can be created for complex expressions that that used often.
+ 
+\layout LyX-Code
+
+alias <alias name> <expression>;
+\layout Standard
+
+This example will create an alias of p16f877.porta with the name vdata.
+\layout LyX-Code
+
+alias vdata p16f877.porta;
 \layout Section
 
 Subprograms

@@ -459,6 +459,8 @@ opt_expr(tree *expr)
     if (var->tag == sym_const) {
       /* remove all symbols that are constant */
       expr = mk_constant(var->value);
+    } else if (var->tag == sym_alias) {
+      expr = opt_expr(var->node);
     }
     break;
   case node_unop:
@@ -483,12 +485,22 @@ optimize_expr(tree *expr)
   if (!gp_debug_disable) {
     gp_debug("====================================================");
     gp_debug("original:");
-    print_node(expr, 0);
+    print_node(expr, 0, false);
   }
+
   expr = opt_expr(expr);
+
   if (!gp_debug_disable) {
     gp_debug("optimized:");
-    print_node(expr, 0);
+    print_node(expr, 0, false);
+  }
+
+  if (state.optimize.second_pass) {
+    expr = opt_expr(expr);
+    if (!gp_debug_disable) {
+      gp_debug("optimized (second pass):");
+      print_node(expr, 0, false);
+    }  
   }
 
   return expr;
@@ -549,10 +561,10 @@ optimize_unop_expr(struct variable *dest, tree *left, tree *right)
   if ((!gp_debug_disable) && (unop != NULL)) {
     gp_debug("====================================================");
     gp_debug("original binop:");
-    print_node(left, 0);
-    print_node(right, 0);
+    print_node(left, 0, false);
+    print_node(right, 0, false);
     gp_debug("optimized unop:");
-    print_node(unop, 0);
+    print_node(unop, 0, false);
   }
   
   return unop;
