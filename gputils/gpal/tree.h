@@ -47,7 +47,8 @@ enum node_tag {
   node_string,
   node_symbol, 
   node_type,
-  node_unop
+  node_unop,
+  node_with
 };
 
 enum node_op { 
@@ -195,6 +196,9 @@ typedef struct node_struct {
       char *of;
     } type;
     struct {
+      char *name;
+    } with;
+    struct {
       int op;
       tree *p0;
     } unop;
@@ -257,6 +261,7 @@ typedef struct node_struct {
 #define TYPE_OF(T)         (T)->value.type.of
 #define UNOP_OP(B)         (B)->value.unop.op
 #define UNOP_ARG(B)        (B)->value.unop.p0
+#define WITH_NAME(B)       (B)->value.with.name
 
 #define COPY_DEBUG(x, y) y->line_number = x->line_number;\
                          y->file_id = x->file_id;
@@ -292,6 +297,7 @@ tree *mk_string(char *value);
 tree *mk_symbol(char *name, tree *offset);
 tree *mk_type(char *type, tree *start, tree *end, tree *list, char *of);
 tree *mk_unop(enum node_op op, tree *p0);
+tree *mk_with(char *name);
 
 tree *node_list(tree *head, tree *tail);
 

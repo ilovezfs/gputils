@@ -194,19 +194,14 @@ program:
 	;
 
 entity:
-	WITH IDENT ';'
-	{
-	  open_src($2, source_with);
-	}
-	|
 	MODULE IDENT IS element_start END MODULE ';'
 	{
-	  add_entity(mk_file($4, $2, state.src->type));
+	  add_entity(mk_file($4, $2, source_module));
 	}
 	|
 	PUBLIC IDENT IS element_start END PUBLIC ';'
 	{
-	  add_entity(mk_file($4, $2, state.src->type));
+	  add_entity(mk_file($4, $2, source_with));
 	}
         ;
 
@@ -235,6 +230,11 @@ element_list:
 	;
 
 element:
+	WITH IDENT ';'
+	{
+	  $$ = mk_with($2);
+	}
+	|
 	PRAGMA expr ';'
 	{
 	  $$ = mk_pragma($2);

@@ -334,6 +334,14 @@ mk_unop(enum node_op op, tree *p0)
 }
 
 tree *
+mk_with(char *name)
+{
+  tree *new = mk_node(node_with);
+  new->value.with.name = name;
+  return new;
+}
+
+tree *
 node_list(tree *head, tree *tail)
 {
   head->next = tail;
@@ -585,6 +593,10 @@ print_node(tree *node, int level)
     print_space(level);
     printf("arg\n");
     print_node(UNOP_ARG(node), level);
+    break;
+  case node_with:
+    print_space(level);
+    printf("with %s \n", WITH_NAME(node));
     break;
   default:
     assert(0);
