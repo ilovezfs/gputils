@@ -63,7 +63,18 @@ VERSION = @VERSION@
 
 AUTOMAKE_OPTIONS = dist-zip foreign
 
-EXTRA_DIST = data examples src INDEX
+EXTRA_DIST = INDEX \
+	data/nedit/gpasm.pats \
+	examples/example1/Makefile \
+	examples/example1/README \
+	examples/example1/rcvr.asm \
+	examples/example1/rs232.asm \
+	examples/example1/rs232.h \
+	examples/example1/txmtr.asm \
+	src/header/mcp2510.inc \
+	src/memory/flags.asm \
+	src/memory/str.asm	
+
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES = 
@@ -78,9 +89,9 @@ GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --foreign --include-deps Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile
 
-Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
@@ -138,6 +149,13 @@ distdir: $(DISTFILES)
 	-rm -rf $(distdir)
 	mkdir $(distdir)
 	-chmod 777 $(distdir)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign Makefile
+	$(mkinstalldirs) $(distdir)/data/nedit $(distdir)/examples/example1 \
+	   $(distdir)/src/header $(distdir)/src/memory
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
