@@ -359,7 +359,7 @@ Where options can be one of:
 \added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
 
 \begin_inset  Tabular
-<lyxtabular version="3" rows="16" columns="2">
+<lyxtabular version="3" rows="17" columns="2">
 <features>
 <column alignment="left" valignment="top" leftline="true" width="0pt">
 <column alignment="block" valignment="top" leftline="true" rightline="true" width="4in">
@@ -530,6 +530,24 @@ l
 \layout Standard
 
 List supported processors.
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+M
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Generate a Make compatible dependency list.
 \end_inset 
 </cell>
 </row>
@@ -1072,6 +1090,16 @@ None of the ranges are checked at run time.
  
 \layout Subsection
 
+Access types
+\layout LyX-Code
+
+type <name> is access <type>;
+\layout Standard
+
+Will create an access type to <type>.
+ This will allow indirect access to any variable of type <type>.
+\layout Subsection
+
 Arrays
 \layout LyX-Code
 
@@ -1104,6 +1132,61 @@ This will create a new type that can take on one of three values.
  Each symbol value pair is added to the global symbol table.
  All enumerated types use the uint8 size.
  So there for the maximum list size is 256 members.
+\layout Subsection
+
+Records
+\layout LyX-Code
+
+type <name> is record
+\layout LyX-Code
+
+  [<name> : <type>;]*
+\layout LyX-Code
+
+end record;
+\layout Standard
+
+A record is an aggregate of declarations.
+ It allows complex variable structures to be defined with a single statement.
+ It also allows that definition to be easily accessed.
+\layout LyX-Code
+
+type mode_type is (IDLE, ACTIVE, ERROR);
+\layout LyX-Code
+
+type control_type is record
+\layout LyX-Code
+
+  time : uint8;
+\layout LyX-Code
+
+  mode : mode_type;
+\layout LyX-Code
+
+end record;
+\layout Standard
+
+A variable could then be defined like this:
+\layout LyX-Code
+
+control : control_type = (0, IDLE);
+\layout Standard
+
+This variable 
+\begin_inset Quotes eld
+\end_inset 
+
+control
+\begin_inset Quotes erd
+\end_inset 
+
+ would be accessed in the body of a subprogram as follows:
+\layout LyX-Code
+
+control.time = 10;
+\layout LyX-Code
+
+control.mode = ACTIVE;
 \layout Subsection
 
 Type Alias
@@ -1165,6 +1248,65 @@ time.pub
  of the with is important.
  To maintain portability across different operating systems, it is best
  to keep the with statements and filenames lower case.
+\layout Subsection
+
+Attributes
+\layout Standard
+
+Attributes provide a means to access the properties of symbols.
+ They always use the tick symbol (').
+ They are in the form:
+\layout LyX-Code
+
+<symbol>'<attribute>
+\layout Subsubsection
+
+Access
+\layout Standard
+
+Indirectly access memory using the contents of the symbol as the address.
+ This is only valid on symbols that are declared as access types.
+ Using it on any other symbol will cause an error to be generated.
+\layout Subsubsection
+
+Address
+\layout Standard
+
+Generates relocation symbols for the address of the variable.
+ Note that the address is generally not known at compile time.
+ It will be patched by the linker with the correct value after relocation.
+\layout Subsubsection
+
+First
+\layout Standard
+
+Returns the index of the first element in an array.
+ It is only valid on array symbols.
+\layout Subsubsection
+
+Last
+\layout Standard
+
+Returns the index of the last element in an array.
+ It is only valid on array symbols.
+\layout Subsubsection
+
+Range
+\layout Standard
+
+Equivalent to:
+\layout LyX-Code
+
+<symbol>'first TO <symbol>'last
+\layout Standard
+
+Only available in the range statement of a FOR loop.
+\layout Subsubsection
+
+Size
+\layout Standard
+
+Returns the size of a variable in bits.
 \layout Subsection
 
 Numbers
@@ -2148,7 +2290,7 @@ Set the processor name to <name>.
 
 \layout Standard
 
-Udata Address
+Data Address
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2156,7 +2298,7 @@ Udata Address
 
 \layout Standard
 
-udata_address = <constant>
+data_address = <constant>
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2164,7 +2306,7 @@ udata_address = <constant>
 
 \layout Standard
 
-Make the udata section absolute at address <constant>.
+Make the data section absolute at address <constant>.
 \end_inset 
 </cell>
 </row>
@@ -2174,7 +2316,7 @@ Make the udata section absolute at address <constant>.
 
 \layout Standard
 
-Udata Section
+Data Section
 \end_inset 
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -2182,7 +2324,7 @@ Udata Section
 
 \layout Standard
 
-udata_section= 
+data_section= 
 \begin_inset Quotes eld
 \end_inset 
 
@@ -2198,7 +2340,7 @@ udata_section=
 
 \layout Standard
 
-Set the udata section name to <name>.
+Set the data section name to <name>.
 \end_inset 
 </cell>
 </row>
@@ -2594,7 +2736,7 @@ Similarly all data memory is placed in one COFF section.
 Name mangling
 \layout Standard
 
-gpal uses a hierarchical name space.
+gpal uses a hierarchical name space for all symbols and types.
  The module name is specified in all inter-module accesses.
  So to write to memory 
 \begin_inset Quotes eld
@@ -6270,16 +6412,13 @@ PAGESEL
 \layout LyX-Code
 
 PAGESEL <label>
-\layout LyX-Code
-
-GOTO <label>
 \layout Standard
 
 This directive will generate page selecting code to set the page bits to
  the page containing the designated <label>.
- The page selecting code will set/clear bits in the STATUS for 12 bit devices.
- For 14 bit and 16 bit devices, it will generate MOVLW and MOVWF to modify
- PCLATH.
+ The page selecting code will set/clear bits in the STATUS for 12 bit and
+ 14 bit devices.
+ For 16 bit devices, it will generate MOVLW and MOVWF to modify PCLATH.
  The directive is ignored for enhanced 16 bit devices.
 \layout Standard
 

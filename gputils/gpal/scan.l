@@ -1,5 +1,6 @@
 %option noyywrap
 %x asm_block
+%x attrib_def
 
 %{
 /* lexical analyser
@@ -27,7 +28,6 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gpal.h"
-#include "symbol.h"
 #include "parse.h"
 
 #define OPERATOR(x)  return (yylval.i = (x))
@@ -40,6 +40,7 @@ int stringtolong(char *string, int radix);
 #define ASM_BUF_SIZ 8096
 static char asm_buffer[ASM_BUF_SIZ];
 static int asm_index;
+static char *current_attrib;  
 
 %}
 
@@ -70,6 +71,7 @@ DECCHAR [0-9]
 	  		    exit(1);
 			  }
 			}
+"access"		{ return ACCESS; }
 "alias"			{ return ALIAS; }
 "array"			{ return ARRAY; }
 "at"			{ return AT; }
@@ -95,10 +97,12 @@ DECCHAR [0-9]
 "pragma"		{ return PRAGMA; }
 "procedure"		{ return PROCEDURE; }
 "public"		{ return PUBLIC; }
+"record"		{ return RECORD; }
 "return"		{ return RETURN; }
 "then"			{ return THEN; }
 "to"			{ return TO; }
 "type"			{ return TYPE; }
+"volatile"		{ return VOLATILE; }
 "when"			{ return WHEN; }
 "while"			{ return WHILE; }
 "with"			{ return WITH; }
@@ -106,6 +110,47 @@ DECCHAR [0-9]
 			  yytext[yyleng - 1] = '\0';
 			  yylval.s = strdup(yytext + 1);
                           return STRING;
+			}
+[_.a-z][_.0-9a-z]*\'	{
+			  yytext[yyleng - 1] = '\0';
+			  current_attrib = yytext;
+                          BEGIN(attrib_def);
+			}
+<attrib_def>access	{
+			  yylval.a.s = current_attrib;
+			  yylval.a.t = attrib_access;
+			  BEGIN(INITIAL);
+			  return ATTRIB;
+			}
+<attrib_def>address	{
+			  yylval.a.s = current_attrib;
+			  yylval.a.t = attrib_address;
+			  BEGIN(INITIAL);
+			  return ATTRIB;
+			}
+<attrib_def>first	{
+			  yylval.a.s = current_attrib;
+			  yylval.a.t = attrib_first;
+			  BEGIN(INITIAL);
+			  return ATTRIB;
+			}
+<attrib_def>last	{
+			  yylval.a.s = current_attrib;
+			  yylval.a.t = attrib_last;
+			  BEGIN(INITIAL);
+			  return ATTRIB;
+			}
+<attrib_def>range	{
+			  yylval.a.s = current_attrib;
+			  yylval.a.t = attrib_range;
+			  BEGIN(INITIAL);
+			  return ATTRIB;
+			}
+<attrib_def>size	{
+			  yylval.a.s = current_attrib;
+			  yylval.a.t = attrib_size;
+			  BEGIN(INITIAL);
+			  return ATTRIB;
 			}
 [_.a-z][_.0-9a-z]*	{
 			  yylval.s = gp_lower_case(yytext);

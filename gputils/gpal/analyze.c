@@ -23,7 +23,6 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gpal.h"
-#include "symbol.h"
 #include "analyze.h"
 #include "codegen.h"
 #include "deps.h"
@@ -32,6 +31,11 @@ Boston, MA 02111-1307, USA.  */
 
 /* prototypes */
 void analyze_statements(tree *statement);
+static void analyze_elements(tree *current,
+                             char *root_name,
+                             enum node_storage data_storage,
+                             enum node_storage prog_storage,
+                             gp_boolean add_alias);
 
 /* function return data */
 struct variable *subprogram_var;
@@ -108,91 +112,6 @@ int list_length(tree *L)
   }
 }
 
-/* convert a private procedure to public */
-
-static void
-make_proc_public(struct variable *var, tree *prot)
-{
-  tree *def;
-  tree *def_head;
-  tree *def_args;
-  tree *prot_head;
-  tree *prot_args;
-
-  /* make the procedure public */
-  var->storage = storage_public;
-  
-  /* verify that the procedure definition and declaration match */
-  def = var->node;
-
-  def_head = SUB_HEAD(def);
-  prot_head = SUB_HEAD(prot);
-  
-  if (SUB_RET(def)) {
-    if (SUB_RET(prot) == NULL) {
-      analyze_error(prot, "the definition is a function");
-      return;
-    }
-    if (strcasecmp(SUB_RET(def), SUB_RET(prot)) != 0) {
-      analyze_error(prot, "the definition returns %s", SUB_RET(def));
-    }
-  } else if (SUB_RET(prot)) {
-    analyze_error(prot, "the definition is a procedure");
-    return;
-  }
-    
-  def_args = HEAD_ARGS(def_head);
-  prot_args = HEAD_ARGS(prot_head);
- 
-  while (def_args) {
-    assert(def_args->tag == node_arg);
- 
-    if (prot_args == NULL) {
-      analyze_error(prot_head, "the declaration is missing arguments");
-      return;
-    }
-
-    if (strcasecmp(ARG_NAME(def_args), ARG_NAME(prot_args)) != 0) {
-      analyze_error(prot,
-                    "argument %s,\n\t defined as %s in %s:%i:",
-                    ARG_NAME(prot_args),
-                    ARG_NAME(def_args),
-                    get_file_name(var->file_id),
-                    var->line_number);
-      /* The argument name didn't match, so skip the rest of the tests.  
-         This should prevent generating spurious errors. */
-      return;
-    }
-
-    if (strcasecmp(ARG_TYPE(def_args), ARG_TYPE(prot_args)) != 0) {
-      analyze_error(prot,
-                    "type %s of argument %s,\n\t defined as %s in %s:%i:",
-                    ARG_TYPE(prot_args),
-                    ARG_NAME(prot_args),
-                    ARG_TYPE(def_args),
-                    get_file_name(var->file_id),
-                    var->line_number);
-    }
-
-    if (ARG_DIR(def_args) != ARG_DIR(prot_args)) {
-      analyze_error(prot,
-                    "direction mismatch of argument %s,\n\t defined in %s:%i:",
-                    ARG_NAME(prot_args),
-                    get_file_name(var->file_id),
-                    var->line_number);
-    }
-
-    def_args = def_args->next;
-    prot_args = prot_args->next;
-  }
-
-  if (prot_args) {
-    analyze_error(prot_args, "the declaration has extra arguments");
-  }
-
-  return;
-}
-
 /* can the expression be evaluated at compile time */
 
 gp_boolean
@@ -201,6 +120,32 @@ can_evaluate(tree *p, gp_boolean gen_errors)
   struct variable *var;
 
   switch (p->tag) {
+  case node_attrib:
+    var = get_global(ATTRIB_NAME(p));
+    if (is_data(var)) {
+      switch (ATTRIB_TYPE(p)) {
+      case attrib_first:    
+      case attrib_last:    
+        if (var->type->tag == type_array) {
+          return true;
+        } else {
+          if (gen_errors) {
+            analyze_error(p, "symbol %s is not an array", ATTRIB_NAME(p));    
+          }
+          return false;
+        }           
+      case attrib_size:    
+        return true;
+      default:
+        return false;
+      }
+    } else {
+      if (gen_errors) {
+        analyze_error(p, "symbol %s is not data", ATTRIB_NAME(p));    
+      }
+      return false;
+    }
+    return false;
   case node_call:
     return false;
   case node_constant:
@@ -246,6 +191,18 @@ evaluate(tree *p)
   int p0, p1;
 
   switch (p->tag) {
+  case node_attrib:
+    var = get_global(ATTRIB_NAME(p));
+    switch (ATTRIB_TYPE(p)) {
+    case attrib_first:    
+      return var->type->start;
+    case attrib_last:    
+      return var->type->end;
+    case attrib_size:    
+      return type_bits(var->type);
+    default:
+      assert(0);
+    }
   case node_constant:
     return p->value.constant;
   case node_symbol:
@@ -321,6 +278,7 @@ static gp_boolean
 test_symbol(tree *node, char *name, enum size_tag size)
 {
   struct variable *var;
+  enum size_tag arg_size = size_unknown;
 
   var = get_global(name);
   if (var == NULL) {
@@ -329,17 +287,36 @@ test_symbol(tree *node, char *name, enum size_tag size)
   }
 
   var->is_used = true;
+  
+  assert(var->type != NULL);
+  
+  if (node->tag == node_attrib) {
+    switch (ATTRIB_TYPE(node)) {
+    case attrib_address:    
+      arg_size = target->data_ptr_size;
+      break;
+    case attrib_first:
+    case attrib_last:
+    case attrib_size:
+      arg_size = size;
+      break;
+    default:
+      assert(0);
+    }
+  } else {
+    arg_size = prim_size(var->type);
+  }
 
   /* If it is not an unchecked conversion, verify the sizes of the types match */
   if ((size != size_unknown) &&
       (var->tag != sym_const) &&
-      (var->type) &&
-      (prim_type(var->type) != size)) {
+      (arg_size != size)) {
     analyze_error(node, "type mismatch in symbol %s", name);
     return true;
   }
 
-  if ((var->tag == sym_idata) || (var->tag == sym_udata)) {
+  if ((node->tag != node_attrib) && 
+      ((var->tag == sym_idata) || (var->tag == sym_udata))) {
 
     if ((var->is_assigned == false) && (var->storage == storage_local)) {
       analyze_warning(node, "%s might be used uninitialized", name);
@@ -347,7 +324,7 @@ test_symbol(tree *node, char *name, enum size_tag size)
 
     /* Save the size for scanning expressions with an unknown type */
     if ((size == size_unknown) && (var->type)) {     
-      enum size_tag temp_size = prim_type(var->type);
+      enum size_tag temp_size = prim_size(var->type);
 
       if (temp_size != size_unknown) {
         scan_size = temp_size;
@@ -371,6 +348,8 @@ scan_tree(tree *expr, enum size_tag size)
   switch (expr->tag) {
   case node_arg:
     return test_symbol(expr, ARG_NAME(expr), size);
+  case node_attrib:
+    return test_symbol(expr, ATTRIB_NAME(expr), size);
   case node_binop:
     return scan_tree(BINOP_LEFT(expr), size) ||
            scan_tree(BINOP_RIGHT(expr), size);
@@ -507,7 +486,7 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
       head = SUB_HEAD(def);
       if (SUB_RET(def)) {
         load_result = true;
-        call_size = prim_type(get_type(SUB_RET(def)));
+        call_size = prim_size(get_type(SUB_RET(def)));
         if (!in_expr) {
           analyze_error(call, "functions can only be called in expressions");
           return;
@@ -760,8 +739,10 @@ analyze_expr(tree *expr)
 {
   tree *left;
   tree *right;
+  gp_boolean access_type = false;
+  char *name;
   struct variable *var;
-  enum size_tag size;
+  enum size_tag size = size_unknown;
   gp_boolean constant_offset = true;
   int element_size;
   int offset = 0;
@@ -774,31 +755,49 @@ analyze_expr(tree *expr)
 
   left = BINOP_LEFT(expr);
   right = BINOP_RIGHT(expr);
+
+  if ((left->tag == node_attrib) && (ATTRIB_TYPE(left) == attrib_access)) {
+    name = ATTRIB_NAME(left);
+    access_type = true;
+  } else {
+    name = SYM_NAME(left);
+  }
  
-  if (left->tag != node_symbol) {
+  if ((left->tag != node_symbol) && (!access_type)) {
     analyze_error(expr, "invalid lvalue in assignment");
     return;
   }
-  
-  var = get_global(SYM_NAME(left));
+
+  var = get_global(name);
   if (var == NULL) {
-    analyze_error(left, "unknown symbol %s", SYM_NAME(left));  
+    analyze_error(left, "unknown symbol %s", name);  
     return;
   }
 
   /* fetch the symbol's primative type */
   assert(var->type != NULL);
-  size = prim_type(var->type);
+  if (access_type) {
+    /* FIXME: allow access to entries in a record. */ 
+    if (var->type->tag == type_access) {
+      size = prim_size(var->type->access);
+    } else {
+      analyze_error(left, "symbol %s is not an access type", name);  
+    }
+  } else {
+    size = prim_size(var->type);
+  }
 
   /* Verify all symbols in the expression are in the symbol table and
      that they are the same type as the lvalue. */
   if (scan_tree(right, size))
     return;
 
-  /* calculate the offset for indirect accesses if necessary */
-  if (SYM_OFST(left)) {
-    element_size = type_size(var->type->prim);
-    
+  if (access_type) {
+    codegen_load_indirect(var);
+  } else if (SYM_OFST(left)) {
+    element_size = type_bytes(var->type->prim);
+
+    /* calculate the offset for indirect accesses */
     if (var->type->tag == type_array) {
       if (can_evaluate(SYM_OFST(left), false)) {
         /* direct access with an offset */
@@ -807,7 +806,7 @@ analyze_expr(tree *expr)
       } else {
         /* indirect access */
         constant_offset = false;
-        codegen_indirect(SYM_OFST(left), var, element_size, true);
+        codegen_calc_indirect(SYM_OFST(left), var, element_size, true);
       }
     } else {
       analyze_error(left, "lvalue %s is not an array", SYM_NAME(left));
@@ -820,16 +819,28 @@ analyze_expr(tree *expr)
   /* optimize the expression */
   right = optimize_expr(right);
 
-  unop = optimize_unop_expr(var, left, right);
-  if (unop) {
-    /* write the simplified expression */
-    codegen_unop(var, constant_offset, offset, SYM_OFST(left), unop, size);
-  } else {
+  if (access_type) {
     /* write the expression */
     codegen_expr(right, size);
 
-    /* put the result in memory */
-    codegen_store(var, constant_offset, offset, SYM_OFST(left));
+    /* write indirectly to memory */
+    codegen_store(var, true, false, 0, NULL);
+
+    /* mark the symbol as being used */
+    var->is_used = true;
+
+  } else {
+    unop = optimize_unop_expr(var, left, right);
+    if (unop) {
+      /* write the simplified expression */
+      codegen_unop(var, constant_offset, offset, SYM_OFST(left), unop, size);
+    } else {
+      /* write the expression */
+      codegen_expr(right, size);
+
+      /* put the result in memory */
+      codegen_store(var, false, constant_offset, offset, SYM_OFST(left));
+    }
   }
 
   /* mark the symbol as having a valid value */
@@ -849,7 +860,7 @@ analyze_return(tree *ret)
     codegen_line_number(ret);
     ret->value.ret = optimize_expr(ret->value.ret);
     codegen_expr(ret->value.ret, return_size);
-    codegen_store(return_var, false, 0, NULL);
+    codegen_store(return_var, false, false, 0, NULL);
     return_var->is_assigned = true;
     codegen_write_asm("return");
   } else {
@@ -1023,76 +1034,14 @@ add_arg_symbols(tree *node,
     if (add_alias) {
       add_symbol_pointer(ARG_NAME(arg), arg, var);
     }
-    if (var->type->tag == type_array) {
-      analyze_error(arg, "arguments can not be arrays");     
+    if ((var->type->tag == type_array) ||
+        (var->type->tag == type_record))  {
+      analyze_error(arg, "arguments can not be arrays or records");     
     }
     arg = arg->next;
   }
 
   return;
-}
-
-void
-analyze_subprogram_decl(tree *decl)
-{
-  char *decl_name;
-  struct variable *decl_var;
-
-  while (decl) {
-    switch (decl->tag) {
-    case node_alias:
-      add_top_symbol(ALIAS_ALIAS(decl),
-                     ALIAS_EXPR(decl),
-                     sym_alias,
-                     storage_unknown,
-                     NULL);
-      break;
-    case node_cond:
-      analyze_preprocess(decl, (long int)analyze_subprogram_decl);
-      break;
-    case node_pragma:
-      analyze_error(decl, "unknown pragma");
-      break;
-    case node_decl:
-      decl_name = mangle_name2(subprogram_var->name, DECL_NAME(decl));
-      if (DECL_CONSTANT(decl)) {
-        if (DECL_INIT(decl)) {
-          decl_var = add_constant(decl_name,
-                                  maybe_evaluate(DECL_INIT(decl)),
-                                  decl,
-                                  DECL_TYPE(decl));
-          add_symbol_pointer(DECL_NAME(decl), decl, decl_var);
-        } else {
-          analyze_error(decl, "missing constant value");
-        }    
-      } else {
-        decl_var = add_global_symbol(decl_name, 
-                                     decl,
-                                     sym_udata,
-                                     storage_local,
-                                     DECL_TYPE(decl));
-        add_symbol_pointer(DECL_NAME(decl), decl, decl_var);
-        if (DECL_INIT(decl)) {
-          /* initialize the local data */
-          append_init(decl_name, DECL_INIT(decl));
-        }
-        if (DECL_ADDR(decl)) {
-          analyze_error(decl, "address can't be specified on local data");
-        }
-      }
-      break;
-    case node_with:
-    case node_type:
-    case node_subprogram:
-      analyze_error(decl, "construct not yet supported in local declarations");
-      break;    
-    default:
-      assert(0);
-    }
-
-    decl = decl->next;
-  }
-
 }
 
 void
@@ -1107,6 +1056,11 @@ analyze_subprogram(tree *subprogram)
   tree *decl;
   tree *statements;
 
+  if (!state.processor_chosen) {
+    analyze_error(subprogram, "processor not selected");
+    return;
+  }
+
   head = SUB_HEAD(subprogram);
   body = SUB_BODY(subprogram);
   if (SUB_RET(subprogram)) {
@@ -1116,7 +1070,7 @@ analyze_subprogram(tree *subprogram)
       analyze_error(subprogram, "unknown return type");
       return_size = size_unknown;
     } else {
-      return_size = prim_type(return_type);
+      return_size = prim_size(return_type);
     }
   } else {
     generating_function = false;
@@ -1134,11 +1088,16 @@ analyze_subprogram(tree *subprogram)
 
   /* local symbol table */
   state.top = push_symbol_table(state.top, true);
+  state.type_top = push_symbol_table(state.type_top, true);
   found_return = false;
-  init = NULL;  
+  init = NULL;
 
   /* local data */
-  analyze_subprogram_decl(decl);
+  analyze_elements(decl,
+                   subprogram_var->name,
+                   storage_local,
+                   storage_local,
+                   true);
 
   if (init) {
     node_list(last_init, statements);
@@ -1182,12 +1141,13 @@ analyze_subprogram(tree *subprogram)
 
   /* remove the local table */
   state.top = pop_symbol_table(state.top);
+  state.type_top = pop_symbol_table(state.type_top);
 
   return;
 }
 
 void
-analyze_constants(void)
+write_constants(void)
 {
   int i;
   struct symbol *sym;
@@ -1218,7 +1178,7 @@ analyze_constants(void)
 }
 
 void
-analyze_declarations(void)
+write_declarations(void)
 {
   int i;
   struct symbol *sym;
@@ -1254,7 +1214,7 @@ analyze_declarations(void)
   if (first_time == false)
     fprintf(state.output.f, "\n");
 
-  /* write the abolute sections memory section */
+  /* write the absolute sections memory section */
 
   first_time = true;
 
@@ -1340,7 +1300,9 @@ analyze_select_processor(tree *expr, char *name)
 }
 
 static void
-analyze_pragma(tree *expr, enum source_type type)
+analyze_pragma(tree *expr,
+               enum node_storage *data_storage,
+               enum node_storage *prog_storage)
 {
   tree *lhs;
   tree *rhs;
@@ -1354,33 +1316,30 @@ analyze_pragma(tree *expr, enum source_type type)
       analyze_error(expr, "unknown pragma");
     } else {
       if (strcasecmp(SYM_NAME(lhs), "code_address") == 0) {
-        if (rhs->tag != node_constant) {
-          analyze_error(expr, "code address must be a constant");
-        } else if (type == source_module) {            
-          state.section.code_addr = rhs->value.constant;
-          state.section.code_addr_valid = true;
-        } else {
+        if (*prog_storage != storage_private) {
           analyze_error(expr, "code section addresses can only be in modules");
+        } else {            
+          state.section.code_addr = maybe_evaluate(rhs);
+          state.section.code_addr_valid = true;
         }
       } else if (strcasecmp(SYM_NAME(lhs), "code_section") == 0) {
         if (rhs->tag != node_string) {
           analyze_error(expr, "code section name must be a string");
         } else {
-          if (type == source_with) {            
-            if ((state.section.code) && 
-                (strcmp(rhs->value.string, state.section.code) == 0)) {
-              FILE_CODE(state.module) = storage_near;
-            }
-          } else {
-            if (type == source_module) {
-              analyze_warning(expr, "section pragma's should be in a public");
-            }
+          if (*prog_storage == storage_public) {
             if (state.section.code) {
               analyze_error(expr, "duplicate code section name");
             } else {
               state.section.code = rhs->value.string;
+            }         
+          } else if (*prog_storage == storage_far) {
+            if ((state.section.code) && 
+                (strcmp(rhs->value.string, state.section.code) == 0)) {
+              *prog_storage = storage_near;
             }
-          }        
+          } else {
+            analyze_warning(expr, "section pragmas can only be in a public");
+          }
         }
       } else if (strcasecmp(lhs->value.string, "processor") == 0) {
         if (rhs->tag != node_string) {
@@ -1388,35 +1347,31 @@ analyze_pragma(tree *expr, enum source_type type)
         } else {
           analyze_select_processor(rhs, rhs->value.string);
         }
-
-      } else if (strcasecmp(SYM_NAME(lhs), "udata_address") == 0) {
-        if (rhs->tag != node_constant) {
-          analyze_error(expr, "udata address must be a constant");
-        } else if (type == source_module) {            
-          state.section.udata_addr = rhs->value.constant;
-          state.section.udata_addr_valid = true;
-        } else {
-          analyze_error(expr, "udata section addresses can only be in modules");
+      } else if (strcasecmp(SYM_NAME(lhs), "data_address") == 0) {
+        if (*data_storage != storage_private) {
+          analyze_error(expr, "data section addresses can only be in modules");
+        } else {            
+          state.section.data_addr = maybe_evaluate(rhs);
+          state.section.data_addr_valid = true;
         }
-      } else if (strcasecmp(lhs->value.string, "udata_section") == 0) {
+      } else if (strcasecmp(lhs->value.string, "data_section") == 0) {
         if (rhs->tag != node_string) {
-          analyze_error(expr, "udata section name must be a string");
+          analyze_error(expr, "data section name must be a string");
         } else {
-          if (type == source_with) {            
-            if ((state.section.udata) &&
-                (strcmp(rhs->value.string, state.section.udata) == 0)) {
-              FILE_UDATA(state.module) = storage_near;
+          if (*data_storage == storage_public) {
+            if (state.section.data) {
+              analyze_error(expr, "duplicate data section name");
+            } else {
+              state.section.data = rhs->value.string;
+            }         
+          } else if (*data_storage == storage_far) {
+            if ((state.section.data) && 
+                (strcmp(rhs->value.string, state.section.data) == 0)) {
+              *data_storage = storage_near;
             }
           } else {
-            if (type == source_module) {
-              analyze_warning(expr, "section pragma's should be in a public");
-            }
-            if (state.section.code) {
-              analyze_error(expr, "duplicate udata section name");
-            } else {
-              state.section.udata = rhs->value.string;
-            }
-          }        
+            analyze_warning(expr, "section pragmas can only be in a public");
+          }
         }
       } else {
         analyze_error(expr, "unknown pragma %s", SYM_NAME(lhs));
@@ -1430,10 +1385,96 @@ analyze_pragma(tree *expr, enum source_type type)
   return;
 }
 
+/* add all of the decl to the symbol table */
+
+static void
+analyze_decl(tree *decl,
+             char *root_name, 
+             enum node_storage data_storage,
+             gp_boolean add_alias)
+{
+  struct variable *var;
+  char *name;
+  char *alias;
+
+  alias = DECL_NAME(decl);
+  name = mangle_name2(root_name, alias);
+ 
+  if (DECL_CONSTANT(decl)) {
+    if (DECL_INIT(decl)) {
+      var = add_constant(name,
+                         maybe_evaluate(DECL_INIT(decl)),
+                         decl,
+                         DECL_TYPE(decl));
+      if (add_alias) {
+        add_symbol_pointer(alias, decl, var);
+      }
+    } else {
+      analyze_error(decl, "missing constant value");
+    }
+  } else {
+    /* FIXME: add symbol for each entry in a record */
+    var = get_global(name);
+    if (!var) {
+      /* The data has not been declared or defined */
+      var = add_global_symbol(name,
+                              decl,
+                              sym_udata,
+                              data_storage,
+                              DECL_TYPE(decl));
+      if (add_alias) {
+        add_symbol_pointer(alias, decl, var);
+      }
+    } else if ((var->storage != storage_public) ||
+               (data_storage != storage_private)) {
+      analyze_error(decl, 
+                    "duplicate declaration previously defined in %s:%i:",
+                    get_file_name(decl->file_id),
+                    decl->line_number);
+    }   
+    if (DECL_INIT(decl)) {
+      /* FIXME: implement the record initialization (value <, value>*) */
+      if (data_storage == storage_local) {
+        append_init(name, DECL_INIT(decl));
+      } else if (data_storage != storage_private) {
+        analyze_error(decl, "declarations can not be initialized");
+      } else {
+        var->value = maybe_evaluate(DECL_INIT(decl));
+        analyze_error(decl, "initialized data not yet supported");
+      }
+    }
+    if (DECL_ADDR(decl)) {
+      int address = maybe_evaluate(DECL_ADDR(decl));
+      
+      if ((var->is_absolute) && (var->address != address)) {
+        analyze_error(decl, "mismatch in declared absolute address",
+                      name); 
+      }
+      if (data_storage == storage_local) {
+        analyze_error(decl, "address can't be specified on local data");
+      } else {
+        var->is_absolute = true;
+        var->address = address;
+      }
+    }
+    if (DECL_VOLATILE(decl)) {
+      var->is_volatile = true;
+    }
+
+    /* FIXME: figure out how to add this one:
+      analyze_error(decl, "missing definition for %s", name); 
+    */
+  }
+
+  return;
+}
+
 /* add all of the types to the type table */
 
 static void
-analyze_type(tree *file, tree *type, gp_boolean add_alias)
+analyze_type(tree *type,
+             char *root_name,
+             gp_boolean add_alias)
 {
   tree *list;
   char *name;
@@ -1442,10 +1483,22 @@ analyze_type(tree *file, tree *type, gp_boolean add_alias)
   struct variable *var;
   int start;
   int end;
-
-  name = mangle_name2(FILE_NAME(file), TYPE_TYPE(type));
-
-  if (TYPE_LIST(type)) {
+  
+  name = mangle_name2(root_name, TYPE_TYPE(type));
+  
+  if (TYPE_ACCESS(type)) {
+    /* access type, for now it is treated like an alias */
+    if (state.processor_chosen) {
+      /* FIXME: implement access types to program memory space */
+      add_type_access(name, target->data_ptr_type, TYPE_OF(type));
+      if (add_alias) {
+        add_type_alias(TYPE_TYPE(type), name);
+      }
+    } else {
+      analyze_error(type, 
+                    "processor must be selected before access types declared");
+    }
+  } else if (TYPE_LIST(type)) {
     /* enumerated type */
     add_type_enum(name);
     if (add_alias) {
@@ -1456,7 +1509,7 @@ analyze_type(tree *file, tree *type, gp_boolean add_alias)
     while (list) {
       if (list->tag == node_symbol) {
         /* add the constant to the global symbol table */
-        enum_name = mangle_name2(FILE_NAME(file), SYM_NAME(list));
+        enum_name = mangle_name2(root_name, SYM_NAME(list));
         var = add_constant(enum_name, enum_num++, list, name);
         if (add_alias) {
           add_symbol_pointer(SYM_NAME(list), list, var);
@@ -1488,95 +1541,6 @@ analyze_type(tree *file, tree *type, gp_boolean add_alias)
 
 }
 
-static void analyze_public(char *public_name);
-
-static void
-analyze_module(tree *current)
-{
-  char *name;
-  char *alias;
-  struct variable *var;
-
-  add_global_symbol(FILE_DATA_ADDR(state.module),
-                    current,
-                    sym_addr,
-                    storage_public,
-                    NULL);
-
-  add_global_symbol(FILE_CODE_ADDR(state.module),
-                    current,
-                    sym_addr,
-                    storage_public,
-                    NULL);
-
-  while (current) {
-    switch (current->tag) {
-    case node_alias:
-      break;
-    case node_cond:
-      analyze_preprocess(current, (long int)analyze_module);
-      break;
-    case node_pragma:
-      analyze_pragma(current->value.pragma, FILE_TYPE(state.module));
-      break;
-    case node_type:
-      analyze_type(state.module, current, true);
-      break;
-    case node_decl:
-      alias = DECL_NAME(current);
-      name = mangle_name2(FILE_NAME(state.module), alias);
-      if (DECL_CONSTANT(current)) {
-        if (DECL_INIT(current)) {
-          var = add_constant(name,
-                             maybe_evaluate(DECL_INIT(current)),
-                             current,
-                             DECL_TYPE(current));
-          add_symbol_pointer(alias, current, var);
-        } else {
-          analyze_error(current, "missing constant value");
-        }     
-      } else {
-        var = add_global_symbol(name,
-                                current, 
-                                sym_udata,
-                                storage_private,
-                                DECL_TYPE(current));
-        add_symbol_pointer(alias, current, var);
-        if (DECL_INIT(current)) {
-          analyze_error(current, "initialized data not yet supported");
-        }
-        if (DECL_ADDR(current)) {
-          var->is_absolute = true;
-          var->address = maybe_evaluate(DECL_ADDR(current));
-        }
-      }
-      break;
-    case node_subprogram:
-      alias = find_node_name(current);
-      name = mangle_name2(FILE_NAME(state.module), alias);
-      var = add_global_symbol(name,
-                              current,
-                              sym_subprogram,
-                              storage_private,
-                              NULL);
-      add_symbol_pointer(alias, current, var);
-      if (SUB_BODY(current) == NULL) {
-        analyze_error(current,
-                      "only subprogram definitions are allowed in a module");
-      }
-      break;
-    case node_with:
-      analyze_public(WITH_NAME(current));
-      break;
-    default:
-      assert(0);
-    }
-    current = current->next;
-  }
-
-  return;
-}
-
 static tree *
 find_public(char *public_name)
 {
@@ -1604,39 +1568,95 @@ find_public(char *public_name)
   return public;
 }
 
+/* verify the declaration and the definition match */
+
 static void
-analyze_public(char *public_name)
+check_subprogram_declaration(tree *def, tree *prot)
 {
-  tree *current = NULL;
+  tree *def_head;
+  tree *def_args;
+  tree *prot_head;
+  tree *prot_args;
+
+  def_head = SUB_HEAD(def);
+  prot_head = SUB_HEAD(prot);
+  
+  if (SUB_RET(def)) {
+    if (SUB_RET(prot) == NULL) {
+      analyze_error(prot, "the definition is a function");
+      return;
+    }
+    if (strcasecmp(SUB_RET(def), SUB_RET(prot)) != 0) {
+      analyze_error(prot, "the definition returns %s", SUB_RET(def));
+    }
+  } else if (SUB_RET(prot)) {
+    analyze_error(prot, "the definition is a procedure");
+    return;
+  }
+    
+  def_args = HEAD_ARGS(def_head);
+  prot_args = HEAD_ARGS(prot_head);
+ 
+  while (def_args) {
+    assert(def_args->tag == node_arg);
+ 
+    if (prot_args == NULL) {
+      analyze_error(prot_head, "the declaration is missing arguments");
+      return;
+    }
+
+    if (strcasecmp(ARG_NAME(def_args), ARG_NAME(prot_args)) != 0) {
+      analyze_error(prot,
+                    "argument %s,\n\t defined as %s in %s:%i:",
+                    ARG_NAME(prot_args),
+                    ARG_NAME(def_args),
+                    get_file_name(def->file_id),
+                    def->line_number);
+      /* The argument name didn't match, so skip the rest of the tests.  
+         This should prevent generating spurious errors. */
+      return;
+    }
+
+    if (strcasecmp(ARG_TYPE(def_args), ARG_TYPE(prot_args)) != 0) {
+      analyze_error(prot,
+                    "type %s of argument %s,\n\t defined as %s in %s:%i:",
+                    ARG_TYPE(prot_args),
+                    ARG_NAME(prot_args),
+                    ARG_TYPE(def_args),
+                    get_file_name(def->file_id),
+                    def->line_number);
+    }
+
+    if (ARG_DIR(def_args) != ARG_DIR(prot_args)) {
+      analyze_error(prot,
+                    "direction mismatch of argument %s,\n\t defined in %s:%i:",
+                    ARG_NAME(prot_args),
+                    get_file_name(def->file_id),
+                    def->line_number);
+    }
+
+    def_args = def_args->next;
+    prot_args = prot_args->next;
+  }
+
+  if (prot_args) {
+    analyze_error(prot_args, "the declaration has extra arguments");
+  }
+
+  return;
+}
+
+static void
+analyze_elements(tree *current,
+                 char *root_name,
+                 enum node_storage data_storage,
+                 enum node_storage prog_storage,
+                 gp_boolean add_alias)
+{
+  struct variable *var;
   char *name;
   char *alias;
-  struct variable *var;
   tree *public = NULL;
-  tree *last_module = NULL;
-
-  public = find_public(public_name);
-  if (public == NULL)
-    return;
-
-  last_module = state.module;
-  state.module = public;
-  current = FILE_BODY(public);
-
-  add_dependency(get_file_name(state.module->file_id));
-
-  if (FILE_TYPE(state.module) == source_with) {
-    add_global_symbol(FILE_DATA_ADDR(public),
-                      current,
-                      sym_addr,
-                      FILE_UDATA(state.module),
-                      NULL);
-
-    add_global_symbol(FILE_CODE_ADDR(public),
-                      current,
-                      sym_addr,
-                      FILE_CODE(state.module),
-                      NULL);
-  }
 
   while (current) {
     switch (current->tag) {
@@ -1648,165 +1668,114 @@ analyze_public(char *public_name)
                         NULL);
       break;
     case node_cond:
-      analyze_preprocess(current, (long int)analyze_public);
+      analyze_preprocess(current, (long int)analyze_elements);
       break;
     case node_pragma:
-      analyze_pragma(current->value.pragma,  FILE_TYPE(state.module));
-      break;
-    case node_type:
-      if (FILE_TYPE(state.module) == source_public) {
-        analyze_type(state.module, current, true);
-      } else {
-        analyze_type(state.module, current, false);
-      }
+      analyze_pragma(current->value.pragma, &data_storage, &prog_storage);
       break;
     case node_decl:
-      alias = find_node_name(current);
-      name = mangle_name2(FILE_NAME(state.module), alias);
-      if (DECL_CONSTANT(current)) {
-        if (DECL_INIT(current)) {
-          var = add_constant(name,
-                             maybe_evaluate(DECL_INIT(current)),
-                             current,
-                             DECL_TYPE(current));
-          if (FILE_TYPE(state.module) == source_public) {
-            add_symbol_pointer(alias, current, var);
-          }
-        } else {
-          analyze_error(current, "missing constant value");
-        }
-      } else if (FILE_TYPE(state.module) == source_public) {
-        var = get_global(name);
-        if (var) {
-          var->storage = storage_public;       
-          if ((DECL_ADDR(current)) && 
-              (var->address != maybe_evaluate(DECL_ADDR(current)))) {
-            analyze_error(current, "mismatch in declared absolute address",
-                          name); 
-          }
-        } else {
-          analyze_error(current, "missing definition for %s", name); 
-        }
-        if (DECL_INIT(current)) {
-          analyze_error(current, "declarations can not be initialized");
-        }
-      } else if (FILE_TYPE(state.module) == source_with) {
-        var = add_global_symbol(name,
-                                current,
-                                sym_udata,
-                                FILE_UDATA(state.module),
-                                DECL_TYPE(current));
-        if (DECL_INIT(current)) {
-          analyze_error(current, "declarations can not be initialized");
-        }
-        if (DECL_ADDR(current)) {
-          var->is_absolute = true;
-          var->address = maybe_evaluate(DECL_ADDR(current));
-        }
-      } else {
-        assert(0);
+      analyze_decl(current, root_name, data_storage, add_alias);
+      break;
+    case node_record:
+      name = mangle_name2(root_name, RECORD_NAME(current));
+      add_type_record(name, RECORD_LIST(current));
+      if (add_alias) {
+        add_type_alias(RECORD_NAME(current), name);
       }
+      break;
+    case node_type:
+      analyze_type(current, root_name, add_alias);
       break;
     case node_subprogram:
       alias = find_node_name(current);
-      name = mangle_name2(FILE_NAME(state.module), alias);
-      if (SUB_BODY(current)) {
-        analyze_error(current,
-                      "only function declarations are allowed in a public");
-      }
-      if (FILE_TYPE(state.module) == source_public) {
-        var = get_global(name);
-        if (var) {
-          make_proc_public(var, current);
-        } else {
-          analyze_error(current, "missing definition for %s", name); 
-        }
-      } else if (FILE_TYPE(state.module) == source_with) {
+      name = mangle_name2(root_name, alias);
+      var = get_global(name);
+      if (!var) {
+        /* The subprogram has not been declared or defined */
         var = add_global_symbol(name,
                                 current,
                                 sym_subprogram,
-                                FILE_CODE(state.module),
+                                prog_storage,
                                 NULL);
-        if (SUB_RET(current)) {
-          add_global_symbol(mangle_name2(var->name, "return"),
-                            current,
-                            sym_udata,
-                            FILE_UDATA(state.module),
-                            SUB_RET(current));
+        if (add_alias) {
+          add_symbol_pointer(alias, current, var);
         }
-        add_arg_symbols(current,
-                        var->name,
-                        FILE_UDATA(state.module),
-                        false);
+        if ((prog_storage == storage_near) ||
+            (prog_storage == storage_far)) {
+          if (SUB_RET(current)) {
+            add_global_symbol(mangle_name2(var->name, "return"),
+                              current,
+                              sym_udata,
+                              data_storage,
+                              SUB_RET(current));
+          }        
+          add_arg_symbols(current,
+                          var->name,
+                          data_storage,
+                          false);
+          if (SUB_BODY(current)) {
+            analyze_error(current, "illegal subprogram definition");
+          }
+        }
+      } else if (var->tag != sym_subprogram) {
+        analyze_error(current, "duplicate symbol %s also in %s:%i:",
+                      alias,
+                      get_file_name(var->file_id),
+                      var->line_number);
+      } else if (SUB_BODY(current) == NULL) {
+        analyze_error(current, 
+                      "subprogram %s previously declared or defined in %s:%i:",
+                      alias,
+                      get_file_name(var->file_id),
+                      var->line_number);
+      } else if (SUB_BODY(var->node)) {
+        analyze_error(current, "subprogram %s previously defined in %s:%i:",
+                      alias,
+                      get_file_name(var->file_id),
+                      var->line_number);
       } else {
-        assert(0);
+        check_subprogram_declaration(current, var->node);       
       }
-
+      if (prog_storage == storage_local) {
+       analyze_error(current, "nested subprograms are not supported");
+      }
+      if ((gp_num_errors == 0) && (SUB_BODY(current))) {
+        /* It is a definition so scan the subprogram */
+        analyze_subprogram(current);
+      }
       break;
     case node_with:
-      analyze_public(WITH_NAME(current));
+      public = find_public(WITH_NAME(current));
+      if (public) {
+        add_dependency(get_file_name(public->file_id));
+
+        add_global_symbol(FILE_DATA_ADDR(public),
+                          current,
+                          sym_addr,
+                          FILE_DATA(public),
+                          NULL);
+
+        add_global_symbol(FILE_CODE_ADDR(public),
+                          current,
+                          sym_addr,
+                          FILE_CODE(public),
+                          NULL);
+
+        analyze_elements(FILE_BODY(public),
+                         FILE_NAME(public),
+                         FILE_DATA(public),
+                         FILE_CODE(public),
+                         false);
+      }
       break;
     default:
       assert(0);
     }
-    current = current->next;
-  }
 
-  state.module = last_module;
-
-  return;
-}
-
-static void
-analyze_module_contents(tree *current)
-{
-
-  while (current) {
-    switch (current->tag) {
-    case node_alias:
-      add_global_symbol(ALIAS_ALIAS(current),
-                        ALIAS_EXPR(current),
-                        sym_alias,
-                        storage_unknown,
-                        NULL);
-      break;
-    case node_cond:
-      analyze_preprocess(current, (long int)analyze_module_contents);
-      break;
-    case node_pragma:
-    case node_decl:
-    case node_type:
-      /* do nothing */
-      break;
-    case node_subprogram:
-      analyze_subprogram(current);
-      break;
-    case node_with:
-      break;
-    default:
-      assert(0);
-    }
     current = current->next;
   }
 
   return;
-}
-
-/* reset all of the publics to far, allow pragmas to make some near */
-
-void
-analyze_setfar(void)
-{
-  tree *node;
-
-  node = state.root;
-  while (node) {
-    if (FILE_TYPE(node) == source_with) {
-      FILE_CODE(node) = storage_far;
-      FILE_UDATA(node) = storage_far;
-    }  
-    node = node->next;
-  }
 }
 
 void
@@ -1817,51 +1786,52 @@ analyze(tree *module)
   generating_function = false;
   found_return = false;
   return_size = size_unknown;
+  state.current_page = NULL;
+  state.module = module;
 
-  analyze_setfar();
+  codegen_init_deps(module);
 
   /* locate the public for the module being compiled */ 
   public = find_public(FILE_NAME(module));
   if (public == NULL)
     return;
 
-  FILE_TYPE(public) = source_public;
+  /* scan the public */
+  analyze_elements(FILE_BODY(public),
+                   FILE_NAME(public),
+                   storage_public,
+                   storage_public,
+                   true);
 
-  codegen_init_deps(module);
+  /* create symbols for the start of the module's program and data memory */
+  add_global_symbol(FILE_DATA_ADDR(module),
+                    module,
+                    sym_addr,
+                    storage_public,
+                    NULL);
 
-  /* add all procedures and data to the global symbol table */
-  state.module = module;
-  analyze_module(FILE_BODY(module));
+  add_global_symbol(FILE_CODE_ADDR(module),
+                    module,
+                    sym_addr,
+                    storage_public,
+                    NULL);
 
-  if (public) {
-    analyze_public(FILE_NAME(module));
-  }
-
-  if (!state.processor_chosen) {
-    analyze_error(module, "processor not selected");
-    return;
-  }
-
-  /* don't bother generating code if there are errors */
-  if (gp_num_errors)
-    return;
-
-  /* open the output file */
+  /* FIXME: difficult to select processor without scanning all the publics */
   codegen_init_asm(module);
 
   /* scan the module */
-  state.current_page = NULL;
-  analyze_module_contents(FILE_BODY(module));
+  analyze_elements(FILE_BODY(module),
+                   FILE_NAME(module),
+                   storage_private,
+                   storage_private,
+                   true);
 
   /* finish the assembly output */
   codegen_init_data();
-  analyze_declarations();
-  analyze_constants();
+  write_declarations();
+  write_constants();
   codegen_close_asm();
   codegen_close_deps();
-
-  /* return the public to with */
-  FILE_TYPE(public) = source_with;
 
   return;
 }

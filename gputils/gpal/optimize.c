@@ -23,7 +23,6 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gpal.h"
-#include "symbol.h"
 #include "analyze.h"
 
 /* prototypes */
@@ -39,6 +38,14 @@ node_complexity(tree *node)
   int complexity = 0;
 
   switch(node->tag) {
+  case node_attrib:
+    if ((ATTRIB_TYPE(node) == attrib_access) ||
+        (ATTRIB_TYPE(node) == attrib_address)) {
+      complexity = 2;    
+    } else { 
+      complexity = 1;
+    }
+    break;
   case node_call:
     complexity = 2;    
     break;
@@ -451,6 +458,13 @@ opt_expr(tree *expr)
   struct variable *var;
 
   switch(expr->tag) {
+  case node_attrib:
+    if ((ATTRIB_TYPE(expr) != attrib_access) &&
+        (ATTRIB_TYPE(expr) != attrib_address))  {
+      /* convert all attribs into constants if possible */
+      expr = mk_constant(maybe_evaluate(expr));
+    }   
+    break;
   case node_call:
   case node_constant:
     /* do nothing */

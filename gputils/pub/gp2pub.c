@@ -58,6 +58,9 @@ void write_pub(void)
 
   fprintf(f, "public %s is\n\n", processor_name);
 
+  fprintf(f, "  pragma processor=\"%s\";\n\n", processor_name);
+  fprintf(f, "  alias %s pic;\n\n", processor_name);
+
   ps = lst = malloc(state.stGlobal->count * sizeof(lst[0]));
 
   for (i = 0; i < HASH_SIZE; i++)

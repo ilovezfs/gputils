@@ -22,6 +22,6 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __CODEGEN14_H__
 #define __CODEGEN14_H__
 
-extern struct function_pointer_struct codegen14_func;
+extern target_type pic14;
 
 #endif

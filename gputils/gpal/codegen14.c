@@ -23,7 +23,6 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gpal.h"
-#include "symbol.h"
 #include "analyze.h"
 #include "codegen.h"
 #include "codegen14.h"
@@ -49,7 +48,7 @@ load_constant14(int value, enum size_tag size)
   }
 
   /* FIXME: use codegen_bytes */
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   BANKSEL_LOCAL;
 
@@ -99,7 +98,7 @@ load_file14(char *name,
     return;
   }
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   switch (num_bytes) {
   case 4:
@@ -154,7 +153,7 @@ store_file14(char *name,
     return;
   }
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   switch (num_bytes) {
   case 4:
@@ -184,6 +183,75 @@ store_file14(char *name,
 
 }
 
+/* load an address into the working register */
+
+static void
+load_addr14(char *name, enum size_tag size)
+{
+  int num_bytes;
+  
+  if ((size == size_int8) || (size == size_uint8)) {
+    codegen_write_asm("movlw low %s", name);
+    return;
+  }
+
+  /* FIXME: use codegen_bytes */
+  num_bytes = prim_bytes(size);
+
+  BANKSEL_LOCAL;
+
+  switch (num_bytes) {
+  case 4:
+    assert(0);
+    /* fall through */
+  case 3:
+    codegen_write_asm("movlw upper %s", name);
+    codegen_write_asm("movwf %s + 2", WORKING_LABEL);
+    /* fall through */
+  case 2:
+    codegen_write_asm("movlw high %s", name);
+    codegen_write_asm("movwf %s + 1", WORKING_LABEL);
+    /* fall through */
+  case 1:
+    codegen_write_asm("movlw low %s", name);
+    codegen_write_asm("movwf %s", WORKING_LABEL);
+  }
+
+}
+
+/* Load the address contained in memory to the FSR */
+
+static void
+load_fsr14(struct variable *var)
+{
+  
+  /* FIXME: this is only needed on devices with 4 banks.  Also only need 8 
+     bits for less than 2 bank devices. */
+  /* set the IRP bit in the status register */
+  state.current_ibank = NULL;
+  codegen_write_asm("bcf STATUS, IRP"); 
+  codegen_write_asm("rrf %s + 1, w", var->name); 
+  codegen_write_asm("btfsc STATUS, C"); 
+  codegen_write_asm("bsf STATUS, IRP"); 
+  
+  codegen_write_asm("movf %s, w", var->name); 
+  codegen_write_asm("movwf FSR"); 
+}
+
+/* Offset the FSR with a variable address */
+
+static void
+offset_fsr14(struct variable *var)
+{
+  state.current_ibank = NULL;
+  codegen_write_asm("bcf STATUS, IRP"); 
+  codegen_write_asm("addlw %s", var->name); 
+  codegen_write_asm("movwf FSR"); 
+  codegen_write_asm("btfsc STATUS, C"); 
+  codegen_write_asm("bsf STATUS, IRP"); 
+
+}
+
 /* The byte address is in FSR.  Load the data to the working register */
 
 static void
@@ -195,14 +263,12 @@ load_indirect14(char *name,
   int num_bytes;
   int i;
 
-  BANKISEL;
-
   if ((size == size_int8) || (size == size_uint8)) {
     codegen_write_asm("movf INDF, w");
     return;
   }
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   for (i = 0; i < num_bytes; i++) {
     codegen_write_asm("movf INDF, w");
@@ -224,14 +290,12 @@ store_indirect14(char *name,
   int num_bytes;
   int i;
 
-  BANKISEL;
-
   if ((size == size_int8) || (size == size_uint8)) {
     codegen_write_asm("movwf INDF");
     return;
   }
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   for (i = 0; i < num_bytes; i++) {
     BANKSEL_LOCAL;
@@ -256,7 +320,7 @@ gen_boolean(enum size_tag size)
     return;
   }
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   BANKSEL_LOCAL;
   codegen_write_asm("movf %s, w", WORKING_LABEL);
@@ -277,7 +341,7 @@ move_to_working(enum size_tag size)
 {
   int num_bytes;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   BANKSEL_LOCAL;
   switch (num_bytes) {
@@ -361,7 +425,7 @@ clr_indirect14(char *name,
 
   BANKISEL;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   for (i = 0; i < num_bytes; i++) {
     codegen_write_asm("clrf INDF");
@@ -452,7 +516,7 @@ inc_indirect14(char *name,
 
   BANKISEL;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   label = codegen_next_label();
 
@@ -552,7 +616,7 @@ dec_indirect14(char *name,
 
   BANKISEL;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   label = codegen_next_label();
 
@@ -1060,7 +1124,7 @@ left_shift(enum size_tag size)
   int i;
   int num_bytes;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   for (i = 0; i < num_bytes; i++) {
     if (i == 0) {
@@ -1181,7 +1245,7 @@ right_shift(enum size_tag size, gp_boolean is_signed)
   int i;
   int num_bytes;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   i = num_bytes - 1;
 
@@ -1380,7 +1444,7 @@ offset_working(enum size_tag size)
 {
   int num_bytes;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   BANKSEL_LOCAL;
 
@@ -1412,7 +1476,7 @@ offset_reg(char *name, char *bank_addr, enum size_tag size)
 
   BANKSEL;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
   codegen_write_asm("movlw 0x80");
   codegen_write_asm("xorwf %s + %i, f", name, num_bytes - 1);
 
@@ -1424,7 +1488,7 @@ offset_constant(int number, enum size_tag size)
   int result = 0;
   int num_bytes;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   switch (num_bytes) {
   case 4:
@@ -1802,22 +1866,23 @@ interrupt_vector14(struct variable *var)
   fprintf(state.output.f, "pclath_temp res 1\n\n");
 }
 
-static void
-load_fsr14(struct variable *var)
-{
-  codegen_write_asm("addlw %s", var->name); 
-  codegen_write_asm("movwf FSR"); 
-}
-
-struct function_pointer_struct codegen14_func = {
+target_type pic14 = {
   (long int)codegen14,
   (long int)unopgen14,
   (long int)load_constant14,
   (long int)load_file14,
   (long int)store_file14,
+  (long int)load_addr14,
+  (long int)load_fsr14,
+  (long int)offset_fsr14,
   (long int)load_indirect14,
   (long int)store_indirect14,
   (long int)reset_vector14,
   (long int)interrupt_vector14,
-  (long int)load_fsr14
+  size_uint16,
+  "uint16",
+  size_uint16,
+  "uint16",
+  true,
+  true
 };

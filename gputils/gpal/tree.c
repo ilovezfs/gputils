@@ -138,6 +138,15 @@ mk_assembly(char *assembly)
 }
 
 tree *
+mk_attrib(char *name, enum attrib_type type)
+{
+  tree *new = mk_node(node_attrib);
+  new->value.attrib.name = name;
+  new->value.attrib.type = type;
+  return new;
+}
+
+tree *
 mk_body(tree *decl, tree *statements)
 {
   tree *new = mk_node(node_body);
@@ -186,14 +195,16 @@ mk_cond(tree *cond, tree *body, tree *next)
 
 tree *
 mk_decl(char *name,
-        gp_boolean constant,
+        gp_boolean is_volatile,
+        gp_boolean is_constant,
         char *type,
         tree *init,
         tree *addr)
 {
   tree *new = mk_node(node_decl);
   new->value.decl.name = name;
-  new->value.decl.constant = constant;
+  new->value.decl.is_volatile = is_volatile;
+  new->value.decl.is_constant = is_constant;
   new->value.decl.type = type;
   new->value.decl.init = init;
   new->value.decl.addr = addr;
@@ -210,12 +221,12 @@ mk_file(tree *body, char *name, enum source_type type)
   new->value.file.name = name;
   new->value.file.type = type;
 
-  if ((type == source_module) || (type == source_public)) {
+  if (type == source_module) {
     new->value.file.code_default = storage_private;
-    new->value.file.udata_default = storage_private;
+    new->value.file.data_default = storage_private;
   } else {
     new->value.file.code_default = storage_far;
-    new->value.file.udata_default = storage_far;
+    new->value.file.data_default = storage_far;
   }
 
   snprintf(buffer, sizeof(buffer), "_%s_%s", name, LOCAL_PROG_CAT);
@@ -276,6 +287,16 @@ mk_pragma(tree *pragma)
 }
 
 tree *
+mk_record(char *name, tree *list)
+{
+  tree *new = mk_node(node_record);
+  new->value.record.name = name;
+  new->value.record.list = list;
+
+  return new;
+}
+
+tree *
 mk_return(tree *ret)
 {
   tree *new = mk_node(node_return);
@@ -314,10 +335,16 @@ mk_symbol(char *name, tree *offset)
 }
 
 tree *
-mk_type(char *type, tree *start, tree *end, tree *list, char *of)
+mk_type(char *type, 
+        gp_boolean is_access,
+        tree *start,
+        tree *end,
+        tree *list,
+        char *of)
 {
   tree *new = mk_node(node_type);
   new->value.type.type = type;
+  new->value.type.is_access = is_access;
   new->value.type.start = start;
   new->value.type.end = end;
   new->value.type.list = list;
@@ -426,6 +453,16 @@ print_node(tree *node, int level, gp_boolean print_list)
               ARG_NAME(node),
               ARG_DIR(node),
               ARG_TYPE(node));
+      break;
+    case node_assembly:
+      print_space(level);
+      printf("node_assembly \n%s\n", node->value.assembly);
+      break;
+    case node_attrib:
+      print_space(level);
+      printf("node_attrib name=%s, type=%i\n",
+              ATTRIB_NAME(node),
+              ATTRIB_TYPE(node));
       break;
     case node_body:
       print_space(level);
@@ -546,6 +583,11 @@ print_node(tree *node, int level, gp_boolean print_list)
       print_space(level);
       printf("node_pragma\n");
       print_node(node->value.pragma, level, true);
+      break;
+    case node_record:
+      print_space(level);
+      printf("node_record %s is\n", RECORD_NAME(node));
+      print_node(RECORD_LIST(node), level, true);
       break;
     case node_return:
       print_space(level);

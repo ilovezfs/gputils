@@ -31,6 +31,7 @@ Boston, MA 02111-1307, USA.  */
 #endif
 
 #include "tree.h"
+#include "type.h"
 #include "symbol.h"
 
 extern struct gpal_state {
@@ -61,7 +62,6 @@ extern struct gpal_state {
   enum proc_class class;      		/* Processor class */
   struct px *processor_info;    	/* Processor identifiers (e.g. name) */
   gp_boolean processor_chosen;		/* Nonzero after processor-specific init */
-  enum size_tag pointer_size;		/* pointer size */
   char *current_bank;			/* current bank */
   char *current_ibank;			/* current ibank */
   char *current_page;			/* current page */
@@ -69,16 +69,17 @@ extern struct gpal_state {
     char *code;      			/* code section name */
     int code_addr;			/* absolute address of code section */
     gp_boolean code_addr_valid;		/* is code address valid? */
-    char *udata;      			/* uninitialized data section name */
-    int udata_addr;			/* absolute address of udata section */
-    gp_boolean udata_addr_valid;	/* is udata address valid? */
+    char *data;      			/* data section name */
+    int data_addr;			/* absolute address of data section */
+    gp_boolean data_addr_valid;		/* is data address valid? */
   } section;
   struct symbol_table
     *modules,				/* Table of modules */
     *publics,				/* Table of publics */
     *global,				/* Base of Global symbols */
     *top,				/* Top of Global symbols */
-    *type;				/* Symbol Types */
+    *type,				/* Symbol Types */
+    *type_top;				/* Top of Symbol Types */
   tree *root;				/* start of tree */
   tree *module;				/* current tree being processed  */
   struct source_context *src;		/* Top of the stack of source files */

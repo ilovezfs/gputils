@@ -23,7 +23,6 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gpal.h"
-#include "symbol.h"
 #include "analyze.h"
 #include "codegen.h"
 #include "codegen16e.h"
@@ -49,7 +48,7 @@ load_constant16e(int value, enum size_tag size)
   }
 
   /* FIXME: use codegen_bytes */
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   BANKSEL_LOCAL;
 
@@ -100,7 +99,7 @@ load_file16e(char *name,
     return;
   }
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   switch (num_bytes) {
   case 4:
@@ -156,7 +155,7 @@ store_file16e(char *name,
     return;
   }
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   switch (num_bytes) {
   case 4:
@@ -186,6 +185,63 @@ store_file16e(char *name,
 
 }
 
+/* load an address into the working register */
+
+static void
+load_addr16e(char *name, enum size_tag size)
+{
+  int num_bytes;
+  
+  if ((size == size_int8) || (size == size_uint8)) {
+    codegen_write_asm("movlw low %s", name);
+    return;
+  }
+
+  /* FIXME: use codegen_bytes */
+  num_bytes = prim_bytes(size);
+
+  BANKSEL_LOCAL;
+
+  switch (num_bytes) {
+  case 4:
+    assert(0);
+    /* fall through */
+  case 3:
+    codegen_write_asm("movlw upper %s", name);
+    codegen_write_asm("movwf %s + 2", WORKING_LABEL);
+    /* fall through */
+  case 2:
+    codegen_write_asm("movlw high %s", name);
+    codegen_write_asm("movwf %s + 1", WORKING_LABEL);
+    /* fall through */
+  case 1:
+    codegen_write_asm("movlw low %s", name);
+    codegen_write_asm("movwf %s", WORKING_LABEL);
+  }
+
+}
+
+/* Load the address contained in memory to the FSR */
+
+static void
+load_fsr16e(struct variable *var)
+{
+  codegen_write_asm("movff %s, FSR0L", var->name);
+  codegen_write_asm("movff %s, FSR0H", var->name);
+}
+
+/* Offset the FSR with a variable address */
+
+static void
+offset_fsr16e(struct variable *var)
+{
+  codegen_write_asm("lfsr FSR0, %s", var->name);
+  codegen_write_asm("movf %s, w", WORKING_LABEL);
+  codegen_write_asm("addwf FSR0L, f");
+  codegen_write_asm("movf %s + 1, w", WORKING_LABEL);
+  codegen_write_asm("addwfc FSR0H, f");
+}
+
 /* The byte address is in FSR.  Load the data to the working register */
 
 static void
@@ -202,7 +258,7 @@ load_indirect16e(char *name,
     return;
   }
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   codegen_write_asm("movlw 0");
 
@@ -227,7 +283,7 @@ store_indirect16e(char *name,
     return;
   }
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   codegen_write_asm("movlw 0");
 
@@ -250,7 +306,7 @@ gen_boolean(enum size_tag size)
     return;
   }
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   BANKSEL_LOCAL;
   codegen_write_asm("movf %s, w", WORKING_LABEL);
@@ -271,7 +327,7 @@ move_to_working(enum size_tag size)
 {
   int num_bytes;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   BANKSEL_LOCAL;
   switch (num_bytes) {
@@ -353,7 +409,7 @@ clr_indirect16e(char *name,
   int num_bytes;
   int i;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   for (i = 0; i < num_bytes; i++) {
     codegen_write_asm("clrf POSTINC0");
@@ -431,7 +487,7 @@ inc_indirect16e(char *name,
 {
   char *label = codegen_next_label();
   
-  switch (prim_size(size)) {
+  switch (prim_bytes(size)) {
   case 1:
     codegen_write_asm("incf INDF0, f");
     break;
@@ -535,7 +591,7 @@ dec_indirect16e(char *name,
 {
   char *label = NULL;
 
-  switch (prim_size(size)) {
+  switch (prim_bytes(size)) {
   case 1:
     codegen_write_asm("decf INDF0, f");
     break;
@@ -1062,7 +1118,7 @@ left_shift(enum size_tag size)
   int i;
   int num_bytes;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   for (i = 0; i < num_bytes; i++) {
     if (i == 0) {
@@ -1189,7 +1245,7 @@ right_shift(enum size_tag size, gp_boolean is_signed)
   int i;
   int num_bytes;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   i = num_bytes - 1;
 
@@ -1388,7 +1444,7 @@ offset_working(enum size_tag size)
 {
   int num_bytes;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   BANKSEL_LOCAL;
 
@@ -1420,7 +1476,7 @@ offset_reg(char *name, char *bank_addr, enum size_tag size)
 
   BANKSEL;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
   codegen_write_asm("movlw 0x80");
   codegen_write_asm("xorwf %s + %i, f", name, num_bytes - 1);
 
@@ -1432,7 +1488,7 @@ offset_constant(int number, enum size_tag size)
   int result = 0;
   int num_bytes;
 
-  num_bytes = prim_size(size);
+  num_bytes = prim_bytes(size);
 
   switch (num_bytes) {
   case 4:
@@ -1786,26 +1842,24 @@ interrupt_vector16e(struct variable *var)
   fprintf(state.output.f, "  call %s\n", var->name);
   fprintf(state.output.f, "  retfie FAST\n\n");
 }
-  
-static void
-load_fsr16e(struct variable *var)
-{
-  codegen_write_asm("lfsr FSR0, %s", var->name);
-  codegen_write_asm("movf %s, w", WORKING_LABEL);
-  codegen_write_asm("addwf FSR0L, f");
-  codegen_write_asm("movf %s + 1, w", WORKING_LABEL);
-  codegen_write_asm("addwfc FSR0H, f");
-}
 
-struct function_pointer_struct codegen16e_func = {
+target_type pic16e = {
   (long int)codegen16e,
   (long int)unopgen16e,
   (long int)load_constant16e,
   (long int)load_file16e,
   (long int)store_file16e,
+  (long int)load_addr16e,
+  (long int)load_fsr16e,
+  (long int)offset_fsr16e,
   (long int)load_indirect16e,
   (long int)store_indirect16e,
   (long int)reset_vector16e,
   (long int)interrupt_vector16e,
-  (long int)load_fsr16e
+  size_uint16,
+  "uint16",
+  size_uint24,
+  "uint24",
+  false,
+  false
 };
