@@ -1417,6 +1417,9 @@ gp_cofflink_patch_addr(enum proc_class class,
       write_data = 0;
     }
     break;
+  case RELOCT_ALL:
+    data = value & 0xffff;   
+    break; 
   case RELOCT_IBANKSEL:
     switch(class) {
     case PROC_CLASS_PIC14:
@@ -1527,7 +1530,6 @@ gp_cofflink_patch_addr(enum proc_class class,
     break;
   /* unimplemented relocations */
   case RELOCT_PAGESEL:
-  case RELOCT_ALL:
   case RELOCT_SCNSZ_LOW:
   case RELOCT_SCNSZ_HIGH:
   case RELOCT_SCNSZ_UPPER:

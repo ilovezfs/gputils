@@ -1,3 +1,6 @@
+2005-03-11 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [gplink] Fixed RELOCT_ALL relocation.
+
 2005-01-27 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gpal] Updated pub files.
 
