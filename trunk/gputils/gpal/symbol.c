@@ -490,9 +490,8 @@ var_page(struct variable *var)
   char *page = NULL;
   
   switch (var->tag) {
-  case sym_func:
   case sym_label:
-  case sym_proc:
+  case sym_subprogram:
     if (var->is_absolute) {
       page = var->name;
     } else {

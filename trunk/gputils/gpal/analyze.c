@@ -33,6 +33,7 @@ Boston, MA 02111-1307, USA.  */
 void analyze_statements(tree *statement);
 
 /* function return data */
+struct variable *subprogram_var;
 static gp_boolean generating_function;
 static struct variable *return_var;
 static gp_boolean found_return;
@@ -122,24 +123,21 @@ make_proc_public(struct variable *var, tree *prot)
   
   /* verify that the procedure definition and declaration match */
   def = var->node;
+
+  def_head = SUB_HEAD(def);
+  prot_head = SUB_HEAD(prot);
   
-  if (var->tag == sym_proc) {
-    if (prot->tag != node_proc) {
-      analyze_error(prot, "the definition is a procedure");
-      return;
-    }
-    def_head = PROC_HEAD(def);
-    prot_head = PROC_HEAD(prot);
-  } else {
-    if (prot->tag != node_func) {
+  if (SUB_RET(def)) {
+    if (SUB_RET(prot) == NULL) {
       analyze_error(prot, "the definition is a function");
       return;
     }
-    def_head = FUNC_HEAD(def);
-    prot_head = FUNC_HEAD(prot);
-    if (strcasecmp(FUNC_RET(def), FUNC_RET(prot)) != 0) {
-      analyze_error(prot, "the definition returns %s", FUNC_RET(def));
+    if (strcasecmp(SUB_RET(def), SUB_RET(prot)) != 0) {
+      analyze_error(prot, "the definition returns %s", SUB_RET(def));
     }
+  } else if (SUB_RET(prot)) {
+    analyze_error(prot, "the definition is a procedure");
+    return;
   }
     
   def_args = HEAD_ARGS(def_head);
@@ -431,6 +429,29 @@ scan_test(tree *p)
   return true;
 }
 
+typedef void analyze_func_type(tree *file);
+#define ANALYZE_FUNC (*(analyze_func_type*)func_ptr)
+
+static void
+analyze_preprocess(tree *cond, long int func_ptr)
+{
+
+  if (COND_TEST(cond)) {
+    if (maybe_evaluate(COND_TEST(cond))) {
+      /* the test condition is true, process the body and return */
+      ANALYZE_FUNC(COND_BODY(cond));
+    } else if (COND_NEXT(cond)) { 
+      /* the test condition is false, process the next clause and return */
+      analyze_preprocess(COND_NEXT(cond), func_ptr);
+    }
+  } else {
+    /* there is no test, else equivalent, process the body */
+    ANALYZE_FUNC(COND_BODY(cond));
+  }
+  
+  return;
+}
+
 int
 analyze_check_array(tree *symbol, struct variable *var)
 {
@@ -477,28 +498,27 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
   var = get_global(CALL_NAME(call));
   if (var) {
     def = var->node;
-    if (def->tag == node_proc) {
-      head = PROC_HEAD(var->node);
-      if (in_expr) {
+    if (def->tag == node_subprogram) {
+      head = SUB_HEAD(def);
+      if (SUB_RET(def)) {
+        load_result = true;
+        call_size = prim_type(get_type(SUB_RET(def)));
+        if (!in_expr) {
+          analyze_error(call, "functions can only be called in expressions");
+          return;
+        }
+        if (codegen_size != call_size) {
+          analyze_error(call, 
+                        "mismatch between %s return type and current expression",
+                        CALL_NAME(call));
+          return;      
+        }
+      } else if (in_expr) {
         analyze_error(call, "procedures can not be called in expressions");
         return;
       }
-    } else if (def->tag == node_func) {
-      head = FUNC_HEAD(var->node);
-      load_result = true;
-      call_size = prim_type(get_type(FUNC_RET(var->node)));
-      if (!in_expr) {
-        analyze_error(call, "functions can only be called in expressions");
-        return;
-      }
-      if (codegen_size != call_size) {
-        analyze_error(call, 
-                      "mismatch between %s return type and current expression",
-                      CALL_NAME(call));
-        return;      
-      }
     } else {
-      analyze_error(call, "name in the call is not a function or procedure");
+      analyze_error(call, "name in the call is not a subprogram");
       return;
     }
   } else {
@@ -964,7 +984,7 @@ append_init(char *name, tree *expr)
 
 static void
 add_arg_symbols(tree *node,
-                char *proc_name,
+                char *subprogram_name,
                 enum node_storage storage,
                 gp_boolean add_alias)
 {
@@ -973,10 +993,8 @@ add_arg_symbols(tree *node,
   char *arg_name;
   struct variable *var;
 
-  if (node->tag == node_proc) {
-    head = PROC_HEAD(node);
-  } else if (node->tag == node_func) {
-    head = FUNC_HEAD(node);
+  if (node->tag == node_subprogram) {
+    head = SUB_HEAD(node);
   } else {
     assert(0);
   }
@@ -985,7 +1003,7 @@ add_arg_symbols(tree *node,
 
   while (arg) {
     assert(arg->tag == node_arg);
-    arg_name = mangle_name2(proc_name, ARG_NAME(arg));
+    arg_name = mangle_name2(subprogram_name, ARG_NAME(arg));
     var = add_global_symbol(arg_name,
                             arg,
                             sym_udata,
@@ -1004,64 +1022,28 @@ add_arg_symbols(tree *node,
 }
 
 void
-analyze_procedure(tree *procedure, gp_boolean is_func)
+analyze_subprogram_decl(tree *decl)
 {
-  tree *head;
-  tree *body;
-  struct type *return_type;
-  struct variable *var;
-  char *proc_name;
-  char *return_name;
-  tree *args;
-  tree *decl;
   char *decl_name;
   struct variable *decl_var;
-  tree *statements;
 
-  if (is_func) {
-    head = FUNC_HEAD(procedure);
-    body = FUNC_BODY(procedure);
-    generating_function = true;
-    return_type = get_type(FUNC_RET(procedure));
-    if (return_type == NULL) {
-      analyze_error(procedure, "unknown return type");
-      return_size = size_unknown;
-    } else {
-      return_size = prim_type(return_type);
-    }
-  } else {
-    head = PROC_HEAD(procedure);
-    body = PROC_BODY(procedure);
-    generating_function = false;
-  }
-
-  assert(head->tag == node_head);  
-  assert(body->tag == node_body); 
-  args = HEAD_ARGS(head);
-  decl = BODY_DECL(body);
-  statements = BODY_STATEMENTS(body); 
-
-  proc_name = find_node_name(procedure);
-  var = get_global(proc_name);
-  assert(var != NULL);
-
-  /* local symbol table */
-  state.top = push_symbol_table(state.top, true);
-  found_return = false;
-  init = NULL;  
-
-  /* local data */
   while (decl) {
-    if (decl->tag == node_pragma)  {
-      analyze_error(decl, "unknown pragma");
-    } else if (decl->tag == node_alias)  {
+    switch (decl->tag) {
+    case node_alias:
       add_top_symbol(ALIAS_ALIAS(decl),
                      ALIAS_EXPR(decl),
                      sym_alias,
                      storage_unknown,
                      NULL);
-    } else if (decl->tag == node_decl)  {
-      decl_name = mangle_name2(var->name, DECL_NAME(decl));
+      break;
+    case node_cond:
+      analyze_preprocess(decl, (long int)analyze_subprogram_decl);
+      break;
+    case node_pragma:
+      analyze_error(decl, "unknown pragma");
+      break;
+    case node_decl:
+      decl_name = mangle_name2(subprogram_var->name, DECL_NAME(decl));
       if (DECL_CONSTANT(decl)) {
         if (DECL_INIT(decl)) {
           decl_var = add_constant(decl_name,
@@ -1087,12 +1069,65 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
           analyze_error(decl, "address can't be specified on local data");
         }
       }
-    } else {
+      break;
+    case node_with:
+    case node_type:
+    case node_subprogram:
+      analyze_error(decl, "construct not yet supported in local declarations");
+      break;    
+    default:
       assert(0);
     }
 
     decl = decl->next;
   }
+
+}
+
+void
+analyze_subprogram(tree *subprogram)
+{
+  tree *head;
+  tree *body;
+  struct type *return_type;
+  char *subprogram_name;
+  char *return_name;
+  tree *args;
+  tree *decl;
+  tree *statements;
+
+  head = SUB_HEAD(subprogram);
+  body = SUB_BODY(subprogram);
+  if (SUB_RET(subprogram)) {
+    generating_function = true;
+    return_type = get_type(SUB_RET(subprogram));
+    if (return_type == NULL) {
+      analyze_error(subprogram, "unknown return type");
+      return_size = size_unknown;
+    } else {
+      return_size = prim_type(return_type);
+    }
+  } else {
+    generating_function = false;
+  }
+
+  assert(head->tag == node_head);  
+  assert(body->tag == node_body); 
+  args = HEAD_ARGS(head);
+  decl = BODY_DECL(body);
+  statements = BODY_STATEMENTS(body); 
+
+  subprogram_name = find_node_name(subprogram);
+  subprogram_var = get_global(subprogram_name);
+  assert(subprogram_var != NULL);
+
+  /* local symbol table */
+  state.top = push_symbol_table(state.top, true);
+  found_return = false;
+  init = NULL;  
+
+  /* local data */
+  analyze_subprogram_decl(decl);
 
   if (init) {
     node_list(last_init, statements);
@@ -1100,31 +1135,33 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
   }
 
   /* add the return */
-  if (is_func) {
-    return_name = mangle_name2(var->name, "return");
+  if (generating_function) {
+    return_name = mangle_name2(subprogram_var->name, "return");
     return_var = add_global_symbol(return_name,
-                                   procedure,
+                                   subprogram,
                                    sym_udata,
-                                   var->storage,
-                                   FUNC_RET(procedure));
+                                   subprogram_var->storage,
+                                   SUB_RET(subprogram));
   }
 
   /* add the procedure arguments */
-  add_arg_symbols(procedure,
-                  var->name,
-                  var->storage,
+  add_arg_symbols(subprogram,
+                  subprogram_var->name,
+                  subprogram_var->storage,
                   true);     
 
   /* write the procedure to the assembly file */
   state.current_bank = NULL;
   state.current_ibank = NULL;
-  codegen_init_proc(var->name, var->storage, is_func);
-  scan_labels(statements, var->name);
+  codegen_init_proc(subprogram_var->name,
+                    subprogram_var->storage,
+                    generating_function);
+  scan_labels(statements, subprogram_var->name);
   analyze_statements(statements);
   codegen_finish_proc(!generating_function);
 
-  if ((is_func) && (!found_return)) {
-    analyze_error(procedure, "function is missing return");
+  if ((generating_function) && (!found_return)) {
+    analyze_error(subprogram, "function is missing return");
   }
 
   /* scan the local data, if a location is used add it to the list */
@@ -1438,29 +1475,6 @@ analyze_type(tree *file, tree *type, gp_boolean add_alias)
 
 }
 
-typedef void analyze_func_type(tree *file);
-#define ANALYZE_FUNC (*(analyze_func_type*)func_ptr)
-
-static void
-analyze_preprocess(tree *cond, long int func_ptr)
-{
-
-  if (COND_TEST(cond)) {
-    if (maybe_evaluate(COND_TEST(cond))) {
-      /* the test condition is true, process the body and return */
-      ANALYZE_FUNC(COND_BODY(cond));
-    } else if (COND_NEXT(cond)) { 
-      /* the test condition is false, process the next clause and return */
-      analyze_preprocess(COND_NEXT(cond), func_ptr);
-    }
-  } else {
-    /* there is no test, else equivalent, process the body */
-    ANALYZE_FUNC(COND_BODY(cond));
-  }
-  
-  return;
-}
-
 static void analyze_public(char *public_name);
 
 static void
@@ -1524,24 +1538,18 @@ analyze_module(tree *current)
         }
       }
       break;
-    case node_proc:
+    case node_subprogram:
       alias = find_node_name(current);
       name = mangle_name2(FILE_NAME(state.module), alias);
-      var = add_global_symbol(name, current, sym_proc, storage_private, NULL);
+      var = add_global_symbol(name,
+                              current,
+                              sym_subprogram,
+                              storage_private,
+                              NULL);
       add_symbol_pointer(alias, current, var);
-      if (PROC_BODY(current) == NULL) {
+      if (SUB_BODY(current) == NULL) {
         analyze_error(current,
-                      "only procedure definitions are allowed in a module");
-      }
-      break;
-    case node_func:
-      alias = find_node_name(current);
-      name = mangle_name2(FILE_NAME(state.module), alias);
-      var = add_global_symbol(name, current, sym_func, storage_private, NULL);
-      add_symbol_pointer(alias, current, var);
-      if (FUNC_BODY(current) == NULL) {
-        analyze_error(current,
-                      "only function definitions are allowed in a module");
+                      "only subprogram definitions are allowed in a module");
       }
       break;
     case node_with:
@@ -1662,38 +1670,10 @@ analyze_public(char *public_name)
         assert(0);
       }
       break;
-    case node_proc:
+    case node_subprogram:
       alias = find_node_name(current);
       name = mangle_name2(FILE_NAME(state.module), alias);
-      if (PROC_BODY(current)) {
-        analyze_error(current,
-                      "only procedure declarations are allowed in a public");
-      }
-      if (FILE_TYPE(state.module) == source_public) {
-        var = get_global(name);
-        if (var) {
-          make_proc_public(var, current);
-        } else {
-          analyze_error(current, "missing definition for %s", name); 
-        }
-      } else if (FILE_TYPE(state.module) == source_with) {
-        var = add_global_symbol(name,
-                                current,
-                                sym_proc,
-                                FILE_CODE(state.module),
-                                NULL);
-        add_arg_symbols(current,
-                        var->name,
-                        FILE_UDATA(state.module),
-                        false);
-      } else {
-        assert(0);
-      }
-      break;
-    case node_func:
-      alias = find_node_name(current);
-      name = mangle_name2(FILE_NAME(state.module), alias);
-      if (FUNC_BODY(current)) {
+      if (SUB_BODY(current)) {
         analyze_error(current,
                       "only function declarations are allowed in a public");
       }
@@ -1707,14 +1687,16 @@ analyze_public(char *public_name)
       } else if (FILE_TYPE(state.module) == source_with) {
         var = add_global_symbol(name,
                                 current,
-                                sym_func,
+                                sym_subprogram,
                                 FILE_CODE(state.module),
                                 NULL);
-        add_global_symbol(mangle_name2(var->name, "return"),
-                          current,
-                          sym_udata,
-                          FILE_UDATA(state.module),
-                          FUNC_RET(current));
+        if (SUB_RET(current)) {
+          add_global_symbol(mangle_name2(var->name, "return"),
+                            current,
+                            sym_udata,
+                            FILE_UDATA(state.module),
+                            SUB_RET(current));
+        }
         add_arg_symbols(current,
                         var->name,
                         FILE_UDATA(state.module),
@@ -1759,11 +1741,8 @@ analyze_module_contents(tree *current)
     case node_type:
       /* do nothing */
       break;
-    case node_proc:
-      analyze_procedure(current, 0);
-      break;
-    case node_func:
-      analyze_procedure(current, 1);
+    case node_subprogram:
+      analyze_subprogram(current);
       break;
     case node_with:
       break;
@@ -1806,7 +1785,7 @@ analyze(tree *module)
   analyze_setfar();
 
   /* locate the public for the module being compiled */ 
-  sym = get_symbol(state.publics, state.basefilename);
+  sym = get_symbol(state.publics, FILE_NAME(module));
   if (sym) {
     public = get_symbol_annotation(sym);
     FILE_TYPE(public) = source_public;
@@ -1817,7 +1796,7 @@ analyze(tree *module)
   analyze_module(FILE_BODY(module));
 
   if (public) {
-    analyze_public(state.basefilename);
+    analyze_public(FILE_NAME(module));
   }
 
   if (!state.processor_chosen) {

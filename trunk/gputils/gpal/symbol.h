@@ -63,10 +63,9 @@ enum sym_tag {
   sym_addr,				/* symbol address */
   sym_alias,				/* symbol alias */
   sym_const,				/* constant */
-  sym_func,				/* function */
   sym_idata,				/* initialized data */
   sym_label,				/* label */
-  sym_proc,				/* procedure */
+  sym_subprogram,			/* subprogram */
   sym_udata				/* uninitialized data */
 };
 

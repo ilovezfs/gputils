@@ -228,17 +228,6 @@ mk_file(tree *body, char *name, enum source_type type)
 }
 
 tree *
-mk_func(tree *head, char *ret, tree *body)
-{
-  tree *new = mk_node(node_func);
-  new->value.func.head = head;
-  new->value.func.ret = ret;
-  new->value.func.body = body;
- 
-  return new;
-}
-
-tree *
 mk_goto(char *name)
 {
   tree *new = mk_node(node_goto);
@@ -287,16 +276,6 @@ mk_pragma(tree *pragma)
 }
 
 tree *
-mk_proc(tree *head, tree *body)
-{
-  tree *new = mk_node(node_proc);
-  new->value.proc.head = head;
-  new->value.proc.body = body;
-  
-  return new;
-}
-
-tree *
 mk_return(tree *ret)
 {
   tree *new = mk_node(node_return);
@@ -310,6 +289,17 @@ mk_string(char *value)
 {
   tree *new = mk_node(node_string);
   new->value.string = value;
+  return new;
+}
+
+tree *
+mk_subprogram(tree *head, char *ret, tree *body)
+{
+  tree *new = mk_node(node_subprogram);
+  new->value.subprogram.head = head;
+  new->value.subprogram.ret = ret;
+  new->value.subprogram.body = body;
+ 
   return new;
 }
 
@@ -372,12 +362,8 @@ find_node_name(tree *node)
   case node_decl:
     name = DECL_NAME(node);
     break;
-  case node_func:
-    head = FUNC_HEAD(node);
-    name = HEAD_NAME(head);
-    break;
-  case node_proc:
-    head = PROC_HEAD(node);
+  case node_subprogram:
+    head = SUB_HEAD(node);
     name = HEAD_NAME(head);
     break;
   default:
@@ -515,14 +501,6 @@ print_node(tree *node, int level, gp_boolean print_list)
       if (FILE_BODY(node) != NULL)  
         print_node(FILE_BODY(node), level, true);
       break;
-    case node_func:
-      print_space(level);
-      printf("node_func that returns %s\n", node->value.func.ret);
-      if (FUNC_HEAD(node) != NULL)  
-        print_node(FUNC_HEAD(node), level, true);
-      if (FUNC_BODY(node) != NULL)
-        print_node(FUNC_BODY(node), level, true);
-      break;
     case node_goto:
       print_space(level);
       printf("node_goto %s\n", GOTO_NAME(node));
@@ -569,14 +547,6 @@ print_node(tree *node, int level, gp_boolean print_list)
       printf("node_pragma\n");
       print_node(node->value.pragma, level, true);
       break;
-    case node_proc:
-      print_space(level);
-      printf("node_proc\n");
-      if (PROC_HEAD(node) != NULL)  
-        print_node(PROC_HEAD(node), level, true);
-      if (PROC_BODY(node) != NULL)
-         print_node(PROC_BODY(node), level, true);
-      break;
     case node_return:
       print_space(level);
       printf("node_return\n");
@@ -585,6 +555,18 @@ print_node(tree *node, int level, gp_boolean print_list)
     case node_string:
       print_space(level);
       printf("node_string %s\n", node->value.string);
+      break;
+    case node_subprogram:
+      print_space(level);
+      if (SUB_RET(node)) {
+        printf("node_subprogram that returns %s\n", SUB_RET(node));
+      } else {
+        printf("node_subprogram\n");
+      }
+      if (SUB_HEAD(node) != NULL)  
+        print_node(SUB_HEAD(node), level, true);
+      if (SUB_BODY(node) != NULL)
+        print_node(SUB_BODY(node), level, true);
       break;
     case node_symbol:
       print_space(level);
