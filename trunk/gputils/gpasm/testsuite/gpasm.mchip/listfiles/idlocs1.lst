@@ -1,20 +1,20 @@
-MPASM Version 3.00 Beta Release   IDLOCS1.ASM   01/31/2001  12:12:53	   PAGE 1
+MPASM 03.20.02 Released       IDLOCS1.ASM   11-21-2002  20:21:01         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; IDLOCS1.ASM
-                        00002 
-                        00003 ; This file tests the __IDLOCS directive for 12-bit core.
-                        00004 
-                        00005         LIST    P=16C54, R=HEX
-                        00006 
-0200     0001 0002 0003 00007         __IDLOCS        1234
-         0004 
-                        00008 
-                        00009         END
-MPASM Version 3.00 Beta Release   IDLOCS1.ASM   01/31/2001  12:12:53	   PAGE 2
+                      00001 ; IDLOCS1.ASM
+                      00002 
+                      00003 ; This file tests the __IDLOCS directive for 12-bit core.
+                      00004 
+                      00005         LIST    P=16C54, R=HEX
+                      00006 
+0200   0001 0002 0003 00007         __IDLOCS        1234
+       0004 
+                      00008 
+                      00009         END
+MPASM 03.20.02 Released       IDLOCS1.ASM   11-21-2002  20:21:01         PAGE  2
 
 
 SYMBOL TABLE

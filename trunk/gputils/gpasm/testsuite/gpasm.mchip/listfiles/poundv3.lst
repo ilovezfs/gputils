@@ -1,79 +1,79 @@
-MPASM Version 3.00 Beta Release   POUNDV3.ASM   01/31/2001  12:39:55	   PAGE 1
+MPASM 03.20.02 Released       POUNDV3.ASM   11-21-2002  20:21:11         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; SSR 3354
-                        00002 
-                        00003 ; Complex #v substitutions not working, escpecially through macro calls.
-                        00004 
-                        00005         list    p=17c44,r=dec
-                        00006 
-                        00007 #define Lab0(x)         LabA#v(x)
-                        00008 #define Val1            0
-                        00009 #define Lab1            LabB#v(Val1)
-                        00010 #define Lab2(x)         LabC#v(x)z#v(Val1)
-                        00011 
-0000                    00012 Lab0(123)                               ; Makes label named LabA123     = 0
-0000                    00013 Lab1                                    ; Makes label named LabB0       = 0
-0000                    00014 Lab2(7)                                 ; Makes label named LabC7z0     = 0
-                        00015 
-                        00016 ;*******************************************************************************
-                        00017 
-                        00018 Sub1    macro           Arg1, Value
-                        00019 #define Arg1            Value
-                        00020         endm
-                        00021 
-                        00022         Sub1            Name1, 5        ; Makes define Name1            = 5
-                            M #define Arg1            Value
-                        00023 
-                        00024 ;*******************************************************************************
-                        00025 
-                        00026 Sub2    macro           Arg1, Value
-                        00027 Arg1#v(Value)           equ     Value
-                        00028         endm
-                        00029 
-                        00030         Sub2            Name2, 7        ; Makes label Name27            = 7
-  00000007                  M Name27                  equ     7
-                        00031 
-                        00032 ;*******************************************************************************
-                        00033 
-                        00034 #define Sub3Val1                9
-                        00035 #define Sub3Val2                7
-                        00036 #define Sub3Val3                5
-                        00037 #define Sub3Sub(x,y)    x#v(y)#v(Sub3Val1)
-                        00038 
-                        00039 Sub3    macro           Name, Value
-                        00040 Sub3Sub(Name,Sub3Val2)  set     Value
-                        00041 Name#v(Sub3Val3)        set     0
-                        00042         endm
-                        00043 
-  00000002              00044 Sub3Sub(OutMac,3)       set     2       ; Makes label OutMac39          = 2
-                        00045         Sub3            InMac, 3        ; Makes label InMac79           = 3
-  00000003                  M Sub3Sub(InMac,Sub3Val2)  set     3
-  00000000                  M InMac5                  set     0
-                        00046                                         ;   and label InMac5            = 0
-                        00047 
-                        00048 ;*******************************************************************************
-                        00049 
-MPASM Version 3.00 Beta Release   POUNDV3.ASM   01/31/2001  12:39:55	   PAGE 2
+                      00001 ; SSR 3354
+                      00002 
+                      00003 ; Complex #v substitutions not working, escpecially through macro calls.
+                      00004 
+                      00005         list    p=17c44,r=dec
+                      00006 
+                      00007 #define Lab0(x)         LabA#v(x)
+                      00008 #define Val1            0
+                      00009 #define Lab1            LabB#v(Val1)
+                      00010 #define Lab2(x)         LabC#v(x)z#v(Val1)
+                      00011 
+0000                  00012 Lab0(123)                               ; Makes label named LabA123     = 0
+0000                  00013 Lab1                                    ; Makes label named LabB0       = 0
+0000                  00014 Lab2(7)                                 ; Makes label named LabC7z0     = 0
+                      00015 
+                      00016 ;*******************************************************************************
+                      00017 
+                      00018 Sub1    macro           Arg1, Value
+                      00019 #define Arg1            Value
+                      00020         endm
+                      00021 
+                      00022         Sub1            Name1, 5        ; Makes define Name1            = 5
+                          M #define Arg1            Value
+                      00023 
+                      00024 ;*******************************************************************************
+                      00025 
+                      00026 Sub2    macro           Arg1, Value
+                      00027 Arg1#v(Value)           equ     Value
+                      00028         endm
+                      00029 
+                      00030         Sub2            Name2, 7        ; Makes label Name27            = 7
+  00000007                M Name27                  equ     7
+                      00031 
+                      00032 ;*******************************************************************************
+                      00033 
+                      00034 #define Sub3Val1                9
+                      00035 #define Sub3Val2                7
+                      00036 #define Sub3Val3                5
+                      00037 #define Sub3Sub(x,y)    x#v(y)#v(Sub3Val1)
+                      00038 
+                      00039 Sub3    macro           Name, Value
+                      00040 Sub3Sub(Name,Sub3Val2)  set     Value
+                      00041 Name#v(Sub3Val3)        set     0
+                      00042         endm
+                      00043 
+  00000002            00044 Sub3Sub(OutMac,3)       set     2       ; Makes label OutMac39          = 2
+                      00045         Sub3            InMac, 3        ; Makes label InMac79           = 3
+  00000003                M Sub3Sub(InMac,Sub3Val2)  set     3
+  00000000                M InMac5                  set     0
+                      00046                                         ;   and label InMac5            = 0
+                      00047 
+                      00048 ;*******************************************************************************
+                      00049 
+MPASM 03.20.02 Released       POUNDV3.ASM   11-21-2002  20:21:11         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00050 Sub4    macro           Name, Value
-                        00051 #define Name            Name#v(Value)
-                        00052         endm
-                        00053 
-                        00054         Sub4            NumVar, 1       ; Makes define NumVar           = NumVar#v(1)
-                            M #define Name            Name#v(Value)
-                        00055 
-                        00056 ;*******************************************************************************
-                        00057 
-                        00058         end
-MPASM Version 3.00 Beta Release   POUNDV3.ASM   01/31/2001  12:39:55	   PAGE 3
+                      00050 Sub4    macro           Name, Value
+                      00051 #define Name            Name#v(Value)
+                      00052         endm
+                      00053 
+                      00054         Sub4            NumVar, 1       ; Makes define NumVar           = NumVar#v(1)
+                          M #define Name            Name#v(Value)
+                      00055 
+                      00056 ;*******************************************************************************
+                      00057 
+                      00058         end
+MPASM 03.20.02 Released       POUNDV3.ASM   11-21-2002  20:21:11         PAGE  3
 
 
 SYMBOL TABLE

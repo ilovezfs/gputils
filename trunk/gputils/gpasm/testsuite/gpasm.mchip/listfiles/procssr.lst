@@ -1,23 +1,23 @@
-MPASM Version 3.00 Beta Release   PROCSSR.ASM   01/31/2001  12:14:05	   PAGE 1
+MPASM 03.20.02 Released       PROCSSR.ASM   11-21-2002  20:21:30         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; PROCSSR.ASM
-                        00002 
-                        00003 ; This file is used just to make sure a processor has been selected.
-                        00004 
+                      00001 ; PROCSSR.ASM
+                      00002 
+                      00003 ; This file is used just to make sure a processor has been selected.
+                      00004 
 Warning[207]: Found label after column 1. (NOP)
-0000                    00005         NOP
-0000                    00006 Label1
+0000                  00005         NOP
+0000                  00006 Label1
 Warning[207]: Found label after column 1. (NOP)
-0000                    00007         NOP
-0000                    00008 Label2
-                        00009 
-                        00010         END
+0000                  00007         NOP
+0000                  00008 Label2
+                      00009 
+                      00010         END
 Error[131]  : Processor type is undefined
-MPASM Version 3.00 Beta Release   PROCSSR.ASM   01/31/2001  12:14:05	   PAGE 2
+MPASM 03.20.02 Released       PROCSSR.ASM   11-21-2002  20:21:30         PAGE  2
 
 
 SYMBOL TABLE

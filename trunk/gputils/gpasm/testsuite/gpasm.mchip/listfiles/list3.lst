@@ -1,273 +1,261 @@
-MPASM Version 3.00 Beta Release   LIST3.ASM   01/31/2001  12:39:50	   PAGE 1
+MPASM 03.20.02 Released         LIST3.ASM   11-21-2002  20:21:06         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; LIST3.ASM
-                        00002 
-                        00003 ; This file tests legal usage of the LIST directive.
-                        00004 
-                        00005         LIST    P=17c42
-                        00006 
-0000     0001 0002 0003 00007         DATA    1, 2, 3, 4, 5, 6, 7
-         0004 0005 0006 
-         0007 
-                        00008 
-                        00009 Mac     MACRO
-                        00010         NOP
-                        00011                         ; Comment line, next line blank
-                        00012 
-                        00013         ENDM
-                        00014 
-                        00015         LIST    WRAP
-                        00016 ; This is a big long line that will need to be wrapped in the list file based on the default column wi
-                              dth, which is 132.
-                        00017         LIST    NOWRAP
-                        00018 ; This is a big long line that will be truncated in the list file based on the default column width, w
-                        00019         LIST    WRAP
-                        00020 
-                        00021         LIST    B=4
-                        00022 ; No tabs
-                        00023     ; One tab
-                        00024         ; Two tabs
-                        00025     LIST    B=6
-                        00026 ; No tabs
-                        00027       ; One tab
-                        00028             ; Two tabs
-                        00029       LIST  B=8
-                        00030 ; No tabs
-                        00031         ; One tab
-                        00032                 ; Two tabs
-                        00033 
-                        00034         LI
-                              ST    C=40
-                        00035 ; This lin
-                              e will hav
-                              e to be wr
-                              apped.
-                        00036 ; This lin
-                              e will hav
-                              e to be wr
-                              apped twic
-                              e because 
-                              of the new
-                               column wi
-                              dth.
-                        00037         LIST    C = 132
-                        00038 
-                        00039         LIST    F = INHX32      ; Check generated hex file for format
-MPASM Version 3.00 Beta Release   LIST3.ASM   01/31/2001  12:39:50	   PAGE 2
+                      00001 ; LIST3.ASM
+                      00002 
+                      00003 ; This file tests legal usage of the LIST directive.
+                      00004 
+                      00005         LIST    P=17c42
+                      00006 
+0000   0001 0002 0003 00007         DATA    1, 2, 3, 4, 5, 6, 7
+       0004 0005 0006 
+       0007 
+                      00008 
+                      00009 Mac     MACRO
+                      00010         NOP
+                      00011                         ; Comment line, next line blank
+                      00012 
+                      00013         ENDM
+                      00014 
+                      00015         LIST    WRAP
+                      00016 ; This is a big long line that will need to be wrapped in the list file based on the default column widt
+                            h, which is 132.
+                      00017         LIST    NOWRAP
+                      00018 ; This is a big long line that will be truncated in the list file based on the default column width, whi
+                      00019         LIST    WRAP
+                      00020 
+                      00021         LIST    B=4
+                      00022 ; No tabs
+                      00023     ; One tab
+                      00024         ; Two tabs
+                      00025     LIST    B=6
+                      00026 ; No tabs
+                      00027       ; One tab
+                      00028             ; Two tabs
+                      00029       LIST  B=8
+                      00030 ; No tabs
+                      00031         ; One tab
+                      00032                 ; Two tabs
+                      00033 
+                      00034         LIST
+                                C=40
+                      00035 ; This line 
+                            will have to
+                             be wrapped.
+                      00036 ; This line 
+                            will have to
+                             be wrapped 
+                            twice becaus
+                            e of the new
+                             column widt
+                            h.
+                      00037         LIST    C = 132
+                      00038 
+                      00039         LIST    F = INHX32      ; Check generated hex file for format
+                      00040 
+MPASM 03.20.02 Released         LIST3.ASM   11-21-2002  20:21:06         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00040 
-MPASM Version 3.00 Beta Release   LIST3.ASM   01/31/2001  12:39:50	   PAGE 3
+                      00041         PAGE
+                      00042         LIST    L=10            ; Play with page length, 6 needed for header
+                      00043 ; Line 1
+                      00044 ; Line 2
+MPASM 03.20.02 Released         LIST3.ASM   11-21-2002  20:21:06         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00041         PAGE
-                        00042         LIST    L=10            ; Play with page length, 6 needed for header
-                        00043 ; Line 1
-                        00044 ; Line 2
-MPASM Version 3.00 Beta Release   LIST3.ASM   01/31/2001  12:39:50	   PAGE 4
+                      00045 ; Line 3
+                      00046 ; Line 4
+                      00047 ; Line 5
+                      00048 ; Line 6
+MPASM 03.20.02 Released         LIST3.ASM   11-21-2002  20:21:06         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00045 ; Line 3
-                        00046 ; Line 4
-                        00047 ; Line 5
-                        00048 ; Line 6
-MPASM Version 3.00 Beta Release   LIST3.ASM   01/31/2001  12:39:50	   PAGE 5
+                      00049 ; Line 7
+                      00050 ; Line 8
+                      00051 ; Line 9
+                      00052 ; Line 10
+MPASM 03.20.02 Released         LIST3.ASM   11-21-2002  20:21:06         PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00049 ; Line 7
-                        00050 ; Line 8
-                        00051 ; Line 9
-                        00052 ; Line 10
-MPASM Version 3.00 Beta Release   LIST3.ASM   01/31/2001  12:39:50	   PAGE 6
+                      00053 ; Line 11
+                      00054 ; Line 12
+                      00055 ; Line 13
+                      00056         LIST    N = 15
+                      00057         Mac
+0007   0000               M         NOP
+                          M                         ; Comment line, next line blank
+                          M 
+                      00058         Mac
+MPASM 03.20.02 Released         LIST3.ASM   11-21-2002  20:21:06         PAGE  6
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00053 ; Line 11
-                        00054 ; Line 12
-                        00055 ; Line 13
-                        00056         LIST    N = 15
-                        00057         Mac
-0007     0000               M         NOP
-                            M                         ; Comment line, next line blank
-                            M 
-                        00058         Mac
-MPASM Version 3.00 Beta Release   LIST3.ASM   01/31/2001  12:39:50	   PAGE 7
+0008   0000               M         NOP
+                          M                         ; Comment line, next line blank
+                          M 
+                      00059         Mac
+0009   0000               M         NOP
+                          M                         ; Comment line, next line blank
+                          M 
+                      00060         LIST    N = 60
+                      00061 
+                      00062         LIST    R=H
+000A   0010           00063         DATA    10
+                      00064         LIST    R=D
+000B   000A           00065         DATA    10
+                      00066         LIST    R=O
+000C   0008           00067         DATA    10
+                      00068         LIST    R=HEX
+000D   0010           00069         DATA    10
+                      00070         LIST    R=DEC
+000E   000A           00071         DATA    10
+                      00072         LIST    R=OCT
+000F   0008           00073         DATA    10
+                      00074         LIST    R=HEXADECIMAL
+0010   0010           00075         DATA    10
+                      00076         LIST    R=DECIMAL
+0011   000A           00077         DATA    10
+                      00078         LIST    R=OCTAL
+0012   0008           00079         DATA    10
+                      00080         LIST    R=HEX
+                      00081 
+                      00082         LIST    X=ON
+                      00083         Mac
+0013   0000               M         NOP
+                          M                         ; Comment line, next line blank
+                          M 
+                      00084         LIST    X=OFF
+                      00085         Mac
+                      00086         LIST    X=ON
+                      00087 
+                      00088         LIST
+                                X=OFF,C=
+                            40,R=DEC
+                      00089         Mac
+                      00090 ; Here's a b
+                            ig long line
+                             for wrappin
+                            g to show co
+                            lumn width.
+0016   000A           00091         DATA
+                                10
+                      00092 
+                      00093         LIST    X = ON
+                             , C = 50 , R = HEX
+                      00094         Mac
+0017   0000               M         NOP
+MPASM 03.20.02 Released         LIST3.ASM   11-21-2002  20:21:06         PAGE  7
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0008     0000               M         NOP
-                            M                         ; Comment line, next line blank
-                            M 
-                        00059         Mac
-0009     0000               M         NOP
-                            M                         ; Comment line, next line blank
-                            M 
-                        00060         LIST    N = 60
-                        00061 
-                        00062         LIST    R=H
-000A     0010           00063         DATA    10
-                        00064         LIST    R=D
-000B     000A           00065         DATA    10
-                        00066         LIST    R=O
-000C     0008           00067         DATA    10
-                        00068         LIST    R=HEX
-000D     0010           00069         DATA    10
-                        00070         LIST    R=DEC
-000E     000A           00071         DATA    10
-                        00072         LIST    R=OCT
-000F     0008           00073         DATA    10
-                        00074         LIST    R=HEXADECIMAL
-0010     0010           00075         DATA    10
-                        00076         LIST    R=DECIMAL
-0011     000A           00077         DATA    10
-                        00078         LIST    R=OCTAL
-0012     0008           00079         DATA    10
-                        00080         LIST    R=HEX
-                        00081 
-                        00082         LIST    X=ON
-                        00083         Mac
-0013     0000               M         NOP
-                            M                         ; Comment line, next line blank
-                            M 
-                        00084         LIST    X=OFF
-                        00085         Mac
-                        00086         LIST    X=ON
-                        00087 
-                        00088         LI
-                              ST    X=OF
-                              F,C=40,R=D
-                              EC
-                        00089         Ma
-                              c
-                        00090 ; Here's a
-                               big long 
-                              line for w
-                              rapping to
-                               show colu
-                              mn width.
-0016     000A           00091         DA
-                              TA    10
-                        00092 
-                        00093         LIST    X = 
-MPASM Version 3.00 Beta Release   LIST3.ASM   01/31/2001  12:39:50	   PAGE 8
+                          M                       
+                              ; Comment line, next
+                             line blank
+                          M 
+                      00095 ; Here's a big long li
+                            ne for wrapping to sho
+                            w column width.
+0018   0010           00096         DATA    10
+                      00097 
+                      00098         LIST    C=80
+                      00099 
+                      00100 ; Wrap data
+0019   0001           00101         DATA    1
+001A   0001 0002      00102         DATA    1, 2
+001C   0001 0002 0003 00103         DATA    1, 2, 3
+001F   0001 0002 0003 00104         DATA    1, 2, 3, 4
+       0004 
+0023   0001 0002 0003 00105         DATA    1, 2, 3, 4, 5
+       0004 0005 
+0028   0001 0002 0003 00106         DATA    1, 2, 3, 4, 5, 6
+       0004 0005 0006 
+002E   0001 0002 0003 00107         DATA    1, 2, 3, 4, 5, 6, 7
+       0004 0005 0006 
+       0007 
+                      00108 
+                      00109 MakDat  MACRO   Arg
+                      00110         DATA    Arg
+                      00111         ENDM
+                      00112 
+                      00113         MakDat  "a"
+0035   6100               M         DATA    "a"
+                      00114         MakDat  "ab"
+0036   6162               M         DATA    "ab"
+                      00115         MakDat  "abc"
+0037   6162 6300          M         DATA    "abc"
+                      00116         MakDat  "abcd"
+0039   6162 6364          M         DATA    "abcd"
+                      00117         MakDat  "abcde"
+003B   6162 6364 6500     M         DATA    "abcde"
+                      00118         MakDat  "abcdef"
+003E   6162 6364 6566     M         DATA    "abcdef"
+                      00119         MakDat  "abcdefg"
+0041   6162 6364 6566     M         DATA    "abcdefg"
+       6700 
+                      00120         MakDat  "abcdefgh"
+0045   6162 6364 6566     M         DATA    "abcdefgh"
+       6768 
+                      00121         MakDat  "abcdefghi"
+0049   6162 6364 6566     M         DATA    "abcdefghi"
+       6768 6900 
+                      00122         MakDat  "abcdefghij"
+004E   6162 6364 6566     M         DATA    "abcdefghij"
+       6768 696A 
+                      00123         MakDat  "abcdefghijk"
+MPASM 03.20.02 Released         LIST3.ASM   11-21-2002  20:21:06         PAGE  8
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                              ON , C = 50 , R = HE
-                              X
-                        00094         Mac
-0017     0000               M         NOP
-                            M                     
-                                  ; Comment line, 
-                              next line blank
-                            M 
-                        00095 ; Here's a big long 
-                              line for wrapping to
-                               show column width.
-0018     0010           00096         DATA    10
-                        00097 
-                        00098         LIST    C=80
-                        00099 
-                        00100 ; Wrap data
-0019     0001           00101         DATA    1
-001A     0001 0002      00102         DATA    1, 2
-001C     0001 0002 0003 00103         DATA    1, 2, 3
-001F     0001 0002 0003 00104         DATA    1, 2, 3, 4
-         0004 
-0023     0001 0002 0003 00105         DATA    1, 2, 3, 4, 5
-         0004 0005 
-0028     0001 0002 0003 00106         DATA    1, 2, 3, 4, 5, 6
-         0004 0005 0006 
-002E     0001 0002 0003 00107         DATA    1, 2, 3, 4, 5, 6, 7
-         0004 0005 0006 
-         0007 
-                        00108 
-                        00109 MakDat  MACRO   Arg
-                        00110         DATA    Arg
-                        00111         ENDM
-                        00112 
-                        00113         MakDat  "a"
-0035     6100               M         DATA    "a"
-                        00114         MakDat  "ab"
-0036     6162               M         DATA    "ab"
-                        00115         MakDat  "abc"
-0037     6162 6300          M         DATA    "abc"
-                        00116         MakDat  "abcd"
-0039     6162 6364          M         DATA    "abcd"
-                        00117         MakDat  "abcde"
-003B     6162 6364 6500     M         DATA    "abcde"
-                        00118         MakDat  "abcdef"
-003E     6162 6364 6566     M         DATA    "abcdef"
-                        00119         MakDat  "abcdefg"
-0041     6162 6364 6566     M         DATA    "abcdefg"
-         6700 
-                        00120         MakDat  "abcdefgh"
-0045     6162 6364 6566     M         DATA    "abcdefgh"
-         6768 
-                        00121         MakDat  "abcdefghi"
-0049     6162 6364 6566     M         DATA    "abcdefghi"
-         6768 6900 
-MPASM Version 3.00 Beta Release   LIST3.ASM   01/31/2001  12:39:50	   PAGE 9
-
-
-LOC  OBJECT CODE     LINE SOURCE TEXT
-  VALUE
-
-                        00122         MakDat  "abcdefghij"
-004E     6162 6364 6566     M         DATA    "abcdefghij"
-         6768 696A 
-                        00123         MakDat  "abcdefghijk"
-0053     6162 6364 6566     M         DATA    "abcdefghijk"
-         6768 696A 6B00 
-                        00124         MakDat  "abcdefghijkl"
-0059     6162 6364 6566     M         DATA    "abcdefghijkl"
-         6768 696A 6B6C 
-                        00125         MakDat  "abcdefghijklm"
-005F     6162 6364 6566     M         DATA    "abcdefghijklm"
-         6768 696A 6B6C 
-         6D00 
-                        00126         MakDat  "abcdefghijklmn"
-0066     6162 6364 6566     M         DATA    "abcdefghijklmn"
-         6768 696A 6B6C 
-         6D6E 
-                        00127 
-                        00128         LIST    C=50
-                        00129 ;Wrap both
-006D     0001 0002 0003 00130         DATA    1, 2
-                              , 3, 4, 5, 6, 7
-         0004 0005 0006 
-         0007 
-                        00131         MakDat  "abc
-                              defghijklmn"
-0074     6162 6364 6566     M         DATA    "abc
-                              defghijklmn"
-         6768 696A 6B6C 
-         6D6E 
-                        00132 
-                        00133         END
-MPASM Version 3.00 Beta Release   LIST3.ASM   01/31/2001  12:39:50	   PAGE 10
+0053   6162 6364 6566     M         DATA    "abcdefghijk"
+       6768 696A 6B00 
+                      00124         MakDat  "abcdefghijkl"
+0059   6162 6364 6566     M         DATA    "abcdefghijkl"
+       6768 696A 6B6C 
+                      00125         MakDat  "abcdefghijklm"
+005F   6162 6364 6566     M         DATA    "abcdefghijklm"
+       6768 696A 6B6C 
+       6D00 
+                      00126         MakDat  "abcdefghijklmn"
+0066   6162 6364 6566     M         DATA    "abcdefghijklmn"
+       6768 696A 6B6C 
+       6D6E 
+                      00127 
+                      00128         LIST    C=50
+                      00129 ;Wrap both
+006D   0001 0002 0003 00130         DATA    1, 2, 
+                            3, 4, 5, 6, 7
+       0004 0005 0006 
+       0007 
+                      00131         MakDat  "abcde
+                            fghijklmn"
+0074   6162 6364 6566     M         DATA    "abcde
+                            fghijklmn"
+       6768 696A 6B6C 
+       6D6E 
+                      00132 
+                      00133         END
+MPASM 03.20.02 Released         LIST3.ASM   11-21-2002  20:21:06         PAGE  9
 
 
 SYMBOL TABLE

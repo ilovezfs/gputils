@@ -1,29 +1,29 @@
-MPASM Version 3.00 Beta Release   CASESEN.ASM   01/31/2001  12:11:08	   PAGE 1
+MPASM 03.20.02 Released       CASESEN.ASM   11-21-2002  20:20:13         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; CASESEN.ASM
-                        00002 
-                        00003 ; This file is used to illustrate the differences between case 
-                        00004 ; sensitivity and insensitivity.  It should be assembled once
-                        00005 ; without command line options and once with /c.
-                        00006 
-                        00007         LIST    P=16C54
-                        00008 
-  00000010              00009 OneLabel = 10                                   ; mixed case
-  00000020              00010 ONELABEL = 20                                   ; upper case
-                        00011 
-                        00012         if OneLabel == 20                       ; if value changed
-                        00013            MESSG        "Case Insensitive"
-                        00014         else
+                      00001 ; CASESEN.ASM
+                      00002 
+                      00003 ; This file is used to illustrate the differences between case 
+                      00004 ; sensitivity and insensitivity.  It should be assembled once
+                      00005 ; without command line options and once with /c.
+                      00006 
+                      00007         LIST    P=16C54
+                      00008 
+  00000010            00009 OneLabel = 10                                   ; mixed case
+  00000020            00010 ONELABEL = 20                                   ; upper case
+                      00011 
+                      00012         if OneLabel == 20                       ; if value changed
+                      00013            MESSG        "Case Insensitive"
+                      00014         else
 Message[301]: MESSAGE: (Case Sensitive)
-                        00015            MESSG        "Case Sensitive"
-                        00016         endif
-                        00017 
-                        00018         end
-MPASM Version 3.00 Beta Release   CASESEN.ASM   01/31/2001  12:11:08	   PAGE 2
+                      00015            MESSG        "Case Sensitive"
+                      00016         endif
+                      00017 
+                      00018         end
+MPASM 03.20.02 Released       CASESEN.ASM   11-21-2002  20:20:13         PAGE  2
 
 
 SYMBOL TABLE

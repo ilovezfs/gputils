@@ -1,23 +1,23 @@
-MPASM Version 3.00 Beta Release   PROCSSR2.ASM   01/31/2001  12:14:05	   PAGE 1
+MPASM 03.20.02 Released      PROCSSR2.ASM   11-21-2002  20:21:30         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; PROCSSR2.ASM
-                        00002 
-                        00003 ; This file verifies that code is generated correctly when the processor
-                        00004 ; is chosen on the command line and in the source code.
-                        00005 
-                        00006         PROCESSOR       16c54
-                        00007 
-0000     0000           00008         NOP
-0001                    00009 Label1
-0001     0000           00010         NOP
-0002                    00011 Label2
-                        00012 
-                        00013         END
-MPASM Version 3.00 Beta Release   PROCSSR2.ASM   01/31/2001  12:14:05	   PAGE 2
+                      00001 ; PROCSSR2.ASM
+                      00002 
+                      00003 ; This file verifies that code is generated correctly when the processor
+                      00004 ; is chosen on the command line and in the source code.
+                      00005 
+                      00006         PROCESSOR       16c54
+                      00007 
+0000   0000           00008         NOP
+0001                  00009 Label1
+0001   0000           00010         NOP
+0002                  00011 Label2
+                      00012 
+                      00013         END
+MPASM 03.20.02 Released      PROCSSR2.ASM   11-21-2002  20:21:30         PAGE  2
 
 
 SYMBOL TABLE

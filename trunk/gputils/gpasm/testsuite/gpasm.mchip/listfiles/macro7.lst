@@ -1,146 +1,146 @@
-MPASM Version 3.00 Beta Release   MACRO7.ASM   01/31/2001  12:39:52	   PAGE 1
+MPASM 03.20.02 Released        MACRO7.ASM   11-21-2002  20:21:08         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ;MACRO7.ASM
-                        00002 
-                        00003 ; This file tests illegal macro usage.
-                        00004 
-                        00005         LIST    P=17C42
-                        00006 
-                        00007 TEST    MACRO   NUM
-                        00008         ADDLW   NUM
-                        00009         ENDM
-                        00010 
+                      00001 ;MACRO7.ASM
+                      00002 
+                      00003 ; This file tests illegal macro usage.
+                      00004 
+                      00005         LIST    P=17C42
+                      00006 
+                      00007 TEST    MACRO   NUM
+                      00008         ADDLW   NUM
+                      00009         ENDM
+                      00010 
 Error[128]  : Missing argument(s)
-                        00011         TEST            ;Missing parameter
+                      00011         TEST            ;Missing parameter
 Error[113]  : Symbol not previously defined (NUM)
-0000     B100               M         ADDLW   NUM
+0000   B100               M         ADDLW   NUM
 Error[127]  : Too many arguments
-                        00012         TEST    1, 2    ;Too many parameters.
+                      00012         TEST    1, 2    ;Too many parameters.
 Error[113]  : Symbol not previously defined (NUM)
-0001     B100               M         ADDLW   NUM
-                        00013 
-                        00014 MAC1    MACRO
-                        00015         NOP
-                        00016         ENDM
-                        00017 
-                        00018 MAC2    MACRO
-                        00019         MAC1
-                        00020         ENDM
-                        00021 
-                        00022 MAC3    MACRO
-                        00023         MAC2
-                        00024         ENDM
-                        00025 
-                        00026 MAC4    MACRO
-                        00027         MAC3
-                        00028         ENDM
-                        00029 
-                        00030 MAC5    MACRO
-                        00031         MAC4
-                        00032         ENDM
-                        00033 
-                        00034 MAC6    MACRO
-                        00035         MAC5
-                        00036         ENDM
-                        00037 
-                        00038 MAC7    MACRO
-                        00039         MAC6
-                        00040         ENDM
-                        00041 
-                        00042 MAC8    MACRO
-                        00043         MAC7
-                        00044         ENDM
-                        00045 
-                        00046 MAC9    MACRO
-                        00047         MAC8
-MPASM Version 3.00 Beta Release   MACRO7.ASM   01/31/2001  12:39:52	   PAGE 2
+0001   B100               M         ADDLW   NUM
+                      00013 
+                      00014 MAC1    MACRO
+                      00015         NOP
+                      00016         ENDM
+                      00017 
+                      00018 MAC2    MACRO
+                      00019         MAC1
+                      00020         ENDM
+                      00021 
+                      00022 MAC3    MACRO
+                      00023         MAC2
+                      00024         ENDM
+                      00025 
+                      00026 MAC4    MACRO
+                      00027         MAC3
+                      00028         ENDM
+                      00029 
+                      00030 MAC5    MACRO
+                      00031         MAC4
+                      00032         ENDM
+                      00033 
+                      00034 MAC6    MACRO
+                      00035         MAC5
+                      00036         ENDM
+                      00037 
+                      00038 MAC7    MACRO
+                      00039         MAC6
+                      00040         ENDM
+                      00041 
+                      00042 MAC8    MACRO
+                      00043         MAC7
+                      00044         ENDM
+                      00045 
+                      00046 MAC9    MACRO
+                      00047         MAC8
+MPASM 03.20.02 Released        MACRO7.ASM   11-21-2002  20:21:08         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00048         ENDM
-                        00049 
-                        00050 
-                        00051 MAC1A   MACRO
-                        00052         MAC8
-                        00053         ENDM
-                        00054 
-                        00055 MAC2A   MACRO
-                        00056         MAC1A
-                        00057         ENDM
-                        00058 
-                        00059 MAC3A   MACRO
-                        00060         MAC2A
-                        00061         ENDM
-                        00062 
-                        00063 MAC4A   MACRO
-                        00064         MAC3A
-                        00065         ENDM
-                        00066 
-                        00067 MAC5A   MACRO
-                        00068         MAC4A
-                        00069         ENDM
-                        00070 
-                        00071 MAC6A   MACRO
-                        00072         MAC5A
-                        00073         ENDM
-                        00074 
-                        00075 MAC7A   MACRO
-                        00076         MAC6A
-                        00077         ENDM
-                        00078 
-                        00079 MAC8A   MACRO
-                        00080         MAC7A
-                        00081         ENDM
-                        00082 
-                        00083 MAC9A   MACRO
-                        00084         MAC8A
-                        00085         ENDM
-                        00086 
-                        00087 
-                        00088         MAC9    ;Nested too deep - when 8 deep
-                            M         MAC8
-                            M         MAC7
-                            M         MAC6
-                            M         MAC5
-                            M         MAC4
-                            M         MAC3
-                            M         MAC2
-                            M         MAC1
-0002     0000               M         NOP
-                        00089 
-                        00090         MAC9A
-                            M         MAC8A
-MPASM Version 3.00 Beta Release   MACRO7.ASM   01/31/2001  12:39:52	   PAGE 3
+                      00048         ENDM
+                      00049 
+                      00050 
+                      00051 MAC1A   MACRO
+                      00052         MAC8
+                      00053         ENDM
+                      00054 
+                      00055 MAC2A   MACRO
+                      00056         MAC1A
+                      00057         ENDM
+                      00058 
+                      00059 MAC3A   MACRO
+                      00060         MAC2A
+                      00061         ENDM
+                      00062 
+                      00063 MAC4A   MACRO
+                      00064         MAC3A
+                      00065         ENDM
+                      00066 
+                      00067 MAC5A   MACRO
+                      00068         MAC4A
+                      00069         ENDM
+                      00070 
+                      00071 MAC6A   MACRO
+                      00072         MAC5A
+                      00073         ENDM
+                      00074 
+                      00075 MAC7A   MACRO
+                      00076         MAC6A
+                      00077         ENDM
+                      00078 
+                      00079 MAC8A   MACRO
+                      00080         MAC7A
+                      00081         ENDM
+                      00082 
+                      00083 MAC9A   MACRO
+                      00084         MAC8A
+                      00085         ENDM
+                      00086 
+                      00087 
+                      00088         MAC9    ;Nested too deep - when 8 deep
+                          M         MAC8
+                          M         MAC7
+                          M         MAC6
+                          M         MAC5
+                          M         MAC4
+                          M         MAC3
+                          M         MAC2
+                          M         MAC1
+0002   0000               M         NOP
+                      00089 
+                      00090         MAC9A
+                          M         MAC8A
+MPASM 03.20.02 Released        MACRO7.ASM   11-21-2002  20:21:08         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                            M         MAC7A
-                            M         MAC6A
-                            M         MAC5A
-                            M         MAC4A
-                            M         MAC3A
-                            M         MAC2A
-                            M         MAC1A
-                            M         MAC8
-                            M         MAC7
-                            M         MAC6
-                            M         MAC5
-                            M         MAC4
-                            M         MAC3
-                            M         MAC2
+                          M         MAC7A
+                          M         MAC6A
+                          M         MAC5A
+                          M         MAC4A
+                          M         MAC3A
+                          M         MAC2A
+                          M         MAC1A
+                          M         MAC8
+                          M         MAC7
+                          M         MAC6
+                          M         MAC5
+                          M         MAC4
+                          M         MAC3
+                          M         MAC2
 Error[137]  : Macros nested too deep
-                            M         MAC1
-                        00091 
-                        00092         END
-MPASM Version 3.00 Beta Release   MACRO7.ASM   01/31/2001  12:39:52	   PAGE 4
+                          M         MAC1
+                      00091 
+                      00092         END
+MPASM 03.20.02 Released        MACRO7.ASM   11-21-2002  20:21:08         PAGE  4
 
 
 SYMBOL TABLE

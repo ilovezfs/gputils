@@ -1,42 +1,42 @@
-MPASM Version 3.00 Beta Release   IFDEF2.ASM   01/31/2001  12:39:45	   PAGE 1
+MPASM 03.20.02 Released        IFDEF2.ASM   11-21-2002  20:21:03         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; IFDEF2.ASM
-                        00002 
-                        00003 ; This file tests illegal usage of the IFDEF and IFNDEF directives.
-                        00004 
-                        00005         LIST    P=17C42
-                        00006 
-                        00007 #define Def1
-                        00008 
+                      00001 ; IFDEF2.ASM
+                      00002 
+                      00003 ; This file tests illegal usage of the IFDEF and IFNDEF directives.
+                      00004 
+                      00005         LIST    P=17C42
+                      00006 
+                      00007 #define Def1
+                      00008 
 Error[128]  : Missing argument(s)
-                        00009         IFDEF                   ; Missing operand
-0000     0000           00010            NOP
+                      00009         IFDEF                   ; Missing operand
+0000   0000           00010            NOP
 Error[125]  : Illegal condition (ENDIF)
-                        00011         ENDIF
-                        00012 
+                      00011         ENDIF
+                      00012 
 Error[121]  : Illegal label (Label)
-                        00013 Label   IFDEF   Def2            ; Illegal label
-                        00014            NOP
-                        00015         ENDIF
-                        00016 
+                      00013 Label   IFDEF   Def2            ; Illegal label
+                      00014            NOP
+                      00015         ENDIF
+                      00016 
 Error[128]  : Missing argument(s)
-                        00017         IFNDEF                  ; Missing operand
-0001     0000           00018            NOP
+                      00017         IFNDEF                  ; Missing operand
+0001   0000           00018            NOP
 Error[125]  : Illegal condition (ENDIF)
-                        00019         ENDIF
-                        00020 
+                      00019         ENDIF
+                      00020 
 Error[128]  : Missing argument(s)
-                        00021 Label   IFNDEF  Def1            ; Illegal label
-0002     0000           00022            NOP
+                      00021 Label   IFNDEF  Def1            ; Illegal label
+0002   0000           00022            NOP
 Error[125]  : Illegal condition (ENDIF)
-                        00023         ENDIF
-                        00024 
-                        00025         END
-MPASM Version 3.00 Beta Release   IFDEF2.ASM   01/31/2001  12:39:45	   PAGE 2
+                      00023         ENDIF
+                      00024 
+                      00025         END
+MPASM 03.20.02 Released        IFDEF2.ASM   11-21-2002  20:21:03         PAGE  2
 
 
 SYMBOL TABLE

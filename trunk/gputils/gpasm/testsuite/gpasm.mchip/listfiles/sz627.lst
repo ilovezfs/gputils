@@ -1,42 +1,42 @@
-MPASM Version 3.00 Beta Release   SZ627.ASM   01/31/2001  12:14:38	   PAGE 1
+MPASM 03.20.02 Released         SZ627.ASM   11-21-2002  20:21:44         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; SZ627.ASM
-                        00002 
-                        00003 ; This file tests for the processor-specific items for the selected
-                        00004 ; processor.
-                        00005 
-                        00006         LIST    P=16F627, R=HEX ; 14-Bit core
-                        00007 
-  000003FF              00008 ROMRANGE        EQU     3FF
-  000001FF              00009 RAMRANGE        EQU     1FF
-                        00010 
-0000     3412           00011         RETLW   12      ; 0812 = 12-BIT
-                        00012                                 ; 3412 = 14-BIT *
-                        00013                                 ; B612 = 16-BIT
-                        00014 
+                      00001 ; SZ627.ASM
+                      00002 
+                      00003 ; This file tests for the processor-specific items for the selected
+                      00004 ; processor.
+                      00005 
+                      00006         LIST    P=16F627, R=HEX ; 14-Bit core
+                      00007 
+  000003FF            00008 ROMRANGE        EQU     3FF
+  000001FF            00009 RAMRANGE        EQU     1FF
+                      00010 
+0000   3412           00011         RETLW   12      ; 0812 = 12-BIT
+                      00012                                 ; 3412 = 14-BIT *
+                      00013                                 ; B612 = 16-BIT
+                      00014 
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0001     00FF           00015         MOVWF   RAMRANGE                ; OK
+0001   00FF           00015         MOVWF   RAMRANGE                ; OK
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0002     0080           00016         MOVWF   RAMRANGE+1      ; MESSAGE
-                        00017 
-03FF                    00018         ORG     ROMRANGE
-03FF     0000           00019         NOP                     ; OK
+0002   0080           00016         MOVWF   RAMRANGE+1      ; MESSAGE
+                      00017 
+03FF                  00018         ORG     ROMRANGE
+03FF   0000           00019         NOP                     ; OK
 Warning[220]: Address exceeds maximum range for this processor.
-0400     0000           00020         NOP                     ; Warning
-                        00021 
-                        00022    IFDEF __16F627                ; EE Processors
-2100                    00023         ORG     2100
-2100     0033           00024         FILL    33, 0x80        ; OK
+0400   0000           00020         NOP                     ; Warning
+                      00021 
+                      00022    IFDEF __16F627                ; EE Processors
+2100                  00023         ORG     2100
+2100   0033           00024         FILL    33, 0x80        ; OK
 Warning[220]: Address exceeds maximum range for this processor.
-2180     0099           00025         DE      99              ; ERROR
-                        00026    ENDIF
-                        00027 
-                        00028         END
-MPASM Version 3.00 Beta Release   SZ627.ASM   01/31/2001  12:14:38	   PAGE 2
+2180   0099           00025         DE      99              ; ERROR
+                      00026    ENDIF
+                      00027 
+                      00028         END
+MPASM 03.20.02 Released         SZ627.ASM   11-21-2002  20:21:44         PAGE  2
 
 
 SYMBOL TABLE

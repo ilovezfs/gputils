@@ -1,34 +1,34 @@
-MPASM Version 3.00 Beta Release   SZR54B.ASM   01/31/2001  12:40:18	   PAGE 1
+MPASM 03.20.02 Released        SZR54B.ASM   11-21-2002  20:21:54         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; SZR54B.ASM
-                        00002 
-                        00003 ; This file tests for the processor-specific items for the selected
-                        00004 ; processor.
-                        00005 
-                        00006         LIST    P=16CR54B, R=HEX
-                        00007 
-  000001FF              00008 MAXROM  EQU     01FF
-  0000001F              00009 MAXRAM  EQU     001F
-                        00010 
-0000     0812           00011         RETLW   12              ; 0812 = 12-BIT
-                        00012                                 ; 3412 = 14-BIT
-                        00013                                 ; B612 = 16-BIT
-                        00014 
-0001     003F           00015         MOVWF   MAXRAM          ; OK
+                      00001 ; SZR54B.ASM
+                      00002 
+                      00003 ; This file tests for the processor-specific items for the selected
+                      00004 ; processor.
+                      00005 
+                      00006         LIST    P=16CR54B, R=HEX
+                      00007 
+  000001FF            00008 MAXROM  EQU     01FF
+  0000001F            00009 MAXRAM  EQU     001F
+                      00010 
+0000   0812           00011         RETLW   12              ; 0812 = 12-BIT
+                      00012                                 ; 3412 = 14-BIT
+                      00013                                 ; B612 = 16-BIT
+                      00014 
+0001   003F           00015         MOVWF   MAXRAM          ; OK
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0002     0020           00016         MOVWF   MAXRAM+1        ; MESSAGE
-                        00017 
-01FF                    00018         ORG     MAXROM
-01FF     0000           00019         NOP                     ; OK
+0002   0020           00016         MOVWF   MAXRAM+1        ; MESSAGE
+                      00017 
+01FF                  00018         ORG     MAXROM
+01FF   0000           00019         NOP                     ; OK
 Warning[220]: Address exceeds maximum range for this processor.
-0200     0000           00020         NOP                     ; ERROR
-                        00021 
-                        00022         END
-MPASM Version 3.00 Beta Release   SZR54B.ASM   01/31/2001  12:40:18	   PAGE 2
+0200   0000           00020         NOP                     ; ERROR
+                      00021 
+                      00022         END
+MPASM 03.20.02 Released        SZR54B.ASM   11-21-2002  20:21:54         PAGE  2
 
 
 SYMBOL TABLE

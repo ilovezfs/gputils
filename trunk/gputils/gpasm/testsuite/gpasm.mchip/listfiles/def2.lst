@@ -1,38 +1,38 @@
-MPASM Version 3.00 Beta Release   DEF2.ASM   01/31/2001  12:39:40	   PAGE 1
+MPASM 03.20.02 Released          DEF2.ASM   11-21-2002  20:20:15         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; DEF2.ASM
-                        00002 
-                        00003 ; This file tests illegal usage of DEFINE.
-                        00004 
-                        00005         LIST    P=16C54, R=HEX
-                        00006 
+                      00001 ; DEF2.ASM
+                      00002 
+                      00003 ; This file tests illegal usage of DEFINE.
+                      00004 
+                      00005         LIST    P=16C54, R=HEX
+                      00006 
 Error[109]  : Unmatched (
 Error[128]  : Missing argument(s)
-                        00007 #DEFINE Def1(A                          ; Missing paren and def
+                      00007 #DEFINE Def1(A                          ; Missing paren and def
 Error[128]  : Missing argument(s)
-                        00008 #DEFINE Def2(A)                         ; Missing definition
-                        00009 #DEFINE Def3(A)         (A+1            ; Missing paren
+                      00008 #DEFINE Def2(A)                         ; Missing definition
+                      00009 #DEFINE Def3(A)         (A+1            ; Missing paren
 Error[122]  : Illegal opcode (Def1)
-                        00010 DEFINE  Def1    10
-                        00011 
-                        00012 #define Def4 (1+2)
-0000     0003           00013         DATA    Def4
-                        00014 
+                      00010 DEFINE  Def1    10
+                      00011 
+                      00012 #define Def4 (1+2)
+0000   0003           00013         DATA    Def4
+                      00014 
 Error[113]  : Symbol not previously defined (Def2)
-0001     0000           00015         DATA    Def2
+0001   0000           00015         DATA    Def2
 Error[113]  : Symbol not previously defined (Def2)
 Error[112]  : Missing operator
-0002     0000           00016         DATA    Def2(1)
+0002   0000           00016         DATA    Def2(1)
 Error[109]  : Unmatched (
 Error[124]  : Illegal argument
-0003     0000           00017         DATA    Def3(2)
-                        00018 
-                        00019         END
-MPASM Version 3.00 Beta Release   DEF2.ASM   01/31/2001  12:39:40	   PAGE 2
+0003   0000           00017         DATA    Def3(2)
+                      00018 
+                      00019         END
+MPASM 03.20.02 Released          DEF2.ASM   11-21-2002  20:20:15         PAGE  2
 
 
 SYMBOL TABLE

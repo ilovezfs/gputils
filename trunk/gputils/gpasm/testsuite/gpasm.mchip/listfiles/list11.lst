@@ -1,33 +1,33 @@
-MPASM Version 3.00 Beta Release   LIST11.ASM   01/31/2001  12:13:06	   PAGE 1
+MPASM 03.20.02 Released        LIST11.ASM   11-21-2002  20:21:05         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ;LIST11.ASM
-                        00002 
-                        00003 ;This file is used to check the generation of an INHX16 format file
-                        00004 ;that has data above 7FFF.
-                        00005 
-                        00006         list    p=17c44, f=inhx16
-                        00007 
-0000                    00008         org     0
-0000     1234 2345      00009         data    1234, 2345
-                        00010 
-0020                    00011         org     20
-0020     9999           00012         fill    9999, 100
-                        00013 
-7000                    00014         org     7000
-7000     7890 8901      00015         data    7890, 8901
-                        00016 
-8000                    00017         org     8000
-8000     3456 4567      00018         data    3456, 4567
-                        00019 
-FE00                    00020         org     0fe00
-FE00     5678 6789      00021         data    5678, 6789
-                        00022 
-                        00023         end
-MPASM Version 3.00 Beta Release   LIST11.ASM   01/31/2001  12:13:06	   PAGE 2
+                      00001 ;LIST11.ASM
+                      00002 
+                      00003 ;This file is used to check the generation of an INHX16 format file
+                      00004 ;that has data above 7FFF.
+                      00005 
+                      00006         list    p=17c44, f=inhx16
+                      00007 
+0000                  00008         org     0
+0000   1234 2345      00009         data    1234, 2345
+                      00010 
+0020                  00011         org     20
+0020   9999           00012         fill    9999, 100
+                      00013 
+7000                  00014         org     7000
+7000   7890 8901      00015         data    7890, 8901
+                      00016 
+8000                  00017         org     8000
+8000   3456 4567      00018         data    3456, 4567
+                      00019 
+FE00                  00020         org     0fe00
+FE00   5678 6789      00021         data    5678, 6789
+                      00022 
+                      00023         end
+MPASM 03.20.02 Released        LIST11.ASM   11-21-2002  20:21:05         PAGE  2
 
 
 SYMBOL TABLE

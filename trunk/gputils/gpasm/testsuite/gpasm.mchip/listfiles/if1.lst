@@ -1,571 +1,571 @@
-MPASM Version 3.00 Beta Release   IF1.ASM   01/31/2001  12:12:54	   PAGE 1
+MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; IF1.ASM 
-                        00002 
-                        00003 ; This file tests legal usage of the IF-ELSE-ENDIF directives.
-                        00004 
-                        00005         LIST    P=17C42
-                        00006 
-                        00007 #define Def1    5
-  00000010              00008 Value1  EQU     10
-                        00009 
-                        00010         IF 1 == 1
-0000     4F4B           00011            DATA         "OK"
-                        00012         ELSE
-                        00013            ERROR        "Bad condition evaluation"
-                        00014         ENDIF
-                        00015 
-                        00016         IF 1 == 2 
-                        00017            ERROR        "Bad condition evaluation"
-                        00018         ELSE
-0001     4F4B           00019            DATA         "OK"
-                        00020         ENDIF
-                        00021 
-                        00022         IF 1 < 2 
-0002     4F4B           00023            DATA         "OK"
-                        00024         ELSE
-                        00025            ERROR        "Bad condition evaluation"
-                        00026         ENDIF
-                        00027 
-                        00028         IF 1 > 2 
-                        00029            ERROR        "Bad condition evaluation"
-                        00030         ELSE
-0003     4F4B           00031            DATA         "OK"
-                        00032         ENDIF
-                        00033 
-                        00034         IF Def1 == 5
-0004     4F4B           00035            DATA         "OK"
-                        00036         ELSE
-                        00037            ERROR        "Bad condition evaluation"
-                        00038         ENDIF
-                        00039 
-                        00040         IF Value1 == 10
-0005     4F4B           00041            DATA         "OK"
-                        00042         ELSE
-                        00043            ERROR        "Bad condition evaluation"
-                        00044         ENDIF
-                        00045 
-                        00046         IF 1==1
-                        00047            IF 2==2
-0006     4F4B           00048               DATA      "OK"
-                        00049            ELSE
-                        00050               ERROR     "Bad condition evaluation"
-                        00051            ENDIF
-                        00052         ELSE
-                        00053            IF 2==2
-MPASM Version 3.00 Beta Release   IF1.ASM   01/31/2001  12:12:54	   PAGE 2
+                      00001 ; IF1.ASM 
+                      00002 
+                      00003 ; This file tests legal usage of the IF-ELSE-ENDIF directives.
+                      00004 
+                      00005         LIST    P=17C42
+                      00006 
+                      00007 #define Def1    5
+  00000010            00008 Value1  EQU     10
+                      00009 
+                      00010         IF 1 == 1
+0000   4F4B           00011            DATA         "OK"
+                      00012         ELSE
+                      00013            ERROR        "Bad condition evaluation"
+                      00014         ENDIF
+                      00015 
+                      00016         IF 1 == 2 
+                      00017            ERROR        "Bad condition evaluation"
+                      00018         ELSE
+0001   4F4B           00019            DATA         "OK"
+                      00020         ENDIF
+                      00021 
+                      00022         IF 1 < 2 
+0002   4F4B           00023            DATA         "OK"
+                      00024         ELSE
+                      00025            ERROR        "Bad condition evaluation"
+                      00026         ENDIF
+                      00027 
+                      00028         IF 1 > 2 
+                      00029            ERROR        "Bad condition evaluation"
+                      00030         ELSE
+0003   4F4B           00031            DATA         "OK"
+                      00032         ENDIF
+                      00033 
+                      00034         IF Def1 == 5
+0004   4F4B           00035            DATA         "OK"
+                      00036         ELSE
+                      00037            ERROR        "Bad condition evaluation"
+                      00038         ENDIF
+                      00039 
+                      00040         IF Value1 == 10
+0005   4F4B           00041            DATA         "OK"
+                      00042         ELSE
+                      00043            ERROR        "Bad condition evaluation"
+                      00044         ENDIF
+                      00045 
+                      00046         IF 1==1
+                      00047            IF 2==2
+0006   4F4B           00048               DATA      "OK"
+                      00049            ELSE
+                      00050               ERROR     "Bad condition evaluation"
+                      00051            ENDIF
+                      00052         ELSE
+                      00053            IF 2==2
+MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00054               ERROR     "Bad condition evaluation"
-                        00055            ELSE
-                        00056               ERROR     "Bad condition evaluation"
-                        00057            ENDIF
-                        00058         ENDIF
-                        00059 
-                        00060         IF 1==1
-                        00061            IF 2!=2
-                        00062               ERROR     "Bad condition evaluation"
-                        00063            ELSE
-0007     4F4B           00064               DATA      "OK"
-                        00065            ENDIF
-                        00066         ELSE
-                        00067            IF 2==2
-                        00068               ERROR     "Bad condition evaluation"
-                        00069            ELSE
-                        00070               ERROR     "Bad condition evaluation"
-                        00071            ENDIF
-                        00072         ENDIF
-                        00073 
-                        00074         IF 1!=1
-                        00075            IF 2==2
-                        00076               ERROR     "Bad condition evaluation"
-                        00077            ELSE
-                        00078               ERROR     "Bad condition evaluation"
-                        00079            ENDIF
-                        00080         ELSE
-                        00081            IF 2==2
-0008     4F4B           00082               DATA      "OK"
-                        00083            ELSE
-                        00084               ERROR     "Bad condition evaluation"
-                        00085            ENDIF
-                        00086         ENDIF
-                        00087 
-                        00088         IF 1!=1
-                        00089            IF 2==2
-                        00090               ERROR     "Bad condition evaluation"
-                        00091            ELSE
-                        00092               ERROR     "Bad condition evaluation"
-                        00093            ENDIF
-                        00094         ELSE
-                        00095            IF 2!=2
-                        00096               ERROR     "Bad condition evaluation"
-                        00097            ELSE
-0009     4F4B           00098               DATA      "OK"
-                        00099            ENDIF
-                        00100         ENDIF
-                        00101 
-                        00102 
-  00000001              00103 AA = 1
-  00000001              00104 BB = 1
-  00000001              00105 CC = 1
-  00000001              00106 DD = 1
-MPASM Version 3.00 Beta Release   IF1.ASM   01/31/2001  12:12:54	   PAGE 3
+                      00054               ERROR     "Bad condition evaluation"
+                      00055            ELSE
+                      00056               ERROR     "Bad condition evaluation"
+                      00057            ENDIF
+                      00058         ENDIF
+                      00059 
+                      00060         IF 1==1
+                      00061            IF 2!=2
+                      00062               ERROR     "Bad condition evaluation"
+                      00063            ELSE
+0007   4F4B           00064               DATA      "OK"
+                      00065            ENDIF
+                      00066         ELSE
+                      00067            IF 2==2
+                      00068               ERROR     "Bad condition evaluation"
+                      00069            ELSE
+                      00070               ERROR     "Bad condition evaluation"
+                      00071            ENDIF
+                      00072         ENDIF
+                      00073 
+                      00074         IF 1!=1
+                      00075            IF 2==2
+                      00076               ERROR     "Bad condition evaluation"
+                      00077            ELSE
+                      00078               ERROR     "Bad condition evaluation"
+                      00079            ENDIF
+                      00080         ELSE
+                      00081            IF 2==2
+0008   4F4B           00082               DATA      "OK"
+                      00083            ELSE
+                      00084               ERROR     "Bad condition evaluation"
+                      00085            ENDIF
+                      00086         ENDIF
+                      00087 
+                      00088         IF 1!=1
+                      00089            IF 2==2
+                      00090               ERROR     "Bad condition evaluation"
+                      00091            ELSE
+                      00092               ERROR     "Bad condition evaluation"
+                      00093            ENDIF
+                      00094         ELSE
+                      00095            IF 2!=2
+                      00096               ERROR     "Bad condition evaluation"
+                      00097            ELSE
+0009   4F4B           00098               DATA      "OK"
+                      00099            ENDIF
+                      00100         ENDIF
+                      00101 
+                      00102 
+  00000001            00103 AA = 1
+  00000001            00104 BB = 1
+  00000001            00105 CC = 1
+  00000001            00106 DD = 1
+MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-  00000001              00107 EE = 1
-  00000001              00108 FF = 1
-  00000001              00109 GG = 1
-  00000001              00110 HH = 1
-                        00111 
-                        00112         WHILE AA+BB+CC+DD+EE+FF+GG+HH > 0
-                        00113            IF AA > 0
-000A     412B           00114               DATA                      "A+"
+  00000001            00107 EE = 1
+  00000001            00108 FF = 1
+  00000001            00109 GG = 1
+  00000001            00110 HH = 1
+                      00111 
+                      00112         WHILE AA+BB+CC+DD+EE+FF+GG+HH > 0
+                      00113            IF AA > 0
+000A   412B           00114               DATA                      "A+"
 Warning[207]: Found label after column 1. (AA)
-  00000000              00115               AA--
-                        00116            ELSE
-                        00117               DATA                      "A-"
-                        00118               IF BB > 0
-                        00119                  DATA                   "B+"
-                        00120                  BB--
-                        00121               ELSE
-                        00122                  DATA                   "B-"
-                        00123                  IF CC > 0
-                        00124                     DATA                "C+"
-                        00125                     CC--
-                        00126                  ELSE
-                        00127                     DATA                "C-"
-                        00128                     IF DD > 0
-                        00129                        DATA             "D+"
-                        00130                        DD--
-                        00131                     ELSE
-                        00132                        DATA             "D-"
-                        00133                        IF EE > 0
-                        00134                           DATA          "E+"
-                        00135                           EE--
-                        00136                        ELSE
-                        00137                           DATA          "E-"
-                        00138                           IF FF > 0
-                        00139                              DATA       "F+"
-                        00140                              FF--
-                        00141                           ELSE
-                        00142                              DATA       "F-"
-                        00143                              IF GG > 0
-                        00144                                 DATA    "G+"
-                        00145                                 GG--
-                        00146                              ELSE
-                        00147                                 DATA    "G-"
-                        00148                                 IF HH > 0
-                        00149                                    DATA "H+"
-                        00150                                    HH--
-                        00151                                 ELSE
-                        00152                                    DATA "H-"
-                        00153                                 ENDIF
-                        00154                              ENDIF
-                        00155                           ENDIF
-                        00156                        ENDIF
-                        00157                     ENDIF
-                        00158                  ENDIF
-MPASM Version 3.00 Beta Release   IF1.ASM   01/31/2001  12:12:54	   PAGE 4
+  00000000            00115               AA--
+                      00116            ELSE
+                      00117               DATA                      "A-"
+                      00118               IF BB > 0
+                      00119                  DATA                   "B+"
+                      00120                  BB--
+                      00121               ELSE
+                      00122                  DATA                   "B-"
+                      00123                  IF CC > 0
+                      00124                     DATA                "C+"
+                      00125                     CC--
+                      00126                  ELSE
+                      00127                     DATA                "C-"
+                      00128                     IF DD > 0
+                      00129                        DATA             "D+"
+                      00130                        DD--
+                      00131                     ELSE
+                      00132                        DATA             "D-"
+                      00133                        IF EE > 0
+                      00134                           DATA          "E+"
+                      00135                           EE--
+                      00136                        ELSE
+                      00137                           DATA          "E-"
+                      00138                           IF FF > 0
+                      00139                              DATA       "F+"
+                      00140                              FF--
+                      00141                           ELSE
+                      00142                              DATA       "F-"
+                      00143                              IF GG > 0
+                      00144                                 DATA    "G+"
+                      00145                                 GG--
+                      00146                              ELSE
+                      00147                                 DATA    "G-"
+                      00148                                 IF HH > 0
+                      00149                                    DATA "H+"
+                      00150                                    HH--
+                      00151                                 ELSE
+                      00152                                    DATA "H-"
+                      00153                                 ENDIF
+                      00154                              ENDIF
+                      00155                           ENDIF
+                      00156                        ENDIF
+                      00157                     ENDIF
+                      00158                  ENDIF
+MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00159               ENDIF
-                        00160            ENDIF
-                        00113            IF AA > 0
-                        00114               DATA                      "A+"
-                        00115               AA--
-                        00116            ELSE
-000B     412D           00117               DATA                      "A-"
-                        00118               IF BB > 0
-000C     422B           00119                  DATA                   "B+"
+                      00159               ENDIF
+                      00160            ENDIF
+                      00113            IF AA > 0
+                      00114               DATA                      "A+"
+                      00115               AA--
+                      00116            ELSE
+000B   412D           00117               DATA                      "A-"
+                      00118               IF BB > 0
+000C   422B           00119                  DATA                   "B+"
 Warning[207]: Found label after column 1. (BB)
-  00000000              00120                  BB--
-                        00121               ELSE
-                        00122                  DATA                   "B-"
-                        00123                  IF CC > 0
-                        00124                     DATA                "C+"
-                        00125                     CC--
-                        00126                  ELSE
-                        00127                     DATA                "C-"
-                        00128                     IF DD > 0
-                        00129                        DATA             "D+"
-                        00130                        DD--
-                        00131                     ELSE
-                        00132                        DATA             "D-"
-                        00133                        IF EE > 0
-                        00134                           DATA          "E+"
-                        00135                           EE--
-                        00136                        ELSE
-                        00137                           DATA          "E-"
-                        00138                           IF FF > 0
-                        00139                              DATA       "F+"
-                        00140                              FF--
-                        00141                           ELSE
-                        00142                              DATA       "F-"
-                        00143                              IF GG > 0
-                        00144                                 DATA    "G+"
-                        00145                                 GG--
-                        00146                              ELSE
-                        00147                                 DATA    "G-"
-                        00148                                 IF HH > 0
-                        00149                                    DATA "H+"
-                        00150                                    HH--
-                        00151                                 ELSE
-                        00152                                    DATA "H-"
-                        00153                                 ENDIF
-                        00154                              ENDIF
-                        00155                           ENDIF
-                        00156                        ENDIF
-                        00157                     ENDIF
-                        00158                  ENDIF
-                        00159               ENDIF
-                        00160            ENDIF
-                        00113            IF AA > 0
-                        00114               DATA                      "A+"
-MPASM Version 3.00 Beta Release   IF1.ASM   01/31/2001  12:12:54	   PAGE 5
+  00000000            00120                  BB--
+                      00121               ELSE
+                      00122                  DATA                   "B-"
+                      00123                  IF CC > 0
+                      00124                     DATA                "C+"
+                      00125                     CC--
+                      00126                  ELSE
+                      00127                     DATA                "C-"
+                      00128                     IF DD > 0
+                      00129                        DATA             "D+"
+                      00130                        DD--
+                      00131                     ELSE
+                      00132                        DATA             "D-"
+                      00133                        IF EE > 0
+                      00134                           DATA          "E+"
+                      00135                           EE--
+                      00136                        ELSE
+                      00137                           DATA          "E-"
+                      00138                           IF FF > 0
+                      00139                              DATA       "F+"
+                      00140                              FF--
+                      00141                           ELSE
+                      00142                              DATA       "F-"
+                      00143                              IF GG > 0
+                      00144                                 DATA    "G+"
+                      00145                                 GG--
+                      00146                              ELSE
+                      00147                                 DATA    "G-"
+                      00148                                 IF HH > 0
+                      00149                                    DATA "H+"
+                      00150                                    HH--
+                      00151                                 ELSE
+                      00152                                    DATA "H-"
+                      00153                                 ENDIF
+                      00154                              ENDIF
+                      00155                           ENDIF
+                      00156                        ENDIF
+                      00157                     ENDIF
+                      00158                  ENDIF
+                      00159               ENDIF
+                      00160            ENDIF
+                      00113            IF AA > 0
+                      00114               DATA                      "A+"
+MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00115               AA--
-                        00116            ELSE
-000D     412D           00117               DATA                      "A-"
-                        00118               IF BB > 0
-                        00119                  DATA                   "B+"
-                        00120                  BB--
-                        00121               ELSE
-000E     422D           00122                  DATA                   "B-"
-                        00123                  IF CC > 0
-000F     432B           00124                     DATA                "C+"
+                      00115               AA--
+                      00116            ELSE
+000D   412D           00117               DATA                      "A-"
+                      00118               IF BB > 0
+                      00119                  DATA                   "B+"
+                      00120                  BB--
+                      00121               ELSE
+000E   422D           00122                  DATA                   "B-"
+                      00123                  IF CC > 0
+000F   432B           00124                     DATA                "C+"
 Warning[207]: Found label after column 1. (CC)
-  00000000              00125                     CC--
-                        00126                  ELSE
-                        00127                     DATA                "C-"
-                        00128                     IF DD > 0
-                        00129                        DATA             "D+"
-                        00130                        DD--
-                        00131                     ELSE
-                        00132                        DATA             "D-"
-                        00133                        IF EE > 0
-                        00134                           DATA          "E+"
-                        00135                           EE--
-                        00136                        ELSE
-                        00137                           DATA          "E-"
-                        00138                           IF FF > 0
-                        00139                              DATA       "F+"
-                        00140                              FF--
-                        00141                           ELSE
-                        00142                              DATA       "F-"
-                        00143                              IF GG > 0
-                        00144                                 DATA    "G+"
-                        00145                                 GG--
-                        00146                              ELSE
-                        00147                                 DATA    "G-"
-                        00148                                 IF HH > 0
-                        00149                                    DATA "H+"
-                        00150                                    HH--
-                        00151                                 ELSE
-                        00152                                    DATA "H-"
-                        00153                                 ENDIF
-                        00154                              ENDIF
-                        00155                           ENDIF
-                        00156                        ENDIF
-                        00157                     ENDIF
-                        00158                  ENDIF
-                        00159               ENDIF
-                        00160            ENDIF
-                        00113            IF AA > 0
-                        00114               DATA                      "A+"
-                        00115               AA--
-                        00116            ELSE
-0010     412D           00117               DATA                      "A-"
-                        00118               IF BB > 0
-MPASM Version 3.00 Beta Release   IF1.ASM   01/31/2001  12:12:54	   PAGE 6
+  00000000            00125                     CC--
+                      00126                  ELSE
+                      00127                     DATA                "C-"
+                      00128                     IF DD > 0
+                      00129                        DATA             "D+"
+                      00130                        DD--
+                      00131                     ELSE
+                      00132                        DATA             "D-"
+                      00133                        IF EE > 0
+                      00134                           DATA          "E+"
+                      00135                           EE--
+                      00136                        ELSE
+                      00137                           DATA          "E-"
+                      00138                           IF FF > 0
+                      00139                              DATA       "F+"
+                      00140                              FF--
+                      00141                           ELSE
+                      00142                              DATA       "F-"
+                      00143                              IF GG > 0
+                      00144                                 DATA    "G+"
+                      00145                                 GG--
+                      00146                              ELSE
+                      00147                                 DATA    "G-"
+                      00148                                 IF HH > 0
+                      00149                                    DATA "H+"
+                      00150                                    HH--
+                      00151                                 ELSE
+                      00152                                    DATA "H-"
+                      00153                                 ENDIF
+                      00154                              ENDIF
+                      00155                           ENDIF
+                      00156                        ENDIF
+                      00157                     ENDIF
+                      00158                  ENDIF
+                      00159               ENDIF
+                      00160            ENDIF
+                      00113            IF AA > 0
+                      00114               DATA                      "A+"
+                      00115               AA--
+                      00116            ELSE
+0010   412D           00117               DATA                      "A-"
+                      00118               IF BB > 0
+MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  6
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00119                  DATA                   "B+"
-                        00120                  BB--
-                        00121               ELSE
-0011     422D           00122                  DATA                   "B-"
-                        00123                  IF CC > 0
-                        00124                     DATA                "C+"
-                        00125                     CC--
-                        00126                  ELSE
-0012     432D           00127                     DATA                "C-"
-                        00128                     IF DD > 0
-0013     442B           00129                        DATA             "D+"
+                      00119                  DATA                   "B+"
+                      00120                  BB--
+                      00121               ELSE
+0011   422D           00122                  DATA                   "B-"
+                      00123                  IF CC > 0
+                      00124                     DATA                "C+"
+                      00125                     CC--
+                      00126                  ELSE
+0012   432D           00127                     DATA                "C-"
+                      00128                     IF DD > 0
+0013   442B           00129                        DATA             "D+"
 Warning[207]: Found label after column 1. (DD)
-  00000000              00130                        DD--
-                        00131                     ELSE
-                        00132                        DATA             "D-"
-                        00133                        IF EE > 0
-                        00134                           DATA          "E+"
-                        00135                           EE--
-                        00136                        ELSE
-                        00137                           DATA          "E-"
-                        00138                           IF FF > 0
-                        00139                              DATA       "F+"
-                        00140                              FF--
-                        00141                           ELSE
-                        00142                              DATA       "F-"
-                        00143                              IF GG > 0
-                        00144                                 DATA    "G+"
-                        00145                                 GG--
-                        00146                              ELSE
-                        00147                                 DATA    "G-"
-                        00148                                 IF HH > 0
-                        00149                                    DATA "H+"
-                        00150                                    HH--
-                        00151                                 ELSE
-                        00152                                    DATA "H-"
-                        00153                                 ENDIF
-                        00154                              ENDIF
-                        00155                           ENDIF
-                        00156                        ENDIF
-                        00157                     ENDIF
-                        00158                  ENDIF
-                        00159               ENDIF
-                        00160            ENDIF
-                        00113            IF AA > 0
-                        00114               DATA                      "A+"
-                        00115               AA--
-                        00116            ELSE
-0014     412D           00117               DATA                      "A-"
-                        00118               IF BB > 0
-                        00119                  DATA                   "B+"
-                        00120                  BB--
-                        00121               ELSE
-0015     422D           00122                  DATA                   "B-"
-MPASM Version 3.00 Beta Release   IF1.ASM   01/31/2001  12:12:54	   PAGE 7
+  00000000            00130                        DD--
+                      00131                     ELSE
+                      00132                        DATA             "D-"
+                      00133                        IF EE > 0
+                      00134                           DATA          "E+"
+                      00135                           EE--
+                      00136                        ELSE
+                      00137                           DATA          "E-"
+                      00138                           IF FF > 0
+                      00139                              DATA       "F+"
+                      00140                              FF--
+                      00141                           ELSE
+                      00142                              DATA       "F-"
+                      00143                              IF GG > 0
+                      00144                                 DATA    "G+"
+                      00145                                 GG--
+                      00146                              ELSE
+                      00147                                 DATA    "G-"
+                      00148                                 IF HH > 0
+                      00149                                    DATA "H+"
+                      00150                                    HH--
+                      00151                                 ELSE
+                      00152                                    DATA "H-"
+                      00153                                 ENDIF
+                      00154                              ENDIF
+                      00155                           ENDIF
+                      00156                        ENDIF
+                      00157                     ENDIF
+                      00158                  ENDIF
+                      00159               ENDIF
+                      00160            ENDIF
+                      00113            IF AA > 0
+                      00114               DATA                      "A+"
+                      00115               AA--
+                      00116            ELSE
+0014   412D           00117               DATA                      "A-"
+                      00118               IF BB > 0
+                      00119                  DATA                   "B+"
+                      00120                  BB--
+                      00121               ELSE
+0015   422D           00122                  DATA                   "B-"
+MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  7
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00123                  IF CC > 0
-                        00124                     DATA                "C+"
-                        00125                     CC--
-                        00126                  ELSE
-0016     432D           00127                     DATA                "C-"
-                        00128                     IF DD > 0
-                        00129                        DATA             "D+"
-                        00130                        DD--
-                        00131                     ELSE
-0017     442D           00132                        DATA             "D-"
-                        00133                        IF EE > 0
-0018     452B           00134                           DATA          "E+"
+                      00123                  IF CC > 0
+                      00124                     DATA                "C+"
+                      00125                     CC--
+                      00126                  ELSE
+0016   432D           00127                     DATA                "C-"
+                      00128                     IF DD > 0
+                      00129                        DATA             "D+"
+                      00130                        DD--
+                      00131                     ELSE
+0017   442D           00132                        DATA             "D-"
+                      00133                        IF EE > 0
+0018   452B           00134                           DATA          "E+"
 Warning[207]: Found label after column 1. (EE)
-  00000000              00135                           EE--
-                        00136                        ELSE
-                        00137                           DATA          "E-"
-                        00138                           IF FF > 0
-                        00139                              DATA       "F+"
-                        00140                              FF--
-                        00141                           ELSE
-                        00142                              DATA       "F-"
-                        00143                              IF GG > 0
-                        00144                                 DATA    "G+"
-                        00145                                 GG--
-                        00146                              ELSE
-                        00147                                 DATA    "G-"
-                        00148                                 IF HH > 0
-                        00149                                    DATA "H+"
-                        00150                                    HH--
-                        00151                                 ELSE
-                        00152                                    DATA "H-"
-                        00153                                 ENDIF
-                        00154                              ENDIF
-                        00155                           ENDIF
-                        00156                        ENDIF
-                        00157                     ENDIF
-                        00158                  ENDIF
-                        00159               ENDIF
-                        00160            ENDIF
-                        00113            IF AA > 0
-                        00114               DATA                      "A+"
-                        00115               AA--
-                        00116            ELSE
-0019     412D           00117               DATA                      "A-"
-                        00118               IF BB > 0
-                        00119                  DATA                   "B+"
-                        00120                  BB--
-                        00121               ELSE
-001A     422D           00122                  DATA                   "B-"
-                        00123                  IF CC > 0
-                        00124                     DATA                "C+"
-                        00125                     CC--
-                        00126                  ELSE
-MPASM Version 3.00 Beta Release   IF1.ASM   01/31/2001  12:12:54	   PAGE 8
+  00000000            00135                           EE--
+                      00136                        ELSE
+                      00137                           DATA          "E-"
+                      00138                           IF FF > 0
+                      00139                              DATA       "F+"
+                      00140                              FF--
+                      00141                           ELSE
+                      00142                              DATA       "F-"
+                      00143                              IF GG > 0
+                      00144                                 DATA    "G+"
+                      00145                                 GG--
+                      00146                              ELSE
+                      00147                                 DATA    "G-"
+                      00148                                 IF HH > 0
+                      00149                                    DATA "H+"
+                      00150                                    HH--
+                      00151                                 ELSE
+                      00152                                    DATA "H-"
+                      00153                                 ENDIF
+                      00154                              ENDIF
+                      00155                           ENDIF
+                      00156                        ENDIF
+                      00157                     ENDIF
+                      00158                  ENDIF
+                      00159               ENDIF
+                      00160            ENDIF
+                      00113            IF AA > 0
+                      00114               DATA                      "A+"
+                      00115               AA--
+                      00116            ELSE
+0019   412D           00117               DATA                      "A-"
+                      00118               IF BB > 0
+                      00119                  DATA                   "B+"
+                      00120                  BB--
+                      00121               ELSE
+001A   422D           00122                  DATA                   "B-"
+                      00123                  IF CC > 0
+                      00124                     DATA                "C+"
+                      00125                     CC--
+                      00126                  ELSE
+MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  8
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-001B     432D           00127                     DATA                "C-"
-                        00128                     IF DD > 0
-                        00129                        DATA             "D+"
-                        00130                        DD--
-                        00131                     ELSE
-001C     442D           00132                        DATA             "D-"
-                        00133                        IF EE > 0
-                        00134                           DATA          "E+"
-                        00135                           EE--
-                        00136                        ELSE
-001D     452D           00137                           DATA          "E-"
-                        00138                           IF FF > 0
-001E     462B           00139                              DATA       "F+"
+001B   432D           00127                     DATA                "C-"
+                      00128                     IF DD > 0
+                      00129                        DATA             "D+"
+                      00130                        DD--
+                      00131                     ELSE
+001C   442D           00132                        DATA             "D-"
+                      00133                        IF EE > 0
+                      00134                           DATA          "E+"
+                      00135                           EE--
+                      00136                        ELSE
+001D   452D           00137                           DATA          "E-"
+                      00138                           IF FF > 0
+001E   462B           00139                              DATA       "F+"
 Warning[207]: Found label after column 1. (FF)
-  00000000              00140                              FF--
-                        00141                           ELSE
-                        00142                              DATA       "F-"
-                        00143                              IF GG > 0
-                        00144                                 DATA    "G+"
-                        00145                                 GG--
-                        00146                              ELSE
-                        00147                                 DATA    "G-"
-                        00148                                 IF HH > 0
-                        00149                                    DATA "H+"
-                        00150                                    HH--
-                        00151                                 ELSE
-                        00152                                    DATA "H-"
-                        00153                                 ENDIF
-                        00154                              ENDIF
-                        00155                           ENDIF
-                        00156                        ENDIF
-                        00157                     ENDIF
-                        00158                  ENDIF
-                        00159               ENDIF
-                        00160            ENDIF
-                        00113            IF AA > 0
-                        00114               DATA                      "A+"
-                        00115               AA--
-                        00116            ELSE
-001F     412D           00117               DATA                      "A-"
-                        00118               IF BB > 0
-                        00119                  DATA                   "B+"
-                        00120                  BB--
-                        00121               ELSE
-0020     422D           00122                  DATA                   "B-"
-                        00123                  IF CC > 0
-                        00124                     DATA                "C+"
-                        00125                     CC--
-                        00126                  ELSE
-0021     432D           00127                     DATA                "C-"
-                        00128                     IF DD > 0
-                        00129                        DATA             "D+"
-                        00130                        DD--
-MPASM Version 3.00 Beta Release   IF1.ASM   01/31/2001  12:12:54	   PAGE 9
+  00000000            00140                              FF--
+                      00141                           ELSE
+                      00142                              DATA       "F-"
+                      00143                              IF GG > 0
+                      00144                                 DATA    "G+"
+                      00145                                 GG--
+                      00146                              ELSE
+                      00147                                 DATA    "G-"
+                      00148                                 IF HH > 0
+                      00149                                    DATA "H+"
+                      00150                                    HH--
+                      00151                                 ELSE
+                      00152                                    DATA "H-"
+                      00153                                 ENDIF
+                      00154                              ENDIF
+                      00155                           ENDIF
+                      00156                        ENDIF
+                      00157                     ENDIF
+                      00158                  ENDIF
+                      00159               ENDIF
+                      00160            ENDIF
+                      00113            IF AA > 0
+                      00114               DATA                      "A+"
+                      00115               AA--
+                      00116            ELSE
+001F   412D           00117               DATA                      "A-"
+                      00118               IF BB > 0
+                      00119                  DATA                   "B+"
+                      00120                  BB--
+                      00121               ELSE
+0020   422D           00122                  DATA                   "B-"
+                      00123                  IF CC > 0
+                      00124                     DATA                "C+"
+                      00125                     CC--
+                      00126                  ELSE
+0021   432D           00127                     DATA                "C-"
+                      00128                     IF DD > 0
+                      00129                        DATA             "D+"
+                      00130                        DD--
+MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  9
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00131                     ELSE
-0022     442D           00132                        DATA             "D-"
-                        00133                        IF EE > 0
-                        00134                           DATA          "E+"
-                        00135                           EE--
-                        00136                        ELSE
-0023     452D           00137                           DATA          "E-"
-                        00138                           IF FF > 0
-                        00139                              DATA       "F+"
-                        00140                              FF--
-                        00141                           ELSE
-0024     462D           00142                              DATA       "F-"
-                        00143                              IF GG > 0
-0025     472B           00144                                 DATA    "G+"
+                      00131                     ELSE
+0022   442D           00132                        DATA             "D-"
+                      00133                        IF EE > 0
+                      00134                           DATA          "E+"
+                      00135                           EE--
+                      00136                        ELSE
+0023   452D           00137                           DATA          "E-"
+                      00138                           IF FF > 0
+                      00139                              DATA       "F+"
+                      00140                              FF--
+                      00141                           ELSE
+0024   462D           00142                              DATA       "F-"
+                      00143                              IF GG > 0
+0025   472B           00144                                 DATA    "G+"
 Warning[207]: Found label after column 1. (GG)
-  00000000              00145                                 GG--
-                        00146                              ELSE
-                        00147                                 DATA    "G-"
-                        00148                                 IF HH > 0
-                        00149                                    DATA "H+"
-                        00150                                    HH--
-                        00151                                 ELSE
-                        00152                                    DATA "H-"
-                        00153                                 ENDIF
-                        00154                              ENDIF
-                        00155                           ENDIF
-                        00156                        ENDIF
-                        00157                     ENDIF
-                        00158                  ENDIF
-                        00159               ENDIF
-                        00160            ENDIF
-                        00113            IF AA > 0
-                        00114               DATA                      "A+"
-                        00115               AA--
-                        00116            ELSE
-0026     412D           00117               DATA                      "A-"
-                        00118               IF BB > 0
-                        00119                  DATA                   "B+"
-                        00120                  BB--
-                        00121               ELSE
-0027     422D           00122                  DATA                   "B-"
-                        00123                  IF CC > 0
-                        00124                     DATA                "C+"
-                        00125                     CC--
-                        00126                  ELSE
-0028     432D           00127                     DATA                "C-"
-                        00128                     IF DD > 0
-                        00129                        DATA             "D+"
-                        00130                        DD--
-                        00131                     ELSE
-0029     442D           00132                        DATA             "D-"
-                        00133                        IF EE > 0
-                        00134                           DATA          "E+"
-MPASM Version 3.00 Beta Release   IF1.ASM   01/31/2001  12:12:54	   PAGE 10
+  00000000            00145                                 GG--
+                      00146                              ELSE
+                      00147                                 DATA    "G-"
+                      00148                                 IF HH > 0
+                      00149                                    DATA "H+"
+                      00150                                    HH--
+                      00151                                 ELSE
+                      00152                                    DATA "H-"
+                      00153                                 ENDIF
+                      00154                              ENDIF
+                      00155                           ENDIF
+                      00156                        ENDIF
+                      00157                     ENDIF
+                      00158                  ENDIF
+                      00159               ENDIF
+                      00160            ENDIF
+                      00113            IF AA > 0
+                      00114               DATA                      "A+"
+                      00115               AA--
+                      00116            ELSE
+0026   412D           00117               DATA                      "A-"
+                      00118               IF BB > 0
+                      00119                  DATA                   "B+"
+                      00120                  BB--
+                      00121               ELSE
+0027   422D           00122                  DATA                   "B-"
+                      00123                  IF CC > 0
+                      00124                     DATA                "C+"
+                      00125                     CC--
+                      00126                  ELSE
+0028   432D           00127                     DATA                "C-"
+                      00128                     IF DD > 0
+                      00129                        DATA             "D+"
+                      00130                        DD--
+                      00131                     ELSE
+0029   442D           00132                        DATA             "D-"
+                      00133                        IF EE > 0
+                      00134                           DATA          "E+"
+MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE 10
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00135                           EE--
-                        00136                        ELSE
-002A     452D           00137                           DATA          "E-"
-                        00138                           IF FF > 0
-                        00139                              DATA       "F+"
-                        00140                              FF--
-                        00141                           ELSE
-002B     462D           00142                              DATA       "F-"
-                        00143                              IF GG > 0
-                        00144                                 DATA    "G+"
-                        00145                                 GG--
-                        00146                              ELSE
-002C     472D           00147                                 DATA    "G-"
-                        00148                                 IF HH > 0
-002D     482B           00149                                    DATA "H+"
+                      00135                           EE--
+                      00136                        ELSE
+002A   452D           00137                           DATA          "E-"
+                      00138                           IF FF > 0
+                      00139                              DATA       "F+"
+                      00140                              FF--
+                      00141                           ELSE
+002B   462D           00142                              DATA       "F-"
+                      00143                              IF GG > 0
+                      00144                                 DATA    "G+"
+                      00145                                 GG--
+                      00146                              ELSE
+002C   472D           00147                                 DATA    "G-"
+                      00148                                 IF HH > 0
+002D   482B           00149                                    DATA "H+"
 Warning[207]: Found label after column 1. (HH)
-  00000000              00150                                    HH--
-                        00151                                 ELSE
-                        00152                                    DATA "H-"
-                        00153                                 ENDIF
-                        00154                              ENDIF
-                        00155                           ENDIF
-                        00156                        ENDIF
-                        00157                     ENDIF
-                        00158                  ENDIF
-                        00159               ENDIF
-                        00160            ENDIF
-                        00161         ENDW
-                        00162 
-                        00163         END
-MPASM Version 3.00 Beta Release   IF1.ASM   01/31/2001  12:12:54	   PAGE 11
+  00000000            00150                                    HH--
+                      00151                                 ELSE
+                      00152                                    DATA "H-"
+                      00153                                 ENDIF
+                      00154                              ENDIF
+                      00155                           ENDIF
+                      00156                        ENDIF
+                      00157                     ENDIF
+                      00158                  ENDIF
+                      00159               ENDIF
+                      00160            ENDIF
+                      00161         ENDW
+                      00162 
+                      00163         END
+MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE 11
 
 
 SYMBOL TABLE

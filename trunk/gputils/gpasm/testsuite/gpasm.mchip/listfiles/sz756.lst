@@ -1,44 +1,44 @@
-MPASM Version 3.00 Beta Release   SZ756.ASM   01/31/2001  12:40:14	   PAGE 1
+MPASM 03.20.02 Released         SZ756.ASM   11-21-2002  20:21:50         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; SZ671.ASM
-                        00002 
-                        00003 ; This file tests for the processor-specific items for the selected
-                        00004 ; processor.
-                        00005 
-                        00006         LIST    P=17C756, R=HEX, F=INHX32    ; 16-Bit core
-                        00007 
-  0000FFFF              00008 ROMRANGE        EQU     0XFFFF
-  000000FF              00009 RAMRANGE        EQU     00FF
-  00000040              00010 EERANGE     EQU 0040
-                        00011 
-0000     B612           00012         RETLW   12      ; 0812 = 12-BIT
-                        00013                                 ; 3412 = 14-BIT
-                        00014                                 ; B612 = 16-BIT *
-                        00015 
-0001     01FF           00016         MOVWF   RAMRANGE        ; OK
+                      00001 ; SZ671.ASM
+                      00002 
+                      00003 ; This file tests for the processor-specific items for the selected
+                      00004 ; processor.
+                      00005 
+                      00006         LIST    P=17C756, R=HEX, F=INHX32    ; 16-Bit core
+                      00007 
+  0000FFFF            00008 ROMRANGE        EQU     0XFFFF
+  000000FF            00009 RAMRANGE        EQU     00FF
+  00000040            00010 EERANGE     EQU 0040
+                      00011 
+0000   B612           00012         RETLW   12      ; 0812 = 12-BIT
+                      00013                                 ; 3412 = 14-BIT
+                      00014                                 ; B612 = 16-BIT *
+                      00015 
+0001   01FF           00016         MOVWF   RAMRANGE        ; OK
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0002     0100           00017         MOVWF   RAMRANGE+1      ; MESSAGE
-                        00018 
-FFFF                    00019         ORG     ROMRANGE
-FFFF     0000           00020         NOP                     ; OK
+0002   0100           00017         MOVWF   RAMRANGE+1      ; MESSAGE
+                      00018 
+FFFF                  00019         ORG     ROMRANGE
+FFFF   0000           00020         NOP                     ; OK
 Warning[220]: Address exceeds maximum range for this processor.
 Error[117]  : Address wrapped around 0
 Error[118]  : Overwriting previous address contents (0000)
 Error[118]  : Overwriting previous address contents (0000)
-0000     0000           00021         NOP                     ; Warning
-                        00022 
-                        00023    IFDEF    __16C822    ; EE Processors
-                        00024         ORG         2100
-                        00025         FILL    33, EERANGE     ; OK
-                        00026         DE          44              ; ERROR
-                        00027    ENDIF
-                        00028 
-                        00029         END
-MPASM Version 3.00 Beta Release   SZ756.ASM   01/31/2001  12:40:14	   PAGE 2
+0000   0000           00021         NOP                     ; Warning
+                      00022 
+                      00023    IFDEF    __16C822    ; EE Processors
+                      00024         ORG         2100
+                      00025         FILL    33, EERANGE     ; OK
+                      00026         DE          44              ; ERROR
+                      00027    ENDIF
+                      00028 
+                      00029         END
+MPASM 03.20.02 Released         SZ756.ASM   11-21-2002  20:21:50         PAGE  2
 
 
 SYMBOL TABLE

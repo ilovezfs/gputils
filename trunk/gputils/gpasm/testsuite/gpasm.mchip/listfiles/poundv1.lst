@@ -1,201 +1,201 @@
-MPASM Version 3.00 Beta Release   POUNDV1.ASM   01/31/2001  12:13:20	   PAGE 1
+MPASM 03.20.02 Released       POUNDV1.ASM   11-21-2002  20:21:11         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; POUNDV1.ASM
-                        00002 
-                        00003 ; This file tests legal usage of #V substitution
-                        00004 
-                        00005         list    p=16c71,r=dec
-                        00006 
-                        00007 #define d1 5
+                      00001 ; POUNDV1.ASM
+                      00002 
+                      00003 ; This file tests legal usage of #V substitution
+                      00004 
+                      00005         list    p=16c71,r=dec
+                      00006 
+                      00007 #define d1 5
 Warning[207]: Found label after column 1. (v1)
-  00000001              00008         v1 = 1
-                        00009 
-0000                    00010 mult1and2          ; col 20
-                        00011 
-                        00012 padmac      macro  label, num, instruction, dat
-                        00013 label#v(num)       instruction dat
-                        00014 label#v(num)a      instruction dat
-                        00015             endm
-                        00016 
-                        00017             padmac AA, 123, ADDLW, 1
-0000     3E01               M AA123              ADDLW       1
-0001     3E01               M AA123a             ADDLW       1
-                        00018 
-                        00019             padmac AAAA, 234, ADDLW, v1
-0002     3E01               M AAAA234            ADDLW       v1
-0003     3E01               M AAAA234a           ADDLW       v1
-                        00020 
-                        00021             padmac AAAAAA, 345, ADDLW, d1
-0004     3E05               M AAAAAA345          ADDLW       5
-0005     3E05               M AAAAAA345a         ADDLW       5
-                        00022 
-                        00023 #define lab2  myfunnylabel1
-                        00024 #define lab2a myfunnylabel2
-                        00025 
-                        00026 funny   macro vv
-                        00027 lab#v(vv)     ; col 15
-                        00028         vv = vv + 1
-                        00029 lab#v(vv)     ; col 15 myfunnylabel1  may not be substituted correctly
-                        00030 lab#v(vv)a    ; col 15 myfunnylabel2  may not be substituted correctly
-                        00031         endm
-                        00032 
+  00000001            00008         v1 = 1
+                      00009 
+0000                  00010 mult1and2          ; col 20
+                      00011 
+                      00012 padmac      macro  label, num, instruction, dat
+                      00013 label#v(num)       instruction dat
+                      00014 label#v(num)a      instruction dat
+                      00015             endm
+                      00016 
+                      00017             padmac AA, 123, ADDLW, 1
+0000   3E01               M AA123              ADDLW       1
+0001   3E01               M AA123a             ADDLW       1
+                      00018 
+                      00019             padmac AAAA, 234, ADDLW, v1
+0002   3E01               M AAAA234            ADDLW       v1
+0003   3E01               M AAAA234a           ADDLW       v1
+                      00020 
+                      00021             padmac AAAAAA, 345, ADDLW, d1
+0004   3E05               M AAAAAA345          ADDLW       5
+0005   3E05               M AAAAAA345a         ADDLW       5
+                      00022 
+                      00023 #define lab2  myfunnylabel1
+                      00024 #define lab2a myfunnylabel2
+                      00025 
+                      00026 funny   macro vv
+                      00027 lab#v(vv)     ; col 15
+                      00028         vv = vv + 1
+                      00029 lab#v(vv)     ; col 15 myfunnylabel1  may not be substituted correctly
+                      00030 lab#v(vv)a    ; col 15 myfunnylabel2  may not be substituted correctly
+                      00031         endm
+                      00032 
 Warning[207]: Found label after column 1. (var)
-  00000001              00033         var = 1
-                        00034         funny var
-0006                        M lab1          ; col 15
+  00000001            00033         var = 1
+                      00034         funny var
+0006                      M lab1          ; col 15
 Warning[207]: Found label after column 1. (var)
-  00000002                  M         var = var + 1
-0006                        M lab2          ; col 15 myfunnylabel1  may not be substituted correctly
-0006                        M lab2a         ; col 15 myfunnylabel2  may not be substituted correctly
-                        00035 
-                        00036 
-                        00037 test    macro
-                        00038         local   i
-                        00039         i=0
-                        00040         while i < 3
-MPASM Version 3.00 Beta Release   POUNDV1.ASM   01/31/2001  12:13:20	   PAGE 2
+  00000002                M         var = var + 1
+0006                      M lab2          ; col 15 myfunnylabel1  may not be substituted correctly
+0006                      M lab2a         ; col 15 myfunnylabel2  may not be substituted correctly
+                      00035 
+                      00036 
+                      00037 test    macro
+                      00038         local   i
+                      00039         i=0
+                      00040         while i < 3
+MPASM 03.20.02 Released       POUNDV1.ASM   11-21-2002  20:21:11         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00041 addr#v(i)  goto addr#v(i)a   ; col 30
-                        00042 addr#v(i)a data addr#v(i)    ; col 30
-                        00043            i++
-                        00044         endw
-                        00045         endm
-                        00046 
-                        00047         test
-  0000                      M         local   i
+                      00041 addr#v(i)  goto addr#v(i)a   ; col 30
+                      00042 addr#v(i)a data addr#v(i)    ; col 30
+                      00043            i++
+                      00044         endw
+                      00045         endm
+                      00046 
+                      00047         test
+  0000                    M         local   i
 Warning[207]: Found label after column 1. (i)
-  00000000                  M         i=0
-                            M         while i < 3
-0006     2807               M addr0      goto addr0a       ; col 30
-0007     0006               M addr0a     data addr0        ; col 30
+  00000000                M         i=0
+                          M         while i < 3
+0006   2807               M addr0      goto addr0a       ; col 30
+0007   0006               M addr0a     data addr0        ; col 30
 Warning[207]: Found label after column 1. (i)
-  00000001                  M            i++
-0008     2809               M addr1      goto addr1a       ; col 30
-0009     0008               M addr1a     data addr1        ; col 30
+  00000001                M            i++
+0008   2809               M addr1      goto addr1a       ; col 30
+0009   0008               M addr1a     data addr1        ; col 30
 Warning[207]: Found label after column 1. (i)
-  00000002                  M            i++
-000A     280B               M addr2      goto addr2a       ; col 30
-000B     000A               M addr2a     data addr2        ; col 30
+  00000002                M            i++
+000A   280B               M addr2      goto addr2a       ; col 30
+000B   000A               M addr2a     data addr2        ; col 30
 Warning[207]: Found label after column 1. (i)
-  00000003                  M            i++
-                            M         endw
-                        00048 
+  00000003                M            i++
+                          M         endw
+                      00048 
 Warning[207]: Found label after column 1. (v2)
-  00000001              00049         v2 = 1
-                        00050 
-000C                    00051 label1             ; col 20
-  00000002              00052 v1++
-000C     000C           00053         data    label1
-                        00054 
-000D                    00055 label2             ; col 20
-  00000003              00056 v1++
-000D     000D           00057         data    label2
-                        00058 
-000E                    00059 label3             ; col 20
-  00000004              00060 v1++
-000E     000E           00061         data    label3
-                        00062 
-000F                    00063 label5             ; col 20
-  00000005              00064 v1++
-000F     000F           00065         data    label5
-                        00066 
-0010                    00067 label12            ; col 20
-  00000006              00068 v1++
-0010     0010           00069         data    label12
-                        00070 
-                        00071 #define d2 d1 + 1
-                        00072 
-0011                    00073 label11
-  00000007              00074 v1++
-0011     0011           00075         data    label11
-MPASM Version 3.00 Beta Release   POUNDV1.ASM   01/31/2001  12:13:20	   PAGE 3
+  00000001            00049         v2 = 1
+                      00050 
+000C                  00051 label1             ; col 20
+  00000002            00052 v1++
+000C   000C           00053         data    label1
+                      00054 
+000D                  00055 label2             ; col 20
+  00000003            00056 v1++
+000D   000D           00057         data    label2
+                      00058 
+000E                  00059 label3             ; col 20
+  00000004            00060 v1++
+000E   000E           00061         data    label3
+                      00062 
+000F                  00063 label5             ; col 20
+  00000005            00064 v1++
+000F   000F           00065         data    label5
+                      00066 
+0010                  00067 label12            ; col 20
+  00000006            00068 v1++
+0010   0010           00069         data    label12
+                      00070 
+                      00071 #define d2 d1 + 1
+                      00072 
+0011                  00073 label11
+  00000007            00074 v1++
+0011   0011           00075         data    label11
+MPASM 03.20.02 Released       POUNDV1.ASM   11-21-2002  20:21:11         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00076 
-0012                    00077 label13
-  00000008              00078 v1++
-0012     0012           00079         data    label13
-                        00080 
-0013                    00081 label8nopad
-  00000009              00082 v1++
-0013     0013           00083         data    label8nopad
-                        00084 
-0014                    00085 label9nopad        ; col 20 (may not be maintained)
-  0000000A              00086 v1++
-0014     0014           00087         data    label9nopad
-                        00088 
-0015                    00089 label10     ;pad to 13
-  0000000B              00090 v1++
-0015     0015           00091         data    label10
-                        00092 
-  00BC614E              00093 v=12345678
-0016                    00094 label12345678;col 11, sub longer that orig
-                        00095 
-  00BC614E              00096 v=12345678
-0016                    00097 label12345678 ;col 12, sub longer that orig
-                        00098 
-  00BC614E              00099 v=12345678
-0016                    00100 label12345678 ;col 13, sub longer that orig
-                        00101 
-  00BC614E              00102 v=12345678
-0016                    00103 label12345678 ;col 14, sub longer that orig
-                        00104 
-  00BC614E              00105 v=12345678
-0016                    00106 label12345678 ;col 15, sub longer that orig
-                        00107 
-  00BC614E              00108 v=12345678
-0016                    00109 label12345678  ;col 16, sub longer that orig
-                        00110 
-  00BC614E              00111 v=12345678
-0016                    00112 label12345678   ;col 17, sub longer that orig
-                        00113 
-  00BC614E              00114 v=12345678
-0016                    00115 label12345678    ;col 18, sub longer that orig
-                        00116 
-  00BC614E              00117 v=12345678
-0016                    00118 label12345678     ;col 19, sub longer that orig
-0016     0016           00119         data    label12345678
-                        00120 
-                        00121 
-                        00122 mymac       macro  label, num
-                        00123 label#v(num)       data   num
-                        00124             endm
-                        00125 
-                        00126             mymac  maclab, 1
-0017     0001               M maclab1            data   1
-0018     0017           00127         data    maclab1
-MPASM Version 3.00 Beta Release   POUNDV1.ASM   01/31/2001  12:13:20	   PAGE 4
+                      00076 
+0012                  00077 label13
+  00000008            00078 v1++
+0012   0012           00079         data    label13
+                      00080 
+0013                  00081 label8nopad
+  00000009            00082 v1++
+0013   0013           00083         data    label8nopad
+                      00084 
+0014                  00085 label9nopad        ; col 20 (may not be maintained)
+  0000000A            00086 v1++
+0014   0014           00087         data    label9nopad
+                      00088 
+0015                  00089 label10     ;pad to 13
+  0000000B            00090 v1++
+0015   0015           00091         data    label10
+                      00092 
+  00BC614E            00093 v=12345678
+0016                  00094 label12345678;col 11, sub longer that orig
+                      00095 
+  00BC614E            00096 v=12345678
+0016                  00097 label12345678 ;col 12, sub longer that orig
+                      00098 
+  00BC614E            00099 v=12345678
+0016                  00100 label12345678 ;col 13, sub longer that orig
+                      00101 
+  00BC614E            00102 v=12345678
+0016                  00103 label12345678 ;col 14, sub longer that orig
+                      00104 
+  00BC614E            00105 v=12345678
+0016                  00106 label12345678 ;col 15, sub longer that orig
+                      00107 
+  00BC614E            00108 v=12345678
+0016                  00109 label12345678  ;col 16, sub longer that orig
+                      00110 
+  00BC614E            00111 v=12345678
+0016                  00112 label12345678   ;col 17, sub longer that orig
+                      00113 
+  00BC614E            00114 v=12345678
+0016                  00115 label12345678    ;col 18, sub longer that orig
+                      00116 
+  00BC614E            00117 v=12345678
+0016                  00118 label12345678     ;col 19, sub longer that orig
+0016   0016           00119         data    label12345678
+                      00120 
+                      00121 
+                      00122 mymac       macro  label, num
+                      00123 label#v(num)       data   num
+                      00124             endm
+                      00125 
+                      00126             mymac  maclab, 1
+0017   0001               M maclab1            data   1
+0018   0017           00127         data    maclab1
+MPASM 03.20.02 Released       POUNDV1.ASM   11-21-2002  20:21:11         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00128             mymac  maclab, v1
-0019     000B               M maclab11           data   v1
-001A     0019           00129         data    maclab11
-                        00130             mymac  maclab, d1
-001B     0005               M maclab5            data   5
-001C     001B           00131         data    maclab5
-                        00132             mymac  maclab, d2
-001D     0006               M maclab6            data   5 + 1
-001E     001D           00133         data    maclab6
-                        00134             mymac  maclab, d1 + d2 + 1
-001F     000C               M maclab12           data   5 + 5 + 1 + 1
-0020     001F           00135         data    maclab12
-                        00136 
-                        00137     end
-MPASM Version 3.00 Beta Release   POUNDV1.ASM   01/31/2001  12:13:20	   PAGE 5
+                      00128             mymac  maclab, v1
+0019   000B               M maclab11           data   v1
+001A   0019           00129         data    maclab11
+                      00130             mymac  maclab, d1
+001B   0005               M maclab5            data   5
+001C   001B           00131         data    maclab5
+                      00132             mymac  maclab, d2
+001D   0006               M maclab6            data   5 + 1
+001E   001D           00133         data    maclab6
+                      00134             mymac  maclab, d1 + d2 + 1
+001F   000C               M maclab12           data   5 + 5 + 1 + 1
+0020   001F           00135         data    maclab12
+                      00136 
+                      00137     end
+MPASM 03.20.02 Released       POUNDV1.ASM   11-21-2002  20:21:11         PAGE  5
 
 
 SYMBOL TABLE
@@ -246,7 +246,7 @@ v                                 00BC614E
 v1                                0000000B
 v2                                00000001
 var                               00000002
-MPASM Version 3.00 Beta Release   POUNDV1.ASM   01/31/2001  12:13:20	   PAGE 6
+MPASM 03.20.02 Released       POUNDV1.ASM   11-21-2002  20:21:11         PAGE  6
 
 
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)

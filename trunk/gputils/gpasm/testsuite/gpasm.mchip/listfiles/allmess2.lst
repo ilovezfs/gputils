@@ -1,22 +1,21 @@
-MPASM Version 3.00 Beta Release   ALLMESS2.ASM   01/31/2001  12:39:30	   PAGE 1
+MPASM 03.20.02 Released      ALLMESS2.ASM   11-21-2002  20:20:11         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001         list    p=17c42
-                        00002 
+                      00001         list    p=17c42
+                      00002 
 Error[123]  : Illegal directive (Not valid for this processor)
-                        00003         __idlocs        1234    ; Error 123 Illegal directive
-                        00004 
-8000                    00005         org     0x8000
-Error[133]  : Hex file format INHX32 required
-8000     0000           00006         nop                     ; Error 133 Hex file format...
-                        00007 
-                        00008                                 ; Error 125 Illegal condition
-                        00009 
-Error[125]  : Illegal condition (EOF encountered before END or conditional end directive)
-MPASM Version 3.00 Beta Release   ALLMESS2.ASM   01/31/2001  12:39:30	   PAGE 2
+                      00003         __idlocs        1234    ; Error 123 Illegal directive
+                      00004 
+8000                  00005         org     0x8000
+8000   0000           00006         nop                     ; Error 133 Hex file format...
+                      00007 
+                      00008                                 ; Error 125 Illegal condition
+                      00009 
+Error[129]  : Expected (END)
+MPASM 03.20.02 Released      ALLMESS2.ASM   11-21-2002  20:20:11         PAGE  2
 
 
 SYMBOL TABLE
@@ -27,13 +26,14 @@ __17C42                           00000001
 
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 
+8000 : X--------------- ---------------- ---------------- ----------------
 
 All other memory blocks unused.
 
-Program Memory Words Used:     0
+Program Memory Words Used:     1
 
 
-Errors   :     3
+Errors   :     2
 Warnings :     0 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 

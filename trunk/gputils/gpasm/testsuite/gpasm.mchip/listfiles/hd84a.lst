@@ -1,93 +1,93 @@
-MPASM Version 3.00 Beta Release   HD84A.ASM   01/31/2001  12:12:21	   PAGE 1
+MPASM 03.20.02 Released         HD84A.ASM   11-21-2002  20:20:47         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; HD84A.ASM
-                        00002 
-                        00003 ; This file tests header file usage for the specified processor.
-                        00004 
-                        00005         LIST    P=16F84A
-                        00006         INCLUDE "P16F84A.INC"
-                        00001         LIST
-                        00002 ; P16F84A.INC  Standard Header File, Version 2.00    Microchip Technology, Inc.
-                        00134         LIST
-                        00007 
-                        00008 
-                        00009 
-0000     000F 000F      00010         DATA    _CP_ON,         000F
-0002     3FFF 3FFF      00011         DATA    _CP_OFF,        3FFF
-0004     3FF7 3FF7      00012         DATA    _PWRTE_ON,      3FF7
-0006     3FFF 3FF7      00013         DATA    _PWRTE_OFF,     3FF7
-0008     3FFF 3FFF      00014         DATA    _WDT_ON,        3FFF
-000A     3FFB 3FFB      00015         DATA    _WDT_OFF,       3FFB
-000C     3FFC 3FFC      00016         DATA    _LP_OSC,        3FFC
-000E     3FFD 3FFD      00017         DATA    _XT_OSC,        3FFD
-0010     3FFE 3FFE      00018         DATA    _HS_OSC,        3FFE
-0012     3FFF 3FFF      00019         DATA    _RC_OSC,        3FFF
-                        00020 
-                        00021 
-0014     0000 0000      00022         DATA    INDF, 0                 ;Register Files
-0016     0001 0001      00023         DATA    TMR0, 1
-0018     0002 0002      00024         DATA    PCL, 2
-001A     0003 0003      00025         DATA    STATUS, 3
-001C     0004 0004      00026         DATA    FSR, 4
-001E     0005 0005      00027         DATA    PORTA, 5
-0020     0006 0006      00028         DATA    PORTB, 6
-0022     000A 000A      00029         DATA    PCLATH, 0x0A
-0024     000B 000B      00030         DATA    INTCON, 0x0B
-0026     0081 0081      00031         DATA    OPTION_REG, 0x81
-0028     0085 0085      00032         DATA    TRISA, 0X85
-002A     0086 0086      00033         DATA    TRISB, 0X86
-                        00034 
-002C     0008 0008      00035         DATA    EEDATA, 8               ; Processor-specific
-002E     0009 0009      00036         DATA    EEADR, 9                ; Register Files
-0030     0088 0088      00037         DATA    EECON1, 0X88
-0032     0089 0089      00038         DATA    EECON2, 0X89
-                        00039 
-0034     0004 0004      00040         DATA    EEIF, 4                 ; EECON1
-0036     0003 0003      00041         DATA    WRERR, 3
-0038     0002 0002      00042         DATA    WREN, 2
-003A     0001 0001      00043         DATA    WR, 1
-003C     0000 0000      00044         DATA    RD, 0
-                        00045 
-003E     0007 0007      00046         DATA    GIE, 7                  ; INTCON
-0040     0006 0006      00047         DATA    EEIE, 6
-0042     0005 0005      00048         DATA    T0IE, 5
-0044     0004 0004      00049         DATA    INTE, 4
-0046     0003 0003      00050         DATA    RBIE, 3
-MPASM Version 3.00 Beta Release   HD84A.ASM   01/31/2001  12:12:21	   PAGE 2
+                      00001 ; HD84A.ASM
+                      00002 
+                      00003 ; This file tests header file usage for the specified processor.
+                      00004 
+                      00005         LIST    P=16F84A
+                      00006         INCLUDE "P16F84A.INC"
+                      00001         LIST
+                      00002 ; P16F84A.INC  Standard Header File, Version 2.00    Microchip Technology, Inc.
+                      00134         LIST
+                      00007 
+                      00008 
+                      00009 
+0000   000F 000F      00010         DATA    _CP_ON,         000F
+0002   3FFF 3FFF      00011         DATA    _CP_OFF,        3FFF
+0004   3FF7 3FF7      00012         DATA    _PWRTE_ON,      3FF7
+0006   3FFF 3FF7      00013         DATA    _PWRTE_OFF,     3FF7
+0008   3FFF 3FFF      00014         DATA    _WDT_ON,        3FFF
+000A   3FFB 3FFB      00015         DATA    _WDT_OFF,       3FFB
+000C   3FFC 3FFC      00016         DATA    _LP_OSC,        3FFC
+000E   3FFD 3FFD      00017         DATA    _XT_OSC,        3FFD
+0010   3FFE 3FFE      00018         DATA    _HS_OSC,        3FFE
+0012   3FFF 3FFF      00019         DATA    _RC_OSC,        3FFF
+                      00020 
+                      00021 
+0014   0000 0000      00022         DATA    INDF, 0                 ;Register Files
+0016   0001 0001      00023         DATA    TMR0, 1
+0018   0002 0002      00024         DATA    PCL, 2
+001A   0003 0003      00025         DATA    STATUS, 3
+001C   0004 0004      00026         DATA    FSR, 4
+001E   0005 0005      00027         DATA    PORTA, 5
+0020   0006 0006      00028         DATA    PORTB, 6
+0022   000A 000A      00029         DATA    PCLATH, 0x0A
+0024   000B 000B      00030         DATA    INTCON, 0x0B
+0026   0081 0081      00031         DATA    OPTION_REG, 0x81
+0028   0085 0085      00032         DATA    TRISA, 0X85
+002A   0086 0086      00033         DATA    TRISB, 0X86
+                      00034 
+002C   0008 0008      00035         DATA    EEDATA, 8               ; Processor-specific
+002E   0009 0009      00036         DATA    EEADR, 9                ; Register Files
+0030   0088 0088      00037         DATA    EECON1, 0X88
+0032   0089 0089      00038         DATA    EECON2, 0X89
+                      00039 
+0034   0004 0004      00040         DATA    EEIF, 4                 ; EECON1
+0036   0003 0003      00041         DATA    WRERR, 3
+0038   0002 0002      00042         DATA    WREN, 2
+003A   0001 0001      00043         DATA    WR, 1
+003C   0000 0000      00044         DATA    RD, 0
+                      00045 
+003E   0007 0007      00046         DATA    GIE, 7                  ; INTCON
+0040   0006 0006      00047         DATA    EEIE, 6
+0042   0005 0005      00048         DATA    T0IE, 5
+0044   0004 0004      00049         DATA    INTE, 4
+0046   0003 0003      00050         DATA    RBIE, 3
+MPASM 03.20.02 Released         HD84A.ASM   11-21-2002  20:20:47         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0048     0002 0002      00051         DATA    T0IF, 2
-004A     0001 0001      00052         DATA    INTF, 1
-004C     0000 0000      00053         DATA    RBIF, 0
-                        00054 
-004E     0007 0007      00055         DATA    NOT_RBPU, 7             ; OPTION
-0050     0006 0006      00056         DATA    INTEDG, 6
-0052     0005 0005      00057         DATA    T0CS, 5
-0054     0004 0004      00058         DATA    T0SE, 4
-0056     0003 0003      00059         DATA    PSA, 3
-0058     0002 0002      00060         DATA    PS2, 2
-005A     0001 0001      00061         DATA    PS1, 1
-005C     0000 0000      00062         DATA    PS0, 0
-                        00063 
-                        00064 
-005E     0007 0007      00065         DATA    IRP, 7                  ;STATUS
-0060     0006 0006      00066         DATA    RP1, 6
-0062     0005 0005      00067         DATA    RP0, 5
-0064     0004 0004      00068         DATA    NOT_TO, 4
-0066     0003 0003      00069         DATA    NOT_PD, 3
-0068     0002 0002      00070         DATA    Z, 2
-006A     0001 0001      00071         DATA    DC, 1
-006C     0000 0000      00072         DATA    C, 0
-                        00073 
-                        00074         END
-MPASM Version 3.00 Beta Release   HD84A.ASM   01/31/2001  12:12:21	   PAGE 3
+0048   0002 0002      00051         DATA    T0IF, 2
+004A   0001 0001      00052         DATA    INTF, 1
+004C   0000 0000      00053         DATA    RBIF, 0
+                      00054 
+004E   0007 0007      00055         DATA    NOT_RBPU, 7             ; OPTION
+0050   0006 0006      00056         DATA    INTEDG, 6
+0052   0005 0005      00057         DATA    T0CS, 5
+0054   0004 0004      00058         DATA    T0SE, 4
+0056   0003 0003      00059         DATA    PSA, 3
+0058   0002 0002      00060         DATA    PS2, 2
+005A   0001 0001      00061         DATA    PS1, 1
+005C   0000 0000      00062         DATA    PS0, 0
+                      00063 
+                      00064 
+005E   0007 0007      00065         DATA    IRP, 7                  ;STATUS
+0060   0006 0006      00066         DATA    RP1, 6
+0062   0005 0005      00067         DATA    RP0, 5
+0064   0004 0004      00068         DATA    NOT_TO, 4
+0066   0003 0003      00069         DATA    NOT_PD, 3
+0068   0002 0002      00070         DATA    Z, 2
+006A   0001 0001      00071         DATA    DC, 1
+006C   0000 0000      00072         DATA    C, 0
+                      00073 
+                      00074         END
+MPASM 03.20.02 Released         HD84A.ASM   11-21-2002  20:20:47         PAGE  3
 
 
 SYMBOL TABLE
@@ -146,7 +146,7 @@ _HS_OSC                           00003FFE
 _LP_OSC                           00003FFC
 _PWRTE_OFF                        00003FFF
 _PWRTE_ON                         00003FF7
-MPASM Version 3.00 Beta Release   HD84A.ASM   01/31/2001  12:12:21	   PAGE 4
+MPASM 03.20.02 Released         HD84A.ASM   11-21-2002  20:20:47         PAGE  4
 
 
 SYMBOL TABLE

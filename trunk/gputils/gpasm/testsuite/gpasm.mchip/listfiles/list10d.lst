@@ -1,31 +1,31 @@
-MPASM Version 3.00 Beta Release   LIST10D.ASM   01/31/2001  12:39:49	   PAGE 1
+MPASM 03.20.02 Released       LIST10D.ASM   11-21-2002  20:21:05         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ;LIST10D.ASM
-                        00002 ;       This series of files tests symbol table and memory map
-                        00003 ;       generation in the list file.
-                        00004 
-                        00005         list    p=16c54
-                        00006 
-                        00007         list    mm=off, st=off
-                        00008 
-                        00009         cblock  0
-  00000000              00010            aa, bb, cc, dd, ee
-                        00011         endc
-                        00012         
-0000     0000           00013         nop
-0001     0000           00014         nop
-0002     0000           00015         nop
-0003     0000           00016         nop
-0004     0000           00017         nop
-0005     0000           00018         nop
-0006     0000           00019         nop
-0007     0000           00020         nop
-                        00021 
-                        00022         end
+                      00001 ;LIST10D.ASM
+                      00002 ;       This series of files tests symbol table and memory map
+                      00003 ;       generation in the list file.
+                      00004 
+                      00005         list    p=16c54
+                      00006 
+                      00007         list    mm=off, st=off
+                      00008 
+                      00009         cblock  0
+  00000000            00010            aa, bb, cc, dd, ee
+                      00011         endc
+                      00012         
+0000   0000           00013         nop
+0001   0000           00014         nop
+0002   0000           00015         nop
+0003   0000           00016         nop
+0004   0000           00017         nop
+0005   0000           00018         nop
+0006   0000           00019         nop
+0007   0000           00020         nop
+                      00021 
+                      00022         end
 
 Errors   :     0
 Warnings :     0 reported,     0 suppressed

@@ -1,30 +1,30 @@
-MPASM Version 3.00 Beta Release   DEFINE2.ASM   01/31/2001  12:11:15	   PAGE 1
+MPASM 03.20.02 Released       DEFINE2.ASM   11-21-2002  20:20:16         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; DEFINE2.ASM
-                        00002 
-                        00003 ; This file tests to make sure one symbol has been defined on the
-                        00004 ; command line.  It should be called with the command line:
-                        00005 
-                        00006 ;       MPASM DEFINE2.ASM /dSYMBOL2=123
-                        00007 
-                        00008         LIST    P=17C42
-                        00009 
-                        00010         ifdef SYMBOL2
-                        00011            MESSG        "Symbol defined correctly"
-                        00012         else
+                      00001 ; DEFINE2.ASM
+                      00002 
+                      00003 ; This file tests to make sure one symbol has been defined on the
+                      00004 ; command line.  It should be called with the command line:
+                      00005 
+                      00006 ;       MPASM DEFINE2.ASM /dSYMBOL2=123
+                      00007 
+                      00008         LIST    P=17C42
+                      00009 
+                      00010         ifdef SYMBOL2
+                      00011            MESSG        "Symbol defined correctly"
+                      00012         else
 Error[101]  : ERROR: (Symbol not defined)
-                        00013            ERROR        "Symbol not defined"
-                        00014         endif
-                        00015 
+                      00013            ERROR        "Symbol not defined"
+                      00014         endif
+                      00015 
 Error[113]  : Symbol not previously defined (SYMBOL2)
-0000     0000           00016         DATA    SYMBOL2
-                        00017 
-                        00018         end
-MPASM Version 3.00 Beta Release   DEFINE2.ASM   01/31/2001  12:11:15	   PAGE 2
+0000   0000           00016         DATA    SYMBOL2
+                      00017 
+                      00018         end
+MPASM 03.20.02 Released       DEFINE2.ASM   11-21-2002  20:20:16         PAGE  2
 
 
 SYMBOL TABLE

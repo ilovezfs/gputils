@@ -1,21 +1,21 @@
-MPASM Version 3.00 Beta Release   PRF627.ASM   01/31/2001  12:14:02	   PAGE 1
+MPASM 03.20.02 Released        PRF627.ASM   11-21-2002  20:21:28         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; PRF627.ASM
-                        00002 
-                        00003 ; This file tests the processor directive.
-                        00004 
-                        00005         PROCESSOR       16F627  ; 14-bit core
-                        00006 
-0000     3412           00007         RETLW   12      ; 0812 = 12-BIT
-                        00008                                 ; 3412 = 14-BIT
-                        00009                                 ; B612 = 16-BIT
-                        00010 
-                        00011         END
-MPASM Version 3.00 Beta Release   PRF627.ASM   01/31/2001  12:14:02	   PAGE 2
+                      00001 ; PRF627.ASM
+                      00002 
+                      00003 ; This file tests the processor directive.
+                      00004 
+                      00005         PROCESSOR       16F627  ; 14-bit core
+                      00006 
+0000   3412           00007         RETLW   12      ; 0812 = 12-BIT
+                      00008                                 ; 3412 = 14-BIT
+                      00009                                 ; B612 = 16-BIT
+                      00010 
+                      00011         END
+MPASM 03.20.02 Released        PRF627.ASM   11-21-2002  20:21:28         PAGE  2
 
 
 SYMBOL TABLE

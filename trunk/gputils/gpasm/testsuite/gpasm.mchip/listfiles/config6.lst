@@ -1,20 +1,20 @@
-MPASM Version 3.00 Beta Release   CONFIG6.ASM   01/31/2001  12:39:39	   PAGE 1
+MPASM 03.20.02 Released       CONFIG6.ASM   11-21-2002  20:20:14         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; CONFIG6.ASM
-                        00002 
-                        00003 ; This file tests using the __CONFIG directive with too large a value.
-                        00004 
-                        00005         LIST    P=17C44, R=HEX, F=INHX32
-                        00006 
+                      00001 ; CONFIG6.ASM
+                      00002 
+                      00003 ; This file tests using the __CONFIG directive with too large a value.
+                      00004 
+                      00005         LIST    P=17C44, R=HEX, F=INHX32
+                      00006 
 Message[303]: Program word too large.  Truncated to core size. (00012345)
-FE00     2345           00007         __CONFIG        12345
-                        00008 
-                        00009         END
-MPASM Version 3.00 Beta Release   CONFIG6.ASM   01/31/2001  12:39:39	   PAGE 2
+FE00   2345           00007         __CONFIG        12345
+                      00008 
+                      00009         END
+MPASM 03.20.02 Released       CONFIG6.ASM   11-21-2002  20:20:14         PAGE  2
 
 
 SYMBOL TABLE

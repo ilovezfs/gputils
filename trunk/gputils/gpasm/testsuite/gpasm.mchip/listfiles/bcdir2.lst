@@ -1,0 +1,47 @@
+MPASM 03.20.02 Released        BCDIR2.ASM   11-21-2002  20:20:13         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; BCDIR2.ASM
+                      00002 
+                      00003 ; This file tests illegal usage of the BCDirect directive.
+                      00004 
+                      00005         LIST    P=16C54
+                      00006 
+Error[128]  : Missing argument(s)
+                      00007         BCDIRECT
+Error[129]  : Expected (string)
+                      00008         BCDIRECT        A
+Error[129]  : Expected (string)
+                      00009         BCDIRECT        A,
+Error[129]  : Expected (single character rather than "This is string.")
+                      00010         BCDIRECT        "This is string."
+Error[129]  : Expected (single character)
+                      00011         BCDIRECT        ,"This is string."
+                      00012         
+                      00013         END
+MPASM 03.20.02 Released        BCDIR2.ASM   11-21-2002  20:20:13         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+Program Memory Words Free:   512
+
+
+Errors   :     5
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

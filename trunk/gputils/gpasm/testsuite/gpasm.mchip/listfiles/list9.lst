@@ -1,99 +1,95 @@
-MPASM Version 3.00 Beta Release   LIST9.ASM   01/31/2001  12:39:51	   PAGE 1
+MPASM 03.20.02 Released         LIST9.ASM   11-21-2002  20:21:07         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; LIST9.ASM
-                        00002 ;     This file tests the fixed and free format parser selection.
-                        00003 
-                        00004         LIST    P=16C71
-                        00005         LIST    FIXED
-                        00006 
-                        00007         EXPAND                  ; directives
+                      00001 ; LIST9.ASM
+                      00002 ;     This file tests the fixed and free format parser selection.
+                      00003 
+                      00004         LIST    P=16C71
+                      00005         LIST    FIXED
+                      00006 
+                      00007         EXPAND                  ; directives
 Warning[205]: Found directive in column 1. (EXPAND)
-                        00008 EXPAND
-                        00009 
-0000     0000           00010 Label1  nop                     ; labels
+                      00008 EXPAND
+                      00009 
+0000   0000           00010 Label1  nop                     ; labels
 Warning[207]: Found label after column 1. (Label2)
-0001     0000           00011    Label2       nop
-                        00012 
-                        00013 Macro1  MACRO                   ; macro definitions
-                        00014         addlw   1
-                        00015         ENDM
-                        00016 
+0001   0000           00011    Label2       nop
+                      00012 
+                      00013 Macro1  MACRO                   ; macro definitions
+                      00014         addlw   1
+                      00015         ENDM
+                      00016 
 Warning[207]: Found label after column 1. (Macro2)
-                        00017    Macro2       MACRO
-                        00018         addlw   1
+                      00017    Macro2       MACRO
+                      00018         addlw   1
 Warning[205]: Found directive in column 1. (ENDM)
-                        00019 ENDM
-                        00020 
-                        00021         Macro1                  ; macro calls
-0002     3E01               M         addlw   1
+                      00019 ENDM
+                      00020 
+                      00021         Macro1                  ; macro calls
+0002   3E01               M         addlw   1
 Warning[206]: Found call to macro in column 1. (Macro1)
-                        00022 Macro1
-0003     3E01               M         addlw   1
-                        00023 
-                        00024         Macro2
-0004     3E01               M         addlw   1
+                      00022 Macro1
+0003   3E01               M         addlw   1
+                      00023 
+                      00024         Macro2
+0004   3E01               M         addlw   1
 Warning[206]: Found call to macro in column 1. (Macro2)
-                        00025 Macro2
-0005     3E01               M         addlw   1
-                        00026 
-0006     3E01           00027         addlw   1               ; opcodes
+                      00025 Macro2
+0005   3E01               M         addlw   1
+                      00026 
+0006   3E01           00027         addlw   1               ; opcodes
 Warning[203]: Found opcode in column 1. (addlw)
-0007     3E01           00028 addlw   1
-                        00029 
-Message[318]: Special Instruction Mnemonic used. (b)
-0008     2800           00030         b       0               ; pseudo-ops
-Message[318]: Special Instruction Mnemonic used. (b)
+0007   3E01           00028 addlw   1
+                      00029 
+0008   2800           00030         b       0               ; pseudo-ops
 Warning[204]: Found pseudo-op in column 1. (b)
-0009     2800           00031 b       0
-                        00032 
-                        00033 ;**************************************************************************
-                        00034 
-                        00035         LIST    FREE
-                        00036 
-                        00037         EXPAND                  ; directives
-                        00038 EXPAND
-                        00039 
-MPASM Version 3.00 Beta Release   LIST9.ASM   01/31/2001  12:39:51	   PAGE 2
+0009   2800           00031 b       0
+                      00032 
+                      00033 ;**************************************************************************
+                      00034 
+                      00035         LIST    FREE
+                      00036 
+                      00037         EXPAND                  ; directives
+                      00038 EXPAND
+                      00039 
+000A   0000           00040 Label1a nop                     ; labels
+000B   0000           00041    Label2a      nop
+MPASM 03.20.02 Released         LIST9.ASM   11-21-2002  20:21:07         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-000A     0000           00040 Label1a nop                     ; labels
-000B     0000           00041    Label2a      nop
-                        00042 
-                        00043 Macro1a MACRO                   ; macro definitions
-                        00044         addlw   1
-                        00045         ENDM
-                        00046 
-                        00047    Macro2a      MACRO
-                        00048         addlw   1
-                        00049 ENDM
-                        00050 
-                        00051         Macro1a                 ; macro calls
-000C     3E01               M         addlw   1
-                        00052 Macro1a
-000D     3E01               M         addlw   1
-                        00053 
-                        00054         Macro2a
-000E     3E01               M         addlw   1
-                        00055 Macro2a
-000F     3E01               M         addlw   1
-                        00056 
-0010     3E01           00057         addlw   1               ; opcodes
-0011     3E01           00058 addlw   1
-                        00059 
-Message[318]: Special Instruction Mnemonic used. (b)
-0012     2800           00060         b       0               ; pseudo-ops
-Message[318]: Special Instruction Mnemonic used. (b)
-0013     2800           00061 b       0
-                        00062 
-                        00063         end
-MPASM Version 3.00 Beta Release   LIST9.ASM   01/31/2001  12:39:51	   PAGE 3
+                      00042 
+                      00043 Macro1a MACRO                   ; macro definitions
+                      00044         addlw   1
+                      00045         ENDM
+                      00046 
+                      00047    Macro2a      MACRO
+                      00048         addlw   1
+                      00049 ENDM
+                      00050 
+                      00051         Macro1a                 ; macro calls
+000C   3E01               M         addlw   1
+                      00052 Macro1a
+000D   3E01               M         addlw   1
+                      00053 
+                      00054         Macro2a
+000E   3E01               M         addlw   1
+                      00055 Macro2a
+000F   3E01               M         addlw   1
+                      00056 
+0010   3E01           00057         addlw   1               ; opcodes
+0011   3E01           00058 addlw   1
+                      00059 
+0012   2800           00060         b       0               ; pseudo-ops
+0013   2800           00061 b       0
+                      00062 
+                      00063         end
+MPASM 03.20.02 Released         LIST9.ASM   11-21-2002  20:21:07         PAGE  3
 
 
 SYMBOL TABLE
@@ -122,6 +118,6 @@ Program Memory Words Free:  1004
 
 Errors   :     0
 Warnings :     8 reported,     0 suppressed
-Messages :     4 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
 
 

@@ -1,55 +1,55 @@
-MPASM Version 3.00 Beta Release   PAGMSG1.ASM   01/31/2001  12:39:54	   PAGE 1
+MPASM 03.20.02 Released       PAGMSG1.ASM   11-21-2002  20:21:11         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; PAGWRN1.ASM
-                        00002 
-                        00003         LIST    P=16C77
-                        00004 
-0000                    00005         ORG     0
-0000                    00006 PAGE0_SUBROUTINE
-0000     2000           00007         CALL    PAGE0_SUBROUTINE
+                      00001 ; PAGWRN1.ASM
+                      00002 
+                      00003         LIST    P=16C77
+                      00004 
+0000                  00005         ORG     0
+0000                  00006 PAGE0_SUBROUTINE
+0000   2000           00007         CALL    PAGE0_SUBROUTINE
 Message[306]: Crossing page boundary -- ensure page bits are set.
-0001     2000           00008         CALL    PAGE1_SUBROUTINE
+0001   2000           00008         CALL    PAGE1_SUBROUTINE
 Message[306]: Crossing page boundary -- ensure page bits are set.
-0002     2000           00009         CALL    PAGE2_SUBROUTINE
+0002   2000           00009         CALL    PAGE2_SUBROUTINE
 Message[306]: Crossing page boundary -- ensure page bits are set.
-0003     2000           00010         CALL    PAGE3_SUBROUTINE
-                        00011 
-0800                    00012         ORG     0X800
-0800                    00013 PAGE1_SUBROUTINE
+0003   2000           00010         CALL    PAGE3_SUBROUTINE
+                      00011 
+0800                  00012         ORG     0X800
+0800                  00013 PAGE1_SUBROUTINE
 Message[306]: Crossing page boundary -- ensure page bits are set.
-0800     2000           00014         CALL    PAGE0_SUBROUTINE
-0801     2000           00015         CALL    PAGE1_SUBROUTINE
+0800   2000           00014         CALL    PAGE0_SUBROUTINE
+0801   2000           00015         CALL    PAGE1_SUBROUTINE
 Message[306]: Crossing page boundary -- ensure page bits are set.
-0802     2000           00016         CALL    PAGE2_SUBROUTINE
+0802   2000           00016         CALL    PAGE2_SUBROUTINE
 Message[306]: Crossing page boundary -- ensure page bits are set.
-0803     2000           00017         CALL    PAGE3_SUBROUTINE
-                        00018 
-1000                    00019         ORG     0X1000
-1000                    00020 PAGE2_SUBROUTINE
+0803   2000           00017         CALL    PAGE3_SUBROUTINE
+                      00018 
+1000                  00019         ORG     0X1000
+1000                  00020 PAGE2_SUBROUTINE
 Message[306]: Crossing page boundary -- ensure page bits are set.
-1000     2000           00021         CALL    PAGE0_SUBROUTINE
+1000   2000           00021         CALL    PAGE0_SUBROUTINE
 Message[306]: Crossing page boundary -- ensure page bits are set.
-1001     2000           00022         CALL    PAGE1_SUBROUTINE
-1002     2000           00023         CALL    PAGE2_SUBROUTINE
+1001   2000           00022         CALL    PAGE1_SUBROUTINE
+1002   2000           00023         CALL    PAGE2_SUBROUTINE
 Message[306]: Crossing page boundary -- ensure page bits are set.
-1003     2000           00024         CALL    PAGE3_SUBROUTINE
-                        00025 
-1800                    00026         ORG     0X1800
-1800                    00027 PAGE3_SUBROUTINE
+1003   2000           00024         CALL    PAGE3_SUBROUTINE
+                      00025 
+1800                  00026         ORG     0X1800
+1800                  00027 PAGE3_SUBROUTINE
 Message[306]: Crossing page boundary -- ensure page bits are set.
-1800     2000           00028         CALL    PAGE0_SUBROUTINE
+1800   2000           00028         CALL    PAGE0_SUBROUTINE
 Message[306]: Crossing page boundary -- ensure page bits are set.
-1801     2000           00029         CALL    PAGE1_SUBROUTINE
+1801   2000           00029         CALL    PAGE1_SUBROUTINE
 Message[306]: Crossing page boundary -- ensure page bits are set.
-1802     2000           00030         CALL    PAGE2_SUBROUTINE
-1803     2000           00031         CALL    PAGE3_SUBROUTINE
-                        00032 
-                        00033         END
-MPASM Version 3.00 Beta Release   PAGMSG1.ASM   01/31/2001  12:39:54	   PAGE 2
+1802   2000           00030         CALL    PAGE2_SUBROUTINE
+1803   2000           00031         CALL    PAGE3_SUBROUTINE
+                      00032 
+                      00033         END
+MPASM 03.20.02 Released       PAGMSG1.ASM   11-21-2002  20:21:11         PAGE  2
 
 
 SYMBOL TABLE

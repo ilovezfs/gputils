@@ -1,21 +1,21 @@
-MPASM Version 3.00 Beta Release   IDLOCS5.ASM   01/31/2001  12:39:44	   PAGE 1
+MPASM 03.20.02 Released       IDLOCS5.ASM   11-21-2002  20:21:02         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; IDLOCS5.ASM
-                        00002 
-                        00003 ; This file tests using the __IDLOCS directive with too large a value.
-                        00004 
-                        00005         LIST    P=16C54, R=HEX
-                        00006 
+                      00001 ; IDLOCS5.ASM
+                      00002 
+                      00003 ; This file tests using the __IDLOCS directive with too large a value.
+                      00004 
+                      00005         LIST    P=16C54, R=HEX
+                      00006 
 Message[304]: ID Locations value too large.  Last four hex digits used. (2345)
-0200     0002 0003 0004 00007         __IDLOCS        12345
-         0005 
-                        00008 
-                        00009         END
-MPASM Version 3.00 Beta Release   IDLOCS5.ASM   01/31/2001  12:39:44	   PAGE 2
+0200   0002 0003 0004 00007         __IDLOCS        12345
+       0005 
+                      00008 
+                      00009         END
+MPASM 03.20.02 Released       IDLOCS5.ASM   11-21-2002  20:21:02         PAGE  2
 
 
 SYMBOL TABLE

@@ -1,59 +1,59 @@
-MPASM Version 3.00 Beta Release   MACRO2.ASM   01/31/2001  12:39:52	   PAGE 1
+MPASM 03.20.02 Released        MACRO2.ASM   11-21-2002  20:21:07         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; MACRO2.ASM
-                        00002 
-                        00003 ; This file tests list file represention of expanded macros.
-                        00004 
-                        00005         LIST    P=16C54
-                        00006 
-                        00007 #define Def1    1
-  00000002              00008 Value1  EQU     2
-                        00009 
-                        00010 Comm    MACRO
-                        00011         NOP                     ; This macro has a comment.
-                        00012         ENDM
-                        00013 
-                        00014 Spa     MACRO
-                        00015         NOP                     ; This macro has a blank line next.
-                        00016         
-                        00017         NOP
-                        00018         ENDM
-                        00019 
-                        00020 Indent  MACRO
-                        00021         NOP                     ; No extra indent
-                        00022          NOP                    ; One extra indent
-                        00023           NOP                   ; Two extra indents
-                        00024            NOP                  ; Three extra indents
-                        00025         ENDM
-                        00026 
-                        00027 Subs    MACRO   Arg1, Arg2, Arg3
-                        00028         DATA    Arg1
-                        00029         DATA    Arg2
-                        00030         DATA    Arg3
-                        00031         ENDM
-                        00032 
-                        00033         Comm
-0000     0000               M         NOP                     ; This macro has a comment.
-                        00034         Spa
-0001     0000               M         NOP                     ; This macro has a blank line next.
-                            M         
-0002     0000               M         NOP
-                        00035         Indent
-0003     0000               M         NOP                     ; No extra indent
-0004     0000               M          NOP                    ; One extra indent
-0005     0000               M           NOP                   ; Two extra indents
-0006     0000               M            NOP                  ; Three extra indents
-                        00036         Subs    Def1, Value1, 3
-0007     0001               M         DATA    1
-0008     0002               M         DATA    Value1
-0009     0003               M         DATA    3
-                        00037 
-                        00038         END
-MPASM Version 3.00 Beta Release   MACRO2.ASM   01/31/2001  12:39:52	   PAGE 2
+                      00001 ; MACRO2.ASM
+                      00002 
+                      00003 ; This file tests list file represention of expanded macros.
+                      00004 
+                      00005         LIST    P=16C54
+                      00006 
+                      00007 #define Def1    1
+  00000002            00008 Value1  EQU     2
+                      00009 
+                      00010 Comm    MACRO
+                      00011         NOP                     ; This macro has a comment.
+                      00012         ENDM
+                      00013 
+                      00014 Spa     MACRO
+                      00015         NOP                     ; This macro has a blank line next.
+                      00016         
+                      00017         NOP
+                      00018         ENDM
+                      00019 
+                      00020 Indent  MACRO
+                      00021         NOP                     ; No extra indent
+                      00022          NOP                    ; One extra indent
+                      00023           NOP                   ; Two extra indents
+                      00024            NOP                  ; Three extra indents
+                      00025         ENDM
+                      00026 
+                      00027 Subs    MACRO   Arg1, Arg2, Arg3
+                      00028         DATA    Arg1
+                      00029         DATA    Arg2
+                      00030         DATA    Arg3
+                      00031         ENDM
+                      00032 
+                      00033         Comm
+0000   0000               M         NOP                     ; This macro has a comment.
+                      00034         Spa
+0001   0000               M         NOP                     ; This macro has a blank line next.
+                          M         
+0002   0000               M         NOP
+                      00035         Indent
+0003   0000               M         NOP                     ; No extra indent
+0004   0000               M          NOP                    ; One extra indent
+0005   0000               M           NOP                   ; Two extra indents
+0006   0000               M            NOP                  ; Three extra indents
+                      00036         Subs    Def1, Value1, 3
+0007   0001               M         DATA    1
+0008   0002               M         DATA    Value1
+0009   0003               M         DATA    3
+                      00037 
+                      00038         END
+MPASM 03.20.02 Released        MACRO2.ASM   11-21-2002  20:21:07         PAGE  2
 
 
 SYMBOL TABLE

@@ -1,20 +1,20 @@
-MPASM Version 3.00 Beta Release   IDLOCS3.ASM   01/31/2001  12:39:43	   PAGE 1
+MPASM 03.20.02 Released       IDLOCS3.ASM   11-21-2002  20:21:01         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; IDLOCS3.ASM
-                        00002 
-                        00003 ; This file tests the __IDLOCS directive for 16-bit core - illegal.
-                        00004 
-                        00005         LIST    P=17C44, R=HEX, F=INHX32
-                        00006 
+                      00001 ; IDLOCS3.ASM
+                      00002 
+                      00003 ; This file tests the __IDLOCS directive for 16-bit core - illegal.
+                      00004 
+                      00005         LIST    P=17C44, R=HEX, F=INHX32
+                      00006 
 Error[123]  : Illegal directive (Not valid for this processor)
-                        00007         __IDLOCS        1234
-                        00008 
-                        00009         END
-MPASM Version 3.00 Beta Release   IDLOCS3.ASM   01/31/2001  12:39:43	   PAGE 2
+                      00007         __IDLOCS        1234
+                      00008 
+                      00009         END
+MPASM 03.20.02 Released       IDLOCS3.ASM   11-21-2002  20:21:01         PAGE  2
 
 
 SYMBOL TABLE

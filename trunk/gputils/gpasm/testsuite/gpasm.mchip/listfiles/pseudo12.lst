@@ -1,4 +1,4 @@
-MPASM 02.70 Released         PSEUDO12.ASM   5-7-2001  22:14:37         PAGE  1
+MPASM 03.20.02 Released      PSEUDO12.ASM   11-22-2002  16:58:11         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -57,7 +57,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 001F   02A7           00051         INCF     7,1
                       00052 
 0020   0603 0288      00053         ADDCF 8,0
-MPASM 02.70 Released         PSEUDO12.ASM   5-7-2001  22:14:37         PAGE  2
+MPASM 03.20.02 Released      PSEUDO12.ASM   11-22-2002  16:58:11         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -116,7 +116,7 @@ Message[307]: Setting page bits.
 0053   05A3           00102         BSF 3,5
 0054   04C3           00103         BCF 3,6
 Message[306]: Crossing page boundary -- ensure page bits are set.
-MPASM 02.70 Released         PSEUDO12.ASM   5-7-2001  22:14:37         PAGE  3
+MPASM 03.20.02 Released      PSEUDO12.ASM   11-22-2002  16:58:11         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -175,7 +175,7 @@ Message[306]: Crossing page boundary -- ensure page bits are set.
                       00142 
 Message[307]: Setting page bits.
 0080   04A3 05C3 0B67 00143         LGOTO   567
-MPASM 02.70 Released         PSEUDO12.ASM   5-7-2001  22:14:37         PAGE  4
+MPASM 03.20.02 Released      PSEUDO12.ASM   11-22-2002  16:58:11         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -202,7 +202,7 @@ Warning[227]: Substituting RETLW 0 for RETURN pseudo-op
 008C   0800           00158         RETURN
                       00159 
                       00160         END
-MPASM 02.70 Released         PSEUDO12.ASM   5-7-2001  22:14:37         PAGE  5
+MPASM 03.20.02 Released      PSEUDO12.ASM   11-22-2002  16:58:11         PAGE  5
 
 
 SYMBOL TABLE

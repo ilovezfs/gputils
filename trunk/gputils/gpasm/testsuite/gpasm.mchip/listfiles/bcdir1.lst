@@ -1,0 +1,40 @@
+MPASM 03.20.02 Released        BCDIR1.ASM   11-21-2002  20:20:13         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; BCDIR1.ASM
+                      00002 
+                      00003 ; This file tests legal usage of the BCDirect directive.
+                      00004 
+                      00005         LIST    P=16C54
+                      00006 
+                      00007         BCDIRECT        A, "This is my first string."
+                      00008         BCDIRECT        1, This is my second string.
+                      00009         BCDIRECT        b, ""
+                      00010 
+                      00011         END
+MPASM 03.20.02 Released        BCDIR1.ASM   11-21-2002  20:20:13         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+Program Memory Words Free:   512
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

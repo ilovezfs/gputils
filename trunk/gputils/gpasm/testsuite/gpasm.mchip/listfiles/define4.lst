@@ -1,46 +1,46 @@
-MPASM Version 3.00 Beta Release   DEFINE4.ASM   01/31/2001  12:11:16	   PAGE 1
+MPASM 03.20.02 Released       DEFINE4.ASM   11-21-2002  20:20:16         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; DEFINE4.ASM
-                        00002 
-                        00003 ; This file tests to make sure one symbol has been defined on the
-                        00004 ; command line.  It should be called with the command line:
-                        00005 
-                        00006 ;       MPASM DEFINE4.ASM /dSYMBOL1 /dSYMBOL2=123 /dSYMBOL3="abc"
-                        00007 
-                        00008         LIST    P=17C42
-                        00009 
-                        00010         ifdef SYMBOL1
-                        00011            MESSG        "SYMBOL1 defined correctly"
-                        00012         else
+                      00001 ; DEFINE4.ASM
+                      00002 
+                      00003 ; This file tests to make sure one symbol has been defined on the
+                      00004 ; command line.  It should be called with the command line:
+                      00005 
+                      00006 ;       MPASM DEFINE4.ASM /dSYMBOL1 /dSYMBOL2=123 /dSYMBOL3="abc"
+                      00007 
+                      00008         LIST    P=17C42
+                      00009 
+                      00010         ifdef SYMBOL1
+                      00011            MESSG        "SYMBOL1 defined correctly"
+                      00012         else
 Error[101]  : ERROR: (SYMBOL1 not defined)
-                        00013            ERROR        "SYMBOL1 not defined"
-                        00014         endif
-                        00015 
-                        00016         ifdef SYMBOL2
-                        00017            MESSG        "SYMBOL2 defined correctly"
-                        00018         else
+                      00013            ERROR        "SYMBOL1 not defined"
+                      00014         endif
+                      00015 
+                      00016         ifdef SYMBOL2
+                      00017            MESSG        "SYMBOL2 defined correctly"
+                      00018         else
 Error[101]  : ERROR: (SYMBOL2 not defined)
-                        00019            ERROR        "SYMBOL2 not defined"
-                        00020         endif
-                        00021 
-                        00022         ifdef SYMBOL3
-                        00023            MESSG        "SYMBOL3 defined correctly"
-                        00024         else
+                      00019            ERROR        "SYMBOL2 not defined"
+                      00020         endif
+                      00021 
+                      00022         ifdef SYMBOL3
+                      00023            MESSG        "SYMBOL3 defined correctly"
+                      00024         else
 Error[101]  : ERROR: (SYMBOL3 not defined)
-                        00025            ERROR        "SYMBOL3 not defined"
-                        00026         endif
-                        00027 
+                      00025            ERROR        "SYMBOL3 not defined"
+                      00026         endif
+                      00027 
 Error[113]  : Symbol not previously defined (SYMBOL2)
-0000     0000           00028         DATA    SYMBOL2
+0000   0000           00028         DATA    SYMBOL2
 Error[113]  : Symbol not previously defined (SYMBOL3)
-0001     0000           00029         DATA    SYMBOL3
-                        00030         
-                        00031         end
-MPASM Version 3.00 Beta Release   DEFINE4.ASM   01/31/2001  12:11:16	   PAGE 2
+0001   0000           00029         DATA    SYMBOL3
+                      00030         
+                      00031         end
+MPASM 03.20.02 Released       DEFINE4.ASM   11-21-2002  20:20:16         PAGE  2
 
 
 SYMBOL TABLE

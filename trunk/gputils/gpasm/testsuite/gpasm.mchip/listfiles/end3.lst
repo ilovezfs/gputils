@@ -1,18 +1,18 @@
-MPASM Version 3.00 Beta Release   END3.ASM   01/31/2001  12:39:40	   PAGE 1
+MPASM 03.20.02 Released          END3.ASM   11-21-2002  20:20:16         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; END3.ASM
-                        00002 
-                        00003 ; This file tests illegal usage of the END directive.
-                        00004 
-                        00005         LIST    P=16C54, R=HEX
-                        00006 
+                      00001 ; END3.ASM
+                      00002 
+                      00003 ; This file tests illegal usage of the END directive.
+                      00004 
+                      00005         LIST    P=16C54, R=HEX
+                      00006 
 Error[121]  : Illegal label (MyLabel)
-                        00007 MyLabel END
-MPASM Version 3.00 Beta Release   END3.ASM   01/31/2001  12:39:40	   PAGE 2
+                      00007 MyLabel END
+MPASM 03.20.02 Released          END3.ASM   11-21-2002  20:20:16         PAGE  2
 
 
 SYMBOL TABLE

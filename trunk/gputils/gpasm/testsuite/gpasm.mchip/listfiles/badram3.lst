@@ -1,48 +1,48 @@
-MPASM Version 3.00 Beta Release   BADRAM3.ASM   01/31/2001  12:39:37	   PAGE 1
+MPASM 03.20.02 Released       BADRAM3.ASM   11-21-2002  20:20:13         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; BADRAM3.ASM
-                        00002 
-                        00003 ; This file tests illegal usage of the __MAXRAM and __BADRAM directives.
-                        00004 
-                        00005         LIST    P=16C622
-                        00006 
+                      00001 ; BADRAM3.ASM
+                      00002 
+                      00003 ; This file tests illegal usage of the __MAXRAM and __BADRAM directives.
+                      00004 
+                      00005         LIST    P=16C622
+                      00006 
 Error[126]  : Argument out of range (__MAXRAM must be used first)
-                        00007         __BADRAM        0       ; __MAXRAM needed first
-0000     0080           00008         MOVWF           0       ; Should be OK
-                        00009 
+                      00007         __BADRAM        0       ; __MAXRAM needed first
+0000   0080           00008         MOVWF           0       ; Should be OK
+                      00009 
 Error[128]  : Missing argument(s)
-                        00010         __MAXRAM                ; Need parameter
+                      00010         __MAXRAM                ; Need parameter
 Error[126]  : Argument out of range (must be greater than or equal to 127)
-                        00011         __MAXRAM        7E      ; Too small
+                      00011         __MAXRAM        7E      ; Too small
 Error[126]  : Argument out of range (must be less than 4096)
-                        00012         __MAXRAM        1000    ; Too large
-  0000007F              00013         __MAXRAM        7F      ; OK, set for below
-                        00014 
+                      00012         __MAXRAM        1000    ; Too large
+  0000007F            00013         __MAXRAM        7F      ; OK, set for below
+                      00014 
 Error[128]  : Missing argument(s)
-                        00015         __BADRAM                ; Need parameter
+                      00015         __BADRAM                ; Need parameter
 Error[126]  : Argument out of range (greater than maximum RAM)
-                        00016         __BADRAM        080     ; Too large
+                      00016         __BADRAM        080     ; Too large
 Error[128]  : Missing argument(s)
 Error[128]  : Missing argument(s)
-                        00017         __BADRAM        ,       ; Missing argument
+                      00017         __BADRAM        ,       ; Missing argument
 Error[128]  : Missing argument(s)
-                        00018         __BADRAM        -       ; Missing argument
+                      00018         __BADRAM        -       ; Missing argument
 Error[128]  : Missing argument(s)
-                        00019         __BADRAM        1,      ; Missing argument
+                      00019         __BADRAM        1,      ; Missing argument
 Error[128]  : Missing argument(s)
-                        00020         __BADRAM        -2      ; Missing argument
+                      00020         __BADRAM        -2      ; Missing argument
 Error[128]  : Missing argument(s)
-                        00021         __BADRAM        3-      ; Missing argument
+                      00021         __BADRAM        3-      ; Missing argument
 Error[126]  : Argument out of range (first address greater than last)
-                        00022         __BADRAM        5-4     ; First less than last
-                        00023 
-                        00024 
-                        00025         END
-MPASM Version 3.00 Beta Release   BADRAM3.ASM   01/31/2001  12:39:37	   PAGE 2
+                      00022         __BADRAM        5-4     ; First less than last
+                      00023 
+                      00024 
+                      00025         END
+MPASM 03.20.02 Released       BADRAM3.ASM   11-21-2002  20:20:13         PAGE  2
 
 
 SYMBOL TABLE

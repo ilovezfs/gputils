@@ -1,82 +1,82 @@
-MPASM Version 3.00 Beta Release   HD554.ASM   01/31/2001  12:11:39	   PAGE 1
+MPASM 03.20.02 Released         HD554.ASM   11-21-2002  20:20:26         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; HD554.ASM
-                        00002 
-                        00003 ; This file tests header file usage for the specified processor.
-                        00004 
-                        00005         LIST    P=16C554
-                        00006         INCLUDE "P16C554.INC"
-                        00001         LIST
-                        00002 ; P16C554.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
-                        00127         LIST
-                        00007 
-0000     00CF 00CF      00008         DATA    _CP_ON, 0x00CF          ; This changes per device
-0002     3FFF 3FFF      00009         DATA    _CP_OFF, 0X3FFF
-0004     3FFF 3FFF      00010         DATA    _PWRTE_OFF, 0X3FFF
-0006     3FF7 3FF7      00011         DATA    _PWRTE_ON, 0x3FF7       ; This changes per device
-0008     3FFF 3FFF      00012         DATA    _WDT_ON, 0X3FFF
-000A     3FFB 3FFB      00013         DATA    _WDT_OFF, 0X3FFB
-000C     3FFC 3FFC      00014         DATA    _LP_OSC, 0X3FFC
-000E     3FFD 3FFD      00015         DATA    _XT_OSC, 0X3FFD
-0010     3FFE 3FFE      00016         DATA    _HS_OSC, 0X3FFE
-0012     3FFF 3FFF      00017         DATA    _RC_OSC, 0X3FFF 
-                        00018 
-0014     0000 0000      00019         DATA    INDF, 0                 ;Register Files
-0016     0001 0001      00020         DATA    TMR0, 1
-0018     0002 0002      00021         DATA    PCL, 2
-001A     0003 0003      00022         DATA    STATUS, 3
-001C     0004 0004      00023         DATA    FSR, 4
-001E     0005 0005      00024         DATA    PORTA, 5
-0020     0006 0006      00025         DATA    PORTB, 6
-0022     000A 000A      00026         DATA    PCLATH, 0x0A
-0024     000B 000B      00027         DATA    INTCON, 0x0B
-0026     0081 0081      00028         DATA    OPTION_REG, 0x81
-0028     0085 0085      00029         DATA    TRISA, 0X85
-002A     0086 0086      00030         DATA    TRISB, 0X86
-002C     008E 008E      00031         DATA    PCON, 0X8E
-                        00032         
-002E     0001 0001      00033         DATA    NOT_POR, 1              ; PCON
-                        00034 
-                        00035 
-0030     0007 0007      00036         DATA    GIE, 7                  ; INTCON
-0032     0005 0005      00037         DATA    T0IE, 5
-0034     0004 0004      00038         DATA    INTE, 4
-0036     0003 0003      00039         DATA    RBIE, 3
-0038     0002 0002      00040         DATA    T0IF, 2
-003A     0001 0001      00041         DATA    INTF, 1
-003C     0000 0000      00042         DATA    RBIF, 0 
-                        00043 
-003E     0007 0007      00044         DATA    NOT_RBPU, 7             ; OPTION
-0040     0006 0006      00045         DATA    INTEDG, 6
-0042     0005 0005      00046         DATA    T0CS, 5
-0044     0004 0004      00047         DATA    T0SE, 4
-0046     0003 0003      00048         DATA    PSA, 3
-0048     0002 0002      00049         DATA    PS2, 2
-004A     0001 0001      00050         DATA    PS1, 1
-MPASM Version 3.00 Beta Release   HD554.ASM   01/31/2001  12:11:39	   PAGE 2
+                      00001 ; HD554.ASM
+                      00002 
+                      00003 ; This file tests header file usage for the specified processor.
+                      00004 
+                      00005         LIST    P=16C554
+                      00006         INCLUDE "P16C554.INC"
+                      00001         LIST
+                      00002 ; P16C554.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+                      00127         LIST
+                      00007 
+0000   00CF 00CF      00008         DATA    _CP_ON, 0x00CF          ; This changes per device
+0002   3FFF 3FFF      00009         DATA    _CP_OFF, 0X3FFF
+0004   3FFF 3FFF      00010         DATA    _PWRTE_OFF, 0X3FFF
+0006   3FF7 3FF7      00011         DATA    _PWRTE_ON, 0x3FF7       ; This changes per device
+0008   3FFF 3FFF      00012         DATA    _WDT_ON, 0X3FFF
+000A   3FFB 3FFB      00013         DATA    _WDT_OFF, 0X3FFB
+000C   3FFC 3FFC      00014         DATA    _LP_OSC, 0X3FFC
+000E   3FFD 3FFD      00015         DATA    _XT_OSC, 0X3FFD
+0010   3FFE 3FFE      00016         DATA    _HS_OSC, 0X3FFE
+0012   3FFF 3FFF      00017         DATA    _RC_OSC, 0X3FFF 
+                      00018 
+0014   0000 0000      00019         DATA    INDF, 0                 ;Register Files
+0016   0001 0001      00020         DATA    TMR0, 1
+0018   0002 0002      00021         DATA    PCL, 2
+001A   0003 0003      00022         DATA    STATUS, 3
+001C   0004 0004      00023         DATA    FSR, 4
+001E   0005 0005      00024         DATA    PORTA, 5
+0020   0006 0006      00025         DATA    PORTB, 6
+0022   000A 000A      00026         DATA    PCLATH, 0x0A
+0024   000B 000B      00027         DATA    INTCON, 0x0B
+0026   0081 0081      00028         DATA    OPTION_REG, 0x81
+0028   0085 0085      00029         DATA    TRISA, 0X85
+002A   0086 0086      00030         DATA    TRISB, 0X86
+002C   008E 008E      00031         DATA    PCON, 0X8E
+                      00032         
+002E   0001 0001      00033         DATA    NOT_POR, 1              ; PCON
+                      00034 
+                      00035 
+0030   0007 0007      00036         DATA    GIE, 7                  ; INTCON
+0032   0005 0005      00037         DATA    T0IE, 5
+0034   0004 0004      00038         DATA    INTE, 4
+0036   0003 0003      00039         DATA    RBIE, 3
+0038   0002 0002      00040         DATA    T0IF, 2
+003A   0001 0001      00041         DATA    INTF, 1
+003C   0000 0000      00042         DATA    RBIF, 0 
+                      00043 
+003E   0007 0007      00044         DATA    NOT_RBPU, 7             ; OPTION
+0040   0006 0006      00045         DATA    INTEDG, 6
+0042   0005 0005      00046         DATA    T0CS, 5
+0044   0004 0004      00047         DATA    T0SE, 4
+0046   0003 0003      00048         DATA    PSA, 3
+0048   0002 0002      00049         DATA    PS2, 2
+004A   0001 0001      00050         DATA    PS1, 1
+MPASM 03.20.02 Released         HD554.ASM   11-21-2002  20:20:26         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-004C     0000 0000      00051         DATA    PS0, 0
-                        00052 
-                        00053 
-004E     0007 0007      00054         DATA    IRP, 7                  ;STATUS
-0050     0006 0006      00055         DATA    RP1, 6
-0052     0005 0005      00056         DATA    RP0, 5
-0054     0004 0004      00057         DATA    NOT_TO, 4
-0056     0003 0003      00058         DATA    NOT_PD, 3
-0058     0002 0002      00059         DATA    Z, 2
-005A     0001 0001      00060         DATA    DC, 1
-005C     0000 0000      00061         DATA    C, 0
-                        00062 
-                        00063         END
-MPASM Version 3.00 Beta Release   HD554.ASM   01/31/2001  12:11:39	   PAGE 3
+004C   0000 0000      00051         DATA    PS0, 0
+                      00052 
+                      00053 
+004E   0007 0007      00054         DATA    IRP, 7                  ;STATUS
+0050   0006 0006      00055         DATA    RP1, 6
+0052   0005 0005      00056         DATA    RP0, 5
+0054   0004 0004      00057         DATA    NOT_TO, 4
+0056   0003 0003      00058         DATA    NOT_PD, 3
+0058   0002 0002      00059         DATA    Z, 2
+005A   0001 0001      00060         DATA    DC, 1
+005C   0000 0000      00061         DATA    C, 0
+                      00062 
+                      00063         END
+MPASM 03.20.02 Released         HD554.ASM   11-21-2002  20:20:26         PAGE  3
 
 
 SYMBOL TABLE
@@ -132,7 +132,7 @@ _WDT_OFF                          00003FFB
 _WDT_ON                           00003FFF
 _XT_OSC                           00003FFD
 __16C554                          00000001
-MPASM Version 3.00 Beta Release   HD554.ASM   01/31/2001  12:11:39	   PAGE 4
+MPASM 03.20.02 Released         HD554.ASM   11-21-2002  20:20:26         PAGE  4
 
 
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)

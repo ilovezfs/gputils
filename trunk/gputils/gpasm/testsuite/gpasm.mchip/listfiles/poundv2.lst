@@ -1,30 +1,30 @@
-MPASM Version 3.00 Beta Release   POUNDV2.ASM   01/31/2001  12:39:54	   PAGE 1
+MPASM 03.20.02 Released       POUNDV2.ASM   11-21-2002  20:21:11         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; POUNDV2.ASM
-                        00002 
-                        00003 ; This file tests illegal usage of #V substitution
-                        00004 
-                        00005         list    p=16c71,r=dec
-                        00006 
-  00000001              00007 I = 1
-                        00008 ;Label#v                        ; actually, this is a legal label
+                      00001 ; POUNDV2.ASM
+                      00002 
+                      00003 ; This file tests illegal usage of #V substitution
+                      00004 
+                      00005         list    p=16c71,r=dec
+                      00006 
+  00000001            00007 I = 1
+                      00008 ;Label#v                        ; actually, this is a legal label
 Error[109]  : Unmatched (
 Error[109]  : Unmatched (
-0000                    00009 Label0                          ; no expression
+0000                  00009 Label0                          ; no expression
 Error[109]  : Unmatched (
 Error[109]  : Unmatched (
-0000                    00010 Label0I                         ; non-terminated expression
+0000                  00010 Label0I                         ; non-terminated expression
 Error[108]  : Illegal character (1)
-0000                    00011 1                               ; illegal label
+0000                  00011 1                               ; illegal label
 Error[108]  : Illegal character (1)
-0000                    00012 1Label                          ; illegal label
-                        00013 
-                        00014         end
-MPASM Version 3.00 Beta Release   POUNDV2.ASM   01/31/2001  12:39:54	   PAGE 2
+0000                  00012 1Label                          ; illegal label
+                      00013 
+                      00014         end
+MPASM 03.20.02 Released       POUNDV2.ASM   11-21-2002  20:21:11         PAGE  2
 
 
 SYMBOL TABLE

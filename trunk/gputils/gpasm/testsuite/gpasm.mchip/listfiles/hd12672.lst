@@ -1,116 +1,116 @@
-MPASM Version 3.00 Beta Release   HD12672.ASM   01/31/2001  12:11:25	   PAGE 1
+MPASM 03.20.02 Released       HD12672.ASM   11-21-2002  20:20:19         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; HD672.ASM
-                        00002 
-                        00003 ; This file tests header file usage for the specified processor.
-                        00004 
-                        00005         LIST    P=12C672
-                        00006         INCLUDE "P12C672.INC"
-                        00001         LIST
-                        00002 ; P12C672.INC  Standard Header File, Version 1.03    Microchip Technology, Inc.
-                        00178         LIST
-                        00007         
-0000     3FFF 3FFF      00008         DATA    _MCLRE_ON                    , H'3FFF'
-0002     3F7F 3F7F      00009         DATA    _MCLRE_OFF                   , H'3F7F'
-0004     009F 009F      00010         DATA    _CP_ALL                      , H'009F'
-0006     15BF 15BF      00011         DATA    _CP_75                       , H'15BF'
-0008     2ADF 2ADF      00012         DATA    _CP_50                       , H'2ADF'
-000A     3FFF 3FFF      00013         DATA    _CP_OFF                      , H'3FFF'
-000C     3FFF 3FFF      00014         DATA    _PWRTE_OFF                   , H'3FFF'
-000E     3FEF 3FEF      00015         DATA    _PWRTE_ON                    , H'3FEF'
-0010     3FFF 3FFF      00016         DATA    _WDT_ON                      , H'3FFF'
-0012     3FF7 3FF7      00017         DATA    _WDT_OFF                     , H'3FF7'
-0014     3FF8 3FF8      00018         DATA    _LP_OSC                      , H'3FF8'
-0016     3FF9 3FF9      00019         DATA    _XT_OSC                      , H'3FF9'
-0018     3FFA 3FFA      00020         DATA    _HS_OSC                      , H'3FFA'
-001A     3FFC 3FFC      00021         DATA    _INTRC_OSC                   , H'3FFC'
-001C     3FFC 3FFC      00022         DATA    _INTRC_OSC_NOCLKOUT          , H'3FFC'
-001E     3FFD 3FFD      00023         DATA    _INTRC_OSC_CLKOUT            , H'3FFD'
-0020     3FFE 3FFE      00024         DATA    _EXTRC_OSC                   , H'3FFE'
-0022     3FFE 3FFE      00025         DATA    _EXTRC_OSC_NOCLKOUT          , H'3FFE'
-0024     3FFF 3FFF      00026         DATA    _EXTRC_OSC_CLKOUT            , H'3FFF'
-                        00027 
-                        00028 
-0026     0000 0000      00029         DATA    INDF,           0                       ;Register Files
-0028     0001 0001      00030         DATA    TMR0,           1
-002A     0002 0002      00031         DATA    PCL,            2
-002C     0003 0003      00032         DATA    STATUS,         3
-002E     0004 0004      00033         DATA    FSR,            4
-0030     0005 0005      00034         DATA    GPIO,           5
-                        00035 
-0032     000A 000A      00036         DATA    PCLATH,         0x0A
-0034     000B 000B      00037         DATA    INTCON,         0x0B
-0036     000C 000C      00038         DATA    PIR1,           0x0C
-                        00039 
-0038     001E 001E      00040         DATA    ADRES,          0x1E
-003A     001F 001F      00041         DATA    ADCON0,         0x1F
-                        00042 
-003C     0081 0081      00043         DATA    OPTION_REG,     0x81
-003E     0085 0085      00044         DATA    TRISIO,         0X85
-0040     008C 008C      00045         DATA    PIE1,           0x8C
-0042     008E 008E      00046         DATA    PCON,           0x8E
-0044     008F 008F      00047         DATA    OSCCAL,         0x8F
-0046     009F 009F      00048         DATA    ADCON1,         0x9F
-                        00049 
-0048     0007 0007      00050         DATA    IRP,            7       ; STATUS
-MPASM Version 3.00 Beta Release   HD12672.ASM   01/31/2001  12:11:25	   PAGE 2
+                      00001 ; HD672.ASM
+                      00002 
+                      00003 ; This file tests header file usage for the specified processor.
+                      00004 
+                      00005         LIST    P=12C672
+                      00006         INCLUDE "P12C672.INC"
+                      00001         LIST
+                      00002 ; P12C672.INC  Standard Header File, Version 1.03    Microchip Technology, Inc.
+                      00178         LIST
+                      00007         
+0000   3FFF 3FFF      00008         DATA    _MCLRE_ON                    , H'3FFF'
+0002   3F7F 3F7F      00009         DATA    _MCLRE_OFF                   , H'3F7F'
+0004   009F 009F      00010         DATA    _CP_ALL                      , H'009F'
+0006   15BF 15BF      00011         DATA    _CP_75                       , H'15BF'
+0008   2ADF 2ADF      00012         DATA    _CP_50                       , H'2ADF'
+000A   3FFF 3FFF      00013         DATA    _CP_OFF                      , H'3FFF'
+000C   3FFF 3FFF      00014         DATA    _PWRTE_OFF                   , H'3FFF'
+000E   3FEF 3FEF      00015         DATA    _PWRTE_ON                    , H'3FEF'
+0010   3FFF 3FFF      00016         DATA    _WDT_ON                      , H'3FFF'
+0012   3FF7 3FF7      00017         DATA    _WDT_OFF                     , H'3FF7'
+0014   3FF8 3FF8      00018         DATA    _LP_OSC                      , H'3FF8'
+0016   3FF9 3FF9      00019         DATA    _XT_OSC                      , H'3FF9'
+0018   3FFA 3FFA      00020         DATA    _HS_OSC                      , H'3FFA'
+001A   3FFC 3FFC      00021         DATA    _INTRC_OSC                   , H'3FFC'
+001C   3FFC 3FFC      00022         DATA    _INTRC_OSC_NOCLKOUT          , H'3FFC'
+001E   3FFD 3FFD      00023         DATA    _INTRC_OSC_CLKOUT            , H'3FFD'
+0020   3FFE 3FFE      00024         DATA    _EXTRC_OSC                   , H'3FFE'
+0022   3FFE 3FFE      00025         DATA    _EXTRC_OSC_NOCLKOUT          , H'3FFE'
+0024   3FFF 3FFF      00026         DATA    _EXTRC_OSC_CLKOUT            , H'3FFF'
+                      00027 
+                      00028 
+0026   0000 0000      00029         DATA    INDF,           0                       ;Register Files
+0028   0001 0001      00030         DATA    TMR0,           1
+002A   0002 0002      00031         DATA    PCL,            2
+002C   0003 0003      00032         DATA    STATUS,         3
+002E   0004 0004      00033         DATA    FSR,            4
+0030   0005 0005      00034         DATA    GPIO,           5
+                      00035 
+0032   000A 000A      00036         DATA    PCLATH,         0x0A
+0034   000B 000B      00037         DATA    INTCON,         0x0B
+0036   000C 000C      00038         DATA    PIR1,           0x0C
+                      00039 
+0038   001E 001E      00040         DATA    ADRES,          0x1E
+003A   001F 001F      00041         DATA    ADCON0,         0x1F
+                      00042 
+003C   0081 0081      00043         DATA    OPTION_REG,     0x81
+003E   0085 0085      00044         DATA    TRISIO,         0X85
+0040   008C 008C      00045         DATA    PIE1,           0x8C
+0042   008E 008E      00046         DATA    PCON,           0x8E
+0044   008F 008F      00047         DATA    OSCCAL,         0x8F
+0046   009F 009F      00048         DATA    ADCON1,         0x9F
+                      00049 
+0048   0007 0007      00050         DATA    IRP,            7       ; STATUS
+MPASM 03.20.02 Released       HD12672.ASM   11-21-2002  20:20:19         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-004A     0006 0006      00051         DATA    RP1,            6
-004C     0005 0005      00052         DATA    RP0,            5
-004E     0004 0004      00053         DATA    NOT_TO,         4
-0050     0003 0003      00054         DATA    NOT_PD,         3
-0052     0002 0002      00055         DATA    Z,              2
-0054     0001 0001      00056         DATA    DC,             1
-0056     0000 0000      00057         DATA    C,              0
-                        00058 
-0058     0007 0007      00059         DATA    ADCS1,          7       ; ADCON0
-005A     0006 0006      00060         DATA    ADCS0,          6
-                        00061 
-005C     0004 0004      00062         DATA    CHS1,           4
-005E     0003 0003      00063         DATA    CHS0,           3
-0060     0002 0002      00064         DATA    GO,             2
-0062     0002 0002      00065         DATA    NOT_DONE,       2
-0064     0002 0002      00066         DATA    GO_DONE,        2
-0066     0000 0000      00067         DATA    ADON,           0
-                        00068 
-0068     0007 0007      00069         DATA    GIE,            7       ; INTCON
-006A     0006 0006      00070         DATA    PEIE,           6
-006C     0005 0005      00071         DATA    T0IE,           5
-                        00072 
-006E     0003 0003      00073         DATA    GPIE,           3
-0070     0002 0002      00074         DATA    T0IF,           2
-                        00075 
-0072     0000 0000      00076         DATA    GPIF,           0       
-                        00077 
-0074     0006 0006      00078         DATA    ADIF,           6       ; PIR1
-                        00079 
-0076     0007 0007      00080         DATA    NOT_GPPU,       7       ; OPTION
-0078     0006 0006      00081         DATA    INTEDG,         6
-007A     0005 0005      00082         DATA    T0CS,           5
-007C     0004 0004      00083         DATA    T0SE,           4
-007E     0003 0003      00084         DATA    PSA,            3
-0080     0002 0002      00085         DATA    PS2,            2
-0082     0001 0001      00086         DATA    PS1,            1
-0084     0000 0000      00087         DATA    PS0,            0
-                        00088 
-0086     0006 0006      00089         DATA    ADIE,           6       ; PIE1
-                        00090 
-0088     0001 0001      00091         DATA    NOT_POR,        1       ; PCON
-                        00092 
-008A     0002 0002      00093         DATA    PCFG2,          2       ; ADCON1
-008C     0001 0001      00094         DATA    PCFG1,          1
-008E     0000 0000      00095         DATA    PCFG0,          0
-                        00096 
-                        00097         END
-MPASM Version 3.00 Beta Release   HD12672.ASM   01/31/2001  12:11:25	   PAGE 3
+004A   0006 0006      00051         DATA    RP1,            6
+004C   0005 0005      00052         DATA    RP0,            5
+004E   0004 0004      00053         DATA    NOT_TO,         4
+0050   0003 0003      00054         DATA    NOT_PD,         3
+0052   0002 0002      00055         DATA    Z,              2
+0054   0001 0001      00056         DATA    DC,             1
+0056   0000 0000      00057         DATA    C,              0
+                      00058 
+0058   0007 0007      00059         DATA    ADCS1,          7       ; ADCON0
+005A   0006 0006      00060         DATA    ADCS0,          6
+                      00061 
+005C   0004 0004      00062         DATA    CHS1,           4
+005E   0003 0003      00063         DATA    CHS0,           3
+0060   0002 0002      00064         DATA    GO,             2
+0062   0002 0002      00065         DATA    NOT_DONE,       2
+0064   0002 0002      00066         DATA    GO_DONE,        2
+0066   0000 0000      00067         DATA    ADON,           0
+                      00068 
+0068   0007 0007      00069         DATA    GIE,            7       ; INTCON
+006A   0006 0006      00070         DATA    PEIE,           6
+006C   0005 0005      00071         DATA    T0IE,           5
+                      00072 
+006E   0003 0003      00073         DATA    GPIE,           3
+0070   0002 0002      00074         DATA    T0IF,           2
+                      00075 
+0072   0000 0000      00076         DATA    GPIF,           0       
+                      00077 
+0074   0006 0006      00078         DATA    ADIF,           6       ; PIR1
+                      00079 
+0076   0007 0007      00080         DATA    NOT_GPPU,       7       ; OPTION
+0078   0006 0006      00081         DATA    INTEDG,         6
+007A   0005 0005      00082         DATA    T0CS,           5
+007C   0004 0004      00083         DATA    T0SE,           4
+007E   0003 0003      00084         DATA    PSA,            3
+0080   0002 0002      00085         DATA    PS2,            2
+0082   0001 0001      00086         DATA    PS1,            1
+0084   0000 0000      00087         DATA    PS0,            0
+                      00088 
+0086   0006 0006      00089         DATA    ADIE,           6       ; PIE1
+                      00090 
+0088   0001 0001      00091         DATA    NOT_POR,        1       ; PCON
+                      00092 
+008A   0002 0002      00093         DATA    PCFG2,          2       ; ADCON1
+008C   0001 0001      00094         DATA    PCFG1,          1
+008E   0000 0000      00095         DATA    PCFG0,          0
+                      00096 
+                      00097         END
+MPASM 03.20.02 Released       HD12672.ASM   11-21-2002  20:20:19         PAGE  3
 
 
 SYMBOL TABLE
@@ -169,7 +169,7 @@ PS1                               00000001
 PS2                               00000002
 PSA                               00000003
 RP0                               00000005
-MPASM Version 3.00 Beta Release   HD12672.ASM   01/31/2001  12:11:25	   PAGE 4
+MPASM 03.20.02 Released       HD12672.ASM   11-21-2002  20:20:19         PAGE  4
 
 
 SYMBOL TABLE

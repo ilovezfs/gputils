@@ -1,89 +1,89 @@
-MPASM Version 3.00 Beta Release   MACRO6.ASM   01/31/2001  12:13:13	   PAGE 1
+MPASM 03.20.02 Released        MACRO6.ASM   11-21-2002  20:21:08         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ;MACRO6.ASM
-                        00002 
-                        00003 ; This file tests legal macro usage.
-                        00004 
-                        00005         LIST    P=17C42
-                        00006 
-                        00007 
-                        00008 MAC1    MACRO
-                        00009         DATA    "Macro 1"
-                        00010         ENDM
-                        00011 
-                        00012 MAC2    MACRO
-                        00013         DATA    "Macro 2"
-                        00014         MAC1
-                        00015         ENDM
-                        00016 
-                        00017 MAC3    MACRO
-                        00018         DATA    "Macro 3"
-                        00019         MAC2
-                        00020         ENDM
-                        00021 
-                        00022 MAC4    MACRO
-                        00023         DATA    "Macro 4"
-                        00024         MAC3
-                        00025         ENDM
-                        00026 
-                        00027 MAC5    MACRO
-                        00028         DATA    "Macro 5"
-                        00029         MAC4
-                        00030         ENDM
-                        00031 
-                        00032 MAC6    MACRO
-                        00033         DATA    "Macro 6"
-                        00034         MAC5
-                        00035         ENDM
-                        00036 
-                        00037 MAC7    MACRO
-                        00038         DATA    "Macro 7"
-                        00039         MAC6
-                        00040         ENDM
-                        00041 
-                        00042 MAC8    MACRO
-                        00043         DATA    "Macro 8"
-                        00044         MAC7
-                        00045         ENDM
-                        00046 
-                        00047 
-                        00048         MAC8    ;Maximum nesting
-0000     4D61 6372 6F20     M         DATA    "Macro 8"
-         3800 
-                            M         MAC7
-0004     4D61 6372 6F20     M         DATA    "Macro 7"
-         3700 
-MPASM Version 3.00 Beta Release   MACRO6.ASM   01/31/2001  12:13:13	   PAGE 2
+                      00001 ;MACRO6.ASM
+                      00002 
+                      00003 ; This file tests legal macro usage.
+                      00004 
+                      00005         LIST    P=17C42
+                      00006 
+                      00007 
+                      00008 MAC1    MACRO
+                      00009         DATA    "Macro 1"
+                      00010         ENDM
+                      00011 
+                      00012 MAC2    MACRO
+                      00013         DATA    "Macro 2"
+                      00014         MAC1
+                      00015         ENDM
+                      00016 
+                      00017 MAC3    MACRO
+                      00018         DATA    "Macro 3"
+                      00019         MAC2
+                      00020         ENDM
+                      00021 
+                      00022 MAC4    MACRO
+                      00023         DATA    "Macro 4"
+                      00024         MAC3
+                      00025         ENDM
+                      00026 
+                      00027 MAC5    MACRO
+                      00028         DATA    "Macro 5"
+                      00029         MAC4
+                      00030         ENDM
+                      00031 
+                      00032 MAC6    MACRO
+                      00033         DATA    "Macro 6"
+                      00034         MAC5
+                      00035         ENDM
+                      00036 
+                      00037 MAC7    MACRO
+                      00038         DATA    "Macro 7"
+                      00039         MAC6
+                      00040         ENDM
+                      00041 
+                      00042 MAC8    MACRO
+                      00043         DATA    "Macro 8"
+                      00044         MAC7
+                      00045         ENDM
+                      00046 
+                      00047 
+                      00048         MAC8    ;Maximum nesting
+0000   4D61 6372 6F20     M         DATA    "Macro 8"
+       3800 
+                          M         MAC7
+0004   4D61 6372 6F20     M         DATA    "Macro 7"
+       3700 
+MPASM 03.20.02 Released        MACRO6.ASM   11-21-2002  20:21:08         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                            M         MAC6
-0008     4D61 6372 6F20     M         DATA    "Macro 6"
-         3600 
-                            M         MAC5
-000C     4D61 6372 6F20     M         DATA    "Macro 5"
-         3500 
-                            M         MAC4
-0010     4D61 6372 6F20     M         DATA    "Macro 4"
-         3400 
-                            M         MAC3
-0014     4D61 6372 6F20     M         DATA    "Macro 3"
-         3300 
-                            M         MAC2
-0018     4D61 6372 6F20     M         DATA    "Macro 2"
-         3200 
-                            M         MAC1
-001C     4D61 6372 6F20     M         DATA    "Macro 1"
-         3100 
-                        00049 
-                        00050         END
-MPASM Version 3.00 Beta Release   MACRO6.ASM   01/31/2001  12:13:13	   PAGE 3
+                          M         MAC6
+0008   4D61 6372 6F20     M         DATA    "Macro 6"
+       3600 
+                          M         MAC5
+000C   4D61 6372 6F20     M         DATA    "Macro 5"
+       3500 
+                          M         MAC4
+0010   4D61 6372 6F20     M         DATA    "Macro 4"
+       3400 
+                          M         MAC3
+0014   4D61 6372 6F20     M         DATA    "Macro 3"
+       3300 
+                          M         MAC2
+0018   4D61 6372 6F20     M         DATA    "Macro 2"
+       3200 
+                          M         MAC1
+001C   4D61 6372 6F20     M         DATA    "Macro 1"
+       3100 
+                      00049 
+                      00050         END
+MPASM 03.20.02 Released        MACRO6.ASM   11-21-2002  20:21:08         PAGE  3
 
 
 SYMBOL TABLE

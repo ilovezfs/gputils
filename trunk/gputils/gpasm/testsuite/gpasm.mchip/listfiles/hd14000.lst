@@ -1,40 +1,40 @@
-MPASM Version 3.00 Beta Release   HD14000.ASM   01/31/2001  12:11:25	   PAGE 1
+MPASM 03.20.02 Released       HD14000.ASM   11-21-2002  20:20:19         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; HD14000.ASM
-                        00002 
-                        00003 ; This file tests header file usage for the specified processor.
-                        00004 
-                        00005         LIST    P=14000
-                        00006         INCLUDE "P14000.INC"
-                        00001         LIST
-                        00002 ; P14000.INC  Standard Header File, Version 1.01    Microchip Technology, Inc.
-                        00262         LIST
-                        00007 
-0000     1E7F 1E7F      00008         DATA    _CPC_ON, 0x1E7F         ; This changes per device
-0002     2DDF 2DDF      00009         DATA    _CPU_ON, 0x2DDF
-0004     33EF 33EF      00010         DATA    _CPP_ON, 0x33EF
-0006     3FF7 3FF7      00011         DATA    _PWRTE_ON, 0x3FF7       ; This changes per device
-                        00012 
-0008     0001 0001      00013         DATA    TMR0, 1
-000A     0003 0003      00014         DATA    STATUS, 3
-000C     000A 000A      00015         DATA    PCLATH, 0x0A
-000E     000B 000B      00016         DATA    INTCON, 0x0B
-0010     0015 0015      00017         DATA    ADCAPL, 0x15
-0012     0081 0081      00018         DATA    OPTION_REG, 0x81
-                        00019 
-0014     0007 0007      00020         DATA    GIE, 7
-0016     0005 0005      00021         DATA    T0IE, 5
-                        00022 
-0018     0002 0002      00023         DATA    Z, 2
-001A     0001 0001      00024         DATA    DC, 1
-001C     0000 0000      00025         DATA    C, 0
-                        00026 
-                        00027         END
-MPASM Version 3.00 Beta Release   HD14000.ASM   01/31/2001  12:11:25	   PAGE 2
+                      00001 ; HD14000.ASM
+                      00002 
+                      00003 ; This file tests header file usage for the specified processor.
+                      00004 
+                      00005         LIST    P=14000
+                      00006         INCLUDE "P14000.INC"
+                      00001         LIST
+                      00002 ; P14000.INC  Standard Header File, Version 1.01    Microchip Technology, Inc.
+                      00262         LIST
+                      00007 
+0000   1E7F 1E7F      00008         DATA    _CPC_ON, 0x1E7F         ; This changes per device
+0002   2DDF 2DDF      00009         DATA    _CPU_ON, 0x2DDF
+0004   33EF 33EF      00010         DATA    _CPP_ON, 0x33EF
+0006   3FF7 3FF7      00011         DATA    _PWRTE_ON, 0x3FF7       ; This changes per device
+                      00012 
+0008   0001 0001      00013         DATA    TMR0, 1
+000A   0003 0003      00014         DATA    STATUS, 3
+000C   000A 000A      00015         DATA    PCLATH, 0x0A
+000E   000B 000B      00016         DATA    INTCON, 0x0B
+0010   0015 0015      00017         DATA    ADCAPL, 0x15
+0012   0081 0081      00018         DATA    OPTION_REG, 0x81
+                      00019 
+0014   0007 0007      00020         DATA    GIE, 7
+0016   0005 0005      00021         DATA    T0IE, 5
+                      00022 
+0018   0002 0002      00023         DATA    Z, 2
+001A   0001 0001      00024         DATA    DC, 1
+001C   0000 0000      00025         DATA    C, 0
+                      00026 
+                      00027         END
+MPASM 03.20.02 Released       HD14000.ASM   11-21-2002  20:20:19         PAGE  2
 
 
 SYMBOL TABLE
@@ -93,7 +93,7 @@ FSR                               00000004
 GIE                               00000007
 HIBEN                             00000007
 I2CADD                            00000093
-MPASM Version 3.00 Beta Release   HD14000.ASM   01/31/2001  12:11:25	   PAGE 3
+MPASM 03.20.02 Released       HD14000.ASM   11-21-2002  20:20:19         PAGE  3
 
 
 SYMBOL TABLE
@@ -152,7 +152,7 @@ PIR1                              0000000C
 PORTA                             00000005
 PORTC                             00000007
 PORTD                             00000008
-MPASM Version 3.00 Beta Release   HD14000.ASM   01/31/2001  12:11:25	   PAGE 4
+MPASM 03.20.02 Released       HD14000.ASM   11-21-2002  20:20:19         PAGE  4
 
 
 SYMBOL TABLE
@@ -207,7 +207,7 @@ _PWRTE_ON                         00003FF7
 _WDT_OFF                          00003FFB
 _WDT_ON                           00003FFF
 __14000                           00000001
-MPASM Version 3.00 Beta Release   HD14000.ASM   01/31/2001  12:11:25	   PAGE 5
+MPASM 03.20.02 Released       HD14000.ASM   11-21-2002  20:20:19         PAGE  5
 
 
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
