@@ -365,6 +365,7 @@ void show_usage(void)
   printf("  -m, --map                      Output a map file.\n");
   printf("  -o FILE, --output FILE         Alternate name of output file.\n");
   printf("  -q, --quiet                    Quiet.\n");
+  printf("  -r, --use-shared               Use shared memory if necessary.\n");
   printf("  -s FILE, --script FILE         Linker script.\n");
   printf("  -t SIZE, --stack SIZE          Create a stack section.\n");
   printf("  -v, --version                  Show version.\n");
@@ -387,7 +388,7 @@ void show_usage(void)
   exit(0);
 }
 
-#define GET_OPTIONS "?a:cdf:hI:lmo:qs:t:v"
+#define GET_OPTIONS "?a:cdf:hI:lmo:qrs:t:v"
 
   static struct option longopts[] =
   {
@@ -401,6 +402,7 @@ void show_usage(void)
     { "map",         0, 0, 'm' },
     { "output",      1, 0, 'o' },
     { "quiet",       0, 0, 'q' },
+    { "use-shared",  0, 0, 'r' },
     { "script",      1, 0, 's' },
     { "stack",       1, 0, 't' },
     { "version",     0, 0, 'v' },
@@ -503,6 +505,9 @@ int main(int argc, char *argv[])
       break;
     case 'q':
       gp_quiet = 1;
+      break;
+    case 'r':
+      gp_relocate_to_shared = true;
       break;
     case 's':
       state.srcfilename = optarg;
