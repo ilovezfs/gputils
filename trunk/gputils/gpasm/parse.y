@@ -328,7 +328,7 @@ line:
 	|
 	label_concat statement
 	{
-	  if (state.lst.line.linetype == none)
+	  if (asm_enabled() && (state.lst.line.linetype == none))
 	    state.lst.line.linetype = insn;
 	  
 	  if (asm_enabled()) {
@@ -720,7 +720,7 @@ label_concat:
         |
         VARLAB_BEGIN expr ')'
         {
-          if (!state.mac_prev) {
+          if (asm_enabled() && !state.mac_prev) {
 	    $$ = evaluate_concatenation(mk_2op(CONCAT,  mk_symbol($1), 
                            mk_1op(VAR, $2)));
 	  }
@@ -728,7 +728,7 @@ label_concat:
         |
         VARLAB_BEGIN expr VAR_END
         {
-          if (!state.mac_prev) {
+          if (asm_enabled() && !state.mac_prev) {
             $$ = evaluate_concatenation(mk_2op(CONCAT,  mk_symbol($1), 
                       mk_2op(CONCAT, mk_1op(VAR, $2), mk_symbol($3))));
 	  }

@@ -84,6 +84,7 @@ int gp_archive_free_member(gp_archive_type *archive);
 gp_archive_type *gp_archive_delete_member(gp_archive_type *archive, 
                                           char *objectname);
 gp_archive_type *gp_archive_add_member(gp_archive_type *archive, 
+                                       char *filename,
                                        char *objectname);
 int gp_archive_extract_member(gp_archive_type *archive, 
                               char *objectname);

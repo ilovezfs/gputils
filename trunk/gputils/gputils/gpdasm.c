@@ -121,7 +121,7 @@ void dasm(MemBlock *memory)
         i++;
       } else {
         if (lastloc != i - 1){
-          writeorg(i);
+          writeorg(i << byte_addr);
         }
         lastloc = i;
         if (state.format) {
@@ -133,7 +133,7 @@ void dasm(MemBlock *memory)
         }
         gp_disassemble(memory, &i, state.class, buffer);
         printf("%s\n", buffer);
-        if (i != lastloc) {
+        if ((state.format) && (i != lastloc)) {
           /* some 18xx instructions use two words */
           printf("%06x:  %04x\n",
                  i << byte_addr,

@@ -1365,7 +1365,7 @@ case 10:
 case 11:
 #line 330 "parse.y"
 {
-	  if (state.lst.line.linetype == none)
+	  if (asm_enabled() && (state.lst.line.linetype == none))
 	    state.lst.line.linetype = insn;
 	  
 	  if (asm_enabled()) {
@@ -1713,7 +1713,7 @@ case 104:
 case 105:
 #line 722 "parse.y"
 {
-          if (!state.mac_prev) {
+          if (asm_enabled() && !state.mac_prev) {
 	    yyval.s = evaluate_concatenation(mk_2op(CONCAT,  mk_symbol(yyvsp[-2].s), 
                            mk_1op(VAR, yyvsp[-1].p)));
 	  }
@@ -1722,7 +1722,7 @@ case 105:
 case 106:
 #line 730 "parse.y"
 {
-          if (!state.mac_prev) {
+          if (asm_enabled() && !state.mac_prev) {
             yyval.s = evaluate_concatenation(mk_2op(CONCAT,  mk_symbol(yyvsp[-2].s), 
                       mk_2op(CONCAT, mk_1op(VAR, yyvsp[-1].p), mk_symbol(yyvsp[0].s))));
 	  }

@@ -157,6 +157,7 @@ gp_archive_delete_member(gp_archive_type *archive,
 
 gp_archive_type *
 gp_archive_add_member(gp_archive_type *archive, 
+                      char *filename,
                       char *objectname)
 {
   gp_archive_type *oldmember = NULL;
@@ -168,7 +169,7 @@ gp_archive_add_member(gp_archive_type *archive,
   char size[10];
   int timer;
 
-  newobject = gp_read_file(objectname);
+  newobject = gp_read_file(filename);
 
   newmember = (gp_archive_type *)malloc(sizeof(*newmember));
   newmember->next = NULL;
