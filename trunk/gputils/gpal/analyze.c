@@ -200,6 +200,8 @@ can_evaluate(tree *p, gp_boolean gen_errors)
   struct variable *var;
 
   switch (p->tag) {
+  case node_call:
+    return false;
   case node_constant:
     return true;
   case node_symbol:
@@ -257,6 +259,8 @@ evaluate(tree *p)
       return  evaluate(p->value.unop.p0);
     case op_neg:
       return -evaluate(p->value.unop.p0);
+    case op_com:
+      return ~evaluate(p->value.unop.p0);
     default:
       assert(0);
     }

@@ -1,3 +1,9 @@
+2004-10-27 Robert Kaes <rjkaes@users.sourceforge.net>
+  * Moved gpal reset and interrupt vectors to device specific code generators.
+  * Fixed gpal com operator.
+  * Fixed gpal bug when function calls appear in test expressions.
+  * Improved gpal 16e indirect accesses, indf accesses, and inc/dec functions.
+
 2004-10-26 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Allow conditionals in gpal subprogram declaration region.
 

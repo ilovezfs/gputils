@@ -65,6 +65,9 @@ typedef void data_func2(char *name,
                         int offset,
                         char *bank_addr);
 
+/* Used for the RESET and INTERRUPT vectors.  The node is passed to them. */
+typedef void vector_func(struct variable *var);
+
 #define CODEGEN (*(code_func*)func_ptr->codegen)
 #define UNOPGEN (*(code_unop*)func_ptr->unopgen)
 #define LOAD_CONSTANT (*(data_func1*)func_ptr->load_constant)
@@ -72,6 +75,8 @@ typedef void data_func2(char *name,
 #define STORE_FILE (*(data_func2*)func_ptr->store_file)
 #define LOAD_INDIRECT (*(data_func2*)func_ptr->load_indirect)
 #define STORE_INDIRECT (*(data_func2*)func_ptr->store_indirect)
+#define RESET_VECTOR (*(vector_func*)func_ptr->reset_vector)
+#define INT_VECTOR (*(vector_func*)func_ptr->interrupt_vector)
 
 /****************************************************************************/
 /* Common Assembly Functions                                                */
@@ -261,14 +266,11 @@ codegen_indirect(tree *offset,
     codegen_set_bank(FILE_DATA_ADDR(state.module));
     break;
   case PROC_CLASS_PIC16E:
-    codegen_write_asm("movf %s, w", WORKING_LABEL);
-    codegen_write_asm("addlw LOW(%s)", var->name); 
-    codegen_write_asm("movff WREG, FSR0L");
-    codegen_write_asm("movf %s + 1, w", WORKING_LABEL);
-    codegen_write_asm("btfsc STATUS, C");
-    codegen_write_asm("addlw 1"); 
-    codegen_write_asm("addlw HIGH(%s)", var->name); 
-    codegen_write_asm("movff WREG, FSR0H");
+    codegen_write_asm("lfsr FSR0, %s", var->name);
+    codegen_write_asm("movf %s, W", WORKING_LABEL);
+    codegen_write_asm("addwf FSR0L, F");
+    codegen_write_asm("movf %s + 1, W", WORKING_LABEL);
+    codegen_write_asm("addwfc FSR0H, F");
     break;
   default:
     assert(0);
@@ -347,6 +349,7 @@ gen_unop_expr(tree *expr)
     break;
   case op_not:
   case op_neg:
+  case op_com:
     CODEGEN(expr->value.unop.op, codegen_size, true, 0, NULL);
     break;
   default:
@@ -706,43 +709,12 @@ codegen_close_asm(void)
 
   var = get_global("main");
   if ((var) && (var->node->tag == node_subprogram)) {
-    /* a procedure named "main" exists so add the startup code */
-    codegen_write_comment("startup and interrupt vectors");
-    fprintf(state.output.f, "RESET_VECTOR code 0x0\n");
-    codegen_line_number(var->node);
-    fprintf(state.output.f, "  movlw high %s\n", var->name);
-    fprintf(state.output.f, "  movwf PCLATH\n");
-    fprintf(state.output.f, "  goto %s\n\n", var->name);
+    RESET_VECTOR(var);
   }
 
   var = get_global("isr");
   if ((var) && (var->node->tag == node_subprogram)) {
-    fprintf(state.output.f, "INT_VECTOR code 0x4\n");
-    codegen_write_comment("store wreg and status");
-    fprintf(state.output.f, "  movwf w_temp\n");
-    fprintf(state.output.f, "  movf STATUS, w\n");
-    fprintf(state.output.f, "  movwf status_temp\n");
-    fprintf(state.output.f, "  movf PCLATH, w\n");
-    fprintf(state.output.f, "  movwf pclath_temp\n");
-
-    codegen_write_comment("call the interrupt routine");
-    fprintf(state.output.f, "  pagesel %s\n", var->name);
-    fprintf(state.output.f, "  call %s\n", var->name);
-
-    codegen_write_comment("restore wreg and status");
-    fprintf(state.output.f, "  movf pclath_temp, w\n");
-    fprintf(state.output.f, "  movwf PCLATH\n");
-    fprintf(state.output.f, "  movf status_temp, w\n");
-    fprintf(state.output.f, "  movwf STATUS\n");
-    fprintf(state.output.f, "  swapf w_temp, f\n");
-    fprintf(state.output.f, "  swapf w_temp, w\n");
-    fprintf(state.output.f, "  retfie\n\n");
-    
-    fprintf(state.output.f, "INT_VAR udata_shr\n");
-    codegen_write_comment("FIXME: not all processors have shared memory");
-    fprintf(state.output.f, "w_temp res 1\n");
-    fprintf(state.output.f, "status_temp res 1\n\n");
-    fprintf(state.output.f, "pclath_temp res 1\n\n");
+    INT_VECTOR(var);
   }
 
   fprintf(state.output.f, "  .eof\n\n");
