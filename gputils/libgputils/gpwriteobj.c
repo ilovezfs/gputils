@@ -151,6 +151,11 @@ _gp_coffgen_write_data(gp_section_type *section, FILE *fp)
     last = section->address + section->size;
   }
 
+#ifdef __DEBUG__
+  printf("section \"%s\"\nsize= %i\ndata:\n", section->name, section->size);
+  print_i_memory(section->data);
+#endif
+
   for (org = section->address; org < last; org++) {
     data = i_memory_get(section->data, org);
     assert(data & MEM_USED_MASK);
