@@ -215,6 +215,14 @@ show_usage(void)
   printf("  -t, --save-temps               Do not delete intermediate files.\n");
   printf("  -v, --version                  Show version.\n");
   printf("\n");
+#ifdef USE_DEFAULT_PATHS
+  if (gp_pub_path) {
+    printf("Default public file path %s\n", gp_pub_path);
+  } else {
+    printf("Default public file path NOT SET\n");
+  }
+  printf("\n");
+#endif
   printf("Report bugs to:\n");
   printf("%s\n", BUG_REPORT_URL);
   exit(0);
@@ -310,6 +318,12 @@ process_args( int argc, char *argv[])
 
   if (usage) {
     show_usage();
+  }
+
+  /* Add the pub path to the include paths list last, so that the user
+     specified directories are searched first */
+  if (gp_pub_path) {
+    add_path(gp_pub_path);
   }
 
 }

@@ -1,3 +1,7 @@
+2004-04-22 Craig Franklin <craigfranklin@comcast.net>
+  * Added processor pub file generation.
+  * Added default search path to gpal.
+
 2004-04-17 Craig Franklin <craigfranklin@comcast.net>
   * Added support for #if directive and allow else in column 1.
   * Fixed malformed header files.  They were missing a NL before the EOF.

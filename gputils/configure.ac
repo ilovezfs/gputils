@@ -22,7 +22,7 @@ GPUTILS_LIB_PATH="\$(datadir)/gputils/lib"
 GPUTILS_PUB_PATH="\$(datadir)/gputils/pub"
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
-MAKE_SUBDIRS="libgputils libiberty gpasm header lkr doc"
+MAKE_SUBDIRS="libgputils libiberty gpasm header lkr pub doc"
 
 # Check for additional parameters
 AC_ARG_ENABLE(debug, 
@@ -162,6 +162,7 @@ AC_CONFIG_FILES([Makefile
                  libgputils/Makefile 
                  libiberty/Makefile 
                  lkr/Makefile
+                 pub/Makefile
                  gputils.spec])
 
 AC_OUTPUT

@@ -45,5 +45,6 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 %{_mandir}/man1/*
 %{_datadir}/gputils/header/*
 %{_datadir}/gputils/lkr/*
+%{_datadir}/gputils/pub/*
 %doc AUTHORS COPYING ChangeLog INSTALL NEWS README 
 %doc doc/gputils.lyx doc/gputils.pdf doc/gputils.ps
