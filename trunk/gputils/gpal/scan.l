@@ -73,6 +73,7 @@ DECCHAR [0-9]
 "array"			{ return ARRAY; }
 "begin"			{ return BEGIN_TOK; }
 "case"			{ return CASE; }
+"constant"		{ return CONSTANT; }
 "else"			{ return ELSE; }
 "elsif"			{ return ELSIF; }
 "end"			{ return END; }

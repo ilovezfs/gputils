@@ -173,11 +173,13 @@ mk_cond(tree *cond, tree *body, tree *next)
 
 tree *
 mk_decl(char *name,
+        gp_boolean constant,
         char *type,
         tree *init)
 {
   tree *new = mk_node(node_decl);
   new->value.decl.name = name;
+  new->value.decl.constant = constant;
   new->value.decl.type = type;
   new->value.decl.init = init;
   
@@ -437,8 +439,9 @@ print_node(tree *node, int level)
     break;
   case node_decl:
     print_space(level);
-    printf("node_decl name=%s, type=%s\n",
+    printf("node_decl name = %s, type =%s%s\n",
            DECL_NAME(node),
+           DECL_CONSTANT(node) ? " constant " : " ",
            DECL_TYPE(node));
     if (DECL_INIT(node)) {
       print_node(DECL_INIT(node), level);

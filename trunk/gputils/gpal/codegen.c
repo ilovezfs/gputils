@@ -177,7 +177,7 @@ codegen_indirect(tree *offset,
     /* scale the offset by the element size */
     CODEGEN(op_mult, size_uint8, true, element_size, NULL);
   }
-  codegen_write_asm("addlw %s", var->alias); 
+  codegen_write_asm("addlw %s", var->name); 
   codegen_write_asm("movwf FSR"); 
 
 }
@@ -199,16 +199,16 @@ codegen_load_file(tree *symbol, struct variable *var)
         /* direct access */
         offset = analyze_check_array(symbol, var) * element_size;
         if (var->storage == storage_far) {
-          LOAD_FILE(var->alias, codegen_size, offset, true);
+          LOAD_FILE(var->name, codegen_size, offset, true);
         } else {
-          LOAD_FILE(var->alias, codegen_size, offset, false);
+          LOAD_FILE(var->name, codegen_size, offset, false);
         }
       } else {
         codegen_indirect(SYM_OFST(symbol), var, element_size, false);
         if (var->storage == storage_far) {
-          LOAD_INDIRECT(var->alias, codegen_size, 0, true);
+          LOAD_INDIRECT(var->name, codegen_size, 0, true);
         } else {
-          LOAD_INDIRECT(var->alias, codegen_size, 0, false);
+          LOAD_INDIRECT(var->name, codegen_size, 0, false);
         }
       }
     } else {
@@ -217,9 +217,9 @@ codegen_load_file(tree *symbol, struct variable *var)
     }
   } else {
     if (var->storage == storage_far) {
-      LOAD_FILE(var->alias, codegen_size, 0, true);
+      LOAD_FILE(var->name, codegen_size, 0, true);
     } else {
-      LOAD_FILE(var->alias, codegen_size, 0, false);
+      LOAD_FILE(var->name, codegen_size, 0, false);
     }
   }
 
@@ -238,22 +238,22 @@ codegen_store(struct variable *var,
   if (offset_expr) {
     if (constant_offset) {
       if (var->storage == storage_far) {
-        STORE_FILE(var->alias, codegen_size, offset, true);
+        STORE_FILE(var->name, codegen_size, offset, true);
       } else {
-        STORE_FILE(var->alias, codegen_size, offset, false);
+        STORE_FILE(var->name, codegen_size, offset, false);
       }    
     } else {
       if (var->storage == storage_far) {
-        STORE_INDIRECT(var->alias, codegen_size, 0, true);
+        STORE_INDIRECT(var->name, codegen_size, 0, true);
       } else {
-        STORE_INDIRECT(var->alias, codegen_size, 0, false);
+        STORE_INDIRECT(var->name, codegen_size, 0, false);
       }
     }
   } else {
     if (var->storage == storage_far) {
-      STORE_FILE(var->alias, codegen_size, 0, true);
+      STORE_FILE(var->name, codegen_size, 0, true);
     } else {
-      STORE_FILE(var->alias, codegen_size, 0, false);
+      STORE_FILE(var->name, codegen_size, 0, false);
     }
   }
 
@@ -311,7 +311,7 @@ gen_binop_expr(enum node_op op, tree *p0, tree *p1)
       LOAD_FILE(reg1, codegen_size, 0, false);
       CODEGEN(op, codegen_size, false, 0, reg2);
     } else {
-      CODEGEN(op, codegen_size, false, 0, var->alias);
+      CODEGEN(op, codegen_size, false, 0, var->name);
     }
   } else {
     /* it is a complex expression so save temp data */
@@ -598,8 +598,8 @@ codegen_close_asm(void)
     codegen_write_comment("startup and interrupt vectors");
     fprintf(state.output.f, "STARTUP code\n");
     codegen_line_number(var->node);
-    fprintf(state.output.f, "  pagesel %s\n", var->alias);
-    fprintf(state.output.f, "  goto %s\n\n", var->alias);
+    fprintf(state.output.f, "  pagesel %s\n", var->name);
+    fprintf(state.output.f, "  goto %s\n\n", var->name);
   }
 
   fprintf(state.output.f, "#eof\n\n");

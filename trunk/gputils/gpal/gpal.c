@@ -335,10 +335,17 @@ process_args( int argc, char *argv[])
 static void
 compile(void)
 {
-  /* symbol tables */
-  state.top = push_symbol_table(state.top, 1);
-  state.type = push_symbol_table(state.type, 1);
+  /* create the global symbol table that is case insensitive */
+  state.global = push_symbol_table(NULL, 1);
+  
+  /* create a top symbol table for the symbol alias */
+  state.top = push_symbol_table(state.global, 1);
 
+  /* create the type symbol table that is case insensitive */
+  state.type = push_symbol_table(NULL, 1);
+  
+  add_type_prims();  
+  
   init_nodes();
   state.root = NULL;
 
@@ -370,6 +377,7 @@ compile(void)
 
   /* destory symbol table for the current module */
   state.top = pop_symbol_table(state.top);
+  state.global = pop_symbol_table(state.global);
   state.type = pop_symbol_table(state.type);
 
   /* free all the memory */
@@ -523,19 +531,8 @@ init(void)
   state.processor_chosen = false;
   state.outfilename = NULL;
 
-  /* create the global symbol table that is case insensitive */
-  state.top = state.global = push_symbol_table(NULL, 1);
-
-  /* create the type symbol table that is case insensitive */
-  state.type = push_symbol_table(NULL, 1);
-
-  /* create the memory symbol table that is case sensitive */
-  state.memory = push_symbol_table(NULL, 0);
-
   /* local data */
   next_file_id = 1;
-
-  add_type_prims();
    
   return;
 }

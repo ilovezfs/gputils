@@ -135,6 +135,7 @@ typedef struct node_struct {
     } cond;    
     struct {
       char *name;
+      gp_boolean constant;
       char *type;
       tree *init;
     } decl;
@@ -209,6 +210,7 @@ typedef struct node_struct {
 #define COND_BODY(C)       (C)->value.cond.body
 #define COND_NEXT(C)       (C)->value.cond.next
 #define DECL_NAME(D)       (D)->value.decl.name
+#define DECL_CONSTANT(D)   (D)->value.decl.constant
 #define DECL_TYPE(D)       (D)->value.decl.type
 #define DECL_INIT(D)       (D)->value.decl.init
 #define FILE_BODY(F)       (F)->value.file.body
@@ -252,7 +254,7 @@ tree *mk_binop(enum node_op op, tree *p0, tree *p1);
 tree *mk_call(char *name, tree *args);
 tree *mk_constant(int value);
 tree *mk_cond(tree *cond, tree *body, tree *next);
-tree *mk_decl(char *name, char *type, tree *init);
+tree *mk_decl(char *name, gp_boolean constant, char *type, tree *init);
 tree *mk_file(tree *body, char *name, enum source_type type);
 tree *mk_func(tree *head, char *ret, tree *body);
 tree *mk_head(char *name, tree *args);

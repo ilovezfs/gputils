@@ -194,62 +194,6 @@ make_proc_public(struct variable *var, tree *prot)
   return;
 }
 
-/* Add all the the arguments from a procedure or function to the 
-   global symbol table */
-
-static void
-add_arg_symbols(tree *node,
-                char *name,
-                char *module,
-                gp_boolean is_declar,
-                enum node_storage storage)
-{
-  tree *head = NULL;
-  tree *arg = NULL;
-  struct variable *var;
-
-  if (node->tag == node_proc) {
-    head = PROC_HEAD(node);
-  } else if (node->tag == node_func) {
-    head = FUNC_HEAD(node);
-  } else {
-    assert(0);
-  }
-
-  arg = HEAD_ARGS(head);
-
-  while (arg) {
-    assert(arg->tag == node_arg);
-    if (is_declar) {
-      /* Its a declaration, so prefix the symbol name with the function name */ 
-      var = add_global_symbol(ARG_NAME(arg),
-                              NULL,
-                              name,
-                              true,
-                              arg,
-                              sym_udata,
-                              storage,
-                              ARG_TYPE(arg));
-    } else {
-      /* Its a definition so use the symbol name as is. */
-      var = add_global_symbol(ARG_NAME(arg),
-                              name,
-                              module,
-                              false,
-                              arg,
-                              sym_udata,
-                              storage,
-                              ARG_TYPE(arg));
-    }
-    if (var->type->tag == type_array) {
-      analyze_error(arg, "arguments can not be arrays");     
-    }
-    arg = arg->next;
-  }
-
-  return;
-}
-
 /* can the expression be evaluated at compile time */
 
 gp_boolean
@@ -506,13 +450,11 @@ analyze_check_array(tree *symbol, struct variable *var)
 static tree *
 arg_to_symbol(char *proc_name, tree *arg)
 {
-  char buffer[BUFSIZ];
+  char *symbol_name;
   tree *symbol;
 
-  /* mangle the definition argument so it doesn't collide with the local
-     name space */
-  sprintf(buffer, "%s.%s", proc_name, ARG_NAME(arg));
-  symbol = mk_symbol(strdup(buffer), NULL);
+  symbol_name = mangle_name2(proc_name, ARG_NAME(arg));
+  symbol = mk_symbol(symbol_name, NULL);
   COPY_DEBUG(arg, symbol);
 
   return symbol;
@@ -527,6 +469,7 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
   tree *def_args;
   tree *call_args;
   tree *assignment;
+  char *return_name;
   enum size_tag call_size;
   gp_boolean load_result = false;
 
@@ -572,16 +515,6 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
 
   codegen_line_number(call);
 
-  /* local symbol table */
-  state.top = push_symbol_table(state.top, 1);
-
-  /* add the function's arguments to the symbol table */
-  add_arg_symbols(var->node,
-                  var->alias,
-                  NULL,
-                  true,
-                  FILE_UDATA(var->module));
-
   /* write data into the in/inout of the function or procedure */
   while (call_args) {
     assert(def_args->tag == node_arg);
@@ -589,7 +522,7 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
     if ((ARG_DIR(def_args) == dir_in) ||
         (ARG_DIR(def_args) == dir_inout)) {
       assignment = mk_binop(op_assign,
-                            arg_to_symbol(var->alias, def_args),
+                            arg_to_symbol(var->name, def_args),
                             call_args);
       COPY_DEBUG(call_args, assignment);
       analyze_expr(assignment);
@@ -599,7 +532,7 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
     call_args = call_args->next;
   }
 
-  codegen_call(var->alias, var->storage);
+  codegen_call(var->name, var->storage);
 
   /* read data from the inout/out of the function or procedure */
   call_args = CALL_ARGS(call);
@@ -612,7 +545,7 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
       if (call_args->tag == node_symbol) {
         assignment = mk_binop(op_assign,
                               call_args,
-                              arg_to_symbol(var->alias, def_args));
+                              arg_to_symbol(var->name, def_args));
         COPY_DEBUG(call_args, assignment);
         analyze_expr(assignment);
       } else {
@@ -626,19 +559,14 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
 
   /* put the result in the working register */
   if (load_result) {
-    char buffer[BUFSIZ];
     tree *symbol;
 
-    sprintf(buffer, "%s.%s.return",
-            FILE_NAME(var->module),
-            CALL_NAME(call));
-    symbol = mk_symbol(strdup(buffer), NULL);
+    return_name = mangle_name2(var->name, "return");
+    symbol = mk_symbol(return_name, NULL);
     COPY_DEBUG(call, symbol);
     codegen_expr(symbol, codegen_size);
+    free(return_name);
   }
-
-  /* remove the local table */
-  state.top = pop_symbol_table(state.top);
 
   /* mark the procedure or function as used */
   var->is_used = true;
@@ -826,7 +754,7 @@ analyze_expr(tree *expr)
     return;
   }
 
-  if ((var->tag != sym_udata) && (var->tag != sym_idata)) {
+  if (!is_data(var)) {
     analyze_error(expr, "lvalue must be data memory");
     return;
   }
@@ -948,7 +876,7 @@ append_init(char *name, tree *expr)
   constant = mk_constant(maybe_evaluate(expr));
   COPY_DEBUG(expr, constant);
   
-  symbol = mk_symbol(strdup(name), NULL);
+  symbol = mk_symbol(name, NULL);
   COPY_DEBUG(expr, symbol);
   
   assignment = mk_binop(op_assign, symbol, constant);
@@ -967,6 +895,50 @@ append_init(char *name, tree *expr)
   return;
 }
 
+/* Add all the the arguments from a procedure or function to the 
+   global symbol table */
+
+static void
+add_arg_symbols(tree *node,
+                char *proc_name,
+                enum node_storage storage,
+                gp_boolean add_alias)
+{
+  tree *head = NULL;
+  tree *arg = NULL;
+  char *arg_name;
+  struct variable *var;
+
+  if (node->tag == node_proc) {
+    head = PROC_HEAD(node);
+  } else if (node->tag == node_func) {
+    head = FUNC_HEAD(node);
+  } else {
+    assert(0);
+  }
+
+  arg = HEAD_ARGS(head);
+
+  while (arg) {
+    assert(arg->tag == node_arg);
+    arg_name = mangle_name2(proc_name, ARG_NAME(arg));
+    var = add_global_symbol(arg_name,
+                            arg,
+                            sym_udata,
+                            storage,
+                            ARG_TYPE(arg));
+    if (add_alias) {
+      add_symbol_alias(ARG_NAME(arg), arg, var);
+    }
+    if (var->type->tag == type_array) {
+      analyze_error(arg, "arguments can not be arrays");     
+    }
+    arg = arg->next;
+  }
+
+  return;
+}
+
 void
 analyze_procedure(tree *procedure, gp_boolean is_func)
 {
@@ -975,11 +947,14 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
   struct type *return_type;
   struct variable *var;
   char *proc_name;
+  char *return_name;
   tree *args;
   tree *decl;
+  char *decl_name;
+  struct variable *decl_var;
   tree *statements;
 
-  /* local symbol table */
+  /* local symbol alias table */
   state.top = push_symbol_table(state.top, 1);
   found_return = false;
   init = NULL;  
@@ -1012,17 +987,14 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
 
   /* add the procedure arguments */
   add_arg_symbols(procedure,
-                  proc_name,
-                  FILE_NAME(state.module),
-                  false,
-                  var->storage);     
+                  var->name,
+                  var->storage,
+                  true);     
 
   /* add the return */
   if (is_func) {
-    return_var = add_global_symbol("return",
-                                   proc_name,
-                                   FILE_NAME(state.module),
-                                   true,
+    return_name = mangle_name2(var->name, "return");
+    return_var = add_global_symbol(return_name,
                                    procedure,
                                    sym_udata,
                                    var->storage,
@@ -1032,27 +1004,27 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
   /* local data */
   while (decl) {
     assert(decl->tag == node_decl);
-    if (strcasecmp(DECL_TYPE(decl), "constant") == 0) {
+    decl_name = mangle_name2(var->name, DECL_NAME(decl));
+    if (DECL_CONSTANT(decl)) {
       if (DECL_INIT(decl)) {
-        add_constant(DECL_NAME(decl),
-                     maybe_evaluate(DECL_INIT(decl)),
-                     decl,
-                     DECL_TYPE(decl));
+        decl_var = add_constant(decl_name,
+                                maybe_evaluate(DECL_INIT(decl)),
+                                decl,
+                                DECL_TYPE(decl));
+        add_symbol_alias(DECL_NAME(decl), decl, decl_var);
       } else {
         analyze_error(decl, "missing constant value");
       }    
     } else {
-      add_global_symbol(DECL_NAME(decl), 
-                        proc_name,
-                        FILE_NAME(state.module),
-                        false,
-                        decl,
-                        sym_udata,
-                        storage_local,
-                        DECL_TYPE(decl));
+      decl_var = add_global_symbol(decl_name, 
+                                   decl,
+                                   sym_udata,
+                                   storage_local,
+                                   DECL_TYPE(decl));
+      add_symbol_alias(DECL_NAME(decl), decl, decl_var);
       if (DECL_INIT(decl)) {
         /* initialize the local data */
-        append_init(DECL_NAME(decl), DECL_INIT(decl));
+        append_init(decl_name, DECL_INIT(decl));
       }
     }
 
@@ -1065,7 +1037,7 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
   }
 
   /* write the procedure to the assembly file */
-  codegen_init_proc(var->alias, var->storage, is_func);
+  codegen_init_proc(var->name, var->storage, is_func);
   if (var->storage == storage_public) {
     codegen_write_asm("banksel %s", LOCAL_DATA_LABEL);
     codegen_write_asm("bankisel %s", LOCAL_DATA_LABEL);
@@ -1103,20 +1075,18 @@ analyze_declarations(void)
   first_time = true;
 
   for (i = 0; i < HASH_SIZE; i++) {
-    for (sym = state.memory->hash_table[i]; sym; sym = sym->next) {
+    for (sym = state.global->hash_table[i]; sym; sym = sym->next) {
       var = get_symbol_annotation(sym);
-      assert(var != NULL);
-      if (in_module(var)) {
+      if (var && is_data(var) && in_module(var)) {
         write_mem = true;
         if ((!var->is_used) && (var->storage != storage_public)) {
-          analyze_warning(var->node, "unused variable %s",
-                          var->name);
+          analyze_warning(var->node, "unused variable %s", var->name);
           if ((state.optimize.unused_mem) && (!var->is_assigned)) {
             write_mem = false;
           }
         }
         if (write_mem) {
-          codegen_write_data(var->alias, type_size(var->type), var->storage);
+          codegen_write_data(var->name, type_size(var->type), var->storage);
           first_time = false;
         }
       }      
@@ -1128,45 +1098,22 @@ analyze_declarations(void)
   if (first_time == false)
     fprintf(state.output.f, "\n");
 
-  /* write the external symbols for procedures and functions */
+  /* write the external symbols */
 
   first_time = true;
 
   for (i = 0; i < HASH_SIZE; i++) {
-    for (sym = state.top->hash_table[i]; sym; sym = sym->next) {
+    for (sym = state.global->hash_table[i]; sym; sym = sym->next) {
       var = get_symbol_annotation(sym);
       assert(var != NULL);
-      if (((var->tag == sym_proc) || (var->tag == sym_func)) &&
+      if (var && 
+          ((var->is_used) || (var->is_assigned)) &&
           is_extern(var)) {
-        if (var->is_used) {
-          if (first_time == true) {
-            codegen_write_comment("external procedures and functions");
-            first_time = false;
-          }
-          fprintf(state.output.f, "  extern %s\n", var->alias);
+        if (first_time == true) {
+          codegen_write_comment("external subprograms and data");
+          first_time = false;
         }
-      }
-    }
-  }
-
-  if (first_time == false)
-    fprintf(state.output.f, "\n");
-
-  /* write the external symbols for data memory */
-
-  first_time = true;
-
-  for (i = 0; i < HASH_SIZE; i++) {
-    for (sym = state.memory->hash_table[i]; sym; sym = sym->next) {
-      var = get_symbol_annotation(sym);
-      if (var && has_address(var) && is_extern(var)) {
-        if ((var->is_used) || (var->is_assigned)) {
-          if (first_time == true) {
-            codegen_write_comment("external data memory");
-            first_time = false;
-          }
-          fprintf(state.output.f, "  extern %s\n", var->alias);
-        }
+        fprintf(state.output.f, "  extern %s\n", var->name);
       }
     }
   }
@@ -1302,22 +1249,34 @@ analyze_pragma(tree *expr, enum source_type type)
 /* add all of the types to the type table */
 
 static void
-analyze_type(tree *type)
+analyze_type(tree *file, tree *type, gp_boolean add_alias)
 {
-  int enum_num;
   tree *list;
+  char *name;
+  char *enum_name;
+  int enum_num;
+  struct variable *var;
   int start;
   int end;
 
+  name = mangle_name2(FILE_NAME(file), TYPE_TYPE(type));
+
   if (TYPE_LIST(type)) {
     /* enumerated type */
-    add_type_enum(TYPE_TYPE(type));
+    add_type_enum(name);
+    if (add_alias) {
+      add_type_alias(TYPE_TYPE(type), name);
+    }
     enum_num = 0;
     list = TYPE_LIST(type);
     while (list) {
       if (list->tag == node_symbol) {
         /* add the constant to the global symbol table */
-        add_constant(SYM_NAME(list), enum_num++, list, TYPE_TYPE(type));
+        enum_name = mangle_name2(FILE_NAME(file), SYM_NAME(list));
+        var = add_constant(enum_name, enum_num++, list, name);
+        if (add_alias) {
+          add_symbol_alias(SYM_NAME(list), list, var);
+        }
       } else {
         analyze_error(list, "enumerated list must be symbols");
       }
@@ -1329,11 +1288,17 @@ analyze_type(tree *type)
          can_evaluate(TYPE_END(type), true)) {
       start = evaluate(TYPE_START(type));
       end = evaluate(TYPE_END(type));
-      add_type_array(TYPE_TYPE(type), start, end, TYPE_OF(type));
+      add_type_array(name, start, end, TYPE_OF(type));
+      if (add_alias) {
+        add_type_alias(TYPE_TYPE(type), name);
+      }
     }
   } else {
     /* alias */
-    add_type_alias(TYPE_TYPE(type), TYPE_OF(type));
+    add_type_alias(name, TYPE_OF(type));
+    if (add_alias) {
+      add_type_alias(TYPE_TYPE(type), name);
+    } 
   }
 
 
@@ -1344,6 +1309,7 @@ analyze_module(tree *file)
 {
   tree *current;
   char *name;
+  char *alias;
   struct variable *var;
 
   state.module = file;
@@ -1355,57 +1321,48 @@ analyze_module(tree *file)
       analyze_pragma(current->value.pragma, FILE_TYPE(file));
       break;
     case node_type:
-      analyze_type(current);
+      analyze_type(file, current, true);
       break;
     case node_decl:
-      if (strcasecmp(DECL_TYPE(current), "constant") == 0) {
+      alias = DECL_NAME(current);
+      name = mangle_name2(FILE_NAME(file), alias);
+      if (DECL_CONSTANT(current)) {
         if (DECL_INIT(current)) {
-          add_constant(DECL_NAME(current),
-                       maybe_evaluate(DECL_INIT(current)),
-                       current,
-                       DECL_TYPE(current));
+          var = add_constant(name,
+                             maybe_evaluate(DECL_INIT(current)),
+                             current,
+                             DECL_TYPE(current));
+          add_symbol_alias(alias, current, var);
         } else {
           analyze_error(current, "missing constant value");
         }     
       } else {
-        var = add_global_symbol(DECL_NAME(current), 
-                                NULL,
-                                FILE_NAME(file),
-                                false,
+        var = add_global_symbol(name,
                                 current, 
                                 sym_udata,
                                 storage_private,
                                 DECL_TYPE(current));
+        add_symbol_alias(alias, current, var);
         if (DECL_INIT(current)) {
           analyze_error(current, "initialized data not yet supported");
         }
       }
       break;
     case node_proc:
-      name = find_node_name(current);
-      add_global_symbol(name,
-                        NULL,
-                        FILE_NAME(file),
-                        false,
-                        current,
-                        sym_proc,
-                        storage_private,
-                        NULL);
+      alias = find_node_name(current);
+      name = mangle_name2(FILE_NAME(file), alias);
+      var = add_global_symbol(name, current, sym_proc, storage_private, NULL);
+      add_symbol_alias(alias, current, var);
       if (PROC_BODY(current) == NULL) {
         analyze_error(current,
                       "only procedure definitions are allowed in a module");
       }
       break;
     case node_func:
-      name = find_node_name(current);
-      add_global_symbol(name,
-                        NULL,
-                        FILE_NAME(file),
-                        false,
-                        current,
-                        sym_func,
-                        storage_private,
-                        NULL);
+      alias = find_node_name(current);
+      name = mangle_name2(FILE_NAME(file), alias);
+      var = add_global_symbol(name, current, sym_func, storage_private, NULL);
+      add_symbol_alias(alias, current, var);
       if (FUNC_BODY(current) == NULL) {
         analyze_error(current,
                       "only function definitions are allowed in a module");
@@ -1425,6 +1382,7 @@ analyze_public(tree *file)
 {
   tree *current;
   char *name;
+  char *alias;
   struct variable *var;
 
   state.module = file;
@@ -1436,7 +1394,11 @@ analyze_public(tree *file)
       analyze_pragma(current->value.pragma,  FILE_TYPE(file));
       break;
     case node_type:
-      analyze_type(current);
+      if (FILE_TYPE(file) == source_public) {
+        analyze_type(file, current, true);
+      } else {
+        analyze_type(file, current, false);
+      }
       break;
     case node_decl:
     case node_proc:
@@ -1455,13 +1417,17 @@ analyze_public(tree *file)
     case node_type:
       break;
     case node_decl:
-      name = find_node_name(current);
-      if (strcasecmp(DECL_TYPE(current), "constant") == 0) {
+      alias = find_node_name(current);
+      name = mangle_name2(FILE_NAME(file), alias);
+      if (DECL_CONSTANT(current)) {
         if (DECL_INIT(current)) {
-          add_constant(DECL_NAME(current),
-                       maybe_evaluate(DECL_INIT(current)),
-                       current,
-                       DECL_TYPE(current));
+          var = add_constant(name,
+                             maybe_evaluate(DECL_INIT(current)),
+                             current,
+                             DECL_TYPE(current));
+          if (FILE_TYPE(file) == source_with) {
+            add_symbol_alias(alias, current, var);
+          }
         } else {
           analyze_error(current, "missing constant value");
         }
@@ -1476,14 +1442,11 @@ analyze_public(tree *file)
           analyze_error(current, "declarations can not be initialized");
         }
       } else if (FILE_TYPE(file) == source_with) {
-        add_global_symbol(name,
-                          NULL,
-                          FILE_NAME(file),
-                          true,
-                          current,
-                          sym_udata,
-                          FILE_UDATA(file),
-                          DECL_TYPE(current));
+        var = add_global_symbol(name,
+                                current,
+                                sym_udata,
+                                FILE_UDATA(file),
+                                DECL_TYPE(current));
         if (DECL_INIT(current)) {
           analyze_error(current, "declarations can not be initialized");
         }
@@ -1492,7 +1455,8 @@ analyze_public(tree *file)
       }
       break;
     case node_proc:
-      name = find_node_name(current);
+      alias = find_node_name(current);
+      name = mangle_name2(FILE_NAME(file), alias);
       if (PROC_BODY(current)) {
         analyze_error(current,
                       "only procedure declarations are allowed in a public");
@@ -1505,20 +1469,22 @@ analyze_public(tree *file)
           analyze_error(current, "missing definition for %s", name); 
         }
       } else if (FILE_TYPE(file) == source_with) {
-        add_global_symbol(name,
-                          NULL,
-                          FILE_NAME(file),
-                          true,
-                          current,
-                          sym_proc,
-                          FILE_CODE(file),
-                          NULL);
+        var = add_global_symbol(name,
+                                current,
+                                sym_proc,
+                                FILE_CODE(file),
+                                NULL);
+        add_arg_symbols(current,
+                        var->name,
+                        FILE_UDATA(file),
+                        false);
       } else {
         assert(0);
       }
       break;
     case node_func:
-      name = find_node_name(current);
+      alias = find_node_name(current);
+      name = mangle_name2(FILE_NAME(file), alias);
       if (FUNC_BODY(current)) {
         analyze_error(current,
                       "only function declarations are allowed in a public");
@@ -1531,14 +1497,15 @@ analyze_public(tree *file)
           analyze_error(current, "missing definition for %s", name); 
         }
       } else if (FILE_TYPE(file) == source_with) {
-        add_global_symbol(name,
-                          NULL,
-                          FILE_NAME(file),
-                          true,
-                          current,
-                          sym_func,
-                          FILE_CODE(file),
-                          NULL);
+        var = add_global_symbol(name,
+                                current,
+                                sym_func,
+                                FILE_CODE(file),
+                                NULL);
+        add_arg_symbols(current,
+                        var->name,
+                        FILE_UDATA(file),
+                        false);
       } else {
         assert(0);
       }

@@ -67,7 +67,6 @@ extern struct gpal_state {
   struct symbol_table
     *global,				/* Base of Global symbols */
     *top,				/* Top of Global symbols */
-    *memory,				/* All data memory */
     *type;				/* Symbol Types */
   tree *root;				/* start of tree */
   tree *module;				/* current tree being processed  */
