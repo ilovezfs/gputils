@@ -283,6 +283,7 @@ void show_usage(void)
   printf("  -a FMT, --hex-format FMT       Select hex file format.\n");
   printf("  -c, --object                   Output executable object file.\n");
   printf("  -d, --debug                    Output debug messages.\n");
+  printf("  -f VALUE, --fill VALUE         Fill unused program memory with value.\n");
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
   printf("  -m, --map                      Output a map file.\n");
@@ -304,13 +305,14 @@ void show_usage(void)
   exit(0);
 }
 
-#define GET_OPTIONS "?a:cdhI:mo:qs:v"
+#define GET_OPTIONS "?a:cdf:hI:mo:qs:v"
 
   static struct option longopts[] =
   {
     { "hex-format",  1, 0, 'a' },
     { "object",      0, 0, 'c' },
     { "debug",       0, 0, 'd' },
+    { "fill",        1, 0, 'f' },
     { "help",        0, 0, 'h' },
     { "include",     1, 0, 'I' },
     { "map",         0, 0, 'm' },
@@ -339,6 +341,8 @@ int main(int argc, char *argv[])
   state.hexfile = normal;
   state.mapfile = normal;
   state.objfile = suppress;
+  state.fill_enable = 0;
+  state.fill_value = 0;
   state.srcfilename = NULL;
   state.object  = NULL;
   state.archives = NULL;
@@ -375,6 +379,16 @@ int main(int argc, char *argv[])
       break;
     case 'd':
       gp_debug_disable = 0;
+      break;
+    case 'f':
+      state.fill_value = strtol(optarg, &pc, 16);
+      if ((pc == NULL) || (*pc != '\0')) {
+        gp_error("invalid character %#x in number constant", *pc);
+      } else if (state.fill_value > 0xffff) {
+        gp_error("fill value exceeds 0xffff", *pc);
+      } else {
+        state.fill_enable = 1;
+      }
       break;
     case '?':
     case 'h':

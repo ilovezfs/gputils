@@ -3,7 +3,7 @@
 
   processor 16f877a
 
-.udata_badudata1 udata
-too_big_array res 0x60
+  udata
+too_big_array res 0x61
   
   end

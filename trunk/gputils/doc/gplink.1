@@ -28,6 +28,11 @@ Output an executable object.
 .B -d, --debug 
 Display debug messages.
 .TP
+.B -f VALUE, --fill VALUE 
+Fill unused unprotected program memory with value.  The value supercedes the 
+linker script fill value.  The value must not be greater than 0xffff.  The 
+value is hex.  The value may be preceeded by "0x".
+.TP
 .B -h, --help
 Show the usage message. 
 .TP

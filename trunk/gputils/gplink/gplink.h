@@ -44,6 +44,8 @@ extern struct gplink_state {
     hexfile,			   /* Hex output file control */
     mapfile,			   /* Map output file control */
     objfile;			   /* Executable object file control */
+  int fill_enable;		   /* Fill unused program memory with value */
+  unsigned int fill_value;	   /* Value to fill program memory with */
   char  *srcfilename,		   /* Script file name */
     basefilename[BUFSIZ],	   /* basename for generating hex,list,symbol filenames */
     codfilename[BUFSIZ],	   /* Symbol (.cod) file name */

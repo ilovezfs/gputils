@@ -141,6 +141,9 @@ coff_new_section(char *name, int addr, int flags)
 
   state.obj.symbol_num += 2;
 
+  /* increment the section number */
+  state.obj.section_num++;
+
   /* store the flags so they are available for pass 1 */
   state.obj.flags = flags;
 
@@ -182,7 +185,7 @@ coff_new_section(char *name, int addr, int flags)
   new = gp_coffgen_addsymbol(state.obj.object);
   new->name           = strdup(name);
   new->value          = addr;
-  new->section_number = 1;
+  new->section_number = state.obj.section_num;  /* Modified later. */
   new->section        = state.obj.section;
   new->type           = T_NULL;
   new->class          = C_SECTION;
