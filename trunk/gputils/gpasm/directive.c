@@ -990,10 +990,6 @@ static gpasmVal do_errlvl(gpasmVal r,
         gperror(GPE_ILLEGAL_ARGU, "Expected 0, 1, 2, +|-<message number>");
       }
     }
-
-    #ifdef __DEBUG__
-      print_errorcodes();  
-    #endif
   }
 
   return r;

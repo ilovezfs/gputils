@@ -98,13 +98,6 @@ void init(void)
   
   state.processor = no_processor;
   state.processor_chosen = 0;
-    
-  #ifdef PARSE_DEBUG
-  {
-    extern int yydebug;
-    yydebug = 1; /* enable parse debug */
-  }
-  #endif
 
   n_include_paths = 0;
 
@@ -307,12 +300,12 @@ int assemble(void)
     state.cmd_line.processor = 1;
   }
 
-  open_src(state.srcfilename, 0);
   state.pass = 1;
+  open_src(state.srcfilename, 0);
   yyparse();
  
-  open_src(state.srcfilename, 0);
   state.pass++;
+  open_src(state.srcfilename, 0);
   state.org = 0;
   state.cblock = 0;
   if (state.cmd_line.radix != 1)

@@ -327,6 +327,10 @@ void lst_format_line(char *src_line, int value)
 
   lst_line(m);
 
+#ifdef PARSE_DEBUG
+  fprintf(stderr, "%s\n\n", m);
+#endif
+
   if (state.lst.line.linetype == idlocs) {
     sprintf(m, "     %04X %04X ",
             i_memory_get(state.i_memory, 
