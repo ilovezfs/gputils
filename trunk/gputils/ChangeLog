@@ -1,3 +1,8 @@
+2003-05-20 Craig Franklin <craigfranklin@attbi.com>
+  * Updated scripts to automake-1.6 and autoconf-2.57.
+  * Ran autoscan and fixed reported problems.
+  * Added AM_MAINTAINER_MODE to autoconf.
+
 2003-05-10 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.11.3 Released.  
   * Fixed seg fault in gpasm when difference between coff symbols is 
