@@ -316,6 +316,10 @@ line:
 		h->line_number = state.src->line_number;
 	      }
 	      h->pass = state.pass;
+ 	      
+	      /* The macro is defined so allow calls. */
+	      if (state.pass == 2)
+	        h->defined = 1;
 
 	      state.mac_head = NULL;
 	    } else if (!state.mac_prev) {
