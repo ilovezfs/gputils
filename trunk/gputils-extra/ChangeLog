@@ -1,16 +1,16 @@
-2002-05-12 Craig Franklin <craigfranklin@attbi.com>
+2002-05-12 Craig Franklin <craigfranklin@comcast.net>
   * gputils-extra 0.0.2 Released.
 
-2002-04-17 Craig Franklin <craigfranklin@attbi.com>
+2002-04-17 Craig Franklin <craigfranklin@comcast.net>
   * Updated mcp2510.inc from file included in appnote 212 to file included in
     appnote 215.
   
-2002-02-25 Craig Franklin <craigfranklin@attbi.com>
+2002-02-25 Craig Franklin <craigfranklin@comcast.net>
   * Changed NEdit patterns to include *.inc and *.lst in addition to *.asm.
   * Added IORWF instruction to NEdit pattern.
 
-2002-01-24 Craig Franklin <craigfranklin@attbi.com>
+2002-01-24 Craig Franklin <craigfranklin@comcast.net>
   * gputils-extra 0.0.1 Released.
 
-2002-01-23 Craig Franklin <craigfranklin@attbi.com>
+2002-01-23 Craig Franklin <craigfranklin@comcast.net>
   * Import gputils-extra into cvs.
