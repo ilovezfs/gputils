@@ -1201,7 +1201,7 @@ static gpasmVal do_global(gpasmVal r,
                 (var->previous_type == gvt_static)) {
               /* make the symbol global */
               var->type = gvt_global;
-            } else if (var->previous_type == gvt_extern) || 
+            } else if (var->previous_type == gvt_extern) { 
               gperror(GPE_DUPLAB, NULL);    
             } else {
               sprintf(buf, "Operand must be an address label (%s).", 
