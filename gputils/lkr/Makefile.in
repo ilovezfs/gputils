@@ -220,9 +220,12 @@ EXTRA_DIST = \
 	16f872i.lkr \
 	16f872.lkr \
 	16f873i.lkr \
+	16f873a.lkr \
 	16f873.lkr \
+	16f874a.lkr \
 	16f874i.lkr \
 	16f874.lkr \
+	16f876a.lkr \
 	16f876i.lkr \
 	16f876.lkr \
 	16f877a.lkr \
@@ -244,20 +247,43 @@ EXTRA_DIST = \
 	18c252.lkr \
 	18c442.lkr \
 	18c452.lkr \
+	18c601i.lkr \
 	18c601.lkr \
 	18c658.lkr \
+	18c801i.lkr \
 	18c801.lkr \
 	18c858.lkr \
 	18f010.lkr \
 	18f020.lkr \
+	18f242i.lkr \
 	18f242.lkr \
+	18f248i.lkr \
 	18f248.lkr \
+	18f252i.lkr \
 	18f252.lkr \
+	18f258i.lkr \
 	18f258.lkr \
+	18f442i.lkr \
 	18f442.lkr \
+	18f448i.lkr \
 	18f448.lkr \
+	18f452i.lkr \
 	18f452.lkr \
-	18f458.lkr
+	18f458i.lkr \
+	18f458.lkr \
+	18f6620.lkr \
+	18f6620i.lkr \
+	18f6720.lkr \
+	18f6720i.lkr \
+	18f8620.lkr \
+	18f8620i.lkr \
+	18f8720.lkr \
+	18f8720i.lkr \
+	ap7675.lkr \
+	hcs1365.lkr \
+	hcs1370.lkr \
+	rf509af.lkr \
+	rf509ag.lkr
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h

@@ -1,6 +1,5 @@
-// File: 16f876i.lkr
-// Sample linker command file for 16f876
-// Used with the debugger
+// Sample linker command file for 16f876 used with the ICD
+// $Id$
 
 LIBPATH  .
 

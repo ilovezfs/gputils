@@ -1,5 +1,5 @@
-// File: 14000.lkr
 // Sample linker command file for 14000
+// $Id$
 
 LIBPATH  .
 

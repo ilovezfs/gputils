@@ -1,5 +1,5 @@
 	LIST
-; P16C505.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+; P16C505.INC  Standard Header File, Version 1.10    Microchip Technology, Inc.
 	NOLIST
 
 ; This header file defines configurations, registers, and other useful bits of
@@ -24,6 +24,7 @@
 ;Rev:   Date:    Reason:
 
 ;1.00   03/01/98 Initial Release
+;1.10   13Aug2001 Fixed MAXRAM definition
 
 ;==========================================================================
 ;
@@ -91,7 +92,7 @@ CAL0                         EQU     H'0002'
 ;
 ;==========================================================================
 
-        __MAXRAM H'1F'
+        __MAXRAM H'7F'
 
 ;==========================================================================
 ;

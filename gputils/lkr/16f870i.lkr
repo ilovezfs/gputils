@@ -1,6 +1,5 @@
-// File: 16f870i.lkr
-// Sample linker command file for 16f870
-// Used with the debugger
+// Sample linker command file for 16f870 used with the ICD
+// $Id$
 
 LIBPATH  .
 

@@ -1,12 +1,12 @@
         LIST
-; P18F452.INC  Standard Header File, Version 0.01   Microchip Technology, Inc.
+; P18F452.INC  Standard Header File, Version 1.1   Microchip Technology, Inc.
         NOLIST
 
 ; This header file defines configurations, registers, and other useful bits of
-; information for the PIC18F452 microcontroller.  These names are taken to match
-; the data sheets as closely as possible.
+; information for the PIC18F452 microcontroller.  These names are taken to match 
+; the data sheets as closely as possible.  
 
-; Note that the processor must be selected before this file is
+; Note that the processor must be selected before this file is 
 ; included.  The processor may be selected the following ways:
 
 ;       1. Command line switch:
@@ -22,7 +22,10 @@
 ;
 ;==========================================================================
 ;Rev:   Date:      Details:                                           Who:
-;       03/23/01   Modified C452 for F452                             tr
+;1.0    03/23/01   Modified C452 for F452                             tr
+;1.1	08/01/01   Added EECON1 bits, corrected code protect config bit inserts 
+;1.2    09/17/01   Corrected MAXRAM,BADRAM                            tr
+;1.3    10/23/01   Corrected CONFIG bits/registers		      tr/pas
 
 ;==========================================================================
 ;
@@ -515,6 +518,15 @@ TRISE2          EQU  H'0002'
 TRISE1          EQU  H'0001'
 TRISE0          EQU  H'0000'
 
+;----- EECON1 Bits ---------------------------------------------------------
+EEPGD		EQU  H'0007'
+CFGS		EQU  H'0006'
+FREE		EQU  H'0004'
+WRERR		EQU  H'0003'
+WREN		EQU  H'0002'
+WR		EQU  H'0001'
+RD		EQU  H'0000'
+
 ;==========================================================================
 ;
 ;       I/O Pin Name Definitions
@@ -613,200 +625,202 @@ RE2             EQU  2
 CS              EQU  2
 AN7             EQU  2
 
-
-;==========================================================================
-
-
 ;==========================================================================
 ;
 ;       RAM Definition
 ;
 ;==========================================================================
 
-;       __MAXRAM H'5FF'
-
+	__MAXRAM H'FFF'
+        __BADRAM H'600'-H'F7F'
+	__BADRAM H'F85'-H'F88'
+	__BADRAM H'F8E'-H'F91'
+	__BADRAM H'F97'-H'F9C'
+	__BADRAM H'FA3'-H'FA5'
+	__BADRAM H'FAA'
+	__BADRAM H'FB4'-H'FB9'
+       
 ;==========================================================================
 ;
 ;       Configuration Bits
 ;
 ;     Data Sheet    Include File                  Address
-;     CONFIG1L    = Configuration Byte 0          300000h
-;     CONFIG1H    = Configuration Byte 1          300001h
-;     CONFIG2L    = Configuration Byte 2          300002h
-;     CONFIG2H    = Configuration Byte 3          300003h
-;     CONFIG3L    = Configuration Byte 4          300004h
-;     CONFIG3H    = Configuration Byte 5          300005h
-;     CONFIG4L    = Configuration Byte 6          300006h
-;     CONFIG4H    = Configuration Byte 7          300007h
-;     CONFIG5L    = Configuration Byte 8          300008h
-;     CONFIG5H    = Configuration Byte 9          300009h
-;     CONFIG6L    = Configuration Byte A          30000ah
-;     CONFIG6H    = Configuration Byte B          30000bh
-;     CONFIG7L    = Configuration Byte C          30000ch
-;     CONFIG7H    = Configuration Byte D          30000dh
+;     CONFIG1L    = Configuration Byte 1L         300000h
+;     CONFIG1H    = Configuration Byte 1H         300001h
+;     CONFIG2L    = Configuration Byte 2L         300002h
+;     CONFIG2H    = Configuration Byte 2H         300003h
+;     CONFIG3L    = Configuration Byte 3L         300004h
+;     CONFIG3H    = Configuration Byte 3H         300005h
+;     CONFIG4L    = Configuration Byte 4L         300006h
+;     CONFIG4H    = Configuration Byte 4H         300007h
+;     CONFIG5L    = Configuration Byte 5L         300008h
+;     CONFIG5H    = Configuration Byte 5H         300009h
+;     CONFIG6L    = Configuration Byte 6L         30000ah
+;     CONFIG6H    = Configuration Byte 6H         30000bh
+;     CONFIG7L    = Configuration Byte 7L         30000ch
+;     CONFIG7H    = Configuration Byte 7H         30000dh
 ;
 ;==========================================================================
-;
-;Configuration Byte 1 Options
-_OSCS_ON_1        EQU  H'DF'	; Oscillator Switch enable
-_OSCS_OFF_1       EQU  H'FF'
 
-_LP_OSC_1         EQU  H'F8'	; Oscillator type
-_XT_OSC_1         EQU  H'F9'
-_HS_OSC_1         EQU  H'FA'
-_RC_OSC_1         EQU  H'FB'
-_EC_OSC_1         EQU  H'FC'	; External Clock w/OSC2 output divide by 4
-_ECIO_OSC_1       EQU  H'FD'	; w/OSC2 as an IO pin (RA6)
-_HSPLL_OSC_1      EQU  H'FE'	; HS PLL
-_RCIO_OSC_1       EQU  H'FF'	; RC w/OSC2 as an IO pin (RA6)
+;Configuration Byte 1H Options
+_OSCS_ON_1H        EQU  H'DF'	; Oscillator Switch enable
+_OSCS_OFF_1H       EQU  H'FF'
+_LP_OSC_1H         EQU  H'F8'	; Oscillator type
+_XT_OSC_1H         EQU  H'F9'
+_HS_OSC_1H         EQU  H'FA'
+_RC_OSC_1H         EQU  H'FB'
+_EC_OSC_1H         EQU  H'FC'	; External Clock w/OSC2 output divide by 4
+_ECIO_OSC_1H       EQU  H'FD'	; w/OSC2 as an IO pin (RA6)
+_HSPLL_OSC_1H      EQU  H'FE'	; HS PLL
+_RCIO_OSC_1H       EQU  H'FF'	; RC w/OSC2 as an IO pin (RA6)
 
-;Configuration Byte 2 Options
-_BOR_ON_2         EQU  H'FF'	; Brown-Out Reset enable
-_BOR_OFF_2        EQU  H'FD'
-_PWRT_OFF_2       EQU  H'FF'	; Power-Up Timer enable
-_PWRT_ON_2        EQU  H'FE'
-_BORV_20_2        EQU  H'FF'	; BOR Voltage - 2.0v
-_BORV_27_2        EQU  H'FB'	;               2.7v
-_BORV_42_2        EQU  H'F7' 	;               4.2v
-_BORV_45_2        EQU  H'F3'	;               4.5v
+;Configuration Byte 2L Options
+_BOR_ON_2L         EQU  H'FF'	; Brown-Out Reset enable
+_BOR_OFF_2L        EQU  H'FD'
+_PWRT_OFF_2L       EQU  H'FF'	; Power-Up Timer enable
+_PWRT_ON_2L        EQU  H'FE'
+_BORV_20_2L        EQU  H'FF'	; BOR Voltage - 2.0v
+_BORV_27_2L        EQU  H'FB'	;               2.7v
+_BORV_42_2L        EQU  H'F7' 	;               4.2v
+_BORV_45_2L        EQU  H'F3'	;               4.5v
 
-;Configuration Byte 3 Options
-_WDT_ON_3         EQU  H'FF'	; Watch Dog Timer enable
-_WDT_OFF_3        EQU  H'FE'
-_WDTPS_128_3      EQU  H'FF'	; Watch Dog Timer PostScaler count
-_WDTPS_64_3       EQU  H'FD'
-_WDTPS_32_3       EQU  H'FB'
-_WDTPS_16_3       EQU  H'F9'
-_WDTPS_8_3        EQU  H'F7'
-_WDTPS_4_3        EQU  H'F5'
-_WDTPS_2_3        EQU  H'F3'
-_WDTPS_1_3        EQU  H'F1'
+;Configuration Byte 2H Options
+_WDT_ON_2H         EQU  H'FF'	; Watch Dog Timer enable
+_WDT_OFF_2H        EQU  H'FE'
+_WDTPS_128_2H      EQU  H'FF'	; Watch Dog Timer PostScaler count
+_WDTPS_64_2H       EQU  H'FD'
+_WDTPS_32_2H       EQU  H'FB'
+_WDTPS_16_2H       EQU  H'F9'
+_WDTPS_8_2H        EQU  H'F7'
+_WDTPS_4_2H        EQU  H'F5'
+_WDTPS_2_2H        EQU  H'F3'
+_WDTPS_1_2H        EQU  H'F1'
 
-;Configuration Byte 5 Options
-_CCP2MX_ON_5      EQU  H'FF'	; CCP2 pin Mux enable
-_CCP2MX_OFF_5     EQU  H'FE'
+;Configuration Byte 3H Options
+_CCP2MX_ON_3H      EQU  H'FF'	; CCP2 pin Mux enable
+_CCP2MX_OFF_3H     EQU  H'FE'
 
-;Configuration Byte 6 Options
-_STVR_ON_6        EQU  H'FF'	; Stack over/underflow Reset enable
-_STVR_OFF_6       EQU  H'FE'
-_LVP_ON_6         EQU  H'FF'    ; Low-voltage ICSP enable
-_LVP_OFF_6        EQU  H'FB'
-_DEBUG_ON_6       EQU  H'7F'    ; Backgound Debugger enable
-_DEBUG_OFF_6      EQU  H'FF'
+;Configuration Byte 4L Options
+_STVR_ON_4L        EQU  H'FF'	; Stack over/underflow Reset enable
+_STVR_OFF_4L       EQU  H'FE'
+_LVP_ON_4L         EQU  H'FF'    ; Low-voltage ICSP enable
+_LVP_OFF_4L        EQU  H'FB'
+_DEBUG_ON_4L       EQU  H'7F'    ; Backgound Debugger enable
+_DEBUG_OFF_4L      EQU  H'FF'
 
-;Configuration Byte 8 Options
-_CP0_ON_8         EQU  H'FE'    ; Code protect user block enable
-_CP0_OFF_8        EQU  H'FF'
-_CP1_ON_8         EQU  H'FD'
-_CP1_OFF_8        EQU  H'FF'
-_CP2_ON_8         EQU  H'FB'
-_CP2_OFF_8        EQU  H'FF'
-_CP3_ON_8         EQU  H'F7'
-_CP3_OFF_8        EQU  H'FF'
+;Configuration Byte 5L Options
+_CP0_ON_5L         EQU  H'FE'    ; Code protect user block enable
+_CP0_OFF_5L        EQU  H'FF'
+_CP1_ON_5L         EQU  H'FD'
+_CP1_OFF_5L        EQU  H'FF'
+_CP2_ON_5L         EQU  H'FB'
+_CP2_OFF_5L        EQU  H'FF'
+_CP3_ON_5L         EQU  H'F7'
+_CP3_OFF_5L        EQU  H'FF'
 
-;Configuration Byte 9 Options
-_CPB_ON_9         EQU  H'BF'    ; Code protect boot block enable
-_CPB_OFF_9        EQU  H'FF'
-_CPD_ON_9         EQU  H'7F'    ; Code protect Data EE enable
-_CPD_OFF_9        EQU  H'FF'
+;Configuration Byte 5H Options
+_CPB_ON_5H         EQU  H'BF'    ; Code protect boot block enable
+_CPB_OFF_5H        EQU  H'FF'
+_CPD_ON_5H         EQU  H'7F'    ; Code protect Data EE enable
+_CPD_OFF_5H        EQU  H'FF'
 
-;Configuration Byte A Options
-_WRT0_ON_A        EQU  H'FE'    ; Write protect user block enable
-_WRT0_OFF_A       EQU  H'FF'
-_WRT1_ON_A        EQU  H'FD'
-_WRT1_OFF_A       EQU  H'FF'
-_WRT2_ON_A        EQU  H'FB'
-_WRT2_OFF_A       EQU  H'FF'
-_WRT3_ON_A        EQU  H'F7'
-_WRT3_OFF_A       EQU  H'FF'
+;Configuration Byte 6L Options
+_WRT0_ON_6L        EQU  H'FE'    ; Write protect user block enable
+_WRT0_OFF_6L       EQU  H'FF'
+_WRT1_ON_6L        EQU  H'FD'
+_WRT1_OFF_6L       EQU  H'FF'
+_WRT2_ON_6L        EQU  H'FB'
+_WRT2_OFF_6L       EQU  H'FF'
+_WRT3_ON_6L        EQU  H'F7'
+_WRT3_OFF_6L       EQU  H'FF'
 
-;Configuration Byte B Options
-_WRTC_ON_B        EQU  H'DF'    ; Write protect CONFIG regs enable
-_WRTC_OFF_B       EQU  H'FF'
-_WRTB_ON_B        EQU  H'BF'    ; Write protect boot block enable
-_WRTB_OFF_B       EQU  H'FF'
-_WRTD_ON_B        EQU  H'7F'    ; Write protect Data EE enable
-_WRTD_OFF_B       EQU  H'FF'
+;Configuration Byte 6H Options
+_WRTC_ON_6H        EQU  H'DF'    ; Write protect CONFIG regs enable
+_WRTC_OFF_6H       EQU  H'FF'
+_WRTB_ON_6H        EQU  H'BF'    ; Write protect boot block enable
+_WRTB_OFF_6H       EQU  H'FF'
+_WRTD_ON_6H        EQU  H'7F'    ; Write protect Data EE enable
+_WRTD_OFF_6H       EQU  H'FF'
 
-;Configuration Byte C Options
-_EBTR0_ON_C       EQU  H'FE'    ; Table Read protect user block enable
-_EBTR0_OFF_C      EQU  H'FF'
-_EBTR1_ON_C       EQU  H'FD'
-_EBTR1_OFF_C      EQU  H'FF'
-_EBTR2_ON_C       EQU  H'FB'
-_EBTR2_OFF_C      EQU  H'FF'
-_EBTR3_ON_C       EQU  H'F7'
-_EBTR3_OFF_C      EQU  H'FF'
+;Configuration Byte 7L Options
+_EBTR0_ON_7L       EQU  H'FE'    ; Table Read protect user block enable
+_EBTR0_OFF_7L      EQU  H'FF'
+_EBTR1_ON_7L       EQU  H'FD'
+_EBTR1_OFF_7L      EQU  H'FF'
+_EBTR2_ON_7L       EQU  H'FB'
+_EBTR2_OFF_7L      EQU  H'FF'
+_EBTR3_ON_7L       EQU  H'F7'
+_EBTR3_OFF_7L      EQU  H'FF'
 
-;Configuration Byte D Options
-_EBTRB_ON_D       EQU  H'BF'    ; Table Read protect boot block enable
-_EBTRB_OFF_D      EQU  H'FF'
+;Configuration Byte 7H Options
+_EBTRB_ON_7H       EQU  H'BF'    ; Table Read protect boot block enable
+_EBTRB_OFF_7H      EQU  H'FF'
 
 ; To use the Configuration Bits, place the following lines in your source code
-;  in the following format, and change the configuration value to the desired
+;  in the following format, and change the configuration value to the desired 
 ;  setting (such as CP_OFF to CP_ON).  These are currently commented out here
 ;  and each __CONFIG line should have the preceding semicolon removed when
 ;  pasted into your source code.
 
 ;  The following is a assignment of address values for all of the configuration
 ;  registers for the purpose of table reads
-_CONFIG0        EQU    H'300000'
-_CONFIG1        EQU    H'300001'
-_CONFIG2        EQU    H'300002'
-_CONFIG3        EQU    H'300003'
-_CONFIG4        EQU    H'300004'
-_CONFIG5        EQU    H'300005'
-_CONFIG6        EQU    H'300006'
-_CONFIG7        EQU    H'300007'
-_CONFIG8        EQU    H'300008'
-_CONFIG9        EQU    H'300009'
-_CONFIGA        EQU    H'30000A'
-_CONFIGB        EQU    H'30000B'
-_CONFIGC        EQU    H'30000C'
-_CONFIGD        EQU    H'30000D'
-_DEVID1         EQU    H'3FFFFE'
-_DEVID2         EQU    H'3FFFFF'
-_IDLOC0         EQU    H'200000'
-_IDLOC1         EQU    H'200001'
-_IDLOC2         EQU    H'200002'
-_IDLOC3         EQU    H'200003'
-_IDLOC4         EQU    H'200004'
-_IDLOC5         EQU    H'200005'
-_IDLOC6         EQU    H'200006'
-_IDLOC7         EQU    H'200007'
+_CONFIG1L        EQU    H'300000'
+_CONFIG1H        EQU    H'300001'
+_CONFIG2L        EQU    H'300002'
+_CONFIG2H        EQU    H'300003'
+_CONFIG3L        EQU    H'300004'
+_CONFIG3H        EQU    H'300005'
+_CONFIG4L        EQU    H'300006'
+_CONFIG4H        EQU    H'300007'
+_CONFIG5L        EQU    H'300008'
+_CONFIG5H        EQU    H'300009'
+_CONFIG6L        EQU    H'30000A'
+_CONFIG6H        EQU    H'30000B'
+_CONFIG7L        EQU    H'30000C'
+_CONFIG7H        EQU    H'30000D'
+_DEVID1          EQU    H'3FFFFE'
+_DEVID2          EQU    H'3FFFFF'
+_IDLOC0          EQU    H'200000'
+_IDLOC1          EQU    H'200001'
+_IDLOC2          EQU    H'200002'
+_IDLOC3          EQU    H'200003'
+_IDLOC4          EQU    H'200004'
+_IDLOC5          EQU    H'200005'
+_IDLOC6          EQU    H'200006'
+_IDLOC7          EQU    H'200007'
 
-;Program Configuration Register 1
-;		__CONFIG    _CONFIG1, _OSCS_OFF_1 & _RCIO_OSC_1
+;Program Configuration Register 1H
+;		__CONFIG    _CONFIG1H, _OSCS_OFF_1H & _RCIO_OSC_1H
 
-;Program Configuration Register 2
-;		__CONFIG    _CONFIG2, _BOR_ON_2 & _BORV_20_2 & _PWRT_OFF_2
+;Program Configuration Register 2L
+;		__CONFIG    _CONFIG2L, _BOR_ON_2L & _BORV_20_2L & _PWRT_OFF_2L
 
-;Program Configuration Register 3
-;		__CONFIG    _CONFIG3, _WDT_ON_3 & _WDTPS_128_3
+;Program Configuration Register 2H
+;		__CONFIG    _CONFIG2H, _WDT_ON_2H & _WDTPS_128_2H
 
-;Program Configuration Register 5
-;		__CONFIG    _CONFIG5, _CCP2MX_ON_5
+;Program Configuration Register 3H
+;		__CONFIG    _CONFIG3H, _CCP2MX_ON_3H
 
-;Program Configuration Register 6
-;		__CONFIG    _CONFIG6, _STVR_ON_6 & _LVP_OFF_6 & _DEBUG_OFF_6
+;Program Configuration Register 4L
+;		__CONFIG    _CONFIG4L, _STVR_ON_4L & _LVP_OFF_4L & _DEBUG_OFF_4L
 
-;Program Configuration Register 8
-;		__CONFIG    _CONFIG8, _CP0_OFF_8 & _CP1_OFF_8 & _CP2_OFF_8 & _CP3_OFF_8
+;Program Configuration Register 5L
+;		__CONFIG    _CONFIG5L, _CP0_OFF_5L & _CP1_OFF_5L & _CP2_OFF_5L & _CP3_OFF_5L 
 
-;Program Configuration Register 9
-;		__CONFIG    _CONFIG9, _CPB_ON_9 & _CPD_OFF_9
+;Program Configuration Register 5H
+;		__CONFIG    _CONFIG5H, _CPB_ON_5H & _CPD_OFF_5H
 
-;Program Configuration Register A
-;		__CONFIG    _CONFIGA, _WRT0_OFF_A & _WRT1_OFF_A & _WRT2_OFF_A & _WRT3_OFF_A
+;Program Configuration Register 6L
+;		__CONFIG    _CONFIG6L, _WRT0_OFF_6L & _WRT1_OFF_6L & _WRT2_OFF_6L & _WRT3_OFF_6L 
 
-;Program Configuration Register B
-;		__CONFIG    _CONFIGB, _WRTC_OFF_C & _WRTC_OFF_B & _WRTC_OFF_D
+;Program Configuration Register 6H
+;		__CONFIG    _CONFIG6H, _WRTC_OFF_6H & _WRTB_OFF_6H & _WRTD_OFF_6H
 
-;Program Configuration Register C
-;		__CONFIG    _CONFIGC, _EBTR0_OFF_C & _EBTR1_OFF_C & _EBTR2_OFF_C & _EBTR3_OFF_C
+;Program Configuration Register 7L
+;		__CONFIG    _CONFIG7L, _EBTR0_OFF_7L & _EBTR1_OFF_7L & _EBTR2_OFF_7L & _EBTR3_OFF_7L
 
-;Program Configuration Register D
-;		__CONFIG    _CONFIGD, _EBTRB_OFF_D
+;Program Configuration Register 7H
+;		__CONFIG    _CONFIG7H, _EBTRB_OFF_7H
 
 ;ID Locations Register 0
 ;		__IDLOCS    _IDLOC0, <expression>
@@ -838,6 +852,4 @@ _IDLOC7         EQU    H'200007'
 ;Device ID Register 2
 ;               DEV10, DEV9, DEV8, DEV7, DEV6, DEV5, DEV4, DEV3
 
-
-;==========================================================================
         LIST

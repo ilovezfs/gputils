@@ -27,7 +27,8 @@
 ; 0.03   13 Jun 2001   Fixed RAM map and changed config bit labels      MG
 ; 0.04	 22 Jun 2001   Fixed OSCCON bits								nr	
 ; 0.05	 27 Jun 2001   Fixed LVDCON, IPR2, PIR2, PIE2 bits				nr
-
+; 0.06   22 Oct 2001   Added __MAXROM / __BADROM directive for bad
+;		       ROM between external memory and boot ram	 	pas
 ;==========================================================================
 ;
 ;       Verify Processor
@@ -678,6 +679,15 @@ BA0             EQU  4
        __BADRAM H'400'-H'F7F', H'F9B', H'FA3'-H'FA5'
        __BADRAM H'FA8'-H'FAA', H'FB4'-H'FB9', H'FD4'
         
+;==========================================================================
+;
+;       ROM Definition
+;
+;==========================================================================
+
+       __MAXROM H'1FFFFF'
+       __BADROM H'40000' - H'1FFDFF'
+
 ;==========================================================================
 ;
 ;       Configuration Bits

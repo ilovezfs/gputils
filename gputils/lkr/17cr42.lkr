@@ -1,5 +1,5 @@
-// File: 17cr42.lkr
 // Sample linker command file for 17CR42
+// $Id$
 
 LIBPATH  .
 

@@ -1,5 +1,5 @@
-// File: 16f877.lkr
 // Sample linker command file for 16F877a and 876a
+// $Id$
 
 LIBPATH  .
 
