@@ -61,6 +61,9 @@ extern struct gpal_state {
   struct px *processor_info;    	/* Processor identifiers (e.g. name) */
   gp_boolean processor_chosen;		/* Nonzero after processor-specific init */
   enum size_tag pointer_size;		/* pointer size */
+  char *current_bank;			/* current bank */
+  char *current_ibank;			/* current ibank */
+  char *current_page;			/* current page */
   struct {				/* Processor data */
     char *code;      			/* code section name */
     int code_addr;			/* absolute address of code section */

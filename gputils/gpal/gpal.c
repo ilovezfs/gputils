@@ -571,6 +571,9 @@ init(void)
   state.class = PROC_CLASS_GENERIC;
   state.processor_chosen = false;
   state.pointer_size = size_unknown;
+  state.current_bank = NULL;
+  state.current_ibank = NULL;
+  state.current_page = NULL;
   state.outfilename = NULL;
 
   /* local data */

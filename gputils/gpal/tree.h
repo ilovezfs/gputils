@@ -154,6 +154,8 @@ typedef struct node_struct {
       enum source_type type;
       enum node_storage code_default;
       enum node_storage udata_default;
+      char *page_address;
+      char *bank_address;
     } file;
     struct {
       tree *head;
@@ -239,6 +241,8 @@ typedef struct node_struct {
 #define FILE_TYPE(F)       (F)->value.file.type
 #define FILE_CODE(F)       (F)->value.file.code_default
 #define FILE_UDATA(F)      (F)->value.file.udata_default
+#define FILE_CODE_ADDR(F)  (F)->value.file.page_address
+#define FILE_DATA_ADDR(F)  (F)->value.file.bank_address
 #define FUNC_HEAD(F)       (F)->value.func.head
 #define FUNC_RET(F)        (F)->value.func.ret
 #define FUNC_BODY(F)       (F)->value.func.body

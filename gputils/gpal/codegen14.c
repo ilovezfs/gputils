@@ -32,7 +32,9 @@ Boston, MA 02111-1307, USA.  */
 /* Common                                                                   */
 /****************************************************************************/
 
-#define ADD_BANKSEL(x) if(add_banksel) codegen_write_asm("banksel %s", x);
+#define BANKSEL       codegen_set_bank(bank_addr)
+#define BANKSEL_LOCAL codegen_set_bank(FILE_DATA_ADDR(state.module))
+#define BANKISEL      codegen_set_ibank(bank_addr)
 
 /* load a constant into the working register */
 
@@ -48,6 +50,8 @@ load_constant14(int value, enum size_tag size)
 
   /* FIXME: use codegen_bytes */
   num_bytes = prim_size(size);
+
+  BANKSEL_LOCAL;
 
   switch (num_bytes) {
   case 4:
@@ -72,7 +76,7 @@ load_constant14(int value, enum size_tag size)
 /* load a file into the working register */
 
 static void
-load_file14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
+load_file14(char *name, enum size_tag size, int offset, char *bank_addr)
 {
   int num_bytes;
   char offset_buffer[64];
@@ -87,9 +91,8 @@ load_file14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
   
   /* W is used as the working register for single byte types. */
   if ((size == size_int8) || (size == size_uint8)) {
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("movf %s%s, w", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     return;
   }
 
@@ -97,27 +100,27 @@ load_file14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
 
   switch (num_bytes) {
   case 4:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("movf %s%s + 3, w", name, offset_buffer);
-    ADD_BANKSEL(WORKING_LABEL);
+    BANKSEL_LOCAL;
     codegen_write_asm("movwf %s + 3", WORKING_LABEL);
     /* fall through */
   case 3:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("movf %s%s + 2, w", name, offset_buffer);
-    ADD_BANKSEL(WORKING_LABEL);
+    BANKSEL_LOCAL;
     codegen_write_asm("movwf %s + 2", WORKING_LABEL);
     /* fall through */
   case 2:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("movf %s%s + 1, w", name, offset_buffer);
-    ADD_BANKSEL(WORKING_LABEL);
+    BANKSEL_LOCAL;
     codegen_write_asm("movwf %s + 1", WORKING_LABEL);
     /* fall through */
   case 1:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("movf %s%s, w", name, offset_buffer);
-    ADD_BANKSEL(WORKING_LABEL);
+    BANKSEL_LOCAL;
     codegen_write_asm("movwf %s", WORKING_LABEL);
   }
 
@@ -126,7 +129,7 @@ load_file14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
 /* store the working register to a file */
 
 static void
-store_file14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
+store_file14(char *name, enum size_tag size, int offset, char *bank_addr)
 {
   int num_bytes;
   char offset_buffer[64];
@@ -140,9 +143,8 @@ store_file14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
   }
   
   if ((size == size_int8) || (size == size_uint8)) {
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("movwf %s%s", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     return;
   }
 
@@ -150,28 +152,28 @@ store_file14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
 
   switch (num_bytes) {
   case 4:
+    BANKSEL_LOCAL;
     codegen_write_asm("movf %s + 3, w", WORKING_LABEL);
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("movwf %s%s + 3", name, offset_buffer);
     /* fall through */
   case 3:
-    ADD_BANKSEL(WORKING_LABEL);
+    BANKSEL_LOCAL;
     codegen_write_asm("movf %s + 2, w", WORKING_LABEL);
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("movwf %s%s + 2", name, offset_buffer);
     /* fall through */
   case 2:
-    ADD_BANKSEL(WORKING_LABEL);
+    BANKSEL_LOCAL;
     codegen_write_asm("movf %s + 1, w", WORKING_LABEL);
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("movwf %s%s + 1", name, offset_buffer);
     /* fall through */
   case 1:
-    ADD_BANKSEL(WORKING_LABEL);
+    BANKSEL_LOCAL;
     codegen_write_asm("movf %s, w", WORKING_LABEL);
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("movwf %s%s", name, offset_buffer);
-    ADD_BANKSEL(WORKING_LABEL);
   }
 
 }
@@ -182,14 +184,12 @@ static void
 load_indirect14(char *name,
                 enum size_tag size,
                 int offset,
-                gp_boolean add_bankisel)
+                char *bank_addr)
 {
   int num_bytes;
   int i;
 
-  if (add_bankisel) {
-    codegen_write_asm("bankisel %s", name);
-  }
+  BANKISEL;
 
   if ((size == size_int8) || (size == size_uint8)) {
     codegen_write_asm("movf INDF, w");
@@ -199,8 +199,11 @@ load_indirect14(char *name,
   num_bytes = prim_size(size);
 
   for (i = 0; i < num_bytes; i++) {
+    codegen_set_bank("INDF");
     codegen_write_asm("movf INDF, w");
+    BANKSEL_LOCAL;
     codegen_write_asm("movwf %s + %i", WORKING_LABEL, i);
+    codegen_set_bank("FSR");
     codegen_write_asm("incf FSR, f");
   }
 
@@ -212,14 +215,12 @@ static void
 store_indirect14(char *name,
                  enum size_tag size,
                  int offset,
-                 gp_boolean add_bankisel)
+                 char *bank_addr)
 {
   int num_bytes;
   int i;
 
-  if (add_bankisel) {
-    codegen_write_asm("bankisel %s", name);
-  }
+  BANKISEL;
 
   if ((size == size_int8) || (size == size_uint8)) {
     codegen_write_asm("movwf INDF");
@@ -229,7 +230,9 @@ store_indirect14(char *name,
   num_bytes = prim_size(size);
 
   for (i = 0; i < num_bytes; i++) {
+    BANKSEL_LOCAL;
     codegen_write_asm("movf %s + %i, w", WORKING_LABEL, i);
+    codegen_set_bank("INDF");
     codegen_write_asm("movwf INDF");
     codegen_write_asm("incf FSR, f");
   }
@@ -291,7 +294,7 @@ move_to_working(enum size_tag size)
 /****************************************************************************/
 
 static void
-clr_direct14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
+clr_direct14(char *name, enum size_tag size, int offset, char *bank_addr)
 {
   char offset_buffer[64];
   
@@ -309,33 +312,29 @@ clr_direct14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
     break;
   case size_uint8:
   case size_int8:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("clrf %s%s", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint16:
   case size_int16:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("clrf %s%s", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 1", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint24:
   case size_int24:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("clrf %s%s", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 1", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 2", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint32:
   case size_int32:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("clrf %s%s", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 1", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 2", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 3", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_float:
   default:
@@ -348,18 +347,17 @@ static void
 clr_indirect14(char *name,
                enum size_tag size,
                int offset,
-               gp_boolean add_bankisel)
+               char *bank_addr)
 {
   int num_bytes;
   int i;
 
-  if (add_bankisel) {
-    codegen_write_asm("bankisel %s", name);
-  }
+  BANKISEL;
 
   num_bytes = prim_size(size);
 
   for (i = 0; i < num_bytes; i++) {
+    codegen_set_bank("INDF");
     codegen_write_asm("clrf INDF");
     codegen_write_asm("incf FSR, f");
   }
@@ -367,7 +365,7 @@ clr_indirect14(char *name,
 }
 
 static void
-inc_direct14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
+inc_direct14(char *name, enum size_tag size, int offset, char *bank_addr)
 {
   char offset_buffer[64];
   char *label = NULL;
@@ -386,22 +384,20 @@ inc_direct14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
     break;
   case size_uint8:
   case size_int8:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("incf %s%s, f", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint16:
   case size_int16:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("incf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("incf %s%s + 1, f", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint24:
   case size_int24:
     label = codegen_next_label();
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("incf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
     codegen_write_asm("goto %s", label);
@@ -410,12 +406,11 @@ inc_direct14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
     codegen_write_asm("goto %s", label);
     codegen_write_asm("incf %s%s + 2, f", name, offset_buffer);
     codegen_write_label(label);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint32:
   case size_int32:
     label = codegen_next_label();
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("incf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
     codegen_write_asm("goto %s", label);
@@ -427,7 +422,6 @@ inc_direct14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
     codegen_write_asm("goto %s", label);
     codegen_write_asm("incf %s%s + 3, f", name, offset_buffer);
     codegen_write_label(label);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_float:
   default:
@@ -443,21 +437,20 @@ static void
 inc_indirect14(char *name,
                enum size_tag size,
                int offset,
-               gp_boolean add_bankisel)
+               char *bank_addr)
 {
   int num_bytes;
   int i;
   char *label = NULL;
 
-  if (add_bankisel) {
-    codegen_write_asm("bankisel %s", name);
-  }
+  BANKISEL;
 
   num_bytes = prim_size(size);
 
   label = codegen_next_label();
 
   for (i = 0; i < num_bytes; i++) {
+    codegen_set_bank("INDF");
     codegen_write_asm("incf INDF, f");
     codegen_write_asm("btfss STATUS, C");
     codegen_write_asm("goto %s", label);
@@ -472,7 +465,7 @@ inc_indirect14(char *name,
 }
 
 static void
-dec_direct14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
+dec_direct14(char *name, enum size_tag size, int offset, char *bank_addr)
 {
   char offset_buffer[64];
   char *label = NULL;
@@ -491,22 +484,20 @@ dec_direct14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
     break;
   case size_uint8:
   case size_int8:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint16:
   case size_int16:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("decf %s%s + 1, f", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint24:
   case size_int24:
     label = codegen_next_label();
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
     codegen_write_asm("goto %s", label);
@@ -515,12 +506,11 @@ dec_direct14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
     codegen_write_asm("goto %s", label);
     codegen_write_asm("decf %s%s + 2, f", name, offset_buffer);
     codegen_write_label(label);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint32:
   case size_int32:
     label = codegen_next_label();
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
     codegen_write_asm("goto %s", label);
@@ -532,7 +522,6 @@ dec_direct14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
     codegen_write_asm("goto %s", label);
     codegen_write_asm("decf %s%s + 3, f", name, offset_buffer);
     codegen_write_label(label);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_float:
   default:
@@ -548,21 +537,20 @@ static void
 dec_indirect14(char *name,
                enum size_tag size,
                int offset,
-               gp_boolean add_bankisel)
+               char *bank_addr)
 {
   int num_bytes;
   int i;
   char *label = NULL;
 
-  if (add_bankisel) {
-    codegen_write_asm("bankisel %s", name);
-  }
+  BANKISEL;
 
   num_bytes = prim_size(size);
 
   label = codegen_next_label();
 
   for (i = 0; i < num_bytes; i++) {
+    codegen_set_bank("INDF");
     codegen_write_asm("decf INDF, f");
     codegen_write_asm("btfss STATUS, C");
     codegen_write_asm("goto %s", label);
@@ -1612,28 +1600,28 @@ unopgen14(enum node_op op,
           char *name,
           enum size_tag size,
           int offset,
-          gp_boolean add_banksel)
+          char *bank_addr)
 {
   switch (op) {
   case op_clr:
     if (direct) {
-      clr_direct14(name, size, offset, add_banksel);
+      clr_direct14(name, size, offset, bank_addr);
     } else {
-      clr_indirect14(name, size, offset, add_banksel);
+      clr_indirect14(name, size, offset, bank_addr);
     }
     break;
   case op_inc:
     if (direct) {
-      inc_direct14(name, size, offset, add_banksel);
+      inc_direct14(name, size, offset, bank_addr);
     } else {
-      inc_indirect14(name, size, offset, add_banksel);
+      inc_indirect14(name, size, offset, bank_addr);
     }
    break;
   case op_dec:
     if (direct) {
-      dec_direct14(name, size, offset, add_banksel);
+      dec_direct14(name, size, offset, bank_addr);
     } else {
-      dec_indirect14(name, size, offset, add_banksel);
+      dec_indirect14(name, size, offset, bank_addr);
     }
     break;
   default:
