@@ -26,6 +26,7 @@ Boston, MA 02111-1307, USA.  */
 
 enum node_tag { 
   node_unknown,
+  node_alias,
   node_arg,
   node_assembly,
   node_body,
@@ -110,6 +111,10 @@ typedef struct node_struct tree;
 typedef struct node_struct {
   enum node_tag tag;
   union {
+    struct {
+      char *alias;
+      char *name;
+    } alias;
     struct {
       char *name;
       enum node_dir dir;
@@ -204,6 +209,8 @@ typedef struct node_struct {
 
 } node;
 
+#define ALIAS_ALIAS(A)     (A)->value.alias.alias
+#define ALIAS_NAME(A)      (A)->value.alias.name
 #define ARG_NAME(A)        (A)->value.arg.name
 #define ARG_DIR(A)         (A)->value.arg.dir
 #define ARG_TYPE(A)        (A)->value.arg.type
@@ -257,6 +264,7 @@ void free_nodes(void);
 
 tree *mk_node(enum node_tag tag);
 
+tree *mk_alias(char *alias, char *name);
 tree *mk_arg(char *name, enum node_dir dir, char *type);
 tree *mk_assembly(char *assembly);
 tree *mk_body(tree *decl, tree *statements);

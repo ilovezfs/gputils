@@ -5619,7 +5619,7 @@ esac
 
 # Host filesystem options
 case "${host}" in
-  *mingw* | *-pc-os2_emx | *-pc-os2-emx )
+  *mingw* | *-pc-os2_emx | *-pc-os2-emx | *djgpp* )
 
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_DOS_BASED_FILE_SYSTEM 1

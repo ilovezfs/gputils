@@ -69,6 +69,7 @@ static tree *case_ident = NULL;
 }
 
 /* keywords */
+%token <i> ALIAS     "alias"
 %token <i> ARRAY     "array"
 %token <i> CASE      "case"
 %token <i> CONSTANT  "constant"
@@ -147,9 +148,31 @@ static tree *case_ident = NULL;
 %type <t> case_body
 %type <t> loop_statement
 %type <t> parameter_list
-%type <i> '+', '-', '*', '/', '%', '!', '~'
-%type <t> expr, e0, e1, e2, e3, e4, e5, e6, e7, e8,
-%type <o> e1op, e2op, e3op, e4op, e5op, e6op, e7op, e8op
+%type <i> '+'
+%type <i> '-'
+%type <i> '*'
+%type <i> '/'
+%type <i> '%'
+%type <i> '!'
+%type <i> '~'
+%type <t> expr
+%type <t> e0
+%type <t> e1
+%type <t> e2
+%type <t> e3
+%type <t> e4
+%type <t> e5
+%type <t> e6
+%type <t> e7
+%type <t> e8
+%type <o> e1op
+%type <o> e2op
+%type <o> e3op
+%type <o> e4op
+%type <o> e5op
+%type <o> e6op
+%type <o> e7op
+%type <o> e8op
 
 %start program
 
@@ -207,6 +230,11 @@ element:
 	decl
 	{
 	  $$ = $1;
+        }
+	|
+	ALIAS IDENT IDENT ';'
+	{
+	  $$ = mk_alias($2, $3);
         }
 	|
 	PROCEDURE head body PROCEDURE ';'

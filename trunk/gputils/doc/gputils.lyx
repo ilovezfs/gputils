@@ -1305,7 +1305,7 @@ This will create a new type that can take on one of three values.
  So there for the maximum list size is 256 members.
 \layout Subsection
 
-Alias
+Type Alias
 \layout Standard
 
 Types can be given new names to suit the user's preference.
@@ -1364,6 +1364,25 @@ time.pub
  of the with is important.
  To maintain portability across different operating systems, it is best
  to keep the with statements and filenames lower case.
+\layout Subsection
+
+Symbol Alias
+\layout Standard
+
+Symbols can be given new names to suit the user's preference.
+ 
+\layout LyX-Code
+
+alias <new name> <old name>;
+\layout Standard
+
+This example will create an alias of p16f877.porta with the name vdata.
+\layout LyX-Code
+
+type vdata p16f877.porta;
+\layout Standard
+
+An alias can be defined inside a public or module, but not inside a subprogram.
 \layout Subsection
 
 Numbers

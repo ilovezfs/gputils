@@ -1402,6 +1402,8 @@ analyze_module(tree *file)
   current = FILE_BODY(file);
   while (current) {
     switch (current->tag) {
+    case node_alias:
+      break;
     case node_pragma:
       analyze_pragma(current->value.pragma, FILE_TYPE(file));
       break;
@@ -1475,6 +1477,8 @@ analyze_public(tree *file)
   current = FILE_BODY(file);
   while (current) {
     switch (current->tag) {
+    case node_alias:
+      break;
     case node_pragma:
       analyze_pragma(current->value.pragma,  FILE_TYPE(file));
       break;
@@ -1498,6 +1502,10 @@ analyze_public(tree *file)
   current = FILE_BODY(file);
   while (current) {
     switch (current->tag) {
+    case node_alias:
+      var = get_global(ALIAS_NAME(current));
+      add_symbol_alias(ALIAS_ALIAS(current), current, var);
+      break;
     case node_pragma:
     case node_type:
       break;
@@ -1609,9 +1617,14 @@ static void
 analyze_module_contents(tree *file)
 {
   tree *current = FILE_BODY(file);
+  struct variable *var;
 
   while (current) {
     switch (current->tag) {
+    case node_alias:
+      var = get_global(ALIAS_NAME(current));
+      add_symbol_alias(ALIAS_ALIAS(current), current, var);
+      break;
     case node_pragma:
     case node_decl:
     case node_type:

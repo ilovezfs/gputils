@@ -1,8 +1,133 @@
-#ifndef BISON_PARSE_H
-# define BISON_PARSE_H
+/* A Bison parser, made by GNU Bison 1.875c.  */
 
-#ifndef YYSTYPE
-typedef union {
+/* Skeleton parser for Yacc-like parsing with Bison,
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
+
+/* As a special exception, when this file is copied by Bison into a
+   Bison output file, you may use that output file without restriction.
+   This special exception was added by the Free Software Foundation
+   in version 1.24 of Bison.  */
+
+/* Tokens.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+   /* Put the tokens into the symbol table, so that GDB and other debuggers
+      know about them.  */
+   enum yytokentype {
+     ALIAS = 258,
+     ARRAY = 259,
+     CASE = 260,
+     CONSTANT = 261,
+     BEGIN_TOK = 262,
+     ELSE = 263,
+     ELSIF = 264,
+     END = 265,
+     FOR = 266,
+     FUNCTION = 267,
+     GOTO = 268,
+     IF = 269,
+     IN = 270,
+     INOUT = 271,
+     IS = 272,
+     LOOP = 273,
+     MODULE = 274,
+     NULL_TOK = 275,
+     OF = 276,
+     OTHERS = 277,
+     PRAGMA = 278,
+     PROCEDURE = 279,
+     PUBLIC = 280,
+     RETURN = 281,
+     THEN = 282,
+     TO = 283,
+     TYPE = 284,
+     OUT = 285,
+     WHEN = 286,
+     WHILE = 287,
+     WITH = 288,
+     ASM = 289,
+     IDENT = 290,
+     LABEL = 291,
+     NUMBER = 292,
+     STRING = 293,
+     LSH = 294,
+     RSH = 295,
+     ARROW = 296,
+     GREATER_EQUAL = 297,
+     LESS_EQUAL = 298,
+     EQUAL = 299,
+     NOT_EQUAL = 300,
+     LOGICAL_AND = 301,
+     LOGICAL_OR = 302
+   };
+#endif
+#define ALIAS 258
+#define ARRAY 259
+#define CASE 260
+#define CONSTANT 261
+#define BEGIN_TOK 262
+#define ELSE 263
+#define ELSIF 264
+#define END 265
+#define FOR 266
+#define FUNCTION 267
+#define GOTO 268
+#define IF 269
+#define IN 270
+#define INOUT 271
+#define IS 272
+#define LOOP 273
+#define MODULE 274
+#define NULL_TOK 275
+#define OF 276
+#define OTHERS 277
+#define PRAGMA 278
+#define PROCEDURE 279
+#define PUBLIC 280
+#define RETURN 281
+#define THEN 282
+#define TO 283
+#define TYPE 284
+#define OUT 285
+#define WHEN 286
+#define WHILE 287
+#define WITH 288
+#define ASM 289
+#define IDENT 290
+#define LABEL 291
+#define NUMBER 292
+#define STRING 293
+#define LSH 294
+#define RSH 295
+#define ARROW 296
+#define GREATER_EQUAL 297
+#define LESS_EQUAL 298
+#define EQUAL 299
+#define NOT_EQUAL 300
+#define LOGICAL_AND 301
+#define LOGICAL_OR 302
+
+
+
+
+#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
+#line 59 "parse.y"
+typedef union YYSTYPE {
   int i;
   struct {
     tree *start;
@@ -12,56 +137,15 @@ typedef union {
   tree *t;
   enum node_dir d;
   enum node_op o;
-} yystype;
-# define YYSTYPE yystype
+} YYSTYPE;
+/* Line 1275 of yacc.c.  */
+#line 143 "y.tab.h"
+# define yystype YYSTYPE /* obsolescent; will be withdrawn */
+# define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
 #endif
-# define	ARRAY	257
-# define	CASE	258
-# define	CONSTANT	259
-# define	BEGIN_TOK	260
-# define	ELSE	261
-# define	ELSIF	262
-# define	END	263
-# define	FOR	264
-# define	FUNCTION	265
-# define	GOTO	266
-# define	IF	267
-# define	IN	268
-# define	INOUT	269
-# define	IS	270
-# define	LOOP	271
-# define	MODULE	272
-# define	NULL_TOK	273
-# define	OF	274
-# define	OTHERS	275
-# define	PRAGMA	276
-# define	PROCEDURE	277
-# define	PUBLIC	278
-# define	RETURN	279
-# define	THEN	280
-# define	TO	281
-# define	TYPE	282
-# define	OUT	283
-# define	WHEN	284
-# define	WHILE	285
-# define	WITH	286
-# define	ASM	287
-# define	IDENT	288
-# define	LABEL	289
-# define	NUMBER	290
-# define	STRING	291
-# define	LSH	292
-# define	RSH	293
-# define	ARROW	294
-# define	GREATER_EQUAL	295
-# define	LESS_EQUAL	296
-# define	EQUAL	297
-# define	NOT_EQUAL	298
-# define	LOGICAL_AND	299
-# define	LOGICAL_OR	300
-
 
 extern YYSTYPE yylval;
 
-#endif /* not BISON_PARSE_H */
+
+
