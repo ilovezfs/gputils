@@ -1812,7 +1812,6 @@ analyze_setfar(void)
 void
 analyze(tree *module)
 {
-  struct symbol *sym;
   tree *public = NULL;
 
   generating_function = false;
@@ -1822,11 +1821,11 @@ analyze(tree *module)
   analyze_setfar();
 
   /* locate the public for the module being compiled */ 
-  sym = get_symbol(state.publics, FILE_NAME(module));
-  if (sym) {
-    public = get_symbol_annotation(sym);
-    FILE_TYPE(public) = source_public;
-  }
+  public = find_public(FILE_NAME(module));
+  if (public == NULL)
+    return;
+
+  FILE_TYPE(public) = source_public;
 
   codegen_init_deps(module);
 
@@ -1861,10 +1860,8 @@ analyze(tree *module)
   codegen_close_asm();
   codegen_close_deps();
 
-  if (public) {
-    /* return the public to with */
-    FILE_TYPE(public) = source_with;
-  }
+  /* return the public to with */
+  FILE_TYPE(public) = source_with;
 
   return;
 }
