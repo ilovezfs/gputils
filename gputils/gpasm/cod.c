@@ -255,7 +255,7 @@ void write_file_block(void)
   }
 
   if(id_number>=1000) {
-    printf("Too many files to handle in the .cod file\n");
+    /* Too many files to handle in the .cod file */
     assert(0);
   }
 

@@ -123,10 +123,6 @@ make_macro_buffer(struct macro_head *h)
   /* build the string to be scanned */  
   copy_macro_body(h->body, macro_src);
 
-  #ifdef __DEBUG__
-    printf("macro: \n%s\n", macro_src);
-  #endif
-
   return macro_src;
 }
 
