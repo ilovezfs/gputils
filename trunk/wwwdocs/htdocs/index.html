@@ -6,7 +6,7 @@
 	<META NAME="AUTHOR" CONTENT="Craig Franklin">
 	<META NAME="CREATED" CONTENT="20010305;1020400">
 	<META NAME="CHANGEDBY" CONTENT=" ">
-	<META NAME="CHANGED" CONTENT="20020404;421100">
+	<META NAME="CHANGED" CONTENT="20020417;18424600">
 	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
 	<STYLE>
 	<!--
@@ -21,14 +21,14 @@
 <H1 ALIGN=CENTER><FONT SIZE=7>gputils</FONT></H1>
 <H2 ALIGN=CENTER>GNU PIC Utilities</H2>
 <TABLE WIDTH=100% BORDER=0 CELLPADDING=2 CELLSPACING=0 BGCOLOR="#ffffff">
+	<COL WIDTH=32*>
+	<COL WIDTH=143*>
+	<COL WIDTH=82*>
 	<TR VALIGN=TOP>
-		<TD ROWSPAN=16 WIDTH=12%>
+		<TD ROWSPAN=14 WIDTH=12%>
 			<P><A HREF="#What"><I><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">What</FONT></I></A>
 						</P>
-			<P><A HREF="#Who"><I><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Who</FONT></I></A>
-						</P>
-			<P><A HREF="#History"><I><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">History</FONT></I></A>
-						</P>
+			<P><A HREF="#Who"><I><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Who</FONT></I></A></P>
 			<P><A HREF="#Platforms"><I><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Platforms</FONT></I></A>
 						</P>
 			<P><A HREF="#Download"><I><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Download</FONT></I></A>
@@ -67,47 +67,6 @@
 			<P><FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Currently,
 			it is primarily supported by <A HREF="mailto:craigfranklin@attbi.com">Craig
 			Franklin</A> and <A HREF="mailto:scott@datallo.com">Scott Dattalo.</A></FONT></FONT></P>
-		</TD>
-	</TR>
-	<TR>
-		<TD COLSPAN=2 WIDTH=88% VALIGN=TOP BGCOLOR="#00b8ff">
-			<P><A NAME="History"></A><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><I><B>A
-			Brief History</B></I></FONT></P>
-		</TD>
-	</TR>
-	<TR>
-		<TD COLSPAN=2 WIDTH=88%>
-			<P><FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">In
-			1997, <A HREF="mailto:jamesbowman@users.sourceforge.net">James
-			Bowman</A> started gpasm. The objective was to create an open
-			source replacement for <A HREF="http://www.microchip.com/">Microchip's</A>
-			MPASM. During this time many people contributed to gpasm.</FONT></FONT>
-						</P>
-			<UL>
-				<P><A HREF="mailto:scott@datallo.com"><FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Scott
-				Dattalo</FONT></FONT></A> <BR><A HREF="mailto:james.cameron@digital.com"><FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">James
-				Cameron</FONT></FONT></A> <BR><A HREF="mailto:spe@stacken.kth.se"><FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Stefan
-				Petersen</FONT></FONT></A> <BR><A HREF="mailto:eric@brouhaha.com"><FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Eric
-				Smith</FONT></FONT></A> <BR><A HREF="mailto:azummo@ita.flashnet.it"><FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Alessandro
-				Zummo</FONT></FONT></A> <BR><A HREF="mailto:aab@cichlid.com"><FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Andrew
-				Burgess</FONT></FONT></A> <BR><A HREF="mailto:sbs@wavefront.com"><FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Bruce
-				Stough</FONT></FONT></A> <BR><A HREF="mailto:thorn@acm.org"><FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Tommy
-				Thorn</FONT></FONT></A> <BR><A HREF="mailto:scott@datallo.com"><FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Charlie
-				Krauter</FONT></FONT></A></P>
-			</UL>
-			<P><FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">At
-			the end of 2000, <A HREF="mailto:craigfranklin@attbi.com">Craig
-			Franklin</A> became the primary gpasm developer. Through most of
-			2001 the focus was compatiblity with MPASM. This was made much
-			easiler by a contribution of MPASM test files to the project by
-			<A HREF="http://www.microchip.com/">Microchip</A>.</FONT></FONT>
-			<FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Also
-			during this time, work started on relocatable object tools for
-			gpasm.</FONT></FONT> 
-			</P>
-			<P><FONT FACE="arial, sans-serif"><FONT SIZE=2>In 2002, A new
-			package, gputils, containing gpasm and the new relocatable object
-			tools was created.</FONT></FONT></P>
 		</TD>
 	</TR>
 	<TR>
@@ -243,9 +202,9 @@
 			4, 2002 -- gputils-0.10.2 Released</B></I></FONT></FONT></P>
 			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>gpasm
 			now generates messages, warnings, and errors for various invalid
-			arguments to instructions.  Typically because the argument is not
-			within the valid range.  Additionally, gpasm now generates
-			messages and warnings related to setting the bank and page bits.</FONT></FONT></P>
+			arguments to instructions. Typically because the argument is not
+			within the valid range. Additionally, gpasm now generates messages
+			and warnings related to setting the bank and page bits.</FONT></FONT></P>
 			<P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><I><B>February
 			24, 2002 -- gputils-0.10.1 Released</B></I></FONT></FONT></P>
 			<P STYLE="font-style: normal; font-weight: medium"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2>This
@@ -305,6 +264,8 @@
 				Manual</A> - for information on the tools in <A HREF="http://www.adobe.com/">Acrobat</A>
 				format. You might also want to take a look at <A HREF="http://www.microchip.com/">Microchip's</A>
 				MPASM <A HREF="http://www.microchip.com/10/Tools/PICmicro/Code/MPASM/33014g\index.htm">manual</A>.</FONT></FONT></P>
+				<LI><P><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><FONT SIZE=2><A HREF="http://gputils.sourceforge.net/faq.html">FAQ</A>
+				- for frequently asked questions.</FONT></FONT></P>
 			</UL>
 			<UL>
 				<LI><P><FONT SIZE=2><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular"><A HREF="mailto:gnupic@linuxhacker.org">Mailing
@@ -351,17 +312,17 @@
 	</TR>
 	<TR>
 		<TD WIDTH=12% VALIGN=TOP></TD>
-		<TD WIDTH=42%>
+		<TD WIDTH=56%>
 			<P><I><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">This
 			Site Hosted by</FONT></I> 
 			</P>
 			<P><A HREF="http://sourceforge.net/"><IMG SRC="http://sourceforge.net/sflogo.php?group_id=41924" NAME="Graphic1" ALT="SourceForge" ALIGN=BOTTOM WIDTH=88 HEIGHT=31 BORDER=0></A></P>
 		</TD>
-		<TD WIDTH=46%>
+		<TD WIDTH=32%>
 			<P ALIGN=RIGHT><A HREF="mailto:craigfranklin@attbi.com"><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Webmaster</FONT></A>
 						</P>
 			<P ALIGN=RIGHT><FONT FACE="Arial, Helvetica, Geneva, Swiss, SunSans-Regular">Last
-			updated: April 4, 2002</FONT></P>
+			updated: April 17, 2002</FONT></P>
 		</TD>
 	</TR>
 </TABLE>
