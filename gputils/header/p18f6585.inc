@@ -4262,7 +4262,7 @@ _MCLRE_OFF_3H        EQU  H'7F'    ; Disabled
 _MCLRE_ON_3H         EQU  H'FF'    ; Enabled
 
 _CCP2MX_OFF_3H       EQU  H'FE'    ; CCP2 input/output is multiplexed with RE7
-_CCP2MX_ON_3H        EQU  H'FE'    ; CCP2 input/output is multiplexed with RC1
+_CCP2MX_ON_3H        EQU  H'FF'    ; CCP2 input/output is multiplexed with RC1
 
 ;----- CONFIG4L Options --------------------------------------------------
 _STVR_OFF_4L         EQU  H'FE'    ; Disabled

@@ -7,6 +7,7 @@
 ; the data sheets as closely as possible.  The microcontrollers included
 ; in this file are:
 
+;		16F59
 ;		16F57
 ;		16F54
 
@@ -18,8 +19,12 @@
 
 ;       1. Command line switch:
 ;               C:\ MPASM MYFILE.ASM /P16F54
+;		C:\ MPASM MYFILE.ASM /P16F57
+;		C:\ MPASM MYFILE.ASM /P16F59
 ;       2. LIST directive in the source file
 ;               LIST   P=16F54
+;		LIST   P=16F57
+;		LIST   P=16F59
 ;       3. Processor Type entry in the MPASM full-screen interface
 
 ;==========================================================================
@@ -31,7 +36,7 @@
 ;Rev:   Date:   Reason:
 
 ;1.00	12/09/03 Initial release for the PIC16F54/F57
-
+;1.10	05/28/04 Update to add PIC16F59
 
 ;==========================================================================
 ;
@@ -90,6 +95,15 @@ PORTC                     EQU     H'0007'
            __MAXRAM H'07F'
         ENDIF
 
+;--------------------------------------------------------------------------
+
+        IFDEF __16F59
+                                                ; Register Files
+PORTC                     EQU     H'0007'
+PORTD                     EQU     H'0008'
+PORTE                     EQU     H'0009'
+           __MAXRAM H'07F'
+        ENDIF
 
 ;==========================================================================
 ;

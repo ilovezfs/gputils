@@ -120,10 +120,14 @@ PIE3             EQU  H'0FA3'
 PIR3             EQU  H'0FA4'
 IPR3             EQU  H'0FA5'
 EECON1           EQU  H'0FA6'
+RCSTA            EQU  H'0FAB'
 RCSTA1           EQU  H'0FAB'
+TXSTA            EQU  H'0FAC'
 TXSTA1           EQU  H'0FAC'
+TXREG            EQU  H'0FAD'
 TXREG1           EQU  H'0FAD'
 RCREG1           EQU  H'0FAE'
+SPBRG            EQU  H'0FAF'
 SPBRG1           EQU  H'0FAF'
 PSPCON           EQU  H'0FB0'
 T3CON            EQU  H'0FB1'
@@ -162,7 +166,7 @@ TMR1L            EQU  H'0FCE'
 TMR1H            EQU  H'0FCF'
 RCON             EQU  H'0FD0'
 WDTCON           EQU  H'0FD1'
-LVDCON           EQU  H'0FD2'
+HLVDCON          EQU  H'0FD2'
 OSCCON           EQU  H'0FD3'
 T0CON            EQU  H'0FD5'
 TMR0L            EQU  H'0FD6'
@@ -759,7 +763,9 @@ TUN1             EQU  H'0001'
 TUN2             EQU  H'0002'
 TUN3             EQU  H'0003'
 TUN4             EQU  H'0004'
-HF256DIV         EQU  H'0007'
+TUN5             EQU  H'0005'
+PLLEN            EQU  H'0006'
+INTSRC           EQU  H'0007'
 
 
 ;----- MEMCON Bits -----------------------------------------------------
@@ -869,6 +875,19 @@ FREE             EQU  H'0004'
 CFGS             EQU  H'0006'
 
 
+;----- RCSTA Bits -----------------------------------------------------
+RX9D             EQU  H'0000'
+OERR             EQU  H'0001'
+FERR             EQU  H'0002'
+ADEN             EQU  H'0003'
+CREN             EQU  H'0004'
+SREN             EQU  H'0005'
+RX9              EQU  H'0006'
+SPEN             EQU  H'0007'
+
+ADDEN            EQU  H'0003'
+
+
 ;----- RCSTA1 Bits -----------------------------------------------------
 RX9D             EQU  H'0000'
 OERR             EQU  H'0001'
@@ -880,6 +899,16 @@ RX9              EQU  H'0006'
 SPEN             EQU  H'0007'
 
 ADDEN            EQU  H'0003'
+
+
+;----- TXSTA Bits -----------------------------------------------------
+TX9D             EQU  H'0000'
+TRMT             EQU  H'0001'
+BRGH             EQU  H'0002'
+SYNC             EQU  H'0004'
+TXEN             EQU  H'0005'
+TX9              EQU  H'0006'
+CSRC             EQU  H'0007'
 
 
 ;----- TXSTA1 Bits -----------------------------------------------------
@@ -1109,13 +1138,14 @@ SWDTEN           EQU  H'0000'
 SWDTE            EQU  H'0000'
 
 
-;----- LVDCON Bits -----------------------------------------------------
+;----- HLVDCON Bits -----------------------------------------------------
 LVDL0            EQU  H'0000'
 LVDL1            EQU  H'0001'
 LVDL2            EQU  H'0002'
 LVDL3            EQU  H'0003'
 LVDEN            EQU  H'0004'
 IRVST            EQU  H'0005'
+VDIRMAG          EQU  H'0007'
 
 LVV0             EQU  H'0000'
 LVV1             EQU  H'0001'
@@ -1313,13 +1343,13 @@ _WDTPS_16384_2H      EQU  H'FD'    ; 1:16384
 _WDTPS_32768_2H      EQU  H'FF'    ; 1:32768
 
 ;----- CONFIG3L Options --------------------------------------------------
-_MODE_EM_3L          EQU  H'FC'    ; Extended Microcontroller Mode
-_MODE_MPB_3L         EQU  H'FD'    ; Microprocessor with Boot Block Mode
-_MODE_MP_3L          EQU  H'FE'    ; Microprocessor Mode
-_MODE_MC_3L          EQU  H'FF'    ; Microcontroller Mode
+_PM_EM_3L            EQU  H'FC'    ; Extended Microcontroller Mode
+_PM_MPB_3L           EQU  H'FD'    ; Microprocessor with Boot Block Mode
+_PM_MP_3L            EQU  H'FE'    ; Microprocessor Mode
+_PM_MC_3L            EQU  H'FF'    ; Microcontroller Mode
 
-_BUSWIDTH_8Bit_3L    EQU  H'BF'    ; 8-Bit External Data Bus Width
-_BUSWIDTH_16Bit_3L   EQU  H'BF'    ; 16-Bit External Data Bus Width
+_BW_8_3L             EQU  H'BF'    ; 8-Bit External Data Bus Width
+_BW_16_3L            EQU  H'FF'    ; 16-Bit External Data Bus Width
 
 _WAIT_ON_3L          EQU  H'7F'    ; Enabled
 _WAIT_OFF_3L         EQU  H'FF'    ; Disabled

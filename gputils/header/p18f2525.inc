@@ -130,6 +130,7 @@ TMR1L            EQU  H'0FCE'
 TMR1H            EQU  H'0FCF'
 RCON             EQU  H'0FD0'
 WDTCON           EQU  H'0FD1'
+HLVDCON          EQU  H'0FD2'
 LVDCON           EQU  H'0FD2'
 OSCCON           EQU  H'0FD3'
 DEBUG            EQU  H'0FD4'
@@ -199,6 +200,8 @@ SS               EQU  H'0005'
 NOT_SS           EQU  H'0005'
 
 LVDIN            EQU  H'0005'
+
+HLVDIN           EQU  H'0005'
 
 
 ;----- PORTB Bits -----------------------------------------------------
@@ -414,6 +417,8 @@ EEIE             EQU  H'0004'
 CMIE             EQU  H'0006'
 OSCFIE           EQU  H'0007'
 
+HLVDIE           EQU  H'0002'
+
 
 ;----- PIR2 Bits -----------------------------------------------------
 CCP2IF           EQU  H'0000'
@@ -424,6 +429,8 @@ EEIF             EQU  H'0004'
 CMIF             EQU  H'0006'
 OSCFIF           EQU  H'0007'
 
+HLVDIF           EQU  H'0002'
+
 
 ;----- IPR2 Bits -----------------------------------------------------
 CCP2IP           EQU  H'0000'
@@ -433,6 +440,8 @@ BCLIP            EQU  H'0003'
 EEIP             EQU  H'0004'
 CMIP             EQU  H'0006'
 OSCFIP           EQU  H'0007'
+
+HLVDIP           EQU  H'0002'
 
 
 ;----- EECON1 Bits -----------------------------------------------------
@@ -658,6 +667,30 @@ SWDTEN           EQU  H'0000'
 SWDTE            EQU  H'0000'
 
 
+;----- HLVDCON Bits -----------------------------------------------------
+LVDL0            EQU  H'0000'
+LVDL1            EQU  H'0001'
+LVDL2            EQU  H'0002'
+LVDL3            EQU  H'0003'
+LVDEN            EQU  H'0004'
+IRVST            EQU  H'0005'
+
+LVV0             EQU  H'0000'
+LVV1             EQU  H'0001'
+LVV2             EQU  H'0002'
+LVV3             EQU  H'0003'
+BGST             EQU  H'0005'
+
+HLVDL0           EQU  H'0000'
+HLVDL1           EQU  H'0001'
+HLVDL2           EQU  H'0002'
+HLVDL3           EQU  H'0003'
+HLVDEN           EQU  H'0004'
+VDIRMAG          EQU  H'0007'
+
+IVRST            EQU  H'0005'
+
+
 ;----- LVDCON Bits -----------------------------------------------------
 LVDL0            EQU  H'0000'
 LVDL1            EQU  H'0001'
@@ -665,6 +698,18 @@ LVDL2            EQU  H'0002'
 LVDL3            EQU  H'0003'
 LVDEN            EQU  H'0004'
 IRVST            EQU  H'0005'
+
+LVV0             EQU  H'0000'
+LVV1             EQU  H'0001'
+LVV2             EQU  H'0002'
+LVV3             EQU  H'0003'
+BGST             EQU  H'0005'
+
+HLVDL0           EQU  H'0000'
+HLVDL1           EQU  H'0001'
+HLVDL2           EQU  H'0002'
+HLVDL3           EQU  H'0003'
+HLVDEN           EQU  H'0004'
 VDIRMAG          EQU  H'0007'
 
 IVRST            EQU  H'0005'

@@ -139,6 +139,7 @@ TMR1L            EQU  H'0FCE'
 TMR1H            EQU  H'0FCF'
 RCON             EQU  H'0FD0'
 WDTCON           EQU  H'0FD1'
+HLVDCON          EQU  H'0FD2'
 LVDCON           EQU  H'0FD2'
 OSCCON           EQU  H'0FD3'
 T0CON            EQU  H'0FD5'
@@ -806,6 +807,30 @@ SWDTEN           EQU  H'0000'
 SWDTE            EQU  H'0000'
 
 
+;----- HLVDCON Bits -----------------------------------------------------
+LVDL0            EQU  H'0000'
+LVDL1            EQU  H'0001'
+LVDL2            EQU  H'0002'
+LVDL3            EQU  H'0003'
+LVDEN            EQU  H'0004'
+IRVST            EQU  H'0005'
+
+LVV0             EQU  H'0000'
+LVV1             EQU  H'0001'
+LVV2             EQU  H'0002'
+LVV3             EQU  H'0003'
+BGST             EQU  H'0005'
+
+HLVDL0           EQU  H'0000'
+HLVDL1           EQU  H'0001'
+HLVDL2           EQU  H'0002'
+HLVDL3           EQU  H'0003'
+HLVDEN           EQU  H'0004'
+VDIRMAG          EQU  H'0007'
+
+IVRST            EQU  H'0005'
+
+
 ;----- LVDCON Bits -----------------------------------------------------
 LVDL0            EQU  H'0000'
 LVDL1            EQU  H'0001'
@@ -813,6 +838,21 @@ LVDL2            EQU  H'0002'
 LVDL3            EQU  H'0003'
 LVDEN            EQU  H'0004'
 IRVST            EQU  H'0005'
+
+LVV0             EQU  H'0000'
+LVV1             EQU  H'0001'
+LVV2             EQU  H'0002'
+LVV3             EQU  H'0003'
+BGST             EQU  H'0005'
+
+HLVDL0           EQU  H'0000'
+HLVDL1           EQU  H'0001'
+HLVDL2           EQU  H'0002'
+HLVDL3           EQU  H'0003'
+HLVDEN           EQU  H'0004'
+VDIRMAG          EQU  H'0007'
+
+IVRST            EQU  H'0005'
 
 
 ;----- OSCCON Bits -----------------------------------------------------

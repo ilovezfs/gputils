@@ -3511,6 +3511,8 @@ SS               EQU  H'0005'
 
 NOT_SS           EQU  H'0005'
 
+HLVDIN           EQU  H'0005'
+
 
 ;----- PORTB Bits -----------------------------------------------------
 RB0              EQU  H'0000'
@@ -3717,6 +3719,8 @@ BCLIE            EQU  H'0003'
 EEIE             EQU  H'0004'
 OSCFIE           EQU  H'0007'
 
+HLVDIE           EQU  H'0002'
+
 
 ;----- PIR2 Bits -----------------------------------------------------
 TMR3IF           EQU  H'0001'
@@ -3725,6 +3729,8 @@ BCLIF            EQU  H'0003'
 EEIF             EQU  H'0004'
 OSCFIF           EQU  H'0007'
 
+HLVDIF           EQU  H'0002'
+
 
 ;----- IPR2 Bits -----------------------------------------------------
 TMR3IP           EQU  H'0001'
@@ -3732,6 +3738,8 @@ LVDIP            EQU  H'0002'
 BCLIP            EQU  H'0003'
 EEIP             EQU  H'0004'
 OSCFIP           EQU  H'0007'
+
+HLVDIP           EQU  H'0002'
 
 
 ;----- PIE3 Bits -----------------------------------------------------
@@ -3744,6 +3752,7 @@ ERRIE            EQU  H'0005'
 WAKIE            EQU  H'0006'
 IRXIE            EQU  H'0007'
 
+FIFOWMIE         EQU  H'0000'
 RXBnIE           EQU  H'0001'
 TXBnIE           EQU  H'0004'
 
@@ -3758,6 +3767,7 @@ ERRIF            EQU  H'0005'
 WAKIF            EQU  H'0006'
 IRXIF            EQU  H'0007'
 
+FIFOWMIF         EQU  H'0000'
 RXBnIF           EQU  H'0001'
 TXBnIF           EQU  H'0004'
 
@@ -3772,6 +3782,7 @@ ERRIP            EQU  H'0005'
 WAKIP            EQU  H'0006'
 IRXIP            EQU  H'0007'
 
+FIFOWMIP         EQU  H'0000'
 RXBnIP           EQU  H'0001'
 TXBnIP           EQU  H'0004'
 
@@ -3981,7 +3992,6 @@ LVDL2            EQU  H'0002'
 LVDL3            EQU  H'0003'
 LVDEN            EQU  H'0004'
 IRVST            EQU  H'0005'
-LVDMAG           EQU  H'0007'
 
 LVV0             EQU  H'0000'
 LVV1             EQU  H'0001'
@@ -3989,19 +3999,14 @@ LVV2             EQU  H'0002'
 LVV3             EQU  H'0003'
 BGST             EQU  H'0005'
 
-HLVV0            EQU  H'0000'
-HLVV1            EQU  H'0001'
-HLVV2            EQU  H'0002'
-HLVV3            EQU  H'0003'
-HBGST            EQU  H'0005'
-HLVDMAG          EQU  H'0007'
-
 HLVDL0           EQU  H'0000'
 HLVDL1           EQU  H'0001'
 HLVDL2           EQU  H'0002'
 HLVDL3           EQU  H'0003'
 HLVDEN           EQU  H'0004'
-HIRVST           EQU  H'0005'
+VDIRMAG          EQU  H'0007'
+
+IVRST            EQU  H'0005'
 
 
 ;----- LVDCON Bits -----------------------------------------------------
@@ -4011,7 +4016,6 @@ LVDL2            EQU  H'0002'
 LVDL3            EQU  H'0003'
 LVDEN            EQU  H'0004'
 IRVST            EQU  H'0005'
-LVDMAG           EQU  H'0007'
 
 LVV0             EQU  H'0000'
 LVV1             EQU  H'0001'
@@ -4019,19 +4023,14 @@ LVV2             EQU  H'0002'
 LVV3             EQU  H'0003'
 BGST             EQU  H'0005'
 
-HLVV0            EQU  H'0000'
-HLVV1            EQU  H'0001'
-HLVV2            EQU  H'0002'
-HLVV3            EQU  H'0003'
-HBGST            EQU  H'0005'
-HLVDMAG          EQU  H'0007'
-
 HLVDL0           EQU  H'0000'
 HLVDL1           EQU  H'0001'
 HLVDL2           EQU  H'0002'
 HLVDL3           EQU  H'0003'
 HLVDEN           EQU  H'0004'
-HIRVST           EQU  H'0005'
+VDIRMAG          EQU  H'0007'
+
+IVRST            EQU  H'0005'
 
 
 ;----- OSCCON Bits -----------------------------------------------------
@@ -4255,6 +4254,10 @@ _DEBUG_OFF_4L        EQU  H'FF'    ; Disabled
 
 _XINST_OFF_4L        EQU  H'BF'    ; Disabled
 _XINST_ON_4L         EQU  H'FF'    ; Enabled
+
+_BBSIZ_1024_4L       EQU  H'CF'    ; 1K words (2K bytes) Boot Block
+_BBSIZ_2048_4L       EQU  H'DF'    ; 2K words (4K bytes) Boot Block
+_BBSIZ_4096_4L       EQU  H'EF'    ; 4K words (8K bytes) Boot Block
 
 _LVP_OFF_4L          EQU  H'FB'    ; Disabled
 _LVP_ON_4L           EQU  H'FF'    ; Enabled
