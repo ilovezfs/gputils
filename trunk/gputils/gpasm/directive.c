@@ -26,6 +26,7 @@ Boston, MA 02111-1307, USA.  */
 #include "directive.h"
 #include "evaluate.h"
 #include "parse.h"
+#include "processor.h"
 #include "lst.h"
 #include "macro.h"
 #include "gperror.h"
@@ -494,8 +495,16 @@ static int cfg_evaluate_address(struct pnode *p)
       case CONFIG1H:
       case CONFIG2L:
       case CONFIG2H:
+      case CONFIG3L:
       case CONFIG3H:
       case CONFIG4L:
+      case CONFIG4H:
+      case CONFIG5L:
+      case CONFIG5H:
+      case CONFIG6L:
+      case CONFIG6H:
+      case CONFIG7L:
+      case CONFIG7H:
       case DEVID1:
       case DEVID2:
 	return address;
@@ -2389,59 +2398,59 @@ void execute_body(struct macro_head *h)
 /* Note that instructions within each group are sorted alphabetically */
 
 struct insn op_0[] = {
-  { "constant", (long int)do_constant,  INSN_CLASS_FUNC,	0 },
-  { "else",	(long int)do_else, 	INSN_CLASS_FUNC,	ATTRIB_COND },
-  { "endif",	(long int)do_endif,	INSN_CLASS_FUNC,	ATTRIB_COND },
-  { "endm",	(long int)do_endm,	INSN_CLASS_FUNC,	0 },
-  { "endw",	(long int)do_endw,	INSN_CLASS_FUNC,	0 },
-  { "equ",	(long int)do_equ,  	INSN_CLASS_FUNC,	0 },
-  { "error",	(long int)do_error, 	INSN_CLASS_FUNC,	0 },
-  { "exitm",	(long int)do_exitm,     INSN_CLASS_FUNC,	0 },
-  { "expand",	(long int)do_expand,    INSN_CLASS_FUNC,	0 },
-  { "errorlevel", (long int)do_errlvl,  INSN_CLASS_FUNC,	0 },
-  { "if",	(long int)do_if,   	INSN_CLASS_FUNC,	ATTRIB_COND },
-  { "ifdef",	(long int)do_ifdef, 	INSN_CLASS_FUNC,	ATTRIB_COND },
-  { "ifndef",	(long int)do_ifndef,	INSN_CLASS_FUNC,	ATTRIB_COND },
-  { "include",	(long int)do_include, 	INSN_CLASS_FUNC,	0 },
-  { "list",	(long int)do_list, 	INSN_CLASS_FUNC,	0 },
-  { "local",	(long int)do_local, 	INSN_CLASS_FUNC,	0 },
-  { "macro",	(long int)do_macro,	INSN_CLASS_FUNC,	0 },
-  { "messg",	(long int)do_messg,	INSN_CLASS_FUNC,	0 },
-  { "noexpand", (long int)do_noexpand,  INSN_CLASS_FUNC,	0 },
-  { "nolist",	(long int)do_nolist,    INSN_CLASS_FUNC,	0 },
-  { "page",	(long int)do_page,      INSN_CLASS_FUNC,	0 },
-  { "processor",(long int)do_processor, INSN_CLASS_FUNC,	0 },
-  { "radix",	(long int)do_radix, 	INSN_CLASS_FUNC,	0 },
-  { "set",	(long int)do_set, 	INSN_CLASS_FUNC,	0 },
-  { "space",	(long int)do_space,     INSN_CLASS_FUNC,	0 },
-  { "variable", (long int)do_variable,  INSN_CLASS_FUNC,	0 },
-  { "while",	(long int)do_while, 	INSN_CLASS_FUNC,	0 },
-  { ".set",	(long int)do_set, 	INSN_CLASS_FUNC,	0 },
-  { "#else",	(long int)do_else,	INSN_CLASS_FUNC,	ATTRIB_COND },
-  { "#endif",	(long int)do_endif,	INSN_CLASS_FUNC,	ATTRIB_COND },
-  { "#ifdef",	(long int)do_ifdef, 	INSN_CLASS_FUNC,	ATTRIB_COND },
-  { "#ifndef",	(long int)do_ifndef,	INSN_CLASS_FUNC,	ATTRIB_COND },
-  { "#include",	(long int)do_include, 	INSN_CLASS_FUNC,	0 },
-  { "#undefine", (long int)do_undefine,	INSN_CLASS_FUNC,	0 }
+  { "constant",   0, (long int)do_constant,  INSN_CLASS_FUNC,   0 },
+  { "else",       0, (long int)do_else,      INSN_CLASS_FUNC,   ATTRIB_COND },
+  { "endif",      0, (long int)do_endif,     INSN_CLASS_FUNC,   ATTRIB_COND },
+  { "endm",       0, (long int)do_endm,	     INSN_CLASS_FUNC,   0 },
+  { "endw",       0, (long int)do_endw,	     INSN_CLASS_FUNC,   0 },
+  { "equ",        0, (long int)do_equ,       INSN_CLASS_FUNC,   0 },
+  { "error",      0, (long int)do_error,     INSN_CLASS_FUNC,   0 },
+  { "exitm",      0, (long int)do_exitm,     INSN_CLASS_FUNC,   0 },
+  { "expand",     0, (long int)do_expand,    INSN_CLASS_FUNC,   0 },
+  { "errorlevel", 0, (long int)do_errlvl,    INSN_CLASS_FUNC,   0 },
+  { "if",         0, (long int)do_if,        INSN_CLASS_FUNC,   ATTRIB_COND },
+  { "ifdef",      0, (long int)do_ifdef,     INSN_CLASS_FUNC,   ATTRIB_COND },
+  { "ifndef",     0, (long int)do_ifndef,    INSN_CLASS_FUNC,   ATTRIB_COND },
+  { "include",    0, (long int)do_include,   INSN_CLASS_FUNC,   0 },
+  { "list",       0, (long int)do_list,	     INSN_CLASS_FUNC,   0 },
+  { "local",      0, (long int)do_local,     INSN_CLASS_FUNC,   0 },
+  { "macro",      0, (long int)do_macro,     INSN_CLASS_FUNC,	0 },
+  { "messg",      0, (long int)do_messg,     INSN_CLASS_FUNC,   0 },
+  { "noexpand",   0, (long int)do_noexpand,  INSN_CLASS_FUNC,   0 },
+  { "nolist",     0, (long int)do_nolist,    INSN_CLASS_FUNC,   0 },
+  { "page",       0, (long int)do_page,      INSN_CLASS_FUNC,   0 },
+  { "processor",  0, (long int)do_processor, INSN_CLASS_FUNC,   0 },
+  { "radix",      0, (long int)do_radix,     INSN_CLASS_FUNC,   0 },
+  { "set",        0, (long int)do_set, 	     INSN_CLASS_FUNC,   0 },
+  { "space",      0, (long int)do_space,     INSN_CLASS_FUNC,   0 },
+  { "variable",   0, (long int)do_variable,  INSN_CLASS_FUNC,   0 },
+  { "while",      0, (long int)do_while,     INSN_CLASS_FUNC,   0 },
+  { ".set",       0, (long int)do_set, 	     INSN_CLASS_FUNC,   0 },
+  { "#else",      0, (long int)do_else,	     INSN_CLASS_FUNC,   ATTRIB_COND },
+  { "#endif",     0, (long int)do_endif,     INSN_CLASS_FUNC,   ATTRIB_COND },
+  { "#ifdef",     0, (long int)do_ifdef,     INSN_CLASS_FUNC,   ATTRIB_COND },
+  { "#ifndef",    0, (long int)do_ifndef,    INSN_CLASS_FUNC,   ATTRIB_COND },
+  { "#include",   0, (long int)do_include,   INSN_CLASS_FUNC,   0 },
+  { "#undefine",  0, (long int)do_undefine,  INSN_CLASS_FUNC,   0 }
 };
 
 const int num_op_0 = TABLE_SIZE(op_0);
 
 struct insn op_1[] = {
-  { "__badram", (long int)do_badram,    INSN_CLASS_FUNC,	0 },
-  { "__config", (long int)do_config,    INSN_CLASS_FUNC,	0 },
-  { "__fuses",  (long int)do_config,    INSN_CLASS_FUNC,	0 },
-  { "__idlocs", (long int)do_idlocs,    INSN_CLASS_FUNC,	0 },
-  { "__maxram", (long int)do_maxram,    INSN_CLASS_FUNC,	0 },
-  { "data",     (long int)do_data, 	INSN_CLASS_FUNC,	0 },
-  { "da",       (long int)do_da, 	INSN_CLASS_FUNC,	0 },
-  { "db",       (long int)do_db, 	INSN_CLASS_FUNC,	0 },
-  { "de",       (long int)do_de, 	INSN_CLASS_FUNC,	0 },
-  { "dt",       (long int)do_dt, 	INSN_CLASS_FUNC,	0 },
-  { "dw",       (long int)do_dw, 	INSN_CLASS_FUNC,	0 },
-  { "fill",	(long int)do_fill,  	INSN_CLASS_FUNC,	0 },
-  { "org",	(long int)do_org,       INSN_CLASS_FUNC,	0 },
-  { "res",	(long int)do_res,       INSN_CLASS_FUNC,	0 }
+  { "__badram",   0, (long int)do_badram,    INSN_CLASS_FUNC,   0 },
+  { "__config",   0, (long int)do_config,    INSN_CLASS_FUNC,   0 },
+  { "__fuses",    0, (long int)do_config,    INSN_CLASS_FUNC,   0 },
+  { "__idlocs",   0, (long int)do_idlocs,    INSN_CLASS_FUNC,   0 },
+  { "__maxram",   0, (long int)do_maxram,    INSN_CLASS_FUNC,   0 },
+  { "data",       0, (long int)do_data,      INSN_CLASS_FUNC,   0 },
+  { "da",         0, (long int)do_da, 	     INSN_CLASS_FUNC,   0 },
+  { "db",         0, (long int)do_db, 	     INSN_CLASS_FUNC,   0 },
+  { "de",         0, (long int)do_de, 	     INSN_CLASS_FUNC,   0 },
+  { "dt",         0, (long int)do_dt, 	     INSN_CLASS_FUNC,   0 },
+  { "dw",         0, (long int)do_dw, 	     INSN_CLASS_FUNC,   0 },
+  { "fill",       0, (long int)do_fill,      INSN_CLASS_FUNC,   0 },
+  { "org",        0, (long int)do_org,       INSN_CLASS_FUNC,   0 },
+  { "res",        0, (long int)do_res,       INSN_CLASS_FUNC,   0 }
 };
 
 const int num_op_1 = TABLE_SIZE(op_1);
@@ -2451,6 +2460,7 @@ void opcode_init(int stage)
   int i;
   int count = 0;
   struct insn *base = NULL;
+  enum proc_class class;
 
   switch (stage) {
   case 0:
@@ -2462,70 +2472,30 @@ void opcode_init(int stage)
     count = num_op_1;
     break;
   case 2:
-
-    /* XXXPRO: Need to add a line here for any extra processors. */
-
-    switch (state.processor) {
-    case eeprom8:
+    class = gp_processor_class(state.processor);
+    switch (class) {
+    case PROC_CLASS_EEPROM8:
       base = 0;
       count = 0;
       state.device.core_size = CORE_8BIT_MASK;
       state.device.config_address = 0;
       state.device.id_location = 0;
       break;
-    case generic:
+    case PROC_CLASS_GENERIC:
       base = 0;
       count = 0;
       state.device.core_size = CORE_12BIT_MASK;
       state.device.config_address = CONFIG_ADDRESS_12;
       state.device.id_location = IDLOC_ADDRESS_12;
       break;
-    case pic12c508:
-    case pic12c508a:
-    case pic12c509:
-    case pic12c509a:
-    case pic12ce518:
-    case pic12ce519:
-    case pic12cr509a:
-    case pic16c5x:
-    case pic16c505:
-    case pic16c52:
-    case pic16c54:
-    case pic16c54a:
-    case pic16c54b:
-    case pic16c54c:
-    case pic16c55:
-    case pic16c55a:
-    case pic16c56:
-    case pic16c56a:
-    case pic16c57:
-    case pic16c57c:
-    case pic16c58:
-    case pic16c58a:
-    case pic16c58b:   
-    case pic16cr54:
-    case pic16cr54a:
-    case pic16cr54b:
-    case pic16cr54c:
-    case pic16cr56:
-    case pic16cr56a:
-    case pic16cr57a:
-    case pic16cr57b:
-    case pic16cr57c:
-    case pic16cr58a:
-    case pic16cr58b:
-    case pic16hv540:
-    case rf509af:
-    case rf509ag:
+    case PROC_CLASS_PIC12:
       base = op_12c5xx;
       count = num_op_12c5xx;
       state.device.core_size = CORE_12BIT_MASK;
       state.device.config_address = CONFIG_ADDRESS_12;
       state.device.id_location = IDLOC_ADDRESS_12;
       break;
-    case sx18:
-    case sx20:
-    case sx28:
+    case PROC_CLASS_SX:
       base = op_sx;
       count = num_op_sx;
       state.device.core_size = CORE_12BIT_MASK;
@@ -2534,176 +2504,21 @@ void opcode_init(int stage)
       /* page instruction conflicts with the page directive */
       remove_symbol(state.stBuiltin, "page");    
       break;
-    case pic12c671:
-    case pic12c672:
-    case pic12ce673:
-    case pic12ce674:
-    case pic12f629:
-    case pic12f675:
-    case pic14000:
-    case pic16cxx:
-    case pic16c432:
-    case pic16c433:
-    case pic16c461:
-    case pic16c554:
-    case pic16c557:
-    case pic16c558:
-    case pic16c61:
-    case pic16c62:
-    case pic16c62a:
-    case pic16c62b:
-    case pic16c620:
-    case pic16c620a:
-    case pic16c621:
-    case pic16c621a:
-    case pic16c622:
-    case pic16c622a:
-    case pic16c63:
-    case pic16c63a:
-    case pic16c64:
-    case pic16c64a:
-    case pic16c641:
-    case pic16c642:
-    case pic16c65:
-    case pic16c65a:   
-    case pic16c65b:
-    case pic16c66:
-    case pic16c661:
-    case pic16c662:
-    case pic16c67:
-    case pic16c70:
-    case pic16c71:
-    case pic16c71a:
-    case pic16c710:
-    case pic16c711:
-    case pic16c712:
-    case pic16c715:
-    case pic16c716:
-    case pic16c717:
-    case pic16c72:
-    case pic16c72a:
-    case pic16c73:
-    case pic16c73a:
-    case pic16c73b:
-    case pic16c74:
-    case pic16c745:
-    case pic16c74a:
-    case pic16c74b:
-    case pic16c76:
-    case pic16c765:
-    case pic16c77:
-    case pic16c770:
-    case pic16c771:
-    case pic16c773:
-    case pic16c774:
-    case pic16c781:
-    case pic16c782:
-    case pic16c83:
-    case pic16c84:
-    case pic16c85:   
-    case pic16c86:   
-    case pic16c923:
-    case pic16c924:
-    case pic16c925:
-    case pic16c926:
-    case pic16ce623:
-    case pic16ce624:
-    case pic16ce625:
-    case pic16cr62:
-    case pic16cr620a:
-    case pic16cr63:
-    case pic16cr64:  
-    case pic16cr65:
-    case pic16cr72:
-    case pic16cr83:
-    case pic16cr84:
-    case pic16f627:
-    case pic16f627a:
-    case pic16f628:
-    case pic16f628a:
-    case pic16f630:
-    case pic16f676:
-    case pic16f72:
-    case pic16f73:
-    case pic16f74:
-    case pic16f76:
-    case pic16f77:
-    case pic16f818:
-    case pic16f819:
-    case pic16f83:
-    case pic16f84:
-    case pic16f84a:
-    case pic16f85:
-    case pic16f86:
-    case pic16f87:
-    case pic16f870:
-    case pic16f871:
-    case pic16f872:
-    case pic16f873:
-    case pic16f873a:
-    case pic16f874:
-    case pic16f874a:
-    case pic16f876:
-    case pic16f876a:
-    case pic16f877:
-    case pic16f877a:
-    case pic16f88:
-    case pic16lc74b:
+    case PROC_CLASS_PIC14:
       base = op_16cxx;
       count = num_op_16cxx;
       state.device.core_size = CORE_14BIT_MASK;
       state.device.config_address = CONFIG_ADDRESS_14;
       state.device.id_location = IDLOC_ADDRESS_14;
       break;
-    case pic17cxx:
-    case pic17c42:
-    case pic17c42a:
-    case pic17c43:
-    case pic17c44:
-    case pic17c752:
-    case pic17c756:
-    case pic17c756a:
-    case pic17c762:
-    case pic17c766:
-    case pic17cr42:
-    case pic17cr43:
+    case PROC_CLASS_PIC16:
       base = op_17cxx;
       count = num_op_17cxx;
       state.device.core_size = CORE_16BIT_MASK;
       _17cxx_core = 1;
       state.device.config_address = CONFIG_17CXX;
       break;
-    case pic18cxx:
-    case pic18c242:
-    case pic18c252:
-    case pic18c442:
-    case pic18c452:
-    case pic18c601:
-    case pic18c658:
-    case pic18c801:
-    case pic18c858:
-    case pic18f010:
-    case pic18f012:
-    case pic18f020:
-    case pic18f022:
-    case pic18f1220:
-    case pic18f1320:
-    case pic18f2220:
-    case pic18f2320:
-    case pic18f242:
-    case pic18f248:
-    case pic18f252:
-    case pic18f258:
-    case pic18f4220:
-    case pic18f4320:
-    case pic18f442:
-    case pic18f448:
-    case pic18f452:
-    case pic18f458:
-    case pic18f6620:
-    case pic18f6720:
-    case pic18f8620:
-    case pic18f8720:
+    case PROC_CLASS_PIC16E:
       base = op_18cxx;
       count = num_op_18cxx;
       state.device.core_size = CORE_16BIT_MASK;

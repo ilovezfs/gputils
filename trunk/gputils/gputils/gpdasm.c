@@ -20,12 +20,64 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 #include "gpdasm.h"
-#include "gpdis.c"
+
+char *processor_name = NULL;
 
 struct gpdasm_state state = {
-     pic14,		/* processor type */  
-     1			/* output format */
+     generic,		   /* processor type */  
+     PROC_CLASS_GENERIC,   /* 12 bit device */
+     1			   /* output format */
      };
+
+void
+select_processor(void)
+{
+  struct px *found = NULL;
+
+  if (processor_name == NULL) {
+    printf("error: must select processor\n");
+    exit(1);
+  }
+
+  found = gp_find_processor(processor_name);
+
+  if (found) {
+    state.processor = found->tag;
+  } else {
+    printf("Didn't find any processor named: %s\nHere are the supported processors:\n",
+            processor_name);
+    gp_dump_processor_list();
+    exit(1);
+  }
+
+  state.class = gp_processor_class(state.processor);
+   
+  switch (state.class) {
+  case PROC_CLASS_EEPROM8:
+  case PROC_CLASS_GENERIC:
+    fprintf(stderr, "error: unsupported processor class\n");
+    exit(1);
+    break;
+  case PROC_CLASS_PIC12:
+  case PROC_CLASS_SX:
+  case PROC_CLASS_PIC14:
+  case PROC_CLASS_PIC16:
+  case PROC_CLASS_PIC16E:
+    break;
+  default:
+    assert(0);
+  }
+
+  return;
+}
+
+void writeheader()
+{
+  if (!state.format) {
+    printf("\n");
+    printf("        processor %s\n", processor_name);
+  }
+}
 
 void closeasm()
 {
@@ -38,7 +90,7 @@ void writeorg(int address)
 {
   if (!state.format) {
     printf("\n");
-    printf("        org     0x%04x\n", address);
+    printf("        org\t%#x\n", address);
   }
 }
 
@@ -48,6 +100,8 @@ void dasm(MemBlock *memory)
   int i, maximum;
   int lastloc = 0;
   char buffer[80];
+
+  writeheader();
 
   while(m) {
     i = m->base << I_MEM_BITS;
@@ -61,11 +115,7 @@ void dasm(MemBlock *memory)
 	 if (lastloc != i - 1){
 	   writeorg(i);
 	 }
-         if (state.processor == pic12) {
-           mem2asm12(i_memory_get(memory, i), buffer);
-	 } else if (state.processor == pic14) {
-           mem2asm14(i_memory_get(memory, i), buffer);
-         }
+         gp_disassemble(memory, &i, state.class, buffer);
          if (state.format) {
 	   printf("%06x:  %04x  %s\n", i, (i_memory_get(memory, i) & 0xffff), buffer);
 	 } else {
@@ -89,6 +139,7 @@ void show_usage(void)
   printf("Where <options> are:\n");
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -i, --hex-info                 Information on input hex file.\n");
+  printf("  -l, --list-chips               List supported processors.\n");
   printf("  -m, --dump                     Memory dump hex file.\n");
   printf("  -p PROC, --processor PROC      Select processor.\n");
   printf("  -s, --short                    Print short format.\n");
@@ -99,13 +150,14 @@ void show_usage(void)
   exit(0);
 }
 
-#define GET_OPTIONS "?himp:sv"
+#define GET_OPTIONS "?hilmp:sv"
 
   /* Used: himpsv */
   static struct option longopts[] =
   {
     { "help",        0, 0, 'h' },
     { "hex-info",    0, 0, 'i' },
+    { "list-chips",  0, 0, 'l' },
     { "dump",        0, 0, 'm' },
     { "processor",   1, 0, 'p' },
     { "short",       0, 0, 's' },
@@ -136,20 +188,15 @@ int main(int argc, char *argv[])
     case 'i':
       print_hex_info = 1;
       break;
+    case 'l':
+      gp_dump_processor_list();
+      exit(0);
+      break;
     case 'm':
       memory_dump = 1;
       break;
     case 'p':
-      if (strcasecmp(optarg, "pic12") == 0)
-	state.processor = pic12;
-      else if (strcasecmp(optarg, "pic14") == 0)
-	state.processor = pic14;
-      else {
-	fprintf(stderr,
-		"Error: unrecognised processor family \"%s\"\n",
-		optarg);
-        exit(1);
-      }
+      processor_name = optarg;
       break;
     case 's':
       state.format = 0;
@@ -171,6 +218,8 @@ int main(int argc, char *argv[])
   if (usage) {
     show_usage();
   }
+
+  select_processor();
 
   state.hex_info = readhex(filename, state.i_memory);
 

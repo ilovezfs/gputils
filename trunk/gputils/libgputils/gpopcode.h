@@ -68,6 +68,7 @@ enum insn_class {
 
 struct insn {
   char *name;
+  long int mask;
   long int opcode;
   enum insn_class class;
   int attribs;

@@ -27,6 +27,7 @@ Boston, MA 02111-1307, USA.  */
 #include "directive.h"
 #include "lst.h"
 #include "cod.h"
+#include "processor.h"
 
 struct gpasm_state state;
 
@@ -224,7 +225,7 @@ void process_args( int argc, char *argv[])
       state.cmd_line.lst_force = 1;
       break;  
     case 'l':
-      dump_processor_list();
+      gp_dump_processor_list();
       exit(0);
       break;
     case 'm':

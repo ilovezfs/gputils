@@ -1,3 +1,7 @@
+2002-11-07 Craig Franklin <craigfranklin@attbi.com>
+  * Added support for sx, 17xx, and 18xx devices in gpdasm.
+  * Fixed config directive for 18xx devices with address > 0x300007
+
 2002-10-27 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.10.5 Released.
 

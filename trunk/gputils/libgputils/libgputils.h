@@ -24,6 +24,8 @@ Boston, MA 02111-1307, USA.  */
 #include <gputils/gptypes.h>
 #include <gputils/gpcod.h>
 #include <gputils/gpcoff.h>
+#include <gputils/gpopcode.h>
+#include <gputils/gpprocessor.h>
 #include <gputils/gpsymbol.h>
 #include <gputils/gpmemory.h>
 #include <gputils/gpreadobj.h>
