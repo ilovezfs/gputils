@@ -76,7 +76,10 @@ load_constant14(int value, enum size_tag size)
 /* load a file into the working register */
 
 static void
-load_file14(char *name, enum size_tag size, int offset, char *bank_addr)
+load_file14(char *name,
+            char *bank_addr,
+            enum size_tag size,
+            int offset)
 {
   int num_bytes;
   char offset_buffer[64];
@@ -129,7 +132,10 @@ load_file14(char *name, enum size_tag size, int offset, char *bank_addr)
 /* store the working register to a file */
 
 static void
-store_file14(char *name, enum size_tag size, int offset, char *bank_addr)
+store_file14(char *name,
+             char *bank_addr,
+             enum size_tag size,
+             int offset)
 {
   int num_bytes;
   char offset_buffer[64];
@@ -182,9 +188,9 @@ store_file14(char *name, enum size_tag size, int offset, char *bank_addr)
 
 static void
 load_indirect14(char *name,
+                char *bank_addr,
                 enum size_tag size,
-                int offset,
-                char *bank_addr)
+                int offset)
 {
   int num_bytes;
   int i;
@@ -199,11 +205,9 @@ load_indirect14(char *name,
   num_bytes = prim_size(size);
 
   for (i = 0; i < num_bytes; i++) {
-    codegen_set_bank("INDF");
     codegen_write_asm("movf INDF, w");
     BANKSEL_LOCAL;
     codegen_write_asm("movwf %s + %i", WORKING_LABEL, i);
-    codegen_set_bank("FSR");
     codegen_write_asm("incf FSR, f");
   }
 
@@ -213,9 +217,9 @@ load_indirect14(char *name,
 
 static void
 store_indirect14(char *name,
+                 char *bank_addr,
                  enum size_tag size,
-                 int offset,
-                 char *bank_addr)
+                 int offset)
 {
   int num_bytes;
   int i;
@@ -232,7 +236,6 @@ store_indirect14(char *name,
   for (i = 0; i < num_bytes; i++) {
     BANKSEL_LOCAL;
     codegen_write_asm("movf %s + %i, w", WORKING_LABEL, i);
-    codegen_set_bank("INDF");
     codegen_write_asm("movwf INDF");
     codegen_write_asm("incf FSR, f");
   }
@@ -255,6 +258,7 @@ gen_boolean(enum size_tag size)
 
   num_bytes = prim_size(size);
 
+  BANKSEL_LOCAL;
   codegen_write_asm("movf %s, w", WORKING_LABEL);
 
   for (i = 1; i < num_bytes; i++) {
@@ -275,6 +279,7 @@ move_to_working(enum size_tag size)
 
   num_bytes = prim_size(size);
 
+  BANKSEL_LOCAL;
   switch (num_bytes) {
   case 4:
     codegen_write_asm("clrf %s + 3", WORKING_LABEL);
@@ -294,7 +299,10 @@ move_to_working(enum size_tag size)
 /****************************************************************************/
 
 static void
-clr_direct14(char *name, enum size_tag size, int offset, char *bank_addr)
+clr_direct14(char *name,
+             char *bank_addr,
+             enum size_tag size,
+             int offset)
 {
   char offset_buffer[64];
   
@@ -306,31 +314,29 @@ clr_direct14(char *name, enum size_tag size, int offset, char *bank_addr)
     sprintf(offset_buffer, " + %#x", offset);
   }
 
+  BANKSEL;
+
   switch (size) {
   case size_bit:
     assert(0);
     break;
   case size_uint8:
   case size_int8:
-    BANKSEL;
     codegen_write_asm("clrf %s%s", name, offset_buffer);
     break;
   case size_uint16:
   case size_int16:
-    BANKSEL;
     codegen_write_asm("clrf %s%s", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 1", name, offset_buffer);
     break;
   case size_uint24:
   case size_int24:
-    BANKSEL;
     codegen_write_asm("clrf %s%s", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 1", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 2", name, offset_buffer);
     break;
   case size_uint32:
   case size_int32:
-    BANKSEL;
     codegen_write_asm("clrf %s%s", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 1", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 2", name, offset_buffer);
@@ -345,9 +351,9 @@ clr_direct14(char *name, enum size_tag size, int offset, char *bank_addr)
 
 static void
 clr_indirect14(char *name,
+               char *bank_addr,
                enum size_tag size,
-               int offset,
-               char *bank_addr)
+               int offset)
 {
   int num_bytes;
   int i;
@@ -357,7 +363,6 @@ clr_indirect14(char *name,
   num_bytes = prim_size(size);
 
   for (i = 0; i < num_bytes; i++) {
-    codegen_set_bank("INDF");
     codegen_write_asm("clrf INDF");
     codegen_write_asm("incf FSR, f");
   }
@@ -365,7 +370,10 @@ clr_indirect14(char *name,
 }
 
 static void
-inc_direct14(char *name, enum size_tag size, int offset, char *bank_addr)
+inc_direct14(char *name,
+             char *bank_addr,
+             enum size_tag size,
+             int offset)
 {
   char offset_buffer[64];
   char *label = NULL;
@@ -378,31 +386,30 @@ inc_direct14(char *name, enum size_tag size, int offset, char *bank_addr)
     sprintf(offset_buffer, " + %#x", offset);
   }
 
+  BANKSEL;
+
   switch (size) {
   case size_bit:
     assert(0);
     break;
   case size_uint8:
   case size_int8:
-    BANKSEL;
     codegen_write_asm("incf %s%s, f", name, offset_buffer);
     break;
   case size_uint16:
   case size_int16:
-    BANKSEL;
     codegen_write_asm("incf %s%s, f", name, offset_buffer);
-    codegen_write_asm("btfsc STATUS, C");
+    codegen_write_asm("btfss STATUS, C");
     codegen_write_asm("incf %s%s + 1, f", name, offset_buffer);
     break;
   case size_uint24:
   case size_int24:
     label = codegen_next_label();
-    BANKSEL;
     codegen_write_asm("incf %s%s, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("goto %s", label);
     codegen_write_asm("incf %s%s + 1, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("goto %s", label);
     codegen_write_asm("incf %s%s + 2, f", name, offset_buffer);
     codegen_write_label(label);
@@ -410,15 +417,14 @@ inc_direct14(char *name, enum size_tag size, int offset, char *bank_addr)
   case size_uint32:
   case size_int32:
     label = codegen_next_label();
-    BANKSEL;
     codegen_write_asm("incf %s%s, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("goto %s", label);
     codegen_write_asm("incf %s%s + 1, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("goto %s", label);
     codegen_write_asm("incf %s%s + 2, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("goto %s", label);
     codegen_write_asm("incf %s%s + 3, f", name, offset_buffer);
     codegen_write_label(label);
@@ -435,9 +441,9 @@ inc_direct14(char *name, enum size_tag size, int offset, char *bank_addr)
 
 static void
 inc_indirect14(char *name,
+               char *bank_addr,
                enum size_tag size,
-               int offset,
-               char *bank_addr)
+               int offset)
 {
   int num_bytes;
   int i;
@@ -450,9 +456,8 @@ inc_indirect14(char *name,
   label = codegen_next_label();
 
   for (i = 0; i < num_bytes; i++) {
-    codegen_set_bank("INDF");
     codegen_write_asm("incf INDF, f");
-    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("goto %s", label);
     codegen_write_asm("incf FSR, f");
   }
@@ -465,7 +470,10 @@ inc_indirect14(char *name,
 }
 
 static void
-dec_direct14(char *name, enum size_tag size, int offset, char *bank_addr)
+dec_direct14(char *name,
+             char *bank_addr,
+             enum size_tag size,
+             int offset)
 {
   char offset_buffer[64];
   char *label = NULL;
@@ -478,31 +486,30 @@ dec_direct14(char *name, enum size_tag size, int offset, char *bank_addr)
     sprintf(offset_buffer, " + %#x", offset);
   }
 
+  BANKSEL;
+
   switch (size) {
   case size_bit:
     assert(0);
     break;
   case size_uint8:
   case size_int8:
-    BANKSEL;
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
     break;
   case size_uint16:
   case size_int16:
-    BANKSEL;
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
-    codegen_write_asm("btfsc STATUS, C");
+    codegen_write_asm("btfss STATUS, C");
     codegen_write_asm("decf %s%s + 1, f", name, offset_buffer);
     break;
   case size_uint24:
   case size_int24:
     label = codegen_next_label();
-    BANKSEL;
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("goto %s", label);
     codegen_write_asm("decf %s%s + 1, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("goto %s", label);
     codegen_write_asm("decf %s%s + 2, f", name, offset_buffer);
     codegen_write_label(label);
@@ -510,15 +517,14 @@ dec_direct14(char *name, enum size_tag size, int offset, char *bank_addr)
   case size_uint32:
   case size_int32:
     label = codegen_next_label();
-    BANKSEL;
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("goto %s", label);
     codegen_write_asm("decf %s%s + 1, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("goto %s", label);
     codegen_write_asm("decf %s%s + 2, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("goto %s", label);
     codegen_write_asm("decf %s%s + 3, f", name, offset_buffer);
     codegen_write_label(label);
@@ -535,9 +541,9 @@ dec_direct14(char *name, enum size_tag size, int offset, char *bank_addr)
 
 static void
 dec_indirect14(char *name,
+               char *bank_addr,
                enum size_tag size,
-               int offset,
-               char *bank_addr)
+               int offset)
 {
   int num_bytes;
   int i;
@@ -550,9 +556,8 @@ dec_indirect14(char *name,
   label = codegen_next_label();
 
   for (i = 0; i < num_bytes; i++) {
-    codegen_set_bank("INDF");
     codegen_write_asm("decf INDF, f");
-    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("goto %s", label);
     codegen_write_asm("incf FSR, f");
   }
@@ -571,34 +576,42 @@ dec_indirect14(char *name,
 
 /* add the lowest byte */
 static void
-add_setup(gp_boolean is_const, int value, char *name)
+add_setup(gp_boolean is_const, int value, char *name, char *bank_addr)
 {
   codegen_write_asm("movf %s, w", WORKING_LABEL);
   if (is_const) {
     codegen_write_asm("addlw %#x", value);
   } else {
+    BANKSEL;
     codegen_write_asm("addwf %s, w", name);
+    BANKSEL_LOCAL;
   }
   codegen_write_asm("movwf %s", WORKING_LABEL);
 }
 
 /* add the next byte */
 static void
-add_next(gp_boolean is_const, int value, char *name, int byte)
+add_next(gp_boolean is_const, int value, char *name, char *bank_addr, int byte)
 {
   codegen_write_asm("movf %s + %i, w", WORKING_LABEL, byte);
-  codegen_write_asm("btfsc STATUS, C");
+  codegen_write_asm("btfss STATUS, C");
   codegen_write_asm("incfsz %s + %i, w", WORKING_LABEL, byte);
   if (is_const) {
     codegen_write_asm("addlw %#x", value);    
   } else {
+    BANKSEL;
     codegen_write_asm("addwf %s + %i, w", name, byte);
+    BANKSEL_LOCAL;
   }
   codegen_write_asm("movwf %s + %i", WORKING_LABEL, byte);
 }
 
 static void
-do_add(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_add(enum size_tag size,
+       gp_boolean is_const,
+       int value,
+       char *name,
+       char *bank_addr)
 {
 
   switch (size) {
@@ -610,26 +623,30 @@ do_add(enum size_tag size, gp_boolean is_const, int value, char *name)
     if (is_const) {
       codegen_write_asm("addlw %#x", value & 0xff);
     } else {
+      BANKSEL;
       codegen_write_asm("addwf %s, w", name);
     }
     break;
   case size_uint16:
   case size_int16:
-    add_setup(is_const, (value & 0xff), name);
-    add_next(is_const, (value >> 8) && 0xff, name, 1);
+    BANKSEL_LOCAL;
+    add_setup(is_const, (value & 0xff), name, bank_addr);
+    add_next(is_const, (value >> 8) && 0xff, name, bank_addr, 1);
     break;
   case size_uint24:
   case size_int24:
-    add_setup(is_const, (value & 0xff), name);
-    add_next(is_const, (value >> 8) && 0xff, name, 1);
-    add_next(is_const, (value >> 16) && 0xff, name, 2);
+    BANKSEL_LOCAL;
+    add_setup(is_const, (value & 0xff), name, bank_addr);
+    add_next(is_const, (value >> 8) && 0xff, name, bank_addr, 1);
+    add_next(is_const, (value >> 16) && 0xff, name, bank_addr, 2);
     break;
   case size_uint32:
   case size_int32:
-    add_setup(is_const, (value & 0xff), name);
-    add_next(is_const, (value >> 8) && 0xff, name, 1);
-    add_next(is_const, (value >> 16) && 0xff, name, 2);
-    add_next(is_const, (value >> 24) && 0xff, name, 3);
+    BANKSEL_LOCAL;
+    add_setup(is_const, (value & 0xff), name, bank_addr);
+    add_next(is_const, (value >> 8) && 0xff, name, bank_addr, 1);
+    add_next(is_const, (value >> 16) && 0xff, name, bank_addr, 2);
+    add_next(is_const, (value >> 24) && 0xff, name, bank_addr, 3);
     break;
   case size_float:
   default:
@@ -638,22 +655,24 @@ do_add(enum size_tag size, gp_boolean is_const, int value, char *name)
 
 }
 
-/* substract the lowest byte */
+/* subtract the lowest byte */
 static void
-sub_setup(gp_boolean is_const, int value, char *name)
+sub_setup(gp_boolean is_const, int value, char *name, char *bank_addr)
 {
   codegen_write_asm("movf %s, w", WORKING_LABEL);
   if (is_const) {
     codegen_write_asm("sublw %#x", value);    
   } else {
+    BANKSEL;
     codegen_write_asm("subwf %s, w", name);
+    BANKSEL_LOCAL;
   }
   codegen_write_asm("movwf %s", WORKING_LABEL);
 }
 
 /* subtract the next byte */
 static void
-sub_next(gp_boolean is_const, int value, char *name, int byte)
+sub_next(gp_boolean is_const, int value, char *name, char *bank_addr, int byte)
 {
   codegen_write_asm("movf %s + %i, w", WORKING_LABEL, byte);
   codegen_write_asm("btfss STATUS, C");
@@ -661,13 +680,19 @@ sub_next(gp_boolean is_const, int value, char *name, int byte)
   if (is_const) {
     codegen_write_asm("sublw %#x", value);    
   } else {
+    BANKSEL;
     codegen_write_asm("subwf %s + %i, w", name, byte);
+    BANKSEL_LOCAL;
   }
   codegen_write_asm("movwf %s + %i", WORKING_LABEL, byte);
 }
 
 static void
-do_sub(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_sub(enum size_tag size,
+       gp_boolean is_const,
+       int value,
+       char *name,
+       char *bank_addr)
 {
 
   switch (size) {
@@ -679,26 +704,30 @@ do_sub(enum size_tag size, gp_boolean is_const, int value, char *name)
     if (is_const) {
       codegen_write_asm("sublw %#x", value);
     } else {
+      BANKSEL;
       codegen_write_asm("subwf %s, w", name);
     }
     break;
   case size_uint16:
   case size_int16:
-    sub_setup(is_const, (value & 0xff), name);
-    sub_next(is_const, (value >> 8) && 0xff, name, 1);
+    BANKSEL_LOCAL;
+    sub_setup(is_const, (value & 0xff), name, bank_addr);
+    sub_next(is_const, (value >> 8) && 0xff, name, bank_addr, 1);
     break;
   case size_uint24:
   case size_int24:
-    sub_setup(is_const, (value & 0xff), name);
-    sub_next(is_const, (value >> 8) && 0xff, name, 1);
-    sub_next(is_const, (value >> 16) && 0xff, name, 2);
+    BANKSEL_LOCAL;
+    sub_setup(is_const, (value & 0xff), name, bank_addr);
+    sub_next(is_const, (value >> 8) && 0xff, name, bank_addr, 1);
+    sub_next(is_const, (value >> 16) && 0xff, name, bank_addr, 2);
     break;
   case size_uint32:
   case size_int32:
-    sub_setup(is_const, (value & 0xff), name);
-    sub_next(is_const, (value >> 8) && 0xff, name, 1);
-    sub_next(is_const, (value >> 16) && 0xff, name, 2);
-    sub_next(is_const, (value >> 24) && 0xff, name, 3);
+    BANKSEL_LOCAL;
+    sub_setup(is_const, (value & 0xff), name, bank_addr);
+    sub_next(is_const, (value >> 8) && 0xff, name, bank_addr, 1);
+    sub_next(is_const, (value >> 16) && 0xff, name, bank_addr, 2);
+    sub_next(is_const, (value >> 24) && 0xff, name, bank_addr, 3);
     break;
   case size_float:
   default:
@@ -708,7 +737,11 @@ do_sub(enum size_tag size, gp_boolean is_const, int value, char *name)
 }
 
 static void
-do_neg(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_neg(enum size_tag size,
+       gp_boolean is_const,
+       int value,
+       char *name,
+       char *bank_addr)
 {
 
   switch (size) {
@@ -723,7 +756,7 @@ do_neg(enum size_tag size, gp_boolean is_const, int value, char *name)
   case size_int24:
   case size_uint32:
   case size_int32:
-    do_sub(size, true, 0, NULL);
+    do_sub(size, true, 0, NULL, NULL);
     break;
   case size_float:
   default:
@@ -737,21 +770,27 @@ do_neg(enum size_tag size, gp_boolean is_const, int value, char *name)
 /****************************************************************************/
 
 static void
-and_byte(gp_boolean is_const, int value, char *name, int byte)
+and_byte(gp_boolean is_const, int value, char *name, char *bank_addr, int byte)
 {
 
   codegen_write_asm("movf %s + %i, w", WORKING_LABEL, byte);
   if (is_const) {
     codegen_write_asm("andlw %#x", value);
   } else {
+    BANKSEL;
     codegen_write_asm("andwf %s, w", name);
+    BANKSEL_LOCAL;
   }
   codegen_write_asm("movwf %s + %i", WORKING_LABEL, byte);
 
 }
 
 static void
-do_and(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_and(enum size_tag size,
+       gp_boolean is_const,
+       int value,
+       char *name,
+       char *bank_addr)
 {
 
   switch (size) {
@@ -763,26 +802,30 @@ do_and(enum size_tag size, gp_boolean is_const, int value, char *name)
     if (is_const) {
       codegen_write_asm("andlw %#x", value);
     } else {
+      BANKSEL;
       codegen_write_asm("andwf %s, w", name);
     }
     break;
   case size_uint16:
   case size_int16:
-    and_byte(is_const, value & 0xff, name, 0);
-    and_byte(is_const, (value >> 8) & 0xff, name, 1);
+    BANKSEL_LOCAL;
+    and_byte(is_const, value & 0xff, name, bank_addr, 0);
+    and_byte(is_const, (value >> 8) & 0xff, name, bank_addr, 1);
     break;
   case size_uint24:
   case size_int24:
-    and_byte(is_const, value & 0xff, name, 0);
-    and_byte(is_const, (value >> 8) & 0xff, name, 1);
-    and_byte(is_const, (value >> 16) & 0xff, name, 2);
+    BANKSEL_LOCAL;
+    and_byte(is_const, value & 0xff, name, bank_addr, 0);
+    and_byte(is_const, (value >> 8) & 0xff, name, bank_addr, 1);
+    and_byte(is_const, (value >> 16) & 0xff, name, bank_addr, 2);
     break;
   case size_uint32:
   case size_int32:
-    and_byte(is_const, value & 0xff, name, 0);
-    and_byte(is_const, (value >> 8) & 0xff, name, 1);
-    and_byte(is_const, (value >> 16) & 0xff, name, 2);
-    and_byte(is_const, (value >> 24) & 0xff, name, 3);
+    BANKSEL_LOCAL;
+    and_byte(is_const, value & 0xff, name, bank_addr, 0);
+    and_byte(is_const, (value >> 8) & 0xff, name, bank_addr, 1);
+    and_byte(is_const, (value >> 16) & 0xff, name, bank_addr, 2);
+    and_byte(is_const, (value >> 24) & 0xff, name, bank_addr, 3);
     break;
   case size_float:
   default:
@@ -792,21 +835,27 @@ do_and(enum size_tag size, gp_boolean is_const, int value, char *name)
 }
 
 static void
-or_byte(gp_boolean is_const, int value, char *name, int byte)
+or_byte(gp_boolean is_const, int value, char *name, char *bank_addr, int byte)
 {
 
   codegen_write_asm("movf %s + %i, w", WORKING_LABEL, byte);
   if (is_const) {
     codegen_write_asm("iorlw %#x", value);
   } else {
+    BANKSEL;
     codegen_write_asm("iorwf %s, w", name);
+    BANKSEL_LOCAL;
   }
   codegen_write_asm("movwf %s + %i", WORKING_LABEL, byte);
 
 }
 
 static void
-do_or(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_or(enum size_tag size,
+      gp_boolean is_const,
+      int value,
+      char *name,
+      char *bank_addr)
 {
 
   switch (size) {
@@ -818,26 +867,30 @@ do_or(enum size_tag size, gp_boolean is_const, int value, char *name)
     if (is_const) {
       codegen_write_asm("iorlw %#x", value);
     } else {
+      BANKSEL;
       codegen_write_asm("iorwf %s, w", name);
     }
     break;
   case size_uint16:
   case size_int16:
-    or_byte(is_const, value & 0xff, name, 0);
-    or_byte(is_const, (value >> 8) & 0xff, name, 1);
+    BANKSEL_LOCAL;
+    or_byte(is_const, value & 0xff, name, bank_addr, 0);
+    or_byte(is_const, (value >> 8) & 0xff, name, bank_addr, 1);
     break;
   case size_uint24:
   case size_int24:
-    or_byte(is_const, value & 0xff, name, 0);
-    or_byte(is_const, (value >> 8) & 0xff, name, 1);
-    or_byte(is_const, (value >> 16) & 0xff, name, 2);
+    BANKSEL_LOCAL;
+    or_byte(is_const, value & 0xff, name, bank_addr, 0);
+    or_byte(is_const, (value >> 8) & 0xff, name, bank_addr, 1);
+    or_byte(is_const, (value >> 16) & 0xff, name, bank_addr, 2);
     break;
   case size_uint32:
   case size_int32:
-    or_byte(is_const, value & 0xff, name, 0);
-    or_byte(is_const, (value >> 8) & 0xff, name, 1);
-    or_byte(is_const, (value >> 16) & 0xff, name, 2);
-    or_byte(is_const, (value >> 24) & 0xff, name, 3);
+    BANKSEL_LOCAL;
+    or_byte(is_const, value & 0xff, name, bank_addr, 0);
+    or_byte(is_const, (value >> 8) & 0xff, name, bank_addr, 1);
+    or_byte(is_const, (value >> 16) & 0xff, name, bank_addr, 2);
+    or_byte(is_const, (value >> 24) & 0xff, name, bank_addr, 3);
     break;
   case size_float:
   default:
@@ -847,21 +900,27 @@ do_or(enum size_tag size, gp_boolean is_const, int value, char *name)
 }
 
 static void
-xor_byte(gp_boolean is_const, int value, char *name, int byte)
+xor_byte(gp_boolean is_const, int value, char *name, char *bank_addr, int byte)
 {
 
   codegen_write_asm("movf %s + %i, w", WORKING_LABEL, byte);
   if (is_const) {
     codegen_write_asm("xorlw %#x", value);
   } else {
+    BANKSEL;
     codegen_write_asm("xorwf %s, w", name);
+    BANKSEL_LOCAL;
   }
   codegen_write_asm("movwf %s + %i", WORKING_LABEL, byte);
 
 }
 
 static void
-do_xor(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_xor(enum size_tag size,
+       gp_boolean is_const,
+       int value,
+       char *name,
+       char *bank_addr)
 {
 
   switch (size) {
@@ -873,26 +932,30 @@ do_xor(enum size_tag size, gp_boolean is_const, int value, char *name)
     if (is_const) {
       codegen_write_asm("xorlw %#x", value);
     } else {
+      BANKSEL;
       codegen_write_asm("xorwf %s, w", name);
     }
     break;
   case size_uint16:
   case size_int16:
-    xor_byte(is_const, value & 0xff, name, 0);
-    xor_byte(is_const, (value >> 8) & 0xff, name, 1);
+    BANKSEL_LOCAL;
+    xor_byte(is_const, value & 0xff, name, bank_addr, 0);
+    xor_byte(is_const, (value >> 8) & 0xff, name, bank_addr, 1);
     break;
   case size_uint24:
   case size_int24:
-    xor_byte(is_const, value & 0xff, name, 0);
-    xor_byte(is_const, (value >> 8) & 0xff, name, 1);
-    xor_byte(is_const, (value >> 16) & 0xff, name, 2);
+    BANKSEL_LOCAL;
+    xor_byte(is_const, value & 0xff, name, bank_addr, 0);
+    xor_byte(is_const, (value >> 8) & 0xff, name, bank_addr, 1);
+    xor_byte(is_const, (value >> 16) & 0xff, name, bank_addr, 2);
     break;
   case size_uint32:
   case size_int32:
-    xor_byte(is_const, value & 0xff, name, 0);
-    xor_byte(is_const, (value >> 8) & 0xff, name, 1);
-    xor_byte(is_const, (value >> 16) & 0xff, name, 2);
-    xor_byte(is_const, (value >> 24) & 0xff, name, 3);
+    BANKSEL_LOCAL;
+    xor_byte(is_const, value & 0xff, name, bank_addr, 0);
+    xor_byte(is_const, (value >> 8) & 0xff, name, bank_addr, 1);
+    xor_byte(is_const, (value >> 16) & 0xff, name, bank_addr, 2);
+    xor_byte(is_const, (value >> 24) & 0xff, name, bank_addr, 3);
     break;
   case size_float:
   default:
@@ -902,7 +965,11 @@ do_xor(enum size_tag size, gp_boolean is_const, int value, char *name)
 }
 
 static void
-do_not(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_not(enum size_tag size,
+       gp_boolean is_const,
+       int value,
+       char *name,
+       char *bank_addr)
 {
 
   switch (size) {
@@ -920,6 +987,7 @@ do_not(enum size_tag size, gp_boolean is_const, int value, char *name)
   case size_uint32:
   case size_int32:
     codegen_write_asm("movlw 1");
+    BANKSEL_LOCAL;
     codegen_write_asm("xorwf %s, f", WORKING_LABEL);
     break;
   case size_float:
@@ -932,13 +1000,18 @@ do_not(enum size_tag size, gp_boolean is_const, int value, char *name)
 static void
 com_byte(int byte)
 {
-  codegen_write_asm("movlw 0xff");
   codegen_write_asm("xorwf %s + %i, f", WORKING_LABEL, byte);
 }
 
 static void
-do_com(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_com(enum size_tag size,
+       gp_boolean is_const,
+       int value,
+       char *name,
+       char *bank_addr)
 {
+
+  BANKSEL_LOCAL;
 
   switch (size) {
   case size_bit:
@@ -950,17 +1023,20 @@ do_com(enum size_tag size, gp_boolean is_const, int value, char *name)
     break;
   case size_uint16:
   case size_int16:
+    codegen_write_asm("movlw 0xff");
     com_byte(0);
     com_byte(1);
     break;
   case size_uint24:
   case size_int24:
+    codegen_write_asm("movlw 0xff");
     com_byte(0);
     com_byte(1);
     com_byte(2);
     break;
   case size_uint32:
   case size_int32:
+    codegen_write_asm("movlw 0xff");
     com_byte(0);
     com_byte(1);
     com_byte(2);
@@ -995,7 +1071,11 @@ left_shift(enum size_tag size)
 }
 
 static void
-do_lsh(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_lsh(enum size_tag size,
+       gp_boolean is_const,
+       int value,
+       char *name,
+       char *bank_addr)
 {
   int i;
   char *reg1 = NULL;
@@ -1011,6 +1091,7 @@ do_lsh(enum size_tag size, gp_boolean is_const, int value, char *name)
   case size_int8:
     reg1 = codegen_get_temp(size);
     if (is_const) {
+      BANKSEL_LOCAL;
       if (value > 3) {
         codegen_write_asm("andlw 0x0f");
         codegen_write_asm("movwf %s", reg1);
@@ -1029,8 +1110,11 @@ do_lsh(enum size_tag size, gp_boolean is_const, int value, char *name)
       label1 = codegen_next_label();
       label2 = codegen_next_label();
 
+      BANKSEL_LOCAL;
       codegen_write_asm("movwf %s", reg1);
+      BANKSEL;
       codegen_write_asm("movf %s, w", name);
+      BANKSEL_LOCAL;
       codegen_write_asm("movwf %s", reg2);
       codegen_write_label(label1);
       codegen_write_asm("btfsc STATUS, Z");
@@ -1057,8 +1141,10 @@ do_lsh(enum size_tag size, gp_boolean is_const, int value, char *name)
       codegen_write_asm("addlw 0", value);
     } else {
       /* never can shift more than 31 so read the bottom byte only */
+      BANKSEL;
       codegen_write_asm("movf %s, w", name);
     }
+    BANKSEL_LOCAL;
     codegen_write_asm("movwf %s", reg1);
     codegen_write_label(label1);
     codegen_write_asm("btfsc STATUS, Z");
@@ -1110,7 +1196,11 @@ right_shift(enum size_tag size, gp_boolean is_signed)
 }
 
 static void
-do_rsh(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_rsh(enum size_tag size,
+       gp_boolean is_const,
+       int value,
+       char *name,
+       char *bank_addr)
 {
   int i;
   gp_boolean is_signed = false;
@@ -1129,6 +1219,7 @@ do_rsh(enum size_tag size, gp_boolean is_const, int value, char *name)
   case size_uint8:
     reg1 = codegen_get_temp(size);
     if (is_const) {
+      BANKSEL_LOCAL;
       codegen_write_asm("movwf %s", reg1);
       for (i = 0; i < value; i++) {
         if (is_signed) {
@@ -1145,8 +1236,11 @@ do_rsh(enum size_tag size, gp_boolean is_const, int value, char *name)
       label1 = codegen_next_label();
       label2 = codegen_next_label();
 
+      BANKSEL_LOCAL;
       codegen_write_asm("movwf %s", reg1);
+      BANKSEL;
       codegen_write_asm("movf %s, w", name);
+      BANKSEL_LOCAL;
       codegen_write_asm("movwf %s", reg2);
       codegen_write_label(label1);
       codegen_write_asm("btfsc STATUS, Z");
@@ -1180,8 +1274,10 @@ do_rsh(enum size_tag size, gp_boolean is_const, int value, char *name)
       codegen_write_asm("addlw 0", value);
     } else {
       /* never can shift more than 31 so read the bottom byte only */
+      BANKSEL;
       codegen_write_asm("movf %s, w", name);
     }
+    BANKSEL_LOCAL;
     codegen_write_asm("movwf %s", reg1);
     codegen_write_label(label1);
     codegen_write_asm("btfsc STATUS, Z");
@@ -1216,7 +1312,11 @@ do_rsh(enum size_tag size, gp_boolean is_const, int value, char *name)
 /****************************************************************************/
 
 static void
-do_eq(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_eq(enum size_tag size,
+      gp_boolean is_const,
+      int value,
+      char *name,
+      char *bank_addr)
 {
 
   switch (size) {
@@ -1231,7 +1331,7 @@ do_eq(enum size_tag size, gp_boolean is_const, int value, char *name)
   case size_int24:
   case size_uint32:
   case size_int32:
-    do_xor(size, is_const, value, name);    
+    do_xor(size, is_const, value, name, bank_addr);    
     gen_boolean(size);
     codegen_write_asm("xorlw 1");
     move_to_working(size);
@@ -1244,7 +1344,11 @@ do_eq(enum size_tag size, gp_boolean is_const, int value, char *name)
 }
 
 static void
-do_ne(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_ne(enum size_tag size,
+      gp_boolean is_const,
+      int value,
+      char *name,
+      char *bank_addr)
 {
 
   switch (size) {
@@ -1259,7 +1363,7 @@ do_ne(enum size_tag size, gp_boolean is_const, int value, char *name)
   case size_int24:
   case size_uint32:
   case size_int32:
-    do_xor(size, is_const, value, name);    
+    do_xor(size, is_const, value, name, bank_addr);    
     gen_boolean(size);
     move_to_working(size);
     break;
@@ -1276,6 +1380,8 @@ offset_working(enum size_tag size)
   int num_bytes;
 
   num_bytes = prim_size(size);
+
+  BANKSEL_LOCAL;
 
   switch (num_bytes) {
   case 4:
@@ -1299,9 +1405,11 @@ offset_working(enum size_tag size)
 }
 
 static void
-offset_reg(char *name, enum size_tag size)
+offset_reg(char *name, char *bank_addr, enum size_tag size)
 {
   int num_bytes;
+
+  BANKSEL;
 
   num_bytes = prim_size(size);
   codegen_write_asm("movlw 0x80");
@@ -1337,7 +1445,11 @@ offset_constant(int number, enum size_tag size)
 }
 
 static void
-do_lt(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_lt(enum size_tag size,
+      gp_boolean is_const,
+      int value,
+      char *name,
+      char *bank_addr)
 {
 
   switch (size) {
@@ -1348,14 +1460,14 @@ do_lt(enum size_tag size, gp_boolean is_const, int value, char *name)
   case size_uint16:
   case size_uint24:
   case size_uint32:
-    do_sub(size, is_const, value, name);    
+    do_sub(size, is_const, value, name, bank_addr);    
     codegen_write_asm("movf STATUS, w");
     codegen_write_asm("andlw 1");
     move_to_working(size);
     break;
   case size_int8:
     offset_working(size);
-    do_sub(size, is_const, value, name);    
+    do_sub(size, is_const, value, name, bank_addr);    
     /* offset the input */
     codegen_write_asm("andlw 0x80");
     codegen_write_asm("movf STATUS, w");
@@ -1368,15 +1480,15 @@ do_lt(enum size_tag size, gp_boolean is_const, int value, char *name)
     if (is_const) {
       value = offset_constant(value, size);
     } else {
-      offset_reg(name, size);
+      offset_reg(name, bank_addr, size);
     }
-    do_sub(size, is_const, value, name);    
+    do_sub(size, is_const, value, name, bank_addr);    
     codegen_write_asm("movf STATUS, w");
     codegen_write_asm("andlw 1");
     move_to_working(size);
     if (!is_const) {
       /* restore name to original value */
-      offset_reg(name, size);
+      offset_reg(name, bank_addr, size);
     }
     break;
   case size_float:
@@ -1387,7 +1499,11 @@ do_lt(enum size_tag size, gp_boolean is_const, int value, char *name)
 }
 
 static void
-do_lte(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_lte(enum size_tag size,
+       gp_boolean is_const,
+       int value,
+       char *name,
+       char *bank_addr)
 {
 
   switch (size) {
@@ -1398,7 +1514,7 @@ do_lte(enum size_tag size, gp_boolean is_const, int value, char *name)
   case size_uint16:
   case size_uint24:
   case size_uint32:
-    do_sub(size, is_const, value, name);    
+    do_sub(size, is_const, value, name, bank_addr);    
     codegen_write_asm("movf STATUS, w");
     codegen_write_asm("andlw 5");
     codegen_write_asm("btfss STATUS, Z");
@@ -1407,7 +1523,7 @@ do_lte(enum size_tag size, gp_boolean is_const, int value, char *name)
     break;
   case size_int8:
     offset_working(size);
-    do_sub(size, is_const, value, name);    
+    do_sub(size, is_const, value, name, bank_addr);    
     /* offset the input */
     codegen_write_asm("addlw 0x80");
     codegen_write_asm("movf STATUS, w");
@@ -1422,9 +1538,9 @@ do_lte(enum size_tag size, gp_boolean is_const, int value, char *name)
     if (is_const) {
       value = offset_constant(value, size);
     } else {
-      offset_reg(name, size);
+      offset_reg(name, bank_addr, size);
     }
-    do_sub(size, is_const, value, name);    
+    do_sub(size, is_const, value, name, bank_addr);    
     codegen_write_asm("movf STATUS, w");
     codegen_write_asm("andlw 5");
     codegen_write_asm("btfss STATUS, Z");
@@ -1432,7 +1548,7 @@ do_lte(enum size_tag size, gp_boolean is_const, int value, char *name)
     move_to_working(size);
     if (!is_const) {
       /* restore name to original value */
-      offset_reg(name, size);
+      offset_reg(name, bank_addr, size);
     }
     break;
   case size_float:
@@ -1447,7 +1563,11 @@ do_lte(enum size_tag size, gp_boolean is_const, int value, char *name)
 /****************************************************************************/
 
 static void
-do_mult(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_mult(enum size_tag size,
+        gp_boolean is_const,
+        int value,
+        char *name,
+        char *bank_addr)
 {
 
   switch (size) {
@@ -1468,7 +1588,11 @@ do_mult(enum size_tag size, gp_boolean is_const, int value, char *name)
 }
 
 static void
-do_div(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_div(enum size_tag size,
+       gp_boolean is_const,
+       int value,
+       char *name,
+       char *bank_addr)
 {
 
   switch (size) {
@@ -1489,7 +1613,11 @@ do_div(enum size_tag size, gp_boolean is_const, int value, char *name)
 }
 
 static void
-do_mod(enum size_tag size, gp_boolean is_const, int value, char *name)
+do_mod(enum size_tag size,
+       gp_boolean is_const,
+       int value,
+       char *name,
+       char *bank_addr)
 {
 
   switch (size) {
@@ -1514,59 +1642,60 @@ codegen14(enum node_op op,
           enum size_tag size,
           gp_boolean is_const,
           int value,
-          char *name)
+          char *name,
+          char *bank_addr)
 {
   switch (op) {
   case op_assign:
     assert(0);
     break;
   case op_add:
-    do_add(size, is_const, value, name);
+    do_add(size, is_const, value, name, bank_addr);
     break;
   case op_sub:
-    do_sub(size, is_const, value, name);
+    do_sub(size, is_const, value, name, bank_addr);
     break;
   case op_neg:
-    do_neg(size, is_const, value, name);
+    do_neg(size, is_const, value, name, bank_addr);
     break;
   case op_com:
-    do_com(size, is_const, value, name);
+    do_com(size, is_const, value, name, bank_addr);
     break;
   case op_and:
-    do_and(size, is_const, value, name);
+    do_and(size, is_const, value, name, bank_addr);
     break;
   case op_or:
-    do_or(size, is_const, value, name);
+    do_or(size, is_const, value, name, bank_addr);
     break;
   case op_xor:
-    do_xor(size, is_const, value, name);
+    do_xor(size, is_const, value, name, bank_addr);
     break;
   case op_not:
-    do_not(size, is_const, value, name);
+    do_not(size, is_const, value, name, bank_addr);
     break;
   case op_lsh:
-    do_lsh(size, is_const, value, name);
+    do_lsh(size, is_const, value, name, bank_addr);
     break;
   case op_rsh:
-    do_rsh(size, is_const, value, name);
+    do_rsh(size, is_const, value, name, bank_addr);
     break;
   case op_land:
-    do_and(size_uint8, is_const, value, name);
+    do_and(size_uint8, is_const, value, name, bank_addr);
     break;
   case op_lor:
-    do_or(size_uint8, is_const, value, name);
+    do_or(size_uint8, is_const, value, name, bank_addr);
     break;
   case op_eq:
-    do_eq(size, is_const, value, name);
+    do_eq(size, is_const, value, name, bank_addr);
     break;
   case op_ne:
-    do_ne(size, is_const, value, name);
+    do_ne(size, is_const, value, name, bank_addr);
     break;
   case op_lt:
-    do_lt(size, is_const, value, name);
+    do_lt(size, is_const, value, name, bank_addr);
     break;
   case op_lte:
-    do_lte(size, is_const, value, name);
+    do_lte(size, is_const, value, name, bank_addr);
     break;
   case op_gt:
   case op_gte:
@@ -1574,13 +1703,13 @@ codegen14(enum node_op op,
     assert(0);
     break;
   case op_mult:
-    do_mult(size, is_const, value, name);
+    do_mult(size, is_const, value, name, bank_addr);
     break;
   case op_div:
-    do_div(size, is_const, value, name);
+    do_div(size, is_const, value, name, bank_addr);
     break;
   case op_mod:
-    do_mod(size, is_const, value, name);
+    do_mod(size, is_const, value, name, bank_addr);
     break;
   case op_clr:
   case op_inc:
@@ -1598,30 +1727,30 @@ static void
 unopgen14(enum node_op op, 
           gp_boolean direct,
           char *name,
+          char *bank_addr,
           enum size_tag size,
-          int offset,
-          char *bank_addr)
+          int offset)
 {
   switch (op) {
   case op_clr:
     if (direct) {
-      clr_direct14(name, size, offset, bank_addr);
+      clr_direct14(name, bank_addr, size, offset);
     } else {
-      clr_indirect14(name, size, offset, bank_addr);
+      clr_indirect14(name, bank_addr, size, offset);
     }
     break;
   case op_inc:
     if (direct) {
-      inc_direct14(name, size, offset, bank_addr);
+      inc_direct14(name, bank_addr, size, offset);
     } else {
-      inc_indirect14(name, size, offset, bank_addr);
+      inc_indirect14(name, bank_addr, size, offset);
     }
    break;
   case op_dec:
     if (direct) {
-      dec_direct14(name, size, offset, bank_addr);
+      dec_direct14(name, bank_addr, size, offset);
     } else {
-      dec_indirect14(name, size, offset, bank_addr);
+      dec_indirect14(name, bank_addr, size, offset);
     }
     break;
   default:

@@ -860,6 +860,12 @@ static void
 analyze_assembly(tree *assembly)
 {
   codegen_assembly(assembly);
+
+  /* Clear the settings, because user could have changed them. */
+  state.current_bank = NULL;
+  state.current_ibank = NULL;
+  state.current_page = NULL;
+
 }
 
 void

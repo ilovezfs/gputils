@@ -67,3 +67,9 @@ gplink
   * Peep-like optimization.  Consider using pcode from sdcc-pic14.
   * Partial linking.
   * Remove external symbols in an object that have no relocations.
+
+gpvc
+  * Use the disassembler to decode the program memory sections.
+
+gpdasm
+  * Generate human readable outputs.

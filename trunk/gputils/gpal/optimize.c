@@ -197,9 +197,9 @@ optimize_binop(tree *expr)
   /* replace the operators that the code generator doesn't support */
   if ((BINOP_OP(expr) == op_gt) || (BINOP_OP(expr) == op_gte)) {
     if (BINOP_OP(expr) == op_gt) {
-      BINOP_OP(expr) = op_lte;
-    } else {
       BINOP_OP(expr) = op_lt;
+    } else {
+      BINOP_OP(expr) = op_lte;
     }
     temp = BINOP_RIGHT(expr);
     BINOP_RIGHT(expr) = BINOP_LEFT(expr);
