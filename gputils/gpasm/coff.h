@@ -27,7 +27,7 @@ Boston, MA 02111-1307, USA.  */
 void coff_init(void);
 void coff_close_file(void);
 void coff_new_section(char *name, int addr, int flags);
-void coff_add_sym(char *name, int value, int section_number, int type, int class);
+void coff_add_sym(char *name, int value, enum gpasmValTypes type);
 void coff_reloc(int symbol, short offset, unsigned short type);
 void coff_linenum(int emitted);
 gp_symbol_type *coff_add_filesym(char *name, int isinclude);
