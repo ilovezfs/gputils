@@ -57,6 +57,14 @@ Boston, MA 02111-1307, USA.  */
 #include <ctype.h>
 #include <errno.h>
 
+#ifdef __MSDOS__
+  #define PATH_CHAR '\\'
+  #define COPY_CHAR "\\"
+#else
+  #define PATH_CHAR '/'
+  #define COPY_CHAR "/"
+#endif
+
 #define BUG_REPORT_URL "<URL:http://gputils.sourceforge.net/>"
 
 #endif

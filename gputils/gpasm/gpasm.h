@@ -56,16 +56,34 @@ extern struct gpasm_state {
     int error_level;
     int macro_expand;		
     int processor;
+    int lst_force;
   } cmd_line;
+  int pass;			/* 1 or 2 */
+  unsigned int org;		/* Current code-generation point */
+  int dos_newlines;		/* Use DOS newlines in hex file */
+  int memory_dump;		/* Dump instruction memory to standard output */
+  unsigned int maxram;		/* Highest legal memory location */
+  enum outfile
+    lstfile,			/* List output file control */
+    hexfile,			/* Hex output file control */
+    codfile;			/* Symbol output file control */
+  struct {			/* Totals for errors, warnings, messages */
+    int errors;
+    int warnings;
+    int messages;
+    int warnings_suppressed;
+    int messages_suppressed;
+  } num;
   enum pic_processor processor;
   struct px *processor_info;    /* Processor identifiers (e.g. name) */
+  int processor_chosen;		/* Nonzero after processor-specific init */
   struct {			/* Processor data */
-    int core_size;		/* processor core size  */
+    int core_size;		/* Processor core size  */
     int config_address;		/* configuration address */
     int id_location;		/* location for idlocs for 12 and 14 bit proc */
   } device;
-  int pass;			/* 1 or 2 */
-  int processor_chosen;		/* Nonzero after processor-specific init */
+  unsigned int c_memory_base;	/* Base address of configuration memory */
+  char badram[MAX_RAM];		/* nonzero indicates illegal memory */
   struct symbol_table
   *stBuiltin,			/* Built-ins: instructions, pseudo-ops */
     *stDirective,               /* bottom half of Builtin with directives */
@@ -75,14 +93,6 @@ extern struct gpasm_state {
     *stTopDefines,		/* Macro #defines (stDefines is base) */
     *stMacros;			/* Macros */
   MemBlock *i_memory;		/* Instruction memory linked list */
-  unsigned int c_memory_base;	/* Base address of configuration memory */
-  char badram[MAX_RAM];		/* nonzero indicates illegal memory */
-  unsigned int maxram;		/* Highest legal memory location */
-  unsigned int org;		/* Current code-generation point */
-  enum outfile
-    lstfile,			/* List output file control */
-    hexfile,			/* Hex output file control */
-    codfile;			/* Symbol output file control */
   char *srcfilename,		/* Source (.asm) file name */
     basefilename[BUFSIZ],	/* basename for generating hex,list,symbol filenames */
     hexfilename[BUFSIZ],	/* Hex (.hex) file name */
@@ -127,13 +137,6 @@ extern struct gpasm_state {
   } cod;
   struct source_context *src;	/* Top of the stack of source files */
   struct file_context *files;   /* Top of the stack of all files */
-  struct {			/* Totals for errors, warnings, messages */
-    int errors;
-    int warnings;
-    int messages;
-    int warnings_suppressed;
-    int messages_suppressed;
-  } num;
   struct amode *astack;		/* Stack of amodes (macros, etc) */
   gpasmVal cblock;		/* cblock constant */
   struct macro_head *mac_head;  /* Starting a macro... */
@@ -142,7 +145,7 @@ extern struct gpasm_state {
   struct macro_head *while_head;/* WHILEs work a lot like macros... */
   enum state_types next_state; 
   union {
-    char       *file;
+    char *file;
     struct macro_head *macro;
   } next_buffer;
 } state;
