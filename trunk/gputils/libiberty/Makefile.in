@@ -77,12 +77,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_alias = @build_alias@
-build_triplet = @build@
 host_alias = @host_alias@
 host_triplet = @host@
-target_alias = @target_alias@
-target_triplet = @target@
 AR = @AR@
 CC = @CC@
 EXEEXT = @EXEEXT@
@@ -92,12 +88,12 @@ GPUTILS_MAJOR_VERSION = @GPUTILS_MAJOR_VERSION@
 GPUTILS_MICRO_VERSION = @GPUTILS_MICRO_VERSION@
 GPUTILS_MINOR_VERSION = @GPUTILS_MINOR_VERSION@
 GPUTILS_VERSION = @GPUTILS_VERSION@
+IBERTYOBJS = @IBERTYOBJS@
 LEX = @LEX@
 LIBGPUTILS = @LIBGPUTILS@
 LIBIBERTY = @LIBIBERTY@
 MAKEINFO = @MAKEINFO@
 MAKE_SUBDIRS = @MAKE_SUBDIRS@
-OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
@@ -114,7 +110,10 @@ libiberty_a_SOURCES = \
 	getopt1.c
 
 
-EXTRA_DIST = README
+libiberty_a_LIBADD = $(IBERTYOBJS)
+libiberty_a_DEPENDENCIES = $(IBERTYOBJS)
+
+EXTRA_DIST = bzero.c README
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
@@ -124,8 +123,7 @@ LIBRARIES =  $(noinst_LIBRARIES)
 DEFS = @DEFS@ -I. -I$(srcdir) -I..
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-libiberty_a_LIBADD = 
-libiberty_a_OBJECTS =  getopt.$(OBJEXT) getopt1.$(OBJEXT)
+libiberty_a_OBJECTS =  getopt.o getopt1.o
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -143,7 +141,7 @@ OBJECTS = $(libiberty_a_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .S .c .o .obj .s
+.SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --foreign libiberty/Makefile
 
@@ -161,11 +159,6 @@ distclean-noinstLIBRARIES:
 
 maintainer-clean-noinstLIBRARIES:
 
-# FIXME: We should only use cygpath when building on Windows,
-# and only if it is available.
-.c.obj:
-	$(COMPILE) -c `cygpath -w $<`
-
 .s.o:
 	$(COMPILE) -c $<
 
@@ -174,7 +167,6 @@ maintainer-clean-noinstLIBRARIES:
 
 mostlyclean-compile:
 	-rm -f *.o core *.core
-	-rm -f *.$(OBJEXT)
 
 clean-compile:
 

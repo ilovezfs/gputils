@@ -77,12 +77,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_alias = @build_alias@
-build_triplet = @build@
 host_alias = @host_alias@
 host_triplet = @host@
-target_alias = @target_alias@
-target_triplet = @target@
 AR = @AR@
 CC = @CC@
 EXEEXT = @EXEEXT@
@@ -92,12 +88,12 @@ GPUTILS_MAJOR_VERSION = @GPUTILS_MAJOR_VERSION@
 GPUTILS_MICRO_VERSION = @GPUTILS_MICRO_VERSION@
 GPUTILS_MINOR_VERSION = @GPUTILS_MINOR_VERSION@
 GPUTILS_VERSION = @GPUTILS_VERSION@
+IBERTYOBJS = @IBERTYOBJS@
 LEX = @LEX@
 LIBGPUTILS = @LIBGPUTILS@
 LIBIBERTY = @LIBIBERTY@
 MAKEINFO = @MAKEINFO@
 MAKE_SUBDIRS = @MAKE_SUBDIRS@
-OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
@@ -147,19 +143,19 @@ PROGRAMS =  $(bin_PROGRAMS) $(noinst_PROGRAMS)
 DEFS = @DEFS@ -I. -I$(srcdir) -I..
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-gpvc_OBJECTS =  block.$(OBJEXT) dump.$(OBJEXT) gpvc.$(OBJEXT)
+gpvc_OBJECTS =  block.o dump.o gpvc.o
 gpvc_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@ \
 ${top_builddir}/@LIBIBERTY@
 gpvc_LDFLAGS = 
-gpdasm_OBJECTS =  gpdasm.$(OBJEXT)
+gpdasm_OBJECTS =  gpdasm.o
 gpdasm_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@ \
 ${top_builddir}/@LIBIBERTY@
 gpdasm_LDFLAGS = 
-gplib_OBJECTS =  gplib.$(OBJEXT)
+gplib_OBJECTS =  gplib.o
 gplib_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@ \
 ${top_builddir}/@LIBIBERTY@
 gplib_LDFLAGS = 
-gpvo_OBJECTS =  gpvo.$(OBJEXT)
+gpvo_OBJECTS =  gpvo.o
 gpvo_DEPENDENCIES =  ${top_builddir}/@LIBGPUTILS@ \
 ${top_builddir}/@LIBIBERTY@
 gpvo_LDFLAGS = 
@@ -181,7 +177,7 @@ OBJECTS = $(gpvc_OBJECTS) $(gpdasm_OBJECTS) $(gplib_OBJECTS) $(gpvo_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .S .c .o .obj .s
+.SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu gputils/Makefile
 
@@ -224,11 +220,6 @@ distclean-noinstPROGRAMS:
 
 maintainer-clean-noinstPROGRAMS:
 
-# FIXME: We should only use cygpath when building on Windows,
-# and only if it is available.
-.c.obj:
-	$(COMPILE) -c `cygpath -w $<`
-
 .s.o:
 	$(COMPILE) -c $<
 
@@ -237,7 +228,6 @@ maintainer-clean-noinstPROGRAMS:
 
 mostlyclean-compile:
 	-rm -f *.o core *.core
-	-rm -f *.$(OBJEXT)
 
 clean-compile:
 
