@@ -70,9 +70,21 @@ void write_pub(void)
 
   for (i = 0; i < state.stGlobal->count; i++) {
     var = get_symbol_annotation(lst[i]);
-    fprintf(f, "  %-18s : constant uint8 = %#x;\n",
-            get_symbol_name(lst[i]), 
-            var ? var->value : 0);
+    fprintf(f, "  %-18s : constant", get_symbol_name(lst[i])); 
+    if (var) {
+      if (var->value < 0x100) {
+        fprintf(f, " uint8");
+      } else if (var->value < 0x10000) {
+        fprintf(f, " uint16");
+      } else if (var->value < 0x1000000) {
+        fprintf(f, " uint24");
+      } else {
+        fprintf(f, " uint32");
+      }
+      fprintf(f, " = %#x;\n", var->value);
+    } else {
+      fprintf(f, " uint8 = 0;\n");
+    }
   }
 
   fprintf(f, "\nend public;\n\n");
