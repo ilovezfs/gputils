@@ -30,6 +30,7 @@ int gp_quiet = 0;
 int gp_num_errors = 0;
 int gp_num_warnings = 0;
 int gp_num_messages = 0;
+int gp_debug_disable = 1;
 
 void 
 gp_error(const char *format, ...)
@@ -96,6 +97,27 @@ gp_message(const char *format, ...)
   va_end(args);
 
   printf("%s %s\n", "message:", buffer);
+
+  return;
+}
+
+void 
+gp_debug(const char *format, ...)
+{
+  va_list args;
+  char buffer[BUFSIZ]; 
+
+  if (gp_debug_disable != 0)
+    return;
+
+  if (gp_quiet != 0)
+    return;
+
+  va_start(args, format);
+  vsprintf(buffer, format, args);
+  va_end(args);
+
+  printf("%s %s\n", "debug:", buffer);
 
   return;
 }

@@ -361,7 +361,8 @@ int assemble(void)
     cod_close_file();
   free_files();
 
-  if (state.num.errors > 0)
+  if ((state.num.errors > 0) ||
+      (gp_num_errors > 0))
     return EXIT_FAILURE;
   else
     return EXIT_SUCCESS;

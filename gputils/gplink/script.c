@@ -285,7 +285,6 @@ static int do_secdef(char *name, struct pnode *parms)
       section_def->fill = fill;
       section_def->use_fill = found_fill;
       section_def->protected = found_protected;
-      section_def->next_address = 0;
 
       if (strcasecmp(name, "accessbank") == 0) {
         /* FIXME: accessbank is only valid for 18cxx devices */

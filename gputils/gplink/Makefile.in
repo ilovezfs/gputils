@@ -30,8 +30,6 @@
 # the Free Software Foundation, 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-# gplink is still be developed, so don't install it
-
 
 SHELL = @SHELL@
 
@@ -101,7 +99,7 @@ RANLIB = @RANLIB@
 VERSION = @VERSION@
 YACC = @YACC@
 
-noinst_PROGRAMS = gplink
+bin_PROGRAMS = gplink
 
 CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
@@ -123,8 +121,8 @@ EXTRA_DIST = scan.h parse.h
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
-noinst_PROGRAMS =  gplink$(EXEEXT)
-PROGRAMS =  $(noinst_PROGRAMS)
+bin_PROGRAMS =  gplink$(EXEEXT)
+PROGRAMS =  $(bin_PROGRAMS)
 
 
 DEFS = @DEFS@ -I. -I$(srcdir) -I..
@@ -162,14 +160,30 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 
-mostlyclean-noinstPROGRAMS:
+mostlyclean-binPROGRAMS:
 
-clean-noinstPROGRAMS:
-	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-distclean-noinstPROGRAMS:
+distclean-binPROGRAMS:
 
-maintainer-clean-noinstPROGRAMS:
+maintainer-clean-binPROGRAMS:
+
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "  $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
+	     $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	  else :; fi; \
+	done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	done
 
 .s.o:
 	$(COMPILE) -c $<
@@ -289,7 +303,7 @@ check-am: all-am
 check: check-am
 installcheck-am:
 installcheck: installcheck-am
-install-exec-am:
+install-exec-am: install-binPROGRAMS
 install-exec: install-exec-am
 
 install-data-am:
@@ -298,13 +312,14 @@ install-data: install-data-am
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-am
-uninstall-am:
+uninstall-am: uninstall-binPROGRAMS
 uninstall: uninstall-am
 all-am: Makefile $(PROGRAMS)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
 installdirs:
+	$(mkinstalldirs)  $(DESTDIR)$(bindir)
 
 
 mostlyclean-generic:
@@ -317,22 +332,22 @@ distclean-generic:
 
 maintainer-clean-generic:
 	-test -z "scanlparsehparsec" || rm -f scanl parseh parsec
-mostlyclean-am:  mostlyclean-noinstPROGRAMS mostlyclean-compile \
+mostlyclean-am:  mostlyclean-binPROGRAMS mostlyclean-compile \
 		mostlyclean-tags mostlyclean-depend mostlyclean-generic
 
 mostlyclean: mostlyclean-am
 
-clean-am:  clean-noinstPROGRAMS clean-compile clean-tags clean-depend \
+clean-am:  clean-binPROGRAMS clean-compile clean-tags clean-depend \
 		clean-generic mostlyclean-am
 
 clean: clean-am
 
-distclean-am:  distclean-noinstPROGRAMS distclean-compile distclean-tags \
+distclean-am:  distclean-binPROGRAMS distclean-compile distclean-tags \
 		distclean-depend distclean-generic clean-am
 
 distclean: distclean-am
 
-maintainer-clean-am:  maintainer-clean-noinstPROGRAMS \
+maintainer-clean-am:  maintainer-clean-binPROGRAMS \
 		maintainer-clean-compile maintainer-clean-tags \
 		maintainer-clean-depend maintainer-clean-generic \
 		distclean-am
@@ -341,8 +356,8 @@ maintainer-clean-am:  maintainer-clean-noinstPROGRAMS \
 
 maintainer-clean: maintainer-clean-am
 
-.PHONY: mostlyclean-noinstPROGRAMS distclean-noinstPROGRAMS \
-clean-noinstPROGRAMS maintainer-clean-noinstPROGRAMS \
+.PHONY: mostlyclean-binPROGRAMS distclean-binPROGRAMS clean-binPROGRAMS \
+maintainer-clean-binPROGRAMS uninstall-binPROGRAMS install-binPROGRAMS \
 mostlyclean-compile distclean-compile clean-compile \
 maintainer-clean-compile tags mostlyclean-tags distclean-tags \
 clean-tags maintainer-clean-tags distdir mostlyclean-depend \

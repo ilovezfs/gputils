@@ -25,12 +25,17 @@ Boston, MA 02111-1307, USA.  */
 
 #define MAX_PATHS 100
 
+struct archivelist {
+  char                *name;
+  gp_archive_type     *archive;
+  struct archivelist  *next;
+};
+
 enum modes { _hex, _object};
 
 extern struct gplink_state {
   enum modes mode;                 /* default mode */ 
   enum formats hex_format;         /* format of the output */
-  int debug;                       /* enable gplink debug features */
   char *paths[MAX_PATHS];          /* the list of include paths */
   int numpaths;                    /* number of paths in the list */
   enum pic_processor processor;
@@ -41,7 +46,6 @@ extern struct gplink_state {
     mapfilename[BUFSIZ],	   /* List (.map) file name */
     objfilename[BUFSIZ];	   /* Object (.o) file name */
   struct source_context *src;	   /* Top of the stack of the script files */
-  struct objectlist     *objects;
   struct archivelist    *archives;
   struct {
     struct symbol_table *definition; /* section definitions from script */
@@ -52,7 +56,7 @@ extern struct gplink_state {
     struct symbol_table *missing;    /* missing external symbols */
     struct symbol_table *archive;    /* archive symbol index */
   } symbol;
-  gp_object_type *output;            /* output object file */
+  gp_object_type *object;            /* object files */
 } state;
 
 struct source_context {

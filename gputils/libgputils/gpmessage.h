@@ -25,9 +25,11 @@ extern int gp_quiet;
 extern int gp_num_errors;
 extern int gp_num_warnings;
 extern int gp_num_messages;
+extern int gp_debug_disable;
 
 void gp_error(const char *format, ...);
 void gp_warning(const char *format, ...);
 void gp_message(const char *format, ...);
+void gp_debug(const char *format, ...);
 
 #endif

@@ -135,7 +135,7 @@ _gp_coffgen_write_data(gp_section_type *section, FILE *fp)
   unsigned int org;
   unsigned int last;
   unsigned int data;
-  
+
   org = section->address;
 
   if (section->flags & STYP_TEXT) {
@@ -148,7 +148,7 @@ _gp_coffgen_write_data(gp_section_type *section, FILE *fp)
 
   for (org = section->address; org < last; org++) {
     data = i_memory_get(section->data, org);
-    assert((data & MEM_USED_MASK) != 0);
+    assert(data & MEM_USED_MASK);
 
     if (section->flags & STYP_TEXT) {
       _fput_16(data & 0xffff, fp);
@@ -271,7 +271,7 @@ _gp_coffgen_write_symbols(gp_object_type *object, char *table, FILE *fp)
   return;
 }
 
-static int
+int
 _has_data(gp_section_type *section)
 {
 
@@ -307,7 +307,7 @@ _gp_updateptr(gp_object_type *object)
   while (section != NULL) {
     section->number = section_number;
     section_number++;
-    section->data_ptr  = 0;
+    section->data_ptr = 0;
     if (_has_data(section)) {
       section->data_ptr = loc;
       loc += section->size;
