@@ -2943,6 +2943,7 @@ struct insn op_0[] = {
   { "variable",   0, (long int)do_variable,  INSN_CLASS_FUNC,   0 },
   { "while",      0, (long int)do_while,     INSN_CLASS_FUNC,   0 },
   { ".set",       0, (long int)do_set, 	     INSN_CLASS_FUNC,   0 },
+  { "#if",        0, (long int)do_if,        INSN_CLASS_FUNC,   ATTRIB_COND },
   { "#else",      0, (long int)do_else,	     INSN_CLASS_FUNC,   ATTRIB_COND },
   { "#endif",     0, (long int)do_endif,     INSN_CLASS_FUNC,   ATTRIB_COND },
   { "#ifdef",     0, (long int)do_ifdef,     INSN_CLASS_FUNC,   ATTRIB_COND },

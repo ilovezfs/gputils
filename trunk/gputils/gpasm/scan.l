@@ -182,13 +182,19 @@ list		     	 {
 			  yylval.s = strdup(yytext);
 			  return IDENTIFIER;
 			 }
+#?if			 {
+			   /* #if and if can appear in column 1 */
+			   quoted = 1;
+			   yylval.s = strdup(yytext);
+			   return IDENTIFIER;
+			 }
 #?else   	 	 {
 			   /* #else and else can appear in column 1 */
 			   yylval.s = strdup(yytext);
 			   return IDENTIFIER;
 			 }
-#endif  	 	 {
-			   /* only #endif can appear in column 1 */
+#?endif  	 	 {
+			   /* #endif and endif can appear in column 1 */
 			   yylval.s = strdup(yytext);
 			   return IDENTIFIER;
 			 }
