@@ -25,7 +25,7 @@ Boston, MA 02111-1307, USA.  */
 #include "gpal.h"
 
 void
-codegen_init_deps(tree *module)
+deps_init(tree *module)
 {
   char depfilename[BUFSIZ];
 
@@ -47,7 +47,7 @@ codegen_init_deps(tree *module)
 }
 
 void
-add_dependency(char *file_name)
+deps_add(char *file_name)
 {
   if (state.output.d) {
     fprintf(state.output.d, " \\\n  %s", file_name);
@@ -55,7 +55,7 @@ add_dependency(char *file_name)
 }
 
 void
-codegen_close_deps(void)
+deps_close(void)
 {
   if (state.output.d) {
     fprintf(state.output.d, "\n");

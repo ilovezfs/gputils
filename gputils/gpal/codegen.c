@@ -313,7 +313,7 @@ codegen_load_file(tree *symbol, struct variable *var)
   int element_size;
   char *bank_addr = var_bank(var);
 
-  if ((symbol->tag == node_symbol) && (SYM_OFST(symbol))) {
+  if ((symbol->tag == tag_symbol) && (SYM_OFST(symbol))) {
     /* access an array */
     element_size = type_bytes(var->type->prim);
 
@@ -395,14 +395,14 @@ gen_binop_expr(enum node_op op, tree *p0, tree *p1)
 
   gen_expr(p1);
 
-  if (p0->tag == node_call) {
+  if (p0->tag == tag_call) {
     reg1 = codegen_get_temp(codegen_size);
     STORE_FILE(reg1, local_bank_addr, codegen_size, 0);
     analyze_call(p0, true, codegen_size);    
     CODEGEN(op, codegen_size, false, 0, reg1, local_bank_addr);
-  } else if (p0->tag == node_constant) {
+  } else if (p0->tag == tag_constant) {
     CODEGEN(op, codegen_size, true, p0->value.constant, NULL, NULL);
-  } else if (p0->tag == node_symbol) { 
+  } else if (p0->tag == tag_symbol) { 
     var = get_global(SYM_NAME(p0));
     if (var->tag == sym_const) {
       CODEGEN(op, codegen_size, true, var->value, NULL, NULL);
@@ -440,11 +440,11 @@ gen_expr(tree *expr)
   char *bank_addr;
 
   switch(expr->tag) {
-  case node_arg:
+  case tag_arg:
     var = get_global(ARG_NAME(expr));
     codegen_load_file(expr, var);
     break;
-  case node_attrib:
+  case tag_attrib:
     var = get_global(ATTRIB_NAME(expr));
     if (ATTRIB_TYPE(expr) == attrib_access) {
       LOAD_FSR(var);
@@ -456,13 +456,13 @@ gen_expr(tree *expr)
       LOAD_CONSTANT(maybe_evaluate(expr), codegen_size);
     }
     break;
-  case node_call:
+  case tag_call:
     analyze_call(expr, true, codegen_size);    
     break;
-  case node_constant:
+  case tag_constant:
     LOAD_CONSTANT(expr->value.constant, codegen_size);
     break;
-  case node_symbol:
+  case tag_symbol:
     var = get_global(SYM_NAME(expr));
     if (var->tag == sym_const) {
       LOAD_CONSTANT(var->value, codegen_size); 
@@ -472,10 +472,10 @@ gen_expr(tree *expr)
       codegen_load_file(expr, var);
     }
     break;
-  case node_unop:
+  case tag_unop:
     gen_unop_expr(expr);
     break;
-  case node_binop:
+  case tag_binop:
     if (expr->value.binop.op == op_assign) {
       analyze_error(expr, "assign operator = should be equal operator ==");
     } else if ((expr->value.binop.op == op_lsh) ||
@@ -760,12 +760,12 @@ codegen_close_asm(void)
   struct variable *var;
 
   var = get_global("main");
-  if ((var) && (var->node->tag == node_subprogram)) {
+  if ((var) && (var->node->tag == tag_subprogram)) {
     RESET_VECTOR(var);
   }
 
   var = get_global("isr");
-  if ((var) && (var->node->tag == node_subprogram)) {
+  if ((var) && (var->node->tag == tag_subprogram)) {
     INT_VECTOR(var);
   }
 

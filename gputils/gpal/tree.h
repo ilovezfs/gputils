@@ -22,34 +22,32 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __TREE_H__
 #define __TREE_H__
 
-/* FIXME: change name from node_unknown to tag_unknown */
-
 enum node_tag { 
-  node_unknown,
-  node_alias,
-  node_arg,
-  node_assembly,
-  node_attrib,
-  node_body,
-  node_binop,
-  node_call,
-  node_constant, 
-  node_cond,
-  node_decl,
-  node_file,
-  node_goto,  
-  node_head,  
-  node_label,
-  node_loop,
-  node_pragma,
-  node_record,
-  node_return,
-  node_string,
-  node_subprogram,
-  node_symbol, 
-  node_type,
-  node_unop,
-  node_with
+  tag_unknown,
+  tag_alias,
+  tag_arg,
+  tag_assembly,
+  tag_attrib,
+  tag_body,
+  tag_binop,
+  tag_call,
+  tag_constant,
+  tag_cond,
+  tag_decl,
+  tag_file,
+  tag_goto,  
+  tag_head,
+  tag_label,
+  tag_loop,
+  tag_pragma,
+  tag_record,
+  tag_return,
+  tag_string,
+  tag_subprogram,
+  tag_symbol,
+  tag_type,
+  tag_unop,
+  tag_with
 };
 
 enum node_op { 

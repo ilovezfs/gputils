@@ -22,8 +22,8 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __DEPS_H__
 #define __DEPS_H__
 
-void codegen_init_deps(tree *module);
-void add_dependency(char *file_name);
-void codegen_close_deps(void);
+void deps_init(tree *module);
+void deps_add(char *file_name);
+void deps_close(void);
 
 #endif

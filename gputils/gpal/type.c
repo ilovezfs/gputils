@@ -227,7 +227,7 @@ add_type_record(char *name, tree *list)
 
   current = list;
   while (list) {
-    assert(list->tag == node_decl);
+    assert(list->tag == tag_decl);
     element_name = DECL_NAME(list);
     element_type = DECL_TYPE(list);
     prim = get_symbol(state.type, element_type);

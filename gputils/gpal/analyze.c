@@ -120,7 +120,7 @@ can_evaluate(tree *p, gp_boolean gen_errors)
   struct variable *var;
 
   switch (p->tag) {
-  case node_attrib:
+  case tag_attrib:
     var = get_global(ATTRIB_NAME(p));
     if (is_data(var)) {
       switch (ATTRIB_TYPE(p)) {
@@ -146,11 +146,11 @@ can_evaluate(tree *p, gp_boolean gen_errors)
       return false;
     }
     return false;
-  case node_call:
+  case tag_call:
     return false;
-  case node_constant:
+  case tag_constant:
     return true;
-  case node_symbol:
+  case tag_symbol:
     var = get_global(SYM_NAME(p));
     if (var) {
       if (var->tag == sym_const) {
@@ -167,12 +167,12 @@ can_evaluate(tree *p, gp_boolean gen_errors)
       }
       return false;
     }
-  case node_unop:
+  case tag_unop:
     return can_evaluate(p->value.unop.p0, gen_errors);
-  case node_binop:
+  case tag_binop:
     return can_evaluate(p->value.binop.p0, gen_errors) && 
            can_evaluate(p->value.binop.p1, gen_errors);
-  case node_string:
+  case tag_string:
     if (gen_errors) {
       analyze_error(p, "illegal argument %s", p->value.string);
     }
@@ -191,7 +191,7 @@ evaluate(tree *p)
   int p0, p1;
 
   switch (p->tag) {
-  case node_attrib:
+  case tag_attrib:
     var = get_global(ATTRIB_NAME(p));
     switch (ATTRIB_TYPE(p)) {
     case attrib_first:    
@@ -203,13 +203,13 @@ evaluate(tree *p)
     default:
       assert(0);
     }
-  case node_constant:
+  case tag_constant:
     return p->value.constant;
-  case node_symbol:
+  case tag_symbol:
     var = get_global(SYM_NAME(p));
     assert (var != NULL);
     return var->value;
-  case node_unop:
+  case tag_unop:
     switch (p->value.unop.op) {
     case op_not:
       return !evaluate(p->value.unop.p0);
@@ -222,7 +222,7 @@ evaluate(tree *p)
     default:
       assert(0);
     }
-  case node_binop:
+  case tag_binop:
     p0 = evaluate(p->value.binop.p0);
     p1 = evaluate(p->value.binop.p1);
     switch (p->value.binop.op) {
@@ -290,7 +290,7 @@ test_symbol(tree *node, char *name, enum size_tag size)
   
   assert(var->type != NULL);
   
-  if (node->tag == node_attrib) {
+  if (node->tag == tag_attrib) {
     switch (ATTRIB_TYPE(node)) {
     case attrib_address:    
       arg_size = target->data_ptr_size;
@@ -315,7 +315,7 @@ test_symbol(tree *node, char *name, enum size_tag size)
     return true;
   }
 
-  if ((node->tag != node_attrib) && 
+  if ((node->tag != tag_attrib) && 
       ((var->tag == sym_idata) || (var->tag == sym_udata))) {
 
     if ((var->is_assigned == false) && (var->storage == storage_local)) {
@@ -346,20 +346,20 @@ scan_tree(tree *expr, enum size_tag size)
     return true;
 
   switch (expr->tag) {
-  case node_arg:
+  case tag_arg:
     return test_symbol(expr, ARG_NAME(expr), size);
-  case node_attrib:
+  case tag_attrib:
     return test_symbol(expr, ATTRIB_NAME(expr), size);
-  case node_binop:
+  case tag_binop:
     return scan_tree(BINOP_LEFT(expr), size) ||
            scan_tree(BINOP_RIGHT(expr), size);
-  case node_call:
+  case tag_call:
     return test_symbol(expr, CALL_NAME(expr), size);
-  case node_constant:
+  case tag_constant:
     return false;
-  case node_unop:
+  case tag_unop:
     return scan_tree(UNOP_ARG(expr), size);
-  case node_symbol:
+  case tag_symbol:
     return test_symbol(expr, SYM_NAME(expr), size);
   default:
     assert(0);
@@ -378,19 +378,19 @@ scan_test(tree *p)
     return true;
 
   switch (p->tag) {
-  case node_arg:
+  case tag_arg:
     return true;
-  case node_constant:
+  case tag_constant:
     return true;
-  case node_symbol:
+  case tag_symbol:
     return true;
-  case node_unop:
+  case tag_unop:
     if (p->value.unop.op == op_not) {
       return scan_test(p->value.unop.p0);
     } else {
       return true;
     }
-  case node_binop:
+  case tag_binop:
     switch (p->value.binop.op) {
     case op_eq:
     case op_lt:
@@ -482,7 +482,7 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
   var = get_global(CALL_NAME(call));
   if (var) {
     def = var->node;
-    if (def->tag == node_subprogram) {
+    if (def->tag == tag_subprogram) {
       head = SUB_HEAD(def);
       if (SUB_RET(def)) {
         load_result = true;
@@ -522,7 +522,7 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
 
   /* write data into the in/inout of the function or procedure */
   while (call_args) {
-    assert(def_args->tag == node_arg);
+    assert(def_args->tag == tag_arg);
 
     if ((ARG_DIR(def_args) == dir_in) ||
         (ARG_DIR(def_args) == dir_inout)) {
@@ -543,11 +543,11 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
   call_args = CALL_ARGS(call);
   def_args = HEAD_ARGS(head);
   while (call_args) {
-    assert(def_args->tag == node_arg);
+    assert(def_args->tag == tag_arg);
 
     if ((ARG_DIR(def_args) == dir_inout) ||
         (ARG_DIR(def_args) == dir_out)) {
-      if (call_args->tag == node_symbol) {
+      if (call_args->tag == tag_symbol) {
         assignment = mk_binop(op_assign,
                               call_args,
                               arg_to_symbol(var->name, def_args));
@@ -748,7 +748,7 @@ analyze_expr(tree *expr)
   int offset = 0;
   tree *unop = NULL;
 
-  if ((expr->tag != node_binop) || (BINOP_OP(expr) != op_assign)) {
+  if ((expr->tag != tag_binop) || (BINOP_OP(expr) != op_assign)) {
     analyze_error(expr, "expression is missing =");
     return;
   }
@@ -756,14 +756,14 @@ analyze_expr(tree *expr)
   left = BINOP_LEFT(expr);
   right = BINOP_RIGHT(expr);
 
-  if ((left->tag == node_attrib) && (ATTRIB_TYPE(left) == attrib_access)) {
+  if ((left->tag == tag_attrib) && (ATTRIB_TYPE(left) == attrib_access)) {
     name = ATTRIB_NAME(left);
     access_type = true;
   } else {
     name = SYM_NAME(left);
   }
  
-  if ((left->tag != node_symbol) && (!access_type)) {
+  if ((left->tag != tag_symbol) && (!access_type)) {
     analyze_error(expr, "invalid lvalue in assignment");
     return;
   }
@@ -890,16 +890,16 @@ analyze_statements(tree *statement)
 
   while(statement) {
     switch(statement->tag) {
-    case node_assembly:
+    case tag_assembly:
       analyze_assembly(statement);
       break;
-    case node_call:
+    case tag_call:
       analyze_call(statement, false, size_unknown);
       break;
-    case node_cond:
+    case tag_cond:
       analyze_cond(statement, NULL);  
       break;
-    case node_goto:
+    case tag_goto:
       label_var = get_global(GOTO_NAME(statement));
       if (label_var != NULL) {
         if (label_var->tag == sym_label) {
@@ -911,7 +911,7 @@ analyze_statements(tree *statement)
         analyze_error(statement, "unknown label %s", GOTO_NAME(statement));  
       }
       break;
-    case node_label:
+    case tag_label:
       label_var = get_global(LABEL_NAME(statement));
       if (label_var != NULL) {
         /* errors will be generated in scan_labels() */
@@ -921,10 +921,10 @@ analyze_statements(tree *statement)
         }
       }
       break; 
-    case node_loop:
+    case tag_loop:
       analyze_loop(statement);
       break; 
-    case node_return:
+    case tag_return:
       analyze_return(statement);
       break; 
     default:
@@ -944,10 +944,10 @@ scan_labels(tree *statement, char *base_name)
 
   while(statement) {
     switch(statement->tag) {
-    case node_cond:
+    case tag_cond:
       scan_labels(COND_BODY(statement), base_name);  
       break;
-    case node_label:
+    case tag_label:
       label = mangle_name2(base_name, LABEL_NAME(statement));      
       label_var = add_global_symbol(label, 
                                     statement,
@@ -956,7 +956,7 @@ scan_labels(tree *statement, char *base_name)
                                     NULL);
       add_symbol_pointer(LABEL_NAME(statement), statement, label_var);
       break; 
-    case node_loop:
+    case tag_loop:
       scan_labels(LOOP_BODY(statement), base_name);  
       break; 
     default:
@@ -1015,7 +1015,7 @@ add_arg_symbols(tree *node,
   char *arg_name;
   struct variable *var;
 
-  if (node->tag == node_subprogram) {
+  if (node->tag == tag_subprogram) {
     head = SUB_HEAD(node);
   } else {
     assert(0);
@@ -1024,7 +1024,7 @@ add_arg_symbols(tree *node,
   arg = HEAD_ARGS(head);
 
   while (arg) {
-    assert(arg->tag == node_arg);
+    assert(arg->tag == tag_arg);
     arg_name = mangle_name2(subprogram_name, ARG_NAME(arg));
     var = add_global_symbol(arg_name,
                             arg,
@@ -1076,8 +1076,8 @@ analyze_subprogram(tree *subprogram)
     generating_function = false;
   }
 
-  assert(head->tag == node_head);  
-  assert(body->tag == node_body); 
+  assert(head->tag == tag_head);  
+  assert(body->tag == tag_body); 
   args = HEAD_ARGS(head);
   decl = BODY_DECL(body);
   statements = BODY_STATEMENTS(body); 
@@ -1308,11 +1308,11 @@ analyze_pragma(tree *expr,
   tree *rhs;
 
   switch (expr->tag) {
-  case node_binop:
+  case tag_binop:
     lhs = expr->value.binop.p0;
     rhs = expr->value.binop.p1;
     if ((expr->value.binop.op != op_assign) ||
-        (lhs->tag != node_symbol)) {
+        (lhs->tag != tag_symbol)) {
       analyze_error(expr, "unknown pragma");
     } else {
       if (strcasecmp(SYM_NAME(lhs), "code_address") == 0) {
@@ -1323,7 +1323,7 @@ analyze_pragma(tree *expr,
           state.section.code_addr_valid = true;
         }
       } else if (strcasecmp(SYM_NAME(lhs), "code_section") == 0) {
-        if (rhs->tag != node_string) {
+        if (rhs->tag != tag_string) {
           analyze_error(expr, "code section name must be a string");
         } else {
           if (*prog_storage == storage_public) {
@@ -1342,7 +1342,7 @@ analyze_pragma(tree *expr,
           }
         }
       } else if (strcasecmp(lhs->value.string, "processor") == 0) {
-        if (rhs->tag != node_string) {
+        if (rhs->tag != tag_string) {
           analyze_error(expr, "processor name must be a string");        
         } else {
           analyze_select_processor(rhs, rhs->value.string);
@@ -1355,7 +1355,7 @@ analyze_pragma(tree *expr,
           state.section.data_addr_valid = true;
         }
       } else if (strcasecmp(lhs->value.string, "data_section") == 0) {
-        if (rhs->tag != node_string) {
+        if (rhs->tag != tag_string) {
           analyze_error(expr, "data section name must be a string");
         } else {
           if (*data_storage == storage_public) {
@@ -1507,7 +1507,7 @@ analyze_type(tree *type,
     enum_num = 0;
     list = TYPE_LIST(type);
     while (list) {
-      if (list->tag == node_symbol) {
+      if (list->tag == tag_symbol) {
         /* add the constant to the global symbol table */
         enum_name = mangle_name2(root_name, SYM_NAME(list));
         var = add_constant(enum_name, enum_num++, list, name);
@@ -1598,7 +1598,7 @@ check_subprogram_declaration(tree *def, tree *prot)
   prot_args = HEAD_ARGS(prot_head);
  
   while (def_args) {
-    assert(def_args->tag == node_arg);
+    assert(def_args->tag == tag_arg);
  
     if (prot_args == NULL) {
       analyze_error(prot_head, "the declaration is missing arguments");
@@ -1660,33 +1660,33 @@ analyze_elements(tree *current,
 
   while (current) {
     switch (current->tag) {
-    case node_alias:
+    case tag_alias:
       add_global_symbol(ALIAS_ALIAS(current),
                         ALIAS_EXPR(current),
                         sym_alias,
                         storage_unknown,
                         NULL);
       break;
-    case node_cond:
+    case tag_cond:
       analyze_preprocess(current, (long int)analyze_elements);
       break;
-    case node_pragma:
+    case tag_pragma:
       analyze_pragma(current->value.pragma, &data_storage, &prog_storage);
       break;
-    case node_decl:
+    case tag_decl:
       analyze_decl(current, root_name, data_storage, add_alias);
       break;
-    case node_record:
+    case tag_record:
       name = mangle_name2(root_name, RECORD_NAME(current));
       add_type_record(name, RECORD_LIST(current));
       if (add_alias) {
         add_type_alias(RECORD_NAME(current), name);
       }
       break;
-    case node_type:
+    case tag_type:
       analyze_type(current, root_name, add_alias);
       break;
-    case node_subprogram:
+    case tag_subprogram:
       alias = find_node_name(current);
       name = mangle_name2(root_name, alias);
       var = get_global(name);
@@ -1744,10 +1744,10 @@ analyze_elements(tree *current,
         analyze_subprogram(current);
       }
       break;
-    case node_with:
+    case tag_with:
       public = find_public(WITH_NAME(current));
       if (public) {
-        add_dependency(get_file_name(public->file_id));
+        deps_add(get_file_name(public->file_id));
 
         add_global_symbol(FILE_DATA_ADDR(public),
                           current,
@@ -1789,7 +1789,7 @@ analyze(tree *module)
   state.current_page = NULL;
   state.module = module;
 
-  codegen_init_deps(module);
+  deps_init(module);
 
   /* locate the public for the module being compiled */ 
   public = find_public(FILE_NAME(module));
@@ -1831,7 +1831,7 @@ analyze(tree *module)
   write_declarations();
   write_constants();
   codegen_close_asm();
-  codegen_close_deps();
+  deps_close();
 
   return;
 }
