@@ -1965,12 +1965,11 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	}
 	break;
       case INSN_CLASS_LIT20:
-
 	if (enforce_arity(arity, 1)) {
 	  int dest;
 	  p = HEAD(parms);
 	  dest = maybe_evaluate(p) >> _16bit_core;
-	  emit_check(i->opcode, dest, 0xff);
+	  emit(i->opcode | (dest & 0xff));
 	  emit_check(0xf000, dest>>8, 0xfff);
 	}
 	break;
@@ -1998,7 +1997,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    enforce_arity(arity, 2);
 	  }
 	  dest = maybe_evaluate(p) >> _16bit_core;
-	  emit_check(i->opcode | (s<<8), (dest&0xff), 0xff);
+	  emit(i->opcode | (s<<8) | (dest & 0xff));
 	  emit_check(0xf000, (dest>>8), 0xfff);
 	}
 	break;
@@ -2015,8 +2014,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    p = HEAD(TAIL(parms));
 	    k =  maybe_evaluate(p);
 	    emit_check(i->opcode | ((file & 3) << 4), (k>>8), 0xf);
-	    k &= 0xff;
-	    emit_check(0xf000, k, 0xff);
+	    emit(0xf000 | (k & 0xff));
 	  }
 	}
 	break;
