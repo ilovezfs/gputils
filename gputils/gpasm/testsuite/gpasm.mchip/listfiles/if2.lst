@@ -1,0 +1,2019 @@
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; IF2.ASM 
+                        00002 
+                        00003 ; This file tests illegal usage of the IF-ELSE-ENDIF directives.
+                        00004 
+                        00005         LIST    P=17C42
+                        00006 
+                        00007 #define Def1    5
+  00000010              00008 Value1  EQU     10
+                        00009 
+Error[128]  : Missing argument(s)
+                        00010         IF                              ; No expression
+0000     0000           00011            NOP
+Error[125]  : Illegal condition (ENDIF)
+                        00012         ENDIF
+                        00013 
+Error[108]  : Illegal character (=)
+                        00014         IF 1=1                          ; Illegal condition
+                        00015            NOP
+                        00016         ENDIF
+                        00017 
+Error[121]  : Illegal label (Label)
+                        00018 Label   IF 1==1                         ; Illegal label
+0001     0000           00019            NOP
+                        00020         ENDIF
+                        00021 
+  00000001              00022 AA = 1
+  00000001              00023 BB = 1
+  00000001              00024 CC = 1
+  00000001              00025 DD = 1
+  00000001              00026 EE = 1
+  00000001              00027 FF = 1
+  00000001              00028 GG = 1
+  00000001              00029 HH = 1
+  00000001              00030 II = 1
+                        00031 
+  00000001              00032 A1 = 1
+  00000001              00033 B1 = 1
+  00000001              00034 C1 = 1
+  00000001              00035 D1 = 1
+  00000001              00036 E1 = 1
+  00000001              00037 F1 = 1
+  00000001              00038 G1 = 1
+  00000001              00039 H1 = 1
+  00000001              00040 I1 = 1
+                        00041 
+                        00042         WHILE AA+BB+CC+DD+EE+FF+GG+HH + A1+B1+C1+D1+E1+F1+G1+H1 > 0
+                        00043            IF AA > 0
+0002     412B           00044               DATA                      "A+"
+  00000000              00045 AA--
+                        00046            ELSE
+                        00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00050 BB--
+                        00051               ELSE
+                        00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+                        00055 CC--
+                        00056                  ELSE
+                        00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+                        00060 DD--
+                        00061                     ELSE
+                        00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+                        00065 EE--
+                        00066                        ELSE
+                        00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+                        00070 FF--
+                        00071                           ELSE
+                        00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+                        00075 GG--
+                        00076                              ELSE
+                        00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+                        00080 HH--
+                        00081                                 ELSE
+                        00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+                        00085 II--
+                        00086                                    ELSE
+                        00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+                        00090 A1--
+                        00091            ELSE
+                        00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+                        00095 B1--
+                        00096               ELSE
+                        00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+                        00100 C1--
+                        00101                  ELSE
+                        00102                     DATA                "C1-"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+                        00105 D1--
+                        00106                     ELSE
+                        00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+                        00110 E1--
+                        00111                        ELSE
+                        00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+                        00115 F1--
+                        00116                           ELSE
+                        00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+                        00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+0003     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+0004     422B           00049                  DATA                   "B+"
+  00000000              00050 BB--
+                        00051               ELSE
+                        00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00055 CC--
+                        00056                  ELSE
+                        00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+                        00060 DD--
+                        00061                     ELSE
+                        00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+                        00065 EE--
+                        00066                        ELSE
+                        00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+                        00070 FF--
+                        00071                           ELSE
+                        00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+                        00075 GG--
+                        00076                              ELSE
+                        00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+                        00080 HH--
+                        00081                                 ELSE
+                        00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+                        00085 II--
+                        00086                                    ELSE
+                        00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+                        00090 A1--
+                        00091            ELSE
+                        00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+                        00095 B1--
+                        00096               ELSE
+                        00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+                        00100 C1--
+                        00101                  ELSE
+                        00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+                        00105 D1--
+                        00106                     ELSE
+                        00107                        DATA             "D1-"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+                        00110 E1--
+                        00111                        ELSE
+                        00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+                        00115 F1--
+                        00116                           ELSE
+                        00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+                        00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+0005     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+                        00050 BB--
+                        00051               ELSE
+0006     422D           00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+0007     432B           00054                     DATA                "C+"
+  00000000              00055 CC--
+                        00056                  ELSE
+                        00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00060 DD--
+                        00061                     ELSE
+                        00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+                        00065 EE--
+                        00066                        ELSE
+                        00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+                        00070 FF--
+                        00071                           ELSE
+                        00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+                        00075 GG--
+                        00076                              ELSE
+                        00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+                        00080 HH--
+                        00081                                 ELSE
+                        00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+                        00085 II--
+                        00086                                    ELSE
+                        00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+                        00090 A1--
+                        00091            ELSE
+                        00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+                        00095 B1--
+                        00096               ELSE
+                        00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+                        00100 C1--
+                        00101                  ELSE
+                        00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+                        00105 D1--
+                        00106                     ELSE
+                        00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+                        00110 E1--
+                        00111                        ELSE
+                        00112                           DATA          "E1-"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+                        00115 F1--
+                        00116                           ELSE
+                        00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+                        00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+0008     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+                        00050 BB--
+                        00051               ELSE
+0009     422D           00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+                        00055 CC--
+                        00056                  ELSE
+000A     432D           00057                     DATA                "C-"
+                        00058                     IF DD > 0
+000B     442B           00059                        DATA             "D+"
+  00000000              00060 DD--
+                        00061                     ELSE
+                        00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00065 EE--
+                        00066                        ELSE
+                        00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+                        00070 FF--
+                        00071                           ELSE
+                        00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+                        00075 GG--
+                        00076                              ELSE
+                        00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+                        00080 HH--
+                        00081                                 ELSE
+                        00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+                        00085 II--
+                        00086                                    ELSE
+                        00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+                        00090 A1--
+                        00091            ELSE
+                        00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+                        00095 B1--
+                        00096               ELSE
+                        00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+                        00100 C1--
+                        00101                  ELSE
+                        00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+                        00105 D1--
+                        00106                     ELSE
+                        00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+                        00110 E1--
+                        00111                        ELSE
+                        00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+                        00115 F1--
+                        00116                           ELSE
+                        00117                              DATA       "F1-"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+                        00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+000C     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+                        00050 BB--
+                        00051               ELSE
+000D     422D           00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+                        00055 CC--
+                        00056                  ELSE
+000E     432D           00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+                        00060 DD--
+                        00061                     ELSE
+000F     442D           00062                        DATA             "D-"
+                        00063                        IF EE > 0
+0010     452B           00064                           DATA          "E+"
+  00000000              00065 EE--
+                        00066                        ELSE
+                        00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00070 FF--
+                        00071                           ELSE
+                        00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+                        00075 GG--
+                        00076                              ELSE
+                        00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+                        00080 HH--
+                        00081                                 ELSE
+                        00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+                        00085 II--
+                        00086                                    ELSE
+                        00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+                        00090 A1--
+                        00091            ELSE
+                        00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+                        00095 B1--
+                        00096               ELSE
+                        00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+                        00100 C1--
+                        00101                  ELSE
+                        00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+                        00105 D1--
+                        00106                     ELSE
+                        00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+                        00110 E1--
+                        00111                        ELSE
+                        00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+                        00115 F1--
+                        00116                           ELSE
+                        00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+                        00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+0011     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+                        00050 BB--
+                        00051               ELSE
+0012     422D           00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+                        00055 CC--
+                        00056                  ELSE
+0013     432D           00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+                        00060 DD--
+                        00061                     ELSE
+0014     442D           00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+                        00065 EE--
+                        00066                        ELSE
+0015     452D           00067                           DATA          "E-"
+                        00068                           IF FF > 0
+0016     462B           00069                              DATA       "F+"
+  00000000              00070 FF--
+                        00071                           ELSE
+                        00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00075 GG--
+                        00076                              ELSE
+                        00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+                        00080 HH--
+                        00081                                 ELSE
+                        00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+                        00085 II--
+                        00086                                    ELSE
+                        00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+                        00090 A1--
+                        00091            ELSE
+                        00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+                        00095 B1--
+                        00096               ELSE
+                        00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+                        00100 C1--
+                        00101                  ELSE
+                        00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+                        00105 D1--
+                        00106                     ELSE
+                        00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+                        00110 E1--
+                        00111                        ELSE
+                        00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+                        00115 F1--
+                        00116                           ELSE
+                        00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+                        00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+0017     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+                        00050 BB--
+                        00051               ELSE
+0018     422D           00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+                        00055 CC--
+                        00056                  ELSE
+0019     432D           00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+                        00060 DD--
+                        00061                     ELSE
+001A     442D           00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+                        00065 EE--
+                        00066                        ELSE
+001B     452D           00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+                        00070 FF--
+                        00071                           ELSE
+001C     462D           00072                              DATA       "F-"
+                        00073                              IF GG > 0
+001D     472B           00074                                 DATA    "G+"
+  00000000              00075 GG--
+                        00076                              ELSE
+                        00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00080 HH--
+                        00081                                 ELSE
+                        00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+                        00085 II--
+                        00086                                    ELSE
+                        00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+                        00090 A1--
+                        00091            ELSE
+                        00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+                        00095 B1--
+                        00096               ELSE
+                        00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+                        00100 C1--
+                        00101                  ELSE
+                        00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+                        00105 D1--
+                        00106                     ELSE
+                        00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+                        00110 E1--
+                        00111                        ELSE
+                        00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+                        00115 F1--
+                        00116                           ELSE
+                        00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+                        00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+001E     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+                        00050 BB--
+                        00051               ELSE
+001F     422D           00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+                        00055 CC--
+                        00056                  ELSE
+0020     432D           00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+                        00060 DD--
+                        00061                     ELSE
+0021     442D           00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+                        00065 EE--
+                        00066                        ELSE
+0022     452D           00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+                        00070 FF--
+                        00071                           ELSE
+0023     462D           00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+                        00075 GG--
+                        00076                              ELSE
+0024     472D           00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+0025     482B           00079                                    DATA "H+"
+  00000000              00080 HH--
+                        00081                                 ELSE
+                        00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00085 II--
+                        00086                                    ELSE
+                        00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+                        00090 A1--
+                        00091            ELSE
+                        00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+                        00095 B1--
+                        00096               ELSE
+                        00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+                        00100 C1--
+                        00101                  ELSE
+                        00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+                        00105 D1--
+                        00106                     ELSE
+                        00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+                        00110 E1--
+                        00111                        ELSE
+                        00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+                        00115 F1--
+                        00116                           ELSE
+                        00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+                        00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+0026     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+                        00050 BB--
+                        00051               ELSE
+0027     422D           00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+                        00055 CC--
+                        00056                  ELSE
+0028     432D           00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+                        00060 DD--
+                        00061                     ELSE
+0029     442D           00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+                        00065 EE--
+                        00066                        ELSE
+002A     452D           00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+                        00070 FF--
+                        00071                           ELSE
+002B     462D           00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+                        00075 GG--
+                        00076                              ELSE
+002C     472D           00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+                        00080 HH--
+                        00081                                 ELSE
+002D     482D           00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+002E     492B           00084                                       DATA      "I+"
+  00000000              00085 II--
+                        00086                                    ELSE
+                        00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 18
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00090 A1--
+                        00091            ELSE
+                        00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+                        00095 B1--
+                        00096               ELSE
+                        00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+                        00100 C1--
+                        00101                  ELSE
+                        00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+                        00105 D1--
+                        00106                     ELSE
+                        00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+                        00110 E1--
+                        00111                        ELSE
+                        00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+                        00115 F1--
+                        00116                           ELSE
+                        00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+                        00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 19
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+002F     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+                        00050 BB--
+                        00051               ELSE
+0030     422D           00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+                        00055 CC--
+                        00056                  ELSE
+0031     432D           00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+                        00060 DD--
+                        00061                     ELSE
+0032     442D           00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+                        00065 EE--
+                        00066                        ELSE
+0033     452D           00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+                        00070 FF--
+                        00071                           ELSE
+0034     462D           00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+                        00075 GG--
+                        00076                              ELSE
+0035     472D           00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+                        00080 HH--
+                        00081                                 ELSE
+0036     482D           00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+                        00085 II--
+                        00086                                    ELSE
+0037     492D           00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+0038     4131 2B00      00089               DATA                      "A1+"
+  00000000              00090 A1--
+                        00091            ELSE
+                        00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 20
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00095 B1--
+                        00096               ELSE
+                        00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+                        00100 C1--
+                        00101                  ELSE
+                        00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+                        00105 D1--
+                        00106                     ELSE
+                        00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+                        00110 E1--
+                        00111                        ELSE
+                        00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+                        00115 F1--
+                        00116                           ELSE
+                        00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+                        00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 21
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+003A     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+                        00050 BB--
+                        00051               ELSE
+003B     422D           00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+                        00055 CC--
+                        00056                  ELSE
+003C     432D           00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+                        00060 DD--
+                        00061                     ELSE
+003D     442D           00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+                        00065 EE--
+                        00066                        ELSE
+003E     452D           00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+                        00070 FF--
+                        00071                           ELSE
+003F     462D           00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+                        00075 GG--
+                        00076                              ELSE
+0040     472D           00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+                        00080 HH--
+                        00081                                 ELSE
+0041     482D           00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+                        00085 II--
+                        00086                                    ELSE
+0042     492D           00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+                        00090 A1--
+                        00091            ELSE
+0043     4131 2D00      00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+0045     4231 2B00      00094                  DATA                   "B1+"
+  00000000              00095 B1--
+                        00096               ELSE
+                        00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 22
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00100 C1--
+                        00101                  ELSE
+                        00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+                        00105 D1--
+                        00106                     ELSE
+                        00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+                        00110 E1--
+                        00111                        ELSE
+                        00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+                        00115 F1--
+                        00116                           ELSE
+                        00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+                        00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+0047     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+                        00050 BB--
+                        00051               ELSE
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 23
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0048     422D           00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+                        00055 CC--
+                        00056                  ELSE
+0049     432D           00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+                        00060 DD--
+                        00061                     ELSE
+004A     442D           00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+                        00065 EE--
+                        00066                        ELSE
+004B     452D           00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+                        00070 FF--
+                        00071                           ELSE
+004C     462D           00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+                        00075 GG--
+                        00076                              ELSE
+004D     472D           00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+                        00080 HH--
+                        00081                                 ELSE
+004E     482D           00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+                        00085 II--
+                        00086                                    ELSE
+004F     492D           00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+                        00090 A1--
+                        00091            ELSE
+0050     4131 2D00      00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+                        00095 B1--
+                        00096               ELSE
+0052     4231 2D00      00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+0054     4331 2B00      00099                     DATA                "C1+"
+  00000000              00100 C1--
+                        00101                  ELSE
+                        00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 24
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00105 D1--
+                        00106                     ELSE
+                        00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+                        00110 E1--
+                        00111                        ELSE
+                        00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+                        00115 F1--
+                        00116                           ELSE
+                        00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+                        00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+0056     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+                        00050 BB--
+                        00051               ELSE
+0057     422D           00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+                        00055 CC--
+                        00056                  ELSE
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 25
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0058     432D           00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+                        00060 DD--
+                        00061                     ELSE
+0059     442D           00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+                        00065 EE--
+                        00066                        ELSE
+005A     452D           00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+                        00070 FF--
+                        00071                           ELSE
+005B     462D           00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+                        00075 GG--
+                        00076                              ELSE
+005C     472D           00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+                        00080 HH--
+                        00081                                 ELSE
+005D     482D           00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+                        00085 II--
+                        00086                                    ELSE
+005E     492D           00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+                        00090 A1--
+                        00091            ELSE
+005F     4131 2D00      00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+                        00095 B1--
+                        00096               ELSE
+0061     4231 2D00      00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+                        00100 C1--
+                        00101                  ELSE
+0063     4331 2D00      00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+0065     4431 2B00      00104                        DATA             "D1+"
+  00000000              00105 D1--
+                        00106                     ELSE
+                        00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 26
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00110 E1--
+                        00111                        ELSE
+                        00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+                        00115 F1--
+                        00116                           ELSE
+                        00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+                        00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+0067     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+                        00050 BB--
+                        00051               ELSE
+0068     422D           00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+                        00055 CC--
+                        00056                  ELSE
+0069     432D           00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+                        00060 DD--
+                        00061                     ELSE
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 27
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+006A     442D           00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+                        00065 EE--
+                        00066                        ELSE
+006B     452D           00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+                        00070 FF--
+                        00071                           ELSE
+006C     462D           00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+                        00075 GG--
+                        00076                              ELSE
+006D     472D           00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+                        00080 HH--
+                        00081                                 ELSE
+006E     482D           00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+                        00085 II--
+                        00086                                    ELSE
+006F     492D           00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+                        00090 A1--
+                        00091            ELSE
+0070     4131 2D00      00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+                        00095 B1--
+                        00096               ELSE
+0072     4231 2D00      00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+                        00100 C1--
+                        00101                  ELSE
+0074     4331 2D00      00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+                        00105 D1--
+                        00106                     ELSE
+0076     4431 2D00      00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+0078     4531 2B00      00109                           DATA          "E1+"
+  00000000              00110 E1--
+                        00111                        ELSE
+                        00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 28
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00115 F1--
+                        00116                           ELSE
+                        00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+                        00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+007A     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+                        00050 BB--
+                        00051               ELSE
+007B     422D           00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+                        00055 CC--
+                        00056                  ELSE
+007C     432D           00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+                        00060 DD--
+                        00061                     ELSE
+007D     442D           00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+                        00065 EE--
+                        00066                        ELSE
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 29
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+007E     452D           00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+                        00070 FF--
+                        00071                           ELSE
+007F     462D           00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+                        00075 GG--
+                        00076                              ELSE
+0080     472D           00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+                        00080 HH--
+                        00081                                 ELSE
+0081     482D           00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+                        00085 II--
+                        00086                                    ELSE
+0082     492D           00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+                        00090 A1--
+                        00091            ELSE
+0083     4131 2D00      00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+                        00095 B1--
+                        00096               ELSE
+0085     4231 2D00      00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+                        00100 C1--
+                        00101                  ELSE
+0087     4331 2D00      00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+                        00105 D1--
+                        00106                     ELSE
+0089     4431 2D00      00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+                        00110 E1--
+                        00111                        ELSE
+008B     4531 2D00      00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+008D     4631 2B00      00114                              DATA       "F1+"
+  00000000              00115 F1--
+                        00116                           ELSE
+                        00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 30
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+008F     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+                        00050 BB--
+                        00051               ELSE
+0090     422D           00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+                        00055 CC--
+                        00056                  ELSE
+0091     432D           00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+                        00060 DD--
+                        00061                     ELSE
+0092     442D           00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+                        00065 EE--
+                        00066                        ELSE
+0093     452D           00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+                        00070 FF--
+                        00071                           ELSE
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 31
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0094     462D           00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+                        00075 GG--
+                        00076                              ELSE
+0095     472D           00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+                        00080 HH--
+                        00081                                 ELSE
+0096     482D           00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+                        00085 II--
+                        00086                                    ELSE
+0097     492D           00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+                        00090 A1--
+                        00091            ELSE
+0098     4131 2D00      00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+                        00095 B1--
+                        00096               ELSE
+009A     4231 2D00      00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+                        00100 C1--
+                        00101                  ELSE
+009C     4331 2D00      00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+                        00105 D1--
+                        00106                     ELSE
+009E     4431 2D00      00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+                        00110 E1--
+                        00111                        ELSE
+00A0     4531 2D00      00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+                        00115 F1--
+                        00116                           ELSE
+00A2     4631 2D00      00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+00A4     4731 2B00      00119                                 DATA    "G1+"
+  00000000              00120 G1--
+                        00121                              ELSE
+                        00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 32
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00043            IF AA > 0
+                        00044               DATA                      "A+"
+                        00045 AA--
+                        00046            ELSE
+00A6     412D           00047               DATA                      "A-"
+                        00048               IF BB > 0
+                        00049                  DATA                   "B+"
+                        00050 BB--
+                        00051               ELSE
+00A7     422D           00052                  DATA                   "B-"
+                        00053                  IF CC > 0
+                        00054                     DATA                "C+"
+                        00055 CC--
+                        00056                  ELSE
+00A8     432D           00057                     DATA                "C-"
+                        00058                     IF DD > 0
+                        00059                        DATA             "D+"
+                        00060 DD--
+                        00061                     ELSE
+00A9     442D           00062                        DATA             "D-"
+                        00063                        IF EE > 0
+                        00064                           DATA          "E+"
+                        00065 EE--
+                        00066                        ELSE
+00AA     452D           00067                           DATA          "E-"
+                        00068                           IF FF > 0
+                        00069                              DATA       "F+"
+                        00070 FF--
+                        00071                           ELSE
+00AB     462D           00072                              DATA       "F-"
+                        00073                              IF GG > 0
+                        00074                                 DATA    "G+"
+                        00075 GG--
+                        00076                              ELSE
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 33
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00AC     472D           00077                                 DATA    "G-"
+                        00078                                 IF HH > 0
+                        00079                                    DATA "H+"
+                        00080 HH--
+                        00081                                 ELSE
+00AD     482D           00082                                    DATA "H-"
+                        00083                                    IF II > 0            ; Too deep - when level 8 is max
+                        00084                                       DATA      "I+"
+                        00085 II--
+                        00086                                    ELSE
+00AE     492D           00087                                       DATA      "I-"
+                        00088            IF A1 > 0
+                        00089               DATA                      "A1+"
+                        00090 A1--
+                        00091            ELSE
+00AF     4131 2D00      00092               DATA                      "A1-"
+                        00093               IF B1 > 0
+                        00094                  DATA                   "B1+"
+                        00095 B1--
+                        00096               ELSE
+00B1     4231 2D00      00097                  DATA                   "B1-"
+                        00098                  IF C1 > 0
+                        00099                     DATA                "C1+"
+                        00100 C1--
+                        00101                  ELSE
+00B3     4331 2D00      00102                     DATA                "C1-"
+                        00103                     IF D1 > 0
+                        00104                        DATA             "D1+"
+                        00105 D1--
+                        00106                     ELSE
+00B5     4431 2D00      00107                        DATA             "D1-"
+                        00108                        IF E1 > 0
+                        00109                           DATA          "E1+"
+                        00110 E1--
+                        00111                        ELSE
+00B7     4531 2D00      00112                           DATA          "E1-"
+                        00113                           IF F1 > 0
+                        00114                              DATA       "F1+"
+                        00115 F1--
+                        00116                           ELSE
+00B9     4631 2D00      00117                              DATA       "F1-"
+                        00118                              IF G1 > 0
+                        00119                                 DATA    "G1+"
+                        00120 G1--
+                        00121                              ELSE
+00BB     4731 2D00      00122                                 DATA    "G1-"
+Error[142]  : IFs nested too deep
+                        00123                                 IF H1 > 0               ; Too deep
+  00000000              00124 H1--
+                        00125                                 ENDIF
+                        00126                              ENDIF
+                        00127                           ENDIF
+                        00128                        ENDIF
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 34
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00129                     ENDIF
+                        00130                  ENDIF
+                        00131               ENDIF
+                        00132            ENDIF
+                        00133                                    ENDIF
+                        00134                                 ENDIF
+                        00135                              ENDIF
+                        00136                           ENDIF
+                        00137                        ENDIF
+                        00138                     ENDIF
+                        00139                  ENDIF
+                        00140               ENDIF
+Error[125]  : Illegal condition (ENDIF)
+                        00141            ENDIF
+                        00142         ENDW
+                        00143 
+                        00144         IF 1==1         ; Missing ENDIF
+00BD     0000           00145            NOP
+                        00146 
+Warning[212]: Expected (ENDIF)
+                        00147         END
+MPASM Version 3.00 Beta Release   IF2.ASM   01/31/2001  12:39:44	   PAGE 35
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+A1                                00000000
+AA                                00000000
+B1                                00000000
+BB                                00000000
+C1                                00000000
+CC                                00000000
+D1                                00000000
+DD                                00000000
+Def1                              5
+E1                                00000000
+EE                                00000000
+F1                                00000000
+FF                                00000000
+G1                                00000000
+GG                                00000000
+H1                                00000000
+HH                                00000000
+I1                                00000001
+II                                00000000
+Value1                            00000010
+__17C42                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXX--
+
+All other memory blocks unused.
+
+Program Memory Words Used:   190
+
+
+Errors   :    38
+Warnings :     1 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,38 @@
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; EXTGLO2.ASM
+                        00002 
+                        00003 ; This file tests the illegal usage of the Extern and Global directives.
+                        00004 ; It must be assembled with the /o option.
+                        00005 
+                        00006         LIST    P=16C71
+                        00007 
+Error[128]  : Missing argument(s)
+                        00008         EXTERN
+Error[121]  : Illegal label (Label1)
+  0000                  00009 Label1  EXTERN          A1
+                        00010 
+Error[128]  : Missing argument(s)
+                        00011         GLOBAL
+Error[113]  : Symbol not previously defined (NotDef)
+  0000                  00012         GLOBAL          NotDef
+Error[121]  : Illegal label (Label2)
+Error[113]  : Symbol not previously defined (I2)
+  0000                  00013 Label2  GLOBAL          I2
+                        00014 
+                        00015         END
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+A1                                00000000
+__16C71                           00000001
+
+Errors   :     6
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+

@@ -1,0 +1,39 @@
+MPASM Version 3.00 Beta Release   FUSES4.ASM   01/31/2001  12:39:42	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; FUSES4.ASM
+                        00002 
+                        00003 ; This file tests the __FUSES directive for 16-bit core with illegal 
+                        00004 ; output format.
+                        00005 
+                        00006         LIST    P=17C44, R=HEX          ; , F=INHX32
+                        00007 
+Error[133]  : Hex file format INHX32 required
+FE00     1234           00008         __FUSES 1234
+                        00009 
+                        00010         END
+MPASM Version 3.00 Beta Release   FUSES4.ASM   01/31/2001  12:39:42	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__17C44                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+
+
+Errors   :     1
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

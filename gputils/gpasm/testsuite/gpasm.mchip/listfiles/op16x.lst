@@ -1,0 +1,455 @@
+MPASM Version 3.00 Beta Release   OP16X.ASM   01/31/2001  12:13:17	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; OP16x.ASM
+                        00002 
+                        00003 ; This file tests all 16-bit extended opcodes at their max and min and, if
+                        00004 ; applicable, all possible values.  Note that the max and mins are
+                        00005 ; processor-dependent.  As long as the max and min values are set
+                        00006 ; correctly, which is tested elsewhere, this file tests that they are
+                        00007 ; used.
+                        00008 
+                        00009         LIST    P=17C44,R=HEX
+                        00010 
+  00001FFF              00011 MAXROM = 01FFF
+  000000FF              00012 MAXRAM = 00FF
+                        00013 
+0000     B100           00014         ADDLW   0
+0001     B141           00015         ADDLW   'A'
+0002     B141           00016         ADDLW   "A"
+0003     B1FF           00017         ADDLW   0FF
+                        00018 
+Message[305]: Using default destination of 1 (file).
+0004     0F00           00019         ADDWF   0
+0005     0F00           00020         ADDWF   0,1
+0006     0F00           00021         ADDWF   0,F
+0007     0E00           00022         ADDWF   0,0
+0008     0E00           00023         ADDWF   0,W
+Message[305]: Using default destination of 1 (file).
+0009     0FFF           00024         ADDWF   MAXRAM
+                        00025 
+Message[305]: Using default destination of 1 (file).
+000A     1100           00026         ADDWFC  0
+000B     1100           00027         ADDWFC  0,1
+000C     1100           00028         ADDWFC  0,F
+000D     1000           00029         ADDWFC  0,0
+000E     1000           00030         ADDWFC  0,W
+Message[305]: Using default destination of 1 (file).
+000F     11FF           00031         ADDWFC  MAXRAM
+                        00032 
+0010     B500           00033         ANDLW   0
+0011     B541           00034         ANDLW   'A'
+0012     B541           00035         ANDLW   "A"
+0013     B5FF           00036         ANDLW   0FF
+                        00037 
+Message[305]: Using default destination of 1 (file).
+0014     0B00           00038         ANDWF   0
+0015     0B00           00039         ANDWF   0,1
+0016     0B00           00040         ANDWF   0,F
+0017     0A00           00041         ANDWF   0,0
+0018     0A00           00042         ANDWF   0,W
+Message[305]: Using default destination of 1 (file).
+0019     0BFF           00043         ANDWF   MAXRAM
+                        00044 
+001A     8800           00045         BCF     0,0
+001B     8900           00046         BCF     0,1
+001C     8A00           00047         BCF     0,2
+MPASM Version 3.00 Beta Release   OP16X.ASM   01/31/2001  12:13:17	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001D     8B00           00048         BCF     0,3
+001E     8C00           00049         BCF     0,4
+001F     8D00           00050         BCF     0,5
+0020     8E00           00051         BCF     0,6
+0021     8F00           00052         BCF     0,7
+0022     88FF           00053         BCF     MAXRAM,0
+                        00054 
+0023     8000           00055         BSF     0,0
+0024     8100           00056         BSF     0,1
+0025     8200           00057         BSF     0,2
+0026     8300           00058         BSF     0,3
+0027     8400           00059         BSF     0,4
+0028     8500           00060         BSF     0,5
+0029     8600           00061         BSF     0,6
+002A     8700           00062         BSF     0,7
+002B     80FF           00063         BSF     MAXRAM,0
+                        00064 
+002C     9800           00065         BTFSC   0,0
+002D     9900           00066         BTFSC   0,1
+002E     9A00           00067         BTFSC   0,2
+002F     9B00           00068         BTFSC   0,3
+0030     9C00           00069         BTFSC   0,4
+0031     9D00           00070         BTFSC   0,5
+0032     9E00           00071         BTFSC   0,6
+0033     9F00           00072         BTFSC   0,7
+0034     98FF           00073         BTFSC   MAXRAM,0
+                        00074 
+0035     9000           00075         BTFSS   0,0
+0036     9100           00076         BTFSS   0,1
+0037     9200           00077         BTFSS   0,2
+0038     9300           00078         BTFSS   0,3
+0039     9400           00079         BTFSS   0,4
+003A     9500           00080         BTFSS   0,5
+003B     9600           00081         BTFSS   0,6
+003C     9700           00082         BTFSS   0,7
+003D     90FF           00083         BTFSS   MAXRAM,0
+                        00084 
+003E     3800           00085         BTG     0,0
+003F     3900           00086         BTG     0,1
+0040     3A00           00087         BTG     0,2
+0041     3B00           00088         BTG     0,3
+0042     3C00           00089         BTG     0,4
+0043     3D00           00090         BTG     0,5
+0044     3E00           00091         BTG     0,6
+0045     3F00           00092         BTG     0,7
+0046     38FF           00093         BTG     MAXRAM,0
+                        00094 
+0047     E000           00095         CALL    0
+0048     FFFF           00096         CALL    MAXROM
+                        00097 
+Message[305]: Using default destination of 1 (file).
+0049     2900           00098         CLRF    0
+004A     2900           00099         CLRF    0,1
+MPASM Version 3.00 Beta Release   OP16X.ASM   01/31/2001  12:13:17	   PAGE 3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+004B     2900           00100         CLRF    0,F
+004C     2800           00101         CLRF    0,0
+004D     2800           00102         CLRF    0,W
+Message[305]: Using default destination of 1 (file).
+004E     29FF           00103         CLRF    MAXRAM
+                        00104 
+004F     0004           00105         CLRWDT
+                        00106 
+Message[305]: Using default destination of 1 (file).
+0050     1300           00107         COMF    0
+0051     1300           00108         COMF    0,1
+0052     1300           00109         COMF    0,F
+0053     1200           00110         COMF    0,0
+0054     1200           00111         COMF    0,W
+Message[305]: Using default destination of 1 (file).
+0055     13FF           00112         COMF    MAXRAM
+                        00113 
+0056     3100           00114         CPFSEQ  0
+0057     31FF           00115         CPFSEQ  MAXRAM
+                        00116 
+0058     3200           00117         CPFSGT  0
+0059     32FF           00118         CPFSGT  MAXRAM
+                        00119 
+005A     3000           00120         CPFSLT  0
+005B     30FF           00121         CPFSLT  MAXRAM
+                        00122 
+Message[305]: Using default destination of 1 (file).
+005C     2F00           00123         DAW     0
+005D     2F00           00124         DAW     0,1
+005E     2F00           00125         DAW     0,F
+005F     2E00           00126         DAW     0,0
+0060     2E00           00127         DAW     0,W
+Message[305]: Using default destination of 1 (file).
+0061     2FFF           00128         DAW     MAXRAM
+                        00129 
+Message[305]: Using default destination of 1 (file).
+0062     0700           00130         DECF    0
+0063     0700           00131         DECF    0,1
+0064     0700           00132         DECF    0,F
+0065     0600           00133         DECF    0,0
+0066     0600           00134         DECF    0,W
+Message[305]: Using default destination of 1 (file).
+0067     07FF           00135         DECF    MAXRAM
+                        00136 
+Message[305]: Using default destination of 1 (file).
+0068     1700           00137         DECFSZ  0
+0069     1700           00138         DECFSZ  0,1
+006A     1700           00139         DECFSZ  0,F
+006B     1600           00140         DECFSZ  0,0
+006C     1600           00141         DECFSZ  0,W
+Message[305]: Using default destination of 1 (file).
+006D     17FF           00142         DECFSZ  MAXRAM
+                        00143 
+MPASM Version 3.00 Beta Release   OP16X.ASM   01/31/2001  12:13:17	   PAGE 4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Message[305]: Using default destination of 1 (file).
+006E     2700           00144         DCFSNZ  0
+006F     2700           00145         DCFSNZ  0,1
+0070     2700           00146         DCFSNZ  0,F
+0071     2600           00147         DCFSNZ  0,0
+0072     2600           00148         DCFSNZ  0,W
+Message[305]: Using default destination of 1 (file).
+0073     27FF           00149         DCFSNZ  MAXRAM
+                        00150 
+0074     C000           00151         GOTO    0
+0075     DFFF           00152         GOTO    1FFF
+                        00153 
+Message[305]: Using default destination of 1 (file).
+0076     1500           00154         INCF    0
+0077     1500           00155         INCF    0,1
+0078     1500           00156         INCF    0,F
+0079     1400           00157         INCF    0,0
+007A     1400           00158         INCF    0,W
+Message[305]: Using default destination of 1 (file).
+007B     15FF           00159         INCF    MAXRAM
+                        00160 
+Message[305]: Using default destination of 1 (file).
+007C     1F00           00161         INCFSZ  0
+007D     1F00           00162         INCFSZ  0,1
+007E     1F00           00163         INCFSZ  0,F
+007F     1E00           00164         INCFSZ  0,0
+0080     1E00           00165         INCFSZ  0,W
+Message[305]: Using default destination of 1 (file).
+0081     1FFF           00166         INCFSZ  MAXRAM
+                        00167 
+Message[305]: Using default destination of 1 (file).
+0082     2500           00168         INFSNZ  0
+0083     2500           00169         INFSNZ  0,1
+0084     2500           00170         INFSNZ  0,F
+0085     2400           00171         INFSNZ  0,0
+0086     2400           00172         INFSNZ  0,W
+Message[305]: Using default destination of 1 (file).
+0087     25FF           00173         INFSNZ  MAXRAM
+                        00174 
+0088     B300           00175         IORLW   0
+0089     B341           00176         IORLW   'A'
+008A     B341           00177         IORLW   "A"
+008B     B3FF           00178         IORLW   0FF
+                        00179 
+Message[305]: Using default destination of 1 (file).
+008C     0900           00180         IORWF   0
+008D     0900           00181         IORWF   0,1
+008E     0900           00182         IORWF   0,F
+008F     0800           00183         IORWF   0,0
+0090     0800           00184         IORWF   0,W
+Message[305]: Using default destination of 1 (file).
+0091     09FF           00185         IORWF   MAXRAM
+                        00186 
+MPASM Version 3.00 Beta Release   OP16X.ASM   01/31/2001  12:13:17	   PAGE 5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0092     B700           00187         LCALL   0
+0093     B7FF           00188         LCALL   0FF
+                        00189 
+0094     6000           00190         MOVFP   0,0
+0095     7FFF           00191         MOVFP   0FF,1F
+                        00192 
+0096     B800           00193         MOVLB   0
+0097     B80F           00194         MOVLB   0F
+                        00195 
+0098     BA00           00196         MOVLR   0
+0099     BAF0           00197         MOVLR   0F
+                        00198 
+009A     B000           00199         MOVLW   0
+009B     B041           00200         MOVLW   'A'
+009C     B041           00201         MOVLW   "A"
+009D     B0FF           00202         MOVLW   0FF
+                        00203 
+009E     4000           00204         MOVPF   0,0
+009F     5FFF           00205         MOVPF   1F,0FF
+                        00206 
+00A0     0100           00207         MOVWF   0
+00A1     01FF           00208         MOVWF   MAXRAM
+                        00209 
+00A2     BC00           00210         MULLW   0
+00A3     BC41           00211         MULLW   'A'
+00A4     BC41           00212         MULLW   "A"
+00A5     BCFF           00213         MULLW   0FF
+                        00214 
+00A6     3400           00215         MULWF   0
+00A7     34FF           00216         MULWF   MAXRAM
+                        00217 
+Message[305]: Using default destination of 1 (file).
+00A8     2D00           00218         NEGW    0
+00A9     2D00           00219         NEGW    0,1
+00AA     2D00           00220         NEGW    0,F
+00AB     2C00           00221         NEGW    0,0
+00AC     2C00           00222         NEGW    0,W
+Message[305]: Using default destination of 1 (file).
+00AD     2DFF           00223         NEGW    MAXRAM
+                        00224 
+00AE     0000           00225         NOP
+                        00226 
+00AF     0005           00227         RETFIE
+                        00228 
+00B0     B600           00229         RETLW   0
+00B1     B641           00230         RETLW   'A'
+00B2     B641           00231         RETLW   "A"
+00B3     B6FF           00232         RETLW   0FF
+                        00233 
+00B4     0002           00234         RETURN
+                        00235 
+Message[305]: Using default destination of 1 (file).
+00B5     1B00           00236         RLCF    0
+MPASM Version 3.00 Beta Release   OP16X.ASM   01/31/2001  12:13:17	   PAGE 6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00B6     1B00           00237         RLCF    0,1
+00B7     1B00           00238         RLCF    0,F
+00B8     1A00           00239         RLCF    0,0
+00B9     1A00           00240         RLCF    0,W
+Message[305]: Using default destination of 1 (file).
+00BA     1BFF           00241         RLCF    MAXRAM
+                        00242 
+Message[305]: Using default destination of 1 (file).
+00BB     2300           00243         RLNCF   0
+00BC     2300           00244         RLNCF   0,1
+00BD     2300           00245         RLNCF   0,F
+00BE     2200           00246         RLNCF   0,0
+00BF     2200           00247         RLNCF   0,W
+Message[305]: Using default destination of 1 (file).
+00C0     23FF           00248         RLNCF   MAXRAM
+                        00249 
+Message[305]: Using default destination of 1 (file).
+00C1     1900           00250         RRCF    0
+00C2     1900           00251         RRCF    0,1
+00C3     1900           00252         RRCF    0,F
+00C4     1800           00253         RRCF    0,0
+00C5     1800           00254         RRCF    0,W
+Message[305]: Using default destination of 1 (file).
+00C6     19FF           00255         RRCF    MAXRAM
+                        00256 
+Message[305]: Using default destination of 1 (file).
+00C7     2100           00257         RRNCF   0
+00C8     2100           00258         RRNCF   0,1
+00C9     2100           00259         RRNCF   0,F
+00CA     2000           00260         RRNCF   0,0
+00CB     2000           00261         RRNCF   0,W
+Message[305]: Using default destination of 1 (file).
+00CC     21FF           00262         RRNCF   MAXRAM
+                        00263 
+Message[305]: Using default destination of 1 (file).
+00CD     2B00           00264         SETF    0
+00CE     2B00           00265         SETF    0,1
+00CF     2B00           00266         SETF    0,F
+00D0     2A00           00267         SETF    0,0
+00D1     2A00           00268         SETF    0,W
+Message[305]: Using default destination of 1 (file).
+00D2     2BFF           00269         SETF    MAXRAM
+                        00270 
+00D3     0003           00271         SLEEP
+                        00272 
+00D4     B200           00273         SUBLW   0
+00D5     B241           00274         SUBLW   'A'
+00D6     B241           00275         SUBLW   "A"
+00D7     B2FF           00276         SUBLW   0FF
+                        00277 
+Message[305]: Using default destination of 1 (file).
+00D8     0500           00278         SUBWF   0
+00D9     0500           00279         SUBWF   0,1
+MPASM Version 3.00 Beta Release   OP16X.ASM   01/31/2001  12:13:17	   PAGE 7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00DA     0500           00280         SUBWF   0,F
+00DB     0400           00281         SUBWF   0,0
+00DC     0400           00282         SUBWF   0,W
+Message[305]: Using default destination of 1 (file).
+00DD     05FF           00283         SUBWF   MAXRAM
+                        00284 
+Message[305]: Using default destination of 1 (file).
+00DE     0300           00285         SUBWFB  0
+00DF     0300           00286         SUBWFB  0,1
+00E0     0300           00287         SUBWFB  0,F
+00E1     0200           00288         SUBWFB  0,0
+00E2     0200           00289         SUBWFB  0,W
+Message[305]: Using default destination of 1 (file).
+00E3     03FF           00290         SUBWFB  MAXRAM
+                        00291 
+Message[305]: Using default destination of 1 (file).
+00E4     1D00           00292         SWAPF   0
+00E5     1D00           00293         SWAPF   0,1
+00E6     1D00           00294         SWAPF   0,F
+00E7     1C00           00295         SWAPF   0,0
+00E8     1C00           00296         SWAPF   0,W
+Message[305]: Using default destination of 1 (file).
+00E9     1DFF           00297         SWAPF   MAXRAM
+                        00298 
+00EA     A800           00299         TABLRD  0,0,0
+00EB     A900           00300         TABLRD  0,1,0
+00EC     AA00           00301         TABLRD  1,0,0
+00ED     AB00           00302         TABLRD  1,1,0
+00EE     A8FF           00303         TABLRD  0,0,MAXRAM
+                        00304 
+00EF     AC00           00305         TABLWT  0,0,0
+00F0     AD00           00306         TABLWT  0,1,0
+00F1     AE00           00307         TABLWT  1,0,0
+00F2     AF00           00308         TABLWT  1,1,0
+00F3     ACFF           00309         TABLWT  0,0,MAXRAM
+                        00310 
+00F4     A000           00311         TLRD    0,0
+00F5     A2FF           00312         TLRD    1,MAXRAM
+                        00313 
+00F6     A400           00314         TLWT    0,0
+00F7     A6FF           00315         TLWT    1,MAXRAM
+                        00316 
+00F8     3300           00317         TSTFSZ  0
+00F9     33FF           00318         TSTFSZ  MAXRAM
+                        00319 
+00FA     B400           00320         XORLW   0
+00FB     B441           00321         XORLW   'A'
+00FC     B441           00322         XORLW   "A"
+00FD     B4FF           00323         XORLW   0FF
+                        00324 
+Message[305]: Using default destination of 1 (file).
+00FE     0D00           00325         XORWF   0
+00FF     0D00           00326         XORWF   0,1
+MPASM Version 3.00 Beta Release   OP16X.ASM   01/31/2001  12:13:17	   PAGE 8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0100     0D00           00327         XORWF   0,F
+0101     0C00           00328         XORWF   0,0
+0102     0C00           00329         XORWF   0,W
+Message[305]: Using default destination of 1 (file).
+0103     0DFF           00330         XORWF   MAXRAM
+                        00331 
+                        00332         END
+MPASM Version 3.00 Beta Release   OP16X.ASM   01/31/2001  12:13:17	   PAGE 9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+MAXRAM                            000000FF
+MAXROM                            00001FFF
+__17C44                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXX------------ ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   260
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :    46 reported,     0 suppressed
+
+

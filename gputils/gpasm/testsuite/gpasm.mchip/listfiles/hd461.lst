@@ -1,0 +1,326 @@
+MPASM Version 3.00 Beta Release   HD461.ASM   01/31/2001  12:11:32	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; HD461.ASM
+                        00002 
+                        00003 ; This file tests header file usage for the specified processor.
+                        00004 ; 1/8/97    Commented out the VCLMP options.  These have been removed from the
+                        00005 ;           header file.
+                        00006 
+                        00007         LIST    P=16C461
+                        00008         INCLUDE "P16C461.INC"
+                        00001         LIST
+                        00002 ; P16C461.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+                        00003 ;        NOLIST
+                        00004 
+                        00005 ; This header file defines configurations, registers, and other useful bits of
+                        00006 ; information for the PIC16C461 microcontroller.  These names are taken to match 
+                        00007 ; the data sheets as closely as possible.  
+                        00008 
+                        00009 ; Note that the processor must be selected before this file is 
+                        00010 ; included.  The processor may be selected the following ways:
+                        00011 
+                        00012 ;       1. Command line switch:
+                        00013 ;               C:\ MPASM MYFILE.ASM /PIC16C461
+                        00014 ;       2. LIST directive in the source file
+                        00015 ;               LIST   P=PIC16C461
+                        00016 ;       3. Processor Type entry in the MPASM full-screen interface
+                        00017 
+                        00018 ;==========================================================================
+                        00019 ;
+                        00020 ;       Revision History
+                        00021 ;
+                        00022 ;==========================================================================
+                        00023 
+                        00024 ;Rev:   Date:    Reason:
+                        00025 
+                        00026 ;1.10   08/18/98 Fixed configuration bit equate
+                        00027 ;1.00   05/01/98 Initial Release
+                        00028 
+                        00029 ;==========================================================================
+                        00030 ;
+                        00031 ;       Verify Processor
+                        00032 ;
+                        00033 ;==========================================================================
+                        00034 
+                        00035         IFNDEF __16C461
+                        00036            MESSG "Processor-header file mismatch.  Verify selected processor."
+                        00037         ENDIF
+                        00038 
+                        00039 ;==========================================================================
+                        00040 ;
+                        00041 ;       Register Definitions
+                        00042 ;
+                        00043 ;==========================================================================
+                        00044 
+  00000000              00045 W                            EQU     H'0000'
+MPASM Version 3.00 Beta Release   HD461.ASM   01/31/2001  12:11:32	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+  00000001              00046 F                            EQU     H'0001'
+                        00047 
+                        00048 ;----- Register Files------------------------------------------------------
+                        00049 
+  00000000              00050 INDF                         EQU     H'0000'
+  00000001              00051 TMR0                         EQU     H'0001'
+  00000002              00052 PCL                          EQU     H'0002'
+  00000003              00053 STATUS                       EQU     H'0003'
+  00000004              00054 FSR                          EQU     H'0004'
+  00000005              00055 PORTA                        EQU     H'0005'
+  00000006              00056 PORTB                        EQU     H'0006'
+  0000000A              00057 PCLATH                       EQU     H'000A'
+  0000000B              00058 INTCON                       EQU     H'000B'
+                        00059 
+  00000081              00060 OPTION_REG                   EQU     H'0081'
+  00000085              00061 TRISA                        EQU     H'0085'
+  00000086              00062 TRISB                        EQU     H'0086'
+  0000008E              00063 PCON                         EQU     H'008E'
+  0000008F              00064 OSCCAL                       EQU     H'008F'
+                        00065 
+                        00066 ;----- STATUS Bits --------------------------------------------------------
+                        00067 
+  00000007              00068 IRP                          EQU     H'0007'
+  00000006              00069 RP1                          EQU     H'0006'
+  00000005              00070 RP0                          EQU     H'0005'
+  00000004              00071 NOT_TO                       EQU     H'0004'
+  00000003              00072 NOT_PD                       EQU     H'0003'
+  00000002              00073 Z                            EQU     H'0002'
+  00000001              00074 DC                           EQU     H'0001'
+  00000000              00075 C                            EQU     H'0000'
+                        00076 
+                        00077 
+                        00078 ;----- INTCON Bits --------------------------------------------------------
+                        00079 
+  00000007              00080 GIE                          EQU     H'0007'
+  00000006              00081 PEIE                         EQU     H'0006'
+  00000005              00082 T0IE                         EQU     H'0005'
+  00000004              00083 INTE                         EQU     H'0004'
+  00000003              00084 GPIE                         EQU     H'0003'
+  00000002              00085 T0IF                         EQU     H'0002'
+  00000001              00086 INTF                         EQU     H'0001'
+  00000000              00087 GPIF                         EQU     H'0000'
+                        00088 
+                        00089 ;----- OPTION Bits --------------------------------------------------------
+                        00090 
+  00000007              00091 NOT_RBPU                     EQU     H'0007'
+  00000006              00092 INTEDG                       EQU     H'0006'
+  00000005              00093 T0CS                         EQU     H'0005'
+  00000004              00094 T0SE                         EQU     H'0004'
+  00000003              00095 PSA                          EQU     H'0003'
+  00000002              00096 PS2                          EQU     H'0002'
+  00000001              00097 PS1                          EQU     H'0001'
+  00000000              00098 PS0                          EQU     H'0000'
+MPASM Version 3.00 Beta Release   HD461.ASM   01/31/2001  12:11:32	   PAGE 3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00099 
+                        00100 ;----- PCON Bits --------------------------------------------------------
+                        00101 
+  00000001              00102 NOT_POR                      EQU     H'0001'
+                        00103 
+                        00104 ;----- OSCCAL Bits --------------------------------------------------------
+                        00105 
+  00000007              00106 CAL5                         EQU     H'0007'                            
+  00000006              00107 CAL4                         EQU     H'0006'
+  00000005              00108 CAL3                         EQU     H'0005'
+  00000004              00109 CAL2                         EQU     H'0004'
+  00000003              00110 CAL1                         EQU     H'0003'
+  00000002              00111 CAL0                         EQU     H'0002'
+                        00112 
+                        00113 ;==========================================================================
+                        00114 ;
+                        00115 ;       RAM Definition
+                        00116 ;
+                        00117 ;==========================================================================
+                        00118 
+  000000FF              00119         __MAXRAM H'FF'
+                        00120         __BADRAM H'07'-H'09', H'0C'-H'1F'
+                        00121         __BADRAM H'87'-H'89', H'8C'-H'8D', H'90'-H'9F'
+                        00122         __BADRAM H'C0'-H'EF'
+                        00123 
+                        00124 ;==========================================================================
+                        00125 ;
+                        00126 ;       Configuration Bits
+                        00127 ;
+                        00128 ;==========================================================================
+                        00129 
+  00003FFF              00130 _MCLRE_ON                    EQU     H'3FFF'
+  00003FDF              00131 _MCLRE_OFF                   EQU     H'3FDF'
+  000003FF              00132 _CP_ALL                      EQU     H'03FF'
+  000017FF              00133 _CP_50                       EQU     H'17FF'
+  00003FFF              00134 _CP_OFF                      EQU     H'3FFF'
+  00003FFF              00135 _PWRTE_OFF                   EQU     H'3FFF'
+  00003FF7              00136 _PWRTE_ON                    EQU     H'3FF7'
+  00003FFF              00137 _WDT_ON                      EQU     H'3FFF'
+  00003FFB              00138 _WDT_OFF                     EQU     H'3FFB'
+  00003FEC              00139 _LP_OSC                      EQU     H'3FEC'
+  00003FED              00140 _XT_OSC                      EQU     H'3FED'
+  00003FEE              00141 _HS_OSC                      EQU     H'3FEE'
+  00003FFD              00142 _INTRC_OSC                   EQU     H'3FFD'
+  00003FFC              00143 _INTRC_OSC_NOCLKOUT          EQU     H'3FFC'
+  00003FFD              00144 _INTRC_OSC_CLKOUT            EQU     H'3FFD'
+  00003FFE              00145 _EXTRC_OSC                   EQU     H'3FFE'
+  00003FFE              00146 _EXTRC_OSC_NOCLKOUT          EQU     H'3FFE'
+  00003FFF              00147 _EXTRC_OSC_CLKOUT            EQU     H'3FFF'
+                        00148 
+                        00149         LIST
+                        00009 
+                        00010 
+MPASM Version 3.00 Beta Release   HD461.ASM   01/31/2001  12:11:32	   PAGE 4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00011 
+                        00012 ;       DATA    _VCLMP_ON,  0X0FFF
+                        00013 ;       DATA    _VCLMP_OFF, 0X0FDF
+0000     3FFF 0FFF      00014         DATA    _MCLRE_ON,  0X0FFF
+0002     3FDF 0FEF      00015         DATA    _MCLRE_OFF, 0X0FEF
+0004     03FF 0FF7      00016         DATA    _CP_ALL,     0X0FF7                       
+0006     3FFF 0FFF      00017         DATA    _CP_OFF,    0X0FFF
+0008     3FFF 0FFF      00018         DATA    _WDT_ON,    0X0FFF
+000A     3FFB 0FFB      00019         DATA    _WDT_OFF,   0X0FFB
+000C     3FEC 0FFC      00020         DATA    _LP_OSC,    0X0FFC
+000E     3FED 0FFD      00021         DATA    _XT_OSC,    0X0FFD
+0010     3FFD 0FFE      00022         DATA    _INTRC_OSC, 0X0FFE
+0012     3FFE 0FFF      00023         DATA    _EXTRC_OSC, 0X0FFF
+                        00024         
+                        00025 
+                        00026 
+0014     0005 0006      00027         DATA    PORTA, 6 
+0016     008F 0005      00028         DATA    OSCCAL, 5
+0018     0004 0004      00029         DATA    FSR, 4  
+001A     0003 0003      00030         DATA    STATUS, 3
+001C     0002 0002      00031         DATA    PCL, 2
+001E     0001 0001      00032         DATA    TMR0, 1
+0020     0000 0000      00033         DATA    INDF, 0
+                        00034 
+                        00035 
+                        00036 ;       DATA    PA2, 7
+                        00037 ;       DATA    GPWUF, 7
+                        00038 ;       DATA    RP1, 6
+0022     0005 0005      00039         DATA    RP0, 5
+0024     0004 0004      00040         DATA    NOT_TO, 4
+0026     0003 0003      00041         DATA    NOT_PD, 3
+0028     0002 0002      00042         DATA    Z, 2
+002A     0001 0001      00043         DATA    DC, 1
+002C     0000 0000      00044         DATA    C, 0
+                        00045 
+                        00046 ;       DATA    NOT_GPWU, 7
+                        00047 ;       DATA    NOT_GPPU, 6
+002E     0005 0005      00048         DATA    T0CS, 5
+0030     0004 0004      00049         DATA    T0SE, 4
+0032     0003 0003      00050         DATA    PSA, 3
+0034     0002 0002      00051         DATA    PS2, 2
+0036     0001 0001      00052         DATA    PS1, 1
+0038     0000 0000      00053         DATA    PS0, 0
+                        00054 
+                        00055 
+                        00056 
+                        00057 
+                        00058         END
+MPASM Version 3.00 Beta Release   HD461.ASM   01/31/2001  12:11:32	   PAGE 5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+CAL0                              00000002
+CAL1                              00000003
+CAL2                              00000004
+CAL3                              00000005
+CAL4                              00000006
+CAL5                              00000007
+DC                                00000001
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+GPIE                              00000003
+GPIF                              00000000
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+OSCCAL                            0000008F
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RP0                               00000005
+RP1                               00000006
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TMR0                              00000001
+TRISA                             00000085
+TRISB                             00000086
+W                                 00000000
+Z                                 00000002
+_CP_50                            000017FF
+_CP_ALL                           000003FF
+_CP_OFF                           00003FFF
+_EXTRC_OSC                        00003FFE
+_EXTRC_OSC_CLKOUT                 00003FFF
+_EXTRC_OSC_NOCLKOUT               00003FFE
+MPASM Version 3.00 Beta Release   HD461.ASM   01/31/2001  12:11:32	   PAGE 6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_HS_OSC                           00003FEE
+_INTRC_OSC                        00003FFD
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FEC
+_MCLRE_OFF                        00003FDF
+_MCLRE_ON                         00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FED
+__16C461                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXX------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    58
+Program Memory Words Free:   966
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

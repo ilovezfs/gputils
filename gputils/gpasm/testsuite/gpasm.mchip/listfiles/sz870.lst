@@ -1,0 +1,69 @@
+MPASM Version 3.00 Beta Release   SZ870.ASM   01/31/2001  12:14:56	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; SZ870.ASM
+                        00002 
+                        00003 ; This file tests for the processor-specific items for the selected
+                        00004 ; processor.
+                        00005 
+                        00006         LIST    P=16F870, R=HEX ; 14-Bit core
+                        00007 
+  000007FF              00008 ROMRANGE        EQU     07FF
+  000001FF              00009 RAMRANGE        EQU     01FF
+                        00010 
+0000     3412           00011         RETLW   12      ; 0812 = 12-BIT
+                        00012                                 ; 3412 = 14-BIT *
+                        00013                                 ; B612 = 16-BIT
+                        00014 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0001     00FF           00015         MOVWF   RAMRANGE                ; OK
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0002     0080           00016         MOVWF   RAMRANGE+1      ; MESSAGE
+                        00017 
+07FF                    00018         ORG     ROMRANGE
+07FF     0000           00019         NOP                     ; OK
+Warning[220]: Address exceeds maximum range for this processor.
+0800     0000           00020         NOP                     ; Warning
+                        00021 
+                        00022    IFDEF __16F870                ; EE Processors
+2100                    00023         ORG     2100
+2100     0033           00024         FILL    33, 0x80        ; OK
+Warning[220]: Address exceeds maximum range for this processor.
+2180     0099           00025         DE      99              ; ERROR
+                        00026    ENDIF
+                        00027 
+                        00028         END
+MPASM Version 3.00 Beta Release   SZ870.ASM   01/31/2001  12:14:56	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RAMRANGE                          000001FF
+ROMRANGE                          000007FF
+__16F870                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXX------------- ---------------- ---------------- ----------------
+07C0 : ---------------- ---------------- ---------------- ---------------X
+0800 : X--------------- ---------------- ---------------- ----------------
+2100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+2140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+2180 : X--------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     4
+Program Memory Words Free:  2044
+
+
+Errors   :     0
+Warnings :     2 reported,     0 suppressed
+Messages :     2 reported,     0 suppressed
+
+

@@ -1,0 +1,4610 @@
+#LyX 1.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 2.16
+\textclass book
+\language default
+\inputencoding default
+\fontscheme times
+\graphics default
+\paperfontsize 10
+\spacing single 
+\papersize letterpaper
+\paperpackage a4
+\use_geometry 1
+\use_amsmath 0
+\paperorientation portrait
+\leftmargin 34mm
+\rightmargin 34mm
+\secnumdepth 2
+\tocdepth 2
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+\added_space_top vfill \added_space_bottom vfill 
+gputils 0.10.0
+\layout Author
+
+James Bowman 
+\layout Author
+
+Craig Franklin 
+\layout Date
+
+January 1 2002
+\layout Standard
+
+
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset 
+
+
+\layout Chapter*
+
+Introduction
+\layout Standard
+
+gputils is a collection of tools for Microchip (
+\shape smallcaps 
+TM
+\shape default 
+) PIC microcontrollers.
+ It includes gpasm, gplink, and gplib.
+ Each tool is intended to be an open source replacement for a corresponding
+ Microchip (TM) tool.
+ This manual covers the basics of running the tools: for more details on
+ a microcontroller, consult the manual for the specific PICmicro product
+ that you are using.
+\layout Standard
+
+This document is part of gputils.
+\layout Standard
+
+gputils is free software; you can redistribute it and/or modify it under
+ the terms of the 
+\begin_inset LatexCommand \index{GNU}
+
+\end_inset 
+
+GNU General Public 
+\begin_inset LatexCommand \index{License}
+
+\end_inset 
+
+License as published by the Free Software Foundation; either version 2,
+ or (at your option) any later version.
+\layout Standard
+
+gputils is distributed in the hope that it will be useful, but WITHOUT ANY
+ 
+\begin_inset LatexCommand \index{NO WARRANTY}
+
+\end_inset 
+
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE.
+ See the GNU General Public License for more details.
+\layout Standard
+
+You should have received a copy of the GNU General Public License along
+ with gpasm; see the file COPYING.
+ If not, write to the Free Software Foundation, 59 Temple Place - Suite
+ 330, Boston, MA 02111-1307, USA.
+\layout Chapter
+
+gpasm
+\layout Standard
+
+gpasm 
+\layout Section
+
+Running gpasm
+\begin_inset LatexCommand \index{options}
+
+\end_inset 
+
+
+\layout Standard
+
+The general syntax for running gpasm is
+\layout LyX-Code
+
+gpasm <options> <asm-file>
+\layout Standard
+
+Where options can be one of:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+19 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+0 0 1 0
+0 0 1 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+0 0 1 0
+1 0 0 0
+1 1 0 0
+2 1 0 "" ""
+2 1 1 "4in" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 1 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 1 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 1 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+
+Option
+\newline 
+Meaning
+\newline 
+a <format>
+\newline 
+Produce 
+\begin_inset LatexCommand \index{hex file}
+
+\end_inset 
+
+hex file in one of four formats: inhx8m (the default), inhx8s, inhx16, inhx32.
+\newline 
+c
+\newline 
+
+\begin_inset LatexCommand \index{case}
+
+\end_inset 
+
+Ignore case in source code.
+ By default gpasms to treats 
+\begin_inset Quotes eld
+\end_inset 
+
+fooYa
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+FOOYA
+\begin_inset Quotes erd
+\end_inset 
+
+ as being different.
+\newline 
+
+\newline 
+
+\newline 
+
+\newline 
+
+\newline 
+d symbol[=value] 
+\newline 
+Equivalent to 
+\begin_inset Quotes eld
+\end_inset 
+
+#define <symbol> <value>
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\newline 
+e [ON|OFF]
+\newline 
+Expand macros in listing file.
+\newline 
+h
+\newline 
+Display the help message.
+\newline 
+I <directory>
+\newline 
+Specify an include directory.
+\newline 
+l
+\newline 
+List the supported processors.
+\newline 
+m
+\newline 
+Memory dump.
+\newline 
+n
+\newline 
+Use DOS style newlines (CRLF) in hex file.
+ This option is disabled on win32 systems.
+\newline 
+o <file>
+\newline 
+Alternate name of hex output file.
+\newline 
+p<processor> 
+\newline 
+Select target processor.
+\newline 
+q
+\newline 
+Quiet
+\newline 
+r <radix>
+\newline 
+Set the 
+\begin_inset LatexCommand \index{radix}
+
+\end_inset 
+
+radix, i.e.
+ the number base that gpasm uses when interpreting numbers.
+\newline 
+
+\newline 
+<radix> can be one of 
+\begin_inset Quotes eld
+\end_inset 
+
+oct
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+dec
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+hex
+\begin_inset Quotes erd
+\end_inset 
+
+ for bases eight, ten, and sixteen respectively.
+ Default is 
+\begin_inset Quotes eld
+\end_inset 
+
+hex
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\newline 
+-w [ 0 | 1 | 2]
+\newline 
+Set the message level.
+\newline 
+v
+\newline 
+Print gpasm version information and exit.
+\layout Standard
+
+Unless otherwise specified, gpasm removes the 
+\begin_inset Quotes eld
+\end_inset 
+
+.asm
+\begin_inset Quotes erd
+\end_inset 
+
+ suffix from its input file, replacing it with 
+\begin_inset Quotes eld
+\end_inset 
+
+.lst
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+.hex
+\begin_inset Quotes erd
+\end_inset 
+
+ for the list and hex output files respectively.
+ On most modern operating systems case is significant in filenames.
+ For this reason you should ensure that filenames are named consistently,
+ and that the 
+\begin_inset Quotes eld
+\end_inset 
+
+.asm
+\begin_inset Quotes erd
+\end_inset 
+
+ suffix on any source file is in lower case.
+\layout Standard
+
+gpasm always produces a 
+\begin_inset Quotes eld
+\end_inset 
+
+.lst
+\begin_inset Quotes erd
+\end_inset 
+
+ file.
+ If it runs without errors, it also produces a 
+\begin_inset Quotes eld
+\end_inset 
+
+.hex
+\begin_inset Quotes erd
+\end_inset 
+
+ file.
+\layout Subsection
+
+Using gpasm with 
+\begin_inset Quotes eld
+\end_inset 
+
+make
+\begin_inset Quotes erd
+\end_inset 
+
+
+\begin_inset LatexCommand \index{make}
+
+\end_inset 
+
+
+\layout Standard
+
+On most operating systems, you can build a project using the make utility.
+ To use gpasm with make, you might have a 
+\begin_inset Quotes eld
+\end_inset 
+
+makefile
+\begin_inset Quotes erd
+\end_inset 
+
+ like this:
+\layout LyX-Code
+
+tree.hex: tree.asm treedef.inc
+\layout LyX-Code
+
+        gpasm tree.asm
+\layout Standard
+
+This will rebuild 
+\begin_inset Quotes eld
+\end_inset 
+
+tree.hex
+\begin_inset Quotes erd
+\end_inset 
+
+ whenever either of the 
+\begin_inset Quotes eld
+\end_inset 
+
+tree.asm
+\begin_inset Quotes erd
+\end_inset 
+
+ or 
+\begin_inset Quotes eld
+\end_inset 
+
+treedef.inc
+\begin_inset Quotes erd
+\end_inset 
+
+ files change.
+ A more comprehensive example of using gpasm with makefiles is included
+ as example1 in the gpasm source distribution.
+\layout Subsection
+
+Dealing with errors
+\begin_inset LatexCommand \index{error file}
+
+\end_inset 
+
+
+\layout Standard
+
+gpasm doesn't specifically create an error file.
+ This can be a problem if you want to keep a record of errors, or if your
+ assembly produces so many errors that they scroll off the screen.
+ To deal with this if your shell is 
+\begin_inset LatexCommand \index{sh}
+
+\end_inset 
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+sh
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset LatexCommand \index{bash}
+
+\end_inset 
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+bash
+\begin_inset Quotes erd
+\end_inset 
+
+ or 
+\begin_inset LatexCommand \index{ksh}
+
+\end_inset 
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+ksh
+\begin_inset Quotes erd
+\end_inset 
+
+, you can do something like:
+\layout LyX-Code
+
+gpasm tree.asm 2>&1 | tee tree.err
+\layout Standard
+
+This redirects standard error to standard output (
+\begin_inset Quotes eld
+\end_inset 
+
+2>&1
+\begin_inset Quotes erd
+\end_inset 
+
+), then pipes this output into 
+\begin_inset Quotes eld
+\end_inset 
+
+
+\begin_inset LatexCommand \index{tee}
+
+\end_inset 
+
+tee
+\begin_inset Quotes erd
+\end_inset 
+
+, which copies it input to 
+\begin_inset Quotes eld
+\end_inset 
+
+tree.err
+\begin_inset Quotes erd
+\end_inset 
+
+, and then displays it.
+\layout Section
+
+Syntax
+\layout Subsection
+
+File structure
+\layout Standard
+
+gpasm source files consist of a series of lines.
+ Lines can contain a 
+\begin_inset LatexCommand \index{labels}
+
+\end_inset 
+
+label (starting in column 1) or an operation (starting in any column after
+ 1), both, or neither.
+ 
+\begin_inset LatexCommand \index{comments}
+
+\end_inset 
+
+Comments follow a 
+\begin_inset Quotes eld
+\end_inset 
+
+;
+\begin_inset Quotes erd
+\end_inset 
+
+ character, and are treated as a newline.
+ Labels may be any series of the letters A-z, digits 0-9, and the underscore
+ (
+\begin_inset Quotes eld
+\end_inset 
+
+_
+\begin_inset Quotes erd
+\end_inset 
+
+); they may not begin with a digit.
+ Labels may be followed by a colon (
+\begin_inset Quotes eld
+\end_inset 
+
+:
+\begin_inset Quotes erd
+\end_inset 
+
+).
+\layout Standard
+
+An operation is a single identifier (the same rules as for a label above)
+ followed by a space, and a comma-separated list of parameters.
+ For example, the following are all legal source lines:
+\layout LyX-Code
+
+                              ; Blank line
+\newline 
+loop    sleep                 ; Label and operation
+\newline 
+        incf    6,1           ; Operation with 2 parameters
+\newline 
+        goto    loop          ; Operation with 1 parameter
+\layout Subsection
+
+Expressions
+\layout Standard
+
+gpasm supports a full set of 
+\begin_inset LatexCommand \index{operators}
+
+\end_inset 
+
+operators, based on the C operator set.
+ The operators in the following table are arranged in groups of equal precedence
+, but the groups are arranged in order of increasing precedence.
+ When gpasm encounters operators of equal precedence, it always evaluates
+ from left to right.
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+25 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 1 0 0
+1 1 0 0
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+1 0 0 0
+1 1 0 0
+1 0 0 0
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+8 1 0 "" ""
+8 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+Operator
+\newline 
+Description
+\newline 
+=
+\newline 
+assignment
+\newline 
+||
+\newline 
+logical or
+\newline 
+&&
+\newline 
+logical and
+\newline 
+&
+\newline 
+bitwise and
+\newline 
+|
+\newline 
+bitwise or
+\newline 
+^
+\newline 
+bitwise exclusive-or
+\newline 
+<
+\newline 
+less than
+\newline 
+>
+\newline 
+greater than
+\newline 
+==
+\newline 
+equals
+\newline 
+!=
+\newline 
+not equals
+\newline 
+>=
+\newline 
+greater than or equal
+\newline 
+<=
+\newline 
+less than or equal
+\newline 
+<<
+\newline 
+left shift
+\newline 
+>>
+\newline 
+right shift
+\newline 
++
+\newline 
+addition
+\newline 
+-
+\newline 
+subtraction
+\newline 
+*
+\newline 
+multiplication
+\newline 
+/
+\newline 
+division
+\newline 
+%
+\newline 
+modulo
+\newline 
+HIGH
+\newline 
+high byte
+\newline 
+LOW
+\newline 
+low byte
+\newline 
+-
+\newline 
+negation
+\newline 
+!
+\newline 
+logical not
+\newline 
+~
+\newline 
+bitwise no
+\layout Standard
+\align left 
+Any symbol appearing in column 1 may be assigned a value using the assignment
+ operator (=) in the previous table.
+ Additionally, any value previously assigned may be modified using one of
+ the operators in the table below.
+ Each of these operators evaluates the current value of the symbol and then
+ assigns a new value based on the operator.
+ 
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+14 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+8 1 0 "" ""
+8 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+Operator
+\newline 
+Description
+\newline 
+=
+\newline 
+assignment
+\newline 
+++
+\newline 
+increment by 1
+\newline 
+--
+\newline 
+decrement by 1
+\newline 
++=
+\newline 
+increment
+\newline 
+-=
+\newline 
+decrement
+\newline 
+*=
+\newline 
+multiply
+\newline 
+/=
+\newline 
+divide
+\newline 
+%=
+\newline 
+modulo
+\newline 
+<<=
+\newline 
+left shift
+\newline 
+>>=
+\newline 
+right shift
+\newline 
+&=
+\newline 
+bitwise and
+\newline 
+|=
+\newline 
+bitwise or
+\newline 
+^=
+\newline 
+bitwise exclusive-or
+\layout Subsection
+
+Numbers
+\begin_inset LatexCommand \index{radix}
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset LatexCommand \label{sec:numbers}
+
+\end_inset 
+
+gpasm gives you several ways of specifying numbers.
+ You can use a syntax that uses an initial character to indicate the number's
+ base.
+ The following table summarizes the alternatives.
+ Note the C-style option for specifying hexadecimal numbers.
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+6 3 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+8 1 0 "" ""
+8 1 0 "" ""
+8 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+base
+\newline 
+general syntax
+\newline 
+21 decimal written as
+\newline 
+binary
+\newline 
+B'[01]*'
+\newline 
+B'10101'
+\newline 
+octal
+\newline 
+O'[0-7]*'
+\newline 
+O'25'
+\newline 
+decimal
+\newline 
+D'[0-9]*'
+\newline 
+D'21'
+\newline 
+hex
+\newline 
+H'[0-F]*'
+\newline 
+H'15'
+\newline 
+hex
+\newline 
+0x[0-F]*
+\newline 
+0x15
+\layout Standard
+
+When you write a number without a specifying prefix such as 
+\begin_inset Quotes eld
+\end_inset 
+
+45
+\begin_inset Quotes erd
+\end_inset 
+
+, gpasm uses the current radix (base) to interpret the number.
+ You can change this radix with the RADIX directive, or with the 
+\begin_inset Quotes eld
+\end_inset 
+
+-r
+\begin_inset Quotes erd
+\end_inset 
+
+ option on gpasm's command-line.
+ If you do not start hexadecimal numbers with a digit, gpasm will attempt
+ to interpret what you've written as an identifier.
+ For example, instead of writing C2, write either 0C2, 0xC2 or H'C2'.
+\layout Standard
+
+Case is not significant when interpreting numbers: 0ca, 0CA, h'CA' and H'ca'
+ are all equivalent.
+\layout Standard
+
+You can write the 
+\begin_inset LatexCommand \index{ASCII}
+
+\end_inset 
+
+ASCII code for a 
+\begin_inset LatexCommand \index{character}
+
+\end_inset 
+
+character X using 'X', or A'X'.
+ 
+\layout Subsection
+
+Preprocessor
+\layout Standard
+
+
+\begin_inset LatexCommand \index{include}
+
+\end_inset 
+
+A line such as:
+\layout LyX-Code
+
+include foo.inc
+\layout Standard
+
+will make gpasm fetch source lines from the file 
+\begin_inset Quotes eld
+\end_inset 
+
+foo.inc
+\begin_inset Quotes erd
+\end_inset 
+
+ until the end of the file, and then return to the original source file
+ at the line following the include.
+\layout Standard
+
+Lines beginning with a 
+\begin_inset Quotes eld
+\end_inset 
+
+#
+\begin_inset Quotes erd
+\end_inset 
+
+ are preprocessor directives, and are treated differently by gpasm.
+ They may contain a 
+\begin_inset Quotes eld
+\end_inset 
+
+#define
+\begin_inset Quotes erd
+\end_inset 
+
+, or a 
+\begin_inset Quotes eld
+\end_inset 
+
+#undefine
+\begin_inset Quotes erd
+\end_inset 
+
+ directive.
+\layout Standard
+
+Once gpasm has processed a line such as:
+\layout LyX-Code
+
+#define X Y
+\layout Standard
+
+every subsequent occurrence of X is replaced with Y, until the end of file
+ or a line
+\layout LyX-Code
+
+#undefine X
+\layout Standard
+
+appears.
+\layout Standard
+
+The preprocessor will replace an occurance of #v(expression) in a symbol
+ with the value of 
+\begin_inset Quotes eld
+\end_inset 
+
+expression
+\begin_inset Quotes erd
+\end_inset 
+
+ in decimal.
+ In the following expression:
+\layout LyX-Code
+
+number equ 5
+\layout LyX-Code
+
+label_#v( (number +1) * 5 )_suffix equ 0x10
+\layout Standard
+
+gpasm will place the symbol 
+\begin_inset Quotes eld
+\end_inset 
+
+label_30_suffix
+\begin_inset Quotes erd
+\end_inset 
+
+ with a value of 0x10 in the symbol table.
+\layout Standard
+
+The preprocessor in gpasm is only 
+\shape italic 
+like
+\shape default 
+ the C preprocessor; its syntax is rather different from that of the C preproces
+sor.
+ gpasm uses a simple internal preprocessor to implement 
+\begin_inset Quotes eld
+\end_inset 
+
+include
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+#define
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+#undefine
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Section
+
+Directives
+\layout Subsection
+
+Code generation
+\layout Standard
+
+To set the PIC memory location where gpasm will start assembling code, use
+ the ORG directive.
+ If you don't specify an address with ORG, gpasm assumes 0x0000.
+\layout Subsection
+
+Configuration
+\layout Standard
+
+You can choose the fuse settings for your PIC implementation using the __CONFIG
+ directive, so that the hex file set the fuses explicitly.
+ Naturally you should make sure that these settings match your PIC hardware
+ design.
+\layout Standard
+
+The __MAXRAM and __BADRAM directives specify which RAM locations are legal.
+ These directives are mostly used in processor-specific configuration files.
+\layout Subsection
+
+Conditional assembly
+\layout Standard
+
+The IF, IFNDEF, IFDEF, ELSE and ENDIF directives enable you to assemble
+ certain sections of code only if a condition is met.
+ In themselves, they do not cause gpasm to emit any PIC code.
+ The example in section 
+\begin_inset LatexCommand \ref{sec:macros}
+
+\end_inset 
+
+ for demonstrates conditional assembly.
+\layout Subsection
+
+Macros
+\layout Standard
+
+
+\begin_inset LatexCommand \label{sec:macros}
+
+\end_inset 
+
+gpasm supports a simple macro scheme; you can define and use macros like
+ this:
+\layout LyX-Code
+
+any     macro parm
+\newline 
+        movlw parm
+\layout LyX-Code
+
+        endm
+\layout LyX-Code
+
+...
+\layout LyX-Code
+
+        any   33
+\layout Standard
+
+A more useful example of some macros in use is:
+\layout LyX-Code
+
+; Shift reg left, result (w or f) in 'dst'
+\layout LyX-Code
+
+slf     macro   reg,dst
+\layout LyX-Code
+
+        clrc
+\layout LyX-Code
+
+        rlf     reg,f
+\layout LyX-Code
+
+endm
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+; Scale W by 
+\begin_inset Quotes eld
+\end_inset 
+
+factor
+\begin_inset Quotes erd
+\end_inset 
+
+.
+  Result in 
+\begin_inset Quotes eld
+\end_inset 
+
+reg
+\begin_inset Quotes erd
+\end_inset 
+
+, W unchanged.
+\layout LyX-Code
+
+scale   macro   reg, factor
+\layout LyX-Code
+
+        if (factor == 1)
+\layout LyX-Code
+
+            movwf reg                 ; 1 X is easy
+\layout LyX-Code
+
+        else
+\layout LyX-Code
+
+            scale   reg, (factor / 2) ; W * (factor / 2)
+\layout LyX-Code
+
+            slf     reg,f             ; double reg
+\layout LyX-Code
+
+            if ((factor & 1) == 1)    ; if lo-bit set ..
+\layout LyX-Code
+
+                addwf   reg,f         ; ..
+ add W to reg
+\layout LyX-Code
+
+            endif
+\layout LyX-Code
+
+        endif
+\layout LyX-Code
+
+endm
+\layout Standard
+
+This recursive macro generates code to multiply W by a constant 
+\begin_inset Quotes eld
+\end_inset 
+
+factor
+\begin_inset Quotes erd
+\end_inset 
+
+, and stores the result in 
+\begin_inset Quotes eld
+\end_inset 
+
+reg
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ So writing:
+\layout LyX-Code
+
+        scale   tmp,D'10'
+\layout Standard
+
+is the same as writing:
+\layout LyX-Code
+
+        movwf   tmp      ; tmp = W
+\layout LyX-Code
+
+        clrc
+\layout LyX-Code
+
+        rlf     tmp,f    ; tmp = 2 * W
+\layout LyX-Code
+
+        clrc
+\layout LyX-Code
+
+        rlf     tmp,f    ; tmp = 4 * W
+\layout LyX-Code
+
+        addwf   tmp,f    ; tmp = (4 * W) + W = 5 * W
+\layout LyX-Code
+
+        clrc
+\layout LyX-Code
+
+        rlf     tmp,f    ; tmp = 10 * W
+\layout Subsection
+
+Suggestions for structuring your code
+\layout Standard
+
+
+\begin_inset LatexCommand \label{sec:structuring}
+
+\end_inset 
+
+Nested IF operations can quickly become confusing.
+ Indentation is one way of making code clearer.
+ Another way is to add braces on IF, ELSE and ENDIF, like this:
+\layout LyX-Code
+
+        IF (this) ; {
+\layout LyX-Code
+
+          ...
+\layout LyX-Code
+
+        ELSE      ; }{
+\layout LyX-Code
+
+          ...
+\layout LyX-Code
+
+        ENDIF     ; }
+\layout Standard
+
+After you've done this, you can use your text editor's show-matching-brace
+ to check matching parts of the IF structure.
+ In vi this command is 
+\begin_inset Quotes eld
+\end_inset 
+
+%
+\begin_inset Quotes erd
+\end_inset 
+
+, in emacs it's M-C-f and M-C-b.
+\layout Subsection
+
+Directive summary
+\begin_inset LatexCommand \label{sec:directivesummary}
+
+\end_inset 
+
+
+\layout Subsection*
+
+__BADRAM
+\begin_inset LatexCommand \index{BADRAM}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+__BADRAM <expression> [, <expression]*
+\layout Standard
+
+Instructs gpasm that it should generate an error if there is any use of
+ the given RAM locations.
+ Specify a range of addresses with <lo>-<hi>.
+ See any processor-specific header file for an example.
+\layout Standard
+
+See also: __MAXRAM
+\layout Subsection*
+
+__CONFIG
+\begin_inset LatexCommand \index{CONFIG}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+__CONFIG <expression>
+\layout Standard
+
+Sets the PIC processor's configuration fuses.
+\layout Subsection*
+
+__IDLOCS
+\begin_inset LatexCommand \index{IDLOCS}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+__IDLOCS <expression> or __IDLOCS <expression1>,<expression2>
+\layout Standard
+
+Sets the PIC processor's identification locations.
+ For 12 and 14 bit processors, the four id locations are set to the hexidecimal
+ value of expression.
+ For 18cxx devices idlocation expression1 is set to the hexidecimal value
+ of expression2.
+\layout Subsection*
+
+__MAXRAM
+\begin_inset LatexCommand \index{MAXRAM}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+__MAXRAM <expression>
+\layout Standard
+
+Instructs gpasm that an attempt to use any RAM location above the one specified
+ should be treated as an error.
+ See any processor specific header file for an example.
+\layout Standard
+
+See also: __BADRAM
+\layout Subsection*
+
+CBLOCK
+\begin_inset LatexCommand \index{CBLOCK}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+CBLOCK <expression>
+\layout Standard
+
+Marks the beginning of a block of constants.
+ gpasm allocates values for symbols in the block starting at the value given
+ to CBLOCK.
+\layout Standard
+
+See also: EQU
+\layout Subsection*
+
+CONSTANT
+\begin_inset LatexCommand \index{CONSTANT}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+CONSTANT <label>=<expression> [, <label>=<expression>]*
+\layout Standard
+
+Delcares <label> equal to <expression>.
+ Similar to SET and VARIABLE, except it can not be changed once assigned.
+\layout Standard
+
+See also: SET, VARIABLE
+\layout Subsection*
+
+DA
+\begin_inset LatexCommand \index{DA}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+<label> DA <expression> [, <expression]*
+\layout Standard
+
+Stores Strings in program memory.
+ The data is stored as one 14 bit word representing two 7 bit ASCII characters.
+\layout Standard
+
+See also: DT
+\layout Subsection*
+
+DATA
+\begin_inset LatexCommand \index{DATA}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+DATA <expression> [, <expression]*
+\layout Standard
+
+Generates the specified data.
+\layout Standard
+
+See also: DA, DB, DE, DW
+\layout Subsection*
+
+DB
+\begin_inset LatexCommand \index{DB}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+<label> DB <expression> [, <expression]*
+\layout Standard
+
+Declare data of one byte.
+ The values are packed two per word.
+\layout Standard
+
+See also: DA, DATA, DE, DW
+\layout Subsection*
+
+DE
+\begin_inset LatexCommand \index{DE}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+<label> DE <expression> [, <expression]*
+\layout Standard
+
+Define EEPROM data.
+ Each character in a string is stored in a seperate word.
+\layout Standard
+
+See also: DA, DATA, DB, DW
+\layout Subsection*
+
+DT
+\begin_inset LatexCommand \index{DT}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+DT <expression> [, <expression]*
+\layout Standard
+
+Generates the specified data as bytes in a sequence of RETLW instructions.
+\layout Standard
+
+See also: DATA
+\layout Subsection*
+
+DW
+\begin_inset LatexCommand \index{DW}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+<label> DW <expression> [, <expression]*
+\layout Standard
+
+Declare data of one word.
+\layout Standard
+
+See also: DA, DATA, DB, DW
+\layout Subsection*
+
+ELSE
+\begin_inset LatexCommand \index{ELSE}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+ELSE
+\layout Standard
+
+Marks the alternate section of a conditional assembly block.
+\layout Standard
+
+See also: IF, IFDEF, IFNDEF, ELSE, ENDIF
+\layout Subsection*
+
+END
+\begin_inset LatexCommand \index{END}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+END
+\layout Standard
+
+Marks the end of the source file.
+\layout Subsection*
+
+ENDC
+\begin_inset LatexCommand \index{ENDC}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+ENDC
+\layout Standard
+
+Marks the end of a CBLOCK.
+\layout Standard
+
+See also: CBLOCK
+\layout Subsection*
+
+ENDIF
+\begin_inset LatexCommand \index{ENDIF}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+ENDIF
+\layout Standard
+
+Ends a conditional assembly block.
+\layout Standard
+
+See also: IFDEF, IFNDEF, ELSE, ENDIF
+\layout Subsection*
+
+ENDM
+\begin_inset LatexCommand \index{ENDM}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+ENDM
+\layout Standard
+
+Ends a macro definition.
+\layout Standard
+
+See also: MACRO
+\layout Subsection*
+
+ENDW
+\begin_inset LatexCommand \index{ENDW}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+ENDW
+\layout Standard
+
+Ends a while loop.
+\layout Standard
+
+See also: WHILE
+\layout Subsection*
+
+EQU
+\begin_inset LatexCommand \index{EQU}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+<label> EQU <expression>
+\layout Standard
+
+Permanently assigns the value obtained by evaluating <expression> to the
+ symbol <label>.
+\layout Standard
+
+See also: SET
+\layout Subsection*
+
+ERROR
+\begin_inset LatexCommand \index{ERROR}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+ERROR <string>
+\layout Standard
+
+Issues an error message.
+\layout Standard
+
+See also: MESSG
+\layout Subsection*
+
+ERRORLEVEL
+\begin_inset LatexCommand \index{ERRORLEVEL}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+ERRORLEVEL {0 | 1 | 2 | +<msgnum> | -<msgnum>}[, ...]
+\layout Standard
+
+Sets the types of messages that are printed.
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+6 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+8 1 0 "" ""
+8 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+Setting
+\newline 
+Affect
+\newline 
+0
+\newline 
+Messages, warnings and errors printed.
+\newline 
+1
+\newline 
+Warnings and error printed.
+\newline 
+2
+\newline 
+Errors printed.
+\newline 
++<msgnum>
+\newline 
+Inhibits the printing of message <msgnum>.
+\newline 
+-<msgnum>
+\newline 
+Enables the printing of message <msgnum>.
+\layout Standard
+
+See also: LIST
+\layout Subsection*
+
+EXITM
+\begin_inset LatexCommand \index{EXITM}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+EXITM
+\layout Standard
+
+Immediately return from macro expansion during assembly.
+\layout Standard
+
+See also: ENDM
+\layout Subsection*
+
+EXPAND
+\begin_inset LatexCommand \index{EXITM}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+EXPAND
+\layout Standard
+
+Expand the macro in the listing file.
+\layout Standard
+
+See also: ENDM
+\layout Subsection*
+
+FILL
+\begin_inset LatexCommand \index{FILL}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+<label> FILL <expression>,<count>
+\layout Standard
+
+Generates <count> occurances of the program word or byte <expression>.
+ If expression is enclosed by parentheses, expression is a line of assembly.
+ 
+\layout Standard
+
+See also: DATA DW ORG
+\layout Subsection*
+
+IF
+\begin_inset LatexCommand \index{IF}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+IF <expression>
+\layout Standard
+
+Begin a conditional assembly block.
+ If the value obtained by evaluating <expression> is true (i.e.
+ non-zero), code up to the following ELSE or ENDIF is assembled.
+ If the value is false (i.e.
+ zero), code is not assembled until the corresponding ELSE or ENDIF.
+\layout Standard
+
+See also: IFDEF, IFNDEF, ELSE, ENDIF
+\layout Subsection*
+
+IFDEF
+\begin_inset LatexCommand \index{IFDEF}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+IFDEF <symbol>
+\layout Standard
+
+Begin a conditional assembly block.
+ If <symbol> appears in the symbol table, gpasm assembles the following
+ code.
+\layout Standard
+
+See also: IF, IFNDEF, ELSE, ENDIF
+\layout Subsection*
+
+IFNDEF
+\begin_inset LatexCommand \index{IFNDEF}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+IFNDEF <symbol>
+\layout Standard
+
+Begin a conditional assembly block.
+ If <symbol>does not appear in the symbol table, gpasm assembles the following
+ code.
+\layout Standard
+
+See also: IF, IFNDEF, ELSE, ENDIF
+\layout Subsection*
+
+LIST
+\begin_inset LatexCommand \index{LIST}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+LIST <expression> [ , <expression> ] *
+\layout Standard
+
+Enables output to the list (
+\begin_inset Quotes eld
+\end_inset 
+
+.lst
+\begin_inset Quotes erd
+\end_inset 
+
+) file.
+ All arguments are interpretted as decimal regardless of the current radix
+ setting.
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+list n=0
+\begin_inset Quotes erd
+\end_inset 
+
+ may be used to prevent page breaks in the code section of the list file.
+ Other options are listed in the table below:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+10 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+8 1 0 "" ""
+8 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+option
+\newline 
+description
+\newline 
+b=nnn
+\newline 
+Sets the tab spaces
+\newline 
+e=[ON|OFF]
+\newline 
+Macro expansion on or off
+\newline 
+f=<format>
+\newline 
+Set the hex file format.
+ Can be inhx8m, inhx8s, inhx16, or inhx32.
+\newline 
+mm=[ON|OFF]
+\newline 
+Memory Map on or off
+\newline 
+n=nnn
+\newline 
+Sets the number of lines per page
+\newline 
+p = <symbol>
+\newline 
+Sets the current processor
+\newline 
+r= [ oct | dec | hex ]
+\newline 
+Sets the radix
+\newline 
+st = [ ON | OFF ]
+\newline 
+Symbol table dump on or off
+\newline 
+w=[0 | 1| 2]
+\newline 
+Sets the message level.
+\layout Standard
+
+See also: NOLIST, RADIX, PROCESSOR
+\layout Subsection*
+
+LOCAL
+\begin_inset LatexCommand \index{LOCAL}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+LOCAL <symbol>[[=<expression>], [<symbol>[=<expression>]]*]
+\layout Standard
+
+Declares <symbol> as local to the macro that's currently being defined.
+ This means that further occurrences of <symbol> in the macro definition
+ refer to a local variable, with scope and lifetime limited to the execution
+ of the macro.
+\layout Standard
+
+See also: MACRO, ENDM
+\layout Subsection*
+
+MACRO
+\begin_inset LatexCommand \index{MACRO}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+<label> MACRO [ <symbol> [ , <symbol> ]* ]
+\layout Standard
+
+Declares a macro with name <label>.
+ gpasm replaces any occurrences of <symbol> in the macro definition with
+ the parameters given at macro invocation.
+\layout Standard
+
+See also: LOCAL, ENDM
+\layout Subsection*
+
+MESSG
+\begin_inset LatexCommand \index{MESSG}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+MESSG <string>
+\layout Standard
+
+Writes <string> to the list file, and to the standard error output.
+\layout Standard
+
+See also: ERROR
+\layout Subsection*
+
+NOEXPAND
+\begin_inset LatexCommand \index{NOEXPAND}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+NOEXPAND
+\layout Standard
+
+Turn off macro expansion in the list file.
+\layout Standard
+
+See also: EXPAND
+\layout Subsection*
+
+NOLIST
+\begin_inset LatexCommand \index{NOLIST}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+NOLIST
+\layout Standard
+
+Disables list file output.
+\layout Standard
+
+See also: LIST
+\layout Subsection*
+
+ORG
+\begin_inset LatexCommand \index{ORG}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+ORG <expression>
+\layout Standard
+
+Sets the location at which instructions will be placed.
+ If the source file does not specify an address with ORG, gpasm assumes
+ an ORG of zero.
+\layout Subsection*
+
+PAGE
+\begin_inset LatexCommand \index{PAGE}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+PAGE
+\layout Standard
+
+Causes the list file to advance to the next page.
+\layout Standard
+
+See also: LIST
+\layout Subsection*
+
+PROCESSOR
+\begin_inset LatexCommand \index{PROCESSOR}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+PROCESSOR <symbol>
+\layout Standard
+
+Selects the target processor.
+ See section 
+\begin_inset LatexCommand \ref{sec:processors}
+
+\end_inset 
+
+ for more details.
+\layout Standard
+
+See also: LIST
+\layout Subsection*
+
+RADIX
+\begin_inset LatexCommand \index{RADIX}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+RADIX <symbol>
+\layout Standard
+
+Selects the default radix from 
+\begin_inset Quotes eld
+\end_inset 
+
+oct
+\begin_inset Quotes erd
+\end_inset 
+
+ for octal, 
+\begin_inset Quotes eld
+\end_inset 
+
+dec
+\begin_inset Quotes erd
+\end_inset 
+
+ for decimal or 
+\begin_inset Quotes eld
+\end_inset 
+
+hex
+\begin_inset Quotes erd
+\end_inset 
+
+ for hexadecimal.
+ gpasm uses this radix to interpret numbers that don't have an explicit
+ radix.
+\layout Standard
+
+See also: LIST
+\layout Subsection*
+
+RES
+\begin_inset LatexCommand \index{RES}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+RES <mem_units>
+\layout Standard
+
+Causes the memory location pointer to be advanced <mem_unitsl>.
+ Can be used to reserve data storage.
+\layout Standard
+
+See also: FILL, ORG
+\layout Subsection*
+
+SET
+\begin_inset LatexCommand \index{SET}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+<label> SET <expression>
+\layout Standard
+
+Temporarily assigns the value obtained by evaluating <expression> to the
+ symbol <label>.
+\layout Standard
+
+See also: SET
+\layout Subsection*
+
+SPACE
+\begin_inset LatexCommand \index{SPACE}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+SPACE <expression>
+\layout Standard
+
+Inserts <expression> number of blank lines into the listing file.
+\layout Standard
+
+See also: LIST
+\layout Subsection*
+
+SUBTITLE
+\begin_inset LatexCommand \index{SUBTITLE}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+SUBTITLE <string>
+\layout Standard
+
+This directive establishes a second program header line for use as a subtitle
+ in the listing output.
+ <string> is an ASCII string enclosed by double quotes, no longer than 60
+ characters.
+\layout Standard
+
+See also: TITLE
+\layout Subsection*
+
+TITLE
+\begin_inset LatexCommand \index{TITLE}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+TITLE <string>
+\layout Standard
+
+This directive establishes a program header line for use as a title in the
+ listing output.
+ <stringt> is an ASCII string enclosed by double quotes, no longer than
+ 60 characters.
+\layout Standard
+
+See also: SUBTITLE
+\layout Subsection*
+
+VARIABLE
+\begin_inset LatexCommand \index{VARIABLE}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+VARIABLE <label>[=<expression>, <label>[=<expression>]]*
+\layout Standard
+
+Delcares variable with the name <label>.
+ The value of <label> may later be reassigned.
+ The value of <label> does not have to be assigned at declaration.
+\layout Standard
+
+See also: CONSTANT
+\layout Subsection*
+
+WHILE
+\begin_inset LatexCommand \index{WHILE}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+WHILE <expression>
+\layout Standard
+
+Performs loop while <expression> is true.
+\layout Standard
+
+See also: ENDW
+\layout Section
+
+Instructions 
+\layout Subsection
+
+Supported processors 
+\layout LyX-Code
+
+gpasm currently supports the following processors:
+\layout LyX-Code
+
+eeprom8    gen        p12c508    p12c508a   p12c509    p12c509a
+\layout LyX-Code
+
+p12c671    p12c672    p12ce518   p12ce519   p12ce673   p12ce674
+\layout LyX-Code
+
+p12cr509a  p14000     p16c5x     p16cxx     p16c432    p16c433
+\layout LyX-Code
+
+p16c461    p16c505    p16c52     p16c54     p16c54a    p16c54b
+\layout LyX-Code
+
+p16c54c    p16c55     p16c55a    p16c554    p16c558    p16c56
+\layout LyX-Code
+
+p16c56a    p16c57     p16c57c    p16c58     p16c58a    p16c58b
+\layout LyX-Code
+
+p16c61     p16c62     p16c62a    p16c62b    p16c620    p16c620a
+\layout LyX-Code
+
+p16c621    p16c621a   p16c622    p16c622a   p16c63     p16c63a
+\layout LyX-Code
+
+p16c64     p16c64a    p16c641    p16c642    p16c65     p16c65a
+\layout LyX-Code
+
+p16c65b    p16c66     p16c661    p16c662    p16c67     p16c70
+\layout LyX-Code
+
+p16c71     p16c71a    p16c710    p16c711    p16c712    p16c715
+\layout LyX-Code
+
+p16c716    p16c717    p16c72     p16c72a    p16c73     p16c73a
+\layout LyX-Code
+
+p16c73b    p16c74     p16c745    p16c74a    p16c74b    p16c76
+\layout LyX-Code
+
+p16c765    p16c77     p16c770    p16c771    p16c773    p16c774
+\layout LyX-Code
+
+p16c781    p16c782    p16c83     p16c84     p16c85     p16c86
+\layout LyX-Code
+
+p16c923    p16c924    p16c925    p16c926    p16ce623   p16ce624
+\layout LyX-Code
+
+p16ce625   p16cr54    p16cr54a   p16cr54b   p16cr54c   p16cr56
+\layout LyX-Code
+
+p16cr56a   p16cr57a   p16cr57b   p16cr57c   p16cr58a   p16cr58b
+\layout LyX-Code
+
+p16cr62    p16cr620a  p16cr63    p16cr64    p16cr65    p16cr72
+\layout LyX-Code
+
+p16cr83    p16cr84    p16f73     p16f74     p16f83     p16f84
+\layout LyX-Code
+
+p16f85     p16f86     p16f84a    p16f627    p16f628    p16f870
+\layout LyX-Code
+
+p16f871    p16f872    p16f873    p16f874    p16f876    p16f877
+\layout LyX-Code
+
+p16f877a   p16hv540   p16lc74b   p17cxx     p17c42     p17c42a
+\layout LyX-Code
+
+p17c43     p17c44     p17c752    p17c756    p17c756a   p17c762
+\layout LyX-Code
+
+p17c766    p17cr42    p17cr43    p18cxx2    p18c242    p18c252
+\layout LyX-Code
+
+p18c442    p18c452    p18c601    p18c658    p18c801    p18c858
+\layout LyX-Code
+
+p18f010    p18f012    p18f020    p18f022    p18f242    p18f248
+\layout LyX-Code
+
+p18f252    p18f258    p18f442    p18f448    p18f452    p18f458
+\layout LyX-Code
+
+sx18       sx20       sx28       
+\layout LyX-Code
+
+\layout Subsection
+
+Instruction set summary
+\layout Subsubsection
+
+12 bit Devices (PIC12C5XX)
+\layout Standard
+\LyXTable
+multicol5
+33 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+2 1 0 "" ""
+2 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+
+Syntax
+\newline 
+Description
+\newline 
+ADDWF <f>,<dst>
+\newline 
+Add W to <f>, result in <dst>
+\newline 
+ANDLW <f>,<dst>
+\newline 
+And W and literal, result in W
+\newline 
+ANDWF <f>,<dst>
+\newline 
+And W and <f>, result in <dst>
+\newline 
+BCF <f>,<bit>
+\newline 
+Clear <bit> of <f>
+\newline 
+BSF <f>,<bit>
+\newline 
+Set <bit> of <f>
+\newline 
+BTFSC <f>,<bit>
+\newline 
+Skip next instruction if <bit> of <f> is clear
+\newline 
+BTFSS <f>,<bit>
+\newline 
+Skip next instruction if <bit> of <f> is set
+\newline 
+CALL <addr>
+\newline 
+Call subroutine
+\newline 
+CLRF <f>,<dst>
+\newline 
+Write zero to <dst>
+\newline 
+CLRW
+\newline 
+Write zero to W
+\newline 
+CLRWDT
+\newline 
+Reset watchdog timer
+\newline 
+COMF <f>,<dst>
+\newline 
+Complement <f>, result in <dst>
+\newline 
+DECF <f>,<dst>
+\newline 
+Decrement <f>, result in <dst>
+\newline 
+DECFSZ <f>,<dst>
+\newline 
+Decrement <f>, result in <dst>, skip if zero
+\newline 
+GOTO <addr>
+\newline 
+Go to <addr>
+\newline 
+INCF <f>,<dst>
+\newline 
+Increment <f>, result in <dst>
+\newline 
+INCFSZ <f>,<dst>
+\newline 
+Increment <f>, result in <dst>, skip if zero
+\newline 
+IORLW <f>,<dst>
+\newline 
+Or W and <f>, result in <dst>
+\newline 
+MOVF <f>,<dst>
+\newline 
+Move <f> to <dst>
+\newline 
+MOVLW <imm8>
+\newline 
+Move literal to W
+\newline 
+MOVWF <f>
+\newline 
+Move W to <f>
+\newline 
+NOP
+\newline 
+No operation
+\newline 
+OPTION
+\newline 
+
+\newline 
+RETLW <imm8>
+\newline 
+Load W with immediate and return
+\newline 
+RLF <f>,<dst>
+\newline 
+Rotate <f> left, result in <dst>
+\newline 
+RRF <f>,<dst>
+\newline 
+Rotate <f> right, result in <dst>
+\newline 
+SLEEP
+\newline 
+Enter sleep mode
+\newline 
+SUBWF <f>,<dst>
+\newline 
+Subtract W from <f>, result in <dst>
+\newline 
+SWAPF <f>,<dst>
+\newline 
+Swap nibbles of <f>, result in <dst>
+\newline 
+TRIS
+\newline 
+
+\newline 
+XORLW
+\newline 
+Xor W and <f>, result in <dst>
+\newline 
+XORWF
+\newline 
+Xor W and immediate
+\layout Subsubsection
+
+14 Bit Devices (PIC16CXX)
+\layout Standard
+\LyXTable
+multicol5
+36 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+2 1 0 "" ""
+2 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+
+Syntax
+\newline 
+Description
+\newline 
+ADDLW <imm8>
+\newline 
+Add immediate to W
+\newline 
+ADDWF <f>,<dst>
+\newline 
+Add W to <f>, result in <dst>
+\newline 
+ANDLW <f>,<dst>
+\newline 
+And W and <f>, result in <dst>
+\newline 
+BCF <f>,<bit>
+\newline 
+Clear <bit> of <f>
+\newline 
+BSF <f>,<bit>
+\newline 
+Set <bit> of <f>
+\newline 
+BTFSC <f>,<bit>
+\newline 
+Skip next instruction if <bit> of <f> is clear
+\newline 
+BTFSS <f>,<bit>
+\newline 
+Skip next instruction if <bit> of <f> is set
+\newline 
+CALL <addr>
+\newline 
+Call subroutine
+\newline 
+CLRF <f>,<dst>
+\newline 
+Write zero to <dst>
+\newline 
+CLRW
+\newline 
+Write zero to W
+\newline 
+CLRWDT
+\newline 
+Reset watchdog timer
+\newline 
+COMF <f>,<dst>
+\newline 
+Complement <f>, result in <dst>
+\newline 
+DECF <f>,<dst>
+\newline 
+Decrement <f>, result in <dst>
+\newline 
+DECFSZ <f>,<dst>
+\newline 
+Decrement <f>, result in <dst>, skip if zero
+\newline 
+GOTO <addr>
+\newline 
+Go to <addr>
+\newline 
+INCF <f>,<dst>
+\newline 
+Increment <f>, result in <dst>
+\newline 
+INCFSZ <f>,<dst>
+\newline 
+Increment <f>, result in <dst>, skip if zero
+\newline 
+IORLW <f>,<dst>
+\newline 
+Or W and <f>, result in <dst>
+\newline 
+MOVF <f>,<dst>
+\newline 
+Move <f> to <dst>
+\newline 
+MOVLW <imm8>
+\newline 
+Move literal to W
+\newline 
+MOVWF <f>
+\newline 
+Move W to <f>
+\newline 
+NOP
+\newline 
+No operation
+\newline 
+OPTION
+\newline 
+
+\newline 
+RETFIE
+\newline 
+Return from interrupt
+\newline 
+RETLW <imm8>
+\newline 
+Load W with immediate and return
+\newline 
+RETURN
+\newline 
+Return from subroutine
+\newline 
+RLF <f>,<dst>
+\newline 
+Rotate <f> left, result in <dst>
+\newline 
+RRF <f>,<dst>
+\newline 
+Rotate <f> right, result in <dst>
+\newline 
+SLEEP
+\newline 
+Enter sleep mode
+\newline 
+SUBLW
+\newline 
+Subtract W from literal
+\newline 
+SUBWF <f>,<dst>
+\newline 
+Subtract W from <f>, result in <dst>
+\newline 
+SWAPF <f>,<dst>
+\newline 
+Swap nibbles of <f>, result in <dst>
+\newline 
+TRIS
+\newline 
+
+\newline 
+XORLW
+\newline 
+Xor W and <f>, result in <dst>
+\newline 
+XORWF
+\newline 
+Xor W and immediate
+\layout Subsubsection
+
+Ubicom Processors
+\layout Standard
+
+For Ubicom (Scenix) processors, the assembler supports the following instruction
+s, in addition to those listed under 
+\begin_inset Quotes eld
+\end_inset 
+
+12 Bit Devices
+\begin_inset Quotes erd
+\end_inset 
+
+ above.
+\layout Standard
+\LyXTable
+multicol5
+11 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+2 1 0 "" ""
+8 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+Syntax
+\newline 
+Description
+\newline 
+BANK <imm3>
+\newline 
+
+\newline 
+IREAD
+\newline 
+
+\newline 
+MODE <imm4>
+\newline 
+
+\newline 
+MOVMW
+\newline 
+
+\newline 
+MOVWM
+\newline 
+
+\newline 
+PAGE <imm3>
+\newline 
+
+\newline 
+RETI
+\newline 
+
+\newline 
+RETIW
+\newline 
+
+\newline 
+RETP
+\newline 
+
+\newline 
+RETURN
+\newline 
+
+\layout Subsubsection
+
+Special macros
+\layout Standard
+
+There are also a number of standard additional macros that gpasm reads from
+ the file 
+\begin_inset Quotes eld
+\end_inset 
+
+special.inc
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Consult that file for more details.
+ These macros are:
+\layout Standard
+\LyXTable
+multicol5
+19 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+2 1 0 "" ""
+2 1 1 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+
+Syntax
+\newline 
+Description
+\newline 
+ADDCF <f>,<dst>
+\newline 
+Add carry to <f>, result in <dst>
+\newline 
+B <addr>
+\newline 
+Branch
+\newline 
+BC <addr>
+\newline 
+Branch on carry
+\newline 
+BZ <addr>
+\newline 
+Branch on zero
+\newline 
+BNC <addr>
+\newline 
+Branch on no carry
+\newline 
+BNZ <addr>
+\newline 
+Branch on not zero
+\newline 
+CLRC
+\newline 
+Clear carry
+\newline 
+CLRZ
+\newline 
+Clear zero
+\newline 
+SETC
+\newline 
+Set carry
+\newline 
+SETZ
+\newline 
+Set zero
+\newline 
+MOVFW <f>
+\newline 
+Move file to W
+\newline 
+NEGF <f>
+\newline 
+Negate <f>
+\newline 
+SKPC
+\newline 
+Skip on carry
+\newline 
+SKPZ 
+\newline 
+Skip on zero
+\newline 
+SKPNC
+\newline 
+Skip on no carry
+\newline 
+SKPNZ 
+\newline 
+Skip on not zero
+\newline 
+SUBCF <f>,<dst>
+\newline 
+Subtract carry from <f>, result in <dst>
+\newline 
+TSTF <f>
+\newline 
+Test <f>
+\layout Section
+
+Errors/Warnings/Messages
+\layout Standard
+
+gpasm writes every error message to two locations:
+\layout Itemize
+
+the standard error output
+\layout Itemize
+
+the list file (
+\begin_inset Quotes eld
+\end_inset 
+
+.lst
+\begin_inset Quotes erd
+\end_inset 
+
+)
+\layout Standard
+
+The format of error messages is:
+\layout LyX-Code
+
+Error <src-file> <line> : <code> <description>
+\layout Standard
+
+where:
+\layout Description
+
+<src-file> is the source file where gpasm encountered the error
+\layout Description
+
+<line> is the line number
+\layout Description
+
+<code> is the 3-digit code for the error, given in the list below
+\layout Description
+
+<description> is a short description of the error.
+ In some cases this contains further information about the error.
+\layout Standard
+
+Error messages are suitable for parsing by emacs' 
+\begin_inset Quotes eld
+\end_inset 
+
+compilation mode
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ This chapter lists the error messages that gpasm produces.
+ 
+\layout Subsection
+
+Errors
+\layout Description
+
+101 ERROR directive
+\layout Standard
+
+A user-generated error.
+ See the ERROR directive for more details.
+\layout Description
+
+114 Divide by zero
+\layout Standard
+
+gpasm encountered a divide by zero.
+\layout Description
+
+115 Duplicate Label
+\layout Standard
+
+Duplicate label or redefining a symbol that can not be redefined.
+\layout Description
+
+124 Illegal Argument
+\layout Standard
+
+gpasm encountered an illegal argument in an expression.
+ 
+\layout Description
+
+125 Illegal Condition
+\layout Standard
+
+An illegal condition like a missing endif or endw has been encountered.
+\layout Description
+
+126 Argument out of Range
+\layout Standard
+
+The expression has an argument that was out of range.
+\layout Description
+
+127 Too many arguments
+\layout Standard
+
+gpasm encountered an expression with too many arguments.
+\layout Description
+
+128 Missing argument(s)
+\layout Standard
+
+gpasm encountered an expression with at least one missing argument.
+\layout Description
+
+129 Expected
+\layout Standard
+
+Expected a certain type of argument.
+ 
+\layout Description
+
+130 Processor type previously defined
+\layout Standard
+
+The processor is being redefined.
+ 
+\layout Description
+
+131 Undefined processor
+\layout Standard
+
+The processor type has not been defined.
+ 
+\layout Description
+
+132 Unknown processor
+\layout Standard
+
+The selected processor is not valid.
+ Check the processors listed in section 
+\begin_inset LatexCommand \ref{sec:processors}
+
+\end_inset 
+
+.
+\layout Description
+
+133 Hex file format INHX32 required
+\layout Standard
+
+An address above 32K was specified.
+ 
+\layout Description
+
+135 Macro name missing
+\layout Standard
+
+A macro was defined without a name.
+ 
+\layout Description
+
+136 Duplicate macro name
+\layout Standard
+
+A macro name was duplicated.
+ 
+\layout Description
+
+145 Unmatched ENDM
+\layout Standard
+
+ENDM found without a macro definition.
+ 
+\layout Description
+
+159 Odd number of FILL bytes
+\layout Standard
+
+In PIC18CXX devices the number of bytes must be even.
+ 
+\layout Subsection
+
+Warnings
+\layout Description
+
+201 Symbol not previously defined.
+\layout Standard
+
+The symbol being #undefined was not previously defined.
+\layout Description
+
+202 Argument out of range
+\layout Standard
+
+The argument does not fit in the allocated space.
+\layout Description
+
+211 Extraneous arguments
+\layout Standard
+
+Extra arguments were found on the line.
+\layout Description
+
+215 Processor superseded by command line
+\layout Standard
+
+The processor was specified on the command line and in the source file.
+ The command line has precedence.
+\layout Description
+
+216 Radix superceded by command line
+\layout Standard
+
+The radix was specified on the command line and in the source file.
+ The command line has precedence.
+\layout Description
+
+217 Hex format superceded by command line
+\layout Standard
+
+The hex file format was specified on the command line and in the source
+ file.
+ The command line has precedence.
+\layout Description
+
+218 Expected DEC, OCT, HEX.
+ Will use HEX.
+\layout Standard
+
+gpasm encountered an invalid radix.
+\layout Description
+
+219 Invalid RAM location specified.
+\layout Standard
+
+gpasm encountered an invalid RAM location as specified by the __MAXRAM and
+ __BADRAM directives.
+\layout Description
+
+222 Error messages can not be disabled
+\layout Standard
+
+Error messages can not be disabled using the ERRORLEVEL directive.
+\layout Description
+
+223 Redefining processor
+\layout Standard
+
+The processor is being reselected by the LIST or PROCESSOR directive.
+\layout Description
+
+224 Use of this instruction is not recommanded
+\layout Standard
+
+Use of the TRIS and OPTION instructions is not recommended for a PIC16CXX
+ device.
+\layout Subsection
+
+Messages
+\layout Description
+
+301 User Message
+\layout Standard
+
+User message, invoked with the MESSG directive.
+ 
+\layout Description
+
+303 Program word too large.
+ Truncated to core size.
+\layout Standard
+
+gpasm has encounter a program word larger than the core size of the selected
+ device.
+ 
+\layout Description
+
+304 ID Locations value too large.
+ Last four hex digits used.
+\layout Standard
+
+The ID locations value specified is too large.
+\layout Description
+
+305 Using default destination of 1 (file).
+\layout Standard
+
+No destination was specified so the default location was used.
+\layout Description
+
+308 Warning level superseded by command line
+\layout Standard
+
+The warning level was specified on the command line and in the source file.
+ The command line has precedence.
+\layout Description
+
+309 Macro expansion superseded by command line
+\layout Standard
+
+Macro expansion was specified on the command line and in the source file.
+ The command line has precedence.
+\layout Chapter
+
+gplink
+\layout Section
+
+Running gplink
+\begin_inset LatexCommand \index{options}
+
+\end_inset 
+
+
+\layout Standard
+
+The general syntax for running gpasm is
+\layout LyX-Code
+
+gplink <options> <asm-file>
+\layout Standard
+
+Where options can be one of:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+19 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+0 0 1 0
+0 0 1 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+0 0 1 0
+1 0 0 0
+1 1 0 0
+2 1 0 "" ""
+2 1 1 "4in" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 1 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 1 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 1 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+
+Option
+\newline 
+Meaning
+\newline 
+a <format>
+\newline 
+Produce 
+\begin_inset LatexCommand \index{hex file}
+
+\end_inset 
+
+hex file in one of four formats: inhx8m (the default), inhx8s, inhx16, inhx32.
+\newline 
+c
+\newline 
+
+\begin_inset LatexCommand \index{case}
+
+\end_inset 
+
+Ignore case in source code.
+ By default gpasms to treats 
+\begin_inset Quotes eld
+\end_inset 
+
+fooYa
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+FOOYA
+\begin_inset Quotes erd
+\end_inset 
+
+ as being different.
+\newline 
+
+\newline 
+
+\newline 
+
+\newline 
+
+\newline 
+d symbol[=value] 
+\newline 
+Equivalent to 
+\begin_inset Quotes eld
+\end_inset 
+
+#define <symbol> <value>
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\newline 
+e [ON|OFF]
+\newline 
+Expand macros in listing file.
+\newline 
+h
+\newline 
+Display the help message.
+\newline 
+I <directory>
+\newline 
+Specify an include directory.
+\newline 
+l
+\newline 
+List the supported processors.
+\newline 
+m
+\newline 
+Memory dump.
+\newline 
+n
+\newline 
+Use DOS style newlines (CRLF) in hex file.
+ This option is disabled on win32 systems.
+\newline 
+o <file>
+\newline 
+Alternate name of hex output file.
+\newline 
+p<processor> 
+\newline 
+Select target processor.
+\newline 
+q
+\newline 
+Quiet
+\newline 
+r <radix>
+\newline 
+Set the 
+\begin_inset LatexCommand \index{radix}
+
+\end_inset 
+
+radix, i.e.
+ the number base that gpasm uses when interpreting numbers.
+\newline 
+
+\newline 
+<radix> can be one of 
+\begin_inset Quotes eld
+\end_inset 
+
+oct
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+dec
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+hex
+\begin_inset Quotes erd
+\end_inset 
+
+ for bases eight, ten, and sixteen respectively.
+ Default is 
+\begin_inset Quotes eld
+\end_inset 
+
+hex
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\newline 
+-w [ 0 | 1 | 2]
+\newline 
+Set the message level.
+\newline 
+v
+\newline 
+Print gpasm version information and exit.
+\layout Standard
+
+Unless otherwise specified, gpasm removes the 
+\begin_inset Quotes eld
+\end_inset 
+
+.asm
+\begin_inset Quotes erd
+\end_inset 
+
+ suffix from its input file, replacing it with 
+\begin_inset Quotes eld
+\end_inset 
+
+.lst
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+.hex
+\begin_inset Quotes erd
+\end_inset 
+
+ for the list and hex output files respectively.
+ On most modern operating systems case is significant in filenames.
+ For this reason you should ensure that filenames are named consistently,
+ and that the 
+\begin_inset Quotes eld
+\end_inset 
+
+.asm
+\begin_inset Quotes erd
+\end_inset 
+
+ suffix on any source file is in lower case.
+\layout Standard
+
+gpasm always produces a 
+\begin_inset Quotes eld
+\end_inset 
+
+.lst
+\begin_inset Quotes erd
+\end_inset 
+
+ file.
+ If it runs without errors, it also produces a 
+\begin_inset Quotes eld
+\end_inset 
+
+.hex
+\begin_inset Quotes erd
+\end_inset 
+
+ file.
+\layout Chapter
+
+gplib
+\layout Section
+
+Running gplib
+\begin_inset LatexCommand \index{options}
+
+\end_inset 
+
+
+\layout Standard
+
+The general syntax for running gpasm is
+\layout LyX-Code
+
+gplib <options> <asm-file>
+\layout Standard
+
+Where options can be one of:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+19 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+0 0 1 0
+0 0 1 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+0 0 1 0
+1 0 0 0
+1 1 0 0
+2 1 0 "" ""
+2 1 1 "4in" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 1 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 1 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 1 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+
+Option
+\newline 
+Meaning
+\newline 
+a <format>
+\newline 
+Produce 
+\begin_inset LatexCommand \index{hex file}
+
+\end_inset 
+
+hex file in one of four formats: inhx8m (the default), inhx8s, inhx16, inhx32.
+\newline 
+c
+\newline 
+
+\begin_inset LatexCommand \index{case}
+
+\end_inset 
+
+Ignore case in source code.
+ By default gpasms to treats 
+\begin_inset Quotes eld
+\end_inset 
+
+fooYa
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+FOOYA
+\begin_inset Quotes erd
+\end_inset 
+
+ as being different.
+\newline 
+
+\newline 
+
+\newline 
+
+\newline 
+
+\newline 
+d symbol[=value] 
+\newline 
+Equivalent to 
+\begin_inset Quotes eld
+\end_inset 
+
+#define <symbol> <value>
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\newline 
+e [ON|OFF]
+\newline 
+Expand macros in listing file.
+\newline 
+h
+\newline 
+Display the help message.
+\newline 
+I <directory>
+\newline 
+Specify an include directory.
+\newline 
+l
+\newline 
+List the supported processors.
+\newline 
+m
+\newline 
+Memory dump.
+\newline 
+n
+\newline 
+Use DOS style newlines (CRLF) in hex file.
+ This option is disabled on win32 systems.
+\newline 
+o <file>
+\newline 
+Alternate name of hex output file.
+\newline 
+p<processor> 
+\newline 
+Select target processor.
+\newline 
+q
+\newline 
+Quiet
+\newline 
+r <radix>
+\newline 
+Set the 
+\begin_inset LatexCommand \index{radix}
+
+\end_inset 
+
+radix, i.e.
+ the number base that gpasm uses when interpreting numbers.
+\newline 
+
+\newline 
+<radix> can be one of 
+\begin_inset Quotes eld
+\end_inset 
+
+oct
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+dec
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+hex
+\begin_inset Quotes erd
+\end_inset 
+
+ for bases eight, ten, and sixteen respectively.
+ Default is 
+\begin_inset Quotes eld
+\end_inset 
+
+hex
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\newline 
+-w [ 0 | 1 | 2]
+\newline 
+Set the message level.
+\newline 
+v
+\newline 
+Print gpasm version information and exit.
+\layout Standard
+
+Unless otherwise specified, gpasm removes the 
+\begin_inset Quotes eld
+\end_inset 
+
+.asm
+\begin_inset Quotes erd
+\end_inset 
+
+ suffix from its input file, replacing it with 
+\begin_inset Quotes eld
+\end_inset 
+
+.lst
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+.hex
+\begin_inset Quotes erd
+\end_inset 
+
+ for the list and hex output files respectively.
+ On most modern operating systems case is significant in filenames.
+ For this reason you should ensure that filenames are named consistently,
+ and that the 
+\begin_inset Quotes eld
+\end_inset 
+
+.asm
+\begin_inset Quotes erd
+\end_inset 
+
+ suffix on any source file is in lower case.
+\layout Standard
+
+gpasm always produces a 
+\begin_inset Quotes eld
+\end_inset 
+
+.lst
+\begin_inset Quotes erd
+\end_inset 
+
+ file.
+ If it runs without errors, it also produces a 
+\begin_inset Quotes eld
+\end_inset 
+
+.hex
+\begin_inset Quotes erd
+\end_inset 
+
+ file.
+\layout Chapter
+
+Utilities
+\layout Section
+
+gpdasm
+\begin_inset LatexCommand \index{gpdasm}
+
+\end_inset 
+
+
+\layout Standard
+
+gpdasm is open source disassembler for Microchip's popular PICmicro (TM)
+ line of microcontrollers.
+ gpdasm is part of gpasm.
+\layout Subsection
+
+Running gpdasm
+\begin_inset LatexCommand \index{Running gpdasm}
+
+\end_inset 
+
+
+\layout Standard
+
+The general syntax for running gpdasm is
+\layout LyX-Code
+
+gpdasm <options> <hex-file>
+\layout Standard
+
+Where options can be one of:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+7 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+2 1 0 "" ""
+2 1 1 "4in" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+
+Option
+\newline 
+Meaning
+\newline 
+h
+\newline 
+Display the help message.
+\newline 
+i
+\newline 
+Display hex file information
+\newline 
+m
+\newline 
+Memory dump hex file.
+\newline 
+p\SpecialChar ~
+ [pic12|pic14] 
+\newline 
+Select processor family.
+\newline 
+s
+\newline 
+Print short form output
+\newline 
+v
+\newline 
+Print gpasm version information and exit.
+\layout Standard
+
+gpdasm doesn't specifically create an output file.
+ It dumps its output to the screen.
+ This helps to reduce the risk that a good source file will be unintentionally
+ overwritten.
+ If you want to create an output file and your shell is 
+\begin_inset LatexCommand \index{sh}
+
+\end_inset 
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+sh
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset LatexCommand \index{bash}
+
+\end_inset 
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+bash
+\begin_inset Quotes erd
+\end_inset 
+
+ or 
+\begin_inset LatexCommand \index{ksh}
+
+\end_inset 
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+ksh
+\begin_inset Quotes erd
+\end_inset 
+
+, you can do something like:
+\layout LyX-Code
+
+gpdasm test.hex > test.dis
+\layout Standard
+
+This redirects standard output to the file 
+\begin_inset Quotes eld
+\end_inset 
+
+test.dis
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Subsection
+
+Comments on Disassembling
+\layout Itemize
+
+The gpdasm only uses a hex file as an input.
+ Because of this it has no way to distinguish between instructions and data
+ in program memory.
+ 
+\layout Itemize
+
+If gpdasm encounters an unknown instruction it uses the DW directive and
+ treats it as raw data.
+\layout Itemize
+
+There are DON'T CARE bits in the instruction words.
+ Normally, this isn't a problem.
+ It could be, however, if a file with data in the program memory space is
+ disassembled and then reassembled.
+ Example: gpdasm will treat 0x0060 in a 14 bit device as a NOP.
+ If the output is then reassembled, gpasm will assign a 0x0000 value.
+ The value has changed and both tools are behaving correctly.
+\layout Section
+
+gpvc
+\begin_inset LatexCommand \index{gpvc}
+
+\end_inset 
+
+
+\layout Standard
+
+gpvc is open source cod file viewer for Microchip's popular PICmicro (TM)
+ line of microcontrollers.
+ gpvc is part of gpasm.
+\layout Subsection
+
+Running gpvc
+\begin_inset LatexCommand \index{Running gpvc}
+
+\end_inset 
+
+
+\layout Standard
+
+The general syntax for running gpdasm is
+\layout LyX-Code
+
+gpvc <options> <cod-file>
+\layout Standard
+
+Where options can be one of:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+9 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+2 1 0 "" ""
+2 1 1 "4in" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+
+Option
+\newline 
+Meaning
+\newline 
+a
+\newline 
+Display all information
+\newline 
+d
+\newline 
+Display directory header
+\newline 
+s
+\newline 
+Display symbols
+\newline 
+h
+\newline 
+Show the help message.
+\newline 
+r
+\newline 
+Display rom
+\newline 
+l
+\newline 
+Display source listing
+\newline 
+m
+\newline 
+Display debug message area
+\newline 
+v
+\newline 
+Print gpvc version information and exit.
+\layout Standard
+
+gpvc doesn't specifically create an output file.
+ It dumps its output to the screen.
+ If you want to create an output file and your shell is 
+\begin_inset LatexCommand \index{sh}
+
+\end_inset 
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+sh
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset LatexCommand \index{bash}
+
+\end_inset 
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+bash
+\begin_inset Quotes erd
+\end_inset 
+
+ or 
+\begin_inset LatexCommand \index{ksh}
+
+\end_inset 
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+ksh
+\begin_inset Quotes erd
+\end_inset 
+
+, you can do something like:
+\layout LyX-Code
+
+gpvc test.cod > test.dump
+\layout Standard
+
+This redirects standard output to the file 
+\begin_inset Quotes eld
+\end_inset 
+
+test.dump
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Section
+
+gpvo
+\begin_inset LatexCommand \index{gpvo}
+
+\end_inset 
+
+
+\layout Standard
+
+gpvo is open source object file viewer for Microchip's popular PICmicro
+ (TM) line of microcontrollers.
+ gpvo is part of gpasm.
+\layout Subsection
+
+Running gpvo
+\begin_inset LatexCommand \index{Running gpvo}
+
+\end_inset 
+
+
+\layout Standard
+
+The general syntax for running gpdasm is
+\layout LyX-Code
+
+gpvo <options> <object-file>
+\layout Standard
+
+Where options can be one of:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+10 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+2 1 0 "" ""
+2 1 1 "4in" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+
+Option
+\newline 
+Meaning
+\newline 
+a
+\newline 
+Auxillary record
+\newline 
+b
+\newline 
+Binary data
+\newline 
+f
+\newline 
+File header
+\newline 
+h
+\newline 
+Show the help message.
+\newline 
+o
+\newline 
+Optional header
+\newline 
+p\SpecialChar ~
+ [pic12|pic14] 
+\newline 
+Select processor 
+\newline 
+s
+\newline 
+Section data
+\newline 
+t
+\newline 
+Symbol data
+\newline 
+v
+\newline 
+Print gpvo version information and exit.
+\layout Standard
+
+gpvo doesn't specifically create an output file.
+ It dumps its output to the screen.
+ If you want to create an output file and your shell is 
+\begin_inset LatexCommand \index{sh}
+
+\end_inset 
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+sh
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset LatexCommand \index{bash}
+
+\end_inset 
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+bash
+\begin_inset Quotes erd
+\end_inset 
+
+ or 
+\begin_inset LatexCommand \index{ksh}
+
+\end_inset 
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+ksh
+\begin_inset Quotes erd
+\end_inset 
+
+, you can do something like:
+\layout LyX-Code
+
+gpvo test.obj > test.dump
+\layout Standard
+
+This redirects standard output to the file 
+\begin_inset Quotes eld
+\end_inset 
+
+test.dump
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Standard
+
+
+\begin_inset LatexCommand \printindex{}
+
+\end_inset 
+
+
+\the_end

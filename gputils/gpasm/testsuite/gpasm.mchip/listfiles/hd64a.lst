@@ -1,0 +1,378 @@
+MPASM Version 3.00 Beta Release   HD64A.ASM   01/31/2001  12:11:54	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; HD64A.ASM
+                        00002 
+                        00003 ; This file tests header file usage for the specified processor.
+                        00004 
+                        00005         LIST    P=16C64A
+                        00006         INCLUDE "P16C64A.INC"
+                        00001         LIST
+                        00002 ; P16C64A.INC  Standard Header File, Version 1.02    Microchip Technology, Inc.
+                        00243         LIST
+                        00007 
+0000     3FFF 3FFF      00008         DATA    _BODEN_ON, 0X3FFF
+0002     3FBF 3FBF      00009         DATA    _BODEN_OFF, 0X3FBF
+0004     00CF 00CF      00010         DATA    _CP_ALL, 0x00CF         ; This changes per device
+0006     15DF 15DF      00011         DATA    _CP_75, 0X15DF
+0008     2AEF 2AEF      00012         DATA    _CP_50, 0X2AEF
+000A     3FFF 3FFF      00013         DATA    _CP_OFF, 0X3FFF
+000C     3FFF 3FFF      00014         DATA    _PWRTE_OFF, 0X3FFF
+000E     3FF7 3FF7      00015         DATA    _PWRTE_ON, 0x3FF7       ; This changes per device
+0010     3FFF 3FFF      00016         DATA    _WDT_ON, 0X3FFF
+0012     3FFB 3FFB      00017         DATA    _WDT_OFF, 0X3FFB
+0014     3FFC 3FFC      00018         DATA    _LP_OSC, 0X3FFC
+0016     3FFD 3FFD      00019         DATA    _XT_OSC, 0X3FFD
+0018     3FFE 3FFE      00020         DATA    _HS_OSC, 0X3FFE
+001A     3FFF 3FFF      00021         DATA    _RC_OSC, 0X3FFF
+                        00022 
+001C     0000 0000      00023         DATA    INDF, 0                 ;Register Files
+001E     0001 0001      00024         DATA    TMR0, 1
+0020     0002 0002      00025         DATA    PCL, 2
+0022     0003 0003      00026         DATA    STATUS, 3
+0024     0004 0004      00027         DATA    FSR, 4
+0026     0005 0005      00028         DATA    PORTA, 5
+0028     0006 0006      00029         DATA    PORTB, 6
+002A     000A 000A      00030         DATA    PCLATH, 0x0A
+002C     000B 000B      00031         DATA    INTCON, 0x0B
+002E     0081 0081      00032         DATA    OPTION_REG, 0x81
+0030     0085 0085      00033         DATA    TRISA, 0X85
+0032     0086 0086      00034         DATA    TRISB, 0X86
+                        00035 
+0034     0007 0007      00036         DATA    PORTC, 7                ; Processor Specific
+0036     0008 0008      00037         DATA    PORTD, 8                ; Register Files
+0038     0009 0009      00038         DATA    PORTE, 9
+003A     000C 000C      00039         DATA    PIR1, 0XC
+003C     000E 000E      00040         DATA    TMR1L, 0XE
+003E     000F 000F      00041         DATA    TMR1H, 0XF
+0040     0010 0010      00042         DATA    T1CON, 0X10
+0042     0011 0011      00043         DATA    TMR2, 0X11
+0044     0012 0012      00044         DATA    T2CON, 0X12
+0046     0013 0013      00045         DATA    SSPBUF, 0X13
+0048     0014 0014      00046         DATA    SSPCON, 0X14
+004A     0015 0015      00047         DATA    CCPR1L, 0X15
+004C     0016 0016      00048         DATA    CCPR1H, 0X16
+004E     0017 0017      00049         DATA    CCP1CON, 0X17
+                        00050 
+MPASM Version 3.00 Beta Release   HD64A.ASM   01/31/2001  12:11:54	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0050     0087 0087      00051         DATA    TRISC, 0X87
+0052     0088 0088      00052         DATA    TRISD, 0X88
+0054     0089 0089      00053         DATA    TRISE, 0X89
+0056     008C 008C      00054         DATA    PIE1, 0X8C
+0058     008E 008E      00055         DATA    PCON, 0X8E
+005A     0092 0092      00056         DATA    PR2, 0X92
+005C     0093 0093      00057         DATA    SSPADD, 0X93
+005E     0094 0094      00058         DATA    SSPSTAT, 0X94
+                        00059 
+0060     0006 0006      00060         DATA    PEIE, 6                 ; Finish INTCON Definition
+                        00061 
+0062     0005 0005      00062         DATA    CCP1X, 5                ; CCP1CON
+0064     0004 0004      00063         DATA    CCP1Y, 4
+0066     0003 0003      00064         DATA    CCP1M3, 3
+0068     0002 0002      00065         DATA    CCP1M2, 2
+006A     0001 0001      00066         DATA    CCP1M1, 1
+006C     0000 0000      00067         DATA    CCP1M0, 0
+                        00068 
+006E     0001 0001      00069         DATA    NOT_POR, 1              ; PCON
+0070     0000 0000      00070         DATA    NOT_BO, 0
+                        00071 
+0072     0007 0007      00072         DATA    PSPIE, 7                ; PIE1
+0074     0003 0003      00073         DATA    SSPIE, 3
+0076     0002 0002      00074         DATA    CCP1IE, 2
+0078     0001 0001      00075         DATA    TMR2IE, 1
+007A     0000 0000      00076         DATA    TMR1IE, 0
+                        00077 
+007C     0007 0007      00078         DATA    PSPIF, 7                ; PIR1
+007E     0003 0003      00079         DATA    SSPIF, 3
+0080     0002 0002      00080         DATA    CCP1IF, 2
+0082     0001 0001      00081         DATA    TMR2IF, 1
+0084     0000 0000      00082         DATA    TMR1IF, 0
+                        00083 
+                        00084 
+0086     0007 0007      00085         DATA    WCOL, 7                 ; SSPCON
+0088     0006 0006      00086         DATA    SSPOV, 6        
+008A     0005 0005      00087         DATA    SSPEN, 5
+008C     0004 0004      00088         DATA    CKP, 4
+008E     0003 0003      00089         DATA    SSPM3, 3
+0090     0002 0002      00090         DATA    SSPM2, 2
+0092     0001 0001      00091         DATA    SSPM1, 1
+0094     0000 0000      00092         DATA    SSPM0, 0
+                        00093 
+0096     0005 0005      00094         DATA    D, 5                    ; SSPSTAT
+0098     0005 0005      00095         DATA    I2C_DATA, 5
+009A     0005 0005      00096         DATA    NOT_A, 5
+009C     0005 0005      00097         DATA    NOT_ADDRESS, 5
+009E     0005 0005      00098         DATA    D_A, 5
+00A0     0005 0005      00099         DATA    DATA_ADDRESS, 5
+00A2     0004 0004      00100         DATA    P, 4
+00A4     0004 0004      00101         DATA    I2C_STOP, 4
+00A6     0003 0003      00102         DATA    S, 3
+00A8     0003 0003      00103         DATA    I2C_START, 3
+MPASM Version 3.00 Beta Release   HD64A.ASM   01/31/2001  12:11:54	   PAGE 3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00AA     0002 0002      00104         DATA    R, 2
+00AC     0002 0002      00105         DATA    I2C_READ, 2
+00AE     0002 0002      00106         DATA    NOT_W, 2
+00B0     0002 0002      00107         DATA    NOT_WRITE, 2
+00B2     0002 0002      00108         DATA    R_W, 2
+00B4     0002 0002      00109         DATA    READ_WRITE, 2
+00B6     0001 0001      00110         DATA    UA, 1
+00B8     0000 0000      00111         DATA    BF, 0
+                        00112 
+                        00113 
+00BA     0005 0005      00114         DATA    T1CKPS1, 5              ; T1CON
+00BC     0004 0004      00115         DATA    T1CKPS0, 4
+00BE     0003 0003      00116         DATA    T1OSCEN, 3
+00C0     0002 0002      00117         DATA    T1INSYNC, 2
+00C2     0001 0001      00118         DATA    TMR1CS, 1
+00C4     0000 0000      00119         DATA    TMR1ON, 0
+                        00120 
+00C6     0006 0006      00121         DATA    TOUTPS3, 6              ; T2CON
+00C8     0005 0005      00122         DATA    TOUTPS2, 5
+00CA     0004 0004      00123         DATA    TOUTPS1, 4
+00CC     0003 0003      00124         DATA    TOUTPS0, 3
+00CE     0002 0002      00125         DATA    TMR2ON, 2
+00D0     0001 0001      00126         DATA    T2CKPS1, 1
+00D2     0000 0000      00127         DATA    T2CKPS0, 0
+                        00128 
+                        00129 
+00D4     0007 0007      00130         DATA    IBF, 7                  ; TRISE
+00D6     0006 0006      00131         DATA    OBF, 6
+00D8     0005 0005      00132         DATA    IBOV, 5
+00DA     0004 0004      00133         DATA    PSPMODE, 4
+00DC     0002 0002      00134         DATA    TRISE2, 2
+00DE     0001 0001      00135         DATA    TRISE1, 1
+00E0     0000 0000      00136         DATA    TRISE0, 0
+                        00137 
+00E2     0007 0007      00138         DATA    GIE, 7                  ; INTCON
+00E4     0005 0005      00139         DATA    T0IE, 5
+00E6     0004 0004      00140         DATA    INTE, 4
+00E8     0003 0003      00141         DATA    RBIE, 3
+00EA     0002 0002      00142         DATA    T0IF, 2
+00EC     0001 0001      00143         DATA    INTF, 1
+00EE     0000 0000      00144         DATA    RBIF, 0 
+                        00145 
+00F0     0007 0007      00146         DATA    NOT_RBPU, 7             ; OPTION
+00F2     0006 0006      00147         DATA    INTEDG, 6
+00F4     0005 0005      00148         DATA    T0CS, 5
+00F6     0004 0004      00149         DATA    T0SE, 4
+00F8     0003 0003      00150         DATA    PSA, 3
+00FA     0002 0002      00151         DATA    PS2, 2
+00FC     0001 0001      00152         DATA    PS1, 1
+00FE     0000 0000      00153         DATA    PS0, 0
+                        00154 
+                        00155 
+0100     0007 0007      00156         DATA    IRP, 7                  ;STATUS
+MPASM Version 3.00 Beta Release   HD64A.ASM   01/31/2001  12:11:54	   PAGE 4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0102     0006 0006      00157         DATA    RP1, 6
+0104     0005 0005      00158         DATA    RP0, 5
+0106     0004 0004      00159         DATA    NOT_TO, 4
+0108     0003 0003      00160         DATA    NOT_PD, 3
+010A     0002 0002      00161         DATA    Z, 2
+010C     0001 0001      00162         DATA    DC, 1
+010E     0000 0000      00163         DATA    C, 0
+                        00164 
+                        00165         END
+MPASM Version 3.00 Beta Release   HD64A.ASM   01/31/2001  12:11:54	   PAGE 5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+BF                                00000000
+C                                 00000000
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCPR1H                            00000016
+CCPR1L                            00000015
+CKP                               00000004
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+D_A                               00000005
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OBF                               00000006
+OPTION_REG                        00000081
+P                                 00000004
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+MPASM Version 3.00 Beta Release   HD64A.ASM   01/31/2001  12:11:54	   PAGE 6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+R                                 00000002
+RBIE                              00000003
+RBIF                              00000000
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+R_W                               00000002
+S                                 00000003
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+MPASM Version 3.00 Beta Release   HD64A.ASM   01/31/2001  12:11:54	   PAGE 7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISB                             00000086
+TRISC                             00000087
+TRISD                             00000088
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+UA                                00000001
+W                                 00000000
+WCOL                              00000007
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_CP_50                            00002AEF
+_CP_75                            000015DF
+_CP_ALL                           000000CF
+_CP_OFF                           00003FFF
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16C64A                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   272
+Program Memory Words Free:  1776
+
+
+MPASM Version 3.00 Beta Release   HD64A.ASM   01/31/2001  12:11:54	   PAGE 8
+
+
+
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

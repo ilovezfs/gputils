@@ -1,0 +1,40 @@
+MPASM Version 3.00 Beta Release   LIST4.ASM   01/31/2001  12:13:07	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; LIST4.ASM
+                        00002 
+                        00003 ; This file tests legal usage of the LIST directive.
+                        00004 
+                        00005         LIST    P=17C42
+                        00006         LIST    F = INHX32      ; Check generated hex file for format
+                        00007 
+0000     0001 0002 0003 00008         DATA    1, 2, 3, "abc"
+         6162 6300 
+                        00009 
+                        00010         END
+MPASM Version 3.00 Beta Release   LIST4.ASM   01/31/2001  12:13:07	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__17C42                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXX----------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     5
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,52 @@
+MPASM Version 3.00 Beta Release   LOCAL2.ASM   01/31/2001  12:39:51	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; LOCAL2.ASM
+                        00002 
+                        00003 ; This file tests illegal usage of the LOCAL and MACRO-EXITM-ENDM
+                        00004 ; directives.
+                        00005 
+                        00006         LIST    P=16C54
+                        00007 
+Error[146]  : Unmatched EXITM
+                        00008         EXITM                   ; Unmatched
+Error[145]  : Unmatched ENDM
+                        00009         ENDM                    ; Unmatched
+                        00010 
+Error[128]  : Missing argument(s)
+                        00011         LOCAL                   ; No operand
+Error[121]  : Illegal label (Label1)
+  0000                  00012 Label1  LOCAL   AA              ; Illegal label
+                        00013 
+                        00014 Mac1    MACRO                   ; Missing ENDM
+                        00015         NOP
+                        00016 
+                        00017         END
+Error[125]  : Illegal condition (EOF encountered before END or conditional end directive)
+MPASM Version 3.00 Beta Release   LOCAL2.ASM   01/31/2001  12:39:51	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Mac1                              
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+Program Memory Words Free:   512
+
+
+Errors   :     5
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

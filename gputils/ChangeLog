@@ -1,0 +1,672 @@
+2002-01-10 Craig Franklin <craigfranklin@attbi.com>
+  * Renamed gpasm package to gputils.
+  * Changed library from libgpasm.a to libgputils.a
+  * Renamed mem2asm.c to dis.c
+  * Appended gp prefix to all library files.
+  * Renamed /gpasm/opcode.c to /gpasm/directive.c.
+  * Corrected and updated copyright notices.
+  * Moved /gpasm/cod.h to library. Removed cod.h from gpvc.
+  * Moved test files to tool subdir for future support of dejagnu.
+  * Started updating users manual.
+  * Moved examples to gputils-extra package.
+  * Corrected many problems with gplib.
+  * Continued work on gplink.  
+
+2001-12-07 Craig Franklin <craigfranklin@attbi.com>
+  * Added linker scripts.
+
+2001-12-06 Craig Franklin <craigfranklin@attbi.com>
+  * Fixed cygwin warnings with -Wall -pedantic flags.
+  * Updated maintainer information.
+
+2001-11-26 Craig Franklin <craigfranklin@attbi.com>
+  * Fixed a bug that could cause a core dump when expanding macros.
+  * Fixed a bug that cause labels inside of macros for 18cxx devices
+    to be off by 2X.
+  * Removed unecessary -I /usr/local/share/gpasm/header from example1
+    Makefile. 
+  * Fixed a bug that causes command line radix to be overwritten on pass 2.
+  * Moved symbol table functions to library for use with gplink.
+  * Added extra warning flags to cygwin.
+
+2001-11-24 Craig Franklin <craigfranklin@attbi.com>
+  * Added new tool gplink.  This tool is intended to be compatible with mplink.
+    This is a development version.  It is not complete.  
+
+2001-11-17 Craig Franklin <craigfranklin@attbi.com>
+  * Added new tool gplib.  This tool is intended to be compatible with mplib.
+    This is a development version.  It is not complete.  
+
+2001-10-31 Craig Franklin <craigfranklin@attbi.com>
+
+  * gpasm 0.9.14 Released.
+  * The path to the header files is now searched when including files.  This  
+    means the "-I /usr/local/share/gpasm/header" argument to gpasm is no  
+    longer necessary.  The path may be displayed by commanding "gpasm -h".  
+    This path may be disabled at compile time using the "--disable-path" 
+    configuration option.
+  
+2001-10-25 Craig Franklin <craigfranklin@attbi.com>
+
+  * implemented "fill (<expression>),number", where <expression> is a line of
+    assembly.  example: "fill (goto start), 10" 
+  * fixed bug #423204, infinite loop when missing new line before EOF in a file
+    without the END directive
+  * parser debug is enabled when PARSE_DEBUG is defined
+
+2001-10-09 Craig Franklin <craigfranklin@attbi.com>
+
+  * removed all // comments to satisfy --pedantic flag
+  * fixed several errors in gpvo
+
+2001-10-06 Craig Franklin <craigfranklin@attbi.com>
+
+  * gpasm 0.9.13 Released.
+  * Added new processors:
+    p16c432 p16c433 p16c781 p16c782 p16c925 p16c926 p16cr620a p16f73	
+    p16f74 p16f85 p16f86 p16f877a p18f242 p18f248 p18f252 p18f258	
+    p18f442 p18f448 p18f452 p18f458	
+  * Corrected header file errors.
+  * New header files added:
+    p16c781.inc p16c782.inc p16f85.inc p16f86.inc p16f877a.inc p18c601.inc
+    p18c801.inc p18f020.inc p18f242.inc p18f248.inc p18f252.inc p18f258.inc
+    p18f442.inc p18f448.inc p18f452.inc p18f458.inc
+
+2001-10-02 Craig Franklin <craigfranklin@attbi.com>
+
+  * "list n=0" may now be used to prevent page breaks in the listing file.  
+    This feature was provided by Reto Felix <reto.felix@bluewin.ch>.
+  * All arguments to the list directive are now processed as decimal regardless
+    of the current radix setting.
+  * reformat ChangeLog  
+
+0.9.12   TSD for Craig Franklin
+
+1.  The preprocessor now supports #v(expression) substitution in labels and 
+symbols.  If symbol equals 4, then the label "mylabel_#v( (symbol * 3))_ok" is 
+replaced with "mylabel_12_ok".
+
+2.  The error message "can't evaluate expression" has been replaced by more
+specific error messages.
+
+3.  eeprom8 device is now supported.
+
+4.  The DOS newlines option (-n) has been disabled on win32 systems.  DOS
+newlines are already the default on these systems.
+
+0.9.11   TSD for Craig Franklin
+
+1.  Labels are substituted when found on the #define table.  
+
+2.  Labels are treated as macros when found on the macro table.
+
+3.  gpasm can now distinguish between directives and opcodes placed in the 
+first column.  
+
+4.  defines are now printing in the listing file symbol table.
+
+5.  #ifdef and #ifndef check the entire symbol table not just #define table.
+
+6.  Several processors had characters with the incorrect case in the 
+defined_as section of their definition.  This lead to incorrect warnings when
+using the Microchip header files.
+
+7.  Some changes have been incorporated for cross compiling to win32 systems.
+
+0.9.10   TSD for Craig Franklin
+
+1.  The instruction set is now loaded when the processor is selected.
+Previously it was loaded when the first instruction is encountered.  This 
+resolves some old problems when the first instruction is incorrectly formatted.  
+
+0.9.9   TSD for Craig Franklin
+
+1.  Labels are now checked against the symbol tables.  If the label is found
+on the instruction or the directive lists, a warning is generated and the text 
+is treated accordingly.
+
+2.  Symbols may now be assigned values when declared using the local directive.
+As in "local i, j=15, k".
+
+3.  The extended ASCII character set (ü) may now be used for labels and 
+symbols.  
+
+4.  gpasm now tests for infinite while loops.  In this condition, an error is
+generated and assembly continues. 
+
+5.  Assembly will now stop upon encountering the first END statement. 
+Regardless of location.
+
+6.  Flags have been added to the linker to warn when a common symbol is 
+combined with another symbol.  This condition could create porting issues. The 
+warnings that resulted from this change were fixed.  
+
+0.9.8   TSD for Craig Franklin
+
+1. Macros and While loops are now expanded in the listing file.  Macro 
+expansion can be disabled using "list e=OFF" in the source code or "-e OFF" as 
+a gpasm argument.  While loops are always expanded.    
+
+2. Macros and While loops are also expanded in the COD file.  Now when you 
+step through the source code in gpsim, the file viewer will jump to the macro 
+or while loop definition.
+
+3.  New Processors added:
+
+     16c745, 16c765
+
+4.  Some users require dos style new lines (CRLF) in hex files for device 
+programmers.  gpasm will generate these by selecting -n or --dos. 
+
+5. The -Wall and -pedantic flags were added to gcc on linux systems.  All 
+warnings generated from this change were corrected.  
+
+6. Various configuration problems were fixed that caused "make distcheck" to 
+fail.
+
+7. getopt_long() has been added to gpvo.
+
+8. A Makefile for generating rpms has been added.  See the README in the rpm
+subdirectory for details.
+
+9. BUG #433291. During macro innvocation, the list linetype was set to the 
+value of the line before endm in the definition.  This could result in a bad
+label error, if that line was a non code generating directive.  The linetype is
+now "none" during expansion or "insn" during nonexpansion. 
+
+0.9.7   TSD for Craig Franklin
+
+1.  The i++ and i-- operators are now implemented.  Note: the variable is a
+label and must appear in column 1. 
+
+2.  +=, -=, *=, /=, %=, <<=, >>=, &=, |=, and ^= have all been implemented.
+Note: the variable is a label and must appear in column 1. 
+
+3.  If a file ends during an IF statement, before an ENDIF found, a warning is 
+now generated.
+
+4.  The conditional assembly directives IFDEF, IFNDEF, and ENDIF may now be
+proceeded by a "#".  example: #ifdef
+
+5.  The SET directive may now be proceeded by "."
+
+6.  The header files have been updated. 
+
+7.  A memory map is now generated as part of the listing file.  The generation
+of the memory map is controlled by "list mm=[ON|OFF]".
+
+8.  The number of program words used by the program is now reported in the
+listing file.
+
+9.  Several users have had problems linking with libfl.a to get yywrap().  
+gpasm has been modified so that libfl.a is no longer needed.  flex is still 
+required.
+
+10.  The message generated whenever a special mneumonic was used has been
+disabled.  This message was part of the test files provided by Microchip, but
+message is not yet part of the current mpasm releases. 
+
+11.  The configure script now detects the host operating system.  When using cc
+on SunOS the "-xCC" flag is used to allow "//" comments.
+
+12.  New processors added:
+
+     18c601, 18c801, 18f010, 18f012, 18f020, 18f022
+
+0.9.6   TSD for Craig Franklin
+
+1.  A new utility, gpvo, GNU PIC View Object, was added.  This tool displays the
+contents of Microchip's object files.  The tool is in a very preliminary stage 
+of development.  To reflect this it is designated "pre-alpha".  
+
+2.  BUG #426330.  getopt_long() is not available on all systems.  The configure
+script now detects the function.  If it is not present gpasm uses getopt(). 
+This does not change the features available, only the way they are commanded.
+
+3.  To make the error messages more readable the error codes are now enclosed in
+[].
+
+4.  BUG #423850.  gpasm would hang on symbols defined incorrectly. 
+
+          #define foo foo.  
+ 
+crash --> movlw foo
+
+An error is now generated each time foo is used in an expression and gpasm
+doesn't lockup.
+
+5.  1/2 of BUG #423204.  The top level assembly file must always end in "END". 
+This condition is now tested for and an error is generated if it is not present.    
+
+6.  BUG #422060.  gpasm will now compile on a 64 bit machine (NetBSD/Alpha is
+the only one that has been tested).     
+
+7.  gpvc header file had declarations that were getting instantiated multiple
+times.
+
+0.9.5   TSD for Craig Franklin
+
+1.  gpasm, like mpasm, is now case sensitive by default.  The -c parameter now 
+makes gpasm case insensitive.
+
+2.  The macros in special.inc have been incorporated into the source code.  This
+was done to solve a case sensitivity problem.
+
+3.  gpdasm can now read inhx16 format in addition to inhx8m and inhx32.
+
+4.  A new option, -i, has been added to gpdasm.  This option returns data on 
+the input hex file, like number of bytes and hex file format.
+
+5.  The format of error/warning/message has been changed.  To standard output
+the new format is 
+
+  "filename":"line number": Error "number" "message"
+
+to the list file:
+
+  Error ["number"] : "message"
+
+The list file output conforms with MPASM.  The standard output conforms with
+most gnu tools.
+
+6.  GNU long options have been provided by Salvador Eduardo Tropea
+<salvador@inti.gov.ar>. 
+
+0.9.4   TSD for Craig Franklin
+
+1.  inhx16 hex format can now be generated by gpasm.  
+
+2.  17cxx devices are now checked for exceeding their 16 bit address range.  If
+this happens an error is generated.
+
+3.  gpasm now checks to see if an address has been written to more than once.  
+If it has an error is generated.
+
+4.  Previously, when an invalid data memory location is accessed, gpasm would
+generate a warning and not write the instruction to program memory.  Now it 
+will still generate the warning, but it also outputs the instruction.
+
+5.  __fuses is now equivalent to __config.
+
+6.  The 16c461 processor has been added.
+
+7.  When two different processors are selected in the source file an error,
+in addition to the duplicate processor warning, is generated.
+
+8.  The "#" symbol can now be prefixed to include directives.
+
+9.  If a source file ends during a while statement, before a endw is
+encountered, an error is generated.
+
+10.  Bug #413296.  Numeric expressions followed by b, d, h, or o, are now 
+interpretted according to the radix they represent (i.e. 144o = 144 octal 
+= 100 decimal)
+
+11.  Labels are now checked to verify they are on a legal line.  An example is
+shown below: 
+
+     Error radixerr.asm 16 : 121 Illegal label.
+                    00016 Label   RADIX   OCTAL
+
+0.9.3   TSD for Craig Franklin
+
+1.  The 17cxx processor family is now supported.  Much of the work was completed
+by Carlos Nieves <cnieves@iname.com>.
+
+2.  Macro name case sensitivity is now controlled by the -c option.
+
+3.  Values stored to program memory using the dt directive are now masked to
+ensure that a value over 0xff isn't stored.
+
+4.  The number of arguments passed to EXPAND and NOEXPAND are now checked.  If
+any number other than 0 is passed a warning is generated.
+
+5.  If no arguments are passed to SPACE, it is now equivalent to SPACE 0.
+
+6.  16cr56 and 14000 processors are now supported.  
+
+7.  SUBTITL and STITLE are now equivalent to the SUBTITLE directive. 
+
+8.  A single character enclosed by double quotes is now interpretted as the
+corresponding ASCII code (example: ANDLW "A" = 0x0E41 for 12 bit cores).
+
+9.  The header files have been updated.
+
+10.  The ram access bit "a" for 18cxx devices now defaults to "0" or Access RAM.
+
+11.  The AND operator now has a higher precedence then the OR operator.  The
+following line from the preced.asm test file demonstrates this.
+
+    002D     0000           00067         DATA    2 == (2 && 0 + 1)       ; 0
+                            00068 
+--> 002E     0001           00069         DATA    1 || 0 && 0     ; 1
+    002F     0001           00070         DATA    1 || (0&&0)     ; 1
+    0030     0000           00071         DATA    (1||0) && 0     ; 0
+
+12.  A few changes were required to compile under Mac OS X.  Some of these 
+changes were incorporated.
+
+0.9.2   TSD for Craig Franklin
+
+1.  Added many new processors.  The new list is below:
+
+	gen        p12c508    p12c508a   p12c509    p12c509a   p12c671
+	p12c672    p12ce518   p12ce519   p12ce673   p12ce674   p12cr509a
+	p16c5x     p16cxx     p16c505    p16c52     p16c54     p16c54a
+	p16c54b    p16c54c    p16c55     p16c55a    p16c554    p16c554a
+	p16c558    p16c558a   p16c56     p16c56a    p16c57     p16c57c
+	p16c58     p16c58a    p16c58b    p16c61     p16c62     p16c62a
+	p16c62b    p16c620    p16c620a   p16c621    p16c621a   p16c622
+	p16c622a   p16c63     p16c63a    p16c64     p16c64a    p16c641
+	p16c642    p16c65     p16c65a    p16c65b    p16c66     p16c661
+	p16c662    p16c67     p16c70     p16c71     p16c71a    p16c710
+	p16c711    p16c712    p16c715    p16c716    p16c717    p16c72
+	p16c72a    p16c73     p16c73a    p16c73b    p16c74     p16c74a
+	p16c74b    p16c76     p16c77     p16c770    p16c771    p16c773
+	p16c774    p16c83     p16c84     p16c85     p16c86     p16c923
+	p16c924    p16ce623   p16ce624   p16ce625   p16cr54    p16cr54a
+	p16cr54b   p16cr54c   p16cr56a   p16cr57a   p16cr57b   p16cr57c
+	p16cr58a   p16cr58b   p16cr62    p16cr63    p16cr64    p16cr65
+	p16cr72    p16cr83    p16cr84    p16f83     p16f84     p16f84a
+	p16f627    p16f628    p16f870    p16f871    p16f872    p16f873
+	p16f874    p16f876    p16f877    p16hv540   p16lc74b   p18cxx2
+	p18c242    p18c252    p18c442    p18c452    p18c658    p18c858
+	sx18       sx20       sx28       
+
+2.  Bug #231274.  Page directive conflicted with the Page instruction in sx 
+devices.  The result was a redefining symbol error when an SX device was 
+selected.  This has been fixed.  The result is the PAGE directive is disabled 
+for all SX devices.
+
+3.  Config data is now masked by the device core size.  This prevents things
+like 0x1234 from being written into config memory for a 12 bit device. 
+
+4.  "decimal" and "octal" are now valid arguments for the radix.  This is a
+legacy feature of MPASM.  It is not documented in their users manual. 
+
+5.  In instances of "label org 100", label is added to the symbol table. 
+Previously, it was ignored.
+
+6.  BUG #233207.  Labels defined inside macros now work.
+
+7.  Microchip has provided the gpasm project with test files they use to test 
+MPASM.  The new test files have been added to CVS.  These files required the 
+use of their header files.  These were added to the project.  They are 
+installed when "make install" is ran.
+
+8.  The distribution now includes an example located in ./examples/example1.
+
+9.  A few changes were required to compile under cygwin.  Some of these changes
+were incorporated.
+
+10.  Cleaned up source code.  (Missing comments, unused code, ...) 
+
+0.9.1   TSD for Craig Franklin
+
+1.  The project was reorganized to make room for some new tools. Each tool    
+is now located in its own subdirectory.  Common functions are located in 
+libgpasm.a in the lib directory.
+
+2.  A new utility, gpdasm, GNU PIC Disassembler, was added.  Details can be 
+found in the project documentation.  
+
+3.  A new utility, gpvc, GNU PIC View COD, was added.  Details can be 
+found in the project documentation.  This is basically version 0.0.3 of Scott
+Dattalo's vc.  It will be maintained as part of gpasm. 
+
+4.  Documentation has been updated.  The gpasm section includes changes made
+during the 0.8.x series.  It still isn't perfect. It is missing information on
+the PIC18cxx series.  New sections have been added for the new tools.
+
+5.  Previously, the ERRORLEVEL directive required the user to force
+interpretation of arguments as decimal using "." or "d".  This is no longer
+required.  The arguments are always interpreted as decimal regardless of the
+radix setting.
+
+6.  A debug message has been removed from the maybe_evaluate function in
+opcode.c.
+
+0.9.0   TSD for Craig Franklin
+
+1.  A typo in the help listing for the usage of warning level was fixed. 
+
+2.  The options for LIST are case sensitive when the -c option is used.  Because
+of this, list p=<XXX> works and list P=<XXX> doesn't.  This has been corrected.
+
+3.  The addition of the case sensitive defines broke the processor selection
+using -p <processor>.  This has been fixed.
+
+4.  gpasm -q will now suppress the output from the gperror system to the screen.
+This doesn't effect the listing file.  It doesn't currently make gpasm totally
+quiet.  Some messages bypass the gperror system.  They are not effected by -q.
+
+5.  gpasm reported an "Unknown Opcode" for each instruction whenever a processor
+wasn't selected.  It now reports this error as "Processor type is undefined". 
+
+
+0.8.16  TSD for Craig Franklin
+
+1.  New directives:
+
+     da
+     __idlocs
+     variable
+     constant
+     
+2.  The data and db directives generated incorrect values for 16 bit cores. 
+This has been corrected.
+
+3.  The dw directive generated incorrect values for all devices.  This as been
+corrected.
+
+4.  inhx8s hex format can now be generated.
+
+5.  EXPAND and NOEXPAND directives can now be called without generating an
+error.  They will not, however, effect the listing file.  Similarly, macro 
+expansion can be selected on the command line with "gpasm -e [ON|OFF]" or
+using in the source file "list x=[ON|OFF]."  They will not effect the listing
+file.
+
+0.8.15	TSD for Craig Franklin
+
+1.  When numeric arguments were passed to a function that expects a symbol,
+GPASM reported the error as "Expression to Complex".  This has been changed to
+illegal argument to conform with MPASM.  
+
+2.  A previous patch always warned the user then option or tris was used.  I
+have learned that MPASM doesn't warn the user on p16c5x devices.  The behavior
+has been modified to conform with MPASM.
+
+3.  The -c option now makes the #defines case sensitive.
+
+4.  Command line setting of the warning level is supported.  Like MPASM, 
+command line arguments override settings in the source code. All command 
+line settings now have flags indicating the value was set by the 
+command line and it can't be overwritten by the asm source code.  A warning 
+or message is posted to the user.
+
+5.  Output hex file format can now be chose using LIST f=<inhx8m|inhx8s|inhx32>.  
+
+6.  GPASM 0.8.14 has a bug were the org isn't reset after a config is called. 
+This is normally not seen because most people place the config statements before
+their first org.  This patch saves the org before the config is ran then 
+restores it afterword.
+
+7.  GPASM 0.8.14 doesn't print the config information to the list file correctly
+for pic18cxx devices. 
+
+8.  Several new codes have been added for new tests.
+
+9.  The FILL directive works.  It works the same as MPASM with one important 
+exception.  It does't support the use of a line of assembly as an argument.  
+That is not a problem because the while statement can do the same thing. 
+
+10.  GPASM now generates inhx32 format.  In adding this, a structural change had 
+to be made.  Previously, the MEMBLOCK segment size was 64K words.  I changed 
+this to 32K words.  I did this because the 32K words (or 64K bytes) is equal 
+to one segment.  Which, conviently, is the maximum size for a inhx8m file and
+the size of one inhx32 segment.
+
+11.  The list file had some extra blanks.  These were fixed.
+
+12.  All of the directives and instuctions now have the correct list linetype 
+assignment.  I abandoned the default method because of too many special cases.
+
+13.  The RADIX directive had a linetype assignment of ORG, it should be none.
+
+14.  The ORG directive originally had the correct line type assignment of ORG. 
+It was changed to EQU in version 1.8 of opcode.c.  I don't know the reason.  
+This patch changes it back.
+
+15.  The PAGE directive had a linetype assignment of ORG, it should be NONE.
+
+16.  Directives in scan.l (include, define, ..) are now all case insensitive.
+There are many instances in microchips appnotes of SubTitle, Title, ...
+GPASM 0.8.14 dosesn't recognize them.  The change was to add "-i" to flex
+when GPASM is compiled this makes the scan.l case insensitive.
+
+17.  #undefine now works.  Previously symbols could be redefined by having
+another instance of #define.  Doing so will now result in a warning.  Symbols
+must be defined and undefined and defined again to be reassigned.
+
+18.  Previously, #define could only appear in column 1.  Now it does not. This
+occurs in micorchip include files.  
+
+19.  Previously, #defines were executed regardless of assembling being enabled. 
+An example would be a set of defines inside an IF statement.  This case occurs
+when Micorchip's include file for 16c5x devices is used.
+
+0.8.14	TSD Yet another patch from Craig Franklin that improves gpasm error
+	handling capabilities. Also, I added the 16f876 for Alex Holden.
+
+0.8.13  ELS - Added gpasm.spec file to build RPMs under Red Hat Linux 7.0,
+	use 'rpm -ta gpasm-0.8.13.tar.gz'.  Added missing newline to
+	gperror.h.
+
+0.8.12	TSD Patch from Craig Franklin mailto:craigfranklin@attbi.com that 
+	implements the ERRORLEVEL directive.
+
+0.8.11  TSD Patch from Craig Franklin mailto:craigfranklin@attbi.com to fix command
+	line options (the -o option was missing, and the -e and -w options weren't
+	being used). Also applied patch from Craig that implements the subtitle 
+	directive.
+
+0.8.10	TSD added support for more than 8 files in one .cod file.
+
+0.8.6  symbol information was not being written to the .cod file
+
+0.8.5 
+  added >64k file generation capability. 
+  added support for the __CONFIG address, config_bits directive
+    (you used to couldn't specify the config address)
+  added i_memory.c to handle the instruction memory. Previously,
+    i_memory was a 64k, statically allocated array. Now it's a
+    dynamically allocated linked list of 64k memory blocks.
+  redesigned/rewrote major portions of cod.c to accomodate the
+   greater than 64k code generation. Removed the unnecessary
+   restriction that the miscellaneous code blocks had to be
+   written in a specific order. Added multiple directories.
+   Fixed the code range information (this specifies where there's
+   valid code).  
+   
+0.8.1 - 0.8.4
+  minor enhancements 
+
+0.8.0
+
+ - added a few more processors
+ - the HIGH directive was always returning 0
+ - __CONFIG directive now supports an optional address
+ - added support for >64k address space
+   (this allows the 18cxxx config word to be handled
+    properly, but at the same time the change is 
+    general enough to accomodate code generation
+    at addresses above 64k - a feature gpsim will
+    soon need).
+ - Switched the Makefile to a more standard automake
+   style.
+ - Changed the number notation so that what was the
+   micro version is now the minor version. Development
+   releases will bump the micro version. (This means
+   gpasm-0.0.8 is now expressed as gpasm-0.8.0).
+ - renamed gpasm.y to parse.y so that the automake
+   tools would be happy.
+ - Enhanced the error message system.
+
+0.0.8
+
+Added SET opcode
+Supports '=' syntax for SET
+Added WHILE/WEND
+Added ERROR
+Added 'generic' processor type; needed for AVR support
+
+Support for .cod files added 
+  - added cod.c and cod.h
+  - several small changes scattered through out all of the source
+    some of the more significant changes:
+     o modified the state structure to accomodate symbol files
+     o gpasmVal now has typing information
+     o cblock defined constant are given register typing
+     o program labels are given typing info
+
+Added a few more pic processors
+
+__config now will display the config address and config value in the .lst file
+
+dt macro didn't ignore upper 8 bits of a literal
+
+added new macros:
+  db   byte packed data table
+  dw   same as data macro
+  de   like dw but upper nibble is zeroed
+
+Added support for the 18cxxx instruction set.
+Added the '-l' (dash ell) option for showing the list of
+supported processors
+
+
+0.0.7
+
+Tab-stops now expanded to spaces in listing, LIST b=NN supported
+Scenix processors added
+Changed sys_errlist[] to strerror()
+Manual update
+
+0.0.6
+
+Build using autoconf
+
+0.0.5
+
+Fixed bug where we always processed equ statements, even inside
+conditional assembly blocks.
+
+0.0.4
+
+Second invocation of macro actually runs the macro twice, so local
+forward definitions get resolved correctly.  This means that macro
+bodies get 3 passes made on them.  Far from pretty, but it does the
+job.  See execute_macro(), and new function execute_body().
+
+Restore cblock value to 0 at start of 2nd pass.
+
+Accept CBLOCK headers without an expression: continues at previous
+CBLOCK value.  See gpasm.y.
+
+Accept CBLOCK values as labels, with or without an expression.  See gpasm.y.
+
+Do #define substitution.  Done in the lexical analyser, using the same
+stack that we use for include files.  Still no support for parameters
+in #define.  See scan.l.
+
+Evaluate '$' late, instead of at parse time.
+
+Missing parameter to bit operations was giving coredump instead of
+error message.
+
+Makefile now builds with "gcc -Wall --pedantic", had a general cleanup
+following this.
+
+Small fix to lexical analyser to make it cope with MSDOS '\r'
+characters.

@@ -1,0 +1,79 @@
+MPASM Version 3.00 Beta Release   SET1.ASM   01/31/2001  12:14:18	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; SET1.ASM
+                        00002 
+                        00003 ; This file tests legal usage of the SET directive.
+                        00004 
+                        00005         LIST    P=16C54, R=HEX
+                        00006 
+                        00007 #DEFINE Def1    10
+                        00008 
+  00000001              00009 Sym01   SET     1
+  00000010              00010 Sym02   SET     Def1
+  00000001              00011 Sym03   SET     Sym01
+  00000012              00012 Sym04   SET     Sym01+Sym02+Sym03
+  00000011              00013 Sym05   SET     Sym04 - Sym03
+                        00014 
+0000     0001 0010 0001 00015         DATA    Sym01, Sym02, Sym03, Sym04, Sym05
+         0012 0011 
+                        00016 
+  00000002              00017 Sym01   SET     2               ; Redefinition allowed.
+                        00018 
+0005     0002 0010 0001 00019         DATA    Sym01, Sym02, Sym03, Sym04, Sym05
+         0012 0011 
+                        00020 
+                        00021 
+  00000001              00022 Sym11   .SET    1
+  00000010              00023 Sym12   .SET    Def1
+  00000001              00024 Sym13   .SET    Sym11
+  00000012              00025 Sym14   .SET    Sym11+Sym12+Sym13
+  00000011              00026 Sym15   .SET    Sym14 - Sym13
+                        00027 
+000A     0001 0010 0001 00028         DATA    Sym11, Sym12, Sym13, Sym14, Sym15
+         0012 0011 
+                        00029 
+  00000002              00030 Sym11   .SET    2               ; Redefinition allowed.
+                        00031 
+000F     0002 0010 0001 00032         DATA    Sym11, Sym12, Sym13, Sym14, Sym15
+         0012 0011 
+                        00033 
+                        00034         END
+MPASM Version 3.00 Beta Release   SET1.ASM   01/31/2001  12:14:18	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Def1                              10
+Sym01                             00000002
+Sym02                             00000010
+Sym03                             00000001
+Sym04                             00000012
+Sym05                             00000011
+Sym11                             00000002
+Sym12                             00000010
+Sym13                             00000001
+Sym14                             00000012
+Sym15                             00000011
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXX------------ ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    20
+Program Memory Words Free:   492
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

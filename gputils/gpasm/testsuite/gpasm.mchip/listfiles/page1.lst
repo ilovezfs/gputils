@@ -1,0 +1,67 @@
+MPASM Version 3.00 Beta Release   PAGE1.ASM   01/31/2001  12:39:54	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ;PAGE1.ASM
+                        00002 ;       This file tests the behavior of PAGE and SPACE directives during
+                        00003 ;       NOLIST.
+                        00004 
+                        00005         list    p=16c54
+                        00006 
+0000     0000           00007         data    0
+
+
+
+                        00008         space   3
+0001     0000           00009         data    0
+MPASM Version 3.00 Beta Release   PAGE1.ASM   01/31/2001  12:39:54	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00010         page
+0002     0001           00011         data    1
+                        00012 
+                        00020         list
+0006     0004           00021         data    4
+
+
+
+                        00022         space   3
+0007     0004           00023         data    4
+MPASM Version 3.00 Beta Release   PAGE1.ASM   01/31/2001  12:39:54	   PAGE 3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00024         page
+0008     0005           00025         data    5
+                        00026 
+MPASM Version 3.00 Beta Release   PAGE1.ASM   01/31/2001  12:39:54	   PAGE 4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXX--- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    13
+Program Memory Words Free:   499
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

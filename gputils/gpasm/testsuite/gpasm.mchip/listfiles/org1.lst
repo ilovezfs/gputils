@@ -1,0 +1,49 @@
+MPASM Version 3.00 Beta Release   ORG1.ASM   01/31/2001  12:13:19	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; ORG1.ASM
+                        00002 
+                        00003 ; This file tests legal usage of the ORG directive.
+                        00004 
+                        00005         LIST    P=16C54, R=HEX
+                        00006 
+0000                    00007         ORG     0
+0000     0000           00008         DATA    $
+                        00009 
+0010                    00010         ORG     10
+0010     0010           00011         DATA    $
+                        00012 
+0020                    00013 Label   ORG     20
+0020     0020           00014         DATA    Label           ; Should be 20
+                        00015 
+                        00016         END
+MPASM Version 3.00 Beta Release   ORG1.ASM   01/31/2001  12:13:19	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Label                             00000020
+__16C54                           00000001
+_code0_0000                       00000000
+_code1_0010                       00000010
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X--------------- X--------------- X--------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     3
+Program Memory Words Free:   509
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

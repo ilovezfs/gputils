@@ -1,0 +1,71 @@
+MPASM Version 3.00 Beta Release   DATA3.ASM   01/31/2001  12:39:40	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; DATA3.ASM
+                        00002 
+                        00003 ; This file tests illegal uses of the various data directives.
+                        00004 
+                        00005         LIST    P=17C44, R=DEC
+                        00006 
+Warning[202]: Argument out of range.  Least significant bits used.
+0000     7FFF           00007         DATA    -32769
+Warning[202]: Argument out of range.  Least significant bits used.
+0001     0000           00008         DATA    65536
+Warning[209]: Missing quote
+0002     6162 6300      00009         DATA    "abc
+                        00010 
+Warning[202]: Argument out of range.  Least significant bits used.
+0004     7FFF           00011         DW      -32769
+Warning[202]: Argument out of range.  Least significant bits used.
+0005     0000           00012         DW      65536
+Warning[209]: Missing quote
+0006     6162 6300      00013         DW      "abc
+                        00014 
+Warning[202]: Argument out of range.  Least significant bits used.
+0008     7F00           00015         DB      -129
+Warning[202]: Argument out of range.  Least significant bits used.
+0009     0000           00016         DB      256
+Warning[209]: Missing quote
+000A     6162 6300      00017         DB      "abc
+                        00018 
+Warning[202]: Argument out of range.  Least significant bits used.
+000C     007F           00019         DE      -129
+Warning[202]: Argument out of range.  Least significant bits used.
+000D     0000           00020         DE      256
+Warning[209]: Missing quote
+000E     0061 0062 0063 00021         DE      "abc
+                        00022 
+Warning[202]: Argument out of range.  Least significant bits used.
+0011     B67F           00023         DT      -129
+Warning[202]: Argument out of range.  Least significant bits used.
+0012     B600           00024         DT      256
+Warning[209]: Missing quote
+0013     B661 B662 B663 00025         DT      "abc
+                        00026 
+                        00027         END
+MPASM Version 3.00 Beta Release   DATA3.ASM   01/31/2001  12:39:40	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__17C44                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXX---------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    22
+
+
+Errors   :     0
+Warnings :    15 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

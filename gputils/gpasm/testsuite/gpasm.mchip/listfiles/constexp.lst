@@ -1,0 +1,250 @@
+MPASM Version 3.00 Beta Release   CONSTEXP.ASM   01/31/2001  12:11:12	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; CONSTEXP.ASM
+                        00002 
+                        00003 ; This file is used to evaluate how constant expressions are parsed.
+                        00004 
+                        00005         LIST    P=17C44
+                        00006 
+                        00007 Quoted  MACRO
+                        00008         DATA    '1'
+                        00009         DATA    ','
+                        00010         DATA    '('
+                        00011         DATA    ')'
+                        00012         DATA    '\''
+                        00013         DATA    '\"'
+                        00014         DATA    A'1'
+                        00015         DATA    a'1'
+                        00016         DATA    B'100'
+                        00017         DATA    b'100'
+                        00018         DATA    D'100'
+                        00019         DATA    d'100'
+                        00020         DATA    H'100'
+                        00021         DATA    h'100'
+                        00022         DATA    O'100'
+                        00023         DATA    o'100'
+                        00024         DATA    Q'100'
+                        00025         DATA    q'100'
+                        00026         ENDM
+                        00027 
+                        00028 Straight        MACRO
+                        00029         DATA    1
+                        00030         DATA    10
+                        00031         DATA    100
+                        00032         ENDM
+                        00033 
+                        00034 Leading MACRO
+                        00035         DATA    .10
+                        00036         DATA    .100
+                        00037         DATA    0x10
+                        00038         DATA    0x100
+                        00039         ENDM
+                        00040 
+                        00041 Trailing        MACRO
+                        00042         DATA    100b
+                        00043         DATA    100B
+                        00044         DATA    100d
+                        00045         DATA    100D
+                        00046         DATA    100h
+                        00047         DATA    100H
+                        00048         DATA    100o
+                        00049         DATA    100O
+                        00050         DATA    100q
+                        00051         DATA    100Q
+                        00052         ENDM
+                        00053 
+MPASM Version 3.00 Beta Release   CONSTEXP.ASM   01/31/2001  12:11:12	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00054 
+                        00055         RADIX   HEX
+                        00056         Quoted
+0000     0031               M         DATA    '1'
+0001     002C               M         DATA    ','
+0002     0028               M         DATA    '('
+0003     0029               M         DATA    ')'
+0004     0027               M         DATA    '\''
+0005     0022               M         DATA    '\"'
+0006     0031               M         DATA    A'1'
+0007     0031               M         DATA    a'1'
+0008     0004               M         DATA    B'100'
+0009     0004               M         DATA    b'100'
+000A     0064               M         DATA    D'100'
+000B     0064               M         DATA    d'100'
+000C     0100               M         DATA    H'100'
+000D     0100               M         DATA    h'100'
+000E     0040               M         DATA    O'100'
+000F     0040               M         DATA    o'100'
+0010     0040               M         DATA    Q'100'
+0011     0040               M         DATA    q'100'
+                        00057         Straight
+0012     0001               M         DATA    1
+0013     0010               M         DATA    10
+0014     0100               M         DATA    100
+                        00058         Leading
+0015     000A               M         DATA    .10
+0016     0064               M         DATA    .100
+0017     0010               M         DATA    0x10
+0018     0100               M         DATA    0x100
+                        00059         Trailing
+0019     100B               M         DATA    100b
+001A     100B               M         DATA    100B
+001B     100D               M         DATA    100d
+001C     100D               M         DATA    100D
+001D     0100               M         DATA    100h
+001E     0100               M         DATA    100H
+001F     0040               M         DATA    100o
+0020     0040               M         DATA    100O
+0021     0040               M         DATA    100q
+0022     0040               M         DATA    100Q
+                        00060 
+                        00061         RADIX   DEC
+                        00062         Quoted
+0023     0031               M         DATA    '1'
+0024     002C               M         DATA    ','
+0025     0028               M         DATA    '('
+0026     0029               M         DATA    ')'
+0027     0027               M         DATA    '\''
+0028     0022               M         DATA    '\"'
+0029     0031               M         DATA    A'1'
+002A     0031               M         DATA    a'1'
+002B     0004               M         DATA    B'100'
+MPASM Version 3.00 Beta Release   CONSTEXP.ASM   01/31/2001  12:11:12	   PAGE 3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+002C     0004               M         DATA    b'100'
+002D     0064               M         DATA    D'100'
+002E     0064               M         DATA    d'100'
+002F     0100               M         DATA    H'100'
+0030     0100               M         DATA    h'100'
+0031     0040               M         DATA    O'100'
+0032     0040               M         DATA    o'100'
+0033     0040               M         DATA    Q'100'
+0034     0040               M         DATA    q'100'
+                        00063         Straight
+0035     0001               M         DATA    1
+0036     000A               M         DATA    10
+0037     0064               M         DATA    100
+                        00064         Leading
+0038     000A               M         DATA    .10
+0039     0064               M         DATA    .100
+003A     0010               M         DATA    0x10
+003B     0100               M         DATA    0x100
+                        00065         Trailing
+003C     0004               M         DATA    100b
+003D     0004               M         DATA    100B
+003E     0064               M         DATA    100d
+003F     0064               M         DATA    100D
+0040     0100               M         DATA    100h
+0041     0100               M         DATA    100H
+0042     0040               M         DATA    100o
+0043     0040               M         DATA    100O
+0044     0040               M         DATA    100q
+0045     0040               M         DATA    100Q
+                        00066 
+                        00067         RADIX   OCT
+                        00068         Quoted
+0046     0031               M         DATA    '1'
+0047     002C               M         DATA    ','
+0048     0028               M         DATA    '('
+0049     0029               M         DATA    ')'
+004A     0027               M         DATA    '\''
+004B     0022               M         DATA    '\"'
+004C     0031               M         DATA    A'1'
+004D     0031               M         DATA    a'1'
+004E     0004               M         DATA    B'100'
+004F     0004               M         DATA    b'100'
+0050     0064               M         DATA    D'100'
+0051     0064               M         DATA    d'100'
+0052     0100               M         DATA    H'100'
+0053     0100               M         DATA    h'100'
+0054     0040               M         DATA    O'100'
+0055     0040               M         DATA    o'100'
+0056     0040               M         DATA    Q'100'
+0057     0040               M         DATA    q'100'
+                        00069         Straight
+0058     0001               M         DATA    1
+0059     0008               M         DATA    10
+MPASM Version 3.00 Beta Release   CONSTEXP.ASM   01/31/2001  12:11:12	   PAGE 4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+005A     0040               M         DATA    100
+                        00070         Leading
+005B     000A               M         DATA    .10
+005C     0064               M         DATA    .100
+005D     0010               M         DATA    0x10
+005E     0100               M         DATA    0x100
+                        00071         Trailing
+005F     0004               M         DATA    100b
+0060     0004               M         DATA    100B
+0061     0064               M         DATA    100d
+0062     0064               M         DATA    100D
+0063     0100               M         DATA    100h
+0064     0100               M         DATA    100H
+0065     0040               M         DATA    100o
+0066     0040               M         DATA    100O
+0067     0040               M         DATA    100q
+0068     0040               M         DATA    100Q
+                        00072 
+                        00073         RADIX   HEX
+0069     00B9           00074         DATA    0B9
+006A     0041           00075         DATA    'A'
+006B     0041           00076         DATA    A'A'
+006C     4142 4300      00077         DATA    "ABC"
+006E     0A53 09D1      00078         DATA    "\n\123\t\321"
+                        00079 
+                        00080 ;***** Test for SSR 2060 **************************************************
+                        00081 
+0070     0064           00082         DATA    (D'90'-'(') * 2         ; quoted paren inside paren
+0071     0064           00083         DATA    (D'90'-"(") * 2         ; quoted paren inside paren
+                        00084 
+                        00085 ;***** End Test ***********************************************************
+                        00086 
+                        00087 ;***** Test for SSR 2883 **************************************************
+                        00088 
+0072     FFC3           00089         DATA    -'='                    ; negative equals sign
+                        00090 
+                        00091 ;***** End Test ***********************************************************
+                        00092 
+                        00093         END
+MPASM Version 3.00 Beta Release   CONSTEXP.ASM   01/31/2001  12:11:12	   PAGE 5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Leading                           
+Quoted                            
+Straight                          
+Trailing                          
+__17C44                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXX-------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   115
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

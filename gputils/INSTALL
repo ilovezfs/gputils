@@ -1,0 +1,116 @@
+GPUTILS Installation
+====================
+
+1.  Requirements
+================
+
+To build gputils, you'll need both "flex" and "bison".  These are tools
+that gputils uses to handle user input. If you're running Linux, you'll
+almost certainly have these already. If not, you can get them from any
+site that carries a GNU distribution.
+
+2.  System Install
+==================
+
+Quick steps:
+
+./configure
+make
+su
+make install
+
+Untar the gputils source into a directory and type:
+
+	./configure
+	make
+
+Everything should just build and produce the executables.
+
+Install it by becoming root and type "make install".  This copies
+the executables into /usr/local/bin and the shared data into 
+/usr/local/share/gputils.
+
+You should now be ready to assemble some PIC code by typing "gpasm".
+
+3.  User Install
+================
+
+If you don't have root privleges on the system:
+
+  ./configure --prefix=/home/local/<username>
+  make
+  make install
+
+This will copy the executables into /home/local/<username>/bin and the shared 
+data into /home/local/<username>/share/gputils.  
+
+It is also a good idea to place /home/local/<username>/bin in your path.
+
+4.  Configure Options
+=====================
+
+The configuration script has many options available.  The options are listed
+by commanding "./configure --help".  At the end of the list are gputils 
+specific options.  The options are explained in detail below. 
+
+--enable-debug
+
+  Enabling this option configures gputils to use some of its debug features.  
+  These features typically write internal gputils data to standard output.
+
+--disable-gplink
+
+  Adding this option prevents gplink from being compiled or installed.  
+
+--disable-gputils
+
+  Adding this option prevents the utilities, such as gpvo, from being compiled 
+  or installed.  
+
+--disable-path
+
+  The option prevents the addition of the header path to the gpasm include 
+  paths.
+
+
+5.  CFLAGS Options
+==================
+
+Extra cc flags may be passed to the configure script by setting the 
+XTRA_CFLAGS environmental variable:
+
+XTRA_CFLAGS="add cc flags here" ./configure
+
+For example, to produce debug information in COFF format do the following:
+
+XTRA_CFLAGS=-gcoff ./configure
+
+6.  Win32 Support
+=================
+
+Although gputils was primarily intended for GNU systems, it can be compiled
+on a win32 system (Win98, WinNT, ...).  This has been performed using the 
+Borland C Compiler and Microsoft Visual C.
+
+The gputils supported win32 compiler is MinGW32.  It is available at:
+
+http://www.mingw.org/
+
+MinGW32 was selected because it is based on the GNU C compiler.  It also 
+includes some libraries that gputils requires.  Additionally, it can easily be 
+used as a cross compiler on GNU systems.
+
+A native win32 version of MinGW32 is available.  However, the process for 
+compiling on a win32 system has not been developed.  This will be provided 
+some time in the future.
+
+Until then, offical gputils ports to win32 will be generated using a cross 
+compiler on a Linux system.  The following scripts will configure gputils to 
+cross compile to win32 using a Linux system:
+
+mkdir cross && \
+cd cross && \
+CC=i386-mingw32msvc-gcc ../configure \
+  --srcdir=.. \
+  --build=i586-pc-linux-gnu \
+  --host=i386-mingw32msvc

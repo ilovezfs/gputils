@@ -1,0 +1,46 @@
+MPASM Version 3.00 Beta Release   RAW1.ASM   01/31/2001  12:43:34	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; RAW1.ASM
+                        00002 
+                        00003 ; This file test raw data contents of the COFF file.
+                        00004 
+                        00005         LIST    P=17C44
+                        00006 
+                        00007         IDATA
+0000     01 02 03       00008 Bytes   DB      1, 2, 3
+0003     34 12 78 56    00009 Words   DW      H'1234', H'5678'
+0007     48 69 00       00010 String  DB      "Hi", 0
+000A     FF             00011 Final   DB      0xFF
+                        00012 
+                        00013         CODE
+0000     0102 0300      00014 Bytes2  DB      1, 2, 3
+0002     1234 5678      00015 Words2  DW      H'1234', H'5678'
+0004     4869 0000      00016 String2 DB      "Hi", 0
+0006     FF00           00017 Final2  DB      0xFF
+                        00018 
+                        00019         END
+MPASM Version 3.00 Beta Release   RAW1.ASM   01/31/2001  12:43:34	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Bytes                             00000000
+Bytes2                            00000000
+Final                             0000000A
+Final2                            00000006
+String                            00000007
+String2                           00000004
+Words                             00000003
+Words2                            00000002
+__17C44                           00000001
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

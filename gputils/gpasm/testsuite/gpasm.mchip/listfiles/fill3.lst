@@ -1,0 +1,54 @@
+MPASM Version 3.00 Beta Release   FILL3.ASM   01/31/2001  12:39:42	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; FILL3.ASM
+                        00002 
+                        00003 ; This file tests illegal usage of the FILL directive.
+                        00004 
+                        00005         LIST    P=16C54, R=HEX
+                        00006 
+  00000200              00007 ROMSize = 0x200
+                        00008 
+0000                    00009 Start   ORG     0
+Message[306]: Crossing page boundary -- ensure page bits are set.
+Warning[220]: Address exceeds maximum range for this processor.
+0000     0A             00010         FILL    (GOTO Start), ROMSize+1
+                        00011 
+                        00012         END
+MPASM Version 3.00 Beta Release   FILL3.ASM   01/31/2001  12:39:42	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ROMSize                           00000200
+Start                             00000000
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+01C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0200 : X--------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   512
+Program Memory Words Free:     0
+
+
+Errors   :     0
+Warnings :     1 reported,     0 suppressed
+Messages :     1 reported,     0 suppressed
+
+

@@ -1,0 +1,140 @@
+; HD628.ASM
+
+; This file tests header file usage for the specified processor.
+
+        LIST    P=16F628
+        INCLUDE "p16f628.inc"
+
+
+        DATA    _BODEN_ON,       0x3FFF
+        DATA    _BODEN_OFF,      0x3FBF
+        DATA    _CP_ALL,         0x03FF
+        DATA    _CP_50,          0x2BFF
+        DATA    _CP_75,          0x17FF
+        DATA    _CP_OFF,         0x3FFF
+        DATA    _LVP_ON,         0x3FFF
+        DATA    _LVP_OFF,        0x3F7F         
+        DATA    _MCLRE_ON,               0x3FFF
+        DATA    _MCLRE_OFF,              0x3FDF
+        DATA    _ER_OSC_CLKOUT,          0x3FFF
+        DATA    _ER_OSC_NOCLKOUT,        0x3FFE
+        DATA    _INTRC_OSC_CLKOUT,       0x3FFD
+        DATA    _INTRC_OSC_NOCLKOUT,     0x3FFC
+        DATA    _EXTCLK_OSC,             0x3FEF
+        DATA    _PWRTE_OFF,      0x3FFF
+        DATA    _PWRTE_ON,       0x3FF7
+        DATA    _WDT_ON,         0x3FFF
+        DATA    _WDT_OFF,        0x3FFB
+        DATA    _LP_OSC,         0x3FFC
+        DATA    _XT_OSC,         0x3FFD
+        DATA    _HS_OSC,         0x3FFE
+
+
+
+	DATA	INDF,		0	; Register Files
+	DATA	TMR0,		1
+	DATA	PCL,		2
+	DATA	STATUS,		3
+	DATA	FSR,		4
+	DATA	PORTA,		5
+	DATA	PORTB,		6
+
+	DATA	PCLATH,		0x0A
+	DATA	INTCON,		0x0B
+	DATA	PIR1,		0X0C
+	DATA	TMR1L,		0X0E
+	DATA	TMR1H,		0X0F
+	DATA	T1CON,		0X10
+	DATA	TMR2,		0X11
+	DATA	T2CON,		0X12
+	DATA	CCPR1L,		0X15
+	DATA	CCPR1H,		0X16
+	DATA	CCP1CON,	0X17
+	DATA	RCSTA,		0X18
+	DATA	TXREG,		0X19
+	DATA	RCREG,		0X1A
+
+	DATA	OPTION_REG,	0x81
+
+	DATA	TRISA,		0X85
+	DATA	TRISB,		0X86
+ 
+	DATA	PIE1,		0X8C
+	DATA	PCON,		0X8E
+
+	DATA	PR2,		0X92
+
+	DATA	IRP,		7	; STATUS
+	DATA	RP1,		6
+	DATA	RP0,		5
+	DATA	NOT_TO,		4
+	DATA	NOT_PD,		3
+	DATA	Z,		2
+	DATA	DC,		1
+	DATA	C,		0
+
+	DATA	GIE,		7	; INTCON
+	DATA	PEIE,		6
+	DATA	T0IE,		5
+	DATA	INTE,		4
+	DATA	RBIE,		3
+	DATA	T0IF,		2
+	DATA	INTF,		1
+	DATA	RBIF,		0
+
+	DATA	RCIF,		5	; PIR1 Bits
+	DATA	TXIF,		4
+	DATA	CCP1IF,		2
+	DATA	TMR2IF,		1
+	DATA	TMR1IF,		0
+
+
+
+	DATA	T1CKPS1,	5	; T1CON
+	DATA	T1CKPS0,	4
+	DATA	T1OSCEN,	3
+	DATA	NOT_T1SYNC,	2
+	DATA	TMR1CS,		1
+	DATA	TMR1ON,		0
+
+	DATA	TOUTPS3,	6	; T2CON
+	DATA	TOUTPS2,	5
+	DATA	TOUTPS1,	4
+	DATA	TOUTPS0,	3
+	DATA	TMR2ON,		2
+	DATA	T2CKPS1,	1
+	DATA	T2CKPS0,	0
+
+
+	DATA	CCP1X,		5	; CCP1CON
+	DATA	CCP1Y,		4
+	DATA	CCP1M3,		3
+	DATA	CCP1M2,		2
+	DATA	CCP1M1,		1
+	DATA	CCP1M0,		0
+
+
+
+	DATA	NOT_RBPU,	7	; OPTION
+	DATA	INTEDG,		6
+	DATA	T0CS,		5
+	DATA	T0SE,		4
+	DATA	PSA,		3
+	DATA	PS2,		2
+	DATA	PS1,		1
+	DATA	PS0,		0
+
+
+                                       ; PIE1
+	DATA	CCP1IE,		2
+	DATA	TMR2IE,		1
+	DATA	TMR1IE,		0
+
+
+	DATA	NOT_POR,	1	; PCON
+	DATA	NOT_BO,		0
+	DATA	NOT_BOR,	0
+
+	
+
+	END

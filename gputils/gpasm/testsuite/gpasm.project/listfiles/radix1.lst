@@ -1,0 +1,41 @@
+MPASM 02.70 Released           RADIX1.ASM   7-24-2001  0:32:09         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; tests to make sure that the radix is reset on the second pass
+                      00002 
+                      00003      list p=16c84
+                      00004      
+0000   0100           00005      data 100
+                      00006      
+                      00007      radix DEC
+                      00008      
+0001   0064           00009      data 100
+                      00010           
+                      00011      end
+MPASM 02.70 Released           RADIX1.ASM   7-24-2001  0:32:09         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C84                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XX-------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     2
+Program Memory Words Free:  1022
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,23 @@
+; RADIXERR.ASM
+
+; This file tests errors in radix specification.
+
+	LIST	P=16C54
+
+	DATA	10
+
+	RADIX	OCTAL
+	DATA	10
+	RADIX	DECIMAL
+	DATA	10
+	RADIX	HEX
+	DATA	10
+
+Label	RADIX	OCTAL
+	DATA	10
+	RADIX	DECAMAL
+	DATA	10
+	RADIX	STUPID
+	DATA	10
+
+	END

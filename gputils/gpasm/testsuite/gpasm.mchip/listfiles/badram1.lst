@@ -1,0 +1,316 @@
+MPASM Version 3.00 Beta Release   BADRAM1.ASM   01/31/2001  12:39:34	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; BADRAM1.ASM
+                        00002 
+                        00003 ; This file tests legal usage of the BADRAM directive.
+                        00004 
+                        00005         LIST    P=16C622
+                        00006 
+                        00007 TEST    MACRO
+                        00008         MOVWF   06      ;OK
+                        00009         MOVWF   07      ;WARN
+                        00010         MOVWF   08      ;WARN
+                        00011         MOVWF   09      ;WARN
+                        00012         MOVWF   0A      ;OK
+                        00013         MOVWF   0B      ;OK
+                        00014         MOVWF   0C      ;OK
+                        00015         MOVWF   0D      ;WARN
+                        00016         MOVWF   0E      ;WARN
+                        00017 
+                        00018         MOVWF   1E      ;WARN
+                        00019         MOVWF   1F      ;OK
+                        00020 
+                        00021         MOVWF   7F      ;OK
+                        00022 
+                        00023         MOVWF   80      ;MESS
+                        00024 
+                        00025         MOVWF   86      ;MESS
+                        00026         MOVWF   87      ;WARN, MESS
+                        00027         MOVWF   88      ;WARN, MESS
+                        00028         MOVWF   89      ;WARN, MESS
+                        00029         MOVWF   8A      ;MESS
+                        00030         MOVWF   8B      ;MESS
+                        00031         MOVWF   8C      ;MESS
+                        00032         MOVWF   8D      ;WARN, MESS
+                        00033         MOVWF   8E      ;MESS
+                        00034         MOVWF   8F      ;WARN, MESS
+                        00035         MOVWF   90      ;WARN, MESS
+                        00036 
+                        00037         MOVWF   9D      ;WARN, MESS
+                        00038         MOVWF   9E      ;WARN, MESS
+                        00039         MOVWF   9F      ;MESS
+                        00040         MOVWF   0A0     ;MESS
+                        00041 
+                        00042         MOVWF   0BE     ;MESS
+                        00043         MOVWF   0BF     ;MESS
+                        00044         MOVWF   0C0     ;WARN, MESS
+                        00045         ENDM
+                        00046 
+                        00047         TITLE   These should have only messages
+MPASM Version 3.00 Beta Release   BADRAM1.ASM   01/31/2001  12:39:34	   PAGE 2
+These should have only messages
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00048         PAGE
+                        00049         TEST
+0000     0086               M         MOVWF   06      ;OK
+0001     0087               M         MOVWF   07      ;WARN
+0002     0088               M         MOVWF   08      ;WARN
+0003     0089               M         MOVWF   09      ;WARN
+0004     008A               M         MOVWF   0A      ;OK
+0005     008B               M         MOVWF   0B      ;OK
+0006     008C               M         MOVWF   0C      ;OK
+0007     008D               M         MOVWF   0D      ;WARN
+0008     008E               M         MOVWF   0E      ;WARN
+                            M 
+0009     009E               M         MOVWF   1E      ;WARN
+000A     009F               M         MOVWF   1F      ;OK
+                            M 
+000B     00FF               M         MOVWF   7F      ;OK
+                            M 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000C     0080               M         MOVWF   80      ;MESS
+                            M 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000D     0086               M         MOVWF   86      ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000E     0087               M         MOVWF   87      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000F     0088               M         MOVWF   88      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0010     0089               M         MOVWF   89      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0011     008A               M         MOVWF   8A      ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0012     008B               M         MOVWF   8B      ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0013     008C               M         MOVWF   8C      ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0014     008D               M         MOVWF   8D      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0015     008E               M         MOVWF   8E      ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0016     008F               M         MOVWF   8F      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0017     0090               M         MOVWF   90      ;WARN, MESS
+                            M 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0018     009D               M         MOVWF   9D      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0019     009E               M         MOVWF   9E      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001A     009F               M         MOVWF   9F      ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001B     00A0               M         MOVWF   0A0     ;MESS
+                            M 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+MPASM Version 3.00 Beta Release   BADRAM1.ASM   01/31/2001  12:39:34	   PAGE 3
+These should have only messages
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001C     00BE               M         MOVWF   0BE     ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001D     00BF               M         MOVWF   0BF     ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001E     00C0               M         MOVWF   0C0     ;WARN, MESS
+                        00050 
+                        00051         TITLE   These should have warnings and messages
+MPASM Version 3.00 Beta Release   BADRAM1.ASM   01/31/2001  12:39:34	   PAGE 4
+These should have warnings and messages
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00052         PAGE
+  000000BF              00053         __MAXRAM        0BF
+                        00054         __BADRAM        07-09, 0D-1E
+                        00055         __BADRAM        87-89, 8D, 8F-9E
+                        00056         TEST
+001F     0086               M         MOVWF   06      ;OK
+Warning[219]: Invalid RAM location specified.
+0020     0087               M         MOVWF   07      ;WARN
+Warning[219]: Invalid RAM location specified.
+0021     0088               M         MOVWF   08      ;WARN
+Warning[219]: Invalid RAM location specified.
+0022     0089               M         MOVWF   09      ;WARN
+0023     008A               M         MOVWF   0A      ;OK
+0024     008B               M         MOVWF   0B      ;OK
+0025     008C               M         MOVWF   0C      ;OK
+Warning[219]: Invalid RAM location specified.
+0026     008D               M         MOVWF   0D      ;WARN
+Warning[219]: Invalid RAM location specified.
+0027     008E               M         MOVWF   0E      ;WARN
+                            M 
+Warning[219]: Invalid RAM location specified.
+0028     009E               M         MOVWF   1E      ;WARN
+0029     009F               M         MOVWF   1F      ;OK
+                            M 
+002A     00FF               M         MOVWF   7F      ;OK
+                            M 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002B     0080               M         MOVWF   80      ;MESS
+                            M 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002C     0086               M         MOVWF   86      ;MESS
+Warning[219]: Invalid RAM location specified.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002D     0087               M         MOVWF   87      ;WARN, MESS
+Warning[219]: Invalid RAM location specified.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002E     0088               M         MOVWF   88      ;WARN, MESS
+Warning[219]: Invalid RAM location specified.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002F     0089               M         MOVWF   89      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0030     008A               M         MOVWF   8A      ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0031     008B               M         MOVWF   8B      ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0032     008C               M         MOVWF   8C      ;MESS
+Warning[219]: Invalid RAM location specified.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0033     008D               M         MOVWF   8D      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0034     008E               M         MOVWF   8E      ;MESS
+Warning[219]: Invalid RAM location specified.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+MPASM Version 3.00 Beta Release   BADRAM1.ASM   01/31/2001  12:39:34	   PAGE 5
+These should have warnings and messages
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0035     008F               M         MOVWF   8F      ;WARN, MESS
+Warning[219]: Invalid RAM location specified.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0036     0090               M         MOVWF   90      ;WARN, MESS
+                            M 
+Warning[219]: Invalid RAM location specified.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0037     009D               M         MOVWF   9D      ;WARN, MESS
+Warning[219]: Invalid RAM location specified.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0038     009E               M         MOVWF   9E      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0039     009F               M         MOVWF   9F      ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+003A     00A0               M         MOVWF   0A0     ;MESS
+                            M 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+003B     00BE               M         MOVWF   0BE     ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+003C     00BF               M         MOVWF   0BF     ;MESS
+Warning[219]: Invalid RAM location specified.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+003D     00C0               M         MOVWF   0C0     ;WARN, MESS
+                        00057 
+                        00058         TITLE   These should have only messages
+MPASM Version 3.00 Beta Release   BADRAM1.ASM   01/31/2001  12:39:34	   PAGE 6
+These should have only messages
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00059         PAGE
+Message[310]: Superceding current maximum RAM and RAM map.
+  000000BF              00060         __MAXRAM        0BF
+                        00061         TEST
+003E     0086               M         MOVWF   06      ;OK
+003F     0087               M         MOVWF   07      ;WARN
+0040     0088               M         MOVWF   08      ;WARN
+0041     0089               M         MOVWF   09      ;WARN
+0042     008A               M         MOVWF   0A      ;OK
+0043     008B               M         MOVWF   0B      ;OK
+0044     008C               M         MOVWF   0C      ;OK
+0045     008D               M         MOVWF   0D      ;WARN
+0046     008E               M         MOVWF   0E      ;WARN
+                            M 
+0047     009E               M         MOVWF   1E      ;WARN
+0048     009F               M         MOVWF   1F      ;OK
+                            M 
+0049     00FF               M         MOVWF   7F      ;OK
+                            M 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+004A     0080               M         MOVWF   80      ;MESS
+                            M 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+004B     0086               M         MOVWF   86      ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+004C     0087               M         MOVWF   87      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+004D     0088               M         MOVWF   88      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+004E     0089               M         MOVWF   89      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+004F     008A               M         MOVWF   8A      ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0050     008B               M         MOVWF   8B      ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0051     008C               M         MOVWF   8C      ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0052     008D               M         MOVWF   8D      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0053     008E               M         MOVWF   8E      ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0054     008F               M         MOVWF   8F      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0055     0090               M         MOVWF   90      ;WARN, MESS
+                            M 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0056     009D               M         MOVWF   9D      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0057     009E               M         MOVWF   9E      ;WARN, MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0058     009F               M         MOVWF   9F      ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0059     00A0               M         MOVWF   0A0     ;MESS
+MPASM Version 3.00 Beta Release   BADRAM1.ASM   01/31/2001  12:39:34	   PAGE 7
+These should have only messages
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                            M 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+005A     00BE               M         MOVWF   0BE     ;MESS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+005B     00BF               M         MOVWF   0BF     ;MESS
+Warning[219]: Invalid RAM location specified.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+005C     00C0               M         MOVWF   0C0     ;WARN, MESS
+                        00062 
+                        00063         END
+MPASM Version 3.00 Beta Release   BADRAM1.ASM   01/31/2001  12:39:34	   PAGE 8
+These should have only messages
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TEST                              
+__16C622                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXX--- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    93
+Program Memory Words Free:  1955
+
+
+Errors   :     0
+Warnings :    16 reported,     0 suppressed
+Messages :    58 reported,     0 suppressed
+
+

@@ -1,0 +1,565 @@
+MPASM 02.70 Released            HD774.ASM   6-16-2001  13:50:56         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; HD774.ASM
+                      00002 
+                      00003 ; This file tests header file usage for the specified processor.
+                      00004 
+                      00005         LIST    P=16C774
+                      00006         INCLUDE "p16c774.inc"
+                      00001         LIST
+                      00002 ; P16C774.INC  Standard Header File, Version 1.01    Microchip Technology, Inc.
+                      00372         LIST
+                      00007 
+                      00008 
+                      00009 
+0000   3FFF 3FFF      00010         DATA _BODEN_ON,     H'3FFF'
+0002   3FBF 3FBF      00011         DATA _BODEN_OFF,    H'3FBF'
+0004   0CCF 0CCF      00012         DATA _CP_ALL,       H'0CCF'
+0006   1DDF 1DDF      00013         DATA _CP_75,        H'1DDF'
+0008   2EEF 2EEF      00014         DATA _CP_50,        H'2EEF'
+000A   3FFF 3FFF      00015         DATA _CP_OFF,       H'3FFF'
+000C   3FFF 3FFF      00016         DATA _VBOR_25,      H'3FFF'
+000E   3BFF 3BFF      00017         DATA _VBOR_27,      H'3BFF'
+0010   37FF 37FF      00018         DATA _VBOR_42,      H'37FF'
+0012   33FF 33FF      00019         DATA _VBOR_45,      H'33FF'
+0014   3FFF 3FFF      00020         DATA _PWRTE_OFF,    H'3FFF'
+0016   3FF7 3FF7      00021         DATA _PWRTE_ON,     H'3FF7'
+0018   3FFF 3FFF      00022         DATA _WDT_ON,       H'3FFF'
+001A   3FFB 3FFB      00023         DATA _WDT_OFF,      H'3FFB'
+001C   3FFC 3FFC      00024         DATA _LP_OSC,       H'3FFC'
+001E   3FFD 3FFD      00025         DATA _XT_OSC,       H'3FFD'
+0020   3FFE 3FFE      00026         DATA _HS_OSC,       H'3FFE'
+0022   3FFF 3FFF      00027         DATA _RC_OSC,       H'3FFF'
+                      00028 
+                      00029 
+0024   0000 0000      00030         DATA    INDF,           0       ; Register Files
+0026   0001 0001      00031         DATA    TMR0,           1
+0028   0002 0002      00032         DATA    PCL,            2
+002A   0003 0003      00033         DATA    STATUS,         3
+002C   0004 0004      00034         DATA    FSR,            4
+002E   0005 0005      00035         DATA    PORTA,          5
+0030   0006 0006      00036         DATA    PORTB,          6
+0032   0007 0007      00037         DATA    PORTC,          7       ; Processor-specific
+0034   0008 0008      00038         DATA    PORTD,          8
+0036   0009 0009      00039         DATA    PORTE,          9
+                      00040 
+0038   000A 000A      00041         DATA    PCLATH,         0x0A
+003A   000B 000B      00042         DATA    INTCON,         0x0B
+003C   000C 000C      00043         DATA    PIR1,           0X0C
+003E   000D 000D      00044         DATA    PIR2,           0X0D
+0040   000E 000E      00045         DATA    TMR1L,          0X0E
+0042   000F 000F      00046         DATA    TMR1H,          0X0F
+0044   0010 0010      00047         DATA    T1CON,          0X10
+0046   0011 0011      00048         DATA    TMR2,           0X11
+0048   0012 0012      00049         DATA    T2CON,          0X12
+004A   0013 0013      00050         DATA    SSPBUF,         0X13
+MPASM 02.70 Released            HD774.ASM   6-16-2001  13:50:56         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+004C   0014 0014      00051         DATA    SSPCON,         0X14
+004E   0015 0015      00052         DATA    CCPR1L,         0X15
+0050   0016 0016      00053         DATA    CCPR1H,         0X16
+0052   0017 0017      00054         DATA    CCP1CON,        0X17
+0054   0018 0018      00055         DATA    RCSTA,          0X18
+0056   0019 0019      00056         DATA    TXREG,          0X19
+0058   001A 001A      00057         DATA    RCREG,          0X1A
+005A   001B 001B      00058         DATA    CCPR2L,         0X1B
+005C   001C 001C      00059         DATA    CCPR2H,         0X1C
+005E   001D 001D      00060         DATA    CCP2CON,        0X1D
+0060   009E 001E      00061         DATA    ADRESL,         0x1E
+0062   001E 009E      00062         DATA    ADRESH,         0x9E
+0064   001F 001F      00063         DATA    ADCON0,         0x1F
+                      00064 
+0066   0081 0081      00065         DATA    OPTION_REG,     0x81
+                      00066 
+0068   0085 0085      00067         DATA    TRISA,          0X85
+006A   0086 0086      00068         DATA    TRISB,          0X86
+006C   0087 0087      00069         DATA    TRISC,          0X87
+006E   0088 0088      00070         DATA    TRISD,          0x88
+0070   0089 0089      00071         DATA    TRISE,          0x89
+                      00072  
+0072   008C 008C      00073         DATA    PIE1,           0X8C
+0074   008D 008D      00074         DATA    PIE2,           0X8D
+0076   008E 008E      00075         DATA    PCON,           0X8E
+                      00076 
+0078   0092 0092      00077         DATA    PR2,            0X92
+007A   0093 0093      00078         DATA    SSPADD,         0X93
+007C   0094 0094      00079         DATA    SSPSTAT,        0X94
+007E   0098 0098      00080         DATA    TXSTA,          0X98
+0080   0099 0099      00081         DATA    SPBRG,          0X99
+                      00082 
+0082   009F 009F      00083         DATA    ADCON1,         0x9F
+                      00084 
+0084   0007 0007      00085         DATA    IRP,            7       ; STATUS
+0086   0006 0006      00086         DATA    RP1,            6
+0088   0005 0005      00087         DATA    RP0,            5
+008A   0004 0004      00088         DATA    NOT_TO,         4
+008C   0003 0003      00089         DATA    NOT_PD,         3
+008E   0002 0002      00090         DATA    Z,              2
+0090   0001 0001      00091         DATA    DC,             1
+0092   0000 0000      00092         DATA    C,              0
+                      00093 
+0094   0007 0007      00094         DATA    GIE,            7       ; INTCON
+0096   0006 0006      00095         DATA    PEIE,           6
+0098   0005 0005      00096         DATA    T0IE,           5
+009A   0004 0004      00097         DATA    INTE,           4
+009C   0003 0003      00098         DATA    RBIE,           3
+009E   0002 0002      00099         DATA    T0IF,           2
+00A0   0001 0001      00100         DATA    INTF,           1
+00A2   0000 0000      00101         DATA    RBIF,           0
+                      00102 
+00A4   0005 0005      00103         DATA    RCIF,           5       ; PIR1 Bits
+MPASM 02.70 Released            HD774.ASM   6-16-2001  13:50:56         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00A6   0004 0004      00104         DATA    TXIF,           4
+00A8   0003 0003      00105         DATA    SSPIF,          3
+00AA   0002 0002      00106         DATA    CCP1IF,         2
+00AC   0001 0001      00107         DATA    TMR2IF,         1
+00AE   0000 0000      00108         DATA    TMR1IF,         0
+                      00109 
+00B0   0000 0000      00110         DATA    CCP2IF,         0       ; PIR2
+                      00111 
+00B2   0005 0005      00112         DATA    T1CKPS1,        5       ; T1CON
+00B4   0004 0004      00113         DATA    T1CKPS0,        4
+00B6   0003 0003      00114         DATA    T1OSCEN,        3
+00B8   0002 0002      00115         DATA    NOT_T1SYNC,     2
+00BA   0002 0002      00116         DATA    T1INSYNC,       2
+00BC   0001 0001      00117         DATA    TMR1CS,         1
+00BE   0000 0000      00118         DATA    TMR1ON,         0
+                      00119 
+00C0   0006 0006      00120         DATA    TOUTPS3,        6       ; T2CON
+00C2   0005 0005      00121         DATA    TOUTPS2,        5
+00C4   0004 0004      00122         DATA    TOUTPS1,        4
+00C6   0003 0003      00123         DATA    TOUTPS0,        3
+00C8   0002 0002      00124         DATA    TMR2ON,         2
+00CA   0001 0001      00125         DATA    T2CKPS1,        1
+00CC   0000 0000      00126         DATA    T2CKPS0,        0
+                      00127 
+00CE   0007 0007      00128         DATA    WCOL,           7       ; SSPCON
+00D0   0006 0006      00129         DATA    SSPOV,          6
+00D2   0005 0005      00130         DATA    SSPEN,          5
+00D4   0004 0004      00131         DATA    CKP,            4
+00D6   0003 0003      00132         DATA    SSPM3,          3
+00D8   0002 0002      00133         DATA    SSPM2,          2
+00DA   0001 0001      00134         DATA    SSPM1,          1
+00DC   0000 0000      00135         DATA    SSPM0,          0
+                      00136 
+00DE   0005 0005      00137         DATA    CCP1X,          5       ; CCP1CON
+00E0   0004 0004      00138         DATA    CCP1Y,          4
+00E2   0003 0003      00139         DATA    CCP1M3,         3
+00E4   0002 0002      00140         DATA    CCP1M2,         2
+00E6   0001 0001      00141         DATA    CCP1M1,         1
+00E8   0000 0000      00142         DATA    CCP1M0,         0
+                      00143 
+00EA   0007 0007      00144         DATA    SPEN,           7       ; RCSTA
+00EC   0006 0006      00145         DATA    RX9,            6
+00EE   0006 0006      00146         DATA    RC9,            6
+00F0   0006 0006      00147         DATA    NOT_RC8,        6
+00F2   0006 0006      00148         DATA    RC8_9,          6
+00F4   0005 0005      00149         DATA    SREN,           5
+00F6   0004 0004      00150         DATA    CREN,           4
+00F8   0002 0002      00151         DATA    FERR,           2
+00FA   0001 0001      00152         DATA    OERR,           1
+00FC   0000 0000      00153         DATA    RX9D,           0
+00FE   0000 0000      00154         DATA    RCD8,           0
+                      00155 
+0100   0005 0005      00156         DATA    CCP2X,          5       ; CCP2CON
+MPASM 02.70 Released            HD774.ASM   6-16-2001  13:50:56         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0102   0004 0004      00157         DATA    CCP2Y,          4
+0104   0003 0003      00158         DATA    CCP2M3,         3
+0106   0002 0002      00159         DATA    CCP2M2,         2
+0108   0001 0001      00160         DATA    CCP2M1,         1
+010A   0000 0000      00161         DATA    CCP2M0,         0
+                      00162 
+010C   0007 0007      00163         DATA    ADCS1,          7       ; ADCON0
+010E   0006 0006      00164         DATA    ADCS0,          6
+0110   0005 0005      00165         DATA    CHS2,           5
+0112   0004 0004      00166         DATA    CHS1,           4
+0114   0003 0003      00167         DATA    CHS0,           3
+0116   0002 0002      00168         DATA    GO,             2
+0118   0002 0002      00169         DATA    NOT_DONE,       2
+011A   0002 0002      00170         DATA    GO_DONE,        2
+011C   0000 0000      00171         DATA    ADON,           0
+                      00172 
+011E   0007 0007      00173         DATA    NOT_RBPU,       7       ; OPTION
+0120   0006 0006      00174         DATA    INTEDG,         6
+0122   0005 0005      00175         DATA    T0CS,           5
+0124   0004 0004      00176         DATA    T0SE,           4
+0126   0003 0003      00177         DATA    PSA,            3
+0128   0002 0002      00178         DATA    PS2,            2
+012A   0001 0001      00179         DATA    PS1,            1
+012C   0000 0000      00180         DATA    PS0,            0
+                      00181 
+012E   0007 0007      00182         DATA    IBF,            7       ; TRISE
+0130   0006 0006      00183         DATA    OBF,            6
+0132   0005 0005      00184         DATA    IBOV,           5
+0134   0004 0004      00185         DATA    PSPMODE,        4
+0136   0002 0002      00186         DATA    TRISE2,         2
+0138   0001 0001      00187         DATA    TRISE1,         1
+013A   0000 0000      00188         DATA    TRISE0,         0
+                      00189 
+013C   0006 0006      00190         DATA    ADIE,           6       ; PIE1
+013E   0005 0005      00191         DATA    RCIE,           5
+0140   0004 0004      00192         DATA    TXIE,           4
+0142   0003 0003      00193         DATA    SSPIE,          3
+0144   0002 0002      00194         DATA    CCP1IE,         2
+0146   0001 0001      00195         DATA    TMR2IE,         1
+0148   0000 0000      00196         DATA    TMR1IE,         0
+                      00197 
+014A   0000 0000      00198         DATA    CCP2IE,         0       ; PIE2
+                      00199 
+014C   0001 0001      00200         DATA    NOT_POR,        1       ; PCON
+014E   0000 0000      00201         DATA    NOT_BO,         0
+0150   0000 0000      00202         DATA    NOT_BOR,        0
+                      00203 
+0152   0007 0007      00204         DATA    SMP,            7       ; SSPSTAT
+0154   0006 0006      00205         DATA    CKE,            6
+0156   0005 0005      00206         DATA    D,              5
+0158   0005 0005      00207         DATA    I2C_DATA,       5
+015A   0005 0005      00208         DATA    NOT_A,          5
+015C   0005 0005      00209         DATA    NOT_ADDRESS,    5
+MPASM 02.70 Released            HD774.ASM   6-16-2001  13:50:56         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+015E   0005 0005      00210         DATA    D_A,            5
+0160   0005 0005      00211         DATA    DATA_ADDRESS,   5
+0162   0004 0004      00212         DATA    P,              4
+0164   0004 0004      00213         DATA    I2C_STOP,       4
+0166   0003 0003      00214         DATA    S,              3
+0168   0003 0003      00215         DATA    I2C_START,      3
+016A   0002 0002      00216         DATA    R,              2
+016C   0002 0002      00217         DATA    I2C_READ,       2
+016E   0002 0002      00218         DATA    NOT_W,          2
+0170   0002 0002      00219         DATA    NOT_WRITE,      2
+0172   0002 0002      00220         DATA    R_W,            2
+0174   0002 0002      00221         DATA    READ_WRITE,     2
+0176   0001 0001      00222         DATA    UA,             1
+0178   0000 0000      00223         DATA    BF,             0
+                      00224 
+017A   0007 0007      00225         DATA    CSRC,           7       ; TXSTA
+017C   0006 0006      00226         DATA    TX9,            6
+017E   0006 0006      00227         DATA    NOT_TX8,        6
+0180   0006 0006      00228         DATA    TX8_9,          6
+0182   0005 0005      00229         DATA    TXEN,           5
+0184   0004 0004      00230         DATA    SYNC,           4
+0186   0002 0002      00231         DATA    BRGH,           2
+0188   0001 0001      00232         DATA    TRMT,           1
+018A   0000 0000      00233         DATA    TX9D,           0
+018C   0000 0000      00234         DATA    TXD8,           0
+                      00235         
+018E   0002 0002      00236         DATA    PCFG2,          2       ; ADCON1
+0190   0001 0001      00237         DATA    PCFG1,          1
+0192   0000 0000      00238         DATA    PCFG0,          0
+                      00239 
+                      00240         END
+MPASM 02.70 Released            HD774.ASM   6-16-2001  13:50:56         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BGST                              00000005
+BRGH                              00000002
+C                                 00000000
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CHS3                              00000001
+CKE                               00000006
+CKP                               00000004
+CREN                              00000004
+CSRC                              00000007
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+MPASM 02.70 Released            HD774.ASM   6-16-2001  13:50:56         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+D_A                               00000005
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GCEN                              00000007
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+LV0                               00000000
+LV1                               00000001
+LV2                               00000002
+LV3                               00000003
+LVDCON                            0000009C
+LVDEN                             00000004
+LVDIE                             00000007
+LVDIF                             00000007
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OBF                               00000006
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+MPASM 02.70 Released            HD774.ASM   6-16-2001  13:50:56         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSPMODE                           00000004
+R                                 00000002
+RBIE                              00000003
+RBIF                              00000000
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+READ_WRITE                        00000002
+REFCON                            0000009B
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+R_W                               00000002
+S                                 00000003
+SEN                               00000000
+SMP                               00000007
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+MPASM 02.70 Released            HD774.ASM   6-16-2001  13:50:56         PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISB                             00000086
+TRISC                             00000087
+TRISD                             00000088
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+VCFG0                             00000004
+VCFG1                             00000005
+MPASM 02.70 Released            HD774.ASM   6-16-2001  13:50:56         PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+VCFG2                             00000006
+VRHEN                             00000007
+VRHOEN                            00000005
+VRLEN                             00000006
+VRLOEN                            00000004
+W                                 00000000
+WCOL                              00000007
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_CP_50                            00002EEF
+_CP_75                            00001DDF
+_CP_ALL                           00000CCF
+_CP_OFF                           00003FFF
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_VBOR_25                          00003FFF
+_VBOR_27                          00003BFF
+_VBOR_42                          000037FF
+_VBOR_45                          000033FF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16C774                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0180 : XXXXXXXXXXXXXXXX XXXX------------ ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   404
+Program Memory Words Free:  3692
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

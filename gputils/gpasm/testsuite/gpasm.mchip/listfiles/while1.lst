@@ -1,0 +1,152 @@
+MPASM Version 3.00 Beta Release   WHILE1.ASM   01/31/2001  12:15:16	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; WHILE1.ASM
+                        00002 
+                        00003 ; This file tests general use of the WHILE directive.
+                        00004 
+                        00005         LIST    P=17C44, R=DEC
+                        00006 
+Warning[207]: Found label after column 1. (I)
+  00000005              00007         I = 5
+                        00008         WHILE I > 0     ; Multiple passes
+0000     0005           00009            DATA I
+Warning[207]: Found label after column 1. (I)
+  00000004              00010            I--
+0001     0004           00009            DATA I
+Warning[207]: Found label after column 1. (I)
+  00000003              00010            I--
+0002     0003           00009            DATA I
+Warning[207]: Found label after column 1. (I)
+  00000002              00010            I--
+0003     0002           00009            DATA I
+Warning[207]: Found label after column 1. (I)
+  00000001              00010            I--
+0004     0001           00009            DATA I
+Warning[207]: Found label after column 1. (I)
+  00000000              00010            I--
+                        00011         ENDW
+                        00012 
+Warning[207]: Found label after column 1. (I)
+  0000000A              00013         I = 10
+                        00014         WHILE I == 10   ; Single pass
+0005     000A           00015            DATA I
+Warning[207]: Found label after column 1. (I)
+  0000000B              00016            I++
+                        00017         ENDW
+                        00018 
+Warning[207]: Found label after column 1. (I)
+  0000000A              00019         I = 10
+                        00020         WHILE I == 0    ; No pass
+                        00021            DATA I
+                        00022            I++
+                        00023         ENDW
+                        00024 
+Warning[207]: Found label after column 1. (I)
+  00000002              00025         I = 2
+                        00026         WHILE I > 0             ; Nested WHILE
+Warning[207]: Found label after column 1. (J)
+  00000003              00027            J = 3
+                        00028            WHILE J > 0
+0006     0006           00029               DATA      I * J
+Warning[207]: Found label after column 1. (J)
+  00000002              00030               J--
+0007     0004           00029               DATA      I * J
+Warning[207]: Found label after column 1. (J)
+  00000001              00030               J--
+MPASM Version 3.00 Beta Release   WHILE1.ASM   01/31/2001  12:15:16	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0008     0002           00029               DATA      I * J
+Warning[207]: Found label after column 1. (J)
+  00000000              00030               J--
+                        00031            ENDW
+Warning[207]: Found label after column 1. (I)
+  00000001              00032            I--
+Warning[207]: Found label after column 1. (J)
+  00000003              00027            J = 3
+                        00028            WHILE J > 0
+0009     0003           00029               DATA      I * J
+Warning[207]: Found label after column 1. (J)
+  00000002              00030               J--
+000A     0002           00029               DATA      I * J
+Warning[207]: Found label after column 1. (J)
+  00000001              00030               J--
+000B     0001           00029               DATA      I * J
+Warning[207]: Found label after column 1. (J)
+  00000000              00030               J--
+                        00031            ENDW
+Warning[207]: Found label after column 1. (I)
+  00000000              00032            I--
+                        00033         ENDW
+                        00034 
+                        00035 ;SSR 1351, Multiple line macro called from within a WHILE
+                        00036 
+                        00037 TEST    MACRO   NUM     
+                        00038         ADDLW   NUM
+                        00039         ADDLW   NUM
+                        00040         ADDLW   NUM
+                        00041         ENDM
+                        00042 
+Warning[207]: Found label after column 1. (I)
+  00000003              00043         I = 3
+                        00044         WHILE I > 0
+                        00045            TEST I
+000C     B103               M         ADDLW   I
+000D     B103               M         ADDLW   I
+000E     B103               M         ADDLW   I
+Warning[207]: Found label after column 1. (I)
+  00000002              00046            I--
+                        00045            TEST I
+000F     B102               M         ADDLW   I
+0010     B102               M         ADDLW   I
+0011     B102               M         ADDLW   I
+Warning[207]: Found label after column 1. (I)
+  00000001              00046            I--
+                        00045            TEST I
+0012     B101               M         ADDLW   I
+0013     B101               M         ADDLW   I
+0014     B101               M         ADDLW   I
+Warning[207]: Found label after column 1. (I)
+  00000000              00046            I--
+                        00047         ENDW
+MPASM Version 3.00 Beta Release   WHILE1.ASM   01/31/2001  12:15:16	   PAGE 3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00048 
+                        00049         END
+MPASM Version 3.00 Beta Release   WHILE1.ASM   01/31/2001  12:15:16	   PAGE 4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+I                                 00000000
+J                                 00000000
+TEST                              
+__17C44                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXX----------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    21
+
+
+Errors   :     0
+Warnings :    24 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

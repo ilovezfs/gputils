@@ -1,0 +1,42 @@
+MPASM Version 3.00 Beta Release   RES2.ASM   01/31/2001  12:39:56	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; RES2.ASM
+                        00002 
+                        00003 ; This file tests illegal usage of the RES directive.
+                        00004 
+                        00005         LIST    P=16C54
+                        00006 
+0000                    00007         ORG     0
+Error[128]  : Missing argument(s)
+0000                    00008         RES                     ; No parameter
+0000     0111           00009         DATA    111
+                        00010 
+                        00011         END
+MPASM Version 3.00 Beta Release   RES2.ASM   01/31/2001  12:39:56	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X--------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     1
+Program Memory Words Free:   511
+
+
+Errors   :     1
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

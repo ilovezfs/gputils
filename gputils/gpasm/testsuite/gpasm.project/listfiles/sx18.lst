@@ -1,0 +1,148 @@
+gpasm-0.9.2 alpha               sx18.asm    3-8-2001  01:33:54           PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001      list p=sx18,f=inhx8m
+               00002 
+               00003 insn macro file
+               00004      ADDWF file,1 
+               00005      ANDLW 0xff
+               00006      ANDWF file,1
+               00007      BCF file,7
+               00008      BSF file,7
+               00009      BTFSC file,1
+               00010      BTFSS file,1
+               00011      CALL 0xff
+               00012      CLRF file
+               00013      CLRW
+               00014      CLRWDT
+               00015      COMF file,1
+               00016      DECF file,1
+               00017      DECFSZ file,1
+               00018      GOTO 0x100
+               00019      INCF file,1
+               00020      INCFSZ file,1
+               00021      IORLW 0xff
+               00022      IORWF file,1
+               00023      MOVF  file,1
+               00024      MOVLW 0xff
+               00025      MOVWF file
+               00026      NOP
+               00027      OPTION 
+               00028      RETLW 0
+               00029      RLF file,1
+               00030      RRF file,1
+               00031      SLEEP
+               00032      SUBWF file,1
+               00033      SWAPF file,1
+               00034      TRIS 7
+               00035      XORLW 0xff
+               00036      XORWF file,1
+               00037      ; SX only
+               00038      BANK 0xff
+               00039      IREAD
+               00040      MODE 0xf
+               00041      MOVMW
+               00042      MOVWM
+               00043      PAGE 0xff
+               00044      RETI
+               00045      RETIW
+               00046      RETP
+               00047      RETURN
+               00048      endm
+               00049 
+0000           00050      org 0
+0000 01F0 0EFF 00051      insn 10
+0002 0170 04F0
+0004 05F0 0630
+0006 0730 09FF
+gpasm-0.9.2 alpha               sx18.asm    3-8-2001  01:33:54           PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0008 0070 0040
+000A 0004 0270
+000C 00F0 02F0
+000E 0B00 02B0
+0010 03F0 0DFF
+0012 0130 0230
+0014 0CFF 0030
+0016 0000 0002
+0018 0800 0370
+001A 0330 0003
+001C 00B0 03B0
+001E 0007 0FFF
+0020 01B0 001F
+0022 0041 005F
+0024 0042 0043
+0026 0010 000E
+0028 000F 000D
+002A 000C
+0400           00052      org 400
+0400 01E0 0EFF 00053      insn 20
+0402 0160 04E0
+0404 05E0 0620
+0406 0720 09FF
+0408 0060 0040
+040A 0004 0260
+040C 00E0 02E0
+040E 0B00 02A0
+0410 03E0 0DFF
+0412 0120 0220
+0414 0CFF 0020
+0416 0000 0002
+0418 0800 0360
+041A 0320 0003
+041C 00A0 03A0
+041E 0007 0FFF
+0420 01A0 001F
+0422 0041 005F
+0424 0042 0043
+0426 0010 000E
+0428 000F 000D
+042A 000C
+0800           00054      org 800
+0800 01E5 0EFF 00055      insn 25
+0802 0165 04E5
+0804 05E5 0625
+0806 0725 09FF
+0808 0065 0040
+080A 0004 0265
+080C 00E5 02E5
+080E 0B00 02A5
+0810 03E5 0DFF
+0812 0125 0225
+0814 0CFF 0025
+0816 0000 0002
+gpasm-0.9.2 alpha               sx18.asm    3-8-2001  01:33:54           PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0818 0800 0365
+081A 0325 0003
+081C 00A5 03A5
+081E 0007 0FFF
+0820 01A5 001F
+0822 0041 005F
+0824 0042 0043
+0826 0010 000E
+0828 000F 000D
+082A 000C
+gpasm-0.9.2 alpha               sx18.asm    3-8-2001  01:33:54           PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

@@ -1,0 +1,33 @@
+MPASM Version 3.00 Beta Release   ALLMESS3.ASM   01/31/2001  13:40:09	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Error[131]  : Processor type is undefined
+                        00001         data    0               ; Error 131 Processor type is undefined
+                        00002 
+                        00003         end
+Error[131]  : Processor type is undefined
+MPASM Version 3.00 Beta Release   ALLMESS3.ASM   01/31/2001  13:40:09	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+Program Memory Words Free:     1
+
+
+Errors   :     2
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

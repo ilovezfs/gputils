@@ -1,0 +1,33 @@
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; CODE2.ASM
+                        00002 
+                        00003 ; This file tests illegal usage of the CODE directive.
+                        00004 ; It should be placed in the list comparison section for
+                        00005 ; object files.
+                        00006 
+                        00007         list    p=17c44
+                        00008 
+                        00009 Code1   code                    ; Two segments, same name
+0000     0000           00010         nop
+                        00011 Code1   code
+0001     0000           00012         nop
+                        00013 
+Error[113]  : Symbol not previously defined (xyz)
+                        00014 Code2   code    xyz             ; Illegal address
+                        00015 
+                        00016         end
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__17C44                           00000001
+
+Errors   :     1
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+

@@ -1,0 +1,55 @@
+/* Symbol table support
+   Copyright (C) 1998,1999,2000,2001 James Bowman
+
+This file is part of gputils.
+
+gputils is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+gputils is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with gputils; see the file COPYING.  If not, write to
+the Free Software Foundation, 59 Temple Place - Suite 330,
+Boston, MA 02111-1307, USA.  */
+
+#ifndef __GPSYMBOL_H__
+#define __GPSYMBOL_H__
+
+#define HASH_SIZE 173  /* Too small and we get collisions.  Too big
+			* and we use up memory and run slow.. */
+
+struct symbol {
+  char *name;
+  void *annotation;
+  struct symbol *next;
+};
+
+struct symbol_table {
+  int count;
+  int case_insensitive;
+  int (*compare)(const char *__s1, const char *__s2);
+  struct symbol *hash_table[HASH_SIZE];
+  struct symbol_table *prev;
+};
+
+struct symbol_table *push_symbol_table(struct symbol_table *, int case_insensitive);
+struct symbol_table *pop_symbol_table(struct symbol_table *);
+
+struct symbol *add_symbol(struct symbol_table *, char *name);
+int remove_symbol(struct symbol_table *table, char *name);
+struct symbol *get_symbol(struct symbol_table *, char *name);
+
+void annotate_symbol(struct symbol *, void *);
+
+char *get_symbol_name(struct symbol *);
+void *get_symbol_annotation(struct symbol *);
+
+int symbol_compare(const void *p0, const void *p1);
+
+#endif

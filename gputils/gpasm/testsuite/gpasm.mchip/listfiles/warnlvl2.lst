@@ -1,0 +1,95 @@
+MPASM Version 3.00 Beta Release   WARNLVL2.ASM   01/31/2001  12:40:23	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; WARNLVL2.ASM
+                        00002 
+                        00003 ; This file is used to test errors in warning level setting in the list file.  It
+                        00004 ; uses both the LIST directive and the ERRORLEVEL directive.  Note that
+                        00005 ; the command line will override either of these.  Since warnings cannot
+                        00006 ; be explicitly generated, we will use a ROM specification to generate a
+                        00007 ; warning.
+                        00008 
+                        00009         LIST    P=16C54
+                        00010 
+Error[128]  : Missing argument(s)
+                        00011         LIST    W
+Message[301]: MESSAGE: (A Message)
+                        00012         MESSG   "A Message"
+0000     0000           00013         NOP
+Error[101]  : ERROR: (An Error)
+                        00014         ERROR   "An Error"
+                        00015 
+Error[128]  : Missing argument(s)
+                        00016         LIST    W=
+Message[301]: MESSAGE: (A Message)
+                        00017         MESSG   "A Message"
+0001     0000           00018         NOP
+Error[101]  : ERROR: (An Error)
+                        00019         ERROR   "An Error"
+                        00020 
+Error[124]  : Illegal argument (expected 0, 1, 2, or +|-<message number>)
+                        00021         LIST    W=3
+Message[301]: MESSAGE: (A Message)
+                        00022         MESSG   "A Message"
+0002     0000           00023         NOP
+Error[101]  : ERROR: (An Error)
+                        00024         ERROR   "An Error"
+                        00025 
+Error[128]  : Missing argument(s)
+                        00026         ERRORLEVEL
+Message[301]: MESSAGE: (A Message)
+                        00027         MESSG   "A Message"
+0003     0000           00028         NOP
+Error[101]  : ERROR: (An Error)
+                        00029         ERROR   "An Error"
+                        00030 
+Error[113]  : Symbol not previously defined (a)
+                        00031         ERRORLEVEL      a
+Message[301]: MESSAGE: (A Message)
+                        00032         MESSG   "A Message"
+0004     0000           00033         NOP
+Error[101]  : ERROR: (An Error)
+                        00034         ERROR   "An Error"
+                        00035 
+Error[124]  : Illegal argument (expected 0, 1, 2, or +|-<message number>)
+                        00036         ERRORLEVEL      3
+Message[301]: MESSAGE: (A Message)
+MPASM Version 3.00 Beta Release   WARNLVL2.ASM   01/31/2001  12:40:23	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00037         MESSG   "A Message"
+0005     0000           00038         NOP
+Error[101]  : ERROR: (An Error)
+                        00039         ERROR   "An Error"
+                        00040 
+                        00041         END
+MPASM Version 3.00 Beta Release   WARNLVL2.ASM   01/31/2001  12:40:23	   PAGE 3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXX---------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     6
+Program Memory Words Free:   506
+
+
+Errors   :    12
+Warnings :     0 reported,     0 suppressed
+Messages :     6 reported,     0 suppressed
+
+

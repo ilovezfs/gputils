@@ -1,0 +1,68 @@
+MPASM Version 3.00 Beta Release   ALLMESS7.ASM   01/31/2001  12:39:33	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ;ALLMESS7.ASM
+                        00002 ;       This file tests the generation of all messages.
+                        00003 
+                        00004         list    p=16c57
+                        00005 
+Message[301]: MESSAGE: (This is a test message)
+                        00006         messg   "This is a test message"        ; Message 301 MESSAGE:
+                        00007 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0000     01E5           00008         addwf   0x85,1                          ; Message 302 Argument out of range.
+                        00009 
+Message[303]: Program word too large.  Truncated to core size. (1000)
+0001     0000           00010         data    0x1000                          ; Message 303 Program word too large.
+                        00011 
+Message[304]: ID Locations value too large.  Last four hex digits used. (2345)
+0800     0002 0003 0004 00012         __idlocs 0x12345                        ; Message 304 ID Locations value too large.
+         0005 
+                        00013 
+Message[305]: Using default destination of 1 (file).
+0002     01E1           00014         addwf   1                               ; Message 305 Using default destination of 1
+                        00015 
+Message[306]: Crossing page boundary -- ensure page bits are set.
+0003     0A00           00016         goto    0x200                           ; Message 306 Crossing page boundary...
+                        00017 
+Message[318]: Special Instruction Mnemonic used. (lgoto)
+Message[307]: Setting page bits.
+0004     05A3 04C3 0A00 00018         lgoto   0x200                           ; Message 307 Setting page bits
+                        00019 
+  0000001F              00020         __MAXRAM        0x1F
+Message[310]: Superceding current maximum RAM and RAM map.
+  0000001F              00021         __MAXRAM        0x1F                    ; Message 310 Superceding current maximum RAM and RAM 
+                              map.
+                        00022 
+Message[311]: Operand of HIGH operator was larger than H'FFFF'.
+0007     0C56           00023         movlw   high( 0x12345678 )              ; Message 311 Higher order bits of operand are being m
+                              asked.
+                        00024         end
+MPASM Version 3.00 Beta Release   ALLMESS7.ASM   01/31/2001  12:39:33	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C57                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXX-------- ---------------- ---------------- ----------------
+0800 : XXXX------------ ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     8
+Program Memory Words Free:  2040
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :    10 reported,     0 suppressed
+
+

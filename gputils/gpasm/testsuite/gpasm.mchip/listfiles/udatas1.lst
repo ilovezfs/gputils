@@ -1,0 +1,43 @@
+MPASM Version 3.00 Beta Release   UDATAS1.ASM   01/31/2001  12:43:35	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; UDATAS1.ASM
+                        00002 
+                        00003 ; This file tests legal usage of the UDATA_SHR directive.
+                        00004 ; This file is placed in the object file comparison test section.
+                        00005 
+                        00006                 list            p=17C44
+                        00007 
+                        00008                 udata_shr               ; Unnamed, no address
+0000                    00009 Var1            res             1       ; Reserve data
+                        00010 
+                        00011 DATA1           udata_shr               ; Name, no address
+0000                    00012                 res             1       ; Data byte
+                        00013 
+                        00014 DATA2           UDATA_SHR               ; Capital letters
+0000                    00015                 res             3       ; Multiple bytes
+                        00016 
+                        00017 DATA3           udata_shr       0x20    ; Address specified
+0020                    00018                 res             4       ; Multiple words
+                        00019 
+                        00020 LongDataName    udata_shr       0x30    ; Long name
+0030                    00021                 res             2       ; Data word
+                        00022 
+                        00023                 end
+MPASM Version 3.00 Beta Release   UDATAS1.ASM   01/31/2001  12:43:35	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Var1                              00000000
+__17C44                           00000001
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

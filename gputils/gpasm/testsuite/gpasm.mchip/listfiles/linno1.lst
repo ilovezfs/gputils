@@ -1,0 +1,98 @@
+MPASM Version 3.00 Beta Release   LINNO1.ASM   01/31/2001  12:43:32	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; LINNO1.ASM
+                        00002 
+                        00003 ; This file tests line number entry for COFF files.  Macro generated
+                        00004 ; lines should point to the invokation line, not the definition line.
+                        00005 
+                        00006         list    p=16c61
+                        00007 
+                        00008 Mac1    macro
+                        00009         clrw
+                        00010         endm
+                        00011 
+                        00012 Mac2    macro   Times
+                        00013 Loop    = 0
+                        00014         while Loop < Times
+                        00015            addlw        1
+                        00016 Loop ++
+                        00017         endw
+                        00018         endm
+                        00019 
+                        00020 
+                        00021         code
+                        00022 
+0000     0000           00023         nop
+                        00024         Mac1
+0001     0103               M         clrw
+0002     0000           00025         nop
+                        00026         Mac2    4
+  00000000                  M Loop    = 0
+                            M         while Loop < 4
+0003     3E01               M            addlw        1
+  00000001                  M Loop ++
+0004     3E01               M            addlw        1
+  00000002                  M Loop ++
+0005     3E01               M            addlw        1
+  00000003                  M Loop ++
+0006     3E01               M            addlw        1
+  00000004                  M Loop ++
+                            M         endw
+0007     0000           00027         nop
+                        00028         Mac1
+0008     0103               M         clrw
+0009     0000           00029         nop
+                        00030         Mac2    9
+  00000000                  M Loop    = 0
+                            M         while Loop < 9
+000A     3E01               M            addlw        1
+  00000001                  M Loop ++
+000B     3E01               M            addlw        1
+  00000002                  M Loop ++
+000C     3E01               M            addlw        1
+  00000003                  M Loop ++
+000D     3E01               M            addlw        1
+  00000004                  M Loop ++
+MPASM Version 3.00 Beta Release   LINNO1.ASM   01/31/2001  12:43:32	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000E     3E01               M            addlw        1
+  00000005                  M Loop ++
+000F     3E01               M            addlw        1
+  00000006                  M Loop ++
+0010     3E01               M            addlw        1
+  00000007                  M Loop ++
+0011     3E01               M            addlw        1
+  00000008                  M Loop ++
+0012     3E01               M            addlw        1
+  00000009                  M Loop ++
+                            M         endw
+0013     0000           00031         nop
+                        00032         Mac1
+0014     0103               M         clrw
+0015     0000           00033         nop
+                        00034 
+                        00035         end
+MPASM Version 3.00 Beta Release   LINNO1.ASM   01/31/2001  12:43:32	   PAGE 3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Loop                              00000009
+Mac1                              
+Mac2                              
+__16C61                           00000001
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

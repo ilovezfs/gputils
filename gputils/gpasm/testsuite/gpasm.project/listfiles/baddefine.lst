@@ -1,0 +1,27 @@
+gpasm-0.9.5 alpha               baddefine.asm5-28-2001  23:40:43          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ; tests for bug #423850 Hang on bad #define directive
+               00002 
+               00003      list p=16c84
+               00004 
+               00005 #define foo foo
+               00006 
+Error [157] : Can't evaluate expression
+0000 3000      00007      movlw foo
+               00008 
+gpasm-0.9.5 alpha               baddefine.asm5-28-2001  23:40:43          PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+
+
+Errors   :       1
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

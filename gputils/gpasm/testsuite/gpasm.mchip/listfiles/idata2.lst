@@ -1,0 +1,37 @@
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; IDATA2.ASM
+                        00002 
+                        00003 ; This file tests illegal usage of the IDATA directive.
+                        00004 ; It should be placed in the list comparison section for
+                        00005 ; object files.
+                        00006 
+                        00007         list    p=17c44
+                        00008 
+                        00009 Data1   idata                   ; Two segments, same name
+0000     00             00010         res     1
+                        00011 Data1   idata
+0001     00             00012         res     1
+                        00013 
+Error[113]  : Symbol not previously defined (xyz)
+                        00014 Data2   idata   xyz             ; Illegal address
+                        00015 
+                        00016 Data3   idata
+Error[152]  : Executable code and data must be defined in an appropriate section
+0000                    00017         nop                     ; Program code
+                        00018 
+                        00019         end
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__17C44                           00000001
+
+Errors   :     2
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+

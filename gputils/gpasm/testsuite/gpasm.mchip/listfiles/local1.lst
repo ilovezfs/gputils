@@ -1,0 +1,140 @@
+MPASM Version 3.00 Beta Release   LOCAL1.ASM   01/31/2001  12:13:10	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; LOCAL1.ASM
+                        00002 
+                        00003 ; This file tests legal usage of the LOCAL and MACRO-EXITM-ENDM
+                        00004 ; directives.
+                        00005 
+                        00006         LIST    P=16C54
+                        00007 
+                        00008 Mac1    MACRO
+                        00009         NOP
+                        00010         ENDM
+                        00011 
+                        00012 Mac2    MACRO   Param1
+                        00013         IF Param1 > 5
+                        00014            EXITM
+                        00015         ELSE
+                        00016            DATA Param1
+                        00017         ENDIF
+                        00018         ENDM
+                        00019 
+                        00020 Mac3    MACRO   Param1
+                        00021         LOCAL   MyVar
+                        00022         MyVar = 1
+                        00023         WHILE MyVar <= Param1
+                        00024            DATA MyVar
+                        00025            MyVar++
+                        00026         ENDW
+                        00027         ENDM
+                        00028 
+                        00029 
+                        00030         Mac1
+0000     0000               M         NOP
+                        00031         Mac2    1
+                            M         IF 1      > 5
+                            M            EXITM
+                            M         ELSE
+0001     0001               M            DATA 1
+                            M         ENDIF
+                        00032         Mac2    6
+                            M         IF 6      > 5
+                            M            EXITM
+                        00033 
+Warning[207]: Found label after column 1. (MyVar)
+  00000002              00034         MyVar = 2
+0002     0002           00035         DATA    MyVar
+                        00036         Mac3    4
+  0000                      M         LOCAL   MyVar
+Warning[207]: Found label after column 1. (MyVar)
+  00000001                  M         MyVar = 1
+                            M         WHILE MyVar <= 4
+0003     0001               M            DATA MyVar
+Warning[207]: Found label after column 1. (MyVar)
+  00000002                  M            MyVar++
+0004     0002               M            DATA MyVar
+MPASM Version 3.00 Beta Release   LOCAL1.ASM   01/31/2001  12:13:10	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[207]: Found label after column 1. (MyVar)
+  00000003                  M            MyVar++
+0005     0003               M            DATA MyVar
+Warning[207]: Found label after column 1. (MyVar)
+  00000004                  M            MyVar++
+0006     0004               M            DATA MyVar
+Warning[207]: Found label after column 1. (MyVar)
+  00000005                  M            MyVar++
+                            M         ENDW
+0007     0002           00037         DATA    MyVar   
+                        00038 
+                        00039 ;***** Test for SSR 1756
+                        00040 
+                        00041 Mac4    macro
+                        00042         local   Var = 3
+                        00043         while Var > 0
+                        00044            Mac5 Var
+                        00045            Var--
+                        00046         endw
+                        00047         endm
+                        00048 
+                        00049 Mac5    macro   Value
+                        00050         data    Value
+                        00051         endm
+                        00052 
+                        00053         Mac4
+  0003                      M         local   Var = 3
+                            M         while Var > 0
+                            M            Mac5 Var
+0008     0003               M         data    _5Var
+Warning[207]: Found label after column 1. (Var)
+  00000002                  M            Var--
+                            M            Mac5 Var
+0009     0002               M         data    _5Var
+Warning[207]: Found label after column 1. (Var)
+  00000001                  M            Var--
+                            M            Mac5 Var
+000A     0001               M         data    _5Var
+Warning[207]: Found label after column 1. (Var)
+  00000000                  M            Var--
+                            M         endw
+                        00054 
+                        00055 ;***** End Test
+                        00056 
+                        00057         END
+MPASM Version 3.00 Beta Release   LOCAL1.ASM   01/31/2001  12:13:10	   PAGE 3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Mac1                              
+Mac2                              
+Mac3                              
+Mac4                              
+Mac5                              
+MyVar                             00000002
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXX----- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    11
+Program Memory Words Free:   501
+
+
+Errors   :     0
+Warnings :     9 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

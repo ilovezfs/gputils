@@ -1,0 +1,58 @@
+MPASM 02.61 Released         LABELSUB.ASM   7-5-2001  15:35:41         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; This file tests the substitution of labels
+                      00002 
+                      00003   list p=16c84
+                      00004 
+                      00005 #define oldlabel newlabel
+                      00006 
+0000   3001           00007   movlw 1
+0001   3002           00008   movlw 2
+0002   3003           00009   movlw 3
+0003   3004           00010   movlw 4
+                      00011 
+0004   3005           00012 oldlabel movlw 5
+                      00013 
+0005   3006           00014   movlw 6
+0006   3007           00015   movlw 7
+0007   3008           00016   movlw 8
+                      00017 
+0008   2804           00018   goto oldlabel
+0009   2804           00019   goto newlabel
+                      00020 
+                      00021 #undefine oldlabel
+                      00022 
+000A   3009           00023   movlw 9
+                      00024 
+000B   2804           00025   goto newlabel
+                      00026 
+                      00027   end
+MPASM 02.61 Released         LABELSUB.ASM   7-5-2001  15:35:41         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C84                           00000001
+newlabel                          00000004
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXX---- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    12
+Program Memory Words Free:  1012
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,193 @@
+MPASM Version 3.00 Beta Release   HD672.ASM   01/31/2001  12:12:01	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; HD672.ASM
+                        00002 
+                        00003 ; This file tests header file usage for the specified processor.
+                        00004 ; 1/8/97    Commented out the VCLMP options.  These have been removed from the
+                        00005 ;           header file.
+                        00006 
+                        00007         LIST    P=12C672
+                        00008         INCLUDE "P12C672.INC"
+                        00001         LIST
+                        00002 ; P12C672.INC  Standard Header File, Version 1.03    Microchip Technology, Inc.
+                        00178         LIST
+                        00009 
+                        00010 
+                        00011 
+0000     3FFF 3FFF      00012         DATA _MCLRE_ON,       H'3FFF'
+0002     3F7F 3F7F      00013         DATA _MCLRE_OFF,      H'3F7F'
+0004     009F 009F      00014         DATA _CP_ALL,         H'009F'
+0006     15BF 15BF      00015         DATA _CP_75,          H'15BF'
+0008     2ADF 2ADF      00016         DATA _CP_50,          H'2ADF'
+000A     3FFF 3FFF      00017         DATA _CP_OFF,         H'3FFF'
+000C     3FFF 3FFF      00018         DATA _PWRTE_OFF,      H'3FFF'
+000E     3FEF 3FEF      00019         DATA _PWRTE_ON,       H'3FEF'
+0010     3FFF 3FFF      00020         DATA _WDT_ON,         H'3FFF'
+0012     3FF7 3FF7      00021         DATA _WDT_OFF,        H'3FF7'
+0014     3FF8 3FF8      00022         DATA _LP_OSC,         H'3FF8'
+0016     3FF9 3FF9      00023         DATA _XT_OSC,         H'3FF9'
+0018     3FFA 3FFA      00024         DATA _HS_OSC,         H'3FFA'
+001A     3FFC 3FFC      00025         DATA _INTRC_OSC,      H'3FFC'
+001C     3FFC 3FFC      00026         DATA _INTRC_OSC_NOCLKOUT,   H'3FFC'
+001E     3FFD 3FFD      00027         DATA _INTRC_OSC_CLKOUT,     H'3FFD'
+0020     3FFE 3FFE      00028         DATA _EXTRC_OSC,            H'3FFE'
+0022     3FFE 3FFE      00029         DATA _EXTRC_OSC_NOCLKOUT,   H'3FFE'
+0024     3FFF 3FFF      00030         DATA _EXTRC_OSC_CLKOUT,     H'3FFF'
+                        00031         
+                        00032 
+                        00033 
+0026     0005 0006      00034         DATA    GPIO, 6 
+0028     008F 0005      00035         DATA    OSCCAL, 5
+002A     0004 0004      00036         DATA    FSR, 4  
+002C     0003 0003      00037         DATA    STATUS, 3
+002E     0002 0002      00038         DATA    PCL, 2
+0030     0001 0001      00039         DATA    TMR0, 1
+0032     0000 0000      00040         DATA    INDF, 0
+                        00041 
+                        00042 
+                        00043 ;       DATA    PA2, 7
+                        00044 ;       DATA    GPWUF, 7
+                        00045 ;       DATA    PA1, 6
+                        00046 ;       DATA    PA0, 5
+0034     0004 0004      00047         DATA    NOT_TO, 4
+0036     0003 0003      00048         DATA    NOT_PD, 3
+0038     0002 0002      00049         DATA    Z, 2
+003A     0001 0001      00050         DATA    DC, 1
+MPASM Version 3.00 Beta Release   HD672.ASM   01/31/2001  12:12:01	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+003C     0000 0000      00051         DATA    C, 0
+                        00052 
+                        00053 ;       DATA    NOT_GPWU, 7
+003E     0007 0006      00054         DATA    NOT_GPPU, 6
+0040     0005 0005      00055         DATA    T0CS, 5
+0042     0004 0004      00056         DATA    T0SE, 4
+0044     0003 0003      00057         DATA    PSA, 3
+0046     0002 0002      00058         DATA    PS2, 2
+0048     0001 0001      00059         DATA    PS1, 1
+004A     0000 0000      00060         DATA    PS0, 0
+                        00061 
+                        00062 
+                        00063 
+                        00064 
+                        00065         END
+MPASM Version 3.00 Beta Release   HD672.ASM   01/31/2001  12:12:01	   PAGE 3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRES                             0000001E
+C                                 00000000
+CAL0                              00000004
+CAL1                              00000005
+CAL2                              00000006
+CAL3                              00000007
+CALFST                            00000003
+CALSLW                            00000002
+CHS0                              00000003
+CHS1                              00000004
+DC                                00000001
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+GPIE                              00000003
+GPIF                              00000000
+GPIO                              00000005
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_DONE                          00000002
+NOT_GPPU                          00000007
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_TO                            00000004
+OPTION_REG                        00000081
+OSCCAL                            0000008F
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RP0                               00000005
+MPASM Version 3.00 Beta Release   HD672.ASM   01/31/2001  12:12:01	   PAGE 4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RP1                               00000006
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TMR0                              00000001
+TRISIO                            00000085
+W                                 00000000
+Z                                 00000002
+_CP_50                            00002ADF
+_CP_75                            000015BF
+_CP_ALL                           0000009F
+_CP_OFF                           00003FFF
+_EXTRC_OSC                        00003FFE
+_EXTRC_OSC_CLKOUT                 00003FFF
+_EXTRC_OSC_NOCLKOUT               00003FFE
+_HS_OSC                           00003FFA
+_INTRC_OSC                        00003FFC
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FF8
+_MCLRE_OFF                        00003F7F
+_MCLRE_ON                         00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FEF
+_WDT_OFF                          00003FF7
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FF9
+__12C672                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXX---- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    76
+Program Memory Words Free:  1972
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

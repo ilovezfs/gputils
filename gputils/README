@@ -1,0 +1,31 @@
+This is a collection of development tools for Microchip (TM) PIC (TM) 
+microcontrollers. It's intended to be compatible with the manufacturer's 
+tools, MPASM, MPLINK,and MPLIB.
+
+This is ALPHA software: there may be serious bugs in it, and it's
+nowhere near complete.  gputils currently only implements a subset of
+the features available with Microchip's tools.  See the documentation for 
+an up-to-date list of what gputils can do.
+
+Installation instructions are constained in the INSTALL document.
+
+Documentation is in the "doc" directory.  The user manual is
+"gputils.lyx", it's ready for a postscript printer as "gputils.ps" or
+viewing using Adobe (TM) Acrobat (TM) as "gputils.pdf".  Lyx is
+available from http://www.lyx.org
+
+Send any bug reports to the bug tracking system at:
+
+https://sourceforge.net/projects/gputils/
+
+Please verify a bug report has not already been submitted before creating a
+new one.  In the report, please state which version of gputils you're using, 
+the machine and OS you've built it for (or not), and enough source code to 
+reproduce the problem.
+
+If you're trying to build gputils on a machine/OS but can't, you might
+want to take a look at 'stdhdr.h' and see if you can fix the problem
+there.
+
+Please send any patches you wish to be considered for the next gputils release, 
+to one of the Project Administrators listed at sourceforge.

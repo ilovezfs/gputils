@@ -1,0 +1,71 @@
+                         gpasm test scripts
+
+This directory contains the files and scripts for testing gpasm.  The 
+complete set of tests should be ran before each release.  
+
+Please don't modify an existing test file.  Modifying the file will reduce 
+its effectivness in regression testing.  It is better to create a new file that
+tests the new/untested feature. 
+
+I.  Usage
+
+To run the complete test suite:
+
+  ./test all &> test.log
+  
+This will test all tools and output the result to the file "test.log".  It
+should always be reviewed.
+
+for more information 
+
+  ./test help
+
+II.  Test structure
+
+The files come from a varitey of sources.
+
+/gpasm.mchip 
+
+This directory contains files provided by Microchip.  The files were
+provided "as is" with no guarantee of support.  They will consider future 
+requests for test files on a case by case basis.  
+
+All of the hex and object files were generated with a version of MPASM.  These
+files should never be modified.  No test file from any source other than
+Microchip shall be placed in this directory.
+
+/gpasm.project
+
+These tests were created specifically for gpasm.  The intention is to test
+features that MPASM doesn't have (like support for SX devices) or that are not
+covered by the mchip test files.
+
+All of the hex and object files should be generated from MPASM whenever 
+possible.  In cases were that is not possible, the hex files should be verified
+by hand.
+
+/old
+
+This is the original set of gpasm test files.  Some of the features they test
+are not supported by MPASM.  In cases were a feature is in conflict with a
+MPASM feature, the MPASM feature should be given priority.  New tests should 
+not be added to this test directory.
+
+III.  Adding new tests.
+
+Here are the basic steps:
+
+  1.  Write the asm file.
+  2.  Assemble with MPASM.
+  3.  Convert the \CR\LF as needed.
+  4.  Place the the files in their respective subdirectories in ./project.
+  
+The script will automatically find the file and test it.  
+
+IV. The Future.
+
+This directory structure should support dejagnu.  The tests will be converted
+sometime in the future.  At that time the test files will probably be 
+distributed as part of gpasm, to allow users to easily test new ports.  
+Unfortunately, this will double the size of the package, but it should still
+be under 1 MB.

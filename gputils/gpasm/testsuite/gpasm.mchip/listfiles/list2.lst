@@ -1,0 +1,84 @@
+MPASM Version 3.00 Beta Release   LIST2.ASM   01/31/2001  12:39:50	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; LIST2.ASM
+                        00002 
+                        00003 ; This file tests illegal formatting of the list file.
+                        00004 
+                        00005         LIST            P=17C44, R=DEC
+                        00006 
+Warning[207]: Found label after column 1. (TITL)
+Error[108]  : Illegal character (")
+                        00007         TITL            "This is my list file title."
+Warning[207]: Found label after column 1. (STITL)
+Error[108]  : Illegal character (")
+                        00008         STITL           "This is my list file subtitle."
+Warning[211]: Extraneous arguments on the line.
+MPASM Version 3.00 Beta Release   LIST2.ASM   01/31/2001  12:39:50	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00009         PAGE    2       
+                        00010         
+Error[121]  : Illegal label (Label1)
+                        00011 Label1  TITLE           "This is my second title."
+                        00012         SUBTITLE        "This is my second subtitle."
+MPASM Version 3.00 Beta Release   LIST2.ASM   01/31/2001  12:39:50	   PAGE 3
+This is my second title.
+This is my second subtitle.
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00013         PAGE    
+                        00014 
+                        00015 ; ***********************************
+Error[126]  : Argument out of range (-1)
+                        00016         SPACE   -1
+                        00017 ; ***********************************
+Error[113]  : Symbol not previously defined (a)
+                        00018         SPACE   a
+                        00019 ; ***********************************
+                        00020 
+MPASM Version 3.00 Beta Release   LIST2.ASM   01/31/2001  12:39:50	   PAGE 4
+This is my second title.
+This is my second subtitle.
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00021         PAGE
+Warning[211]: Extraneous arguments on the line.
+Error[128]  : Missing argument(s)
+Error[121]  : Illegal label (Label3)
+Error[121]  : Illegal label (Label4)
+                        00028 Label4  LIST    
+                        00029 ; Comment...
+                        00030 
+                        00031 
+                        00032         END
+MPASM Version 3.00 Beta Release   LIST2.ASM   01/31/2001  12:39:50	   PAGE 5
+This is my second title.
+This is my second subtitle.
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__17C44                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+
+
+Errors   :     8
+Warnings :     4 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

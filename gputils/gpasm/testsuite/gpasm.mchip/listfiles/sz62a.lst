@@ -1,0 +1,58 @@
+MPASM Version 3.00 Beta Release   SZ62A.ASM   01/31/2001  12:40:07	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; SZ62A.ASM
+                        00002 
+                        00003 ; This file tests for the processor-specific items for the selected
+                        00004 ; processor.
+                        00005 
+                        00006         LIST    P=16C62A, R=HEX
+                        00007 
+  000007FF              00008 MAXROM  EQU     07FF
+  0000007F              00009 MAXRAM  EQU     007F
+                        00010 
+0000     3412           00011         RETLW   12              ; 0812 = 12-BIT
+                        00012                                 ; 3412 = 14-BIT
+                        00013                                 ; B612 = 16-BIT
+                        00014 
+0001     00FF           00015         MOVWF   MAXRAM          ; OK
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0002     0080           00016         MOVWF   MAXRAM+1        ; MESSAGE
+                        00017 
+07FF                    00018         ORG     MAXROM
+07FF     0000           00019         NOP                     ; OK
+Warning[220]: Address exceeds maximum range for this processor.
+0800     0000           00020         NOP                     ; ERROR
+                        00021 
+                        00022         END
+MPASM Version 3.00 Beta Release   SZ62A.ASM   01/31/2001  12:40:07	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+MAXRAM                            0000007F
+MAXROM                            000007FF
+__16C62A                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXX------------- ---------------- ---------------- ----------------
+07C0 : ---------------- ---------------- ---------------- ---------------X
+0800 : X--------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     4
+Program Memory Words Free:  2044
+
+
+Errors   :     0
+Warnings :     1 reported,     0 suppressed
+Messages :     1 reported,     0 suppressed
+
+

@@ -1,0 +1,44 @@
+MPASM Version 3.00 Beta Release   TABS.ASM   01/31/2001  12:15:12	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001         LIST    P=16C54
+                        00002 
+                        00003 ; TABS.ASM
+                        00004 
+                        00005 ; This file show how tabs are presented in the list file.
+                        00006 
+                        00007 ;         1         2         3         4         5         6
+                        00008 ;123456789012345678901234567890123456789012345678901234567890
+                        00009 ; no tab
+                        00010         ; one tab
+                        00011                 ; two tabs
+                        00012                         ; three tabs
+                        00013                                 ; four tabs
+                        00014 
+                        00015         end
+MPASM Version 3.00 Beta Release   TABS.ASM   01/31/2001  12:15:12	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+Program Memory Words Free:   512
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

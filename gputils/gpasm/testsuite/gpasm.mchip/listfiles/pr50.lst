@@ -1,0 +1,45 @@
+MPASM Version 3.00 Beta Release   PR50.ASM   01/31/2001  12:39:55	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; PR50.ASM
+                        00002 
+                        00003 ; This file tests illegal use of the processor directive.
+                        00004 
+Error[128]  : Missing argument(s)
+                        00005         PROCESSOR               ; No value
+Error[132]  : Unknown processor (16C50)
+                        00006         PROCESSOR       16C50   ; Illegal value
+                        00007 
+Warning[207]: Found label after column 1. (RETLW)
+Error[108]  : Illegal character (1)
+                        00008         RETLW   12              ; 0812 = 12-BIT
+                        00009                                 ; 3412 = 14-BIT
+                        00010                                 ; B612 = 16-BIT
+                        00011 
+                        00012         END
+Error[131]  : Processor type is undefined
+MPASM Version 3.00 Beta Release   PR50.ASM   01/31/2001  12:39:55	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+Program Memory Words Free:     1
+
+
+Errors   :     4
+Warnings :     1 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

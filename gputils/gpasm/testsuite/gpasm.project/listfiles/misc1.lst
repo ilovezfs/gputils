@@ -1,0 +1,75 @@
+MPASM 02.61 Released            MISC1.ASM   3-8-2001  1:53:33         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001      list p=16c84
+                      00002 
+                      00003 ; Make sure directives are no longer case sensitive
+                      00004 
+                      00005      Title "test file"
+                      00006      SubTitle "for various changes"  
+                      00007      #DeFiNe frogger 2
+                      00008 
+                      00009 ; Defines can now start anywhere
+                      00010 
+                      00011 #define num1 1
+                      00012  #define num2 2
+                      00013         #define num3 3
+                      00014                  #define num4 4
+                      00015 
+  00000001            00016 anum  equ num1
+  00000002            00017 bnum  equ num2
+  00000003            00018 cnum  equ num3
+  00000004            00019 dnum  equ num4
+                      00020 
+0000   3001           00021      movlw anum
+0001   3002           00022      movlw bnum
+0002   3003           00023      movlw cnum
+0003   3004           00024      movlw dnum
+                      00025 
+                      00026 ; the undefine directive is now supported
+                      00027 
+                      00028 #undefine num1
+                      00029 
+                      00030 #define num1 5
+                      00031 
+0004   3005           00032      movlw num1
+                      00033      
+                      00034 ; Another example of how directives are not case sensitive
+                      00035      
+                      00036      eNd
+MPASM 02.61 Released            MISC1.ASM   3-8-2001  1:53:33         PAGE  2
+test file
+for various changes
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C84                           00000001
+anum                              00000001
+bnum                              00000002
+cnum                              00000003
+dnum                              00000004
+frogger                           2
+num1                              5
+num2                              2
+num3                              3
+num4                              4
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXX----------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     5
+Program Memory Words Free:  1019
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

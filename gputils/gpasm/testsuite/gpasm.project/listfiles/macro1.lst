@@ -1,0 +1,44 @@
+MPASM 02.70 Released           MACRO1.ASM   8-14-2001  21:08:36         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; this file tests macros calls that appear in column 1
+                      00002 
+                      00003   processor 16c84
+                      00004 
+                      00005 test macro 
+                      00006     retlw 0
+                      00007     endm
+                      00008 
+Warning[206]: Found call to macro in column 1. (test)
+                      00009 test
+0000   3400               M     retlw 0
+                      00010 
+                      00011    end
+MPASM 02.70 Released           MACRO1.ASM   8-14-2001  21:08:36         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C84                           00000001
+test                              
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X--------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     1
+Program Memory Words Free:  1023
+
+
+Errors   :     0
+Warnings :     1 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

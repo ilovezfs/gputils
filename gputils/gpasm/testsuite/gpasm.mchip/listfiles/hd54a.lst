@@ -1,0 +1,105 @@
+MPASM Version 3.00 Beta Release   HD54A.ASM   01/31/2001  12:11:37	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; HD54A.ASM
+                        00002 
+                        00003 ; This file tests header file usage for the specified processor.
+                        00004 
+                        00005         LIST    P=16C54A
+                        00006         INCLUDE "P16C5X.INC"
+                        00001         LIST
+                        00002 ; P16C5X.INC  Standard Header File, Version 4.00    Microchip Technology, Inc.
+                        00313         LIST
+                        00007 
+0000     0FF7 0FF7      00008         DATA    _CP_ON, 0X0FF7          ; This changes per device
+0002     0FFF 0FFF      00009         DATA    _CP_OFF, 0X0FFF
+0004     0FFF 0FFF      00010         DATA    _WDT_ON, 0X0FFF
+0006     0FFB 0FFB      00011         DATA    _WDT_OFF, 0X0FFB
+0008     0FFC 0FFC      00012         DATA    _LP_OSC, 0X0FFC
+000A     0FFD 0FFD      00013         DATA    _XT_OSC, 0X0FFD
+000C     0FFE 0FFE      00014         DATA    _HS_OSC, 0X0FFE
+000E     0FFF 0FFF      00015         DATA    _RC_OSC, 0X0FFF
+                        00016 
+0010     0006 0006      00017         DATA    PORTB, 6                ; Register Files        
+0012     0005 0005      00018         DATA    PORTA, 5
+0014     0004 0004      00019         DATA    FSR, 4  
+0016     0003 0003      00020         DATA    STATUS, 3
+0018     0002 0002      00021         DATA    PCL, 2
+001A     0001 0001      00022         DATA    TMR0, 1
+001C     0000 0000      00023         DATA    INDF, 0
+                        00024 
+001E     0007 0007      00025         DATA    PA2, 7                  ;Status Register
+0020     0006 0006      00026         DATA    PA1, 6
+0022     0005 0005      00027         DATA    PA0, 5
+0024     0004 0004      00028         DATA    NOT_TO, 4
+0026     0003 0003      00029         DATA    NOT_PD, 3
+0028     0002 0002      00030         DATA    Z, 2
+002A     0001 0001      00031         DATA    DC, 1
+002C     0000 0000      00032         DATA    C, 0
+                        00033 
+002E     0005 0005      00034         DATA    T0CS, 5                 ; Option Register
+0030     0004 0004      00035         DATA    T0SE, 4
+0032     0003 0003      00036         DATA    PSA, 3
+0034     0002 0002      00037         DATA    PS2, 2
+0036     0001 0001      00038         DATA    PS1, 1
+0038     0000 0000      00039         DATA    PS0, 0
+                        00040 
+                        00041         END
+MPASM Version 3.00 Beta Release   HD54A.ASM   01/31/2001  12:11:37	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+DC                                00000001
+F                                 00000001
+FSR                               00000004
+INDF                              00000000
+NOT_PD                            00000003
+NOT_TO                            00000004
+PA0                               00000005
+PA1                               00000006
+PA2                               00000007
+PCL                               00000002
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+STATUS                            00000003
+T0CS                              00000005
+T0SE                              00000004
+TMR0                              00000001
+W                                 00000000
+Z                                 00000002
+_CP_OFF                           00000FFF
+_CP_ON                            00000FF7
+_HS_OSC                           00000FFE
+_LP_OSC                           00000FFC
+_RC_OSC                           00000FFF
+_WDT_OFF                          00000FFB
+_WDT_ON                           00000FFF
+_XT_OSC                           00000FFD
+__16C54A                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXX------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    58
+Program Memory Words Free:   454
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,50 @@
+;MACRO6.ASM
+
+; This file tests legal macro usage.
+
+	LIST	P=17C42
+
+
+MAC1	MACRO
+	DATA	"Macro 1"
+	ENDM
+
+MAC2	MACRO
+	DATA	"Macro 2"
+	MAC1
+	ENDM
+
+MAC3	MACRO
+	DATA	"Macro 3"
+	MAC2
+	ENDM
+
+MAC4	MACRO
+	DATA	"Macro 4"
+	MAC3
+	ENDM
+
+MAC5	MACRO
+	DATA	"Macro 5"
+	MAC4
+	ENDM
+
+MAC6	MACRO
+	DATA	"Macro 6"
+	MAC5
+	ENDM
+
+MAC7	MACRO
+	DATA	"Macro 7"
+	MAC6
+	ENDM
+
+MAC8	MACRO
+	DATA	"Macro 8"
+	MAC7
+	ENDM
+
+
+	MAC8	;Maximum nesting
+
+	END

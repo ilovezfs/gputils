@@ -1,0 +1,57 @@
+MPASM Version 3.00 Beta Release   LIST10A.ASM   01/31/2001  12:39:49	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ;LIST10A.ASM
+                        00002 ;       This series of files tests symbol table and memory map
+                        00003 ;       generation in the list file.
+                        00004 
+                        00005         list    p=16c54
+                        00006 
+                        00007         list    mm=on,  st=on
+                        00008 
+                        00009         cblock  0       
+  00000000              00010            aa, bb, cc, dd, ee
+                        00011         endc
+                        00012         
+0000     0000           00013         nop
+0001     0000           00014         nop
+0002     0000           00015         nop
+0003     0000           00016         nop
+0004     0000           00017         nop
+0005     0000           00018         nop
+0006     0000           00019         nop
+0007     0000           00020         nop
+                        00021 
+                        00022         end
+MPASM Version 3.00 Beta Release   LIST10A.ASM   01/31/2001  12:39:49	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C54                           00000001
+aa                                00000000
+bb                                00000001
+cc                                00000002
+dd                                00000003
+ee                                00000004
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXX-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     8
+Program Memory Words Free:   504
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,566 @@
+MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001      list p=18c242,f=inhx32 
+                      00002      include "p18c242.inc" 
+                      00001         LIST
+                      00002 ; P18C242.INC  Standard Header File, Version 0.10   Microchip Technology, Inc.
+                      00733         LIST
+                      00003 
+  00000015            00004 test equ 0x15
+                      00005 
+                      00006      __idlocs _IDLOC0, 0x12 
+200000 FF12           00007      __idlocs _IDLOC1, 0xff 
+                      00008      __idlocs _IDLOC2, 99 
+200002 6699           00009      __idlocs _IDLOC3, 66
+                      00010      __idlocs _IDLOC4, test 
+200004 AA15           00011      __idlocs _IDLOC5, 0xAA 
+                      00012      __idlocs _IDLOC6, 0xF 
+200006 0A0F           00013      __idlocs _IDLOC7, 0xA
+                      00014 
+000000 6261 6463 6665 00015      da "abcdefg"
+       0067 
+000008 3231 3433 3635 00016      da "12345678",0
+       3837 0000 
+000012 FFFF           00017      da 0xFFFF
+                      00018 
+000014 6261 6463 6665 00019      data "abcdefg"
+       0067 
+00001C 3231 3433 3635 00020      data "12345678",0x1421,2,3,4
+       3837 1421 0002 
+       0003 0004 
+00002C FFFF           00021      data 0xFFFF
+                      00022 
+00002E 0F74 0F65 0F73 00023      db 't',0x0f,'e',0x0f,'s',0x0f,'t','\n'
+       0A74 
+                      00024 
+000036 004D 0079 0020 00025      de "My Program, v1.0",0
+       0050 0072 006F 
+       0067 0072 0061 
+       006D 002C 0020 
+       0076 0031 002E 
+       0030 0000 
+                      00026 
+000058 6261 6463 6665 00027      dw "abcdefg"
+       0067 
+000060 3231 3433 3635 00028      dw "12345678",0
+       3837 0000 
+00006A FFFF           00029      dw 0xFFFF
+                      00030 
+00006C 0C41 0C20 0C4D 00031      dt "A Message",0
+       0C65 0C73 0C73 
+       0C61 0C67 0C65 
+       0C00 
+                      00032 
+                      00033      end
+MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+A                                 00000000
+ACCESS                            00000000
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            00000FC2
+ADCON1                            00000FC1
+ADCS0                             00000006
+ADCS1                             00000007
+ADCS2                             00000006
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADIP                              00000006
+ADON                              00000000
+ADRESH                            00000FC4
+ADRESL                            00000FC3
+AN0                               00000000
+AN1                               00000001
+AN2                               00000002
+AN3                               00000003
+AN4                               00000005
+BANKED                            00000001
+BCLIE                             00000003
+BCLIF                             00000003
+BCLIP                             00000003
+BF                                00000000
+BOR                               00000000
+BRGH                              00000002
+BSR                               00000FE0
+C                                 00000000
+CCP1                              00000002
+CCP1CON                           00000FBD
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1IP                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2                              00000001
+CCP2A                             00000003
+CCP2CON                           00000FBA
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2IP                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1H                            00000FBF
+CCPR1L                            00000FBE
+CCPR2H                            00000FBC
+CCPR2L                            00000FBB
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CK                                00000006
+CKE                               00000006
+CKP                               00000004
+CLKO                              00000006
+CLRW                              CLRF WREG
+CREN                              00000004
+CSRC                              00000007
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+DC1B0                             00000004
+DC1B1                             00000005
+DC2B0                             00000004
+DC2B1                             00000005
+DDRA                              TRISA
+DDRB                              TRISB
+DDRC                              TRISC
+DONE                              00000002
+D_A                               00000005
+FAST                              00000001
+FERR                              00000002
+FSR0                              00000000
+FSR0H                             00000FEA
+FSR0L                             00000FE9
+FSR1                              00000001
+FSR1H                             00000FE2
+FSR1L                             00000FE1
+FSR2                              00000002
+FSR2H                             00000FDA
+FSR2L                             00000FD9
+GCEN                              00000007
+GIE                               00000007
+GIEH                              00000007
+GIEL                              00000006
+GO                                00000002
+GO_DONE                           00000002
+I2C_DAT                           00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+INDF0                             00000FEF
+INDF1                             00000FE7
+INDF2                             00000FDF
+INT0                              00000000
+MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+INT0E                             00000004
+INT0F                             00000001
+INT0IE                            00000004
+INT0IF                            00000001
+INT1                              00000001
+INT1IE                            00000003
+INT1IF                            00000000
+INT1IP                            00000006
+INT2                              00000002
+INT2IE                            00000004
+INT2IF                            00000001
+INT2IP                            00000007
+INTCON                            00000FF2
+INTCON1                           00000FF2
+INTCON2                           00000FF1
+INTCON3                           00000FF0
+INTEDG0                           00000006
+INTEDG1                           00000005
+INTEDG2                           00000004
+IPEN                              00000007
+IPR1                              00000F9F
+IPR2                              00000FA2
+IRVST                             00000005
+LATA                              00000F89
+LATB                              00000F8A
+LATC                              00000F8B
+LCALL                             CALL
+LGOTO                             GOTO
+LVDCON                            00000FD2
+LVDEN                             00000004
+LVDIE                             00000002
+LVDIF                             00000002
+LVDIN                             00000005
+LVDIP                             00000002
+LVDL0                             00000000
+LVDL1                             00000001
+LVDL2                             00000002
+LVDL3                             00000003
+LWRT                              00000006
+MOVFP                             MOVFF
+MOVPF                             MOVFF
+N                                 00000004
+NEGW                              NEGF WREG
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000002
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_RI                            00000004
+NOT_T1SYNC                        00000002
+MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+NOT_T3SYNC                        00000002
+NOT_TO                            00000003
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OERR                              00000001
+OSC2                              00000006
+OSCCON                            00000FD3
+OV                                00000003
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000FF9
+PCLATH                            00000FFA
+PCLATU                            00000FFB
+PD                                00000002
+PEIE                              00000006
+PEN                               00000002
+PIE1                              00000F9D
+PIE2                              00000FA0
+PIR1                              00000F9E
+PIR2                              00000FA1
+PLUSW0                            00000FEB
+PLUSW1                            00000FE3
+PLUSW2                            00000FDB
+POR                               00000001
+PORTA                             00000F80
+PORTB                             00000F81
+PORTC                             00000F82
+POSTDEC0                          00000FED
+POSTDEC1                          00000FE5
+POSTDEC2                          00000FDD
+POSTINC0                          00000FEE
+POSTINC1                          00000FE6
+POSTINC2                          00000FDE
+PR2                               00000FCB
+PREINC0                           00000FEC
+PREINC1                           00000FE4
+PREINC2                           00000FDC
+PRODH                             00000FF4
+PRODL                             00000FF3
+PSA                               00000003
+PSPIE                             00000007
+PSPIF                             00000007
+PSPIP                             00000007
+R                                 00000002
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RA5                               00000005
+RA6                               00000006
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RBIP                              00000000
+RBPU                              00000007
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCIP                              00000005
+RCON                              00000FD0
+RCREG                             00000FAE
+RCSTA                             00000FAB
+RD16                              00000007
+READ_WRITE                        00000002
+RI                                00000004
+RSEN                              00000001
+RX                                00000007
+RX9                               00000006
+RX9D                              00000000
+R_W                               00000002
+S                                 00000003
+SCK                               00000003
+SCL                               00000003
+SCS                               00000000
+SDA                               00000004
+SDI                               00000004
+SDO                               00000005
+SEN                               00000000
+SMP                               00000007
+SPBRG                             00000FAF
+SPEN                              00000007
+SREN                              00000005
+SS                                00000005
+MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SSPADD                            00000FC8
+SSPBUF                            00000FC9
+SSPCON1                           00000FC6
+SSPCON2                           00000FC5
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPIP                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000FC7
+STATUS                            00000FD8
+STKFUL                            00000007
+STKPTR                            00000FFC
+STKUNF                            00000006
+SWDTEN                            00000000
+SYNC                              00000004
+T08BIT                            00000006
+T0CKI                             00000004
+T0CON                             00000FD5
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0IP                              00000002
+T0PS0                             00000000
+T0PS1                             00000001
+T0PS2                             00000002
+T0SE                              00000004
+T1CKI                             00000000
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000FCD
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1OSI                             00000001
+T1OSO                             00000000
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000FCA
+T3CCP1                            00000003
+T3CCP2                            00000006
+T3CKPS0                           00000004
+T3CKPS1                           00000005
+T3CON                             00000FB1
+T3INSYNC                          00000002
+T3SYNC                            00000002
+TABLAT                            00000FF5
+TBLPTRH                           00000FF7
+TBLPTRL                           00000FF6
+MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TBLPTRU                           00000FF8
+TMR0H                             00000FD7
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR0IP                            00000002
+TMR0L                             00000FD6
+TMR0ON                            00000007
+TMR1CS                            00000001
+TMR1H                             00000FCF
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1IP                            00000000
+TMR1L                             00000FCE
+TMR1ON                            00000000
+TMR2                              00000FCC
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2IP                            00000001
+TMR2ON                            00000002
+TMR3CS                            00000001
+TMR3H                             00000FB3
+TMR3IE                            00000001
+TMR3IF                            00000001
+TMR3IP                            00000001
+TMR3L                             00000FB2
+TMR3ON                            00000000
+TO                                00000003
+TOSH                              00000FFE
+TOSL                              00000FFD
+TOSU                              00000FFF
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000F92
+TRISB                             00000F93
+TRISC                             00000F94
+TRMT                              00000001
+TX                                00000006
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXIP                              00000004
+TXREG                             00000FAD
+TXSTA                             00000FAC
+UA                                00000001
+VREFM                             00000002
+VREFP                             00000003
+W                                 00000000
+MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+WCOL                              00000007
+WDTCON                            00000FD1
+WREG                              00000FE8
+Z                                 00000002
+_BORV_25_2                        000000FF
+_BORV_27_2                        000000FB
+_BORV_42_2                        000000F7
+_BORV_45_2                        000000F3
+_BOR_OFF_2                        000000FD
+_BOR_ON_2                         000000FF
+_CCP2MX_OFF_5                     000000FE
+_CCP2MX_ON_5                      000000FF
+_CONFIG0                          00300000
+_CONFIG1                          00300001
+_CONFIG2                          00300002
+_CONFIG3                          00300003
+_CONFIG4                          00300004
+_CONFIG5                          00300005
+_CONFIG6                          00300006
+_CONFIG7                          00300007
+_CP_OFF_0                         000000FF
+_CP_ON_0                          00000000
+_DEVID1                           003FFFFE
+_DEVID2                           003FFFFF
+_ECIO_OSC_1                       000000FD
+_EC_OSC_1                         000000FC
+_HSPLL_OSC_1                      000000FE
+_HS_OSC_1                         000000FA
+_IDLOC0                           00200000
+_IDLOC1                           00200001
+_IDLOC2                           00200002
+_IDLOC3                           00200003
+_IDLOC4                           00200004
+_IDLOC5                           00200005
+_IDLOC6                           00200006
+_IDLOC7                           00200007
+_LP_OSC_1                         000000F8
+_OSCS_OFF_1                       000000FF
+_OSCS_ON_1                        000000DF
+_PWRT_OFF_2                       000000FF
+_PWRT_ON_2                        000000FE
+_RCIO_OSC_1                       000000FF
+_RC_OSC_1                         000000FB
+_STVR_OFF_6                       000000FE
+_STVR_ON_6                        000000FF
+_WDTPS_128_3                      000000FF
+_WDTPS_16_3                       000000F9
+_WDTPS_1_3                        000000F1
+_WDTPS_2_3                        000000F3
+_WDTPS_32_3                       000000FB
+_WDTPS_4_3                        000000F5
+_WDTPS_64_3                       000000FD
+_WDTPS_8_3                        000000F7
+MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_WDT_OFF_3                        000000FE
+_WDT_ON_3                         000000FF
+_XT_OSC_1                         000000F9
+__18C242                          00000001
+clrw                              clrf WREG
+lcall                             call
+lgoto                             goto
+movfp                             movff
+movpf                             movff
+negw                              negf WREG
+test                              00000015
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0000 : XXXXXXXX-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Bytes Used:   136
+Program Memory Bytes Free: 16248
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,612 @@
+MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; tests infinite while loop condition
+                      00002 
+                      00003     list p=16c84
+                      00004 
+                      00005     while(1)
+0000   30AA           00006       movlw 0xAA
+0001   3055           00007       movlw 0x55
+0002   30AA           00006       movlw 0xAA
+0003   3055           00007       movlw 0x55
+0004   30AA           00006       movlw 0xAA
+0005   3055           00007       movlw 0x55
+0006   30AA           00006       movlw 0xAA
+0007   3055           00007       movlw 0x55
+0008   30AA           00006       movlw 0xAA
+0009   3055           00007       movlw 0x55
+000A   30AA           00006       movlw 0xAA
+000B   3055           00007       movlw 0x55
+000C   30AA           00006       movlw 0xAA
+000D   3055           00007       movlw 0x55
+000E   30AA           00006       movlw 0xAA
+000F   3055           00007       movlw 0x55
+0010   30AA           00006       movlw 0xAA
+0011   3055           00007       movlw 0x55
+0012   30AA           00006       movlw 0xAA
+0013   3055           00007       movlw 0x55
+0014   30AA           00006       movlw 0xAA
+0015   3055           00007       movlw 0x55
+0016   30AA           00006       movlw 0xAA
+0017   3055           00007       movlw 0x55
+0018   30AA           00006       movlw 0xAA
+0019   3055           00007       movlw 0x55
+001A   30AA           00006       movlw 0xAA
+001B   3055           00007       movlw 0x55
+001C   30AA           00006       movlw 0xAA
+001D   3055           00007       movlw 0x55
+001E   30AA           00006       movlw 0xAA
+001F   3055           00007       movlw 0x55
+0020   30AA           00006       movlw 0xAA
+0021   3055           00007       movlw 0x55
+0022   30AA           00006       movlw 0xAA
+0023   3055           00007       movlw 0x55
+0024   30AA           00006       movlw 0xAA
+0025   3055           00007       movlw 0x55
+0026   30AA           00006       movlw 0xAA
+0027   3055           00007       movlw 0x55
+0028   30AA           00006       movlw 0xAA
+0029   3055           00007       movlw 0x55
+002A   30AA           00006       movlw 0xAA
+002B   3055           00007       movlw 0x55
+002C   30AA           00006       movlw 0xAA
+002D   3055           00007       movlw 0x55
+002E   30AA           00006       movlw 0xAA
+002F   3055           00007       movlw 0x55
+MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0030   30AA           00006       movlw 0xAA
+0031   3055           00007       movlw 0x55
+0032   30AA           00006       movlw 0xAA
+0033   3055           00007       movlw 0x55
+0034   30AA           00006       movlw 0xAA
+0035   3055           00007       movlw 0x55
+0036   30AA           00006       movlw 0xAA
+0037   3055           00007       movlw 0x55
+0038   30AA           00006       movlw 0xAA
+0039   3055           00007       movlw 0x55
+003A   30AA           00006       movlw 0xAA
+003B   3055           00007       movlw 0x55
+003C   30AA           00006       movlw 0xAA
+003D   3055           00007       movlw 0x55
+003E   30AA           00006       movlw 0xAA
+003F   3055           00007       movlw 0x55
+0040   30AA           00006       movlw 0xAA
+0041   3055           00007       movlw 0x55
+0042   30AA           00006       movlw 0xAA
+0043   3055           00007       movlw 0x55
+0044   30AA           00006       movlw 0xAA
+0045   3055           00007       movlw 0x55
+0046   30AA           00006       movlw 0xAA
+0047   3055           00007       movlw 0x55
+0048   30AA           00006       movlw 0xAA
+0049   3055           00007       movlw 0x55
+004A   30AA           00006       movlw 0xAA
+004B   3055           00007       movlw 0x55
+004C   30AA           00006       movlw 0xAA
+004D   3055           00007       movlw 0x55
+004E   30AA           00006       movlw 0xAA
+004F   3055           00007       movlw 0x55
+0050   30AA           00006       movlw 0xAA
+0051   3055           00007       movlw 0x55
+0052   30AA           00006       movlw 0xAA
+0053   3055           00007       movlw 0x55
+0054   30AA           00006       movlw 0xAA
+0055   3055           00007       movlw 0x55
+0056   30AA           00006       movlw 0xAA
+0057   3055           00007       movlw 0x55
+0058   30AA           00006       movlw 0xAA
+0059   3055           00007       movlw 0x55
+005A   30AA           00006       movlw 0xAA
+005B   3055           00007       movlw 0x55
+005C   30AA           00006       movlw 0xAA
+005D   3055           00007       movlw 0x55
+005E   30AA           00006       movlw 0xAA
+005F   3055           00007       movlw 0x55
+0060   30AA           00006       movlw 0xAA
+0061   3055           00007       movlw 0x55
+0062   30AA           00006       movlw 0xAA
+0063   3055           00007       movlw 0x55
+0064   30AA           00006       movlw 0xAA
+MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0065   3055           00007       movlw 0x55
+0066   30AA           00006       movlw 0xAA
+0067   3055           00007       movlw 0x55
+0068   30AA           00006       movlw 0xAA
+0069   3055           00007       movlw 0x55
+006A   30AA           00006       movlw 0xAA
+006B   3055           00007       movlw 0x55
+006C   30AA           00006       movlw 0xAA
+006D   3055           00007       movlw 0x55
+006E   30AA           00006       movlw 0xAA
+006F   3055           00007       movlw 0x55
+0070   30AA           00006       movlw 0xAA
+0071   3055           00007       movlw 0x55
+0072   30AA           00006       movlw 0xAA
+0073   3055           00007       movlw 0x55
+0074   30AA           00006       movlw 0xAA
+0075   3055           00007       movlw 0x55
+0076   30AA           00006       movlw 0xAA
+0077   3055           00007       movlw 0x55
+0078   30AA           00006       movlw 0xAA
+0079   3055           00007       movlw 0x55
+007A   30AA           00006       movlw 0xAA
+007B   3055           00007       movlw 0x55
+007C   30AA           00006       movlw 0xAA
+007D   3055           00007       movlw 0x55
+007E   30AA           00006       movlw 0xAA
+007F   3055           00007       movlw 0x55
+0080   30AA           00006       movlw 0xAA
+0081   3055           00007       movlw 0x55
+0082   30AA           00006       movlw 0xAA
+0083   3055           00007       movlw 0x55
+0084   30AA           00006       movlw 0xAA
+0085   3055           00007       movlw 0x55
+0086   30AA           00006       movlw 0xAA
+0087   3055           00007       movlw 0x55
+0088   30AA           00006       movlw 0xAA
+0089   3055           00007       movlw 0x55
+008A   30AA           00006       movlw 0xAA
+008B   3055           00007       movlw 0x55
+008C   30AA           00006       movlw 0xAA
+008D   3055           00007       movlw 0x55
+008E   30AA           00006       movlw 0xAA
+008F   3055           00007       movlw 0x55
+0090   30AA           00006       movlw 0xAA
+0091   3055           00007       movlw 0x55
+0092   30AA           00006       movlw 0xAA
+0093   3055           00007       movlw 0x55
+0094   30AA           00006       movlw 0xAA
+0095   3055           00007       movlw 0x55
+0096   30AA           00006       movlw 0xAA
+0097   3055           00007       movlw 0x55
+0098   30AA           00006       movlw 0xAA
+0099   3055           00007       movlw 0x55
+MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+009A   30AA           00006       movlw 0xAA
+009B   3055           00007       movlw 0x55
+009C   30AA           00006       movlw 0xAA
+009D   3055           00007       movlw 0x55
+009E   30AA           00006       movlw 0xAA
+009F   3055           00007       movlw 0x55
+00A0   30AA           00006       movlw 0xAA
+00A1   3055           00007       movlw 0x55
+00A2   30AA           00006       movlw 0xAA
+00A3   3055           00007       movlw 0x55
+00A4   30AA           00006       movlw 0xAA
+00A5   3055           00007       movlw 0x55
+00A6   30AA           00006       movlw 0xAA
+00A7   3055           00007       movlw 0x55
+00A8   30AA           00006       movlw 0xAA
+00A9   3055           00007       movlw 0x55
+00AA   30AA           00006       movlw 0xAA
+00AB   3055           00007       movlw 0x55
+00AC   30AA           00006       movlw 0xAA
+00AD   3055           00007       movlw 0x55
+00AE   30AA           00006       movlw 0xAA
+00AF   3055           00007       movlw 0x55
+00B0   30AA           00006       movlw 0xAA
+00B1   3055           00007       movlw 0x55
+00B2   30AA           00006       movlw 0xAA
+00B3   3055           00007       movlw 0x55
+00B4   30AA           00006       movlw 0xAA
+00B5   3055           00007       movlw 0x55
+00B6   30AA           00006       movlw 0xAA
+00B7   3055           00007       movlw 0x55
+00B8   30AA           00006       movlw 0xAA
+00B9   3055           00007       movlw 0x55
+00BA   30AA           00006       movlw 0xAA
+00BB   3055           00007       movlw 0x55
+00BC   30AA           00006       movlw 0xAA
+00BD   3055           00007       movlw 0x55
+00BE   30AA           00006       movlw 0xAA
+00BF   3055           00007       movlw 0x55
+00C0   30AA           00006       movlw 0xAA
+00C1   3055           00007       movlw 0x55
+00C2   30AA           00006       movlw 0xAA
+00C3   3055           00007       movlw 0x55
+00C4   30AA           00006       movlw 0xAA
+00C5   3055           00007       movlw 0x55
+00C6   30AA           00006       movlw 0xAA
+00C7   3055           00007       movlw 0x55
+00C8   30AA           00006       movlw 0xAA
+00C9   3055           00007       movlw 0x55
+00CA   30AA           00006       movlw 0xAA
+00CB   3055           00007       movlw 0x55
+00CC   30AA           00006       movlw 0xAA
+00CD   3055           00007       movlw 0x55
+00CE   30AA           00006       movlw 0xAA
+MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00CF   3055           00007       movlw 0x55
+00D0   30AA           00006       movlw 0xAA
+00D1   3055           00007       movlw 0x55
+00D2   30AA           00006       movlw 0xAA
+00D3   3055           00007       movlw 0x55
+00D4   30AA           00006       movlw 0xAA
+00D5   3055           00007       movlw 0x55
+00D6   30AA           00006       movlw 0xAA
+00D7   3055           00007       movlw 0x55
+00D8   30AA           00006       movlw 0xAA
+00D9   3055           00007       movlw 0x55
+00DA   30AA           00006       movlw 0xAA
+00DB   3055           00007       movlw 0x55
+00DC   30AA           00006       movlw 0xAA
+00DD   3055           00007       movlw 0x55
+00DE   30AA           00006       movlw 0xAA
+00DF   3055           00007       movlw 0x55
+00E0   30AA           00006       movlw 0xAA
+00E1   3055           00007       movlw 0x55
+00E2   30AA           00006       movlw 0xAA
+00E3   3055           00007       movlw 0x55
+00E4   30AA           00006       movlw 0xAA
+00E5   3055           00007       movlw 0x55
+00E6   30AA           00006       movlw 0xAA
+00E7   3055           00007       movlw 0x55
+00E8   30AA           00006       movlw 0xAA
+00E9   3055           00007       movlw 0x55
+00EA   30AA           00006       movlw 0xAA
+00EB   3055           00007       movlw 0x55
+00EC   30AA           00006       movlw 0xAA
+00ED   3055           00007       movlw 0x55
+00EE   30AA           00006       movlw 0xAA
+00EF   3055           00007       movlw 0x55
+00F0   30AA           00006       movlw 0xAA
+00F1   3055           00007       movlw 0x55
+00F2   30AA           00006       movlw 0xAA
+00F3   3055           00007       movlw 0x55
+00F4   30AA           00006       movlw 0xAA
+00F5   3055           00007       movlw 0x55
+00F6   30AA           00006       movlw 0xAA
+00F7   3055           00007       movlw 0x55
+00F8   30AA           00006       movlw 0xAA
+00F9   3055           00007       movlw 0x55
+00FA   30AA           00006       movlw 0xAA
+00FB   3055           00007       movlw 0x55
+00FC   30AA           00006       movlw 0xAA
+00FD   3055           00007       movlw 0x55
+00FE   30AA           00006       movlw 0xAA
+00FF   3055           00007       movlw 0x55
+0100   30AA           00006       movlw 0xAA
+0101   3055           00007       movlw 0x55
+0102   30AA           00006       movlw 0xAA
+0103   3055           00007       movlw 0x55
+MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0104   30AA           00006       movlw 0xAA
+0105   3055           00007       movlw 0x55
+0106   30AA           00006       movlw 0xAA
+0107   3055           00007       movlw 0x55
+0108   30AA           00006       movlw 0xAA
+0109   3055           00007       movlw 0x55
+010A   30AA           00006       movlw 0xAA
+010B   3055           00007       movlw 0x55
+010C   30AA           00006       movlw 0xAA
+010D   3055           00007       movlw 0x55
+010E   30AA           00006       movlw 0xAA
+010F   3055           00007       movlw 0x55
+0110   30AA           00006       movlw 0xAA
+0111   3055           00007       movlw 0x55
+0112   30AA           00006       movlw 0xAA
+0113   3055           00007       movlw 0x55
+0114   30AA           00006       movlw 0xAA
+0115   3055           00007       movlw 0x55
+0116   30AA           00006       movlw 0xAA
+0117   3055           00007       movlw 0x55
+0118   30AA           00006       movlw 0xAA
+0119   3055           00007       movlw 0x55
+011A   30AA           00006       movlw 0xAA
+011B   3055           00007       movlw 0x55
+011C   30AA           00006       movlw 0xAA
+011D   3055           00007       movlw 0x55
+011E   30AA           00006       movlw 0xAA
+011F   3055           00007       movlw 0x55
+0120   30AA           00006       movlw 0xAA
+0121   3055           00007       movlw 0x55
+0122   30AA           00006       movlw 0xAA
+0123   3055           00007       movlw 0x55
+0124   30AA           00006       movlw 0xAA
+0125   3055           00007       movlw 0x55
+0126   30AA           00006       movlw 0xAA
+0127   3055           00007       movlw 0x55
+0128   30AA           00006       movlw 0xAA
+0129   3055           00007       movlw 0x55
+012A   30AA           00006       movlw 0xAA
+012B   3055           00007       movlw 0x55
+012C   30AA           00006       movlw 0xAA
+012D   3055           00007       movlw 0x55
+012E   30AA           00006       movlw 0xAA
+012F   3055           00007       movlw 0x55
+0130   30AA           00006       movlw 0xAA
+0131   3055           00007       movlw 0x55
+0132   30AA           00006       movlw 0xAA
+0133   3055           00007       movlw 0x55
+0134   30AA           00006       movlw 0xAA
+0135   3055           00007       movlw 0x55
+0136   30AA           00006       movlw 0xAA
+0137   3055           00007       movlw 0x55
+0138   30AA           00006       movlw 0xAA
+MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0139   3055           00007       movlw 0x55
+013A   30AA           00006       movlw 0xAA
+013B   3055           00007       movlw 0x55
+013C   30AA           00006       movlw 0xAA
+013D   3055           00007       movlw 0x55
+013E   30AA           00006       movlw 0xAA
+013F   3055           00007       movlw 0x55
+0140   30AA           00006       movlw 0xAA
+0141   3055           00007       movlw 0x55
+0142   30AA           00006       movlw 0xAA
+0143   3055           00007       movlw 0x55
+0144   30AA           00006       movlw 0xAA
+0145   3055           00007       movlw 0x55
+0146   30AA           00006       movlw 0xAA
+0147   3055           00007       movlw 0x55
+0148   30AA           00006       movlw 0xAA
+0149   3055           00007       movlw 0x55
+014A   30AA           00006       movlw 0xAA
+014B   3055           00007       movlw 0x55
+014C   30AA           00006       movlw 0xAA
+014D   3055           00007       movlw 0x55
+014E   30AA           00006       movlw 0xAA
+014F   3055           00007       movlw 0x55
+0150   30AA           00006       movlw 0xAA
+0151   3055           00007       movlw 0x55
+0152   30AA           00006       movlw 0xAA
+0153   3055           00007       movlw 0x55
+0154   30AA           00006       movlw 0xAA
+0155   3055           00007       movlw 0x55
+0156   30AA           00006       movlw 0xAA
+0157   3055           00007       movlw 0x55
+0158   30AA           00006       movlw 0xAA
+0159   3055           00007       movlw 0x55
+015A   30AA           00006       movlw 0xAA
+015B   3055           00007       movlw 0x55
+015C   30AA           00006       movlw 0xAA
+015D   3055           00007       movlw 0x55
+015E   30AA           00006       movlw 0xAA
+015F   3055           00007       movlw 0x55
+0160   30AA           00006       movlw 0xAA
+0161   3055           00007       movlw 0x55
+0162   30AA           00006       movlw 0xAA
+0163   3055           00007       movlw 0x55
+0164   30AA           00006       movlw 0xAA
+0165   3055           00007       movlw 0x55
+0166   30AA           00006       movlw 0xAA
+0167   3055           00007       movlw 0x55
+0168   30AA           00006       movlw 0xAA
+0169   3055           00007       movlw 0x55
+016A   30AA           00006       movlw 0xAA
+016B   3055           00007       movlw 0x55
+016C   30AA           00006       movlw 0xAA
+016D   3055           00007       movlw 0x55
+MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+016E   30AA           00006       movlw 0xAA
+016F   3055           00007       movlw 0x55
+0170   30AA           00006       movlw 0xAA
+0171   3055           00007       movlw 0x55
+0172   30AA           00006       movlw 0xAA
+0173   3055           00007       movlw 0x55
+0174   30AA           00006       movlw 0xAA
+0175   3055           00007       movlw 0x55
+0176   30AA           00006       movlw 0xAA
+0177   3055           00007       movlw 0x55
+0178   30AA           00006       movlw 0xAA
+0179   3055           00007       movlw 0x55
+017A   30AA           00006       movlw 0xAA
+017B   3055           00007       movlw 0x55
+017C   30AA           00006       movlw 0xAA
+017D   3055           00007       movlw 0x55
+017E   30AA           00006       movlw 0xAA
+017F   3055           00007       movlw 0x55
+0180   30AA           00006       movlw 0xAA
+0181   3055           00007       movlw 0x55
+0182   30AA           00006       movlw 0xAA
+0183   3055           00007       movlw 0x55
+0184   30AA           00006       movlw 0xAA
+0185   3055           00007       movlw 0x55
+0186   30AA           00006       movlw 0xAA
+0187   3055           00007       movlw 0x55
+0188   30AA           00006       movlw 0xAA
+0189   3055           00007       movlw 0x55
+018A   30AA           00006       movlw 0xAA
+018B   3055           00007       movlw 0x55
+018C   30AA           00006       movlw 0xAA
+018D   3055           00007       movlw 0x55
+018E   30AA           00006       movlw 0xAA
+018F   3055           00007       movlw 0x55
+0190   30AA           00006       movlw 0xAA
+0191   3055           00007       movlw 0x55
+0192   30AA           00006       movlw 0xAA
+0193   3055           00007       movlw 0x55
+0194   30AA           00006       movlw 0xAA
+0195   3055           00007       movlw 0x55
+0196   30AA           00006       movlw 0xAA
+0197   3055           00007       movlw 0x55
+0198   30AA           00006       movlw 0xAA
+0199   3055           00007       movlw 0x55
+019A   30AA           00006       movlw 0xAA
+019B   3055           00007       movlw 0x55
+019C   30AA           00006       movlw 0xAA
+019D   3055           00007       movlw 0x55
+019E   30AA           00006       movlw 0xAA
+019F   3055           00007       movlw 0x55
+01A0   30AA           00006       movlw 0xAA
+01A1   3055           00007       movlw 0x55
+01A2   30AA           00006       movlw 0xAA
+MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+01A3   3055           00007       movlw 0x55
+01A4   30AA           00006       movlw 0xAA
+01A5   3055           00007       movlw 0x55
+01A6   30AA           00006       movlw 0xAA
+01A7   3055           00007       movlw 0x55
+01A8   30AA           00006       movlw 0xAA
+01A9   3055           00007       movlw 0x55
+01AA   30AA           00006       movlw 0xAA
+01AB   3055           00007       movlw 0x55
+01AC   30AA           00006       movlw 0xAA
+01AD   3055           00007       movlw 0x55
+01AE   30AA           00006       movlw 0xAA
+01AF   3055           00007       movlw 0x55
+01B0   30AA           00006       movlw 0xAA
+01B1   3055           00007       movlw 0x55
+01B2   30AA           00006       movlw 0xAA
+01B3   3055           00007       movlw 0x55
+01B4   30AA           00006       movlw 0xAA
+01B5   3055           00007       movlw 0x55
+01B6   30AA           00006       movlw 0xAA
+01B7   3055           00007       movlw 0x55
+01B8   30AA           00006       movlw 0xAA
+01B9   3055           00007       movlw 0x55
+01BA   30AA           00006       movlw 0xAA
+01BB   3055           00007       movlw 0x55
+01BC   30AA           00006       movlw 0xAA
+01BD   3055           00007       movlw 0x55
+01BE   30AA           00006       movlw 0xAA
+01BF   3055           00007       movlw 0x55
+01C0   30AA           00006       movlw 0xAA
+01C1   3055           00007       movlw 0x55
+01C2   30AA           00006       movlw 0xAA
+01C3   3055           00007       movlw 0x55
+01C4   30AA           00006       movlw 0xAA
+01C5   3055           00007       movlw 0x55
+01C6   30AA           00006       movlw 0xAA
+01C7   3055           00007       movlw 0x55
+01C8   30AA           00006       movlw 0xAA
+01C9   3055           00007       movlw 0x55
+01CA   30AA           00006       movlw 0xAA
+01CB   3055           00007       movlw 0x55
+01CC   30AA           00006       movlw 0xAA
+01CD   3055           00007       movlw 0x55
+01CE   30AA           00006       movlw 0xAA
+01CF   3055           00007       movlw 0x55
+01D0   30AA           00006       movlw 0xAA
+01D1   3055           00007       movlw 0x55
+01D2   30AA           00006       movlw 0xAA
+01D3   3055           00007       movlw 0x55
+01D4   30AA           00006       movlw 0xAA
+01D5   3055           00007       movlw 0x55
+01D6   30AA           00006       movlw 0xAA
+01D7   3055           00007       movlw 0x55
+MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+01D8   30AA           00006       movlw 0xAA
+01D9   3055           00007       movlw 0x55
+01DA   30AA           00006       movlw 0xAA
+01DB   3055           00007       movlw 0x55
+01DC   30AA           00006       movlw 0xAA
+01DD   3055           00007       movlw 0x55
+01DE   30AA           00006       movlw 0xAA
+01DF   3055           00007       movlw 0x55
+01E0   30AA           00006       movlw 0xAA
+01E1   3055           00007       movlw 0x55
+01E2   30AA           00006       movlw 0xAA
+01E3   3055           00007       movlw 0x55
+01E4   30AA           00006       movlw 0xAA
+01E5   3055           00007       movlw 0x55
+01E6   30AA           00006       movlw 0xAA
+01E7   3055           00007       movlw 0x55
+01E8   30AA           00006       movlw 0xAA
+01E9   3055           00007       movlw 0x55
+01EA   30AA           00006       movlw 0xAA
+01EB   3055           00007       movlw 0x55
+01EC   30AA           00006       movlw 0xAA
+01ED   3055           00007       movlw 0x55
+01EE   30AA           00006       movlw 0xAA
+01EF   3055           00007       movlw 0x55
+01F0   30AA           00006       movlw 0xAA
+01F1   3055           00007       movlw 0x55
+01F2   30AA           00006       movlw 0xAA
+01F3   3055           00007       movlw 0x55
+01F4   30AA           00006       movlw 0xAA
+01F5   3055           00007       movlw 0x55
+01F6   30AA           00006       movlw 0xAA
+01F7   3055           00007       movlw 0x55
+01F8   30AA           00006       movlw 0xAA
+01F9   3055           00007       movlw 0x55
+01FA   30AA           00006       movlw 0xAA
+01FB   3055           00007       movlw 0x55
+01FC   30AA           00006       movlw 0xAA
+01FD   3055           00007       movlw 0x55
+01FE   30AA           00006       movlw 0xAA
+01FF   3055           00007       movlw 0x55
+Error[140]  : WHILE must terminate within 256 iterations
+                      00008     endw
+                      00009 
+                      00010     end
+MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C84                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+01C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+
+All other memory blocks unused.
+
+Program Memory Words Used:   512
+Program Memory Words Free:   512
+
+
+Errors   :     1
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

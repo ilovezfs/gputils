@@ -1,0 +1,79 @@
+MPASM Version 3.00 Beta Release   IFDEF1.ASM   01/31/2001  12:12:57	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; IFDEF1.ASM
+                        00002 
+                        00003 ; This file tests legal usage of the IFDEF and IFNDEF directives.
+                        00004 
+                        00005         LIST    P=17C42
+                        00006 
+                        00007 #define Def1
+                        00008 
+                        00009         IFDEF   Def1
+0000     4F4B           00010            DATA "OK"
+                        00011         ENDIF
+                        00012 
+                        00013         IFDEF   Def2
+                        00014            ERROR        "Symbol not defined"
+                        00015         ENDIF
+                        00016 
+                        00017         IFNDEF  Def1
+                        00018            ERROR        "Symbol not defined"
+                        00019         ENDIF
+                        00020 
+                        00021         IFNDEF  Def2
+0001     4F4B           00022            DATA "OK"
+                        00023         ENDIF
+                        00024 
+                        00025         IFDEF   Def1
+0002     4F4B           00026            DATA "OK"
+                        00027         ELSE
+                        00028            ERROR        "Symbol was defined"
+                        00029         ENDIF
+                        00030 
+                        00031         IFDEF   Def2
+                        00032            Error        "Symbol was not defined"
+                        00033         ELSE
+0003     4F4B           00034            DATA "OK"
+                        00035         ENDIF
+                        00036 
+                        00037         IFNDEF  Def1
+                        00038            ERROR        "Symbol was defined"
+                        00039         ELSE
+0004     4F4B           00040            DATA "OK"
+                        00041         ENDIF
+                        00042 
+                        00043         IFNDEF  Def2
+0005     4F4B           00044            DATA "OK"
+                        00045         ELSE
+                        00046            Error        "Symbol was not defined"
+                        00047         ENDIF
+                        00048 
+                        00049         END
+MPASM Version 3.00 Beta Release   IFDEF1.ASM   01/31/2001  12:12:57	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Def1                              
+__17C42                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXX---------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     6
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

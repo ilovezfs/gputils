@@ -1,0 +1,129 @@
+MPASM Version 3.00 Beta Release   CBLOCK1.ASM   01/31/2001  12:11:09	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; CBLOCK1.ASM
+                        00002 
+                        00003 ; This file tests legal usage of CBLOCK.
+                        00004 
+                        00005         LIST    P=16C54,R=HEX
+                        00006 
+Message[313]: CBLOCK constants will start with a value of 0.
+                        00007         CBLOCK                  ; Start at 0.
+  00000000              00008                 Block01
+                        00009         ENDC
+                        00010         
+                        00011         CBLOCK                  ; Start where left off - 1
+  00000001              00012                 Block02
+                        00013         ENDC
+                        00014 
+                        00015         CBLOCK  0x10            ; Start at 0x10
+  00000010              00016                 Block03
+                        00017         ENDC
+                        00018 
+                        00019         CBLOCK  0x20            ; Multiple symbols on one line
+  00000020              00020                 Block04, Block05, Block06
+                        00021         ENDC
+                        00022 
+                        00023         CBLOCK  0x30            ; Multiple lines
+  00000030              00024                 Block07
+  00000031              00025                 Block08
+  00000032              00026                 Block09
+                        00027         ENDC
+                        00028 
+                        00029         CBLOCK  0x40            ; General mishmash
+  00000040              00030                 Block10,Block11
+  00000042              00031                 Block12
+  00000043              00032                 Block13  ,  Block14  ,  Block15
+                        00033         ENDC
+                        00034 
+0000     0000 0001 0010 00035         DATA    Block01, Block02, Block03
+0003     0020 0021 0022 00036         DATA    Block04, Block05, Block06
+0006     0030 0031 0032 00037         DATA    Block07, Block08, Block09
+0009     0040 0041 0042 00038         DATA    Block10, Block11, Block12
+000C     0043 0044 0045 00039         DATA    Block13, Block14, Block15
+                        00040 
+                        00041         CBLOCK  0x0a
+  0000000A              00042                 w
+                        00043         ENDC
+                        00044 
+000F     000A           00045         DATA    w
+                        00046 
+                        00047 ;***** Test for SSR #2070
+                        00048 
+                        00049 #define QUEUE_SIZE      20
+                        00050 
+                        00051         CBLOCK  0x100
+  00000100              00052            TwoByte:0, TwoByteHigh, TwoByteLow
+MPASM Version 3.00 Beta Release   CBLOCK1.ASM   01/31/2001  12:11:09	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+  00000102              00053            QueueBuffer : QUEUE_SIZE
+  00000122              00054            QueueHead, QueueTail
+  00000124              00055            CalcSize : (2+3) * 2
+  0000012E              00056            EndMark
+                        00057         ENDC
+                        00058 
+0010     0100 0100 0101 00059         DATA    TwoByte, TwoByteHigh, TwoByteLow
+0013     0102           00060         DATA    QueueBuffer
+0014     0122 0123      00061         DATA    QueueHead, QueueTail
+0016     0124           00062         DATA    CalcSize
+0017     012E           00063         DATA    EndMark
+                        00064 
+                        00065 ;***** End test
+                        00066 
+                        00067         END
+MPASM Version 3.00 Beta Release   CBLOCK1.ASM   01/31/2001  12:11:09	   PAGE 3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Block01                           00000000
+Block02                           00000001
+Block03                           00000010
+Block04                           00000020
+Block05                           00000021
+Block06                           00000022
+Block07                           00000030
+Block08                           00000031
+Block09                           00000032
+Block10                           00000040
+Block11                           00000041
+Block12                           00000042
+Block13                           00000043
+Block14                           00000044
+Block15                           00000045
+CalcSize                          00000124
+EndMark                           0000012E
+QUEUE_SIZE                        20
+QueueBuffer                       00000102
+QueueHead                         00000122
+QueueTail                         00000123
+TwoByte                           00000100
+TwoByteHigh                       00000100
+TwoByteLow                        00000101
+__16C54                           00000001
+w                                 0000000A
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXX-------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    24
+Program Memory Words Free:   488
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     1 reported,     0 suppressed
+
+

@@ -1,0 +1,41 @@
+MPASM Version 3.00 Beta Release   ALLMESS8.ASM   01/31/2001  12:11:06	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ;ALLMESS8.ASM
+                        00002 ;       This file tests for messages generated from command line or
+                        00003 ;       interface options.  It must be assembled with the command line 
+                        00004 ;       options /W1 /M.
+                        00005 
+                        00006         list    p=16c54
+                        00007 
+                        00008         errorlevel      2               ; Message 308 Warning level superceded by command line value.
+                        00009 
+                        00010         expand                          ; Message 309 Macro expansion superceded by commandline.
+                        00011 
+                        00012         end     
+MPASM Version 3.00 Beta Release   ALLMESS8.ASM   01/31/2001  12:11:06	   PAGE 2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+All other memory blocks unused.
+
+Program Memory Words Used:     0
+Program Memory Words Free:   512
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,188 @@
+MPASM Version 3.00 Beta Release   OPERAT2.ASM   01/31/2001  12:39:53	   PAGE 1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                        00001 ; OPERAT2.ASM
+                        00002 
+                        00003 ; This file tests all operators for illegal usage.
+                        00004 
+                        00005         LIST    P=16C54,R=HEX
+                        00006 
+Error[109]  : Unmatched (
+Error[124]  : Illegal argument
+0000     0000           00007         DATA    (1                      ; Missing paren
+Error[110]  : Unmatched )
+0001     0000           00008         DATA    1)                      ; Missing paren
+Error[128]  : Missing argument(s)
+0002     0000           00009         DATA    !                       ; No value
+Error[128]  : Missing argument(s)
+0003     0000           00010         DATA    -                       ; No value
+Error[128]  : Missing argument(s)
+0004     0000           00011         DATA    ~                       ; No value
+Error[128]  : Missing argument(s)
+0005     0000           00012         DATA    HIGH                    ; No value
+Error[128]  : Missing argument(s)
+0006     0000           00013         DATA    LOW                     ; No value
+Error[128]  : Missing argument(s)
+0007     0000           00014         DATA    2*                      ; Missing value
+Error[128]  : Missing argument(s)
+0008     0000           00015         DATA     * 4                    ; Missing value
+Error[128]  : Missing argument(s)
+0009     0000           00016         DATA    9/                      ; Missing value
+Error[128]  : Missing argument(s)
+000A     0000           00017         DATA     / 2                    ; Missing value
+Error[128]  : Missing argument(s)
+000B     0000           00018         DATA    9%                      ; Missing value
+Error[128]  : Missing argument(s)
+000C     0000           00019         DATA     % 5                    ; Missing value
+Error[128]  : Missing argument(s)
+000D     0000           00020         DATA    1+                      ; Missing value
+Error[128]  : Missing argument(s)
+000E     0000           00021         DATA     + 4                    ; Missing value
+Error[128]  : Missing argument(s)
+000F     0000           00022         DATA    8-                      ; Missing value
+Error[128]  : Missing argument(s)
+0010     0000           00023         DATA     - 1                    ; Missing value
+Error[128]  : Missing argument(s)
+0011     0000           00024         DATA    1<<                     ; Missing value
+Error[128]  : Missing argument(s)
+0012     0000           00025         DATA     << 2                   ; Missing value
+Error[128]  : Missing argument(s)
+0013     0000           00026         DATA    8>>                     ; Missing value
+Error[128]  : Missing argument(s)
+0014     0000           00027         DATA     >> 1                   ; Missing value
+Error[128]  : Missing argument(s)
+0015     0000           00028         DATA    2>=                     ; Missing value
+Error[128]  : Missing argument(s)
+0016     0000           00029         DATA     >= 5                   ; Missing value
+MPASM Version 3.00 Beta Release   OPERAT2.ASM   01/31/2001  12:39:53	   PAGE 2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Error[128]  : Missing argument(s)
+0017     0000           00030         DATA    5>                      ; Missing value
+Error[128]  : Missing argument(s)
+0018     0000           00031         DATA     > 6                    ; Missing value
+Error[128]  : Missing argument(s)
+0019     0000           00032         DATA    7<                      ; Missing value
+Error[128]  : Missing argument(s)
+001A     0000           00033         DATA     < 7                    ; Missing value
+Error[128]  : Missing argument(s)
+001B     0000           00034         DATA    8<=                     ; Missing value
+Error[128]  : Missing argument(s)
+001C     0000           00035         DATA     <= 3                   ; Missing value
+Error[128]  : Missing argument(s)
+001D     0000           00036         DATA    3==                     ; Missing value
+Error[128]  : Missing argument(s)
+001E     0000           00037         DATA     == 5                   ; Missing value
+Error[128]  : Missing argument(s)
+001F     0000           00038         DATA    7!=                     ; Missing value
+Error[128]  : Missing argument(s)
+0020     0000           00039         DATA     != 8                   ; Missing value
+Error[128]  : Missing argument(s)
+0021     0000           00040         DATA    7&                      ; Missing value
+Error[128]  : Missing argument(s)
+0022     0000           00041         DATA     & 2                    ; Missing value
+Error[128]  : Missing argument(s)
+0023     0000           00042         DATA    8^                      ; Missing value
+Error[128]  : Missing argument(s)
+0024     0000           00043         DATA     ^ 1                    ; Missing value
+Error[128]  : Missing argument(s)
+0025     0000           00044         DATA    2|                      ; Missing value
+Error[128]  : Missing argument(s)
+0026     0000           00045         DATA     | 1                    ; Missing value
+Error[128]  : Missing argument(s)
+0027     0000           00046         DATA    1&&                     ; Missing value
+Error[128]  : Missing argument(s)
+0028     0000           00047         DATA     && 0                   ; Missing value
+Error[128]  : Missing argument(s)
+0029     0000           00048         DATA    1||                     ; Missing value
+Error[128]  : Missing argument(s)
+002A     0000           00049         DATA     || 0                   ; Missing value
+                        00050 
+Error[128]  : Missing argument(s)
+                        00051 I = 
+Error[111]  : Missing symbol
+                        00052  = 4
+Error[128]  : Missing argument(s)
+                        00053 I += 
+Error[111]  : Missing symbol
+                        00054  += 1
+Error[128]  : Missing argument(s)
+                        00055 I -= 
+Error[111]  : Missing symbol
+                        00056  -= 2
+MPASM Version 3.00 Beta Release   OPERAT2.ASM   01/31/2001  12:39:53	   PAGE 3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Error[128]  : Missing argument(s)
+                        00057 I *= 
+Error[111]  : Missing symbol
+                        00058  *= 2
+Error[128]  : Missing argument(s)
+                        00059 I /= 
+Error[111]  : Missing symbol
+                        00060  /= 3
+Error[128]  : Missing argument(s)
+                        00061 I %= 
+Error[111]  : Missing symbol
+                        00062  %= 2
+Error[128]  : Missing argument(s)
+                        00063 I <<= 
+Error[111]  : Missing symbol
+                        00064  <<= 3
+Error[128]  : Missing argument(s)
+                        00065 I >>= 
+Error[111]  : Missing symbol
+                        00066  >>= 1
+Error[128]  : Missing argument(s)
+                        00067 I &= 
+Error[111]  : Missing symbol
+                        00068  &= 2
+Error[128]  : Missing argument(s)
+                        00069 I |= 
+Error[111]  : Missing symbol
+                        00070  |= 4
+Error[128]  : Missing argument(s)
+                        00071 I ^= 
+Error[111]  : Missing symbol
+                        00072  ^= 7
+                        00073 
+Error[113]  : Symbol not previously defined (J)
+  00000000              00074 I = J                           ; Undefined symbol
+Error[108]  : Illegal character ($)
+  00000000              00075  $
+                        00076 
+                        00077         END
+MPASM Version 3.00 Beta Release   OPERAT2.ASM   01/31/2001  12:39:53	   PAGE 4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+I                                 00000000
+__16C54                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXX----- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    43
+Program Memory Words Free:   469
+
+
+Errors   :    68
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

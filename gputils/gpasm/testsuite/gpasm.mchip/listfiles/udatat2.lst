@@ -1,0 +1,17 @@
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Error[125]  : Illegal condition (EOF encountered before END or conditional end directive)
+Error[131]  : Processor type is undefined
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+
+Errors   :     2
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
