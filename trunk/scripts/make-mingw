@@ -28,6 +28,7 @@
 
 # Options for the system on which the package will run.
 CC=i386-mingw32msvc-gcc      
+CFLAGS="-s -O2"      
 distname="mingw32"
 host=i386-mingw32msvc
 # autoconf can't test cross compilers, so set the variables in the configure
@@ -122,7 +123,7 @@ Configuration:
   --help                  print this message
   --email=EMAIL           email address of the maintainer
   --name=NAME             name of the maintainer
-  --messy                 leave temporary directories
+  --save-temps            leave temporary directories
 Directory and file names:
   --release=NUMBER        release number of the distribution [RELEASE=1]
   --patch=PATCH           patch applied to source
@@ -134,7 +135,7 @@ EOF
     exit 0 
     ;;
 
-  --messy)
+  --save-temps)
     clean=no 
     ;;
 
@@ -239,7 +240,7 @@ distname="gputils-$version-$release-$distname"
 ################################################################################
 
 print_banner "Configuring project"
-CC=$CC ./configure --prefix=$dist_dir/gputils --datadir=$dist_dir \
+CC=$CC CFLAGS=$CFLAGS ./configure --prefix=$dist_dir/gputils --datadir=$dist_dir \
   $config_options
 RETVAL=$?
 if [ $RETVAL -ne 0 ]; then
