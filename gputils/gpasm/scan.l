@@ -55,14 +55,15 @@ static char *check_defines(char *symbol);
 static struct symbol *current_definition;	/* Used in #define */
 static int quoted; /* Used to prevent #define expansion in ifdef and 
                       ifndef... */
-static int force_decimal; /* Used to force decimal in errorlevel */
+int force_decimal; /* Used to force radix to decimal for some directives */
+int force_ident; /* Used to force numbers to identifiers for processor names */
 
 %}
 
 IDENT  [.]?[a-z_\x80-\xff?@#][a-z_0-9\x80-\xff.?@#]*
 ESCCH  \\([abfnrtv\\?'"]|0[0-7]{2}|x[0-9a-f]{2})
 STR_QCHAR  ([^"\n]|{ESCCH})
-NUMCHAR [0-9a-f]
+NUMCHAR [0-9a-z]
 
 %%
 ^[ \t]*#?include[ \t]*[<"]? { BEGIN(incl); }
@@ -104,10 +105,8 @@ cblock			 {
 			   return CBLOCK;
 			 }
 errorlevel		 {
-			   /* Force decimal interpretation for errorlevel*/
-			   force_decimal = 1;
 			   yylval.s = strdup(yytext);
-			   return IDENTIFIER;
+			   return ERRORLEVEL;
 			 }
 endc			 {
 			   return ENDC;
@@ -175,10 +174,12 @@ low		     	 {
 			   return LOW;
 			 }
 list		     	 {
-			  /* Force decimal interpretation for list*/
-			  force_decimal = 1;
-			  yylval.s = strdup(yytext);
-			  return IDENTIFIER;
+			   yylval.s = strdup(yytext);
+			   return LIST;
+			 }
+processor	     	 {
+			   yylval.s = strdup(yytext);
+			   return PROCESSOR;
 			 }
 #?if			 {
 			   /* #if and if can appear in column 1 */
@@ -333,24 +334,22 @@ list		     	 {
 			     return IDENTIFIER;
                            }
 			 }
-1[24678][CFHL0][CERV]?[0-9X][0-9X][0-9]?[0-9ABC]? {
-/* Ugh.  As a special case, treat processor names, such as 16C84
-as identifiers rather than as hex numbers. */
-                           yylval.s = strdup(yytext);
-			   return IDENTIFIER;
-			 }
 0x{NUMCHAR}+             {
                            yylval.i = stringtolong(yytext + 2, 16);
 			   return NUMBER;
 			 }
 {NUMCHAR}+b              {
-                           if (state.radix == 16) {
+                           if (force_ident) {
+                             yylval.s = strdup(yytext);
+                             return IDENTIFIER;
+                           } else if (state.radix == 16) {
                              yylval.i = stringtolong(yytext, 16);                           
+  			     return NUMBER;
 			   } else {
 			     yytext[yyleng - 1] = '\0';
                              yylval.i = stringtolong(yytext, 2);
+  			     return NUMBER;
 			   }
-			   return NUMBER;
 			 }
 b'-?{NUMCHAR}+'          {
                            yytext[yyleng - 1] = '\0';
@@ -358,9 +357,14 @@ b'-?{NUMCHAR}+'          {
 			   return NUMBER;
 			 }
 {NUMCHAR}+[oq]           {			 
-                           yytext[yyleng - 1] = '\0';
-                           yylval.i = stringtolong(yytext, 8);
-			   return NUMBER;
+                           if (force_ident) {
+                             yylval.s = strdup(yytext);
+                             return IDENTIFIER;
+                           } else {
+                             yytext[yyleng - 1] = '\0';
+                             yylval.i = stringtolong(yytext, 8);
+			     return NUMBER;
+			   }
 			 }
 [oq]'-?{NUMCHAR}+'       {
                            yytext[yyleng - 1] = '\0';
@@ -368,13 +372,17 @@ b'-?{NUMCHAR}+'          {
 			   return NUMBER;
 			 }
 {NUMCHAR}+d              {
-                           if (state.radix == 16) {
+                           if (force_ident) {
+                             yylval.s = strdup(yytext);
+                             return IDENTIFIER;
+                           } else if (state.radix == 16) {
                              yylval.i = stringtolong(yytext, 16);                           
+  			     return NUMBER;
 			   } else {
 			     yytext[yyleng - 1] = '\0';
                              yylval.i = stringtolong(yytext, 10);
+  			     return NUMBER;
 			   }
-			   return NUMBER;
 			 }
 d'-?[0-9]+'		 {
                            yytext[yyleng - 1] = '\0';
@@ -386,9 +394,14 @@ d'-?[0-9]+'		 {
 			   return NUMBER;
 			 }
 {NUMCHAR}+h              {			 
-                           yytext[yyleng - 1] = '\0';
-                           yylval.i = stringtolong(yytext, 16);
-			   return NUMBER;
+                           if (force_ident) {
+                             yylval.s = strdup(yytext);
+                             return IDENTIFIER;
+                           } else {
+                             yytext[yyleng - 1] = '\0';
+                             yylval.i = stringtolong(yytext, 16);
+			     return NUMBER;
+			   }
 			 }			 
 h'-?{NUMCHAR}+'          {
                            yytext[yyleng - 1] = '\0';
@@ -396,12 +409,16 @@ h'-?{NUMCHAR}+'          {
 			   return NUMBER;
 			 }
 {NUMCHAR}+		 {
-                           if (force_decimal) {
+                           if (force_ident) {
+                             yylval.s = strdup(yytext);
+                             return IDENTIFIER;
+                           } else if (force_decimal) {
                              yylval.i = stringtolong(yytext, 10);
-                           }else {
+   			     return NUMBER;
+                           } else {
                              yylval.i = stringtolong(yytext, state.radix);
+   			     return NUMBER;
                            }
-   			   return NUMBER;
 			 }
 \"{STR_QCHAR}\"          {
                            yylval.i = gpasm_magic(yytext + 1);
@@ -455,6 +472,7 @@ A'{STR_QCHAR}'           {
 [\n]		         {
 			   quoted = 0;
 			   force_decimal = 0;
+			   force_ident = 0;
  			   return yytext[0];
 			 }
 ^";----- Register".*     {
@@ -554,6 +572,13 @@ void open_src(char *name, int isinclude)
 
   state.src = new;
   state.src->fc = add_file(ft_src, new->name); 
+
+  if (!isinclude) {
+    /* it is the top level file so initialize the lexer */
+    quoted = 0;
+    force_decimal = 0;
+    force_ident = 0;
+  }
 }
 
 void execute_macro(struct macro_head *h, int is_while)

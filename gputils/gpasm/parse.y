@@ -225,8 +225,11 @@ void next_line(int value)
 %token <s> IDENTIFIER
 %token <s> CBLOCK
 %token <s> ENDC
+%token <s> ERRORLEVEL
 %token <s> FILL
+%token <s> LIST
 %token <i> NUMBER
+%token <s> PROCESSOR
 %token <s> STRING
 %token <s> INCLUDE
 %token <i> UPPER
@@ -303,6 +306,8 @@ void next_line(int value)
 %type <i> e8op
 %type <i> e9op
 %type <i> assign_equal_ops
+%type <p> list_block
+%type <p> list_expr
 
 %%
 /* Grammar rules */
@@ -468,6 +473,32 @@ statement:
 	INCLUDE '\n'
 	{
 	  $$ = do_or_append_insn("include", mk_list(mk_string($1), NULL));
+	}
+	|
+	PROCESSOR {  force_ident = 1; }
+        IDENTIFIER '\n'
+	{
+	  $$ = do_or_append_insn($1, mk_list(mk_symbol($3), NULL));
+	  force_ident = 0;
+	}
+	|
+	LIST '\n'
+	{
+	  $$ = do_or_append_insn($1, NULL);
+	}
+	|
+	LIST {  force_decimal = 1; }
+        list_block '\n'
+	{
+	  $$ = do_or_append_insn($1, $3);
+	  force_decimal = 0;
+	}
+	|
+	ERRORLEVEL {  force_decimal = 1; }
+        parameter_list '\n'
+	{
+	  $$ = do_or_append_insn($1, $3);
+	  force_decimal = 0;
 	}
 	|
 	IDENTIFIER '\n'
@@ -823,5 +854,36 @@ label_concat:
 	  }
         }        
         ;
+
+list_block:
+	list_expr
+	{
+	  $$ = mk_list($1, NULL);
+	}
+	|
+	list_expr ',' list_block
+	{
+	  $$ = mk_list($1, $3);
+	}
+	;
+
+list_expr:
+	IDENTIFIER
+        {
+	  if (strcasecmp($1, "p") == 0) { 
+            force_ident = 1;
+          }
+        }
+        e9op e8
+	{
+	  $$ = mk_2op($3, mk_symbol($1), $4);
+	  force_ident = 0;
+	}
+	|
+	e8
+	{
+	  $$ = $1;
+	}
+	;
 
 %%

@@ -27,4 +27,7 @@ void close_file();
 void execute_exitm();
 void execute_macro(struct macro_head *h, int is_while);
 
+extern int force_ident;
+extern int force_decimal;
+
 #endif

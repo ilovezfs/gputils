@@ -1,3 +1,8 @@
+2004-09-13 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * Remove processor name kludge in gpasm lexer. 
+  * Fixed bug in gpal indirect access banksel. 
+  * Fixed bug in gpal function return values.
+
 2004-09-05 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Added new error message to gplink to catch udata sections in devices
     with only shared memory definitions.
