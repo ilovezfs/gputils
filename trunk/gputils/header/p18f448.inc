@@ -406,7 +406,7 @@ T0PS2           EQU  H'0002'
 T0PS1           EQU  H'0001'
 T0PS0           EQU  H'0000'
 
-;----- OSCON Bits ---------------------------------------------------------
+;----- OSCCON Bits ---------------------------------------------------------
 SCS             EQU  H'0000'
 
 ;----- LVDCON Bits ---------------------------------------------------------
@@ -1389,17 +1389,12 @@ AN7             EQU  2
 ;       Configuration Bits
 ;
 ;     Data Sheet    Include File                  Address
-;     CONFIG1L    = Configuration Byte 1L         300000h
 ;     CONFIG1H    = Configuration Byte 1H         300001h
 ;     CONFIG2L    = Configuration Byte 2L         300002h
 ;     CONFIG2H    = Configuration Byte 2H         300003h
 ;     CONFIG4L    = Configuration Byte 4L         300006h
 ;
 ;==========================================================================
-
-;Configuration Byte 1L Options
-_CP_ON_1L         EQU  H'00'	; Code Protect enable   
-_CP_OFF_1L        EQU  H'FF'
 
 ;Configuration Byte 1H Options
 _OSCS_ON_1H       EQU  H'DF'	; Oscillator Switch enable
@@ -1490,13 +1485,12 @@ _EBTRB_OFF_7H        EQU  H'FF'    ; Disabled
 
 ; To use the Configuration Bits, place the following lines in your source code
 ;  in the following format, and change the configuration value to the desired 
-;  setting (such as CP_OFF to CP_ON).  These are currently commented out here
+;  setting (such as _BOR_ON_2L).  These are currently commented out here
 ;  and each __CONFIG line should have the preceding semicolon removed when
 ;  pasted into your source code.
 
 ;  The following is a assignment of address values for all of the configuration
 ;  registers for the purpose of table reads
-_CONFIG1L       EQU    H'300000'
 _CONFIG1H       EQU    H'300001'
 _CONFIG2L       EQU    H'300002'
 _CONFIG2H       EQU    H'300003'
@@ -1517,9 +1511,6 @@ _IDLOC4         EQU    H'200004'
 _IDLOC5         EQU    H'200005'
 _IDLOC6         EQU    H'200006'
 _IDLOC7         EQU    H'200007'
-
-;Program Configuration Register 1L
-;		__CONFIG    _CONFIG1L, _CP_OFF_1L
 
 ;Program Configuration Register 1H
 ;		__CONFIG    _CONFIG1H, _OSCS_OFF_1H & _RCIO_OSC_1H

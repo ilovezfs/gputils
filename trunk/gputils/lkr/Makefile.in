@@ -199,6 +199,8 @@ EXTRA_DIST = \
 	16cr72.lkr \
 	16cr83.lkr \
 	16cr84.lkr \
+	16f54.lkr \
+	16f57.lkr \
 	16f627ai.lkr \
 	16f627a.lkr \
 	16f627.lkr \
@@ -212,10 +214,19 @@ EXTRA_DIST = \
 	16f676i.lkr \
 	16f676.lkr \
 	16f684.lkr \
+	16f716.lkr \
 	16f72.lkr \
+	16f737i.lkr \
+	16f737.lkr \
 	16f73.lkr \
+	16f747i.lkr \
+	16f747.lkr \
 	16f74.lkr \
 	16f76.lkr \
+	16f767i.lkr \
+	16f767.lkr \
+	16f777i.lkr \
+	16f777.lkr \
 	16f77.lkr \
 	16f818i.lkr \
 	16f818.lkr \
@@ -290,12 +301,17 @@ EXTRA_DIST = \
 	18f2439.lkr \
 	18f248i.lkr \
 	18f248.lkr \
+	18f2515.lkr \
+	18f2525.lkr \
 	18f252i.lkr \
 	18f252.lkr \
 	18f2539i.lkr \
 	18f2539.lkr \
 	18f258i.lkr \
 	18f258.lkr \
+	18f2610.lkr \
+	18f2620_e.lkr \
+	18f2620.lkr \
 	18f4220i.lkr \
 	18f4220.lkr \
 	18f4320i.lkr \
@@ -308,50 +324,16 @@ EXTRA_DIST = \
 	18f4439.lkr \
 	18f448i.lkr \
 	18f448.lkr \
+	18f4515.lkr \
+	18f4525.lkr \
 	18f452i.lkr \
 	18f452.lkr \
 	18f4539i.lkr \
 	18f4539.lkr \
 	18f458i.lkr \
 	18f458.lkr \
-	18f6520i.lkr \
-	18f6520.lkr \
-	18f6525i.lkr \
-	18f6525.lkr \
-	18f6585i.lkr \
-	18f6585.lkr \
-	18f6620i.lkr \
-	18f6620.lkr \
-	18f6621i.lkr \
-	18f6621.lkr \
-	18f6680i.lkr \
-	18f6680.lkr \
-	18f6720i.lkr \
-	18f6720.lkr \
-	18f8520i.lkr \
-	18f8520.lkr \
-	18f8525i.lkr \
-	18f8525.lkr \
-	18f8585i.lkr \
-	18f8585.lkr \
-	18f8620i.lkr \
-	18f8620.lkr \
-	18f8621i.lkr \
-	18f8621.lkr \
-	18f8680i.lkr \
-	18f8680.lkr \
-	18f8720i.lkr \
-	18f8720.lkr \
-	hcs1365.lkr \
-	hcs1370.lkr \
-	rf509af.lkr \
-	rf509ag.lkr \
-	rf675fi.lkr \
-	rf675f.lkr \
-	rf675hi.lkr \
-	rf675h.lkr \
-	rf675ki.lkr \
-	rf675k.lkr
+	18f4610.lkr \
+	18f4620_e.lkr
 
 
 pkgdata_DATA = $(EXTRA_DIST)
@@ -495,6 +477,45 @@ uninstall-am: uninstall-info-am uninstall-pkgdataDATA
 	mostlyclean mostlyclean-generic uninstall uninstall-am \
 	uninstall-info-am uninstall-pkgdataDATA
 
+	18f4620.lkr \
+	18f6520i.lkr \
+	18f6520.lkr \
+	18f6525i.lkr \
+	18f6525.lkr \
+	18f6585i.lkr \
+	18f6585.lkr \
+	18f6620i.lkr \
+	18f6620.lkr \
+	18f6621i.lkr \
+	18f6621.lkr \
+	18f6680i.lkr \
+	18f6680.lkr \
+	18f6720i.lkr \
+	18f6720.lkr \
+	18f8520i.lkr \
+	18f8520.lkr \
+	18f8525i.lkr \
+	18f8525.lkr \
+	18f8585i.lkr \
+	18f8585.lkr \
+	18f8620i.lkr \
+	18f8620.lkr \
+	18f8621i.lkr \
+	18f8621.lkr \
+	18f8680i.lkr \
+	18f8680.lkr \
+	18f8720i.lkr \
+	18f8720.lkr \
+	hcs1365.lkr \
+	hcs1370.lkr \
+	rf509af.lkr \
+	rf509ag.lkr \
+	rf675fi.lkr \
+	rf675f.lkr \
+	rf675hi.lkr \
+	rf675h.lkr \
+	rf675ki.lkr \
+	rf675k.lkr
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
