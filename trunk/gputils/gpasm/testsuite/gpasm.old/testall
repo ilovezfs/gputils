@@ -1,0 +1,116 @@
+#!/bin/bash
+
+#   testall tests gpasm, these are older tests
+#   Copyright (C) 2001 Craig Franklin
+#
+# This file is part of gpasm.
+#
+# gpasm is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# gpasm is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with gpasm; see the file COPYING.  If not, write to
+# the Free Software Foundation, 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.  
+
+# Defines
+GPASM=../../gpasm
+FLAGS=-q
+
+function testfailed {
+  echo FAILED
+  exit 1
+}
+
+if [ ! $1 ]; then
+  echo "Not enough arguments. Try \"$0 help\" for help."
+  exit 1
+fi
+
+case "$1" in
+
+  all)
+    if !(test -e $GPASM); then
+      echo "$GPASM not found.  Aborting."
+      exit 1
+    else
+      $GPASM -v
+    fi
+    echo flash.asm
+    $GPASM $FLAGS flash.asm	|| testfailed
+    echo lights.asm
+    $GPASM $FLAGS lights.asm	|| testfailed
+    echo stack.asm
+    $GPASM $FLAGS stack.asm	|| testfailed
+    echo test0.asm
+    $GPASM $FLAGS test0.asm	|| testfailed
+    echo test1.asm
+    $GPASM $FLAGS test1.asm	|| testfailed
+    echo test3.asm
+    $GPASM $FLAGS test3.asm	|| testfailed
+    echo test4.asm
+    $GPASM $FLAGS test4.asm	|| testfailed
+    echo test5.asm
+    $GPASM $FLAGS test5.asm	|| testfailed
+    echo test6.asm
+    $GPASM $FLAGS test6.asm	|| testfailed
+    echo test7.asm
+    $GPASM $FLAGS test7.asm	|| testfailed
+    echo test8.asm
+    $GPASM $FLAGS test8.asm	|| testfailed
+    echo test9.asm
+    $GPASM $FLAGS test9.asm	|| testfailed
+    echo test10.asm
+    $GPASM $FLAGS test10.asm	|| testfailed
+    echo x.asm
+    $GPASM $FLAGS x.asm		|| testfailed
+    echo safp.asm
+    $GPASM $FLAGS safp.asm	|| testfailed
+
+    diff -s safp.hex safp.hex.golden || testfailed
+    echo errorlevel.asm
+    echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    echo XXXXXX Intentional errors XXXXXXXXXXXXX
+    echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    $GPASM errorlevel.asm
+    echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    echo XXXXXX End of Intentional errors XXXXXX
+    echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+    echo "All tests sucessful"
+    exit
+    ;;
+  clean)
+    /bin/rm -f *.hex *.hxh *.hxl *.lst *.cod core
+    exit
+    ;;
+  help)
+    echo "-----------------------------------------------------------"
+    echo " testall - gpasm test script "
+    echo "-----------------------------------------------------------"
+    echo "Usage: $0 <option>"
+    echo
+    echo "Options:"
+    echo "       all    = run all tests"
+    echo "       clean  = clean all test directories"
+    echo "       help   = display this help message"
+    echo
+    echo "Notes:" 
+    echo "       This is an old gpasm test.  Some of the features it"
+    echo "       tests for are not supported by MPASM."
+    exit
+    ;;
+  *)
+    echo "$0: Invalid argument. Try \"$0 help\" for help."
+    exit 1  
+    ;;
+esac
+
+exit
