@@ -1993,11 +1993,11 @@ Warnings and error printed.
 \newline 
 Errors printed.
 \newline 
-+<msgnum>
+-<msgnum>
 \newline 
 Inhibits the printing of message <msgnum>.
 \newline 
--<msgnum>
++<msgnum>
 \newline 
 Enables the printing of message <msgnum>.
 \layout Standard
