@@ -83,11 +83,9 @@ int gpasm_magic(char *c)
     default:
       return c[1];
     }
-  } else {
-    return c[0];
   }
 
-  return 0;
+  return c[0];
 }
 
 void set_global(char *name,
