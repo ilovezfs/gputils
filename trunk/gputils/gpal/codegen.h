@@ -35,6 +35,7 @@ void codegen_write_equ(char *label, int value);
 void codegen_set_bank(char *bank_name);
 void codegen_set_ibank(char *ibank_name);
 void codegen_set_page(char *page_name);
+char *codegen_get_offset_buffer(int offset);
 
 void codegen_jump(char *label);
 void codegen_call(char *label, enum node_storage storage);

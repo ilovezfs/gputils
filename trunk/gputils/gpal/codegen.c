@@ -210,6 +210,24 @@ codegen_set_page(char *page_name)
 
 }
 
+/* Generate offset buffer string.  Static buffer used, so not thread-safe */
+
+char *
+codegen_get_offset_buffer(int offset)
+{
+  static char buffer[64];
+
+  if (offset == 0) {
+    buffer[0] = '\0';
+  } else if (offset < 0) {
+    snprintf(buffer, sizeof(buffer), " - %#x", -offset);
+  } else {
+    snprintf(buffer, sizeof(buffer), " + %#x", offset);
+  }
+
+  return buffer;
+}
+
 /****************************************************************************/
 /* Common directives and instructions                                       */
 /****************************************************************************/
