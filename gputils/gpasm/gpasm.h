@@ -38,6 +38,8 @@ Boston, MA 02111-1307, USA.  */
 			 
 typedef int gpasmVal; 		/* The type that internal arithmetic uses */
 enum gpasmValTypes {gvt_constant, gvt_cblock, gvt_org, gvt_address};
+enum state_types { _exitmacro, _nochange, _macro, _while, 
+                   _substitution, _include };
 
 enum outfile { normal, suppress, named };
 enum file_types { ft_src, ft_hex, ft_lst, ft_cod, ft_other }; /* allowed file types */
@@ -70,6 +72,7 @@ extern struct gpasm_state {
     *stGlobal,			/* Global symbols */
     *stTop,			/* Top of locals stack (stGlobal is base) */
     *stDefines,			/* Preprocessor #defines */
+    *stTopDefines,		/* Macro #defines (stDefines is base) */
     *stMacros;			/* Macros */
   MemBlock *i_memory;		/* Instruction memory linked list */
   unsigned int c_memory_base;	/* Base address of configuration memory */
@@ -136,6 +139,11 @@ extern struct gpasm_state {
   struct macro_body **mac_prev; /* Stitching ptr */
   struct macro_body *mac_body;	/* While we're building a macro */
   struct macro_head *while_head;/* WHILEs work a lot like macros... */
+  enum state_types next_state; 
+  union {
+    char       *file;
+    struct macro_head *macro;
+  } next_buffer;
 } state;
 
 struct variable {
@@ -187,18 +195,21 @@ struct file_context {
 
 struct source_context {
   char *name;
-  FILE *f, *f2;
+  enum src_types { file, macro, substitution } type;
+  FILE *f; 
+  union {
+    FILE *f;                  
+    struct macro_body *m;  
+  } lst; 
   struct yy_buffer_state *yybuf;
   unsigned int line_number;
-  struct source_context *prev;
   struct file_context *fc;    /*   Position in the file context stack */
-  char line[BUFSIZ];
+  struct source_context *prev;
 };
 
 enum globalLife { TEMPORARY, PERMANENT };
 
 void yyerror(char *s);
-int gpasm_number(char *);
 int gpasm_magic(char *);
 gpasmVal do_or_append_insn(char *op, struct pnode *parms);
 void set_global(char *name,

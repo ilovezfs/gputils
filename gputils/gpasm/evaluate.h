@@ -1,5 +1,5 @@
-/* Implements directives, pseudo-ops and processor opcodes
-   Copyright (C) 1998,1999,2000,2001 James Bowman, Craig Franklin
+/* evaluates variables
+   Copyright (C) 2002 Craig Franklin
 
 This file is part of gputils.
 
@@ -18,23 +18,17 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-#ifndef __OPCODE_H__
-#define __OPCODE_H__
+#ifndef __EVALUATE_H__
+#define __EVALUATE_H__
 
-#define HEAD(L) (L)->value.list.head
-#define TAIL(L) (L)->value.list.tail
-
-#define CORE_8BIT_MASK  0xff
-#define CORE_12BIT_MASK 0xfff
-#define CORE_14BIT_MASK 0x3fff
-#define CORE_16BIT_MASK 0xffff
-
-gpasmVal do_insn(char *name, struct pnode *parms);
-void opcode_init(int stage);
-void begin_cblock(struct pnode *c);
-void cblock_expr(struct pnode *s);
-void cblock_expr_incr(struct pnode *s, struct pnode *incr);
-int asm_enabled(void);
-int check_page(struct pnode *p);
+int enforce_arity(int arity, int must_be);
+int enforce_simple(struct pnode *p);
+int list_length(struct pnode *L);
+int can_evaluate_concatenation(struct pnode *p);
+int can_evaluate(struct pnode *p);
+char *evaluate_concatenation(struct pnode *p);
+gpasmVal evaluate(struct pnode *p);
+gpasmVal maybe_evaluate(struct pnode *p);
+int eval_fill_number(struct pnode *p);
 
 #endif

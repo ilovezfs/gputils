@@ -1,0 +1,53 @@
+MPASM 03.00 Released             SET1.ASM   2-24-2002  17:09:13         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; This file tests for the proper evaluation of set in a macro
+                      00002 
+                      00003   processor 16c84
+                      00004 
+                      00005 test macro 
+                      00006 number set number + 1
+                      00007   retlw number
+                      00008   endm
+                      00009 
+  00000000            00010 number set 0
+                      00011   test
+  00000001                M number set number + 1
+0000   3401               M   retlw number
+                      00012   test
+  00000002                M number set number + 1
+0001   3402               M   retlw number
+                      00013   test
+  00000003                M number set number + 1
+0002   3403               M   retlw number
+                      00014 
+                      00015   end
+MPASM 03.00 Released             SET1.ASM   2-24-2002  17:09:13         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C84                           00000001
+number                            00000003
+test                              
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXX------------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     3
+Program Memory Words Free:  1021
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,3 +1,20 @@
+2002-02-23 Craig Franklin <craigfranklin@attbi.com>
+  * Macros are now implemented as a text substitution at the input to the 
+    lexer.  All macro arguments are preprocessor substitutions like #define.
+  * Fixed a bug that caused i = i + 1 type expressions to be evaluated twice
+    in macros.
+  * Include statements now appear before the body of the file in the listing.
+  * Macro calls now appear before the body of the macro in the listing.
+  * Fixed a bug that allowed #defines in the body of a macro to be processed 
+    during the macro definition.
+  * "fill (<expression>),number", equ, and various other commands now work in
+    macros.
+  * Fixed several bugs in the processing of numeric constants.  For example,
+    with a hex radix setting "100b" is now evaluated as 0x100b not 0x4.
+  * #v() subsitutions will now work in cblocks and macros.
+  * Fixed a bug that could cause a segmentation fault with a bad text 
+    substitution.
+
 2002-01-27 Craig Franklin <craigfranklin@attbi.com>
   * added rpm spec file.
 
