@@ -16,7 +16,9 @@ PUB_FILES =\
 	p12ce673.pub \
 	p12ce674.pub \
 	p12f629.pub \
+	p12f635.pub \
 	p12f675.pub \
+	p12f683.pub \
 	p14000.pub \
 	p16c432.pub \
 	p16c433.pub \
@@ -26,36 +28,36 @@ PUB_FILES =\
 	p16c61.pub \
 	p16c62.pub \
 	p16c62a.pub \
-	p16c62b.pub \
-	p16c620.pub \
-	p16c620a.pub \
-	p16c621.pub \
-	p16c621a.pub \
-	p16c622.pub \
 	p16c622a.pub \
 	p16c63.pub \
 	p16c63a.pub \
 	p16c64.pub \
 	p16c64a.pub \
 	p16c642.pub \
+	p16c62b.pub \
+	p16c620.pub \
+	p16c620a.pub \
+	p16c621.pub \
+	p16c621a.pub \
+	p16c622.pub \
 	p16c65.pub \
 	p16c65a.pub \
 	p16c65b.pub \
 	p16c66.pub \
 	p16c662.pub \
 	p16c67.pub \
-	p16c71.pub \
-	p16c710.pub \
-	p16c711.pub \
-	p16c712.pub \
-	p16c715.pub \
-	p16c716.pub \
 	p16c717.pub \
 	p16c72.pub \
 	p16c72a.pub \
 	p16c73.pub \
 	p16c73a.pub \
 	p16c73b.pub \
+	p16c71.pub \
+	p16c710.pub \
+	p16c711.pub \
+	p16c712.pub \
+	p16c715.pub \
+	p16c716.pub \
 	p16c74.pub \
 	p16c745.pub \
 	p16c74a.pub \
@@ -89,6 +91,7 @@ PUB_FILES =\
 	p16f628.pub \
 	p16f628a.pub \
 	p16f630.pub \
+	p16f636.pub \
 	p16f648a.pub \
 	p16f676.pub \
 	p16f684.pub \
@@ -102,6 +105,7 @@ PUB_FILES =\
 	p16f767.pub \
 	p16f77.pub \
 	p16f777.pub \
+	p16f785.pub \
 	p16f818.pub \
 	p16f819.pub \
 	p16f83.pub \
@@ -120,6 +124,10 @@ PUB_FILES =\
 	p16f877.pub \
 	p16f877a.pub \
 	p16f88.pub \
+	p16f913.pub \
+	p16f914.pub \
+	p16f916.pub \
+	p16f917.pub \
 	rf675f.pub \
 	rf675h.pub \
 	rf675k.pub

@@ -307,6 +307,8 @@ struct px {
   char *defined_as;
   char *names[MAX_NAMES];
   unsigned long coff_type; 
+  int num_pages;
+  int num_banks;
   char *script;
 };
 
@@ -352,6 +354,8 @@ struct px *gp_find_processor(char *name);
 enum proc_class gp_processor_class(enum pic_processor);
 int gp_processor_bsr_boundary(enum pic_processor processor);
 unsigned long gp_processor_coff_type(enum pic_processor processor);
+int gp_processor_num_pages(enum pic_processor processor);
+int gp_processor_num_banks(enum pic_processor processor);
 enum pic_processor gp_processor_coff_proc(unsigned long coff_type);
 char *gp_processor_name(enum pic_processor processor, unsigned int choice);
 char *gp_processor_coff_name(unsigned long coff_type, unsigned int choice);
@@ -360,10 +364,12 @@ int gp_processor_rom_width(enum proc_class class);
 int gp_processor_check_page(enum proc_class class, int address);
 int gp_processor_check_bank(enum proc_class class, int address);
 int gp_processor_set_page(enum proc_class class, 
+                          int num_pages,
                           int page,
                           MemBlock *m, 
                           int address);
 int gp_processor_set_bank(enum proc_class class, 
+                          int num_banks,
                           int bank,
                           MemBlock *m, 
                           int address);

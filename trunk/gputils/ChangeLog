@@ -1,3 +1,6 @@
+2004-09-16 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * Improved banksel and pagesel directives.
+
 2004-09-13 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Remove processor name kludge in gpasm lexer. 
   * Fixed bug in gpal indirect access banksel. 

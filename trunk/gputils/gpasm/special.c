@@ -206,6 +206,7 @@ static gpasmVal do_lcall(gpasmVal r,
   int page = gp_processor_check_page(state.device.class, address);
   
   state.org += gp_processor_set_page(state.device.class, 
+                                     state.processor_info->num_pages,
                                      page, 
                                      state.i_memory, 
                                      state.org);
@@ -223,6 +224,7 @@ static gpasmVal do_lgoto(gpasmVal r,
   int page = gp_processor_check_page(state.device.class, address);
   
   state.org += gp_processor_set_page(state.device.class, 
+                                     state.processor_info->num_pages,
                                      page, 
                                      state.i_memory, 
                                      state.org);

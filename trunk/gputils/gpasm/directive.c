@@ -477,6 +477,7 @@ static gpasmVal do_banksel(gpasmVal r,
         address = maybe_evaluate(p);
         bank = gp_processor_check_bank(state.device.class, address);
         state.org += gp_processor_set_bank(state.device.class, 
+                                           state.processor_info->num_banks,
                                            bank, 
                                            state.i_memory, 
                                            state.org);
@@ -489,6 +490,7 @@ static gpasmVal do_banksel(gpasmVal r,
         address = maybe_evaluate(p);
         bank = gp_processor_check_bank(state.device.class, address);
         state.org += gp_processor_set_bank(state.device.class, 
+                                           state.processor_info->num_banks,
                                            bank, 
                                            state.i_memory, 
                                            state.org);
@@ -501,9 +503,17 @@ static gpasmVal do_banksel(gpasmVal r,
         reloc_evaluate(p, RELOCT_BANKSEL);
         emit(0);
       } else {
-        reloc_evaluate(p, RELOCT_BANKSEL);
-        emit(0);
-        emit(0);
+        switch (state.processor_info->num_banks) {
+        case 2:
+          reloc_evaluate(p, RELOCT_BANKSEL);
+          emit(0);
+          break;      
+        case 4:
+          reloc_evaluate(p, RELOCT_BANKSEL);
+          emit(0);
+          emit(0);
+          break;
+        }
       }
     }
   }
@@ -1676,6 +1686,7 @@ static gpasmVal do_pagesel(gpasmVal r,
         page = gp_processor_check_page(state.device.class, address);
 
         state.org += gp_processor_set_page(state.device.class, 
+                                           state.processor_info->num_pages,
                                            page, 
                                            state.i_memory, 
                                            state.org);
@@ -1689,6 +1700,7 @@ static gpasmVal do_pagesel(gpasmVal r,
         page = gp_processor_check_page(state.device.class, address);
 
         state.org += gp_processor_set_page(state.device.class, 
+                                           state.processor_info->num_pages,
                                            page, 
                                            state.i_memory, 
                                            state.org);
@@ -1699,9 +1711,17 @@ static gpasmVal do_pagesel(gpasmVal r,
         emit(0);
         emit(0);
       } else {
-        reloc_evaluate(p, RELOCT_PAGESEL_BITS);
-        emit(0);
-        emit(0);
+        switch (state.processor_info->num_pages) {
+        case 2:
+          reloc_evaluate(p, RELOCT_PAGESEL_BITS);
+          emit(0);
+          break;      
+        case 4:
+          reloc_evaluate(p, RELOCT_PAGESEL_BITS);
+          emit(0);
+          emit(0);
+          break;
+        }
       }
     }
 

@@ -40,7 +40,7 @@ for x in `gpal -l | sort`
   done
   
 echo >> Makefile.am
-echo "%.asm: ../header/%.inc" >> Makefile.am
+echo "%.asm: \${top_srcdir}/header/%.inc" >> Makefile.am
 echo "	echo \"  processor\" \`echo \$@ | sed -e 's%.asm% %g'\` > \$@" >> Makefile.am
 echo "	echo \"  include\" \$< >> \$@" >> Makefile.am
 echo "	echo \"  end\" >> \$@" >> Makefile.am
