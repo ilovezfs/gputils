@@ -298,8 +298,6 @@ sed -e s/@VERSION@/$version/\
     -e s/@RELEASE@/$release/\
     $root_dir/gputils.nsi.in > $dist_dir/gputils/gputils.nsi
 echo "creating NSIS script... gputils.nsi"
-cp $root_dir/gputils.ico $dist_dir/gputils
-echo "copying gputils icon... gputils.ico"
 
 # convert the remaining project data to dos format
 unix2dos -q $dist_dir/gputils/header/*
