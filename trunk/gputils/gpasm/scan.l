@@ -59,7 +59,7 @@ static int force_decimal; /* Used to force decimal in errorlevel */
 
 %}
 
-IDENT  [.]?[a-z_\x80-\xff?@][a-z_0-9\x80-\xff.?@]*
+IDENT  [.]?[a-z_\x80-\xff?@#][a-z_0-9\x80-\xff.?@#]*
 ESCCH  \\([abfnrtv\\?'"]|0[0-7]{2}|x[0-9a-f]{2})
 STR_QCHAR  ([^"\n]|{ESCCH})
 NUMCHAR [0-9a-f]
