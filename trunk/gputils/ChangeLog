@@ -1,3 +1,7 @@
+Sun Aug 18 08:51:57 PDT 2002 Scott Dattalo <scott@dattalo.com>
+	* gpasm - arithmetic for negative relative branches on a 16bit core
+		was loosing the sign bit.
+	
 2002-05-12 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.10.3 Released.
 
