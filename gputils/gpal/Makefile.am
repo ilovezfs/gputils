@@ -10,6 +10,7 @@ gpal_SOURCES=\
 	codegen.c \
 	codegen14.c \
 	codegen16e.c \
+	deps.c \
 	gpal.c \
 	optimize.c \
 	scan.l \
@@ -20,6 +21,7 @@ gpal_SOURCES=\
 	codegen.h \
 	codegen14.h \
 	codegen16e.h \
+	deps.h \
 	gpal.h \
 	scan.h \
 	symbol.h \

@@ -146,9 +146,9 @@ convert_escape_chars(char *ps, int *value)
 }
 
 void set_global(char *name,
-		gpasmVal value,
-		enum globalLife lifetime,
-		enum gpasmValTypes type)
+                gpasmVal value,
+                enum globalLife lifetime,
+                enum gpasmValTypes type)
 {
   struct symbol *sym;
   struct variable *var;
@@ -210,6 +210,7 @@ void set_global(char *name,
   case gvt_static:
   case gvt_address:
   case gvt_debug:
+  case gvt_absolute:
     state.obj.symbol_num++;
     break;
   default:

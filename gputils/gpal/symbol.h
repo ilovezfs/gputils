@@ -117,6 +117,7 @@ gp_boolean is_data(struct variable *var);
 gp_boolean in_module(struct variable *var);
 gp_boolean is_extern(struct variable *var);
 gp_boolean is_far(struct variable *var);
+int var_coff_type(struct variable *var);
 
 #define SYM_TYPE(x) (x->type->tag)
 

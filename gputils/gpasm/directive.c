@@ -805,8 +805,11 @@ static gpasmVal do_def(gpasmVal r,
   int eval;
   int value = 0;
   int section_number = N_DEBUG;
-  int class = C_NULL;
-  int type = T_NULL;
+  gp_boolean new_class = false;
+  int coff_class = C_NULL;
+  gp_boolean new_type = false;
+  int coff_type = T_NULL;
+  enum gpasmValTypes type;
 
   state.lst.line.linetype = dir;
 
@@ -817,13 +820,11 @@ static gpasmVal do_def(gpasmVal r,
       enforce_arity(arity, 2);
       return r;
     }
-    
+
     /* the first argument is the symbol name */
     p = HEAD(parms);
     if (enforce_simple(p)) {
       symbol_name = p->value.symbol;
-      coff_symbol = coff_add_sym(symbol_name, 0, gvt_debug);
-      state.obj.symbol_num++;
     } else {
       return r;
     }
@@ -832,7 +833,7 @@ static gpasmVal do_def(gpasmVal r,
     if ((SECTION_FLAGS & STYP_TEXT) && _16bit_core) {
       shift = 1;
     }
-    
+
     /* update the properties */
     for (; parms; parms = TAIL(parms)) {
       p = HEAD(parms);
@@ -851,14 +852,16 @@ static gpasmVal do_def(gpasmVal r,
             if ((eval < 0) || (eval > 0xffff)) {
               gperror(GPE_RANGE, NULL);
             } else {
-              type = eval;   
+              new_type = true;
+              coff_type = eval;   
             }
     	  } else if (strcasecmp(lhs, "class") == 0) {
             eval = maybe_evaluate(p->value.binop.p1);   
             if ((eval < -128) || (eval > 127)) {
               gperror(GPE_RANGE, NULL);
             } else {
-              class = eval;   
+              new_class = true;
+              coff_class = eval;   
             }
           } else {
             gperror(GPE_ILLEGAL_ARGU, NULL);
@@ -867,23 +870,20 @@ static gpasmVal do_def(gpasmVal r,
       } else {
         if (enforce_simple(p)) {
 	  if (strcasecmp(p->value.symbol, "absolute") == 0) {
+            type = gvt_absolute;
             value = 0;   
-	    section_number = N_ABS;
   	  } else if (strcasecmp(p->value.symbol, "debug") == 0) {
+            type = gvt_debug;
             value = 0;   
-	    section_number = N_DEBUG;
 	  } else if (strcasecmp(p->value.symbol, "extern") == 0) {
+            type = gvt_extern;
             value = 0;   
-            section_number = N_UNDEF;
-            class = C_EXT;
   	  } else if (strcasecmp(p->value.symbol, "global") == 0) {
-            value = state.org << shift;   
-            section_number = state.obj.section_num;
-            class = C_EXT;
+            type = gvt_global;
+            value = state.org << shift;
   	  } else if (strcasecmp(p->value.symbol, "static") == 0) {
-            value = state.org << shift;   
-            section_number = state.obj.section_num;
-            class = C_STAT;
+            type = gvt_static;
+            value = state.org << shift;
   	  } else {
             gperror(GPE_ILLEGAL_ARGU, NULL);
           }
@@ -892,16 +892,17 @@ static gpasmVal do_def(gpasmVal r,
     }
   }
 
+  set_global(symbol_name, value, PERMANENT, type);
+
   /* update the symbol with the values */
-  if (state.pass == 2) {
-    if (coff_symbol == NULL) {
-      gperror(GPE_NOSYM, NULL);
-    } else {
-      coff_symbol->value = value;   
-      coff_symbol->section_number = section_number;
-      coff_symbol->class = class;
-      coff_symbol->type = type;
-    }
+  if ((state.pass == 2) && (new_class || new_type)) {
+    coff_symbol = gp_coffgen_findsymbol(state.obj.object, symbol_name);
+    assert(coff_symbol != NULL);
+    if (new_class)
+      coff_symbol->class = coff_class;
+      
+    if (new_type)
+      coff_symbol->type = coff_type;
   }
 
   return r;

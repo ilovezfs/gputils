@@ -3270,6 +3270,11 @@ fi
 if test "$LEX" = :; then
   LEX=${am_missing_run}flex
 fi
+set `$LEX -V`
+if test "${3}" != "2.5.4"; then
+  { echo "$as_me:$LINENO: WARNING: gputils supports flex version 2.5.4" >&5
+echo "$as_me: WARNING: gputils supports flex version 2.5.4" >&2;}
+fi
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
 # incompatible versions:
@@ -7368,11 +7373,3 @@ gputils-$PACKAGE_VERSION is now configured for $canonical_host_type
   C compiler:           $CC $CFLAGS
 
 " >&6
-
-
-# Verify lexer version is supported
-set `$LEX -V`
-if test "${3}" != "2.5.4"; then
-  { echo "$as_me:$LINENO: WARNING: gputils supports flex version 2.5.4" >&5
-echo "$as_me: WARNING: gputils supports flex version 2.5.4" >&2;}
-fi

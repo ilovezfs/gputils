@@ -108,7 +108,7 @@ DECCHAR [0-9]
                           return STRING;
 			}
 [_.a-z][_.0-9a-z]*	{
-			  yylval.s = strdup(yytext);
+			  yylval.s = gp_lower_case(yytext);
 			  return IDENT;
 			}
 0x{HEXCHAR}+		{

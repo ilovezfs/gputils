@@ -26,6 +26,7 @@ Boston, MA 02111-1307, USA.  */
 #include "symbol.h"
 #include "analyze.h"
 #include "codegen.h"
+#include "deps.h"
 #include "optimize.h"
 #include "scan.h"
 
@@ -1241,7 +1242,7 @@ analyze_declarations(void)
           }
         }
         if (write_mem) {
-          codegen_write_data(var->name, type_size(var->type), var->storage);
+          codegen_write_data(var);
           first_time = false;
         }
       }      
@@ -1272,7 +1273,7 @@ analyze_declarations(void)
           fprintf(state.output.f, ".udata_%s udata %#x\n",
                   var->name,
                   var->address);
-          codegen_write_data(var->name, type_size(var->type), var->storage);
+          codegen_write_data(var);
           fprintf(state.output.f, "\n");
         }
       }      
@@ -1294,7 +1295,9 @@ analyze_declarations(void)
           codegen_write_comment("external subprograms and data");
           first_time = false;
         }
-        fprintf(state.output.f, "  extern %s\n", var->name);
+        fprintf(state.output.f, "  .def %s, extern, type=%#x\n",
+                var->name,
+                var_coff_type(var));
       }
     }
   }
@@ -1574,6 +1577,33 @@ analyze_module(tree *current)
   return;
 }
 
+static tree *
+find_public(char *public_name)
+{
+  char file_name[BUFSIZ];
+  struct symbol *sym;
+  tree *public = NULL;
+
+  sym = get_symbol(state.publics, public_name);
+  if (sym == NULL) {
+    /* couldn't find the public, attempt to open and parse a .pub file
+       containing the public */
+    strncpy(file_name, public_name, sizeof(file_name));
+    strncat(file_name, ".pub", sizeof(file_name));
+    parse(file_name);
+  }
+
+  sym = get_symbol(state.publics, public_name);
+  if (sym) {
+    public = get_symbol_annotation(sym);
+    assert(public != NULL);
+  } else {
+    analyze_error(NULL, "unknown public %s", public_name);
+  }
+
+  return public;
+}
+
 static void
 analyze_public(char *public_name)
 {
@@ -1581,21 +1611,18 @@ analyze_public(char *public_name)
   char *name;
   char *alias;
   struct variable *var;
-  struct symbol *sym;
   tree *public = NULL;
   tree *last_module = NULL;
 
-  sym = get_symbol(state.publics, public_name);
-  if (sym) {
-    public = get_symbol_annotation(sym);
-    assert(public != NULL);
-    last_module = state.module;
-    state.module = public;
-    current = FILE_BODY(public);
-  } else {
-    analyze_error(current, "unknown public %s", public_name);
+  public = find_public(public_name);
+  if (public == NULL)
     return;
-  }
+
+  last_module = state.module;
+  state.module = public;
+  current = FILE_BODY(public);
+
+  add_dependency(get_file_name(state.module->file_id));
 
   if (FILE_TYPE(state.module) == source_with) {
     add_global_symbol(FILE_DATA_ADDR(public),
@@ -1801,6 +1828,8 @@ analyze(tree *module)
     FILE_TYPE(public) = source_public;
   }
 
+  codegen_init_deps(module);
+
   /* add all procedures and data to the global symbol table */
   state.module = module;
   analyze_module(FILE_BODY(module));
@@ -1819,7 +1848,7 @@ analyze(tree *module)
     return;
 
   /* open the output file */
-  codegen_init_asm();
+  codegen_init_asm(module);
 
   /* scan the module */
   state.current_page = NULL;
@@ -1830,6 +1859,7 @@ analyze(tree *module)
   analyze_declarations();
   analyze_constants();
   codegen_close_asm();
+  codegen_close_deps();
 
   if (public) {
     /* return the public to with */

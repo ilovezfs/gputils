@@ -11,16 +11,11 @@ gputils
   * Use dejagnu for testing.
 
 gpal
-  * Use "_" instead of "." in asm file to be compatible with C.
-  * Generate a make compatible dependency list.
   * Clean up the test expressions code generator.  Keep the result in W not
     the working register.
   * Use the new COFF directives.
   * Add backend for each family.
   * Finish 18xx devices.
-  * Simplify compiling a modules.  I don't like adding each file name to
-    the command line.  Either add an include directive or compile to 
-    a parsed library.
   * Add a new analyze stage.  Traverse the call tree and count the number
     of times a subprogramed is used.
   * Remove dead subprograms if they are private and never called.
@@ -30,7 +25,6 @@ gpal
     to be global and inlined or accessed from a parsed library.   
   * Auto inline subprograms that are private and called once.
   * Generate an error if subprograms are recursive.
-  * Allow conditionals in subprogram declarations.
   * Allow arrays to assigned with string values.
   * Implement bit types.
   * Implement records.
@@ -49,7 +43,7 @@ gpal
   * Create a stdlib with a configure script.  Compile to user directory.  Using
     the full path to the source code.
   * Finish testsuite.
-    
+
 gpasm
   * Change to byte addressing in 18xx devices in COD files for MPLAB.
   * Implement nested while loops.
@@ -60,6 +54,8 @@ gpasm
   * Add macro names to symbol table in listing file.
   * Undefined coff symbols are always at the end of the coff table.
   * Add relocations for the difference between symbols in the same section.
+  * Allow multiple symbols with the same name in different sections of COFF
+    asm files.
 
 gplink
   * Remove unused sections.

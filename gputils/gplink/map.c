@@ -29,9 +29,12 @@ Boston, MA 02111-1307, USA.  */
 #include <stdarg.h>
 #endif
 
-/* FIXME: Sort sections so program sections are grouped and data sections are 
-          grouped. */ 
-/* FIXME: Sort program memory so it is semi-contiguous. */ 
+#define SECTION_UNKNOWN 0 
+#define SECTION_ROMDATA 1 
+#define SECTION_CODE    2 
+#define SECTION_IDATA   3 
+#define SECTION_UDATA   4 
+
 /* FIXME: Sort symbols by name and size. */ 
 
 void 
@@ -52,30 +55,99 @@ map_line(const char *format, ...)
   return;
 }
 
+static int
+_section_value(gp_section_type *section)
+{
+  int value = 0;
+
+  if ((section->flags & STYP_TEXT) || 
+      (section->flags & STYP_DATA_ROM))  {
+    value = SECTION_CODE;
+  } else if (section->flags & STYP_DATA) {
+    value = SECTION_IDATA;
+  } else if ((section->flags & STYP_BSS) ||
+             (section->flags & STYP_OVERLAY)) {
+    value = SECTION_UDATA;
+  } else if (section->flags & STYP_DATA_ROM) {
+    value = SECTION_ROMDATA;
+  } else {
+    value = SECTION_UNKNOWN;
+  }
+
+  return value;
+}
+
+static int
+compare_sections(const void *a, const void *b)
+{
+  gp_section_type *section_a = *((gp_section_type **)a);
+  gp_section_type *section_b = *((gp_section_type **)b);
+  int value_a = _section_value(section_a);
+  int value_b = _section_value(section_b);
+
+  if (value_a < value_b)
+    return -1;
+
+  if (value_a > value_b)
+    return +1;
+
+  if (section_a->address < section_b->address)
+    return -1;
+
+  if (section_a->address > section_b->address)
+    return +1;
+
+  return 0;
+}
+
 static void
 _write_sections(void)
 {
   gp_section_type *section = NULL;
+  gp_section_type **section_list = NULL;
   char *type;
   char *location;
+  long i;
+
+  section_list = malloc(sizeof(gp_section_type *) * state.object->num_sections);
+  if (!section_list) {
+    fprintf(stderr, "error: out of memory\n");
+    exit(1);
+  }
+
+  section = state.object->sections;
+  for (i = 0; i < state.object->num_sections; i++) {
+    assert(section != NULL);
+    section_list[i] = section;
+    section = section->next;
+  }
+
+  qsort((void *)section_list,
+        state.object->num_sections,
+        sizeof(gp_section_type *),
+        compare_sections);
 
   map_line("                                 Section Info");
   map_line("                  Section       Type    Address   Location Size(Bytes)");
   map_line("                ---------  ---------  ---------  ---------  ---------");
-  section = state.object->sections;
 
-  while (section != NULL) {
-    if ((section->flags & STYP_TEXT) || 
-        (section->flags & STYP_DATA_ROM))  {
-      type = "code";
-    } else if (section->flags & STYP_DATA) {
-      type = "idata";
-    } else if ((section->flags & STYP_BSS) ||
-               (section->flags & STYP_OVERLAY)) {
-      type = "udata";
-    } else if (section->flags & STYP_DATA_ROM) {
+  for (i = 0; i < state.object->num_sections; i++) {
+    section = section_list[i];
+    switch (_section_value(section)) {
+    case SECTION_ROMDATA:
       type = "romdata";
-    } else {
+      break;
+    case SECTION_CODE:
+      type = "code";
+      break;
+    case SECTION_IDATA:
+      type = "idata";
+      break;
+    case SECTION_UDATA:
+      type = "udata";
+      break;
+    case SECTION_UNKNOWN:
+    default:
       type = "UNKNOWN";
     }
 
@@ -96,8 +168,6 @@ _write_sections(void)
                location,
                section->size);
     }
-    
-    section = section->next;  
   }
   map_line(" ");
 
