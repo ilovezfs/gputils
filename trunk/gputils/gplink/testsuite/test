@@ -1,0 +1,302 @@
+#!/bin/bash
+
+# test tests gplink
+# Copyright (C) 2003
+# Craig Franklin
+#
+# This file is part of gputils.
+#
+# gputils is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# gputils is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with gputils; see the file COPYING.  If not, write to
+# the Free Software Foundation, 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.  
+
+# FIXME: This is a poorly written script. This is temporary.  In 
+# the future, dejagnu will be used to replace this script.
+
+# Defines
+version=1.0
+TESTDIR=./test
+HEADER=../../header
+LKR=../../lkr
+GPASMBIN=../../gpasm/gpasm
+GPASMFLAGS="-q -c"
+GPLIBBIN=../../gputils/gplib
+GPLINKBIN=../gplink
+GPLINKFLAGS="-m"
+GPVOBIN=../../gputils/gpvo
+
+# general functions
+
+function testfailed {
+  echo "TEST FAILED"
+  exit 1
+}
+
+binexists() {
+
+  # Test syntax.
+  if [ $# = 0 ] ; then
+    echo "Usage: binexists {program}"
+    return 1
+  fi
+  echo "testing for $1"
+  if !(test -e $1); then
+    echo "$1 not found.  Aborting."
+    return 1
+  else
+    $1 -v
+    echo "executable found."
+    echo
+    return 0
+  fi
+
+}
+
+printbanner() {
+  # Test syntax.
+  if [ $# = 0 ] ; then
+    echo "Usage: printbanner {message}"
+    return 1
+  fi
+  echo "-----------------------------------------------------------"
+  echo "$1"
+  echo "-----------------------------------------------------------"
+  echo
+  return 0
+}
+
+printversion() {
+  printbanner " test v$version - gplink test script."
+  return 0
+}
+
+printheader () {
+  printversion
+  echo "NAME:      $NAME" 
+  echo "DATE:      $(date +%x)"
+  echo "TIME:      $(date +%r)"
+  echo "HOST:      $HOSTNAME"
+  echo "HOST TYPE: $HOSTTYPE"
+  echo "HOST OS:   $OSTYPE"
+  echo
+  return 0
+}
+
+# gplink test functions
+
+test_gplink_compile () {
+
+  for x in `ls *.asm`
+    do
+      # split the base file name from the extension
+      for basefilename in `echo $x | tr -s "." " "`
+        do
+          if [ $basefilename = "asm" ]; then
+            # do nothing for the extension
+            echo
+          else
+            ../../$GPASMBIN $GPASMFLAGS -I ../../$HEADER $x 
+            if (test -e $basefilename.o); then
+              echo "$x compiled"	
+            else
+              echo "$x failed to compile"
+              exit 1	
+            fi
+          fi
+        done
+    done
+
+}
+
+test_gplink_lib() {
+
+  # Test syntax.
+  if [ $# = 0 ] ; then
+    echo "Usage: test_gplink_lib {library}"
+    exit 1
+  fi
+
+  echo "archiving $1"
+  LIST=`ls *.o`
+  ../../$GPLIBBIN -c $1 $LIST
+  if (test -e $1); then
+    echo "failed to archive"
+    exit 1
+  fi
+
+}
+
+test_gplink_sub() {
+
+  let tested=0
+  let compiled=0
+  let passed=0
+  let errortested=0
+  let notcompiled=0
+
+  #Test syntax.
+  if [ $# = 0 ] ; then
+    echo "Usage: test_gplink_sub {subdirectory}"
+    return 1
+  fi
+
+  if !(test -d $1); then
+    echo "$1 not found.  Aborting."
+    return 1
+  fi
+
+  printbanner "Running ./$1 gplink tests"
+
+  cd $1
+
+  # create the test directory if it doesn't already exist
+  test -d $TESTDIR || mkdir $TESTDIR || exit 1
+  cd $TESTDIR
+  rm -f *
+
+  # compile the lib1
+  #rm -f *.asm
+  #cp ../lib1files/*.asm .
+  #test_gplink_compile
+  #test_gplink_lib "lib1.a"
+
+  # compile the lib2
+  #rm -f *.asm
+  #cp ../lib2files/*.asm .
+  #test_gplink_compile
+  #test_gplink_lib "lib2.a"
+
+  # compile all of the objects
+  rm -f *.asm
+  cp ../asmfiles/*.asm .
+  test_gplink_compile
+
+  # link all the objects and libraries using the scripts
+  printbanner "linking files"
+  cp ../lkrfiles/*.lkr .
+  for x in `ls *.lkr`
+    do
+      # split the base file name from the extension
+      for basefilename in `echo $x | tr -s "." " "`
+        do
+          if [ $basefilename = "lkr" ]; then
+            # do nothing for the extension
+            echo
+          elif (test -e ../hexfiles/$basefilename.hex); then 
+            # a hex file exists so these files must not have errors
+            let tested=tested+1
+            echo "linking $basefilename.o"
+            echo "../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
+            ../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
+            if (test -e $basefilename.hex); then
+              let compiled=compiled+1
+              diff -s -u ../hexfiles/$basefilename.hex $basefilename.hex
+              if (diff -q ../hexfiles/$basefilename.hex $basefilename.hex); then 
+                let passed=passed+1
+                echo "$basefilename.lkr tested successfully"	
+              fi
+            else
+              echo "$basefilename.lkr failed to link"	
+            fi
+          else
+            # a hex file doesn't exist so these files must have intentional
+            # errors
+            let errortested=errortested+1
+            echo "linking $basefilename.lkr"
+            ../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
+            if (test -e $basefilename.hex); then
+              echo "$basefilename.lkr failed to generate an error"	
+            else
+              let notcompiled=notcompiled+1
+              echo "$basefilename.lkr tested successfully"	
+            fi
+          fi
+        done
+    done
+  cd ..
+  cd ..
+  printbanner "./$1 testing complete"
+  echo "$tested files tested without intentional errors"
+  echo "$compiled compiled without errors"  
+  echo "$passed generated identical hex files"  
+  echo
+  echo "$errortested files tested with intentional errors"  
+  echo "$notcompiled generated errors during compilation"  
+  echo
+  if !(test $tested=$passed); then
+    return 1  
+  elif !(test $errrortested=$notcompiled); then
+    return 1
+  else
+    return 0
+  fi
+}
+
+test_gplink() {
+  printbanner "Start of gplink testing"
+  binexists $GPASMBIN
+  binexists $GPLIBBIN  
+  binexists $GPLINKBIN
+  binexists $GPVOBIN
+  RETVAL=$?
+  if [ $RETVAL -eq 0 ]; then
+    test_gplink_sub gplink.project || testfailed
+    echo
+    printbanner "gplink testing successful"
+  fi
+  return 0
+}
+
+# top level
+if [ ! $1 ]; then
+  echo "Not enough arguments. Try \"$0 help\" for help."
+  exit 1
+fi
+
+case "$1" in
+
+  all)
+    printheader
+    test_gplink
+    RETVAL=$?
+    if [ $RETVAL -eq 1 ]; then
+      exit 1
+    else
+      printbanner "All testing sucessful"    
+    fi
+    exit
+    ;;
+  clean)
+    rm -Rf ./gplink.project/test
+    ;;
+  help)
+    printversion
+    echo "Usage: $0 <option>"
+    echo
+    echo "Options:"
+    echo "       all                = run all tests"
+    echo "       clean              = clean all test directories"
+    echo "       help               = display this help message"
+    echo
+    echo
+    exit
+    ;;
+  *)
+    echo "$0: Invalid argument. Try \"$0 help\" for help."
+    exit 1  
+
+esac
+
+exit
+

@@ -1,0 +1,49 @@
+                         gplink test scripts
+
+This directory contains the files and scripts for testing gplink.  The 
+complete set of tests should be ran before each release.  
+
+Please don't modify an existing test file.  Modifying the file will reduce 
+its effectivness in regression testing.  It is better to create a new file that
+tests the new/untested feature. 
+
+I.  Usage
+
+To run the complete test suite:
+
+  ./test all &> test.log
+  
+This will test all tools and output the result to the file "test.log".  It
+should always be reviewed.
+
+for more information 
+
+  ./test help
+
+II.  Test structure
+
+The files can come from a varitey of sources.
+
+/gpasm.project
+
+This directory contains gplink tests written by the project.
+
+III.  Adding new tests.
+
+Here are the basic steps:
+
+  1.  Write the asm files.
+  2.  Write the linker file.
+  2.  Assemble and link.
+  3.  Manually verify the output.
+  4.  Place the the files in their respective subdirectories in ./project.
+  
+The script will automatically find the files and test them.  
+
+IV. The Future.
+
+This directory structure should support dejagnu.  The tests will be converted
+sometime in the future.  At that time the test files will probably be 
+distributed as part of gputils, to allow users to easily test new ports.  
+Unfortunately, this will double the size of the package, but it should still
+be under 1 MB.
