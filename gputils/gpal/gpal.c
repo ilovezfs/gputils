@@ -316,6 +316,7 @@ process_args( int argc, char *argv[])
       break;
     case 'l':
       gp_dump_processor_list(false, PROC_CLASS_PIC14);
+      gp_dump_processor_list(false, PROC_CLASS_PIC16E);
       exit(0);
       break;
     case 'o':

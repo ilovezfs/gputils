@@ -198,17 +198,16 @@ load_indirect16e(char *name,
   int i;
 
   if ((size == size_int8) || (size == size_uint8)) {
-    codegen_write_asm("movff INDF0, WREG");
+    codegen_write_asm("movf INDF0, W");
     return;
   }
 
   num_bytes = prim_size(size);
 
   codegen_write_asm("movlw 0");
+
   for (i = 0; i < num_bytes; i++) {
-    codegen_write_asm("movff INDF0, %s + %i", WORKING_LABEL, i);
-    codegen_write_asm("incf FSR0L, f");
-    codegen_write_asm("addwfc FSR0H, f");
+    codegen_write_asm("movff POSTINC0, %s + %i", WORKING_LABEL, i);
   }
 }
 
@@ -285,6 +284,7 @@ move_to_working(enum size_tag size)
   case 2:
     codegen_write_asm("clrf %s + 1", WORKING_LABEL);
     codegen_write_asm("movwf %s", WORKING_LABEL);
+    codegen_write_asm("xorlw 0"); /* set the Z flag properly */
   }
 
 }
@@ -356,9 +356,7 @@ clr_indirect16e(char *name,
   num_bytes = prim_size(size);
 
   for (i = 0; i < num_bytes; i++) {
-    codegen_write_asm("clrf INDF");
-    codegen_write_asm("incf FSR0L, f");
-    codegen_write_asm("addwfc FSR0H, f");
+    codegen_write_asm("clrf POSTINC0");
   }
 
 }
@@ -392,19 +390,15 @@ inc_direct16e(char *name,
     break;
   case size_uint16:
   case size_int16:
-    codegen_write_asm("incf %s%s, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
+    codegen_write_asm("infsnz %s%s, f", name, offset_buffer);
     codegen_write_asm("incf %s%s + 1, f", name, offset_buffer);
     break;
   case size_uint24:
   case size_int24:
     label = codegen_next_label();
-    codegen_write_asm("incf %s%s, f", name, offset_buffer);
-    codegen_write_asm("btfsc STATUS, C");
+    codegen_write_asm("incfsz %s%s, f", name, offset_buffer);
     codegen_write_asm("bra %s", label);
-    codegen_write_asm("incf %s%s + 1, f", name, offset_buffer);
-    codegen_write_asm("btfsc STATUS, C");
-    codegen_write_asm("bra %s", label);
+    codegen_write_asm("infsnz %s%s + 1, f", name, offset_buffer);
     codegen_write_asm("incf %s%s + 2, f", name, offset_buffer);
     codegen_write_label(label);
     break;
@@ -412,15 +406,11 @@ inc_direct16e(char *name,
   case size_int32:
     label = codegen_next_label();
     codegen_write_asm("incf %s%s, f", name, offset_buffer);
-    codegen_write_asm("btfsc STATUS, C");
-    codegen_write_asm("bra %s", label);
-    codegen_write_asm("incf %s%s + 1, f", name, offset_buffer);
-    codegen_write_asm("btfsc STATUS, C");
-    codegen_write_asm("bra %s", label);
-    codegen_write_asm("incf %s%s + 2, f", name, offset_buffer);
-    codegen_write_asm("btfsc STATUS, C");
-    codegen_write_asm("bra %s", label);
-    codegen_write_asm("incf %s%s + 3, f", name, offset_buffer);
+    codegen_write_asm("bnc %s", label);
+    codegen_write_asm("clrf WREG");
+    codegen_write_asm("addwfc %s%s + 1, f", name, offset_buffer);
+    codegen_write_asm("addwfc %s%s + 2, f", name, offset_buffer);
+    codegen_write_asm("addwfc %s%s + 3, f", name, offset_buffer);
     codegen_write_label(label);
     break;
   case size_float:
@@ -1090,11 +1080,11 @@ do_lsh(enum size_tag size,
        char *name,
        char *bank_addr)
 {
-  int i;
   char *reg1 = NULL;
   char *reg2 = NULL;
   char *label1 = NULL;
   char *label2 = NULL;
+  char *label3 = NULL;
 
   switch (size) {
   case size_bit:
@@ -1102,42 +1092,45 @@ do_lsh(enum size_tag size,
     break;
   case size_uint8:
   case size_int8:
-    reg1 = codegen_get_temp(size);
     if (is_const) {
-      BANKSEL_LOCAL;
-      if (value > 3) {
-        codegen_write_asm("andlw 0x0f");
-        codegen_write_asm("movwf %s", reg1);
-        codegen_write_asm("swapf %s, f", reg1);
-        value -= 4;
+      if (value < 8) {
+        codegen_write_asm("mullw %#x", 1<<value);
+        codegen_write_asm("movf PRODL, W");
       } else {
-        codegen_write_asm("movwf %s", reg1);
+        codegen_write_asm("movlw 0");
       }
-      for (i = 0; i < value; i++) {
-        codegen_write_asm("bcf STATUS, C");
-        codegen_write_asm("rlf %, f", reg1, i);    
-      }
-      codegen_write_asm("movf %s, w", reg1);  /* move the result into w */
     } else {
-      reg2 = codegen_get_temp(size);
+      reg1 = codegen_get_temp(size);
       label1 = codegen_next_label();
       label2 = codegen_next_label();
+      label3 = codegen_next_label();
 
+      /* Save a copy of WREG */
       BANKSEL_LOCAL;
       codegen_write_asm("movwf %s", reg1);
+      /* If "name" > 7, clear WREG and finish */              
+      codegen_write_asm("movlw 0xf8");                        
       BANKSEL;
-      codegen_write_asm("movf %s, w", name);
-      BANKSEL_LOCAL;
-      codegen_write_asm("movwf %s", reg2);
+      codegen_write_asm("andwf %s, w", name);
+      codegen_write_asm("bz %s", label1);
+      codegen_write_asm("movlw 0");
+      codegen_write_asm("bra %s", label3);
+      /* Restore saved WREG; don't shift if "name" == 0 */
       codegen_write_label(label1);
-      codegen_write_asm("btfsc STATUS, Z");
-      codegen_write_asm("bra %s", label2);
-      codegen_write_asm("bcf STATUS, C");
-      codegen_write_asm("rlf %s, f", reg1);
-      codegen_write_asm("decf %s, f", reg2);
-      codegen_write_asm("bra %s", label1);
+      BANKSEL_LOCAL;
+      codegen_write_asm("movf %s, w", reg1);
+      BANKSEL;
+      codegen_write_asm("movf %s, f", name);
+      codegen_write_asm("bz %s", label3);
+      codegen_write_asm("movff %s, %s", name, reg1);
+      /* Perform the shift here */
       codegen_write_label(label2);
-      codegen_write_asm("movf %s, w", reg1);  /* move the result into w */
+      codegen_write_asm("bcf STATUS, C");
+      codegen_write_asm("rlcf WREG, f");
+      BANKSEL_LOCAL;
+      codegen_write_asm("decfsz %s, f", reg1);
+      codegen_write_asm("bra %s", label2);
+      codegen_write_label(label3);
     }
     break;
   case size_uint16:
@@ -1184,6 +1177,9 @@ do_lsh(enum size_tag size,
 
   if (label2)
     free(label2);
+
+  if (label3)
+    free(label3);
 
 }
 
