@@ -31,7 +31,7 @@ Boston, MA 02111-1307, USA.  */
 
 #define BUFFER_SIZE 520
 static char arg_buffer[BUFFER_SIZE];
-static int index;
+static int arg_index;
 
 static void
 cat_string(char *string)
@@ -39,11 +39,11 @@ cat_string(char *string)
   char *ptr;
   int length;
   
-  ptr = &arg_buffer[index];
+  ptr = &arg_buffer[arg_index];
   length = strlen(string);
-  if (index + length + 1 < BUFFER_SIZE) {
+  if (arg_index + length + 1 < BUFFER_SIZE) {
     strcpy(ptr, string);
-    index += length;
+    arg_index += length;
   } else {
     gperror(GPE_UNKNOWN, "macro argument exceeds buffer size");  
   }
@@ -162,6 +162,7 @@ node_to_string(struct pnode *p)
   case unop:
     cat_string("(");
     cat_symbol(p->value.unop.op);
+    cat_string(" ");
     node_to_string(p->value.unop.p0);
     cat_string(")");
     break;
@@ -208,7 +209,7 @@ void setup_macro(struct macro_head *h, int arity, struct pnode *parms)
 	pFromH = HEAD(pFrom);
 	assert(pFromH->tag == symbol);
  
-        index = 0;
+        arg_index = 0;
         arg_buffer[0] = '\0';
         node_to_string(pToH);
         sym = add_symbol(state.stTopDefines, pFromH->value.symbol);	
