@@ -23,5 +23,6 @@ Boston, MA 02111-1307, USA.  */
 #define __OPTIMIZE_H__
 
 tree *optimize_expr(tree *expr);
+tree *optimize_unop_expr(struct variable *dest, tree *left, tree *right);
 
 #endif

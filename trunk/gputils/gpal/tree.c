@@ -560,6 +560,7 @@ print_node(tree *node, int level)
     print_space(level);
     printf("arg\n");
     print_node(UNOP_ARG(node), level);
+    break;
   default:
     assert(0);
   }

@@ -1,3 +1,6 @@
+2004-06-27 Craig Franklin <craigfranklin@comcast.net>
+  *Added several new gpal optimizations.
+
 2004-06-25 Craig Franklin <craigfranklin@comcast.net>
   * Fixed gpasm regression.  Duplicate extern feature can cause assertions.
   * Allow cblocks in gpasm macros.
