@@ -36,7 +36,9 @@ enum node_tag {
   node_decl,
   node_file,
   node_func,  
+  node_goto,  
   node_head,  
+  node_label,
   node_loop,
   node_pragma,
   node_proc,
@@ -153,8 +155,14 @@ typedef struct node_struct {
     } func;
     struct {
       char *name;
+    } _goto;
+    struct {
+      char *name;
       tree *args;
     } head;
+    struct {
+      char *name;
+    } label;
     struct {
       /* for, while, ... */
       tree *init;   /* initalization code */
@@ -221,8 +229,10 @@ typedef struct node_struct {
 #define FUNC_HEAD(F)       (F)->value.func.head
 #define FUNC_RET(F)        (F)->value.func.ret
 #define FUNC_BODY(F)       (F)->value.func.body
+#define GOTO_NAME(G)       (G)->value._goto.name
 #define HEAD_NAME(H)       (H)->value.head.name
 #define HEAD_ARGS(H)       (H)->value.head.args
+#define LABEL_NAME(L)      (L)->value.label.name
 #define LOOP_INIT(L)       (L)->value.loop.init
 #define LOOP_EXIT(L)       (L)->value.loop.exit
 #define LOOP_INCR(L)       (L)->value.loop.incr
@@ -257,7 +267,9 @@ tree *mk_cond(tree *cond, tree *body, tree *next);
 tree *mk_decl(char *name, gp_boolean constant, char *type, tree *init);
 tree *mk_file(tree *body, char *name, enum source_type type);
 tree *mk_func(tree *head, char *ret, tree *body);
+tree *mk_goto(char *name);
 tree *mk_head(char *name, tree *args);
+tree *mk_label(char *name);
 tree *mk_loop(tree *init, tree *exit, tree *incr, tree *body);
 tree *mk_pragma(tree *pragma);
 tree *mk_proc(tree *head, tree *body);
