@@ -1,3 +1,8 @@
+2004-01-01 Scott Dattalo <scott@dattalo.com>
+  * libgputils/gpsystem.c - added unsigned short gp_getu16(char *addr)
+  * gputils/dump.c - changed references of gp_getl16 to gp_getu16. Added
+    new function fget_line() to read a line from a file.
+
 2004-01-01 Craig Franklin <craigfranklin@comcast.net>
   * Allow multiple config words for all devices in gpasm.
 
