@@ -1,5 +1,5 @@
 /* ".COD" file output for gplink
-   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004
    James Bowman, Scott Dattalo
 
 This file is part of gputils.
@@ -61,7 +61,7 @@ init_DirBlock(DirBlockInfo *a_dir)
 	         "gplink",
 	         COD_DIR_NOTICE - COD_DIR_COMPILER);
   gp_cod_strncpy(&a_dir->dir.block[COD_DIR_NOTICE], 
-	         "Copyright (c) 1998-2003 gnupic project",
+	         "Copyright (c) 1998-2004 gnupic project",
 	         COD_DIR_SYMTAB - COD_DIR_NOTICE);
 
   /* The address is always two shorts or 4 bytes long */

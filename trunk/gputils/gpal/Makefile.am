@@ -2,7 +2,7 @@
 
 bin_PROGRAMS = gpal
 
-CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include -DGPASM_HEADER_PATH=\"@GPASM_HEADER_PATH@\"
+CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 gpal_SOURCES=\
 	parse.y \

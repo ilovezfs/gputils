@@ -465,7 +465,7 @@ char *yytext;
 
 #line 5 "scan.l"
 /* lexical analyser
-   Copyright (C) 2003 
+   Copyright (C) 2003, 2004
    Craig Franklin
 
 This file is part of gputils.

@@ -4,7 +4,7 @@ bin_PROGRAMS = gpasm
 
 noinst_LIBRARIES = libgpasm.a
 
-CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include -DGPASM_HEADER_PATH=\"@GPASM_HEADER_PATH@\"
+CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 libgpasm_a_SOURCES=\
 	cod.c \

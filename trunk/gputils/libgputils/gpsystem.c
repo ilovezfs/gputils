@@ -1,5 +1,5 @@
 /* General system functions
-   Copyright (C) 2003
+   Copyright (C) 2003, 2004
    Craig Franklin
 
 This file is part of gputils.
@@ -21,6 +21,29 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 #include "libgputils.h"
+
+char *gp_header_path;
+char *gp_lkr_path;
+char *gp_lib_path;
+
+/* initialize the library */
+
+void
+gp_init(void)
+{
+
+#ifdef USE_DEFAULT_PATHS
+  /* load the environmental variables */
+  gp_header_path = getenv("GPUTILS_HEADER_PATH");
+  gp_lkr_path = getenv("GPUTILS_LKR_PATH");
+  gp_lib_path = getenv("GPUTILS_LIB_PATH");
+#else
+  gp_header_path = NULL;
+  gp_lkr_path = NULL;
+  gp_lib_path = NULL;
+#endif
+
+}
 
 /* little endian functions */
 

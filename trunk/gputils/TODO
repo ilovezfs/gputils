@@ -3,7 +3,6 @@ list is in no particular order.
 
 gputils
   * Switch to xmalloc and obstacks.
-  * Add gpinit.c to library and use it for user defined variables and pathes.
   * Start migrating to the GNU coding style.
   * grep the source for FIXME and fix.
   * Add number of pages and banks to the processor definitions and use it.

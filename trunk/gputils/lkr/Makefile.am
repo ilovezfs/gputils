@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-pkgdatadir = @GPLINK_LKR_PATH@
+pkgdatadir = @GPUTILS_LKR_PATH@
 
 EXTRA_DIST =\
 	12c508a.lkr \

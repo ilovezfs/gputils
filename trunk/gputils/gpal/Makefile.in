@@ -70,8 +70,8 @@ AR = @AR@
 AWK = @AWK@
 CC = @CC@
 DEPDIR = @DEPDIR@
-GPASM_HEADER_PATH = @GPASM_HEADER_PATH@
-GPLINK_LKR_PATH = @GPLINK_LKR_PATH@
+GPUTILS_HEADER_PATH = @GPUTILS_HEADER_PATH@
+GPUTILS_LKR_PATH = @GPUTILS_LKR_PATH@
 IBERTYOBJS = @IBERTYOBJS@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LEX = @LEX@
@@ -92,7 +92,7 @@ install_sh = @install_sh@
 
 bin_PROGRAMS = gpal
 
-CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include -DGPASM_HEADER_PATH=\"@GPASM_HEADER_PATH@\"
+CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 gpal_SOURCES = \
 	parse.y \

@@ -1,5 +1,5 @@
 /* GNU PIC view object
-   Copyright (C) 2001, 2002, 2003
+   Copyright (C) 2001, 2002, 2003, 2004
    Craig Franklin
 
 This file is part of gputils.
@@ -359,6 +359,8 @@ int main(int argc, char *argv[])
   extern int optind;
   int c;
   int usage = 0;
+
+  gp_init();
 
   /* initalize */
   state.quiet = 0;

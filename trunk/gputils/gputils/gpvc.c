@@ -1,5 +1,5 @@
 /* Displays contents of ".COD" files
-   Copyright (C) 2001, 2002, 2003
+   Copyright (C) 2001, 2002, 2003, 2004
    Scott Dattalo
 
 This file is part of gputils.
@@ -123,6 +123,8 @@ int main(int argc, char *argv[])
   int c,usage=0;
   int display_flags;
   Directory *dir;
+
+  gp_init();
 
   addrsize = 1;
 

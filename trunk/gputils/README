@@ -1,6 +1,5 @@
 This is a collection of development tools for Microchip (TM) PIC (TM) 
-microcontrollers. It's intended to be compatible with the manufacturer's 
-tools, MPASM, MPLINK,and MPLIB.
+microcontrollers.
 
 This is ALPHA software: there may be serious bugs in it, and it's
 nowhere near complete.  gputils currently only implements a subset of
@@ -29,3 +28,32 @@ there.
 
 Please send any patches you wish to be considered for the next gputils release, 
 to one of the Project Administrators listed at sourceforge.
+
+Win32 Support
+=============
+
+Although gputils was primarily intended for GNU systems, it can be compiled
+on a win32 system (Win98, WinNT, ...).  This has been performed using the 
+Borland C Compiler and Microsoft Visual C.
+
+The gputils supported win32 compiler is MinGW.  It is available at:
+
+http://www.mingw.org/
+
+MinGW was selected because it is based on the GNU C compiler.  Additionally, 
+it can easily be used as a cross compiler on GNU systems.
+
+A native win32 version of MinGW is available.  However, the process for 
+compiling on a win32 system has not been developed.  This will be provided 
+some time in the future.
+
+Until then, offical gputils ports to win32 will be generated using a cross 
+compiler on a Linux system.  The following scripts will configure gputils to 
+cross compile to win32 using a Linux system:
+
+mkdir cross && \
+cd cross && \
+CC=i386-mingw32msvc-gcc ../configure \
+  --srcdir=.. \
+  --build=i586-pc-linux-gnu \
+  --host=i386-mingw32msvc
