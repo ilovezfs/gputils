@@ -1331,7 +1331,10 @@ gp_cofflink_patch_addr(enum proc_class class,
     data = data | ((value << 4) & 0xf0);
     break;
   case RELOCT_MOVLB:
-    data = data | (value & 0xff);
+    /* The upper byte of the symbol is used for the BSR.  This is inconsistent
+       with the datasheet and the assembler, but is done to maintain
+       compatibility with mplink. */
+    data = data | ((value >> 8) & 0xff);
     break;
   case RELOCT_GOTO2:
     data = data | ((value >> 9) & 0xfff);

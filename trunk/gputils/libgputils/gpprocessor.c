@@ -136,6 +136,8 @@ static struct px pics[] = {
   { pic16cr72,  "__16CR72",   { "pic16cr72",   "p16cr72",   "16cr72"   }, 0x6d72, "16cr72.lkr"   },
   { pic16cr83,  "__16CR83",   { "pic16cr83",   "p16cr83",   "16cr83"   }, 0xdc83, "16cr83.lkr"   },
   { pic16cr84,  "__16CR84",   { "pic16cr84",   "p16cr84",   "16cr84"   }, 0xdc84, "16cr84.lkr"   },
+  { pic16f54,   "__16F54",    { "pic16f54",    "p16f54",    "16f54"    }, 0x654f, "16f54.lkr"    },
+  { pic16f57,   "__16F57",    { "pic16f57",    "p16f57",    "16f57"    }, 0x657f, "16f57.lkr"    },
   { pic16f627,  "__16F627",   { "pic16f627",   "p16f627",   "16f627"   }, 0x6627, "16f627.lkr"   },
   { pic16f627a, "__16F627A",  { "pic16f627a",  "p16f627a",  "16f627a"  }, 0x627a, "16f627a.lkr"  },
   { pic16f628,  "__16F628",   { "pic16f628",   "p16f628",   "16f628"   }, 0x6628, "16f628.lkr"   },  
@@ -144,6 +146,7 @@ static struct px pics[] = {
   { pic16f648a, "__16F648A",  { "pic16f648a",  "p16f648a",  "16f648a"  }, 0x648a, "16f648a.lkr"  },
   { pic16f676,  "__16F676",   { "pic16f676",   "p16f676",   "16f676"   }, 0x6676, "16f676.lkr"   },
   { pic16f684,  "__16F684",   { "pic16f684",   "p16f684",   "16f684"   }, 0x6684, "16f684.lkr"   },
+  { pic16f688,  "__16F688",   { "pic16f688",   "p16f688",   "16f688"   }, 0x6688, "16f688.lkr"   },
   { pic16f716,  "__16F716",   { "pic16f716",   "p16f716",   "16f716"   }, 0x716f, "16f716.lkr"   },
   { pic16f72,   "__16F72",    { "pic16f72",    "p16f72",    "16f72"    }, 0x672f, "16f72.lkr"    },
   { pic16f73,   "__16F73",    { "pic16f73",    "p16f73",    "16f73"    }, 0x673f, "16f73.lkr"    },
@@ -426,6 +429,8 @@ gp_processor_class(enum pic_processor processor)
     case pic16cr72:
     case pic16cr83:
     case pic16cr84:
+    case pic16f54:
+    case pic16f57:
     case pic16f627:
     case pic16f627a:
     case pic16f628:
@@ -434,6 +439,7 @@ gp_processor_class(enum pic_processor processor)
     case pic16f648a:
     case pic16f676:
     case pic16f684:
+    case pic16f688:
     case pic16f716:
     case pic16f72:
     case pic16f73:

@@ -1,7 +1,10 @@
 2003-11-22 Craig Franklin <craigfranklin@comcast.net>
+  * gputils 0.11.8 Released.
+  * Added new processors: 16f54, 16f57, 16f688
   * Updated header files and linker scripts.
   * Updated libiberty from upstream sources.
   * Changed gpasm 18xx banksel from movlb relocation to banksel relocation.
+  * Changed gplink movlb relocation to use the upper byte of symbol address.
 
 2003-10-21 Craig Franklin <craigfranklin@comcast.net>
   * Fixed string to long conversion in gpasm so 32 bit numbers
