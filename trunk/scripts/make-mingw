@@ -32,7 +32,7 @@ host=i386-mingw32msvc
 config_options=" "
 doc="gputils.pdf"
 comments="None. "
-delete_dir="lib include"
+delete_dir="lib man include"
 common="AUTHORS COPYING ChangeLog NEWS README"
 use_zip=yes 
 
