@@ -358,30 +358,34 @@ void show_usage(void)
   printf("Usage: gpvo [options] file\n");
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -b, --binary               Print binary data.\n");
+  printf("  -c, --mnemonics            Decode special mnemonics.\n");
   printf("  -f, --file                 File header.\n");
   printf("  -h, --help                 Show this usage message.\n");
   printf("  -n, --no-names             Suppress filenames.\n");
   printf("  -s, --section              Section data.\n");
   printf("  -t  --symbol               Symbol table.\n");
   printf("  -v, --version              Show version.\n");
+  printf("  -y, --extended             Enable 18xx extended mode.\n");
   printf("\n");
   printf("Report bugs to:\n");
   printf("%s\n", PACKAGE_BUGREPORT);
   exit(0);
 }
 
-#define GET_OPTIONS "?bfhnstv"
+#define GET_OPTIONS "?bcfhnstvy"
 
   /* Used: himpsv */
   static struct option longopts[] =
   {
     { "binary",      0, 0, 'b' },
+    { "mnemonics",   0, 0, 'c' },
     { "file",        0, 0, 'f' },
     { "help",        0, 0, 'h' },
     { "no-names",    0, 0, 'n' },
     { "section",     0, 0, 's' },
     { "symbol",      0, 0, 't' },
     { "version",     0, 0, 'v' },
+    { "extended",    0, 0, 'y' },
     { 0, 0, 0, 0 }
   };
 
@@ -408,6 +412,9 @@ int main(int argc, char *argv[])
     case 'b':
       state.dump_flags |= PRINT_BINARY;
       break;
+    case 'c':
+      gp_decode_mnemonics = true;
+      break;
     case 'f':
       state.dump_flags |= PRINT_HEADER;
       break;
@@ -419,6 +426,9 @@ int main(int argc, char *argv[])
       break;
     case 't':
       state.dump_flags |= PRINT_SYMTBL;
+      break;
+    case 'y':
+      gp_decode_extended = true;
       break;
     case 'v':
       fprintf(stderr, "%s\n", GPVO_VERSION_STRING);

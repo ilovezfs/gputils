@@ -58,6 +58,13 @@ struct pnode *mk_constant(int value)
   return new;
 }
 
+struct pnode *mk_offset(struct pnode *p)
+{
+  struct pnode *new = mk_pnode(offset);
+  new->value.offset = p;
+  return new;
+}
+
 static struct pnode *mk_symbol(char *value)
 {
   struct pnode *new = mk_pnode(symbol);
@@ -271,6 +278,8 @@ void next_line(int value)
 %token <s> VARLAB_BEGIN
 %token <s> VAR_BEGIN
 %token <s> VAR_END
+%token <i> '['
+%token <i> ']'
 
 %type <i> '+'
 %type <i> '-'
@@ -777,6 +786,11 @@ e0:
 	'(' expr ')'
 	{
 	  $$ = $2;
+	}
+	|
+	'[' expr ']'
+	{
+	  $$ = mk_offset($2);
 	}
 	|
 	'*' 

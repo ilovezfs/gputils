@@ -22,6 +22,9 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPDIS_H__
 #define __GPDIS_H__
 
+extern gp_boolean gp_decode_mnemonics;
+extern gp_boolean gp_decode_extended;
+
 int gp_disassemble(MemBlock *m,
                    int org,
                    enum proc_class class,

@@ -39,7 +39,7 @@ static char *processor_name = NULL;
 int yyparse(void);
 extern int yydebug;
 
-#define GET_OPTIONS "?D:I:La:cde:ghilmno:p:qr:uvw:"
+#define GET_OPTIONS "?D:I:La:cde:ghilmno:p:qr:uvw:y"
 
 /* Used: acdDehiIlmopqrwv */
 static struct option longopts[] =
@@ -64,6 +64,7 @@ static struct option longopts[] =
   { "absolute",    0, 0, 'u' },
   { "version",     0, 0, 'v' },
   { "warning",     1, 0, 'w' },
+  { "extended",    0, 0, 'y' },
   { 0, 0, 0, 0 }
 };
 
@@ -75,6 +76,7 @@ init(void)
 
   /* restore gpasm to its initialized state */
   state.mode = absolute;
+  state.extended_pic16e = false;
 
   state.radix = 16;
   state.hex_format = inhx32;
@@ -165,8 +167,9 @@ show_usage(void)
   printf("  -q, --quiet                    Quiet.\n");
   printf("  -r RADIX, --radix RADIX        Select radix. [hex]\n");
   printf("  -u, --absolute                 Use absolute pathes. \n");
-  printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n");
   printf("  -v, --version                  Show version.\n");
+  printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n");
+  printf("  -y, --extended                 Enable 18xx extended mode.\n");
   printf("\n");
 #ifdef USE_DEFAULT_PATHS
   if (gp_header_path) {
@@ -297,6 +300,9 @@ process_args( int argc, char *argv[])
     case 'w':
       select_errorlevel(atoi(optarg));
       state.cmd_line.error_level = true;
+      break;
+    case 'y':
+      state.extended_pic16e = true;
       break;
     case 'v':
       fprintf(stderr, "%s\n", GPASM_VERSION_STRING);

@@ -11,6 +11,29 @@ gputils
   * Use dejagnu for testing.
 
 gpal
+  * Nested subprograms.
+  * Put data memory in order defined not pseudo alphabetical.
+  * Don't use a stack so function pointers are a problem.  Can't have 
+    arguments.
+  * If only one argument to a subprogram and byte or less pass through W.
+  * Define a string for the processor name and the processor family in the
+    processor public.  Use it for conditional code.  
+  * Allow section pragmas to include module name.  This will allow all the 
+    sections to be defined in one guide public file.  
+  * Fix Alias so processor name can be aliased.
+  * Allow alias to bits in bytes.
+  * Define a boolean for each family and each device.  So conditional
+    code generation is simplified. (examples PIC14, PIC16E, P16F877A, P18F442)
+  * Generate a warning if a function uses anything but its inputs.
+  * Generate an error if a function argument is anything but "in".  This should
+    allow some more optimizations.
+  * Don't like module and public, make unit and interface like Pascal,
+    or package and package body like Ada.
+  * Convert ASCII chars and escape characters to hex values for assignments.
+  * Assign arrays with string values.  Maybe a string type instead of uint8?
+  * Unchecked type conversions to_"type" 
+    example value = to_uint8(0x1234), value = 0x34 with no warning
+    Maybe put them in a package as their own functions.
   * Clean up the test expressions code generator.  Keep the result in W not
     the working register.
   * Add backend for each family.
@@ -51,6 +74,7 @@ gpasm
   * Add relocations for the difference between symbols in the same section.
   * Allow multiple symbols with the same name in different sections of COFF
     asm files.
+  * generate dependencies
 
 gplink
   * Remove unused sections.

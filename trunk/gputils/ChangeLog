@@ -1,3 +1,8 @@
+2004-12-31 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [gputils] Added support for 18xx extended instruction set.
+  * [gplink] Generate a warning if object processor names don't match.
+  * [gpdasm] Decode 18xx instruction mnemonics.
+
 2004-12-24 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gputils] Updated header files and linker scripts.
   * [gputils] Added new processors: p10f200, p10f202, p10f204, p10f206,
