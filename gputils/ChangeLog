@@ -1,3 +1,12 @@
+2004-07-23 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * Added new processors: 12f508 12f509 12f635 12f683 16f505 16f636
+    16f785 16f913 16f914 16f916 16f917 18f2410 18f2420 18f2455 18f2480
+    18f2510 18f2515 18f2520 18f2525 18f2550 18f2580 18f2585 18f2610 18f2680
+    18f2681 18f4410 18f4420 18f4455 18f4480 18f4510 18f4515 18f4520 18f4525
+    18f4550 18f4580 18f4585 18f4610 18f4680 18f4681 18f6410 18f6490 18f8410
+    18f8490
+  * Updated header files and linker scripts.
+
 2004-07-22 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Define SFRs in pub files as uint8 instead of constant uint8.
 
