@@ -27,6 +27,10 @@ AC_ARG_ENABLE(debug,
   [  --enable-debug          enable gputils debug features],
   [enable_gputils_debug=yes])    
 
+AC_ARG_ENABLE(gpal,
+  [  --disable-gpal          disable the compiler],
+  [], [enable_gpal=yes])
+
 AC_ARG_ENABLE(gplink,
   [  --disable-gplink        disable the linker],
   [], [enable_gplink=yes])
@@ -112,6 +116,10 @@ esac
 CFLAGS="$CFLAGS $XTRA_CFLAGS"
 
 # Process the options
+if test x$enable_gpal = xyes; then
+  MAKE_SUBDIRS="$MAKE_SUBDIRS gpal"
+fi
+
 if test x$enable_gplink = xyes; then
   MAKE_SUBDIRS="$MAKE_SUBDIRS gplink"
 fi
@@ -141,6 +149,7 @@ AC_SUBST(MAKE_SUBDIRS)
 # Generate Makefiles
 AC_CONFIG_FILES([Makefile 
                  doc/Makefile 
+                 gpal/Makefile 
                  gpasm/Makefile 
                  gplink/Makefile 
                  gputils/Makefile 

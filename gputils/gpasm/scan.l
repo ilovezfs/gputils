@@ -210,6 +210,15 @@ list		     	 {
 			   yylval.s = strdup(yytext);
 			   return IDENTIFIER;
 			 }
+^#file			 {
+			   return DEBUG_FILE;
+			 }
+^#line			 {
+			   return DEBUG_LINE;
+			 }
+^#eof			 {
+			   coff_add_eofsym();
+			 }
 ^{IDENT}#v\(             {
 			   char *symbol;
 
@@ -451,22 +460,6 @@ A'{STR_QCHAR}'           {
 			 }
 %%
 
-static char *
-to_lower_case(char *name)
-{
-  char *new;
-  char *ptr;
-
-  ptr = new = strdup(name);
-
-  while (*ptr != '\0') {
-    *ptr = tolower(*ptr);
-    ptr++;
-  }
-
-  return new;
-}
-
 static void
 search_pathes(struct source_context *new, char *name)
 {
@@ -506,7 +499,7 @@ void open_src(char *name, int isinclude)
       /* We didn't find a match so check for lower case.  This is mainly for 
          Microchip examples and some includes in which filenames were written
          without regard to case */    
-      char *lower_case_name = to_lower_case(name);
+      char *lower_case_name = gp_lower_case(name);
       search_pathes(new, lower_case_name);      
       free(lower_case_name);  
 
@@ -552,7 +545,11 @@ void open_src(char *name, int isinclude)
   new->h = NULL;
   new->line_number = 1;
   new->loop_number = 1;
-  new->file_symbol = coff_add_filesym(new->name, isinclude);
+  if (state.debug_info) {
+    new->file_symbol = NULL;
+  } else {
+    new->file_symbol = coff_add_filesym(new->name, isinclude);
+  }
   new->prev = state.src;
 
   state.src = new;
@@ -653,7 +650,9 @@ void close_file()
     if (old->lst.f != NULL)
       fclose(old->lst.f);
     free(old->name);
-    coff_add_eofsym();
+    if (!state.debug_info) {
+      coff_add_eofsym();
+    }
   } else if (old->type == src_macro) {
     state.stTop = pop_symbol_table(state.stTop);
     state.stTopDefines = pop_symbol_table(state.stTopDefines);

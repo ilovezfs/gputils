@@ -1,5 +1,5 @@
-/* libgputils typedefs
-   Copyright (C) 2001, 2002, 2003
+/* analyze semantics
+   Copyright (C) 2003
    Craig Franklin
 
 This file is part of gputils.
@@ -19,9 +19,20 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-#ifndef __GPTYPES_H__
-#define __GPTYPES_H__
+#ifndef __ANALYZE_H__
+#define __ANALYZE_H__
 
-typedef enum { false = (0 == 1), true = (0 == 0) } gp_boolean;
+void analyze(void);
+void analyze_select_processor(tree *node, char *name);
+void analyze_error(tree *node, const char *format, ...);
+void analyze_warning(tree *node, const char *format, ...);
+
+int can_evaluate(tree *p, gp_boolean gen_errors);
+int evaluate(tree *p);
+int maybe_evaluate(tree *p);
+
+int analyze_check_array(tree *symbol, struct variable *var);
+void analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size);
+void analyze_expr(tree *expr);
 
 #endif
