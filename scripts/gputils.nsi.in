@@ -31,7 +31,7 @@ SetCompressor lzma
 
 !define DEV_ROOT "${GPUTILS_ROOT}"
 
-InstType "Full (Bin, Doc, Hdr, Lkr)"
+InstType "Full (Bin, Doc, Hdr, Lkr, Pub)"
 InstType "Compact (Bin, Doc)"
 
 ;--------------------------------
