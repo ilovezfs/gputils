@@ -65,7 +65,8 @@ _write_sections(void)
   section = state.object->sections;
 
   while (section != NULL) {
-    if (section->flags & STYP_TEXT) {
+    if ((section->flags & STYP_TEXT) || 
+        (section->flags & STYP_DATA_ROM))  {
       type = "code";
     } else if (section->flags & STYP_DATA) {
       type = "idata";
@@ -78,7 +79,8 @@ _write_sections(void)
       type = "UNKNOWN";
     }
 
-    if (section->flags & STYP_TEXT) {
+    if ((section->flags & STYP_TEXT) || 
+        (section->flags & STYP_DATA_ROM))  {
       location = "program";
     } else {
       location = "data";
@@ -115,7 +117,8 @@ _write_program_memory(void)
   section = state.object->sections;
 
   while (section != NULL) {
-    if ((section->flags & STYP_TEXT) && (section->size != 0)) {
+    if (((section->flags & STYP_TEXT) || 
+         (section->flags & STYP_DATA_ROM)) && (section->size != 0)) {
       if (state.object->class == PROC_CLASS_PIC16E) {
         size = section->size;
       } else {
@@ -176,6 +179,7 @@ _write_symbols(void)
   gp_symbol_type *symbol = NULL;
   char *location;
   char *storage;
+  char *file_name;
 
   map_line("                              Symbols");
   map_line("                     Name    Address   Location    Storage File");
@@ -190,13 +194,21 @@ _write_symbols(void)
       stack = pop_file(stack);
     } else if ((symbol->section_number > 0) && 
                (symbol->class != C_SECTION)) {
-      file = stack->symbol;
+      if (stack == NULL) {
+        /* the symbol is not between a .file/.eof pair */
+        file_name = " ";
+      } else {
+        file = stack->symbol;
+        assert(file != NULL);
+        assert(file->aux_list != NULL);
+        file_name = file->aux_list->_aux_symbol._aux_file.filename;
+      }
       
-      assert(file != NULL);
-      assert(file->aux_list != NULL);
       assert(symbol->section != NULL);
+      assert(symbol->name != NULL);
       
-      if (symbol->section->flags & STYP_TEXT) {
+      if ((symbol->section->flags & STYP_TEXT) ||
+          (symbol->section->flags & STYP_DATA_ROM)) {
         location = "program";
       } else {
         location = "data";
@@ -208,15 +220,12 @@ _write_symbols(void)
         storage = "static";
       }
 
-      assert(symbol->name != NULL);
-      assert(file->aux_list->_aux_symbol._aux_file.filename != NULL);
-
       map_line("%25s   %#08x %10s %10s %s",
                symbol->name,
                symbol->value,
                location,
                storage,
-               file->aux_list->_aux_symbol._aux_file.filename);
+               file_name);
   
     }
     symbol = symbol->next;  

@@ -143,12 +143,14 @@ _gp_coffgen_write_data(enum proc_class class,
   unsigned int last;
   unsigned int data;
 
-  if ((class == PROC_CLASS_PIC16E) && (section->flags & STYP_TEXT))
+  if ((class == PROC_CLASS_PIC16E) && 
+      ((section->flags & STYP_TEXT) ||
+       (section->flags & STYP_DATA_ROM)))
     org = section->address >> 1;
   else
     org = section->address;
 
-  if (section->flags & STYP_TEXT) {
+  if ((section->flags & STYP_TEXT) || (section->flags & STYP_DATA_ROM)) {
     /* the section is executable, so each word is two bytes */
     last = org + (section->size / 2);
   } else {
@@ -165,7 +167,7 @@ _gp_coffgen_write_data(enum proc_class class,
     data = i_memory_get(section->data, org);
     assert(data & MEM_USED_MASK);
 
-    if (section->flags & STYP_TEXT) {
+    if ((section->flags & STYP_TEXT) || (section->flags & STYP_DATA_ROM)) {
       gp_fputl16(data & 0xffff, fp);
     } else {
       fputc((int)(data & 0xff), fp);

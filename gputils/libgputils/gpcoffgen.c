@@ -73,12 +73,9 @@ gp_coffgen_findsection(gp_object_type *object,
 }
 
 gp_section_type *
-gp_coffgen_addsection(gp_object_type *object, char *name)
+gp_coffgen_newsection(char *name)
 {
   gp_section_type *new = NULL;
-
-  if (object == NULL)
-    return NULL;
 
   /* allocate memory for the section */
   new = (gp_section_type *)malloc(sizeof(*new));
@@ -97,6 +94,19 @@ gp_coffgen_addsection(gp_object_type *object, char *name)
   new->line_numbers = NULL;
   new->line_numbers_tail = NULL;
   new->next = NULL;
+
+  return new;
+}
+
+gp_section_type *
+gp_coffgen_addsection(gp_object_type *object, char *name)
+{
+  gp_section_type *new = NULL;
+
+  if (object == NULL)
+    return NULL;
+
+  new = gp_coffgen_newsection(name);
 
   if (object->sections == NULL) {
     /* the list is empty */
