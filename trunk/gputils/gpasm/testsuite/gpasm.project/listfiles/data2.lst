@@ -1,71 +1,91 @@
-MPASM 02.61 Released            DATA2.ASM   3-8-2001  1:52:30         PAGE  1
+MPASM 03.20.02 Released         DATA2.ASM   11-22-2002  11:18:04         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
                       00001      list p=16c84
-2000   0001 0002 0003 00002      __idlocs h'1234' 
+                      00002 
+2000   0001 0002 0003 00003      __idlocs h'1234' 
        0004 
-                      00003 
                       00004 
-0000   30E2 31E4 32E6 00005      da "abcdefg"
+                      00005 
+                      00006 
+0000   30E2 31E4 32E6 00007      da "abcdefg"
        3380 
-0004   18B2 19B4 1AB6 00006      da "12345678",0
-       1BB8 0000 
-Message[303]: Program word too large.  Truncated to core size. (FFFF)
-0009   3FFF           00007      da 0xFFFF
                       00008 
+0004   18B2 19B4 1AB6 00009      da "12345678",0
+       1BB8 0000 
+                      00010 
+Message[303]: Program word too large.  Truncated to core size. (FFFF)
+0009   3FFF           00011      da 0xFFFF
+                      00012 
+                      00013 
+                      00014 
 Message[303]: Program word too large.  Truncated to core size. (6162)
 Message[303]: Program word too large.  Truncated to core size. (6364)
 Message[303]: Program word too large.  Truncated to core size. (6566)
 Message[303]: Program word too large.  Truncated to core size. (6700)
-000A   2162 2364 2566 00009      data "abcdefg"
+000A   2162 2364 2566 00015      data "abcdefg"
        2700 
-000E   3132 3334 3536 00010      data "12345678",0x1421,2,3,4
+                      00016 
+000E   3132 3334 3536 00017      data "12345678",0x1421,2,3,4
        3738 1421 0002 
        0003 0004 
+                      00018 
 Message[303]: Program word too large.  Truncated to core size. (FFFF)
-0016   3FFF           00011      data 0xFFFF
-                      00012 
+0016   3FFF           00019      data 0xFFFF
+                      00020 
+                      00021 
+                      00022 
 Message[303]: Program word too large.  Truncated to core size. (740F)
 Message[303]: Program word too large.  Truncated to core size. (650F)
 Message[303]: Program word too large.  Truncated to core size. (730F)
 Message[303]: Program word too large.  Truncated to core size. (740A)
-0017   340F 250F 330F 00013      db 't',0x0f,'e',0x0f,'s',0x0f,'t','\n'
+0017   340F 250F 330F 00023      db 't',0x0f,'e',0x0f,'s',0x0f,'t','\n'
        340A 
-                      00014 
-001B   004D 0079 0020 00015      de "My Program, v1.0",0
+                      00024 
+                      00025 
+                      00026 
+001B   004D 0079 0020 00027      de "My Program, v1.0",0
        0050 0072 006F 
        0067 0072 0061 
        006D 002C 0020 
        0076 0031 002E 
        0030 0000 
-                      00016 
+                      00028 
+                      00029 
+                      00030 
 Message[303]: Program word too large.  Truncated to core size. (6162)
-Message[303]: Program word too large.  Truncated to core size. (6364)
-Message[303]: Program word too large.  Truncated to core size. (6566)
-Message[303]: Program word too large.  Truncated to core size. (6700)
-002C   2162 2364 2566 00017      dw "abcdefg"
-       2700 
-0030   3132 3334 3536 00018      dw "12345678",0
-       3738 0000 
-Message[303]: Program word too large.  Truncated to core size. (FFFF)
-0035   3FFF           00019      dw 0xFFFF
-                      00020 
-0036   3441 3420 344D 00021      dt "A Message",0
-       3465 3473 3473 
-       3461 3467 3465 
-       3400 
-MPASM 02.61 Released            DATA2.ASM   3-8-2001  1:52:30         PAGE  2
+MPASM 03.20.02 Released         DATA2.ASM   11-22-2002  11:18:04         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00022 
-                      00023      end
-MPASM 02.61 Released            DATA2.ASM   3-8-2001  1:52:30         PAGE  3
+Message[303]: Program word too large.  Truncated to core size. (6364)
+Message[303]: Program word too large.  Truncated to core size. (6566)
+Message[303]: Program word too large.  Truncated to core size. (6700)
+002C   2162 2364 2566 00031      dw "abcdefg"
+       2700 
+                      00032 
+0030   3132 3334 3536 00033      dw "12345678",0
+       3738 0000 
+                      00034 
+Message[303]: Program word too large.  Truncated to core size. (FFFF)
+0035   3FFF           00035      dw 0xFFFF
+                      00036 
+                      00037 
+                      00038 
+0036   3441 3420 344D 00039      dt "A Message",0
+       3465 3473 3473 
+       3461 3467 3465 
+       3400 
+                      00040 
+                      00041 
+                      00042 
+                      00043      end
+MPASM 03.20.02 Released         DATA2.ASM   11-22-2002  11:18:04         PAGE  3
 
 
 SYMBOL TABLE

@@ -1,4 +1,4 @@
-MPASM 02.61 Released         VARIA~EO.ASM   3-8-2001  1:53:42         PAGE  1
+MPASM 03.20.02 Released      VARIAB~1.ASM   11-22-2002  11:18:06         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -6,26 +6,27 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 
                       00001      list p=16c84
                       00002 
-  00000020            00003 value equ 0x20 
-                      00004  
-  0008                00005      constant number1=3+5, number2=0x20, number3=value+value, number4=value+5  
-                      00006  
-0000   3008           00007      movlw number1 
-0001   3020           00008      movlw number2 
-0002   3040           00009      movlw number3 
-0003   3025           00010      movlw number4 
-                      00011 
-  0004                00012      variable test1=4
-0004   3004           00013      movlw test1 
-  0003                00014      variable test1=3
-0005   3003           00015      movlw test1 
-  0000                00016      variable test2,test3=6,test4=test1+test3
-0006   3000           00017      movlw test2 
-0007   3006           00018      movlw test3 
-0008   3006           00019      movlw test3 
-                      00020      
-                      00021      end
-MPASM 02.61 Released         VARIA~EO.ASM   3-8-2001  1:53:42         PAGE  2
+                      00003 
+  00000020            00004 value equ 0x20 
+                      00005  
+  0008                00006      constant number1=3+5, number2=0x20, number3=value+value, number4=value+5  
+                      00007  
+0000   3008           00008      movlw number1 
+0001   3020           00009      movlw number2 
+0002   3040           00010      movlw number3 
+0003   3025           00011      movlw number4 
+                      00012 
+  0004                00013      variable test1=4
+0004   3004           00014      movlw test1 
+  0003                00015      variable test1=3
+0005   3003           00016      movlw test1 
+  0000                00017      variable test2,test3=6,test4=test1+test3
+0006   3000           00018      movlw test2 
+0007   3006           00019      movlw test3 
+0008   3006           00020      movlw test3 
+                      00021      
+                      00022      end
+MPASM 03.20.02 Released      VARIAB~1.ASM   11-22-2002  11:18:06         PAGE  2
 
 
 SYMBOL TABLE

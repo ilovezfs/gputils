@@ -1,4 +1,4 @@
-MPASM 02.70 Released            INSN1.ASM   7-31-2001  0:16:34         PAGE  1
+MPASM 03.20.02 Released         INSN1.ASM   11-22-2002  11:18:05         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -14,7 +14,7 @@ Warning[203]: Found opcode in column 1. (movlw)
 0001   3001           00007 label movlw 1
                       00008 
                       00009   end
-MPASM 02.70 Released            INSN1.ASM   7-31-2001  0:16:34         PAGE  2
+MPASM 03.20.02 Released         INSN1.ASM   11-22-2002  11:18:05         PAGE  2
 
 
 SYMBOL TABLE

@@ -1,37 +1,60 @@
-MPASM 02.61 Released          CONFIG3.ASM   3-8-2001  1:53:10         PAGE  1
+MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
                       00001      list p=18c242,f=inhx32
-                      00002      include "p18c242.inc"
+                      00002 
+                      00003      include "p18c242.inc"
                       00001         LIST
                       00002 ; P18C242.INC  Standard Header File, Version 0.10   Microchip Technology, Inc.
                       00733         LIST
-                      00003 
-000000                00004      org 0
-000000 0EAA           00005      movlw 0Xaa
+                      00004 
+                      00005 
                       00006 
-                      00007      __CONFIG    _CONFIG0, _CP_OFF_0
-300000 DFFF           00008      __CONFIG    _CONFIG1, _OSCS_ON_1 & _RCIO_OSC_1
-                      00009      __CONFIG    _CONFIG2, _BOR_OFF_2 & _BORV_25_2 & _PWRT_ON_2
-300002 FFFC           00010      __CONFIG    _CONFIG3, _WDT_ON_3 & _WDTPS_128_3
-300004 FEFF           00011      __CONFIG    _CONFIG5, _CCP2MX_OFF_5
-300006 FFFE           00012      __CONFIG    _CONFIG6, _STVR_OFF_6
-                      00013      __CONFIG    _DEVID1, 0x55
-3FFFFE AA55           00014      __CONFIG    _DEVID2, 0xAA
-                      00015 
+000000                00007      org 0
+                      00008 
+000000 0EAA           00009      movlw 0Xaa
+                      00010 
+                      00011 
+                      00012 
+                      00013      __CONFIG    _CONFIG0, _CP_OFF_0
+                      00014 
+300000 DFFF           00015      __CONFIG    _CONFIG1, _OSCS_ON_1 & _RCIO_OSC_1
                       00016 
-000100                00017      org 0x100
+                      00017      __CONFIG    _CONFIG2, _BOR_OFF_2 & _BORV_25_2 & _PWRT_ON_2
                       00018 
-000100 0E05           00019      movlw 0x5
-000102 0023           00020      fill 0x23, 14
-000116 00FF           00021      fill 0xff, 58
-00016E 5534           00022      fill 0x5534, 0xF00
-                      00023      
-                      00024      eNd
-MPASM 02.61 Released          CONFIG3.ASM   3-8-2001  1:53:10         PAGE  2
+300002 FFFC           00019      __CONFIG    _CONFIG3, _WDT_ON_3 & _WDTPS_128_3
+                      00020 
+300004 FEFF           00021      __CONFIG    _CONFIG5, _CCP2MX_OFF_5
+                      00022 
+300006 FFFE           00023      __CONFIG    _CONFIG6, _STVR_OFF_6
+                      00024 
+                      00025      __CONFIG    _DEVID1, 0x55
+                      00026 
+3FFFFE AA55           00027      __CONFIG    _DEVID2, 0xAA
+                      00028 
+                      00029 
+                      00030 
+                      00031 
+                      00032 
+000100                00033      org 0x100
+                      00034 
+                      00035 
+                      00036 
+000100 0E05           00037      movlw 0x5
+                      00038 
+000102 0023           00039      fill 0x23, 14
+                      00040 
+000116 00FF           00041      fill 0xff, 58
+                      00042 
+00016E 5534           00043      fill 0x5534, 0xF00
+                      00044 
+                      00045      
+                      00046 
+                      00047      eNd
+MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  2
 
 
 SYMBOL TABLE
@@ -90,7 +113,7 @@ CCP2M0                            00000000
 CCP2M1                            00000001
 CCP2M2                            00000002
 CCP2M3                            00000003
-MPASM 02.61 Released          CONFIG3.ASM   3-8-2001  1:53:10         PAGE  3
+MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  3
 
 
 SYMBOL TABLE
@@ -149,7 +172,7 @@ INDF0                             00000FEF
 INDF1                             00000FE7
 INDF2                             00000FDF
 INT0                              00000000
-MPASM 02.61 Released          CONFIG3.ASM   3-8-2001  1:53:10         PAGE  4
+MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  4
 
 
 SYMBOL TABLE
@@ -208,7 +231,7 @@ NOT_RBPU                          00000007
 NOT_RC8                           00000006
 NOT_RI                            00000004
 NOT_T1SYNC                        00000002
-MPASM 02.61 Released          CONFIG3.ASM   3-8-2001  1:53:10         PAGE  5
+MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  5
 
 
 SYMBOL TABLE
@@ -267,7 +290,7 @@ RA1                               00000001
 RA2                               00000002
 RA3                               00000003
 RA4                               00000004
-MPASM 02.61 Released          CONFIG3.ASM   3-8-2001  1:53:10         PAGE  6
+MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  6
 
 
 SYMBOL TABLE
@@ -326,7 +349,7 @@ SPBRG                             00000FAF
 SPEN                              00000007
 SREN                              00000005
 SS                                00000005
-MPASM 02.61 Released          CONFIG3.ASM   3-8-2001  1:53:10         PAGE  7
+MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  7
 
 
 SYMBOL TABLE
@@ -385,7 +408,7 @@ T3SYNC                            00000002
 TABLAT                            00000FF5
 TBLPTRH                           00000FF7
 TBLPTRL                           00000FF6
-MPASM 02.61 Released          CONFIG3.ASM   3-8-2001  1:53:10         PAGE  8
+MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  8
 
 
 SYMBOL TABLE
@@ -444,7 +467,7 @@ UA                                00000001
 VREFM                             00000002
 VREFP                             00000003
 W                                 00000000
-MPASM 02.61 Released          CONFIG3.ASM   3-8-2001  1:53:10         PAGE  9
+MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  9
 
 
 SYMBOL TABLE
@@ -503,7 +526,7 @@ _WDTPS_32_3                       000000FB
 _WDTPS_4_3                        000000F5
 _WDTPS_64_3                       000000FD
 _WDTPS_8_3                        000000F7
-MPASM 02.61 Released          CONFIG3.ASM   3-8-2001  1:53:10         PAGE 10
+MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE 10
 
 
 SYMBOL TABLE
@@ -555,7 +578,7 @@ MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 0800 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0840 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0880 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
-MPASM 02.61 Released          CONFIG3.ASM   3-8-2001  1:53:10         PAGE 11
+MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE 11
 
 
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)

@@ -1,4 +1,4 @@
-MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  1
+MPASM 03.20.02 Released         DATA3.ASM   11-22-2002  20:29:11         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -37,26 +37,23 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 00002E 0F74 0F65 0F73 00023      db 't',0x0f,'e',0x0f,'s',0x0f,'t','\n'
        0A74 
                       00024 
-000036 004D 0079 0020 00025      de "My Program, v1.0",0
-       0050 0072 006F 
-       0067 0072 0061 
-       006D 002C 0020 
-       0076 0031 002E 
-       0030 0000 
+000036 794D 5020 6F72 00025      de "My Program, v1.0",0
+       7267 6D61 202C 
+       3176 302E 0000 
                       00026 
-000058 6261 6463 6665 00027      dw "abcdefg"
+000048 6261 6463 6665 00027      dw "abcdefg"
        0067 
-000060 3231 3433 3635 00028      dw "12345678",0
+000050 3231 3433 3635 00028      dw "12345678",0
        3837 0000 
-00006A FFFF           00029      dw 0xFFFF
+00005A FFFF           00029      dw 0xFFFF
                       00030 
-00006C 0C41 0C20 0C4D 00031      dt "A Message",0
+00005C 0C41 0C20 0C4D 00031      dt "A Message",0
        0C65 0C73 0C73 
        0C61 0C67 0C65 
        0C00 
                       00032 
                       00033      end
-MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  2
+MPASM 03.20.02 Released         DATA3.ASM   11-22-2002  20:29:11         PAGE  2
 
 
 SYMBOL TABLE
@@ -115,7 +112,7 @@ CCP2M0                            00000000
 CCP2M1                            00000001
 CCP2M2                            00000002
 CCP2M3                            00000003
-MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  3
+MPASM 03.20.02 Released         DATA3.ASM   11-22-2002  20:29:11         PAGE  3
 
 
 SYMBOL TABLE
@@ -174,7 +171,7 @@ INDF0                             00000FEF
 INDF1                             00000FE7
 INDF2                             00000FDF
 INT0                              00000000
-MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  4
+MPASM 03.20.02 Released         DATA3.ASM   11-22-2002  20:29:11         PAGE  4
 
 
 SYMBOL TABLE
@@ -233,7 +230,7 @@ NOT_RBPU                          00000007
 NOT_RC8                           00000006
 NOT_RI                            00000004
 NOT_T1SYNC                        00000002
-MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  5
+MPASM 03.20.02 Released         DATA3.ASM   11-22-2002  20:29:11         PAGE  5
 
 
 SYMBOL TABLE
@@ -292,7 +289,7 @@ RA1                               00000001
 RA2                               00000002
 RA3                               00000003
 RA4                               00000004
-MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  6
+MPASM 03.20.02 Released         DATA3.ASM   11-22-2002  20:29:11         PAGE  6
 
 
 SYMBOL TABLE
@@ -351,7 +348,7 @@ SPBRG                             00000FAF
 SPEN                              00000007
 SREN                              00000005
 SS                                00000005
-MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  7
+MPASM 03.20.02 Released         DATA3.ASM   11-22-2002  20:29:11         PAGE  7
 
 
 SYMBOL TABLE
@@ -410,7 +407,7 @@ T3SYNC                            00000002
 TABLAT                            00000FF5
 TBLPTRH                           00000FF7
 TBLPTRL                           00000FF6
-MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  8
+MPASM 03.20.02 Released         DATA3.ASM   11-22-2002  20:29:11         PAGE  8
 
 
 SYMBOL TABLE
@@ -469,7 +466,7 @@ UA                                00000001
 VREFM                             00000002
 VREFP                             00000003
 W                                 00000000
-MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE  9
+MPASM 03.20.02 Released         DATA3.ASM   11-22-2002  20:29:11         PAGE  9
 
 
 SYMBOL TABLE
@@ -528,7 +525,7 @@ _WDTPS_32_3                       000000FB
 _WDTPS_4_3                        000000F5
 _WDTPS_64_3                       000000FD
 _WDTPS_8_3                        000000F7
-MPASM 02.61 Released            DATA3.ASM   3-8-2001  1:52:35         PAGE 10
+MPASM 03.20.02 Released         DATA3.ASM   11-22-2002  20:29:11         PAGE 10
 
 
 SYMBOL TABLE
@@ -550,13 +547,13 @@ test                              00000015
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 
 0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
-0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX ----------------
 0000 : XXXXXXXX-------- ---------------- ---------------- ----------------
 
 All other memory blocks unused.
 
-Program Memory Bytes Used:   136
-Program Memory Bytes Free: 16248
+Program Memory Bytes Used:   120
+Program Memory Bytes Free: 16264
 
 
 Errors   :     0

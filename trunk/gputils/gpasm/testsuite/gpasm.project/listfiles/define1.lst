@@ -1,4 +1,4 @@
-MPASM 02.70 Released          DEFINE1.ASM   8-14-2001  21:08:22         PAGE  1
+MPASM 03.20.02 Released       DEFINE1.ASM   11-22-2002  11:18:04         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -42,7 +42,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0009   2807           00036   goto nextlabel
                       00037 
                       00038     end
-MPASM 02.70 Released          DEFINE1.ASM   8-14-2001  21:08:22         PAGE  2
+MPASM 03.20.02 Released       DEFINE1.ASM   11-22-2002  11:18:04         PAGE  2
 
 
 SYMBOL TABLE

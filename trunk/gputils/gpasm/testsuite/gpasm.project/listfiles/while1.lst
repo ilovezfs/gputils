@@ -1,4 +1,4 @@
-MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  1
+MPASM 03.20.02 Released        WHILE1.ASM   11-22-2002  11:18:07         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -57,7 +57,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 002D   3055           00007       movlw 0x55
 002E   30AA           00006       movlw 0xAA
 002F   3055           00007       movlw 0x55
-MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  2
+MPASM 03.20.02 Released        WHILE1.ASM   11-22-2002  11:18:07         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -116,7 +116,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0062   30AA           00006       movlw 0xAA
 0063   3055           00007       movlw 0x55
 0064   30AA           00006       movlw 0xAA
-MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  3
+MPASM 03.20.02 Released        WHILE1.ASM   11-22-2002  11:18:07         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -175,7 +175,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0097   3055           00007       movlw 0x55
 0098   30AA           00006       movlw 0xAA
 0099   3055           00007       movlw 0x55
-MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  4
+MPASM 03.20.02 Released        WHILE1.ASM   11-22-2002  11:18:07         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -234,7 +234,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 00CC   30AA           00006       movlw 0xAA
 00CD   3055           00007       movlw 0x55
 00CE   30AA           00006       movlw 0xAA
-MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  5
+MPASM 03.20.02 Released        WHILE1.ASM   11-22-2002  11:18:07         PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -293,7 +293,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0101   3055           00007       movlw 0x55
 0102   30AA           00006       movlw 0xAA
 0103   3055           00007       movlw 0x55
-MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  6
+MPASM 03.20.02 Released        WHILE1.ASM   11-22-2002  11:18:07         PAGE  6
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -352,7 +352,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0136   30AA           00006       movlw 0xAA
 0137   3055           00007       movlw 0x55
 0138   30AA           00006       movlw 0xAA
-MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  7
+MPASM 03.20.02 Released        WHILE1.ASM   11-22-2002  11:18:07         PAGE  7
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -411,7 +411,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 016B   3055           00007       movlw 0x55
 016C   30AA           00006       movlw 0xAA
 016D   3055           00007       movlw 0x55
-MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  8
+MPASM 03.20.02 Released        WHILE1.ASM   11-22-2002  11:18:07         PAGE  8
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -470,7 +470,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 01A0   30AA           00006       movlw 0xAA
 01A1   3055           00007       movlw 0x55
 01A2   30AA           00006       movlw 0xAA
-MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE  9
+MPASM 03.20.02 Released        WHILE1.ASM   11-22-2002  11:18:07         PAGE  9
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -529,7 +529,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 01D5   3055           00007       movlw 0x55
 01D6   30AA           00006       movlw 0xAA
 01D7   3055           00007       movlw 0x55
-MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE 10
+MPASM 03.20.02 Released        WHILE1.ASM   11-22-2002  11:18:07         PAGE 10
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -579,7 +579,7 @@ Error[140]  : WHILE must terminate within 256 iterations
                       00008     endw
                       00009 
                       00010     end
-MPASM 02.70 Released           WHILE1.ASM   7-24-2001  0:33:16         PAGE 11
+MPASM 03.20.02 Released        WHILE1.ASM   11-22-2002  11:18:07         PAGE 11
 
 
 SYMBOL TABLE

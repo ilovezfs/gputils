@@ -1,32 +1,35 @@
-gpasm-0.10.3 alpha              macro_def.asm10-7-2002  20:36:53          PAGE  1
+MPASM 03.20.02 Released      MACRO_~1.ASM   11-22-2002  11:18:06         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
- 
-               00001 ; generate an error because macro calls must be after the definition
-               00002 
-               00003   processor 16c84
-               00004 
-0005           00005   org 5
-               00006 
-Error [157] : Forward references to macros are not allowed.
-               00007   test 5
-               00008 
-               00009 test macro number1
-               00010   movlw number1
-               00011   endm
-               00012   
-               00013   test 5
-0005 3005          M   movlw number1
-               00014   
-gpasm-0.10.3 alpha              macro_def.asm10-7-2002  20:36:53          PAGE  2
+
+                      00001 ; generate an error because macro calls must be after the definition
+                      00002 
+                      00003   processor 16c84
+                      00004 
+0005                  00005   org 5
+                      00006 
+Warning[207]: Found label after column 1. (test)
+Error[108]  : Illegal character (5)
+                      00007   test 5
+                      00008 
+                      00009 test macro number1
+                      00010   movlw number1
+                      00011   endm
+                      00012   
+                      00013   test 5
+0005   3005               M   movlw 5
+                      00014   
+                      00015   end
+MPASM 03.20.02 Released      MACRO_~1.ASM   11-22-2002  11:18:06         PAGE  2
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
 __16C84                           00000001
+test                              
 
 
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
@@ -35,10 +38,12 @@ MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 
 All other memory blocks unused.
 
-Program Memory Words Used: 1
+Program Memory Words Used:     1
+Program Memory Words Free:  1023
 
 
-Errors   :       1
-Warnings :       0 reported,       0 suppressed
-Messages :       0 reported,       0 suppressed
+Errors   :     1
+Warnings :     1 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
 

@@ -1,4 +1,4 @@
-MPASM 02.61 Released         LABELSUB.ASM   7-5-2001  15:35:41         PAGE  1
+MPASM 03.20.02 Released      LABELSUB.ASM   11-22-2002  11:18:05         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -31,7 +31,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 000B   2804           00025   goto newlabel
                       00026 
                       00027   end
-MPASM 02.61 Released         LABELSUB.ASM   7-5-2001  15:35:41         PAGE  2
+MPASM 03.20.02 Released      LABELSUB.ASM   11-22-2002  11:18:05         PAGE  2
 
 
 SYMBOL TABLE
