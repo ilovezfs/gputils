@@ -390,9 +390,7 @@ statement:
 	|
 	INCLUDE '\n'
 	{
-          state.next_state = _include;  
-          state.next_buffer.file = strdup($1);
-          $$ = 0;
+	  $$ = do_or_append_insn("include", mk_list(mk_string($1), NULL));
 	}
 	|
 	IDENTIFIER '\n'

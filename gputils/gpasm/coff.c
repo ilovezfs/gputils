@@ -156,7 +156,7 @@ coff_new_section(char *name, int addr, int flags)
 
   found = gp_coffgen_findsection(state.obj.object, 
                                  state.obj.object->sections,
-                                 name);    
+                                 name);
 
   if (found != NULL) {
     if ((flags & STYP_OVERLAY) && 

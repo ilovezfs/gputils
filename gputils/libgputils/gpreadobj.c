@@ -155,9 +155,7 @@ _read_section_header(gp_object_type *object,
   }
 
   section->symbol = gp_coffgen_findsymbol(object, section->name);
-  if (section->symbol == NULL)
-    gp_error("missing section symbol in \"%s\"", object->filename);
-  
+
   section->address = gp_getl32(&file[8]);
   if (section->address != gp_getl32(&file[12]))
     gp_error("virtual address does not equal physical address in \"%s\"", 

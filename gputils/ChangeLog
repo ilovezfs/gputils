@@ -1,7 +1,14 @@
+2003-05-06 Craig Franklin <craigfranklin@attbi.com>
+  * Fixed conditional assembly of INCLUDE directives in gpasm. 
+  * Fixed seg fault in gplink when object has no sections or symbols.
+  * Fixed target memory allocation in gplink when section size = page size
+  * Fixed target memory allocation in gplink when section size = 1
+  * Implemented section fill in gplink.
+
 2003-05-03  Scott Dattalo  <scott@dattalo.com>
   * 18f Bit instructions were not handling the Access bit properly
 
-2003-04-06 Craig Franklin <craigfranklin@attbi.com>
+2003-04-19 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.11.2 Released.
   * Fixed section size bug in org directives when used in gpasm coff outputs.
   * Fixed bug in cod file address size that confused MPLAB.

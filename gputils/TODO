@@ -27,7 +27,6 @@ gpasm
 
 gplink
   * Implement idata.
-  * Added fill function.
   * Complete protected features.
   * Check the 18xx relocations.
   * Handle sharebank sections properly.
