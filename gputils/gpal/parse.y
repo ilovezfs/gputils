@@ -71,6 +71,7 @@ static tree *case_ident = NULL;
 /* keywords */
 %token <i> ARRAY     "array"
 %token <i> CASE      "case"
+%token <i> CONSTANT  "constant"
 %token <i> BEGIN_TOK "begin"
 %token <i> ELSE      "else"
 %token <i> ELSIF     "elsif"
@@ -99,10 +100,10 @@ static tree *case_ident = NULL;
 %token <i> WITH      "with"
 
 /* general */
-%token <s> ASM
-%token <s> IDENT
-%token <i> NUMBER
-%token <s> STRING
+%token <s> ASM       "asm"
+%token <s> IDENT     "symbol"
+%token <i> NUMBER    "number"
+%token <s> STRING    "string"
 %token <i> ';'
 %token <i> ':'
 
@@ -318,12 +319,17 @@ decl_block:
 decl:
 	IDENT ':' IDENT ';'
 	{ 
-	  $$ = mk_decl($1, $3, NULL);
+	  $$ = mk_decl($1, false, $3, NULL);
         }
 	|
 	IDENT ':' IDENT '=' expr ';'
 	{ 
-	  $$ = mk_decl($1, $3, $5);
+	  $$ = mk_decl($1, false, $3, $5);
+        }
+	|
+	IDENT ':' CONSTANT IDENT '=' expr ';'
+	{ 
+	  $$ = mk_decl($1, true, $4, $6);
         }
 	;
 

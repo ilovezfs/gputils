@@ -26,58 +26,74 @@ Boston, MA 02111-1307, USA.  */
 #include "symbol.h"
 #include "analyze.h"
 
-/* add a symbol for each data memory */
+/* Add an alias to an existing symbol at the top of the symbol table stack */
 
-static void
-add_memory(char *name, struct variable *var)
+void
+add_symbol_alias(char *name, tree *symbol, struct variable *var)
 {
   struct symbol *sym;
 
-  sym = get_symbol(state.memory, name);
+  sym = get_symbol(state.top, name);
   if (sym == NULL) {
-    sym = add_symbol(state.memory, name);
+    sym = add_symbol(state.top, name);
     annotate_symbol(sym, var);
+  } else {
+    var = get_symbol_annotation(sym);
+    analyze_error(symbol,
+                  "redefinition of %s,\n\talso defined in %s:%i:",
+                  name,
+                  get_file_name(var->file_id),
+                  var->line_number);
   }
+
+  return;
 }
 
-/* add one symbol to the global table */
+char *
+mangle_name1(char *first)
+{
+  return gp_lower_case(first);
+}
+
+char *
+mangle_name2(char *first, char *second)
+{
+  char buffer[BUFSIZ];
+
+  sprintf(buffer, "%s.%s", first, second);
+
+  return gp_lower_case(buffer);
+}
+
+char *
+mangle_name3(char *first, char *second, char *third)
+{
+  char buffer[BUFSIZ];
+
+  sprintf(buffer, "%s.%s.%s", first, second, third);
+
+  return gp_lower_case(buffer);
+}
+
+/* Add one symbol to the global table to the base of the symbol table
+   stack.  */
 
 struct variable *
 add_global_symbol(char *name,
-                  char *prefix,
-                  char *module,
-                  gp_boolean mangle_name,
                   tree *symbol,
                   enum sym_tag tag,
                   enum node_storage storage,
                   char *type)
 {
-  char *symbol_name;
-  char buffer[BUFSIZ];
   struct symbol *sym;
   struct variable *var;
 
-  if (prefix) {
-    sprintf(buffer, "%s.%s.%s", module, prefix, name);
-  } else if (module) {
-    sprintf(buffer, "%s.%s", module, name);
-  } else {
-    sprintf(buffer, "%s", name);
-  }
-
-  if (mangle_name) {
-    symbol_name = buffer;
-  } else {
-    symbol_name = name;
-  }
-
-  sym = get_symbol(state.top, symbol_name);
+  sym = get_symbol(state.global, name);
   if (sym == NULL) {
-    sym = add_symbol(state.top, symbol_name);
+    sym = add_symbol(state.global, name);
     var = malloc(sizeof(*var));
     annotate_symbol(sym, var);
-    var->name = strdup(symbol_name);
-    var->alias = gp_lower_case(buffer);
+    var->name = name;
     var->tag = tag;
     var->storage = storage;
     if (type) {
@@ -91,14 +107,15 @@ add_global_symbol(char *name,
     var->is_used = false;
     var->is_assigned = false;
     var->value = 0;
-    var->file_id = symbol->file_id;
-    var->line_number = symbol->line_number;
+    if (symbol) {
+      var->file_id = symbol->file_id;
+      var->line_number = symbol->line_number;
+    } else {
+      var->file_id = 0;
+      var->line_number = 0;
+    }
     var->node = symbol;
     var->module = state.module;
-    /* add the symbol to the memory table */
-    if ((tag == sym_udata) || (tag == sym_idata)) {
-      add_memory(var->alias, var);
-    }
   } else {
     var = get_symbol_annotation(sym);
     analyze_error(symbol,
@@ -131,9 +148,6 @@ add_constant(char *name, int value, tree *node, char *type)
   struct variable *var;
 
   var = add_global_symbol(name,
-                          NULL,
-                          NULL,
-                          false,
                           node,
                           sym_const,
                           storage_unknown,
@@ -246,7 +260,6 @@ void
 add_type_alias(char *name, char *type)
 {
   struct symbol *sym;
-  struct type *new;
   struct symbol *prim;
   struct type *prim_type;
 
@@ -262,14 +275,7 @@ add_type_alias(char *name, char *type)
   sym = get_symbol(state.type, name);
   if (sym == NULL) {
     sym = add_symbol(state.type, name);
-    new = malloc(sizeof(*new));
-    annotate_symbol(sym, new);
-    new->tag = type_alias;
-    new->size = size_unknown;
-    new->nelts = 0;
-    new->start = 0;
-    new->end = 0;
-    new->prim = prim_type;
+    annotate_symbol(sym, prim_type);
   } else {
     analyze_error(NULL, "redefinition of type %s", name);
   }
@@ -301,9 +307,6 @@ prim_size(enum size_tag size)
   switch (size) {
   case size_unknown:
     assert(0);
-    break;
-  case size_constant:
-    byte_size = 0;
     break;
   case size_bit:
     byte_size = 1;
@@ -355,7 +358,6 @@ prim_type(struct type *type)
     break;
   case type_array:
   case type_enum:
-  case type_alias:
     size = type->prim->size;
     break;
   default:
@@ -382,9 +384,6 @@ type_size(struct type *type)
   case type_enum:
     size = type_size(type->prim);
     break;
-  case type_alias:
-    size = type_size(type->prim);
-    break;
   default:
     assert(0);
   }
@@ -395,8 +394,8 @@ type_size(struct type *type)
 void
 add_type_prims(void)
 {
-  add_type_prim("constant", size_bit);
   add_type_prim("bit",      size_bit);
+  add_type_prim("boolean",  size_uint8);
   add_type_prim("uint8",    size_uint8);
   add_type_prim("int8",     size_int8);
   add_type_prim("uint16",   size_uint16);
@@ -407,22 +406,25 @@ add_type_prims(void)
   add_type_prim("int32",    size_int32);
   add_type_prim("float",    size_float);
 
+  add_constant(strdup("false"), 0, NULL, "boolean");
+  add_constant(strdup("true"), 1, NULL, "boolean");
+
   return;
 }
 
-/* return true if the symbol has a run-time address */
+/* return true if the symbol is data memory */
 
 gp_boolean
-has_address(struct variable *var)
+is_data(struct variable *var)
 {
   assert(var != NULL);
 
   switch (var->tag) {
-  case sym_unknown:
-  case sym_const:
-    return false;
-  default:
+  case sym_idata:
+  case sym_udata:
     return true;
+  default:
+    return false;
   }
 
 }

@@ -26,7 +26,6 @@ Boston, MA 02111-1307, USA.  */
 
 enum size_tag {
   size_unknown,
-  size_constant,			/* a compile time constant */
   size_bit,				/* one bit packed */
   size_uint8,				/* one byte unsigned */
   size_int8,				/* one byte signed */
@@ -45,8 +44,7 @@ enum type_tag {
   type_unknown,
   type_prim,				/* primative (bit, uint8, ...) */
   type_array,				/* array of other types */
-  type_enum,				/* enumeration */
-  type_alias				/* type alias */
+  type_enum				/* enumeration */
 };
 
 struct type {
@@ -71,7 +69,6 @@ enum sym_tag {
 
 struct variable {
   char *name;				/* symbol name */
-  char *alias;				/* mangled name used in asm file */
   enum sym_tag tag;			/* symbol tag */
   enum node_storage storage;		/* storage class */
   struct type *type;			/* symbol type */
@@ -84,10 +81,11 @@ struct variable {
   tree *module;				/* module the node was located in */
 };
 
+void add_symbol_alias(char *name, tree *symbol, struct variable *var);
+char *mangle_name1(char *first);
+char *mangle_name2(char *first, char *second);
+char *mangle_name3(char *first, char *second, char *third);
 struct variable *add_global_symbol(char *name,
-                                   char *prefix,
-                                   char *module,
-                                   gp_boolean mangle_name,
                                    tree *symbol,
                                    enum sym_tag tag,
                                    enum node_storage storage,
@@ -105,7 +103,7 @@ int prim_size(enum size_tag size);
 int type_size(struct type *type);
 void add_type_prims(void);
 
-gp_boolean has_address(struct variable *var);
+gp_boolean is_data(struct variable *var);
 gp_boolean in_module(struct variable *var);
 gp_boolean is_extern(struct variable *var);
 
