@@ -147,7 +147,7 @@ tree *
 mk_call(char *name, tree *args)
 {
   tree *new = mk_node(node_call);
-  new->value.call.name = strdup(name);
+  new->value.call.name = name;
   new->value.call.args = args;
   return new;
 }
@@ -172,15 +172,13 @@ mk_cond(tree *cond, tree *body, tree *next)
 }
 
 tree *
-mk_decl(enum node_key key,
+mk_decl(char *name,
         char *type,
-        char *name,
         tree *init)
 {
   tree *new = mk_node(node_decl);
-  new->value.decl.key = key;
-  new->value.decl.type = type;
   new->value.decl.name = name;
+  new->value.decl.type = type;
   new->value.decl.init = init;
   
   return new;
@@ -219,7 +217,7 @@ tree *
 mk_head(char *name, tree *args)
 {
   tree *new = mk_node(node_head);
-  new->value.head.name = strdup(name);
+  new->value.head.name = name;
   new->value.head.args = args;
   return new;
 }
@@ -276,7 +274,7 @@ tree *
 mk_symbol(char *name, tree *offset)
 {
   tree *new = mk_node(node_symbol);
-  new->value.symbol.name = strdup(name);
+  new->value.symbol.name = name;
   new->value.symbol.offset = offset;
 
   return new;
@@ -439,10 +437,9 @@ print_node(tree *node, int level)
     break;
   case node_decl:
     print_space(level);
-    printf("node_decl key=%i, type=%s, name=%s\n",
-            DECL_KEY(node),
-            DECL_TYPE(node),
-            DECL_NAME(node));
+    printf("node_decl name=%s, type=%s\n",
+           DECL_NAME(node),
+           DECL_TYPE(node));
     if (DECL_INIT(node)) {
       print_node(DECL_INIT(node), level);
     }

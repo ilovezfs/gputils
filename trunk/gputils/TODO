@@ -12,8 +12,6 @@ gputils
     others.
 
 gpal
-  * Maybe remove the variable keyword from declarations. Leave the constant
-    or make constant a type.
   * Add a macro/inline procedure feature.  Maybe a "pragma inline = true".
     It would then have to be placed in the public.   
   * Implement initialized data using idata sections.

@@ -37,7 +37,6 @@ enum node_tag {
   node_file,
   node_func,  
   node_head,  
-  node_key, 
   node_loop,
   node_pragma,
   node_proc,
@@ -81,12 +80,6 @@ enum node_op {
   /* add assign ops from gpasm/scan.l */
 };
 
-enum node_key { 
-  key_unknown,
-  key_variable,
-  key_constant
-};
-
 enum node_dir { 
   dir_unknown,
   dir_in,
@@ -105,7 +98,6 @@ enum node_storage {
 
 enum source_type {
   source_unknown,
-  source_header,   /* a processor header file */
   source_module,   /* a source file */
   source_public,   /* the public file for the module being compiled */
   source_with      /* the public file for a external module */ 
@@ -142,9 +134,8 @@ typedef struct node_struct {
       tree *next; /* else or elsif */
     } cond;    
     struct {
-      enum node_key key;
-      char *type;
       char *name;
+      char *type;
       tree *init;
     } decl;
     struct {
@@ -217,9 +208,8 @@ typedef struct node_struct {
 #define COND_TEST(C)       (C)->value.cond.cond
 #define COND_BODY(C)       (C)->value.cond.body
 #define COND_NEXT(C)       (C)->value.cond.next
-#define DECL_KEY(D)        (D)->value.decl.key
-#define DECL_TYPE(D)       (D)->value.decl.type
 #define DECL_NAME(D)       (D)->value.decl.name
+#define DECL_TYPE(D)       (D)->value.decl.type
 #define DECL_INIT(D)       (D)->value.decl.init
 #define FILE_BODY(F)       (F)->value.file.body
 #define FILE_NAME(F)       (F)->value.file.name
@@ -262,7 +252,7 @@ tree *mk_binop(enum node_op op, tree *p0, tree *p1);
 tree *mk_call(char *name, tree *args);
 tree *mk_constant(int value);
 tree *mk_cond(tree *cond, tree *body, tree *next);
-tree *mk_decl(enum node_key key, char *type, char *name, tree *init);
+tree *mk_decl(char *name, char *type, tree *init);
 tree *mk_file(tree *body, char *name, enum source_type type);
 tree *mk_func(tree *head, char *ret, tree *body);
 tree *mk_head(char *name, tree *args);

@@ -1,3 +1,7 @@
+2003-12-23 Craig Franklin <craigfranklin@comcast.net>
+  * Removed constant and variable keywords from gpal.  Added constant type.
+  * Removed header file scan from gpal.
+
 2003-12-20 Craig Franklin <craigfranklin@comcast.net>
   * Fixed i_memory allocation so memory beyond 32k words is initialized to 0.
   * Fixed memory map in gpasm list files for 18xx devices.  The map is now 

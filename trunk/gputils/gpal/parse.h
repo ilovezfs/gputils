@@ -11,7 +11,6 @@ typedef union {
   char *s;
   tree *t;
   enum node_dir d;
-  enum node_key k;
   enum node_op o;
 } yystype;
 # define YYSTYPE yystype
@@ -19,47 +18,45 @@ typedef union {
 #endif
 # define	ARRAY	257
 # define	CASE	258
-# define	CONSTANT	259
-# define	BEGIN_TOK	260
-# define	ELSE	261
-# define	ELSIF	262
-# define	END	263
-# define	FOR	264
-# define	FUNCTION	265
-# define	IF	266
-# define	IN	267
-# define	INOUT	268
-# define	IS	269
-# define	LOOP	270
-# define	MODULE	271
-# define	NULL_TOK	272
-# define	OF	273
-# define	OTHERS	274
-# define	PRAGMA	275
-# define	PROCEDURE	276
-# define	PUBLIC	277
-# define	RETURN	278
-# define	THEN	279
-# define	TO	280
-# define	TYPE	281
-# define	OUT	282
-# define	VARIABLE	283
-# define	WHEN	284
-# define	WHILE	285
-# define	WITH	286
-# define	ASM	287
-# define	IDENT	288
-# define	NUMBER	289
-# define	STRING	290
-# define	LSH	291
-# define	RSH	292
-# define	ARROW	293
-# define	GREATER_EQUAL	294
-# define	LESS_EQUAL	295
-# define	EQUAL	296
-# define	NOT_EQUAL	297
-# define	LOGICAL_AND	298
-# define	LOGICAL_OR	299
+# define	BEGIN_TOK	259
+# define	ELSE	260
+# define	ELSIF	261
+# define	END	262
+# define	FOR	263
+# define	FUNCTION	264
+# define	IF	265
+# define	IN	266
+# define	INOUT	267
+# define	IS	268
+# define	LOOP	269
+# define	MODULE	270
+# define	NULL_TOK	271
+# define	OF	272
+# define	OTHERS	273
+# define	PRAGMA	274
+# define	PROCEDURE	275
+# define	PUBLIC	276
+# define	RETURN	277
+# define	THEN	278
+# define	TO	279
+# define	TYPE	280
+# define	OUT	281
+# define	WHEN	282
+# define	WHILE	283
+# define	WITH	284
+# define	ASM	285
+# define	IDENT	286
+# define	NUMBER	287
+# define	STRING	288
+# define	LSH	289
+# define	RSH	290
+# define	ARROW	291
+# define	GREATER_EQUAL	292
+# define	LESS_EQUAL	293
+# define	EQUAL	294
+# define	NOT_EQUAL	295
+# define	LOGICAL_AND	296
+# define	LOGICAL_OR	297
 
 
 extern YYSTYPE yylval;

@@ -10,7 +10,7 @@
 %DVIPSCommandLine: dvips -t letter -o
 %+ /home/craig/gputils/cvs/gputils/doc/gputils.ps gputils.dvi
 %DVIPSParameters: dpi=600, compressed
-%DVIPSSource:  TeX output 2003.12.18:0204
+%DVIPSSource:  TeX output 2003.12.23:2104
 %%BeginProcSet: texc.pro
 %!
 /TeXDict 300 dict def TeXDict begin/N{def}def/B{bind def}N/S{exch}N/X{S
@@ -250,8 +250,8 @@ rf /Fj 133[37 42 2[42 46 28 32 37 1[46 42 46 69 23 46
 103 115 172 57 115 1[57 1[103 1[92 115 92 115 103 11[149
 11[80 5[149 67[{TeXBase1Encoding ReEncodeFont}21 206.559
 /Times-Bold rf /Fl 136[72 3[39 33 2[50 50 78 28 50 1[28
-1[50 1[44 50 44 50 44 22[39 3[55 1[72 66 66 9[50 4[50
-50 50 50 3[25 44[{TeXBase1Encoding ReEncodeFont}26 99.6264
+1[50 1[44 50 44 50 44 22[39 3[55 1[72 66 66 14[50 50
+1[50 3[25 44[{TeXBase1Encoding ReEncodeFont}24 99.6264
 /Times-Roman rf /Fm 138[72 40 56 2[72 3[40 2[40 1[72
 46[72 6[72 72 1[36 46[{TeXBase1Encoding ReEncodeFont}11
 143.462 /Times-Roman rf end
@@ -267,7 +267,7 @@ letter
 %%Page: 1 1
 1 0 bop 1557 2053 a Fm(gputils)35 b(0.11.8)1248 2418
 y Fl(James)25 b(Bo)n(wman)f(and)h(Craig)g(Franklin)1559
-2659 y(December)g(18,)f(2003)p eop
+2659 y(December)g(23,)f(2003)p eop
 %%Page: 1 2
 1 1 bop 203 727 a Fk(Contents)203 1242 y Fj(1)83 b(Intr)o(oduction)2875
 b(4)328 1341 y Fi(1.1)86 b(T)-7 b(ool)20 b(Flo)n(ws)80
@@ -1017,69 +1017,65 @@ eop
 %%Page: 12 13
 12 12 bop 203 -170 a Fh(CHAPTER)21 b(2.)46 b(GP)-8 b(AL)2694
 b Fi(12)203 63 y Fd(2.6.9)99 b(Pragma)411 218 y Fb(pragma)48
-b(<anything>;)203 374 y Fi(Pragmas)25 b(pro)o(vide)e(data)i(to)g
+b(<anything>;)203 386 y Fi(Pragmas)25 b(pro)o(vide)e(data)i(to)g
 (compiler)f(which)g(is)i(outside)f(of)g(its)h(le)o(gal)e(syntax.)39
-b(The)25 b(table)g(belo)n(w)f(summarizes)g(the)203 473
-y(pragmas)19 b(a)n(v)n(ailable:)p 203 574 3623 4 v 201
-673 4 100 v 399 644 a(Name)p 792 673 V 591 w(F)o(ormat)p
-1821 673 V 1201 w(Description)p 3824 673 V 203 677 3623
-4 v 203 693 V 201 793 4 100 v 264 763 a(Code)h(Address)p
-792 793 V 122 w(code_address)e(=)j(<constant>)p 1821
-793 V 159 w(Mak)o(e)f(the)g(code)g(section)g(absolute)f(at)i(address)f
-(<constant>.)p 3824 793 V 203 796 3623 4 v 201 896 4
-100 v 276 866 a(Code)g(Section)p 792 896 V 152 w(code_section)e(=)i
-(\223<name>\223)p 1821 896 V 449 w(Set)h(the)f(code)f(section)h(name)g
-(to)g(<name>.)p 3824 896 V 203 899 3623 4 v 201 999 4
-100 v 379 969 a(Header)p 792 999 V 360 w(header)f(=)h(\223<name>\223)p
-1821 999 V 234 w(Scan)g(the)h(processor)e(header)g(\002le)h(and)g(add)g
-(the)g(EQ)o(U)g(symbols.)p 3824 999 V 203 1002 3623 4
-v 201 1102 4 100 v 337 1072 a(Processor)p 792 1102 V
-270 w(processor)f(=)i(\223<name>\223)p 1821 1102 V 553
-w(Set)g(the)f(processor)f(name)h(to)g(<name>.)p 3824
-1102 V 203 1105 3623 4 v 201 1205 4 100 v 253 1175 a(Udata)g(Address)p
-792 1205 V 99 w(udata_address)e(=)i(<constant>)p 1821
-1205 V 137 w(Mak)o(e)g(the)g(udata)g(section)f(absolute)h(at)h(address)
-e(<constant>.)p 3824 1205 V 203 1208 3623 4 v 201 1308
-4 100 v 264 1278 a(Udata)h(Section)p 792 1308 V 140 w(udata_section=)e
-(\223<name>\223)p 1821 1308 V 435 w(Set)j(the)f(udata)g(section)g(name)
-f(to)i(<name>.)p 3824 1308 V 203 1311 3623 4 v 203 1598
-a Fe(2.7)119 b(Declarations)203 1801 y Fd(2.7.1)99 b(V)-9
-b(ariables)203 1956 y Fi(Symbols)17 b(whose)h(v)n(alues)g(change)f
-(during)f(runtime)h(are)h(referred)e(to)j(as)f(v)n(ariables.)24
-b(Because)18 b(v)n(ariables)f(change)g(v)n(alue)203 2056
-y(during)24 b(run)i(time)g(the)o(y)f(are)h(stored)g(in)g(data)g(memory)
--5 b(.)40 b(An)26 b(e)o(xpression)e(speci\002es)j(its)g(initial)f(v)n
-(alue.)42 b(A)27 b(v)n(ariable)d(is)203 2155 y(declared)19
-b(as)i(follo)n(ws:)411 2311 y Fb(variable)48 b(<name>)h(:)g(<type>)g
-([=)g(<expression>]?;)203 2466 y Fi(Here)20 b(is)h(an)f(e)o(xample:)411
-2622 y Fb(variable)48 b(gain)h(:)h(short)f(=)g(10;)203
-2854 y Fd(2.7.2)99 b(Constants)203 3010 y Fi(Compile)20
+b(The)25 b(table)g(belo)n(w)f(summarizes)g(the)203 485
+y(pragmas)19 b(a)n(v)n(ailable:)p 203 586 3546 4 v 201
+685 4 100 v 399 656 a(Name)p 792 685 V 591 w(F)o(ormat)p
+1821 685 V 1163 w(Description)p 3747 685 V 203 689 3546
+4 v 203 705 V 201 805 4 100 v 264 775 a(Code)h(Address)p
+792 805 V 122 w(code_address)e(=)j(<constant>)p 1821
+805 V 121 w(Mak)o(e)f(the)g(code)g(section)f(absolute)h(at)h(address)e
+(<constant>.)p 3747 805 V 203 808 3546 4 v 201 908 4
+100 v 276 878 a(Code)h(Section)p 792 908 V 152 w(code_section)e(=)i
+(\223<name>\223)p 1821 908 V 410 w(Set)h(the)f(code)g(section)g(name)f
+(to)i(<name>.)p 3747 908 V 203 911 3546 4 v 201 1011
+4 100 v 337 981 a(Processor)p 792 1011 V 270 w(processor)e(=)i
+(\223<name>\223)p 1821 1011 V 515 w(Set)f(the)h(processor)e(name)g(to)h
+(<name>.)p 3747 1011 V 203 1014 3546 4 v 201 1114 4 100
+v 253 1084 a(Udata)g(Address)p 792 1114 V 99 w(udata_address)e(=)i
+(<constant>)p 1821 1114 V 98 w(Mak)o(e)g(the)g(udata)g(section)g
+(absolute)f(at)i(address)f(<constant>.)p 3747 1114 V
+203 1117 3546 4 v 201 1217 4 100 v 264 1187 a(Udata)g(Section)p
+792 1217 V 140 w(udata_section=)e(\223<name>\223)p 1821
+1217 V 397 w(Set)j(the)f(udata)f(section)h(name)g(to)g(<name>.)p
+3747 1217 V 203 1220 3546 4 v 203 1510 a Fe(2.7)119 b(Declarations)203
+1712 y Fd(2.7.1)99 b(V)-9 b(ariables)203 1867 y Fi(Symbols)17
+b(whose)h(v)n(alues)g(change)f(during)f(runtime)h(are)h(referred)e(to)j
+(as)f(v)n(ariables.)24 b(Because)18 b(v)n(ariables)f(change)g(v)n(alue)
+203 1967 y(during)24 b(run)i(time)g(the)o(y)f(are)h(stored)g(in)g(data)
+g(memory)-5 b(.)40 b(An)26 b(e)o(xpression)e(speci\002es)j(its)g
+(initial)f(v)n(alue.)42 b(A)27 b(v)n(ariable)d(is)203
+2067 y(declared)19 b(as)i(follo)n(ws:)411 2234 y Fb(<name>)48
+b(:)i(<type>)f([=)g(<expression>]?;)203 2402 y Fi(Here)20
+b(is)h(an)f(e)o(xample:)411 2569 y Fb(gain)49 b(:)g(short)g(=)h(10;)203
+2804 y Fd(2.7.2)99 b(Constants)203 2960 y Fi(Compile)20
 b(time)h(symbols)f(whose)h(v)n(alues)f(do)g(not)h(change)e(are)h
 (referred)f(to)i(as)h(constants.)k(A)21 b(constant)f(is)h(declared)f
-(as)203 3110 y(follo)n(ws:)411 3265 y Fb(constant)48
-b(<name>)h(:)g(<type>)g(=)h(<expression>;)203 3420 y
-Fi(Here)20 b(is)h(an)f(e)o(xample:)411 3576 y Fb(constant)48
-b(filter_offset)f(:)j(int16)f(=)h(0x1434;)203 3851 y
-Fe(2.8)119 b(Subpr)n(ograms)203 4053 y Fd(2.8.1)99 b(Pr)n(ocedur)n(e)
-411 4209 y Fb(procedure)48 b(<name>)h(\()g([<arg)g(name>)g(:)h
-([in|out|inout])d(<type>]*)h(\))i(is)510 4308 y(<declarations>)411
-4408 y(begin)510 4508 y(<statements>)411 4607 y(end)f(procedure;)203
-4763 y Fi(This)27 b(creates)f(a)h(block)f(of)g(e)o(x)o(ecutable)e(code)
-i(that)h(starts)g(at)g(<name>.)43 b(The)26 b(procedure)e(can)i(be)h
-(called)f(from)f(other)203 4862 y(subprograms)18 b(within)i(an)o(y)f
-(statement)h(block,)f(b)n(ut)h(the)o(y)g(can)g(not)g(be)g(called)g
-(from)f(within)h(an)g(e)o(xpression.)328 4962 y(Permanent)d(storage)h
-(is)h(allocated)f(for)g(each)g(procedure)e(ar)o(gument.)22
-b(Data)d(is)h(passed)e(to)h(and)f(from)f(the)i(procedure)203
-5061 y(through)h(that)i(storage.)29 b(The)22 b(calling)f(subprogram)e
-(puts)j(data)g(into)f(the)h(ar)o(guments)e(and)h(reads)h(from)f(the)g
-(ar)o(guments)203 5161 y(based)j(the)g(direction)f(speci\002ed)h(in)h
-(the)f(procedure)e(de\002nition.)36 b(The)24 b(direction)f(is)i
-(ignored)e(by)h(the)g(procedure.)35 b(All)203 5261 y(the)20
-b(ar)o(guments)e(can)i(be)h(read)e(from)g(and)h(written)g(to.)328
-5360 y(Local)26 b(constants)h(and)f(v)n(ariables)g(are)h(declared)e(in)
-i(<declarations>.)44 b(An)o(y)26 b(v)n(ariables)g(declared)g(in)h(this)
-g(re)o(gion)203 5460 y(may)20 b(be)g(permanent)e(or)i(o)o(v)o(erlayed)e
+(as)203 3059 y(follo)n(ws:)411 3227 y Fb(<name>)48 b(:)i(constant)e(=)i
+(<expression>;)203 3394 y Fi(Here)20 b(is)h(an)f(e)o(xample:)411
+3561 y Fb(filter_offset)47 b(:)j(constant)e(=)i(0x1434;)203
+3839 y Fe(2.8)119 b(Subpr)n(ograms)203 4041 y Fd(2.8.1)99
+b(Pr)n(ocedur)n(e)411 4197 y Fb(procedure)48 b(<name>)h(\()g([<arg)g
+(name>)g(:)h([in|out|inout])d(<type>]*)h(\))i(is)510
+4296 y(<declarations>)411 4396 y(begin)510 4496 y(<statements>)411
+4595 y(end)f(procedure;)203 4763 y Fi(This)27 b(creates)f(a)h(block)f
+(of)g(e)o(x)o(ecutable)e(code)i(that)h(starts)g(at)g(<name>.)43
+b(The)26 b(procedure)e(can)i(be)h(called)f(from)f(other)203
+4862 y(subprograms)18 b(within)i(an)o(y)f(statement)h(block,)f(b)n(ut)h
+(the)o(y)g(can)g(not)g(be)g(called)g(from)f(within)h(an)g(e)o
+(xpression.)328 4962 y(Permanent)d(storage)h(is)h(allocated)f(for)g
+(each)g(procedure)e(ar)o(gument.)22 b(Data)d(is)h(passed)e(to)h(and)f
+(from)f(the)i(procedure)203 5061 y(through)h(that)i(storage.)29
+b(The)22 b(calling)f(subprogram)e(puts)j(data)g(into)f(the)h(ar)o
+(guments)e(and)h(reads)h(from)f(the)g(ar)o(guments)203
+5161 y(based)j(the)g(direction)f(speci\002ed)h(in)h(the)f(procedure)e
+(de\002nition.)36 b(The)24 b(direction)f(is)i(ignored)e(by)h(the)g
+(procedure.)35 b(All)203 5261 y(the)20 b(ar)o(guments)e(can)i(be)h
+(read)e(from)g(and)h(written)g(to.)328 5360 y(Local)26
+b(constants)h(and)f(v)n(ariables)g(are)h(declared)e(in)i
+(<declarations>.)44 b(An)o(y)26 b(v)n(ariables)g(declared)g(in)h(this)g
+(re)o(gion)203 5460 y(may)20 b(be)g(permanent)e(or)i(o)o(v)o(erlayed)e
 (with)i(data)g(from)f(other)h(subprograms.)p eop
 %%Page: 13 14
 13 13 bop 203 -170 a Fh(CHAPTER)21 b(2.)46 b(GP)-8 b(AL)2694

@@ -26,6 +26,7 @@ Boston, MA 02111-1307, USA.  */
 
 enum size_tag {
   size_unknown,
+  size_constant,			/* a compile time constant */
   size_bit,				/* one bit packed */
   size_uint8,				/* one byte unsigned */
   size_int8,				/* one byte signed */
@@ -62,7 +63,6 @@ struct type {
 enum sym_tag {
   sym_unknown,
   sym_const,				/* constant */
-  sym_equ,				/* equate */
   sym_func,				/* function */
   sym_idata,				/* initialized data */
   sym_proc,				/* procedure */
@@ -94,7 +94,6 @@ struct variable *add_global_symbol(char *name,
                                    char *type);
 struct variable *get_global(char *name);
 struct variable *add_constant(char *name, int value, tree *node, char *type);
-void add_equ(char *name, int value);
 struct variable *add_label(char *name, tree *node);
 
 void add_type_array(char *name, int start, int end, char *type);

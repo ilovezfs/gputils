@@ -384,7 +384,8 @@ test_symbol(tree *node, char *name, enum size_tag size)
   var->is_used = true;
 
   /* If it is not an unchecked conversion, verify the sizes of the types match */
-  if ((size != size_unknown) && 
+  if ((size != size_unknown) &&
+      (var->tag != sym_const) &&
       (var->type) &&
       (prim_type(var->type) != size)) {
     analyze_error(node, "type mismatch in symbol %s", name);
@@ -511,7 +512,7 @@ arg_to_symbol(char *proc_name, tree *arg)
   /* mangle the definition argument so it doesn't collide with the local
      name space */
   sprintf(buffer, "%s.%s", proc_name, ARG_NAME(arg));
-  symbol = mk_symbol(buffer, NULL);
+  symbol = mk_symbol(strdup(buffer), NULL);
   COPY_DEBUG(arg, symbol);
 
   return symbol;
@@ -631,7 +632,7 @@ analyze_call(tree *call, gp_boolean in_expr, enum size_tag codegen_size)
     sprintf(buffer, "%s.%s.return",
             FILE_NAME(var->module),
             CALL_NAME(call));
-    symbol = mk_symbol(buffer, NULL);
+    symbol = mk_symbol(strdup(buffer), NULL);
     COPY_DEBUG(call, symbol);
     codegen_expr(symbol, codegen_size);
   }
@@ -825,6 +826,11 @@ analyze_expr(tree *expr)
     return;
   }
 
+  if ((var->tag != sym_udata) && (var->tag != sym_idata)) {
+    analyze_error(expr, "lvalue must be data memory");
+    return;
+  }
+
   /* fetch the symbol's primative type */
   assert(var->type != NULL);
   size = prim_type(var->type);
@@ -942,7 +948,7 @@ append_init(char *name, tree *expr)
   constant = mk_constant(maybe_evaluate(expr));
   COPY_DEBUG(expr, constant);
   
-  symbol = mk_symbol(name, NULL);
+  symbol = mk_symbol(strdup(name), NULL);
   COPY_DEBUG(expr, symbol);
   
   assignment = mk_binop(op_assign, symbol, constant);
@@ -1026,7 +1032,16 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
   /* local data */
   while (decl) {
     assert(decl->tag == node_decl);
-    if (DECL_KEY(decl) == key_variable) {
+    if (strcasecmp(DECL_TYPE(decl), "constant") == 0) {
+      if (DECL_INIT(decl)) {
+        add_constant(DECL_NAME(decl),
+                     maybe_evaluate(DECL_INIT(decl)),
+                     decl,
+                     DECL_TYPE(decl));
+      } else {
+        analyze_error(decl, "missing constant value");
+      }    
+    } else {
       add_global_symbol(DECL_NAME(decl), 
                         proc_name,
                         FILE_NAME(state.module),
@@ -1039,17 +1054,6 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
         /* initialize the local data */
         append_init(DECL_NAME(decl), DECL_INIT(decl));
       }
-    } else if (DECL_KEY(decl) == key_constant) {
-      if (DECL_INIT(decl)) {
-        add_constant(DECL_NAME(decl),
-                     maybe_evaluate(DECL_INIT(decl)),
-                     decl,
-                     DECL_TYPE(decl));
-      } else {
-        analyze_error(decl, "missing constant value");
-      }
-    } else {
-      assert(0);    
     }
 
     decl = decl->next;
@@ -1247,16 +1251,6 @@ analyze_pragma(tree *expr, enum source_type type)
             }
           }        
         }
-      } else if (strcasecmp(lhs->value.string, "header") == 0) {
-        if (rhs->tag != node_string) {
-          analyze_error(expr, "header file name must be a string");        
-        } else {
-          if (state.processor_chosen) {
-            scan_header(rhs->value.string);
-          } else {
-            analyze_error(expr, "processor must be selected");        
-          }
-        }
       } else if (strcasecmp(lhs->value.string, "processor") == 0) {
         if (rhs->tag != node_string) {
           analyze_error(expr, "processor name must be a string");        
@@ -1361,26 +1355,19 @@ analyze_module(tree *file)
       analyze_pragma(current->value.pragma, FILE_TYPE(file));
       break;
     case node_type:
-    case node_decl:
-    case node_proc:
-    case node_func:
-      break;
-    default:
-      assert(0);
-    }
-    current = current->next;
-  }
-
-  current = FILE_BODY(file);
-  while (current) {
-    switch (current->tag) {
-    case node_pragma:
-      break;
-    case node_type:
       analyze_type(current);
       break;
     case node_decl:
-      if (DECL_KEY(current) == key_variable) {
+      if (strcasecmp(DECL_TYPE(current), "constant") == 0) {
+        if (DECL_INIT(current)) {
+          add_constant(DECL_NAME(current),
+                       maybe_evaluate(DECL_INIT(current)),
+                       current,
+                       DECL_TYPE(current));
+        } else {
+          analyze_error(current, "missing constant value");
+        }     
+      } else {
         var = add_global_symbol(DECL_NAME(current), 
                                 NULL,
                                 FILE_NAME(file),
@@ -1391,15 +1378,6 @@ analyze_module(tree *file)
                                 DECL_TYPE(current));
         if (DECL_INIT(current)) {
           analyze_error(current, "initialized data not yet supported");
-        }
-      } else {
-        if (DECL_INIT(current)) {
-          add_constant(DECL_NAME(current),
-                       maybe_evaluate(DECL_INIT(current)),
-                       current,
-                       DECL_TYPE(current));
-        } else {
-          analyze_error(current, "missing constant value");
         }
       }
       break;
@@ -1478,7 +1456,7 @@ analyze_public(tree *file)
       break;
     case node_decl:
       name = find_node_name(current);
-      if (DECL_KEY(current) == key_constant) {
+      if (strcasecmp(DECL_TYPE(current), "constant") == 0) {
         if (DECL_INIT(current)) {
           add_constant(DECL_NAME(current),
                        maybe_evaluate(DECL_INIT(current)),
