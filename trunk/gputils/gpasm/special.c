@@ -202,14 +202,8 @@ static gpasmVal do_lcall(gpasmVal r,
 		         int arity,
 		         struct pnode *parms)
 {
-  int address = maybe_evaluate(HEAD(parms));
-  int page = gp_processor_check_page(state.device.class, address);
-  
-  state.org += gp_processor_set_page(state.device.class, 
-                                     state.processor_info->num_pages,
-                                     page, 
-                                     state.i_memory, 
-                                     state.org);
+
+  do_insn("pagesel", parms);
   do_insn("call", parms);
 
   return r;
@@ -220,14 +214,8 @@ static gpasmVal do_lgoto(gpasmVal r,
 		         int arity,
 		         struct pnode *parms)
 {
-  int address = maybe_evaluate(HEAD(parms));
-  int page = gp_processor_check_page(state.device.class, address);
-  
-  state.org += gp_processor_set_page(state.device.class, 
-                                     state.processor_info->num_pages,
-                                     page, 
-                                     state.i_memory, 
-                                     state.org);
+
+  do_insn("pagesel", parms);
   do_insn("goto", parms);
 
   return r;
