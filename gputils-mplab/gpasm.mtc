@@ -1,0 +1,77 @@
+// Microchip Language Tools Configuration File
+// gpasm
+// Craig Franklin
+
+[Tool]
+Tool=gpasm
+SourceExtension=asm
+HeaderExtension=inc
+DefaultOptions=
+MultipleNodes=0
+SpaceBetweenSwitchAndData=1
+
+[0]
+Description=Define
+Switch=-D
+Data=1
+MultipleOptions=1
+
+[1]
+Description=Hex Format
+OptionList=INHX8M;INHX8S;INHX32
+INHX8M=-a INHX8M
+INHX8S=-a INHX8S
+INHX32=-a INHX32
+Data=0
+HideForObj=1
+
+[2]
+Description=Assemble to object
+Switch=-c
+Data=0
+Hidden=1
+ObjectSwitch=Switch
+
+[3]
+Description=Processor
+Switch=-p
+Data=1
+MultipleOptions=0
+ProcessorSwitch=Switch
+Hidden=1
+
+[4]
+Description=Include path
+Switch=-I
+Data=1
+MultipleOptions=0
+IncludeSwitch=Switch
+Hidden=1 
+
+[5]
+Description=Warning level
+OptionList=all;warn+err;err
+all=-w 0
+warn+err=-w 1
+err=-w 2
+Data=0
+
+[6]
+Description=Case insensitive
+Switch=-i
+Data=0
+CaseSwitch=Switch
+
+[7]
+Description=Default radix
+OptionList=HEX;DEC;OCT
+HEX=-r hex
+DEC=-r dec
+OCT=-r oct
+Data=0
+
+[8]
+Description=Absolute Path
+Switch=-u
+Data=0
+Hidden=1

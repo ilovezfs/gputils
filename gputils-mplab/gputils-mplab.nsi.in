@@ -1,0 +1,206 @@
+# gputils-mplab.nsi - NSIS installer script for gputils-mplab
+#
+# Copyright (c) 2004 Craig Franklin
+#
+# This file is part of gputils.
+#
+#  This software is provided 'as-is', without any express or implied
+#  warranty.  In no event will the authors be held liable for any damages
+#  arising from the use of this software.
+#
+#  Permission is granted to anyone to use this software for any purpose,
+#  including commercial applications, and to alter it and redistribute it
+#  freely, subject to the following restrictions:
+#
+#  1. The origin of this software must not be misrepresented; you must not
+#     claim that you wrote the original software. If you use this software
+#     in a product, an acknowledgment in the product documentation would be
+#     appreciated but is not required.
+#  2. Altered source versions must be plainly marked as such, and must not be
+#     misrepresented as being the original software.
+#  3. This notice may not be removed or altered from any source distribution.
+#
+#  Craig Franklin
+#  craigfranklin@users.sourceforge.net
+
+#  uuidgen values
+!define GPUTILS_KEY    "{77ce8dbe-3905-4ed8-86fa-322be5daef1b}"
+!define GPUTILS_KEY_IN "{aca16bf8-8af7-4dd2-a3cd-03508b64f7f4}"
+!define GPASM_KEY      "{e0dbd60e-3bf8-4185-acc0-e5af4a7bbb93}"
+!define GPASM_KEY_IN   "{77c92193-72f0-4e01-91e4-b5c45aea9417}"
+!define GPLINK_KEY     "{804cbf19-b459-4d9d-87ec-669038639d60}"
+!define GPLINK_KEY_IN  "{43f7cd89-1294-495e-9525-f268225eb77a}"
+!define GPAL_KEY       "{a72f47f0-1bdf-4e1b-a7eb-bec2892e2066}"
+!define GPAL_KEY_IN    "{9f6507a7-edc4-42a0-8ce7-f88c4cb85424}"
+
+!define MCHIP_LEGACY   "Software\Microchip\MPLAB IDE\Legacy Language Suites"
+
+!include "MUI.nsh"
+
+SetCompressor lzma
+
+!define GPUTILS_ROOT "."
+
+!define DEV_ROOT "${GPUTILS_ROOT}"
+
+;--------------------------------
+; Variables
+
+Var MUI_STARTMENUPAGE_VARIABLE
+
+;--------------------------------
+!define MUI_ABORTWARNING
+
+!insertmacro MUI_PAGE_WELCOME
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "gputils-mplab"
+!define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKLM"
+!define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\gputils-mplab"
+!define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "NSIS:StartMenuDir"
+!define MUI_STARTMENUPAGE_NODISABLE
+!insertmacro MUI_PAGE_STARTMENU Application $MUI_STARTMENUPAGE_VARIABLE
+!insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
+
+!insertmacro MUI_UNPAGE_INSTFILES
+
+!insertmacro MUI_LANGUAGE "English"
+
+Name "gputils-mplab"
+BrandingText ""
+OutFile "gputils-mplab-@VERSION@.exe"
+InstallDir "$PROGRAMFILES\gputils-mplab"
+ShowInstDetails show
+ShowUnInstDetails show
+
+Function .onInit
+
+  ; Uninstall the old version, if present
+  ReadRegStr $R0 HKLM \
+  "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" \
+  "UninstallString"
+  StrCmp $R0 "" inst
+
+  MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
+  "$(^Name) is already installed. $\n$\nClick 'OK' to remove the \
+  previous version or 'Cancel' to cancel this upgrade." \
+  IDOK uninst
+  Abort
+
+uninst:
+  ; Run the uninstaller
+  ClearErrors
+  ExecWait '$R0 _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
+
+  ;IfErrors no_remove_uninstaller
+  ;  ; You can either use Delete /REBOOTOK in the uninstaller or add some code
+  ;  ; here to remove to remove the uninstaller. Use a registry key to check
+  ;  ; whether the user has chosen to uninstall. If you are using an uninstaller
+  ;  ; components page, make sure all sections are uninstalled.
+  ;no_remove_uninstaller:
+
+  Goto done
+
+inst:
+
+  ; Install the new version
+  MessageBox MB_YESNO|MB_ICONQUESTION "This will install $(^Name). Do you wish to continue?" IDYES +2
+  Abort
+
+done:
+FunctionEnd
+
+Section -Common
+  ReadRegStr $OUTDIR HKLM "Software\Microchip\MPLAB IDE" "MTCdir"
+  File "${GPUTILS_ROOT}\tlgputils.ini"
+  File "${GPUTILS_ROOT}\gpal.mtc"
+  File "${GPUTILS_ROOT}\gpasm.mtc"
+  File "${GPUTILS_ROOT}\gplink.mtc"
+  SetOutPath "$INSTDIR"
+  File "${GPUTILS_ROOT}\COPYING.txt"
+  File "${GPUTILS_ROOT}\ChangeLog.txt"
+  File "${GPUTILS_ROOT}\README.txt"
+SectionEnd
+
+Section -Icons
+!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateDirectory "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE"
+  CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\gputils on the Web.lnk" "$INSTDIR\gputils.url"
+  CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Uninstall gputils-mplab.lnk" "$INSTDIR\uninstall.exe"
+  CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\README.lnk" "$INSTDIR\README.txt"
+  CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\ChangeLog.lnk" "$INSTDIR\ChangeLog.txt"
+  CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\License.lnk" "$INSTDIR\COPYING.txt"
+!insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section -INI
+  WriteIniStr "$INSTDIR\gputils.url" "InternetShortcut" "URL" "http://gputils.sourceforge.net/"
+SectionEnd
+
+Section -PostInstall
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\gputils-mplab" "DisplayName" "gputils-mplab"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\gputils-mplab" "UninstallString" "$INSTDIR\uninstall.exe"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\gputils-mplab" "Publisher" "gputils.sourceforge.net"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\gputils-mplab" "URLInfoAbout" "http://gputils.sourceforge.net/"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\gputils-mplab" "HelpLink" "http://gputils.sourceforge.net/"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\gputils-mplab" "URLUpdateInfo" "http://gputils.sourceforge.net/"
+
+  WriteRegExpandStr HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}" "" "tlgputils.ini"
+  WriteRegExpandStr HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}\${GPUTILS_KEY_IN}" "" ""
+  ;WriteRegDWORD     HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}" "DoNotLoad" 1
+
+  WriteRegExpandStr HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}\Tools\${GPAL_KEY}" "" "gpal.mtc"
+  WriteRegExpandStr HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}\Tools\${GPAL_KEY}\${GPAL_KEY_IN}" "" ""
+
+  WriteRegExpandStr HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}\Tools\${GPASM_KEY}" "" "gpasm.mtc"
+  WriteRegExpandStr HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}\Tools\${GPASM_KEY}\${GPASM_KEY_IN}" "" ""
+
+  WriteRegExpandStr HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}\Tools\${GPLINK_KEY}" "" "gplink.mtc"
+  WriteRegExpandStr HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}\Tools\${GPLINK_KEY}\${GPLINK_KEY_IN}" "" ""
+
+  WriteUninstaller "$INSTDIR\uninstall.exe"
+SectionEnd
+
+
+;;;; Uninstaller code ;;;;
+
+Function un.onInit
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
+  Abort
+FunctionEnd
+
+Function un.onUninstSuccess
+  HideWindow
+  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
+FunctionEnd
+
+Section Uninstall
+  !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_STARTMENUPAGE_VARIABLE
+
+  DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\gputils-mplab" "NSIS:StartMenuDir"
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\gputils-mplab"
+
+  ReadRegStr $OUTDIR HKLM "Software\Microchip\MPLAB IDE" "MTCdir"
+
+  Delete "$OUTDIR\tlgputils.ini"
+  Delete "$OUTDIR\gpal.mtc"
+  Delete "$OUTDIR\gpasm.mtc"
+  Delete "$OUTDIR\gplink.mtc"
+
+  DeleteRegKey HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}"
+
+  Delete "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\License.lnk"
+  Delete "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\ChangeLog.lnk"
+  Delete "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\README.lnk"
+  Delete "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Uninstall gputils-mplab.lnk"
+  Delete "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\gputils on the Web.lnk"
+  RMDir "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE"
+
+  Delete "$INSTDIR\gputils.url"
+  Delete "$INSTDIR\ChangeLog.txt"
+  Delete "$INSTDIR\README.txt"
+  Delete "$INSTDIR\COPYING.txt"
+  Delete "$INSTDIR\uninstall.exe"
+  RMDir "$INSTDIR"
+
+  SetAutoClose true
+SectionEnd

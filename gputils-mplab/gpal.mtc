@@ -1,0 +1,49 @@
+// Microchip Language Tools Configuration File
+// gpal
+// Craig Franklin
+
+[Tool]
+Tool=gpal
+SourceExtension=pal
+HeaderExtension=pub
+DefaultOptions=
+MultipleNodes=0
+SpaceBetweenSwitchAndData=1
+
+[0]
+Description=Assemble to object
+Switch=-c
+Data=0
+Hidden=1
+ObjectSwitch=Switch
+
+[1]
+Description=Processor
+Switch=-p
+Data=1
+MultipleOptions=0
+ProcessorSwitch=Switch
+Hidden=1
+
+[2]
+Description=Include path
+Switch=-I
+Data=1
+MultipleOptions=0
+IncludeSwitch=Switch
+Hidden=1 
+
+[3]
+Description=Optimization Level
+OptionList=OFF;LOW;MEDIUM;HIGH
+OFF=-O 0
+LOW=-O 1
+MEDIUM=-O 2
+HIGH=-O 3
+Data=0
+
+[4]
+Description=Absolute Path
+Switch=-u
+Data=0
+Hidden=1
