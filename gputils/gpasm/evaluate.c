@@ -76,10 +76,20 @@ int can_evaluate_concatenation(struct pnode *p)
   case symbol:
     return 1;
   case unop:
-    return can_evaluate_concatenation(p->value.unop.p0);
+    if (p->value.unop.op != VAR) {
+      gperror(GPE_ILLEGAL_ARGU, NULL);
+      return 0;
+    } else {  
+      return can_evaluate_concatenation(p->value.unop.p0);
+    }
   case binop:
-    return can_evaluate_concatenation(p->value.binop.p0) 
-           && can_evaluate_concatenation(p->value.binop.p1);
+    if (p->value.binop.op != CONCAT) {
+      gperror(GPE_ILLEGAL_ARGU, NULL);
+      return 0;
+    } else {  
+      return can_evaluate_concatenation(p->value.binop.p0) &&
+             can_evaluate_concatenation(p->value.binop.p1);
+    }
   case string:
     snprintf(buf, sizeof(buf), "Illegal argument (%s).", p->value.string);
     gperror(GPE_ILLEGAL_ARGU, buf);
@@ -89,6 +99,57 @@ int can_evaluate_concatenation(struct pnode *p)
   }
 
   return 0;
+}
+
+char *evaluate_concatenation(struct pnode *p)
+{
+  switch (p->tag) {
+  case symbol:
+    return p->value.symbol;
+  case binop:
+    assert(p->value.binop.op == CONCAT);
+    {
+      char *s[2], *new;
+      size_t sizeof_new;
+
+      s[0] = evaluate_concatenation(p->value.binop.p0);
+      s[1] = evaluate_concatenation(p->value.binop.p1);
+      sizeof_new =strlen(s[0]) + 1 + strlen(s[1]) + 1;
+      new = malloc(sizeof_new);
+      if (new) {
+        strncpy(new, s[0], sizeof_new);
+        strncat(new, s[1], sizeof_new);
+      }
+      return new;
+    }
+  case unop:
+    assert(p->value.unop.op == VAR);
+    {
+      char buf[80];
+      snprintf(buf, sizeof(buf), "%d", maybe_evaluate(p->value.unop.p0));
+      return (strdup(buf));
+    }
+  default:
+    assert(0);
+  }
+
+  return NULL;
+}
+
+/* Attempt to evaluate concatenation 'p'.  Return its value if
+ * successful, otherwise generate an error message and return NULL.  */
+
+char *maybe_evaluate_concat(struct pnode *p)
+{
+  char *r;
+
+  if (p && can_evaluate_concatenation(p)) {
+    r = evaluate_concatenation(p);
+  } else {
+    r = NULL;
+  }
+
+  return r;
 }
 
 int can_evaluate(struct pnode *p)
@@ -153,41 +214,6 @@ int can_evaluate(struct pnode *p)
   }
 
   return 0;
-}
-
-char *evaluate_concatenation(struct pnode *p)
-{
-  switch (p->tag) {
-  case symbol:
-    return p->value.symbol;
-  case binop:
-    assert(p->value.binop.op == CONCAT);
-    {
-      char *s[2], *new;
-      size_t sizeof_new;
-
-      s[0] = evaluate_concatenation(p->value.binop.p0);
-      s[1] = evaluate_concatenation(p->value.binop.p1);
-      sizeof_new =strlen(s[0]) + 1 + strlen(s[1]) + 1;
-      new = malloc(sizeof_new);
-      if (new) {
-        strncpy(new, s[0], sizeof_new);
-        strncat(new, s[1], sizeof_new);
-      }
-      return new;
-    }
-  case unop:
-    assert(p->value.unop.op == VAR);
-    {
-      char buf[80];
-      snprintf(buf, sizeof(buf), "%d", maybe_evaluate(p->value.unop.p0));
-      return (strdup(buf));
-    }
-  default:
-    assert(0);
-  }
-
-  return NULL;
 }
 
 gpasmVal evaluate(struct pnode *p)

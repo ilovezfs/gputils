@@ -1,3 +1,6 @@
+2005-01-14 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [gpasm] Allow concatenation operators in extern and global directives.
+
 2005-01-12 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Updated config scripts.
 
