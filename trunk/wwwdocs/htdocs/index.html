@@ -24,18 +24,14 @@
 	<COL WIDTH=161*>
 	<COL WIDTH=69*>
 	<TR VALIGN=TOP>
-		<TD ROWSPAN=14 WIDTH=10%>
-			<P STYLE="margin-bottom: 0cm"><A HREF="#What"><I>What</I></A> 
-			</P>
-			<P STYLE="margin-bottom: 0cm"><A HREF="#Who"><I>Who</I></A></P>
-			<P STYLE="margin-bottom: 0cm"><A HREF="#Platforms"><I>Platforms</I></A>
-						</P>
-			<P STYLE="margin-bottom: 0cm"><A HREF="#Download"><I>Download</I></A>
-						</P>
-			<P STYLE="margin-bottom: 0cm"><A HREF="#Test"><I>Test Files</I></A>
-						</P>
-			<P STYLE="margin-bottom: 0cm"><A HREF="#News"><I>News</I></A> 
-			</P>
+		<TD ROWSPAN=16 WIDTH=10%>
+			<P><A HREF="#What"><I>What</I></A></P>
+			<P><A HREF="#Who"><I>Who</I></A></P>
+			<P><A HREF="#Platforms"><I>Platforms</I></A></P>
+			<P><A HREF="#Download"><I>Download</I></A></P>
+			<P><A HREF="#Mplab"><I>MPLAB Plugin</I></A></P>
+			<P><A HREF="#Test"><I>Test Files</I></A></P>
+			<P><A HREF="#News"><I>News</I></A></P>
 			<P><A HREF="#Support"><I>Support</I></A></P>
 		</TD>
 		<TD COLSPAN=2 WIDTH=90% BGCOLOR="#00b8ff">
@@ -75,23 +71,6 @@
 			Mac OS X users will need the December 2001 Developer Tools.
 			Windows 98/NT users will need <A HREF="http://www.mingw.org/">MinGW32</A>
 			if they wish to compile the tools.</P>
-			<P>Users have ported gputils to many other platforms. Some of
-			these binaries are for the old gpasm package.</P>
-			<P><A HREF="http://packages.debian.org/unstable/electronics/gputils.html"><SPAN STYLE="background: transparent">GPUTILS
-			Debian Linux</SPAN></A></P>
-			<P><A HREF="http://www.freebsd.org/ports/devel.html">GPUTILS
-			FreeBSD</A></P>
-			<P><A HREF="http://gputils.sourceforge.net/djgpp">GPUTILS
-			DOS (DJGPP)</A></P>
-			<P><A HREF="http://hobbes.nmsu.edu/cgi-bin/h-search?key=gputils&amp;pushbutton=Search">GPUTILS
-			OS/2</A></P>
-			<P><A HREF="http://www.traklink.com/component/option,com_docman/task,view_category/Itemid,26/subcat,8/catid,69/limitstart,0/limit,5/">GPUTILS
-			Sharp Zaurus</A></P>
-			<P><A HREF="http://homepages.ihug.co.nz/~jamjars/michael/software.html">GPASM
-			RISC OS</A></P>
-			<P><A HREF="http://www.btinternet.com/~adfhome/demarco5">GPASM Psion EPOC</A></P>
-			<P>If you have generated a binary of gputils please notify the
-			maintainer of this website, so that it can be added.</P>
 		</TD>
 	</TR>
 	<TR>
@@ -122,6 +101,38 @@
 			<P>Older <A HREF="http://prdownloads.sourceforge.net/gputils/">gputils</A>
 			and <A HREF="http://gputils.sourceforge.net/gpasm/">gpasm</A>
 			releases are available.</P>
+			<P>Users have ported gputils to many other platforms. Some of
+			these binaries are for the old gpasm package.</P>
+			<P><A HREF="http://packages.debian.org/unstable/electronics/gputils.html"><SPAN STYLE="background: transparent">GPUTILS
+			Debian Linux</SPAN></A></P>
+			<P><A HREF="http://www.freebsd.org/ports/devel.html">GPUTILS
+			FreeBSD</A></P>
+			<P><A HREF="http://gputils.sourceforge.net/djgpp">GPUTILS
+			DOS (DJGPP)</A></P>
+			<P><A HREF="http://hobbes.nmsu.edu/cgi-bin/h-search?key=gputils&amp;pushbutton=Search">GPUTILS
+			OS/2</A></P>
+			<P><A HREF="http://www.traklink.com/component/option,com_docman/task,view_category/Itemid,26/subcat,8/catid,69/limitstart,0/limit,5/">GPUTILS
+			Sharp Zaurus</A></P>
+			<P><A HREF="http://homepages.ihug.co.nz/~jamjars/michael/software.html">GPASM
+			RISC OS</A></P>
+			<P><A HREF="http://www.btinternet.com/~adfhome/demarco5">GPASM Psion EPOC</A></P>
+			<P>If you have generated a binary of gputils please notify the
+			maintainer of this website, so that it can be added.</P>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 WIDTH=90% VALIGN=TOP BGCOLOR="#00b8ff">
+			<P><A NAME="Mplab"></A><I><B>MPLAB Plugin</B></I></P>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 WIDTH=90%>
+			<P><A HREF="http://www.microchip.com/">Microchip</A> offers an integrated
+                        development environment called MPLAB.  This environment is only available
+                        for MS-Windows.  The gputils project has developed an MPLAB plugin.  With 
+                        this plugin,
+                        <A HREF="https://sourceforge.net/project/showfiles.php?group_id=41924">gputils-mplab</A>,
+                        MPLAB can be used as an IDE for gputils.</P>
 		</TD>
 	</TR>
 	<TR>
@@ -153,115 +164,6 @@
 		<TD COLSPAN=2 WIDTH=90%>
 			<P><B>January 3, 2005 -- gputils-0.13.0 Released</B></P>
 			<P>Added many new processors.  Added support for extended 18xx mode.  Fixed many bugs.</P>
-			<P><B>November 14, 2004 -- MPLAB Plugin Available </B>
-			</P>
-			<P STYLE="font-weight: medium">A preliminary release of an MPLAB plugin is available.
-                        Informal releases are available <A HREF="http://gputils.sourceforge.net/mplab/">here</A>.</P>
-			<P><B>September 25, 2004 -- COD File Improvements </B>
-			</P>
-			<P STYLE="font-weight: medium">We have started an effort to fix bugs in gputils COD
-                        files.  The purpose is to improve compatibility with other tools.  Informal releases
-                        are available <A HREF="http://gputils.sourceforge.net/cod/">here</A>.</P>
-			<P><B>September 24, 2004 -- gputils-0.12.4 Released </B>
-			</P>
-			<P STYLE="font-weight: medium">Fixed bugs.</P>
-			<P><B>July 25, 2004 -- gputils-0.12.3 Released </B>
-			</P>
-			<P STYLE="font-weight: medium">Added processors and fixed bugs.</P>
-			<P><B>July 13, 2004 -- gputils-0.12.2 Released </B>
-			</P>
-			<P STYLE="font-weight: medium">Fixed many bugs and added features to gpal.</P>
-			<P><B>January 20, 2004 -- gputils-0.12.0 Released </B>
-			</P>
-			<P STYLE="font-weight: medium">Fixed many bugs and released gpal.  Although, gpal really isn't ready to be used.</P>
-			<P><B>December 12, 2003 -- gpal announcement</B>
-			</P>
-			<P STYLE="font-weight: medium">I am adding a new tool to gputils. A compiler called
-                        <A HREF="http://gputils.sourceforge.net/gpal.html">gpal</A>.</P>
-			<P><B>November 22, 2003 -- gputils-0.11.8 Released </B>
-			</P>
-			<P STYLE="font-weight: medium">Fixed bugs.</P>
-			<P><B>October 17, 2003 -- gputils-0.11.7 Released </B>
-			</P>
-			<P STYLE="font-weight: medium">Fixed 18xx gplink bugs and added
-			support for 18xx config and idlocs sections in gpasm.</P>
-			<P><B>August 1, 2003 -- gputils-0.11.6 Released </B>
-			</P>
-			<P STYLE="font-weight: medium">Added support for idata sections in
-			gplink and added new processors.</P>
-			<P><B>June 28, 2003 -- gputils-0.11.5 Released </B>
-			</P>
-			<P>Fixed many bugs in 18xx relocatable object support.</P>
-			<P><B>June 4, 2003 -- gputils-0.11.4 Released </B>
-			</P>
-			<P>Added new processors, updated header files, and update linker
-			scripts.</P>
-			<P><B>May 10, 2003 -- gputils-0.11.3 Released </B>
-			</P>
-			<P>Added memory fill feature to gplink and fixed several target
-			memory allocation problems.</P>
-			<P><B>April 19, 2003 -- gputils-0.11.2 Released</B> 
-			</P>
-			<P>Fixed various bugs.</P>
-			<P><B>April 2, 2003 -- gputils-0.11.1 Released </B>
-			</P>
-			<P>Added cod output to gplink. Fixed various bugs.</P>
-			<P><B>March 14, 2003 -- gputils-0.11.0 Released </B>
-			</P>
-			<P>Added support for relocatable objects. This is just a start,
-			there is still much work to do.</P>
-			<P><B>November 24, 2002 -- gputils-0.10.6 Released </B>
-			</P>
-			<P>Added banksel, pagesel, and changed default hex format to
-			inhx32.</P>
-			<P><B>October 27, 2002 -- gputils-0.10.5 Released </B>
-			</P>
-			<P>Added support for new processors.</P>
-			<P><B>October 12, 2002 -- gputils-0.10.4 Released </B>
-			</P>
-			<P>This release primarily fixes bugs in gpasm.</P>
-			<P><B>May 12, 2002 -- gputils-0.10.3 Released and
-			gputils-extra-0.0.2 Released</B> 
-			</P>
-			<P>At the request of a user, man pages have been generated for
-			gputils. These pages are not considered a substitute for the
-			manual. The header files and linker scripts have been updated.
-			Changes were incorporated for the Code Warrior port of gpasm.</P>
-			<P>A new branch in cvs has been created for the relocatable object
-			file support. This branch will become 0.10.4 or 0.10.5. A notice
-			will be posted when it is ready for the users. 
-			</P>
-			<P><B>April 4, 2002 -- gputils-0.10.2 Released</B></P>
-			<P>gpasm now generates messages, warnings, and errors for various
-			invalid arguments to instructions. Typically because the argument
-			is not within the valid range. Additionally, gpasm now generates
-			messages and warnings related to setting the bank and page bits.</P>
-			<P><B>February 24, 2002 -- gputils-0.10.1 Released</B></P>
-			<P>This release includes a major overhaul of macros. The macros
-			are now stored as text instead of a parsed structure. This text is
-			inputted into the lexer each time the macro is called. Several
-			macro related problems were also fixed.</P>
-			<P><B>January 24, 2002 -- gputils-extra-0.0.1 Released</B></P>
-			<P>The is the first release of the new extras package. Anything
-			which doesn't fit into gputils will go into this new package. The
-			package is distributed in source only and does not install.</P>
-			<P><B>January 20, 2002 -- gputils-0.10.0 Released</B> 
-			</P>
-			<P>This release is basically gpasm-0.9.14 with bug fixes.
-			Additionally, there are some new tools. However, these new tools
-			are not complete, so they are not installed. Please see the
-			ChangeLog for details on the bug fixes. 
-			</P>
-			<P><B>January 13, 2002 -- gputils imported to cvs </B>
-			</P>
-			<P>The new package has been imported to cvs. The first release
-			should occur in the coming weeks. 
-			</P>
-			<P><B>December 12, 2001 -- gputils package created </B>
-			</P>
-			<P>A new linker and lib tool are under development. These new
-			tools along with gpasm will be distributed in a new package
-			gputils, GNU PIC Utilities.</P>
 			<P><A HREF="previous.html">Previous News</A> 
 			</P>
 		</TD>
@@ -342,7 +244,7 @@
 		<TD WIDTH=27%>
 			<P STYLE="margin-bottom: 0cm"><A HREF="mailto:craigfranklin@users.sourceforge.net">Webmaster</A>
 						</P>
-			<P>Last updated: January 3, 2005</P>
+			<P>Last updated: January 21, 2005</P>
 		</TD>
 	</TR>
 </TABLE>
