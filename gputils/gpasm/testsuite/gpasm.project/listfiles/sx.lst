@@ -1,0 +1,178 @@
+MPASM 03.20.02 Released            SX.ASM   1-11-2003  20:59:45         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;  This file is used to test relocatable objects with the sx instruction 
+                      00002 ;  set.  Some of the expressions are possible, but not very useful.
+                      00003 
+Error[132]  : Unknown processor (SX18)
+                      00004      list p=sx18
+                      00005 
+  0000                00006      extern file, address
+                      00007 
+                      00008      code     
+Warning[207]: Found label after column 1. (addwf)
+Error[122]  : Illegal opcode (file)
+                      00009      addwf file,1 
+Warning[207]: Found label after column 1. (andlw)
+Error[122]  : Illegal opcode (file)
+                      00010      andlw file
+Warning[207]: Found label after column 1. (andwf)
+Error[122]  : Illegal opcode (file)
+                      00011      andwf file,1
+Warning[207]: Found label after column 1. (bcf)
+Error[122]  : Illegal opcode (file)
+                      00012      bcf file,7
+Warning[207]: Found label after column 1. (bsf)
+Error[122]  : Illegal opcode (file)
+                      00013      bsf file,7
+Warning[207]: Found label after column 1. (btfsc)
+Error[122]  : Illegal opcode (file)
+                      00014      btfsc file,1
+Warning[207]: Found label after column 1. (btfss)
+Error[122]  : Illegal opcode (file)
+                      00015      btfss file,1
+Warning[207]: Found label after column 1. (call)
+Error[122]  : Illegal opcode (file)
+                      00016      call file
+Warning[207]: Found label after column 1. (clrf)
+Error[122]  : Illegal opcode (file)
+                      00017      clrf file
+Warning[207]: Found label after column 1. (clrw)
+0000                  00018      clrw
+Warning[207]: Found label after column 1. (clrwdt)
+0000                  00019      clrwdt
+Warning[207]: Found label after column 1. (comf)
+Error[122]  : Illegal opcode (file)
+0000                  00020      comf file,1
+Warning[207]: Found label after column 1. (decf)
+Error[122]  : Illegal opcode (file)
+0000                  00021      decf file,1
+Warning[207]: Found label after column 1. (decfsz)
+Error[122]  : Illegal opcode (file)
+0000                  00022      decfsz file,1
+Warning[207]: Found label after column 1. (goto)
+Error[122]  : Illegal opcode (address)
+0000                  00023      goto address
+Warning[207]: Found label after column 1. (incf)
+MPASM 03.20.02 Released            SX.ASM   1-11-2003  20:59:45         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Error[122]  : Illegal opcode (file)
+0000                  00024      incf file,1
+Warning[207]: Found label after column 1. (incfsz)
+Error[122]  : Illegal opcode (file)
+0000                  00025      incfsz file,1
+Warning[207]: Found label after column 1. (iorlw)
+Error[122]  : Illegal opcode (file)
+0000                  00026      iorlw file
+Warning[207]: Found label after column 1. (iorwf)
+Error[122]  : Illegal opcode (file)
+0000                  00027      iorwf file,1
+Warning[207]: Found label after column 1. (movf)
+Error[122]  : Illegal opcode (file)
+0000                  00028      movf  file,1
+Warning[207]: Found label after column 1. (movlw)
+Error[122]  : Illegal opcode (file)
+0000                  00029      movlw file
+Warning[207]: Found label after column 1. (movwf)
+Error[122]  : Illegal opcode (file)
+0000                  00030      movwf file
+Warning[207]: Found label after column 1. (nop)
+0000                  00031      nop
+Warning[207]: Found label after column 1. (option)
+0000                  00032      option 
+Warning[207]: Found label after column 1. (retlw)
+Error[122]  : Illegal opcode (file)
+0000                  00033      retlw file
+Warning[207]: Found label after column 1. (rlf)
+Error[122]  : Illegal opcode (file)
+0000                  00034      rlf file,1
+Warning[207]: Found label after column 1. (rrf)
+Error[122]  : Illegal opcode (file)
+0000                  00035      rrf file,1
+Warning[207]: Found label after column 1. (sleep)
+0000                  00036      sleep
+Warning[207]: Found label after column 1. (subwf)
+Error[122]  : Illegal opcode (file)
+0000                  00037      subwf file,1
+Warning[207]: Found label after column 1. (swapf)
+Error[122]  : Illegal opcode (file)
+0000                  00038      swapf file,1
+Warning[207]: Found label after column 1. (tris)
+Error[122]  : Illegal opcode (file)
+0000                  00039      tris file
+Warning[207]: Found label after column 1. (xorlw)
+Error[122]  : Illegal opcode (file)
+0000                  00040      xorlw file
+Warning[207]: Found label after column 1. (xorwf)
+Error[122]  : Illegal opcode (file)
+0000                  00041      xorwf file,1
+                      00042      ; sx only
+Warning[207]: Found label after column 1. (bank)
+Error[122]  : Illegal opcode (file)
+MPASM 03.20.02 Released            SX.ASM   1-11-2003  20:59:45         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00043      bank file
+Warning[207]: Found label after column 1. (iread)
+0000                  00044      iread
+Warning[207]: Found label after column 1. (mode)
+Error[122]  : Illegal opcode (file)
+0000                  00045      mode file
+Warning[207]: Found label after column 1. (movmw)
+0000                  00046      movmw
+Warning[207]: Found label after column 1. (movwm)
+0000                  00047      movwm
+Warning[211]: Extraneous arguments on the line.
+MPASM 03.20.02 Released            SX.ASM   1-11-2003  20:59:45         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00048      page file
+Warning[207]: Found label after column 1. (reti)
+0000                  00049      reti
+Warning[207]: Found label after column 1. (retiw)
+0000                  00050      retiw
+Warning[207]: Found label after column 1. (retp)
+0000                  00051      retp
+Warning[207]: Found label after column 1. (return)
+0000                  00052      return
+                      00053      end
+Error[131]  : Processor type is undefined
+MPASM 03.20.02 Released            SX.ASM   1-11-2003  20:59:45         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+address                           00000000
+clrw                              00000000
+clrwdt                            00000000
+file                              00000000
+iread                             00000000
+movmw                             00000000
+movwm                             00000000
+nop                               00000000
+option                            00000000
+reti                              00000000
+retiw                             00000000
+retp                              00000000
+return                            00000000
+sleep                             00000000
+
+Errors   :    32
+Warnings :    43 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

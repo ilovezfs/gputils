@@ -1,57 +1,55 @@
-MPASM Version 3.00 Beta Release   OBJSEC1.ASM   01/31/2001  12:43:32	   PAGE 1
+MPASM 03.20.02 Released       OBJSEC1.ASM   1-11-2003  21:26:44         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; OBJSEC1.ASM
-                        00002 
-                        00003 ; This file tests the generic sections of a COFF file.
-                        00004 
-                        00005                 list    p=17c44
-                        00006 
-  0000                  00007                 extern  Ext1, Ext2, ExtCall
-                        00008 
-                        00014                 list
-                        00015 
-                        00016                 UDATA
-0000                    00017 U1              res     1
-0001                    00018 U2              res     1
-0002                    00019 U3              res     1
-                        00020 
-                        00021 Init_data       IDATA   0x10
-0010     01 02 03       00022 I1              db      1,2,3
-                        00023 
-                        00024                 UDATA_SHR
-0000                    00025 Shr1            res     1
-0001                    00026 Shr2            res     1
-                        00027 
-                        00028 Temps           UDATA_OVR
-0000                    00029 T1              res     1
-0001                    00030 T2              res     1
-0002                    00031 LongVarName     res     1
-                        00032         
-                        00033                 CODE
-                        00034 
-0000                    00035 Top
-  0000                  00036                 global  Top
-                        00037 
-                        00038                 #include "objsec1.inc"
-                        00001 ; OBJSEC1.INC
-                        00002 
-                        00003 ; This is an include file to check the symbol table entries.
-                        00004 
-0000     0F??           00005         ADDWF   Ext1, f
-0001     01??           00006         MOVWF   U1
-0002     0004           00007         CLRWDT
-                        00008 
-                        00009 
-                        00039 
-0003                    00040 StartOfProgram
-0003     0000           00041                 nop
-                        00042 
-                        00043                 end
-MPASM Version 3.00 Beta Release   OBJSEC1.ASM   01/31/2001  12:43:32	   PAGE 2
+                      00001 ; OBJSEC1.ASM
+                      00002 
+                      00003 ; This file tests the generic sections of a COFF file.
+                      00004 
+                      00005                 list    p=17c44
+                      00006 
+  0000                00007                 extern  Ext1, Ext2, ExtCall
+                      00008 
+                      00014                 list
+                      00015 
+                      00016                 UDATA
+0000                  00017 U1              res     1
+0001                  00018 U2              res     1
+0002                  00019 U3              res     1
+                      00020 
+                      00021 Init_data       IDATA   0x10
+0010   01 02 03       00022 I1              db      1,2,3
+                      00023 
+                      00024                 UDATA_SHR
+0000                  00025 Shr1            res     1
+0001                  00026 Shr2            res     1
+                      00027 
+                      00028 Temps           UDATA_OVR
+0000                  00029 T1              res     1
+0001                  00030 T2              res     1
+0002                  00031 LongVarName     res     1
+                      00032         
+                      00033                 CODE
+                      00034 
+0000                  00035 Top
+  0000                00036                 global  Top
+                      00037 
+                      00038                 #include "objsec1.inc"
+                      00001 ; OBJSEC1.INC
+                      00002 
+                      00003 ; This is an include file to check the symbol table entries
+                      00004 
+0000   0F??           00005         ADDWF   Ext1, f
+0001   01??           00006         MOVWF   U1
+0002   0004           00007         CLRWDT
+                      00039 
+0003                  00040 StartOfProgram
+0003   0000           00041                 nop
+                      00042 
+                      00043                 end
+MPASM 03.20.02 Released       OBJSEC1.ASM   1-11-2003  21:26:44         PAGE  2
 
 
 SYMBOL TABLE

@@ -1,42 +1,42 @@
-MPASM Version 3.00 Beta Release   EXTGLO1.ASM   01/31/2001  12:43:32	   PAGE 1
+MPASM 03.20.02 Released       EXTGLO1.ASM   1-11-2003  20:59:42         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; EXTGLO1.ASM
-                        00002 
-                        00003 ; This file tests the legal usage of the External and Global directives.
-                        00004 ; It must be assembled with the /o option.
-                        00005 
-                        00006         LIST    P=16C71
-                        00007 
-  0000                  00008         EXTERN         A1
-  0000                  00009         EXTERN         B1,C1
-  0000                  00010         EXTERN         D1 , E1
-                        00011 
-                        00012 
-                        00013         UDATA
-0000                    00014 A2      RES             1
-0001                    00015 B2      RES             1
-                        00016 
-                        00017 
-                        00018         CODE
-0000     3FFF           00019 C2      RES             1
-0001     3FFF           00020 D2      RES             1
-0002     3FFF           00021 E2      RES             1
-                        00022 
-0003     00??           00023         MOVWF           A1
-0004     2???           00024         CALL            B1
-0005     2???           00025         GOTO            D1
-                        00026 
-                        00027                 
-  0000                  00028         GLOBAL         A2
-  0000                  00029         GLOBAL         B2,C2
-  0000                  00030         GLOBAL         D2 , E2
-                        00031 
-                        00032         END
-MPASM Version 3.00 Beta Release   EXTGLO1.ASM   01/31/2001  12:43:32	   PAGE 2
+                      00001 ; EXTGLO1.ASM
+                      00002 
+                      00003 ; This file tests the legal usage of the External and Global directives.
+                      00004 ; It must be assembled with the /o option.
+                      00005 
+                      00006         LIST    P=16C71
+                      00007 
+  0000                00008         EXTERN         A1
+  0000                00009         EXTERN         B1,C1
+  0000                00010         EXTERN         D1 , E1
+                      00011 
+                      00012 
+                      00013         UDATA
+0000                  00014 A2      RES             1
+0001                  00015 B2      RES             1
+                      00016 
+                      00017 
+                      00018         CODE
+0000   3FFF           00019 C2      RES             1
+0001   3FFF           00020 D2      RES             1
+0002   3FFF           00021 E2      RES             1
+                      00022 
+0003   00??           00023         MOVWF           A1
+0004   2???           00024         CALL            B1
+0005   2???           00025         GOTO            D1
+                      00026 
+                      00027                 
+  0000                00028         GLOBAL         A2
+  0000                00029         GLOBAL         B2,C2
+  0000                00030         GLOBAL         D2 , E2
+                      00031 
+                      00032         END
+MPASM 03.20.02 Released       EXTGLO1.ASM   1-11-2003  20:59:42         PAGE  2
 
 
 SYMBOL TABLE

@@ -1,0 +1,428 @@
+MPASM 03.20.02 Released         OP16E.ASM   1-11-2003  21:26:26         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;  This file is used to test relocatable objects with the enhanced 16 bit 
+                      00002 ;  instruction set.  Some of the expressions are possible, but not very useful.
+                      00003 
+                      00004         list    p=18f8720
+                      00005 
+  00000001            00006 f       EQU     1
+  00000000            00007 w       EQU     0
+                      00008 
+  0000                00009         extern file, address
+                      00010 
+                      00011         code
+000000 0F00           00012         addlw   0
+000002 0F61           00013         addlw   'a'
+000004 0F61           00014         addlw   "a"
+000006 0F??           00015         addlw   file
+                      00016 
+000008 2600           00017         addwf   0
+00000A 2600           00018         addwf   0,1
+00000C 2600           00019         addwf   0,f
+00000E 2400           00020         addwf   0,0
+000010 2400           00021         addwf   0,w
+000012 26??           00022         addwf   file
+                      00023 
+000014 2200           00024         addwfc  0
+000016 2200           00025         addwfc  0,1
+000018 2200           00026         addwfc  0,f
+00001A 2000           00027         addwfc  0,0
+00001C 2000           00028         addwfc  0,w
+00001E 22??           00029         addwfc  file
+                      00030 
+000020 0B00           00031         andlw   0
+000022 0B61           00032         andlw   'a'
+000024 0B61           00033         andlw   "a"
+000026 0B??           00034         andlw   file
+                      00035 
+000028 1600           00036         andwf   0
+00002A 1600           00037         andwf   0,1
+00002C 1600           00038         andwf   0,f
+00002E 1400           00039         andwf   0,0
+000030 1400           00040         andwf   0,w
+000032 16??           00041         andwf   file
+                      00042 
+000034 E2E5           00043         bc      0
+000036 E2??           00044         bc      file
+                      00045 
+000038 9000           00046         bcf     0,0
+00003A 9200           00047         bcf     0,1
+00003C 9400           00048         bcf     0,2
+00003E 9600           00049         bcf     0,3
+000040 9800           00050         bcf     0,4
+000042 9A00           00051         bcf     0,5
+000044 9C00           00052         bcf     0,6
+000046 9E00           00053         bcf     0,7
+MPASM 03.20.02 Released         OP16E.ASM   1-11-2003  21:26:26         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000048 90??           00054         bcf     file,0
+                      00055 
+00004A E6DA           00056         bn      0
+00004C E6??           00057         bn      file
+                      00058 
+00004E E3D8           00059         bnc     0
+000050 E3??           00060         bnc     file
+                      00061 
+000052 E7D6           00062         bnn     0
+000054 E7??           00063         bnn     file     ;10
+                      00064 
+000056 E5D4           00065         bnov    0
+000058 E5??           00066         bnov    file
+                      00067 
+00005A E1D2           00068         bnz     0
+00005C E1??           00069         bnz     file
+                      00070 
+00005E E4D0           00071         bov     0
+000060 E4??           00072         bov     file
+                      00073 
+000062 D7CE           00074         bra     0
+000064 D???           00075         bra     file
+                      00076 
+000066 8000           00077         bsf     0,0
+000068 8200           00078         bsf     0,1
+00006A 8400           00079         bsf     0,2
+00006C 8600           00080         bsf     0,3
+00006E 8800           00081         bsf     0,4
+000070 8A00           00082         bsf     0,5
+000072 8C00           00083         bsf     0,6
+000074 8E00           00084         bsf     0,7
+000076 80??           00085         bsf     file,0
+                      00086 
+000078 B000           00087         btfsc   0,0
+00007A B200           00088         btfsc   0,1
+00007C B400           00089         btfsc   0,2
+00007E B600           00090         btfsc   0,3
+000080 B800           00091         btfsc   0,4
+000082 BA00           00092         btfsc   0,5
+000084 BC00           00093         btfsc   0,6
+000086 BE00           00094         btfsc   0,7
+000088 B0??           00095         btfsc   file,0
+                      00096 
+00008A A000           00097         btfss   0,0
+00008C A200           00098         btfss   0,1
+00008E A400           00099         btfss   0,2
+000090 A600           00100         btfss   0,3
+000092 A800           00101         btfss   0,4
+000094 AA00           00102         btfss   0,5
+000096 AC00           00103         btfss   0,6
+000098 AE00           00104         btfss   0,7
+00009A A0??           00105         btfss   file,0
+                      00106 
+MPASM 03.20.02 Released         OP16E.ASM   1-11-2003  21:26:26         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00009C 7000           00107         btg     0,0
+00009E 7200           00108         btg     0,1
+0000A0 7400           00109         btg     0,2
+0000A2 7600           00110         btg     0,3
+0000A4 7800           00111         btg     0,4
+0000A6 7A00           00112         btg     0,5
+0000A8 7C00           00113         btg     0,6
+0000AA 7E00           00114         btg     0,7
+0000AC 70??           00115         btg     file,0
+                      00116 
+0000AE E0A8           00117         bz      0
+0000B0 E0??           00118         bz      file
+                      00119 
+0000B2 EC00 F000      00120         call    0
+0000B6 EC?? F???      00121         call    address-1
+                      00122 
+0000BA 6A00           00123         clrf    0
+0000BC 6B00           00124         clrf    0,1
+0000BE 6B00           00125         clrf    0,f
+0000C0 6A00           00126         clrf    0,0
+0000C2 6A00           00127         clrf    0,w
+0000C4 6A??           00128         clrf    file
+                      00129 
+0000C6 0004           00130         clrwdt     
+                      00131 
+0000C8 1E00           00132         comf    0
+0000CA 1E00           00133         comf    0,1
+0000CC 1E00           00134         comf    0,f
+0000CE 1C00           00135         comf    0,0
+0000D0 1C00           00136         comf    0,w
+0000D2 1E??           00137         comf    file
+                      00138 
+0000D4 6200           00139         cpfseq  0
+0000D6 62??           00140         cpfseq  file
+                      00141 
+0000D8 6400           00142         cpfsgt  0
+0000DA 64??           00143         cpfsgt  file
+                      00144 
+0000DC 6000           00145         cpfslt  0
+0000DE 60??           00146         cpfslt  file
+                      00147 
+0000E0 0007           00148         daw     
+                      00149 
+0000E2 0600           00150         decf    0
+0000E4 0600           00151         decf    0,1
+0000E6 0600           00152         decf    0,f
+0000E8 0400           00153         decf    0,0
+0000EA 0400           00154         decf    0,w
+0000EC 06??           00155         decf    file
+                      00156 
+0000EE 2E00           00157         decfsz  0
+0000F0 2E00           00158         decfsz  0,1
+0000F2 2E00           00159         decfsz  0,f
+MPASM 03.20.02 Released         OP16E.ASM   1-11-2003  21:26:26         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0000F4 2C00           00160         decfsz  0,0
+0000F6 2C00           00161         decfsz  0,w
+0000F8 2E??           00162         decfsz  file
+                      00163 
+0000FA 4E00           00164         dcfsnz  0
+0000FC 4E00           00165         dcfsnz  0,1
+0000FE 4E00           00166         dcfsnz  0,f
+000100 4C00           00167         dcfsnz  0,0
+000102 4C00           00168         dcfsnz  0,w
+000104 4E??           00169         dcfsnz  file
+                      00170 
+000106 EF00 F000      00171         goto    0
+00010A EF?? F???      00172         goto    address - 1
+                      00173 
+00010E 2A00           00174         incf    0
+000110 2A00           00175         incf    0,1
+000112 2A00           00176         incf    0,f
+000114 2800           00177         incf    0,0
+000116 2800           00178         incf    0,w
+000118 2A??           00179         incf    file
+                      00180 
+00011A 3E00           00181         incfsz  0
+00011C 3E00           00182         incfsz  0,1
+00011E 3E00           00183         incfsz  0,f
+000120 3C00           00184         incfsz  0,0
+000122 3C00           00185         incfsz  0,w
+000124 3E??           00186         incfsz  file
+                      00187 
+000126 4A00           00188         infsnz  0
+000128 4A00           00189         infsnz  0,1
+00012A 4A00           00190         infsnz  0,f
+00012C 4800           00191         infsnz  0,0
+00012E 4800           00192         infsnz  0,w
+000130 4A??           00193         infsnz  file
+                      00194 
+000132 0900           00195         iorlw   0
+000134 0961           00196         iorlw   'a'
+000136 0961           00197         iorlw   "a"
+000138 09??           00198         iorlw   file
+                      00199 
+00013A 1200           00200         iorwf   0
+00013C 1200           00201         iorwf   0,1
+00013E 1200           00202         iorwf   0,f
+000140 1000           00203         iorwf   0,0
+000142 1000           00204         iorwf   0,w
+000144 12??           00205         iorwf   file
+                      00206 
+                      00207 
+000146 EE00 F000      00208         lfsr    0,0
+00014A EE?? F0??      00209         lfsr    0,address
+00014E EE10 F000      00210         lfsr    1,0
+000152 EE?? F0??      00211         lfsr    1,address
+000156 EE20 F000      00212         lfsr    2,0
+MPASM 03.20.02 Released         OP16E.ASM   1-11-2003  21:26:26         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00015A EE?? F0??      00213         lfsr    2,address
+                      00214 
+00015E 52??           00215         movf    file, f
+000160 50??           00216         movf    file, w
+000162 5200           00217         movf    0,f
+000164 5000           00218         movf    0,w
+                      00219 
+000166 C000 F000      00220         movff   0,0
+00016A C??? F000      00221         movff   file,0
+                      00222 
+00016E 0100           00223         movlb   0
+000170 010?           00224         movlb   file
+                      00225         
+000172 0E00           00226         movlw   0
+000174 0E61           00227         movlw   'a'
+000176 0E61           00228         movlw   "a"
+000178 0E??           00229         movlw   file
+                      00230 
+00017A 6E00           00231         movwf   0
+00017C 6E??           00232         movwf   file
+                      00233 
+00017E 0D00           00234         mullw   0
+000180 0D61           00235         mullw   'a'
+000182 0D61           00236         mullw   "a"
+000184 0D??           00237         mullw   file
+                      00238         
+000186 0200           00239         mulwf   0
+000188 02??           00240         mulwf   file
+                      00241 
+00018A 6C00           00242         negf    0
+00018C 6C??           00243         negf    file
+                      00244 
+00018E 0000           00245         nop
+                      00246 
+000190 0006           00247         pop
+                      00248 
+000192 0005           00249         push
+                      00250 
+000194 DF35           00251         rcall   0
+000196 D???           00252         rcall   address
+                      00253 
+000198 00FF           00254         reset           ;50         
+                      00255 
+00019A 0010           00256         retfie
+                      00257 
+00019C 0C00           00258         retlw   0
+00019E 0C61           00259         retlw   'a'
+0001A0 0C61           00260         retlw   "a"
+0001A2 0C??           00261         retlw   file
+                      00262 
+0001A4 0012           00263         return
+                      00264 
+0001A6 3600           00265         rlcf    0
+MPASM 03.20.02 Released         OP16E.ASM   1-11-2003  21:26:26         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0001A8 3600           00266         rlcf    0,1
+0001AA 3600           00267         rlcf    0,f
+0001AC 3400           00268         rlcf    0,0
+0001AE 3400           00269         rlcf    0,w
+0001B0 36??           00270         rlcf    file
+                      00271 
+0001B2 4600           00272         rlncf   0
+0001B4 4600           00273         rlncf   0,1
+0001B6 4600           00274         rlncf   0,f
+0001B8 4400           00275         rlncf   0,0
+0001BA 4400           00276         rlncf   0,w
+0001BC 46??           00277         rlncf   file
+                      00278 
+0001BE 3200           00279         rrcf    0
+0001C0 3200           00280         rrcf    0,1
+0001C2 3200           00281         rrcf    0,f
+0001C4 3000           00282         rrcf    0,0
+0001C6 3000           00283         rrcf    0,w
+0001C8 32??           00284         rrcf    file
+                      00285 
+0001CA 4200           00286         rrncf   0
+0001CC 4200           00287         rrncf   0,1
+0001CE 4200           00288         rrncf   0,f
+0001D0 4000           00289         rrncf   0,0
+0001D2 4000           00290         rrncf   0,w
+0001D4 42??           00291         rrncf   file
+                      00292 
+0001D6 6800           00293         setf    0
+0001D8 6900           00294         setf    0,1
+0001DA 6900           00295         setf    0,f
+0001DC 6800           00296         setf    0,0
+0001DE 6800           00297         setf    0,w
+0001E0 68??           00298         setf    file
+                      00299 
+0001E2 0003           00300         sleep
+                      00301 
+0001E4 0800           00302         sublw   0
+0001E6 0861           00303         sublw   'a'
+0001E8 0861           00304         sublw   "a"
+0001EA 08??           00305         sublw   file
+                      00306 
+0001EC 5E00           00307         subwf   0
+0001EE 5E00           00308         subwf   0,1
+0001F0 5E00           00309         subwf   0,f
+0001F2 5C00           00310         subwf   0,0
+0001F4 5C00           00311         subwf   0,w
+0001F6 5E??           00312         subwf   file
+                      00313 
+0001F8 5600           00314         subfwb  0
+0001FA 5600           00315         subfwb  0,1
+0001FC 5600           00316         subfwb  0,f
+0001FE 5400           00317         subfwb  0,0
+000200 5400           00318         subfwb  0,w
+MPASM 03.20.02 Released         OP16E.ASM   1-11-2003  21:26:26         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000202 56??           00319         subfwb  file
+                      00320 
+000204 5A00           00321         subwfb  0
+000206 5A00           00322         subwfb  0,1
+000208 5A00           00323         subwfb  0,f
+00020A 5800           00324         subwfb  0,0
+00020C 5800           00325         subwfb  0,w
+00020E 5A??           00326         subwfb  file
+                      00327 
+                      00328 
+000210 3A00           00329         swapf   0
+000212 3A00           00330         swapf   0,1
+000214 3A00           00331         swapf   0,f
+000216 3800           00332         swapf   0,0
+000218 3800           00333         swapf   0,w
+00021A 3A??           00334         swapf   file
+                      00335 
+00021C 0008           00336         tblrd *  
+00021E 0008           00337         tblrd *  
+000220 0009           00338         tblrd *+ 
+000222 0009           00339         tblrd *+ 
+000224 000A           00340         tblrd *- 
+000226 000A           00341         tblrd *- 
+000228 000B           00342         tblrd +* 
+00022A 000B           00343         tblrd +* 
+                      00344 
+00022C 000C           00345         tblwt *  
+00022E 000C           00346         tblwt *  
+000230 000D           00347         tblwt *+ 
+000232 000D           00348         tblwt *+ 
+000234 000E           00349         tblwt *- 
+000236 000E           00350         tblwt *- 
+000238 000F           00351         tblwt +* 
+00023A 000F           00352         tblwt +* 
+                      00353         
+00023C 6600           00354         tstfsz  0
+00023E 66??           00355         tstfsz  file
+                      00356 
+000240 0A00           00357         xorlw   0
+000242 0A61           00358         xorlw   'a'
+000244 0A61           00359         xorlw   "a"
+000246 0A??           00360         xorlw   file
+                      00361 
+000248 1A00           00362         xorwf   0
+00024A 1A00           00363         xorwf   0,1
+00024C 1A00           00364         xorwf   0,f
+00024E 1800           00365         xorwf   0,0
+000250 1800           00366         xorwf   0,w
+000252 1A??           00367         xorwf   file
+                      00368 
+                      00369         end
+MPASM 03.20.02 Released         OP16E.ASM   1-11-2003  21:26:26         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__18F8720                         00000001
+address                           00000000
+f                                 00000001
+file                              00000000
+w                                 00000000
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

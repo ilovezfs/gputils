@@ -1,37 +1,39 @@
+MPASM 03.20.02 Released      BNKISEL2.ASM   1-11-2003  20:59:41         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; BNKISEL2.ASM
-                        00002 
-                        00003 ; This file tests illegal usage of the BANKISEL directive.
-                        00004 ; It should be placed in the list comparison section for
-                        00005 ; object files.
-                        00006 
-                        00007         list    p=17c44
-                        00008 
-                        00009         udata   
-0000                    00010 Var1    res     1
-0001                    00011 Var2    res     1
-                        00012 
-                        00013 
+                      00001 ; BNKISEL2.ASM
+                      00002 
+                      00003 ; This file tests illegal usage of the BANKISEL directive.
+                      00004 ; It should be placed in the list comparison section for
+                      00005 ; object files.
+                      00006 
+                      00007         list    p=17c44
+                      00008 
+                      00009         udata   
+0000                  00010 Var1    res     1
+0001                  00011 Var2    res     1
+                      00012 
+                      00013 
 Error[152]  : Executable code and data must be defined in an appropriate section
-0002                    00014         bankisel        Var1            ; Outside CODE section
-                        00015 
-                        00016 
-                        00017         code
-                        00018 
+0002                  00014         bankisel        Var1            ; Outside CODE section
+                      00015 
+                      00016 
+                      00017         code
+                      00018 
 Error[128]  : Missing argument(s)
-                        00019         bankisel                        ; No label specified
-                        00020 
+                      00019         bankisel                        ; No label specified
+                      00020 
 Error[151]  : Operand contains unresolvable labels or is too complex
-0000     B800           00021         bankisel        Var1+Var2       ; Too complex
-                        00022 
+0000   B800           00021         bankisel        Var1+Var2       ; Too complex
+                      00022 
 Error[113]  : Symbol not previously defined (Var3)
-0001     B800           00023         bankisel        Var3            ; Undefined label
-                        00024 
-                        00025         end
+0001   B800           00023         bankisel        Var3            ; Undefined label
+                      00024 
+                      00025         end
+MPASM 03.20.02 Released      BNKISEL2.ASM   1-11-2003  20:59:41         PAGE  2
 
 
 SYMBOL TABLE
@@ -45,3 +47,4 @@ Errors   :     4
 Warnings :     0 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 
+

@@ -1,61 +1,61 @@
-MPASM Version 3.00 Beta Release   STRSYM1.ASM   01/31/2001  12:43:34	   PAGE 1
+MPASM 03.20.02 Released       STRSYM1.ASM   1-11-2003  20:59:44         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; STRSYM1.ASM
-                        00002 
-                        00003 ; This file checks the symbol table and string table generation.
-                        00004 
-                        00005                 list    p=17c44
-                        00006 
-                        00007 UDATA1          UDATA
-                        00008 
-0000                    00009 Short1          res     1
-0001                    00010 Short2          res     1
-0002                    00011 Short3          res     1
-                        00012 
-                        00013 UDATA2          UDATA
-                        00014 
-0000                    00015 Short4          res     1
-0001                    00016 Short5          res     1
-0002                    00017 Short6          res     1
-                        00018 
-                        00019 UDATA3          UDATA
-                        00020 
-0000                    00021 LongVarName1    res     1
-0001                    00022 LongVarName2    res     1
-0002                    00023 LongVarName3    res     1
-                        00024 
-                        00025 CODE1           CODE
-                        00026 
-0000     0000           00027 Addr1           nop
-0001     0000           00028 Addr2           nop
-0002     0000           00029 Addr3           nop
-                        00030 
-0003     0000           00031 LongAddrName1   nop
-0004     0000           00032 LongAddrName2   nop
-0005     0000           00033 LongAddrName3   nop
-                        00034 
-                        00035 CODE2           CODE
-                        00036 
-0000     0000           00037 Addr4           nop
-0001     0000           00038 Addr5           nop
-0002     0000           00039 Addr6           nop
-                        00040 
-0003     0000           00041 LongAddrName4   nop
-0004     0000           00042 LongAddrName5   nop
-0005     0000           00043 LongAddrName6   nop
-                        00044 
-                        00047                 list
-                        00048 
-  0000                  00049                 extern  ExtVar
-0007                    00050 GlobAdd
-  0000                  00051                 global  GlobAdd
-                        00052 
-                        00053                 end
-MPASM Version 3.00 Beta Release   STRSYM1.ASM   01/31/2001  12:43:34	   PAGE 2
+                      00001 ; STRSYM1.ASM
+                      00002 
+                      00003 ; This file checks the symbol table and string table generation.
+                      00004 
+                      00005                 list    p=17c44
+                      00006 
+                      00007 UDATA1          UDATA
+                      00008 
+0000                  00009 Short1          res     1
+0001                  00010 Short2          res     1
+0002                  00011 Short3          res     1
+                      00012 
+                      00013 UDATA2          UDATA
+                      00014 
+0000                  00015 Short4          res     1
+0001                  00016 Short5          res     1
+0002                  00017 Short6          res     1
+                      00018 
+                      00019 UDATA3          UDATA
+                      00020 
+0000                  00021 LongVarName1    res     1
+0001                  00022 LongVarName2    res     1
+0002                  00023 LongVarName3    res     1
+                      00024 
+                      00025 CODE1           CODE
+                      00026 
+0000   0000           00027 Addr1           nop
+0001   0000           00028 Addr2           nop
+0002   0000           00029 Addr3           nop
+                      00030 
+0003   0000           00031 LongAddrName1   nop
+0004   0000           00032 LongAddrName2   nop
+0005   0000           00033 LongAddrName3   nop
+                      00034 
+                      00035 CODE2           CODE
+                      00036 
+0000   0000           00037 Addr4           nop
+0001   0000           00038 Addr5           nop
+0002   0000           00039 Addr6           nop
+                      00040 
+0003   0000           00041 LongAddrName4   nop
+0004   0000           00042 LongAddrName5   nop
+0005   0000           00043 LongAddrName6   nop
+                      00044 
+                      00047                 list
+                      00048 
+  0000                00049                 extern  ExtVar
+0007                  00050 GlobAdd
+  0000                00051                 global  GlobAdd
+                      00052 
+                      00053                 end
+MPASM 03.20.02 Released       STRSYM1.ASM   1-11-2003  20:59:44         PAGE  2
 
 
 SYMBOL TABLE

@@ -1,48 +1,48 @@
-MPASM Version 3.00 Beta Release   UDATAO1.ASM   01/31/2001  12:43:35	   PAGE 1
+MPASM 03.20.02 Released       UDATAO1.ASM   1-11-2003  20:59:45         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; UDATAO1.ASM
-                        00002 
-                        00003 ; This file tests legal usage of the UDATA_OVR directive.
-                        00004 ; This file is placed in the object file comparison test section.
-                        00005 
-                        00006                 list            p=17C44
-                        00007 
-                        00008                 udata_ovr               ; Unnamed, no address
-0000                    00009 Var1            res             1       ; Reserve data
-                        00010 
-                        00011 DATA1           udata_ovr               ; Name, no address
-0000                    00012                 res             1       ; Data byte
-                        00013 
-                        00014 DATA2           UDATA_OVR               ; Capital letters
-0000                    00015                 res             3       ; Multiple bytes
-                        00016 
-                        00017 DATA3           udata_ovr       0x20    ; Address specified
-0020                    00018                 res             4       ; Multiple words
-                        00019 
-                        00020 LongDataName    udata_ovr       0x30    ; Long name
-0030                    00021                 res             2       ; Data word
-                        00022 
-                        00023 Mult1           udata_ovr               ; Multiple, second larger
-0000                    00024                 res             1
-                        00025 Mult1           udata_ovr
-0000                    00026                 res             2
-                        00027 
-                        00028 Mult2           udata_ovr               ; Multiple, first larger
-0000                    00029                 res             2
-                        00030 Mult2           udata_ovr
-0000                    00031                 res             1
-                        00032 
-                        00033 Mult3           udata_ovr       0x10    ; Multiple with address
-0010                    00034                 res             1
-                        00035 Mult3           udata_ovr       0x10
-0010                    00036                 res             1
-                        00037 
-                        00038                 end
-MPASM Version 3.00 Beta Release   UDATAO1.ASM   01/31/2001  12:43:35	   PAGE 2
+                      00001 ; UDATAO1.ASM
+                      00002 
+                      00003 ; This file tests legal usage of the UDATA_OVR directive.
+                      00004 ; This file is placed in the object file comparison test section.
+                      00005 
+                      00006                 list            p=17C44
+                      00007 
+                      00008                 udata_ovr               ; Unnamed, no address
+0000                  00009 Var1            res             1       ; Reserve data
+                      00010 
+                      00011 DATA1           udata_ovr               ; Name, no address
+0000                  00012                 res             1       ; Data byte
+                      00013 
+                      00014 DATA2           UDATA_OVR               ; Capital letters
+0000                  00015                 res             3       ; Multiple bytes
+                      00016 
+                      00017 DATA3           udata_ovr       0x20    ; Address specified
+0020                  00018                 res             4       ; Multiple words
+                      00019 
+                      00020 LongDataName    udata_ovr       0x30    ; Long name
+0030                  00021                 res             2       ; Data word
+                      00022 
+                      00023 Mult1           udata_ovr               ; Multiple, second larger
+0000                  00024                 res             1
+                      00025 Mult1           udata_ovr
+0000                  00026                 res             2
+                      00027 
+                      00028 Mult2           udata_ovr               ; Multiple, first larger
+0000                  00029                 res             2
+                      00030 Mult2           udata_ovr
+0000                  00031                 res             1
+                      00032 
+                      00033 Mult3           udata_ovr       0x10    ; Multiple with address
+0010                  00034                 res             1
+                      00035 Mult3           udata_ovr       0x10
+0010                  00036                 res             1
+                      00037 
+                      00038                 end
+MPASM 03.20.02 Released       UDATAO1.ASM   1-11-2003  20:59:45         PAGE  2
 
 
 SYMBOL TABLE

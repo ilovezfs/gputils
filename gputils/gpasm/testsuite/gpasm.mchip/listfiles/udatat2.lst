@@ -1,10 +1,12 @@
+MPASM 03.20.02 Released       UDATAT2.ASM   1-11-2003  20:59:45         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-Error[125]  : Illegal condition (EOF encountered before END or conditional end directive)
+Error[129]  : Expected (END)
 Error[131]  : Processor type is undefined
+MPASM 03.20.02 Released       UDATAT2.ASM   1-11-2003  20:59:45         PAGE  2
 
 
 SYMBOL TABLE
@@ -15,3 +17,4 @@ Errors   :     2
 Warnings :     0 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 
+

@@ -1,47 +1,47 @@
-MPASM Version 3.00 Beta Release   BNKSEL1.ASM   01/31/2001  12:43:31	   PAGE 1
+MPASM 03.20.02 Released       BNKSEL1.ASM   1-11-2003  20:59:41         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; BNKSEL1.ASM
-                        00002 
-                        00003 ; This file tests legal uses of the BANKSEL directives.
-                        00004 ; This file goes in the object file comparison test section.
-                        00005 
-                        00006         list    p=17c44
-                        00007 
-                        00008 UDATA1  UDATA
-                        00009 
-0000                    00010 Var1    res     1
-0001                    00011 Var2    res     1
-                        00012 
-                        00013 UDATA2  UDATA
-                        00014 
-0000                    00015 Var3    res     1
-0001                    00016 Var4    res     1
-0002                    00017 Var5    res     1
-                        00018 
-  0000                  00019         global  Var5
-  0000                  00020         extern  Var6
-                        00021 
-                        00022 
-                        00023         code
-                        00024 
-0000     ????           00025         banksel Var1            ; Normal
-                        00026 
-0001     ????           00027         banksel Var2 + 1        ; Plus offset
-                        00028 
-0002     ????           00029         BANKSEL Var3            ; Upper case
-                        00030 
-0003     ????           00031         banksel Var3 - 1        ; Minus offset
-                        00032 
-0004     ????           00033         banksel Var5            ; Global variable
-                        00034 
-0005     ????           00035         banksel Var6            ; External variable
-                        00036 
-                        00037         end
-MPASM Version 3.00 Beta Release   BNKSEL1.ASM   01/31/2001  12:43:31	   PAGE 2
+                      00001 ; BNKSEL1.ASM
+                      00002 
+                      00003 ; This file tests legal uses of the BANKSEL directives.
+                      00004 ; This file goes in the object file comparison test section.
+                      00005 
+                      00006         list    p=17c44
+                      00007 
+                      00008 UDATA1  UDATA
+                      00009 
+0000                  00010 Var1    res     1
+0001                  00011 Var2    res     1
+                      00012 
+                      00013 UDATA2  UDATA
+                      00014 
+0000                  00015 Var3    res     1
+0001                  00016 Var4    res     1
+0002                  00017 Var5    res     1
+                      00018 
+  0000                00019         global  Var5
+  0000                00020         extern  Var6
+                      00021 
+                      00022 
+                      00023         code
+                      00024 
+0000   ????           00025         banksel Var1            ; Normal
+                      00026 
+0001   ????           00027         banksel Var2 + 1        ; Plus offset
+                      00028 
+0002   ????           00029         BANKSEL Var3            ; Upper case
+                      00030 
+0003   ????           00031         banksel Var3 - 1        ; Minus offset
+                      00032 
+0004   ????           00033         banksel Var5            ; Global variable
+                      00034 
+0005   ????           00035         banksel Var6            ; External variable
+                      00036 
+                      00037         end
+MPASM 03.20.02 Released       BNKSEL1.ASM   1-11-2003  20:59:41         PAGE  2
 
 
 SYMBOL TABLE
