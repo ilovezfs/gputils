@@ -1,3 +1,8 @@
+2003-02-02 Craig Franklin <craigfranklin@attbi.com>
+  * Combined overlayed sections in gpasm coff outputs.
+  * Append prefix on local variables that end up in coff file.  
+  * Fixed error that prevented using $ with data directives.
+
 2003-01-19 Craig Franklin <craigfranklin@attbi.com>
   * Added object test files.
   * Fixed errors found by running new test files.  

@@ -146,6 +146,10 @@ char *gp_geterror(unsigned int code)
     return "Operand must be an address label.";
   case GPE_FILL_ODD:
     return "Cannot use FILL Directive with odd number of bytes.";
+  case GPE_CONTIG_CONFIG:
+    return "__CONFIG directives must be contiguous.";
+  case GPE_CONTIG_IDLOC:
+    return "__IDLOC directives must be contiguous.";
   case GPE_UNKNOWN:
   default:
     return "UNKNOWN";

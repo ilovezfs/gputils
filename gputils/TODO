@@ -18,3 +18,4 @@ list is in no particular order.
   * Add .ident for HLL tools 
   * Add .file/.line for debugger.
   * Add .def/.endef for embedding debug/optimization information
+  * Config and Idlocs for coff output of 18xx devices 

@@ -37,7 +37,7 @@ typedef struct gp_symbol_type {
 } gp_symbol_type;
 
 typedef struct gp_section_type {
-  unsigned int     number;          /* section number */
+  int              number;          /* section number */
   struct scnhdr    header;
   MemBlock        *data;            /* Memory linked list */
   gp_reloc_type   *relocations;
@@ -78,7 +78,9 @@ void gp_coffgen_fetch_symbol_name(gp_object_type *object,
 void gp_coffgen_fetch_section_name(gp_object_type *object, 
                                    struct scnhdr *header,
 			           char *string);
-gp_section_type *gp_coffgen_findsection(gp_object_type *object, char *name);
+gp_section_type *gp_coffgen_findsection(gp_object_type *object, 
+                                        gp_section_type *start,
+                                        char *name);
 int gp_coffgen_addstring(gp_object_type *object, char *name);                                   
 void gp_coffgen_addname(gp_object_type *object, char *ptr, char *name);
 gp_section_type *gp_coffgen_addsection(gp_object_type *object, char *name);
@@ -90,6 +92,8 @@ gp_symbol_type *
 gp_coffgen_findsymbolnum(gp_object_type *object, unsigned int number);
 gp_symbol_type *
 gp_coffgen_addsymbol(gp_object_type *object, char *name, int num_aux);
+int gp_coffgen_free_section(gp_section_type *section);
+int gp_coffgen_free(gp_object_type *object);
 int gp_coffgen_free(gp_object_type *object);
 int gp_coffgen_updateptr(gp_object_type *object);
 int gp_coffgen_writecoff(gp_object_type *object);

@@ -27,7 +27,8 @@ Boston, MA 02111-1307, USA.  */
 
 extern int _16bit_core;
 
-void coff_init(void)
+void 
+coff_init(void)
 {
   if (state.objfile != named) {
     strcpy(state.objfilename, state.basefilename);
@@ -73,8 +74,10 @@ _update_section_size(void)
   return;
 }
 
-void coff_close_file(void)
+void 
+coff_close_file(void)
 {
+  unsigned int num_sections;
 
   if(!state.obj.enabled)
     return;
@@ -87,6 +90,14 @@ void coff_close_file(void)
   /* store data from the last section */
   _update_section_size();
 
+  /* combine overlayed sections */
+  num_sections = state.obj.object->file_header.f_nscns;
+  gp_cofflink_combine_overlay(state.obj.object);
+
+  /* remove duplicate section entries in the symbol table */
+  if (num_sections != state.obj.object->file_header.f_nscns)
+    gp_cofflink_remove_dupsecsyms(state.obj.object);
+
   /* update file pointers in the coff */
   gp_coffgen_updateptr(state.obj.object);
 
@@ -96,7 +107,8 @@ void coff_close_file(void)
   gp_coffgen_free(state.obj.object);
 }
 
-void new_coff_section(char *name, int addr, int flags)
+void 
+coff_new_section(char *name, int addr, int flags)
 {
   gp_section_type *found = NULL;
   gp_symbol_type *new = NULL;
@@ -120,17 +132,26 @@ void new_coff_section(char *name, int addr, int flags)
   /* store data from the last section */
   _update_section_size();
 
-  found = gp_coffgen_findsection(state.obj.object, name);    
+  found = gp_coffgen_findsection(state.obj.object, 
+                                 state.obj.object->sections,
+                                 name);    
 
   if (found != NULL) {
-    /* Overlayed sections can be duplicated.  This allows multiple code sections in the 
-       same source file to share the same data memory. */
-    if (!(flags & STYP_OVERLAY) || !(found->header.s_flags & STYP_OVERLAY)) {
+    if ((flags & STYP_OVERLAY) && 
+        (found->header.s_flags & STYP_OVERLAY)) {
+      /* Overlayed sections can be duplicated.  This allows multiple code 
+         sections in the same source file to share the same data memory. */
+      if ((flags != found->header.s_flags) ||
+          (addr != found->header.s_paddr)) {
+        gperror(GPE_CONTIG_SECTION, NULL);
+        return;
+      }    
+    } else {
       gperror(GPE_CONTIG_SECTION, NULL);
       return;
     }
   }
-     
+
   state.obj.section = gp_coffgen_addsection(state.obj.object, name);    
   state.obj.section->header.s_paddr = addr; 
   state.obj.section->header.s_vaddr = addr; 
@@ -188,7 +209,7 @@ coff_linenum(int emitted)
     return;
 
   if (state.obj.section->header.s_flags & STYP_ABS) {
-    /* If the section is absolute use the abolute address */
+    /* If the section is absolute, use the abolute address. */
     origin = state.lst.line.was_org << _16bit_core;
   } else {
     /* use the relative address */
@@ -348,4 +369,36 @@ coff_symbol_section(char *name)
   number = symbol->symbol.sec_num;
 
   return number;
+}
+
+/* If the symbol is local, generate a modified name for the coff symbol 
+   table. */
+
+char *
+coff_local_name(char *name)
+{
+  struct symbol *local;
+  gp_symbol_type *symbol;
+  char buffer[BUFSIZ];
+  int count = 1;
+
+  if(!state.obj.enabled)
+    return NULL;
+
+  local = get_symbol(state.stGlobal, name);
+  if (local == NULL) {
+    /* It isn't in the stGlobal so it must be in stTop. It's local. */
+    while(1) {
+      sprintf(buffer, "_%d%s", count, name);
+      symbol = gp_coffgen_findsymbol(state.obj.object, buffer);
+      if (symbol == NULL)
+        break;
+      count++;
+    } 
+  } else {
+    strcpy(buffer, name);
+  }
+
+  return strdup(buffer);
+
 }

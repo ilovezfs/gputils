@@ -142,7 +142,7 @@ test_gpasm_sub() {
             ../../$GPASMBIN -q -I ../../$HEADER $basefilename.asm 
             if (test -e $basefilename.hex); then
               let compiled=compiled+1
-              diff -s ../hexfiles/$basefilename.hex $basefilename.hex
+              diff -s -u ../hexfiles/$basefilename.hex $basefilename.hex
               if (diff -q ../hexfiles/$basefilename.hex $basefilename.hex); then 
                 let passed=passed+1
                 echo "$basefilename.asm tested successfully"	
