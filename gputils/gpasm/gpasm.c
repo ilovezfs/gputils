@@ -280,7 +280,7 @@ process_args( int argc, char *argv[])
       break;
   }
   
-  if (optind < argc)
+  if ((optind + 1) == argc)
     state.srcfilename = argv[optind];
   else
     usage = 1;

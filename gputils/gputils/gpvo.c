@@ -386,7 +386,7 @@ int main(int argc, char *argv[])
       break;
   }
 
-  if (optind < argc) {
+  if ((optind + 1) == argc) {
     state.filename = argv[optind];
   } else {
     usage = 1;

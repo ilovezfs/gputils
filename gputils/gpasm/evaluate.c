@@ -356,7 +356,7 @@ int count_reloc(struct pnode *p)
 }
 
 /* When generating object files, operands with relocatable addresses can only be 
-   [HIGH|LOW]([<relocatable address>] + [<offset>]) */
+   [UPPER|HIGH|LOW]([<relocatable symbol>] + [<offset>]) */
 
 static void
 add_reloc(struct pnode *p, short offset, unsigned short type)
@@ -483,12 +483,12 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
 }
 
 /* Determine if the expression is the difference between two symbols in 
-   the same section */
+   the same section.  If so, calculate the offset and don't generate a
+   relocation.
 
-/* FIXME: This needs some help.  Need a better definition of what is legal
-   syntax.  Concatenations are not supported and should be.  This could
-   cause some problems for an optimizer.  Need to disable it on any section
-   that has this type of difference.  */
+   [UPPER|HIGH|LOW]([<relocatable symbol>] - [<relocatable symbol>])   
+   
+*/
 
 static int
 same_section(struct pnode *p)

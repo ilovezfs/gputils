@@ -1828,14 +1828,17 @@ static gpasmVal do_res(gpasmVal r,
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (can_evaluate(p)) {
-      count = (evaluate(p) >> _16bit_core);
+      count = evaluate(p);
       r = state.org;
 
       if (state.mode == absolute) {
         state.lst.line.linetype = equ;
-        state.org += count;
+        state.org += (count >> _16bit_core);
       } else {
         state.lst.line.linetype = res;
+        if (SECTION_FLAGS & STYP_TEXT)
+          count >> _16bit_core;
+
         for (i = 0; i < count; i++) {
           if (SECTION_FLAGS & STYP_TEXT) {
             /* For some reason program memory is filled with a different 
