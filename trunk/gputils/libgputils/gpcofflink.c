@@ -757,7 +757,8 @@ _update_table(gp_object_type *object)
   while (symbol != NULL) {
     if (symbol->section_number > 0) {
       assert(symbol->section != NULL);
-      symbol->value += symbol->section->address;
+      if (!(symbol->section->flags & STYP_ABS))
+        symbol->value += symbol->section->address;
     }
 
     symbol = symbol->next;
