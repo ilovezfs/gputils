@@ -217,7 +217,7 @@ void setup_macro(struct macro_head *h, int arity, struct pnode *parms)
       }
     }
 
-    state.next_state = _macro;  
+    state.next_state = state_macro;  
     state.next_buffer.macro = h;
     state.lst.line.linetype = none;
   }

@@ -107,8 +107,6 @@ gpasmVal set_label(char *label, struct pnode *parms)
     value = do_or_append_insn("set", parms);
     if (!state.mac_prev) {
       set_global(label, value, TEMPORARY, gvt_constant);
-    } else {
-      state.mac_body->label = label;
     }
   }
 
@@ -141,16 +139,26 @@ void next_line(int value)
   char l[BUFSIZ];
   char *e = l;
 
+  if ((state.src->type == src_macro) || 
+      (state.src->type == src_while)) {
+    /* while loops can be defined inside a macro or nested */
+    if (state.mac_prev) {
+      state.lst.line.linetype = none;
+      if (state.mac_body)
+	state.mac_body->src_line = strdup(state.src->lst.m->src_line);
+    }
 
-  if (state.src->type == macro) {
-    if ((state.lst.expand) && (state.pass == 2)) {
+    if (((state.src->type == src_while) || (state.lst.expand)) &&
+        (state.pass == 2)) {
       assert(state.src->lst.m->src_line != NULL);
       lst_format_line(state.src->lst.m->src_line, value);
     }
-    if (state.src->lst.m->next)
+    
+    if (state.src->lst.m->next) {
       state.src->lst.m = state.src->lst.m->next;
-  
-  } else if (state.src->lst.f != NULL) {
+    }
+  } else if ((state.src->type == src_file) &&
+             (state.src->lst.f != NULL)) {
     fgets(l, BUFSIZ, state.src->lst.f);
     l[strlen(l) - 1] = '\0';	/* Eat the trailing newline */
 
@@ -168,26 +176,30 @@ void next_line(int value)
   state.src->line_number++;
 
   switch (state.next_state) {
-    case _exitmacro:
+    case state_exitmacro:
       execute_exitm();
       break;
 
-    case _include:
+    case state_include:
       open_src(state.next_buffer.file, 1);
       free(state.next_buffer.file);
       break;
 
-    case _macro:
+    case state_macro:
       /* push the label for local directive */
       state.stTop = push_macro_symbol_table(state.stTop);
-      execute_macro(state.next_buffer.macro);
+      execute_macro(state.next_buffer.macro, 0);
       break;
 
-    case _section:
+    case state_section:
       /* create a new coff section */
       coff_new_section(state.obj.new_sec_name, 
                        state.obj.new_sec_addr, 
                        state.obj.new_sec_flags);
+      break;
+
+    case state_while:
+      execute_macro(state.next_buffer.macro, 1);
       break;
 
     default:
@@ -249,7 +261,7 @@ program:
         { 
           state.lst.line.was_org = state.org; 
           state.lst.line.linetype = none; 
-          state.next_state = _nochange;
+          state.next_state = state_nochange;
         } line
 	| program error '\n'
 	{ 
@@ -357,10 +369,6 @@ line:
               default:
 		break;
 	      }
-	    } else {
-	      /* Inside a macro; add the label to the current line */
-	      if (state.mac_body)
-		state.mac_body->label = $1;
 	    }
 	  }
 	  next_line($2);

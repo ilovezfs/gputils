@@ -1,5 +1,5 @@
-#ifndef BISON_Y_TAB_H
-# define BISON_Y_TAB_H
+#ifndef BISON_PARSE_H
+# define BISON_PARSE_H
 
 #ifndef YYSTYPE
 typedef union {
@@ -54,4 +54,4 @@ typedef union {
 
 extern YYSTYPE yylval;
 
-#endif /* not BISON_Y_TAB_H */
+#endif /* not BISON_PARSE_H */

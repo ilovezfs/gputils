@@ -35,6 +35,7 @@ Boston, MA 02111-1307, USA.  */
 #include "scan.h"
 #include "gperror.h"
 #include "directive.h"
+#include "evaluate.h"
 #include "macro.h"
 #include "coff.h"
 
@@ -547,8 +548,10 @@ void open_src(char *name, int isinclude)
   }
 #endif
 
-  new->type = file;
+  new->type = src_file;
+  new->h = NULL;
   new->line_number = 1;
+  new->loop_number = 1;
   new->file_symbol = coff_add_filesym(new->name, isinclude);
   new->prev = state.src;
 
@@ -556,7 +559,7 @@ void open_src(char *name, int isinclude)
   state.src->fc = add_file(ft_src, new->name); 
 }
 
-void execute_macro(struct macro_head *h)
+void execute_macro(struct macro_head *h, int is_while)
 {
   struct source_context *new = malloc(sizeof(*new));
   yy_size_t macro_src_size = 0;
@@ -572,16 +575,43 @@ void execute_macro(struct macro_head *h)
 
   /* create new source_context */
   new->name = strdup(h->src_name);
-  new->type = macro;
+  if (is_while) {
+    new->type = src_while;
+  } else {
+    new->type = src_macro;
+  }
   new->line_number = h->line_number + 1;
+  new->loop_number = 1;
   new->file_symbol = h->file_symbol;
   new->f = NULL;
+  new->h = h;
   new->lst.m = h->body;
   
   new->prev = state.src;
   state.src = new;
 
   state.src->fc = add_file(ft_src, new->name); /* scan list for fc */
+  YY_CURRENT_BUFFER = yy_scan_buffer(macro_src, macro_src_size);
+
+}
+
+void repeat_while(void)
+{
+  struct macro_head *h;
+  yy_size_t macro_src_size = 0;
+  char *macro_src;
+
+  h = state.src->h;
+
+  /* rebuild the macro buffer, because it may have been modified */
+  macro_src = make_macro_buffer(h);
+  macro_src_size = strlen(macro_src) + 2;
+
+  state.src->line_number = h->line_number + 1;
+  state.src->loop_number++;
+  state.src->lst.m = h->body;
+
+  yy_delete_buffer(YY_CURRENT_BUFFER);
   YY_CURRENT_BUFFER = yy_scan_buffer(macro_src, macro_src_size);
 
 }
@@ -594,10 +624,12 @@ static void push_string(char *str)
   state.src->yybuf = YY_CURRENT_BUFFER;
 
   new->name = strdup(state.src->name);
-  new->type = substitution;
+  new->type = src_substitution;
   new->line_number = state.src->line_number;
+  new->loop_number = 1;
   new->file_symbol = state.src->file_symbol;
   new->f = NULL;
+  new->h = NULL;
   new->lst.f = NULL;
   new->fc = add_file(ft_src, new->name); /* scan list for fc */
 
@@ -614,7 +646,7 @@ void close_file()
   old = state.src;
   state.src = state.src->prev;
 
-  if (old->type == file) {
+  if (old->type == src_file) {
     if (old->f != NULL) {
       fclose(old->f);
     }
@@ -622,7 +654,7 @@ void close_file()
       fclose(old->lst.f);
     free(old->name);
     coff_add_eofsym();
-  } else if (old->type == macro) {
+  } else if (old->type == src_macro) {
     state.stTop = pop_symbol_table(state.stTop);
     state.stTopDefines = pop_symbol_table(state.stTopDefines);
     if (state.src->astack != state.astack) {
@@ -630,6 +662,8 @@ void close_file()
     }
     assert(state.stTop != NULL);
     assert(state.stTopDefines != NULL);
+    free(old->name);
+  } else if (old->type == src_while) {
     free(old->name);
   }  
   free(old);
@@ -697,6 +731,18 @@ static int found_end()
 static int found_eof()
 {
   int terminate = 0;
+
+  if (state.src->type == src_while) {
+    if (maybe_evaluate(state.src->h->parms)) {
+      if (state.src->loop_number > 255) {
+        gperror(GPE_BAD_WHILE_LOOP, NULL);
+      } else {
+        /* repeat the while loop */
+        repeat_while();
+        return 0;
+      }
+    }
+  }
 
   close_file();
   if (state.src) {
