@@ -1,5 +1,5 @@
         LIST
-; P18C442.INC  Standard Header File, Version 0.10   Microchip Technology, Inc.
+; P18C442.INC  Standard Header File, Version 0.12   Microchip Technology, Inc.
         NOLIST
 
 ; This header file defines configurations, registers, and other useful bits of

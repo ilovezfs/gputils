@@ -14,7 +14,9 @@ EXTRA_DIST =\
 	12ce673.lkr \
 	12ce674.lkr \
 	12cr509a.lkr \
+	12f629i.lkr \
 	12f629.lkr \
+	12f675i.lkr \
 	12f675.lkr \
 	14000.lkr \
 	16c432.lkr \
@@ -26,6 +28,7 @@ EXTRA_DIST =\
 	16c54c.lkr \
 	16c54.lkr \
 	16c554.lkr \
+	16c557.lkr \
 	16c558.lkr \
 	16c55a.lkr \
 	16c55.lkr \
@@ -107,44 +110,59 @@ EXTRA_DIST =\
 	16cr72.lkr \
 	16cr83.lkr \
 	16cr84.lkr \
-	16f627.lkr \
+	16f627ai.lkr \
 	16f627a.lkr \
-	16f628.lkr \
+	16f627.lkr \
+	16f628ai.lkr \
 	16f628a.lkr \
+	16f628.lkr \
+	16f630i.lkr \
 	16f630.lkr \
+	16f648ai.lkr \
+	16f648a.lkr \
+	16f676i.lkr \
 	16f676.lkr \
+	16f684.lkr \
 	16f72.lkr \
 	16f73.lkr \
 	16f74.lkr \
 	16f76.lkr \
 	16f77.lkr \
+	16f818i.lkr \
 	16f818.lkr \
+	16f819i.lkr \
 	16f819.lkr \
 	16f83.lkr \
 	16f84a.lkr \
 	16f84.lkr \
 	16f85.lkr \
 	16f86.lkr \
-	16f87.lkr \
-	16f88.lkr \
 	16f870i.lkr \
 	16f870.lkr \
 	16f871i.lkr \
 	16f871.lkr \
 	16f872i.lkr \
 	16f872.lkr \
-	16f873i.lkr \
+	16f873ai.lkr \
 	16f873a.lkr \
+	16f873i.lkr \
 	16f873.lkr \
+	16f874ai.lkr \
 	16f874a.lkr \
 	16f874i.lkr \
 	16f874.lkr \
+	16f876ai.lkr \
 	16f876a.lkr \
 	16f876i.lkr \
 	16f876.lkr \
+	16f877ai.lkr \
 	16f877a.lkr \
 	16f877i.lkr \
 	16f877.lkr \
+	16f87i.lkr \
+	16f87.lkr \
+	16f88i.lkr \
+	16f88.lkr \
 	16hv540.lkr \
 	17c42a.lkr \
 	17c42.lkr \
@@ -167,37 +185,83 @@ EXTRA_DIST =\
 	18c801i.lkr \
 	18c801.lkr \
 	18c858.lkr \
+	18f1220i.lkr \
 	18f1220.lkr \
+	18f1320i.lkr \
 	18f1320.lkr \
+	18f2220i.lkr \
 	18f2220.lkr \
+	18f2320i.lkr \
 	18f2320.lkr \
+	18f2331.lkr \
 	18f242i.lkr \
 	18f242.lkr \
-	18f248.lkr \
+	18f2431.lkr \
+	18f2439i.lkr \
+	18f2439.lkr \
 	18f248i.lkr \
-	18f252.lkr \
+	18f248.lkr \
 	18f252i.lkr \
-	18f258.lkr \
+	18f252.lkr \
+	18f2539i.lkr \
+	18f2539.lkr \
 	18f258i.lkr \
+	18f258.lkr \
+	18f4220i.lkr \
 	18f4220.lkr \
+	18f4320i.lkr \
 	18f4320.lkr \
-	18f442.lkr \
+	18f4331.lkr \
 	18f442i.lkr \
-	18f448.lkr \
+	18f442.lkr \
+	18f4431.lkr \
+	18f4439i.lkr \
+	18f4439.lkr \
 	18f448i.lkr \
-	18f452.lkr \
+	18f448.lkr \
 	18f452i.lkr \
-	18f458.lkr \
+	18f452.lkr \
+	18f4539i.lkr \
+	18f4539.lkr \
 	18f458i.lkr \
-	18f6620.lkr \
+	18f458.lkr \
+	18f6520i.lkr \
+	18f6520.lkr \
+	18f6525i.lkr \
+	18f6525.lkr \
+	18f6585i.lkr \
+	18f6585.lkr \
 	18f6620i.lkr \
-	18f6720.lkr \
+	18f6620.lkr \
+	18f6621i.lkr \
+	18f6621.lkr \
+	18f6680i.lkr \
+	18f6680.lkr \
 	18f6720i.lkr \
-	18f8620.lkr \
+	18f6720.lkr \
+	18f8520i.lkr \
+	18f8520.lkr \
+	18f8525i.lkr \
+	18f8525.lkr \
+	18f8585i.lkr \
+	18f8585.lkr \
 	18f8620i.lkr \
-	18f8720.lkr \
+	18f8620.lkr \
+	18f8621i.lkr \
+	18f8621.lkr \
+	18f8680i.lkr \
+	18f8680.lkr \
 	18f8720i.lkr \
+	18f8720.lkr \
+	hcs1365.lkr \
+	hcs1370.lkr \
 	rf509af.lkr \
-	rf509ag.lkr
+	rf509ag.lkr \
+	rf675fi.lkr \
+	rf675f.lkr \
+	rf675hi.lkr \
+	rf675h.lkr \
+	rf675ki.lkr \
+	rf675k.lkr
 
 pkgdata_DATA= $(EXTRA_DIST)

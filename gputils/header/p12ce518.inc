@@ -64,6 +64,17 @@ Z                            EQU     H'0002'
 DC                           EQU     H'0001'
 C                            EQU     H'0000'
 
+;----- OSCCAL Bits --------------------------------------------------------
+
+CAL5                         EQU     H'0007'
+CAL4                         EQU     H'0006'
+CAL3                         EQU     H'0005'
+CAL2                         EQU     H'0004'
+OSCFST                       EQU     H'0003'
+CAL1                         EQU     H'0003'
+OSCSLW                       EQU     H'0002'
+CAL0                         EQU     H'0002'
+
 ;----- OPTION Bits --------------------------------------------------------
 
 NOT_GPWU                     EQU     H'0007'

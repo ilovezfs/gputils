@@ -7,28 +7,29 @@
 ; the data sheets as closely as possible.  The microcontrollers included
 ; in this file are:
 
-;    16C52
-;    16C54
-;    16CR54
-;    16C54A
-;    16CR54A
-;    16C54B
-;    16C54C
-;    16CR54B
-;    16CR54C
-;    16C55
-;    16C55A
-;    16C56
-;    16C56A
-;    16CR56A
-;    16C57
-;    16C57C
-;    16CR57A
-;    16CR57B
-;    16C58A
-;    16CR58A
-;    16C58B
-;    16CR58B
+;		16C52
+;		16C54
+;		16CR54
+;		16C54A
+;		16CR54A
+;		16C54B
+;		16CR54B
+;		16C54C
+;		16CR54C
+;		16C55
+;		16C55A
+;		16C56
+;		16C56A
+;		16CR56A
+;		16C57
+;		16CR57A
+;		16CR57B
+;		16C57C
+;		16CR57C
+;		16C58A
+;		16CR58A
+;		16C58B
+;		16CR58B
 
 ; There is one group of symbols that is valid for all microcontrollers.  
 ; Each microcontroller in this family also has its own section of special 
@@ -49,6 +50,7 @@
 
 ;Rev:   Date:   Reason:
 
+;4.12   12/02/02 Added 16CR57C
 ;4.11   01/18/99 Added 54C, 55A, 57C for interim release
 ;4.10   08/18/98 Added new processor for MPASM v2.16
 ;4.00   06/05/97 Added new processors for MPASM v2.00
@@ -237,6 +239,15 @@ PORTC                     EQU     H'0007'
 ;--------------------------------------------------------------------------
 
         IFDEF __16CR57B
+                                                ; Register Files
+PORTC                     EQU     H'0007'
+           __MAXRAM H'07F'
+           #define __CONFIG_1
+        ENDIF
+
+;--------------------------------------------------------------------------
+
+        IFDEF __16CR57C
                                                 ; Register Files
 PORTC                     EQU     H'0007'
            __MAXRAM H'07F'

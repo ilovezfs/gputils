@@ -1,5 +1,5 @@
         LIST
-; P18F248.INC  Standard Header File, Version 0.10   Microchip Technology, Inc.
+; P18F248.INC  Standard Header File, Version 1.10   Microchip Technology, Inc.
         NOLIST
 
 ; This header file defines configurations, registers, and other useful bits of
@@ -370,10 +370,16 @@ T0IP            EQU  H'0002'      ; For compatibility with T0IE and T0IF
 RBIP            EQU  H'0000'
 
 ;----- INTCON3 Bits --------------------------------------------------------
+INT2IP		EQU  H'0007'
+INT2P		EQU  H'0007'
 INT1IP          EQU  H'0006'
 INT1P           EQU  H'0006'
+INT2IE		EQU  H'0004'
+INT2E		EQU  H'0004'
 INT1IE          EQU  H'0003'
 INT1E           EQU  H'0003'
+INT2IF		EQU  H'0001'
+INT2F		EQU  H'0001'
 INT1IF          EQU  H'0000'
 INT1F           EQU  H'0000'
 
@@ -1383,8 +1389,56 @@ _WDTPS_2_2H       EQU  H'F3'
 _WDTPS_1_2H       EQU  H'F1'
 
 ;Configuration Byte 4L Options
+_DEBUG_ON_4L      EQU  H'7F'    ; Enabled
+_DEBUG_OFF_4L     EQU  H'FF'    ; Disabled
+
+_LVP_ON_4L        EQU  H'FF'    ; Enabled
+_LVP_OFF_4L       EQU  H'FB'    ; Disabled
+
 _STVR_ON_4L       EQU  H'FF'	; Stack over/underflow Reset enable
 _STVR_OFF_4L      EQU  H'FE'
+
+;Configuration Byte 5L Options
+_CP0_ON_5L           EQU  H'FE'    ; Enabled
+_CP0_OFF_5L          EQU  H'FF'    ; Disabled
+
+_CP1_ON_5L           EQU  H'FD'    ; Enabled
+_CP1_OFF_5L          EQU  H'FF'    ; Disabled
+
+;Configuration Byte 5H Options
+_CPB_ON_5H           EQU  H'BF'    ; Enabled
+_CPB_OFF_5H          EQU  H'FF'    ; Disabled
+
+_CPD_ON_5H           EQU  H'7F'    ; Enabled
+_CPD_OFF_5H          EQU  H'FF'    ; Disabled
+
+;Configuration Byte 6L Options
+_WRT0_ON_6L          EQU  H'FE'    ; Enabled
+_WRT0_OFF_6L         EQU  H'FF'    ; Disabled
+
+_WRT1_ON_6L          EQU  H'FD'    ; Enabled
+_WRT1_OFF_6L         EQU  H'FF'    ; Disabled
+
+;Configuration Byte 6H Options
+_WRTB_ON_6H          EQU  H'BF'    ; Enabled
+_WRTB_OFF_6H         EQU  H'FF'    ; Disabled
+
+_WRTC_ON_6H          EQU  H'DF'    ; Enabled
+_WRTC_OFF_6H         EQU  H'FF'    ; Disabled
+
+_WRTD_ON_6H          EQU  H'7F'    ; Enabled
+_WRTD_OFF_6H         EQU  H'FF'    ; Disabled
+
+;Configuration Byte 7L Options
+_EBTR0_ON_7L         EQU  H'FE'    ; Enabled
+_EBTR0_OFF_7L        EQU  H'FF'    ; Disabled
+
+_EBTR1_ON_7L         EQU  H'FD'    ; Enabled
+_EBTR1_OFF_7L        EQU  H'FF'    ; Disabled
+
+;Configuration Byte 7H Options
+_EBTRB_ON_7H         EQU  H'BF'    ; Enabled
+_EBTRB_OFF_7H        EQU  H'FF'    ; Disabled
 
 ; To use the Configuration Bits, place the following lines in your source code
 ;  in the following format, and change the configuration value to the desired 
@@ -1399,6 +1453,12 @@ _CONFIG1H       EQU    H'300001'
 _CONFIG2L       EQU    H'300002'
 _CONFIG2H       EQU    H'300003'
 _CONFIG4L       EQU    H'300006'
+_CONFIG5L       EQU    H'300008'
+_CONFIG5H       EQU    H'300009'
+_CONFIG6L       EQU    H'30000A'
+_CONFIG6H       EQU    H'30000B'
+_CONFIG7L       EQU    H'30000C'
+_CONFIG7H       EQU    H'30000D'
 _DEVID1         EQU    H'3FFFFE'
 _DEVID2         EQU    H'3FFFFF'
 _IDLOC0         EQU    H'200000'

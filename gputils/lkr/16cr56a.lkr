@@ -14,5 +14,5 @@ DATABANK   NAME=gprs     START=0x7      END=0x1F
 
 SECTION    NAME=PROG1    ROM=page0      // ROM code space - page0
 SECTION    NAME=PROG2    ROM=page1      // ROM code space - page1
-SECTION	   NAME=IDLOCS	 ROM=.idlocs    // ID locations
+SECTION    NAME=IDLOCS   ROM=.idlocs    // ID locations
 SECTION    NAME=CONFIG   ROM=.config    // Configuration bits location

@@ -15,5 +15,5 @@ DATABANK   NAME=gprs     START=0x20     END=0x6F
 
 SECTION    NAME=STARTUP  ROM=vectors    // Reset and interrupt vectors
 SECTION    NAME=PROG     ROM=page       // ROM code space
-SECTION	   NAME=IDLOCS	 ROM=.idlocs    // ID locations
+SECTION    NAME=IDLOCS   ROM=.idlocs    // ID locations
 SECTION    NAME=CONFIG   ROM=.config    // Configuration bits location

@@ -25,6 +25,9 @@
 
 ;1.00   07/29/02 Initial Release
 ;1.01	09/18/02 Changed name of bit-2 in the OSCCON register to IOFS
+;1.02	01/10/03 Added bit names for TXSTA & RCSTA registers.
+;1.03	01/24/03 Changed Config bit CCP1_RB2 to CCP1_RB0
+;1.04	03/12/03 Changed code example Config bit CCP1_RB2 to CCP1_RB0
 
 ;==========================================================================
 ;
@@ -78,14 +81,14 @@ TRISB                        EQU     H'0086'
 PIE1                         EQU     H'008C'
 PIE2                         EQU     H'008D'
 PCON                         EQU     H'008E'
-OSCCON			     EQU     H'008F'
-OSCTUNE			     EQU     H'0090'
+OSCCON			     		 EQU     H'008F'
+OSCTUNE			             EQU     H'0090'
 PR2                          EQU     H'0092'
 SSPADD                       EQU     H'0093'
 SSPSTAT                      EQU     H'0094'
 TXSTA                        EQU     H'0098'
 SPBRG                        EQU     H'0099'
-CMCON 			     EQU     H'009C'
+CMCON 			    		 EQU     H'009C'
 CVRCON                       EQU     H'009D'
 
 WDTCON                       EQU     H'0105'
@@ -111,15 +114,17 @@ C                            EQU     H'0000'
 GIE                          EQU     H'0007'
 PEIE                         EQU     H'0006'
 TMR0IE                       EQU     H'0005'
+T0IE                         EQU     H'0005'
 INTE                         EQU     H'0004'
 RBIE                         EQU     H'0003'
 TMR0IF                       EQU     H'0002'
+T0IF                         EQU     H'0002'
 INTF                         EQU     H'0001'
 RBIF                         EQU     H'0000'
 
 ;----- PIR1 Bits ----------------------------------------------------------
 RCIF                         EQU     H'0005'
-TXIF		             EQU     H'0004'
+TXIF		             	 EQU     H'0004'
 SSPIF                        EQU     H'0003'
 CCP1IF                       EQU     H'0002'
 TMR2IF                       EQU     H'0001'
@@ -127,11 +132,11 @@ TMR1IF                       EQU     H'0000'
 
 ;----- PIR2 Bits ----------------------------------------------------------
 OSFIF                        EQU     H'0007'
-CMIF			     EQU     H'0006'
+CMIF			     		 EQU     H'0006'
 EEIF                         EQU     H'0004'
 
 ;----- T1CON Bits ---------------------------------------------------------
-T1RUN			     EQU     H'0006'
+T1RUN			    		 EQU     H'0006'
 T1CKPS1                      EQU     H'0005'
 T1CKPS0                      EQU     H'0004'
 T1OSCEN                      EQU     H'0003'
@@ -167,6 +172,20 @@ CCP1M2                       EQU     H'0002'
 CCP1M1                       EQU     H'0001'
 CCP1M0                       EQU     H'0000'
 
+;----- RCSTA Bits ---------------------------------------------------------
+SPEN                         EQU     H'0007'
+RX9                          EQU     H'0006'
+RC9                          EQU     H'0006'    ; Backward compatibility only
+NOT_RC8                      EQU     H'0006'    ; Backward compatibility only
+RC8_9                        EQU     H'0006'    ; Backward compatibility only
+SREN                         EQU     H'0005'
+CREN                         EQU     H'0004'
+ADDEN                        EQU     H'0003'
+FERR                         EQU     H'0002'
+OERR                         EQU     H'0001'
+RX9D                         EQU     H'0000'
+RCD8                         EQU     H'0000'    ; Backward compatibility only
+
 ;----- OPTION_REG Bits -----------------------------------------------------
 NOT_RBPU                     EQU     H'0007'
 INTEDG                       EQU     H'0006'
@@ -196,21 +215,21 @@ NOT_BO                       EQU     H'0000'
 NOT_BOR                      EQU     H'0000' 
 
 ;----- OSCCON Bits -------------------------------------------------------
-IRCF2			     EQU     H'0006'
-IRCF1			     EQU     H'0005'
-IRCF0			     EQU     H'0004'
+IRCF2			    		 EQU     H'0006'
+IRCF1			    		 EQU     H'0005'
+IRCF0			   			 EQU     H'0004'
 OSTS                         EQU     H'0003'
-IOFS			     EQU     H'0002'
+IOFS			    		 EQU     H'0002'
 SCS1                         EQU     H'0001'
 SCS0                         EQU     H'0000'
 
 ;----- OSCTUNE Bits -------------------------------------------------------
-TUN5			     EQU     H'0005'
+TUN5			    		 EQU     H'0005'
 TUN4                         EQU     H'0004'
 TUN3                         EQU     H'0003'
-TUN2		             EQU     H'0002'
+TUN2		            	 EQU     H'0002'
 TUN1                         EQU     H'0001'
-TUN0		             EQU     H'0000'
+TUN0		             	 EQU     H'0000'
 
 ;----- SSPSTAT Bits -------------------------------------------------------
 SMP                          EQU     H'0007'
@@ -233,6 +252,18 @@ R_W                          EQU     H'0002'
 READ_WRITE                   EQU     H'0002'
 UA                           EQU     H'0001'
 BF                           EQU     H'0000'
+
+;----- TXSTA Bits ---------------------------------------------------------
+CSRC                         EQU     H'0007'
+TX9                          EQU     H'0006'
+NOT_TX8                      EQU     H'0006'    ; Backward compatibility only
+TX8_9                        EQU     H'0006'    ; Backward compatibility only
+TXEN                         EQU     H'0005'
+SYNC                         EQU     H'0004'
+BRGH                         EQU     H'0002'
+TRMT                         EQU     H'0001'
+TX9D                         EQU     H'0000'
+TXD8                         EQU     H'0000'    ; Backward compatibility only
 
 ;----- WDTCON Bits --------------------------------------------------------
 WDTPS3                       EQU     H'0004'
@@ -263,7 +294,7 @@ CVR0                         EQU     H'0000'
 
 ;----- EECON1 Bits --------------------------------------------------------
 EEPGD                        EQU     H'0007'
-FREE			     EQU     H'0004'
+FREE			             EQU     H'0004'
 WRERR                        EQU     H'0003'
 WREN                         EQU     H'0002'
 WR                           EQU     H'0001'
@@ -277,7 +308,7 @@ RD                           EQU     H'0000'
 
         __MAXRAM H'1FF'
         __BADRAM H'07'-H'09', H'1B'-H'1F'
-	__BADRAM H'87'-H'89', H'91', H'95'-H'97', H'9A', H'9E'-H'9F'
+		__BADRAM H'87'-H'89', H'91', H'95'-H'97', H'9A', H'9E'-H'9F'
         __BADRAM H'107'-H'109'
         __BADRAM H'185', H'187'-H'189', H'18E'-H'18F'
 
@@ -293,7 +324,7 @@ _CONFIG2                    EQU     H'2008'
 ;Configuration Byte 1 Options
 _CP_ALL                      EQU     H'1FFF'
 _CP_OFF	                     EQU     H'3FFF'
-_CCP1_RB2		     EQU     H'3FFF'
+_CCP1_RB0		     		 EQU     H'3FFF'
 _CCP1_RB3                    EQU     H'2FFF'
 _DEBUG_OFF                   EQU     H'3FFF'
 _DEBUG_ON                    EQU     H'37FF'
@@ -306,17 +337,17 @@ _LVP_ON                      EQU     H'3FFF'
 _LVP_OFF                     EQU     H'3F7F'
 _BODEN_ON                    EQU     H'3FFF'
 _BODEN_OFF                   EQU     H'3FBF'
-_MCLR_ON		     EQU     H'3FFF'
+_MCLR_ON		    		 EQU     H'3FFF'
 _MCLR_OFF                    EQU     H'3FDF'
 _PWRTE_OFF                   EQU     H'3FFF'
 _PWRTE_ON                    EQU     H'3FF7'
 _WDT_ON                      EQU     H'3FFF'
 _WDT_OFF                     EQU     H'3FFB'
-_EXTRC_CLKOUT		     EQU     H'3FFF'
-_EXTRC_IO		     EQU     H'3FFE'
+_EXTRC_CLKOUT		     	 EQU     H'3FFF'
+_EXTRC_IO		     		 EQU     H'3FFE'
 _INTRC_CLKOUT                EQU     H'3FFD'
-_INTRC_IO		     EQU     H'3FFC'
-_EXTCLK			     EQU     H'3FEF'
+_INTRC_IO		     		 EQU     H'3FFC'
+_EXTCLK			        	 EQU     H'3FEF'
 _HS_OSC                      EQU     H'3FEE'
 _XT_OSC                      EQU     H'3FED'
 _LP_OSC                      EQU     H'3FEC'
@@ -336,7 +367,7 @@ _FCMEN_OFF                   EQU     H'3FFE'
 ;  pasted into your source code.
 
 ;Program Configuration Register 1
-;		__CONFIG    _CONFIG1, _CP_OFF & _CCP1_RB2 & _DEBUG_OFF & _WRT_ENABLE_OFF & _CPD_OFF & _LVP_OFF & _BODEN_OFF & _MCLR_OFF & _PWRTE_OFF & _WDT_OFF & _HS_OSC
+;		__CONFIG    _CONFIG1, _CP_OFF & _CCP1_RB0 & _DEBUG_OFF & _WRT_ENABLE_OFF & _CPD_OFF & _LVP_OFF & _BODEN_OFF & _MCLR_OFF & _PWRTE_OFF & _WDT_OFF & _HS_OSC
 
 ;Program Configuration Register 2
 ;		__CONFIG    _CONFIG2, _IESO_OFF & _FCMEN_OFF

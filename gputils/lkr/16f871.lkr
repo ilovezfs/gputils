@@ -1,5 +1,4 @@
 // Sample linker command file for 16F871
-// $Id$
 
 LIBPATH  .
 
@@ -14,16 +13,19 @@ DATABANK   NAME=sfr1     START=0x80     END=0x9F     PROTECTED
 DATABANK   NAME=sfr2     START=0x100    END=0x10F    PROTECTED
 DATABANK   NAME=sfr3     START=0x180    END=0x18F    PROTECTED
 
-DATABANK   NAME=gpr0     START=0x20     END=0x6F
-DATABANK   NAME=gpr1     START=0xA0     END=0xBF
+SHAREBANK   NAME=gprnobnk0     START=0x20     END=0x6F
+SHAREBANK   NAME=gprnobnk0     START=0x120    END=0x16F
 
-SHAREBANK  NAME=gprnobnk START=0x70     END=0x7F
-SHAREBANK  NAME=gprnobnk START=0xF0     END=0xFF
-SHAREBANK  NAME=gprnobnk START=0x170    END=0x17F
-SHAREBANK  NAME=gprnobnk START=0x1F0    END=0x1FF
+SHAREBANK   NAME=gprnobnk1     START=0xA0     END=0xBF
+SHAREBANK   NAME=gprnobnk1     START=0x1A0    END=0x1BF
+
+SHAREBANK  NAME=gprnobnk2 START=0x70     END=0x7F
+SHAREBANK  NAME=gprnobnk2 START=0xF0     END=0xFF
+SHAREBANK  NAME=gprnobnk2 START=0x170    END=0x17F
+SHAREBANK  NAME=gprnobnk2 START=0x1F0    END=0x1FF
 
 SECTION    NAME=STARTUP  ROM=vectors    // Reset and interrupt vectors
 SECTION    NAME=PROG1    ROM=page0      // ROM code space - page0
-SECTION	   NAME=IDLOCS   ROM=.idlocs    // ID locations
+SECTION    NAME=IDLOCS   ROM=.idlocs    // ID locations
 SECTION    NAME=CONFIG   ROM=.config    // Configuration bits location
 SECTION    NAME=DEEPROM  ROM=eedata     // Data EEPROM
