@@ -81,16 +81,22 @@ void print_reloc_list(gp_reloc_type *relocation)
 
 void print_linenum_list(gp_linenum_type *linenumber)
 {
+  char *filename;
+
   printf("Line Number Table\n");
   printf("Line     Address  Symbol\n");
 
-  /* FIXME: output the correct file name */
-
   while (linenumber != NULL) {
+    if (state.suppress_names) {
+      filename = linenumber->symbol->name;
+    } else {
+      filename = linenumber->symbol->aux_list->_aux_symbol._aux_file.filename;
+    }
+
     printf("%-8i %#-8lx %s\n", 
            linenumber->line_number,
            linenumber->address,
-           linenumber->symbol->name);
+           filename);
   
     linenumber = linenumber->next;
   }
@@ -192,7 +198,9 @@ void print_sec_list(gp_object_type *object)
 void print_sym_table (gp_object_type *object)
 {
   gp_symbol_type *symbol;
+  gp_aux_type *aux;
   char *section;
+  int i;
 
   symbol = object->symbols;
 
@@ -220,9 +228,31 @@ void print_sym_table (gp_object_type *object)
            symbol->class,
            symbol->num_auxsym);
 
-    /* FIXME: print the aux symbol */
     if (symbol->num_auxsym != 0) {
-
+      aux = symbol->aux_list;
+      
+      switch (aux->type) {
+      case AUX_FILE:
+        if (!state.suppress_names) {
+          printf("  file = %s\n", 
+                 aux->_aux_symbol._aux_file.filename);
+        }
+        printf("  line included = %li\n", 
+               aux->_aux_symbol._aux_file.line_number);
+        break;
+      case AUX_SCN:
+        printf("  length = %li\n", 
+               aux->_aux_symbol._aux_scn.length);
+        printf("  number of relocations = %i\n", 
+               aux->_aux_symbol._aux_scn.nreloc);
+        printf("  number of line numbers = %i\n", 
+               aux->_aux_symbol._aux_scn.nlineno);
+        break;
+      default:
+        printf("  ");
+        for (i = 0; i < SYMBOL_SIZE; i++)
+          printf("%2x", aux->_aux_symbol.data[i]);
+      }
     }
 
     symbol = symbol->next;
@@ -282,6 +312,7 @@ void show_usage(void)
   printf("  -b, --binary               Print binary data.\n");
   printf("  -f, --file                 File header.\n");
   printf("  -h, --help                 Show this usage message.\n");
+  printf("  -n, --no-names             Suppress filenames.\n");
   printf("  -s, --section              Section data.\n");
   printf("  -t  --symbol               Symbol table.\n");
   printf("  -v, --version              Show version.\n");
@@ -291,7 +322,7 @@ void show_usage(void)
   exit(0);
 }
 
-#define GET_OPTIONS "?bfhstv"
+#define GET_OPTIONS "?bfhnstv"
 
   /* Used: himpsv */
   static struct option longopts[] =
@@ -299,6 +330,7 @@ void show_usage(void)
     { "binary",      0, 0, 'b' },
     { "file",        0, 0, 'f' },
     { "help",        0, 0, 'h' },
+    { "no-names",    0, 0, 'n' },
     { "section",     0, 0, 's' },
     { "symbol",      0, 0, 't' },
     { "version",     0, 0, 'v' },
@@ -316,6 +348,7 @@ int main(int argc, char *argv[])
   /* initalize */
   state.quiet = 0;
   state.dump_flags = 0;
+  state.suppress_names = 0;
 
   while ((c = GETOPT_FUNC) != EOF) {
     switch (c) {
@@ -328,6 +361,9 @@ int main(int argc, char *argv[])
       break;
     case 'f':
       state.dump_flags |= PRINT_HEADER;
+      break;
+    case 'n':
+      state.suppress_names = 1;
       break;
     case 's':
       state.dump_flags |= PRINT_SECTIONS;

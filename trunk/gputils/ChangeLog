@@ -1,3 +1,6 @@
+2003-02-17 Craig Franklin <craigfranklin@attbi.com>
+  * Added auxilary coff symbols.
+
 2003-02-16 Craig Franklin <craigfranklin@attbi.com>
   * Added pointers in object files to simplify linking operations.
   * Added checks when reading object files.

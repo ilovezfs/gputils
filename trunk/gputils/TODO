@@ -19,5 +19,4 @@ list is in no particular order.
   * Add .file/.line for debugger.
   * Add .def/.endef for embedding debug/optimization information
   * Config and Idlocs for coff output of 18xx devices 
-  * Define auxilary coff symbols.
   * Undefined coff symbols are always at the end of the coff table.
