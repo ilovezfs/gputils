@@ -105,7 +105,8 @@ EXTRA_DIST = \
 	./include/stdhdr.h \
 	./include/getopt.h \
 	config.h.in \
-	stamp-h.in
+	stamp-h.in \
+	TODO
 
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

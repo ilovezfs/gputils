@@ -22,7 +22,7 @@ AUTOMAKE_OPTIONS = foreign
 
 CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/include
 
-lib_LIBRARIES = libgputils.a
+noinst_LIBRARIES = libgputils.a
 
 libgputils_a_SOURCES =\
 	gparchive.c \
@@ -33,11 +33,7 @@ libgputils_a_SOURCES =\
 	gpreadhex.c \
 	gpreadobj.c \
 	gpsymbol.c \
-	gpwritehex.c
-
-gputilsincludedir = $(includedir)/gputils
-
-gputilsinclude_HEADERS =\
+	gpwritehex.c \
 	gparchive.h \
 	gpcod.h \
         gpcoff.h \

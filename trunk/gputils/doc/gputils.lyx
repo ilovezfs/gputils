@@ -30,12 +30,9 @@ gputils 0.10.0
 \layout Author
 
 James Bowman 
-\layout Author
-
-Craig Franklin 
 \layout Date
 
-January 1 2002
+January 20 2002
 \layout Standard
 
 
@@ -57,9 +54,9 @@ TM
  It includes gpasm, gplink, and gplib.
  Each tool is intended to be an open source replacement for a corresponding
  Microchip (TM) tool.
- This manual covers the basics of running the tools: for more details on
- a microcontroller, consult the manual for the specific PICmicro product
- that you are using.
+ This manual covers the basics of running the tools.
+ For more details on a microcontroller, consult the manual for the specific
+ PICmicro product that you are using.
 \layout Standard
 
 This document is part of gputils.
@@ -98,9 +95,6 @@ You should have received a copy of the GNU General Public License along
 \layout Chapter
 
 gpasm
-\layout Standard
-
-gpasm 
 \layout Section
 
 Running gpasm
@@ -3524,588 +3518,20 @@ Macro expansion was specified on the command line and in the source file.
  The command line has precedence.
 \layout Chapter
 
-gplink
-\layout Section
-
-Running gplink
-\begin_inset LatexCommand \index{options}
-
-\end_inset 
-
-
+gplib
 \layout Standard
 
-The general syntax for running gpasm is
-\layout LyX-Code
-
-gplink <options> <asm-file>
-\layout Standard
-
-Where options can be one of:
-\layout Standard
-\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
-multicol5
-19 2 0 0 -1 -1 -1 -1
-1 1 0 0
-1 0 0 0
-1 0 0 0
-0 0 1 0
-0 0 1 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 1 0 0
-0 0 1 0
-1 0 0 0
-1 1 0 0
-2 1 0 "" ""
-2 1 1 "4in" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 1 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 1 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 1 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-
-Option
-\newline 
-Meaning
-\newline 
-a <format>
-\newline 
-Produce 
-\begin_inset LatexCommand \index{hex file}
-
-\end_inset 
-
-hex file in one of four formats: inhx8m (the default), inhx8s, inhx16, inhx32.
-\newline 
-c
-\newline 
-
-\begin_inset LatexCommand \index{case}
-
-\end_inset 
-
-Ignore case in source code.
- By default gpasms to treats 
-\begin_inset Quotes eld
-\end_inset 
-
-fooYa
-\begin_inset Quotes erd
-\end_inset 
-
- and 
-\begin_inset Quotes eld
-\end_inset 
-
-FOOYA
-\begin_inset Quotes erd
-\end_inset 
-
- as being different.
-\newline 
-
-\newline 
-
-\newline 
-
-\newline 
-
-\newline 
-d symbol[=value] 
-\newline 
-Equivalent to 
-\begin_inset Quotes eld
-\end_inset 
-
-#define <symbol> <value>
-\begin_inset Quotes erd
-\end_inset 
-
-.
-\newline 
-e [ON|OFF]
-\newline 
-Expand macros in listing file.
-\newline 
-h
-\newline 
-Display the help message.
-\newline 
-I <directory>
-\newline 
-Specify an include directory.
-\newline 
-l
-\newline 
-List the supported processors.
-\newline 
-m
-\newline 
-Memory dump.
-\newline 
-n
-\newline 
-Use DOS style newlines (CRLF) in hex file.
- This option is disabled on win32 systems.
-\newline 
-o <file>
-\newline 
-Alternate name of hex output file.
-\newline 
-p<processor> 
-\newline 
-Select target processor.
-\newline 
-q
-\newline 
-Quiet
-\newline 
-r <radix>
-\newline 
-Set the 
-\begin_inset LatexCommand \index{radix}
-
-\end_inset 
-
-radix, i.e.
- the number base that gpasm uses when interpreting numbers.
-\newline 
-
-\newline 
-<radix> can be one of 
-\begin_inset Quotes eld
-\end_inset 
-
-oct
-\begin_inset Quotes erd
-\end_inset 
-
-, 
-\begin_inset Quotes eld
-\end_inset 
-
-dec
-\begin_inset Quotes erd
-\end_inset 
-
- and 
-\begin_inset Quotes eld
-\end_inset 
-
-hex
-\begin_inset Quotes erd
-\end_inset 
-
- for bases eight, ten, and sixteen respectively.
- Default is 
-\begin_inset Quotes eld
-\end_inset 
-
-hex
-\begin_inset Quotes erd
-\end_inset 
-
-.
-\newline 
--w [ 0 | 1 | 2]
-\newline 
-Set the message level.
-\newline 
-v
-\newline 
-Print gpasm version information and exit.
-\layout Standard
-
-Unless otherwise specified, gpasm removes the 
-\begin_inset Quotes eld
-\end_inset 
-
-.asm
-\begin_inset Quotes erd
-\end_inset 
-
- suffix from its input file, replacing it with 
-\begin_inset Quotes eld
-\end_inset 
-
-.lst
-\begin_inset Quotes erd
-\end_inset 
-
- and 
-\begin_inset Quotes eld
-\end_inset 
-
-.hex
-\begin_inset Quotes erd
-\end_inset 
-
- for the list and hex output files respectively.
- On most modern operating systems case is significant in filenames.
- For this reason you should ensure that filenames are named consistently,
- and that the 
-\begin_inset Quotes eld
-\end_inset 
-
-.asm
-\begin_inset Quotes erd
-\end_inset 
-
- suffix on any source file is in lower case.
-\layout Standard
-
-gpasm always produces a 
-\begin_inset Quotes eld
-\end_inset 
-
-.lst
-\begin_inset Quotes erd
-\end_inset 
-
- file.
- If it runs without errors, it also produces a 
-\begin_inset Quotes eld
-\end_inset 
-
-.hex
-\begin_inset Quotes erd
-\end_inset 
-
- file.
+gplib is a new and incomplete tool.
+ When complete, it will provide the ability to archive relocatable objects.
+ These archives, or libraries, can be used to simplify linking.
 \layout Chapter
 
-gplib
-\layout Section
-
-Running gplib
-\begin_inset LatexCommand \index{options}
-
-\end_inset 
-
-
+gplink
 \layout Standard
 
-The general syntax for running gpasm is
-\layout LyX-Code
-
-gplib <options> <asm-file>
-\layout Standard
-
-Where options can be one of:
-\layout Standard
-\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
-multicol5
-19 2 0 0 -1 -1 -1 -1
-1 1 0 0
-1 0 0 0
-1 0 0 0
-0 0 1 0
-0 0 1 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 0 0 0
-1 1 0 0
-0 0 1 0
-1 0 0 0
-1 1 0 0
-2 1 0 "" ""
-2 1 1 "4in" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 1 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 1 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 1 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-0 2 1 0 0 0 0 "" ""
-
-Option
-\newline 
-Meaning
-\newline 
-a <format>
-\newline 
-Produce 
-\begin_inset LatexCommand \index{hex file}
-
-\end_inset 
-
-hex file in one of four formats: inhx8m (the default), inhx8s, inhx16, inhx32.
-\newline 
-c
-\newline 
-
-\begin_inset LatexCommand \index{case}
-
-\end_inset 
-
-Ignore case in source code.
- By default gpasms to treats 
-\begin_inset Quotes eld
-\end_inset 
-
-fooYa
-\begin_inset Quotes erd
-\end_inset 
-
- and 
-\begin_inset Quotes eld
-\end_inset 
-
-FOOYA
-\begin_inset Quotes erd
-\end_inset 
-
- as being different.
-\newline 
-
-\newline 
-
-\newline 
-
-\newline 
-
-\newline 
-d symbol[=value] 
-\newline 
-Equivalent to 
-\begin_inset Quotes eld
-\end_inset 
-
-#define <symbol> <value>
-\begin_inset Quotes erd
-\end_inset 
-
-.
-\newline 
-e [ON|OFF]
-\newline 
-Expand macros in listing file.
-\newline 
-h
-\newline 
-Display the help message.
-\newline 
-I <directory>
-\newline 
-Specify an include directory.
-\newline 
-l
-\newline 
-List the supported processors.
-\newline 
-m
-\newline 
-Memory dump.
-\newline 
-n
-\newline 
-Use DOS style newlines (CRLF) in hex file.
- This option is disabled on win32 systems.
-\newline 
-o <file>
-\newline 
-Alternate name of hex output file.
-\newline 
-p<processor> 
-\newline 
-Select target processor.
-\newline 
-q
-\newline 
-Quiet
-\newline 
-r <radix>
-\newline 
-Set the 
-\begin_inset LatexCommand \index{radix}
-
-\end_inset 
-
-radix, i.e.
- the number base that gpasm uses when interpreting numbers.
-\newline 
-
-\newline 
-<radix> can be one of 
-\begin_inset Quotes eld
-\end_inset 
-
-oct
-\begin_inset Quotes erd
-\end_inset 
-
-, 
-\begin_inset Quotes eld
-\end_inset 
-
-dec
-\begin_inset Quotes erd
-\end_inset 
-
- and 
-\begin_inset Quotes eld
-\end_inset 
-
-hex
-\begin_inset Quotes erd
-\end_inset 
-
- for bases eight, ten, and sixteen respectively.
- Default is 
-\begin_inset Quotes eld
-\end_inset 
-
-hex
-\begin_inset Quotes erd
-\end_inset 
-
-.
-\newline 
--w [ 0 | 1 | 2]
-\newline 
-Set the message level.
-\newline 
-v
-\newline 
-Print gpasm version information and exit.
-\layout Standard
-
-Unless otherwise specified, gpasm removes the 
-\begin_inset Quotes eld
-\end_inset 
-
-.asm
-\begin_inset Quotes erd
-\end_inset 
-
- suffix from its input file, replacing it with 
-\begin_inset Quotes eld
-\end_inset 
-
-.lst
-\begin_inset Quotes erd
-\end_inset 
-
- and 
-\begin_inset Quotes eld
-\end_inset 
-
-.hex
-\begin_inset Quotes erd
-\end_inset 
-
- for the list and hex output files respectively.
- On most modern operating systems case is significant in filenames.
- For this reason you should ensure that filenames are named consistently,
- and that the 
-\begin_inset Quotes eld
-\end_inset 
-
-.asm
-\begin_inset Quotes erd
-\end_inset 
-
- suffix on any source file is in lower case.
-\layout Standard
-
-gpasm always produces a 
-\begin_inset Quotes eld
-\end_inset 
-
-.lst
-\begin_inset Quotes erd
-\end_inset 
-
- file.
- If it runs without errors, it also produces a 
-\begin_inset Quotes eld
-\end_inset 
-
-.hex
-\begin_inset Quotes erd
-\end_inset 
-
- file.
+gplink is a new and incomplete tool.
+ When complete, it will provide the ability to link relocatable objects
+ to produce an executable object.
 \layout Chapter
 
 Utilities
@@ -4121,7 +3547,7 @@ gpdasm
 
 gpdasm is open source disassembler for Microchip's popular PICmicro (TM)
  line of microcontrollers.
- gpdasm is part of gpasm.
+ gpdasm is part of gputils.
 \layout Subsection
 
 Running gpdasm
@@ -4289,7 +3715,7 @@ gpvc
 
 gpvc is open source cod file viewer for Microchip's popular PICmicro (TM)
  line of microcontrollers.
- gpvc is part of gpasm.
+ gpvc is part of gputils.
 \layout Subsection
 
 Running gpvc
@@ -4446,7 +3872,7 @@ gpvo
 
 gpvo is open source object file viewer for Microchip's popular PICmicro
  (TM) line of microcontrollers.
- gpvo is part of gpasm.
+ gpvo is part of gputils.
 \layout Subsection
 
 Running gpvo
