@@ -913,7 +913,7 @@ static int quoted; /* Used to prevent #define expansion in ifdef and
                       ifndef... */
 static int force_decimal; /* Used to force decimal in errorlevel */
 
-#line 917 "lex.yy.c"
+#line 917 "scan.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -1069,7 +1069,7 @@ YY_DECL
 
 #line 64 "scan.l"
 
-#line 1073 "lex.yy.c"
+#line 1073 "scan.c"
 
 	if ( yy_init )
 		{
@@ -1829,7 +1829,7 @@ YY_RULE_SETUP
 #line 437 "scan.l"
 ECHO;
 	YY_BREAK
-#line 1833 "lex.yy.c"
+#line 1833 "scan.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2210,6 +2210,7 @@ register char *yy_bp;
 #endif	/* ifndef YY_NO_UNPUT */
 
 
+#ifndef YY_NO_INPUT
 #ifdef __cplusplus
 static int yyinput()
 #else
@@ -2282,7 +2283,7 @@ static int input()
 
 	return c;
 	}
-
+#endif /* YY_NO_INPUT */
 
 #ifdef YY_USE_PROTOS
 void yyrestart( FILE *input_file )
@@ -2713,6 +2714,42 @@ int main()
 #line 437 "scan.l"
 
 
+static char *
+to_lower_case(char *name)
+{
+  char *new;
+  char *ptr;
+
+  ptr = new = strdup(name);
+
+  while (*ptr != '\0') {
+    *ptr = tolower(*ptr);
+    ptr++;
+  }
+
+  return new;
+}
+
+static void
+search_pathes(struct source_context *new, char *name)
+{
+  char tryname[BUFSIZ];
+  int i;
+
+  for(i = 0; i < state.path_num; i++) {
+    strcpy(tryname, state.paths[i]);
+    strcat(tryname, COPY_CHAR);
+    strcat(tryname, name);
+    new->f = fopen(tryname, "rt");
+    if(new->f) {
+      new->name = strdup(tryname);
+      break;
+    }
+  }
+
+  return; 
+}
+
 void open_src(char *name, int isinclude)
 {
   extern FILE *yyin;
@@ -2722,23 +2759,23 @@ void open_src(char *name, int isinclude)
 
   new->f = fopen(name, "rt");
   if(new->f)
-	  new->name = strdup(name);
+    new->name = strdup(name);
   else if(isinclude && (strchr(name, PATH_CHAR) == 0)) { 
-	  /* If include file and no PATH_CHAR in name, try searching include 
-             path */
-	  char tryname[BUFSIZ];
-	  int i;
+    /* If include file and no PATH_CHAR in name, try searching include 
+       path */
+    search_pathes(new, name);
 
-	  for(i = 0; i < state.path_num; i++) {
-		  strcpy(tryname, state.paths[i]);
-		  strcat(tryname, COPY_CHAR);
-		  strcat(tryname, name);
-		  new->f = fopen(tryname, "rt");
-		  if(new->f) {
-			  new->name = strdup(tryname);
-			  break;
-		  }
-	  }
+    if (new->f == NULL) {
+      /* We didn't find a match so check for lower case.  This is mainly for 
+         Microchip examples and some includes in which filenames were written
+         without regard to case */    
+      char *lower_case_name = to_lower_case(name);
+      search_pathes(new, lower_case_name);      
+      free(lower_case_name);  
+
+      if (new->f != NULL)
+        gpwarning(GPW_UNKNOWN, "found lower case match for include filename");    
+    }
   }
   if(new->f)
     new->lst.f = fopen(new->name, "rt");

@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
       break;
   }
   
-  if (optind < argc)
+  if ((optind + 1) == argc)
     strcpy(filename, argv[optind]);
   else
     usage = 1;
