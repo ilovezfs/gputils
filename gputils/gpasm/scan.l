@@ -214,44 +214,51 @@ list		     	 {
 			     has_collon = 1;
 			   }
 			   yylval.s = strdup(yytext);
-                           switch(identify(yytext)) {
-                             case defines:
-                               sym = get_symbol(state.stDefines, yytext);
-                               subst = get_symbol_annotation(sym);
-                               push_string(subst);
-                               break;
-                             case directives:
-			       gpwarning(GPW_DIR_COLUMN_ONE, NULL);
-                               if (has_collon)
-                                 gperror(GPE_BADCHAR, "Illegal character (:)");
-			       return IDENTIFIER;
-                               break;
-                             case macros:
-			       /* make sure macro definition on second pass
-                                  is ignored */
-			       sym = get_symbol(state.stMacros, yytext);
-			       h = get_symbol_annotation(sym);
-                               if (h->line_number == state.src->line_number) {
-			         return LABEL;
-			       } else {
-			         gpwarning(GPW_MACRO_COLUMN_ONE, NULL);
-			         if (has_collon)
-                                  gperror(GPE_BADCHAR, 
-                                           "Illegal character (:)");
+                           if(asm_enabled()) {
+                             switch(identify(yytext)) {
+                               case defines:
+                                 sym = get_symbol(state.stDefines, yytext);
+                                 subst = get_symbol_annotation(sym);
+                                 push_string(subst);
+                                 break;
+                               case directives:
+			         gpwarning(GPW_DIR_COLUMN_ONE, NULL);
+                                 if (has_collon)
+                                   gperror(GPE_BADCHAR, "Illegal character (:)");
 			         return IDENTIFIER;
-			       }
-                               break;
-                             case opcodes:
-			       gpwarning(GPW_OP_COLUMN_ONE, NULL);
-                               if (has_collon)
-                                 gperror(GPE_BADCHAR, "Illegal character (:)");
-			       return IDENTIFIER;
-                               break;
-                             case unknown:
-			       return LABEL;
-                             default:
-			       return LABEL;
-                           }			   
+                                 break;
+                               case macros:
+			         /* make sure macro definition on second pass
+                                    is ignored */
+			         sym = get_symbol(state.stMacros, yytext);
+			         h = get_symbol_annotation(sym);
+                                 if (h->line_number == state.src->line_number) {
+			           return LABEL;
+			         } else {
+			           gpwarning(GPW_MACRO_COLUMN_ONE, NULL);
+			           if (has_collon)
+                                    gperror(GPE_BADCHAR, 
+                                             "Illegal character (:)");
+			           return IDENTIFIER;
+			         }
+                                 break;
+                               case opcodes:
+			         gpwarning(GPW_OP_COLUMN_ONE, NULL);
+                                 if (has_collon)
+                                   gperror(GPE_BADCHAR, "Illegal character (:)");
+			         return IDENTIFIER;
+                                 break;
+                               case unknown:
+			         return LABEL;
+                               default:
+			         return LABEL;
+                             }			   
+			   } else {
+			     /* if assembly is not enabled don't issue warnings
+			        about macro calls in column 1, they could be
+				an alternate definition */ 
+			     return LABEL;			   
+			   }
 			 }
 {IDENT}#v\(              {
                            yytext[strlen(yytext) - 3] = '\0';
