@@ -58,6 +58,7 @@ void
 codegen_close_deps(void)
 {
   if (state.output.d) {
+    fprintf(state.output.d, "\n");
     fclose(state.output.d);
   }
 }
