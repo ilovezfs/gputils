@@ -47,7 +47,7 @@ an up-to-date list of what gputils can do.
 %setup
 
 %build
-./configure --prefix=/usr 
+./configure --prefix=/usr --mandir=/usr/share/man
 make
 
 %clean
@@ -61,6 +61,7 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 %{_bindir}/gpasm
 %{_bindir}/gpdasm
 %{_bindir}/gpvc
+%{_mandir}/man1/*
 %{_datadir}/gputils/header/*
 %doc AUTHORS COPYING ChangeLog INSTALL NEWS README 
 %doc doc/gputils.lyx doc/gputils.pdf doc/gputils.ps

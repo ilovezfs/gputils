@@ -21,4 +21,14 @@
 gputils.pdf: gputils.ps
 	ps2pdf gputils.ps gputils.pdf
 
-EXTRA_DIST = gputils.lyx gputils.ps gputils.pdf
+man_MANS = gpasm.1 gpdasm.1 gputils.1 gpvc.1
+
+EXTRA_DIST =\
+	gpasm.1 \
+	gpdasm.1 \
+	gputils.1 \
+	gputils.lyx \
+	gputils.ps \
+	gputils.pdf \
+	gpvc.1
+
