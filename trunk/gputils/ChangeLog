@@ -1,3 +1,6 @@
+2004-01-01 Craig Franklin <craigfranklin@comcast.net>
+  * Allow multiple config words for all devices in gpasm.
+
 2003-12-25 Craig Franklin <craigfranklin@comcast.net>
   * Use full symbol name in gpal at the base of symbol tables.
   * Add symbol alias at the top of symbol table stack.
