@@ -22,30 +22,34 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
-#define DECODE_ARG0 sprintf(buffer, "%s", instruction->name)
+#define DECODE_ARG0 snprintf(buffer, sizeof_buffer, "%s", instruction->name)
 
-#define DECODE_ARG1(ARG1) sprintf(buffer, "%s\t%#lx", \
+#define DECODE_ARG1(ARG1) snprintf(buffer, sizeof_buffer, "%s\t%#lx", \
                                   instruction->name,\
                                   ARG1)
 
-#define DECODE_ARG1WF(ARG1, ARG2) sprintf(buffer, "%s\t%#lx, %s", \
+#define DECODE_ARG1WF(ARG1, ARG2) snprintf(buffer, sizeof_buffer, "%s\t%#lx, %s", \
                                           instruction->name,\
                                           ARG1, \
                                           (ARG2 ? "f" : "w"))
 
-#define DECODE_ARG2(ARG1, ARG2) sprintf(buffer, "%s\t%#lx, %#lx", \
+#define DECODE_ARG2(ARG1, ARG2) snprintf(buffer, sizeof_buffer, "%s\t%#lx, %#lx", \
                                         instruction->name,\
                                         ARG1, \
                                         ARG2)
 
-#define DECODE_ARG3(ARG1, ARG2, ARG3) sprintf(buffer, "%s\t%#lx, %#lx, %#lx", \
+#define DECODE_ARG3(ARG1, ARG2, ARG3) snprintf(buffer, sizeof_buffer, "%s\t%#lx, %#lx, %#lx", \
                                              instruction->name,\
                                              ARG1, \
                                              ARG2, \
                                              ARG3)
 
 void
-gp_disassemble(MemBlock *m, int *org, enum proc_class class, char *buffer)
+gp_disassemble(MemBlock *m,
+               int *org,
+               enum proc_class class,
+               char *buffer,
+               size_t sizeof_buffer)
 {
   int i;
   int value;
@@ -57,7 +61,7 @@ gp_disassemble(MemBlock *m, int *org, enum proc_class class, char *buffer)
   switch (class) {
   case PROC_CLASS_EEPROM8:
   case PROC_CLASS_GENERIC:
-    sprintf(buffer, "unsupported processor class");
+    snprintf(buffer, sizeof_buffer, "unsupported processor class");
     return;
   case PROC_CLASS_PIC12:
     for(i = 0; i < num_op_12c5xx; i++)
@@ -89,7 +93,7 @@ gp_disassemble(MemBlock *m, int *org, enum proc_class class, char *buffer)
   }
 
   if (instruction == NULL)  {
-    sprintf(buffer, "dw\t%#lx  ;unknown opcode", opcode);
+    snprintf(buffer, sizeof_buffer, "dw\t%#lx  ;unknown opcode", opcode);
     return;
   }
 
@@ -157,7 +161,7 @@ gp_disassemble(MemBlock *m, int *org, enum proc_class class, char *buffer)
         *org += 1;
         dest = (i_memory_get(m, *org) & 0xfff) << 8;
         dest |= opcode & 0xff;      
-	sprintf(buffer, "%s\t%#lx, %#lx",
+	snprintf(buffer, sizeof_buffer, "%s\t%#lx, %#lx",
                 instruction->name,
                 dest * 2,
 		(opcode >> 8) & 1);
@@ -238,22 +242,26 @@ gp_disassemble(MemBlock *m, int *org, enum proc_class class, char *buffer)
 	switch(opcode & 0x3)
 	  {
 	  case 0:
-	    strcpy(operator, "*");
+	    strncpy(operator, "*", sizeof(operator));
 	    break;
 	  case 1:
-	    strcpy(operator, "*+");
+	    strncpy(operator, "*+", sizeof(operator));
 	    break;
 	  case 2:
-	    strcpy(operator, "*-");
+	    strncpy(operator, "*-", sizeof(operator));
 	    break;
 	  case 3:
-	    strcpy(operator, "+*");
+	    strncpy(operator, "+*", sizeof(operator));
 	    break;
 	  default:
 	    assert(0);
 	  }
 
-        sprintf(buffer, "%s\t%s", instruction->name, operator);
+        snprintf(buffer,
+                 sizeof_buffer,
+                 "%s\t%s",
+                 instruction->name,
+                 operator);
       }
       break;
     case INSN_CLASS_TBL2:

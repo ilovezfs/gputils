@@ -32,8 +32,8 @@ void
 coff_init(void)
 {
   if (state.objfile != named) {
-    strcpy(state.objfilename, state.basefilename);
-    strcat(state.objfilename, ".o");  
+    strncpy(state.objfilename, state.basefilename, sizeof(state.objfilename));
+    strncat(state.objfilename, ".o", sizeof(state.objfilename));  
   }
 
   if (state.objfile == suppress) {
@@ -434,17 +434,17 @@ coff_add_sym(char *name, int value, enum gpasmValTypes type)
   if ((new != NULL) && (type == gvt_extern))  {
     if ((new->type != class) || 
         (new->section_number != section_number)) {
-      sprintf(message,
-              "Duplicate label or redefining symbol that cannot be redefined. (%s)",
-              name);    
+      snprintf(message, sizeof(message),
+               "Duplicate label or redefining symbol that cannot be redefined. (%s)",
+               name);    
       gperror(GPE_UNKNOWN, message);
     }
   }
 
   if ((new != NULL) && (type != gvt_extern))  {
-    sprintf(message,
-            "Duplicate label or redefining symbol that cannot be redefined. (%s)",
-            name);    
+    snprintf(message, sizeof(message),
+             "Duplicate label or redefining symbol that cannot be redefined. (%s)",
+             name);    
     gperror(GPE_DUPLAB, message);
   } else {
     new = gp_coffgen_addsymbol(state.obj.object);
@@ -586,14 +586,14 @@ coff_local_name(char *name)
   if (local == NULL) {
     /* It isn't in the stGlobal so it must be in stTop. It's local. */
     while(1) {
-      sprintf(buffer, "_%d%s", count, name);
+      snprintf(buffer, sizeof(buffer), "_%d%s", count, name);
       symbol = gp_coffgen_findsymbol(state.obj.object, buffer);
       if (symbol == NULL)
         break;
       count++;
     } 
   } else {
-    strcpy(buffer, name);
+    strncpy(buffer, name, sizeof(buffer));
   }
 
   return strdup(buffer);

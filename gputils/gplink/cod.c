@@ -117,8 +117,8 @@ cod_init(void)
 {
 
   if (state.codfile != named) {
-    strcpy(state.codfilename, state.basefilename);
-    strcat(state.codfilename, ".cod");  
+    strncpy(state.codfilename, state.basefilename, sizeof(state.codfilename));
+    strncat(state.codfilename, ".cod", sizeof(state.codfilename));
   }
 
   if (state.codfile == suppress) {

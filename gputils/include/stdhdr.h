@@ -30,7 +30,9 @@ Boston, MA 02111-1307, USA.  */
 #include <stdio.h>
 #include <assert.h>
 
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
@@ -43,8 +45,10 @@ Boston, MA 02111-1307, USA.  */
 
 #include "getopt.h"
 
+#ifndef HAVE_STDLIB_H
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
+#endif
 #endif
 
 #ifndef HAVE_STRCASECMP

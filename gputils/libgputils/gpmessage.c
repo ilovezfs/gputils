@@ -48,7 +48,7 @@ gp_error(const char *format, ...)
     return;
 
   va_start(args, format);
-  vsprintf(buffer, format, args);
+  vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
 
   printf("%s %s\n", "error:", buffer);
@@ -71,7 +71,7 @@ gp_warning(const char *format, ...)
     return;
 
   va_start(args, format);
-  vsprintf(buffer, format, args);
+  vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
 
   printf("%s %s\n", "warning:", buffer);
@@ -94,7 +94,7 @@ gp_message(const char *format, ...)
     return;
 
   va_start(args, format);
-  vsprintf(buffer, format, args);
+  vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
 
   printf("%s %s\n", "message:", buffer);
@@ -115,7 +115,7 @@ gp_debug(const char *format, ...)
     return;
 
   va_start(args, format);
-  vsprintf(buffer, format, args);
+  vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
 
   printf("%s %s\n", "debug:", buffer);

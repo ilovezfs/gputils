@@ -51,7 +51,7 @@ binexists() {
     return 1
   fi
   echo "testing for $1"
-  if !(test -e $1); then
+  if ! test -e $1; then
     echo "$1 not found.  Aborting."
     return 1
   else
@@ -107,7 +107,7 @@ test_gplink_compile () {
             echo
           else
             ../../$GPASMBIN $GPASMFLAGS -I ../../$HEADER $x 
-            if (test -e $basefilename.o); then
+            if test -e $basefilename.o; then
               echo "$x compiled"	
             else
               echo "$x failed to compile"
@@ -130,7 +130,7 @@ test_gplink_lib() {
   echo "archiving $1"
   LIST=`ls *.o`
   ../../$GPLIBBIN -c $1 $LIST
-  if (test -e $1); then
+  if test -e $1; then
     echo "failed to archive"
     exit 1
   fi
@@ -151,7 +151,7 @@ test_gplink_sub() {
     return 1
   fi
 
-  if !(test -d $1); then
+  if ! test -d $1; then
     echo "$1 not found.  Aborting."
     return 1
   fi
@@ -193,16 +193,16 @@ test_gplink_sub() {
           if [ $basefilename = "lkr" ]; then
             # do nothing for the extension
             echo
-          elif (test -e ../hexfiles/$basefilename.hex); then 
+          elif test -e ../hexfiles/$basefilename.hex; then 
             # a hex file exists so these files must not have errors
             let tested=tested+1
             echo "linking $basefilename.o"
             echo "../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
             ../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
-            if (test -e $basefilename.hex); then
+            if test -e $basefilename.hex; then
               let compiled=compiled+1
               diff -s -u ../hexfiles/$basefilename.hex $basefilename.hex
-              if (diff -q ../hexfiles/$basefilename.hex $basefilename.hex); then 
+              if diff -q ../hexfiles/$basefilename.hex $basefilename.hex; then 
                 let passed=passed+1
                 echo "$basefilename.lkr tested successfully"	
               fi
@@ -215,7 +215,7 @@ test_gplink_sub() {
             let errortested=errortested+1
             echo "linking $basefilename.lkr"
             ../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
-            if (test -e $basefilename.hex); then
+            if test -e $basefilename.hex; then
               echo "$basefilename.lkr failed to generate an error"	
             else
               let notcompiled=notcompiled+1
@@ -234,9 +234,9 @@ test_gplink_sub() {
   echo "$errortested files tested with intentional errors"  
   echo "$notcompiled generated errors during compilation"  
   echo
-  if !(test $tested=$passed); then
+  if ! test $tested=$passed; then
     return 1  
-  elif !(test $errrortested=$notcompiled); then
+  elif ! test $errrortested=$notcompiled; then
     return 1
   else
     return 0

@@ -1,3 +1,6 @@
+2004-07-24 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * Merged patches from OpenBSD port.
+
 2004-07-23 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Added new processors: 12f508 12f509 12f635 12f683 16f505 16f636
     16f785 16f913 16f914 16f916 16f917 18f2410 18f2420 18f2455 18f2480

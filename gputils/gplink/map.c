@@ -44,7 +44,7 @@ map_line(const char *format, ...)
     return;
 
   va_start(args, format);
-  vsprintf(buffer, format, args);
+  vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
 
   fprintf(state.map.f, "%s\n", buffer);

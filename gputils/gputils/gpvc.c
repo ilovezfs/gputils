@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
   }
   
   if ((optind + 1) == argc)
-    strcpy(filename, argv[optind]);
+    strncpy(filename, argv[optind], sizeof(filename));
   else
     usage = 1;
 

@@ -60,7 +60,7 @@ mangle_name2(char *first, char *second)
 {
   char buffer[BUFSIZ];
 
-  sprintf(buffer, "%s.%s", first, second);
+  snprintf(buffer, sizeof(buffer), "%s.%s", first, second);
 
   return gp_lower_case(buffer);
 }
@@ -70,7 +70,7 @@ mangle_name3(char *first, char *second, char *third)
 {
   char buffer[BUFSIZ];
 
-  sprintf(buffer, "%s.%s.%s", first, second, third);
+  snprintf(buffer, sizeof(buffer), "%s.%s.%s", first, second, third);
 
   return gp_lower_case(buffer);
 }

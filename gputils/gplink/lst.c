@@ -78,7 +78,7 @@ lst_line(const char *format, ...)
     return;
 
   va_start(args, format);
-  vsprintf(buffer, format, args);
+  vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
 
   fprintf(state.lst.f, "%s\n", buffer);
@@ -167,7 +167,11 @@ write_src(int last_line)
         org = line->address >> state.byte_addr;
         data = i_memory_get(line_section->data, org);
         assert(data & MEM_USED_MASK);
-        gp_disassemble(line_section->data, &org, state.class, dasmbuf);
+        gp_disassemble(line_section->data,
+                       &org,
+                       state.class,
+                       dasmbuf,
+                       sizeof(dasmbuf));
         lst_line("%06lx   %04x     %-24s %s",
                  line->address,
                  data & 0xffff, 
@@ -201,8 +205,8 @@ lst_init(void)
 {
 
   if (state.lstfile != named) {
-    strcpy(state.lstfilename, state.basefilename);
-    strcat(state.lstfilename, ".lst");  
+    strncpy(state.lstfilename, state.basefilename, sizeof(state.lstfilename));
+    strncat(state.lstfilename, ".lst", sizeof(state.lstfilename));
   }
 
   if (state.lstfile == suppress) {

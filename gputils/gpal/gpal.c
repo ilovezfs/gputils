@@ -69,10 +69,11 @@ add_file(char *name,
   struct file_struct *file_data;
 
   if (extension != NULL) {
-    file_name = malloc(strlen(name) + strlen(extension)+ 2);
-    strcpy(file_name, name);
-    strcat(file_name, ".");
-    strcat(file_name, extension);
+    size_t len = strlen(name) + strlen(extension) + 2;
+    file_name = malloc(len);
+    strncpy(file_name, name, len);
+    strncat(file_name, ".", len);
+    strncat(file_name, extension, len);
   } else {
     file_name = strdup(name);
   }
@@ -416,14 +417,14 @@ assemble(void)
     exit(1);
   }
 
-  strcpy(command, "gpasm -c -g ");
+  strncpy(command, "gpasm -c -g ", sizeof(command));
 
   if (gp_quiet) {
-    strcat(command, "-q ");
+    strncat(command, "-q ", sizeof(command));
   }
 
-  strcat(command, state.basefilename);
-  strcat(command, ".asm ");
+  strncat(command, state.basefilename, sizeof(command));
+  strncat(command, ".asm ", sizeof(command));
 
   if (!gp_debug_disable) {
     printf("%s\n", command);
@@ -483,43 +484,42 @@ combine_output(void)
   if (state.archive == true) {
     check_lib();
     if (lib_exists) {
-      strcpy(command, "gplib -r ");
+      strncpy(command, "gplib -r ", sizeof(command));
     } else {
-      strcpy(command, "gplib -c ");
+      strncpy(command, "gplib -c ", sizeof(command));
     }
   } else {
-    strcpy(command, "gplink ");
+    strncpy(command, "gplink ", sizeof(command));
   }
   
   if (gp_quiet) {
-    strcat(command, "-q ");
+    strncat(command, "-q ", sizeof(command));
   }
 
   if (state.options) {
-    strcat(command, state.options);
-    strcat(command, " ");
+    strncat(command, state.options, sizeof(command));
+    strncat(command, " ", sizeof(command));
   }
 
   if (state.outfilename == NULL) {
     if (state.archive == true) {
-      strcat(command, GPAL_DEFAULT_LIB);
-      strcat(command, " ");
+      strncat(command, GPAL_DEFAULT_LIB, sizeof(command));
+      strncat(command, " ", sizeof(command));
     }
   } else {
     if (state.archive == false) {
-      strcat(command, "-o ");    
+      strncat(command, "-o ", sizeof(command));
     }
-    strcat(command, state.outfilename);
-    strcat(command, " ");
+    strncat(command, state.outfilename, sizeof(command));
+    strncat(command, " ", sizeof(command));
   }
-
   
   if (state.archive == false) {
     list = state.path;
     while(list) {
-      strcat(command, "-I ");    
-      strcat(command, gp_list_get(list)); 
-      strcat(command, " ");
+      strncat(command, "-I ", sizeof(command));
+      strncat(command, gp_list_get(list), sizeof(command));
+      strncat(command, " ", sizeof(command));
       list = list->next;
     }  
   }
@@ -528,8 +528,8 @@ combine_output(void)
   while(list) {
     file_data = gp_list_get(list);
     if (file_data->is_link) {
-      strcat(command, file_data->name); 
-      strcat(command, " ");
+      strncat(command, file_data->name, sizeof(command));
+      strncat(command, " ", sizeof(command));
     }
     list = list->next;
   }

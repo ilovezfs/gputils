@@ -28,10 +28,12 @@ Boston, MA 02111-1307, USA.  */
 
 int number_of_source_files = 0;
 
-char *substr(char *a, char *b, int n)
+char *substr(char *a, size_t sizeof_a, char *b, size_t n)
 {
-  *a = 0;
-  return strncat(a,b,n);
+  strncpy(a, b, sizeof_a);
+  if (n < sizeof_a)
+    a[n] = 0;
+  return a;
 
 }
 
@@ -283,7 +285,7 @@ void dump_symbols( void )
 
 	if(temp[i*SSYMBOL_SIZE + SR_NAME])
 	  printf("%s = %x, type = %s\n",
-		 substr(b,&temp[i*SSYMBOL_SIZE + SR_NAME],12), 
+		 substr(b, sizeof(b), &temp[i*SSYMBOL_SIZE + SR_NAME],12), 
 		 gp_getu16(&temp[i*SSYMBOL_SIZE + SR_VALUE]), 
 		 SymbolType4[(unsigned char)temp[i*SSYMBOL_SIZE + SR_TYPE]]
 		 );
@@ -335,7 +337,7 @@ void dump_lsymbols( void )
 	value = gp_getb32(&s[length+3]);
 
 	printf("%s = %x, type = %s\n",
-	       substr(b,&s[1],length),
+	       substr(b, sizeof(b), &s[1],length),
 	       value,
 	       SymbolType4[type]);
 	i += (length + 7);
@@ -375,12 +377,14 @@ void dump_source_files( void )
       for(i=0; i<FILES_PER_BLOCK; i++) {
 
 	offset = i*FILE_SIZE;
-	substr(b,&temp[offset+1],FILE_SIZE);
+	substr(b, sizeof(b), &temp[offset+1],FILE_SIZE);
 
 	if(temp[offset]) {
-	  source_file_names[number_of_source_files] = 
-	    (char *)malloc(strlen(b) + 1);
-	  strcpy(source_file_names[number_of_source_files],b);
+	  source_file_names[number_of_source_files] = strdup(b);
+	  if (!source_file_names[number_of_source_files]) {
+	    fprintf(stderr, " system error\n");
+	    exit(1);
+          }
 	  printf("%s\n",source_file_names[number_of_source_files]);
 	  source_files[number_of_source_files] = 
 	    fopen(source_file_names[number_of_source_files],"rt");
@@ -389,9 +393,9 @@ void dump_source_files( void )
 	    exit(1);
 	  }
 	  number_of_source_files++;
-	  if(number_of_source_files >= MAX_SOURCE_FILES) {
-		  fprintf(stderr, " too many source files; increase MAX_SOURCE_FILES and recompile\n");
-		  exit(1);
+	  if (number_of_source_files >= MAX_SOURCE_FILES) {
+	    fprintf(stderr, " too many source files; increase MAX_SOURCE_FILES and recompile\n");
+            exit(1);
 	  }
 	}
       }
@@ -507,7 +511,7 @@ void dump_message_area(void)
 
 	DebugType = temp[j++];
 
-	substr(DebugMessage,&temp[j],64);
+	substr(DebugMessage, sizeof(DebugMessage), &temp[j],64);
 	j += strlen(DebugMessage);
 
 	printf("%8x %2d %s\n",laddress, DebugType, DebugMessage);

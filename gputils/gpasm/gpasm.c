@@ -271,8 +271,8 @@ process_args( int argc, char *argv[])
       #endif
       break;
     case 'o':
-      strcpy(state.hexfilename, optarg);
-      strcpy(state.basefilename, optarg);
+      strncpy(state.hexfilename, optarg, sizeof(state.hexfilename));
+      strncpy(state.basefilename, optarg, sizeof(state.basefilename));
       pc = strrchr(state.basefilename, '.');
       if (pc)
         *pc = 0;
@@ -329,7 +329,7 @@ assemble(void)
   state.c_memory = state.i_memory = i_memory_create();
 
   if(state.basefilename[0] == '\0') {
-    strcpy(state.basefilename, state.srcfilename);
+    strncpy(state.basefilename, state.srcfilename, sizeof(state.basefilename));
     pc = strrchr(state.basefilename, '.');
     if (pc)
       *pc = 0;

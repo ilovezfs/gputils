@@ -37,7 +37,7 @@ fi
 case "$1" in
 
   all)
-    if !(test -e $GPASM); then
+    if ! test -e $GPASM; then
       echo "$GPASM not found.  Aborting."
       exit 1
     else

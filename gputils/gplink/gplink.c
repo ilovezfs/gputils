@@ -294,7 +294,7 @@ void gplink_open_coff(char *name)
   FILE *coff;
   char file_name[BUFSIZ];
   
-  strcpy(file_name, name);
+  strncpy(file_name, name, sizeof(file_name));
   
   coff = fopen(file_name, "rb");
   if ((coff == NULL) && (strchr(file_name, PATH_CHAR) == 0)) { 
@@ -302,9 +302,9 @@ void gplink_open_coff(char *name)
     int i;
 
     for(i = 0; i < state.numpaths; i++) {
-      strcpy(file_name, state.paths[i]);
-      strcat(file_name, COPY_CHAR);
-      strcat(file_name, name);
+      strncpy(file_name, state.paths[i], sizeof(file_name));
+      strncat(file_name, COPY_CHAR, sizeof(file_name));
+      strncat(file_name, name, sizeof(file_name));
       coff = fopen(file_name, "rb");
       if (coff != NULL) {
         break;
@@ -420,7 +420,7 @@ int main(int argc, char *argv[])
   gp_init();
 
   /* initialize */
-  gp_date_string(state.startdate);
+  gp_date_string(state.startdate, sizeof(state.startdate));
   state.hex_format = inhx32;
   state.numpaths = 0;
   state.byte_addr = 0;
@@ -496,7 +496,7 @@ int main(int argc, char *argv[])
       state.mapfile = normal;
       break;
     case 'o':
-      strcpy(state.basefilename, optarg);
+      strncpy(state.basefilename, optarg, sizeof(state.basefilename));
       pc = strrchr(state.basefilename, '.');
       if (pc)
         *pc = 0;
@@ -536,7 +536,7 @@ int main(int argc, char *argv[])
 
   if(state.basefilename[0] == '\0') {
     /* set default output filename to be a.o, a.hex, a.cod, a.map */
-    strcpy(state.basefilename, "a");
+    strncpy(state.basefilename, "a", sizeof(state.basefilename));
   }
 
   /* Add the library path to the include paths list last, so that the user
@@ -546,12 +546,12 @@ int main(int argc, char *argv[])
   }
 
   /* setup output filenames */
-  strcpy(state.hexfilename, state.basefilename);
-  strcat(state.hexfilename, ".hex");  
-  strcpy(state.mapfilename, state.basefilename);
-  strcat(state.mapfilename, ".map");  
-  strcpy(state.objfilename, state.basefilename);
-  strcat(state.objfilename, ".cof");  
+  strncpy(state.hexfilename, state.basefilename, sizeof(state.hexfilename));
+  strncat(state.hexfilename, ".hex", sizeof(state.hexfilename));
+  strncpy(state.mapfilename, state.basefilename, sizeof(state.mapfilename));
+  strncat(state.mapfilename, ".map", sizeof(state.mapfilename));
+  strncpy(state.objfilename, state.basefilename, sizeof(state.objfilename));
+  strncat(state.objfilename, ".cof", sizeof(state.objfilename));
 
   /* Open all objects and archives in the file list. */ 
   for ( ; optind < argc; optind++) {
@@ -575,9 +575,9 @@ int main(int argc, char *argv[])
       gp_error("linker script not specified and can't determine default script");
       return EXIT_FAILURE; 
     }
-    strcpy(file_name, gp_lkr_path);    
-    strcat(file_name, COPY_CHAR);
-    strcat(file_name, script_name);
+    strncpy(file_name, gp_lkr_path, sizeof(file_name));
+    strncat(file_name, COPY_CHAR, sizeof(file_name));
+    strncat(file_name, script_name, sizeof(file_name));
     gp_message("using default linker script \"%s\"", file_name);
     open_src(file_name, 0);
     yyparse();

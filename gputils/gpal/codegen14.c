@@ -80,9 +80,9 @@ load_file14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
   if (offset == 0) {
     offset_buffer[0] = '\0';
   } else if (offset < 0) {
-    sprintf(offset_buffer, " - %#x", -offset);
+    snprintf(offset_buffer, sizeof(offset_buffer), " - %#x", -offset);
   } else {
-    sprintf(offset_buffer, " + %#x", offset);
+    snprintf(offset_buffer, sizeof(offset_buffer), " + %#x", offset);
   }
   
   /* W is used as the working register for single byte types. */
@@ -134,9 +134,9 @@ store_file14(char *name, enum size_tag size, int offset, gp_boolean add_banksel)
   if (offset == 0) {
     offset_buffer[0] = '\0';
   } else if (offset < 0) {
-    sprintf(offset_buffer, " - %#x", -offset);
+    snprintf(offset_buffer, sizeof(offset_buffer), " - %#x", -offset);
   } else {
-    sprintf(offset_buffer, " + %#x", offset);
+    snprintf(offset_buffer, sizeof(offset_buffer), " + %#x", offset);
   }
   
   if ((size == size_int8) || (size == size_uint8)) {

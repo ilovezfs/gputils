@@ -42,7 +42,7 @@ binexists() {
     return 1
   fi
   echo "testing for $1"
-  if !(test -e $1); then
+  if ! test -e $1; then
     echo "$1 not found.  Aborting."
     return 1
   else

@@ -33,6 +33,6 @@ void dump_message_area(void);
 void dump_local_vars(void);
 
 unsigned short get_short_int( char * buff);
-char *substr(char *a, char *b, int n);
+char *substr(char *a, size_t sizeof_a, char *b, size_t n);
 
 #endif

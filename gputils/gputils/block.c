@@ -44,18 +44,21 @@ void directory_block(void)
   printf("Source file       %s\n",
 	 &block[COD_DIR_SOURCE]);
   printf("Date              %s\n",
-	 substr(temp_buf,&block[COD_DIR_DATE],7));
+	 substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_DATE],7));
   printf("Time              %2d:%2d\n",
 	 gp_getl16(&block[COD_DIR_TIME]) / 100, 
 	 gp_getl16(&block[COD_DIR_DATE]) % 100);
   printf("Compiler version  %s\n",
-	 substr(temp_buf,&block[COD_DIR_VERSION],19));
+	 substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_VERSION],19));
   printf("Compiler          %s\n",
-	 substr(temp_buf,&block[COD_DIR_COMPILER],12));
+	 substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_COMPILER],12));
   printf("Notice            %s\n",
-	 substr(temp_buf,&block[COD_DIR_NOTICE],64));
+	 substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_NOTICE],64));
 
-  processor_name = substr(temp_buf,&block[COD_DIR_PROCESSOR],8);
+  processor_name = substr(temp_buf,
+                          sizeof(temp_buf),
+                          &block[COD_DIR_PROCESSOR],
+                          8);
   printf("Processor         %s\n", processor_name);
 
   processor_info = gp_find_processor(processor_name);
