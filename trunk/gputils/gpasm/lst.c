@@ -119,37 +119,57 @@ void lst_memory_map(MemBlock *m)
 {
   char buf[BUFSIZ];
   char *e;
-  int i, j, base, row_used;
+  int i, j, base, row_used, num_per_line, num_per_block;
 
   lst_line("");
   lst_line("");
   lst_line("MEMORY USAGE MAP ('X' = Used,  '-' = Unused)");
   lst_line("");
 
+  if (_16bit_core) {
+    /* uses byte addressing so read half as many words */
+    num_per_line = 32;
+    num_per_block = 8;
+  } else {
+    num_per_line = 64;
+    num_per_block = 16;
+  }
+
   while(m) {
     assert(m->memory != NULL);
 
     base = (m->base << I_MEM_BITS);
 
-    for(i = 0; i<MAX_I_MEM; i+=64) {
+    for (i = 0; i < MAX_I_MEM; i += num_per_line) {
       row_used = 0;
 
-      for(j = 0; j<64; j++)
-	if( m->memory[i+j] )
+      for (j = 0; j < num_per_line; j++) {
+	if (m->memory[i+j] & MEM_USED_MASK) {
 	  row_used = 1;
+	  break;
+	}
+      }
 
       if(row_used) {
         e = buf;
-        sprintf(e, "%04x :", (i + base));
+        sprintf(e, "%08x :", (i + base) << _16bit_core);
 	e += strlen(e);
-	for(j = 0; j<64; j++) {
-          if ((j%16) == 0) {
+	for (j = 0; j < num_per_line; j++) {
+          if ((j % num_per_block) == 0) {
 	    *e++ = ' ';
           }
-          if ((i_memory_get(m, i+j) & MEM_USED_MASK)) {
+          if (m->memory[i + j] & MEM_USED_MASK) {
 	    *e++ = 'X';
+	    if (_16bit_core) {
+	      /* each word has two bytes */
+	      *e++ = 'X';            
+	    }
           } else {
 	    *e++ = '-';
+	    if (_16bit_core) {
+	      /* each word has two bytes */
+	      *e++ = '-';            
+	    }
           }
         }
 
