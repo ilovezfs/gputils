@@ -1,3 +1,9 @@
+2002-01-17 Craig Franklin <craigfranklin@attbi.com>
+  * Removed target detection from configure.  Target is always a PIC so it
+    doesn't make any sense to run a test.
+  * Removed unnecessary object extension from Makefiles.
+  * Added bzero.c to libiberty for mingw32 port.
+
 2002-01-16 Craig Franklin <craigfranklin@attbi.com>
   * Added missing () in gplink lexer. 
   * Added a subset of libiberty so getopt_long is always available.

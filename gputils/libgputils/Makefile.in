@@ -77,12 +77,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_alias = @build_alias@
-build_triplet = @build@
 host_alias = @host_alias@
 host_triplet = @host@
-target_alias = @target_alias@
-target_triplet = @target@
 AR = @AR@
 CC = @CC@
 EXEEXT = @EXEEXT@
@@ -92,12 +88,12 @@ GPUTILS_MAJOR_VERSION = @GPUTILS_MAJOR_VERSION@
 GPUTILS_MICRO_VERSION = @GPUTILS_MICRO_VERSION@
 GPUTILS_MINOR_VERSION = @GPUTILS_MINOR_VERSION@
 GPUTILS_VERSION = @GPUTILS_VERSION@
+IBERTYOBJS = @IBERTYOBJS@
 LEX = @LEX@
 LIBGPUTILS = @LIBGPUTILS@
 LIBIBERTY = @LIBIBERTY@
 MAKEINFO = @MAKEINFO@
 MAKE_SUBDIRS = @MAKE_SUBDIRS@
-OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
@@ -148,10 +144,8 @@ DEFS = @DEFS@ -I. -I$(srcdir) -I..
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 libgputils_a_LIBADD = 
-libgputils_a_OBJECTS =  gparchive.$(OBJEXT) gpcoffgen.$(OBJEXT) \
-gpcofflink.$(OBJEXT) gpdis.$(OBJEXT) gpmemory.$(OBJEXT) \
-gpreadhex.$(OBJEXT) gpreadobj.$(OBJEXT) gpsymbol.$(OBJEXT) \
-gpwritehex.$(OBJEXT)
+libgputils_a_OBJECTS =  gparchive.o gpcoffgen.o gpcofflink.o gpdis.o \
+gpmemory.o gpreadhex.o gpreadobj.o gpsymbol.o gpwritehex.o
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -173,7 +167,7 @@ OBJECTS = $(libgputils_a_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .S .c .o .obj .s
+.SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --foreign libgputils/Makefile
 
@@ -214,11 +208,6 @@ uninstall-libLIBRARIES:
 	  rm -f $(DESTDIR)$(libdir)/$$p; \
 	done
 
-# FIXME: We should only use cygpath when building on Windows,
-# and only if it is available.
-.c.obj:
-	$(COMPILE) -c `cygpath -w $<`
-
 .s.o:
 	$(COMPILE) -c $<
 
@@ -227,7 +216,6 @@ uninstall-libLIBRARIES:
 
 mostlyclean-compile:
 	-rm -f *.o core *.core
-	-rm -f *.$(OBJEXT)
 
 clean-compile:
 

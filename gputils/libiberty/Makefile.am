@@ -28,4 +28,7 @@ libiberty_a_SOURCES =\
 	getopt.c \
 	getopt1.c
 
-EXTRA_DIST = README
+libiberty_a_LIBADD = $(IBERTYOBJS)
+libiberty_a_DEPENDENCIES = $(IBERTYOBJS)
+
+EXTRA_DIST = bzero.c README

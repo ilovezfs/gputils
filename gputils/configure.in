@@ -6,8 +6,9 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT(gpasm/directive.c)
 AM_CONFIG_HEADER(config.h)
 
-# Determine the host, build, and target systems
-AC_CANONICAL_SYSTEM
+# Determine the host and build type. The target is always a PIC.
+AC_CANONICAL_HOST
+AC_CANONICAL_BUILD
 
 # Defaults
 GPASM_HEADER_PATH="\$(datadir)/gputils/header"
@@ -62,10 +63,12 @@ AC_STRUCT_TM
 AC_FUNC_ALLOCA
 AC_CHECK_FUNCS(strdup strtol strcasecmp stricmp)
 
-# Check for mingw32
-AC_MINGW32
+# Check for functions to compile into libiberty (getopt is always compiled).
+IBERTYOBJS=
+AC_CHECK_FUNC(bzero, , [IBERTYOBJS="$IBERTYOBJS bzero.o"])
+
+# Check if host will require an extension on the executable (.exe)
 AC_EXEEXT
-AC_OBJEXT
 
 # Options for the system on which the package will run
 case "${host}" in
@@ -126,6 +129,7 @@ AC_SUBST(GPUTILS_MAJOR_VERSION)
 AC_SUBST(GPUTILS_MINOR_VERSION)
 AC_SUBST(GPUTILS_MICRO_VERSION)
 AC_SUBST(GPUTILS_VERSION)
+AC_SUBST(IBERTYOBJS)
 AC_SUBST(LIBGPUTILS)
 AC_SUBST(LIBIBERTY)
 AC_SUBST(MAKE_SUBDIRS)
