@@ -196,7 +196,7 @@ codegen_indirect(tree *offset,
     codegen_write_asm("addlw %s", var->name); 
     codegen_write_asm("banksel FSR");
     codegen_write_asm("movwf FSR"); 
-    codegen_write_asm("banksel %s", WORKING_LABEL);
+    codegen_write_asm("banksel %s", LOCAL_DATA_LABEL);
     break;
   case PROC_CLASS_PIC16E:
     codegen_write_asm("movf %s, w", WORKING_LABEL);
