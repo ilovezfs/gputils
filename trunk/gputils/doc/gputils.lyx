@@ -2777,7 +2777,7 @@ Where options can be one of:
 \added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
 
 \begin_inset  Tabular
-<lyxtabular version="3" rows="18" columns="2">
+<lyxtabular version="3" rows="20" columns="2">
 <features>
 <column alignment="left" valignment="top" leftline="true" width="0pt">
 <column alignment="block" valignment="top" leftline="true" rightline="true" width="4in">
@@ -2846,7 +2846,25 @@ Output a relocatable object
 
 \layout Standard
 
-d symbol[=value] 
+d
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Output debug messages
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+D symbol[=value] 
 \end_inset 
 </cell>
 <cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -2881,6 +2899,24 @@ e [ON|OFF]
 \layout Standard
 
 Expand macros in listing file.
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+g
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Use debug directives for COFF.
 \end_inset 
 </cell>
 </row>
@@ -6569,6 +6605,301 @@ Performs loop while <expression> is true.
 \layout Standard
 
 See also: ENDW
+\layout Subsection
+
+High level extensions
+\layout Standard
+
+gpasm supports several directives for use with high level languages.
+ These directives are easily identified because they start with 
+\begin_inset Quotes eld
+\end_inset 
+
+.
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ They are only available in relocatable mode.
+\layout Standard
+
+These features are advanced and require knowledge of how gputils relocatable
+ objects work.
+ These features are intended to be used by compilers.
+ Nothing prevents them from being used with assembly.
+\layout Subsection*
+
+.DEF
+\begin_inset LatexCommand \index{.DEF}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+.DEF <symbol>, [ NEW ]? [, <expression> ]*
+\layout Standard
+
+Create or modify the contents of COFF <symbol>.
+ If NEW is specified as the second argument create the symbol, otherwise
+ modify an existing symbol.
+ Other options are listed in the table below:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
+
+\begin_inset  Tabular
+<lyxtabular version="3" rows="6" columns="2">
+<features>
+<column alignment="center" valignment="top" leftline="true" width="0pt">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="0pt">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+option
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+description
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+absolute
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Make it an absolute symbol 
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+class=nnn
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Sets the symbol class (byte sized)
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+debug
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Make it a debug symbol 
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+type=nnn
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Sets the symbol type (short sized)
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+value=nnn
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Sets the symbol value
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Standard
+
+This directive gives the user good control of the symbol table.
+ This control is necessary, but if used incorrectly it can have many undesirable
+ consequences.
+ It can easily cause errors during linking or invalid machine code.
+ The user must fully understand the operation of gputils COFF symbol table
+ before modifying its contents.
+\layout Standard
+
+See also: .DIM
+\layout Subsection*
+
+.DIM
+\begin_inset LatexCommand \index{.DIM}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+.DIM <symbol>, <number>, <expression> [ , <expression> ] *
+\layout Standard
+
+Create <number> auxiliary symbols, attached to <symbol>.
+ Fill the auxilary symbols with the values specified in <expression>.
+ The expressions must result in byte sized values when evaluated or be strings.
+ The symbol must be a COFF symbol.
+\layout Standard
+
+This directive will generate an error if the symbol already has auxiliary
+ symbols.
+ This prevents the user from corrupting automatically generated symbols.
+\layout Standard
+
+Each auxiliary symbol is 18 bytes.
+ So the contents specified by the expressions must be less than or equal
+ to 18 * <number>.
+\layout Standard
+
+gpasm does not use auxilary symbols.
+ So the contents have no effect on its operation.
+ However, the contents may be used by gplink or a third party tool.
+\layout Standard
+
+See also: .DEF
+\layout Subsection*
+
+.EOF
+\begin_inset LatexCommand \index{.EOF}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+.EOF
+\layout Standard
+
+This directive causes an end of file symbol to be placed in the symbol table.
+ Normally this symbol is automatically generated.
+ This directive allows the user to manually generate the symbol.
+ The directive is only processed if the 
+\begin_inset Quotes eld
+\end_inset 
+
+-g
+\begin_inset Quotes erd
+\end_inset 
+
+ command line option is used.
+ When that option is used, the automatic symbol generation is disabled.
+\layout Standard
+
+See also: .EOF, .FILE, .LINE
+\layout Subsection*
+
+.FILE
+\begin_inset LatexCommand \index{.FILE}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+.FILE <string>
+\layout Standard
+
+This directive causes a file symbol to be placed in the symbol table.
+ Normally this symbol is automatically generated.
+ This directive allows the user to manually generate the symbol.
+ The directive is only processed if the 
+\begin_inset Quotes eld
+\end_inset 
+
+-g
+\begin_inset Quotes erd
+\end_inset 
+
+ command line option is used.
+ When that option is used, the automatic symbol generation is disabled.
+\layout Standard
+
+See also: .EOF, .FILE, .LINE
+\layout Subsection*
+
+.LINE
+\begin_inset LatexCommand \index{.LINE}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+.LINE <expression>
+\layout Standard
+
+This directive causes and COFF line number to be generated.
+ Normally they are automatically generated.
+ This directive allows the user to manually generate the line numbers.
+ The directive is only processed if the 
+\begin_inset Quotes eld
+\end_inset 
+
+-g
+\begin_inset Quotes erd
+\end_inset 
+
+ command line option is used.
+ When that option is used, the automatic symbol generation is disabled.
+ The <expression> is always evaluated as decimal regardless of the current
+ radix setting.
+\layout Standard
+
+See also: .EOF, .FILE, .LINE
 \layout Section
 
 Instructions 

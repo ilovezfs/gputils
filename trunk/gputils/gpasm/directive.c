@@ -801,6 +801,194 @@ static gpasmVal do_de(gpasmVal r,
   return r;
 }
 
+static gpasmVal do_def(gpasmVal r,
+                       char *name,
+                       int arity,
+                       struct pnode *parms)
+{
+  struct pnode *p;
+  char *symbol_name = NULL;
+  gp_symbol_type *coff_symbol = NULL;
+  int value = 0;
+
+  state.lst.line.linetype = dir;
+
+  if (state.mode == absolute) {
+    gperror(GPE_OBJECT_ONLY, NULL);
+  } else {
+    if (arity < 2) { 
+      enforce_arity(arity, 2);
+      return r;
+    }
+    
+    /* the first argument is the symbol name */
+    p = HEAD(parms);
+    if (enforce_simple(p)) {
+      /* lookup the symbol */
+      symbol_name = p->value.symbol;
+      coff_symbol = gp_coffgen_findsymbol(state.obj.object, symbol_name);
+    } else {
+      return r;
+    }
+    parms = TAIL(parms);
+
+    /* the second argument can be "new" */
+    p = HEAD(parms);
+    if ((p->tag == symbol) && (strcasecmp(p->value.symbol, "new") == 0)) {
+      coff_symbol = coff_add_sym(symbol_name, 0, gvt_debug);
+      state.obj.symbol_num++;
+      parms = TAIL(parms);
+    }
+
+    if (coff_symbol == NULL) {
+      gperror(GPE_NOSYM, NULL);
+      return r;
+    }
+
+    /* wait for second pass to process options */
+    if (state.pass != 2) {
+      return r;
+    }
+
+    /* update the properties */
+    for (; parms; parms = TAIL(parms)) {
+      p = HEAD(parms);
+      if ((p->tag == binop) &&
+	  (p->value.binop.op == '=')) {
+        if (enforce_simple(p->value.binop.p0)) {
+	  char *lhs;
+
+	  lhs = p->value.binop.p0->value.symbol;
+          if (strcasecmp(lhs, "value") == 0) {
+          coff_symbol->value = maybe_evaluate(p->value.binop.p1);   
+    	  } else if (strcasecmp(lhs, "type") == 0) {
+            value = maybe_evaluate(p->value.binop.p1);   
+            if ((value < 0) || (value > 0xffff)) {
+              gperror(GPE_RANGE, NULL);
+            } else {
+              coff_symbol->type = value;   
+            }
+    	  } else if (strcasecmp(lhs, "class") == 0) {
+            value = maybe_evaluate(p->value.binop.p1);   
+            if ((value < -128) || (value > 127)) {
+              gperror(GPE_RANGE, NULL);
+            } else {
+              coff_symbol->class = value;   
+            }
+          } else {
+            gperror(GPE_ILLEGAL_ARGU, NULL);
+          }
+        }
+      } else {
+        if (enforce_simple(p)) {
+  	  if (strcasecmp(p->value.symbol, "debug") == 0) {
+	    coff_symbol->section_number = N_DEBUG;
+	  } else if (strcasecmp(p->value.symbol, "absolute") == 0) {
+	    coff_symbol->section_number = N_ABS;
+	  } else if (strcasecmp(p->value.symbol, "new") == 0) {
+            gperror(GPE_UNKNOWN, "\"new\" only valid as second argument");
+  	  } else {
+            gperror(GPE_ILLEGAL_ARGU, NULL);
+          }
+        }
+      }
+    }
+  }
+
+  return r;
+}
+
+static gpasmVal do_dim(gpasmVal r,
+                       char *name,
+                       int arity,
+                       struct pnode *parms)
+{
+  struct pnode *p;
+  char *symbol_name = NULL;
+  gp_symbol_type *coff_symbol = NULL;
+  int number_symbols;
+  gp_aux_type *aux_list;
+  struct sllist first_list;
+  struct sllist *list = &first_list;
+  struct sllist *previous;
+  int i;
+  int value;
+
+  state.lst.line.linetype = dir;
+
+  if (state.mode == absolute) {
+    gperror(GPE_OBJECT_ONLY, NULL);
+  } else {
+    if (arity < 3) { 
+      enforce_arity(arity, 1);
+      return r;
+    }
+    
+    /* the first argument is the symbol name */
+    p = HEAD(parms);
+    if (enforce_simple(p)) {
+      /* lookup the symbol */
+      symbol_name = p->value.symbol;
+      coff_symbol = gp_coffgen_findsymbol(state.obj.object, symbol_name);
+      if (coff_symbol == NULL) {
+        gperror(GPE_NOSYM, NULL);
+        return r;
+      }
+    } else {
+      return r;
+    }
+    parms = TAIL(parms);
+
+    /* the second argument must be the number of aux symbols */
+    p = HEAD(parms);
+    number_symbols = maybe_evaluate(p);
+    if ((number_symbols < 0) || (number_symbols > 127)) {
+      gperror(GPE_UNKNOWN, "number of auxiliary symbols must be less then 128 and positive"); 
+      return r;
+    }
+    state.obj.symbol_num += number_symbols;
+    parms = TAIL(parms);
+
+    /* create the symbols */
+    aux_list = gp_coffgen_blockaux(number_symbols);
+    coff_symbol->num_auxsym = number_symbols;
+    coff_symbol->aux_list = aux_list;
+
+    /* convert the arguments into a list of values */
+    list->next = NULL;
+    simplify_data(parms, list, 0);
+
+    /* write the data to the auxiliary symbols */
+    list = list->next;
+    i = 0;
+    while(list) {
+      value = maybe_evaluate(list->p);
+      if (value & (~0xff)) {
+        gperror(GPE_RANGE, NULL); 
+        return r;
+      }
+      
+      if (aux_list == NULL) {
+        gperror(GPE_UNKNOWN, "insufficent number of auxiliary symbols"); 
+        return r;
+      }
+      
+      if (i == SYMBOL_SIZE) {
+        i = 0;
+        aux_list = aux_list->next;      
+      } else {
+        aux_list->_aux_symbol.data[i++] = value;
+      }
+
+      previous = list;
+      list = list->next;
+      free(previous);
+    }
+  }
+
+  return r;
+}
+
 static gpasmVal do_dt(gpasmVal r,
 		      char *name,
 		      int arity,
@@ -932,6 +1120,26 @@ static gpasmVal do_endw(gpasmVal r,
   state.mac_body = NULL;
   state.mac_prev = NULL;
   state.while_head = NULL;
+
+  return r;
+}
+
+static gpasmVal do_eof(gpasmVal r,
+		       char *name,
+		       int arity,
+		       struct pnode *parms)
+{
+  state.lst.line.linetype = dir;
+
+  if (state.mode == absolute) {
+    gperror(GPE_OBJECT_ONLY, NULL);
+  } else if (enforce_arity(arity, 0)) {
+    if (state.debug_info) { 
+      coff_add_eofsym();
+    } else {
+      gpwarning(GPW_UNKNOWN, "directive ignored when debug info is disabled");
+    }
+  }
 
   return r;
 }
@@ -1070,6 +1278,32 @@ static gpasmVal do_extern(gpasmVal r,
       } else {
         gperror(GPE_ILLEGAL_ARGU, NULL);
       }
+    }
+  }
+
+  return r;
+}
+
+static gpasmVal do_file(gpasmVal r,
+		       char *name,
+		       int arity,
+		       struct pnode *parms)
+{
+  struct pnode *p;
+  state.lst.line.linetype = dir;
+  
+  if (state.mode == absolute) {
+    gperror(GPE_OBJECT_ONLY, NULL);
+  } else if (enforce_arity(arity, 1)) {
+    if (state.debug_info) {
+      p = HEAD(parms);
+      if (p->tag == string) {
+        state.obj.debug_file = coff_add_filesym(p->value.string, 0);
+      } else {
+        gperror(GPE_ILLEGAL_ARGU, NULL);
+      }
+    } else {
+      gpwarning(GPW_UNKNOWN, "directive ignored when debug info is disabled");
     }
   }
 
@@ -1373,6 +1607,27 @@ static gpasmVal do_include(gpasmVal r,
       state.next_buffer.file = strdup(p->value.string);
     } else {
       gperror(GPE_ILLEGAL_ARGU, NULL);
+    }
+  }
+
+  return r;
+}
+
+static gpasmVal do_line(gpasmVal r,
+		       char *name,
+		       int arity,
+		       struct pnode *parms)
+{
+  struct pnode *p;
+
+  state.lst.line.linetype = dir;
+
+  if (enforce_arity(arity, 1)) {
+    if (state.debug_info) {
+      p = HEAD(parms);
+      state.obj.debug_line = maybe_evaluate(p);
+    } else {
+      gpwarning(GPW_UNKNOWN, "directive ignored when debug info is disabled");
     }
   }
 
@@ -2987,6 +3242,11 @@ struct insn op_0[] = {
   { "udata_shr",  0, (long int)do_udata_shr, INSN_CLASS_FUNC,   0 },
   { "variable",   0, (long int)do_variable,  INSN_CLASS_FUNC,   0 },
   { "while",      0, (long int)do_while,     INSN_CLASS_FUNC,   0 },
+  { ".def",       0, (long int)do_def, 	     INSN_CLASS_FUNC,   0 },
+  { ".dim",       0, (long int)do_dim, 	     INSN_CLASS_FUNC,   0 },
+  { ".eof",       0, (long int)do_eof,	     INSN_CLASS_FUNC,   0 },
+  { ".file",      0, (long int)do_file,	     INSN_CLASS_FUNC,   0 },
+  { ".line",      0, (long int)do_line,	     INSN_CLASS_FUNC,   0 },
   { ".set",       0, (long int)do_set, 	     INSN_CLASS_FUNC,   0 },
   { "#if",        0, (long int)do_if,        INSN_CLASS_FUNC,   ATTRIB_COND },
   { "#else",      0, (long int)do_else,	     INSN_CLASS_FUNC,   ATTRIB_COND },

@@ -205,7 +205,7 @@ gp_coffgen_addaux(gp_object_type *object, gp_symbol_type *symbol)
   gp_aux_type *new = NULL;
   gp_aux_type *list = NULL;
 
-  /* allocate memory for the auxilary symbol */
+  /* allocate memory for the auxiliary symbol */
   new = (gp_aux_type *)malloc(sizeof(*new));
   new->next = NULL;
 
@@ -354,7 +354,7 @@ gp_coffgen_blocksym(unsigned int number)
     return NULL;
     
   /* allocate memory for the symbols */
-  new = (gp_symbol_type *)malloc(sizeof(*new) * number);
+  new = (gp_symbol_type *)calloc(sizeof(*new) * number, sizeof(gp_symbol_type));
 
   /* don't process the last entry */
   number--;
@@ -384,15 +384,17 @@ gp_coffgen_blockaux(unsigned int number)
     return NULL;
     
   /* allocate memory for the symbols */
-  new = (gp_aux_type *)malloc(sizeof(*new) * number);
+  new = (gp_aux_type *)calloc(sizeof(*new) * number, sizeof(gp_aux_type));
 
   /* don't process the last entry */
   number--;
 
   /* initialize the pointers to create the linked list */  
-  for(i = 0; i < number; i++)
+  for(i = 0; i < number; i++) {
+    new[i].type = AUX_NONE;
     new[i].next = &new[i+1];
-  
+  }
+
   /* assign the tail of the list */
   new[number].next = NULL;
 

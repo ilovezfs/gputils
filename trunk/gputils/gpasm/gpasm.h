@@ -43,7 +43,8 @@ enum gpasmValTypes {
   gvt_address,
   gvt_extern,
   gvt_global,
-  gvt_static
+  gvt_static,
+  gvt_debug
 };
 
 enum state_types { 

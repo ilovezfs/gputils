@@ -230,6 +230,7 @@ void print_sym_table (gp_object_type *object)
   gp_aux_type *aux;
   char *section;
   int i;
+  char c;
 
   symbol = object->symbols;
 
@@ -279,8 +280,16 @@ void print_sym_table (gp_object_type *object)
         break;
       default:
         printf("  ");
-        for (i = 0; i < SYMBOL_SIZE; i++)
-          printf("%2x", aux->_aux_symbol.data[i]);
+        for (i = 0; i < SYMBOL_SIZE; i++) {
+          printf("%02x", aux->_aux_symbol.data[i]);
+          if (i & 1) {
+            printf(" ");
+          }
+        }
+        for (i = 0; i < SYMBOL_SIZE; i++) {
+          c = aux->_aux_symbol.data[i];
+          putchar( (isprint(c)) ? c : '.');
+        }
       }
     }
 

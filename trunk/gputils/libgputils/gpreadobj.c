@@ -390,10 +390,10 @@ _read_symtbl(gp_object_type *object, char *file)
 
         /* advance the through the list */
         for (j = 0; j < num_auxsym; j++) {
-          /* COFF places all symbols inluding auxilary, in the symbol table.
-             However, in memory, gputils attaches auxilary symbols to their
+          /* COFF places all symbols inluding auxiliary, in the symbol table.
+             However, in memory, gputils attaches auxiliary symbols to their
              associated primary symbol.  When reading COFF, space is reserved
-             for the auxilary symbols but not used.  Later the space is 
+             for the auxiliary symbols but not used.  Later the space is 
              freed.  This simplifies assigning the pointer in the 
              relocations. */
           current = current->next;
@@ -406,7 +406,7 @@ _read_symtbl(gp_object_type *object, char *file)
   }
 }
 
-/* remove space reserved for auxilary entries, add section pointers, and 
+/* remove space reserved for auxiliary entries, add section pointers, and 
    setup tail pointer */
 
 static void 

@@ -400,20 +400,20 @@ coff_linenum(int emitted)
 /* Add a symbol to the coff symbol table.  The calling function must
    increment the global symbol number. */
 
-void
+gp_symbol_type *
 coff_add_sym(char *name, int value, enum gpasmValTypes type)
 {
-  gp_symbol_type *new;
+  gp_symbol_type *new = NULL;
   char message[BUFSIZ];
   int section_number = 0;
   int class = C_EXT; 
 
   if(!state.obj.enabled)
-    return;
+    return NULL;
 
   switch (type) {
   case gvt_extern:
-    section_number = 0;
+    section_number = N_UNDEF;
     class = C_EXT;
     break;
   case gvt_global:
@@ -428,8 +428,12 @@ coff_add_sym(char *name, int value, enum gpasmValTypes type)
     section_number = state.obj.section_num;
     class = C_LABEL;
     break;
+  case gvt_debug:
+    section_number = N_DEBUG;
+    class = C_NULL;
+    break;
   default:
-    return;
+    return new;
   }
 
   new = gp_coffgen_findsymbol(state.obj.object, name);
@@ -445,7 +449,7 @@ coff_add_sym(char *name, int value, enum gpasmValTypes type)
     }
   }
 
-  if ((new != NULL) && (type != gvt_extern))  {
+  if ((new != NULL) && (type != gvt_extern) && (type != gvt_debug))  {
     snprintf(message, sizeof(message),
              "Duplicate label or redefining symbol that cannot be redefined. (%s)",
              name);    
@@ -460,7 +464,7 @@ coff_add_sym(char *name, int value, enum gpasmValTypes type)
     new->class          = class;
   }
  
-  return;
+  return new;
 }
 
 /* add a file symbol to the coff symbol table */
