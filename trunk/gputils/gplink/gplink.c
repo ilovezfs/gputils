@@ -161,6 +161,48 @@ int scan_archive(gp_archive_type *archive, char *name)
   return 0;
 }
 
+/* Remove special symbols from the missing table. These symbols are created
+   by the linker. */
+
+static void
+remove_special(void)
+{
+  struct symbol *sym;
+
+  sym = get_symbol(state.symbol.missing, "_cinit");
+  if (sym != NULL) {
+    gp_link_remove_symbol(state.symbol.missing, "_cinit");
+  }
+
+  return;
+}
+
+/* Locate the _cinit symbol that the linker created and add it to the 
+   symbol table. */
+
+static void
+add_cinit(void)
+{
+  gp_symbol_type *current = state.object->symbols;
+  gp_symbol_type *found = NULL;
+
+  while (current != NULL) {
+    if ((current->name != NULL) &&
+        (strcmp(current->name, "_cinit") == 0) &&
+        (current->section_number > 0)) {
+      found = current;
+      break;
+    }
+    current = current->next;
+  }
+
+  /* If a _cinit symbol definition existings, add it to the symbol table */
+  if (found != NULL)
+    gp_link_add_symbol(state.symbol.definition, found, NULL);
+
+  return;
+}
+
 /* Build the symbol tables.  Determine which objects from the archives are 
    required for linking */
     
@@ -192,6 +234,8 @@ void build_tables(void)
       arlist = arlist->next;
     }
   }
+
+  remove_special();
 
   /* All of the archives have been scanned.  If there are still missing
      references, it is an error */
@@ -399,7 +443,7 @@ int main(int argc, char *argv[])
       gplink_add_path(optarg);
       break;
     case 'm':
-      state.objfile = normal;
+      state.mapfile = normal;
       break;
     case 'o':
       strcpy(state.basefilename, optarg);
@@ -445,7 +489,7 @@ int main(int argc, char *argv[])
   strcpy(state.mapfilename, state.basefilename);
   strcat(state.mapfilename, ".map");  
   strcpy(state.objfilename, state.basefilename);
-  strcat(state.objfilename, ".out");  
+  strcat(state.objfilename, ".cof");  
 
   /* Open all objects and archives in the file list. */ 
   for ( ; optind < argc; optind++) {
@@ -499,8 +543,10 @@ int main(int argc, char *argv[])
   /* relocate the sections */
   gp_cofflink_reloc(state.object, 
                     state.section.definition, 
-                    state.section.logical);  
-	
+                    state.section.logical);
+
+  add_cinit();
+
   /* patch raw data with the relocated symbol values */
   gp_cofflink_patch(state.object, state.symbol.definition);
 

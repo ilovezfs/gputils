@@ -316,7 +316,7 @@ gp_cofflink_merge_sections(gp_object_type *object)
       second->symbol->value = first->size;
 
       /* Copy the section data */
-      if (second->flags & STYP_TEXT) {
+      if ((second->flags & STYP_TEXT) || (second->flags & STYP_DATA_ROM)) {
         /* the section is executable, so each word is two bytes */
         last = second->size / 2;
         offset = first->size / 2;
@@ -390,6 +390,181 @@ gp_cofflink_merge_sections(gp_object_type *object)
   return;
 }
 
+/* create a program memory section to hold the data */
+
+static void
+_create_rom_section(gp_object_type *object, gp_section_type *section)
+{
+  gp_section_type *new = NULL;
+  char name[BUFSIZ];
+  int insn;
+  int data;
+  int from;
+  int to;
+  int last;
+  
+  /* create the new section */
+  strcpy(name, section->name);
+  strcat(name, "_i");
+  new = gp_coffgen_newsection(name);
+
+  /* select "retlw" instruction */  
+  insn = MEM_USED_MASK | gp_processor_retlw(object->class);
+
+  /* create the ROM contents */
+  to = 0;
+  last = section->address + section->size; 
+  for (from = section->address; from < last; from++) {
+    data = (i_memory_get(section->data, from) & 0xff);
+    i_memory_put(new->data, to++, insn | data);
+  }
+  new->flags = STYP_DATA_ROM;
+  new->size = section->size << 1;
+
+  /* insert the new ROM section after the idata section */
+  if (section == object->sections_tail) {
+    object->sections_tail = new;
+  }
+  new->next = section->next;
+  section->next = new;
+  
+  object->num_sections++;
+
+  return;
+}
+
+/* write a word into two bytes of memory */
+
+static void
+_write_table_data(gp_section_type *section,
+                  int org,
+                  int insn,
+                  int data)
+{
+  i_memory_put(section->data, org, insn | (data & 0xff));
+  i_memory_put(section->data, org + 1, insn | ((data & 0xff00) >> 8));
+}
+
+/* read a word into two bytes of memory */
+
+static int
+_read_table_data(gp_section_type *section, int org)
+{
+  int data;
+
+  data = i_memory_get(section->data, org) & 0xff;
+  data |= ((i_memory_get(section->data, org + 1) & 0xff) << 8);
+
+  return data;
+}
+
+/* create ROM data for initialized data sections */
+
+static void
+gp_cofflink_make_idata(gp_object_type *object)
+{
+  gp_section_type *section = object->sections;
+  gp_section_type *new = NULL;
+  int count = 0;
+  int word_count;
+  int i;
+  int insn;
+  gp_symbol_type *symbol;
+
+  while (section != NULL) {
+    if (section->flags & STYP_DATA) {
+      _create_rom_section(object, section);
+      count++;
+    }
+    section = section->next;
+  }
+
+  if (count) {
+    new = gp_coffgen_addsection(object, ".cinit");
+    new->flags = STYP_DATA_ROM;
+    new->size = ((count * 6) + 2) << 1;
+    /* load the table with data */
+    word_count = (count * 6) + 2;
+    for (i = 2; i < word_count; i++) {
+      i_memory_put(new->data, i, MEM_USED_MASK);
+    }
+    insn = MEM_USED_MASK | gp_processor_retlw(object->class);
+    _write_table_data(new, 0, insn, count);
+
+    /* create the symbol for the start address of the table */
+    symbol = gp_coffgen_findsymbol(object, "_cinit");
+    if ((symbol != NULL) && (symbol->section_number > 0)) {
+      gp_error("_cinit symbol already exists");
+    } else {
+      symbol = gp_coffgen_addsymbol(object);
+      symbol->name           = strdup("_cinit");
+      symbol->value          = 0;
+      symbol->section_number = 1;
+      symbol->section        = new;
+      symbol->type           = T_NULL;
+      symbol->class          = C_EXT;
+    }
+
+  }
+
+  return;
+}
+
+/* load the relocated sections addresses in the table */
+
+static void
+gp_add_cinit_section(gp_object_type *object, int byte_addr)
+{
+  gp_section_type *section;
+  gp_section_type *new = NULL;
+  gp_section_type *prog_section = NULL;
+  char prog_name[BUFSIZ];
+  int insn;
+  int count;
+  int base_org;
+
+  new = gp_coffgen_findsection(object, object->sections, ".cinit");
+
+  if (new != NULL) {
+
+    insn = MEM_USED_MASK | gp_processor_retlw(object->class);
+
+    /* scan through the sections to determine the addresses */
+    count = 0;
+    base_org = (new->address >> byte_addr) + 2;
+    section = object->sections;
+    while (section != NULL) {
+      if (section->flags & STYP_DATA) {
+        /* locate the rom table */
+        strcpy(prog_name, section->name);
+        strcat(prog_name, "_i");
+        prog_section = gp_coffgen_findsection(object, 
+                                              object->sections, 
+                                              prog_name);
+
+        /* write program memory address */
+        _write_table_data(new, base_org, insn, prog_section->address);
+        
+        /* write data memory address */
+        _write_table_data(new, base_org + 2, insn, section->address);
+        
+        /* write the table size */
+        _write_table_data(new, base_org + 4, insn, section->size);
+
+        count++;
+        base_org += 6;
+      }
+      section = section->next;
+    }
+
+    /* make sure the section count matches */
+    assert(_read_table_data(new, new->address >> byte_addr) == count);
+
+  }
+
+  return;
+}
+
 /* Set the memory used flags in a block of words */
 
 static void
@@ -428,7 +603,7 @@ gp_cofflink_reloc_abs(MemBlock *m,
   while (section != NULL) {
     if ((section->flags & STYP_ABS) &&
         (section->flags & flags)) {
-      if (section->flags & STYP_TEXT) {
+      if ((section->flags & STYP_TEXT) || (section->flags & STYP_DATA_ROM)) {
         /* size is in bytes, but words are stored in memory */
         size = section->size / 2;
       } else {
@@ -648,7 +823,7 @@ gp_cofflink_reloc_assigned(MemBlock *m,
     if (current == NULL)
       break;
     
-    if (current->flags & STYP_TEXT) {
+    if ((current->flags & STYP_TEXT) || (current->flags & STYP_DATA_ROM)) {
       /* size is in bytes, but words are stored in memory */
       size = current->size / 2;
     } else {
@@ -720,7 +895,7 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
     if (current == NULL)
       break;
    
-    if (current->flags & STYP_TEXT) {
+    if ((current->flags & STYP_TEXT) || (current->flags & STYP_DATA_ROM)) {
       /* size is in bytes, but words are stored in memory */
       size = current->size / 2;
     } else {
@@ -728,7 +903,7 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
     }
 
     /* determine what type of sections are being relocated */
-    if (current->flags & STYP_TEXT) {
+    if ((current->flags & STYP_TEXT) || (current->flags & STYP_DATA_ROM)) {
       type = codepage;
       gp_debug("  relocating code");
     } else if (current->flags & STYP_ACCESS) {
@@ -938,12 +1113,15 @@ gp_cofflink_reloc(gp_object_type *object,
   /* combine all sections with the same name */
   gp_cofflink_merge_sections(object);
 
+  /* create ROM data for initialized data sections */
+  gp_cofflink_make_idata(object);
+
   /* allocate memory for absolute sections */
   gp_debug("verifying absolute sections.");
   gp_cofflink_reloc_abs(program, 
                         byte_addr,
                         object->sections,
-                        STYP_TEXT);
+                        STYP_TEXT | STYP_DATA_ROM);
   gp_cofflink_reloc_abs(data, 
                         0,
                         object->sections, 
@@ -957,7 +1135,7 @@ gp_cofflink_reloc(gp_object_type *object,
   gp_cofflink_reloc_assigned(program, 
                              byte_addr,
                              object->sections,
-                             STYP_TEXT,
+                             STYP_TEXT | STYP_DATA_ROM,
                              sections,
                              logical_sections);
   gp_cofflink_reloc_assigned(data, 
@@ -975,7 +1153,7 @@ gp_cofflink_reloc(gp_object_type *object,
   gp_cofflink_reloc_unassigned(program, 
                                byte_addr,
                                object->sections,
-                               STYP_TEXT,
+                               STYP_TEXT | STYP_DATA_ROM,
                                sections);
   gp_cofflink_reloc_unassigned(data, 
                                0,
@@ -983,6 +1161,9 @@ gp_cofflink_reloc(gp_object_type *object,
                                STYP_DATA | STYP_BSS | STYP_SHARED | 
                                STYP_OVERLAY | STYP_ACCESS,
                                sections);
+
+  /* load the table with the relocated addresses */
+  gp_add_cinit_section(object, byte_addr);
 
   _update_table(object);
 
@@ -1263,6 +1444,9 @@ gp_cofflink_patch(gp_object_type *object,
           var = get_symbol_annotation(sym);
           assert(var != NULL);	  
           symbol = var->symbol;
+          gp_debug("  lookup symbol %s (%#x)",
+                   symbol->name,
+                   symbol->value);
         }
         gp_cofflink_patch_addr(object->class,
 	                       bsr_boundary,

@@ -952,3 +952,31 @@ gp_processor_set_bank(enum proc_class class,
 
   return count;
 }
+
+/* determine the value for retlw */
+
+int 
+gp_processor_retlw(enum proc_class class)
+{
+  int insn;
+
+  switch(class) {
+  case PROC_CLASS_PIC12:
+  case PROC_CLASS_SX:
+    insn = 0x800;
+    break;
+  case PROC_CLASS_PIC14:
+    insn = 0x3400;
+    break;
+  case PROC_CLASS_PIC16:
+    insn = 0xb600;
+    break;
+  case PROC_CLASS_PIC16E:
+    insn = 0x0c00;
+    break;
+  default:
+    assert(0);
+  }  
+
+  return insn;
+}

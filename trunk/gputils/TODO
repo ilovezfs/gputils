@@ -26,5 +26,4 @@ gpasm
   * Add relocations for the difference between symbols in the same section.
 
 gplink
-  * Implement idata.
   * Check the 18xx relocations.

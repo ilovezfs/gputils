@@ -50,6 +50,12 @@ struct linker_section {
   int protected;
 };
 
+void gp_link_add_symbol(struct symbol_table *table,
+		        gp_symbol_type *symbol,
+		        gp_object_type *file);
+
+void gp_link_remove_symbol(struct symbol_table *table, char *name);
+
 int gp_link_add_symbols(struct symbol_table *,
                         struct symbol_table *missing,
                         gp_object_type *object);

@@ -238,20 +238,22 @@ _read_sections(gp_object_type *object, char *file)
 
     /* read the data */
     if ((current->size) && (current->data_ptr)) {
-      if ((object->class == PROC_CLASS_PIC16E) && (current->flags & STYP_TEXT))
+      if ((object->class == PROC_CLASS_PIC16E) && 
+          ((current->flags & STYP_TEXT) ||
+           (current->flags & STYP_DATA_ROM)))
         org = current->address >> 1;
       else
         org = current->address;
 
       loc = &file[current->data_ptr];
-      if (current->flags & STYP_TEXT) {
+      if ((current->flags & STYP_TEXT) || (current->flags & STYP_DATA_ROM)) {
         /* size is in bytes, but words are stored in memory */
         number = current->size / 2;
       } else {
         number = current->size;
       }
       for (j = 0; j < number; j++) {
-        if (current->flags & STYP_TEXT) {
+        if ((current->flags & STYP_TEXT) || (current->flags & STYP_DATA_ROM)) {
           value = (unsigned int)gp_getl16(&loc[j * 2]);
         } else {
           value = (unsigned int)loc[j];

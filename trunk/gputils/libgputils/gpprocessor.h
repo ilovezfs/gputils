@@ -310,4 +310,6 @@ int gp_processor_set_bank(enum proc_class class,
                           MemBlock *m, 
                           int address);
 
+int gp_processor_retlw(enum proc_class class);
+
 #endif

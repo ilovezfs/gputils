@@ -32,6 +32,7 @@ gp_object_type *gp_coffgen_init(void);
 gp_section_type *gp_coffgen_findsection(gp_object_type *object, 
                                         gp_section_type *start,
                                         char *name);
+gp_section_type *gp_coffgen_newsection(char *name);
 gp_section_type *gp_coffgen_addsection(gp_object_type *object, char *name);
 gp_reloc_type *gp_coffgen_addreloc(gp_section_type *section);
 gp_linenum_type *gp_coffgen_addlinenum(gp_section_type *section);

@@ -61,14 +61,20 @@ void print_header(gp_object_type *object)
   return;
 }
 
-void print_reloc_list(gp_reloc_type *relocation)
+void print_reloc_list(enum proc_class class, gp_reloc_type *relocation)
 {
+  int word_addr = 1;
+
   printf("Relocations Table\n");
   printf("Address    Offset     Type   Symbol\n");
 
+  if (class == PROC_CLASS_PIC16E) {
+    word_addr = 0;
+  }
+
   while (relocation != NULL) {
     printf("%#-10lx %#-10x %#-6x %-s\n", 
-           relocation->address,
+           relocation->address >> word_addr,
            relocation->offset,
            relocation->type,
            relocation->symbol->name);
@@ -180,18 +186,20 @@ void print_sec_header(gp_section_type *section)
 void print_sec_list(gp_object_type *object)
 {
   gp_section_type *section = object->sections;
+  int disassemble;
 
   while (section != NULL) {
     print_sec_header(section);
 
     if (section->size) {
-      print_data(object->class,
-                 section->data,
-                 section->address,
-                 section->flags & STYP_TEXT);
+      if ((section->flags & STYP_TEXT) || (section->flags & STYP_DATA_ROM))
+        disassemble = 1;
+      else
+        disassemble = 0;       
+      print_data(object->class, section->data, section->address, disassemble);
     }
     if (section->num_reloc) {
-      print_reloc_list(section->relocations);
+      print_reloc_list(object->class, section->relocations);
     }
     if (section->num_lineno) {
       print_linenum_list(section->line_numbers);
@@ -408,10 +416,6 @@ int main(int argc, char *argv[])
 
   state.object = gp_read_coff(state.filename);
   state.file = gp_read_file(state.filename);
-  
-  if (state.dump_flags & PRINT_BINARY) {
-    print_binary(state.file->file, state.file->size);
-  }
 
   if (state.dump_flags & PRINT_HEADER) {
     print_header(state.object);
@@ -423,6 +427,10 @@ int main(int argc, char *argv[])
 
   if (state.dump_flags & PRINT_SYMTBL) {
     print_sym_table(state.object);
+  }
+
+  if (state.dump_flags & PRINT_BINARY) {
+    print_binary(state.file->file, state.file->size);
   }
 
   return EXIT_SUCCESS;
