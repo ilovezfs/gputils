@@ -111,7 +111,7 @@ mk_node(enum node_tag tag)
 tree *
 mk_alias(char *alias, tree *expr)
 {
-  tree *new = mk_node(node_alias);
+  tree *new = mk_node(tag_alias);
   new->value.alias.alias = alias;
   new->value.alias.expr = expr;
   
@@ -121,7 +121,7 @@ mk_alias(char *alias, tree *expr)
 tree *
 mk_arg(char *name, enum node_dir dir, char *type)
 {
-  tree *new = mk_node(node_arg);
+  tree *new = mk_node(tag_arg);
   new->value.arg.name = name;
   new->value.arg.dir = dir;
   new->value.arg.type = type;
@@ -132,7 +132,7 @@ mk_arg(char *name, enum node_dir dir, char *type)
 tree *
 mk_assembly(char *assembly)
 {
-  tree *new = mk_node(node_assembly);
+  tree *new = mk_node(tag_assembly);
   new->value.assembly = assembly;
   return new;
 }
@@ -140,7 +140,7 @@ mk_assembly(char *assembly)
 tree *
 mk_attrib(char *name, enum attrib_type type)
 {
-  tree *new = mk_node(node_attrib);
+  tree *new = mk_node(tag_attrib);
   new->value.attrib.name = name;
   new->value.attrib.type = type;
   return new;
@@ -149,7 +149,7 @@ mk_attrib(char *name, enum attrib_type type)
 tree *
 mk_body(tree *decl, tree *statements)
 {
-  tree *new = mk_node(node_body);
+  tree *new = mk_node(tag_body);
   new->value.body.decl = decl;
   new->value.body.statements = statements;
   return new;
@@ -158,7 +158,7 @@ mk_body(tree *decl, tree *statements)
 tree *
 mk_binop(enum node_op op, tree *p0, tree *p1)
 {
-  tree *new = mk_node(node_binop);
+  tree *new = mk_node(tag_binop);
   new->value.binop.op = op;
   new->value.binop.p0 = p0;
   new->value.binop.p1 = p1;
@@ -168,7 +168,7 @@ mk_binop(enum node_op op, tree *p0, tree *p1)
 tree *
 mk_call(char *name, tree *args)
 {
-  tree *new = mk_node(node_call);
+  tree *new = mk_node(tag_call);
   new->value.call.name = name;
   new->value.call.args = args;
   return new;
@@ -177,7 +177,7 @@ mk_call(char *name, tree *args)
 tree *
 mk_constant(int value)
 {
-  tree *new = mk_node(node_constant);
+  tree *new = mk_node(tag_constant);
   new->value.constant = value;
   return new;
 }
@@ -185,7 +185,7 @@ mk_constant(int value)
 tree *
 mk_cond(tree *cond, tree *body, tree *next)
 {
-  tree *new = mk_node(node_cond);
+  tree *new = mk_node(tag_cond);
   new->value.cond.cond = cond;
   new->value.cond.body = body;
   new->value.cond.next = next;
@@ -201,7 +201,7 @@ mk_decl(char *name,
         tree *init,
         tree *addr)
 {
-  tree *new = mk_node(node_decl);
+  tree *new = mk_node(tag_decl);
   new->value.decl.name = name;
   new->value.decl.is_volatile = is_volatile;
   new->value.decl.is_constant = is_constant;
@@ -216,7 +216,7 @@ tree *
 mk_file(tree *body, char *name, enum source_type type)
 {
   char buffer[BUFSIZ];
-  tree *new = mk_node(node_file);
+  tree *new = mk_node(tag_file);
   new->value.file.body = body;
   new->value.file.name = name;
   new->value.file.type = type;
@@ -241,7 +241,7 @@ mk_file(tree *body, char *name, enum source_type type)
 tree *
 mk_goto(char *name)
 {
-  tree *new = mk_node(node_goto);
+  tree *new = mk_node(tag_goto);
   new->value._goto.name = name;
 
   return new;
@@ -250,7 +250,7 @@ mk_goto(char *name)
 tree *
 mk_head(char *name, tree *args)
 {
-  tree *new = mk_node(node_head);
+  tree *new = mk_node(tag_head);
   new->value.head.name = name;
   new->value.head.args = args;
   return new;
@@ -259,7 +259,7 @@ mk_head(char *name, tree *args)
 tree *
 mk_label(char *name)
 {
-  tree *new = mk_node(node_label);
+  tree *new = mk_node(tag_label);
   new->value.label.name = name;
 
   return new;
@@ -268,7 +268,7 @@ mk_label(char *name)
 tree *
 mk_loop(tree *init, tree *exit, tree *incr, tree *body)
 {
-  tree *new = mk_node(node_loop);
+  tree *new = mk_node(tag_loop);
   new->value.loop.init = init;
   new->value.loop.exit = exit;  
   new->value.loop.incr = incr;
@@ -280,7 +280,7 @@ mk_loop(tree *init, tree *exit, tree *incr, tree *body)
 tree *
 mk_pragma(tree *pragma)
 {
-  tree *new = mk_node(node_pragma);
+  tree *new = mk_node(tag_pragma);
   new->value.pragma = pragma;
   
   return new;
@@ -289,7 +289,7 @@ mk_pragma(tree *pragma)
 tree *
 mk_record(char *name, tree *list)
 {
-  tree *new = mk_node(node_record);
+  tree *new = mk_node(tag_record);
   new->value.record.name = name;
   new->value.record.list = list;
 
@@ -299,7 +299,7 @@ mk_record(char *name, tree *list)
 tree *
 mk_return(tree *ret)
 {
-  tree *new = mk_node(node_return);
+  tree *new = mk_node(tag_return);
   new->value.ret = ret;
   
   return new;
@@ -308,7 +308,7 @@ mk_return(tree *ret)
 tree *
 mk_string(char *value)
 {
-  tree *new = mk_node(node_string);
+  tree *new = mk_node(tag_string);
   new->value.string = value;
   return new;
 }
@@ -316,7 +316,7 @@ mk_string(char *value)
 tree *
 mk_subprogram(tree *head, char *ret, tree *body)
 {
-  tree *new = mk_node(node_subprogram);
+  tree *new = mk_node(tag_subprogram);
   new->value.subprogram.head = head;
   new->value.subprogram.ret = ret;
   new->value.subprogram.body = body;
@@ -327,7 +327,7 @@ mk_subprogram(tree *head, char *ret, tree *body)
 tree *
 mk_symbol(char *name, tree *offset)
 {
-  tree *new = mk_node(node_symbol);
+  tree *new = mk_node(tag_symbol);
   new->value.symbol.name = name;
   new->value.symbol.offset = offset;
 
@@ -342,7 +342,7 @@ mk_type(char *type,
         tree *list,
         char *of)
 {
-  tree *new = mk_node(node_type);
+  tree *new = mk_node(tag_type);
   new->value.type.type = type;
   new->value.type.is_access = is_access;
   new->value.type.start = start;
@@ -355,7 +355,7 @@ mk_type(char *type,
 tree *
 mk_unop(enum node_op op, tree *p0)
 {
-  tree *new = mk_node(node_unop);
+  tree *new = mk_node(tag_unop);
   new->value.unop.op = op;
   new->value.unop.p0 = p0;
   return new;
@@ -364,7 +364,7 @@ mk_unop(enum node_op op, tree *p0)
 tree *
 mk_with(char *name)
 {
-  tree *new = mk_node(node_with);
+  tree *new = mk_node(tag_with);
   new->value.with.name = name;
   return new;
 }
@@ -386,10 +386,10 @@ find_node_name(tree *node)
   char *name = NULL;
 
   switch(node->tag) {
-  case node_decl:
+  case tag_decl:
     name = DECL_NAME(node);
     break;
-  case node_subprogram:
+  case tag_subprogram:
     head = SUB_HEAD(node);
     name = HEAD_NAME(head);
     break;
@@ -438,33 +438,33 @@ print_node(tree *node, int level, gp_boolean print_list)
 
   while (node) {
     switch(node->tag) {
-    case node_unknown:
+    case tag_unknown:
       print_space(level);
       printf("node_unknown\n");
       break;
-    case node_alias:
+    case tag_alias:
       print_space(level);
       printf("node_alias alias=%s, expr=\n", ALIAS_ALIAS(node));
       print_node(ALIAS_EXPR(node), level, true);
       break;
-    case node_arg:
+    case tag_arg:
       print_space(level);
       printf("node_arg name=%s, dir=%i, type=%s\n",
               ARG_NAME(node),
               ARG_DIR(node),
               ARG_TYPE(node));
       break;
-    case node_assembly:
+    case tag_assembly:
       print_space(level);
       printf("node_assembly \n%s\n", node->value.assembly);
       break;
-    case node_attrib:
+    case tag_attrib:
       print_space(level);
       printf("node_attrib name=%s, type=%i\n",
               ATTRIB_NAME(node),
               ATTRIB_TYPE(node));
       break;
-    case node_body:
+    case tag_body:
       print_space(level);
       printf("node_body\n");
       if (BODY_DECL(node) != NULL) {
@@ -478,7 +478,7 @@ print_node(tree *node, int level, gp_boolean print_list)
         print_node(BODY_STATEMENTS(node), level, true);
       }
       break;
-    case node_binop:
+    case tag_binop:
       print_space(level);
       printf("node_binop %i \n", BINOP_OP(node));
       print_space(level);
@@ -488,15 +488,15 @@ print_node(tree *node, int level, gp_boolean print_list)
       printf("arg 2\n");
       print_node(BINOP_RIGHT(node), level, true);
       break;
-    case node_call:
+    case tag_call:
       print_space(level);
       printf("node_call %s\n", CALL_NAME(node));
       break;
-    case node_constant:
+    case tag_constant:
       print_space(level);
       printf("node_constant = %i\n", node->value.constant);
       break;
-    case node_cond:
+    case tag_cond:
       print_space(level);
       printf("node_cond\n");
       if (COND_TEST(node) != NULL) {
@@ -515,7 +515,7 @@ print_node(tree *node, int level, gp_boolean print_list)
         print_node(COND_NEXT(node), level, true);
       }
       break;
-    case node_decl:
+    case tag_decl:
       print_space(level);
       printf("node_decl name = %s, type =%s%s\n",
              DECL_NAME(node),
@@ -532,17 +532,17 @@ print_node(tree *node, int level, gp_boolean print_list)
         print_node(DECL_ADDR(node), level, true);
       }
       break;
-    case node_file:
+    case tag_file:
       print_space(level);
       printf("node_file %s\n", FILE_NAME(node));
       if (FILE_BODY(node) != NULL)  
         print_node(FILE_BODY(node), level, true);
       break;
-    case node_goto:
+    case tag_goto:
       print_space(level);
       printf("node_goto %s\n", GOTO_NAME(node));
       break;
-    case node_head:
+    case tag_head:
       print_space(level);
       printf("node_head %s\n", HEAD_NAME(node));
       if (HEAD_ARGS(node) != NULL) {
@@ -551,11 +551,11 @@ print_node(tree *node, int level, gp_boolean print_list)
         print_node(HEAD_ARGS(node), level, true);
       }
       break;
-    case node_label:
+    case tag_label:
       print_space(level);
       printf("node_label %s\n", LABEL_NAME(node));
       break;
-    case node_loop:
+    case tag_loop:
       print_space(level);
       printf("node_loop\n");
       if (LOOP_INIT(node) != NULL) {
@@ -579,26 +579,26 @@ print_node(tree *node, int level, gp_boolean print_list)
         print_node(LOOP_BODY(node), level, true);
       }
       break;
-    case node_pragma:
+    case tag_pragma:
       print_space(level);
       printf("node_pragma\n");
       print_node(node->value.pragma, level, true);
       break;
-    case node_record:
+    case tag_record:
       print_space(level);
       printf("node_record %s is\n", RECORD_NAME(node));
       print_node(RECORD_LIST(node), level, true);
       break;
-    case node_return:
+    case tag_return:
       print_space(level);
       printf("node_return\n");
       print_node(node->value.ret, level, true);
       break;
-    case node_string:
+    case tag_string:
       print_space(level);
       printf("node_string %s\n", node->value.string);
       break;
-    case node_subprogram:
+    case tag_subprogram:
       print_space(level);
       if (SUB_RET(node)) {
         printf("node_subprogram that returns %s\n", SUB_RET(node));
@@ -610,13 +610,13 @@ print_node(tree *node, int level, gp_boolean print_list)
       if (SUB_BODY(node) != NULL)
         print_node(SUB_BODY(node), level, true);
       break;
-    case node_symbol:
+    case tag_symbol:
       print_space(level);
       printf("node_symbol %s\n", SYM_NAME(node));
       if (SYM_OFST(node) != NULL)  
         print_node(SYM_OFST(node), level, true);
       break;
-    case node_type:
+    case tag_type:
       print_space(level);
       if (TYPE_LIST(node)) {
         printf("node_type %s is enumerated\n", TYPE_TYPE(node));
@@ -627,14 +627,14 @@ print_node(tree *node, int level, gp_boolean print_list)
         printf("node_type %s is %s\n", TYPE_TYPE(node), TYPE_OF(node));
       }
       break;
-    case node_unop:
+    case tag_unop:
       print_space(level);
       printf("unop %i \n", UNOP_OP(node));
       print_space(level);
       printf("arg\n");
       print_node(UNOP_ARG(node), level, true);
       break;
-    case node_with:
+    case tag_with:
       print_space(level);
       printf("with %s \n", WITH_NAME(node));
       break;

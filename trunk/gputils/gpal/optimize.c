@@ -38,7 +38,7 @@ node_complexity(tree *node)
   int complexity = 0;
 
   switch(node->tag) {
-  case node_attrib:
+  case tag_attrib:
     if ((ATTRIB_TYPE(node) == attrib_access) ||
         (ATTRIB_TYPE(node) == attrib_address)) {
       complexity = 2;    
@@ -46,13 +46,13 @@ node_complexity(tree *node)
       complexity = 1;
     }
     break;
-  case node_call:
+  case tag_call:
     complexity = 2;    
     break;
-  case node_constant:
+  case tag_constant:
     complexity = 1;
     break;
-  case node_symbol:
+  case tag_symbol:
     if (SYM_OFST(node)) {
       /* it is an array */
       complexity = 3;
@@ -60,10 +60,10 @@ node_complexity(tree *node)
       complexity = 2;    
     }
     break;
-  case node_unop:
+  case tag_unop:
     complexity = 1 + node_complexity(node->value.unop.p0);
     break;
-  case node_binop:
+  case tag_binop:
     complexity = 2 + 
                  node_complexity(node->value.binop.p0) +
                  node_complexity(node->value.binop.p1);
@@ -103,7 +103,7 @@ static gp_boolean
 is_constant(tree *p)
 {
 
-  if (p->tag == node_constant) {
+  if (p->tag == tag_constant) {
     return true;
   } else {
     return false;
@@ -115,7 +115,7 @@ static gp_boolean
 is_symbol(tree *p)
 {
 
-  if (p->tag == node_symbol) {
+  if (p->tag == tag_symbol) {
     return true;
   } else {
     return false;
@@ -127,7 +127,7 @@ static gp_boolean
 is_binop(tree *p)
 {
 
-  if (p->tag == node_binop) {
+  if (p->tag == tag_binop) {
     return true;
   } else {
     return false;
@@ -458,18 +458,18 @@ opt_expr(tree *expr)
   struct variable *var;
 
   switch(expr->tag) {
-  case node_attrib:
+  case tag_attrib:
     if ((ATTRIB_TYPE(expr) != attrib_access) &&
         (ATTRIB_TYPE(expr) != attrib_address))  {
       /* convert all attribs into constants if possible */
       expr = mk_constant(maybe_evaluate(expr));
     }   
     break;
-  case node_call:
-  case node_constant:
+  case tag_call:
+  case tag_constant:
     /* do nothing */
     break;
-  case node_symbol:
+  case tag_symbol:
     var = get_global(SYM_NAME(expr));
     if (var->tag == sym_const) {
       /* remove all symbols that are constant */
@@ -478,10 +478,10 @@ opt_expr(tree *expr)
       expr = opt_expr(var->node);
     }
     break;
-  case node_unop:
+  case tag_unop:
     expr = optimize_unop(expr);
     break;
-  case node_binop:
+  case tag_binop:
     expr = optimize_binop(expr);
     break;
   default:
@@ -531,25 +531,25 @@ optimize_unop_expr(struct variable *dest, tree *left, tree *right)
   tree *unop = NULL;
   struct variable *arg;
 
-  if ((right->tag == node_constant) && (right->value.constant == 0)) {
+  if ((right->tag == tag_constant) && (right->value.constant == 0)) {
     /* i = 0 */
     unop = mk_unop(op_clr, left);
-  } else if (right->tag == node_binop) {
+  } else if (right->tag == tag_binop) {
      binop_left = BINOP_LEFT(right);
      binop_right = BINOP_RIGHT(right);
      
      if (BINOP_OP(right) == op_add) {
-       if ((binop_left->tag == node_constant) && 
+       if ((binop_left->tag == tag_constant) && 
            (binop_left->value.constant == 1) &&
-           (binop_right->tag == node_symbol)) {
+           (binop_right->tag == tag_symbol)) {
          /* i = 1 + i ==> i++ */
          arg = get_global(SYM_NAME(binop_right));
          if (arg == dest) {
            unop = mk_unop(op_inc, left);
          }
-       } else if ((binop_right->tag == node_constant) && 
+       } else if ((binop_right->tag == tag_constant) && 
                   (binop_right->value.constant == 1) &&
-                  (binop_left->tag == node_symbol)) {
+                  (binop_left->tag == tag_symbol)) {
          /* i = i + 1 ==> i++ */
          arg = get_global(SYM_NAME(binop_left));
          if (arg == dest) {
@@ -558,9 +558,9 @@ optimize_unop_expr(struct variable *dest, tree *left, tree *right)
        }
      } else if (BINOP_OP(right) == op_sub) {
        /* i = i - 1 ==> i-- */
-       if ((binop_right->tag == node_constant) && 
+       if ((binop_right->tag == tag_constant) && 
            (binop_right->value.constant == 1) &&
-           (binop_left->tag == node_symbol)) {
+           (binop_left->tag == tag_symbol)) {
          arg = get_global(SYM_NAME(binop_left));
          if (arg == dest) {
            unop = mk_unop(op_dec, left);
