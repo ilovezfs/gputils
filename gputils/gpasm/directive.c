@@ -306,6 +306,7 @@ static void simplify_data(struct pnode *L, struct sllist *list, int packing_stri
     struct pnode *p;
     unsigned int v = 0;
     unsigned int shift;
+    int value;
 
     p = HEAD(L);
 
@@ -319,19 +320,21 @@ static void simplify_data(struct pnode *L, struct sllist *list, int packing_stri
       }
       
       while (*pc) {
+	pc = convert_escape_chars(pc, &value);
+
 	if(packing_strings) {
 	  if(v>= (1<<31) ) {
-	    v = (v<<shift) |  *pc++;
+	    v = (v<<shift) |  value;
             if(_16bit_core) {
               v = endian_swap_word(v);
             }   	    
 	    list = sllist_append(list, mk_constant(v));
 	    v = 0;
 	  } else
-	    v = (1<<31) | *pc++;
+	    v = (1<<31) | value;
 	  
 	} else {
-	  list = sllist_append(list, mk_constant(*pc++));
+	  list = sllist_append(list, mk_constant(value));
 	}
       }
 

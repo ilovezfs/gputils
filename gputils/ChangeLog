@@ -1,3 +1,7 @@
+2003-02-22 Craig Franklin <craigfranklin@attbi.com>
+  * Removed nuisance warning about malformed asm files.
+  * Fixed errors when using escape characters in strings.
+
 2003-02-17 Craig Franklin <craigfranklin@attbi.com>
   * Added auxilary coff symbols.
 

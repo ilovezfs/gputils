@@ -518,19 +518,6 @@ expr:
 	|
 	STRING
         {
-	  /* Cook up the string, replacing \X with its code. */
-	  char *ps, *pd;
-
-	  ps = pd = $1;
-	  while (*ps) {
-	    if (*ps != '\\') {
-	      *pd++ = *ps++;
-	    } else {
-	      *pd++ = gpasm_magic(ps);
-	      ps += 2;
-	    }
-	  }
-	  *pd = 0;
 	  $$ = mk_string($1);
         }
 	;
