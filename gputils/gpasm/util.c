@@ -83,7 +83,6 @@ char *
 convert_escape_chars(char *ps, int *value)
 {
   int count;
-  char buffer[3];
   
   if (*ps != '\\') {
     *value = *ps++;
@@ -120,7 +119,11 @@ convert_escape_chars(char *ps, int *value)
         ps[2] = '\0';
         ps += 2;
       } else {
-        strncpy(buffer, &ps[2], 2);
+        char buffer[3];
+
+        buffer[0] = ps[2];
+        buffer[1] = ps[3];
+        buffer[2] = 0;
         *value = stringtolong(buffer, 16);
         ps += 4;
       }
