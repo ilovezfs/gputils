@@ -1,4 +1,4 @@
-	list	p=16c84
+	list	p=16c84, f=inhx8m
 
 	include	p16c84.inc
 	include	utility.inc
