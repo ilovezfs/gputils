@@ -31,6 +31,5 @@ void cod_init(void);
 void cod_close_file(void);
 void cod_lst_line(int line_type);
 void cod_write_symbols(struct symbol **,int);
-void cod_emit_opcode(int, int);
 
 #endif

@@ -203,23 +203,39 @@ int writehex (char *basefilename,
 
     /* Write the low memory */
     hex = fopen(lowhex, "wt");
+    if (hex == NULL) {
+      perror(lowhex);
+      exit(1);
+    }
     write_i_mem(hex_format, low);
     fclose(hex);
 
     /* Write the high memory */
     hex = fopen(highhex, "wt");
+    if (hex == NULL) {
+      perror(highhex);
+      exit(1);
+    }
     write_i_mem(hex_format, high);
     fclose(hex);
 
   } else if (hex_format == inhx16) {
 
     hex = fopen(hexfilename, "wt");
+    if (hex == NULL) {
+      perror(hexfilename);
+      exit(1);
+    }
     write_i_mem(hex_format, swap);
     fclose(hex);
 
   } else {
 
     hex = fopen(hexfilename, "wt");
+    if (hex == NULL) {
+      perror(hexfilename);
+      exit(1);
+    }
     if (byte_words)
       write_i_mem(hex_format, byte);
     else

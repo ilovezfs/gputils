@@ -385,6 +385,10 @@ void dump_source_files( void )
 	  printf("%s\n",source_file_names[number_of_source_files]);
 	  source_files[number_of_source_files] = 
 	    fopen(source_file_names[number_of_source_files],"rt");
+	  if (source_files[number_of_source_files] == NULL) {
+	    perror(source_file_names[number_of_source_files]);
+	    exit(1);
+	  }
 	  number_of_source_files++;
 	  if(number_of_source_files >= MAX_SOURCE_FILES) {
 		  fprintf(stderr, " too many source files; increase MAX_SOURCE_FILES and recompile\n");

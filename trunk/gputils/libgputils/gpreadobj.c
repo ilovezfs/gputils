@@ -55,7 +55,10 @@ gp_read_file(char *filename)
   gp_binary_type *file;
 
   infile = fopen(filename,"rb");
-  assert(infile != NULL);
+  if (infile == NULL) {
+    perror(filename);
+    exit(1);
+  }
   
   file = (gp_binary_type *)malloc(sizeof(*file));
 
