@@ -870,7 +870,7 @@ list_block:
 list_expr:
 	IDENTIFIER
         {
-	  if (strcasecmp($1, "p") == 0) { 
+	  if ((strcasecmp($1, "p") == 0) || (strcasecmp($1, "pe") == 0)) { 
             force_ident = 1;
           }
         }

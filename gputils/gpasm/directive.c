@@ -1780,6 +1780,10 @@ static gpasmVal do_list(gpasmVal r,
 	} else if (strcasecmp(lhs, "p") == 0) {
 	  if (enforce_simple(p->value.binop.p1))
 	    select_processor(p->value.binop.p1->value.symbol);
+	} else if (strcasecmp(lhs, "pe") == 0) {
+          state.extended_pic16e = true;
+	  if (enforce_simple(p->value.binop.p1))
+	    select_processor(p->value.binop.p1->value.symbol);
 	} else if (strcasecmp(lhs, "r") == 0) {
 	  if (enforce_simple(p->value.binop.p1))
 	    select_radix(p->value.binop.p1->value.symbol);
@@ -2062,28 +2066,6 @@ static gpasmVal do_pagesel(gpasmVal r,
 
   return r;
 }
-
-#if 0
-
-static gpasmVal do_pe(gpasmVal r,
-		      char *name,
-		      int arity,
-		      struct pnode *parms)
-{
-  state.lst.line.linetype = dir;
-
-  /* FIXME: This directive is mentioned in the 18f2480 documentation.  However, it is not
-     supported with current version of MPASM. It is also not documented in the current
-     version of MPLAB.  */
-
-  if (enforce_arity(arity, 0)) {
-    state.extended_pic16e = true;
-  }
-
-  return r;
-}
-
-#endif
 
 static gpasmVal do_processor(gpasmVal r,
 			     char *name,
@@ -3485,9 +3467,6 @@ struct insn op_1[] = {
   { "fill",       0, (long int)do_fill,      INSN_CLASS_FUNC,   0 },
   { "org",        0, (long int)do_org,       INSN_CLASS_FUNC,   0 },
   { "pagesel",    0, (long int)do_pagesel,   INSN_CLASS_FUNC,   0 },
-#if 0
-  { "pe",         0, (long int)do_pe,        INSN_CLASS_FUNC,   0 },
-#endif
   { "res",        0, (long int)do_res,       INSN_CLASS_FUNC,   0 }
 };
 
