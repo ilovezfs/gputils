@@ -44,9 +44,9 @@ Boston, MA 02111-1307, USA.  */
                                              ARG2, \
                                              ARG3)
 
-void
+int
 gp_disassemble(MemBlock *m,
-               int *org,
+               int org,
                enum proc_class class,
                char *buffer,
                size_t sizeof_buffer)
@@ -55,14 +55,15 @@ gp_disassemble(MemBlock *m,
   int value;
   long int opcode;
   struct insn *instruction = NULL;
+  int num_words = 1;
 
-  opcode = i_memory_get(m, *org) & 0xffff;
+  opcode = i_memory_get(m, org) & 0xffff;
 
   switch (class) {
   case PROC_CLASS_EEPROM8:
   case PROC_CLASS_GENERIC:
     snprintf(buffer, sizeof_buffer, "unsupported processor class");
-    return;
+    return 0;
   case PROC_CLASS_PIC12:
     for(i = 0; i < num_op_12c5xx; i++) {
       if((op_12c5xx[i].mask & opcode) == op_12c5xx[i].opcode) {
@@ -109,7 +110,7 @@ gp_disassemble(MemBlock *m,
 
   if (instruction == NULL)  {
     snprintf(buffer, sizeof_buffer, "dw\t%#lx  ;unknown opcode", opcode);
-    return;
+    return num_words;
   }
 
   switch (instruction->class)
@@ -149,7 +150,7 @@ gp_disassemble(MemBlock *m,
       if (value & 0x80) {
         value = -((value ^ 0xff) + 1);
       }
-      DECODE_ARG1((unsigned long)(*org + value + 1) * 2); 
+      DECODE_ARG1((unsigned long)(org + value + 1) * 2); 
       break;
     case INSN_CLASS_RBRA11:
       value = opcode  & 0x7ff;
@@ -157,14 +158,14 @@ gp_disassemble(MemBlock *m,
       if (value & 0x400) {
         value = -((value ^ 0x7ff) + 1);
       }      
-      DECODE_ARG1((unsigned long)(*org + value + 1) * 2); 
+      DECODE_ARG1((unsigned long)(org + value + 1) * 2); 
       break;
     case INSN_CLASS_LIT20:
       {
         long int dest;
 
-        *org += 1;
-        dest = (i_memory_get(m, *org) & 0xfff) << 8;
+        num_words = 2;
+        dest = (i_memory_get(m, org) & 0xfff) << 8;
         dest |= opcode & 0xff;      
         DECODE_ARG1(dest * 2); 
       }
@@ -173,8 +174,8 @@ gp_disassemble(MemBlock *m,
       {
         long int dest;
 
-        *org += 1;
-        dest = (i_memory_get(m, *org) & 0xfff) << 8;
+        num_words = 2;
+        dest = (i_memory_get(m, org) & 0xfff) << 8;
         dest |= opcode & 0xff;      
 	snprintf(buffer, sizeof_buffer, "%s\t%#lx, %#lx",
                 instruction->name,
@@ -187,8 +188,8 @@ gp_disassemble(MemBlock *m,
         long int k;
         long int file;
 
-        *org += 1;
-        k = i_memory_get(m, *org) & 0xff;
+        num_words = 2;
+        k = i_memory_get(m, org) & 0xff;
         k |= ((opcode & 0xf) << 8);
 	file = (opcode >> 4) & 0x3;
         DECODE_ARG2(file, k);
@@ -199,9 +200,9 @@ gp_disassemble(MemBlock *m,
         long int file1;
         long int file2;
 
-        *org += 1;
+        num_words = 2;
         file1 = opcode & 0xfff;
-        file2 = i_memory_get(m, *org) & 0xfff;
+        file2 = i_memory_get(m, org) & 0xfff;
         DECODE_ARG2(file1, file2);
       }
       break;
@@ -290,4 +291,6 @@ gp_disassemble(MemBlock *m,
     default:
       assert(0);
     }
+
+  return num_words;
 }

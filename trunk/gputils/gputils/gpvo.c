@@ -118,6 +118,7 @@ void print_data(enum proc_class class, gp_section_type *section)
   char buffer[BUFSIZ];
   int byte_addr = 0;
   int org;
+  int num_words = 1;
 
   if ((class == PROC_CLASS_PIC16E) && !(section->flags & STYP_DATA)) {
     org = section->address >> 1;
@@ -135,15 +136,25 @@ void print_data(enum proc_class class, gp_section_type *section)
       break;
 
     if (section->flags & STYP_TEXT) {
-      gp_disassemble(section->data, &org, class, buffer, sizeof(buffer));
+      num_words = gp_disassemble(section->data,
+                                 org,
+                                 class,
+                                 buffer,
+                                 sizeof(buffer));
       printf("%06x:  %04x  %s\n", org << byte_addr, memory & 0xffff, buffer);
+      if (num_words != 1) {
+        org++;
+        memory = i_memory_get(section->data, org);
+        assert(memory & MEM_USED_MASK);
+        printf("%06x:  %04x\n", org << byte_addr, memory & 0xffff);
+      }
     } else if (section->flags & STYP_DATA_ROM) {
       printf("%06x:  %04x\n", org << byte_addr, memory & 0xffff);
     } else if (section->flags & STYP_DATA) {
       printf("%06x:  %02x\n", org, memory & 0xff);
     }
 
-    org++;
+    org += num_words;
   }
   printf("\n");
 

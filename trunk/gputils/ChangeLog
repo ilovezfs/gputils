@@ -1,5 +1,6 @@
 2004-08-29 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Add 18xx support to gpal.
+  * Fix disassembly of multi-word 18xx instructions.
 
 2004-08-25 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Allow "#" in gpasm labels.
