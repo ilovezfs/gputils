@@ -1,3 +1,6 @@
+2004-10-02 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * Fixed error in disassembly of 18xx instuctions.
+
 2004-09-26 Craig Franklin <craigfranklin@users.sourceforge.net>
   * Added directives to gpasm for directly modifying COFF symbol tables.
   * Changed the gpasm COFF debug directives to .file, .eof, and .line.  

@@ -165,7 +165,7 @@ gp_disassemble(MemBlock *m,
         long int dest;
 
         num_words = 2;
-        dest = (i_memory_get(m, org) & 0xfff) << 8;
+        dest = (i_memory_get(m, org + 1) & 0xfff) << 8;
         dest |= opcode & 0xff;      
         DECODE_ARG1(dest * 2); 
       }
@@ -175,7 +175,7 @@ gp_disassemble(MemBlock *m,
         long int dest;
 
         num_words = 2;
-        dest = (i_memory_get(m, org) & 0xfff) << 8;
+        dest = (i_memory_get(m, org + 1) & 0xfff) << 8;
         dest |= opcode & 0xff;      
 	snprintf(buffer, sizeof_buffer, "%s\t%#lx, %#lx",
                 instruction->name,
@@ -189,7 +189,7 @@ gp_disassemble(MemBlock *m,
         long int file;
 
         num_words = 2;
-        k = i_memory_get(m, org) & 0xff;
+        k = i_memory_get(m, org + 1) & 0xff;
         k |= ((opcode & 0xf) << 8);
 	file = (opcode >> 4) & 0x3;
         DECODE_ARG2(file, k);
@@ -202,7 +202,7 @@ gp_disassemble(MemBlock *m,
 
         num_words = 2;
         file1 = opcode & 0xfff;
-        file2 = i_memory_get(m, org) & 0xfff;
+        file2 = i_memory_get(m, org + 1) & 0xfff;
         DECODE_ARG2(file1, file2);
       }
       break;
