@@ -495,7 +495,7 @@ static gpasmVal do_banksel(gpasmVal r,
         reloc_evaluate(p, RELOCT_BANKSEL);
         emit(0);
       } else if (state.device.class == PROC_CLASS_PIC16E) {
-        reloc_evaluate(p, RELOCT_MOVLB);
+        reloc_evaluate(p, RELOCT_BANKSEL);
         emit(0);
       } else {
         reloc_evaluate(p, RELOCT_BANKSEL);
