@@ -346,8 +346,10 @@ gp_cofflink_merge_sections(gp_object_type *object)
       /* Update the symbol table */
       symbol = object->symbols;
       while (symbol != NULL) {
-        if (symbol->section == second) {
+        if ((symbol->section_number > 0) &&  
+            (symbol->section == second)) {
           symbol->section = first;
+          symbol->value += offset;
         }
         symbol = symbol->next;
       }

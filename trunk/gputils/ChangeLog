@@ -1,4 +1,11 @@
 2003-03-14 Craig Franklin <craigfranklin@attbi.com>
+  * Specified fopen() mode to prevent CRLF conversion on binary files when
+    using the mingw port.
+  * Fixed gplink bug that causes some symbols to be incorrect after section
+    merging.
+  * Report symbol names when resolving external references in gplink fails.
+
+2003-03-14 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.11.0 Released.
   * Fixed bug that caused amode stack to be incorrect when exitm was used.
   * The P value for movpf and movfp instructions is now checked.

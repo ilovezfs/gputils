@@ -369,7 +369,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
     return 0;
   }
   
-  coff = fopen(object->filename, "w");
+  coff = fopen(object->filename, "wb");
   if (coff == NULL) {
     perror(object->filename);
     exit(1);

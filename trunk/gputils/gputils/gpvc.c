@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
     show_usage();
   }
 
-  codefile = fopen(filename,"r");
+  codefile = fopen(filename,"rb");
   if(codefile == NULL) {
     printf("Unable to open %s\n",filename);
     exit(1);

@@ -166,6 +166,9 @@ void build_tables(void)
 {
   gp_object_type *list = state.object;
   struct archivelist *arlist = state.archives;
+  int i;
+  struct symbol *s;
+  char *name;
 
   /* Create the object file symbol tables */  
   while (list != NULL) {
@@ -188,8 +191,16 @@ void build_tables(void)
     }
   }
 
+  /* All of the archives have been scanned.  If there are still missing
+     references, it is an error */
   if (count_missing()) {
-    gp_error("missing definitions for external references");
+    for (i = 0; i < HASH_SIZE; i++) {
+      for (s = state.symbol.missing->hash_table[i]; s; s = s->next) {
+        name = get_symbol_name(s);
+        assert(name != NULL);
+        gp_error("missing definition for symbol \"%s\"", name);
+      }      
+    }
     exit(1);
   }
 
@@ -376,6 +387,11 @@ int main(int argc, char *argv[])
   /* Open all objects and archives in the file list. */ 
   for ( ; optind < argc; optind++) {
     gplink_open_coff(argv[optind]);
+  }
+
+  if (state.object == NULL) {
+    gp_error("missing input object file");
+    return EXIT_FAILURE; 
   }
 
   /* Read the script */

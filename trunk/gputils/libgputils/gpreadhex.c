@@ -82,7 +82,7 @@ struct hex_data readhex(char *filename, MemBlock *m)
   };
   
   /* Open the input file */
-  if ( (infile = fopen(filename,"rb")) == NULL ){
+  if ( (infile = fopen(filename,"rt")) == NULL ){
     printf("Can't open input file\n");
     info.error = 1;
     return info;
