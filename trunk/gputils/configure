@@ -18,7 +18,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --disable-gputils       disable the utilities"
 ac_help="$ac_help
-  --disable-path          disable adding header path to includes paths"
+  --disable-path          disable adding default search paths"
 
 # Initialize some variables set by options.
 # The variables have the same names as the options, with
@@ -604,7 +604,7 @@ GPASM_HEADER_PATH="\$(datadir)/gputils/header"
 GPLINK_LKR_PATH="\$(datadir)/gputils/lkr"
 GPUTILS_MAJOR_VERSION=0
 GPUTILS_MINOR_VERSION=11
-GPUTILS_MICRO_VERSION=1
+GPUTILS_MICRO_VERSION=2
 GPUTILS_VERSION=$GPUTILS_MAJOR_VERSION.$GPUTILS_MINOR_VERSION.$GPUTILS_MICRO_VERSION
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
@@ -876,7 +876,7 @@ if test "${enable_path+set}" = set; then
   enableval="$enable_path"
   :
 else
-  enable_gpasm_path=yes
+  enable_gputils_path=yes
 fi
 
 
@@ -2319,7 +2319,23 @@ case "${host}" in
     fi
     ;;
   *mingw* )
-    CFLAGS="-O2"
+    CFLAGS="-s -O2"
+    ;;
+  *-pc-os2_emx | *-pc-os2-emx )
+    EXEEXT=".exe"
+    if test "x$GCC" = "xyes"; then
+      CFLAGS="-Zcrtdll -s -O2"
+    fi
+    ;;
+esac
+
+# Host filesystem options
+case "${host}" in
+  *mingw* | *-pc-os2_emx | *-pc-os2-emx )
+    cat >> confdefs.h <<\EOF
+#define HAVE_DOS_BASED_FILE_SYSTEM 1
+EOF
+
     ;;
 esac
 
@@ -2342,16 +2358,9 @@ EOF
 
 fi
 
-if test x$enable_gpasm_path = xyes; then
+if test x$enable_gputils_path = xyes; then
   cat >> confdefs.h <<\EOF
-#define USE_GPASM_HEADER_PATH 1
-EOF
-
-fi
-
-if test x$MINGW32 = xyes; then
-  cat >> confdefs.h <<\EOF
-#define __MSDOS__ 1
+#define USE_DEFAULT_PATHS 1
 EOF
 
 fi
@@ -2478,7 +2487,8 @@ trap 'rm -fr `echo "Makefile
           header/Makefile 
           libgputils/Makefile 
           libiberty/Makefile 
-          lkr/Makefile config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+          lkr/Makefile
+          gputils.spec config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -2600,7 +2610,8 @@ CONFIG_FILES=\${CONFIG_FILES-"Makefile
           header/Makefile 
           libgputils/Makefile 
           libiberty/Makefile 
-          lkr/Makefile"}
+          lkr/Makefile
+          gputils.spec"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then

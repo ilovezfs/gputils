@@ -66,7 +66,6 @@ enum pic_processor {
   pic16c55,
   pic16c55a,
   pic16c554,
-  pic16c557,
   pic16c558,
   pic16c56,
   pic16c56a,
@@ -229,6 +228,7 @@ struct px {
   char *defined_as;
   char *names[MAX_NAMES];
   unsigned long coff_type; 
+  char *script;
 };
 
 /* CONFIG addresses for the 18cxxx parts */
@@ -266,6 +266,7 @@ unsigned long gp_processor_coff_type(enum pic_processor processor);
 enum pic_processor gp_processor_coff_proc(unsigned long coff_type);
 char *gp_processor_name(enum pic_processor processor, unsigned int choice);
 char *gp_processor_coff_name(unsigned long coff_type, unsigned int choice);
+char *gp_processor_script(enum pic_processor processor);
 int gp_processor_rom_width(enum proc_class class);
 int gp_processor_check_page(enum proc_class class, int address);
 int gp_processor_check_bank(enum proc_class class, int address);

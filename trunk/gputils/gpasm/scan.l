@@ -1,4 +1,5 @@
 %option noyywrap
+%x incl
 %x define
 %x definition
 %x title
@@ -55,12 +56,21 @@ static int force_decimal; /* Used to force decimal in errorlevel */
 
 %}
 
-IDENT  ([a-z_\x80-\xff?@][a-z_0-9\x80-\xff.?@]*)|([.][a-z_\x80-\xff.?@]*)
+IDENT  [.]?[a-z_\x80-\xff?@][a-z_0-9\x80-\xff.?@]*
 ESCCH  \\([abfnrtv\\?'"]|0[0-7]{2}|x[0-9a-f]{2})
 STR_QCHAR  ([^"\n]|{ESCCH})
 NUMCHAR [0-9a-f]
 
 %%
+^[ \t]*#?include[ \t]*[<"]? { BEGIN(incl); }
+<incl>[^<"\r\n]*[>"]?	 { /* got the include file name */
+			   char *pc = &yytext[yyleng - 1];
+			   if ((*pc == '"') || (*pc == '>'))
+			     *pc = '\0';
+			   BEGIN(INITIAL);
+			   yylval.s = strdup(yytext);
+			   return INCLUDE;
+			 }
 <<EOF>>		 	 {
 			   if (found_eof())
 			     yyterminate();
@@ -188,11 +198,6 @@ list		     	 {
 #?ifndef		 {
 			   /* #ifndef and ifdef can appear in column 1 */
 			   quoted = 1;
-			   yylval.s = strdup(yytext);
-			   return IDENTIFIER;
-			 }
-#?include   	 	 {
-			   /* #include and include can appear in column 1 */
 			   yylval.s = strdup(yytext);
 			   return IDENTIFIER;
 			 }
@@ -343,12 +348,12 @@ b'-?{NUMCHAR}+'          {
 			   }
 			   return NUMBER;
 			 }
-d'-?{NUMCHAR}+'          {
+d'-?[0-9]+'		 {
                            yytext[yyleng - 1] = '\0';
 			   yylval.i = stringtolong(yytext + 2, 10);
 			   return NUMBER;
 			 }			
-"."{NUMCHAR}+	         {
+"."[0-9]+	         {
                            yylval.i = stringtolong(yytext + 1, 10);
 			   return NUMBER;
 			 }
@@ -382,13 +387,6 @@ h'-?{NUMCHAR}+'          {
 			     gpwarning(GPW_MISSING_QUOTE, NULL);                           
                            yylval.s = strdup(yytext + 1);
 			   return STRING;
-                         }
-\<[^<"\r\n;]*\>          {
-			   /* treat include pathes as strings */
-			   char *pc = &yytext[yyleng - 1];
-			   *pc = '\0';
-                            yylval.s = strdup(yytext + 1);
- 			   return STRING;
                          }
 '{STR_QCHAR}'            {
                            yylval.i = gpasm_magic(yytext + 1);
@@ -454,8 +452,8 @@ void open_src(char *name, int isinclude)
 	  char tryname[BUFSIZ];
 	  int i;
 
-	  for(i = 0; i < n_include_paths; i++) {
-		  strcpy(tryname, include_paths[i]);
+	  for(i = 0; i < state.path_num; i++) {
+		  strcpy(tryname, state.paths[i]);
 		  strcat(tryname, COPY_CHAR);
 		  strcat(tryname, name);
 		  new->f = fopen(tryname, "rt");

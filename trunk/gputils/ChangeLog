@@ -1,3 +1,19 @@
+2003-04-06 Craig Franklin <craigfranklin@attbi.com>
+  * gputils 0.11.2 Released.
+  * Fixed section size bug in org directives when used in gpasm coff outputs.
+  * Fixed bug in cod file address size that confused MPLAB.
+  * Fixed bug in lexer when < and > were used in the same expression.
+  * Prevented symbols from absolute sections from being updated after
+    relocation.
+  * Added feature so gplink now loads a default linker script if one is not
+    specified.
+  * Updated header files.
+  * Updated linker scripts.
+  * Added configuration settings for OS/2 host.
+  * Modified lexer to allow [.][a-z][a-z0-9]* labels.
+  * Moved gpasm default header path to last in the search list.
+  * Changed the path to linker and header files in mingw port to relative.
+
 2003-04-02 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.11.1 Released.
 

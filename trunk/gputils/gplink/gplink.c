@@ -31,9 +31,6 @@ struct gplink_state state;
 
 int yyparse(void);
 
-/* The 16bit core is handled differently in some instances. */
-int _16bit_core = 0;
-
 /* return the number of missing symbols */
 int count_missing(void)
 {
@@ -219,25 +216,50 @@ void gplink_open_coff(char *name)
 {
   gp_object_type *object;
   gp_archive_type *archive;
+  FILE *coff;
+  char file_name[BUFSIZ];
   
-  /* FIXME:  need to add include pathes to this search */
+  strcpy(file_name, name);
+  
+  coff = fopen(file_name, "rb");
+  if ((coff == NULL) && (strchr(file_name, PATH_CHAR) == 0)) { 
+    /* If include file and no "/" in name, try searching include pathes */
+    int i;
 
-  switch(gp_identify_coff_file(name)) {
+    for(i = 0; i < state.numpaths; i++) {
+      strcpy(file_name, state.paths[i]);
+      strcat(file_name, COPY_CHAR);
+      strcat(file_name, name);
+      coff = fopen(file_name, "rb");
+      if (coff != NULL) {
+        break;
+      }
+    }  
+  }
+  
+  if (coff == NULL) {
+    perror(name);
+    exit(1);
+  }
+
+  /* FIXME: Three files are opened, surely one is sufficent */
+
+  switch(gp_identify_coff_file(file_name)) {
   case object_file:
     /* read the object */  
-    object = gp_read_coff(name);
-    object_append(object, name);
+    object = gp_read_coff(file_name);
+    object_append(object, file_name);
     break;
   case archive_file:
     /* read the archive */  
-    archive = gp_archive_read(name);
-    archive_append(archive, name);
+    archive = gp_archive_read(file_name);
+    archive_append(archive, file_name);
     break;
   case sys_err_file:
-    gp_error("can't open file \"%s\"", name);     
+    gp_error("can't open file \"%s\"", file_name);     
     break;
   case unknown_file:
-    gp_error("\"%s\" is not a valid coff object or archive", name);     
+    gp_error("\"%s\" is not a valid coff object or archive", file_name);     
     break; 
   default:
     assert(0);
@@ -269,6 +291,14 @@ void show_usage(void)
   printf("  -s FILE, --script FILE         Linker script.\n");
   printf("  -v, --version                  Show version.\n");
   printf("\n");
+  #ifdef USE_DEFAULT_PATHS
+    #ifdef HAVE_DOS_BASED_FILE_SYSTEM
+      printf("Default linker script path %s\n", DOS_LKR_PATH);
+    #else
+      printf("Default linker script path %s\n", GPLINK_LKR_PATH);
+    #endif
+  #endif
+  printf("\n");    
   printf("Report bugs to:\n");
   printf("%s\n", BUG_REPORT_URL);
   exit(0);
@@ -303,13 +333,15 @@ int main(int argc, char *argv[])
 
   /* initialize */
   state.hex_format = inhx32;
-  state.srcfilename = NULL;
-  state.object  = NULL;
-  state.archives = NULL;
+  state.numpaths = 0;
+  state.processor = no_processor;
   state.codfile = normal;
   state.hexfile = normal;
   state.mapfile = normal;
   state.objfile = suppress;
+  state.srcfilename = NULL;
+  state.object  = NULL;
+  state.archives = NULL;
 
   /* The symbols are case sensitive */
   state.symbol.definition = push_symbol_table(NULL, 0);
@@ -374,9 +406,10 @@ int main(int argc, char *argv[])
       break;
   }
 
-  /* FIXME: Remove this test, scripts can also specify the files. Later in
-    check that there is at least one object name passed to linker */
-  if (optind >= argc) {
+  if ((state.srcfilename == NULL) &&
+      (optind >= argc)) {
+    /* No linker script was specified and no object filenames were provided,
+       so print the usage */
     usage = 1;
   }
 
@@ -404,22 +437,44 @@ int main(int argc, char *argv[])
     gplink_open_coff(argv[optind]);
   }
 
-  if (state.object == NULL) {
-    gp_error("missing input object file");
-    return EXIT_FAILURE; 
-  }
-
-  if (state.object->class == PROC_CLASS_PIC16E)
-    _16bit_core = 1;
-
   /* Read the script */
   if (state.srcfilename != NULL) {
     open_src(state.srcfilename, 0);
     yyparse();
+#ifdef USE_DEFAULT_PATHS
+  } else if (state.object != NULL) {
+    /* The processor is known because an object was on the command line. So
+       use one of the default scripts that are distributed with gputils. */
+    char file_name[BUFSIZ];
+    char *script_name;
+    
+    assert(state.processor != no_processor); 
+    script_name = gp_processor_script(state.processor);
+    if (script_name == NULL) {
+      gp_error("linker script not specified and can't determine default script");
+      return EXIT_FAILURE; 
+    }
+    #ifdef HAVE_DOS_BASED_FILE_SYSTEM
+      strcpy(file_name, DOS_LKR_PATH);    
+    #else
+      strcpy(file_name, GPLINK_LKR_PATH);
+    #endif
+    strcat(file_name, COPY_CHAR);
+    strcat(file_name, script_name);
+    gp_message("using default linker script \"%s\"", file_name);
+    open_src(file_name, 0);
+    yyparse();
+#endif
   } else {
-    /* FIXME: Maybe add a default script so a user supplied one isn't always 
-       necessary. */ 
-    gp_error("linker command file not specified");
+    /* The user must supply the linker script name.  The processor isn't
+       commanded so the linker has no way to pick. */ 
+    gp_error("linker script not specified");
+    return EXIT_FAILURE; 
+  }
+
+  if (state.object == NULL) {
+    gp_error("missing input object file");
+    return EXIT_FAILURE; 
   }
 
   /* Construct the symbol tables. Determine which archive members are 

@@ -31,4 +31,3 @@ gplink
   * Complete protected features.
   * Check the 18xx relocations.
   * Handle sharebank sections properly.
-  * Add COD output.

@@ -10,27 +10,6 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-# Makefile.am
-# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 
-# James Bowman, Craig Franklin
-# 
-# This file is part of gputils.
-# 
-# gputils is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
-# 
-# gputils is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with gputils; see the file COPYING.  If not, write to
-# the Free Software Foundation, 59 Temple Place - Suite 330,
-# Boston, MA 02111-1307, USA.
-
 
 SHELL = @SHELL@
 
@@ -102,27 +81,22 @@ YACC = @YACC@
 
 SUBDIRS = @MAKE_SUBDIRS@
 
-# generate the rpm spec file when "make spec" or "make dist" is commanded.
-
-SPECFILE = gputils-@VERSION@.spec
-
-CLEANFILES = $(SPECFILE)
-
 EXTRA_DIST = \
 	./include/stdhdr.h \
 	./include/getopt.h \
 	config.h.in \
-	gputils.spec \
+	gputils.spec.in \
 	stamp-h.in \
 	TODO
 
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = 
+CONFIG_CLEAN_FILES =  gputils.spec
 DIST_COMMON =  README ./stamp-h.in AUTHORS COPYING ChangeLog INSTALL \
 Makefile.am Makefile.in NEWS TODO aclocal.m4 config.guess config.h.in \
-config.sub configure configure.in install-sh missing mkinstalldirs
+config.sub configure configure.in gputils.spec.in install-sh missing \
+mkinstalldirs
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -173,6 +147,8 @@ distclean-hdr:
 	-rm -f config.h
 
 maintainer-clean-hdr:
+gputils.spec: $(top_builddir)/config.status gputils.spec.in
+	cd $(top_builddir) && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.
@@ -361,7 +337,6 @@ installdirs-am:
 mostlyclean-generic:
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)
@@ -403,16 +378,8 @@ installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
-dist-hook: $(SPECFILE)
-
-spec: $(SPECFILE)
-
-$(SPECFILE): ${top_srcdir}/gputils.spec
-	sed \
-	-e 's%\@VERSION\@%$(VERSION)%g' \
-	-e 's%\@NAME\@%$(NAME)%g' \
-	-e 's%\@EMAIL\@%$(EMAIL)%g' \
-	${top_srcdir}/gputils.spec > $(SPECFILE)
+dist-hook:
+	cp gputils.spec $(distdir)     
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
