@@ -2768,6 +2768,14 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    /* add relocation for the access bit, if necessary */          
 	    reloc_evaluate(f, RELOCT_ACCESS);
 
+	    /* Default access (use the BSR unless access is to special registers) */
+	    if ((file < state.device.bsr_boundary) || 
+		(file >= (0xf00 + state.device.bsr_boundary))) {
+	      a = 0;
+	    } else {
+	      a = 1;
+	    }
+
 	    bit = maybe_evaluate(b);
 	    if (!((0 <= bit) && (bit <= 7)))
               gpwarning(GPW_RANGE, NULL);

@@ -1,3 +1,6 @@
+2003-05-03  Scott Dattalo  <scott@dattalo.com>
+  * 18f Bit instructions were not handling the Access bit properly
+
 2003-04-06 Craig Franklin <craigfranklin@attbi.com>
   * gputils 0.11.2 Released.
   * Fixed section size bug in org directives when used in gpasm coff outputs.
