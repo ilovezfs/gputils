@@ -2,7 +2,7 @@
 
 bin_PROGRAMS = gpdasm gplib gpvc gpvo
 
-CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
+AM_CPPFLAGS = -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 gpdasm_SOURCES=\
 	gpdasm.c\

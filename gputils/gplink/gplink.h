@@ -35,14 +35,17 @@ struct archivelist {
 enum outfile { normal, suppress, named };
 
 extern struct gplink_state {
+  char startdate[80];              /* When gplink ran */
   enum formats hex_format;         /* format of the output */
   char *paths[MAX_PATHS];          /* the list of include paths */
   int numpaths;                    /* number of paths in the list */
+  int byte_addr;                   /* program memory uses byte addressing */
   enum pic_processor processor;
   enum proc_class class;
   enum outfile
     codfile,			   /* Symbol output file control */
     hexfile,			   /* Hex output file control */
+    lstfile,			   /* List output file control */
     mapfile,			   /* Map output file control */
     objfile;			   /* Executable object file control */
   int fill_enable;		   /* Fill unused program memory with value */
@@ -51,18 +54,24 @@ extern struct gplink_state {
     basefilename[BUFSIZ],	   /* basename for generating hex,list,symbol filenames */
     codfilename[BUFSIZ],	   /* Symbol (.cod) file name */
     hexfilename[BUFSIZ],	   /* Hex (.hex) file name */
+    lstfilename[BUFSIZ],	   /* Symbol (.lst) file name */
     mapfilename[BUFSIZ],	   /* List (.map) file name */
     objfilename[BUFSIZ];	   /* Object (.o) file name */
   struct source_context *src;	   /* Top of the stack of the script files */
   struct {			   /* Map file state: */
     FILE *f;			     /*   Map file output */
-    char startdate[80];		     /*   When assembly started */
   } map;
   struct {			   /* Symbol file state: */
     FILE *f;			     /*   Symbol file output */
     int enabled;		     /*   nonzero if symbol file is enabled */
     int emitting;                    /*   flag indicating when an opcode is emitted */
   } cod;
+  struct {			   /* List file state: */
+    FILE *f;			     /*   List file output */
+    int enabled;		     /*   nonzero if list file is enabled */
+    struct list_context *src;        /*   list file context */
+    int was_org;                     /*   last address that generated code */
+  } lst;
   struct {
     struct symbol_table *definition; /* section definitions from script */
     struct symbol_table *logical;    /* logical definitions from script */
@@ -83,6 +92,14 @@ struct source_context {
   unsigned int line_number;
   struct yy_buffer_state *yybuf;
   struct source_context *prev;
+};
+
+struct list_context {
+  char *name;
+  gp_symbol_type *symbol;
+  FILE *f; 
+  unsigned int line_number;
+  struct list_context *prev;
 };
 
 void gplink_error(char *messg);

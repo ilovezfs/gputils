@@ -242,23 +242,23 @@ int main(int argc, char *argv[])
 
   state.hex_info = readhex(filename, state.i_memory);
 
-  if (state.hex_info.error) {
+  if (state.hex_info->error) {
     state.num.errors++;
   }
 
   if (print_hex_info) {
     printf("hex file name:   %s\n", filename);
     printf("hex file format: ");
-    if (state.hex_info.hex_format == inhx8m) {
+    if (state.hex_info->hex_format == inhx8m) {
       printf("inhx8m\n");
-    } else if (state.hex_info.hex_format == inhx16) {
+    } else if (state.hex_info->hex_format == inhx16) {
       printf("inhx16\n");
-    } else if (state.hex_info.hex_format == inhx32) {
+    } else if (state.hex_info->hex_format == inhx32) {
       printf("inhx32\n");
     } else {
       printf("UNKNOWN\n");
     }
-    printf("number of bytes: %i\n", state.hex_info.size);
+    printf("number of bytes: %i\n", state.hex_info->size);
     printf("\n");
   }
   

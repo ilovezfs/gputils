@@ -1,8 +1,10 @@
 ## Process this file with automake to produce Makefile.in
 
-AUTOMAKE_OPTIONS = foreign
-
-CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/include
+AM_CPPFLAGS =\
+	-I${top_srcdir}/include \
+	-DHEADER_PATH=\"@GPUTILS_HEADER_PATH@\" \
+	-DLKR_PATH=\"@GPUTILS_LKR_PATH@\" \
+	-DLIB_PATH=\"@GPUTILS_LIB_PATH@\"
 
 noinst_LIBRARIES = libgputils.a
 

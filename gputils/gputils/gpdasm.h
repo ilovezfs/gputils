@@ -33,7 +33,7 @@ extern struct gpdasm_state {
   char *srcfilename,            /* Source (.asm) file name */
     basefilename[BUFSIZ],       /* basename for generating hex,list,symbol filenames */
     hexfilename[BUFSIZ];        /* Hex (.hex) file name */
-  struct hex_data hex_info;     /* information on input hex file */
+  struct hex_data *hex_info;    /* information on input hex file */
   struct {			/* Totals for errors, warnings, messages */
     int errors;
     int warnings;

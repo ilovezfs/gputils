@@ -274,7 +274,7 @@ gp_cofflink_combine_overlay(gp_object_type *object, int remove_symbol)
    sections must have been combined first.  */
 
 void
-gp_cofflink_merge_sections(gp_object_type *object)
+gp_cofflink_merge_sections(gp_object_type *object, int byte_addr)
 {
   gp_section_type *first;
   gp_section_type *second;
@@ -284,6 +284,7 @@ gp_cofflink_merge_sections(gp_object_type *object)
   unsigned int org;
   unsigned int last;
   unsigned int offset;
+  unsigned int line_offset;
   unsigned int data;
 
   first = object->sections;
@@ -312,20 +313,6 @@ gp_cofflink_merge_sections(gp_object_type *object)
         relocation = relocation->next;
       }
 
-      /* Update the line number offsets */
-      _update_line_numbers(second->line_numbers, first->size);
-
-      /* Update the symbol table */
-      symbol = object->symbols;
-      while (symbol != NULL) {
-        if ((symbol->section_number > 0) &&  
-            (symbol->section == second)) {
-          symbol->section = first;
-          symbol->value += first->size;
-        }
-        symbol = symbol->next;
-      }
-
       /* Update the section symbol for the section symbol */
       second->symbol->value = first->size;
 
@@ -334,10 +321,16 @@ gp_cofflink_merge_sections(gp_object_type *object)
         /* the section is executable, so each word is two bytes */
         last = second->size / 2;
         offset = first->size / 2;
+        if (byte_addr) {
+          line_offset = first->size;
+        } else {
+          line_offset = first->size / 2;
+        }
       } else {
         /* the section is data, so each word is one byte */
         last = second->size;
         offset = first->size;
+        line_offset = first->size;
       }
       if(_has_data(second)) {
         for (org = 0; org < last; org++) {
@@ -345,6 +338,20 @@ gp_cofflink_merge_sections(gp_object_type *object)
           assert((data & MEM_USED_MASK) != 0);
           i_memory_put(first->data, org + offset, data);
         }      
+      }
+
+      /* Update the line number offsets */
+      _update_line_numbers(second->line_numbers, line_offset);
+
+      /* Update the symbol table */
+      symbol = object->symbols;
+      while (symbol != NULL) {
+        if ((symbol->section_number > 0) &&  
+            (symbol->section == second)) {
+          symbol->section = first;
+          symbol->value += line_offset;
+        }
+        symbol = symbol->next;
       }
 
       /* Add section sizes */
@@ -362,14 +369,16 @@ gp_cofflink_merge_sections(gp_object_type *object)
       }
 
       /* Append the line numbers from the second section to the first. */
-      if (first->num_lineno == 0) {
-        first->line_numbers = second->line_numbers;
-      } else {
-        first->line_numbers_tail->next = second->line_numbers;
+      if (second->num_lineno != 0) {
+        if (first->num_lineno == 0) {
+          first->line_numbers = second->line_numbers;
+        } else {
+          first->line_numbers_tail->next = second->line_numbers;
+        }
+        first->num_lineno += second->num_lineno;
+        first->line_numbers_tail = second->line_numbers_tail;
       }
-      first->num_lineno += second->num_lineno;
-      first->line_numbers_tail = second->line_numbers_tail;
-      
+
       /* Remove the second section*/
       list = object->sections;
       while(list != NULL) {
@@ -383,7 +392,7 @@ gp_cofflink_merge_sections(gp_object_type *object)
       /* FIXME: gp_coffgen_free_section(second); */
         
       /* Take another pass */
-      gp_cofflink_merge_sections(object);
+      gp_cofflink_merge_sections(object, byte_addr);
       return;
     }
     first = first->next;
@@ -587,7 +596,7 @@ _set_used(MemBlock *m, int byte_addr, unsigned int address, unsigned int size)
   for ( ; org < stop; org++) {
     data = i_memory_get(m, org);
     if (data & MEM_USED_MASK) {
-      gp_error("multiple sections using address %#lx", org);
+      gp_error("multiple sections using address %#lx", org << byte_addr);
       return;
     } else {
       i_memory_put(m, org, MEM_USED_MASK);
@@ -1110,7 +1119,7 @@ gp_cofflink_reloc(gp_object_type *object,
   gp_cofflink_combine_overlay(object, 0);
 
   /* combine all sections with the same name */
-  gp_cofflink_merge_sections(object);
+  gp_cofflink_merge_sections(object, byte_addr);
 
   /* create ROM data for initialized data sections */
   gp_cofflink_make_idata(object);
@@ -1180,7 +1189,7 @@ check_relative(gp_section_type *section, int org, int argument, int range)
   /* If the branch is too far then issue a warning */
   if ((argument > range) || (argument < -(range+1))) {
     gp_warning("relative branch out of range in at %#x of section \"%s\"",
-               org,
+               org << 1,
 	       section->name);
   }
 
@@ -1213,7 +1222,7 @@ gp_cofflink_patch_addr(enum proc_class class,
   value = symbol->value + relocation->offset;
 
   gp_debug("  patching %#x from %s with %#x", 
-           org, 
+           section->address + relocation->address, 
            section->name, 
            value);
   

@@ -128,7 +128,7 @@ void print_data(enum proc_class class, MemBlock *data, int org, int disassemble)
   printf("Data\n");
   while (1) {
     memory = i_memory_get(data, org);
-    if ((memory && MEM_USED_MASK) == 0)
+    if ((memory & MEM_USED_MASK) == 0)
       break;
     
     if (disassemble)

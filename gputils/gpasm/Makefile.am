@@ -4,15 +4,15 @@ bin_PROGRAMS = gpasm
 
 noinst_LIBRARIES = libgpasm.a
 
-CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
+AM_CPPFLAGS = -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 libgpasm_a_SOURCES=\
+	parse.y \
 	cod.c \
 	coff.c \
 	directive.c \
 	evaluate.c \
 	gpasm.c \
-	parse.y \
 	scan.l \
 	gperror.c \
 	lst.c \
@@ -30,13 +30,14 @@ libgpasm_a_SOURCES=\
 	lst.h \
 	macro.h \
 	processor.h \
+	scan.h \
 	special.h
 
 gpasm_SOURCES = main.c
 
 gpasm_LDADD = libgpasm.a ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 
-YFLAGS = -dvt
-LFLAGS = -i
+AM_YFLAGS = -dvt
+AM_LFLAGS = -i
 
-EXTRA_DIST = scan.h parse.h
+EXTRA_DIST = parse.h

@@ -158,7 +158,7 @@ _gp_coffgen_write_data(enum proc_class class,
     last = org + section->size;
   }
 
-#ifdef __DEBUG__
+#ifdef GPUTILS_DEBUG
   printf("section \"%s\"\nsize= %i\ndata:\n", section->name, section->size);
   print_i_memory(section->data, class == PROC_CLASS_PIC16E ? 1 : 0);
 #endif

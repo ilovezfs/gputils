@@ -8,6 +8,9 @@
 /* Define to 1 if using `alloca.c'. */
 #undef C_ALLOCA
 
+/* Define if you want to enable GPUTILS debug features. */
+#undef GPUTILS_DEBUG
+
 /* Define to 1 if you have `alloca', as a function or macro. */
 #undef HAVE_ALLOCA
 
@@ -130,9 +133,6 @@
 /* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
    `char[]'. */
 #undef YYTEXT_POINTER
-
-/* Define if you want to enable GPUTILS debug features. */
-#undef __DEBUG__
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const

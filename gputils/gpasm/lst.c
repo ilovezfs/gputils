@@ -350,7 +350,7 @@ void lst_format_line(char *src_line, int value)
 
   lst_line(m);
 
-#ifdef PARSE_DEBUG
+#ifdef GPUTILS_DEBUG
   fprintf(stderr, "%s\n\n", m);
 #endif
 

@@ -2,7 +2,7 @@
 
 bin_PROGRAMS = gpal
 
-CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
+AM_CPPFLAGS = -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 gpal_SOURCES=\
 	parse.y \
@@ -25,7 +25,7 @@ gpal_SOURCES=\
 
 gpal_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 
-YFLAGS = -dvt
-LFLAGS = -i
+AM_YFLAGS = -dvt
+AM_LFLAGS = -i
 
-EXTRA_DIST = scan.h parse.h
+EXTRA_DIST = parse.h

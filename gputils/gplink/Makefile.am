@@ -2,23 +2,26 @@
 
 bin_PROGRAMS = gplink
 
-CPPFLAGS = @CPPFLAGS@ -I${top_srcdir}/libgputils -I${top_srcdir}/include
+AM_CPPFLAGS = -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 gplink_SOURCES=\
+	parse.y \
 	cod.c \
 	gplink.c \
+	lst.c \
 	map.c \
 	script.c \
-	parse.y \
 	scan.l \
 	cod.h \
 	gplink.h \
+	lst.h \
 	map.h \
+	scan.h \
 	script.h
 
 gplink_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 
-YFLAGS = -dvt
-LFLAGS = -i
+AM_YFLAGS = -dvt
+AM_LFLAGS = -i
 
-EXTRA_DIST = scan.h parse.h
+EXTRA_DIST = parse.h
