@@ -1084,6 +1084,9 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
         /* initialize the local data */
         append_init(decl_name, DECL_INIT(decl));
       }
+      if (DECL_ADDR(decl)) {
+        analyze_error(decl, "address can't be specified on local data");
+      }
     }
 
     decl = decl->next;
@@ -1162,7 +1165,7 @@ analyze_declarations(void)
   for (i = 0; i < HASH_SIZE; i++) {
     for (sym = state.global->hash_table[i]; sym; sym = sym->next) {
       var = get_symbol_annotation(sym);
-      if (var && is_data(var) && in_module(var)) {
+      if (var && is_data(var) && in_module(var) && !var->is_absolute) {
         write_mem = true;
         if ((!var->is_used) && (var->storage != storage_public)) {
           analyze_warning(var->node, "unused variable %s", var->name);
@@ -1182,6 +1185,32 @@ analyze_declarations(void)
 
   if (first_time == false)
     fprintf(state.output.f, "\n");
+
+  /* write the abolute sections memory section */
+
+  first_time = true;
+
+  for (i = 0; i < HASH_SIZE; i++) {
+    for (sym = state.global->hash_table[i]; sym; sym = sym->next) {
+      var = get_symbol_annotation(sym);
+      if (var && is_data(var) && in_module(var) && var->is_absolute) {
+        write_mem = true;
+        if ((!var->is_used) && (var->storage != storage_public)) {
+          analyze_warning(var->node, "unused variable %s", var->name);
+          if ((state.optimize.unused_mem) && (!var->is_assigned)) {
+            write_mem = false;
+          }
+        }
+        if (write_mem) {
+          fprintf(state.output.f, ".udata_%s udata %#x\n",
+                  var->name,
+                  var->address);
+          codegen_write_data(var->name, type_size(var->type), var->storage);
+          fprintf(state.output.f, "\n");
+        }
+      }      
+    }
+  }
 
   /* write the external symbols */
 
@@ -1433,6 +1462,10 @@ analyze_module(tree *file)
         if (DECL_INIT(current)) {
           analyze_error(current, "initialized data not yet supported");
         }
+        if (DECL_ADDR(current)) {
+          var->is_absolute = true;
+          var->address = maybe_evaluate(DECL_ADDR(current));
+        }
       }
       break;
     case node_proc:
@@ -1528,6 +1561,11 @@ analyze_public(tree *file)
         var = get_global(name);
         if (var) {
           var->storage = storage_public;       
+          if ((DECL_ADDR(current)) && 
+              (var->address != maybe_evaluate(DECL_ADDR(current)))) {
+            analyze_error(current, "mismatch in declared absolute address",
+                          name); 
+          }
         } else {
           analyze_error(current, "missing definition for %s", name); 
         }
@@ -1542,6 +1580,10 @@ analyze_public(tree *file)
                                 DECL_TYPE(current));
         if (DECL_INIT(current)) {
           analyze_error(current, "declarations can not be initialized");
+        }
+        if (DECL_ADDR(current)) {
+          var->is_absolute = true;
+          var->address = maybe_evaluate(DECL_ADDR(current));
         }
       } else {
         assert(0);

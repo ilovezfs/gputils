@@ -72,6 +72,7 @@ DECCHAR [0-9]
 			}
 "alias"			{ return ALIAS; }
 "array"			{ return ARRAY; }
+"at"			{ return AT; }
 "begin"			{ return BEGIN_TOK; }
 "case"			{ return CASE; }
 "constant"		{ return CONSTANT; }

@@ -9,7 +9,7 @@
 %DVIPSWebPage: (www.radicaleye.com)
 %DVIPSCommandLine: dvips -t letter -o gputils.ps gputils.dvi
 %DVIPSParameters: dpi=600, compressed
-%DVIPSSource:  TeX output 2004.07.04:0108
+%DVIPSSource:  TeX output 2004.07.07:2054
 %%BeginProcSet: texc.pro
 %!
 /TeXDict 300 dict def TeXDict begin/N{def}def/B{bind def}N/S{exch}N/X{S
@@ -1120,15 +1120,15 @@ y Fb(for)49 b(i)h(in)f(0)h(to)f(10)510 2711 y(loop)610
 (speci\002ed)h(by)g(<label>.)24 b(<label>)17 b(must)h(occur)f(with)i
 (in)f(the)g(same)g(subprogram)203 3586 y(as)j(the)f(goto.)k(<label>)c
 (can)g(appear)f(before)g(or)h(after)g(the)g(goto)f(statement.)328
-3685 y(The)g(use)g(of)g(goto)f(is)j(discouraged)c(in)i(most)g
-(languages,)f(b)n(ut)h(most)h(ha)n(v)o(e)e(them.)24 b(The)o(y)19
-b(can)g(aid)g(in)g(the)g(creation)g(of)203 3785 y(comple)o(x)g(state)i
-(machines.)j(F)o(or)19 b(gpal)h(it)h(the)f(mechanism)f(for)h(e)o
-(xiting)f(in\002nite)h(loops)g(or)f(e)o(xiting)h(\002nite)g(loops)g
-(early)-5 b(.)411 3967 y Fb(loop)510 4067 y(j)50 b(=)g(j)f(+)h(1;)510
-4167 y(if)g(j)f(=)h(100)f(then)610 4266 y(goto)g(end_of_loop;)510
-4366 y(end)h(if;)411 4466 y(end)f(loop;)411 4565 y(end_of_loop:)p
-eop end
+3685 y(The)k(use)h(of)g(goto)f(is)h(discouraged)e(in)i(most)g
+(languages,)f(b)n(ut)g(most)h(ha)n(v)o(e)f(them.)36 b(The)o(y)22
+b(can)i(aid)g(in)g(the)f(creation)203 3785 y(of)f(comple)o(x)f(state)j
+(machines.)31 b(F)o(or)22 b(gpal,)h(it)g(is)g(the)g(mechanism)e(for)h
+(e)o(xiting)g(in\002nite)g(loops)g(or)h(e)o(xiting)e(\002nite)i(loops)
+203 3884 y(early)-5 b(.)411 4067 y Fb(loop)510 4167 y(j)50
+b(=)g(j)f(+)h(1;)510 4266 y(if)g(j)f(=)h(100)f(then)610
+4366 y(goto)g(end_of_loop;)510 4466 y(end)h(if;)411 4565
+y(end)f(loop;)411 4665 y(end_of_loop:)p eop end
 %%Page: 14 15
 TeXDict begin 14 14 bop 203 42 a Fh(CHAPTER)21 b(2.)46
 b(GP)-8 b(AL)2694 b Fi(14)203 275 y Fd(2.6.5)99 b(If)411
@@ -1160,45 +1160,56 @@ TeXDict begin 15 15 bop 203 42 a Fh(CHAPTER)21 b(2.)46
 b(GP)-8 b(AL)2694 b Fi(15)203 275 y(Pragmas)25 b(pro)o(vide)e(data)i
 (to)g(compiler)f(which)g(is)i(outside)f(of)g(its)h(le)o(gal)e(syntax.)
 39 b(The)25 b(table)g(belo)n(w)f(summarizes)g(the)203
-375 y(pragmas)19 b(a)n(v)n(ailable:)p 203 640 3559 4
-v 203 739 4 100 v 403 710 a(Name)p 797 739 V 594 w(F)o(ormat)p
-1829 739 V 1166 w(Description)p 3759 739 V 203 743 3559
-4 v 203 763 V 203 862 4 100 v 268 832 a(Code)h(Address)p
-797 862 V 125 w(code_address)e(=)i(<constant>)p 1829
-862 V 125 w(Mak)o(e)g(the)g(code)f(section)h(absolute)g(at)h(address)e
-(<constant>.)p 3759 862 V 203 866 3559 4 v 203 965 4
-100 v 279 935 a(Code)h(Section)p 797 965 V 155 w(code_section)f(=)h
-(\223<name>\223)p 1829 965 V 413 w(Set)h(the)f(code)g(section)g(name)f
-(to)i(<name>.)p 3759 965 V 203 969 3559 4 v 203 1068
-4 100 v 340 1038 a(Processor)p 797 1068 V 274 w(processor)e(=)h
-(\223<name>\223)p 1829 1068 V 519 w(Set)g(the)h(processor)e(name)g(to)h
-(<name>.)p 3759 1068 V 203 1072 3559 4 v 203 1171 4 100
-v 256 1141 a(Udata)g(Address)p 797 1171 V 102 w(udata_address)e(=)j
-(<constant>)p 1829 1171 V 101 w(Mak)o(e)f(the)g(udata)g(section)g
-(absolute)f(at)i(address)f(<constant>.)p 3759 1171 V
-203 1174 3559 4 v 203 1274 4 100 v 268 1244 a(Udata)g(Section)p
-797 1274 V 142 w(udata_section=)e(\223<name>\223)p 1829
-1274 V 401 w(Set)j(the)f(udata)f(section)h(name)g(to)g(<name>.)p
-3759 1274 V 203 1277 3559 4 v 203 1630 a Fd(2.6.9)99
-b(Retur)o(n)411 1785 y Fb(return)48 b(<expression>;)203
-1968 y Fi(Ev)n(aluate)19 b(the)i(<e)o(xpression>,)d(place)h(it)i(in)g
+375 y(pragmas)19 b(a)n(v)n(ailable:)p 203 600 3559 4
+v 203 700 4 100 v 403 670 a(Name)p 797 700 V 594 w(F)o(ormat)p
+1829 700 V 1166 w(Description)p 3759 700 V 203 703 3559
+4 v 203 723 V 203 823 4 100 v 268 793 a(Code)h(Address)p
+797 823 V 125 w(code_address)e(=)i(<constant>)p 1829
+823 V 125 w(Mak)o(e)g(the)g(code)f(section)h(absolute)g(at)h(address)e
+(<constant>.)p 3759 823 V 203 826 3559 4 v 203 926 4
+100 v 279 896 a(Code)h(Section)p 797 926 V 155 w(code_section)f(=)h
+(\223<name>\223)p 1829 926 V 413 w(Set)h(the)f(code)g(section)g(name)f
+(to)i(<name>.)p 3759 926 V 203 929 3559 4 v 203 1028
+4 100 v 340 999 a(Processor)p 797 1028 V 274 w(processor)e(=)h
+(\223<name>\223)p 1829 1028 V 519 w(Set)g(the)h(processor)e(name)g(to)h
+(<name>.)p 3759 1028 V 203 1032 3559 4 v 203 1131 4 100
+v 256 1102 a(Udata)g(Address)p 797 1131 V 102 w(udata_address)e(=)j
+(<constant>)p 1829 1131 V 101 w(Mak)o(e)f(the)g(udata)g(section)g
+(absolute)f(at)i(address)f(<constant>.)p 3759 1131 V
+203 1135 3559 4 v 203 1234 4 100 v 268 1204 a(Udata)g(Section)p
+797 1234 V 142 w(udata_section=)e(\223<name>\223)p 1829
+1234 V 401 w(Set)j(the)f(udata)f(section)h(name)g(to)g(<name>.)p
+3759 1234 V 203 1238 3559 4 v 203 1543 a Fd(2.6.9)99
+b(Retur)o(n)411 1699 y Fb(return)48 b(<expression>;)203
+1842 y Fi(Ev)n(aluate)19 b(the)i(<e)o(xpression>,)d(place)h(it)i(in)g
 (the)f(return)f(re)o(gister)m(,)g(and)g(return)h(from)f(the)h
-(function.)203 2206 y Fd(2.6.10)99 b(While)411 2361 y
-Fb(while)49 b(<expression>)510 2461 y(loop)610 2561 y(<statements>)510
-2660 y(end)h(loop;)203 2843 y Fi(The)20 b(statements)g(in)h(the)f
+(function.)203 2072 y Fd(2.6.10)99 b(While)411 2228 y
+Fb(while)49 b(<expression>)510 2327 y(loop)610 2427 y(<statements>)510
+2527 y(end)h(loop;)203 2670 y Fi(The)20 b(statements)g(in)h(the)f
 (block)f(are)h(e)o(x)o(ecuted)f(while)h(<e)o(xpression>)e(is)j(true.)k
-(Here)20 b(is)h(an)f(e)o(xample:)411 3025 y Fb(while)49
-b(j)g(<)h(10)510 3125 y(loop)610 3225 y(j)g(=)f(j)h(+)f(1;)510
-3324 y(end)h(loop;)203 3605 y Fe(2.7)119 b(Declarations)203
-3807 y Fd(2.7.1)99 b(V)-9 b(ariables)203 3962 y Fi(Symbols)17
+(Here)20 b(is)h(an)f(e)o(xample:)411 2812 y Fb(while)49
+b(j)g(<)h(10)510 2912 y(loop)610 3012 y(j)g(=)f(j)h(+)f(1;)510
+3111 y(end)h(loop;)203 3384 y Fe(2.7)119 b(Declarations)203
+3587 y Fd(2.7.1)99 b(V)-9 b(ariables)203 3742 y Fi(Symbols)17
 b(whose)h(v)n(alues)g(change)f(during)f(runtime)h(are)h(referred)e(to)j
 (as)f(v)n(ariables.)24 b(Because)18 b(v)n(ariables)f(change)g(v)n(alue)
-203 4062 y(during)24 b(run)i(time)g(the)o(y)f(are)h(stored)g(in)g(data)
-g(memory)-5 b(.)40 b(An)26 b(e)o(xpression)e(speci\002es)j(its)g
-(initial)f(v)n(alue.)42 b(A)27 b(v)n(ariable)d(is)203
-4162 y(declared)19 b(as)i(follo)n(ws:)411 4344 y Fb(<name>)48
-b(:)i(<type>)f([=)g(<expression>]?;)203 4527 y Fi(Here)20
-b(is)h(an)f(e)o(xample:)411 4710 y Fb(gain)49 b(:)g(short)g(=)h(10;)p
+203 3842 y(during)22 b(run)g(time)i(the)o(y)e(are)h(stored)g(in)h(data)
+f(memory)-5 b(.)32 b(An)23 b(e)o(xpression)f(speci\002es)h(its)i
+(initial)e(v)n(alue)g(and)g(the)g(address)203 3941 y(of)d(the)g(v)n
+(ariable.)k(A)d(v)n(ariable)e(is)i(declared)e(as)i(follo)n(ws:)411
+4084 y Fb(<name>)48 b(:)i(<type>)f([=)g(<expression>]?)e([at)j
+(<expression>]?;)203 4227 y Fi(Here)20 b(is)h(an)f(e)o(xample:)411
+4370 y Fb(gain)49 b(:)g(short)g(=)h(10)f(at)h(0x30;)203
+4513 y Fi(As)22 b(sho)n(wn)e(in)h(the)g(e)o(xample)e(abo)o(v)o(e,)h
+(the)g(address)h(of)g(the)f(v)n(ariable)g(can)h(be)g(speci\002ed.)27
+b(This)21 b(feature)e(is)j(not)f(a)n(v)n(ailable)203
+4613 y(for)f(v)n(ariables)f(declared)g(within)h(a)h(subprogram.)h(This)
+e(is)h(a)n(v)n(ailable)f(for)f(global)h(data.)25 b(Ho)n(we)n(v)o(er)m
+(,)18 b(this)i(should)f(gener)n(-)203 4712 y(ally)j(be)g(a)n(v)n
+(oided.)29 b(Manually)20 b(assigning)i(addresses)f(can)h(interfere)e
+(with)i(optimial)g(relocation)e(of)i(the)f(data)h(memory)203
+4812 y(sections.)j(This)c(could)e(result)h(in)g(more)g(bank)f
+(switching)g(and)h(a)h(more)e(fragmented)f(memory)g(map.)p
 eop end
 %%Page: 16 17
 TeXDict begin 16 16 bop 203 42 a Fh(CHAPTER)21 b(2.)46

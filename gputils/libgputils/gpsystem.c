@@ -209,6 +209,22 @@ gp_lower_case(char *name)
   return new;
 }
 
+char *
+gp_upper_case(char *name)
+{
+  char *new;
+  char *ptr;
+
+  ptr = new = strdup(name);
+
+  while (*ptr != '\0') {
+    *ptr = toupper(*ptr);
+    ptr++;
+  }
+
+  return new;
+}
+
 /* linked list functions */
 
 gp_linked_list *

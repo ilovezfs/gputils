@@ -72,6 +72,7 @@ static tree *case_ident = NULL;
 /* keywords */
 %token <i> ALIAS     "alias"
 %token <i> ARRAY     "array"
+%token <i> AT        "at"
 %token <i> CASE      "case"
 %token <i> CONSTANT  "constant"
 %token <i> BEGIN_TOK "begin"
@@ -352,17 +353,27 @@ decl_block:
 decl:
 	IDENT ':' IDENT ';'
 	{ 
-	  $$ = mk_decl($1, false, $3, NULL);
+	  $$ = mk_decl($1, false, $3, NULL, NULL);
+        }
+	|
+	IDENT ':' IDENT AT expr ';'
+	{ 
+	  $$ = mk_decl($1, false, $3, NULL, $5);
         }
 	|
 	IDENT ':' IDENT '=' expr ';'
 	{ 
-	  $$ = mk_decl($1, false, $3, $5);
+	  $$ = mk_decl($1, false, $3, $5, NULL);
+        }
+	|
+	IDENT ':' IDENT '=' expr AT expr ';'
+	{ 
+	  $$ = mk_decl($1, false, $3, $5, $7);
         }
 	|
 	IDENT ':' CONSTANT IDENT '=' expr ';'
 	{ 
-	  $$ = mk_decl($1, true, $4, $6);
+	  $$ = mk_decl($1, true, $4, $6, NULL);
         }
 	;
 

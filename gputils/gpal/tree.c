@@ -185,13 +185,15 @@ tree *
 mk_decl(char *name,
         gp_boolean constant,
         char *type,
-        tree *init)
+        tree *init,
+        tree *addr)
 {
   tree *new = mk_node(node_decl);
   new->value.decl.name = name;
   new->value.decl.constant = constant;
   new->value.decl.type = type;
   new->value.decl.init = init;
+  new->value.decl.addr = addr;
   
   return new;
 }
@@ -478,7 +480,14 @@ print_node(tree *node, int level)
            DECL_CONSTANT(node) ? " constant " : " ",
            DECL_TYPE(node));
     if (DECL_INIT(node)) {
+      print_space(level);
+      printf("initial value:\n");
       print_node(DECL_INIT(node), level);
+    }
+    if (DECL_ADDR(node)) {
+      print_space(level);
+      printf("absolute address:\n");
+      print_node(DECL_ADDR(node), level);
     }
     break;
   case node_file:
