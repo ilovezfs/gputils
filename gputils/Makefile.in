@@ -101,10 +101,17 @@ YACC = @YACC@
 
 SUBDIRS = @MAKE_SUBDIRS@
 
+# generate the rpm spec file when "make spec" or "make dist" is commanded.
+
+SPECFILE = gputils-@VERSION@.spec
+
+CLEANFILES = $(SPECFILE)
+
 EXTRA_DIST = \
 	./include/stdhdr.h \
 	./include/getopt.h \
 	config.h.in \
+	gputils.spec \
 	stamp-h.in \
 	TODO
 
@@ -319,6 +326,7 @@ distdir: $(DISTFILES)
 	      || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) top_distdir="$(top_distdir)" distdir="$(distdir)" dist-hook
 info-am:
 info: info-recursive
 dvi-am:
@@ -352,6 +360,7 @@ installdirs-am:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)
@@ -392,6 +401,17 @@ install uninstall-am uninstall all-redirect all-am all installdirs-am \
 installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
+
+dist-hook: $(SPECFILE)
+
+spec: $(SPECFILE)
+
+$(SPECFILE): ${top_srcdir}/gputils.spec
+	sed \
+	-e 's%\@VERSION\@%$(VERSION)%g' \
+	-e 's%\@NAME\@%$(NAME)%g' \
+	-e 's%\@EMAIL\@%$(EMAIL)%g' \
+	${top_srcdir}/gputils.spec > $(SPECFILE)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
