@@ -2,8 +2,12 @@
 
 dnl Process this file with autoconf to produce a configure script.
 
+AC_PREREQ(2.57)
+
 # Initialization
-AC_INIT(gpasm/directive.c)
+AC_INIT([gputils],[0.11.4])
+AC_CONFIG_SRCDIR(gpasm/gpasm.c)
+AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
 AM_MAINTAINER_MODE
 
@@ -14,16 +18,9 @@ AC_CANONICAL_HOST
 # Defaults
 GPASM_HEADER_PATH="\$(datadir)/gputils/header"
 GPLINK_LKR_PATH="\$(datadir)/gputils/lkr"
-GPUTILS_MAJOR_VERSION=0
-GPUTILS_MINOR_VERSION=11
-GPUTILS_MICRO_VERSION=3
-GPUTILS_VERSION=$GPUTILS_MAJOR_VERSION.$GPUTILS_MINOR_VERSION.$GPUTILS_MICRO_VERSION
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
 MAKE_SUBDIRS="libgputils libiberty gpasm header lkr doc"
-
-# Initialize automake
-AM_INIT_AUTOMAKE(gputils, $GPUTILS_VERSION)
 
 # Check for additional parameters
 AC_ARG_ENABLE(debug, 
@@ -71,9 +68,6 @@ AC_CHECK_FUNCS(memset strcasecmp strchr strdup strerror stricmp strrchr strtol)
 # Check for functions to compile into libiberty (getopt is always compiled).
 IBERTYOBJS=
 AC_CHECK_FUNC(bzero, , [IBERTYOBJS="$IBERTYOBJS bzero.o"])
-
-# Check if host will require an extension on the executable (.exe)
-AC_EXEEXT
 
 # Options for the system on which the package will run
 case "${host}" in
@@ -139,30 +133,28 @@ fi
 # Substitute configuration variables
 AC_SUBST(GPASM_HEADER_PATH)
 AC_SUBST(GPLINK_LKR_PATH)
-AC_SUBST(GPUTILS_MAJOR_VERSION)
-AC_SUBST(GPUTILS_MINOR_VERSION)
-AC_SUBST(GPUTILS_MICRO_VERSION)
-AC_SUBST(GPUTILS_VERSION)
 AC_SUBST(IBERTYOBJS)
 AC_SUBST(LIBGPUTILS)
 AC_SUBST(LIBIBERTY)
 AC_SUBST(MAKE_SUBDIRS)
 
 # Generate Makefiles
-AC_OUTPUT(Makefile 
-          doc/Makefile 
-          gpasm/Makefile 
-          gplink/Makefile 
-          gputils/Makefile 
-          header/Makefile 
-          libgputils/Makefile 
-          libiberty/Makefile 
-          lkr/Makefile
-          gputils.spec)
+AC_CONFIG_FILES([Makefile 
+                 doc/Makefile 
+                 gpasm/Makefile 
+                 gplink/Makefile 
+                 gputils/Makefile 
+                 header/Makefile 
+                 libgputils/Makefile 
+                 libiberty/Makefile 
+                 lkr/Makefile
+                 gputils.spec])
+
+AC_OUTPUT
 
 AC_MSG_RESULT([
 
-gputils-$GPUTILS_VERSION is now configured for $canonical_host_type
+gputils-$PACKAGE_VERSION is now configured for $canonical_host_type
 
   Build:                $build
   Host:                 $host
