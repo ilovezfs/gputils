@@ -1,5 +1,5 @@
-/* Generate coff file
-   Copyright (C) 2002 Craig Franklin
+/* Write coff objects
+   Copyright (C) 2003 Craig Franklin
 
 This file is part of gputils.
 
@@ -18,21 +18,9 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-#ifndef __COFF_H__
-#define __COFF_H__
+#ifndef __GPWRITEOBJ_H__
+#define __GPWRITEOBJ_H__
 
-#define SECTION_FLAGS state.obj.flags
-
-void coff_init(void);
-void coff_close_file(void);
-void coff_new_section(char *name, int addr, int flags);
-void coff_add_sym(char *name, int value, int section_number, int type, int class);
-void coff_reloc(int symbol, short offset, unsigned short type);
-void coff_linenum(int emitted);
-gp_symbol_type *coff_add_filesym(char *name, int isinclude);
-void coff_add_eofsym(void);
-void coff_add_listsym(void);
-void coff_add_nolistsym(void);
-char *coff_local_name(char *name);
+int gp_write_coff(gp_object_type *object);
 
 #endif

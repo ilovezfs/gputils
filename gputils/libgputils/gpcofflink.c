@@ -30,8 +30,7 @@ Boston, MA 02111-1307, USA.  */
 
 void 
 gp_link_add_symbol(struct symbol_table *table,
-                   char *name,
-		   struct syment *coffsym,
+		   gp_symbol_type *symbol,
 		   gp_object_type *file)
 {
   struct symbol      *sym;
@@ -39,13 +38,13 @@ gp_link_add_symbol(struct symbol_table *table,
 
   /* Search the for the symbol.  If not found, then add it to 
      the global symbol table.  */
-  sym = get_symbol(table, name);
+  sym = get_symbol(table, symbol->name);
   if (sym != NULL)
     return;  
 
-  sym = add_symbol(table, name);
+  sym = add_symbol(table, symbol->name);
   var = malloc(sizeof(*var));
-  var->coffsym = coffsym;
+  var->symbol = symbol;
   var->file = file;
   annotate_symbol(sym, var);
   
@@ -78,56 +77,46 @@ gp_link_add_symbols(struct symbol_table *definition,
                     struct symbol_table *missing,
                     gp_object_type *object)  
 {
-  gp_symbol_type *list = NULL;
-  struct syment *coffsym = NULL;
-  char name[BUFSIZ];
+  gp_symbol_type *symbol = NULL;
   struct symbol *sym; 
   gp_coffsymbol_type *var;
-  int i;
 
   if ((definition == NULL) || (object == NULL))
     return 1;
 
-  list = object->sym_table;
+  symbol = object->symbols;
 
-  while (list != NULL ) {
-    coffsym = &list->symbol;
-    gp_coffgen_fetch_symbol_name(object, coffsym, &name[0]);
+  while (symbol != NULL ) {
     /* process all external symbols that are not directives */
-    if ((coffsym->st_class == C_EXT) && (name[0] != '.')) {
-      if (coffsym->sec_num == 0) {
+    if ((symbol->class == C_EXT) && (symbol->name[0] != '.')) {
+      if (symbol->section_number == 0) {
         /* This symbol is defined elsewhere. Check for it in the symbol 
 	   definitions.  If it doesn't exist there, add it to the missing
 	   symbol table, if not already entered. */
-	sym = get_symbol(definition, &name[0]); 
+	sym = get_symbol(definition, symbol->name); 
         if ((sym == NULL) && (missing != NULL))
-          gp_link_add_symbol(missing, &name[0], coffsym, object);
+          gp_link_add_symbol(missing, symbol, object);
       } else {
         /* External symbol definition.  See if it is already defined, it so
 	   it is an error. Add the symbol to the symbol definitions and remove
 	   it from the missing symbol table if it exists there */
-	sym = get_symbol(definition, &name[0]); 
+	sym = get_symbol(definition, symbol->name); 
         if (sym != NULL) {
           /* duplicate symbol */
           var = get_symbol_annotation(sym);
           gp_error("duplicate symbol \"%s\" defined in \"%s\" and \"%s\"", 
-                   name,
+                   symbol->name,
                    var->file->filename,
                    object->filename);
         } else {	
-          gp_link_add_symbol(definition, &name[0], coffsym, object);
+          gp_link_add_symbol(definition, symbol, object);
         }
         if (missing != NULL)
-          gp_link_remove_symbol(missing, &name[0]);
+          gp_link_remove_symbol(missing, symbol->name);
       }     
     }
-
-    /* don't process auxillary symbols */
-    for (i = 0; i < coffsym->num_auxsym; i++) {
-      list = list->next;
-    }
     
-    list = list->next;
+    symbol = symbol->next;
 
   }
 
@@ -145,8 +134,6 @@ gp_link_reloc(struct objectlist *list,
   gp_object_type  *object;
   gp_section_type *section;
   gp_symbol_type  *symbol;
-  char name[256];
-  int i;
   struct symbol *sym;
   char *section_name;
   struct linker_section *section_def;
@@ -160,8 +147,7 @@ gp_link_reloc(struct objectlist *list,
     assert(object != NULL);
     section = object->sections;
     while (section != NULL) {
-      gp_coffgen_fetch_section_name(object, &section->header, &name[0]);
-      sym = get_symbol(logical_sections, &name[0]);
+      sym = get_symbol(logical_sections, section->name);
       if (sym == NULL) {
         /* FIXME: Maybe issue error or place code in a default location*/  
       } else {
@@ -173,21 +159,15 @@ gp_link_reloc(struct objectlist *list,
         section_def = get_symbol_annotation(sym);
         assert(section_def != NULL);
         /* assign the address to this section */
-	section->header.s_paddr = section_def->next_address;
-        section->header.s_vaddr = section_def->next_address;
-        section_def->next_address += (section->header.s_size / 2);
+	section->address = section_def->next_address;
+        section_def->next_address += (section->size / 2);
       }
     
       /* update the symbol addresses for this section */
-      symbol = object->sym_table;
+      symbol = object->symbols;
       while (symbol != NULL) {
-        if (symbol->symbol.sec_num == section->number) {
-          symbol->symbol.value += section->header.s_paddr; 
-        }
-      
-        /* don't process auxillary symbols */
-        for (i = 0; i < symbol->symbol.num_auxsym; i++) {
-          symbol = symbol->next;
+        if (symbol->section == section) {
+          symbol->value += section->address; 
         }
     
         symbol = symbol->next;
@@ -263,10 +243,8 @@ gp_link_patch(struct objectlist *list,
   gp_object_type     *object;
   gp_section_type    *section;
   gp_reloc_type      *relocation;
-  gp_symbol_type     *symbolentry;
+  gp_symbol_type     *symbol;
   gp_coffsymbol_type *var;
-  struct syment      *symbol;
-  char name[256];
   struct symbol *sym;
   
   assert(list != NULL);
@@ -280,23 +258,20 @@ gp_link_patch(struct objectlist *list,
       /* patch raw data with relocation entries */
       relocation = section->relocations;
       while (relocation != NULL) {
-        symbolentry = gp_coffgen_findsymbolnum(object, 
-                                               relocation->relocation.r_symndx);
-        symbol = &symbolentry->symbol;
-        if ((symbol->st_class == C_EXT) && 
-            (symbol->sec_num == 0)) {
+        symbol = relocation->symbol;
+        if ((symbol->class == C_EXT) && 
+            (symbol->section_number == 0)) {
 	  /* This is an external symbol defined elsewhere */
-	  gp_coffgen_fetch_symbol_name(object, symbol, &name[0]);
-          sym = get_symbol(symbols, &name[0]);
+          sym = get_symbol(symbols, symbol->name);
 	  assert(sym != NULL);
 	  var = get_symbol_annotation(sym);
 	  assert(var != NULL);	  
-	  symbol = var->coffsym;
+	  symbol = var->symbol;
         }
         gp_link_patch_addr(section->data,
-                           relocation->relocation.r_vaddr >> 1,
+                           relocation->address>> 1,
                            symbol->value, 
-                           relocation->relocation.r_type);
+                           relocation->type);
   
         relocation = relocation->next;
       }
@@ -323,76 +298,13 @@ gp_link_combine(struct objectlist *list,
   assert(list != NULL);
   assert(name != NULL);
 
-  new = gp_coffgen_init(name, processor);
-  new->file_header.f_flags = F_EXEC;
+  new = gp_coffgen_init();
+  new->filename = strdup(name);
+  new->processor = processor;
+  new->class = gp_processor_class(processor);
+  new->flags = F_EXEC;
 
   return new;
-}
-
-/* renumber relocations because symbol table was changed */
-
-static void
-_renumber_relocs(gp_object_type *object, int number)
-{
-  gp_section_type *section;
-  gp_reloc_type *relocation;
-
-  section = object->sections;
-  while (section != NULL) {
-    relocation = section->relocations;
-    while (relocation != NULL) {
-      if (relocation->relocation.r_symndx > number) {
-        relocation->relocation.r_symndx -= 2;
-      }
-      relocation = relocation->next;
-    }
-    section = section->next;
-  }
-
-}
-
-/* remove duplicate section symbol table entries */
-
-void
-gp_cofflink_remove_dupsecsyms(gp_object_type *object)
-{
-  gp_symbol_type *first = NULL;
-  gp_symbol_type *second = NULL;
-  gp_symbol_type *previous = NULL;
-  gp_symbol_type *aux = NULL;
-  int first_num = 0;
-  int second_num = 0;
-
-  first = object->sym_table;
-  
-  while (first != NULL) {
-    if (first->symbol.st_class == C_SECTION) {
-      previous = first;
-      second_num = first_num +1;
-      second = first->next;
-      while (second != NULL) {
-        if ((second->symbol.sec_num == first->symbol.sec_num) &&
-            (second->symbol.st_class == C_SECTION)) {
-          assert(second->symbol.num_auxsym == 1);
-          aux = second->next;
-          previous->next = aux->next;
-          free(aux);
-          free(second);
-          object->file_header.f_nsyms -= 2;
-          _renumber_relocs(object, second_num);          
-          gp_cofflink_remove_dupsecsyms(object);
-          return;
-        }
-        previous = second;
-        second_num++;
-        second = second->next;
-      }   
-    }
-    first_num++;
-    first = first->next;
-  }
-
-  return;
 }
 
 /* combine overlay sections in an object file */
@@ -401,56 +313,53 @@ void
 gp_cofflink_combine_overlay(gp_object_type *object)
 {
   gp_section_type *first = NULL;
-  char first_name[BUFSIZ];
   gp_section_type *second = NULL;
   gp_section_type *list = NULL;
-  gp_symbol_type  *symbol;
+  gp_symbol_type  *symbol = NULL;
+  int count;
 
   first = object->sections;
   
   while (first != NULL) {
-    if (first->header.s_flags & STYP_OVERLAY) {
-      gp_coffgen_fetch_section_name(object, &first->header, first_name);
-      second = gp_coffgen_findsection(object, first->next, first_name);    
+    if (first->flags & STYP_OVERLAY) {
+      second = gp_coffgen_findsection(object, first->next, first->name);    
       if (second != NULL) {
         /* The only way we should have two sections with the same
            name is if they are both overlay. */
-        assert(second->header.s_flags & STYP_OVERLAY);
+        assert(second->flags & STYP_OVERLAY);
 
         /* The sections must have the same properties or they cann't be 
            combined. */
-        if ((first->header.s_flags != second->header.s_flags) ||
-            (first->header.s_paddr != second->header.s_paddr)) {
+        if ((first->flags != second->flags) ||
+            (first->address != second->address)) {
           continue;
         }
 
         /* Set the size of the first section to the larger of the two */
-        if (second->header.s_size > first->header.s_size)
-          first->header.s_size = second->header.s_size;
+        if (second->size > first->size)
+          first->size = second->size;
 
-        /* Update the symbol table */
-        symbol = object->sym_table;
+       /* Remove the section symbol */
+        symbol = object->symbols;
         while (symbol != NULL) {
-          if (symbol->symbol.sec_num == second->number) {
-            /* Change all symbols located in the second section to the 
-               first. */
-            symbol->symbol.sec_num = first->number;
-          } else if (symbol->symbol.sec_num > second->number) {
-            /* Decrement the section number for any symbol in a section above the
-               second. */
-            symbol->symbol.sec_num--;
-          } 
+          if (symbol->next == second->symbol) {
+            symbol->next = second->symbol->next;
+            count = gp_coffgen_free_symbol(second->symbol);
+            object->num_symbols -= (count + 1);
+            break;
+          }
           symbol = symbol->next;
         }
-        
-        /* Decrement section numbers for all sections after the second. */ 
-        object->file_header.f_nscns--;
-        list = second->next;
-        while (list != NULL) {
-          list->number--;
-          list = list->next;
+
+        /* Update the symbol table */
+        symbol = object->symbols;
+        while (symbol != NULL) {
+          if (symbol->section == second) {
+            symbol->section = first;
+          }
+          symbol = symbol->next;
         }
-                
+
         /* Remove the second section*/
         list = object->sections;
         while(list != NULL) {
@@ -460,6 +369,7 @@ gp_cofflink_combine_overlay(gp_object_type *object)
           }
           list = list->next;
         }
+        object->num_sections--;
         gp_coffgen_free_section(second);
         
         /* Take another pass */

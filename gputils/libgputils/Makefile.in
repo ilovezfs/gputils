@@ -117,7 +117,9 @@ libgputils_a_SOURCES = \
 	gpreadhex.c \
 	gpreadobj.c \
 	gpsymbol.c \
+	gpsystem.c \
 	gpwritehex.c \
+	gpwriteobj.c \
 	gparchive.h \
 	gpcod.h \
         gpcoff.h \
@@ -131,8 +133,10 @@ libgputils_a_SOURCES = \
 	gpreadhex.h \
 	gpreadobj.h \
 	gpsymbol.h \
+	gpsystem.h \
 	gptypes.h \
 	gpwritehex.h \
+	gpwriteobj.h \
 	libgputils.h
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -147,7 +151,7 @@ LIBS = @LIBS@
 libgputils_a_LIBADD = 
 libgputils_a_OBJECTS =  gparchive.o gpcoffgen.o gpcofflink.o gpdis.o \
 gpmemory.o gpmessage.o gpopcode.o gpprocessor.o gpreadhex.o gpreadobj.o \
-gpsymbol.o gpwritehex.o
+gpsymbol.o gpsystem.o gpwritehex.o gpwriteobj.o
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -162,7 +166,7 @@ GZIP_ENV = --best
 DEP_FILES =  .deps/gparchive.P .deps/gpcoffgen.P .deps/gpcofflink.P \
 .deps/gpdis.P .deps/gpmemory.P .deps/gpmessage.P .deps/gpopcode.P \
 .deps/gpprocessor.P .deps/gpreadhex.P .deps/gpreadobj.P \
-.deps/gpsymbol.P .deps/gpwritehex.P
+.deps/gpsymbol.P .deps/gpsystem.P .deps/gpwritehex.P .deps/gpwriteobj.P
 SOURCES = $(libgputils_a_SOURCES)
 OBJECTS = $(libgputils_a_OBJECTS)
 

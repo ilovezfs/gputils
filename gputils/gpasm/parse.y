@@ -322,7 +322,7 @@ line:
 		annotate_symbol(mac, state.mac_head);
 		h = state.mac_head;
 		h->line_number = state.src->line_number;
-		h->coff_number = state.src->coff_number;
+		h->file_symbol = state.src->file_symbol;
 	      }
 	      h->pass = state.pass;
  	      

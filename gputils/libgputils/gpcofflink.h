@@ -21,6 +21,8 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPCOFFLINK_H__
 #define __GPCOFFLINK_H__
 
+/* FIXME: remove object list, gp_object_type takes care of it */
+
 struct objectlist {
   char              *name;
   gp_object_type    *object;

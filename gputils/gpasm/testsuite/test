@@ -235,8 +235,8 @@ test_gpasm_obj() {
             ../../$GPASMBIN -c -q -I ../../$HEADER $basefilename.asm 
             if (test -e $basefilename.o); then
               let compiled=compiled+1
-              ../../$GPVOBIN -o -s -t $basefilename.o > $basefilename.dump
-              ../../$GPVOBIN -o -s -t ../objfiles/$basefilename.o > $basefilename.orig
+              ../../$GPVOBIN -s -t $basefilename.o > $basefilename.dump
+              ../../$GPVOBIN -s -t ../objfiles/$basefilename.o > $basefilename.orig
               diff -s -u $basefilename.orig $basefilename.dump
               if (diff -q $basefilename.orig $basefilename.dump); then 
                 let passed=passed+1

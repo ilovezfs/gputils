@@ -480,8 +480,11 @@ same_section(struct pnode *p)
 {
   struct pnode *p0;
   struct pnode *p1;
-  int num0;
-  int num1;
+  gp_symbol_type *symbol0;
+  gp_symbol_type *symbol1;
+
+  if(!state.obj.enabled)
+    return 0;
   
   if ((p->tag != binop) ||
       (p->value.binop.op != '-') ||
@@ -495,10 +498,11 @@ same_section(struct pnode *p)
       (p1->tag != symbol))
     return 0;
   
-  num0 = coff_symbol_section(p0->value.symbol);
-  num1 = coff_symbol_section(p0->value.symbol);
+  symbol0 = gp_coffgen_findsymbol(state.obj.object, p0->value.symbol);
+  symbol1 = gp_coffgen_findsymbol(state.obj.object, p1->value.symbol);
   
-  if ((num0 == 0) || (num0 != num1))
+  if ((symbol0->section_number < 1) || 
+      (symbol0->section != symbol1->section))
     return 0;
     
   return 1;

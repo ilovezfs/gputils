@@ -26,8 +26,6 @@ Boston, MA 02111-1307, USA.  */
 
 #define OPTMAGIC 0x5678
 
-/* FIXME: change to typedefs */
-
 /* coff file header format */
 struct filehdr
 {

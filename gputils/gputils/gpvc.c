@@ -213,5 +213,5 @@ int main(int argc, char *argv[])
   if(display_flags & DISPLAY_MESS)
     dump_message_area();
 
-  return(0);
+  return EXIT_SUCCESS;
 }

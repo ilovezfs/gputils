@@ -29,6 +29,7 @@ Copyright: GPL
 Group: Development/Languages
 Source: http://prdownloads.sourceforge.net/gputils/gputils-%{version}.tar.gz
 Packager: @NAME@ @EMAIL@
+Vendor: @NAME@ @EMAIL@
 Distribution: Red Hat Linux
 URL: http://gputils.sourceforge.net
 Buildroot: %{_builddir}/%{name}-%{version}-root

@@ -97,15 +97,15 @@ void set_global(char *name,
 
     coff_name = coff_local_name(name);
 
-    /* write coff symbol */ 
+    /* add coff symbol */ 
     if (var->type == gvt_extern) {
       coff_add_sym(coff_name, value, 0, T_NULL, C_EXT);
     } else if (var->type == gvt_global) {
-      coff_add_sym(coff_name, value, state.obj.section_num, T_NULL, C_EXT);
+      coff_add_sym(coff_name, value, 1, T_NULL, C_EXT);
     } else if (var->type == gvt_static) {
-      coff_add_sym(coff_name, value, state.obj.section_num, T_NULL, C_STAT);
+      coff_add_sym(coff_name, value, 1, T_NULL, C_STAT);
     } else if (var->type == gvt_address) {
-      coff_add_sym(coff_name, value, state.obj.section_num, T_NULL, C_LABEL);
+      coff_add_sym(coff_name, value, 1, T_NULL, C_LABEL);
     }
 
     if (coff_name != NULL)
