@@ -6716,7 +6716,7 @@ Instruction set summary
 
 
 \begin_inset  Tabular
-<lyxtabular version="3" rows="33" columns="2">
+<lyxtabular version="3" rows="35" columns="2">
 <features>
 <column alignment="left" valignment="top" leftline="true" width="0pt">
 <column alignment="left" valignment="top" leftline="true" rightline="true" width="0pt">
@@ -6744,6 +6744,24 @@ Description
 
 \layout Standard
 
+ADDLW <imm8>
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Add immediate to W
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
 ADDWF <f>,<dst>
 \end_inset 
 </cell>
@@ -6762,7 +6780,7 @@ Add W to <f>, result in <dst>
 
 \layout Standard
 
-ANDLW <f>,<dst>
+ANDLW <imm8>
 \end_inset 
 </cell>
 <cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -7050,7 +7068,25 @@ Increment <f>, result in <dst>, skip if zero
 
 \layout Standard
 
-IORLW <f>,<dst>
+IORLW <imm8>
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Or W and immediate
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+IORWF <f>,<dst>
 \end_inset 
 </cell>
 <cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -7290,7 +7326,7 @@ XORLW
 
 \layout Standard
 
-Xor W and <f>, result in <dst>
+Xor W and immediate
 \end_inset 
 </cell>
 </row>
@@ -7308,7 +7344,7 @@ XORWF
 
 \layout Standard
 
-Xor W and immediate
+Xor W and <f>, result in <dst>
 \end_inset 
 </cell>
 </row>
@@ -7324,7 +7360,7 @@ Xor W and immediate
 
 
 \begin_inset  Tabular
-<lyxtabular version="3" rows="36" columns="2">
+<lyxtabular version="3" rows="39" columns="2">
 <features>
 <column alignment="left" valignment="top" leftline="true" width="0pt">
 <column alignment="left" valignment="top" leftline="true" rightline="true" width="0pt">
@@ -7388,7 +7424,25 @@ Add W to <f>, result in <dst>
 
 \layout Standard
 
-ANDLW <f>,<dst>
+ANDLW <imm8>
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+And immediate to W
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+ANDWF <f>,<dst>
 \end_inset 
 </cell>
 <cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -7658,7 +7712,25 @@ Increment <f>, result in <dst>, skip if zero
 
 \layout Standard
 
-IORLW <f>,<dst>
+IORLW <imm8>
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Or W and immediate
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+IORWF <f>,<dst>
 \end_inset 
 </cell>
 <cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
@@ -7667,6 +7739,22 @@ IORLW <f>,<dst>
 \layout Standard
 
 Or W and <f>, result in <dst>
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
 \end_inset 
 </cell>
 </row>
@@ -7952,7 +8040,7 @@ XORLW
 
 \layout Standard
 
-Xor W and <f>, result in <dst>
+Xor W and immediate
 \end_inset 
 </cell>
 </row>
@@ -7970,7 +8058,7 @@ XORWF
 
 \layout Standard
 
-Xor W and immediate
+Xor W and <f>, result in <dst>
 \end_inset 
 </cell>
 </row>
