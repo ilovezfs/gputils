@@ -1,11 +1,8 @@
-
-
-with config;
-with delay;
-with stack;
-
 module main is
 
+  with config;
+  with delay;
+  with stack;
 
   type state_type is (INIT, WAIT, OUTPUT);
 

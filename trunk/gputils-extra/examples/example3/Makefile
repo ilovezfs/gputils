@@ -1,20 +1,22 @@
 # Makefile for example
 
+EXECUTABLE = main.hex
 OBJECTS = main.o delay.o stack.o
 
-all: example.hex
+all: $(EXECUTABLE)
 
 %.o : %.pal
-	gpal -t -c $<
+	gpal -c p16f877.pub $(COMMON) $<
 
-example.hex: $(OBJECTS)
-	gpal -k"-m -c -s 16f877.lkr" -o example.hex $(OBJECTS)
-        
+$(EXECUTABLE): $(OBJECTS)
+	gplink -m -c -s 16f877.lkr -o $(EXECUTABLE) $(OBJECTS)
+
 clean:
 	rm -f *.cod *.hex *.o *.map *.asm *.cof *.lst
 
-COMMON = config.pub types.pub
+COMMON = config.pub types.pub delay.pub stack.pub main.pub 
 
-main.o : main.pub main.pal $(COMMON)
-delay.o : delay.pub delay.pal $(COMMON)
-stack.o : stack.pub stack.pal $(COMMON)
+# Dependencies
+main.o :  main.pal $(COMMON)
+delay.o : delay.pal $(COMMON)
+stack.o : stack.pal $(COMMON)

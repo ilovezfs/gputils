@@ -1,7 +1,6 @@
-
-with config;
-
 module delay is
+
+  with config;
 
   procedure delay_8(count : in uint8) is
   
