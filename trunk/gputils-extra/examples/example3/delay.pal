@@ -1,0 +1,30 @@
+
+with config;
+
+module delay is
+
+  procedure delay_8(count : in uint8) is
+  
+  begin
+
+    asm
+loop1:
+    decfsz delay.delay_8.count, f
+    goto loop1  
+    end asm;
+  
+  end procedure;
+
+
+  procedure delay_32(count : in uint32) is
+ 
+  begin
+
+    while (count != 0)
+      loop
+        count = count - 1;
+      end loop;
+  
+  end procedure;
+
+end module;

@@ -1,0 +1,6 @@
+public delay is
+
+  procedure delay_8(count : in uint8);
+  procedure delay_32(count : in uint32);
+  
+end public;

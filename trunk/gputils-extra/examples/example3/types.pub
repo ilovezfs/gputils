@@ -1,0 +1,6 @@
+public types is
+
+  type boolean is (false, true);
+
+
+end public;

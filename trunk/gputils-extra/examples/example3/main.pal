@@ -1,0 +1,55 @@
+
+
+with config;
+with delay;
+with stack;
+
+module main is
+
+
+  type state_type is (INIT, WAIT, OUTPUT);
+
+  procedure main is
+
+    variable state : state_type;
+    variable counter : uint8;
+    variable led_shadow: uint8;
+
+  begin
+
+    state = INIT;
+    stack.init_stack();
+
+    loop
+      -- state machine
+      case state is
+
+        when INIT =>
+          counter = 0;
+          state = WAIT;
+
+        when WAIT =>
+          counter = counter + 1;
+          if (counter < 237) then
+            state = WAIT;
+          else
+            state = OUTPUT;
+          end if;
+
+        when OUTPUT =>
+          led_shadow = led_shadow - 1;
+          PORTA = led_shadow;
+          state = INIT;
+
+        when others =>
+          state = INIT;
+          
+      end case;
+
+      delay.delay_8(100);
+
+    end loop;
+
+  end procedure;
+
+end module;
