@@ -42,6 +42,10 @@ extern struct gplink_state {
   int byte_addr;                   /* program memory uses byte addressing */
   enum pic_processor processor;
   enum proc_class class;
+  struct {
+    int level;
+    gp_boolean weak_symbols;
+  } optimize;
   enum outfile
     codfile,			   /* Symbol output file control */
     hexfile,			   /* Hex output file control */

@@ -60,6 +60,8 @@ int gp_link_add_symbols(struct symbol_table *,
                         struct symbol_table *missing,
                         gp_object_type *object);
 
+void gp_cofflink_remove_weak(gp_object_type *object);
+
 void gp_cofflink_combine_objects(gp_object_type *object);
 
 void gp_cofflink_combine_overlay(gp_object_type *object, int remove_symbol);
