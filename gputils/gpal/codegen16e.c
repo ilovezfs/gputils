@@ -222,17 +222,16 @@ store_indirect16e(char *name,
   int i;
 
   if ((size == size_int8) || (size == size_uint8)) {
-    codegen_write_asm("movff WREG, INDF0");
+    codegen_write_asm("movwf INDF0");
     return;
   }
 
   num_bytes = prim_size(size);
 
   codegen_write_asm("movlw 0");
+
   for (i = 0; i < num_bytes; i++) {
-    codegen_write_asm("movff %s + %i, INDF0", WORKING_LABEL, i);
-    codegen_write_asm("incf FSR0L, f");
-    codegen_write_asm("addwfc FSR0H, f");
+    codegen_write_asm("movff %s + %i, POSTINC0", WORKING_LABEL, i);
   }
 }
 
@@ -440,28 +439,38 @@ inc_indirect16e(char *name,
                 int offset,
                 char *bank_addr)
 {
-  int num_bytes;
-  int i;
-  char *label = NULL;
-
-  num_bytes = prim_size(size);
-
-  label = codegen_next_label();
-
-  for (i = 0; i < num_bytes; i++) {
-    codegen_set_bank("INDF");
-    codegen_write_asm("incf INDF, f");
-    codegen_write_asm("btfss STATUS, C");
+  char *label = codegen_next_label();
+  
+  switch (prim_size(size)) {
+  case 1:
+    codegen_write_asm("incf INDF0, f");
+    break;
+  case 2:
+    codegen_write_asm("infsnz POSTINC0, f");
+    codegen_write_asm("incf INDF0, f");
+    break;
+  case 3:
+    codegen_write_asm("incfsz POSTINC0, f");
     codegen_write_asm("bra %s", label);
-    codegen_write_asm("incf FSR0L, f");
-    codegen_write_asm("addwfc FSR0H, f");
+    codegen_write_asm("infsnz POSTINC0, f");
+    codegen_write_asm("incf INDF0, f");
+    codegen_write_label(label);
+    break;
+  case 4:
+    codegen_write_asm("incf POSTINC0, f");
+    codegen_write_asm("bnc %s", label);
+    codegen_write_asm("clrf WREG");
+    codegen_write_asm("addwfc POSTINC0, f");
+    codegen_write_asm("addwfc POSTINC0, f");
+    codegen_write_asm("addwfc INDF0, f");
+    codegen_write_label(label);
+    break;
+  default:
+    assert(0);
   }
-
-  codegen_write_label(label);
 
   if (label)
     free(label);
-
 }
 
 static void
@@ -494,7 +503,7 @@ dec_direct16e(char *name,
   case size_int16:
     BANKSEL;
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
-    codegen_write_asm("btfsc STATUS, C");
+    codegen_write_asm("btfss STATUS, C");
     codegen_write_asm("decf %s%s + 1, f", name, offset_buffer);
     break;
   case size_uint24:
@@ -502,11 +511,9 @@ dec_direct16e(char *name,
     label = codegen_next_label();
     BANKSEL;
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("bra %s", label);
+    codegen_write_asm("bc %s", label);
     codegen_write_asm("decf %s%s + 1, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("bra %s", label);
+    codegen_write_asm("bc %s", label);
     codegen_write_asm("decf %s%s + 2, f", name, offset_buffer);
     codegen_write_label(label);
     break;
@@ -515,15 +522,11 @@ dec_direct16e(char *name,
     label = codegen_next_label();
     BANKSEL;
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("bra %s", label);
-    codegen_write_asm("decf %s%s + 1, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("bra %s", label);
-    codegen_write_asm("decf %s%s + 2, f", name, offset_buffer);
-    codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("bra %s", label);
-    codegen_write_asm("decf %s%s + 3, f", name, offset_buffer);
+    codegen_write_asm("bc %s", label);
+    codegen_write_asm("clrf WREG");
+    codegen_write_asm("subwfb %s%s + 1, f", name, offset_buffer);
+    codegen_write_asm("subwfb %s%s + 2, f", name, offset_buffer);
+    codegen_write_asm("subwfb %s%s + 3, f", name, offset_buffer);
     codegen_write_label(label);
     break;
   case size_float:
@@ -542,24 +545,39 @@ dec_indirect16e(char *name,
                 int offset,
                 char *bank_addr)
 {
-  int num_bytes;
-  int i;
   char *label = NULL;
 
-  num_bytes = prim_size(size);
-
-  label = codegen_next_label();
-
-  for (i = 0; i < num_bytes; i++) {
-    codegen_set_bank("INDF");
-    codegen_write_asm("decf INDF, f");
+  switch (prim_size(size)) {
+  case 1:
+    codegen_write_asm("decf INDF0, f");
+    break;
+  case 2:
+    codegen_write_asm("decf POSTINC0, f");
     codegen_write_asm("btfss STATUS, C");
-    codegen_write_asm("bra %s", label);
-    codegen_write_asm("incf FSR0L, f");
-    codegen_write_asm("addwfc FSR0H, f");
+    codegen_write_asm("decf INFD0, f");
+    break;
+  case 3:
+    label = codegen_next_label();
+    codegen_write_asm("decf POSTINC0, f");
+    codegen_write_asm("bc %s", label);
+    codegen_write_asm("decf POSTINC0, f");
+    codegen_write_asm("bc %s", label);
+    codegen_write_asm("decf INDF0, f");
+    codegen_write_label(label);
+    break;
+  case 4:
+    label = codegen_next_label();
+    codegen_write_asm("decf POSTINC0, f");
+    codegen_write_asm("bc %s", label);
+    codegen_write_asm("clrf WREG");
+    codegen_write_asm("subwfb POSTINC0, f");
+    codegen_write_asm("subwfb POSTINC0, f");
+    codegen_write_asm("subwfb INFD0, f");
+    codegen_write_label(label);
+    break;
+  default:
+    assert(0);
   }
-
-  codegen_write_label(label);
 
   if (label)
     free(label);
@@ -1632,6 +1650,26 @@ unopgen16e(enum node_op op,
 
 }
 
+static void
+reset_vector16e(struct variable *var)
+{
+  codegen_write_comment("reset/startup vector");
+  fprintf(state.output.f, "RESET_VECTOR code 0x0\n");
+  codegen_line_number(var->node);
+  fprintf(state.output.f, "  goto %s\n\n", var->name);
+}
+
+static void
+interrupt_vector16e(struct variable *var)
+{
+  codegen_write_comment("hi-priority interrupt vector");
+  fprintf(state.output.f, "HIPRI_INT_VECTOR code 0x8\n");
+  codegen_line_number(var->node);
+  fprintf(state.output.f, "  call %s\n", var->name);
+  fprintf(state.output.f, "  retfie FAST\n\n");
+}
+  
+
 struct function_pointer_struct codegen16e_func = {
   (long int)codegen16e,
   (long int)unopgen16e,
@@ -1639,5 +1677,7 @@ struct function_pointer_struct codegen16e_func = {
   (long int)load_file16e,
   (long int)store_file16e,
   (long int)load_indirect16e,
-  (long int)store_indirect16e
+  (long int)store_indirect16e,
+  (long int)reset_vector16e,
+  (long int)interrupt_vector16e
 };

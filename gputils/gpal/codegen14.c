@@ -1630,6 +1630,49 @@ unopgen14(enum node_op op,
 
 }
 
+static void
+reset_vector14(struct variable *var)
+{
+  codegen_write_comment("startup and interrupt vectors");
+  fprintf(state.output.f, "RESET_VECTOR code 0x0\n");
+  codegen_line_number(var->node);
+  fprintf(state.output.f, "  movlw high %s\n", var->name);
+  fprintf(state.output.f, "  movwf PCLATH\n");
+  fprintf(state.output.f, "  goto %s\n\n", var->name);
+}
+
+static void
+interrupt_vector14(struct variable *var)
+{
+  fprintf(state.output.f, "INT_VECTOR code 0x4\n");
+  codegen_write_comment("store wreg and status");
+  fprintf(state.output.f, "  movwf w_temp\n");
+  fprintf(state.output.f, "  movf STATUS, w\n");
+  fprintf(state.output.f, "  movwf status_temp\n");
+  fprintf(state.output.f, "  movf PCLATH, w\n");
+  fprintf(state.output.f, "  movwf pclath_temp\n");
+  
+  codegen_write_comment("call the interrupt routine");
+  fprintf(state.output.f, "  pagesel %s\n", var->name);
+  fprintf(state.output.f, "  call %s\n", var->name);
+
+  codegen_write_comment("restore wreg and status");
+  fprintf(state.output.f, "  movf pclath_temp, w\n");
+  fprintf(state.output.f, "  movwf PCLATH\n");
+  fprintf(state.output.f, "  movf status_temp, w\n");
+  fprintf(state.output.f, "  movwf STATUS\n");
+  fprintf(state.output.f, "  swapf w_temp, f\n");
+  fprintf(state.output.f, "  swapf w_temp, w\n");
+  fprintf(state.output.f, "  retfie\n\n");
+    
+  fprintf(state.output.f, "INT_VAR udata_shr\n");
+  codegen_write_comment("FIXME: not all processors have shared memory");
+  fprintf(state.output.f, "w_temp res 1\n");
+  fprintf(state.output.f, "status_temp res 1\n\n");
+  fprintf(state.output.f, "pclath_temp res 1\n\n");
+}
+
+
 struct function_pointer_struct codegen14_func = {
   (long int)codegen14,
   (long int)unopgen14,
@@ -1637,5 +1680,7 @@ struct function_pointer_struct codegen14_func = {
   (long int)load_file14,
   (long int)store_file14,
   (long int)load_indirect14,
-  (long int)store_indirect14
+  (long int)store_indirect14,
+  (long int)reset_vector14,
+  (long int)interrupt_vector14
 };

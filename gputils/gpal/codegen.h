@@ -80,6 +80,8 @@ struct function_pointer_struct {
   long int store_file;
   long int load_indirect;
   long int store_indirect;
+  long int reset_vector;
+  long int interrupt_vector;      
 };
 
 #endif

@@ -155,6 +155,7 @@ optimize_unop(tree *expr)
     /* remove the unop */
     expr = UNOP_ARG(expr);
     break;
+  case op_com:
   case op_not:
   case op_neg:
     if (is_constant(UNOP_ARG(expr))) {
