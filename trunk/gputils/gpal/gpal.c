@@ -23,7 +23,6 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gpal.h"
-#include "symbol.h"
 #include "scan.h"
 #include "analyze.h"
 
@@ -360,6 +359,9 @@ compile(tree *module)
 
   /* create the type symbol table that is case insensitive */
   state.type = push_symbol_table(NULL, true);
+
+  /* create a top type table for the type alias */
+  state.type_top = push_symbol_table(state.type, true);
   
   add_type_prims();  
 
@@ -368,9 +370,9 @@ compile(tree *module)
   state.section.code_addr = 0;
   state.section.code_addr_valid = false;
 
-  state.section.udata = NULL;
-  state.section.udata_addr = 0;
-  state.section.udata_addr_valid = false;
+  state.section.data = NULL;
+  state.section.data_addr = 0;
+  state.section.data_addr_valid = false;
 
   /* check for semantic errors and write the code, if there are no errors */
   analyze(module);
@@ -379,6 +381,7 @@ compile(tree *module)
   state.top = pop_symbol_table(state.top);
   state.global = pop_symbol_table(state.global);
   state.type = pop_symbol_table(state.type);
+  state.type_top = pop_symbol_table(state.type_top);
 
   if (!gp_num_errors) {
     if (state.compile_only == true) {
@@ -553,7 +556,6 @@ init(void)
   state.processor = no_processor;
   state.class = PROC_CLASS_GENERIC;
   state.processor_chosen = false;
-  state.pointer_size = size_unknown;
   state.current_bank = NULL;
   state.current_ibank = NULL;
   state.current_page = NULL;
@@ -616,8 +618,8 @@ main(int argc, char *argv[])
   /* free all the memory */
   free_nodes();
 
-  if (gp_num_errors > 0)
+  if (gp_num_errors)
     return EXIT_FAILURE;
-
-  return EXIT_SUCCESS;
+  else
+    return EXIT_SUCCESS;
 }

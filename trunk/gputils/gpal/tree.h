@@ -29,6 +29,7 @@ enum node_tag {
   node_alias,
   node_arg,
   node_assembly,
+  node_attrib,
   node_body,
   node_binop,
   node_call,
@@ -41,6 +42,7 @@ enum node_tag {
   node_label,
   node_loop,
   node_pragma,
+  node_record,
   node_return,
   node_string,
   node_subprogram,
@@ -94,7 +96,7 @@ enum node_storage {
   storage_unknown,
   storage_public,  /* data which is visible to other modules */
   storage_private, /* data which is not visible to other modules */
-  storage_local,   /* data which is local to current procedure */
+  storage_local,   /* data which is local to a subprogram */
   storage_near,    /* external data on the same page or bank with module */
   storage_far      /* external data which is on an unknown page or bank */
 };
@@ -102,8 +104,17 @@ enum node_storage {
 enum source_type {
   source_unknown,
   source_module,   /* a source file */
-  source_public,   /* the public file for the module being compiled */
-  source_with      /* the public file for a external module */ 
+  source_with      /* a public file */ 
+};
+
+enum attrib_type {
+  attrib_unknown,
+  attrib_access,
+  attrib_address,
+  attrib_first,
+  attrib_last,
+  attrib_range,
+  attrib_size
 };
 
 typedef struct node_struct tree;
@@ -121,6 +132,10 @@ typedef struct node_struct {
       char *type;
     } arg;
     char *assembly;
+    struct {
+      char *name;
+      enum attrib_type type;
+    } attrib;
     struct {
       tree *decl;
       tree *statements;
@@ -142,7 +157,8 @@ typedef struct node_struct {
     } cond;    
     struct {
       char *name;
-      gp_boolean constant;
+      gp_boolean is_volatile;
+      gp_boolean is_constant;
       char *type;
       tree *init;
       tree *addr;
@@ -152,7 +168,7 @@ typedef struct node_struct {
       char *name;
       enum source_type type;
       enum node_storage code_default;
-      enum node_storage udata_default;
+      enum node_storage data_default;
       char *page_address;
       char *bank_address;
     } file;
@@ -174,6 +190,10 @@ typedef struct node_struct {
       tree *body;
     } loop;
     tree *pragma;
+    struct {
+      char *name;
+      tree *list;
+    } record;
     tree *ret;
     char *string;
     struct {
@@ -187,6 +207,7 @@ typedef struct node_struct {
     } symbol;
     struct {
       char *type;
+      gp_boolean is_access;
       tree *start;
       tree *end;
       tree *list;
@@ -216,6 +237,8 @@ typedef struct node_struct {
 #define ARG_NAME(A)        (A)->value.arg.name
 #define ARG_DIR(A)         (A)->value.arg.dir
 #define ARG_TYPE(A)        (A)->value.arg.type
+#define ATTRIB_NAME(A)     (A)->value.attrib.name
+#define ATTRIB_TYPE(A)     (A)->value.attrib.type
 #define BODY_DECL(B)       (B)->value.body.decl
 #define BODY_STATEMENTS(B) (B)->value.body.statements
 #define BINOP_OP(B)        (B)->value.binop.op
@@ -227,7 +250,8 @@ typedef struct node_struct {
 #define COND_BODY(C)       (C)->value.cond.body
 #define COND_NEXT(C)       (C)->value.cond.next
 #define DECL_NAME(D)       (D)->value.decl.name
-#define DECL_CONSTANT(D)   (D)->value.decl.constant
+#define DECL_VOLATILE(D)   (D)->value.decl.is_volatile
+#define DECL_CONSTANT(D)   (D)->value.decl.is_constant
 #define DECL_TYPE(D)       (D)->value.decl.type
 #define DECL_INIT(D)       (D)->value.decl.init
 #define DECL_ADDR(D)       (D)->value.decl.addr
@@ -235,7 +259,7 @@ typedef struct node_struct {
 #define FILE_NAME(F)       (F)->value.file.name
 #define FILE_TYPE(F)       (F)->value.file.type
 #define FILE_CODE(F)       (F)->value.file.code_default
-#define FILE_UDATA(F)      (F)->value.file.udata_default
+#define FILE_DATA(F)       (F)->value.file.data_default
 #define FILE_CODE_ADDR(F)  (F)->value.file.page_address
 #define FILE_DATA_ADDR(F)  (F)->value.file.bank_address
 #define GOTO_NAME(G)       (G)->value._goto.name
@@ -246,12 +270,15 @@ typedef struct node_struct {
 #define LOOP_EXIT(L)       (L)->value.loop.exit
 #define LOOP_INCR(L)       (L)->value.loop.incr
 #define LOOP_BODY(L)       (L)->value.loop.body
+#define RECORD_NAME(R)     (R)->value.record.name 
+#define RECORD_LIST(R)     (R)->value.record.list
 #define SUB_HEAD(S)        (S)->value.subprogram.head
 #define SUB_RET(S)         (S)->value.subprogram.ret
 #define SUB_BODY(S)        (S)->value.subprogram.body
 #define SYM_NAME(T)        (T)->value.symbol.name
 #define SYM_OFST(T)        (T)->value.symbol.offset
 #define TYPE_TYPE(T)       (T)->value.type.type
+#define TYPE_ACCESS(T)     (T)->value.type.is_access
 #define TYPE_START(T)      (T)->value.type.start
 #define TYPE_END(T)        (T)->value.type.end
 #define TYPE_LIST(T)       (T)->value.type.list
@@ -271,13 +298,15 @@ tree *mk_node(enum node_tag tag);
 tree *mk_alias(char *alias, tree *expr);
 tree *mk_arg(char *name, enum node_dir dir, char *type);
 tree *mk_assembly(char *assembly);
+tree *mk_attrib(char *name, enum attrib_type type);
 tree *mk_body(tree *decl, tree *statements);
 tree *mk_binop(enum node_op op, tree *p0, tree *p1);
 tree *mk_call(char *name, tree *args);
 tree *mk_constant(int value);
 tree *mk_cond(tree *cond, tree *body, tree *next);
 tree *mk_decl(char *name,
-              gp_boolean constant,
+              gp_boolean is_volatile,
+              gp_boolean is_constant,
               char *type,
               tree *init,
               tree *addr);
@@ -287,11 +316,17 @@ tree *mk_head(char *name, tree *args);
 tree *mk_label(char *name);
 tree *mk_loop(tree *init, tree *exit, tree *incr, tree *body);
 tree *mk_pragma(tree *pragma);
+tree *mk_record(char *name, tree *list);
 tree *mk_return(tree *ret);
 tree *mk_string(char *value);
 tree *mk_subprogram(tree *head, char *ret, tree *body);
 tree *mk_symbol(char *name, tree *offset);
-tree *mk_type(char *type, tree *start, tree *end, tree *list, char *of);
+tree *mk_type(char *type, 
+              gp_boolean is_access,
+              tree *start,
+              tree *end,
+              tree *list,
+              char *of);
 tree *mk_unop(enum node_op op, tree *p0);
 tree *mk_with(char *name);
 

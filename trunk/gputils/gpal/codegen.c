@@ -23,7 +23,6 @@ Boston, MA 02111-1307, USA.  */
 
 #include "libgputils.h"
 #include "gpal.h"
-#include "symbol.h"
 #include "analyze.h" 
 #include "codegen.h"
 #include "codegen14.h"
@@ -39,7 +38,7 @@ static int codegen_working_bytes;
 static enum size_tag codegen_size;
 int codegen_bytes;
 
-static struct function_pointer_struct *func_ptr;
+target_type *target = NULL;
 
 /* code generation function pointer */
 typedef void code_func(enum node_op op, 
@@ -66,19 +65,24 @@ typedef void data_func2(char *name,
                         enum size_tag size,
                         int offset);
 
+/* load address function pointer */
+typedef void data_func3(char *name, enum size_tag size);
+
 /* variable operation function pointers */
 typedef void var_func(struct variable *var);
 
-#define CODEGEN (*(code_func*)func_ptr->codegen)
-#define UNOPGEN (*(code_unop*)func_ptr->unopgen)
-#define LOAD_CONSTANT (*(data_func1*)func_ptr->load_constant)
-#define LOAD_FILE (*(data_func2*)func_ptr->load_file)
-#define STORE_FILE (*(data_func2*)func_ptr->store_file)
-#define LOAD_INDIRECT (*(data_func2*)func_ptr->load_indirect)
-#define STORE_INDIRECT (*(data_func2*)func_ptr->store_indirect)
-#define RESET_VECTOR (*(var_func*)func_ptr->reset_vector)
-#define INT_VECTOR (*(var_func*)func_ptr->interrupt_vector)
-#define LOAD_FSR (*(var_func*)func_ptr->load_fsr)
+#define CODEGEN (*(code_func*)target->codegen)
+#define UNOPGEN (*(code_unop*)target->unopgen)
+#define LOAD_CONSTANT (*(data_func1*)target->load_constant)
+#define LOAD_FILE (*(data_func2*)target->load_file)
+#define STORE_FILE (*(data_func2*)target->store_file)
+#define LOAD_ADDRESS (*(data_func3*)target->load_address)
+#define LOAD_FSR (*(var_func*)target->load_fsr)
+#define OFFSET_FSR (*(var_func*)target->offset_fsr)
+#define LOAD_INDIRECT (*(data_func2*)target->load_indirect)
+#define STORE_INDIRECT (*(data_func2*)target->store_indirect)
+#define RESET_VECTOR (*(var_func*)target->reset_vector)
+#define INT_VECTOR (*(var_func*)target->interrupt_vector)
 
 #define LOCAL_BANK FILE_DATA_ADDR(state.module)
 
@@ -173,8 +177,9 @@ codegen_set_ibank(char *ibank_name)
 
   assert(ibank_name != NULL);
 
-  if ((state.current_ibank == NULL) || 
-      (strcasecmp(ibank_name, state.current_ibank) != 0)) {
+  if ((target->use_bankisel) &&
+      ((state.current_ibank == NULL) || 
+       (strcasecmp(ibank_name, state.current_ibank) != 0))) {
     codegen_write_asm("bankisel %s", ibank_name);
     state.current_ibank = ibank_name;
     var = get_global(ibank_name);
@@ -192,8 +197,9 @@ codegen_set_page(char *page_name)
 
   assert(page_name != NULL);
 
-  if ((state.current_page == NULL) || 
-      (strcasecmp(page_name, state.current_page) != 0)) {
+  if ((target->use_pagesel) &&
+      ((state.current_page == NULL) || 
+       (strcasecmp(page_name, state.current_page) != 0))) {
     codegen_write_asm("pagesel %s", page_name);
     state.current_page = page_name;
     var = get_global(page_name);
@@ -238,33 +244,44 @@ codegen_assembly(tree *assembly)
 /* Memory access                                                            */
 /****************************************************************************/
 
+/* load the address for indirect access */
+
+void
+codegen_load_indirect(struct variable *var)
+{
+
+  LOAD_FSR(var);
+
+  return;
+}
+
 /* calculate the byte address of the data and put it in FSR */
 
 void
-codegen_indirect(tree *offset,
-                 struct variable *var,
-                 int element_size,
-                 gp_boolean new_expr)
+codegen_calc_indirect(tree *offset,
+                      struct variable *var,
+                      int element_size,
+                      gp_boolean new_expr)
 {
 
   /* indirect access */
   if (new_expr) {
-    codegen_expr(offset, state.pointer_size);
+    codegen_expr(offset, target->data_ptr_size);
   } else {
     gen_expr(offset);
   }
 
   if (var->type->start != 0) {
     /* shift the offset for the first element */
-    CODEGEN(op_add, state.pointer_size, true, 0 - var->type->start, NULL, NULL);
+    CODEGEN(op_add, target->data_ptr_size, true, 0 - var->type->start, NULL, NULL);
   }
 
   if (element_size != 1) {
     /* scale the offset by the element size */
-    CODEGEN(op_mult, state.pointer_size, true, element_size, NULL, NULL);
+    CODEGEN(op_mult, target->data_ptr_size, true, element_size, NULL, NULL);
   }
 
-  LOAD_FSR(var);
+  OFFSET_FSR(var);
 
   return;
 }
@@ -280,7 +297,7 @@ codegen_load_file(tree *symbol, struct variable *var)
 
   if ((symbol->tag == node_symbol) && (SYM_OFST(symbol))) {
     /* access an array */
-    element_size = type_size(var->type->prim);
+    element_size = type_bytes(var->type->prim);
 
     if ((var) && (var->type) && (var->type->tag == type_array)) {
       if (can_evaluate(SYM_OFST(symbol), false)) {
@@ -288,7 +305,7 @@ codegen_load_file(tree *symbol, struct variable *var)
         offset = analyze_check_array(symbol, var) * element_size;
         LOAD_FILE(var->name, bank_addr, codegen_size, offset);
       } else {
-        codegen_indirect(SYM_OFST(symbol), var, element_size, false);
+        codegen_calc_indirect(SYM_OFST(symbol), var, element_size, false);
         LOAD_INDIRECT(var->name, bank_addr, codegen_size, 0);
       }
     } else {
@@ -306,13 +323,16 @@ codegen_load_file(tree *symbol, struct variable *var)
 
 void
 codegen_store(struct variable *var,
+              gp_boolean access,
               gp_boolean constant_offset,
               int offset,
               tree *offset_expr)
 {
   char *bank_addr = var_bank(var);
 
-  if (offset_expr) {
+  if (access) {
+    STORE_INDIRECT(var->name, bank_addr, codegen_size, 0);
+  } else if (offset_expr) {
     if (constant_offset) {
       STORE_FILE(var->name, bank_addr, codegen_size, offset);
     } else {
@@ -399,11 +419,24 @@ static void
 gen_expr(tree *expr)
 {
   struct variable *var;
+  char *bank_addr;
 
   switch(expr->tag) {
   case node_arg:
     var = get_global(ARG_NAME(expr));
     codegen_load_file(expr, var);
+    break;
+  case node_attrib:
+    var = get_global(ATTRIB_NAME(expr));
+    if (ATTRIB_TYPE(expr) == attrib_access) {
+      LOAD_FSR(var);
+      bank_addr = var_bank(var);
+      LOAD_INDIRECT(var->name, bank_addr, codegen_size, 0);
+    } else if (ATTRIB_TYPE(expr) == attrib_address) {
+      LOAD_ADDRESS(var->name, codegen_size);
+    } else {
+      LOAD_CONSTANT(maybe_evaluate(expr), codegen_size);
+    }
     break;
   case node_call:
     analyze_call(expr, true, codegen_size);    
@@ -452,7 +485,7 @@ static int
 codegen_setup(enum size_tag size)
 {
   codegen_size = size;
-  codegen_bytes = prim_size(size);
+  codegen_bytes = prim_bytes(size);
 
   if (codegen_bytes > codegen_working_bytes) {
     codegen_working_bytes = codegen_bytes;
@@ -562,19 +595,19 @@ codegen_init_data()
 {
   codegen_write_comment("declarations");
 
-  if (state.section.udata) {
-    if (state.section.udata_addr_valid) {
+  if (state.section.data) {
+    if (state.section.data_addr_valid) {
       fprintf(state.output.f, "%s udata %#x\n", 
-              state.section.udata,
-              state.section.udata_addr);
+              state.section.data,
+              state.section.data_addr);
     } else {
-      fprintf(state.output.f, "%s udata\n", state.section.udata);
+      fprintf(state.output.f, "%s udata\n", state.section.data);
     }
   } else {
-    if (state.section.udata_addr_valid) {
+    if (state.section.data_addr_valid) {
       fprintf(state.output.f, ".udata_%s udata %#x\n",
               FILE_NAME(state.module),
-              state.section.udata_addr);
+              state.section.data_addr);
     } else {
       fprintf(state.output.f, ".udata_%s udata\n", FILE_NAME(state.module));
     }  
@@ -597,7 +630,7 @@ codegen_write_data(struct variable *var)
   }
 
   fprintf(state.output.f, "size=%#x, type=%#x\n",
-          type_size(var->type),
+          type_bytes(var->type),
           var_coff_type(var));
 
 }
@@ -628,7 +661,7 @@ codegen_get_temp(enum size_tag size)
            FILE_NAME(state.module),
            temp_number);
 
-  temp_number += prim_size(size);
+  temp_number += prim_bytes(size);
 
   return strdup(temp_name);
 }
@@ -656,7 +689,7 @@ codegen_init_asm(tree *module)
   max_temp_number = 0;
   codegen_working_bytes = 1;
   codegen_size = size_uint8;
-  codegen_bytes = prim_size(codegen_size);
+  codegen_bytes = prim_bytes(codegen_size);
 
   gp_date_string(buffer, sizeof(buffer));
 
@@ -735,18 +768,16 @@ codegen_select(tree *expr)
   case PROC_CLASS_GENERIC:
   case PROC_CLASS_PIC12:
   case PROC_CLASS_SX:
-    analyze_error(expr, "unsupported processor class");
+    analyze_error(expr, "unsupported device");
     break;
   case PROC_CLASS_PIC14:
-    func_ptr = &codegen14_func;
-    state.pointer_size = size_uint8;
+    target = &pic14;
     break;
   case PROC_CLASS_PIC16:
-    analyze_error(expr, "unsupported processor class");
+    analyze_error(expr, "unsupported device");
     break;
   case PROC_CLASS_PIC16E:
-    func_ptr = &codegen16e_func;
-    state.pointer_size = size_uint16;
+    target = &pic16e;
     break;
   default:
     assert(0);

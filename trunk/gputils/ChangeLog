@@ -1,3 +1,9 @@
+2004-11-26 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [gpal] Added symbol attributes.
+  * [gpal] Added access types.
+  * [gpal] Added volatile symbols.
+  * [gpal] Added records.
+
 2004-11-09 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gpal] Write a newline before eof in deps output.
   * [gpal] Require a public file for the module being compiled.

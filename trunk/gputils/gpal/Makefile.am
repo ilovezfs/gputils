@@ -16,6 +16,7 @@ gpal_SOURCES=\
 	scan.l \
 	symbol.c \
 	tree.c \
+	type.c \
 	optimize.h \
 	analyze.h \
 	codegen.h \
@@ -25,7 +26,8 @@ gpal_SOURCES=\
 	gpal.h \
 	scan.h \
 	symbol.h \
-	tree.h
+	tree.h \
+	type.h
 
 gpal_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 

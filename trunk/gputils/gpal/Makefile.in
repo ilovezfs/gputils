@@ -54,7 +54,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_gpal_OBJECTS = parse.$(OBJEXT) analyze.$(OBJEXT) codegen.$(OBJEXT) \
 	codegen14.$(OBJEXT) codegen16e.$(OBJEXT) deps.$(OBJEXT) \
 	gpal.$(OBJEXT) optimize.$(OBJEXT) scan.$(OBJEXT) \
-	symbol.$(OBJEXT) tree.$(OBJEXT)
+	symbol.$(OBJEXT) tree.$(OBJEXT) type.$(OBJEXT)
 gpal_OBJECTS = $(am_gpal_OBJECTS)
 gpal_DEPENDENCIES = ${top_builddir}/@LIBGPUTILS@ \
 	${top_builddir}/@LIBIBERTY@
@@ -66,7 +66,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/deps.Po ./$(DEPDIR)/gpal.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/optimize.Po ./$(DEPDIR)/parse.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/scan.Po ./$(DEPDIR)/symbol.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/tree.Po
+@AMDEP_TRUE@	./$(DEPDIR)/tree.Po ./$(DEPDIR)/type.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -190,6 +190,7 @@ gpal_SOURCES = \
 	scan.l \
 	symbol.c \
 	tree.c \
+	type.c \
 	optimize.h \
 	analyze.h \
 	codegen.h \
@@ -199,7 +200,8 @@ gpal_SOURCES = \
 	gpal.h \
 	scan.h \
 	symbol.h \
-	tree.h
+	tree.h \
+	type.h
 
 gpal_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 AM_YFLAGS = -dvt
@@ -284,6 +286,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scan.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/symbol.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tree.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/type.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

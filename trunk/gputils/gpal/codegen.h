@@ -48,11 +48,13 @@ void codegen_unop(struct variable *var,
                   tree *offset_expr,
                   tree *unop,
                   enum size_tag size);
-void codegen_indirect(tree *offset,
-                      struct variable *var,
-                      int element_size,
-                      gp_boolean new_expr);
+void codegen_load_indirect(struct variable *var);
+void codegen_calc_indirect(tree *offset,
+                           struct variable *var,
+                           int element_size,
+                           gp_boolean new_expr);
 void codegen_store(struct variable *var,
+                   gp_boolean access,
                    gp_boolean constant_offset,
                    int offset,
                    tree *offset_expr);
@@ -72,17 +74,29 @@ void codegen_init_asm(tree *module);
 void codegen_close_asm(void);
 void codegen_select(tree *expr);
 
-struct function_pointer_struct {
+typedef struct {
+  /* function pointers */
   long int codegen;
   long int unopgen;
   long int load_constant;
   long int load_file;
   long int store_file;
+  long int load_address;
+  long int load_fsr;
+  long int offset_fsr;
   long int load_indirect;
   long int store_indirect;
   long int reset_vector;
   long int interrupt_vector;      
-  long int load_fsr;
-};
+  /* device data */
+  enum size_tag data_ptr_size;
+  char *data_ptr_type;
+  enum size_tag prog_ptr_size;
+  char *prog_ptr_type;
+  gp_boolean use_bankisel;
+  gp_boolean use_pagesel;
+} target_type;
+
+extern target_type *target;
 
 #endif

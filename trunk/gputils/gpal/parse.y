@@ -107,6 +107,10 @@ add_entity(tree *node)
 %union {
   int i;
   struct {
+    char *s;
+    enum attrib_type t;
+  } a;
+  struct {
     tree *start;
     tree *end;
   } r;
@@ -117,6 +121,7 @@ add_entity(tree *node)
 }
 
 /* keywords */
+%token <i> ACCESS    "access"
 %token <i> ALIAS     "alias"
 %token <i> ARRAY     "array"
 %token <i> AT        "at"
@@ -138,20 +143,23 @@ add_entity(tree *node)
 %token <i> NULL_TOK  "null"
 %token <i> OF        "of"
 %token <i> OTHERS    "others"
+%token <i> OUT       "out"
 %token <i> PRAGMA    "pragma"
 %token <i> PROCEDURE "procedure"
 %token <i> PUBLIC    "public"
+%token <i> RECORD    "record"
 %token <i> RETURN    "return"
 %token <i> THEN      "then"
 %token <i> TO        "to"
 %token <i> TYPE      "type"
-%token <i> OUT       "out"
+%token <i> VOLATILE  "volatile"
 %token <i> WHEN      "when"
 %token <i> WHILE     "while"
 %token <i> WITH      "with"
 
 /* general */
 %token <s> ASM       "asm"
+%token <a> ATTRIB    "attribute"
 %token <s> IDENT     "symbol"
 %token <i> NUMBER    "number"
 %token <s> STRING    "string"
@@ -181,7 +189,12 @@ add_entity(tree *node)
 %type <t> element_list
 %type <t> element
 %type <t> element_cond
+%type <t> var_value
+%type <t> var_location
 %type <t> type
+%type <t> record_start
+%type <t> record_list
+%type <t> simple_decl
 %type <t> head
 %type <t> arg_list
 %type <t> arg
@@ -283,29 +296,19 @@ element:
 	  $$ = $1;
         }
 	|
-	IDENT ':' IDENT ';'
+	IDENT ':' IDENT var_value var_location ';'
 	{ 
-	  $$ = mk_decl($1, false, $3, NULL, NULL);
+	  $$ = mk_decl($1, false, false, $3, $4, $5);
         }
 	|
-	IDENT ':' IDENT AT expr ';'
+	IDENT ':' VOLATILE IDENT var_value var_location ';'
 	{ 
-	  $$ = mk_decl($1, false, $3, NULL, $5);
-        }
-	|
-	IDENT ':' IDENT '=' expr ';'
-	{ 
-	  $$ = mk_decl($1, false, $3, $5, NULL);
-        }
-	|
-	IDENT ':' IDENT '=' expr AT expr ';'
-	{ 
-	  $$ = mk_decl($1, false, $3, $5, $7);
+	  $$ = mk_decl($1, true, false, $4, $5, $6);
         }
 	|
 	IDENT ':' CONSTANT IDENT '=' expr ';'
 	{ 
-	  $$ = mk_decl($1, true, $4, $6, NULL);
+	  $$ = mk_decl($1, false, true, $4, $6, NULL);
         }
 	|
 	PRAGMA expr ';'
@@ -349,6 +352,30 @@ element:
 	}
 	;
 
+var_value:
+	/* empty */
+	{
+	  $$ = NULL;
+	}
+	|
+	'=' expr
+	{
+          $$ = $2;
+	}
+	;
+
+var_location:
+	/* empty */
+	{
+	  $$ = NULL;
+	}
+	|
+	AT expr
+	{
+          $$ = $2;
+	}
+	;
+
 element_cond:
 	ELSIF expr THEN element_start
 	{
@@ -372,21 +399,64 @@ type:
 	TYPE IDENT IS IDENT ';'
 	{
 	  /* type alias */
-	  $$ = mk_type($2, NULL, NULL, NULL, $4);
+	  $$ = mk_type($2, false, NULL, NULL, NULL, $4);
+        }
+	|
+	TYPE IDENT IS ACCESS IDENT ';'
+	{
+	  /* access type */
+	  $$ = mk_type($2, true, NULL, NULL, NULL, $5);
         }
 	|
 	TYPE IDENT IS ARRAY range OF IDENT ';'
 	{
 	  /* array */
-	  $$ = mk_type($2, $5.start, $5.end, NULL, $7);
+	  $$ = mk_type($2, false, $5.start, $5.end, NULL, $7);
         }
 	|
 	TYPE IDENT IS '(' parameter_list ')' ';'
 	{
 	  /* enumerated type */
-	  $$ = mk_type($2, NULL, NULL, $5, NULL);
+	  $$ = mk_type($2, false, NULL, NULL, $5, NULL);
+        }
+        |
+	TYPE IDENT IS RECORD record_start END RECORD ';'
+	{
+	  /* record definition */
+	  $$ = mk_record($2, $5);
         }
         ;
+
+record_start:
+	/* empty */
+	{
+	  $$ = NULL;
+	}
+	|
+	record_list
+	{
+          $$ = $1;
+	}
+	;
+
+record_list:
+	simple_decl
+	{
+	  $$ = node_list($1, NULL);
+	}
+	|
+	simple_decl record_list
+	{
+	  $$ = node_list($1, $2);
+	}
+	;
+
+simple_decl:
+	IDENT ':' IDENT ';'
+	{ 
+	  $$ = mk_decl($1, false, false, $3, NULL, NULL);
+        }
+	;
 
 head:
 	IDENT
@@ -628,6 +698,17 @@ range:
 	  $$.start = $1;
 	  $$.end = $3;
         }
+	|
+	ATTRIB
+	{
+          if ($1.t == attrib_range) {
+  	    /* transform 'range into 'first and 'last */
+            $$.start = mk_attrib($1.s, attrib_first);
+	    $$.end = mk_attrib($1.s, attrib_last);
+	  } else {
+	    yyerror("either use range attribute or <start> TO <stop>");
+          }
+        }
 	;
 
 parameter_list:
@@ -756,6 +837,11 @@ e0:
 	IDENT
         {
 	  $$ = mk_symbol($1, NULL);
+        }
+	|
+	ATTRIB
+        {
+	  $$ = mk_attrib($1.s, $1.t);
         }
 	|
 	IDENT '[' expr ']'

@@ -13,7 +13,6 @@ gputils
 gpal
   * Clean up the test expressions code generator.  Keep the result in W not
     the working register.
-  * Use the new COFF directives.
   * Add backend for each family.
   * Finish 18xx devices.
   * Add a new analyze stage.  Traverse the call tree and count the number
@@ -27,8 +26,6 @@ gpal
   * Generate an error if subprograms are recursive.
   * Allow arrays to assigned with string values.
   * Implement bit types.
-  * Implement records.
-  * Figure out how to do pointers.  Maybe a new "pointer" type? or "access"?
   * Implement initialized data using idata sections.
   * Implement "rom" to go with variable and constant. dt "my string\0"
   * Maybe use attribute instead of pragma.
@@ -40,8 +37,6 @@ gpal
   * Move multibyte operations to a library if overloading and user defined
     operators are supported.
   * Create icode in codegen and peep it.  Write that to asm file.
-  * Create a stdlib with a configure script.  Compile to user directory.  Using
-    the full path to the source code.
   * Finish testsuite.
 
 gpasm
