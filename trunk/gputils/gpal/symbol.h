@@ -60,6 +60,7 @@ struct type {
 
 enum sym_tag {
   sym_unknown,
+  sym_addr,				/* symbol address */
   sym_const,				/* constant */
   sym_func,				/* function */
   sym_idata,				/* initialized data */
@@ -105,7 +106,8 @@ enum size_tag prim_type(struct type *type);
 int prim_size(enum size_tag size);
 int type_size(struct type *type);
 void add_type_prims(void);
-
+char *var_bank(struct variable *var);
+char *var_page(struct variable *var);
 gp_boolean is_data(struct variable *var);
 gp_boolean in_module(struct variable *var);
 gp_boolean is_extern(struct variable *var);

@@ -54,7 +54,7 @@ typedef void code_unop(enum node_op op,
                        char *name,
                        enum size_tag size,
                        int offset,
-                       gp_boolean add_banksel);
+                       char *bank_addr);
 
 /* load constant function pointer */
 typedef void data_func1(int value, enum size_tag size);
@@ -63,7 +63,7 @@ typedef void data_func1(int value, enum size_tag size);
 typedef void data_func2(char *name,
                         enum size_tag size,
                         int offset,
-                        gp_boolean add_banksel);
+                        char *bank_addr);
 
 #define CODEGEN (*(code_func*)func_ptr->codegen)
 #define UNOPGEN (*(code_unop*)func_ptr->unopgen)
@@ -124,6 +124,11 @@ codegen_next_label(void)
 void
 codegen_write_label(char *label)
 {
+
+  /* Clear the bank setting, because current bank is unknown. */
+  state.current_bank = NULL;
+  state.current_ibank = NULL;
+
   fprintf(state.output.f, "%s:\n", label);
 }
 
@@ -131,6 +136,63 @@ void
 codegen_write_equ(char *label, int value)
 {
   fprintf(state.output.f, "%-30s equ %#x\n", label, value);
+}
+
+void
+codegen_set_bank(char *bank_name)
+{
+  struct variable *var;
+
+  assert(bank_name != NULL);
+
+  if ((state.current_bank == NULL) || 
+      (strcasecmp(bank_name, state.current_bank) != 0)) {
+    codegen_write_asm("banksel %s", bank_name);
+    state.current_bank = bank_name;
+    var = get_global(bank_name);
+    if (var) {
+      var->is_used = true;
+    }
+  }
+
+}
+
+void
+codegen_set_ibank(char *ibank_name)
+{
+  struct variable *var;
+
+  assert(ibank_name != NULL);
+
+  if ((state.current_ibank == NULL) || 
+      (strcasecmp(ibank_name, state.current_ibank) != 0)) {
+    codegen_write_asm("bankisel %s", ibank_name);
+    state.current_ibank = ibank_name;
+    var = get_global(ibank_name);
+    if (var) {
+      var->is_used = true;
+    }
+  }
+
+}
+
+void
+codegen_set_page(char *page_name)
+{
+  struct variable *var;
+
+  assert(page_name != NULL);
+
+  if ((state.current_page == NULL) || 
+      (strcasecmp(page_name, state.current_page) != 0)) {
+    codegen_write_asm("pagesel %s", page_name);
+    state.current_page = page_name;
+    var = get_global(page_name);
+    if (var) {
+      var->is_used = true;
+    }
+  }
+
 }
 
 /****************************************************************************/
@@ -196,7 +258,7 @@ codegen_indirect(tree *offset,
     codegen_write_asm("addlw %s", var->name); 
     codegen_write_asm("banksel FSR");
     codegen_write_asm("movwf FSR"); 
-    codegen_write_asm("banksel %s", LOCAL_DATA_LABEL);
+    codegen_set_bank(FILE_DATA_ADDR(state.module));
     break;
   case PROC_CLASS_PIC16E:
     codegen_write_asm("movf %s, w", WORKING_LABEL);
@@ -223,6 +285,7 @@ codegen_load_file(tree *symbol, struct variable *var)
 {
   int offset;
   int element_size;
+  char *bank_addr = var_bank(var);
 
   if ((symbol->tag == node_symbol) && (SYM_OFST(symbol))) {
     /* access an array */
@@ -232,29 +295,17 @@ codegen_load_file(tree *symbol, struct variable *var)
       if (can_evaluate(SYM_OFST(symbol), false)) {
         /* direct access */
         offset = analyze_check_array(symbol, var) * element_size;
-        if (is_far(var)) {
-          LOAD_FILE(var->name, codegen_size, offset, true);
-        } else {
-          LOAD_FILE(var->name, codegen_size, offset, false);
-        }
+        LOAD_FILE(var->name, codegen_size, offset, bank_addr);
       } else {
         codegen_indirect(SYM_OFST(symbol), var, element_size, false);
-        if (is_far(var)) {
-          LOAD_INDIRECT(var->name, codegen_size, 0, true);
-        } else {
-          LOAD_INDIRECT(var->name, codegen_size, 0, false);
-        }
+        LOAD_INDIRECT(var->name, codegen_size, 0, bank_addr);
       }
     } else {
       analyze_error(symbol, "symbol %s is not an array",
                     SYM_NAME(symbol));
     }
   } else {
-    if (is_far(var)) {
-      LOAD_FILE(var->name, codegen_size, 0, true);
-    } else {
-      LOAD_FILE(var->name, codegen_size, 0, false);
-    }
+    LOAD_FILE(var->name, codegen_size, 0, bank_addr);
   }
 
   return;
@@ -268,27 +319,16 @@ codegen_store(struct variable *var,
               int offset,
               tree *offset_expr)
 {
+  char *bank_addr = var_bank(var);
 
   if (offset_expr) {
     if (constant_offset) {
-      if (is_far(var)) {
-        STORE_FILE(var->name, codegen_size, offset, true);
-      } else {
-        STORE_FILE(var->name, codegen_size, offset, false);
-      }    
+      STORE_FILE(var->name, codegen_size, offset, bank_addr);
     } else {
-      if (is_far(var)) {
-        STORE_INDIRECT(var->name, codegen_size, 0, true);
-      } else {
-        STORE_INDIRECT(var->name, codegen_size, 0, false);
-      }
+      STORE_INDIRECT(var->name, codegen_size, 0, bank_addr);
     }
   } else {
-    if (is_far(var)) {
-      STORE_FILE(var->name, codegen_size, 0, true);
-    } else {
-      STORE_FILE(var->name, codegen_size, 0, false);
-    }
+    STORE_FILE(var->name, codegen_size, 0, bank_addr);
   }
 
 }
@@ -326,7 +366,7 @@ gen_binop_expr(enum node_op op, tree *p0, tree *p1)
 
   if (p0->tag == node_call) {
     reg1 = codegen_get_temp(codegen_size);
-    STORE_FILE(reg1, codegen_size, 0, false);
+    STORE_FILE(reg1, codegen_size, 0, FILE_DATA_ADDR(state.module));
     analyze_call(p0, true, codegen_size);    
     CODEGEN(op, codegen_size, false, 0, reg1);
   } else if (p0->tag == node_constant) {
@@ -339,10 +379,10 @@ gen_binop_expr(enum node_op op, tree *p0, tree *p1)
       /* it is a complex expression, so save temp data */
       reg1 = codegen_get_temp(codegen_size);
       reg2 = codegen_get_temp(codegen_size);
-      STORE_FILE(reg1, codegen_size, 0, false);
+      STORE_FILE(reg1, codegen_size, 0, FILE_DATA_ADDR(state.module));
       codegen_load_file(p0, var);
-      STORE_FILE(reg2, codegen_size, 0, false);
-      LOAD_FILE(reg1, codegen_size, 0, false);
+      STORE_FILE(reg2, codegen_size, 0, FILE_DATA_ADDR(state.module));
+      LOAD_FILE(reg1, codegen_size, 0, FILE_DATA_ADDR(state.module));
       CODEGEN(op, codegen_size, false, 0, reg2);
     } else {
       CODEGEN(op, codegen_size, false, 0, var->name);
@@ -350,7 +390,7 @@ gen_binop_expr(enum node_op op, tree *p0, tree *p1)
   } else {
     /* it is a complex expression so save temp data */
     reg1 = codegen_get_temp(codegen_size);
-    STORE_FILE(reg1, codegen_size, 0, false);
+    STORE_FILE(reg1, codegen_size, 0, FILE_DATA_ADDR(state.module));
     gen_expr(p0);
     CODEGEN(op, codegen_size, false, 0, reg1);
   }
@@ -471,29 +511,18 @@ codegen_unop(struct variable *var,
              tree *unop,
              enum size_tag size)
 {
+  char *bank_addr = var_bank(var);
 
   temp_number = codegen_setup(size);
 
   if (offset_expr) {
     if (constant_offset) {
-      if (is_far(var)) {
-        UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, offset, true);
-      } else {
-        UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, offset, false);
-      }    
+      UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, offset, bank_addr);
     } else {
-      if (is_far(var)) {
-        UNOPGEN(UNOP_OP(unop), false, var->name, codegen_size, 0, true);
-      } else {
-        UNOPGEN(UNOP_OP(unop), false, var->name, codegen_size, 0, false);
-      }
+      UNOPGEN(UNOP_OP(unop), false, var->name, codegen_size, 0, bank_addr);
     }
   } else {
-    if (is_far(var)) {
-      UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, 0, true);
-    } else {
-      UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, 0, false);
-    }
+    UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, 0, bank_addr);
   }
 
   if (temp_number > max_temp_number)
@@ -556,8 +585,8 @@ codegen_init_data()
     }  
   }
 
-  codegen_write_label(LOCAL_DATA_LABEL);
-  
+  codegen_write_label(FILE_DATA_ADDR(state.module));
+  codegen_write_asm("global %s", FILE_DATA_ADDR(state.module));
 }
 
 void
@@ -661,6 +690,9 @@ codegen_init_asm()
       fprintf(state.output.f, ".code_%s code\n", FILE_NAME(state.module));
     }
   }
+
+  codegen_write_label(FILE_CODE_ADDR(state.module));
+  codegen_write_asm("global %s", FILE_CODE_ADDR(state.module));
 
   return;
 }

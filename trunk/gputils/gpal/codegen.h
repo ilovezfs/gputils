@@ -22,7 +22,6 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __CODEGEN_H__
 #define __CODEGEN_H__
 
-#define LOCAL_DATA_LABEL "_local_data"
 #define WORKING_LABEL "_working_data"
 
 extern int codegen_bytes;
@@ -33,6 +32,9 @@ void codegen_line_number(tree *node);
 char *codegen_next_label(void);
 void codegen_write_label(char *label);
 void codegen_write_equ(char *label, int value);
+void codegen_set_bank(char *bank_name);
+void codegen_set_ibank(char *ibank_name);
+void codegen_set_page(char *page_name);
 
 void codegen_jump(char *label);
 void codegen_call(char *label, enum node_storage storage);

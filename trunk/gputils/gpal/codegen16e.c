@@ -32,7 +32,9 @@ Boston, MA 02111-1307, USA.  */
 /* Common                                                                   */
 /****************************************************************************/
 
-#define ADD_BANKSEL(x) if(add_banksel) codegen_write_asm("banksel %s", x);
+#define BANKSEL       codegen_set_bank(bank_addr)
+#define BANKSEL_LOCAL codegen_set_bank(FILE_DATA_ADDR(state.module))
+#define BANKISEL      codegen_set_ibank(bank_addr)
 
 /* load a constant into the working register */
 
@@ -75,7 +77,7 @@ static void
 load_file16e(char *name,
              enum size_tag size,
              int offset,
-             gp_boolean add_banksel)
+             char *bank_addr)
 {
   int num_bytes;
   char offset_buffer[64];
@@ -132,7 +134,7 @@ static void
 store_file16e(char *name,
               enum size_tag size,
               int offset,
-              gp_boolean add_banksel)
+              char *bank_addr)
 {
   int num_bytes;
   char offset_buffer[64];
@@ -188,7 +190,7 @@ static void
 load_indirect16e(char *name,
                  enum size_tag size,
                  int offset,
-                 gp_boolean add_bankisel)
+                 char *bank_addr)
 {
   int num_bytes;
   int i;
@@ -214,7 +216,7 @@ static void
 store_indirect16e(char *name,
                   enum size_tag size,
                   int offset,
-                  gp_boolean add_bankisel)
+                  char *bank_addr)
 {
   int num_bytes;
   int i;
@@ -292,7 +294,7 @@ static void
 clr_direct16e(char *name,
               enum size_tag size,
               int offset,
-              gp_boolean add_banksel)
+              char *bank_addr)
 {
   char offset_buffer[64];
   
@@ -310,33 +312,29 @@ clr_direct16e(char *name,
     break;
   case size_uint8:
   case size_int8:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("clrf %s%s", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint16:
   case size_int16:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("clrf %s%s", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 1", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint24:
   case size_int24:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("clrf %s%s", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 1", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 2", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint32:
   case size_int32:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("clrf %s%s", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 1", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 2", name, offset_buffer);
     codegen_write_asm("clrf %s%s + 3", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_float:
   default:
@@ -349,7 +347,7 @@ static void
 clr_indirect16e(char *name,
                 enum size_tag size,
                 int offset,
-                gp_boolean add_bankisel)
+                char *bank_addr)
 {
   int num_bytes;
   int i;
@@ -361,13 +359,14 @@ clr_indirect16e(char *name,
     codegen_write_asm("incf FSR0L, f");
     codegen_write_asm("addwfc FSR0H, f");
   }
+  BANKSEL_LOCAL;
 }
 
 static void
 inc_direct16e(char *name,
               enum size_tag size,
               int offset,
-              gp_boolean add_banksel)
+              char *bank_addr)
 {
   char offset_buffer[64];
   char *label = NULL;
@@ -386,22 +385,20 @@ inc_direct16e(char *name,
     break;
   case size_uint8:
   case size_int8:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("incf %s%s, f", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint16:
   case size_int16:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("incf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("incf %s%s + 1, f", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint24:
   case size_int24:
     label = codegen_next_label();
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("incf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
     codegen_write_asm("bra %s", label);
@@ -410,12 +407,11 @@ inc_direct16e(char *name,
     codegen_write_asm("bra %s", label);
     codegen_write_asm("incf %s%s + 2, f", name, offset_buffer);
     codegen_write_label(label);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint32:
   case size_int32:
     label = codegen_next_label();
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("incf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
     codegen_write_asm("bra %s", label);
@@ -427,7 +423,6 @@ inc_direct16e(char *name,
     codegen_write_asm("bra %s", label);
     codegen_write_asm("incf %s%s + 3, f", name, offset_buffer);
     codegen_write_label(label);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_float:
   default:
@@ -443,7 +438,7 @@ static void
 inc_indirect16e(char *name,
                 enum size_tag size,
                 int offset,
-                gp_boolean add_bankisel)
+                char *bank_addr)
 {
   int num_bytes;
   int i;
@@ -454,6 +449,7 @@ inc_indirect16e(char *name,
   label = codegen_next_label();
 
   for (i = 0; i < num_bytes; i++) {
+    codegen_set_bank("INDF");
     codegen_write_asm("incf INDF, f");
     codegen_write_asm("btfss STATUS, C");
     codegen_write_asm("bra %s", label);
@@ -472,7 +468,7 @@ static void
 dec_direct16e(char *name,
               enum size_tag size,
               int offset,
-              gp_boolean add_banksel)
+              char *bank_addr)
 {
   char offset_buffer[64];
   char *label = NULL;
@@ -491,22 +487,20 @@ dec_direct16e(char *name,
     break;
   case size_uint8:
   case size_int8:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint16:
   case size_int16:
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfsc STATUS, C");
     codegen_write_asm("decf %s%s + 1, f", name, offset_buffer);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint24:
   case size_int24:
     label = codegen_next_label();
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
     codegen_write_asm("bra %s", label);
@@ -515,12 +509,11 @@ dec_direct16e(char *name,
     codegen_write_asm("bra %s", label);
     codegen_write_asm("decf %s%s + 2, f", name, offset_buffer);
     codegen_write_label(label);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_uint32:
   case size_int32:
     label = codegen_next_label();
-    ADD_BANKSEL(name);
+    BANKSEL;
     codegen_write_asm("decf %s%s, f", name, offset_buffer);
     codegen_write_asm("btfss STATUS, C");
     codegen_write_asm("bra %s", label);
@@ -532,7 +525,6 @@ dec_direct16e(char *name,
     codegen_write_asm("bra %s", label);
     codegen_write_asm("decf %s%s + 3, f", name, offset_buffer);
     codegen_write_label(label);
-    ADD_BANKSEL(LOCAL_DATA_LABEL);
     break;
   case size_float:
   default:
@@ -548,7 +540,7 @@ static void
 dec_indirect16e(char *name,
                 enum size_tag size,
                 int offset,
-                gp_boolean add_bankisel)
+                char *bank_addr)
 {
   int num_bytes;
   int i;
@@ -559,6 +551,7 @@ dec_indirect16e(char *name,
   label = codegen_next_label();
 
   for (i = 0; i < num_bytes; i++) {
+    codegen_set_bank("INDF");
     codegen_write_asm("decf INDF, f");
     codegen_write_asm("btfss STATUS, C");
     codegen_write_asm("bra %s", label);
@@ -1609,28 +1602,28 @@ unopgen16e(enum node_op op,
            char *name,
            enum size_tag size,
            int offset,
-           gp_boolean add_banksel)
+           char *bank_addr)
 {
   switch (op) {
   case op_clr:
     if (direct) {
-      clr_direct16e(name, size, offset, add_banksel);
+      clr_direct16e(name, size, offset, bank_addr);
     } else {
-      clr_indirect16e(name, size, offset, add_banksel);
+      clr_indirect16e(name, size, offset, bank_addr);
     }
     break;
   case op_inc:
     if (direct) {
-      inc_direct16e(name, size, offset, add_banksel);
+      inc_direct16e(name, size, offset, bank_addr);
     } else {
-      inc_indirect16e(name, size, offset, add_banksel);
+      inc_indirect16e(name, size, offset, bank_addr);
     }
    break;
   case op_dec:
     if (direct) {
-      dec_direct16e(name, size, offset, add_banksel);
+      dec_direct16e(name, size, offset, bank_addr);
     } else {
-      dec_indirect16e(name, size, offset, add_banksel);
+      dec_indirect16e(name, size, offset, bank_addr);
     }
     break;
   default:

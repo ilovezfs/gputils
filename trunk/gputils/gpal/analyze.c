@@ -1104,11 +1104,9 @@ analyze_procedure(tree *procedure, gp_boolean is_func)
   }
 
   /* write the procedure to the assembly file */
+  state.current_bank = NULL;
+  state.current_ibank = NULL;
   codegen_init_proc(var->name, var->storage, is_func);
-  if (var->storage == storage_public) {
-    codegen_write_asm("banksel %s", LOCAL_DATA_LABEL);
-    codegen_write_asm("bankisel %s", LOCAL_DATA_LABEL);
-  }
   scan_labels(statements, var->name);
   analyze_statements(statements);
   codegen_finish_proc(!generating_function);
@@ -1461,6 +1459,18 @@ analyze_module(tree *current)
   char *alias;
   struct variable *var;
 
+  add_global_symbol(FILE_DATA_ADDR(state.module),
+                    current,
+                    sym_addr,
+                    storage_public,
+                    NULL);
+
+  add_global_symbol(FILE_CODE_ADDR(state.module),
+                    current,
+                    sym_addr,
+                    storage_public,
+                    NULL);
+
   while (current) {
     switch (current->tag) {
     case node_alias:
@@ -1556,6 +1566,20 @@ analyze_public(char *public_name)
   } else {
     analyze_error(current, "unknown public %s", public_name);
     return;
+  }
+
+  if (FILE_TYPE(state.module) == source_with) {
+    add_global_symbol(FILE_DATA_ADDR(public),
+                      current,
+                      sym_addr,
+                      FILE_UDATA(state.module),
+                      NULL);
+
+    add_global_symbol(FILE_CODE_ADDR(public),
+                      current,
+                      sym_addr,
+                      FILE_CODE(state.module),
+                      NULL);
   }
 
   while (current) {
@@ -1793,6 +1817,7 @@ analyze(tree *module)
   codegen_init_asm();
 
   /* scan the module */
+  state.current_page = NULL;
   analyze_module_contents(FILE_BODY(module));
 
   /* finish the assembly output */

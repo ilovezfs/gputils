@@ -414,6 +414,54 @@ add_type_prims(void)
   return;
 }
 
+/* return address of the bank in the variable */
+
+char *
+var_bank(struct variable *var)
+{
+  char *bank = NULL;
+ 
+  switch (var->tag) {
+  case sym_idata:
+  case sym_udata:
+    if (var->is_absolute) {
+      bank = var->name;
+    } else {
+      bank = FILE_DATA_ADDR(var->module);
+    }
+    break;
+  default:
+    assert(0);
+  }
+
+  return bank;
+}
+
+/* return address of the bank in the variable */
+
+char *
+var_page(struct variable *var)
+{
+  char *page = NULL;
+  
+  switch (var->tag) {
+  case sym_func:
+  case sym_label:
+  case sym_proc:
+    if (var->is_absolute) {
+      page = var->name;
+    } else {
+      page = FILE_CODE_ADDR(var->module);
+    } 
+    break;
+  default:
+    assert(0);
+  }
+
+  return page;
+}
+
+
 /* return true if the symbol is data memory */
 
 gp_boolean
