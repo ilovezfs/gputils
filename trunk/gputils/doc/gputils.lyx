@@ -2092,7 +2092,7 @@ Branch progam flow to the address specified by <label>.
 
 The use of goto is discouraged in most languages, but most have them.
  They can aid in the creation of complex state machines.
- For gpal it the mechanism for exiting infinite loops or exiting finite
+ For gpal, it is the mechanism for exiting infinite loops or exiting finite
  loops early.
 \layout LyX-Code
 
@@ -2477,17 +2477,26 @@ Variables
 Symbols whose values change during runtime are referred to as variables.
  Because variables change value during run time they are stored in data
  memory.
- An expression specifies its initial value.
+ An expression specifies its initial value and the address of the variable.
  A variable is declared as follows:
 \layout LyX-Code
 
-<name> : <type> [= <expression>]?;
+<name> : <type> [= <expression>]? [at <expression>]?;
 \layout Standard
 
 Here is an example:
 \layout LyX-Code
 
-gain : short = 10;
+gain : short = 10 at 0x30;
+\layout Standard
+
+As shown in the example above, the address of the variable can be specified.
+ This feature is not available for variables declared within a subprogram.
+ This is available for global data.
+ However, this should generally be avoided.
+ Manually assigning addresses can interfere with optimial relocation of
+ the data memory sections.
+ This could result in more bank switching and a more fragmented memory map.
 \layout Subsection
 
 Constants

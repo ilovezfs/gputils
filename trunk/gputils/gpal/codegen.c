@@ -213,14 +213,14 @@ codegen_load_file(tree *symbol, struct variable *var)
       if (can_evaluate(SYM_OFST(symbol), false)) {
         /* direct access */
         offset = analyze_check_array(symbol, var) * element_size;
-        if (var->storage == storage_far) {
+        if (is_far(var)) {
           LOAD_FILE(var->name, codegen_size, offset, true);
         } else {
           LOAD_FILE(var->name, codegen_size, offset, false);
         }
       } else {
         codegen_indirect(SYM_OFST(symbol), var, element_size, false);
-        if (var->storage == storage_far) {
+        if (is_far(var)) {
           LOAD_INDIRECT(var->name, codegen_size, 0, true);
         } else {
           LOAD_INDIRECT(var->name, codegen_size, 0, false);
@@ -231,7 +231,7 @@ codegen_load_file(tree *symbol, struct variable *var)
                     SYM_NAME(symbol));
     }
   } else {
-    if (var->storage == storage_far) {
+    if (is_far(var)) {
       LOAD_FILE(var->name, codegen_size, 0, true);
     } else {
       LOAD_FILE(var->name, codegen_size, 0, false);
@@ -252,20 +252,20 @@ codegen_store(struct variable *var,
 
   if (offset_expr) {
     if (constant_offset) {
-      if (var->storage == storage_far) {
+      if (is_far(var)) {
         STORE_FILE(var->name, codegen_size, offset, true);
       } else {
         STORE_FILE(var->name, codegen_size, offset, false);
       }    
     } else {
-      if (var->storage == storage_far) {
+      if (is_far(var)) {
         STORE_INDIRECT(var->name, codegen_size, 0, true);
       } else {
         STORE_INDIRECT(var->name, codegen_size, 0, false);
       }
     }
   } else {
-    if (var->storage == storage_far) {
+    if (is_far(var)) {
       STORE_FILE(var->name, codegen_size, 0, true);
     } else {
       STORE_FILE(var->name, codegen_size, 0, false);
@@ -457,20 +457,20 @@ codegen_unop(struct variable *var,
 
   if (offset_expr) {
     if (constant_offset) {
-      if (var->storage == storage_far) {
+      if (is_far(var)) {
         UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, offset, true);
       } else {
         UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, offset, false);
       }    
     } else {
-      if (var->storage == storage_far) {
+      if (is_far(var)) {
         UNOPGEN(UNOP_OP(unop), false, var->name, codegen_size, 0, true);
       } else {
         UNOPGEN(UNOP_OP(unop), false, var->name, codegen_size, 0, false);
       }
     }
   } else {
-    if (var->storage == storage_far) {
+    if (is_far(var)) {
       UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, 0, true);
     } else {
       UNOPGEN(UNOP_OP(unop), true, var->name, codegen_size, 0, false);

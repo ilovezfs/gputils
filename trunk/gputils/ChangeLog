@@ -1,3 +1,6 @@
+2004-07-07 Craig Franklin <craigfranklin@comcast.net>
+  * Added support for manually assigned data memory addresses in gpal.
+
 2004-07-04 Craig Franklin <craigfranklin@comcast.net>
   * Added support for nested case statements in gpal.
   * Added support for multiple switch elements in gpal case statements.

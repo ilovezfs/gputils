@@ -106,7 +106,9 @@ add_global_symbol(char *name,
     }
     var->is_used = false;
     var->is_assigned = false;
+    var->is_absolute = false;
     var->value = 0;
+    var->address = 0;
     if (symbol) {
       var->file_id = symbol->file_id;
       var->line_number = symbol->line_number;
@@ -462,4 +464,17 @@ is_extern(struct variable *var)
     return false;
   }
 
+}
+
+/* return true if the symbol needs a banksel */
+
+gp_boolean
+is_far(struct variable *var)
+{
+  if ((var->storage == storage_far) ||
+      (var->is_absolute)) {
+    return true;
+  } else {
+    return false;
+  }
 }

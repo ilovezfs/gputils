@@ -43,6 +43,7 @@ void  gp_putb32(char *addr, long data);
 
 void  gp_date_string(char *buffer);
 char *gp_lower_case(char *name);
+char *gp_upper_case(char *name);
 
 typedef struct gp_list_struct gp_linked_list;
 

@@ -75,7 +75,9 @@ struct variable {
   struct type *type;			/* symbol type */
   gp_boolean is_used;			/* is used in expr */
   gp_boolean is_assigned;		/* has been assigned a value */
+  gp_boolean is_absolute;		/* has an absolute address */
   int value;				/* value if constant symbol */
+  int address;				/* address if abosolute */
   int file_id;				/* file symbol was defined in */
   int line_number;			/* line number symbol was defined on */
   tree *node;				/* parse tree */
@@ -107,6 +109,7 @@ void add_type_prims(void);
 gp_boolean is_data(struct variable *var);
 gp_boolean in_module(struct variable *var);
 gp_boolean is_extern(struct variable *var);
+gp_boolean is_far(struct variable *var);
 
 #define SYM_TYPE(x) (x->type->tag)
 
