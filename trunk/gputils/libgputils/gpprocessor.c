@@ -479,37 +479,36 @@ unsigned long
 gp_processor_coff_type(enum pic_processor processor)
 {
   int i;
-  struct px *found = NULL;
+  unsigned long coff_type = 0;
 
   for (i = 0; i < NUM_PICS; i++) {
     if (pics[i].tag == processor) {
-      found = &pics[i];
+      coff_type = pics[i].coff_type;
     }
   }
 
-  return found->coff_type;
+  return coff_type;
 }
 
 enum pic_processor
 gp_processor_coff_proc(unsigned long coff_type)
 {
   int i;
-  struct px *found = NULL;
+  enum pic_processor processor = no_processor;
 
   for (i = 0; i < NUM_PICS; i++) {
     if (pics[i].coff_type == coff_type) {
-      found = &pics[i];
+      processor = pics[i].tag;
     }
   }
 
-  return found->tag;
+  return processor;
 }
 
 char *
 gp_processor_coff_name(unsigned long coff_type, unsigned int choice)
 {
   int i;
-  struct px *found = NULL;
 
   if (coff_type == 0)
     return NULL;
@@ -518,9 +517,9 @@ gp_processor_coff_name(unsigned long coff_type, unsigned int choice)
 
   for (i = 0; i < NUM_PICS; i++) {
     if (pics[i].coff_type == coff_type) {
-      found = &pics[i];
+      return pics[i].names[choice];
     }
   }
 
-  return found->names[choice];
+  return NULL;
 }

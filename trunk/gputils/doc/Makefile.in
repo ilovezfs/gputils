@@ -99,16 +99,18 @@ RANLIB = @RANLIB@
 VERSION = @VERSION@
 YACC = @YACC@
 
-man_MANS = gpasm.1 gpdasm.1 gputils.1 gpvc.1
+man_MANS = gpasm.1 gpdasm.1 gplib.1 gputils.1 gpvc.1 gpvo.1
 
 EXTRA_DIST = \
 	gpasm.1 \
 	gpdasm.1 \
+	gplib.1 \
 	gputils.1 \
 	gputils.lyx \
 	gputils.ps \
 	gputils.pdf \
-	gpvc.1
+	gpvc.1 \
+	gpvo.1
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h

@@ -23,6 +23,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include "stdhdr.h"
 
+#include "libgputils.h"
 #include "gplink.h"
 #include "parse.h"
 #include "scan.h"

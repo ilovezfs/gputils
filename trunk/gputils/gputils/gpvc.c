@@ -80,16 +80,16 @@ char * SymbolType4[154] = {
 
 void show_usage(void)
 {
-  printf("Usage: gpdasm <options> <filename>\n");
-  printf("Where <options> are:\n");
-  printf("  -a, --all          Display all information in .cod file\n");
-  printf("  -d, --directory    Display directory header\n");
-  printf("  -l, --listing      Display source listing cross\n");
-  printf("  -m, --message      Display debug message area\n");
-  printf("  -h, --help         Show this usage message \n");
-  printf("  -r, --rom          Display rom\n");
-  printf("  -s, --symbols      Display symbols\n");
-  printf("  -v, --version      Show version\n");
+  printf("Usage: gpdasm [options] file\n");
+  printf("Options: [defaults in brackets after descriptions]\n");
+  printf("  -a, --all          Display all information in .cod file.\n");
+  printf("  -d, --directory    Display directory header.\n");
+  printf("  -l, --listing      Display source listing cross.\n");
+  printf("  -m, --message      Display debug message area.\n");
+  printf("  -h, --help         Show this usage message.\n");
+  printf("  -r, --rom          Display rom.\n");
+  printf("  -s, --symbols      Display symbols.\n");
+  printf("  -v, --version      Show version.\n");
   printf("\n");
   printf("Report bugs to:\n");
   printf("%s\n", BUG_REPORT_URL);

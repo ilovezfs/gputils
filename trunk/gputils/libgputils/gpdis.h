@@ -21,8 +21,6 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPDIS_H__
 #define __GPDIS_H__
 
-void mem2asm12(int insn, char buffer[80]);
-void mem2asm14(int insn, char buffer[80]);
 void gp_disassemble(MemBlock *m, int *org, enum proc_class class, char *buffer);
 
 #endif

@@ -21,50 +21,23 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPREADOBJ_H__
 #define __GPREADOBJ_H__
 
-/* FIXME: Change the section data from int to char.  All addresses are chars.
-Changing it will reduce the >> 1 in the source code */
+typedef enum gp_coff_type { 
+  archive_file, 
+  object_file, 
+  sys_err_file,
+  unknown_file
+} gp_coff_type;
 
-struct section {
-  struct scnhdr  header;
-  unsigned int  *data;  
-  struct reloc  *relocations;
-  struct lineno *linenumbers;
-};
-
-struct objectfile {
-  char            *filename;    /* object filename */
-  struct filehdr  file_header;  /* file header */
-  struct opthdr   opt_header;   /* optional header */
-  struct section  *sections;
-  struct syment   *symtbl;
-  char            *strtbl;
-};
-
-struct binaryfile {
+typedef struct gp_binary_type {
   long int        size;         /* size of the file in bytes */
   char           *file;         /* file contents */
-};
+} gp_binary_type;
 
-unsigned short get_16(unsigned char *addr);
-unsigned long get_32(unsigned char *addr);
-struct binaryfile *readfile(char *filename, char *message);
-struct objectfile *readobj(char *filename, char *message);
-struct objectfile *convert_object(unsigned char *file, char *message);
-void freeobj(struct objectfile *object);
+gp_coff_type gp_identify_coff_file(char *filename);
+gp_binary_type *gp_read_file(char *filename);
+void gp_free_file(gp_binary_type *file);
+gp_object_type *gp_convert_file(char *file);
+gp_object_type *gp_read_coff(char *filename);
 
-enum coff_types { 
-  archive, 
-  object, 
-  sys_err,
-  unknown
-};
-
-enum coff_types identify_coff_file(char *filename);
-void gp_fetch_symbol_name(struct objectfile *object, 
-                          struct syment *coffsym,
-			  char *string);
-void gp_fetch_section_name(struct objectfile *object, 
-                           struct scnhdr *header,
-			   char *string);
 
 #endif

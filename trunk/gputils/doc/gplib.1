@@ -1,42 +1,51 @@
-.TH gpdasm 1 "(c) 2002 James Bowman, Craig Franklin"
+.TH gplib 1 "(c) 2002 James Bowman, Craig Franklin"
 .SH NAME
-gpasm - GNU PIC disassembler
+gplib - GNU PIC Librarian
 .SH SYNOPSIS
-.B gpdasm [options] file
+.B gplib [options] library [member]
 .SH WARNING
 The information in this man page is an extract from the full documentation of
 gputils and is limited to the meaning of the options.  For complete and 
 current documentation, refer to "gputils.ps" located in the gputils docs 
 directory.
 .SH DESCRIPTION
-.B gpdasm
-is an disassembler for Microchip (TM) PIC (TM) micro-controllers.
-.B gpdasm
+.B gplib
+creates, modifies, and extracts from COFF archives for Microchip (TM) PIC 
+(TM) micro-controllers.
+.B gplib
 is part of gputils.  Check the gputils(1) manpage for details on other GNU 
 PIC utilities.
 .SH OPTIONS
 .TP
+.B -c, --create
+Create a new library.
+.TP
+.B -d, --delete
+Delete member from library.
+.TP
 .B -h, --help
-Show the usage message.
+Show the usage message. 
 .TP
-.B -i, --hex-info
-Report extra information about input hex file.  This information includes file
-size and hex format.
+.B -n, --no-index
+Don't add symbol index.
 .TP
-.B -l, --list-chips
-List the supported processors.
+.B -q, --quiet
+Quiet mode.
 .TP
-.B -m, --dump
-Display the contents of instruction memory.
+.B -r, --replace
+Add or replace member from library.
 .TP
-.B -p PROC, --processor PROC
-Select the processor.
+.B -s, --symbols
+List global symbols in library.
 .TP
-.B -s, --short
-Output the short format.  This format can be reassembled by gpasm.
+.B -t, --list
+List members in library.
 .TP
 .B -v, --version
 Show the version.
+.TP
+.B -x, --extract
+Extract member from library.
 .SH SEE ALSO
 gputils(1)
 .SH AUTHOR

@@ -63,48 +63,44 @@ struct ar_hdr
 
 #define AR_HDR_SIZ 280
 
-struct coff_archive {
-  struct ar_hdr        header; /* archive header file */
-  char                *file;   /* object file */
-  int                  offset; /* offset from the begining of the archive */
-  struct coff_archive *next;   /* next file in linked list */
-};
+typedef struct gp_archive_type {
+  struct ar_hdr           header; /* archive header file */
+  char                   *file;   /* object file */
+  int                     offset; /* offset from the begining of the archive */
+  struct gp_archive_type *next;   /* next file in linked list */
+} gp_archive_type;
 
 /* symbol index data */
 #define AR_INDEX_NUMBER_SIZ 4  /* number of symbols is 4 bytes long */
 #define AR_INDEX_OFFSET_SIZ 4  /* symbol index offsets are 4 bytes long */
 
-int count_archive_members(struct coff_archive *archive);
-void list_archive_members(struct coff_archive *archive);
-struct coff_archive *find_archive_member(struct coff_archive *archive, 
-                                         char *objectname);
-int free_archive_member(struct coff_archive *archive);
-struct coff_archive *delete_archive_member(struct coff_archive *archive, 
-                                           char *objectname, 
-                                           char *message);
-struct coff_archive *add_archive_member(struct coff_archive *archive, 
-                                        char *objectname, 
-                                        char *message);
-int extract_archive_member(struct coff_archive *archive, 
-                           char *objectname, 
-                           char *message);
-int write_archive(struct coff_archive *archive, 
-                  char *archivename, 
-                  char *message);
-struct coff_archive *read_coff_archive(char *filename, 
-                                       char *message);
-
-int gp_archive_make_index(struct coff_archive *archive, 
-                          struct symbol_table *,
-			  char *message);
-struct coff_archive *gp_archive_add_index(struct symbol_table *table,
-                                          struct coff_archive *archive, 
-                                          char *message);
+int gp_archive_count_members(gp_archive_type *archive);
+char *gp_archive_member_name(gp_archive_type *archive);
+void gp_archive_list_members(gp_archive_type *archive);
+gp_archive_type *gp_archive_find_member(gp_archive_type *archive, 
+                                        char *objectname);
+int gp_archive_free_member(gp_archive_type *archive);
+gp_archive_type *gp_archive_delete_member(gp_archive_type *archive, 
+                                          char *objectname);
+gp_archive_type *gp_archive_add_member(gp_archive_type *archive, 
+                                       char *objectname);
+int gp_archive_extract_member(gp_archive_type *archive, 
+                              char *objectname);
+int gp_archive_write(gp_archive_type *archive, 
+                     char *archivename);
+void gp_archive_update_offsets(gp_archive_type *archive);
+gp_archive_type *gp_archive_read(char *filename);
+int gp_archive_have_index(gp_archive_type *archive);
+gp_archive_type *gp_archive_remove_index(gp_archive_type *archive);
+int gp_archive_make_index(gp_archive_type *archive, 
+                          struct symbol_table *);
+gp_archive_type *gp_archive_add_index(struct symbol_table *table,
+                                      gp_archive_type *archive);
+int gp_archive_add_symbol(struct symbol_table *table,
+                          char *name,
+                          gp_archive_type *member);
 void gp_archive_read_index(struct symbol_table *table,
-                           struct coff_archive *archive);
+                           gp_archive_type *archive);
 void gp_archive_print_table(struct symbol_table *table);
-int gp_archive_have_index(struct coff_archive *archive);
-struct coff_archive *gp_archive_remove_index(struct coff_archive *archive);
-char *gp_archive_member_name(struct coff_archive *archive);
 
 #endif

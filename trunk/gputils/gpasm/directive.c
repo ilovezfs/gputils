@@ -1630,8 +1630,10 @@ static gpasmVal do_macro(gpasmVal r,
   head->parms = parms;
   head->body = NULL;
   head->defined = 0;
-  /* Record data for the list and cod files */
+  /* Record data for the list, cod, and coff files */
   head->line_number = state.src->line_number;
+  head->coff_number = state.src->coff_number;
+
   head->src_name = strdup(state.src->name);
   
   state.lst.line.linetype = dir;

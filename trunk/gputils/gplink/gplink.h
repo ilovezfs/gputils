@@ -23,11 +23,7 @@ Boston, MA 02111-1307, USA.  */
 
 #define GPLINK_VERSION_STRING ("gplink-" VERSION " pre-alpha")
 
-#define MAX_NAMES 256
 #define MAX_PATHS 100
-
-#include "gpmemory.h"
-#include "gpwritehex.h"
 
 enum modes { _hex, _object};
 
@@ -43,8 +39,13 @@ extern struct gplink_state {
     int warnings;
     int messages;
   } num;
-  char  *srcfilename;		   /* Script file name */
-  char  *basefilename;		   /* Script file name */
+  enum pic_processor processor;
+  char  *srcfilename,		   /* Script file name */
+    basefilename[BUFSIZ],	   /* basename for generating hex,list,symbol filenames */
+    codfilename[BUFSIZ],	   /* Symbol (.cod) file name */
+    hexfilename[BUFSIZ],	   /* Hex (.hex) file name */
+    mapfilename[BUFSIZ],	   /* List (.map) file name */
+    objfilename[BUFSIZ];	   /* Object (.o) file name */
   struct source_context *src;	   /* Top of the stack of the script files */
   struct objectlist     *objects;
   struct archivelist    *archives;
@@ -57,7 +58,7 @@ extern struct gplink_state {
     struct symbol_table *missing;    /* missing external symbols */
     struct symbol_table *archive;    /* archive symbol index */
   } symbol;
-  struct objectfile *output;         /* output object file */
+  gp_object_type *output;            /* output object file */
 } state;
 
 struct source_context {

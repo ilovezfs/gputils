@@ -93,7 +93,7 @@ struct scnhdr
 #define STYP_TEXT     0x0020
 /* Section contains initialized data */
 #define STYP_DATA     0x0040
-/* Section contains unitialized data */
+/* Section contains uninitialized data */
 #define STYP_BSS      0x0080
 /* Section contains initialized data for ROM */
 #define STYP_DATA_ROM 0x0100

@@ -24,7 +24,8 @@ Boston, MA 02111-1307, USA.  */
 /* FIXME: member headers always start on an even-byte boundary. A newline
    character is often used to fill the gap. */
  
-int count_archive_members(struct coff_archive *archive)
+int 
+gp_archive_count_members(gp_archive_type *archive)
 {
   int number = 0;
 
@@ -40,7 +41,24 @@ int count_archive_members(struct coff_archive *archive)
   return number;
 }
 
-void list_archive_members(struct coff_archive *archive)
+/* This function is unused */
+
+char *
+gp_archive_member_name(gp_archive_type *archive)
+{
+  char name[256];
+  char *end;
+
+  sscanf(archive->header.ar_name, "%s/", name);
+  end = strchr(&name[0], '/');
+  if (end != NULL) 
+    *end = '\0';
+
+  return strdup(name);
+}
+
+void 
+gp_archive_list_members(gp_archive_type *archive)
 {
   const char *format = "%-24s  %06i bytes  %s";
   char name[256];
@@ -68,12 +86,12 @@ void list_archive_members(struct coff_archive *archive)
   return;
 }
 
-struct coff_archive *find_archive_member(struct coff_archive *archive, 
-                                         char *objectname)
+gp_archive_type *
+gp_archive_find_member(gp_archive_type *archive, char *objectname)
 {
   char name[256];
   char *end;
-  struct coff_archive *found = NULL;
+  gp_archive_type *found = NULL;
 
   /* If present, skip the symbol index. */
   if (gp_archive_have_index(archive))
@@ -94,7 +112,8 @@ struct coff_archive *find_archive_member(struct coff_archive *archive,
   return found;
 }
 
-int free_archive_member(struct coff_archive *archive)
+int 
+gp_archive_free_member(gp_archive_type *archive)
 {
 
   if (archive->file != NULL)
@@ -105,26 +124,21 @@ int free_archive_member(struct coff_archive *archive)
   return 0;
 }
 
-struct coff_archive *delete_archive_member(struct coff_archive *archive, 
-                                           char *objectname,
-                                           char *message)
+gp_archive_type *
+gp_archive_delete_member(gp_archive_type *archive, 
+                         char *objectname)
 {
-  struct coff_archive *object = NULL;
-  struct coff_archive *list = NULL;
+  gp_archive_type *object = NULL;
+  gp_archive_type *list = NULL;
   
-  object = find_archive_member(archive, objectname);
-
-  if (object == NULL) {
-    sprintf(message, "object \"%s\" not found", objectname);  
-    return NULL;
-  }
+  object = gp_archive_find_member(archive, objectname);
+  assert(object != NULL);
 
   if (object == archive) {
     /* the first object in the list is being deleted */
     archive = archive->next;
   } else {
     /* locate and remove the member */
-
     list = archive;
     while (list != NULL) {
       if (list->next == object) {
@@ -135,40 +149,27 @@ struct coff_archive *delete_archive_member(struct coff_archive *archive,
     }  
   }
 
-  free_archive_member(object);
+  gp_archive_free_member(object);
 
   return archive;
 }
 
-struct coff_archive *add_archive_member(struct coff_archive *archive, 
-                                        char *objectname,
-                                        char *message)
+gp_archive_type *
+gp_archive_add_member(gp_archive_type *archive, 
+                      char *objectname)
 {
-  struct coff_archive *object = NULL;
-  struct coff_archive *newmember = NULL;
-  struct coff_archive *list = NULL;
-  struct binaryfile *newobject = NULL;
+  gp_archive_type *oldmember = NULL;
+  gp_archive_type *newmember = NULL;
+  gp_archive_type *list = NULL;
+  gp_binary_type *newobject = NULL;
   char name[256];
   char date[12];
   char size[10];
   int timer;
-  unsigned short magic;
-  
-  newobject = readfile(objectname, message);
 
-  if (newobject == NULL) {
-    return NULL;
-  }
- 
-  /* make sure the file is a coff object */  
-  magic = ((unsigned char)newobject->file[1] << 8) + 
-           (unsigned char)newobject->file[0];
-  if (magic != MICROCHIP_MAGIC) {
-    sprintf(message, "\"%s\" is not an object file", objectname);
-    return NULL;  
-  }
+  newobject = gp_read_file(objectname);
 
-  newmember = (struct coff_archive *)malloc(sizeof(*newmember));
+  newmember = (gp_archive_type *)malloc(sizeof(*newmember));
   newmember->next = NULL;
 
   /* Point the archive member file to the object file.  The object is never
@@ -191,11 +192,11 @@ struct coff_archive *add_archive_member(struct coff_archive *archive,
   strncpy(&newmember->header.ar_size[0], &size[0], 10);
   strncpy(&newmember->header.ar_fmag[0], ARMAG, 2);
 
-  object = find_archive_member(archive, objectname);
+  oldmember = gp_archive_find_member(archive, objectname);
   
-  if (object != NULL) {
+  if (oldmember != NULL) {
     /* the object already exists, replace it */
-    archive = delete_archive_member(archive, objectname, message);
+    archive = gp_archive_delete_member(archive, objectname);
   }
 
   if (archive == NULL) {
@@ -213,21 +214,17 @@ struct coff_archive *add_archive_member(struct coff_archive *archive,
   return archive;
 }
 
-int extract_archive_member(struct coff_archive *archive, 
-                           char *objectname,
-                           char *message)
+int 
+gp_archive_extract_member(gp_archive_type *archive, 
+                          char *objectname)
 {
-  struct coff_archive *object = NULL;
+  gp_archive_type *object = NULL;
   char filename[256];
   FILE *output_file;
   int size;
 
-  object = find_archive_member(archive, objectname);
-
-  if (object == NULL) {
-    sprintf(message, "object \"%s\" not found", objectname);
-    return 1;
-  }
+  object = gp_archive_find_member(archive, objectname);
+  assert(object != NULL);
 
   /* if the object doesn't have an extension, add one.  This is done for
      some libs generated with other tools.  It should not be necessary
@@ -237,10 +234,8 @@ int extract_archive_member(struct coff_archive *archive,
     strcat(filename, ".o");
 
   output_file = fopen(filename, "wt");
-  if (output_file == NULL) {
-    sprintf(message, "can't write file \"%s\"", objectname);  
+  if (output_file == NULL)
     return 1;
-  }
 
   sscanf(object->header.ar_size, "%il", &size);
   fwrite(object->file, 1, size, output_file);
@@ -252,21 +247,18 @@ int extract_archive_member(struct coff_archive *archive,
   return 0;
 }
 
-int write_archive(struct coff_archive *archive, 
-                  char *archivename,
-                  char *message)
+int 
+gp_archive_write(gp_archive_type *archive, 
+                 char *archivename)
 {
   FILE *output_file;
   int size;
 
-  if (archive == NULL)
-    assert(0);
+  assert(archive != NULL);
 
   output_file = fopen(archivename, "wt");
-  if (output_file == NULL) {
-    sprintf(message, "can't write file \"%s\"", archivename);
+  if (output_file == NULL)
     return 1;
-  }
 
   fputs(ARMAG, output_file); /* write the archive magic number */
 
@@ -285,7 +277,8 @@ int write_archive(struct coff_archive *archive,
 /* update the offset numbers for the archive, this is only required
    if a symbol index is created */
 
-void gp_archive_update_offsets(struct coff_archive *archive)
+void 
+gp_archive_update_offsets(gp_archive_type *archive)
 {
   unsigned int offset = SARMAG;
   int size = 0;
@@ -300,161 +293,32 @@ void gp_archive_update_offsets(struct coff_archive *archive)
   return;
 }
 
-/* place the symbol from the archive symbol index in the archive symbol table */
+/* read a coff archive and store it in memory */
 
-void gp_archive_add_symbol(struct symbol_table *table,
-                           char *name,
-		           struct coff_archive *member)
-{
-  struct symbol *sym;
-
-  /* Search the for the symbol.  If not found, then add it to 
-     the global symbol table.  */
-  sym = get_symbol(table, name);
-  if (sym != NULL) {
-    /* FIXME: an error should be generated here.  duplicate symbols */ 
-    return;
-  }  
-  sym = add_symbol(table, name);
-  annotate_symbol(sym, member);
-
-  return;
-}
-
-/* This function reads the symbol index in the archive.  The symbols are
-placed in the archive symbol table.  This table stores the name of the 
-symbol and the archive member that the symbol is defined in. */ 
-
-void gp_archive_read_index(struct symbol_table *table,
-                           struct coff_archive *archive)
-{
-  int number = 0;
-  int i;
-  char *name;
-  char *offset;
-  int offset_value = 0;
-  struct coff_archive *list;
-  char *file;
-  
-  if (gp_archive_have_index(archive) != 1) {
-    printf("error: this archive has no symbol index\n");
-    return;
-  }
-  
-  file = archive->file;
-  
-  /* read the number of symbols */
-  number = get_32((unsigned char *)file);  
-  
-  /* set the pointers to the offsets and symbol names */
-  offset = &file[AR_INDEX_NUMBER_SIZ];
-  name = offset + (AR_INDEX_OFFSET_SIZ * number);
-  
-  for (i = 0; i < number; i++) {
-    /* get the symbol offset from the symbol index */
-    offset_value = get_32((unsigned char *)offset); 
-
-    /* Locate the object file the symbol is defined in.  The both should
-       have the same offset */
-    list = archive;
-    while (list != NULL) {
-      if (list->offset == offset_value)
-        break;    
-      list = list->next;
-    }
-    
-    if (list == NULL) {
-      assert(0);
-    }
-    
-    /* add the symbol to the archive symbol table */
-    gp_archive_add_symbol(table, name, list);
-
-    /* increment the pointers to the next symbol */
-    name += strlen(name) + 1;
-    offset += AR_INDEX_OFFSET_SIZ;
-  }  
-
-  return;
-}
-
-/* print the archive symbol table */
-
-void gp_archive_print_table(struct symbol_table *table)
-{
-  struct symbol **lst, **ps, *s;
-  int i;
-  const char *format = "%-32s %s\n";
-  struct coff_archive *member;
-  char name[256];
-  char *end;
-
-  /* FIXME: This function is overkill.  It implements the necessary steps
-     for what the linker needs, but the archive tool doesn't need anything
-     this complicated. */
-  
-  if (table == NULL)
-    return;
-  
-  /* sort the index */
-  ps = lst = malloc(table->count * sizeof(lst[0]));
-  for (i = 0; i < HASH_SIZE; i++)
-    for (s = table->hash_table[i]; s; s = s->next) 
-      *ps++ = s;
-  assert(ps == &lst[table->count]);
-  qsort(lst, table->count, sizeof(lst[0]), symbol_compare);    
-
-  for (i = 0; i < table->count; i++) {
-    /* determine the archive member the symbol is defined in */
-    member = get_symbol_annotation(lst[i]);
-    assert(member != NULL);
-    /* determine the archive member name */
-    sscanf(member->header.ar_name, "%s/", name);
-    end = strchr(&name[0], '/');
-    if (end != NULL) 
-      *end = '\0';
-    /* print it */
-    printf(format, get_symbol_name(lst[i]), name);
-  }
-
-  return;
-}
-
-/* FIXME: use the readfile function then convert to archive */
-
-struct coff_archive *read_coff_archive(char *filename, char *message)
+gp_archive_type *
+gp_archive_read(char *filename)
 {
   FILE *infile;
-  struct coff_archive *archive = NULL;
-  struct coff_archive *list = NULL;
-  struct coff_archive *new = NULL;
+  gp_archive_type *archive = NULL;
+  gp_archive_type *list = NULL;
+  gp_archive_type *new = NULL;
   struct ar_hdr tmpheader;
   fpos_t position;
   int object_size;
-  char armag[SARMAG + 1];
-  unsigned short magic;
-  int first_time = 1;
+  char buffer[SARMAG + 1];
 
-  if ( (infile = fopen(filename,"rb")) == NULL ) {
-    sprintf(message, "Can't open archive \"%s\"", filename);
-    return NULL;
-  }
+  infile = fopen(filename,"rb");
+  assert(infile != NULL);
 
-  fread(&armag[0], 1, SARMAG, infile); /* read the magic number */
-  
-  if (strncmp(armag, ARMAG, SARMAG) != 0) {
-    if (armag[7] == 0x0d) {
-      sprintf(message, "Malformed archive, strings in dos format");
-    } else {
-      sprintf(message, "\"%s\" is not a valid archive", filename);  
-    }
+  fread(&buffer[0], 1, SARMAG, infile); /* read the magic number */
+  if (strncmp(buffer, ARMAG, SARMAG) != 0) {
     fclose(infile);
     return NULL;
   }
 
   while (feof(infile) == 0) {
     /* allocate space for the next archive member */
-    new = (struct coff_archive *)malloc(sizeof(*new));
+    new = (gp_archive_type *)malloc(sizeof(*new));
     new->next = NULL;
 
     /* read the archive header */
@@ -465,25 +329,6 @@ struct coff_archive *read_coff_archive(char *filename, char *message)
     new->file = (char *)malloc(sizeof(char)*object_size);
     fread(new->file, sizeof(char), object_size, infile); 
 
-    if (ferror(infile)) {
-      sprintf(message, "can't read archive \"%s\"", filename);  
-      fclose(infile);
-      return NULL;
-    }
-
-    if (!((first_time == 1) && (new->header.ar_name[0] == '/'))) {
-      /* make sure the member is a coff object */  
-      magic = ((unsigned char)new->file[1] << 8) + 
-               (unsigned char)new->file[0];
-      if (magic != MICROCHIP_MAGIC) {
-        char name[256];
-      
-        sscanf(new->header.ar_name, "%s/", name);
-        sprintf(message, "warning: archive member \"%s\" is not an object file",
-	        name);
-      }
-    }
-
     /* insert the new member in the archive list */
     if (archive == NULL) {
       /* this is the first entry */
@@ -493,8 +338,6 @@ struct coff_archive *read_coff_archive(char *filename, char *message)
       list->next = new;
       list = new;
     }
-
-    first_time = 0;
 
     /* Some malformed libs have a couple of extra bytes on the end.  The 
        while eof test passes, but there are no other members.  Test for 
@@ -514,25 +357,45 @@ struct coff_archive *read_coff_archive(char *filename, char *message)
   return archive;
 }
 
-/* FIXME: put this in a better place */
-void gp_archive_put_int(char *buff, int value)
+/* Determine if the archive has a symbol index */
+
+int 
+gp_archive_have_index(gp_archive_type *archive)
 {
-  buff[0] = value & 0xff;
-  buff[1] = (value >> 8) & 0xff;
-  buff[2] = (value >> 16) & 0xff;
-  buff[3] = (value >> 24) & 0xff;
+
+  if ((archive != NULL) && (archive->header.ar_name[0] == '/'))
+    return 1;
+    
+  return 0;
+}
+
+/* Remove the symbol index if one exists */ 
+
+gp_archive_type *
+gp_archive_remove_index(gp_archive_type *archive)
+{
+  gp_archive_type *member = NULL;
+  
+  /* If present, remove the symbol index. */
+  if (gp_archive_have_index(archive)) {
+    member = archive;
+    archive = archive->next;
+    gp_archive_free_member(member);
+  }
+    
+  return archive;
 }
 
 /* Create a symbol index for the archive.  This is always done to make
    sure duplicate symbols don't get into the library.  This data can 
    and should be stored in the file.  The only reason not to is if you
-   need complaiblity with other tools.  */
+   need compatibility with other tools.  */
 
-int gp_archive_make_index(struct coff_archive *archive, 
-                          struct symbol_table *definition,
-			  char *message)
+int 
+gp_archive_make_index(gp_archive_type *archive, 
+                      struct symbol_table *definition)
 {
-  struct objectfile *object = NULL;
+  gp_object_type *object = NULL;
   char name[256];
   char *end;
 
@@ -545,15 +408,10 @@ int gp_archive_make_index(struct coff_archive *archive,
     end = strchr(&name[0], '/');
     if (end != NULL) 
       *end = '\0';
-    object = convert_object((unsigned char *)archive->file, message);
-    if (object == NULL) {
-      printf("DEBUG: This is the name \"%s\"\n", &name[0]);
-      return 1;
-    }
+    object = gp_convert_file(archive->file);
+    assert(object != NULL);
     object->filename = strdup(name); 
     gp_link_add_symbols(definition, NULL, object);
-    /* FIXME:  This function is not working */
-    /*freeobj(object); */
     archive = archive->next;  
   }
 
@@ -561,15 +419,15 @@ int gp_archive_make_index(struct coff_archive *archive,
 }
 
 /* add the symbol index to the archive */
-struct coff_archive *gp_archive_add_index(struct symbol_table *table,
-                                          struct coff_archive *archive, 
-                                          char *message)
+gp_archive_type *
+gp_archive_add_index(struct symbol_table *table,
+                     gp_archive_type *archive)
 {
-  struct coff_archive *newmember = NULL;
-  struct coff_archive *member = NULL;
+  gp_archive_type *newmember = NULL;
+  gp_archive_type *member = NULL;
   int i;
   struct symbol **lst, **ps, *s;
-  struct coffsymbol *var;
+  gp_coffsymbol_type *var;
   char size[10];
   char *ptr;
   long int indexsize = 0;
@@ -594,7 +452,7 @@ struct coff_archive *gp_archive_add_index(struct symbol_table *table,
   }
 
   /* create a new member for the index and place it in the archive */
-  newmember = (struct coff_archive *)malloc(sizeof(*newmember));
+  newmember = (gp_archive_type *)malloc(sizeof(*newmember));
   newmember->file = (char *)malloc(sizeof(char)*indexsize);
   newmember->next = NULL;  
 
@@ -615,14 +473,14 @@ struct coff_archive *gp_archive_add_index(struct symbol_table *table,
   
   /* write the number of symbols to the member */
   ptr = archive->file;
-  gp_archive_put_int(ptr, table->count);
+  _put_32(ptr, table->count);
   ptr += 4;
   
   /* write the offsets to the member */
   for (i = 0; i < table->count; i++) {
     var = get_symbol_annotation(lst[i]);
-    member = find_archive_member(archive, var->filename);
-    gp_archive_put_int(ptr, member->offset);
+    member = gp_archive_find_member(archive, var->file->filename);
+    _put_32(ptr, member->offset);
     ptr += 4;
   }
 
@@ -635,47 +493,114 @@ struct coff_archive *gp_archive_add_index(struct symbol_table *table,
   return archive;
 }
 
-/* Determine if the archive has a symbol index */
+/* place the symbol from the archive symbol index in the archive symbol table */
 
-int gp_archive_have_index(struct coff_archive *archive)
+int 
+gp_archive_add_symbol(struct symbol_table *table,
+                      char *name,
+                      gp_archive_type *member)
 {
-  int have_index = 0;
+  struct symbol *sym;
 
-  if ((archive != NULL) && (archive->header.ar_name[0] == '/'))
-    have_index = 1;
-    
-  return have_index;
+  /* Search the for the symbol.  If not found, then add it to 
+     the global symbol table.  */
+  sym = get_symbol(table, name);
+  if (sym != NULL) {
+    return 1;
+  }  
+  sym = add_symbol(table, name);
+  annotate_symbol(sym, member);
+
+  return 0;
 }
 
-/* Remove the symbol index if one exists */ 
+/* This function reads the symbol index in the archive.  The symbols are
+placed in the archive symbol table.  This table stores the name of the 
+symbol and the archive member that the symbol is defined in. */ 
 
-struct coff_archive *gp_archive_remove_index(struct coff_archive *archive)
+void 
+gp_archive_read_index(struct symbol_table *table,
+                      gp_archive_type *archive)
 {
-  struct coff_archive *member = NULL;
+  int number = 0;
+  int i;
+  char *name;
+  char *offset;
+  int offset_value = 0;
+  gp_archive_type *list;
+  char *file;
   
-  /* If present, remove the symbol index. */
-  if (gp_archive_have_index(archive)) {
-    member = archive;
-    archive = archive->next;
-    free_archive_member(member);
-  }
+  assert(gp_archive_have_index(archive));
+  
+  file = archive->file;
+  
+  /* read the number of symbols */
+  number = _get_32(file);  
+  
+  /* set the pointers to the offsets and symbol names */
+  offset = &file[AR_INDEX_NUMBER_SIZ];
+  name = offset + (AR_INDEX_OFFSET_SIZ * number);
+  
+  for (i = 0; i < number; i++) {
+    /* get the symbol offset from the symbol index */
+    offset_value = _get_32(offset); 
+
+    /* Locate the object file the symbol is defined in.  The both should
+       have the same offset */
+    list = archive;
+    while (list != NULL) {
+      if (list->offset == offset_value)
+        break;    
+      list = list->next;
+    }
     
-  return archive;
+    assert(list != NULL);
+    
+    /* add the symbol to the archive symbol table */
+    gp_archive_add_symbol(table, name, list);
+
+    /* increment the pointers to the next symbol */
+    name += strlen(name) + 1;
+    offset += AR_INDEX_OFFSET_SIZ;
+  }  
+
+  return;
 }
 
-char *gp_archive_member_name(struct coff_archive *archive)
+/* print the archive symbol table */
+
+void 
+gp_archive_print_table(struct symbol_table *table)
 {
+  struct symbol **lst, **ps, *s;
+  int i;
+  const char *format = "%-32s %s\n";
+  gp_archive_type *member;
   char name[256];
   char *end;
+  
+  assert(table != NULL);
+  
+  /* sort the index */
+  ps = lst = malloc(table->count * sizeof(lst[0]));
+  for (i = 0; i < HASH_SIZE; i++)
+    for (s = table->hash_table[i]; s; s = s->next) 
+      *ps++ = s;
+  assert(ps == &lst[table->count]);
+  qsort(lst, table->count, sizeof(lst[0]), symbol_compare);    
 
-  sscanf(archive->header.ar_name, "%s/", name);
-  /* FIXME: sscanf isn't working like I want it to.  strcpy would work just 
-     as well */
-  end = strchr(&name[0], '/');
-  if (end != NULL) 
-    *end = '\0';
+  for (i = 0; i < table->count; i++) {
+    /* determine the archive member the symbol is defined in */
+    member = get_symbol_annotation(lst[i]);
+    assert(member != NULL);
+    /* determine the archive member name */
+    sscanf(member->header.ar_name, "%s/", name);
+    end = strchr(&name[0], '/');
+    if (end != NULL) 
+      *end = '\0';
+    /* print it */
+    printf(format, get_symbol_name(lst[i]), name);
+  }
 
-  return strdup(name);
+  return;
 }
-
-

@@ -1,3 +1,8 @@
+2003-01-05 Craig Franklin <craigfranklin@attbi.com>
+  * Converted to new object structures.
+  * Fixed errors in gpasm, gplib, and gplink.  
+  * Changed gpvo output format.
+
 2002-12-22 Craig Franklin <craigfranklin@attbi.com>
   * Added coff file support to gpasm.
   * Added UPPER operator.
@@ -15,7 +20,7 @@
   * Fixed default BSR behavior for 18xxx devices.
   * Changed gpasm default hex file format to inhx32.
 
-2002-11-09  Scott Dattalo <scott@dattalo.com>
+2002-11-09 Scott Dattalo <scott@dattalo.com>
   * Invalid relative branches for 18xxx family were not generating errors. 
     eg: bc $+258, bc $-256, rcall $-2048, rcall $+2050 all now generate 
     appropriate errors.
@@ -161,7 +166,6 @@
     This is a development version.  It is not complete.  
 
 2001-10-31 Craig Franklin <craigfranklin@attbi.com>
-
   * gpasm 0.9.14 Released.
   * The path to the header files is now searched when including files.  This  
     means the "-I /usr/local/share/gpasm/header" argument to gpasm is no  
@@ -170,7 +174,6 @@
     configuration option.
   
 2001-10-25 Craig Franklin <craigfranklin@attbi.com>
-
   * implemented "fill (<expression>),number", where <expression> is a line of
     assembly.  example: "fill (goto start), 10" 
   * fixed bug #423204, infinite loop when missing new line before EOF in a file
@@ -178,12 +181,10 @@
   * parser debug is enabled when PARSE_DEBUG is defined
 
 2001-10-09 Craig Franklin <craigfranklin@attbi.com>
-
   * removed all // comments to satisfy --pedantic flag
   * fixed several errors in gpvo
 
 2001-10-06 Craig Franklin <craigfranklin@attbi.com>
-
   * gpasm 0.9.13 Released.
   * Added new processors:
     p16c432 p16c433 p16c781 p16c782 p16c925 p16c926 p16cr620a p16f73	
@@ -196,7 +197,6 @@
     p18f442.inc p18f448.inc p18f452.inc p18f458.inc
 
 2001-10-02 Craig Franklin <craigfranklin@attbi.com>
-
   * "list n=0" may now be used to prevent page breaks in the listing file.  
     This feature was provided by Reto Felix <reto.felix@bluewin.ch>.
   * All arguments to the list directive are now processed as decimal regardless

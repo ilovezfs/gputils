@@ -222,7 +222,8 @@ struct source_context {
   } lst; 
   struct yy_buffer_state *yybuf;
   unsigned int line_number;
-  struct file_context *fc;    /*   Position in the file context stack */
+  unsigned int coff_number;       /* COFF symbol number */
+  struct file_context *fc;        /* Position in the file context stack */
   struct source_context *prev;
 };
 
@@ -252,7 +253,8 @@ struct macro_head {
   struct macro_body *body;
   int defined;			/* 1 macro has been defined so calls are valid */ 
   char *src_name;
-  int line_number;
+  unsigned int line_number;
+  unsigned int coff_number;
 };
 
 struct macro_body {

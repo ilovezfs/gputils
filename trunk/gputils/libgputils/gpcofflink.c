@@ -28,13 +28,14 @@ Boston, MA 02111-1307, USA.  */
    objects in a library are to be linked against.  This table should be empty
    at the begining of the relocation process. */
 
-void gp_link_add_symbol(struct symbol_table *table,
-                        char *name,
-		        struct syment *coffsym,
-		        struct objectfile *file)
+void 
+gp_link_add_symbol(struct symbol_table *table,
+                   char *name,
+		   struct syment *coffsym,
+		   gp_object_type *file)
 {
-  struct symbol     *sym;
-  struct coffsymbol *var;
+  struct symbol      *sym;
+  gp_coffsymbol_type *var;
 
   /* Search the for the symbol.  If not found, then add it to 
      the global symbol table.  */
@@ -46,16 +47,16 @@ void gp_link_add_symbol(struct symbol_table *table,
   var = malloc(sizeof(*var));
   var->coffsym = coffsym;
   var->file = file;
-  var->filename = file->filename;
   annotate_symbol(sym, var);
   
   return;
 }
 
-void gp_link_remove_symbol(struct symbol_table *table, char *name)
+void 
+gp_link_remove_symbol(struct symbol_table *table, char *name)
 {
-  struct symbol     *sym;
-  struct coffsymbol *var;
+  struct symbol      *sym;
+  gp_coffsymbol_type *var;
 
   sym = get_symbol(table, name);
   if (sym == NULL)
@@ -70,23 +71,31 @@ void gp_link_remove_symbol(struct symbol_table *table, char *name)
 
 /* Add the external symbols from an object file to the appropriate symbol 
    tables.  NOTE: The missing symbol table is optional. This feature is
-   used for generating symbol indexes for archives. */ 
+   not used for generating symbol indexes for archives. */ 
 
-int gp_link_add_symbols(struct symbol_table *definition,
-                        struct symbol_table *missing,
-                        struct objectfile *object)  
+/* The calling app must provide an error reporting function */
+void _duplicate_symbol(char *name, gp_object_type *first, gp_object_type *second);  
+
+int 
+gp_link_add_symbols(struct symbol_table *definition,
+                    struct symbol_table *missing,
+                    gp_object_type *object)  
 {
+  gp_symbol_type *list = NULL;
   struct syment *coffsym = NULL;
   char name[256];
   struct symbol *sym; 
+  gp_coffsymbol_type *var;
   int i;
 
   if ((definition == NULL) || (object == NULL))
     return 1;
 
-  for (i = 0; i < object->file_header.f_nsyms; i++) {
-    coffsym = &object->symtbl[i];
-    gp_fetch_symbol_name(object, coffsym, &name[0]);
+  list = object->sym_table;
+
+  while (list != NULL ) {
+    coffsym = &list->symbol;
+    gp_coffgen_fetch_symbol_name(object, coffsym, &name[0]);
     /* process all external symbols that are not directives */
     if ((coffsym->st_class == C_EXT) && (name[0] != '.')) {
       if (coffsym->sec_num == 0) {
@@ -102,8 +111,9 @@ int gp_link_add_symbols(struct symbol_table *definition,
 	   it from the missing symbol table if it exists there */
 	sym = get_symbol(definition, &name[0]); 
         if (sym != NULL) {
-          /* FIXME: generate an error, duplicate symbols */
-
+          /* duplicate symbol */
+          var = get_symbol_annotation(sym);
+          _duplicate_symbol(&name[0], var->file, object);
         } else {	
           gp_link_add_symbol(definition, &name[0], coffsym, object);
         }
@@ -113,39 +123,33 @@ int gp_link_add_symbols(struct symbol_table *definition,
     }
 
     /* don't process auxillary symbols */
-    if (coffsym->num_auxsym == 1)
-      i++;
+    for (i = 0; i < coffsym->num_auxsym; i++) {
+      list = list->next;
+    }
+    
+    list = list->next;
 
   }
 
   return 0;
 }
 
-int gp_link_check_object(char *name,
-                         struct objectfile *object)
-{
-  int valid = 0;
-
-
-  return valid;
-}
-
 /* FIXME: need a function to check the section definitions for overlapping
           addresses */
 
-void gp_link_reloc(struct objectlist *list,
-                   struct symbol_table *sections,
-                   struct symbol_table *logical_sections)  
+void 
+gp_link_reloc(struct objectlist *list,
+              struct symbol_table *sections,
+              struct symbol_table *logical_sections)  
 {
-  struct objectfile *object;
-  struct section    *section;
-  int i;
+  gp_object_type  *object;
+  gp_section_type *section;
+  gp_symbol_type  *symbol;
   char name[256];
+  int i;
   struct symbol *sym;
   char *section_name;
   struct linker_section *section_def;
-  struct syment *symbol;
-  int index;
 
   assert(list != NULL);
   assert(sections != NULL);
@@ -154,14 +158,14 @@ void gp_link_reloc(struct objectlist *list,
   while (list != NULL) {
     object = list->object;
     assert(object != NULL);
-    for (i = 0; i < object->file_header.f_nscns; i++) {
-      section = &object->sections[i];
-      gp_fetch_section_name(object, &section->header, &name[0]);
+    section = object->sections;
+    while (section != NULL) {
+      gp_coffgen_fetch_section_name(object, &section->header, &name[0]);
       sym = get_symbol(logical_sections, &name[0]);
       if (sym == NULL) {
-        /* FIXME: issue error */  
+        /* FIXME: Maybe issue error or place code in a default location*/  
       } else {
-        /* find the linker script section defintion that this section belongs
+        /* find the linker script section definition that this section belongs
 	   in */ 
         section_name = get_symbol_annotation(sym);
         sym = get_symbol(sections, section_name);
@@ -173,21 +177,23 @@ void gp_link_reloc(struct objectlist *list,
         section->header.s_vaddr = section_def->next_address;
         section_def->next_address += (section->header.s_size / 2);
       }
-
-    }
-
-    /* update the symbol addresses */
-    for (i = 0; i < object->file_header.f_nsyms; i++) {    
-      symbol = &object->symtbl[i];
-      if (symbol->sec_num > 0) {
-        index = symbol->sec_num - 1;
-        section = &object->sections[index];
-        symbol->value += section->header.s_paddr; 
-      }
+    
+      /* update the symbol addresses for this section */
+      symbol = object->sym_table;
+      while (symbol != NULL) {
+        if (symbol->symbol.sec_num == section->number) {
+          symbol->symbol.value += section->header.s_paddr; 
+        }
       
-      /* don't process auxillary symbols */
-      if (symbol->num_auxsym == 1)
-        i++;
+        /* don't process auxillary symbols */
+        for (i = 0; i < symbol->symbol.num_auxsym; i++) {
+          symbol = symbol->next;
+        }
+    
+        symbol = symbol->next;
+      }
+
+      section = section->next;
     }
 
     list = list->next;
@@ -198,10 +204,19 @@ void gp_link_reloc(struct objectlist *list,
 
 /* FIXME: finish defining patch operations */
 
-void gp_link_patch_addr(unsigned int *data, 
-                        long value,
-			unsigned short type)
+/* patch one word with the relocated address */ 
+
+void 
+gp_link_patch_addr(MemBlock *m, 
+                   unsigned int org,
+                   long value,
+                   unsigned short type)
 {
+  unsigned int data;
+  
+  /* fetch the current contents of the memory */
+  data = i_memory_get(m, org);
+  assert((data & MEM_USED_MASK) != 0);
 
   switch (type) {
   case RELOCT_CALL:
@@ -209,14 +224,14 @@ void gp_link_patch_addr(unsigned int *data,
     if (value > 0x7ff) {
       /* issue a warning */
     }
-    *data = *data | (value & 0x7ff);    
+    data = data | (value & 0x7ff);    
     break;
   case RELOCT_GOTO:
     /* lowest eleven bits contain address */
     if (value > 0x7ff) {
       /* issue a warning */
     }
-    *data = *data | (value & 0x7ff);   
+    data = data | (value & 0x7ff);   
     break;
   case RELOCT_BANKSEL:
   
@@ -226,27 +241,33 @@ void gp_link_patch_addr(unsigned int *data,
     if (value > 0x7F) {
       /* issue a warning */
     }
-    *data = *data | (value & 0x7f);   
+    data = data | (value & 0x7f);   
     break; 
   default:
     printf("unimplemented relocation = %i\n", type);
     assert(0);
   }
 
+  /* update memory with the new value */
+  i_memory_put(m, org, data);
+
   return;
 }
 
-void gp_link_patch(struct objectlist *list,
-                   struct symbol_table *symbols)
+/* patch all addresses with the relocated symbols */
+
+void 
+gp_link_patch(struct objectlist *list,
+              struct symbol_table *symbols)
 {
-  struct objectfile *object;
-  struct section    *section;
-  int i, j;
+  gp_object_type     *object;
+  gp_section_type    *section;
+  gp_reloc_type      *relocation;
+  gp_symbol_type     *symbolentry;
+  gp_coffsymbol_type *var;
+  struct syment      *symbol;
   char name[256];
   struct symbol *sym;
-  struct reloc *relocation;
-  struct syment *symbol;
-  unsigned int *data;
   
   assert(list != NULL);
   assert(symbols != NULL);
@@ -254,25 +275,33 @@ void gp_link_patch(struct objectlist *list,
   while (list != NULL) {
     object = list->object;
     assert(object != NULL);
-    
-    for (i = 0; i < object->file_header.f_nscns; i++) {
-      section = &object->sections[i];
+    section = object->sections;
+    while (section != NULL) {
       /* patch raw data with relocation entries */
-      for (j = 0; j < section->header.s_nreloc; j++) {  
-        relocation = &section->relocations[j];
-        symbol = &object->symtbl[relocation->r_symndx]; 
-        if ((symbol->st_class == C_EXT) && (symbol->sec_num == 0)) {
+      relocation = section->relocations;
+      while (relocation != NULL) {
+        symbolentry = gp_coffgen_findsymbolnum(object, 
+                                               relocation->relocation.r_symndx);
+        symbol = &symbolentry->symbol;
+        if ((symbol->st_class == C_EXT) && 
+            (symbol->sec_num == 0)) {
 	  /* This is an external symbol defined elsewhere */
-	  gp_fetch_symbol_name(object, symbol, &name[0]);
+	  gp_coffgen_fetch_symbol_name(object, symbol, &name[0]);
           sym = get_symbol(symbols, &name[0]);
 	  assert(sym != NULL);
-	  symbol = get_symbol_annotation(sym);
-	  assert(symbol != NULL);	  
-	}
-	data = &section->data[relocation->r_vaddr >> 1];
-	gp_link_patch_addr(data, symbol->value, relocation->r_type);
+	  var = get_symbol_annotation(sym);
+	  assert(var != NULL);	  
+	  symbol = var->coffsym;
+        }
+        gp_link_patch_addr(section->data,
+                           relocation->relocation.r_vaddr >> 1,
+                           symbol->value, 
+                           relocation->relocation.r_type);
   
+        relocation = relocation->next;
       }
+
+      section = section->next;
     }
 
     list = list->next;
@@ -281,116 +310,21 @@ void gp_link_patch(struct objectlist *list,
   return;
 }
 
-void gp_link_copy_section(struct section *output, struct section *input)
+/* Combine the relocated and linked files into one object file.  This function
+   is destructive.  Objects in the list are modified. */
+
+gp_object_type *
+gp_link_combine(struct objectlist *list, 
+                char *name, 
+                enum pic_processor processor)
 {
+  gp_object_type  *new = NULL;
 
+  assert(list != NULL);
+  assert(name != NULL);
 
+  new = gp_coffgen_init(name, processor);
+  new->file_header.f_flags = F_EXEC;
 
-}
-
-struct objectfile *gp_link_combine(struct objectlist *list)
-{
-  struct objectlist *store;
-  struct objectfile *object;
-  struct objectfile *output = NULL;
-  struct section    *section;
-  char name[256];
-  struct symbol_table *section_names;
-  int i;
-  struct symbol *sym;
-  int *number;
-  
-  int num_sections = 0;
-  int num_symbols  = 0;
-  unsigned int strtbl_size  = 0;
-
-  /* if (list != NULL)
-     output = gp_coff_init("a.out"); */
-
-  /* create a symbol table with the section names */
-  section_names = push_symbol_table(NULL, 1);
-
-  store = list;
-
-  /* scan through the files to determine number of sections */ 
-  while (list != NULL) {
-    object = list->object;
-    assert(object != NULL);
-
-    num_symbols += object->file_header.f_nsyms;
-    strtbl_size += get_32((unsigned char *)&object->strtbl[0]);
-    
-    for (i = 0; i < object->file_header.f_nscns; i++) {
-      section = &object->sections[i];
-
-      gp_fetch_section_name(object, &section->header, &name[0]);
-      sym = get_symbol(section_names, &name[0]);
-      if (sym == NULL) {
-	sym = add_symbol(section_names, &name[0]);
-        number = (int *)malloc(sizeof(int));
-	*number = 1;
-	annotate_symbol(sym, number);
-        num_sections++;
-      } else {
-        number = get_symbol_annotation(sym);
-	/**number++; FIXME: This causes a silly warning */
-      }
-    }
-
-    list = list->next;
-  }
-
-  /* allocate memory for the output object pointers */
-  output->sections = (struct section *)
-                        malloc(num_sections * sizeof(object->sections));
-  output->symtbl = (struct syment *)
-                      malloc(num_symbols * sizeof(object->symtbl));
-  output->strtbl = (char *)malloc(strtbl_size);
-
-  output->file_header.f_flags = F_EXEC;  
-
-  list = store;
-
-  /* combine the objects */
-  while (list != NULL) {
-    object = list->object;
-    assert(object != NULL);
-
-    /* copy the symbol pointers */
-    for (i = 0; i < object->file_header.f_nsyms; i++) {
-      output->symtbl[output->file_header.f_nsyms] = object->symtbl[i];
-      output->file_header.f_nsyms++;
-    }
-    
-    /* copy the string table */
-    strtbl_size = get_32((unsigned char *)&output->strtbl[0]);
-    memcpy(&output->strtbl[strtbl_size], 
-           &object->strtbl[4], 
-	   get_32((unsigned char *)&object->strtbl[0]));
-
-
-    for (i = 0; i < object->file_header.f_nscns; i++) {
-      section = &object->sections[i];
-
-      gp_fetch_section_name(object, &section->header, &name[0]);
-      sym = get_symbol(section_names, &name[0]);
-      assert(sym != NULL);
-      number = get_symbol_annotation(sym);      
-      if (*number == 1) {
-        int index;
-	
-	/* Only one instance of this section, add it */
-        output->file_header.f_nscns++;
-	index = output->file_header.f_nscns;
-        gp_link_copy_section(&output->sections[index], section);
-      } else {
-        /* combine section */
-      
-      }
-    }
-
-    list = list->next;
-  }
-
-  return output;
+  return new;
 }

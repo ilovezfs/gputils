@@ -21,15 +21,6 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPDASM_H__
 #define __GPDASM_H__
 
-#include "stdhdr.h"
-
-#include "gpprocessor.h"
-#include "gpopcode.h"
-#include "gpmemory.h"
-#include "gpwritehex.h"
-#include "gpreadhex.h"
-#include "gpdis.h"
-
 #define GPDASM_VERSION_STRING ("gpdasm-" VERSION " alpha")
 
 extern struct gpdasm_state {

@@ -1,39 +1,42 @@
-.TH gpdasm 1 "(c) 2002 James Bowman, Craig Franklin"
+.TH gpvo 1 "(c) 2002 James Bowman, Craig Franklin"
 .SH NAME
-gpasm - GNU PIC disassembler
+gpvo - GNU PIC object file Viewer
 .SH SYNOPSIS
-.B gpdasm [options] file
+.B gpvo [options] file
 .SH WARNING
 The information in this man page is an extract from the full documentation of
 gputils and is limited to the meaning of the options.  For complete and 
 current documentation, refer to "gputils.ps" located in the gputils docs 
 directory.
 .SH DESCRIPTION
-.B gpdasm
-is an disassembler for Microchip (TM) PIC (TM) micro-controllers.
-.B gpdasm
+.B gpvo
+is an COFF object file viewer for Microchip (TM) PIC (TM) micro-controllers.  
+COFF files are relocatable objects output from gpasm.
+.B gpvo
 is part of gputils.  Check the gputils(1) manpage for details on other GNU 
 PIC utilities.
 .SH OPTIONS
 .TP
+.B -b, --binary
+Display binary data.
+.TP
+.B -f, --file
+Display file header.
+.TP
 .B -h, --help
-Show the usage message.
+Show the usage message. 
 .TP
-.B -i, --hex-info
-Report extra information about input hex file.  This information includes file
-size and hex format.
+.B -o, --optional 
+Display optional header.
 .TP
-.B -l, --list-chips
-List the supported processors.
+.B -r, --string
+Display the string table.
 .TP
-.B -m, --dump
-Display the contents of instruction memory.
+.B -s, --section 
+Display sections.
 .TP
-.B -p PROC, --processor PROC
-Select the processor.
-.TP
-.B -s, --short
-Output the short format.  This format can be reassembled by gpasm.
+.B -t, --symbol
+Display symbol table.
 .TP
 .B -v, --version
 Show the version.
