@@ -43,6 +43,7 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 %{_bindir}/gpvc
 %{_bindir}/gpvo
 %{_mandir}/man1
+%{_mandir}/fr/man1
 %{_datadir}/gputils/header
 %{_datadir}/gputils/lkr
 %{_datadir}/gputils/pub

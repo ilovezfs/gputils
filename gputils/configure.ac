@@ -164,6 +164,8 @@ AC_CONFIG_FILES([Makefile
                  libgputils/Makefile 
                  libiberty/Makefile 
                  lkr/Makefile
+                 man/Makefile 
+                 man/fr/Makefile 
                  pub/Makefile
                  gputils.spec])
 
