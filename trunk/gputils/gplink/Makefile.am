@@ -27,3 +27,5 @@ AM_LFLAGS = -i
 EXTRA_DIST = parse.h
 
 CLEANFILES = parse.output
+
+MAINTAINERCLEANFILES = parse.c parse.h scan.c

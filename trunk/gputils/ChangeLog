@@ -1,3 +1,6 @@
+2004-07-13 Craig Franklin <craigfranklin@comcast.net>
+  * gputils 0.12.2 Released.
+
 2004-07-08 Craig Franklin <craigfranklin@comcast.net>
   * Allow empty modules and publics in gpal.
   * Allow if statements in a module or public, but outside of subprograms
