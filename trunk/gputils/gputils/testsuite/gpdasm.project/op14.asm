@@ -1,6 +1,6 @@
 ;  This file is used to test gpdasm with the 14 bit instruction set.
 
-     list p=16c84,f=inhx8m
+     list p=16c84
 
 insn macro file 
      ADDLW 0xff

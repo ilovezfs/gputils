@@ -1,4 +1,4 @@
-        LIST    P=18C452,R=HEX
+        LIST    P=18C452
 
 MAXROM = 03FFF
 MAXRAM = 0FFF

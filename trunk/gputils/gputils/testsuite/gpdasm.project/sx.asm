@@ -1,4 +1,4 @@
-     list p=sx18,f=inhx8m
+     list p=sx18
 
 insn macro file
      ADDWF file,1 
