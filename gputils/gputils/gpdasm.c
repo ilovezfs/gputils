@@ -1,5 +1,5 @@
 /* Disassembles ".HEX" files
-   Copyright (C) 2001, 2002, 2003, 2004
+   Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
 
 This file is part of gputils.
@@ -139,12 +139,14 @@ void dasm(MemBlock *memory)
                                    sizeof(buffer));
         printf("%s\n", buffer);
         i++;
-        if ((state.format) && (num_words != 1)) {
+        if (num_words != 1) {
           /* some 18xx instructions use two words */
-          printf("%06x:  %04x\n",
-                 i << byte_addr,
-                 (i_memory_get(memory, i) & 0xffff));
-          i++;
+	  if (state.format) {
+	    printf("%06x:  %04x\n",
+                   i << byte_addr,
+                   (i_memory_get(memory, i) & 0xffff));
+          }
+	  i++;
         }        
       } 
     }

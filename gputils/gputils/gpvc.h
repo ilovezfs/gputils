@@ -1,5 +1,5 @@
 /* Displays contents of ".COD" files
-   Copyright (C) 2001, 2002, 2003, 2004
+   Copyright (C) 2001, 2002, 2003, 2004, 2005
    Scott Dattalo
 
 This file is part of gputils.

@@ -5,7 +5,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.57)
 
 # Initialization
-AC_INIT([gputils],[0.12.4], [<URL:http://gputils.sourceforge.net/>])
+AC_INIT([gputils],[0.13.0], [<URL:http://gputils.sourceforge.net/>])
 AC_CONFIG_SRCDIR(gpasm/gpasm.c)
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
