@@ -3129,12 +3129,14 @@ void opcode_init(int stage)
 
 void begin_cblock(struct pnode *c)
 {
-  state.cblock = maybe_evaluate(c);
+  if (asm_enabled()) { 
+    state.cblock = maybe_evaluate(c);
+  }
 }
 
 void cblock_expr(struct pnode *s)
 {
-  if (can_evaluate_concatenation(s)) {
+  if ((asm_enabled()) && (can_evaluate_concatenation(s))) {
     set_global(evaluate_concatenation(s), state.cblock, PERMANENT, gvt_cblock);
     state.cblock++;
   }
@@ -3142,7 +3144,7 @@ void cblock_expr(struct pnode *s)
 
 void cblock_expr_incr(struct pnode *s, struct pnode *incr)
 {
-  if (can_evaluate_concatenation(s)) {
+  if ((asm_enabled()) &&(can_evaluate_concatenation(s))) {
     set_global(evaluate_concatenation(s), state.cblock, PERMANENT, gvt_cblock);
     state.cblock += maybe_evaluate(incr);
   }
