@@ -10,7 +10,5 @@ EXTRA_DIST =\
 	./include/getopt.h \
 	./include/libiberty.h \
 	./include/stdhdr.h \
-	config.h.in \
 	gputils.spec.in \
-	stamp-h.in \
 	TODO

@@ -1,14 +1,11 @@
-#! /bin/sh
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
 
-dnl Process this file with autoconf to produce a configure script.
-
-AC_PREREQ(2.57)
-
-# Initialization
+AC_PREREQ(2.59)
 AC_INIT([gputils],[0.13.0], [<URL:http://gputils.sourceforge.net/>])
-AC_CONFIG_SRCDIR(gpasm/gpasm.c)
+AC_CONFIG_SRCDIR([config.h.in])
+AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE
-AM_CONFIG_HEADER(config.h)
 AM_MAINTAINER_MODE
 
 # Determine the host and build type. The target is always a PIC.
@@ -49,19 +46,20 @@ AC_CHECK_TOOL(AR, ar, :)
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(stdlib.h malloc.h unistd.h string.h strings.h windows.h)
+AC_CHECK_HEADERS([libintl.h malloc.h stddef.h stdlib.h string.h strings.h unistd.h windows.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
-AC_STRUCT_TM
 AC_TYPE_SIZE_T 
+AC_STRUCT_TM
 
 # Checks for library functions.
 AC_FUNC_ALLOCA
 AC_FUNC_MALLOC
+AC_FUNC_MEMCMP
 AC_FUNC_REALLOC
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(memset strcasecmp strchr strdup strerror stricmp strrchr strtol strtoul)
+AC_CHECK_FUNCS([memmove mempcpy memset strcasecmp strchr strdup strerror stricmp strrchr strtol strtoul])
 
 # Check for functions to compile into libiberty (getopt is always compiled).
 IBERTYOBJS=

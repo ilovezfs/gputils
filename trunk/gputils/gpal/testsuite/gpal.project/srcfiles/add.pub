@@ -1,7 +1,0 @@
-public test is
-
-  failed : uint8;
-  
-  procedure done;
-
-end public;
