@@ -1349,6 +1349,8 @@ check_relative(gp_section_type *section, int org, int argument, int range)
 
 void 
 gp_cofflink_patch_addr(enum proc_class class,
+                       int num_pages,
+                       int num_banks,
                        int bsr_boundary,
                        gp_section_type *section, 
                        gp_symbol_type *symbol,
@@ -1440,7 +1442,7 @@ gp_cofflink_patch_addr(enum proc_class class,
   case RELOCT_BANKSEL:
     {
       int bank = gp_processor_check_bank(class, value);
-      gp_processor_set_bank(class, bank, section->data, org);
+      gp_processor_set_bank(class, num_banks, bank, section->data, org);
       write_data = 0;
     }
     break;
@@ -1548,7 +1550,7 @@ gp_cofflink_patch_addr(enum proc_class class,
   case RELOCT_PAGESEL_BITS:
     {
       int page = gp_processor_check_page(class, value);
-      gp_processor_set_page(class, page, section->data, org);
+      gp_processor_set_page(class, num_pages, page, section->data, org);
       write_data = 0;
     }
     break;
@@ -1589,10 +1591,15 @@ gp_cofflink_patch(gp_object_type *object,
   gp_symbol_type     *symbol;
   gp_coffsymbol_type *var;
   struct symbol      *sym;
+  int num_pages;
+  int num_banks;
   int bsr_boundary = 0;
   
   if (object->class == PROC_CLASS_PIC16E)  
     bsr_boundary = gp_processor_bsr_boundary(object->processor);
+
+  num_pages = gp_processor_num_pages(object->processor);
+  num_banks = gp_processor_num_banks(object->processor);
 
   gp_debug("patching data with relocated symbols");
 
@@ -1615,7 +1622,9 @@ gp_cofflink_patch(gp_object_type *object,
                    symbol->value);
         }
         gp_cofflink_patch_addr(object->class,
-	                       bsr_boundary,
+	                       num_pages,
+                               num_banks,
+                               bsr_boundary,
 			       section,
 			       symbol,
 			       relocation);
