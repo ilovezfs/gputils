@@ -112,29 +112,37 @@ void print_linenum_list(gp_linenum_type *linenumber)
 
 }
 
-void print_data(enum proc_class class, MemBlock *data, int org, int disassemble)
+void print_data(enum proc_class class, gp_section_type *section)
 {
   int memory;
   char buffer[BUFSIZ];
   int byte_addr = 0;
-  
-  if (class == PROC_CLASS_PIC16E) {
-    org = org >> 1;
+  int org;
+
+  if ((class == PROC_CLASS_PIC16E) && !(section->flags & STYP_DATA)) {
+    org = section->address >> 1;
     byte_addr = 1;
+  } else {
+    org = section->address;
   }
   
   buffer[0] = '\0';
   
   printf("Data\n");
   while (1) {
-    memory = i_memory_get(data, org);
+    memory = i_memory_get(section->data, org);
     if ((memory & MEM_USED_MASK) == 0)
       break;
-    
-    if (disassemble)
-      gp_disassemble(data, &org, class, buffer);
 
-    printf("%06x:  %04x  %s\n", org << byte_addr, memory & 0xffff, buffer);
+    if (section->flags & STYP_TEXT) {
+      gp_disassemble(section->data, &org, class, buffer);
+      printf("%06x:  %04x  %s\n", org << byte_addr, memory & 0xffff, buffer);
+    } else if (section->flags & STYP_DATA_ROM) {
+      printf("%06x:  %04x\n", org << byte_addr, memory & 0xffff);
+    } else if (section->flags & STYP_DATA) {
+      printf("%06x:  %02x\n", org, memory & 0xff);
+    }
+
     org++;
   }
   printf("\n");
@@ -186,17 +194,12 @@ void print_sec_header(gp_section_type *section)
 void print_sec_list(gp_object_type *object)
 {
   gp_section_type *section = object->sections;
-  int disassemble;
 
   while (section != NULL) {
     print_sec_header(section);
 
     if (section->size) {
-      if ((section->flags & STYP_TEXT) || (section->flags & STYP_DATA_ROM))
-        disassemble = 1;
-      else
-        disassemble = 0;       
-      print_data(object->class, section->data, section->address, disassemble);
+      print_data(object->class, section);
     }
     if (section->num_reloc) {
       print_reloc_list(object->class, section->relocations);

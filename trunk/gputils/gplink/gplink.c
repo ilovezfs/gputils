@@ -162,34 +162,32 @@ int scan_archive(gp_archive_type *archive, char *name)
   return 0;
 }
 
-/* Remove special symbols from the missing table. These symbols are created
-   by the linker. */
+/* Remove a symbol the linker created from the missing table */
 
 static void
-remove_special(void)
+remove_linker_symbol(char *name)
 {
   struct symbol *sym;
 
-  sym = get_symbol(state.symbol.missing, "_cinit");
+  sym = get_symbol(state.symbol.missing, name);
   if (sym != NULL) {
-    gp_link_remove_symbol(state.symbol.missing, "_cinit");
+    gp_link_remove_symbol(state.symbol.missing, name);
   }
 
   return;
 }
 
-/* Locate the _cinit symbol that the linker created and add it to the 
-   symbol table. */
+/* Add a symbol the linker created to the symbol table. */
 
 static void
-add_cinit(void)
+add_linker_symbol(char *name)
 {
   gp_symbol_type *current = state.object->symbols;
   gp_symbol_type *found = NULL;
 
   while (current != NULL) {
     if ((current->name != NULL) &&
-        (strcmp(current->name, "_cinit") == 0) &&
+        (strcmp(current->name, name) == 0) &&
         (current->section_number > 0)) {
       found = current;
       break;
@@ -197,9 +195,31 @@ add_cinit(void)
     current = current->next;
   }
 
-  /* If a _cinit symbol definition existings, add it to the symbol table */
-  if (found != NULL)
-    gp_link_add_symbol(state.symbol.definition, found, NULL);
+  assert(found != NULL);
+  gp_link_add_symbol(state.symbol.definition, found, NULL);
+
+  return;
+}
+
+/* Search the object list for an idata section. */
+
+static void
+search_idata(void)
+{
+  gp_object_type *list = state.object;
+  gp_section_type *section;
+
+  while (list != NULL) {
+    section = list->sections;
+    while (section != NULL) {
+      if (section->flags & STYP_DATA) {
+        state.has_idata = 1;
+        return;    
+      }
+      section = section->next;
+    }
+    list = list->next;
+  }
 
   return;
 }
@@ -236,7 +256,15 @@ void build_tables(void)
     }
   }
 
-  remove_special();
+  search_idata();
+
+  if (state.has_idata) {
+    remove_linker_symbol("_cinit");
+  }
+
+  if (state.has_stack) {
+    remove_linker_symbol("_stack");
+  }
 
   /* All of the archives have been scanned.  If there are still missing
      references, it is an error */
@@ -332,10 +360,12 @@ void show_usage(void)
   printf("  -f VALUE, --fill VALUE         Fill unused program memory with value.\n");
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
+  printf("  -l, --no-list                  Disable list file output.\n");
   printf("  -m, --map                      Output a map file.\n");
   printf("  -o FILE, --output FILE         Alternate name of output file.\n");
   printf("  -q, --quiet                    Quiet.\n");
   printf("  -s FILE, --script FILE         Linker script.\n");
+  printf("  -t SIZE, --stack SIZE          Create a stack section.\n");
   printf("  -v, --version                  Show version.\n");
   printf("\n");
 #ifdef USE_DEFAULT_PATHS
@@ -356,7 +386,7 @@ void show_usage(void)
   exit(0);
 }
 
-#define GET_OPTIONS "?a:cdf:hI:mo:qs:v"
+#define GET_OPTIONS "?a:cdf:hI:lmo:qs:t:v"
 
   static struct option longopts[] =
   {
@@ -366,10 +396,12 @@ void show_usage(void)
     { "fill",        1, 0, 'f' },
     { "help",        0, 0, 'h' },
     { "include",     1, 0, 'I' },
+    { "no-list",     0, 0, 'l' },
     { "map",         0, 0, 'm' },
     { "output",      1, 0, 'o' },
     { "quiet",       0, 0, 'q' },
     { "script",      1, 0, 's' },
+    { "stack",       1, 0, 't' },
     { "version",     0, 0, 'v' },
     { 0, 0, 0, 0 }
   };
@@ -399,6 +431,9 @@ int main(int argc, char *argv[])
   state.objfile = suppress;
   state.fill_enable = 0;
   state.fill_value = 0;
+  state.has_stack = 0;
+  state.stack_size = 0;
+  state.has_idata = 0;
   state.srcfilename = NULL;
   state.object  = NULL;
   state.archives = NULL;
@@ -453,6 +488,9 @@ int main(int argc, char *argv[])
     case 'I':
       gplink_add_path(optarg);
       break;
+    case 'l':
+      state.lstfile = suppress;
+      break;
     case 'm':
       state.mapfile = normal;
       break;
@@ -467,6 +505,14 @@ int main(int argc, char *argv[])
       break;
     case 's':
       state.srcfilename = optarg;
+      break;
+    case 't':
+      state.stack_size = strtol(optarg, &pc, 10);
+      if ((pc == NULL) || (*pc != '\0')) {
+        gp_error("invalid character %#x in number constant", *pc);
+      } else {
+        state.has_stack = 1;
+      }
       break;
     case 'v':
       fprintf(stderr, "%s\n", GPLINK_VERSION_STRING);
@@ -557,12 +603,23 @@ int main(int argc, char *argv[])
      required to resolve external references.  */
   build_tables();  
 
+  /* add the stack section */
+  if (state.has_stack) {
+    gp_cofflink_make_stack(state.object, state.stack_size);
+  }
+
   /* relocate the sections */
   gp_cofflink_reloc(state.object, 
                     state.section.definition, 
                     state.section.logical);
 
-  add_cinit();
+  if (state.has_idata) {
+    add_linker_symbol("_cinit");
+  }
+
+  if (state.has_stack) {
+    add_linker_symbol("_stack");
+  }
 
   /* patch raw data with the relocated symbol values */
   gp_cofflink_patch(state.object, state.symbol.definition);

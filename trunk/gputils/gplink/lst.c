@@ -42,9 +42,9 @@ open_src(char *name, gp_symbol_type *symbol)
   new->f = fopen(name, "rt");
   if(new->f) {
     new->name = strdup(name);
+    new->missing_source = false;
   } else {
-    perror(name);
-    exit(1);  
+    new->missing_source = true;
   }
 
   new->symbol = symbol;
@@ -127,6 +127,10 @@ write_src(int last_line)
   gp_boolean first_time;
   int org;
   int data;
+
+  /* if the source file wasn't found, can't write it to the list file */
+  if (state.lst.src->missing_source)
+    return;
 
   while (1) {
     

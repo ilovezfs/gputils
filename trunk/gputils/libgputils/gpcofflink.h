@@ -62,6 +62,8 @@ int gp_link_add_symbols(struct symbol_table *,
 
 void gp_cofflink_combine_overlay(gp_object_type *object, int remove_symbol);
 
+void gp_cofflink_make_stack(gp_object_type *object, int num_bytes);
+
 void gp_cofflink_reloc(gp_object_type *object,
                        struct symbol_table *sections,
                        struct symbol_table *logical_sections);
