@@ -1,26 +1,26 @@
-MPASM Version 3.00 Beta Release   OBJSEC3.ASM   01/31/2001  12:43:33	   PAGE 1
+MPASM 03.20.02 Released       OBJSEC3.ASM   1-11-2003  20:59:43         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; OBJSEC3.ASM
-                        00002 
-                        00003 ; This file checks to make sure the correct sections are generated for 
-                        00004 ; the 16Cxx configuration bits and ID locations
-                        00005 
-                        00006         list    p=16c74a
-                        00007 
-2000     0005 0006 0007 00008         __idlocs        0x5678
-         0008 
-2007     1234           00009         __config        0x1234
-                        00010 
-                        00011         code    0
-0000     0001 0002 0003 00012         data    1, 2, 3, 4, 5
-         0004 0005 
-                        00013 
-                        00014         end
-MPASM Version 3.00 Beta Release   OBJSEC3.ASM   01/31/2001  12:43:33	   PAGE 2
+                      00001 ; OBJSEC3.ASM
+                      00002 
+                      00003 ; This file checks to make sure the correct sections are generated for 
+                      00004 ; the 16Cxx configuration bits and ID locations
+                      00005 
+                      00006         list    p=16c74a
+                      00007 
+2000   0005 0006 0007 00008         __idlocs        0x5678
+       0008 
+2007   1234           00009         __config        0x1234
+                      00010 
+                      00011         code    0
+0000   0001 0002 0003 00012         data    1, 2, 3, 4, 5
+       0004 0005 
+                      00013 
+                      00014         end
+MPASM 03.20.02 Released       OBJSEC3.ASM   1-11-2003  20:59:43         PAGE  2
 
 
 SYMBOL TABLE

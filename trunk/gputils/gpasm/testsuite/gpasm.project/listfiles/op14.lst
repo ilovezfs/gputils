@@ -1,0 +1,70 @@
+MPASM 03.20.02 Released          OP14.ASM   1-11-2003  20:59:43         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;  This file is used to test relocatable objects with the 14 bit instruction 
+                      00002 ;  set.  Some of the expressions are possible, but not very useful.
+                      00003 
+                      00004      list p=16f877
+                      00005 
+  0000                00006      extern file, address
+                      00007 
+                      00008      code
+0000   3E??           00009      addlw file
+0001   07??           00010      addwf file,1 
+0002   39??           00011      andlw file
+0003   05??           00012      andwf file,1
+0004   1380           00013      bcf file,7
+0005   1780           00014      bsf file,7
+0006   1880           00015      btfsc file,1
+0007   1C80           00016      btfss file,1
+0008   2???           00017      call address
+0009   01??           00018      clrf file
+000A   0103           00019      clrw
+000B   0064           00020      clrwdt
+000C   09??           00021      comf file,1
+000D   03??           00022      decf file,1
+000E   0B??           00023      decfsz file,1
+000F   ???? ????      00024      pagesel address
+0011   2???           00025      goto address
+0012   0A??           00026      incf file,1
+0013   0F??           00027      incfsz file,1
+0014   38??           00028      iorlw file
+0015   04??           00029      iorwf file,1
+0016   08??           00030      movf  file,1
+0017   30??           00031      movlw file
+0018   00??           00032      movwf file
+0019   0000           00033      nop
+Warning[224]: Use of this instruction is not recommended.
+001A   0062           00034      option 
+001B   0009           00035      retfie
+001C   34??           00036      retlw file
+001D   0008           00037      return
+001E   0D??           00038      rlf file,1
+001F   0C??           00039      rrf file,1
+0020   0063           00040      sleep
+0021   3C??           00041      sublw file
+0022   02??           00042      subwf file,1
+0023   0E??           00043      swapf file,1
+Warning[224]: Use of this instruction is not recommended.
+0024   006?           00044      tris file
+0025   3A??           00045      xorlw file
+0026   06??           00046      xorwf file,1
+                      00047      end
+MPASM 03.20.02 Released          OP14.ASM   1-11-2003  20:59:43         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16F877                          00000001
+address                           00000000
+file                              00000000
+
+Errors   :     0
+Warnings :     2 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

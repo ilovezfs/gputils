@@ -1,0 +1,65 @@
+MPASM 03.20.02 Released          OP12.ASM   1-11-2003  20:59:43         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;  This file is used to test relocatable objects with the 12 bit instruction 
+                      00002 ;  set.  Some of the expressions are possible, but not very useful.
+                      00003 
+                      00004      list p=16c58b
+                      00005 
+  0000                00006      extern file, address
+                      00007 
+                      00008      code
+0000   ???? ????      00009      banksel file
+0002   01??           00010      addwf file,1 
+0003   0E??           00011      andlw address
+0004   01??           00012      andwf file,1
+0005   04E0           00013      bcf file,7
+0006   05E0           00014      bsf file,7
+0007   0620           00015      btfsc file,1
+0008   0720           00016      btfss file,1
+0009   09??           00017      call address
+000A   00??           00018      clrf file
+000B   0040           00019      clrw
+000C   0004           00020      clrwdt
+000D   02??           00021      comf file,1
+000E   00??           00022      decf file,1
+000F   02??           00023      decfsz file,1
+0010   ???? ????      00024      pagesel address
+0012   0A??           00025      goto address
+0013   02??           00026      incf file,1
+0014   03??           00027      incfsz file,1
+0015   0D??           00028      iorlw file
+0016   01??           00029      iorwf file,1
+0017   02??           00030      movf  file,1
+0018   0C??           00031      movlw file
+0019   00??           00032      movwf file
+001A   0000           00033      nop
+001B   0002           00034      option 
+001C   08??           00035      retlw file
+001D   03??           00036      rlf file,1
+001E   03??           00037      rrf file,1
+001F   0003           00038      sleep
+0020   00??           00039      subwf file,1
+0021   03??           00040      swapf file,1
+0022   000?           00041      tris file
+0023   0F??           00042      xorlw file
+0024   01??           00043      xorwf file,1
+                      00044      end
+MPASM 03.20.02 Released          OP12.ASM   1-11-2003  20:59:43         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16C58B                          00000001
+address                           00000000
+file                              00000000
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

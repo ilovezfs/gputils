@@ -1,0 +1,437 @@
+MPASM 03.20.02 Released          OP16.ASM   1-11-2003  20:59:43         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;  This file is used to test relocatable objects with the 16 bit instruction 
+                      00002 ;  set.  Some of the expressions are possible, but not very useful.
+                      00003 
+                      00004         list    p=17c766
+                      00005 
+  0000                00006         extern file, file2, address
+                      00007 
+                      00008         code
+0000   B100           00009         addlw   0
+0001   B161           00010         addlw   'a'
+0002   B161           00011         addlw   "a"
+0003   B1??           00012         addlw   file
+                      00013 
+Message[305]: Using default destination of 1 (file).
+0004   0F00           00014         addwf   0
+0005   0F00           00015         addwf   0,1
+0006   0F00           00016         addwf   0,f
+0007   0E00           00017         addwf   0,0
+0008   0E00           00018         addwf   0,w
+Message[305]: Using default destination of 1 (file).
+0009   0F??           00019         addwf   file
+                      00020 
+Message[305]: Using default destination of 1 (file).
+000A   1100           00021         addwfc  0
+000B   1100           00022         addwfc  0,1
+000C   1100           00023         addwfc  0,f
+000D   1000           00024         addwfc  0,0
+000E   1000           00025         addwfc  0,w
+Message[305]: Using default destination of 1 (file).
+000F   11??           00026         addwfc  file
+                      00027 
+0010   B500           00028         andlw   0
+0011   B561           00029         andlw   'a'
+0012   B561           00030         andlw   "a"
+0013   B5??           00031         andlw   file
+                      00032 
+Message[305]: Using default destination of 1 (file).
+0014   0B00           00033         andwf   0
+0015   0B00           00034         andwf   0,1
+0016   0B00           00035         andwf   0,f
+0017   0A00           00036         andwf   0,0
+0018   0A00           00037         andwf   0,w
+Message[305]: Using default destination of 1 (file).
+0019   0B??           00038         andwf   file
+                      00039 
+001A   8800           00040         bcf     0,0
+001B   8900           00041         bcf     0,1
+001C   8A00           00042         bcf     0,2
+001D   8B00           00043         bcf     0,3
+001E   8C00           00044         bcf     0,4
+001F   8D00           00045         bcf     0,5
+0020   8E00           00046         bcf     0,6
+0021   8F00           00047         bcf     0,7
+MPASM 03.20.02 Released          OP16.ASM   1-11-2003  20:59:43         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0022   8800           00048         bcf     file,0
+                      00049 
+0023   8000           00050         bsf     0,0
+0024   8100           00051         bsf     0,1
+0025   8200           00052         bsf     0,2
+0026   8300           00053         bsf     0,3
+0027   8400           00054         bsf     0,4
+0028   8500           00055         bsf     0,5
+0029   8600           00056         bsf     0,6
+002A   8700           00057         bsf     0,7
+002B   8000           00058         bsf     file,0
+                      00059 
+002C   9800           00060         btfsc   0,0
+002D   9900           00061         btfsc   0,1
+002E   9A00           00062         btfsc   0,2
+002F   9B00           00063         btfsc   0,3
+0030   9C00           00064         btfsc   0,4
+0031   9D00           00065         btfsc   0,5
+0032   9E00           00066         btfsc   0,6
+0033   9F00           00067         btfsc   0,7
+0034   9800           00068         btfsc   file,0
+                      00069 
+0035   9000           00070         btfss   0,0
+0036   9100           00071         btfss   0,1
+0037   9200           00072         btfss   0,2
+0038   9300           00073         btfss   0,3
+0039   9400           00074         btfss   0,4
+003A   9500           00075         btfss   0,5
+003B   9600           00076         btfss   0,6
+003C   9700           00077         btfss   0,7
+003D   9000           00078         btfss   file,0
+                      00079 
+003E   3800           00080         btg     0,0
+003F   3900           00081         btg     0,1
+0040   3A00           00082         btg     0,2
+0041   3B00           00083         btg     0,3
+0042   3C00           00084         btg     0,4
+0043   3D00           00085         btg     0,5
+0044   3E00           00086         btg     0,6
+0045   3F00           00087         btg     0,7
+0046   3800           00088         btg     file,0
+                      00089 
+0047   E000           00090         call    0
+0048   E???           00091         call    address
+                      00092 
+Message[305]: Using default destination of 1 (file).
+0049   2900           00093         clrf    0
+004A   2900           00094         clrf    0,1
+004B   2900           00095         clrf    0,f
+004C   2800           00096         clrf    0,0
+004D   2800           00097         clrf    0,w
+Message[305]: Using default destination of 1 (file).
+004E   29??           00098         clrf    file
+MPASM 03.20.02 Released          OP16.ASM   1-11-2003  20:59:43         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00099 
+004F   0004           00100         clrwdt
+                      00101 
+Message[305]: Using default destination of 1 (file).
+0050   1300           00102         comf    0
+0051   1300           00103         comf    0,1
+0052   1300           00104         comf    0,f
+0053   1200           00105         comf    0,0
+0054   1200           00106         comf    0,w
+Message[305]: Using default destination of 1 (file).
+0055   13??           00107         comf    file
+                      00108 
+0056   3100           00109         cpfseq  0
+0057   31??           00110         cpfseq  file
+                      00111 
+0058   3200           00112         cpfsgt  0
+0059   32??           00113         cpfsgt  file
+                      00114 
+005A   3000           00115         cpfslt  0
+005B   30??           00116         cpfslt  file
+                      00117 
+Message[305]: Using default destination of 1 (file).
+005C   2F00           00118         daw     0
+005D   2F00           00119         daw     0,1
+005E   2F00           00120         daw     0,f
+005F   2E00           00121         daw     0,0
+0060   2E00           00122         daw     0,w
+Message[305]: Using default destination of 1 (file).
+0061   2F??           00123         daw     file
+                      00124 
+Message[305]: Using default destination of 1 (file).
+0062   0700           00125         decf    0
+0063   0700           00126         decf    0,1
+0064   0700           00127         decf    0,f
+0065   0600           00128         decf    0,0
+0066   0600           00129         decf    0,w
+Message[305]: Using default destination of 1 (file).
+0067   07??           00130         decf    file
+                      00131 
+Message[305]: Using default destination of 1 (file).
+0068   1700           00132         decfsz  0
+0069   1700           00133         decfsz  0,1
+006A   1700           00134         decfsz  0,f
+006B   1600           00135         decfsz  0,0
+006C   1600           00136         decfsz  0,w
+Message[305]: Using default destination of 1 (file).
+006D   17??           00137         decfsz  file
+                      00138 
+Message[305]: Using default destination of 1 (file).
+006E   2700           00139         dcfsnz  0
+006F   2700           00140         dcfsnz  0,1
+0070   2700           00141         dcfsnz  0,f
+0071   2600           00142         dcfsnz  0,0
+MPASM 03.20.02 Released          OP16.ASM   1-11-2003  20:59:43         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0072   2600           00143         dcfsnz  0,w
+Message[305]: Using default destination of 1 (file).
+0073   27??           00144         dcfsnz  file
+                      00145 
+0074   C000           00146         goto    0
+0075   C???           00147         goto    address
+                      00148 
+Message[305]: Using default destination of 1 (file).
+0076   1500           00149         incf    0
+0077   1500           00150         incf    0,1
+0078   1500           00151         incf    0,f
+0079   1400           00152         incf    0,0
+007A   1400           00153         incf    0,w
+Message[305]: Using default destination of 1 (file).
+007B   15??           00154         incf    file
+                      00155 
+Message[305]: Using default destination of 1 (file).
+007C   1F00           00156         incfsz  0
+007D   1F00           00157         incfsz  0,1
+007E   1F00           00158         incfsz  0,f
+007F   1E00           00159         incfsz  0,0
+0080   1E00           00160         incfsz  0,w
+Message[305]: Using default destination of 1 (file).
+0081   1F??           00161         incfsz  file
+                      00162 
+Message[305]: Using default destination of 1 (file).
+0082   2500           00163         infsnz  0
+0083   2500           00164         infsnz  0,1
+0084   2500           00165         infsnz  0,f
+0085   2400           00166         infsnz  0,0
+0086   2400           00167         infsnz  0,w
+Message[305]: Using default destination of 1 (file).
+0087   25??           00168         infsnz  file
+                      00169 
+0088   B300           00170         iorlw   0
+0089   B361           00171         iorlw   'a'
+008A   B361           00172         iorlw   "a"
+008B   B3??           00173         iorlw   file
+                      00174 
+Message[305]: Using default destination of 1 (file).
+008C   0900           00175         iorwf   0
+008D   0900           00176         iorwf   0,1
+008E   0900           00177         iorwf   0,f
+008F   0800           00178         iorwf   0,0
+0090   0800           00179         iorwf   0,w
+Message[305]: Using default destination of 1 (file).
+0091   09??           00180         iorwf   file
+                      00181 
+0092   B700           00182         lcall   0
+0093   B7??           00183         lcall   address
+                      00184 
+0094   6000           00185         movfp   0,0
+0095   6???           00186         movfp   file, file2
+MPASM 03.20.02 Released          OP16.ASM   1-11-2003  20:59:43         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00187 
+0096   B800           00188         movlb   0
+0097   B80?           00189         movlb   file
+                      00190 
+0098   BA00           00191         movlr   0
+0099   BA?0           00192         movlr   file
+                      00193 
+009A   B000           00194         movlw   0
+009B   B061           00195         movlw   'a'
+009C   B061           00196         movlw   "a"
+009D   B0??           00197         movlw   file
+                      00198 
+009E   4000           00199         movpf   0,0
+009F   4???           00200         movpf   file, file2
+                      00201 
+00A0   0100           00202         movwf   0
+00A1   01??           00203         movwf   file
+                      00204 
+00A2   BC00           00205         mullw   0
+00A3   BC61           00206         mullw   'a'
+00A4   BC61           00207         mullw   "a"
+00A5   BC??           00208         mullw   file
+                      00209 
+00A6   3400           00210         mulwf   0
+00A7   34??           00211         mulwf   file
+                      00212 
+Message[305]: Using default destination of 1 (file).
+00A8   2D00           00213         negw    0
+00A9   2D00           00214         negw    0,1
+00AA   2D00           00215         negw    0,f
+00AB   2C00           00216         negw    0,0
+00AC   2C00           00217         negw    0,w
+Message[305]: Using default destination of 1 (file).
+00AD   2D??           00218         negw    file
+                      00219 
+00AE   0000           00220         nop
+                      00221 
+00AF   0005           00222         retfie
+                      00223 
+00B0   B600           00224         retlw   0
+00B1   B661           00225         retlw   'a'
+00B2   B661           00226         retlw   "a"
+00B3   B6??           00227         retlw   file
+                      00228 
+00B4   0002           00229         return
+                      00230 
+Message[305]: Using default destination of 1 (file).
+00B5   1B00           00231         rlcf    0
+00B6   1B00           00232         rlcf    0,1
+00B7   1B00           00233         rlcf    0,f
+00B8   1A00           00234         rlcf    0,0
+00B9   1A00           00235         rlcf    0,w
+Message[305]: Using default destination of 1 (file).
+MPASM 03.20.02 Released          OP16.ASM   1-11-2003  20:59:43         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00BA   1B??           00236         rlcf    file
+                      00237 
+Message[305]: Using default destination of 1 (file).
+00BB   2300           00238         rlncf   0
+00BC   2300           00239         rlncf   0,1
+00BD   2300           00240         rlncf   0,f
+00BE   2200           00241         rlncf   0,0
+00BF   2200           00242         rlncf   0,w
+Message[305]: Using default destination of 1 (file).
+00C0   23??           00243         rlncf   file
+                      00244 
+Message[305]: Using default destination of 1 (file).
+00C1   1900           00245         rrcf    0
+00C2   1900           00246         rrcf    0,1
+00C3   1900           00247         rrcf    0,f
+00C4   1800           00248         rrcf    0,0
+00C5   1800           00249         rrcf    0,w
+Message[305]: Using default destination of 1 (file).
+00C6   19??           00250         rrcf    file
+                      00251 
+Message[305]: Using default destination of 1 (file).
+00C7   2100           00252         rrncf   0
+00C8   2100           00253         rrncf   0,1
+00C9   2100           00254         rrncf   0,f
+00CA   2000           00255         rrncf   0,0
+00CB   2000           00256         rrncf   0,w
+Message[305]: Using default destination of 1 (file).
+00CC   21??           00257         rrncf   file
+                      00258 
+Message[305]: Using default destination of 1 (file).
+00CD   2B00           00259         setf    0
+00CE   2B00           00260         setf    0,1
+00CF   2B00           00261         setf    0,f
+00D0   2A00           00262         setf    0,0
+00D1   2A00           00263         setf    0,w
+Message[305]: Using default destination of 1 (file).
+00D2   2B??           00264         setf    file
+                      00265 
+00D3   0003           00266         sleep
+                      00267 
+00D4   B200           00268         sublw   0
+00D5   B261           00269         sublw   'a'
+00D6   B261           00270         sublw   "a"
+00D7   B2??           00271         sublw   file
+                      00272 
+Message[305]: Using default destination of 1 (file).
+00D8   0500           00273         subwf   0
+00D9   0500           00274         subwf   0,1
+00DA   0500           00275         subwf   0,f
+00DB   0400           00276         subwf   0,0
+00DC   0400           00277         subwf   0,w
+Message[305]: Using default destination of 1 (file).
+00DD   05??           00278         subwf   file
+MPASM 03.20.02 Released          OP16.ASM   1-11-2003  20:59:43         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00279 
+Message[305]: Using default destination of 1 (file).
+00DE   0300           00280         subwfb  0
+00DF   0300           00281         subwfb  0,1
+00E0   0300           00282         subwfb  0,f
+00E1   0200           00283         subwfb  0,0
+00E2   0200           00284         subwfb  0,w
+Message[305]: Using default destination of 1 (file).
+00E3   03??           00285         subwfb  file
+                      00286 
+Message[305]: Using default destination of 1 (file).
+00E4   1D00           00287         swapf   0
+00E5   1D00           00288         swapf   0,1
+00E6   1D00           00289         swapf   0,f
+00E7   1C00           00290         swapf   0,0
+00E8   1C00           00291         swapf   0,w
+Message[305]: Using default destination of 1 (file).
+00E9   1D??           00292         swapf   file
+                      00293 
+00EA   A800           00294         tablrd  0,0,0
+00EB   A900           00295         tablrd  0,1,0
+00EC   AA00           00296         tablrd  1,0,0
+00ED   AB00           00297         tablrd  1,1,0
+00EE   A8??           00298         tablrd  0,0,file
+                      00299 
+00EF   AC00           00300         tablwt  0,0,0
+00F0   AD00           00301         tablwt  0,1,0
+00F1   AE00           00302         tablwt  1,0,0
+00F2   AF00           00303         tablwt  1,1,0
+00F3   AC??           00304         tablwt  0,0,file
+                      00305 
+00F4   A000           00306         tlrd    0,0
+00F5   A2??           00307         tlrd    1,file
+                      00308 
+00F6   A400           00309         tlwt    0,0
+00F7   A6??           00310         tlwt    1,file
+                      00311 
+00F8   3300           00312         tstfsz  0
+00F9   33??           00313         tstfsz  file
+                      00314 
+00FA   B400           00315         xorlw   0
+00FB   B461           00316         xorlw   'a'
+00FC   B461           00317         xorlw   "a"
+00FD   B4??           00318         xorlw   file
+                      00319 
+Message[305]: Using default destination of 1 (file).
+00FE   0D00           00320         xorwf   0
+00FF   0D00           00321         xorwf   0,1
+0100   0D00           00322         xorwf   0,f
+0101   0C00           00323         xorwf   0,0
+0102   0C00           00324         xorwf   0,w
+Message[305]: Using default destination of 1 (file).
+0103   0D??           00325         xorwf   file
+MPASM 03.20.02 Released          OP16.ASM   1-11-2003  20:59:43         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00326 
+                      00327         end
+MPASM 03.20.02 Released          OP16.ASM   1-11-2003  20:59:43         PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__17C766                          00000001
+address                           00000000
+file                              00000000
+file2                             00000000
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :    46 reported,     0 suppressed
+
+

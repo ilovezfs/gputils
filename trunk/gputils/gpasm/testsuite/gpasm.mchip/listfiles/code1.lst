@@ -1,33 +1,33 @@
-MPASM Version 3.00 Beta Release   CODE1.ASM   01/31/2001  12:43:32	   PAGE 1
+MPASM 03.20.02 Released         CODE1.ASM   1-11-2003  20:59:41         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; CODE1.ASM
-                        00002 
-                        00003 ; This file tests legal usage of the CODE directive.
-                        00004 ; This file is placed in the object file comparison test section.
-                        00005 
-                        00006                 list    p=17C44
-                        00007 
-                        00008                 code            ; Unnamed, no address
-0000     0001           00009                 data    1
-                        00010 
-                        00011 CODE1           code            ; Name, no address
-0000     0002           00012                 data    2
-                        00013 
-                        00014 CODE2           CODE            ; Capital letters
-0000     0003           00015                 data    3
-                        00016 
-                        00017 CODE3           code    0x20    ; Address specified
-0020     0004           00018                 data    4
-                        00019 
-                        00020 LongCodeName    code    0x30    ; Long name
-0030     0005           00021                 data    5
-                        00022 
-                        00023                 end
-MPASM Version 3.00 Beta Release   CODE1.ASM   01/31/2001  12:43:32	   PAGE 2
+                      00001 ; CODE1.ASM
+                      00002 
+                      00003 ; This file tests legal usage of the CODE directive.
+                      00004 ; This file is placed in the object file comparison test section.
+                      00005 
+                      00006                 list    p=17C44
+                      00007 
+                      00008                 code            ; Unnamed, no address
+0000   0001           00009                 data    1
+                      00010 
+                      00011 CODE1           code            ; Name, no address
+0000   0002           00012                 data    2
+                      00013 
+                      00014 CODE2           CODE            ; Capital letters
+0000   0003           00015                 data    3
+                      00016 
+                      00017 CODE3           code    0x20    ; Address specified
+0020   0004           00018                 data    4
+                      00019 
+                      00020 LongCodeName    code    0x30    ; Long name
+0030   0005           00021                 data    5
+                      00022 
+                      00023                 end
+MPASM 03.20.02 Released         CODE1.ASM   1-11-2003  20:59:41         PAGE  2
 
 
 SYMBOL TABLE

@@ -1,31 +1,33 @@
+MPASM 03.20.02 Released        RELOC3.ASM   1-11-2003  20:59:44         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; RELOC3.ASM
-                        00002 
-                        00003 ; This file tests illegal relocation entries.
-                        00004 ; It should be placed in the list comparison section for
-                        00005 ; object files.
-                        00006 
-                        00007         list    p=17c44
-                        00008 
-                        00009         udata
-0000                    00010 Var1    res     1
-0001                    00011 Var2    res     1
-0002                    00012 Var3    res     1
-                        00013 
-                        00014 
-                        00015         code
-                        00016 
+                      00001 ; RELOC3.ASM
+                      00002 
+                      00003 ; This file tests illegal relocation entries.
+                      00004 ; It should be placed in the list comparison section for
+                      00005 ; object files.
+                      00006 
+                      00007         list    p=17c44
+                      00008 
+                      00009         udata
+0000                  00010 Var1    res     1
+0001                  00011 Var2    res     1
+0002                  00012 Var3    res     1
+                      00013 
+                      00014 
+                      00015         code
+                      00016 
 Error[151]  : Operand contains unresolvable labels or is too complex
-0000     0100           00017         movwf   Var1 << 1       ; Too complex
-                        00018 
+0000   0100           00017         movwf   Var1 << 1       ; Too complex
+                      00018 
 Error[113]  : Symbol not previously defined (Var4)
-0001     0100           00019         movwf   Var4            ; Symbol not defined
-                        00020 
-                        00021         end
+0001   0100           00019         movwf   Var4            ; Symbol not defined
+                      00020 
+                      00021         end
+MPASM 03.20.02 Released        RELOC3.ASM   1-11-2003  20:59:44         PAGE  2
 
 
 SYMBOL TABLE
@@ -40,3 +42,4 @@ Errors   :     2
 Warnings :     0 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 
+

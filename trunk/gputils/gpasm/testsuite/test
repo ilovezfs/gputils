@@ -30,6 +30,7 @@ GPASMFLAGS=-q
 TESTDIR=./test
 HEADER=../../header
 GPASMBIN=../gpasm
+GPVOBIN=../../gputils/gpvo
 
 # general functions
 
@@ -183,6 +184,101 @@ test_gpasm_sub() {
   fi
 }
 
+test_gpasm_obj() {
+
+  let tested=0
+  let compiled=0
+  let passed=0
+  let errortested=0
+  let notcompiled=0
+
+  #Test syntax.
+  if [ $# = 0 ] ; then
+    echo "Usage: test_gpasm_obj {subdirectory}"
+    return 1
+  fi
+
+  if !(test -d $1); then
+    echo "$1 not found.  Aborting."
+    return 1
+  fi
+
+  if (test $1 = "old"); then
+    echo "$1 is a special test directory.  Aborting."
+    return 1
+  fi
+
+  printbanner "Running ./$1 gpasm object tests"
+
+  cd $1
+
+  # create the test directory if it doesn't already exist
+  test -d $TESTDIR || mkdir $TESTDIR || exit 1
+  cd $TESTDIR
+  rm -f *.asm
+  cp ../objasm/* .
+
+  # test all of the asm files
+  for x in `ls *.asm`
+    do
+      # split the base file name from the extension
+      for basefilename in `echo $x | tr -s "." " "`
+        do
+          if [ $basefilename = "asm" ]; then
+            # do nothing for the extension
+            echo
+          elif (test -e ../objfiles/$basefilename.o); then 
+            # a object file exists so these files must not have errors
+            let tested=tested+1
+            echo "Compiling $basefilename.asm"
+            echo "../../$GPASMBIN -c -q -I ../../$HEADER $basefilename.asm"
+            ../../$GPASMBIN -c -q -I ../../$HEADER $basefilename.asm 
+            if (test -e $basefilename.o); then
+              let compiled=compiled+1
+              ../../$GPVOBIN -o -s -t $basefilename.o > $basefilename.dump
+              ../../$GPVOBIN -o -s -t ../objfiles/$basefilename.o > $basefilename.orig
+              diff -s -u $basefilename.orig $basefilename.dump
+              if (diff -q $basefilename.orig $basefilename.dump); then 
+                let passed=passed+1
+                echo "$basefilename.asm tested successfully"	
+              fi
+           else
+              echo "$basefilename.asm failed to compile"	
+            fi
+          else
+            # an object file doesn't exit so these files must have intentional
+            # errors
+            let errortested=errortested+1
+            echo "Compiling $basefilename.asm"
+            ../../$GPASMBIN -c -q -I ../../$HEADER $basefilename.asm 
+            if (test -e $basefilename.o); then
+              echo "$basefilename.asm failed to generate an error"	
+            else
+              let notcompiled=notcompiled+1
+              echo "$basefilename.asm tested successfully"	
+            fi
+          fi
+        done
+    done
+  cd ..
+  cd ..
+  printbanner "./$1 testing complete"
+  echo "$tested files tested without intentional errors"
+  echo "$compiled compiled without errors"  
+  echo "$passed generated identical object files"  
+  echo
+  echo "$errortested files tested with intentional errors"  
+  echo "$notcompiled generated errors during compilation"  
+  echo
+  if !(test $tested=$passed); then
+    return 1  
+  elif !(test $errrortested=$notcompiled); then
+    return 1
+  else
+    return 0
+  fi
+}
+
 test_gpasm_old() {
   printbanner "Running old gpasm tests..."
   cd gpasm.old
@@ -197,11 +293,14 @@ test_gpasm_old() {
 test_gpasm() {
   printbanner "Start of gpasm testing"
   binexists $GPASMBIN
+  binexists $GPVOBIN
   RETVAL=$?
   if [ $RETVAL -eq 0 ]; then
     test_gpasm_old || testfailed
     test_gpasm_sub gpasm.project || testfailed
     test_gpasm_sub gpasm.mchip || testfailed
+    test_gpasm_obj gpasm.project || testfailed
+    test_gpasm_obj gpasm.mchip || testfailed
     echo
     printbanner "gpasm testing successful"
   fi

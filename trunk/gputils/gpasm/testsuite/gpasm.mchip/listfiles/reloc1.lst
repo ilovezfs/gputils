@@ -1,119 +1,119 @@
-MPASM Version 3.00 Beta Release   RELOC1.ASM   01/31/2001  12:43:34	   PAGE 1
+MPASM 03.20.02 Released        RELOC1.ASM   1-11-2003  20:59:44         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; RELOC1.ASM
-                        00002 
-                        00003 ; This file tests several relocation types.  Both the object file and
-                        00004 ; the list file should be examined.
-                        00005 
-                        00006         list    p=17c44
-                        00007 
-                        00008 mac     macro   
-                        00009         local   here
-                        00010 here    nop
-                        00011         goto    here
-                        00012         endm
-                        00013 
-                        00014         udata
-                        00015 
-0000                    00016 Var     res     1
-0001                    00017 Var2    res     1
-                        00018 
-                        00019 
-                        00020         code
-                        00021 
-0000                    00022 Top
-0000     B001           00023         movlw   Var2-Var                ; should be no entry
-                        00024 
-0001                    00025 Back    
-0001     C???           00026         goto    Back
-0002     C???           00027         goto    Forward
-0003                    00028 Forward
-                        00029 
-                        00030         mac
-  0000                      M         local   here
-0003     0000               M here    nop
-0004     C???               M         goto    here
-                        00031 
-0005     E???           00032         call    Top
-0006     E???           00033         call    Top+1
-0007     E???           00034         call    Top-1
-                        00035 
-0008     C???           00036         goto    Top
-0009     C???           00037         goto    Top+1
-000A     C???           00038         goto    Top-1
-                        00039 
-000B     B0??           00040         movlw   HIGH(Top)
-000C     B0??           00041         movlw   HIGH(Top+1)
-000D     B0??           00042         movlw   HIGH(Top-1)
-                        00043 
-000E     B0??           00044         movlw   LOW(Top)
-000F     B0??           00045         movlw   LOW(Top+1)
-0010     B0??           00046         movlw   LOW(Top-1)
-0011     B0??           00047         movlw   Top
-                        00048 
-0012     6?20           00049         movfp   0x20, Var
-0013     6?20           00050         movfp   0x20, Var+1
-MPASM Version 3.00 Beta Release   RELOC1.ASM   01/31/2001  12:43:34	   PAGE 2
+                      00001 ; RELOC1.ASM
+                      00002 
+                      00003 ; This file tests several relocation types.  Both the object file and
+                      00004 ; the list file should be examined.
+                      00005 
+                      00006         list    p=17c44
+                      00007 
+                      00008 mac     macro   
+                      00009         local   here
+                      00010 here    nop
+                      00011         goto    here
+                      00012         endm
+                      00013 
+                      00014         udata
+                      00015 
+0000                  00016 Var     res     1
+0001                  00017 Var2    res     1
+                      00018 
+                      00019 
+                      00020         code
+                      00021 
+0000                  00022 Top
+0000   B001           00023         movlw   Var2-Var                ; should be no entry
+                      00024 
+0001                  00025 Back    
+0001   C???           00026         goto    Back
+0002   C???           00027         goto    Forward
+0003                  00028 Forward
+                      00029 
+                      00030         mac
+  0000                    M         local   here
+0003   0000               M here    nop
+0004   C???               M         goto    here
+                      00031 
+0005   E???           00032         call    Top
+0006   E???           00033         call    Top+1
+0007   E???           00034         call    Top-1
+                      00035 
+0008   C???           00036         goto    Top
+0009   C???           00037         goto    Top+1
+000A   C???           00038         goto    Top-1
+                      00039 
+000B   B0??           00040         movlw   HIGH(Top)
+000C   B0??           00041         movlw   HIGH(Top+1)
+000D   B0??           00042         movlw   HIGH(Top-1)
+                      00043 
+000E   B0??           00044         movlw   LOW(Top)
+000F   B0??           00045         movlw   LOW(Top+1)
+0010   B0??           00046         movlw   LOW(Top-1)
+0011   B0??           00047         movlw   Top
+                      00048 
+0012   6?20           00049         movfp   0x20, Var
+0013   6?20           00050         movfp   0x20, Var+1
+MPASM 03.20.02 Released        RELOC1.ASM   1-11-2003  20:59:44         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0014     6?20           00051         movfp   0x20, Var-1
-                        00052 
-0015     4?20           00053         movpf   Var, 0x20
-0016     4?20           00054         movpf   Var+1, 0x20
-0017     4?20           00055         movpf   Var-1, 0x20
-                        00056 
-0018     ????           00057         banksel Var
-0019     ????           00058         banksel Var+1
-001A     ????           00059         banksel Var-1
-                        00060 
+0014   6?20           00051         movfp   0x20, Var-1
+                      00052 
+0015   4?20           00053         movpf   Var, 0x20
+0016   4?20           00054         movpf   Var+1, 0x20
+0017   4?20           00055         movpf   Var-1, 0x20
+                      00056 
+0018   ????           00057         banksel Var
+0019   ????           00058         banksel Var+1
+001A   ????           00059         banksel Var-1
+                      00060 
 Message[316]: W Register modified. 
-001B     ???? ????      00061         pagesel Top
+001B   ???? ????      00061         pagesel Top
 Message[316]: W Register modified. 
-001D     ???? ????      00062         pagesel Top+1
+001D   ???? ????      00062         pagesel Top+1
 Message[316]: W Register modified. 
-001F     ???? ????      00063         pagesel Top-1
-                        00064 
-0021     ????           00065         data    Top
-0022     ????           00066         data    Top+1
-0023     ????           00067         data    Top-1
-                        00068 
-0024     ????           00069         bankisel        Var
-0025     ????           00070         bankisel        Var+1
-0026     ????           00071         bankisel        Var-1
-                        00072 
-0027     65??           00073         movfp   Var, 5  
-0028     65??           00074         movfp   Var+1, 5        
-0029     65??           00075         movfp   Var-1, 5        
-                        00076 
-002A     45??           00077         movpf   5, Var
-002B     45??           00078         movpf   5, Var+1
-002C     45??           00079         movpf   5, Var-1
-                        00080 
-002D     01??           00081         movwf   Var
-002E     01??           00082         movwf   Var+1
-002F     01??           00083         movwf   Var-1
-                        00084 
-0030     BA?0           00085         movlr   Var
-0031     BA?0           00086         movlr   Var+1
-0032     BA?0           00087         movlr   Var-1
-                        00088 
-0033     B80?           00089         movlb   Var
-0034     B80?           00090         movlb   Var+1
-0035     B80?           00091         movlb   Var-1
-                        00092 
-0036     6???           00093         movfp   Var, Var2
-0037     6???           00094         movfp   Var+1, Var2+2   
-0038     6???           00095         movfp   Var-1, Var2-2   
-                        00096 
-                        00097         end
-MPASM Version 3.00 Beta Release   RELOC1.ASM   01/31/2001  12:43:34	   PAGE 3
+001F   ???? ????      00063         pagesel Top-1
+                      00064 
+0021   ????           00065         data    Top
+0022   ????           00066         data    Top+1
+0023   ????           00067         data    Top-1
+                      00068 
+0024   ????           00069         bankisel        Var
+0025   ????           00070         bankisel        Var+1
+0026   ????           00071         bankisel        Var-1
+                      00072 
+0027   65??           00073         movfp   Var, 5  
+0028   65??           00074         movfp   Var+1, 5        
+0029   65??           00075         movfp   Var-1, 5        
+                      00076 
+002A   45??           00077         movpf   5, Var
+002B   45??           00078         movpf   5, Var+1
+002C   45??           00079         movpf   5, Var-1
+                      00080 
+002D   01??           00081         movwf   Var
+002E   01??           00082         movwf   Var+1
+002F   01??           00083         movwf   Var-1
+                      00084 
+0030   BA?0           00085         movlr   Var
+0031   BA?0           00086         movlr   Var+1
+0032   BA?0           00087         movlr   Var-1
+                      00088 
+0033   B80?           00089         movlb   Var
+0034   B80?           00090         movlb   Var+1
+0035   B80?           00091         movlb   Var-1
+                      00092 
+0036   6???           00093         movfp   Var, Var2
+0037   6???           00094         movfp   Var+1, Var2+2   
+0038   6???           00095         movfp   Var-1, Var2-2   
+                      00096 
+                      00097         end
+MPASM 03.20.02 Released        RELOC1.ASM   1-11-2003  20:59:44         PAGE  3
 
 
 SYMBOL TABLE
