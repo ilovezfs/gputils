@@ -22,10 +22,16 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#endif
+
 char *gp_header_path;
 char *gp_lkr_path;
 char *gp_lib_path;
 char *gp_pub_path;
+
+gp_boolean absolute_path_warning = true;
 
 /* initialize the library */
 
@@ -250,4 +256,41 @@ void *
 gp_list_get(gp_linked_list *link)
 {
   return link->annotation;
+}
+
+/* fetch the absolute path of the filename */
+char *
+gp_absolute_path(char *file_name)
+{
+#ifdef HAVE_WINDOWS_H
+
+  /* It would be better to test for GetFullPathName, but the test won't
+     work with a cross compiler. So if windows.h exists, we assume that
+     GetFullPathName is available. */ 
+
+  #define FILE_BUFFER_SIZE 512
+  char file_buffer[FILE_BUFFER_SIZE];
+  char *file_ptr;
+  int num_chars;
+
+  num_chars = GetFullPathName(file_name, 
+                              FILE_BUFFER_SIZE,
+                              file_buffer,
+                              &file_ptr);
+  if (num_chars == 0) {
+    gp_error("can't fetch full path of %s", file_name);
+    return file_name;
+  } else {
+    return strdup(file_buffer);
+  }
+#else
+
+  if (absolute_path_warning) {
+    gp_warning("host system does not support absolute paths");
+    absolute_path_warning = false;
+  }
+  
+  return file_name;
+
+#endif
 }

@@ -79,6 +79,7 @@ extern struct gpasm_state {
   enum formats hex_format;
   gp_boolean case_insensitive;
   gp_boolean quiet;
+  gp_boolean use_absolute_path;
   int error_level;		/* 0, 1, 2 */
   gp_boolean debug_info;	/* use debug directives for coff outputs */
   int path_num;                 /* number of paths in the list */

@@ -553,6 +553,9 @@ void open_src(char *name, int isinclude)
     yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
   }
 
+  if (state.use_absolute_path) {
+    new->name = gp_absolute_path(new->name);
+  }
   new->type = src_file;
   new->h = NULL;
   new->line_number = 1;
