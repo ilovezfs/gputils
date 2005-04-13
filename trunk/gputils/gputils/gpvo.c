@@ -143,10 +143,9 @@ void print_data(enum proc_class class, gp_section_type *section)
                                  sizeof(buffer));
       printf("%06x:  %04x  %s\n", org << byte_addr, memory & 0xffff, buffer);
       if (num_words != 1) {
-        org++;
-        memory = i_memory_get(section->data, org);
+        memory = i_memory_get(section->data, org + 1);
         assert(memory & MEM_USED_MASK);
-        printf("%06x:  %04x\n", org << byte_addr, memory & 0xffff);
+        printf("%06x:  %04x\n", (org + 1) << byte_addr, memory & 0xffff);
       }
     } else if (section->flags & STYP_DATA_ROM) {
       printf("%06x:  %04x\n", org << byte_addr, memory & 0xffff);
