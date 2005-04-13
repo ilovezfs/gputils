@@ -494,6 +494,11 @@ gp_cofflink_merge_sections(gp_object_type *object, int byte_addr)
       while(list != NULL) {
         if (list->next == second) {
           list->next = second->next;
+          if (list->next == NULL) {
+            /* The last section in the list is being removed, so update
+               the tail. */ 
+            object->sections_tail = list;
+          }
           break;
         }
         list = list->next;

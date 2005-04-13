@@ -1,3 +1,7 @@
+2005-04-13 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [gplink] Fixed a bug in section merging.
+  * [gpvo] Fixed a bug when disassembling multiword instructions.
+
 2005-03-23 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gputils] Updated header files and linker scripts.
 
