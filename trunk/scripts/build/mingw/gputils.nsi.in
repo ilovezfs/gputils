@@ -112,12 +112,12 @@ SectionEnd
 Section "gputils application files"
   SectionIn 1 2 RO
   SetOutPath "$INSTDIR\bin"
-  File "${GPUTILS_ROOT}\gpal\gpal.exe"
-  File "${GPUTILS_ROOT}\gpasm\gpasm.exe"
-  File "${GPUTILS_ROOT}\gplink\gplink.exe"
-  File "${GPUTILS_ROOT}\gputils\gplib.exe"
-  File "${GPUTILS_ROOT}\gputils\gpvc.exe"
-  File "${GPUTILS_ROOT}\gputils\gpvo.exe"
+  File "${GPUTILS_ROOT}\bin\gpal.exe"
+  File "${GPUTILS_ROOT}\bin\gpasm.exe"
+  File "${GPUTILS_ROOT}\bin\gplink.exe"
+  File "${GPUTILS_ROOT}\bin\gplib.exe"
+  File "${GPUTILS_ROOT}\bin\gpvc.exe"
+  File "${GPUTILS_ROOT}\bin\gpvo.exe"
 SectionEnd
 
 Section "gputils documentation"
