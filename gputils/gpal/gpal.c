@@ -560,6 +560,7 @@ init(void)
   state.current_ibank = NULL;
   state.current_page = NULL;
   state.root = NULL;
+  state.module = NULL;
   state.outfilename = NULL;
 
   /* local data */
