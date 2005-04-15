@@ -1,111 +1,78 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
-<HEAD>
-	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
-	<TITLE> GPUTILS Frequently Asked Questions </TITLE>
-	<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.0.2  (Linux)">
-	<META NAME="CREATED" CONTENT="20020417;18324400">
-	<META NAME="CHANGED" CONTENT="20031127;19140500">
-	<STYLE>
-	<!--
-		TD P { color: #000000 }
-		H1 { color: #000000 }
-		P { color: #000000 }
-		H2 { color: #000000 }
-		A:link { color: #1f00ff }
-		A:visited { color: #9900dd }
-	-->
-	</STYLE>
-</HEAD>
-<BODY LANG="en-US" TEXT="#000000" LINK="#1f00ff" VLINK="#9900dd" BGCOLOR="#ffffff">
-<P><BR><BR>
-</P>
-<H1 ALIGN=CENTER>GPUTILS Frequently Asked Questions 
-</H1>
-<P STYLE="margin-bottom: 0cm">The latest version of this document is
-always available at <A HREF="http://gputils.sourceforge.net/faq.html">http://gputils.sourceforge.net/faq.html</A>.</P>
-<P STYLE="margin-bottom: 0cm">This FAQ tries to answer specific
-questions concerning GPUTILS. For general information regarding
-Microchip microcontrollers please check the <A HREF="http://www.microchip.com/">Microchip
-homepage</A>.</P>
+
+<H1 ALIGN=CENTER>GPUTILS Frequently Asked Questions</H1>
+
+<P>The latest version of this document is always available at 
+<A HREF="http://gputils.sourceforge.net/faq.html">http://gputils.sourceforge.net/faq.html</A>.</P>
+<P>This FAQ tries to answer specific questions concerning GPUTILS. For general 
+information regarding Microchip microcontrollers please check the
+<A HREF="http://www.microchip.com/">Microchip homepage</A>.</P>
+
 <HR>
 <H2 ALIGN=CENTER>Questions</H2>
 <OL>
-	<LI><P STYLE="margin-bottom: 0cm"><FONT SIZE=3>What is the history
-	of GPUTILS?</FONT></P>
-	<LI><P STYLE="margin-bottom: 0cm"><FONT SIZE=3>Why can't gpasm find
-	&quot;P16F84.INC&quot; on my Linux system?</FONT></P>
-	<LI><P STYLE="margin-bottom: 0cm"><FONT SIZE=3>Why can't gpasm find
-	a processor header file on my win32 system?</FONT></P>
-	<LI><P STYLE="margin-bottom: 0cm"><A NAME="incremental1"></A><FONT SIZE=3>Will
-	GPUTILS ever include relocatable object and linker support?</FONT></P>
+	<LI><P STYLE="margin-bottom: 0cm"><FONT SIZE=3>What is the history of GPUTILS?</FONT></P>
+	<LI><P STYLE="margin-bottom: 0cm"><FONT SIZE=3>Why can't gpasm find &quot;P16F84.INC&quot; on my Linux system?</FONT></P>
 </OL>
-<P STYLE="margin-bottom: 0cm"><BR>
+<P><BR>
 </P>
 <HR>
-<H2><A NAME="gcc"></A>What is the history of GPUTILS?</H2>
-<P STYLE="margin-bottom: 0cm">In 1997, <A HREF="mailto:jamesbowman@users.sourceforge.net">James
-Bowman</A> started gpasm. The objective was to create an open source
-replacement for <A HREF="http://www.microchip.com/">Microchip's</A>
-MPASM. During this time many people contributed to gpasm.</P>
+
+<H2>What is the history of GPUTILS?</H2>
+
+<P>In 1997,
+<A HREF="mailto:jamesbowman@users.sourceforge.net">James Bowman</A> started
+gpasm. The objective was to create an open source replacement for 
+<A HREF="http://www.microchip.com/">Microchip's</A> MPASM. During this time 
+many people contributed to gpasm.</P>
+
 <UL>
-	<P STYLE="margin-bottom: 0cm"><A HREF="mailto:scott@datallo.com">Scott
-	Dattalo</A> <BR><A HREF="mailto:james.cameron@digital.com">James
-	Cameron</A> <BR><A HREF="mailto:spe@stacken.kth.se">Stefan Petersen</A>
-	<BR><A HREF="mailto:eric@brouhaha.com">Eric Smith</A> <BR><A HREF="mailto:azummo@towertech.it">Alessandro
-	Zummo</A> <BR><A HREF="mailto:aab@cichlid.com">Andrew Burgess</A>
-	<BR><A HREF="mailto:sbs@wavefront.com">Bruce Stough</A> <BR><A HREF="mailto:thorn@acm.org">Tommy
-	Thorn</A> <BR><A HREF="mailto:scott@datallo.com">Charlie Krauter</A></P>
+	<P><A HREF="mailto:scott@datallo.com">Scott Dattalo</A>
+        <BR><A HREF="mailto:james.cameron@digital.com">James Cameron</A>
+        <BR><A HREF="mailto:spe@stacken.kth.se">Stefan Petersen</A>
+	<BR><A HREF="mailto:eric@brouhaha.com">Eric Smith</A>
+        <BR><A HREF="mailto:azummo@towertech.it">Alessandro Zummo</A>
+        <BR><A HREF="mailto:aab@cichlid.com">Andrew Burgess</A>
+	<BR><A HREF="mailto:sbs@wavefront.com">Bruce Stough</A>
+        <BR><A HREF="mailto:thorn@acm.org">Tommy Thorn</A>
+        <BR><A HREF="mailto:scott@datallo.com">Charlie Krauter</A></P>
 </UL>
-<P STYLE="margin-bottom: 0cm">At the end of 2000, <A HREF="mailto:craigfranklin@users.sourceforge.net">Craig
-Franklin</A> became the primary gpasm developer. Through most of 2001
-the focus was compatiblity with MPASM. This was made much easiler by
-a contribution of MPASM test files to the project by <A HREF="http://www.microchip.com/">Microchip</A>.
-Also during this time, work started on relocatable object tools for
-gpasm. 
+
+<P>At the end of 2000,
+<A HREF="mailto:craigfranklin@users.sourceforge.net">Craig Franklin</A>
+became the primary gpasm developer. Through most of 2001 the focus was 
+compatiblity with MPASM. This was made much easiler by a contribution
+of MPASM test files to the project by
+<A HREF="http://www.microchip.com/">Microchip</A>. Also during this time,
+work started on relocatable object tools for gpasm. 
 </P>
-<P STYLE="margin-bottom: 0cm"><FONT SIZE=3>In 2002, A new package,
-gputils, containing gpasm and the new relocatable object tools was
-created.</FONT></P>
+
+<P>In 2002, A new package, gputils, containing gpasm and the new relocatable
+object tools was created.</P>
+
 <H2>Why can't gpasm find &quot;P16F84.INC&quot; on my Linux system?</H2>
-<P STYLE="margin-bottom: 0cm"><FONT SIZE=3>GPASM includes a complete
-set of processor header files. These files are identical to the files
-that Microchip distributes. Often, with source code developed on
-win32 systems, the INCLUDE directives are written without regard to
-case. Linux is case sensitive. To be consistent, the header file
-names were all converted to lower case. Accordingly, all include
-directives calling out processor header files should be lower case. </FONT>
+
+<P>GPASM includes a complete set of processor header files. These files are
+identical to the files that Microchip distributes. Often, with source code
+developed on win32 systems, the INCLUDE directives are written without regard
+to case. Linux is case sensitive. To be consistent, the header file names were
+all converted to lower case. Accordingly, all include directives calling out
+processor header files should be lower case.
 </P>
-<H2>Why can't gpasm find a processor header file on my win32 system?</H2>
-<P STYLE="margin-bottom: 0cm"><FONT SIZE=3>The location of the
-processor header files is selected when gpasm is compiled. For the
-provided win32 binary, this location was selected as
-c:\gputils\header. This path can be reported by commanding &quot;gpasm&quot;
-with no options. If the gputils tree is moved, gpasm will not be able
-to locate the header files.</FONT></P>
-<H2><A NAME="incremental"></A>Will GPUTILS ever include relocatable
-object and linker support?</H2>
-<P STYLE="margin-bottom: 0cm"><FONT SIZE=3>Yes. Version 0.11.0 is the
-first release of gputils with relocatable object support. There is
-still a great deal of work to do, but progress is being made.</FONT></P>
-<P STYLE="margin-bottom: 0cm"><BR>
-</P>
+
 <TABLE WIDTH=100% BORDER=0 CELLPADDING=2 CELLSPACING=0>
 	<COL WIDTH=164*>
 	<COL WIDTH=92*>
 	<TR>
 		<TD WIDTH=64%>
-			<P STYLE="margin-bottom: 0cm"><I>This Site Hosted by:</I></P>
+			<P><I>This Site Hosted by:</I></P>
 			<P><A HREF="http://sourceforge.net/"><IMG SRC="http://sourceforge.net/sflogo.php?group_id=41924" NAME="Graphic1" ALT="SourceForge" ALIGN=BOTTOM WIDTH=88 HEIGHT=31 BORDER=0></A></P>
 		</TD>
 		<TD WIDTH=36% VALIGN=BOTTOM>
-			<P STYLE="margin-bottom: 0cm"><A HREF="mailto:craigfranklin@users.sourceforge.net">Webmaster</A>
-						</P>
-			<P>Last updated: November 27, 2003</P>
+			<P STYLE="margin-bottom: 0cm"><A HREF="mailto:craigfranklin@users.sourceforge.net">Webmaster</A></P>
+			<P>Last updated: April 13, 2005</P>
 		</TD>
 	</TR>
 </TABLE>
-<P><BR><BR>
-</P>
 </BODY>
 </HTML>
