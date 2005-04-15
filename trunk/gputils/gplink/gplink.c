@@ -705,6 +705,10 @@ linker(void)
     state.byte_addr = 0;
   }
 
+  /* An error occured while reading the input files, no need to continue */
+  if (gp_num_errors)
+    return EXIT_FAILURE;
+
   /* Construct the symbol tables. Determine which archive members are 
      required to resolve external references. */
   build_tables();  

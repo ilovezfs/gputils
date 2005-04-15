@@ -76,20 +76,10 @@ int can_evaluate_concatenation(struct pnode *p)
   case symbol:
     return 1;
   case unop:
-    if (p->value.unop.op != VAR) {
-      gperror(GPE_ILLEGAL_ARGU, NULL);
-      return 0;
-    } else {  
-      return can_evaluate_concatenation(p->value.unop.p0);
-    }
+    return can_evaluate_concatenation(p->value.unop.p0);
   case binop:
-    if (p->value.binop.op != CONCAT) {
-      gperror(GPE_ILLEGAL_ARGU, NULL);
-      return 0;
-    } else {  
-      return can_evaluate_concatenation(p->value.binop.p0) &&
-             can_evaluate_concatenation(p->value.binop.p1);
-    }
+    return can_evaluate_concatenation(p->value.binop.p0) &&
+           can_evaluate_concatenation(p->value.binop.p1);
   case string:
     snprintf(buf, sizeof(buf), "Illegal argument (%s).", p->value.string);
     gperror(GPE_ILLEGAL_ARGU, buf);
@@ -141,12 +131,13 @@ char *evaluate_concatenation(struct pnode *p)
 
 char *maybe_evaluate_concat(struct pnode *p)
 {
-  char *r;
+  char *r = NULL;
 
-  if (p && can_evaluate_concatenation(p)) {
+  if (((p->tag == unop) && (p->value.unop.op != VAR)) ||
+      ((p->tag == binop) && (p->value.binop.op != CONCAT))) {
+    gperror(GPE_ILLEGAL_ARGU, NULL);
+  } else if (p && can_evaluate_concatenation(p)) {
     r = evaluate_concatenation(p);
-  } else {
-    r = NULL;
   }
 
   return r;

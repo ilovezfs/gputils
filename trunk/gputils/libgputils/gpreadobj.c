@@ -180,6 +180,7 @@ _read_section_header(gp_object_type *object,
 
 static void 
 _read_reloc(gp_object_type *object,
+            gp_section_type *section,
             gp_reloc_type *relocation,
             char *file)
 {
@@ -187,6 +188,13 @@ _read_reloc(gp_object_type *object,
   relocation->symbol  = &object->symbols[gp_getl32(&file[4])];
   relocation->offset  = gp_getl16(&file[8]);
   relocation->type    = gp_getl16(&file[10]);
+
+  if (relocation->address > section->size)
+    gp_error("relocation at address %#x in section \"%s\" of \"%s\" exceeds the section size", 
+             relocation->address,
+             section->name,
+             object->filename);
+
 }
 
 static void 
@@ -269,7 +277,7 @@ _read_sections(gp_object_type *object, char *file)
       current->relocations = gp_coffgen_blockrel(number);
       current_reloc = current->relocations;
       for (j = 0; j < number; j++) {
-        _read_reloc(object, current_reloc, loc);
+        _read_reloc(object, current, current_reloc, loc);
         loc += RELOC_SIZ;
         current->relocations_tail = current_reloc;
         current_reloc = current_reloc->next;

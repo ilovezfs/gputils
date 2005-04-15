@@ -684,6 +684,9 @@ static gpasmVal do_config(gpasmVal r,
       i_memory_put(state.c_memory, ca, MEM_USED_MASK | value);
       /* FIXME: need line_number? this one will be wrong coff_linenum(1) */
     }
+
+    /* force the section to end */
+    state.obj.section = NULL;
   }
         
   return r;

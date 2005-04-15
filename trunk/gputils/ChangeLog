@@ -1,3 +1,8 @@
+2005-04-15 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * gputils 0.13.1 Released.
+  * [gpasm] Generate an error if config is placed in the middle of section.
+  * [gplink] Generate an error if a relocation address is outside a section.
+
 2005-04-13 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gplink] Fixed a bug in section merging.
   * [gpvo] Fixed a bug when disassembling multiword instructions.
