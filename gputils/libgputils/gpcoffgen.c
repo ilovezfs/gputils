@@ -122,6 +122,51 @@ gp_coffgen_addsection(gp_object_type *object, char *name)
   return new;
 }
 
+gp_section_type *
+gp_coffgen_delsection(gp_object_type *object, gp_section_type *section)
+{
+  gp_section_type *list = NULL;
+  gp_section_type *previous = NULL;
+  gp_section_type *removed = NULL;
+
+  if (object == NULL)
+    return NULL;
+
+  list = object->sections;
+  while (list != NULL) {
+    if (list == section) {
+      removed = section;
+      if (previous == NULL) {
+        /* removing the first section in the list */
+        object->sections = list->next;
+        if (object->sections == NULL) {
+          /* there are no sections in the list */
+          object->sections_tail = NULL;
+        } else if (object->sections->next == NULL) {
+          /* there is one section in the list */
+          object->sections_tail = object->sections;
+        }
+      } else {
+        previous->next = list->next;
+        if (list->next == NULL) {
+          /* The last section in the list is being removed, so update
+             the tail. */ 
+          object->sections_tail = previous;
+        }
+      }
+      break;
+    }
+    previous = list;
+    list = list->next;
+  }
+  
+  object->num_sections--;
+  
+  /* FIXME: gp_coffgen_free_section(second); */
+
+  return removed;
+}
+
 gp_reloc_type *
 gp_coffgen_addreloc(gp_section_type *section)
 {
@@ -257,6 +302,126 @@ gp_coffgen_addsymbol(gp_object_type *object)
   object->num_symbols += 1;
 
   return new;
+}
+
+gp_symbol_type *
+gp_coffgen_delsymbol(gp_object_type *object, gp_symbol_type *symbol)
+{
+  gp_symbol_type *list = NULL;
+  gp_symbol_type *previous = NULL;
+  gp_symbol_type *removed = NULL;
+
+  if (object == NULL)
+    return NULL;
+
+  list = object->symbols;
+  while (list != NULL) {
+    if (list == symbol) {
+      removed = symbol;
+      if (previous == NULL) {
+        /* removing the first symbol in the list */
+        object->symbols = list->next;
+        if (object->symbols == NULL) {
+          /* there are no symbols in the list */
+          object->symbols_tail = NULL;
+        } else if (object->symbols->next == NULL) {
+          /* there is one symbol in the list */
+          object->symbols_tail = object->sections;
+        }
+      } else {
+        previous->next = list->next;
+        if (list->next == NULL) {
+          /* The last symbol in the list is being removed, so update
+             the tail. */ 
+          object->symbols_tail = previous;
+        }
+      }
+      break;
+    }
+    previous = list;
+    list = list->next;
+  }
+  
+  object->num_symbols -= (symbol->num_auxsym + 1);
+
+  /* FIXME: gp_coffgen_free_symbol(symbol); */
+
+  return removed;
+}
+
+/* Determine if any relocation uses the symbol. */
+
+gp_boolean
+gp_coffgen_has_reloc(gp_object_type *object, gp_symbol_type *symbol)
+{
+  gp_section_type *section;
+  gp_reloc_type *relocation;
+
+  section = object->sections;
+  while (section != NULL) {
+    relocation = section->relocations;
+    while (relocation != NULL) {
+      if (relocation->symbol == symbol) {
+        return true;
+      }
+      relocation = relocation->next;
+    }
+    section = section->next;
+  }
+
+  return false;
+}
+
+/* Determine if the symbol is global */
+
+gp_boolean
+gp_coffgen_is_global(gp_symbol_type *symbol)
+{
+
+  if ((symbol->class == C_EXT) && (symbol->section_number == N_SCNUM)) {
+    return true;
+  }
+
+  return false;
+}
+
+/* Determine if the symbol is external */
+
+gp_boolean
+gp_coffgen_is_external(gp_symbol_type *symbol)
+{
+
+  if ((symbol->class == C_EXT) && (symbol->section_number == N_UNDEF)) {
+    return true;
+  }
+
+  return false;
+}
+
+/* Determine if the symbol is debug */
+
+gp_boolean
+gp_coffgen_is_debug(gp_symbol_type *symbol)
+{
+
+  if (symbol->class == N_DEBUG) {
+    return true;
+  }
+
+  return false;
+}
+
+/* Determine if the symbol is absolute */
+
+gp_boolean
+gp_coffgen_is_absolute(gp_symbol_type *symbol)
+{
+
+  if (symbol->class == N_ABS) {
+    return true;
+  }
+
+  return false;
 }
 
 /* allocate a block of section */

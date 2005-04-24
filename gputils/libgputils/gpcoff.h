@@ -233,7 +233,7 @@ struct syment
 #define N_DEBUG -2
 #define N_ABS   -1
 #define N_UNDEF 0
-#define N_SCNUM 
+#define N_SCNUM 1
 
 /* Symbol types
 

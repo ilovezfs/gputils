@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-SOURCES = $(gpdasm_SOURCES) $(gplib_SOURCES) $(gpvc_SOURCES) $(gpvo_SOURCES)
+SOURCES = $(gpdasm_SOURCES) $(gplib_SOURCES) $(gpstrip_SOURCES) $(gpvc_SOURCES) $(gpvo_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -38,8 +38,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = gpdasm$(EXEEXT) gplib$(EXEEXT) gpvc$(EXEEXT) \
-	gpvo$(EXEEXT)
+bin_PROGRAMS = gpdasm$(EXEEXT) gplib$(EXEEXT) gpstrip$(EXEEXT) \
+	gpvc$(EXEEXT) gpvo$(EXEEXT)
 subdir = gputils
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -60,6 +60,10 @@ am_gplib_OBJECTS = gplib.$(OBJEXT)
 gplib_OBJECTS = $(am_gplib_OBJECTS)
 gplib_DEPENDENCIES = ${top_builddir}/@LIBGPUTILS@ \
 	${top_builddir}/@LIBIBERTY@
+am_gpstrip_OBJECTS = gpstrip.$(OBJEXT)
+gpstrip_OBJECTS = $(am_gpstrip_OBJECTS)
+gpstrip_DEPENDENCIES = ${top_builddir}/@LIBGPUTILS@ \
+	${top_builddir}/@LIBIBERTY@
 am_gpvc_OBJECTS = block.$(OBJEXT) dump.$(OBJEXT) gpvc.$(OBJEXT)
 gpvc_OBJECTS = $(am_gpvc_OBJECTS)
 gpvc_DEPENDENCIES = ${top_builddir}/@LIBGPUTILS@ \
@@ -75,10 +79,10 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(gpdasm_SOURCES) $(gplib_SOURCES) $(gpvc_SOURCES) \
-	$(gpvo_SOURCES)
-DIST_SOURCES = $(gpdasm_SOURCES) $(gplib_SOURCES) $(gpvc_SOURCES) \
-	$(gpvo_SOURCES)
+SOURCES = $(gpdasm_SOURCES) $(gplib_SOURCES) $(gpstrip_SOURCES) \
+	$(gpvc_SOURCES) $(gpvo_SOURCES)
+DIST_SOURCES = $(gpdasm_SOURCES) $(gplib_SOURCES) $(gpstrip_SOURCES) \
+	$(gpvc_SOURCES) $(gpvo_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -194,6 +198,11 @@ gplib_SOURCES = \
 	gplib.h
 
 gplib_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
+gpstrip_SOURCES = \
+	gpstrip.c \
+	gpstrip.h
+
+gpstrip_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 gpvc_SOURCES = \
 	block.c dump.c gpvc.c \
 	block.h dump.h gpvc.h
@@ -266,6 +275,9 @@ gpdasm$(EXEEXT): $(gpdasm_OBJECTS) $(gpdasm_DEPENDENCIES)
 gplib$(EXEEXT): $(gplib_OBJECTS) $(gplib_DEPENDENCIES) 
 	@rm -f gplib$(EXEEXT)
 	$(LINK) $(gplib_LDFLAGS) $(gplib_OBJECTS) $(gplib_LDADD) $(LIBS)
+gpstrip$(EXEEXT): $(gpstrip_OBJECTS) $(gpstrip_DEPENDENCIES) 
+	@rm -f gpstrip$(EXEEXT)
+	$(LINK) $(gpstrip_LDFLAGS) $(gpstrip_OBJECTS) $(gpstrip_LDADD) $(LIBS)
 gpvc$(EXEEXT): $(gpvc_OBJECTS) $(gpvc_DEPENDENCIES) 
 	@rm -f gpvc$(EXEEXT)
 	$(LINK) $(gpvc_LDFLAGS) $(gpvc_OBJECTS) $(gpvc_LDADD) $(LIBS)
@@ -283,6 +295,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dump.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpdasm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gplib.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpstrip.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpvc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpvo.Po@am__quote@
 

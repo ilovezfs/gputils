@@ -78,7 +78,12 @@ struct symbol_table *pop_symbol_table(struct symbol_table *table)
 struct symbol *add_symbol(struct symbol_table *table, char *name)
 {
   struct symbol *r;
-  int index = hashfunc(table, name);
+  int index;
+
+  assert(name != NULL);
+  assert(table != NULL);
+
+  index = hashfunc(table, name);
 
   r = table->hash_table[index];
   while (r && ((*table->compare)(name, r->name) != 0))
@@ -103,8 +108,13 @@ int remove_symbol(struct symbol_table *table, char *name)
 {
   struct symbol *r = NULL; 
   struct symbol *last = NULL;
-  int index = hashfunc(table, name);
+  int index;
   int found_symbol = 0;
+
+  assert(name != NULL);
+  assert(table != NULL);
+
+  index = hashfunc(table, name);
 
   /* Search for the symbol */
   if (table != NULL) {
@@ -134,6 +144,8 @@ int remove_symbol(struct symbol_table *table, char *name)
 struct symbol *get_symbol(struct symbol_table *table, char *name)
 {
   struct symbol *r = NULL;
+
+  assert(name != NULL);
 
   if (table != NULL) {
     int index = hashfunc(table, name);

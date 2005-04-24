@@ -40,6 +40,7 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 %{_bindir}/gpdasm
 %{_bindir}/gplib
 %{_bindir}/gplink
+%{_bindir}/gpstrip
 %{_bindir}/gpvc
 %{_bindir}/gpvo
 %{_mandir}/man1

@@ -23,6 +23,7 @@ Boston, MA 02111-1307, USA.  */
 #define __GPMESSAGE_H__
 
 extern gp_boolean gp_quiet;
+extern gp_boolean gp_message_disable;
 extern gp_boolean gp_debug_disable;
 
 extern int gp_num_errors;
