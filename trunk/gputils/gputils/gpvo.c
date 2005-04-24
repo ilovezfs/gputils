@@ -449,7 +449,7 @@ int main(int argc, char *argv[])
 
   if (!state.dump_flags) {
     /* no command line flags were set so print everything */
-    state.dump_flags = 0xff;
+    state.dump_flags = PRINT_HEADER | PRINT_SECTIONS | PRINT_SYMTBL;
   }
 
   if (gp_identify_coff_file(state.filename) != object_file) {

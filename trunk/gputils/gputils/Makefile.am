@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-bin_PROGRAMS = gpdasm gplib gpvc gpvo
+bin_PROGRAMS = gpdasm gplib gpstrip gpvc gpvo
 
 AM_CPPFLAGS = -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
@@ -15,6 +15,13 @@ gplib_SOURCES=\
 	gplib.h
 
 gplib_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
+
+gpstrip_SOURCES=\
+	gpstrip.c \
+	gpstrip.h
+
+gpstrip_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
+
 
 gpvc_SOURCES=\
 	block.c dump.c gpvc.c \

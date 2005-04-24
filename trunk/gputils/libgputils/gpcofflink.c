@@ -126,36 +126,12 @@ gp_link_add_symbols(struct symbol_table *definition,
   return 0;
 }
 
-/* Determine if any relocation uses the symbol. */
-
-static gp_boolean
-_has_relocation(gp_object_type *object, gp_symbol_type *symbol)
-{
-  gp_section_type *section;
-  gp_reloc_type *relocation;
-
-  section = object->sections;
-  while (section != NULL) {
-    relocation = section->relocations;
-    while (relocation != NULL) {
-      if (relocation->symbol == symbol) {
-        return true;
-      }
-      relocation = relocation->next;
-    }
-    section = section->next;
-  }
-
-  return false;
-}
-
 /* Remove any weak symbols in the object. */
 
 void
 gp_cofflink_remove_weak(gp_object_type *object)
 {
   gp_symbol_type *symbol;
-  gp_symbol_type *previous = NULL;
 
   gp_debug("removing weak symbols from %s", object->filename);
 
@@ -164,17 +140,9 @@ gp_cofflink_remove_weak(gp_object_type *object)
   while (symbol != NULL) {
     if ((symbol->class == C_EXT) && 
         (symbol->section_number == N_UNDEF) &&
-        (!_has_relocation(object, symbol))) {
+        (!gp_coffgen_has_reloc(object, symbol))) {
       gp_debug("  removed weak symbol \"%s\"", symbol->name);
-      if (previous == NULL) {
-        /* removing first symbol in the list */
-        object->symbols = object->symbols->next;
-      } else {
-        previous->next = symbol->next;
-      }
-      object->num_symbols--;    
-    } else {
-      previous = symbol;
+      gp_coffgen_delsymbol(object, symbol);
     }
 
     symbol = symbol->next;
@@ -253,9 +221,7 @@ gp_cofflink_combine_overlay(gp_object_type *object, int remove_symbol)
 {
   gp_section_type *first = NULL;
   gp_section_type *second = NULL;
-  gp_section_type *list = NULL;
   gp_symbol_type  *symbol = NULL;
-  int count;
 
   first = object->sections;
   
@@ -284,17 +250,7 @@ gp_cofflink_combine_overlay(gp_object_type *object, int remove_symbol)
 
         /* Remove the section symbol */
         if (remove_symbol) {
-          symbol = object->symbols;
-          while (symbol != NULL) {
-            if (symbol->next == second->symbol) {
-              symbol->next = second->symbol->next;
-              /* FIXME : count = gp_coffgen_free_symbol(second->symbol); */
-              count = 1;
-              object->num_symbols -= (count + 1);
-              break;
-            }
-            symbol = symbol->next;
-          }
+          gp_coffgen_delsymbol(object, second->symbol);
         }
 
         /* Update the symbol table */
@@ -307,16 +263,7 @@ gp_cofflink_combine_overlay(gp_object_type *object, int remove_symbol)
         }
 
         /* Remove the second section*/
-        list = object->sections;
-        while(list != NULL) {
-          if (list->next == second) {
-            list->next = second->next;
-            break;
-          }
-          list = list->next;
-        }
-        object->num_sections--;
-        /* FIXME: gp_coffgen_free_section(second); */
+        gp_coffgen_delsection(object, second);
         
         /* Take another pass */
         gp_cofflink_combine_overlay(object, remove_symbol);
@@ -388,7 +335,6 @@ gp_cofflink_merge_sections(gp_object_type *object, int byte_addr)
 {
   gp_section_type *first;
   gp_section_type *second;
-  gp_section_type *list = NULL;
   gp_symbol_type  *symbol = NULL;
   gp_reloc_type   *relocation = NULL;
   unsigned int org;
@@ -490,21 +436,7 @@ gp_cofflink_merge_sections(gp_object_type *object, int byte_addr)
       }
 
       /* Remove the second section*/
-      list = object->sections;
-      while(list != NULL) {
-        if (list->next == second) {
-          list->next = second->next;
-          if (list->next == NULL) {
-            /* The last section in the list is being removed, so update
-               the tail. */ 
-            object->sections_tail = list;
-          }
-          break;
-        }
-        list = list->next;
-      }
-      object->num_sections--;
-      /* FIXME: gp_coffgen_free_section(second); */
+      gp_coffgen_delsection(object, second);
         
       /* Take another pass */
       gp_cofflink_merge_sections(object, byte_addr);

@@ -26,8 +26,8 @@ Boston, MA 02111-1307, USA.  */
 #include <stdarg.h>
 #endif
 
-gp_boolean gp_message_disable = false;
 gp_boolean gp_quiet = false;
+gp_boolean gp_message_disable = false;
 gp_boolean gp_debug_disable = true;
 
 int gp_num_errors = 0;
