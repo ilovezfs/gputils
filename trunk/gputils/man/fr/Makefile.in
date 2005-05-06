@@ -79,7 +79,6 @@ EXEEXT = @EXEEXT@
 GPUTILS_HEADER_PATH = @GPUTILS_HEADER_PATH@
 GPUTILS_LIB_PATH = @GPUTILS_LIB_PATH@
 GPUTILS_LKR_PATH = @GPUTILS_LKR_PATH@
-GPUTILS_PUB_PATH = @GPUTILS_PUB_PATH@
 IBERTYOBJS = @IBERTYOBJS@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -153,7 +152,6 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 man_MANS = \
-	gpal.1 \
 	gpasm.1 \
 	gpdasm.1 \
 	gplib.1 \

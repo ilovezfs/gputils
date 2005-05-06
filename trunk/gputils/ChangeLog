@@ -1,4 +1,5 @@
 2005-05-05 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [gpal] Removed gpal until it reaches alpha status.
   * [libgputils] Fixed pointer bug in symbol removal function.
   * [gpasm] Use .org_{address} for ORG COFF section names.
 
