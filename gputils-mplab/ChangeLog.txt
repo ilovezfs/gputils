@@ -1,2 +1,9 @@
+2005-05-05 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * gputils-mplab 0.3 Released.
+  * removed gpal.
+
+2005-01-13 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * gputils-mplab 0.2 Released.
+
 2004-11-14 Craig Franklin <craigfranklin@users.sourceforge.net>
   * gputils-mplab 0.1 Released.

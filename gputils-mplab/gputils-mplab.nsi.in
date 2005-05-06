@@ -1,6 +1,6 @@
 # gputils-mplab.nsi - NSIS installer script for gputils-mplab
 #
-# Copyright (c) 2004 Craig Franklin
+# Copyright (c) 2004, 2005 Craig Franklin
 #
 # This file is part of gputils.
 #
@@ -30,8 +30,6 @@
 !define GPASM_KEY_IN   "{77c92193-72f0-4e01-91e4-b5c45aea9417}"
 !define GPLINK_KEY     "{804cbf19-b459-4d9d-87ec-669038639d60}"
 !define GPLINK_KEY_IN  "{43f7cd89-1294-495e-9525-f268225eb77a}"
-!define GPAL_KEY       "{a72f47f0-1bdf-4e1b-a7eb-bec2892e2066}"
-!define GPAL_KEY_IN    "{9f6507a7-edc4-42a0-8ce7-f88c4cb85424}"
 
 !define MCHIP_LEGACY   "Software\Microchip\MPLAB IDE\Legacy Language Suites"
 
@@ -112,7 +110,6 @@ FunctionEnd
 Section -Common
   ReadRegStr $OUTDIR HKLM "Software\Microchip\MPLAB IDE" "MTCdir"
   File "${GPUTILS_ROOT}\tlgputils.ini"
-  File "${GPUTILS_ROOT}\gpal.mtc"
   File "${GPUTILS_ROOT}\gpasm.mtc"
   File "${GPUTILS_ROOT}\gplink.mtc"
   SetOutPath "$INSTDIR"
@@ -148,9 +145,6 @@ Section -PostInstall
   WriteRegExpandStr HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}\${GPUTILS_KEY_IN}" "" ""
   ;WriteRegDWORD     HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}" "DoNotLoad" 1
 
-  WriteRegExpandStr HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}\Tools\${GPAL_KEY}" "" "gpal.mtc"
-  WriteRegExpandStr HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}\Tools\${GPAL_KEY}\${GPAL_KEY_IN}" "" ""
-
   WriteRegExpandStr HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}\Tools\${GPASM_KEY}" "" "gpasm.mtc"
   WriteRegExpandStr HKLM "${MCHIP_LEGACY}\${GPUTILS_KEY}\Tools\${GPASM_KEY}\${GPASM_KEY_IN}" "" ""
 
@@ -182,7 +176,6 @@ Section Uninstall
   ReadRegStr $OUTDIR HKLM "Software\Microchip\MPLAB IDE" "MTCdir"
 
   Delete "$OUTDIR\tlgputils.ini"
-  Delete "$OUTDIR\gpal.mtc"
   Delete "$OUTDIR\gpasm.mtc"
   Delete "$OUTDIR\gplink.mtc"
 
