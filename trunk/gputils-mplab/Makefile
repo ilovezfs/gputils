@@ -1,5 +1,5 @@
 PACKAGE_NAME = gputils-mplab
-PACKAGE_VERSION = 0.1
+PACKAGE_VERSION = 0.3
 
 DIST_NAME=$(PACKAGE_NAME)-$(PACKAGE_VERSION)
 
@@ -9,7 +9,6 @@ DISTFILES=\
 	README.txt\
 	gputils-mplab.nsi\
 	tlgputils.ini\
-	gpal.mtc\
 	gpasm.mtc\
 	gplink.mtc
 
