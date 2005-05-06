@@ -2005,7 +2005,10 @@ static gpasmVal do_org(gpasmVal r,
       }	else {
         /* Default section name, this will be overwritten if a label is 
            present. */
-        snprintf(state.obj.new_sec_name, sizeof(state.obj.new_sec_name), ".org_%d", state.obj.org_num++);
+        snprintf(state.obj.new_sec_name,
+                 sizeof(state.obj.new_sec_name),
+                 ".org_%x",
+                 r);
         state.obj.new_sec_addr = r;
         state.obj.new_sec_flags = STYP_TEXT | STYP_ABS;
         state.lst.line.linetype = sec;

@@ -326,7 +326,7 @@ gp_coffgen_delsymbol(gp_object_type *object, gp_symbol_type *symbol)
           object->symbols_tail = NULL;
         } else if (object->symbols->next == NULL) {
           /* there is one symbol in the list */
-          object->symbols_tail = object->sections;
+          object->symbols_tail = object->symbols;
         }
       } else {
         previous->next = list->next;

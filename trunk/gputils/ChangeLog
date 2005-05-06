@@ -1,3 +1,7 @@
+2005-05-05 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [libgputils] Fixed pointer bug in symbol removal function.
+  * [gpasm] Use .org_{address} for ORG COFF section names.
+
 2005-04-24 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gpstrip] Added new utility.
 
