@@ -101,7 +101,6 @@ init(void)
   state.found_config = false;
   state.found_devid = false;
   state.found_idlocs = false;
-  state.register_block = false;
   state.maxram = (MAX_RAM - 1);
 
   state.codfile = normal;

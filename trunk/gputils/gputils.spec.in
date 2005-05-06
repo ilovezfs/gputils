@@ -35,7 +35,6 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 
 %files
 %defattr(-, root, root)
-%{_bindir}/gpal
 %{_bindir}/gpasm
 %{_bindir}/gpdasm
 %{_bindir}/gplib
@@ -47,6 +46,5 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 %{_mandir}/fr/man1
 %{_datadir}/gputils/header
 %{_datadir}/gputils/lkr
-%{_datadir}/gputils/pub
 %doc AUTHORS COPYING ChangeLog NEWS README 
 %doc doc/gputils.pdf doc/gputils.ps
