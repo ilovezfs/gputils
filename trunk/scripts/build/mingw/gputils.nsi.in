@@ -31,7 +31,7 @@ SetCompressor lzma
 
 !define DEV_ROOT "${GPUTILS_ROOT}"
 
-InstType "Full (Bin, Doc, Hdr, Lkr, Pub)"
+InstType "Full (Bin, Doc, Hdr, Lkr)"
 InstType "Compact (Bin, Doc)"
 
 ;--------------------------------
@@ -112,7 +112,6 @@ SectionEnd
 Section "gputils application files"
   SectionIn 1 2 RO
   SetOutPath "$INSTDIR\bin"
-  File "${GPUTILS_ROOT}\bin\gpal.exe"
   File "${GPUTILS_ROOT}\bin\gpasm.exe"
   File "${GPUTILS_ROOT}\bin\gplink.exe"
   File "${GPUTILS_ROOT}\bin\gplib.exe"
@@ -146,17 +145,6 @@ Section "gputils lkr files"
   ; Set GPUTILS_LKR_PATH environment variable
   Push "GPUTILS_LKR_PATH"  ; name
   Push "$INSTDIR\lkr"      ; value
-  Call WriteEnvStr
-SectionEnd
-
-Section "gputils pub files"
-  SectionIn 1
-  SetOutPath "$INSTDIR\pub"
-  File "${DEV_ROOT}\pub\*.pub"
-
-  ; Set GPUTILS_PUB_PATH environment variable
-  Push "GPUTILS_PUB_PATH"  ; name
-  Push "$INSTDIR\pub"      ; value
   Call WriteEnvStr
 SectionEnd
 
@@ -231,7 +219,6 @@ Section Uninstall
   Push "GPUTILS_LKR_PATH"     ; name
   Call un.DeleteEnvStr
 
-  Delete "$INSTDIR\bin\gpal.exe"
   Delete "$INSTDIR\bin\gpasm.exe"
   Delete "$INSTDIR\bin\gplink.exe"
   Delete "$INSTDIR\bin\gplib.exe"
@@ -242,9 +229,6 @@ Section Uninstall
 
   Delete "$INSTDIR\lkr\*.lkr"
   RMDir "$INSTDIR\lkr"
-
-  Delete "$INSTDIR\pub\*.pub"
-  RMDir "$INSTDIR\pub"
 
   Delete "$INSTDIR\header\*.inc"
   RMDir "$INSTDIR\header"
