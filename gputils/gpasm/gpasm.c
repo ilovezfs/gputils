@@ -122,7 +122,6 @@ init(void)
   state.obj.section = NULL;
   state.obj.symbol_num = 0;
   state.obj.section_num = 0;
-  state.obj.org_num = 0;
   
   state.astack = NULL;
   
@@ -382,7 +381,6 @@ assemble(void)
     state.radix = 16;
   state.obj.symbol_num = 0;
   state.obj.section_num = 0;
-  state.obj.org_num = 0;
   state.found_config = false;
   state.found_devid = false;
   state.found_idlocs = false;
