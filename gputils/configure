@@ -311,7 +311,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE YACC LEX LEXLIB LEX_OUTPUT_ROOT RANLIB ac_ct_RANLIB AR ac_ct_AR CPP EGREP ALLOCA LIBOBJS AM_CFLAGS AM_LDFLAGS GPUTILS_HEADER_PATH GPUTILS_LKR_PATH GPUTILS_LIB_PATH GPUTILS_PUB_PATH IBERTYOBJS LIBGPUTILS LIBIBERTY MAKE_SUBDIRS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE YACC LEX LEXLIB LEX_OUTPUT_ROOT RANLIB ac_ct_RANLIB AR ac_ct_AR CPP EGREP ALLOCA LIBOBJS AM_CFLAGS AM_LDFLAGS GPUTILS_HEADER_PATH GPUTILS_LKR_PATH GPUTILS_LIB_PATH IBERTYOBJS LIBGPUTILS LIBIBERTY MAKE_SUBDIRS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1843,10 +1843,9 @@ host_os=`echo $ac_cv_host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 GPUTILS_HEADER_PATH="\$(datadir)/gputils/header"
 GPUTILS_LKR_PATH="\$(datadir)/gputils/lkr"
 GPUTILS_LIB_PATH="\$(datadir)/gputils/lib"
-GPUTILS_PUB_PATH="\$(datadir)/gputils/pub"
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
-MAKE_SUBDIRS="libgputils libiberty gpal gpasm gplink gputils header lkr pub doc man"
+MAKE_SUBDIRS="libgputils libiberty gpasm gplink gputils header lkr doc man"
 
 # Check for additional parameters
 # Check whether --enable-debug or --disable-debug was given.
@@ -5999,9 +5998,8 @@ fi
 
 
 
-
 # Generate Makefiles
-                                                                                                                                            ac_config_files="$ac_config_files Makefile doc/Makefile gpal/Makefile gpasm/Makefile gplink/Makefile gputils/Makefile header/Makefile libgputils/Makefile libiberty/Makefile lkr/Makefile man/Makefile man/fr/Makefile pub/Makefile gputils.spec"
+                                                                                                                        ac_config_files="$ac_config_files Makefile doc/Makefile gpasm/Makefile gplink/Makefile gputils/Makefile header/Makefile libgputils/Makefile libiberty/Makefile lkr/Makefile man/Makefile man/fr/Makefile gputils.spec"
 
 
 cat >confcache <<\_ACEOF
@@ -6562,7 +6560,6 @@ do
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   "doc/Makefile" ) CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
-  "gpal/Makefile" ) CONFIG_FILES="$CONFIG_FILES gpal/Makefile" ;;
   "gpasm/Makefile" ) CONFIG_FILES="$CONFIG_FILES gpasm/Makefile" ;;
   "gplink/Makefile" ) CONFIG_FILES="$CONFIG_FILES gplink/Makefile" ;;
   "gputils/Makefile" ) CONFIG_FILES="$CONFIG_FILES gputils/Makefile" ;;
@@ -6572,7 +6569,6 @@ do
   "lkr/Makefile" ) CONFIG_FILES="$CONFIG_FILES lkr/Makefile" ;;
   "man/Makefile" ) CONFIG_FILES="$CONFIG_FILES man/Makefile" ;;
   "man/fr/Makefile" ) CONFIG_FILES="$CONFIG_FILES man/fr/Makefile" ;;
-  "pub/Makefile" ) CONFIG_FILES="$CONFIG_FILES pub/Makefile" ;;
   "gputils.spec" ) CONFIG_FILES="$CONFIG_FILES gputils.spec" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
@@ -6727,7 +6723,6 @@ s,@AM_LDFLAGS@,$AM_LDFLAGS,;t t
 s,@GPUTILS_HEADER_PATH@,$GPUTILS_HEADER_PATH,;t t
 s,@GPUTILS_LKR_PATH@,$GPUTILS_LKR_PATH,;t t
 s,@GPUTILS_LIB_PATH@,$GPUTILS_LIB_PATH,;t t
-s,@GPUTILS_PUB_PATH@,$GPUTILS_PUB_PATH,;t t
 s,@IBERTYOBJS@,$IBERTYOBJS,;t t
 s,@LIBGPUTILS@,$LIBGPUTILS,;t t
 s,@LIBIBERTY@,$LIBIBERTY,;t t

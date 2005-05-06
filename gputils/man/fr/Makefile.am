@@ -3,7 +3,6 @@
 mandir = @mandir@/fr
 
 man_MANS =\
-	gpal.1 \
 	gpasm.1 \
 	gpdasm.1 \
 	gplib.1 \

@@ -16,10 +16,9 @@ AC_CANONICAL_HOST
 GPUTILS_HEADER_PATH="\$(datadir)/gputils/header"
 GPUTILS_LKR_PATH="\$(datadir)/gputils/lkr"
 GPUTILS_LIB_PATH="\$(datadir)/gputils/lib"
-GPUTILS_PUB_PATH="\$(datadir)/gputils/pub"
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
-MAKE_SUBDIRS="libgputils libiberty gpal gpasm gplink gputils header lkr pub doc man"
+MAKE_SUBDIRS="libgputils libiberty gpasm gplink gputils header lkr doc man"
 
 # Check for additional parameters
 AC_ARG_ENABLE(debug, 
@@ -125,7 +124,6 @@ AC_SUBST(AM_LDFLAGS)
 AC_SUBST(GPUTILS_HEADER_PATH)
 AC_SUBST(GPUTILS_LKR_PATH)
 AC_SUBST(GPUTILS_LIB_PATH)
-AC_SUBST(GPUTILS_PUB_PATH)
 AC_SUBST(IBERTYOBJS)
 AC_SUBST(LIBGPUTILS)
 AC_SUBST(LIBIBERTY)
@@ -134,7 +132,6 @@ AC_SUBST(MAKE_SUBDIRS)
 # Generate Makefiles
 AC_CONFIG_FILES([Makefile 
                  doc/Makefile 
-                 gpal/Makefile 
                  gpasm/Makefile 
                  gplink/Makefile 
                  gputils/Makefile 
@@ -144,7 +141,6 @@ AC_CONFIG_FILES([Makefile
                  lkr/Makefile
                  man/Makefile 
                  man/fr/Makefile 
-                 pub/Makefile
                  gputils.spec])
 
 AC_OUTPUT

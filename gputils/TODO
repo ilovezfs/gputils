@@ -10,59 +10,6 @@ gputils
   * Switch to xmalloc and obstacks.
   * Use dejagnu for testing.
 
-gpal
-  * pragma error/warning/message="string"
-  * Nested subprograms.
-  * Put data memory in order defined not pseudo alphabetical.
-  * Don't use a stack so function pointers are a problem.  Can't have 
-    arguments.
-  * If only one argument to a subprogram and byte or less pass through W.
-  * Define a string for the processor name and the processor family in the
-    processor public.  Use it for conditional code.  
-  * Allow section pragmas to include module name.  This will allow all the 
-    sections to be defined in one guide public file.  
-  * Fix Alias so processor name can be aliased.
-  * Allow alias to bits in bytes.
-  * Define a boolean for each family and each device.  So conditional
-    code generation is simplified. (examples PIC14, PIC16E, P16F877A, P18F442)
-  * Generate a warning if a function uses anything but its inputs.
-  * Generate an error if a function argument is anything but "in".  This should
-    allow some more optimizations.
-  * Don't like module and public, make unit and interface like Pascal,
-    or package and package body like Ada.
-  * Convert ASCII chars and escape characters to hex values for assignments.
-  * Assign arrays with string values.  Maybe a string type instead of uint8?
-  * Unchecked type conversions to_"type" 
-    example value = to_uint8(0x1234), value = 0x34 with no warning
-    Maybe put them in a package as their own functions.
-  * Clean up the test expressions code generator.  Keep the result in W not
-    the working register.
-  * Add backend for each family.
-  * Finish 18xx devices.
-  * Add a new analyze stage.  Traverse the call tree and count the number
-    of times a subprogramed is used.
-  * Remove dead subprograms if they are private and never called.
-  * Overlay memory on private subprograms that don't call each other
-  * Add a inline subprogram feature.  Maybe a "pragma inline" in the
-    declarations to enable.  It would then have to be placed in the public
-    to be global and inlined or accessed from a parsed library.   
-  * Auto inline subprograms that are private and called once.
-  * Generate an error if subprograms are recursive.
-  * Allow arrays to assigned with string values.
-  * Implement bit types.
-  * Implement initialized data using idata sections.
-  * Implement "rom" to go with variable and constant. dt "my string\0"
-  * Maybe use attribute instead of pragma.
-  * Convert float numbers to hex in scan.l.
-  * Allow subprograms to be defined in the public.  One copy of the subprogram
-    goes in each module.
-  * Support overloading subprograms.  Complicated, error prone, but powerful.
-  * Support user defined operators.  What to do about the parser?
-  * Move multibyte operations to a library if overloading and user defined
-    operators are supported.
-  * Create icode in codegen and peep it.  Write that to asm file.
-  * Finish testsuite.
-
 gpasm
   * Change to byte addressing in 18xx devices in COD files for MPLAB.
   * Implement nested while loops.
