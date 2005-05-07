@@ -54,7 +54,7 @@ void print_header(gp_object_type *object)
     printf("  Local symbols have been stripped.\n");
   }
   if (object->flags & F_GENERIC) {
-    printf("  Processor independant file for a core.\n");
+    printf("  Processor independent file for a core.\n");
   }
 
   printf("\n");
@@ -223,6 +223,93 @@ void print_sec_list(gp_object_type *object)
 
 }
 
+void coff_type(int type, char *buffer, size_t sizeof_buffer)
+{
+
+  switch (type) {
+  case T_NULL:
+    /* null */
+    snprintf(buffer, sizeof_buffer, "NULL");
+    break;
+  case T_VOID:
+    /* void */
+    snprintf(buffer, sizeof_buffer, "void");
+    break;
+  case T_CHAR:
+    /* character */
+    snprintf(buffer, sizeof_buffer, "char");
+    break;
+  case T_SHORT:
+    /* short integer */
+    snprintf(buffer, sizeof_buffer, "short");
+    break;
+  case T_INT:
+    /* integer */
+    snprintf(buffer, sizeof_buffer, "int");
+    break;
+  case T_LONG:
+    /* long integer */
+    snprintf(buffer, sizeof_buffer, "long int");
+    break;
+  case T_FLOAT:
+    /* floating point */
+    snprintf(buffer, sizeof_buffer, "float");
+    break;
+  case T_DOUBLE:
+    /* double length floating point */
+    snprintf(buffer, sizeof_buffer, "double");
+    break;
+  case T_STRUCT:
+    /* structure */
+    snprintf(buffer, sizeof_buffer, "struct");
+    break;
+  case T_UNION:
+    /* union */
+    snprintf(buffer, sizeof_buffer, "union");
+    break;
+  case T_ENUM:
+    /* enumeration */
+    snprintf(buffer, sizeof_buffer, "enum");
+    break;
+  case T_MOE:
+    /* member of enumeration */
+    snprintf(buffer, sizeof_buffer, "enum");
+    break;
+  case T_UCHAR:
+    /* unsigned character */
+    snprintf(buffer, sizeof_buffer, "unsigned char");
+    break;
+  case T_USHORT:
+    /* unsigned short */
+    snprintf(buffer, sizeof_buffer, "unsigned short");
+    break;
+  case T_UINT:
+    /* unsigned integer */
+    snprintf(buffer, sizeof_buffer, "unsigned int");
+    break;
+  case T_ULONG:
+    /* unsigned long */
+    snprintf(buffer, sizeof_buffer, "unsigned long");
+    break;
+  case T_LNGDBL:
+    /* long double floating point */
+    snprintf(buffer, sizeof_buffer, "long double");
+    break;
+  case T_SLONG:
+    /* short long */
+    snprintf(buffer, sizeof_buffer, "short long");
+    break;
+  case T_USLONG:
+    /* unsigned short long */
+    snprintf(buffer, sizeof_buffer, "unsigned short long");
+    break;
+  default:
+    snprintf(buffer, sizeof_buffer, "unknown");
+    break;
+  }
+
+}
+
 void print_sym_table (gp_object_type *object)
 {
   gp_symbol_type *symbol;
@@ -310,6 +397,30 @@ void print_sym_table (gp_object_type *object)
   return;
 }
 
+void export_sym_table(gp_object_type *object)
+{
+  gp_symbol_type *symbol;
+  char buffer[BUFSIZ];
+
+  symbol = object->symbols;
+
+  while (symbol != NULL) {
+
+    if ((state.export.enabled) && 
+        (symbol->class == C_EXT) &&
+        (symbol->section_number > 0)) {
+
+      coff_type(symbol->type, buffer, sizeof(buffer));
+      fprintf(state.export.f, "  extern %s ; %s\n",
+              symbol->name,
+              buffer);
+    }
+
+    symbol = symbol->next;
+  }
+
+}
+
 void print_binary(char *data, long int file_size) 
 {
 
@@ -364,6 +475,7 @@ void show_usage(void)
   printf("  -s, --section              Section data.\n");
   printf("  -t  --symbol               Symbol table.\n");
   printf("  -v, --version              Show version.\n");
+  printf("  -x FILE, --export FILE     Export symbols to include file.\n");
   printf("  -y, --extended             Enable 18xx extended mode.\n");
   printf("\n");
   printf("Report bugs to:\n");
@@ -371,7 +483,7 @@ void show_usage(void)
   exit(0);
 }
 
-#define GET_OPTIONS "?bcfhnstvy"
+#define GET_OPTIONS "?bcfhnstvx:y"
 
   /* Used: himpsv */
   static struct option longopts[] =
@@ -384,6 +496,7 @@ void show_usage(void)
     { "section",     0, 0, 's' },
     { "symbol",      0, 0, 't' },
     { "version",     0, 0, 'v' },
+    { "export",      1, 0, 'x' },
     { "extended",    0, 0, 'y' },
     { 0, 0, 0, 0 }
   };
@@ -395,12 +508,14 @@ int main(int argc, char *argv[])
   extern int optind;
   int c;
   int usage = 0;
+  char buffer[BUFSIZ];
 
   gp_init();
 
   /* initalize */
   state.dump_flags = 0;
   state.suppress_names = false;
+  state.export.enabled = false;
 
   while ((c = GETOPT_FUNC) != EOF) {
     switch (c) {
@@ -428,6 +543,10 @@ int main(int argc, char *argv[])
       break;
     case 'y':
       gp_decode_extended = true;
+      break;
+    case 'x':
+      state.export.enabled = true;
+      state.export.filename = optarg;
       break;
     case 'v':
       fprintf(stderr, "%s\n", GPVO_VERSION_STRING);
@@ -459,6 +578,30 @@ int main(int argc, char *argv[])
 
   state.object = gp_read_coff(state.filename);
   state.file = gp_read_file(state.filename);
+
+  if (state.export.enabled) {
+    state.export.f = fopen(state.export.filename, "w");
+    if (state.export.f == NULL) {
+      perror(state.export.filename);
+      exit(1);
+    }
+
+    gp_date_string(buffer, sizeof(buffer));
+
+    fprintf(state.export.f, "; %s\n", state.export.filename);
+    fprintf(state.export.f, "; generated by %s on %s\n",
+            GPVO_VERSION_STRING,
+            buffer);
+    fprintf(state.export.f, "; from %s\n\n",
+            state.filename);
+
+    export_sym_table(state.object);
+    
+    fclose(state.export.f);
+
+    /* suppress normal output */
+    state.dump_flags = 0;
+  }
 
   if (state.dump_flags & PRINT_HEADER) {
     print_header(state.object);
