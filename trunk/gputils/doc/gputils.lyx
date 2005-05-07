@@ -8677,7 +8677,7 @@ Where options can be one of:
 \added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
 
 \begin_inset  Tabular
-<lyxtabular version="3" rows="10" columns="2">
+<lyxtabular version="3" rows="11" columns="2">
 <features>
 <column alignment="left" valignment="top" leftline="true" width="0pt">
 <column alignment="block" valignment="top" leftline="true" rightline="true" width="4in">
@@ -8840,6 +8840,24 @@ v
 \layout Standard
 
 Print gpvo version information and exit
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+x FILE
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Export symbols to an include file.
 \end_inset 
 </cell>
 </row>
