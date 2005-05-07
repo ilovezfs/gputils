@@ -34,6 +34,11 @@ extern struct gpvo_state {
   int dump_flags; 		/* when bit set then print that section */	
   gp_boolean suppress_names;	/* suppress filenames when 1 */ 
   char *filename;		/* object file name */
+  struct {
+    FILE *f;			/* include file output */
+    gp_boolean enabled;		/* include file enable */
+    char *filename;		/* include file name */
+  } export;
   gp_object_type *object;	/* formatted object file */
   gp_binary_type *file;		/* binary object file */
 } state;

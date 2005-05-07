@@ -1,3 +1,6 @@
+2005-05-06 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [gpvo] Added symbol export feature.
+
 2005-05-05 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gpal] Removed gpal until it reaches alpha status.
   * [libgputils] Fixed pointer bug in symbol removal function.
