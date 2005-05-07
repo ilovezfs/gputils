@@ -15,7 +15,7 @@ $(OUTPUT) : $(OBJECTS) $(SCRIPT)
 	gpasm -p 16f873 -c -M $< && mv $*.d $(DEPDIR)/$*.d
 
 clean:
-	-rm -f *.o *.lst *.map *.hex
+	-rm -f *.o *.cod *.lst *.map *.hex
 
 distclean: clean
 	-rm -Rf $(DEPDIR)
