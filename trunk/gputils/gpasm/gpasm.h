@@ -104,6 +104,7 @@ extern struct gpasm_state {
   unsigned int maxram;		/* Highest legal memory location */
   enum outfile
     codfile,			/* Symbol output file control */
+    depfile,			/* Dependency output file control */
     hexfile,			/* Hex output file control */
     lstfile,			/* List output file control */
     objfile;			/* Relocatable object file control */
@@ -139,9 +140,19 @@ extern struct gpasm_state {
   char *srcfilename,		/* Source (.asm) file name */
     basefilename[BUFSIZ],	/* basename for generating hex,list,symbol filenames */
     codfilename[BUFSIZ],	/* Symbol (.cod) file name */
+    depfilename[BUFSIZ],	/* Dependency (.d) file name */
     hexfilename[BUFSIZ],	/* Hex (.hex) file name */
     lstfilename[BUFSIZ],	/* List (.lst) file name */
     objfilename[BUFSIZ];	/* Object (.o) file name */
+  struct {			/* Symbol file state: */
+    FILE *f;			/*   Symbol file output */
+    gp_boolean enabled;		/*   true if symbol file is enabled */
+    int emitting;               /*   flag indicating when an opcode is emitted */
+  } cod;
+  struct {			/* Dep file state: */
+    FILE *f;			/*   Dep file output */
+    gp_boolean enabled;		/*   true if dep file is enabled */
+  } dep;
   struct {			/* List file state: */
     FILE *f;			/*   List file output */
     unsigned int
@@ -175,16 +186,11 @@ extern struct gpasm_state {
     char subtitle_name[80];	/*   given in SUBTITLE directive */
     int tabstop;		/*   tab-stop distance */
   } lst;
-  struct {			/* Symbol file state: */
-    FILE *f;			/*   Symbol file output */
-    gp_boolean enabled;		/*   nonzero if symbol file is enabled */
-    int emitting;               /*   flag indicating when an opcode is emitted */
-  } cod;
   struct {			/* Object file state: */
     gp_object_type *object;	/*   Object file */
     gp_section_type *section;	/*   Current section */
     int section_num;		/*   Current section number */
-    gp_boolean enabled;		/*   nonzero if object file is enabled */
+    gp_boolean enabled;		/*   true if object file is enabled */
     char new_sec_name[80];	/*   new section name */
     int new_sec_addr;		/*   new section name */
     int new_sec_flags;		/*   new section name */

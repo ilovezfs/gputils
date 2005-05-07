@@ -33,6 +33,7 @@ Boston, MA 02111-1307, USA.  */
 #include "gpasm.h"
 #include "parse.h"
 #include "scan.h"
+#include "deps.h"
 #include "gperror.h"
 #include "directive.h"
 #include "evaluate.h"
@@ -563,6 +564,7 @@ void open_src(char *name, int isinclude)
 
   state.src = new;
   state.src->fc = add_file(ft_src, new->name); 
+  deps_add(new->name);
 
   if (!isinclude) {
     /* it is the top level file so initialize the lexer */

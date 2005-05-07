@@ -25,6 +25,7 @@ Boston, MA 02111-1307, USA.  */
 #include "gpasm.h"
 #include "gperror.h"
 #include "scan.h"
+#include "deps.h"
 #include "directive.h"
 #include "lst.h"
 #include "cod.h"
@@ -39,9 +40,8 @@ static char *processor_name = NULL;
 int yyparse(void);
 extern int yydebug;
 
-#define GET_OPTIONS "?D:I:La:cde:ghilmno:p:qr:uvw:y"
+#define GET_OPTIONS "?D:I:a:cde:ghilLmMno:p:qr:uvw:y"
 
-/* Used: acdDehiIlmopqrwv */
 static struct option longopts[] =
 {
   { "define",      1, 0, 'D' },
@@ -53,9 +53,10 @@ static struct option longopts[] =
   { "debug-info",  0, 0, 'g' },
   { "help",        0, 0, 'h' },
   { "ignore-case", 0, 0, 'i' },
-  { "force-list",  0, 0, 'L' },
   { "list-chips",  0, 0, 'l' },
+  { "force-list",  0, 0, 'L' },
   { "dump",        0, 0, 'm' },
+  { "deps",        0, 0, 'M' },
   { "dos",         0, 0, 'n' },
   { "output",      1, 0, 'o' },
   { "processor",   1, 0, 'p' },
@@ -104,6 +105,7 @@ init(void)
   state.maxram = (MAX_RAM - 1);
 
   state.codfile = normal;
+  state.depfile = suppress;
   state.hexfile = normal;
   state.lstfile = normal;
   state.objfile = suppress;
@@ -116,6 +118,11 @@ init(void)
   
   state.processor = no_processor;
   state.processor_chosen = 0;
+
+  state.cod.enabled = false;
+  state.dep.enabled = false;
+  state.lst.enabled = false;
+  state.obj.enabled = false;
 
   state.obj.object = NULL;
   state.obj.section = NULL;
@@ -157,6 +164,7 @@ show_usage(void)
   printf("  -l, --list-chips               List supported processors.\n");
   printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -m, --dump                     Memory dump.\n");
+  printf("  -M, --deps                     Output dependency file.\n");
 #ifndef HAVE_DOS_BASED_FILE_SYSTEM
   printf("  -n, --dos                      Use DOS newlines in hex file.\n");
 #endif
@@ -265,6 +273,9 @@ process_args( int argc, char *argv[])
     case 'l':
       gp_dump_processor_list(true, 0);
       exit(0);
+      break;
+    case 'M':
+      state.depfile = normal;
       break;
     case 'm':
       state.memory_dump = true;
@@ -385,6 +396,7 @@ assemble(void)
   state.found_idlocs = false;
   coff_init();
   cod_init();
+  deps_init();
   lst_init();
   open_src(state.srcfilename, 0);
   if (!gp_debug_disable) {
@@ -416,8 +428,9 @@ assemble(void)
     lst_memory_map(state.i_memory);
   }
   
-  /* Finish off the object, listing, and symbol files*/
+  /* Finish off the object, dependency, listing, and symbol files*/
   coff_close_file();
+  deps_close();
   lst_close();
   if (state.processor_info)
     cod_close_file();
