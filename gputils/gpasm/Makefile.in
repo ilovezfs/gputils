@@ -55,9 +55,10 @@ ARFLAGS = cru
 libgpasm_a_AR = $(AR) $(ARFLAGS)
 libgpasm_a_LIBADD =
 am_libgpasm_a_OBJECTS = parse.$(OBJEXT) cod.$(OBJEXT) coff.$(OBJEXT) \
-	directive.$(OBJEXT) evaluate.$(OBJEXT) gpasm.$(OBJEXT) \
-	scan.$(OBJEXT) gperror.$(OBJEXT) lst.$(OBJEXT) macro.$(OBJEXT) \
-	processor.$(OBJEXT) special.$(OBJEXT) util.$(OBJEXT)
+	deps.$(OBJEXT) directive.$(OBJEXT) evaluate.$(OBJEXT) \
+	gpasm.$(OBJEXT) scan.$(OBJEXT) gperror.$(OBJEXT) lst.$(OBJEXT) \
+	macro.$(OBJEXT) processor.$(OBJEXT) special.$(OBJEXT) \
+	util.$(OBJEXT)
 libgpasm_a_OBJECTS = $(am_libgpasm_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
@@ -186,6 +187,7 @@ libgpasm_a_SOURCES = \
 	parse.y \
 	cod.c \
 	coff.c \
+	deps.c \
 	directive.c \
 	evaluate.c \
 	gpasm.c \
@@ -198,6 +200,7 @@ libgpasm_a_SOURCES = \
 	util.c \
 	cod.h \
 	coff.h \
+	deps.h \
 	directive.h \
 	evaluate.h \
 	gpasm.h \
@@ -291,6 +294,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cod.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/coff.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/deps.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/directive.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/evaluate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpasm.Po@am__quote@

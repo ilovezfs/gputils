@@ -10,6 +10,7 @@ libgpasm_a_SOURCES=\
 	parse.y \
 	cod.c \
 	coff.c \
+	deps.c \
 	directive.c \
 	evaluate.c \
 	gpasm.c \
@@ -22,6 +23,7 @@ libgpasm_a_SOURCES=\
 	util.c \
 	cod.h \
 	coff.h \
+	deps.h \
 	directive.h \
 	evaluate.h \
 	gpasm.h \
