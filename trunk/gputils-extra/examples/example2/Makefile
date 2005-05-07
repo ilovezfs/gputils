@@ -1,20 +1,25 @@
 SCRIPT = 16f873.lkr
 OBJECTS =  mastri2c.o init.o i2ccomm.o
+DEPDIR = .deps
 OUTPUT = example2.hex
 
-all : $(OUTPUT)
+all : $(DEPDIR) $(OUTPUT)
+
+$(DEPDIR):
+	mkdir -p $(DEPDIR)
 
 $(OUTPUT) : $(OBJECTS) $(SCRIPT)
 	gplink --map -s $(SCRIPT) -o $(OUTPUT) $(OBJECTS)
 
 %.o : %.asm
-	gpasm -p 16f873 -c $<
+	gpasm -p 16f873 -c -M $< && mv $*.d $(DEPDIR)/$*.d
 
 clean:
-	rm -f *.o *.lst *.map *.hex
+	-rm -f *.o *.lst *.map *.hex
 
-mastri2c.o : mastri2c.asm mastri2c.inc i2ccomm1.inc flags.inc
-init.o : init.asm
-i2ccomm.o : i2ccomm.asm i2ccomm.inc i2ccomm1.inc flags.inc
+distclean: clean
+	-rm -Rf $(DEPDIR)
 
+# Dependencies
+-include $(DEPDIR)/*.d
 
