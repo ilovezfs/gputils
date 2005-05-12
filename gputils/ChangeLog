@@ -1,3 +1,6 @@
+2005-05-11 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [gpstrip] Allow multiple input files.
+
 2005-05-07 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gpasm] Generate dependency file.
 

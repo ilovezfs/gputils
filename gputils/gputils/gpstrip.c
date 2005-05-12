@@ -213,7 +213,7 @@ add_name(struct symbol_table *table, char *name)
 
 void show_usage(void)
 {
-  printf("Usage: gpstrip [options] file\n");
+  printf("Usage: gpstrip [options] file(s)\n");
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -g, --strip-debug                     Strip debug symbols.\n");
   printf("  -h, --help                            Show this usage message.\n");
@@ -318,75 +318,75 @@ int main(int argc, char *argv[])
       break;
   }
 
-  if ((optind + 1) == argc) {
-    state.input_file = argv[optind];
-  } else {
-    usage = 1;
-  }
-
-  if (usage) {
+  if ((optind == argc) || (usage)) {
     show_usage();
   }
 
-  if (gp_identify_coff_file(state.input_file) != object_file) {
-    gp_error("\"%s\" is not a valid object file", state.input_file);
-    exit(1);
+  for ( ; optind < argc; optind++) {
+    state.input_file = argv[optind];
+
+    if (gp_identify_coff_file(state.input_file) != object_file) {
+      gp_error("\"%s\" is not a valid object file", state.input_file);
+      exit(1);
+    }
+
+    state.object = gp_read_coff(state.input_file);
+
+    if (state.object) {
+      remove_sections();
+      remove_symbols();
+    
+      if (state.strip_all) {
+        strip_all();
+      }
+
+      if (state.strip_debug) {
+        if (state.strip_all) {
+          gp_message("strip debug ignored");
+        } else {
+          strip_debug();
+        }
+      }
+
+      if (state.strip_unneeded) {
+        if (state.strip_all) {
+          gp_message("strip unneeded ignored");
+        } else {
+          strip_unneeded();
+        }
+      }
+
+      if (state.discard_all) {
+        if (state.strip_all) {
+          gp_message("discard all ignored");
+        } else {
+          discard_all();
+        }
+      }
+
+      if (state.output_file) {
+        state.object->filename = state.output_file;
+      }
+
+      if (!state.preserve_dates) {
+        /* FIXME: need to update the output file dates */
+        state.object->time = (long)time(NULL);
+      }
+    
+      if (gp_num_errors == 0) {
+        /* no errors have occured so write the file */
+        if (gp_write_coff(state.object, 0))
+          gp_error("system error while writing object file");
+      } else if (state.output_file) {
+        /* a new file is being written, but errors have occurred, delete
+           the file if it exists */
+        unlink(state.output_file);
+      }
+
+      /* FIXME: free state.output_file */
+    }
   }
 
-  state.object = gp_read_coff(state.input_file);
-
-  if (state.object) {
-    remove_sections();
-    remove_symbols();
-    
-    if (state.strip_all) {
-      strip_all();
-    }
-
-    if (state.strip_debug) {
-      if (state.strip_all) {
-        gp_message("strip debug ignored");
-      } else {
-        strip_debug();
-      }
-    }
-
-    if (state.strip_unneeded) {
-      if (state.strip_all) {
-        gp_message("strip unneeded ignored");
-      } else {
-        strip_unneeded();
-      }
-    }
-
-    if (state.discard_all) {
-      if (state.strip_all) {
-        gp_message("discard all ignored");
-      } else {
-        discard_all();
-      }
-    }
-
-    if (state.output_file) {
-      state.object->filename = state.output_file;
-    }
-
-    if (!state.preserve_dates) {
-      /* FIXME: need to update the output file dates */
-      state.object->time = (long)time(NULL);
-    }
-    
-    if (gp_num_errors == 0) {
-      /* no errors have occured so write the file */
-      if (gp_write_coff(state.object, 0))
-        gp_error("system error while writing object file");
-    } else if (state.output_file) {
-      /* a new file is being written, but errors have occurred, delete
-         the file if it exists */
-      unlink(state.output_file);
-    }
-
-  }
 
   if (gp_num_errors)
     return EXIT_FAILURE;
