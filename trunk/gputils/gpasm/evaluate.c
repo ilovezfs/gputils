@@ -285,7 +285,13 @@ gpasmVal evaluate(struct pnode *p)
       } else {
         return p0 / p1;
       }
-    case '%':      return p0 % p1;
+    case '%':
+      if (p1 == 0){
+        gperror(GPE_DIVBY0, NULL);
+        return 0;
+      } else {
+        return p0 % p1;
+      }
     case '&':      return p0 & p1;
     case '|':      return p0 | p1;
     case '^':      return p0 ^ p1;

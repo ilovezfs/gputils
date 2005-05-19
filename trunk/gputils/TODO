@@ -22,7 +22,6 @@ gpasm
   * Add relocations for the difference between symbols in the same section.
   * Allow multiple symbols with the same name in different sections of COFF
     asm files.
-  * generate dependencies
   * Allow expressions in .direct.  Reduce to operators, numbers, and controls.
 
 gplink
