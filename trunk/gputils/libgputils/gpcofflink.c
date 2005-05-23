@@ -126,31 +126,6 @@ gp_link_add_symbols(struct symbol_table *definition,
   return 0;
 }
 
-/* Remove any weak symbols in the object. */
-
-void
-gp_cofflink_remove_weak(gp_object_type *object)
-{
-  gp_symbol_type *symbol;
-
-  gp_debug("removing weak symbols from %s", object->filename);
-
-  /* Search the symbol table for extern symbols. */
-  symbol = object->symbols;
-  while (symbol != NULL) {
-    if ((symbol->class == C_EXT) && 
-        (symbol->section_number == N_UNDEF) &&
-        (!gp_coffgen_has_reloc(object, symbol))) {
-      gp_debug("  removed weak symbol \"%s\"", symbol->name);
-      gp_coffgen_delsymbol(object, symbol);
-    }
-
-    symbol = symbol->next;
-  }
-
-  return;
-}
-
 /* Combine all sections and symbols from all objects into one object file. */
 
 void
@@ -197,6 +172,63 @@ gp_cofflink_combine_objects(gp_object_type *object)
 
   /* FIXME: breaking the chain isn't good */
   object->next = NULL;
+
+  return;
+}
+
+/* Cleanup the symbol table after combining objects. */
+
+void 
+gp_cofflink_clean_table(gp_object_type *object,
+                        struct symbol_table *symbols)
+{
+  gp_section_type    *section = object->sections;
+  gp_reloc_type      *relocation;
+  gp_symbol_type *symbol;
+  gp_coffsymbol_type *var;
+  struct symbol      *sym;
+  gp_symbol_type *previous = NULL;
+
+  gp_debug("cleaning symbol table");
+
+  /* point all relocations to the symbol definitions */
+  while (section != NULL) {
+    relocation = section->relocations;
+    while (relocation != NULL) {
+      symbol = relocation->symbol;
+      if ((symbol->class == C_EXT) && 
+          (symbol->section_number == N_UNDEF)) {
+        /* This is an external symbol defined elsewhere */
+        sym = get_symbol(symbols, symbol->name);
+        assert(sym != NULL);
+        var = get_symbol_annotation(sym);
+        assert(var != NULL);	  
+        relocation->symbol = var->symbol;
+      }
+      relocation = relocation->next;
+    }
+    section = section->next;
+  }
+
+  symbol = object->symbols;
+  while (symbol != NULL) {
+    if ((symbol->class == C_EXT) && 
+        (symbol->section_number == N_UNDEF)) {
+      /* This is an external symbol defined elsewhere */
+      if (previous == NULL) {
+        /* removing first symbol in the list */
+        object->symbols = object->symbols->next;
+      } else {
+        previous->next = symbol->next;
+      }
+      gp_debug("  removed symbol \"%s\"", symbol->name);
+      object->num_symbols--;
+    } else {
+      previous = symbol;
+    }
+
+    symbol = symbol->next;
+  }
 
   return;
 }
@@ -1496,14 +1528,11 @@ gp_cofflink_patch_addr(enum proc_class class,
    stripped from the sections. */
 
 void 
-gp_cofflink_patch(gp_object_type *object,
-                  struct symbol_table *symbols)
+gp_cofflink_patch(gp_object_type *object)
 {
   gp_section_type    *section = object->sections;
   gp_reloc_type      *relocation;
   gp_symbol_type     *symbol;
-  gp_coffsymbol_type *var;
-  struct symbol      *sym;
   int num_pages;
   int num_banks;
   int bsr_boundary = 0;
@@ -1522,18 +1551,6 @@ gp_cofflink_patch(gp_object_type *object,
       relocation = section->relocations;
       while (relocation != NULL) {
         symbol = relocation->symbol;
-        if ((symbol->class == C_EXT) && 
-            (symbol->section_number == 0)) {
-          /* This is an external symbol defined elsewhere */
-          sym = get_symbol(symbols, symbol->name);
-          assert(sym != NULL);
-          var = get_symbol_annotation(sym);
-          assert(var != NULL);	  
-          symbol = var->symbol;
-          gp_debug("  lookup symbol %s (%#x)",
-                   symbol->name,
-                   symbol->value);
-        }
         gp_cofflink_patch_addr(object->class,
 	                       num_pages,
                                num_banks,
@@ -1558,38 +1575,6 @@ gp_cofflink_patch(gp_object_type *object,
     }
 
     section = section->next;
-  }
-
-  return;
-}
-
-/* Cleanup the symbol table after relocating and linking. */
-
-void 
-gp_cofflink_clean_table(gp_object_type *object)
-{
-  gp_symbol_type *previous = NULL;
-  gp_symbol_type *symbol = object->symbols;
-
-  gp_debug("cleaning symbol table");
-
-  while (symbol != NULL) {
-    if ((symbol->class == C_EXT) && 
-        (symbol->section_number == N_UNDEF)) {
-      /* This is an external symbol defined elsewhere */
-      if (previous == NULL) {
-        /* removing first symbol in the list */
-        object->symbols = object->symbols->next;
-      } else {
-        previous->next = symbol->next;
-      }
-      gp_debug("  removed symbol \"%s\"", symbol->name);
-      object->num_symbols--;
-    } else {
-      previous = symbol;
-    }
-
-    symbol = symbol->next;
   }
 
   return;

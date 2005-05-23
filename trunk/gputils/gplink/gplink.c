@@ -64,7 +64,7 @@ void object_append(gp_object_type *file, char *name)
   }
 
   if (state.optimize.weak_symbols) {
-    gp_cofflink_remove_weak(file);
+    gp_coffopt_remove_weak(file);
   }
 
   return;
@@ -383,12 +383,14 @@ set_optimize_level(void)
 {
 
   /* default */
+  state.optimize.dead_sections = false;
   state.optimize.weak_symbols = false;
 
   switch(state.optimize.level) {
   case 3:
     /* fall through */
   case 2:
+    state.optimize.dead_sections = true;
     /* fall through */
   case 1:
     state.optimize.weak_symbols = true;
@@ -643,6 +645,10 @@ process_args( int argc, char *argv[])
     gplink_add_path(gp_lib_path);
   }
 
+  if (gp_lkr_path) {
+    gplink_add_path(gp_lkr_path);
+  }
+
   /* Open all objects and archives in the file list. */ 
   for ( ; optind < argc; optind++) {
     gplink_open_coff(argv[optind]);
@@ -720,6 +726,13 @@ linker(void)
 
   /* combine all object files into one object */
   gp_cofflink_combine_objects(state.object);
+
+  /* clean up symbol table */
+  gp_cofflink_clean_table(state.object, state.symbol.definition);
+
+  if (state.optimize.dead_sections) {
+    gp_coffopt_remove_dead_sections(state.object, 0);
+  }
 
   /* combine overlay sections */
   gp_cofflink_combine_overlay(state.object, 0);
@@ -803,10 +816,7 @@ linker(void)
   }
 
   /* patch raw data with the relocated symbol values */
-  gp_cofflink_patch(state.object, state.symbol.definition);
-
-  /* clean up symbol table */
-  gp_cofflink_clean_table(state.object);
+  gp_cofflink_patch(state.object);
 
   /* modify the executable object data */
   state.object->filename = strdup(state.objfilename);

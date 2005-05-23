@@ -176,6 +176,8 @@ _read_section_header(gp_object_type *object,
   section->relocations_tail = NULL;
   section->line_numbers = NULL;
   section->line_numbers_tail = NULL;
+  section->is_used = false;
+
 }
 
 static void 

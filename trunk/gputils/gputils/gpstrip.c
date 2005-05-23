@@ -48,8 +48,6 @@ remove_sections(void)
   int i;
   struct symbol *sym;
   gp_section_type *section;
-  gp_symbol_type *symbol = NULL;
-  gp_symbol_type *list = NULL;
 
   /* FIXME:  Check for relocations from other sections.  Error out if
      they exist */
@@ -64,16 +62,8 @@ remove_sections(void)
           gp_message("removing section \"%s\"", sym->name);
         }
 
-        /* remove all symbols for the section */
-        list = state.object->symbols;
-        while (list != NULL) {
-          /* advance the pointer so the symbol can be freed */
-          symbol = list;
-          list = list->next;
-          if (symbol->section == section) {
-            gp_coffgen_delsymbol(state.object, symbol);
-          }
-        }
+        /* remove the sections symbols */
+        gp_coffgen_delsectionsyms(state.object, section);
 
         /* remove the section */
         gp_coffgen_delsection(state.object, section);

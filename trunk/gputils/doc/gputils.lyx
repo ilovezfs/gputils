@@ -7134,7 +7134,7 @@ Where options can be one of:
 \added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
 
 \begin_inset  Tabular
-<lyxtabular version="3" rows="15" columns="2">
+<lyxtabular version="3" rows="16" columns="2">
 <features>
 <column alignment="left" valignment="top" leftline="true" width="0pt">
 <column alignment="block" valignment="top" leftline="true" rightline="true" width="4in">
@@ -7325,6 +7325,24 @@ Alternate name of hex output file
 
 \layout Standard
 
+O <level>
+\end_inset 
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Optimization level
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
 q
 \end_inset 
 </cell>
@@ -7465,6 +7483,57 @@ gplink can create a stack section at link time using a stack directive in
  gplink will create the section and two symbols.
  _stack points to the beginning of the stack section and _stack_end points
  to the end.
+\layout Section
+
+Optimization
+\layout Standard
+
+gplink is an optimizing linker.
+ There are four different optimzation levels.
+ Each level includes all optimizations of lower levels.
+ Increasing the level typically increases the link time required.
+\layout Subsection
+
+Level 0
+\layout Standard
+
+No optimizations.
+\layout Subsection
+
+Level 1 (default)
+\layout Subsubsection
+
+Weak Symbols
+\layout Standard
+
+A weak symbol is an external symbol declaration that isn't used.
+ These symbols are typically created by declaring functions or data that
+ isn't used.
+ Including these symbols might lead to extra objects being extracted from
+ archieves for symbol resolution.
+ That will increase the data and program memory used.
+ This optimzation removes all weak symbols when the object file is read
+ by the linker.
+\layout Subsection
+
+Level 2
+\layout Subsubsection
+
+Dead Sections
+\layout Standard
+
+A dead section is any section that doesn't have relocations pointing to
+ its symbols.
+ This means the code or data in the section is never accesed.
+ This optimization removes the section and its symbols to reduce program
+ and data memory.
+ This optimization will not remove any absolute sections.
+\layout Subsection
+
+Level 3
+\layout Standard
+
+No optimizations.
 \layout Chapter
 
 gplib

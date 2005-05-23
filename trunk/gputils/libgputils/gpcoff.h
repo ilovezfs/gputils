@@ -550,6 +550,9 @@ typedef struct gp_section_type
   /* tail of line numbers */
   gp_linenum_type *line_numbers_tail;
 
+  /* this section required for symbol resolution, only valid when linking */  
+  gp_boolean is_used;
+
   /* section number, only valid when writing coff file */  
   unsigned long number;
 

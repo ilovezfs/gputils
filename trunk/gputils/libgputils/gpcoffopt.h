@@ -1,5 +1,5 @@
-/* libgputils header
-   Copyright (C) 2001, 2002, 2003, 2004, 2005
+/* GNU PIC coff optimizing functions
+   Copyright (C) 2005
    Craig Franklin
 
 This file is part of gputils.
@@ -19,33 +19,10 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-#ifndef __LIBGPUTILS_H__
-#define __LIBGPUTILS_H__
+#ifndef __GPCOFFOPT_H__
+#define __GPCOFFOPT_H__
 
-/* library files */
-#include <gptypes.h>
-#include <gpsystem.h>
-#include <gpmessage.h>
-
-/* common files */
-#include <gpmemory.h>
-#include <gpopcode.h>
-#include <gpprocessor.h>
-#include <gpsymbol.h>
-#include <gpdis.h>
-#include <gpwritehex.h>
-#include <gpreadhex.h>
-
-/* COFF files */
-#include <gpcoff.h>
-#include <gparchive.h>
-#include <gpcoffgen.h>
-#include <gpcofflink.h>
-#include <gpcoffopt.h>
-#include <gpreadobj.h>
-#include <gpwriteobj.h>
-
-/* COD files */
-#include <gpcod.h>
+void gp_coffopt_remove_weak(gp_object_type *object);
+void gp_coffopt_remove_dead_sections(gp_object_type *object, int pass);
 
 #endif

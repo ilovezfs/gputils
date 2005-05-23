@@ -60,9 +60,10 @@ int gp_link_add_symbols(struct symbol_table *,
                         struct symbol_table *missing,
                         gp_object_type *object);
 
-void gp_cofflink_remove_weak(gp_object_type *object);
-
 void gp_cofflink_combine_objects(gp_object_type *object);
+
+void gp_cofflink_clean_table(gp_object_type *object, 
+                             struct symbol_table *symbols);
 
 void gp_cofflink_combine_overlay(gp_object_type *object, int remove_symbol);
 
@@ -99,9 +100,7 @@ void gp_cofflink_fill_pages(gp_object_type *object,
                             int byte_addr,
                             struct symbol_table *sections);
 
-void gp_cofflink_patch(gp_object_type *object, struct symbol_table *symbols);
-
-void gp_cofflink_clean_table(gp_object_type *object);
+void gp_cofflink_patch(gp_object_type *object);
 
 MemBlock *gp_cofflink_make_memory(gp_object_type *object);
 
