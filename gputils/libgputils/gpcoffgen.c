@@ -93,6 +93,11 @@ gp_coffgen_newsection(char *name)
   new->num_lineno = 0;
   new->line_numbers = NULL;
   new->line_numbers_tail = NULL;
+  new->is_used = false;
+  new->number = 0;
+  new->data_ptr = 0;
+  new->reloc_ptr = 0;
+  new->lineno_ptr = 0;
   new->next = NULL;
 
   return new;
@@ -120,6 +125,26 @@ gp_coffgen_addsection(gp_object_type *object, char *name)
   object->num_sections++;
 
   return new;
+}
+
+void
+gp_coffgen_delsectionsyms(gp_object_type *object, gp_section_type *section)
+{
+  gp_symbol_type *list;
+  gp_symbol_type *symbol;
+
+  /* remove all symbols for the section */
+  list = object->symbols;
+  while (list != NULL) {
+    /* advance the pointer so the symbol can be freed */
+    symbol = list;
+    list = list->next;
+    if (symbol->section == section) {
+      gp_coffgen_delsymbol(object, symbol);
+    }
+  }
+
+  return;
 }
 
 gp_section_type *

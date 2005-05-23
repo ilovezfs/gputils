@@ -44,6 +44,7 @@ extern struct gplink_state {
   enum proc_class class;
   struct {
     int level;
+    gp_boolean dead_sections;
     gp_boolean weak_symbols;
   } optimize;
   enum outfile

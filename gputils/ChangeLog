@@ -1,3 +1,7 @@
+2005-05-22 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [gplink] Remove dead sections from the object files.
+  * [gplink] Added default linker path to search paths.
+
 2005-05-18 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gpasm] Check for divide by zero on modulo operator.
 

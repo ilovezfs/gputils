@@ -34,6 +34,8 @@ gp_section_type *gp_coffgen_findsection(gp_object_type *object,
                                         char *name);
 gp_section_type *gp_coffgen_newsection(char *name);
 gp_section_type *gp_coffgen_addsection(gp_object_type *object, char *name);
+void gp_coffgen_delsectionsyms(gp_object_type *object,
+                               gp_section_type *section);
 gp_section_type *gp_coffgen_delsection(gp_object_type *object,
                                        gp_section_type *section);
 gp_reloc_type *gp_coffgen_addreloc(gp_section_type *section);

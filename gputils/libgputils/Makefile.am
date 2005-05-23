@@ -14,6 +14,7 @@ libgputils_a_SOURCES =\
 	gpcod.c \
 	gpcoffgen.c \
 	gpcofflink.c \
+	gpcoffopt.c \
 	gpdis.c \
 	gpmemory.c \
 	gpmessage.c \
@@ -30,6 +31,7 @@ libgputils_a_SOURCES =\
         gpcoff.h \
 	gpcoffgen.h \
 	gpcofflink.h \
+	gpcoffopt.h \
 	gpdis.h \
 	gpmemory.h \
 	gpmessage.h \
