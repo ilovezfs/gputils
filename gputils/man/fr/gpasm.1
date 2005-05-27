@@ -15,7 +15,7 @@ situé dans le répertoire doc de gputils.
 .SH DESCRIPTION
 .B gpasm
 est un assembleur pour les microcontrôleurs PIC (TM) de Microchip (TM).
-Son objectif est d'être compatible avec l'assembleur MPASM du fabriquant.
+Son objectif est d'être compatible avec l'assembleur MPASM du fabricant.
 .B gpasm
 est une partie de gputils. Consultez la page manuel gputils(1) pour avoir
 des détails sur les autres utilitaires GNU PIC.
@@ -35,6 +35,9 @@ utilisé. La valeur par défaut est inhx32.
 .B -c, --object 
 Produire en sortie un objet relogeable.
 .TP
+.B -d, --debug   
+Afficher les messages de debogage.
+.TP
 .B -D SYM=VAL, --define SYM=VAL   
 Définir SYM avec la valeur VAL. Ceci est équivalent à placer
 «\ #define SYM VAL\ » dans le code source.
@@ -45,6 +48,9 @@ les directives EXPAND et NOEXPAND. Cette option permet d'ignorer l'une ou
 l'autre directive. Lorsque «\ ON\ » est sélectionné, les macros sont toujours
 développées sans se soucier de la présence de NOEXPAND. De la même manière,
 «\ OFF\ » forcera les macros à ne pas être développées.
+.TP
+.B -g, --debug-info   
+Utiliser les directives de débogage pour COFF.
 .TP
 .B -h, --help
 Afficher un message d'usage.
@@ -111,7 +117,7 @@ Craig Franklin <craigfranklin@users.sourceforge.net>
 .PP
 Ce document est une traduction réalisée par Alain Portal
 <aportal AT univ-montp2 DOT fr> le 14 octobre 2004 et révisée
-le 6 janvier 2005.
+le 24 mai 2005.
 .PP
 L'équipe de traduction a fait le maximum pour réaliser une adaptation
 française de qualité. La version anglaise la plus à jour de ce document est

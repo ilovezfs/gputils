@@ -1,10 +1,10 @@
-.TH gpvc 1 "(c) 2002, 2003, 2004, 2005 Scott Dattalo"
+.TH gpstrip 1 "(c) 2005 Craig Franklin"
 
 .SH NOM
-gpvc - Visualiseur de fichiers COD GNU PIC
+gpstrip - retire les symboles d'un fichier objet
 
 .SH SYNOPSIS
-.B gpvc [options] fichier
+.B gpstrip [options] [fichier]
 
 .SH AVERTISSEMENT
 L'information de cette page de manuel est extraite de la documentation
@@ -13,39 +13,46 @@ documentation complète, reportez-vous au fichier «\ gputils.ps\ » (en anglais
 situé dans le répertoire doc de gputils.
 
 .SH DESCRIPTION
-.B gpvc
-est un visualiseur de fichiers COD pour les microcontrôleurs PIC (TM) de
-Microchip (TM). Ces fichiers contiennent des informations utilisées pour la
-simulation.
-.B gpvc
+.B gpstrip
+retire les symboles des fichiers objet GNU PIC
+.B gpstrip
 est une partie de gputils. Consultez la page manuel gputils(1) pour avoir
 des détails sur les autres utilitaires GNU PIC.
 
 .SH OPTIONS
 .TP
-.B -a, --all
-Afficher toutes les informations situées dans le fichier COD.
-.TP
-.B -d, --directory
-Afficher le répertoire des en-têtes.
-.TP
-.B -l, --listing
-Afficher le listage des sources.
-.TP
-.B -m, --message
-Afficher la zone de messages de débogage.
+.B -g, --strip-debug
+Éliminer les symboles de débogage.
 .TP
 .B -h, --help
-Afficher un message d'usage.
+Afficher ce message d'usage.
 .TP
-.B -r, --rom 
-Afficher la ROM.
+.B -k SYMBOL, --keep-symbol SYMBOLE
+Conserver le symbole SYMBOLE. 
 .TP
-.B -s, --symbols
-Afficher les symboles.
+.B -n SYMBOL, --strip-symbol SYMBOLE
+Supprimer le symbole SYMBOLE. 
+.TP
+.B -o FICHIER,, --output FICHIER,
+Nom alternatif du fichier de sortie.
+.TP
+.B -p, --preserve-dates
+Préserver les dates. 
+.TP
+.B -r SECTION, --remove-section SECTION
+Retirer la section SECTION. 
+.TP
+.B -s, --strip-all
+Retirer tous les symboles.
+.TP
+.B -u, --strip-unneeded
+Retirer les symboles qui ne sont pas nécessaires à la translation (NdT\ : relocation).
 .TP
 .B -v, --version
 Afficher la version.
+.TP
+.B -x, --discard-all
+Retirer les symboles non globaux.
 
 .SH VOIR AUSSI
 gputils(1)
@@ -56,17 +63,16 @@ Craig Franklin <craigfranklin@users.sourceforge.net>
 .SH TRADUCTION
 .PP
 Ce document est une traduction réalisée par Alain Portal
-<aportal AT univ-montp2 DOT fr> le 14 octobre 2004 et révisée
-le 24 mai 2005.
+<aportal AT univ-montp2 DOT fr> le 24 mai 2005.
 .PP
 L'équipe de traduction a fait le maximum pour réaliser une adaptation
 française de qualité. La version anglaise la plus à jour de ce document est
-toujours consultable via la commande\ : «\ \fBLANG=en\ man\ 1\ gpvc\fR\ ».
+toujours consultable via la commande\ : «\ \fBLANG=en\ man\ 1\ gpstrip\fR\ ».
 N'hésitez pas à signaler à l'auteur ou au traducteur, selon le cas, toute
 erreur dans cette page de manuel.
 
 .SH COPYRIGHT
-Copyright (C) 2002, 2003, 2004, 2005 Scott Dattalo
+Copyright (C) 2005 Craig Franklin
 
 Ce programme est un logiciel libre\ ; vous pouvez le redistribuer et/ou le
 modifier sous les termes de la licence GNU GPL telle que publiée par la Free
