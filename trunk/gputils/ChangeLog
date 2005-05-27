@@ -1,3 +1,6 @@
+2005-05-26 Alain Portal <aportal AT univ-montp2 DOT fr>
+  * [man] Updated French man pages.
+
 2005-05-22 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gplink] Remove dead sections from the object files.
   * [gplink] Added default linker path to search paths.
