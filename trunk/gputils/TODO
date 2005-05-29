@@ -11,7 +11,6 @@ gputils
   * Use dejagnu for testing.
 
 gpasm
-  * Change to byte addressing in 18xx devices in COD files for MPLAB.
   * Implement nested while loops.
   * Clean up the byte verses word, data memory/program memory stuff.
   * Move opcode generator from /gpasm/directive.c to 
@@ -25,7 +24,6 @@ gpasm
   * Allow expressions in .direct.  Reduce to operators, numbers, and controls.
 
 gplink
-  * Remove unused sections.
   * Removed unnecessary page and bank switches.
   * Peep-like optimization.  Consider using pcode from sdcc-pic14.
   * Partial linking.
