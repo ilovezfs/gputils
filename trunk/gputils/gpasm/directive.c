@@ -1042,7 +1042,7 @@ static gpasmVal do_direct(gpasmVal r,
     p= HEAD(TAIL(parms));
     if (p->tag == string) {
       if (strlen(p->value.string) < 255) {
-        direct_string = p->value.string;
+        direct_string = convert_escaped_char(p->value.string,'"');
       } else {
         gperror(GPE_UNKNOWN, "string must be less than 255 bytes long");
       }
