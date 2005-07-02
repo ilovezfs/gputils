@@ -76,6 +76,39 @@ int gpasm_magic(char *c)
   return c[0];
 }
 
+/*
+  convert_escaped_char(char *src,char c)
+  Input: pointer to a string
+  Output returns the input string with escaped char converted to a regular char
+
+  For example if escaped character is a double quote then:
+
+  This is a escaped quote: \"
+
+  is translated to:
+
+  This is a escaped quote: "
+
+*/
+char *
+convert_escaped_char(char *str, char c)
+{
+  if (!str)
+    return str;
+
+  char *src  = str;
+  char *dest = str;
+
+  while (*src) {
+    if (*src =='\\' && src[1] == c)
+      src++;
+    *dest++ = *src++;
+  }
+  *dest=0;
+
+  return str;
+}
+
 /* Determine the value of the escape char pointed to by ps.  Return a pointer
 to the next character. */ 
 
