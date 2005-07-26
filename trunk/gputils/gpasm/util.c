@@ -93,11 +93,11 @@ int gpasm_magic(char *c)
 char *
 convert_escaped_char(char *str, char c)
 {
-  if (!str)
-    return str;
-
   char *src  = str;
   char *dest = str;
+
+  if (!str)
+    return str;
 
   while (*src) {
     if (*src =='\\' && src[1] == c)

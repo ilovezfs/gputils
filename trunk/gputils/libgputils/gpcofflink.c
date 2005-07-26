@@ -594,6 +594,30 @@ _read_table_data(gp_section_type *section, int org)
   return data;
 }
 
+/* create the symbol for the start address of the table */
+
+void
+gp_cofflink_make_cinit(gp_object_type *object)
+{
+  gp_symbol_type *symbol;
+
+  /* create the symbol for the start address of the table */
+  symbol = gp_coffgen_findsymbol(object, "_cinit");
+  if ((symbol != NULL) && (symbol->section_number > 0)) {
+    gp_error("_cinit symbol already exists");
+  } else {
+    symbol = gp_coffgen_addsymbol(object);
+    symbol->name           = strdup("_cinit");
+    symbol->value          = 0;
+    symbol->section_number = 1;
+    symbol->section        = NULL;
+    symbol->type           = T_NULL;
+    symbol->class          = C_EXT;
+  }
+
+  return;
+}
+
 /* create ROM data for initialized data sections */
 
 void
@@ -639,19 +663,10 @@ gp_cofflink_make_idata(gp_object_type *object)
       _write_table_data(new, 0, insn, count);
     }
 
-    /* create the symbol for the start address of the table */
+    /* update the section pointer in _cinit */
     symbol = gp_coffgen_findsymbol(object, "_cinit");
-    if ((symbol != NULL) && (symbol->section_number > 0)) {
-      gp_error("_cinit symbol already exists");
-    } else {
-      symbol = gp_coffgen_addsymbol(object);
-      symbol->name           = strdup("_cinit");
-      symbol->value          = 0;
-      symbol->section_number = 1;
-      symbol->section        = new;
-      symbol->type           = T_NULL;
-      symbol->class          = C_EXT;
-    }
+    assert(symbol != NULL);
+    symbol->section = new;
 
   }
 

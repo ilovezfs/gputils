@@ -71,6 +71,8 @@ void gp_cofflink_make_stack(gp_object_type *object, int num_bytes);
 
 void gp_cofflink_merge_sections(gp_object_type *object, int byte_addr);
 
+void gp_cofflink_make_cinit(gp_object_type *object);
+
 void gp_cofflink_make_idata(gp_object_type *object);
 
 void gp_add_cinit_section(gp_object_type *object, int byte_addr);

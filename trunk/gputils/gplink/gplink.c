@@ -719,13 +719,20 @@ linker(void)
      required to resolve external references. */
   build_tables();  
 
+  /* combine all object files into one object */
+  gp_cofflink_combine_objects(state.object);
+
   /* add the stack section */
   if (state.has_stack) {
     gp_cofflink_make_stack(state.object, state.stack_size);
+    add_linker_symbol("_stack");
+    add_linker_symbol("_stack_end");
   }
 
-  /* combine all object files into one object */
-  gp_cofflink_combine_objects(state.object);
+  if (state.has_idata) {
+    gp_cofflink_make_cinit(state.object);
+    add_linker_symbol("_cinit");
+  }
 
   /* clean up symbol table */
   gp_cofflink_clean_table(state.object, state.symbol.definition);
@@ -805,15 +812,6 @@ linker(void)
 
   i_memory_free(data);
   i_memory_free(program);
-
-  if (state.has_idata) {
-    add_linker_symbol("_cinit");
-  }
-
-  if (state.has_stack) {
-    add_linker_symbol("_stack");
-    add_linker_symbol("_stack_end");
-  }
 
   /* patch raw data with the relocated symbol values */
   gp_cofflink_patch(state.object);
