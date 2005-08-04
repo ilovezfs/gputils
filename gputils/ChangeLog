@@ -1,3 +1,10 @@
+2005-08-03 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * gputils 0.13.3 Released.
+  * [gpasm] Added more arity checks to bit special instruction mnemonics.
+
+2005-08-03 Raphael Neider <tecodev@users.sourceforge.net>
+  * [gplink] Allow processor mismatch warning to be disabled.
+
 2005-07-25 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gplink] Changed order of stack and cinit functions to fix bugs.
 

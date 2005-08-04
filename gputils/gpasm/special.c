@@ -227,7 +227,9 @@ static gpasmVal do_movfw(gpasmVal r,
 		         struct pnode *parms)
 {
 
-  do_insn("movf", add_symbol_constant(parms, 0));
+  if (enforce_arity(arity, 1)) {
+    do_insn("movf", add_symbol_constant(parms, 0));
+  } 
 
   return r;
 }
@@ -238,8 +240,12 @@ static gpasmVal do_negf(gpasmVal r,
 		        struct pnode *parms)
 {
 
-  do_insn("comf", add_symbol_constant(parms, 1));
-  do_insn("incf", parms);
+  if ((arity == 1) || (arity == 2)) {
+    do_insn("comf", add_symbol_constant(parms, 1));
+    do_insn("incf", parms);
+  } else {
+    enforce_arity(arity, 2);
+  }
 
   return r;
 }
@@ -409,7 +415,9 @@ static gpasmVal do_tstf(gpasmVal r,
 		        struct pnode *parms)
 {
 
-  do_insn("movf", add_symbol_constant(parms, 1));
+  if (enforce_arity(arity, 1)) {
+    do_insn("movf", add_symbol_constant(parms, 1));
+  }
 
   return r;
 }

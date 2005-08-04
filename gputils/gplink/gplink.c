@@ -29,6 +29,7 @@ Boston, MA 02111-1307, USA.  */
 #include "map.h"
 
 struct gplink_state state;
+static int processor_mismatch_warning = 1;
 
 int yyparse(void);
 extern int yydebug;
@@ -57,7 +58,8 @@ void object_append(gp_object_type *file, char *name)
     
     if (file->class != state.class) {
       gp_error("processor family mismatch in \"%s\"", file->filename);
-    } else if (file->processor != state.processor) {
+    } else if ((0 != processor_mismatch_warning) &&
+               (file->processor != state.processor)) {
       gp_warning("processor mismatch in \"%s\"", file->filename);
     }
 
@@ -404,25 +406,26 @@ set_optimize_level(void)
   return;
 }
 
-#define GET_OPTIONS "?a:cdf:hI:lmo:O:qrs:t:v"
+#define GET_OPTIONS "?a:cdf:hI:lmo:O:qrs:t:vw"
 
   static struct option longopts[] =
   {
-    { "hex-format",  1, 0, 'a' },
-    { "object",      0, 0, 'c' },
-    { "debug",       0, 0, 'd' },
-    { "fill",        1, 0, 'f' },
-    { "help",        0, 0, 'h' },
-    { "include",     1, 0, 'I' },
-    { "no-list",     0, 0, 'l' },
-    { "map",         0, 0, 'm' },
-    { "output",      1, 0, 'o' },
-    { "optimize",    1, 0, 'O' },
-    { "quiet",       0, 0, 'q' },
-    { "use-shared",  0, 0, 'r' },
-    { "script",      1, 0, 's' },
-    { "stack",       1, 0, 't' },
-    { "version",     0, 0, 'v' },
+    { "hex-format",          1, 0, 'a' },
+    { "object",              0, 0, 'c' },
+    { "debug",               0, 0, 'd' },
+    { "fill",                1, 0, 'f' },
+    { "help",                0, 0, 'h' },
+    { "include",             1, 0, 'I' },
+    { "no-list",             0, 0, 'l' },
+    { "map",                 0, 0, 'm' },
+    { "output",              1, 0, 'o' },
+    { "optimize",            1, 0, 'O' },
+    { "quiet",               0, 0, 'q' },
+    { "use-shared",          0, 0, 'r' },
+    { "script",              1, 0, 's' },
+    { "stack",               1, 0, 't' },
+    { "version",             0, 0, 'v' },
+    { "processor-mismatch",  0, 0, 'w' },
     { 0, 0, 0, 0 }
   };
 
@@ -493,6 +496,7 @@ void show_usage(void)
   printf("  -s FILE, --script FILE         Linker script.\n");
   printf("  -t SIZE, --stack SIZE          Create a stack section.\n");
   printf("  -v, --version                  Show version.\n");
+  printf("  -w, --processor-mismatch       Disable \"processor mismatch\" warning.\n");
   printf("\n");
 #ifdef USE_DEFAULT_PATHS
   if (gp_lkr_path) {
@@ -609,6 +613,10 @@ process_args( int argc, char *argv[])
     case 'v':
       fprintf(stderr, "%s\n", GPLINK_VERSION_STRING);
       exit(0);
+      break;
+    case 'w':
+      processor_mismatch_warning = 0;
+      break;
     }
     if (usage)
       break;
