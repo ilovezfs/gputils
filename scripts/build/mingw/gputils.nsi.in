@@ -113,6 +113,7 @@ Section "gputils application files"
   SectionIn 1 2 RO
   SetOutPath "$INSTDIR\bin"
   File "${GPUTILS_ROOT}\bin\gpasm.exe"
+  File "${GPUTILS_ROOT}\bin\gpdasm.exe"
   File "${GPUTILS_ROOT}\bin\gplink.exe"
   File "${GPUTILS_ROOT}\bin\gplib.exe"
   File "${GPUTILS_ROOT}\bin\gpstrip.exe"
@@ -220,6 +221,7 @@ Section Uninstall
   Call un.DeleteEnvStr
 
   Delete "$INSTDIR\bin\gpasm.exe"
+  Delete "$INSTDIR\bin\gpdasm.exe"
   Delete "$INSTDIR\bin\gplink.exe"
   Delete "$INSTDIR\bin\gplib.exe"
   Delete "$INSTDIR\bin\gpstrip.exe"
