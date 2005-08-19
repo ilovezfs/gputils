@@ -1,3 +1,6 @@
+2005-08-18 Borut Razem <borutr@users.sourceforge.net>
+  * [gplib] Allow forward and back slashes as directory delimiters.
+
 2005-08-03 Craig Franklin <craigfranklin@users.sourceforge.net>
   * gputils 0.13.3 Released.
   * [gpasm] Added more arity checks to bit special instruction mnemonics.
@@ -7,6 +10,9 @@
 
 2005-07-25 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gplink] Changed order of stack and cinit functions to fix bugs.
+
+2005-07-02 Scott Dattalo <scott@dattalo.com>
+  * [gpasm] Quoted strings can now be passed in a .direct directive.
 
 2005-06-14 Alain Portal <aportal AT univ-montp2 DOT fr>
   * [man] Updated French man pages.

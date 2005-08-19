@@ -48,14 +48,22 @@ object_name(char *file_name)
 {
   char *name;
 
-  name = strrchr(file_name, PATH_CHAR);
-  if (name) {
-    name++;
-  } else {
-    name = file_name;
+#ifdef HAVE_DOS_BASED_FILE_SYSTEM
+  for (name = file_name + strlen(file_name) - 1; name >= file_name; --name) {
+    if (*name == UNIX_PATH_CHAR || *name == PATH_CHAR) {
+      return ++name;
+    }
   }
 
-  return name;
+  return file_name;
+#else
+  name = strrchr(file_name, PATH_CHAR);
+  if (name) {
+    return ++name;
+  } else {
+    return file_name;
+  }
+#endif
 }
 
 static gp_boolean
@@ -64,13 +72,16 @@ has_path(char *file_name)
   char *name;
 
   name = strrchr(file_name, PATH_CHAR);
+#ifdef HAVE_DOS_BASED_FILE_SYSTEM
+  if (!name)
+    name = strrchr(file_name, UNIX_PATH_CHAR);
+#endif
 
   if (name) {
     return true;
   } else {
     return false;  
   }
-
 }
 
 void show_usage(void)
