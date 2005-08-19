@@ -68,6 +68,7 @@ Boston, MA 02111-1307, USA.  */
 #include <errno.h>
 
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
+  #define UNIX_PATH_CHAR '/'
   #define PATH_CHAR '\\'
   #define COPY_CHAR "\\"
 #else
