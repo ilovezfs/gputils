@@ -420,14 +420,12 @@ gp_processor_bsr_boundary(enum pic_processor processor)
     case pic18f242:
     case pic18f2420:
     case pic18f2439:
-    case pic18f2455:
     case pic18f2510:
     case pic18f2515:
     case pic18f252:
     case pic18f2520:
     case pic18f2525:
     case pic18f2539:
-    case pic18f2550:
     case pic18f2610:
     case pic18f2620:
     case pic18f4220:
@@ -436,14 +434,12 @@ gp_processor_bsr_boundary(enum pic_processor processor)
     case pic18f442:
     case pic18f4420:
     case pic18f4439:
-    case pic18f4455:
     case pic18f4510:
     case pic18f4515:
     case pic18f452:
     case pic18f4520:
     case pic18f4525:
     case pic18f4539:
-    case pic18f4550:
     case pic18f4610:
     case pic18f4620:
     case pic18f6525:
@@ -458,16 +454,20 @@ gp_processor_bsr_boundary(enum pic_processor processor)
       break;
     case pic18f2331:
     case pic18f2431:
+    case pic18f2455:
     case pic18f248:
     case pic18f2480:
     case pic18f258:
+    case pic18f2550:
     case pic18f2580:
     case pic18f2585:
     case pic18f2680:
     case pic18f4331:
     case pic18f4431:
+    case pic18f4455:
     case pic18f448:
     case pic18f4480:
+    case pic18f4550:
     case pic18f458:
     case pic18f4580:
     case pic18f4585:
