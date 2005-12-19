@@ -133,8 +133,8 @@ _copy_config(void)
   int stop;
   int word;
   gp_boolean found_break;
-  
-  if (state.obj.section == NULL)
+
+  if(!state.obj.enabled)
     return;
   
   if (state.found_config) {
@@ -145,6 +145,7 @@ _copy_config(void)
     assert(config_section != NULL);
 
     if(_16bit_core) {
+      config_section->size = 0;    
       start = config_section->address >> 1;
       stop = CONFIG7H >> 1;
       for (i = start; i <= stop; i++) {
@@ -194,6 +195,7 @@ _copy_config(void)
     assert(config_section != NULL);  
 
     if(_16bit_core) {
+      config_section->size = 0;    
       start = config_section->address >> 1;
       stop = IDLOC7 >> 1;
       found_break = false;
