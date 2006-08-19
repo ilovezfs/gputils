@@ -34,6 +34,5 @@ DATABANK   NAME=sfr3     START=0x180    END=0x18F    PROTECTED
 
 SECTION    NAME=PROG1    ROM=page0      // ROM code space - page0
 SECTION	   NAME=IDLOCS	 ROM=.idlocs	// ID locations
-SECTION    NAME=CONFIG   ROM=.config	// Configuration bits location
 SECTION    NAME=DEEPROM  ROM=eedata     // Data EEPROM
 

@@ -24,6 +24,5 @@ SHAREBANK  NAME=gpr0nobnk START=0xA0     END=0xDF
 SECTION    NAME=PROG     ROM=page       // ROM code space
 SECTION    NAME=OSCVAL   ROM=.oscval    // Oscillator Cal Value
 SECTION    NAME=IDLOCS   ROM=.idlocs    // ID locations
-SECTION    NAME=CONFIG   ROM=.config    // Configuration bits location
 SECTION    NAME=DEEPROM  ROM=eedata     // Data EEPROM
 

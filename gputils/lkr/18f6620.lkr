@@ -2,6 +2,9 @@
 // File: 18f6620.lkr
 // Sample linker script for the PIC18F6620 processor
 
+// Not intended for use with MPLAB C18.  For C18 projects,
+// use the linker scripts provided with that product.
+
 LIBPATH .
 
 CODEPAGE   NAME=vectors    START=0x0            END=0x29           PROTECTED
@@ -28,5 +31,3 @@ DATABANK   NAME=gpr12      START=0xC00          END=0xCFF
 DATABANK   NAME=gpr13      START=0xD00          END=0xDFF
 DATABANK   NAME=gpr14      START=0xE00          END=0xEFF
 ACCESSBANK NAME=accesssfr  START=0xF60          END=0xFFF          PROTECTED
-
-SECTION    NAME=CONFIG     ROM=config

@@ -41,7 +41,6 @@ SECTION    NAME=DEBUG    ROM=debug       // ICD debug exec
 SECTION    NAME=IDLOCS   ROM=.idlocs     // ID locations
 SECTION    NAME=ICD_INST ROM=.icd_inst   // ICD instruction
 SECTION    NAME=DEVID    ROM=.devid      // device id
-SECTION    NAME=CONFIG   ROM=.config     // Configuration bits location
 SECTION    NAME=OSCVAL   ROM=.oscval     // Oscillator value 
 SECTION    NAME=TEST     ROM=.test       // Test program memory 
 SECTION    NAME=DEEPROM  ROM=eedata      // Data EEPROM

@@ -3,7 +3,7 @@
 LIBPATH  .
 
 CODEPAGE   NAME=page     START=0x0      END=0x1FF
-CODEPAGE   NAME=.config  START=0x3FF    END=0x3FF    PROTECTED
+CODEPAGE   NAME=.config  START=0xFFF    END=0xFFF    PROTECTED
 CODEPAGE   NAME=.idlocs  START=0x200    END=0x203    PROTECTED
 
 DATABANK   NAME=sfrs     START=0x0      END=0x6      PROTECTED
@@ -12,4 +12,4 @@ DATABANK   NAME=gprs     START=0x7      END=0x1F
 
 SECTION    NAME=PROG     ROM=page       // ROM code space
 SECTION    NAME=IDLOCS   ROM=.idlocs    // ID locations
-SECTION    NAME=CONFIG   ROM=.config    // Configuration bits location
+

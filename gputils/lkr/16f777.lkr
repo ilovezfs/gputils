@@ -35,5 +35,4 @@ SECTION    NAME=PROG3     ROM=page3       // ROM code space
 SECTION    NAME=IDLOCS    ROM=.idlocs     // ID locations
 SECTION    NAME=TEST_VECT ROM=.test_vect  // Test vector 
 SECTION    NAME=DEVICEID  ROM=.device_id  // Device ID
-SECTION    NAME=CONFIG    ROM=.config     // Configuration bits location
 SECTION    NAME=TEST      ROM=.test       // Test 
