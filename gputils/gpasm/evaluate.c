@@ -259,7 +259,7 @@ gpasmVal evaluate(struct pnode *p)
     case '~':
       return ~evaluate(p->value.unop.p0);
     case UPPER:
-      return (evaluate(p->value.unop.p0) >> 16) & 0x3f;
+      return (evaluate(p->value.unop.p0) >> 16) & 0xff;
     case HIGH:
       return (evaluate(p->value.unop.p0) >> 8) & 0xff;
     case LOW:

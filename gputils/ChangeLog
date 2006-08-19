@@ -1,3 +1,9 @@
+2006-08-19 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * [gputils] Updated header files and linker scripts.
+  * {gputils] Fixed UPPER to mask with 0xff instead of 0x3f.
+  * [gpasm] Mask MOVLB with 0xf instead of 0xff.
+  * [gpasm] Fixed default access bit for extended pic16e.
+
 2005-12-19 Craig Franklin <craigfranklin@users.sourceforge.net>
   * [gpasm] Fixed 18xx config bug when config the last section.
 

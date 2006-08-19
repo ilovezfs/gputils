@@ -2669,7 +2669,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
 	  if (strcasecmp(i->name, "movlb") == 0) {
-	    emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), 0xff);
+	    emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), 0xf);
 	  } else {
 	    emit_check(i->opcode, reloc_evaluate(p, RELOCT_LOW), 0xff);
 	  }
@@ -3180,9 +3180,16 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  reloc_evaluate(p, RELOCT_ACCESS);
 
 	  /* Default access (use the BSR unless access is to special registers) */
-	  if ((file < state.device.bsr_boundary) || 
-              (file >= (0xf00 + state.device.bsr_boundary))) {
-            a = 0;
+	  /* If extended instructions are enabled, access bit should default to 1 for low-end */
+	  /* of Access Memory unless the file is explicitly an offset (e.g. [foo]) */
+	  if ((state.extended_pic16e == true) && (file <= 0x5f)) {
+	    if (p->tag == offset) {
+	      a = 0;
+	    } else {
+	      a = 1;
+	    }
+	  } else if ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) {
+	    a = 0;
 	  } else {
 	    a = 1;
 	  }
@@ -3270,9 +3277,16 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  reloc_evaluate(p, RELOCT_ACCESS);
 
 	  /* Default access (use the BSR unless access is to special registers) */
-	  if ((file < state.device.bsr_boundary) || 
-              (file >= (0xf00 + state.device.bsr_boundary))) {
-            a = 0;
+	  /* If extended instructions are enabled, access bit should default to 1 for low-end */
+	  /* of Access Memory */
+	  if ((state.extended_pic16e == true) && (file <= 0x5f)) {
+	    if (p->tag == offset) {
+	      a = 0;
+	    } else {
+	      a = 1;
+	    }
+	  } else if ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) {
+	    a = 0;
 	  } else {
 	    a = 1;
 	  }
