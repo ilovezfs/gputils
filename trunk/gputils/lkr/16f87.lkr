@@ -30,5 +30,4 @@ SECTION    NAME=PROG0    ROM=page0        // ROM code space
 SECTION    NAME=PROG1    ROM=page1        // ROM code space 
 SECTION    NAME=IDLOCS   ROM=.idlocs      // ID locations
 SECTION    NAME=DEVICEID ROM=.device_id   // Device ID
-SECTION    NAME=CONFIG   ROM=.config      // Configuration bits location
 SECTION    NAME=DEEPROM  ROM=eedata       // Data EEPROM

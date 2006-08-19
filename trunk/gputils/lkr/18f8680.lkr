@@ -2,6 +2,9 @@
 // File: 18f8680.lkr
 // Sample linker script for the PIC18F8680 processor
 
+// Not intended for use with MPLAB C18.  For C18 projects,
+// use the linker scripts provided with that product.
+
 LIBPATH .
 
 CODEPAGE   NAME=vectors    START=0x0            END=0x29           PROTECTED
@@ -29,5 +32,3 @@ DATABANK   NAME=sfr13      START=0xD00          END=0xDFF          PROTECTED
 DATABANK   NAME=sfr14      START=0xE00          END=0xEFF          PROTECTED
 DATABANK   NAME=sfr15      START=0xF00          END=0xF5F          PROTECTED
 ACCESSBANK NAME=accesssfr  START=0xF60          END=0xFFF          PROTECTED
-
-SECTION    NAME=CONFIG     ROM=config

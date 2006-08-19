@@ -33,4 +33,4 @@ SECTION    NAME=PROG2    ROM=page1      // ROM code space - page1
 SECTION    NAME=PROG3    ROM=page2      // ROM code space - page2
 SECTION    NAME=USRLOCS  ROM=.usrlocs   // User-configurable locations
 SECTION    NAME=DEVICEID ROM=.device_id // Device ID
-SECTION    NAME=CONFIG   ROM=.config    // Configuration bits location
+

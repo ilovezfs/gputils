@@ -2,11 +2,14 @@
 // File: 18f67j10.lkr
 // Sample linker script for the PIC18F67J10 processor
 
+// Not intended for use with MPLAB C18.  For C18 projects,
+// use the linker scripts provided with that product.
+
 LIBPATH .
 
 CODEPAGE   NAME=vectors    START=0x0            END=0x29           PROTECTED
-CODEPAGE   NAME=page       START=0x2A           END=0x1FFFF
-CODEPAGE   NAME=config     START=0x300000       END=0x30000D       PROTECTED
+CODEPAGE   NAME=page       START=0x2A           END=0x1FFF7
+CODEPAGE   NAME=config     START=0x1FFF8        END=0x1FFFD        PROTECTED
 CODEPAGE   NAME=devid      START=0x3FFFFE       END=0x3FFFFF       PROTECTED
 
 ACCESSBANK NAME=accessram  START=0x0            END=0x5F
@@ -27,5 +30,3 @@ DATABANK   NAME=gpr13      START=0xD00          END=0xDFF
 DATABANK   NAME=gpr14      START=0xE00          END=0xEFF
 DATABANK   NAME=gpr15      START=0xF00          END=0xF5F
 ACCESSBANK NAME=accesssfr  START=0xF60          END=0xFFF          PROTECTED
-
-SECTION    NAME=CONFIG     ROM=config

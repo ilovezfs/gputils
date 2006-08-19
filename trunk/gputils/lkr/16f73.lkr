@@ -21,4 +21,4 @@ SECTION    NAME=STARTUP  ROM=vectors    // Reset and interrupt vectors
 SECTION    NAME=PROG1    ROM=page0      // ROM code space - page0
 SECTION    NAME=PROG2    ROM=page1      // ROM code space - page1
 SECTION    NAME=IDLOCS   ROM=.idlocs    // ID locations
-SECTION    NAME=CONFIG   ROM=.config    // Configuration bits location
+
