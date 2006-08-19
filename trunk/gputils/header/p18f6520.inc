@@ -1157,15 +1157,15 @@ STKFUL           EQU  H'0007'
 ;     OSCS = ON            Enabled
 ;     OSCS = OFF           Disabled
 ;
-;   Power Up Timer:
+;   Power-up Timer:
 ;     PWRT = ON            Enabled
 ;     PWRT = OFF           Disabled
 ;
-;   Brown Out Reset:
+;   Brown-out Reset:
 ;     BOR = OFF            Disabled
 ;     BOR = ON             Enabled
 ;
-;   Brown Out Voltage:
+;   Brown-out Voltage:
 ;     BORV = 45            4.5V
 ;     BORV = 42            4.2V
 ;     BORV = 27            2.7V
@@ -1185,7 +1185,7 @@ STKFUL           EQU  H'0007'
 ;     WDTPS = 64           1:64
 ;     WDTPS = 128          1:128
 ;
-;   CCP2 Mux:
+;   CCP2 MUX:
 ;     CCP2MUX = OFF        Uses RE7
 ;     CCP2MUX = RE7        Uses RE7
 ;     CCP2MUX = ON         Uses RC1
@@ -1284,6 +1284,7 @@ STKFUL           EQU  H'0007'
 ;   CONFIG1H        300001h
 ;   CONFIG2L        300002h
 ;   CONFIG2H        300003h
+;   CONFIG3L        300004h
 ;   CONFIG3H        300005h
 ;   CONFIG4L        300006h
 ;   CONFIG5L        300008h
@@ -1300,6 +1301,7 @@ STKFUL           EQU  H'0007'
 _CONFIG1H        EQU  H'300001'
 _CONFIG2L        EQU  H'300002'
 _CONFIG2H        EQU  H'300003'
+_CONFIG3L        EQU  H'300004'
 _CONFIG3H        EQU  H'300005'
 _CONFIG4L        EQU  H'300006'
 _CONFIG5L        EQU  H'300008'
@@ -1347,6 +1349,7 @@ _WDTPS_32_2H         EQU  H'FB'    ; 1:32
 _WDTPS_64_2H         EQU  H'FD'    ; 1:64
 _WDTPS_128_2H        EQU  H'FF'    ; 1:128
 
+;----- CONFIG3L Options --------------------------------------------------
 ;----- CONFIG3H Options --------------------------------------------------
 _CCP2MUX_OFF_3H      EQU  H'FE'    ; Uses RE7
 _CCP2MUX_RE7_3H      EQU  H'FE'    ; Uses RE7

@@ -25,6 +25,8 @@
 
 ;1.00   12/13/04  Initial Release
 ;1.01	13/15/04  Added EC osc mode, COrrected CP on
+;1.02	07/14/05  Updated Comparator names, comparator register bit names, and Oscillator fuse options
+;1.03   08/26/05  Added port bit names
 
 ;==========================================================================
 ;
@@ -55,10 +57,10 @@ FSR                          EQU     H'0004'
 OSCCAL                       EQU     H'0005'
 PORTB                        EQU     H'0006'
 PORTC                        EQU     H'0007'
-CMCON0                       EQU     H'0008'
+CM1CON0                      EQU     H'0008'
 ADCON0                       EQU     H'0009'
 ADRES                        EQU     H'000A'
-CMCON1                       EQU     H'000B'	
+CM2CON0                      EQU     H'000B'	
 VRCON                        EQU     H'000C'
 
 ;----- STATUS Bits --------------------------------------------------------
@@ -93,16 +95,16 @@ CAL2                         EQU     H'0003'
 CAL1                         EQU     H'0002'
 CAL0                         EQU     H'0001'
 
-;----- CMCON0 Bits --------------------------------------------------------
+;----- CM1CON0 Bits --------------------------------------------------------
 
-CMP1OUT                      EQU     H'0007'	
-NOT_COUT1EN                  EQU     H'0006'
+C1OUT                        EQU     H'0007'	
+NOT_C1OUTEN                  EQU     H'0006'
 C1POL                        EQU     H'0005'
-NOT_CMP1T0CS                 EQU     H'0004'
-CMP1ON                       EQU     H'0003'
-CN1REF                       EQU     H'0002'
-CP1REF                       EQU     H'0001'	
-NOT_CWU1                     EQU     H'0000'
+NOT_C1T0CS                   EQU     H'0004'
+C1ON                         EQU     H'0003'
+C1NREF                       EQU     H'0002'
+C1PREF                       EQU     H'0001'	
+NOT_C1WU                     EQU     H'0000'
 
 ;----- ADCON0 Bits --------------------------------------------------------
 
@@ -116,16 +118,16 @@ GO                           EQU     H'0001'
 NOT_DONE                     EQU     H'0001'
 ADON                         EQU     H'0000'
 
-;----- CMCON1 Bits --------------------------------------------------------
+;----- CM2CON0 Bits --------------------------------------------------------
 
-CMP2OUT                      EQU     H'0007'	
-NOT_COUT2EN                  EQU     H'0006'
+C2OUT                        EQU     H'0007'	
+NOT_C2OUTEN                  EQU     H'0006'
 C2POL                        EQU     H'0005'
-CP2REF2                      EQU     H'0004'
-CMP2ON                       EQU     H'0003'
-CN2REF                       EQU     H'0002'
-CP2REF1                      EQU     H'0001'	
-NOT_CWU2                     EQU     H'0000'
+C2PREF2                      EQU     H'0004'
+C2ON                         EQU     H'0003'
+C2NREF                       EQU     H'0002'
+C2PREF1                      EQU     H'0001'	
+NOT_C2WU                     EQU     H'0000'
 
 ;----- VRCON Bits --------------------------------------------------------
 
@@ -136,6 +138,22 @@ VR3                          EQU     H'0003'
 VR2                          EQU     H'0002'
 VR1                          EQU     H'0001'	
 VR0                          EQU     H'0000'
+
+;----- PORTB Bits --------------------------------------------------------
+RB0                          EQU     H'0000'
+RB1                          EQU     H'0001'
+RB2                          EQU     H'0002'
+RB3                          EQU     H'0003'
+RB4                          EQU     H'0004'
+RB5                          EQU     H'0005'
+
+;----- PORTC Bits --------------------------------------------------------
+RC0                          EQU     H'0000'
+RC1                          EQU     H'0001'
+RC2                          EQU     H'0002'
+RC3                          EQU     H'0003'
+RC4                          EQU     H'0004'
+RC5                          EQU     H'0005'
 
 ;==========================================================================
 ;

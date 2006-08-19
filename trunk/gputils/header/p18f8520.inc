@@ -1293,15 +1293,15 @@ STKFUL           EQU  H'0007'
 ;     OSCS = ON            Enabled
 ;     OSCS = OFF           Disabled
 ;
-;   Power Up Timer:
+;   Power-up Timer:
 ;     PWRT = ON            Enabled
 ;     PWRT = OFF           Disabled
 ;
-;   Brown Out Reset:
+;   Brown-out Reset:
 ;     BOR = OFF            Disabled
 ;     BOR = ON             Enabled
 ;
-;   Brown Out Voltage:
+;   Brown-out Voltage:
 ;     BORV = 45            4.5V
 ;     BORV = 42            4.2V
 ;     BORV = 27            2.7V
@@ -1322,16 +1322,16 @@ STKFUL           EQU  H'0007'
 ;     WDTPS = 128          1:128
 ;
 ;   Processor Mode Selection:
-;     MODE = EM            Extended Microcontroller Mode
-;     MODE = MPB           Microprocessor with Boot Block Mode
-;     MODE = MP            Microprocessor Mode
-;     MODE = MC            Microcontroller Mode
+;     MODE = EM            Extended Microcontroller mode
+;     MODE = MPB           Microprocessor with Boot Block mode
+;     MODE = MP            Microprocessor mode
+;     MODE = MC            Microcontroller mode
 ;
 ;   External Bus Data Wait:
 ;     WAIT = ON            Enabled
 ;     WAIT = OFF           Disabled
 ;
-;   CCP2 Mux:
+;   CCP2 MUX:
 ;     CCP2MUX = OFF        Uses RE7
 ;     CCP2MUX = RE7        Uses RE7
 ;     CCP2MUX = ON         Uses RC1
@@ -1496,10 +1496,10 @@ _WDTPS_64_2H         EQU  H'FD'    ; 1:64
 _WDTPS_128_2H        EQU  H'FF'    ; 1:128
 
 ;----- CONFIG3L Options --------------------------------------------------
-_MODE_EM_3L          EQU  H'FC'    ; Extended Microcontroller Mode
-_MODE_MPB_3L         EQU  H'FD'    ; Microprocessor with Boot Block Mode
-_MODE_MP_3L          EQU  H'FE'    ; Microprocessor Mode
-_MODE_MC_3L          EQU  H'FF'    ; Microcontroller Mode
+_MODE_EM_3L          EQU  H'FC'    ; Extended Microcontroller mode
+_MODE_MPB_3L         EQU  H'FD'    ; Microprocessor with Boot Block mode
+_MODE_MP_3L          EQU  H'FE'    ; Microprocessor mode
+_MODE_MC_3L          EQU  H'FF'    ; Microcontroller mode
 
 _WAIT_ON_3L          EQU  H'7F'    ; Enabled
 _WAIT_OFF_3L         EQU  H'FF'    ; Disabled

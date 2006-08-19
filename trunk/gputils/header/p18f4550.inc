@@ -248,6 +248,23 @@ SPPEN            EQU  H'0000'
 SPPOWN           EQU  H'0001'
 
 
+;----- UFRML Bits -----------------------------------------------------
+FRM0             EQU  H'0000'
+FRM1             EQU  H'0001'
+FRM2             EQU  H'0002'
+FRM3             EQU  H'0003'
+FRM4             EQU  H'0004'
+FRM5             EQU  H'0005'
+FRM6             EQU  H'0006'
+FRM7             EQU  H'0007'
+
+
+;----- UFRMH Bits -----------------------------------------------------
+FRM8             EQU  H'0000'
+FRM9             EQU  H'0001'
+FRM10            EQU  H'0002'
+
+
 ;----- UIR Bits -----------------------------------------------------
 URSTIF           EQU  H'0000'
 UERRIF           EQU  H'0001'
@@ -691,9 +708,9 @@ TRISE2           EQU  H'0002'
 TUN0             EQU  H'0000'
 TUN1             EQU  H'0001'
 TUN2             EQU  H'0002'
-TUN3             EQU  H'0004'
-TUN4             EQU  H'0005'
-INTSRC           EQU  H'0008'
+TUN3             EQU  H'0003'
+TUN4             EQU  H'0004'
+INTSRC           EQU  H'0007'
 
 
 ;----- PIE1 Bits -----------------------------------------------------
@@ -842,6 +859,8 @@ CVRSS            EQU  H'0004'
 
 
 ;----- CCP1AS Bits -----------------------------------------------------
+PSSBD0           EQU  H'0000'
+PSSBD1           EQU  H'0001'
 PSSAC0           EQU  H'0002'
 PSSAC1           EQU  H'0003'
 ECCPAS0          EQU  H'0004'
@@ -862,7 +881,13 @@ ECCPASE          EQU  H'0007'
 
 
 ;----- CCP1DEL Bits -----------------------------------------------------
-filler0          EQU  H'0000'
+PDC0             EQU  H'0000'
+PDC1             EQU  H'0001'
+PDC2             EQU  H'0002'
+PDC3             EQU  H'0003'
+PDC4             EQU  H'0004'
+PDC5             EQU  H'0005'
+PDC6             EQU  H'0006'
 PRSEN            EQU  H'0007'
 
 
@@ -1208,25 +1233,25 @@ STKFUL           EQU  H'0007'
 ;              superseded by the CONFIG directive.  The following settings
 ;              are available for this device.
 ;
-;   96MHz PLL Prescaler:
-;     PLLDIV = 1           No devide (4MHz input)
-;     PLLDIV = 2           Divide by 2 (8MHz input)
-;     PLLDIV = 3           Divide by 3 (12MHz input)
-;     PLLDIV = 4           Divide by 4 (16MHz input)
-;     PLLDIV = 5           Divide by 5 (20MHz input)
-;     PLLDIV = 6           Divide by 6 (24MHz input)
-;     PLLDIV = 10          Divide by 10 (40MHz input)
-;     PLLDIV = 12          Divide by 12 (48MHz input)
+;   PLL Prescaler Selection bits:
+;     PLLDIV = 1           No prescale (4 MHz oscillator input drives PLL directly)
+;     PLLDIV = 2           Divide by 2 (8 MHz oscillator input)
+;     PLLDIV = 3           Divide by 3 (12 MHz oscillator input)
+;     PLLDIV = 4           Divide by 4 (16 MHz oscillator input)
+;     PLLDIV = 5           Divide by 5 (20 MHz oscillator input)
+;     PLLDIV = 6           Divide by 6 (24 MHz oscillator input)
+;     PLLDIV = 10          Divide by 10 (40 MHz oscillator input)
+;     PLLDIV = 12          Divide by 12 (48 MHz oscillator input)
 ;
 ;   CPU System Clock Postscaler:
-;     CPUDIV = OSC1_PLL2   [OSC1/OSC2 Src: /1][96MHz PLL Src: /2]
-;     CPUDIV = OSC2_PLL3   [OSC1/OSC2 Src: /2][96MHz PLL Src: /3]
-;     CPUDIV = OSC3_PLL4   [OSC1/OSC2 Src: /3][96MHz PLL Src: /4]
-;     CPUDIV = OSC4_PLL6   [OSC1/OSC2 Src: /4][96MHz PLL Src: /6]
+;     CPUDIV = OSC1_PLL2   [OSC1/OSC2 Src: /1][96 MHz PLL Src: /2]
+;     CPUDIV = OSC2_PLL3   [OSC1/OSC2 Src: /2][96 MHz PLL Src: /3]
+;     CPUDIV = OSC3_PLL4   [OSC1/OSC2 Src: /3][96 MHz PLL Src: /4]
+;     CPUDIV = OSC4_PLL6   [OSC1/OSC2 Src: /4][96 MHz PLL Src: /6]
 ;
-;   Full-Speed USB Clock Source Selection:
-;     USBDIV = 1           Clock source from OSC1/OSC2
-;     USBDIV = 2           Clock source from 96MHz PLL/2
+;   USB Clock Selection bit (used in Full Speed USB mode only; UCFG:FSEN = 1):
+;     USBDIV = 1           USB clock source comes directly from the primary oscillator block with no postscale
+;     USBDIV = 2           USB clock source comes from the 96 MHz PLL divided by 2
 ;
 ;   Oscillator Selection bits:
 ;     FOSC = XT_XT         XT oscillator, XT used by USB
@@ -1242,39 +1267,39 @@ STKFUL           EQU  H'0007'
 ;     FOSC = HS            HS oscillator, HS used by USB
 ;     FOSC = HSPLL_HS      HS oscillator, PLL enabled, HS used by USB
 ;
-;   Fail Safe Clock Monitor:
-;     FCMEM = OFF          Disabled
-;     FCMEM = ON           Enabled
+;   Fail-Safe Clock Monitor Enable bit:
+;     FCMEM = OFF          Fail-Safe Clock Monitor disabled
+;     FCMEM = ON           Fail-Safe Clock Monitor enabled
 ;
-;   Internal/External Switch Over:
-;     IESO = OFF           Disabled
-;     IESO = ON            Enabled
+;   Internal/External Oscillator Switchover bit:
+;     IESO = OFF           Oscillator Switchover mode disabled
+;     IESO = ON            Oscillator Switchover mode enabled
 ;
-;   Power Up Timer:
-;     PWRT = ON            Enabled
-;     PWRT = OFF           Disabled
+;   Power-up Timer Enable bit:
+;     PWRT = ON            PWRT enabled
+;     PWRT = OFF           PWRT disabled
 ;
-;   Brown Out Reset:
-;     BOR = OFF            Disabled
-;     BOR = SOFT           Controled by SBOREN
-;     BOR = ON_ACTIVE      Enabled when the device is not in SLEEP, SBOREN bit is disabled
-;     BOR = ON             Enabled, SBOREN bit is disabled
+;   Brown-out Reset Enable bits:
+;     BOR = OFF            Brown-out Reset disabled in hardware and software
+;     BOR = SOFT           Brown-out Reset enabled and controlled by software (SBOREN is enabled)
+;     BOR = ON_ACTIVE      Brown-out Reset enabled in hardware only and disabled in Sleep mode (SBOREN is disabled)
+;     BOR = ON             Brown-out Reset enabled in hardware only (SBOREN is disabled)
 ;
-;   Brown Out Voltage:
-;     BORV = 46            4.6V
-;     BORV = 43            4.3V
-;     BORV = 28            2.8V
-;     BORV = 21            2.1V
+;   Brown-out Voltage bits:
+;     BORV = 0             Maximum setting
+;     BORV = 1             
+;     BORV = 2             
+;     BORV = 3             Minimum setting
 ;
-;   USB Voltage Regulator Enable:
-;     VREGEN = OFF         Disabled
-;     VREGEN = ON          Enabled
+;   USB Voltage Regulator Enable bit:
+;     VREGEN = OFF         USB voltage regulator disabled
+;     VREGEN = ON          USB voltage regulator enabled
 ;
-;   Watchdog Timer:
+;   Watchdog Timer Enable bit:
 ;     WDT = OFF            HW Disabled - SW Controlled
 ;     WDT = ON             HW Enabled - SW Disabled
 ;
-;   Watchdog Postscaler:
+;   Watchdog Timer Postscale Select bits:
 ;     WDTPS = 1            1:1
 ;     WDTPS = 2            1:2
 ;     WDTPS = 4            1:4
@@ -1292,113 +1317,113 @@ STKFUL           EQU  H'0007'
 ;     WDTPS = 16384        1:16384
 ;     WDTPS = 32768        1:32768
 ;
-;   MCLR Enable:
-;     MCLRE = OFF          Disabled
-;     MCLRE = ON           Enabled
+;   MCLR Pin Enable bit:
+;     MCLRE = OFF          RE3 input pin enabled; MCLR disabled
+;     MCLRE = ON           MCLR pin enabled; RE3 input pin disabled
 ;
-;   Low Power Timer1 Oscillator Enable:
-;     LPT1OSC = OFF        Timer1 oscillator configured for high power
-;     LPT1OSC = ON         Timer1 oscillator configured for low power
+;   Low-Power Timer 1 Oscillator Enable bit:
+;     LPT1OSC = OFF        Timer1 configured for higher power operation
+;     LPT1OSC = ON         Timer1 configured for low-power operation
 ;
-;   Port B A/D Enable:
-;     PBADEN = OFF         PortB<4:0> pins are configured as digital I/O on RESET
-;     PBADEN = ON          PortB<4:0> pins are configured as analog input on RESET
+;   PORTB A/D Enable bit:
+;     PBADEN = OFF         PORTB<4:0> pins are configured as digital I/O on Reset
+;     PBADEN = ON          PORTB<4:0> pins are configured as analog input channels on Reset
 ;
-;   CCP2 Mux bit:
+;   CCP2 MUX bit:
 ;     CCP2MX = OFF         CCP2 input/output is multiplexed with RB3
 ;     CCP2MX = ON          CCP2 input/output is multiplexed with RC1
 ;
-;   Stack Overflow Reset:
-;     STVREN = OFF         Disabled
-;     STVREN = ON          Enabled
+;   Stack Full/Underflow Reset Enable bit:
+;     STVREN = OFF         Stack full/underflow will not cause Reset
+;     STVREN = ON          Stack full/underflow will cause Reset
 ;
-;   Low Voltage ICSP:
-;     LVP = OFF            Disabled
-;     LVP = ON             Enabled
+;   Single-Supply ICSP Enable bit:
+;     LVP = OFF            Single-Supply ICSP disabled
+;     LVP = ON             Single-Supply ICSP enabled
 ;
-;   Dedicated In-Circuit Debug/Programming Enable:
-;     ICPRT = OFF          Disabled
-;     ICPRT = ON           Enabled
+;   Dedicated In-Circuit Debug/Programming Port (ICPORT) Enable bit:
+;     ICPRT = OFF          ICPORT disabled
+;     ICPRT = ON           ICPORT enabled
 ;
-;   Extended Instruction Set Enable:
-;     XINST = OFF          Disabled
-;     XINST = ON           Enabled
+;   Extended Instruction Set Enable bit:
+;     XINST = OFF          Instruction set extension and Indexed Addressing mode disabled (Legacy mode)
+;     XINST = ON           Instruction set extension and Indexed Addressing mode enabled
 ;
-;   Background Debugger Enable:
-;     DEBUG = ON           Enabled
-;     DEBUG = OFF          Disabled
+;   Background Debugger Enable bit:
+;     DEBUG = ON           Background debugger enabled, RB6 and RB7 are dedicated to In-Circuit Debug
+;     DEBUG = OFF          Background debugger disabled, RB6 and RB7 configured as general purpose I/O pins
 ;
-;   Code Protection Block 0:
-;     CP0 = ON             Enabled
-;     CP0 = OFF            Disabled
+;   Code Protection bit Block 0:
+;     CP0 = ON             Block 0 (000800-001FFFh) code-protected
+;     CP0 = OFF            Block 0 (000800-001FFFh) not code-protected
 ;
-;   Code Protection Block 1:
-;     CP1 = ON             Enabled
-;     CP1 = OFF            Disabled
+;   Code Protection bit Block 1:
+;     CP1 = ON             Block 1 (002000-003FFFh) code-protected
+;     CP1 = OFF            Block 1 (002000-003FFFh) not code-protected
 ;
-;   Code Protection Block 2:
-;     CP2 = ON             Enabled
-;     CP2 = OFF            Disabled
+;   Code Protection bit Block 2:
+;     CP2 = ON             Block 2 (004000-005FFFh) code-protected
+;     CP2 = OFF            Block 2 (004000-005FFFh) not code-protected
 ;
-;   Code Protection Block 3:
-;     CP3 = ON             Enabled
-;     CP3 = OFF            Disabled
+;   Code Protection bit Block 3:
+;     CP3 = ON             Block 3 (006000-007FFFh) code-protected
+;     CP3 = OFF            Block 3 (006000-007FFFh) not code-protected
 ;
-;   Boot Block Code Protection:
-;     CPB = ON             Enabled
-;     CPB = OFF            Disabled
+;   Boot Block Code Protection bit:
+;     CPB = ON             Boot block (000000-0007FFh) code-protected
+;     CPB = OFF            Boot block (000000-0007FFh) not code-protected
 ;
-;   Data EEPROM Code Protection:
-;     CPD = ON             Enabled
-;     CPD = OFF            Disabled
+;   Data EEPROM Code Protection bit:
+;     CPD = ON             Data EEPROM code-protected
+;     CPD = OFF            Data EEPROM not code-protected
 ;
-;   Write Protection Block 0:
-;     WRT0 = ON            Enabled
-;     WRT0 = OFF           Disabled
+;   Write Protection bit Block 0:
+;     WRT0 = ON            Block 0 (000800-001FFFh) write-protected
+;     WRT0 = OFF           Block 0 (000800-001FFFh) not write-protected
 ;
-;   Write Protection Block 1:
-;     WRT1 = ON            Enabled
-;     WRT1 = OFF           Disabled
+;   Write Protection bit Block 1:
+;     WRT1 = ON            Block 1 (002000-003FFFh) write-protected
+;     WRT1 = OFF           Block 1 (002000-003FFFh) not write-protected
 ;
-;   Write Protection Block 2:
-;     WRT2 = ON            Enabled
-;     WRT2 = OFF           Disabled
+;   Write Protection bit Block 2:
+;     WRT2 = ON            Block 2 (004000-005FFFh) write-protected
+;     WRT2 = OFF           Block 2 (004000-005FFFh) not write-protected
 ;
-;   Write Protection Block 3:
-;     WRT3 = ON            Enabled
-;     WRT3 = OFF           Disabled
+;   Write Protection bit Block 3:
+;     WRT3 = ON            Block 3 (006000-007FFFh) write-protected
+;     WRT3 = OFF           Block 3 (006000-007FFFh) not write-protected
 ;
-;   Boot Block Write Protection:
-;     WRTB = ON            Enabled
-;     WRTB = OFF           Disabled
+;   Boot Block Write Protection bit:
+;     WRTB = ON            Configuration registers (300000-3000FFh) write-protected
+;     WRTB = OFF           Configuration registers (300000-3000FFh) not write-protected
 ;
-;   Configuration Register Write Protection:
-;     WRTC = ON            Enabled
-;     WRTC = OFF           Disabled
+;   Configuration Register Write Protection bit:
+;     WRTC = ON            Boot block (000000-0007FFh) write-protected
+;     WRTC = OFF           Boot block (000000-0007FFh) not write-protected
 ;
-;   Data EEPROM Write Protection:
-;     WRTD = ON            Enabled
-;     WRTD = OFF           Disabled
+;   Data EEPROM Write Protection bit:
+;     WRTD = ON            Data EEPROM write-protected
+;     WRTD = OFF           Data EEPROM not write-protected
 ;
-;   Table Read Protection Block 0:
-;     EBTR0 = ON           Enabled
-;     EBTR0 = OFF          Disabled
+;   Table Read Protection bit Block 0:
+;     EBTR0 = ON           Block 0 (000800-001FFFh) protected from table reads executed in other blocks
+;     EBTR0 = OFF          Block 0 (000800-001FFFh) not protected from table reads executed in other blocks
 ;
-;   Table Read Protection Block 1:
-;     EBTR1 = ON           Enabled
-;     EBTR1 = OFF          Disabled
+;   Table Read Protection bit Block 1:
+;     EBTR1 = ON           Block 1 (002000-003FFFh) protected from table reads executed in other blocks
+;     EBTR1 = OFF          Block 1 (002000-003FFFh) not protected from table reads executed in other blocks
 ;
-;   Table Read Protection Block 2:
-;     EBTR2 = ON           Enabled
-;     EBTR2 = OFF          Disabled
+;   Table Read Protection bit Block 2:
+;     EBTR2 = ON           Block 2 (004000-005FFFh) protected from table reads executed in other blocks
+;     EBTR2 = OFF          Block 2 (004000-005FFFh) not protected from table reads executed in other blocks
 ;
-;   Table Read Protection Block 3:
-;     EBTR3 = ON           Enabled
-;     EBTR3 = OFF          Disabled
+;   Table Read Protection bit Block 3:
+;     EBTR3 = ON           Block 3 (006000-007FFFh) protected from table reads executed in other blocks
+;     EBTR3 = OFF          Block 3 (006000-007FFFh) not protected from table reads executed in other blocks
 ;
 ;   Boot Block Table Read Protection:
-;     EBTRB = ON           Enabled
-;     EBTRB = OFF          Disabled
+;     EBTRB = ON           Boot block (000000-0007FFh) protected from table reads executed in other blocks
+;     EBTRB = OFF          Boot block (000000-0007FFh) not protected from table reads executed in other blocks
 ;
 ;==========================================================================
 ;==========================================================================
@@ -1437,22 +1462,22 @@ _CONFIG7L        EQU  H'30000C'
 _CONFIG7H        EQU  H'30000D'
 
 ;----- CONFIG1L Options --------------------------------------------------
-_PLLDIV_1_1L         EQU  H'F8'    ; No devide (4MHz input)
-_PLLDIV_2_1L         EQU  H'F9'    ; Divide by 2 (8MHz input)
-_PLLDIV_3_1L         EQU  H'FA'    ; Divide by 3 (12MHz input)
-_PLLDIV_4_1L         EQU  H'FB'    ; Divide by 4 (16MHz input)
-_PLLDIV_5_1L         EQU  H'FC'    ; Divide by 5 (20MHz input)
-_PLLDIV_6_1L         EQU  H'FD'    ; Divide by 6 (24MHz input)
-_PLLDIV_10_1L        EQU  H'FE'    ; Divide by 10 (40MHz input)
-_PLLDIV_12_1L        EQU  H'FF'    ; Divide by 12 (48MHz input)
+_PLLDIV_1_1L         EQU  H'F8'    ; No prescale (4 MHz oscillator input drives PLL directly)
+_PLLDIV_2_1L         EQU  H'F9'    ; Divide by 2 (8 MHz oscillator input)
+_PLLDIV_3_1L         EQU  H'FA'    ; Divide by 3 (12 MHz oscillator input)
+_PLLDIV_4_1L         EQU  H'FB'    ; Divide by 4 (16 MHz oscillator input)
+_PLLDIV_5_1L         EQU  H'FC'    ; Divide by 5 (20 MHz oscillator input)
+_PLLDIV_6_1L         EQU  H'FD'    ; Divide by 6 (24 MHz oscillator input)
+_PLLDIV_10_1L        EQU  H'FE'    ; Divide by 10 (40 MHz oscillator input)
+_PLLDIV_12_1L        EQU  H'FF'    ; Divide by 12 (48 MHz oscillator input)
 
-_CPUDIV_OSC1_PLL2_1L EQU  H'E7'    ; [OSC1/OSC2 Src: /1][96MHz PLL Src: /2]
-_CPUDIV_OSC2_PLL3_1L EQU  H'EF'    ; [OSC1/OSC2 Src: /2][96MHz PLL Src: /3]
-_CPUDIV_OSC3_PLL4_1L EQU  H'F7'    ; [OSC1/OSC2 Src: /3][96MHz PLL Src: /4]
-_CPUDIV_OSC4_PLL6_1L EQU  H'FF'    ; [OSC1/OSC2 Src: /4][96MHz PLL Src: /6]
+_CPUDIV_OSC1_PLL2_1L EQU  H'E7'    ; [OSC1/OSC2 Src: /1][96 MHz PLL Src: /2]
+_CPUDIV_OSC2_PLL3_1L EQU  H'EF'    ; [OSC1/OSC2 Src: /2][96 MHz PLL Src: /3]
+_CPUDIV_OSC3_PLL4_1L EQU  H'F7'    ; [OSC1/OSC2 Src: /3][96 MHz PLL Src: /4]
+_CPUDIV_OSC4_PLL6_1L EQU  H'FF'    ; [OSC1/OSC2 Src: /4][96 MHz PLL Src: /6]
 
-_USBDIV_1_1L         EQU  H'DF'    ; Clock source from OSC1/OSC2
-_USBDIV_2_1L         EQU  H'FF'    ; Clock source from 96MHz PLL/2
+_USBDIV_1_1L         EQU  H'DF'    ; USB clock source comes directly from the primary oscillator block with no postscale
+_USBDIV_2_1L         EQU  H'FF'    ; USB clock source comes from the 96 MHz PLL divided by 2
 
 ;----- CONFIG1H Options --------------------------------------------------
 _FOSC_XT_XT_1H       EQU  H'F0'    ; XT oscillator, XT used by USB
@@ -1468,28 +1493,28 @@ _FOSC_INTOSC_HS_1H   EQU  H'FB'    ; Internal oscillator, HS used by USB
 _FOSC_HS_1H          EQU  H'FC'    ; HS oscillator, HS used by USB
 _FOSC_HSPLL_HS_1H    EQU  H'FE'    ; HS oscillator, PLL enabled, HS used by USB
 
-_FCMEM_OFF_1H        EQU  H'BF'    ; Disabled
-_FCMEM_ON_1H         EQU  H'FF'    ; Enabled
+_FCMEM_OFF_1H        EQU  H'BF'    ; Fail-Safe Clock Monitor disabled
+_FCMEM_ON_1H         EQU  H'FF'    ; Fail-Safe Clock Monitor enabled
 
-_IESO_OFF_1H         EQU  H'7F'    ; Disabled
-_IESO_ON_1H          EQU  H'FF'    ; Enabled
+_IESO_OFF_1H         EQU  H'7F'    ; Oscillator Switchover mode disabled
+_IESO_ON_1H          EQU  H'FF'    ; Oscillator Switchover mode enabled
 
 ;----- CONFIG2L Options --------------------------------------------------
-_PWRT_ON_2L          EQU  H'FE'    ; Enabled
-_PWRT_OFF_2L         EQU  H'FF'    ; Disabled
+_PWRT_ON_2L          EQU  H'FE'    ; PWRT enabled
+_PWRT_OFF_2L         EQU  H'FF'    ; PWRT disabled
 
-_BOR_OFF_2L          EQU  H'F9'    ; Disabled
-_BOR_SOFT_2L         EQU  H'FB'    ; Controled by SBOREN
-_BOR_ON_ACTIVE_2L    EQU  H'FD'    ; Enabled when the device is not in SLEEP, SBOREN bit is disabled
-_BOR_ON_2L           EQU  H'FF'    ; Enabled, SBOREN bit is disabled
+_BOR_OFF_2L          EQU  H'F9'    ; Brown-out Reset disabled in hardware and software
+_BOR_SOFT_2L         EQU  H'FB'    ; Brown-out Reset enabled and controlled by software (SBOREN is enabled)
+_BOR_ON_ACTIVE_2L    EQU  H'FD'    ; Brown-out Reset enabled in hardware only and disabled in Sleep mode (SBOREN is disabled)
+_BOR_ON_2L           EQU  H'FF'    ; Brown-out Reset enabled in hardware only (SBOREN is disabled)
 
-_BORV_46_2L          EQU  H'E7'    ; 4.6V
-_BORV_43_2L          EQU  H'EF'    ; 4.3V
-_BORV_28_2L          EQU  H'F7'    ; 2.8V
-_BORV_21_2L          EQU  H'FF'    ; 2.1V
+_BORV_0_2L           EQU  H'E7'    ; Maximum setting
+_BORV_1_2L           EQU  H'EF'    ; 
+_BORV_2_2L           EQU  H'F7'    ; 
+_BORV_3_2L           EQU  H'FF'    ; Minimum setting
 
-_VREGEN_OFF_2L       EQU  H'DF'    ; Disabled
-_VREGEN_ON_2L        EQU  H'FF'    ; Enabled
+_VREGEN_OFF_2L       EQU  H'DF'    ; USB voltage regulator disabled
+_VREGEN_ON_2L        EQU  H'FF'    ; USB voltage regulator enabled
 
 ;----- CONFIG2H Options --------------------------------------------------
 _WDT_OFF_2H          EQU  H'FE'    ; HW Disabled - SW Controlled
@@ -1513,93 +1538,93 @@ _WDTPS_16384_2H      EQU  H'FD'    ; 1:16384
 _WDTPS_32768_2H      EQU  H'FF'    ; 1:32768
 
 ;----- CONFIG3H Options --------------------------------------------------
-_MCLRE_OFF_3H        EQU  H'7F'    ; Disabled
-_MCLRE_ON_3H         EQU  H'FF'    ; Enabled
+_MCLRE_OFF_3H        EQU  H'7F'    ; RE3 input pin enabled; MCLR disabled
+_MCLRE_ON_3H         EQU  H'FF'    ; MCLR pin enabled; RE3 input pin disabled
 
-_LPT1OSC_OFF_3H      EQU  H'FB'    ; Timer1 oscillator configured for high power
-_LPT1OSC_ON_3H       EQU  H'FF'    ; Timer1 oscillator configured for low power
+_LPT1OSC_OFF_3H      EQU  H'FB'    ; Timer1 configured for higher power operation
+_LPT1OSC_ON_3H       EQU  H'FF'    ; Timer1 configured for low-power operation
 
-_PBADEN_OFF_3H       EQU  H'FD'    ; PortB<4:0> pins are configured as digital I/O on RESET
-_PBADEN_ON_3H        EQU  H'FF'    ; PortB<4:0> pins are configured as analog input on RESET
+_PBADEN_OFF_3H       EQU  H'FD'    ; PORTB<4:0> pins are configured as digital I/O on Reset
+_PBADEN_ON_3H        EQU  H'FF'    ; PORTB<4:0> pins are configured as analog input channels on Reset
 
 _CCP2MX_OFF_3H       EQU  H'FE'    ; CCP2 input/output is multiplexed with RB3
 _CCP2MX_ON_3H        EQU  H'FF'    ; CCP2 input/output is multiplexed with RC1
 
 ;----- CONFIG4L Options --------------------------------------------------
-_STVREN_OFF_4L       EQU  H'FE'    ; Disabled
-_STVREN_ON_4L        EQU  H'FF'    ; Enabled
+_STVREN_OFF_4L       EQU  H'FE'    ; Stack full/underflow will not cause Reset
+_STVREN_ON_4L        EQU  H'FF'    ; Stack full/underflow will cause Reset
 
-_LVP_OFF_4L          EQU  H'FB'    ; Disabled
-_LVP_ON_4L           EQU  H'FF'    ; Enabled
+_LVP_OFF_4L          EQU  H'FB'    ; Single-Supply ICSP disabled
+_LVP_ON_4L           EQU  H'FF'    ; Single-Supply ICSP enabled
 
-_ICPRT_OFF_4L        EQU  H'DF'    ; Disabled
-_ICPRT_ON_4L         EQU  H'FF'    ; Enabled
+_ICPRT_OFF_4L        EQU  H'DF'    ; ICPORT disabled
+_ICPRT_ON_4L         EQU  H'FF'    ; ICPORT enabled
 
-_XINST_OFF_4L        EQU  H'BF'    ; Disabled
-_XINST_ON_4L         EQU  H'FF'    ; Enabled
+_XINST_OFF_4L        EQU  H'BF'    ; Instruction set extension and Indexed Addressing mode disabled (Legacy mode)
+_XINST_ON_4L         EQU  H'FF'    ; Instruction set extension and Indexed Addressing mode enabled
 
-_DEBUG_ON_4L         EQU  H'7F'    ; Enabled
-_DEBUG_OFF_4L        EQU  H'FF'    ; Disabled
+_DEBUG_ON_4L         EQU  H'7F'    ; Background debugger enabled, RB6 and RB7 are dedicated to In-Circuit Debug
+_DEBUG_OFF_4L        EQU  H'FF'    ; Background debugger disabled, RB6 and RB7 configured as general purpose I/O pins
 
 ;----- CONFIG5L Options --------------------------------------------------
-_CP0_ON_5L           EQU  H'FE'    ; Enabled
-_CP0_OFF_5L          EQU  H'FF'    ; Disabled
+_CP0_ON_5L           EQU  H'FE'    ; Block 0 (000800-001FFFh) code-protected
+_CP0_OFF_5L          EQU  H'FF'    ; Block 0 (000800-001FFFh) not code-protected
 
-_CP1_ON_5L           EQU  H'FD'    ; Enabled
-_CP1_OFF_5L          EQU  H'FF'    ; Disabled
+_CP1_ON_5L           EQU  H'FD'    ; Block 1 (002000-003FFFh) code-protected
+_CP1_OFF_5L          EQU  H'FF'    ; Block 1 (002000-003FFFh) not code-protected
 
-_CP2_ON_5L           EQU  H'FB'    ; Enabled
-_CP2_OFF_5L          EQU  H'FF'    ; Disabled
+_CP2_ON_5L           EQU  H'FB'    ; Block 2 (004000-005FFFh) code-protected
+_CP2_OFF_5L          EQU  H'FF'    ; Block 2 (004000-005FFFh) not code-protected
 
-_CP3_ON_5L           EQU  H'F7'    ; Enabled
-_CP3_OFF_5L          EQU  H'FF'    ; Disabled
+_CP3_ON_5L           EQU  H'F7'    ; Block 3 (006000-007FFFh) code-protected
+_CP3_OFF_5L          EQU  H'FF'    ; Block 3 (006000-007FFFh) not code-protected
 
 ;----- CONFIG5H Options --------------------------------------------------
-_CPB_ON_5H           EQU  H'BF'    ; Enabled
-_CPB_OFF_5H          EQU  H'FF'    ; Disabled
+_CPB_ON_5H           EQU  H'BF'    ; Boot block (000000-0007FFh) code-protected
+_CPB_OFF_5H          EQU  H'FF'    ; Boot block (000000-0007FFh) not code-protected
 
-_CPD_ON_5H           EQU  H'7F'    ; Enabled
-_CPD_OFF_5H          EQU  H'FF'    ; Disabled
+_CPD_ON_5H           EQU  H'7F'    ; Data EEPROM code-protected
+_CPD_OFF_5H          EQU  H'FF'    ; Data EEPROM not code-protected
 
 ;----- CONFIG6L Options --------------------------------------------------
-_WRT0_ON_6L          EQU  H'FE'    ; Enabled
-_WRT0_OFF_6L         EQU  H'FF'    ; Disabled
+_WRT0_ON_6L          EQU  H'FE'    ; Block 0 (000800-001FFFh) write-protected
+_WRT0_OFF_6L         EQU  H'FF'    ; Block 0 (000800-001FFFh) not write-protected
 
-_WRT1_ON_6L          EQU  H'FD'    ; Enabled
-_WRT1_OFF_6L         EQU  H'FF'    ; Disabled
+_WRT1_ON_6L          EQU  H'FD'    ; Block 1 (002000-003FFFh) write-protected
+_WRT1_OFF_6L         EQU  H'FF'    ; Block 1 (002000-003FFFh) not write-protected
 
-_WRT2_ON_6L          EQU  H'FB'    ; Enabled
-_WRT2_OFF_6L         EQU  H'FF'    ; Disabled
+_WRT2_ON_6L          EQU  H'FB'    ; Block 2 (004000-005FFFh) write-protected
+_WRT2_OFF_6L         EQU  H'FF'    ; Block 2 (004000-005FFFh) not write-protected
 
-_WRT3_ON_6L          EQU  H'F7'    ; Enabled
-_WRT3_OFF_6L         EQU  H'FF'    ; Disabled
+_WRT3_ON_6L          EQU  H'F7'    ; Block 3 (006000-007FFFh) write-protected
+_WRT3_OFF_6L         EQU  H'FF'    ; Block 3 (006000-007FFFh) not write-protected
 
 ;----- CONFIG6H Options --------------------------------------------------
-_WRTB_ON_6H          EQU  H'BF'    ; Enabled
-_WRTB_OFF_6H         EQU  H'FF'    ; Disabled
+_WRTB_ON_6H          EQU  H'BF'    ; Configuration registers (300000-3000FFh) write-protected
+_WRTB_OFF_6H         EQU  H'FF'    ; Configuration registers (300000-3000FFh) not write-protected
 
-_WRTC_ON_6H          EQU  H'DF'    ; Enabled
-_WRTC_OFF_6H         EQU  H'FF'    ; Disabled
+_WRTC_ON_6H          EQU  H'DF'    ; Boot block (000000-0007FFh) write-protected
+_WRTC_OFF_6H         EQU  H'FF'    ; Boot block (000000-0007FFh) not write-protected
 
-_WRTD_ON_6H          EQU  H'7F'    ; Enabled
-_WRTD_OFF_6H         EQU  H'FF'    ; Disabled
+_WRTD_ON_6H          EQU  H'7F'    ; Data EEPROM write-protected
+_WRTD_OFF_6H         EQU  H'FF'    ; Data EEPROM not write-protected
 
 ;----- CONFIG7L Options --------------------------------------------------
-_EBTR0_ON_7L         EQU  H'FE'    ; Enabled
-_EBTR0_OFF_7L        EQU  H'FF'    ; Disabled
+_EBTR0_ON_7L         EQU  H'FE'    ; Block 0 (000800-001FFFh) protected from table reads executed in other blocks
+_EBTR0_OFF_7L        EQU  H'FF'    ; Block 0 (000800-001FFFh) not protected from table reads executed in other blocks
 
-_EBTR1_ON_7L         EQU  H'FD'    ; Enabled
-_EBTR1_OFF_7L        EQU  H'FF'    ; Disabled
+_EBTR1_ON_7L         EQU  H'FD'    ; Block 1 (002000-003FFFh) protected from table reads executed in other blocks
+_EBTR1_OFF_7L        EQU  H'FF'    ; Block 1 (002000-003FFFh) not protected from table reads executed in other blocks
 
-_EBTR2_ON_7L         EQU  H'FB'    ; Enabled
-_EBTR2_OFF_7L        EQU  H'FF'    ; Disabled
+_EBTR2_ON_7L         EQU  H'FB'    ; Block 2 (004000-005FFFh) protected from table reads executed in other blocks
+_EBTR2_OFF_7L        EQU  H'FF'    ; Block 2 (004000-005FFFh) not protected from table reads executed in other blocks
 
-_EBTR3_ON_7L         EQU  H'F7'    ; Enabled
-_EBTR3_OFF_7L        EQU  H'FF'    ; Disabled
+_EBTR3_ON_7L         EQU  H'F7'    ; Block 3 (006000-007FFFh) protected from table reads executed in other blocks
+_EBTR3_OFF_7L        EQU  H'FF'    ; Block 3 (006000-007FFFh) not protected from table reads executed in other blocks
 
 ;----- CONFIG7H Options --------------------------------------------------
-_EBTRB_ON_7H         EQU  H'BF'    ; Enabled
-_EBTRB_OFF_7H        EQU  H'FF'    ; Disabled
+_EBTRB_ON_7H         EQU  H'BF'    ; Boot block (000000-0007FFh) protected from table reads executed in other blocks
+_EBTRB_OFF_7H        EQU  H'FF'    ; Boot block (000000-0007FFh) not protected from table reads executed in other blocks
 
 
 _DEVID1          EQU  H'3FFFFE'

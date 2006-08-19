@@ -721,8 +721,8 @@ D7		EQU  7
 ;     PWRT = OFF           Disable
 ;
 ;   External Bus Data Width:
-;     BW = 8               8-bit external bus mode
-;     BW = 16              16-bit external bus mode
+;     BW = 8               8-bit External Bus mode
+;     BW = 16              16-bit External Bus mode
 ;
 ;   Watchdog Timer:
 ;     WDT = OFF            Disabled
@@ -738,7 +738,7 @@ D7		EQU  7
 ;     WDTPS = 64           1:64
 ;     WDTPS = 128          1:128
 ;
-;   Stack Full/Underflow RESET:
+;   Stack Full/Underflow Reset:
 ;     STVR = OFF           Disabled
 ;     STVR = ON            Enabled
 ;
@@ -764,7 +764,7 @@ _LP_OSC_1H        EQU  H'FC'    ; Oscillator type
 ;Configuration Byte 2L Options
 _BW_16_BIT_2L	  EQU  H'FF'	; Default bus width
 _BW_8_BIT_2L	  EQU  H'BF'	; 
-_PWRT_OFF_2L      EQU  H'FF'    ; Disable Power-Up Timer
+_PWRT_OFF_2L      EQU  H'FF'    ; Disable Power-up Timer
 _PWRT_ON_2L       EQU  H'FE'	; Enable Power-up Timer
 
 ;Configuration Byte 2H Options

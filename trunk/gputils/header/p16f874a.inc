@@ -22,6 +22,7 @@
 ;==========================================================================
 
 ;Rev:   Date:    Reason:
+;1.03   11/17/05 Added the INTCON bits TMR0IE and TMR0IF and the ADCON1 bit ADCS2.
 ;1.02	05/28/02 Corrected values for _CP_ALL and _CP_OFF in Configuration Bits section.
 ;1.01   10/03/01 Added the PIR2 bit CMIF and the PIE2 bit CMIE
 ;1.00   04/19/01 Initial Release (BD - generated from PIC16F877A.inc)
@@ -124,9 +125,11 @@ C                            EQU     H'0000'
 GIE                          EQU     H'0007'
 PEIE                         EQU     H'0006'
 T0IE                         EQU     H'0005'
+TMR0IE                       EQU     H'0005'
 INTE                         EQU     H'0004'
 RBIE                         EQU     H'0003'
 T0IF                         EQU     H'0002'
+TMR0IF                       EQU     H'0002'
 INTF                         EQU     H'0001'
 RBIF                         EQU     H'0000'
 
@@ -340,6 +343,7 @@ CVR0                         EQU     H'0000'
 ;----- ADCON1 Bits --------------------------------------------------------
 
 ADFM                         EQU     H'0007'
+ADCS2                        EQU     H'0006'
 PCFG3                        EQU     H'0003'
 PCFG2                        EQU     H'0002'
 PCFG1                        EQU     H'0001'

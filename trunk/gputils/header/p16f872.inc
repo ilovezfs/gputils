@@ -23,6 +23,7 @@
 
 ;Rev:   Date:    Reason:
 
+;1.01   11/17/05 Added the INTCON bits TMR0IE and TMR0IF
 ;1.00   01/25/98 Initial Release
 
 ;==========================================================================
@@ -109,9 +110,11 @@ C                            EQU     H'0000'
 GIE                          EQU     H'0007'
 PEIE                         EQU     H'0006'
 T0IE                         EQU     H'0005'
+TMR0IE                       EQU     H'0005'
 INTE                         EQU     H'0004'
 RBIE                         EQU     H'0003'
 T0IF                         EQU     H'0002'
+TMR0IF                       EQU     H'0002'
 INTF                         EQU     H'0001'
 RBIF                         EQU     H'0000'
 

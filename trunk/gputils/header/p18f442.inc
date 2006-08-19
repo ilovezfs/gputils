@@ -654,15 +654,15 @@ AN7             EQU  2
 ;     OSCS = ON            Enabled
 ;     OSCS = OFF           Disabled
 ;
-;   Power Up Timer:
+;   Power-up Timer:
 ;     PWRT = ON            Enabled
 ;     PWRT = OFF           Disabled
 ;
-;   Brown Out Reset:
+;   Brown-out Reset:
 ;     BOR = OFF            Disabled
 ;     BOR = ON             Enabled
 ;
-;   Brown Out Voltage:
+;   Brown-out Voltage:
 ;     BORV = 45            4.5V
 ;     BORV = 42            4.2V
 ;     BORV = 27            2.7V
@@ -682,7 +682,7 @@ AN7             EQU  2
 ;     WDTPS = 64           1:64
 ;     WDTPS = 128          1:128
 ;
-;   CCP2 Mux:
+;   CCP2 MUX:
 ;     CCP2MUX = OFF        Disable (RB3)
 ;     CCP2MUX = ON         Enable (RC1)
 ;
@@ -782,9 +782,9 @@ _HSPLL_OSC_1H      EQU  H'FE'	; HS PLL
 _RCIO_OSC_1H       EQU  H'FF'	; RC w/OSC2 as an IO pin (RA6)
 
 ;Configuration Byte 2L Options
-_BOR_ON_2L         EQU  H'FF'	; Brown-Out Reset enable
+_BOR_ON_2L         EQU  H'FF'	; Brown-out Reset enable
 _BOR_OFF_2L        EQU  H'FD'
-_PWRT_OFF_2L       EQU  H'FF'	; Power-Up Timer enable
+_PWRT_OFF_2L       EQU  H'FF'	; Power-up Timer enable
 _PWRT_ON_2L        EQU  H'FE'
 _BORV_20_2L        EQU  H'FF'	; BOR Voltage - 2.0v
 _BORV_27_2L        EQU  H'FB'	;               2.7v
@@ -804,7 +804,7 @@ _WDTPS_2_2H        EQU  H'F3'
 _WDTPS_1_2H        EQU  H'F1'
 
 ;Configuration Byte 3H Options
-_CCP2MX_ON_3H      EQU  H'FF'	; CCP2 pin Mux enable
+_CCP2MX_ON_3H      EQU  H'FF'	; CCP2 pin MUX enable
 _CCP2MX_OFF_3H     EQU  H'FE'
 
 ;Configuration Byte 4L Options

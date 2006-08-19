@@ -4,7 +4,7 @@
 ;  $Id$
 ;  MPASM PIC18F24J10 processor include
 ; 
-;  (c) Copyright 1999-2005 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2006 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -77,6 +77,7 @@ DDRB             EQU  H'0F93'
 TRISB            EQU  H'0F93'
 DDRC             EQU  H'0F94'
 TRISC            EQU  H'0F94'
+OSCTUNE          EQU  H'0F9B'
 PIE1             EQU  H'0F9D'
 PIR1             EQU  H'0F9E'
 IPR1             EQU  H'0F9F'
@@ -367,6 +368,10 @@ TRISC4           EQU  H'0004'
 TRISC5           EQU  H'0005'
 TRISC6           EQU  H'0006'
 TRISC7           EQU  H'0007'
+
+
+;----- OSCTUNE Bits -----------------------------------------------------
+PLLEN            EQU  H'0006'
 
 
 ;----- PIE1 Bits -----------------------------------------------------
@@ -894,7 +899,8 @@ STKFUL           EQU  H'0007'
        __BADRAM  H'0400'-H'0F7F'
        __BADRAM  H'0F83'-H'0F88'
        __BADRAM  H'0F8C'-H'0F91'
-       __BADRAM  H'0F95'-H'0F9C'
+       __BADRAM  H'0F95'-H'0F9A'
+       __BADRAM  H'0F9C'
        __BADRAM  H'0FA8'-H'0FAA'
        __BADRAM  H'0FB1'-H'0FB3'
        __BADRAM  H'0FB9'
@@ -907,43 +913,45 @@ STKFUL           EQU  H'0007'
 ;              superseded by the CONFIG directive.  The following settings
 ;              are available for this device.
 ;
-;   Background Debugger Enable:
-;     DEBUG = ON           Enabled
-;     DEBUG = OFF          Disabled
+;   Background Debugger Enable bit:
+;     DEBUG = ON           Background debugger enabled; RB6 and RB7 are dedicated to In-Circuit Debug
+;     DEBUG = OFF          Background debugger disabled; RB6 and RB7 configured as general purpose I/O pins
 ;
-;   Extended Instruction Set Enable:
-;     XINST = OFF          Disabled
-;     XINST = ON           Enabled
+;   Extended Instruction Set Enable bit:
+;     XINST = OFF          Instruction set extension and Indexed Addressing mode disabled (Legacy mode)
+;     XINST = ON           Instruction set extension and Indexed Addressing mode enabled
 ;
-;   Stack Overflow Reset:
-;     STVR = OFF           Disabled
-;     STVR = ON            Enabled
+;   Stack Overflow/Underflow Reset Enable bit:
+;     STVREN = OFF         Reset on stack overflow/underflow disabled
+;     STVREN = ON          Reset on stack overflow/underflow enabled
 ;
-;   Watchdog Timer:
-;     WDT = OFF            Disabled
-;     WDT = ON             Enabled
+;   Watchdog Timer Enable bit:
+;     WDTEN = OFF          WDT disabled (control is placed on SWDTEN bit)
+;     WDTEN = ON           WDT enabled
 ;
-;   Code Protection:
-;     CP0 = ON             Enabled
-;     CP0 = OFF            Disabled
+;   Code Protection bit:
+;     CP0 = ON             Program memory is code-protected
+;     CP0 = OFF            Program memory is not code-protected
 ;
-;   Fail Safe Clock Monitor:
-;     FCMEM = OFF          Disabled
-;     FCMEM = ON           Enabled
+;   Fail-Safe Clock Monitor Enable bit:
+;     FCMEN = OFF          Fail-Safe Clock Monitor disabled
+;     FCMEN = ON           Fail-Safe Clock Monitor enabled
 ;
-;   Internal/External Switch Over:
-;     IESO = OFF           Disabled
-;     IESO = ON            Enabled
+;   Two-Speed Start-up (Internal/External Oscillator Switchover) Control bit:
+;     IESO = OFF           Two-Speed Start-up disabled
+;     IESO = ON            Two-Speed Start-up enabled
 ;
 ;   Default/Reset System Clock Select bit:
-;     FOSC1 = INTRC        INTRC enabled as system clock
-;     FOSC1 = FOSC         Clock selected by FOSC0
+;     FOSC2 = OFF          INTRC enabled as system clock when OSCCON<1:0> = 00
+;     FOSC2 = ON           Clock selected by FOSC as system clock is enabled when OSCCON<1:0> = 00
 ;
-;   FOSC0: Oscillator Selection bit:
-;     FOSC0 = HS           HS oscillator
-;     FOSC0 = EC           External Clock
+;   Oscillator Selection bits:
+;     FOSC = HS            HS oscillator
+;     FOSC = HSPLL         HS oscillator, PLL enabled and under software control
+;     FOSC = EC            EC oscillator, CLKO function on OSC2
+;     FOSC = ECPLL         EC oscillator, PLL enabled and under software control, CLKO function on OSC2
 ;
-;   Watchdog Postscaler:
+;   Watchdog Timer Postscale Select bits:
 ;     WDTPS = 1            1:1
 ;     WDTPS = 2            1:2
 ;     WDTPS = 4            1:4
@@ -961,85 +969,11 @@ STKFUL           EQU  H'0007'
 ;     WDTPS = 16384        1:16384
 ;     WDTPS = 32768        1:32768
 ;
-;   CCP2 Mux:
-;     CCP2MUX = OFF        CCP2 Multiplexed with RB3
-;     CCP2MUX = ON         CCP2 Multiplexed with RC1
+;   CCP2 MUX bit:
+;     CCP2MX = ALTERNATE   CCP2 is multiplexed with RB3
+;     CCP2MX = DEFAULT     CCP2 is multiplexed with RC1
 ;
 ;==========================================================================
-;==========================================================================
-;
-;       Configuration Bits
-;
-;   NAME            Address
-;   CONFIG1L        300000h
-;   CONFIG1H        300001h
-;   CONFIG2L        300002h
-;   CONFIG2H        300003h
-;   CONFIG3H        300005h
-;
-;==========================================================================
-
-; The following is an assignment of address values for all of the
-; configuration registers for the purpose of table reads
-_CONFIG1L        EQU  H'300000'
-_CONFIG1H        EQU  H'300001'
-_CONFIG2L        EQU  H'300002'
-_CONFIG2H        EQU  H'300003'
-_CONFIG3H        EQU  H'300005'
-
-;----- CONFIG1L Options --------------------------------------------------
-_DEBUG_ON_1L         EQU  H'7F'    ; Enabled
-_DEBUG_OFF_1L        EQU  H'FF'    ; Disabled
-
-_XINST_OFF_1L        EQU  H'BF'    ; Disabled
-_XINST_ON_1L         EQU  H'FF'    ; Enabled
-
-_STVR_OFF_1L         EQU  H'DF'    ; Disabled
-_STVR_ON_1L          EQU  H'FF'    ; Enabled
-
-_WDT_OFF_1L          EQU  H'FE'    ; Disabled
-_WDT_ON_1L           EQU  H'FF'    ; Enabled
-
-;----- CONFIG1H Options --------------------------------------------------
-_CP0_ON_1H           EQU  H'FB'    ; Enabled
-_CP0_OFF_1H          EQU  H'FF'    ; Disabled
-
-;----- CONFIG2L Options --------------------------------------------------
-_FCMEM_OFF_2L        EQU  H'BF'    ; Disabled
-_FCMEM_ON_2L         EQU  H'FF'    ; Enabled
-
-_IESO_OFF_2L         EQU  H'7F'    ; Disabled
-_IESO_ON_2L          EQU  H'FF'    ; Enabled
-
-_FOSC1_INTRC_2L      EQU  H'FD'    ; INTRC enabled as system clock
-_FOSC1_FOSC_2L       EQU  H'FF'    ; Clock selected by FOSC0
-
-_FOSC0_HS_2L         EQU  H'FE'    ; HS oscillator
-_FOSC0_EC_2L         EQU  H'FF'    ; External Clock
-
-;----- CONFIG2H Options --------------------------------------------------
-_WDTPS_1_2H          EQU  H'F0'    ; 1:1
-_WDTPS_2_2H          EQU  H'F1'    ; 1:2
-_WDTPS_4_2H          EQU  H'F2'    ; 1:4
-_WDTPS_8_2H          EQU  H'F3'    ; 1:8
-_WDTPS_16_2H         EQU  H'F4'    ; 1:16
-_WDTPS_32_2H         EQU  H'F5'    ; 1:32
-_WDTPS_64_2H         EQU  H'F6'    ; 1:64
-_WDTPS_128_2H        EQU  H'F7'    ; 1:128
-_WDTPS_256_2H        EQU  H'F8'    ; 1:256
-_WDTPS_512_2H        EQU  H'F9'    ; 1:512
-_WDTPS_1024_2H       EQU  H'FA'    ; 1:1024
-_WDTPS_2048_2H       EQU  H'FB'    ; 1:2048
-_WDTPS_4096_2H       EQU  H'FC'    ; 1:4096
-_WDTPS_8192_2H       EQU  H'FD'    ; 1:8192
-_WDTPS_16384_2H      EQU  H'FE'    ; 1:16384
-_WDTPS_32768_2H      EQU  H'FF'    ; 1:32768
-
-;----- CONFIG3H Options --------------------------------------------------
-_CCP2MUX_OFF_3H      EQU  H'FE'    ; CCP2 Multiplexed with RB3
-_CCP2MUX_ON_3H       EQU  H'FF'    ; CCP2 Multiplexed with RC1
-
-
 _DEVID1          EQU  H'3FFFFE'
 _DEVID2          EQU  H'3FFFFF'
 

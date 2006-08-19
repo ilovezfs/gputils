@@ -1128,7 +1128,7 @@ STKFUL           EQU  H'0007'
 ;     OSC = RC1            External RC, RA6 is CLKOUT
 ;     OSC = RC             External RC, RA6 is CLKOUT
 ;
-;   Fail Safe Clock Monitor Enable:
+;   Fail-Safe Clock Monitor Enable:
 ;     FCMEN = OFF          Disabled
 ;     FCMEN = ON           Enabled
 ;
@@ -1136,15 +1136,15 @@ STKFUL           EQU  H'0007'
 ;     IESO = OFF           Disabled
 ;     IESO = ON            Enabled
 ;
-;   Power Up Timer:
+;   Power-up Timer:
 ;     PWRTEN = ON          Enabled
 ;     PWRTEN = OFF         Disabled
 ;
-;   Brown Out Reset:
+;   Brown-out Reset:
 ;     BOREN = OFF          Disabled
 ;     BOREN = ON           Enabled
 ;
-;   Brown Out Voltage:
+;   Brown-out Voltage:
 ;     BORV = 45            4.5V
 ;     BORV = 42            4.2V
 ;     BORV = 27            2.7V
@@ -1176,7 +1176,7 @@ STKFUL           EQU  H'0007'
 ;     WDPS = 16384         1:16384
 ;     WDPS = 32768         1:32768
 ;
-;   Timer1 Oscillator Mux:
+;   Timer1 Oscillator MUX:
 ;     T1OSCMX = OFF        Active
 ;     T1OSCMX = ON         Inactive
 ;
@@ -1188,7 +1188,7 @@ STKFUL           EQU  H'0007'
 ;     LPOL = LOW           Active low
 ;     LPOL = HIGH          Active high
 ;
-;   PWM output pins RESET state control:
+;   PWM output pins Reset state control:
 ;     PWMPIN = ON          Enabled
 ;     PWMPIN = OFF         Disabled
 ;
@@ -1197,20 +1197,20 @@ STKFUL           EQU  H'0007'
 ;     MCLRE = ON           Enabled
 ;
 ;   External clock MUX bit:
-;     EXCLKMX = RD0        MUXed with RD0
-;     EXCLKMX = RC3        MUXed with RC3
+;     EXCLKMX = RD0        Multiplexed with RD0
+;     EXCLKMX = RC3        Multiplexed with RC3
 ;
 ;   PWM4 MUX bit:
-;     PWM4MX = RD5         MUXed with RD5
-;     PWM4MX = RB5         MUXed with RB5
+;     PWM4MX = RD5         Multiplexed with RD5
+;     PWM4MX = RB5         Multiplexed with RB5
 ;
 ;   SSP I/O MUX bit:
-;     SSPMX = RD1          SDO output muxed with RD1
-;     SSPMX = RC7          SD0 output muxed with RC7
+;     SSPMX = RD1          SDO output is multiplexed with RD1
+;     SSPMX = RC7          SD0 output is multiplexed with RC7
 ;
 ;   FLTA MUX bit:
-;     FLTAMX = RD4         MUXed with RD4
-;     FLTAMX = RC1         MUXed with RC1
+;     FLTAMX = RD4         Multiplexed with RD4
+;     FLTAMX = RC1         Multiplexed with RC1
 ;
 ;   Stack Overflow Reset:
 ;     STVREN = OFF         Disabled
@@ -1405,17 +1405,17 @@ _PWMPIN_OFF_3L       EQU  H'FF'    ; Disabled
 _MCLRE_OFF_3H        EQU  H'7F'    ; Disabled
 _MCLRE_ON_3H         EQU  H'FF'    ; Enabled
 
-_EXCLKMX_RD0_3H      EQU  H'EF'    ; MUXed with RD0
-_EXCLKMX_RC3_3H      EQU  H'FF'    ; MUXed with RC3
+_EXCLKMX_RD0_3H      EQU  H'EF'    ; Multiplexed with RD0
+_EXCLKMX_RC3_3H      EQU  H'FF'    ; Multiplexed with RC3
 
-_PWM4MX_RD5_3H       EQU  H'F7'    ; MUXed with RD5
-_PWM4MX_RB5_3H       EQU  H'FF'    ; MUXed with RB5
+_PWM4MX_RD5_3H       EQU  H'F7'    ; Multiplexed with RD5
+_PWM4MX_RB5_3H       EQU  H'FF'    ; Multiplexed with RB5
 
-_SSPMX_RD1_3H        EQU  H'FB'    ; SDO output muxed with RD1
-_SSPMX_RC7_3H        EQU  H'FF'    ; SD0 output muxed with RC7
+_SSPMX_RD1_3H        EQU  H'FB'    ; SDO output is multiplexed with RD1
+_SSPMX_RC7_3H        EQU  H'FF'    ; SD0 output is multiplexed with RC7
 
-_FLTAMX_RD4_3H       EQU  H'FE'    ; MUXed with RD4
-_FLTAMX_RC1_3H       EQU  H'FF'    ; MUXed with RC1
+_FLTAMX_RD4_3H       EQU  H'FE'    ; Multiplexed with RD4
+_FLTAMX_RC1_3H       EQU  H'FF'    ; Multiplexed with RC1
 
 ;----- CONFIG4L Options --------------------------------------------------
 _STVREN_OFF_4L       EQU  H'FE'    ; Disabled

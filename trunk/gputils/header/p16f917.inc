@@ -1,5 +1,5 @@
         LIST
-; P16F917.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+; P16F917.INC  Standard Header File, Version 1.03    Microchip Technology, Inc.
         NOLIST
 
 ; This header file defines configurations, registers, and other useful bits of
@@ -24,7 +24,10 @@
 ;Rev:   Date:    Reason:
 ;1.00   06/11/04 Initial Release
 ;1.01	08/16/04 Added EECON2 
- 
+;1.02	05/20/05 Removed EECON2 from badram
+;1.03   10/05/05 Correct names of bits in ANSEL, Add EEADRH and EEADRL bit 
+;			definitions
+
 
 ;==========================================================================
 ;
@@ -317,14 +320,22 @@ TUN0		             EQU     H'0000'
 
 ;----- ANSEL Bits ---------------------------------------------------------
 
-AN7			     EQU     H'0007'
-AN6			     EQU     H'0006'
-AN5			     EQU     H'0005'
-AN4			     EQU     H'0004'
-AN3			     EQU     H'0003'
-AN2			     EQU     H'0002'
-AN1			     EQU     H'0001'
-AN0			     EQU     H'0000'
+ANS7			     EQU     H'0007'
+AN7                          EQU     H'0007'    ; Backward compatibility only
+ANS6			     EQU     H'0006'
+AN6                          EQU     H'0006'    ; Backward compatibility only
+ANS5			     EQU     H'0005'
+AN5                          EQU     H'0005'    ; Backward compatibility only
+ANS4			     EQU     H'0004'
+AN4                          EQU     H'0004'    ; Backward compatibility only
+ANS3			     EQU     H'0003'
+AN3                          EQU     H'0003'    ; Backward compatibility only
+ANS2			     EQU     H'0002'
+AN2                          EQU     H'0002'    ; Backward compatibility only
+ANS1			     EQU     H'0001'
+AN1                          EQU     H'0001'    ; Backward compatibility only
+ANS0			     EQU     H'0000'
+AN0                          EQU     H'0000'    ; Backward compatibility only
 
 
 ;----- SSPSTAT Bits -------------------------------------------------------
@@ -474,7 +485,7 @@ LVDL2                        EQU     H'0002'
 LVDL1                        EQU     H'0001'
 LVDL0                        EQU     H'0000'
 
-;----- LCDDAT0 Bits -------------------------------------------------------
+;----- LCDDATA0 Bits -------------------------------------------------------
 
 SEG7COM0		     EQU     H'0007'
 SEG6COM0		     EQU     H'0006'
@@ -494,7 +505,7 @@ S2C0			     EQU     H'0002'
 S1C0			     EQU     H'0001'
 S0C0	 		     EQU     H'0000'
 
-;----- LCDDAT1 Bits -------------------------------------------------------
+;----- LCDDATA1 Bits -------------------------------------------------------
 
 SEG15COM0		     EQU     H'0007'
 SEG14COM0		     EQU     H'0006'
@@ -514,7 +525,7 @@ S10C0			     EQU     H'0002'
 S9C0			     EQU     H'0001'
 S8C0	 		     EQU     H'0000'
 
-;----- LCDDAT2 Bits -------------------------------------------------------
+;----- LCDDATA2 Bits -------------------------------------------------------
 
 SEG23COM0		     EQU     H'0007'
 SEG22COM0		     EQU     H'0006'
@@ -534,7 +545,7 @@ S18C0			     EQU     H'0002'
 S17C0			     EQU     H'0001'
 S16C0	 		     EQU     H'0000'
 
-;----- LCDDAT3 Bits -------------------------------------------------------
+;----- LCDDATA3 Bits -------------------------------------------------------
 
 SEG7COM1		     EQU     H'0007'
 SEG6COM1		     EQU     H'0006'
@@ -554,7 +565,7 @@ S2C1			     EQU     H'0002'
 S1C1			     EQU     H'0001'
 S0C1	 		     EQU     H'0000'
 
-;----- LCDDAT4 Bits -------------------------------------------------------
+;----- LCDDATA4 Bits -------------------------------------------------------
 
 SEG15COM1		     EQU     H'0007'
 SEG14COM1		     EQU     H'0006'
@@ -574,7 +585,7 @@ S10C1			     EQU     H'0002'
 S9C1			     EQU     H'0001'
 S8C1	 		     EQU     H'0000'
 
-;----- LCDDAT5 Bits -------------------------------------------------------
+;----- LCDDATA5 Bits -------------------------------------------------------
 
 SEG23COM1		     EQU     H'0007'
 SEG22COM1		     EQU     H'0006'
@@ -594,7 +605,7 @@ S18C1			     EQU     H'0002'
 S17C1			     EQU     H'0001'
 S16C1	 		     EQU     H'0000'
 
-;----- LCDDAT6 Bits -------------------------------------------------------
+;----- LCDDATA6 Bits -------------------------------------------------------
 
 SEG7COM2		     EQU     H'0007'
 SEG6COM2		     EQU     H'0006'
@@ -614,7 +625,7 @@ S2C2			     EQU     H'0002'
 S1C2			     EQU     H'0001'
 S0C2	 		     EQU     H'0000'
 
-;----- LCDDAT7 Bits -------------------------------------------------------
+;----- LCDDATA7 Bits -------------------------------------------------------
 
 SEG15COM2		     EQU     H'0007'
 SEG14COM2		     EQU     H'0006'
@@ -634,7 +645,7 @@ S10C2			     EQU     H'0002'
 S9C2			     EQU     H'0001'
 S8C2	 		     EQU     H'0000'
 
-;----- LCDDAT8 Bits -------------------------------------------------------
+;----- LCDDATA8 Bits -------------------------------------------------------
 
 SEG23COM2		     EQU     H'0007'
 SEG22COM2		     EQU     H'0006'
@@ -654,7 +665,7 @@ S18C2			     EQU     H'0002'
 S17C2			     EQU     H'0001'
 S16C2	 		     EQU     H'0000'
 
-;----- LCDDAT9 Bits -------------------------------------------------------
+;----- LCDDATA9 Bits -------------------------------------------------------
 
 SEG7COM3		     EQU     H'0007'
 SEG6COM3		     EQU     H'0006'
@@ -674,7 +685,7 @@ S2C3			     EQU     H'0002'
 S1C3			     EQU     H'0001'
 S0C3	 		     EQU     H'0000'
 
-;----- LCDDAT10 Bits -------------------------------------------------------
+;----- LCDDATA10 Bits -------------------------------------------------------
 
 SEG15COM3		     EQU     H'0007'
 SEG14COM3		     EQU     H'0006'
@@ -694,7 +705,7 @@ S10C3			     EQU     H'0002'
 S9C3			     EQU     H'0001'
 S8C3	 		     EQU     H'0000'
 
-;----- LCDDAT11 Bits -------------------------------------------------------
+;----- LCDDATA11 Bits -------------------------------------------------------
 
 SEG23COM3		     EQU     H'0007'
 SEG22COM3		     EQU     H'0006'
@@ -754,7 +765,7 @@ SEGEN10			     EQU     H'0002'
 SEGEN9			     EQU     H'0001'
 SEGEN8			     EQU     H'0000'
 
-;----- LCDSE3 Bits --------------------------------------------------------
+;----- LCDSE2 Bits --------------------------------------------------------
 
 SE23			     EQU     H'0007'
 SE22			     EQU     H'0006'
@@ -784,6 +795,25 @@ EEWR			     EQU     H'0001'
 RD			     EQU     H'0000'
 EERD			     EQU     H'0000'
 
+;----- EEADRH Bits --------------------------------------------------------
+
+EEADRH4			     EQU     H'0004'
+EEADRH3			     EQU     H'0003'
+EEADRH2			     EQU     H'0002'
+EEADRH1			     EQU     H'0001'
+EEADRH0			     EQU     H'0000'
+
+;----- EEADRL Bits --------------------------------------------------------
+
+EEADRL7			     EQU     H'0007'
+EEADRL6			     EQU     H'0006'
+EEADRL5			     EQU     H'0005'
+EEADRL4			     EQU     H'0004'
+EEADRL3			     EQU     H'0003'
+EEADRL2			     EQU     H'0002'
+EEADRL1			     EQU     H'0001'
+EEADRL0			     EQU     H'0000'
+
 
 ;==========================================================================
 ;
@@ -794,7 +824,7 @@ EERD			     EQU     H'0000'
         __MAXRAM H'1FF'
         __BADRAM H'9A'-H'9B'
         __BADRAM H'11F'
-        __BADRAM H'185', H'187'-H'189', H'18D'-H'18F'
+        __BADRAM H'185', H'187'-H'189', H'18E'-H'18F'
 
 ;==========================================================================
 ;
