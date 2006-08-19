@@ -1518,15 +1518,15 @@ RG4             EQU  4
 ;     OSCS = ON            Enabled
 ;     OSCS = OFF           Disabled
 ;
-;   Power Up Timer:
+;   Power-up Timer:
 ;     PWRT = ON            Enabled
 ;     PWRT = OFF           Disabled
 ;
-;   Brown Out Reset:
+;   Brown-out Reset:
 ;     BOR = OFF            Disabled
 ;     BOR = ON             Enabled
 ;
-;   Brown Out Voltage:
+;   Brown-out Voltage:
 ;     BORV = 45            4.5V
 ;     BORV = 42            4.2V
 ;     BORV = 27            2.7V
@@ -1585,9 +1585,9 @@ _HSPLL_OSC_1      EQU  H'FE'    ; HS PLL
 _RCIO_OSC_1       EQU  H'FF'    ; RC w/OSC2 as an IO pin (RA6)
 
 ;Configuration Byte 2 Options
-_BOR_ON_2         EQU  H'FF'    ; Brown-Out Reset enable
+_BOR_ON_2         EQU  H'FF'    ; Brown-out Reset enable
 _BOR_OFF_2        EQU  H'FD'
-_PWRT_OFF_2       EQU  H'FF'    ; Power-Up Timer enable
+_PWRT_OFF_2       EQU  H'FF'    ; Power-up Timer enable
 _PWRT_ON_2        EQU  H'FE'
 _BORV_25_2        EQU  H'FF'    ; BOR Voltage - 2.5v
 _BORV_27_2        EQU  H'FB'    ;               2.7v

@@ -24,7 +24,8 @@
 ;Rev:   Date:    Reason:
 
 ;1.00   12/13/04 Initial Release
-
+;1.01   07/13/05 Updated comparator names and fuse section
+;1.02	08/26/05 Added port bit names
 
 ;==========================================================================
 ;
@@ -55,7 +56,7 @@ STATUS                       EQU     H'0003'
 FSR                          EQU     H'0004'
 OSCCAL                       EQU     H'0005'
 GPIO                         EQU     H'0006'
-CMCON0                       EQU     H'0007'
+CM1CON0                      EQU     H'0007'
 ADCON0                       EQU     H'0008'
 ADRES                        EQU     H'0009'
 	
@@ -92,16 +93,17 @@ CAL2                         EQU     H'0003'
 CAL1                         EQU     H'0002'
 CAL0                         EQU     H'0001'
 
-;----- CMCON0 Bits --------------------------------------------------------
+;----- CM1CON0 Bits --------------------------------------------------------
 
-CMP0OUT                     EQU     H'0007'	
-NOT_COUT0EN                 EQU     H'0006'
-C0POL                       EQU     H'0005'
-NOT_CMP0T0CS                EQU     H'0004'
-CMP0ON                      EQU     H'0003'
-CN0REF                      EQU     H'0002'
-CP0REF                      EQU     H'0001'	
-NOT_CWU0                    EQU     H'0000'
+C1OUT                        EQU     H'0007'	
+NOT_C1OUTEN                  EQU     H'0006'
+C1POL                        EQU     H'0005'
+NOT_C1T0CS                   EQU     H'0004'
+C1ON                         EQU     H'0003'
+C1NREF                       EQU     H'0002'
+C1PREF                       EQU     H'0001'	
+NOT_C1WU                     EQU     H'0000'
+
 
 ;----- ADCON0 Bits --------------------------------------------------------
 
@@ -115,7 +117,13 @@ GO                          EQU     H'0001'
 NOT_DONE                    EQU     H'0001'
 ADON                        EQU     H'0000'
 
-
+;----- GPIO Bits --------------------------------------------------------
+GP0                         EQU     H'0000'
+GP1                         EQU     H'0001'
+GP2                         EQU     H'0002'
+GP3                         EQU     H'0003'
+GP4                         EQU     H'0004'
+GP5                         EQU     H'0005'
 
 ;==========================================================================
 ;

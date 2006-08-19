@@ -22,6 +22,7 @@
 ;==========================================================================
 
 ;Rev:   Date:    Reason:
+;1.03   11/17/05 Added the ADCON1 bit ADCS2.
 ;1.02	05/28/02 Corrected values for _CP_ALL and _CP_OFF in Configuration Bits section.
 ;1.01   09/13/01 Added the PIR2 bit CMIF and the PIE2 bit CMIE
 ;1.00   04/19/01 Initial Release (BD - generated from PIC16F877.inc)
@@ -342,6 +343,7 @@ CVR0                         EQU     H'0000'
 ;----- ADCON1 Bits --------------------------------------------------------
 
 ADFM                         EQU     H'0007'
+ADCS2                        EQU     H'0006'
 PCFG3                        EQU     H'0003'
 PCFG2                        EQU     H'0002'
 PCFG1                        EQU     H'0001'

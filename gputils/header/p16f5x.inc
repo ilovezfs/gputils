@@ -102,7 +102,7 @@ PORTC                     EQU     H'0007'
 PORTC                     EQU     H'0007'
 PORTD                     EQU     H'0008'
 PORTE                     EQU     H'0009'
-           __MAXRAM H'07F'
+           __MAXRAM H'0FF'
         ENDIF
 
 ;==========================================================================

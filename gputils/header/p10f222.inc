@@ -3,7 +3,7 @@
 	NOLIST
 
 ; This header file defines configurations, registers, and other useful bits of
-; information for the PIC10F206 microcontroller.  These names are taken to match 
+; information for the PIC10F222 microcontroller.  These names are taken to match 
 ; the data sheets as closely as possible.  
 
 ; Note that the processor must be selected before this file is 
@@ -24,7 +24,8 @@
 ;Rev:   Date:    Reason:
 
 ;1.00   01/19/05 Initial Release
-
+;1.01   08/09/05 Fixed formatting and correct osc speed select fuse name
+;1.02   01/13/06 Added GPIO bit descriptions
 
 ;==========================================================================
 ;
@@ -54,8 +55,8 @@ STATUS                       EQU     H'0003'
 FSR                          EQU     H'0004'
 OSCCAL                       EQU     H'0005'
 GPIO                         EQU     H'0006'
-ADCON0					     EQU     H'0007'
-ADRES						 EQU	 H'0008'
+ADCON0                       EQU     H'0007'
+ADRES                        EQU     H'0008'
 
 
 ;----- STATUS Bits --------------------------------------------------------
@@ -86,18 +87,24 @@ CAL4                         EQU     H'0005'
 CAL3                         EQU     H'0004'
 CAL2                         EQU     H'0003'
 CAL1                         EQU     H'0002'
-CAL0			     		 EQU     H'0001'
-FOSC4					     EQU     H'0000'
+CAL0                         EQU     H'0001'
+FOSC4			     EQU     H'0000'
+
+;----- GPIO Bits --------------------------------------------------------
+GP0                         EQU     H'0000'
+GP1                         EQU     H'0001'
+GP2                         EQU     H'0002'
+GP3                         EQU     H'0003'
 
 ;----- ADCON0 Bits --------------------------------------------------------
 
-ANS1						 EQU     H'0007'
-ANS0 						 EQU     H'0006'
-CHS1						 EQU     H'0003'
-CHS0						 EQU     H'0002'
-GO							 EQU     H'0001'
-NOT_DONE					 EQU     H'0001'
-ADON						 EQU     H'0000'
+ANS1                         EQU     H'0007'
+ANS0                         EQU     H'0006'
+CHS1                         EQU     H'0003'
+CHS0                         EQU     H'0002'
+GO                           EQU     H'0001'
+NOT_DONE                     EQU     H'0001'
+ADON                         EQU     H'0000'
 
 ;----- ADRES Bits --------------------------------------------------------
 
@@ -107,8 +114,8 @@ ADRES5                       EQU     H'0005'
 ADRES4                       EQU     H'0004'
 ADRES3                       EQU     H'0003'
 ADRES2                       EQU     H'0002'
-ADRES1			     		 EQU     H'0001'
-ADRES0			    		 EQU     H'0000'
+ADRES1			     EQU     H'0001'
+ADRES0			     EQU     H'0000'
 
 
 ;==========================================================================
@@ -131,9 +138,10 @@ _CP_ON                       EQU     H'0FF7'
 _CP_OFF                      EQU     H'0FFF'
 _WDT_ON                      EQU     H'0FFF'
 _WDT_OFF                     EQU     H'0FFB'
-_MCPU_ON					 EQU	 H'0FFD'
-_MCPU_OFF					 EQU	 H'0FFF'
-_IOFSCS_8MHZ				 EQU	 H'0FFF'
-_IOFSCS_4MHZ				 EQU	 H'0FFE'
-
+_MCPU_ON                     EQU     H'0FFD'
+_MCPU_OFF                    EQU     H'0FFF'
+_IOFSCS_8MHZ                 EQU     H'0FFF'
+_IOFSCS_4MHZ                 EQU     H'0FFE'
+_IOSCFS_8MHZ                 EQU     H'0FFF';matches datasheet
+_IOSCFS_4MHZ                 EQU     H'0FFE';matches datasheet
 	LIST

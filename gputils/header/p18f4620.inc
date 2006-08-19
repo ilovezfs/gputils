@@ -312,11 +312,10 @@ NOT_WR           EQU  H'0001'
 NOT_CS           EQU  H'0002'
 NOT_MCLR         EQU  H'0003'
 
-VPP              EQU  H'0003'
-
 AN5              EQU  H'0000'
 AN6              EQU  H'0001'
 AN7              EQU  H'0002'
+VPP              EQU  H'0003'
 
 
 ;----- LATA Bits -----------------------------------------------------
@@ -668,6 +667,9 @@ CCP2M0           EQU  H'0000'
 CCP2M1           EQU  H'0001'
 CCP2M2           EQU  H'0002'
 CCP2M3           EQU  H'0003'
+CCP2Y            EQU  H'0004'
+CCP2X            EQU  H'0005'
+
 DC2B0            EQU  H'0004'
 DC2B1            EQU  H'0005'
 
@@ -677,10 +679,11 @@ CCP1M0           EQU  H'0000'
 CCP1M1           EQU  H'0001'
 CCP1M2           EQU  H'0002'
 CCP1M3           EQU  H'0003'
+CCP1Y            EQU  H'0004'
+CCP1X            EQU  H'0005'
+
 DC1B0            EQU  H'0004'
 DC1B1            EQU  H'0005'
-P1M0             EQU  H'0006'
-P1M1             EQU  H'0007'
 
 
 ;----- ADCON2 Bits -----------------------------------------------------
@@ -874,6 +877,8 @@ T0CS             EQU  H'0005'
 T016BIT          EQU  H'0006'
 TMR0ON           EQU  H'0007'
 
+T08BIT           EQU  H'0006'
+
 
 ;----- STATUS Bits -----------------------------------------------------
 C                EQU  H'0000'
@@ -929,8 +934,20 @@ GIEH             EQU  H'0007'
 
 
 ;----- STKPTR Bits -----------------------------------------------------
+STKPTR0          EQU  H'0000'
+STKPTR1          EQU  H'0001'
+STKPTR2          EQU  H'0002'
+STKPTR3          EQU  H'0003'
+STKPTR4          EQU  H'0004'
 STKUNF           EQU  H'0006'
 STKOVF           EQU  H'0007'
+
+SP0              EQU  H'0000'
+SP1              EQU  H'0001'
+SP2              EQU  H'0002'
+SP3              EQU  H'0003'
+SP4              EQU  H'0004'
+STKFUL           EQU  H'0007'
 
 
 
@@ -965,7 +982,7 @@ STKOVF           EQU  H'0007'
 ;     OSC = INTIO67        INTRC-OSC2 as RA6, OSC1 as RA7
 ;     OSC = INTIO7         INTRC-OSC2 as Clock Out, OSC1 as RA7
 ;
-;   Fail Safe Clock Monitor:
+;   Fail-Safe Clock Monitor:
 ;     FCMEN = OFF          Disabled
 ;     FCMEN = ON           Enabled
 ;
@@ -973,21 +990,21 @@ STKOVF           EQU  H'0007'
 ;     IESO = OFF           Disabled
 ;     IESO = ON            Enabled
 ;
-;   Power Up Timer:
+;   Power-up Timer:
 ;     PWRT = ON            Enabled
 ;     PWRT = OFF           Disabled
 ;
-;   Brown Out Reset:
+;   Brown-out Reset:
 ;     BOREN = OFF          Disabled
 ;     BOREN = ON           SBOREN Enabled
-;     BOREN = NOSLP        Enabled except SLEEP, SBOREN Disabled
+;     BOREN = NOSLP        Enabled except Sleep, SBOREN Disabled
 ;     BOREN = SBORDIS      Enabled, SBOREN Disabled
 ;
-;   Brown Out Voltage:
-;     BORV = 46            4.6V
-;     BORV = 43            4.3V
-;     BORV = 28            2.8V
-;     BORV = 21            2.1V
+;   Brown-out Voltage:
+;     BORV = 0             Maximum setting
+;     BORV = 1             
+;     BORV = 2             
+;     BORV = 3             Minimum setting
 ;
 ;   Watchdog Timer:
 ;     WDT = OFF            Disabled
@@ -1019,13 +1036,13 @@ STKOVF           EQU  H'0007'
 ;     LPT1OSC = OFF        Disabled
 ;     LPT1OSC = ON         Enabled
 ;
-;   Port B A/D Enable:
-;     PBADEN = OFF         Port B<4:0> digital on RESET
-;     PBADEN = ON          Port B<4:0> analog on RESET
+;   PORTB A/D Enable:
+;     PBADEN = OFF         PORTB<4:0> digital on Reset
+;     PBADEN = ON          PORTB<4:0> analog on Reset
 ;
-;   CCP2 Mux:
-;     CCP2MX = PORTBE      Muxed with RB3
-;     CCP2MX = PORTC       Muxed with RC1
+;   CCP2 MUX:
+;     CCP2MX = PORTBE      Multiplexed with RB3
+;     CCP2MX = PORTC       Multiplexed with RC1
 ;
 ;   Stack Overflow Reset:
 ;     STVREN = OFF         Disabled
@@ -1173,13 +1190,13 @@ _PWRT_OFF_2L         EQU  H'FF'    ; Disabled
 
 _BOREN_OFF_2L        EQU  H'F9'    ; Disabled
 _BOREN_ON_2L         EQU  H'FB'    ; SBOREN Enabled
-_BOREN_NOSLP_2L      EQU  H'FD'    ; Enabled except SLEEP, SBOREN Disabled
+_BOREN_NOSLP_2L      EQU  H'FD'    ; Enabled except Sleep, SBOREN Disabled
 _BOREN_SBORDIS_2L    EQU  H'FF'    ; Enabled, SBOREN Disabled
 
-_BORV_46_2L          EQU  H'E7'    ; 4.6V
-_BORV_43_2L          EQU  H'EF'    ; 4.3V
-_BORV_28_2L          EQU  H'F7'    ; 2.8V
-_BORV_21_2L          EQU  H'FF'    ; 2.1V
+_BORV_0_2L           EQU  H'E7'    ; Maximum setting
+_BORV_1_2L           EQU  H'EF'    ; 
+_BORV_2_2L           EQU  H'F7'    ; 
+_BORV_3_2L           EQU  H'FF'    ; Minimum setting
 
 ;----- CONFIG2H Options --------------------------------------------------
 _WDT_OFF_2H          EQU  H'FE'    ; Disabled
@@ -1209,11 +1226,11 @@ _MCLRE_ON_3H         EQU  H'FF'    ; Enabled
 _LPT1OSC_OFF_3H      EQU  H'FB'    ; Disabled
 _LPT1OSC_ON_3H       EQU  H'FF'    ; Enabled
 
-_PBADEN_OFF_3H       EQU  H'FD'    ; Port B<4:0> digital on RESET
-_PBADEN_ON_3H        EQU  H'FF'    ; Port B<4:0> analog on RESET
+_PBADEN_OFF_3H       EQU  H'FD'    ; PORTB<4:0> digital on Reset
+_PBADEN_ON_3H        EQU  H'FF'    ; PORTB<4:0> analog on Reset
 
-_CCP2MX_PORTBE_3H    EQU  H'FE'    ; Muxed with RB3
-_CCP2MX_PORTC_3H     EQU  H'FF'    ; Muxed with RC1
+_CCP2MX_PORTBE_3H    EQU  H'FE'    ; Multiplexed with RB3
+_CCP2MX_PORTC_3H     EQU  H'FF'    ; Multiplexed with RC1
 
 ;----- CONFIG4L Options --------------------------------------------------
 _STVREN_OFF_4L       EQU  H'FE'    ; Disabled

@@ -21,6 +21,7 @@
 ;
 ;==========================================================================
 ;1.00   10/12/04 Original
+;2.00	04/21/05 Modified file to match released datasheet
 ;==========================================================================
 ;
 ;       Verify Processor
@@ -100,7 +101,7 @@ ADRESL                       EQU     H'009E'
 ADCON1                       EQU     H'009F'
 
 
-
+EEDAT                        EQU     H'010C'
 EEDATA                       EQU     H'010C'
 EEADR                        EQU     H'010D'
 EEDATH                       EQU     H'010E'
@@ -280,7 +281,7 @@ TRISC0                       EQU     H'0000'
 ADIE                         EQU     H'0006'
 
 
-CCPIE                        EQU     H'0002'
+CCP1IE                       EQU     H'0002'
 T2IE                         EQU     H'0001'
 TMR2IE                       EQU     H'0001'
 T1IE                         EQU     H'0000'
@@ -296,9 +297,10 @@ EEIE                         EQU     H'0004'
 ;----- PCON Bits ----------------------------------------------------------
 
 ULPWUE                       EQU     H'0005'
-SBODEN                       EQU     H'0004'
+SBOREN                       EQU     H'0004'
 NOT_POR                      EQU     H'0001'
 NOT_BOD                      EQU     H'0000'
+NOT_BOR                      EQU     H'0000'
 
 ;----- OSCCON Bits --------------------------------------------------------
 
@@ -414,6 +416,13 @@ MC2OUT                       EQU      H'0006'
 T1GSS                        EQU      H'0001'
 C2SYNC                       EQU      H'0000'
 
+;----- ANSELH --------------------------------------------------------------
+
+ANS11                        EQU     H'0003'
+ANS10                        EQU     H'0002'
+ANS9                         EQU     H'0001'
+ANS8                         EQU     H'0000'
+
 ;----- ANSEL --------------------------------------------------------------
 
 ANS7                         EQU     H'0007'
@@ -473,10 +482,10 @@ _FCMEN_ON                    EQU     H'3FFF'
 _FCMEN_OFF                   EQU     H'37FF'
 _IESO_ON                     EQU     H'3FFF'
 _IESO_OFF                    EQU     H'3BFF'
-_BOD_ON                      EQU     H'3FFF'
-_BOD_NSLEEP                  EQU     H'3EFF'
-_BOD_SBODEN                  EQU     H'3DFF'
-_BOD_OFF                     EQU     H'3CFF'
+_BOR_ON                      EQU     H'3FFF'
+_BOR_NSLEEP                  EQU     H'3EFF'
+_BOR_SBODEN                  EQU     H'3DFF'
+_BOR_OFF                     EQU     H'3CFF'
 _CPD_ON                      EQU     H'3F7F'
 _CPD_OFF                     EQU     H'3FFF'
 _CP_ON                       EQU     H'3FBF'
@@ -485,8 +494,8 @@ _MCLRE_ON                    EQU     H'3FFF'
 _MCLRE_OFF                   EQU     H'3FDF'
 _PWRTE_OFF                   EQU     H'3FFF'
 _PWRTE_ON                    EQU     H'3FEF'
-_WDT_ON                      EQU     H'3FFF'
-_WDT_OFF                     EQU     H'3FF7'
+_WDT_ON                     EQU     H'3FFF'
+_WDT_OFF                    EQU     H'3FF7'
 _LP_OSC                      EQU     H'3FF8'
 _XT_OSC                      EQU     H'3FF9'
 _HS_OSC                      EQU     H'3FFA'

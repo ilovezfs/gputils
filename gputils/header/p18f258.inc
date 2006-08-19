@@ -353,6 +353,7 @@ NOT_RBPU        EQU  H'0007'
 RBPU            EQU  H'0007'
 INTEDG0         EQU  H'0006'
 INTEDG1         EQU  H'0005'
+INTEDG2         EQU  H'0004'
 TMR0IP          EQU  H'0002'
 T0IP            EQU  H'0002'      ; For compatibility with T0IE and T0IF
 RBIP            EQU  H'0000'
@@ -1345,15 +1346,15 @@ RX              EQU  7
 ;     OSCS = ON            Enabled
 ;     OSCS = OFF           Disabled
 ;
-;   Power Up Timer:
+;   Power-up Timer:
 ;     PWRT = ON            Enabled
 ;     PWRT = OFF           Disabled
 ;
-;   Brown Out Reset:
+;   Brown-out Reset:
 ;     BOR = OFF            Disabled
 ;     BOR = ON             Enabled
 ;
-;   Brown Out Voltage:
+;   Brown-out Voltage:
 ;     BORV = 45            4.5V
 ;     BORV = 42            4.2V
 ;     BORV = 27            2.7V
@@ -1490,9 +1491,9 @@ _HSPLL_OSC_1H     EQU  H'FE'	; HS PLL
 _RCIO_OSC_1H      EQU  H'FF'	; RC w/OSC2 as an IO pin (RA6)
 
 ;Configuration Byte 2L Options
-_BOR_ON_2L        EQU  H'FF'	; Brown-Out Reset enable
+_BOR_ON_2L        EQU  H'FF'	; Brown-out Reset enable
 _BOR_OFF_2L       EQU  H'FD'
-_PWRT_OFF_2L      EQU  H'FF'	; Power-Up Timer enable
+_PWRT_OFF_2L      EQU  H'FF'	; Power-up Timer enable
 _PWRT_ON_2L       EQU  H'FE'
 _BORV_25_2L       EQU  H'FF'	; BOR Voltage - 2.5v
 _BORV_27_2L       EQU  H'FB'	;               2.7v

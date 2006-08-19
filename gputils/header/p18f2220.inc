@@ -700,31 +700,31 @@ _IDLOC7         EQU    H'200007'
 ;     OSC = LP             LP Oscillator
 ;     OSC = XT             XT Oscillator
 ;     OSC = HS             HS Oscillator
-;     OSC = EC             External Clock on OSC1, OSC2 as Fosc/4
+;     OSC = EC             External Clock on OSC1, OSC2 as FOSC/4
 ;     OSC = ECIO           External Clock on OSC1, OSC2 as RA6
 ;     OSC = HSPLL          HS + PLL
 ;     OSC = RCIO           External RC on OSC1, OSC2 as RA6
 ;     OSC = INTIO2         Internal RC, OSC1 as RA7, OSC2 as RA6
-;     OSC = INTIO1         Internal RC, OSC1 as RA7, OSC2 as Fosc/4
-;     OSC = RC             External RC on OSC1, OSC2 as Fosc/4
+;     OSC = INTIO1         Internal RC, OSC1 as RA7, OSC2 as FOSC/4
+;     OSC = RC             External RC on OSC1, OSC2 as FOSC/4
 ;
-;   Fail Safe Clock Monitor:
-;     FSCM = OFF           Fail Safe Clock Monitor disabled
-;     FSCM = ON            Fail Safe Clock Monitor enabled
+;   Fail-Safe Clock Monitor:
+;     FSCM = OFF           Fail-Safe Clock Monitor disabled
+;     FSCM = ON            Fail-Safe Clock Monitor enabled
 ;
 ;   Internal External Switch Over mode:
 ;     IESO = OFF           Internal External Switch Over mode disabled
 ;     IESO = ON            Internal External Switch Over mode enabled
 ;
-;   Power-Up Timer:
+;   Power-up Timer:
 ;     PWRT = ON            Enabled
 ;     PWRT = OFF           Disabled
 ;
-;   Brown-Out Reset:
+;   Brown-out Reset:
 ;     BOR = OFF            Disabled
 ;     BOR = ON             Enabled
 ;
-;   Brown Out Voltage:
+;   Brown-out Voltage:
 ;     BORV = 45            4.5V
 ;     BORV = 42            4.2V
 ;     BORV = 27            2.7V
@@ -870,17 +870,17 @@ _CONFIG7H       EQU    H'30000D'
 ;Configuration Byte 1H Options
 _IESO_ON_1H       EQU  H'FF' ; Internal External oscillator Switch Over mode enabled
 _IESO_OFF_1H      EQU  H'7F' ; Internal External oscillator Switch Over mode disabled
-_FSCM_ON_1H       EQU  H'FF' ; Fail Safe Clock Monitor enabled
-_FSCM_OFF_1H      EQU  H'BF' ; Fail Safe Clock Monitor disabled
-_RC_OSC_1H        EQU  H'FF' ; External RC on OSC1, OSC2 as Fosc/4
+_FSCM_ON_1H       EQU  H'FF' ; Fail-Safe Clock Monitor enabled
+_FSCM_OFF_1H      EQU  H'BF' ; Fail-Safe Clock Monitor disabled
+_RC_OSC_1H        EQU  H'FF' ; External RC on OSC1, OSC2 as FOSC/4
 _RCIO_OSC_1H      EQU  H'F7' ; External RC on OSC1, OSC2 as RA6
 _LP_OSC_1H        EQU  H'F0' ; LP Oscillator
 _XT_OSC_1H        EQU  H'F1' ; XT Oscillator
 _HS_OSC_1H        EQU  H'F2' ; HS Oscillator
 _HSPLL_OSC_1H     EQU  H'F6' ; HS + PLL
-_EC_OSC_1H        EQU  H'F4' ; External Clock on OSC1, OSC2 as Fosc/4
+_EC_OSC_1H        EQU  H'F4' ; External Clock on OSC1, OSC2 as FOSC/4
 _ECIO_OSC_1H      EQU  H'F5' ; External Clock on OSC1, OSC2 as RA6
-_INTIO1_OSC_1H    EQU  H'F9' ; Internal RC, OSC1 as RA7, OSC2 as Fosc/4
+_INTIO1_OSC_1H    EQU  H'F9' ; Internal RC, OSC1 as RA7, OSC2 as FOSC/4
 _INTIO2_OSC_1H    EQU  H'F8' ; Internal RC, OSC1 as RA7, OSC2 as RA6
 
 ;Configuration Byte 2L Options
@@ -888,10 +888,10 @@ _BORV_20_2L       EQU  H'FF' ; BOR Voltage - 2.0v
 _BORV_27_2L       EQU  H'FB' ;               2.7v
 _BORV_42_2L       EQU  H'F7' ;               4.2v
 _BORV_45_2L       EQU  H'F3' ;               4.5v
-_BOR_ON_2L        EQU  H'FF' ; Brown-Out Reset enabled
-_BOR_OFF_2L       EQU  H'FD' ; Brown-Out Reset disabled
-_PWRT_OFF_2L      EQU  H'FF' ; Power-Up Timer disabled
-_PWRT_ON_2L       EQU  H'FE' ; Power-Up Timer enabled
+_BOR_ON_2L        EQU  H'FF' ; Brown-out Reset enabled
+_BOR_OFF_2L       EQU  H'FD' ; Brown-out Reset disabled
+_PWRT_OFF_2L      EQU  H'FF' ; Power-up Timer disabled
+_PWRT_ON_2L       EQU  H'FE' ; Power-up Timer enabled
 
 ;Configuration Byte 2H Options
 _WDT_ON_2H        EQU  H'FF' ; Watch Dog Timer enabled

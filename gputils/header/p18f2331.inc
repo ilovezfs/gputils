@@ -4,7 +4,7 @@
 ;  $Id$
 ;  MPASM PIC18F2331 processor include
 ; 
-;  (c) Copyright 1999-2005 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2006 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -106,6 +106,7 @@ PTCON0           EQU  H'0F7F'
 PORTA            EQU  H'0F80'
 PORTB            EQU  H'0F81'
 PORTC            EQU  H'0F82'
+PORTE            EQU  H'0F84'
 TMR5L            EQU  H'0F87'
 TMR5H            EQU  H'0F88'
 LATA             EQU  H'0F89'
@@ -420,6 +421,10 @@ SDO              EQU  H'0007'
 FLTA             EQU  H'0001'
 FLTB             EQU  H'0002'
 SS               EQU  H'0006'
+
+
+;----- PORTE Bits -----------------------------------------------------
+RE3              EQU  H'0003'
 
 
 ;----- LATA Bits -----------------------------------------------------
@@ -992,7 +997,8 @@ STKFUL           EQU  H'0007'
 ;==========================================================================
        __MAXRAM  H'0FFF'
        __BADRAM  H'0300'-H'0F5F'
-       __BADRAM  H'0F83'-H'0F86'
+       __BADRAM  H'0F83'
+       __BADRAM  H'0F85'-H'0F86'
        __BADRAM  H'0F8C'-H'0F8F'
        __BADRAM  H'0F95'-H'0F98'
        __BADRAM  H'0F9C'
@@ -1021,7 +1027,7 @@ STKFUL           EQU  H'0007'
 ;     OSC = RC1            External RC, RA6 is CLKOUT
 ;     OSC = RC             External RC, RA6 is CLKOUT
 ;
-;   Fail Safe Clock Monitor Enable:
+;   Fail-Safe Clock Monitor Enable:
 ;     FCMEN = OFF          Disabled
 ;     FCMEN = ON           Enabled
 ;
@@ -1029,15 +1035,15 @@ STKFUL           EQU  H'0007'
 ;     IESO = OFF           Disabled
 ;     IESO = ON            Enabled
 ;
-;   Power Up Timer:
+;   Power-up Timer:
 ;     PWRTEN = ON          Enabled
 ;     PWRTEN = OFF         Disabled
 ;
-;   Brown Out Reset:
+;   Brown-out Reset:
 ;     BOREN = OFF          Disabled
 ;     BOREN = ON           Enabled
 ;
-;   Brown Out Voltage:
+;   Brown-out Voltage:
 ;     BORV = 45            4.5V
 ;     BORV = 42            4.2V
 ;     BORV = 27            2.7V
@@ -1069,7 +1075,7 @@ STKFUL           EQU  H'0007'
 ;     WDPS = 16384         1:16384
 ;     WDPS = 32768         1:32768
 ;
-;   Timer1 Oscillator Mux:
+;   Timer1 Oscillator MUX:
 ;     T1OSCMX = OFF        Active
 ;     T1OSCMX = ON         Inactive
 ;
@@ -1081,7 +1087,7 @@ STKFUL           EQU  H'0007'
 ;     LPOL = LOW           Active low
 ;     LPOL = HIGH          Active high
 ;
-;   PWM output pins RESET state control:
+;   PWM output pins Reset state control:
 ;     PWMPIN = ON          Enabled
 ;     PWMPIN = OFF         Disabled
 ;
@@ -1109,14 +1115,6 @@ STKFUL           EQU  H'0007'
 ;     CP1 = ON             Enabled
 ;     CP1 = OFF            Disabled
 ;
-;   Code Protection Block 2:
-;     CP2 = ON             Enabled
-;     CP2 = OFF            Disabled
-;
-;   Code Protection Block 3:
-;     CP3 = ON             Enabled
-;     CP3 = OFF            Disabled
-;
 ;   Boot Block Code Protection:
 ;     CPB = ON             Enabled
 ;     CPB = OFF            Disabled
@@ -1132,14 +1130,6 @@ STKFUL           EQU  H'0007'
 ;   Write Protection Block 1:
 ;     WRT1 = ON            Enabled
 ;     WRT1 = OFF           Disabled
-;
-;   Write Protection Block 2:
-;     WRT2 = ON            Enabled
-;     WRT2 = OFF           Disabled
-;
-;   Write Protection Block 3:
-;     WRT3 = ON            Enabled
-;     WRT3 = OFF           Disabled
 ;
 ;   Boot Block Write Protection:
 ;     WRTB = ON            Enabled
@@ -1160,14 +1150,6 @@ STKFUL           EQU  H'0007'
 ;   Table Read Protection Block 1:
 ;     EBTR1 = ON           Enabled
 ;     EBTR1 = OFF          Disabled
-;
-;   Table Read Protection Block 2:
-;     EBTR2 = ON           Enabled
-;     EBTR2 = OFF          Disabled
-;
-;   Table Read Protection Block 3:
-;     EBTR3 = ON           Enabled
-;     EBTR3 = OFF          Disabled
 ;
 ;   Boot Block Table Read Protection:
 ;     EBTRB = ON           Enabled
@@ -1299,12 +1281,6 @@ _CP0_OFF_5L          EQU  H'FF'    ; Disabled
 _CP1_ON_5L           EQU  H'FD'    ; Enabled
 _CP1_OFF_5L          EQU  H'FF'    ; Disabled
 
-_CP2_ON_5L           EQU  H'FB'    ; Enabled
-_CP2_OFF_5L          EQU  H'FF'    ; Disabled
-
-_CP3_ON_5L           EQU  H'F7'    ; Enabled
-_CP3_OFF_5L          EQU  H'FF'    ; Disabled
-
 ;----- CONFIG5H Options --------------------------------------------------
 _CPB_ON_5H           EQU  H'BF'    ; Enabled
 _CPB_OFF_5H          EQU  H'FF'    ; Disabled
@@ -1318,12 +1294,6 @@ _WRT0_OFF_6L         EQU  H'FF'    ; Disabled
 
 _WRT1_ON_6L          EQU  H'FD'    ; Enabled
 _WRT1_OFF_6L         EQU  H'FF'    ; Disabled
-
-_WRT2_ON_6L          EQU  H'FB'    ; Enabled
-_WRT2_OFF_6L         EQU  H'FF'    ; Disabled
-
-_WRT3_ON_6L          EQU  H'F7'    ; Enabled
-_WRT3_OFF_6L         EQU  H'FF'    ; Disabled
 
 ;----- CONFIG6H Options --------------------------------------------------
 _WRTB_ON_6H          EQU  H'BF'    ; Enabled
@@ -1341,12 +1311,6 @@ _EBTR0_OFF_7L        EQU  H'FF'    ; Disabled
 
 _EBTR1_ON_7L         EQU  H'FD'    ; Enabled
 _EBTR1_OFF_7L        EQU  H'FF'    ; Disabled
-
-_EBTR2_ON_7L         EQU  H'FB'    ; Enabled
-_EBTR2_OFF_7L        EQU  H'FF'    ; Disabled
-
-_EBTR3_ON_7L         EQU  H'F7'    ; Enabled
-_EBTR3_OFF_7L        EQU  H'FF'    ; Disabled
 
 ;----- CONFIG7H Options --------------------------------------------------
 _EBTRB_ON_7H         EQU  H'BF'    ; Enabled
