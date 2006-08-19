@@ -1488,7 +1488,7 @@ gp_cofflink_patch_addr(enum proc_class class,
     data = offset & 0xff;
     break;
   case RELOCT_UPPER:
-    data = (value >> 16) & 0x3f;   
+    data = (value >> 16) & 0x3f;
     break; 
   case RELOCT_ACCESS:
     {
