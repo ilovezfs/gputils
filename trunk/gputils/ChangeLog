@@ -1,4 +1,5 @@
 2006-08-19 Craig Franklin <craigfranklin@users.sourceforge.net>
+  * gputils 0.13.4 Released.
   * [gputils] Updated header files and linker scripts.
   * {gputils] Fixed UPPER to mask with 0xff instead of 0x3f.
   * [gpasm] Mask MOVLB with 0xf instead of 0xff.
