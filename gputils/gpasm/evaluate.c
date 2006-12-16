@@ -433,7 +433,8 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
     if (strcmp(p->value.symbol, "$") == 0) {
       char buffer[BUFSIZ];
       
-      snprintf(buffer, sizeof(buffer), "_$_%06x", state.org << _16bit_core);
+      snprintf(buffer, sizeof(buffer), "_%s_%06x", state.obj.new_sec_name,
+	 		state.org << _16bit_core);
       set_global(buffer, state.org << _16bit_core, PERMANENT, gvt_static);
       s = get_symbol(state.stTop, buffer);
     } else {
