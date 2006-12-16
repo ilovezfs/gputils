@@ -1,3 +1,6 @@
+2006-12-16 Scott Dattalo <scott@dattalo.com>
+  * [gpasm] Patch from David Barnett to fix 'Duplicate Label' bug.
+
 2006-08-19 Craig Franklin <craigfranklin@users.sourceforge.net>
   * gputils 0.13.4 Released.
   * [gputils] Updated header files and linker scripts.
