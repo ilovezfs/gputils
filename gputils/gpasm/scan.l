@@ -421,7 +421,7 @@ h'-?{NUMCHAR}+'          {
                          }
 \"{STR_QCHAR}*\"?        {
 			   char *pc = &yytext[yyleng - 1];
-			   if (*pc == '"')
+			   if ((yyleng > 1) && (*pc == '"'))
 			     *pc = '\0';
                            else
 			     gpwarning(GPW_MISSING_QUOTE, NULL);                           
