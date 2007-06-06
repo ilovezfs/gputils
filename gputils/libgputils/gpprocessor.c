@@ -190,7 +190,7 @@ static struct px pics[] = {
   { pic16f876a,  PROC_CLASS_PIC14,   "__16F876A",  { "pic16f876a",  "p16f876a",  "16f876a"  }, 0x876a, 4, 4, "16f876a.lkr"  },
   { pic16f877,   PROC_CLASS_PIC14,   "__16F877",   { "pic16f877",   "p16f877",   "16f877"   }, 0x877f, 4, 4, "16f877.lkr"   },
   { pic16f877a,  PROC_CLASS_PIC14,   "__16F877A",  { "pic16f877a",  "p16f877a",  "16f877a"  }, 0x877a, 4, 4, "16f877a.lkr"  },
-  { pic16f88,    PROC_CLASS_PIC14,   "__16F88",    { "pic16f88",    "p16f88",    "16f88"    }, 0x688f, 2, 4, "16f88.lkr"    },
+  { pic16f88,    PROC_CLASS_PIC14,   "__16F88",    { "pic16f88",    "p16f88",    "16f88"    }, 0x688f, 4, 4, "16f88.lkr"    },
   { pic16f913,   PROC_CLASS_PIC14,   "__16F913",   { "pic16f913",   "p16f913",   "16f913"   }, 0x913f, 2, 4, "16f913.lkr"   },
   { pic16f914,   PROC_CLASS_PIC14,   "__16F914",   { "pic16f914",   "p16f914",   "16f914"   }, 0x914f, 4, 4, "16f914.lkr"   },
   { pic16f916,   PROC_CLASS_PIC14,   "__16F916",   { "pic16f916",   "p16f916",   "16f916"   }, 0x916f, 2, 4, "16f916.lkr"   },
