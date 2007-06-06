@@ -3629,6 +3629,16 @@ void opcode_init(int stage)
     remove_symbol(state.stBuiltin, "MULLW");    
   }
 
+  /* Special Case, Some instructions not available on 16f5x devices */
+  if (state.processor == pic16f54 ||
+      state.processor == pic16f57 ||
+	 state.processor == pic16f59) {
+    remove_symbol(state.stBuiltin, "ADDLW");
+    remove_symbol(state.stBuiltin, "SUBLW");
+    remove_symbol(state.stBuiltin, "RETURN");
+    remove_symbol(state.stBuiltin, "RETFIE");
+  }
+
 }
 
 /************************************************************************/
