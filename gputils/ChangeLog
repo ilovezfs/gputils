@@ -1,4 +1,8 @@
 2007-06-06 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Corrected processor class and removed special-case
+  missing instructions for p16f5x
+
+2007-06-06 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed erroneous page count on p16f88
 
 2007-06-06 David Barnett <daviebdawg@gmail.com>
