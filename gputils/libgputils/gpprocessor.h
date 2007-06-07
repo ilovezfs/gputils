@@ -44,6 +44,8 @@ enum pic_processor {
   pic10f202,
   pic10f204,
   pic10f206,
+  pic10f220,
+  pic10f222,
   pic12c508,
   pic12c508a,
   pic12c509,

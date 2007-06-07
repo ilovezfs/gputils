@@ -32,6 +32,8 @@ static struct px pics[] = {
   { pic10f202,   PROC_CLASS_PIC12,   "__10F202",   { "pic10f202",   "p10f202",   "10f202"   }, 0xf202, 1, 1, "10f202.lkr"   },
   { pic10f204,   PROC_CLASS_PIC12,   "__10F204",   { "pic10f204",   "p10f204",   "10f204"   }, 0xf204, 1, 1, "10f204.lkr"   },
   { pic10f206,   PROC_CLASS_PIC12,   "__10F206",   { "pic10f206",   "p10f206",   "10f206"   }, 0xf206, 1, 1, "10f206.lkr"   },
+  { pic10f220,   PROC_CLASS_PIC12,   "__10F220",   { "pic10f220",   "p10f220",   "10f220"   }, 0xf220, 1, 1, "10f220.lkr"   },
+  { pic10f222,   PROC_CLASS_PIC12,   "__10F222",   { "pic10f222",   "p10f222",   "10f222"   }, 0xf222, 1, 1, "10f222.lkr"   },
   { pic12c508,   PROC_CLASS_PIC12,   "__12C508",   { "pic12c508",   "p12c508",   "12c508"   }, 0x2508, 1, 1, "12c508.lkr"   },
   { pic12c508a,  PROC_CLASS_PIC12,   "__12C508A",  { "pic12c508a",  "p12c508a",  "12c508a"  }, 0x508a, 1, 1, "12c508a.lkr"  },
   { pic12c509,   PROC_CLASS_PIC12,   "__12C509",   { "pic12c509",   "p12c509",   "12c509"   }, 0x2509, 1, 2, "12c509.lkr"   },
