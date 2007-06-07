@@ -1,4 +1,8 @@
 2007-06-07 David Barnett <daviebdawg@gmail.com>
+  * [gputils] Added support for sx48 and sx52
+  * [gputils] Updated list of supported processors in gputils.lyx
+
+2007-06-07 David Barnett <daviebdawg@gmail.com>
   * [gputils] Added support for p10f220 and p10f222
 
 2007-06-07 David Barnett <daviebdawg@gmail.com>
