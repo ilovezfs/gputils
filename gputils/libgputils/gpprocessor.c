@@ -149,6 +149,7 @@ static struct px pics[] = {
   { pic16f57,    PROC_CLASS_PIC12,   "__16F57",    { "pic16f57",    "p16f57",    "16f57"    }, 0x657f, 4, 4, "16f57.lkr"    },
   { pic16f59,    PROC_CLASS_PIC12,   "__16F59",    { "pic16f59",    "p16f59",    "16f59"    }, 0x659f, 4, 4, "16f59.lkr"    },
   { pic16f627,   PROC_CLASS_PIC14,   "__16F627",   { "pic16f627",   "p16f627",   "16f627"   }, 0x6627, 1, 4, "16f627.lkr"   },
+  { pic16f610,   PROC_CLASS_PIC14,   "__16F610",   { "pic16f610",   "p16f610",   "16f610"   }, 0x6610, 1, 4, "16f610.lkr"   },
   { pic16f627a,  PROC_CLASS_PIC14,   "__16F627A",  { "pic16f627a",  "p16f627a",  "16f627a"  }, 0x627a, 1, 4, "16f627a.lkr"  },
   { pic16f628,   PROC_CLASS_PIC14,   "__16F628",   { "pic16f628",   "p16f628",   "16f628"   }, 0x6628, 1, 4, "16f628.lkr"   },  
   { pic16f628a,  PROC_CLASS_PIC14,   "__16F628A",  { "pic16f628a",  "p16f628a",  "16f628a"  }, 0x628a, 1, 4, "16f628a.lkr"  },
@@ -191,6 +192,11 @@ static struct px pics[] = {
   { pic16f877,   PROC_CLASS_PIC14,   "__16F877",   { "pic16f877",   "p16f877",   "16f877"   }, 0x877f, 4, 4, "16f877.lkr"   },
   { pic16f877a,  PROC_CLASS_PIC14,   "__16F877A",  { "pic16f877a",  "p16f877a",  "16f877a"  }, 0x877a, 4, 4, "16f877a.lkr"  },
   { pic16f88,    PROC_CLASS_PIC14,   "__16F88",    { "pic16f88",    "p16f88",    "16f88"    }, 0x688f, 4, 4, "16f88.lkr"    },
+  { pic16f882,   PROC_CLASS_PIC14,   "__16F882",   { "pic16f882",   "p16f882",   "16f882"   }, 0x882f, 4, 4, "16f882.lkr"   },
+  { pic16f883,   PROC_CLASS_PIC14,   "__16F883",   { "pic16f883",   "p16f883",   "16f883"   }, 0x883f, 4, 4, "16f883.lkr"   },
+  { pic16f884,   PROC_CLASS_PIC14,   "__16F884",   { "pic16f884",   "p16f884",   "16f884"   }, 0x884f, 4, 4, "16f884.lkr"   },
+  { pic16f886,   PROC_CLASS_PIC14,   "__16F886",   { "pic16f886",   "p16f886",   "16f886"   }, 0x886f, 4, 4, "16f886.lkr"   },
+  { pic16f887,   PROC_CLASS_PIC14,   "__16F887",   { "pic16f887",   "p16f887",   "16f887"   }, 0x887f, 4, 4, "16f887.lkr"   },
   { pic16f913,   PROC_CLASS_PIC14,   "__16F913",   { "pic16f913",   "p16f913",   "16f913"   }, 0x913f, 2, 4, "16f913.lkr"   },
   { pic16f914,   PROC_CLASS_PIC14,   "__16F914",   { "pic16f914",   "p16f914",   "16f914"   }, 0x914f, 4, 4, "16f914.lkr"   },
   { pic16f916,   PROC_CLASS_PIC14,   "__16F916",   { "pic16f916",   "p16f916",   "16f916"   }, 0x916f, 2, 4, "16f916.lkr"   },
@@ -219,6 +225,8 @@ static struct px pics[] = {
   { pic18c858,   PROC_CLASS_PIC16E,  "__18C858",   { "pic18c858",   "p18c858",   "18c858"   }, 0x8858, 0, 0, "18c858.lkr"   },
   { pic18f1220,  PROC_CLASS_PIC16E,  "__18F1220",  { "pic18f1220",  "p18f1220",  "18f1220"  }, 0xa122, 0, 0, "18f1220.lkr"  },
   { pic18f1320,  PROC_CLASS_PIC16E,  "__18F1320",  { "pic18f1320",  "p18f1320",  "18f1320"  }, 0xa132, 0, 0, "18f1320.lkr"  },
+  { pic18f1230,  PROC_CLASS_PIC16E,  "__18F1230",  { "pic18f1230",  "p18f1230",  "18f1230"  }, 0xa123, 0, 0, "18f1230.lkr"  },
+  { pic18f1330,  PROC_CLASS_PIC16E,  "__18F1330",  { "pic18f1330",  "p18f1330",  "18f1330"  }, 0xa133, 0, 0, "18f1330.lkr"  },
   { pic18f2220,  PROC_CLASS_PIC16E,  "__18F2220",  { "pic18f2220",  "p18f2220",  "18f2220"  }, 0xa222, 0, 0, "18f2220.lkr"  },
   { pic18f2320,  PROC_CLASS_PIC16E,  "__18F2320",  { "pic18f2320",  "p18f2320",  "18f2320"  }, 0xa232, 0, 0, "18f2320.lkr"  },
   { pic18f2331,  PROC_CLASS_PIC16E,  "__18F2331",  { "pic18f2331",  "p18f2331",  "18f2331"  }, 0x2331, 0, 0, "18f2331.lkr"  },
@@ -230,6 +238,7 @@ static struct px pics[] = {
   { pic18f2455,  PROC_CLASS_PIC16E,  "__18F2455",  { "pic18f2455",  "p18f2455",  "18f2455"  }, 0x2455, 0, 0, "18f2455.lkr"  },
   { pic18f248,   PROC_CLASS_PIC16E,  "__18F248",   { "pic18f248",   "p18f248",   "18f248"   }, 0x8248, 0, 0, "18f248.lkr"   },
   { pic18f2480,  PROC_CLASS_PIC16E,  "__18F2480",  { "pic18f2480",  "p18f2480",  "18f2480"  }, 0x2480, 0, 0, "18f2480.lkr"  },
+  { pic18f24j10, PROC_CLASS_PIC16E,  "__18F24J10", { "pic18f24j10", "p18f24j10", "18f24j10" }, 0xd410, 0, 0, "18f24j10.lkr" },
   { pic18f2510,  PROC_CLASS_PIC16E,  "__18F2510",  { "pic18f2510",  "p18f2510",  "18f2510"  }, 0x2510, 0, 0, "18f2510.lkr"  },
   { pic18f2515,  PROC_CLASS_PIC16E,  "__18F2515",  { "pic18f2515",  "p18f2515",  "18f2515"  }, 0x2515, 0, 0, "18f2515.lkr"  },
   { pic18f252,   PROC_CLASS_PIC16E,  "__18F252",   { "pic18f252",   "p18f252",   "18f252"   }, 0x252f, 0, 0, "18f252.lkr"   },
@@ -240,6 +249,7 @@ static struct px pics[] = {
   { pic18f258,   PROC_CLASS_PIC16E,  "__18F258",   { "pic18f258",   "p18f258",   "18f258"   }, 0x8258, 0, 0, "18f258.lkr"   },
   { pic18f2580,  PROC_CLASS_PIC16E,  "__18F2580",  { "pic18f2580",  "p18f2580",  "18f2580"  }, 0x2580, 0, 0, "18f2580.lkr"  },
   { pic18f2585,  PROC_CLASS_PIC16E,  "__18F2585",  { "pic18f2585",  "p18f2585",  "18f2585"  }, 0x2585, 0, 0, "18f2585.lkr"  },
+  { pic18f25j10, PROC_CLASS_PIC16E,  "__18F25J10", { "pic18f25j10", "p18f25j10", "18f25j10" }, 0xd510, 0, 0, "18f25j10.lkr" },
   { pic18f2610,  PROC_CLASS_PIC16E,  "__18F2610",  { "pic18f2610",  "p18f2610",  "18f2610"  }, 0xa261, 0, 0, "18f2610.lkr"  },
   { pic18f2620,  PROC_CLASS_PIC16E,  "__18F2620",  { "pic18f2620",  "p18f2620",  "18f2620"  }, 0xa262, 0, 0, "18f2620.lkr"  },
   { pic18f2680,  PROC_CLASS_PIC16E,  "__18F2680",  { "pic18f2680",  "p18f2680",  "18f2680"  }, 0x2680, 0, 0, "18f2680.lkr"  },
@@ -255,6 +265,7 @@ static struct px pics[] = {
   { pic18f4455,  PROC_CLASS_PIC16E,  "__18F4455",  { "pic18f4455",  "p18f4455",  "18f4455"  }, 0x4455, 0, 0, "18f4455.lkr"  },
   { pic18f448,   PROC_CLASS_PIC16E,  "__18F448",   { "pic18f448",   "p18f448",   "18f448"   }, 0x8448, 0, 0, "18f448.lkr"   },
   { pic18f4480,  PROC_CLASS_PIC16E,  "__18F4480",  { "pic18f4480",  "p18f4480",  "18f4480"  }, 0x4480, 0, 0, "18f4480.lkr"  },
+  { pic18f44j10, PROC_CLASS_PIC16E,  "__18F44J10", { "pic18f44j10", "p18f44j10", "18f44j10" }, 0xe410, 0, 0, "18f44j10.lkr" },
   { pic18f4510,  PROC_CLASS_PIC16E,  "__18F4510",  { "pic18f4510",  "p18f4510",  "18f4510"  }, 0x4510, 0, 0, "18f4510.lkr"  },
   { pic18f4515,  PROC_CLASS_PIC16E,  "__18F4515",  { "pic18f4515",  "p18f4515",  "18f4515"  }, 0x4515, 0, 0, "18f4515.lkr"  },
   { pic18f452,   PROC_CLASS_PIC16E,  "__18F452",   { "pic18f452",   "p18f452",   "18f452"   }, 0x452f, 0, 0, "18f452.lkr"   },
@@ -265,6 +276,7 @@ static struct px pics[] = {
   { pic18f458,   PROC_CLASS_PIC16E,  "__18F458",   { "pic18f458",   "p18f458",   "18f458"   }, 0x8458, 0, 0, "18f458.lkr"   },
   { pic18f4580,  PROC_CLASS_PIC16E,  "__18F4580",  { "pic18f4580",  "p18f4580",  "18f4580"  }, 0x4580, 0, 0, "18f4580.lkr"  },
   { pic18f4585,  PROC_CLASS_PIC16E,  "__18F4585",  { "pic18f4585",  "p18f4585",  "18f4585"  }, 0x4585, 0, 0, "18f4585.lkr"  },
+  { pic18f45j10, PROC_CLASS_PIC16E,  "__18F45J10", { "pic18f45j10", "p18f45j10", "18f45j10" }, 0xe510, 0, 0, "18f45j10.lkr" },
   { pic18f4610,  PROC_CLASS_PIC16E,  "__18F4610",  { "pic18f4610",  "p18f4610",  "18f4610"  }, 0xa461, 0, 0, "18f4610.lkr"  },
   { pic18f4620,  PROC_CLASS_PIC16E,  "__18F4620",  { "pic18f4620",  "p18f4620",  "18f4620"  }, 0xa462, 0, 0, "18f4620.lkr"  },
   { pic18f4680,  PROC_CLASS_PIC16E,  "__18F4680",  { "pic18f4680",  "p18f4680",  "18f4680"  }, 0x4680, 0, 0, "18f4680.lkr"  },
@@ -414,18 +426,22 @@ gp_processor_bsr_boundary(enum pic_processor processor)
     case pic18c858:
     case pic18f1220:
     case pic18f1320:
+    case pic18f1230:
+    case pic18f1330:
     case pic18f2220:
     case pic18f2320:
     case pic18f2410:
     case pic18f242:
     case pic18f2420:
     case pic18f2439:
+    case pic18f24j10:
     case pic18f2510:
     case pic18f2515:
     case pic18f252:
     case pic18f2520:
     case pic18f2525:
     case pic18f2539:
+    case pic18f25j10:
     case pic18f2610:
     case pic18f2620:
     case pic18f4220:
@@ -434,12 +450,14 @@ gp_processor_bsr_boundary(enum pic_processor processor)
     case pic18f442:
     case pic18f4420:
     case pic18f4439:
+    case pic18f44j10:
     case pic18f4510:
     case pic18f4515:
     case pic18f452:
     case pic18f4520:
     case pic18f4525:
     case pic18f4539:
+    case pic18f45j10:
     case pic18f4610:
     case pic18f4620:
     case pic18f6525:

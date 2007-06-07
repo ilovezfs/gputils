@@ -1,3 +1,9 @@
+2007-06-07 David Barnett <daviebdawg@gmail.com>
+  * [gputils] Added support for p16f610
+  * [gputils] Added support for p16f882, p16f883, p16f884, p16f886, and p16f887
+  * [gputils] Added support for p18f1230 and p18f1330
+  * [gputils] Added support for p18f24j10, p18f25j10, p18f44j10, and p18f45j10
+
 2007-06-06 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Corrected processor class and removed special-case
   missing instructions for p16f5x
