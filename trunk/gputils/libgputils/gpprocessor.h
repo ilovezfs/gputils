@@ -340,7 +340,9 @@ enum pic_processor {
   rf675k,
   sx18,
   sx20,
-  sx28
+  sx28,
+  sx48,
+  sx52
 };
 
 #define MAX_NAMES 3 /* Maximum number of names a processor can have */

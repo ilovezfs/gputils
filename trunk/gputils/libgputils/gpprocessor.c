@@ -150,8 +150,8 @@ static struct px pics[] = {
   { pic16f54,    PROC_CLASS_PIC12,   "__16F54",    { "pic16f54",    "p16f54",    "16f54"    }, 0x654f, 1, 1, "16f54.lkr"    },
   { pic16f57,    PROC_CLASS_PIC12,   "__16F57",    { "pic16f57",    "p16f57",    "16f57"    }, 0x657f, 4, 4, "16f57.lkr"    },
   { pic16f59,    PROC_CLASS_PIC12,   "__16F59",    { "pic16f59",    "p16f59",    "16f59"    }, 0x659f, 4, 4, "16f59.lkr"    },
-  { pic16f627,   PROC_CLASS_PIC14,   "__16F627",   { "pic16f627",   "p16f627",   "16f627"   }, 0x6627, 1, 4, "16f627.lkr"   },
   { pic16f610,   PROC_CLASS_PIC14,   "__16F610",   { "pic16f610",   "p16f610",   "16f610"   }, 0x6610, 1, 4, "16f610.lkr"   },
+  { pic16f627,   PROC_CLASS_PIC14,   "__16F627",   { "pic16f627",   "p16f627",   "16f627"   }, 0x6627, 1, 4, "16f627.lkr"   },
   { pic16f627a,  PROC_CLASS_PIC14,   "__16F627A",  { "pic16f627a",  "p16f627a",  "16f627a"  }, 0x627a, 1, 4, "16f627a.lkr"  },
   { pic16f628,   PROC_CLASS_PIC14,   "__16F628",   { "pic16f628",   "p16f628",   "16f628"   }, 0x6628, 1, 4, "16f628.lkr"   },  
   { pic16f628a,  PROC_CLASS_PIC14,   "__16F628A",  { "pic16f628a",  "p16f628a",  "16f628a"  }, 0x628a, 1, 4, "16f628a.lkr"  },
@@ -328,7 +328,9 @@ static struct px pics[] = {
   { rf675k,      PROC_CLASS_PIC14,   "__RF675K",   { "rf675k",      "rf675k",    "rf675k"   }, 0x5675, 0, 0, "rf675k.lkr"   },
   { sx18,        PROC_CLASS_SX,      "__SX18",     { "sx18ac",      "sx18",      "sx18"     }, 0x0018, 0, 0, NULL           },
   { sx20,        PROC_CLASS_SX,      "__SX20",     { "sx20ac",      "sx20",      "sx20"     }, 0x0020, 0, 0, NULL           },
-  { sx28,        PROC_CLASS_SX,      "__SX28",     { "sx28ac",      "sx28",      "sx28"     }, 0x0028, 0, 0, NULL           }
+  { sx28,        PROC_CLASS_SX,      "__SX28",     { "sx28ac",      "sx28",      "sx28"     }, 0x0028, 0, 0, NULL           },
+  { sx48,        PROC_CLASS_SX,      "__SX48",     { "sx48bd",      "sx48",      "sx48"     }, 0x0048, 0, 0, NULL           },
+  { sx52,        PROC_CLASS_SX,      "__SX52",     { "sx52bd",      "sx52",      "sx52"     }, 0x0052, 0, 0, NULL           }
 };
 
 #define NUM_PICS	(sizeof(pics) / sizeof(pics[0]))
