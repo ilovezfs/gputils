@@ -93,6 +93,8 @@ OSCTUNE			     EQU     H'0090'
 SSPCON2                      EQU     H'0091'
 PR2                          EQU     H'0092'
 SSPADD                       EQU     H'0093'
+SSPMSK                       EQU     H'0093'
+MSK                          EQU     H'0093'
 SSPSTAT                      EQU     H'0094'
 WPUB			     EQU     H'0095'
 IOCB			     EQU     H'0096'
@@ -113,6 +115,7 @@ CM2CON0			     EQU     H'0108'
 CM2CON1			     EQU     H'0109'
 
 EEDATA                       EQU     H'010C'
+EEDAT                        EQU     H'010C'
 EEADR                        EQU     H'010D'
 EEDATH                       EQU     H'010E'
 EEADRH                       EQU     H'010F'
@@ -163,7 +166,7 @@ TMR1IF                       EQU     H'0000'
 
 ;----- PIR2 Bits ----------------------------------------------------------
 
-OSPIF			     EQU     H'0007'
+OSFIF			     EQU     H'0007'
 C2IF			     EQU     H'0006'
 C1IF			     EQU     H'0005'
 EEIF                         EQU     H'0004'
@@ -173,6 +176,8 @@ CCP2IF                       EQU     H'0000'
 
 ;----- T1CON Bits ---------------------------------------------------------
 
+T1GINV                       EQU     H'0007'
+TMR1GE                       EQU     H'0006'
 T1CKPS1                      EQU     H'0005'
 T1CKPS0                      EQU     H'0004'
 T1OSCEN                      EQU     H'0003'
@@ -388,6 +393,7 @@ NOT_TX8                      EQU     H'0006'    ; Backward compatibility only
 TX8_9                        EQU     H'0006'    ; Backward compatibility only
 TXEN                         EQU     H'0005'
 SYNC                         EQU     H'0004'
+SENDB                        EQU     H'0003'
 BRGH                         EQU     H'0002'
 TRMT                         EQU     H'0001'
 TX9D                         EQU     H'0000'
@@ -448,8 +454,8 @@ STRA                         EQU     H'0000'
 ;----- ADCON1 -------------------------------------------------------------
 
 ADFM			     EQU      H'0007'
-VCFG0			     EQU      H'0005'
-VCFG1			     EQU      H'0004'
+VCFG1			     EQU      H'0005'
+VCFG0			     EQU      H'0004'
 
 ;----- BANK 2 REGISTER DEFINITIONS ----------------------------------------
 ;----- WDTCON Bits --------------------------------------------------------
@@ -560,6 +566,8 @@ _CONFIG2                     EQU     H'2008'
 
 ;----- Configuration Word1 ------------------------------------------------
 
+_DEBUG_ON                    EQU     H'1FFF'
+_DEBUG_OFF                   EQU     H'3FFF'
 _LVP_ON			     EQU     H'3FFF'
 _LVP_OFF		     EQU     H'2FFF'
 _FCMEN_ON                    EQU     H'3FFF'
