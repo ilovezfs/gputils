@@ -1,5 +1,7 @@
 %option noyywrap
 %x incl
+%x inclb
+%x inclq
 %x define
 %x definition
 %x title
@@ -67,11 +69,35 @@ STR_QCHAR  ([^"\n]|{ESCCH})
 NUMCHAR [0-9a-z]
 
 %%
-^[ \t]*#?include[ \t]*[<"]? { BEGIN(incl); }
-<incl>[^<>";\r\n]*[>"]?	 { /* got the include file name */
+^[ \t]*#?include[ \t]*[<"]? {
+			   /* FIXME: consider moving #include logic to parser */
+			   switch(yytext[yyleng - 1]) {
+			     case '<': BEGIN(inclb); break;
+			     case '"': BEGIN(inclq); break;
+			     default: BEGIN(incl); break;
+			   }
+			 }
+<inclb>[^>\r\n]*\>?	 { /* got the include file name */
 			   char *pc = &yytext[yyleng - 1];
-			   if ((*pc == '"') || (*pc == '>'))
+			   if (*pc == '>')
 			     *pc = '\0';
+			   else
+			     gpwarning(GPW_MISSING_QUOTE, NULL);
+			   BEGIN(INITIAL);
+			   yylval.s = strdup(yytext);
+			   return INCLUDE;
+			 }
+<inclq>[^"\r\n]*\"?	 { /* got the include file name */
+			   char *pc = &yytext[yyleng - 1];
+			   if (*pc == '"')
+			     *pc = '\0';
+			   else
+			     gpwarning(GPW_MISSING_QUOTE, NULL);
+			   BEGIN(INITIAL);
+			   yylval.s = strdup(yytext);
+			   return INCLUDE;
+			 }
+<incl>[^ \t<>";\r\n]*	 { /* got the include file name */
 			   BEGIN(INITIAL);
 			   yylval.s = strdup(yytext);
 			   return INCLUDE;

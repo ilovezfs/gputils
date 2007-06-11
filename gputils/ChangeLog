@@ -1,3 +1,7 @@
+2007-06-11 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Corrected behavior for include directive with quoted, braced, and
+  unquoted parameter
+
 2007-06-07 David Barnett <daviebdawg@gmail.com>
   * [gputils] Added support for sx48 and sx52
   * [gputils] Updated list of supported processors in gputils.lyx
