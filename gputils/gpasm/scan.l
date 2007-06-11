@@ -1,11 +1,8 @@
 %option noyywrap
-%x incl
-%x inclb
-%x inclq
+%x bquote
+%x lnquote
 %x define
 %x definition
-%x title
-%x subtitle
 
 %{
 /* lexical analyser for gpasm
@@ -65,42 +62,15 @@ int force_ident; /* Used to force numbers to identifiers for processor names */
 
 IDENT  [.]?[a-z_\x80-\xff?@#][a-z_0-9\x80-\xff.?@#]*
 ESCCH  \\([abfnrtv\\?'"]|0[0-7]{2}|x[0-9a-f]{2})
-STR_QCHAR  ([^"\n]|{ESCCH})
+STR_QCHAR  ([^"\r\n]|{ESCCH})
+STR_BCHAR  ([^>\r\n]|{ESCCH})
 NUMCHAR [0-9a-z]
 
 %%
-^[ \t]*#?include[ \t]*[<"]? {
-			   /* FIXME: consider moving #include logic to parser */
-			   switch(yytext[yyleng - 1]) {
-			     case '<': BEGIN(inclb); break;
-			     case '"': BEGIN(inclq); break;
-			     default: BEGIN(incl); break;
-			   }
-			 }
-<inclb>[^>\r\n]*\>?	 { /* got the include file name */
-			   char *pc = &yytext[yyleng - 1];
-			   if (*pc == '>')
-			     *pc = '\0';
-			   else
-			     gpwarning(GPW_MISSING_QUOTE, NULL);
-			   BEGIN(INITIAL);
-			   yylval.s = strdup(yytext);
-			   return INCLUDE;
-			 }
-<inclq>[^"\r\n]*\"?	 { /* got the include file name */
-			   char *pc = &yytext[yyleng - 1];
-			   if (*pc == '"')
-			     *pc = '\0';
-			   else
-			     gpwarning(GPW_MISSING_QUOTE, NULL);
-			   BEGIN(INITIAL);
-			   yylval.s = strdup(yytext);
-			   return INCLUDE;
-			 }
-<incl>[^ \t<>";\r\n]*	 { /* got the include file name */
-			   BEGIN(INITIAL);
-			   yylval.s = strdup(yytext);
-			   return INCLUDE;
+^[ \t]*#?include		 {
+			   yylval.s = "include";
+			   BEGIN(bquote);
+			   return IDENTIFIER;
 			 }
 <<EOF>>		 	 {
 			   if (found_eof())
@@ -110,24 +80,16 @@ end		         {
 			   found_end();
 			   yyterminate();
 			 }
-^[ \t]*title[ \t]*[<"]?  { BEGIN(title); }
-<title>[^<"\r\n]*[>"]?   { /* got the title text */
-#define LEN sizeof(state.lst.title_name)
-                           yytext[yyleng - 1] = '\0';
-                           strncpy(state.lst.title_name, yytext, LEN);
-                           BEGIN(INITIAL);
-#undef LEN
-                         }
-^[ \t]*subtitle[ \t]*[<"]?  { BEGIN(subtitle); }
-^[ \t]*subtitl[ \t]*[<"]?   { BEGIN(subtitle); }
-^[ \t]*stitle[ \t]*[<"]?    { BEGIN(subtitle); }
-<subtitle>[^<"\r\n]*[>"]?   { /* got the subtitle text */
-#define LEN sizeof(state.lst.subtitle_name)
-                           yytext[yyleng - 1] = '\0';
-                           strncpy(state.lst.subtitle_name, yytext, LEN);
-                           BEGIN(INITIAL);
-#undef LEN
-                         }
+^[ \t]*title	 {
+			   BEGIN(lnquote);
+			   yylval.s = "title";
+			   return IDENTIFIER;
+			 }
+^[ \t]*(subtitle?|stitle) {
+			   BEGIN(lnquote);
+			   yylval.s = "subtitle";
+			   return IDENTIFIER;
+			 }
 cblock			 {
 			   return CBLOCK;
 			 }
@@ -445,13 +407,14 @@ h'-?{NUMCHAR}+'          {
                            yylval.i = gpasm_magic(yytext + 1);
 			   return NUMBER;
                          }
-\"{STR_QCHAR}*\"?        {
+<INITIAL,bquote>\"{STR_QCHAR}*\"?        {
 			   char *pc = &yytext[yyleng - 1];
 			   if ((yyleng > 1) && (*pc == '"'))
 			     *pc = '\0';
                            else
 			     gpwarning(GPW_MISSING_QUOTE, NULL);                           
                            yylval.s = strdup(yytext + 1);
+			   BEGIN(INITIAL);
 			   return STRING;
                          }
 '{STR_QCHAR}'            {
@@ -462,6 +425,30 @@ A'{STR_QCHAR}'           {
                            yylval.i = yytext[2];
 			   return NUMBER;
                          }
+<bquote>\<{STR_BCHAR}*\> {
+			   yytext[yyleng - 1] = '\0';
+			   yylval.s = strdup(&yytext[1]);
+			   BEGIN(INITIAL);
+			   return STRING;
+			 }
+<bquote>[^ \t<>";\r\n]+ {
+			   /* unquoted (special-case) string */
+			   yylval.s = strdup(yytext);
+			   BEGIN(INITIAL);
+			   return STRING;
+			 }
+<lnquote>\"{STR_QCHAR}*\" {
+			   yytext[yyleng - 1] = '\0';
+			   yylval.s = strdup(&yytext[1]);
+			   BEGIN(INITIAL);
+			   return STRING;
+			 }
+<lnquote>[^ \t;\r\n][^;\r\n]* {
+			   /* full-line (special-case title/subtitle) string */
+			   yylval.s = strdup(yytext);
+			   BEGIN(INITIAL);
+			   return STRING;
+			 }
 "<<"			 OPERATOR(LSH);
 ">>"			 OPERATOR(RSH);
 ">="			 OPERATOR(GREATER_EQUAL);
@@ -489,15 +476,16 @@ A'{STR_QCHAR}'           {
 "*-"			 OPERATOR(TBL_POST_DEC);
 "+*"			 OPERATOR(TBL_PRE_INC);
 
-[ \t\r]*
-[\n]		         {
+<INITIAL,bquote,lnquote>[ \t\r]*
+<*>[\n]		         {
 			   quoted = 0;
 			   force_decimal = 0;
 			   force_ident = 0;
+			   BEGIN(INITIAL);  /* no multiline states yet */
  			   return yytext[0];
 			 }
-;.*			 {  }
-.			 { 
+<*>;.*			 {  }
+<*>.			 { 
 			   yylval.i = yytext[0];
 		           return yytext[0];
 			 }

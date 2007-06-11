@@ -239,7 +239,6 @@ void next_line(int value)
 %token <i> NUMBER
 %token <s> PROCESSOR
 %token <s> STRING
-%token <s> INCLUDE
 %token <i> UPPER
 %token <i> HIGH
 %token <i> LOW
@@ -463,11 +462,6 @@ statement:
 	  } else {
 	    macro_append();
 	  }
-	}
-	|
-	INCLUDE '\n'
-	{
-	  $$ = do_or_append_insn("include", mk_list(mk_string($1), NULL));
 	}
 	|
 	PROCESSOR {  force_ident = 1; }

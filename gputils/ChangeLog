@@ -1,4 +1,8 @@
 2007-06-11 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Improved quote behavior on include, title, and subtitle directives
+  and moved their logic into the parser grammar
+
+2007-06-11 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Corrected behavior for include directive with quoted, braced, and
   unquoted parameter
 
