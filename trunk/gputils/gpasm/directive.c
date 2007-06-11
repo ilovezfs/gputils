@@ -2220,6 +2220,48 @@ static gpasmVal do_space(gpasmVal r,
   return r;
 }
 
+static gpasmVal do_subtitle(gpasmVal r,
+		        char *name,
+		        int arity,
+		        struct pnode *parms)
+{
+  struct pnode *p;
+
+  if (enforce_arity(arity, 1)) {
+    p = HEAD(parms);
+    if (p->tag == string) {
+#define LEN sizeof(state.lst.subtitle_name)
+      strncpy(state.lst.subtitle_name, p->value.string, LEN);
+#undef LEN
+    } else {
+      gperror(GPE_ILLEGAL_ARGU, NULL);
+    }
+  }
+
+  return r;
+}
+
+static gpasmVal do_title(gpasmVal r,
+		        char *name,
+		        int arity,
+		        struct pnode *parms)
+{
+  struct pnode *p;
+
+  if (enforce_arity(arity, 1)) {
+    p = HEAD(parms);
+    if (p->tag == string) {
+#define LEN sizeof(state.lst.title_name)
+      strncpy(state.lst.title_name, p->value.string, LEN);
+#undef LEN
+    } else {
+      gperror(GPE_ILLEGAL_ARGU, NULL);
+    }
+  }
+
+  return r;
+}
+
 static gpasmVal do_type(gpasmVal r,
 		        char *name,
 		        int arity,
@@ -3471,6 +3513,8 @@ struct insn op_0[] = {
   { "radix",      0, (long int)do_radix,     INSN_CLASS_FUNC,   0 },
   { "set",        0, (long int)do_set, 	     INSN_CLASS_FUNC,   0 },
   { "space",      0, (long int)do_space,     INSN_CLASS_FUNC,   0 },
+  { "subtitle",   0, (long int)do_subtitle,  INSN_CLASS_FUNC,   0 },
+  { "title",      0, (long int)do_title,     INSN_CLASS_FUNC,   0 },
   { "udata",      0, (long int)do_udata,     INSN_CLASS_FUNC,   0 },
   { "udata_acs",  0, (long int)do_udata_acs, INSN_CLASS_FUNC,   0 },
   { "udata_ovr",  0, (long int)do_udata_ovr, INSN_CLASS_FUNC,   0 },
