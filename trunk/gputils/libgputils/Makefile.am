@@ -27,6 +27,9 @@ libgputils_a_SOURCES =\
 	gpwritehex.c \
 	gpwriteobj.c \
 	gparchive.h \
+	gpcfg.c \
+	gpcfg.h \
+	gpcfg-table.c \
 	gpcod.h \
         gpcoff.h \
 	gpcoffgen.h \
