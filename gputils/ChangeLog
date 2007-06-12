@@ -1,3 +1,8 @@
+2007-06-12 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed minor lexer error with title and subtitle directive involving
+  whitespace after parameter
+  * [gpasm] Fixed errors on misuse of #define directive
+
 2007-06-11 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Improved quote behavior on include, title, and subtitle directives
   and moved their logic into the parser grammar

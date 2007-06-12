@@ -924,6 +924,45 @@ static gpasmVal do_def(gpasmVal r,
   return r;
 }
 
+static gpasmVal do_define(gpasmVal r,
+                       char *name,
+                       int arity,
+                       struct pnode *parms)
+{
+  struct pnode *p;
+  struct symbol *current_definition;
+
+  if (arity < 1) {
+    /* FIXME: find a more elegant way to do this */
+    state.pass = 2;
+    gperror(GPE_MISSING_ARGU, NULL);
+    exit(1);
+  }
+  assert(arity <= 2);
+
+  p = HEAD(parms);
+  if (p->tag == string) {
+    if((asm_enabled()) && (!state.mac_prev)) {
+      if ((get_symbol(state.stDefines, p->value.string) != NULL)
+          && (state.pass == 1)) {
+        /* FIXME: find a more elegant way to do this */
+        state.pass = 2;
+        gperror(GPE_DUPLAB, NULL);
+        exit(1);
+	 }
+      current_definition = add_symbol(state.stDefines, p->value.string);
+    }
+  }
+
+  if (TAIL(parms)) {
+    struct pnode *p2 = HEAD(TAIL(parms));
+    assert(p2->tag == string);
+    annotate_symbol(current_definition, strdup(p2->value.string));
+  }
+
+  return r;
+}
+
 static gpasmVal do_dim(gpasmVal r,
                        char *name,
                        int arity,
@@ -3535,6 +3574,7 @@ struct insn op_0[] = {
   { "#endif",     0, (long int)do_endif,     INSN_CLASS_FUNC,   ATTRIB_COND },
   { "#ifdef",     0, (long int)do_ifdef,     INSN_CLASS_FUNC,   ATTRIB_COND },
   { "#ifndef",    0, (long int)do_ifndef,    INSN_CLASS_FUNC,   ATTRIB_COND },
+  { "#define",    0, (long int)do_define,    INSN_CLASS_FUNC,   0 },
   { "#undefine",  0, (long int)do_undefine,  INSN_CLASS_FUNC,   0 }
 };
 

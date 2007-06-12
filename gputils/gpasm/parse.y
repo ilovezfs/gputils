@@ -239,6 +239,7 @@ void next_line(int value)
 %token <i> NUMBER
 %token <s> PROCESSOR
 %token <s> STRING
+%token <s> DEFINE
 %token <i> UPPER
 %token <i> HIGH
 %token <i> LOW
@@ -488,6 +489,22 @@ statement:
 	{
 	  $$ = do_or_append_insn($1, $3);
 	  force_decimal = 0;
+	}
+	|
+	DEFINE IDENTIFIER STRING '\n'
+	{
+	  $$ = do_or_append_insn($1, mk_list(mk_string($2),
+	      mk_list(mk_string($3), NULL)));
+	}
+	|
+	DEFINE IDENTIFIER '\n'
+	{
+	  $$ = do_or_append_insn($1, mk_list(mk_string($2), NULL));
+	}
+	|
+	DEFINE '\n'
+	{
+	  $$ = do_or_append_insn($1, NULL);
 	}
 	|
 	IDENTIFIER '\n'
