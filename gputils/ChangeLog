@@ -1,4 +1,7 @@
 2007-06-12 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Patch by Michael Ballbach to add support for CONFIG directive
+
+2007-06-12 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed minor lexer error with title and subtitle directive involving
   whitespace after parameter
   * [gpasm] Fixed errors on misuse of #define directive
