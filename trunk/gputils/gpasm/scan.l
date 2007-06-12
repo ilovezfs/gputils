@@ -52,7 +52,6 @@ static int found_eof();
 
 static char *check_defines(char *symbol);
 
-static struct symbol *current_definition;	/* Used in #define */
 static int quoted; /* Used to prevent #define expansion in ifdef and 
                       ifndef... */
 int force_decimal; /* Used to force radix to decimal for some directives */
@@ -107,49 +106,14 @@ fill[ \t]*\(     	 {
 			 }
 ^[ \t]*#define[ \t]+ 	 {
                            BEGIN(define);
+					  yylval.s = "#define";
+					  return DEFINE;
 			 }
 <define>{IDENT}		 {
-                           if((asm_enabled()) && (!state.mac_prev)) {
-			     if ((get_symbol(state.stDefines, yytext) != NULL)
-                                  && (state.pass == 1)) {
-			       /* FIXME: find a more elegant way to do this */
-			       state.pass = 2;
-			       gperror(GPE_DUPLAB, NULL);
-			       exit(1);
-			     }
-			     current_definition = add_symbol(state.stDefines, 
-                                                             yytext);
-                           }
 			   BEGIN(definition);
+			   yylval.s = strdup(yytext);
+			   return IDENTIFIER;
 			 }
-<definition>.*$	 	 {
-                           if((asm_enabled()) && (!state.mac_prev)) {
-			     char *string_ptr = yytext;
-
-			     /* Should have a #define in progress */
-			     assert(current_definition != NULL);
-
-			     /* if there is a comment remove it */
-			     while(*string_ptr != '\0') {
-                               if (*string_ptr == ';') {
-                                 *string_ptr = '\0';
-                                 break;
-                               }                                 
-                               string_ptr++;
-			     }
-
-			     /* remove leading spaces or tabs */
-			     string_ptr = yytext;
-			     while(*string_ptr == '\t' || *string_ptr == ' ') {
-			       string_ptr++;
-			     }
-
-                             annotate_symbol(current_definition, 
-                                             strdup(string_ptr));
-			     current_definition = NULL;
-                           }
-			   BEGIN(INITIAL);
-                         }
 upper			 {
 			   yylval.i = UPPER;
 			   return UPPER;
@@ -438,13 +402,15 @@ A'{STR_QCHAR}'           {
 			   return STRING;
 			 }
 <lnquote>\"{STR_QCHAR}*\" {
+			   /* if valid, must match with length >= unquoted token below */
 			   yytext[yyleng - 1] = '\0';
 			   yylval.s = strdup(&yytext[1]);
 			   BEGIN(INITIAL);
 			   return STRING;
 			 }
-<lnquote>[^ \t;\r\n][^;\r\n]* {
-			   /* full-line (special-case title/subtitle) string */
+<definition,lnquote>[^ \t;\r\n]+([ \t][^ \t;\r\n]+)* {
+			   /* full-line (special-case) string */
+			   /* must begin and end with non-whitespace */
 			   yylval.s = strdup(yytext);
 			   BEGIN(INITIAL);
 			   return STRING;
@@ -476,7 +442,7 @@ A'{STR_QCHAR}'           {
 "*-"			 OPERATOR(TBL_POST_DEC);
 "+*"			 OPERATOR(TBL_PRE_INC);
 
-<INITIAL,bquote,lnquote>[ \t\r]*
+<INITIAL,bquote,lnquote,definition>[ \t\r]*
 <*>[\n]		         {
 			   quoted = 0;
 			   force_decimal = 0;
