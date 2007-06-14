@@ -785,10 +785,11 @@ check_defines(char *symbol)
 
   /* If not quoted, check for #define substitution */
   if (!quoted &&
-     (sym = get_symbol(state.stTopDefines, yytext)) != NULL) {
+     (sym = get_symbol(state.stTopDefines, symbol)) != NULL) {
     subst = get_symbol_annotation(sym);
-    assert(subst != NULL);
-    if (strcmp(yytext, subst) == 0) {
+    if (subst == NULL)
+      subst = "";
+    if (strcmp(symbol, subst) == 0) {
       /* check for a bad subsitution */
       subst = NULL;
     }
