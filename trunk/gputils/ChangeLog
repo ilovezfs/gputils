@@ -1,3 +1,8 @@
+2007-06-14 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed bug #897875, assertion failed instead of error for
+  substitution of #define label without a value
+  * [gpasm] Fixed minor bug with ignored parameter in check_defines
+
 2007-06-12 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Patch by Michael Ballbach to add support for CONFIG directive
 
