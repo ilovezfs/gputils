@@ -303,7 +303,6 @@ void next_line(int value)
 %type <p> e6
 %type <p> e7
 %type <p> e8
-%type <p> e9
 %type <p> cidentifier
 %type <i> e1op
 %type <i> e2op
@@ -671,19 +670,12 @@ parameter_list:
 	;
 
 expr:
-	e9
-	|
-	STRING
-        {
-	  $$ = mk_string($1);
-        }
-	;
-
-e9:
 	e8
 	|
-	e9 e9op e8
+	expr e9op e8
 	{
+	  coerce_str1($1);
+	  coerce_str1($3);
 	  $$ = mk_2op($2, $1, $3);
 	}
 	;
@@ -695,6 +687,8 @@ e8:
 	|
 	e8 e8op e7
 	{
+	  coerce_str1($1);
+	  coerce_str1($3);
 	  $$ = mk_2op($2, $1, $3);
 	}
 	;
@@ -706,6 +700,8 @@ e7:
 	|
 	e7 e7op e6
 	{
+	  coerce_str1($1);
+	  coerce_str1($3);
 	  $$ = mk_2op($2, $1, $3);
 	}
 	;
@@ -717,6 +713,8 @@ e6:
 	|
 	e6 e6op e5
 	{
+	  coerce_str1($1);
+	  coerce_str1($3);
 	  $$ = mk_2op($2, $1, $3);
 	}
 	;
@@ -728,6 +726,8 @@ e5:
 	|
 	e5 e5op e4
 	{
+	  coerce_str1($1);
+	  coerce_str1($3);
 	  $$ = mk_2op($2, $1, $3);
 	}
 	;
@@ -739,6 +739,8 @@ e4:
 	|
 	e4 e4op e3
 	{
+	  coerce_str1($1);
+	  coerce_str1($3);
 	  $$ = mk_2op($2, $1, $3);
 	}
 	;
@@ -750,6 +752,8 @@ e3:
 	|
 	e3 e3op e2
 	{
+	  coerce_str1($1);
+	  coerce_str1($3);
 	  $$ = mk_2op($2, $1, $3);
 	}
 	;
@@ -761,6 +765,8 @@ e2:
 	|
 	e2 e2op e1
 	{
+	  coerce_str1($1);
+	  coerce_str1($3);
 	  $$ = mk_2op($2, $1, $3);
 	}
 	;
@@ -772,6 +778,7 @@ e1:
 	|
 	e1op e0
 	{
+	  coerce_str1($2);
 	  $$ = mk_1op($1, $2);
 	}
 	;
@@ -792,6 +799,11 @@ e0:
         '$'
         {
 	  $$ = mk_symbol("$");
+	}
+	|
+	STRING
+	{
+	  $$ = mk_string($1);
 	}
 	|
 	'(' expr ')'

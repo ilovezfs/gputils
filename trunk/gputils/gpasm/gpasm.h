@@ -294,6 +294,7 @@ int stringtolong(char *string, int radix);
 int gpasm_magic(char *);
 char *convert_escape_chars(char *ps, int *value);
 char *convert_escaped_char(char *str, char c);
+void coerce_str1(struct pnode *exp);
 gpasmVal do_or_append_insn(char *op, struct pnode *parms);
 void set_global(char *name,
 		gpasmVal value,
