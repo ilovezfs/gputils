@@ -367,10 +367,6 @@ h'-?{NUMCHAR}+'          {
    			     return NUMBER;
                            }
 			 }
-\"{STR_QCHAR}\"          {
-                           yylval.i = gpasm_magic(yytext + 1);
-			   return NUMBER;
-                         }
 <INITIAL,bquote>\"{STR_QCHAR}*\"?        {
 			   char *pc = &yytext[yyleng - 1];
 			   if ((yyleng > 1) && (*pc == '"'))
@@ -382,7 +378,8 @@ h'-?{NUMCHAR}+'          {
 			   return STRING;
                          }
 '{STR_QCHAR}'            {
-                           yylval.i = gpasm_magic(yytext + 1);
+                           char *pc = convert_escape_chars(yytext + 1, &yylval.i);
+			   assert(pc == &yytext[yyleng - 1]);
 			   return NUMBER;
                          }
 A'{STR_QCHAR}'           {

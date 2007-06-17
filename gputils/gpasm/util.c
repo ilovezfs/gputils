@@ -178,6 +178,23 @@ convert_escape_chars(char *ps, int *value)
 
 }
 
+/* In some contexts, such as in the operand to a literal instruction, a
+ * single-character string literal in an expression can be coerced to a
+ * character literal. coerce_str1 converts a string-type pnode to a
+ * constant-type pnode in-place. */
+void coerce_str1(struct pnode *exp)
+{
+  if ((exp != NULL) && (exp->tag == string)) {
+    int value;
+    char *pc = convert_escape_chars(exp->value.string, &value);
+    if (*pc == '\0') {
+      /* castable string, make the conversion */
+      exp->tag = constant;
+      exp->value.constant = value;
+    }
+  }
+}
+
 void set_global(char *name,
                 gpasmVal value,
                 enum globalLife lifetime,

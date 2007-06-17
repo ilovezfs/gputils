@@ -2938,6 +2938,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_LIT8:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
+	  coerce_str1(p); /* literal instructions can coerce string literals */
 	  if (strcasecmp(i->name, "movlb") == 0) {
 	    emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), 0xf);
 	  } else {

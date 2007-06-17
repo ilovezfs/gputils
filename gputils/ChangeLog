@@ -1,3 +1,9 @@
+2007-06-17 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Limited string->character coercion of 1-length string literals to
+  contexts where syntax doesn't permit strings
+  * [gpasm] Allowed special escape sequences (like hex codes) in character
+  literals. Old behavior would silently return incorrect result.
+
 2007-06-14 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed bug #897875, assertion failed instead of error for
   substitution of #define label without a value
