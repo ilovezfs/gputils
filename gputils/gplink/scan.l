@@ -38,7 +38,7 @@ static void bad_char(char *character);
 
 %}
 
-SYM [a-z0-9_./\\:]*
+SYM \/?([a-z0-9_.\\:]+\/?)+
 
 %%
 <<EOF>>		 	 {
