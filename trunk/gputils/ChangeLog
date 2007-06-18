@@ -1,3 +1,6 @@
+2007-06-18 David Barnett <daviebdawg@gmail.com>
+  * [gplink] Fixed bug #1472396, error on empty comment line in LKR script
+
 2007-06-17 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Limited string->character coercion of 1-length string literals to
   contexts where syntax doesn't permit strings
