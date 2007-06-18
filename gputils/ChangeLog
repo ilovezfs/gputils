@@ -1,4 +1,8 @@
 2007-06-18 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed to allow blank parameters on macro invocation, substituting
+  nothing (not even empty quotes) as in MPASM
+
+2007-06-18 David Barnett <daviebdawg@gmail.com>
   * [gplink] Fixed bug #1472396, error on empty comment line in LKR script
 
 2007-06-17 David Barnett <daviebdawg@gmail.com>

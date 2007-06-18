@@ -659,13 +659,22 @@ parameter_list:
 	|
 	expr ','
 	{
-	  gperror(GPE_BADCHAR, "Illegal Character (,)");
-          $$ = mk_list($1, NULL);
+          $$ = mk_list($1, mk_list(mk_symbol(""), NULL));
 	}
 	|
 	expr ',' parameter_list
 	{
 	  $$ = mk_list($1, $3);
+	}
+	|
+	',' parameter_list
+	{
+	  $$ = mk_list(mk_symbol(""), $2);
+	}
+	|
+	','
+	{
+	  $$ = mk_list(mk_symbol(""), mk_list(mk_symbol(""), NULL));
 	}
 	;
 
