@@ -1,3 +1,8 @@
+2007-06-19 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed behavior of undefined expressions on the first pass to
+  assume 0 as in MPASM (affects strange "differ on second pass" cases like
+  bug #1058509)
+
 2007-06-18 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed to allow blank parameters on macro invocation, substituting
   nothing (not even empty quotes) as in MPASM
