@@ -1459,6 +1459,8 @@ static gpasmVal do_equ(gpasmVal r,
     p = HEAD(parms);
     if (can_evaluate(p))
       r = evaluate(p);
+		else
+		  r = 0;
   }
 
   return r;
@@ -2243,6 +2245,8 @@ static gpasmVal do_org(gpasmVal r,
         state.next_state = state_section;
       }
     }
+		else
+		  r = 0;
   }
 
   return r;
@@ -2395,6 +2399,8 @@ static gpasmVal do_res(gpasmVal r,
         }
       }
     }
+		else
+		  r = 1;
   }
 
   return r;
@@ -2412,6 +2418,8 @@ static gpasmVal do_set(gpasmVal r,
     p = HEAD(parms);
     if (can_evaluate(p))
       r = evaluate(p);
+    else
+      r = 0;
   }
 
   return r;
