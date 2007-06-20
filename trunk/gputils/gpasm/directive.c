@@ -2400,7 +2400,7 @@ static gpasmVal do_res(gpasmVal r,
       }
     }
 		else
-		  r = 1;
+		  r = 0;
   }
 
   return r;
