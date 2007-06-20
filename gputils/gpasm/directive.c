@@ -87,6 +87,10 @@ static void emit(unsigned int value)
       gperror(GPE_ADDROVR, NULL);
     }
 
+    if ((state.maxrom >= 0) && (state.org > state.maxrom)) {
+      gpwarning(GPW_EXCEED_ROM, NULL);
+    }
+
     i_memory_put(state.i_memory, state.org, MEM_USED_MASK | value);
 
   }
@@ -2163,11 +2167,14 @@ static gpasmVal do_maxrom(gpasmVal r,
 			  int arity,
 			  struct pnode *parms)
 {
+  struct pnode *p;
 
   state.lst.line.linetype = dir;
-
-  /* FIXME: implement this directive */
-  gpwarning(GPW_UNKNOWN, "gpasm doesn't support the maxrom directive yet"); 
+  if (enforce_arity(arity, 1)) {
+    p = HEAD(parms);
+    if (can_evaluate(p))
+      state.maxrom = evaluate(p);
+  }
 
   return r;
 }

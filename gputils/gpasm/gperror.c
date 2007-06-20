@@ -239,6 +239,8 @@ char *gp_getwarning(unsigned int code)
     return "Expected dec, oct, hex. Will use hex.";
   case GPW_INVALID_RAM:
     return "Invalid RAM location specified.";
+  case GPW_EXCEED_ROM:
+    return "Address exceeds maximum range for this processor.";
   case GPW_DISABLE_ERROR:
     return "Error messages cannot be disabled.";
   case GPW_REDEFINING_PROC:

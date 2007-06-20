@@ -102,6 +102,7 @@ extern struct gpasm_state {
   gp_boolean found_devid;	/* config directive in source code */
   gp_boolean found_idlocs;	/* idlocs directive in source code */
   unsigned int maxram;		/* Highest legal memory location */
+  long maxrom;			/* Highest legal program memory location */
   enum outfile
     codfile,			/* Symbol output file control */
     depfile,			/* Dependency output file control */

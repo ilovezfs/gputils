@@ -120,7 +120,6 @@ enum pic_processor {
   pic16c73b,
   pic16c74,
   pic16c745,
-  pic16c747,
   pic16c74a,
   pic16c74b,
   pic16c76,
@@ -183,6 +182,7 @@ enum pic_processor {
   pic16f73,
   pic16f737,
   pic16f74,
+  pic16f747,
   pic16f76,
   pic16f767,
   pic16f77,
@@ -238,8 +238,8 @@ enum pic_processor {
   pic18c801,
   pic18c858,
   pic18f1220,
-  pic18f1320,
   pic18f1230,
+  pic18f1320,
   pic18f1330,
   pic18f2220,
   pic18f2320,
@@ -355,6 +355,7 @@ struct px {
   unsigned long coff_type; 
   int num_pages;
   int num_banks;
+  long maxrom;
   char *script;
 };
 
