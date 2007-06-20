@@ -40,6 +40,7 @@ void select_processor(char *name)
     if (found) {
       if (state.processor == none) {
         state.processor = found->tag;
+	   state.maxrom = found->maxrom;
         state.processor_info = found;
         set_global(found->defined_as, 1, PERMANENT, gvt_constant);
       } else if (state.processor != found->tag ) {

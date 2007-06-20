@@ -1,4 +1,10 @@
 2007-06-20 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Implemented warning for program code overflow
+  * [gpasm] Implemented __maxrom directive (but not __badrom)
+  * [gputils] Removed 16c747 (doesn't exist) and added 16f747
+  * [gputils] Fixed wrong address in 16c771.lkr
+
+2007-06-20 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Minor fix to previous update, assume 0 instead of 1 for "res"
   directive argument (size).
 
