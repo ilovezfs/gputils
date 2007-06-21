@@ -187,7 +187,6 @@ show_usage(void)
 #endif
   printf("Report bugs to:\n");
   printf("%s\n", PACKAGE_BUGREPORT);
-  exit(0);
 }
 
 void
@@ -197,6 +196,7 @@ process_args( int argc, char *argv[])
   extern int optind;
   int c;
   gp_boolean usage = false;
+  int usage_code = 0;
   char *pc;
 
   /* Scan through the options for the -i flag.  It must be set before the 
@@ -218,6 +218,7 @@ process_args( int argc, char *argv[])
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
     switch (c) {
     case '?':
+      usage_code = 1;
     case 'h':
       usage = true;
       break;
@@ -329,6 +330,7 @@ process_args( int argc, char *argv[])
 
   if (usage) {
     show_usage();
+    exit(usage_code);
   }
 
   /* Add the header path to the include paths list last, so that the user
