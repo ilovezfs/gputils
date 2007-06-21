@@ -1,4 +1,8 @@
 2007-06-21 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed bug #1335511, where redefining a symbol silently corrupts
+  the COFF relocations
+
+2007-06-21 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed to return non-zero for invalid command-line arguments
 
 2007-06-20 David Barnett <daviebdawg@gmail.com>
