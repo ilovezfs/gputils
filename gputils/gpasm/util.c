@@ -219,6 +219,21 @@ void set_global(char *name,
     var->coff_section_num = state.obj.section_num;
     var->type = type;
     var->previous_type = type;  /* coff symbols can be changed to global */
+
+    /* increment the index into the coff symbol table for the relocations */
+    switch(type) {
+    case gvt_extern:
+    case gvt_global:
+    case gvt_static:
+    case gvt_address:
+    case gvt_debug:
+    case gvt_absolute:
+      state.obj.symbol_num++;
+      break;
+    default:
+      break;
+    }
+
   } else if (lifetime == TEMPORARY) {
     /*
      * TSD - the following embarrassing piece of code is a hack
@@ -250,20 +265,6 @@ void set_global(char *name,
 
     if (coff_name != NULL)
       free(coff_name);
-  }
-
-  /* increment the index into the coff symbol table for the relocations */
-  switch(type) {
-  case gvt_extern:
-  case gvt_global:
-  case gvt_static:
-  case gvt_address:
-  case gvt_debug:
-  case gvt_absolute:
-    state.obj.symbol_num++;
-    break;
-  default:
-    break;
   }
 
 }
