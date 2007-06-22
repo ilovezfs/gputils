@@ -176,9 +176,9 @@ test_gpasm_sub() {
   echo "$errortested files tested with intentional errors"  
   echo "$notcompiled generated errors during compilation"  
   echo
-  if ! test $tested=$passed; then
+  if ! test $tested -eq $passed; then
     return 1  
-  elif ! test $errrortested=$notcompiled; then
+  elif ! test $errortested -eq $notcompiled; then
     return 1
   else
     return 0
@@ -271,9 +271,9 @@ test_gpasm_obj() {
   echo "$errortested files tested with intentional errors"  
   echo "$notcompiled generated errors during compilation"  
   echo
-  if ! test $tested=$passed; then
+  if ! test $tested -eq $passed; then
     return 1  
-  elif ! test $errrortested=$notcompiled; then
+  elif ! test $errortested -eq $notcompiled; then
     return 1
   else
     return 0
@@ -299,9 +299,9 @@ test_gpasm() {
   if [ $RETVAL -eq 0 ]; then
     test_gpasm_old || testfailed
     test_gpasm_sub gpasm.project || testfailed
-    test_gpasm_sub gpasm.mchip || testfailed
+    test_gpasm_sub gpasm.mchip
     test_gpasm_obj gpasm.project || testfailed
-    test_gpasm_obj gpasm.mchip || testfailed
+    test_gpasm_obj gpasm.mchip
     echo
     printbanner "gpasm testing successful"
   fi

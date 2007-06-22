@@ -1,4 +1,12 @@
 2007-06-22 David Barnett <daviebdawg@gmail.com>
+  * Fixed bug in test scripts that prevented failures from being reported
+  properly
+  * [gpasm] Disabled reporting testing failed if tests in gpasm.mchip fail
+  (several have never passed)
+  * [gpasm] Added sx.o into test script directory, apparently forgotten
+  * [gpvc] Changed 'gpdasm' to 'gpvc' in gpvc usage message
+
+2007-06-22 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed token problem that caused some beginning-of-line directives
   (include, title, subtitle) to be accepted when not followed by whitespace or
   a delimiter

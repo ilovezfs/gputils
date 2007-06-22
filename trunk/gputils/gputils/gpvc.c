@@ -82,7 +82,7 @@ char * SymbolType4[154] = {
 
 void show_usage(void)
 {
-  printf("Usage: gpdasm [options] file\n");
+  printf("Usage: gpvc [options] file\n");
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -a, --all          Display all information in .cod file.\n");
   printf("  -d, --directory    Display directory header.\n");
