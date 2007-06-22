@@ -66,7 +66,7 @@ STR_BCHAR  ([^>\r\n]|{ESCCH})
 NUMCHAR [0-9a-z]
 
 %%
-^[ \t]*#?include		 {
+^[ \t]*#?include[ \t]+		 {
 			   yylval.s = "include";
 			   BEGIN(bquote);
 			   return IDENTIFIER;
@@ -79,12 +79,12 @@ end		         {
 			   found_end();
 			   yyterminate();
 			 }
-^[ \t]*title	 {
+^[ \t]*title[ \t]+	 {
 			   BEGIN(lnquote);
 			   yylval.s = "title";
 			   return IDENTIFIER;
 			 }
-^[ \t]*(subtitle?|stitle) {
+^[ \t]*(subtitle?|stitle)[ \t]+ {
 			   BEGIN(lnquote);
 			   yylval.s = "subtitle";
 			   return IDENTIFIER;

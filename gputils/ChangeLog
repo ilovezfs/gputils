@@ -1,3 +1,8 @@
+2007-06-22 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed token problem that caused some beginning-of-line directives
+  (include, title, subtitle) to be accepted when not followed by whitespace or
+  a delimiter
+
 2007-06-21 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed bug #1335511, where redefining a symbol silently corrupts
   the COFF relocations
