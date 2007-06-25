@@ -25,6 +25,7 @@ Boston, MA 02111-1307, USA.  */
 typedef enum gp_coff_type { 
   archive_file, 
   object_file, 
+  object_file_v2, 
   sys_err_file,
   unknown_file
 } gp_coff_type;

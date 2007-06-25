@@ -26,7 +26,8 @@ Boston, MA 02111-1307, USA.  */
 /* These definitions are for the COFF as stored in a file. */
 
 /* define the typical values, if they aren't found warn the user */
-#define MICROCHIP_MAGIC 0x1234
+#define MICROCHIP_MAGIC_v1 0x1234
+#define MICROCHIP_MAGIC_v2 0x1240
 
 #define OPTMAGIC 0x5678
 
@@ -60,13 +61,14 @@ struct filehdr
 struct opthdr
 {
   unsigned short  opt_magic;                   
-  unsigned short  vstamp;         /* version of the compiler assembler */             
+  unsigned long   vstamp;         /* version of the compiler assembler */             
   unsigned long   proc_type;                   
   unsigned long   rom_width_bits;                   
   unsigned long   ram_width_bits;           
 };
 
-#define OPT_HDR_SIZ 16
+#define OPT_HDR_SIZ_v1 16
+#define OPT_HDR_SIZ_v2 18
 
 /* section header format */
 struct scnhdr
@@ -227,7 +229,8 @@ struct syment
   char            num_auxsym;  /* number of auxiliary symbols */
 };
 
-#define SYMBOL_SIZE 18
+#define SYMBOL_SIZE_v1 18
+#define SYMBOL_SIZE_v2 20
 
 /* Symbol section numbers */
 #define N_DEBUG -2
@@ -469,7 +472,7 @@ typedef struct gp_aux_type
       unsigned short nreloc;
       unsigned short nlineno;
     } _aux_scn;
-    char data[SYMBOL_SIZE];
+    char data[SYMBOL_SIZE_v2];
   } _aux_symbol;
   
   struct gp_aux_type *next;
@@ -493,7 +496,7 @@ typedef struct gp_symbol_type
   struct gp_section_type *section;
 
   /* type */
-  unsigned short type;
+  unsigned long type;
 
   /* storage class */
   char class;
@@ -572,6 +575,12 @@ typedef struct gp_object_type
 {
   /* object filename */
   char *filename;
+
+  /* format version/magic number */
+  int version;
+
+  /* to reduce conditionals, store the size of symbols in this object */
+  size_t symbol_size;
 
   /* processor */
   enum pic_processor processor;
