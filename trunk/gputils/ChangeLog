@@ -1,4 +1,7 @@
 2007-06-25 David Barnett <daviebdawg@gmail.com>
+  * [gputils] Patch by Michael Ballbach to add support for new COFF format
+
+2007-06-25 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed bug #1466150, where gpasm produced bad HEX output (instead
   of an error) for addresses above 0xFFFF under some hex formats
 

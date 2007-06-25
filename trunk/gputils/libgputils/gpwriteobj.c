@@ -83,12 +83,12 @@ _gp_coffgen_addname(char *name, char *ptr, size_t sizeof_ptr, char *table)
 static void 
 _gp_coffgen_write_filehdr(gp_object_type *object, FILE *fp) 
 {
-  gp_fputl16(MICROCHIP_MAGIC, fp);
+  gp_fputl16(MICROCHIP_MAGIC_v1, fp);
   gp_fputl16(object->num_sections, fp);
   gp_fputl32(object->time, fp);
   gp_fputl32(object->symbol_ptr, fp);
   gp_fputl32(object->num_symbols, fp);
-  gp_fputl16(OPT_HDR_SIZ, fp);
+  gp_fputl16(OPT_HDR_SIZ_v1, fp);
   gp_fputl16(object->flags, fp);
 
   return;
@@ -338,7 +338,7 @@ _gp_updateptr(gp_object_type *object)
   int section_number = 1;
   int symbol_number = 0;
 
-  loc = FILE_HDR_SIZ + OPT_HDR_SIZ + (SEC_HDR_SIZ * object->num_sections);
+  loc = FILE_HDR_SIZ + OPT_HDR_SIZ_v1 + (SEC_HDR_SIZ * object->num_sections);
 
   /* update the data pointers in the section headers */
   section = object->sections;

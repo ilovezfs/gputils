@@ -37,9 +37,11 @@ gp_identify_coff_file(char *filename)
   fread(&magic[0], 1, SARMAG, file);
   fclose(file); 
 
-  if (((magic[1]<<8) + magic[0]) == MICROCHIP_MAGIC)
+  if (((magic[1]<<8) + magic[0]) == MICROCHIP_MAGIC_v1)
     return object_file;
-    
+  if (((magic[1]<<8) + magic[0]) == MICROCHIP_MAGIC_v2)
+    return object_file;
+ 
   if (strncmp(magic, ARMAG, SARMAG) == 0)
     return archive_file;
 
@@ -94,17 +96,21 @@ static void
 _read_file_header(gp_object_type *object, char *file)
 {
 
-  if (gp_getl16(&file[0]) != MICROCHIP_MAGIC)
+  if (gp_getl16(&file[0]) != MICROCHIP_MAGIC_v1 && gp_getl16(&file[0]) != MICROCHIP_MAGIC_v2)
     gp_error("invalid magic number in \"%s\"", object->filename);
 
+  object->version      = gp_getl16(&file[0]);
   object->num_sections = gp_getl16(&file[2]);
   object->time         = gp_getl32(&file[4]);
   object->symbol_ptr   = gp_getl32(&file[8]);
   object->num_symbols  = gp_getl32(&file[12]);
   
-  if (gp_getl16(&file[16]) != OPT_HDR_SIZ)
+  if ((object->version == MICROCHIP_MAGIC_v1 && gp_getl16(&file[16]) != OPT_HDR_SIZ_v1) ||
+	  (object->version == MICROCHIP_MAGIC_v2 && gp_getl16(&file[16]) != OPT_HDR_SIZ_v2))
     gp_error("incorrect optional header size in \"%s\"", object->filename);
-    
+
+  object->symbol_size = (object->version == MICROCHIP_MAGIC_v1 ? 
+						 	SYMBOL_SIZE_v1 : SYMBOL_SIZE_v2);
   object->flags = gp_getl16(&file[18]);
 
 }
@@ -112,28 +118,46 @@ _read_file_header(gp_object_type *object, char *file)
 static void
 _read_opt_header(gp_object_type *object, char *file)
 {
- 
+  unsigned long vstamp;
+  size_t offset = 0;
+
   if (gp_getl16(&file[0]) != OPTMAGIC)
-    gp_error("invalid optional magic number in \"%s\"", object->filename);
-  
-  if (gp_getl16(&file[2]) != 1)
-    gp_error("invalid assembler version in \"%s\"", object->filename);
-  
-  object->processor = gp_processor_coff_proc(gp_getl32(&file[4]));
+    gp_error("invalid optional magic number (0x%04x) in \"%s\"", gp_getl16(&file[0]), object->filename);
+ 
+  offset = 2;
+  if (object->version == MICROCHIP_MAGIC_v1) {
+    vstamp = gp_getl16(&file[offset]);
+	offset += 2;
+  } else if (object->version == MICROCHIP_MAGIC_v2) {
+	vstamp = gp_getl32(&file[offset]);
+	offset += 4;
+  } else {
+	/* programmer error */
+    gp_error("logic error: version not handled in \"%s\"", object->filename);
+	vstamp = 0;
+	abort();
+  }
+
+  if (object->version == MICROCHIP_MAGIC_v1 && vstamp != 1)
+    gp_error("invalid assembler version (%d) in \"%s\"", vstamp, object->filename);
+ 
+  object->processor = gp_processor_coff_proc(gp_getl32(&file[offset]));
   if (object->processor == no_processor)
     gp_error("invalid processor type %#04x in \"%s\"",
              gp_getl32(&file[4]),
              object->filename);
+  offset += 4;
 
   object->class = gp_processor_class(object->processor);
   
-  if (gp_processor_rom_width(object->class) != gp_getl32(&file[8]))
+  if (gp_processor_rom_width(object->class) != gp_getl32(&file[offset]))
     gp_error("invalid rom width for selected processor in \"%s\"", 
              object->filename);
+  offset += 4;
   
-  if (gp_getl32(&file[12]) != 8)
-    gp_error("invalid ram width in \"%s\"", object->filename);
-
+  if (gp_getl32(&file[offset]) != 8)
+    gp_error("invalid ram width (%d) in \"%s\"", gp_getl32(&file[offset]), object->filename);
+  offset += 4;
 }
 
 static void 
@@ -231,11 +255,12 @@ _read_sections(gp_object_type *object, char *file)
   int org;
 
   /* move to the start of the section headers */
-  section_ptr = file + FILE_HDR_SIZ + OPT_HDR_SIZ;
+  section_ptr = file + FILE_HDR_SIZ + 
+	  		(object->version == MICROCHIP_MAGIC_v1 ? OPT_HDR_SIZ_v1 : OPT_HDR_SIZ_v2);
 
   /* setup pointer to string table */
   string_table = &file[object->symbol_ptr + 
-                 (SYMBOL_SIZE * object->num_symbols)];
+                 (object->symbol_size * object->num_symbols)];
 
   object->sections = gp_coffgen_blocksec(object->num_sections);
   current = object->sections;
@@ -257,17 +282,29 @@ _read_sections(gp_object_type *object, char *file)
 
       loc = &file[current->data_ptr];
       if ((current->flags & STYP_TEXT) || (current->flags & STYP_DATA_ROM)) {
-        /* size is in bytes, but words are stored in memory */
-        number = current->size / 2;
+        /* 
+		 * original comment: size is in bytes, but words are stored in memory
+		 *
+		 * this is true, but when using code_pack sections can have an odd
+		 * size. it looks like what MPLAB does is set the odd byte to 0xff in
+		 * program memory, and it doesn't seem to allow two code pack sections
+		 * to straddle a non-word boundary.
+		 */
+        number = (current->size + 1) / 2;
       } else {
         number = current->size;
       }
       for (j = 0; j < number; j++) {
         if ((current->flags & STYP_TEXT) || (current->flags & STYP_DATA_ROM)) {
-          value = (unsigned int)gp_getl16(&loc[j * 2]);
+		  if (j + 1 == number && current->size % 2 != 0) {
+		    /* an odd byte - use 0xff for the lower half, ala MPLAB */
+		    value = 0xff00 | loc[j * 2];
+		  } else {
+            value = (unsigned int)gp_getl16(&loc[j * 2]);
+		  }
         } else {
           value = (unsigned int)loc[j];
-        }        
+        }
         i_memory_put(current->data, org + j, MEM_USED_MASK | value);
       }
     }
@@ -307,7 +344,7 @@ _read_sections(gp_object_type *object, char *file)
 }
 
 static void
-_read_aux(gp_aux_type *aux, int aux_type, char *file, char *string_table)
+_read_aux(gp_object_type *object, gp_aux_type *aux, int aux_type, char *file, char *string_table)
 {
   
   aux->type = aux_type;
@@ -333,16 +370,17 @@ _read_aux(gp_aux_type *aux, int aux_type, char *file, char *string_table)
       aux->_aux_symbol._aux_scn.nlineno = gp_getl16(&file[6]);
       break;
     default:
-      memcpy(&aux->_aux_symbol.data[0], file, SYMBOL_SIZE);
+      memcpy(&aux->_aux_symbol.data[0], file, object->symbol_size);
   }
 
 }
 
 static void 
-_read_symbol(gp_symbol_type *symbol, char *file, char *string_table)
+_read_symbol(gp_object_type *object, gp_symbol_type *symbol, char *file, char *string_table)
 {
   char buffer[9];
   unsigned int offset;
+  size_t file_off = 0;
 
   if (gp_getl32(&file[0]) == 0) {
     /* read name from the string table */
@@ -355,11 +393,16 @@ _read_symbol(gp_symbol_type *symbol, char *file, char *string_table)
     symbol->name = strdup(buffer);
   }
 
-  symbol->value = gp_getl32(&file[8]);
-  symbol->section_number = gp_getl16(&file[12]);
-  symbol->type = gp_getl16(&file[14]);
-  symbol->class = file[16];
-  symbol->num_auxsym = file[17];
+  file_off = 8;
+  symbol->value = gp_getl32(&file[file_off]);			file_off += 4;
+  symbol->section_number = gp_getl16(&file[file_off]);	file_off += 2;
+  if(object->version == MICROCHIP_MAGIC_v1) {
+	  symbol->type = gp_getl16(&file[file_off]);		file_off += 2;
+  } else {
+	  symbol->type = gp_getl32(&file[file_off]);		file_off += 4;
+  }
+  symbol->class = file[file_off];						file_off += 1;
+  symbol->num_auxsym = file[file_off];					file_off += 1;
 
   symbol->section = NULL;
   symbol->aux_list = NULL;
@@ -382,17 +425,17 @@ _read_symtbl(gp_object_type *object, char *file)
     object->symbols = gp_coffgen_blocksym(number);
 
     /* setup pointer to string table */
-    string_table = &file[object->symbol_ptr + (SYMBOL_SIZE * number)];
+    string_table = &file[object->symbol_ptr + (object->symbol_size * number)];
 
     /* read the symbols */
     file = &file[object->symbol_ptr];
     current = object->symbols;
     for (i = 0; i < number; i++) {
       /* read the symbol */
-      _read_symbol(current, file, string_table);
+      _read_symbol(object, current, file, string_table);
       current->number = i;
       num_auxsym = current->num_auxsym;
-      file += SYMBOL_SIZE;
+      file += object->symbol_size;
 
       if (num_auxsym != 0) {
         current->aux_list = gp_coffgen_blockaux(current->num_auxsym);
@@ -401,9 +444,9 @@ _read_symtbl(gp_object_type *object, char *file)
         
         /* read the aux symbols */
         for (j = 0; j < num_auxsym; j++) {
-          _read_aux(current_aux, aux_type, file, string_table);
+          _read_aux(object, current_aux, aux_type, file, string_table);
           current_aux = current_aux->next;
-          file += SYMBOL_SIZE;
+          file += object->symbol_size;
           i++;
         }
 

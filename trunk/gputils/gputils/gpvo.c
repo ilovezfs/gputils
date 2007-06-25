@@ -336,7 +336,7 @@ void print_sym_table (gp_object_type *object)
       section = symbol->section->name;
     }    
     
-    printf("%-24s %-16s %#-10lx %-4i  %-4i   %-4i\n", 
+    printf("%-24s %-16s %#-10lx %-4li  %-4i   %-4i\n", 
            symbol->name,
            section,
            symbol->value,
@@ -376,13 +376,13 @@ void print_sym_table (gp_object_type *object)
         break;
       default:
         printf("  ");
-        for (i = 0; i < SYMBOL_SIZE; i++) {
+        for (i = 0; i < object->symbol_size; i++) {
           printf("%02x", aux->_aux_symbol.data[i]);
           if (i & 1) {
             printf(" ");
           }
         }
-        for (i = 0; i < SYMBOL_SIZE; i++) {
+        for (i = 0; i < object->symbol_size; i++) {
           c = aux->_aux_symbol.data[i];
           putchar( (isprint(c)) ? c : '.');
         }
