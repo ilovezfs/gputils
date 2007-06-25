@@ -1,4 +1,9 @@
 2007-06-25 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Reverted forward reference changes for RES directive (on 2007-6-19
+  & 6-20) since they affect the wrong value
+  * [gpasm] Fixed potential uninitialized pointer access in do_define
+
+2007-06-25 David Barnett <daviebdawg@gmail.com>
   * [gputils] Added support for p18f2682, p18f2685, p18f4682, and p18f4685
 
 2007-06-22 David Barnett <daviebdawg@gmail.com>
