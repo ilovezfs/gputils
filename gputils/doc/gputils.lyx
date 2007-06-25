@@ -283,43 +283,46 @@ p18f2515   p18f252    p18f2520   p18f2525   p18f2539   p18f2550
 p18f258    p18f2580   p18f2585   p18f25j10  p18f2610   p18f2620   
 \layout LyX-Code
 
-p18f2680   p18f2681   p18f4220   p18f4320   p18f4331   p18f4410   
+p18f2680   p18f2681   p18f2682   p18f2685   p18f4220   p18f4320   
 \layout LyX-Code
 
-p18f442    p18f4420   p18f4431   p18f4439   p18f4455   p18f448    
+p18f4331   p18f4410   p18f442    p18f4420   p18f4431   p18f4439   
 \layout LyX-Code
 
-p18f4480   p18f44j10  p18f4510   p18f4515   p18f452    p18f4520   
+p18f4455   p18f448    p18f4480   p18f44j10  p18f4510   p18f4515   
 \layout LyX-Code
 
-p18f4525   p18f4539   p18f4550   p18f458    p18f4580   p18f4585   
+p18f452    p18f4520   p18f4525   p18f4539   p18f4550   p18f458    
 \layout LyX-Code
 
-p18f45j10  p18f4610   p18f4620   p18f4680   p18f4681   p18f6310   
+p18f4580   p18f4585   p18f45j10  p18f4610   p18f4620   p18f4680   
 \layout LyX-Code
 
-p18f6390   p18f6410   p18f6490   p18f64j15  p18f6520   p18f6525   
+p18f4681   p18f4682   p18f4685   p18f6310   p18f6390   p18f6410   
 \layout LyX-Code
 
-p18f6585   p18f65j10  p18f65j15  p18f6620   p18f6621   p18f6627   
+p18f6490   p18f64j15  p18f6520   p18f6525   p18f6585   p18f65j10  
 \layout LyX-Code
 
-p18f6680   p18f66j10  p18f66j15  p18f6720   p18f6722   p18f67j10  
+p18f65j15  p18f6620   p18f6621   p18f6627   p18f6680   p18f66j10  
 \layout LyX-Code
 
-p18f8310   p18f8390   p18f8410   p18f8490   p18f84j15  p18f8520   
+p18f66j15  p18f6720   p18f6722   p18f67j10  p18f8310   p18f8390   
 \layout LyX-Code
 
-p18f8525   p18f8585   p18f85j10  p18f85j15  p18f8620   p18f8621   
+p18f8410   p18f8490   p18f84j15  p18f8520   p18f8525   p18f8585   
 \layout LyX-Code
 
-p18f8627   p18f8680   p18f86j10  p18f86j15  p18f8720   p18f8722   
+p18f85j10  p18f85j15  p18f8620   p18f8621   p18f8627   p18f8680   
 \layout LyX-Code
 
-p18f87j10  rf509af    rf509ag    rf675f     rf675h     rf675k     
+p18f86j10  p18f86j15  p18f8720   p18f8722   p18f87j10  rf509af    
 \layout LyX-Code
 
-sx18       sx20       sx28       sx48       sx52
+rf509ag    rf675f     rf675h     rf675k     sx18       sx20       
+\layout LyX-Code
+
+sx28       sx48       sx52
 \layout LyX-Code
 
             
