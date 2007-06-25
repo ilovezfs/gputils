@@ -2270,15 +2270,24 @@ static gpasmVal do_page(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_pagesel(gpasmVal r,
+/* Called by both do_pagesel and do_pageselw, which have a very slight
+ * difference between them */
+static gpasmVal _do_pagesel(gpasmVal r,
 		           char *name,
 		           int arity,
-		           struct pnode *parms)
+		           struct pnode *parms,
+		           unsigned short reloc_type)
 {
   struct pnode *p;
   int address;
   int page;
   int num_reloc;
+  int use_wreg = 0;
+
+  if ((reloc_type == RELOCT_PAGESEL_WREG) ||
+      (state.device.class == PROC_CLASS_PIC16)) {
+    use_wreg = 1;
+  }
   
   if ((state.device.class == PROC_CLASS_EEPROM8) ||
       (state.device.class == PROC_CLASS_PIC16E)) {
@@ -2297,7 +2306,8 @@ static gpasmVal do_pagesel(gpasmVal r,
                                          state.processor_info->num_pages,
                                          page, 
                                          state.i_memory, 
-                                         state.org);
+                                         state.org,
+                                         use_wreg);
     } else {
       num_reloc = count_reloc(p);
       
@@ -2310,7 +2320,8 @@ static gpasmVal do_pagesel(gpasmVal r,
                                            state.processor_info->num_pages,
                                            page, 
                                            state.i_memory, 
-                                           state.org);
+                                           state.org,
+                                           use_wreg);
       } else if (num_reloc != 1) {
         gperror(GPE_ILLEGAL_LABEL, NULL);
       } else if (state.device.class == PROC_CLASS_PIC16) {
@@ -2318,16 +2329,16 @@ static gpasmVal do_pagesel(gpasmVal r,
         emit(0);
         emit(0);
       } else {
-        switch (state.processor_info->num_pages) {
-        case 2:
+        if ((use_wreg == 0) &&
+            (state.processor_info->num_pages == 2)) {
           reloc_evaluate(p, RELOCT_PAGESEL_BITS);
           emit(0);
-          break;      
-        case 4:
-          reloc_evaluate(p, RELOCT_PAGESEL_BITS);
+        }
+        else if ((state.processor_info->num_pages == 2) ||
+            (state.processor_info->num_pages == 4)) {
+          reloc_evaluate(p, reloc_type);
           emit(0);
           emit(0);
-          break;
         }
       }
     }
@@ -2335,6 +2346,22 @@ static gpasmVal do_pagesel(gpasmVal r,
   }
 
   return r;
+}
+
+static gpasmVal do_pagesel(gpasmVal r,
+		           char *name,
+		           int arity,
+		           struct pnode *parms)
+{
+  return _do_pagesel(r, name, arity, parms, RELOCT_PAGESEL_BITS);
+}
+
+static gpasmVal do_pageselw(gpasmVal r,
+		           char *name,
+		           int arity,
+		           struct pnode *parms)
+{
+  return _do_pagesel(r, name, arity, parms, RELOCT_PAGESEL_WREG);
 }
 
 static gpasmVal do_processor(gpasmVal r,
@@ -3802,6 +3829,7 @@ struct insn op_1[] = {
   { "fill",       0, (long int)do_fill,      INSN_CLASS_FUNC,   0 },
   { "org",        0, (long int)do_org,       INSN_CLASS_FUNC,   0 },
   { "pagesel",    0, (long int)do_pagesel,   INSN_CLASS_FUNC,   0 },
+  { "pageselw",   0, (long int)do_pageselw,  INSN_CLASS_FUNC,   0 },
   { "res",        0, (long int)do_res,       INSN_CLASS_FUNC,   0 }
 };
 

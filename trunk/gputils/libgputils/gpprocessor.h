@@ -418,7 +418,8 @@ int gp_processor_set_page(enum proc_class class,
                           int num_pages,
                           int page,
                           MemBlock *m, 
-                          int address);
+                          int address,
+                          int use_wreg);
 int gp_processor_set_bank(enum proc_class class, 
                           int num_banks,
                           int bank,
