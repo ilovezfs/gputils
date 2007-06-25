@@ -139,6 +139,9 @@ void write_i_mem(enum formats hex_format, int mode)
     if (hex_format == inhx32) {
       seg_address_line(m->base);
     }
+    else {
+      assert(m->base == 0);
+    }
 
     while (i < maximum) {
       if ((i_memory_get(memory, i) & MEM_USED_MASK) == 0) {
@@ -254,7 +257,7 @@ int check_writehex(MemBlock *m,
 
 int error = 0;
 
-  if (hex_format == inhx8m) {
+  if (hex_format != inhx32) {
 
     while(m) {
       if (m->base > 0) {

@@ -1,4 +1,8 @@
 2007-06-25 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed bug #1466150, where gpasm produced bad HEX output (instead
+  of an error) for addresses above 0xFFFF under some hex formats
+
+2007-06-25 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Reverted forward reference changes for RES directive (on 2007-6-19
   & 6-20) since they affect the wrong value
   * [gpasm] Fixed potential uninitialized pointer access in do_define
