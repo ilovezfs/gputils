@@ -1,3 +1,6 @@
+2007-06-25 David Barnett <daviebdawg@gmail.com>
+  * [gputils] Added support for p18f2682, p18f2685, p18f4682, and p18f4685
+
 2007-06-22 David Barnett <daviebdawg@gmail.com>
   * Fixed bug in test scripts that prevented failures from being reported
   properly
