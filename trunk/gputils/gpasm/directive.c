@@ -1142,15 +1142,14 @@ static gpasmVal do_define(gpasmVal r,
         state.pass = 2;
         gperror(GPE_DUPLAB, NULL);
         exit(1);
-	 }
+      }
       current_definition = add_symbol(state.stDefines, p->value.string);
+      if (TAIL(parms)) {
+        struct pnode *p2 = HEAD(TAIL(parms));
+        assert(p2->tag == string);
+        annotate_symbol(current_definition, strdup(p2->value.string));
+      }
     }
-  }
-
-  if (TAIL(parms)) {
-    struct pnode *p2 = HEAD(TAIL(parms));
-    assert(p2->tag == string);
-    annotate_symbol(current_definition, strdup(p2->value.string));
   }
 
   return r;
@@ -2406,8 +2405,6 @@ static gpasmVal do_res(gpasmVal r,
         }
       }
     }
-		else
-		  r = 0;
   }
 
   return r;
