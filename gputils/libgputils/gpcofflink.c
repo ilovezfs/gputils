@@ -1505,10 +1505,16 @@ gp_cofflink_patch_addr(enum proc_class class,
     }
     break;
   case RELOCT_PAGESEL_WREG:
+    {
+      int page = gp_processor_check_page(class, value);
+      gp_processor_set_page(class, num_pages, page, section->data, org, 1);
+      write_data = 0;
+    }
+    break;
   case RELOCT_PAGESEL_BITS:
     {
       int page = gp_processor_check_page(class, value);
-      gp_processor_set_page(class, num_pages, page, section->data, org);
+      gp_processor_set_page(class, num_pages, page, section->data, org, 0);
       write_data = 0;
     }
     break;

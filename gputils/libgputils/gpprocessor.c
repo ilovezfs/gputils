@@ -766,11 +766,14 @@ gp_processor_set_page(enum proc_class class,
                       int num_pages,
                       int page,
                       MemBlock *m, 
-                      int address)
+                      int address,
+                      int use_wreg)
 {
   unsigned int data;
   int bcf_insn;
   int bsf_insn;
+  int movlw_insn;
+  int movwf_insn;
   int location;
   int page0;
   int page1;
@@ -793,67 +796,43 @@ gp_processor_set_page(enum proc_class class,
     if (class == PROC_CLASS_PIC14) {
       bcf_insn = MEM_USED_MASK | 0x1000;
       bsf_insn = MEM_USED_MASK | 0x1400;
+      movlw_insn = MEM_USED_MASK | 0x3000;
+      movwf_insn = MEM_USED_MASK | 0x0080;
       location = 0xa;
       page0 = 3 << 7;
       page1 = 4 << 7;    
     } else {
       bcf_insn = MEM_USED_MASK | 0x400;
       bsf_insn = MEM_USED_MASK | 0x500;
+      movlw_insn = MEM_USED_MASK | 0xc00;
+      movwf_insn = MEM_USED_MASK | 0x020;
       location = 0x3;
       page0 = 5 << 5;
       page1 = 6 << 5;    
     }
 
-    switch(page) {
-    case 0:
-      /* bcf location, page0 */
-      data = bcf_insn | page0 | location;
+    if (use_wreg) {
+      data = movlw_insn | page;
       i_memory_put(m, address, data);
-      if (num_pages == 4) {
-        /* bcf location, page1 */
-        data = bcf_insn | page1 | location;
-        i_memory_put(m, address + 1, data);
-      }
-      break;
-    case 1:
-      /* bsf location, page0 */
-      data = bsf_insn | page0 | location;
-      i_memory_put(m, address, data);
-      if (num_pages == 4) {
-        /* bcf location, page1 */
-        data = bcf_insn | page1 | location;
-        i_memory_put(m, address + 1, data);
-      }
-      break;
-    case 2:
-      /* bcf location, page0 */
-      data = bcf_insn | page0 | location;
-      i_memory_put(m, address, data);
-      if (num_pages == 4) {
-        /* bsf location, page1 */
-        data = bsf_insn | page1 | location;
-        i_memory_put(m, address + 1, data);
-      }
-      break;
-    case 3:
-      /* bsf location, page0 */
-      data = bsf_insn | page0 | location;
-      i_memory_put(m, address, data);
-      if (num_pages == 4) {
-        /* bsf location, page1 */
-        data = bsf_insn | page1 | location;
-        i_memory_put(m, address + 1, data);
-      }
-      break;
-    default:
-      assert(0);
-      break;  
+      data = movwf_insn | location;
+      i_memory_put(m, address + 1, data);
     }
+    else {
+      /* page low bit */
+      data = (page & 1 ? bsf_insn : bcf_insn) | page0 | location;
+      i_memory_put(m, address, data);
 
-    if (num_pages == 2) {
-      count = 1;
-    } else {
-      count = 2;
+      /* page high bit */
+      if (num_pages == 4) {
+        data = (page & 2 ? bsf_insn : bcf_insn) | page1 | location;
+        i_memory_put(m, address + 1, data);
+      }
+
+      if (num_pages == 2) {
+        count = 1;
+      } else {
+        count = 2;
+      }
     }
 
   }

@@ -1,4 +1,8 @@
 2007-06-25 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Added support for pageselw directive
+  * [gpasm] Added test cases for pageselw directive in gpasm.project directory
+
+2007-06-25 David Barnett <daviebdawg@gmail.com>
   * [gputils] Patch by Michael Ballbach to add support for new COFF format
 
 2007-06-25 David Barnett <daviebdawg@gmail.com>
