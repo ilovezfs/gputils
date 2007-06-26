@@ -329,7 +329,7 @@ char *gp_getmessage(unsigned int code)
   case GPM_EXTPAGE:
     return "Page or Bank selection not needed for this device.";
   case GPM_CBLOCK:
-    return "CBLOCK will begin at address 0.";
+    return "CBLOCK constants will start with a value of 0.";
   case GPM_W_MODIFIED:
     return "W Register modified.";
   case GPM_SPECIAL_MNEMONIC:

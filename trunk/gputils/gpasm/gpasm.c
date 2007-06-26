@@ -386,6 +386,7 @@ assemble(void)
   state.pass++;
   state.org = 0;
   state.cblock = 0;
+  state.cblock_defined = 0;
   /* clean out defines for second pass */
   state.stTopDefines = 
     state.stDefines = push_symbol_table(cmd_defines, state.case_insensitive);

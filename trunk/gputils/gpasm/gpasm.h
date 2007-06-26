@@ -204,6 +204,7 @@ extern struct gpasm_state {
   struct file_context *files;   /* Top of the stack of all files */
   struct amode *astack;		/* Stack of amodes (macros, etc) */
   gpasmVal cblock;		/* cblock constant */
+  int cblock_defined;
   struct macro_head *mac_head;  /* Starting a macro... */
   struct macro_body **mac_prev; /* Stitching ptr */
   struct macro_body *mac_body;	/* While we're building a macro */
