@@ -83,13 +83,14 @@ enum GPE_codes {
   GPE_WRONG_SECTION    = 152,
   GPE_CONTIG_SECTION   = 154,
   GPE_MUST_BE_LABEL    = 156,
+  GPE_ORG_ODD          = 157,
   GPE_FILL_ODD         = 159,
   GPE_CONTIG_CONFIG    = 163,
   GPE_CONTIG_IDLOC     = 164,
   GPE_MISSING_BRACKET  = 168,
-  GPE_UNKNOWN          = 174,
   GPE_CONFIG_UNKNOWN   = 176,
-  GPE_CONFIG_usCONFIG  = 177
+  GPE_CONFIG_usCONFIG  = 177,
+  GPE_UNKNOWN          = 179
 };
 
 /* Warning codes
@@ -119,7 +120,7 @@ enum GPW_codes {
   GPW_REDEFINING_PROC  = 223,
   GPW_NOT_RECOMMENDED  = 224,
   GPW_INVALID_ROM      = 228,
-  GPW_UNKNOWN          = 230
+  GPW_UNKNOWN          = 231
 };
 
 /* Message codes

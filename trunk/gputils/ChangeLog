@@ -1,4 +1,9 @@
 2007-06-26 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Report message when RES directive size evaluates to zero (or
+  truncates on PIC18)
+  * [gpasm] Report error when ORG has odd address on PIC18
+
+2007-06-26 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed bug #1638506, where fixed idata addresses were divided by 2
 
 2007-06-26 David Barnett <daviebdawg@gmail.com>
