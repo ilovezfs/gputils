@@ -2235,7 +2235,10 @@ static gpasmVal do_org(gpasmVal r,
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (can_evaluate(p)) {
-      r = evaluate(p) >> _16bit_core;
+      gpasmVal new_org = evaluate(p);
+      if (_16bit_core && (new_org & 0x1))
+        gperror(GPE_ORG_ODD, NULL);
+      r = new_org >> _16bit_core;
       if (state.mode == absolute) {
         state.org = r;
       }	else {
@@ -2415,12 +2418,18 @@ static gpasmVal do_res(gpasmVal r,
 
       if (state.mode == absolute) {
         state.lst.line.linetype = equ;
+        /* FIXME: in absolute mode, MPASM will reserve single bytes for
+         * PIC18's, but that will require significant changes for gpasm */
+        if ((count >> _16bit_core) == 0)
+          gpwarning(GPW_UNKNOWN, "No memory has been reserved by this instruction.");
         state.org += (count >> _16bit_core);
       } else {
         state.lst.line.linetype = res;
         if (SECTION_FLAGS & STYP_TEXT)
           count >>= _16bit_core;
 
+        if (count == 0)
+          gpwarning(GPW_UNKNOWN, "No memory has been reserved by this instruction.");
         for (i = 0; i < count; i++) {
           if (SECTION_FLAGS & STYP_TEXT) {
             /* For some reason program memory is filled with a different 

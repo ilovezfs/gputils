@@ -147,6 +147,8 @@ char *gp_geterror(unsigned int code)
     return "Each object file section must be contiguous.";
   case GPE_MUST_BE_LABEL:
     return "Operand must be an address label.";
+  case GPE_ORG_ODD:
+    return "ORG at odd address.";
   case GPE_FILL_ODD:
     return "Cannot use FILL Directive with odd number of bytes.";
   case GPE_CONTIG_CONFIG:
