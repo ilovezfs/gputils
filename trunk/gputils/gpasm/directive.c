@@ -1724,7 +1724,7 @@ static gpasmVal do_idata(gpasmVal r,
       /* new absolute section */
       p = HEAD(parms);
       strncpy(state.obj.new_sec_name, ".idata", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = maybe_evaluate(p) >> _16bit_core;
+      state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_DATA | STYP_ABS;
       break;
     default:

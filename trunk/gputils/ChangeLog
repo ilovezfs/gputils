@@ -1,4 +1,7 @@
 2007-06-26 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed bug #1638506, where fixed idata addresses were divided by 2
+
+2007-06-26 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Added message when assuming first CBLOCK address
 
 2007-06-25 David Barnett <daviebdawg@gmail.com>
