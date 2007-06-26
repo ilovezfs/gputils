@@ -568,7 +568,9 @@ statement:
 	|
 	CBLOCK '\n'
 	{
-	  if (state.mac_prev) {
+	  if (!state.mac_prev) {
+	    continue_cblock();
+	  } else {
 	    macro_append();
 	  }
 	  next_line(0);

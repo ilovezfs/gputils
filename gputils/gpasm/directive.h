@@ -33,6 +33,7 @@ Boston, MA 02111-1307, USA.  */
 gpasmVal do_insn(char *name, struct pnode *parms);
 void opcode_init(int stage);
 void begin_cblock(struct pnode *c);
+void continue_cblock(void);
 void cblock_expr(struct pnode *s);
 void cblock_expr_incr(struct pnode *s, struct pnode *incr);
 int asm_enabled(void);

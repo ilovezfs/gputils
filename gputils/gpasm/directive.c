@@ -3961,8 +3961,16 @@ void opcode_init(int stage)
 void begin_cblock(struct pnode *c)
 {
   if (asm_enabled()) { 
+    state.cblock_defined = 1;
     state.cblock = maybe_evaluate(c);
   }
+}
+
+void continue_cblock(void)
+{
+  if (state.cblock_defined == 0)
+    gpmessage(GPM_CBLOCK, NULL);
+  state.cblock_defined = 1;
 }
 
 void cblock_expr(struct pnode *s)
