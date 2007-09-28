@@ -1,3 +1,6 @@
+2007-09-28 David Barnett <daviebdawg@gmail.com>
+  * [gputils] Fixed bsr location for p18f6585, p18f6680, p18f8585 and p18f8680
+
 2007-09-17 Scott Dattalo <scott@dattalo.com>
   * [gputils] Added support for the p12f510.
 
