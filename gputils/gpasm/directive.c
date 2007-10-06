@@ -1263,6 +1263,7 @@ static gpasmVal do_direct(gpasmVal r,
     gperror(GPE_OBJECT_ONLY, NULL);
   } else if (enforce_arity(arity, 2)) {
     p = HEAD(parms);
+    coerce_str1(p);
     value = maybe_evaluate(p);
     if ((value < 0) || (value > 255)) {
       gperror(GPE_RANGE, NULL);
