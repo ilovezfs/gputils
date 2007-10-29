@@ -1,73 +1,65 @@
-.TH gpdasm 1 "(c) 2002, 2003, 2004, 2005 Craig Franklin"
-
+.TH GPDASM 1 "27 octobre 2007" "gputils-0.13.5" "Manuel de l'utilisateur Linux"
 .SH NOM
-gpdasm - Désassembleur GNU PIC
-
+gpdasm \- Désassembleur GNU pour PIC
 .SH SYNOPSIS
 .B gpdasm [options] fichier
-
 .SH AVERTISSEMENT
 Les informations de cette page de manuel sont extraites de la documentation 
 complète de gputils et sont limitées à la signification des options. Pour une 
 documentation complète, reportez-vous au fichier «\ gputils.ps\ » (en anglais) 
 situé dans le répertoire doc de gputils.
-
 .SH DESCRIPTION
 .B gpdasm
 est un désassembleur pour les microcontrôleurs PIC (TM) de Microchip (TM).
 .B gpdasm
-est une partie de gputils. Consultez la page manuel gputils(1) pour avoir
-des détails sur les autres utilitaires GNU PIC.
-
+est une partie de gputils. Consultez la page manuel
+.BR gputils (1)
+pour avoir des détails sur les autres utilitaires GNU PIC.
 .SH OPTIONS
 .TP
-.B -c, --mnemonics
+.BR \-c ", " \-\-mnemonics
 Décoder les mnémoniques spéciales.
 .TP
-.B -h, --help
+.BR \-h ", "\-\-help
 Afficher un message d'usage.
 .TP
-.B -i, --hex-info
+.BR \-i ", "\-\-hex-info
 Produire des informations supplémentaires concernant le fichier hexadécimal
 d'entrée. Ces informations incluent la taille du fichier et le format
 hexadécimal.
 .TP
-.B -l, --list-chips
+.BR \-l ", "\-\-list-chips
 Afficher la liste des processeurs reconnus.
 .TP
-.B -m, --dump
+.BR \-m ", "\-\-dump
 Afficher le contenu de la mémoire programme.
 .TP
-.B -p PROC, --processor PROC
+.BR "\-p PROC" , " \-\-processor PROC
 Sélectionner le processeur.
 .TP
-.B -s, --short
+.BR \-s ", "\-\-short
 Produire en sortie le format court. Ce format peut être réassemblé par gpasm.
 .TP
-.B -v, --version
+.BR \-v ", "\-\-version
 Afficher la version.
 .TP
-.B -y, --extended
+.BR \-y ", "\-\-extended
 Activer le mode étendu 18xx.
-
 .SH VOIR AUSSI
-gputils(1)
-
+.BR gputils (1)
 .SH AUTEUR
 Craig Franklin <craigfranklin@users.sourceforge.net>
-
 .SH TRADUCTION
 .PP
 Ce document est une traduction réalisée par Alain Portal
-<aportal AT univ-montp2 DOT fr> le 14 octobre 2004 et révisée
-le 24 mai 2005.
+<aportal AT univ-montp2 DOT fr> le 14\ octobre\ 2004
+et révisée le 28\ octobre\ 2007.
 .PP
 L'équipe de traduction a fait le maximum pour réaliser une adaptation
 française de qualité. La version anglaise la plus à jour de ce document est
-toujours consultable via la commande\ : «\ \fBLANG=en\ man\ 1\ gpdasm\fR\ ».
+toujours consultable via la commande\ : «\ \fBLANG=C\ man\ 1\ gpdasm\fR\ ».
 N'hésitez pas à signaler à l'auteur ou au traducteur, selon le cas, toute
 erreur dans cette page de manuel.
-
 .SH COPYRIGHT
 Copyright (C) 2002, 2003, 2004, 2005 Craig Franklin
 

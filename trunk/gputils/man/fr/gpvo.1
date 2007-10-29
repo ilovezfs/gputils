@@ -1,76 +1,71 @@
-.TH gpvo 1 "(c) 2002, 2003, 2004, 2005 Craig Franklin"
-
+.TH GPVO 1 "27 octobre 2007" "gputils-0.13.5" "Manuel de l'utilisateur Linux"
 .SH NOM
-gpvo - Visualiseur de fichiers objets GNU PIC
-
+gpvo \- Visualiseur GNU de fichiers objets pour PIC
 .SH SYNOPSIS
 .B gpvo [options] fichier
-
 .SH AVERTISSEMENT
 Les informations de cette page de manuel sont extraites de la documentation 
 complète de gputils et sont limitées à la signification des options. Pour une 
 documentation complète, reportez-vous au fichier «\ gputils.ps\ » (en anglais) 
 situé dans le répertoire doc de gputils.
-
 .SH DESCRIPTION
 .B gpvo
 est un visualiseur de fichiers objets COFF pour les microcontrôleurs PIC (TM)
 de Microchip (TM). Les fichiers COFF sont des objets relogeables produit par
 gpasm.
 .B gpvo
-est une partie de gputils. Consultez la page manuel gputils(1) pour avoir
-des détails sur les autres utilitaires GNU PIC.
-
+est une partie de gputils. Consultez la page manuel
+.BR gputils (1)
+pour avoir des détails sur les autres utilitaires GNU PIC.
 .SH OPTIONS
 .TP
-.B -b, --binary
+.BR \-b ", "\-\-binary
 Afficher les données binaires.
 .TP
-.B -c, --mnemonics
+.BR \-c ", "\-\-mnemonics
 Décoder les mnémoniques spéciales.
 .TP
-.B -f, --file
+.BR \-f ", "\-\-file
 Afficher l'en-tête du fichier.
 .TP
-.B -h, --help
+.BR \-h ", "\-\-help
 Afficher un message d'usage.
 .TP
-.B -o, --optional 
+.BR \-o ", "\-\-optional
 Afficher l'en-tête optionnel.
 .TP
-.B -r, --string
+.BR \-r ", "\-\-string
 Afficher la table des chaînes.
 .TP
-.B -s, --section 
+.BR \-s ", "\-\-section
 Afficher les sections.
 .TP
-.B -t, --symbol
+.BR \-t ", "\-\-symbol
 Afficher la tables des symboles.
 .TP
-.B -v, --version
+.BR \-v ", "\-\-version
 Afficher la version.
 .TP
-.B -y, --extended
+.BR "\-x FICHIER" , " \-\-export FICHIER
+Exporter les symboles externes.
+.TP
+.BR \-y ", "\-\-extended
 Activer le mode étendu 18xx.
-
 .SH VOIR AUSSI
-gputils(1)
-
+.BR gputils (1)
 .SH AUTEUR
 Craig Franklin <craigfranklin@users.sourceforge.net>
-
 .SH TRADUCTION
 .PP
 Ce document est une traduction réalisée par Alain Portal
-<aportal AT univ-montp2 DOT fr> le 14 octobre 2004 et révisée
-le 24 mai 2005.
+<aportal AT univ-montp2 DOT fr> le 14\ octobre\ 2004
+et révisée le 27\ octobre\ 2007.
 .PP
 L'équipe de traduction a fait le maximum pour réaliser une adaptation
 française de qualité. La version anglaise la plus à jour de ce document est
 toujours consultable via la commande\ : «\ \fBLANG=en\ man\ 1\ gpvo\fR\ ».
 N'hésitez pas à signaler à l'auteur ou au traducteur, selon le cas, toute
 erreur dans cette page de manuel.
-
 .SH COPYRIGHT
 Copyright (C) 2002, 2003, 2004, 2005 Craig Franklin
 
