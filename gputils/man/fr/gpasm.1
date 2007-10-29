@@ -1,65 +1,61 @@
-.TH gpasm 1 "(c) 2002, 2003, 2004, 2005 James Bowman, Craig Franklin"
-
+.TH GPASM 1 "27 octobre 2007" "gputils-0.13.5" "Manuel de l'utilisateur Linux"
 .SH NOM
-gpasm - Assembleur GNU PIC
-
+gpasm \- Assembleur GNU pour PIC
 .SH SYNOPSIS
 .B gpasm [options] fichier
-
 .SH AVERTISSEMENT
 Les informations de cette page de manuel sont extraites de la documentation 
 complète de gputils et sont limitées à la signification des options. Pour une 
 documentation complète, reportez-vous au fichier «\ gputils.ps\ » (en anglais) 
 situé dans le répertoire doc de gputils.
-
 .SH DESCRIPTION
 .B gpasm
 est un assembleur pour les microcontrôleurs PIC (TM) de Microchip (TM).
 Son objectif est d'être compatible avec l'assembleur MPASM du fabricant.
 .B gpasm
-est une partie de gputils. Consultez la page manuel gputils(1) pour avoir
-des détails sur les autres utilitaires GNU PIC.
-
+est une partie de gputils. Consultez la page manuel
+.BR gputils (1)
+pour avoir des détails sur les autres utilitaires GNU PIC.
 .SH OPTIONS
 Voici un résumé des options
-.B gpasm.
+.BR gpasm .
 Les options de
 .B gpasm
 supplantent toujours toute configuration contenue dans le code source.
 .TP
-.B -a FMT, --hex-format FMT       
-GPASM reconnaît les formats de fichiers hexadécimaux inhx8m, inhx8s, inhx16,
+.BR "\-a FMT" , " \-\-hex\-format FMT
+GPASM reconnaît les formats de fichiers hexadécimaux inhx8m, inhx8s, inhx16
 et inhx32. Cette option contrôle quel format de fichier hexadécimal est
 utilisé. La valeur par défaut est inhx32.
 .TP
-.B -c, --object 
+.BR \-c ", "\-\-object
 Produire en sortie un objet relogeable.
 .TP
-.B -d, --debug   
-Afficher les messages de debogage.
+.BR \-d ", " \-\-debug
+Afficher les messages de débogage.
 .TP
-.B -D SYM=VAL, --define SYM=VAL   
+.BR "\-D SYM=VAL" , " \-\-define SYM=VAL"
 Définir SYM avec la valeur VAL. Ceci est équivalent à placer
 «\ #define SYM VAL\ » dans le code source.
 .TP
-.B -e [ON|OFF], --expand [ON|OFF] 
+.BR "\-e [ON|OFF]" , " \-\-expand [ON|OFF]"
 Le développement des macros dans le fichier listage est contrôlé en utilisant
 les directives EXPAND et NOEXPAND. Cette option permet d'ignorer l'une ou
 l'autre directive. Lorsque «\ ON\ » est sélectionné, les macros sont toujours
 développées sans se soucier de la présence de NOEXPAND. De la même manière,
 «\ OFF\ » forcera les macros à ne pas être développées.
 .TP
-.B -g, --debug-info   
+.BR \-g ", " \-\-debug-info
 Utiliser les directives de débogage pour COFF.
 .TP
-.B -h, --help
+.BR \-h ", " \-\-help
 Afficher un message d'usage.
 .TP
-.B -i, --ignore-case 
+.BR \-i ", " \-\-ignore\-case
 Tous les symboles et macros définis par l'utilisateur sont sensibles à la
 casse. Cette option permet de les rendre insensibles à la casse.
 .TP
-.B -I RÉP, --include RÉP
+.BR "\-I RÉP" , " \-\-include RÉP"
 Le fichier d'assemblage de plus haut niveau hiérarchique est passé comme
 argument à gpasm. Ce fichier peut contenir des directives INCLUDE. Ces
 directives ouvrent les fichiers spécifiés et leurs contenus sont alors
@@ -67,64 +63,63 @@ assemblés. GPASM recherche ces fichiers dans le répertoire courant. Si le
 fichier n'est pas localisé, le chemin par défaut des en-têtes est parcouru.
 Enfin, tous les chemins spécifiés par cet argument sont parcourus.
 .TP
-.B -L, --force-list 
+.BR \-L ", "\-\-force-list
 Ignorer les directives NOLIST. Ceci force gpasm à afficher chaque ligne
 assemblée dans le fichier listage de sortie.
 .TP
-.B -l, --list-chips
+.BR \-l ", "\-\-list\-chips
 Afficher la liste des processeurs reconnus.
 .TP
-.B -m, --dump
+.BR \-m ", "\-\-dump
 À la fin de la dernière étape d'assemblage, afficher le contenu de la mémoire
 programme.
 .TP
-.B -n, --dos
+.BR \-M ", "\-\-deps
+Produire un fichier des dépendances.
+.TP
+.BR \-n ", "\-\-dos
 Par défaut, gpasm génère des fichiers hexadécimaux au format ISO. Toutefois,
 certains programmateurs de composants requièrent un fichier au format DOS.
 Cette option fait que gpasm génèrera un fichier au format DOS.
 .TP
-.B -o FICHIER, --output FICHIER
+.BR "\-o FICHIER" , " \-\-output FICHIER"
 Nom alternatif du fichier de sortie.
 .TP
-.B -p PROC, --processor PROC
+.BR "\-p PROC" , " \-\-processor PROC"
 Sélectionner le processeur.
 .TP
-.B -q, --quiet
+.BR \-q ", "\-\-quiet
 Supprimer tout ce qui est envoyé sur la sortie standard.
 .TP
-.B -r BASE, --radix BASE
+.BR "\-r BASE" , " \-\-radix BASE"
 Les bases reconnues sont BIN, DEC, OCT, et HEX. La base par défaut est HEX.
 .TP
-.B -v, --version
+.BR \-v ", "\-\-version
 Afficher la version.
 .TP
-.B -w [0|1|2], --warning [0|1|2]
+.BR "\-w [0|1|2]" , " \-\-warning [0|1|2]"
 Cette option configure le niveau d'affichage des messages. La valeur par défaut
 est «\ 0\ ». Elle permet l'affichage des messages, des avertissements et des
 erreurs. «\ 1\ » supprimera les messages. «\ 2\ » supprimera les messages et
 les avertissements.
 .TP
-.B -y, --extended
+.BR \-y ", "\-\-extended
 Activer le mode étendu 18xx.
-
 .SH VOIR AUSSI
-gputils(1)
-
+.BR gputils (1)
 .SH AUTEUR
 Craig Franklin <craigfranklin@users.sourceforge.net>
-
 .SH TRADUCTION
 .PP
 Ce document est une traduction réalisée par Alain Portal
-<aportal AT univ-montp2 DOT fr> le 14 octobre 2004 et révisée
-le 24 mai 2005.
+<aportal AT univ-montp2 DOT fr> le 14\ octobre\ 2004
+et révisée le 28\ octobre\ 2007.
 .PP
 L'équipe de traduction a fait le maximum pour réaliser une adaptation
 française de qualité. La version anglaise la plus à jour de ce document est
-toujours consultable via la commande\ : «\ \fBLANG=en\ man\ 1\ gpasm\fR\ ».
+toujours consultable via la commande\ : «\ \fBLANG=C\ man\ 1\ gpasm\fR\ ».
 N'hésitez pas à signaler à l'auteur ou au traducteur, selon le cas, toute
 erreur dans cette page de manuel.
-
 .SH COPYRIGHT
 Copyright (C) 2002, 2003, 2004, 2005 James Bowman, Craig Franklin
 
