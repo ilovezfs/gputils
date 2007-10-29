@@ -1,56 +1,57 @@
-.TH gpvo 1 "(c) 2002, 2003, 2004, 2005 Craig Franklin"
+.TH GPVO 1 "2007-10-27" "gputils-0.13.5" "Linux user's manual"
 .SH NAME
-gpvo - GNU PIC object file Viewer
+gpvo \- GNU PIC object file viewer
 .SH SYNOPSIS
 .B gpvo [options] file
 .SH WARNING
 The information in this man page is an extract from the full documentation of
-gputils and is limited to the meaning of the options.  For complete and 
-current documentation, refer to "gputils.ps" located in the gputils docs 
+gputils and is limited to the meaning of the options.  For complete and
+current documentation, refer to "gputils.ps" located in the gputils docs
 directory.
 .SH DESCRIPTION
 .B gpvo
-is an COFF object file viewer for Microchip (TM) PIC (TM) micro-controllers.  
+is an COFF object file viewer for Microchip (TM) PIC (TM) micro-controllers.
 COFF files are relocatable objects output from gpasm.
 .B gpvo
-is part of gputils.  Check the gputils(1) manpage for details on other GNU 
-PIC utilities.
+is part of gputils.  Check the
+.BR gputils (1)
+manpage for details on other GNU PIC utilities.
 .SH OPTIONS
 .TP
-.B -b, --binary
+.BR \-b ", "\-\-binary
 Display binary data.
 .TP
-.B -c, --mnemonics
+.BR \-c ", "\-\-mnemonics
 Decode special mnemonics.
 .TP
-.B -f, --file
+.BR \-f ", "\-\-file
 Display file header.
 .TP
-.B -h, --help
-Show the usage message. 
+.BR \-h ", "\-\-help
+Show the usage message.
 .TP
-.B -o, --optional 
+.BR \-o ", "\-\-optional
 Display optional header.
 .TP
-.B -r, --string
+.BR \-r ", "\-\-string
 Display the string table.
 .TP
-.B -s, --section 
+.BR \-s ", "\-\-section
 Display sections.
 .TP
-.B -t, --symbol
+.BR \-t ", "\-\-symbol
 Display symbol table.
 .TP
-.B -v, --version
+.BR \-v ", "\-\-version
 Show the version.
 .TP
-.B -x FILE, --export FILE
+.BR "\-x FILE" , " \-\-export FILE
 Export the external symbols.
 .TP
-.B -y, --extended
+.BR \-y ", "\-\-extended
 Enable 18xx extended mode.
 .SH SEE ALSO
-gputils(1)
+.BR gputils (1)
 .SH AUTHOR
 Craig Franklin <craigfranklin@users.sourceforge.net>
 .SH COPYRIGHT

@@ -1,55 +1,56 @@
-.TH gpstrip 1 "(c) 2005 Craig Franklin"
+.TH GPSTRIP 1 "2007-10-27" "gputils-0.13.5" "Linux user's manual"
 .SH NAME
-gpstrip - discard symbols from object file
+gpstrip \- discard symbols from object file
 .SH SYNOPSIS
 .B gpstrip [options] [file(s)]
 .SH WARNING
 The information in this man page is an extract from the full documentation of
 gputils and is limited to the meaning of the options.  For complete and 
-current documentation, refer to "gputils.ps" located in the gputils docs 
+current documentation, refer to "gputils.ps" located in the gputils docs
 directory.
 .SH DESCRIPTION
 .B gpstrip
 discards symbols from GNU PIC object files.
 .B gpstrip
-is part of gputils.  Check the gputils(1) manpage for details on other GNU 
-PIC utilities.
+is part of gputils.  Check the
+.BR gputils (1)
+manpage for details on other GNU PIC utilities.
 .SH OPTIONS
 .TP
-.B -g, --strip-debug
-Strip debug symbols. 
+.BR \-g ", "\-\-strip\-debug
+Strip debug symbols.
 .TP
-.B -h, --help
-Show this usage message. 
+.BR \-h ", "\-\-help
+Show this usage message.
 .TP
-.B -k SYMBOL, --keep-symbol SYMBOL
-Keep symbol. 
+.BR "\-k SYMBOL" , " \-\-keep\-symbol SYMBOL
+Keep symbol.
 .TP
-.B -n SYMBOL, --strip-symbol SYMBOL
+.BR "\-n SYMBOL" , " \-\-strip\-symbol SYMBOL
 Remove symbol. 
 .TP
-.B -o FILE, --output FILE
-Alternate name of output file. 
+.BR "\-o FILE" , " \-\-output FILE
+Alternate name of output file.
 .TP
-.B -p, --preserve-dates
-Preserve dates. 
+.BR \-p ", "\-\-preserve\-dates
+Preserve dates.
 .TP
-.B -r SECTION, --remove-section SECTION
-Remove section. 
+.BR "\-r SECTION" , " \-\-remove-section SECTION
+Remove section.
 .TP
-.B -s, --strip-all
-Remove all symbols. 
+.BR \-s ", "\-\-strip\-all
+Remove all symbols.
 .TP
-.B -u, --strip-unneeded
-Strip symbols not need for relocations. 
+.BR \-u ", "\-\-strip\-unneeded
+Strip symbols not need for relocations.
 .TP
-.B -v, --version
-Show version. 
+.BR \-v ", "\-\-version
+Show version.
 .TP
-.B -x, --discard-all
-Remove non-global symbols. 
+.BR \-x ", "\-\-discard-all
+Remove non-global symbols.
 .SH SEE ALSO
-gputils(1)
+.BR gputils (1)
 .SH AUTHOR
 Craig Franklin <craigfranklin@users.sourceforge.net>
 .SH COPYRIGHT
