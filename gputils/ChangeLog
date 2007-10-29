@@ -1,3 +1,6 @@
+2007-10-27 David Barnett <daviebdawg@gmail.com>
+  * gputils 0.13.5 Released
+
 2007-09-17 Scott Dattalo <scott@dattalo.com>
   * [gpasm] Single character strings were not being interpreted correctly for
   the .direct macros.
