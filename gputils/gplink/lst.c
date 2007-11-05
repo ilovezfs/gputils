@@ -101,9 +101,9 @@ find_line_number(gp_symbol_type *symbol, int line_number)
       if ((line->symbol == symbol) && 
           (line->line_number == line_number)) {
         if (section != line_section) {
-          /* switching sections, so update was_org with the new section
+          /* switching sections, so update was_org with the new 
              address */
-          state.lst.was_org = section->address >> state.byte_addr;
+          state.lst.was_org = line->address >> state.byte_addr;
           line_section = section;
         }  
         return line;    
@@ -179,6 +179,7 @@ write_src(int last_line)
                  data & 0xffff, 
                  dasmbuf,
                  linebuf);
+        state.lst.was_org = org;
         cod_lst_line(COD_NORMAL_LST_LINE);
         org++;
         if (num_words != 1) {
