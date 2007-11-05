@@ -1,4 +1,8 @@
 2007-11-05 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Updated gpcfg-table.c based on MPASMWIN 5.13 and script by Michael
+  Ballbach
+
+2007-11-05 David Barnett <daviebdawg@gmail.com>
   * Changed 'FCMEM' to 'FCMEN' in p18f4550.inc
 
 2007-10-28 David Barnett <daviebdawg@gmail.com>
