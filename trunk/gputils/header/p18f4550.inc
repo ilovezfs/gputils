@@ -1268,8 +1268,8 @@ STKFUL           EQU  H'0007'
 ;     FOSC = HSPLL_HS      HS oscillator, PLL enabled, HS used by USB
 ;
 ;   Fail-Safe Clock Monitor Enable bit:
-;     FCMEM = OFF          Fail-Safe Clock Monitor disabled
-;     FCMEM = ON           Fail-Safe Clock Monitor enabled
+;     FCMEN = OFF          Fail-Safe Clock Monitor disabled
+;     FCMEN = ON           Fail-Safe Clock Monitor enabled
 ;
 ;   Internal/External Oscillator Switchover bit:
 ;     IESO = OFF           Oscillator Switchover mode disabled
@@ -1493,8 +1493,8 @@ _FOSC_INTOSC_HS_1H   EQU  H'FB'    ; Internal oscillator, HS used by USB
 _FOSC_HS_1H          EQU  H'FC'    ; HS oscillator, HS used by USB
 _FOSC_HSPLL_HS_1H    EQU  H'FE'    ; HS oscillator, PLL enabled, HS used by USB
 
-_FCMEM_OFF_1H        EQU  H'BF'    ; Fail-Safe Clock Monitor disabled
-_FCMEM_ON_1H         EQU  H'FF'    ; Fail-Safe Clock Monitor enabled
+_FCMEN_OFF_1H        EQU  H'BF'    ; Fail-Safe Clock Monitor disabled
+_FCMEN_ON_1H         EQU  H'FF'    ; Fail-Safe Clock Monitor enabled
 
 _IESO_OFF_1H         EQU  H'7F'    ; Oscillator Switchover mode disabled
 _IESO_ON_1H          EQU  H'FF'    ; Oscillator Switchover mode enabled
