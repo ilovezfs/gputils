@@ -1,4 +1,8 @@
 2007-11-05 David Barnett <daviebdawg@gmail.com>
+  * [gplink] Applied patch from Robert Pearce to fix address/line mapping in
+  COD files
+
+2007-11-05 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Updated gpcfg-table.c based on MPASMWIN 5.13 and script by Michael
   Ballbach
 
