@@ -1,4 +1,8 @@
 2007-11-08 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed gpasm absolute mode to give "maximum range" warnings between
+  program memory and eeprom
+
+2007-11-08 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed maxrom to respect max eeprom address (but temporarily
   removed warnings for addresses in between)
 

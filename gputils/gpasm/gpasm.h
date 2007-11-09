@@ -74,6 +74,11 @@ enum gpasm_modes {
   relocatable
 };
 
+struct range_pair {
+  long start, end;
+  struct range_pair *next;
+};
+
 extern struct gpasm_state {
   enum gpasm_modes mode;
   gp_boolean extended_pic16e;
@@ -103,6 +108,7 @@ extern struct gpasm_state {
   gp_boolean found_idlocs;	/* idlocs directive in source code */
   unsigned int maxram;		/* Highest legal memory location */
   long maxrom;			/* Highest legal program memory location */
+  struct range_pair *badrom;
   enum outfile
     codfile,			/* Symbol output file control */
     depfile,			/* Dependency output file control */

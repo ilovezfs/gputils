@@ -66,6 +66,7 @@ int _17cxx_core = 0;         /* 17cxx is different from 18cxx */
 
 static void emit(unsigned int value)
 {
+  long byte_org = (state.org << _16bit_core);
 
   /* only write the program data to memory on the second pass */
   if (state.pass == 2) {
@@ -87,8 +88,20 @@ static void emit(unsigned int value)
       gperror(GPE_ADDROVR, NULL);
     }
 
-    if ((state.maxrom >= 0) && ((state.org << _16bit_core) > state.maxrom)) {
+    if (state.maxrom >= 0) {
+      if (byte_org > state.maxrom) {
       gpwarning(GPW_EXCEED_ROM, NULL);
+      } else {
+        /* check if current org is within a bad address range */
+        struct range_pair *cur_badrom;
+        for (cur_badrom = state.badrom; cur_badrom != NULL;
+              cur_badrom = cur_badrom->next) {
+          if ((byte_org >= cur_badrom->start) && (byte_org <= cur_badrom->end)) {
+            gpwarning(GPW_EXCEED_ROM, NULL);
+            break;
+          }
+        }
+      }
     }
 
     i_memory_put(state.i_memory, state.org, MEM_USED_MASK | value);
