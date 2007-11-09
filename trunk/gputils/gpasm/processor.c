@@ -38,9 +38,26 @@ void select_processor(char *name)
   } else {
     found = gp_find_processor(name);
     if (found) {
+      int badrom_idx;
       if (state.processor == none) {
         state.processor = found->tag;
 	   state.maxrom = found->maxrom;
+        /* initialize badrom from internal processor info */
+        state.badrom = NULL;
+        for (badrom_idx = 0; badrom_idx < MAX_BADROM; badrom_idx+=2) {
+          long start, end;
+          start = found->badrom[badrom_idx];
+          end = found->badrom[badrom_idx+1];
+          if ((start == -1) || (end == -1))
+            break;
+          else {
+            struct range_pair *new_pair = malloc(sizeof(struct range_pair));
+            new_pair->start = start;
+            new_pair->end = end;
+            new_pair->next = state.badrom;
+            state.badrom = new_pair;
+          }
+        }
         state.processor_info = found;
         set_global(found->defined_as, 1, PERMANENT, gvt_constant);
       } else if (state.processor != found->tag ) {
