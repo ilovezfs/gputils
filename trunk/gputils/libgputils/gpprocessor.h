@@ -351,6 +351,8 @@ enum pic_processor {
 };
 
 #define MAX_NAMES 3 /* Maximum number of names a processor can have */
+#define MAX_BADROM 1*2 /* Maximum number of BADROM ranges a processor can be */
+                       /* initialized with */
 
 struct px {
   enum pic_processor tag;
@@ -361,6 +363,7 @@ struct px {
   int num_pages;
   int num_banks;
   long maxrom;
+  long badrom[MAX_BADROM];
   char *script;
 };
 
