@@ -87,7 +87,7 @@ static void emit(unsigned int value)
       gperror(GPE_ADDROVR, NULL);
     }
 
-    if ((state.maxrom >= 0) && (state.org > state.maxrom)) {
+    if ((state.maxrom >= 0) && ((state.org << _16bit_core) > state.maxrom)) {
       gpwarning(GPW_EXCEED_ROM, NULL);
     }
 
