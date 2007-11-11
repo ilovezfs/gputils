@@ -27,10 +27,25 @@
 # elsewhere, so this script only has to take care of mingw.
 
 # Options for the system on which the package will run.
-CC=i386-mingw32msvc-gcc      
-CFLAGS="-s -O2"      
+if test "$CC" == ""
+then
+  CC=i386-mingw32msvc-gcc      
+fi
+if test "$CFLAGS" == ""
+then
+  CFLAGS="-s -O2"
+fi
+
 distname="mingw32"
 host=i386-mingw32msvc
+
+if expr "$(unix2dos -q < /dev/null 2>&1)" : '.*-q: unknown option' >/dev/null
+then
+  UNIX2DOS="unix2dos"
+else
+  UNIX2DOS="unix2dos -q"
+fi
+
 # autoconf can't test cross compilers, so set the variables in the configure
 # command line.
 config_options="ac_cv_func_malloc_0_nonnull=yes \
@@ -269,7 +284,7 @@ print_banner "Copying project data to distribution directory"
 for x in $common
   do
     cp $x $dist_dir/gputils/$x.txt
-    unix2dos -q $dist_dir/gputils/$x.txt
+    $UNIX2DOS $dist_dir/gputils/$x.txt
   done
 echo "copying project data... $common"
 
@@ -290,7 +305,7 @@ echo "removing directories... $delete_dir"
 
 # generate the binary distribution data file
 data_file > $dist_dir/gputils/DISTRIBUTION.txt
-unix2dos -q $dist_dir/gputils/DISTRIBUTION.txt
+$UNIX2DOS $dist_dir/gputils/DISTRIBUTION.txt
 echo "creating binary data file... DISTRIBUTION.txt"
 
 # copy the NSIS script and icon
@@ -300,8 +315,8 @@ sed -e s/@VERSION@/$version/\
 echo "creating NSIS script... gputils.nsi"
 
 # convert the remaining project data to dos format
-unix2dos -q $dist_dir/gputils/header/*
-unix2dos -q $dist_dir/gputils/lkr/*
+$UNIX2DOS $dist_dir/gputils/header/*
+$UNIX2DOS $dist_dir/gputils/lkr/*
 echo "converting project data to DOS format... done"
 
 ################################################################################
