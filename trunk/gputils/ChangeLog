@@ -1,3 +1,6 @@
+2007-11-11 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed bad information on 12f509 and 18f6722 in processor data
+
 2007-11-10 David Barnett <daviebdawg@gmail.com>
   * Fixed old version number to 0.13.5 (actually released 2007-10-27)
 
