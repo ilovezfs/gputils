@@ -140,7 +140,7 @@ Configuration:
   --name=NAME             name of the maintainer
   --save-temps            leave temporary directories
 Directory and file names:
-  --release=NUMBER        release number of the distribution [RELEASE=1]
+  --release=NUMBER        release number of the distribution [none]
   --patch=PATCH           patch applied to source
   --source=SRCFILENAME    name of the source file
 Host type:
@@ -240,13 +240,14 @@ echo "checking maintainer name... $NAME"
 echo "checking maintainer email address... $EMAIL"
 
 # if release is not specified use "1"
-if [ ! $release ]; then
-  release="1"
+dash_release=""
+if [ $release ]; then
+  dash_release="-$release"
 fi
-echo "checking distribution dash number... $release"
+echo "checking distribution dash number... $dash_release"
 
 # generate the complete distribution name
-distname="$version-$distname-$release"
+distname="$version-$distname$dash_release"
 
 echo "checking distribution name... $distname"
 
@@ -310,7 +311,7 @@ echo "creating binary data file... DISTRIBUTION.txt"
 
 # copy the NSIS script and icon
 sed -e s/@VERSION@/$version/\
-    -e s/@RELEASE@/$release/\
+    -e s/@DASH_RELEASE@/$dash_release/\
     $root_dir/gputils.nsi.in > $dist_dir/gputils/gputils.nsi
 echo "creating NSIS script... gputils.nsi"
 

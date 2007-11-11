@@ -25,7 +25,7 @@
 
 !include "MUI.nsh"
 
-SetCompressor lzma
+SetCompressor /SOLID lzma
 
 !define GPUTILS_ROOT "."
 
@@ -61,7 +61,7 @@ Var MUI_STARTMENUPAGE_VARIABLE
 
 Name "gputils"
 BrandingText ""
-OutFile "@VERSION@-@RELEASE@.exe"
+OutFile "@VERSION@@DASH_RELEASE@.exe"
 InstallDir "$PROGRAMFILES\gputils"
 ShowInstDetails show
 ShowUnInstDetails show
