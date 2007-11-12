@@ -244,6 +244,7 @@ enum pic_processor {
   pic18f1330,
   pic18f2220,
   pic18f2320,
+  pic18f2321,
   pic18f2331,
   pic18f2410,
   pic18f242,

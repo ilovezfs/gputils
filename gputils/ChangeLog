@@ -1,4 +1,7 @@
 2007-11-11 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Added support for 18f2321
+
+2007-11-11 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed bad information on 12f509 and 18f6722 in processor data
 
 2007-11-10 David Barnett <daviebdawg@gmail.com>
