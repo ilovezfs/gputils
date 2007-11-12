@@ -370,6 +370,7 @@ coff_linenum(int emitted)
   gp_linenum_type *new = NULL;
   int i;
   int origin;
+  static gp_boolean show_bad_debug = true;
 
   if ((!state.obj.enabled) || (state.obj.section == NULL))
     return;
@@ -382,11 +383,18 @@ coff_linenum(int emitted)
     origin = (state.lst.line.was_org - state.obj.section->address) << _16bit_core;
   }
   
+  if (state.debug_info && (state.obj.debug_file == NULL)) {
+    if (show_bad_debug) {
+      gperror(GPE_UNKNOWN, ".file directive required to generate debug info");
+      show_bad_debug = false;
+    }
+    return;
+  }
+
   for (i = 0; i < emitted; i++) {
      
     new = gp_coffgen_addlinenum(state.obj.section);
     if (state.debug_info) {
-      assert(state.obj.debug_file != NULL);
       new->symbol = state.obj.debug_file;
       new->line_number = state.obj.debug_line;
     } else {

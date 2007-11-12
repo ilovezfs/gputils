@@ -1,3 +1,7 @@
+2007-11-12 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed -g option to give meaningful error instead of failed
+  assertion when missing .file directive (bug #1825940)
+
 2007-11-11 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Added support for 18f2321
 
