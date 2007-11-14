@@ -48,6 +48,7 @@ coff_init(void)
       state.obj.object->filename = strdup(state.objfilename);
       state.obj.object->processor = state.processor;
       state.obj.object->class = state.device.class;
+      state.obj.object->isnew = state.obj.newcoff;
       state.obj.enabled = true;
     }
   }

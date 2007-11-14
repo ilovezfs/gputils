@@ -40,7 +40,7 @@ gp_identify_coff_file(char *filename)
   if (((magic[1]<<8) + magic[0]) == MICROCHIP_MAGIC_v1)
     return object_file;
   if (((magic[1]<<8) + magic[0]) == MICROCHIP_MAGIC_v2)
-    return object_file;
+    return object_file_v2;
  
   if (strncmp(magic, ARMAG, SARMAG) == 0)
     return archive_file;
@@ -95,18 +95,21 @@ gp_free_file(gp_binary_type *file)
 static void 
 _read_file_header(gp_object_type *object, char *file)
 {
+  int isnew = 0;
 
-  if (gp_getl16(&file[0]) != MICROCHIP_MAGIC_v1 && gp_getl16(&file[0]) != MICROCHIP_MAGIC_v2)
+  if (gp_getl16(&file[0]) == MICROCHIP_MAGIC_v2)
+    isnew = 1;
+  else if (gp_getl16(&file[0]) != MICROCHIP_MAGIC_v2)
     gp_error("invalid magic number in \"%s\"", object->filename);
 
+  object->isnew = isnew;
   object->version      = gp_getl16(&file[0]);
   object->num_sections = gp_getl16(&file[2]);
   object->time         = gp_getl32(&file[4]);
   object->symbol_ptr   = gp_getl32(&file[8]);
   object->num_symbols  = gp_getl32(&file[12]);
   
-  if ((object->version == MICROCHIP_MAGIC_v1 && gp_getl16(&file[16]) != OPT_HDR_SIZ_v1) ||
-	  (object->version == MICROCHIP_MAGIC_v2 && gp_getl16(&file[16]) != OPT_HDR_SIZ_v2))
+  if (gp_getl16(&file[16]) != (isnew ? OPT_HDR_SIZ_v2 : OPT_HDR_SIZ_v1) )
     gp_error("incorrect optional header size in \"%s\"", object->filename);
 
   object->symbol_size = (object->version == MICROCHIP_MAGIC_v1 ? 
@@ -118,45 +121,46 @@ _read_file_header(gp_object_type *object, char *file)
 static void
 _read_opt_header(gp_object_type *object, char *file)
 {
-  unsigned long vstamp;
+  unsigned short optmagic;
+  unsigned long vstamp, proc_code, rom_width, ram_width;
   size_t offset = 0;
 
-  if (gp_getl16(&file[0]) != OPTMAGIC)
-    gp_error("invalid optional magic number (0x%04x) in \"%s\"", gp_getl16(&file[0]), object->filename);
+  optmagic = gp_getl16(&file[0]);
+  if (optmagic != (object->isnew ? OPTMAGIC_v2 : OPTMAGIC_v1))
+    gp_error("invalid optional magic number (%#04x) in \"%s\"", optmagic, object->filename);
  
   offset = 2;
-  if (object->version == MICROCHIP_MAGIC_v1) {
-    vstamp = gp_getl16(&file[offset]);
-	offset += 2;
-  } else if (object->version == MICROCHIP_MAGIC_v2) {
+  if (object->isnew) {
 	vstamp = gp_getl32(&file[offset]);
 	offset += 4;
   } else {
-	/* programmer error */
-    gp_error("logic error: version not handled in \"%s\"", object->filename);
-	vstamp = 0;
-	abort();
+    vstamp = gp_getl16(&file[offset]);
+	offset += 2;
   }
 
-  if (object->version == MICROCHIP_MAGIC_v1 && vstamp != 1)
-    gp_error("invalid assembler version (%d) in \"%s\"", vstamp, object->filename);
+  if (!object->isnew && vstamp != 1)
+    gp_error("invalid assembler version (%ld) in \"%s\"", vstamp, object->filename);
  
-  object->processor = gp_processor_coff_proc(gp_getl32(&file[offset]));
+  proc_code = gp_getl32(&file[offset]);
+  object->processor = gp_processor_coff_proc(proc_code);
   if (object->processor == no_processor)
-    gp_error("invalid processor type %#04x in \"%s\"",
-             gp_getl32(&file[4]),
+    gp_error("invalid processor type (%#04lx) in \"%s\"",
+             proc_code,
              object->filename);
   offset += 4;
 
   object->class = gp_processor_class(object->processor);
   
-  if (gp_processor_rom_width(object->class) != gp_getl32(&file[offset]))
-    gp_error("invalid rom width for selected processor in \"%s\"", 
+  rom_width = gp_getl32(&file[offset]);
+  if (gp_processor_rom_width(object->class) != rom_width)
+    gp_error("invalid rom width for selected processor (%ld) in \"%s\"", 
+             rom_width,
              object->filename);
   offset += 4;
   
-  if (gp_getl32(&file[offset]) != 8)
-    gp_error("invalid ram width (%d) in \"%s\"", gp_getl32(&file[offset]), object->filename);
+  ram_width = gp_getl32(&file[offset]);
+  if (ram_width != 8)
+    gp_error("invalid ram width (%ld) in \"%s\"", ram_width, object->filename);
   offset += 4;
 }
 
@@ -255,8 +259,8 @@ _read_sections(gp_object_type *object, char *file)
   int org;
 
   /* move to the start of the section headers */
-  section_ptr = file + FILE_HDR_SIZ + 
-	  		(object->version == MICROCHIP_MAGIC_v1 ? OPT_HDR_SIZ_v1 : OPT_HDR_SIZ_v2);
+  section_ptr = file + (object->isnew ? (FILE_HDR_SIZ_v2 + OPT_HDR_SIZ_v2) : 
+            (FILE_HDR_SIZ_v1 + OPT_HDR_SIZ_v1));
 
   /* setup pointer to string table */
   string_table = &file[object->symbol_ptr + 
@@ -269,7 +273,7 @@ _read_sections(gp_object_type *object, char *file)
     _read_section_header(object, current, section_ptr, string_table);
 
     current->number = i + 1;
-    section_ptr += SEC_HDR_SIZ;
+    section_ptr += (object->isnew ? SEC_HDR_SIZ_v2  : SEC_HDR_SIZ_v1);
 
     /* read the data */
     if ((current->size) && (current->data_ptr)) {
@@ -394,12 +398,12 @@ _read_symbol(gp_object_type *object, gp_symbol_type *symbol, char *file, char *s
   }
 
   file_off = 8;
-  symbol->value = gp_getl32(&file[file_off]);			file_off += 4;
-  symbol->section_number = gp_getl16(&file[file_off]);	file_off += 2;
-  if(object->version == MICROCHIP_MAGIC_v1) {
-	  symbol->type = gp_getl16(&file[file_off]);		file_off += 2;
+  symbol->value = gp_getl32(&file[file_off]);           file_off += 4;
+  symbol->section_number = gp_getl16(&file[file_off]);  file_off += 2;
+  if(object->isnew) {
+    symbol->type = gp_getl32(&file[file_off]);          file_off += 4;
   } else {
-	  symbol->type = gp_getl32(&file[file_off]);		file_off += 4;
+    symbol->type = gp_getl16(&file[file_off]);          file_off += 2;
   }
   symbol->class = file[file_off];						file_off += 1;
   symbol->num_auxsym = file[file_off];					file_off += 1;
@@ -518,7 +522,7 @@ gp_convert_file(char *filename, char *file)
 
   /* read the object */
   _read_file_header(object, file);
-  _read_opt_header(object, file + FILE_HDR_SIZ);
+  _read_opt_header(object, file + (object->isnew ? FILE_HDR_SIZ_v2 : FILE_HDR_SIZ_v1));
   _read_symtbl(object, file);
   _read_sections(object, file);
   _clean_symtbl(object);

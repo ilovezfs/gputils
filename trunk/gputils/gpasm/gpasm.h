@@ -205,6 +205,7 @@ extern struct gpasm_state {
     int flags;			/*   Current section flags */
     gp_symbol_type *debug_file; /*   Debug information for high level langs */
     unsigned int debug_line;    
+    int newcoff;
   } obj;
   struct source_context *src;	/* Top of the stack of source files */
   struct file_context *files;   /* Top of the stack of all files */

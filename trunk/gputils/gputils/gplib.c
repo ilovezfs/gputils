@@ -226,7 +226,8 @@ int main(int argc, char *argv[])
   case ar_create: 
   case ar_replace:
     while (i < state.numobjects) {
-      if (gp_identify_coff_file(state.objectname[i]) != object_file) {
+      if (gp_identify_coff_file(state.objectname[i]) != object_file_v2 &&
+          gp_identify_coff_file(state.objectname[i]) != object_file) {
         gp_error("\"%s\" is not a valid object file", state.objectname[i]);
         break;
       } else {

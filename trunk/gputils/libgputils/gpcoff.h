@@ -29,14 +29,15 @@ Boston, MA 02111-1307, USA.  */
 #define MICROCHIP_MAGIC_v1 0x1234
 #define MICROCHIP_MAGIC_v2 0x1240
 
-#define OPTMAGIC 0x5678
+#define OPTMAGIC_v1 0x5678
+#define OPTMAGIC_v2 0x0000
 
 /* coff file header format */
 struct filehdr
 {
   unsigned short  f_magic;   /* magic number */
   unsigned short  f_nscns;   /* number of sections */
-  long  f_timdat;            /* time and date stamp */
+  unsigned long   f_timdat;            /* time and date stamp */
   unsigned long   f_symptr;  /* file ptr to symtab */
   unsigned long   f_nsyms;   /* # symtab entries */
   unsigned short  f_opthdr;  /* sizeof(opt hdr) */
@@ -44,7 +45,8 @@ struct filehdr
 };
 
 /* define the size in the file, don't use sizeof() !! */
-#define FILE_HDR_SIZ 20
+#define FILE_HDR_SIZ_v1 20
+#define FILE_HDR_SIZ_v2 20
 
 /* relocation info has been stripped */
 #define F_RELFLG    0x01
@@ -91,7 +93,8 @@ struct scnhdr
   unsigned long   s_flags;   /* flags */
 };
 
-#define SEC_HDR_SIZ 40
+#define SEC_HDR_SIZ_v1 40
+#define SEC_HDR_SIZ_v2 40
 
 /* Section contains executable code */
 #define STYP_TEXT     0x0020
@@ -118,8 +121,8 @@ struct scnhdr
 /* relocation entry */
 struct reloc
 {
-  long            r_vaddr;     /* entry relative virtual address */
-  long            r_symndx;    /* index into symbol table */
+  unsigned long            r_vaddr;     /* entry relative virtual address */
+  unsigned long            r_symndx;    /* index into symbol table */
   short           r_offset;    /* offset to be added to address of symbol 
                                   'r_symndx' */
   unsigned short  r_type;      /* relocation type */
@@ -194,6 +197,7 @@ struct reloc
 /* relocation for the address of the end of a section on LFSR */
 #define     RELOCT_SCNEND_LFSR1 31
 #define     RELOCT_SCNEND_LFSR2 32
+#define	    RELOCT_TRIS_4BIT    33
 
 /* linenumber entry */
 struct lineno
@@ -222,11 +226,11 @@ struct syment
       unsigned long s_offset;  /* pointer to the string table */
     } ptr;
   } sym_name;
-  long   value;                /* symbol value */
+  unsigned long   value;       /* symbol value */
   short  sec_num;              /* section number */
-  unsigned short  type;        /* type */
+  unsigned long   type;        /* type */
   char            st_class;    /* storage class */
-  char            num_auxsym;  /* number of auxiliary symbols */
+  unsigned char   num_auxsym;  /* number of auxiliary symbols */
 };
 
 #define SYMBOL_SIZE_v1 18
@@ -270,6 +274,8 @@ struct syment
 #define DT_PTR      1  /* pointer */
 #define DT_FCN      2  /* function */
 #define DT_ARY      3  /* array */
+#define DT_ROMPTR   4  
+#define DT_FARROMPTR 5
 
 /* Storage classes */
 #define C_EFCN      0xff /* physical end of function */
@@ -311,7 +317,8 @@ struct aux_file
   unsigned long  x_offset;  /* String table offset for filename */
   unsigned long  x_incline; /* Line number at which this file was included, 
                               0->not included */
-  char _unused[10];
+  unsigned char  x_flags;
+  char _unused[11];
 };
 
 /* Auxiliary symbol table entry for a section */
@@ -320,7 +327,7 @@ struct aux_scn
   unsigned long  x_scnlen;  /* Section Length */
   unsigned short x_nreloc;  /* Number of relocation entries */
   unsigned short x_nlinno;  /* Number of line numbers */
-  char _unused[10];
+  char _unused[12];
 };
 
 /* Auxiliary symbol table entry for the tagname of a struct/union/enum */
@@ -331,7 +338,7 @@ struct aux_tag
   char _unused2[4];
   unsigned long x_endndx;    /* Symbol index of next entry beyond this 
                                 struct/union/enum */
-  char _unused3[2];
+  char _unused3[4];
 };
 
 /* Auxiliary symbol table entry for an end of struct/union/enum */
@@ -340,7 +347,7 @@ struct aux_eos
   unsigned long x_tagndx;    /* Symbol index of struct/union/enum tag */
   char _unused[2];
   unsigned short x_size;     /* Size of struct/union/enum */
-  char _unused2[10];
+  char _unused2[12];
 };
 
 /* Auxiliary symbol table entry for a function name */
@@ -351,7 +358,8 @@ struct aux_fcn
   unsigned long x_lnnoptr;  /* File pointer to line numbers for this function */
   unsigned long x_endndx;   /* Symbol Index of next entry beyond this 
                                function */
-  unsigned short x_actsize; /* size of static activation record to allocate */
+  short x_actscnum; /* size of static activation record to allocate */
+  char _unused[2];
 };
 
 /* Auxiliary symbol table entry for an array */
@@ -361,6 +369,7 @@ struct aux_arr
   unsigned short x_lnno;     /* Unused??  Line number declaration */
   unsigned short x_size;     /* Size of array */
   unsigned short x_dimen[4]; /* Size of first four dimensions */
+  char _unused[4];
 };
 
 /* Auxiliary symbol table entry for the end of a block or function */
@@ -369,7 +378,7 @@ struct aux_eobf
   char _unused[4];
   unsigned short x_lnno;   /* C Source line number of the end, relative to 
                               start of block/func */
-  char _unused2[12];
+  char _unused2[14];
 };
 
 /* Auxiliary symbol table entry for the beginning of a block or function */
@@ -380,7 +389,7 @@ struct aux_bobf
                               to start enclosing scope */
   char _unused2[6];
   unsigned long x_endndx;  /* Symbol Index of next entry past this block/func */
-  char _unused3[2];
+  char _unused3[4];
 };
 
 /* Auxiliary symbol table entry for a variable of type struct/union/enum */
@@ -389,8 +398,22 @@ struct aux_var
   unsigned long x_tagndx;  /* Symbol Index of struct/union/enum tagname */
   char _unused[2];
   unsigned short x_size;   /* Size of the struct/union/enum */
-  char _unused2[10];
+  char _unused2[12];
 };
+
+struct aux_field {
+  char _unused[6];
+  unsigned short x_size;
+  char _unused2[12];
+};
+
+struct aux_fcn_calls {
+  unsigned long x_calleendx;
+  unsigned long x_is_interrupt;
+  char _unused[12];
+};
+  
+
 
 /* Auxiliary entries */
 #define X_DIMNUM   4
@@ -581,6 +604,9 @@ typedef struct gp_object_type
 
   /* to reduce conditionals, store the size of symbols in this object */
   size_t symbol_size;
+
+  /* new style coff file? */
+  int isnew;
 
   /* processor */
   enum pic_processor processor;
