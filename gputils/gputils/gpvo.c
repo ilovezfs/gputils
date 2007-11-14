@@ -375,7 +375,7 @@ void print_sym_table (gp_object_type *object)
                aux->_aux_symbol._aux_scn.nlineno);
         break;
       default:
-        printf("  ");
+        printf("%ld  ", aux->type);
         for (i = 0; i < object->symbol_size; i++) {
           printf("%02x", aux->_aux_symbol.data[i]);
           if (i & 1) {
@@ -571,7 +571,8 @@ int main(int argc, char *argv[])
     state.dump_flags = PRINT_HEADER | PRINT_SECTIONS | PRINT_SYMTBL;
   }
 
-  if (gp_identify_coff_file(state.filename) != object_file) {
+  if (gp_identify_coff_file(state.filename) != object_file_v2 &&
+      gp_identify_coff_file(state.filename) != object_file) {
     gp_error("\"%s\" is not a valid object file", state.filename);
     exit(1);
   }

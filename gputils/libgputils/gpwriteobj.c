@@ -83,12 +83,12 @@ _gp_coffgen_addname(char *name, char *ptr, size_t sizeof_ptr, char *table)
 static void 
 _gp_coffgen_write_filehdr(gp_object_type *object, FILE *fp) 
 {
-  gp_fputl16(MICROCHIP_MAGIC_v1, fp);
+  gp_fputl16((object->isnew ? MICROCHIP_MAGIC_v2 : MICROCHIP_MAGIC_v1), fp);
   gp_fputl16(object->num_sections, fp);
   gp_fputl32(object->time, fp);
   gp_fputl32(object->symbol_ptr, fp);
   gp_fputl32(object->num_symbols, fp);
-  gp_fputl16(OPT_HDR_SIZ_v1, fp);
+  gp_fputl16((object->isnew ? OPT_HDR_SIZ_v2: OPT_HDR_SIZ_v1), fp);
   gp_fputl16(object->flags, fp);
 
   return;
@@ -104,8 +104,11 @@ _gp_coffgen_write_opthdr(gp_object_type *object, FILE *fp)
   assert(coff_type);
 
   /* write the data to file */
-  gp_fputl16(OPTMAGIC, fp);
-  gp_fputl16(1, fp);
+  gp_fputl16(object->isnew ? OPTMAGIC_v2 : OPTMAGIC_v1, fp);
+  if (object->isnew)
+    gp_fputl32(1, fp);
+  else
+    gp_fputl16(1, fp);
   gp_fputl32(coff_type, fp);
   gp_fputl32(gp_processor_rom_width(object->class), fp);
   gp_fputl32(8, fp);
@@ -219,7 +222,8 @@ _gp_coffgen_write_linenum(gp_section_type *section, FILE *fp)
 
 /* write the auxiliary symbols */
 static void 
-_gp_coffgen_write_auxsymbols(gp_aux_type *aux, char *table, FILE *fp) 
+_gp_coffgen_write_auxsymbols(gp_aux_type *aux, char *table, FILE *fp,
+			     int isnew) 
 {
   unsigned int offset;
 
@@ -234,7 +238,7 @@ _gp_coffgen_write_auxsymbols(gp_aux_type *aux, char *table, FILE *fp)
       gp_fputl32(offset, fp);
       gp_fputl32(0, fp);
       gp_fputl32(0, fp);
-      gp_fputl16(0, fp);
+      if (isnew) gp_fputl32(0, fp); else gp_fputl16(0, fp);
       break;
     case AUX_FILE:
       /* add the filename to the string table */
@@ -244,7 +248,7 @@ _gp_coffgen_write_auxsymbols(gp_aux_type *aux, char *table, FILE *fp)
       gp_fputl32(aux->_aux_symbol._aux_file.line_number, fp);
       gp_fputl32(0, fp);
       gp_fputl32(0, fp);
-      gp_fputl16(0, fp);
+      if (isnew) gp_fputl32(0, fp); else gp_fputl16(0, fp);
       break;
     case AUX_IDENT:
       /* add the ident string to the string table */
@@ -254,7 +258,7 @@ _gp_coffgen_write_auxsymbols(gp_aux_type *aux, char *table, FILE *fp)
       gp_fputl32(0, fp);
       gp_fputl32(0, fp);
       gp_fputl32(0, fp);
-      gp_fputl16(0, fp);
+      if (isnew) gp_fputl32(0, fp); else gp_fputl16(0, fp);
       break;
     case AUX_SCN:
       /* write section auxiliary symbol */
@@ -263,11 +267,11 @@ _gp_coffgen_write_auxsymbols(gp_aux_type *aux, char *table, FILE *fp)
       gp_fputl16(aux->_aux_symbol._aux_scn.nlineno, fp);
       gp_fputl32(0, fp);
       gp_fputl32(0, fp);
-      gp_fputl16(0, fp);
+      if (isnew) gp_fputl32(0, fp); else gp_fputl16(0, fp);
       break;
     default:
       /* copy the data to the file */
-      gp_fputvar(&aux->_aux_symbol.data[0], 18, fp);
+      gp_fputvar(&aux->_aux_symbol.data[0], isnew ? 20 : 18, fp);
     }
    
     aux = aux->next;
@@ -296,12 +300,13 @@ _gp_coffgen_write_symbols(gp_object_type *object, char *table, FILE *fp)
     } else {
       gp_fputl16(current->section->number, fp);
     }    
-    gp_fputl16(current->type, fp);
+    if (object->isnew) gp_fputl32(current->type, fp);
+    else gp_fputl16(current->type, fp);
     fputc(current->class, fp);
     fputc(current->num_auxsym, fp);
 
     if (current->num_auxsym)
-      _gp_coffgen_write_auxsymbols(current->aux_list, table, fp);
+      _gp_coffgen_write_auxsymbols(current->aux_list, table, fp, object->isnew);
    
     current = current->next;
   }
@@ -338,7 +343,9 @@ _gp_updateptr(gp_object_type *object)
   int section_number = 1;
   int symbol_number = 0;
 
-  loc = FILE_HDR_SIZ + OPT_HDR_SIZ_v1 + (SEC_HDR_SIZ * object->num_sections);
+  loc = (object->isnew ?
+    (FILE_HDR_SIZ_v2 + OPT_HDR_SIZ_v2 + (SEC_HDR_SIZ_v2 * object->num_sections)) :
+    (FILE_HDR_SIZ_v1 + OPT_HDR_SIZ_v1 + (SEC_HDR_SIZ_v1 * object->num_sections)));
 
   /* update the data pointers in the section headers */
   section = object->sections;

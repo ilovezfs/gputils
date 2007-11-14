@@ -358,6 +358,7 @@ void gplink_open_coff(char *name)
   /* FIXME: Three files are opened, surely one is sufficent */
 
   switch(gp_identify_coff_file(file_name)) {
+  case object_file_v2:
   case object_file:
     /* read the object */  
     object = gp_read_coff(file_name);

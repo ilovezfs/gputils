@@ -40,7 +40,7 @@ static char *processor_name = NULL;
 int yyparse(void);
 extern int yydebug;
 
-#define GET_OPTIONS "?D:I:a:cde:ghilLmMno:p:qr:uvw:y"
+#define GET_OPTIONS "?D:I:a:cCde:ghilLmMno:p:qr:uvw:y"
 
 static struct option longopts[] =
 {
@@ -48,6 +48,7 @@ static struct option longopts[] =
   { "include",     1, 0, 'I' },
   { "hex-format",  1, 0, 'a' },
   { "object",      0, 0, 'c' },
+  { "new-coff",    0, 0, 'C' },
   { "debug",       0, 0, 'd' },
   { "expand",      1, 0, 'e' },
   { "debug-info",  0, 0, 'g' },
@@ -123,6 +124,7 @@ init(void)
   state.dep.enabled = false;
   state.lst.enabled = false;
   state.obj.enabled = false;
+  state.obj.newcoff = 0;
 
   state.obj.object = NULL;
   state.obj.section = NULL;
@@ -154,6 +156,7 @@ show_usage(void)
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -a FMT, --hex-format FMT       Select hex file format. [inhx32]\n");
   printf("  -c, --object                   Output relocatable object.\n");
+  printf("  -C, --new-coff                 Use new Microchip format.\n");
   printf("  -d, --debug                    Output debug messages.\n");
   printf("  -D SYM=VAL, --define SYM=VAL   Define SYM with value VAL.\n");
   printf("  -e [ON|OFF], --expand [ON|OFF] Macro expansion.\n");
@@ -232,6 +235,9 @@ process_args( int argc, char *argv[])
       state.hexfile = suppress;
       state.lstfile = normal;
       state.objfile = normal;
+      break;
+    case 'C':
+      state.obj.newcoff = 1;
       break;
     case 'd':
       gp_debug_disable = false;

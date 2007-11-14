@@ -1243,7 +1243,7 @@ static gpasmVal do_dim(gpasmVal r,
         return r;
       }
       
-      if (i == SYMBOL_SIZE_v1) {
+      if (i == (state.obj.newcoff ? SYMBOL_SIZE_v2 : SYMBOL_SIZE_v1)) {
         i = 0;
         aux_list = aux_list->next;      
       } else {
