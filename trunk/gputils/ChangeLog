@@ -1,3 +1,6 @@
+2007-11-14 David Barnett <daviebdawg@gmail.com>
+  * Updated gpasm manpage for flag to output new COFF format (-C)
+
 2007-11-13 David Barnett <daviebdawg@gmail.com>
   * Merged changes from patch by Andreas Kabel to support the new COFF format
   across all of gputils
