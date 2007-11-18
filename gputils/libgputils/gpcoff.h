@@ -30,7 +30,7 @@ Boston, MA 02111-1307, USA.  */
 #define MICROCHIP_MAGIC_v2 0x1240
 
 #define OPTMAGIC_v1 0x5678
-#define OPTMAGIC_v2 0x0000
+#define OPTMAGIC_v2 0x5678
 
 /* coff file header format */
 struct filehdr
