@@ -1,3 +1,6 @@
+2007-11-18 David Barnett <daviebdawg@gmail.com>
+  * Fixed COFF magic number regression
+
 2007-11-17 David Barnett <daviebdawg@gmail.com>
   * Fixed CONFIG definitions for 16c54a and 16c715 (in PIC headers)
 
