@@ -99,7 +99,7 @@ _read_file_header(gp_object_type *object, char *file)
 
   if (gp_getl16(&file[0]) == MICROCHIP_MAGIC_v2)
     isnew = 1;
-  else if (gp_getl16(&file[0]) != MICROCHIP_MAGIC_v2)
+  else if (gp_getl16(&file[0]) != MICROCHIP_MAGIC_v1)
     gp_error("invalid magic number in \"%s\"", object->filename);
 
   object->isnew = isnew;
