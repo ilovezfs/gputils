@@ -1,4 +1,7 @@
 2007-11-18 David Barnett <daviebdawg@gmail.com>
+  * Changed "mode" directive on sx48/sx52 to support 5 bits (FR #835201)
+
+2007-11-18 David Barnett <daviebdawg@gmail.com>
   * Changed COFF v2 optional magic number to 0x5678 (same as COFF v1)
   * Fixed strange errors in sx.asm and pageselw2.asm tests expected output
 

@@ -25,4 +25,6 @@ Boston, MA 02111-1307, USA.  */
 extern struct insn special[];
 extern const int num_op_special;
 
+extern struct insn op_sx_mode;
+
 #endif

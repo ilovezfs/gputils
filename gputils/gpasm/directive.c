@@ -3977,6 +3977,12 @@ void opcode_init(int stage)
     remove_symbol(state.stBuiltin, "RETFIE");
   }
 
+  if (state.processor == sx48 ||
+      state.processor == sx52) {
+    struct symbol *mode_sym = get_symbol(state.stBuiltin, "MODE");
+    if (mode_sym != NULL)
+      annotate_symbol(mode_sym, &op_sx_mode);
+  }
 }
 
 /************************************************************************/

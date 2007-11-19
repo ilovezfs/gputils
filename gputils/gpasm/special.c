@@ -422,6 +422,24 @@ static gpasmVal do_tstf(gpasmVal r,
   return r;
 }
 
+static gpasmVal do_mode(gpasmVal r,
+		        char *name,
+		        int arity,
+		        struct pnode *parms)
+{
+  if (enforce_arity(arity, 1)) {
+    struct pnode* val = HEAD(parms);
+    if ((val->tag == constant) && 
+        (val->value.constant > 0x1f)) {
+      gpwarning(GPW_RANGE, NULL);
+      val->value.constant &= 0x1f;
+    }
+    do_insn("movlw", parms);
+    do_insn("movwm", NULL);
+  }
+  return r;
+}
+
 /* PIC 12-bit and 14-bit "Special" instruction set */
 struct insn special[] = {
   { "addcf",    0, (long int)do_addcf,  INSN_CLASS_FUNC,        0 },
@@ -456,3 +474,5 @@ struct insn special[] = {
 };
 
 const int num_op_special = TABLE_SIZE(special);
+
+struct insn op_sx_mode = { "mode", 0, (long int)do_mode, INSN_CLASS_FUNC, 0 };
