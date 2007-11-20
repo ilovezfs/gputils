@@ -1,3 +1,6 @@
+2007-11-19 David Barnett <daviebdawg@gmail.com>
+  * Fixed endianness bugs in gpvc based on patch by Steve Tell (bug #803352)
+
 2007-11-18 David Barnett <daviebdawg@gmail.com>
   * Changed "mode" directive on sx48/sx52 to support 5 bits (FR #835201)
 

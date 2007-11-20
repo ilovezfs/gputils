@@ -134,14 +134,17 @@ void dump_hex(char *chunk, int length)
 
 void dump_memmap( void)
 {
-  typedef struct _REC_maptab {
+/*  typedef struct _REC_maptab {
     unsigned short start, last;
   } _REC_maptab;
+*/
+#define COD_MAPTAB_START 0
+#define COD_MAPTAB_LAST 2
+#define COD_MAPENTRY_SIZE 4
 
   unsigned short _64k_base;
   DirBlockInfo *dbi;
 
-  _REC_maptab *mt;
   unsigned short i,j,start_block,end_block;
   int first = 1;
   int shift;
@@ -172,13 +175,17 @@ void dump_memmap( void)
 
 	read_block(temp, j);
 
-	mt = (_REC_maptab *)temp;
+	for(i=0; i< 128; i++) {
+	  unsigned short start;
+	  unsigned short last;
+	  start = gp_getl16(&temp[i*COD_MAPENTRY_SIZE + COD_MAPTAB_START]);
+	  last = gp_getl16(&temp[i*COD_MAPENTRY_SIZE + COD_MAPTAB_LAST]);
 
-	for(i=0; i< 128; i++)
-	  if( !((mt[i].start == 0) && (mt[i].last == 0) ))
+	  if( !((start == 0) && (last == 0) ))
 	    printf("using ROM 0x%06x to 0x%06x\n",
-		   (_64k_base+mt[i].start) >> shift,
-		   (_64k_base+mt[i].last) >> shift);
+		   (_64k_base+start) >> shift,
+		   (_64k_base+last) >> shift);
+	}
       }
     } else if(first)
       printf("    No ROM usage information available.\n");
@@ -322,7 +329,7 @@ void dump_lsymbols( void )
 	  break;
 
 	length = *s;
-	type  = *(short *)&s[length+1];
+	type  = gp_getl16(&s[length+1]);
 	if(type>128)
 	  type = 0;
 	/* read big endian */
@@ -438,29 +445,33 @@ void dump_line_symbols(void)
     printf(" -----  -----  ----   -----------   ---------------------------------------\n");
 
     for(j=start_block; j<=end_block; j++) {
+      unsigned short sline;
+      unsigned short sloc;
 
       read_block(temp, j);
 
       ls = (LineSymbol *) temp;
 
       for(i=0; i<84; i++) {
+        sline = gp_getl16((char *)&ls[i].sline);
+        sloc = gp_getl16((char *)&ls[i].sloc);
 
 	if((ls[i].smod & 4) == 0) {
 	  assert(ls[i].sfile < number_of_source_files);
 	  printf(" %5d  %5d %06X   %2x %s   %-50s\n",
 		 lst_line_number++,
-		 ls[i].sline,
-		 ls[i].sloc,
+		 sline,
+		 sloc,
 		 ls[i].smod,
 		 smod_flags(ls[i].smod),
 		 source_file_names[ls[i].sfile]);
 	}
-	if(source_files[ls[i].sfile] && (ls[i].sline != last_src_line)) {
+	if(source_files[ls[i].sfile] && (sline != last_src_line)) {
 	  /*fgets(buf, sizeof(buf), source_files[ls[i].sfile]);*/
-	  fget_line(ls[i].sline, buf, sizeof(buf), source_files[ls[i].sfile]);
+	  fget_line(sline, buf, sizeof(buf), source_files[ls[i].sfile]);
 	  printf("%s",buf);
 	}
-	last_src_line = ls[i].sline;
+	last_src_line = sline;
       }
     }
   } else
@@ -529,6 +540,7 @@ void dump_local_vars(void)
 #define SSYMBOL_SIZE  16
 #define SYMBOLS_PER_BLOCK COD_BLOCK_SIZE/SSYMBOL_SIZE
 
+#if 0
   typedef struct symbol_record {
     char name_strlen;
     char name[12];         /* Not Symbol Length because */
@@ -542,13 +554,22 @@ void dump_local_vars(void)
     unsigned int start;
     unsigned int stop;
   } scope_head;
+#endif
 
-  symbol_record *sr;
-  scope_head  *sh;
+#define COD_SSYMBOL_NAME 1
+#define COD_SSYMBOL_STYPE 13
+#define COD_SSYMBOL_SVALUE 14
+#define COD_SSYMBOL_START 8
+#define COD_SSYMBOL_STOP  12
+
+  /* scope_head */    char *sh;
 
   unsigned short i,j,start_block,end_block;
-
-  j=0;
+  unsigned char shift;
+  if (byte_addr)
+    shift = 0;
+  else
+    shift = 1;
 
   start_block = gp_getu16(&directory_block_data[COD_DIR_LOCALVAR]);
 
@@ -562,15 +583,21 @@ void dump_local_vars(void)
     for(i=start_block; i<=end_block; i++) {
       read_block(temp, i);
 
-      for(i=0; i<SYMBOLS_PER_BLOCK; i++) {
-	sh = (scope_head *)&temp[i*SSYMBOL_SIZE];
+      for(j=0; j<SYMBOLS_PER_BLOCK; j++) {
+        sh = &temp[j*SSYMBOL_SIZE];
 
-	if(sh->name[0]) {
-	  if( 0 == strncmp(sh->name,"__LOCAL",7)) {
-	    printf("Local symbols between %06x and %06x:  ",sh->start,sh->stop);
+        if(sh[COD_SSYMBOL_NAME]) {
+          if( 0 == strncmp(&sh[COD_SSYMBOL_NAME], "__LOCAL",7)) {
+            unsigned int start;
+            unsigned int stop;
+            start = gp_getl32(&sh[COD_SSYMBOL_START]);
+            stop = gp_getl32(&sh[COD_SSYMBOL_STOP]);
+            printf("Local symbols between %06x and %06x:  ",
+                   start >> shift, stop >> shift);
 	  } else {
-	    sr = (symbol_record *)sh;
-	    printf("%s = 0x%x, type = %s\n",sr->name, sr->svalue, SymbolType4[sr->stype]);
+            printf("%.12s = 0x%x, type = %s\n", &sh[COD_SSYMBOL_NAME],
+                   gp_getl16(&sh[COD_SSYMBOL_SVALUE]),
+                   SymbolType4[(int)sh[COD_SSYMBOL_STYPE]]);
 	  }
 	}
       }
