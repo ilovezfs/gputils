@@ -1,3 +1,6 @@
+2007-11-20 David Barnett <daviebdawg@gmail.com>
+  * Applied patch by Michael Ballbach to support code_pack directive
+
 2007-11-19 David Barnett <daviebdawg@gmail.com>
   * Fixed endianness bugs in gpvc based on patch by Steve Tell (bug #803352)
 

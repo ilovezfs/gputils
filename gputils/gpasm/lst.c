@@ -239,17 +239,38 @@ void lst_format_line(char *src_line, int value)
 		         state.device.id_location + 1) & 0xffff);
     break;
   case insn:
-    snprintf(m, sizeof(m), "%04X ", state.lst.line.was_org << _16bit_core);
-    emitted = state.org - state.lst.line.was_org;
+    emitted = state.org - state.lst.line.was_org
+	     				+ (state.obj.section &&
+					   state.obj.section->emitted_pack_byte ? 1 : 0);
+    snprintf(m, sizeof(m), "%04X ", (state.lst.line.was_org << _16bit_core)
+	     				- (state.obj.section &&
+					   ((emitted == 0 && 
+					     state.obj.section->have_pack_byte) ||
+					    state.obj.section->emitted_pack_byte) ? 1 : 0));
+
     if (emitted >= 1) {
-      snprintf(buf, sizeof(buf), "%04X ", i_memory_get(state.i_memory, 
-			               state.lst.line.was_org) & 0xffff);
+      if(state.obj.section && state.obj.section->have_pack_byte && emitted == 1)
+	snprintf(buf, sizeof(buf), "%02X   ", i_memory_get(state.i_memory, state.lst.line.was_org) & 0xff);
+      else if(state.obj.section && state.obj.section->emitted_pack_byte)
+	snprintf(buf, sizeof(buf), "  %02X ", (i_memory_get(state.i_memory, state.lst.line.was_org - 1) & 0xff00) >> 8);
+      else
+        snprintf(buf, sizeof(buf), "%04X ", i_memory_get(state.i_memory, 
+			                 state.lst.line.was_org) & 0xffff);
+
       strncat(m, buf, sizeof(m));
     } else
       strncat(m, "     ", sizeof(m));
+
     if (emitted >= 2) {
-      snprintf(buf, sizeof(buf), "%04X ", i_memory_get(state.i_memory, 
-			               state.lst.line.was_org + 1) & 0xffff);
+      if(state.obj.section && state.obj.section->have_pack_byte && emitted == 2)
+        snprintf(buf, sizeof(buf), "%02X   ", i_memory_get(state.i_memory, 
+	  		                  state.lst.line.was_org
+				          + (state.obj.section->emitted_pack_byte ? 0 : 1)) & 0xffff);
+      else
+        snprintf(buf, sizeof(buf), "%04X ", i_memory_get(state.i_memory, 
+	  		                  state.lst.line.was_org
+				          + (state.obj.section &&
+					     state.obj.section->emitted_pack_byte ? 0 : 1)) & 0xffff);
       strncat(m, buf, sizeof(buf));
     } else
       strncat(m, "     ", sizeof(m));
@@ -355,23 +376,41 @@ void lst_format_line(char *src_line, int value)
     int i;
 
     for (i = 2; i < emitted; i += 2) {
+      unsigned int org = state.lst.line.was_org + i -
+			  (state.obj.section && state.obj.section->emitted_pack_byte ? 1 : 0);
+
       if ((i + 1) < emitted)
-        snprintf(m, sizeof(m), "%04X %04X %04X",
-                 ((state.lst.line.was_org + i) << _16bit_core),
-                 i_memory_get(state.i_memory, 
-                              state.lst.line.was_org + i) & 0xffff,
-		 i_memory_get(state.i_memory, 
-                              state.lst.line.was_org + i + 1) & 0xffff);
-      else
-        snprintf(m, sizeof(m), "%04X %04X",
-		 ((state.lst.line.was_org + i) << _16bit_core),
-		 i_memory_get(state.i_memory, 
-			      state.lst.line.was_org + i) & 0xffff);
-        lst_line(m);
+        if(state.obj.section && state.obj.section->have_pack_byte)
+          snprintf(m, sizeof(m), "%04X %04X %02X   ",
+                   org << _16bit_core,
+                   i_memory_get(state.i_memory, org) & 0xffff,
+		   i_memory_get(state.i_memory, org + 1) & 0xff);
+     	else
+          snprintf(m, sizeof(m), "%04X %04X %04X",
+                   org << _16bit_core,
+                   i_memory_get(state.i_memory, org) & 0xffff,
+	  	   i_memory_get(state.i_memory, org + 1) & 0xffff);
+      else {
+        if(state.obj.section && state.obj.section->have_pack_byte)
+	  snprintf(m, sizeof(m), "%04X %02X   ", 
+		   ((state.lst.line.was_org + i) << _16bit_core),
+		   i_memory_get(state.i_memory,
+			        state.lst.line.was_org + i) & 0xff);
+	else
+          snprintf(m, sizeof(m), "%04X %04X",
+		   ((state.lst.line.was_org + i) << _16bit_core),
+		   i_memory_get(state.i_memory, 
+			        state.lst.line.was_org + i) & 0xffff);
       }
+      lst_line(m);
+    }
 
     state.cod.emitting = 0;
   }
+ 
+  /* we reset this here, otherwise labels will display bytes again */
+  if(state.obj.section)
+    state.obj.section->emitted_pack_byte = false;
 }
 
 /* append the symbol table to the .lst file */
