@@ -130,6 +130,7 @@ int endian_swap_word(int x)
 
 int packed_hi_lo = 0;
 static int packed_byte = 0;
+gp_boolean _16packed_byte_acc;
 
 static void emit_packed(unsigned int value, unsigned int mode)
 {
@@ -175,6 +176,8 @@ static int off_or_on(struct pnode *p)
 
 static void data(struct sllist *L, int flavor, int lit_mask)
 {
+  if(state.obj.section)
+    state.obj.section->emitted_pack_byte = false;
 
 
   if (L) {
@@ -188,9 +191,24 @@ static void data(struct sllist *L, int flavor, int lit_mask)
 
       value = reloc_evaluate(list->p, RELOCT_ALL);
 
-      if(lit_mask & PACKING_BYTES)
-	emit_packed(value | flavor, lit_mask);
-      else {
+      if(lit_mask & PACKING_BYTES) {
+	if(!_16packed_byte_acc)
+	  emit_packed(value | flavor, lit_mask);
+        else {
+          if (state.pass == 2) {
+	    /* read what's in the current org - pack our byte with it using emit() directly */
+    	    i_memory_put(state.i_memory, state.org - 1,
+		         (i_memory_get(state.i_memory, state.org - 1) & ~0xff00) | (value << 8));
+	  }
+
+	  /* reset status */
+	  _16packed_byte_acc = false;
+	  if(state.obj.section) {
+	    state.obj.section->have_pack_byte = false;
+            state.obj.section->emitted_pack_byte = true;
+	  }
+	}
+      } else {
 	if((value > lit_mask) || (value < 0)) {
           gpwarning(GPW_RANGE,NULL);
 	}
@@ -211,9 +229,20 @@ static void data(struct sllist *L, int flavor, int lit_mask)
 
   }
 
-  if(packed_hi_lo) 
-    emit_packed(flavor, lit_mask);
-  
+  if(packed_hi_lo) {
+    if(!(state.obj.new_sec_flags & STYP_BPACK)) {
+      emit_packed(flavor, lit_mask);
+    } else {
+      /* 
+       * still pad, but do so with 0xff (to match mplab), it will be
+       * overwritten if there is more db data.
+       */
+      emit_packed(flavor | 0xff, lit_mask);
+      _16packed_byte_acc = true;
+      if(state.obj.section)
+	state.obj.section->have_pack_byte = true;
+    }
+  }
 }
 
 
@@ -574,6 +603,50 @@ static gpasmVal do_code(gpasmVal r,
       break;
     default:
       enforce_arity(arity, 1);
+    }
+  }
+
+  return r;
+}
+
+static gpasmVal do_code_pack(gpasmVal r,
+		             char *name,
+		             int arity,
+		             struct pnode *parms)
+{
+  struct pnode *p;
+
+  if(!_16bit_core)
+    gperror(GPE_UNKNOWN, "code_pack is only supported on 16bit cores");
+  else {
+    state.lst.line.linetype = sec;
+    state.next_state = state_section;
+    _16packed_byte_acc = false;
+    if(state.obj.section) {
+      state.obj.section->have_pack_byte = false;
+      state.obj.section->emitted_pack_byte = false;
+    }
+
+    if (state.mode == absolute) {
+      gperror(GPE_OBJECT_ONLY, NULL);
+    } else {
+      switch (arity) {
+      case 0:
+        /* new relocatable section */
+        strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
+        state.obj.new_sec_addr = 0;
+        state.obj.new_sec_flags = STYP_TEXT | STYP_BPACK;
+        break;
+      case 1:
+        /* new absolute section */
+        p = HEAD(parms);
+        strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
+        state.obj.new_sec_addr = maybe_evaluate(p) >> _16bit_core;
+        state.obj.new_sec_flags = STYP_TEXT | STYP_ABS | STYP_BPACK;
+        break;
+      default:
+        enforce_arity(arity, 1);
+      }
     }
   }
 
@@ -3776,6 +3849,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
 struct insn op_0[] = {
   { "code",       0, (long int)do_code,      INSN_CLASS_FUNC,   0 },
+  { "code_pack",  0, (long int)do_code_pack, INSN_CLASS_FUNC,   0 },
   { "constant",   0, (long int)do_constant,  INSN_CLASS_FUNC,   0 },
   { "else",       0, (long int)do_else,      INSN_CLASS_FUNC,   ATTRIB_COND },
   { "endif",      0, (long int)do_endif,     INSN_CLASS_FUNC,   ATTRIB_COND },

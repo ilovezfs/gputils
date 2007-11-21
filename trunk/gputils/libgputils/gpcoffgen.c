@@ -99,6 +99,8 @@ gp_coffgen_newsection(char *name)
   new->reloc_ptr = 0;
   new->lineno_ptr = 0;
   new->next = NULL;
+  new->have_pack_byte = false;
+  new->emitted_pack_byte = false;
 
   return new;
 }

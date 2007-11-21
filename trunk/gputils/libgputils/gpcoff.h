@@ -117,6 +117,8 @@ struct scnhdr
 #define STYP_ACTREC   0x10000
 /* Section has been relocated.  This is a temporary flag used by the linker */
 #define STYP_RELOC    0x20000
+/* Section is byte packed on 16bit devices */
+#define STYP_BPACK    0x40000
 
 /* relocation entry */
 struct reloc
@@ -590,6 +592,18 @@ typedef struct gp_section_type
 
   /* linenumber pointer, only valid when writing coff file */  
   unsigned long lineno_ptr;
+
+  /*
+   * when the section is STYP_BPACK, this contains the flag as to whether the
+   * next byte would occupy part of the existing org address or start a new one
+   */
+  gp_boolean have_pack_byte;
+
+  /*
+   * when the section is STYP_BPACK, this will be true when we've just emitted
+   * a packed byte. (for synchronizing the listing)
+   */
+  gp_boolean emitted_pack_byte;
 
   struct gp_section_type *next;
 } gp_section_type;
