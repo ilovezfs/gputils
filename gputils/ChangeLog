@@ -1,3 +1,6 @@
+2007-11-22 David Barnett <daviebdawg@gmail.com>
+  * Fix bug with #v substituted labels in code_pack sections
+
 2007-11-21 David Barnett <daviebdawg@gmail.com>
   * Updated gputils manual (gputils.lyx) to LyX 1.5.1 and fixed outdated
   information
