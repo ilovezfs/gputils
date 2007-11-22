@@ -889,6 +889,7 @@ label_concat:
           if (asm_enabled() && !state.mac_prev) {
 	    $$ = evaluate_concatenation(mk_2op(CONCAT,  mk_symbol($1), 
                            mk_1op(VAR, $2)));
+	  _16packed_offset_labels = _16packed_byte_acc;
 	  }
         }
         |
@@ -897,6 +898,7 @@ label_concat:
           if (asm_enabled() && !state.mac_prev) {
             $$ = evaluate_concatenation(mk_2op(CONCAT,  mk_symbol($1), 
                       mk_2op(CONCAT, mk_1op(VAR, $2), mk_symbol($3))));
+	  _16packed_offset_labels = _16packed_byte_acc;
 	  }
         }        
         ;
