@@ -239,6 +239,7 @@ static struct px pics[] = {
   { pic18f2420,  PROC_CLASS_PIC16E,  "__18F2420",  { "pic18f2420",  "p18f2420",  "18f2420"  }, 0x2420, 0, 0, 0xf000ff, { 0x4000, 0xefffff },  "18f2420.lkr"  },
   { pic18f2431,  PROC_CLASS_PIC16E,  "__18F2431",  { "pic18f2431",  "p18f2431",  "18f2431"  }, 0x2431, 0, 0, 0xf000ff, { 0x4000, 0xefffff },  "18f2431.lkr"  },
   { pic18f2439,  PROC_CLASS_PIC16E,  "__18F2439",  { "pic18f2439",  "p18f2439",  "18f2439"  }, 0x2439, 0, 0, 0xf000ff, { 0x3000, 0xefffff },  "18f2439.lkr"  },
+  { pic18f2450,  PROC_CLASS_PIC16E,  "__18F2450",  { "pic18f2450",  "p18f2450",  "18f2450"  }, 0x2450, 0, 0, 0xf000ff, { 0x4000, 0xefffff },  "18f2450.lkr"  },
   { pic18f2455,  PROC_CLASS_PIC16E,  "__18F2455",  { "pic18f2455",  "p18f2455",  "18f2455"  }, 0x2455, 0, 0, 0xf000ff, { 0x6000, 0xefffff },  "18f2455.lkr"  },
   { pic18f248,   PROC_CLASS_PIC16E,  "__18F248",   { "pic18f248",   "p18f248",   "18f248"   }, 0x8248, 0, 0, 0xf000ff, { 0x4000, 0xefffff },  "18f248.lkr"   },
   { pic18f2480,  PROC_CLASS_PIC16E,  "__18F2480",  { "pic18f2480",  "p18f2480",  "18f2480"  }, 0x2480, 0, 0, 0xf000ff, { 0x4000, 0xefffff },  "18f2480.lkr"  },
@@ -247,6 +248,7 @@ static struct px pics[] = {
   { pic18f2515,  PROC_CLASS_PIC16E,  "__18F2515",  { "pic18f2515",  "p18f2515",  "18f2515"  }, 0x2515, 0, 0, 0xbfff,   { -1, -1 },            "18f2515.lkr"  },
   { pic18f252,   PROC_CLASS_PIC16E,  "__18F252",   { "pic18f252",   "p18f252",   "18f252"   }, 0x252f, 0, 0, 0xf000ff, { 0x8000, 0xefffff },  "18f252.lkr"   },
   { pic18f2520,  PROC_CLASS_PIC16E,  "__18F2520",  { "pic18f2520",  "p18f2520",  "18f2520"  }, 0x2520, 0, 0, 0xf000ff, { 0x8000, 0xefffff },  "18f2520.lkr"  },
+  { pic18f2523,  PROC_CLASS_PIC16E,  "__18F2523",  { "pic18f2523",  "p18f2523",  "18f2523"  }, 0x2523, 0, 0, 0x7fff,   { 0x8000, 0xefffff },  "18f2523.lkr"  },
   { pic18f2525,  PROC_CLASS_PIC16E,  "__18F2525",  { "pic18f2525",  "p18f2525",  "18f2525"  }, 0x2525, 0, 0, 0xf003ff, { 0xc000, 0xefffff },  "18f2525.lkr"  },
   { pic18f2539,  PROC_CLASS_PIC16E,  "__18F2539",  { "pic18f2539",  "p18f2539",  "18f2539"  }, 0x2539, 0, 0, 0xf000ff, { 0x6000, 0xefffff },  "18f2539.lkr"  },
   { pic18f2550,  PROC_CLASS_PIC16E,  "__18F2550",  { "pic18f2550",  "p18f2550",  "18f2550"  }, 0x2550, 0, 0, 0xf000ff, { 0x8000, 0xefffff },  "18f2550.lkr"  },
@@ -268,6 +270,7 @@ static struct px pics[] = {
   { pic18f4420,  PROC_CLASS_PIC16E,  "__18F4420",  { "pic18f4420",  "p18f4420",  "18f4420"  }, 0x4420, 0, 0, 0xf000ff, { 0x4000, 0xefffff },  "18f4420.lkr"  },
   { pic18f4431,  PROC_CLASS_PIC16E,  "__18F4431",  { "pic18f4431",  "p18f4431",  "18f4431"  }, 0x4431, 0, 0, 0xf000ff, { 0x4000, 0xefffff },  "18f4431.lkr"  },
   { pic18f4439,  PROC_CLASS_PIC16E,  "__18F4439",  { "pic18f4439",  "p18f4439",  "18f4439"  }, 0x4439, 0, 0, 0xf000ff, { 0x3000, 0xefffff },  "18f4439.lkr"  },
+  { pic18f4450,  PROC_CLASS_PIC16E,  "__18F4450",  { "pic18f4450",  "p18f4450",  "18f4450"  }, 0x4450, 0, 0, 0xf000ff, { 0x4000, 0xefffff },  "18f4450.lkr"  },
   { pic18f4455,  PROC_CLASS_PIC16E,  "__18F4455",  { "pic18f4455",  "p18f4455",  "18f4455"  }, 0x4455, 0, 0, 0xf000ff, { 0x6000, 0xefffff },  "18f4455.lkr"  },
   { pic18f448,   PROC_CLASS_PIC16E,  "__18F448",   { "pic18f448",   "p18f448",   "18f448"   }, 0x8448, 0, 0, 0xf000ff, { 0x4000, 0xefffff },  "18f448.lkr"   },
   { pic18f4480,  PROC_CLASS_PIC16E,  "__18F4480",  { "pic18f4480",  "p18f4480",  "18f4480"  }, 0x4480, 0, 0, 0xf000ff, { 0x4000, 0xefffff },  "18f4480.lkr"  },
@@ -450,6 +453,7 @@ gp_processor_bsr_boundary(enum pic_processor processor)
     case pic18f2515:
     case pic18f252:
     case pic18f2520:
+    case pic18f2523:
     case pic18f2525:
     case pic18f2539:
     case pic18f25j10:
@@ -479,6 +483,7 @@ gp_processor_bsr_boundary(enum pic_processor processor)
       break;
     case pic18f2331:
     case pic18f2431:
+    case pic18f2450:
     case pic18f2455:
     case pic18f248:
     case pic18f2480:
@@ -491,6 +496,7 @@ gp_processor_bsr_boundary(enum pic_processor processor)
     case pic18f2685:
     case pic18f4331:
     case pic18f4431:
+    case pic18f4450:
     case pic18f4455:
     case pic18f448:
     case pic18f4480:
