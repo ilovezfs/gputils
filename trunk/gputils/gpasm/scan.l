@@ -405,7 +405,7 @@ A'{STR_QCHAR}'           {
 			   BEGIN(INITIAL);
 			   return STRING;
 			 }
-<definition,lnquote>[^ \t;\r\n]+([ \t][^ \t;\r\n]+)* {
+<definition,lnquote>[^ \t;\r\n]+([ \t]+[^ \t;\r\n]+)* {
 			   /* full-line (special-case) string */
 			   /* must begin and end with non-whitespace */
 			   yylval.s = strdup(yytext);

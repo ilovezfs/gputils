@@ -1,3 +1,6 @@
+2008-03-21 David Barnett <daviebdawg@gmail.com>
+  * Fixed bug with multiple spaces in #define directives (bug #1860881)
+
 2007-11-22 David Barnett <daviebdawg@gmail.com>
   * Fix bug with #v substituted labels in code_pack sections
 
