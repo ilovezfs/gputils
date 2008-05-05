@@ -325,23 +325,27 @@ void lst_format_line(char *src_line, int value)
 
   /* Now copy 'l' to 'e', expanding tabs as required */
   {
+    int offset = strlen(m);
     int column = 0;
     char *old;
-    char *e = m + strlen(m);
-        
+    char *e = m + offset;
+
     old = src_line;
 
     while (*old) {
       if (*old == '\t') {
-        *e++ = ' ';
-        column++;
-	while ((column % state.lst.tabstop) != 0) {
+        int len = state.lst.tabstop - column % state.lst.tabstop;
+
+        if ((offset + (column += len)) >= sizeof(m))
+          break;
+
+        while (len--)
           *e++ = ' ';
-          column++;
-        }
       } else {
+        if ((offset + (++column)) >= sizeof(m))
+          break;
+
         *e++ = *old;
-        column++;
       }
       old++;
     }
