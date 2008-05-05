@@ -1,3 +1,7 @@
+2008-05-05 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Applied patch by Borut Razem to fix buffer overflow in LST file
+  generation (bug #1922419)
+
 2008-03-21 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Added support for 18f2450, 18f4450, 18f2523
 
