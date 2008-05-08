@@ -86,11 +86,11 @@ void i_memory_free(MemBlock *m)
  *
  ************************************************************************/
 
-MemBlock * i_memory_new(MemBlock *m, MemBlock *mbp, int base_address)
+MemBlock * i_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
 {
-  int base;
+  unsigned int base;
 
-  base = base_address >> I_MEM_BITS;
+  base = (base_address >> I_MEM_BITS) & 0xFFFF;
 
   mbp->memory = (unsigned int *)calloc(MAX_I_MEM, sizeof(unsigned int));
   mbp->base   = base;
@@ -133,7 +133,7 @@ int i_memory_get(MemBlock *m, unsigned int address)
   do {
     assert(m->memory != NULL);
 
-    if( (address >> I_MEM_BITS) == m->base )
+    if( ((address >> I_MEM_BITS) & 0xFFFF) == m->base )
       return m->memory[address & I_MEM_MASK];
 
     m = m->next;
@@ -171,7 +171,7 @@ void i_memory_put(MemBlock *i_memory, unsigned int address, unsigned int value)
       i_memory_new(i_memory, m, address);
     }
 
-    if( (address >> I_MEM_BITS) == m->base ) {
+    if( ((address >> I_MEM_BITS) & 0xFFFF) == m->base ) {
       m->memory[address & I_MEM_MASK] = value;
       return;
     }
@@ -225,7 +225,7 @@ void print_i_memory(MemBlock *m, int byte_addr)
   do {
     assert(m->memory != NULL);
 
-    base = (m->base << I_MEM_BITS);
+    base = m->base << I_MEM_BITS;
 
     for(i = 0; i<MAX_I_MEM; i+=WORDS_IN_ROW) {
       row_used = 0;
