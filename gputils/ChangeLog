@@ -1,3 +1,7 @@
+2008-05-07 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed failed assertion for unreasonably high code addresses (bug
+  #1741065)
+
 2008-05-06 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed symbol problems for labels on blank lines in data sections
   (bug #1943487)

@@ -435,7 +435,7 @@ write_cod_range_block(unsigned int address, Block *rb)
 
   do {
 
-    if(gp_getl16(&dbi->dir.block[COD_DIR_HIGHADDR]) == _64k_base) {
+    if(gp_getl16(&dbi->dir.block[COD_DIR_HIGHADDR]) == (short)_64k_base) {
       write_cod_block(dbi, COD_DIR_MEMMAP, COD_DIR_MEMMAP+2, rb);
       return;
     }
