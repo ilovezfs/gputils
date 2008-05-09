@@ -1,3 +1,7 @@
+2008-05-08 David Barnett <daviebdawg@gmail.com>
+  * [gpdasm] Improved gpdasm to allow non-word-aligned byte addresses (bug
+  #1917597)
+
 2008-05-07 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed failed assertion for unreasonably high code addresses (bug
   #1741065)
