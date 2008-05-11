@@ -3648,7 +3648,15 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  } else {
 	    /* Default access (use the BSR unless access is to special 
                registers) */
-	    if ((file < state.device.bsr_boundary) || 
+	    /* If extended instructions are enabled, access bit should default to 1 for low-end */
+	    /* of Access Memory unless the file is explicitly an offset (e.g. [foo]) */
+	    if ((state.extended_pic16e == true) && (file <= 0x5f)) {
+	      if (p->tag == offset) {
+	        a = 0;
+	      } else {
+	        a = 1;
+	      }
+	    } else if ((file < state.device.bsr_boundary) || 
 		(file >= (0xf00 + state.device.bsr_boundary))) {
 	      a = 0;
 	    } else {
