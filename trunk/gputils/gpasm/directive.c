@@ -3241,27 +3241,31 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  int s = 0; /* By default, fast push is not used */
 	  struct pnode *p2; /* second parameter */
 	    
-	  p = HEAD(parms);
-	  switch (arity) {
-	  case 2:
-	    p2 = HEAD(TAIL(parms));
-	    /* Allow "s" for fast push */
-	    if ((p2->tag == symbol) &&
-		(strcasecmp(p2->value.symbol, "s") == 0))
-	      s = 1;
-	    else
-	      s = check_flag(maybe_evaluate(p2));
-	    break;
-	  case 1:
-	    s = 0;
-	    break;
-	  default:
-	    enforce_arity(arity, 2);
-	  }
-	  dest = reloc_evaluate(p, RELOCT_CALL) >> _16bit_core;
-	  emit(i->opcode | (s<<8) | (dest & 0xff));
-	  reloc_evaluate(p, RELOCT_CALL2);     /* add the second relocation */
-	  emit_check(0xf000, (dest>>8), 0xfff);
+      if (arity < 1) {
+        enforce_arity(arity, 2);
+      } else {
+	    p = HEAD(parms);
+	    switch (arity) {
+	    case 2:
+	      p2 = HEAD(TAIL(parms));
+	      /* Allow "s" for fast push */
+	      if ((p2->tag == symbol) &&
+		  (strcasecmp(p2->value.symbol, "s") == 0))
+	        s = 1;
+	      else
+	        s = check_flag(maybe_evaluate(p2));
+	      break;
+	    case 1:
+	      s = 0;
+	      break;
+	    default:
+	      enforce_arity(arity, 2);
+	    }
+	    dest = reloc_evaluate(p, RELOCT_CALL) >> _16bit_core;
+	    emit(i->opcode | (s<<8) | (dest & 0xff));
+	    reloc_evaluate(p, RELOCT_CALL2);     /* add the second relocation */
+	    emit_check(0xf000, (dest>>8), 0xfff);
+      }
 	}
 	break;
       case INSN_CLASS_FLIT12:
