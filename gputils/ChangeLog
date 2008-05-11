@@ -1,4 +1,7 @@
 2008-05-11 David Barnett <daviebdawg@gmail.com>
+  * [gputils] Fixed missing #include for Windows builds
+
+2008-05-11 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed segfault on call w/ no args in PIC18's (bug #1943484)
 
 2008-05-08 David Barnett <daviebdawg@gmail.com>
