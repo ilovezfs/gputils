@@ -1,4 +1,7 @@
 2008-05-11 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed special-case default for PIC18 access bit (bug #1534641)
+
+2008-05-11 David Barnett <daviebdawg@gmail.com>
   * [gputils] Fixed missing #include for Windows builds
 
 2008-05-11 David Barnett <daviebdawg@gmail.com>
