@@ -368,6 +368,7 @@ struct px {
   int num_banks;
   long maxrom;
   long badrom[MAX_BADROM];
+  long config_addrs[2];
   char *script;
 };
 
