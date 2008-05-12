@@ -1,4 +1,8 @@
 2008-05-11 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Added CONFIG start/end addresses into processor table (bugs
+  #1831152, #1852585)
+
+2008-05-11 David Barnett <daviebdawg@gmail.com>
   * [gputils] Updated p18f65j50.inc
 
 2008-05-11 David Barnett <daviebdawg@gmail.com>

@@ -715,7 +715,7 @@ static gp_boolean config_add_section(int ca)
       state.found_devid = true;
 	  return true;
     } else if (!state.found_config) {
-      coff_new_section(".config", ca >> _16bit_core, STYP_ABS | STYP_TEXT);
+      coff_new_section(".config", state.processor_info->config_addrs[0] >> _16bit_core, STYP_ABS | STYP_TEXT);
       state.found_config = true;
 	  return true;
     }
@@ -745,10 +745,8 @@ static gpasmVal do_config(gpasmVal r,
   case 1:
     if(_16bit_core) {
       gpwarning(GPW_EXPECTED,"18cxxx devices should specify __CONFIG address");
-      ca = CONFIG1L;
-    } else {
-      ca = state.device.config_address;
     }
+    ca = state.processor_info->config_addrs[0];
     p = HEAD(parms);
     break;
 

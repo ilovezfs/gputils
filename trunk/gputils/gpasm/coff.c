@@ -145,29 +145,18 @@ _copy_config(void)
     
     assert(config_section != NULL);
 
-    if(_16bit_core) {
-      config_section->size = 0;    
-      start = config_section->address >> 1;
-      stop = CONFIG7H >> 1;
-      for (i = start; i <= stop; i++) {
-        word = i_memory_get(state.c_memory, i);
-        if (word & MEM_USED_MASK) {
-          i_memory_put(config_section->data, i, word);
-        } else {
-          /* fill undefined configuration registers with 0xff */
-          i_memory_put(config_section->data, i, 0xffff | MEM_USED_MASK);
-        }
-        config_section->size += 2;    
+    start = state.processor_info->config_addrs[0] >> _16bit_core;
+    stop = state.processor_info->config_addrs[1] >> _16bit_core;
+    config_section->size = (stop - start + 1) * 2;
+    for (i = start; i <= stop; i++) {
+      word = i_memory_get(state.c_memory, i);
+      if (word & MEM_USED_MASK) {
+        i_memory_put(config_section->data, i, word);
+      } else {
+        /* fill undefined configuration registers with 0xff */
+        i_memory_put(config_section->data, i, 0xffff | MEM_USED_MASK);
       }
-      
-    } else {
-      /* FIXME: Some 16xx devices have two config words (16f88). */
-      word = i_memory_get(state.c_memory, state.device.config_address);
-      assert(word & MEM_USED_MASK);
-      i_memory_put(config_section->data, state.device.config_address, word);
-      config_section->size = 2;    
-    }  
-
+    }
     _update_section_symbol(config_section);
   }
 
