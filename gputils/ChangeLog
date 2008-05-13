@@ -1,4 +1,10 @@
 2008-05-13 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Added support for p18f66j60, p18f66j65, p18f67j60, p18f86j60,
+  p18f86j65, p18f87j60, p18f96j60, p18f96j65, and p18f97j60 (thanks Strobl
+  Anton)
+  * Added these and other added processors to processor list in documentation
+
+2008-05-13 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Updated French manpage for -C option (patch by Alain Portal)
 
 2008-05-11 David Barnett <daviebdawg@gmail.com>

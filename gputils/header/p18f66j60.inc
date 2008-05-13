@@ -1708,6 +1708,13 @@ STKFUL           EQU  H'0007'
 ;     ETHLED = ON          Enabled
 ;
 ;==========================================================================
+_CONFIG1L        EQU  H'FFF8'
+_CONFIG1H        EQU  H'FFF9'
+_CONFIG2L        EQU  H'FFFA'
+_CONFIG2H        EQU  H'FFFB'
+_CONFIG3L        EQU  H'FFFC'
+_CONFIG3H        EQU  H'FFFD'
+
 _DEVID1          EQU  H'3FFFFE'
 _DEVID2          EQU  H'3FFFFF'
 
