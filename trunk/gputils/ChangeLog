@@ -1,3 +1,6 @@
+2008-05-13 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Updated French manpage for -C option (patch by Alain Portal)
+
 2008-05-11 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Added CONFIG start/end addresses into processor table (bugs
   #1831152, #1852585)

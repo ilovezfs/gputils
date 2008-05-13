@@ -23,13 +23,16 @@ Les options de
 .B gpasm
 supplantent toujours toute configuration contenue dans le code source.
 .TP
-.BR "\-a FMT" , " \-\-hex\-format FMT
+.BR "\-a FMT" , " \-\-hex-format FMT
 GPASM reconnaît les formats de fichiers hexadécimaux inhx8m, inhx8s, inhx16
 et inhx32. Cette option contrôle quel format de fichier hexadécimal est
 utilisé. La valeur par défaut est inhx32.
 .TP
 .BR \-c ", "\-\-object
-Produire en sortie un objet relogeable.
+Produire en sortie un objet relogeable (ancien format COFF).
+.TP
+.BR \-C ", "\-\-new-coff
+Produire en sortie un objet relogeable (nouveau format COFF).
 .TP
 .BR \-d ", " \-\-debug
 Afficher les messages de débogage.
@@ -51,7 +54,7 @@ Utiliser les directives de débogage pour COFF.
 .BR \-h ", " \-\-help
 Afficher un message d'usage.
 .TP
-.BR \-i ", " \-\-ignore\-case
+.BR \-i ", " \-\-ignore-case
 Tous les symboles et macros définis par l'utilisateur sont sensibles à la
 casse. Cette option permet de les rendre insensibles à la casse.
 .TP
@@ -67,7 +70,7 @@ Enfin, tous les chemins spécifiés par cet argument sont parcourus.
 Ignorer les directives NOLIST. Ceci force gpasm à afficher chaque ligne
 assemblée dans le fichier listage de sortie.
 .TP
-.BR \-l ", "\-\-list\-chips
+.BR \-l ", "\-\-list-chips
 Afficher la liste des processeurs reconnus.
 .TP
 .BR \-m ", "\-\-dump
@@ -113,7 +116,7 @@ Craig Franklin <craigfranklin@users.sourceforge.net>
 .PP
 Ce document est une traduction réalisée par Alain Portal
 <aportal AT univ-montp2 DOT fr> le 14\ octobre\ 2004
-et révisée le 28\ octobre\ 2007.
+et révisée le 13\ mai\ 2008.
 .PP
 L'équipe de traduction a fait le maximum pour réaliser une adaptation
 française de qualité. La version anglaise la plus à jour de ce document est
