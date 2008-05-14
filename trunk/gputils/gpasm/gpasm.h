@@ -223,12 +223,15 @@ extern struct gpasm_state {
   } next_buffer;
 } state;
 
+enum globalLife { TEMPORARY, PERMANENT };
+
 struct variable {
   int value;
   int coff_num;
   int coff_section_num;
   enum gpasmValTypes type;
   enum gpasmValTypes previous_type; /* can change from static to global */
+  enum globalLife lifetime;
 };
 
 /************************************************************************/
@@ -296,8 +299,6 @@ struct source_context {
   struct source_context *prev;
 };
 
-enum globalLife { TEMPORARY, PERMANENT };
-
 void yyerror(char *s);
 int stringtolong(char *string, int radix);
 int gpasm_magic(char *);
@@ -309,6 +310,7 @@ void set_global(char *name,
 		gpasmVal value,
 		enum globalLife lifetime,
 		enum gpasmValTypes type);
+void purge_temp_symbols(struct symbol_table *table);
 void select_errorlevel(int level);
 void select_expand(char *expand);
 void select_hexformat(char *format_name);

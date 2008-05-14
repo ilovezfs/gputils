@@ -219,6 +219,7 @@ void set_global(char *name,
     var->coff_section_num = state.obj.section_num;
     var->type = type;
     var->previous_type = type;  /* coff symbols can be changed to global */
+    var->lifetime = lifetime;
 
     /* increment the index into the coff symbol table for the relocations */
     switch(type) {
@@ -267,6 +268,39 @@ void set_global(char *name,
       free(coff_name);
   }
 
+}
+
+void purge_temp_symbols(struct symbol_table *table) {
+  int i;
+  if (table != NULL) {
+    for (i = 0; i < HASH_SIZE; ++i) {
+      struct symbol *cur_symbol;
+      struct symbol *last_symbol = NULL;
+      cur_symbol = table->hash_table[i];
+      while (cur_symbol != NULL) {
+        if (cur_symbol != NULL) {
+          struct variable *var = (struct variable *)get_symbol_annotation(cur_symbol);
+          if (var != NULL) {
+            if (var->lifetime == TEMPORARY) {
+              struct symbol *next_symbol = cur_symbol->next;
+              free(cur_symbol);
+              table->count--;
+              if (last_symbol == NULL)
+                table->hash_table[i] = next_symbol;
+              else
+                last_symbol->next = next_symbol;
+              cur_symbol = next_symbol;
+              continue;
+            }
+          }
+        }
+        last_symbol = cur_symbol;
+        cur_symbol = cur_symbol->next;
+      }
+    }
+
+    purge_temp_symbols(table->prev);
+  }
 }
 
 void select_errorlevel(int level)

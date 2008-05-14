@@ -1,3 +1,7 @@
+2008-05-14 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed segfault involving relocations on second pass of assembler
+  (bug #1858537)
+
 2008-05-13 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Added support for p18f66j60, p18f66j65, p18f67j60, p18f86j60,
   p18f86j65, p18f87j60, p18f96j60, p18f96j65, and p18f97j60 (thanks Strobl

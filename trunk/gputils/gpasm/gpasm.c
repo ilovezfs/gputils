@@ -396,6 +396,7 @@ assemble(void)
   /* clean out defines for second pass */
   state.stTopDefines = 
     state.stDefines = push_symbol_table(cmd_defines, state.case_insensitive);
+  purge_temp_symbols(state.stTop);
   if (!state.cmd_line.radix)
     state.radix = 16;
   state.obj.symbol_num = 0;
