@@ -1,5 +1,5 @@
 2008-05-14 David Barnett <daviebdawg@gmail.com>
-  * Updated CONFIG directive definitions to match MPASM 8.10
+  * Updated CONFIG directive definitions to match MPASM 5.20
 
 2008-05-14 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed segfault involving relocations on second pass of assembler
