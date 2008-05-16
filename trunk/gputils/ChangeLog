@@ -1,3 +1,6 @@
+2008-05-15 David Barnett <daviebdawg@gmail.com>
+  * Added support for p18f4321 (thanks Rob Pearce)
+
 2008-05-14 David Barnett <daviebdawg@gmail.com>
   * Updated CONFIG directive definitions to match MPASM 5.20
 
