@@ -264,6 +264,7 @@ static struct px pics[] = {
   { pic18f2685,  PROC_CLASS_PIC16E,  "__18F2685",  { "pic18f2685",  "p18f2685",  "18f2685"  }, 0x2685, 0, 0, 0xf003ff, { 0x18000, 0xefffff }, { 0x300000, 0x30000D }, "18f2685.lkr"  },
   { pic18f4220,  PROC_CLASS_PIC16E,  "__18F4220",  { "pic18f4220",  "p18f4220",  "18f4220"  }, 0xa422, 0, 0, 0xf000ff, { 0x1000, 0xefffff },  { 0x300000, 0x30000D }, "18f4220.lkr"  },
   { pic18f4320,  PROC_CLASS_PIC16E,  "__18F4320",  { "pic18f4320",  "p18f4320",  "18f4320"  }, 0xa432, 0, 0, 0xf000ff, { 0x2000, 0xefffff },  { 0x300000, 0x30000D }, "18f4320.lkr"  },
+  { pic18f4321,  PROC_CLASS_PIC16E,  "__18F4321",  { "pic18f4321",  "p18f4321",  "18f4321"  }, 0x4321, 0, 0, 0xf000ff, { 0x2000, 0xefffff },  { 0x300000, 0x30000D }, "18f4321.lkr"  },
   { pic18f4331,  PROC_CLASS_PIC16E,  "__18F4331",  { "pic18f4331",  "p18f4331",  "18f4331"  }, 0x4331, 0, 0, 0xf000ff, { 0x2000, 0xefffff },  { 0x300000, 0x30000D }, "18f4331.lkr"  },
   { pic18f4410,  PROC_CLASS_PIC16E,  "__18F4410",  { "pic18f4410",  "p18f4410",  "18f4410"  }, 0x4410, 0, 0, 0x3fff,   { -1, -1 },            { 0x300000, 0x30000D }, "18f4410.lkr"  },
   { pic18f442,   PROC_CLASS_PIC16E,  "__18F442",   { "pic18f442",   "p18f442",   "18f442"   }, 0x442f, 0, 0, 0xf000ff, { 0x4000, 0xefffff },  { 0x300000, 0x30000D }, "18f442.lkr"   },
@@ -470,6 +471,7 @@ gp_processor_bsr_boundary(enum pic_processor processor)
     case pic18f2620:
     case pic18f4220:
     case pic18f4320:
+    case pic18f4321:
     case pic18f4410:
     case pic18f442:
     case pic18f4420:
