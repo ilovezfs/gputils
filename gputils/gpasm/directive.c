@@ -3649,7 +3649,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    /* If extended instructions are enabled, access bit should default to 1 for low-end */
 	    /* of Access Memory unless the file is explicitly an offset (e.g. [foo]) */
 	    if ((state.extended_pic16e == true) && (file <= 0x5f)) {
-	      if (p->tag == offset) {
+	      if (f->tag == offset) {
 	        a = 0;
 	      } else {
 	        a = 1;

@@ -1,3 +1,6 @@
+2008-05-17 David Barnett <daviebdawg@gmail.com>
+  * Fixed bug in r528 (involving bug #1534641)
+
 2008-05-16 David Barnett <daviebdawg@gmail.com>
   * Added support for p18f45k20
   * Added this and previous few processors to processor list in documentation
