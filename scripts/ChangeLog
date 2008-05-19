@@ -1,0 +1,9 @@
+2008-05-19 Borut Razem <borut.razem AT siol.net>
+	* scripts/ChangeLog: created
+	* scripts/build/mingw/gputils.nsi.in: renamed to
+	  scripts/build/mingw/gputils.nsi
+	* scripts/build/mingw/gputils.nsi:
+	  updated for gputils 0.13.6 release package
+	* scripts/build/mingw/make-mingw: removed preprocessing of
+	  gputils.nsi.in, command line arguments are used instead;
+	  run makensis on Windows

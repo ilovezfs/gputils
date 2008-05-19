@@ -187,7 +187,12 @@ elif [ ! -f $srcfilename ]; then
   exit 1
 else
   # determine the src directory and version  and 
-  version=`echo $srcfilename | sed -e 's%.tar.gz%%g'`  
+  version=`echo $srcfilename | sed -e 's%.tar.gz%%g'`
+  ver=`echo $srcfilename | sed -e 's%gputils-\(.*\)\.tar\.gz%\1%'`
+  ver_major=`echo $ver|awk 'BEGIN {FS="."} {print $1}'`
+  ver_minor=`echo $ver|awk 'BEGIN {FS="."} {print $2}'`
+  ver_revision=`echo $ver|awk 'BEGIN {FS="."} {print $3}'`
+  ver_build=0
   # extract the files
   rm -Rf $version
   tar -zxf $srcfilename
@@ -310,10 +315,8 @@ $UNIX2DOS $dist_dir/gputils/DISTRIBUTION.txt
 echo "creating binary data file... DISTRIBUTION.txt"
 
 # copy the NSIS script and icon
-sed -e s/@VERSION@/$version/\
-    -e s/@DASH_RELEASE@/$dash_release/\
-    $root_dir/gputils.nsi.in > $dist_dir/gputils/gputils.nsi
-echo "creating NSIS script... gputils.nsi"
+cp $root_dir/gputils.nsi $dist_dir/gputils/gputils.nsi
+echo "copying NSIS script... gputils.nsi"
 
 # convert the remaining project data to dos format
 $UNIX2DOS $dist_dir/gputils/header/*
@@ -345,4 +348,16 @@ if test x$clean = xyes; then
   rm -Rf $version
   rm -Rf $dist_dir 
 fi
+
+case `uname` in
+*MINGW*)  ac_win32=1 ;;
+*CYGWIN*) ac_win32=1 ;;
+*)        ac_win32=0 ;;
+esac
+
+if [ $ac_win32 ]; then
+  cd dist/gputils
+  "c:/Program Files/NSIS/makensis" -DVER_MAJOR=$ver_major -DVER_MINOR=$ver_minor -DVER_REVISION=$ver_revision -DVER_BUILD=$ver_build -DDASH_RELEASE="" gputils.nsi
+fi
+
 exit
