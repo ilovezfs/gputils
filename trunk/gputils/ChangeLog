@@ -1,3 +1,6 @@
+2008-06-03 David Barnett <daviebdawg@gmail.com>
+  * Fixed line number problems with CODE_PACK directive (bug #1972099)
+
 2008-05-17 David Barnett <daviebdawg@gmail.com>
   * gputils-0.13.6 released
 
