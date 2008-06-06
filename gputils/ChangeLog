@@ -1,3 +1,6 @@
+2008-06-06 David Barnett <daviebdawg@gmail.com>
+  * Fixed CONFIG address range for 18f65j50 (bug #1986505)
+
 2008-06-03 David Barnett <daviebdawg@gmail.com>
   * Fixed line number problems with CODE_PACK directive (bug #1972099)
 
