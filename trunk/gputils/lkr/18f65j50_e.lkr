@@ -9,7 +9,7 @@ LIBPATH .
 
 CODEPAGE   NAME=vectors    START=0x0            END=0x29           PROTECTED
 CODEPAGE   NAME=page       START=0x2A           END=0x7FF7
-CODEPAGE   NAME=config     START=0x1FFF8        END=0x1FFFD        PROTECTED
+CODEPAGE   NAME=config     START=0x7FF8         END=0x7FFD         PROTECTED
 CODEPAGE   NAME=devid      START=0x3FFFFE       END=0x3FFFFF       PROTECTED
 
 DATABANK   NAME=gpre       START=0x0            END=0x5F
