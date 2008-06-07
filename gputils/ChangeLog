@@ -1,4 +1,7 @@
 2008-06-06 David Barnett <daviebdawg@gmail.com>
+  * Fixed segfault in gplink -O2 for symbols w/o sections (bug #1985543)
+
+2008-06-06 David Barnett <daviebdawg@gmail.com>
   * Fixed CONFIG address range for 18f65j50 (bug #1986505)
 
 2008-06-03 David Barnett <daviebdawg@gmail.com>
