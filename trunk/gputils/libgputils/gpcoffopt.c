@@ -71,7 +71,11 @@ gp_coffopt_remove_dead_sections(gp_object_type *object, int pass)
     /* mark all sections that relocations point to as unused */
     relocation = section->relocations;
     while (relocation != NULL) {
-      relocation->symbol->section->is_used = true;
+      if (relocation->symbol->section)
+        relocation->symbol->section->is_used = true;
+      else
+        gp_warning("relocation symbol %s has no section",
+            relocation->symbol->name);
       relocation = relocation->next;
     }
     section = section->next;
