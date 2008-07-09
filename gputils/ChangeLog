@@ -1,3 +1,7 @@
+2008-07-08 David Barnett <daviebdawg@gmail.com>
+  * Added support for p18f23k20, p18f24k20, p18f25k20, p18f26k20, p18f43k20,
+  p18f44k20, p18f45k20, p18f46k20 (thanks Renato Caldas)
+
 2008-06-06 David Barnett <daviebdawg@gmail.com>
   * Fixed segfault in gplink -O2 for symbols w/o sections (bug #1985543)
 
