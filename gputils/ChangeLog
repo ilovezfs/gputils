@@ -1,3 +1,7 @@
+2008-11-06 David Barnett <daviebdawg@gmail.com>
+  * Added missing definitions for p18f23k20 and p18f43k20 (thanks Raphael
+  Neider)
+
 2008-08-19 David Barnett <daviebdawg@gmail.com>
   * Added header & LKR files for p18f23k20, p18f24k20, p18f25k20, p18f26k20,
   p18f43k20, p18f44k20, p18f45k20, p18f46k20
