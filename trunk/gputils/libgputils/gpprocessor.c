@@ -232,6 +232,7 @@ static struct px pics[] = {
   { pic18f1330,  PROC_CLASS_PIC16E,  "__18F1330",  { "pic18f1330",  "p18f1330",  "18f1330"  }, 0xa133, 0, 0, 0xf0007f, { 0x2000, 0xefffff },  { 0x300000, 0x30000D }, "18f1330.lkr"  },
   { pic18f2220,  PROC_CLASS_PIC16E,  "__18F2220",  { "pic18f2220",  "p18f2220",  "18f2220"  }, 0xa222, 0, 0, 0xf000ff, { 0x1000, 0xefffff },  { 0x300000, 0x30000D }, "18f2220.lkr"  },
   { pic18f2320,  PROC_CLASS_PIC16E,  "__18F2320",  { "pic18f2320",  "p18f2320",  "18f2320"  }, 0xa232, 0, 0, 0xf000ff, { 0x2000, 0xefffff },  { 0x300000, 0x30000D }, "18f2320.lkr"  },
+  { pic18f23k20, PROC_CLASS_PIC16E,  "__18F23K20", { "pic18f23k20", "p18f23k20", "18f23k20" }, 0xd320, 0, 0, 0xf000ff, { 0x4000, 0xefffff },  { 0x300000, 0x30000D }, "18f23k20.lkr" },
   { pic18f2321,  PROC_CLASS_PIC16E,  "__18F2321",  { "pic18f2321",  "p18f2321",  "18f2321"  }, 0x2321, 0, 0, 0xf000ff, { 0x2000, 0xefffff },  { 0x300000, 0x30000D }, "18f2321.lkr"  },
   { pic18f2331,  PROC_CLASS_PIC16E,  "__18F2331",  { "pic18f2331",  "p18f2331",  "18f2331"  }, 0x2331, 0, 0, 0xf000ff, { 0x2000, 0xefffff },  { 0x300000, 0x30000D }, "18f2331.lkr"  },
   { pic18f2410,  PROC_CLASS_PIC16E,  "__18F2410",  { "pic18f2410",  "p18f2410",  "18f2410"  }, 0x2410, 0, 0, 0x3fff,   { -1, -1 },            { 0x300000, 0x30000D }, "18f2410.lkr"  },
@@ -267,6 +268,7 @@ static struct px pics[] = {
   { pic18f2685,  PROC_CLASS_PIC16E,  "__18F2685",  { "pic18f2685",  "p18f2685",  "18f2685"  }, 0x2685, 0, 0, 0xf003ff, { 0x18000, 0xefffff }, { 0x300000, 0x30000D }, "18f2685.lkr"  },
   { pic18f4220,  PROC_CLASS_PIC16E,  "__18F4220",  { "pic18f4220",  "p18f4220",  "18f4220"  }, 0xa422, 0, 0, 0xf000ff, { 0x1000, 0xefffff },  { 0x300000, 0x30000D }, "18f4220.lkr"  },
   { pic18f4320,  PROC_CLASS_PIC16E,  "__18F4320",  { "pic18f4320",  "p18f4320",  "18f4320"  }, 0xa432, 0, 0, 0xf000ff, { 0x2000, 0xefffff },  { 0x300000, 0x30000D }, "18f4320.lkr"  },
+  { pic18f43k20, PROC_CLASS_PIC16E,  "__18F43K20", { "pic18f43k20", "p18f43k20", "18f43k20" }, 0xe320, 0, 0, 0xf000ff, { 0x4000, 0xefffff },  { 0x300000, 0x30000D }, "18f43k20.lkr" },
   { pic18f4321,  PROC_CLASS_PIC16E,  "__18F4321",  { "pic18f4321",  "p18f4321",  "18f4321"  }, 0x4321, 0, 0, 0xf000ff, { 0x2000, 0xefffff },  { 0x300000, 0x30000D }, "18f4321.lkr"  },
   { pic18f4331,  PROC_CLASS_PIC16E,  "__18F4331",  { "pic18f4331",  "p18f4331",  "18f4331"  }, 0x4331, 0, 0, 0xf000ff, { 0x2000, 0xefffff },  { 0x300000, 0x30000D }, "18f4331.lkr"  },
   { pic18f4410,  PROC_CLASS_PIC16E,  "__18F4410",  { "pic18f4410",  "p18f4410",  "18f4410"  }, 0x4410, 0, 0, 0x3fff,   { -1, -1 },            { 0x300000, 0x30000D }, "18f4410.lkr"  },
@@ -500,6 +502,7 @@ gp_processor_bsr_boundary(enum pic_processor processor)
       bsr_boundary = 0x80;
       break;
     case pic18f2331:
+    case pic18f23k20:
     case pic18f24k20:
     case pic18f2431:
     case pic18f2450:
@@ -516,6 +519,7 @@ gp_processor_bsr_boundary(enum pic_processor processor)
     case pic18f2682:
     case pic18f2685:
     case pic18f4331:
+    case pic18f43k20:
     case pic18f44k20:
     case pic18f4431:
     case pic18f4450:
