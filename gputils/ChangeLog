@@ -1,4 +1,7 @@
 2008-12-02 David Barnett <daviebdawg@gmail.com>
+  * Corrected COFF type for p12f510 (bug #2255399)
+
+2008-12-02 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed infinite loop for odd addresses on 18F parts (bug #1988473)
   * [gpasm] Display code_pack sections byte-by-byte in listing file
   * Special thanks to Michael Ballbach
