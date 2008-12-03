@@ -218,36 +218,56 @@ unsigned int lst_data(char *m, unsigned int byte_org,
   char buf[BUFSIZ];
   unsigned int i;
   unsigned int lst_bytes = 0;
+  size_t m_spacing, m_prev_len = strlen(m), m_after_len;
 
-  if ((byte_org & 1) != 0) {
-    /* not word-aligned */
-    /* list first byte */
-    unsigned char emit_byte = (unsigned char)(i_memory_get(state.i_memory,
-        (byte_org >> 1)) >> 8);
-    snprintf(buf, sizeof(buf), "%02X", emit_byte);
-    strncat(m, buf, sizeof_m);
-    ++lst_bytes;
+  if (bytes_emitted == 0)
+    return 0;
+
+  /* when in a byte packed section, print byte by byte */
+  if (state.obj.new_sec_flags & STYP_BPACK) {
+    gp_boolean started_odd = (byte_org & 1) != 0;
+
+    if (started_odd) {
+      /* not word-aligned */
+      /* list first byte */
+      unsigned char emit_byte = (unsigned char)(i_memory_get(state.i_memory,
+          (byte_org >> 1)) >> 8);
+      snprintf(buf, sizeof(buf), "%02X ", emit_byte);
+      strncat(m, buf, sizeof_m);
+      ++lst_bytes;
+    } else if (bytes_emitted == 1) {
+      /* word-aligned */
+      /* but only one byte */
+      unsigned char emit_byte = (unsigned char)(i_memory_get(state.i_memory,
+          (byte_org >> 1)) & 0xff);
+      snprintf(buf, sizeof(buf), "%02X ", emit_byte);
+      strncat(m, buf, sizeof_m);
+      ++lst_bytes;
+    }
     /* list whole words */
-    for (i = 0; (i < ((bytes_emitted-1) >> 1)) && (i < 1); ++i) {
+    for (i = 0; (i < ((bytes_emitted-started_odd) >> 1)) && (i < 1); ++i) {
       unsigned int emit_word = i_memory_get(state.i_memory,
-          ((byte_org+1) >> 1) + i) & 0xffff;
-      snprintf(buf, sizeof(buf), "%02X %02X", emit_word & 0x00ff,
+          ((byte_org+started_odd) >> 1) + i) & 0xffff;
+      snprintf(buf, sizeof(buf), "%02X %02X ", emit_word & 0x00ff,
           emit_word >> 8);
       strncat(m, buf, sizeof_m);
       lst_bytes += 2;
     }
-    /* list extra byte if odd */
-    if (((byte_org+bytes_emitted) & 1) != 0) {
-      snprintf(buf, sizeof(buf), "%02X ", i_memory_get(state.i_memory,
-          ((byte_org + bytes_emitted - 2) >> 1)) & 0x00ff);
+    if (i != 1 && started_odd && bytes_emitted > 1) {
+      /* we have space for an extra byte if we had no whole word and we started odd */
+      snprintf(buf, sizeof(buf), "%02X", i_memory_get(state.i_memory,
+          ((byte_org + 1) >> 1)) & 0xff00 >> 8);
+      strncat(m, buf, sizeof_m);
+      ++lst_bytes;
+    } else if (!started_odd && i == 1 && bytes_emitted > 2) {
+      /* we have space for another byte, word aligned */
+      snprintf(buf, sizeof(buf), "%02X", i_memory_get(state.i_memory,
+          (byte_org + 2) >> 1) & 0xff);
       strncat(m, buf, sizeof_m);
       ++lst_bytes;
     }
-    else {
-      strncat(m, "   ", sizeof_m);
-    }
   }
-  else {    /* word-aligned */
+  else {    /* non-code pack section */
     /* list full words as bytes */
     for (i = 0; (i < (bytes_emitted >> 1)) && (i < 2); ++i) {
       unsigned int emit_word = i_memory_get(state.i_memory,
@@ -270,6 +290,13 @@ unsigned int lst_data(char *m, unsigned int byte_org,
     }
   }
 
+  /* append appropriate spacing */
+  m_after_len = strlen(m);
+  m_spacing = m_after_len - m_prev_len;
+  for(; m_spacing < 10; m_spacing++) {
+    m[m_after_len++] = ' ';
+  }
+  m[m_after_len] = '\0';
   return lst_bytes;
 }
 
@@ -307,10 +334,22 @@ void lst_format_line(char *src_line, int value)
     if (state.obj.section)
       byte_org -= (state.obj.section->emitted_pack_byte ? 1 : 0);
     bytes_emitted = (state.org << 1) - byte_org;
-    if (state.obj.section)
-      bytes_emitted -= (state.obj.section->have_pack_byte ? 1 : 0);
+    
+    /* deal with offset changes for non-word aligned data */
+    if (state.obj.section) {
+      /* do we have a pending byte for a full word? */
+      if (state.obj.section->have_pack_byte) {
+        /* did we emit some bytes? if so we have to subtract a half word */
+        if (bytes_emitted > 0 && state.obj.section->have_pack_byte)
+          bytes_emitted--;
+        /* is this a label or something with no instructions? then our
+         * org must be modified. */
+        else if (bytes_emitted == 0)
+          byte_org--;
+      }
+    }
     emitted = (bytes_emitted >> 1);
-    if (((byte_org & 1) == 0) && ((bytes_emitted & 1) != 0))
+    if (bytes_emitted > 0 && ((byte_org & 1) == 0) && ((bytes_emitted & 1) != 0))
       emitted += 1;
     snprintf(m, sizeof(m), "%04X ", byte_org >> (1 - _16bit_core));
 
