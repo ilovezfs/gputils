@@ -361,6 +361,10 @@ coff_linenum(int emitted)
   int i;
   int origin;
   static gp_boolean show_bad_debug = true;
+  gp_boolean emitted_pack_byte;
+
+  /* note if we're doing code_pack work */
+  emitted_pack_byte = state.obj.section && state.obj.section->emitted_pack_byte;
 
   if ((!state.obj.enabled) || (state.obj.section == NULL))
     return;
@@ -381,7 +385,7 @@ coff_linenum(int emitted)
     return;
   }
 
-  for (i = 0; i < emitted; i++) {
+  for (i = 0; i < emitted + (emitted_pack_byte ? 1 : 0); i++) {
      
     new = gp_coffgen_addlinenum(state.obj.section);
     if (state.debug_info) {
@@ -391,7 +395,14 @@ coff_linenum(int emitted)
       new->symbol = state.src->file_symbol;
       new->line_number = state.src->line_number;
     }
-    new->address = origin + (i << _16bit_core);
+
+    /* when emitting non-word aligned data, we must modify
+     * the origin address if our initial emission was a byte
+     * in an existing word. subsequent bytes/words then need
+     * to subtract 2, to compensate for the fact that the
+     * origin was off by a whole word. */
+    new->address = origin + (i << _16bit_core)
+        - (emitted_pack_byte ? (i == 0 ? 1 : 2) : 0);
   }
 
   return;

@@ -1,4 +1,9 @@
 2008-12-02 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed infinite loop for odd addresses on 18F parts (bug #1988473)
+  * [gpasm] Display code_pack sections byte-by-byte in listing file
+  * Special thanks to Michael Ballbach
+
+2008-12-02 David Barnett <daviebdawg@gmail.com>
   * Fixed filename expansion bug in regression test script
 
 2008-12-02 David Barnett <daviebdawg@gmail.com>
