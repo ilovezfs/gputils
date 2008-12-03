@@ -24,7 +24,7 @@
 GPASM=../../gpasm
 FLAGS=-q
 
-function testfailed {
+testfailed() {
   echo FAILED
   exit 1
 }

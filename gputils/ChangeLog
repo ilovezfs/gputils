@@ -1,3 +1,6 @@
+2008-12-02 David Barnett <daviebdawg@gmail.com>
+  * Made regression tests Bourne shell compatible
+
 2008-11-06 David Barnett <daviebdawg@gmail.com>
   * Added missing definitions for p18f23k20 and p18f43k20 (thanks Raphael
   Neider)
