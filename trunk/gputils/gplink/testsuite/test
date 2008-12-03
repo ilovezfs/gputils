@@ -38,7 +38,7 @@ GPVOBIN=../../gputils/gpvo
 
 # general functions
 
-function testfailed {
+testfailed() {
   echo "TEST FAILED"
   exit 1
 }
@@ -86,9 +86,9 @@ printheader () {
   echo "NAME:      $NAME" 
   echo "DATE:      $(date +%x)"
   echo "TIME:      $(date +%r)"
-  echo "HOST:      $HOSTNAME"
-  echo "HOST TYPE: $HOSTTYPE"
-  echo "HOST OS:   $OSTYPE"
+  echo "HOST:      $(hostname)"
+  echo "HOST TYPE: $(uname -m)"
+  echo "HOST OS:   $(uname -o)"
   echo
   return 0
 }
@@ -139,11 +139,11 @@ test_gplink_lib() {
 
 test_gplink_sub() {
 
-  let tested=0
-  let compiled=0
-  let passed=0
-  let errortested=0
-  let notcompiled=0
+  tested=0
+  compiled=0
+  passed=0
+  errortested=0
+  notcompiled=0
 
   #Test syntax.
   if [ $# = 0 ] ; then
@@ -195,15 +195,15 @@ test_gplink_sub() {
             echo
           elif test -e ../hexfiles/$basefilename.hex; then 
             # a hex file exists so these files must not have errors
-            let tested=tested+1
+            tested=$((tested+1))
             echo "linking $basefilename.o"
             echo "../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
             ../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
             if test -e $basefilename.hex; then
-              let compiled=compiled+1
+              compiled=$((compiled+1))
               diff -s -u ../hexfiles/$basefilename.hex $basefilename.hex
               if diff -q ../hexfiles/$basefilename.hex $basefilename.hex; then 
-                let passed=passed+1
+                passed=$((passed+1))
                 echo "$basefilename.lkr tested successfully"	
               fi
             else
@@ -212,13 +212,13 @@ test_gplink_sub() {
           else
             # a hex file doesn't exist so these files must have intentional
             # errors
-            let errortested=errortested+1
+            errortested=$((errortested+1))
             echo "linking $basefilename.lkr"
             ../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
             if test -e $basefilename.hex; then
               echo "$basefilename.lkr failed to generate an error"	
             else
-              let notcompiled=notcompiled+1
+              notcompiled=$((notcompiled+1))
               echo "$basefilename.lkr tested successfully"	
             fi
           fi
