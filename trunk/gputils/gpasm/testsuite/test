@@ -123,7 +123,7 @@ test_gpasm_sub() {
   # create the test directory if it doesn't already exist
   test -d $TESTDIR || mkdir $TESTDIR || exit 1
   cd $TESTDIR
-  rm -f *.{asm,inc}
+  rm -f *.asm *.inc
   cp ../asmfiles/* .
 
   # test all of the asm files
@@ -216,7 +216,7 @@ test_gpasm_obj() {
   # create the test directory if it doesn't already exist
   test -d $TESTDIR || mkdir $TESTDIR || exit 1
   cd $TESTDIR
-  rm -f *.{asm,inc}
+  rm -f *.asm *.inc
   cp ../objasm/* .
 
   # test all of the asm files
