@@ -1,3 +1,6 @@
+2008-12-03 David Barnett <daviebdawg@gmail.com>
+  * [gpasm] Fixed warnings checking RAM against max ROM address (bug #2255225)
+
 2008-12-02 David Barnett <daviebdawg@gmail.com>
   * Corrected COFF type for p12f510 (bug #2255399)
 
