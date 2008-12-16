@@ -623,7 +623,7 @@ typedef struct gp_object_type
   int isnew;
 
   /* processor */
-  enum pic_processor processor;
+  pic_processor_t processor;
   
   /* processor class */
   enum proc_class class;

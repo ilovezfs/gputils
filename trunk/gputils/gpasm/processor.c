@@ -39,8 +39,8 @@ void select_processor(char *name)
     found = gp_find_processor(name);
     if (found) {
       int badrom_idx;
-      if (state.processor == none) {
-        state.processor = found->tag;
+      if (state.processor == no_processor) {
+        state.processor = found;
 	   state.maxrom = found->maxrom;
         /* initialize badrom from internal processor info */
         state.badrom = NULL;
@@ -60,7 +60,7 @@ void select_processor(char *name)
         }
         state.processor_info = found;
         set_global(found->defined_as, 1, PERMANENT, gvt_constant);
-      } else if (state.processor != found->tag ) {
+      } else if (state.processor != found ) {
         gpwarning(GPW_REDEFINING_PROC, NULL);
         gperror(GPE_EXTRA_PROC, NULL);
       }

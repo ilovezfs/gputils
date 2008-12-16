@@ -122,7 +122,7 @@ extern struct gpasm_state {
     int warnings_suppressed;
     int messages_suppressed;
   } num;
-  enum pic_processor processor;
+  pic_processor_t processor;
   struct px *processor_info;    /* Processor identifiers (e.g. name) */
   int processor_chosen;		/* Nonzero after processor-specific init */
   struct {			/* Processor data */
