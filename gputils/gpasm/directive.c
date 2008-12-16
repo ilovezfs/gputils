@@ -4044,28 +4044,32 @@ void opcode_init(int stage)
   for (i = 0; i < count; i++)
     annotate_symbol(add_symbol(state.stBuiltin, base[i].name), &base[i]);
 
-  /* Special Case, Some instructions not available on 17c42 devices */
-  if (state.processor == pic17c42) {
-    remove_symbol(state.stBuiltin, "MULWF");    
-    remove_symbol(state.stBuiltin, "MOVLR");    
-    remove_symbol(state.stBuiltin, "MULLW");    
-  }
+  if (state.processor) {
+    const char *name = gp_processor_name(state.processor, 0);
 
-  /* Special Case, Some instructions not available on 16f5x devices */
-  if (state.processor == pic16f54 ||
-      state.processor == pic16f57 ||
-	 state.processor == pic16f59) {
-    remove_symbol(state.stBuiltin, "ADDLW");
-    remove_symbol(state.stBuiltin, "SUBLW");
-    remove_symbol(state.stBuiltin, "RETURN");
-    remove_symbol(state.stBuiltin, "RETFIE");
-  }
+    /* Special Case, Some instructions not available on 17c42 devices */
+    if (strcmp(name, "pic17c42") == 0) {
+      remove_symbol(state.stBuiltin, "MULWF");
+      remove_symbol(state.stBuiltin, "MOVLR");
+      remove_symbol(state.stBuiltin, "MULLW");
+    }
 
-  if (state.processor == sx48 ||
-      state.processor == sx52) {
-    struct symbol *mode_sym = get_symbol(state.stBuiltin, "MODE");
-    if (mode_sym != NULL)
-      annotate_symbol(mode_sym, &op_sx_mode);
+    /* Special Case, Some instructions not available on 16f5x devices */
+    if (strcmp(name, "pic16f54") == 0 ||
+        strcmp(name, "pic16f57") == 0 ||
+        strcmp(name, "pic16f59") == 0) {
+      remove_symbol(state.stBuiltin, "ADDLW");
+      remove_symbol(state.stBuiltin, "SUBLW");
+      remove_symbol(state.stBuiltin, "RETURN");
+      remove_symbol(state.stBuiltin, "RETFIE");
+    }
+
+    if (strcmp(name, "sx48bd") == 0 ||
+        strcmp(name, "sx52bd") == 0) {
+      struct symbol *mode_sym = get_symbol(state.stBuiltin, "MODE");
+      if (mode_sym != NULL)
+        annotate_symbol(mode_sym, &op_sx_mode);
+    }
   }
 }
 

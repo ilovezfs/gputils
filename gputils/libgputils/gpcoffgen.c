@@ -32,7 +32,7 @@ gp_coffgen_init(void)
 
   /* initialize the object */
   object->filename = NULL;
-  object->processor = generic;
+  object->processor = gp_find_processor("generic");
   object->class = PROC_CLASS_GENERIC;
   object->time = (long)time(NULL);
   object->flags = 0;

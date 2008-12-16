@@ -27,7 +27,7 @@ Boston, MA 02111-1307, USA.  */
 char *processor_name = NULL;
 
 struct gpdasm_state state = {
-     generic,		   /* processor type */  
+     no_processor,	   /* processor type */  
      PROC_CLASS_GENERIC,   /* 12 bit device */
      1			   /* output format */
      };
@@ -45,7 +45,7 @@ select_processor(void)
   found = gp_find_processor(processor_name);
 
   if (found) {
-    state.processor = found->tag;
+    state.processor = found;
   } else {
     printf("Didn't find any processor named: %s\nHere are the supported processors:\n",
             processor_name);

@@ -1,3 +1,7 @@
+2008-12-15 David Barnett <daviebdawg@gmail.com>
+  * Cleaned up processor definitions and updated from MPASM data (special
+  thanks Marko Kohtala)
+
 2008-12-03 David Barnett <daviebdawg@gmail.com>
   * [gpasm] Fixed warnings checking RAM against max ROM address (bug #2255225)
 

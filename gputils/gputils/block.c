@@ -64,7 +64,7 @@ void directory_block(void)
   printf("Processor         %s\n", processor_name);
 
   processor_info = gp_find_processor(processor_name);
-  processor_class = gp_processor_class(processor_info->tag);
+  processor_class = gp_processor_class(processor_info);
   if (processor_class == PROC_CLASS_PIC16E) {
     byte_addr = 1;
   } else {

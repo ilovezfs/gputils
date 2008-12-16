@@ -25,7 +25,7 @@ Boston, MA 02111-1307, USA.  */
 #define GPDASM_VERSION_STRING ("gpdasm-" VERSION " alpha")
 
 extern struct gpdasm_state {
-  enum pic_processor processor; /* selected processor */
+  pic_processor_t processor;    /* selected processor */
   enum proc_class class;        /* processor class */
   int format;                   /* format of the output */
   int pass;                     /* 1 or 2 */

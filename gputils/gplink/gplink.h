@@ -40,7 +40,7 @@ extern struct gplink_state {
   char *paths[MAX_PATHS];          /* the list of include paths */
   int numpaths;                    /* number of paths in the list */
   int byte_addr;                   /* program memory uses byte addressing */
-  enum pic_processor processor;
+  pic_processor_t processor;
   enum proc_class class;
   struct {
     int level;
