@@ -25,6 +25,7 @@ Boston, MA 02111-1307, USA.  */
 enum proc_class {
   PROC_CLASS_UNKNOWN,   /* Unknown device */
   PROC_CLASS_EEPROM8,   /* 8 bit EEPROM */
+  PROC_CLASS_EEPROM16,  /* 16 bit EEPROM */
   PROC_CLASS_GENERIC,   /* 12 bit device */
   PROC_CLASS_PIC12,     /* 12 bit devices */
   PROC_CLASS_SX,        /* 12 bit devices */

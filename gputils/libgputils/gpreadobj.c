@@ -142,22 +142,37 @@ _read_opt_header(gp_object_type *object, char *file)
     gp_error("invalid assembler version (%ld) in \"%s\"", vstamp, object->filename);
  
   proc_code = gp_getl32(&file[offset]);
-  object->processor = gp_processor_coff_proc(proc_code);
-  if (object->processor == no_processor)
-    gp_error("invalid processor type (%#04lx) in \"%s\"",
-             proc_code,
-             object->filename);
   offset += 4;
 
-  object->class = gp_processor_class(object->processor);
-  
   rom_width = gp_getl32(&file[offset]);
+  offset += 4;
+
+  object->processor = gp_processor_coff_proc(proc_code);
+  if (object->processor == no_processor) {
+    /* Fallback to a generic processor of matching rom width */
+    switch(rom_width) {
+    case 8: object->processor = gp_find_processor("pic18cxx"); break;
+    case 12: object->processor = gp_find_processor("pic16c5x"); break;
+    case 14: object->processor = gp_find_processor("pic16cxx"); break;
+    case 16: object->processor = gp_find_processor("pic17cxx"); break;
+    }
+    if (object->processor == no_processor)
+      gp_error("invalid processor type (%#04lx) in \"%s\"",
+	       proc_code,
+	       object->filename);
+    else
+      gp_warning("unknown processor type (%#04lx) in \"%s\" defaulted to %s",
+		 proc_code,
+		 object->filename,
+		 gp_processor_name(object->processor, 0));
+  }
+
+  object->class = gp_processor_class(object->processor);
   if (gp_processor_rom_width(object->class) != rom_width)
-    gp_error("invalid rom width for selected processor (%ld) in \"%s\"", 
+    gp_error("invalid rom width for selected processor (%ld) in \"%s\"",
              rom_width,
              object->filename);
-  offset += 4;
-  
+
   ram_width = gp_getl32(&file[offset]);
   if (ram_width != 8)
     gp_error("invalid ram width (%ld) in \"%s\"", ram_width, object->filename);

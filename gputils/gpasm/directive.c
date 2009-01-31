@@ -2378,6 +2378,7 @@ static gpasmVal _do_pagesel(gpasmVal r,
   }
   
   if ((state.device.class == PROC_CLASS_EEPROM8) ||
+      (state.device.class == PROC_CLASS_EEPROM16) ||
       (state.device.class == PROC_CLASS_PIC16E)) {
     /* do nothing */
     return r;
@@ -2926,6 +2927,7 @@ void file_ok(unsigned int file)
   /* Issue bank message if necessary */
   switch (state.device.class) {
   case PROC_CLASS_EEPROM8:
+  case PROC_CLASS_EEPROM16:
     /* do nothing */
     break;
   case PROC_CLASS_GENERIC:
@@ -3964,6 +3966,13 @@ void opcode_init(int stage)
       base = 0;
       count = 0;
       state.device.core_size = CORE_8BIT_MASK;
+      state.device.config_address = 0;
+      state.device.id_location = 0;
+      break;
+    case PROC_CLASS_EEPROM16:
+      base = 0;
+      count = 0;
+      state.device.core_size = CORE_16BIT_MASK;
       state.device.config_address = 0;
       state.device.id_location = 0;
       break;
