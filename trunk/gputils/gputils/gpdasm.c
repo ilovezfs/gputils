@@ -57,6 +57,7 @@ select_processor(void)
    
   switch (state.class) {
   case PROC_CLASS_EEPROM8:
+  case PROC_CLASS_EEPROM16:
   case PROC_CLASS_GENERIC:
     fprintf(stderr, "error: unsupported processor class\n");
     exit(1);

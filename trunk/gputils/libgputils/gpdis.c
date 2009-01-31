@@ -64,6 +64,7 @@ gp_disassemble(MemBlock *m,
 
   switch (class) {
   case PROC_CLASS_EEPROM8:
+  case PROC_CLASS_EEPROM16:
   case PROC_CLASS_GENERIC:
     snprintf(buffer, sizeof_buffer, "unsupported processor class");
     return 0;

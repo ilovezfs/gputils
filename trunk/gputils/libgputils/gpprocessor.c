@@ -481,8 +481,6 @@ gp_processor_coff_proc(unsigned long coff_type)
 char *
 gp_processor_name(pic_processor_t processor, unsigned int choice)
 {
-  int i;
-
   assert(!((choice < 0) || (choice > MAX_NAMES - 1)));
 
   if (processor)
@@ -533,12 +531,13 @@ gp_processor_rom_width(enum proc_class class)
     rom_width = 14;
     break;
   case PROC_CLASS_PIC16:
+  case PROC_CLASS_EEPROM16:
     rom_width = 16;
     break;
   case PROC_CLASS_PIC16E:
+  case PROC_CLASS_EEPROM8:
     rom_width = 8;
     break;
-  case PROC_CLASS_EEPROM8:
   default:
     assert(0);
   }
@@ -554,6 +553,7 @@ gp_processor_check_page(enum proc_class class, int address)
 
   switch (class) {
   case PROC_CLASS_EEPROM8:
+  case PROC_CLASS_EEPROM16:
     assert(0);
     break;
   case PROC_CLASS_GENERIC:
@@ -599,6 +599,7 @@ gp_processor_check_bank(enum proc_class class, int address)
 
   switch (class) {
   case PROC_CLASS_EEPROM8:
+  case PROC_CLASS_EEPROM16:
     assert(0);
     break;
   case PROC_CLASS_GENERIC:
@@ -640,7 +641,9 @@ gp_processor_set_page(enum proc_class class,
   int page1;
   int count = 2;
 
-  if ((class == PROC_CLASS_EEPROM8) || (class == PROC_CLASS_PIC16E)) {
+  if ((class == PROC_CLASS_EEPROM8) ||
+      (class == PROC_CLASS_EEPROM16) ||
+      (class == PROC_CLASS_PIC16E)) {
     assert(0);
   } else if (class == PROC_CLASS_PIC16) {
     /* movlw <page> */
@@ -718,7 +721,8 @@ gp_processor_set_bank(enum proc_class class,
   int bank1;
   int count;
 
-  if (class == PROC_CLASS_EEPROM8) {
+  if (class == PROC_CLASS_EEPROM8 ||
+      class == PROC_CLASS_EEPROM16) {
     assert(0);
   } else if (class == PROC_CLASS_PIC16E) {
     /* movlb bank */

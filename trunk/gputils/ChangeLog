@@ -1,3 +1,7 @@
+2009-1-30 David Barnett <daviebdawg@gmail.com>
+  * Patch from Marko Kohtala to open COFF files with unknown device ID (using
+  generic device of the same ROM width)
+
 2008-12-15 David Barnett <daviebdawg@gmail.com>
   * Cleaned up processor definitions and updated from MPASM data (special
   thanks Marko Kohtala)
