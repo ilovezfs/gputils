@@ -18,7 +18,7 @@ DATABANK   NAME=sfr1nobnk START=0x80    END=0x9F     PROTECTED
 
 
 SHAREBANK  NAME=gpr0nobnk START=0x20     END=0x5F
-SHAREBANK  NAME=gpr0nobnk START=0xA0     END=0xDF
+SHAREBANK  NAME=gpr0nobnk START=0xA0     END=0xDF    PROTECTED
 
 
 SECTION    NAME=PROG     ROM=page       // ROM code space

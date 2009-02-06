@@ -26,7 +26,7 @@
 ;1.01   10/05/05 Correct names of bits in ANSEL, Add EEADRH and EEADRL bit 
 ;			definitions
 ;1.02   10/31/05 Remove EECON2 from badram.
- 
+;1.03   02/26/07 Added Alias of EEADR and EEDATA 
 
 ;==========================================================================
 ;
@@ -114,7 +114,9 @@ LCDCON			     EQU     H'0107'
 LCDPS			     EQU     H'0108'
 LVDCON			     EQU     H'0109'
 EEDATL	                     EQU     H'010C'
+EEDATA                       EQU     H'010C'
 EEADRL                       EQU     H'010D'
+EEADR                        EQU     H'010D'
 EEDATH                       EQU     H'010E'
 EEADRH                       EQU     H'010F'
 LCDDATA0		     EQU     H'0110'

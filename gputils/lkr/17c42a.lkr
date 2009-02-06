@@ -1,10 +1,9 @@
 // Sample linker command file for 17C42A
-// $Id$
+// $Id: 17c42a.lkr,v 1.4 2008/03/20 17:19:03 curtiss Exp $
 
 LIBPATH  .
 
-CODEPAGE   NAME=vectors   START=0x0      END=0x27     PROTECTED
-CODEPAGE   NAME=page      START=0x28     END=0x7FF
+CODEPAGE   NAME=page      START=0x0      END=0x7FF
 CODEPAGE   NAME=config    START=0xFE00   END=0xFE0F   PROTECTED
 
 SHAREBANK  NAME=sfrnobnk  START=0x0      END=0xF      PROTECTED

@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F83J11 processor include
 ; 
-;  (c) Copyright 1999-2006 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -138,6 +137,7 @@ TXREG1           EQU  H'0FAD'
 RCREG1           EQU  H'0FAE'
 SPBRG            EQU  H'0FAF'
 SPBRG1           EQU  H'0FAF'
+PSPCON           EQU  H'0FB0'
 T3CON            EQU  H'0FB1'
 TMR3L            EQU  H'0FB2'
 TMR3H            EQU  H'0FB3'
@@ -881,7 +881,6 @@ CCP1IE           EQU  H'0001'
 CCP2IE           EQU  H'0002'
 TX2IE            EQU  H'0004'
 RC2IE            EQU  H'0005'
-LCDIE            EQU  H'0006'
 
 
 ;----- PIR3 Bits -----------------------------------------------------
@@ -889,7 +888,6 @@ CCP1IF           EQU  H'0001'
 CCP2IF           EQU  H'0002'
 TX2IF            EQU  H'0004'
 RC2IF            EQU  H'0005'
-LCDIF            EQU  H'0006'
 
 
 ;----- IPR3 Bits -----------------------------------------------------
@@ -897,7 +895,6 @@ CCP1IP           EQU  H'0001'
 CCP2IP           EQU  H'0002'
 TX2IP            EQU  H'0004'
 RC2IP            EQU  H'0005'
-LCDIP            EQU  H'0006'
 
 
 ;----- EECON1 Bits -----------------------------------------------------
@@ -975,6 +972,13 @@ TX8_9            EQU  H'0006'
 NOT_TX8          EQU  H'0006'
 
 
+;----- PSPCON Bits -----------------------------------------------------
+PSPMODE          EQU  H'0004'
+IBOV             EQU  H'0005'
+OBF              EQU  H'0006'
+IBF              EQU  H'0007'
+
+
 ;----- T3CON Bits -----------------------------------------------------
 TMR3ON           EQU  H'0000'
 TMR3CS           EQU  H'0001'
@@ -1042,7 +1046,6 @@ CHS0             EQU  H'0002'
 CHS1             EQU  H'0003'
 CHS2             EQU  H'0004'
 CHS3             EQU  H'0005'
-DISCARD          EQU  H'0006'
 ADCAL            EQU  H'0007'
 
 NOT_DONE         EQU  H'0001'
@@ -1307,7 +1310,6 @@ STKFUL           EQU  H'0007'
        __BADRAM  H'0400'-H'0F5F'
        __BADRAM  H'0F6B'-H'0F7D'
        __BADRAM  H'0FA8'-H'0FAA'
-       __BADRAM  H'0FB0'
        __BADRAM  H'0FB6'-H'0FBF'
        __BADRAM  H'0FD2'
        __BADRAM  H'0FD4'
@@ -1383,10 +1385,10 @@ STKFUL           EQU  H'0007'
 ;     BW = 16              16-bit external bus mode
 ;
 ;   Processor Mode Selection:
-;     MODE = MM            Microcontroller mode - External bus disabled
-;     MODE = XM12          Extended Microcontroller mode, 12-bit Address mode
-;     MODE = XM16          Extended Microcontroller mode, 16-bit Address mode
 ;     MODE = XM20          Extended Microcontroller mode, 20-bit Address mode
+;     MODE = XM16          Extended Microcontroller mode, 16-bit Address mode
+;     MODE = XM12          Extended Microcontroller mode, 12-bit Address mode
+;     MODE = MM            Microcontroller mode - External bus disabled
 ;
 ;   External Address Bus Shift Enable bit:
 ;     EASHFT = OFF         Address shifting disabled, address on external bus reflects the PC value
@@ -1477,10 +1479,10 @@ _WAIT_OFF_3L         EQU  H'FF'    ; Wait states for operations on external memo
 _BW_8_3L             EQU  H'BF'    ; 8-bit external bus mode
 _BW_16_3L            EQU  H'FF'    ; 16-bit external bus mode
 
-_MODE_MM_3L          EQU  H'CF'    ; Microcontroller mode - External bus disabled
-_MODE_XM12_3L        EQU  H'DF'    ; Extended Microcontroller mode, 12-bit Address mode
-_MODE_XM16_3L        EQU  H'EF'    ; Extended Microcontroller mode, 16-bit Address mode
-_MODE_XM20_3L        EQU  H'FF'    ; Extended Microcontroller mode, 20-bit Address mode
+_MODE_XM20_3L        EQU  H'CF'    ; Extended Microcontroller mode, 20-bit Address mode
+_MODE_XM16_3L        EQU  H'DF'    ; Extended Microcontroller mode, 16-bit Address mode
+_MODE_XM12_3L        EQU  H'EF'    ; Extended Microcontroller mode, 12-bit Address mode
+_MODE_MM_3L          EQU  H'FF'    ; Microcontroller mode - External bus disabled
 
 _EASHFT_OFF_3L       EQU  H'F7'    ; Address shifting disabled, address on external bus reflects the PC value
 _EASHFT_ON_3L        EQU  H'FF'    ; Address shifting enabled, address on external bus is offset to start at 000000h

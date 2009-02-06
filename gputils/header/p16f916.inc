@@ -27,8 +27,9 @@
 ;1.02	08/16/04 Added EECON2
 ;1.03	05/20/05 Removed EECON2 from badram
 ;1.04   10/05/05 Correct names of bits in ANSEL, Add EEADRH and EEADRL bit 
+;1.05   10/30/06 Added Alias of go_done, go
 ;			definitions
-
+;1.06   02/26/07 Added Alias of EEADR and EEDATA
 
 ;==========================================================================
 ;
@@ -111,7 +112,9 @@ LCDCON			     EQU     H'0107'
 LCDPS			     EQU     H'0108'
 LVDCON			     EQU     H'0109'
 EEDATL	                     EQU     H'010C'
+EEDATA                       EQU     H'010C'
 EEADRL                       EQU     H'010D'
+EEADR                        EQU     H'010D'
 EEDATH                       EQU     H'010E'
 EEADRH                       EQU     H'010F'
 LCDDATA0		     EQU     H'0110'
@@ -241,6 +244,7 @@ CHS1                         EQU     H'0003'
 CHS0                         EQU     H'0002'
 NOT_DONE                     EQU     H'0001'
 GO_DONE                      EQU     H'0001'
+GO                           EQU     H'0001'
 ADON                         EQU     H'0000'
 
 ;----- OPTION_REG Bits -----------------------------------------------------

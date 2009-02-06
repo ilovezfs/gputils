@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F4431 processor include
 ; 
-;  (c) Copyright 1999-2005 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST

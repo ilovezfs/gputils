@@ -159,8 +159,6 @@ TMR3H           EQU  H'0FB3'
 TMR3L           EQU  H'0FB2'
 T3CON           EQU  H'0FB1'
 
-PSPCON          EQU  H'0FB0'
-
 SPBRG           EQU  H'0FAF'
 RCREG           EQU  H'0FAE'
 TXREG           EQU  H'0FAD'

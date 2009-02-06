@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F1230 processor include
 ; 
-;  (c) Copyright 1999-2006 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -982,7 +981,7 @@ _PWMPIN_OFF_3L       EQU  H'FF'    ; PWM outputs disabled upon Reset
 _FLTAMX_RA7_3H       EQU  H'FE'    ; FLTA input is muxed onto RA7
 _FLTAMX_RA5_3H       EQU  H'FF'    ; FLTA input is muxed onto RA5
 
-_T1OSCMX_LOW_3H      EQU  H'FF'    ; T1OSO/T1CKI pin resides on RB2
+_T1OSCMX_LOW_3H      EQU  H'F7'    ; T1OSO/T1CKI pin resides on RB2
 _T1OSCMX_HIGH_3H     EQU  H'FF'    ; T1OSO/T1CKI pin resides on RA6
 
 _MCLRE_OFF_3H        EQU  H'7F'    ; RA5 input pin enabled, MCLR pin disabled
@@ -995,7 +994,7 @@ _STVREN_ON_4L        EQU  H'FF'    ; Reset on stack overflow/underflow enabled
 _BBSIZ_BB256_4L      EQU  H'CF'    ; 256 Words (512 Bytes)
 _BBSIZ_BB512_4L      EQU  H'FF'    ; 512 Words (1024 Bytes)
 
-_XINST_OFF_4L        EQU  H'FF'    ; Instruction set extension and Indexed Addressing mode disabled
+_XINST_OFF_4L        EQU  H'BF'    ; Instruction set extension and Indexed Addressing mode disabled
 _XINST_ON_4L         EQU  H'FF'    ; Instruction set extension and Indexed Addressing mode enabled
 
 _DEBUG_ON_4L         EQU  H'7F'    ; Background debugger enabled, RB6 and RB7 are dedicated to In-Circuit Debug

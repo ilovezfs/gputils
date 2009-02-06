@@ -1,5 +1,5 @@
 // Sample linker command file for HCS1365
-// $Id$
+// $Id: hcs1365.lkr,v 1.4 2006/02/04 00:06:46 nairnj Exp $
 
 LIBPATH  .
 

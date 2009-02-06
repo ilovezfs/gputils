@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F67J60 processor include
 ; 
-;  (c) Copyright 1999-2006 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -71,30 +70,21 @@ MAADR3           EQU  H'0E82'
 MAADR4           EQU  H'0E83'
 MAADR1           EQU  H'0E84'
 MAADR2           EQU  H'0E85'
-EBSTSD           EQU  H'0E86'
-EBSTCON          EQU  H'0E87'
-EBSTCS           EQU  H'0E88'
-EBSTCSL          EQU  H'0E88'
-EBSTCSH          EQU  H'0E89'
 MISTAT           EQU  H'0E8A'
 EFLOCON          EQU  H'0E97'
 EPAUS            EQU  H'0E98'
 EPAUSL           EQU  H'0E98'
 EPAUSH           EQU  H'0E99'
 MACON1           EQU  H'0EA0'
-MACON2           EQU  H'0EA1'
 MACON3           EQU  H'0EA2'
 MACON4           EQU  H'0EA3'
 MABBIPG          EQU  H'0EA4'
 MAIPG            EQU  H'0EA6'
 MAIPGL           EQU  H'0EA6'
 MAIPGH           EQU  H'0EA7'
-MACLCON1         EQU  H'0EA8'
-MACLCON2         EQU  H'0EA9'
 MAMXFL           EQU  H'0EAA'
 MAMXFLL          EQU  H'0EAA'
 MAMXFLH          EQU  H'0EAB'
-MICON            EQU  H'0EB1'
 MICMD            EQU  H'0EB2'
 MIREGADR         EQU  H'0EB4'
 MIWR             EQU  H'0EB6'
@@ -125,8 +115,6 @@ EPMCSH           EQU  H'0ED1'
 EPMO             EQU  H'0ED4'
 EPMOL            EQU  H'0ED4'
 EPMOH            EQU  H'0ED5'
-EWOLIE           EQU  H'0ED6'
-EWOLIR           EQU  H'0ED7'
 ERXFCON          EQU  H'0ED8'
 EPKTCNT          EQU  H'0ED9'
 EWRPT            EQU  H'0EE2'
@@ -337,24 +325,10 @@ TOSL             EQU  H'0FFD'
 TOSH             EQU  H'0FFE'
 TOSU             EQU  H'0FFF'
 
-;----- EBSTCON Bits -----------------------------------------------------
-BISTST           EQU  H'0000'
-TME              EQU  H'0001'
-TMSEL0           EQU  H'0002'
-TMSEL1           EQU  H'0003'
-PSV0             EQU  H'0005'
-PSV1             EQU  H'0006'
-PSV2             EQU  H'0007'
-
-TMSEL            EQU  H'0002'
-PSV              EQU  H'0005'
-
-
 ;----- MISTAT Bits -----------------------------------------------------
 BUSY             EQU  H'0000'
 SCAN             EQU  H'0001'
 NVALID           EQU  H'0002'
-LINKFL           EQU  H'0003'
 
 
 ;----- EFLOCON Bits -----------------------------------------------------
@@ -370,20 +344,11 @@ RXPAUS           EQU  H'0002'
 TXPAUS           EQU  H'0003'
 
 
-;----- MACON2 Bits -----------------------------------------------------
-TFUNRST          EQU  H'0000'
-MATXRST          EQU  H'0001'
-RFUNRST          EQU  H'0002'
-MARXRST          EQU  H'0003'
-RNDRST           EQU  H'0006'
-MARST            EQU  H'0007'
-
-
 ;----- MACON3 Bits -----------------------------------------------------
 FULDPX           EQU  H'0000'
 FRMLNEN          EQU  H'0001'
 HFRMEN           EQU  H'0002'
-PHDRLEN          EQU  H'0003'
+PHDREN           EQU  H'0003'
 TXCRCEN          EQU  H'0004'
 PADCFG0          EQU  H'0005'
 PADCFG1          EQU  H'0006'
@@ -393,46 +358,12 @@ PADCFG           EQU  H'0005'
 
 
 ;----- MACON4 Bits -----------------------------------------------------
-NOBKOFF          EQU  H'0004'
-BPEN             EQU  H'0005'
 DEFER            EQU  H'0006'
-
-
-;----- MACLCON1 Bits -----------------------------------------------------
-RETMAX           EQU  H'0000'
-
-
-;----- MACLCON2 Bits -----------------------------------------------------
-COLWIN           EQU  H'0000'
-
-
-;----- MICON Bits -----------------------------------------------------
-RSTMII           EQU  H'0007'
 
 
 ;----- MICMD Bits -----------------------------------------------------
 MIIRD            EQU  H'0000'
 MIISCAN          EQU  H'0001'
-
-
-;----- EWOLIE Bits -----------------------------------------------------
-BCWOLIE          EQU  H'0000'
-MCWOLIE          EQU  H'0001'
-HTWOLIE          EQU  H'0002'
-MPWOLIE          EQU  H'0003'
-PMWOLIE          EQU  H'0004'
-AWOLIE           EQU  H'0006'
-UCWOLIE          EQU  H'0007'
-
-
-;----- EWOLIR Bits -----------------------------------------------------
-BCWOLIF          EQU  H'0000'
-MCWOLIF          EQU  H'0001'
-HTWOLIF          EQU  H'0002'
-MPWOLIF          EQU  H'0003'
-PMWOLIF          EQU  H'0004'
-AWOLIF           EQU  H'0006'
-UCWOLIF          EQU  H'0007'
 
 
 ;----- ERXFCON Bits -----------------------------------------------------
@@ -459,7 +390,6 @@ PKTIE            EQU  H'0006'
 PHYRDY           EQU  H'0000'
 TXABRT           EQU  H'0001'
 RXBUSY           EQU  H'0002'
-LATECOL          EQU  H'0004'
 BUFER            EQU  H'0006'
 
 
@@ -747,6 +677,8 @@ CK               EQU  H'0006'
 ; DT is a reserved word
 ; DT               EQU  H'0007'
 
+ECCP2            EQU  H'0001'
+ECCP1            EQU  H'0002'
 SCK1             EQU  H'0003'
 SDI1             EQU  H'0004'
 SDO1             EQU  H'0005'
@@ -766,6 +698,8 @@ RD2              EQU  H'0002'
 
 CCP3             EQU  H'0001'
 CCP4             EQU  H'0002'
+
+ECCP3            EQU  H'0001'
 
 
 ;----- PORTE Bits -----------------------------------------------------
@@ -1043,7 +977,6 @@ RC1IP            EQU  H'0005'
 CCP2IE           EQU  H'0000'
 TMR3IE           EQU  H'0001'
 BCLIE            EQU  H'0003'
-ETHWIE           EQU  H'0004'
 ETHIE            EQU  H'0005'
 CMIE             EQU  H'0006'
 OSCFIE           EQU  H'0007'
@@ -1055,7 +988,6 @@ BCL1IE           EQU  H'0003'
 CCP2IF           EQU  H'0000'
 TMR3IF           EQU  H'0001'
 BCLIF            EQU  H'0003'
-ETHWIF           EQU  H'0004'
 ETHIF            EQU  H'0005'
 CMIF             EQU  H'0006'
 OSCFIF           EQU  H'0007'
@@ -1067,7 +999,6 @@ BCL1IF           EQU  H'0003'
 CCP2IP           EQU  H'0000'
 TMR3IP           EQU  H'0001'
 BCLIP            EQU  H'0003'
-ETHWIP           EQU  H'0004'
 ETHIP            EQU  H'0005'
 CMIP             EQU  H'0006'
 OSCFIP           EQU  H'0007'
@@ -1080,7 +1011,6 @@ CCP3IE           EQU  H'0000'
 CCP4IE           EQU  H'0001'
 CCP5IE           EQU  H'0002'
 TMR4IE           EQU  H'0003'
-BCL2IE           EQU  H'0006'
 
 
 ;----- PIR3 Bits -----------------------------------------------------
@@ -1088,7 +1018,6 @@ CCP3IF           EQU  H'0000'
 CCP4IF           EQU  H'0001'
 CCP5IF           EQU  H'0002'
 TMR4IF           EQU  H'0003'
-BCL2IF           EQU  H'0006'
 
 
 ;----- IPR3 Bits -----------------------------------------------------
@@ -1096,7 +1025,6 @@ CCP3IP           EQU  H'0000'
 CCP4IP           EQU  H'0001'
 CCP5IP           EQU  H'0002'
 TMR4IP           EQU  H'0003'
-BCL2IP           EQU  H'0006'
 
 
 ;----- EECON1 Bits -----------------------------------------------------
@@ -1608,6 +1536,11 @@ STKPTR4          EQU  H'0004'
 STKUNF           EQU  H'0006'
 STKOVF           EQU  H'0007'
 
+SP0              EQU  H'0000'
+SP1              EQU  H'0001'
+SP2              EQU  H'0002'
+SP3              EQU  H'0003'
+SP4              EQU  H'0004'
 STKFUL           EQU  H'0007'
 
 
@@ -1618,14 +1551,18 @@ STKFUL           EQU  H'0007'
 ;
 ;==========================================================================
        __MAXRAM  H'0FFF'
+       __BADRAM  H'0E86'-H'0E89'
        __BADRAM  H'0E8B'-H'0E96'
        __BADRAM  H'0E9A'-H'0E9F'
+       __BADRAM  H'0EA1'
        __BADRAM  H'0EA5'
-       __BADRAM  H'0EAC'-H'0EB0'
+       __BADRAM  H'0EA8'-H'0EA9'
+       __BADRAM  H'0EAC'-H'0EB1'
        __BADRAM  H'0EB3'
        __BADRAM  H'0EB5'
        __BADRAM  H'0EBA'-H'0EBF'
        __BADRAM  H'0ED2'-H'0ED3'
+       __BADRAM  H'0ED6'-H'0ED7'
        __BADRAM  H'0EDA'-H'0EE1'
        __BADRAM  H'0EF8'-H'0EFA'
        __BADRAM  H'0EFC'
@@ -1647,45 +1584,45 @@ STKFUL           EQU  H'0007'
 ;              superseded by the CONFIG directive.  The following settings
 ;              are available for this device.
 ;
-;   Background Debugger Enable:
-;     DEBUG = ON           Enabled
-;     DEBUG = OFF          Disabled
+;   Background Debugger Enable bit:
+;     DEBUG = ON           Background debugger enabled; RB6 and RB7 are dedicated to In-Circuit Debug
+;     DEBUG = OFF          Background debugger disabled; RB6 and RB7 configured as general purpose I/O pins
 ;
-;   Extended Instruction Set Enable:
-;     XINST = OFF          Disabled
-;     XINST = ON           Enabled
+;   Extended Instruction Set Enable bit:
+;     XINST = OFF          Instruction set extension and Indexed Addressing mode disabled (Legacy mode)
+;     XINST = ON           Instruction set extension and Indexed Addressing mode enabled
 ;
-;   Stack Overflow Reset:
-;     STVR = OFF           Disabled
-;     STVR = ON            Enabled
+;   Stack Overflow/Underflow Reset Enable bit:
+;     STVR = OFF           Reset on stack overflow/underflow disabled
+;     STVR = ON            Reset on stack overflow/underflow enabled
 ;
-;   Watchdog Timer:
-;     WDT = OFF            Disabled
-;     WDT = ON             Enabled
+;   Watchdog Timer Enable bit:
+;     WDT = OFF            WDT disabled (control is placed on SWDTEN bit)
+;     WDT = ON             WDT enabled
 ;
-;   Code Protection:
-;     CP0 = ON             Enabled
-;     CP0 = OFF            Disabled
+;   Code Protection bit:
+;     CP0 = ON             Program memory is code-protected
+;     CP0 = OFF            Program memory is not code-protected
 ;
-;   Fail-Safe Clock Monitor:
-;     FCMEN = OFF          Disabled
-;     FCMEN = ON           Enabled
+;   Fail-Safe Clock Monitor Enable bit:
+;     FCMEN = OFF          Fail-Safe Clock Monitor disabled
+;     FCMEN = ON           Fail-Safe Clock Monitor enabled
 ;
-;   Internal/External Switch Over:
-;     IESO = OFF           Disabled
-;     IESO = ON            Enabled
+;   Two-Speed Start-up (Internal/External Oscillator Switchover) Control bit:
+;     IESO = OFF           Two-Speed Start-up disabled
+;     IESO = ON            Two-Speed Start-up enabled
 ;
-;   Default/Reset System Clock Select Bit:
-;     FOSC2 = OFF          INTRC as system clock when OSCCON<1:0> = 00
-;     FOSC2 = ON           FOSC<1:0> selects system clock for OSCCON<1:0> = 00
+;   Default/Reset System Clock Select bit:
+;     FOSC2 = OFF          INTRC enabled as system clock when OSCCON<1:0> = 00
+;     FOSC2 = ON           Clock selected by FOSC1:FOSC0 as system clock is enabled when OSCCON<1:0> = 00
 ;
 ;   Oscillator Selection bits:
 ;     FOSC = HS            HS oscillator
-;     FOSC = HSPLL         HS oscillator, Software Controlled PLL
-;     FOSC = EC            External Clock
-;     FOSC = ECPLL         External Clock, Software Controlled PLL
+;     FOSC = HSPLL         HS oscillator, PLL enabled and under software control
+;     FOSC = EC            EC oscillator, CLKO function on OSC2
+;     FOSC = ECPLL         EC oscillator, PLL enabled and under software control, CLKO function on OSC2
 ;
-;   Watchdog Postscaler:
+;   Watchdog Timer Postscale Select bits:
 ;     WDTPS = 1            1:1
 ;     WDTPS = 2            1:2
 ;     WDTPS = 4            1:4
@@ -1703,18 +1640,11 @@ STKFUL           EQU  H'0007'
 ;     WDTPS = 16384        1:16384
 ;     WDTPS = 32768        1:32768
 ;
-;   Ethernet LED Enable:
-;     ETHLED = OFF         Disabled
-;     ETHLED = ON          Enabled
+;   Ethernet LED Enable bit:
+;     ETHLED = OFF         RA0/RA1 function as I/O regardless of Ethernet module status
+;     ETHLED = ON          RA0/RA1 are multiplexed with LEDA/LEDB when Ethernet module is enabled and function as I/O when Ethernet is disabled
 ;
 ;==========================================================================
-_CONFIG1L        EQU  H'1FFF8'
-_CONFIG1H        EQU  H'1FFF9'
-_CONFIG2L        EQU  H'1FFFA'
-_CONFIG2H        EQU  H'1FFFB'
-_CONFIG3L        EQU  H'1FFFC'
-_CONFIG3H        EQU  H'1FFFD'
-
 _DEVID1          EQU  H'3FFFFE'
 _DEVID2          EQU  H'3FFFFF'
 

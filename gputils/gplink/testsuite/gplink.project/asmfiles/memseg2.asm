@@ -7,7 +7,7 @@
 .code_reloc2 code
 reloc2:
   global reloc2
-  fill 0x22, (0x5ff - 0x5 + 1)
+  fill 0x22, (0x5ff + 1)
 
 ; lower half of second page
 .code_abs2 code 0xd00

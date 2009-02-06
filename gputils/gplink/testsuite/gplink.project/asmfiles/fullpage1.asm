@@ -4,7 +4,7 @@
   processor 16f877a
 
 .code_fullpage0 code
-  fill 0xff, 0x7fa
+  fill 0xff, 0x7ff
 
 .code_fullpage1 code
   fill 0xaa, 0x7ff

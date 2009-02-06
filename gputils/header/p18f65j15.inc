@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F65J15 processor include
 ; 
-;  (c) Copyright 1999-2006 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -93,6 +92,7 @@ TMR4             EQU  H'0F78'
 ECCP1DEL         EQU  H'0F79'
 BAUDCON2         EQU  H'0F7C'
 SPBRGH2          EQU  H'0F7D'
+BAUDCON          EQU  H'0F7E'
 BAUDCON1         EQU  H'0F7E'
 SPBRGH1          EQU  H'0F7F'
 PORTA            EQU  H'0F80'
@@ -141,6 +141,7 @@ TXSTA            EQU  H'0FAC'
 TXSTA1           EQU  H'0FAC'
 TXREG            EQU  H'0FAD'
 TXREG1           EQU  H'0FAD'
+RCREG            EQU  H'0FAE'
 RCREG1           EQU  H'0FAE'
 SPBRG            EQU  H'0FAF'
 SPBRG1           EQU  H'0FAF'
@@ -464,6 +465,17 @@ P1RSEN           EQU  H'0007'
 
 
 ;----- BAUDCON2 Bits -----------------------------------------------------
+ABDEN            EQU  H'0000'
+WUE              EQU  H'0001'
+BRG16            EQU  H'0003'
+SCKP             EQU  H'0004'
+RCMT             EQU  H'0006'
+ABDOVF           EQU  H'0007'
+
+RCIDL            EQU  H'0006'
+
+
+;----- BAUDCON Bits -----------------------------------------------------
 ABDEN            EQU  H'0000'
 WUE              EQU  H'0001'
 BRG16            EQU  H'0003'

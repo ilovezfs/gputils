@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F2480 processor include
 ; 
-;  (c) Copyright 1999-2006 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2008 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -375,6 +374,7 @@ SPBRGH           EQU  H'0FB0'
 T3CON            EQU  H'0FB1'
 TMR3L            EQU  H'0FB2'
 TMR3H            EQU  H'0FB3'
+ECCP1DEL         EQU  H'0FB7'
 BAUDCON          EQU  H'0FB8'
 CCP1CON          EQU  H'0FBD'
 CCPR1            EQU  H'0FBE'
@@ -3917,6 +3917,10 @@ T3ECCP1          EQU  H'0006'
 NOT_T3SYNC       EQU  H'0002'
 
 
+;----- ECCP1DEL Bits -----------------------------------------------------
+PRSEN            EQU  H'0007'
+
+
 ;----- BAUDCON Bits -----------------------------------------------------
 ABDEN            EQU  H'0000'
 WUE              EQU  H'0001'
@@ -4231,7 +4235,7 @@ STKFUL           EQU  H'0007'
        __BADRAM  H'0F95'-H'0F9A'
        __BADRAM  H'0F9C'
        __BADRAM  H'0FAA'
-       __BADRAM  H'0FB4'-H'0FB7'
+       __BADRAM  H'0FB4'-H'0FB6'
        __BADRAM  H'0FB9'-H'0FBC'
        __BADRAM  H'0FD4'
 

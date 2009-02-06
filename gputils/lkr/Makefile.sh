@@ -14,14 +14,14 @@ _ACEOF
 
 # count the number of items in the list
 let count=0
-for x in `ls *.lkr | sort`
+for x in *.lkr
   do
     let count=count+1
   done
 
 # output the file list
 let number=0
-for x in `ls *.lkr | sort`
+for x in *.lkr
   do
     let number=number+1
     if [ $number -eq $count ]; then

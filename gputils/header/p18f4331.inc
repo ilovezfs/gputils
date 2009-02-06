@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F4331 processor include
 ; 
-;  (c) Copyright 1999-2005 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2008 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -1232,14 +1231,6 @@ STKFUL           EQU  H'0007'
 ;     CP1 = ON             Enabled
 ;     CP1 = OFF            Disabled
 ;
-;   Code Protection Block 2:
-;     CP2 = ON             Enabled
-;     CP2 = OFF            Disabled
-;
-;   Code Protection Block 3:
-;     CP3 = ON             Enabled
-;     CP3 = OFF            Disabled
-;
 ;   Boot Block Code Protection:
 ;     CPB = ON             Enabled
 ;     CPB = OFF            Disabled
@@ -1433,12 +1424,6 @@ _CP0_OFF_5L          EQU  H'FF'    ; Disabled
 
 _CP1_ON_5L           EQU  H'FD'    ; Enabled
 _CP1_OFF_5L          EQU  H'FF'    ; Disabled
-
-_CP2_ON_5L           EQU  H'FB'    ; Enabled
-_CP2_OFF_5L          EQU  H'FF'    ; Disabled
-
-_CP3_ON_5L           EQU  H'F7'    ; Enabled
-_CP3_OFF_5L          EQU  H'FF'    ; Disabled
 
 ;----- CONFIG5H Options --------------------------------------------------
 _CPB_ON_5H           EQU  H'BF'    ; Enabled
