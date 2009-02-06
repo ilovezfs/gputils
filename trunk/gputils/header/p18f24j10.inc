@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F24J10 processor include
 ; 
-;  (c) Copyright 1999-2006 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2008 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -84,9 +83,6 @@ IPR1             EQU  H'0F9F'
 PIE2             EQU  H'0FA0'
 PIR2             EQU  H'0FA1'
 IPR2             EQU  H'0FA2'
-PIE3             EQU  H'0FA3'
-PIR3             EQU  H'0FA4'
-IPR3             EQU  H'0FA5'
 EECON1           EQU  H'0FA6'
 EECON2           EQU  H'0FA7'
 RCSTA            EQU  H'0FAB'
@@ -441,21 +437,6 @@ CMIP             EQU  H'0006'
 OSCFIP           EQU  H'0007'
 
 BCL1IP           EQU  H'0003'
-
-
-;----- PIE3 Bits -----------------------------------------------------
-BCL2IE           EQU  H'0006'
-SSP2IE           EQU  H'0007'
-
-
-;----- PIR3 Bits -----------------------------------------------------
-BCL2IF           EQU  H'0006'
-SSP2IF           EQU  H'0007'
-
-
-;----- IPR3 Bits -----------------------------------------------------
-BCL2IP           EQU  H'0006'
-SSP2IP           EQU  H'0007'
 
 
 ;----- EECON1 Bits -----------------------------------------------------
@@ -901,6 +882,7 @@ STKFUL           EQU  H'0007'
        __BADRAM  H'0F8C'-H'0F91'
        __BADRAM  H'0F95'-H'0F9A'
        __BADRAM  H'0F9C'
+       __BADRAM  H'0FA3'-H'0FA5'
        __BADRAM  H'0FA8'-H'0FAA'
        __BADRAM  H'0FB1'-H'0FB3'
        __BADRAM  H'0FB9'

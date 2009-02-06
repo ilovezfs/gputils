@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F6490 processor include
 ; 
-;  (c) Copyright 1999-2005 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -1050,10 +1049,6 @@ SEG7             EQU  H'0007'
 
 
 ;----- PORTE Bits -----------------------------------------------------
-RE0              EQU  H'0000'
-RE1              EQU  H'0001'
-RE2              EQU  H'0002'
-RE3              EQU  H'0003'
 RE4              EQU  H'0004'
 RE5              EQU  H'0005'
 RE6              EQU  H'0006'
@@ -1185,10 +1180,6 @@ LATD7            EQU  H'0007'
 
 
 ;----- LATE Bits -----------------------------------------------------
-LATE0            EQU  H'0000'
-LATE1            EQU  H'0001'
-LATE2            EQU  H'0002'
-LATE3            EQU  H'0003'
 LATE4            EQU  H'0004'
 LATE5            EQU  H'0005'
 LATE6            EQU  H'0006'
@@ -1303,10 +1294,6 @@ TRISD7           EQU  H'0007'
 
 
 ;----- DDRE Bits -----------------------------------------------------
-RE0              EQU  H'0000'
-RE1              EQU  H'0001'
-RE2              EQU  H'0002'
-RE3              EQU  H'0003'
 RE4              EQU  H'0004'
 RE5              EQU  H'0005'
 RE6              EQU  H'0006'
@@ -1314,10 +1301,6 @@ RE7              EQU  H'0007'
 
 
 ;----- TRISE Bits -----------------------------------------------------
-TRISE0           EQU  H'0000'
-TRISE1           EQU  H'0001'
-TRISE2           EQU  H'0002'
-TRISE3           EQU  H'0003'
 TRISE4           EQU  H'0004'
 TRISE5           EQU  H'0005'
 TRISE6           EQU  H'0006'

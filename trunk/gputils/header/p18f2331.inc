@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F2331 processor include
 ; 
-;  (c) Copyright 1999-2006 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -89,8 +88,6 @@ PWMCON1          EQU  H'0F6E'
 PWMCON0          EQU  H'0F6F'
 SEVTCMPH         EQU  H'0F70'
 SEVTCMPL         EQU  H'0F71'
-PDC3H            EQU  H'0F72'
-PDC3L            EQU  H'0F73'
 PDC2H            EQU  H'0F74'
 PDC2L            EQU  H'0F75'
 PDC1H            EQU  H'0F76'
@@ -354,7 +351,6 @@ RA1              EQU  H'0001'
 RA2              EQU  H'0002'
 RA3              EQU  H'0003'
 RA4              EQU  H'0004'
-RA5              EQU  H'0005'
 RA6              EQU  H'0006'
 RA7              EQU  H'0007'
 
@@ -367,7 +363,6 @@ OSC2             EQU  H'0006'
 
 VREFM            EQU  H'0002'
 VREFP            EQU  H'0003'
-LVDIN            EQU  H'0005'
 CLKO             EQU  H'0006'
 
 
@@ -433,7 +428,6 @@ LATA1            EQU  H'0001'
 LATA2            EQU  H'0002'
 LATA3            EQU  H'0003'
 LATA4            EQU  H'0004'
-LATA5            EQU  H'0005'
 LATA6            EQU  H'0006'
 LATA7            EQU  H'0007'
 
@@ -466,7 +460,6 @@ RA1              EQU  H'0001'
 RA2              EQU  H'0002'
 RA3              EQU  H'0003'
 RA4              EQU  H'0004'
-RA5              EQU  H'0005'
 RA6              EQU  H'0006'
 RA7              EQU  H'0007'
 
@@ -477,7 +470,6 @@ TRISA1           EQU  H'0001'
 TRISA2           EQU  H'0002'
 TRISA3           EQU  H'0003'
 TRISA4           EQU  H'0004'
-TRISA5           EQU  H'0005'
 TRISA6           EQU  H'0006'
 TRISA7           EQU  H'0007'
 
@@ -997,8 +989,7 @@ STKFUL           EQU  H'0007'
 ;==========================================================================
        __MAXRAM  H'0FFF'
        __BADRAM  H'0300'-H'0F5F'
-       __BADRAM  H'0F83'
-       __BADRAM  H'0F85'-H'0F86'
+       __BADRAM  H'0F83'-H'0F86'
        __BADRAM  H'0F8C'-H'0F8F'
        __BADRAM  H'0F95'-H'0F98'
        __BADRAM  H'0F9C'

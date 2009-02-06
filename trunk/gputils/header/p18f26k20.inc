@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC18F26K20 processor include
 ; 
-;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2008 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -345,11 +345,11 @@ PGC              EQU  H'0006'
 PGD              EQU  H'0007'
 
 FLT0             EQU  H'0000'
-C12IN2M          EQU  H'0001'
-C12IN3M          EQU  H'0003'
+C12IN3M          EQU  H'0001'
+C12IN2M          EQU  H'0003'
 
-C12IN2N          EQU  H'0001'
-C12IN3N          EQU  H'0003'
+C12IN3N          EQU  H'0001'
+C12IN2N          EQU  H'0003'
 
 P1C              EQU  H'0001'
 P1B              EQU  H'0002'

@@ -1,5 +1,4 @@
 // Sample linker command file for 16c52
-// $Id$
 
 LIBPATH  .
 

@@ -1,10 +1,8 @@
 // Sample linker command file for 16F917
-// $Id$
 
 LIBPATH  .
 
-CODEPAGE   NAME=vectors  START=0x0      END=0x4      PROTECTED
-CODEPAGE   NAME=page0    START=0x5      END=0x7FF
+CODEPAGE   NAME=page0    START=0x0      END=0x7FF
 CODEPAGE   NAME=page1    START=0x800    END=0xFFF
 CODEPAGE   NAME=page2    START=0x1000   END=0x17FF
 CODEPAGE   NAME=page3    START=0x1800   END=0x1FFF
@@ -23,11 +21,10 @@ DATABANK   NAME=gpr2     START=0x120    END=0x16F
 DATABANK   NAME=gpr3     START=0x190    END=0x1EF
 
 SHAREBANK  NAME=gprnobnk START=0x70     END=0x7F
-SHAREBANK  NAME=gprnobnk START=0xF0     END=0xFF
-SHAREBANK  NAME=gprnobnk START=0x170    END=0x17F
-SHAREBANK  NAME=gprnobnk START=0x1F0    END=0x1FF
+SHAREBANK  NAME=gprnobnk START=0xF0     END=0xFF     PROTECTED
+SHAREBANK  NAME=gprnobnk START=0x170    END=0x17F    PROTECTED
+SHAREBANK  NAME=gprnobnk START=0x1F0    END=0x1FF    PROTECTED
 
-SECTION    NAME=STARTUP  ROM=vectors    // Reset and interrupt vectors
 SECTION    NAME=PROG1    ROM=page0      // ROM code space - page0
 SECTION    NAME=PROG2    ROM=page1      // ROM code space - page1
 SECTION    NAME=PROG3    ROM=page2      // ROM code space - page2

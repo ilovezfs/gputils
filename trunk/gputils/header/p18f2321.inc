@@ -1,7 +1,6 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F2321 processor include
 ; 
 ;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved

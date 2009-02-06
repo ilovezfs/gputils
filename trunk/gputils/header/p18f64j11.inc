@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F64J11 processor include
 ; 
-;  (c) Copyright 1999-2006 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -109,7 +108,6 @@ TRISF            EQU  H'0F97'
 DDRG             EQU  H'0F98'
 TRISG            EQU  H'0F98'
 OSCTUNE          EQU  H'0F9B'
-MEMCON           EQU  H'0F9C'
 PIE1             EQU  H'0F9D'
 PIR1             EQU  H'0F9E'
 IPR1             EQU  H'0F9F'
@@ -130,6 +128,7 @@ TXREG1           EQU  H'0FAD'
 RCREG1           EQU  H'0FAE'
 SPBRG            EQU  H'0FAF'
 SPBRG1           EQU  H'0FAF'
+PSPCON           EQU  H'0FB0'
 T3CON            EQU  H'0FB1'
 TMR3L            EQU  H'0FB2'
 TMR3H            EQU  H'0FB3'
@@ -422,7 +421,6 @@ RG1              EQU  H'0001'
 RG2              EQU  H'0002'
 RG3              EQU  H'0003'
 RG4              EQU  H'0004'
-RJPU             EQU  H'0005'
 REPU             EQU  H'0006'
 RDPU             EQU  H'0007'
 
@@ -668,14 +666,6 @@ PLLEN            EQU  H'0006'
 INTSRC           EQU  H'0007'
 
 
-;----- MEMCON Bits -----------------------------------------------------
-WM0              EQU  H'0000'
-WM1              EQU  H'0001'
-WAIT0            EQU  H'0004'
-WAIT1            EQU  H'0005'
-EBDIS            EQU  H'0007'
-
-
 ;----- PIE1 Bits -----------------------------------------------------
 TMR1IE           EQU  H'0000'
 TMR2IE           EQU  H'0001'
@@ -753,7 +743,6 @@ CCP1IE           EQU  H'0001'
 CCP2IE           EQU  H'0002'
 TX2IE            EQU  H'0004'
 RC2IE            EQU  H'0005'
-LCDIE            EQU  H'0006'
 
 
 ;----- PIR3 Bits -----------------------------------------------------
@@ -761,7 +750,6 @@ CCP1IF           EQU  H'0001'
 CCP2IF           EQU  H'0002'
 TX2IF            EQU  H'0004'
 RC2IF            EQU  H'0005'
-LCDIF            EQU  H'0006'
 
 
 ;----- IPR3 Bits -----------------------------------------------------
@@ -769,7 +757,6 @@ CCP1IP           EQU  H'0001'
 CCP2IP           EQU  H'0002'
 TX2IP            EQU  H'0004'
 RC2IP            EQU  H'0005'
-LCDIP            EQU  H'0006'
 
 
 ;----- EECON1 Bits -----------------------------------------------------
@@ -847,6 +834,13 @@ TX8_9            EQU  H'0006'
 NOT_TX8          EQU  H'0006'
 
 
+;----- PSPCON Bits -----------------------------------------------------
+PSPMODE          EQU  H'0004'
+IBOV             EQU  H'0005'
+OBF              EQU  H'0006'
+IBF              EQU  H'0007'
+
+
 ;----- T3CON Bits -----------------------------------------------------
 TMR3ON           EQU  H'0000'
 TMR3CS           EQU  H'0001'
@@ -914,7 +908,6 @@ CHS0             EQU  H'0002'
 CHS1             EQU  H'0003'
 CHS2             EQU  H'0004'
 CHS3             EQU  H'0005'
-DISCARD          EQU  H'0006'
 ADCAL            EQU  H'0007'
 
 NOT_DONE         EQU  H'0001'
@@ -1181,8 +1174,8 @@ STKFUL           EQU  H'0007'
        __BADRAM  H'0F87'-H'0F88'
        __BADRAM  H'0F90'-H'0F91'
        __BADRAM  H'0F99'-H'0F9A'
+       __BADRAM  H'0F9C'
        __BADRAM  H'0FA8'-H'0FAA'
-       __BADRAM  H'0FB0'
        __BADRAM  H'0FB6'-H'0FBF'
        __BADRAM  H'0FD2'
        __BADRAM  H'0FD4'

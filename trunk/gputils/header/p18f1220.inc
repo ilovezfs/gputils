@@ -654,7 +654,6 @@ _IDLOC7         EQU    H'200007'
 ;     BORV = 45            4.5V
 ;     BORV = 42            4.2V
 ;     BORV = 27            2.7V
-;     BORV = 20            2.0V
 ;
 ;   Watchdog Timer:
 ;     WDT = OFF            Disabled
@@ -771,7 +770,7 @@ _CONFIG7H       EQU    H'30000D'
 ; preceding semicolon (;) removed when pasted into your source code.
 
 ;    __CONFIG  _CONFIG1H, _IESO_ON_1H & _FSCM_OFF_1H & _RC_OSC_1H
-;    __CONFIG  _CONFIG2L, _PWRT_ON_2L & _BOR_OFF_2L & _BORV_20_2L
+;    __CONFIG  _CONFIG2L, _PWRT_ON_2L & _BOR_OFF_2L & _BORV_27_2L
 ;    __CONFIG  _CONFIG2H, _WDT_OFF_2H & _WDTPS_32K_2H
 ;    __CONFIG  _CONFIG3H, _MCLRE_ON_3H
 ;    __CONFIG  _CONFIG4L, _DEBUG_OFF_4L & _LVP_ON_4L & _STVR_ON_4L
@@ -800,8 +799,7 @@ _INTIO1_OSC_1H    EQU  H'F9' ; Internal RC, OSC1 as RA7, OSC2 as FOSC/4
 _INTIO2_OSC_1H    EQU  H'F8' ; Internal RC, OSC1 as RA7, OSC2 as RA6
 
 ;Configuration Byte 2L Options
-_BORV_20_2L       EQU  H'FF' ; BOR Voltage - 2.0v
-_BORV_27_2L       EQU  H'FB' ;               2.7v
+_BORV_27_2L       EQU  H'FB' ; BOR Voltage - 2.7v
 _BORV_42_2L       EQU  H'F7' ;               4.2v
 _BORV_45_2L       EQU  H'F3' ;               4.5v
 _BOR_ON_2L        EQU  H'FF' ; Brown-out Reset enabled

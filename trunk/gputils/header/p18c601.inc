@@ -29,6 +29,7 @@
 ; 0.05	 27 Jun 2001   Fixed LVDCON, IPR2, PIR2, PIE2 bits				nr
 ; 0.06   22 Oct 2001   Added __MAXROM / __BADROM directive for bad
 ;		       ROM between external memory and boot ram	 	pas
+; 0.07 	 12 Mar 2008   Added SWDPS0, SWDPS1, and SWDPS2                 src
 ;==========================================================================
 ;
 ;       Verify Processor
@@ -316,8 +317,11 @@ LVDL0           EQU  H'0000'
 
 ;----- WDTCON Bits ---------------------------------------------------------
 WDPS2		EQU  H'0003'
+SWDPS2		EQU  H'0003'
 WDPS1		EQU  H'0002'
+SWDPS1		EQU  H'0002'
 WDPS0		EQU  H'0001'
+SWDPS0		EQU  H'0001'
 SWDTE           EQU  H'0000'
 SWDTEN          EQU  H'0000'
 

@@ -1,5 +1,4 @@
 // Sample linker command file for 16C56A
-// $Id$
 
 LIBPATH  .
 

@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F2523 processor include
 ; 
-;  (c) Copyright 1999-2005 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -101,6 +100,7 @@ TMR3H            EQU  H'0FB3'
 CMCON            EQU  H'0FB4'
 CVRCON           EQU  H'0FB5'
 ECCP1AS          EQU  H'0FB6'
+ECCP1DEL         EQU  H'0FB7'
 PWM1CON          EQU  H'0FB7'
 BAUDCON          EQU  H'0FB8'
 BAUDCTL          EQU  H'0FB8'
@@ -542,6 +542,10 @@ ECCPAS2          EQU  H'0006'
 ECCPASE          EQU  H'0007'
 
 
+;----- ECCP1DEL Bits -----------------------------------------------------
+PRSEN            EQU  H'0007'
+
+
 ;----- PWM1CON Bits -----------------------------------------------------
 PRSEN            EQU  H'0007'
 
@@ -554,6 +558,8 @@ SCKP             EQU  H'0004'
 RCIDL            EQU  H'0006'
 ABDOVF           EQU  H'0007'
 
+TXCKP            EQU  H'0004'
+RXDTP            EQU  H'0005'
 RCMT             EQU  H'0006'
 
 
@@ -565,6 +571,8 @@ SCKP             EQU  H'0004'
 RCIDL            EQU  H'0006'
 ABDOVF           EQU  H'0007'
 
+TXCKP            EQU  H'0004'
+RXDTP            EQU  H'0005'
 RCMT             EQU  H'0006'
 
 

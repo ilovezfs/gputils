@@ -18,14 +18,14 @@ gcc -Wall -pedantic -g -O2 -I../include -o header_check header_check.c
 
 # count the number of items in the list
 let count=0
-for x in `ls *.inc | sort`
+for x in *.inc
   do
     let count=count+1
   done
 
 # output the file list
 let number=0
-for x in `ls *.inc | sort`
+for x in *.inc
   do
     let number=number+1
     echo "testing $x"

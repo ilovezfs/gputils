@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F4550 processor include
 ; 
-;  (c) Copyright 1999-2005 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -910,6 +909,8 @@ SCKP             EQU  H'0004'
 RCIDL            EQU  H'0006'
 ABDOVF           EQU  H'0007'
 
+TXCKP            EQU  H'0004'
+RXDTP            EQU  H'0005'
 RCMT             EQU  H'0006'
 
 
@@ -1394,12 +1395,12 @@ STKFUL           EQU  H'0007'
 ;     WRT3 = OFF           Block 3 (006000-007FFFh) not write-protected
 ;
 ;   Boot Block Write Protection bit:
-;     WRTB = ON            Configuration registers (300000-3000FFh) write-protected
-;     WRTB = OFF           Configuration registers (300000-3000FFh) not write-protected
+;     WRTB = ON            Boot block (000000-0007FFh) write-protected
+;     WRTB = OFF           Boot block (000000-0007FFh) not write-protected
 ;
 ;   Configuration Register Write Protection bit:
-;     WRTC = ON            Boot block (000000-0007FFh) write-protected
-;     WRTC = OFF           Boot block (000000-0007FFh) not write-protected
+;     WRTC = ON            Configuration registers (300000-3000FFh) write-protected
+;     WRTC = OFF           Configuration registers (300000-3000FFh) not write-protected
 ;
 ;   Data EEPROM Write Protection bit:
 ;     WRTD = ON            Data EEPROM write-protected
@@ -1600,11 +1601,11 @@ _WRT3_ON_6L          EQU  H'F7'    ; Block 3 (006000-007FFFh) write-protected
 _WRT3_OFF_6L         EQU  H'FF'    ; Block 3 (006000-007FFFh) not write-protected
 
 ;----- CONFIG6H Options --------------------------------------------------
-_WRTB_ON_6H          EQU  H'BF'    ; Configuration registers (300000-3000FFh) write-protected
-_WRTB_OFF_6H         EQU  H'FF'    ; Configuration registers (300000-3000FFh) not write-protected
+_WRTB_ON_6H          EQU  H'BF'    ; Boot block (000000-0007FFh) write-protected
+_WRTB_OFF_6H         EQU  H'FF'    ; Boot block (000000-0007FFh) not write-protected
 
-_WRTC_ON_6H          EQU  H'DF'    ; Boot block (000000-0007FFh) write-protected
-_WRTC_OFF_6H         EQU  H'FF'    ; Boot block (000000-0007FFh) not write-protected
+_WRTC_ON_6H          EQU  H'DF'    ; Configuration registers (300000-3000FFh) write-protected
+_WRTC_OFF_6H         EQU  H'FF'    ; Configuration registers (300000-3000FFh) not write-protected
 
 _WRTD_ON_6H          EQU  H'7F'    ; Data EEPROM write-protected
 _WRTD_OFF_6H         EQU  H'FF'    ; Data EEPROM not write-protected

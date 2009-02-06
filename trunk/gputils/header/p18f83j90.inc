@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F83J90 processor include
 ; 
-;  (c) Copyright 1999-2006 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -136,7 +135,6 @@ TRISH            EQU  H'0F99'
 DDRJ             EQU  H'0F9A'
 TRISJ            EQU  H'0F9A'
 OSCTUNE          EQU  H'0F9B'
-MEMCON           EQU  H'0F9C'
 PIE1             EQU  H'0F9D'
 PIR1             EQU  H'0F9E'
 IPR1             EQU  H'0F9F'
@@ -848,7 +846,6 @@ SEG7             EQU  H'0007'
 ;----- PORTE Bits -----------------------------------------------------
 RE0              EQU  H'0000'
 RE1              EQU  H'0001'
-RE2              EQU  H'0002'
 RE3              EQU  H'0003'
 RE4              EQU  H'0004'
 RE5              EQU  H'0005'
@@ -857,7 +854,6 @@ RE7              EQU  H'0007'
 
 LCDBIAS1         EQU  H'0000'
 LCDBIAS2         EQU  H'0001'
-LCDBIAS3         EQU  H'0002'
 COM0             EQU  H'0003'
 COM1             EQU  H'0004'
 COM2             EQU  H'0005'
@@ -1011,7 +1007,6 @@ LATD7            EQU  H'0007'
 ;----- LATE Bits -----------------------------------------------------
 LATE0            EQU  H'0000'
 LATE1            EQU  H'0001'
-LATE2            EQU  H'0002'
 LATE3            EQU  H'0003'
 LATE4            EQU  H'0004'
 LATE5            EQU  H'0005'
@@ -1152,7 +1147,6 @@ TRISD7           EQU  H'0007'
 ;----- DDRE Bits -----------------------------------------------------
 RE0              EQU  H'0000'
 RE1              EQU  H'0001'
-RE2              EQU  H'0002'
 RE3              EQU  H'0003'
 RE4              EQU  H'0004'
 RE5              EQU  H'0005'
@@ -1163,7 +1157,6 @@ RE7              EQU  H'0007'
 ;----- TRISE Bits -----------------------------------------------------
 TRISE0           EQU  H'0000'
 TRISE1           EQU  H'0001'
-TRISE2           EQU  H'0002'
 TRISE3           EQU  H'0003'
 TRISE4           EQU  H'0004'
 TRISE5           EQU  H'0005'
@@ -1265,14 +1258,6 @@ PLLEN            EQU  H'0006'
 INTSRC           EQU  H'0007'
 
 
-;----- MEMCON Bits -----------------------------------------------------
-WM0              EQU  H'0000'
-WM1              EQU  H'0001'
-WAIT0            EQU  H'0004'
-WAIT1            EQU  H'0005'
-EBDIS            EQU  H'0007'
-
-
 ;----- PIE1 Bits -----------------------------------------------------
 TMR1IE           EQU  H'0000'
 TMR2IE           EQU  H'0001'
@@ -1280,7 +1265,6 @@ SSPIE            EQU  H'0003'
 TXIE             EQU  H'0004'
 RCIE             EQU  H'0005'
 ADIE             EQU  H'0006'
-PSPIE            EQU  H'0007'
 
 SSP1IE           EQU  H'0003'
 TX1IE            EQU  H'0004'
@@ -1294,7 +1278,6 @@ SSPIF            EQU  H'0003'
 TXIF             EQU  H'0004'
 RCIF             EQU  H'0005'
 ADIF             EQU  H'0006'
-PSPIF            EQU  H'0007'
 
 SSP1IF           EQU  H'0003'
 TX1IF            EQU  H'0004'
@@ -1308,7 +1291,6 @@ SSPIP            EQU  H'0003'
 TXIP             EQU  H'0004'
 RCIP             EQU  H'0005'
 ADIP             EQU  H'0006'
-PSPIP            EQU  H'0007'
 
 SSP1IP           EQU  H'0003'
 TX1IP            EQU  H'0004'
@@ -1786,7 +1768,6 @@ CHS0             EQU  H'0002'
 CHS1             EQU  H'0003'
 CHS2             EQU  H'0004'
 CHS3             EQU  H'0005'
-DISCARD          EQU  H'0006'
 ADCAL            EQU  H'0007'
 
 NOT_DONE         EQU  H'0001'
@@ -2059,6 +2040,7 @@ STKFUL           EQU  H'0007'
 ;==========================================================================
        __MAXRAM  H'0FFF'
        __BADRAM  H'0400'-H'0F5F'
+       __BADRAM  H'0F9C'
        __BADRAM  H'0FB0'
        __BADRAM  H'0FD4'
 

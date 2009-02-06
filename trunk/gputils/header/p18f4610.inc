@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F4610 processor include
 ; 
-;  (c) Copyright 1999-2005 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2008 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -644,6 +643,8 @@ SCKP             EQU  H'0004'
 RCIDL            EQU  H'0006'
 ABDOVF           EQU  H'0007'
 
+TXCKP            EQU  H'0004'
+RXDTP            EQU  H'0005'
 RCMT             EQU  H'0006'
 
 
@@ -655,6 +656,8 @@ SCKP             EQU  H'0004'
 RCIDL            EQU  H'0006'
 ABDOVF           EQU  H'0007'
 
+TXCKP            EQU  H'0004'
+RXDTP            EQU  H'0005'
 RCMT             EQU  H'0006'
 
 
@@ -1031,8 +1034,8 @@ STKOVF           EQU  H'0007'
 ;     WDTPS = 32768        1:32768
 ;
 ;   MCLR Pin Enable bit:
-;     MCLRE = OFF          MCLR pin enabled; RE3 input pin disabled
-;     MCLRE = ON           RE3 input pin enabled; MCLR disabled
+;     MCLRE = OFF          RE3 input pin enabled; MCLR disabled
+;     MCLRE = ON           MCLR pin enabled; RE3 input pin disabled
 ;
 ;   Low-Power Timer1 Oscillator Enable bit:
 ;     LPT1OSC = OFF        Timer1 configured for higher power operation
@@ -1214,8 +1217,8 @@ _WDTPS_16384_2H      EQU  H'FD'    ; 1:16384
 _WDTPS_32768_2H      EQU  H'FF'    ; 1:32768
 
 ;----- CONFIG3H Options --------------------------------------------------
-_MCLRE_OFF_3H        EQU  H'7F'    ; MCLR pin enabled; RE3 input pin disabled
-_MCLRE_ON_3H         EQU  H'FF'    ; RE3 input pin enabled; MCLR disabled
+_MCLRE_OFF_3H        EQU  H'7F'    ; RE3 input pin enabled; MCLR disabled
+_MCLRE_ON_3H         EQU  H'FF'    ; MCLR pin enabled; RE3 input pin disabled
 
 _LPT1OSC_OFF_3H      EQU  H'FB'    ; Timer1 configured for higher power operation
 _LPT1OSC_ON_3H       EQU  H'FF'    ; Timer1 configured for low-power operation

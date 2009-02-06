@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F2450 processor include
 ; 
-;  (c) Copyright 1999-2005 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -188,6 +187,23 @@ TOS              EQU  H'0FFD'
 TOSL             EQU  H'0FFD'
 TOSH             EQU  H'0FFE'
 TOSU             EQU  H'0FFF'
+
+;----- UFRML Bits -----------------------------------------------------
+FRM0             EQU  H'0000'
+FRM1             EQU  H'0001'
+FRM2             EQU  H'0002'
+FRM3             EQU  H'0003'
+FRM4             EQU  H'0004'
+FRM5             EQU  H'0005'
+FRM6             EQU  H'0006'
+FRM7             EQU  H'0007'
+
+
+;----- UFRMH Bits -----------------------------------------------------
+FRM8             EQU  H'0000'
+FRM9             EQU  H'0001'
+FRM10            EQU  H'0002'
+
 
 ;----- UIR Bits -----------------------------------------------------
 URSTIF           EQU  H'0000'
@@ -656,6 +672,8 @@ SCKP             EQU  H'0004'
 RCIDL            EQU  H'0006'
 ABDOVF           EQU  H'0007'
 
+TXCKP            EQU  H'0004'
+RXDTP            EQU  H'0005'
 RCMT             EQU  H'0006'
 
 
@@ -941,8 +959,8 @@ STKOVF           EQU  H'0007'
 ;     FOSC = HSPLL_HS      HS oscillator, PLL enabled, HS used by USB
 ;
 ;   Fail-Safe Clock Monitor:
-;     FCMEM = OFF          Disabled
-;     FCMEM = ON           Enabled
+;     FCMEN = OFF          Disabled
+;     FCMEN = ON           Enabled
 ;
 ;   Internal/External Switch Over:
 ;     IESO = OFF           Disabled
@@ -1011,8 +1029,8 @@ STKOVF           EQU  H'0007'
 ;     LVP = ON             Enabled
 ;
 ;   Boot Block Size Select Bit:
-;     BBSIZ = BB2K         2KW Boot Block Size
 ;     BBSIZ = BB1K         1KW Boot Block Size
+;     BBSIZ = BB2K         2KW Boot Block Size
 ;
 ;   Dedicated In-Circuit Debug/Programming Enable:
 ;     ICPRT = OFF          Disabled
@@ -1134,8 +1152,8 @@ _FOSC_INTOSC_HS_1H   EQU  H'FB'    ; Internal oscillator, HS used by USB
 _FOSC_HS_1H          EQU  H'FC'    ; HS oscillator, HS used by USB
 _FOSC_HSPLL_HS_1H    EQU  H'FE'    ; HS oscillator, PLL enabled, HS used by USB
 
-_FCMEM_OFF_1H        EQU  H'BF'    ; Disabled
-_FCMEM_ON_1H         EQU  H'FF'    ; Enabled
+_FCMEN_OFF_1H        EQU  H'BF'    ; Disabled
+_FCMEN_ON_1H         EQU  H'FF'    ; Enabled
 
 _IESO_OFF_1H         EQU  H'7F'    ; Disabled
 _IESO_ON_1H          EQU  H'FF'    ; Enabled
@@ -1195,8 +1213,8 @@ _STVREN_ON_4L        EQU  H'FF'    ; Enabled
 _LVP_OFF_4L          EQU  H'FB'    ; Disabled
 _LVP_ON_4L           EQU  H'FF'    ; Enabled
 
-_BBSIZ_BB2K_4L       EQU  H'F7'    ; 2KW Boot Block Size
-_BBSIZ_BB1K_4L       EQU  H'FF'    ; 1KW Boot Block Size
+_BBSIZ_BB1K_4L       EQU  H'F7'    ; 1KW Boot Block Size
+_BBSIZ_BB2K_4L       EQU  H'FF'    ; 2KW Boot Block Size
 
 _ICPRT_OFF_4L        EQU  H'DF'    ; Disabled
 _ICPRT_ON_4L         EQU  H'FF'    ; Enabled

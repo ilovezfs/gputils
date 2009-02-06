@@ -1,3 +1,25 @@
+2009-02-06  Marko Kohtala  <marko.kohtala@gmail.com>
+  * Synchronized device support with MPLAB IDE 8.20. Updated 82
+  devices. For some devices object files compiled with previous
+  version will not link against object files from this version due
+  to coff file type changes and memory size changes. Coff file type
+  changed on pic12f508, pic12f509, pic12f635, pic12f683, pic16f505,
+  pic16f54, pic16f57, pic16f59, pic16f610, pic16f636, pic16f639,
+  pic16f716, pic16f737, pic16f767, pic16f777, pic16f785, pic16f84,
+  pic16f84a, pic16f913, pic16f914, pic16f916, pic16f917, pic18f1230,
+  pic18f1330, pic18f2610, pic18f2620, pic18f26k20, pic18f4610,
+  pic18f4620, pic18f6310, pic18f6390, pic18f6410, pic18f6490,
+  pic18f6627, pic18f66j60, pic18f66j65, pic18f6722, pic18f67j60,
+  pic18f8627, pic18f86j60, pic18f86j65, pic18f87j60, pic18f96j60,
+  pic18f96j65, pic18f97j60.  Memory sizes fixed to match MPASM v5.30
+  for pic12c509, pic12c509a, pic12cr509a, pic12f509, pic12f510,
+  pic12ce519, pic16c505, pic16f610, pic16f630, pic16f676, pic16f88,
+  pic16f882, pic16f883, pic16f884, pic16f914, pic16f916, rf509af,
+  rf509ag, rf675f, rf675h, rf675k.  BSR position fixed on
+  pic18f6525, pic18c658, pic18f6621, pic18c858, pic18f8621. Added
+  122 new devices from MPASM v5.30.
+  * [gpasm] Updated config options with script by Michael Ballbach.
+
 2009-1-30 David Barnett <daviebdawg@gmail.com>
   * Patch from Marko Kohtala to open COFF files with unknown device ID (using
   generic device of the same ROM width)

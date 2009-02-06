@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F4620 processor include
 ; 
-;  (c) Copyright 1999-2005 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -652,6 +651,10 @@ SCKP             EQU  H'0004'
 RCIDL            EQU  H'0006'
 ABDOVF           EQU  H'0007'
 
+TXCKP            EQU  H'0004'
+RXDTP            EQU  H'0005'
+RCMT             EQU  H'0006'
+
 
 ;----- BAUDCTL Bits -----------------------------------------------------
 ABDEN            EQU  H'0000'
@@ -660,6 +663,10 @@ BRG16            EQU  H'0003'
 SCKP             EQU  H'0004'
 RCIDL            EQU  H'0006'
 ABDOVF           EQU  H'0007'
+
+TXCKP            EQU  H'0004'
+RXDTP            EQU  H'0005'
+RCMT             EQU  H'0006'
 
 
 ;----- CCP2CON Bits -----------------------------------------------------
@@ -684,6 +691,9 @@ CCP1X            EQU  H'0005'
 
 DC1B0            EQU  H'0004'
 DC1B1            EQU  H'0005'
+
+P1M0             EQU  H'0006'
+P1M1             EQU  H'0007'
 
 
 ;----- ADCON2 Bits -----------------------------------------------------

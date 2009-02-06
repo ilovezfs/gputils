@@ -1,5 +1,4 @@
 // Sample linker command file for 12CE519
-// $Id$
 
 LIBPATH  .
 

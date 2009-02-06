@@ -1,10 +1,9 @@
         LIST
 
 ;==========================================================================
-;  $Id$
 ;  MPASM PIC18F2221 processor include
 ; 
-;  (c) Copyright 1999-2005 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2007 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -68,6 +67,7 @@ BANKED          EQU 1
 PORTA            EQU  H'0F80'
 PORTB            EQU  H'0F81'
 PORTC            EQU  H'0F82'
+PORTE            EQU  H'0F84'
 LATA             EQU  H'0F89'
 LATB             EQU  H'0F8A'
 LATC             EQU  H'0F8B'
@@ -275,6 +275,16 @@ CK               EQU  H'0006'
 ; DT               EQU  H'0007'
 
 T1CKI            EQU  H'0000'
+
+
+;----- PORTE Bits -----------------------------------------------------
+RE3              EQU  H'0003'
+
+MCLR             EQU  H'0003'
+
+NOT_MCLR         EQU  H'0003'
+
+VPP              EQU  H'0003'
 
 
 ;----- LATA Bits -----------------------------------------------------
@@ -819,7 +829,8 @@ STKOVF           EQU  H'0007'
 ;==========================================================================
        __MAXRAM  H'0FFF'
        __BADRAM  H'0200'-H'0F7F'
-       __BADRAM  H'0F83'-H'0F88'
+       __BADRAM  H'0F83'
+       __BADRAM  H'0F85'-H'0F88'
        __BADRAM  H'0F8C'-H'0F91'
        __BADRAM  H'0F95'-H'0F9A'
        __BADRAM  H'0F9C'

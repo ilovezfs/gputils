@@ -26,11 +26,15 @@ HEADER_FILES =\
 	p12f508.inc \
 	p12f509.inc \
 	p12f510.inc \
+	p12f519.inc \
+	p12f609.inc \
 	p12f615.inc \
 	p12f629.inc \
 	p12f635.inc \
 	p12f675.inc \
 	p12f683.inc \
+	p12hv609.inc \
+	p12hv615.inc \
 	p14000.inc \
 	p16c432.inc \
 	p16c433.inc \
@@ -100,9 +104,15 @@ HEADER_FILES =\
 	p16cr72.inc \
 	p16cr83.inc \
 	p16cr84.inc \
+	p16f1933.inc \
+	p16f1934.inc \
+	p16f1936.inc \
+	p16f1937.inc \
 	p16f505.inc \
 	p16f506.inc \
+	p16f526.inc \
 	p16f5x.inc \
+	p16f610.inc \
 	p16f616.inc \
 	p16f627a.inc \
 	p16f627.inc \
@@ -122,6 +132,11 @@ HEADER_FILES =\
 	p16f689.inc \
 	p16f690.inc \
 	p16f716.inc \
+	p16f722.inc \
+	p16f723.inc \
+	p16f724.inc \
+	p16f726.inc \
+	p16f727.inc \
 	p16f72.inc \
 	p16f737.inc \
 	p16f73.inc \
@@ -149,6 +164,7 @@ HEADER_FILES =\
 	p16f877a.inc \
 	p16f877.inc \
 	p16f87.inc \
+	p16f882.inc \
 	p16f883.inc \
 	p16f884.inc \
 	p16f886.inc \
@@ -160,8 +176,18 @@ HEADER_FILES =\
 	p16f917.inc \
 	p16f946.inc \
 	p16hv540.inc \
+	p16hv610.inc \
 	p16hv616.inc \
 	p16hv785.inc \
+	p16lf1933.inc \
+	p16lf1934.inc \
+	p16lf1936.inc \
+	p16lf1937.inc \
+	p16lf722.inc \
+	p16lf723.inc \
+	p16lf724.inc \
+	p16lf726.inc \
+	p16lf727.inc \
 	p17c42a.inc \
 	p17c42.inc \
 	p17c43.inc \
@@ -186,11 +212,16 @@ HEADER_FILES =\
 	p18f1230.inc \
 	p18f1320.inc \
 	p18f1330.inc \
+	p18f13k22.inc \
+	p18f13k50.inc \
+	p18f14k22.inc \
+	p18f14k50.inc \
 	p18f2220.inc \
 	p18f2221.inc \
 	p18f2320.inc \
 	p18f2321.inc \
 	p18f2331.inc \
+	p18f23k20.inc \
 	p18f2410.inc \
 	p18f2420.inc \
 	p18f2423.inc \
@@ -199,9 +230,13 @@ HEADER_FILES =\
 	p18f2439.inc \
 	p18f2450.inc \
 	p18f2455.inc \
+	p18f2458.inc \
 	p18f2480.inc \
 	p18f248.inc \
 	p18f24j10.inc \
+	p18f24j11.inc \
+	p18f24j50.inc \
+	p18f24k20.inc \
 	p18f2510.inc \
 	p18f2515.inc \
 	p18f2520.inc \
@@ -210,21 +245,28 @@ HEADER_FILES =\
 	p18f252.inc \
 	p18f2539.inc \
 	p18f2550.inc \
+	p18f2553.inc \
 	p18f2580.inc \
 	p18f2585.inc \
 	p18f258.inc \
 	p18f25j10.inc \
+	p18f25j11.inc \
+	p18f25j50.inc \
 	p18f25k20.inc \
 	p18f2610.inc \
 	p18f2620.inc \
 	p18f2680.inc \
 	p18f2682.inc \
 	p18f2685.inc \
+	p18f26j11.inc \
+	p18f26j50.inc \
+	p18f26k20.inc \
 	p18f4220.inc \
 	p18f4221.inc \
 	p18f4320.inc \
 	p18f4321.inc \
 	p18f4331.inc \
+	p18f43k20.inc \
 	p18f4410.inc \
 	p18f4420.inc \
 	p18f4423.inc \
@@ -233,9 +275,13 @@ HEADER_FILES =\
 	p18f4439.inc \
 	p18f4450.inc \
 	p18f4455.inc \
+	p18f4458.inc \
 	p18f4480.inc \
 	p18f448.inc \
 	p18f44j10.inc \
+	p18f44j11.inc \
+	p18f44j50.inc \
+	p18f44k20.inc \
 	p18f4510.inc \
 	p18f4515.inc \
 	p18f4520.inc \
@@ -244,22 +290,30 @@ HEADER_FILES =\
 	p18f452.inc \
 	p18f4539.inc \
 	p18f4550.inc \
+	p18f4553.inc \
 	p18f4580.inc \
 	p18f4585.inc \
 	p18f458.inc \
 	p18f45j10.inc \
+	p18f45j11.inc \
+	p18f45j50.inc \
 	p18f45k20.inc \
 	p18f4610.inc \
 	p18f4620.inc \
 	p18f4680.inc \
 	p18f4682.inc \
 	p18f4685.inc \
+	p18f46j11.inc \
+	p18f46j50.inc \
+	p18f46k20.inc \
 	p18f6310.inc \
 	p18f6390.inc \
+	p18f6393.inc \
 	p18f63j11.inc \
 	p18f63j90.inc \
 	p18f6410.inc \
 	p18f6490.inc \
+	p18f6493.inc \
 	p18f64j11.inc \
 	p18f64j90.inc \
 	p18f6520.inc \
@@ -275,6 +329,7 @@ HEADER_FILES =\
 	p18f6621.inc \
 	p18f6622.inc \
 	p18f6627.inc \
+	p18f6628.inc \
 	p18f6680.inc \
 	p18f66j10.inc \
 	p18f66j11.inc \
@@ -284,18 +339,23 @@ HEADER_FILES =\
 	p18f66j55.inc \
 	p18f66j60.inc \
 	p18f66j65.inc \
+	p18f66j90.inc \
 	p18f6720.inc \
 	p18f6722.inc \
+	p18f6723.inc \
 	p18f67j10.inc \
 	p18f67j11.inc \
 	p18f67j50.inc \
 	p18f67j60.inc \
+	p18f67j90.inc \
 	p18f8310.inc \
 	p18f8390.inc \
+	p18f8393.inc \
 	p18f83j11.inc \
 	p18f83j90.inc \
 	p18f8410.inc \
 	p18f8490.inc \
+	p18f8493.inc \
 	p18f84j11.inc \
 	p18f84j90.inc \
 	p18f8520.inc \
@@ -311,6 +371,7 @@ HEADER_FILES =\
 	p18f8621.inc \
 	p18f8622.inc \
 	p18f8627.inc \
+	p18f8628.inc \
 	p18f8680.inc \
 	p18f86j10.inc \
 	p18f86j11.inc \
@@ -320,16 +381,39 @@ HEADER_FILES =\
 	p18f86j55.inc \
 	p18f86j60.inc \
 	p18f86j65.inc \
+	p18f86j90.inc \
 	p18f8720.inc \
 	p18f8722.inc \
+	p18f8723.inc \
 	p18f87j10.inc \
 	p18f87j11.inc \
 	p18f87j50.inc \
 	p18f87j60.inc \
+	p18f87j90.inc \
 	p18f96j60.inc \
 	p18f96j65.inc \
 	p18f97j60.inc \
+	p18lf13k22.inc \
+	p18lf13k50.inc \
+	p18lf14k22.inc \
+	p18lf14k50.inc \
+	p18lf24j11.inc \
+	p18lf24j50.inc \
+	p18lf25j11.inc \
+	p18lf25j50.inc \
+	p18lf26j11.inc \
+	p18lf26j50.inc \
+	p18lf44j11.inc \
+	p18lf44j50.inc \
+	p18lf45j11.inc \
+	p18lf45j50.inc \
+	p18lf46j11.inc \
+	p18lf46j50.inc \
 	p18macro.inc \
+	pmcv08a.inc \
+	pmcv14a.inc \
+	pmcv18a.inc \
+	pmcv28a.inc \
 	ps500.inc \
 	ps810.inc \
 	rf509af.inc \

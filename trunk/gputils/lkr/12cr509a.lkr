@@ -1,5 +1,4 @@
 // Sample linker command file for 12CR509A
-// $Id$
 
 LIBPATH  .
 

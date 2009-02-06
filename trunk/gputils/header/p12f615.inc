@@ -22,6 +22,8 @@
 ;==========================================================================
 ;1.00   04/19/06 Original
 ;1.01   05/03/06 Remove references to 12HV615
+;1.02	12/08/06 Corrected references of comparator C1 to CM, with aliases
+;1.03	12/11/06 Added TRISA and IOCA aliases
 ;==========================================================================
 ;
 ;       Verify Processor
@@ -49,6 +51,7 @@ PCL                          EQU     H'0002'
 STATUS                       EQU     H'0003'
 FSR                          EQU     H'0004'
 GPIO                         EQU     H'0005'
+PORTA                        EQU     H'0005'
 
 PCLATH                       EQU     H'000A'
 INTCON                       EQU     H'000B'
@@ -76,6 +79,7 @@ ADCON0                       EQU     H'001F'
 OPTION_REG                   EQU     H'0081'
 
 TRISIO                       EQU     H'0085'
+TRISA                        EQU     H'0085'
 
 PIE1                         EQU     H'008C'
 
@@ -87,7 +91,9 @@ PR2                          EQU     H'0092'
 APFCON                       EQU     H'0093'
 
 WPU                          EQU     H'0095'
+WPUA                         EQU     H'0095'
 IOC                          EQU     H'0096'
+IOCA                         EQU     H'0096'
 
 ADRESL                       EQU     H'009E'
 ANSEL                        EQU     H'009F'
@@ -103,6 +109,30 @@ NOT_PD                       EQU     H'0003'
 Z                            EQU     H'0002'
 DC                           EQU     H'0001'
 C                            EQU     H'0000'
+
+;----- GPIO Bits ----------------------------------------------------------
+
+GP5                          EQU     H'0005'
+GPIO5                        EQU     H'0005'
+GP4                          EQU     H'0004'
+GPIO4                        EQU     H'0004'
+GP3                          EQU     H'0003'
+GPIO3                        EQU     H'0003'
+GP2                          EQU     H'0002'
+GPIO2                        EQU     H'0002'
+GP1                          EQU     H'0001'
+GPIO1                        EQU     H'0001'
+GP0                          EQU     H'0000'
+GPIO0                        EQU     H'0000'
+
+;----- PORTA Bits ---------------------------------------------------------
+
+RA5                          EQU     H'0005'
+RA4                          EQU     H'0004'
+RA3                          EQU     H'0003'
+RA2                          EQU     H'0002'
+RA1                          EQU     H'0001'
+RA0                          EQU     H'0000'
 
 ;----- INTCON Bits --------------------------------------------------------
 
@@ -121,6 +151,7 @@ ADIF                         EQU     H'0006'
 CCP1IF                       EQU     H'0005'
 
 C1IF                         EQU     H'0003'
+CMIF                         EQU     H'0003'
 
 T2IF                         EQU     H'0001'
 TMR2IF                       EQU     H'0001'
@@ -145,6 +176,7 @@ TOUTPS2                      EQU     H'0005'
 TOUTPS1                      EQU     H'0004'
 TOUTPS0                      EQU     H'0003'
 TMR2ON                       EQU     H'0002'
+T2ON                         EQU     H'0002'
 T2CKPS1                      EQU     H'0001'
 T2CKPS0                      EQU     H'0000'
 
@@ -184,8 +216,10 @@ PSSBD0                       EQU     H'0000'
 ;----- VRCON Bits -------------------------------------------------------
 
 C1VREN                       EQU     H'0007'
+CMVREN                       EQU     H'0007'
 
 VRR                          EQU     H'0005'
+VP6EN                        EQU     H'0004'
 FVREN                        EQU     H'0004'
 VR3                          EQU     H'0003'
 VR2                          EQU     H'0002'
@@ -195,21 +229,30 @@ VR0                          EQU     H'0000'
 ;----- CMCON0 Bits -------------------------------------------------------
 
 C1ON                         EQU     H'0007'
+CMON                         EQU     H'0007'
 C1OUT                        EQU     H'0006'
+COUT                         EQU     H'0006'
+
 C1OE                         EQU     H'0005'
+CMOE                         EQU     H'0005'
 C1POL                        EQU     H'0004'
+CMPOL                        EQU     H'0004'
 
 C1R                          EQU     H'0002'
-C1CH1                        EQU     H'0001'
+CMR                          EQU     H'0002'
+
 C1CH0                        EQU     H'0000'
+CMCH                         EQU     H'0000'
 
 ;----- CMCON1 Bits -------------------------------------------------------
 
 T1ACS                        EQU     H'0004'
 C1HYS                        EQU     H'0003'
+CMHYS                        EQU     H'0003'
 
 T1GSS                        EQU     H'0001'
 C1SYNC                       EQU     H'0000'
+CMSYNC                       EQU     H'0000'
 
 ;----- ADCON0 Bits --------------------------------------------------------
 
@@ -235,12 +278,22 @@ PS2                          EQU     H'0002'
 PS1                          EQU     H'0001'
 PS0                          EQU     H'0000'
 
+;----- TRISIO Bits --------------------------------------------------------
+
+TRISIO5                      EQU     H'0005'
+TRISIO4                      EQU     H'0004'
+TRISIO3                      EQU     H'0003'
+TRISIO2                      EQU     H'0002'
+TRISIO1                      EQU     H'0001'
+TRISIO0                      EQU     H'0000'
+
 ;----- PIE1 Bits ----------------------------------------------------------
 
 ADIE                         EQU     H'0006'
 CCP1IE                       EQU     H'0005'
 
 C1IE                         EQU     H'0003'
+CMIE                         EQU     H'0003'
 
 T2IE                         EQU     H'0001'
 TMR2IE                       EQU     H'0001'
@@ -261,14 +314,14 @@ TUN2                         EQU     H'0002'
 TUN1                         EQU     H'0001'
 TUN0                         EQU     H'0000'
 
-;----- APFCON -------------------------------------------------------------
+;----- APFCON Bits --------------------------------------------------------
 
 T1GSEL                       EQU     H'0004'
 
 P1BSEL                       EQU     H'0001'
 P1ASEL                       EQU     H'0000'
 
-;----- WPU --------------------------------------------------------------
+;----- WPU Bits ---------------------------------------------------------
 
 WPU5                         EQU     H'0005'
 WPU4                         EQU     H'0004'
@@ -277,7 +330,16 @@ WPU2                         EQU     H'0002'
 WPU1                         EQU     H'0001'
 WPU0                         EQU     H'0000'
 
-;----- IOC --------------------------------------------------------------
+;----- WPUA Bits ---------------------------------------------------------
+
+WPUA5                         EQU     H'0005'
+WPUA4                         EQU     H'0004'
+
+WPUA2                         EQU     H'0002'
+WPUA1                         EQU     H'0001'
+WPUA0                         EQU     H'0000'
+
+;----- IOC Bits ---------------------------------------------------------
 
 IOC5                         EQU     H'0005'
 IOC4                         EQU     H'0004'
@@ -286,7 +348,16 @@ IOC2                         EQU     H'0002'
 IOC1                         EQU     H'0001'
 IOC0                         EQU     H'0000'
 
-;----- ANSEL --------------------------------------------------------------
+;----- IOCA Bits ---------------------------------------------------------
+
+IOCA5                         EQU     H'0005'
+IOCA4                         EQU     H'0004'
+IOCA3                         EQU     H'0003'
+IOCA2                         EQU     H'0002'
+IOCA1                         EQU     H'0001'
+IOCA0                         EQU     H'0000'
+
+;----- ANSEL Bits ---------------------------------------------------------
 
 ADCS2                        EQU     H'0006'
 ADCS1                        EQU     H'0005'
@@ -317,7 +388,9 @@ _BOR_ON                      EQU     H'3FFF'
 _BOR_NSLEEP                  EQU     H'3EFF'
 _BOR_OFF                     EQU     H'3CFF'
 
+_IOSCFS8                     EQU     H'3FFF'
 _IOSCFS_8MHZ                 EQU     H'3FFF'
+_IOSCFS4                     EQU     H'3F7F'
 _IOSCFS_4MHZ                 EQU     H'3F7F'
 
 _CP_ON                       EQU     H'3FBF'
