@@ -40,7 +40,7 @@ host_triplet = @host@
 bin_PROGRAMS = gpasm$(EXEEXT)
 subdir = gpasm
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in parse.c \
-	scan.c
+	parse.h scan.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -218,12 +218,12 @@ libgpasm_a_SOURCES = \
 
 gpasm_SOURCES = main.c
 gpasm_LDADD = libgpasm.a ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
-AM_YFLAGS = -dvt
+AM_YFLAGS = -d -vt
 AM_LFLAGS = -i
-EXTRA_DIST = parse.h
+BUILT_SOURCES = parse.h
 CLEANFILES = parse.output
-MAINTAINERCLEANFILES = parse.c parse.h scan.c
-all: all-am
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .l .o .obj .y
@@ -259,6 +259,11 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+parse.h: parse.c
+	@if test ! -f $@; then \
+	  rm -f parse.c; \
+	  $(MAKE) parse.c; \
+	else :; fi
 libgpasm.a: $(libgpasm_a_OBJECTS) $(libgpasm_a_DEPENDENCIES) 
 	-rm -f libgpasm.a
 	$(libgpasm_a_AR) libgpasm.a $(libgpasm_a_OBJECTS) $(libgpasm_a_LIBADD)
@@ -429,13 +434,15 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-check: check-am
+check: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(LIBRARIES) $(PROGRAMS)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
-install: install-am
+install: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -461,8 +468,9 @@ maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 	-rm -f parse.c
+	-rm -f parse.h
 	-rm -f scan.c
-	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \

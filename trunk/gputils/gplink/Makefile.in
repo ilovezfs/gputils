@@ -39,7 +39,7 @@ host_triplet = @host@
 bin_PROGRAMS = gplink$(EXEEXT)
 subdir = gplink
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in parse.c \
-	scan.c
+	parse.h scan.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -192,11 +192,9 @@ gplink_SOURCES = \
 	script.h
 
 gplink_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
-AM_YFLAGS = -dvt
+AM_YFLAGS = -d -vt
 AM_LFLAGS = -i
-EXTRA_DIST = parse.h
 CLEANFILES = parse.output
-MAINTAINERCLEANFILES = parse.c parse.h scan.c
 all: all-am
 
 .SUFFIXES:
@@ -253,6 +251,11 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+parse.h: parse.c
+	@if test ! -f $@; then \
+	  rm -f parse.c; \
+	  $(MAKE) parse.c; \
+	else :; fi
 gplink$(EXEEXT): $(gplink_OBJECTS) $(gplink_DEPENDENCIES) 
 	@rm -f gplink$(EXEEXT)
 	$(LINK) $(gplink_LDFLAGS) $(gplink_OBJECTS) $(gplink_LDADD) $(LIBS)
@@ -420,8 +423,8 @@ maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 	-rm -f parse.c
+	-rm -f parse.h
 	-rm -f scan.c
-	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
