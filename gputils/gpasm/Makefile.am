@@ -39,11 +39,9 @@ gpasm_SOURCES = main.c
 
 gpasm_LDADD = libgpasm.a ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 
-AM_YFLAGS = -dvt
+AM_YFLAGS = -d -vt
 AM_LFLAGS = -i
 
-EXTRA_DIST = parse.h
+BUILT_SOURCES = parse.h
 
 CLEANFILES = parse.output
-
-MAINTAINERCLEANFILES = parse.c parse.h scan.c

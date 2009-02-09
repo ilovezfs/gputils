@@ -122,26 +122,7 @@ gpasmVal set_label(char *label, struct pnode *parms)
   return value;
 }
 
-int return_op(int operation) 
-{
-  /* returns an operator for the replacement of i+=1 with i=i+1*/
-  switch(operation) {
-  case ASSIGN_PLUS:     return '+';
-  case ASSIGN_MINUS:    return '-';
-  case ASSIGN_MULTIPLY: return '*';
-  case ASSIGN_DIVIDE:   return '/';
-  case ASSIGN_MODULUS:  return '%';
-  case ASSIGN_LSH:      return LSH;
-  case ASSIGN_RSH:      return RSH;
-  case ASSIGN_AND:      return '&';
-  case ASSIGN_OR:       return '|';
-  case ASSIGN_XOR:      return '^'; 
-  default:
-    assert(0); /* Unhandled operator */ 
-  }
-
-  return 0;
-}
+int return_op(int operation);
 
 void next_line(int value)
 {
@@ -941,3 +922,24 @@ list_expr:
 	;
 
 %%
+
+int return_op(int operation) 
+{
+  /* returns an operator for the replacement of i+=1 with i=i+1*/
+  switch(operation) {
+  case ASSIGN_PLUS:     return '+';
+  case ASSIGN_MINUS:    return '-';
+  case ASSIGN_MULTIPLY: return '*';
+  case ASSIGN_DIVIDE:   return '/';
+  case ASSIGN_MODULUS:  return '%';
+  case ASSIGN_LSH:      return LSH;
+  case ASSIGN_RSH:      return RSH;
+  case ASSIGN_AND:      return '&';
+  case ASSIGN_OR:       return '|';
+  case ASSIGN_XOR:      return '^'; 
+  default:
+    assert(0); /* Unhandled operator */ 
+  }
+
+  return 0;
+}

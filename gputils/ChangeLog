@@ -1,3 +1,11 @@
+2009-02-09  Marko Kohtala  <marko.kohtala@gmail.com>
+  * gpasm/parse.y: Move use of token symbols after definition. This
+  is needed to compile with bison 1.4.1.
+  * gpasm/Makefile.am, gplink/Makefile.am: Separate AM_YFLAGS -d
+  option to enable automake magic to make EXTRA_DIST and
+  MAINTAINERCLEANFILES unnecessary. Use BUILT_SOURCES to have parse.h
+  available for include in other files (namely gpasm/directive.c).
+
 2009-02-06  Marko Kohtala  <marko.kohtala@gmail.com>
   * Synchronized device support with MPLAB IDE 8.20. Updated 82
   devices. For some devices object files compiled with previous
