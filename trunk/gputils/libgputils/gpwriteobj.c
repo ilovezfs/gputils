@@ -45,7 +45,7 @@ _gp_coffgen_addstring(char *name, char *table)
   assert(!(nbytes > MAX_STRING_TABLE));
 
   /* copy the string to the table */
-  memmove(&table[offset], name, sizeof_name);
+  memcpy(&table[offset], name, sizeof_name);
 
   /* write the new byte count */
   gp_putl32(&table[0], nbytes);

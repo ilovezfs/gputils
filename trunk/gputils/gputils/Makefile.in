@@ -52,22 +52,27 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_gpdasm_OBJECTS = gpdasm.$(OBJEXT)
 gpdasm_OBJECTS = $(am_gpdasm_OBJECTS)
+gpdasm_LDADD = $(LDADD)
 gpdasm_DEPENDENCIES = ${top_builddir}/@LIBGPUTILS@ \
 	${top_builddir}/@LIBIBERTY@
 am_gplib_OBJECTS = gplib.$(OBJEXT)
 gplib_OBJECTS = $(am_gplib_OBJECTS)
+gplib_LDADD = $(LDADD)
 gplib_DEPENDENCIES = ${top_builddir}/@LIBGPUTILS@ \
 	${top_builddir}/@LIBIBERTY@
 am_gpstrip_OBJECTS = gpstrip.$(OBJEXT)
 gpstrip_OBJECTS = $(am_gpstrip_OBJECTS)
+gpstrip_LDADD = $(LDADD)
 gpstrip_DEPENDENCIES = ${top_builddir}/@LIBGPUTILS@ \
 	${top_builddir}/@LIBIBERTY@
 am_gpvc_OBJECTS = block.$(OBJEXT) dump.$(OBJEXT) gpvc.$(OBJEXT)
 gpvc_OBJECTS = $(am_gpvc_OBJECTS)
+gpvc_LDADD = $(LDADD)
 gpvc_DEPENDENCIES = ${top_builddir}/@LIBGPUTILS@ \
 	${top_builddir}/@LIBIBERTY@
 am_gpvo_OBJECTS = gpvo.$(OBJEXT)
 gpvo_OBJECTS = $(am_gpvo_OBJECTS)
+gpvo_LDADD = $(LDADD)
 gpvo_DEPENDENCIES = ${top_builddir}/@LIBGPUTILS@ \
 	${top_builddir}/@LIBIBERTY@
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -85,7 +90,6 @@ ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
-ALLOCA = @ALLOCA@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
@@ -191,31 +195,27 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AM_CPPFLAGS = -I${top_srcdir}/libgputils -I${top_srcdir}/include
+LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 gpdasm_SOURCES = \
 	gpdasm.c\
 	gpdasm.h
 
-gpdasm_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 gplib_SOURCES = \
 	gplib.c \
 	gplib.h
 
-gplib_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 gpstrip_SOURCES = \
 	gpstrip.c \
 	gpstrip.h
 
-gpstrip_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 gpvc_SOURCES = \
 	block.c dump.c gpvc.c \
 	block.h dump.h gpvc.h
 
-gpvc_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 gpvo_SOURCES = \
 	gpvo.c \
 	gpvo.h
 
-gpvo_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 all: all-am
 
 .SUFFIXES:
