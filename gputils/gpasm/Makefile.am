@@ -42,6 +42,4 @@ gpasm_LDADD = libgpasm.a ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY
 AM_YFLAGS = -d -vt
 AM_LFLAGS = -i
 
-BUILT_SOURCES = parse.h
-
 CLEANFILES = parse.output

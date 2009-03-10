@@ -22,8 +22,6 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 
 #include "gpcfg.h"
-#include <string.h>
-#include <stdlib.h>
 
 static int cb_find_pic(const void *p1, const void *p2)
 {

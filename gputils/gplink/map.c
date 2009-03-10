@@ -109,8 +109,9 @@ _write_sections(void)
   char *location;
   long i;
 
+  /* Some malloc implementations return NULL for malloc(0) */
   section_list = malloc(sizeof(gp_section_type *) * state.object->num_sections);
-  if (!section_list) {
+  if (!section_list && state.object->num_sections > 0) {
     fprintf(stderr, "error: out of memory\n");
     exit(1);
   }
@@ -171,7 +172,7 @@ _write_sections(void)
   }
   map_line(" ");
 
-  return;
+  free(section_list);
 }
 
 static void

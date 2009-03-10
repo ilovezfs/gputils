@@ -9,8 +9,7 @@
  * identical data.
  */
 
-#include <stdlib.h>
-
+#include "stdhdr.h"
 #include "gpcfg.h"
 
 /*

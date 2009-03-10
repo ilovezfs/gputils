@@ -1,3 +1,10 @@
+2009-03-10  Marko Kohtala  <marko.kohtala@gmail.com>
+
+  * configure script updated to only test for what is used. Fixes
+  compilation problems due to unresolved rpl_malloc and others.
+  * Some includes of stdlib.h and string.h fixed to take advice from
+  configure.
+
 2009-02-09  Marko Kohtala  <marko.kohtala@gmail.com>
   * gpasm/parse.y: Move use of token symbols after definition. This
   is needed to compile with bison 1.4.1.
