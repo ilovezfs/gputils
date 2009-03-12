@@ -1,5 +1,7 @@
-2009-03-10  Marko Kohtala  <marko.kohtala@gmail.com>
+2009-03-12  Marko Kohtala  <marko.kohtala@gmail.com>
+  * Add LIST M=??? support for EEPROM8.
 
+2009-03-10  Marko Kohtala  <marko.kohtala@gmail.com>
   * configure script updated to only test for what is used. Fixes
   compilation problems due to unresolved rpl_malloc and others.
   * Some includes of stdlib.h and string.h fixed to take advice from
