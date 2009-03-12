@@ -2098,6 +2098,21 @@ static gpasmVal do_list(gpasmVal r,
             select_hexformat(p->value.binop.p1->value.symbol);
 	} else if (strcasecmp(lhs, "l") == 0) {
 	  ; /* Ignore this for now: page length */
+	} else if (strcasecmp(lhs, "m") == 0) {
+	  /* Undocumented, only found in MEMORY.INC and
+	     MCP250XX.INC. */
+          if (can_evaluate(p->value.binop.p1)) {
+	    int value = evaluate(p->value.binop.p1);
+	    if (value < state.maxrom) {
+	      char message[BUFSIZ];
+	      snprintf(message, sizeof(message),
+		       "Argument out of range (must be greater than or equal to %ld)",
+		       state.maxrom);
+  	      gperror(GPE_RANGE, message);
+	    }
+	    else
+	      state.maxrom = value;
+	  }
 	} else if (strcasecmp(lhs, "mm") == 0) {
 	  state.lst.memorymap = off_or_on(p->value.binop.p1);
 	} else if (strcasecmp(lhs, "n") == 0) {
