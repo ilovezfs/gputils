@@ -603,7 +603,7 @@ gp_processor_coff_proc(unsigned long coff_type)
 char *
 gp_processor_name(pic_processor_t processor, unsigned int choice)
 {
-  assert(!((choice < 0) || (choice > MAX_NAMES - 1)));
+  assert(!(choice > MAX_NAMES - 1));
 
   if (processor)
     return processor->names[choice];
@@ -619,7 +619,7 @@ gp_processor_coff_name(unsigned long coff_type, unsigned int choice)
   if (coff_type == 0)
     return NULL;
 
-  assert(!((choice < 0) || (choice > MAX_NAMES - 1)));
+  assert(!(choice > MAX_NAMES - 1));
 
   for (i = 0; i < NUM_PICS; i++) {
     if (pics[i].coff_type == coff_type) {

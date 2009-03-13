@@ -524,7 +524,7 @@ typedef struct gp_symbol_type
   unsigned long type;
 
   /* storage class */
-  char class;
+  signed char class;
 
    /* number of auxiliary symbols */
   char num_auxsym;

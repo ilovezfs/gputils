@@ -1,3 +1,6 @@
+2009-03-13  David Barnett  <daviebdawg@gmail.com>
+  * Minor signed/unsigned cleanups from bug #2556391.
+
 2009-03-12  Marko Kohtala  <marko.kohtala@gmail.com>
   * Add LIST M=??? support for EEPROM8.
 
