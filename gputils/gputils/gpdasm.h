@@ -22,7 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPDASM_H__
 #define __GPDASM_H__
 
-#define GPDASM_VERSION_STRING ("gpdasm-" VERSION " alpha")
+#define GPDASM_VERSION_STRING ("gpdasm-" VERSION " beta")
 
 extern struct gpdasm_state {
   pic_processor_t processor;    /* selected processor */
