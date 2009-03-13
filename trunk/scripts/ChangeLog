@@ -1,3 +1,8 @@
+2009-03-13 Borut Razem <borut.razem AT siol.net>
+	* scripts/build/mingw/gputils.nsi:
+	  remove DISTRIBUTION.txt and NEWS.txt when uninstalling
+	* scripts/build/mingw/do_setup.sh: added
+
 2008-05-19 Borut Razem <borut.razem AT siol.net>
 	* scripts/ChangeLog: created
 	* scripts/build/mingw/gputils.nsi.in: renamed to
