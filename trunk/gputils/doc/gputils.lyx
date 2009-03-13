@@ -41,7 +41,7 @@
 \begin_body
 
 \begin_layout Title
-gputils 0.13.6
+gputils 0.13.7
 \end_layout
 
 \begin_layout Author
@@ -204,9 +204,12 @@ Most develpment tools use relocatable objects for these reasons.
 Supported processors 
 \end_layout
 
-\begin_layout LyX-Code
-gputils currently supports the following processors:
+\begin_layout Standard
+gputils currently supports all processors supported by MPLAB 8.20 (except 
+eeprom16 and related devices). This includes the following processors:
 \newline
+\end_layout
+\begin_layout LyX-Code
 eeprom8    gen        hcs1365    hcs1370    mcv08a     mcv14a     
 \newline
 mcv18a     mcv28a     p10f200    p10f202    p10f204    p10f206    

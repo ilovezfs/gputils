@@ -32,7 +32,7 @@ enum lib_modes {
   ar_null 
 };
 
-#define GPLIB_VERSION_STRING ("gplib-" VERSION " alpha")
+#define GPLIB_VERSION_STRING ("gplib-" VERSION " beta")
 #define MAX_OBJ_NAMES 256
 
 extern struct gplib_state {
