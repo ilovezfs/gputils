@@ -2935,7 +2935,7 @@ void file_ok(unsigned int file)
   if (state.mode == relocatable)
     return;
 
-  if ((0 > file) || (file > state.maxram) || (state.badram[file])) {
+  if ((file > state.maxram) || (state.badram[file])) {
     gpwarning(GPW_INVALID_RAM, NULL);
   }
 
