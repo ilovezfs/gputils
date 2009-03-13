@@ -471,6 +471,8 @@ ${Section} Uninstall SECUNINSTALL
   Delete "$INSTDIR\README.txt"
   Delete "$INSTDIR\AUTHORS.txt"
   Delete "$INSTDIR\COPYING.txt"
+  Delete "$INSTDIR\DISTRIBUTION.txt"
+  Delete "$INSTDIR\NEWS.txt"
   RMDir "$INSTDIR"
 
   SetAutoClose true
