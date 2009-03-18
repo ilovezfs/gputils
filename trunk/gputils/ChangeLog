@@ -1,3 +1,6 @@
+2009-03-18  Marko Kohtala  <marko.kohtala@gmail.com>
+  * Fix gpdasm inhx32 reading bug. Thanks to Peter Keller.
+
 2009-03-13  David Barnett  <daviebdawg@gmail.com>
   * gputils-0.13.7 released
 

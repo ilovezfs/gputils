@@ -73,9 +73,9 @@ struct hex_data *
 readhex(char *filename, MemBlock *m)
 {
   struct hex_data *info = malloc(sizeof(*info));
-  int length, address, type, data;
+  unsigned int length, address, type, data;
   int i;
-  int page = 0;
+  unsigned int page = 0;
   int length_step;
 
   info->hex_format = inhx8m;
@@ -136,7 +136,7 @@ readhex(char *filename, MemBlock *m)
       }
 
       /* inhx32 segment line*/
-      page = readword();
+      page = readword() << 15;
       info->hex_format = inhx32;
 
     } else {
@@ -144,10 +144,10 @@ readhex(char *filename, MemBlock *m)
         /* we're starting in the middle of a word */
         /* merge this byte with word already in memory */
         data = i_memory_get(m,
-                     ((page << 16) | (address >> 1))) & 0xFF;
+                     (page | (address >> 1))) & 0xFF;
         data |= (readbyte() << 8);
         i_memory_put(m,
-                     ((page << 16) | (address >> 1)),
+                     (page | (address >> 1)),
                      data | MEM_USED_MASK);
         ++address;
         --length;
@@ -160,14 +160,14 @@ readhex(char *filename, MemBlock *m)
           data = swapword(data);        
         }
         i_memory_put(m, 
-                     ((page << 16) | (address + i)>>1),  
+                     (page | (address + i)>>1),  
                      data | MEM_USED_MASK);
       }
 
       if ((length_step == 2) && ((length % 2) != 0)) {
         /* we're ending in the middle of a word */
         /* merge this byte with word already in memory */
-        unsigned int word_address = (page << 16) | ((address+length) >> 1);
+        unsigned int word_address = page | ((address+length) >> 1);
         data = i_memory_get(m, word_address) & 0xFF00;
         data |= readbyte();
         i_memory_put(m, word_address, data | MEM_USED_MASK);
