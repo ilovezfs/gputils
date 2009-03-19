@@ -217,10 +217,16 @@ libgpasm_a_SOURCES = \
 
 gpasm_SOURCES = main.c
 gpasm_LDADD = libgpasm.a ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
+
+# Need to have -d alone (not -dvt) for automake magic
 AM_YFLAGS = -d -vt
 AM_LFLAGS = -i
+
+# Make sure we have parse.h when compiling other sources
+BUILT_SOURCES = parse.h
 CLEANFILES = parse.output
-all: all-am
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .l .o .obj .y
@@ -431,13 +437,15 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-check: check-am
+check: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(LIBRARIES) $(PROGRAMS)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
-install: install-am
+install: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -465,6 +473,7 @@ maintainer-clean-generic:
 	-rm -f parse.c
 	-rm -f parse.h
 	-rm -f scan.c
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \

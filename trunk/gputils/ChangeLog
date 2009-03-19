@@ -1,3 +1,8 @@
+2009-03-19  Marko Kohtala  <marko.kohtala@gmail.com>
+  * gpasm/Makefile.am, gplink/Makefile.am: Bring back BUILT_SOURCES
+  removed by mistake. Now with comments to help remember why it is
+  there.
+
 2009-03-18  Marko Kohtala  <marko.kohtala@gmail.com>
   * Fix gpdasm inhx32 reading bug. Thanks to Peter Keller.
 

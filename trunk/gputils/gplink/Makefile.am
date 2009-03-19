@@ -21,7 +21,11 @@ gplink_SOURCES=\
 
 gplink_LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 
+# Need to have -d alone (not -dvt) for automake magic
 AM_YFLAGS = -d -vt
 AM_LFLAGS = -i
+
+# Make sure we have parse.h when compiling other sources
+BUILT_SOURCES = parse.h
 
 CLEANFILES = parse.output
