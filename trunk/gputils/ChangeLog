@@ -1,3 +1,7 @@
+2009-03-29  Marko Kohtala  <marko.kohtala@gmail.com>
+  * gpasm/util.c (select_radix): Fix LIST R=? processing to pass
+  testsuite/gpasm.mchip list3.asm compilation
+
 2009-03-19  Marko Kohtala  <marko.kohtala@gmail.com>
   * gpasm/Makefile.am, gplink/Makefile.am: Bring back BUILT_SOURCES
   removed by mistake. Now with comments to help remember why it is
