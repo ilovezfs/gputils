@@ -379,15 +379,17 @@ void select_radix(char *radix_name)
   if (state.cmd_line.radix) {
     gpwarning(GPW_CMDLINE_RADIX, NULL);
   } else {
-    if (strcasecmp(radix_name, "hex") == 0) {
+    if (strcasecmp(radix_name, "hex") == 0 ||
+	strcasecmp(radix_name, "hexadecimal") == 0 ||
+	strcasecmp(radix_name, "h") == 0) {
       state.radix = 16;
-    } else if (strcasecmp(radix_name, "dec") == 0) {
+    } else if (strcasecmp(radix_name, "dec") == 0 ||
+	       strcasecmp(radix_name, "decimal") == 0 ||
+	       strcasecmp(radix_name, "d") == 0) {
       state.radix = 10;
-    } else if (strcasecmp(radix_name, "decimal") == 0) {
-      state.radix = 10;
-    } else if (strcasecmp(radix_name, "oct") == 0) {
-      state.radix = 8;
-    } else if (strcasecmp(radix_name, "octal") == 0) {
+    } else if (strcasecmp(radix_name, "oct") == 0 ||
+	       strcasecmp(radix_name, "octal") == 0 ||
+	       strcasecmp(radix_name, "o") == 0) {
       state.radix = 8;
     } else {
       state.radix = 16;
