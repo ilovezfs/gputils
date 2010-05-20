@@ -185,44 +185,40 @@ test_gplink_sub() {
   # link all the objects and libraries using the scripts
   printbanner "linking files"
   cp ../lkrfiles/*.lkr .
-  for x in `ls *.lkr`
+  for x in *.lkr
     do
       # split the base file name from the extension
-      for basefilename in `echo $x | tr -s "." " "`
-        do
-          if [ $basefilename = "lkr" ]; then
-            # do nothing for the extension
-            echo
-          elif test -e ../hexfiles/$basefilename.hex; then 
-            # a hex file exists so these files must not have errors
-            tested=$((tested+1))
-            echo "linking $basefilename.o"
-            echo "../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
-            ../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
-            if test -e $basefilename.hex; then
-              compiled=$((compiled+1))
-              diff -s -u ../hexfiles/$basefilename.hex $basefilename.hex
-              if diff -q ../hexfiles/$basefilename.hex $basefilename.hex; then 
-                passed=$((passed+1))
-                echo "$basefilename.lkr tested successfully"	
-              fi
-            else
-              echo "$basefilename.lkr failed to link"	
-            fi
-          else
-            # a hex file doesn't exist so these files must have intentional
-            # errors
-            errortested=$((errortested+1))
-            echo "linking $basefilename.lkr"
-            ../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
-            if test -e $basefilename.hex; then
-              echo "$basefilename.lkr failed to generate an error"	
-            else
-              notcompiled=$((notcompiled+1))
-              echo "$basefilename.lkr tested successfully"	
-            fi
-          fi
-        done
+      basefilename="${x%%.lkr}"
+      if test -e ../hexfiles/$basefilename.hex; then 
+	# a hex file exists so these files must not have errors
+	tested=$((tested+1))
+	echo "linking $basefilename.o"
+	echo "../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
+	../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
+	if test -e $basefilename.hex; then
+	  compiled=$((compiled+1))
+	  diff -s -u ../hexfiles/$basefilename.hex $basefilename.hex
+	  if diff -q ../hexfiles/$basefilename.hex $basefilename.hex; then 
+	    passed=$((passed+1))
+	    echo "$basefilename.lkr tested successfully"	
+	  fi
+	else
+	  echo "$basefilename.lkr failed to link"	
+	fi
+      else
+	# a hex file doesn't exist so these files must have intentional
+	# errors
+	errortested=$((errortested+1))
+	echo "linking $basefilename.lkr"
+	../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
+	if test -e $basefilename.hex; then
+	  echo "$basefilename.lkr failed to generate an error"	
+	else
+	  notcompiled=$((notcompiled+1))
+	  echo "$basefilename.lkr tested successfully"	
+	fi
+      fi
+      echo
     done
   cd ..
   cd ..

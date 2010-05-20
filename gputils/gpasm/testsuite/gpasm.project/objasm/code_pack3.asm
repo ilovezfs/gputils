@@ -1,0 +1,23 @@
+	LIST P=18F242
+
+p	CODE_PACK
+	DB 1
+	DB 2,3
+	RETLW 1
+	DB 4,5,6
+	DB 7,8,9,0
+	DB 1,2,3,4,5
+	DB 6,7,8,9,0,1
+	DB 2,3
+
+	CODE
+	DB 1
+	DB 2,3
+	RETLW 1
+	DB 4,5,6
+	DB 7,8,9,0
+	DB 1,2,3,4,5
+	DB 6,7,8,9,0,1
+	DB 2,3
+	END
+	

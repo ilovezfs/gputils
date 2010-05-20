@@ -1,4 +1,8 @@
 2010-05-20  Marko Kohtala  <marko.kohtala@gmail.com>
+  * Add gpasm test cases for code_pack, data sections, .def, .dim,
+  .direct, etc. Also the gpasm test scripts now execute all tests even in
+  case of errors and run object tests in objtest directory to not mess up
+  the absolute mode tests.
   * Add more descriptive output to gpvo.
 
 2009-03-29  Marko Kohtala  <marko.kohtala@gmail.com>

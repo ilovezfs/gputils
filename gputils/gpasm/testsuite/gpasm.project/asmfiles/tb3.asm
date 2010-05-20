@@ -1,0 +1,6 @@
+	list p=18c242
+
+	org 0xFFFE
+	movlw 0x12
+	movlw 0x34
+	end

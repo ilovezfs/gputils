@@ -63,5 +63,7 @@ blabel0x2c db 0x2d
 
 blech3      code
             movlw   0
+	db 1
+	res 2
             end
 

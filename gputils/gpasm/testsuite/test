@@ -29,15 +29,18 @@
 version=1.0
 GPASMFLAGS=-q
 TESTDIR=./test
+TESTOBJDIR=./objtest
 HEADER=../../header
 GPASMBIN=../gpasm
 GPVOBIN=../../gputils/gpvo
 
 # general functions
 
+failures=0
+
 testfailed() {
   echo "TEST FAILED"
-  exit 1
+  failures=$((failures+1))
 }
 
 binexists() {
@@ -90,6 +93,11 @@ printheader () {
   return 0
 }
 
+verbose () {
+    echo "$@"
+    "$@"
+}
+
 # gpasm test functions
 
 test_gpasm_sub() {
@@ -111,7 +119,7 @@ test_gpasm_sub() {
     return 1
   fi
 
-  if (test $1 = "old"); then
+  if test $1 = "old" ; then
     echo "$1 is a special test directory.  Aborting."
     return 1
   fi
@@ -127,44 +135,56 @@ test_gpasm_sub() {
   cp ../asmfiles/* .
 
   # test all of the asm files
-  for x in `ls *.asm | sort`
+  for x in *.asm
     do
       # split the base file name from the extension
-      for basefilename in `echo $x | tr -s "." " "`
-        do
-          if [ $basefilename = "asm" ]; then
-            # do nothing for the extension
-            echo
-          elif (test -e ../hexfiles/$basefilename.hex); then 
-            # a hex file exists so these files must not have errors
-            tested=$((tested+1))
-            echo "Compiling $basefilename.asm"
-            echo "../../$GPASMBIN -q -I ../../$HEADER $basefilename.asm"
-            ../../$GPASMBIN -q -I ../../$HEADER $basefilename.asm 
-            if (test -e $basefilename.hex); then
-              compiled=$((compiled+1))
-              diff -s -u ../hexfiles/$basefilename.hex $basefilename.hex
-              if (diff -q ../hexfiles/$basefilename.hex $basefilename.hex); then 
-                passed=$((passed+1))
-                echo "$basefilename.asm tested successfully"	
-              fi
-            else
-              echo "$basefilename.asm failed to compile"	
-            fi
-          else
-            # a hex file doesn't exit so these files must have intentional
-            # errors
-            errortested=$((errortested+1))
-            echo "Compiling $basefilename.asm"
-            ../../$GPASMBIN -q -I ../../$HEADER $basefilename.asm 
-            if (test -e $basefilename.hex); then
-              echo "$basefilename.asm failed to generate an error"	
-            else
-              notcompiled=$((notcompiled+1))
-              echo "$basefilename.asm tested successfully"	
-            fi
-          fi
-        done
+      basefilename="${x%%.asm}"
+      echo "To be overwritten or removed" > "$basefilename.hex"
+      if test -e "../hexfiles/$basefilename.hex" ; then
+	# a hex file exists so these files must not have errors
+	tested=$((tested+1))
+	echo "Compiling $basefilename.asm"
+	if verbose ../../$GPASMBIN -q -I ../../$HEADER "$basefilename.asm" ; then
+	  if test -e "$basefilename.hex" ; then
+	    compiled=$((compiled+1))
+	    if diff -s -u "../hexfiles/$basefilename.hex" "$basefilename.hex" ; then 
+	      passed=$((passed+1))
+	      echo "$basefilename.asm tested successfully"
+	    else
+	      echo "Files $1/hexfiles/$basefilename.hex and $basefilename.hex differ"
+	    fi
+	  else
+	    echo "$basefilename.asm failed to compile, and exit code failed to show error"
+	  fi
+	else
+	  err=$?
+	  if test -e "$basefilename.hex" ; then
+	    echo "$basefilename.asm failed with exit code $err, and failed to clean up .hex file"
+	  else
+	    echo "$basefilename.asm failed with exit code $err"
+	  fi
+	fi
+      else
+	# a hex file doesn't exit so these files must have intentional
+	# errors
+	errortested=$((errortested+1))
+	echo "Compiling $basefilename.asm"
+	if verbose ../../$GPASMBIN -q -I ../../$HEADER "$basefilename.asm" ; then
+	  if test -e "$basefilename.hex" ; then
+	    echo "$basefilename.asm failed to generate an error"
+	  else
+	    echo "$basefilename.asm failed to compile, but exit code was ok"
+	  fi
+	else
+	  if test -e "$basefilename.hex" ; then
+	    echo "$basefilename.asm failed to remove .hex file"
+	  else
+	    notcompiled=$((notcompiled+1))
+	    echo "$basefilename.asm tested successfully"	
+	  fi
+	fi
+      fi
+      echo
     done
   cd ..
   cd ..
@@ -204,7 +224,7 @@ test_gpasm_obj() {
     return 1
   fi
 
-  if (test $1 = "old"); then
+  if test $1 = "old" ; then
     echo "$1 is a special test directory.  Aborting."
     return 1
   fi
@@ -214,52 +234,64 @@ test_gpasm_obj() {
   cd $1
 
   # create the test directory if it doesn't already exist
-  test -d $TESTDIR || mkdir $TESTDIR || exit 1
-  cd $TESTDIR
+  test -d $TESTOBJDIR || mkdir $TESTOBJDIR || exit 1
+  cd $TESTOBJDIR
   rm -f *.asm *.inc
   cp ../objasm/* .
 
   # test all of the asm files
-  for x in `ls *.asm | sort`
+  for x in *.asm
     do
       # split the base file name from the extension
-      for basefilename in `echo $x | tr -s "." " "`
-        do
-          if [ $basefilename = "asm" ]; then
-            # do nothing for the extension
-            echo
-          elif (test -e ../objfiles/$basefilename.o); then 
-            # a object file exists so these files must not have errors
-            tested=$((tested+1))
-            echo "Compiling $basefilename.asm"
-            echo "../../$GPASMBIN -c -q -I ../../$HEADER $basefilename.asm"
-            ../../$GPASMBIN -c -q -I ../../$HEADER $basefilename.asm 
-            if (test -e $basefilename.o); then
-              compiled=$((compiled+1))
-              ../../$GPVOBIN -n -s -t $basefilename.o > $basefilename.dump
-              ../../$GPVOBIN -n -s -t ../objfiles/$basefilename.o > $basefilename.orig
-              diff -s -u $basefilename.orig $basefilename.dump
-              if (diff -q $basefilename.orig $basefilename.dump); then 
-                passed=$((passed+1))
-                echo "$basefilename.asm tested successfully"	
-              fi
-           else
-              echo "$basefilename.asm failed to compile"	
-            fi
-          else
-            # an object file doesn't exit so these files must have intentional
-            # errors
-            errortested=$((errortested+1))
-            echo "Compiling $basefilename.asm"
-            ../../$GPASMBIN -c -q -I ../../$HEADER $basefilename.asm 
-            if (test -e $basefilename.o); then
-              echo "$basefilename.asm failed to generate an error"	
-            else
-              notcompiled=$((notcompiled+1))
-              echo "$basefilename.asm tested successfully"	
-            fi
-          fi
-        done
+      basefilename="${x%%.asm}"
+      echo "To be overwritten or removed" > "$basefilename.o"
+      if test -e "../objfiles/$basefilename.o" ; then 
+	# a object file exists so these files must not have errors
+	tested=$((tested+1))
+	echo "Compiling $basefilename.asm"
+	if verbose ../../$GPASMBIN -c -q -I ../../$HEADER "$basefilename.asm" ; then
+	  if test -e "$basefilename.o" ; then
+	    compiled=$((compiled+1))
+	    ../../$GPVOBIN -n -s -t "$basefilename.o" > "$basefilename.dump"
+	    ../../$GPVOBIN -n -s -t "../objfiles/$basefilename.o" > "$basefilename.orig"
+	    if diff -s -u "$basefilename.orig" "$basefilename.dump" ; then 
+	      passed=$((passed+1))
+	      echo "$basefilename.asm tested successfully"	
+	    else
+	      echo "Files $1/objfiles/$basefilename.o and $basefilename.o differ"
+	    fi
+	  else
+	    echo "$basefilename.asm failed to compile, and exit code failed to show error"	
+	  fi
+	else
+	  err=$?
+	  if test -e "$basefilename.o" ; then
+	    echo "$basefilename.asm failed with exit code $err, and failed to clean up .o file"
+	  else
+	    echo "$basefilename.asm failed with exit code $err"
+	  fi
+	fi
+      else
+	# an object file doesn't exit so these files must have intentional
+	# errors
+	errortested=$((errortested+1))
+	echo "Compiling $basefilename.asm"
+	if verbose ../../$GPASMBIN -c -q -I ../../$HEADER "$basefilename.asm" ; then
+	  if test -e "$basefilename.o" ; then
+	    echo "$basefilename.asm failed to generate an error"	
+	  else
+	    echo "$basefilename.asm failed to compile, but exit code was ok"
+	  fi
+	else
+	  if test -e "$basefilename.o" ; then
+	    echo "$basefilename.asm failed to remove .o file"
+	  else
+	    notcompiled=$((notcompiled+1))
+	    echo "$basefilename.asm tested successfully"
+	  fi
+	fi
+      fi
+      echo
     done
   cd ..
   cd ..
@@ -293,19 +325,20 @@ test_gpasm_old() {
 
 test_gpasm() {
   printbanner "Start of gpasm testing"
-  binexists $GPASMBIN
-  binexists $GPVOBIN
-  RETVAL=$?
-  if [ $RETVAL -eq 0 ]; then
+  if binexists $GPASMBIN && binexists $GPVOBIN ; then
     test_gpasm_old || testfailed
     test_gpasm_sub gpasm.project || testfailed
     test_gpasm_sub gpasm.mchip
     test_gpasm_obj gpasm.project || testfailed
     test_gpasm_obj gpasm.mchip
     echo
-    printbanner "gpasm testing successful"
+    if [ $failures -eq 0 ] ; then
+	printbanner "gpasm testing successful"
+    else
+	printbanner "$failures test sets failed"
+	return 1
+    fi
   fi
-  return 0
 }
 
 # top level
@@ -318,9 +351,7 @@ case "$1" in
 
   all)
     printheader
-    test_gpasm
-    RETVAL=$?
-    if [ $RETVAL -eq 1 ]; then
+    if ! test_gpasm ; then
       exit 1
     else
       printbanner "All testing sucessful"    
