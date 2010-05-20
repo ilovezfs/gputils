@@ -325,7 +325,7 @@ gp_cofflink_make_stack(gp_object_type *object, int num_bytes)
 
   /* mark the memory locations as used */
   for (i = 0; i < num_bytes; i++) {
-    i_memory_put(new->data, i, MEM_USED_MASK);
+    b_memory_put(new->data, i, 0);
   }
 
   /* create the symbol for the start address of the stack */
@@ -363,17 +363,14 @@ gp_cofflink_make_stack(gp_object_type *object, int num_bytes)
    sections must have been combined first.  */
 
 void
-gp_cofflink_merge_sections(gp_object_type *object, int byte_addr)
+gp_cofflink_merge_sections(gp_object_type *object)
 {
   gp_section_type *first;
   gp_section_type *second;
   gp_symbol_type  *symbol = NULL;
   gp_reloc_type   *relocation = NULL;
-  unsigned int org;
-  unsigned int last;
-  unsigned int offset;
   unsigned int line_offset;
-  unsigned int data;
+  unsigned char data;
 
   first = object->sections;
   while (first != NULL) {
@@ -405,28 +402,19 @@ gp_cofflink_merge_sections(gp_object_type *object, int byte_addr)
       second->symbol->value = first->size;
 
       /* Copy the section data */
-      if ((second->flags & STYP_TEXT) || (second->flags & STYP_DATA_ROM)) {
-        /* the section is executable, so each word is two bytes */
-        last = second->size / 2;
-        offset = first->size / 2;
-        if (byte_addr) {
-          line_offset = first->size;
-        } else {
-          line_offset = first->size / 2;
-        }
-      } else {
-        /* the section is data, so each word is one byte */
-        last = second->size;
-        offset = first->size;
-        line_offset = first->size;
-      }
       if(_has_data(second)) {
+	unsigned int last = second->size;
+	unsigned int offset = first->size;
+	unsigned int org;
         for (org = 0; org < last; org++) {
-          data = i_memory_get(second->data, org);
-          assert((data & MEM_USED_MASK) != 0);
-          i_memory_put(first->data, org + offset, data);
-        }      
+          if (b_memory_get(second->data, org, &data))
+	    b_memory_put(first->data, org + offset, data);
+	  else
+	    assert(0);
+        }
       }
+
+      line_offset = first->size;
 
       /* Update the line number offsets */
       _update_line_numbers(second->line_numbers, line_offset);
@@ -471,7 +459,7 @@ gp_cofflink_merge_sections(gp_object_type *object, int byte_addr)
       gp_coffgen_delsection(object, second);
         
       /* Take another pass */
-      gp_cofflink_merge_sections(object, byte_addr);
+      gp_cofflink_merge_sections(object);
       return;
     }
     first = first->next;
@@ -487,34 +475,27 @@ _copy_rom_section(gp_object_type *object,
                   gp_section_type *idata,
                   gp_section_type *rom)
 {
-  int insn;
-  int data;
   int from;
   int to;
   int last;
 
-  if (object->class == PROC_CLASS_PIC16E) {
-    to = rom->address >> 1;
-  } else {
-    to = rom->address;
-  }
-  last = idata->address + idata->size; 
-  if (object->class == PROC_CLASS_PIC16E) {
-    insn = MEM_USED_MASK;
-    for (from = idata->address; from < last; from += 2) {
-      data =  (i_memory_get(idata->data, from) & 0xff);
-      data |= ((i_memory_get(idata->data, from + 1) & 0xff) << 8);
-      i_memory_put(rom->data, to++, insn | data);
+  to = rom->address;
+  last = idata->address + idata->size;
+  if (object->class->rom_width == 8) {
+    for (from = idata->address; from < last; ++from, ++to) {
+      unsigned char data;
+      if (b_memory_get(idata->data, from, &data))
+	b_memory_put(rom->data, to, data);
     }
   } else {
-    /* select "retlw" instruction */  
-    insn = MEM_USED_MASK | gp_processor_retlw(object->class);
-    for (from = idata->address; from < last; from++) {
-      data = (i_memory_get(idata->data, from) & 0xff);
-      i_memory_put(rom->data, to++, insn | data);
+    /* select "retlw" instruction */
+    unsigned short insn = gp_processor_retlw(object->class);
+    for (from = idata->address; from < last; from++, to += 2) {
+      unsigned char data;
+      if (b_memory_get(idata->data, from, &data))
+	object->class->i_memory_put(rom->data, to, insn | data);
     }
   }
-
 }
 
 /* create a program memory section to hold the data */
@@ -529,7 +510,7 @@ _create_rom_section(gp_object_type *object, gp_section_type *section)
   strncpy(name, section->name, sizeof(name));
   strncat(name, "_i", sizeof(name));
   new = gp_coffgen_newsection(name);
-  if (object->class == PROC_CLASS_PIC16E) {
+  if (object->class->rom_width == 8) {
     new->size = section->size;
     /* force the section size to be an even number of bytes */ 
     if (section->size & 1) {
@@ -557,41 +538,43 @@ _create_rom_section(gp_object_type *object, gp_section_type *section)
   return;
 }
 
-/* write a word into two bytes of memory */
+/* write a word into four bytes of memory (not PIC16E) */
 
 static void
-_write_table_data(gp_section_type *section,
-                  int org,
+_write_table_data(const struct proc_class *class,
+		  gp_section_type *section,
+                  int address,
                   int insn,
                   int data)
 {
-  i_memory_put(section->data, org, insn | (data & 0xff));
-  i_memory_put(section->data, org + 1, insn | ((data & 0xff00) >> 8));
+  class->i_memory_put(section->data, address, insn | (data & 0xff));
+  class->i_memory_put(section->data, address + 2, insn | (data >> 8));
 }
 
-/* write a long into four bytes of memory */
+/* write a long into four bytes of memory (PIC16E) */
 
 static void
-_write_table_long(gp_section_type *section,
-                    int org,
-                    int insn,
+_write_table_long(const struct proc_class *class,
+		  gp_section_type *section,
+                    int address,
                     int data)
 {
-  i_memory_put(section->data, org,     insn | (data & 0xffff));
-  i_memory_put(section->data, org + 1, insn | ((data & 0xffff0000) >> 16));
+  class->i_memory_put(section->data, address,     data & 0xffff);
+  class->i_memory_put(section->data, address + 2, data >> 16);
 }
 
-/* read a word into two bytes of memory */
+/* read a word from four bytes of memory (not PIC16E) */
 
-static int
-_read_table_data(gp_section_type *section, int org)
+static unsigned short
+_read_table_data(const struct proc_class *class,
+		 gp_section_type *section, int address)
 {
-  int data;
+  unsigned short data[2];
 
-  data = i_memory_get(section->data, org) & 0xff;
-  data |= ((i_memory_get(section->data, org + 1) & 0xff) << 8);
+  class->i_memory_get(section->data, address, data);
+  class->i_memory_get(section->data, address + 2, data+1);
 
-  return data;
+  return (data[0] & 0xff) | ((data[1] & 0xff) << 8);
 }
 
 /* create the symbol for the start address of the table */
@@ -626,7 +609,7 @@ gp_cofflink_make_idata(gp_object_type *object)
   gp_section_type *section = object->sections;
   gp_section_type *new = NULL;
   int count = 0;
-  int word_count;
+  int byte_count;
   int i;
   int insn;
   gp_symbol_type *symbol;
@@ -643,24 +626,22 @@ gp_cofflink_make_idata(gp_object_type *object)
     new = gp_coffgen_addsection(object, ".cinit");
     new->flags = STYP_DATA_ROM;
 
-    word_count = (count * 6);
-    if (object->class == PROC_CLASS_PIC16E) {
-      word_count += 1;
-    } else {
-      /* retlw is used so the count is stored in 4 bytes not 2 */ 
-      word_count += 2;
+    byte_count = 2 + count * 12;
+    if (object->class->rom_width != 8) {
+      /* retlw is used so 16-bit count is stored in 4 bytes not 2 */ 
+      byte_count += 2;
     }
-    new->size = word_count << 1;
+    new->size = byte_count;
 
     /* load the table with data */
-    for (i = 0; i < word_count; i++) {
-      i_memory_put(new->data, i, MEM_USED_MASK);
+    for (i = 0; i < byte_count; i++) {
+      b_memory_put(new->data, i, 0);
     }
-    if (object->class == PROC_CLASS_PIC16E) {
-      i_memory_put(new->data, 0, MEM_USED_MASK | count);
+    if (object->class->rom_width == 8) {
+      object->class->i_memory_put(new->data, 0, count);
     } else {
-      insn = MEM_USED_MASK | gp_processor_retlw(object->class);
-      _write_table_data(new, 0, insn, count);
+      insn = gp_processor_retlw(object->class);
+      _write_table_data(object->class, new, 0, insn, count);
     }
 
     /* update the section pointer in _cinit */
@@ -669,14 +650,12 @@ gp_cofflink_make_idata(gp_object_type *object)
     symbol->section = new;
 
   }
-
-  return;
 }
 
 /* load the relocated sections addresses in the table */
 
 void
-gp_add_cinit_section(gp_object_type *object, int byte_addr)
+gp_add_cinit_section(gp_object_type *object)
 {
   gp_section_type *section;
   gp_section_type *new = NULL;
@@ -684,8 +663,8 @@ gp_add_cinit_section(gp_object_type *object, int byte_addr)
   char prog_name[BUFSIZ];
   int insn;
   int count;
-  int base_org;
-  int number;
+  int base_address;
+  unsigned short number;
 
   new = gp_coffgen_findsection(object, object->sections, ".cinit");
 
@@ -693,13 +672,13 @@ gp_add_cinit_section(gp_object_type *object, int byte_addr)
 
     /* scan through the sections to determine the addresses */
     count = 0;
-    base_org = new->address >> byte_addr;
-    if (object->class == PROC_CLASS_PIC16E) {
-      base_org += 1;
-      insn = MEM_USED_MASK;
+    base_address = new->address;
+    if (object->class->rom_width == 8) {
+      base_address += 2;
+      insn = 0;
     } else {
-      base_org += 2;
-      insn = MEM_USED_MASK | gp_processor_retlw(object->class);
+      base_address += 4;
+      insn = gp_processor_retlw(object->class);
     }
     section = object->sections;
     while (section != NULL) {
@@ -711,96 +690,77 @@ gp_add_cinit_section(gp_object_type *object, int byte_addr)
                                               object->sections, 
                                               prog_name);
 
-        if (object->class == PROC_CLASS_PIC16E) {
+        if (object->class->rom_width == 8) {
           /* write program memory address */
-          _write_table_long(new, base_org, insn, prog_section->address);
+          _write_table_long(object->class, new, base_address, prog_section->address);
         
           /* write data memory address */
-          _write_table_long(new, base_org + 2, insn, section->address);
+          _write_table_long(object->class, new, base_address + 4, section->address);
         
           /* write the table size */
-          _write_table_long(new, base_org + 4, insn, section->size);
+          _write_table_long(object->class, new, base_address + 8, section->size);
         } else {
           /* write program memory address */
-          _write_table_data(new, base_org, insn, prog_section->address);
+          _write_table_data(object->class, new, base_address, insn, prog_section->address);
         
           /* write data memory address */
-          _write_table_data(new, base_org + 2, insn, section->address);
+          _write_table_data(object->class, new, base_address + 4, insn, section->address);
         
           /* write the table size */
-          _write_table_data(new, base_org + 4, insn, section->size);
+          _write_table_data(object->class, new, base_address + 8, insn, section->size);
         }
  
         count++;
-        base_org += 6;
+        base_address += 12;
       }
       section = section->next;
     }
 
     /* make sure the section count matches */
-    if (object->class == PROC_CLASS_PIC16E) {
-      number = i_memory_get(new->data, new->address >> byte_addr) & 0xffff;
+    if (object->class->rom_width == 8) {
+      object->class->i_memory_get(new->data, new->address, &number);
     } else {
-      number = _read_table_data(new, new->address >> byte_addr);
+      number = _read_table_data(object->class, new, new->address);
     }
     assert(number == count);
 
   }
-
-  return;
 }
 
 /* Set the memory used flags in a block of words */
 
 static void
-_set_used(MemBlock *m, int byte_addr, unsigned int address, unsigned int size)
+_set_used(MemBlock *m, int org_to_byte_shift, unsigned int address, unsigned int size)
 {
-  unsigned int org;
-  unsigned int stop;
-  unsigned int data;
-
-  org = address >> byte_addr;
-  stop = org + size;
+  unsigned char data;
 
   gp_debug("      marking %#x words from %#x to %#x as used", 
            size,
-           org,
-           (stop - 1));
+           gp_byte_to_org(org_to_byte_shift, address),
+           gp_byte_to_org(org_to_byte_shift, address + size));
 
-  for ( ; org < stop; org++) {
-    data = i_memory_get(m, org);
-    if (data & MEM_USED_MASK) {
-      gp_error("multiple sections using address %#lx", org << byte_addr);
+  for ( ; size; address++, size--) {
+    if (b_memory_get(m, address, &data)) {
+      gp_error("multiple sections using address %#lx", gp_byte_to_org(org_to_byte_shift, address));
       return;
     } else {
-      i_memory_put(m, org, MEM_USED_MASK);
+      b_memory_put(m, address, 0);
     }
   }
-
-  return;
 }
 
 /* allocate space for the absolute sections */
 
 void
 gp_cofflink_reloc_abs(MemBlock *m,
-                      int byte_addr,
+		      int org_to_byte_shift,
                       gp_section_type *section,
                       unsigned long flags)
 {
-  unsigned int size;
-
   while (section != NULL) {
     if ((section->flags & STYP_ABS) &&
         (section->flags & flags)) {
-      if ((section->flags & STYP_TEXT) || (section->flags & STYP_DATA_ROM)) {
-        /* size is in bytes, but words are stored in memory */
-        size = section->size / 2;
-      } else {
-        size = section->size;
-      }
-
-      _set_used(m, byte_addr, section->address, size);
+      _set_used(m, org_to_byte_shift, section->address, section->size);
 
       /* Set the relocated flag */
       section->flags |= STYP_RELOC;
@@ -876,14 +836,14 @@ gp_cofflink_find_big_section(gp_section_type *section,
 
 static int
 _search_memory(MemBlock *m,
-               int byte_addr, 
+               int org_to_byte_shift, 
                unsigned int start,
                unsigned int stop,
                unsigned int size,
                unsigned int *block_address,
                unsigned int *block_size)
 {
-  unsigned int org;
+  unsigned int address;
   unsigned int current_address = 0;
   unsigned int current_size = 0;
   int mem_used;
@@ -891,16 +851,13 @@ _search_memory(MemBlock *m,
   int end_block = 0;
   int success = 0;
 
-  /* data is stored as words in memory */
-  start = start >> byte_addr;
-  stop = stop >> byte_addr;
-
   /* set the size to max value */
   *block_size = 0xffffffff;
 
-  for (org = start; org <= stop; org++) {
-    mem_used = i_memory_get(m, org) & MEM_USED_MASK;
-    if (org == stop) { 
+  for (address = start; address <= stop; address++) {
+    unsigned char b;
+    mem_used = b_memory_get(m, address, &b);
+    if (address == stop) { 
       if (in_block == 1) {
         /* end of the section definition */
         end_block = 1;
@@ -924,8 +881,8 @@ _search_memory(MemBlock *m,
     } else {
       if (in_block == 0) {
         /* start of an unused block of memory */
-        gp_debug("    start unused block at %#x", org);
-        current_address = org;
+        gp_debug("    start unused block at %#x", gp_byte_to_org(org_to_byte_shift, address));
+        current_address = address;
         current_size = 1;
       } else {
         /* continuation of an unused block of memory */
@@ -936,8 +893,8 @@ _search_memory(MemBlock *m,
   
     if (end_block == 1) {
       gp_debug("    end unused block at %#x with size %#x", 
-               org, 
-               current_size);
+               gp_byte_to_org(org_to_byte_shift, address),
+               gp_byte_to_org(org_to_byte_shift, current_size));
       if ((current_size >= size) &&
           (current_size < *block_size)) {
         *block_size = current_size;
@@ -955,29 +912,28 @@ _search_memory(MemBlock *m,
    a higher address. */
 
 static void
-_move_data(MemBlock *m, 
+_move_data(MemBlock *m,
            unsigned int address, 
            unsigned int size,
            unsigned int new_address) 
 {
   int org;
-  unsigned int data;
+  unsigned char data;
 
   if (address == new_address)
     return;
 
-  gp_debug("    moving %#x words from %#x to %#x", 
+  gp_debug("    moving %#x bytes from %#x to %#x", 
            size,
            address,
            new_address);
 
   for (org = address + size - 1; org >= 0; org--) {
-    data = i_memory_get(m, org);
-    gp_debug("      moving word %#x from %#x to %#x", 
+    b_memory_assert_get(m, org, &data);
+    gp_debug("      moving byte %#x from %#x to %#x",
              data, org, new_address + org);
-    assert(data & MEM_USED_MASK);
-    i_memory_put(m, org, 0x0);
-    i_memory_put(m, new_address + org, data);
+    b_memory_clear(m, org);
+    b_memory_put(m, new_address + org, data);
   }
 
   return;
@@ -987,14 +943,13 @@ _move_data(MemBlock *m,
 
 void
 gp_cofflink_reloc_assigned(MemBlock *m,
-                           int byte_addr,
+                           int org_to_byte_shift,
                            gp_section_type *section,
                            unsigned long flags,
                            struct symbol_table *sections,
                            struct symbol_table *logical_sections)  
 {
   gp_section_type *current;
-  unsigned int size;
   struct symbol *sym;
   char *section_name;
   struct linker_section *section_def;
@@ -1007,13 +962,6 @@ gp_cofflink_reloc_assigned(MemBlock *m,
     if (current == NULL)
       break;
     
-    if ((current->flags & STYP_TEXT) || (current->flags & STYP_DATA_ROM)) {
-      /* size is in bytes, but words are stored in memory */
-      size = current->size / 2;
-    } else {
-      size = current->size;
-    }
-
     /* Fetch the logical section */
     sym = get_symbol(logical_sections, current->name);
     assert(sym != NULL);
@@ -1026,14 +974,14 @@ gp_cofflink_reloc_assigned(MemBlock *m,
     assert(section_def != NULL);
         
     /* assign the address to this section */
-    if (_search_memory(m, byte_addr, section_def->start, section_def->end,
-                       size, &current_address, &current_size) == 1) {
-      gp_debug("    successful relocation to %#x", current_address);
+    if (_search_memory(m, org_to_byte_shift, section_def->start, section_def->end,
+                       section->size, &current_address, &current_size) == 1) {
+      gp_debug("    successful relocation to %#x", gp_byte_to_org(org_to_byte_shift, current_address));
       if (_has_data(current)) {
-        _move_data(current->data, current->address, size, current_address);
+        _move_data(current->data, current->address, current->size, current_address);
       }
-      current->address = current_address << byte_addr;
-      _set_used(m, 0, current_address, size);
+      current->address = current_address;
+      _set_used(m, 0, current_address, current->size);
 
       /* Update the line number offsets */
       _update_line_numbers(current->line_numbers, current->address);
@@ -1054,7 +1002,7 @@ gp_cofflink_reloc_assigned(MemBlock *m,
 
 void
 gp_cofflink_reloc_unassigned(MemBlock *m,
-                             int byte_addr,
+                             int org_to_byte_shift,
                              gp_section_type *section,
                              unsigned long flags,
                              struct symbol_table *sections)  
@@ -1080,12 +1028,7 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
     if (current == NULL)
       break;
    
-    if ((current->flags & STYP_TEXT) || (current->flags & STYP_DATA_ROM)) {
-      /* size is in bytes, but words are stored in memory */
-      size = current->size / 2;
-    } else {
-      size = current->size;
-    }
+    size = current->size;
 
     /* determine what type of sections are being relocated */
     if ((current->flags & STYP_TEXT) || (current->flags & STYP_DATA_ROM)) {
@@ -1124,7 +1067,7 @@ next_pass:
           gp_debug("    def end = %#x", section_def->end);
           type_avail = 1;
           if (_search_memory(m, 
-                             byte_addr,
+                             org_to_byte_shift,
                              section_def->start,
                              section_def->end,
                              size,
@@ -1142,11 +1085,11 @@ next_pass:
 
     /* set the memory used flag for all words in the block */
     if (success == 1) {
-      gp_debug("    successful relocation to %#x", smallest_address);
+      gp_debug("    successful relocation to %#x", gp_byte_to_org(org_to_byte_shift, smallest_address));
       if (_has_data(current)) {
         _move_data(current->data, current->address, size, smallest_address);
       }
-      current->address = smallest_address << byte_addr;
+      current->address = smallest_address;
       _set_used(m, 0, smallest_address, size);
 
       /* Update the line number offsets */
@@ -1207,7 +1150,6 @@ gp_cofflink_update_table(gp_object_type *object)
 void 
 gp_cofflink_fill_pages(gp_object_type *object,
                        MemBlock *m,
-                       int byte_addr,
                        struct symbol_table *sections)
 {
   struct linker_section *section_def;
@@ -1232,7 +1174,7 @@ gp_cofflink_fill_pages(gp_object_type *object,
           (section_def->use_fill)) {
         while (1) {
           found = _search_memory(m, 
-                                 byte_addr,
+                                 object->class->org_to_byte_shift,
                                  section_def->start,
                                  section_def->end,
                                  1,
@@ -1255,20 +1197,21 @@ gp_cofflink_fill_pages(gp_object_type *object,
               /* create a new section for the fill data */
               section = gp_coffgen_addsection(object, fill_name); 
               section->address = current_address; 
-              section->size = current_size * 2; /* size in bytes */
+              section->size = current_size;
               section->flags = STYP_TEXT;
               /* FIXME: do we really need a section symbol? */
               
               /* mark the memory as used */
-              _set_used(m, byte_addr, current_address, current_size);
+              _set_used(m, object->class->org_to_byte_shift,
+			current_address, current_size);
               
               /* fill the section memory */
-              org = current_address >> byte_addr;
+              org = current_address;
               end = org + current_size;
-              for ( ; org <= end; org++) {
-                i_memory_put(section->data,
-                             org,
-                             MEM_USED_MASK | section_def->fill);
+              for ( ; org < end; org += 2) {
+                object->class->i_memory_put(section->data,
+					    org,
+					    section_def->fill);
               }
             }
           } else {
@@ -1298,7 +1241,7 @@ check_relative(gp_section_type *section, int org, int argument, int range)
 /* patch one word with the relocated address */ 
 
 static void 
-gp_cofflink_patch_addr(enum proc_class class,
+gp_cofflink_patch_addr(proc_class_t class,
                        int num_pages,
                        int num_banks,
                        int bsr_boundary,
@@ -1307,30 +1250,13 @@ gp_cofflink_patch_addr(enum proc_class class,
                        gp_reloc_type *relocation)
 {
   int org;
-  int upper_byte;
-  int current_value;
+  unsigned short current_value;
   int data = 0;
   int value;
   int offset;
   int write_data = 1;
 
-  if (section->flags & STYP_DATA) {
-    /* It is an initialized data section, so everything is bytes */ 
-    org = section->address + relocation->address;
-    upper_byte = 0;
-  } else {
-    /* section address are byte addresses */
-    if (class == PROC_CLASS_PIC16E) {
-      org = section->address >> 1;
-    } else {
-      org = section->address;
-    }
-    /* the relocation address is always a byte address */
-    org += (relocation->address >> 1);
-    /* the address is odd so put the data in upper byte */
-    upper_byte = relocation->address & 1;
-  }
-  
+  org = section->address + relocation->address;
   value = symbol->value + relocation->offset;
 
   gp_debug("  patching %#x from %s with %#x", 
@@ -1339,8 +1265,7 @@ gp_cofflink_patch_addr(enum proc_class class,
            value);
   
   /* fetch the current contents of the memory */
-  current_value = i_memory_get(section->data, org);
-  assert(current_value & MEM_USED_MASK);
+  class->i_memory_get(section->data, org, &current_value);
 
   /* FIXME: Not sure if warnings should be generated for out of range 
             arguments. The linker should make sure values are within
@@ -1348,42 +1273,10 @@ gp_cofflink_patch_addr(enum proc_class class,
 
   switch (relocation->type) {
   case RELOCT_CALL:
-    switch(class) {
-    case PROC_CLASS_PIC12:
-    case PROC_CLASS_SX:
-      data = value & 0xff;
-      break;
-    case PROC_CLASS_PIC14:
-      data = value & 0x7ff;
-      break;
-    case PROC_CLASS_PIC16:
-      data = value & 0x1fff;
-      break;
-    case PROC_CLASS_PIC16E:
-      data = (value >> 1) & 0xff;
-      break;
-    default:
-      assert(0);
-    }
+    data = class->reloc_call(value);
     break;
   case RELOCT_GOTO:
-    switch(class) {
-    case PROC_CLASS_PIC12:
-    case PROC_CLASS_SX:
-      data = value & 0x1ff;
-      break;
-    case PROC_CLASS_PIC14:
-      data = value & 0x7ff;
-      break;
-    case PROC_CLASS_PIC16:
-      data = value & 0x1fff;
-      break;
-    case PROC_CLASS_PIC16E:
-      data = (value >> 1) & 0xff;
-      break;
-    default:
-      assert(0);
-    }
+    data = class->reloc_goto(value);
     break;
   case RELOCT_HIGH:
     data = (value >> 8) & 0xff;   
@@ -1405,53 +1298,13 @@ gp_cofflink_patch_addr(enum proc_class class,
     data = value & 0xffff;   
     break; 
   case RELOCT_IBANKSEL:
-    switch(class) {
-    case PROC_CLASS_PIC14:
-      if (value < 0x100) {
-        /* bcf 0x3, 0x7 */
-        data = MEM_USED_MASK | 0x1383;
-      } else {
-        /* bsf 0x3, 0x7 */
-        data = MEM_USED_MASK | 0x1783;
-      }
-      break;
-    case PROC_CLASS_PIC16:
-      /* movlb bank */
-      data = MEM_USED_MASK | 0xb800 | gp_processor_check_bank(class, value);
-      break;
-    default:
-      assert(0);
-    }
+    data = class->reloc_ibanksel(data);
     break; 
   case RELOCT_F:
-    switch(class) {
-    case PROC_CLASS_PIC12:
-    case PROC_CLASS_SX:
-      data = value & 0x1f;
-      break;
-    case PROC_CLASS_PIC14:
-      data = value & 0x7f;
-      break;
-    case PROC_CLASS_PIC16:
-    case PROC_CLASS_PIC16E:
-      data = value & 0xff;
-      break;
-    default:
-      assert(0);
-    }
+    data = class->reloc_f(value);
     break; 
   case RELOCT_TRIS:
-    switch(class) {
-    case PROC_CLASS_PIC12:
-    case PROC_CLASS_SX:
-      data = value & 0x1f;
-      break;
-    case PROC_CLASS_PIC14:
-      data = value & 0x7f;
-      break;
-    default:
-      assert(0);
-    }
+    data = class->reloc_tris(value);
     break; 
   case RELOCT_MOVLR:
     data = (value << 4) & 0xf0;
@@ -1535,12 +1388,9 @@ gp_cofflink_patch_addr(enum proc_class class,
     assert(0);
   }
 
-  if (upper_byte)
-    data <<= 8;
-
   /* update memory with the new value */
   if (write_data)
-    i_memory_put(section->data, org, current_value | data);
+    class->i_memory_put(section->data, org, current_value | data);
 
   return;
 }
@@ -1556,10 +1406,9 @@ gp_cofflink_patch(gp_object_type *object)
   gp_symbol_type     *symbol;
   int num_pages;
   int num_banks;
-  int bsr_boundary = 0;
+  int bsr_boundary;
   
-  if (object->class == PROC_CLASS_PIC16E)  
-    bsr_boundary = gp_processor_bsr_boundary(object->processor);
+  bsr_boundary = gp_processor_bsr_boundary(object->processor);
 
   num_pages = gp_processor_num_pages(object->processor);
   num_banks = gp_processor_num_banks(object->processor);
@@ -1610,26 +1459,22 @@ gp_cofflink_make_memory(gp_object_type *object)
   MemBlock *m;
   unsigned int org;
   unsigned int stop;
-  unsigned int data;
 
   m = i_memory_create();
 
   while (section != NULL) {
     if ((section->flags & STYP_TEXT) ||
         (section->flags & STYP_DATA_ROM)) {
-      if (object->class == PROC_CLASS_PIC16E)
-        org = section->address >> 1;
-      else
-        org = section->address;
+      org = section->address;
       
-      stop = org + (section->size / 2);
+      stop = org + section->size;
             
       for ( ; org < stop; org++) {
+	unsigned char b;
         /* fetch the current contents of the memory */
-        data = i_memory_get(section->data, org);
-        assert(data & MEM_USED_MASK);
+	b_memory_assert_get(section->data, org, &b);
         /* write data to new memory */
-        i_memory_put(m, org, data);
+        b_memory_put(m, org, b);
       }
     }
     section = section->next;

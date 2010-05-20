@@ -28,13 +28,12 @@ Boston, MA 02111-1307, USA.  */
 
 int number_of_source_files = 0;
 
-char *substr(char *a, size_t sizeof_a, char *b, size_t n)
+char *substr(char *a, size_t sizeof_a, unsigned char *b, size_t n)
 {
-  strncpy(a, b, sizeof_a);
-  if (n < sizeof_a)
-    a[n] = 0;
+  int m = n < sizeof_a ? n : sizeof_a - 1;
+  memcpy(a, b, m);
+  a[m] = 0;
   return a;
-
 }
 
 /* a little utility routine that's not actually used in the
@@ -132,7 +131,7 @@ void dump_hex(char *chunk, int length)
  * ROM usage information
  */
 
-void dump_memmap( void)
+void dump_memmap(proc_class_t proc_class)
 {
 /*  typedef struct _REC_maptab {
     unsigned short start, last;
@@ -142,18 +141,11 @@ void dump_memmap( void)
 #define COD_MAPTAB_LAST 2
 #define COD_MAPENTRY_SIZE 4
 
-  unsigned short _64k_base;
+  unsigned int _64k_base;
   DirBlockInfo *dbi;
 
   unsigned short i,j,start_block,end_block;
   int first = 1;
-  int shift;
-
-  if (byte_addr) {
-    shift = 0;
-  } else {
-    shift = 1;
-  }
 
   dbi = &main_dir;
 
@@ -183,8 +175,8 @@ void dump_memmap( void)
 
 	  if( !((start == 0) && (last == 0) ))
 	    printf("using ROM 0x%06x to 0x%06x\n",
-		   (_64k_base+start) >> shift,
-		   (_64k_base+last) >> shift);
+		   gp_processor_byte_to_org(proc_class, _64k_base+start),
+		   gp_processor_byte_to_org(proc_class, _64k_base+last+1)-1);
 	}
       }
     } else if(first)
@@ -200,13 +192,13 @@ void dump_memmap( void)
  * Dump all of the machine code in the .cod file 
  */
 
-void dump_code(void)
+void dump_code(proc_class_t proc_class)
 {
-  unsigned short _64k_base;
+  unsigned int _64k_base;
   unsigned short i,j,k,all_zero_line,index;
   DirBlockInfo *dbi;
 
-  dump_memmap();
+  dump_memmap(proc_class);
 
   printf("\n\nFormatted Code Dump\n");
   printf("-------------------\n");
@@ -214,7 +206,7 @@ void dump_code(void)
   dbi = &main_dir;
 
   do {
-    _64k_base = gp_getu16(&dbi->dir.block[COD_DIR_HIGHADDR]) << 15;
+    _64k_base = gp_getu16(&dbi->dir.block[COD_DIR_HIGHADDR]) << 16;
     for (k = 0; k <= 127; k++) {
       index = gp_getu16(&dbi->dir.block[2*(COD_DIR_CODE + k)]);
       if (index != 0) {
@@ -231,7 +223,7 @@ void dump_code(void)
 	  if(all_zero_line)
 	    i+=8;
 	  else {
-	    printf("\n%06x:  ", (_64k_base+i+k*256) << byte_addr);
+	    printf("\n%06x:  ", gp_processor_byte_to_org(proc_class, _64k_base+2*(i+k*256)));
 
 	    for(j=0; j<8; j++)
 	      printf("%04x ",gp_getu16(&temp[2*i++]));
@@ -304,7 +296,7 @@ void dump_symbols( void )
 
 void dump_lsymbols( void )
 {
-  char *s,length;
+  unsigned char *s,length;
   short type;
   unsigned short i,j,start_block,end_block, value;
   char b[256];
@@ -453,8 +445,8 @@ void dump_line_symbols(void)
       ls = (LineSymbol *) temp;
 
       for(i=0; i<84; i++) {
-        sline = gp_getl16((char *)&ls[i].sline);
-        sloc = gp_getl16((char *)&ls[i].sloc);
+        sline = gp_getl16((unsigned char *)&ls[i].sline);
+        sloc = gp_getl16((unsigned char *)&ls[i].sloc);
 
 	if((ls[i].smod & 4) == 0) {
 	  assert(ls[i].sfile < number_of_source_files);
@@ -535,7 +527,7 @@ void dump_message_area(void)
  * Display the local symbol table information
  */
 
-void dump_local_vars(void)
+void dump_local_vars(proc_class_t proc_class)
 {
 #define SSYMBOL_SIZE  16
 #define SYMBOLS_PER_BLOCK COD_BLOCK_SIZE/SSYMBOL_SIZE
@@ -562,14 +554,9 @@ void dump_local_vars(void)
 #define COD_SSYMBOL_START 8
 #define COD_SSYMBOL_STOP  12
 
-  /* scope_head */    char *sh;
+  /* scope_head */ unsigned char *sh;
 
   unsigned short i,j,start_block,end_block;
-  unsigned char shift;
-  if (byte_addr)
-    shift = 0;
-  else
-    shift = 1;
 
   start_block = gp_getu16(&directory_block_data[COD_DIR_LOCALVAR]);
 
@@ -587,13 +574,14 @@ void dump_local_vars(void)
         sh = &temp[j*SSYMBOL_SIZE];
 
         if(sh[COD_SSYMBOL_NAME]) {
-          if( 0 == strncmp(&sh[COD_SSYMBOL_NAME], "__LOCAL",7)) {
+          if( 0 == memcmp(&sh[COD_SSYMBOL_NAME], "__LOCAL",7)) {
             unsigned int start;
             unsigned int stop;
             start = gp_getl32(&sh[COD_SSYMBOL_START]);
             stop = gp_getl32(&sh[COD_SSYMBOL_STOP]);
             printf("Local symbols between %06x and %06x:  ",
-                   start >> shift, stop >> shift);
+                   gp_processor_byte_to_org(proc_class, start),
+		   gp_processor_byte_to_org(proc_class, stop+1)-1);
 	  } else {
             printf("%.12s = 0x%x, type = %s\n", &sh[COD_SSYMBOL_NAME],
                    gp_getl16(&sh[COD_SSYMBOL_SVALUE]),

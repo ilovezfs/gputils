@@ -22,14 +22,18 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPWRITEHEX_H__
 #define __GPWRITEHEX_H__
 
+/* inhx8m has no 04 record for upper bits of 32-bit address
+   inhx8s creates .hxl and .hxh files for odd and even bytes
+   inhx16 line length is in words that are big endian (not in MPLAB IDE 8.40)
+   inhx32 has 04 record for upper bits of 32-bit address */
 enum formats { inhx8m, inhx8s, inhx16, inhx32 };
 
 int writehex (char *basefilename, 
               MemBlock *m,   
               enum formats hex_format,
               int numerrors,
-              int byte_words,
-              int dos_newlines);
+              int dos_newlines,
+	      unsigned int core_size);
 
 int check_writehex(MemBlock *m, enum formats hex_format);
 

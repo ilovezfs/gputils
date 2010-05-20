@@ -133,6 +133,7 @@ _write_sections(void)
   map_line("                ---------  ---------  ---------  ---------  ---------");
 
   for (i = 0; i < state.object->num_sections; i++) {
+    int org_to_byte_shift = state.class->org_to_byte_shift;
     section = section_list[i];
     switch (_section_value(section)) {
     case SECTION_ROMDATA:
@@ -157,6 +158,7 @@ _write_sections(void)
       location = "program";
     } else {
       location = "data";
+      org_to_byte_shift = 0;
     }
 
     assert(section->name != NULL);
@@ -165,7 +167,7 @@ _write_sections(void)
       map_line("%25s %10s   %#08x %10s   %#08x",
                section->name,
                type,
-               section->address,
+               gp_byte_to_org(org_to_byte_shift, section->address),
                location,
                section->size);
     }
@@ -179,7 +181,6 @@ static void
 _write_program_memory(void)
 {
   gp_section_type *section = NULL;
-  int size;
   int prog_size = 0;
 
   map_line("                              Program Memory Usage");
@@ -190,24 +191,16 @@ _write_program_memory(void)
   while (section != NULL) {
     if (((section->flags & STYP_TEXT) || 
          (section->flags & STYP_DATA_ROM)) && (section->size != 0)) {
-      if (state.object->class == PROC_CLASS_PIC16E) {
-        size = section->size;
-      } else {
-        size = section->size >> 1;
-      }
       map_line("                            %#08x    %#08x",
-               section->address,
-               section->address + size - 1);
-      prog_size += size;
+               gp_processor_byte_to_org(state.class, section->address),
+               gp_processor_byte_to_org(state.class, section->address + section->size - 1));
+      prog_size += section->size;
     }
     section = section->next;  
   }
-  if (state.object->class == PROC_CLASS_PIC16E) {
-    prog_size >>= 1;  
-  }
   map_line(" ");
   map_line("                            %i program addresses used",
-           prog_size);
+           prog_size >> 1);
   map_line(" ");
 }
 
@@ -267,6 +260,7 @@ _write_symbols(void)
       stack = pop_file(stack);
     } else if ((symbol->section_number > 0) && 
                (symbol->class != C_SECTION)) {
+      int org_to_byte_shift = state.class->org_to_byte_shift;
       if (stack == NULL) {
         /* the symbol is not between a .file/.eof pair */
         file_name = " ";
@@ -285,6 +279,7 @@ _write_symbols(void)
         location = "program";
       } else {
         location = "data";
+	org_to_byte_shift = 0;
       }
 
       if (symbol->class == C_EXT) {
@@ -295,7 +290,7 @@ _write_symbols(void)
 
       map_line("%25s   %#08x %10s %10s %s",
                symbol->name,
-               symbol->value,
+               gp_byte_to_org(org_to_byte_shift, symbol->value),
                location,
                storage,
                file_name);

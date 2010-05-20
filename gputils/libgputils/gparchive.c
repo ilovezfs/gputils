@@ -343,7 +343,7 @@ gp_archive_read(char *filename)
 
     /* read the object file or symbol index into memory */
     sscanf(new->header.ar_size, "%il", &object_size);
-    new->file = (char *)malloc(sizeof(char)*object_size);
+    new->file = (unsigned char *)malloc(object_size);
     fread(new->file, sizeof(char), object_size, infile); 
 
     /* insert the new member in the archive list */
@@ -442,12 +442,12 @@ gp_archive_add_index(struct symbol_table *table,
   gp_archive_type *newmember = NULL;
   gp_archive_type *member = NULL;
   int i;
-  struct symbol **lst, **ps, *s;
-  gp_coffsymbol_type *var;
+  const struct symbol **lst, **ps, *s;
+  const gp_coffsymbol_type *var;
   char size[10];
-  char *ptr;
+  unsigned char *ptr;
   long int indexsize = 0;
-  char *symname;
+  const char *symname;
   
   if ((archive == NULL) || (table == NULL))
     return NULL;
@@ -473,7 +473,7 @@ gp_archive_add_index(struct symbol_table *table,
     fprintf(stderr, " error allocating memory\n");
     exit(1);
   }
-  newmember->file = (char *)malloc(sizeof(char)*indexsize);
+  newmember->file = (unsigned char *)malloc(indexsize);
   if(!newmember->file) {
     fprintf(stderr, " error allocating memory\n");
     exit(1);
@@ -527,7 +527,7 @@ gp_archive_add_index(struct symbol_table *table,
 
 int 
 gp_archive_add_symbol(struct symbol_table *table,
-                      char *name,
+                      const char *name,
                       gp_archive_type *member)
 {
   struct symbol *sym;
@@ -554,11 +554,11 @@ gp_archive_read_index(struct symbol_table *table,
 {
   int number = 0;
   int i;
-  char *name;
-  char *offset;
+  const char *name;
+  const unsigned char *offset;
   int offset_value = 0;
   gp_archive_type *list;
-  char *file;
+  const unsigned char *file;
   
   assert(gp_archive_have_index(archive));
   
@@ -569,7 +569,7 @@ gp_archive_read_index(struct symbol_table *table,
   
   /* set the pointers to the offsets and symbol names */
   offset = &file[AR_INDEX_NUMBER_SIZ];
-  name = offset + (AR_INDEX_OFFSET_SIZ * number);
+  name = (const char*)offset + (AR_INDEX_OFFSET_SIZ * number);
   
   for (i = 0; i < number; i++) {
     /* get the symbol offset from the symbol index */
@@ -593,8 +593,6 @@ gp_archive_read_index(struct symbol_table *table,
     name += strlen(name) + 1;
     offset += AR_INDEX_OFFSET_SIZ;
   }  
-
-  return;
 }
 
 /* print the archive symbol table */
@@ -602,10 +600,10 @@ gp_archive_read_index(struct symbol_table *table,
 void 
 gp_archive_print_table(struct symbol_table *table)
 {
-  struct symbol **lst, **ps, *s;
+  const struct symbol **lst, **ps, *s;
   int i;
   const char *format = "%-32s %s\n";
-  gp_archive_type *member;
+  const gp_archive_type *member;
   char name[256];
   char *end;
   
@@ -631,6 +629,4 @@ gp_archive_print_table(struct symbol_table *table)
     /* print it */
     printf(format, get_symbol_name(lst[i]), name);
   }
-
-  return;
 }

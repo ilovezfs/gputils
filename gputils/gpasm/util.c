@@ -30,7 +30,7 @@ Boston, MA 02111-1307, USA.  */
 static struct file_context *last = NULL;
 
 int
-stringtolong(char *string, int radix)
+stringtolong(const char *string, int radix)
 {
   char *endptr;
   int value;
@@ -50,7 +50,7 @@ stringtolong(char *string, int radix)
   return value;
 }
 
-int gpasm_magic(char *c)
+int gpasm_magic(const char *c)
 {
   if (c[0] == '\\') {
     switch (c[1]) {
@@ -112,8 +112,8 @@ convert_escaped_char(char *str, char c)
 /* Determine the value of the escape char pointed to by ps.  Return a pointer
 to the next character. */ 
 
-char *
-convert_escape_chars(char *ps, int *value)
+const char *
+convert_escape_chars(const char *ps, int *value)
 {
   int count;
   
@@ -149,8 +149,9 @@ convert_escape_chars(char *ps, int *value)
         gperror(GPE_UNKNOWN, "missing hex value in \\x escape character");
         *value = 0;
         /* return a NULL character */
-        ps[2] = '\0';
         ps += 2;
+	if (*ps)
+	  ++ps;
       } else {
         char buffer[3];
 
@@ -186,7 +187,7 @@ void coerce_str1(struct pnode *exp)
 {
   if ((exp != NULL) && (exp->tag == string)) {
     int value;
-    char *pc = convert_escape_chars(exp->value.string, &value);
+    const char *pc = convert_escape_chars(exp->value.string, &value);
     if (*pc == '\0') {
       /* castable string, make the conversion */
       exp->tag = constant;
@@ -195,7 +196,7 @@ void coerce_str1(struct pnode *exp)
   }
 }
 
-void set_global(char *name,
+void set_global(const char *name,
                 gpasmVal value,
                 enum globalLife lifetime,
                 enum gpasmValTypes type)
@@ -240,7 +241,7 @@ void set_global(char *name,
      * TSD - the following embarrassing piece of code is a hack
      *       to fix a problem when global variables are changed
      *       during the expansion of a macro. Macros are expanded
-     *       by running through them twice. if you have a stetement
+     *       by running through them twice. if you have a statement
      *       like:
      *       some_var set some_var + 1
      *       then this is incremented twice! So the if statement
@@ -326,7 +327,7 @@ void select_errorlevel(int level)
   }
 }
 
-void select_expand(char *expand)
+void select_expand(const char *expand)
 {
   if (state.cmd_line.macro_expand) {
     gpmessage(GPM_SUPLIN, NULL);
@@ -348,7 +349,7 @@ void select_expand(char *expand)
   }
 }
 
-void select_hexformat(char *format_name)
+void select_hexformat(const char *format_name)
 {
   if (state.cmd_line.hex_format) {
     gpwarning(GPW_CMDLINE_HEXFMT, NULL);
@@ -374,22 +375,22 @@ void select_hexformat(char *format_name)
   }
 }
 
-void select_radix(char *radix_name)
+void select_radix(const char *radix_name)
 {
   if (state.cmd_line.radix) {
     gpwarning(GPW_CMDLINE_RADIX, NULL);
   } else {
-    if (strcasecmp(radix_name, "hex") == 0 ||
-	strcasecmp(radix_name, "hexadecimal") == 0 ||
-	strcasecmp(radix_name, "h") == 0) {
+    if (strcasecmp(radix_name, "h") == 0 ||
+	strcasecmp(radix_name, "hex") == 0 ||
+	strcasecmp(radix_name, "hexadecimal") == 0) {
       state.radix = 16;
-    } else if (strcasecmp(radix_name, "dec") == 0 ||
-	       strcasecmp(radix_name, "decimal") == 0 ||
-	       strcasecmp(radix_name, "d") == 0) {
+    } else if (strcasecmp(radix_name, "d") == 0 ||
+	       strcasecmp(radix_name, "dec") == 0 ||
+	       strcasecmp(radix_name, "decimal") == 0) {
       state.radix = 10;
-    } else if (strcasecmp(radix_name, "oct") == 0 ||
-	       strcasecmp(radix_name, "octal") == 0 ||
-	       strcasecmp(radix_name, "o") == 0) {
+    } else if (strcasecmp(radix_name, "o") == 0 ||
+	       strcasecmp(radix_name, "oct") == 0 ||
+	       strcasecmp(radix_name, "octal") == 0) {
       state.radix = 8;
     } else {
       state.radix = 16;
@@ -493,7 +494,7 @@ void print_macro_body(struct macro_body *mac)
 /* add_file: add a file of type 'type' to the file_context stack.
  */
 
-struct file_context * add_file(unsigned int type, char *name)
+struct file_context * add_file(unsigned int type, const char *name)
 {
   static unsigned int file_id = 0;
   struct file_context *new;
@@ -549,31 +550,28 @@ void hex_init(void)
              state.i_memory, 
              state.hex_format, 
              1,
-             0, 
-             state.dos_newlines);
+             state.dos_newlines,
+	     1);
     return;
   }
 
   if (check_writehex(state.i_memory, state.hex_format)) {
     gperror(GPE_IHEX,NULL); 
-  } else {
-    int byte_words;
-  
-    if (state.device.core_size > 0xff) {
-      byte_words = 0;
-    } else {
-      byte_words = 1;
-      if (state.hex_format != inhx8m) {
-        gpwarning(GPW_UNKNOWN,"Must use inhx8m format for EEPROM8");
-        state.hex_format = inhx8m;
-      }
-    }
-  
+    writehex(state.basefilename, state.i_memory,
+	     state.hex_format, 1,
+	     state.dos_newlines, 1);
+  } else if (state.device.class != NULL) {
     if (writehex(state.basefilename, state.i_memory, 
                  state.hex_format, state.num.errors,
-                 byte_words, state.dos_newlines)) {
+                 state.dos_newlines,
+		 state.device.class->core_size)) {
       gperror(GPE_UNKNOWN,"Error generating hex file");
     }
+  } else {
+    /* Won't have anything to write, just remove any old files */
+    writehex(state.basefilename, state.i_memory,
+	     state.hex_format, 1,
+	     state.dos_newlines, 1);
   }
   
   return;

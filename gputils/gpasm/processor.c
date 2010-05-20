@@ -27,11 +27,10 @@ Boston, MA 02111-1307, USA.  */
 #include "gperror.h"
 
 extern int _16bit_core;
-extern int _17cxx_core;
 
 void select_processor(char *name)
 {
-  struct px *found = NULL;
+  const struct px *found = NULL;
 
   if (state.cmd_line.processor) {
     gpwarning(GPW_CMDLINE_PROC, NULL);
@@ -58,7 +57,6 @@ void select_processor(char *name)
             state.badrom = new_pair;
           }
         }
-        state.processor_info = found;
         set_global(found->defined_as, 1, PERMANENT, gvt_constant);
       } else if (state.processor != found ) {
         gpwarning(GPW_REDEFINING_PROC, NULL);
@@ -80,7 +78,8 @@ void select_processor(char *name)
       /* seperate the directives from the opcodes */
       state.stBuiltin = push_symbol_table(state.stBuiltin, true);      
       opcode_init(2);	/* Processor-specific */
-      if (!_16bit_core && !_17cxx_core) {
+      if (state.device.class != PROC_CLASS_PIC16E &&
+	  state.device.class != PROC_CLASS_PIC16) {
         opcode_init(3);   /* Special pseudo ops for 12 and 14 bit devices */
       }
       state.processor_chosen = 1;

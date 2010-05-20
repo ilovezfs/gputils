@@ -98,6 +98,7 @@ init(void)
 
   state.pass = 0;
   state.org = 0;
+  state.device.id_location = 0;
   state.dos_newlines = false;
   state.memory_dump = false;
   state.found_config = false;
@@ -139,7 +140,7 @@ init(void)
 }
 
 void 
-add_path(char *path)
+add_path(const char *path)
 {
   if(state.path_num < MAX_PATHS) {
     state.paths[state.path_num++] = strdup(path);
@@ -391,6 +392,7 @@ assemble(void)
  
   state.pass++;
   state.org = 0;
+  state.device.id_location = 0;
   state.cblock = 0;
   state.cblock_defined = 0;
   /* clean out defines for second pass */
@@ -423,8 +425,7 @@ assemble(void)
   hex_init();
 
   if(state.memory_dump)
-    print_i_memory(state.i_memory, 
-                   state.device.class == PROC_CLASS_PIC16E ? 1 : 0);
+    print_i_memory(state.i_memory, state.device.class);
 
   /* Maybe produce a symbol table */
   if (state.lst.symboltable) {
@@ -442,7 +443,7 @@ assemble(void)
   coff_close_file();
   deps_close();
   lst_close();
-  if (state.processor_info)
+  if (state.processor)
     cod_close_file();
   free_files();
 

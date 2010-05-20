@@ -69,28 +69,28 @@ void gp_cofflink_combine_overlay(gp_object_type *object, int remove_symbol);
 
 void gp_cofflink_make_stack(gp_object_type *object, int num_bytes);
 
-void gp_cofflink_merge_sections(gp_object_type *object, int byte_addr);
+void gp_cofflink_merge_sections(gp_object_type *object);
 
 void gp_cofflink_make_cinit(gp_object_type *object);
 
 void gp_cofflink_make_idata(gp_object_type *object);
 
-void gp_add_cinit_section(gp_object_type *object, int byte_addr);
+void gp_add_cinit_section(gp_object_type *object);
 
 void gp_cofflink_reloc_abs(MemBlock *m,
-                           int byte_addr,
+			   int org_to_byte_shift,
                            gp_section_type *section,
                            unsigned long flags);
 
 void gp_cofflink_reloc_assigned(MemBlock *m,
-                                int byte_addr,
+				int org_to_byte_shift,
                                 gp_section_type *section,
                                 unsigned long flags,
                                 struct symbol_table *sections,
                                 struct symbol_table *logical_sections);
 
 void gp_cofflink_reloc_unassigned(MemBlock *m,
-                                  int byte_addr,
+				  int org_to_byte_shift,
                                   gp_section_type *section,
                                   unsigned long flags,
                                   struct symbol_table *sections);
@@ -99,7 +99,6 @@ void gp_cofflink_update_table(gp_object_type *object);
 
 void gp_cofflink_fill_pages(gp_object_type *object,
                             MemBlock *m,
-                            int byte_addr,
                             struct symbol_table *sections);
 
 void gp_cofflink_patch(gp_object_type *object);

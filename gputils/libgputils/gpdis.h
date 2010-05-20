@@ -26,8 +26,8 @@ extern gp_boolean gp_decode_mnemonics;
 extern gp_boolean gp_decode_extended;
 
 int gp_disassemble(MemBlock *m,
-                   int org,
-                   enum proc_class class,
+                   int byte_address,
+                   proc_class_t class,
                    char *buffer,
                    size_t sizeof_buffer);
 

@@ -112,7 +112,7 @@ scan_index(struct symbol_table *table, gp_archive_type *archive)
   gp_object_type *object;
   int i;
   int num_added = 1; /* initalize to 1 so while loop can be entered */
-  char *name;
+  const char *name;
   char *object_name;
   gp_boolean modified = false;
 
@@ -251,7 +251,7 @@ void build_tables(void)
   gp_boolean modified;
   int i;
   struct symbol *s;
-  char *name;
+  const char *name;
   gp_coffsymbol_type *var;
 
   /* Create the object file symbol tables */  
@@ -440,7 +440,6 @@ init(void)
   gp_date_string(state.startdate, sizeof(state.startdate));
   state.hex_format = inhx32;
   state.numpaths = 0;
-  state.byte_addr = 0;
   state.processor = no_processor;
   state.optimize.level = 1;
   state.codfile = normal;
@@ -469,7 +468,7 @@ init(void)
   return;
 }
 
-void gplink_add_path(char *path)
+void gplink_add_path(const char *path)
 {
   if(state.numpaths < MAX_PATHS) {
     state.paths[state.numpaths++] = strdup(path);
@@ -687,7 +686,7 @@ linker(void)
     /* The processor is known because an object was on the command line. So
        use one of the default scripts that are distributed with gputils. */
     char file_name[BUFSIZ];
-    char *script_name;
+    const char *script_name;
     
     assert(state.processor != no_processor); 
     script_name = gp_processor_script(state.processor);
@@ -712,12 +711,6 @@ linker(void)
   if (state.object == NULL) {
     gp_error("missing input object file");
     return EXIT_FAILURE; 
-  }
-
-  if (state.class == PROC_CLASS_PIC16E) {
-    state.byte_addr = 1;
-  } else {
-    state.byte_addr = 0;
   }
 
   /* An error occured while reading the input files, no need to continue */
@@ -754,7 +747,7 @@ linker(void)
   gp_cofflink_combine_overlay(state.object, 0);
 
   /* combine all sections with the same name */
-  gp_cofflink_merge_sections(state.object, state.byte_addr);
+  gp_cofflink_merge_sections(state.object);
 
   /* create ROM data for initialized data sections */
   gp_cofflink_make_idata(state.object);
@@ -766,7 +759,7 @@ linker(void)
   /* allocate memory for absolute sections */
   gp_debug("verifying absolute sections.");
   gp_cofflink_reloc_abs(program, 
-                        state.byte_addr,
+                        state.class->org_to_byte_shift,
                         state.object->sections,
                         STYP_TEXT | STYP_DATA_ROM);
   gp_cofflink_reloc_abs(data, 
@@ -780,7 +773,7 @@ linker(void)
   /* allocate memory for relocatable assigned sections */
   gp_debug("relocating assigned sections.");
   gp_cofflink_reloc_assigned(program, 
-                             state.byte_addr,
+                             state.class->org_to_byte_shift,
                              state.object->sections,
                              STYP_TEXT | STYP_DATA_ROM,
                              state.section.definition,
@@ -798,7 +791,7 @@ linker(void)
   /* allocate memory for relocatable unassigned sections */
   gp_debug("relocating unassigned sections.");
   gp_cofflink_reloc_unassigned(program, 
-                               state.byte_addr,
+                               state.class->org_to_byte_shift,
                                state.object->sections,
                                STYP_TEXT | STYP_DATA_ROM,
                                state.section.definition);
@@ -810,13 +803,12 @@ linker(void)
                                state.section.definition);
 
   /* load the table with the relocated addresses */
-  gp_add_cinit_section(state.object, state.byte_addr);
+  gp_add_cinit_section(state.object);
 
   gp_cofflink_update_table(state.object);
 
   gp_cofflink_fill_pages(state.object,
                          program,
-                         state.byte_addr,
                          state.section.definition);
 
   i_memory_free(data);
@@ -845,7 +837,7 @@ linker(void)
            state.hex_format,
            gp_num_errors,
            0,
-           0);
+	   state.class->core_size);
 
   /* convert the executable object into a cod file and list file */
   cod_init();

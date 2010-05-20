@@ -66,7 +66,7 @@ struct ar_hdr
 
 typedef struct gp_archive_type {
   struct ar_hdr           header; /* archive header file */
-  char                   *file;   /* object file */
+  unsigned char          *file;   /* object file */
   int                     offset; /* offset from the begining of the archive */
   struct gp_archive_type *next;   /* next file in linked list */
 } gp_archive_type;
@@ -99,7 +99,7 @@ int gp_archive_make_index(gp_archive_type *archive,
 gp_archive_type *gp_archive_add_index(struct symbol_table *table,
                                       gp_archive_type *archive);
 int gp_archive_add_symbol(struct symbol_table *table,
-                          char *name,
+                          const char *name,
                           gp_archive_type *member);
 void gp_archive_read_index(struct symbol_table *table,
                            gp_archive_type *archive);

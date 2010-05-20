@@ -32,14 +32,14 @@ typedef enum gp_coff_type {
 
 typedef struct gp_binary_type {
   long int        size;         /* size of the file in bytes */
-  char           *file;         /* file contents */
+  unsigned char  *file;         /* file contents */
 } gp_binary_type;
 
-gp_coff_type gp_identify_coff_file(char *filename);
-gp_binary_type *gp_read_file(char *filename);
+gp_coff_type gp_identify_coff_file(const char *filename);
+gp_binary_type *gp_read_file(const char *filename);
 void gp_free_file(gp_binary_type *file);
-gp_object_type *gp_convert_file(char *filename, char *file);
-gp_object_type *gp_read_coff(char *filename);
+gp_object_type *gp_convert_file(const char *filename, const unsigned char *file);
+gp_object_type *gp_read_coff(const char *filename);
 
 
 #endif

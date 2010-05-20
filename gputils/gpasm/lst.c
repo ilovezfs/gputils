@@ -142,7 +142,7 @@ void lst_memory_map(MemBlock *m)
       row_used = 0;
 
       for (j = 0; j < num_per_line; j++) {
-	if (m->memory[i+j] & MEM_USED_MASK) {
+	if (m->memory[i+j] & BYTE_USED_MASK) {
 	  row_used = 1;
 	  break;
 	}
@@ -154,7 +154,7 @@ void lst_memory_map(MemBlock *m)
           if ((j % num_per_block) == 0) {
 	    strncat(buf, " ", sizeof(buf));
           }
-          if (m->memory[i + j] & MEM_USED_MASK) {
+          if (m->memory[i + j] & BYTE_USED_MASK) {
 	    strncat(buf, "X", sizeof(buf));
 	    if (_16bit_core) {
 	      /* each word has two bytes */
@@ -180,9 +180,9 @@ void lst_memory_map(MemBlock *m)
   lst_line("All other memory blocks unused.");
   lst_line("");
 
-  snprintf(buf, sizeof(buf), 
+  snprintf(buf, sizeof(buf),
            "Program Memory Words Used: %i",
-           i_memory_used(state.i_memory));
+           gp_processor_byte_to_org(state.device.class, b_memory_used(state.i_memory)));
   lst_line(buf);
 
 }
@@ -216,71 +216,55 @@ unsigned int lst_data(char *m, unsigned int byte_org,
     unsigned int bytes_emitted, size_t sizeof_m)
 {
   char buf[BUFSIZ];
-  unsigned int i;
   unsigned int lst_bytes = 0;
   size_t m_spacing, m_prev_len = strlen(m), m_after_len;
 
   if (bytes_emitted == 0)
     return 0;
 
-  /* when in a byte packed section, print byte by byte */
-  if (state.obj.new_sec_flags & STYP_BPACK) {
-    gp_boolean started_odd = (byte_org & 1) != 0;
-
-    if (started_odd) {
-      /* not word-aligned */
-      /* list first byte */
-      unsigned char emit_byte = (unsigned char)(i_memory_get(state.i_memory,
-          (byte_org >> 1)) >> 8);
-      snprintf(buf, sizeof(buf), "%02X ", emit_byte);
-      strncat(m, buf, sizeof_m);
-      ++lst_bytes;
-    } else if (bytes_emitted == 1) {
-      /* word-aligned */
-      /* but only one byte */
-      unsigned char emit_byte = (unsigned char)(i_memory_get(state.i_memory,
-          (byte_org >> 1)) & 0xff);
+  /* when in a idata or byte packed section, print byte by byte */
+  if (state.obj.new_sec_flags & (STYP_DATA|STYP_BPACK)) {
+    /* list first byte */
+    if ((byte_org & 1) != 0) {
+      unsigned char emit_byte;
+      b_memory_get(state.i_memory, byte_org, &emit_byte);
       snprintf(buf, sizeof(buf), "%02X ", emit_byte);
       strncat(m, buf, sizeof_m);
       ++lst_bytes;
     }
     /* list whole words */
-    for (i = 0; (i < ((bytes_emitted-started_odd) >> 1)) && (i < 1); ++i) {
-      unsigned int emit_word = i_memory_get(state.i_memory,
-          ((byte_org+started_odd) >> 1) + i) & 0xffff;
-      snprintf(buf, sizeof(buf), "%02X %02X ", emit_word & 0x00ff,
-          emit_word >> 8);
+    if (1 < bytes_emitted - lst_bytes) {
+      unsigned char emit_bytes[2];
+      b_memory_get(state.i_memory, byte_org+lst_bytes, emit_bytes);
+      b_memory_get(state.i_memory, byte_org+lst_bytes+1, emit_bytes+1);
+      snprintf(buf, sizeof(buf), "%02X %02X ", emit_bytes[0], emit_bytes[1]);
       strncat(m, buf, sizeof_m);
       lst_bytes += 2;
     }
-    if (i != 1 && started_odd && bytes_emitted > 1) {
-      /* we have space for an extra byte if we had no whole word and we started odd */
-      snprintf(buf, sizeof(buf), "%02X", i_memory_get(state.i_memory,
-          ((byte_org + 1) >> 1)) & 0xff00 >> 8);
-      strncat(m, buf, sizeof_m);
-      ++lst_bytes;
-    } else if (!started_odd && i == 1 && bytes_emitted > 2) {
-      /* we have space for another byte, word aligned */
-      snprintf(buf, sizeof(buf), "%02X", i_memory_get(state.i_memory,
-          (byte_org + 2) >> 1) & 0xff);
+    if (0 < bytes_emitted - lst_bytes) {
+      /* we have space for an extra byte */
+      unsigned char emit_byte;
+      b_memory_get(state.i_memory, byte_org+lst_bytes, &emit_byte);
+      snprintf(buf, sizeof(buf), "%02X", emit_byte);
       strncat(m, buf, sizeof_m);
       ++lst_bytes;
     }
   }
   else {    /* non-code pack section */
     /* list full words as bytes */
-    for (i = 0; (i < (bytes_emitted >> 1)) && (i < 2); ++i) {
-      unsigned int emit_word = i_memory_get(state.i_memory,
-            (byte_org>>1) + i) & 0xffff;
+    for (; lst_bytes+1 < bytes_emitted && lst_bytes < 4; lst_bytes+=2) {
+      unsigned short emit_word;
+      state.device.class->i_memory_get(state.i_memory, byte_org+lst_bytes,
+				       &emit_word);
       snprintf(buf, sizeof(buf), "%04X ", emit_word);
       strncat(m, buf, sizeof_m);
-      lst_bytes += 2;
     }
     if (bytes_emitted < 4) {
       /* list extra byte if odd */
-      if (((byte_org+bytes_emitted) & 1) != 0) {
-        snprintf(buf, sizeof(buf), "%02X   ", i_memory_get(state.i_memory,
-                (byte_org+bytes_emitted)>>1) & 0x00ff);
+      if (lst_bytes < bytes_emitted) {
+	unsigned char emit_byte;
+	b_memory_get(state.i_memory, byte_org+lst_bytes, &emit_byte);
+        snprintf(buf, sizeof(buf), "%02X   ", emit_byte);
         strncat(m, buf, sizeof_m);
         ++lst_bytes;
       }
@@ -318,40 +302,26 @@ void lst_format_line(char *src_line, int value)
     strncat(m, "     ", sizeof(m));
     break;
   case org:
-    snprintf(m, sizeof(m), "%04X      ", state.org << _16bit_core);
+    snprintf(m, sizeof(m), "%04X      ", gp_processor_byte_to_org(state.device.class, state.org));
     strncat(m, "     ", sizeof(m));
     break;
   case idlocs:
     /* not used for 16 bit devices, config is used */
-    snprintf(m, sizeof(m), "%04X %04X %04X ",
-            state.device.id_location,
-            i_memory_get(state.i_memory, state.device.id_location) & 0xffff,
-            i_memory_get(state.i_memory, 
-		         state.device.id_location + 1) & 0xffff);
+    {
+      unsigned short id[2];
+      state.device.class->i_memory_get(state.i_memory, state.device.id_location, id);
+      state.device.class->i_memory_get(state.i_memory, state.device.id_location+2, id+1);
+      snprintf(m, sizeof(m), "%04X %04X %04X ",
+	       gp_processor_byte_to_org(state.device.class, gp_processor_id_location(state.processor)),
+	       id[0], id[1]);
+    }
     break;
   case insn:
-    byte_org = (state.lst.line.was_org << 1);
-    if (state.obj.section)
-      byte_org -= (state.obj.section->emitted_pack_byte ? 1 : 0);
-    bytes_emitted = (state.org << 1) - byte_org;
-    
-    /* deal with offset changes for non-word aligned data */
-    if (state.obj.section) {
-      /* do we have a pending byte for a full word? */
-      if (state.obj.section->have_pack_byte) {
-        /* did we emit some bytes? if so we have to subtract a half word */
-        if (bytes_emitted > 0 && state.obj.section->have_pack_byte)
-          bytes_emitted--;
-        /* is this a label or something with no instructions? then our
-         * org must be modified. */
-        else if (bytes_emitted == 0)
-          byte_org--;
-      }
-    }
-    emitted = (bytes_emitted >> 1);
-    if (bytes_emitted > 0 && ((byte_org & 1) == 0) && ((bytes_emitted & 1) != 0))
-      emitted += 1;
-    snprintf(m, sizeof(m), "%04X ", byte_org >> (1 - _16bit_core));
+    byte_org = state.lst.line.was_org;
+    bytes_emitted = state.org - byte_org;
+    emitted = bytes_emitted;
+    snprintf(m, sizeof(m), "%04X ",
+	     gp_processor_byte_to_org(state.device.class, state.lst.line.was_org));
 
     lst_bytes = lst_data(m, byte_org, bytes_emitted, sizeof(m));
     byte_org += lst_bytes;
@@ -364,29 +334,39 @@ void lst_format_line(char *src_line, int value)
 	 words in the list file. */
       if (state.lst.config_address == CONFIG4L) {
         /* Special case */
-        snprintf(m, sizeof(m), "%06X %04X    ",   
-                 state.lst.config_address,
-                 i_memory_get(state.i_memory, 
-		 	      state.lst.config_address >> 1) & 0xffff);
+	unsigned short word;
+	state.device.class->i_memory_get(state.i_memory,
+					 state.lst.config_address, &word);
+        snprintf(m, sizeof(m), "%06X %04X    ",
+                 state.lst.config_address, word);
       } else if((state.lst.config_address & 0x1) == 0) {
         /* if it is an even address don't print anything */
 	strncpy(m, "               ", sizeof(m));
       } else {
+	unsigned short word;
+	state.device.class->i_memory_get(state.i_memory,
+					 state.lst.config_address - 1, &word);
         snprintf(m, sizeof(m), "%06X %04X    ",   
-                 state.lst.config_address - 1,
-                 i_memory_get(state.i_memory, 
-			     (state.lst.config_address - 1) >> 1) & 0xffff);
+                 state.lst.config_address - 1, word);
       }
     } else {
-      snprintf(m, sizeof(m), "%06X %04X    ",   
-               state.lst.config_address,
-               i_memory_get(state.i_memory, 
-		            state.lst.config_address) & 0xffff);
+      unsigned short word;
+      state.device.class->i_memory_get(state.i_memory,
+				       state.lst.config_address, &word);
+      snprintf(m, sizeof(m), "%06X %04X    ",
+               gp_processor_byte_to_org(state.device.class, state.lst.config_address), word);
+    }
+    break;
+  case data:
+    strncpy(m, "               ", sizeof(m));
+    if ((SECTION_FLAGS & (STYP_TEXT|STYP_BPACK)) == STYP_TEXT) {
+      /* generate line numbers for data directives in program memory */
+      emitted = state.org - state.lst.line.was_org;
     }
     break;
   case res:
     strncpy(m, "               ", sizeof(m));
-    if (SECTION_FLAGS & STYP_TEXT) {
+    if (!IS_RAM_ORG) {
       /* generate line numbers for res directives in program memory */
       emitted = state.org - state.lst.line.was_org;
     }
@@ -437,7 +417,7 @@ void lst_format_line(char *src_line, int value)
 
   coff_linenum(emitted);
 
-  /* Don't write to file is list is disabled */
+  /* Don't write to file if list is disabled */
   if (!state.lst.enabled)
     return;
 
@@ -451,11 +431,12 @@ void lst_format_line(char *src_line, int value)
 #endif
 
   if (state.lst.line.linetype == idlocs) {
-    snprintf(m, sizeof(m), "     %04X %04X ",
-             i_memory_get(state.i_memory, 
-		          state.device.id_location + 2) & 0xffff,
-             i_memory_get(state.i_memory, 
-		          state.device.id_location + 3) & 0xffff);      
+    unsigned short id[2];
+    state.device.class->i_memory_get(state.i_memory,
+				     state.device.id_location + 4, id);
+    state.device.class->i_memory_get(state.i_memory,
+				     state.device.id_location + 6, id+1);
+    snprintf(m, sizeof(m), "     %04X %04X ", id[0], id[1]);
     lst_line(m);   
   }
 
@@ -471,10 +452,6 @@ void lst_format_line(char *src_line, int value)
     }
     state.cod.emitting = 0;
   }
- 
-  /* we reset this here, otherwise labels will display bytes again */
-  if(state.obj.section)
-    state.obj.section->emitted_pack_byte = false;
 }
 
 /* append the symbol table to the .lst file */

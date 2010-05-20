@@ -83,25 +83,25 @@ struct insn {
 
 #define TABLE_SIZE(X)       (sizeof(X) / sizeof(X[0]))
 
-extern struct insn op_12c5xx[];
+extern const struct insn op_12c5xx[];
 extern const int num_op_12c5xx;
 
-extern struct insn op_sx[];
+extern const struct insn op_sx[];
 extern const int num_op_sx;
 
-extern struct insn op_16cxx[];
+extern const struct insn op_16cxx[];
 extern const int num_op_16cxx;
 
-extern struct insn op_17cxx[];
+extern const struct insn op_17cxx[];
 extern const int num_op_17cxx;
 
-extern struct insn op_18cxx[];
+extern const struct insn op_18cxx[];
 extern const int num_op_18cxx;
 
-extern struct insn op_18cxx_sp[];
+extern const struct insn op_18cxx_sp[];
 extern const int num_op_18cxx_sp;
 
-extern struct insn op_18cxx_ext[];
+extern const struct insn op_18cxx_ext[];
 extern const int num_op_18cxx_ext;
 
 #endif

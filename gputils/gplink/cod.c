@@ -286,7 +286,7 @@ cod_lst_line(int line_type)
 
     /* Write the address of the opcode. */
     gp_putl16(&lb.block[offset + COD_LS_SLOC],
-              state.lst.was_org << state.byte_addr);
+              gp_processor_byte_to_org(state.class, state.lst.was_org));
 
     break;
   case COD_LAST_LST_LINE:
@@ -327,7 +327,7 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
 
   int i,offset,len,type;
   gp_coffsymbol_type *var;
-  char * s;
+  const char * s;
   Block sb;
 
   if(!state.cod.enabled)
@@ -388,7 +388,7 @@ cod_emit_opcode(int address,int opcode)
   int block_index;
   int found;
   int _64k_base;
-  char * block;
+  unsigned char * block;
 
   if(!state.cod.enabled)
     return;
@@ -403,8 +403,8 @@ cod_emit_opcode(int address,int opcode)
    * all of the opcodes have been emitted.
    */
 
-  block_index = (address >> (COD_BLOCK_BITS-1)) & (COD_CODE_IMAGE_BLOCKS -1); 
-  _64k_base = (address >> 15) & 0xffff;
+  block_index = (address >> COD_BLOCK_BITS) & (COD_CODE_IMAGE_BLOCKS -1); 
+  _64k_base = (address >> 16) & 0xffff;
 
 
   dbi = &main_dir;
@@ -440,7 +440,7 @@ cod_emit_opcode(int address,int opcode)
 
   block = dbi->cod_image_blocks[block_index].block;
 
-  gp_putl16(&block[(address*2) & (COD_BLOCK_SIZE - 1)], opcode);
+  gp_putl16(&block[address & (COD_BLOCK_SIZE - 1)], opcode);
 
 }
 
@@ -451,7 +451,7 @@ write_cod_range_block(unsigned int address, Block *rb)
   DirBlockInfo *dbi = &main_dir;
   unsigned int _64k_base;
 
-  _64k_base = (address >> 15) & 0xffff;
+  _64k_base = (address >> 16) & 0xffff;
 
   do {
 
@@ -485,10 +485,11 @@ cod_write_code(void)
   while(m) {
     mem_base = m->base << I_MEM_BITS;
 
-    for(i=mem_base; (i-mem_base) <= MAX_I_MEM; i++) {
-      if ((i_memory_get(state.i_memory, i) & MEM_USED_MASK) &&
-          ((i-mem_base) < MAX_I_MEM)) {
-	cod_emit_opcode(i, i_memory_get(state.i_memory, i) & 0xffff);
+    for(i=mem_base; (i-mem_base) <= MAX_I_MEM; i += 2) {
+      unsigned short insn;
+      if (i - mem_base < MAX_I_MEM &&
+	  state.class->i_memory_get(state.i_memory, i, &insn)) {
+	cod_emit_opcode(i, insn);
 	if(used_flag == 0) {
           /* Save the start address in a range of opcodes */
           start_address = i;
@@ -507,8 +508,8 @@ cod_write_code(void)
 	  /* We need to update dir map indicating a range of memory that
 	     is needed. This is done by writing the start and end address to
 	     the directory map. */
-	  gp_putl16(&rb.block[offset], 2*start_address);
-	  gp_putl16(&rb.block[offset+2], 2*(i-1) + 1);
+	  gp_putl16(&rb.block[offset], start_address);
+	  gp_putl16(&rb.block[offset+2], i-1);
 
 	  offset += 4;
 	  if(offset>=COD_BLOCK_SIZE) {

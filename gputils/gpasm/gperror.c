@@ -157,6 +157,8 @@ char *gp_geterror(unsigned int code)
     return "__IDLOC directives must be contiguous.";
   case GPE_MISSING_BRACKET:
     return "Square brackets required around offset operand.";
+  case GPE_IDLOCS_ORDER:
+    return "__IDLOCS directives must be listed in ascending order.";
   case GPE_CONFIG_UNKNOWN:
     return "An error with the CONFIG directive occured.";
   case GPE_CONFIG_usCONFIG:

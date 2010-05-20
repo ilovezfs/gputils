@@ -26,9 +26,9 @@ Boston, MA 02111-1307, USA.  */
 #include <windows.h>
 #endif
 
-char *gp_header_path;
-char *gp_lkr_path;
-char *gp_lib_path;
+const char *gp_header_path;
+const char *gp_lkr_path;
+const char *gp_lib_path;
 
 gp_boolean absolute_path_warning = true;
 
@@ -69,8 +69,8 @@ gp_init(void)
 void 
 gp_fputl16(short data, FILE *fp) 
 {
-  fputc((int)(data & 255), fp);
-  fputc((int)((data >> 8) & 255), fp);
+  fputc(data & 255, fp);
+  fputc((data >> 8) & 255, fp);
 
   return;
 }
@@ -78,17 +78,18 @@ gp_fputl16(short data, FILE *fp)
 void 
 gp_fputl32(long data, FILE *fp) 
 {
-  fputc((int)(data & 255), fp);
-  fputc((int)((data >> 8) & 255), fp);
-  fputc((int)((data >> 16) & 255), fp);
-  fputc((int)((data >> 24) & 255), fp);
+  fputc(data & 255, fp);
+  fputc((data >> 8) & 255, fp);
+  fputc((data >> 16) & 255, fp);
+  fputc((data >> 24) & 255, fp);
 
   return;
 }
 
-void 
-gp_fputvar(char *data, int number, FILE *fp) 
+void
+gp_fputvar(const void *data_, int number, FILE *fp)
 {
+  const unsigned char *data = data_;
   int i;
   
   for(i = 0; i < number; i++)
@@ -98,37 +99,37 @@ gp_fputvar(char *data, int number, FILE *fp)
 }
 
 short 
-gp_getl16(char *addr)
+gp_getl16(const unsigned char *addr)
 {
   short value;
   
-  value  = (unsigned char)addr[0];
-  value |= (unsigned char)addr[1] << 8;
+  value  = addr[0];
+  value |= addr[1] << 8;
   
   return value;
 }
 
 unsigned short 
-gp_getu16(char *addr)
+gp_getu16(const unsigned char *addr)
 {
   return (unsigned short) gp_getl16(addr);
 }
 
 long 
-gp_getl32(char *addr)
+gp_getl32(const unsigned char *addr)
 {
   long value;
 
-  value  = (unsigned char)addr[0];
-  value |= (unsigned char)addr[1] << 8;
-  value |= (unsigned char)addr[2] << 16;
-  value |= (unsigned char)addr[3] << 24;
+  value  = addr[0];
+  value |= addr[1] << 8;
+  value |= addr[2] << 16;
+  value |= addr[3] << 24;
 
   return value;
 }
 
 void 
-gp_putl16(char *addr, short data)
+gp_putl16(unsigned char *addr, short data)
 {
   addr[1] = (data >> 8) & 0xff;
   addr[0] = data & 0xff;
@@ -137,7 +138,7 @@ gp_putl16(char *addr, short data)
 }
 
 void 
-gp_putl32(char *addr, long data)
+gp_putl32(unsigned char *addr, long data)
 {
   addr[0] = data & 0xff;
   addr[1] = (data >> 8)  & 0xff;
@@ -150,20 +151,20 @@ gp_putl32(char *addr, long data)
 /* big endian functions */
 
 long 
-gp_getb32(char *addr)
+gp_getb32(const unsigned char *addr)
 {
   long value;
 
-  value  = (unsigned char)addr[0] << 24;
-  value |= (unsigned char)addr[1] << 16;
-  value |= (unsigned char)addr[2] << 8;
-  value |= (unsigned char)addr[3];
+  value  = addr[0] << 24;
+  value |= addr[1] << 16;
+  value |= addr[2] << 8;
+  value |= addr[3];
 
   return value;
 }
 
 void 
-gp_putb32(char *addr, long data)
+gp_putb32(unsigned char *addr, long data)
 {
   addr[0] = (data >> 24) & 0xff;
   addr[1] = (data >> 16) & 0xff;
@@ -194,7 +195,7 @@ gp_date_string(char *buffer, size_t sizeof_buffer)
 }
 
 char *
-gp_lower_case(char *name)
+gp_lower_case(const char *name)
 {
   char *new;
   char *ptr;
@@ -210,7 +211,7 @@ gp_lower_case(char *name)
 }
 
 char *
-gp_upper_case(char *name)
+gp_upper_case(const char *name)
 {
   char *new;
   char *ptr;

@@ -22,27 +22,27 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPSYSTEM_H__
 #define __GPSYSTEM_H__
 
-extern char *gp_header_path;
-extern char *gp_lkr_path;
-extern char *gp_lib_path;
+extern const char *gp_header_path;
+extern const char *gp_lkr_path;
+extern const char *gp_lib_path;
 
 void gp_init(void);
 
 void  gp_fputl16(short data, FILE *fp);
 void  gp_fputl32(long data, FILE *fp); 
-void  gp_fputvar(char *data, int number, FILE *fp); 
-short gp_getl16(char *addr);
-unsigned short gp_getu16(char *addr);
-long  gp_getl32(char *addr);
-void  gp_putl16(char *addr, short data);
-void  gp_putl32(char *addr, long data);
+void  gp_fputvar(const void *data, int number, FILE *fp); 
+short gp_getl16(const unsigned char *addr);
+unsigned short gp_getu16(const unsigned char *addr);
+long  gp_getl32(const unsigned char *addr);
+void  gp_putl16(unsigned char *addr, short data);
+void  gp_putl32(unsigned char *addr, long data);
 
-long  gp_getb32(char *addr);
-void  gp_putb32(char *addr, long data);
+long  gp_getb32(const unsigned char *addr);
+void  gp_putb32(unsigned char *addr, long data);
 
 void  gp_date_string(char *buffer, size_t sizeof_buffer);
-char *gp_lower_case(char *name);
-char *gp_upper_case(char *name);
+char *gp_lower_case(const char *name);
+char *gp_upper_case(const char *name);
 
 typedef struct gp_list_struct gp_linked_list;
 

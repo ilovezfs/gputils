@@ -23,7 +23,7 @@ Boston, MA 02111-1307, USA.  */
 #include "libgputils.h"
 
 gp_coff_type 
-gp_identify_coff_file(char *filename)
+gp_identify_coff_file(const char *filename)
 {
   FILE *file;
   char magic[SARMAG + 1];
@@ -51,7 +51,7 @@ gp_identify_coff_file(char *filename)
 /* Read a binary file and store it in memory. */
 
 gp_binary_type *
-gp_read_file(char *filename)
+gp_read_file(const char *filename)
 {
   FILE *infile;
   gp_binary_type *file;
@@ -70,7 +70,7 @@ gp_read_file(char *filename)
   rewind(infile); 
 
   /* read the object file into memory */
-  file->file = (char *)malloc(file->size);
+  file->file = (unsigned char *)malloc(file->size);
   fread(file->file, 1, file->size, infile); 
 
   fclose(infile);
@@ -94,7 +94,7 @@ gp_free_file(gp_binary_type *file)
 
 /* Return optional header size (0 for no header) */
 static int
-_read_file_header(gp_object_type *object, char *file)
+_read_file_header(gp_object_type *object, const unsigned char *file)
 {
   int isnew = 0;
   int opt_hdr;
@@ -123,7 +123,7 @@ _read_file_header(gp_object_type *object, char *file)
 }
 
 static void
-_read_opt_header(gp_object_type *object, char *file)
+_read_opt_header(gp_object_type *object, const unsigned char *file)
 {
   unsigned short optmagic;
   unsigned long vstamp, proc_code, rom_width, ram_width;
@@ -186,8 +186,8 @@ _read_opt_header(gp_object_type *object, char *file)
 static void 
 _read_section_header(gp_object_type *object,
                      gp_section_type *section, 
-                     char *file, 
-                     char *string_table)
+                     const unsigned char *file, 
+                     const char *string_table)
 {
   char buffer[9];
   unsigned int offset;
@@ -197,7 +197,7 @@ _read_section_header(gp_object_type *object,
     offset = gp_getl32(&file[4]);
     section->name = strdup(&string_table[offset]);
   } else {
-    strncpy(buffer, &file[0], 8);
+    memcpy(buffer, &file[0], 8);
     /* the name can occupy all 8 chars without a null terminator */
     buffer[8] = '\0';
     section->name = strdup(buffer);
@@ -218,20 +218,25 @@ _read_section_header(gp_object_type *object,
   section->num_lineno = gp_getl16(&file[34]);
   section->flags      = gp_getl32(&file[36]); 
 
-  section->data = i_memory_create();
+  if (section->data_ptr)
+    section->data = i_memory_create();
+  else
+    section->data = NULL;
   section->relocations = NULL;
   section->relocations_tail = NULL;
   section->line_numbers = NULL;
   section->line_numbers_tail = NULL;
   section->is_used = false;
 
+  if (section->flags & (STYP_TEXT|STYP_DATA_ROM))
+    section->address = gp_processor_org_to_byte(object->class, section->address);
 }
 
 static void 
 _read_reloc(gp_object_type *object,
             gp_section_type *section,
             gp_reloc_type *relocation,
-            char *file)
+            const unsigned char *file)
 {
   relocation->address = gp_getl32(&file[0]);
   relocation->symbol  = &object->symbols[gp_getl32(&file[4])];
@@ -248,13 +253,14 @@ _read_reloc(gp_object_type *object,
 
 static void 
 _read_lineno(gp_object_type *object,
+	     int org_to_byte_shift,
              gp_linenum_type *line_number,
-             char *file)
+             const unsigned char *file)
 {
 
   line_number->symbol      = &object->symbols[gp_getl32(&file[0])];
   line_number->line_number = gp_getl16(&file[4]);
-  line_number->address     = gp_getl32(&file[6]); 
+  line_number->address     = gp_org_to_byte(org_to_byte_shift, gp_getl32(&file[6]));
 
   /* FIXME: function index and flags are unused, so far.
   line_number->l_flags  = gp_getl16(&file[10]);
@@ -264,17 +270,16 @@ _read_lineno(gp_object_type *object,
 }
 
 static void 
-_read_sections(gp_object_type *object, char *file)
+_read_sections(gp_object_type *object, const unsigned char *file)
 {
   int i, j;
-  char *section_ptr;
-  char *string_table;
-  char *loc;
+  const unsigned char *section_ptr;
+  const char *string_table;
+  const unsigned char *loc;
   gp_section_type *current = NULL;
   gp_reloc_type *current_reloc = NULL;
   gp_linenum_type *current_linenum = NULL;
   unsigned int number;
-  unsigned int value;
   int org;
 
   /* move to the start of the section headers */
@@ -282,8 +287,9 @@ _read_sections(gp_object_type *object, char *file)
             (FILE_HDR_SIZ_v1 + OPT_HDR_SIZ_v1));
 
   /* setup pointer to string table */
-  string_table = &file[object->symbol_ptr + 
-                 (object->symbol_size * object->num_symbols)];
+  string_table = (const char*)
+    &file[object->symbol_ptr + 
+	  (object->symbol_size * object->num_symbols)];
 
   object->sections = gp_coffgen_blocksec(object->num_sections);
   current = object->sections;
@@ -296,39 +302,11 @@ _read_sections(gp_object_type *object, char *file)
 
     /* read the data */
     if ((current->size) && (current->data_ptr)) {
-      if ((object->class == PROC_CLASS_PIC16E) && 
-          ((current->flags & STYP_TEXT) ||
-           (current->flags & STYP_DATA_ROM)))
-        org = current->address >> 1;
-      else
-        org = current->address;
-
+      org = current->address;
       loc = &file[current->data_ptr];
-      if ((current->flags & STYP_TEXT) || (current->flags & STYP_DATA_ROM)) {
-        /* 
-		 * original comment: size is in bytes, but words are stored in memory
-		 *
-		 * this is true, but when using code_pack sections can have an odd
-		 * size. it looks like what MPLAB does is set the odd byte to 0xff in
-		 * program memory, and it doesn't seem to allow two code pack sections
-		 * to straddle a non-word boundary.
-		 */
-        number = (current->size + 1) / 2;
-      } else {
-        number = current->size;
-      }
+      number = current->size;
       for (j = 0; j < number; j++) {
-        if ((current->flags & STYP_TEXT) || (current->flags & STYP_DATA_ROM)) {
-		  if (j + 1 == number && current->size % 2 != 0) {
-		    /* an odd byte - use 0xff for the lower half, ala MPLAB */
-		    value = 0xff00 | loc[j * 2];
-		  } else {
-            value = (unsigned int)gp_getl16(&loc[j * 2]);
-		  }
-        } else {
-          value = (unsigned int)loc[j];
-        }
-        i_memory_put(current->data, org + j, MEM_USED_MASK | value);
+        b_memory_put(current->data, org + j, loc[j]);
       }
     }
 
@@ -348,12 +326,17 @@ _read_sections(gp_object_type *object, char *file)
 
     /* read the line numbers */
     if ((current->num_lineno) && (current->lineno_ptr)) {
+      int org_to_byte_shift;
+      if (current->flags & (STYP_TEXT|STYP_DATA_ROM))
+	org_to_byte_shift = object->class->org_to_byte_shift;
+      else
+	org_to_byte_shift = 0;
       loc = &file[current->lineno_ptr];
       number = current->num_lineno;
       current->line_numbers = gp_coffgen_blockline(number);
       current_linenum = current->line_numbers;
       for (j = 0; j < number; j++) {
-        _read_lineno(object, current_linenum, loc);
+        _read_lineno(object, org_to_byte_shift, current_linenum, loc);
         loc += LINENO_SIZ;
         current->line_numbers_tail = current_linenum;
         current_linenum = current_linenum->next;
@@ -376,7 +359,7 @@ struct lazy_linking_s {
 
 static void
 _read_aux(gp_object_type *object, int i, gp_aux_type *aux, int aux_type,
-		  char *file, char *string_table, struct lazy_linking_s *lazy_linking)
+	  const unsigned char *file, const char *string_table, struct lazy_linking_s *lazy_linking)
 {
   
   aux->type = aux_type;
@@ -427,7 +410,7 @@ _read_aux(gp_object_type *object, int i, gp_aux_type *aux, int aux_type,
 
 static void 
 _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol,
-			 char *file, char *string_table, struct lazy_linking_s *lazy_linking)
+	     const unsigned char *file, const char *string_table, struct lazy_linking_s *lazy_linking)
 {
   char buffer[9];
   unsigned int offset;
@@ -439,7 +422,7 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol,
     offset = gp_getl32(&file[4]);
     symbol->name = strdup(&string_table[offset]);
   } else {
-    strncpy(buffer, &file[0], 8);
+    memcpy(buffer, &file[0], 8);
     /* the name can occupy all 8 chars without a null terminator */
     buffer[8] = '\0';
     symbol->name = strdup(buffer);
@@ -481,7 +464,7 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol,
 }
 
 static void 
-_read_symtbl(gp_object_type *object, char *file)
+_read_symtbl(gp_object_type *object, const unsigned char *file)
 {
   int i;
   int j;
@@ -490,7 +473,7 @@ _read_symtbl(gp_object_type *object, char *file)
   int aux_type;
   gp_symbol_type *current = NULL; 
   gp_aux_type *current_aux = NULL; 
-  char *string_table;
+  const char *string_table;
   struct lazy_linking_s *lazy_linking;
 
   if (number != 0) {
@@ -498,7 +481,8 @@ _read_symtbl(gp_object_type *object, char *file)
     object->symbols = gp_coffgen_blocksym(number);
 
     /* setup pointer to string table */
-    string_table = &file[object->symbol_ptr + (object->symbol_size * number)];
+    string_table = (const char *)
+      &file[object->symbol_ptr + (object->symbol_size * number)];
 
 	/* setup lazy linking of symbol table indices */
 	lazy_linking = (struct lazy_linking_s*)malloc(sizeof(struct lazy_linking_s)*number);
@@ -563,8 +547,12 @@ _clean_symtbl(gp_object_type *object)
 
   while (current != NULL) {
     /* assign section pointer, section numbers start at 1 not 0 */
-    if (current->section_number > 0)
+    if (current->section_number > 0) {
       current->section = &object->sections[current->section_number - 1];
+      /* Fix up the value to byte address if symbol is in ROM section */
+      if ((current->section->flags & (STYP_TEXT|STYP_DATA_ROM)))
+	current->value = gp_processor_org_to_byte(object->class, current->value);
+    }
     else
       current->section = NULL;
     
@@ -588,7 +576,7 @@ _clean_symtbl(gp_object_type *object)
 }
 
 gp_object_type *
-gp_convert_file(char *filename, char *file)
+gp_convert_file(const char *filename, const unsigned char *file)
 {
   gp_object_type *object;
 
@@ -607,7 +595,7 @@ gp_convert_file(char *filename, char *file)
 }
 
 gp_object_type *
-gp_read_coff(char *filename)
+gp_read_coff(const char *filename)
 {
   gp_binary_type *file;
   gp_object_type *object;

@@ -26,12 +26,11 @@ Boston, MA 02111-1307, USA.  */
    string length occupies the first string location */
 
 void 
-gp_cod_strncpy(char *dest, char *src, int max_len)
+gp_cod_strncpy(unsigned char *dest, const char *src, int max_len)
 {
-
-  *(dest-1) = ( (max_len>strlen(src)) ? strlen(src) : max_len );
-  strncpy(dest, src, *(dest-1));
-
+  int len = strlen(src);
+  dest[-1] = ( (max_len>len) ? len : max_len );
+  memcpy(dest, src, dest[-1]);
 }
 
 /* gp_cod_clear - write zeroes to a code block, unless the code block ptr 
@@ -85,11 +84,10 @@ gp_cod_create(Block *b, int *block_number)
 }
 
 void
-gp_cod_date(char *buffer, size_t sizeof_buffer)
+gp_cod_date(unsigned char *buffer, size_t sizeof_buffer)
 {
   #define TEMP_SIZE 32
   char temp[TEMP_SIZE];
-  int i;
   time_t now;
   struct tm *now_tm;
 
@@ -106,16 +104,11 @@ gp_cod_date(char *buffer, size_t sizeof_buffer)
            &mon_name[now_tm->tm_mon][0],
            now_tm->tm_year % 100);
 
-  /* copy the temporary buffer to the output */
-  for (i = 0; i < sizeof_buffer; i++) {
-    *buffer++ = temp[i];
-  }
-
-  return;
+  memcpy(buffer, temp, sizeof_buffer);
 }
 
 void
-gp_cod_time(char *buffer, size_t sizeof_buffer)
+gp_cod_time(unsigned char *buffer, size_t sizeof_buffer)
 {
   time_t now;
   struct tm *now_tm;
@@ -129,6 +122,4 @@ gp_cod_time(char *buffer, size_t sizeof_buffer)
   buffer[0] = value & 0xff;
   buffer[1] = (value >> 8) & 0xff;
   buffer[2] = now_tm->tm_sec & 0xff;
-
-  return;
 }

@@ -26,23 +26,23 @@ Boston, MA 02111-1307, USA.  */
 
  gpmemory.c
 
-    This file provides the functions used to manipulate the instruction
- memory. 
-    The instruction memory is stored in 'memory blocks' which are implemented
+    This file provides the functions used to manipulate the PIC memory. 
+    The memory is stored in 'memory blocks' which are implemented
  with the 'MemBlock' structure:
 
      typedef struct MemBlock {
        unsigned int base;
-       unsigned int *memory;
+       unsigned short *memory;
        struct MemBlock *next;
      } MemBlock;
 
- Each MemBlock can hold up to `MAX_I_MEM' (32k currently) words. The `base'
+ Each MemBlock can hold up to `MAX_I_MEM' (32k currently) bytes. The `base'
  is the base address of the memory block. If the instruction memory spans
  more than 32k, then additional memory blocks can be allocated and linked
  together in a singly linked list (`next'). The last memory block in a 
- linked list of blocks has its next ptr set to NULL.  32k was chose because
- it corresponds to 64K bytes which is the upper limit on inhx8m files.
+ linked list of blocks has its next ptr set to NULL.  32k is left over
+ from when it was number of two byte instructions and it corresponded
+ to 64K bytes which is the upper limit on inhx8m files.
  
  ************************************************************************/
 
@@ -52,7 +52,7 @@ MemBlock *i_memory_create(void)
 
   m         = (MemBlock *)malloc(sizeof(MemBlock));
   m->base   = 0;
-  m->memory = (unsigned int *)calloc(MAX_I_MEM, sizeof(unsigned int));
+  m->memory = (unsigned short *)calloc(MAX_I_MEM, sizeof(unsigned short));
   m->next   = NULL;
 
   return m;
@@ -92,7 +92,7 @@ MemBlock * i_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
 
   base = (base_address >> I_MEM_BITS) & 0xFFFF;
 
-  mbp->memory = (unsigned int *)calloc(MAX_I_MEM, sizeof(unsigned int));
+  mbp->memory = (unsigned short *)calloc(MAX_I_MEM, sizeof(unsigned short));
   mbp->base   = base;
 
   do {
@@ -113,9 +113,9 @@ MemBlock * i_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
 }
 
 /************************************************************************
- * i_memory_get
+ * b_memory_get
  *
- * Fetch a word from the pic memory. This function will traverse through
+ * Fetch a byte from the pic memory. This function will traverse through
  * the linked list of memory blocks searching for the address from the 
  * word will be fetched. If the address is not found, then `0' will be
  * returned.
@@ -124,17 +124,19 @@ MemBlock * i_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
  *  address - 
  *  m - start of the instruction memory
  * Returns
- *  the word from that address
+ *  the byte from that address combined with status bits
  *
  ************************************************************************/
-int i_memory_get(MemBlock *m, unsigned int address)
+int b_memory_get(MemBlock *m, unsigned int address, unsigned char *byte)
 {
 
   do {
     assert(m->memory != NULL);
 
-    if( ((address >> I_MEM_BITS) & 0xFFFF) == m->base )
-      return m->memory[address & I_MEM_MASK];
+    if( ((address >> I_MEM_BITS) & 0xFFFF) == m->base ) {
+      *byte = m->memory[address & I_MEM_MASK] & 0xFF;
+      return (m->memory[address & I_MEM_MASK] & BYTE_USED_MASK) != 0;
+    }
 
     m = m->next;
   } while(m);
@@ -143,9 +145,9 @@ int i_memory_get(MemBlock *m, unsigned int address)
 }
 
 /************************************************************************
- *  i_memory_put
+ *  b_memory_put
  *
- * This function will write one word to a pic memory address. If the
+ * This function will write one byte to a pic memory address. If the
  * destination memory block is non-existant, a new one will be created.
  *
  * inputs:
@@ -156,7 +158,7 @@ int i_memory_get(MemBlock *m, unsigned int address)
  *   none
  *
  ************************************************************************/
-void i_memory_put(MemBlock *i_memory, unsigned int address, unsigned int value)
+void b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value)
 {
   MemBlock *m = NULL;
 
@@ -172,7 +174,7 @@ void i_memory_put(MemBlock *i_memory, unsigned int address, unsigned int value)
     }
 
     if( ((address >> I_MEM_BITS) & 0xFFFF) == m->base ) {
-      m->memory[address & I_MEM_MASK] = value;
+      m->memory[address & I_MEM_MASK] = value | BYTE_USED_MASK;
       return;
     }
   } while (m->next);
@@ -181,13 +183,39 @@ void i_memory_put(MemBlock *i_memory, unsigned int address, unsigned int value)
      the first time we've tried to write to high memory some place. */
 
   m = i_memory_new(i_memory, (MemBlock *) malloc(sizeof(MemBlock)), address);
-  m->memory[address & I_MEM_MASK] = value;
+  m->memory[address & I_MEM_MASK] = value | BYTE_USED_MASK;
 
 }
 
-int i_memory_used(MemBlock *m)
+/************************************************************************
+ *  b_memory_clear
+ *
+ * This function will clear one byte of a pic memory address.
+ *
+ * inputs:
+ *   i_memory - start of the instruction memory
+ *   address - destination address of the write
+ * returns:
+ *   none
+ *
+ ************************************************************************/
+void b_memory_clear(MemBlock *m, unsigned int address)
 {
-  int words=0;
+  do {
+    assert(m->memory != NULL);
+
+    if( ((address >> I_MEM_BITS) & 0xFFFF) == m->base ) {
+      m->memory[address & I_MEM_MASK] = 0;
+      break;
+    }
+
+    m = m->next;
+  } while(m);
+}
+
+int b_memory_used(MemBlock *m)
+{
+  int bytes=0;
   int i;
   int maximum;
 
@@ -196,26 +224,57 @@ int i_memory_used(MemBlock *m)
 
     maximum = i + MAX_I_MEM;
 
-    while (i < maximum) {
-      if ((i_memory_get(m, i) & MEM_USED_MASK)) {
-	words++;
-      } 
-      i++;
+    for (i = 0; i < MAX_I_MEM; ++i) {
+      if (m->memory[i & I_MEM_MASK] & BYTE_USED_MASK)
+	bytes++;
     }
     m = m->next;
   }
 
-  return words;
+  return bytes;
 }
 
 /************************************************************************
  * 
  *
- *  These two functions are used to read and write instruction memory.
+ *  These functions are used to read and write instruction memory.
  * 
  *
  ************************************************************************/
-void print_i_memory(MemBlock *m, int byte_addr)
+int i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word)
+{
+  unsigned char bytes[2];
+  if (b_memory_get(m, byte_addr, bytes) &&
+      b_memory_get(m, byte_addr+1, bytes+1)) {
+    *word = bytes[0] + (bytes[1] << 8);
+    return 1;
+  }
+  return 0;
+}
+
+void i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word)
+{
+  b_memory_put(m, byte_addr, word & 0xFF);
+  b_memory_put(m, byte_addr+1, word >> 8);
+}
+
+int i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word)
+{
+  unsigned char bytes[2];
+  if (b_memory_get(m, byte_addr, bytes) &&
+      b_memory_get(m, byte_addr+1, bytes+1)) {
+    *word = bytes[1] + (bytes[0] << 8);
+    return 1;
+  }
+  return 0;
+}
+void i_memory_put_be(MemBlock *m, unsigned int byte_addr, unsigned short word)
+{
+  b_memory_put(m, byte_addr, word >> 8);
+  b_memory_put(m, byte_addr+1, word & 0xFF);
+}
+
+void print_i_memory(MemBlock *m, proc_class_t class)
 {
   int base,i,j,row_used;
   char c;
@@ -227,24 +286,24 @@ void print_i_memory(MemBlock *m, int byte_addr)
 
     base = m->base << I_MEM_BITS;
 
-    for(i = 0; i<MAX_I_MEM; i+=WORDS_IN_ROW) {
+    for(i = 0; i<MAX_I_MEM; i+=2*WORDS_IN_ROW) {
       row_used = 0;
 
-      for(j = 0; j<WORDS_IN_ROW; j++)
+      for(j = 0; j<2*WORDS_IN_ROW; j++)
 	if( m->memory[i+j] )
 	  row_used = 1;
 
       if(row_used) {
-	printf("%08X  ",(base+i) << byte_addr );
+	printf("%08X  ", gp_processor_byte_to_org(class, base+i));
 
-	for(j = 0; j<WORDS_IN_ROW; j++)
-	  printf("%04X ", m->memory[i+j] & 0xffff );
+	for(j = 0; j<WORDS_IN_ROW; j+=2) {
+	  unsigned short data;
+	  class->i_memory_get(m, i+2*j, &data);
+	  printf("%04X ", data);
+	}
 
-	for(j = 0; j<WORDS_IN_ROW; j++) {
+	for(j = 0; j<2*WORDS_IN_ROW; j++) {
 	  c = m->memory[i+j] & 0xff;
-	  putchar( (isprint(c)) ? c : '.');
-
-	  c = (m->memory[i+j]>>8) & 0xff;
 	  putchar( (isprint(c)) ? c : '.');
 	}
 	putchar('\n');

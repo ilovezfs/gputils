@@ -438,9 +438,9 @@ struct aux_fcn_calls {
 
 /* relocation linked list */
 
-typedef struct gp_reloc_type 
+typedef struct gp_reloc_type
 {
-  /* entry relative address */
+  /* entry relative address in bytes */
   long address;
 
   /* symbol */
@@ -468,8 +468,8 @@ typedef struct gp_linenum_type
   /* line number */
   unsigned short line_number; 
 
-  /* address of code for this line number */
-  unsigned long address;     
+  /* byte address for this line number */
+  unsigned int address;     
 
   struct gp_linenum_type *next;
 } gp_linenum_type;
@@ -561,8 +561,8 @@ typedef struct gp_section_type
   /* flags */
   unsigned long flags;
   
-  /* section address */
-  unsigned long address;
+  /* section address in bytes */
+  unsigned int address;
   
   /* section size in bytes */
   unsigned long size;
@@ -603,18 +603,6 @@ typedef struct gp_section_type
   /* linenumber pointer, only valid when writing coff file */  
   unsigned long lineno_ptr;
 
-  /*
-   * when the section is STYP_BPACK, this contains the flag as to whether the
-   * next byte would occupy part of the existing org address or start a new one
-   */
-  gp_boolean have_pack_byte;
-
-  /*
-   * when the section is STYP_BPACK, this will be true when we've just emitted
-   * a packed byte. (for synchronizing the listing)
-   */
-  gp_boolean emitted_pack_byte;
-
   struct gp_section_type *next;
 } gp_section_type;
 
@@ -636,7 +624,7 @@ typedef struct gp_object_type
   pic_processor_t processor;
   
   /* processor class */
-  enum proc_class class;
+  proc_class_t class;
   
   /* time object was created */
   time_t time;

@@ -23,16 +23,16 @@ Boston, MA 02111-1307, USA.  */
 #define __DUMP_H__
 
 void dump_hex(char *chunk, int length);
-void dump_memmap( void);
-void dump_code(void);
+void dump_memmap(proc_class_t proc_class);
+void dump_code(proc_class_t proc_class);
 void dump_symbols( void );
 void dump_lsymbols( void );
 void dump_source_files( void );
 void dump_line_symbols(void);
 void dump_message_area(void);
-void dump_local_vars(void);
+void dump_local_vars(proc_class_t proc_class);
 
 unsigned short get_short_int( char * buff);
-char *substr(char *a, size_t sizeof_a, char *b, size_t n);
+char *substr(char *a, size_t sizeof_a, unsigned char *b, size_t n);
 
 #endif

@@ -285,6 +285,8 @@ static int do_secdef(char *name, struct pnode *parms)
         section_def->type = accessbank;
       } else if (strcasecmp(name, "codepage") == 0) {
         section_def->type = codepage;
+	start = gp_processor_org_to_byte(state.class, start);
+	end = gp_processor_org_to_byte(state.class, end + 1) - 1;
       } else if (strcasecmp(name, "databank") == 0) {
         section_def->type = databank;
       } else if (strcasecmp(name, "sharebank") == 0) {

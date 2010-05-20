@@ -43,7 +43,7 @@ const struct gp_cfg_device *gp_cfg_find_pic(const char *pic)
 /*
  * Locate a PIC by name, pass a list of names to use, try each in order.
  */
-const struct gp_cfg_device *gp_cfg_find_pic_multi(int count, char **pics)
+const struct gp_cfg_device *gp_cfg_find_pic_multi(int count, const char * const *pics)
 {
   int t;
   for(t=0; t<count; t++) {

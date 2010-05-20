@@ -39,8 +39,6 @@ void yyerror(char *message)
 
 int yylex(void);
 extern int _16bit_core;
-extern gp_boolean _16packed_byte_acc;
-static gp_boolean _16packed_offset_labels;
 
 /************************************************************************/
 
@@ -361,8 +359,7 @@ line:
 	label_concat statement
 	{
 	  if (asm_enabled() && (state.lst.line.linetype == none)) {
-	    if ((state.mode == relocatable) &&
-                (SECTION_FLAGS & (STYP_BSS | STYP_DATA)))
+	    if (IS_RAM_ORG)
           /* alias to next definition */
           state.lst.line.linetype = res;
         else
@@ -413,10 +410,12 @@ line:
 		set_global($1, $2, PERMANENT, gvt_constant);
 		break;
 	      case insn:
-		set_global($1, ($2 << _16bit_core) - _16packed_offset_labels, PERMANENT, gvt_address);
-		break;
+	      case data:
 	      case res:
-		set_global($1, $2, PERMANENT, gvt_static);
+		if (IS_RAM_ORG)
+		  set_global($1, $2, PERMANENT, gvt_static);
+		else
+		  set_global($1, $2, PERMANENT, gvt_address);
                 break;
 	      case dir:
                 gperror(GPE_ILLEGAL_LABEL, NULL);
@@ -447,7 +446,11 @@ statement:
 	'\n'
 	{
 	  if (!state.mac_prev) {
-	    $$ = state.org;
+	    if (!IS_RAM_ORG)
+	      /* We want to have r as the value to assign to label */
+	      $$ = gp_processor_byte_to_org(state.device.class, state.org);
+	    else
+	      $$ = state.org;
 	  } else {
 	    macro_append();
 	  }
@@ -859,16 +862,6 @@ label_concat:
 	LABEL
         { 
           $$ = $1;
-
-	  /*
-	   * statements return their org - but, with 16bit cores, org is a word
-	   * address. for us to know whether a label points at a non word aligned
-	   * address, we must get status from the directive.c module through a
-	   * back channel. however, we must make sure to store this status before
-	   * any statement on the current line is processed, so we must save it here
-	   * before the statement rules run.
-	   */
-	  _16packed_offset_labels = _16packed_byte_acc;
         }
         |
         VARLAB_BEGIN expr ')'
@@ -876,7 +869,6 @@ label_concat:
           if (asm_enabled() && !state.mac_prev) {
 	    $$ = evaluate_concatenation(mk_2op(CONCAT,  mk_symbol($1), 
                            mk_1op(VAR, $2)));
-	  _16packed_offset_labels = _16packed_byte_acc;
 	  }
         }
         |
@@ -885,7 +877,6 @@ label_concat:
           if (asm_enabled() && !state.mac_prev) {
             $$ = evaluate_concatenation(mk_2op(CONCAT,  mk_symbol($1), 
                       mk_2op(CONCAT, mk_1op(VAR, $2), mk_symbol($3))));
-	  _16packed_offset_labels = _16packed_byte_acc;
 	  }
         }        
         ;

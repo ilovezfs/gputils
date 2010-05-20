@@ -29,7 +29,7 @@ struct gpvo_state state;
 void print_header(gp_object_type *object) 
 {
   char *time = ctime(&object->time);
-  char *processor_name = gp_processor_name(object->processor, 2);
+  const char *processor_name = gp_processor_name(object->processor, 2);
   
   /* strip the newline from time */
   time[strlen(time)-1] = '\0';
@@ -61,16 +61,12 @@ void print_header(gp_object_type *object)
   return;
 }
 
-void print_reloc_list(enum proc_class class, gp_reloc_type *relocation)
+void print_reloc_list(proc_class_t class, gp_reloc_type *relocation)
 {
-  int word_addr = 1;
+  int word_addr = class->org_to_byte_shift;
 
   printf("Relocations Table\n");
   printf("Address    Offset     Type   Symbol\n");
-
-  if (class == PROC_CLASS_PIC16E) {
-    word_addr = 0;
-  }
 
   while (relocation != NULL) {
     printf("%#-10lx %#-10x %#-6x %-s\n", 
@@ -86,9 +82,9 @@ void print_reloc_list(enum proc_class class, gp_reloc_type *relocation)
 
 }
 
-void print_linenum_list(gp_linenum_type *linenumber)
+void print_linenum_list(proc_class_t class, gp_linenum_type *linenumber)
 {
-  char *filename;
+  const char *filename;
 
   printf("Line Number Table\n");
   printf("Line     Address  Symbol\n");
@@ -100,9 +96,9 @@ void print_linenum_list(gp_linenum_type *linenumber)
       filename = linenumber->symbol->aux_list->_aux_symbol._aux_file.filename;
     }
 
-    printf("%-8i %#-8lx %s\n", 
+    printf("%-8i %#-8x %s\n", 
            linenumber->line_number,
-           linenumber->address,
+           gp_processor_byte_to_org(class, linenumber->address),
            filename);
   
     linenumber = linenumber->next;
@@ -112,59 +108,63 @@ void print_linenum_list(gp_linenum_type *linenumber)
 
 }
 
-void print_data(enum proc_class class, gp_section_type *section)
+void print_data(proc_class_t class, gp_section_type *section)
 {
-  int memory;
   char buffer[BUFSIZ];
-  int byte_addr = 0;
-  int org;
+  int address;
   int num_words = 1;
 
-  if ((class == PROC_CLASS_PIC16E) && !(section->flags & STYP_DATA)) {
-    org = section->address >> 1;
-    byte_addr = 1;
-  } else {
-    org = section->address;
-  }
-  
+  address = section->address;
+
   buffer[0] = '\0';
   
   printf("Data\n");
   while (1) {
-    memory = i_memory_get(section->data, org);
-    if ((memory & MEM_USED_MASK) == 0)
-      break;
-
     if (section->flags & STYP_TEXT) {
+      unsigned short memory;
+      if (!class->i_memory_get(section->data, address, &memory))
+	break;
       num_words = gp_disassemble(section->data,
-                                 org,
+                                 address,
                                  class,
                                  buffer,
                                  sizeof(buffer));
-      printf("%06x:  %04x  %s\n", org << byte_addr, memory & 0xffff, buffer);
+      printf("%06x:  %04x  %s\n", gp_processor_byte_to_org(class, address), memory, buffer);
       if (num_words != 1) {
-        memory = i_memory_get(section->data, org + 1);
-        assert(memory & MEM_USED_MASK);
-        printf("%06x:  %04x\n", (org + 1) << byte_addr, memory & 0xffff);
+        class->i_memory_get(section->data, address + 2, &memory);
+        printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address + 2), memory);
       }
+      address += 2 * num_words;
     } else if (section->flags & STYP_DATA_ROM) {
-      printf("%06x:  %04x\n", org << byte_addr, memory & 0xffff);
+      unsigned short memory;
+      if (!class->i_memory_get(section->data, address, &memory))
+	break;
+      printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address), memory);
+      address += 2;
     } else if (section->flags & STYP_DATA) {
-      printf("%06x:  %02x\n", org, memory & 0xff);
+      unsigned char b;
+      if (!b_memory_get(section->data, address, &b))
+	break;
+      printf("%06x:  %02x\n", address, b);
+      ++address;
     }
-
-    org += num_words;
   }
   printf("\n");
 
 }
 
-void print_sec_header(gp_section_type *section)
+void print_sec_header(proc_class_t class, gp_section_type *section)
 {
+  int org_to_byte_shift;
+
+  if (section->flags & (STYP_TEXT|STYP_DATA_ROM))
+    org_to_byte_shift = class->org_to_byte_shift;
+  else
+    org_to_byte_shift = 0;
 
   printf("Section Header\n");
   printf("Name                    %s\n",   section->name);
-  printf("Address                 %#lx\n", section->address);
+  printf("Address                 %#x\n", gp_byte_to_org(org_to_byte_shift, section->address));
   printf("Size of Section         %li\n",  section->size);
   printf("Number of Relocations   %i\n",   section->num_reloc);
   printf("Number of Line Numbers  %i\n",   section->num_lineno);
@@ -206,16 +206,16 @@ void print_sec_list(gp_object_type *object)
   gp_section_type *section = object->sections;
 
   while (section != NULL) {
-    print_sec_header(section);
+    print_sec_header(object->class, section);
 
-    if (section->size) {
+    if (section->size && !(section->flags & STYP_BSS)) {
       print_data(object->class, section);
     }
     if (section->num_reloc) {
       print_reloc_list(object->class, section->relocations);
     }
     if (section->num_lineno) {
-      print_linenum_list(section->line_numbers);
+      print_linenum_list(object->class, section->line_numbers);
     }
     
     section = section->next;
@@ -411,7 +411,8 @@ void print_sym_table (gp_object_type *object)
   printf("Idx  Name                     Section          Value      Type     DT           Class     NumAux \n");
 
   while (symbol != NULL) {
-    
+    int org_to_byte_shift = 0;
+
     if (symbol->section_number == N_DEBUG) {
       section = "DEBUG";
     } else if (symbol->section_number == N_ABS) {
@@ -421,13 +422,15 @@ void print_sym_table (gp_object_type *object)
     } else {
       assert(symbol->section != NULL);
       section = symbol->section->name;
+      if (symbol->section->flags & (STYP_TEXT|STYP_DATA_ROM))
+	org_to_byte_shift = object->class->org_to_byte_shift;
     }    
     
-    printf("%04d %-24s %-16s %#-10lx %-8s %-12s %-9s %-4i\n",
+    printf("%04d %-24s %-16s %#-10x %-8s %-12s %-9s %-4i\n",
 	   idx,
            symbol->name,
            section,
-           symbol->value,
+           gp_byte_to_org(org_to_byte_shift, symbol->value),
            format_sym_type(symbol->type, buffer_type, sizeof(buffer_type)),
            format_sym_derived_type(symbol->derived_type, buffer_derived_type, sizeof(buffer_derived_type)),
            format_sym_class(symbol->class, buffer_class, sizeof(buffer_class)),
@@ -526,12 +529,12 @@ void export_sym_table(gp_object_type *object)
 
 }
 
-void print_binary(char *data, long int file_size) 
+void print_binary(unsigned char *data, long int file_size) 
 {
 
   long int i, j;
   int memory;
-  char c;
+  int c;
 
   printf("\nObject file size = %li bytes\n", file_size);
 
@@ -540,8 +543,7 @@ void print_binary(char *data, long int file_size)
     printf("\n%06lx", i);
 
     for(j = 0; j < 16; j += 2) {
-      memory = data[i + j];
-      memory = ((memory << 8) & 0xff00) | (data[i+j+1] & 0xff); 
+      memory = (data[i + j] << 8) | data[i+j+1]; 
       if ((i+j) >= file_size) {
         printf("     ");      
       } else {
@@ -553,10 +555,10 @@ void print_binary(char *data, long int file_size)
     
     for(j = 0; j < 16; j += 2) {
       if ((i+j) < file_size) {      
-        c = data[i + j] & 0xff;
+        c = data[i + j];
         putchar( (isprint(c)) ? c : '.');
 
-        c = data[i + j + 1] & 0xff;
+        c = data[i + j + 1];
         putchar( (isprint(c)) ? c : '.');
       }
     }

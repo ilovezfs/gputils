@@ -29,7 +29,7 @@ Boston, MA 02111-1307, USA.  */
 /* write the symbol or section name into the string table */
 
 static int
-_gp_coffgen_addstring(char *name, char *table)
+_gp_coffgen_addstring(const char *name, unsigned char *table)
 {
   int nbytes;
   int offset;
@@ -54,7 +54,7 @@ _gp_coffgen_addstring(char *name, char *table)
 }
 
 static void
-_gp_coffgen_addname(char *name, char *ptr, size_t sizeof_ptr, char *table)
+_gp_coffgen_addname(const char *name, FILE *fp, unsigned char *table)
 {
   int length;
   int offset;
@@ -65,18 +65,20 @@ _gp_coffgen_addname(char *name, char *ptr, size_t sizeof_ptr, char *table)
   length = strlen(name);
 
   if (length < 9) {
+    static const unsigned char zero[8];
     /* The string will fit in the structure. */
-    strncpy(ptr, name, sizeof_ptr);
+    if (length > 0)
+      gp_fputvar(name, length, fp);
+    if (length < 8)
+      gp_fputvar(zero, 8 - length, fp);
   } else {
     offset = _gp_coffgen_addstring(name, table);
  
     /* write zeros and offset */
-    gp_putl32(&ptr[0], 0);
-    gp_putl32(&ptr[4], offset);
+    gp_fputl32(0, fp);
+    gp_fputl32(offset, fp);
 
   }
-
-  return;
 }
 
 /* write the file header */
@@ -118,64 +120,46 @@ _gp_coffgen_write_opthdr(gp_object_type *object, FILE *fp)
 
 /* write the section header */
 static void 
-_gp_coffgen_write_scnhdr(gp_section_type *section, char *table, FILE *fp) 
+_gp_coffgen_write_scnhdr(gp_section_type *section, int org_to_byte_shift,
+			 unsigned char *table, FILE *fp) 
 {
-  char name[8];
-  
-  _gp_coffgen_addname(section->name, name, sizeof(name), table);
-  gp_fputvar(&name[0], 8, fp);
-  gp_fputl32(section->address, fp);
-  gp_fputl32(section->address, fp);
+  if (!(section->flags & (STYP_TEXT|STYP_DATA_ROM)))
+      org_to_byte_shift = 0;
+
+  _gp_coffgen_addname(section->name, fp, table);
+  gp_fputl32(gp_byte_to_org(org_to_byte_shift, section->address), fp);
+  gp_fputl32(gp_byte_to_org(org_to_byte_shift, section->address), fp);
   gp_fputl32(section->size, fp);
   gp_fputl32(section->data_ptr, fp);
   gp_fputl32(section->reloc_ptr, fp);
   gp_fputl32(section->lineno_ptr, fp);
   gp_fputl16(section->num_reloc, fp);
   gp_fputl16(section->num_lineno, fp);
-  gp_fputl32(section->flags, fp);
-
-  return;
+  /* Don't write internal section flags */
+  gp_fputl32(section->flags & ~(STYP_RELOC|STYP_BPACK), fp);
 }
 
 /* write the section data */
 static void 
-_gp_coffgen_write_data(enum proc_class class, 
+_gp_coffgen_write_data(proc_class_t class, 
                        gp_section_type *section, 
                        FILE *fp) 
 {
   unsigned int org;
   unsigned int last;
-  unsigned int data;
 
-  if ((class == PROC_CLASS_PIC16E) && 
-      ((section->flags & STYP_TEXT) ||
-       (section->flags & STYP_DATA_ROM)))
-    org = section->address >> 1;
-  else
-    org = section->address;
-
-  if ((section->flags & STYP_TEXT) || (section->flags & STYP_DATA_ROM)) {
-    /* the section is executable, so each word is two bytes */
-    last = org + (section->size / 2);
-  } else {
-    /* the section is data, so each word is one byte */
-    last = org + section->size;
-  }
+  org = section->address;
+  last = org + section->size;
 
 #ifdef GPUTILS_DEBUG
   printf("section \"%s\"\nsize= %i\ndata:\n", section->name, section->size);
-  print_i_memory(section->data, class == PROC_CLASS_PIC16E ? 1 : 0);
+  print_i_memory(section->data, class);
 #endif
 
   for ( ; org < last; org++) {
-    data = i_memory_get(section->data, org);
-    assert(data & MEM_USED_MASK);
-
-    if ((section->flags & STYP_TEXT) || (section->flags & STYP_DATA_ROM)) {
-      gp_fputl16(data & 0xffff, fp);
-    } else {
-      fputc((int)(data & 0xff), fp);
-    }
+    unsigned char b;
+    b_memory_assert_get(section->data, org, &b);
+    fputc(b, fp);
   }
 
   return;
@@ -202,15 +186,18 @@ _gp_coffgen_write_reloc(gp_section_type *section, FILE *fp)
 
 /* write the section linenumbers */
 static void 
-_gp_coffgen_write_linenum(gp_section_type *section, FILE *fp) 
+_gp_coffgen_write_linenum(gp_section_type *section, int org_to_byte_shift, FILE *fp) 
 {
   gp_linenum_type *current = section->line_numbers;
+
+  if (!(section->flags & (STYP_TEXT|STYP_DATA_ROM)))
+      org_to_byte_shift = 0;
 
   while (current != NULL) {
 
     gp_fputl32(current->symbol->number, fp);
     gp_fputl16(current->line_number, fp);
-    gp_fputl32(current->address, fp); 
+    gp_fputl32(gp_byte_to_org(org_to_byte_shift, current->address), fp); 
     gp_fputl16(0, fp);
     gp_fputl32(0, fp);
 
@@ -222,7 +209,7 @@ _gp_coffgen_write_linenum(gp_section_type *section, FILE *fp)
 
 /* write the auxiliary symbols */
 static void 
-_gp_coffgen_write_auxsymbols(gp_aux_type *aux, char *table, FILE *fp,
+_gp_coffgen_write_auxsymbols(gp_aux_type *aux, unsigned char *table, FILE *fp,
 			     int isnew) 
 {
   unsigned int offset;
@@ -282,18 +269,15 @@ _gp_coffgen_write_auxsymbols(gp_aux_type *aux, char *table, FILE *fp,
 
 /* write the symbol table */
 static void 
-_gp_coffgen_write_symbols(gp_object_type *object, char *table, FILE *fp) 
+_gp_coffgen_write_symbols(gp_object_type *object, unsigned char *table, FILE *fp) 
 {
   gp_symbol_type *current;
-  char name[8];
 
   current = object->symbols;
 
   while(current != NULL) {
 
-    _gp_coffgen_addname(current->name, name, sizeof(name), table);
-
-    gp_fputvar(&name[0], 8, fp);
+    _gp_coffgen_addname(current->name, fp, table);
     gp_fputl32(current->value, fp);
     if (current->section_number < 1) {
       gp_fputl16(current->section_number, fp);
@@ -406,7 +390,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
 {
   FILE *coff;
   gp_section_type *section = NULL;
-  char table[MAX_STRING_TABLE]; /* string table */
+  unsigned char table[MAX_STRING_TABLE]; /* string table */
 
   if (numerrors) {
     unlink(object->filename);
@@ -433,7 +417,8 @@ gp_write_coff(gp_object_type *object, int numerrors)
 
   /* write section headers */
   while (section != NULL) {
-    _gp_coffgen_write_scnhdr(section, &table[0], coff); 
+    _gp_coffgen_write_scnhdr(section, object->class->org_to_byte_shift,
+			     &table[0], coff);
     section = section->next;
   }
 
@@ -459,7 +444,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
   section = object->sections;
   while (section != NULL) {
     if (section->num_lineno != 0) {
-      _gp_coffgen_write_linenum(section, coff); 
+      _gp_coffgen_write_linenum(section, object->class->org_to_byte_shift, coff); 
     }    
     section = section->next;
   }
