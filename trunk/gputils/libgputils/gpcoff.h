@@ -246,9 +246,9 @@ struct syment
 
 /* Symbol types
 
-  Type in an unsigned short (16 bits).  The lowest nibble contains the basic
-  type.  The next higher three bits contain the derived symbol type.  The
-  rest of the bits are unused. */
+  Type in an unsigned short (16 bits).  The lowest four or five bits contains
+  the basic type.  The next higher three bits contain the derived symbol type.
+  The rest of the bits are unused. */
 
 /* Basic symbol types  */
 #define T_NULL      0   /* null */
@@ -267,6 +267,7 @@ struct syment
 #define T_USHORT    13  /* unsigned short */
 #define T_UINT      14  /* unsigned integer */
 #define T_ULONG     15  /* unsigned long */
+/* Basic symbol types for new format only */
 #define T_LNGDBL    16  /* long double floating point */
 #define T_SLONG     17  /* short long */
 #define T_USLONG    18  /* unsigned short long */
@@ -410,8 +411,8 @@ struct aux_field {
 };
 
 struct aux_fcn_calls {
-  unsigned long x_calleendx;
-  unsigned long x_is_interrupt;
+  unsigned long x_calleendx;    /* Symbol table entry of callee - 1 */
+  unsigned long x_is_interrupt; /* 0 not, 1 low, 2 high */
   char _unused[12];
 };
   
@@ -431,6 +432,7 @@ struct aux_fcn_calls {
 #define AUX_VAR    9  /* variable */
 #define AUX_DIRECT 10 /* direct message */
 #define AUX_IDENT  11 /* ident */
+#define AUX_FCN_CALLS 12  /* function called by this function */
 
 /* These definitions are for the COFF as stored in memory. */
 
@@ -488,6 +490,7 @@ typedef struct gp_aux_type
     struct {
       char *filename;
       unsigned long line_number; 
+      unsigned char flags;
     } _aux_file;
     struct {
       char *string;
@@ -497,6 +500,10 @@ typedef struct gp_aux_type
       unsigned short nreloc;
       unsigned short nlineno;
     } _aux_scn;
+    struct {
+      struct gp_symbol_type *callee; /* NULL for call through pointer */
+      unsigned long is_interrupt; /* 0 not, 1 low, 2 high */
+    } _aux_fcn_calls;
     char data[SYMBOL_SIZE_v2];
   } _aux_symbol;
   
@@ -521,7 +528,10 @@ typedef struct gp_symbol_type
   struct gp_section_type *section;
 
   /* type */
-  unsigned long type;
+  unsigned char type;
+
+  /* derived type */
+  unsigned long derived_type;
 
   /* storage class */
   signed char class;

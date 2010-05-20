@@ -1,3 +1,6 @@
+2010-05-20  Marko Kohtala  <marko.kohtala@gmail.com>
+  * Add more descriptive output to gpvo.
+
 2009-03-29  Marko Kohtala  <marko.kohtala@gmail.com>
   * gpasm/util.c (select_radix): Fix LIST R=? processing to pass
   testsuite/gpasm.mchip list3.asm compilation

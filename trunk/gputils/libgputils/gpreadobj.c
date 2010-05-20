@@ -92,10 +92,12 @@ gp_free_file(gp_binary_type *file)
   return;
 } 
 
-static void 
+/* Return optional header size (0 for no header) */
+static int
 _read_file_header(gp_object_type *object, char *file)
 {
   int isnew = 0;
+  int opt_hdr;
 
   if (gp_getl16(&file[0]) == MICROCHIP_MAGIC_v2)
     isnew = 1;
@@ -109,13 +111,15 @@ _read_file_header(gp_object_type *object, char *file)
   object->symbol_ptr   = gp_getl32(&file[8]);
   object->num_symbols  = gp_getl32(&file[12]);
   
-  if (gp_getl16(&file[16]) != (isnew ? OPT_HDR_SIZ_v2 : OPT_HDR_SIZ_v1) )
-    gp_error("incorrect optional header size in \"%s\"", object->filename);
+  opt_hdr = gp_getl16(&file[16]);
+  if (opt_hdr != 0 && opt_hdr != (isnew ? OPT_HDR_SIZ_v2 : OPT_HDR_SIZ_v1) )
+    gp_error("incorrect optional header size (%d) in \"%s\"", opt_hdr, object->filename);
 
   object->symbol_size = (object->version == MICROCHIP_MAGIC_v1 ? 
 						 	SYMBOL_SIZE_v1 : SYMBOL_SIZE_v2);
   object->flags = gp_getl16(&file[18]);
 
+  return opt_hdr;
 }
 
 static void
@@ -362,8 +366,17 @@ _read_sections(gp_object_type *object, char *file)
 
 }
 
+struct lazy_linking_s {
+  union {
+	gp_symbol_type *symbol; 
+	gp_aux_type *aux; 
+  } read;
+  struct lazy_linking_s *next;
+};
+
 static void
-_read_aux(gp_object_type *object, gp_aux_type *aux, int aux_type, char *file, char *string_table)
+_read_aux(gp_object_type *object, int i, gp_aux_type *aux, int aux_type,
+		  char *file, char *string_table, struct lazy_linking_s *lazy_linking)
 {
   
   aux->type = aux_type;
@@ -378,6 +391,7 @@ _read_aux(gp_object_type *object, gp_aux_type *aux, int aux_type, char *file, ch
       aux->_aux_symbol._aux_file.filename = 
         strdup(&string_table[gp_getl32(&file[0])]);
       aux->_aux_symbol._aux_file.line_number = gp_getl32(&file[4]);
+      aux->_aux_symbol._aux_file.flags = file[8];
       break;
     case AUX_IDENT:
       aux->_aux_symbol._aux_ident.string = 
@@ -388,6 +402,23 @@ _read_aux(gp_object_type *object, gp_aux_type *aux, int aux_type, char *file, ch
       aux->_aux_symbol._aux_scn.nreloc  = gp_getl16(&file[4]);
       aux->_aux_symbol._aux_scn.nlineno = gp_getl16(&file[6]);
       break;
+	  case AUX_FCN_CALLS: {
+		unsigned long calleendx = gp_getl32(&file[0]);
+		/* First symbol index is 0 */
+		if (calleendx < i)
+		  aux->_aux_symbol._aux_fcn_calls.callee = lazy_linking[calleendx].read.symbol;
+		else if (calleendx == 0xFFFFFFFF)
+		  /* "higher order function", call through a pointer */
+		  aux->_aux_symbol._aux_fcn_calls.callee = NULL;
+		else {
+		  /* Symbol not read yet, link for lazy binding */
+		  lazy_linking[i].read.aux = aux;
+		  lazy_linking[i].next = lazy_linking[calleendx].next;
+		  lazy_linking[calleendx].next = &lazy_linking[i];
+		}
+		aux->_aux_symbol._aux_fcn_calls.is_interrupt = gp_getl32(&file[4]);
+		break;
+	  }
     default:
       memcpy(&aux->_aux_symbol.data[0], file, object->symbol_size);
   }
@@ -395,11 +426,13 @@ _read_aux(gp_object_type *object, gp_aux_type *aux, int aux_type, char *file, ch
 }
 
 static void 
-_read_symbol(gp_object_type *object, gp_symbol_type *symbol, char *file, char *string_table)
+_read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol,
+			 char *file, char *string_table, struct lazy_linking_s *lazy_linking)
 {
   char buffer[9];
   unsigned int offset;
   size_t file_off = 0;
+  struct lazy_linking_s *current_lazy;
 
   if (gp_getl32(&file[0]) == 0) {
     /* read name from the string table */
@@ -416,15 +449,35 @@ _read_symbol(gp_object_type *object, gp_symbol_type *symbol, char *file, char *s
   symbol->value = gp_getl32(&file[file_off]);           file_off += 4;
   symbol->section_number = gp_getl16(&file[file_off]);  file_off += 2;
   if(object->isnew) {
-    symbol->type = gp_getl32(&file[file_off]);          file_off += 4;
+    unsigned type = gp_getl32(&file[file_off]);         file_off += 4;
+    symbol->type = type & 0x1F;
+    symbol->derived_type = type >> 5;
   } else {
-    symbol->type = gp_getl16(&file[file_off]);          file_off += 2;
+    /* TODO Make sure the old format had this alignment */
+    unsigned type = gp_getl16(&file[file_off]);         file_off += 2;
+    symbol->type = type & 0x0F;
+    symbol->derived_type = type >> 4;
   }
   symbol->class = file[file_off];						file_off += 1;
   symbol->num_auxsym = file[file_off];					file_off += 1;
 
   symbol->section = NULL;
   symbol->aux_list = NULL;
+
+  lazy_linking[i].read.symbol = symbol;
+  /* update those aux entries that pointed to us */
+  current_lazy = lazy_linking[i].next;
+  while (current_lazy != NULL) {
+	assert(current_lazy < &lazy_linking[i]);
+	switch(current_lazy->read.aux->type) {
+	case AUX_FCN_CALLS:
+	  current_lazy->read.aux->_aux_symbol._aux_fcn_calls.callee = symbol;
+	  break;
+	default:
+	  assert(!"Lazy symbol binding not implemented");
+	}
+	current_lazy = current_lazy->next;
+  }
 }
 
 static void 
@@ -438,6 +491,7 @@ _read_symtbl(gp_object_type *object, char *file)
   gp_symbol_type *current = NULL; 
   gp_aux_type *current_aux = NULL; 
   char *string_table;
+  struct lazy_linking_s *lazy_linking;
 
   if (number != 0) {
     /* create a block of symbols */
@@ -446,12 +500,16 @@ _read_symtbl(gp_object_type *object, char *file)
     /* setup pointer to string table */
     string_table = &file[object->symbol_ptr + (object->symbol_size * number)];
 
+	/* setup lazy linking of symbol table indices */
+	lazy_linking = (struct lazy_linking_s*)malloc(sizeof(struct lazy_linking_s)*number);
+	memset(lazy_linking, 0, sizeof(struct lazy_linking_s)*number);
+
     /* read the symbols */
     file = &file[object->symbol_ptr];
     current = object->symbols;
     for (i = 0; i < number; i++) {
       /* read the symbol */
-      _read_symbol(object, current, file, string_table);
+      _read_symbol(object, i, current, file, string_table, lazy_linking);
       current->number = i;
       num_auxsym = current->num_auxsym;
       file += object->symbol_size;
@@ -463,7 +521,10 @@ _read_symtbl(gp_object_type *object, char *file)
         
         /* read the aux symbols */
         for (j = 0; j < num_auxsym; j++) {
-          _read_aux(object, current_aux, aux_type, file, string_table);
+          _read_aux(object, i+1, current_aux, aux_type, file, string_table, lazy_linking);
+          /* AUX_FCN may be followed by AUX_FCN_CALLS */
+          if (aux_type == AUX_FCN)
+            aux_type = AUX_FCN_CALLS;
           current_aux = current_aux->next;
           file += object->symbol_size;
           i++;
@@ -536,8 +597,8 @@ gp_convert_file(char *filename, char *file)
   object->filename = strdup(filename);
 
   /* read the object */
-  _read_file_header(object, file);
-  _read_opt_header(object, file + (object->isnew ? FILE_HDR_SIZ_v2 : FILE_HDR_SIZ_v1));
+  if (_read_file_header(object, file) != 0)
+    _read_opt_header(object, file + (object->isnew ? FILE_HDR_SIZ_v2 : FILE_HDR_SIZ_v1));
   _read_symtbl(object, file);
   _read_sections(object, file);
   _clean_symtbl(object);

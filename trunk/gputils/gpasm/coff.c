@@ -511,6 +511,7 @@ coff_add_filesym(char *name, int isinclude)
     new_aux->_aux_symbol._aux_file.line_number = state.src->line_number - 1;
   else
     new_aux->_aux_symbol._aux_file.line_number = 0;
+  new_aux->_aux_symbol._aux_file.flags = 0;
  
   return new;
 }
