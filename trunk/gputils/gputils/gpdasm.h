@@ -26,7 +26,7 @@ Boston, MA 02111-1307, USA.  */
 
 extern struct gpdasm_state {
   pic_processor_t processor;    /* selected processor */
-  enum proc_class class;        /* processor class */
+  proc_class_t class;           /* processor class */
   int format;                   /* format of the output */
   int pass;                     /* 1 or 2 */
   MemBlock *i_memory;           /* Instruction memory linked list */

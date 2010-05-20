@@ -61,7 +61,7 @@ extern int gp_cfg_device_count;
 
 /* helper API */
 const struct gp_cfg_device *gp_cfg_find_pic(const char *pic);
-const struct gp_cfg_device *gp_cfg_find_pic_multi(int count, char **pics);
+const struct gp_cfg_device *gp_cfg_find_pic_multi(int count, const char * const *pics);
 const struct gp_cfg_directive *gp_cfg_find_directive(const struct gp_cfg_device *device,
                     const char *directive, int *out_config_addr, unsigned char *out_def_value);
 const struct gp_cfg_option *gp_cfg_find_option(const struct gp_cfg_directive *directive, const char *option);

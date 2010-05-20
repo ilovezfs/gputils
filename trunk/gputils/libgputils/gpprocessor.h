@@ -22,36 +22,94 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPPROCESSOR_H__
 #define __GPPROCESSOR_H__
 
-enum proc_class {
-  PROC_CLASS_UNKNOWN,   /* Unknown device */
-  PROC_CLASS_EEPROM8,   /* 8 bit EEPROM */
-  PROC_CLASS_EEPROM16,  /* 16 bit EEPROM */
-  PROC_CLASS_GENERIC,   /* 12 bit device */
-  PROC_CLASS_PIC12,     /* 12 bit devices */
-  PROC_CLASS_SX,        /* 12 bit devices */
-  PROC_CLASS_PIC14,     /* 14 bit devices */
-  PROC_CLASS_PIC16,     /* 16 bit devices */
-  PROC_CLASS_PIC16E     /* enhanced 16 bit devices */
-};
+struct px;
 
-typedef struct px *pic_processor_t;
-#define no_processor ((struct px *)0)
+struct proc_class {
+  /* Instruction used in making initialization data sections */
+  int retlw;
+  /* Value in COFF header */
+  int rom_width;
+  /* Bits to shift assembly code address for COFF file byte address */
+  unsigned int org_to_byte_shift;
+  /* Mask of address bits for bank */
+  unsigned int bank_mask;
+  /* Bitmask of bits that can be stored in code section address */
+  unsigned int core_size;
+  /* Get the address for ID location */
+  unsigned int (*id_location)(const struct px *processor);
+
+  /* Determine which bank of data memory the address is located */
+  int (*check_bank)(unsigned int address);
+
+  /* Set the bank bits, return the number of instructions required. */
+  int (*set_bank)(int num_banks,
+		  int bank,
+		  MemBlock *m,
+		  unsigned int address);
+
+  /* Determine which page of program memory the address is located */
+  int (*check_page)(unsigned int address);
+
+  /* Set the page bits, return the number of instructions required. */
+  int (*set_page)(int num_pages,
+		  int page,
+		  MemBlock *m, 
+		  unsigned int address,
+		  int use_wreg);
+
+  /* These return the bits to set in instruction for given address */
+  int (*reloc_call)(unsigned int address);
+  int (*reloc_goto)(unsigned int address);
+  int (*reloc_ibanksel)(unsigned int address);
+  int (*reloc_f)(unsigned int address);
+  int (*reloc_tris)(unsigned int address);
+
+  const struct insn *instructions;
+  const int *num_instructions;
+  const struct insn *(*find_insn)(const struct proc_class *cls, long int opcode);
+
+  int (*i_memory_get)(MemBlock *m, unsigned int byte_address, unsigned short *word);
+  void (*i_memory_put)(MemBlock *m, unsigned int byte_address, unsigned short value);
+};
+typedef const struct proc_class *proc_class_t;
+
+#define PROC_CLASS_UNKNOWN ((proc_class_t)0) /* Unknown device */
+extern const struct proc_class proc_class_eeprom8;   /* 8 bit EEPROM */
+extern const struct proc_class proc_class_eeprom16;  /* 16 bit EEPROM */
+extern const struct proc_class proc_class_generic;   /* 12 bit device */
+extern const struct proc_class proc_class_pic12;     /* 12 bit devices */
+extern const struct proc_class proc_class_sx;        /* 12 bit devices */
+extern const struct proc_class proc_class_pic14;     /* 14 bit devices */
+extern const struct proc_class proc_class_pic16;     /* 16 bit devices */
+extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices */
+#define PROC_CLASS_EEPROM8 (&proc_class_eeprom8)
+#define PROC_CLASS_EEPROM16 (&proc_class_eeprom16)
+#define PROC_CLASS_GENERIC (&proc_class_generic)
+#define PROC_CLASS_PIC12 (&proc_class_pic12)
+#define PROC_CLASS_SX (&proc_class_sx)
+#define PROC_CLASS_PIC14 (&proc_class_pic14)
+#define PROC_CLASS_PIC16 (&proc_class_pic16)
+#define PROC_CLASS_PIC16E (&proc_class_pic16e)
+
+typedef const struct px *pic_processor_t;
+#define no_processor ((const struct px *)0)
 
 #define MAX_NAMES 3 /* Maximum number of names a processor can have */
-#define MAX_BADROM 1*2 /* Maximum number of BADROM ranges a processor can be */
+#define MAX_BADROM (1*2) /* Maximum number of BADROM ranges a processor can be */
                        /* initialized with */
 
 struct px {
-  enum proc_class class;
-  char *defined_as;
-  char *names[MAX_NAMES];
-  unsigned long coff_type; 
+  proc_class_t class;
+  const char *defined_as;
+  const char *names[MAX_NAMES];
+  unsigned int coff_type;
   int num_pages;
   int num_banks;
-  long maxrom;
-  long badrom[MAX_BADROM];
-  long config_addrs[2];
-  char *script;
+  /* These are in org to make it easier to fill from datasheet */
+  int maxrom;
+  int badrom[MAX_BADROM];
+  int config_addrs[2];
+  const char *script;
 };
 
 /* CONFIG addresses for the 18xx parts */
@@ -87,36 +145,39 @@ struct px {
 #define CONFIG_ADDRESS_14  0x2007
 #define CONFIG_ADDRESS_12  0x0fff
 
-/* ID Locations */
-#define IDLOC_ADDRESS_12  0x200
-#define IDLOC_ADDRESS_14  0x2000
-
-void gp_dump_processor_list(gp_boolean list_all, enum proc_class class);
-struct px *gp_find_processor(char *name);
-enum proc_class gp_processor_class(pic_processor_t);
+void gp_dump_processor_list(gp_boolean list_all, proc_class_t class);
+const struct px *gp_find_processor(const char *name);
+proc_class_t gp_processor_class(pic_processor_t);
 int gp_processor_bsr_boundary(pic_processor_t processor);
 unsigned long gp_processor_coff_type(pic_processor_t processor);
 int gp_processor_num_pages(pic_processor_t processor);
 int gp_processor_num_banks(pic_processor_t processor);
 pic_processor_t gp_processor_coff_proc(unsigned long coff_type);
-char *gp_processor_name(pic_processor_t processor, unsigned int choice);
-char *gp_processor_coff_name(unsigned long coff_type, unsigned int choice);
-char *gp_processor_script(pic_processor_t processor);
-int gp_processor_rom_width(enum proc_class class);
-int gp_processor_check_page(enum proc_class class, int address);
-int gp_processor_check_bank(enum proc_class class, int address);
-int gp_processor_set_page(enum proc_class class, 
+const char *gp_processor_name(pic_processor_t processor, unsigned int choice);
+const char *gp_processor_coff_name(unsigned long coff_type, unsigned int choice);
+const char *gp_processor_script(pic_processor_t processor);
+unsigned int gp_processor_id_location(pic_processor_t processor);
+int gp_processor_rom_width(proc_class_t class);
+int gp_processor_check_page(proc_class_t class, unsigned int address);
+int gp_processor_check_bank(proc_class_t class, unsigned int address);
+int gp_processor_set_page(proc_class_t class, 
                           int num_pages,
                           int page,
                           MemBlock *m, 
-                          int address,
+                          unsigned int address,
                           int use_wreg);
-int gp_processor_set_bank(enum proc_class class, 
+int gp_processor_set_bank(proc_class_t class, 
                           int num_banks,
                           int bank,
                           MemBlock *m, 
-                          int address);
+                          unsigned int address);
 
-int gp_processor_retlw(enum proc_class class);
+int gp_processor_retlw(proc_class_t class);
+
+int gp_processor_org_to_byte(proc_class_t class, int org);
+int gp_processor_byte_to_org(proc_class_t class, int byte);
+
+int gp_org_to_byte(unsigned shift, int org);
+int gp_byte_to_org(unsigned shift, int byte);
 
 #endif

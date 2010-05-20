@@ -103,7 +103,7 @@ find_line_number(gp_symbol_type *symbol, int line_number)
         if (section != line_section) {
           /* switching sections, so update was_org with the new 
              address */
-          state.lst.was_org = line->address >> state.byte_addr;
+          state.lst.was_org = line->address;
           line_section = section;
         }  
         return line;    
@@ -126,7 +126,7 @@ write_src(int last_line)
   gp_linenum_type *line = NULL;
   gp_boolean first_time;
   int org = 0;
-  int data;
+  unsigned short data;
   int num_words;
 
   /* if the source file wasn't found, can't write it to the list file */
@@ -166,31 +166,27 @@ write_src(int last_line)
           linebuf[0] = '\0';
         }
         state.cod.emitting = 1;
-        org = line->address >> state.byte_addr;
-        data = i_memory_get(line_section->data, org);
-        assert(data & MEM_USED_MASK);
+        org = line->address;
+        state.class->i_memory_get(line_section->data, org, &data);
         num_words = gp_disassemble(line_section->data,
                                    org,
                                    state.class,
                                    dasmbuf,
                                    sizeof(dasmbuf));
         lst_line("%06lx   %04x     %-24s %s",
-                 line->address,
-                 data & 0xffff, 
+                 gp_processor_byte_to_org(state.class, line->address),
+                 data, 
                  dasmbuf,
                  linebuf);
         state.lst.was_org = org;
         cod_lst_line(COD_NORMAL_LST_LINE);
-        org++;
+	org += 2;
         if (num_words != 1) {
           state.lst.was_org = org;
-          data = i_memory_get(line_section->data, org);
-          assert(data & MEM_USED_MASK);
-          lst_line("%06lx   %04x",
-                   org << state.byte_addr,
-                   data & 0xffff);
+          state.class->i_memory_get(line_section->data, org, &data);
+          lst_line("%06lx   %04x", gp_processor_byte_to_org(state.class, org), data);
           cod_lst_line(COD_NORMAL_LST_LINE);
-          org++;
+	  org += 2;
           if (line->next) {
             /* skip the line number for the other half of this instruction */
             line = line->next;

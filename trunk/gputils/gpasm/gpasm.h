@@ -123,13 +123,10 @@ extern struct gpasm_state {
     int messages_suppressed;
   } num;
   pic_processor_t processor;
-  struct px *processor_info;    /* Processor identifiers (e.g. name) */
   int processor_chosen;		/* Nonzero after processor-specific init */
   struct {			/* Processor data */
-    enum proc_class class;      /* Processor class */
-    int core_size;		/* Processor core size  */
-    int config_address;		/* configuration address */
-    int id_location;		/* location for idlocs for 12 and 14 bit proc */
+    proc_class_t class;         /* Processor class */
+    int id_location;		/* address of last __idlocs */
     int bsr_boundary;		/* 18xx bsr boundary location */
   } device;
   unsigned int c_memory_base;	/* Base address of configuration memory */
@@ -178,6 +175,7 @@ extern struct gpasm_state {
 	     idlocs,		/*     ID locations for 12 and 14 bit cores */
 	     insn,		/*     Some other instruction or pseudo */
 	     equ,		/*     An equate */
+	     data,              /*     Data */
 	     res,               /*     reserve memory */
 	     sec,		/*     new coff section */
 	     set,		/*     A SET or '=' */
@@ -300,26 +298,26 @@ struct source_context {
 };
 
 void yyerror(char *s);
-int stringtolong(char *string, int radix);
-int gpasm_magic(char *);
-char *convert_escape_chars(char *ps, int *value);
+int stringtolong(const char *string, int radix);
+int gpasm_magic(const char *);
+const char *convert_escape_chars(const char *ps, int *value);
 char *convert_escaped_char(char *str, char c);
 void coerce_str1(struct pnode *exp);
 gpasmVal do_or_append_insn(char *op, struct pnode *parms);
-void set_global(char *name,
+void set_global(const char *name,
 		gpasmVal value,
 		enum globalLife lifetime,
 		enum gpasmValTypes type);
 void purge_temp_symbols(struct symbol_table *table);
 void select_errorlevel(int level);
-void select_expand(char *expand);
-void select_hexformat(char *format_name);
-void select_radix(char *name);
-struct file_context *add_file(unsigned int type, char *name);
+void select_expand(const char *expand);
+void select_hexformat(const char *format_name);
+void select_radix(const char *name);
+struct file_context *add_file(unsigned int type, const char *name);
 void free_files(void);
 void macro_append(void);
 void hex_init(void);
-void add_path(char *path);
+void add_path(const char *path);
 
 /************************************************************************/
 

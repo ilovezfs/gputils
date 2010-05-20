@@ -24,21 +24,21 @@ Boston, MA 02111-1307, USA.  */
 
 #define DECODE_ARG0 snprintf(buffer, sizeof_buffer, "%s", instruction->name)
 
-#define DECODE_ARG1(ARG1) snprintf(buffer, sizeof_buffer, "%s\t%#lx", \
+#define DECODE_ARG1(ARG1) snprintf(buffer, sizeof_buffer, "%s\t%#x", \
                                   instruction->name,\
                                   ARG1)
 
-#define DECODE_ARG1WF(ARG1, ARG2) snprintf(buffer, sizeof_buffer, "%s\t%#lx, %s", \
+#define DECODE_ARG1WF(ARG1, ARG2) snprintf(buffer, sizeof_buffer, "%s\t%#x, %s", \
                                           instruction->name,\
                                           ARG1, \
                                           (ARG2 ? "f" : "w"))
 
-#define DECODE_ARG2(ARG1, ARG2) snprintf(buffer, sizeof_buffer, "%s\t%#lx, %#lx", \
+#define DECODE_ARG2(ARG1, ARG2) snprintf(buffer, sizeof_buffer, "%s\t%#x, %#x", \
                                         instruction->name,\
                                         ARG1, \
                                         ARG2)
 
-#define DECODE_ARG3(ARG1, ARG2, ARG3) snprintf(buffer, sizeof_buffer, "%s\t%#lx, %#lx, %#lx", \
+#define DECODE_ARG3(ARG1, ARG2, ARG3) snprintf(buffer, sizeof_buffer, "%s\t%#x, %#x, %#x", \
                                              instruction->name,\
                                              ARG1, \
                                              ARG2, \
@@ -49,90 +49,26 @@ gp_boolean gp_decode_extended = false;
 
 int
 gp_disassemble(MemBlock *m,
-               int org,
-               enum proc_class class,
+               int byte_address,
+               proc_class_t class,
                char *buffer,
                size_t sizeof_buffer)
 {
-  int i;
   int value;
-  long int opcode;
-  struct insn *instruction = NULL;
+  unsigned short opcode;
+  const struct insn *instruction = NULL;
   int num_words = 1;
 
-  opcode = i_memory_get(m, org) & 0xffff;
-
-  switch (class) {
-  case PROC_CLASS_EEPROM8:
-  case PROC_CLASS_EEPROM16:
-  case PROC_CLASS_GENERIC:
+  if (class->find_insn == NULL) {
     snprintf(buffer, sizeof_buffer, "unsupported processor class");
     return 0;
-  case PROC_CLASS_PIC12:
-    for(i = 0; i < num_op_12c5xx; i++) {
-      if((op_12c5xx[i].mask & opcode) == op_12c5xx[i].opcode) {
-        instruction = &op_12c5xx[i];
-        break;
-      }
-    }
-    break;
-  case PROC_CLASS_SX:
-    for(i = 0; i < num_op_sx; i++) {
-      if((op_sx[i].mask & opcode) == op_sx[i].opcode) {
-        instruction = &op_sx[i];
-        break;
-      }
-    }
-    break;
-  case PROC_CLASS_PIC14:
-    for(i = 0; i < num_op_16cxx; i++) {
-      if((op_16cxx[i].mask & opcode) == op_16cxx[i].opcode) {
-        instruction = &op_16cxx[i];
-        break;
-      }
-    }
-    break;
-  case PROC_CLASS_PIC16:
-    for(i = 0; i < num_op_17cxx; i++) {
-      if((op_17cxx[i].mask & opcode) == op_17cxx[i].opcode) {
-        instruction = &op_17cxx[i];
-        break;
-      }
-    }
-    break;
-  case PROC_CLASS_PIC16E:
-    if (gp_decode_mnemonics) {
-      for(i = 0; i < num_op_18cxx_sp; i++) {
-        if((op_18cxx_sp[i].mask & opcode) == op_18cxx_sp[i].opcode) {
-          instruction = &op_18cxx_sp[i];
-          break;
-        }
-      }
-    }
-    if (instruction == NULL) {
-      for(i = 0; i < num_op_18cxx; i++) {
-        if((op_18cxx[i].mask & opcode) == op_18cxx[i].opcode) {
-          instruction = &op_18cxx[i];
-          break;
-        }
-      }
-    }
-    if ((instruction == NULL) && (gp_decode_extended)) {
-      /* might be from the extended instruction set */
-      for(i = 0; i < num_op_18cxx_ext; i++) {
-        if((op_18cxx_ext[i].mask & opcode) == op_18cxx_ext[i].opcode) {
-          instruction = &op_18cxx_ext[i];
-          break;
-        }
-      }
-    }
-    break;
-  default:
-    assert(0);
   }
 
+  class->i_memory_get(m, byte_address, &opcode);
+  instruction = class->find_insn(class, opcode);
+
   if (instruction == NULL)  {
-    snprintf(buffer, sizeof_buffer, "dw\t%#lx  ;unknown opcode", opcode);
+    snprintf(buffer, sizeof_buffer, "dw\t%#x  ;unknown opcode", opcode);
     return num_words;
   }
 
@@ -174,12 +110,13 @@ gp_disassemble(MemBlock *m,
       DECODE_ARG2(((opcode >> 6) & 0x3), (opcode & 0x3f));
       break;
     case INSN_CLASS_RBRA8:
-      value = opcode & 0xff;
+      value = (opcode & 0xff);
       /* twos complement number */
       if (value & 0x80) {
         value = -((value ^ 0xff) + 1);
       }
-      DECODE_ARG1((unsigned long)(org + value + 1) * 2); 
+      value = gp_processor_byte_to_org(class, byte_address + value * 2 + 2);
+      DECODE_ARG1(value);
       break;
     case INSN_CLASS_RBRA11:
       value = opcode  & 0x7ff;
@@ -187,51 +124,55 @@ gp_disassemble(MemBlock *m,
       if (value & 0x400) {
         value = -((value ^ 0x7ff) + 1);
       }      
-      DECODE_ARG1((unsigned long)(org + value + 1) * 2); 
+      value = gp_processor_byte_to_org(class, byte_address + value * 2 + 2);
+      DECODE_ARG1(value);
       break;
     case INSN_CLASS_LIT20:
       {
-        long int dest;
+        unsigned short dest;
 
         num_words = 2;
-        dest = (i_memory_get(m, org + 1) & 0xfff) << 8;
+	class->i_memory_get(m, byte_address + 2, &dest);
+	dest = (dest & 0xfff) << 8;
         dest |= opcode & 0xff;      
-        DECODE_ARG1(dest * 2); 
+        DECODE_ARG1(gp_processor_byte_to_org(class, dest * 2));
       }
       break;
     case INSN_CLASS_CALL20:
       {
-        long int dest;
+        unsigned short dest;
 
         num_words = 2;
-        dest = (i_memory_get(m, org + 1) & 0xfff) << 8;
-        dest |= opcode & 0xff;      
-	snprintf(buffer, sizeof_buffer, "%s\t%#lx, %#lx",
+	class->i_memory_get(m, byte_address + 2, &dest);
+	dest = (dest & 0xfff) << 8;
+        dest |= opcode & 0xff;
+	snprintf(buffer, sizeof_buffer, "%s\t%#x, %#x",
                 instruction->name,
-                dest * 2,
+		 gp_processor_byte_to_org(class, dest * 2),
 		(opcode >> 8) & 1);
       }
       break;
     case INSN_CLASS_FLIT12:
       {
-        long int k;
-        long int file;
+        unsigned short k;
+        unsigned short file;
 
         num_words = 2;
-        k = i_memory_get(m, org + 1) & 0xff;
-        k |= ((opcode & 0xf) << 8);
+        class->i_memory_get(m, byte_address + 2, &k);
+        k = ((opcode & 0xf) << 8) | (k & 0xff);
 	file = (opcode >> 4) & 0x3;
         DECODE_ARG2(file, k);
       }
       break;
     case INSN_CLASS_FF:
       {
-        long int file1;
-        long int file2;
+        unsigned short file1;
+        unsigned short file2;
 
         num_words = 2;
         file1 = opcode & 0xfff;
-        file2 = i_memory_get(m, org + 1) & 0xfff;
+        class->i_memory_get(m, byte_address + 2, &file2);
+	file2 &= 0xfff;
         DECODE_ARG2(file1, file2);
       }
       break;
@@ -243,23 +184,25 @@ gp_disassemble(MemBlock *m,
       break;
     case INSN_CLASS_SF:
       {
-        long int offset;
-        long int file;
+        unsigned short offset;
+        unsigned short file;
 
         num_words = 2;
         offset = opcode & 0x7f;
-        file = i_memory_get(m, org + 1) & 0xfff;
+        class->i_memory_get(m, byte_address + 2, &file);
+	file &= 0xfff;
         DECODE_ARG2(offset, file);
       }
       break;
     case INSN_CLASS_SS:
       {
-        long int offset1;
-        long int offset2;
+        unsigned short offset1;
+        unsigned short offset2;
 
         num_words = 2;
         offset1 = opcode & 0x7f;
-        offset2 = i_memory_get(m, org + 1) & 0x7f;
+	class->i_memory_get(m, byte_address + 2, &offset2);
+        offset2 &= 0x7f;
         DECODE_ARG2(offset1, offset2);
       }
       break;

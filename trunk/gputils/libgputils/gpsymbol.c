@@ -25,7 +25,7 @@ Boston, MA 02111-1307, USA.  */
 /* Base the hash func on the 1st, 2nd, 3rd and last characters of the
    string, and its length. */
 
-static int hashfunc(struct symbol_table *t, char *s)
+static int hashfunc(struct symbol_table *t, const char *s)
 {
   union {
     char b[4];
@@ -75,7 +75,7 @@ struct symbol_table *pop_symbol_table(struct symbol_table *table)
   return prev;
 }
 
-struct symbol *add_symbol(struct symbol_table *table, char *name)
+struct symbol *add_symbol(struct symbol_table *table, const char *name)
 {
   struct symbol *r;
   int index;
@@ -104,7 +104,7 @@ struct symbol *add_symbol(struct symbol_table *table, char *name)
 /* FIXME: remove_symbol does not search all of the symbol tables in the stack.
 Maybe this is ok, but it seems wrong. */
 
-int remove_symbol(struct symbol_table *table, char *name)
+int remove_symbol(struct symbol_table *table, const char *name)
 {
   struct symbol *r = NULL; 
   struct symbol *last = NULL;
@@ -141,7 +141,7 @@ int remove_symbol(struct symbol_table *table, char *name)
   return found_symbol;
 }
 
-struct symbol *get_symbol(struct symbol_table *table, char *name)
+struct symbol *get_symbol(struct symbol_table *table, const char *name)
 {
   struct symbol *r = NULL;
 
@@ -167,12 +167,12 @@ void annotate_symbol(struct symbol *s, void *a)
   s->annotation = a;
 }
 
-char *get_symbol_name(struct symbol *s)
+const char *get_symbol_name(const struct symbol *s)
 {
   return s->name;
 }
 
-void *get_symbol_annotation(struct symbol *s)
+void *get_symbol_annotation(const struct symbol *s)
 {
   return s->annotation;
 }

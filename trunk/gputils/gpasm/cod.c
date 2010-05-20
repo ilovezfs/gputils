@@ -30,8 +30,6 @@ static DirBlockInfo main_dir;
 static int cod_lst_line_number = 0;
 static int blocks = 0;
 
-extern int _16bit_core;
-
 static void
 init_DirBlock(DirBlockInfo *a_dir)
 {
@@ -263,8 +261,8 @@ cod_lst_line(int line_type)
     gp_putl16(&lb.block[offset + COD_LS_SLINE], state.src->line_number);
 
     /* Write the address of the opcode. */
-    gp_putl16(&lb.block[offset + COD_LS_SLOC], 
-              state.lst.line.was_org << _16bit_core);
+    gp_putl16(&lb.block[offset + COD_LS_SLOC],
+              gp_processor_byte_to_org(state.device.class, state.lst.line.was_org));
 
     break;
   case COD_LAST_LST_LINE:
@@ -305,7 +303,7 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
 
   int i,offset,len,type;
   struct variable *var;
-  char * s;
+  const char * s;
   Block sb;
 
   if(!state.cod.enabled)
@@ -316,6 +314,7 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
   offset = 0;
 
   for(i=0; i<num_symbols; i++) {
+    int value;
     var = get_symbol_annotation(symbol_list[i]);
     s = get_symbol_name(symbol_list[i]);
     len = strlen(s);
@@ -331,12 +330,16 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
 
     gp_cod_strncpy(&sb.block[offset +1], s, MAX_SYM_LEN);
 
+    value = var->value;
     switch(var->type) {
     case gvt_cblock:
       type = COD_ST_C_SHORT;  /* byte craft's nomenclature for a memory byte. */
       break;
     case gvt_address:
       type = COD_ST_ADDRESS;
+      /* FIXME: gvt_org never used, should it be and should the value
+	 be divided by two there? */
+      value /= 2;
       break;
     case gvt_org:
       type = COD_ST_ADDRESS;
@@ -349,7 +352,7 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
     gp_putl16(&sb.block[offset+len+COD_SYM_TYPE], type);
 
     /* write 32 bits, big endian */
-    gp_putb32(&sb.block[offset+len+COD_SYM_VALUE], var->value);
+    gp_putb32(&sb.block[offset+len+COD_SYM_VALUE], value);
     offset += (len+COD_SYM_EXTRA);
   }
 
@@ -368,7 +371,7 @@ cod_emit_opcode(int address,int opcode)
   int block_index;
   int found;
   int _64k_base;
-  char * block;
+  unsigned char * block;
 
   if(!state.cod.enabled)
     return;
@@ -383,8 +386,8 @@ cod_emit_opcode(int address,int opcode)
    * all of the opcodes have been emitted.
    */
 
-  block_index = (address >> (COD_BLOCK_BITS-1)) & (COD_CODE_IMAGE_BLOCKS -1); 
-  _64k_base = (address >> 15) & 0xffff;
+  block_index = (address >> COD_BLOCK_BITS) & (COD_CODE_IMAGE_BLOCKS -1); 
+  _64k_base = (address >> 16) & 0xffff;
 
 
   dbi = &main_dir;
@@ -420,7 +423,7 @@ cod_emit_opcode(int address,int opcode)
 
   block = dbi->cod_image_blocks[block_index].block;
 
-  gp_putl16(&block[(address*2) & (COD_BLOCK_SIZE - 1)], opcode);
+  gp_putl16(&block[address & (COD_BLOCK_SIZE - 1)], opcode);
 
 }
 
@@ -431,11 +434,11 @@ write_cod_range_block(unsigned int address, Block *rb)
   DirBlockInfo *dbi = &main_dir;
   unsigned int _64k_base;
 
-  _64k_base = (address >> 15) & 0xffff;
+  _64k_base = (address >> 16) & 0xffff;
 
   do {
 
-    if(gp_getl16(&dbi->dir.block[COD_DIR_HIGHADDR]) == (short)_64k_base) {
+    if(gp_getl16(&dbi->dir.block[COD_DIR_HIGHADDR]) == _64k_base) {
       write_cod_block(dbi, COD_DIR_MEMMAP, COD_DIR_MEMMAP+2, rb);
       return;
     }
@@ -465,10 +468,11 @@ cod_write_code(void)
   while(m) {
     mem_base = m->base << I_MEM_BITS;
 
-    for(i=mem_base; (i-mem_base) <= MAX_I_MEM; i++) {
-      if ((i_memory_get(state.i_memory, i) & MEM_USED_MASK) &&
-          ((i-mem_base) < MAX_I_MEM)) {
-	cod_emit_opcode(i, i_memory_get(state.i_memory, i) & 0xffff);
+    for(i=mem_base; (i-mem_base) <= MAX_I_MEM; i += 2) {
+      unsigned short insn;
+      if (i - mem_base < MAX_I_MEM &&
+	  state.device.class->i_memory_get(state.i_memory, i, &insn)) {
+	cod_emit_opcode(i, insn);
 	if(used_flag == 0) {
           /* Save the start address in a range of opcodes */
           start_address = i;
@@ -487,8 +491,8 @@ cod_write_code(void)
 	  /* We need to update dir map indicating a range of memory that
 	     is needed. This is done by writing the start and end address to
 	     the directory map. */
-	  gp_putl16(&rb.block[offset], 2*start_address);
-	  gp_putl16(&rb.block[offset+2], 2*(i-1) + 1);
+	  gp_putl16(&rb.block[offset], start_address);
+	  gp_putl16(&rb.block[offset+2], i-1);
 
 	  offset += 4;
 	  if(offset>=COD_BLOCK_SIZE) {
@@ -560,7 +564,7 @@ cod_close_file(void)
   cod_write_code();
 
   gp_cod_strncpy(&main_dir.dir.block[COD_DIR_PROCESSOR], 
-	         state.processor_info->names[2],
+	         gp_processor_name(state.processor, 2),
 	         COD_DIR_LSYMTAB - COD_DIR_PROCESSOR);
 
   write_directory();

@@ -27,7 +27,6 @@ Boston, MA 02111-1307, USA.  */
 #define low   1
 #define high  2
 #define swap  3  /* swap bytes for inhx16 format */
-#define byte  4  /* write byte sized words */
 
 static int sum;
 static char *newline;
@@ -72,36 +71,41 @@ void data_line(int start, int stop, int mode)
 {
   new_record();
   if (mode == all) {
-    write_byte(2 * (stop - start));
-    write_bg_word(2 * start);
-    write_byte(0);
-    while (start < stop){ 
-      write_word(i_memory_get(memory, start++));
-    }
-  } else if (mode == byte) {
     write_byte(stop - start);
     write_bg_word(start);
     write_byte(0);
     while (start < stop) {
-      write_byte((i_memory_get(memory, start++)) & 0xff);
+      unsigned char b;
+      if (!b_memory_get(memory, start++, &b))
+	b = 0xff;
+      write_byte(b);
     }
   } else if (mode == swap) {
-    write_byte(stop - start);
-    write_bg_word(start);
+    /* MPLINK 2.40, 3.80, 4.11 and 4.3x do not support inhx16 format.
+     * (FIXME I have no idea where it comes from or if it can be used
+     * for whatever purpose it was written for.) */
+    assert(start % 2 == 0 && stop % 2 == 0);
+    write_byte((stop - start) / 2);
+    write_bg_word(start / 2);
     write_byte(0);
-    while (start < stop){ 
-      write_bg_word(i_memory_get(memory, start++));
+    while (start < stop) {
+      unsigned char b;
+      if (!b_memory_get(memory, (start++) ^ 1, &b))
+	b = 0xff;
+      write_byte(b);
     }
   } else {
     write_byte(stop - start);
     write_bg_word(start);
     write_byte(0);
+    if (mode == high)
+      ++start;
     while (start < stop) { 
-      if (mode == low) {
-        write_byte((i_memory_get(memory, start++)) & 0xff);
-      } else {
-        write_byte(((i_memory_get(memory, start++)) & 0xff00) >> 8);
-      }
+      unsigned char b;
+      if (!b_memory_get(memory, start, &b))
+	b = 0xff;
+      write_byte(b);
+      start += 2;
     }
   } 
   end_record();
@@ -126,7 +130,7 @@ void last_line()
   end_record();
 }
 
-void write_i_mem(enum formats hex_format, int mode)
+void write_i_mem(enum formats hex_format, int mode, unsigned int core_size)
 {
   MemBlock *m = memory;
   int i, j, maximum;
@@ -137,6 +141,7 @@ void write_i_mem(enum formats hex_format, int mode)
     maximum = i + MAX_I_MEM;
 
     if (hex_format == inhx32) {
+      /* FIXME would mode swap require division by 2? */
       seg_address_line(m->base);
     }
     else {
@@ -144,20 +149,32 @@ void write_i_mem(enum formats hex_format, int mode)
     }
 
     while (i < maximum) {
-      if ((i_memory_get(memory, i) & MEM_USED_MASK) == 0) {
+      unsigned char b;
+      if (!b_memory_get(memory, i, &b)) {
 	++i;
       } else {
 	j = i;
-	while ((i_memory_get(memory, i) & MEM_USED_MASK)) {
+	while (b_memory_get(memory, i, &b)) {
 	  ++i;
-	  if (((mode == all) || (mode == swap))  && ((i & 0x7) == 0))
+	  if (((mode == all) || (mode == swap))  && ((i & 0xf) == 0))
 	    break;
-	  if ((i & 0xf) == 0)
+	  if ((i & 0x1f) == 0)
 	    break;
+	}
+	if (core_size > 0xFF) {
+	  /* Write complete instructions, so move start down and stop up
+	     to even address. */
+	  if (j & 1)
+	    --j;
+	  if (i & 1)
+	    ++i;
 	}
 	/* Now we have a run of (i - j) occupied memory locations. */
         /* Write the data to the file */
-        data_line(j, i, mode);
+	/* To be bug-for-bug compatible with MPASM 5.34 we ignore
+	   negative addresses. */
+	if (j >= 0)
+	  data_line(j, i, mode);
       }
     }
     m = m->next;
@@ -170,8 +187,8 @@ int writehex (char *basefilename,
               MemBlock *m,   
               enum formats hex_format,
               int numerrors,
-              int byte_words,
-              int dos_newlines)
+              int dos_newlines,
+	      unsigned int core_size)
 {
   char hexfilename[BUFSIZ];
   char lowhex[BUFSIZ];
@@ -210,7 +227,7 @@ int writehex (char *basefilename,
       perror(lowhex);
       exit(1);
     }
-    write_i_mem(hex_format, low);
+    write_i_mem(hex_format, low, core_size);
     fclose(hex);
 
     /* Write the high memory */
@@ -219,7 +236,7 @@ int writehex (char *basefilename,
       perror(highhex);
       exit(1);
     }
-    write_i_mem(hex_format, high);
+    write_i_mem(hex_format, high, core_size);
     fclose(hex);
 
   } else if (hex_format == inhx16) {
@@ -229,7 +246,7 @@ int writehex (char *basefilename,
       perror(hexfilename);
       exit(1);
     }
-    write_i_mem(hex_format, swap);
+    write_i_mem(hex_format, swap, core_size);
     fclose(hex);
 
   } else {
@@ -239,10 +256,7 @@ int writehex (char *basefilename,
       perror(hexfilename);
       exit(1);
     }
-    if (byte_words)
-      write_i_mem(hex_format, byte);
-    else
-      write_i_mem(hex_format, all);
+    write_i_mem(hex_format, all, core_size);
     fclose(hex);
 
   }

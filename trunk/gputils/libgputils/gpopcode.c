@@ -22,10 +22,8 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
-/* FIXME: use const struct */
-
 /* PIC 12-bit instruction set */
-struct insn  op_12c5xx[] = {
+const struct insn  op_12c5xx[] = {
   { "addwf",  0xfc0, 0x1c0,     INSN_CLASS_OPWF5 	},
   { "andlw",  0xf00, 0xe00,     INSN_CLASS_LIT8 	},
   { "andwf",  0xfc0, 0x140,     INSN_CLASS_OPWF5 	},
@@ -70,7 +68,7 @@ const int num_op_12c5xx = TABLE_SIZE(op_12c5xx);
  * either by adding a flags field to struct insn, or by allowing a
  * processor to have more than one associated table.
  */
-struct insn  op_sx[] = {
+const struct insn  op_sx[] = {
   { "addwf",  0xfc0, 0x1c0,     INSN_CLASS_OPWF5 	},
   { "andlw",  0xf00, 0xe00,     INSN_CLASS_LIT8 	},
   { "andwf",  0xfc0, 0x140,     INSN_CLASS_OPWF5 	},
@@ -119,7 +117,7 @@ struct insn  op_sx[] = {
 const int num_op_sx = TABLE_SIZE(op_sx);
 
 /* PIC 14-bit instruction set */
-struct insn  op_16cxx[] = {
+const struct insn  op_16cxx[] = {
   { "addlw",  0x3e00, 0x3e00, 	INSN_CLASS_LIT8 	},
   { "addwf",  0x3f00, 0x0700,	INSN_CLASS_OPWF7 	},
   { "andlw",  0x3f00, 0x3900,	INSN_CLASS_LIT8 	},
@@ -162,7 +160,7 @@ struct insn  op_16cxx[] = {
 const int num_op_16cxx = TABLE_SIZE(op_16cxx);
 
 /* PIC 16-bit instruction set */
-struct insn  op_17cxx[] = {
+const struct insn  op_17cxx[] = {
   { "addlw",  0xff00, 0xb100,   INSN_CLASS_LIT8         },
   { "addwf",  0xfe00, 0x0e00,   INSN_CLASS_OPWF8        },
   { "addwfc", 0xfe00, 0x1000,   INSN_CLASS_OPWF8        },
@@ -225,7 +223,7 @@ struct insn  op_17cxx[] = {
 
 const int num_op_17cxx = TABLE_SIZE(op_17cxx);
 
-struct insn  op_18cxx[] = {
+const struct insn  op_18cxx[] = {
   { "addlw",  0xff00, 0x0f00, 	INSN_CLASS_LIT8 	},
   { "addwf",  0xfc00, 0x2400,	INSN_CLASS_OPWFA8 	},
   { "addwfc", 0xfc00, 0x2000,	INSN_CLASS_OPWFA8 	},
@@ -300,7 +298,7 @@ struct insn  op_18cxx[] = {
 const int num_op_18cxx = TABLE_SIZE(op_18cxx);
 
 /* PIC 16-bit "Special" instruction set */
-struct insn  op_18cxx_sp[] = {
+const struct insn  op_18cxx_sp[] = {
   { "clrc",   0xffff, 0x90d8,	INSN_CLASS_IMPLICIT 	},
   { "clrdc",  0xffff, 0x92d8,	INSN_CLASS_IMPLICIT 	},
   { "clrn",   0xffff, 0x98d8,	INSN_CLASS_IMPLICIT 	},
@@ -333,7 +331,7 @@ struct insn  op_18cxx_sp[] = {
 const int num_op_18cxx_sp = TABLE_SIZE(op_18cxx_sp);
 
 /* PIC 16-bit Extended instruction set */
-struct insn  op_18cxx_ext[] = {
+const struct insn  op_18cxx_ext[] = {
   { "addfsr",  0xff00, 0xe800,	INSN_CLASS_LITFSR 	},
   { "addulnk", 0xffc0, 0xe8c0,	INSN_CLASS_LIT6 	},
   { "callw",   0xffff, 0x0014,	INSN_CLASS_IMPLICIT 	},

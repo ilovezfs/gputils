@@ -35,7 +35,7 @@ struct gpdasm_state state = {
 void
 select_processor(void)
 {
-  struct px *found = NULL;
+  const struct px *found = NULL;
 
   if (processor_name == NULL) {
     printf("error: must select processor\n");
@@ -55,21 +55,9 @@ select_processor(void)
 
   state.class = gp_processor_class(state.processor);
    
-  switch (state.class) {
-  case PROC_CLASS_EEPROM8:
-  case PROC_CLASS_EEPROM16:
-  case PROC_CLASS_GENERIC:
+  if (state.class->instructions == NULL) {
     fprintf(stderr, "error: unsupported processor class\n");
     exit(1);
-    break;
-  case PROC_CLASS_PIC12:
-  case PROC_CLASS_SX:
-  case PROC_CLASS_PIC14:
-  case PROC_CLASS_PIC16:
-  case PROC_CLASS_PIC16E:
-    break;
-  default:
-    assert(0);
   }
 
   return;
@@ -90,11 +78,11 @@ void closeasm()
   }
 }
 
-void writeorg(int address)
+void writeorg(int org)
 {
   if (!state.format) {
     printf("\n");
-    printf("        org\t%#x\n", address);
+    printf("        org\t%#x\n", org);
   }
 }
 
@@ -105,11 +93,6 @@ void dasm(MemBlock *memory)
   int last_loc = 0;
   int num_words;
   char buffer[80];
-  int byte_addr = 0;
-
-  if (state.class == PROC_CLASS_PIC16E) {
-    byte_addr = 1;
-  }
 
   writeheader();
 
@@ -119,17 +102,15 @@ void dasm(MemBlock *memory)
     maximum = i + MAX_I_MEM;
     
     while (i < maximum) {
-      if (((i_memory_get(memory, i)) & MEM_USED_MASK) == 0) {
-        i++;
-      } else {
-        if (last_loc != i - 1){
-          writeorg(i << byte_addr);
+      unsigned short data;
+      if (state.class->i_memory_get(memory, i, &data)) {
+	int org = gp_processor_byte_to_org(state.class, i);
+        if (last_loc != i - 2){
+          writeorg(org);
         }
         last_loc = i;
         if (state.format) {
-          printf("%06x:  %04x  ",
-                 i << byte_addr,
-                 (i_memory_get(memory, i) & 0xffff));
+          printf("%06x:  %04x  ", org, data);
         } else {
           printf("        ");
         }
@@ -139,17 +120,16 @@ void dasm(MemBlock *memory)
                                    buffer,
                                    sizeof(buffer));
         printf("%s\n", buffer);
-        i++;
         if (num_words != 1) {
+	  i += 2;
           /* some 18xx instructions use two words */
 	  if (state.format) {
-	    printf("%06x:  %04x\n",
-                   i << byte_addr,
-                   (i_memory_get(memory, i) & 0xffff));
+	    state.class->i_memory_get(memory, i, &data);
+	    printf("%06x:  %04x\n", gp_processor_byte_to_org(state.class, i), data);
           }
-	  i++;
         }        
       } 
+      i += 2;
     }
     
     m = m->next;
@@ -283,7 +263,7 @@ int main(int argc, char *argv[])
   
   if (state.num.errors == 0) {
     if(memory_dump) {
-      print_i_memory(state.i_memory, state.class == PROC_CLASS_PIC16E ? 1 : 0);
+      print_i_memory(state.i_memory, state.class);
     } else {
       dasm(state.i_memory);
     }

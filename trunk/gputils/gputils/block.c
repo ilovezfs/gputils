@@ -29,10 +29,10 @@ Boston, MA 02111-1307, USA.  */
 void directory_block(void)
 {
   char temp_buf[256];
-  char *block;
+  unsigned char *block;
   char *processor_name;
-  struct px *processor_info;
-  enum proc_class processor_class;
+  const struct px *processor_info;
+  proc_class_t processor_class;
   int time;
   int bytes_for_address;
   
@@ -65,11 +65,6 @@ void directory_block(void)
 
   processor_info = gp_find_processor(processor_name);
   processor_class = gp_processor_class(processor_info);
-  if (processor_class == PROC_CLASS_PIC16E) {
-    byte_addr = 1;
-  } else {
-    byte_addr = 0;
-  }
 
   bytes_for_address = gp_getl16(&block[COD_DIR_ADDRSIZE]);
   printf("Bytes for address: %d\n", bytes_for_address);
@@ -127,7 +122,7 @@ void directory_block(void)
 
 }
 
-void read_block(char * block, int block_number)
+void read_block(unsigned char * block, int block_number)
 {
 
   fseek(codefile, block_number * COD_BLOCK_SIZE, SEEK_SET);

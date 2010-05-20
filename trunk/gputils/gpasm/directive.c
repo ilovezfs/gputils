@@ -35,124 +35,123 @@ Boston, MA 02111-1307, USA.  */
 #include "gpcfg.h"
 
 /* Forward declarations */
-void execute_body(struct macro_head *h);
 
 #define ATTRIB_COND 1
-
-/************************************************************************/
-/* create flags that control the behavior of the table macros like data,
- * dt,de, and dw */
-
-#define DEFAULT_LIT_MASK 0xffff
-#define ENDIAN_SWAP      (1<<31)
-#define PACKING_BYTES    (1<<30)
-#define SPLIT_PACK       (1<<29)
-
-struct sllist {
-  struct pnode *p;
-  struct sllist *next;
-};
 
 extern struct pnode *mk_constant(int value);
 
 /************************************************************************/
 int _16bit_core = 0;         /* The 16bit core is handled differently in
 			      * some instances. */
-int _17cxx_core = 0;         /* 17cxx is different from 18cxx */
 
 /************************************************************************/
 
+static unsigned short checkwrite(unsigned short value)
+{
+  unsigned short insn;
+
+  if (state.mode == relocatable) {
+    if (state.obj.section == NULL) {
+      gperror(GPE_WRONG_SECTION, NULL);
+      return value;
+    }
+    /* Don't do program memory checks for data memory */
+    if (IS_RAM_ORG)
+      return value;
+  }
+
+  if (state.device.class == PROC_CLASS_PIC16 && (state.org > 0x1ffff)) {
+    gperror(GPE_ADDROVF, NULL);
+  } 
+  else if (state.device.class != PROC_CLASS_PIC16E &&
+	   (state.org & 0x1FFFF) == 0 && (int)state.org > 0) {
+    /* We cast state.org to signed int on purpose to repeat a bug from
+       MPASM 5.34 and pass tb.asm testcase. */
+    gperror(GPE_ADDROVF, "Address wrapped around 0");
+  }
+
+  if(value > state.device.class->core_size) {
+    gpmessage(GPM_RANGE,NULL);
+    value &= state.device.class->core_size;
+  }
+
+  if (state.device.class->i_memory_get(state.i_memory, state.org, &insn)) {
+    gperror(GPE_ADDROVR, NULL);
+  }
+
+  if (state.maxrom >= 0) {
+    if (state.org > state.maxrom) {
+      gpwarning(GPW_EXCEED_ROM, NULL);
+    } else {
+      /* check if current org is within a bad address range */
+      struct range_pair *cur_badrom;
+      for (cur_badrom = state.badrom; cur_badrom != NULL;
+	    cur_badrom = cur_badrom->next) {
+	if ((state.org >= cur_badrom->start) && (state.org <= cur_badrom->end)) {
+	  gpwarning(GPW_EXCEED_ROM, NULL);
+	  break;
+	}
+      }
+    }
+  }
+  return value;
+}
+
 /* Write a word into the memory image at the current location */
 
-static void emit(unsigned int value)
+static void emit(unsigned short value)
 {
-  long byte_org = (state.org << _16bit_core);
-
   /* only write the program data to memory on the second pass */
   if (state.pass == 2) {
+    value = checkwrite(value);
+    state.device.class->i_memory_put(state.i_memory, state.org, value);
+  }
+
+  state.org += 2;
+}
+
+static void emit_byte(unsigned char value)
+{
+  if (state.pass == 2) {
+    unsigned char byte;
 
     if ((state.mode == relocatable) && (state.obj.section == NULL)) {
       gperror(GPE_WRONG_SECTION, NULL);
     }
 
-    if (_17cxx_core && (state.org > 0xffff)) {  
-      gperror(GPE_ADDROVF, NULL);
-    } 
+    if (!IS_RAM_ORG) {
+      if (state.device.class == PROC_CLASS_PIC16 && (state.org > 0x1ffff)) {
+	gperror(GPE_ADDROVF, NULL);
+      } 
+      else if (state.device.class != PROC_CLASS_PIC16E &&
+	       (state.org & 0x1FFFF) == 0 && (int)state.org > 0) {
+	gperror(GPE_ADDROVF, "Address wrapped around 0");
+      }
 
-    if(value > state.device.core_size) {
-      gpmessage(GPM_RANGE,NULL);
-      value &= state.device.core_size;
-    }
+      if (b_memory_get(state.i_memory, state.org, &byte)) {
+	gperror(GPE_ADDROVR, NULL);
+      }
 
-    if (i_memory_get(state.i_memory, state.org) & MEM_USED_MASK) {
-      gperror(GPE_ADDROVR, NULL);
-    }
-
-    if ((SECTION_FLAGS & STYP_TEXT) && (state.maxrom >= 0)) {
-      if (byte_org > state.maxrom) {
-      gpwarning(GPW_EXCEED_ROM, NULL);
-      } else {
-        /* check if current org is within a bad address range */
-        struct range_pair *cur_badrom;
-        for (cur_badrom = state.badrom; cur_badrom != NULL;
-              cur_badrom = cur_badrom->next) {
-          if ((byte_org >= cur_badrom->start) && (byte_org <= cur_badrom->end)) {
-            gpwarning(GPW_EXCEED_ROM, NULL);
-            break;
-          }
-        }
+      if (state.maxrom >= 0) {
+	if (state.org > state.maxrom) {
+	  gpwarning(GPW_EXCEED_ROM, NULL);
+	} else {
+	  /* check if current org is within a bad address range */
+	  struct range_pair *cur_badrom;
+	  for (cur_badrom = state.badrom; cur_badrom != NULL;
+	       cur_badrom = cur_badrom->next) {
+	    if ((state.org >= cur_badrom->start) && (state.org <= cur_badrom->end)) {
+	      gpwarning(GPW_EXCEED_ROM, NULL);
+	      break;
+	    }
+	  }
+	}
       }
     }
 
-    i_memory_put(state.i_memory, state.org, MEM_USED_MASK | value);
-
+    b_memory_put(state.i_memory, state.org, value);
   }
-
-  state.org++;
-
-}
-
-int endian_swap_word(int x)
-{
-  return (  ( (x>>8) & 0xff) |  ( (x<<8) & 0xff00));
-}
-
-/* Write a word to memory unless we're packing successive bytes into a word
- *
- * The static variable 'packed_hi_lo' acts both as a flag and a shift amount.
- * when it's zero, the next byte to be emitted is packed into the low byte
- * of the word. When it is 8, the next byte is packed into high byte of the
- * word.  This variable is used in conjunction with the data( ) routine.
- *
- * The static variable 'packed_byte' is the word into which two bytes are
- * packed. When two bytes are packed, then the word is emitted.
- */
-
-int packed_hi_lo = 0;
-static int packed_byte = 0;
-gp_boolean _16packed_byte_acc;
-
-static void emit_packed(unsigned int value, unsigned int mode)
-{
-
-  if(value > 255) {
-    gpwarning(GPW_RANGE,NULL);
-    value &= 0xff;
-  }
-
-  packed_byte |= (value << packed_hi_lo);
-
-  if(packed_hi_lo) {
-
-    if(mode & ENDIAN_SWAP) 
-      packed_byte = endian_swap_word(packed_byte);
-
-    emit( packed_byte);
-    packed_hi_lo = packed_byte = 0;
-
-  } else
-    packed_hi_lo = 8;
-
+  state.org += 1;
 }
 
 static int off_or_on(struct pnode *p)
@@ -174,162 +173,78 @@ static int off_or_on(struct pnode *p)
   return ret;
 }
 
-static void data(struct sllist *L, int flavor, int lit_mask)
-{
-  if(state.obj.section)
-    state.obj.section->emitted_pack_byte = false;
-
-
-  if (L) {
-
-    struct sllist *list,*previous;
-    int value;
-
-    list = L->next;
-    
-    while(list) {
-
-      value = reloc_evaluate(list->p, RELOCT_ALL);
-
-      if(lit_mask & PACKING_BYTES) {
-	if(!_16packed_byte_acc)
-	  emit_packed(value | flavor, lit_mask);
-        else {
-          if (state.pass == 2) {
-	    /* read what's in the current org - pack our byte with it using emit() directly */
-    	    i_memory_put(state.i_memory, state.org - 1,
-		         (i_memory_get(state.i_memory, state.org - 1) & ~0xff00) | (value << 8));
-	  }
-
-	  /* reset status */
-	  _16packed_byte_acc = false;
-	  if(state.obj.section) {
-	    state.obj.section->have_pack_byte = false;
-            state.obj.section->emitted_pack_byte = true;
-	  }
-	}
-      } else {
-	if((value > lit_mask) || (value < 0)) {
-          gpwarning(GPW_RANGE,NULL);
-	}
-      
-        if(lit_mask & SPLIT_PACK) {
-	  emit(value & 0xff);
-	  emit((value >> 8) & 0xff);
-        } else {
-	  emit((value & lit_mask) | flavor);
-        }
-      }
-
-      previous = list;
-      list = list->next;
-      free(previous);
-
-    }
-
-  }
-
-  if(packed_hi_lo) {
-    if(!(state.obj.new_sec_flags & STYP_BPACK)) {
-      emit_packed(flavor, lit_mask);
-    } else {
-      /* 
-       * still pad, but do so with 0xff (to match mplab), it will be
-       * overwritten if there is more db data.
-       */
-      emit_packed(flavor | 0xff, lit_mask);
-      _16packed_byte_acc = true;
-      if(state.obj.section)
-	state.obj.section->have_pack_byte = true;
-    }
-  }
-}
-
-
-/* If we convert to glib, we can use the built in library call g_slist_append */
-
-struct sllist *sllist_append(struct sllist   *list,
-			     struct pnode *p)
-{
-  struct sllist *new;
-
-  new = malloc(sizeof(*new));
-  new->p = p;
-  new->next  = NULL;
-  list->next = new;
-
-  return(new);
-}
-
-
 /* convert an expression list which may consist of strings, constants, labels,
- * etc. into a singly linked list of integers.
- * This is called by the db,dw,dt,de, and data directives. 
+ * etc. into instruction memory.
+ * This is called by the da,data, and dw directives.
  * 
  * pnode *L -        A pointer to a doubly-linked list containing all of the 
  *                   expressions.
- * sllist *list -    A pointer to a singly-linked list into which we will place
- *                   the integer values of the expressions.
- * packing_strings - A flag indicating that char strings should be packed two to
- *                   a word. Note that this applies to only the da, dw, and data 
- *                   directives. The db directive does the byte packing later.
+ * int char_shift -  Character width in bits (8 but 7 for da on 14-bit PIC).
  */
 
-static void simplify_data(struct pnode *L, struct sllist *list, int packing_strings)
+static int emit_data(struct pnode *L, int char_shift)
 {
+  unsigned begin_org = state.org;
+  struct pnode *p;
 
-  if (L) {
-    struct pnode *p;
-    unsigned int v = 0;
-    unsigned int shift;
-    int value;
-
+  for(; L; L = TAIL(L)) {
+    const char *pc;
     p = HEAD(L);
-
     if (p->tag == string) {
-      char *pc = p->value.string;
-
-      if(packing_strings == 2) {
-        shift = 7;
-      } else {
-        shift = 8;
-      }
-      
-      while (*pc) {
-	pc = convert_escape_chars(pc, &value);
-
-	if(packing_strings) {
-	  if(v>= (1<<31) ) {
-	    v = (v<<shift) |  value;
-            if(_16bit_core) {
-              v = endian_swap_word(v);
-            }   	    
-	    list = sllist_append(list, mk_constant(v));
-	    v = 0;
-	  } else
-	    v = (1<<31) | value;
-	  
-	} else {
-	  list = sllist_append(list, mk_constant(value));
+      pc = p->value.string;
+      if (state.device.class == PROC_CLASS_PIC16E &&
+	  !(SECTION_FLAGS & (STYP_DATA|STYP_BPACK))) {
+	/* Special case of PIC16E strings in code */
+	int n = 0;
+	while(*pc) {
+	  int value;
+	  pc = convert_escape_chars(pc, &value);
+	  emit_byte(value);
+	  ++n;
+	}
+	/* Pad using zero if 16-bit numbers */
+	if (n & 1) {
+	  emit_byte(0);
+	  ++n;
 	}
       }
-
-      if(packing_strings && v >= 1<<31 ) {
-        v = v <<shift;
-        if(_16bit_core) {
-          v = endian_swap_word(v);
-        }        
-	list = sllist_append(list, mk_constant(v));
+      else {
+	while (*pc) {
+	  int value;
+	  unsigned short v;
+	  pc = convert_escape_chars(pc, &value);
+	  value &= 0xFF;
+	  /* If idata or packed and not db or de, emit one character per word */
+	  if (SECTION_FLAGS & (STYP_DATA|STYP_BPACK)) {
+	    v = value;
+	  }
+	  else {
+	    v = value << char_shift;
+	    if (*pc) {
+	      pc = convert_escape_chars(pc, &value);
+	      v |= value & 0xFF;
+	    }
+	  }
+	  emit(v);
+	}
+	/* For data and packed emit a terminating nul for strings */
+	if (SECTION_FLAGS & (STYP_DATA|STYP_BPACK))
+	  emit(0);
       }
-
-    } else {
-      list = sllist_append(list, p);
-
     }
-    simplify_data(TAIL(L), list, packing_strings);
-
+    else if (state.device.class->core_size > 0xFF) {
+      unsigned short v;
+      v = reloc_evaluate(p, RELOCT_ALL);
+      emit(v);
+    }
+    else {
+      unsigned short v;
+      /* FIXME: This case is for EEPROM8. Do we need the RELOCT_LOW? */
+      v = reloc_evaluate(p, RELOCT_LOW);
+      emit_byte(v);
+    }
   }
-
+  return state.org - begin_org;
 }
 
 /* Do the work for beginning a conditional assembly block.  Leave it
@@ -531,9 +446,9 @@ static gpasmVal do_banksel(gpasmVal r,
       address = maybe_evaluate(p);
       bank = gp_processor_check_bank(state.device.class, address);
       state.org += gp_processor_set_bank(state.device.class, 
-                                         state.processor_info->num_banks,
-                                         bank, 
-                                         state.i_memory, 
+                                         state.processor->num_banks,
+                                         bank,
+                                         state.i_memory,
                                          state.org);
     } else {
       num_reloc = count_reloc(p);
@@ -542,10 +457,10 @@ static gpasmVal do_banksel(gpasmVal r,
         /* it is an absolute address, generate the banksel but no relocation */
         address = maybe_evaluate(p);
         bank = gp_processor_check_bank(state.device.class, address);
-        state.org += gp_processor_set_bank(state.device.class, 
-                                           state.processor_info->num_banks,
-                                           bank, 
-                                           state.i_memory, 
+        state.org += gp_processor_set_bank(state.device.class,
+                                           state.processor->num_banks,
+                                           bank,
+                                           state.i_memory,
                                            state.org);
       } else if (num_reloc != 1) {
         gperror(GPE_UNRESOLVABLE, NULL);
@@ -556,7 +471,7 @@ static gpasmVal do_banksel(gpasmVal r,
         reloc_evaluate(p, RELOCT_BANKSEL);
         emit(0);
       } else {
-        switch (state.processor_info->num_banks) {
+        switch (state.processor->num_banks) {
         case 2:
           reloc_evaluate(p, RELOCT_BANKSEL);
           emit(0);
@@ -598,7 +513,7 @@ static gpasmVal do_code(gpasmVal r,
       /* new absolute section */
       p = HEAD(parms);
       strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
-      state.obj.new_sec_addr = maybe_evaluate(p) >> _16bit_core;
+      state.obj.new_sec_addr = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
       state.obj.new_sec_flags = STYP_TEXT | STYP_ABS;
       break;
     default:
@@ -621,11 +536,6 @@ static gpasmVal do_code_pack(gpasmVal r,
   else {
     state.lst.line.linetype = sec;
     state.next_state = state_section;
-    _16packed_byte_acc = false;
-    if(state.obj.section) {
-      state.obj.section->have_pack_byte = false;
-      state.obj.section->emitted_pack_byte = false;
-    }
 
     if (state.mode == absolute) {
       gperror(GPE_OBJECT_ONLY, NULL);
@@ -641,7 +551,7 @@ static gpasmVal do_code_pack(gpasmVal r,
         /* new absolute section */
         p = HEAD(parms);
         strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
-        state.obj.new_sec_addr = maybe_evaluate(p) >> _16bit_core;
+        state.obj.new_sec_addr = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
         state.obj.new_sec_flags = STYP_TEXT | STYP_ABS | STYP_BPACK;
         break;
       default:
@@ -711,11 +621,13 @@ static gp_boolean config_add_section(int ca)
 {
   if (state.mode == relocatable) {
     if ((!state.found_devid) && ((ca == DEVID1) || (ca == DEVID2))) {
-      coff_new_section(".devid", ca >> _16bit_core, STYP_ABS | STYP_TEXT);
+      coff_new_section(".devid", ca, STYP_ABS | STYP_TEXT);
       state.found_devid = true;
 	  return true;
     } else if (!state.found_config) {
-      coff_new_section(".config", state.processor_info->config_addrs[0] >> _16bit_core, STYP_ABS | STYP_TEXT);
+      int addr = gp_processor_org_to_byte(state.device.class,
+                                          state.processor->config_addrs[0]);
+      coff_new_section(".config", addr, STYP_ABS | STYP_TEXT);
       state.found_config = true;
 	  return true;
     }
@@ -724,6 +636,21 @@ static gp_boolean config_add_section(int ca)
   return false;
 }
  
+/* helper to write configuration data, grabbing defaults when necessary */
+static void config_16_set_mem(const struct gp_cfg_device *p_dev, int ca, unsigned char byte, unsigned char mask)
+{
+  unsigned char other_byte;
+  unsigned char old_byte;
+
+  if (!b_memory_get(state.c_memory, ca ^ 1, &other_byte)) {
+    unsigned char fill_val = gp_cfg_get_default(p_dev, ca ^ 1);
+    b_memory_put(state.c_memory, ca ^ 1, fill_val);
+  }
+  if (!b_memory_get(state.c_memory, ca, &old_byte))
+    old_byte = gp_cfg_get_default(p_dev, ca);
+  b_memory_put(state.c_memory, ca, (old_byte & ~mask) | byte);
+}
+
 static gpasmVal do_config(gpasmVal r,
 			  char *name,
 			  int arity,
@@ -738,15 +665,22 @@ static gpasmVal do_config(gpasmVal r,
     gperror(GPE_CONFIG_usCONFIG, NULL);
     return r;
   }
+
+  if(_16bit_core) {
+    gpwarning(GPW_EXPECTED,"__CONFIG has been deprecated for PIC18 devices. Use directive CONFIG.");
+  }
   
   state.lst.line.linetype = config;
 
   switch(arity) {
   case 1:
+    /* FIXME: Whenever there are more than one configuration address, the
+       address must be specified in MPASM. MPASM fails with error
+       "Argument out of range (not a valid config register address)" */
     if(_16bit_core) {
       gpwarning(GPW_EXPECTED,"18cxxx devices should specify __CONFIG address");
     }
-    ca = state.processor_info->config_addrs[0];
+    ca = state.processor->config_addrs[0];
     p = HEAD(parms);
     break;
 
@@ -760,70 +694,59 @@ static gpasmVal do_config(gpasmVal r,
     return r;
   }
 
+  ca = gp_processor_org_to_byte(state.device.class, ca);
   state.lst.config_address = ca;
+  /* FIXME: The .config section(s) should be placed in another list to
+     be created at the END. That way we do not mess up the sections we
+     are currently in and the section order will match with MPASM
+     5.34. */
   config_add_section(ca);
+
+  /* FIXME: For PIC18 (like for other PIC) MPASM always fills in two
+     bytes. The byte not specified for PIC18 will contain the default
+     values. For the two bytes it generates a section named
+     .config_<org>_<filename>.O. */
 
   if ((can_evaluate(p)) && (state.pass == 2)) { 
     value = evaluate(p);
 
     if(_16bit_core) {
-      int curval = i_memory_get(state.c_memory, ca>>1);
-      int mask = 0xff <<((ca&1) ? 0 : 8);
-
+      const struct gp_cfg_device *p_dev;
       if(value > 0xff) {
 	gpwarning(GPW_RANGE,0);
       }
-      /* If the config address is even, then this byte goes in LSB position */
-      value = (value & 0xff) << ((ca&1) ? 8 : 0)  | MEM_USED_MASK; 
-
-      if(curval & MEM_USED_MASK)
-	curval &= mask;
-      else
-	curval |= mask;
-
-      i_memory_put(state.c_memory, ca>>1,  curval | value);
-
+      p_dev = gp_cfg_find_pic_multi(sizeof(state.processor->names) /
+				    sizeof(*state.processor->names),
+				    state.processor->names);
+      if (p_dev) {
+	/* We do this to also set the other byte in a word. */
+	config_16_set_mem(p_dev, ca, value, 0xff);
+      }
+      else {
+	/* Hack in case the config defaults are not available. */
+	b_memory_put(state.c_memory, ca, value);
+      }
     } else {
-      if(value > state.device.core_size) {
+      unsigned short word;
+      if(value > state.device.class->core_size) {
         gpmessage(GPM_RANGE,NULL);
-        value &= state.device.core_size;
+        value &= state.device.class->core_size;
       }
 
-      if (i_memory_get(state.c_memory, ca) & MEM_USED_MASK) {
+      if (state.device.class->i_memory_get(state.c_memory, ca, &word)) {
         gperror(GPE_ADDROVR, NULL);
       }
 
-      i_memory_put(state.c_memory, ca, MEM_USED_MASK | value);
+      state.device.class->i_memory_put(state.c_memory, ca, value);
       /* FIXME: need line_number? this one will be wrong coff_linenum(1) */
     }
 
+    /* FIXME: MPASM continues the section that was interrupted. */
     /* force the section to end */
     state.obj.section = NULL;
   }
-        
+
   return r;
-}
-
-/* helper to write configuration data, grabbing defaults when necessary */
-static void config_16_set_mem(const struct gp_cfg_device *p_dev, int ca, unsigned char byte, unsigned char mask)
-{
-  int new_val, cur_val = i_memory_get(state.c_memory, ca / 2);
-  unsigned char cd = gp_cfg_get_default(p_dev, ca);
-
-  if (ca & 1) {
-    unsigned char fill_val = gp_cfg_get_default(p_dev, ca - 1);
-    if (!(cur_val & MEM_USED_MASK))
-      cur_val = (cd << 8) | fill_val;
-    new_val = (cur_val & ~((int)mask << 8)) | (byte << 8) | MEM_USED_MASK;
-  } else {
-    unsigned char fill_val = gp_cfg_get_default(p_dev, ca + 1);
-    if (!(cur_val & MEM_USED_MASK))
-      cur_val = (fill_val << 8) | cd;
-    new_val = (cur_val & ~((int)mask)) | (byte) | MEM_USED_MASK;
-  }
-
-  /* write the new config word */
-  i_memory_put(state.c_memory, ca / 2, new_val);
 }
 
 /* Sets defaults over unused portions of configuration memory. */
@@ -832,6 +755,10 @@ static void config_16_check_defaults(const struct gp_cfg_device *p_dev)
   const struct gp_cfg_addr *addrs = p_dev->config_addrs;
   int t;
 
+  /* FIXME: We do not need to set defaults here, but during
+     linking. And to keep it consistent for absolute mode we should
+     perform linking in absolute mode. MPASM 5.34 executes MPLINK in
+     absolute mode. Below comments are old and not entirely right. */
   /*
    * if we don't set defaults here, then MPLINK (I'm assuming) will pad the
    * entire section with 0xff. That puts the 0xff's in the hex file. MPASM puts
@@ -842,7 +769,8 @@ static void config_16_check_defaults(const struct gp_cfg_device *p_dev)
    * use defaults for adjacent values.
    */
   for(t=0; t<p_dev->addr_count; addrs++, t++) {
-    if(!(i_memory_get(state.c_memory, addrs->addr / 2) & MEM_USED_MASK)) {
+    unsigned char byte;
+    if(!b_memory_get(state.c_memory, addrs->addr, &byte)) {
       config_16_set_mem(p_dev, addrs->addr, addrs->defval, 0xff);
     }
   }
@@ -871,9 +799,9 @@ static gpasmVal _do_16_config(gpasmVal r,
   }
 
   /* make sure we an find our device in the config DB */
-  p_dev = gp_cfg_find_pic_multi(sizeof(state.processor_info->names) /
-                sizeof(*state.processor_info->names),
-                state.processor_info->names);
+  p_dev = gp_cfg_find_pic_multi(sizeof(state.processor->names) /
+                sizeof(*state.processor->names),
+                state.processor->names);
   if (!p_dev) {
     gperror(GPE_UNKNOWN, "the selected processor has no entries in the config db. CONFIG cannot be used.");
     return r;
@@ -931,6 +859,7 @@ static gpasmVal _do_16_config(gpasmVal r,
   }
  
   /* make sure the section exists ... */
+  /* FIXME: For PIC18 we'd need to create a section for each config byte (like MPASM) */
   config_add_section(ca);
   config_16_check_defaults(p_dev);
 
@@ -961,68 +890,73 @@ static gpasmVal do_16_config(gpasmVal r,
                int arity,
                struct pnode *parms)
 {
+  /* FIXME: MPASM creates .config_<address>_<filename>.O sections for
+     each configuration byte for relative files. For absolute it
+     performs what MPLINK does i.e. fills all config bytes with
+     default values. There can be undefined bytes in middle of
+     configuration if there is no default.
+     
+     No instructions can follow after a CONFIG. Must leave no current
+     section.
+ */
   for (; parms != NULL; parms = TAIL(parms)) {
     struct pnode *p = HEAD(parms);
     _do_16_config(r, name, arity, p);
   }
 
+  /* A new section must be started after this directive. */
+  state.obj.section = NULL;
+
   return r;
 }
 
 /*-------------------------------------------------------------------------
- *  do_da - The 'da' directive. Generates a number representing two
- *          7 bit ascii characters. It can be used in place of the DATA
- *          directive for 14 bit cores to pack two characters into one
- *          word. 
+ *  do_da - The 'da' directive. Identical to 'data' directive, except
+ *          for 14-bit cores it packs two 7-bit characters into one word.
  */
 static gpasmVal do_da(gpasmVal r,
 		      char *name,
 		      int arity,
 		      struct pnode *parms)
 {
-
-  struct sllist list;
-
-  list.next = NULL;
-
-  if(_16bit_core || state.device.core_size == CORE_12BIT_MASK) {
-    simplify_data(parms, &list, 1);
-  } else {
-    simplify_data(parms, &list, 2);
+  int char_shift = state.device.class == PROC_CLASS_PIC14 ? 7 : 8;
+  if ((state.mode == relocatable) &&
+      (SECTION_FLAGS & (STYP_DATA|STYP_BPACK))) {
+    /* This is a data memory not program */
+    state.lst.line.linetype = data;
+    char_shift = 8;
   }
 
-  data(&list, 0, DEFAULT_LIT_MASK);
+  emit_data(parms, char_shift);
 
   return r;
 }
 
 /*-------------------------------------------------------------------------
- * do_data - The 'data' directive. Initialize one or more words of program
- *           memory with data. On all families except the pic18cxxx, the 
- *           first character is in the most significant byte of the word.
+ * do_data - The 'data' directive. Fill words of program memory with data.
+ *           Pack strings two characters into one word, first character in
+ *           most significant byte of the word except for the pic18cxxx.
+ *           Pic18cxxx has byte addressed program memory and strings are
+ *           stored directly. Strings are padded to even number of bytes
+ *           by adding zero byte to end of string.
+ *           Eeprom16 strings have same byte order than pic18cxxx, but
+ *           only because all eeprom16 words are stored most significant
+ *           byte first (big-endian).
+ *           When in idata section, generate initialization data.
  */
 
 static gpasmVal do_data(gpasmVal r,
-		       char *name,
-		       int arity,
-		       struct pnode *parms)
+			char *name,
+			int arity,
+			struct pnode *parms)
 {
-
-  struct sllist list;
-
-  list.next = NULL;
-  simplify_data(parms, &list, 1);
-
   if ((state.mode == relocatable) &&
-      !(SECTION_FLAGS & STYP_TEXT)) {
+      (SECTION_FLAGS & (STYP_DATA|STYP_BPACK))) {
     /* This is a data memory not program */
-    state.lst.line.linetype = res;
+    state.lst.line.linetype = data;
+  }
 
-    /* data memory is byte sized so split the data */  
-    data(&list, 0, SPLIT_PACK);
-  } else {
-    data(&list, 0, DEFAULT_LIT_MASK);
-  } 
+  emit_data(parms, 8);
 
   return r;
 }
@@ -1040,30 +974,84 @@ static gpasmVal do_db(gpasmVal r,
 		      int arity,
 		      struct pnode *parms)
 {
-
-  struct sllist list;
-
-  list.next = NULL;
-  simplify_data(parms, &list,0);
+  struct pnode *L = parms;
+  struct pnode *p;
 
   if ((state.mode == relocatable) &&
-      !(SECTION_FLAGS & STYP_TEXT)) {
+      (SECTION_FLAGS & (STYP_DATA|STYP_BPACK))) {
     /* This is a data memory not program */
-    state.lst.line.linetype = res;
+    state.lst.line.linetype = data;
  
     /* only valid in initialized data sections */
     if (SECTION_FLAGS & STYP_BSS)
       gperror(GPE_WRONG_SECTION, NULL);
+  }
 
-    data(&list, 0, 0xff);
-  } else {
-    if(_16bit_core) {
-      data(&list, 0, PACKING_BYTES);
-    } else {
-      data(&list, 0, ENDIAN_SWAP | PACKING_BYTES);
-    }    
-  } 
-
+  if (state.device.class == PROC_CLASS_PIC16E ||
+      (SECTION_FLAGS & STYP_DATA)) {
+    unsigned begin_org = state.org;
+    for(; L; L = TAIL(L)) {
+      const char *pc;
+      p = HEAD(L);
+      if (p->tag == string) {
+	int n = 0;
+	pc = p->value.string;
+	while(*pc) {
+	  int value;
+	  pc = convert_escape_chars(pc, &value);
+	  emit_byte(value);
+	  ++n;
+	}
+      }
+      else {
+	int value;
+	value = reloc_evaluate(p, RELOCT_LOW);
+	if (value < 0 || value > 0xFF) {
+	  gpwarning(GPW_RANGE, NULL);
+	}
+	emit_byte(value);
+      }
+    }
+    if (state.mode == absolute || !(SECTION_FLAGS & (STYP_DATA|STYP_BPACK))) {
+      if ((state.org - begin_org) & 1) {
+	emit_byte(0);
+      }
+    }
+  }
+  else {
+    unsigned short v = 0;
+    unsigned n = 0;
+    while(L) {
+      const char *pc = NULL;
+      int value;
+      p = HEAD(L);
+      if (p->tag == string)
+	pc = p->value.string;
+      for(;;) {
+	if (p->tag == string) {
+	  pc = convert_escape_chars(pc, &value);
+	}
+	else {
+	  value = reloc_evaluate(p, RELOCT_LOW);
+	}
+	if (value < -128 || value > 0xFF) {
+	  gpwarning(GPW_RANGE, 0);
+	}
+	value &= 0xFF;
+	if (!(n & 1))
+	  v = value << 8;
+	else
+	  emit(v | value);
+	++n;
+	if (p->tag != string || !*pc) {
+	  L = TAIL(L);
+	  break;
+	}
+      }
+    }
+    if (n & 1)
+      emit(v);
+  }
   return r;
 }
 
@@ -1072,21 +1060,32 @@ static gpasmVal do_de(gpasmVal r,
 		      int arity,
 		      struct pnode *parms)
 {
+  struct pnode *p;
 
-  struct sllist list;
+  if (state.device.class == PROC_CLASS_PIC16E)
+    return do_db(r, name, arity, parms);
 
-  list.next = NULL;
-  simplify_data(parms, &list,0);
-  if(_16bit_core) {
-    data(&list, 0, PACKING_BYTES);
-  } else {
-    data(&list, 0, 0xff);
-  }  
-
+  for(; parms; parms = TAIL(parms)) {
+    p = HEAD(parms);
+    if (p->tag == string) {
+      const char *pc = p->value.string;
+      while (*pc) {
+	int value;
+	pc = convert_escape_chars(pc, &value);
+	emit(value & 0xFF);
+      }
+    }
+    else {
+      unsigned short v;
+      v = reloc_evaluate(p, RELOCT_ALL);
+      emit(v & 0xFF);
+    }
+  }
 
   return r;
 }
 
+/* Extension to MPASM, used at least by LLVM to emit debugging information. */
 static gpasmVal do_def(gpasmVal r,
                        char *name,
                        int arity,
@@ -1095,7 +1094,6 @@ static gpasmVal do_def(gpasmVal r,
   struct pnode *p;
   char *symbol_name = NULL;
   gp_symbol_type *coff_symbol = NULL;
-  int shift = 0;
   int eval;
   int value = 0;
   gp_boolean new_class = false;
@@ -1123,10 +1121,6 @@ static gpasmVal do_def(gpasmVal r,
     }
     parms = TAIL(parms);
 
-    if ((SECTION_FLAGS & STYP_TEXT) && _16bit_core) {
-      shift = 1;
-    }
-
     /* update the properties */
     for (; parms; parms = TAIL(parms)) {
       p = HEAD(parms);
@@ -1139,7 +1133,8 @@ static gpasmVal do_def(gpasmVal r,
           if (strcasecmp(lhs, "value") == 0) {
             value = maybe_evaluate(p->value.binop.p1);   
     	  } else if (strcasecmp(lhs, "size") == 0) {
-            state.org += (maybe_evaluate(p->value.binop.p1) >> shift);   
+	    eval = maybe_evaluate(p->value.binop.p1);
+	    state.org += IS_RAM_ORG ? eval : gp_processor_org_to_byte(state.device.class, eval);
     	  } else if (strcasecmp(lhs, "type") == 0) {
             eval = maybe_evaluate(p->value.binop.p1);   
             if ((eval < 0) || (eval > 0xffff)) {
@@ -1173,10 +1168,10 @@ static gpasmVal do_def(gpasmVal r,
             value = 0;   
   	  } else if (strcasecmp(p->value.symbol, "global") == 0) {
             type = gvt_global;
-            value = state.org << shift;
+	    value = IS_RAM_ORG ? state.org : gp_processor_byte_to_org(state.device.class, state.org);
   	  } else if (strcasecmp(p->value.symbol, "static") == 0) {
             type = gvt_static;
-            value = state.org << shift;
+	    value = IS_RAM_ORG ? state.org : gp_processor_byte_to_org(state.device.class, state.org);
   	  } else {
             gperror(GPE_ILLEGAL_ARGU, NULL);
           }
@@ -1239,6 +1234,7 @@ static gpasmVal do_define(gpasmVal r,
   return r;
 }
 
+/* Extension to MPASM, used at least by LLVM to emit debugging information. */
 static gpasmVal do_dim(gpasmVal r,
                        char *name,
                        int arity,
@@ -1249,9 +1245,6 @@ static gpasmVal do_dim(gpasmVal r,
   gp_symbol_type *coff_symbol = NULL;
   int number_symbols;
   gp_aux_type *aux_list;
-  struct sllist first_list;
-  struct sllist *list = &first_list;
-  struct sllist *previous;
   int i;
   int value;
 
@@ -1291,19 +1284,13 @@ static gpasmVal do_dim(gpasmVal r,
     parms = TAIL(parms);
 
     /* create the symbols */
-    aux_list = gp_coffgen_blockaux(number_symbols);
-    coff_symbol->num_auxsym = number_symbols;
-    coff_symbol->aux_list = aux_list;
-
-    /* convert the arguments into a list of values */
-    list->next = NULL;
-    simplify_data(parms, list, 0);
+    aux_list = gp_coffgen_addaux(state.obj.object, coff_symbol);
 
     /* write the data to the auxiliary symbols */
-    list = list->next;
     i = 0;
-    while(list) {
-      value = maybe_evaluate(list->p);
+    while(parms) {
+      p = HEAD(parms);
+      value = maybe_evaluate(p);
       if (value & (~0xff)) {
         gperror(GPE_RANGE, NULL); 
         return r;
@@ -1316,14 +1303,12 @@ static gpasmVal do_dim(gpasmVal r,
       
       if (i == (state.obj.newcoff ? SYMBOL_SIZE_v2 : SYMBOL_SIZE_v1)) {
         i = 0;
-        aux_list = aux_list->next;      
+        aux_list = gp_coffgen_addaux(state.obj.object, coff_symbol);
       } else {
         aux_list->_aux_symbol.data[i++] = value;
       }
 
-      previous = list;
-      list = list->next;
-      free(previous);
+      parms = TAIL(parms);
     }
   }
 
@@ -1386,19 +1371,25 @@ static gpasmVal do_dt(gpasmVal r,
 		      int arity,
 		      struct pnode *parms)
 {
-  struct symbol *s;
-  struct insn *i;
+  int retlw = gp_processor_retlw(state.device.class);
+  struct pnode *p;
 
-  struct sllist list;
-
-
-  s = get_symbol(state.stBuiltin, "RETLW");
-  assert(s != NULL); /* Every PIC has a RETLW instruction */
-  i = get_symbol_annotation(s);
-
-  list.next = NULL;
-  simplify_data(parms, &list, 0);
-  data(&list, i->opcode, 0xff);
+  for(; parms; parms = TAIL(parms)) {
+    p = HEAD(parms);
+    if (p->tag == string) {
+      const char *pc = p->value.string;
+      while (*pc) {
+	int value;
+	pc = convert_escape_chars(pc, &value);
+	emit((value & 0xFF) | retlw);
+      }
+    }
+    else {
+      unsigned short v;
+      v = reloc_evaluate(p, RELOCT_ALL);
+      emit((v & 0xFF) | retlw);
+    }
+  }
 
   return r;
 }
@@ -1414,27 +1405,17 @@ static gpasmVal do_dw(gpasmVal r,
 		      int arity,
 		      struct pnode *parms)
 {
-
-  struct sllist list;
-
-  list.next = NULL;
-  simplify_data(parms, &list, 1);
-
   if ((state.mode == relocatable) &&
-      !(SECTION_FLAGS & STYP_TEXT)) {
+      (SECTION_FLAGS & (STYP_DATA|STYP_BPACK))) {
     /* This is a data memory not program */
-    state.lst.line.linetype = res;
+    state.lst.line.linetype = data;
 
     /* only valid in initialized data sections */
     if (SECTION_FLAGS & STYP_BSS)
       gperror(GPE_WRONG_SECTION, NULL);
-
-    /* data memory is byte sized so split the data */  
-    data(&list, 0, SPLIT_PACK);
-  } else {
-    data(&list, 0, DEFAULT_LIT_MASK);
   }
-  
+  /* MPASM 5.34 seems to do this same for p18cxxx as for others. */
+  emit_data(parms, 8);
 
   return r;
 }
@@ -1541,14 +1522,9 @@ static gpasmVal do_equ(gpasmVal r,
 		       int arity,
 		       struct pnode *parms)
 {
-  struct pnode *p;
   state.lst.line.linetype = equ;
   if (enforce_arity(arity, 1)) {
-    p = HEAD(parms);
-    if (can_evaluate(p))
-      r = evaluate(p);
-		else
-		  r = 0;
+    r = maybe_evaluate(HEAD(parms));
   }
 
   return r;
@@ -1848,18 +1824,18 @@ static gpasmVal do_idlocs(gpasmVal r,
 		          struct pnode *parms)
 {
   int value;
-  int idreg;
-  int curvalue;
-  int mask;
+  unsigned int id_location;
+  unsigned int idreg;
 
-  if (_17cxx_core) {
+  id_location = gp_processor_id_location(state.processor);
+  if (id_location == 0) {
     gperror(GPE_ILLEGAL_DIR, NULL);
     return r;
   }
-
-  if (_16bit_core) {
+  
+  if (state.device.class == PROC_CLASS_PIC16E) {
     if (enforce_arity(arity,2)) {
-      idreg = maybe_evaluate(HEAD(parms));
+      idreg = gp_processor_org_to_byte(state.device.class, maybe_evaluate(HEAD(parms)));
       value = maybe_evaluate(HEAD(TAIL(parms)));
     } else {
       gperror(GPW_EXPECTED,"18cxxx devices should specify __IDLOC address");
@@ -1867,7 +1843,7 @@ static gpasmVal do_idlocs(gpasmVal r,
     }
   } else {
     if (enforce_arity(arity,1)) {
-      idreg = state.device.id_location;
+      idreg = id_location;
       value = maybe_evaluate(HEAD(parms));
     } else {
       return r;
@@ -1875,38 +1851,32 @@ static gpasmVal do_idlocs(gpasmVal r,
   }
 
   if ((state.mode == relocatable) && (!state.found_idlocs)) {
-    coff_new_section(".idlocs", idreg >> _16bit_core, STYP_ABS | STYP_TEXT);
+    coff_new_section(".idlocs", idreg, STYP_ABS | STYP_TEXT);
     state.found_idlocs = true;
   }
 
-  state.lst.config_address = idreg;
-  state.device.id_location = idreg;
-
   if (state.pass == 2) {
     if (_16bit_core) {
-      state.lst.line.linetype = config;
 
       if (idreg > IDLOC7 || idreg < IDLOC0) {
-        gperror(GPE_RANGE,NULL);
+        gperror(GPE_RANGE, "Argument out of range (not a valid ID location)");
       } else {
+	unsigned char curvalue;
+	state.lst.line.linetype = config;
+	state.lst.config_address = idreg;
         if(value > 0xff) {
-          gpwarning(GPW_RANGE, NULL);
+          gpmessage(GPM_IDLOC, NULL);
         }
-        curvalue = i_memory_get(state.c_memory, idreg>>1);
-        mask = 0xff <<((idreg&1) ? 0 : 8);
-	
-        /* If the address is even, then this byte goes in LSB position */
-        value = (value & 0xff) << ((idreg&1) ? 8 : 0)  | MEM_USED_MASK; 
-
-        if(curvalue & MEM_USED_MASK)
-          curvalue &= mask;
-        else
-          curvalue |= mask;
-
-        i_memory_put(state.c_memory, idreg>>1,  curvalue | value);
+	if (idreg <= state.device.id_location) {
+	  gperror(GPE_IDLOCS_ORDER, NULL);
+	}
+	if (b_memory_get(state.c_memory, idreg, &curvalue))
+	  gperror(GPE_ADDROVR, NULL);
+	b_memory_put(state.c_memory, idreg, value);
       }
 
     } else {
+      unsigned short word;
       state.lst.line.linetype = idlocs;
 
       if (value > 0xffff) {
@@ -1914,21 +1884,22 @@ static gpasmVal do_idlocs(gpasmVal r,
         value &= 0xffff;
       }     
       
-      if (i_memory_get(state.c_memory, idreg) & MEM_USED_MASK) {
+      if (state.device.class->i_memory_get(state.c_memory, idreg, &word)) {
         gperror(GPE_ADDROVR, NULL);
       }
 
-      i_memory_put(state.c_memory, idreg,     
-                   ((value & 0xf000) >> 12) | MEM_USED_MASK);
-      i_memory_put(state.c_memory, idreg + 1,
-                   ((value & 0x0f00) >> 8) | MEM_USED_MASK);
-      i_memory_put(state.c_memory, idreg + 2,
-                   ((value & 0x00f0) >> 4) | MEM_USED_MASK);
-      i_memory_put(state.c_memory, idreg + 3,
-                   (value & 0x000f) | MEM_USED_MASK);
+      state.device.class->i_memory_put(state.c_memory, idreg,     
+				       (value & 0xf000) >> 12);
+      state.device.class->i_memory_put(state.c_memory, idreg + 2,
+				       (value & 0x0f00) >> 8);
+      state.device.class->i_memory_put(state.c_memory, idreg + 4,
+				       (value & 0x00f0) >> 4);
+      state.device.class->i_memory_put(state.c_memory, idreg + 6,
+				       value & 0x000f);
 
     }
   }
+  state.device.id_location = idreg;
   
   return r;
 }
@@ -2335,12 +2306,13 @@ static gpasmVal do_org(gpasmVal r,
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (can_evaluate(p)) {
-      gpasmVal new_org = evaluate(p);
-      if (_16bit_core && (new_org & 0x1))
+      gpasmVal new_org;
+      r = evaluate(p);
+      if ((r & 0x1) && state.device.class == PROC_CLASS_PIC16E)
         gperror(GPE_ORG_ODD, NULL);
-      r = new_org >> _16bit_core;
+      new_org = gp_processor_org_to_byte(state.device.class, r);
       if (state.mode == absolute) {
-        state.org = r;
+        state.org = new_org;
       }	else {
         /* Default section name, this will be overwritten if a label is 
            present. */
@@ -2348,7 +2320,7 @@ static gpasmVal do_org(gpasmVal r,
                  sizeof(state.obj.new_sec_name),
                  ".org_%x",
                  r);
-        state.obj.new_sec_addr = r;
+        state.obj.new_sec_addr = new_org;
         state.obj.new_sec_flags = STYP_TEXT | STYP_ABS;
         state.lst.line.linetype = sec;
         state.next_state = state_section;
@@ -2404,12 +2376,12 @@ static gpasmVal _do_pagesel(gpasmVal r,
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (state.mode == absolute) {
-      address = maybe_evaluate(p);
+      address = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
       page = gp_processor_check_page(state.device.class, address);
-      state.org += gp_processor_set_page(state.device.class, 
-                                         state.processor_info->num_pages,
-                                         page, 
-                                         state.i_memory, 
+      state.org += gp_processor_set_page(state.device.class,
+                                         state.processor->num_pages,
+                                         page,
+                                         state.i_memory,
                                          state.org,
                                          use_wreg);
     } else {
@@ -2417,13 +2389,13 @@ static gpasmVal _do_pagesel(gpasmVal r,
       
       if (num_reloc == 0) {
         /* it is an absolute address, generate the pagesel but no relocation */
-        address = maybe_evaluate(p);
+	address = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
         page = gp_processor_check_page(state.device.class, address);
 
-        state.org += gp_processor_set_page(state.device.class, 
-                                           state.processor_info->num_pages,
-                                           page, 
-                                           state.i_memory, 
+        state.org += gp_processor_set_page(state.device.class,
+                                           state.processor->num_pages,
+                                           page,
+                                           state.i_memory,
                                            state.org,
                                            use_wreg);
       } else if (num_reloc != 1) {
@@ -2434,12 +2406,12 @@ static gpasmVal _do_pagesel(gpasmVal r,
         emit(0);
       } else {
         if ((use_wreg == 0) &&
-            (state.processor_info->num_pages == 2)) {
+            (state.processor->num_pages == 2)) {
           reloc_evaluate(p, RELOCT_PAGESEL_BITS);
           emit(0);
         }
-        else if ((state.processor_info->num_pages == 2) ||
-            (state.processor_info->num_pages == 4)) {
+        else if ((state.processor->num_pages == 2) ||
+            (state.processor->num_pages == 4)) {
           reloc_evaluate(p, reloc_type);
           emit(0);
           emit(0);
@@ -2515,29 +2487,28 @@ static gpasmVal do_res(gpasmVal r,
     p = HEAD(parms);
     if (can_evaluate(p)) {
       count = evaluate(p);
-      r = state.org;
 
       if (state.mode == absolute) {
         state.lst.line.linetype = equ;
-        /* FIXME: in absolute mode, MPASM will reserve single bytes for
-         * PIC18's, but that will require significant changes for gpasm */
-        if ((count >> _16bit_core) == 0)
-          gpwarning(GPW_UNKNOWN, "No memory has been reserved by this instruction.");
-        state.org += (count >> _16bit_core);
+        state.org += gp_processor_org_to_byte(state.device.class, count);
       } else {
         state.lst.line.linetype = res;
-        if (SECTION_FLAGS & STYP_TEXT)
-          count >>= _16bit_core;
-
-        if (count == 0)
-          gpwarning(GPW_UNKNOWN, "No memory has been reserved by this instruction.");
-        for (i = 0; i < count; i++) {
-          if (SECTION_FLAGS & STYP_TEXT) {
-            /* For some reason program memory is filled with a different 
+        if (SECTION_FLAGS & STYP_TEXT) {
+	  count = gp_processor_org_to_byte(state.device.class, count);
+	  if (state.device.class->rom_width < 16) {
+	    count >>= 1;
+	    /* FIXME: Most likely this check belongs to our caller. */
+	    if (count == 0)
+	      gpwarning(GPW_UNKNOWN, "No memory has been reserved by this instruction.");
+	  }
+	  for (i = 0; i < count; i += 2) {
+            /* For some reason program memory is filled with a different
                value. */
-            emit(state.device.core_size);     
-          } else {
-            emit(0);     
+            emit(state.device.class->core_size);
+	  }
+	} else {
+	  for (i = 0; i < count; i++) {
+            emit_byte(0);
           }
         }
       }
@@ -2940,31 +2911,8 @@ void file_ok(unsigned int file)
   }
 
   /* Issue bank message if necessary */
-  switch (state.device.class) {
-  case PROC_CLASS_EEPROM8:
-  case PROC_CLASS_EEPROM16:
-    /* do nothing */
-    break;
-  case PROC_CLASS_GENERIC:
-  case PROC_CLASS_PIC12:
-  case PROC_CLASS_SX:
-    if (file & (~0x1f))
-      gpmessage(GPM_BANK, NULL);   
-    break;
-  case PROC_CLASS_PIC14:
-    if (file & (~0x7f))
-      gpmessage(GPM_BANK, NULL);  
-    break;
-  case PROC_CLASS_PIC16:
-    if (file & (~0xff))
-      gpmessage(GPM_BANK, NULL);  
-    break;
-  case PROC_CLASS_PIC16E:
-    /* do nothing */
-    break;
-  default:
-    assert(0);
-  }
+  if (file & state.device.class->bank_mask)
+    gpmessage(GPM_BANK, NULL);
 
   return;
 }
@@ -3025,7 +2973,11 @@ gpasmVal do_insn(char *name, struct pnode *parms)
   int file;		/* register file address, if applicable */
   gpasmVal r;		/* Return value */
 
-  r = state.org;
+  if (!IS_RAM_ORG)
+    /* We want to have r as the value to assign to label */
+    r = gp_processor_byte_to_org(state.device.class, state.org);
+  else
+    r = state.org;
 
   arity = list_length(parms);
 
@@ -3107,7 +3059,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  if (value & (~0x7ff))
 	    gperror(GPE_RANGE, NULL);
 
-	  if ((value & 0x600) != (state.org & 0x600))
+	  if ((value & 0x600) != (r & 0x600))
 	    gpmessage(GPM_PAGE, NULL);	  
 
 	  if (value & 0x100)
@@ -3141,7 +3093,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  if (value & (~0x7ff))
 	    gperror(GPE_RANGE, NULL); 	  
 	  
-	  if ((value & 0x600) != (state.org & 0x600))
+	  if ((value & 0x600) != (r & 0x600))
 	    gpmessage(GPM_PAGE, NULL);	  
 	  	  
 	  emit(i->opcode | (value & 0x1ff));
@@ -3162,7 +3114,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  if (value & (~0x1fff))
 	    gperror(GPE_RANGE, NULL); 	  
 	  
-	  if ((value & 0x1800) != (state.org & 0x1800))
+	  if ((value & 0x1800) != (r & 0x1800))
 	    gpmessage(GPM_PAGE, NULL);
 	  
 	  emit(i->opcode | (value & 0x7ff));
@@ -3183,7 +3135,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  if (value & (~0xffff))
 	    gperror(GPE_RANGE, NULL); 	  
 
-	  if ((value & 0xe000) != (state.org & 0xe000))
+	  if ((value & 0xe000) != (r & 0xe000))
 	    gpmessage(GPM_PAGE, NULL);
 
 	  emit(i->opcode | (value & 0x1fff));
@@ -3214,11 +3166,11 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
 	  p = HEAD(parms);
 	  if (count_reloc(p) == 0) {
-	    offset = maybe_evaluate(p) - ((state.org + 1)<<_16bit_core);
-	    offset >>= _16bit_core;
+	    offset = maybe_evaluate(p) - (r + 1);
 	  } else {
 	    offset = reloc_evaluate(p, RELOCT_CONDBRA);
 	  }
+	  offset = gp_processor_org_to_byte(state.device.class, offset) >> 1;
 
 	  /* The offset for the relative branch must be 
 	     between -127 <= offset <= 127. */
@@ -3231,11 +3183,11 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
 	  p = HEAD(parms);
 	  if (count_reloc(p) == 0) {
-	    offset = maybe_evaluate(p) - ((state.org + 1)<<_16bit_core);
-	    offset >>= _16bit_core;
+	    offset = maybe_evaluate(p) - (r + 1);
 	  } else {
 	    offset = reloc_evaluate(p, RELOCT_BRA);
-	  }	  
+	  }
+	  offset = gp_processor_org_to_byte(state.device.class, offset) >> 1;
          
 	  emit_check_relative(i->opcode, offset, 0x7ff, 0x3ff);
 	}
@@ -3244,7 +3196,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	if (enforce_arity(arity, 1)) {
 	  int dest;
 	  p = HEAD(parms);
-	  dest = reloc_evaluate(p, RELOCT_GOTO) >> _16bit_core;
+	  dest = reloc_evaluate(p, RELOCT_GOTO);
+	  dest = gp_processor_org_to_byte(state.device.class, dest) >> 1;
 	  emit(i->opcode | (dest & 0xff));
 	  reloc_evaluate(p, RELOCT_GOTO2);     /* add the second relocation */
 	  emit_check(0xf000, dest>>8, 0xfff);
@@ -3276,7 +3229,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    default:
 	      enforce_arity(arity, 2);
 	    }
-	    dest = reloc_evaluate(p, RELOCT_CALL) >> _16bit_core;
+	    dest = reloc_evaluate(p, RELOCT_CALL);
+	    dest = gp_processor_org_to_byte(state.device.class, dest) >> 1;
 	    emit(i->opcode | (s<<8) | (dest & 0xff));
 	    reloc_evaluate(p, RELOCT_CALL2);     /* add the second relocation */
 	    emit_check(0xf000, (dest>>8), 0xfff);
@@ -3762,7 +3716,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           gpwarning(GPW_EXTRANEOUS, NULL);
 	}
 	if ((strcasecmp(i->name, "option") == 0) &&
-            (state.device.core_size != CORE_12BIT_MASK)){
+            (state.device.class->core_size != CORE_12BIT_MASK)){
           gpwarning(GPW_NOT_RECOMMENDED, NULL);
         }
 	emit(i->opcode);
@@ -3963,7 +3917,7 @@ void opcode_init(int stage)
 {
   int i;
   int count = 0;
-  struct insn *base = NULL;
+  const struct insn *base = NULL;
 
   switch (stage) {
   case 0:
@@ -3976,84 +3930,29 @@ void opcode_init(int stage)
     break;
   case 2:
     state.device.class = gp_processor_class(state.processor);
-    switch (state.device.class) {
-    case PROC_CLASS_EEPROM8:
-      base = 0;
-      count = 0;
-      state.device.core_size = CORE_8BIT_MASK;
-      state.device.config_address = 0;
-      state.device.id_location = 0;
-      break;
-    case PROC_CLASS_EEPROM16:
-      base = 0;
-      count = 0;
-      state.device.core_size = CORE_16BIT_MASK;
-      state.device.config_address = 0;
-      state.device.id_location = 0;
-      break;
-    case PROC_CLASS_GENERIC:
-      base = 0;
-      count = 0;
-      state.device.core_size = CORE_12BIT_MASK;
-      state.device.config_address = CONFIG_ADDRESS_12;
-      state.device.id_location = IDLOC_ADDRESS_12;
-      break;
-    case PROC_CLASS_PIC12:
-      base = op_12c5xx;
-      count = num_op_12c5xx;
-      state.device.core_size = CORE_12BIT_MASK;
-      state.device.config_address = CONFIG_ADDRESS_12;
-      state.device.id_location = IDLOC_ADDRESS_12;
-      break;
-    case PROC_CLASS_SX:
-      base = op_sx;
-      count = num_op_sx;
-      state.device.core_size = CORE_12BIT_MASK;
-      state.device.config_address = CONFIG_ADDRESS_12;
-      state.device.id_location = IDLOC_ADDRESS_12;
+    base = state.device.class->instructions;
+    count = base == NULL ? 0 : *state.device.class->num_instructions;
+    if (state.device.class == PROC_CLASS_SX) {
       /* page instruction conflicts with the page directive */
-      remove_symbol(state.stBuiltin, "page");    
-      break;
-    case PROC_CLASS_PIC14:
-      base = op_16cxx;
-      count = num_op_16cxx;
-      state.device.core_size = CORE_14BIT_MASK;
-      state.device.config_address = CONFIG_ADDRESS_14;
-      state.device.id_location = IDLOC_ADDRESS_14;
-      break;
-    case PROC_CLASS_PIC16:
-      base = op_17cxx;
-      count = num_op_17cxx;
-      state.device.core_size = CORE_16BIT_MASK;
-      _17cxx_core = 1;
-      state.device.config_address = CONFIG_17CXX;
-      break;
-    case PROC_CLASS_PIC16E:
-      base = op_18cxx;
-      count = num_op_18cxx;
-      state.device.core_size = CORE_16BIT_MASK;
+      remove_symbol(state.stBuiltin, "page");
+    }
+    else if (state.device.class == PROC_CLASS_PIC16E) {
       _16bit_core = 1;
       state.c_memory_base = CONFIG1L;
-      state.device.config_address = CONFIG1L;
       state.device.bsr_boundary = gp_processor_bsr_boundary(state.processor);
 
       /* The 16_bit core special macros are encoded directly into the
        * symbol table like regular instructions. */
       for (i = 0; i < num_op_18cxx_sp; i++)
 	annotate_symbol( add_symbol(state.stBuiltin, op_18cxx_sp[i].name), 
-			 &op_18cxx_sp[i]);
+			 (void*)&op_18cxx_sp[i]);
 
       if (state.extended_pic16e) {
         /* Some 18xx devices have an extended instruction set. */
         for (i = 0; i < num_op_18cxx_ext; i++)
 	  annotate_symbol( add_symbol(state.stBuiltin, op_18cxx_ext[i].name), 
-                           &op_18cxx_ext[i]);
+                           (void*)&op_18cxx_ext[i]);
       }
-
-      break;
-
-    default:
-      assert(0);
     }
     break;
   case 3:
@@ -4066,7 +3965,7 @@ void opcode_init(int stage)
   }
 
   for (i = 0; i < count; i++)
-    annotate_symbol(add_symbol(state.stBuiltin, base[i].name), &base[i]);
+    annotate_symbol(add_symbol(state.stBuiltin, base[i].name), (void*)&base[i]);
 
   if (state.processor) {
     const char *name = gp_processor_name(state.processor, 0);

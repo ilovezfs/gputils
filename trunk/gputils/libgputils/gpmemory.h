@@ -23,27 +23,42 @@ Boston, MA 02111-1307, USA.  */
 #define __GPMEMORY_H__
 
 #define MAX_RAM		0x1000	        /* Maximum RAM */
-#define I_MEM_BITS      15
-#define MAX_I_MEM	(1<<I_MEM_BITS) /* Maximum instruction memory */
+/* Choose bases such that each base has different hex 04 record */
+#define I_MEM_BITS      16		/* MemBlock base bit alignment */
+#define MAX_I_MEM	(1<<I_MEM_BITS) /* MemBlock base alignment */
 #define I_MEM_MASK      (MAX_I_MEM-1)
 
 #define MAX_C_MEM       0x100           /* Maximum configuration memory 
                                            (only a few bytes are used) */
 
-#define MEM_USED_MASK 0x80000000 /* Means occupied in state.i_memory above */
+#define BYTE_USED_MASK 0x8000 /* Means occupied in MemBlock.memory */
 
+struct proc_class;
 
+/* See beginning of gpmemory.c for documentation. */
 typedef struct MemBlock {
   unsigned int base;
-  unsigned int *memory;
+  unsigned short *memory;
   struct MemBlock *next;
 } MemBlock;
 
 MemBlock *i_memory_create(void);
 void i_memory_free(MemBlock *m);
-int i_memory_get(MemBlock *m, unsigned int address);
-void i_memory_put(MemBlock *i_memory, unsigned int address, unsigned int value);
-int i_memory_used(MemBlock *m);
-void print_i_memory(MemBlock *m, int byte_addr);
+int b_memory_get(MemBlock *m, unsigned int byte_address, unsigned char *byte);
+#ifndef NDEBUG
+#define b_memory_assert_get(m, byte_address, byte) assert(b_memory_get(m, byte_address, byte))
+#else
+#define b_memory_assert_get(m, byte_address, byte) b_memory_get(m, byte_address, byte)
+#endif
+void b_memory_put(MemBlock *b_memory, unsigned int byte_address, unsigned char value);
+void b_memory_clear(MemBlock *b_memory, unsigned int byte_address);
+int b_memory_used(MemBlock *m);
+struct proc_class;
+void print_i_memory(MemBlock *m, const struct proc_class *class);
+
+int i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word);
+int i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word);
+void i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word);
+void i_memory_put_be(MemBlock *m, unsigned int byte_addr, unsigned short word);
 
 #endif

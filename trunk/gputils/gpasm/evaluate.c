@@ -240,7 +240,7 @@ gpasmVal evaluate(struct pnode *p)
       struct symbol *s;
 
       if (strcmp(p->value.symbol, "$") == 0) {
-	return state.org << _16bit_core;
+	return gp_processor_byte_to_org(state.device.class, state.org);
       } else {
 	s = get_symbol(state.stTop, p->value.symbol);
 	var = get_symbol_annotation(s);
@@ -432,10 +432,10 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
   case symbol:
     if (strcmp(p->value.symbol, "$") == 0) {
       char buffer[BUFSIZ];
+      unsigned org = gp_processor_byte_to_org(state.device.class, state.org);
       
-      snprintf(buffer, sizeof(buffer), "_%s_%06x", state.obj.new_sec_name,
-	 		state.org << _16bit_core);
-      set_global(buffer, state.org << _16bit_core, PERMANENT, gvt_static);
+      snprintf(buffer, sizeof(buffer), "_%s_%04X", state.obj.new_sec_name, org);
+      set_global(buffer, org, PERMANENT, IS_RAM_ORG ? gvt_static : gvt_address);
       s = get_symbol(state.stTop, buffer);
     } else {
       s = get_symbol(state.stTop, p->value.symbol);
@@ -619,15 +619,9 @@ int eval_fill_number(struct pnode *p)
   int number;
 
   number = maybe_evaluate(p);
-  if(_16bit_core) {
-    /* For 16 bit core devices number is bytes not words */ 
-    if ((number & 0x1) == 1){
-      /* The number is divided by two, so it can't be odd */
-      gperror(GPE_FILL_ODD, NULL);
-    } else {
-      number = number / 2;
-    }	
-  }
+  if (state.device.class->rom_width == 8 && (number & 0x1) == 1)
+    gperror(GPE_FILL_ODD, NULL);
+  number = gp_processor_org_to_byte(state.device.class, number) >> 1;
 
   return number;
 }

@@ -28,14 +28,12 @@ Boston, MA 02111-1307, USA.  */
 
 FILE *codefile;  
 char filename[BUFFER_LENGTH];
-char temp[COD_BLOCK_SIZE];
+unsigned char temp[COD_BLOCK_SIZE];
 char *source_file_names[MAX_SOURCE_FILES];
 FILE *source_files[MAX_SOURCE_FILES];
 DirBlockInfo main_dir;
 
-int byte_addr;
-
-char directory_block_data[COD_BLOCK_SIZE];
+unsigned char directory_block_data[COD_BLOCK_SIZE];
 char * SymbolType4[154] = {
   "a_reg          ", "x_reg          ", "c_short        ", "c_long         ",
   "c_ushort       ", "c_ulong        ", "c_pointer      ", "c_upointer     ",
@@ -124,9 +122,12 @@ int main(int argc, char *argv[])
   int display_flags;
   Directory *dir;
 
-  gp_init();
+  char temp_buf[12];
+  char *processor_name;
+  const struct px *processor_info;
+  proc_class_t processor_class;
 
-  byte_addr = 0;
+  gp_init();
 
 #define DISPLAY_NOTHING 0
 #define DISPLAY_DIR     1
@@ -190,6 +191,15 @@ int main(int argc, char *argv[])
   /* Start off by reading the directory block */
   read_directory();
 
+  /* Determine if byte address and org are different */
+  processor_name = substr(temp_buf,
+                          sizeof(temp_buf),
+                          &main_dir.dir.block[COD_DIR_PROCESSOR],
+                          8);
+
+  processor_info = gp_find_processor(processor_name);
+  processor_class = gp_processor_class(processor_info);
+
   fseek(codefile, 0,SEEK_SET);
   buffer_size = fread(directory_block_data, 1, COD_BLOCK_SIZE, codefile);
 
@@ -199,12 +209,12 @@ int main(int argc, char *argv[])
   dir = (Directory *)directory_block_data;
 
   if(display_flags & DISPLAY_ROM)
-    dump_code();
+    dump_code(processor_class);
 
   if(display_flags & DISPLAY_SYM) {
     dump_symbols();
     dump_lsymbols();
-    dump_local_vars();
+    dump_local_vars(processor_class);
   }
 
   dump_source_files();

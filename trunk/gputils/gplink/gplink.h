@@ -39,9 +39,8 @@ extern struct gplink_state {
   enum formats hex_format;         /* format of the output */
   char *paths[MAX_PATHS];          /* the list of include paths */
   int numpaths;                    /* number of paths in the list */
-  int byte_addr;                   /* program memory uses byte addressing */
   pic_processor_t processor;
-  enum proc_class class;
+  proc_class_t class;
   struct {
     int level;
     gp_boolean dead_sections;
@@ -115,6 +114,6 @@ void gplink_error(char *messg);
 void gplink_warning(char *messg);
 void gplink_debug(char *messg);
 void gplink_open_coff(char *name);
-void gplink_add_path(char *path);
+void gplink_add_path(const char *path);
 
 #endif

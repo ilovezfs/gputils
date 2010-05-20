@@ -26,7 +26,7 @@ Boston, MA 02111-1307, USA.  */
 			* and we use up memory and run slow.. */
 
 struct symbol {
-  char *name;
+  const char *name;
   void *annotation;
   struct symbol *next;
 };
@@ -43,14 +43,14 @@ struct symbol_table *push_symbol_table(struct symbol_table *,
                                        gp_boolean case_insensitive);
 struct symbol_table *pop_symbol_table(struct symbol_table *);
 
-struct symbol *add_symbol(struct symbol_table *, char *name);
-int remove_symbol(struct symbol_table *table, char *name);
-struct symbol *get_symbol(struct symbol_table *, char *name);
+struct symbol *add_symbol(struct symbol_table *, const char *name);
+int remove_symbol(struct symbol_table *table, const char *name);
+struct symbol *get_symbol(struct symbol_table *, const char *name);
 
 void annotate_symbol(struct symbol *, void *);
 
-char *get_symbol_name(struct symbol *);
-void *get_symbol_annotation(struct symbol *);
+const char *get_symbol_name(const struct symbol *);
+void *get_symbol_annotation(const struct symbol *);
 
 int symbol_compare(const void *p0, const void *p1);
 

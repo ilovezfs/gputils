@@ -50,7 +50,7 @@ gp_coffgen_init(void)
 gp_section_type *
 gp_coffgen_findsection(gp_object_type *object, 
                        gp_section_type *start,
-                       char *name)
+                       const char *name)
 {
   gp_section_type *current = NULL;
   gp_section_type *found = NULL;
@@ -73,7 +73,7 @@ gp_coffgen_findsection(gp_object_type *object,
 }
 
 gp_section_type *
-gp_coffgen_newsection(char *name)
+gp_coffgen_newsection(const char *name)
 {
   gp_section_type *new = NULL;
 
@@ -99,14 +99,12 @@ gp_coffgen_newsection(char *name)
   new->reloc_ptr = 0;
   new->lineno_ptr = 0;
   new->next = NULL;
-  new->have_pack_byte = false;
-  new->emitted_pack_byte = false;
 
   return new;
 }
 
 gp_section_type *
-gp_coffgen_addsection(gp_object_type *object, char *name)
+gp_coffgen_addsection(gp_object_type *object, const char *name)
 {
   gp_section_type *new = NULL;
 
@@ -249,7 +247,7 @@ gp_coffgen_addlinenum(gp_section_type *section)
 }
 
 gp_symbol_type *
-gp_coffgen_findsymbol(gp_object_type *object, char *name)
+gp_coffgen_findsymbol(gp_object_type *object, const char *name)
 {
   gp_symbol_type *current = NULL;
   gp_symbol_type *found = NULL;

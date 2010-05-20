@@ -27,7 +27,6 @@ Boston, MA 02111-1307, USA.  */
 #include "coff.h"
 
 extern int _16bit_core;
-extern int packed_hi_lo;
 
 void 
 coff_init(void)
@@ -78,16 +77,9 @@ _update_section_size(void)
   
   if (state.obj.section == NULL)
     return;
-  
-  if (state.obj.section->flags & STYP_TEXT) {
-    /* the section is executable, so each word is two bytes */
-    state.obj.section->size = 
-      (state.org - (state.obj.section->address >> _16bit_core)) * 2;
-  } else {
-    /* the section is data, so each word is one byte */
-    state.obj.section->size = 
-      (state.org - state.obj.section->address);
-  }
+
+  state.obj.section->size =
+    (state.org - state.obj.section->address);
 
   _update_section_symbol(state.obj.section);
 
@@ -120,6 +112,7 @@ _update_reloc_ptr(void)
   return;
 }
 
+/* FIXME: Now that gpasm stores bytes, this should go away. */
 /* Copy data from c_memory into the coff section.  This kludge is for the
    18xx devices.  Their memory is byte addressable, but words are stored
    in gpasm memory.  The user isn't guaranteed to put the config directives
@@ -132,7 +125,7 @@ _copy_config(void)
   int i;
   int start;
   int stop;
-  int word;
+  unsigned char byte;
   gp_boolean found_break;
 
   if(!state.obj.enabled)
@@ -145,16 +138,15 @@ _copy_config(void)
     
     assert(config_section != NULL);
 
-    start = state.processor_info->config_addrs[0] >> _16bit_core;
-    stop = state.processor_info->config_addrs[1] >> _16bit_core;
-    config_section->size = (stop - start + 1) * 2;
+    start = gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[0]);
+    stop = gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[1]);
+    config_section->size = stop - start + 1;
     for (i = start; i <= stop; i++) {
-      word = i_memory_get(state.c_memory, i);
-      if (word & MEM_USED_MASK) {
-        i_memory_put(config_section->data, i, word);
+      if (b_memory_get(state.c_memory, i, &byte)) {
+        b_memory_put(config_section->data, i, byte);
       } else {
         /* fill undefined configuration registers with 0xff */
-        i_memory_put(config_section->data, i, 0xffff | MEM_USED_MASK);
+        b_memory_put(config_section->data, i, 0xff);
       }
     }
     _update_section_symbol(config_section);
@@ -168,14 +160,19 @@ _copy_config(void)
     assert(config_section != NULL);
     assert(_16bit_core);
 
-    i = DEVID1>>1;
-    word = i_memory_get(state.c_memory, i);
-    assert(word && MEM_USED_MASK);
-    i_memory_put(config_section->data, i, word);
+    if (b_memory_get(state.c_memory, DEVID1, &byte))
+      b_memory_put(config_section->data, DEVID1, byte);
+    else
+      assert(0);
+    if (b_memory_get(state.c_memory, DEVID2, &byte))
+      b_memory_put(config_section->data, DEVID2, byte);
+    else
+      assert(0);
+    
     config_section->size = 2;
 
     _update_section_symbol(config_section);
-  }  
+  }
 
   if (state.found_idlocs) {
     config_section = gp_coffgen_findsection(state.obj.object, 
@@ -185,37 +182,35 @@ _copy_config(void)
     assert(config_section != NULL);  
 
     if(_16bit_core) {
-      config_section->size = 0;    
-      start = config_section->address >> 1;
-      stop = IDLOC7 >> 1;
+      config_section->size = 0;
+      start = config_section->address;
+      stop = IDLOC7;
       found_break = false;
       for (i = start; i <= stop; i++) {
         printf("address = %x\n", i);
-        word = i_memory_get(state.c_memory, i);
-        if (word & MEM_USED_MASK) {
+        if (b_memory_get(state.c_memory, i, &byte)) {
           if (found_break) {
             gperror(GPE_CONTIG_IDLOC, NULL);
           }
-          i_memory_put(config_section->data, i, word);
-          config_section->size += 2;    
+          b_memory_put(config_section->data, i, byte);
+          config_section->size += 1;
         } else {
           found_break = true;
         }
       }
       
     } else {
-      start = state.device.id_location;
-      stop = start + 4;
+      start = gp_processor_id_location(state.processor);
+      stop = start + 8;
       for (i = start; i < stop; i++) {
-        word = i_memory_get(state.c_memory, i);
-        assert(word & MEM_USED_MASK);
-        i_memory_put(config_section->data, i, word);
+        b_memory_assert_get(state.c_memory, i, &byte);
+	b_memory_put(config_section->data, i, byte);
       }
-      config_section->size = 8;    
+      config_section->size = 8;
     }
 
     _update_section_symbol(config_section);
-  }  
+  }
 
   return;
 }
@@ -244,13 +239,12 @@ coff_close_file(void)
   gp_coffgen_free(state.obj.object);
 }
 
-void 
-coff_new_section(char *name, int addr, int flags)
+void
+coff_new_section(const char *name, int addr, int flags)
 {
   gp_section_type *found = NULL;
   gp_symbol_type *new = NULL;
   gp_aux_type *new_aux;
-  int section_addr;
 
   state.obj.symbol_num += 2;
 
@@ -290,19 +284,14 @@ coff_new_section(char *name, int addr, int flags)
     }
   }
 
-  if ((flags & STYP_TEXT) && (_16bit_core))
-    section_addr = addr << 1;
-  else
-    section_addr = addr;
-
   state.obj.section = gp_coffgen_addsection(state.obj.object, name);    
-  state.obj.section->address = section_addr; 
+  state.obj.section->address = addr; 
   state.obj.section->flags = flags;
   
   /* add a section symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
   new->name           = strdup(name);
-  new->value          = section_addr;
+  new->value          = IS_RAM_ORG ? addr : gp_processor_byte_to_org(state.device.class, addr);
   new->section_number = state.obj.section_num;  /* Modified later. */
   new->section        = state.obj.section;
   new->type           = T_NULL;
@@ -333,20 +322,10 @@ coff_reloc(int symbol, short offset, unsigned short type)
   if ((!state.obj.enabled) || (state.obj.section == NULL))
     return;
 
-  if ((state.obj.section->flags & STYP_TEXT) && (_16bit_core))
-    origin = state.org - (state.obj.section->address >> 1);
-  else
-    origin = state.org - state.obj.section->address;
+  origin = state.org - state.obj.section->address;
   
   new = gp_coffgen_addreloc(state.obj.section);
-  if (state.obj.section->flags & STYP_DATA) {
-    new->address     = origin;
-  } else {
-    new->address     = origin * 2;    /* byte address not word */
-    if (packed_hi_lo) {
-      new->address++;
-    }
-  }
+  new->address       = origin;
   new->symbol_number = symbol;
   new->offset        = offset;    
   new->type          = type;    
@@ -361,20 +340,15 @@ coff_linenum(int emitted)
   int i;
   int origin;
   static gp_boolean show_bad_debug = true;
-  gp_boolean emitted_pack_byte;
-
-  /* note if we're doing code_pack work */
-  emitted_pack_byte = state.obj.section && state.obj.section->emitted_pack_byte;
 
   if ((!state.obj.enabled) || (state.obj.section == NULL))
     return;
 
-  if (state.obj.section->flags & STYP_ABS) {
-    /* If the section is absolute, use the abolute address. */
-    origin = state.lst.line.was_org << _16bit_core;
-  } else {
-    /* use the relative address */
-    origin = (state.lst.line.was_org - state.obj.section->address) << _16bit_core;
+  /* If the section is absolute, use the abolute address. */
+  origin = state.lst.line.was_org;
+  if (!(state.obj.section->flags & STYP_ABS)) {
+    /* else use the relative address */
+    origin -= state.obj.section->address;
   }
   
   if (state.debug_info && (state.obj.debug_file == NULL)) {
@@ -385,8 +359,8 @@ coff_linenum(int emitted)
     return;
   }
 
-  for (i = 0; i < emitted + (emitted_pack_byte ? 1 : 0); i++) {
-     
+  for (i = 0; i < emitted; i += 2) {
+
     new = gp_coffgen_addlinenum(state.obj.section);
     if (state.debug_info) {
       new->symbol = state.obj.debug_file;
@@ -396,13 +370,7 @@ coff_linenum(int emitted)
       new->line_number = state.src->line_number;
     }
 
-    /* when emitting non-word aligned data, we must modify
-     * the origin address if our initial emission was a byte
-     * in an existing word. subsequent bytes/words then need
-     * to subtract 2, to compensate for the fact that the
-     * origin was off by a whole word. */
-    new->address = origin + (i << _16bit_core)
-        - (emitted_pack_byte ? (i == 0 ? 1 : 2) : 0);
+    new->address = origin + i;
   }
 
   return;
@@ -412,7 +380,7 @@ coff_linenum(int emitted)
    increment the global symbol number. */
 
 gp_symbol_type *
-coff_add_sym(char *name, int value, enum gpasmValTypes type)
+coff_add_sym(const char *name, int value, enum gpasmValTypes type)
 {
   gp_symbol_type *new = NULL;
   char message[BUFSIZ];
@@ -485,7 +453,7 @@ coff_add_sym(char *name, int value, enum gpasmValTypes type)
 /* add a file symbol to the coff symbol table */
 
 gp_symbol_type *
-coff_add_filesym(char *name, int isinclude)
+coff_add_filesym(const char *name, int isinclude)
 {
   gp_symbol_type *new = NULL;
   gp_aux_type *new_aux;
@@ -595,7 +563,7 @@ coff_add_nolistsym(void)
 /* add a direct symbol to the coff symbol table */
 
 void
-coff_add_directsym(unsigned char command, char *string)
+coff_add_directsym(unsigned char command, const char *string)
 {
   gp_symbol_type *new = NULL;
   gp_aux_type *new_aux;
@@ -608,7 +576,7 @@ coff_add_directsym(unsigned char command, char *string)
   /* add .cod symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
   new->name           = strdup(".direct");
-  new->value          = state.org << _16bit_core;
+  new->value          = gp_processor_byte_to_org(state.device.class, state.org);
   new->section_number = state.obj.section_num;
   new->section        = state.obj.section;
   new->type           = T_NULL;
@@ -618,14 +586,12 @@ coff_add_directsym(unsigned char command, char *string)
   new_aux->type = AUX_DIRECT;
   new_aux->_aux_symbol._aux_direct.command = command;
   new_aux->_aux_symbol._aux_direct.string = strdup(string);
- 
-  return;
 }
 
 /* add a cod symbol to the coff symbol table */
 
 void
-coff_add_identsym(char *string)
+coff_add_identsym(const char *string)
 {
   gp_symbol_type *new = NULL;
   gp_aux_type *new_aux;
@@ -655,7 +621,7 @@ coff_add_identsym(char *string)
    table. */
 
 char *
-coff_local_name(char *name)
+coff_local_name(const char *name)
 {
   struct symbol *local;
   gp_symbol_type *symbol;

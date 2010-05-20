@@ -23,19 +23,20 @@ Boston, MA 02111-1307, USA.  */
 #define __COFF_H__
 
 #define SECTION_FLAGS state.obj.flags
+#define IS_RAM_ORG (SECTION_FLAGS & (STYP_BSS|STYP_DATA))
 
 void coff_init(void);
 void coff_close_file(void);
-void coff_new_section(char *name, int addr, int flags);
-gp_symbol_type *coff_add_sym(char *name, int value, enum gpasmValTypes type);
+void coff_new_section(const char *name, int byte_addr, int flags);
+gp_symbol_type *coff_add_sym(const char *name, int value, enum gpasmValTypes type);
 void coff_reloc(int symbol, short offset, unsigned short type);
 void coff_linenum(int emitted);
-gp_symbol_type *coff_add_filesym(char *name, int isinclude);
+gp_symbol_type *coff_add_filesym(const char *name, int isinclude);
 void coff_add_eofsym(void);
 void coff_add_listsym(void);
 void coff_add_nolistsym(void);
-void coff_add_directsym(unsigned char command, char *string);
-void coff_add_identsym(char *string);
-char *coff_local_name(char *name);
+void coff_add_directsym(unsigned char command, const char *string);
+void coff_add_identsym(const char *string);
+char *coff_local_name(const char *name);
 
 #endif

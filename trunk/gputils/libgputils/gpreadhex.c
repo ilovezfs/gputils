@@ -76,7 +76,6 @@ readhex(char *filename, MemBlock *m)
   unsigned int length, address, type, data;
   int i;
   unsigned int page = 0;
-  int length_step;
 
   info->hex_format = inhx8m;
   info->size = 0;
@@ -109,18 +108,13 @@ readhex(char *filename, MemBlock *m)
       return info;
     }
 
-    if (info->hex_format != inhx16) {
-      length_step = 2;
-    } else {
-      length_step = 1;
-    }
-    
     /* fetch the address */
     address = readword();
     address = swapword(address);
 
     if (info->hex_format == inhx16) {
-      address = address * 2;
+      address *= 2;
+      length *= 2;
     }
     
     /* read the type of record */
@@ -136,44 +130,22 @@ readhex(char *filename, MemBlock *m)
       }
 
       /* inhx32 segment line*/
-      page = readword() << 15;
+      page = readword() << 16;
       info->hex_format = inhx32;
 
     } else {
-      if ((length_step == 2) && ((address % 2) != 0)) {
-        /* we're starting in the middle of a word */
-        /* merge this byte with word already in memory */
-        data = i_memory_get(m,
-                     (page | (address >> 1))) & 0xFF;
-        data |= (readbyte() << 8);
-        i_memory_put(m,
-                     (page | (address >> 1)),
-                     data | MEM_USED_MASK);
-        ++address;
-        --length;
-      }
-
       /* read the data (skipping last byte if at odd address) */
-      for (i = 0; i < (length & ~0x1); i += length_step) {
-        data = readword();
-        if (info->hex_format == inhx16) {
-          data = swapword(data);        
-        }
-        i_memory_put(m, 
-                     (page | (address + i)>>1),  
-                     data | MEM_USED_MASK);
+      for (i = 0; i < length; ++i) {
+	data = readbyte();
+	if (info->hex_format == inhx16) {
+	  b_memory_put( m, page | ((address + i) ^ 1), data);
+	}
+	else {
+	  b_memory_put(m, page | (address + i), data);
+	}
       }
 
-      if ((length_step == 2) && ((length % 2) != 0)) {
-        /* we're ending in the middle of a word */
-        /* merge this byte with word already in memory */
-        unsigned int word_address = page | ((address+length) >> 1);
-        data = i_memory_get(m, word_address) & 0xFF00;
-        data |= readbyte();
-        i_memory_put(m, word_address, data | MEM_USED_MASK);
-      }
-
-      info->size += (length * length_step); 
+      info->size += length;
 
     }
     

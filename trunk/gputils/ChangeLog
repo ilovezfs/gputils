@@ -1,4 +1,8 @@
 2010-05-20  Marko Kohtala  <marko.kohtala@gmail.com>
+  * Major change to byte based section data handling. Device classes
+  are now structures with class specific data. Bug 2975796 fix for code_pack.
+  Several fixes to code generation in data section. __idlocs fixed to use
+  correct addresses. const, signedness and other cleanups.
   * Add gpasm test cases for code_pack, data sections, .def, .dim,
   .direct, etc. Also the gpasm test scripts now execute all tests even in
   case of errors and run object tests in objtest directory to not mess up
