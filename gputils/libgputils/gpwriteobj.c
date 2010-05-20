@@ -246,8 +246,8 @@ _gp_coffgen_write_auxsymbols(gp_aux_type *aux, char *table, FILE *fp,
                                      table);
       gp_fputl32(offset, fp);
       gp_fputl32(aux->_aux_symbol._aux_file.line_number, fp);
-      gp_fputl32(0, fp);
-      gp_fputl32(0, fp);
+      fputc(aux->_aux_symbol._aux_file.flags, fp);
+      gp_fputvar("\0\0\0\0\0\0", 7, fp);
       if (isnew) gp_fputl32(0, fp); else gp_fputl16(0, fp);
       break;
     case AUX_IDENT:
@@ -300,8 +300,12 @@ _gp_coffgen_write_symbols(gp_object_type *object, char *table, FILE *fp)
     } else {
       gp_fputl16(current->section->number, fp);
     }    
-    if (object->isnew) gp_fputl32(current->type, fp);
-    else gp_fputl16(current->type, fp);
+    if (object->isnew) {
+      gp_fputl32(current->type | current->derived_type << 5, fp);
+    }
+    else {
+      gp_fputl16(current->type | current->derived_type << 4, fp);
+    }
     fputc(current->class, fp);
     fputc(current->num_auxsym, fp);
 

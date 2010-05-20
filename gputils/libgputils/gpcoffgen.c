@@ -312,6 +312,7 @@ gp_coffgen_addsymbol(gp_object_type *object)
   new->section_number = 0;
   new->section = NULL;
   new->type = 0;
+  new->derived_type = 0;
   new->class = 0;
   new->num_auxsym = 0;
   new->aux_list = NULL;
@@ -689,12 +690,20 @@ gp_determine_aux(gp_symbol_type *symbol)
     return AUX_IDENT;  
   }
 
+  if (symbol->derived_type == DT_FCN) {
+    return AUX_FCN;
+  }
+
   switch (symbol->class) {
   case C_FILE:
     aux_type = AUX_FILE;
     break;
   case C_SECTION:
     aux_type = AUX_SCN;
+    break;
+  case C_BLOCK:
+  case C_FCN:
+    aux_type = symbol->name[1] == 'b' ? AUX_BOBF : AUX_EOBF;
     break;
   default:
     aux_type = AUX_NONE;

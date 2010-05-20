@@ -304,10 +304,96 @@ void coff_type(int type, char *buffer, size_t sizeof_buffer)
     snprintf(buffer, sizeof_buffer, "unsigned short long");
     break;
   default:
-    snprintf(buffer, sizeof_buffer, "unknown");
+    snprintf(buffer, sizeof_buffer, "unknown(%d)", type);
     break;
   }
 
+}
+
+static const char *format_sym_type(int type, char *buffer, size_t sizeof_buffer)
+{
+  static const char * const type_str[] = {
+    "T_NULL",
+    "T_VOID",
+    "T_CHAR",
+    "T_SHORT",
+    "T_INT",
+    "T_LONG",
+    "T_FLOAT",
+    "T_DOUBLE",
+    "T_STRUCT",
+    "T_UNION",
+    "T_ENUM",
+    "T_MOE",
+    "T_UCHAR",
+    "T_USHORT",
+    "T_UINT",
+    "T_ULONG",
+    "T_LNGDBL",
+    "T_SLONG",
+    "T_USLONG"
+  };
+  if (type < sizeof(type_str)/sizeof(type_str[0]))
+    return type_str[type];
+  snprintf(buffer, sizeof_buffer, "%d", type);
+  return buffer;
+}
+
+static const char *format_sym_derived_type(int type, char *buffer, size_t sizeof_buffer)
+{
+  static const char * const type_str[] = {
+    "DT_NON",
+    "DT_PTR",
+    "DT_FCN",
+    "DT_ARY",
+    "DT_ROMPTR",
+    "DT_FARROMPTR",
+  };
+  if (type < sizeof(type_str)/sizeof(type_str[0]))
+    return type_str[type];
+  snprintf(buffer, sizeof_buffer, "%d", type);
+  return buffer;
+}
+
+static const char *format_sym_class(int cls, char *buffer, size_t sizeof_buffer)
+{
+  switch(cls) {
+  case C_EFCN: return "C_EFCN";
+  case C_NULL: return "C_NULL";
+  case C_AUTO: return "C_AUTO";
+  case C_EXT: return "C_EXT";
+  case C_STAT: return "C_STAT";
+  case C_REG: return "C_REG";
+  case C_EXTDEF: return "C_EXTDEF";
+  case C_LABEL: return "C_LABEL";
+  case C_ULABEL: return "C_ULABEL";
+  case C_MOS: return "C_MOS";
+  case C_ARG: return "C_ARG";
+  case C_STRTAG: return "C_STRTAG";
+  case C_MOU: return "C_MOU";
+  case C_UNTAG: return "C_UNTAG";
+  case C_TPDEF: return "C_TPDEF";
+  case C_USTATIC: return "C_USTATIC";
+  case C_ENTAG: return "C_ENTAG";
+  case C_MOE: return "C_MOE";
+  case C_REGPARM: return "C_REGPARM";
+  case C_FIELD: return "C_FIELD";
+  case C_AUTOARG: return "C_AUTOARG";
+  case C_LASTENT: return "C_LASTENT";
+  case C_BLOCK: return "C_BLOCK";
+  case C_FCN: return "C_FCN";
+  case C_EOS: return "C_EOS";
+  case C_FILE: return "C_FILE";
+  case C_LINE: return "C_LINE";
+  case C_ALIAS: return "C_ALIAS";
+  case C_HIDDEN: return "C_HIDDEN";
+  case C_EOF: return "C_EOF";
+  case C_LIST: return "C_LIST";
+  case C_SECTION: return "C_SECTION";
+  default:
+    snprintf(buffer, sizeof_buffer, "%d", cls);
+    return buffer;
+  }
 }
 
 void print_sym_table (gp_object_type *object)
@@ -316,12 +402,13 @@ void print_sym_table (gp_object_type *object)
   gp_aux_type *aux;
   char *section;
   int i;
-  char c;
+  int idx = 1;
+  char buffer_type[8], buffer_derived_type[8], buffer_class[8];
 
   symbol = object->symbols;
 
   printf("Symbol Table\n");
-  printf("Name                     Section          Value      Type  Class  NumAux \n");
+  printf("Idx  Name                     Section          Value      Type     DT           Class     NumAux \n");
 
   while (symbol != NULL) {
     
@@ -336,60 +423,78 @@ void print_sym_table (gp_object_type *object)
       section = symbol->section->name;
     }    
     
-    printf("%-24s %-16s %#-10lx %-4li  %-4i   %-4i\n", 
+    printf("%04d %-24s %-16s %#-10lx %-8s %-12s %-9s %-4i\n",
+	   idx,
            symbol->name,
            section,
            symbol->value,
-           symbol->type,
-           symbol->class,
+           format_sym_type(symbol->type, buffer_type, sizeof(buffer_type)),
+           format_sym_derived_type(symbol->derived_type, buffer_derived_type, sizeof(buffer_derived_type)),
+           format_sym_class(symbol->class, buffer_class, sizeof(buffer_class)),
            symbol->num_auxsym);
 
-    if (symbol->num_auxsym != 0) {
-      aux = symbol->aux_list;
-      
+    aux = symbol->aux_list;
+    while (aux != NULL) {
+
+#define AUX_INDENT "      "
+
       switch (aux->type) {
       case AUX_DIRECT:
-        printf("  command = \"%c\"\n", 
+        printf(AUX_INDENT "command = \"%c\"\n", 
                aux->_aux_symbol._aux_direct.command);
-        printf("  string = \"%s\"\n", 
+        printf(AUX_INDENT "string = \"%s\"\n", 
                aux->_aux_symbol._aux_direct.string);
         break;
       case AUX_FILE:
         if (!state.suppress_names) {
-          printf("  file = %s\n", 
+          printf(AUX_INDENT "file = %s\n", 
                  aux->_aux_symbol._aux_file.filename);
         }
-        printf("  line included = %li\n", 
+        printf(AUX_INDENT "line included = %li\n", 
                aux->_aux_symbol._aux_file.line_number);
+        printf(AUX_INDENT "flags = %x\n", 
+               aux->_aux_symbol._aux_file.flags);
         break;
       case AUX_IDENT:
-        printf("  string = \"%s\"\n", 
+        printf(AUX_INDENT "string = \"%s\"\n", 
                aux->_aux_symbol._aux_ident.string);
         break;
       case AUX_SCN:
-        printf("  length = %li\n", 
+        printf(AUX_INDENT "length = %li\n", 
                aux->_aux_symbol._aux_scn.length);
-        printf("  number of relocations = %i\n", 
+        printf(AUX_INDENT "number of relocations = %i\n", 
                aux->_aux_symbol._aux_scn.nreloc);
-        printf("  number of line numbers = %i\n", 
+        printf(AUX_INDENT "number of line numbers = %i\n", 
                aux->_aux_symbol._aux_scn.nlineno);
         break;
+      case AUX_FCN_CALLS: {
+	struct gp_symbol_type *callee = aux->_aux_symbol._aux_fcn_calls.callee;
+        printf(AUX_INDENT "callee = %s\n",
+               callee != NULL ? callee->name : "higher order");
+        printf(AUX_INDENT "is_interrupt = %lu\n",
+               aux->_aux_symbol._aux_fcn_calls.is_interrupt);
+	break;
+      }
       default:
         printf("%ld  ", aux->type);
         for (i = 0; i < object->symbol_size; i++) {
-          printf("%02x", aux->_aux_symbol.data[i]);
+          printf("%02x", aux->_aux_symbol.data[i] & 0xFF);
           if (i & 1) {
             printf(" ");
           }
         }
         for (i = 0; i < object->symbol_size; i++) {
-          c = aux->_aux_symbol.data[i];
+          int c = aux->_aux_symbol.data[i] & 0xFF;
           putchar( (isprint(c)) ? c : '.');
         }
+	putchar('\n');
       }
+      aux = aux->next;
+      ++idx;
     }
 
     symbol = symbol->next;
+    ++idx;
   }
 
   printf("\n"); 
