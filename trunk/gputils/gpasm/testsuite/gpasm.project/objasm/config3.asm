@@ -1,0 +1,15 @@
+	LIST P=18C242
+
+	CODE
+
+	MOVLW 5
+
+	CONFIG WDT=ON
+	CONFIG BOR=ON
+	CONFIG WDTPS=8		; Adds to same byte as WDT=ON
+
+b	CODE
+
+	MOVLW 10
+	
+	END
