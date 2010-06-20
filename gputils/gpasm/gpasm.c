@@ -294,7 +294,7 @@ process_args( int argc, char *argv[])
       #endif
       break;
     case 'o':
-      strncpy(state.hexfilename, optarg, sizeof(state.hexfilename));
+      strncpy(state.objfilename, optarg, sizeof(state.objfilename));
       strncpy(state.basefilename, optarg, sizeof(state.basefilename));
       pc = strrchr(state.basefilename, '.');
       if (pc)
