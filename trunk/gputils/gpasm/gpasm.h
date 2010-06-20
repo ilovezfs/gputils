@@ -145,7 +145,6 @@ extern struct gpasm_state {
     basefilename[BUFSIZ],	/* basename for generating hex,list,symbol filenames */
     codfilename[BUFSIZ],	/* Symbol (.cod) file name */
     depfilename[BUFSIZ],	/* Dependency (.d) file name */
-    hexfilename[BUFSIZ],	/* Hex (.hex) file name */
     lstfilename[BUFSIZ],	/* List (.lst) file name */
     objfilename[BUFSIZ];	/* Object (.o) file name */
   struct {			/* Symbol file state: */

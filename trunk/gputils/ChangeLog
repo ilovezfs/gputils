@@ -1,3 +1,7 @@
+2010-06-20  Borut Razem <borutr@users.sourceforge.net>
+  * gpasm/gpasm.c, gpasm/gpasm.h:
+    fixed bug #3018645: gpasm -o option: file name extension is overwritten
+
 2010-05-20  Marko Kohtala  <marko.kohtala@gmail.com>
   * Major change to byte based section data handling. Device classes
   are now structures with class specific data. Bug 2975796 fix for code_pack.
