@@ -1,0 +1,3 @@
+FILES reloc16e_1.o reloc16e_2.o
+
+INCLUDE 18f2420.lkr

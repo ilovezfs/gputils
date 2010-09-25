@@ -466,10 +466,10 @@ static gpasmVal do_banksel(gpasmVal r,
         gperror(GPE_UNRESOLVABLE, NULL);
       } else if (state.device.class == PROC_CLASS_PIC16) {
         reloc_evaluate(p, RELOCT_BANKSEL);
-        emit(0);
+        emit(0xb800);
       } else if (state.device.class == PROC_CLASS_PIC16E) {
         reloc_evaluate(p, RELOCT_BANKSEL);
-        emit(0);
+        emit(0x100);
       } else {
         switch (state.processor->num_banks) {
         case 2:
@@ -2354,7 +2354,6 @@ static gpasmVal _do_pagesel(gpasmVal r,
 		           unsigned short reloc_type)
 {
   struct pnode *p;
-  int address;
   int page;
   int num_reloc;
   int use_wreg = 0;
@@ -2376,8 +2375,7 @@ static gpasmVal _do_pagesel(gpasmVal r,
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (state.mode == absolute) {
-      address = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
-      page = gp_processor_check_page(state.device.class, address);
+      page = gp_processor_check_page(state.device.class, maybe_evaluate(p));
       state.org += gp_processor_set_page(state.device.class,
                                          state.processor->num_pages,
                                          page,
@@ -2389,8 +2387,7 @@ static gpasmVal _do_pagesel(gpasmVal r,
       
       if (num_reloc == 0) {
         /* it is an absolute address, generate the pagesel but no relocation */
-	address = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
-        page = gp_processor_check_page(state.device.class, address);
+        page = gp_processor_check_page(state.device.class, maybe_evaluate(p));
 
         state.org += gp_processor_set_page(state.device.class,
                                            state.processor->num_pages,
@@ -3555,8 +3552,9 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  file = reloc_evaluate(p, RELOCT_F);
 	  file_ok(file);
 
-	  /* add relocation for the access bit, if necessary */          
-	  reloc_evaluate(p, RELOCT_ACCESS);
+	  /* add relocation for the access bit, if necessary */
+	  if (arity < 2)
+	    reloc_evaluate(p, RELOCT_ACCESS);
 
 	  /* Default access (use the BSR unless access is to special registers) */
 	  /* If extended instructions are enabled, access bit should default to 1 for low-end */
@@ -3576,7 +3574,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  switch (arity) {
 	  case 2:
 	    p2 = HEAD(TAIL(parms));
-	    /* Allow "w" and "f" as destinations */
+	    /* Allow "b" for BSR to select RAM bank */
 	    if ((p2->tag == symbol) &&
 		(strcasecmp(p2->value.symbol, "b") == 0))
 	      a = 1;
@@ -3633,8 +3631,9 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    }          
 	  }
 	    
-	  /* add relocation for the access bit, if necessary */          
-	  reloc_evaluate(f, RELOCT_ACCESS);
+	  /* add relocation for the access bit, if necessary */
+	  if (arity < 3)
+	    reloc_evaluate(f, RELOCT_ACCESS);
 
 	  b = HEAD(TAIL(parms));
 	  bit = maybe_evaluate(b);
@@ -3660,8 +3659,9 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  file = reloc_evaluate(p, RELOCT_F);
 	  file_ok(file);
 
-	  /* add relocation for the access bit, if necessary */          
-	  reloc_evaluate(p, RELOCT_ACCESS);
+	  /* add relocation for the access bit, if necessary */
+	  if (arity < 3)
+	    reloc_evaluate(p, RELOCT_ACCESS);
 
 	  /* Default access (use the BSR unless access is to special registers) */
 	  /* If extended instructions are enabled, access bit should default to 1 for low-end */

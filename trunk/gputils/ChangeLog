@@ -1,3 +1,11 @@
+2010-09-25  Marko Kohtala  <marko.kohtala@gmail.com>
+  * Fix bugs from 2010-05-20 commit. Coff file reading got symbols
+  wrong and relocations had problems. Closes bug #3066883. Bugs
+  #3031576 and #3018489 may be duplicates and closed as well. Related
+  test cases added.
+  * No longer generate RELOCT_ACCESS relocations when access bit was
+  explicitly defined in instruction.
+
 2010-06-20  Borut Razem <borutr@users.sourceforge.net>
   * gpasm/gpasm.c, gpasm/gpasm.h:
     fixed bug #3018645: gpasm -o option: file name extension is overwritten

@@ -726,9 +726,9 @@ gp_byte_to_org(unsigned shift, int byte)
 
 /* determine which page of program memory the byte address is located */
 int
-gp_processor_check_page(proc_class_t class, unsigned int address)
+gp_processor_check_page(proc_class_t class, unsigned int org)
 {
-  return class->check_page(address);
+  return class->check_page(org);
 }
 
 /* determine which bank of data memory the address is located */
@@ -740,7 +740,7 @@ gp_processor_check_bank(proc_class_t class, unsigned int address)
 
 /* When unsupported on the class */
 static int
-gp_processor_check_page_unsupported(unsigned int address)
+gp_processor_check_page_unsupported(unsigned int org)
 {
   assert(0);
   return 0;
@@ -932,9 +932,9 @@ id_location_pic12(const struct px *processor)
 }
 
 static int
-gp_processor_check_page_pic12(unsigned int address)
+gp_processor_check_page_pic12(unsigned int org)
 {
-  return (address >> 1 >> 9) & 0x3;
+  return (org >> 9) & 0x3;
 }
 
 static int
@@ -979,13 +979,13 @@ gp_processor_set_bank_pic12(int num_banks,
 					6 << 5);
 }
 
-static int reloc_call_pic12(unsigned int address)
+static int reloc_call_pic12(unsigned int org)
 {
-  return (address >> 1) & 0xff;
+  return org & 0xff;
 }
-static int reloc_goto_pic12(unsigned int address)
+static int reloc_goto_pic12(unsigned int org)
 {
-  return (address >> 1) & 0x1ff;
+  return org & 0x1ff;
 }
 static int reloc_f_pic12(unsigned int address)
 {
@@ -993,6 +993,10 @@ static int reloc_f_pic12(unsigned int address)
 }
 static int reloc_tris_pic12(unsigned int address)
 {
+  /* TODO This is not accurate, for example PIC12F510/16F506 only has
+     three bits and allowed values of 6 and 7. MPASM 5.34 has
+     Error[126]  : Argument out of range (0000 not between 0005 and 0009)
+  */
   return address & 0x1f;
 }
 
@@ -1010,9 +1014,9 @@ id_location_pic14(const struct px *processor)
 }
 
 static int
-gp_processor_check_page_pic14(unsigned int address)
+gp_processor_check_page_pic14(unsigned int org)
 {
-  return (address >> 1 >> 11) & 0x3;
+  return (org >> 11) & 0x3;
 }
 
 static int
@@ -1056,13 +1060,13 @@ gp_processor_set_bank_pic14(int num_banks,
 					6 << 7);
 }
 
-static int reloc_call_pic14(unsigned int address)
+static int reloc_call_pic14(unsigned int org)
 {
-  return (address >> 1) & 0x7ff;
+  return org & 0x7ff;
 }
-static int reloc_goto_pic14(unsigned int address)
+static int reloc_goto_pic14(unsigned int org)
 {
-  return (address >> 1) & 0x7ff;
+  return org & 0x7ff;
 }
 static int reloc_ibanksel_pic14(unsigned int address)
 {
@@ -1086,9 +1090,9 @@ static int reloc_tris_pic14(unsigned int address)
 /* PIC16 */
 
 static int
-gp_processor_check_page_pic16(unsigned int address)
+gp_processor_check_page_pic16(unsigned int org)
 {
-  return (address >> 1 >> 8) & 0xff;
+  return (org >> 8) & 0xff;
 }
 
 
@@ -1128,13 +1132,13 @@ gp_processor_set_bank_pic16(int num_banks,
   return 2;
 }
 
-static int reloc_call_pic16(unsigned int address)
+static int reloc_call_pic16(unsigned int org)
 {
-  return (address >> 1) & 0x1fff;
+  return org & 0x1fff;
 }
-static int reloc_goto_pic16(unsigned int address)
+static int reloc_goto_pic16(unsigned int org)
 {
-  return (address >> 1) & 0x1fff;
+  return org & 0x1fff;
 }
 static int reloc_ibanksel_pic16(unsigned int address)
 {
@@ -1165,13 +1169,13 @@ gp_processor_set_bank_pic16e(int num_banks,
   return 2;
 }
 
-static int reloc_call_pic16e(unsigned int address)
+static int reloc_call_pic16e(unsigned int org)
 {
-  return (address >> 1) & 0xff;
+  return (org >> 1) & 0xff;
 }
-static int reloc_goto_pic16e(unsigned int address)
+static int reloc_goto_pic16e(unsigned int org)
 {
-  return (address >> 1) & 0xff;
+  return (org >> 1) & 0xff;
 }
 
 static const struct insn *

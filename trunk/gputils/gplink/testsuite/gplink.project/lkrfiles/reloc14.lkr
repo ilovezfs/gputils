@@ -1,0 +1,3 @@
+FILES reloc14_1.o reloc14_2.o
+
+INCLUDE 16f877a.lkr
