@@ -547,12 +547,8 @@ _clean_symtbl(gp_object_type *object)
 
   while (current != NULL) {
     /* assign section pointer, section numbers start at 1 not 0 */
-    if (current->section_number > 0) {
+    if (current->section_number > 0)
       current->section = &object->sections[current->section_number - 1];
-      /* Fix up the value to byte address if symbol is in ROM section */
-      if ((current->section->flags & (STYP_TEXT|STYP_DATA_ROM)))
-	current->value = gp_processor_org_to_byte(object->class, current->value);
-    }
     else
       current->section = NULL;
     

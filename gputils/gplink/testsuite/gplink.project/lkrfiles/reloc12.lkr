@@ -1,0 +1,3 @@
+FILES reloc12_1.o reloc12_2.o
+
+INCLUDE 12c509.lkr

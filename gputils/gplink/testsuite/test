@@ -97,24 +97,17 @@ printheader () {
 
 test_gplink_compile () {
 
-  for x in `ls *.asm`
+  for x in *.asm
     do
       # split the base file name from the extension
-      for basefilename in `echo $x | tr -s "." " "`
-        do
-          if [ $basefilename = "asm" ]; then
-            # do nothing for the extension
-            echo
-          else
-            ../../$GPASMBIN $GPASMFLAGS -I ../../$HEADER $x 
-            if test -e $basefilename.o; then
-              echo "$x compiled"	
-            else
-              echo "$x failed to compile"
-              exit 1	
-            fi
-          fi
-        done
+      basefilename="${x%%.asm}"
+      ../../$GPASMBIN $GPASMFLAGS -I ../../$HEADER $x 
+      if test -e $basefilename.o; then
+        echo "$x compiled"	
+      else
+        echo "$x failed to compile"
+        exit 1	
+      fi
     done
 
 }
@@ -128,7 +121,7 @@ test_gplink_lib() {
   fi
 
   echo "archiving $1"
-  LIST=`ls *.o`
+  LIST=*.o
   ../../$GPLIBBIN -c $1 $LIST
   if test -e $1; then
     echo "failed to archive"

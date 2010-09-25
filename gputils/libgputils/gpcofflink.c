@@ -1260,7 +1260,7 @@ gp_cofflink_patch_addr(proc_class_t class,
   value = symbol->value + relocation->offset;
 
   gp_debug("  patching %#x from %s with %#x", 
-           section->address + relocation->address, 
+           org,
            section->name, 
            value);
   
@@ -1316,6 +1316,7 @@ gp_cofflink_patch_addr(proc_class_t class,
     data = (value >> 8) & 0xff;
     break;
   case RELOCT_GOTO2:
+    /* This is only used for PIC16E (pic18) */
     data = (value >> 9) & 0xfff;
     break;
   case RELOCT_FF1:
@@ -1331,12 +1332,14 @@ gp_cofflink_patch_addr(proc_class_t class,
     data = value & 0xff;
     break;
   case RELOCT_BRA:
-    offset = (value - ((org + 1) << 1)) >> 1;
+    /* This is only used for PIC16E (pic18) */
+    offset = (value - org - 2) >> 1;
     check_relative(section, org, offset, 0x3ff);
     data = offset & 0x7ff;
     break;
   case RELOCT_CONDBRA:
-    offset = (value - ((org + 1) << 1)) >> 1;
+    /* This is only used for PIC16E (pic18) */
+    offset = (value - org - 2) >> 1;
     check_relative(section, org, offset, 0x7f);
     data = offset & 0xff;
     break;
@@ -1344,18 +1347,11 @@ gp_cofflink_patch_addr(proc_class_t class,
     data = (value >> 16) & 0xff;
     break; 
   case RELOCT_ACCESS:
-    {
-      int a;
-      
-      if ((value < bsr_boundary) || 
-          (value >= (0xf00 + bsr_boundary))) {
-        a = 0;
-      } else {
-        a = 1;
-      }
-
-      data = a << 8;   
-    }
+    if ((value >= 0 && value < bsr_boundary) ||
+	(value >= 0xf00 + bsr_boundary && value < 0x1000))
+      data = 0;
+    else
+      data = 0x100;
     break;
   case RELOCT_PAGESEL_WREG:
     {

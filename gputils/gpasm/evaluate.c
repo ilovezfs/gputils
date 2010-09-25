@@ -433,9 +433,12 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
     if (strcmp(p->value.symbol, "$") == 0) {
       char buffer[BUFSIZ];
       unsigned org = gp_processor_byte_to_org(state.device.class, state.org);
-      
+
       snprintf(buffer, sizeof(buffer), "_%s_%04X", state.obj.new_sec_name, org);
-      set_global(buffer, org, PERMANENT, IS_RAM_ORG ? gvt_static : gvt_address);
+      /* RELOCT_ACCESS has always also RELOCT_F, which has already
+	 created this symbol.*/
+      if (type != RELOCT_ACCESS)
+	set_global(buffer, org, PERMANENT, IS_RAM_ORG ? gvt_static : gvt_address);
       s = get_symbol(state.stTop, buffer);
     } else {
       s = get_symbol(state.stTop, p->value.symbol);
