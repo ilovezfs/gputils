@@ -1099,7 +1099,12 @@ gp_processor_check_page_pic16(unsigned int org)
 static int
 gp_processor_check_bank_pic16(unsigned int address)
 {
-  return (address >> 8) & 0xff;
+  if ((address & 0xFF) < 0x20)
+    return (address >> 8) & 0xff;
+  else
+    /* 0x200 turns MOVLB to MOVLR for setting GPR RAM bank in
+       set_bank */
+    return 0x200 + ((address >> 8) & 0xff);
 }
 
 
@@ -1128,7 +1133,7 @@ gp_processor_set_bank_pic16(int num_banks,
 {
   /* movlb bank */
   i_memory_put_le(m, address,
-		  0xb800 | (bank & 0xff));
+		  0xb800 | bank);
   return 2;
 }
 

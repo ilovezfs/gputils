@@ -1,4 +1,6 @@
 2010-09-27  Marko Kohtala  <marko.kohtala@gmail.com>
+  * libgputils/gpprocessor.c: Bug #3038983 fix for PIC16 MOVLR instruction
+  for GPR RAM bank selection.
   * gpasm/coff.c (_copy_config): config section size off by one.
   * gpasm/directive.c (do_config): Revert a change to PIC16 banksel
   instruction in object file. It broke a test case.
