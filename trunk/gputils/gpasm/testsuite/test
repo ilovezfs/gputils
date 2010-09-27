@@ -143,7 +143,7 @@ test_gpasm_sub() {
       if test -e "../hexfiles/$basefilename.hex" ; then
 	# a hex file exists so these files must not have errors
 	tested=$((tested+1))
-	echo "Compiling $basefilename.asm"
+	echo "Compiling $1/asmfiles/$x"
 	if verbose ../../$GPASMBIN -q -I ../../$HEADER "$basefilename.asm" ; then
 	  if test -e "$basefilename.hex" ; then
 	    compiled=$((compiled+1))
@@ -168,7 +168,7 @@ test_gpasm_sub() {
 	# a hex file doesn't exit so these files must have intentional
 	# errors
 	errortested=$((errortested+1))
-	echo "Compiling $basefilename.asm"
+	echo "Compiling $1/asmfiles/$x"
 	if verbose ../../$GPASMBIN -q -I ../../$HEADER "$basefilename.asm" ; then
 	  if test -e "$basefilename.hex" ; then
 	    echo "$basefilename.asm failed to generate an error"
@@ -248,7 +248,7 @@ test_gpasm_obj() {
       if test -e "../objfiles/$basefilename.o" ; then 
 	# a object file exists so these files must not have errors
 	tested=$((tested+1))
-	echo "Compiling $basefilename.asm"
+	echo "Compiling $1/objasm/$basefilename.asm"
 	if verbose ../../$GPASMBIN -c -q -I ../../$HEADER "$basefilename.asm" ; then
 	  if test -e "$basefilename.o" ; then
 	    compiled=$((compiled+1))
@@ -275,7 +275,7 @@ test_gpasm_obj() {
 	# an object file doesn't exit so these files must have intentional
 	# errors
 	errortested=$((errortested+1))
-	echo "Compiling $basefilename.asm"
+	echo "Compiling $1/objasm/$basefilename.asm"
 	if verbose ../../$GPASMBIN -c -q -I ../../$HEADER "$basefilename.asm" ; then
 	  if test -e "$basefilename.o" ; then
 	    echo "$basefilename.asm failed to generate an error"	
