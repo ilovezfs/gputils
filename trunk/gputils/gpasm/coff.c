@@ -139,8 +139,8 @@ _copy_config(void)
     assert(config_section != NULL);
 
     start = gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[0]);
-    stop = gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[1]);
-    config_section->size = stop - start + 1;
+    stop = gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[1]+1);
+    config_section->size = stop - start;
     for (i = start; i <= stop; i++) {
       if (b_memory_get(state.c_memory, i, &byte)) {
         b_memory_put(config_section->data, i, byte);

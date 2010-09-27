@@ -1,3 +1,9 @@
+2010-09-27  Marko Kohtala  <marko.kohtala@gmail.com>
+  * gpasm/coff.c (_copy_config): config section size off by one.
+  * gpasm/directive.c (do_config): Revert a change to PIC16 banksel
+  instruction in object file. It broke a test case.
+  * gpasm/testsuite/test: Print path to asm file being compiled.
+
 2010-09-25  Marko Kohtala  <marko.kohtala@gmail.com>
   * Fix bugs from 2010-05-20 commit. Coff file reading got symbols
   wrong and relocations had problems. Closes bug #3066883. Bugs
