@@ -172,8 +172,6 @@ char *gp_geterror(unsigned int code)
 void gperror(unsigned int code,
 	     char *message)
 {
-  char full_message[BUFSIZ];
-
   if (state.pass == 2) {
     if(message == NULL)
       message = gp_geterror(code);
@@ -182,31 +180,24 @@ void gperror(unsigned int code,
     /* standard output */
     if (!state.quiet) {
       if (state.src)
-        snprintf(full_message, sizeof(full_message),
-                 "%s:%d:Error [%03d] %s",
-                 state.src->name,
-                 state.src->line_number,
-                 code,
-                 message);
+        printf("%s:%d:Error [%03d] %s\n",
+	       state.src->name,
+	       state.src->line_number,
+	       code,
+	       message);
       else
-        snprintf(full_message, sizeof(full_message),
-                 "Error [%03d] %s",
-                 code,
-                 message);
-
-      printf("%s\n", full_message);
+        printf("Error [%03d] %s\n",
+	       code,
+	       message);
     }
 #else
     user_error(code, message);
 #endif
 
     /* list file output */
-    snprintf(full_message, sizeof(full_message),
-	     "Error [%03d] : %s",
+    lst_line("Error [%03d] : %s",
 	     code,
 	     message);
-
-    lst_line(full_message);
 
     state.num.errors++;
   }
@@ -262,8 +253,6 @@ char *gp_getwarning(unsigned int code)
 void gpwarning(unsigned int code,
 	       char *message)
 {
-  char full_message[BUFSIZ];
-
   if (state.pass ==2) {
 
     if ((state.error_level <= 1) && check_code(code)) {
@@ -274,31 +263,24 @@ void gpwarning(unsigned int code,
       /* standard output */
       if (!state.quiet) {
         if (state.src)
-          snprintf(full_message, sizeof(full_message),
-                   "%s:%d:Warning [%03d] %s",
-                   state.src->name,
-                   state.src->line_number,
-                   code,
-                   message);
+          printf("%s:%d:Warning [%03d] %s\n",
+		 state.src->name,
+		 state.src->line_number,
+		 code,
+		 message);
         else
-          snprintf(full_message, sizeof(full_message),
-                   "Warning [%03d] %s",
-                   code,
-                   message);
-
-        printf("%s\n", full_message);
+          printf("Warning [%03d] %s\n",
+		 code,
+		 message);
       } 
 #else
       user_warning(code, message);
 #endif
 
       /* list file output */
-      snprintf(full_message, sizeof(full_message),
-	       "Warning [%03d] : %s",
+      lst_line("Warning [%03d] : %s",
 	       code,
 	       message);
-
-      lst_line(full_message);
 
       state.num.warnings++;
     } else {
@@ -347,8 +329,6 @@ char *gp_getmessage(unsigned int code)
 void gpmessage(unsigned int code,
 	       char *message)
 {
-  char full_message[BUFSIZ];
-
   if (state.pass==2) {
 
     if ((state.error_level == 0) && check_code(code)){
@@ -359,31 +339,24 @@ void gpmessage(unsigned int code,
       /* standard output */
       if (!state.quiet) {
         if (state.src)
-          snprintf(full_message, sizeof(full_message),
-                   "%s:%d:Message [%03d] %s",
-                   state.src->name,
-                   state.src->line_number,
-                   code,
-                   message);
+          printf("%s:%d:Message [%03d] %s\n",
+		 state.src->name,
+		 state.src->line_number,
+		 code,
+		 message);
         else
-          snprintf(full_message, sizeof(full_message),
-                   "Message [%03d] %s",
-                   code,
-                   message);
-
-        printf("%s\n", full_message);
+          printf("Message [%03d] %s\n",
+		 code,
+		 message);
       }
 #else
       user_message(code, message);
 #endif
 
       /* list file output */
-      snprintf(full_message, sizeof(full_message),
-               "Message [%03d] : %s",
+      lst_line("Message [%03d] : %s",
                code,
                message);
-
-      lst_line(full_message);
 
       state.num.messages++;
     } else {

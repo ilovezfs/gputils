@@ -32,8 +32,8 @@ void
 coff_init(void)
 {
   if (state.objfile != named) {
-    strncpy(state.objfilename, state.basefilename, sizeof(state.objfilename));
-    strncat(state.objfilename, ".o", sizeof(state.objfilename));  
+    snprintf(state.objfilename, sizeof(state.objfilename),
+	     "%s.o", state.basefilename);
   }
 
   if (state.objfile == suppress) {

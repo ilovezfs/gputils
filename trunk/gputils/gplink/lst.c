@@ -71,19 +71,13 @@ close_src(void)
 static void 
 lst_line(const char *format, ...)
 {
-  va_list args;
-  char buffer[BUFSIZ]; 
-
-  if (state.lst.f == NULL)
-    return;
-
-  va_start(args, format);
-  vsnprintf(buffer, sizeof(buffer), format, args);
-  va_end(args);
-
-  fprintf(state.lst.f, "%s\n", buffer);
-
-  return;
+  if (state.lst.f) {
+    va_list args;
+    va_start(args, format);
+    vfprintf(state.lst.f, format, args);
+    va_end(args);
+    fputc('\n', state.lst.f);
+  }
 }
 
 gp_linenum_type *
@@ -217,8 +211,8 @@ lst_init(void)
 {
 
   if (state.lstfile != named) {
-    strncpy(state.lstfilename, state.basefilename, sizeof(state.lstfilename));
-    strncat(state.lstfilename, ".lst", sizeof(state.lstfilename));
+    snprintf(state.lstfilename, sizeof(state.lstfilename),
+	     "%s.lst", state.basefilename);
   }
 
   if ((gp_num_errors) || (state.lstfile == suppress)) {

@@ -236,15 +236,15 @@ void setup_macro(struct macro_head *h, int arity, struct pnode *parms)
 
 void copy_macro_body(struct macro_body *b, char *buffer, size_t sizeof_buffer)
 {
+  int len = 0;
   while (b) {
     if (b->src_line != NULL) {
-      strncat(buffer, b->src_line, sizeof_buffer);
-      strncat(buffer, "\n", sizeof_buffer);
+      /* sizeof_buffer is always larger than len because it was
+	 measured by caller */
+      len += snprintf(buffer + len, sizeof_buffer - len, "%s\n", b->src_line);
     }
     b = b->next;
   }
-  
-  return;
 }
 
 
@@ -264,11 +264,11 @@ make_macro_buffer(struct macro_head *h)
       macro_src_size += strlen(b->src_line) + 1; /* add one for \n */
     b = b->next;
   }
-  
+
   macro_src_size += 2; /* flex requires two extra chars at the end */
 
   /* Allocate memory for the new buffer. yy_delete_buffer frees it */
-  macro_src = (char *)calloc(sizeof(char), macro_src_size);
+  macro_src = (char *)malloc(macro_src_size);
   if (macro_src) {
     /* build the string to be scanned */  
     copy_macro_body(h->body, macro_src, macro_src_size);

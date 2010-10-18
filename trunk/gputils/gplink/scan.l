@@ -115,9 +115,8 @@ void open_src(char *name, int isinclude)
     int i;
 
     for(i = 0; i < state.numpaths; i++) {
-      strncpy(tryname, state.paths[i], sizeof(tryname));
-      strncat(tryname, COPY_CHAR, sizeof(tryname));
-      strncat(tryname, name, sizeof(tryname));
+      snprintf(tryname, sizeof(tryname),
+	       "%s" COPY_CHAR "%s", state.paths[i], name);
       new->f = fopen(tryname, "rt");
       if(new->f) {
         new->name = strdup(tryname);
