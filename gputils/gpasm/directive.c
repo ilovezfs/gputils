@@ -2339,7 +2339,7 @@ static gpasmVal do_page(gpasmVal r,
 			struct pnode *parms)
 {
   state.lst.line.linetype = dir;
-  if (enforce_arity(arity, 0))
+  if (enforce_arity(arity, 0) && state.lst.enabled)
     lst_throw();
 
   return r;

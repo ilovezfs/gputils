@@ -1,3 +1,6 @@
+2010-10-18  Marko Kohtala  <marko.kohtala@gmail.com>
+  * gpasm/directive.c (do_page): Do not start new page if in NOLIST.
+
 2010-10-17  Marko Kohtala  <marko.kohtala@gmail.com>
   * gpasm/lst.c (lst_line): Allow printf formatting to avoid lots of error
   prone formatting to a buffer. Modify also uses of the function.
