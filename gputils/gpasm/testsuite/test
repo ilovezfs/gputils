@@ -361,7 +361,8 @@ case "$1" in
   clean)
     rm -Rf ./gpasm.mchip/test
     rm -Rf ./gpasm.project/test
-    cd gpasm.old 
+    rm -Rf ./gpasm.project/objtest
+    cd gpasm.old
     ./testall clean
     cd ..
     ;;

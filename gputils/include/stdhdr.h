@@ -66,6 +66,7 @@ Boston, MA 02111-1307, USA.  */
 #include <time.h>
 #include <ctype.h>
 #include <errno.h>
+#include <limits.h>
 
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
   #define UNIX_PATH_CHAR '/'

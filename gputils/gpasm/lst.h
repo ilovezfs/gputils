@@ -22,12 +22,12 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __LST_H__
 #define __LST_H__
 
-void lst_line(char *line);
+void lst_line(const char *format, ...);
 void lst_throw(void);
 void lst_init(void);
 void lst_memory_map(MemBlock *m);
 void lst_close(void);
-void lst_format_line(char *line, int value);
+void lst_format_line(const char *line, int value);
 
 void lst_symbol_table(struct symbol_table *);
 void lst_defines_table(struct symbol_table *);

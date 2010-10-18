@@ -99,16 +99,18 @@ char *evaluate_concatenation(struct pnode *p)
   case binop:
     assert(p->value.binop.op == CONCAT);
     {
-      char *s[2], *new;
-      size_t sizeof_new;
+      char *s0, *s1, *new;
+      size_t size0, size1;
 
-      s[0] = evaluate_concatenation(p->value.binop.p0);
-      s[1] = evaluate_concatenation(p->value.binop.p1);
-      sizeof_new =strlen(s[0]) + 1 + strlen(s[1]) + 1;
-      new = malloc(sizeof_new);
+      s0 = evaluate_concatenation(p->value.binop.p0);
+      s1 = evaluate_concatenation(p->value.binop.p1);
+      size0 = strlen(s0);
+      size1 = strlen(s1);
+      new = malloc(size0 + size1 + 1);
       if (new) {
-        strncpy(new, s[0], sizeof_new);
-        strncat(new, s[1], sizeof_new);
+	memcpy(new, s0, size0);
+	memcpy(new + size0, s1, size1);
+	new[size0 + size1] = '\0';
       }
       return new;
     }

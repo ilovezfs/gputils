@@ -378,7 +378,7 @@ h'-?{NUMCHAR}+'          {
 			   return STRING;
                          }
 '{STR_QCHAR}'            {
-                           char *pc = convert_escape_chars(yytext + 1, &yylval.i);
+                           const char *pc = convert_escape_chars(yytext + 1, &yylval.i);
 			   assert(pc == &yytext[yyleng - 1]);
 			   return NUMBER;
                          }
@@ -457,13 +457,12 @@ A'{STR_QCHAR}'           {
 static void
 search_pathes(struct source_context *new, char *name)
 {
-  char tryname[BUFSIZ];
+  char tryname[PATH_MAX + 1];
   int i;
 
   for(i = 0; i < state.path_num; i++) {
-    strncpy(tryname, state.paths[i], sizeof(tryname));
-    strncat(tryname, COPY_CHAR, sizeof(tryname));
-    strncat(tryname, name, sizeof(tryname));
+    snprintf(tryname, sizeof(tryname),
+             "%s" COPY_CHAR "%s", state.paths[i], name);
     new->f = fopen(tryname, "rt");
     if(new->f) {
       new->name = strdup(tryname);
@@ -564,6 +563,8 @@ void execute_macro(struct macro_head *h, int is_while)
 
   macro_src = make_macro_buffer(h);
   macro_src_size = strlen(macro_src) + 2;
+  /* Initialize the flex end marker */
+  memset(macro_src + macro_src_size - 2, 0, 2);
 
   /* create new source_context */
   new->name = strdup(h->src_name);

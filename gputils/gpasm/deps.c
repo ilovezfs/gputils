@@ -30,8 +30,8 @@ deps_init(void)
   char output_file[BUFSIZ];
 
   if (state.depfile != named) {
-    strncpy(state.depfilename, state.basefilename, sizeof(state.depfilename));
-    strncat(state.depfilename, ".d", sizeof(state.depfilename));  
+    snprintf(state.depfilename, sizeof(state.depfilename),
+	     "%s.d", state.basefilename);
   }
 
   if (state.depfile == suppress) {
@@ -46,11 +46,12 @@ deps_init(void)
     state.dep.enabled = true;
 
     /* output file names may not be setup, so make one */
-    strncpy(output_file, state.basefilename, sizeof(output_file));
     if (state.mode == relocatable) {
-      strncat(output_file, ".o", sizeof(output_file));  
+      snprintf(output_file, sizeof(output_file),
+	       "%s.o", state.basefilename);
     } else {
-      strncat(output_file, ".hex", sizeof(output_file));  
+      snprintf(output_file, sizeof(output_file),
+	       "%s.hex", state.basefilename);
     }
 
     fprintf(state.dep.f, "%s : ", output_file);

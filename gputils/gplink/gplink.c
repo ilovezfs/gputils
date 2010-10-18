@@ -330,19 +330,18 @@ void gplink_open_coff(char *name)
   gp_object_type *object;
   gp_archive_type *archive;
   FILE *coff;
-  char file_name[BUFSIZ];
-  
+  char file_name[PATH_MAX + 1];
+
   strncpy(file_name, name, sizeof(file_name));
-  
+
   coff = fopen(file_name, "rb");
   if ((coff == NULL) && (strchr(file_name, PATH_CHAR) == 0)) { 
     /* If no "/" in name, try searching include pathes */
     int i;
 
     for(i = 0; i < state.numpaths; i++) {
-      strncpy(file_name, state.paths[i], sizeof(file_name));
-      strncat(file_name, COPY_CHAR, sizeof(file_name));
-      strncat(file_name, name, sizeof(file_name));
+      snprintf(file_name, sizeof(file_name),
+	       "%s" COPY_CHAR "%s", state.paths[i], name);
       coff = fopen(file_name, "rb");
       if (coff != NULL) {
         break;
@@ -670,12 +669,12 @@ linker(void)
   MemBlock *data, *program;
 
   /* setup output filenames */
-  strncpy(state.hexfilename, state.basefilename, sizeof(state.hexfilename));
-  strncat(state.hexfilename, ".hex", sizeof(state.hexfilename));
-  strncpy(state.mapfilename, state.basefilename, sizeof(state.mapfilename));
-  strncat(state.mapfilename, ".map", sizeof(state.mapfilename));
-  strncpy(state.objfilename, state.basefilename, sizeof(state.objfilename));
-  strncat(state.objfilename, ".cof", sizeof(state.objfilename));
+  snprintf(state.hexfilename, sizeof(state.hexfilename),
+	   "%s.hex", state.basefilename);
+  snprintf(state.mapfilename, sizeof(state.mapfilename),
+	   "%s.map", state.basefilename);
+  snprintf(state.objfilename, sizeof(state.objfilename),
+	   "%s.cof", state.basefilename);
 
   /* Read the script */
   if (state.srcfilename) {
@@ -694,9 +693,8 @@ linker(void)
       gp_error("linker script not specified and can't determine default script");
       return EXIT_FAILURE; 
     }
-    strncpy(file_name, gp_lkr_path, sizeof(file_name));
-    strncat(file_name, COPY_CHAR, sizeof(file_name));
-    strncat(file_name, script_name, sizeof(file_name));
+    snprintf(file_name, sizeof(file_name),
+	     "%s" COPY_CHAR "%s", gp_lkr_path, script_name);
     gp_message("using default linker script \"%s\"", file_name);
     open_src(file_name, 0);
     yyparse();

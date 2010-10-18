@@ -498,18 +498,28 @@ _copy_rom_section(gp_object_type *object,
   }
 }
 
+static char *_create_i_section_name(const char *name)
+{
+  /* create the new section */
+  int len = strlen(name);
+  char *name_i = malloc(len + 3);
+  memcpy(name_i, name, len);
+  memcpy(name_i + len, "_i", 3);
+  return name_i;
+}
+
 /* create a program memory section to hold the data */
 
 static void
 _create_rom_section(gp_object_type *object, gp_section_type *section)
 {
   gp_section_type *new = NULL;
-  char name[BUFSIZ];
-  
+  char *name;
+
   /* create the new section */
-  strncpy(name, section->name, sizeof(name));
-  strncat(name, "_i", sizeof(name));
+  name = _create_i_section_name(section->name);
   new = gp_coffgen_newsection(name);
+  free(name);
   if (object->class->rom_width == 8) {
     new->size = section->size;
     /* force the section size to be an even number of bytes */ 
@@ -660,7 +670,6 @@ gp_add_cinit_section(gp_object_type *object)
   gp_section_type *section;
   gp_section_type *new = NULL;
   gp_section_type *prog_section = NULL;
-  char prog_name[BUFSIZ];
   int insn;
   int count;
   int base_address;
@@ -684,11 +693,11 @@ gp_add_cinit_section(gp_object_type *object)
     while (section != NULL) {
       if (section->flags & STYP_DATA) {
         /* locate the rom table */
-        strncpy(prog_name, section->name, sizeof(prog_name));
-        strncat(prog_name, "_i", sizeof(prog_name));
+	char *prog_name = _create_i_section_name(section->name);
         prog_section = gp_coffgen_findsection(object, 
                                               object->sections, 
                                               prog_name);
+	free(prog_name);
 
         if (object->class->rom_width == 8) {
           /* write program memory address */

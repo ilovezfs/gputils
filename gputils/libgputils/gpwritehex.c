@@ -203,12 +203,9 @@ int writehex (char *basefilename,
   }
 
    /* build file names */
-  strncpy(hexfilename, basefilename, sizeof(hexfilename));
-  strncat(hexfilename, ".hex", sizeof(hexfilename));
-  strncpy(lowhex, basefilename, sizeof(lowhex));
-  strncat(lowhex, ".hxl", sizeof(lowhex));
-  strncpy(highhex, basefilename, sizeof(highhex));
-  strncat(highhex, ".hxh", sizeof(highhex));
+  snprintf(hexfilename, sizeof(hexfilename), "%s.hex", basefilename);
+  snprintf(lowhex, sizeof(lowhex), "%s.hxl", basefilename);
+  snprintf(highhex, sizeof(highhex), "%s.hxh", basefilename);
 
   if (numerrors) {
     /* Remove the hex files (if any) */

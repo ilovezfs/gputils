@@ -1,3 +1,12 @@
+2010-10-17  Marko Kohtala  <marko.kohtala@gmail.com>
+  * gpasm/lst.c (lst_line): Allow printf formatting to avoid lots of error
+  prone formatting to a buffer. Modify also uses of the function.
+  (lst_printf,lst_eol): New functions to avoid need of building complicated
+  string in buffer.
+  (lst_format_line): Code rearranged to emit coff line number in beginning
+  and avoid formatting of the line when listing is disabled by NOLIST.
+  * Fix bug #3081197 and #3081206 by removing uses of strncat.
+
 2010-09-27  Marko Kohtala  <marko.kohtala@gmail.com>
   * libgputils/gpprocessor.c: Bug #3038983 fix for PIC16 MOVLR instruction
   for GPR RAM bank selection.
