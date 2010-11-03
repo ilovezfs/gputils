@@ -7,6 +7,11 @@
 	nop
 c3	nop
 
+.code4	code 0x800
+	pagesel $-1
+	pagesel $-1
+	pagesel $
+	
 .data3	udata 0x30
 	res 1
 d3	res 1

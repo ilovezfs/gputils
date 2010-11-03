@@ -436,6 +436,8 @@ c1
 	pagesel	c1
 	pagesel c2
 	pagesel c3
+	pagesel $
+	pagesel $+1
 
 	DW	c1,c2,c3
 
