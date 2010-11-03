@@ -9,6 +9,8 @@ goto_macro macro
        lcall page2
        pagesel page3
        lcall page3
+       pagesel $
+       lcall $
        endm
   
 page0  org 0

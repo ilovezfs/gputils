@@ -9,6 +9,8 @@ goto_macro macro
        goto page2
        pagesel page3
        goto page3
+       pagesel $
+       goto $
        endm
   
 page0  org 0

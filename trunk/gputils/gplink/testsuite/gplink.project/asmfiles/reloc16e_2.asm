@@ -17,6 +17,12 @@ c3	nop
 	BZ	c1
 	RCALL	c1
 
+	;; I know, this is nonsense on pic16e
+.code4	code 0x800
+	pagesel $-1
+	pagesel $-1
+	pagesel $
+
 .data3	udata_acs 0x20
 	res 1
 d3	res 1
