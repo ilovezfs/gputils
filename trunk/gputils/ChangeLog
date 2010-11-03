@@ -1,3 +1,10 @@
+2010-11-03  Marko Kohtala  <marko.kohtala@gmail.com>
+  * gputils/gpvo.c (print_data): Fix to not hang on STYP_ACTREC.
+  * gpasm/testsuite/gpasm.project/asmfiles/pagesel?.asm,
+  gplink/testsuite/gplink.project/asmfiles/reloc1*.asm: Add test cases for
+  pagesel $ in different pages. Compiled reference .hex files with mpasm
+  5.34.
+
 2010-10-18  Marko Kohtala  <marko.kohtala@gmail.com>
   * gpasm/directive.c (do_page): Do not start new page if in NOLIST.
 
