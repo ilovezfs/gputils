@@ -688,7 +688,7 @@ gp_determine_aux(gp_symbol_type *symbol)
     return AUX_IDENT;  
   }
 
-  if (symbol->derived_type == DT_FCN) {
+  if ((symbol->derived_type & 7) == DT_FCN) {
     return AUX_FCN;
   }
 

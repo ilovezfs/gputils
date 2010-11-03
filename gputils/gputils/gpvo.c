@@ -141,7 +141,8 @@ void print_data(proc_class_t class, gp_section_type *section)
 	break;
       printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address), memory);
       address += 2;
-    } else if (section->flags & STYP_DATA) {
+    } else {
+      /* STYP_DATA or STYP_ACTREC */
       unsigned char b;
       if (!b_memory_get(section->data, address, &b))
 	break;
@@ -208,7 +209,7 @@ void print_sec_list(gp_object_type *object)
   while (section != NULL) {
     print_sec_header(object->class, section);
 
-    if (section->size && !(section->flags & STYP_BSS)) {
+    if (section->size && section->data_ptr) {
       print_data(object->class, section);
     }
     if (section->num_reloc) {
