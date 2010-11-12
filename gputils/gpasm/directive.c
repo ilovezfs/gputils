@@ -80,14 +80,15 @@ static unsigned short checkwrite(unsigned short value)
   }
 
   if (state.maxrom >= 0) {
-    if (state.org > state.maxrom) {
+    int org = gp_processor_byte_to_org(state.device.class, state.org);
+    if (org > state.maxrom) {
       gpwarning(GPW_EXCEED_ROM, NULL);
     } else {
       /* check if current org is within a bad address range */
       struct range_pair *cur_badrom;
       for (cur_badrom = state.badrom; cur_badrom != NULL;
 	    cur_badrom = cur_badrom->next) {
-	if ((state.org >= cur_badrom->start) && (state.org <= cur_badrom->end)) {
+	if (org >= cur_badrom->start && org <= cur_badrom->end) {
 	  gpwarning(GPW_EXCEED_ROM, NULL);
 	  break;
 	}
@@ -133,14 +134,15 @@ static void emit_byte(unsigned char value)
       }
 
       if (state.maxrom >= 0) {
-	if (state.org > state.maxrom) {
+	int org = gp_processor_byte_to_org(state.device.class, state.org);
+	if (org > state.maxrom) {
 	  gpwarning(GPW_EXCEED_ROM, NULL);
 	} else {
 	  /* check if current org is within a bad address range */
 	  struct range_pair *cur_badrom;
 	  for (cur_badrom = state.badrom; cur_badrom != NULL;
 	       cur_badrom = cur_badrom->next) {
-	    if ((state.org >= cur_badrom->start) && (state.org <= cur_badrom->end)) {
+	    if (org >= cur_badrom->start && org <= cur_badrom->end) {
 	      gpwarning(GPW_EXCEED_ROM, NULL);
 	      break;
 	    }
