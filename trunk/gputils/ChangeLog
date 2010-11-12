@@ -1,3 +1,9 @@
+2010-11-12  Marko Kohtala  <marko.kohtala@gmail.com>
+  * gpasm/directive.c (checkwrite, emit_byte): Fix maxrom and badrom
+  checks. Fixes #3107775.
+  * libgputils/gpprocessor.c (pics): Fix eeprom memories for 16f627a,
+  16f628a, 16f84a and memory sizes for 17c42 and 17c42a.
+
 2010-11-03  Marko Kohtala  <marko.kohtala@gmail.com>
   * gputils/gpvo.c (print_data): Fix to not hang on STYP_ACTREC.
   * gpasm/testsuite/gpasm.project/asmfiles/pagesel?.asm,
