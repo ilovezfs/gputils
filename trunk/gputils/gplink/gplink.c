@@ -803,7 +803,7 @@ linker(void)
   /* load the table with the relocated addresses */
   gp_add_cinit_section(state.object);
 
-  gp_cofflink_update_table(state.object);
+  gp_cofflink_update_table(state.object, state.class->org_to_byte_shift);
 
   gp_cofflink_fill_pages(state.object,
                          program,

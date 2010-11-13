@@ -31,4 +31,11 @@ d3	res 1
 	res 1
 d4	res 1
 
+	;; This tests symbol value adjustment when the section is
+	;; relocated.
+.code5	code
+	nop
+c5	goto c5
+	dw c5
+
 	end
