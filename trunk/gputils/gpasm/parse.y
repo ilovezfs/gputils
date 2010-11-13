@@ -250,6 +250,9 @@ void next_line(int value)
 %token <i> ASSIGN_XOR
 %token <i> INCREMENT
 %token <i> DECREMENT
+%token <i> POSTINCREMENT
+%token <i> POSTDECREMENT
+%token <i> INDFOFFSET
 %token <i> TBL_NO_CHANGE
 %token <i> TBL_POST_INC
 %token <i> TBL_POST_DEC
@@ -646,6 +649,12 @@ assign_equal_ops: ASSIGN_PLUS | ASSIGN_MINUS | ASSIGN_MULTIPLY |
                   ASSIGN_AND | ASSIGN_OR | ASSIGN_XOR; 
 
 parameter_list:
+	expr '[' expr ']'
+	{
+	  $$ = mk_list(mk_constant(INDFOFFSET),
+		       mk_list($3, $1));
+	}
+        |
 	expr
 	{
 	  $$ = mk_list($1, NULL);
@@ -669,6 +678,26 @@ parameter_list:
 	','
 	{
 	  $$ = mk_list(mk_symbol(""), mk_list(mk_symbol(""), NULL));
+	}
+        |
+	INCREMENT parameter_list
+	{
+	  $$ = mk_list(mk_constant($1), $2);
+	}
+        |
+	DECREMENT parameter_list
+	{
+	  $$ = mk_list(mk_constant($1), $2);
+	}
+        |
+	parameter_list INCREMENT 
+	{
+	  $$ = mk_list(mk_constant(POSTINCREMENT), $1);
+	}
+        |
+	parameter_list DECREMENT 
+	{
+	  $$ = mk_list(mk_constant(POSTDECREMENT), $1);
 	}
 	;
 
@@ -835,6 +864,16 @@ e0:
 	}
 	| 
 	TBL_PRE_INC
+	{
+	  $$ = mk_constant($1);
+	}
+        |
+	INCREMENT
+	{
+	  $$ = mk_constant($1);
+	}
+        |
+	DECREMENT
 	{
 	  $$ = mk_constant($1);
 	}

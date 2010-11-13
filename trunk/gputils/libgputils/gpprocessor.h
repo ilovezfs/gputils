@@ -80,6 +80,7 @@ extern const struct proc_class proc_class_generic;   /* 12 bit device */
 extern const struct proc_class proc_class_pic12;     /* 12 bit devices */
 extern const struct proc_class proc_class_sx;        /* 12 bit devices */
 extern const struct proc_class proc_class_pic14;     /* 14 bit devices */
+extern const struct proc_class proc_class_pic14e;    /* enhanced 14 bit devices */
 extern const struct proc_class proc_class_pic16;     /* 16 bit devices */
 extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices */
 #define PROC_CLASS_EEPROM8 (&proc_class_eeprom8)
@@ -88,6 +89,7 @@ extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices 
 #define PROC_CLASS_PIC12 (&proc_class_pic12)
 #define PROC_CLASS_SX (&proc_class_sx)
 #define PROC_CLASS_PIC14 (&proc_class_pic14)
+#define PROC_CLASS_PIC14E (&proc_class_pic14e)
 #define PROC_CLASS_PIC16 (&proc_class_pic16)
 #define PROC_CLASS_PIC16E (&proc_class_pic16e)
 

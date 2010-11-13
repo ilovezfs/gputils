@@ -66,14 +66,16 @@ static struct px pics[] = {
   { PROC_CLASS_PIC14,   "__12F683",   { "pic12f683",   "p12f683",   "12f683"   }, 0xf683, 1, 2, 0x21ff,   { 0x800, 0x20ff },     { 0x2007, 0x2007 },     "12f683.lkr"   },
   { PROC_CLASS_PIC14,   "__14000",    { "pic14000",    "p14000",    "14000"    }, 0x4000, 2, 2, 0xfbf,    { -1, -1 },            { 0x2007, 0x2007 },     "14000.lkr"    },
   { PROC_CLASS_PIC14,   "__16CXX",    { "pic16cxx",    "p16cxx",    "16cxx"    }, 0x6c77, 4, 4, -1,       { -1, -1 },            { -1, -1 },             NULL           },
-  { PROC_CLASS_PIC14,   "__16F1933",  { "pic16f1933",  "p16f1933",  "16f1933"  }, 0x1933, 2, 2, 0xf0ff,   { 0x1000, 0xefff },    { 0x8007, 0x8008 },     "16f1933.lkr"  },
-  { PROC_CLASS_PIC14,   "__16LF1933", { "pic16lf1933", "p16lf1933", "16lf1933" }, 0xa933, 2, 2, 0xf0ff,   { 0x1000, 0xefff },    { 0x8007, 0x8008 },     "16lf1933.lkr" },
-  { PROC_CLASS_PIC14,   "__16F1934",  { "pic16f1934",  "p16f1934",  "16f1934"  }, 0x1934, 2, 2, 0xf0ff,   { 0x1000, 0xefff },    { 0x8007, 0x8008 },     "16f1934.lkr"  },
-  { PROC_CLASS_PIC14,   "__16LF1934", { "pic16lf1934", "p16lf1934", "16lf1934" }, 0xa934, 2, 2, 0xf0ff,   { 0x1000, 0xefff },    { 0x8007, 0x8008 },     "16lf1934.lkr" },
-  { PROC_CLASS_PIC14,   "__16F1936",  { "pic16f1936",  "p16f1936",  "16f1936"  }, 0x1936, 2, 2, 0xf0ff,   { 0x2000, 0xefff },    { 0x8007, 0x8008 },     "16f1936.lkr"  },
-  { PROC_CLASS_PIC14,   "__16LF1936", { "pic16lf1936", "p16lf1936", "16lf1936" }, 0xa936, 2, 2, 0xf0ff,   { 0x2000, 0xefff },    { 0x8007, 0x8008 },     "16lf1936.lkr" },
-  { PROC_CLASS_PIC14,   "__16F1937",  { "pic16f1937",  "p16f1937",  "16f1937"  }, 0x1937, 2, 2, 0xf0ff,   { 0x2000, 0xefff },    { 0x8007, 0x8008 },     "16f1937.lkr"  },
-  { PROC_CLASS_PIC14,   "__16LF1937", { "pic16lf1937", "p16lf1937", "16lf1937" }, 0xa937, 2, 2, 0xf0ff,   { 0x2000, 0xefff },    { 0x8007, 0x8008 },     "16lf1937.lkr" },
+  { PROC_CLASS_PIC14E,  "__16F1826",  { "pic16f1826",  "p16f1826",  "16f1826"  }, 0x1826, 1, 0x1f, 0xf0ff,{ 0x1000, 0xefff },    { 0x8007, 0x8008 },     "16f1826.lkr"  },
+  { PROC_CLASS_PIC14E,  "__16F1827",  { "pic16f1827",  "p16f1827",  "16f1827"  }, 0x1827, 2, 0x1f, 0xf0ff,{ 0x1000, 0xefff },    { 0x8007, 0x8008 },     "16f1827.lkr"  },
+  { PROC_CLASS_PIC14E,  "__16F1933",  { "pic16f1933",  "p16f1933",  "16f1933"  }, 0x1933, 2, 0x1f, 0xf0ff,{ 0x1000, 0xefff },    { 0x8007, 0x8008 },     "16f1933.lkr"  },
+  { PROC_CLASS_PIC14E,  "__16LF1933", { "pic16lf1933", "p16lf1933", "16lf1933" }, 0xa933, 2, 0x1f, 0xf0ff,{ 0x1000, 0xefff },    { 0x8007, 0x8008 },     "16lf1933.lkr" },
+  { PROC_CLASS_PIC14E,  "__16F1934",  { "pic16f1934",  "p16f1934",  "16f1934"  }, 0x1934, 2, 0x1f, 0xf0ff,{ 0x1000, 0xefff },    { 0x8007, 0x8008 },     "16f1934.lkr"  },
+  { PROC_CLASS_PIC14E,  "__16LF1934", { "pic16lf1934", "p16lf1934", "16lf1934" }, 0xa934, 2, 0x1f, 0xf0ff,{ 0x1000, 0xefff },    { 0x8007, 0x8008 },     "16lf1934.lkr" },
+  { PROC_CLASS_PIC14E,  "__16F1936",  { "pic16f1936",  "p16f1936",  "16f1936"  }, 0x1936, 4, 0x1f, 0xf0ff,{ 0x2000, 0xefff },    { 0x8007, 0x8008 },     "16f1936.lkr"  },
+  { PROC_CLASS_PIC14E,  "__16LF1936", { "pic16lf1936", "p16lf1936", "16lf1936" }, 0xa936, 4, 0x1f, 0xf0ff,{ 0x2000, 0xefff },    { 0x8007, 0x8008 },     "16lf1936.lkr" },
+  { PROC_CLASS_PIC14E,  "__16F1937",  { "pic16f1937",  "p16f1937",  "16f1937"  }, 0x1937, 4, 0x1f, 0xf0ff,{ 0x2000, 0xefff },    { 0x8007, 0x8008 },     "16f1937.lkr"  },
+  { PROC_CLASS_PIC14E,  "__16LF1937", { "pic16lf1937", "p16lf1937", "16lf1937" }, 0xa937, 4, 0x1f, 0xf0ff,{ 0x2000, 0xefff },    { 0x8007, 0x8008 },     "16lf1937.lkr" },
   { PROC_CLASS_PIC14,   "__16C432",   { "pic16c432",   "p16c432",   "16c432"   }, 0x6432, 1, 2, 0x7ff,    { -1, -1 },            { 0x2007, 0x2007 },     "16c432.lkr"   },
   { PROC_CLASS_PIC14,   "__16C433",   { "pic16c433",   "p16c433",   "16c433"   }, 0x6433, 1, 2, 0x7ff,    { -1, -1 },            { 0x2007, 0x2007 },     "16c433.lkr"   },
   { PROC_CLASS_PIC12,   "__16C5X",    { "pic16c5x",    "p16c5x",    "16c5x"    }, 0x658a, 4, 4, -1,       { -1, -1 },            { -1, -1 },             NULL           },
@@ -1087,6 +1089,59 @@ static int reloc_tris_pic14(unsigned int address)
   return address & 0x7f;
 }
 
+/* PIC14E */
+
+static int
+gp_processor_check_page_pic14e(unsigned int org)
+{
+  return (org >> 11) & 0xf;
+}
+
+static int
+gp_processor_check_bank_pic14e(unsigned int address)
+{
+  return (address >> 7) & 0x1f;
+}
+
+static int
+gp_processor_set_page_pic14e(int num_pages,
+			     int page,
+			     MemBlock *m, 
+			     unsigned int address,
+			     int use_wreg)
+{
+  unsigned int data;
+  if (num_pages == 1) {
+    return 0;
+  }
+
+  page <<= 3; /* page is in bits 3:6 of PCLATH */
+  if (use_wreg) {
+    data = 0x3000 | page; /* movlw */
+    i_memory_put_le(m, address, data);
+    data = 0x0080 | 0xa; /* movwf 0xa*/
+    i_memory_put_le(m, address + 2, data);
+    return 4;
+  }
+  else {
+    data = 0x3180 | page; /* movlp */
+    i_memory_put_le(m, address, data);
+    return 2;
+  }
+}
+
+static int
+gp_processor_set_bank_pic14e(int num_banks,
+			     int bank,
+			     MemBlock *m, 
+			     unsigned int address)
+{
+  unsigned int data;
+  data = 0x0020 | (bank & 0x1f);
+  i_memory_put_le(m, address, data);
+  return 2;
+}
+
 /* PIC16 */
 
 static int
@@ -1326,6 +1381,27 @@ const struct proc_class proc_class_pic14 = {
   gp_processor_set_bank_pic14,
   gp_processor_check_page_pic14,
   gp_processor_set_page_pic14,
+  reloc_call_pic14,
+  reloc_goto_pic14,
+  reloc_ibanksel_pic14,
+  reloc_f_pic14,
+  reloc_tris_pic14,
+  op_16cxx, &num_op_16cxx,
+  find_insn_generic,
+  i_memory_get_le, i_memory_put_le,
+};
+
+const struct proc_class proc_class_pic14e = {
+  0x3400,				/* retlw */
+  14,					/* rom_width */
+  1,					/* org_to_byte_shift */
+  0,					/* bank_mask */
+  (1<<14)-1,				/* core_size */
+  id_location_pic14,			/* id_location */
+  gp_processor_check_bank_pic14e,
+  gp_processor_set_bank_pic14e,
+  gp_processor_check_page_pic14e,
+  gp_processor_set_page_pic14e,
   reloc_call_pic14,
   reloc_goto_pic14,
   reloc_ibanksel_pic14,

@@ -159,6 +159,25 @@ const struct insn  op_16cxx[] = {
 
 const int num_op_16cxx = TABLE_SIZE(op_16cxx);
 
+/* PIC 14-bit enhanced instruction set */
+const struct insn op_16cxx_enh[] = {
+  { "addfsr", 0x3f80, 0x3100,   INSN_CLASS_LITFSR       },
+  { "addwfc", 0x3f00, 0x3d00,   INSN_CLASS_OPWF7        },
+  { "asrf",   0x3f00, 0x3700,   INSN_CLASS_OPWF7        },
+  { "bra",    0x3e00, 0x3200,   INSN_CLASS_RBRA9        },
+  { "brw",    0x3fff, 0x000b,   INSN_CLASS_IMPLICIT     },
+  { "callw",  0x3fff, 0x000a,   INSN_CLASS_IMPLICIT     },
+  { "lslf",   0x3f00, 0x3500,   INSN_CLASS_OPWF7        },
+  { "lsrf",   0x3f00, 0x3600,   INSN_CLASS_OPWF7        },
+  { "moviw",  0x3ff8, 0x0010,   INSN_CLASS_MOVINDF      },
+  { "movwi",  0x3ff8, 0x0018,   INSN_CLASS_MOVINDF      },
+  { "movlb",  0x3fd0, 0x0020,   INSN_CLASS_LIT5         },
+  { "movlp",  0x3f80, 0x3180,   INSN_CLASS_LIT7         },
+  { "subwfb", 0x3f00, 0x3b00,   INSN_CLASS_OPWF7        }
+};
+
+const int num_op_16cxx_enh = TABLE_SIZE(op_16cxx_enh);
+
 /* PIC 16-bit instruction set */
 const struct insn  op_17cxx[] = {
   { "addlw",  0xff00, 0xb100,   INSN_CLASS_LIT8         },
