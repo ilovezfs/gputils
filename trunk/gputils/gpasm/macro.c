@@ -272,6 +272,9 @@ make_macro_buffer(struct macro_head *h)
   if (macro_src) {
     /* build the string to be scanned */  
     copy_macro_body(h->body, macro_src, macro_src_size);
+    /* Flex requires the two extra chars at end to be nuls */
+    macro_src[macro_src_size-2] = 0;
+    macro_src[macro_src_size-1] = 0;
   }
 
   return macro_src;
