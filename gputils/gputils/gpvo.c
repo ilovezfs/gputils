@@ -412,8 +412,6 @@ void print_sym_table (gp_object_type *object)
   printf("Idx  Name                     Section          Value      Type     DT           Class     NumAux \n");
 
   while (symbol != NULL) {
-    int org_to_byte_shift = 0;
-
     if (symbol->section_number == N_DEBUG) {
       section = "DEBUG";
     } else if (symbol->section_number == N_ABS) {
@@ -423,15 +421,13 @@ void print_sym_table (gp_object_type *object)
     } else {
       assert(symbol->section != NULL);
       section = symbol->section->name;
-      if (symbol->section->flags & (STYP_TEXT|STYP_DATA_ROM))
-	org_to_byte_shift = object->class->org_to_byte_shift;
     }    
     
-    printf("%04d %-24s %-16s %#-10x %-8s %-12s %-9s %-4i\n",
+    printf("%04d %-24s %-16s %#-10lx %-8s %-12s %-9s %-4i\n",
 	   idx,
            symbol->name,
            section,
-           gp_byte_to_org(org_to_byte_shift, symbol->value),
+           symbol->value,
            format_sym_type(symbol->type, buffer_type, sizeof(buffer_type)),
            format_sym_derived_type(symbol->derived_type, buffer_derived_type, sizeof(buffer_derived_type)),
            format_sym_class(symbol->class, buffer_class, sizeof(buffer_class)),
