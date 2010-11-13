@@ -682,6 +682,9 @@ static gpasmVal do_config(gpasmVal r,
     if(_16bit_core) {
       gpwarning(GPW_EXPECTED,"18cxxx devices should specify __CONFIG address");
     }
+    if (state.device.class == PROC_CLASS_PIC14E) {
+      gpwarning(GPW_EXPECTED,"Enhanced 16cxxx devices should specify __CONFIG address");
+    }
     ca = state.processor->config_addrs[0];
     p = HEAD(parms);
     break;
@@ -730,9 +733,14 @@ static gpasmVal do_config(gpasmVal r,
       }
     } else {
       unsigned short word;
-      if(value > state.device.class->core_size) {
-        gpmessage(GPM_RANGE,NULL);
-        value &= state.device.class->core_size;
+
+      /* Don't complain for 14 bit enhanced devices */
+      /* Why are the config words 16 bits long in headers?? */
+      if (state.device.class != PROC_CLASS_PIC14E) {
+	if(value > state.device.class->core_size) {
+	  gpmessage(GPM_RANGE,NULL);
+	  value &= state.device.class->core_size;
+	}
       }
 
       if (state.device.class->i_memory_get(state.c_memory, ca, &word)) {
@@ -3023,6 +3031,12 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  emit_check(i->opcode, reloc_evaluate(p, RELOCT_F), 0x0f);
 	}
 	break;
+      case INSN_CLASS_LIT5:
+	if (enforce_arity(arity, 1)) {
+	  p = HEAD(parms);
+	  emit_check(i->opcode, maybe_evaluate(p), 0x1f);
+	}
+	break;
       case INSN_CLASS_LIT4S:
 	if (enforce_arity(arity, 1)) {
 	  p = HEAD(parms);
@@ -3034,6 +3048,13 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  p = HEAD(parms);
 	  /* The literal cannot be a relocatable address */
           emit_check(i->opcode, maybe_evaluate(p), 0x3f);
+	}
+	break;
+      case INSN_CLASS_LIT7:
+	if (enforce_arity(arity, 1)) {
+	  p = HEAD(parms);
+	  /* The literal cannot be a relocatable address */
+          emit_check(i->opcode, maybe_evaluate(p), 0x7f);
 	}
 	break;
       case INSN_CLASS_LIT8:
@@ -3109,12 +3130,19 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    value = reloc_evaluate(p, RELOCT_CALL);
           }
 	  
-	  /* PC is 13 bits.  mpasm checks the maximum device address. */
-	  if (value & (~0x1fff))
-	    gperror(GPE_RANGE, NULL); 	  
-	  
-	  if ((value & 0x1800) != (r & 0x1800))
-	    gpmessage(GPM_PAGE, NULL);
+	  if (state.device.class == PROC_CLASS_PIC14E) {
+	    /* PC is 15 bits.  mpasm checks the maximum device address. */
+	    if (value & (~0x7fff))
+	      gperror(GPE_RANGE, NULL);
+	    if ((value & 0x7800) != (r & 0x7800))
+	      gpmessage(GPM_PAGE, NULL);
+	  } else {
+	    /* PC is 13 bits.  mpasm checks the maximum device address. */
+	    if (value & (~0x1fff))
+	      gperror(GPE_RANGE, NULL);
+	    if ((value & 0x1800) != (r & 0x1800))
+	      gpmessage(GPM_PAGE, NULL);
+	  }
 	  
 	  emit(i->opcode | (value & 0x7ff));
 	}
@@ -3174,6 +3202,23 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	  /* The offset for the relative branch must be 
 	     between -127 <= offset <= 127. */
 	  emit_check_relative(i->opcode, offset, 0xff, 127);
+	}
+	break;
+      case INSN_CLASS_RBRA9:
+	if (enforce_arity(arity, 1)) {
+	  int offset;
+
+	  p = HEAD(parms);
+	  if (count_reloc(p) == 0) {
+	    offset = maybe_evaluate(p) - (r + 1);
+	  } else {
+	    offset = reloc_evaluate(p, RELOCT_CONDBRA);
+	  }
+	  offset = gp_processor_org_to_byte(state.device.class, offset) >> 1;
+
+	  /* The offset for the relative branch must be 
+	     between -256 <= offset <= 255. */
+	  emit_check_relative(i->opcode, offset, 0x1ff, 255);
 	}
 	break;
       case INSN_CLASS_RBRA11:
@@ -3745,7 +3790,73 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 	    }
 	}
 	break;
-
+      case INSN_CLASS_MOVINDF:
+	if (arity == 0) {
+	  enforce_arity(arity, 1);
+	  break;
+	}
+	p = HEAD(parms);
+	switch (arity) {
+	  int fsr;
+	  int opcode;
+	  int k;
+	  struct pnode *p2, *p3;
+	case 1:
+	  fsr = maybe_evaluate(p);
+	  if ((fsr < 0) || (fsr > 1)) {
+            gperror(GPE_RANGE, NULL);
+	    break;
+	  }
+	  /* New opcode for indexed indirect */
+	  /* moviw/movwi INDFn handled as moviw/movwi 0[INDFn] */
+	  if (strcasecmp(i->name, "moviw") == 0)
+	    opcode = 0x3f00 | (fsr << 6);
+	  else
+	    opcode = 0x3f80 | (fsr << 6);
+	  emit(opcode);
+	  break;
+	case 2:
+	  p2 = HEAD(TAIL(parms));
+	  fsr = maybe_evaluate(p2);
+	  switch (maybe_evaluate(p)) {
+	  case INCREMENT:
+	    emit(i->opcode | (fsr << 2));
+	    break;
+	  case DECREMENT:
+	    emit(i->opcode | 1 | (fsr << 2));
+	    break;
+	  case POSTINCREMENT:
+	    emit(i->opcode | 2 | (fsr << 2));
+	    break;
+	  case POSTDECREMENT:
+	    emit(i->opcode | 3 | (fsr << 2));
+	    break;
+	  default:
+	    gperror(GPE_ILLEGAL_ARGU, NULL);
+	  }
+	  break;
+	case 3:
+	case 4:
+	  p2 = HEAD(TAIL(parms));
+	  fsr = maybe_evaluate(p2);
+	  switch (maybe_evaluate(p)) {
+	  case INDFOFFSET:
+	    p3 = TAIL(TAIL(parms));
+	    k = maybe_evaluate(p3); /* Index */
+	    if ((k < -32) || (k > 31))
+	      gperror(GPE_RANGE, NULL);
+	    /* New opcode for indexed indirect */
+	    if (strcasecmp(i->name, "moviw") == 0)
+	      opcode = 0x3f00 | (fsr << 6);
+	    else
+	      opcode = 0x3f80 | (fsr << 6);
+	    emit(opcode | (k & 0x3f));
+	    break;
+	  default:
+	    gperror(GPE_ILLEGAL_ARGU, NULL);
+	  }
+	}
+	break;
       case INSN_CLASS_TBL2:
 	if (enforce_arity(arity, 2)) {
 	  int t=0; /* read low byte by default */
@@ -3788,6 +3899,9 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_FUNC:
 	r = (*(opfunc*)i->opcode)(r, name, arity, parms);
 	break;
+	default:
+	  assert(0);
+	  break;
       }
     }
   } else {
@@ -3955,6 +4069,11 @@ void opcode_init(int stage)
 	  annotate_symbol( add_symbol(state.stBuiltin, op_18cxx_ext[i].name), 
                            (void*)&op_18cxx_ext[i]);
       }
+    }
+    else if (state.device.class == PROC_CLASS_PIC14E) {
+      for (i = 0; i < num_op_16cxx_enh; i++)
+	annotate_symbol( add_symbol(state.stBuiltin, op_16cxx_enh[i].name),
+			 (void*)&op_16cxx_enh[i]);
     }
     break;
   case 3:

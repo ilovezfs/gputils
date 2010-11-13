@@ -25,7 +25,9 @@ Boston, MA 02111-1307, USA.  */
 enum insn_class {
   INSN_CLASS_LIT1,	/* bit 0 contains a 1 bit literal		*/
   INSN_CLASS_LIT4S,     /* Bits 7:4 contain a 4 bit literal, bits 3:0 are unused   */
+  INSN_CLASS_LIT5,	/* bits 4:0 contain an 4 bit literal		*/
   INSN_CLASS_LIT6,	/* bits 5:0 contain an 6 bit literal		*/
+  INSN_CLASS_LIT7,	/* bits 6:0 contain an 7 bit literal		*/
   INSN_CLASS_LIT8,	/* bits 7:0 contain an 8 bit literal		*/
   INSN_CLASS_LIT8C12,	/* bits 7:0 contain an 8 bit literal, 12 bit CALL */
   INSN_CLASS_LIT8C16,	/* bits 7:0 contain an 8 bit literal, 16 bit CALL */
@@ -50,6 +52,7 @@ enum insn_class {
   INSN_CLASS_LIT20,	/* 20bit lit, bits 7:0 in first word bits 19:8 in second		*/
   INSN_CLASS_CALL20,	/* Like LIT20, but bit 8 has fast push flag			 	*/
   INSN_CLASS_RBRA8,	/* Bits 7:0 contain a relative branch address			 	*/
+  INSN_CLASS_RBRA9,	/* Bits 8:0 contain a relative branch address			 	*/
   INSN_CLASS_RBRA11,	/* Bits 10:0 contain a relative branch address			 	*/
   INSN_CLASS_FLIT12,	/* LFSR, 12bit lit loaded into 1 of 4 FSRs				*/
   INSN_CLASS_FF,	/* two 12bit file addresses						*/
@@ -70,7 +73,8 @@ enum insn_class {
   INSN_CLASS_FUNC,	/* instruction is an assembler function		*/
   INSN_CLASS_LIT3_BANK, /* SX: bits 3:0 contain a 3 bit literal, shifted 5 bits */
   INSN_CLASS_LIT3_PAGE, /* SX: bits 3:0 contain a 3 bit literal, shifted 9 bits */
-  INSN_CLASS_LIT4       /* SX: bits 3:0 contain a 4 bit literal         */
+  INSN_CLASS_LIT4,      /* SX: bits 3:0 contain a 4 bit literal         */
+  INSN_CLASS_MOVINDF    /* enhanced 14-bit moviw and movwi insn arguments */
 };
 
 struct insn {
@@ -91,6 +95,9 @@ extern const int num_op_sx;
 
 extern const struct insn op_16cxx[];
 extern const int num_op_16cxx;
+
+extern const struct insn op_16cxx_enh[];
+extern const int num_op_16cxx_enh;
 
 extern const struct insn op_17cxx[];
 extern const int num_op_17cxx;

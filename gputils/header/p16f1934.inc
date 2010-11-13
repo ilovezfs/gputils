@@ -115,9 +115,9 @@ CM2CON0          EQU  H'0113'
 CM2CON1          EQU  H'0114'
 CMOUT            EQU  H'0115'
 BORCON           EQU  H'0116'
-VREFCON0         EQU  H'0117'
-VREFCON1         EQU  H'0118'
-VREFCON2         EQU  H'0119'
+FVRCON           EQU  H'0117'
+DACCON0          EQU  H'0118'
+DACCON1          EQU  H'0119'
 SRCON0           EQU  H'011A'
 SRCON1           EQU  H'011B'
 APFCON           EQU  H'011D'
@@ -142,7 +142,7 @@ SPBRG            EQU  H'019B'
 SPBRGH           EQU  H'019C'
 RCSTA            EQU  H'019D'
 TXSTA            EQU  H'019E'
-BAUDCTL          EQU  H'019F'
+BAUDCON          EQU  H'019F'
 
 ;-----Bank4------------------
 WPUB             EQU  H'020D'
@@ -151,6 +151,7 @@ SSPBUF           EQU  H'0211'
 SSPADD           EQU  H'0212'
 SSPMSK           EQU  H'0213'
 SSPSTAT          EQU  H'0214'
+SSPCON1          EQU  H'0215'
 SSPCON           EQU  H'0215'
 SSPCON2          EQU  H'0216'
 SSPCON3          EQU  H'0217'
@@ -160,12 +161,14 @@ CCPR1L           EQU  H'0291'
 CCPR1H           EQU  H'0292'
 CCP1CON          EQU  H'0293'
 PWM1CON          EQU  H'0294'
+CCP1AS           EQU  H'0295'
 ECCP1AS          EQU  H'0295'
 PSTR1CON         EQU  H'0296'
 CCPR2L           EQU  H'0298'
 CCPR2H           EQU  H'0299'
 CCP2CON          EQU  H'029A'
 PWM2CON          EQU  H'029B'
+CCP2AS           EQU  H'029C'
 ECCP2AS          EQU  H'029C'
 PSTR2CON         EQU  H'029D'
 CCPTMRS0         EQU  H'029E'
@@ -176,6 +179,7 @@ CCPR3L           EQU  H'0311'
 CCPR3H           EQU  H'0312'
 CCP3CON          EQU  H'0313'
 PWM3CON          EQU  H'0314'
+CCP3AS           EQU  H'0315'
 ECCP3AS          EQU  H'0315'
 PSTR3CON         EQU  H'0316'
 CCPR4L           EQU  H'0318'
@@ -528,7 +532,7 @@ SCS1             EQU  H'0001'
 IRCF0            EQU  H'0003'
 IRCF1            EQU  H'0004'
 IRCF2            EQU  H'0005'
-IRFC3            EQU  H'0006'
+IRCF3            EQU  H'0006'
 SPLLEN           EQU  H'0007'
 
 
@@ -672,7 +676,7 @@ BORRDY           EQU  H'0000'
 SBOREN           EQU  H'0007'
 
 
-;----- VREFCON0 Bits -----------------------------------------------------
+;----- FVRCON Bits -----------------------------------------------------
 ADFVR0           EQU  H'0000'
 ADFVR1           EQU  H'0001'
 CDAFVR0          EQU  H'0002'
@@ -684,22 +688,22 @@ FVREN            EQU  H'0007'
 
 
 
-;----- VREFCON1 Bits -----------------------------------------------------
-D1NSS            EQU  H'0000'
-D1PSS0           EQU  H'0002'
-D1PSS1           EQU  H'0003'
-DAC1OE           EQU  H'0005'
-D1LPS            EQU  H'0006'
-D1EN             EQU  H'0007'
+;----- DACCON0 Bits -----------------------------------------------------
+DACNSS           EQU  H'0000'
+DACPSS0          EQU  H'0002'
+DACPSS1          EQU  H'0003'
+DACOE            EQU  H'0005'
+DACLPS           EQU  H'0006'
+DACEN            EQU  H'0007'
 
 
 
-;----- VREFCON2 Bits -----------------------------------------------------
-DAC1R0           EQU  H'0000'
-DAC1R1           EQU  H'0001'
-DAC1R2           EQU  H'0002'
-DAC1R3           EQU  H'0003'
-DAC1R4           EQU  H'0004'
+;----- DACCON1 Bits -----------------------------------------------------
+DACR0            EQU  H'0000'
+DACR1            EQU  H'0001'
+DACR2            EQU  H'0002'
+DACR3            EQU  H'0003'
+DACR4            EQU  H'0004'
 
 
 
@@ -808,7 +812,7 @@ TX9              EQU  H'0006'
 CSRC             EQU  H'0007'
 
 
-;----- BAUDCTL Bits -----------------------------------------------------
+;----- BAUDCON Bits -----------------------------------------------------
 ABDEN            EQU  H'0000'
 WUE              EQU  H'0001'
 BRG16            EQU  H'0003'
@@ -844,6 +848,17 @@ CKE              EQU  H'0006'
 SMP              EQU  H'0007'
 
 
+;----- SSPCON1 Bits -----------------------------------------------------
+SSPM0            EQU  H'0000'
+SSPM1            EQU  H'0001'
+SSPM2            EQU  H'0002'
+SSPM3            EQU  H'0003'
+CKP              EQU  H'0004'
+SSPEN            EQU  H'0005'
+SSPOV            EQU  H'0006'
+WCOL             EQU  H'0007'
+
+
 ;----- SSPCON Bits -----------------------------------------------------
 SSPM0            EQU  H'0000'
 SSPM1            EQU  H'0001'
@@ -872,6 +887,8 @@ AHEN             EQU  H'0001'
 SBCDE            EQU  H'0002'
 SDAHT            EQU  H'0003'
 BOEN             EQU  H'0004'
+SCIE             EQU  H'0005'
+PCIE             EQU  H'0006'
 ACKTIM           EQU  H'0007'
 
 
@@ -896,6 +913,17 @@ P1DC4            EQU  H'0004'
 P1DC5            EQU  H'0005'
 P1DC6            EQU  H'0006'
 P1RSEN           EQU  H'0007'
+
+
+;----- CCP1AS Bits -----------------------------------------------------
+PSS1BD0          EQU  H'0000'
+PSS1BD1          EQU  H'0001'
+PSS1AC0          EQU  H'0002'
+PSS1AC1          EQU  H'0003'
+CCP1AS0          EQU  H'0004'
+CCP1AS1          EQU  H'0005'
+CCP1AS2          EQU  H'0006'
+CCP1ASE          EQU  H'0007'
 
 
 ;----- ECCP1AS Bits -----------------------------------------------------
@@ -937,6 +965,17 @@ P2DC4            EQU  H'0004'
 P2DC5            EQU  H'0005'
 P2DC6            EQU  H'0006'
 P2RSEN           EQU  H'0007'
+
+
+;----- CCP2AS Bits -----------------------------------------------------
+PSS2BD0          EQU  H'0000'
+PSS2BD1          EQU  H'0001'
+PSS2AC0          EQU  H'0002'
+PSS2AC1          EQU  H'0003'
+CCP2AS0          EQU  H'0004'
+CCP2AS1          EQU  H'0005'
+CCP2AS2          EQU  H'0006'
+CCP2ASE          EQU  H'0007'
 
 
 ;----- ECCP2AS Bits -----------------------------------------------------
@@ -994,6 +1033,17 @@ P3DC4            EQU  H'0004'
 P3DC5            EQU  H'0005'
 P3DC6            EQU  H'0006'
 P3RSEN           EQU  H'0007'
+
+
+;----- CCP3AS Bits -----------------------------------------------------
+PSS3BD0          EQU  H'0000'
+PSS3BD1          EQU  H'0001'
+PSS3AC0          EQU  H'0002'
+PSS3AC1          EQU  H'0003'
+CCP3AS0          EQU  H'0004'
+CCP3AS1          EQU  H'0005'
+CCP3AS2          EQU  H'0006'
+CCP3ASE          EQU  H'0007'
 
 
 ;----- ECCP3AS Bits -----------------------------------------------------
@@ -1426,8 +1476,8 @@ _WDTE_SWDTEN         EQU  H'FFEF'    ; WDT controlled by the SWDTEN bit in the W
 _WDTE_NSLEEP         EQU  H'FFF7'    ; WDT enabled while running and disabled in Sleep
 _WDTE_ON             EQU  H'FFFF'    ; WDT enabled
 
-_nPWRTE_OFF          EQU  H'FFDF'    ; PWRT enabled
-_nPWRTE_ON           EQU  H'FFFF'    ; PWRT disabled
+_PWRTE_ON            EQU  H'FFDF'    ; PWRT enabled
+_PWRTE_OFF           EQU  H'FFFF'    ; PWRT disabled
 
 _MCLRE_OFF           EQU  H'FFBF'    ; RE3/MCLR/VPP pin function is digital input
 _MCLRE_ON            EQU  H'FFFF'    ; RE3/MCLR/VPP pin function is MCLR
@@ -1443,8 +1493,8 @@ _BOREN_SBODEN        EQU  H'FBFF'    ; Brown-out Reset controlled by the SBOREN 
 _BOREN_NSLEEP        EQU  H'FDFF'    ; Brown-out Reset enabled while running and disabled in Sleep
 _BOREN_ON            EQU  H'FFFF'    ; Brown-out Reset enabled
 
-_CLKOUTEN_OFF        EQU  H'F7FF'    ; CLKOUT function is enabled on RA6/CLKOUT pin
-_CLKOUTEN_ON         EQU  H'FFFF'    ; CLKOUT function is disabled. I/O or oscillator function on RA6/CLKOUT
+_CLKOUTEN_ON         EQU  H'F7FF'    ; CLKOUT function is enabled on RA6/CLKOUT pin
+_CLKOUTEN_OFF        EQU  H'FFFF'    ; CLKOUT function is disabled. I/O or oscillator function on RA6/CLKOUT
 
 _IESO_OFF            EQU  H'EFFF'    ; Internal/External Switchover mode is disabled
 _IESO_ON             EQU  H'FFFF'    ; Internal/External Switchover mode is enabled
@@ -1453,9 +1503,9 @@ _FCMEN_OFF           EQU  H'DFFF'    ; Fail-Safe Clock Monitor is disabled
 _FCMEN_ON            EQU  H'FFFF'    ; Fail-Safe Clock Monitor is enabled
 
 ;----- CONFIG2 Options --------------------------------------------------
-_WRT_ALL             EQU  H'FFFC'    ; 000h to 1FFFh write protected, no addresses may be modified by EECON control
-_WRT_HALF            EQU  H'FFFD'    ; 000h to FFFh write protected, 1000h to 1FFFh may be modified by EECON control
-_WRT_BOOT            EQU  H'FFFE'    ; 000h to 1FFh write protected, 200h to 1FFFh may be modified by EECON control
+_WRT_ALL             EQU  H'FFFC'    ; 000h to FFFh write protected, no addresses may be modified by EECON control
+_WRT_HALF            EQU  H'FFFD'    ; 000h to 7FFh write protected, 800h to FFFh may be modified by EECON control
+_WRT_BOOT            EQU  H'FFFE'    ; 000h to 1FFh write protected, 200h to FFFh may be modified by EECON control
 _WRT_OFF             EQU  H'FFFF'    ; Write protection off
 
 _VCAPEN_RA0          EQU  H'FFCF'    ; VCAP functionality is enabled on RA0
@@ -1471,9 +1521,6 @@ _STVREN_ON           EQU  H'FFFF'    ; Stack Overflow or underflow will cause a 
 
 _BORV_27             EQU  H'FBFF'    ; Brown-out Reset Voltage (VBOR) set to 2.7 V
 _BORV_19             EQU  H'FFFF'    ; Brown-out Reset Voltage (VBOR) set to 1.9 V
-
-_nDEBUG_ON           EQU  H'EFFF'    ; Background debugger is enabled
-_nDEBUG_OFF          EQU  H'FFFF'    ; Background debugger is disabled
 
 _LVP_OFF             EQU  H'DFFF'    ; HV on MCLR/VPP must be used for programming
 _LVP_ON              EQU  H'FFFF'    ; Low voltage programming enabled
