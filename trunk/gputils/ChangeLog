@@ -1,4 +1,5 @@
 2010-11-13  Marko Kohtala  <marko.kohtala@gmail.com>
+  * gputils/gpvo.c (print_sym_table): Fix symbol values.
   * libgputils/gpcofflink.c (gp_cofflink_update_table): Bug #3094297 fix
   to adjust symbol value by org rather than byte.
 
