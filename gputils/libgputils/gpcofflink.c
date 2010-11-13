@@ -1128,7 +1128,7 @@ next_pass:
 /* update all symbols with their new relocated values  */
 
 void 
-gp_cofflink_update_table(gp_object_type *object)  
+gp_cofflink_update_table(gp_object_type *object, int org_to_byte_shift)
 {
   gp_symbol_type *symbol = object->symbols;
   gp_section_type *section = object->sections;
@@ -1138,8 +1138,12 @@ gp_cofflink_update_table(gp_object_type *object)
   while (symbol != NULL) {
     if (symbol->section_number > 0) {
       assert(symbol->section != NULL);
-      if (!(symbol->section->flags & STYP_ABS))
-        symbol->value += symbol->section->address;
+      if (!(symbol->section->flags & STYP_ABS)) {
+	int offset = symbol->section->address;
+	if (symbol->section->flags & (STYP_TEXT | STYP_DATA_ROM))
+	  offset = gp_byte_to_org(org_to_byte_shift, offset);
+        symbol->value += offset;
+      }
     }
 
     symbol = symbol->next;

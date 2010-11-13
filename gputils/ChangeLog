@@ -1,3 +1,7 @@
+2010-11-13  Marko Kohtala  <marko.kohtala@gmail.com>
+  * libgputils/gpcofflink.c (gp_cofflink_update_table): Bug #3094297 fix
+  to adjust symbol value by org rather than byte.
+
 2010-11-12  Marko Kohtala  <marko.kohtala@gmail.com>
   * gpasm/directive.c (checkwrite, emit_byte): Fix maxrom and badrom
   checks. Fixes #3107775.

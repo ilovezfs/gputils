@@ -95,7 +95,7 @@ void gp_cofflink_reloc_unassigned(MemBlock *m,
                                   unsigned long flags,
                                   struct symbol_table *sections);
 
-void gp_cofflink_update_table(gp_object_type *object);
+void gp_cofflink_update_table(gp_object_type *object, int org_to_byte_shift);
 
 void gp_cofflink_fill_pages(gp_object_type *object,
                             MemBlock *m,
