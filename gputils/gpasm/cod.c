@@ -395,7 +395,7 @@ cod_emit_opcode(int address,int opcode)
   /* find the directory containing this 64k segment */
   found = 0;
   do {
-    if(gp_getl16(&dbi->dir.block[COD_DIR_HIGHADDR]) == _64k_base)
+    if(gp_getu16(&dbi->dir.block[COD_DIR_HIGHADDR]) == _64k_base)
       found = 1;
     else {
     
@@ -438,7 +438,7 @@ write_cod_range_block(unsigned int address, Block *rb)
 
   do {
 
-    if(gp_getl16(&dbi->dir.block[COD_DIR_HIGHADDR]) == _64k_base) {
+    if(gp_getu16(&dbi->dir.block[COD_DIR_HIGHADDR]) == _64k_base) {
       write_cod_block(dbi, COD_DIR_MEMMAP, COD_DIR_MEMMAP+2, rb);
       return;
     }
