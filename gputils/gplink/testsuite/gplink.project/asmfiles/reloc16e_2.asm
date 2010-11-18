@@ -38,4 +38,10 @@ d4	res 1
 c5	goto c5
 	dw c5
 
+.data5	idata
+	db 1
+d5	db $,3
+	dw $-1
+	dw c1
+
 	end

@@ -1,3 +1,11 @@
+2010-11-18  Marko Kohtala  <marko.kohtala@gmail.com>
+
+  * gpasm/evaluate.c (add_reloc, evaluate): Fix $ value in idata section.
+  * libgputils/gpcofflink.c (_create_rom_section): Initialize the padding
+  byte that is added to make initialization data rom section size even
+  bytes.
+  (gp_add_cinit_section): Fix .cinit rom addresses.
+
 2010-11-14  Marko Kohtala  <marko.kohtala@gmail.com>
   * gpasm/cod.c (write_cod_range_block): Fix
   gpasm/testsuite/gpasm.project/asmfiles/tb.asm compilation assertion

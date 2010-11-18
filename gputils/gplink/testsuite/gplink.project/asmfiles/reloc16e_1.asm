@@ -443,8 +443,10 @@ c1
 
 c2
 
-.data2	udata 0x100
-	res 1
-d2	res 1
+.data2	idata 0x100
+	db 1
+d2	db $,3
+	dw $-1
+	dw c3
 
 	END
