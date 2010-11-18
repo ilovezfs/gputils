@@ -242,6 +242,8 @@ gpasmVal evaluate(struct pnode *p)
       struct symbol *s;
 
       if (strcmp(p->value.symbol, "$") == 0) {
+	if (IS_RAM_ORG)
+	  return state.org;
 	return gp_processor_byte_to_org(state.device.class, state.org);
       } else {
 	s = get_symbol(state.stTop, p->value.symbol);
@@ -434,7 +436,11 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
   case symbol:
     if (strcmp(p->value.symbol, "$") == 0) {
       char buffer[BUFSIZ];
-      unsigned org = gp_processor_byte_to_org(state.device.class, state.org);
+      unsigned org;
+      if (IS_RAM_ORG)
+	org = state.org;
+      else
+	org = gp_processor_byte_to_org(state.device.class, state.org);
 
       snprintf(buffer, sizeof(buffer), "_%s_%04X", state.obj.new_sec_name, org);
       /* RELOCT_ACCESS has always also RELOCT_F, which has already

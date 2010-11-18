@@ -524,6 +524,7 @@ _create_rom_section(gp_object_type *object, gp_section_type *section)
     new->size = section->size;
     /* force the section size to be an even number of bytes */ 
     if (section->size & 1) {
+      b_memory_put(new->data, section->size, 0);
       new->size++;
     }
   } else {
@@ -595,6 +596,8 @@ gp_cofflink_make_cinit(gp_object_type *object)
   gp_symbol_type *symbol;
 
   /* create the symbol for the start address of the table */
+  /* TODO MPLINK 4.34 does not create this. We must implement the
+     section address relocations RELOCT_SCN*. */
   symbol = gp_coffgen_findsymbol(object, "_cinit");
   if ((symbol != NULL) && (symbol->section_number > 0)) {
     gp_error("_cinit symbol already exists");
@@ -701,20 +704,22 @@ gp_add_cinit_section(gp_object_type *object)
 
         if (object->class->rom_width == 8) {
           /* write program memory address */
-          _write_table_long(object->class, new, base_address, prog_section->address);
-        
+          _write_table_long(object->class, new, base_address,
+			    gp_processor_byte_to_org(object->class, prog_section->address));
+
           /* write data memory address */
           _write_table_long(object->class, new, base_address + 4, section->address);
-        
+
           /* write the table size */
           _write_table_long(object->class, new, base_address + 8, section->size);
         } else {
           /* write program memory address */
-          _write_table_data(object->class, new, base_address, insn, prog_section->address);
-        
+          _write_table_data(object->class, new, base_address, insn, 
+			    gp_processor_byte_to_org(object->class, prog_section->address));
+
           /* write data memory address */
           _write_table_data(object->class, new, base_address + 4, insn, section->address);
-        
+
           /* write the table size */
           _write_table_data(object->class, new, base_address + 8, insn, section->size);
         }
