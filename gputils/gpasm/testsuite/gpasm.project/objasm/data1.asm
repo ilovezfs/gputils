@@ -46,22 +46,34 @@ cfill2
      fill (goto $), 2
 cfill3
 
+     res 1
+cres1
+     res 2
+cres2
+     res 3
+cres3
+     res 4
+cres4
+
      udata
 u0
      res 1
 u1   res 2
 u3   res 3
-u6
+u6   res 4
+u10
      udata_ovr
 uo0
      res 1
 uo1  res 2
 uo3  res 3
-uo6
+uo6  res 4
+uo10
      udata_shr
 us0
      res 1
 us1  res 2
 us3  res 3
-us6
+us6  res 4
+us10
      end

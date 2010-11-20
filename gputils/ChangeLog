@@ -1,4 +1,6 @@
 2010-11-20  Marko Kohtala  <marko.kohtala@gmail.com>
+  * gpasm/directive.c (do_res): Fix RES directive for PIC16E object
+  files. Fixes bug #3113459.
   * libgputils/gpreadobj.c (_read_opt_header): Fix assigning processor for
   EEPROM16.
   * gputils/gpvo.c (print_data): Fix printing data for EEPROMs.

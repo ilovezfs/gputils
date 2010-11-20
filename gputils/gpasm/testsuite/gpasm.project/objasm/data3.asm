@@ -53,6 +53,8 @@ cres1
 cres2
      res 3
 cres3
+     res 4
+cres4
 
      idata
      da "abcdefg"
@@ -106,6 +108,8 @@ ires1
 ires2
      res 3
 ires3
+     res 4
+ires4
 
 packed code_pack
      da "abcdefg"
@@ -162,29 +166,35 @@ pres1
 pres2
      res 3
 pres3
+     res 4
+pres4
 
      udata
 u0
      res 1
 u1   res 2
 u3   res 3
-u6
+u6   res 4
+u10
      udata_ovr
 uo0
      res 1
 uo1  res 2
 uo3  res 3
-uo6
+uo6  res 4
+uo10
      udata_shr
 us0
      res 1
 us1  res 2
 us3  res 3
-us6
+us6  res 4
+us10
      udata_acs
 ua0
      res 1
 ua1  res 2
 ua3  res 3
-ua6
+ua6  res 4
+ua10
      end

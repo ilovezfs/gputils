@@ -30,4 +30,14 @@ test equ 0x15
 
      dt "A Message",0
 
+	;; Would give Error[180] RES directive cannot reserve odd number of bytes in PIC18 absolute mode
+     ;res 1
+     ;db 1
+     res 2
+     db 2
+     ;res 3
+     ;db 3
+     res 4
+     db 4
+
      end
