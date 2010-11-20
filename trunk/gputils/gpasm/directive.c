@@ -2497,18 +2497,19 @@ static gpasmVal do_res(gpasmVal r,
 
       if (state.mode == absolute) {
         state.lst.line.linetype = equ;
+	if (state.device.class == PROC_CLASS_PIC16E && count % 2 != 0)
+	  gperror(GPE_RES_ODD_PIC16EA, NULL);
         state.org += gp_processor_org_to_byte(state.device.class, count);
       } else {
         state.lst.line.linetype = res;
         if (SECTION_FLAGS & STYP_TEXT) {
 	  count = gp_processor_org_to_byte(state.device.class, count);
 	  if (state.device.class->rom_width < 16) {
-	    count >>= 1;
 	    /* FIXME: Most likely this check belongs to our caller. */
-	    if (count == 0)
+	    if (count < 2)
 	      gpwarning(GPW_UNKNOWN, "No memory has been reserved by this instruction.");
 	  }
-	  for (i = 0; i < count; i += 2) {
+	  for (i = 0; i + 1 < count; i += 2) {
             /* For some reason program memory is filled with a different
                value. */
             emit(state.device.class->core_size);

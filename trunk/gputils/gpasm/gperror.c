@@ -163,6 +163,8 @@ char *gp_geterror(unsigned int code)
     return "An error with the CONFIG directive occured.";
   case GPE_CONFIG_usCONFIG:
     return "You cannot mix CONFIG and __CONFIG directives.";
+  case GPE_RES_ODD_PIC16EA:
+    return "RES directive cannot reserve odd number of bytes in PIC18 absolute mode.";
   case GPE_UNKNOWN:
   default:
     return "UNKNOWN";

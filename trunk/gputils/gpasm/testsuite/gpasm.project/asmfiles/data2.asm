@@ -20,4 +20,13 @@
 
      dt "A Message",0
 
+     res 1
+     db 1
+     res 2
+     db 2
+     res 3
+     db 3
+     res 4
+     db 4
+
      end

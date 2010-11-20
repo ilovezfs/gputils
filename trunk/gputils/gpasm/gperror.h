@@ -91,7 +91,8 @@ enum GPE_codes {
   GPE_IDLOCS_ORDER     = 175,
   GPE_CONFIG_UNKNOWN   = 176,
   GPE_CONFIG_usCONFIG  = 177,
-  GPE_UNKNOWN          = 179
+  GPE_RES_ODD_PIC16EA  = 180,
+  GPE_UNKNOWN
 };
 
 /* Warning codes

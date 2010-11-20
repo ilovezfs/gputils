@@ -51,6 +51,8 @@ cres1
 cres2
      res 3
 cres3
+     res 4
+cres4
 
      idata
      da "abcdefg"
@@ -103,5 +105,7 @@ ires1
 ires2
      res 3
 ires3
+     res 4
+ires4
 
      end
