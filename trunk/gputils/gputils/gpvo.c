@@ -120,7 +120,7 @@ void print_data(proc_class_t class, gp_section_type *section)
   
   printf("Data\n");
   while (1) {
-    if (section->flags & STYP_TEXT) {
+    if ((section->flags & STYP_TEXT) && class->find_insn != NULL) {
       unsigned short memory;
       if (!class->i_memory_get(section->data, address, &memory))
 	break;
@@ -135,14 +135,14 @@ void print_data(proc_class_t class, gp_section_type *section)
         printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address + 2), memory);
       }
       address += 2 * num_words;
-    } else if (section->flags & STYP_DATA_ROM) {
+    } else if (section->flags & STYP_DATA_ROM || class == PROC_CLASS_EEPROM16) {
       unsigned short memory;
       if (!class->i_memory_get(section->data, address, &memory))
 	break;
       printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address), memory);
       address += 2;
     } else {
-      /* STYP_DATA or STYP_ACTREC */
+      /* STYP_DATA or STYP_ACTREC, or EEPROM8 */
       unsigned char b;
       if (!b_memory_get(section->data, address, &b))
 	break;
