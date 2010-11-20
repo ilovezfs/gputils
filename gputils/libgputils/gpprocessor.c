@@ -27,7 +27,8 @@ Boston, MA 02111-1307, USA.  */
    alphabetically. */
 
 static struct px pics[] = {
-  { PROC_CLASS_EEPROM8, "__EEPROM8",  { "eeprom8",     "eeprom8",   "eeprom8"  }, 0x1fff, 0, 0, 0x7f,     { -1, -1 },            { -1, -1 },             NULL           },
+  { PROC_CLASS_EEPROM8, "__EEPROM8",  { "eeprom8",     "eeprom8",   "eeprom8"  }, 0x1fff, 0, 0, 0xff,     { -1, -1 },            { -1, -1 },             NULL           },
+  { PROC_CLASS_EEPROM16,"__EEPROM16", { "eeprom16",    "eeprom16",  "eeprom16" }, 0x1fff, 0, 0, 0x7f,     { -1, -1 },            { -1, -1 },             NULL           },
   { PROC_CLASS_GENERIC, "__GEN",      { "generic",     "gen",       "unknown"  }, 0x0000, 0, 0, -1,       { -1, -1 },            { -1, -1 },             NULL           },
   { PROC_CLASS_PIC12,   "__HCS1365",  { "hcs1365",     "hcs1365",   "hcs1365"  }, 0xf365, 2, 4, 0x3ff,    { -1, -1 },            { 0x7FF, 0x7FF },       "hcs1365.lkr"  },
   { PROC_CLASS_PIC12,   "__HCS1370",  { "hcs1370",     "hcs1370",   "hcs1370"  }, 0xf370, 2, 4, 0x3ff,    { -1, -1 },            { 0x7FF, 0x7FF },       "hcs1370.lkr"  },
@@ -1289,7 +1290,7 @@ const struct proc_class proc_class_eeprom8 = {
 const struct proc_class proc_class_eeprom16 = {
   -1,					/* retlw */
   16,					/* rom_width */
-  1,					/* org_to_byte_shift */
+  0,					/* org_to_byte_shift */
   0,					/* bank_mask */
   (1<<16)-1,				/* core_size */
   0,					/* id_location */

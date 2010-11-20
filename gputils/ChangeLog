@@ -1,3 +1,9 @@
+2010-11-20  Marko Kohtala  <marko.kohtala@gmail.com>
+  * libgputils/gpreadobj.c (_read_opt_header): Fix assigning processor for
+  EEPROM16.
+  * gputils/gpvo.c (print_data): Fix printing data for EEPROMs.
+  * libgputils/gpprocessor.c (pics): Add EEPROM16.
+
 2010-11-18  Marko Kohtala  <marko.kohtala@gmail.com>
 
   * gpasm/evaluate.c (add_reloc, evaluate): Fix $ value in idata section.

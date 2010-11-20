@@ -172,10 +172,16 @@ _read_opt_header(gp_object_type *object, const unsigned char *file)
   }
 
   object->class = gp_processor_class(object->processor);
-  if (gp_processor_rom_width(object->class) != rom_width)
-    gp_error("invalid rom width for selected processor (%ld) in \"%s\"",
-             rom_width,
-             object->filename);
+  if (gp_processor_rom_width(object->class) != rom_width) {
+    if (object->class == PROC_CLASS_EEPROM8 && rom_width == 16) {
+      object->processor = gp_find_processor("eeprom16");
+      object->class = gp_processor_class(object->processor);
+    }
+    else
+      gp_error("invalid rom width for selected processor (%ld) in \"%s\"",
+	       rom_width,
+	       object->filename);
+  }
 
   ram_width = gp_getl32(&file[offset]);
   if (ram_width != 8)
