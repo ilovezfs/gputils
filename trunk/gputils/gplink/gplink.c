@@ -624,7 +624,7 @@ process_args( int argc, char *argv[])
   /* check if the first file is the linker script */
   if (argv[optind]) {
     pc = strrchr(argv[optind], '.');
-    if (strcasecmp(pc, ".lkr") == 0) {
+    if (pc && strcasecmp(pc, ".lkr") == 0) {
       if (state.srcfilename == NULL) {
         state.srcfilename = argv[optind++];
       } else {
