@@ -1,3 +1,7 @@
+2010-11-21  Marko Kohtala  <marko.kohtala@gmail.com>
+  * gplink/gplink.c (process_args): Applied patch by Kip in bug #3113064
+  to fix segv when bad filename is given on command line.
+
 2010-11-20  Marko Kohtala  <marko.kohtala@gmail.com>
   * gpasm/directive.c (do_res): Fix RES directive for PIC16E object
   files. Fixes bug #3113459.
