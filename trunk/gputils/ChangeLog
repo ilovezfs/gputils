@@ -1,3 +1,7 @@
+2010-11-23  Marko Kohtala  <marko.kohtala@gmail.com>
+  * libgputils/gpcofflink.c (gp_cofflink_merge_sections): Fix symbol
+  adjustments when merging sections. Fixes bug #3109409.
+
 2010-11-21  Marko Kohtala  <marko.kohtala@gmail.com>
   * gplink/gplink.c (process_args): Applied patch by Kip in bug #3113064
   to fix segv when bad filename is given on command line.

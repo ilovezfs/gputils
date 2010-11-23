@@ -1,6 +1,6 @@
 	processor 12c509
 
-	extern	c3, d3, d4, p6
+	extern	c3, d3, d4, p6, code2
 	global	c1, c2
 
 opf5	macro i
@@ -162,5 +162,10 @@ d2	db $,3
 
 .data0	udata 7
 p7	res 1
-	
+
+	;; Test symbol values when merging code sections
+	code
+	pagesel code1
+code1	dw code1, code2
+
 	END

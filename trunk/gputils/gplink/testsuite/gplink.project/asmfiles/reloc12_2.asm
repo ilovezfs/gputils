@@ -1,7 +1,7 @@
 	processor 12c509
 
 	extern	c1, c2
-	global	c3, d3, d4, p6
+	global	c3, d3, d4, p6, code2
 
 .data06	udata 6
 p6	res 1
@@ -32,5 +32,12 @@ c5	goto c5
 d5	db $,3
 	dw $-1
 	dw c1
+
+	;; This tests symbol value adjustment when the section is
+	;; merged and relocated.
+	code
+	pagesel code2
+code2	goto code2
+	dw code2
 
 	end
