@@ -1,6 +1,6 @@
 	processor 18f2420
 
-	extern	c3, d3, d4
+	extern	c3, d3, d4, code2
 	global	c1, c2
 
 	__maxrom 0xfffff
@@ -448,5 +448,10 @@ c2
 d2	db $,3
 	dw $-1
 	dw c3
+
+	;; Test symbol values when merging code sections
+	code
+	nop
+code1	dw code1, code2
 
 	END

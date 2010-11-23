@@ -1,7 +1,7 @@
 	processor 18f2420
 
 	extern	c1, c2
-	global	c3, d3, d4
+	global	c3, d3, d4, code2
 
 .code3	code 0
 	nop
@@ -43,5 +43,12 @@ c5	goto c5
 d5	db $,3
 	dw $-1
 	dw c1
+
+	;; This tests symbol value adjustment when the section is
+	;; merged and relocated.
+	code
+	nop
+code2	goto code2
+	dw code2
 
 	end

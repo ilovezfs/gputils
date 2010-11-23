@@ -1,6 +1,6 @@
 	processor 16f877a
 
-	extern	c3, d3, d4
+	extern	c3, d3, d4, code2
 	global	c1, c2
 
 opf7	macro i
@@ -156,5 +156,10 @@ c2
 d2	db $,3
 	dw $-1
 	dw c3
+
+	;; Test symbol values when merging code sections
+	code
+	pagesel code1
+code1	dw code1, code2
 
 	END
