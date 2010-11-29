@@ -1,3 +1,7 @@
+2010-11-28  Marko Kohtala  <marko.kohtala@gmail.com>
+  * libgputils/gpcofflink.c (gp_cofflink_patch_addr): Fix typo in
+  RELOCT_IBANKSEL. Fixes bug #3120845.
+
 2010-11-23  Marko Kohtala  <marko.kohtala@gmail.com>
   * libgputils/gpcofflink.c (gp_cofflink_merge_sections): Fix symbol
   adjustments when merging sections. Fixes bug #3109409.
