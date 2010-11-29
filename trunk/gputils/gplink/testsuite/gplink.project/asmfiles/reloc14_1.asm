@@ -1,6 +1,6 @@
 	processor 16f877a
 
-	extern	c3, d3, d4, code2
+	extern	c3, d3, d4, d5, code2
 	global	c1, c2
 
 opf7	macro i
@@ -140,6 +140,14 @@ c1
 	banksel	d1
 	banksel	d2
 	banksel	d3
+	banksel	d4
+	banksel	d5
+
+	bankisel d1
+	bankisel d2
+	bankisel d3
+	bankisel d4
+	bankisel d5
 
 	pagesel	c1
 	pagesel c2

@@ -1316,7 +1316,7 @@ gp_cofflink_patch_addr(proc_class_t class,
     data = value & 0xffff;   
     break; 
   case RELOCT_IBANKSEL:
-    data = class->reloc_ibanksel(data);
+    data = class->reloc_ibanksel(value);
     break; 
   case RELOCT_F:
     data = class->reloc_f(value);
