@@ -1,3 +1,6 @@
+2011-05-26  Marko Kohtala  <marko.kohtala@gmail.com>
+  * Patch #3302490 by strobla. Add support for pic18f2xk22 / pic18f4xk22 family.
+
 2010-11-28  Marko Kohtala  <marko.kohtala@gmail.com>
   * libgputils/gpcofflink.c (gp_cofflink_patch_addr): Fix typo in
   RELOCT_IBANKSEL. Fixes bug #3120845.
