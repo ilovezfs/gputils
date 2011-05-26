@@ -319,6 +319,45 @@ typedef gpasmVal opfunc(gpasmVal r,
 
 /************************************************************************/
 
+static gpasmVal do_access_ovr(gpasmVal r,
+		              char *name,
+		              int arity,
+		              struct pnode *parms)
+{
+  struct pnode *p;
+
+  state.lst.line.linetype = sec;
+  state.next_state = state_section;
+  
+  if (state.mode == absolute) {
+    gperror(GPE_OBJECT_ONLY, NULL);
+  } else {
+    switch (arity) {
+    case 0:
+      /* new relocatable section */
+      strncpy(state.obj.new_sec_name,
+              ".access_ovr",
+              sizeof(state.obj.new_sec_name));
+      state.obj.new_sec_addr = 0;
+      state.obj.new_sec_flags = STYP_ACCESS | STYP_OVERLAY;
+      break;
+    case 1:
+      /* new absolute section */
+      p = HEAD(parms);
+      strncpy(state.obj.new_sec_name,
+              ".access_ovr",
+              sizeof(state.obj.new_sec_name));
+      state.obj.new_sec_addr = maybe_evaluate(p);
+      state.obj.new_sec_flags = STYP_ACCESS | STYP_ABS | STYP_OVERLAY;
+      break;
+    default:
+      enforce_arity(arity, 1);
+    }
+  }
+
+  return r;
+}
+
 static gpasmVal do_badram(gpasmVal r,
 			  char *name,
 			  int arity,
@@ -1797,6 +1836,41 @@ static gpasmVal do_idata(gpasmVal r,
       strncpy(state.obj.new_sec_name, ".idata", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_DATA | STYP_ABS;
+      break;
+    default:
+      enforce_arity(arity, 1);
+    }  
+  }
+
+  return r;
+}
+
+static gpasmVal do_idata_acs(gpasmVal r,
+		             char *name,
+		             int arity,
+		             struct pnode *parms)
+{
+  struct pnode *p;
+
+  state.lst.line.linetype = sec;
+  state.next_state = state_section;
+  
+  if (state.mode == absolute) {
+    gperror(GPE_OBJECT_ONLY, NULL);
+  } else {
+    switch (arity) {
+    case 0:
+      /* new relocatable section */
+      strncpy(state.obj.new_sec_name, ".idata_acs", sizeof(state.obj.new_sec_name));
+      state.obj.new_sec_addr = 0;
+      state.obj.new_sec_flags = STYP_DATA | STYP_ACCESS;
+      break;
+    case 1:
+      /* new absolute section */
+      p = HEAD(parms);
+      strncpy(state.obj.new_sec_name, ".idata_acs", sizeof(state.obj.new_sec_name));
+      state.obj.new_sec_addr = maybe_evaluate(p);
+      state.obj.new_sec_flags = STYP_DATA | STYP_ABS | STYP_ACCESS;
       break;
     default:
       enforce_arity(arity, 1);
@@ -3946,6 +4020,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 /* Note that instructions within each group are sorted alphabetically */
 
 struct insn op_0[] = {
+  { "access_ovr", 0, (long int)do_access_ovr, INSN_CLASS_FUNC,  0 },
   { "code",       0, (long int)do_code,      INSN_CLASS_FUNC,   0 },
   { "code_pack",  0, (long int)do_code_pack, INSN_CLASS_FUNC,   0 },
   { "constant",   0, (long int)do_constant,  INSN_CLASS_FUNC,   0 },
@@ -3961,6 +4036,7 @@ struct insn op_0[] = {
   { "errorlevel", 0, (long int)do_errlvl,    INSN_CLASS_FUNC,   0 },
   { "global",     0, (long int)do_global,    INSN_CLASS_FUNC,   0 },
   { "idata",      0, (long int)do_idata,     INSN_CLASS_FUNC,   0 },
+  { "idata_acs",  0, (long int)do_idata_acs, INSN_CLASS_FUNC,   0 },
   { "if",         0, (long int)do_if,        INSN_CLASS_FUNC,   ATTRIB_COND },
   { "ifdef",      0, (long int)do_ifdef,     INSN_CLASS_FUNC,   ATTRIB_COND },
   { "ifndef",     0, (long int)do_ifndef,    INSN_CLASS_FUNC,   ATTRIB_COND },

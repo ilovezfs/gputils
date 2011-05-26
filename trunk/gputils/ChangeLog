@@ -1,4 +1,5 @@
 2011-05-26  Marko Kohtala  <marko.kohtala@gmail.com>
+  * Patch #3307321 by Peter Heinrich. Adds support for PIC18 access_ovr and idata_acs directives.
   * Patch #3302490 by strobla. Add support for pic18f2xk22 / pic18f4xk22 family.
 
 2010-11-28  Marko Kohtala  <marko.kohtala@gmail.com>
