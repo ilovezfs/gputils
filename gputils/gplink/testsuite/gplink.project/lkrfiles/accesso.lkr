@@ -1,0 +1,3 @@
+files accesso1.o accesso2.o
+
+include 18f242.lkr
