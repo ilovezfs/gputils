@@ -339,7 +339,7 @@ static gpasmVal do_access_ovr(gpasmVal r,
               ".access_ovr",
               sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
-      state.obj.new_sec_flags = STYP_ACCESS | STYP_OVERLAY;
+      state.obj.new_sec_flags = STYP_ACCESS | STYP_BSS | STYP_OVERLAY;
       break;
     case 1:
       /* new absolute section */
@@ -348,7 +348,7 @@ static gpasmVal do_access_ovr(gpasmVal r,
               ".access_ovr",
               sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
-      state.obj.new_sec_flags = STYP_ACCESS | STYP_ABS | STYP_OVERLAY;
+      state.obj.new_sec_flags = STYP_ACCESS | STYP_ABS | STYP_BSS | STYP_OVERLAY;
       break;
     default:
       enforce_arity(arity, 1);
