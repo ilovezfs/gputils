@@ -1,5 +1,8 @@
 2011-06-03  Marko Kohtala  <marko.kohtala@gmail.com>
-  * Patch #3308670 to fix patch #3307321 and add test cases.
+  * Patch #3302490 by strobla. Fix for header/p18cxxx.inc to include new
+  headers.
+  * Patch #3308670 by Peter Heinrich to fix patch #3307321 and add test
+  cases.
 
 2011-05-26  Marko Kohtala  <marko.kohtala@gmail.com>
   * Patch #3307321 by Peter Heinrich. Adds support for PIC18 access_ovr and idata_acs directives.
