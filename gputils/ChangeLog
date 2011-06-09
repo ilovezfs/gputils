@@ -1,3 +1,7 @@
+2011-06-09  Marko Kohtala  <marko.kohtala@gmail.com>
+  * Add to gplink option -u and linker script directives #DEFINE, #IFDEF,
+  #ELSE, #FI and ERROR.
+
 2011-06-03  Marko Kohtala  <marko.kohtala@gmail.com>
   * Patch #3302490 by strobla. Fix for header/p18cxxx.inc to include new
   headers.

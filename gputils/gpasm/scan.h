@@ -22,7 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __SCAN_H__
 #define __SCAN_H__
 
-void open_src(char *name, int is_include_file);
+void open_src(const char *name, int is_include_file);
 void close_file();
 void execute_exitm();
 void execute_macro(struct macro_head *h, int is_while);
