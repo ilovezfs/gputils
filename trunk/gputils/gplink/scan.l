@@ -50,7 +50,23 @@ libpath			 {
 			 }
 lkrpath			 {
 			   return LKRPATH;
-			 }                         
+			 }
+#define/[ \t]		 {
+			   return DEFINE;
+			 }
+#ifdef/[ \t]		 {
+			   return IFDEF;
+			 }
+#else/[^a-z0-9]		 {
+			   return ELSE;
+			 }
+#fi/[^a-z0-9]		 {
+			   return FI;
+			 }
+error([ \t].*)?		 {
+                           yylval.s = strdup(yytext);
+			   return ERROR;
+			 }
 [0-9]+                   {
                            char *endptr;
 
@@ -63,7 +79,7 @@ lkrpath			 {
 0x[0-9a-f]+	         {
                            char *endptr;
 
-		           yylval.i = strtol(yytext + 2, &endptr, 16);
+		           yylval.l = strtol(yytext + 2, &endptr, 16);
                            if ((endptr == NULL) || (*endptr != '\0')) {
                              bad_char(endptr);
                            }
@@ -99,7 +115,7 @@ static void bad_char(char *character)
   return;
 }
 
-void open_src(char *name, int isinclude)
+void open_src(const char *name, int isinclude)
 {
   extern FILE *yyin;
   struct source_context *new = malloc(sizeof(*new));

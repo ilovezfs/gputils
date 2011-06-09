@@ -33,7 +33,7 @@ static gp_boolean list_enabled;
 static gp_section_type *line_section;
 
 static void
-open_src(char *name, gp_symbol_type *symbol)
+open_src(const char *name, gp_symbol_type *symbol)
 {
   struct list_context *new = malloc(sizeof(*new));
 

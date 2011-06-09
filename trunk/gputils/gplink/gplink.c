@@ -27,6 +27,7 @@ Boston, MA 02111-1307, USA.  */
 #include "scan.h"
 #include "lst.h"
 #include "map.h"
+#include "script.h"
 
 struct gplink_state state;
 static int processor_mismatch_warning = 1;
@@ -325,7 +326,7 @@ void build_tables(void)
    This allows alternate extensions such as .a archives and .obj coff 
    objects.  */
 
-void gplink_open_coff(char *name)
+void gplink_open_coff(const char *name)
 {
   gp_object_type *object;
   gp_archive_type *archive;
@@ -406,7 +407,7 @@ set_optimize_level(void)
   return;
 }
 
-#define GET_OPTIONS "?a:cdf:hI:lmo:O:qrs:t:vw"
+#define GET_OPTIONS "?a:cdf:hI:lmo:O:qrs:t:u:vw"
 
   static struct option longopts[] =
   {
@@ -424,6 +425,7 @@ set_optimize_level(void)
     { "use-shared",          0, 0, 'r' },
     { "script",              1, 0, 's' },
     { "stack",               1, 0, 't' },
+    { "macro",               1, 0, 'u' },
     { "version",             0, 0, 'v' },
     { "processor-mismatch",  0, 0, 'w' },
     { 0, 0, 0, 0 }
@@ -458,6 +460,9 @@ init(void)
   /* set default output filename to be a.o, a.hex, a.cod, a.map */
   strncpy(state.basefilename, "a", sizeof(state.basefilename));
 
+  state.ifdef = NULL;
+  state.script_symbols = push_symbol_table(NULL, false);
+
   /* The symbols are case sensitive */
   state.symbol.definition = push_symbol_table(NULL, false);
   state.symbol.missing = push_symbol_table(NULL, false);
@@ -474,6 +479,22 @@ void gplink_add_path(const char *path)
   } else {
     gp_error("too many -I paths");
   }
+}
+
+/* I have this take the func in anticipation of the option
+  printf("  -z, --defsym symbol=value      Add symbol value to symbol table.\n");
+*/
+static
+void parse_define(const char *optarg,
+		  void (*func)(const char* name, long value))
+{
+  long value = 0;
+  char *pc = strchr(optarg, '=');
+  if (pc) {
+    *pc++ = 0;
+    value = strtol(pc, &pc, 10);
+  }
+  func(optarg, value);
 }
 
 void show_usage(void)
@@ -494,6 +515,7 @@ void show_usage(void)
   printf("  -r, --use-shared               Use shared memory if necessary.\n");
   printf("  -s FILE, --script FILE         Linker script.\n");
   printf("  -t SIZE, --stack SIZE          Create a stack section.\n");
+  printf("  -u, --macro symbol[=value]     Add macro value for script.\n");
   printf("  -v, --version                  Show version.\n");
   printf("  -w, --processor-mismatch       Disable \"processor mismatch\" warning.\n");
   printf("\n");
@@ -608,6 +630,9 @@ process_args( int argc, char *argv[])
       } else {
         state.has_stack = true;
       }
+      break;
+    case 'u':
+      parse_define(optarg, add_script_macro);
       break;
     case 'v':
       fprintf(stderr, "%s\n", GPLINK_VERSION_STRING);

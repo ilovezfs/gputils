@@ -45,14 +45,14 @@ static struct pnode *mk_pnode(enum pnode_tag tag)
   return new;
 }
 
-struct pnode *mk_constant(int value)
+struct pnode *mk_constant(long value)
 {
   struct pnode *new = mk_pnode(constant);
   new->value.constant = value;
   return new;
 }
 
-static struct pnode *mk_symbol(char *value)
+static struct pnode *mk_symbol(const char *value)
 {
   struct pnode *new = mk_pnode(symbol);
   new->value.symbol = value;
@@ -60,7 +60,7 @@ static struct pnode *mk_symbol(char *value)
 }
 
 /*
-static struct pnode *mk_string(char *value)
+static struct pnode *mk_string(const char *value)
 {
   struct pnode *new = mk_pnode(string);
   new->value.string = value;
@@ -102,6 +102,7 @@ static struct pnode *mk_1op(int op, struct pnode *p0)
 
 %union {
   int i;
+  long l;
   char *s;
   struct pnode *p;
 }
@@ -110,12 +111,22 @@ static struct pnode *mk_1op(int op, struct pnode *p0)
 %token <s> LIBPATH
 %token <s> LKRPATH
 %token <s> PATH
-%token <s> LEXEOF
-%token <i> NUMBER
+%token <s> LEXEOF 0 "end of file"
+%token <s> ERROR
+%token <l> NUMBER
+%token DEFINE
+%token IFDEF
+%token ELSE
+%token FI
 %type <i> '='
+%type <i> '+'
+%type <i> '-'
+%type <i> '/'
+%type <i> '*'
 %type <i> e1op
+%type <l> macroval
+%type <i> aop
 
-%type <s> line
 %type <p> e0
 %type <p> e1
 %type <p> parameter_list
@@ -125,60 +136,92 @@ static struct pnode *mk_1op(int op, struct pnode *p0)
 /* Grammar rules */
 
 program:
-	/* can be nothing */
-	|
-	program 
-        { 
-          /* do nothing */
-        } line
-	| program error '\n'
-	{ 
-          /* do nothing */
-	}
+	line
+	| error
+	| program '\n' {
+	  ++state.src->line_number;
+	} line
 	;
 
 line:
-	'\n'
+	/* empty */
+	|
+	LIBPATH path_list
 	{
-          /* do nothing */
+	  if (!state.ifdef || state.ifdef->istrue)
+	    add_path($2);
 	}
 	|
-	LEXEOF
+	LKRPATH path_list
 	{
-	  YYACCEPT;
+	  if (!state.ifdef || state.ifdef->istrue)
+	    add_path($2);
 	}
 	|
-	LIBPATH path_list '\n'
+	SYMBOL parameter_list
 	{
-	  add_path($2);
+	  if (!state.ifdef || state.ifdef->istrue)
+	    execute_command($1, $2);
 	}
 	|
-	LIBPATH path_list LEXEOF
-	{
-	  add_path($2);
-	  YYACCEPT;
+	ERROR {
+	  if (!state.ifdef || state.ifdef->istrue)
+	    yyerror($1);
 	}
 	|
-	LKRPATH path_list '\n'
+	DEFINE SYMBOL macroval aop macroval
 	{
-	  add_path($2);
+	  /* Contrary to documentation, the mplink 4.38 does not seem
+	     to care if the macro has already been defined or if the
+	     parameters to the operation are undefined. */
+	  if (!state.ifdef || state.ifdef->istrue) {
+	    long newval = 0, lh = $3, rh = $5;
+	    switch($4) {
+	    case '+': newval = lh + rh; break;
+	    case '-': newval = lh - rh; break;
+	    case '*': newval = lh * rh; break;
+	    case '/':
+	      if (rh == 0)
+		yyerror("Division by zero");
+	      else
+		newval = lh / rh;
+	      break;
+	    }
+	    add_script_macro($2, newval);
+	  }
 	}
 	|
-	LKRPATH path_list LEXEOF
+	IFDEF SYMBOL
 	{
-	  add_path($2);
-	  YYACCEPT;
+	  struct ifdef *ifdef = malloc(sizeof *ifdef);
+	  ifdef->istrue = ((!state.ifdef || state.ifdef->istrue) &&
+			   get_symbol(state.script_symbols, $2));
+	  ifdef->inelse = false;
+	  ifdef->prev = state.ifdef;
+	  state.ifdef = ifdef;
 	}
 	|
-	SYMBOL parameter_list '\n'
+	ELSE
 	{
-	  execute_command($1, $2);
+	  if (!state.ifdef || state.ifdef->inelse)
+	    yyerror("#ELSE without #IFDEF in linker script");
+	  else {
+	    state.ifdef->istrue = (!state.ifdef->istrue &&
+				   (!state.ifdef->prev ||
+				    state.ifdef->prev->istrue));
+	    state.ifdef->inelse = true;
+	  }
 	}
 	|
-	SYMBOL parameter_list LEXEOF
+	FI
 	{
-	  execute_command($1, $2);
-	  YYACCEPT;
+	  if (!state.ifdef)
+	    yyerror("#FI without #IFDEF in linker script");
+	  else {
+	    struct ifdef *ifdef = state.ifdef;
+	    state.ifdef = state.ifdef->prev;
+	    free(ifdef);
+	  }
 	}
 	;
 
@@ -228,5 +271,16 @@ e0:
 	  $$ = mk_constant($1);
 	}
 	;
+
+macroval:
+	SYMBOL
+	{
+	  $$ = get_script_macro($1);
+	}
+	|
+	NUMBER
+	;
+
+aop:	'+' | '-' | '/' | '*' ;
 
 %%

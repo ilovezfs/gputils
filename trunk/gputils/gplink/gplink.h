@@ -65,6 +65,8 @@ extern struct gplink_state {
     mapfilename[BUFSIZ],	   /* List (.map) file name */
     objfilename[BUFSIZ];	   /* Object (.o) file name */
   struct source_context *src;	   /* Top of the stack of the script files */
+  struct ifdef *ifdef;             /* Top of the stack of ifdef nesting */
+  struct symbol_table *script_symbols;
   struct {			   /* Map file state: */
     FILE *f;			     /*   Map file output */
   } map;
@@ -101,6 +103,12 @@ struct source_context {
   struct source_context *prev;
 };
 
+struct ifdef {
+  gp_boolean istrue;
+  gp_boolean inelse;
+  struct ifdef *prev;
+};
+
 struct list_context {
   char *name;
   gp_symbol_type *symbol;
@@ -113,7 +121,7 @@ struct list_context {
 void gplink_error(char *messg);
 void gplink_warning(char *messg);
 void gplink_debug(char *messg);
-void gplink_open_coff(char *name);
+void gplink_open_coff(const char *name);
 void gplink_add_path(const char *path);
 
 #endif

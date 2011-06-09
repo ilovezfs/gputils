@@ -27,8 +27,8 @@ Boston, MA 02111-1307, USA.  */
 struct pnode {
   enum pnode_tag { constant, symbol, string, list, binop, unop } tag;
   union {
-    int constant;
-    char *symbol;
+    long constant;
+    const char *symbol;
     struct {
       struct pnode *head, *tail;
     } list;
@@ -40,12 +40,14 @@ struct pnode {
       int op;
       struct pnode *p0;
     } unop;
-    char *string;
+    const char *string;
   } value;
 };
 
-void script_error(char *messg, char *detail);
+void script_error(const char *messg, const char *detail);
 int add_path(struct pnode *parms);
+void add_script_macro(const char *name, long value);
+long get_script_macro(const char *name);
 int execute_command(char *name, struct pnode *parms);
 
 #endif

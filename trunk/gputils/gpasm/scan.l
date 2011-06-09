@@ -455,7 +455,7 @@ A'{STR_QCHAR}'           {
 %%
 
 static void
-search_pathes(struct source_context *new, char *name)
+search_pathes(struct source_context *new, const char *name)
 {
   char tryname[PATH_MAX + 1];
   int i;
@@ -473,7 +473,7 @@ search_pathes(struct source_context *new, char *name)
   return; 
 }
 
-void open_src(char *name, int isinclude)
+void open_src(const char *name, int isinclude)
 {
   extern FILE *yyin;
   struct source_context *new = malloc(sizeof(*new));

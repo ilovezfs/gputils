@@ -37,7 +37,7 @@ struct command {
 typedef int lkrfunc(char *name, struct pnode *parms);
 
 void
-script_error(char *messg, char *detail)
+script_error(const char *messg, const char *detail)
 {
 
   gp_num_errors++;
@@ -72,12 +72,14 @@ static int enforce_simple(struct pnode *p)
   }
 }
 
-static int evaluate(struct pnode *p)
+static long evaluate(struct pnode *p)
 {
 
   switch (p->tag) {
   case constant:
     return p->value.constant;
+  case symbol:
+    return get_script_macro(p->value.symbol);
   default:
     script_error("illegal argument", NULL);
     return 0;
@@ -129,6 +131,30 @@ add_path(struct pnode *parms)
   return 0;
 }
 
+void add_script_macro(const char *name, long value)
+{
+  struct symbol *sym;
+  long *val;
+  sym = add_symbol(state.script_symbols, name);
+  val = get_symbol_annotation(sym);
+  if (!val) {
+    val = malloc(sizeof value);
+    annotate_symbol(sym, val);
+  }
+  *val = value;
+}
+
+long get_script_macro(const char *name)
+{
+  struct symbol *sym;
+  long *val;
+  sym = get_symbol(state.script_symbols, name);
+  if (!sym)
+    return 0;
+  val = get_symbol_annotation(sym);
+  return *val;
+}
+
 /* FIXME:  These functions were written to allow the user the greatest 
    flexibility.  The arguments can appear in any order.  In hind sight
    this may not have been necessary and resulted in overly complicated
@@ -141,7 +167,7 @@ static int do_logsec(char *name, struct pnode *parms)
   gp_boolean found_secname   = false;
   gp_boolean found_ram       = false;
   gp_boolean found_rom       = false;
-  char *logical_section_name = NULL;
+  const char *logical_section_name = NULL;
   char *section_name = NULL;
   struct linker_section *section = NULL;
   struct symbol *sym;
@@ -152,7 +178,7 @@ static int do_logsec(char *name, struct pnode *parms)
     if ((p->tag == binop) &&
 	(p->value.binop.op == '=')) {
       if (enforce_simple(p->value.binop.p0)) {
-	char *lhs;
+	const char *lhs;
 
 	lhs = p->value.binop.p0->value.symbol;
 	if (strcasecmp(lhs, "name") == 0) {
@@ -218,10 +244,10 @@ static int do_secdef(char *name, struct pnode *parms)
   gp_boolean found_end       = false;
   gp_boolean found_fill      = false;
   gp_boolean found_protected = false;
-  char *section_name = NULL;
-  int  start = 0;
-  int  end = 0;
-  int  fill = 0;
+  const char *section_name = NULL;
+  long start = 0;
+  long end = 0;
+  long fill = 0;
   struct symbol *sym;
   struct linker_section *section_def;
 
@@ -231,7 +257,7 @@ static int do_secdef(char *name, struct pnode *parms)
     if ((p->tag == binop) &&
 	(p->value.binop.op == '=')) {
       if (enforce_simple(p->value.binop.p0)) {
-	char *lhs;
+	const char *lhs;
 
 	lhs = p->value.binop.p0->value.symbol;
 	if (strcasecmp(lhs, "name") == 0) {
@@ -343,7 +369,7 @@ static int do_stack(char *name, struct pnode *parms)
     if ((p->tag == binop) &&
 	(p->value.binop.op == '=')) {
       if (enforce_simple(p->value.binop.p0)) {
-	char *lhs;
+	const char *lhs;
 
 	lhs = p->value.binop.p0->value.symbol;
         if (strcasecmp(lhs, "size") == 0) {
@@ -352,7 +378,7 @@ static int do_stack(char *name, struct pnode *parms)
         } else if (strcasecmp(lhs, "ram") == 0) {
           if (enforce_simple(p->value.binop.p1)) {
             found_ram = true;
-            ram_name = p->value.binop.p1->value.symbol;   
+            ram_name = strdup(p->value.binop.p1->value.symbol);
           }
         } else {
           script_error("illegal argument", lhs);        
