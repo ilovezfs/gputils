@@ -1,3 +1,6 @@
+2011-08-05  Marko Kohtala  <marko.kohtala@gmail.com>
+  * Patch #3314801 by strobla to add new parts to documentation.
+
 2011-06-09  Marko Kohtala  <marko.kohtala@gmail.com>
   * Add to gplink option -u and linker script directives #DEFINE, #IFDEF,
   #ELSE, #FI and ERROR.
