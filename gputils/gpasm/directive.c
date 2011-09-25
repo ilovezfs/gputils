@@ -3255,7 +3255,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             p = HEAD(TAIL(parms));
             /* the offset cannot be a relocatable address */
             value = maybe_evaluate(p);
-            if (value < -231 || value > 32)
+            if (value < -32 || value > 31)
               gperror(GPE_RANGE, NULL);
 
             emit(i->opcode | fsr | (value & 0x3f));
