@@ -1,46 +1,52 @@
-.TH GPDASM 1 "2007-10-27" "gputils-0.13.7" "Linux user's manual"
+.TH GPVO 1 "2007-10-27" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
 .SH NAME
-gpdasm \- GNU PIC disassembler
+gpvo \- GNU PIC object file viewer
 .SH SYNOPSIS
-.B gpdasm [options] file
+.B gpvo [options] file
 .SH WARNING
 The information in this man page is an extract from the full documentation of
 gputils and is limited to the meaning of the options.  For complete and
 current documentation, refer to "gputils.ps" located in the gputils docs
 directory.
 .SH DESCRIPTION
-.B gpdasm
-is an disassembler for Microchip (TM) PIC (TM) micro-controllers.
-.B gpdasm
+.B gpvo
+is an COFF object file viewer for Microchip (TM) PIC (TM) micro-controllers.
+COFF files are relocatable objects output from gpasm.
+.B gpvo
 is part of gputils.  Check the
 .BR gputils (1)
 manpage for details on other GNU PIC utilities.
 .SH OPTIONS
 .TP
-.BR \-c ", " \-\-mnemonics
+.BR \-b ", "\-\-binary
+Display binary data.
+.TP
+.BR \-c ", "\-\-mnemonics
 Decode special mnemonics.
+.TP
+.BR \-f ", "\-\-file
+Display file header.
 .TP
 .BR \-h ", "\-\-help
 Show the usage message.
 .TP
-.BR \-i ", "\-\-hex-info
-Report extra information about input hex file.  This information includes file
-size and hex format.
+.BR \-o ", "\-\-optional
+Display optional header.
 .TP
-.BR \-l ", "\-\-list-chips
-List the supported processors.
+.BR \-r ", "\-\-string
+Display the string table.
 .TP
-.BR \-m ", "\-\-dump
-Display the contents of instruction memory.
+.BR \-s ", "\-\-section
+Display sections.
 .TP
-.BR "\-p PROC" , " \-\-processor PROC
-Select the processor.
-.TP
-.BR \-s ", "\-\-short
-Output the short format.  This format can be reassembled by gpasm.
+.BR \-t ", "\-\-symbol
+Display symbol table.
 .TP
 .BR \-v ", "\-\-version
 Show the version.
+.TP
+.BR "\-x FILE" , " \-\-export FILE
+Export the external symbols.
 .TP
 .BR \-y ", "\-\-extended
 Enable 18xx extended mode.

@@ -1,52 +1,60 @@
-.TH GPVC 1 "2007-10-27" "gputils-0.13.7" "Linux user's manual"
+.TH GPSTRIP 1 "2007-10-27" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
 .SH NAME
-gpvc \- GNU PIC COD file viewer
+gpstrip \- discard symbols from object file
 .SH SYNOPSIS
-.B gpvc [options] file
+.B gpstrip [options] [file(s)]
 .SH WARNING
 The information in this man page is an extract from the full documentation of
 gputils and is limited to the meaning of the options.  For complete and 
 current documentation, refer to "gputils.ps" located in the gputils docs
 directory.
 .SH DESCRIPTION
-.B gpvc
-is an COD file viewer for Microchip (TM) PIC (TM) micro-controllers.  COD files
-are and output from gpasm.  They contain information used for simulation.
-.B gpvc
+.B gpstrip
+discards symbols from GNU PIC object files.
+.B gpstrip
 is part of gputils.  Check the
 .BR gputils (1)
 manpage for details on other GNU PIC utilities.
 .SH OPTIONS
 .TP
-.BR \-a ", "\-\-all
-Display all information in the COD file.
-.TP
-.BR \-d ", "\-\-directory
-Display directory header.
-.TP
-.BR \-l ", "\-\-listing
-Display source listing.
-.TP
-.BR \-m ", "\-\-message
-Display debug message area.
+.BR \-g ", "\-\-strip\-debug
+Strip debug symbols.
 .TP
 .BR \-h ", "\-\-help
-Show the usage message.
+Show this usage message.
 .TP
-.BR \-r ", "\-\-rom
-Display ROM.
+.BR "\-k SYMBOL" , " \-\-keep\-symbol SYMBOL
+Keep symbol.
 .TP
-.BR \-s ", "\-\-symbols
-Display symbols.
+.BR "\-n SYMBOL" , " \-\-strip\-symbol SYMBOL
+Remove symbol. 
+.TP
+.BR "\-o FILE" , " \-\-output FILE
+Alternate name of output file.
+.TP
+.BR \-p ", "\-\-preserve\-dates
+Preserve dates.
+.TP
+.BR "\-r SECTION" , " \-\-remove-section SECTION
+Remove section.
+.TP
+.BR \-s ", "\-\-strip\-all
+Remove all symbols.
+.TP
+.BR \-u ", "\-\-strip\-unneeded
+Strip symbols not need for relocations.
 .TP
 .BR \-v ", "\-\-version
-Show the version.
+Show version.
+.TP
+.BR \-x ", "\-\-discard-all
+Remove non-global symbols.
 .SH SEE ALSO
 .BR gputils (1)
 .SH AUTHOR
 Craig Franklin <craigfranklin@users.sourceforge.net>
 .SH COPYRIGHT
-Copyright (C) 2002, 2003, 2004, 2005 Scott Dattalo
+Copyright (C) 2005 Craig Franklin
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

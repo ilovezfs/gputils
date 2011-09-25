@@ -1,4 +1,4 @@
-.TH GPASM 1 "27 octobre 2007" "gputils-0.13.7" "Manuel de l'utilisateur Linux"
+.TH GPASM 1 "27 octobre 2007" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Manuel de l'utilisateur Linux"
 .SH NOM
 gpvc \- Visualiseur GNU de fichiers COD pour PIC
 .SH SYNOPSIS

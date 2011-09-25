@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([gputils],[0.13.7], [<URL:http://gputils.sourceforge.net/>])
+AC_INIT([gputils],[0.13.8], [<URL:http://gputils.sourceforge.net/>])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE
@@ -126,17 +126,33 @@ AC_SUBST(LIBIBERTY)
 AC_SUBST(MAKE_SUBDIRS)
 
 # Generate Makefiles
-AC_CONFIG_FILES([Makefile 
-                 doc/Makefile 
-                 gpasm/Makefile 
-                 gplink/Makefile 
-                 gputils/Makefile 
-                 header/Makefile 
-                 libgputils/Makefile 
-                 libiberty/Makefile 
+AC_CONFIG_FILES([Makefile
+                 doc/Makefile
+                 gpasm/Makefile
+                 gplink/Makefile
+                 gputils/Makefile
+                 header/Makefile
+                 libgputils/Makefile
+                 libiberty/Makefile
                  lkr/Makefile
-                 man/Makefile 
-                 man/fr/Makefile 
+                 man/Makefile
+                 man/gpasm.1
+                 man/gpdasm.1
+                 man/gplib.1
+                 man/gplink.1
+                 man/gpstrip.1
+                 man/gputils.1
+                 man/gpvc.1
+                 man/gpvo.1
+                 man/fr/Makefile
+                 man/fr/gpasm.1
+                 man/fr/gpdasm.1
+                 man/fr/gplib.1
+                 man/fr/gplink.1
+                 man/fr/gpstrip.1
+                 man/fr/gputils.1
+                 man/fr/gpvc.1
+                 man/fr/gpvo.1
                  gputils.spec])
 
 AC_OUTPUT

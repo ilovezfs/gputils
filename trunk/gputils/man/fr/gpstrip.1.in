@@ -1,52 +1,55 @@
-.TH GPLIB 1 "27 octobre 2007" "gputils-0.13.7" "Manuel de l'utilisateur Linux"
+.TH GPSTRIP 1 "27 octobre 2007" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Manuel de l'utilisateur Linux"
 .SH NOM
-gplib - Bibliothécaire GNU pour PIC
+gpstrip \- Retirer les symboles d'un fichier objet
 .SH SYNOPSIS
-.B gplib [options] bibliothèque [membre]
+.B gpstrip [options] [fichier]
 .SH AVERTISSEMENT
-Les informations de cette page de manuel sont extraites de la documentation 
-complète de gputils et sont limitées à la signification des options. Pour une 
-documentation complète, reportez-vous au fichier «\ gputils.ps\ » (en anglais) 
+Les informations de cette page de manuel sont extraites de la documentation
+complète de gputils et sont limitées à la signification des options. Pour une
+documentation complète, reportez-vous au fichier «\ gputils.ps\ » (en anglais)
 situé dans le répertoire doc de gputils.
 .SH DESCRIPTION
-.B gplib
-crée, modifie et extrait des archives COFF pour les microcontrôleurs PIC (TM)
-de Microchip (TM).
-.B gplib
+.B gpstrip
+retire les symboles des fichiers objet GNU PIC
+.B gpstrip
 est une partie de gputils. Consultez la page manuel
 .BR gputils (1)
 pour avoir des détails sur les autres utilitaires GNU PIC.
 .SH OPTIONS
 .TP
-.BR \-c ", "\-\-create
-Créer une nouvelle bibliothèque.
-.TP
-.BR \-d ", "\-\-delete
-Supprimer «\ membre\ » de «\ bibliothèque\ ».
+.BR \-g ", "\-\-strip\-debug
+Éliminer les symboles de débogage.
 .TP
 .BR \-h ", "\-\-help
-Afficher un message d'usage.
+Afficher ce message d'usage.
 .TP
-.BR \-n ", "\-\-no-index
-Ne pas ajouter l'index des symboles.
+.BR "\-k SYMBOLE" , " \-\-keep\-symbol SYMBOLE
+Conserver le symbole SYMBOLE.
 .TP
-.BR \-q ", "\-\-quiet
-Mode silencieux.
+.BR "\-n SYMBOLE" , " \-\-strip\-symbol SYMBOLE
+Supprimer le symbole SYMBOLE.
 .TP
-.BR \-r ", "\-\-replace
-Ajouter ou remplacer «\ membre\ » de «\ bibliothèque\ ».
+.BR "\-o FICHIER" , " \-\-output FICHIER
+Nom alternatif du fichier de sortie.
 .TP
-.BR \-s ", "\-\-symbols
-Afficher les symboles globaux de «\ bibliothèque\ ».
+.BR \-p ", "\-\-preserve\-dates
+Préserver les dates.
 .TP
-.BR \-t ", "\-\-list
-Afficher les membres de «\ bibliothèque\ ».
+.BR "\-r SECTION" , " \-\-remove-section SECTION
+Retirer la section SECTION.
+.TP
+.BR \-s ", "\-\-strip\-all
+Retirer tous les symboles.
+.TP
+.BR \-u ", "\-\-strip\-unneeded
+Retirer les symboles qui ne sont pas nécessaires à la translation
+(Ndt\ : relocation).
 .TP
 .BR \-v ", "\-\-version
 Afficher la version.
 .TP
-.BR \-x ", "\-\-extract
-Extraire «\ membre\ » de «\ bibliothèque\ ».
+.BR \-x ", "\-\-discard-all
+Retirer les symboles non globaux.
 .SH VOIR AUSSI
 .BR gputils (1)
 .SH AUTEUR
@@ -54,16 +57,16 @@ Craig Franklin <craigfranklin@users.sourceforge.net>
 .SH TRADUCTION
 .PP
 Ce document est une traduction réalisée par Alain Portal
-<aportal AT univ-montp2 DOT fr> le 14\ octobre\ 2004
+<aportal AT univ-montp2 DOT fr> le 24\ mai\ 2005
 et révisée le 28\ octobre\ 2007.
 .PP
 L'équipe de traduction a fait le maximum pour réaliser une adaptation
 française de qualité. La version anglaise la plus à jour de ce document est
-toujours consultable via la commande\ : «\ \fBLANG=C\ man\ 1\ gplib\fR\ ».
+toujours consultable via la commande\ : «\ \fBLANG=C\ man\ 1\ gpstrip\fR\ ».
 N'hésitez pas à signaler à l'auteur ou au traducteur, selon le cas, toute
 erreur dans cette page de manuel.
 .SH COPYRIGHT
-Copyright (C) 2002, 2003, 2004, 2005 Craig Franklin
+Copyright (C) 2005 Craig Franklin
 
 Ce programme est un logiciel libre\ ; vous pouvez le redistribuer et/ou le
 modifier sous les termes de la licence GNU GPL telle que publiée par la Free
