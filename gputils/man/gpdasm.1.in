@@ -1,60 +1,55 @@
-.TH GPSTRIP 1 "2007-10-27" "gputils-0.13.7" "Linux user's manual"
+.TH GPDASM 1 "2007-10-27" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
 .SH NAME
-gpstrip \- discard symbols from object file
+gpdasm \- GNU PIC disassembler
 .SH SYNOPSIS
-.B gpstrip [options] [file(s)]
+.B gpdasm [options] file
 .SH WARNING
 The information in this man page is an extract from the full documentation of
-gputils and is limited to the meaning of the options.  For complete and 
+gputils and is limited to the meaning of the options.  For complete and
 current documentation, refer to "gputils.ps" located in the gputils docs
 directory.
 .SH DESCRIPTION
-.B gpstrip
-discards symbols from GNU PIC object files.
-.B gpstrip
+.B gpdasm
+is an disassembler for Microchip (TM) PIC (TM) micro-controllers.
+.B gpdasm
 is part of gputils.  Check the
 .BR gputils (1)
 manpage for details on other GNU PIC utilities.
 .SH OPTIONS
 .TP
-.BR \-g ", "\-\-strip\-debug
-Strip debug symbols.
+.BR \-c ", " \-\-mnemonics
+Decode special mnemonics.
 .TP
 .BR \-h ", "\-\-help
-Show this usage message.
+Show the usage message.
 .TP
-.BR "\-k SYMBOL" , " \-\-keep\-symbol SYMBOL
-Keep symbol.
+.BR \-i ", "\-\-hex-info
+Report extra information about input hex file.  This information includes file
+size and hex format.
 .TP
-.BR "\-n SYMBOL" , " \-\-strip\-symbol SYMBOL
-Remove symbol. 
+.BR \-l ", "\-\-list-chips
+List the supported processors.
 .TP
-.BR "\-o FILE" , " \-\-output FILE
-Alternate name of output file.
+.BR \-m ", "\-\-dump
+Display the contents of instruction memory.
 .TP
-.BR \-p ", "\-\-preserve\-dates
-Preserve dates.
+.BR "\-p PROC" , " \-\-processor PROC
+Select the processor.
 .TP
-.BR "\-r SECTION" , " \-\-remove-section SECTION
-Remove section.
-.TP
-.BR \-s ", "\-\-strip\-all
-Remove all symbols.
-.TP
-.BR \-u ", "\-\-strip\-unneeded
-Strip symbols not need for relocations.
+.BR \-s ", "\-\-short
+Output the short format.  This format can be reassembled by gpasm.
 .TP
 .BR \-v ", "\-\-version
-Show version.
+Show the version.
 .TP
-.BR \-x ", "\-\-discard-all
-Remove non-global symbols.
+.BR \-y ", "\-\-extended
+Enable 18xx extended mode.
 .SH SEE ALSO
 .BR gputils (1)
 .SH AUTHOR
 Craig Franklin <craigfranklin@users.sourceforge.net>
 .SH COPYRIGHT
-Copyright (C) 2005 Craig Franklin
+Copyright (C) 2002, 2003, 2004, 2005 Craig Franklin
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

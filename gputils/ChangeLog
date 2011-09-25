@@ -1,3 +1,13 @@
+2011-09-25  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/directive.c:
+    proper fix for patch #3375990 Ugly fix for moviw and movwi, pic14e bug fixes
+  * gpasm/testsuite/gpasm.project/asmfiles/op14e.asm,
+    gpasm/testsuite/gpasm.project/hexfiles/op14e.hex,
+    gpasm/testsuite/gpasm.project/listfiles/op14e.lst:
+    pic14 enhanced instruction set regression test
+  * configure, configure.ac, man/*.in, man/fr/*.in:
+    generate *.1 manual pages from *.1.in files
+
 2011-08-05  Marko Kohtala  <marko.kohtala@gmail.com>
   * Patch #3314801 by strobla to add new parts to documentation.
 

@@ -1,4 +1,4 @@
-.TH GPASM 1 "2007-10-27" "gputils-0.13.7" "Linux user's manual"
+.TH GPASM 1 "2007-10-27" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
 .SH NAME
 gpasm \- GNU PIC assembler
 .SH SYNOPSIS
