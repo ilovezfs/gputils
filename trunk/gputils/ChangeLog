@@ -1,3 +1,13 @@
+2011-09-26  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/directive.c: fixed regtest failures: res directive in absolute mode
+    gpasm/testsuite/gpasm.mchip/hexfiles/res1.hex,
+    gpasm/testsuite/gpasm.mchip/listfiles/res1.lst,
+    gpasm/testsuite/gpasm.project/asmfiles/data2.asm,
+    gpasm/testsuite/gpasm.project/listfiles/data1.lst,
+    gpasm/testsuite/gpasm.project/listfiles/data2.lst,
+    gpasm/testsuite/gpasm.project/listfiles/data3.lst,
+
+
 2011-09-25  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c:
     proper fix for patch #3375990 Ugly fix for moviw and movwi, pic14e bug fixes

@@ -2573,7 +2573,10 @@ static gpasmVal do_res(gpasmVal r,
         state.lst.line.linetype = equ;
         if (state.device.class == PROC_CLASS_PIC16E && count % 2 != 0)
           gperror(GPE_RES_ODD_PIC16EA, NULL);
-        state.org += gp_processor_org_to_byte(state.device.class, count);
+        count = gp_processor_org_to_byte(state.device.class, count);
+        for (i = 0; i + 1 < count; i += 2) {
+          emit(state.device.class->core_size);
+        }
       } else {
         state.lst.line.linetype = res;
         if (SECTION_FLAGS & STYP_TEXT) {
