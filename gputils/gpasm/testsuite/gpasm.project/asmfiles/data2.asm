@@ -1,4 +1,4 @@
-     list p=16c84
+     list p=16f84
      __idlocs h'1234' 
 
 

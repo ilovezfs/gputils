@@ -1,4 +1,4 @@
-MPASM 03.20.02 Released          RES1.ASM   11-21-2002  20:21:35         PAGE  1
+MPASM  5.42                          RES1.ASM   9-26-2011  11:18:16         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -11,20 +11,36 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00005         LIST    P=16C54
                       00006 
 0000                  00007         ORG     0
-0000                  00008         RES     10
+0000   0FFF 0FFF 0FFF 00008         RES     10
+       0FFF 0FFF 0FFF 
+       0FFF 0FFF 0FFF 
+       0FFF 0FFF 0FFF 
+       0FFF 0FFF 0FFF 
+       0FFF 
 0010   0111           00009         DATA    111
                       00010 
+Warning[231]: No memory has been reserved by this instruction
 0011                  00011         RES     0
 0011   0222           00012         DATA    222
                       00013 
-0012                  00014         RES     1
+0012   0FFF           00014         RES     1
 0013   0333           00015         DATA    333
                       00016 
-0014                  00017 Label   RES     20
+0014   0FFF 0FFF 0FFF 00017 Label   RES     20
+       0FFF 0FFF 0FFF 
+       0FFF 0FFF 0FFF 
+       0FFF 0FFF 0FFF 
+       0FFF 0FFF 0FFF 
+       0FFF 0FFF 0FFF 
+       0FFF 0FFF 0FFF 
+       0FFF 0FFF 0FFF 
+       0FFF 0FFF 0FFF 
+       0FFF 0FFF 0FFF 
+       0FFF 0FFF 
 0034   0444           00018         DATA    444
                       00019 
                       00020         END
-MPASM 03.20.02 Released          RES1.ASM   11-21-2002  20:21:35         PAGE  2
+MPASM  5.42                          RES1.ASM   9-26-2011  11:18:16         PAGE  2
 
 
 SYMBOL TABLE
@@ -36,16 +52,16 @@ __16C54                           00000001
 
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 
-0000 : ---------------- XX-X------------ ---------------- ----X-----------
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXX-----------
 
 All other memory blocks unused.
 
-Program Memory Words Used:     4
-Program Memory Words Free:   508
+Program Memory Words Used:    53
+Program Memory Words Free:   459
 
 
 Errors   :     0
-Warnings :     0 reported,     0 suppressed
+Warnings :     1 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 
 
