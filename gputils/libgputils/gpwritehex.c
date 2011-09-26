@@ -42,7 +42,7 @@ static void new_record()
 static void write_byte(int b)
 {
   sum += b;
-    
+
   assert((0 <= b) && (b <= 255));
   fprintf(hex, "%02X", b);
 }
@@ -64,7 +64,7 @@ static void write_word(int w)
 static void end_record()
 {
   write_byte((-sum) & 0xff);
-  fprintf(hex, newline);
+  fprintf(hex, "%s", newline);
 }
 
 void data_line(int start, int stop, int mode)
@@ -77,7 +77,7 @@ void data_line(int start, int stop, int mode)
     while (start < stop) {
       unsigned char b;
       if (!b_memory_get(memory, start++, &b))
-	b = 0xff;
+        b = 0xff;
       write_byte(b);
     }
   } else if (mode == swap) {
@@ -91,7 +91,7 @@ void data_line(int start, int stop, int mode)
     while (start < stop) {
       unsigned char b;
       if (!b_memory_get(memory, (start++) ^ 1, &b))
-	b = 0xff;
+        b = 0xff;
       write_byte(b);
     }
   } else {
@@ -100,24 +100,24 @@ void data_line(int start, int stop, int mode)
     write_byte(0);
     if (mode == high)
       ++start;
-    while (start < stop) { 
+    while (start < stop) {
       unsigned char b;
       if (!b_memory_get(memory, start, &b))
-	b = 0xff;
+        b = 0xff;
       write_byte(b);
       start += 2;
     }
-  } 
+  }
   end_record();
 }
- 
+
 void seg_address_line(int segment)
 {
   new_record();
   write_byte(2);
   write_word(0);
   write_byte(4);
-  write_bg_word(segment);  
+  write_bg_word(segment);
   end_record();
 }
 
@@ -151,30 +151,34 @@ void write_i_mem(enum formats hex_format, int mode, unsigned int core_size)
     while (i < maximum) {
       unsigned char b;
       if (!b_memory_get(memory, i, &b)) {
-	++i;
+        ++i;
       } else {
-	j = i;
-	while (b_memory_get(memory, i, &b)) {
-	  ++i;
-	  if (((mode == all) || (mode == swap))  && ((i & 0xf) == 0))
-	    break;
-	  if ((i & 0x1f) == 0)
-	    break;
-	}
-	if (core_size > 0xFF) {
-	  /* Write complete instructions, so move start down and stop up
-	     to even address. */
-	  if (j & 1)
-	    --j;
-	  if (i & 1)
-	    ++i;
-	}
-	/* Now we have a run of (i - j) occupied memory locations. */
+        j = i;
+        while (b_memory_get(memory, i, &b)) {
+          ++i;
+          if (((mode == all) || (mode == swap))  && ((i & 0xf) == 0))
+            break;
+          if ((i & 0x1f) == 0)
+            break;
+        }
+#if 0
+        /* disabled for MPASM compatibility,
+         * regression test gpasm.mchip/asmfiles/szee16.asm */
+        if (core_size > 0xFF) {
+          /* Write complete instructions, so move start down and stop up
+             to even address. */
+          if (j & 1)
+            --j;
+          if (i & 1)
+            ++i;
+        }
+#endif
+        /* Now we have a run of (i - j) occupied memory locations. */
         /* Write the data to the file */
-	/* To be bug-for-bug compatible with MPASM 5.34 we ignore
-	   negative addresses. */
-	if (j >= 0)
-	  data_line(j, i, mode);
+        /* To be bug-for-bug compatible with MPASM 5.34 we ignore
+           negative addresses. */
+        if (j >= 0)
+          data_line(j, i, mode);
       }
     }
     m = m->next;
@@ -183,12 +187,12 @@ void write_i_mem(enum formats hex_format, int mode, unsigned int core_size)
   last_line();
 }
 
-int writehex (char *basefilename, 
-              MemBlock *m,   
+int writehex (char *basefilename,
+              MemBlock *m,
               enum formats hex_format,
               int numerrors,
               int dos_newlines,
-	      unsigned int core_size)
+              unsigned int core_size)
 {
   char hexfilename[BUFSIZ];
   char lowhex[BUFSIZ];
@@ -197,9 +201,9 @@ int writehex (char *basefilename,
   memory = m;
 
   if (dos_newlines) {
-    newline = "\r\n";  
+    newline = "\r\n";
   } else {
-    newline = "\n";  
+    newline = "\n";
   }
 
    /* build file names */
@@ -262,11 +266,10 @@ int writehex (char *basefilename,
 }
 
 /* scan the memory to see if it exceeds 32K limit on inhx8m limit */
-int check_writehex(MemBlock *m,   
+int check_writehex(MemBlock *m,
                    enum formats hex_format)
 {
-
-int error = 0;
+  int error = 0;
 
   if (hex_format != inhx32) {
 
