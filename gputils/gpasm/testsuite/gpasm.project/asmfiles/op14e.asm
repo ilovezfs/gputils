@@ -289,6 +289,7 @@ MAXRAM = H'007F'
 ; INSN_CLASS_IMPLICIT
         brw
         callw
+        reset
 
 ; INSN_CLASS_LIT5
         movlb 0

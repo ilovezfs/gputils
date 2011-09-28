@@ -1,4 +1,4 @@
-MPASM  5.42                         OP14E.ASM   9-25-2011  15:05:26         PAGE  1
+MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -57,7 +57,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00039         moviwx 6
 001C   3F06               M         moviw 6[FSR0]
 001D   3F46               M         moviw 6[FSR1]
-MPASM  5.42                         OP14E.ASM   9-25-2011  15:05:26         PAGE  2
+MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -116,7 +116,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 003F   3F57               M         moviw 23[FSR1]
                       00057         moviwx 24
 0040   3F18               M         moviw 24[FSR0]
-MPASM  5.42                         OP14E.ASM   9-25-2011  15:05:26         PAGE  3
+MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -175,7 +175,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00075         moviwx -10
 0062   3F36               M         moviw -10[FSR0]
 0063   3F76               M         moviw -10[FSR1]
-MPASM  5.42                         OP14E.ASM   9-25-2011  15:05:26         PAGE  4
+MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -234,7 +234,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0085   3F65               M         moviw -27[FSR1]
                       00093         moviwx -28
 0086   3F24               M         moviw -28[FSR0]
-MPASM  5.42                         OP14E.ASM   9-25-2011  15:05:26         PAGE  5
+MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -293,7 +293,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 00A4   3F89               M         movwi 9[FSR0]
 00A5   3FC9               M         movwi 9[FSR1]
                       00115         movwix 10
-MPASM  5.42                         OP14E.ASM   9-25-2011  15:05:26         PAGE  6
+MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  6
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -352,7 +352,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00132         movwix 27
 00C8   3F9B               M         movwi 27[FSR0]
 00C9   3FDB               M         movwi 27[FSR1]
-MPASM  5.42                         OP14E.ASM   9-25-2011  15:05:26         PAGE  7
+MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  7
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -411,7 +411,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 00EA   3FB4               M         movwi -12[FSR0]
 00EB   3FF4               M         movwi -12[FSR1]
                       00151         movwix -13
-MPASM  5.42                         OP14E.ASM   9-25-2011  15:05:26         PAGE  8
+MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  8
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -470,7 +470,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00168         movwix -30
 010E   3FA2               M         movwi -30[FSR0]
 010F   3FE2               M         movwi -30[FSR1]
-MPASM  5.42                         OP14E.ASM   9-25-2011  15:05:26         PAGE  9
+MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  9
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -529,7 +529,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 012C   310C               M         addfsr FSR0,12
 012D   314C               M         addfsr FSR1,12
                       00191         addfsrx 13
-MPASM  5.42                         OP14E.ASM   9-25-2011  15:05:26         PAGE 10
+MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE 10
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -588,7 +588,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00208         addfsrx 30
 0150   311E               M         addfsr FSR0,30
 0151   315E               M         addfsr FSR1,30
-MPASM  5.42                         OP14E.ASM   9-25-2011  15:05:26         PAGE 11
+MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE 11
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -647,7 +647,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0172   3130               M         addfsr FSR0,-16
 0173   3170               M         addfsr FSR1,-16
                       00227         addfsrx -17
-MPASM  5.42                         OP14E.ASM   9-25-2011  15:05:26         PAGE 12
+MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE 12
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -706,7 +706,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
   000007FF            00246 MAXROM = H'07FF'
   0000007F            00247 MAXRAM = H'007F'
                       00248 
-MPASM  5.42                         OP14E.ASM   9-25-2011  15:05:26         PAGE 13
+MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE 13
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -765,23 +765,24 @@ Message[305]: Using default destination of 1 (file).
                       00289 ; INSN_CLASS_IMPLICIT
 01B4   000B           00290         brw
 01B5   000A           00291         callw
-MPASM  5.42                         OP14E.ASM   9-25-2011  15:05:26         PAGE 14
+MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE 14
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00292 
-                      00293 ; INSN_CLASS_LIT5
-01B6   0020           00294         movlb 0
-01B7   003F           00295         movlb 31
-                      00296 
-                      00297 ; INSN_CLASS_LIT7
-01B8   3180           00298         movlp 0
-01B9   31FF           00299         movlp 127
-                      00300 
-                      00301         end
-MPASM  5.42                         OP14E.ASM   9-25-2011  15:05:26         PAGE 15
+01B6   0001           00292         reset
+                      00293 
+                      00294 ; INSN_CLASS_LIT5
+01B7   0020           00295         movlb 0
+01B8   003F           00296         movlb 31
+                      00297 
+                      00298 ; INSN_CLASS_LIT7
+01B9   3180           00299         movlp 0
+01BA   31FF           00300         movlp 127
+                      00301 
+                      00302         end
+MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE 15
 
 
 SYMBOL TABLE
@@ -805,12 +806,12 @@ MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
-0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXX------
+0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXX-----
 
 All other memory blocks unused.
 
-Program Memory Words Used:   442
-Program Memory Words Free:  3654
+Program Memory Words Used:   443
+Program Memory Words Free:  3653
 
 
 Errors   :     0
