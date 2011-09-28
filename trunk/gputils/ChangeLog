@@ -12,6 +12,7 @@
     header/Makefile.in, lkr/Makefile.in, doc/Makefile.in, gpasm/Makefile.in,
     man/Makefile.in, man/fr/Makefile.in, libgputils/Makefile.in,
     aclocal.m4, configure: regenerated
+  * doc/gputils.lyx: added p12f1822
 
 2011-09-26  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c: fixed regtest failures: res directive in absolute mode
