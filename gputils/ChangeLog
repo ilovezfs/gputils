@@ -4,6 +4,14 @@
     gpasm/testsuite/gpasm.project/hexfiles/op14e.hex,
     gpasm/testsuite/gpasm.project/listfiles/op14e.lst:
     added reset pic14e enhanced instruction regression test
+  * header/Makefile.am, lkr/Makefile.am, libgputils/Makefile.am,
+    libgputils/gpprocessor.c, header/p12f1822.inc, lkr/12f1822_g.lkr:
+    applied modified patch #3375989: Add support for 12f1822,
+    thanks Richard Hodges
+  * Makefile.in, gplink/Makefile.in, libiberty/Makefile.in, gputils/Makefile.in,
+    header/Makefile.in, lkr/Makefile.in, doc/Makefile.in, gpasm/Makefile.in,
+    man/Makefile.in, man/fr/Makefile.in, libgputils/Makefile.in,
+    aclocal.m4, configure: regenerated
 
 2011-09-26  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c: fixed regtest failures: res directive in absolute mode

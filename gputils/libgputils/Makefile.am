@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 AM_CPPFLAGS =\
-	-I${top_srcdir}/include \
+	-I$(top_srcdir)/include \
 	-DHEADER_PATH=\"@GPUTILS_HEADER_PATH@\" \
 	-DLKR_PATH=\"@GPUTILS_LKR_PATH@\" \
 	-DLIB_PATH=\"@GPUTILS_LIB_PATH@\" \

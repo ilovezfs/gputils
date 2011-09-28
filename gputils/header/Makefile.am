@@ -33,6 +33,7 @@ HEADER_FILES =\
 	p12f635.inc \
 	p12f675.inc \
 	p12f683.inc \
+	p12f1822.inc \
 	p12hv609.inc \
 	p12hv615.inc \
 	p14000.inc \
