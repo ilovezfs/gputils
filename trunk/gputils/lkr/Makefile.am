@@ -45,6 +45,7 @@ LKR_FILES =\
 	12f675.lkr \
 	12f683i.lkr \
 	12f683.lkr \
+	12f1822_g.lkr \
 	12hv609i.lkr \
 	12hv609.lkr \
 	12hv615i.lkr \
