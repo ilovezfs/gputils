@@ -3,6 +3,7 @@
     updated from MPASM v5.42; fixed bugs:
     #3401813: corrected header files
     and #3343718: Pic18F13k22 header file
+  * ylwrap: added to svn
 
 2011-09-28  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpopcode.c: added reset pic14e enhanced instruction
