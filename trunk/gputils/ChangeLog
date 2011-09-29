@@ -1,3 +1,9 @@
+2011-09-29  Borut Razem  <borutr@users.sourceforge.net>
+  * header/p18f13k22.inc, header/p18f14k22.inc, header/p18f87j11.inc:
+    updated from MPASM v5.42; fixed bugs:
+    #3401813: corrected header files
+    and #3343718: Pic18F13k22 header file
+
 2011-09-28  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpopcode.c: added reset pic14e enhanced instruction
   * gpasm/testsuite/gpasm.project/asmfiles/op14e.asm,
