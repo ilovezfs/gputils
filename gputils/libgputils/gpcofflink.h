@@ -28,14 +28,16 @@ accessbank - used for access registers in internal ram for 18CXX
 codepage - used for program code, initialized data values, and constants
 databank - used for banked registers in internal ram
 sharebank - used for unbanked registers in internal ram
+linearmem - used for linear RAM access
 
 */
 
-enum section_type { 
+enum section_type {
   accessbank,
   codepage,
   databank,
-  sharebank
+  sharebank,
+  linearmem
 };
 
 /* Section definitions from the linker script are stored in the following
@@ -48,11 +50,13 @@ struct linker_section {
   int fill;
   gp_boolean use_fill;
   gp_boolean protected;
+  int shadow_val;
+  const char *shadow_sym;
 };
 
 void gp_link_add_symbol(struct symbol_table *table,
-		        gp_symbol_type *symbol,
-		        gp_object_type *file);
+                        gp_symbol_type *symbol,
+                        gp_object_type *file);
 
 void gp_link_remove_symbol(struct symbol_table *table, char *name);
 
@@ -62,7 +66,7 @@ int gp_link_add_symbols(struct symbol_table *,
 
 void gp_cofflink_combine_objects(gp_object_type *object);
 
-void gp_cofflink_clean_table(gp_object_type *object, 
+void gp_cofflink_clean_table(gp_object_type *object,
                              struct symbol_table *symbols);
 
 void gp_cofflink_combine_overlay(gp_object_type *object, int remove_symbol);
@@ -78,19 +82,19 @@ void gp_cofflink_make_idata(gp_object_type *object);
 void gp_add_cinit_section(gp_object_type *object);
 
 void gp_cofflink_reloc_abs(MemBlock *m,
-			   int org_to_byte_shift,
+                           int org_to_byte_shift,
                            gp_section_type *section,
                            unsigned long flags);
 
 void gp_cofflink_reloc_assigned(MemBlock *m,
-				int org_to_byte_shift,
+                                int org_to_byte_shift,
                                 gp_section_type *section,
                                 unsigned long flags,
                                 struct symbol_table *sections,
                                 struct symbol_table *logical_sections);
 
 void gp_cofflink_reloc_unassigned(MemBlock *m,
-				  int org_to_byte_shift,
+                                  int org_to_byte_shift,
                                   gp_section_type *section,
                                   unsigned long flags,
                                   struct symbol_table *sections);

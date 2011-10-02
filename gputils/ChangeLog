@@ -1,3 +1,7 @@
+2011-10-02  Borut Razem  <borutr@users.sourceforge.net>
+  * gplink/script.c, libgputils/gpreadobj.c, libgputils/gpcofflink.h:
+    added LINEARMEM and SHADOW lkr support (currently merely ignored)
+
 2011-09-29  Borut Razem  <borutr@users.sourceforge.net>
   * header/p18f13k22.inc, header/p18f14k22.inc, header/p18f87j11.inc:
     updated from MPASM v5.42; fixed bugs:
