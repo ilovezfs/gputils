@@ -55,7 +55,6 @@ gp_read_file(const char *filename)
 {
   FILE *infile;
   gp_binary_type *file;
-  struct stat statbuf;
 
   infile = fopen(filename,"rb");
   if (infile == NULL) {
@@ -66,8 +65,9 @@ gp_read_file(const char *filename)
   file = (gp_binary_type *)malloc(sizeof(*file));
 
   /* determine the size of the file */
-  fstat(fileno(infile), &statbuf);
-  file->size = statbuf.st_size;
+  fseek(infile, 0, SEEK_END);
+  file->size = ftell(infile);
+  rewind(infile); 
 
   /* read the object file into memory */
   file->file = (unsigned char *)malloc(file->size);
