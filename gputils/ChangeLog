@@ -1,3 +1,8 @@
+2011-10-16  Borut Razem  <borutr@users.sourceforge.net>
+  * gplink/script.c, libgputils/gpcoffgen.c, libgputils/gpcoff.h,
+    libgputils/gpreadobj.c, libgputils/gpcofflink.c, libgputils/gpcofflink.h:
+    inplemeted SHADOW
+
 2011-10-09  Marko Kohtala  <marko.kohtala@gmail.com>
   * libgputils/gpreadobj.c (gp_read_file): Revert previous change in
   determining file size as it does not compile.

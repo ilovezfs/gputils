@@ -62,11 +62,11 @@ struct filehdr
 /* optional header format */
 struct opthdr
 {
-  unsigned short  opt_magic;                   
-  unsigned long   vstamp;         /* version of the compiler assembler */             
-  unsigned long   proc_type;                   
-  unsigned long   rom_width_bits;                   
-  unsigned long   ram_width_bits;           
+  unsigned short  opt_magic;
+  unsigned long   vstamp;         /* version of the compiler assembler */
+  unsigned long   proc_type;
+  unsigned long   rom_width_bits;
+  unsigned long   ram_width_bits;
 };
 
 #define OPT_HDR_SIZ_v1 16
@@ -108,7 +108,7 @@ struct scnhdr
 #define STYP_ABS      0x1000
 /* Section is shared across banks */
 #define STYP_SHARED   0x2000
-/* Section is overlaid with other sections of the same name from different 
+/* Section is overlaid with other sections of the same name from different
    objects modules */
 #define STYP_OVERLAY  0x4000
 /* Section is available using access bit */
@@ -125,7 +125,7 @@ struct reloc
 {
   unsigned long            r_vaddr;     /* entry relative virtual address */
   unsigned long            r_symndx;    /* index into symbol table */
-  short           r_offset;    /* offset to be added to address of symbol 
+  short           r_offset;    /* offset to be added to address of symbol
                                   'r_symndx' */
   unsigned short  r_type;      /* relocation type */
 };
@@ -140,20 +140,20 @@ struct reloc
 #define     RELOCT_HIGH     3
 /* relocation for the low order 8 bits of an address */
 #define     RELOCT_LOW      4
-/* relocation for the 5 bits of address for the P operand of a 17cxx MOVFP 
+/* relocation for the 5 bits of address for the P operand of a 17cxx MOVFP
    or MOVPF instruction */
 #define     RELOCT_P        5
-/* relocation to generate the appropriate instruction to bank switch for a 
+/* relocation to generate the appropriate instruction to bank switch for a
    symbol */
 #define     RELOCT_BANKSEL  6
-/* relocation to generate the appropriate instruction to page switch for a 
+/* relocation to generate the appropriate instruction to page switch for a
    symbol */
 #define     RELOCT_PAGESEL  7
 /* FIXME */
 #define     RELOCT_ALL      8
 /* FIXME */
 #define     RELOCT_IBANKSEL 9
-/* relocation for the 8 bits of address for the F operand of a 17cxx MOVFP or 
+/* relocation for the 8 bits of address for the F operand of a 17cxx MOVFP or
    MOVPF instruction */
 #define     RELOCT_F        10
 /* FIXME */
@@ -204,7 +204,7 @@ struct reloc
 /* linenumber entry */
 struct lineno
 {
-  unsigned long  l_srcndx;     /* symbol table index of associated source 
+  unsigned long  l_srcndx;     /* symbol table index of associated source
                                   file */
   unsigned short l_lnno;       /* line number */
   unsigned long  l_paddr;      /* address of code for this lineno */
@@ -273,11 +273,11 @@ struct syment
 #define T_USLONG    18  /* unsigned short long */
 
 /* Derived types */
-#define DT_NON      0  /* no derived type */         
+#define DT_NON      0  /* no derived type */
 #define DT_PTR      1  /* pointer */
 #define DT_FCN      2  /* function */
 #define DT_ARY      3  /* array */
-#define DT_ROMPTR   4  
+#define DT_ROMPTR   4
 #define DT_FARROMPTR 5
 
 /* Storage classes */
@@ -318,7 +318,7 @@ struct syment
 struct aux_file
 {
   unsigned long  x_offset;  /* String table offset for filename */
-  unsigned long  x_incline; /* Line number at which this file was included, 
+  unsigned long  x_incline; /* Line number at which this file was included,
                               0->not included */
   unsigned char  x_flags;
   char _unused[11];
@@ -339,7 +339,7 @@ struct aux_tag
   char _unused[6];
   unsigned short x_size;     /* Size of struct/union/enum */
   char _unused2[4];
-  unsigned long x_endndx;    /* Symbol index of next entry beyond this 
+  unsigned long x_endndx;    /* Symbol index of next entry beyond this
                                 struct/union/enum */
   char _unused3[4];
 };
@@ -359,7 +359,7 @@ struct aux_fcn
   unsigned long x_tagndx;   /* Unused??  Tag Index */
   unsigned long x_size;     /* Unused??  Size of function in bits */
   unsigned long x_lnnoptr;  /* File pointer to line numbers for this function */
-  unsigned long x_endndx;   /* Symbol Index of next entry beyond this 
+  unsigned long x_endndx;   /* Symbol Index of next entry beyond this
                                function */
   short x_actscnum; /* size of static activation record to allocate */
   char _unused[2];
@@ -379,7 +379,7 @@ struct aux_arr
 struct aux_eobf
 {
   char _unused[4];
-  unsigned short x_lnno;   /* C Source line number of the end, relative to 
+  unsigned short x_lnno;   /* C Source line number of the end, relative to
                               start of block/func */
   char _unused2[14];
 };
@@ -388,7 +388,7 @@ struct aux_eobf
 struct aux_bobf
 {
   char _unused[4];
-  unsigned short x_lnno;   /* C Source line number of the beginning, relative 
+  unsigned short x_lnno;   /* C Source line number of the beginning, relative
                               to start enclosing scope */
   char _unused2[6];
   unsigned long x_endndx;  /* Symbol Index of next entry past this block/func */
@@ -415,7 +415,7 @@ struct aux_fcn_calls {
   unsigned long x_is_interrupt; /* 0 not, 1 low, 2 high */
   char _unused[12];
 };
-  
+
 
 
 /* Auxiliary entries */
@@ -460,23 +460,23 @@ typedef struct gp_reloc_type
 
 /* line number linked list */
 
-typedef struct gp_linenum_type 
+typedef struct gp_linenum_type
 {
   /* source file symbol */
   struct gp_symbol_type *symbol;
 
   /* line number */
-  unsigned short line_number; 
+  unsigned short line_number;
 
   /* byte address for this line number */
-  unsigned int address;     
+  unsigned int address;
 
   struct gp_linenum_type *next;
 } gp_linenum_type;
 
 /* auxiliary symbol linked list */
 
-typedef struct gp_aux_type 
+typedef struct gp_aux_type
 {
   /* auxiliary symbol type */
   long type;
@@ -489,7 +489,7 @@ typedef struct gp_aux_type
     } _aux_direct;
     struct {
       char *filename;
-      unsigned long line_number; 
+      unsigned long line_number;
       unsigned char flags;
     } _aux_file;
     struct {
@@ -506,25 +506,25 @@ typedef struct gp_aux_type
     } _aux_fcn_calls;
     char data[SYMBOL_SIZE_v2];
   } _aux_symbol;
-  
+
   struct gp_aux_type *next;
 } gp_aux_type;
 
 /* symbol linked list */
 
-typedef struct gp_symbol_type 
+typedef struct gp_symbol_type
 {
   /* symbol name */
   char *name;
 
-  /* symbol value */ 
+  /* symbol value */
   long value;
 
-  /* section number, only for used for determining symbol type: 
+  /* section number, only for used for determining symbol type:
      N_DEBUG = -2, N_ABS = -1, N_UNDEF = 0, or N_SCNUM = 1 if defined */
   short section_number;
-  
-  /* defining section */ 
+
+  /* defining section */
   struct gp_section_type *section;
 
   /* type */
@@ -542,7 +542,7 @@ typedef struct gp_symbol_type
   /* auxiliary symbols */
   struct gp_aux_type *aux_list;
 
-  /* symbol number, only valid when writing coff or cod file */  
+  /* symbol number, only valid when writing coff or cod file */
   unsigned long number;
 
   struct gp_symbol_type *next;
@@ -550,7 +550,7 @@ typedef struct gp_symbol_type
 
 /* section linked list */
 
-typedef struct gp_section_type 
+typedef struct gp_section_type
 {
   /* section name */
   char *name;
@@ -560,13 +560,16 @@ typedef struct gp_section_type
 
   /* flags */
   unsigned long flags;
-  
+
   /* section address in bytes */
   unsigned int address;
-  
+
+  /* section shadow address in bytes */
+  unsigned int shadow_address;
+
   /* section size in bytes */
   unsigned long size;
-  
+
   /* memory linked list */
   MemBlock *data;
 
@@ -588,25 +591,25 @@ typedef struct gp_section_type
   /* tail of line numbers */
   gp_linenum_type *line_numbers_tail;
 
-  /* this section required for symbol resolution, only valid when linking */  
+  /* this section required for symbol resolution, only valid when linking */
   gp_boolean is_used;
 
-  /* section number, only valid when writing coff file */  
+  /* section number, only valid when writing coff file */
   unsigned long number;
 
-  /* data pointer, only valid when writing coff file */  
+  /* data pointer, only valid when writing coff file */
   unsigned long data_ptr;
 
-  /* relocations pointer, only valid when writing coff file */  
+  /* relocations pointer, only valid when writing coff file */
   unsigned long reloc_ptr;
 
-  /* linenumber pointer, only valid when writing coff file */  
+  /* linenumber pointer, only valid when writing coff file */
   unsigned long lineno_ptr;
 
   struct gp_section_type *next;
 } gp_section_type;
 
-typedef struct gp_object_type 
+typedef struct gp_object_type
 {
   /* object filename */
   char *filename;
@@ -622,16 +625,16 @@ typedef struct gp_object_type
 
   /* processor */
   pic_processor_t processor;
-  
+
   /* processor class */
   proc_class_t class;
-  
+
   /* time object was created */
   time_t time;
-  
+
   /* flags */
   unsigned short flags;
-  
+
   /* number of sections */
   long num_sections;
 
@@ -643,14 +646,14 @@ typedef struct gp_object_type
 
   /* number of symbols */
   long num_symbols;
-  
+
   /* head of symbols */
   gp_symbol_type *symbols;
 
   /* tail of symbols */
   gp_symbol_type *symbols_tail;
 
-  /* symbol table pointer, only valid when writing coff file */  
+  /* symbol table pointer, only valid when writing coff file */
   unsigned long symbol_ptr;
 
   /* next object in the linked list */

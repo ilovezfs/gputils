@@ -26,35 +26,33 @@ gp_boolean gp_relocate_to_shared = false;
 
 /* Two symbol tables are constructed. The first contains the definitions of all
    external symbols in all the object files.  This symbol table is used for
-   relocation and linking.  The second table contains all external symbols 
+   relocation and linking.  The second table contains all external symbols
    that do not yet have a definition.  This table is used to determine which
    objects in a library are to be linked against.  This table should be empty
    at the begining of the relocation process. */
 
-void 
+void
 gp_link_add_symbol(struct symbol_table *table,
-		   gp_symbol_type *symbol,
-		   gp_object_type *file)
+                   gp_symbol_type *symbol,
+                   gp_object_type *file)
 {
   struct symbol      *sym;
   gp_coffsymbol_type *var;
 
-  /* Search the for the symbol.  If not found, then add it to 
+  /* Search the for the symbol.  If not found, then add it to
      the global symbol table.  */
   sym = get_symbol(table, symbol->name);
   if (sym != NULL)
-    return;  
+    return;
 
   sym = add_symbol(table, symbol->name);
   var = malloc(sizeof(*var));
   var->symbol = symbol;
   var->file = file;
   annotate_symbol(sym, var);
-  
-  return;
 }
 
-void 
+void
 gp_link_remove_symbol(struct symbol_table *table, char *name)
 {
   struct symbol      *sym;
@@ -67,21 +65,19 @@ gp_link_remove_symbol(struct symbol_table *table, char *name)
   var = get_symbol_annotation(sym);
   free(var);
   remove_symbol(table, name);
-
-  return;
 }
 
-/* Add the external symbols from an object file to the appropriate symbol 
+/* Add the external symbols from an object file to the appropriate symbol
    tables.  NOTE: The missing symbol table is optional. This feature is
-   not used for generating symbol indexes for archives. */ 
+   not used for generating symbol indexes for archives. */
 
-int 
+int
 gp_link_add_symbols(struct symbol_table *definition,
                     struct symbol_table *missing,
-                    gp_object_type *object)  
+                    gp_object_type *object)
 {
   gp_symbol_type *symbol = NULL;
-  struct symbol *sym; 
+  struct symbol *sym;
   gp_coffsymbol_type *var;
 
   if ((definition == NULL) || (object == NULL))
@@ -93,32 +89,32 @@ gp_link_add_symbols(struct symbol_table *definition,
     /* process all external symbols that are not directives */
     if ((symbol->class == C_EXT) && (symbol->name[0] != '.')) {
       if (symbol->section_number == 0) {
-        /* This symbol is defined elsewhere. Check for it in the symbol 
-	   definitions.  If it doesn't exist there, add it to the missing
-	   symbol table, if not already entered. */
-	sym = get_symbol(definition, symbol->name); 
+        /* This symbol is defined elsewhere. Check for it in the symbol
+           definitions.  If it doesn't exist there, add it to the missing
+           symbol table, if not already entered. */
+        sym = get_symbol(definition, symbol->name);
         if ((sym == NULL) && (missing != NULL))
           gp_link_add_symbol(missing, symbol, object);
       } else {
         /* External symbol definition.  See if it is already defined, it so
-	   it is an error. Add the symbol to the symbol definitions and remove
-	   it from the missing symbol table if it exists there */
-	sym = get_symbol(definition, symbol->name); 
+           it is an error. Add the symbol to the symbol definitions and remove
+           it from the missing symbol table if it exists there */
+        sym = get_symbol(definition, symbol->name);
         if (sym != NULL) {
           /* duplicate symbol */
           var = get_symbol_annotation(sym);
-          gp_error("duplicate symbol \"%s\" defined in \"%s\" and \"%s\"", 
+          gp_error("duplicate symbol \"%s\" defined in \"%s\" and \"%s\"",
                    symbol->name,
                    var->file->filename,
                    object->filename);
-        } else {	
+        } else {
           gp_link_add_symbol(definition, symbol, object);
         }
         if (missing != NULL)
           gp_link_remove_symbol(missing, symbol->name);
-      }     
+      }
     }
-    
+
     symbol = symbol->next;
 
   }
@@ -151,7 +147,7 @@ gp_cofflink_combine_objects(gp_object_type *object)
       object->num_symbols += list->num_symbols;
     }
     list = list->next;
-  }  
+  }
 
   /* append the sections onto the list */
   list = object->next;
@@ -172,13 +168,11 @@ gp_cofflink_combine_objects(gp_object_type *object)
 
   /* FIXME: breaking the chain isn't good */
   object->next = NULL;
-
-  return;
 }
 
 /* Cleanup the symbol table after combining objects. */
 
-void 
+void
 gp_cofflink_clean_table(gp_object_type *object,
                         struct symbol_table *symbols)
 {
@@ -196,13 +190,13 @@ gp_cofflink_clean_table(gp_object_type *object,
     relocation = section->relocations;
     while (relocation != NULL) {
       symbol = relocation->symbol;
-      if ((symbol->class == C_EXT) && 
+      if ((symbol->class == C_EXT) &&
           (symbol->section_number == N_UNDEF)) {
         /* This is an external symbol defined elsewhere */
         sym = get_symbol(symbols, symbol->name);
         assert(sym != NULL);
         var = get_symbol_annotation(sym);
-        assert(var != NULL);	  
+        assert(var != NULL);
         relocation->symbol = var->symbol;
       }
       relocation = relocation->next;
@@ -212,7 +206,7 @@ gp_cofflink_clean_table(gp_object_type *object,
 
   symbol = object->symbols;
   while (symbol != NULL) {
-    if ((symbol->class == C_EXT) && 
+    if ((symbol->class == C_EXT) &&
         (symbol->section_number == N_UNDEF)) {
       /* This is an external symbol defined elsewhere */
       if (previous == NULL) {
@@ -256,12 +250,12 @@ gp_cofflink_combine_overlay(gp_object_type *object, int remove_symbol)
   gp_symbol_type  *symbol = NULL;
 
   first = object->sections;
-  
+
   while (first != NULL) {
     if (first->flags & STYP_OVERLAY) {
-      second = gp_coffgen_findsection(object, first->next, first->name);    
+      second = gp_coffgen_findsection(object, first->next, first->name);
       if (second != NULL) {
-        /* The sections must have the same properties or they can't be 
+        /* The sections must have the same properties or they can't be
            combined. */
         if (first->flags != second->flags) {
           gp_error("section types for \"%s\" do not match",
@@ -296,7 +290,7 @@ gp_cofflink_combine_overlay(gp_object_type *object, int remove_symbol)
 
         /* Remove the second section*/
         gp_coffgen_delsection(object, second);
-        
+
         /* Take another pass */
         gp_cofflink_combine_overlay(object, remove_symbol);
         return;
@@ -304,8 +298,6 @@ gp_cofflink_combine_overlay(gp_object_type *object, int remove_symbol)
     }
     first = first->next;
   }
-
-  return;
 }
 
 /* Allocate memory for a stack */
@@ -355,8 +347,6 @@ gp_cofflink_make_stack(gp_object_type *object, int num_bytes)
     symbol->type           = T_NULL;
     symbol->class          = C_EXT;
   }
-
-  return;
 }
 
 /* Merge all sections in one object file with the same name. The overlayed
@@ -374,11 +364,11 @@ gp_cofflink_merge_sections(gp_object_type *object)
 
   first = object->sections;
   while (first != NULL) {
-    second = gp_coffgen_findsection(object, first->next, first->name);    
+    second = gp_coffgen_findsection(object, first->next, first->name);
     if (second != NULL) {
-      /* The sections must have the same properties or they can't be 
+      /* The sections must have the same properties or they can't be
          combined. */
-      if ((first->flags & STYP_ABS) || 
+      if ((first->flags & STYP_ABS) ||
           (second->flags & STYP_ABS) ||
           (strcmp(first->name, ".config") == 0) ||
           (strcmp(first->name, ".idlocs") == 0)) {
@@ -387,7 +377,7 @@ gp_cofflink_merge_sections(gp_object_type *object)
         exit(1);
       }
 
-      gp_debug("  merging section \"%s\" with section \"%s\"", 
+      gp_debug("  merging section \"%s\" with section \"%s\"",
                first->name,
                second->name);
 
@@ -400,14 +390,14 @@ gp_cofflink_merge_sections(gp_object_type *object)
 
       /* Copy the section data */
       if(_has_data(second)) {
-	unsigned int last = second->size;
-	unsigned int offset = first->size;
-	unsigned int org;
+        unsigned int last = second->size;
+        unsigned int offset = first->size;
+        unsigned int org;
         for (org = 0; org < last; org++) {
           if (b_memory_get(second->data, org, &data))
-	    b_memory_put(first->data, org + offset, data);
-	  else
-	    assert(0);
+            b_memory_put(first->data, org + offset, data);
+          else
+            assert(0);
         }
       }
 
@@ -415,14 +405,14 @@ gp_cofflink_merge_sections(gp_object_type *object)
       _update_line_numbers(second->line_numbers, first->size);
 
       if (first->flags & (STYP_TEXT|STYP_DATA_ROM))
-	section_org = gp_processor_byte_to_org(object->class, first->size);
+        section_org = gp_processor_byte_to_org(object->class, first->size);
       else
-	section_org = first->size;
+        section_org = first->size;
 
       /* Update the symbol table */
       symbol = object->symbols;
       while (symbol != NULL) {
-        if ((symbol->section_number > 0) &&  
+        if ((symbol->section_number > 0) &&
             (symbol->section == second)) {
           symbol->section = first;
           symbol->value += section_org;
@@ -457,15 +447,13 @@ gp_cofflink_merge_sections(gp_object_type *object)
 
       /* Remove the second section*/
       gp_coffgen_delsection(object, second);
-        
+
       /* Take another pass */
       gp_cofflink_merge_sections(object);
       return;
     }
     first = first->next;
   }
-
-  return;
 }
 
 /* copy data from idata section to the ROM section */
@@ -485,7 +473,7 @@ _copy_rom_section(gp_object_type *object,
     for (from = idata->address; from < last; ++from, ++to) {
       unsigned char data;
       if (b_memory_get(idata->data, from, &data))
-	b_memory_put(rom->data, to, data);
+        b_memory_put(rom->data, to, data);
     }
   } else {
     /* select "retlw" instruction */
@@ -493,7 +481,7 @@ _copy_rom_section(gp_object_type *object,
     for (from = idata->address; from < last; from++, to += 2) {
       unsigned char data;
       if (b_memory_get(idata->data, from, &data))
-	object->class->i_memory_put(rom->data, to, insn | data);
+        object->class->i_memory_put(rom->data, to, insn | data);
     }
   }
 }
@@ -522,7 +510,7 @@ _create_rom_section(gp_object_type *object, gp_section_type *section)
   free(name);
   if (object->class->rom_width == 8) {
     new->size = section->size;
-    /* force the section size to be an even number of bytes */ 
+    /* force the section size to be an even number of bytes */
     if (section->size & 1) {
       b_memory_put(new->data, section->size, 0);
       new->size++;
@@ -543,17 +531,15 @@ _create_rom_section(gp_object_type *object, gp_section_type *section)
   }
   new->next = section->next;
   section->next = new;
-  
-  object->num_sections++;
 
-  return;
+  object->num_sections++;
 }
 
 /* write a word into four bytes of memory (not PIC16E) */
 
 static void
 _write_table_data(const struct proc_class *class,
-		  gp_section_type *section,
+                  gp_section_type *section,
                   int address,
                   int insn,
                   int data)
@@ -566,7 +552,7 @@ _write_table_data(const struct proc_class *class,
 
 static void
 _write_table_long(const struct proc_class *class,
-		  gp_section_type *section,
+                  gp_section_type *section,
                     int address,
                     int data)
 {
@@ -578,7 +564,7 @@ _write_table_long(const struct proc_class *class,
 
 static unsigned short
 _read_table_data(const struct proc_class *class,
-		 gp_section_type *section, int address)
+                 gp_section_type *section, int address)
 {
   unsigned short data[2];
 
@@ -610,8 +596,6 @@ gp_cofflink_make_cinit(gp_object_type *object)
     symbol->type           = T_NULL;
     symbol->class          = C_EXT;
   }
-
-  return;
 }
 
 /* create ROM data for initialized data sections */
@@ -641,7 +625,7 @@ gp_cofflink_make_idata(gp_object_type *object)
 
     byte_count = 2 + count * 12;
     if (object->class->rom_width != 8) {
-      /* retlw is used so 16-bit count is stored in 4 bytes not 2 */ 
+      /* retlw is used so 16-bit count is stored in 4 bytes not 2 */
       byte_count += 2;
     }
     new->size = byte_count;
@@ -696,16 +680,16 @@ gp_add_cinit_section(gp_object_type *object)
     while (section != NULL) {
       if (section->flags & STYP_DATA) {
         /* locate the rom table */
-	char *prog_name = _create_i_section_name(section->name);
-        prog_section = gp_coffgen_findsection(object, 
-                                              object->sections, 
+        char *prog_name = _create_i_section_name(section->name);
+        prog_section = gp_coffgen_findsection(object,
+                                              object->sections,
                                               prog_name);
-	free(prog_name);
+        free(prog_name);
 
         if (object->class->rom_width == 8) {
           /* write program memory address */
           _write_table_long(object->class, new, base_address,
-			    gp_processor_byte_to_org(object->class, prog_section->address));
+                            gp_processor_byte_to_org(object->class, prog_section->address));
 
           /* write data memory address */
           _write_table_long(object->class, new, base_address + 4, section->address);
@@ -714,8 +698,8 @@ gp_add_cinit_section(gp_object_type *object)
           _write_table_long(object->class, new, base_address + 8, section->size);
         } else {
           /* write program memory address */
-          _write_table_data(object->class, new, base_address, insn, 
-			    gp_processor_byte_to_org(object->class, prog_section->address));
+          _write_table_data(object->class, new, base_address, insn,
+                            gp_processor_byte_to_org(object->class, prog_section->address));
 
           /* write data memory address */
           _write_table_data(object->class, new, base_address + 4, insn, section->address);
@@ -723,7 +707,7 @@ gp_add_cinit_section(gp_object_type *object)
           /* write the table size */
           _write_table_data(object->class, new, base_address + 8, insn, section->size);
         }
- 
+
         count++;
         base_address += 12;
       }
@@ -748,7 +732,7 @@ _set_used(MemBlock *m, int org_to_byte_shift, unsigned int address, unsigned int
 {
   unsigned char data;
 
-  gp_debug("      marking %#x words from %#x to %#x as used", 
+  gp_debug("      marking %#x words from %#x to %#x as used",
            size,
            gp_byte_to_org(org_to_byte_shift, address),
            gp_byte_to_org(org_to_byte_shift, address + size));
@@ -767,7 +751,7 @@ _set_used(MemBlock *m, int org_to_byte_shift, unsigned int address, unsigned int
 
 void
 gp_cofflink_reloc_abs(MemBlock *m,
-		      int org_to_byte_shift,
+                      int org_to_byte_shift,
                       gp_section_type *section,
                       unsigned long flags)
 {
@@ -789,9 +773,9 @@ gp_cofflink_reloc_abs(MemBlock *m,
    assigned section that has not been relocated. */
 
 static gp_section_type *
-gp_cofflink_find_big_assigned(gp_section_type *section, 
+gp_cofflink_find_big_assigned(gp_section_type *section,
                               unsigned long flags,
-                              struct symbol_table *logical_sections)  
+                              struct symbol_table *logical_sections)
 {
   gp_section_type *biggest = NULL;
   struct symbol *sym;
@@ -817,7 +801,7 @@ gp_cofflink_find_big_assigned(gp_section_type *section,
    section that has not been relocated. */
 
 static gp_section_type *
-gp_cofflink_find_big_section(gp_section_type *section, 
+gp_cofflink_find_big_section(gp_section_type *section,
                              unsigned long flags)
 {
   gp_section_type *biggest = NULL;
@@ -835,22 +819,22 @@ gp_cofflink_find_big_section(gp_section_type *section,
   }
 
   if (biggest != NULL) {
-    gp_debug("  biggest section = %s, section flags = %#x, flags = %#x", 
+    gp_debug("  biggest section = %s, section flags = %#x, flags = %#x",
              biggest->name,
              biggest->flags,
              flags);
   }
-           
+
   return biggest;
 }
 
 /* Search through the target memory.  Locate the smallest block of memory
-   that is larger than the requested size.  Return the address of that 
+   that is larger than the requested size.  Return the address of that
    block */
 
 static int
 _search_memory(MemBlock *m,
-               int org_to_byte_shift, 
+               int org_to_byte_shift,
                unsigned int start,
                unsigned int stop,
                unsigned int size,
@@ -871,7 +855,7 @@ _search_memory(MemBlock *m,
   for (address = start; address <= stop; address++) {
     unsigned char b;
     mem_used = b_memory_get(m, address, &b);
-    if (address == stop) { 
+    if (address == stop) {
       if (in_block == 1) {
         /* end of the section definition */
         end_block = 1;
@@ -901,12 +885,12 @@ _search_memory(MemBlock *m,
       } else {
         /* continuation of an unused block of memory */
         current_size++;
-      }      
+      }
       in_block = 1;
     }
-  
+
     if (end_block == 1) {
-      gp_debug("    end unused block at %#x with size %#x", 
+      gp_debug("    end unused block at %#x with size %#x",
                gp_byte_to_org(org_to_byte_shift, address),
                gp_byte_to_org(org_to_byte_shift, current_size));
       if ((current_size >= size) &&
@@ -914,7 +898,7 @@ _search_memory(MemBlock *m,
         *block_size = current_size;
         *block_address = current_address;
         success = 1;
-      }    
+      }
       end_block = 0;
     }
   }
@@ -927,9 +911,9 @@ _search_memory(MemBlock *m,
 
 static void
 _move_data(MemBlock *m,
-           unsigned int address, 
+           unsigned int address,
            unsigned int size,
-           unsigned int new_address) 
+           unsigned int new_address)
 {
   int org;
   unsigned char data;
@@ -937,7 +921,7 @@ _move_data(MemBlock *m,
   if (address == new_address)
     return;
 
-  gp_debug("    moving %#x bytes from %#x to %#x", 
+  gp_debug("    moving %#x bytes from %#x to %#x",
            size,
            address,
            new_address);
@@ -949,8 +933,32 @@ _move_data(MemBlock *m,
     b_memory_clear(m, org);
     b_memory_put(m, new_address + org, data);
   }
+}
 
-  return;
+/* map real addres to shadow address */
+
+static unsigned int
+_map_to_shadow_address(struct linker_section *section_def, unsigned int address)
+{
+  if (section_def->shadow_sym) {
+    unsigned int new_address = address - section_def->start + section_def->shadow_val;
+    gp_debug("      mapping shadow address %#x => %#x", address, new_address);
+    return new_address;
+  } else
+    return address;
+}
+
+/* unmap real addres from shadow address */
+
+static unsigned int
+_unmap_from_shadow_address(struct linker_section *section_def, unsigned int address)
+{
+  if (section_def->shadow_sym) {
+    unsigned int new_address = address - section_def->shadow_val + section_def->start;
+    gp_debug("      unmapping shadow address %#x => %#x", address, new_address);
+    return new_address;
+  } else
+    return address;
 }
 
 /* allocate memory for relocatable assigned sections */
@@ -961,41 +969,46 @@ gp_cofflink_reloc_assigned(MemBlock *m,
                            gp_section_type *section,
                            unsigned long flags,
                            struct symbol_table *sections,
-                           struct symbol_table *logical_sections)  
+                           struct symbol_table *logical_sections)
 {
   gp_section_type *current;
   struct symbol *sym;
   char *section_name;
   struct linker_section *section_def;
-  unsigned int current_address;
+  unsigned int current_shadow_address;
   unsigned int current_size;
 
   while (1) {
     current = gp_cofflink_find_big_assigned(section, flags, logical_sections);
-    
+
     if (current == NULL)
       break;
-    
+
     /* Fetch the logical section */
     sym = get_symbol(logical_sections, current->name);
     assert(sym != NULL);
 
-    /* Fetch the section definition */ 
+    /* Fetch the section definition */
     section_name = get_symbol_annotation(sym);
     sym = get_symbol(sections, section_name);
     assert(sym != NULL);
     section_def = get_symbol_annotation(sym);
     assert(section_def != NULL);
-        
+
     /* assign the address to this section */
-    if (_search_memory(m, org_to_byte_shift, section_def->start, section_def->end,
-                       section->size, &current_address, &current_size) == 1) {
-      gp_debug("    successful relocation to %#x", gp_byte_to_org(org_to_byte_shift, current_address));
+    if (_search_memory(m, org_to_byte_shift,
+                       _map_to_shadow_address(section_def, section_def->start),
+                       _map_to_shadow_address(section_def, section_def->end),
+                       section->size, &current_shadow_address, &current_size) == 1) {
+      gp_debug("    logical section: %s", current->name);
+      gp_debug("    section name: %s", section_name);
+      gp_debug("    successful relocation to %#x", gp_byte_to_org(org_to_byte_shift, current_shadow_address));
       if (_has_data(current)) {
-        _move_data(current->data, current->address, current->size, current_address);
+        _move_data(current->data, current->shadow_address, current->size, current_shadow_address);
       }
-      current->address = current_address;
-      _set_used(m, 0, current_address, current->size);
+      current->address = _unmap_from_shadow_address(section_def, current_shadow_address);
+      current->shadow_address = current_shadow_address;
+      _set_used(m, 0, current_shadow_address, current->size);
 
       /* Update the line number offsets */
       _update_line_numbers(current->line_numbers, current->address);
@@ -1004,12 +1017,10 @@ gp_cofflink_reloc_assigned(MemBlock *m,
       current->flags |= STYP_RELOC;
 
     } else {
-      gp_error("no target memory available for section \"%s\"", current->name);    
+      gp_error("no target memory available for section \"%s\"", current->name);
       return;
     }
   }
-
-  return;
 }
 
 /* allocate memory for relocatable unassigned sections */
@@ -1019,7 +1030,7 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
                              int org_to_byte_shift,
                              gp_section_type *section,
                              unsigned long flags,
-                             struct symbol_table *sections)  
+                             struct symbol_table *sections)
 
 {
   gp_section_type *current;
@@ -1031,17 +1042,18 @@ gp_cofflink_reloc_unassigned(MemBlock *m,
   int i;
   struct symbol *sym;
   struct linker_section *section_def;
-  unsigned int current_address;
+  unsigned int current_shadow_address;
   unsigned int current_size;
+  unsigned int smallest_shadow_address;
   unsigned int smallest_address;
   unsigned int smallest_size;
 
   while (1) {
     current = gp_cofflink_find_big_section(section, flags);
-    
+
     if (current == NULL)
       break;
-   
+
     size = current->size;
 
     /* determine what type of sections are being relocated */
@@ -1065,10 +1077,11 @@ next_pass:
 
     success = 0;
     type_avail = 0;
+    smallest_shadow_address = 0;
     smallest_address = 0;
     smallest_size = 0xffffffff;
 
-    /* search the section definitions for the smallest block of memory that 
+    /* search the section definitions for the smallest block of memory that
        the section will fit in */
     for (i = 0; i < HASH_SIZE; i++) {
       for (sym = sections->hash_table[i]; sym; sym = sym->next) {
@@ -1076,21 +1089,27 @@ next_pass:
         if ((section_def->type == type) &&
             (!section_def->protected)) {
           gp_debug("  section = %s", current->name);
+          gp_debug("    name = %s", sym->name);
           gp_debug("    size = %#x", current->size);
           gp_debug("    def start = %#x", section_def->start);
           gp_debug("    def end = %#x", section_def->end);
+          if (section_def->shadow_sym) {
+            gp_debug("    def shadow_sym = %s", section_def->shadow_sym);
+            gp_debug("    def shadow_val = %#x", section_def->shadow_val);
+          }
           type_avail = 1;
-          if (_search_memory(m, 
+          if (_search_memory(m,
                              org_to_byte_shift,
-                             section_def->start,
-                             section_def->end,
+                             _map_to_shadow_address(section_def, section_def->start),
+                             _map_to_shadow_address(section_def, section_def->end),
                              size,
-                             &current_address,
+                             &current_shadow_address,
                              &current_size) == 1) {
             success = 1;
             if (smallest_size > current_size) {
               smallest_size = current_size;
-              smallest_address = current_address;
+              smallest_shadow_address = current_shadow_address;
+              smallest_address = _unmap_from_shadow_address(section_def, smallest_shadow_address);
             }
           }
         }
@@ -1099,12 +1118,13 @@ next_pass:
 
     /* set the memory used flag for all words in the block */
     if (success == 1) {
-      gp_debug("    successful relocation to %#x", gp_byte_to_org(org_to_byte_shift, smallest_address));
+      gp_debug("    successful relocation to %#x", gp_byte_to_org(org_to_byte_shift, smallest_shadow_address));
       if (_has_data(current)) {
-        _move_data(current->data, current->address, size, smallest_address);
+        _move_data(current->data, current->shadow_address, size, smallest_shadow_address);
       }
+      current->shadow_address = smallest_shadow_address;
       current->address = smallest_address;
-      _set_used(m, 0, smallest_address, size);
+      _set_used(m, 0, smallest_shadow_address, size);
 
       /* Update the line number offsets */
       _update_line_numbers(current->line_numbers, current->address);
@@ -1115,24 +1135,22 @@ next_pass:
       first_time = 0;
       type = sharebank;
       gp_warning("relocation of section \"%s\" failed, relocating to a shared memory location",
-                 current->name);    
+                 current->name);
       goto next_pass;
     } else if (type_avail == 0) {
       gp_error("linker script has no definition that matches the type of section \"%s\"",
-               current->name);    
+               current->name);
       return;
     } else {
-      gp_error("no target memory available for section \"%s\"", current->name);    
+      gp_error("no target memory available for section \"%s\"", current->name);
       return;
     }
   }
-
-  return;
 }
 
 /* update all symbols with their new relocated values  */
 
-void 
+void
 gp_cofflink_update_table(gp_object_type *object, int org_to_byte_shift)
 {
   gp_symbol_type *symbol = object->symbols;
@@ -1144,9 +1162,9 @@ gp_cofflink_update_table(gp_object_type *object, int org_to_byte_shift)
     if (symbol->section_number > 0) {
       assert(symbol->section != NULL);
       if (!(symbol->section->flags & STYP_ABS)) {
-	int offset = symbol->section->address;
-	if (symbol->section->flags & (STYP_TEXT | STYP_DATA_ROM))
-	  offset = gp_byte_to_org(org_to_byte_shift, offset);
+        int offset = symbol->section->address;
+        if (symbol->section->flags & (STYP_TEXT | STYP_DATA_ROM))
+          offset = gp_byte_to_org(org_to_byte_shift, offset);
         symbol->value += offset;
       }
     }
@@ -1165,7 +1183,7 @@ gp_cofflink_update_table(gp_object_type *object, int org_to_byte_shift)
 
 /* Create sections to fill unused memory in the pages with constant data. */
 
-void 
+void
 gp_cofflink_fill_pages(gp_object_type *object,
                        MemBlock *m,
                        struct symbol_table *sections)
@@ -1177,7 +1195,7 @@ gp_cofflink_fill_pages(gp_object_type *object,
   char fill_name[BUFSIZ];
   int fill_number = 1;
   gp_section_type *section = NULL;
-  unsigned int current_address;
+  unsigned int current_shadow_address;
   unsigned int current_size;
   int org;
   int end;
@@ -1191,45 +1209,46 @@ gp_cofflink_fill_pages(gp_object_type *object,
       if ((section_def->type == codepage) &&
           (section_def->use_fill)) {
         while (1) {
-          found = _search_memory(m, 
+          found = _search_memory(m,
                                  object->class->org_to_byte_shift,
-                                 section_def->start,
-                                 section_def->end,
+                                 _map_to_shadow_address(section_def, section_def->start),
+                                 _map_to_shadow_address(section_def, section_def->end),
                                  1,
-                                 &current_address,
+                                 &current_shadow_address,
                                  &current_size);
           if (found == 1) {
             snprintf(fill_name, sizeof(fill_name), ".fill_%i", fill_number++);
-            gp_debug("  new section \"%s\" at %#x with size %#x and data %#x", 
+            gp_debug("  new section \"%s\" at %#x with size %#x and data %#x",
                      fill_name,
-                     current_address,
+                     current_shadow_address,
                      current_size,
                      section_def->fill);
-            section = gp_coffgen_findsection(object, 
+            section = gp_coffgen_findsection(object,
                                              object->sections,
                                              fill_name);
             if (section != NULL) {
-              gp_error("fill section \"%s\" aready exists", fill_name);    
+              gp_error("fill section \"%s\" aready exists", fill_name);
               return;
             } else {
               /* create a new section for the fill data */
-              section = gp_coffgen_addsection(object, fill_name); 
-              section->address = current_address; 
+              section = gp_coffgen_addsection(object, fill_name);
+              section->address = _unmap_from_shadow_address(section_def, current_shadow_address);
+              section->shadow_address = current_shadow_address;
               section->size = current_size;
               section->flags = STYP_TEXT;
               /* FIXME: do we really need a section symbol? */
-              
+
               /* mark the memory as used */
               _set_used(m, object->class->org_to_byte_shift,
-			current_address, current_size);
-              
+                        current_shadow_address, current_size);
+
               /* fill the section memory */
-              org = current_address;
+              org = current_shadow_address;
               end = org + current_size;
               for ( ; org < end; org += 2) {
                 object->class->i_memory_put(section->data,
-					    org,
-					    section_def->fill);
+                                            org,
+                                            section_def->fill);
               }
             }
           } else {
@@ -1238,9 +1257,7 @@ gp_cofflink_fill_pages(gp_object_type *object,
         }
       }
     }
-  } 
-
-  return;
+  }
 }
 
 static void
@@ -1250,20 +1267,18 @@ check_relative(gp_section_type *section, int org, int argument, int range)
   if ((argument > range) || (argument < -(range+1))) {
     gp_warning("relative branch out of range in at %#x of section \"%s\"",
                org << 1,
-	       section->name);
+               section->name);
   }
+}
 
-  return;
-} 
+/* patch one word with the relocated address */
 
-/* patch one word with the relocated address */ 
-
-static void 
+static void
 gp_cofflink_patch_addr(proc_class_t class,
                        int num_pages,
                        int num_banks,
                        int bsr_boundary,
-                       gp_section_type *section, 
+                       gp_section_type *section,
                        gp_symbol_type *symbol,
                        gp_reloc_type *relocation)
 {
@@ -1277,15 +1292,15 @@ gp_cofflink_patch_addr(proc_class_t class,
   org = section->address + relocation->address;
   value = symbol->value + relocation->offset;
 
-  gp_debug("  patching %#x from %s with %#x", 
+  gp_debug("  patching %#x from %s with %#x",
            org,
-           section->name, 
+           section->name,
            value);
-  
+
   /* fetch the current contents of the memory */
   class->i_memory_get(section->data, org, &current_value);
 
-  /* FIXME: Not sure if warnings should be generated for out of range 
+  /* FIXME: Not sure if warnings should be generated for out of range
             arguments. The linker should make sure values are within
             ranges in the linker scripts. */
 
@@ -1297,14 +1312,14 @@ gp_cofflink_patch_addr(proc_class_t class,
     data = class->reloc_goto(value);
     break;
   case RELOCT_HIGH:
-    data = (value >> 8) & 0xff;   
-    break; 
+    data = (value >> 8) & 0xff;
+    break;
   case RELOCT_LOW:
-    data = value & 0xff;   
-    break; 
+    data = value & 0xff;
+    break;
   case RELOCT_P:
-    data = (value & 0x1f) << 8;   
-    break; 
+    data = (value & 0x1f) << 8;
+    break;
   case RELOCT_BANKSEL:
     {
       int bank = gp_processor_check_bank(class, value);
@@ -1313,17 +1328,17 @@ gp_cofflink_patch_addr(proc_class_t class,
     }
     break;
   case RELOCT_ALL:
-    data = value & 0xffff;   
-    break; 
+    data = value & 0xffff;
+    break;
   case RELOCT_IBANKSEL:
     data = class->reloc_ibanksel(value);
-    break; 
+    break;
   case RELOCT_F:
     data = class->reloc_f(value);
-    break; 
+    break;
   case RELOCT_TRIS:
     data = class->reloc_tris(value);
-    break; 
+    break;
   case RELOCT_MOVLR:
     data = (value << 4) & 0xf0;
     break;
@@ -1363,10 +1378,10 @@ gp_cofflink_patch_addr(proc_class_t class,
     break;
   case RELOCT_UPPER:
     data = (value >> 16) & 0xff;
-    break; 
+    break;
   case RELOCT_ACCESS:
     if ((value >= 0 && value < bsr_boundary) ||
-	(value >= 0xf00 + bsr_boundary && value < 0x1000))
+        (value >= 0xf00 + bsr_boundary && value < 0x1000))
       data = 0;
     else
       data = 0x100;
@@ -1396,7 +1411,7 @@ gp_cofflink_patch_addr(proc_class_t class,
   case RELOCT_SCNEND_LFSR1:
   case RELOCT_SCNEND_LFSR2:
   default:
-    gp_error("unimplemented relocation = %i in section \"%s\"", 
+    gp_error("unimplemented relocation = %i in section \"%s\"",
              relocation->type,
              section->name);
     assert(0);
@@ -1405,14 +1420,12 @@ gp_cofflink_patch_addr(proc_class_t class,
   /* update memory with the new value */
   if (write_data)
     class->i_memory_put(section->data, org, current_value | data);
-
-  return;
 }
 
 /* Patch all addresses with the relocated symbols.  The relocations are
    stripped from the sections. */
 
-void 
+void
 gp_cofflink_patch(gp_object_type *object)
 {
   gp_section_type    *section = object->sections;
@@ -1421,7 +1434,7 @@ gp_cofflink_patch(gp_object_type *object)
   int num_pages;
   int num_banks;
   int bsr_boundary;
-  
+
   bsr_boundary = gp_processor_bsr_boundary(object->processor);
 
   num_pages = gp_processor_num_pages(object->processor);
@@ -1436,12 +1449,12 @@ gp_cofflink_patch(gp_object_type *object)
       while (relocation != NULL) {
         symbol = relocation->symbol;
         gp_cofflink_patch_addr(object->class,
-	                       num_pages,
+                               num_pages,
                                num_banks,
                                bsr_boundary,
-			       section,
-			       symbol,
-			       relocation);
+                               section,
+                               symbol,
+                               relocation);
 
         relocation = relocation->next;
       }
@@ -1451,7 +1464,7 @@ gp_cofflink_patch(gp_object_type *object)
         assert(section->next->flags & STYP_DATA_ROM);
         _copy_rom_section(object, section, section->next);
       }
-    
+
       /* strip the relocations from the section */
       section->num_reloc = 0;
       section->relocations = NULL;
@@ -1460,13 +1473,11 @@ gp_cofflink_patch(gp_object_type *object)
 
     section = section->next;
   }
-
-  return;
 }
 
 /* copy all executatable data to new memory */
 
-MemBlock * 
+MemBlock *
 gp_cofflink_make_memory(gp_object_type *object)
 {
   gp_section_type *section = object->sections;
@@ -1480,19 +1491,19 @@ gp_cofflink_make_memory(gp_object_type *object)
     if ((section->flags & STYP_TEXT) ||
         (section->flags & STYP_DATA_ROM)) {
       org = section->address;
-      
+
       stop = org + section->size;
-            
+
       for ( ; org < stop; org++) {
-	unsigned char b;
+        unsigned char b;
         /* fetch the current contents of the memory */
-	b_memory_assert_get(section->data, org, &b);
+        b_memory_assert_get(section->data, org, &b);
         /* write data to new memory */
         b_memory_put(m, org, b);
       }
     }
     section = section->next;
   }
- 
+
  return m;
 }
