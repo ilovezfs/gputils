@@ -67,7 +67,7 @@ gp_read_file(const char *filename)
   /* determine the size of the file */
   fseek(infile, 0, SEEK_END);
   file->size = ftell(infile);
-  rewind(infile); 
+  rewind(infile);
 
   /* read the object file into memory */
   file->file = (unsigned char *)malloc(file->size);
@@ -236,6 +236,7 @@ _read_section_header(gp_object_type *object,
 
   if (section->flags & (STYP_TEXT|STYP_DATA_ROM))
     section->address = gp_processor_org_to_byte(object->class, section->address);
+  section->shadow_address = section->address;
 }
 
 static void
