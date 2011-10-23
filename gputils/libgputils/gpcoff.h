@@ -199,7 +199,9 @@ struct reloc
 /* relocation for the address of the end of a section on LFSR */
 #define     RELOCT_SCNEND_LFSR1 31
 #define     RELOCT_SCNEND_LFSR2 32
-#define	    RELOCT_TRIS_4BIT    33
+#define     RELOCT_TRIS_4BIT    33
+/* relocation for selecting the correct page using pic14 enhanced MOVLP instruction */
+#define     RELOCT_PAGESEL_MOVLP   34
 
 /* linenumber entry */
 struct lineno

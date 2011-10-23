@@ -1,3 +1,9 @@
+2011-10-23  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/directive.c, libgputils/gpcofflink.c: fixed bug #3427278:
+    BANKSEL is broken on PIC16F1936 in certain cases
+  * gpasm/directive.c, libgputils/gpcoff.h, libgputils/gpcofflink.c,
+    libgputils/gpprocessor.c: fixed bug #3376246: differs on second pass
+
 2011-10-16  Borut Razem  <borutr@users.sourceforge.net>
   * gplink/script.c, libgputils/gpcoffgen.c, libgputils/gpcoff.h,
     libgputils/gpreadobj.c, libgputils/gpcofflink.c, libgputils/gpcofflink.h:

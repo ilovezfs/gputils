@@ -2488,6 +2488,15 @@ static gpasmVal _do_pagesel(gpasmVal r,
         reloc_evaluate(p, RELOCT_PAGESEL_WREG);
         emit(0);
         emit(0);
+      } else if (state.device.class == PROC_CLASS_PIC14E) {
+        if (use_wreg == 0) {
+          reloc_evaluate(p, RELOCT_PAGESEL_MOVLP);
+          emit(0x3180);
+        } else {
+          reloc_evaluate(p, RELOCT_PAGESEL_WREG);
+          emit(0);
+          emit(0);
+        }
       } else {
         if ((use_wreg == 0) &&
             (state.processor->num_pages == 2)) {
@@ -4184,6 +4193,11 @@ void opcode_init(int stage)
   for (i = 0; i < count; i++)
     annotate_symbol(add_symbol(state.stBuiltin, base[i].name), (void*)&base[i]);
 
+  if (stage == 1) {
+    /* pageselw directive not supported on pic14 enhanced devices*/
+    remove_symbol(state.stBuiltin, "pageselw");
+  }
+
   if (state.processor) {
     const char *name = gp_processor_name(state.processor, 0);
 
@@ -4193,9 +4207,8 @@ void opcode_init(int stage)
       remove_symbol(state.stBuiltin, "MOVLR");
       remove_symbol(state.stBuiltin, "MULLW");
     }
-
     /* Special Case, Some instructions not available on 16f5x devices */
-    if (strcmp(name, "pic16f54") == 0 ||
+    else if (strcmp(name, "pic16f54") == 0 ||
         strcmp(name, "pic16f57") == 0 ||
         strcmp(name, "pic16f59") == 0) {
       remove_symbol(state.stBuiltin, "ADDLW");
@@ -4203,8 +4216,7 @@ void opcode_init(int stage)
       remove_symbol(state.stBuiltin, "RETURN");
       remove_symbol(state.stBuiltin, "RETFIE");
     }
-
-    if (strcmp(name, "sx48bd") == 0 ||
+    else if (strcmp(name, "sx48bd") == 0 ||
         strcmp(name, "sx52bd") == 0) {
       struct symbol *mode_sym = get_symbol(state.stBuiltin, "MODE");
       if (mode_sym != NULL)
