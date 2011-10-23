@@ -1343,10 +1343,15 @@ gp_cofflink_patch_addr(proc_class_t class,
     data = (value << 4) & 0xf0;
     break;
   case RELOCT_MOVLB:
-    /* The upper byte of the symbol is used for the BSR.  This is inconsistent
-       with the datasheet and the assembler, but is done to maintain
-       compatibility with mplink. */
-    data = (value >> 8) & 0xff;
+    if (class = PROC_CLASS_PIC14E) {
+      data = (value >> 7) & 0xff;
+    }
+    else {
+      /* The upper byte of the symbol is used for the BSR.  This is inconsistent
+         with the datasheet and the assembler, but is done to maintain
+         compatibility with mplink. */
+      data = (value >> 8) & 0xff;
+    }
     break;
   case RELOCT_GOTO2:
     /* This is only used for PIC16E (pic18) */
