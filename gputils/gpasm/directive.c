@@ -505,6 +505,9 @@ static gpasmVal do_banksel(gpasmVal r,
                                            state.org);
       } else if (num_reloc != 1) {
         gperror(GPE_UNRESOLVABLE, NULL);
+      } else if (state.device.class == PROC_CLASS_PIC14E) {
+        reloc_evaluate(p, RELOCT_MOVLB);
+        emit(0x20);
       } else if (state.device.class == PROC_CLASS_PIC16) {
         reloc_evaluate(p, RELOCT_BANKSEL);
         emit(0);
@@ -3112,7 +3115,11 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_LIT5:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          emit_check(i->opcode, maybe_evaluate(p), 0x1f);
+         if (strcasecmp(i->name, "movlb") == 0) {
+            emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), 0x1f);
+          } else {
+            emit_check(i->opcode, maybe_evaluate(p), 0x1f);
+          }
         }
         break;
       case INSN_CLASS_LIT4S:
