@@ -1399,6 +1399,7 @@ gp_cofflink_patch_addr(proc_class_t class,
     }
     break;
   case RELOCT_PAGESEL_BITS:
+  case RELOCT_PAGESEL_MOVLP:
     {
       int page = gp_processor_check_page(class, value);
       gp_processor_set_page(class, num_pages, page, section->data, org, 0);
