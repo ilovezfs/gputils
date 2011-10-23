@@ -4193,7 +4193,7 @@ void opcode_init(int stage)
   for (i = 0; i < count; i++)
     annotate_symbol(add_symbol(state.stBuiltin, base[i].name), (void*)&base[i]);
 
-  if (stage == 1) {
+  if (stage == 1 && state.device.class == PROC_CLASS_PIC14E) {
     /* pageselw directive not supported on pic14 enhanced devices*/
     remove_symbol(state.stBuiltin, "pageselw");
   }
