@@ -1343,7 +1343,7 @@ gp_cofflink_patch_addr(proc_class_t class,
     data = (value << 4) & 0xf0;
     break;
   case RELOCT_MOVLB:
-    if (class = PROC_CLASS_PIC14E) {
+    if (PROC_CLASS_PIC14E == class) {
       data = (value >> 7) & 0xff;
     }
     else {
