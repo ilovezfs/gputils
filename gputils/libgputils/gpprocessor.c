@@ -1152,6 +1152,24 @@ gp_processor_set_bank_pic14e(int num_banks,
   return 2;
 }
 
+static const struct insn *
+find_insn_pic14e(proc_class_t cls, long int opcode)
+{
+  int i;
+  /* might be from the enganced instruction set */
+  for(i = 0; i < num_op_16cxx_enh; i++) {
+    if((op_16cxx_enh[i].mask & opcode) == op_16cxx_enh[i].opcode) {
+      return &op_16cxx_enh[i];
+    }
+  }
+  for(i = 0; i < num_op_16cxx; i++) {
+    if((op_16cxx[i].mask & opcode) == op_16cxx[i].opcode) {
+      return &op_16cxx[i];
+    }
+  }
+  return NULL;
+}
+
 /* PIC16 */
 
 static int
@@ -1418,7 +1436,7 @@ const struct proc_class proc_class_pic14e = {
   reloc_f_pic14,
   reloc_tris_pic14,
   op_16cxx, &num_op_16cxx,
-  find_insn_generic,
+  find_insn_pic14e,
   i_memory_get_le, i_memory_put_le,
 };
 

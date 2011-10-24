@@ -5,6 +5,8 @@
   * AUTHORS: added Borut, '@' replaced with '.AT.'
   * doc/gputils.lyx, configure.ac, configure: version changed to 0.14.0
   * libgputils/gpcofflink.c: fixed typo
+  * libgputils/gpdis.c, libgputils/gpprocessor.c: implemented disassembler for
+    pic14 enhanced instruction set
 
 2011-10-23  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c, libgputils/gpcofflink.c: fixed bug #3427278:
