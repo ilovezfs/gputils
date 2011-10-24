@@ -1,5 +1,7 @@
 2011-10-24  Borut Razem  <borutr@users.sourceforge.net>
-  * README: gputils is not ALPHA software any more ;-)
+  * README, gplink/gplink.h, gputils/gplib.h, gputils/gpvc.h, gputils/gpdasm.h,
+    gputils/gpvo.h, gputils/gpstrip.h, gpasm/gpasm.h:
+    gputils is not ALPHA nor BETA software any more ;-)
   * AUTHORS: added Borut, '@' replaced with '.AT.'
   * doc/gputils.lyx, configure.ac, configure: version changed to 0.14.0
   * libgputils/gpcofflink.c: fixed typo

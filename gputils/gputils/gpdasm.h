@@ -22,7 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPDASM_H__
 #define __GPDASM_H__
 
-#define GPDASM_VERSION_STRING ("gpdasm-" VERSION " beta")
+#define GPDASM_VERSION_STRING ("gpdasm-" VERSION)
 
 extern struct gpdasm_state {
   pic_processor_t processor;    /* selected processor */
@@ -34,7 +34,7 @@ extern struct gpdasm_state {
     basefilename[BUFSIZ],       /* basename for generating hex,list,symbol filenames */
     hexfilename[BUFSIZ];        /* Hex (.hex) file name */
   struct hex_data *hex_info;    /* information on input hex file */
-  struct {			/* Totals for errors, warnings, messages */
+  struct {                      /* Totals for errors, warnings, messages */
     int errors;
     int warnings;
     int messages;
