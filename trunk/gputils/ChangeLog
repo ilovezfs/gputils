@@ -1,3 +1,8 @@
+2011-10-24  Borut Razem  <borutr@users.sourceforge.net>
+  * README: gputils is not ALPHA software any more ;-)
+  * AUTHORS: added Borut, '@' replaced with '.AT.'
+  * doc/gputils.lyx, configure.ac, configure: version changed to 0.14.0
+
 2011-10-23  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c, libgputils/gpcofflink.c: fixed bug #3427278:
     BANKSEL is broken on PIC16F1936 in certain cases
