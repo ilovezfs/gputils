@@ -45,7 +45,7 @@
 \begin_body
 
 \begin_layout Title
-gputils 0.13.8
+gputils 0.14.0
 \end_layout
 
 \begin_layout Author
@@ -53,7 +53,7 @@ James Bowman, Craig Franklin, and David Barnett
 \end_layout
 
 \begin_layout Date
-September 29, 2011
+October 23, 2011
 \end_layout
 
 \begin_layout Standard
@@ -8192,7 +8192,7 @@ Xor W and <f>, result in <dst>
 
 \begin_layout Standard
 \begin_inset Tabular
-<lyxtabular version="3" rows="17" columns="2">
+<lyxtabular version="3" rows="23" columns="2">
 <features>
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
@@ -8381,7 +8381,7 @@ Logical Right Shift
 \begin_inset Text
 
 \begin_layout Plain Layout
-MOVIW <n> <mm>
+MOVIW ++FSR<n>
 \end_layout
 
 \end_inset
@@ -8390,7 +8390,67 @@ MOVIW <n> <mm>
 \begin_inset Text
 
 \begin_layout Plain Layout
-Move Indirect FSR<n> to W with pre/post inc/dec modifier, <mm>
+Move Indirect FSR<n> to W with preincrement
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MOVIW --FSR<n>
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Move Indirect FSR<n> to W with predecrement
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MOVIW FSR<n>++
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Move Indirect FSR<n> to W with postincrement
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MOVIW FSR<n>--
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Move Indirect FSR<n> to W with postdecrement
 \end_layout
 
 \end_inset
@@ -8421,7 +8481,7 @@ Move INDFn to W, Indexed Indirect
 \begin_inset Text
 
 \begin_layout Plain Layout
-MOVWI <n> <mm>
+MOVWI ++FSR<n>
 \end_layout
 
 \end_inset
@@ -8430,7 +8490,67 @@ MOVWI <n> <mm>
 \begin_inset Text
 
 \begin_layout Plain Layout
-Move W to Indirect FSR<n> with pre/post inc/dec modifier, <mm> 
+Move W to Indirect FSR<n> with preincrement
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MOVWI --FSR<n>
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Move W to Indirect FSR<n> with predecrement
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MOVWI FSR<n>++
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Move W to Indirect FSR<n> with postincrement
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MOVWI FSR<n>--
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Move W to Indirect FSR<n> with postdecrement
 \end_layout
 
 \end_inset
