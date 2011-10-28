@@ -130,7 +130,7 @@ readhex(char *filename, MemBlock *m)
       }
 
       /* inhx32 segment line*/
-      page = readword() << 16;
+      page = ((readbyte() << 8) + readbyte()) << 16;
       info->hex_format = inhx32;
 
     } else {

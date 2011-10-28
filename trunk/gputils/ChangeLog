@@ -1,3 +1,7 @@
+2011-10-28  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpdis.c: fixed INSN_CLASS_LIT20 and movwi, moviw disassembly
+  * libgputils/gpreadhex.c: fixed reading inhx32 segment line
+
 2011-10-24  Borut Razem  <borutr@users.sourceforge.net>
   * README, gplink/gplink.h, gputils/gplib.h, gputils/gpvc.h, gputils/gpdasm.h,
     gputils/gpvo.h, gputils/gpstrip.h, gpasm/gpasm.h:

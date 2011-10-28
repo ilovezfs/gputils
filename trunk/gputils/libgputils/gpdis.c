@@ -44,7 +44,7 @@ Boston, MA 02111-1307, USA.  */
                                              ARG2, \
                                              ARG3)
 
-#define DECODE_MOVINDF(ARG1, ARG2, ARG3) snprintf(buffer, sizeof_buffer, "%s\t%sFSR%d%s", \
+#define DECODE_MOVINDF(ARG1, ARG2, ARG3) snprintf(buffer, sizeof_buffer, "%s\t%s%#x%s", \
                                              instruction->name,\
                                              ARG1, \
                                              ARG2, \
@@ -79,16 +79,21 @@ gp_disassemble(MemBlock *m,
     if (0x3f00 == masked)
        instr = "moviw";
     else if (0x3f80 == masked)
-       instr = "moviw";
+       instr = "movwi";
 
     if (instr) {
       /* twos complement number */
-      int value = opcode & 0x3f;
+      int neg;
+
+      value = opcode & 0x3f;
       if (value & 0x20) {
-        value = -((value ^ 0x3f) + 1);
+        value = (value ^ 0x3f) + 1;
+        neg = 1;
+      } else {
+        neg = 0;
       }
-      snprintf(buffer, sizeof_buffer, "%s\t%d[FSR%d]", instr, value,
-               0 != (opcode & 0x40));
+      snprintf(buffer, sizeof_buffer, "%s\t%s.%d[%#x]", instr, neg ? "-" : "", value,
+               (opcode & 0x40) ? 6 : 4);
       return num_words;
     }
   }
@@ -140,8 +145,19 @@ gp_disassemble(MemBlock *m,
     case INSN_CLASS_LIT13:
       DECODE_ARG1(opcode & 0x1fff);
       break;
-    case INSN_CLASS_LITFSR:
-      DECODE_ARG2(((opcode >> 6) & 0x3), (opcode & 0x3f));
+    case INSN_CLASS_LITFSR: {
+        int neg;
+
+        value = (opcode & 0x3f);
+        if (value & 0x20) {
+          value = (value ^ 0x3f) + 1;
+          neg = 1;
+        } else {
+          neg = 0;
+        }
+        snprintf(buffer, sizeof_buffer, "%s\t%#x, %s.%d", instruction->name,
+                 ((opcode >> 6) & 0x3) ? 6 : 4, neg ? "-" : "", value);
+      }
       break;
     case INSN_CLASS_RBRA8:
       value = (opcode & 0xff);
@@ -172,7 +188,7 @@ gp_disassemble(MemBlock *m,
       break;
     case INSN_CLASS_LIT20:
       {
-        unsigned short dest;
+        unsigned int dest;
 
         num_words = 2;
         class->i_memory_get(m, byte_address + 2, &dest);
@@ -183,7 +199,7 @@ gp_disassemble(MemBlock *m,
       break;
     case INSN_CLASS_CALL20:
       {
-        unsigned short dest;
+        unsigned int dest;
 
         num_words = 2;
         class->i_memory_get(m, byte_address + 2, &dest);
@@ -327,7 +343,7 @@ gp_disassemble(MemBlock *m,
       break;
     case INSN_CLASS_MOVINDF:
       DECODE_MOVINDF((opcode & 0x02) ? "" : ((opcode & 0x01) ? "--" : "++"),
-                     (opcode & 0x04) != 0,
+                     (opcode & 0x04) ? 6 : 4,
                      (opcode & 0x02) ? ((opcode & 0x01) ? "--" : "++") : "");
       break;
     default:
