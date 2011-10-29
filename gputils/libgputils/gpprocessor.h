@@ -70,6 +70,8 @@ struct proc_class {
 
   int (*i_memory_get)(MemBlock *m, unsigned int byte_address, unsigned short *word);
   void (*i_memory_put)(MemBlock *m, unsigned int byte_address, unsigned short value);
+
+  void (*patch_strict)(void);
 };
 typedef const struct proc_class *proc_class_t;
 
