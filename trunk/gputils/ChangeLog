@@ -1,4 +1,12 @@
 2011-10-28  Borut Razem  <borutr@users.sourceforge.net>
+  * gputils/gpdasm.c, libgputils/gpopcode.c, libgputils/gpopcode.h,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.h:
+    introduced --strict gpdasm command line option
+  * doc/gputils.lyx: documented --strict gpdasm command line option
+  * gpasm/testsuite/test:
+    added disassemble and reassemble the assembled hex file test
+
+2011-10-28  Borut Razem  <borutr@users.sourceforge.net>
   * gputils-0.14.0 released
 
 2011-10-28  Borut Razem  <borutr@users.sourceforge.net>
