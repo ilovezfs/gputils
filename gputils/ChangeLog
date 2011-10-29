@@ -1,4 +1,7 @@
 2011-10-28  Borut Razem  <borutr@users.sourceforge.net>
+  * gputils-0.14.0 released
+
+2011-10-28  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpdis.c: fixed INSN_CLASS_LIT20 and movwi, moviw disassembly
   * libgputils/gpreadhex.c: fixed reading inhx32 segment line
 
