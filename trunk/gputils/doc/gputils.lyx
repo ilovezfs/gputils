@@ -616,7 +616,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
-a <format>
+-a <format>
 \end_layout
 
 \end_inset
@@ -646,7 +646,7 @@ hex file in one of four formats: inhx8m, inhx8s, inhx16, inhx32 (the default).
 \begin_inset Text
 
 \begin_layout Plain Layout
-c
+-c
 \end_layout
 
 \end_inset
@@ -666,7 +666,7 @@ Output a relocatable object in the older version of the Microchip COFF format
 \begin_inset Text
 
 \begin_layout Plain Layout
-C
+-C
 \end_layout
 
 \end_inset
@@ -686,7 +686,7 @@ Output a relocatable object in the new Microchip COFF format
 \begin_inset Text
 
 \begin_layout Plain Layout
-d
+-d
 \end_layout
 
 \end_inset
@@ -706,7 +706,7 @@ Output debug messages
 \begin_inset Text
 
 \begin_layout Plain Layout
-D symbol[=value] 
+-D symbol[=value] 
 \end_layout
 
 \end_inset
@@ -734,7 +734,7 @@ Equivalent to
 \begin_inset Text
 
 \begin_layout Plain Layout
-e [ON|OFF]
+-e [ON|OFF]
 \end_layout
 
 \end_inset
@@ -754,7 +754,7 @@ Expand macros in listing file
 \begin_inset Text
 
 \begin_layout Plain Layout
-g
+-g
 \end_layout
 
 \end_inset
@@ -774,7 +774,7 @@ Use debug directives for COFF
 \begin_inset Text
 
 \begin_layout Plain Layout
-h
+-h
 \end_layout
 
 \end_inset
@@ -794,7 +794,7 @@ Display the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
-i
+-i
 \end_layout
 
 \end_inset
@@ -840,7 +840,7 @@ FOOYA
 \begin_inset Text
 
 \begin_layout Plain Layout
-I <directory>
+-I <directory>
 \end_layout
 
 \end_inset
@@ -860,7 +860,7 @@ Specify an include directory
 \begin_inset Text
 
 \begin_layout Plain Layout
-l
+-l
 \end_layout
 
 \end_inset
@@ -880,7 +880,7 @@ List the supported processors
 \begin_inset Text
 
 \begin_layout Plain Layout
-L
+-L
 \end_layout
 
 \end_inset
@@ -900,7 +900,7 @@ Ignore nolist directives
 \begin_inset Text
 
 \begin_layout Plain Layout
-m
+-m
 \end_layout
 
 \end_inset
@@ -920,7 +920,7 @@ Memory dump
 \begin_inset Text
 
 \begin_layout Plain Layout
-M
+-M
 \end_layout
 
 \end_inset
@@ -940,7 +940,7 @@ Output a dependency file
 \begin_inset Text
 
 \begin_layout Plain Layout
-n
+-n
 \end_layout
 
 \end_inset
@@ -961,7 +961,7 @@ Use DOS style newlines (CRLF) in hex file.
 \begin_inset Text
 
 \begin_layout Plain Layout
-o <file>
+-o <file>
 \end_layout
 
 \end_inset
@@ -981,7 +981,7 @@ Alternate name of hex output file
 \begin_inset Text
 
 \begin_layout Plain Layout
-p<processor> 
+-p<processor> 
 \end_layout
 
 \end_inset
@@ -1001,7 +1001,7 @@ Select target processor
 \begin_inset Text
 
 \begin_layout Plain Layout
-q
+-q
 \end_layout
 
 \end_inset
@@ -1021,7 +1021,7 @@ Quiet
 \begin_inset Text
 
 \begin_layout Plain Layout
-r <radix>
+-r <radix>
 \end_layout
 
 \end_inset
@@ -1086,7 +1086,7 @@ hex
 \begin_inset Text
 
 \begin_layout Plain Layout
-u
+-u
 \end_layout
 
 \end_inset
@@ -1106,7 +1106,7 @@ Use absolute paths
 \begin_inset Text
 
 \begin_layout Plain Layout
-v
+-v
 \end_layout
 
 \end_inset
@@ -1126,7 +1126,7 @@ Print gpasm version information and exit
 \begin_inset Text
 
 \begin_layout Plain Layout
-w [ 0 | 1 | 2 ]
+-w [ 0 | 1 | 2 ]
 \end_layout
 
 \end_inset
@@ -1146,7 +1146,7 @@ Set the message level
 \begin_inset Text
 
 \begin_layout Plain Layout
-y
+-y
 \end_layout
 
 \end_inset
@@ -10037,7 +10037,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
-a
+-a
 \end_layout
 
 \end_inset
@@ -10058,7 +10058,7 @@ Produce hex file in one of four formats: inhx8m, inhx8s, inhx16, inhx32
 \begin_inset Text
 
 \begin_layout Plain Layout
-c
+-c
 \end_layout
 
 \end_inset
@@ -10078,7 +10078,7 @@ Output an executable object
 \begin_inset Text
 
 \begin_layout Plain Layout
-d
+-d
 \end_layout
 
 \end_inset
@@ -10098,7 +10098,7 @@ Display debug messages
 \begin_inset Text
 
 \begin_layout Plain Layout
-f <value>
+-f <value>
 \end_layout
 
 \end_inset
@@ -10118,7 +10118,7 @@ Fill unused unprotected program memory with <value>
 \begin_inset Text
 
 \begin_layout Plain Layout
-h
+-h
 \end_layout
 
 \end_inset
@@ -10138,7 +10138,7 @@ Show the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
-I <directory>
+-I <directory>
 \end_layout
 
 \end_inset
@@ -10158,7 +10158,7 @@ Specify an include directory
 \begin_inset Text
 
 \begin_layout Plain Layout
-l
+-l
 \end_layout
 
 \end_inset
@@ -10178,7 +10178,7 @@ Disable the list file output
 \begin_inset Text
 
 \begin_layout Plain Layout
-m
+-m
 \end_layout
 
 \end_inset
@@ -10198,7 +10198,7 @@ Output a map file
 \begin_inset Text
 
 \begin_layout Plain Layout
-o <file>
+-o <file>
 \end_layout
 
 \end_inset
@@ -10218,7 +10218,7 @@ Alternate name of hex output file
 \begin_inset Text
 
 \begin_layout Plain Layout
-O <level>
+-O <level>
 \end_layout
 
 \end_inset
@@ -10238,7 +10238,7 @@ Optimization level
 \begin_inset Text
 
 \begin_layout Plain Layout
-q
+-q
 \end_layout
 
 \end_inset
@@ -10258,7 +10258,7 @@ Quiet
 \begin_inset Text
 
 \begin_layout Plain Layout
-r
+-r
 \end_layout
 
 \end_inset
@@ -10279,7 +10279,7 @@ Attempt to relocate unshared data sections to shared memory if relocation
 \begin_inset Text
 
 \begin_layout Plain Layout
-s <file>
+-s <file>
 \end_layout
 
 \end_inset
@@ -10319,7 +10319,7 @@ Create a stack section
 \begin_inset Text
 
 \begin_layout Plain Layout
-v
+-v
 \end_layout
 
 \end_inset
@@ -10339,7 +10339,7 @@ Print gplink version information and exit
 \begin_inset Text
 
 \begin_layout Plain Layout
-w
+-w
 \end_layout
 
 \end_inset
@@ -10565,7 +10565,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
-c
+-c
 \end_layout
 
 \end_inset
@@ -10585,7 +10585,7 @@ Create a new library
 \begin_inset Text
 
 \begin_layout Plain Layout
-d
+-d
 \end_layout
 
 \end_inset
@@ -10605,7 +10605,7 @@ Delete member from library
 \begin_inset Text
 
 \begin_layout Plain Layout
-h
+-h
 \end_layout
 
 \end_inset
@@ -10625,7 +10625,7 @@ Show the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
-n
+-n
 \end_layout
 
 \end_inset
@@ -10645,7 +10645,7 @@ Don't add the symbol index
 \begin_inset Text
 
 \begin_layout Plain Layout
-q
+-q
 \end_layout
 
 \end_inset
@@ -10665,7 +10665,7 @@ Quiet mode
 \begin_inset Text
 
 \begin_layout Plain Layout
-r
+-r
 \end_layout
 
 \end_inset
@@ -10685,7 +10685,7 @@ Add or replace member from library
 \begin_inset Text
 
 \begin_layout Plain Layout
-s
+-s
 \end_layout
 
 \end_inset
@@ -10705,7 +10705,7 @@ List global symbols in libary
 \begin_inset Text
 
 \begin_layout Plain Layout
-t
+-t
 \end_layout
 
 \end_inset
@@ -10725,7 +10725,7 @@ List member in library
 \begin_inset Text
 
 \begin_layout Plain Layout
-v
+-v
 \end_layout
 
 \end_inset
@@ -10745,7 +10745,7 @@ Print gplib version information and exit
 \begin_inset Text
 
 \begin_layout Plain Layout
-x
+-x
 \end_layout
 
 \end_inset
@@ -10973,8 +10973,9 @@ Where options can be one of:
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="10" columns="2">
+<lyxtabular version="3" rows="11" columns="3">
 <features>
+<column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
 <row>
@@ -10983,6 +10984,15 @@ Where options can be one of:
 
 \begin_layout Plain Layout
 Option
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Long option
 \end_layout
 
 \end_inset
@@ -11002,7 +11012,16 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
-c
+-c
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--mnemonics
 \end_layout
 
 \end_inset
@@ -11022,7 +11041,16 @@ Decode special mnemonics
 \begin_inset Text
 
 \begin_layout Plain Layout
-h
+-h
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-help
 \end_layout
 
 \end_inset
@@ -11042,7 +11070,16 @@ Display the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
-i
+-i
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--hex-info
 \end_layout
 
 \end_inset
@@ -11062,7 +11099,16 @@ Display hex file information
 \begin_inset Text
 
 \begin_layout Plain Layout
-l
+-l
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--list-chips
 \end_layout
 
 \end_inset
@@ -11082,7 +11128,16 @@ List supported processors
 \begin_inset Text
 
 \begin_layout Plain Layout
-m
+-m
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-dump
 \end_layout
 
 \end_inset
@@ -11102,7 +11157,16 @@ Memory dump hex file
 \begin_inset Text
 
 \begin_layout Plain Layout
-p<processor>
+-p<processor>
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--processor <processor>
 \end_layout
 
 \end_inset
@@ -11122,7 +11186,16 @@ Select processor
 \begin_inset Text
 
 \begin_layout Plain Layout
-s
+-s
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--short
 \end_layout
 
 \end_inset
@@ -11142,7 +11215,16 @@ Print short form output
 \begin_inset Text
 
 \begin_layout Plain Layout
-v
+-v
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--version
 \end_layout
 
 \end_inset
@@ -11158,20 +11240,59 @@ Print gpdasm version information and exit
 </cell>
 </row>
 <row>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-y
+-y
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--extended
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Enable 18xx extended mode
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--strict
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Disassemble only opcodes generated by gpasm in case of instructions with
+ serveral opcodes
 \end_layout
 
 \end_inset
@@ -11378,7 +11499,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
-g
+-g
 \end_layout
 
 \end_inset
@@ -11398,7 +11519,7 @@ Strip debug symbols
 \begin_inset Text
 
 \begin_layout Plain Layout
-h
+-h
 \end_layout
 
 \end_inset
@@ -11418,7 +11539,7 @@ Show the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
-k
+-k
 \end_layout
 
 \end_inset
@@ -11438,7 +11559,7 @@ Keep symbol
 \begin_inset Text
 
 \begin_layout Plain Layout
-n
+-n
 \end_layout
 
 \end_inset
@@ -11458,7 +11579,7 @@ Remove symbol
 \begin_inset Text
 
 \begin_layout Plain Layout
-o
+-o
 \end_layout
 
 \end_inset
@@ -11478,7 +11599,7 @@ Alternate output file
 \begin_inset Text
 
 \begin_layout Plain Layout
-p
+-p
 \end_layout
 
 \end_inset
@@ -11498,7 +11619,7 @@ Preserve dates
 \begin_inset Text
 
 \begin_layout Plain Layout
-r
+-r
 \end_layout
 
 \end_inset
@@ -11518,7 +11639,7 @@ Remove section
 \begin_inset Text
 
 \begin_layout Plain Layout
-s
+-s
 \end_layout
 
 \end_inset
@@ -11538,7 +11659,7 @@ Remove all symbols
 \begin_inset Text
 
 \begin_layout Plain Layout
-u
+-u
 \end_layout
 
 \end_inset
@@ -11558,7 +11679,7 @@ Remove all symbols not needed for relocations
 \begin_inset Text
 
 \begin_layout Plain Layout
-v
+-v
 \end_layout
 
 \end_inset
@@ -11578,7 +11699,7 @@ Show version
 \begin_inset Text
 
 \begin_layout Plain Layout
-V
+-V
 \end_layout
 
 \end_inset
@@ -11598,7 +11719,7 @@ Verbose mode
 \begin_inset Text
 
 \begin_layout Plain Layout
-x
+-x
 \end_layout
 
 \end_inset
@@ -11712,7 +11833,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
-a
+-a
 \end_layout
 
 \end_inset
@@ -11732,7 +11853,7 @@ Display all information
 \begin_inset Text
 
 \begin_layout Plain Layout
-d
+-d
 \end_layout
 
 \end_inset
@@ -11752,7 +11873,7 @@ Display directory header
 \begin_inset Text
 
 \begin_layout Plain Layout
-s
+-s
 \end_layout
 
 \end_inset
@@ -11772,7 +11893,7 @@ Display symbols
 \begin_inset Text
 
 \begin_layout Plain Layout
-h
+-h
 \end_layout
 
 \end_inset
@@ -11792,7 +11913,7 @@ Show the help message.
 \begin_inset Text
 
 \begin_layout Plain Layout
-r
+-r
 \end_layout
 
 \end_inset
@@ -11812,7 +11933,7 @@ Display ROM
 \begin_inset Text
 
 \begin_layout Plain Layout
-l
+-l
 \end_layout
 
 \end_inset
@@ -11832,7 +11953,7 @@ Display source listing
 \begin_inset Text
 
 \begin_layout Plain Layout
-m
+-m
 \end_layout
 
 \end_inset
@@ -11852,7 +11973,7 @@ Display debug message area
 \begin_inset Text
 
 \begin_layout Plain Layout
-v
+-v
 \end_layout
 
 \end_inset
@@ -12042,7 +12163,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
-b
+-b
 \end_layout
 
 \end_inset
@@ -12062,7 +12183,7 @@ Binary data
 \begin_inset Text
 
 \begin_layout Plain Layout
-c
+-c
 \end_layout
 
 \end_inset
@@ -12082,7 +12203,7 @@ Decode special mnemonics
 \begin_inset Text
 
 \begin_layout Plain Layout
-f
+-f
 \end_layout
 
 \end_inset
@@ -12102,7 +12223,7 @@ File header
 \begin_inset Text
 
 \begin_layout Plain Layout
-h
+-h
 \end_layout
 
 \end_inset
@@ -12122,7 +12243,7 @@ Show the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
-n
+-n
 \end_layout
 
 \end_inset
@@ -12142,7 +12263,7 @@ Suppress filenames
 \begin_inset Text
 
 \begin_layout Plain Layout
-s
+-s
 \end_layout
 
 \end_inset
@@ -12162,7 +12283,7 @@ Section data
 \begin_inset Text
 
 \begin_layout Plain Layout
-t
+-t
 \end_layout
 
 \end_inset
@@ -12182,7 +12303,7 @@ Symbol data
 \begin_inset Text
 
 \begin_layout Plain Layout
-v
+-v
 \end_layout
 
 \end_inset
@@ -12202,7 +12323,7 @@ Print gpvo version information and exit
 \begin_inset Text
 
 \begin_layout Plain Layout
-x FILE
+-x FILE
 \end_layout
 
 \end_inset
@@ -12222,7 +12343,7 @@ Export symbols to an include file.
 \begin_inset Text
 
 \begin_layout Plain Layout
-y
+-y
 \end_layout
 
 \end_inset

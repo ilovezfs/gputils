@@ -1099,6 +1099,17 @@ static int reloc_tris_pic14(unsigned int address)
   return address & 0x7f;
 }
 
+static void patch_strict_pic14(void)
+{
+  int i, j = 0;
+  for (i = 0; i < num_op_16cxx & j < num_op_16cxx_strict_mask; ++i) {
+    if (!strcasecmp(op_16cxx[i].name, op_16cxx_strict_mask[j].name)) {
+      op_16cxx[i].mask = op_16cxx_strict_mask[j].mask;
+      ++j;
+    }
+  }
+}
+
 /* PIC14E */
 
 static int
@@ -1312,6 +1323,7 @@ const struct proc_class proc_class_eeprom8 = {
   NULL, NULL,
   NULL,
   i_memory_get_le, i_memory_put_le,
+  NULL,
 };
 
 const struct proc_class proc_class_eeprom16 = {
@@ -1333,6 +1345,7 @@ const struct proc_class proc_class_eeprom16 = {
   NULL, NULL,
   NULL,
   i_memory_get_be, i_memory_put_be,
+  NULL,
 };
 
 const struct proc_class proc_class_generic = {
@@ -1354,6 +1367,7 @@ const struct proc_class proc_class_generic = {
   NULL, NULL,
   NULL,
   i_memory_get_le, i_memory_put_le,
+  NULL,
 };
 
 const struct proc_class proc_class_pic12 = {
@@ -1375,6 +1389,7 @@ const struct proc_class proc_class_pic12 = {
   op_12c5xx, &num_op_12c5xx,
   find_insn_generic,
   i_memory_get_le, i_memory_put_le,
+  NULL,
 };
 
 const struct proc_class proc_class_sx = {
@@ -1396,6 +1411,7 @@ const struct proc_class proc_class_sx = {
   op_sx, &num_op_sx,
   find_insn_generic,
   i_memory_get_le, i_memory_put_le,
+  NULL,
 };
 
 const struct proc_class proc_class_pic14 = {
@@ -1417,6 +1433,7 @@ const struct proc_class proc_class_pic14 = {
   op_16cxx, &num_op_16cxx,
   find_insn_generic,
   i_memory_get_le, i_memory_put_le,
+  patch_strict_pic14,
 };
 
 const struct proc_class proc_class_pic14e = {
@@ -1438,6 +1455,7 @@ const struct proc_class proc_class_pic14e = {
   op_16cxx, &num_op_16cxx,
   find_insn_pic14e,
   i_memory_get_le, i_memory_put_le,
+  patch_strict_pic14,
 };
 
 const struct proc_class proc_class_pic16 = {
@@ -1459,6 +1477,7 @@ const struct proc_class proc_class_pic16 = {
   op_17cxx, &num_op_17cxx,
   find_insn_generic,
   i_memory_get_le, i_memory_put_le,
+  NULL,
 };
 
 const struct proc_class proc_class_pic16e = {
@@ -1480,4 +1499,5 @@ const struct proc_class proc_class_pic16e = {
   op_18cxx, &num_op_18cxx,
   find_insn_pic16e,
   i_memory_get_le, i_memory_put_le,
+  NULL,
 };
