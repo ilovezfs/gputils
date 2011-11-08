@@ -1016,8 +1016,9 @@ _PLLEN_ON        EQU  H'FFFF'    ; 4x PLL enabled
 _STVREN_OFF      EQU  H'FDFF'    ; Stack Overflow or Underflow will not cause a Reset
 _STVREN_ON       EQU  H'FFFF'    ; Stack Overflow or Underflow will cause a Reset
 
-_BORV_25         EQU  H'FBFF'    ; Brown-out Reset Voltage (VBOR) set to 2.5 V
-_BORV_19         EQU  H'FFFF'    ; Brown-out Reset Voltage (VBOR) set to 1.9 V
+_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (VBOR) set to 2.7V
+_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (VBOR) set to 1.9V
+_BORV_19         EQU  H'FFFF'    ; Brown-out Reset Voltage (VBOR) set to 1.9V
 
 _LVP_OFF         EQU  H'DFFF'    ; High-voltage on MCLR/VPP must be used for programming
 _LVP_ON          EQU  H'FFFF'    ; Low-voltage programming enabled
