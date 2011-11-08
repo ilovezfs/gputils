@@ -1,3 +1,7 @@
+2011-11-08  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpprocessor.c: added pic 14 bit enhanced devices
+  * gplink/script.c: shadow option temporarily disabled
+
 2011-10-28  Borut Razem  <borutr@users.sourceforge.net>
   * gputils/gpdasm.c, libgputils/gpopcode.c, libgputils/gpopcode.h,
     libgputils/gpprocessor.c, libgputils/gpprocessor.h:
