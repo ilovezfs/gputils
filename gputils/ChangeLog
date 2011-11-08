@@ -1,5 +1,7 @@
 2011-11-08  Borut Razem  <borutr@users.sourceforge.net>
-  * libgputils/gpprocessor.c: added pic 14 bit enhanced devices
+  * libgputils/gpprocessor.c, header/Makefile.am, header/Makefile.in,
+    header/*.inc, lkr/Makefile.am, lkr/Makefile.in, lkr/*.lkr:
+    added pic 14 bit enhanced devices from MPASM v5.43
   * gplink/script.c: shadow option temporarily disabled
 
 2011-10-28  Borut Razem  <borutr@users.sourceforge.net>
