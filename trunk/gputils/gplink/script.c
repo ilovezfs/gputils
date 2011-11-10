@@ -328,7 +328,6 @@ static int do_secdef(char *name, enum section_type type, struct pnode *parms)
           break;
 
         case id_shadow:
-          /* shadow option temporarily disabled
           if (enforce_simple(p->value.binop.p1)) {
             const char *begin;
             char *end;
@@ -350,7 +349,6 @@ static int do_secdef(char *name, enum section_type type, struct pnode *parms)
               script_error("bad shadow argument", lhs);
             }
           }
-          */
           break;
 
         default:
