@@ -1,7 +1,9 @@
+2011-11-10  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/coff.c, libgputils/gpwriteobj.c: SHADOW support fixes
+  * gplink/script.c: shadow option re-disabled
+
 2011-11-08  Borut Razem  <borutr@users.sourceforge.net>
-  * libgputils/gpprocessor.c, header/Makefile.am, header/Makefile.in,
-    header/*.inc, lkr/Makefile.am, lkr/Makefile.in, lkr/*.lkr:
-    added pic 14 bit enhanced devices from MPASM v5.43
+  * libgputils/gpprocessor.c: added pic 14 bit enhanced devices
   * gplink/script.c: shadow option temporarily disabled
 
 2011-10-28  Borut Razem  <borutr@users.sourceforge.net>
@@ -38,7 +40,7 @@
 2011-10-16  Borut Razem  <borutr@users.sourceforge.net>
   * gplink/script.c, libgputils/gpcoffgen.c, libgputils/gpcoff.h,
     libgputils/gpreadobj.c, libgputils/gpcofflink.c, libgputils/gpcofflink.h:
-    inplemeted SHADOW
+    implemeted SHADOW
   * doc/gputils.lyx: aded chapter "14 Bit Devices Enhanced Instruction Set"
 
 2011-10-09  Marko Kohtala  <marko.kohtala@gmail.com>

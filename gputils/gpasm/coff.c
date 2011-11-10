@@ -28,12 +28,12 @@ Boston, MA 02111-1307, USA.  */
 
 extern int _16bit_core;
 
-void 
+void
 coff_init(void)
 {
   if (state.objfile != named) {
     snprintf(state.objfilename, sizeof(state.objfilename),
-	     "%s.o", state.basefilename);
+       "%s.o", state.basefilename);
   }
 
   if (state.objfile == suppress) {
@@ -51,7 +51,7 @@ coff_init(void)
       state.obj.enabled = true;
     }
   }
-  
+
   return;
 }
 
@@ -60,13 +60,13 @@ _update_section_symbol(gp_section_type *section)
 {
 
   /* write data to the auxiliary section symbol */
-  section->symbol->aux_list->_aux_symbol._aux_scn.length = 
+  section->symbol->aux_list->_aux_symbol._aux_scn.length =
     section->size;
-    
-  section->symbol->aux_list->_aux_symbol._aux_scn.nreloc = 
+
+  section->symbol->aux_list->_aux_symbol._aux_scn.nreloc =
     section->num_reloc;
 
-  section->symbol->aux_list->_aux_symbol._aux_scn.nlineno = 
+  section->symbol->aux_list->_aux_symbol._aux_scn.nlineno =
     section->num_lineno;
 
 }
@@ -74,7 +74,7 @@ _update_section_symbol(gp_section_type *section)
 static void
 _update_section_size(void)
 {
-  
+
   if (state.obj.section == NULL)
     return;
 
@@ -130,12 +130,12 @@ _copy_config(void)
 
   if(!state.obj.enabled)
     return;
-  
+
   if (state.found_config) {
-    config_section = gp_coffgen_findsection(state.obj.object, 
+    config_section = gp_coffgen_findsection(state.obj.object,
                                             state.obj.object->sections,
                                             ".config");
-    
+
     assert(config_section != NULL);
 
     start = gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[0]);
@@ -153,10 +153,10 @@ _copy_config(void)
   }
 
   if (state.found_devid) {
-    config_section = gp_coffgen_findsection(state.obj.object, 
+    config_section = gp_coffgen_findsection(state.obj.object,
                                             state.obj.object->sections,
                                             ".devid");
-    
+
     assert(config_section != NULL);
     assert(_16bit_core);
 
@@ -168,18 +168,18 @@ _copy_config(void)
       b_memory_put(config_section->data, DEVID2, byte);
     else
       assert(0);
-    
+
     config_section->size = 2;
 
     _update_section_symbol(config_section);
   }
 
   if (state.found_idlocs) {
-    config_section = gp_coffgen_findsection(state.obj.object, 
+    config_section = gp_coffgen_findsection(state.obj.object,
                                             state.obj.object->sections,
                                             ".idlocs");
-    
-    assert(config_section != NULL);  
+
+    assert(config_section != NULL);
 
     if(_16bit_core) {
       config_section->size = 0;
@@ -198,13 +198,13 @@ _copy_config(void)
           found_break = true;
         }
       }
-      
+
     } else {
       start = gp_processor_id_location(state.processor);
       stop = start + 8;
       for (i = start; i < stop; i++) {
         b_memory_assert_get(state.c_memory, i, &byte);
-	b_memory_put(config_section->data, i, byte);
+  b_memory_put(config_section->data, i, byte);
       }
       config_section->size = 8;
     }
@@ -215,7 +215,7 @@ _copy_config(void)
   return;
 }
 
-void 
+void
 coff_close_file(void)
 {
 
@@ -235,7 +235,7 @@ coff_close_file(void)
 
   if (gp_write_coff(state.obj.object, (state.num.errors + gp_num_errors)) == 1)
     gperror(GPE_UNKNOWN, "system error while writing object file");
-    
+
   gp_coffgen_free(state.obj.object);
 }
 
@@ -264,30 +264,30 @@ coff_new_section(const char *name, int addr, int flags)
   /* store data from the last section */
   _update_section_size();
 
-  found = gp_coffgen_findsection(state.obj.object, 
+  found = gp_coffgen_findsection(state.obj.object,
                                  state.obj.object->sections,
                                  name);
 
   if (found != NULL) {
-    if ((flags & STYP_OVERLAY) && 
+    if ((flags & STYP_OVERLAY) &&
         (found->flags & STYP_OVERLAY)) {
-      /* Overlayed sections can be duplicated.  This allows multiple code 
+      /* Overlayed sections can be duplicated.  This allows multiple code
          sections in the same source file to share the same data memory. */
       if ((flags != found->flags) ||
           (addr != found->address)) {
         gperror(GPE_CONTIG_SECTION, NULL);
         return;
-      }    
+      }
     } else {
       gperror(GPE_CONTIG_SECTION, NULL);
       return;
     }
   }
 
-  state.obj.section = gp_coffgen_addsection(state.obj.object, name);    
-  state.obj.section->address = addr; 
+  state.obj.section = gp_coffgen_addsection(state.obj.object, name);
+  state.obj.section->shadow_address = state.obj.section->address = addr;
   state.obj.section->flags = flags;
-  
+
   /* add a section symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
   new->name           = strdup(name);
@@ -301,7 +301,7 @@ coff_new_section(const char *name, int addr, int flags)
 
   new_aux = gp_coffgen_addaux(state.obj.object, new);
   new_aux->type = AUX_SCN;
-  
+
   state.i_memory = state.obj.section->data;
   state.org = addr;
 
@@ -311,9 +311,9 @@ coff_new_section(const char *name, int addr, int flags)
 /* All coff data is generated on the second pass.  To support forward
    references to symbols in the relocation table, the symbol index
    is stored in relocations instead of a pointer to the symbol.  Before
-   the coff is written the symbol pointer is updated. */ 
+   the coff is written the symbol pointer is updated. */
 
-void 
+void
 coff_reloc(int symbol, short offset, unsigned short type)
 {
   gp_reloc_type *new = NULL;
@@ -323,17 +323,17 @@ coff_reloc(int symbol, short offset, unsigned short type)
     return;
 
   origin = state.org - state.obj.section->address;
-  
+
   new = gp_coffgen_addreloc(state.obj.section);
   new->address       = origin;
   new->symbol_number = symbol;
-  new->offset        = offset;    
-  new->type          = type;    
+  new->offset        = offset;
+  new->type          = type;
 
   return;
 }
 
-void 
+void
 coff_linenum(int emitted)
 {
   gp_linenum_type *new = NULL;
@@ -350,7 +350,7 @@ coff_linenum(int emitted)
     /* else use the relative address */
     origin -= state.obj.section->address;
   }
-  
+
   if (state.debug_info && (state.obj.debug_file == NULL)) {
     if (show_bad_debug) {
       gperror(GPE_UNKNOWN, ".file directive required to generate debug info");
@@ -385,7 +385,7 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
   gp_symbol_type *new = NULL;
   char message[BUFSIZ];
   int section_number = 0;
-  int class = C_EXT; 
+  int class = C_EXT;
 
   if(!state.obj.enabled)
     return NULL;
@@ -423,11 +423,11 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
 
   /* verify the duplicate extern has the same properties */
   if ((new != NULL) && (type == gvt_extern))  {
-    if ((new->type != class) || 
+    if ((new->type != class) ||
         (new->section_number != section_number)) {
       snprintf(message, sizeof(message),
                "Duplicate label or redefining symbol that cannot be redefined. (%s)",
-               name);    
+               name);
       gperror(GPE_UNKNOWN, message);
     }
   }
@@ -435,7 +435,7 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
   if ((new != NULL) && (type != gvt_extern) && (type != gvt_debug))  {
     snprintf(message, sizeof(message),
              "Duplicate label or redefining symbol that cannot be redefined. (%s)",
-             name);    
+             name);
     gperror(GPE_DUPLAB, message);
   } else {
     new = gp_coffgen_addsymbol(state.obj.object);
@@ -446,7 +446,7 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
     new->type           = T_NULL;
     new->class          = class;
   }
- 
+
   return new;
 }
 
@@ -480,7 +480,7 @@ coff_add_filesym(const char *name, int isinclude)
   else
     new_aux->_aux_symbol._aux_file.line_number = 0;
   new_aux->_aux_symbol._aux_file.flags = 0;
- 
+
   return new;
 }
 
@@ -503,7 +503,7 @@ coff_add_eofsym(void)
   new->section_number = N_DEBUG;
   new->section        = NULL;
   new->type           = T_NULL;
-  new->class          = C_EOF;  
+  new->class          = C_EOF;
 
   return;
 }
@@ -555,7 +555,7 @@ coff_add_nolistsym(void)
   new->section_number = N_DEBUG;
   new->section        = NULL;
   new->type           = T_NULL;
-  new->class          = C_LIST;  
+  new->class          = C_LIST;
 
   return;
 }
@@ -613,11 +613,11 @@ coff_add_identsym(const char *string)
   new_aux = gp_coffgen_addaux(state.obj.object, new);
   new_aux->type = AUX_IDENT;
   new_aux->_aux_symbol._aux_ident.string = strdup(string);
- 
+
   return;
 }
 
-/* If the symbol is local, generate a modified name for the coff symbol 
+/* If the symbol is local, generate a modified name for the coff symbol
    table. */
 
 char *
@@ -640,7 +640,7 @@ coff_local_name(const char *name)
       if (symbol == NULL)
         break;
       count++;
-    } 
+    }
   } else {
     strncpy(buffer, name, sizeof(buffer));
   }

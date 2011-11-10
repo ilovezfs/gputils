@@ -148,7 +148,7 @@ _gp_coffgen_write_data(proc_class_t class,
   unsigned int org;
   unsigned int last;
 
-  org = section->address;
+  org = section->shadow_address;
   last = org + section->size;
 
 #ifdef GPUTILS_DEBUG
