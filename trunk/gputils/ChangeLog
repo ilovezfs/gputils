@@ -1,9 +1,15 @@
+2011-11-11  Borut Razem  <borutr@users.sourceforge.net>
+  * doc/gputils.lyx, configure.ac, configure: version changed to 0.14.1
+  * doc/gputils.lyx: listed all enhanced 14 bit devices supported by MPASM 5.43
+
 2011-11-10  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/coff.c, libgputils/gpwriteobj.c: SHADOW support fixes
-  * gplink/script.c: shadow option re-disabled
+  * gplink/script.c: shadow option re-enabled
 
 2011-11-08  Borut Razem  <borutr@users.sourceforge.net>
-  * libgputils/gpprocessor.c: added pic 14 bit enhanced devices
+  * libgputils/gpprocessor.c:
+    added support for all pic 14 bit enhanced devices supported by MPASM 5.43,
+    thanks to Gal Zsolt.
   * gplink/script.c: shadow option temporarily disabled
 
 2011-10-28  Borut Razem  <borutr@users.sourceforge.net>
