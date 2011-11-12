@@ -53,7 +53,7 @@ James Bowman, Craig Franklin, and David Barnett
 \end_layout
 
 \begin_layout Date
-November 11, 2011
+November 12, 2011
 \end_layout
 
 \begin_layout Standard
@@ -260,7 +260,11 @@ p12f675    p12f683    p12f1822   p12lf1822  p12f1840   p12lf1840
 \begin_inset Newline newline
 \end_inset
 
-p14000     p16cxx     p16f1503   p16lf1503  p16f1507   p16lf1507  
+p14000     p16cxx     p16f1455   p16lf1455  p16f1458   p16lf1458  
+\begin_inset Newline newline
+\end_inset
+
+p16f1459   p16lf1459  p16f1503   p16lf1503  p16f1507   p16lf1507  
 \begin_inset Newline newline
 \end_inset
 
@@ -272,311 +276,311 @@ p16f1517   p16lf1517  p16f1518   p16lf1518  p16f1519   p16lf1519
 \begin_inset Newline newline
 \end_inset
 
-p16f1526   p16lf1526  p16f1527   p16lf1527  p16f1823   p16lf1823  
+p16f1526   p16lf1526  p16f1527   p16lf1527  p16f1782   p16lf1782  
 \begin_inset Newline newline
 \end_inset
 
-p16f1824   p16lf1824  p16f1825   p16lf1825  p16f1826   p16lf1826  
+p16f1783   p16lf1783  p16f1823   p16lf1823  p16f1824   p16lf1824  
 \begin_inset Newline newline
 \end_inset
 
-p16f1827   p16lf1827  p16f1828   p16lf1828  p16f1829   p16lf1829  
+p16f1825   p16lf1825  p16f1826   p16lf1826  p16f1827   p16lf1827  
 \begin_inset Newline newline
 \end_inset
 
-p16f1847   p16lf1847  p16lf1902  p16lf1903  p16lf1904  p16lf1906  
+p16f1828   p16lf1828  p16f1829   p16lf1829  p16f1847   p16lf1847  
 \begin_inset Newline newline
 \end_inset
 
-p16lf1907  p16f1933   p16lf1933  p16f1934   p16lf1934  p16f1936   
+p16lf1902  p16lf1903  p16lf1904  p16lf1906  p16lf1907  p16f1933   
 \begin_inset Newline newline
 \end_inset
 
-p16lf1936  p16f1937   p16lf1937  p16f1938   p16lf1938  p16f1939   
+p16lf1933  p16f1934   p16lf1934  p16f1936   p16lf1936  p16f1937   
 \begin_inset Newline newline
 \end_inset
 
-p16lf1939  p16f1946   p16lf1946  p16f1947   p16lf1947  p16c432    
+p16lf1937  p16f1938   p16lf1938  p16f1939   p16lf1939  p16f1946   
 \begin_inset Newline newline
 \end_inset
 
-p16c433    p16c5x     p16c505    p16f505    p16f506    p16c52     
+p16lf1946  p16f1947   p16lf1947  p16c432    p16c433    p16c5x     
 \begin_inset Newline newline
 \end_inset
 
-p16f526    p16c54     p16c54a    p16c54b    p16c54c    p16cr54    
+p16c505    p16f505    p16f506    p16c52     p16f526    p16c54     
 \begin_inset Newline newline
 \end_inset
 
-p16cr54a   p16cr54b   p16cr54c   p16f54     p16hv540   p16c55     
+p16c54a    p16c54b    p16c54c    p16cr54    p16cr54a   p16cr54b   
 \begin_inset Newline newline
 \end_inset
 
-p16c55a    p16c554    p16c557    p16c558    p16c56     p16c56a    
+p16cr54c   p16f54     p16hv540   p16c55     p16c55a    p16c554    
 \begin_inset Newline newline
 \end_inset
 
-p16cr56a   p16c57     p16c57c    p16cr57a   p16cr57b   p16cr57c   
+p16c557    p16c558    p16c56     p16c56a    p16cr56a   p16c57     
 \begin_inset Newline newline
 \end_inset
 
-p16f57     p16c58a    p16c58b    p16cr58a   p16cr58b   p16f59     
+p16c57c    p16cr57a   p16cr57b   p16cr57c   p16f57     p16c58a    
 \begin_inset Newline newline
 \end_inset
 
-p16c61     p16f610    p16hv610   p16f616    p16hv616   p16c62     
+p16c58b    p16cr58a   p16cr58b   p16f59     p16c61     p16f610    
 \begin_inset Newline newline
 \end_inset
 
-p16c62a    p16c62b    p16cr62    p16c620    p16c620a   p16cr620a  
+p16hv610   p16f616    p16hv616   p16c62     p16c62a    p16c62b    
 \begin_inset Newline newline
 \end_inset
 
-p16c621    p16c621a   p16c622    p16c622a   p16ce623   p16ce624   
+p16cr62    p16c620    p16c620a   p16cr620a  p16c621    p16c621a   
 \begin_inset Newline newline
 \end_inset
 
-p16ce625   p16f627    p16f627a   p16f628    p16f628a   p16c63     
+p16c622    p16c622a   p16ce623   p16ce624   p16ce625   p16f627    
 \begin_inset Newline newline
 \end_inset
 
-p16c63a    p16cr63    p16f630    p16f631    p16f636    p16f639    
+p16f627a   p16f628    p16f628a   p16c63     p16c63a    p16cr63    
 \begin_inset Newline newline
 \end_inset
 
-p16c64     p16c64a    p16cr64    p16c642    p16f648a   p16c65     
+p16f630    p16f631    p16f636    p16f639    p16c64     p16c64a    
 \begin_inset Newline newline
 \end_inset
 
-p16c65a    p16c65b    p16cr65    p16c66     p16c662    p16c67     
+p16cr64    p16c642    p16f648a   p16c65     p16c65a    p16c65b    
 \begin_inset Newline newline
 \end_inset
 
-p16f676    p16f677    p16f684    p16f685    p16f687    p16f688    
+p16cr65    p16c66     p16c662    p16c67     p16f676    p16f677    
 \begin_inset Newline newline
 \end_inset
 
-p16f689    p16f690    p16c71     p16c710    p16c711    p16c712    
+p16f684    p16f685    p16f687    p16f688    p16f689    p16f690    
 \begin_inset Newline newline
 \end_inset
 
-p16c715    p16c716    p16f716    p16c717    p16c72     p16c72a    
+p16c71     p16c710    p16c711    p16c712    p16c715    p16c716    
 \begin_inset Newline newline
 \end_inset
 
-p16cr72    p16f72     p16f722    p16lf722   p16f723    p16lf723   
+p16f716    p16c717    p16c72     p16c72a    p16cr72    p16f72     
 \begin_inset Newline newline
 \end_inset
 
-p16f724    p16lf724   p16f726    p16lf726   p16f727    p16lf727   
+p16f722    p16lf722   p16f723    p16lf723   p16f724    p16lf724   
 \begin_inset Newline newline
 \end_inset
 
-p16c73     p16c73a    p16c73b    p16f73     p16f737    p16c74     
+p16f726    p16lf726   p16f727    p16lf727   p16c73     p16c73a    
 \begin_inset Newline newline
 \end_inset
 
-p16c74a    p16c74b    p16f74     p16c745    p16f747    p16c76     
+p16c73b    p16f73     p16f737    p16c74     p16c74a    p16c74b    
 \begin_inset Newline newline
 \end_inset
 
-p16f76     p16c765    p16f767    p16c77     p16f77     p16c770    
+p16f74     p16c745    p16f747    p16c76     p16f76     p16c765    
 \begin_inset Newline newline
 \end_inset
 
-p16c771    p16c773    p16c774    p16f777    p16c781    p16c782    
+p16f767    p16c77     p16f77     p16c770    p16c771    p16c773    
 \begin_inset Newline newline
 \end_inset
 
-p16f785    p16hv785   p16f818    p16f819    p16cr83    p16f83     
+p16c774    p16f777    p16c781    p16c782    p16f785    p16hv785   
 \begin_inset Newline newline
 \end_inset
 
-p16c84     p16cr84    p16f84     p16f84a    p16f87     p16f870    
+p16f818    p16f819    p16cr83    p16f83     p16c84     p16cr84    
 \begin_inset Newline newline
 \end_inset
 
-p16f871    p16f872    p16f873    p16f873a   p16f874    p16f874a   
+p16f84     p16f84a    p16f87     p16f870    p16f871    p16f872    
 \begin_inset Newline newline
 \end_inset
 
-p16f876    p16f876a   p16f877    p16f877a   p16f88     p16f882    
+p16f873    p16f873a   p16f874    p16f874a   p16f876    p16f876a   
 \begin_inset Newline newline
 \end_inset
 
-p16f883    p16f884    p16f886    p16f887    p16f913    p16f914    
+p16f877    p16f877a   p16f88     p16f882    p16f883    p16f884    
 \begin_inset Newline newline
 \end_inset
 
-p16f916    p16f917    p16c923    p16c924    p16c925    p16c926    
+p16f886    p16f887    p16f913    p16f914    p16f916    p16f917    
 \begin_inset Newline newline
 \end_inset
 
-p16f946    p17cxx     p17c42     p17c42a    p17cr42    p17c43     
+p16c923    p16c924    p16c925    p16c926    p16f946    p17cxx     
 \begin_inset Newline newline
 \end_inset
 
-p17cr43    p17c44     p17c752    p17c756    p17c756a   p17c762    
+p17c42     p17c42a    p17cr42    p17c43     p17cr43    p17c44     
 \begin_inset Newline newline
 \end_inset
 
-p17c766    p18cxx     p18f1220   p18f1230   p18f1320   p18f13k22  
+p17c752    p17c756    p17c756a   p17c762    p17c766    p18cxx     
 \begin_inset Newline newline
 \end_inset
 
-p18lf13k22 p18f1330   p18f13k50  p18lf13k50 p18f14k22  p18lf14k22 
+p18f1220   p18f1230   p18f1320   p18f13k22  p18lf13k22 p18f1330   
 \begin_inset Newline newline
 \end_inset
 
-p18f14k50  p18lf14k50 p18f2220   p18f2221   p18f2320   p18f23k20  
+p18f13k50  p18lf13k50 p18f14k22  p18lf14k22 p18f14k50  p18lf14k50 
 \begin_inset Newline newline
 \end_inset
 
-p18f23k22  p18f2321   p18f2331   p18f2410   p18f24j10  p18f24j11  
+p18f2220   p18f2221   p18f2320   p18f23k20  p18f23k22  p18f2321   
 \begin_inset Newline newline
 \end_inset
 
-p18lf24j11 p18c242    p18f242    p18f2420   p18f24k20  p18f24k22  
+p18f2331   p18f2410   p18f24j10  p18f24j11  p18lf24j11 p18c242    
 \begin_inset Newline newline
 \end_inset
 
-p18f2423   p18f2431   p18f2439   p18f2450   p18f24j50  p18lf24j50 
+p18f242    p18f2420   p18f24k20  p18f24k22  p18f2423   p18f2431   
 \begin_inset Newline newline
 \end_inset
 
-p18f2455   p18f2458   p18f248    p18f2480   p18f2510   p18f25j10  
+p18f2439   p18f2450   p18f24j50  p18lf24j50 p18f2455   p18f2458   
 \begin_inset Newline newline
 \end_inset
 
-p18f25j11  p18lf25j11 p18f2515   p18c252    p18f252    p18f2520   
+p18f248    p18f2480   p18f2510   p18f25j10  p18f25j11  p18lf25j11 
 \begin_inset Newline newline
 \end_inset
 
-p18f25k20  p18f25k22  p18f2523   p18f2525   p18f2539   p18f2550   
+p18f2515   p18c252    p18f252    p18f2520   p18f25k20  p18f25k22  
 \begin_inset Newline newline
 \end_inset
 
-p18f25j50  p18lf25j50 p18f2553   p18f258    p18f2580   p18f2585   
+p18f2523   p18f2525   p18f2539   p18f2550   p18f25j50  p18lf25j50 
 \begin_inset Newline newline
 \end_inset
 
-p18f2610   p18f26j11  p18lf26j11 p18f2620   p18f26k20  p18f26k22  
+p18f2553   p18f258    p18f2580   p18f2585   p18f2610   p18f26j11  
 \begin_inset Newline newline
 \end_inset
 
-p18f26j50  p18lf26j50 p18f2680   p18f2681   p18f2682   p18f2685   
+p18lf26j11 p18f2620   p18f26k20  p18f26k22  p18f26j50  p18lf26j50 
 \begin_inset Newline newline
 \end_inset
 
-p18f4220   p18f4221   p18f4320   p18f43k20  p18f43k22  p18f4321   
+p18f2680   p18f2681   p18f2682   p18f2685   p18f4220   p18f4221   
 \begin_inset Newline newline
 \end_inset
 
-p18f4331   p18f4410   p18f44j10  p18f44j11  p18lf44j11 p18c442    
+p18f4320   p18f43k20  p18f43k22  p18f4321   p18f4331   p18f4410   
 \begin_inset Newline newline
 \end_inset
 
-p18f442    p18f4420   p18f44k20  p18f44k22  p18f4423   p18f4431   
+p18f44j10  p18f44j11  p18lf44j11 p18c442    p18f442    p18f4420   
 \begin_inset Newline newline
 \end_inset
 
-p18f4439   p18f4450   p18f44j50  p18lf44j50 p18f4455   p18f4458   
+p18f44k20  p18f44k22  p18f4423   p18f4431   p18f4439   p18f4450   
 \begin_inset Newline newline
 \end_inset
 
-p18f448    p18f4480   p18f4510   p18f45j10  p18f45j11  p18lf45j11 
+p18f44j50  p18lf44j50 p18f4455   p18f4458   p18f448    p18f4480   
 \begin_inset Newline newline
 \end_inset
 
-p18f4515   p18c452    p18f452    p18f4520   p18f45k20  p18f45k22  
+p18f4510   p18f45j10  p18f45j11  p18lf45j11 p18f4515   p18c452    
 \begin_inset Newline newline
 \end_inset
 
-p18f4523   p18f4525   p18f4539   p18f4550   p18f45j50  p18lf45j50 
+p18f4520   p18f45k20  p18f45k22  p18f4523   p18f4525   p18f4539   
 \begin_inset Newline newline
 \end_inset
 
-p18f4553   p18f458    p18f4580   p18f4585   p18f4610   p18f46j11  
+p18f4550   p18f45j50  p18lf45j50 p18f4553   p18f458    p18f4580   
 \begin_inset Newline newline
 \end_inset
 
-p18lf46j11 p18f4620   p18f46k20  p18f46k22  p18f46j50  p18lf46j50 
+p18f4585   p18f4610   p18f46j11  p18lf46j11 p18f4620   p18f46k20  
 \begin_inset Newline newline
 \end_inset
 
-p18f4680   p18f4681   p18f4682   p18f4685   p18c601    p18f6310   
+p18f46k22  p18f46j50  p18lf46j50 p18f4680   p18f4681   p18f4682   
 \begin_inset Newline newline
 \end_inset
 
-p18f63j11  p18f6390   p18f63j90  p18f6393   p18f6410   p18f64j11  
+p18f4685   p18c601    p18f6310   p18f63j11  p18f6390   p18f63j90  
 \begin_inset Newline newline
 \end_inset
 
-p18f64j15  p18f6490   p18f64j90  p18f6493   p18f65j10  p18f65j11  
+p18f6393   p18f6410   p18f64j11  p18f64j15  p18f6490   p18f64j90  
 \begin_inset Newline newline
 \end_inset
 
-p18f65j15  p18f6520   p18f6525   p18f6527   p18f65j50  p18c658    
+p18f6493   p18f65j10  p18f65j11  p18f65j15  p18f6520   p18f6525   
 \begin_inset Newline newline
 \end_inset
 
-p18f6585   p18f65j90  p18f66j10  p18f66j11  p18f66j15  p18f66j16  
+p18f6527   p18f65j50  p18c658    p18f6585   p18f65j90  p18f66j10  
 \begin_inset Newline newline
 \end_inset
 
-p18f6620   p18f6621   p18f6622   p18f6627   p18f6628   p18f66j50  
+p18f66j11  p18f66j15  p18f66j16  p18f6620   p18f6621   p18f6622   
 \begin_inset Newline newline
 \end_inset
 
-p18f66j55  p18f66j60  p18f66j65  p18f6680   p18f66j90  p18f67j10  
+p18f6627   p18f6628   p18f66j50  p18f66j55  p18f66j60  p18f66j65  
 \begin_inset Newline newline
 \end_inset
 
-p18f67j11  p18f6720   p18f6722   p18f6723   p18f67j50  p18f67j60  
+p18f6680   p18f66j90  p18f67j10  p18f67j11  p18f6720   p18f6722   
 \begin_inset Newline newline
 \end_inset
 
-p18f67j90  p18c801    p18f8310   p18f83j11  p18f8390   p18f83j90  
+p18f6723   p18f67j50  p18f67j60  p18f67j90  p18c801    p18f8310   
 \begin_inset Newline newline
 \end_inset
 
-p18f8393   p18f8410   p18f84j11  p18f84j15  p18f8490   p18f84j90  
+p18f83j11  p18f8390   p18f83j90  p18f8393   p18f8410   p18f84j11  
 \begin_inset Newline newline
 \end_inset
 
-p18f8493   p18f85j10  p18f85j11  p18f85j15  p18f8520   p18f8525   
+p18f84j15  p18f8490   p18f84j90  p18f8493   p18f85j10  p18f85j11  
 \begin_inset Newline newline
 \end_inset
 
-p18f8527   p18f85j50  p18c858    p18f8585   p18f85j90  p18f86j10  
+p18f85j15  p18f8520   p18f8525   p18f8527   p18f85j50  p18c858    
 \begin_inset Newline newline
 \end_inset
 
-p18f86j11  p18f86j15  p18f86j16  p18f8620   p18f8621   p18f8622   
+p18f8585   p18f85j90  p18f86j10  p18f86j11  p18f86j15  p18f86j16  
 \begin_inset Newline newline
 \end_inset
 
-p18f8627   p18f8628   p18f86j50  p18f86j55  p18f86j60  p18f86j65  
+p18f8620   p18f8621   p18f8622   p18f8627   p18f8628   p18f86j50  
 \begin_inset Newline newline
 \end_inset
 
-p18f8680   p18f86j90  p18f87j10  p18f87j11  p18f8720   p18f8722   
+p18f86j55  p18f86j60  p18f86j65  p18f8680   p18f86j90  p18f87j10  
 \begin_inset Newline newline
 \end_inset
 
-p18f8723   p18f87j50  p18f87j60  p18f87j90  p18f96j60  p18f96j65  
+p18f87j11  p18f8720   p18f8722   p18f8723   p18f87j50  p18f87j60  
 \begin_inset Newline newline
 \end_inset
 
-p18f97j60  ps500      ps810      rf509af    rf509ag    rf675f     
+p18f87j90  p18f96j60  p18f96j65  p18f97j60  ps500      ps810      
 \begin_inset Newline newline
 \end_inset
 
-rf675h     rf675k     sx18       sx20       sx28       sx48       
+rf509af    rf509ag    rf675f     rf675h     rf675k     sx18       
 \begin_inset Newline newline
 \end_inset
 
-sx52    
+sx20       sx28       sx48       sx52    
 \end_layout
 
 \begin_layout Chapter
