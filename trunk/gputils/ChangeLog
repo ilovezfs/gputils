@@ -1,3 +1,8 @@
+2011-11-12  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpprocessor.c, doc/gputils.lyx:
+    added support for pic 14 bit enhanced devices supported by mpasmx 5.42,
+    thanks to Gal Zsolt.
+
 2011-11-11  Borut Razem  <borutr@users.sourceforge.net>
   * doc/gputils.lyx, configure.ac, configure: version changed to 0.14.1
   * doc/gputils.lyx: listed all enhanced 14 bit devices supported by MPASM 5.43
