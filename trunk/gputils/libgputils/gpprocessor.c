@@ -64,7 +64,7 @@ static struct px pics[] = {
   { PROC_CLASS_PIC14,   "__12CE673",  { "pic12ce673",  "p12ce673",  "12ce673"  }, 0x2673, 1, 2, 0x3ff,    { -1, -1 },            { 0x2007, 0x2007 },     "12ce673.lkr"  },
   { PROC_CLASS_PIC14,   "__12CE674",  { "pic12ce674",  "p12ce674",  "12ce674"  }, 0x2674, 1, 2, 0x7ff,    { -1, -1 },            { 0x2007, 0x2007 },     "12ce674.lkr"  },
   { PROC_CLASS_PIC14,   "__12F675",   { "pic12f675",   "p12f675",   "12f675"   }, 0x2675, 1, 2, 0x217f,   { 0x3ff, 0x20ff },     { 0x2007, 0x2007 },     "12f675.lkr"   },
-  { PROC_CLASS_PIC14,   "__12F683",   { "pic12f683",   "p12f683",   "12f683"   }, 0xf683, 1, 2, 0x21ff,   { 0x800, 0x20ff },     { 0x2007, 0x2007 },     "12f683.lkr"   },
+  { PROC_CLASS_PIC14,   "__12F683",   { "pic12f683",   "p12f683",   "12f683"   }, 0xf683, 1, 2, 0x21ff,   { 0x800, 0x20ff },     { 0x2007, 0x2007 },     "12f683_g.lkr"   },
   { PROC_CLASS_PIC14E,  "__12F1822",  { "pic12f1822",  "p12f1822",  "12f1822"  }, 0x1822, 1, 0x1f, 0xf0ff,{ 0x0800, 0xefff },    { 0x8007, 0x8008 },     "12f1822_g.lkr"  },
   { PROC_CLASS_PIC14E,  "__12LF1822", { "pic12lf1822", "p12lf1822", "12lf1822" }, 0xa822, 1, 0x1f, 0xf0ff,{ 0x0800, 0xefff },    { 0x8007, 0x8008 },     "12lf1822_g.lkr" },
   { PROC_CLASS_PIC14E,  "__12F1840",  { "pic12f1840",  "p12f1840",  "12f1840"  }, 0x1840, 2, 0x1f, 0xf0ff,{ 0x1000, 0xefff },    { 0x8007, 0x8008 },     "12f1840_g.lkr"  },
