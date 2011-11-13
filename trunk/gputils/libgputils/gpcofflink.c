@@ -393,6 +393,12 @@ gp_cofflink_merge_sections(gp_object_type *object)
         unsigned int last = second->size;
         unsigned int offset = first->size;
         unsigned int org;
+
+        if(!_has_data(first)) {
+          /* TODO optimization: adopt data from second by moving second->size bytes from org to org + offset */
+          first->data = i_memory_create();
+        }
+
         for (org = 0; org < last; org++) {
           if (b_memory_get(second->data, org, &data))
             b_memory_put(first->data, org + offset, data);
