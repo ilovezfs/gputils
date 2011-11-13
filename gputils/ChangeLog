@@ -1,8 +1,12 @@
 2011-11-12  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpprocessor.c, libgputils/gpdis.c: fixed compilation warnings
+  * libgputils/gpcofflink.c: fixed bug #3435767: gplink segfaults
+
+2011-11-12  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpprocessor.c, doc/gputils.lyx:
     added support for pic 14 bit enhanced devices supported by mpasmx 5.42,
     thanks to Gal Zsolt.
-  * libgputils/gpprocessor.c, header/p12f683.inc, lkr/12f683.lkr,
+  * libgputils/gpprocessor.c, header/p12f683.inc, lkr/12f683_g.lkr,
     lkr/Makefile.am, lkr/Makefile.in:
     fixed bug #2822266: TMR1GE bit missing for T1CON on 12f683
     12f683 lkr and inc files updated to mpasmx 5.42 version

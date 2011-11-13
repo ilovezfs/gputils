@@ -188,7 +188,7 @@ gp_disassemble(MemBlock *m,
       break;
     case INSN_CLASS_LIT20:
       {
-        unsigned int dest;
+        short unsigned int dest;
 
         num_words = 2;
         class->i_memory_get(m, byte_address + 2, &dest);
@@ -199,7 +199,7 @@ gp_disassemble(MemBlock *m,
       break;
     case INSN_CLASS_CALL20:
       {
-        unsigned int dest;
+        short unsigned int dest;
 
         num_words = 2;
         class->i_memory_get(m, byte_address + 2, &dest);

@@ -117,15 +117,15 @@ static struct px pics[] = {
   { PROC_CLASS_PIC14E,  "__16LF1829", { "pic16lf1829", "p16lf1829", "16lf1829" }, 0xa829, 4, 0x1f, 0xf0ff,{ 0x2000, 0xefff },    { 0x8007, 0x8008 },     "16lf1829_g.lkr" },
   { PROC_CLASS_PIC14E,  "__16F1847",  { "pic16f1847",  "p16f1847",  "16f1847"  }, 0x1847, 4, 0x1f, 0xf0ff,{ 0x2000, 0xefff },    { 0x8007, 0x8008 },     "16f1847_g.lkr"  },
   { PROC_CLASS_PIC14E,  "__16LF1847", { "pic16lf1847", "p16lf1847", "16lf1847" }, 0xa847, 4, 0x1f, 0xf0ff,{ 0x2000, 0xefff },    { 0x8007, 0x8008 },     "16lf1847_g.lkr" },
-//{ PROC_CLASS_PIC14E,  "__16F1902",  { "pic16f1902",  "p16f1902",  "16f1902"  }, 0x1902, 1, 0x1f, 0x07ff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16f1902_g.lkr"  },
+/*{ PROC_CLASS_PIC14E,  "__16F1902",  { "pic16f1902",  "p16f1902",  "16f1902"  }, 0x1902, 1, 0x1f, 0x07ff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16f1902_g.lkr"  },*/
   { PROC_CLASS_PIC14E,  "__16LF1902", { "pic16lf1902", "p16lf1902", "16lf1902" }, 0xa902, 1, 0x1f, 0x07ff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16lf1902_g.lkr" },
-//{ PROC_CLASS_PIC14E,  "__16F1903",  { "pic16f1903",  "p16f1903",  "16f1903"  }, 0x1903, 2, 0x1f, 0x0fff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16f1903_g.lkr"  },
+/*{ PROC_CLASS_PIC14E,  "__16F1903",  { "pic16f1903",  "p16f1903",  "16f1903"  }, 0x1903, 2, 0x1f, 0x0fff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16f1903_g.lkr"  },*/
   { PROC_CLASS_PIC14E,  "__16LF1903", { "pic16lf1903", "p16lf1903", "16lf1903" }, 0xa903, 2, 0x1f, 0x0fff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16lf1903_g.lkr" },
-//{ PROC_CLASS_PIC14E,  "__16F1904",  { "pic16f1904",  "p16f1904",  "16f1904"  }, 0x1904, 2, 0x1f, 0x0fff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16f1904_g.lkr"  },
+/*{ PROC_CLASS_PIC14E,  "__16F1904",  { "pic16f1904",  "p16f1904",  "16f1904"  }, 0x1904, 2, 0x1f, 0x0fff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16f1904_g.lkr"  },*/
   { PROC_CLASS_PIC14E,  "__16LF1904", { "pic16lf1904", "p16lf1904", "16lf1904" }, 0xa904, 2, 0x1f, 0x0fff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16lf1904_g.lkr" },
-//{ PROC_CLASS_PIC14E,  "__16F1906",  { "pic16f1906",  "p16f1906",  "16f1906"  }, 0x1906, 4, 0x1f, 0x1fff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16f1906_g.lkr"  },
+/*{ PROC_CLASS_PIC14E,  "__16F1906",  { "pic16f1906",  "p16f1906",  "16f1906"  }, 0x1906, 4, 0x1f, 0x1fff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16f1906_g.lkr"  },*/
   { PROC_CLASS_PIC14E,  "__16LF1906", { "pic16lf1906", "p16lf1906", "16lf1906" }, 0xa906, 4, 0x1f, 0x1fff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16lf1906_g.lkr" },
-//{ PROC_CLASS_PIC14E,  "__16F1907",  { "pic16f1907",  "p16f1907",  "16f1907"  }, 0x1907, 4, 0x1f, 0x1fff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16f1907_g.lkr"  },
+/*{ PROC_CLASS_PIC14E,  "__16F1907",  { "pic16f1907",  "p16f1907",  "16f1907"  }, 0x1907, 4, 0x1f, 0x1fff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16f1907_g.lkr"  },*/
   { PROC_CLASS_PIC14E,  "__16LF1907", { "pic16lf1907", "p16lf1907", "16lf1907" }, 0xa907, 4, 0x1f, 0x1fff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16lf1907_g.lkr" },
   { PROC_CLASS_PIC14E,  "__16F1933",  { "pic16f1933",  "p16f1933",  "16f1933"  }, 0x1933, 2, 0x1f, 0xf0ff,{ 0x1000, 0xefff },    { 0x8007, 0x8008 },     "16f1933_g.lkr"  },
   { PROC_CLASS_PIC14E,  "__16LF1933", { "pic16lf1933", "p16lf1933", "16lf1933" }, 0xa933, 2, 0x1f, 0xf0ff,{ 0x1000, 0xefff },    { 0x8007, 0x8008 },     "16lf1933_g.lkr" },
@@ -1167,7 +1167,7 @@ static int reloc_tris_pic14(unsigned int address)
 static void patch_strict_pic14(void)
 {
   int i, j = 0;
-  for (i = 0; i < num_op_16cxx & j < num_op_16cxx_strict_mask; ++i) {
+  for (i = 0; i < num_op_16cxx && j < num_op_16cxx_strict_mask; ++i) {
     if (!strcasecmp(op_16cxx[i].name, op_16cxx_strict_mask[j].name)) {
       op_16cxx[i].mask = op_16cxx_strict_mask[j].mask;
       ++j;
