@@ -1,3 +1,7 @@
+2011-11-18  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpcofflink.c:
+    fixed first part of bug #3439778: gplink fails to allocate sections
+
 2011-11-12  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpprocessor.c, libgputils/gpdis.c: fixed compilation warnings
   * libgputils/gpcofflink.c: fixed bug #3435767: gplink segfaults
