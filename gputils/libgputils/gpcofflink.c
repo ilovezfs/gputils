@@ -1005,7 +1005,7 @@ gp_cofflink_reloc_assigned(MemBlock *m,
     if (_search_memory(m, org_to_byte_shift,
                        _map_to_shadow_address(section_def, section_def->start),
                        _map_to_shadow_address(section_def, section_def->end),
-                       section->size, &current_shadow_address, &current_size) == 1) {
+                       current->size, &current_shadow_address, &current_size) == 1) {
       gp_debug("    logical section: %s", current->name);
       gp_debug("    section name: %s", section_name);
       gp_debug("    successful relocation to %#x", gp_byte_to_org(org_to_byte_shift, current_shadow_address));
