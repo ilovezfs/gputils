@@ -38,13 +38,13 @@ void lst_throw()
   if(state.lst.f) {
     state.lst.page++;
     fprintf(state.lst.f,
-	    "%s%-32s%-12s%-29sPAGE %2d\n%s\n%s\n",
-	    (state.lst.page == 1) ? "" : "\f",
-	    GPASM_VERSION_STRING,
-	    state.srcfilename,
-	    state.lst.startdate,
-	    state.lst.page,
-	    state.lst.title_name,
+            "%s%-32s%-12s%-29sPAGE %2d\n%s\n%s\n",
+            (state.lst.page == 1) ? "" : "\f",
+            GPASM_VERSION_STRING,
+            state.srcfilename,
+            state.lst.startdate,
+            state.lst.page,
+            state.lst.title_name,
             state.lst.subtitle_name);
     state.lst.lineofpage = 4;
     cod_lst_line(COD_NORMAL_LST_LINE);
@@ -117,21 +117,21 @@ void lst_init()
 
   if (!state.cmd_line.macro_expand){
     state.lst.expand = true;
-  }  
-  
+  }
+
   if (state.cmd_line.lst_force)
-    state.lst.force = true; 
+    state.lst.force = true;
   else
     state.lst.force = false;
 
   state.lst.config_address = 0;
   state.lst.title_name[0] = '\0';
-  state.lst.subtitle_name[0] = '\0';  
-  state.lst.tabstop = 8;	/* Default tabstop every 8 */
+  state.lst.subtitle_name[0] = '\0';
+  state.lst.tabstop = 8;        /* Default tabstop every 8 */
 
   if (state.lstfile != named) {
     snprintf(state.lstfilename, sizeof(state.lstfilename),
-	     "%s.lst", state.basefilename);
+             "%s.lst", state.basefilename);
   }
 
   if (state.lstfile == suppress) {
@@ -178,30 +178,30 @@ void lst_memory_map(MemBlock *m)
       row_used = 0;
 
       for (j = 0; j < num_per_line; j++) {
-	if (m->memory[i+j] & BYTE_USED_MASK) {
-	  row_used = 1;
-	  break;
-	}
+        if (m->memory[i+j] & BYTE_USED_MASK) {
+          row_used = 1;
+          break;
+        }
       }
 
       if(row_used) {
         lst_printf("%08x :", (i + base) << _16bit_core);
-	for (j = 0; j < num_per_line; j++) {
+        for (j = 0; j < num_per_line; j++) {
           if ((j % num_per_block) == 0) {
-	    lst_printf(" ");
+            lst_printf(" ");
           }
           if (m->memory[i + j] & BYTE_USED_MASK) {
-	    lst_printf("X");
-	    if (_16bit_core) {
-	      /* each word has two bytes */
-	      lst_printf("X");
-	    }
+            lst_printf("X");
+            if (_16bit_core) {
+              /* each word has two bytes */
+              lst_printf("X");
+            }
           } else {
-	    lst_printf("-");
-	    if (_16bit_core) {
-	      /* each word has two bytes */
-	      lst_printf("-");
-	    }
+            lst_printf("-");
+            if (_16bit_core) {
+              /* each word has two bytes */
+              lst_printf("-");
+            }
           }
         }
 
@@ -226,28 +226,30 @@ void lst_close()
 
   if (state.lst.f) {
     fprintf(state.lst.f,
-	    "\n\n");
+            "\n\n");
     fprintf(state.lst.f,
-	    "Errors   : %7d\n",
-	    state.num.errors);
+            "Errors   : %7d\n",
+            state.num.errors);
     fprintf(state.lst.f,
-	    "Warnings : %7d reported, %7d suppressed\n",
-	    state.num.warnings,
+            "Warnings : %7d reported, %7d suppressed\n",
+            state.num.warnings,
             state.num.warnings_suppressed);
     fprintf(state.lst.f,
-	    "Messages : %7d reported, %7d suppressed\n",
-	    state.num.messages,
+            "Messages : %7d reported, %7d suppressed\n",
+            state.num.messages,
             state.num.messages_suppressed);
     fprintf(state.lst.f,
-	    "\f\n");
-  
+            "\f\n");
+
     fclose(state.lst.f);
   }
 }
 
 unsigned int lst_data(unsigned int byte_org,
-		      unsigned int bytes_emitted)
+                      unsigned int bytes_emitted)
 {
+#define DATA_BYTES_PER_LINE 3
+
   unsigned int lst_bytes = 0;
   int len = 0;
 
@@ -271,7 +273,7 @@ unsigned int lst_data(unsigned int byte_org,
       len += lst_printf("%02X %02X ", emit_bytes[0], emit_bytes[1]);
       lst_bytes += 2;
     }
-    if (0 < bytes_emitted - lst_bytes) {
+    if (lst_bytes < DATA_BYTES_PER_LINE && bytes_emitted > lst_bytes) {
       /* we have space for an extra byte */
       unsigned char emit_byte;
       b_memory_get(state.i_memory, byte_org+lst_bytes, &emit_byte);
@@ -284,14 +286,14 @@ unsigned int lst_data(unsigned int byte_org,
     for (; lst_bytes+1 < bytes_emitted && lst_bytes < 4; lst_bytes+=2) {
       unsigned short emit_word;
       state.device.class->i_memory_get(state.i_memory, byte_org+lst_bytes,
-				       &emit_word);
+                                       &emit_word);
       len += lst_printf("%04X ", emit_word);
     }
     if (bytes_emitted < 4) {
       /* list extra byte if odd */
       if (lst_bytes < bytes_emitted) {
-	unsigned char emit_byte;
-	b_memory_get(state.i_memory, byte_org+lst_bytes, &emit_byte);
+        unsigned char emit_byte;
+        b_memory_get(state.i_memory, byte_org+lst_bytes, &emit_byte);
         len += lst_printf("%02X   ", emit_byte);
         ++lst_bytes;
       }
@@ -322,7 +324,7 @@ void lst_format_line(const char *src_line, int value)
     emitted = state.org - state.lst.line.was_org;
     break;
   case data:
-    if ((SECTION_FLAGS & (STYP_TEXT|STYP_BPACK)) == STYP_TEXT) {
+    if (SECTION_FLAGS & STYP_TEXT) {
       /* generate line numbers for data directives in program memory */
       emitted = state.org - state.lst.line.was_org;
     }
@@ -344,7 +346,7 @@ void lst_format_line(const char *src_line, int value)
     return;
 
   switch (state.lst.line.linetype) {
-  case equ: 
+  case equ:
   case set:
     lst_printf("  %08X     ", value);
     break;
@@ -358,15 +360,16 @@ void lst_format_line(const char *src_line, int value)
       state.device.class->i_memory_get(state.i_memory, state.device.id_location, id);
       state.device.class->i_memory_get(state.i_memory, state.device.id_location+2, id+1);
       lst_printf("%04X %04X %04X ",
-	       gp_processor_byte_to_org(state.device.class, gp_processor_id_location(state.processor)),
-	       id[0], id[1]);
+               gp_processor_byte_to_org(state.device.class, gp_processor_id_location(state.processor)),
+               id[0], id[1]);
     }
     break;
   case insn:
+  case data:
     byte_org = state.lst.line.was_org;
     bytes_emitted = emitted;
     lst_printf("%04X ",
-	       gp_processor_byte_to_org(state.device.class, state.lst.line.was_org));
+               gp_processor_byte_to_org(state.device.class, state.lst.line.was_org));
 
     lst_bytes = lst_data(byte_org, bytes_emitted);
     byte_org += lst_bytes;
@@ -376,33 +379,32 @@ void lst_format_line(const char *src_line, int value)
   case config:
     if(_16bit_core) {
       /* config data is byte addressable, but we only want to print
-	 words in the list file. */
+         words in the list file. */
       if (state.lst.config_address == CONFIG4L) {
         /* Special case */
-	unsigned short word;
-	state.device.class->i_memory_get(state.i_memory,
-					 state.lst.config_address, &word);
+        unsigned short word;
+        state.device.class->i_memory_get(state.i_memory,
+                                         state.lst.config_address, &word);
         lst_printf("%06X %04X    ", state.lst.config_address, word);
       } else if((state.lst.config_address & 0x1) == 0) {
         /* if it is an even address don't print anything */
-	lst_printf("               ");
+        lst_printf("               ");
       } else {
-	unsigned short word;
-	state.device.class->i_memory_get(state.i_memory,
-					 state.lst.config_address - 1, &word);
+        unsigned short word;
+        state.device.class->i_memory_get(state.i_memory,
+                                         state.lst.config_address - 1, &word);
         lst_printf("%06X %04X    ", state.lst.config_address - 1, word);
       }
     } else {
       unsigned short word;
       state.device.class->i_memory_get(state.i_memory,
-				       state.lst.config_address, &word);
+                                       state.lst.config_address, &word);
       lst_printf("%06X %04X    ",
-		 gp_processor_byte_to_org(state.device.class,
-					  state.lst.config_address),
-		 word);
+                 gp_processor_byte_to_org(state.device.class,
+                                          state.lst.config_address),
+                 word);
     }
     break;
-  case data:
   case res:
   case sec:
   case dir:
@@ -414,7 +416,7 @@ void lst_format_line(const char *src_line, int value)
 
   if (state.stGlobal == state.stTop) {
     lst_printf("%05d ", state.src->line_number);
-  } else {		  
+  } else {
     lst_printf("    M ");
   }
 
@@ -427,14 +429,14 @@ void lst_format_line(const char *src_line, int value)
       if (*old == '\t') {
         int len = state.lst.tabstop - column % state.lst.tabstop;
 
-	column += len;
+        column += len;
 
         while (len--)
-	  lst_printf(" ");
+          lst_printf(" ");
       } else {
-	++column;
+        ++column;
 
-	lst_printf("%c", *old);
+        lst_printf("%c", *old);
       }
       old++;
     }
@@ -448,9 +450,9 @@ void lst_format_line(const char *src_line, int value)
   if (state.lst.line.linetype == idlocs) {
     unsigned short id[2];
     state.device.class->i_memory_get(state.i_memory,
-				     state.device.id_location + 4, id);
+                                     state.device.id_location + 4, id);
     state.device.class->i_memory_get(state.i_memory,
-				     state.device.id_location + 6, id+1);
+                                     state.device.id_location + 6, id+1);
     lst_line("     %04X %04X ", id[0], id[1]);
   }
 
@@ -483,7 +485,7 @@ void lst_symbol_table(struct symbol_table *table)
   ps = lst = malloc(table->count * sizeof(lst[0]));
 
   for (i = 0; i < HASH_SIZE; i++)
-    for (s = table->hash_table[i]; s; s = s->next) 
+    for (s = table->hash_table[i]; s; s = s->next)
       *ps++ = s;
 
   assert(ps == &lst[table->count]);
@@ -494,9 +496,9 @@ void lst_symbol_table(struct symbol_table *table)
     struct variable *var;
 
     var = get_symbol_annotation(lst[i]);
-    lst_line(symbol_format, 
-	     get_symbol_name(lst[i]),
-	     var ? var->value : 0);
+    lst_line(symbol_format,
+             get_symbol_name(lst[i]),
+             var ? var->value : 0);
   }
   cod_write_symbols(lst,table->count);
 }
@@ -510,7 +512,7 @@ void lst_defines_table(struct symbol_table *table)
   ps = lst = malloc(table->count * sizeof(lst[0]));
 
   for (i = 0; i < HASH_SIZE; i++)
-    for (s = table->hash_table[i]; s; s = s->next) 
+    for (s = table->hash_table[i]; s; s = s->next)
       *ps++ = s;
 
   assert(ps == &lst[table->count]);
@@ -522,7 +524,7 @@ void lst_defines_table(struct symbol_table *table)
 
     defined_as = get_symbol_annotation(lst[i]);
     lst_line(symbol_format,
-	     get_symbol_name(lst[i]),
-	     defined_as);
+             get_symbol_name(lst[i]),
+             defined_as);
   }
 }

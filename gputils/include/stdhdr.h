@@ -77,6 +77,6 @@ Boston, MA 02111-1307, USA.  */
   #define COPY_CHAR "/"
 #endif
 
-#define GPUTILS_COPYRIGHT_STRING "Copyright (c) 1998-2005 gputils project"
+#define GPUTILS_COPYRIGHT_STRING "Copyright (c) 1998-2011 gputils project"
 
 #endif

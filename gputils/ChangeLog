@@ -1,3 +1,7 @@
+2011-11-20  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/lst.c: fixed bug 3437346: Information missing from list file
+  * include/stdhdr.h: updated GPUTILS_COPYRIGHT_STRING
+
 2011-11-18  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpcofflink.c:
     fixed first part of bug #3439778: gplink fails to allocate sections
