@@ -3262,7 +3262,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit(i->opcode | (value & 0x1fff));
         }
         break;
-      case INSN_CLASS_LITFSR:
+      case INSN_CLASS_LITFSR_14:
         if (enforce_arity(arity, 2)) {
           int value;
           int fsr;
@@ -3280,6 +3280,25 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             emit(i->opcode | fsr | (value & 0x3f));
           } else
             gperror(GPE_RANGE, NULL);
+        }
+        break;
+      case INSN_CLASS_LITFSR_16:
+        if (enforce_arity(arity, 2)) {
+          int value;
+          int fsr;
+
+          p = HEAD(parms);
+          fsr = maybe_evaluate(p);
+          if ((fsr < 0) || (fsr > 2))
+            gperror(GPE_RANGE, NULL);
+
+          p = HEAD(TAIL(parms));
+          /* the offset cannot be a relocatable address */
+          value = maybe_evaluate(p);
+          if (value & (~0x3f))
+            gperror(GPE_RANGE, NULL);
+
+          emit(i->opcode | ((fsr & 0x3) << 6) | (value & 0x3f));
         }
         break;
       case INSN_CLASS_RBRA8:

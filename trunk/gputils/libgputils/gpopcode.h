@@ -34,7 +34,8 @@ enum insn_class {
   INSN_CLASS_LIT9,      /* bits 8:0 contain a 9 bit literal             */
   INSN_CLASS_LIT11,     /* bits 10:0 contain an 11 bit literal          */
   INSN_CLASS_LIT13,     /* bits 12:0 contain an 11 bit literal          */
-  INSN_CLASS_LITFSR,    /* bits 5:0 contain an 6 bit literal for fsr 7:6 */
+  INSN_CLASS_LITFSR_14, /* bits 5:0 contain an 6 bit literal for fsr (14bit enh. cores) */
+  INSN_CLASS_LITFSR_16, /* bits 5:0 contain an 6 bit literal for fsr 7:6 (16bit cores)  */
   INSN_CLASS_IMPLICIT,  /* instruction has no variable bits at all      */
   INSN_CLASS_OPF5,      /* bits 4:0 contain a register address          */
   INSN_CLASS_OPWF5,     /* as above, but bit 5 has a destination flag   */
