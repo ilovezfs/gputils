@@ -1,5 +1,10 @@
+2011-11-21  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/directive.c, libgputils/gpopcode.c, libgputils/gpopcode.h,
+    libgputils/gpdis.c:
+    fixed bug #3440413: gpasm fails to build gpsim test cases
+
 2011-11-20  Borut Razem  <borutr@users.sourceforge.net>
-  * gpasm/lst.c: fixed bug 3437346: Information missing from list file
+  * gpasm/lst.c: fixed bug #3437346: Information missing from list file
   * include/stdhdr.h: updated GPUTILS_COPYRIGHT_STRING
 
 2011-11-18  Borut Razem  <borutr@users.sourceforge.net>

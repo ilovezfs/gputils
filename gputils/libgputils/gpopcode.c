@@ -173,7 +173,7 @@ const int num_op_16cxx_strict_mask = TABLE_SIZE(op_16cxx_strict_mask);
 
 /* PIC 14-bit enhanced instruction set */
 const struct insn op_16cxx_enh[] = {
-  { "addfsr", 0x3f80, 0x3100,   INSN_CLASS_LITFSR       },
+  { "addfsr", 0x3f80, 0x3100,   INSN_CLASS_LITFSR_14    },
   { "addwfc", 0x3f00, 0x3d00,   INSN_CLASS_OPWF7        },
   { "asrf",   0x3f00, 0x3700,   INSN_CLASS_OPWF7        },
   { "bra",    0x3e00, 0x3200,   INSN_CLASS_RBRA9        },
@@ -363,13 +363,13 @@ const int num_op_18cxx_sp = TABLE_SIZE(op_18cxx_sp);
 
 /* PIC 16-bit Extended instruction set */
 const struct insn op_18cxx_ext[] = {
-  { "addfsr",  0xff00, 0xe800,  INSN_CLASS_LITFSR       },
+  { "addfsr",  0xff00, 0xe800,  INSN_CLASS_LITFSR_16    },
   { "addulnk", 0xffc0, 0xe8c0,  INSN_CLASS_LIT6         },
   { "callw",   0xffff, 0x0014,  INSN_CLASS_IMPLICIT     },
   { "movsf",   0xff80, 0xeb00,  INSN_CLASS_SF           },
   { "movss",   0xff80, 0xeb80,  INSN_CLASS_SS           },
   { "pushl",   0xff00, 0xea00,  INSN_CLASS_LIT8         },
-  { "subfsr",  0xff00, 0xe900,  INSN_CLASS_LITFSR       },
+  { "subfsr",  0xff00, 0xe900,  INSN_CLASS_LITFSR_16    },
   { "subulnk", 0xffc0, 0xe9c0,  INSN_CLASS_LIT6         }
 };
 

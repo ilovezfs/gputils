@@ -145,7 +145,7 @@ gp_disassemble(MemBlock *m,
     case INSN_CLASS_LIT13:
       DECODE_ARG1(opcode & 0x1fff);
       break;
-    case INSN_CLASS_LITFSR: {
+    case INSN_CLASS_LITFSR_14: {
         int neg;
 
         value = (opcode & 0x3f);
@@ -158,6 +158,9 @@ gp_disassemble(MemBlock *m,
         snprintf(buffer, sizeof_buffer, "%s\t%#x, %s.%d", instruction->name,
                  ((opcode >> 6) & 0x3) ? 6 : 4, neg ? "-" : "", value);
       }
+      break;
+    case INSN_CLASS_LITFSR_16:
+      DECODE_ARG2(((opcode >> 6) & 0x3), (opcode & 0x3f));
       break;
     case INSN_CLASS_RBRA8:
       value = (opcode & 0xff);
