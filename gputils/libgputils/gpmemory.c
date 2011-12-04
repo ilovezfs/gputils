@@ -26,7 +26,7 @@ Boston, MA 02111-1307, USA.  */
 
  gpmemory.c
 
-    This file provides the functions used to manipulate the PIC memory. 
+    This file provides the functions used to manipulate the PIC memory.
     The memory is stored in 'memory blocks' which are implemented
  with the 'MemBlock' structure:
 
@@ -39,11 +39,11 @@ Boston, MA 02111-1307, USA.  */
  Each MemBlock can hold up to `MAX_I_MEM' (32k currently) bytes. The `base'
  is the base address of the memory block. If the instruction memory spans
  more than 32k, then additional memory blocks can be allocated and linked
- together in a singly linked list (`next'). The last memory block in a 
+ together in a singly linked list (`next'). The last memory block in a
  linked list of blocks has its next ptr set to NULL.  32k is left over
  from when it was number of two byte instructions and it corresponded
  to 64K bytes which is the upper limit on inhx8m files.
- 
+
  ************************************************************************/
 
 MemBlock *i_memory_create(void)
@@ -116,12 +116,12 @@ MemBlock * i_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
  * b_memory_get
  *
  * Fetch a byte from the pic memory. This function will traverse through
- * the linked list of memory blocks searching for the address from the 
+ * the linked list of memory blocks searching for the address from the
  * word will be fetched. If the address is not found, then `0' will be
  * returned.
  *
  * Inputs:
- *  address - 
+ *  address -
  *  m - start of the instruction memory
  * Returns
  *  the byte from that address combined with status bits
@@ -141,7 +141,7 @@ int b_memory_get(MemBlock *m, unsigned int address, unsigned char *byte)
     m = m->next;
   } while(m);
 
-  return 0;  
+  return 0;
 }
 
 /************************************************************************
@@ -226,7 +226,7 @@ int b_memory_used(MemBlock *m)
 
     for (i = 0; i < MAX_I_MEM; ++i) {
       if (m->memory[i & I_MEM_MASK] & BYTE_USED_MASK)
-	bytes++;
+        bytes++;
     }
     m = m->next;
   }
@@ -235,10 +235,10 @@ int b_memory_used(MemBlock *m)
 }
 
 /************************************************************************
- * 
+ *
  *
  *  These functions are used to read and write instruction memory.
- * 
+ *
  *
  ************************************************************************/
 int i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word)
@@ -290,28 +290,74 @@ void print_i_memory(MemBlock *m, proc_class_t class)
       row_used = 0;
 
       for(j = 0; j<2*WORDS_IN_ROW; j++)
-	if( m->memory[i+j] )
-	  row_used = 1;
+        if( m->memory[i+j] )
+          row_used = 1;
 
       if(row_used) {
-	printf("%08X  ", gp_processor_byte_to_org(class, base+i));
+        printf("%08X  ", gp_processor_byte_to_org(class, base+i));
 
-	for(j = 0; j<WORDS_IN_ROW; j+=2) {
-	  unsigned short data;
-	  class->i_memory_get(m, i+2*j, &data);
-	  printf("%04X ", data);
-	}
+        for(j = 0; j<WORDS_IN_ROW; j+=2) {
+          unsigned short data;
+          class->i_memory_get(m, i+2*j, &data);
+          printf("%04X ", data);
+        }
 
-	for(j = 0; j<2*WORDS_IN_ROW; j++) {
-	  c = m->memory[i+j] & 0xff;
-	  putchar( (isprint(c)) ? c : '.');
-	}
-	putchar('\n');
+        for(j = 0; j<2*WORDS_IN_ROW; j++) {
+          c = m->memory[i+j] & 0xff;
+          putchar( (isprint(c)) ? c : '.');
+        }
+        putchar('\n');
       }
     }
 
     m = m->next;
   } while(m);
-
 }
 
+/************************************************************************
+ *
+ *
+ *  These functions are used to mark memory as listed.
+ *
+ *
+ ************************************************************************/
+void b_memory_set_listed(MemBlock *m, unsigned int address, unsigned int n_bytes)
+{
+  assert(m->memory != NULL);
+
+  while (n_bytes--) {
+    do {
+      if (((address >> I_MEM_BITS) & 0xFFFF) == m->base) {
+        m->memory[address & I_MEM_MASK] |= BYTE_LISTED_MASK;
+        break;
+      }
+
+      m = m->next;
+    } while(m);
+    ++address;
+  }
+}
+
+unsigned int b_memory_get_unlisted_size(MemBlock *m, unsigned int address)
+{
+  unsigned int n_bytes = 0;
+
+  assert(m->memory != NULL);
+
+  do {
+    do {
+      if (((address >> I_MEM_BITS) & 0xFFFF) == m->base) {
+        if (BYTE_USED_MASK == (m->memory[address & I_MEM_MASK] & (BYTE_LISTED_MASK | BYTE_USED_MASK)))
+          break;
+        else
+          return n_bytes;
+      }
+
+      m = m->next;
+    } while(m);
+    ++address;
+    ++n_bytes;
+  } while (n_bytes < 4);
+
+  return n_bytes;
+}

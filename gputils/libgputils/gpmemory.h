@@ -22,16 +22,17 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPMEMORY_H__
 #define __GPMEMORY_H__
 
-#define MAX_RAM		0x1000	        /* Maximum RAM */
+#define MAX_RAM         0x1000          /* Maximum RAM */
 /* Choose bases such that each base has different hex 04 record */
-#define I_MEM_BITS      16		/* MemBlock base bit alignment */
-#define MAX_I_MEM	(1<<I_MEM_BITS) /* MemBlock base alignment */
+#define I_MEM_BITS      16              /* MemBlock base bit alignment */
+#define MAX_I_MEM       (1<<I_MEM_BITS) /* MemBlock base alignment */
 #define I_MEM_MASK      (MAX_I_MEM-1)
 
-#define MAX_C_MEM       0x100           /* Maximum configuration memory 
+#define MAX_C_MEM       0x100           /* Maximum configuration memory
                                            (only a few bytes are used) */
 
-#define BYTE_USED_MASK 0x8000 /* Means occupied in MemBlock.memory */
+#define BYTE_USED_MASK    0x8000 /* Means occupied in MemBlock.memory */
+#define BYTE_LISTED_MASK  0x4000 /* Means already listed */
 
 struct proc_class;
 
@@ -60,5 +61,8 @@ int i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word);
 int i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word);
 void i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word);
 void i_memory_put_be(MemBlock *m, unsigned int byte_addr, unsigned short word);
+
+void b_memory_set_listed(MemBlock *m, unsigned int address, unsigned int n_bytes);
+unsigned int b_memory_get_unlisted_size(MemBlock *m, unsigned int address);
 
 #endif

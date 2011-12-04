@@ -25,7 +25,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include "gpcod.h"
 
-#define GPVC_VERSION_STRING ("gpvc-" VERSION)
+#define GPVC_VERSION_STRING ("gpvc-" VERSION " (" __DATE__ ")")
 #define BUFFER_LENGTH 256
 #define MAX_SOURCE_FILES 100
 

@@ -30,5 +30,21 @@ int gp_disassemble(MemBlock *m,
                    proc_class_t class,
                    char *buffer,
                    size_t sizeof_buffer);
+int gp_disassemble_byte(MemBlock *m,
+                    int byte_address,
+                    proc_class_t class,
+                    char *buffer,
+                    size_t sizeof_buffer);
+int gp_disassemble_word(MemBlock *m,
+                    int byte_address,
+                    proc_class_t class,
+                    char *buffer,
+                    size_t sizeof_buffer);
+int gp_disassemble_size(MemBlock *m,
+                    int byte_address,
+                    proc_class_t class,
+                    char *buffer,
+                    size_t sizeof_buffer,
+                    unsigned int size);
 
 #endif

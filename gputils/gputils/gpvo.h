@@ -22,7 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #ifndef GPVO_H
 #define GPVO_H
 
-#define GPVO_VERSION_STRING ("gpvo-" VERSION)
+#define GPVO_VERSION_STRING ("gpvo-" VERSION " (" __DATE__ ")")
 
 /* Dump Flags */
 #define PRINT_HEADER   1 << 1
