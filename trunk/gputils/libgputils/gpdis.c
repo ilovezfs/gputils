@@ -101,7 +101,7 @@ gp_disassemble(MemBlock *m,
   instruction = class->find_insn(class, opcode);
 
   if (instruction == NULL)  {
-    snprintf(buffer, sizeof_buffer, "dw\t%#x  ;unknown opcode", opcode);
+    snprintf(buffer, sizeof_buffer, "dw\t%#x", opcode);
     return num_words;
   }
 
@@ -354,4 +354,57 @@ gp_disassemble(MemBlock *m,
     }
 
   return num_words;
+}
+
+int
+gp_disassemble_byte(MemBlock *m,
+                    int byte_address,
+                    proc_class_t class,
+                    char *buffer,
+                    size_t sizeof_buffer)
+{
+  unsigned char byte;
+
+  b_memory_assert_get(m, byte_address, &byte);
+  snprintf(buffer, sizeof_buffer, "db\t%#x", (unsigned int)byte);
+  return 1;
+}
+
+int
+gp_disassemble_word(MemBlock *m,
+                    int byte_address,
+                    proc_class_t class,
+                    char *buffer,
+                    size_t sizeof_buffer)
+{
+  unsigned short word;
+
+  class->i_memory_get(m, byte_address, &word);
+  snprintf(buffer, sizeof_buffer, "dw\t%#x", word);
+  return 2;
+}
+
+int
+gp_disassemble_size(MemBlock *m,
+                    int byte_address,
+                    proc_class_t class,
+                    char *buffer,
+                    size_t sizeof_buffer,
+                    unsigned int size)
+{
+  if (size == 1)
+    return gp_disassemble_byte(m, byte_address, class, buffer, sizeof_buffer);
+  else if (size == 2) {
+    char dasmbuf[512];
+    int num_words;
+
+    num_words = gp_disassemble(m, byte_address, class, dasmbuf, sizeof(dasmbuf));
+    if (num_words != 1)
+      return gp_disassemble_word(m, byte_address, class, buffer, sizeof_buffer);
+    else {
+      strncpy(buffer, dasmbuf, sizeof_buffer);
+      return 2 * num_words;
+    }
+  }
+  return 2 * gp_disassemble(m, byte_address, class, buffer, sizeof_buffer);
 }

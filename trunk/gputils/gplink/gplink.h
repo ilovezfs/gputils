@@ -22,7 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #ifndef GPLINK_H
 #define GPLINK_H
 
-#define GPLINK_VERSION_STRING ("gplink-" VERSION)
+#define GPLINK_VERSION_STRING ("gplink-" VERSION " (" __DATE__ ")")
 
 #define MAX_PATHS 100
 

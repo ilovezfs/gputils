@@ -22,7 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #ifndef GPSTRIP_H
 #define GPSTRIP_H
 
-#define GPSTRIP_VERSION_STRING ("gpstrip-" VERSION)
+#define GPSTRIP_VERSION_STRING ("gpstrip-" VERSION " (" __DATE__ ")")
 
 extern struct gpstrip_state {
   gp_boolean strip_debug;               /* strip debug symbols */
