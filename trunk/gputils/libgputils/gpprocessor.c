@@ -158,7 +158,7 @@ static struct px pics[] = {
   { PROC_CLASS_PIC12,   "__16CR54",   { "pic16cr54",   "p16cr54",   "16cr54"   }, 0xdc54, 1, 1, 0x1ff,    { -1, -1 },            { 0xFFF, 0xFFF },       "16cr54.lkr"   },
   { PROC_CLASS_PIC12,   "__16CR54A",  { "pic16cr54a",  "p16cr54a",  "16cr54a"  }, 0xd54a, 1, 1, 0x1ff,    { -1, -1 },            { 0xFFF, 0xFFF },       "16cr54a.lkr"  },
   { PROC_CLASS_PIC12,   "__16CR54B",  { "pic16cr54b",  "p16cr54b",  "16cr54b"  }, 0xd54b, 1, 1, 0x1ff,    { -1, -1 },            { 0xFFF, 0xFFF },       "16cr54b.lkr"  },
-  { PROC_CLASS_PIC12,   "__16CR54C",  { "pic16cr54c",  "p16cr54c",  "16cr54c"  }, 0xdc54, 1, 1, 0x1ff,    { -1, -1 },            { 0xFFF, 0xFFF },       "16cr54c.lkr"  },
+  { PROC_CLASS_PIC12,   "__16CR54C",  { "pic16cr54c",  "p16cr54c",  "16cr54c"  }, 0xd54c, 1, 1, 0x1ff,    { -1, -1 },            { 0xFFF, 0xFFF },       "16cr54c.lkr"  },
   { PROC_CLASS_PIC12,   "__16F54",    { "pic16f54",    "p16f54",    "16f54"    }, 0x6f54, 1, 1, 0x1ff,    { -1, -1 },            { 0xFFF, 0xFFF },       "16f54.lkr"    },
   { PROC_CLASS_PIC12,   "__16HV540",  { "pic16hv540",  "p16hv540",  "16hv540"  }, 0x6540, 1, 1, 0x1ff,    { -1, -1 },            { 0xFFF, 0xFFF },       "16hv540.lkr"  },
   { PROC_CLASS_PIC12,   "__16C55",    { "pic16c55",    "p16c55",    "16c55"    }, 0x6c55, 1, 1, 0x1ff,    { -1, -1 },            { 0xFFF, 0xFFF },       "16c55.lkr"    },

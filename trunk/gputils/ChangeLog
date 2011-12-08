@@ -1,3 +1,6 @@
+2011-12-08  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpprocessor.c: corrected coff_type for __16CR54C
+
 2011-12-04  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/gpasm.h, gplink/gplink.h, gputils/gpdasm.h, gputils/gplib.h,
     gputils/gpstrip.h, gputils/gpvc.h, gputils/gpvo.h:
