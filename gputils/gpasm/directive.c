@@ -3302,12 +3302,16 @@ gpasmVal do_insn(char *name, struct pnode *parms)
         }
         break;
       case INSN_CLASS_RBRA8:
+        /* used only in PROC_CLASS_PIC16E */
         if (enforce_arity(arity, 1)) {
           int offset;
 
           p = HEAD(parms);
           if (count_reloc(p) == 0) {
-            offset = maybe_evaluate(p) - (r + 1);
+            offset = maybe_evaluate(p) - (r + 2);
+            if (offset & 1) {
+              gpwarning(GPW_WORD_ALIGNED, NULL);
+            }
           } else {
             offset = reloc_evaluate(p, RELOCT_CONDBRA);
           }
@@ -3336,12 +3340,16 @@ gpasmVal do_insn(char *name, struct pnode *parms)
         }
         break;
       case INSN_CLASS_RBRA11:
+        /* used only in PROC_CLASS_PIC16E */
         if (enforce_arity(arity, 1)) {
           int offset;
 
           p = HEAD(parms);
           if (count_reloc(p) == 0) {
-            offset = maybe_evaluate(p) - (r + 1);
+            offset = maybe_evaluate(p) - (r + 2);
+            if (offset & 1) {
+              gpwarning(GPW_WORD_ALIGNED, NULL);
+            }
           } else {
             offset = reloc_evaluate(p, RELOCT_BRA);
           }
@@ -3367,9 +3375,9 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           int s = 0; /* By default, fast push is not used */
           struct pnode *p2; /* second parameter */
 
-      if (arity < 1) {
-        enforce_arity(arity, 2);
-      } else {
+          if (arity < 1) {
+            enforce_arity(arity, 2);
+          } else {
             p = HEAD(parms);
             switch (arity) {
             case 2:
@@ -3392,7 +3400,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             emit(i->opcode | (s<<8) | (dest & 0xff));
             reloc_evaluate(p, RELOCT_CALL2);     /* add the second relocation */
             emit_check(0xf000, (dest>>8), 0xfff);
-      }
+          }
         }
         break;
       case INSN_CLASS_FLIT12:

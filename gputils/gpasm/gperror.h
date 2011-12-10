@@ -37,7 +37,7 @@ void add_code(int code);
 /* Error codes
  *
  * The error codes gpasm defines here are identical to MPASM's
- * definitions. Additional gpasm definitions follow the last 
+ * definitions. Additional gpasm definitions follow the last
  * MPASM definition.
  *
  */
@@ -92,13 +92,14 @@ enum GPE_codes {
   GPE_CONFIG_UNKNOWN   = 176,
   GPE_CONFIG_usCONFIG  = 177,
   GPE_RES_ODD_PIC16EA  = 180,
+  GPW_WORD_ALIGNED     = 226,
   GPE_UNKNOWN
 };
 
 /* Warning codes
  *
  * The warning codes gpasm defines here are identical to MPASM's
- * definitions. Additional gpasm definitions follow the last 
+ * definitions. Additional gpasm definitions follow the last
  * MPASM definition.
  *
  */
@@ -128,7 +129,7 @@ enum GPW_codes {
 /* Message codes
  *
  * The message codes gpasm defines here are identical to MPASM's
- * definitions. Additional gpasm definitions follow the last 
+ * definitions. Additional gpasm definitions follow the last
  * MPASM definition.
  *
  */
