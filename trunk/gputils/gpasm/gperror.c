@@ -46,7 +46,7 @@ void add_code(int code)
     new->next  = NULL;
 
     if (errorcodes_list) {
-      /* the list has been started, scan the list for the end */ 
+      /* the list has been started, scan the list for the end */
       list = errorcodes_list;
       while(list->next) {
         list = list->next;
@@ -70,7 +70,7 @@ static int check_code(int code)
     if (p->value == code){
         print = 1;
     } else if (p->value == -(code)) {
-	print = 0;
+  print = 0;
     }
 
     p = p->next;
@@ -172,7 +172,7 @@ char *gp_geterror(unsigned int code)
 }
 
 void gperror(unsigned int code,
-	     char *message)
+       char *message)
 {
   if (state.pass == 2) {
     if(message == NULL)
@@ -183,14 +183,14 @@ void gperror(unsigned int code,
     if (!state.quiet) {
       if (state.src)
         printf("%s:%d:Error [%03d] %s\n",
-	       state.src->name,
-	       state.src->line_number,
-	       code,
-	       message);
+         state.src->name,
+         state.src->line_number,
+         code,
+         message);
       else
         printf("Error [%03d] %s\n",
-	       code,
-	       message);
+         code,
+         message);
     }
 #else
     user_error(code, message);
@@ -198,8 +198,8 @@ void gperror(unsigned int code,
 
     /* list file output */
     lst_line("Error [%03d] : %s",
-	     code,
-	     message);
+       code,
+       message);
 
     state.num.errors++;
   }
@@ -246,14 +246,15 @@ char *gp_getwarning(unsigned int code)
     return "Use of this instruction is not recommended.";
   case GPW_INVALID_ROM:
     return "Invalid ROM location specified.";
-  case GPW_UNKNOWN:
+  case GPW_WORD_ALIGNED:
+    return "Destination address must be word aligned.";
   default:
     return "UNKNOWN";
   }
 }
 
 void gpwarning(unsigned int code,
-	       char *message)
+         char *message)
 {
   if (state.pass ==2) {
 
@@ -266,23 +267,23 @@ void gpwarning(unsigned int code,
       if (!state.quiet) {
         if (state.src)
           printf("%s:%d:Warning [%03d] %s\n",
-		 state.src->name,
-		 state.src->line_number,
-		 code,
-		 message);
+     state.src->name,
+     state.src->line_number,
+     code,
+     message);
         else
           printf("Warning [%03d] %s\n",
-		 code,
-		 message);
-      } 
+     code,
+     message);
+      }
 #else
       user_warning(code, message);
 #endif
 
       /* list file output */
       lst_line("Warning [%03d] : %s",
-	       code,
-	       message);
+         code,
+         message);
 
       state.num.warnings++;
     } else {
@@ -321,7 +322,7 @@ char *gp_getmessage(unsigned int code)
   case GPM_W_MODIFIED:
     return "W Register modified.";
   case GPM_SPECIAL_MNEMONIC:
-    return "Special Instruction Mnemonic used."; 
+    return "Special Instruction Mnemonic used.";
   case GPM_UNKNOWN:
   default:
     return "UNKNOWN MESSAGE";
@@ -329,7 +330,7 @@ char *gp_getmessage(unsigned int code)
 }
 
 void gpmessage(unsigned int code,
-	       char *message)
+         char *message)
 {
   if (state.pass==2) {
 
@@ -342,14 +343,14 @@ void gpmessage(unsigned int code,
       if (!state.quiet) {
         if (state.src)
           printf("%s:%d:Message [%03d] %s\n",
-		 state.src->name,
-		 state.src->line_number,
-		 code,
-		 message);
+     state.src->name,
+     state.src->line_number,
+     code,
+     message);
         else
           printf("Message [%03d] %s\n",
-		 code,
-		 message);
+     code,
+     message);
       }
 #else
       user_message(code, message);
