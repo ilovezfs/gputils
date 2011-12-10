@@ -29,19 +29,19 @@ Boston, MA 02111-1307, USA.  */
 #include <stdarg.h>
 #endif
 
-#define SECTION_UNKNOWN 0 
-#define SECTION_ROMDATA 1 
-#define SECTION_CODE    2 
-#define SECTION_IDATA   3 
-#define SECTION_UDATA   4 
+#define SECTION_UNKNOWN 0
+#define SECTION_ROMDATA 1
+#define SECTION_CODE    2
+#define SECTION_IDATA   3
+#define SECTION_UDATA   4
 
-/* FIXME: Sort symbols by name and size. */ 
+/* FIXME: Sort symbols by name and size. */
 
-void 
+void
 map_line(const char *format, ...)
 {
   va_list args;
-  char buffer[BUFSIZ]; 
+  char buffer[BUFSIZ];
 
   if (state.map.f == NULL)
     return;
@@ -60,7 +60,7 @@ _section_value(gp_section_type *section)
 {
   int value = 0;
 
-  if ((section->flags & STYP_TEXT) || 
+  if ((section->flags & STYP_TEXT) ||
       (section->flags & STYP_DATA_ROM))  {
     value = SECTION_CODE;
   } else if (section->flags & STYP_DATA) {
@@ -153,7 +153,7 @@ _write_sections(void)
       type = "UNKNOWN";
     }
 
-    if ((section->flags & STYP_TEXT) || 
+    if ((section->flags & STYP_TEXT) ||
         (section->flags & STYP_DATA_ROM))  {
       location = "program";
     } else {
@@ -162,7 +162,7 @@ _write_sections(void)
     }
 
     assert(section->name != NULL);
-    
+
     if (section->size != 0) {
       map_line("%25s %10s   %#08x %10s   %#08x",
                section->name,
@@ -189,14 +189,14 @@ _write_program_memory(void)
   section = state.object->sections;
 
   while (section != NULL) {
-    if (((section->flags & STYP_TEXT) || 
+    if (((section->flags & STYP_TEXT) ||
          (section->flags & STYP_DATA_ROM)) && (section->size != 0)) {
       map_line("                            %#08x    %#08x",
                gp_processor_byte_to_org(state.class, section->address),
                gp_processor_byte_to_org(state.class, section->address + section->size - 1));
       prog_size += section->size;
     }
-    section = section->next;  
+    section = section->next;
   }
   map_line(" ");
   map_line("                            %i program addresses used",
@@ -213,7 +213,7 @@ static struct file_stack *
 push_file(struct file_stack *stack, gp_symbol_type *symbol)
 {
   struct file_stack *new;
-  
+
   /* allocate memory for the new stack */
   new = (struct file_stack *)malloc(sizeof(*new));
 
@@ -258,9 +258,8 @@ _write_symbols(void)
       stack = push_file(stack, symbol);
     } else if (symbol->class == C_EOF) {
       stack = pop_file(stack);
-    } else if ((symbol->section_number > 0) && 
+    } else if ((symbol->section_number > 0) &&
                (symbol->class != C_SECTION)) {
-      int org_to_byte_shift = state.class->org_to_byte_shift;
       if (stack == NULL) {
         /* the symbol is not between a .file/.eof pair */
         file_name = " ";
@@ -270,16 +269,15 @@ _write_symbols(void)
         assert(file->aux_list != NULL);
         file_name = file->aux_list->_aux_symbol._aux_file.filename;
       }
-      
+
       assert(symbol->section != NULL);
       assert(symbol->name != NULL);
-      
+
       if ((symbol->section->flags & STYP_TEXT) ||
           (symbol->section->flags & STYP_DATA_ROM)) {
         location = "program";
       } else {
         location = "data";
-	org_to_byte_shift = 0;
       }
 
       if (symbol->class == C_EXT) {
@@ -290,19 +288,19 @@ _write_symbols(void)
 
       map_line("%25s   %#08x %10s %10s %s",
                symbol->name,
-               gp_byte_to_org(org_to_byte_shift, symbol->value),
+               symbol->value,
                location,
                storage,
                file_name);
-  
+
     }
-    symbol = symbol->next;  
+    symbol = symbol->next;
   }
   map_line(" ");
 }
 
 
-void 
+void
 make_map(void)
 {
   if ((gp_num_errors) || (state.mapfile == suppress)) {
@@ -319,7 +317,7 @@ make_map(void)
   map_line("%s", GPLINK_VERSION_STRING);
   map_line("Map File - Created %s", state.startdate);
   map_line(" ");
-  
+
   /* write sections */
   _write_sections();
 
@@ -330,5 +328,4 @@ make_map(void)
   _write_symbols();
 
   fclose(state.map.f);
-
 }

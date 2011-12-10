@@ -8,6 +8,7 @@
     fixed bug #3310962: gpasm extended mode -- MPLAB message:
     added F_EXTENDED18 COFF flag if 18xx extended mode enabled
   * gpasm/lst.c: fixed bug #2831194: Column formatting in gpasm lst files
+  * gplink/map.c: fixed bug #3434584: [PIC16F] Incorrect data in MAP file
 
 2011-12-08  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpprocessor.c: corrected coff_type for __16CR54C
