@@ -53,6 +53,9 @@ void print_header(gp_object_type *object)
   if (object->flags & L_SYMS) {
     printf("  Local symbols have been stripped.\n");
   }
+  if (object->flags & F_EXTENDED18) {
+    printf("  The COFF file produced utilizing the Extended mode.\n");
+  }
   if (object->flags & F_GENERIC) {
     printf("  Processor independent file for a core.\n");
   }
