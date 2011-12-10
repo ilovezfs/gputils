@@ -117,7 +117,7 @@ init(void)
   state.num.messages  = 0;
   state.num.warnings_suppressed = 0;
   state.num.messages_suppressed = 0;
-  
+
   state.processor = no_processor;
   state.processor_chosen = 0;
 
@@ -131,15 +131,15 @@ init(void)
   state.obj.section = NULL;
   state.obj.symbol_num = 0;
   state.obj.section_num = 0;
-  
+
   state.astack = NULL;
-  
+
   state.next_state = state_nochange;
-  
+
   return;
 }
 
-void 
+void
 add_path(const char *path)
 {
   if(state.path_num < MAX_PATHS) {
@@ -203,7 +203,7 @@ process_args( int argc, char *argv[])
   int usage_code = 0;
   char *pc;
 
-  /* Scan through the options for the -i flag.  It must be set before the 
+  /* Scan through the options for the -i flag.  It must be set before the
      defines are read */
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
     switch (c) {
@@ -245,21 +245,21 @@ process_args( int argc, char *argv[])
       break;
     case 'D':
       if ((optarg != NULL) && (strlen(optarg) > 0)) {
-	struct symbol *sym;
-	char *lhs, *rhs;
+        struct symbol *sym;
+        char *lhs, *rhs;
 
-	lhs = strdup(optarg);
-	rhs = strchr(lhs, '=');
-	if (rhs != NULL) {
-	  *rhs = '\0';	/* Terminate the left-hand side */
-	  rhs++;	/* right-hand side begins after the '=' */
-	}
+        lhs = strdup(optarg);
+        rhs = strchr(lhs, '=');
+        if (rhs != NULL) {
+          *rhs = '\0';  /* Terminate the left-hand side */
+          rhs++;        /* right-hand side begins after the '=' */
+        }
 
-	sym = get_symbol(state.stDefines, lhs);
-	if (sym == NULL)
-	  sym = add_symbol(state.stDefines, lhs);
-	if (rhs)
-	  annotate_symbol(sym, rhs);
+        sym = get_symbol(state.stDefines, lhs);
+        if (sym == NULL)
+          sym = add_symbol(state.stDefines, lhs);
+        if (rhs)
+          annotate_symbol(sym, rhs);
       }
       break;
     case 'e':
@@ -271,13 +271,13 @@ process_args( int argc, char *argv[])
       break;
     case 'I':
       add_path(optarg);
-      break;    
+      break;
     case 'i':
       state.case_insensitive = true;
       break;
     case 'L':
       state.cmd_line.lst_force = true;
-      break;  
+      break;
     case 'l':
       gp_dump_processor_list(true, 0);
       exit(0);
@@ -324,12 +324,12 @@ process_args( int argc, char *argv[])
     case 'v':
       fprintf(stderr, "%s\n", GPASM_VERSION_STRING);
       exit(0);
-      
+
     }
     if (usage)
       break;
   }
-  
+
   if ((optind + 1) == argc)
     state.srcfilename = argv[optind];
   else
@@ -355,7 +355,7 @@ process_args( int argc, char *argv[])
 int
 assemble(void)
 {
-  char *pc; 
+  char *pc;
   struct symbol_table *cmd_defines;
 
   /* store the command line defines to restore on second pass */
@@ -373,9 +373,9 @@ assemble(void)
   state.stBuiltin = push_symbol_table(NULL, true);
   state.stDirective = state.stBuiltin;
   state.stMacros = push_symbol_table(NULL, state.case_insensitive);
-  state.stTop = 
+  state.stTop =
     state.stGlobal = push_symbol_table(NULL, state.case_insensitive);
-  state.stTopDefines = 
+  state.stTopDefines =
     state.stDefines = push_symbol_table(cmd_defines, state.case_insensitive);
 
   opcode_init(0);
@@ -389,14 +389,14 @@ assemble(void)
   state.pass = 1;
   open_src(state.srcfilename, 0);
   yyparse();
- 
+
   state.pass++;
   state.org = 0;
   state.device.id_location = 0;
   state.cblock = 0;
   state.cblock_defined = 0;
   /* clean out defines for second pass */
-  state.stTopDefines = 
+  state.stTopDefines =
     state.stDefines = push_symbol_table(cmd_defines, state.case_insensitive);
   purge_temp_symbols(state.stTop);
   if (!state.cmd_line.radix)
@@ -410,6 +410,11 @@ assemble(void)
   cod_init();
   deps_init();
   lst_init();
+
+  /* Set F_EXTENDED18 COFF flag if 18xx extended mode enabled */
+  if (state.extended_pic16e)
+    state.obj.object->flags |= F_EXTENDED18;
+
   open_src(state.srcfilename, 0);
   if (!gp_debug_disable) {
     yydebug = 1;
@@ -419,9 +424,9 @@ assemble(void)
   yyparse();
 
   assert(state.pass == 2);
-  
+
   pop_symbol_table(state.stBuiltin);
-  
+
   hex_init();
 
   if(state.memory_dump)
@@ -438,7 +443,7 @@ assemble(void)
   if ((state.mode == absolute) && (state.lst.memorymap)) {
     lst_memory_map(state.i_memory);
   }
-  
+
   /* Finish off the object, dependency, listing, and symbol files*/
   coff_close_file();
   deps_close();

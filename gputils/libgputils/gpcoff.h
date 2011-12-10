@@ -37,7 +37,7 @@ struct filehdr
 {
   unsigned short  f_magic;   /* magic number */
   unsigned short  f_nscns;   /* number of sections */
-  unsigned long   f_timdat;            /* time and date stamp */
+  unsigned long   f_timdat;  /* time and date stamp */
   unsigned long   f_symptr;  /* file ptr to symtab */
   unsigned long   f_nsyms;   /* # symtab entries */
   unsigned short  f_opthdr;  /* sizeof(opt hdr) */
@@ -49,15 +49,17 @@ struct filehdr
 #define FILE_HDR_SIZ_v2 20
 
 /* relocation info has been stripped */
-#define F_RELFLG    0x01
+#define F_RELFLG      0x01
 /* file is executable - has no unresolved external symbols */
-#define F_EXEC      0x02
+#define F_EXEC        0x02
 /* line numbers have been stripped */
-#define F_LNNO      0x04
+#define F_LNNO        0x04
 /* local symbols have been stripped */
-#define L_SYMS      0x80
+#define L_SYMS        0x80
+/* the COFF file produced utilizing the Extended mode */
+#define F_EXTENDED18  0x4000
 /* processor independent file for a core */
-#define F_GENERIC   0x8000
+#define F_GENERIC     0x8000
 
 /* optional header format */
 struct opthdr
