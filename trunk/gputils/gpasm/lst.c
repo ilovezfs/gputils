@@ -253,8 +253,10 @@ unsigned int lst_data(unsigned int byte_org,
   unsigned int lst_bytes = 0;
   int len = 0;
 
-  if (bytes_emitted == 0)
+  if (bytes_emitted == 0) {
+    lst_printf("          ");
     return 0;
+  }
 
   /* when in a idata or byte packed section, print byte by byte */
   if (state.obj.new_sec_flags & (STYP_DATA|STYP_BPACK)) {
