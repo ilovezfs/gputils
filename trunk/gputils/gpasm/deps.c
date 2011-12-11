@@ -31,12 +31,11 @@ deps_init(void)
 
   if (state.depfile != named) {
     snprintf(state.depfilename, sizeof(state.depfilename),
-	     "%s.d", state.basefilename);
+             "%s.d", state.basefilename);
   }
 
   if (state.depfile == suppress) {
     state.dep.enabled = false;
-    unlink(state.depfilename);
   } else {
     state.dep.f = fopen(state.depfilename, "w");
     if (state.dep.f == NULL) {
@@ -48,16 +47,14 @@ deps_init(void)
     /* output file names may not be setup, so make one */
     if (state.mode == relocatable) {
       snprintf(output_file, sizeof(output_file),
-	       "%s.o", state.basefilename);
+               "%s.o", state.basefilename);
     } else {
       snprintf(output_file, sizeof(output_file),
-	       "%s.hex", state.basefilename);
+               "%s.hex", state.basefilename);
     }
 
     fprintf(state.dep.f, "%s : ", output_file);
-
   }
-
 }
 
 void
