@@ -49,13 +49,15 @@ struct filehdr
 #define FILE_HDR_SIZ_v2 20
 
 /* relocation info has been stripped */
-#define F_RELFLG      0x01
+#define F_RELFLG      0x0001
 /* file is executable - has no unresolved external symbols */
-#define F_EXEC        0x02
+#define F_EXEC        0x0002
 /* line numbers have been stripped */
-#define F_LNNO        0x04
+#define F_LNNO        0x0004
+/* the MPASM assembler object file is from absolute (as opposed to relocatable) assembly code */
+#define F_ABSOLUTE    0x0010
 /* local symbols have been stripped */
-#define L_SYMS        0x80
+#define L_SYMS        0x0080
 /* the COFF file produced utilizing the Extended mode */
 #define F_EXTENDED18  0x4000
 /* processor independent file for a core */

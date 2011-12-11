@@ -1,6 +1,8 @@
 2011-12-11  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/deps.c: fixed bug #2911936: gpasm removes *.d files while compiling
   * gpasm/gpasm.c: fixed crash in absolute mode
+  * libgputils/gpcoff.h:
+    added F_ABSOLUTE COFF flag (currently not used bt gputils)
 
 2011-12-10  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c, gpasm/gperror.c, gpasm/gperror.h:
