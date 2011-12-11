@@ -412,7 +412,7 @@ assemble(void)
   lst_init();
 
   /* Set F_EXTENDED18 COFF flag if 18xx extended mode enabled */
-  if (state.extended_pic16e)
+  if (state.obj.object && state.extended_pic16e)
     state.obj.object->flags |= F_EXTENDED18;
 
   open_src(state.srcfilename, 0);
