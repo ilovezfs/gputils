@@ -3,17 +3,17 @@
    Craig Franklin
 
 This file is part of gputils.
- 
+
 gputils is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
- 
+
 gputils is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
@@ -26,11 +26,11 @@ Boston, MA 02111-1307, USA.  */
 
 struct gpvo_state state;
 
-void print_header(gp_object_type *object) 
+void print_header(gp_object_type *object)
 {
   char *time = ctime(&object->time);
   const char *processor_name = gp_processor_name(object->processor, 2);
-  
+
   /* strip the newline from time */
   time[strlen(time)-1] = '\0';
 
@@ -49,6 +49,9 @@ void print_header(gp_object_type *object)
   }
   if (object->flags & F_LNNO) {
     printf("  Line numbers have been stripped.\n");
+  }
+  if (object->flags & F_ABSOLUTE) {
+    printf("  The MPASM assembler object file is from absolute assembly code.\n");
   }
   if (object->flags & L_SYMS) {
     printf("  Local symbols have been stripped.\n");
@@ -72,12 +75,12 @@ void print_reloc_list(proc_class_t class, gp_reloc_type *relocation)
   printf("Address    Offset     Type   Symbol\n");
 
   while (relocation != NULL) {
-    printf("%#-10lx %#-10x %#-6x %-s\n", 
+    printf("%#-10lx %#-10x %#-6x %-s\n",
            relocation->address >> word_addr,
            relocation->offset,
            relocation->type,
            relocation->symbol->name);
-    
+
     relocation = relocation->next;
   }
 
@@ -99,11 +102,11 @@ void print_linenum_list(proc_class_t class, gp_linenum_type *linenumber)
       filename = linenumber->symbol->aux_list->_aux_symbol._aux_file.filename;
     }
 
-    printf("%-8i %#-8x %s\n", 
+    printf("%-8i %#-8x %s\n",
            linenumber->line_number,
            gp_processor_byte_to_org(class, linenumber->address),
            filename);
-  
+
     linenumber = linenumber->next;
   }
 
@@ -120,13 +123,13 @@ void print_data(proc_class_t class, gp_section_type *section)
   address = section->address;
 
   buffer[0] = '\0';
-  
+
   printf("Data\n");
   while (1) {
     if ((section->flags & STYP_TEXT) && class->find_insn != NULL) {
       unsigned short memory;
       if (!class->i_memory_get(section->data, address, &memory))
-	break;
+        break;
       num_words = gp_disassemble(section->data,
                                  address,
                                  class,
@@ -141,14 +144,14 @@ void print_data(proc_class_t class, gp_section_type *section)
     } else if (section->flags & STYP_DATA_ROM || class == PROC_CLASS_EEPROM16) {
       unsigned short memory;
       if (!class->i_memory_get(section->data, address, &memory))
-	break;
+        break;
       printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address), memory);
       address += 2;
     } else {
       /* STYP_DATA or STYP_ACTREC, or EEPROM8 */
       unsigned char b;
       if (!b_memory_get(section->data, address, &b))
-	break;
+        break;
       printf("%06x:  %02x\n", address, b);
       ++address;
     }
@@ -172,7 +175,7 @@ void print_sec_header(proc_class_t class, gp_section_type *section)
   printf("Size of Section         %li\n",  section->size);
   printf("Number of Relocations   %i\n",   section->num_reloc);
   printf("Number of Line Numbers  %i\n",   section->num_lineno);
-  printf("Flags                   %#lx\n", section->flags); 
+  printf("Flags                   %#lx\n", section->flags);
   if (section->flags & STYP_TEXT) {
     printf("  Executable code.\n");
   }
@@ -201,7 +204,7 @@ void print_sec_header(proc_class_t class, gp_section_type *section)
     printf("  Contains the activation record for a function.\n");
   }
 
-  printf("\n"); 
+  printf("\n");
 
 }
 
@@ -221,7 +224,7 @@ void print_sec_list(gp_object_type *object)
     if (section->num_lineno) {
       print_linenum_list(object->class, section->line_numbers);
     }
-    
+
     section = section->next;
   }
 
@@ -424,10 +427,10 @@ void print_sym_table (gp_object_type *object)
     } else {
       assert(symbol->section != NULL);
       section = symbol->section->name;
-    }    
-    
+    }
+
     printf("%04d %-24s %-16s %#-10lx %-8s %-12s %-9s %-4i\n",
-	   idx,
+           idx,
            symbol->name,
            section,
            symbol->value,
@@ -443,40 +446,40 @@ void print_sym_table (gp_object_type *object)
 
       switch (aux->type) {
       case AUX_DIRECT:
-        printf(AUX_INDENT "command = \"%c\"\n", 
+        printf(AUX_INDENT "command = \"%c\"\n",
                aux->_aux_symbol._aux_direct.command);
-        printf(AUX_INDENT "string = \"%s\"\n", 
+        printf(AUX_INDENT "string = \"%s\"\n",
                aux->_aux_symbol._aux_direct.string);
         break;
       case AUX_FILE:
         if (!state.suppress_names) {
-          printf(AUX_INDENT "file = %s\n", 
+          printf(AUX_INDENT "file = %s\n",
                  aux->_aux_symbol._aux_file.filename);
         }
-        printf(AUX_INDENT "line included = %li\n", 
+        printf(AUX_INDENT "line included = %li\n",
                aux->_aux_symbol._aux_file.line_number);
-        printf(AUX_INDENT "flags = %x\n", 
+        printf(AUX_INDENT "flags = %x\n",
                aux->_aux_symbol._aux_file.flags);
         break;
       case AUX_IDENT:
-        printf(AUX_INDENT "string = \"%s\"\n", 
+        printf(AUX_INDENT "string = \"%s\"\n",
                aux->_aux_symbol._aux_ident.string);
         break;
       case AUX_SCN:
-        printf(AUX_INDENT "length = %li\n", 
+        printf(AUX_INDENT "length = %li\n",
                aux->_aux_symbol._aux_scn.length);
-        printf(AUX_INDENT "number of relocations = %i\n", 
+        printf(AUX_INDENT "number of relocations = %i\n",
                aux->_aux_symbol._aux_scn.nreloc);
-        printf(AUX_INDENT "number of line numbers = %i\n", 
+        printf(AUX_INDENT "number of line numbers = %i\n",
                aux->_aux_symbol._aux_scn.nlineno);
         break;
       case AUX_FCN_CALLS: {
-	struct gp_symbol_type *callee = aux->_aux_symbol._aux_fcn_calls.callee;
+        struct gp_symbol_type *callee = aux->_aux_symbol._aux_fcn_calls.callee;
         printf(AUX_INDENT "callee = %s\n",
                callee != NULL ? callee->name : "higher order");
         printf(AUX_INDENT "is_interrupt = %lu\n",
                aux->_aux_symbol._aux_fcn_calls.is_interrupt);
-	break;
+        break;
       }
       default:
         printf("%ld  ", aux->type);
@@ -490,7 +493,7 @@ void print_sym_table (gp_object_type *object)
           int c = aux->_aux_symbol.data[i] & 0xFF;
           putchar( (isprint(c)) ? c : '.');
         }
-	putchar('\n');
+        putchar('\n');
       }
       aux = aux->next;
       ++idx;
@@ -500,7 +503,7 @@ void print_sym_table (gp_object_type *object)
     ++idx;
   }
 
-  printf("\n"); 
+  printf("\n");
 
   return;
 }
@@ -514,7 +517,7 @@ void export_sym_table(gp_object_type *object)
 
   while (symbol != NULL) {
 
-    if ((state.export.enabled) && 
+    if ((state.export.enabled) &&
         (symbol->class == C_EXT) &&
         (symbol->section_number > 0)) {
 
@@ -529,7 +532,7 @@ void export_sym_table(gp_object_type *object)
 
 }
 
-void print_binary(unsigned char *data, long int file_size) 
+void print_binary(unsigned char *data, long int file_size)
 {
 
   long int i, j;
@@ -543,18 +546,18 @@ void print_binary(unsigned char *data, long int file_size)
     printf("\n%06lx", i);
 
     for(j = 0; j < 16; j += 2) {
-      memory = (data[i + j] << 8) | data[i+j+1]; 
+      memory = (data[i + j] << 8) | data[i+j+1];
       if ((i+j) >= file_size) {
-        printf("     ");      
+        printf("     ");
       } else {
         printf(" %04x", memory);
       }
     }
 
     printf(" ");
-    
+
     for(j = 0; j < 16; j += 2) {
-      if ((i+j) < file_size) {      
+      if ((i+j) < file_size) {
         c = data[i + j];
         putchar( (isprint(c)) ? c : '.');
 
@@ -562,7 +565,7 @@ void print_binary(unsigned char *data, long int file_size)
         putchar( (isprint(c)) ? c : '.');
       }
     }
-    
+
   }
 
   printf("\n\n");
@@ -704,7 +707,7 @@ int main(int argc, char *argv[])
             state.filename);
 
     export_sym_table(state.object);
-    
+
     fclose(state.export.f);
 
     /* suppress normal output */
