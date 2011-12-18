@@ -312,11 +312,6 @@ static int macro_parms_ok(struct pnode *parms)
   return (macro_parms_simple(parms) && macro_parms_unique(parms));
 }
 
-typedef gpasmVal opfunc(gpasmVal r,
-                        char *name,
-                        int arity,
-                        struct pnode *parms);
-
 /************************************************************************/
 
 static gpasmVal do_access_ovr(gpasmVal r,
@@ -341,6 +336,7 @@ static gpasmVal do_access_ovr(gpasmVal r,
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_ACCESS | STYP_BSS | STYP_OVERLAY;
       break;
+
     case 1:
       /* new absolute section */
       p = HEAD(parms);
@@ -350,6 +346,7 @@ static gpasmVal do_access_ovr(gpasmVal r,
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_ACCESS | STYP_ABS | STYP_BSS | STYP_OVERLAY;
       break;
+
     default:
       enforce_arity(arity, 1);
     }
@@ -520,6 +517,7 @@ static gpasmVal do_banksel(gpasmVal r,
           reloc_evaluate(p, RELOCT_BANKSEL);
           emit(0);
           break;
+
         case 4:
           reloc_evaluate(p, RELOCT_BANKSEL);
           emit(0);
@@ -553,6 +551,7 @@ static gpasmVal do_code(gpasmVal r,
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_TEXT;
       break;
+
     case 1:
       /* new absolute section */
       p = HEAD(parms);
@@ -560,6 +559,7 @@ static gpasmVal do_code(gpasmVal r,
       state.obj.new_sec_addr = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
       state.obj.new_sec_flags = STYP_TEXT | STYP_ABS;
       break;
+
     default:
       enforce_arity(arity, 1);
     }
@@ -591,6 +591,7 @@ static gpasmVal do_code_pack(gpasmVal r,
         state.obj.new_sec_addr = 0;
         state.obj.new_sec_flags = STYP_TEXT | STYP_BPACK;
         break;
+
       case 1:
         /* new absolute section */
         p = HEAD(parms);
@@ -598,6 +599,7 @@ static gpasmVal do_code_pack(gpasmVal r,
         state.obj.new_sec_addr = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
         state.obj.new_sec_flags = STYP_TEXT | STYP_ABS | STYP_BPACK;
         break;
+
       default:
         enforce_arity(arity, 1);
       }
@@ -1833,6 +1835,7 @@ static gpasmVal do_idata(gpasmVal r,
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_DATA;
       break;
+
     case 1:
       /* new absolute section */
       p = HEAD(parms);
@@ -1840,6 +1843,7 @@ static gpasmVal do_idata(gpasmVal r,
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_DATA | STYP_ABS;
       break;
+
     default:
       enforce_arity(arity, 1);
     }
@@ -1868,6 +1872,7 @@ static gpasmVal do_idata_acs(gpasmVal r,
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_DATA | STYP_ACCESS;
       break;
+
     case 1:
       /* new absolute section */
       p = HEAD(parms);
@@ -1875,6 +1880,7 @@ static gpasmVal do_idata_acs(gpasmVal r,
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_DATA | STYP_ABS | STYP_ACCESS;
       break;
+
     default:
       enforce_arity(arity, 1);
     }
@@ -2648,6 +2654,7 @@ static gpasmVal do_space(gpasmVal r,
       case 0:
         /* do nothing */
         break;
+
       case 1:
         p = HEAD(parms);
         if (can_evaluate(p)) {
@@ -2657,6 +2664,7 @@ static gpasmVal do_space(gpasmVal r,
             lst_line("");
         }
         break;
+
       default:
         enforce_arity(arity, 1);
     }
@@ -2764,6 +2772,7 @@ static gpasmVal do_udata(gpasmVal r,
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_BSS;
       break;
+
     case 1:
       /* new absolute section */
       p = HEAD(parms);
@@ -2771,6 +2780,7 @@ static gpasmVal do_udata(gpasmVal r,
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS;
       break;
+
     default:
       enforce_arity(arity, 1);
     }
@@ -2801,6 +2811,7 @@ static gpasmVal do_udata_acs(gpasmVal r,
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_BSS | STYP_ACCESS;
       break;
+
     case 1:
       /* new absolute section */
       p = HEAD(parms);
@@ -2810,6 +2821,7 @@ static gpasmVal do_udata_acs(gpasmVal r,
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_ACCESS;
       break;
+
     default:
       enforce_arity(arity, 1);
     }
@@ -2840,6 +2852,7 @@ static gpasmVal do_udata_ovr(gpasmVal r,
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_BSS | STYP_OVERLAY;
       break;
+
     case 1:
       /* new absolute section */
       p = HEAD(parms);
@@ -2849,6 +2862,7 @@ static gpasmVal do_udata_ovr(gpasmVal r,
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_OVERLAY;
       break;
+
     default:
       enforce_arity(arity, 1);
     }
@@ -2879,6 +2893,7 @@ static gpasmVal do_udata_shr(gpasmVal r,
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_BSS | STYP_SHARED;
       break;
+
     case 1:
       /* new absolute section */
       p = HEAD(parms);
@@ -2888,6 +2903,7 @@ static gpasmVal do_udata_shr(gpasmVal r,
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_SHARED;
       break;
+
     default:
       enforce_arity(arity, 1);
     }
@@ -3095,12 +3111,14 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit_check(i->opcode, (reloc_evaluate(p, RELOCT_F) >> 5), 0x07);
         }
         break;
+
       case INSN_CLASS_LIT3_PAGE:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
           emit_check(i->opcode, (reloc_evaluate(p, RELOCT_F) >> 9), 0x07);
         }
         break;
+
       case INSN_CLASS_LIT1:
         {
           int s = 0;
@@ -3110,17 +3128,20 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           case 0:
             emit(i->opcode | s);
             break;
+
           default:
             enforce_arity(arity, 1);
           }
         }
         break;
+
       case INSN_CLASS_LIT4:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
           emit_check(i->opcode, reloc_evaluate(p, RELOCT_F), 0x0f);
         }
         break;
+
       case INSN_CLASS_LIT5:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
@@ -3131,12 +3152,14 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           }
         }
         break;
+
       case INSN_CLASS_LIT4S:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
           emit_check(i->opcode, (reloc_evaluate(p, RELOCT_MOVLR) << 4), 0xf0);
         }
         break;
+
       case INSN_CLASS_LIT6:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
@@ -3144,6 +3167,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit_check(i->opcode, maybe_evaluate(p), 0x3f);
         }
         break;
+
       case INSN_CLASS_LIT7:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
@@ -3151,6 +3175,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit_check(i->opcode, maybe_evaluate(p), 0x7f);
         }
         break;
+
       case INSN_CLASS_LIT8:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
@@ -3162,6 +3187,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           }
         }
         break;
+
       case INSN_CLASS_LIT8C12:
         if (enforce_arity(arity, 1)) {
           int value;
@@ -3182,6 +3208,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit(i->opcode | (value & 0xff));
         }
         break;
+
       case INSN_CLASS_LIT8C16:
         if (enforce_arity(arity, 1)) {
           int value;
@@ -3196,6 +3223,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit(i->opcode | (value & 0xff));
         }
         break;
+
       case INSN_CLASS_LIT9:
         if (enforce_arity(arity, 1)) {
           int value;
@@ -3213,6 +3241,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit(i->opcode | (value & 0x1ff));
         }
         break;
+
       case INSN_CLASS_LIT11:
         if (enforce_arity(arity, 1)) {
           int value;
@@ -3241,6 +3270,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit(i->opcode | (value & 0x7ff));
         }
         break;
+
       case INSN_CLASS_LIT13:
         if (enforce_arity(arity, 1)) {
           int value;
@@ -3262,6 +3292,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit(i->opcode | (value & 0x1fff));
         }
         break;
+
       case INSN_CLASS_LITFSR_14:
         if (enforce_arity(arity, 2)) {
           int value;
@@ -3282,6 +3313,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             gperror(GPE_RANGE, NULL);
         }
         break;
+
       case INSN_CLASS_LITFSR_16:
         if (enforce_arity(arity, 2)) {
           int value;
@@ -3301,6 +3333,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit(i->opcode | ((fsr & 0x3) << 6) | (value & 0x3f));
         }
         break;
+
       case INSN_CLASS_RBRA8:
         /* used only in PROC_CLASS_PIC16E */
         if (enforce_arity(arity, 1)) {
@@ -3322,6 +3355,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit_check_relative(i->opcode, offset, 0xff, 127);
         }
         break;
+
       case INSN_CLASS_RBRA9:
         if (enforce_arity(arity, 1)) {
           int offset;
@@ -3339,6 +3373,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit_check_relative(i->opcode, offset, 0x1ff, 255);
         }
         break;
+
       case INSN_CLASS_RBRA11:
         /* used only in PROC_CLASS_PIC16E */
         if (enforce_arity(arity, 1)) {
@@ -3358,6 +3393,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit_check_relative(i->opcode, offset, 0x7ff, 0x3ff);
         }
         break;
+
       case INSN_CLASS_LIT20:
         if (enforce_arity(arity, 1)) {
           int dest;
@@ -3369,6 +3405,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit_check(0xf000, dest>>8, 0xfff);
         }
         break;
+
       case INSN_CLASS_CALL20:
         {
           int dest;
@@ -3389,9 +3426,11 @@ gpasmVal do_insn(char *name, struct pnode *parms)
               else
                 s = check_flag(maybe_evaluate(p2));
               break;
+
             case 1:
               s = 0;
               break;
+
             default:
               enforce_arity(arity, 2);
             }
@@ -3403,6 +3442,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           }
         }
         break;
+
       case INSN_CLASS_FLIT12:
         {
           int k;
@@ -3439,6 +3479,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
         }
         break;
+
       case INSN_CLASS_FP:
         if (enforce_arity(arity, 2)) {
           int reg=0;
@@ -3452,6 +3493,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
               (file & 0xff) );
         }
         break;
+
       case INSN_CLASS_PF:
         if (enforce_arity(arity, 2)) {
           int reg=0;
@@ -3465,6 +3507,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
               (file & 0xff) );
         }
         break;
+
       case INSN_CLASS_SF:
         if (enforce_arity(arity, 2)) {
           int source;
@@ -3490,6 +3533,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit_check(0xf000, reloc_evaluate(HEAD(TAIL(parms)), RELOCT_FF2), 0xfff);
         }
         break;
+
       case INSN_CLASS_SS:
         if (enforce_arity(arity, 2)) {
           int source;
@@ -3509,6 +3553,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit_check(0xf000, dest, 0x7f);
         }
         break;
+
       case INSN_CLASS_OPF5:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
@@ -3521,6 +3566,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit(i->opcode | (file & 0x1f));
         }
         break;
+
       case INSN_CLASS_OPWF5:
         {
           int d = 1; /* Default destination of 1 (file) */
@@ -3545,10 +3591,12 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             else
               d = check_flag(maybe_evaluate(p2));
             break;
+
           case 1:
             d = 1;
             gpmessage(GPM_NOF,NULL);
             break;
+
           default:
             enforce_arity(arity, 2);
           }
@@ -3557,6 +3605,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit(i->opcode | (d << 5) | (file & 0x1f));
         }
         break;
+
       case INSN_CLASS_B5:
         {
           struct pnode *f, *b;
@@ -3640,10 +3689,12 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             else
               d = check_flag(maybe_evaluate(p2));
             break;
+
           case 1:
             d = 1;
             gpmessage(GPM_NOF,NULL);
             break;
+
           default:
             enforce_arity(arity, 2);
           }
@@ -3677,10 +3728,12 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             else
               d = check_flag(maybe_evaluate(p2));
             break;
+
           case 1:
             d = 1;
             gpmessage(GPM_NOF,NULL);
             break;
+
           default:
             enforce_arity(arity, 2);
           }
@@ -3689,6 +3742,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           emit(i->opcode | (d << 8) | (file & 0xff));
         }
         break;
+
       case INSN_CLASS_B7:
         {
           struct pnode *f, *b;
@@ -3750,9 +3804,11 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             else
               a = check_flag(maybe_evaluate(p2));
             break;
+
           case 1:
             /* use default a */
             break;
+
           default:
             enforce_arity(arity, 2);
           }
@@ -3869,10 +3925,12 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             else
               d = check_flag(maybe_evaluate(par));
             break;
+
           case 1:
             /* use default a and d */
             gpmessage(GPM_NOF,NULL);
             break;
+
           default:
             enforce_arity(arity, 3);
           }
@@ -3890,6 +3948,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
         }
         emit(i->opcode);
         break;
+
       case INSN_CLASS_TBL:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
@@ -3898,20 +3957,25 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             case TBL_NO_CHANGE:
               emit(i->opcode);
               break;
+
             case TBL_POST_INC:
               emit(i->opcode | 1);
               break;
+
             case TBL_POST_DEC:
               emit(i->opcode | 2);
               break;
+
             case TBL_PRE_INC:
               emit(i->opcode | 3);
               break;
+
             default:
               gperror(GPE_ILLEGAL_ARGU, NULL);
             }
         }
         break;
+
       case INSN_CLASS_MOVINDF:
         if (arity == 0) {
           enforce_arity(arity, 1);
@@ -3937,6 +4001,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           } else
             gperror(GPE_ILLEGAL_ARGU, NULL);
           break;
+
         case 2:
           p2 = HEAD(TAIL(parms));
           fsr = maybe_evaluate(p2);
@@ -3946,12 +4011,15 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             case INCREMENT:
               emit(i->opcode | fsr | 0);
               break;
+
             case DECREMENT:
               emit(i->opcode | fsr | 1);
               break;
+
             case POSTINCREMENT:
               emit(i->opcode | fsr | 2);
               break;
+
             case POSTDECREMENT:
               emit(i->opcode | fsr | 3);
               break;
@@ -3959,6 +4027,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           } else
             gperror(GPE_ILLEGAL_ARGU, NULL);
           break;
+
         case 3:
         case 4:
           p2 = HEAD(TAIL(parms));
@@ -3980,6 +4049,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
                 emit(opcode | (k & 0x3f));
               }
               break;
+
             default:
               gperror(GPE_ILLEGAL_ARGU, NULL);
             }
@@ -3987,6 +4057,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             gperror(GPE_ILLEGAL_ARGU, NULL);
         }
         break;
+
       case INSN_CLASS_TBL2:
         if (enforce_arity(arity, 2)) {
           int t=0; /* read low byte by default */
@@ -4027,11 +4098,12 @@ gpasmVal do_insn(char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_FUNC:
-        r = (*(opfunc*)i->opcode)(r, name, arity, parms);
+        r = (*i->doer)(r, name, arity, parms);
         break;
-        default:
-          assert(0);
-          break;
+
+      default:
+        assert(0);
+        break;
       }
     }
   } else {
@@ -4075,88 +4147,88 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 /* Note that instructions within each group are sorted alphabetically */
 
 struct insn op_0[] = {
-  { "access_ovr", 0, (long int)do_access_ovr, INSN_CLASS_FUNC,  0 },
-  { "code",       0, (long int)do_code,      INSN_CLASS_FUNC,   0 },
-  { "code_pack",  0, (long int)do_code_pack, INSN_CLASS_FUNC,   0 },
-  { "constant",   0, (long int)do_constant,  INSN_CLASS_FUNC,   0 },
-  { "else",       0, (long int)do_else,      INSN_CLASS_FUNC,   ATTRIB_COND },
-  { "endif",      0, (long int)do_endif,     INSN_CLASS_FUNC,   ATTRIB_COND },
-  { "endm",       0, (long int)do_endm,      INSN_CLASS_FUNC,   0 },
-  { "endw",       0, (long int)do_endw,      INSN_CLASS_FUNC,   0 },
-  { "equ",        0, (long int)do_equ,       INSN_CLASS_FUNC,   0 },
-  { "error",      0, (long int)do_error,     INSN_CLASS_FUNC,   0 },
-  { "exitm",      0, (long int)do_exitm,     INSN_CLASS_FUNC,   0 },
-  { "expand",     0, (long int)do_expand,    INSN_CLASS_FUNC,   0 },
-  { "extern",     0, (long int)do_extern,    INSN_CLASS_FUNC,   0 },
-  { "errorlevel", 0, (long int)do_errlvl,    INSN_CLASS_FUNC,   0 },
-  { "global",     0, (long int)do_global,    INSN_CLASS_FUNC,   0 },
-  { "idata",      0, (long int)do_idata,     INSN_CLASS_FUNC,   0 },
-  { "idata_acs",  0, (long int)do_idata_acs, INSN_CLASS_FUNC,   0 },
-  { "if",         0, (long int)do_if,        INSN_CLASS_FUNC,   ATTRIB_COND },
-  { "ifdef",      0, (long int)do_ifdef,     INSN_CLASS_FUNC,   ATTRIB_COND },
-  { "ifndef",     0, (long int)do_ifndef,    INSN_CLASS_FUNC,   ATTRIB_COND },
-  { "include",    0, (long int)do_include,   INSN_CLASS_FUNC,   0 },
-  { "list",       0, (long int)do_list,      INSN_CLASS_FUNC,   0 },
-  { "local",      0, (long int)do_local,     INSN_CLASS_FUNC,   0 },
-  { "macro",      0, (long int)do_macro,     INSN_CLASS_FUNC,   0 },
-  { "messg",      0, (long int)do_messg,     INSN_CLASS_FUNC,   0 },
-  { "noexpand",   0, (long int)do_noexpand,  INSN_CLASS_FUNC,   0 },
-  { "nolist",     0, (long int)do_nolist,    INSN_CLASS_FUNC,   0 },
-  { "page",       0, (long int)do_page,      INSN_CLASS_FUNC,   0 },
-  { "processor",  0, (long int)do_processor, INSN_CLASS_FUNC,   0 },
-  { "radix",      0, (long int)do_radix,     INSN_CLASS_FUNC,   0 },
-  { "set",        0, (long int)do_set,       INSN_CLASS_FUNC,   0 },
-  { "space",      0, (long int)do_space,     INSN_CLASS_FUNC,   0 },
-  { "subtitle",   0, (long int)do_subtitle,  INSN_CLASS_FUNC,   0 },
-  { "title",      0, (long int)do_title,     INSN_CLASS_FUNC,   0 },
-  { "udata",      0, (long int)do_udata,     INSN_CLASS_FUNC,   0 },
-  { "udata_acs",  0, (long int)do_udata_acs, INSN_CLASS_FUNC,   0 },
-  { "udata_ovr",  0, (long int)do_udata_ovr, INSN_CLASS_FUNC,   0 },
-  { "udata_shr",  0, (long int)do_udata_shr, INSN_CLASS_FUNC,   0 },
-  { "variable",   0, (long int)do_variable,  INSN_CLASS_FUNC,   0 },
-  { "while",      0, (long int)do_while,     INSN_CLASS_FUNC,   0 },
-  { ".def",       0, (long int)do_def,       INSN_CLASS_FUNC,   0 },
-  { ".dim",       0, (long int)do_dim,       INSN_CLASS_FUNC,   0 },
-  { ".direct",    0, (long int)do_direct,    INSN_CLASS_FUNC,   0 },
-  { ".eof",       0, (long int)do_eof,       INSN_CLASS_FUNC,   0 },
-  { ".file",      0, (long int)do_file,      INSN_CLASS_FUNC,   0 },
-  { ".ident",     0, (long int)do_ident,     INSN_CLASS_FUNC,   0 },
-  { ".line",      0, (long int)do_line,      INSN_CLASS_FUNC,   0 },
-  { ".set",       0, (long int)do_set,       INSN_CLASS_FUNC,   0 },
-  { ".type",      0, (long int)do_type,      INSN_CLASS_FUNC,   0 },
-  { "#if",        0, (long int)do_if,        INSN_CLASS_FUNC,   ATTRIB_COND },
-  { "#else",      0, (long int)do_else,      INSN_CLASS_FUNC,   ATTRIB_COND },
-  { "#endif",     0, (long int)do_endif,     INSN_CLASS_FUNC,   ATTRIB_COND },
-  { "#ifdef",     0, (long int)do_ifdef,     INSN_CLASS_FUNC,   ATTRIB_COND },
-  { "#ifndef",    0, (long int)do_ifndef,    INSN_CLASS_FUNC,   ATTRIB_COND },
-  { "#define",    0, (long int)do_define,    INSN_CLASS_FUNC,   0 },
-  { "#undefine",  0, (long int)do_undefine,  INSN_CLASS_FUNC,   0 }
+  { "access_ovr", 0, 0, INSN_CLASS_FUNC, 0, do_access_ovr },
+  { "code",       0, 0, INSN_CLASS_FUNC, 0, do_code },
+  { "code_pack",  0, 0, INSN_CLASS_FUNC, 0, do_code_pack },
+  { "constant",   0, 0, INSN_CLASS_FUNC, 0, do_constant },
+  { "else",       0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_else },
+  { "endif",      0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_endif },
+  { "endm",       0, 0, INSN_CLASS_FUNC, 0, do_endm },
+  { "endw",       0, 0, INSN_CLASS_FUNC, 0, do_endw },
+  { "equ",        0, 0, INSN_CLASS_FUNC, 0, do_equ },
+  { "error",      0, 0, INSN_CLASS_FUNC, 0, do_error },
+  { "exitm",      0, 0, INSN_CLASS_FUNC, 0, do_exitm },
+  { "expand",     0, 0, INSN_CLASS_FUNC, 0, do_expand },
+  { "extern",     0, 0, INSN_CLASS_FUNC, 0, do_extern },
+  { "errorlevel", 0, 0, INSN_CLASS_FUNC, 0, do_errlvl },
+  { "global",     0, 0, INSN_CLASS_FUNC, 0, do_global },
+  { "idata",      0, 0, INSN_CLASS_FUNC, 0, do_idata },
+  { "idata_acs",  0, 0, INSN_CLASS_FUNC, 0, do_idata_acs },
+  { "if",         0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_if },
+  { "ifdef",      0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifdef },
+  { "ifndef",     0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifndef },
+  { "include",    0, 0, INSN_CLASS_FUNC, 0, do_include },
+  { "list",       0, 0, INSN_CLASS_FUNC, 0, do_list },
+  { "local",      0, 0, INSN_CLASS_FUNC, 0, do_local },
+  { "macro",      0, 0, INSN_CLASS_FUNC, 0, do_macro },
+  { "messg",      0, 0, INSN_CLASS_FUNC, 0, do_messg },
+  { "noexpand",   0, 0, INSN_CLASS_FUNC, 0, do_noexpand },
+  { "nolist",     0, 0, INSN_CLASS_FUNC, 0, do_nolist },
+  { "page",       0, 0, INSN_CLASS_FUNC, 0, do_page },
+  { "processor",  0, 0, INSN_CLASS_FUNC, 0, do_processor },
+  { "radix",      0, 0, INSN_CLASS_FUNC, 0, do_radix },
+  { "set",        0, 0, INSN_CLASS_FUNC, 0, do_set },
+  { "space",      0, 0, INSN_CLASS_FUNC, 0, do_space },
+  { "subtitle",   0, 0, INSN_CLASS_FUNC, 0, do_subtitle },
+  { "title",      0, 0, INSN_CLASS_FUNC, 0, do_title },
+  { "udata",      0, 0, INSN_CLASS_FUNC, 0, do_udata },
+  { "udata_acs",  0, 0, INSN_CLASS_FUNC, 0, do_udata_acs },
+  { "udata_ovr",  0, 0, INSN_CLASS_FUNC, 0, do_udata_ovr },
+  { "udata_shr",  0, 0, INSN_CLASS_FUNC, 0, do_udata_shr },
+  { "variable",   0, 0, INSN_CLASS_FUNC, 0, do_variable },
+  { "while",      0, 0, INSN_CLASS_FUNC, 0, do_while },
+  { ".def",       0, 0, INSN_CLASS_FUNC, 0, do_def },
+  { ".dim",       0, 0, INSN_CLASS_FUNC, 0, do_dim },
+  { ".direct",    0, 0, INSN_CLASS_FUNC, 0, do_direct },
+  { ".eof",       0, 0, INSN_CLASS_FUNC, 0, do_eof },
+  { ".file",      0, 0, INSN_CLASS_FUNC, 0, do_file },
+  { ".ident",     0, 0, INSN_CLASS_FUNC, 0, do_ident },
+  { ".line",      0, 0, INSN_CLASS_FUNC, 0, do_line },
+  { ".set",       0, 0, INSN_CLASS_FUNC, 0, do_set },
+  { ".type",      0, 0, INSN_CLASS_FUNC, 0, do_type },
+  { "#if",        0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_if },
+  { "#else",      0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_else },
+  { "#endif",     0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_endif },
+  { "#ifdef",     0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifdef },
+  { "#ifndef",    0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifndef },
+  { "#define",    0, 0, INSN_CLASS_FUNC, 0, do_define },
+  { "#undefine",  0, 0, INSN_CLASS_FUNC, 0, do_undefine }
 };
 
 const int num_op_0 = TABLE_SIZE(op_0);
 
 struct insn op_1[] = {
-  { "__badram",   0, (long int)do_badram,    INSN_CLASS_FUNC,   0 },
-  { "__badrom",   0, (long int)do_badrom,    INSN_CLASS_FUNC,   0 },
-  { "__config",   0, (long int)do_config,    INSN_CLASS_FUNC,   0 },
-  { "__fuses",    0, (long int)do_config,    INSN_CLASS_FUNC,   0 },
-  { "__idlocs",   0, (long int)do_idlocs,    INSN_CLASS_FUNC,   0 },
-  { "__maxram",   0, (long int)do_maxram,    INSN_CLASS_FUNC,   0 },
-  { "__maxrom",   0, (long int)do_maxrom,    INSN_CLASS_FUNC,   0 },
-  { "bankisel",   0, (long int)do_bankisel,  INSN_CLASS_FUNC,   0 },
-  { "banksel",    0, (long int)do_banksel,   INSN_CLASS_FUNC,   0 },
-  { "CONFIG",     0, (long int)do_16_config, INSN_CLASS_FUNC,   0 },
-  { "data",       0, (long int)do_data,      INSN_CLASS_FUNC,   0 },
-  { "da",         0, (long int)do_da,        INSN_CLASS_FUNC,   0 },
-  { "db",         0, (long int)do_db,        INSN_CLASS_FUNC,   0 },
-  { "de",         0, (long int)do_de,        INSN_CLASS_FUNC,   0 },
-  { "dt",         0, (long int)do_dt,        INSN_CLASS_FUNC,   0 },
-  { "dw",         0, (long int)do_dw,        INSN_CLASS_FUNC,   0 },
-  { "fill",       0, (long int)do_fill,      INSN_CLASS_FUNC,   0 },
-  { "org",        0, (long int)do_org,       INSN_CLASS_FUNC,   0 },
-  { "pagesel",    0, (long int)do_pagesel,   INSN_CLASS_FUNC,   0 },
-  { "pageselw",   0, (long int)do_pageselw,  INSN_CLASS_FUNC,   0 },
-  { "res",        0, (long int)do_res,       INSN_CLASS_FUNC,   0 }
+  { "__badram",   0, 0, INSN_CLASS_FUNC, 0, do_badram },
+  { "__badrom",   0, 0, INSN_CLASS_FUNC, 0, do_badrom },
+  { "__config",   0, 0, INSN_CLASS_FUNC, 0, do_config },
+  { "__fuses",    0, 0, INSN_CLASS_FUNC, 0, do_config },
+  { "__idlocs",   0, 0, INSN_CLASS_FUNC, 0, do_idlocs },
+  { "__maxram",   0, 0, INSN_CLASS_FUNC, 0, do_maxram },
+  { "__maxrom",   0, 0, INSN_CLASS_FUNC, 0, do_maxrom },
+  { "bankisel",   0, 0, INSN_CLASS_FUNC, 0, do_bankisel },
+  { "banksel",    0, 0, INSN_CLASS_FUNC, 0, do_banksel },
+  { "CONFIG",     0, 0, INSN_CLASS_FUNC, 0, do_16_config },
+  { "data",       0, 0, INSN_CLASS_FUNC, 0, do_data },
+  { "da",         0, 0, INSN_CLASS_FUNC, 0, do_da },
+  { "db",         0, 0, INSN_CLASS_FUNC, 0, do_db },
+  { "de",         0, 0, INSN_CLASS_FUNC, 0, do_de },
+  { "dt",         0, 0, INSN_CLASS_FUNC, 0, do_dt },
+  { "dw",         0, 0, INSN_CLASS_FUNC, 0, do_dw },
+  { "fill",       0, 0, INSN_CLASS_FUNC, 0, do_fill },
+  { "org",        0, 0, INSN_CLASS_FUNC, 0, do_org },
+  { "pagesel",    0, 0, INSN_CLASS_FUNC, 0, do_pagesel },
+  { "pageselw",   0, 0, INSN_CLASS_FUNC, 0, do_pageselw },
+  { "res",        0, 0, INSN_CLASS_FUNC, 0, do_res }
 };
 
 const int num_op_1 = TABLE_SIZE(op_1);
@@ -4172,10 +4244,12 @@ void opcode_init(int stage)
     base = op_0;
     count = num_op_0;
     break;
+
   case 1:
     base = op_1;
     count = num_op_1;
     break;
+
   case 2:
     state.device.class = gp_processor_class(state.processor);
     base = state.device.class->instructions;
@@ -4208,11 +4282,13 @@ void opcode_init(int stage)
                          (void*)&op_16cxx_enh[i]);
     }
     break;
+
   case 3:
     /* add 12 and 14 bit special macros */
     base = special;
     count = num_op_special;
     break;
+
   default:
     assert(0);
   }

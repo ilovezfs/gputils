@@ -78,12 +78,19 @@ enum insn_class {
   INSN_CLASS_MOVINDF    /* enhanced 14-bit moviw and movwi insn arguments */
 };
 
+typedef int gpasmVal;   /* The type that internal arithmetic uses */
+
+struct pnode;           /* forward declaration; defined in
+                         * gpasm.h for assembler and in
+                         * script.h for linker */
+
 struct insn {
   char *name;
   long int mask;
   long int opcode;
   enum insn_class class;
   int attribs;
+  gpasmVal (*doer)(gpasmVal r, char *name, int arity, struct pnode *parms);
 };
 
 struct strict_insn {
