@@ -1,3 +1,8 @@
+2011-12-18  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/gpasm.h, gpasm/directive.c, gpasm/special.c, libgputils/gpopcode.h:
+    added "doer" field to insn structure, get rid of ugly "opcode" field abuse
+    for the doer function pointer
+
 2011-12-11  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/deps.c: fixed bug #2911936: gpasm removes *.d files while compiling
   * gpasm/gpasm.c: fixed crash in absolute mode

@@ -34,8 +34,6 @@ Boston, MA 02111-1307, USA.  */
 
 #define MAX_PATHS 100
 
-typedef int gpasmVal;           /* The type that internal arithmetic uses */
-
 enum gpasmValTypes {
   gvt_constant,
   gvt_cblock,
