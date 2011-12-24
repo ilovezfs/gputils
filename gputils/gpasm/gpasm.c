@@ -104,6 +104,7 @@ init(void)
   state.found_config = false;
   state.found_devid = false;
   state.found_idlocs = false;
+  state.found_end = false;
   state.maxram = (MAX_RAM - 1);
 
   state.codfile = normal;
@@ -389,6 +390,7 @@ assemble(void)
   state.pass = 1;
   open_src(state.srcfilename, 0);
   yyparse();
+  yylex_destroy();
 
   state.pass++;
   state.org = 0;
@@ -406,6 +408,7 @@ assemble(void)
   state.found_config = false;
   state.found_devid = false;
   state.found_idlocs = false;
+  state.found_end = false;
   coff_init();
   cod_init();
   deps_init();
