@@ -153,7 +153,7 @@ static void emit_byte(unsigned char value)
 
     b_memory_put(state.i_memory, state.org, value);
   }
-  state.org += 1;
+  ++state.org;
 }
 
 static int off_or_on(struct pnode *p)
@@ -1487,6 +1487,17 @@ static gpasmVal do_else(gpasmVal r,
     gperror(GPE_ILLEGAL_COND, NULL);
   else
     state.astack->enabled = !state.astack->enabled;
+
+  return r;
+}
+
+static gpasmVal do_end(gpasmVal r,
+                       char *name,
+                       int arity,
+                       struct pnode *parms)
+{
+  state.found_end = 1;
+  state.lst.line.linetype = dir;
 
   return r;
 }
@@ -4152,6 +4163,7 @@ struct insn op_0[] = {
   { "code_pack",  0, 0, INSN_CLASS_FUNC, 0, do_code_pack },
   { "constant",   0, 0, INSN_CLASS_FUNC, 0, do_constant },
   { "else",       0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_else },
+  { "end",        0, 0, INSN_CLASS_FUNC, 0, do_end },
   { "endif",      0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_endif },
   { "endm",       0, 0, INSN_CLASS_FUNC, 0, do_endm },
   { "endw",       0, 0, INSN_CLASS_FUNC, 0, do_endw },

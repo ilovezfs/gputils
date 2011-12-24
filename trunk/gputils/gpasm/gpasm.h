@@ -104,6 +104,7 @@ extern struct gpasm_state {
   gp_boolean found_config;      /* config directive in source code */
   gp_boolean found_devid;       /* config directive in source code */
   gp_boolean found_idlocs;      /* idlocs directive in source code */
+  gp_boolean found_end;         /* end directive in source code */
   unsigned int maxram;          /* Highest legal memory location */
   long maxrom;                  /* Highest legal program memory location */
   struct range_pair *badrom;
@@ -291,6 +292,7 @@ struct source_context {
   gp_symbol_type *file_symbol;
   struct file_context *fc;        /* Position in the file context stack */
   struct amode *astack;           /* Stack of amodes when a macro was called */
+  gp_boolean last_char_is_nl;     /* If the last read character is a newline */
   struct source_context *prev;
 };
 

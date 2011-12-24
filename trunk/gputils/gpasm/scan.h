@@ -22,10 +22,13 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __SCAN_H__
 #define __SCAN_H__
 
+int yylex_destroy(void);
+
 void open_src(const char *name, int is_include_file);
-void close_file();
-void execute_exitm();
+void close_file(void);
+void execute_exitm(void);
 void execute_macro(struct macro_head *h, int is_while);
+int found_end(void);
 
 extern int force_ident;
 extern int force_decimal;

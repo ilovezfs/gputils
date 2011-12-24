@@ -47,16 +47,58 @@ enum identtype { defines, directives, globals, macros, opcodes, unknown_type };
 enum identtype identify(char *);
 
 static void push_string(char *str);
-static int found_end();
-static int found_eof();
+static int found_eof(void);
 
 static char *check_defines(char *symbol);
 
-static int quoted; /* Used to prevent #define expansion in ifdef and 
+static int quoted; /* Used to prevent #define expansion in ifdef and
                       ifndef... */
 int force_decimal; /* Used to force radix to decimal for some directives */
 int force_ident; /* Used to force numbers to identifiers for processor names */
 
+#define GP_INPUT(buf,result,max_size) \
+        if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
+                { \
+                int c = '*'; \
+                size_t n; \
+                for ( n = 0; n < max_size && \
+                             (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
+                        buf[n] = (char) c; \
+                if ( c == '\n' ) \
+                        buf[n++] = (char) c; \
+                if ( c == EOF && ferror( yyin ) ) \
+                        YY_FATAL_ERROR( "input in flex scanner failed" ); \
+                result = n; \
+                } \
+        else \
+                { \
+                errno=0; \
+                while ( (result = fread(buf, 1, max_size, yyin))==0 && ferror(yyin)) \
+                        { \
+                        if( errno != EINTR) \
+                                { \
+                                YY_FATAL_ERROR( "input in flex scanner failed" ); \
+                                break; \
+                                } \
+                        errno=0; \
+                        clearerr(yyin); \
+                        } \
+                }
+
+#define YY_INPUT(buf,result,max_size) \
+  { \
+    GP_INPUT(buf,result,max_size); \
+    if (result) \
+      { \
+        state.src->last_char_is_nl = (buf[result - 1] == '\n'); \
+      } \
+    else if (!state.src->last_char_is_nl) \
+      { \
+        *buf = '\n'; \
+        result = 1; \
+        state.src->last_char_is_nl = true; \
+      } \
+  }
 %}
 
 IDENT  [.]?[a-z_\x80-\xff?@#][a-z_0-9\x80-\xff.?@#]*
@@ -66,135 +108,131 @@ STR_BCHAR  ([^>\r\n]|{ESCCH})
 NUMCHAR [0-9a-z]
 
 %%
-^[ \t]*#?include[ \t]+		 {
-			   yylval.s = "include";
-			   BEGIN(bquote);
-			   return IDENTIFIER;
-			 }
-<<EOF>>		 	 {
-			   if (found_eof())
-			     yyterminate();
-			 }
-end		         {
-			   found_end();
-			   yyterminate();
-			 }
-^[ \t]*title[ \t]+	 {
-			   BEGIN(lnquote);
-			   yylval.s = "title";
-			   return IDENTIFIER;
-			 }
+^[ \t]*#?include[ \t]+   {
+                           yylval.s = "include";
+                           BEGIN(bquote);
+                           return IDENTIFIER;
+                         }
+<<EOF>>                  {
+                           if (found_eof())
+                             yyterminate();
+                         }
+^[ \t]*title[ \t]+       {
+                           BEGIN(lnquote);
+                           yylval.s = "title";
+                           return IDENTIFIER;
+                         }
 ^[ \t]*(subtitle?|stitle)[ \t]+ {
-			   BEGIN(lnquote);
-			   yylval.s = "subtitle";
-			   return IDENTIFIER;
-			 }
-cblock			 {
-			   return CBLOCK;
-			 }
-errorlevel		 {
-			   yylval.s = strdup(yytext);
-			   return ERRORLEVEL;
-			 }
-endc			 {
-			   return ENDC;
-			 }
-fill[ \t]*\(     	 {
-			   /* fill with ( ) as first argument */
-			   yylval.i = FILL;
-			   return FILL;
-			 }
-^[ \t]*#define[ \t]+ 	 {
+                           BEGIN(lnquote);
+                           yylval.s = "subtitle";
+                           return IDENTIFIER;
+                         }
+cblock                   {
+                           return CBLOCK;
+                         }
+errorlevel               {
+                           yylval.s = strdup(yytext);
+                           return ERRORLEVEL;
+                         }
+endc                     {
+                           return ENDC;
+                         }
+fill[ \t]*\(             {
+                           /* fill with ( ) as first argument */
+                           yylval.i = FILL;
+                           return FILL;
+                         }
+^[ \t]*#define[ \t]+     {
                            BEGIN(define);
-					  yylval.s = "#define";
-					  return DEFINE;
-			 }
-<define>{IDENT}		 {
-			   BEGIN(definition);
-			   yylval.s = strdup(yytext);
-			   return IDENTIFIER;
-			 }
-upper			 {
-			   yylval.i = UPPER;
-			   return UPPER;
-			 }
-high			 {
-			   yylval.i = HIGH;
-			   return HIGH;
-			 }
-low		     	 {
-			   yylval.i = LOW;
-			   return LOW;
-			 }
-list		     	 {
-			   yylval.s = strdup(yytext);
-			   return LIST;
-			 }
-processor	     	 {
-			   yylval.s = strdup(yytext);
-			   return PROCESSOR;
-			 }
-#?if			 {
-			   /* #if and if can appear in column 1 */
-			   yylval.s = strdup(yytext);
-			   return IDENTIFIER;
-			 }
-#?else   	 	 {
-			   /* #else and else can appear in column 1 */
-			   yylval.s = strdup(yytext);
-			   return IDENTIFIER;
-			 }
-#?endif  	 	 {
-			   /* #endif and endif can appear in column 1 */
-			   yylval.s = strdup(yytext);
-			   return IDENTIFIER;
-			 }
-#?ifdef			 {
-			   /* #ifdef and ifdef can appear in column 1 */
-			   quoted = 1;
-			   yylval.s = strdup(yytext);
-			   return IDENTIFIER;
-			 }
-#?ifndef		 {
-			   /* #ifndef and ifndef can appear in column 1 */
-			   quoted = 1;
-			   yylval.s = strdup(yytext);
-			   return IDENTIFIER;
-			 }
-#undefine 	 	 {
-			   /* #undefine can appear in column 1 */
-			   quoted = 1;
-			   yylval.s = strdup(yytext);
-			   return IDENTIFIER;
-			 }
-"."line			 {
-			   yylval.s = strdup(yytext);
-			   return DEBUG_LINE;
-			 }
+                           yylval.s = "#define";
+                           return DEFINE;
+                         }
+<define>{IDENT}          {
+                           BEGIN(definition);
+                           yylval.s = strdup(yytext);
+                           return IDENTIFIER;
+                         }
+upper                    {
+                           yylval.i = UPPER;
+                           return UPPER;
+                         }
+high                     {
+                           yylval.i = HIGH;
+                           return HIGH;
+                         }
+low                      {
+                           yylval.i = LOW;
+                           return LOW;
+                         }
+list                     {
+                           yylval.s = strdup(yytext);
+                           return LIST;
+                         }
+processor                {
+                           yylval.s = strdup(yytext);
+                           return PROCESSOR;
+                         }
+#?if                     {
+                           /* #if and if can appear in column 1 */
+                           yylval.s = strdup(yytext);
+                           return IDENTIFIER;
+                         }
+#?else                   {
+                           /* #else and else can appear in column 1 */
+                           yylval.s = strdup(yytext);
+                           return IDENTIFIER;
+                         }
+#?endif                  {
+                           /* #endif and endif can appear in column 1 */
+                           yylval.s = strdup(yytext);
+                           return IDENTIFIER;
+                         }
+#?ifdef                  {
+                           /* #ifdef and ifdef can appear in column 1 */
+                           quoted = 1;
+                           yylval.s = strdup(yytext);
+                           return IDENTIFIER;
+                         }
+#?ifndef                 {
+                           /* #ifndef and ifndef can appear in column 1 */
+                           quoted = 1;
+                           yylval.s = strdup(yytext);
+                           return IDENTIFIER;
+                         }
+#undefine                {
+                           /* #undefine can appear in column 1 */
+                           quoted = 1;
+                           yylval.s = strdup(yytext);
+                           return IDENTIFIER;
+                         }
+"."line                  {
+                           yylval.s = strdup(yytext);
+                           return DEBUG_LINE;
+                         }
 ^{IDENT}#v\(             {
-			   char *symbol;
+                           char *symbol;
 
                            yytext[strlen(yytext) - 3] = '\0';
 
-			   symbol = check_defines(yytext);
-			   if (symbol) {
+                           symbol = check_defines(yytext);
+                           if (symbol) {
                              yylval.s = strdup(symbol);
-			   } else {
+                           } else {
                              yylval.s = strdup(yytext);
-			   }
+                           }
                            return VARLAB_BEGIN;
                          }
-^{IDENT}:?		 { 
-			   int has_collon = 0;
-			   struct symbol *sym;
-			   struct macro_head *h;
-			   char *subst;
-                           
-			   if (yytext[strlen(yytext) - 1] == ':') {
-			     yytext[strlen(yytext) - 1] = '\0';
-			     has_collon = 1;
-			   }
-			   yylval.s = strdup(yytext);
+^{IDENT}:?               {
+                           int has_collon = 0;
+                           struct symbol *sym;
+                           struct macro_head *h;
+                           char *subst;
+
+                           if (yytext[strlen(yytext) - 1] == ':') {
+                             yytext[strlen(yytext) - 1] = '\0';
+                             has_collon = 1;
+                           }
+                           yylval.s = strdup(yytext);
                            switch(identify(yytext)) {
                              case defines:
                                sym = get_symbol(state.stTopDefines, yytext);
@@ -209,24 +247,24 @@ processor	     	 {
                                break;
                              case macros:
                                if(asm_enabled()) {
-			         /* make sure macro definition on second pass
+                                 /* make sure macro definition on second pass
                                     is ignored */
-			         sym = get_symbol(state.stMacros, yytext);
-			         h = get_symbol_annotation(sym);
+                                 sym = get_symbol(state.stMacros, yytext);
+                                 h = get_symbol_annotation(sym);
                                  if (h->line_number == state.src->line_number) {
-			           return LABEL;
-			         } else {
-			           gpwarning(GPW_MACRO_COLUMN_ONE, NULL);
-			           if (has_collon)
-                                    gperror(GPE_BADCHAR, 
+                                   return LABEL;
+                                 } else {
+                                   gpwarning(GPW_MACRO_COLUMN_ONE, NULL);
+                                   if (has_collon)
+                                    gperror(GPE_BADCHAR,
                                              "Illegal character (:)");
-			           return IDENTIFIER;
-			         }
+                                   return IDENTIFIER;
+                                 }
                                } else {
-                                 /* if assembly is not enabled don't issue 
-                                 warnings about macro calls in column 1, they 
-                                 could be an alternate definition */ 
-                                 return LABEL;			   
+                                 /* if assembly is not enabled don't issue
+                                 warnings about macro calls in column 1, they
+                                 could be an alternate definition */
+                                 return LABEL;
                                }
                                break;
                              case opcodes:
@@ -239,219 +277,219 @@ processor	     	 {
                                return LABEL;
                              default:
                                return LABEL;
-                           }			   
-			 }
+                           }
+                         }
 {IDENT}#v\(              {
-			   char *symbol;
+                           char *symbol;
 
                            yytext[strlen(yytext) - 3] = '\0';
 
-			   symbol = check_defines(yytext);
-			   if (symbol) {
+                           symbol = check_defines(yytext);
+                           if (symbol) {
                              yylval.s = strdup(symbol);
-			   } else {
+                           } else {
                              yylval.s = strdup(yytext);
-			   }
+                           }
                            return VAR_BEGIN;
                          }
 \)[a-z_0-9\x80-\xff?.]+  {
-			   char *symbol;
+                           char *symbol;
 
-			   symbol = check_defines(yytext+1);
-			   if (symbol) {
+                           symbol = check_defines(yytext+1);
+                           if (symbol) {
                              yylval.s = strdup(symbol);
-			   } else {
+                           } else {
                              yylval.s = strdup(yytext+1);
-			   }
+                           }
                            return VAR_END;
                          }
-{IDENT}			 {
-			   char *symbol;
+{IDENT}                  {
+                           char *symbol;
 
-			   symbol = check_defines(yytext);
-			   if (symbol) {
- 			     char buffer[BUFSIZ];
-                               
+                           symbol = check_defines(yytext);
+                           if (symbol) {
+                             char buffer[BUFSIZ];
+
                              /* Make the substitution with a leading space,
                                 so it won't be a label */
-                             sprintf(buffer, " %s", symbol); 
+                             sprintf(buffer, " %s", symbol);
                              push_string(buffer);
                            } else {
                              yylval.s = strdup(yytext);
-			     return IDENTIFIER;
+                             return IDENTIFIER;
                            }
-			 }
+                         }
 0x{NUMCHAR}+             {
                            yylval.i = stringtolong(yytext + 2, 16);
-			   return NUMBER;
-			 }
+                           return NUMBER;
+                         }
 {NUMCHAR}+b              {
                            if (force_ident) {
                              yylval.s = strdup(yytext);
                              return IDENTIFIER;
                            } else if (state.radix == 16) {
-                             yylval.i = stringtolong(yytext, 16);                           
-  			     return NUMBER;
-			   } else {
-			     yytext[yyleng - 1] = '\0';
+                             yylval.i = stringtolong(yytext, 16);
+                             return NUMBER;
+                           } else {
+                             yytext[yyleng - 1] = '\0';
                              yylval.i = stringtolong(yytext, 2);
-  			     return NUMBER;
-			   }
-			 }
+                             return NUMBER;
+                           }
+                         }
 b'-?{NUMCHAR}+'          {
                            yytext[yyleng - 1] = '\0';
-			   yylval.i = stringtolong(yytext + 2, 2);
-			   return NUMBER;
-			 }
-{NUMCHAR}+[oq]           {			 
+                           yylval.i = stringtolong(yytext + 2, 2);
+                           return NUMBER;
+                         }
+{NUMCHAR}+[oq]           {
                            if (force_ident) {
                              yylval.s = strdup(yytext);
                              return IDENTIFIER;
                            } else {
                              yytext[yyleng - 1] = '\0';
                              yylval.i = stringtolong(yytext, 8);
-			     return NUMBER;
-			   }
-			 }
+                             return NUMBER;
+                           }
+                         }
 [oq]'-?{NUMCHAR}+'       {
                            yytext[yyleng - 1] = '\0';
-			   yylval.i = stringtolong(yytext + 2, 8);
-			   return NUMBER;
-			 }
+                           yylval.i = stringtolong(yytext + 2, 8);
+                           return NUMBER;
+                         }
 {NUMCHAR}+d              {
                            if (force_ident) {
                              yylval.s = strdup(yytext);
                              return IDENTIFIER;
                            } else if (state.radix == 16) {
-                             yylval.i = stringtolong(yytext, 16);                           
-  			     return NUMBER;
-			   } else {
-			     yytext[yyleng - 1] = '\0';
+                             yylval.i = stringtolong(yytext, 16);
+                             return NUMBER;
+                           } else {
+                             yytext[yyleng - 1] = '\0';
                              yylval.i = stringtolong(yytext, 10);
-  			     return NUMBER;
-			   }
-			 }
-d'-?[0-9]+'		 {
+                             return NUMBER;
+                           }
+                         }
+d'-?[0-9]+'              {
                            yytext[yyleng - 1] = '\0';
-			   yylval.i = stringtolong(yytext + 2, 10);
-			   return NUMBER;
-			 }			
-"."[0-9]+	         {
+                           yylval.i = stringtolong(yytext + 2, 10);
+                           return NUMBER;
+                         }
+"."[0-9]+                {
                            yylval.i = stringtolong(yytext + 1, 10);
-			   return NUMBER;
-			 }
-{NUMCHAR}+h              {			 
+                           return NUMBER;
+                         }
+{NUMCHAR}+h              {
                            if (force_ident) {
                              yylval.s = strdup(yytext);
                              return IDENTIFIER;
                            } else {
                              yytext[yyleng - 1] = '\0';
                              yylval.i = stringtolong(yytext, 16);
-			     return NUMBER;
-			   }
-			 }			 
+                             return NUMBER;
+                           }
+                         }
 h'-?{NUMCHAR}+'          {
                            yytext[yyleng - 1] = '\0';
-			   yylval.i = stringtolong(yytext + 2, 16);
-			   return NUMBER;
-			 }
-{NUMCHAR}+		 {
+                           yylval.i = stringtolong(yytext + 2, 16);
+                           return NUMBER;
+                         }
+{NUMCHAR}+               {
                            if (force_ident) {
                              yylval.s = strdup(yytext);
                              return IDENTIFIER;
                            } else if (force_decimal) {
                              yylval.i = stringtolong(yytext, 10);
-   			     return NUMBER;
+                             return NUMBER;
                            } else {
                              yylval.i = stringtolong(yytext, state.radix);
-   			     return NUMBER;
+                             return NUMBER;
                            }
-			 }
+                         }
 <INITIAL,bquote>\"{STR_QCHAR}*\"?        {
-			   char *pc = &yytext[yyleng - 1];
-			   if ((yyleng > 1) && (*pc == '"'))
-			     *pc = '\0';
+                           char *pc = &yytext[yyleng - 1];
+                           if ((yyleng > 1) && (*pc == '"'))
+                             *pc = '\0';
                            else
-			     gpwarning(GPW_MISSING_QUOTE, NULL);                           
+                             gpwarning(GPW_MISSING_QUOTE, NULL);
                            yylval.s = strdup(yytext + 1);
-			   BEGIN(INITIAL);
-			   return STRING;
+                           BEGIN(INITIAL);
+                           return STRING;
                          }
 '{STR_QCHAR}'            {
                            const char *pc = convert_escape_chars(yytext + 1, &yylval.i);
-			   assert(pc == &yytext[yyleng - 1]);
-			   return NUMBER;
+                           assert(pc == &yytext[yyleng - 1]);
+                           return NUMBER;
                          }
 A'{STR_QCHAR}'           {
                            yylval.i = yytext[2];
-			   return NUMBER;
+                           return NUMBER;
                          }
 <bquote>\<{STR_BCHAR}*\> {
-			   yytext[yyleng - 1] = '\0';
-			   yylval.s = strdup(&yytext[1]);
-			   BEGIN(INITIAL);
-			   return STRING;
-			 }
+                           yytext[yyleng - 1] = '\0';
+                           yylval.s = strdup(&yytext[1]);
+                           BEGIN(INITIAL);
+                           return STRING;
+                         }
 <bquote>[^ \t<>";\r\n]+ {
-			   /* unquoted (special-case) string */
-			   yylval.s = strdup(yytext);
-			   BEGIN(INITIAL);
-			   return STRING;
-			 }
+                           /* unquoted (special-case) string */
+                           yylval.s = strdup(yytext);
+                           BEGIN(INITIAL);
+                           return STRING;
+                         }
 <lnquote>\"{STR_QCHAR}*\" {
-			   /* if valid, must match with length >= unquoted token below */
-			   yytext[yyleng - 1] = '\0';
-			   yylval.s = strdup(&yytext[1]);
-			   BEGIN(INITIAL);
-			   return STRING;
-			 }
+                           /* if valid, must match with length >= unquoted token below */
+                           yytext[yyleng - 1] = '\0';
+                           yylval.s = strdup(&yytext[1]);
+                           BEGIN(INITIAL);
+                           return STRING;
+                         }
 <definition,lnquote>[^ \t;\r\n]+([ \t]+[^ \t;\r\n]+)* {
-			   /* full-line (special-case) string */
-			   /* must begin and end with non-whitespace */
-			   yylval.s = strdup(yytext);
-			   BEGIN(INITIAL);
-			   return STRING;
-			 }
-"<<"			 OPERATOR(LSH);
-">>"			 OPERATOR(RSH);
-">="			 OPERATOR(GREATER_EQUAL);
-"<="			 OPERATOR(LESS_EQUAL);
-"=="			 OPERATOR(EQUAL);
-"!="			 OPERATOR(NOT_EQUAL);
-"&&"			 OPERATOR(LOGICAL_AND);
-"||"			 OPERATOR(LOGICAL_OR);
+                           /* full-line (special-case) string */
+                           /* must begin and end with non-whitespace */
+                           yylval.s = strdup(yytext);
+                           BEGIN(INITIAL);
+                           return STRING;
+                         }
+"<<"                     OPERATOR(LSH);
+">>"                     OPERATOR(RSH);
+">="                     OPERATOR(GREATER_EQUAL);
+"<="                     OPERATOR(LESS_EQUAL);
+"=="                     OPERATOR(EQUAL);
+"!="                     OPERATOR(NOT_EQUAL);
+"&&"                     OPERATOR(LOGICAL_AND);
+"||"                     OPERATOR(LOGICAL_OR);
 
-"+="			 OPERATOR(ASSIGN_PLUS);
-"-="			 OPERATOR(ASSIGN_MINUS);
-"*="			 OPERATOR(ASSIGN_MULTIPLY);
-"/="			 OPERATOR(ASSIGN_DIVIDE);
-"%="			 OPERATOR(ASSIGN_MODULUS);
-"<<="			 OPERATOR(ASSIGN_LSH);
-">>="			 OPERATOR(ASSIGN_RSH);
-"&="			 OPERATOR(ASSIGN_AND);
-"|="			 OPERATOR(ASSIGN_OR);
-"^="			 OPERATOR(ASSIGN_XOR);
+"+="                     OPERATOR(ASSIGN_PLUS);
+"-="                     OPERATOR(ASSIGN_MINUS);
+"*="                     OPERATOR(ASSIGN_MULTIPLY);
+"/="                     OPERATOR(ASSIGN_DIVIDE);
+"%="                     OPERATOR(ASSIGN_MODULUS);
+"<<="                    OPERATOR(ASSIGN_LSH);
+">>="                    OPERATOR(ASSIGN_RSH);
+"&="                     OPERATOR(ASSIGN_AND);
+"|="                     OPERATOR(ASSIGN_OR);
+"^="                     OPERATOR(ASSIGN_XOR);
 
-"++"			 OPERATOR(INCREMENT);
-"--"			 OPERATOR(DECREMENT);
+"++"                     OPERATOR(INCREMENT);
+"--"                     OPERATOR(DECREMENT);
 
-"*+"			 OPERATOR(TBL_POST_INC);
-"*-"			 OPERATOR(TBL_POST_DEC);
-"+*"			 OPERATOR(TBL_PRE_INC);
+"*+"                     OPERATOR(TBL_POST_INC);
+"*-"                     OPERATOR(TBL_POST_DEC);
+"+*"                     OPERATOR(TBL_PRE_INC);
 
 <INITIAL,bquote,lnquote,definition>[ \t\r]*
-<*>[\n]		         {
-			   quoted = 0;
-			   force_decimal = 0;
-			   force_ident = 0;
-			   BEGIN(INITIAL);  /* no multiline states yet */
- 			   return yytext[0];
-			 }
-<*>;.*			 {  }
-<*>.			 { 
-			   yylval.i = yytext[0];
-		           return yytext[0];
-			 }
+<*>[\n]                  {
+                           quoted = 0;
+                           force_decimal = 0;
+                           force_ident = 0;
+                           BEGIN(INITIAL);  /* no multiline states yet */
+                           return yytext[0];
+                         }
+<*>;.*                   {  }
+<*>.                     {
+                           yylval.i = yytext[0];
+                           return yytext[0];
+                         }
 %%
 
 static void
@@ -469,8 +507,6 @@ search_pathes(struct source_context *new, const char *name)
       break;
     }
   }
-
-  return; 
 }
 
 void open_src(const char *name, int isinclude)
@@ -483,21 +519,21 @@ void open_src(const char *name, int isinclude)
   new->f = fopen(name, "rt");
   if(new->f)
     new->name = strdup(name);
-  else if(isinclude && (strchr(name, PATH_CHAR) == 0)) { 
-    /* If include file and no PATH_CHAR in name, try searching include 
+  else if(isinclude && (strchr(name, PATH_CHAR) == 0)) {
+    /* If include file and no PATH_CHAR in name, try searching include
        path */
     search_pathes(new, name);
 
     if (new->f == NULL) {
-      /* We didn't find a match so check for lower case.  This is mainly for 
+      /* We didn't find a match so check for lower case.  This is mainly for
          Microchip examples and some includes in which filenames were written
-         without regard to case */    
+         without regard to case */
       char *lower_case_name = gp_lower_case(name);
-      search_pathes(new, lower_case_name);      
-      free(lower_case_name);  
+      search_pathes(new, lower_case_name);
+      free(lower_case_name);
 
       if (new->f != NULL)
-        gpwarning(GPW_UNKNOWN, "found lower case match for include filename");    
+        gpwarning(GPW_UNKNOWN, "found lower case match for include filename");
     }
   }
   if(new->f)
@@ -539,7 +575,7 @@ void open_src(const char *name, int isinclude)
   new->prev = state.src;
 
   state.src = new;
-  state.src->fc = add_file(ft_src, new->name); 
+  state.src->fc = add_file(ft_src, new->name);
   deps_add(new->name);
 
   if (!isinclude) {
@@ -548,6 +584,8 @@ void open_src(const char *name, int isinclude)
     force_decimal = 0;
     force_ident = 0;
   }
+  state.src->last_char_is_nl = true;
+  state.found_end = 0;
 }
 
 void execute_macro(struct macro_head *h, int is_while)
@@ -579,13 +617,12 @@ void execute_macro(struct macro_head *h, int is_while)
   new->f = NULL;
   new->h = h;
   new->lst.m = h->body;
-  
+
   new->prev = state.src;
   state.src = new;
 
   state.src->fc = add_file(ft_src, new->name); /* scan list for fc */
   yy_scan_buffer(macro_src, macro_src_size);
-
 }
 
 void repeat_while(void)
@@ -606,7 +643,6 @@ void repeat_while(void)
 
   yy_delete_buffer(YY_CURRENT_BUFFER);
   yy_scan_buffer(macro_src, macro_src_size);
-
 }
 
 static void push_string(char *str)
@@ -632,7 +668,7 @@ static void push_string(char *str)
   state.src = new;
 }
 
-void close_file()
+void close_file(void)
 {
   struct source_context *old;
 
@@ -660,11 +696,11 @@ void close_file()
     free(old->name);
   } else if (old->type == src_while) {
     free(old->name);
-  }  
+  }
   free(old);
 }
 
-void execute_exitm()
+void execute_exitm(void)
 {
   struct amode *previous;
   struct amode *old;
@@ -674,7 +710,7 @@ void execute_exitm()
   while ((state.astack != NULL) &&
          (state.astack != previous)) {
     old = state.astack;
-    state.astack = state.astack->prev; 
+    state.astack = state.astack->prev;
     free(old);
   }
 
@@ -683,34 +719,11 @@ void execute_exitm()
     yy_delete_buffer(YY_CURRENT_BUFFER);
     yy_switch_to_buffer(state.src->yybuf);
   }
-
 }
 
 /* found end directive, close all files and stop the parser */
-static int found_end()
+int found_end(void)
 {
-  if (state.while_head) {
-    state.mac_body = NULL;    
-    state.mac_prev = NULL;
-    state.while_head = NULL;
-    gperror(GPE_EXPECTED, "Expected (ENDW)");
-  }
-
-  if (state.astack != NULL) {
-    struct amode *old;
-
-    while (state.astack) {
-      old = state.astack;
-      state.astack = state.astack->prev; 
-      free(old);
-    }
-    gpwarning(GPW_EXPECTED, "Expected (ENDIF)");
-  }
-
-  if (state.mac_prev != NULL) {
-    gperror(GPW_EXPECTED,"Expected (ENDM)");
-  }
-
   /* close all open files */
   while(state.src) {
     close_file();
@@ -723,7 +736,7 @@ static int found_end()
   return 1;
 }
 
-static int found_eof()
+static int found_eof(void)
 {
   int terminate = 0;
 
@@ -745,8 +758,8 @@ static int found_eof()
     yy_delete_buffer(YY_CURRENT_BUFFER);
     yy_switch_to_buffer(state.src->yybuf);
   } else {
-    gperror(GPE_ILLEGAL_COND, 
-            "Illegal condition (EOF encountered before END)");
+    if (!state.found_end)
+      gperror(GPE_ILLEGAL_COND, "Illegal condition (EOF encountered before END)");
     terminate = found_end();
   }
 
@@ -755,7 +768,7 @@ static int found_eof()
 
 enum identtype identify(char *text)
 {
-  enum identtype type;  
+  enum identtype type;
   struct symbol *sym;
 
   if ((sym = get_symbol(state.stTopDefines, text)) != NULL) {
