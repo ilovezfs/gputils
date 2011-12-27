@@ -3,17 +3,17 @@
    Scott Dattalo
 
 This file is part of gputils.
- 
+
 gputils is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
- 
+
 gputils is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
@@ -32,30 +32,29 @@ void directory_block(void)
   unsigned char *block;
   char *processor_name;
   const struct px *processor_info;
-  proc_class_t processor_class;
   int time;
   int bytes_for_address;
-  
+
   block = main_dir.dir.block;
 
   printf("directory block \n");
 
   printf("COD file version  %d\n",
-	 gp_getl16(&block[COD_DIR_CODTYPE]));
+         gp_getl16(&block[COD_DIR_CODTYPE]));
   printf("Source file       %s\n",
-	 &block[COD_DIR_SOURCE]);
+         &block[COD_DIR_SOURCE]);
   printf("Date              %s\n",
-	 substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_DATE],7));
+         substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_DATE],7));
 
   time = gp_getl16(&block[COD_DIR_TIME]);
-  
+
   printf("Time              %02d:%02d\n", time / 100, time % 100);
   printf("Compiler version  %s\n",
-	 substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_VERSION],19));
+         substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_VERSION],19));
   printf("Compiler          %s\n",
-	 substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_COMPILER],12));
+         substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_COMPILER],12));
   printf("Notice            %s\n",
-	 substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_NOTICE],64));
+         substr(temp_buf, sizeof(temp_buf), &block[COD_DIR_NOTICE],64));
 
   processor_name = substr(temp_buf,
                           sizeof(temp_buf),
@@ -64,7 +63,6 @@ void directory_block(void)
   printf("Processor         %s\n", processor_name);
 
   processor_info = gp_find_processor(processor_name);
-  processor_class = gp_processor_class(processor_info);
 
   bytes_for_address = gp_getl16(&block[COD_DIR_ADDRSIZE]);
   printf("Bytes for address: %d\n", bytes_for_address);
@@ -73,29 +71,29 @@ void directory_block(void)
   }
 
   printf("High word of 64k address %04x\n",
-	 gp_getl16(&block[COD_DIR_HIGHADDR]));
+         gp_getl16(&block[COD_DIR_HIGHADDR]));
 
   printf("Short symbol table start block:  0x%04x  end block:  0x%04x\n",
-	 gp_getl16(&block[COD_DIR_SYMTAB]),
-	 gp_getl16(&block[COD_DIR_SYMTAB+2]));
+         gp_getl16(&block[COD_DIR_SYMTAB]),
+         gp_getl16(&block[COD_DIR_SYMTAB+2]));
   printf("Long symbol table start block:   0x%04x  end block:  0x%04x\n",
-	 gp_getl16(&block[COD_DIR_LSYMTAB]),
-	 gp_getl16(&block[COD_DIR_LSYMTAB+2]));
+         gp_getl16(&block[COD_DIR_LSYMTAB]),
+         gp_getl16(&block[COD_DIR_LSYMTAB+2]));
   printf("File name table start block:     0x%04x  end block:  0x%04x\n",
-	 gp_getl16(&block[COD_DIR_NAMTAB]),
-	 gp_getl16(&block[COD_DIR_NAMTAB+2]));
+         gp_getl16(&block[COD_DIR_NAMTAB]),
+         gp_getl16(&block[COD_DIR_NAMTAB+2]));
   printf("Source info table start block:   0x%04x  end block:  0x%04x\n",
-	 gp_getl16(&block[COD_DIR_LSTTAB]),
-	 gp_getl16(&block[COD_DIR_LSTTAB+2]));
+         gp_getl16(&block[COD_DIR_LSTTAB]),
+         gp_getl16(&block[COD_DIR_LSTTAB+2]));
   printf("Rom table start block:           0x%04x  end block:  0x%04x\n",
-	 gp_getl16(&block[COD_DIR_MEMMAP]),
-	 gp_getl16(&block[COD_DIR_MEMMAP+2]));
+         gp_getl16(&block[COD_DIR_MEMMAP]),
+         gp_getl16(&block[COD_DIR_MEMMAP+2]));
   printf("Local scope table start block:   0x%04x  end block:  0x%04x\n",
-	 gp_getl16(&block[COD_DIR_LOCALVAR]),
-	 gp_getl16(&block[COD_DIR_LOCALVAR+2]));
+         gp_getl16(&block[COD_DIR_LOCALVAR]),
+         gp_getl16(&block[COD_DIR_LOCALVAR+2]));
   printf("Debug messages start block:      0x%04x  end block:  0x%04x\n",
-	 gp_getl16(&block[COD_DIR_MESSTAB]),
-	 gp_getl16(&block[COD_DIR_MESSTAB+2]));
+         gp_getl16(&block[COD_DIR_MESSTAB]),
+         gp_getl16(&block[COD_DIR_MESSTAB+2]));
 
   printf("\nNext directory block");
   if(gp_getl16(&block[COD_DIR_NEXTDIR]))
@@ -136,7 +134,7 @@ void create_block(Block *b)
 
   b->block = malloc(COD_BLOCK_SIZE);
   gp_cod_clear(b);
-  
+
 }
 
 void read_directory(void)

@@ -3,17 +3,17 @@
    Scott Dattalo
 
 This file is part of gputils.
- 
+
 gputils is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
- 
+
 gputils is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
@@ -26,7 +26,7 @@ Boston, MA 02111-1307, USA.  */
 #include "dump.h"
 #include "block.h"
 
-FILE *codefile;  
+FILE *codefile;
 char filename[BUFFER_LENGTH];
 unsigned char temp[COD_BLOCK_SIZE];
 char *source_file_names[MAX_SOURCE_FILES];
@@ -117,10 +117,8 @@ void show_usage(void)
 int main(int argc, char *argv[])
 {
   extern int optind;
-  unsigned int buffer_size;
-  int c,usage=0;
+  int c, usage=0;
   int display_flags;
-  Directory *dir;
 
   char temp_buf[12];
   char *processor_name;
@@ -169,7 +167,7 @@ int main(int argc, char *argv[])
     if (usage)
       break;
   }
-  
+
   if ((optind + 1) == argc)
     strncpy(filename, argv[optind], sizeof(filename));
   else
@@ -201,12 +199,10 @@ int main(int argc, char *argv[])
   processor_class = gp_processor_class(processor_info);
 
   fseek(codefile, 0,SEEK_SET);
-  buffer_size = fread(directory_block_data, 1, COD_BLOCK_SIZE, codefile);
+  fread(directory_block_data, 1, COD_BLOCK_SIZE, codefile);
 
   if(display_flags & DISPLAY_DIR)
     directory_block();
-
-  dir = (Directory *)directory_block_data;
 
   if(display_flags & DISPLAY_ROM)
     dump_code(processor_class);

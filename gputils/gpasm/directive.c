@@ -75,7 +75,7 @@ static unsigned short checkwrite(unsigned short value)
     value &= state.device.class->core_size;
   }
 
-  if (state.device.class->i_memory_get(state.i_memory, state.org, &insn)) {
+  if (0 == state.num.errors && state.device.class->i_memory_get(state.i_memory, state.org, &insn)) {
     gperror(GPE_ADDROVR, NULL);
   }
 
@@ -129,7 +129,7 @@ static void emit_byte(unsigned char value)
         gperror(GPE_ADDROVF, "Address wrapped around 0");
       }
 
-      if (b_memory_get(state.i_memory, state.org, &byte)) {
+      if (0 == state.num.errors && b_memory_get(state.i_memory, state.org, &byte)) {
         gperror(GPE_ADDROVR, NULL);
       }
 
@@ -614,7 +614,6 @@ static gpasmVal do_constant(gpasmVal r,
                        int arity,
                        struct pnode *parms)
 {
-
   struct pnode *p;
   int value;
 
@@ -1257,6 +1256,8 @@ static gpasmVal do_define(gpasmVal r,
 {
   struct pnode *p;
   struct symbol *current_definition;
+
+  state.lst.line.linetype = dir;
 
   if (arity < 1) {
     /* FIXME: find a more elegant way to do this */
@@ -2326,11 +2327,11 @@ static gpasmVal do_maxram(gpasmVal r,
 {
   struct pnode *p;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = set;
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (can_evaluate(p))
-      state.maxram = evaluate(p);
+      r = state.maxram = evaluate(p);
   }
 
   return r;
@@ -2343,11 +2344,11 @@ static gpasmVal do_maxrom(gpasmVal r,
 {
   struct pnode *p;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = set;
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (can_evaluate(p))
-      state.maxrom = evaluate(p);
+      r = state.maxrom = evaluate(p);
   }
 
   return r;
@@ -2405,8 +2406,6 @@ static gpasmVal do_org(gpasmVal r,
 {
   struct pnode *p;
 
-  state.lst.line.linetype = org;
-
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (can_evaluate(p)) {
@@ -2416,6 +2415,7 @@ static gpasmVal do_org(gpasmVal r,
         gperror(GPE_ORG_ODD, NULL);
       new_org = gp_processor_org_to_byte(state.device.class, r);
       if (state.mode == absolute) {
+        state.lst.line.linetype = org;
         state.org = new_org;
       } else {
         /* Default section name, this will be overwritten if a label is
@@ -2430,8 +2430,8 @@ static gpasmVal do_org(gpasmVal r,
         state.next_state = state_section;
       }
     }
-                else
-                  r = 0;
+    else
+      r = 0;
   }
 
   return r;
@@ -2598,8 +2598,9 @@ static gpasmVal do_res(gpasmVal r,
     if (can_evaluate(p)) {
       count = evaluate(p);
 
+      state.lst.line.linetype = res;
+
       if (state.mode == absolute) {
-        state.lst.line.linetype = equ;
         if (state.device.class == PROC_CLASS_PIC16E && count % 2 != 0)
           gperror(GPE_RES_ODD_PIC16EA, NULL);
         count = gp_processor_org_to_byte(state.device.class, count);
@@ -2607,7 +2608,6 @@ static gpasmVal do_res(gpasmVal r,
           emit(state.device.class->core_size);
         }
       } else {
-        state.lst.line.linetype = res;
         if (SECTION_FLAGS & STYP_TEXT) {
           count = gp_processor_org_to_byte(state.device.class, count);
           if (state.device.class->rom_width < 16) {
@@ -3998,6 +3998,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           int opcode;
           int k;
           struct pnode *p2, *p3;
+
         case 1:
           fsr = maybe_evaluate(p);
           /* New opcode for indexed indirect */

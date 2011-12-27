@@ -393,7 +393,7 @@ static int do_secdef(char *name, enum section_type type, struct pnode *parms)
         end = gp_processor_org_to_byte(state.class, end + 1) - 1;
         break;
 
-      case 0:
+      case sect_none:
         script_error("invalid definition type", name);
         break;
 
@@ -519,12 +519,12 @@ int execute_command(char *name, struct pnode *parms)
     { "accessbank", accessbank, do_secdef  },
     { "codepage",   codepage,   do_secdef  },
     { "databank",   databank,   do_secdef  },
-    { "files",      0,          do_files   },
-    { "include",    0,          do_include },
+    { "files",      sect_none,  do_files   },
+    { "include",    sect_none,  do_include },
     { "linearmem",  linearmem,  do_secdef  },
-    { "section",    0,          do_logsec  },
+    { "section",    sect_none,  do_logsec  },
     { "sharebank",  sharebank,  do_secdef  },
-    { "stack",      0,          do_stack   }
+    { "stack",      sect_none,  do_stack   }
   };
   int i;
 

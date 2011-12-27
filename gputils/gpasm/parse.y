@@ -362,10 +362,11 @@ line:
         label_concat statement
         {
           if (asm_enabled() && (state.lst.line.linetype == none)) {
-            if (IS_RAM_ORG)
-          /* alias to next definition */
-          state.lst.line.linetype = res;
-        else
+            if (IS_RAM_ORG) {
+              /* alias to next definition */
+              state.lst.line.linetype = res;
+            }
+            else
               state.lst.line.linetype = insn;
           }
 

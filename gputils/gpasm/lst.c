@@ -31,6 +31,17 @@ Boston, MA 02111-1307, USA.  */
 #include <stdarg.h>
 #endif
 
+#define MPASM_LIST
+
+#ifdef MPASM_LIST
+#define LINENUM_POS 22
+#else
+#define LINENUM_POS 15
+#endif
+
+#define STRINGIFY(s) _str(s)
+#define _str(s) #s
+
 extern int _16bit_core;
 
 void lst_throw()
@@ -38,7 +49,7 @@ void lst_throw()
   if(state.lst.f) {
     state.lst.page++;
     fprintf(state.lst.f,
-            "%s%-32s%-12s%-29sPAGE %2d\n%s\n%s\n",
+            "%s%-29s%-19s%-29sPAGE %2d\n%s\n%s\n",
             (state.lst.page == 1) ? "" : "\f",
             GPASM_VERSION_STRING,
             state.srcfilename,
@@ -60,10 +71,34 @@ static void lst_check_page_start(void)
       (state.lst.lineofpage == 0 ||
        state.lst.lineofpage > state.lst.linesperpage)) {
     lst_throw();
-    lst_line("LOC  OBJECT CODE     LINE SOURCE TEXT");
-    lst_line("  VALUE");
-    lst_line(" ");
+    switch (state.lst.lst_state) {
+    case in_mem:
+      lst_line("LOC  OBJECT CODE     LINE SOURCE TEXT");
+      lst_line("  VALUE");
+      break;
+
+    case in_symtab:
+      lst_line("SYMBOL TABLE");
+      lst_line("%-32s  %-8s", "  LABEL", "  VALUE");
+      break;
+
+    default:
+      lst_line("");
+      break;
+    }
+    lst_line("");
   }
+}
+
+static int lst_spaces(int n)
+{
+  int i = n;
+
+  lst_check_page_start();
+  while (i--)
+    fputc(' ', state.lst.f);
+
+  return n;
 }
 
 static void lst_eol(void)
@@ -107,10 +142,11 @@ void lst_init()
 {
   state.lst.lineofpage = 0;
   state.lst.page = 0;
-  state.lst.linesperpage = 60;
+  state.lst.linesperpage = 59;
   state.lst.line_number = 1;
   state.lst.memorymap = 1;
   state.lst.symboltable = 1;
+  state.lst.lst_state = in_mem;
 
   /* Determine state.startdate */
   gp_date_string(state.lst.startdate, sizeof(state.lst.startdate));
@@ -140,6 +176,7 @@ void lst_init()
     unlink(state.lstfilename);
   } else {
     state.lst.f = fopen(state.lstfilename, "wt");
+
     if (state.lst.f == NULL) {
       perror(state.lstfilename);
       exit(1);
@@ -153,56 +190,42 @@ void lst_init()
 
 void lst_memory_map(MemBlock *m)
 {
+#define MEM_IS_USED(m, i)   (_16bit_core ? ((m)->memory[i] & BYTE_USED_MASK) : (((m)->memory[2 * (i)] & BYTE_USED_MASK) || ((m)->memory[2 * (i) + 1] & BYTE_USED_MASK)))
+
   int i, j, base, row_used, num_per_line, num_per_block;
+  unsigned int used;
 
   lst_line("");
   lst_line("");
   lst_line("MEMORY USAGE MAP ('X' = Used,  '-' = Unused)");
   lst_line("");
 
-  if (_16bit_core) {
-    /* uses byte addressing so read half as many words */
-    num_per_line = 32;
-    num_per_block = 8;
-  } else {
-    num_per_line = 64;
-    num_per_block = 16;
-  }
+  num_per_line = 64;
+  num_per_block = 16;
 
-  while(m) {
+  while (m) {
+    unsigned int max_mem = MAX_I_MEM  >> (!_16bit_core);
     assert(m->memory != NULL);
 
-    base = (m->base << I_MEM_BITS);
+    base = (m->base << I_MEM_BITS) >> (!_16bit_core);
 
-    for (i = 0; i < MAX_I_MEM; i += num_per_line) {
+    for (i = 0; i < max_mem; i += num_per_line) {
       row_used = 0;
 
       for (j = 0; j < num_per_line; j++) {
-        if (m->memory[i+j] & BYTE_USED_MASK) {
+        if (MEM_IS_USED(m, i + j)) {
           row_used = 1;
           break;
         }
       }
 
       if(row_used) {
-        lst_printf("%08x :", (i + base) << _16bit_core);
+        lst_printf("%04x :", i + base);
         for (j = 0; j < num_per_line; j++) {
           if ((j % num_per_block) == 0) {
             lst_printf(" ");
           }
-          if (m->memory[i + j] & BYTE_USED_MASK) {
-            lst_printf("X");
-            if (_16bit_core) {
-              /* each word has two bytes */
-              lst_printf("X");
-            }
-          } else {
-            lst_printf("-");
-            if (_16bit_core) {
-              /* each word has two bytes */
-              lst_printf("-");
-            }
-          }
+          lst_printf(MEM_IS_USED(m, i + j) ? "X" : "-");
         }
 
         lst_eol();
@@ -216,99 +239,83 @@ void lst_memory_map(MemBlock *m)
   lst_line("All other memory blocks unused.");
   lst_line("");
 
-  lst_line("Program Memory Words Used: %i",
-           gp_processor_byte_to_org(state.device.class, b_memory_used(state.i_memory)));
+  used = gp_processor_byte_to_org(state.device.class, b_memory_used(state.i_memory));
+  lst_line("Program Memory %s Used: %5i", _16bit_core ? "Bytes" : "Words", used);
+  /* maxrom is not the program memory size.
+  lst_line("Program Memory %s Free: %5d", _16bit_core ? "Bytes" : "Words", state.maxrom - used);
+  */
 }
 
 void lst_close()
 {
   cod_lst_line(COD_LAST_LST_LINE);
 
+  state.lst.lst_state = in_none;
+
   if (state.lst.f) {
-    fprintf(state.lst.f,
-            "\n\n");
-    fprintf(state.lst.f,
-            "Errors   : %7d\n",
-            state.num.errors);
-    fprintf(state.lst.f,
-            "Warnings : %7d reported, %7d suppressed\n",
-            state.num.warnings,
-            state.num.warnings_suppressed);
-    fprintf(state.lst.f,
-            "Messages : %7d reported, %7d suppressed\n",
-            state.num.messages,
-            state.num.messages_suppressed);
-    fprintf(state.lst.f,
-            "\f\n");
+    lst_line("");
+    lst_line("Errors   : %5d", state.num.errors);
+    lst_line("Warnings : %5d reported, %5d suppressed",
+             state.num.warnings,
+             state.num.warnings_suppressed);
+    lst_line("Messages : %5d reported, %5d suppressed",
+             state.num.messages,
+             state.num.messages_suppressed);
+    lst_line("");
+    fputc('\f', state.lst.f);
 
     fclose(state.lst.f);
   }
 }
 
-unsigned int lst_data(unsigned int byte_org,
+unsigned int lst_data(unsigned int pos, unsigned int byte_org,
                       unsigned int bytes_emitted)
 {
-#define DATA_BYTES_PER_LINE 3
-
-  unsigned int lst_bytes = 0;
-  int len = 0;
-
-  if (bytes_emitted == 0) {
-    lst_printf("          ");
-    return 0;
-  }
+  int lst_bytes = 0;
 
   /* when in a idata or byte packed section, print byte by byte */
-  if (state.obj.new_sec_flags & (STYP_DATA|STYP_BPACK)) {
-    /* list first byte */
-    if ((byte_org & 1) != 0) {
+  if (state.obj.new_sec_flags & (STYP_DATA | STYP_BPACK)) {
+    while (bytes_emitted > lst_bytes && pos + 3 <= LINENUM_POS) {
       unsigned char emit_byte;
+
       b_memory_get(state.i_memory, byte_org, &emit_byte);
-      len += lst_printf("%02X ", emit_byte);
-      ++lst_bytes;
-    }
-    /* list whole words */
-    if (1 < bytes_emitted - lst_bytes) {
-      unsigned char emit_bytes[2];
-      b_memory_get(state.i_memory, byte_org+lst_bytes, emit_bytes);
-      b_memory_get(state.i_memory, byte_org+lst_bytes+1, emit_bytes+1);
-      len += lst_printf("%02X %02X ", emit_bytes[0], emit_bytes[1]);
-      lst_bytes += 2;
-    }
-    if (lst_bytes < DATA_BYTES_PER_LINE && bytes_emitted > lst_bytes) {
-      /* we have space for an extra byte */
-      unsigned char emit_byte;
-      b_memory_get(state.i_memory, byte_org+lst_bytes, &emit_byte);
-      len += lst_printf("%02X", emit_byte);
+      pos += lst_printf("%02X ", emit_byte);
+      ++byte_org;
       ++lst_bytes;
     }
   }
   else {    /* non-code pack section */
-    /* list full words as bytes */
-    for (; lst_bytes+1 < bytes_emitted && lst_bytes < 4; lst_bytes+=2) {
-      unsigned short emit_word;
-      state.device.class->i_memory_get(state.i_memory, byte_org+lst_bytes,
-                                       &emit_word);
-      len += lst_printf("%04X ", emit_word);
+    /* list first byte on odd address */
+    if (bytes_emitted && (byte_org & 1) != 0) {
+      unsigned char emit_byte;
+
+      b_memory_get(state.i_memory, byte_org, &emit_byte);
+      pos += lst_printf("%02X ", emit_byte);
+      ++byte_org;
+      ++lst_bytes;
     }
-    if (bytes_emitted < 4) {
-      /* list extra byte if odd */
-      if (lst_bytes < bytes_emitted) {
-        unsigned char emit_byte;
-        b_memory_get(state.i_memory, byte_org+lst_bytes, &emit_byte);
-        len += lst_printf("%02X   ", emit_byte);
-        ++lst_bytes;
-      }
-      else {
-        len += lst_printf("     ");
-      }
+    /* list full words */
+    while (bytes_emitted - lst_bytes > 1 && pos + 5 <= LINENUM_POS) {
+      unsigned short emit_word;
+
+      state.device.class->i_memory_get(state.i_memory, byte_org, &emit_word);
+      pos += lst_printf("%04X ", emit_word);
+      byte_org += 2;
+      lst_bytes += 2;
+    }
+    if (bytes_emitted - lst_bytes == 1 && pos + 3 <= LINENUM_POS) {
+      unsigned char emit_byte;
+
+      b_memory_get(state.i_memory, byte_org, &emit_byte);
+      pos += lst_printf("%02X ", emit_byte);
+      ++byte_org;
+      ++lst_bytes;
     }
   }
 
   /* append appropriate spacing */
-  for(; len < 10; len++) {
-    lst_printf(" ");
-  }
+  lst_spaces(LINENUM_POS - pos);
+
   return lst_bytes;
 }
 
@@ -318,6 +325,9 @@ void lst_format_line(const char *src_line, int value)
   unsigned int byte_org = 0;
   unsigned int bytes_emitted = 0;
   unsigned int lst_bytes;
+  const char *addr_fmt = _16bit_core ? "%06X " : "%04X   ";
+#define ADDR_LEN 7
+  unsigned int pos = 0;
 
   assert(src_line != NULL);
 
@@ -325,18 +335,21 @@ void lst_format_line(const char *src_line, int value)
   case insn:
     emitted = state.org - state.lst.line.was_org;
     break;
+
   case data:
     if (SECTION_FLAGS & STYP_TEXT) {
       /* generate line numbers for data directives in program memory */
       emitted = state.org - state.lst.line.was_org;
     }
     break;
+
   case res:
     if (!IS_RAM_ORG) {
       /* generate line numbers for res directives in program memory */
       emitted = state.org - state.lst.line.was_org;
     }
     break;
+
   default:
     break;
   }
@@ -350,34 +363,40 @@ void lst_format_line(const char *src_line, int value)
   switch (state.lst.line.linetype) {
   case equ:
   case set:
-    lst_printf("  %08X     ", value);
+    pos += lst_printf("  %08X", value);
+    lst_spaces(LINENUM_POS - pos);
     break;
+
   case org:
-    lst_printf("%04X           ", gp_processor_byte_to_org(state.device.class, state.org));
+    pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, state.org));
+    lst_spaces(LINENUM_POS - pos);
     break;
+
   case idlocs:
     /* not used for 16 bit devices, config is used */
     {
       unsigned short id[2];
       state.device.class->i_memory_get(state.i_memory, state.device.id_location, id);
       state.device.class->i_memory_get(state.i_memory, state.device.id_location+2, id+1);
-      lst_printf("%04X %04X %04X ",
-               gp_processor_byte_to_org(state.device.class, gp_processor_id_location(state.processor)),
-               id[0], id[1]);
+      pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, gp_processor_id_location(state.processor)));
+      pos += lst_printf("%04X %04X", id[0], id[1]);
+      lst_spaces(LINENUM_POS - pos);
     }
     break;
+
   case insn:
   case data:
-    byte_org = state.lst.line.was_org;
-    bytes_emitted = emitted;
-    lst_printf("%04X ",
-               gp_processor_byte_to_org(state.device.class, state.lst.line.was_org));
-
-    lst_bytes = lst_data(byte_org, bytes_emitted);
-    byte_org += lst_bytes;
-    bytes_emitted -= lst_bytes;
-
+  case res:
+    {
+      byte_org = state.lst.line.was_org;
+      bytes_emitted = emitted;
+      pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, state.lst.line.was_org));
+      lst_bytes = lst_data(pos, byte_org, bytes_emitted);
+      byte_org += lst_bytes;
+      bytes_emitted -= lst_bytes;
+    }
     break;
+
   case config:
     if(_16bit_core) {
       /* config data is byte addressable, but we only want to print
@@ -387,32 +406,35 @@ void lst_format_line(const char *src_line, int value)
         unsigned short word;
         state.device.class->i_memory_get(state.i_memory,
                                          state.lst.config_address, &word);
-        lst_printf("%06X %04X    ", state.lst.config_address, word);
+        pos += lst_printf("%06X %04X", state.lst.config_address, word);
+        lst_spaces(LINENUM_POS - pos);
       } else if((state.lst.config_address & 0x1) == 0) {
         /* if it is an even address don't print anything */
-        lst_printf("               ");
+        lst_spaces(LINENUM_POS);
       } else {
         unsigned short word;
         state.device.class->i_memory_get(state.i_memory,
                                          state.lst.config_address - 1, &word);
-        lst_printf("%06X %04X    ", state.lst.config_address - 1, word);
+        pos += lst_printf("%06X %04X", state.lst.config_address - 1, word);
+        lst_spaces(LINENUM_POS - pos);
       }
     } else {
       unsigned short word;
       state.device.class->i_memory_get(state.i_memory,
                                        state.lst.config_address, &word);
-      lst_printf("%06X %04X    ",
+      pos += lst_printf("%06X %04X",
                  gp_processor_byte_to_org(state.device.class,
                                           state.lst.config_address),
                  word);
+      lst_spaces(LINENUM_POS - pos);
     }
     break;
-  case res:
+
   case sec:
   case dir:
   case none:
   default:
-    lst_printf("               ");
+    lst_spaces(LINENUM_POS);
     break;
   }
 
@@ -455,15 +477,16 @@ void lst_format_line(const char *src_line, int value)
                                      state.device.id_location + 4, id);
     state.device.class->i_memory_get(state.i_memory,
                                      state.device.id_location + 6, id+1);
-    lst_line("     %04X %04X ", id[0], id[1]);
+    lst_spaces(ADDR_LEN);
+    lst_line("%04X %04X ", id[0], id[1]);
   }
 
   if (bytes_emitted > 0) {
     while (bytes_emitted > 0) {
       /* data left to print on separate lines */
 
-      lst_printf("     ");
-      lst_bytes = lst_data(byte_org, bytes_emitted);
+      pos = lst_spaces(ADDR_LEN);
+      lst_bytes = lst_data(pos, byte_org, bytes_emitted);
       byte_org += lst_bytes;
       bytes_emitted -= lst_bytes;
       lst_eol();
@@ -479,6 +502,8 @@ void lst_symbol_table(struct symbol_table *table)
   int i;
   const char *symbol_format = "%-32s  %08X";
   struct symbol **lst, **ps, *s;
+
+  state.lst.lst_state = in_symtab;
 
   lst_line("SYMBOL TABLE");
   lst_line("%-32s  %-8s", "  LABEL", "  VALUE");
