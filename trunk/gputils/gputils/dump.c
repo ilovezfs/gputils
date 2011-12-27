@@ -3,17 +3,17 @@
    Scott Dattalo
 
 This file is part of gputils.
- 
+
 gputils is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
- 
+
 gputils is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
@@ -73,7 +73,7 @@ char *fget_line(int line, char *s, int size, FILE *pFile)
     lastPos = -1;
   }
 
-  while(line >= ++lastline) 
+  while(line >= ++lastline)
     fgets(s, size, plastFile);
 
   fgets(s, size, plastFile);
@@ -107,15 +107,15 @@ void dump_hex(char *chunk, int length)
       printf("\n%04x:  ",i);
 
       for(j=0; j<16; j++)
-	printf("%02x ",(unsigned char)chunk[i+j]);
+        printf("%02x ",(unsigned char)chunk[i+j]);
 
       printf("   ");
 
       for(j=0; j<16; j++)
-	if(isprint(chunk[i+j]))
-	  putchar(chunk[i+j]);
-	else
-	  putchar('.');
+        if(isprint(chunk[i+j]))
+          putchar(chunk[i+j]);
+        else
+          putchar('.');
 
       i+=16;
     }
@@ -127,7 +127,7 @@ void dump_hex(char *chunk, int length)
 }
 
 /*---------------------------------------------*/
-/* 
+/*
  * ROM usage information
  */
 
@@ -159,29 +159,29 @@ void dump_memmap(proc_class_t proc_class)
       end_block   = gp_getu16(&dbi->dir.block[COD_DIR_MEMMAP+2]);
 
       if(first) {
-	printf("\n\nROM Usage\n");
-	printf("--------------------------------\n");
-	first = 0;
+        printf("\n\nROM Usage\n");
+        printf("--------------------------------\n");
+        first = 0;
       }
       for(j=start_block; j<=end_block; j++) {
 
-	read_block(temp, j);
+        read_block(temp, j);
 
-	for(i=0; i< 128; i++) {
-	  unsigned short start;
-	  unsigned short last;
-	  start = gp_getl16(&temp[i*COD_MAPENTRY_SIZE + COD_MAPTAB_START]);
-	  last = gp_getl16(&temp[i*COD_MAPENTRY_SIZE + COD_MAPTAB_LAST]);
+        for(i=0; i< 128; i++) {
+          unsigned short start;
+          unsigned short last;
+          start = gp_getl16(&temp[i*COD_MAPENTRY_SIZE + COD_MAPTAB_START]);
+          last = gp_getl16(&temp[i*COD_MAPENTRY_SIZE + COD_MAPTAB_LAST]);
 
-	  if( !((start == 0) && (last == 0) ))
-	    printf("using ROM 0x%06x to 0x%06x\n",
-		   gp_processor_byte_to_org(proc_class, _64k_base+start),
-		   gp_processor_byte_to_org(proc_class, _64k_base+last+1)-1);
-	}
+          if( !((start == 0) && (last == 0) ))
+            printf("using ROM 0x%06x to 0x%06x\n",
+                   gp_processor_byte_to_org(proc_class, _64k_base+start),
+                   gp_processor_byte_to_org(proc_class, _64k_base+last+1)-1);
+        }
       }
     } else if(first)
       printf("    No ROM usage information available.\n");
-    
+
     dbi = dbi->next_dir_block_info;
 
   } while(dbi);
@@ -189,7 +189,7 @@ void dump_memmap(proc_class_t proc_class)
 
 /*---------------------------------------------*/
 /*
- * Dump all of the machine code in the .cod file 
+ * Dump all of the machine code in the .cod file
  */
 
 void dump_code(proc_class_t proc_class)
@@ -210,28 +210,28 @@ void dump_code(proc_class_t proc_class)
     for (k = 0; k <= 127; k++) {
       index = gp_getu16(&dbi->dir.block[2*(COD_DIR_CODE + k)]);
       if (index != 0) {
-	read_block(temp, index);
+        read_block(temp, index);
 
-	printf("\n");
+        printf("\n");
 
-	i = 0;
-	do {
+        i = 0;
+        do {
 
-	  for(j=0, all_zero_line=1; j<8; j++)
-	    if( gp_getu16(&temp[(i+j)*2]) ) all_zero_line = 0;
+          for(j=0, all_zero_line=1; j<8; j++)
+            if( gp_getu16(&temp[(i+j)*2]) ) all_zero_line = 0;
 
-	  if(all_zero_line)
-	    i+=8;
-	  else {
-	    printf("\n%06x:  ", gp_processor_byte_to_org(proc_class, _64k_base+2*(i+k*256)));
+          if(all_zero_line)
+            i+=8;
+          else {
+            printf("\n%06x:  ", gp_processor_byte_to_org(proc_class, _64k_base+2*(i+k*256)));
 
-	    for(j=0; j<8; j++)
-	      printf("%04x ",gp_getu16(&temp[2*i++]));
-	  }
+            for(j=0; j<8; j++)
+              printf("%04x ",gp_getu16(&temp[2*i++]));
+          }
 
-	}while (i<COD_BLOCK_SIZE/2);
+        }while (i<COD_BLOCK_SIZE/2);
 
-	printf("\n");
+        printf("\n");
       }
     }
     dbi = dbi->next_dir_block_info;
@@ -242,7 +242,7 @@ void dump_code(proc_class_t proc_class)
 
 /*---------------------------------------------*/
 /*
- * Dump all of the (short) Symbol Table stuff in the .cod file 
+ * Dump all of the (short) Symbol Table stuff in the .cod file
  */
 
 
@@ -274,12 +274,12 @@ void dump_symbols( void )
 
       for(i=0; i<SYMBOLS_PER_BLOCK; i++) {
 
-	if(temp[i*SSYMBOL_SIZE + SR_NAME])
-	  printf("%s = %x, type = %s\n",
-		 substr(b, sizeof(b), &temp[i*SSYMBOL_SIZE + SR_NAME],12), 
-		 gp_getu16(&temp[i*SSYMBOL_SIZE + SR_VALUE]), 
-		 SymbolType4[(unsigned char)temp[i*SSYMBOL_SIZE + SR_TYPE]]
-		 );
+        if(temp[i*SSYMBOL_SIZE + SR_NAME])
+          printf("%s = %x, type = %s\n",
+                 substr(b, sizeof(b), &temp[i*SSYMBOL_SIZE + SR_NAME],12),
+                 gp_getu16(&temp[i*SSYMBOL_SIZE + SR_VALUE]),
+                 SymbolType4[(unsigned char)temp[i*SSYMBOL_SIZE + SR_TYPE]]
+                 );
       }
     }
   }
@@ -291,7 +291,7 @@ void dump_symbols( void )
 /*---------------------------------------------*/
 
 /*
- * Dump all of the Long Symbol Table stuff in the .cod file 
+ * Dump all of the Long Symbol Table stuff in the .cod file
  */
 
 void dump_lsymbols( void )
@@ -315,23 +315,23 @@ void dump_lsymbols( void )
       read_block(temp, j);
 
       for(i=0; i<COD_BLOCK_SIZE;) {
-	s =  &temp[i];
+        s =  &temp[i];
 
-	if(*s==0)
-	  break;
+        if(*s==0)
+          break;
 
-	length = *s;
-	type  = gp_getl16(&s[length+1]);
-	if(type>128)
-	  type = 0;
-	/* read big endian */
-	value = gp_getb32(&s[length+3]);
+        length = *s;
+        type  = gp_getl16(&s[length+1]);
+        if(type>128)
+          type = 0;
+        /* read big endian */
+        value = gp_getb32(&s[length+3]);
 
-	printf("%s = %x, type = %s\n",
-	       substr(b, sizeof(b), &s[1],length),
-	       value,
-	       SymbolType4[type]);
-	i += (length + 7);
+        printf("%s = %x, type = %s\n",
+               substr(b, sizeof(b), &s[1],length),
+               value,
+               SymbolType4[type]);
+        i += (length + 7);
       }
     }
   }else
@@ -367,28 +367,28 @@ void dump_source_files( void )
 
       for(i=0; i<FILES_PER_BLOCK; i++) {
 
-	offset = i*FILE_SIZE;
-	substr(b, sizeof(b), &temp[offset+1],FILE_SIZE);
+        offset = i*FILE_SIZE;
+        substr(b, sizeof(b), &temp[offset+1],FILE_SIZE);
 
-	if(temp[offset]) {
-	  source_file_names[number_of_source_files] = strdup(b);
-	  if (!source_file_names[number_of_source_files]) {
-	    fprintf(stderr, " system error\n");
-	    exit(1);
-          }
-	  printf("%s\n",source_file_names[number_of_source_files]);
-	  source_files[number_of_source_files] = 
-	    fopen(source_file_names[number_of_source_files],"rt");
-	  if (source_files[number_of_source_files] == NULL) {
-	    perror(source_file_names[number_of_source_files]);
-	    exit(1);
-	  }
-	  number_of_source_files++;
-	  if (number_of_source_files >= MAX_SOURCE_FILES) {
-	    fprintf(stderr, " too many source files; increase MAX_SOURCE_FILES and recompile\n");
+        if(temp[offset]) {
+          source_file_names[number_of_source_files] = strdup(b);
+          if (!source_file_names[number_of_source_files]) {
+            fprintf(stderr, " system error\n");
             exit(1);
-	  }
-	}
+          }
+          printf("%s\n",source_file_names[number_of_source_files]);
+          source_files[number_of_source_files] =
+            fopen(source_file_names[number_of_source_files],"rt");
+          if (source_files[number_of_source_files] == NULL) {
+            perror(source_file_names[number_of_source_files]);
+            exit(1);
+          }
+          number_of_source_files++;
+          if (number_of_source_files >= MAX_SOURCE_FILES) {
+            fprintf(stderr, " too many source files; increase MAX_SOURCE_FILES and recompile\n");
+            exit(1);
+          }
+        }
       }
     }
   }else
@@ -448,22 +448,22 @@ void dump_line_symbols(void)
         sline = gp_getl16((unsigned char *)&ls[i].sline);
         sloc = gp_getl16((unsigned char *)&ls[i].sloc);
 
-	if((ls[i].smod & 4) == 0) {
-	  assert(ls[i].sfile < number_of_source_files);
-	  printf(" %5d  %5d %06X   %2x %s   %-50s\n",
-		 lst_line_number++,
-		 sline,
-		 sloc,
-		 ls[i].smod,
-		 smod_flags(ls[i].smod),
-		 source_file_names[ls[i].sfile]);
-	}
-	if(source_files[ls[i].sfile] && (sline != last_src_line)) {
-	  /*fgets(buf, sizeof(buf), source_files[ls[i].sfile]);*/
-	  fget_line(sline, buf, sizeof(buf), source_files[ls[i].sfile]);
-	  printf("%s",buf);
-	}
-	last_src_line = sline;
+        if((ls[i].smod & 4) == 0) {
+          assert(ls[i].sfile < number_of_source_files);
+          printf(" %5d  %5d %06X   %2x %s   %-50s\n",
+                 lst_line_number++,
+                 sline,
+                 sloc,
+                 ls[i].smod,
+                 smod_flags(ls[i].smod),
+                 source_file_names[ls[i].sfile]);
+        }
+        if(source_files[ls[i].sfile] && (sline != last_src_line)) {
+          /*fgets(buf, sizeof(buf), source_files[ls[i].sfile]);*/
+          fget_line(sline, buf, sizeof(buf), source_files[ls[i].sfile]);
+          printf("%s",buf);
+        }
+        last_src_line = sline;
       }
     }
   } else
@@ -479,7 +479,7 @@ void dump_message_area(void)
 #define MAX_STRING_LEN  255 /* Maximum length of a debug message */
   char DebugType,DebugMessage[MAX_STRING_LEN];
 
-  unsigned short i,j,start_block,end_block, len;
+  unsigned short i,j,start_block,end_block;
   unsigned short laddress;
 
   start_block = gp_getu16(&directory_block_data[COD_DIR_MESSTAB]);
@@ -494,36 +494,34 @@ void dump_message_area(void)
 
     for(i=start_block; i<=end_block; i++) {
       read_block(temp, i);
-    
+
       j = 0;
 
       while (j < 504) {
 
-	/* read big endian */
-	laddress = gp_getb32(&temp[j]);
-        
+        /* read big endian */
+        laddress = gp_getb32(&temp[j]);
+
         j += 4;
 
-	DebugType = temp[j++];
+        DebugType = temp[j++];
 
-	if (DebugType == 0) {
-	  break;
-	}
+        if (DebugType == 0) {
+          break;
+        }
 
-	len = temp[j++];
+        substr(DebugMessage, sizeof(DebugMessage), &temp[j], MAX_STRING_LEN);
+        j += strlen(DebugMessage);
 
-	substr(DebugMessage, sizeof(DebugMessage), &temp[j], MAX_STRING_LEN);
-	j += strlen(DebugMessage);
-
-	printf(" %8x    %c  %s\n",laddress, DebugType, DebugMessage);
+        printf(" %8x    %c  %s\n",laddress, DebugType, DebugMessage);
       }
     }
   } else
     printf("    No Debug Message information available.\n");
-    
+
 }
 /*---------------------------------------------*/
-/* 
+/*
  * Display the local symbol table information
  */
 
@@ -581,13 +579,13 @@ void dump_local_vars(proc_class_t proc_class)
             stop = gp_getl32(&sh[COD_SSYMBOL_STOP]);
             printf("Local symbols between %06x and %06x:  ",
                    gp_processor_byte_to_org(proc_class, start),
-		   gp_processor_byte_to_org(proc_class, stop+1)-1);
-	  } else {
+                   gp_processor_byte_to_org(proc_class, stop+1)-1);
+          } else {
             printf("%.12s = 0x%x, type = %s\n", &sh[COD_SSYMBOL_NAME],
                    gp_getl16(&sh[COD_SSYMBOL_SVALUE]),
                    SymbolType4[(int)sh[COD_SSYMBOL_STYPE]]);
-	  }
-	}
+          }
+        }
       }
     }
   }else

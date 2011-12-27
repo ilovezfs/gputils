@@ -405,6 +405,12 @@ assemble(void)
     state.radix = 16;
   state.obj.symbol_num = 0;
   state.obj.section_num = 0;
+
+  /* Initial section for absolute mode */
+  if (state.mode == absolute) {
+    state.obj.new_sec_flags = STYP_TEXT;
+  }
+
   state.found_config = false;
   state.found_devid = false;
   state.found_idlocs = false;

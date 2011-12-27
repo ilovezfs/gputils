@@ -33,7 +33,8 @@ linearmem - used for linear RAM access
 */
 
 enum section_type {
-  accessbank = 1,
+  sect_none = 0,
+  accessbank,
   codepage,
   databank,
   sharebank,

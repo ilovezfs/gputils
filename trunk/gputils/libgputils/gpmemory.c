@@ -217,13 +217,8 @@ int b_memory_used(MemBlock *m)
 {
   int bytes=0;
   int i;
-  int maximum;
 
   while(m) {
-    i = m->base << I_MEM_BITS;
-
-    maximum = i + MAX_I_MEM;
-
     for (i = 0; i < MAX_I_MEM; ++i) {
       if (m->memory[i & I_MEM_MASK] & BYTE_USED_MASK)
         bytes++;

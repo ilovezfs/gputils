@@ -1,4 +1,12 @@
-2011-12-23  Borut Razem  <borutr@users.sourceforge.net>
+2011-12-27  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/lst.c, gpasm/gpasm.c, gpasm/directive.c, gpasm/gperror.c,
+    gpasm/gpasm.h: make listing more compatible with MPASM
+  * gplink/script.c, gputils/gpvc.c, gputils/dump.c, gputils/block.c,
+    libgputils/gpmemory.c, libgputils/gpcofflink.h:
+    fixed warnings: variable set but not used
+  * gpasm/parse.y: fixed identation
+
+2011-12-24  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/parse.y, gpasm/gpasm.c, gpasm/gpasm.h, gpasm/directive.c,
     gpasm/scan.h, gpasm/scan.l:
     proper "end" line handling, include the "end" line in the asm listing

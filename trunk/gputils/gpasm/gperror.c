@@ -182,13 +182,13 @@ void gperror(unsigned int code,
     /* standard output */
     if (!state.quiet) {
       if (state.src)
-        printf("%s:%d:Error [%03d] %s\n",
+        printf("%s:%d:Error[%03d]   %s\n",
          state.src->name,
          state.src->line_number,
          code,
          message);
       else
-        printf("Error [%03d] %s\n",
+        printf("Error[%03d]   %s\n",
          code,
          message);
     }
@@ -197,7 +197,7 @@ void gperror(unsigned int code,
 #endif
 
     /* list file output */
-    lst_line("Error [%03d] : %s",
+    lst_line("Error[%03d]  : %s",
        code,
        message);
 
@@ -266,13 +266,13 @@ void gpwarning(unsigned int code,
       /* standard output */
       if (!state.quiet) {
         if (state.src)
-          printf("%s:%d:Warning [%03d] %s\n",
+          printf("%s:%d:Warning[%03d] %s\n",
      state.src->name,
      state.src->line_number,
      code,
      message);
         else
-          printf("Warning [%03d] %s\n",
+          printf("Warning[%03d] %s\n",
      code,
      message);
       }
@@ -281,7 +281,7 @@ void gpwarning(unsigned int code,
 #endif
 
       /* list file output */
-      lst_line("Warning [%03d] : %s",
+      lst_line("Warning[%03d]: %s",
          code,
          message);
 
@@ -342,13 +342,13 @@ void gpmessage(unsigned int code,
       /* standard output */
       if (!state.quiet) {
         if (state.src)
-          printf("%s:%d:Message [%03d] %s\n",
+          printf("%s:%d:Message[%03d] %s\n",
      state.src->name,
      state.src->line_number,
      code,
      message);
         else
-          printf("Message [%03d] %s\n",
+          printf("Message[%03d] %s\n",
      code,
      message);
       }
@@ -357,7 +357,7 @@ void gpmessage(unsigned int code,
 #endif
 
       /* list file output */
-      lst_line("Message [%03d] : %s",
+      lst_line("Message[%03d]: %s",
                code,
                message);
 

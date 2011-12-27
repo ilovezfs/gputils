@@ -164,6 +164,10 @@ extern struct gpasm_state {
       line_number,              /*   What line are we at within the file */
       memorymap,                /*   Memory Map dump enabled */
       symboltable;              /*   Symbol table dump enabled */
+      enum { in_none,
+             in_mem,
+             in_symtab }
+        lst_state;              /*   Listing state */
     struct {
       unsigned int was_org;     /*   value of state.org at start of line */
                                 /*   What kind of line was it? */
