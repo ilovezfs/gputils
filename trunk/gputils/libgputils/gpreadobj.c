@@ -55,6 +55,7 @@ gp_read_file(const char *filename)
 {
   FILE *infile;
   gp_binary_type *file;
+  struct stat statbuf;
 
   infile = fopen(filename,"rb");
   if (infile == NULL) {
@@ -65,9 +66,8 @@ gp_read_file(const char *filename)
   file = (gp_binary_type *)malloc(sizeof(*file));
 
   /* determine the size of the file */
-  fseek(infile, 0, SEEK_END);
-  file->size = ftell(infile);
-  rewind(infile);
+  fstat(fileno(infile), &statbuf);
+  file->size = statbuf.st_size;
 
   /* read the object file into memory */
   file->file = (unsigned char *)malloc(file->size);
@@ -212,7 +212,8 @@ _read_section_header(gp_object_type *object,
   section->symbol = gp_coffgen_findsymbol(object, section->name);
 
   section->address = gp_getl32(&file[8]);
-  if (section->address != gp_getl32(&file[12]))
+  section->virtual_address = gp_getl32(&file[12]);
+  if (section->address != section->virtual_address)
     gp_error("virtual address does not equal physical address in \"%s\"",
              object->filename);
 
