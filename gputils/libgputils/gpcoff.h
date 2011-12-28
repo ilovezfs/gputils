@@ -80,7 +80,7 @@ struct opthdr
 struct scnhdr
 {
   union {
-    char            name[8];   /* section name if less then 8 characters */
+    char          name[8];   /* section name if less then 8 characters */
     struct {
       unsigned long s_zeros;   /* first four characters are 0 */
       unsigned long s_offset;  /* pointer to the string table */
@@ -127,8 +127,8 @@ struct scnhdr
 /* relocation entry */
 struct reloc
 {
-  unsigned long            r_vaddr;     /* entry relative virtual address */
-  unsigned long            r_symndx;    /* index into symbol table */
+  unsigned long   r_vaddr;     /* entry relative virtual address */
+  unsigned long   r_symndx;    /* index into symbol table */
   short           r_offset;    /* offset to be added to address of symbol
                                   'r_symndx' */
   unsigned short  r_type;      /* relocation type */
@@ -567,8 +567,11 @@ typedef struct gp_section_type
   /* flags */
   unsigned long flags;
 
-  /* section address in bytes */
+  /* section physical address in bytes */
   unsigned int address;
+
+  /* section virtual address in bytes */
+  unsigned int virtual_address;
 
   /* section shadow address in bytes */
   unsigned int shadow_address;

@@ -28,13 +28,32 @@ struct gpvo_state state;
 
 void print_header(gp_object_type *object)
 {
+#define NELEM(x)  (sizeof(x) / sizeof(*(x)))
+
+  static struct magic_s {
+    unsigned short magic_num;
+    const char *magic_name;
+  } magic[] = {
+    { 0x1234, "MICROCHIP_MAGIC_v1" },
+    { 0x1240, "MICROCHIP_MAGIC_v2" }
+  };
+
   char *time = ctime(&object->time);
   const char *processor_name = gp_processor_name(object->processor, 2);
+  int i;
 
   /* strip the newline from time */
   time[strlen(time)-1] = '\0';
 
   printf("COFF File and Optional Headers\n");
+
+  for (i = 0; i < NELEM(magic); ++i) {
+    if (magic[i].magic_num == object->version) {
+      break;
+    }
+  }
+  printf("COFF version         %#x: %s\n", object->version,
+         (i < NELEM(magic)) ? magic[i].magic_name : "unknown");
   printf("Processor Type       %s\n",   processor_name);
   printf("Time Stamp           %s\n",   time);
   printf("Number of Sections   %li\n",  object->num_sections);
@@ -64,7 +83,6 @@ void print_header(gp_object_type *object)
   }
 
   printf("\n");
-  return;
 }
 
 void print_reloc_list(proc_class_t class, gp_reloc_type *relocation)
@@ -85,7 +103,6 @@ void print_reloc_list(proc_class_t class, gp_reloc_type *relocation)
   }
 
   printf("\n");
-
 }
 
 void print_linenum_list(proc_class_t class, gp_linenum_type *linenumber)
@@ -111,7 +128,6 @@ void print_linenum_list(proc_class_t class, gp_linenum_type *linenumber)
   }
 
   printf("\n");
-
 }
 
 void print_data(proc_class_t class, gp_section_type *section)
@@ -157,7 +173,6 @@ void print_data(proc_class_t class, gp_section_type *section)
     }
   }
   printf("\n");
-
 }
 
 void print_sec_header(proc_class_t class, gp_section_type *section)
@@ -171,7 +186,8 @@ void print_sec_header(proc_class_t class, gp_section_type *section)
 
   printf("Section Header\n");
   printf("Name                    %s\n",   section->name);
-  printf("Address                 %#x\n", gp_byte_to_org(org_to_byte_shift, section->address));
+  printf("Physical address        %#x\n",  gp_byte_to_org(org_to_byte_shift, section->address));
+  printf("Virtual address         %#x\n",  gp_byte_to_org(org_to_byte_shift, section->virtual_address));
   printf("Size of Section         %li\n",  section->size);
   printf("Number of Relocations   %i\n",   section->num_reloc);
   printf("Number of Line Numbers  %i\n",   section->num_lineno);
@@ -205,7 +221,6 @@ void print_sec_header(proc_class_t class, gp_section_type *section)
   }
 
   printf("\n");
-
 }
 
 void print_sec_list(gp_object_type *object)
@@ -227,12 +242,10 @@ void print_sec_list(gp_object_type *object)
 
     section = section->next;
   }
-
 }
 
 void coff_type(int type, char *buffer, size_t sizeof_buffer)
 {
-
   switch (type) {
   case T_NULL:
     /* null */
@@ -314,7 +327,6 @@ void coff_type(int type, char *buffer, size_t sizeof_buffer)
     snprintf(buffer, sizeof_buffer, "unknown(%d)", type);
     break;
   }
-
 }
 
 static const char *format_sym_type(int type, char *buffer, size_t sizeof_buffer)
@@ -504,8 +516,6 @@ void print_sym_table (gp_object_type *object)
   }
 
   printf("\n");
-
-  return;
 }
 
 void export_sym_table(gp_object_type *object)
@@ -529,7 +539,6 @@ void export_sym_table(gp_object_type *object)
 
     symbol = symbol->next;
   }
-
 }
 
 void print_binary(unsigned char *data, long int file_size)
@@ -569,8 +578,6 @@ void print_binary(unsigned char *data, long int file_size)
   }
 
   printf("\n\n");
-
-  return;
 }
 
 void show_usage(void)
@@ -731,5 +738,4 @@ int main(int argc, char *argv[])
   }
 
   return EXIT_SUCCESS;
-
 }
