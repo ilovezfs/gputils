@@ -31,7 +31,6 @@ void directory_block(void)
   char temp_buf[256];
   unsigned char *block;
   char *processor_name;
-  const struct px *processor_info;
   int time;
   int bytes_for_address;
 
@@ -61,8 +60,6 @@ void directory_block(void)
                           &block[COD_DIR_PROCESSOR],
                           8);
   printf("Processor         %s\n", processor_name);
-
-  processor_info = gp_find_processor(processor_name);
 
   bytes_for_address = gp_getl16(&block[COD_DIR_ADDRSIZE]);
   printf("Bytes for address: %d\n", bytes_for_address);
