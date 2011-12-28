@@ -2,6 +2,7 @@
   * include/stdhdr.h, gputils/gpvo.c, libgputils/gpcoff.h,
     libgputils/gpreadobj.c: gpvo shows additional info:
     COFF version, section header Virtual address
+  * gputils/block.c: fixed warning: variable set but not used
 
 2011-12-27  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/lst.c, gpasm/gpasm.c, gpasm/directive.c, gpasm/gperror.c,
