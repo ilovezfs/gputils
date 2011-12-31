@@ -51,8 +51,6 @@ coff_init(void)
       state.obj.enabled = true;
     }
   }
-
-  return;
 }
 
 static void
@@ -82,8 +80,6 @@ _update_section_size(void)
     (state.org - state.obj.section->address);
 
   _update_section_symbol(state.obj.section);
-
-  return;
 }
 
 static void
@@ -108,8 +104,6 @@ _update_reloc_ptr(void)
     }
     section = section->next;
   }
-
-  return;
 }
 
 /* FIXME: Now that gpasm stores bytes, this should go away. */
@@ -139,14 +133,29 @@ _copy_config(void)
     assert(config_section != NULL);
 
     start = gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[0]);
-    stop = gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[1]+1);
+    stop = gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[1] + 1);
+    /* find the last used byte */
+    {
+      int first_used = stop, last_used = start;
+
+      for (i = start; i < stop; ++i)
+        if (b_memory_get(state.c_memory, i, &byte)) {
+          if (first_used == stop)
+            first_used = i;
+          last_used = i;
+        }
+      /* stop and start should be at even address */
+      start = first_used & ~1;
+      stop = (last_used + 2) & ~1;
+    }
+    config_section->shadow_address = config_section->address = start;
     config_section->size = stop - start;
-    for (i = start; i <= stop; i++) {
+    for (i = start; i < stop; i++) {
       if (b_memory_get(state.c_memory, i, &byte)) {
         b_memory_put(config_section->data, i, byte);
       } else {
-        /* fill undefined configuration registers with 0xff */
-        b_memory_put(config_section->data, i, 0xff);
+        /* fill undefined configuration registers with core_size mask */
+        b_memory_put(config_section->data, i, (i & 1) ? state.device.class->core_size >> 8 : state.device.class->core_size);
       }
     }
     _update_section_symbol(config_section);
@@ -211,8 +220,6 @@ _copy_config(void)
 
     _update_section_symbol(config_section);
   }
-
-  return;
 }
 
 void
@@ -304,8 +311,6 @@ coff_new_section(const char *name, int addr, int flags)
 
   state.i_memory = state.obj.section->data;
   state.org = addr;
-
-  return;
 }
 
 /* All coff data is generated on the second pass.  To support forward
@@ -329,8 +334,6 @@ coff_reloc(int symbol, short offset, unsigned short type)
   new->symbol_number = symbol;
   new->offset        = offset;
   new->type          = type;
-
-  return;
 }
 
 void
@@ -372,8 +375,6 @@ coff_linenum(int emitted)
 
     new->address = origin + i;
   }
-
-  return;
 }
 
 /* Add a symbol to the coff symbol table.  The calling function must
@@ -504,8 +505,6 @@ coff_add_eofsym(void)
   new->section        = NULL;
   new->type           = T_NULL;
   new->class          = C_EOF;
-
-  return;
 }
 
 /* add an eof symbol to the coff symbol table */
@@ -531,8 +530,6 @@ coff_add_listsym(void)
   new->section        = NULL;
   new->type           = T_NULL;
   new->class          = C_LIST;
-
-  return;
 }
 
 void
@@ -556,8 +553,6 @@ coff_add_nolistsym(void)
   new->section        = NULL;
   new->type           = T_NULL;
   new->class          = C_LIST;
-
-  return;
 }
 
 /* add a direct symbol to the coff symbol table */
@@ -613,8 +608,6 @@ coff_add_identsym(const char *string)
   new_aux = gp_coffgen_addaux(state.obj.object, new);
   new_aux->type = AUX_IDENT;
   new_aux->_aux_symbol._aux_ident.string = strdup(string);
-
-  return;
 }
 
 /* If the symbol is local, generate a modified name for the coff symbol
@@ -646,5 +639,4 @@ coff_local_name(const char *name)
   }
 
   return strdup(buffer);
-
 }

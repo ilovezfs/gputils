@@ -1,4 +1,13 @@
 2011-12-31  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/lst.c, libgputils/gpmemory.c, libgputils/gpmemory.h:
+    properly count program memory usage: exclude config words for
+    non-pic16 devices
+  * gpasm/evaluate.c: untabification
+  * gpasm/coff.c: don't emit undefined config words id they are outside
+    the defined block; mask emitted config words with core_size. This
+    probably fixes the bug #3373747: gpasm/gplink not working for
+    pic16f88 since 0.13.5
+  * gpasm/directive.c: removed unnecessary returns
 
 2011-12-28  Borut Razem  <borutr@users.sourceforge.net>
   * include/stdhdr.h, gputils/gpvo.c, libgputils/gpcoff.h,
