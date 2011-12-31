@@ -19,6 +19,8 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
+#include <limits.h>
+
 #include "stdhdr.h"
 #include "libgputils.h"
 
@@ -213,20 +215,33 @@ void b_memory_clear(MemBlock *m, unsigned int address)
   } while(m);
 }
 
-int b_memory_used(MemBlock *m)
+int b_range_memory_used(MemBlock *m, int from, int to)
 {
-  int bytes=0;
-  int i;
+  int i, j = 0, page = 0, bytes = 0;
 
-  while(m) {
-    for (i = 0; i < MAX_I_MEM; ++i) {
-      if (m->memory[i & I_MEM_MASK] & BYTE_USED_MASK)
-        bytes++;
+  /* find the starting page */
+  while (m && (page < from / MAX_I_MEM)) {
+    j += MAX_I_MEM;
+    m = m->next;
+  }
+
+  /* count used bytes */
+  while (m && j < to) {
+    for (i = 0; i < MAX_I_MEM && j < to; ++i) {
+      if (m->memory[i & I_MEM_MASK] & BYTE_USED_MASK) {
+        ++bytes;
+      }
+      ++j;
     }
     m = m->next;
   }
 
   return bytes;
+}
+
+int b_memory_used(MemBlock *m)
+{
+  return b_range_memory_used(m, 0, INT_MAX);
 }
 
 /************************************************************************

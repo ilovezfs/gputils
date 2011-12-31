@@ -53,6 +53,7 @@ int b_memory_get(MemBlock *m, unsigned int byte_address, unsigned char *byte);
 #endif
 void b_memory_put(MemBlock *b_memory, unsigned int byte_address, unsigned char value);
 void b_memory_clear(MemBlock *b_memory, unsigned int byte_address);
+int b_range_memory_used(MemBlock *m, int from, int to);
 int b_memory_used(MemBlock *m);
 struct proc_class;
 void print_i_memory(MemBlock *m, const struct proc_class *class);
