@@ -8,6 +8,13 @@
     probably fixes the bug #3373747: gpasm/gplink not working for
     pic16f88 since 0.13.5
   * gpasm/directive.c: removed unnecessary returns
+  * gpasm/gpasm.c, doc/gputils.lyx:
+    use the new Microchip COFF format by default
+  * libgputils/gpprocessor.h, gpasm/directive.c, gpasm/parse.y,
+    gpasm/lst.c, gpasm/processor.c, gpasm/evaluate.c, gpasm/coff.c:
+    _16bit_core replaced by IS_16BIT_CORE
+  * doc/gputils.lyx, gpasm/gperror.c, gpasm/gperror.h:
+    updated errors, warnings and messages
 
 2011-12-28  Borut Razem  <borutr@users.sourceforge.net>
   * include/stdhdr.h, gputils/gpvo.c, libgputils/gpcoff.h,

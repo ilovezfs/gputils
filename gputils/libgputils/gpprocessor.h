@@ -43,19 +43,19 @@ struct proc_class {
 
   /* Set the bank bits, return the number of instructions required. */
   int (*set_bank)(int num_banks,
-		  int bank,
-		  MemBlock *m,
-		  unsigned int address);
+                  int bank,
+                  MemBlock *m,
+                  unsigned int address);
 
   /* Determine which page of program memory the address is located */
   int (*check_page)(unsigned int address);
 
   /* Set the page bits, return the number of instructions required. */
   int (*set_page)(int num_pages,
-		  int page,
-		  MemBlock *m, 
-		  unsigned int address,
-		  int use_wreg);
+                  int page,
+                  MemBlock *m,
+                  unsigned int address,
+                  int use_wreg);
 
   /* These return the bits to set in instruction for given address */
   int (*reloc_call)(unsigned int address);
@@ -94,6 +94,9 @@ extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices 
 #define PROC_CLASS_PIC14E (&proc_class_pic14e)
 #define PROC_CLASS_PIC16 (&proc_class_pic16)
 #define PROC_CLASS_PIC16E (&proc_class_pic16e)
+
+/* The 16bit core is handled differently in some instances. */
+#define IS_16BIT_CORE (state.device.class == PROC_CLASS_PIC16E)
 
 typedef const struct px *pic_processor_t;
 #define no_processor ((const struct px *)0)
@@ -164,16 +167,16 @@ unsigned int gp_processor_id_location(pic_processor_t processor);
 int gp_processor_rom_width(proc_class_t class);
 int gp_processor_check_page(proc_class_t class, unsigned int address);
 int gp_processor_check_bank(proc_class_t class, unsigned int address);
-int gp_processor_set_page(proc_class_t class, 
+int gp_processor_set_page(proc_class_t class,
                           int num_pages,
                           int page,
-                          MemBlock *m, 
+                          MemBlock *m,
                           unsigned int address,
                           int use_wreg);
-int gp_processor_set_bank(proc_class_t class, 
+int gp_processor_set_bank(proc_class_t class,
                           int num_banks,
                           int bank,
-                          MemBlock *m, 
+                          MemBlock *m,
                           unsigned int address);
 
 int gp_processor_retlw(proc_class_t class);

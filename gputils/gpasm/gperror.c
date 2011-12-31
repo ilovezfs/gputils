@@ -83,12 +83,12 @@ char *gp_geterror(unsigned int code)
 {
 
   switch(code) {
+  case GPE_BADCHAR:
+    return "Illegal character.";
   case GPE_OPENPAR:
     return "Unmatched (";
   case GPE_CLOSEPAR:
     return "Unmatched )";
-  case GPE_BADCHAR:
-    return "Illegal character.";
   case GPE_NOSYM:
     return "Symbol not previously defined.";
   case GPE_DIVBY0:
@@ -98,7 +98,7 @@ char *gp_geterror(unsigned int code)
   case GPE_DIFFLAB:
     return "Address label duplicated or different in second pass.";
   case GPE_ADDROVF:
-    return "Address wrapped around 0. ";
+    return "Address wrapped around 0.";
   case GPE_ADDROVR:
     return "Overwriting previous address contents.";
   case GPE_BAD_CALL_ADDR:
@@ -244,10 +244,10 @@ char *gp_getwarning(unsigned int code)
     return "Redefining processor.";
   case GPW_NOT_RECOMMENDED:
     return "Use of this instruction is not recommended.";
-  case GPW_INVALID_ROM:
-    return "Invalid ROM location specified.";
   case GPW_WORD_ALIGNED:
     return "Destination address must be word aligned.";
+  case GPW_INVALID_ROM:
+    return "Invalid ROM location specified.";
   default:
     return "UNKNOWN";
   }

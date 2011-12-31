@@ -126,7 +126,7 @@ init(void)
   state.dep.enabled = false;
   state.lst.enabled = false;
   state.obj.enabled = false;
-  state.obj.newcoff = 0;
+  state.obj.newcoff = 1;  /* use new Microchip COFF format by default */
 
   state.obj.object = NULL;
   state.obj.section = NULL;
@@ -158,7 +158,7 @@ show_usage(void)
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -a FMT, --hex-format FMT       Select hex file format. [inhx32]\n");
   printf("  -c, --object                   Output relocatable object.\n");
-  printf("  -C, --new-coff                 Use new Microchip format.\n");
+  printf("  -C, --old-coff                 Use old Microchip COFF format.\n");
   printf("  -d, --debug                    Output debug messages.\n");
   printf("  -D SYM=VAL, --define SYM=VAL   Define SYM with value VAL.\n");
   printf("  -e [ON|OFF], --expand [ON|OFF] Macro expansion.\n");
@@ -239,7 +239,7 @@ process_args( int argc, char *argv[])
       state.objfile = normal;
       break;
     case 'C':
-      state.obj.newcoff = 1;
+      state.obj.newcoff = 0;
       break;
     case 'd':
       gp_debug_disable = false;

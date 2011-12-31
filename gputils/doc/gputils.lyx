@@ -1,21 +1,29 @@
-#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
-\lyxformat 345
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
 \use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding default
+\fontencoding global
 \font_roman times
 \font_sans default
 \font_typewriter default
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
 
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \paperfontsize 10
 \spacing single
 \use_hyperref false
@@ -23,23 +31,33 @@
 \use_geometry true
 \use_amsmath 1
 \use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \leftmargin 34mm
 \rightmargin 34mm
 \secnumdepth 2
 \tocdepth 2
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
@@ -90,7 +108,7 @@ This document is part of gputils.
 \begin_layout Standard
 gputils is free software; you can redistribute it and/or modify it under
  the terms of the 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -100,7 +118,7 @@ GNU
 \end_inset
 
 GNU General Public 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -116,7 +134,7 @@ License as published by the Free Software Foundation; either version 2,
 \begin_layout Standard
 gputils is distributed in the hope that it will be useful, but WITHOUT ANY
  
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -589,7 +607,7 @@ gpasm
 
 \begin_layout Section
 Running gpasm
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -624,7 +642,7 @@ Where options can be one of:
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="24" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
 <row>
@@ -662,7 +680,7 @@ Meaning
 
 \begin_layout Plain Layout
 Produce 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -711,7 +729,7 @@ Output a relocatable object in the older version of the Microchip COFF format
 \begin_inset Text
 
 \begin_layout Plain Layout
-Output a relocatable object in the new Microchip COFF format
+Output a relocatable object in the old Microchip COFF format
 \end_layout
 
 \end_inset
@@ -839,7 +857,7 @@ Display the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -1067,7 +1085,7 @@ Quiet
 
 \begin_layout Plain Layout
 Set the 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -1282,7 +1300,7 @@ make
 \end_inset
 
 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -1347,7 +1365,7 @@ treedef.inc
 
 \begin_layout Subsection
 Dealing with errors
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -1364,7 +1382,7 @@ gpasm doesn't specifically create an error file.
  This can be a problem if you want to keep a record of errors, or if your
  assembly produces so many errors that they scroll off the screen.
  To deal with this if your shell is 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -1382,7 +1400,7 @@ sh
 \end_inset
 
 , 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -1400,7 +1418,7 @@ bash
 \end_inset
 
  or 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -1438,7 +1456,7 @@ This redirects standard error to standard output (
 \end_inset
 
 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -1473,7 +1491,7 @@ File structure
 \begin_layout Standard
 gpasm source files consist of a series of lines.
  Lines can contain a 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -1485,7 +1503,7 @@ labels
 label (starting in column 1) or an operation (starting in any column after
  1), both, or neither.
  
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -1552,7 +1570,7 @@ Expressions
 
 \begin_layout Standard
 gpasm supports a full set of 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -1579,7 +1597,7 @@ operators, based on the C operator set.
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="26" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -2138,7 +2156,7 @@ Any symbol appearing in column 1 may be assigned a value using the assignment
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="14" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -2437,7 +2455,7 @@ bitwise exclusive-or
 
 \begin_layout Subsection
 Numbers
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -2474,7 +2492,7 @@ gpasm gives you several ways of specifying numbers.
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="3">
-<features>
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
@@ -2718,7 +2736,7 @@ Several legacy mpasm number formats are also supported.
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="8" columns="3">
-<features>
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
@@ -2970,7 +2988,7 @@ hex
 
 \begin_layout Standard
 You can write the 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -2980,7 +2998,7 @@ ASCII
 \end_inset
 
 ASCII code for a 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -2998,7 +3016,7 @@ Preprocessor
 \end_layout
 
 \begin_layout Standard
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3512,7 +3530,7 @@ name "sec:directivesummary"
 
 \begin_layout Subsection*
 __BADRAM
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3566,7 +3584,7 @@ See also: __MAXRAM
 
 \begin_layout Subsection*
 __BADROM
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3620,7 +3638,7 @@ See also: __MAXROM
 
 \begin_layout Subsection*
 __CONFIG
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3671,7 +3689,7 @@ See also: CONFIG, __FUSES
 
 \begin_layout Subsection*
 __FUSES
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3722,7 +3740,7 @@ See also: CONFIG
 
 \begin_layout Subsection*
 __IDLOCS
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3773,7 +3791,7 @@ Sets the PIC processor's identification locations.
 
 \begin_layout Subsection*
 __MAXRAM
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3826,7 +3844,7 @@ See also: __BADRAM
 
 \begin_layout Subsection*
 __MAXROM
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3879,7 +3897,7 @@ See also: __BADROM
 
 \begin_layout Subsection*
 BANKISEL
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3911,7 +3929,7 @@ See also: BANKSEL, PAGESEL
 
 \begin_layout Subsection*
 BANKSEL
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3942,7 +3960,7 @@ See also: BANKISEL, PAGESEL
 
 \begin_layout Subsection*
 CONFIG
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3968,7 +3986,7 @@ See also: __CONFIG
 
 \begin_layout Subsection*
 CBLOCK
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4006,7 +4024,7 @@ See also: EQU
 
 \begin_layout Subsection*
 CODE
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4045,7 +4063,7 @@ See also: IDATA, UDATA, CODE_PACK
 
 \begin_layout Subsection*
 CODE_PACK
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4097,7 +4115,7 @@ See also: IDATA, UDATA, CODE
 
 \begin_layout Subsection*
 CONSTANT
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4125,7 +4143,7 @@ See also: EQU, SET, VARIABLE
 
 \begin_layout Subsection*
 DA
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4152,7 +4170,7 @@ See also: DT
 
 \begin_layout Subsection*
 DATA
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4178,7 +4196,7 @@ See also: DA, DB, DE, DW
 
 \begin_layout Subsection*
 DB
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4205,7 +4223,7 @@ See also: DA, DATA, DE, DW
 
 \begin_layout Subsection*
 DE
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4232,7 +4250,7 @@ See also: DA, DATA, DB, DW
 
 \begin_layout Subsection*
 DT
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4258,7 +4276,7 @@ See also: DATA
 
 \begin_layout Subsection*
 DW
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4284,7 +4302,7 @@ See also: DA, DATA, DB, DW
 
 \begin_layout Subsection*
 ELSE
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4310,7 +4328,7 @@ See also: IF, IFDEF, IFNDEF, ELSE, ENDIF
 
 \begin_layout Subsection*
 END
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4332,7 +4350,7 @@ Marks the end of the source file.
 
 \begin_layout Subsection*
 ENDC
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4358,7 +4376,7 @@ See also: CBLOCK
 
 \begin_layout Subsection*
 ENDIF
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4384,7 +4402,7 @@ See also: IFDEF, IFNDEF, ELSE, ENDIF
 
 \begin_layout Subsection*
 ENDM
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4410,7 +4428,7 @@ See also: MACRO
 
 \begin_layout Subsection*
 ENDW
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4436,7 +4454,7 @@ See also: WHILE
 
 \begin_layout Subsection*
 EQU
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4464,7 +4482,7 @@ See also: CONSTANT, SET
 
 \begin_layout Subsection*
 ERROR
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4490,7 +4508,7 @@ See also: MESSG
 
 \begin_layout Subsection*
 ERRORLEVEL
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4521,7 +4539,7 @@ Sets the types of messages that are printed.
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -4664,7 +4682,7 @@ See also: LIST
 
 \begin_layout Subsection*
 EXTERN
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4691,7 +4709,7 @@ See also: GLOBAL
 
 \begin_layout Subsection*
 EXITM
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4717,7 +4735,7 @@ See also: ENDM
 
 \begin_layout Subsection*
 EXPAND
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4743,7 +4761,7 @@ See also: ENDM
 
 \begin_layout Subsection*
 FILL
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4771,7 +4789,7 @@ See also: DATA DW ORG
 
 \begin_layout Subsection*
 GLOBAL
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4798,7 +4816,7 @@ See also: GLOBAL
 
 \begin_layout Subsection*
 IDATA
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4839,7 +4857,7 @@ See also: CODE, UDATA
 
 \begin_layout Subsection*
 IF
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4869,7 +4887,7 @@ See also: IFDEF, IFNDEF, ELSE, ENDIF
 
 \begin_layout Subsection*
 IFDEF
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4897,7 +4915,7 @@ See also: IF, IFNDEF, ELSE, ENDIF
 
 \begin_layout Subsection*
 IFNDEF
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4925,7 +4943,7 @@ See also: IF, IFNDEF, ELSE, ENDIF
 
 \begin_layout Subsection*
 LIST
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -4976,7 +4994,7 @@ list n=0
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -5220,7 +5238,7 @@ See also: NOLIST, RADIX, PROCESSOR
 
 \begin_layout Subsection*
 LOCAL
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5249,7 +5267,7 @@ See also: MACRO, ENDM
 
 \begin_layout Subsection*
 MACRO
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5277,7 +5295,7 @@ See also: LOCAL, ENDM
 
 \begin_layout Subsection*
 MESSG
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5303,7 +5321,7 @@ See also: ERROR
 
 \begin_layout Subsection*
 NOEXPAND
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5329,7 +5347,7 @@ See also: EXPAND
 
 \begin_layout Subsection*
 NOLIST
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5355,7 +5373,7 @@ See also: LIST
 
 \begin_layout Subsection*
 ORG
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5379,7 +5397,7 @@ Sets the location at which instructions will be placed.
 
 \begin_layout Subsection*
 PAGE
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5405,7 +5423,7 @@ See also: LIST
 
 \begin_layout Subsection*
 PAGESEL
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5436,7 +5454,7 @@ See also: BANKISEL, BANKSEL, PAGESELW
 
 \begin_layout Subsection*
 PAGESELW
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5465,7 +5483,7 @@ See also: BANKISEL, BANKSEL, PAGESEL
 
 \begin_layout Subsection*
 PROCESSOR
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5499,7 +5517,7 @@ See also: LIST
 
 \begin_layout Subsection*
 RADIX
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5551,7 +5569,7 @@ See also: LIST
 
 \begin_layout Subsection*
 RES
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5578,7 +5596,7 @@ See also: FILL, ORG
 
 \begin_layout Subsection*
 SET
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5605,7 +5623,7 @@ See also: SET
 
 \begin_layout Subsection*
 SPACE
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5631,7 +5649,7 @@ See also: LIST
 
 \begin_layout Subsection*
 SUBTITLE
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5660,7 +5678,7 @@ See also: TITLE
 
 \begin_layout Subsection*
 TITLE
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5689,7 +5707,7 @@ See also: SUBTITLE
 
 \begin_layout Subsection*
 UDATA
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5728,7 +5746,7 @@ See also: CODE, IDATA, UDATA_ACS, UDATA_OVR, UDATA_SHR
 
 \begin_layout Subsection*
 UDATA_ACS
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5768,7 +5786,7 @@ See also: CODE, IDATA, UDATA
 
 \begin_layout Subsection*
 UDATA_OVR
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5808,7 +5826,7 @@ See also: CODE, IDATA, UDATA
 
 \begin_layout Subsection*
 UDATA_SHR
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5848,7 +5866,7 @@ See also: CODE, IDATA, UDATA
 
 \begin_layout Subsection*
 VARIABLE
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5876,7 +5894,7 @@ See also: CONSTANT
 
 \begin_layout Subsection*
 WHILE
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5927,7 +5945,7 @@ These features are advanced and require knowledge of how gputils relocatable
 
 \begin_layout Subsection*
 .DEF
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5959,7 +5977,7 @@ Create a new COFF <symbol>.
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="10" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -6203,7 +6221,7 @@ See also: .DIM
 
 \begin_layout Subsection*
 .DIM
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -6250,7 +6268,7 @@ See also: .DEF
 
 \begin_layout Subsection*
 .DIRECT
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -6302,7 +6320,7 @@ Each directive creates a new COFF symbol
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="9" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -6514,7 +6532,7 @@ See also: .DEF, .DIM
 
 \begin_layout Subsection*
 .EOF
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -6552,7 +6570,7 @@ See also: .EOF, .FILE, .LINE
 
 \begin_layout Subsection*
 .FILE
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -6590,7 +6608,7 @@ See also: .EOF, .FILE, .LINE
 
 \begin_layout Subsection*
 .IDENT
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -6622,7 +6640,7 @@ See also: .DEF, .DIM
 
 \begin_layout Subsection*
 .LINE
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -6662,7 +6680,7 @@ See also: .EOF, .FILE, .LINE
 
 \begin_layout Subsection*
 .TYPE
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -6715,7 +6733,7 @@ Instruction set summary
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="35" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <row>
@@ -7432,7 +7450,7 @@ Xor W and <f>, result in <dst>
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="39" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <row>
@@ -8229,7 +8247,7 @@ Xor W and <f>, result in <dst>
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="23" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <row>
@@ -8719,7 +8737,7 @@ s, in addition to those listed under
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -8961,7 +8979,7 @@ There are also a number of standard additional macros.
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="19" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <row>
@@ -9432,7 +9450,7 @@ A user-generated error.
 \end_layout
 
 \begin_layout Description
-108 Illegal character
+108 Illegal character.
 \end_layout
 
 \begin_layout Standard
@@ -9440,7 +9458,15 @@ gpasm encountered an illegal character in a source file.
 \end_layout
 
 \begin_layout Description
-113 Symbol not previously defined
+109 Unmatched (
+\end_layout
+
+\begin_layout Description
+110 Unmatched )
+\end_layout
+
+\begin_layout Description
+113 Symbol not previously defined.
 \end_layout
 
 \begin_layout Standard
@@ -9448,7 +9474,7 @@ gpasm encountered an unrecognized symbol.
 \end_layout
 
 \begin_layout Description
-114 Divide by zero
+114 Divide by zero.
 \end_layout
 
 \begin_layout Standard
@@ -9456,15 +9482,11 @@ gpasm encountered a divide by zero.
 \end_layout
 
 \begin_layout Description
-115 Duplicate Label
-\end_layout
-
-\begin_layout Standard
-Duplicate label or redefining a symbol that can not be redefined.
+115 Duplicate label or redefining symbol that cannot be redefined.
 \end_layout
 
 \begin_layout Description
-116 Address label duplicated or different in second pass
+116 Address label duplicated or different in second pass.
 \end_layout
 
 \begin_layout Standard
@@ -9472,7 +9494,11 @@ Label resolved to a different address on gpasm's second pass.
 \end_layout
 
 \begin_layout Description
-118 Overwriting previous address contents
+117 Address wrapped around 0.
+\end_layout
+
+\begin_layout Description
+118 Overwriting previous address contents.
 \end_layout
 
 \begin_layout Standard
@@ -9480,7 +9506,7 @@ gpasm was instructed to write different values into the same address.
 \end_layout
 
 \begin_layout Description
-120 Call or jump not allowed
+120 Call or jump not allowed at this address (must be in low half of page)
 \end_layout
 
 \begin_layout Standard
@@ -9488,7 +9514,7 @@ gpasm was instructed to write different values into the same address.
 \end_layout
 
 \begin_layout Description
-121 Illegal label
+121 Illegal label.
 \end_layout
 
 \begin_layout Standard
@@ -9496,7 +9522,7 @@ gpasm encountered an illegal label.
 \end_layout
 
 \begin_layout Description
-123 Illegal directive
+123 Illegal directive (Not Valid for this processor).
 \end_layout
 
 \begin_layout Standard
@@ -9504,7 +9530,7 @@ The specified directive is not valid for this processor.
 \end_layout
 
 \begin_layout Description
-124 Illegal Argument
+124 Illegal Argument.
 \end_layout
 
 \begin_layout Standard
@@ -9513,7 +9539,7 @@ gpasm encountered an illegal argument in an expression.
 \end_layout
 
 \begin_layout Description
-125 Illegal Condition
+125 Illegal Condition.
 \end_layout
 
 \begin_layout Standard
@@ -9521,7 +9547,7 @@ An illegal condition like a missing ENDIF or ENDW has been encountered.
 \end_layout
 
 \begin_layout Description
-126 Argument out of Range
+126 Argument out of range.
 \end_layout
 
 \begin_layout Standard
@@ -9529,7 +9555,7 @@ The expression has an argument that was out of range.
 \end_layout
 
 \begin_layout Description
-127 Too many arguments
+127 Too many arguments.
 \end_layout
 
 \begin_layout Standard
@@ -9537,7 +9563,7 @@ gpasm encountered an expression with too many arguments.
 \end_layout
 
 \begin_layout Description
-128 Missing argument(s)
+128 Missing argument(s).
 \end_layout
 
 \begin_layout Standard
@@ -9554,7 +9580,7 @@ Expected a certain type of argument.
 \end_layout
 
 \begin_layout Description
-130 Processor type previously defined
+130 Processor type previously defined.
 \end_layout
 
 \begin_layout Standard
@@ -9563,7 +9589,7 @@ The processor is being redefined.
 \end_layout
 
 \begin_layout Description
-131 Undefined processor
+131 Processor type is undefined.
 \end_layout
 
 \begin_layout Standard
@@ -9572,7 +9598,7 @@ The processor type has not been defined.
 \end_layout
 
 \begin_layout Description
-132 Unknown processor
+132 Unknown processor.
 \end_layout
 
 \begin_layout Standard
@@ -9588,7 +9614,7 @@ reference "sec:processors"
 \end_layout
 
 \begin_layout Description
-133 Hex file format INHX32 required
+133 Hex file format INHX32 required.
 \end_layout
 
 \begin_layout Standard
@@ -9597,7 +9623,7 @@ An address above 32K was specified.
 \end_layout
 
 \begin_layout Description
-135 Macro name missing
+135 Macro name missing.
 \end_layout
 
 \begin_layout Standard
@@ -9606,7 +9632,7 @@ A macro was defined without a name.
 \end_layout
 
 \begin_layout Description
-136 Duplicate macro name
+136 Duplicate macro name.
 \end_layout
 
 \begin_layout Standard
@@ -9615,7 +9641,7 @@ A macro name was duplicated.
 \end_layout
 
 \begin_layout Description
-140 Illegal WHILE loop
+140 WHILE must terminate within 256 iterations.
 \end_layout
 
 \begin_layout Standard
@@ -9625,7 +9651,11 @@ gpasm encountered an infinite loop or a loop with too many iterations (more
 \end_layout
 
 \begin_layout Description
-145 Unmatched ENDM
+143 Illegal nesting.
+\end_layout
+
+\begin_layout Description
+145 Unmatched ENDM.
 \end_layout
 
 \begin_layout Standard
@@ -9634,7 +9664,7 @@ ENDM found without a macro definition.
 \end_layout
 
 \begin_layout Description
-149 Object-only directive
+149 Directive only allowed when generating an object file.
 \end_layout
 
 \begin_layout Standard
@@ -9643,7 +9673,7 @@ Attempt to use relocatable-mode directive when generating HEX file directly.
 \end_layout
 
 \begin_layout Description
-151 Unresolvable or too complex label
+151 Operand contains unresolvable labels or is too complex.
 \end_layout
 
 \begin_layout Standard
@@ -9652,7 +9682,7 @@ Labels must be resolvable to a relocatable address plus a constant.
 \end_layout
 
 \begin_layout Description
-152 Wrong section
+152 Executable code and data must be defined in an appropriate section.
 \end_layout
 
 \begin_layout Standard
@@ -9661,16 +9691,11 @@ Code or data defined in an invalid section.
 \end_layout
 
 \begin_layout Description
-154 Section names must be unique
-\end_layout
-
-\begin_layout Standard
-Multiple object sections were defined with the same name.
- 
+154 Each object file section must be contiguous.
 \end_layout
 
 \begin_layout Description
-156 Operand must be label
+156 Operand must be an address label.
 \end_layout
 
 \begin_layout Standard
@@ -9679,7 +9704,7 @@ gpasm encountered a non-label operand where an address label was expected.
 \end_layout
 
 \begin_layout Description
-157 ORG at odd address
+157 ORG at odd address.
 \end_layout
 
 \begin_layout Standard
@@ -9688,7 +9713,7 @@ ORG directive must take an even address as the start of an absolute section.
 \end_layout
 
 \begin_layout Description
-159 Odd number of FILL bytes
+159 Cannot use FILL Directive with odd number of bytes.
 \end_layout
 
 \begin_layout Standard
@@ -9697,39 +9722,36 @@ In PIC18CXX devices the number of bytes must be even.
 \end_layout
 
 \begin_layout Description
-164 Multiple __IDLOC directives
-\end_layout
-
-\begin_layout Standard
-Multiple __IDLOC object sections were defined.
- 
+163 __CONFIG directives must be contiguous.
 \end_layout
 
 \begin_layout Description
-168 Missing brackets
-\end_layout
-
-\begin_layout Standard
-Square brackets required around offset operand.
-  
+164 __IDLOC directives must be contiguous.
 \end_layout
 
 \begin_layout Description
-176 Unknown CONFIG
-\end_layout
-
-\begin_layout Standard
-An error occured with the CONFIG directive.
- 
+168 Square brackets required around offset operand.
 \end_layout
 
 \begin_layout Description
-177 Cannot mix CONFIG and __CONFIG directives
+175 __IDLOCS directives must be listed in ascending order.
+\end_layout
+
+\begin_layout Description
+176 An error with the CONFIG directive occured.
+\end_layout
+
+\begin_layout Description
+177 You cannot mix CONFIG and __CONFIG directives.
 \end_layout
 
 \begin_layout Standard
 CONFIG and __CONFIG directives cannot both be used in the same project.
  
+\end_layout
+
+\begin_layout Description
+180 RES directive cannot reserve odd number of bytes in PIC18 absolute mode.
 \end_layout
 
 \begin_layout Subsection
@@ -9745,7 +9767,8 @@ The symbol being #undefined was not previously defined.
 \end_layout
 
 \begin_layout Description
-202 Argument out of range
+202 Argument out of range.
+ Least significant bits used.
 \end_layout
 
 \begin_layout Standard
@@ -9753,7 +9776,7 @@ The argument does not fit in the allocated space.
 \end_layout
 
 \begin_layout Description
-203 Opcode in column 1
+203 Found opcode in column 1.
 \end_layout
 
 \begin_layout Standard
@@ -9761,7 +9784,7 @@ Opcodes should be indented to distinguish them from labels.
 \end_layout
 
 \begin_layout Description
-205 Directive in column 1
+205 Found directive in column 1.
 \end_layout
 
 \begin_layout Standard
@@ -9769,7 +9792,7 @@ Directives should be indented to distinguish them from labels.
 \end_layout
 
 \begin_layout Description
-206 Macro call in column 1
+206 Found call to macro in column 1.
 \end_layout
 
 \begin_layout Standard
@@ -9777,7 +9800,7 @@ Macro calls should be indented to distinguish them from labels.
 \end_layout
 
 \begin_layout Description
-207 Label after column 1
+207 Found label after column 1.
 \end_layout
 
 \begin_layout Standard
@@ -9785,7 +9808,7 @@ Labels should be unindented to distinguish them from directives and opcodes.
 \end_layout
 
 \begin_layout Description
-209 Missing quote
+209 Missing quote.
 \end_layout
 
 \begin_layout Standard
@@ -9793,7 +9816,7 @@ Inserted close quote after quoted string.
 \end_layout
 
 \begin_layout Description
-211 Extraneous arguments
+211 Extraneous arguments on the line.
 \end_layout
 
 \begin_layout Standard
@@ -9801,7 +9824,11 @@ Extra arguments were found on the line.
 \end_layout
 
 \begin_layout Description
-215 Processor superseded by command line
+212 Expected.
+\end_layout
+
+\begin_layout Description
+215 Processor superseded by command line.
 \end_layout
 
 \begin_layout Standard
@@ -9810,7 +9837,7 @@ The processor was specified on the command line and in the source file.
 \end_layout
 
 \begin_layout Description
-216 Radix superseded by command line
+216 Radix superseded by command line.
 \end_layout
 
 \begin_layout Standard
@@ -9819,7 +9846,7 @@ The radix was specified on the command line and in the source file.
 \end_layout
 
 \begin_layout Description
-217 Hex format superseded by command line
+217 Hex file format specified on command line.
 \end_layout
 
 \begin_layout Standard
@@ -9829,8 +9856,8 @@ The hex file format was specified on the command line and in the source
 \end_layout
 
 \begin_layout Description
-218 Expected DEC, OCT, HEX.
- Will use HEX.
+218 Expected dec, oct, hex.
+ Will use hex.
 \end_layout
 
 \begin_layout Standard
@@ -9847,7 +9874,7 @@ gpasm encountered an invalid RAM location as specified by the __MAXRAM and
 \end_layout
 
 \begin_layout Description
-220 Exceeded maximum ROM
+220 Address exceeds maximum range for this processor.
 \end_layout
 
 \begin_layout Standard
@@ -9855,7 +9882,7 @@ Data emitted past maximum ROM address.
 \end_layout
 
 \begin_layout Description
-222 Error messages can not be disabled
+222 Error messages can not be disabled.
 \end_layout
 
 \begin_layout Standard
@@ -9863,7 +9890,7 @@ Error messages can not be disabled using the ERRORLEVEL directive.
 \end_layout
 
 \begin_layout Description
-223 Redefining processor
+223 Redefining processor.
 \end_layout
 
 \begin_layout Standard
@@ -9871,12 +9898,16 @@ The processor is being reselected by the LIST or PROCESSOR directive.
 \end_layout
 
 \begin_layout Description
-224 Use of this instruction is not recommanded
+224 Use of this instruction is not recommanded.
 \end_layout
 
 \begin_layout Standard
 Use of the TRIS and OPTION instructions is not recommended for a PIC16CXX
  device.
+\end_layout
+
+\begin_layout Description
+226 Destination address must be word aligned.
 \end_layout
 
 \begin_layout Description
@@ -9901,7 +9932,8 @@ User message, invoked with the MESSG directive.
 \end_layout
 
 \begin_layout Description
-302 Register not in bank 0
+302 Register in operand not in bank 0.
+ Ensure bank bits are correct.
 \end_layout
 
 \begin_layout Standard
@@ -9938,7 +9970,7 @@ No destination was specified so the default location was used.
 \end_layout
 
 \begin_layout Description
-306 Crossing page boundary
+306 Crossing page boundary -- ensure page bits are set.
 \end_layout
 
 \begin_layout Standard
@@ -9948,7 +9980,11 @@ ROM address crossed boundary between pages.
 \end_layout
 
 \begin_layout Description
-308 Warning level superseded by command line
+307 Setting page bits.
+\end_layout
+
+\begin_layout Description
+308 Warning level superceded by command line value.
 \end_layout
 
 \begin_layout Standard
@@ -9957,7 +9993,7 @@ The warning level was specified on the command line and in the source file.
 \end_layout
 
 \begin_layout Description
-309 Macro expansion superseded by command line
+309 Macro expansion superceded by command line value.
 \end_layout
 
 \begin_layout Standard
@@ -9966,7 +10002,11 @@ Macro expansion was specified on the command line and in the source file.
 \end_layout
 
 \begin_layout Description
-312 Page or Bank selection not needed
+310 Superceding current maximum RAM and RAM map
+\end_layout
+
+\begin_layout Description
+312 Page or Bank selection not needed for this device.
 \end_layout
 
 \begin_layout Standard
@@ -9974,7 +10014,7 @@ This device does not use special page or bank selection code.
 \end_layout
 
 \begin_layout Description
-313 Uninitialized CBLOCK
+313 CBLOCK constants will start with a value of 0.
 \end_layout
 
 \begin_layout Standard
@@ -9983,7 +10023,7 @@ First CBLOCK has no initial value.
 \end_layout
 
 \begin_layout Description
-316 W register modified
+316 W register modified.
 \end_layout
 
 \begin_layout Standard
@@ -9992,7 +10032,7 @@ Hidden use of the W register overwrites previous value.
 \end_layout
 
 \begin_layout Description
-318 Special mnemonic used
+318 Special Instruction Mnemonic used.
 \end_layout
 
 \begin_layout Standard
@@ -10010,7 +10050,7 @@ gplink relocates and links gpasm COFF objects and generates an absolute
 
 \begin_layout Section
 Running gplink
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -10045,7 +10085,7 @@ Where options can be one of:
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="17" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
 <row>
@@ -10538,7 +10578,7 @@ gplib creates, modifies and extracts COFF archives.
 
 \begin_layout Section
 Running gplib
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -10573,7 +10613,7 @@ Where options can be one of:
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
 <row>
@@ -10812,7 +10852,7 @@ Extract member from library
 
 \begin_layout Section
 Creating an archive
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -10894,7 +10934,7 @@ When you use the library, simply add it to the list of object passed to
 
 \begin_layout Section
 Other gplib operations
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -10914,7 +10954,7 @@ Most of the other are useful , but will be used much less often.
 
 \begin_layout Section
 Archive format
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -10955,7 +10995,7 @@ Utilities
 
 \begin_layout Section
 gpdasm
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -10975,7 +11015,7 @@ ons.
 
 \begin_layout Subsection
 Running gpdasm
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -11010,7 +11050,7 @@ Where options can be one of:
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="3">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
@@ -11354,7 +11394,7 @@ gpdasm doesn't specifically create an output file.
  This helps to reduce the risk that a good source file will be unintentionally
  overwritten.
  If you want to create an output file and your shell is 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -11372,7 +11412,7 @@ sh
 \end_inset
 
 , 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -11390,7 +11430,7 @@ bash
 \end_inset
 
  or 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -11454,7 +11494,7 @@ There are DON'T CARE bits in the instruction words.
 
 \begin_layout Section
 gpstrip
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -11472,7 +11512,7 @@ gpstrip manipulates the sections and symbol tables of gputils object files.
 
 \begin_layout Subsection
 Running gpstrip
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -11507,7 +11547,7 @@ Where options can be one of:
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="13" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
 <row>
@@ -11786,7 +11826,7 @@ Remove non-global symbols
 
 \begin_layout Section
 gpvc
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -11806,7 +11846,7 @@ gpvc is cod file viewer for gputils.
 
 \begin_layout Subsection
 Running gpvc
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -11841,7 +11881,7 @@ Where options can be one of:
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="9" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
 <row>
@@ -12042,7 +12082,7 @@ Print gpvc version information and exit
 gpvc doesn't specifically create an output file.
  It dumps its output to the screen.
  If you want to create an output file and your shell is 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -12060,7 +12100,7 @@ sh
 \end_inset
 
 , 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -12078,7 +12118,7 @@ bash
 \end_inset
 
  or 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -12116,7 +12156,7 @@ test.dump
 
 \begin_layout Section
 gpvo
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -12136,7 +12176,7 @@ gpvo is COFF object file viewer for gputils.
 
 \begin_layout Subsection
 Running gpvo
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -12171,7 +12211,7 @@ Where options can be one of:
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
 <row>
@@ -12412,7 +12452,7 @@ Enable 18xx extended mode
 gpvo doesn't specifically create an output file.
  It dumps its output to the screen.
  If you want to create an output file and your shell is 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -12430,7 +12470,7 @@ sh
 \end_inset
 
 , 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -12448,7 +12488,7 @@ bash
 \end_inset
 
  or 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -12487,6 +12527,7 @@ test.dump
 \begin_layout Standard
 \begin_inset CommandInset index_print
 LatexCommand printindex
+type "idx"
 
 \end_inset
 

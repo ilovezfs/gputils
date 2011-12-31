@@ -40,12 +40,6 @@ Boston, MA 02111-1307, USA.  */
 
 extern struct pnode *mk_constant(int value);
 
-/************************************************************************/
-int _16bit_core = 0;         /* The 16bit core is handled differently in
-                              * some instances. */
-
-/************************************************************************/
-
 static unsigned short checkwrite(unsigned short value)
 {
   unsigned short insn;
@@ -575,7 +569,7 @@ static gpasmVal do_code_pack(gpasmVal r,
 {
   struct pnode *p;
 
-  if(!_16bit_core)
+  if (!IS_16BIT_CORE)
     gperror(GPE_UNKNOWN, "code_pack is only supported on 16bit cores");
   else {
     state.lst.line.linetype = sec;
@@ -711,7 +705,7 @@ static gpasmVal do_config(gpasmVal r,
     return r;
   }
 
-  if(_16bit_core) {
+  if (IS_16BIT_CORE) {
     gpwarning(GPW_EXPECTED,"__CONFIG has been deprecated for PIC18 devices. Use directive CONFIG.");
   }
 
@@ -722,7 +716,7 @@ static gpasmVal do_config(gpasmVal r,
     /* FIXME: Whenever there are more than one configuration address, the
        address must be specified in MPASM. MPASM fails with error
        "Argument out of range (not a valid config register address)" */
-    if(_16bit_core) {
+    if (IS_16BIT_CORE) {
       gpwarning(GPW_EXPECTED,"18cxxx devices should specify __CONFIG address");
     }
     if (state.device.class == PROC_CLASS_PIC14E) {
@@ -758,7 +752,7 @@ static gpasmVal do_config(gpasmVal r,
   if ((can_evaluate(p)) && (state.pass == 2)) {
     value = evaluate(p);
 
-    if(_16bit_core) {
+    if (IS_16BIT_CORE) {
       const struct gp_cfg_device *p_dev;
       if(value > 0xff) {
         gpwarning(GPW_RANGE,0);
@@ -1961,8 +1955,7 @@ static gpasmVal do_idlocs(gpasmVal r,
   }
 
   if (state.pass == 2) {
-    if (_16bit_core) {
-
+    if (IS_16BIT_CORE) {
       if (idreg > IDLOC7 || idreg < IDLOC0) {
         gperror(GPE_RANGE, "Argument out of range (not a valid ID location)");
       } else {
@@ -4266,7 +4259,6 @@ void opcode_init(int stage)
       remove_symbol(state.stBuiltin, "page");
     }
     else if (state.device.class == PROC_CLASS_PIC16E) {
-      _16bit_core = 1;
       state.c_memory_base = CONFIG1L;
       state.device.bsr_boundary = gp_processor_bsr_boundary(state.processor);
 
