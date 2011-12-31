@@ -3037,8 +3037,6 @@ void file_ok(unsigned int file)
   /* Issue bank message if necessary */
   if (file & state.device.class->bank_mask)
     gpmessage(GPM_BANK, NULL);
-
-  return;
 }
 
 static void emit_check(int insn, int argument, int mask)
@@ -3053,8 +3051,6 @@ static void emit_check(int insn, int argument, int mask)
     gpwarning(GPW_RANGE, NULL);
   }
   emit(insn | (argument & mask));
-
-  return;
 }
 
 /*
@@ -3077,8 +3073,6 @@ static void emit_check_relative(int insn, int argument, int mask, int range)
   }
 
   emit(insn | (argument & mask));
-
-  return;
 }
 
 static int check_flag(int flag)
