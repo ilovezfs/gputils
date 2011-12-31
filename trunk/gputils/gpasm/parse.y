@@ -38,7 +38,6 @@ void yyerror(char *message)
 }
 
 int yylex(void);
-extern int _16bit_core;
 
 /************************************************************************/
 

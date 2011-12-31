@@ -26,8 +26,6 @@ Boston, MA 02111-1307, USA.  */
 #include "gperror.h"
 #include "coff.h"
 
-extern int _16bit_core;
-
 void
 coff_init(void)
 {
@@ -167,7 +165,7 @@ _copy_config(void)
                                             ".devid");
 
     assert(config_section != NULL);
-    assert(_16bit_core);
+    assert(IS_16BIT_CORE);
 
     if (b_memory_get(state.c_memory, DEVID1, &byte))
       b_memory_put(config_section->data, DEVID1, byte);
@@ -190,7 +188,7 @@ _copy_config(void)
 
     assert(config_section != NULL);
 
-    if(_16bit_core) {
+    if (IS_16BIT_CORE) {
       config_section->size = 0;
       start = config_section->address;
       stop = IDLOC7;

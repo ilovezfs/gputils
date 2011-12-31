@@ -26,8 +26,6 @@ Boston, MA 02111-1307, USA.  */
 #include "directive.h"
 #include "gperror.h"
 
-extern int _16bit_core;
-
 void select_processor(char *name)
 {
   const struct px *found = NULL;
@@ -40,7 +38,7 @@ void select_processor(char *name)
       int badrom_idx;
       if (state.processor == no_processor) {
         state.processor = found;
-	   state.maxrom = found->maxrom;
+           state.maxrom = found->maxrom;
         /* initialize badrom from internal processor info */
         state.badrom = NULL;
         for (badrom_idx = 0; badrom_idx < MAX_BADROM; badrom_idx+=2) {
@@ -72,14 +70,14 @@ void select_processor(char *name)
       }
     }
     /* load the instruction sets if necessary */
-    if ((state.processor_chosen == 0) && 
+    if ((state.processor_chosen == 0) &&
         (state.processor != no_processor)) {
-      opcode_init(1);	/* General directives */
+      opcode_init(1);   /* General directives */
       /* seperate the directives from the opcodes */
-      state.stBuiltin = push_symbol_table(state.stBuiltin, true);      
-      opcode_init(2);	/* Processor-specific */
+      state.stBuiltin = push_symbol_table(state.stBuiltin, true);
+      opcode_init(2);   /* Processor-specific */
       if (state.device.class != PROC_CLASS_PIC16E &&
-	  state.device.class != PROC_CLASS_PIC16) {
+          state.device.class != PROC_CLASS_PIC16) {
         opcode_init(3);   /* Special pseudo ops for 12 and 14 bit devices */
       }
       state.processor_chosen = 1;

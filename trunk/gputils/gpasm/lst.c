@@ -42,9 +42,7 @@ Boston, MA 02111-1307, USA.  */
 #define STRINGIFY(s) _str(s)
 #define _str(s) #s
 
-extern int _16bit_core;
-
-void lst_throw()
+void lst_throw(void)
 {
   if(state.lst.f) {
     state.lst.page++;
@@ -138,7 +136,7 @@ static int lst_printf(const char *format, ...)
   return r;
 }
 
-void lst_init()
+void lst_init(void)
 {
   state.lst.lineofpage = 0;
   state.lst.page = 0;
@@ -190,7 +188,7 @@ void lst_init()
 
 void lst_memory_map(MemBlock *m)
 {
-#define MEM_IS_USED(m, i)   (_16bit_core ? ((m)->memory[i] & BYTE_USED_MASK) : (((m)->memory[2 * (i)] & BYTE_USED_MASK) || ((m)->memory[2 * (i) + 1] & BYTE_USED_MASK)))
+#define MEM_IS_USED(m, i)   (IS_16BIT_CORE ? ((m)->memory[i] & BYTE_USED_MASK) : (((m)->memory[2 * (i)] & BYTE_USED_MASK) || ((m)->memory[2 * (i) + 1] & BYTE_USED_MASK)))
 
   int i, j, base, row_used, num_per_line, num_per_block;
   unsigned int used;
@@ -204,10 +202,10 @@ void lst_memory_map(MemBlock *m)
   num_per_block = 16;
 
   while (m) {
-    unsigned int max_mem = MAX_I_MEM  >> (!_16bit_core);
+    unsigned int max_mem = MAX_I_MEM  >> (!IS_16BIT_CORE);
     assert(m->memory != NULL);
 
-    base = (m->base << I_MEM_BITS) >> (!_16bit_core);
+    base = (m->base << I_MEM_BITS) >> (!IS_16BIT_CORE);
 
     for (i = 0; i < max_mem; i += num_per_line) {
       row_used = 0;
@@ -248,13 +246,13 @@ void lst_memory_map(MemBlock *m)
     b_range_memory_used(state.i_memory, 0,
       gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[0])) :
     b_memory_used(state.i_memory));
-  lst_line("Program Memory %s Used: %5i", _16bit_core ? "Bytes" : "Words", used);
+  lst_line("Program Memory %s Used: %5i", IS_16BIT_CORE ? "Bytes" : "Words", used);
   /* maxrom is not the program memory size.
-  lst_line("Program Memory %s Free: %5d", _16bit_core ? "Bytes" : "Words", state.maxrom - used);
+  lst_line("Program Memory %s Free: %5d", IS_16BIT_CORE ? "Bytes" : "Words", state.maxrom - used);
   */
 }
 
-void lst_close()
+void lst_close(void)
 {
   cod_lst_line(COD_LAST_LST_LINE);
 
@@ -333,7 +331,7 @@ void lst_format_line(const char *src_line, int value)
   unsigned int byte_org = 0;
   unsigned int bytes_emitted = 0;
   unsigned int lst_bytes;
-  const char *addr_fmt = _16bit_core ? "%06X " : "%04X   ";
+  const char *addr_fmt = IS_16BIT_CORE ? "%06X " : "%04X   ";
 #define ADDR_LEN 7
   unsigned int pos = 0;
 
@@ -406,7 +404,7 @@ void lst_format_line(const char *src_line, int value)
     break;
 
   case config:
-    if(_16bit_core) {
+    if (IS_16BIT_CORE) {
       /* config data is byte addressable, but we only want to print
          words in the list file. */
       if (state.lst.config_address == CONFIG4L) {

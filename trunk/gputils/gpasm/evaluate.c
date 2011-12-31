@@ -29,8 +29,6 @@ Boston, MA 02111-1307, USA.  */
 #include "parse.h"
 #include "coff.h"
 
-extern int _16bit_core;
-
 int enforce_arity(int arity, int must_be)
 {
   if (arity == must_be)
@@ -534,8 +532,6 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
   default:
     assert(0);
   }
-
-  return;
 }
 
 /* Determine if the expression is the difference between two symbols in
