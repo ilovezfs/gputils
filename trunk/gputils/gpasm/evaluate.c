@@ -108,9 +108,9 @@ char *evaluate_concatenation(struct pnode *p)
       size1 = strlen(s1);
       new = malloc(size0 + size1 + 1);
       if (new) {
-	memcpy(new, s0, size0);
-	memcpy(new + size0, s1, size1);
-	new[size0 + size1] = '\0';
+        memcpy(new, s0, size0);
+        memcpy(new + size0, s1, size1);
+        new[size0 + size1] = '\0';
       }
       return new;
     }
@@ -166,20 +166,20 @@ int can_evaluate(struct pnode *p)
 
       /* '$' means current org, which we can always evaluate */
       if (strcmp(p->value.symbol, "$") == 0) {
-	return 1;
+        return 1;
       } else {
         struct variable *var = NULL;
 
-	/* Otherwise look it up */
-	s = get_symbol(state.stTop, p->value.symbol);
+        /* Otherwise look it up */
+        s = get_symbol(state.stTop, p->value.symbol);
 
         if (s == NULL) {
           snprintf(buf,
                    sizeof(buf),
                    "Symbol not previously defined (%s).",
                    p->value.symbol);
-          gperror(GPE_NOSYM, buf);    
-	} else {
+          gperror(GPE_NOSYM, buf);
+        } else {
           var = get_symbol_annotation(s);
 
           if (var == NULL) {
@@ -187,11 +187,11 @@ int can_evaluate(struct pnode *p)
                      sizeof(buf),
                      "Symbol not assigned a value (%s).",
                      p->value.symbol);
-            gpwarning(GPW_UNKNOWN, buf);    
+            gpwarning(GPW_UNKNOWN, buf);
           }
-        }  
- 
-	return ((s != NULL) && (var != NULL));
+        }
+
+        return ((s != NULL) && (var != NULL));
       }
     }
   case unop:
@@ -223,7 +223,7 @@ gpasmVal evaluate(struct pnode *p)
     if (s == NULL) {
       char buf[BUFSIZ];
       snprintf(buf, sizeof(buf), "Symbol not previously defined (%s).", string);
-      gperror(GPE_NOSYM, buf); 
+      gperror(GPE_NOSYM, buf);
       return 0;
     } else {
       var = get_symbol_annotation(s);
@@ -231,7 +231,7 @@ gpasmVal evaluate(struct pnode *p)
       return var->value;
     }
   }
-  
+
   switch (p->tag) {
   case constant:
     return p->value.constant;
@@ -242,14 +242,14 @@ gpasmVal evaluate(struct pnode *p)
       struct symbol *s;
 
       if (strcmp(p->value.symbol, "$") == 0) {
-	if (IS_RAM_ORG)
-	  return state.org;
-	return gp_processor_byte_to_org(state.device.class, state.org);
+        if (IS_RAM_ORG)
+          return state.org;
+        return gp_processor_byte_to_org(state.device.class, state.org);
       } else {
-	s = get_symbol(state.stTop, p->value.symbol);
-	var = get_symbol_annotation(s);
-	assert(var != NULL);
-	return var->value;
+        s = get_symbol(state.stTop, p->value.symbol);
+        var = get_symbol_annotation(s);
+        assert(var != NULL);
+        return var->value;
       }
     }
   case unop:
@@ -268,9 +268,9 @@ gpasmVal evaluate(struct pnode *p)
       return (evaluate(p->value.unop.p0) >> 8) & 0xff;
     case LOW:
       return evaluate(p->value.unop.p0) & 0xff;
-    case INCREMENT:  
+    case INCREMENT:
       return evaluate(p->value.unop.p0) + 1;
-    case DECREMENT:          
+    case DECREMENT:
       return evaluate(p->value.unop.p0) - 1;
     default:
       assert(0);
@@ -309,8 +309,8 @@ gpasmVal evaluate(struct pnode *p)
     case LESS_EQUAL:         return p0 <= p1;
     case LOGICAL_AND:        return p0 && p1;
     case LOGICAL_OR:         return p0 || p1;
-    case '=': 
-      gperror(GPE_BADCHAR, "Illegal character (=)");     
+    case '=':
+      gperror(GPE_BADCHAR, "Illegal character (=)");
       return 0;
     default:
       assert(0); /* Unhandled binary operator */
@@ -361,8 +361,8 @@ int count_reloc(struct pnode *p)
       case gvt_address:
         return 1;
       default:
-        return 0;        
-      }      
+        return 0;
+      }
     }
     return 0;
   }
@@ -386,11 +386,11 @@ int count_reloc(struct pnode *p)
           case gvt_address:
             return 1;
           default:
-            return 0;        
+            return 0;
           }
         }
       }
-    }  
+    }
     return 0;
   case unop:
     return count_reloc(p->value.unop.p0);
@@ -403,7 +403,7 @@ int count_reloc(struct pnode *p)
   return 0;
 }
 
-/* When generating object files, operands with relocatable addresses can only be 
+/* When generating object files, operands with relocatable addresses can only be
    [UPPER|HIGH|LOW]([<relocatable symbol>] + [<offset>]) */
 
 static void
@@ -427,8 +427,8 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
         coff_reloc(var->coff_num, offset, type);
         return;
       default:
-        return;        
-      }      
+        return;
+      }
     }
     return;
   }
@@ -438,15 +438,15 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
       char buffer[BUFSIZ];
       unsigned org;
       if (IS_RAM_ORG)
-	org = state.org;
+        org = state.org;
       else
-	org = gp_processor_byte_to_org(state.device.class, state.org);
+        org = gp_processor_byte_to_org(state.device.class, state.org);
 
       snprintf(buffer, sizeof(buffer), "_%s_%04X", state.obj.new_sec_name, org);
       /* RELOCT_ACCESS has always also RELOCT_F, which has already
-	 created this symbol.*/
+         created this symbol.*/
       if (type != RELOCT_ACCESS)
-	set_global(buffer, org, PERMANENT, IS_RAM_ORG ? gvt_static : gvt_address);
+        set_global(buffer, org, PERMANENT, IS_RAM_ORG ? gvt_static : gvt_address);
       s = get_symbol(state.stTop, buffer);
     } else {
       s = get_symbol(state.stTop, p->value.symbol);
@@ -462,10 +462,10 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
           coff_reloc(var->coff_num, offset, type);
           return;
         default:
-          return;        
+          return;
         }
       }
-    }  
+    }
     return;
   case unop:
     switch (p->value.unop.op) {
@@ -482,8 +482,8 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
     case '+':
     case '-':
     case '~':
-    case INCREMENT:  
-    case DECREMENT:          
+    case INCREMENT:
+    case DECREMENT:
       gperror(GPE_UNRESOLVABLE, NULL);
       return;
     default:
@@ -523,7 +523,7 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
     case LESS_EQUAL:
     case LOGICAL_AND:
     case LOGICAL_OR:
-    case '=': 
+    case '=':
       gperror(GPE_UNRESOLVABLE, NULL);
       return;
     default:
@@ -538,12 +538,12 @@ add_reloc(struct pnode *p, short offset, unsigned short type)
   return;
 }
 
-/* Determine if the expression is the difference between two symbols in 
+/* Determine if the expression is the difference between two symbols in
    the same section.  If so, calculate the offset and don't generate a
    relocation.
 
-   [UPPER|HIGH|LOW]([<relocatable symbol>] - [<relocatable symbol>])   
-   
+   [UPPER|HIGH|LOW]([<relocatable symbol>] - [<relocatable symbol>])
+
 */
 
 static int
@@ -560,8 +560,8 @@ same_section(struct pnode *p)
     return 0;
 
   if ((p->tag == unop) &&
-      ((p->value.unop.op == UPPER) || 
-       (p->value.unop.op == HIGH) || 
+      ((p->value.unop.op == UPPER) ||
+       (p->value.unop.op == HIGH) ||
        (p->value.unop.op == LOW))) {
     p = p->value.unop.p0;
   }
@@ -573,7 +573,7 @@ same_section(struct pnode *p)
 
   p0 = p->value.binop.p0;
   p1 = p->value.binop.p1;
- 
+
   if ((p0->tag != symbol) ||
       (p1->tag != symbol))
     return 0;
@@ -584,7 +584,7 @@ same_section(struct pnode *p)
   var1 = get_symbol_annotation(sym1);
 
   /* They must come from the same section. Debug symbols are not placed
-     in the global symbol table, so don't worry about symbol type.  */  
+     in the global symbol table, so don't worry about symbol type.  */
   if (var0->coff_section_num != var1->coff_section_num)
     return 0;
 
@@ -606,7 +606,7 @@ gpasmVal reloc_evaluate(struct pnode *p, unsigned short type)
       r = maybe_evaluate(p);
     } else if (count > 1) {
       if ((count == 2) && (same_section(p))) {
-        /* It is valid to take the difference between two symbols in the same 
+        /* It is valid to take the difference between two symbols in the same
            section.  Evaluate, but don't add a relocation. */
         r = maybe_evaluate(p);
       } else {
@@ -620,7 +620,7 @@ gpasmVal reloc_evaluate(struct pnode *p, unsigned short type)
       r = 0;
     }
   }
-  
+
   return r;
 }
 

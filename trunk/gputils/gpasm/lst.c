@@ -220,7 +220,7 @@ void lst_memory_map(MemBlock *m)
       }
 
       if(row_used) {
-        lst_printf("%04x :", i + base);
+        lst_printf("%04X :", i + base);
         for (j = 0; j < num_per_line; j++) {
           if ((j % num_per_block) == 0) {
             lst_printf(" ");
@@ -239,7 +239,15 @@ void lst_memory_map(MemBlock *m)
   lst_line("All other memory blocks unused.");
   lst_line("");
 
-  used = gp_processor_byte_to_org(state.device.class, b_memory_used(state.i_memory));
+  /* it seems that MPASM includes config bytes into program memory usage
+   * count for 16 bit cores. See gpasm testsuite:
+   * gpasm/testsuite/gpasm.mchip/listfiles/configX.lst */
+#define IS_PIC16  (state.device.class == PROC_CLASS_PIC16 || state.device.class == PROC_CLASS_PIC16E)
+
+  used = gp_processor_byte_to_org(state.device.class, (!IS_PIC16 && state.processor) ?
+    b_range_memory_used(state.i_memory, 0,
+      gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[0])) :
+    b_memory_used(state.i_memory));
   lst_line("Program Memory %s Used: %5i", _16bit_core ? "Bytes" : "Words", used);
   /* maxrom is not the program memory size.
   lst_line("Program Memory %s Free: %5d", _16bit_core ? "Bytes" : "Words", state.maxrom - used);
@@ -406,7 +414,8 @@ void lst_format_line(const char *src_line, int value)
         unsigned short word;
         state.device.class->i_memory_get(state.i_memory,
                                          state.lst.config_address, &word);
-        pos += lst_printf("%06X %04X", state.lst.config_address, word);
+        pos += lst_printf(addr_fmt, state.lst.config_address);
+        pos += lst_printf("%04X", word);
         lst_spaces(LINENUM_POS - pos);
       } else if((state.lst.config_address & 0x1) == 0) {
         /* if it is an even address don't print anything */
@@ -415,17 +424,18 @@ void lst_format_line(const char *src_line, int value)
         unsigned short word;
         state.device.class->i_memory_get(state.i_memory,
                                          state.lst.config_address - 1, &word);
-        pos += lst_printf("%06X %04X", state.lst.config_address - 1, word);
+        pos += lst_printf(addr_fmt, state.lst.config_address - 1);
+        pos += lst_printf("%04X", word);
         lst_spaces(LINENUM_POS - pos);
       }
     } else {
       unsigned short word;
       state.device.class->i_memory_get(state.i_memory,
                                        state.lst.config_address, &word);
-      pos += lst_printf("%06X %04X",
-                 gp_processor_byte_to_org(state.device.class,
-                                          state.lst.config_address),
-                 word);
+      pos += lst_printf(addr_fmt,
+                        gp_processor_byte_to_org(state.device.class,
+                                                 state.lst.config_address));
+      pos += lst_printf("%04X", word);
       lst_spaces(LINENUM_POS - pos);
     }
     break;
@@ -506,7 +516,7 @@ void lst_symbol_table(struct symbol_table *table)
   state.lst.lst_state = in_symtab;
 
   lst_line("SYMBOL TABLE");
-  lst_line("%-32s  %-8s", "  LABEL", "  VALUE");
+  lst_line("  LABEL                             VALUE");
   lst_line("");
 
   ps = lst = malloc(table->count * sizeof(lst[0]));
