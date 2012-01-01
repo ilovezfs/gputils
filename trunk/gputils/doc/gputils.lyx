@@ -5199,7 +5199,7 @@ Symbol table dump on or off
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -5208,7 +5208,7 @@ w=[0 | 1| 2]
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -6251,9 +6251,11 @@ This directive will generate an error if the symbol already has auxiliary
 \end_layout
 
 \begin_layout Standard
-Each auxiliary symbol is 18 bytes.
- So the contents specified by the expressions must be less than or equal
- to 18 * <number>.
+Each auxiliary symbol is 18 bytes for Microchip COFF version 1 or 20 bytes
+ for Microchip COFF version 2.
+ If the byte size of contents specified by the expressions is greater then
+ symbol size, several auxiliary symbols are generated.
+ The last auxiliary symbol is zero byte padded to the auxiliary symbol length.
 \end_layout
 
 \begin_layout Standard
@@ -6716,10 +6718,6 @@ See also: .DEF
 
 \begin_layout Section
 Instructions 
-\end_layout
-
-\begin_layout LyX-Code
-
 \end_layout
 
 \begin_layout Subsection
