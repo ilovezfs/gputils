@@ -3,6 +3,7 @@
     fixed .dim directive handling
   * gpasm/testsuite/gpasm.project/objfiles/dim.o:
     updated for Microchip COFF version 2
+  * doc/gputils.lyx: fixed .dim length depending on COFF cersion
 
 2011-12-31  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/lst.c, libgputils/gpmemory.c, libgputils/gpmemory.h:
