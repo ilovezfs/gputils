@@ -1,4 +1,4 @@
-/* Write coff objects 
+/* Write coff objects
    Copyright (C) 2003, 2004, 2005
    Craig Franklin
 
@@ -22,7 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
-/* String table offsets are 16 bits so this coff has a limit on the 
+/* String table offsets are 16 bits so this coff has a limit on the
    maximum string table size. */
 #define MAX_STRING_TABLE 0xffff
 
@@ -61,7 +61,7 @@ _gp_coffgen_addname(const char *name, FILE *fp, unsigned char *table)
 
   if (name == NULL)
     return;
-  
+
   length = strlen(name);
 
   if (length < 9) {
@@ -73,17 +73,16 @@ _gp_coffgen_addname(const char *name, FILE *fp, unsigned char *table)
       gp_fputvar(zero, 8 - length, fp);
   } else {
     offset = _gp_coffgen_addstring(name, table);
- 
+
     /* write zeros and offset */
     gp_fputl32(0, fp);
     gp_fputl32(offset, fp);
-
   }
 }
 
 /* write the file header */
-static void 
-_gp_coffgen_write_filehdr(gp_object_type *object, FILE *fp) 
+static void
+_gp_coffgen_write_filehdr(gp_object_type *object, FILE *fp)
 {
   gp_fputl16((object->isnew ? MICROCHIP_MAGIC_v2 : MICROCHIP_MAGIC_v1), fp);
   gp_fputl16(object->num_sections, fp);
@@ -92,13 +91,11 @@ _gp_coffgen_write_filehdr(gp_object_type *object, FILE *fp)
   gp_fputl32(object->num_symbols, fp);
   gp_fputl16((object->isnew ? OPT_HDR_SIZ_v2: OPT_HDR_SIZ_v1), fp);
   gp_fputl16(object->flags, fp);
-
-  return;
 }
 
 /* write the optional header */
-static void 
-_gp_coffgen_write_opthdr(gp_object_type *object, FILE *fp) 
+static void
+_gp_coffgen_write_opthdr(gp_object_type *object, FILE *fp)
 {
   unsigned long coff_type = gp_processor_coff_type(object->processor);
 
@@ -114,14 +111,12 @@ _gp_coffgen_write_opthdr(gp_object_type *object, FILE *fp)
   gp_fputl32(coff_type, fp);
   gp_fputl32(gp_processor_rom_width(object->class), fp);
   gp_fputl32(8, fp);
-
-  return;
 }
 
 /* write the section header */
-static void 
+static void
 _gp_coffgen_write_scnhdr(gp_section_type *section, int org_to_byte_shift,
-			 unsigned char *table, FILE *fp) 
+                         unsigned char *table, FILE *fp)
 {
   if (!(section->flags & (STYP_TEXT|STYP_DATA_ROM)))
       org_to_byte_shift = 0;
@@ -140,10 +135,10 @@ _gp_coffgen_write_scnhdr(gp_section_type *section, int org_to_byte_shift,
 }
 
 /* write the section data */
-static void 
-_gp_coffgen_write_data(proc_class_t class, 
-                       gp_section_type *section, 
-                       FILE *fp) 
+static void
+_gp_coffgen_write_data(proc_class_t class,
+                       gp_section_type *section,
+                       FILE *fp)
 {
   unsigned int org;
   unsigned int last;
@@ -161,13 +156,11 @@ _gp_coffgen_write_data(proc_class_t class,
     b_memory_assert_get(section->data, org, &b);
     fputc(b, fp);
   }
-
-  return;
 }
 
 /* write the section relocations */
-static void 
-_gp_coffgen_write_reloc(gp_section_type *section, FILE *fp) 
+static void
+_gp_coffgen_write_reloc(gp_section_type *section, FILE *fp)
 {
   gp_reloc_type *current = section->relocations;
 
@@ -177,16 +170,14 @@ _gp_coffgen_write_reloc(gp_section_type *section, FILE *fp)
     gp_fputl32(current->symbol->number, fp);
     gp_fputl16(current->offset, fp);
     gp_fputl16(current->type, fp);
-  
+
     current = current->next;
   }
-
-  return;
 }
 
 /* write the section linenumbers */
-static void 
-_gp_coffgen_write_linenum(gp_section_type *section, int org_to_byte_shift, FILE *fp) 
+static void
+_gp_coffgen_write_linenum(gp_section_type *section, int org_to_byte_shift, FILE *fp)
 {
   gp_linenum_type *current = section->line_numbers;
 
@@ -197,29 +188,26 @@ _gp_coffgen_write_linenum(gp_section_type *section, int org_to_byte_shift, FILE 
 
     gp_fputl32(current->symbol->number, fp);
     gp_fputl16(current->line_number, fp);
-    gp_fputl32(gp_byte_to_org(org_to_byte_shift, current->address), fp); 
+    gp_fputl32(gp_byte_to_org(org_to_byte_shift, current->address), fp);
     gp_fputl16(0, fp);
     gp_fputl32(0, fp);
 
     current = current->next;
   }
-
-  return;
 }
 
 /* write the auxiliary symbols */
-static void 
+static void
 _gp_coffgen_write_auxsymbols(gp_aux_type *aux, unsigned char *table, FILE *fp,
-			     int isnew) 
+                             int isnew)
 {
   unsigned int offset;
 
   while(aux != NULL) {
-
     switch (aux->type) {
     case AUX_DIRECT:
       /* add the direct string to the string table */
-      offset = _gp_coffgen_addstring(aux->_aux_symbol._aux_direct.string, 
+      offset = _gp_coffgen_addstring(aux->_aux_symbol._aux_direct.string,
                                      table);
       gp_fputl32(aux->_aux_symbol._aux_direct.command, fp);
       gp_fputl32(offset, fp);
@@ -227,9 +215,10 @@ _gp_coffgen_write_auxsymbols(gp_aux_type *aux, unsigned char *table, FILE *fp,
       gp_fputl32(0, fp);
       if (isnew) gp_fputl32(0, fp); else gp_fputl16(0, fp);
       break;
+
     case AUX_FILE:
       /* add the filename to the string table */
-      offset = _gp_coffgen_addstring(aux->_aux_symbol._aux_file.filename, 
+      offset = _gp_coffgen_addstring(aux->_aux_symbol._aux_file.filename,
                                      table);
       gp_fputl32(offset, fp);
       gp_fputl32(aux->_aux_symbol._aux_file.line_number, fp);
@@ -237,9 +226,10 @@ _gp_coffgen_write_auxsymbols(gp_aux_type *aux, unsigned char *table, FILE *fp,
       gp_fputvar("\0\0\0\0\0\0", 7, fp);
       if (isnew) gp_fputl32(0, fp); else gp_fputl16(0, fp);
       break;
+
     case AUX_IDENT:
       /* add the ident string to the string table */
-      offset = _gp_coffgen_addstring(aux->_aux_symbol._aux_ident.string, 
+      offset = _gp_coffgen_addstring(aux->_aux_symbol._aux_ident.string,
                                      table);
       gp_fputl32(offset, fp);
       gp_fputl32(0, fp);
@@ -247,6 +237,7 @@ _gp_coffgen_write_auxsymbols(gp_aux_type *aux, unsigned char *table, FILE *fp,
       gp_fputl32(0, fp);
       if (isnew) gp_fputl32(0, fp); else gp_fputl16(0, fp);
       break;
+
     case AUX_SCN:
       /* write section auxiliary symbol */
       gp_fputl32(aux->_aux_symbol._aux_scn.length, fp);
@@ -256,20 +247,19 @@ _gp_coffgen_write_auxsymbols(gp_aux_type *aux, unsigned char *table, FILE *fp,
       gp_fputl32(0, fp);
       if (isnew) gp_fputl32(0, fp); else gp_fputl16(0, fp);
       break;
+
     default:
       /* copy the data to the file */
-      gp_fputvar(&aux->_aux_symbol.data[0], isnew ? 20 : 18, fp);
+      gp_fputvar(&aux->_aux_symbol.data[0], isnew ? SYMBOL_SIZE_v2 : SYMBOL_SIZE_v1, fp);
     }
-   
+
     aux = aux->next;
   }
-
-  return;
 }
 
 /* write the symbol table */
-static void 
-_gp_coffgen_write_symbols(gp_object_type *object, unsigned char *table, FILE *fp) 
+static void
+_gp_coffgen_write_symbols(gp_object_type *object, unsigned char *table, FILE *fp)
 {
   gp_symbol_type *current;
 
@@ -283,7 +273,7 @@ _gp_coffgen_write_symbols(gp_object_type *object, unsigned char *table, FILE *fp
       gp_fputl16(current->section_number, fp);
     } else {
       gp_fputl16(current->section->number, fp);
-    }    
+    }
     if (object->isnew) {
       gp_fputl32(current->type | current->derived_type << 5, fp);
     }
@@ -295,11 +285,9 @@ _gp_coffgen_write_symbols(gp_object_type *object, unsigned char *table, FILE *fp
 
     if (current->num_auxsym)
       _gp_coffgen_write_auxsymbols(current->aux_list, table, fp, object->isnew);
-   
+
     current = current->next;
   }
-
-  return;
 }
 
 int
@@ -366,7 +354,7 @@ _gp_updateptr(gp_object_type *object)
     if (section->num_lineno != 0) {
       section->lineno_ptr = loc;
       loc += (section->num_lineno * LINENO_SIZ);
-    }    
+    }
     section = section->next;
   }
 
@@ -377,7 +365,7 @@ _gp_updateptr(gp_object_type *object)
   symbol = object->symbols;
   while (symbol != NULL) {
     symbol->number = symbol_number;
-    symbol_number += 1 + symbol->num_auxsym; 
+    symbol_number += 1 + symbol->num_auxsym;
     symbol = symbol->next;
   }
 
@@ -396,7 +384,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
     unlink(object->filename);
     return 0;
   }
-  
+
   coff = fopen(object->filename, "wb");
   if (coff == NULL) {
     perror(object->filename);
@@ -410,7 +398,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
   gp_putl32(&table[0], 4);
 
   /* write the data to the file */
-  _gp_coffgen_write_filehdr(object, coff); 
+  _gp_coffgen_write_filehdr(object, coff);
   _gp_coffgen_write_opthdr(object, coff);
 
   section = object->sections;
@@ -418,7 +406,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
   /* write section headers */
   while (section != NULL) {
     _gp_coffgen_write_scnhdr(section, object->class->org_to_byte_shift,
-			     &table[0], coff);
+                             &table[0], coff);
     section = section->next;
   }
 
@@ -426,7 +414,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
   section = object->sections;
   while (section != NULL) {
     if (_has_data(section)) {
-      _gp_coffgen_write_data(object->class, section, coff); 
+      _gp_coffgen_write_data(object->class, section, coff);
     }
     section = section->next;
   }
@@ -435,7 +423,7 @@ gp_write_coff(gp_object_type *object, int numerrors)
   section = object->sections;
   while (section != NULL) {
     if (section->num_reloc != 0) {
-      _gp_coffgen_write_reloc(section, coff); 
+      _gp_coffgen_write_reloc(section, coff);
     }
     section = section->next;
   }
@@ -444,19 +432,19 @@ gp_write_coff(gp_object_type *object, int numerrors)
   section = object->sections;
   while (section != NULL) {
     if (section->num_lineno != 0) {
-      _gp_coffgen_write_linenum(section, object->class->org_to_byte_shift, coff); 
-    }    
+      _gp_coffgen_write_linenum(section, object->class->org_to_byte_shift, coff);
+    }
     section = section->next;
   }
 
   /* write symbols */
   if (object->num_symbols != 0) {
-    _gp_coffgen_write_symbols(object, &table[0], coff); 
-  } 
+    _gp_coffgen_write_symbols(object, &table[0], coff);
+  }
 
   /* write string table */
   fwrite(&table[0], 1, gp_getl32(&table[0]), coff);
-  
+
   fclose(coff);
 
   return 0;
