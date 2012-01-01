@@ -1,3 +1,9 @@
+2012-01-01  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpwriteobj.c, gpasm/directive.c:
+    fixed .dim directive handling
+  * gpasm/testsuite/gpasm.project/objfiles/dim.o:
+    updated for Microchip COFF version 2
+
 2011-12-31  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/lst.c, libgputils/gpmemory.c, libgputils/gpmemory.h:
     properly count program memory usage: exclude config words for

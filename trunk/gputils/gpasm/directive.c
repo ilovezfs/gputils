@@ -1353,9 +1353,9 @@ static gpasmVal do_dim(gpasmVal r,
       if (i == (state.obj.newcoff ? SYMBOL_SIZE_v2 : SYMBOL_SIZE_v1)) {
         i = 0;
         aux_list = gp_coffgen_addaux(state.obj.object, coff_symbol);
-      } else {
-        aux_list->_aux_symbol.data[i++] = value;
       }
+
+      aux_list->_aux_symbol.data[i++] = value;
 
       parms = TAIL(parms);
     }
