@@ -1,95 +1,144 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-  <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
-  <TITLE>GPUTILS - GNU PIC Utilities</TITLE>
-  <META NAME="GENERATOR" CONTENT="OpenOffice.org 1.0.2  (Linux)">
-  <META NAME="AUTHOR" CONTENT="Craig Franklin">
-  <META NAME="CREATED" CONTENT="20010305;1020400">
-  <META NAME="CHANGED" CONTENT="Fri Jul  1 00:26:34 UTC 2011">
-  <STYLE>
-  <!--
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta name="generator" content=
+    "HTML Tidy for Windows (vers 14 February 2006), see www.w3.org">
+    <meta http-equiv="CONTENT-TYPE" content="text/html; charset=iso-8859-1">
+    <title>
+      GPUTILS - GNU PIC Utilities
+    </title>
+    <meta name="GENERATOR" content="OpenOffice.org 1.0.2 (Linux)">
+    <meta name="AUTHOR" content="Craig Franklin">
+    <meta name="CREATED" content="20010305;1020400">
+    <meta name="CHANGED" content="Fri Jul 1 00:26:34 UTC 2011">
+    <style type="text/css">
+<!--
     A:link { color: #008080 }
     A:visited { color: #483d8b }
-  -->
-  </STYLE>
-</HEAD>
-<BODY LANG="en-US" LINK="#008080" VLINK="#483d8b" BGCOLOR="#ffffff">
-<P><BR><BR>
-</P>
-<H1 ALIGN=CENTER>gputils</H1>
-<H2 ALIGN=CENTER>GNU PIC Utilities</H2>
-<TABLE WIDTH=100% BORDER=0 CELLPADDING=2 CELLSPACING=0 BGCOLOR="#ffffff">
-  <COL WIDTH=26*>
-  <COL WIDTH=161*>
-  <COL WIDTH=69*>
-  <TR VALIGN=TOP>
-    <TD ROWSPAN=16 WIDTH=10%>
-      <P><A HREF="#What"><I>What</I></A></P>
-      <P><A HREF="#Who"><I>Who</I></A></P>
-      <P><A HREF="#Platforms"><I>Platforms</I></A></P>
-      <P><A HREF="#Download"><I>Download</I></A></P>
-      <P><A HREF="#Mplab"><I>MPLAB Plugin</I></A></P>
-      <P><A HREF="#Test"><I>Test Files</I></A></P>
-      <P><A HREF="#News"><I>News</I></A></P>
-      <P><A HREF="#Support"><I>Support</I></A></P>
-    </TD>
-    <TD COLSPAN=2 WIDTH=90% BGCOLOR="#00b8ff">
-      <P><A NAME="What"></A><I><B>What is GPUTILS ?</B></I></P>
-    </TD>
-  </TR>
-  <TR>
-    <TD COLSPAN=2 WIDTH=90%>
-      <P>GPUTILS is a collection of tools for the <A HREF="http://www.microchip.com/">Microchip</A>
-      (TM) PIC microcontrollers. It includes gpasm, gplink, and gplib.
-      It's distributed under the terms of the <A HREF="COPYING">GNU
-      Public License</A>. There are other GNU PIC tools available such as <A HREF="http://www.dattalo.com/gnupic/gpsim.html">gpsim</A>,
-      a gputils compatible simulator.</P>
-    </TD>
-  </TR>
-  <TR>
-    <TD COLSPAN=2 WIDTH=90% VALIGN=TOP BGCOLOR="#00b8ff">
-      <P><A NAME="Who"></A><FONT SIZE=3><I><B>Who is GPUTILS ?</B></I></FONT></P>
-    </TD>
-  </TR>
-  <TR>
-    <TD COLSPAN=2 WIDTH=90%>
-      <P>GPUTILS was created by Craig Franklin and James Bowman.
-            Currently, it is primarily supported by Marko Kohtala. In the
-            past it has been supported by David Barnett and Scott Dattalo.</P>
-    </TD>
-  </TR>
-  <TR>
-    <TD COLSPAN=2 WIDTH=90% VALIGN=TOP BGCOLOR="#00b8ff">
-      <P><A NAME="Platforms"></A><I><B>What Platforms are Supported ?</B></I></P>
-    </TD>
-  </TR>
-  <TR>
-    <TD COLSPAN=2 WIDTH=90%>
-      <P>Linux (and other unices), Mac OS X, and MS-Windows are
-      supported. GPUTILS will compile natively on Linux using <A HREF="http://www.gnu.org/">gcc</A>.
-      Mac OS X users will need the December 2001 Developer Tools.
-      Windows 98/NT users will need <A HREF="http://www.mingw.org/">MinGW32</A>
-      if they wish to compile the tools.</P>
-    </TD>
-  </TR>
-  <TR>
-    <TD COLSPAN=2 WIDTH=90% VALIGN=TOP BGCOLOR="#00b8ff">
-      <P><A NAME="Download"></A><I><B>Downloading GPUTILS</B></I></P>
-    </TD>
-  </TR>
-  <TR>
-    <TD COLSPAN=2 WIDTH=90%>
-      <P>See the <A HREF="https://sourceforge.net/project/showfiles.php?group_id=41924">Sourceforge
-      download page</A> for source and binary packages.</P>
-<!--      A nightly snapshot of gputils is available <A HREF="http://gputils.sourceforge.net/snapshots/gputils.tar.gz">here</A>.
+    -->
+    </style>
+  </head>
+  <body lang="en-US" link="teal" vlink="#483D8B" bgcolor="white">
+    <p>
+      <br>
+      <br>
+    </p>
+    <h1 align="center">
+      gputils
+    </h1>
+    <h2 align="center">
+      GNU PIC Utilities
+    </h2>
+    <table width="100%" border="0" cellpadding="2" cellspacing="0" bgcolor=
+    "white">
+      <col width="26*">
+      <col width="161*">
+      <col width="69*">
+      <tr valign="top">
+        <td rowspan="16" width="10%">
+          <p>
+            <a href="#What"><i>What</i></a>
+          </p>
+          <p>
+            <a href="#Who"><i>Who</i></a>
+          </p>
+          <p>
+            <a href="#Platforms"><i>Platforms</i></a>
+          </p>
+          <p>
+            <a href="#Download"><i>Download</i></a>
+          </p>
+          <p>
+            <a href="#Mplab"><i>MPLAB Plugin</i></a>
+          </p>
+          <p>
+            <a href="#Test"><i>Test Files</i></a>
+          </p>
+          <p>
+            <a href="#News"><i>News</i></a>
+          </p>
+          <p>
+            <a href="#Support"><i>Support</i></a>
+          </p>
+        </td>
+        <td colspan="2" width="90%" bgcolor="#00B8FF">
+          <p>
+            <a name="What" id="What"></a><i><b>What is GPUTILS ?</b></i>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" width="90%">
+          <p>
+            GPUTILS is a collection of tools for the <a href=
+            "http://www.microchip.com/">Microchip</a> (TM) PIC
+            microcontrollers. It includes gpasm, gplink, and gplib. It's
+            distributed under the terms of the <a href="COPYING">GNU Public
+            License</a>. There are other GNU PIC tools available such as
+            <a href="http://www.dattalo.com/gnupic/gpsim.html">gpsim</a>, a
+            gputils compatible simulator.
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" width="90%" valign="top" bgcolor="#00B8FF">
+          <p>
+            <a name="Who" id="Who"></a><font size="3"><i><b>Who is GPUTILS
+            ?</b></i></font>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" width="90%">
+          <p>
+            GPUTILS was created by Craig Franklin and James Bowman. Currently,
+            it is primarily supported by Marko Kohtala. In the past it has been
+            supported by David Barnett and Scott Dattalo.
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" width="90%" valign="top" bgcolor="#00B8FF">
+          <p>
+            <a name="Platforms" id="Platforms"></a><i><b>What Platforms are
+            Supported ?</b></i>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" width="90%">
+          <p>
+            Linux (and other unices), Mac OS X, and MS-Windows are supported.
+            GPUTILS will compile natively on Linux using <a href=
+            "http://www.gnu.org/">gcc</a>. Mac OS X users will need the
+            December 2001 Developer Tools. Windows 98/NT users will need
+            <a href="http://www.mingw.org/">MinGW32</a> if they wish to compile
+            the tools.
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" width="90%" valign="top" bgcolor="#00B8FF">
+          <p>
+            <a name="Download" id="Download"></a><i><b>Downloading
+            GPUTILS</b></i>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" width="90%">
+          <p>
+            See the <a href=
+            "https://sourceforge.net/project/showfiles.php?group_id=41924">Sourceforge
+            download page</a> for source and binary packages.
+          </p>
+          <!--      A nightly snapshot of gputils is available <A HREF="http://gputils.sourceforge.net/snapshots/gputils.tar.gz">here</A>.
       This snapshot is automatically updated each night from the
       developmental code on the __CVS__ server. It is <I>not</I> an official
       release. This snapshot is provided as a convience to potential
       contributors and as a way to decrease the load on the SourceForge
       servers.</P>-->
-
-<!--      <P>Of course, pserver access to the CVS repository is still
+          <!--      <P>Of course, pserver access to the CVS repository is still
       provided. The following command will checkout all of the sources
       and place them in a gputils subdirectory: 
       </P>
@@ -99,163 +148,294 @@
             </P>
       <P>SourceForge has further documentation on accessing a CVS tree
       <A HREF="http://sourceforge.net/docman/?group_id=1">here</A>.</P>-->
-      <P>The latest development sources are available from our svn
-      server. <I>Note: we migrated from CVS and the CVS server is no longer
-      in use.</I></P>
-      <P>The following command will checkout all of the sources
-      and place them in a gputils subdirectory: 
-      </P>
-      <P><TT>svn co https://gputils.svn.sourceforge.net/svnroot/gputils <I>local_target_dir</I>
-      </TT></P>
-      <P>Of course, you will probably want to add "/trunk" to the URL to check out the main trunk of development.</P>
-      <P>You can browse our svn tree <A HREF="http://gputils.svn.sourceforge.net/gputils/">here</A>.
-      </P>
-      <P>SourceForge has further documentation on accessing a svn tree
-      <A HREF="https://sourceforge.net/docs/E09">here</A>.</P>
-      <P>Older <A HREF="http://prdownloads.sourceforge.net/gputils/">gputils</A>
-      and <A HREF="http://gputils.sourceforge.net/gpasm/">gpasm</A>
-      releases are available.</P>
-      <P>Users have ported gputils to many other platforms. Some of
-      these binaries are for the old gpasm package.</P>
-      <P><A HREF="http://www.freebsd.org/cgi/cvsweb.cgi/ports/devel/gputils/">GPUTILS
-      FreeBSD</A></P>
-      <P><A HREF="http://www.btinternet.com/~adfhome/demarco5">GPASM Psion EPOC</A></P>
-      <P><A HREF="http://packages.debian.org/unstable/electronics/gputils.html"><SPAN STYLE="background: transparent">GPUTILS
-      Debian Linux</SPAN></A></P>
-      <P><A HREF="http://hobbes.nmsu.edu/h-search.php?key=gputils&amp;pushbutton=Search">GPUTILS
-      OS/2</A></P>
-      <!--<P><A HREF="http://gputils.sourceforge.net/djgpp">GPUTILS
+          <p>
+            The latest development sources are available from our svn server.
+            <i>Note: we migrated from CVS and the CVS server is no longer in
+            use.</i>
+          </p>
+          <p>
+            The following command will checkout all of the sources and place
+            them in a gputils subdirectory:
+          </p>
+          <p>
+            <tt>svn co https://gputils.svn.sourceforge.net/svnroot/gputils
+            <i>local_target_dir</i></tt>
+          </p>
+          <p>
+            Of course, you will probably want to add "/trunk" to the URL to
+            check out the main trunk of development.
+          </p>
+          <p>
+            You can browse our svn tree <a href=
+            "http://gputils.svn.sourceforge.net/gputils/">here</a>.
+          </p>
+          <p>
+            SourceForge has further documentation on accessing a svn tree
+            <a href="https://sourceforge.net/docs/E09">here</a>.
+          </p>
+          <p>
+            Older <a href=
+            "http://prdownloads.sourceforge.net/gputils/">gputils</a> and
+            <a href="http://gputils.sourceforge.net/gpasm/">gpasm</a> releases
+            are available.
+          </p>
+          <p>
+            Users have ported gputils to many other platforms. Some of these
+            binaries are for the old gpasm package.
+          </p>
+          <p>
+            <a href=
+            "http://www.freebsd.org/cgi/cvsweb.cgi/ports/devel/gputils/">GPUTILS
+            FreeBSD</a>
+          </p>
+          <p>
+            <a href="http://www.btinternet.com/~adfhome/demarco5">GPASM Psion
+            EPOC</a>
+          </p>
+          <p>
+            <a href=
+            "http://packages.debian.org/unstable/electronics/gputils.html"><span style="background: transparent">
+            GPUTILS Debian Linux</span></a>
+          </p>
+          <p>
+            <a href=
+            "http://hobbes.nmsu.edu/h-search.php?key=gputils&amp;pushbutton=Search">
+            GPUTILS OS/2</a>
+          </p><!--<P><A HREF="http://gputils.sourceforge.net/djgpp">GPUTILS
       DOS (DJGPP)</A></P>
       <P><A HREF="http://www.traklink.com/component/option,com_docman/task,view_category/Itemid,26/subcat,8/catid,69/limitstart,0/limit,5/">GPUTILS
       Sharp Zaurus</A></P>
       <P><A HREF="http://homepages.ihug.co.nz/~jamjars/michael/software.html">GPASM
       RISC OS</A></P>-->
-      <P>If you have generated a binary of gputils please notify the
-      maintainer of this website, so that it can be added.</P>
-    </TD>
-  </TR>
-  <TR>
-    <TD COLSPAN=2 WIDTH=90% VALIGN=TOP BGCOLOR="#00b8ff">
-      <P><A NAME="Mplab"></A><I><B>MPLAB Plugin</B></I></P>
-    </TD>
-  </TR>
-  <TR>
-    <TD COLSPAN=2 WIDTH=90%>
-      <P><A HREF="http://www.microchip.com/">Microchip</A> offers an integrated
-                        development environment called MPLAB.  This environment is only available
-                        for MS-Windows.  The gputils project has developed an MPLAB plugin.  With 
-                        this plugin,
-                        <A HREF="https://sourceforge.net/project/showfiles.php?group_id=41924">gputils-mplab</A>,
-                        MPLAB can be used as an IDE for gputils.</P>
-    </TD>
-  </TR>
-  <TR>
-    <TD COLSPAN=2 WIDTH=90% VALIGN=TOP BGCOLOR="#00b8ff">
-      <P><A NAME="Test"></A><I><B>Test Files</B></I></P>
-    </TD>
-  </TR>
-  <TR>
-    <TD COLSPAN=2 WIDTH=90%>
-      <P><A HREF="http://www.microchip.com/">Microchip</A> provided the
-      project with a set of test files that they use to test MPASM for
-      each release. These files were reformatted, some typos were fixed,
-      and scripts to run the tests were generated. The files and scripts
-      are located in svn and can be accessed <A HREF="http://gputils.svn.sourceforge.net/viewvc/gputils/trunk/gputils/gpasm/testsuite/">here</A>.</P>
-      <P>For anyone interested, the original unaltered files are
-      available in this <A HREF="http://gputils.sourceforge.net/microchip/mpasmtst.zip">archive</A>.
-      For information about the archive please read this <A HREF="http://gputils.sourceforge.net/microchip/mpasmtst.txt">file</A>.
-      These files were provided by Microchip without any warranty or any
-      level of support. If you have a question about the files ask the
-      current gputils project administrator, not Microchip.</P>
-    </TD>
-  </TR>
-  <TR>
-    <TD COLSPAN=2 WIDTH=90% VALIGN=TOP BGCOLOR="#00b8ff">
-      <P><A NAME="News"></A><I><B>Recent NEWS</B></I></P>
-    </TD>
-  </TR>
-  <TR>
-    <TD COLSPAN=2 WIDTH=90%>
-      <P><B>October 29, 2011 -- gputils-0.13.8 Released</B></P>
-      <P>
-        Added support for pic 14 bit devices enhanced instruction set<BR />
-        Added support for pic18f2xk22 / pic18f4xk22 family<BR />
-        Added support for EEPROM16
-      </P>
-
-      <P><B>March 13, 2009 -- gputils-0.13.7 Released</B></P>
-      <P>Added support for all processors supported by MPLAB 8.20 (except eeprom16 and related).<BR/>
-            Added support for "LIST M=?" directive.<BR/>
-            Fixed several bugs.</P>
-      <P><A HREF="previous.html">Previous News</A> 
-      </P>
-    </TD>
-  </TR>
-  <TR>
-    <TD COLSPAN=2 WIDTH=90% VALIGN=TOP BGCOLOR="#00b8ff">
-      <P><A NAME="Support"></A><I><B>Support for GPUTILS</B></I></P>
-    </TD>
-  </TR>
-  <TR>
-    <TD COLSPAN=2 WIDTH=90%>
-      <P><B>GPUTILS</B> comes with some documentation and examples. When
-      that isn't enough, you can find help in the following places:</P>
-      <UL>
-        <LI><P><A HREF="gputils.pdf">User Manual</A> - for information on
-        the tools in <A HREF="http://www.adobe.com/">Acrobat</A> format.
-        You might also want to take a look at <A HREF="http://www.microchip.com/">Microchip's</A>
-        MPASM <A HREF="33014g.pdf">manual</A>. For information on
-        <A HREF="http://www.microchip.com/">Microchip's</A> COFF files,
-        look in this <A HREF="51288a.pdf">manual</A>.</P></LI>
-        <LI><P><A HREF="http://gputils.wiki.sourceforge.net/">gputils Wiki</A>
-        - for in-depth documentation, etc. (additions welcome).</P></LI>
-        <!--<LI><P><A HREF="http://gputils.sourceforge.net/faq.html">FAQ</A>
-        - for frequently asked questions.</P></LI>-->
-        <LI><P><A HREF="http://gputils.sourceforge.net/reloc_howto.html">Relocatable
-        object HOWTO</A> - for brief information about using gputils with
-        relocatable objects.</P></LI>
-        <LI><P><A HREF="mailto:gnupic@linuxhacker.org">Mailing list</A> -
-        if you have a general question about PIC micro controllers or the
-        tools. Subscribe to the <A HREF="http://www.gnupic.org/">GNUPIC</A>
-        mailing list by sending a message to:</P>
-      <P><A HREF="mailto:gnupic-subscribe@linuxhacker.org">gnupic-subscribe@linuxhacker.org</A></P>
-      <P>with the word <B>subscribe</B> in the body.</P>
-      <P><A HREF="mailto:gnupic@linuxhacker.org">gnupic@linuxhacker.org</A>
-      is the address of the list.</P>
-      <P>There's also the <A HREF="http://www.linuxhacker.org/cgi-bin/ezmlm-cgi/1">gnupic
-      archive</A>.</P></LI>
-        <LI><P><A HREF="https://sourceforge.net/tracker/?atid=431665&amp;group_id=41924&amp;func=browse">Bug
-        Reporting</A> - if you have a problem using GPUTILS, we need to
-        hear about it.</P></LI>
-        <LI><P><A HREF="https://sourceforge.net/tracker/?atid=431668&amp;group_id=41924&amp;func=browse">Feature
-        Requests</A> - if you would like to see a new feature. 
-        </P></LI>
-        <LI><P><A HREF="https://sourceforge.net/projects/gputils/">Source
-        Forge Website</A> - for further information.</P></LI>
-        <LI><P><A HREF="http://www.dattalo.com/gnupic/gpsim.html">GPSIM
-        Information</A> - for information on the gputils compatible
-        simulator.</P></LI>
-        <LI><P><A HREF="http://xizard.free.fr/logiciels/xgpasm/xgpasm.html">XGPASM
-        Information</A> - for information on a gui for gpasm.</P></LI>
-        <LI><P><A HREF="http://pikdev.free.fr/">PiKdev Information</A> -
-        for information on an IDE for gpasm.</P></LI>
-      </UL>
-    </TD>
-  </TR>
-  <TR>
-    <TD WIDTH=10% VALIGN=TOP></TD>
-    <TD WIDTH=63%>
-      <P STYLE="margin-bottom: 0cm"><I>This Site Hosted by</I></P>
-      <P><A HREF="http://sourceforge.net/projects/gputils"><IMG SRC="http://sourceforge.net/sflogo.php?group_id=41924" NAME="Graphic1" ALT="SourceForge" ALIGN=BOTTOM WIDTH=88 HEIGHT=31 BORDER=0></A></P>
-    </TD>
-    <TD WIDTH=27%>
-      <P STYLE="margin-bottom: 0cm"><A HREF="mailto:craigfranklin@users.sourceforge.net">Webmaster</A>
-            </P>
-      <P>Last updated: June 30, 2011</P>
-    </TD>
-  </TR>
-</TABLE>
-<P><BR><BR>
-</P>
-</BODY>
-</HTML>
+          <p>
+            If you have generated a binary of gputils please notify the
+            maintainer of this website, so that it can be added.
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" width="90%" valign="top" bgcolor="#00B8FF">
+          <p>
+            <a name="Mplab" id="Mplab"></a><i><b>MPLAB Plugin</b></i>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" width="90%">
+          <p>
+            <a href="http://www.microchip.com/">Microchip</a> offers an
+            integrated development environment called MPLAB. This environment
+            is only available for MS-Windows. The gputils project has developed
+            an MPLAB plugin. With this plugin, <a href=
+            "https://sourceforge.net/project/showfiles.php?group_id=41924">gputils-mplab</a>,
+            MPLAB can be used as an IDE for gputils.
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" width="90%" valign="top" bgcolor="#00B8FF">
+          <p>
+            <a name="Test" id="Test"></a><i><b>Test Files</b></i>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" width="90%">
+          <p>
+            <a href="http://www.microchip.com/">Microchip</a> provided the
+            project with a set of test files that they use to test MPASM for
+            each release. These files were reformatted, some typos were fixed,
+            and scripts to run the tests were generated. The files and scripts
+            are located in svn and can be accessed <a href=
+            "http://gputils.svn.sourceforge.net/viewvc/gputils/trunk/gputils/gpasm/testsuite/">
+            here</a>.
+          </p>
+          <p>
+            For anyone interested, the original unaltered files are available
+            in this <a href=
+            "http://gputils.sourceforge.net/microchip/mpasmtst.zip">archive</a>.
+            For information about the archive please read this <a href=
+            "http://gputils.sourceforge.net/microchip/mpasmtst.txt">file</a>.
+            These files were provided by Microchip without any warranty or any
+            level of support. If you have a question about the files ask the
+            current gputils project administrator, not Microchip.
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" width="90%" valign="top" bgcolor="#00B8FF">
+          <p>
+            <a name="News" id="News"></a><i><b>Recent NEWS</b></i>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" width="90%">
+          <p>
+            <b>October 29, 2011 -- gputils-0.14.0 Released</b>
+          </p>
+          <p>
+            Added support for pic 14 bit devices enhanced instruction set<br>
+            Added support for pic18f2xk22 / pic18f4xk22 family<br>
+            Added support for EEPROM16
+          </p>
+          <p>
+            <b>March 13, 2009 -- gputils-0.13.7 Released</b>
+          </p>
+          <p>
+            Added support for all processors supported by MPLAB 8.20 (except
+            eeprom16 and related).<br>
+            Added support for "LIST M=?" directive.<br>
+            Fixed several bugs.
+          </p>
+          <p>
+            <a href="previous.html">Previous News</a>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" width="90%" valign="top" bgcolor="#00B8FF">
+          <p>
+            <a name="Support" id="Support"></a><i><b>Support for
+            GPUTILS</b></i>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" width="90%">
+          <p>
+            <b>GPUTILS</b> comes with some documentation and examples. When
+            that isn't enough, you can find help in the following places:
+          </p>
+          <ul>
+            <li>
+              <p>
+                <a href="gputils.pdf">User Manual</a> - for information on the
+                tools in <a href="http://www.adobe.com/">Acrobat</a> format.
+                You might also want to take a look at <a href=
+                "http://www.microchip.com/">Microchip's</a> MPASM <a href=
+                "33014g.pdf">manual</a>. For information on <a href=
+                "http://www.microchip.com/">Microchip's</a> COFF files, look in
+                this <a href="51288a.pdf">manual</a>.
+              </p>
+            </li>
+            <li>
+              <p>
+                <a href="http://sourceforge.net/apps/trac/gputils">gputils
+                Wiki</a> - for in-depth documentation, etc. (additions
+                welcome).
+              </p>
+            </li>
+            <li>
+              <p>
+                <a href="http://gputils.sourceforge.net/faq.html">FAQ</a> - for
+                frequently asked questions.
+              </p>
+            </li>
+            <li>
+              <p>
+                <a href=
+                "http://gputils.sourceforge.net/reloc_howto.html">Relocatable
+                object HOWTO</a> - for brief information about using gputils
+                with relocatable objects.
+              </p>
+            </li>
+            <li>
+              <p>
+                <a href="mailto:gnupic@linuxhacker.org">Mailing list</a> - if
+                you have a general question about PIC micro controllers or the
+                tools. Subscribe to the <a href=
+                "http://www.gnupic.org/">GNUPIC</a> mailing list by sending a
+                message to:
+              </p>
+              <p>
+                <a href=
+                "mailto:gnupic-subscribe@linuxhacker.org">gnupic-subscribe@linuxhacker.org</a>
+              </p>
+              <p>
+                with the word <b>subscribe</b> in the body.
+              </p>
+              <p>
+                <a href=
+                "mailto:gnupic@linuxhacker.org">gnupic@linuxhacker.org</a> is
+                the address of the list.
+              </p>
+              <p>
+                There's also the <a href=
+                "http://www.linuxhacker.org/cgi-bin/ezmlm-cgi/1">gnupic
+                archive</a>.
+              </p>
+            </li>
+            <li>
+              <p>
+                <a href=
+                "https://sourceforge.net/tracker/?atid=431665&amp;group_id=41924&amp;func=browse">
+                Bug Reporting</a> - if you have a problem using GPUTILS, we
+                need to hear about it.
+              </p>
+            </li>
+            <li>
+              <p>
+                <a href=
+                "https://sourceforge.net/tracker/?atid=431668&amp;group_id=41924&amp;func=browse">
+                Feature Requests</a> - if you would like to see a new feature.
+              </p>
+            </li>
+            <li>
+              <p>
+                <a href="https://sourceforge.net/projects/gputils/">Source
+                Forge Website</a> - for further information.
+              </p>
+            </li>
+            <li>
+              <p>
+                <a href="http://www.dattalo.com/gnupic/gpsim.html">GPSIM
+                Information</a> - for information on the gputils compatible
+                simulator.
+              </p>
+            </li>
+            <li>
+              <p>
+                <a href=
+                "http://xizard.free.fr/logiciels/xgpasm/xgpasm.html">XGPASM
+                Information</a> - for information on a gui for gpasm.
+              </p>
+            </li>
+            <li>
+              <p>
+                <a href="http://pikdev.free.fr/">PiKdev Information</a> - for
+                information on an IDE for gpasm.
+              </p>
+            </li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td width="10%" valign="top"></td>
+        <td width="63%">
+          <p style="margin-bottom: 0cm">
+            <i>This Site Hosted by</i>
+          </p>
+          <p>
+            <a href="http://sourceforge.net/projects/gputils"><img src=
+            "http://sourceforge.net/sflogo.php?group_id=41924" name="Graphic1"
+            alt="SourceForge" align="bottom" width="88" height="31" border="0"
+            id="Graphic1"></a>
+          </p>
+        </td>
+        <td width="27%">
+          <p style="margin-bottom: 0cm">
+            <a href="mailto:craigfranklin@users.sourceforge.net">Webmaster</a>
+          </p>
+          <p>
+            Last updated: January 01, 2012
+          </p>
+        </td>
+      </tr>
+    </table>
+    <p>
+      <br>
+      <br>
+    </p>
+  </body>
+</html>
