@@ -7,10 +7,8 @@
     <title>
       GPUTILS - GNU PIC Utilities
     </title>
-    <meta name="GENERATOR" content="OpenOffice.org 1.0.2 (Linux)">
     <meta name="AUTHOR" content="Craig Franklin">
     <meta name="CREATED" content="20010305;1020400">
-    <meta name="CHANGED" content="Fri Jul 1 00:26:34 UTC 2011">
     <style type="text/css">
 <!--
     A:link { color: #008080 }
@@ -268,21 +266,26 @@
       <tr>
         <td colspan="2" width="90%">
           <p>
+            <b>January 7, 2012 -- gputils-0.14.1 Released</b>
+          </p>
+          <p>
+            <li>gpasm, gplink: generate coff files with the new Microchip COFF format version 2 by default</li>
+            <li>gpasm -C option reverted: now it genetares old Microchip COFF format version 1</li>
+            <li>gpasm --new-coff option removed, added --old-coff</li>
+            <li>emitted config words are masked with the word size</li>
+            <li>gpasm messages, warnings and errors more compatible with MPASM</li>
+            <li>gpasm list file format more compatible with MPASM</li>
+            <li>proper "end" line handling, include the "end" line in the asm listing</li>
+            <li>--versions command line option mow shows also the gputils build date</li>
+            <li>added support for all pic 14 bit enhanced devices supported by MPASM 5.43</li>
+          </p>
+          <p>
             <b>October 29, 2011 -- gputils-0.14.0 Released</b>
           </p>
           <p>
             Added support for pic 14 bit devices enhanced instruction set<br>
             Added support for pic18f2xk22 / pic18f4xk22 family<br>
             Added support for EEPROM16
-          </p>
-          <p>
-            <b>March 13, 2009 -- gputils-0.13.7 Released</b>
-          </p>
-          <p>
-            Added support for all processors supported by MPLAB 8.20 (except
-            eeprom16 and related).<br>
-            Added support for "LIST M=?" directive.<br>
-            Fixed several bugs.
           </p>
           <p>
             <a href="previous.html">Previous News</a>
