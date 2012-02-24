@@ -2,6 +2,10 @@
   * lkr/Makefile.sh: let replaced with expr
   * lkr/Makefile.am, lkr/Makefile.in: regenarated,
     fixed bug #3487822: Error during compiling the source of gputils
+  * libgputils/gpprocessor.c, header/p16lf720.inc, header/p16lf721.inc,
+    header/p16f720.inc, header/p16f721.inc,
+    lkr/16f720_g.lkr, lkr/16lf720_g.lkr,
+    lkr/16f721_g.lkr, lkr/16lf721_g.lkr: added
 
 2012-01-01  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpprocessor.c, lkr/*:
