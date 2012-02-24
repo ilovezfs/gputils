@@ -1,3 +1,13 @@
+2012-02-24  Borut Razem  <borutr@users.sourceforge.net>
+  * lkr/Makefile.sh: let replaced with expr
+  * lkr/Makefile.am, lkr/Makefile.in: regenarated,
+    fixed bug #3487822: Error during compiling the source of gputils
+
+2012-01-01  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpprocessor.c, lkr/*:
+    sync existing 10x, 12x and changed 16x devices with
+    MPLAB X IDE v1.00, mpasmx 5.42
+
 2012-01-01  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpwriteobj.c, gpasm/directive.c:
     fixed .dim directive handling
