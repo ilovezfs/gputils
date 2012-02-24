@@ -13,17 +13,17 @@ LKR_FILES =\
 _ACEOF
 
 # count the number of items in the list
-let count=0
+count=0
 for x in *.lkr
   do
-    let count=count+1
+    count=$(expr $count + 1)
   done
 
 # output the file list
-let number=0
+number=0
 for x in *.lkr
   do
-    let number=number+1
+    number=$(expr $number + 1)
     if [ $number -eq $count ]; then
       echo "	$x" >> $MAKE_FILE
     else
