@@ -200,6 +200,8 @@ LKR_FILES =\
 	16f690i.lkr \
 	16f716_g.lkr \
 	16f72.lkr \
+	16f720_g.lkr \
+	16f721_g.lkr \
 	16f722.lkr \
 	16f722i.lkr \
 	16f723.lkr \
@@ -309,6 +311,8 @@ LKR_FILES =\
 	16lf1939_g.lkr \
 	16lf1946_g.lkr \
 	16lf1947_g.lkr \
+	16lf720_g.lkr \
+	16lf721_g.lkr \
 	16lf722.lkr \
 	16lf722i.lkr \
 	16lf723.lkr \
