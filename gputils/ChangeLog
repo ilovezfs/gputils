@@ -1,3 +1,6 @@
+2012-02-25  Borut Razem  <borutr@users.sourceforge.net>
+  * lkr/*.lkr, header/*.inc: fixed *.inc and *.lkr files svn properties
+
 2012-02-24  Borut Razem  <borutr@users.sourceforge.net>
   * lkr/Makefile.sh: let replaced with expr
   * lkr/Makefile.am, lkr/Makefile.in: regenarated,

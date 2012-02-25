@@ -1,5 +1,5 @@
 // Sample linker command file for 17C42A
-// $Id: 17c42a.lkr,v 1.4 2008/03/20 17:19:03 curtiss Exp $
+// $Id$
 
 LIBPATH  .
 

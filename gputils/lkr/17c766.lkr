@@ -1,5 +1,5 @@
 // Sample linker command file for 17C766
-// $Id: 17c766.lkr,v 1.5 2008/03/20 17:19:03 curtiss Exp $
+// $Id$
 
 LIBPATH  .
 
