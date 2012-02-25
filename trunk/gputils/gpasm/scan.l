@@ -54,36 +54,42 @@ static char *check_defines(char *symbol);
 static int quoted; /* Used to prevent #define expansion in ifdef and
                       ifndef... */
 int force_decimal; /* Used to force radix to decimal for some directives */
-int force_ident; /* Used to force numbers to identifiers for processor names */
+int force_ident;   /* Used to force numbers to identifiers for processor names */
+
+#ifndef YY_CURRENT_BUFFER_LVALUE
+# define GP_CURRENT_BUFFER_LVALUE yy_current_buffer
+#else
+# define GP_CURRENT_BUFFER_LVALUE YY_CURRENT_BUFFER_LVALUE
+#endif
 
 #define GP_INPUT(buf,result,max_size) \
-        if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
-                { \
-                int c = '*'; \
-                size_t n; \
-                for ( n = 0; n < max_size && \
-                             (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
-                        buf[n] = (char) c; \
-                if ( c == '\n' ) \
-                        buf[n++] = (char) c; \
-                if ( c == EOF && ferror( yyin ) ) \
-                        YY_FATAL_ERROR( "input in flex scanner failed" ); \
-                result = n; \
-                } \
-        else \
-                { \
-                errno=0; \
-                while ( (result = fread(buf, 1, max_size, yyin))==0 && ferror(yyin)) \
-                        { \
-                        if( errno != EINTR) \
-                                { \
-                                YY_FATAL_ERROR( "input in flex scanner failed" ); \
-                                break; \
-                                } \
-                        errno=0; \
-                        clearerr(yyin); \
-                        } \
-                }
+  if ( GP_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
+    { \
+      int c = '*'; \
+      size_t n; \
+      for ( n = 0; n < max_size && \
+        (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
+        buf[n] = (char) c; \
+      if ( c == '\n' ) \
+        buf[n++] = (char) c; \
+      if ( c == EOF && ferror( yyin ) ) \
+        YY_FATAL_ERROR( "input in flex scanner failed" ); \
+      result = n; \
+    } \
+  else \
+    { \
+      errno=0; \
+      while ( (result = fread(buf, 1, max_size, yyin))==0 && ferror(yyin)) \
+        { \
+          if( errno != EINTR) \
+            { \
+              YY_FATAL_ERROR( "input in flex scanner failed" ); \
+              break; \
+            } \
+          errno=0; \
+          clearerr(yyin); \
+        } \
+    }
 
 #define YY_INPUT(buf,result,max_size) \
   { \
@@ -99,6 +105,8 @@ int force_ident; /* Used to force numbers to identifiers for processor names */
         state.src->last_char_is_nl = true; \
       } \
   }
+
+#undef GP_CURRENT_BUFFER_LVALUE
 %}
 
 IDENT  [.]?[a-z_\x80-\xff?@#][a-z_0-9\x80-\xff.?@#]*

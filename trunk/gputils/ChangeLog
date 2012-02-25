@@ -1,7 +1,8 @@
 2012-02-25  Borut Razem  <borutr@users.sourceforge.net>
   * header/Makefile.sh: let replaced with expr
   * header/Makefile.am, header/Makefile.in: regenarated;
-    thanks to Raphael Neider
+    thanks to Raphael Neider.
+  * gpasm/scan.l: fixed for flex older then 2.5.35
 
 2012-02-25  Borut Razem  <borutr@users.sourceforge.net>
   * lkr/*.lkr, header/*.inc: fixed *.inc and *.lkr files svn properties
