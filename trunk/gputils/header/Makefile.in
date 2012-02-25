@@ -192,10 +192,10 @@ HEADER_FILES = \
 	p10f206.inc \
 	p10f220.inc \
 	p10f222.inc \
-	p12c508a.inc \
 	p12c508.inc \
-	p12c509a.inc \
+	p12c508a.inc \
 	p12c509.inc \
+	p12c509a.inc \
 	p12c671.inc \
 	p12c672.inc \
 	p12ce518.inc \
@@ -227,49 +227,49 @@ HEADER_FILES = \
 	p16c558.inc \
 	p16c5x.inc \
 	p16c61.inc \
-	p16c620a.inc \
+	p16c62.inc \
 	p16c620.inc \
-	p16c621a.inc \
+	p16c620a.inc \
 	p16c621.inc \
-	p16c622a.inc \
+	p16c621a.inc \
 	p16c622.inc \
+	p16c622a.inc \
 	p16c62a.inc \
 	p16c62b.inc \
-	p16c62.inc \
-	p16c63a.inc \
 	p16c63.inc \
+	p16c63a.inc \
+	p16c64.inc \
 	p16c642.inc \
 	p16c64a.inc \
-	p16c64.inc \
+	p16c65.inc \
 	p16c65a.inc \
 	p16c65b.inc \
-	p16c65.inc \
-	p16c662.inc \
 	p16c66.inc \
+	p16c662.inc \
 	p16c67.inc \
+	p16c71.inc \
 	p16c710.inc \
 	p16c711.inc \
 	p16c712.inc \
 	p16c715.inc \
 	p16c716.inc \
 	p16c717.inc \
-	p16c71.inc \
-	p16c72a.inc \
 	p16c72.inc \
+	p16c72a.inc \
+	p16c73.inc \
 	p16c73a.inc \
 	p16c73b.inc \
-	p16c73.inc \
+	p16c74.inc \
 	p16c745.inc \
 	p16c74a.inc \
 	p16c74b.inc \
-	p16c74.inc \
-	p16c765.inc \
 	p16c76.inc \
+	p16c765.inc \
+	p16c77.inc \
 	p16c770.inc \
 	p16c771.inc \
 	p16c773.inc \
 	p16c774.inc \
-	p16c77.inc \
 	p16c781.inc \
 	p16c782.inc \
 	p16c84.inc \
@@ -324,10 +324,10 @@ HEADER_FILES = \
 	p16f5x.inc \
 	p16f610.inc \
 	p16f616.inc \
-	p16f627a.inc \
 	p16f627.inc \
-	p16f628a.inc \
+	p16f627a.inc \
 	p16f628.inc \
+	p16f628a.inc \
 	p16f630.inc \
 	p16f631.inc \
 	p16f636.inc \
@@ -342,44 +342,46 @@ HEADER_FILES = \
 	p16f689.inc \
 	p16f690.inc \
 	p16f716.inc \
+	p16f72.inc \
+	p16f720.inc \
+	p16f721.inc \
 	p16f722.inc \
 	p16f723.inc \
 	p16f724.inc \
 	p16f726.inc \
 	p16f727.inc \
-	p16f72.inc \
-	p16f737.inc \
 	p16f73.inc \
-	p16f747.inc \
+	p16f737.inc \
 	p16f74.inc \
-	p16f767.inc \
+	p16f747.inc \
 	p16f76.inc \
-	p16f777.inc \
+	p16f767.inc \
 	p16f77.inc \
+	p16f777.inc \
 	p16f785.inc \
 	p16f818.inc \
 	p16f819.inc \
 	p16f83.inc \
-	p16f84a.inc \
 	p16f84.inc \
+	p16f84a.inc \
+	p16f87.inc \
 	p16f870.inc \
 	p16f871.inc \
 	p16f872.inc \
-	p16f873a.inc \
 	p16f873.inc \
-	p16f874a.inc \
+	p16f873a.inc \
 	p16f874.inc \
-	p16f876a.inc \
+	p16f874a.inc \
 	p16f876.inc \
-	p16f877a.inc \
+	p16f876a.inc \
 	p16f877.inc \
-	p16f87.inc \
+	p16f877a.inc \
+	p16f88.inc \
 	p16f882.inc \
 	p16f883.inc \
 	p16f884.inc \
 	p16f886.inc \
 	p16f887.inc \
-	p16f88.inc \
 	p16f913.inc \
 	p16f914.inc \
 	p16f916.inc \
@@ -425,18 +427,20 @@ HEADER_FILES = \
 	p16lf1939.inc \
 	p16lf1946.inc \
 	p16lf1947.inc \
+	p16lf720.inc \
+	p16lf721.inc \
 	p16lf722.inc \
 	p16lf723.inc \
 	p16lf724.inc \
 	p16lf726.inc \
 	p16lf727.inc \
-	p17c42a.inc \
 	p17c42.inc \
+	p17c42a.inc \
 	p17c43.inc \
 	p17c44.inc \
 	p17c752.inc \
-	p17c756a.inc \
 	p17c756.inc \
+	p17c756a.inc \
 	p17c762.inc \
 	p17c766.inc \
 	p17cr42.inc \
@@ -466,16 +470,16 @@ HEADER_FILES = \
 	p18f23k20.inc \
 	p18f23k22.inc \
 	p18f2410.inc \
+	p18f242.inc \
 	p18f2420.inc \
 	p18f2423.inc \
-	p18f242.inc \
 	p18f2431.inc \
 	p18f2439.inc \
 	p18f2450.inc \
 	p18f2455.inc \
 	p18f2458.inc \
-	p18f2480.inc \
 	p18f248.inc \
+	p18f2480.inc \
 	p18f24j10.inc \
 	p18f24j11.inc \
 	p18f24j50.inc \
@@ -483,16 +487,16 @@ HEADER_FILES = \
 	p18f24k22.inc \
 	p18f2510.inc \
 	p18f2515.inc \
+	p18f252.inc \
 	p18f2520.inc \
 	p18f2523.inc \
 	p18f2525.inc \
-	p18f252.inc \
 	p18f2539.inc \
 	p18f2550.inc \
 	p18f2553.inc \
+	p18f258.inc \
 	p18f2580.inc \
 	p18f2585.inc \
-	p18f258.inc \
 	p18f25j10.inc \
 	p18f25j11.inc \
 	p18f25j50.inc \
@@ -515,16 +519,16 @@ HEADER_FILES = \
 	p18f43k20.inc \
 	p18f43k22.inc \
 	p18f4410.inc \
+	p18f442.inc \
 	p18f4420.inc \
 	p18f4423.inc \
-	p18f442.inc \
 	p18f4431.inc \
 	p18f4439.inc \
 	p18f4450.inc \
 	p18f4455.inc \
 	p18f4458.inc \
-	p18f4480.inc \
 	p18f448.inc \
+	p18f4480.inc \
 	p18f44j10.inc \
 	p18f44j11.inc \
 	p18f44j50.inc \
@@ -532,16 +536,16 @@ HEADER_FILES = \
 	p18f44k22.inc \
 	p18f4510.inc \
 	p18f4515.inc \
+	p18f452.inc \
 	p18f4520.inc \
 	p18f4523.inc \
 	p18f4525.inc \
-	p18f452.inc \
 	p18f4539.inc \
 	p18f4550.inc \
 	p18f4553.inc \
+	p18f458.inc \
 	p18f4580.inc \
 	p18f4585.inc \
-	p18f458.inc \
 	p18f45j10.inc \
 	p18f45j11.inc \
 	p18f45j50.inc \
