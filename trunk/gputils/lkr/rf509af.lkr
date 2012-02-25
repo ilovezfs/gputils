@@ -1,5 +1,5 @@
 // Sample linker command file for rfPIC12C509AF
-// $Id: rf509af.lkr,v 1.3 2006/02/04 00:06:47 nairnj Exp $
+// $Id$
 
 LIBPATH  .
 

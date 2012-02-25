@@ -1,5 +1,5 @@
 // Sample linker command file for HCS1370
-// $Id: hcs1370.lkr,v 1.4 2006/02/04 00:06:47 nairnj Exp $
+// $Id$
 
 LIBPATH  .
 
