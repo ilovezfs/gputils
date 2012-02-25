@@ -26,6 +26,15 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
+#if !defined(YY_FLEX_MAJOR_VERSION) ||
+  !defined(YY_FLEX_MINOR_VERSION) ||
+  !defined(YY_FLEX_SUBMINOR_VERSION) ||
+  YY_FLEX_MAJOR_VERSION < 2 ||
+  (YY_FLEX_MAJOR_VERSION = 2 && YY_FLEX_MINOR_VERSION < 5) ||
+  (YY_FLEX_MAJOR_VERSION = 2 && YY_FLEX_MINOR_VERSION = 5 && YY_FLEX_SUBMINOR_VERSION < 35)
+#error "flex 2.5.35 or newer required!"
+#endif
+
 #include "stdhdr.h"
 
 #include "libgputils.h"
@@ -56,14 +65,8 @@ static int quoted; /* Used to prevent #define expansion in ifdef and
 int force_decimal; /* Used to force radix to decimal for some directives */
 int force_ident;   /* Used to force numbers to identifiers for processor names */
 
-#ifndef YY_CURRENT_BUFFER_LVALUE
-# define GP_CURRENT_BUFFER_LVALUE yy_current_buffer
-#else
-# define GP_CURRENT_BUFFER_LVALUE YY_CURRENT_BUFFER_LVALUE
-#endif
-
 #define GP_INPUT(buf,result,max_size) \
-  if ( GP_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
+  if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
     { \
       int c = '*'; \
       size_t n; \
@@ -105,8 +108,6 @@ int force_ident;   /* Used to force numbers to identifiers for processor names *
         state.src->last_char_is_nl = true; \
       } \
   }
-
-#undef GP_CURRENT_BUFFER_LVALUE
 %}
 
 IDENT  [.]?[a-z_\x80-\xff?@#][a-z_0-9\x80-\xff.?@#]*
