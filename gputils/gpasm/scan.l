@@ -26,13 +26,13 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-#if !defined(YY_FLEX_MAJOR_VERSION) ||
-  !defined(YY_FLEX_MINOR_VERSION) ||
-  !defined(YY_FLEX_SUBMINOR_VERSION) ||
-  YY_FLEX_MAJOR_VERSION < 2 ||
-  (YY_FLEX_MAJOR_VERSION = 2 && YY_FLEX_MINOR_VERSION < 5) ||
+#if !defined(YY_FLEX_MAJOR_VERSION) || \
+  !defined(YY_FLEX_MINOR_VERSION) || \
+  !defined(YY_FLEX_SUBMINOR_VERSION) || \
+  YY_FLEX_MAJOR_VERSION < 2 || \
+  (YY_FLEX_MAJOR_VERSION = 2 && YY_FLEX_MINOR_VERSION < 5) || \
   (YY_FLEX_MAJOR_VERSION = 2 && YY_FLEX_MINOR_VERSION = 5 && YY_FLEX_SUBMINOR_VERSION < 35)
-#error "flex 2.5.35 or newer required!"
+# error "flex 2.5.35 or newer required!"
 #endif
 
 #include "stdhdr.h"
