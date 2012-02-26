@@ -1,3 +1,6 @@
+2012-02-26  Borut Razem  <borutr@users.sourceforge.net>
+  * doc/gputils.lyx: added 16f720, 16lf720, 16f721, 16lf721 to the list
+
 2012-02-25  Borut Razem  <borutr@users.sourceforge.net>
   * header/Makefile.sh: let replaced with expr
   * header/Makefile.am, header/Makefile.in: regenarated;
