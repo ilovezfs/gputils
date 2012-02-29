@@ -26,7 +26,7 @@ libgpasm_a_SOURCES=\
 	deps.h \
 	directive.h \
 	evaluate.h \
-	gpasm.h \
+	gpasm.h.in \
 	gperror.h \
 	libgpasm.h \
 	lst.h \
@@ -44,6 +44,11 @@ AM_YFLAGS = -d -vt
 AM_LFLAGS = -i
 
 # Make sure we have parse.h when compiling other sources
-BUILT_SOURCES = parse.h
+BUILT_SOURCES = parse.h gpasm.h
 
-CLEANFILES = parse.output
+CLEANFILES = parse.output gpasm.h
+
+.PHONY: gpasm.h
+
+gpasm.h:
+	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" $@.in > $@

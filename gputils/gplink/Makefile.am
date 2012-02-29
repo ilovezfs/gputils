@@ -13,7 +13,7 @@ gplink_SOURCES=\
 	script.c \
 	scan.l \
 	cod.h \
-	gplink.h \
+	gplink.h.in \
 	lst.h \
 	map.h \
 	scan.h \
@@ -26,6 +26,11 @@ AM_YFLAGS = -d -vt
 AM_LFLAGS = -i
 
 # Make sure we have parse.h when compiling other sources
-BUILT_SOURCES = parse.h
+BUILT_SOURCES = parse.h gplink.h
 
-CLEANFILES = parse.output
+CLEANFILES = parse.output gplink.h
+
+.PHONY: gplink.h
+
+gplink.h:
+	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" $@.in > $@

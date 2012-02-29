@@ -11,4 +11,5 @@ EXTRA_DIST =\
 	./include/libiberty.h \
 	./include/stdhdr.h \
 	gputils.spec.in \
-	TODO
+	TODO \
+	get_cl_revision.sh
