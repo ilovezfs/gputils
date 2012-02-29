@@ -220,7 +220,8 @@ EXTRA_DIST = \
 	./include/libiberty.h \
 	./include/stdhdr.h \
 	gputils.spec.in \
-	TODO
+	TODO \
+	get_cl_revision.sh
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive

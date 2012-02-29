@@ -203,25 +203,28 @@ AM_CPPFLAGS = -I${top_srcdir}/libgputils -I${top_srcdir}/include
 LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 gpdasm_SOURCES = \
 	gpdasm.c\
-	gpdasm.h
+	gpdasm.h.in
 
 gplib_SOURCES = \
 	gplib.c \
-	gplib.h
+	gplib.h.in
 
 gpstrip_SOURCES = \
 	gpstrip.c \
-	gpstrip.h
+	gpstrip.h.in
 
 gpvc_SOURCES = \
 	block.c dump.c gpvc.c \
-	block.h dump.h gpvc.h
+	block.h dump.h gpvc.h.in
 
 gpvo_SOURCES = \
 	gpvo.c \
-	gpvo.h
+	gpvo.h.in
 
-all: all-am
+BUILT_SOURCES = gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h
+CLEANFILES = gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .o .obj
@@ -419,13 +422,15 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-check: check-am
+check: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(PROGRAMS)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: install-am
+install: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -442,6 +447,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -450,6 +456,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
@@ -519,7 +526,7 @@ ps-am:
 
 uninstall-am: uninstall-binPROGRAMS
 
-.MAKE: install-am install-strip
+.MAKE: all check install install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
 	clean-generic ctags distclean distclean-compile \
@@ -534,6 +541,11 @@ uninstall-am: uninstall-binPROGRAMS
 	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
 	uninstall-am uninstall-binPROGRAMS
 
+
+.PHONY: gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h
+
+gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h:
+	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" $@.in > $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

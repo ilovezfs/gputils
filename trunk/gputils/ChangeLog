@@ -1,3 +1,14 @@
+2012-02-29  Borut Razem  <borutr@users.sourceforge.net>
+  * get_cl_revision.sh:
+    added utility to extract source control revision number from ChangeLog
+  * Makefile.am, Makefile.in,
+    gputils/Makefile.am, gputils/Makefile.in,
+    gplink/Makefile.am, gplink/Makefile.in,
+    gpasm/Makefile.am, gpasm/Makefile.in: build *.h from *.h.in
+  * gpasm/gpasm.h, gplink/gplink.h, gputils/gpdasm.h, gputils/gplib.h,
+    gputils/gpstrip.h, gputils/gpvc.h, gputils/gpvo.h:
+    renamed to *.h.in, added source control revision number to --version
+
 2012-02-26  Borut Razem  <borutr@users.sourceforge.net>
   * doc/gputils.lyx: added 16f720, 16lf720, 16f721, 16lf721 to the list
 
@@ -2124,3 +2135,5 @@ following this.
 
 Small fix to lexical analyser to make it cope with MSDOS '\r'
 characters.
+
+$Revision$
