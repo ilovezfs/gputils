@@ -14,8 +14,7 @@ usage ()
   echo "  -V, --version         output version information and exit"
   echo "  -h, --help            display this help and exit"
   echo "arguments:"
-  echo "  <ChangeLog_file_name>  ChangeLog file name"
-  exit 0;
+  echo "  <ChangeLog_file_name> ChangeLog file name"
 }
 
 while true
