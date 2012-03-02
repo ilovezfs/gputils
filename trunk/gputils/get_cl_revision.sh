@@ -33,7 +33,7 @@ if [ "$#" != 1 ]
 then
   echo "too many arguments"; usage; exit 1;
 else
-  REV=$(expr "$(tail -n 1 $1)" : '\$Revision: *\([0-9]*\) *\$') || REV=0
+  REV=$(expr "$(tail -1 $1)" : '\$Revision: *\([0-9]*\) *\$') || REV=0
   if [ "$AS_STRING" != 0 ]
   then
     echo "\"$REV\""

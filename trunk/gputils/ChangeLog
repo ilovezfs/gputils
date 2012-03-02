@@ -1,3 +1,7 @@
+2012-03-02  Borut Razem  <borutr@users.sourceforge.net>
+  * get_cl_revision.sh:
+    use tail in non POSIX mode for Solaris copatibility
+
 2012-02-29  Borut Razem  <borutr@users.sourceforge.net>
   * get_cl_revision.sh:
     added utility to extract source control revision number from ChangeLog
