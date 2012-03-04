@@ -2,6 +2,13 @@
   * gputils/gpdasm.c:
     applied patch #3496780: Typo in gpdasm help message
     thanks to Alain Portal
+  * man/gpdasm.1.in, man/gpvo.1.in, man/gplib.1.in, man/gpvc.1.in,
+    man/fr/gpdasm.1.in, man/fr/gpvo.1.in, man/fr/gplib.1.in,
+    man/fr/gpvc.1.in, man/fr/gplink.1.in, man/fr/gpasm.1.in,
+    man/fr/gputils.1.in, man/fr/gpstrip.1.in, man/gplink.1.in,
+    man/gpasm.1.in, man/gputils.1.in, man/gpstrip.1.in:
+    applied patch #3496782: Update man pages
+    thanks to Alain Portal
 
 2012-03-02  Borut Razem  <borutr@users.sourceforge.net>
   * get_cl_revision.sh:

@@ -1,4 +1,4 @@
-.TH GPVO 1 "2007-10-27" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
+.TH GPVO 1 "2012-03-04" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
 .SH NAME
 gpvo \- GNU PIC object file viewer
 .SH SYNOPSIS
@@ -28,13 +28,10 @@ Decode special mnemonics.
 Display file header.
 .TP
 .BR \-h ", "\-\-help
-Show the usage message.
+Show the usage message and exit.
 .TP
-.BR \-o ", "\-\-optional
-Display optional header.
-.TP
-.BR \-r ", "\-\-string
-Display the string table.
+.BR \-n ", "\-\-no\-names
+Suppress filenames.
 .TP
 .BR \-s ", "\-\-section
 Display sections.
@@ -43,7 +40,7 @@ Display sections.
 Display symbol table.
 .TP
 .BR \-v ", "\-\-version
-Show the version.
+Show the version information and exit.
 .TP
 .BR "\-x FILE" , " \-\-export FILE
 Export the external symbols.

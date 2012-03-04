@@ -1,4 +1,4 @@
-.TH GPLIB 1 "2007-10-27" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
+.TH GPLIB 1 "2012-03-04" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
 .SH NAME
 gplib \- GNU PIC librarian
 .SH SYNOPSIS
@@ -25,7 +25,7 @@ Create a new library.
 Delete member from library.
 .TP
 .BR \-h ", "\-\-help
-Show the usage message.
+Show the usage message and exit.
 .TP
 .BR \-n ", "\-\-no-index
 Don't add symbol index.
@@ -43,7 +43,7 @@ List global symbols in library.
 List members in library.
 .TP
 .BR \-v ", "\-\-version
-Show the version.
+Show the version information and exit.
 .TP
 .BR \-x ", "\-\-extract
 Extract member from library.

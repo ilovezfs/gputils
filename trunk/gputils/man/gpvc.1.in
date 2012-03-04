@@ -1,4 +1,4 @@
-.TH GPVC 1 "2007-10-27" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
+.TH GPVC 1 "2012-03-04" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
 .SH NAME
 gpvc \- GNU PIC COD file viewer
 .SH SYNOPSIS
@@ -31,7 +31,7 @@ Display source listing.
 Display debug message area.
 .TP
 .BR \-h ", "\-\-help
-Show the usage message.
+Show the usage message and exit.
 .TP
 .BR \-r ", "\-\-rom
 Display ROM.
@@ -40,7 +40,7 @@ Display ROM.
 Display symbols.
 .TP
 .BR \-v ", "\-\-version
-Show the version.
+Show the version information and exit.
 .SH SEE ALSO
 .BR gputils (1)
 .SH AUTHOR

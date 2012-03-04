@@ -1,4 +1,4 @@
-.TH GPSTRIP 1 "27 octobre 2007" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Manuel de l'utilisateur Linux"
+.TH GPSTRIP 1 "4 mars 2012" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Manuel de l'utilisateur Linux"
 .SH NOM
 gpstrip \- Retirer les symboles d'un fichier objet
 .SH SYNOPSIS
@@ -21,7 +21,7 @@ pour avoir des détails sur les autres utilitaires GNU PIC.
 Éliminer les symboles de débogage.
 .TP
 .BR \-h ", "\-\-help
-Afficher ce message d'usage.
+Afficher ce message d'utilisation et quitter.
 .TP
 .BR "\-k SYMBOLE" , " \-\-keep\-symbol SYMBOLE
 Conserver le symbole SYMBOLE.
@@ -46,7 +46,10 @@ Retirer les symboles qui ne sont pas nécessaires à la translation
 (Ndt\ : relocation).
 .TP
 .BR \-v ", "\-\-version
-Afficher la version.
+Afficher les informations de version et quitter.
+.TP
+.BR \-V ", "\-\-verbose
+Mode volubile.
 .TP
 .BR \-x ", "\-\-discard-all
 Retirer les symboles non globaux.
@@ -57,8 +60,8 @@ Craig Franklin <craigfranklin@users.sourceforge.net>
 .SH TRADUCTION
 .PP
 Ce document est une traduction réalisée par Alain Portal
-<aportal AT univ-montp2 DOT fr> le 24\ mai\ 2005
-et révisée le 28\ octobre\ 2007.
+<alain DOT portal AT univ-montp2 DOT fr> le 24\ mai\ 2005
+et révisée le 4\ mars\ 2012.
 .PP
 L'équipe de traduction a fait le maximum pour réaliser une adaptation
 française de qualité. La version anglaise la plus à jour de ce document est

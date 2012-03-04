@@ -1,4 +1,4 @@
-.TH GPLINK 1 "2007-10-27" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
+.TH GPLINK 1 "2012-03-04" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
 .SH NAME
 gplink \- GNU PIC linker
 .SH SYNOPSIS
@@ -35,16 +35,22 @@ linker script fill value.  The value must not be greater than 0xffff.  The
 value is hex.  The value may be preceeded by "0x".
 .TP
 .BR \-h ", "\-\-help
-Show the usage message.
+Show the usage message and exit.
 .TP
 .BR "\-I DIR" , " \-\-include DIR
 Specify include directory.
+.TP
+.BR \-l ", "\-\-no\-list
+Disable list file output.
 .TP
 .BR \-m ", "\-\-map
 Output a map file.
 .TP
 .BR "\-o FILE" , " \-\-output FILE
 Alternate name of the output file.
+.TP
+.BR "\-O OPT" , " \-\-optimize OPT
+Optimization level.  Default value is 1.
 .TP
 .BR \-q ", "\-\-quiet
 Suppress anything sent to standard output.
@@ -56,8 +62,14 @@ fails.
 .BR "\-s FILE" , " \-\-script FILE
 Linker script.
 .TP
+.BR "\-t SIZE" , " \-\-stack SIZE
+Create a stack section.
+.TP
+.BR "\-u" , " \-\-macro symbol=[value]
+Add macro value for script.
+.TP
 .BR \-v ", "\-\-version
-Show the version.
+Show the version information and exit.
 .TP
 .BR \-w ", "\-\-processor\-mismatch
 Disable "processor mismatch" warning.

@@ -1,4 +1,4 @@
-.TH GPSTRIP 1 "2007-10-27" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
+.TH GPSTRIP 1 "2012-03-04" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
 .SH NAME
 gpstrip \- discard symbols from object file
 .SH SYNOPSIS
@@ -21,7 +21,7 @@ manpage for details on other GNU PIC utilities.
 Strip debug symbols.
 .TP
 .BR \-h ", "\-\-help
-Show this usage message.
+Show the usage message and exit.
 .TP
 .BR "\-k SYMBOL" , " \-\-keep\-symbol SYMBOL
 Keep symbol.
@@ -45,7 +45,10 @@ Remove all symbols.
 Strip symbols not need for relocations.
 .TP
 .BR \-v ", "\-\-version
-Show version.
+Show the version information and exit.
+.TP
+.BR \-V ", "\-\-verbose
+Verbose mode.
 .TP
 .BR \-x ", "\-\-discard-all
 Remove non-global symbols.
