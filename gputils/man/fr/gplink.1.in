@@ -1,4 +1,4 @@
-.TH GPLINK 1 "27 octobre 2007" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Manuel de l'utilisateur Linux"
+.TH GPLINK 1 "4 mars 2012" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Manuel de l'utilisateur Linux"
 .SH NOM
 gplink \- Éditeur de liens GNU pour PIC
 .SH SYNOPSIS
@@ -37,16 +37,22 @@ pas être supérieure à 0xffff. VALEUR est en hexadécimal et doit être préc�
 par «\ 0x\ ».
 .TP
 .BR \-h ", "\-\-help
-Afficher un message d'usage.
+Afficher un message d'utilisation et quitter.
 .TP
 .BR "\-I RÉP" , " \-\-include RÉP
 Spécifier le répertoire d'inclusion d'en-têtes.
+.TP
+.BR \-l ", "\-\-no\-list
+Ne pas produire en sortie le fichier listing.
 .TP
 .BR \-m ", "\-\-map
 Produire en sortie un fichier d'équivalence.
 .TP
 .BR "\-o FICHIER" , " \-\-output FICHIER
 Nom alternatif du fichier de sortie.
+.TP
+.BR "\-O OPT" , " \-\-optimize OPT
+Niveau d'optimization. La valeur par défaut est 1.
 .TP
 .BR \-q ", "\-\-quiet
 Supprimer tout ce qui est envoyé sur la sortie standard.
@@ -58,8 +64,14 @@ partagée si la translation échoue.
 .BR "\-s FICHIER" , " \-\-script FICHIER
 Choisir le script éditeur de lien.
 .TP
+.BR "\-t SIZE" , " \-\-stack SIZE
+Créer une section de pile.
+.TP
+.BR "\-u" , " \-\-macro symbol=[value]
+Ajouter une valeur de macro pour le script.
+.TP
 .BR \-v ", "\-\-version
-Afficher la version.
+Afficher les informations de version et quitter.
 .SH VOIR AUSSI
 .BR gputils (1)
 .SH AUTEUR
@@ -67,8 +79,8 @@ Craig Franklin <craigfranklin@users.sourceforge.net>
 .SH TRADUCTION
 .PP
 Ce document est une traduction réalisée par Alain Portal
-<aportal AT univ-montp2 DOT fr> le 14\ octobre\ 2004
-et révisée le 28\ octobre\ 2007.
+<alain DOT portal AT univ-montp2 DOT fr> le 14\ octobre\ 2004
+et révisée le 4\ mars\ 2012.
 .PP
 L'équipe de traduction a fait le maximum pour réaliser une adaptation
 française de qualité. La version anglaise la plus à jour de ce document est

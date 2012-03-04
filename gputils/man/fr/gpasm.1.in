@@ -1,4 +1,4 @@
-.TH GPASM 1 "27 octobre 2007" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Manuel de l'utilisateur Linux"
+.TH GPASM 1 "4 mars 2012" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Manuel de l'utilisateur Linux"
 .SH NOM
 gpasm \- Assembleur GNU pour PIC
 .SH SYNOPSIS
@@ -29,10 +29,10 @@ et inhx32. Cette option contrôle quel format de fichier hexadécimal est
 utilisé. La valeur par défaut est inhx32.
 .TP
 .BR \-c ", "\-\-object
-Produire en sortie un objet relogeable (ancien format COFF).
-.TP
-.BR \-C ", "\-\-new-coff
 Produire en sortie un objet relogeable (nouveau format COFF).
+.TP
+.BR \-C ", "\-\-old-coff
+Produire en sortie un objet relogeable (ancien format COFF).
 .TP
 .BR \-d ", " \-\-debug
 Afficher les messages de débogage.
@@ -52,7 +52,7 @@ développées sans se soucier de la présence de NOEXPAND. De la même manière,
 Utiliser les directives de débogage pour COFF.
 .TP
 .BR \-h ", " \-\-help
-Afficher un message d'usage.
+Afficher un message d'utilisation et quitter.
 .TP
 .BR \-i ", " \-\-ignore-case
 Tous les symboles et macros définis par l'utilisateur sont sensibles à la
@@ -66,12 +66,12 @@ assemblés. GPASM recherche ces fichiers dans le répertoire courant. Si le
 fichier n'est pas localisé, le chemin par défaut des en-têtes est parcouru.
 Enfin, tous les chemins spécifiés par cet argument sont parcourus.
 .TP
+.BR \-l ", "\-\-list-chips
+Afficher la liste des processeurs reconnus.
+.TP
 .BR \-L ", "\-\-force-list
 Ignorer les directives NOLIST. Ceci force gpasm à afficher chaque ligne
 assemblée dans le fichier listage de sortie.
-.TP
-.BR \-l ", "\-\-list-chips
-Afficher la liste des processeurs reconnus.
 .TP
 .BR \-m ", "\-\-dump
 À la fin de la dernière étape d'assemblage, afficher le contenu de la mémoire
@@ -97,8 +97,11 @@ Supprimer tout ce qui est envoyé sur la sortie standard.
 .BR "\-r BASE" , " \-\-radix BASE"
 Les bases reconnues sont BIN, DEC, OCT, et HEX. La base par défaut est HEX.
 .TP
+.BR \-u ", "\-\-absolute
+Utiliser des chemins absolus.
+.TP
 .BR \-v ", "\-\-version
-Afficher la version.
+Afficher les informations de version et quitter.
 .TP
 .BR "\-w [0|1|2]" , " \-\-warning [0|1|2]"
 Cette option configure le niveau d'affichage des messages. La valeur par défaut
@@ -115,8 +118,8 @@ Craig Franklin <craigfranklin@users.sourceforge.net>
 .SH TRADUCTION
 .PP
 Ce document est une traduction réalisée par Alain Portal
-<aportal AT univ-montp2 DOT fr> le 14\ octobre\ 2004
-et révisée le 13\ mai\ 2008.
+<alain DOT portal AT univ-montp2 DOT fr> le 14\ octobre\ 2004
+et révisée le 4\ mars\ 2012.
 .PP
 L'équipe de traduction a fait le maximum pour réaliser une adaptation
 française de qualité. La version anglaise la plus à jour de ce document est

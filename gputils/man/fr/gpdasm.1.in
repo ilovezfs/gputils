@@ -1,4 +1,4 @@
-.TH GPDASM 1 "27 octobre 2007" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Manuel de l'utilisateur Linux"
+.TH GPDASM 1 "4 mars 2012" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Manuel de l'utilisateur Linux"
 .SH NOM
 gpdasm \- Désassembleur GNU pour PIC
 .SH SYNOPSIS
@@ -21,7 +21,7 @@ pour avoir des détails sur les autres utilitaires GNU PIC.
 Décoder les mnémoniques spéciales.
 .TP
 .BR \-h ", "\-\-help
-Afficher un message d'usage.
+Afficher un message d'utilisation et quitter.
 .TP
 .BR \-i ", "\-\-hex-info
 Produire des informations supplémentaires concernant le fichier hexadécimal
@@ -41,10 +41,14 @@ Sélectionner le processeur.
 Produire en sortie le format court. Ce format peut être réassemblé par gpasm.
 .TP
 .BR \-v ", "\-\-version
-Afficher la version.
+Afficher les informations de version et quitter.
 .TP
 .BR \-y ", "\-\-extended
 Activer le mode étendu 18xx.
+.TP
+.BR "\-\-strict
+Désassembler seulement les codes opératoires générés par gpsam
+dans le cas d'instructions avec plusieurs codes opératoires.
 .SH VOIR AUSSI
 .BR gputils (1)
 .SH AUTEUR
@@ -52,8 +56,8 @@ Craig Franklin <craigfranklin@users.sourceforge.net>
 .SH TRADUCTION
 .PP
 Ce document est une traduction réalisée par Alain Portal
-<aportal AT univ-montp2 DOT fr> le 14\ octobre\ 2004
-et révisée le 28\ octobre\ 2007.
+<alain DOT portal AT univ-montp2 DOT fr> le 14\ octobre\ 2004
+et révisée le 4\ mars\ 2012.
 .PP
 L'équipe de traduction a fait le maximum pour réaliser une adaptation
 française de qualité. La version anglaise la plus à jour de ce document est
