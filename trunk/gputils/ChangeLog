@@ -1,3 +1,8 @@
+2012-03-04  Borut Razem  <borutr@users.sourceforge.net>
+  * gputils/gpdasm.c:
+    applied patch #3496780: Typo in gpdasm help message
+    thanks to Alain Portal
+
 2012-03-02  Borut Razem  <borutr@users.sourceforge.net>
   * get_cl_revision.sh:
     use tail in non POSIX mode for Solaris copatibility
