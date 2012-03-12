@@ -233,8 +233,8 @@ LKR_FILES = \
 	16c56a.lkr \
 	16c57.lkr \
 	16c57c.lkr \
-	16c58a.lkr \
-	16c58b.lkr \
+	16c58a_g.lkr \
+	16c58b_g.lkr \
 	16c61.lkr \
 	16c62.lkr \
 	16c620.lkr \
@@ -297,8 +297,8 @@ LKR_FILES = \
 	16cr57a.lkr \
 	16cr57b.lkr \
 	16cr57c.lkr \
-	16cr58a.lkr \
-	16cr58b.lkr \
+	16cr58a_g.lkr \
+	16cr58b_g.lkr \
 	16cr62.lkr \
 	16cr620a.lkr \
 	16cr63.lkr \
