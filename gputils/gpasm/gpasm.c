@@ -350,7 +350,6 @@ process_args( int argc, char *argv[])
   if (state.use_absolute_path) {
     state.srcfilename = gp_absolute_path(state.srcfilename);
   }
-
 }
 
 int
@@ -420,10 +419,6 @@ assemble(void)
   deps_init();
   lst_init();
 
-  /* Set F_EXTENDED18 COFF flag if 18xx extended mode enabled */
-  if (state.obj.object && state.extended_pic16e)
-    state.obj.object->flags |= F_EXTENDED18;
-
   open_src(state.srcfilename, 0);
   if (!gp_debug_disable) {
     yydebug = 1;
@@ -433,6 +428,16 @@ assemble(void)
   yyparse();
 
   assert(state.pass == 2);
+
+  if (state.obj.object) {
+    /* Set F_ABSOLUTE COFF flag if absolute mode */
+    if (gp_is_absolute_object(state.obj.object))
+      state.obj.object->flags |= F_ABSOLUTE;
+
+    /* Set F_EXTENDED18 COFF flag if 18xx extended mode enabled */
+    if (state.extended_pic16e)
+      state.obj.object->flags |= F_EXTENDED18;
+  }
 
   pop_symbol_table(state.stBuiltin);
 
@@ -453,7 +458,7 @@ assemble(void)
     lst_memory_map(state.i_memory);
   }
 
-  /* Finish off the object, dependency, listing, and symbol files*/
+  /* Finish off the object, dependency, listing, and symbol files */
   coff_close_file();
   deps_close();
   lst_close();

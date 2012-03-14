@@ -1,3 +1,9 @@
+2012-03-14  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/gpasm.c, libgputils/gpwriteobj.c, libgputils/gpwriteobj.h:
+    implemented enhancement request #3504111 - Generate coff file in
+    absolute mode: added function gp_is_absolute_object() which detects
+    if the object is absolute and set F_ABSOLUTE coff file headr flag
+
 2012-03-12  Borut Razem  <borutr@users.sourceforge.net>
   * 16c58a_g.lkr, 16cr58b_g.lkr, 16f1507_g.lkr:
     MPLAB X IDE v1.10, mpasmx 5.42

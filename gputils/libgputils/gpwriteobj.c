@@ -449,3 +449,18 @@ gp_write_coff(gp_object_type *object, int numerrors)
 
   return 0;
 }
+
+/* chack if the object is absolute: all sections are absolute and there
+   are no relocations (undefined symbols) */
+int
+gp_is_absolute_object(gp_object_type *object)
+{
+  gp_section_type *section;
+
+  for (section = object->sections; section; section = section->next) {
+    if (section->num_reloc != 0 || !(section->flags & STYP_ABS))
+      return 0;
+  }
+
+  return 1;
+}
