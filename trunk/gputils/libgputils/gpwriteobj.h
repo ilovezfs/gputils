@@ -24,5 +24,6 @@ Boston, MA 02111-1307, USA.  */
 
 int _has_data(gp_section_type *section);
 int gp_write_coff(gp_object_type *object, int numerrors);
+int gp_is_absolute_object(gp_object_type *object);
 
 #endif
