@@ -1,3 +1,8 @@
+2012-04-20  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpopcode.c: fixed bug #3519667 - gpdasm fails to decove
+    movlb on pic16f enhanced midrange
+  * gputils/testsuite/test: fixed for sh
+
 2012-03-14  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/gpasm.c, libgputils/gpwriteobj.c, libgputils/gpwriteobj.h:
     implemented enhancement request #3504111 - Generate coff file in

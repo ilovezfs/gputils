@@ -183,7 +183,7 @@ const struct insn op_16cxx_enh[] = {
   { "lsrf",   0x3f00, 0x3600,   INSN_CLASS_OPWF7        },
   { "moviw",  0x3ff8, 0x0010,   INSN_CLASS_MOVINDF      },
   { "movwi",  0x3ff8, 0x0018,   INSN_CLASS_MOVINDF      },
-  { "movlb",  0x3fd0, 0x0020,   INSN_CLASS_LIT5         },
+  { "movlb",  0x3fe0, 0x0020,   INSN_CLASS_LIT5         },
   { "movlp",  0x3f80, 0x3180,   INSN_CLASS_LIT7         },
   { "reset",  0x3fff, 0x0001,   INSN_CLASS_IMPLICIT     },
   { "subwfb", 0x3f00, 0x3b00,   INSN_CLASS_OPWF7        }
