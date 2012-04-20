@@ -29,7 +29,7 @@ GPASMBIN=../../gpasm/gpasm
 
 # general functions
 
-function testfailed {
+testfailed() {
   echo "TEST FAILED"
   exit 1
 }
