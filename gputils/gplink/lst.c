@@ -35,16 +35,47 @@ static gp_section_type *line_section;
 static void
 open_src(const char *name, gp_symbol_type *symbol)
 {
+  char file_name[PATH_MAX + 1];
   struct list_context *new = malloc(sizeof(*new));
+  int i;
 
   assert(name != NULL);
 
   new->f = fopen(name, "rt");
-  if(new->f) {
+  if (new->f == NULL) {
+    /* Try searching include pathes */
+    for (i = 0; i < state.numpaths; i++) {
+      snprintf(file_name, sizeof(file_name),
+               "%s" COPY_CHAR "%s", state.paths[i], name);
+      new->f = fopen(file_name, "rb");
+      if (new->f != NULL) {
+        name = file_name;
+        break;
+      }
+    }
+    if (new->f == NULL) {
+      /* The path may belong to a build procedure other than this */
+      const char *p = strrchr(name, PATH_CHAR);
+      if (p != NULL) {
+        for (i = 0; i < state.numpaths; i++) {
+          snprintf(file_name, sizeof(file_name), "%s%s", state.paths[i], p);
+          new->f = fopen(file_name, "rb");
+          if (new->f != NULL) {
+            name = file_name;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  if (new->f) {
     new->name = strdup(name);
     new->missing_source = false;
   } else {
     new->missing_source = true;
+    if (getenv("GPUTILS_WARN_MISSING_SRC"))
+      gp_warning("Cannot find source file \"%s\"", name);
   }
 
   new->symbol = symbol;
@@ -52,7 +83,6 @@ open_src(const char *name, gp_symbol_type *symbol)
   new->prev = state.lst.src;
 
   state.lst.src = new;
-
 }
 
 static void
@@ -65,7 +95,6 @@ close_src(void)
   old = state.lst.src;
   state.lst.src = state.lst.src->prev;
   free(old);
-
 }
 
 static void
@@ -156,7 +185,6 @@ write_src(int last_line)
     state.lst.was_org = org;
 
     if (list_enabled) {
-
       /* Eat the trailing newline */
       pc = strrchr(linebuf, '\n');
       if (pc)
@@ -194,8 +222,8 @@ write_src(int last_line)
               b_memory_assert_get(line_section->data, org, &byte);
               gp_disassemble_byte(line_section->data,
                                   org,
-                                  state.class, 
-                                  dasmbuf, 
+                                  state.class,
+                                  dasmbuf,
                                   sizeof(dasmbuf));
               lst_line("%06lx   %02x       %-24s %s",
                        gp_processor_byte_to_org(state.class, org),
@@ -252,7 +280,6 @@ write_src(int last_line)
 
     state.lst.src->line_number++;
   }
-
 }
 
 /*
@@ -294,7 +321,6 @@ lst_init(void)
   lst_line(" ");
   lst_line("Address  Value    Disassembly              Source");
   lst_line("-------  -----    -----------              ------");
-
 }
 
 void
@@ -358,5 +384,4 @@ write_lst(void)
   }
 
   fclose(state.lst.f);
-
 }
