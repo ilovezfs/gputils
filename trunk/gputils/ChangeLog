@@ -1,3 +1,7 @@
+2012-04-27  Marko Kohtala  <marko.kohtala@gmail.com>
+  * gpasm/cod.c (cod_write_symbols): Fix bug #3521796 reverting a change
+  from revision 572.
+  
 2012-04-21  Borut Razem  <borutr@users.sourceforge.net>
   * gplink/lst.c:
     fixed bug #3519850 - gplink fails to find source - patch attached

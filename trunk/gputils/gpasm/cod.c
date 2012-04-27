@@ -314,7 +314,6 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
   offset = 0;
 
   for(i=0; i<num_symbols; i++) {
-    int value;
     var = get_symbol_annotation(symbol_list[i]);
     s = get_symbol_name(symbol_list[i]);
     len = strlen(s);
@@ -330,16 +329,12 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
 
     gp_cod_strncpy(&sb.block[offset +1], s, MAX_SYM_LEN);
 
-    value = var->value;
     switch(var->type) {
     case gvt_cblock:
       type = COD_ST_C_SHORT;  /* byte craft's nomenclature for a memory byte. */
       break;
     case gvt_address:
       type = COD_ST_ADDRESS;
-      /* FIXME: gvt_org never used, should it be and should the value
-	 be divided by two there? */
-      value /= 2;
       break;
     case gvt_org:
       type = COD_ST_ADDRESS;
@@ -352,7 +347,7 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
     gp_putl16(&sb.block[offset+len+COD_SYM_TYPE], type);
 
     /* write 32 bits, big endian */
-    gp_putb32(&sb.block[offset+len+COD_SYM_VALUE], value);
+    gp_putb32(&sb.block[offset+len+COD_SYM_VALUE], var->value);
     offset += (len+COD_SYM_EXTRA);
   }
 
