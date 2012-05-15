@@ -1272,7 +1272,7 @@ check_relative(gp_section_type *section, int org, int argument, int range)
   /* If the branch is too far then issue a warning */
   if ((argument > range) || (argument < -(range+1))) {
     gp_warning("relative branch out of range in at %#x of section \"%s\"",
-               org << 1,
+               org,
                section->name);
   }
 }
@@ -1349,15 +1349,7 @@ gp_cofflink_patch_addr(proc_class_t class,
     data = (value << 4) & 0xf0;
     break;
   case RELOCT_MOVLB:
-    if (PROC_CLASS_PIC14E == class) {
-      data = (value >> 7) & 0xff;
-    }
-    else {
-      /* The upper byte of the symbol is used for the BSR.  This is inconsistent
-         with the datasheet and the assembler, but is done to maintain
-         compatibility with mplink. */
-      data = (value >> 8) & 0xff;
-    }
+    data = class->reloc_movlb(value);
     break;
   case RELOCT_GOTO2:
     /* This is only used for PIC16E (pic18) */
@@ -1376,10 +1368,7 @@ gp_cofflink_patch_addr(proc_class_t class,
     data = value & 0xff;
     break;
   case RELOCT_BRA:
-    /* This is only used for PIC16E (pic18) */
-    offset = (value - org - 2) >> 1;
-    check_relative(section, org, offset, 0x3ff);
-    data = offset & 0x7ff;
+    data = class->reloc_bra(section, value, org);
     break;
   case RELOCT_CONDBRA:
     /* This is only used for PIC16E (pic18) */
