@@ -1,7 +1,13 @@
+2012-05-15  Marko Kohtala  <marko.kohtala@gmail.com>
+  * libgputils/gpcofflink.c (gp_cofflink_patch_addr): Bug #3526882 fix
+  relocation of RELOCT_BRA for pic14e.
+  * gpasm/directive.c (do_insn): Bug #3526882 fix use of RELOCT_CONDBRA in
+  place of RELOCT_BRA for pic14e "bra" instruction.
+
 2012-04-27  Marko Kohtala  <marko.kohtala@gmail.com>
   * gpasm/cod.c (cod_write_symbols): Fix bug #3521796 reverting a change
   from revision 572.
-  
+
 2012-04-21  Borut Razem  <borutr@users.sourceforge.net>
   * gplink/lst.c:
     fixed bug #3519850 - gplink fails to find source - patch attached

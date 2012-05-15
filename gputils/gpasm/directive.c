@@ -3362,7 +3362,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           if (count_reloc(p) == 0) {
             offset = maybe_evaluate(p) - (r + 1);
           } else {
-            offset = reloc_evaluate(p, RELOCT_CONDBRA);
+            offset = reloc_evaluate(p, RELOCT_BRA);
           }
           offset = gp_processor_org_to_byte(state.device.class, offset) >> 1;
 

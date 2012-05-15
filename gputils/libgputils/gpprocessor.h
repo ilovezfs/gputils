@@ -23,6 +23,7 @@ Boston, MA 02111-1307, USA.  */
 #define __GPPROCESSOR_H__
 
 struct px;
+struct gp_section_type;
 
 struct proc_class {
   /* Instruction used in making initialization data sections */
@@ -63,6 +64,8 @@ struct proc_class {
   int (*reloc_ibanksel)(unsigned int address);
   int (*reloc_f)(unsigned int address);
   int (*reloc_tris)(unsigned int address);
+  int (*reloc_movlb)(unsigned int address);
+  int (*reloc_bra)(struct gp_section_type *section, unsigned value, unsigned int byte_org);
 
   const struct insn *instructions;
   const int *num_instructions;

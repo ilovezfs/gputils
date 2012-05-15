@@ -859,6 +859,12 @@ static int reloc_unsupported(unsigned int address)
   assert(0);
   return 0;
 }
+static int
+reloc_bra_unsupported(gp_section_type *section, unsigned value, unsigned int byte_org)
+{
+  assert(0);
+  return 0;
+}
 
 /* Common to most */
 
@@ -1231,6 +1237,22 @@ gp_processor_set_bank_pic14e(int num_banks,
   return 2;
 }
 
+static int reloc_movlb_pic14e(unsigned int address)
+{
+  return (address >> 7) & 0xff;
+}
+static int
+reloc_bra_pic14e(gp_section_type *section, unsigned value, unsigned int byte_org)
+{
+  int offset = value - byte_org/2 - 1;
+  if (offset > 0xff || offset < -0x100) {
+    gp_warning("relative branch out of range in at %#x of section \"%s\"",
+               byte_org << 1,
+               section->name);
+  }
+  return offset & 0x1ff;
+}
+
 static const struct insn *
 find_insn_pic14e(proc_class_t cls, long int opcode)
 {
@@ -1344,6 +1366,24 @@ static int reloc_goto_pic16e(unsigned int org)
 {
   return (org >> 1) & 0xff;
 }
+static int reloc_movlb_pic16e(unsigned int address)
+{
+  /* The upper byte of the symbol is used for the BSR.  This is inconsistent
+     with the datasheet and the assembler, but is done to maintain
+     compatibility with mplink. */
+  return (address >> 8) & 0xff;
+}
+static int
+reloc_bra_pic16e(gp_section_type *section, unsigned value, unsigned int byte_org)
+{
+  int offset = (value - byte_org - 2) >> 1;
+  if (offset > 0x3ff || offset < -0x400) {
+    gp_warning("relative branch out of range in at %#x of section \"%s\"",
+               byte_org,
+               section->name);
+  }
+  return offset & 0x7ff;
+}
 
 static const struct insn *
 find_insn_pic16e(proc_class_t cls, long int opcode)
@@ -1388,6 +1428,8 @@ const struct proc_class proc_class_eeprom8 = {
   reloc_unsupported,
   reloc_unsupported,
   reloc_unsupported,
+  reloc_unsupported,
+  reloc_bra_unsupported,
   NULL, NULL,
   NULL,
   i_memory_get_le, i_memory_put_le,
@@ -1410,6 +1452,8 @@ const struct proc_class proc_class_eeprom16 = {
   reloc_unsupported,
   reloc_unsupported,
   reloc_unsupported,
+  reloc_unsupported,
+  reloc_bra_unsupported,
   NULL, NULL,
   NULL,
   i_memory_get_be, i_memory_put_be,
@@ -1432,6 +1476,8 @@ const struct proc_class proc_class_generic = {
   reloc_unsupported,
   reloc_unsupported,
   reloc_unsupported,
+  reloc_unsupported,
+  reloc_bra_unsupported,
   NULL, NULL,
   NULL,
   i_memory_get_le, i_memory_put_le,
@@ -1454,6 +1500,8 @@ const struct proc_class proc_class_pic12 = {
   reloc_unsupported,
   reloc_f_pic12,
   reloc_tris_pic12,
+  reloc_unsupported,
+  reloc_bra_unsupported,
   op_12c5xx, &num_op_12c5xx,
   find_insn_generic,
   i_memory_get_le, i_memory_put_le,
@@ -1476,6 +1524,8 @@ const struct proc_class proc_class_sx = {
   reloc_unsupported,
   reloc_f_pic12,
   reloc_tris_pic12,
+  reloc_unsupported,
+  reloc_bra_unsupported,
   op_sx, &num_op_sx,
   find_insn_generic,
   i_memory_get_le, i_memory_put_le,
@@ -1498,6 +1548,8 @@ const struct proc_class proc_class_pic14 = {
   reloc_ibanksel_pic14,
   reloc_f_pic14,
   reloc_tris_pic14,
+  reloc_unsupported,
+  reloc_bra_unsupported,
   op_16cxx, &num_op_16cxx,
   find_insn_generic,
   i_memory_get_le, i_memory_put_le,
@@ -1520,6 +1572,8 @@ const struct proc_class proc_class_pic14e = {
   reloc_ibanksel_pic14,
   reloc_f_pic14,
   reloc_tris_pic14,
+  reloc_movlb_pic14e,
+  reloc_bra_pic14e,
   op_16cxx, &num_op_16cxx,
   find_insn_pic14e,
   i_memory_get_le, i_memory_put_le,
@@ -1542,6 +1596,8 @@ const struct proc_class proc_class_pic16 = {
   reloc_ibanksel_pic16,
   reloc_f_pic16,
   reloc_unsupported,
+  reloc_unsupported,
+  reloc_bra_unsupported,
   op_17cxx, &num_op_17cxx,
   find_insn_generic,
   i_memory_get_le, i_memory_put_le,
@@ -1564,6 +1620,8 @@ const struct proc_class proc_class_pic16e = {
   reloc_unsupported,
   reloc_f_pic16,        /* Same as for pic16 */
   reloc_unsupported,
+  reloc_movlb_pic16e,
+  reloc_bra_pic16e,
   op_18cxx, &num_op_18cxx,
   find_insn_pic16e,
   i_memory_get_le, i_memory_put_le,
