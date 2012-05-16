@@ -30,7 +30,5 @@ BUILT_SOURCES = parse.h gplink.h
 
 CLEANFILES = parse.output gplink.h
 
-.PHONY: gplink.h
-
-gplink.h:
-	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" $@.in > $@
+gplink.h: gplink.h.in
+	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" "$<" > "$@"
