@@ -30,7 +30,17 @@ BUILT_SOURCES = gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h
 
 CLEANFILES = gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h
 
-.PHONY: gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h
+gpdasm.h: gpdasm.h.in
+	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" "$<" > "$@"
 
-gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h:
-	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" $@.in > $@
+gplib.h: gplib.h.in
+	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" "$<" > "$@"
+
+gpstrip.h: gpstrip.h.in
+	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" "$<" > "$@"
+
+gpvc.h: gpvc.h.in
+	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" "$<" > "$@"
+
+gpvo.h: gpvo.h.in
+	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" "$<" > "$@"

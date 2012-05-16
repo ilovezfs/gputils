@@ -48,7 +48,5 @@ BUILT_SOURCES = parse.h gpasm.h
 
 CLEANFILES = parse.output gpasm.h
 
-.PHONY: gpasm.h
-
-gpasm.h:
-	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" $@.in > $@
+gpasm.h: gpasm.h.in
+	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" "$<" > "$@"
