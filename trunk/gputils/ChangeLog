@@ -2,6 +2,8 @@
   * gpasm/Makefile.am, gplink/Makefile.am, gputils/Makefile.am:
     fixed bug #3517180 - Out-of-source-tree builds fail,
     thanx to Raphael Neider for the patfch
+  * gpasm/Makefile.in, gplink/Makefile.in, gputils/Makefile.in:
+    regenerated
 
 2012-05-15  Marko Kohtala  <marko.kohtala@gmail.com>
   * libgputils/gpcofflink.c (gp_cofflink_patch_addr): Bug #3526882 fix
