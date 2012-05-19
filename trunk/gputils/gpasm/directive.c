@@ -2465,7 +2465,15 @@ static gpasmVal _do_pagesel(gpasmVal r,
       (state.device.class == PROC_CLASS_PIC16E)) {
     /* do nothing */
     return r;
-  } else if (state.device.class == PROC_CLASS_PIC16) {
+  }
+  
+  if (state.processor->num_pages == 1) {
+    gpmessage(GPM_EXTPAGE, NULL);
+    /* do nothing */
+    return r;
+  }
+
+  if (state.device.class == PROC_CLASS_PIC16) {
     gpmessage(GPM_W_MODIFIED, NULL);
   }
 
@@ -2521,7 +2529,6 @@ static gpasmVal _do_pagesel(gpasmVal r,
         }
       }
     }
-
   }
 
   return r;
@@ -3169,8 +3176,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_LIT7:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          /* The literal cannot be a relocatable address */
-          emit_check(i->opcode, maybe_evaluate(p), 0x7f);
+          emit_check(i->opcode, reloc_evaluate(p, RELOCT_PAGESEL_MOVLP), 0x7f);
         }
         break;
 

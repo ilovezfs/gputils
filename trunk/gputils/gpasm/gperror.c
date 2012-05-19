@@ -316,7 +316,7 @@ char *gp_getmessage(unsigned int code)
   case GPM_SUPRAM:
     return "Superceding current maximum RAM and RAM map.";
   case GPM_EXTPAGE:
-    return "Page or Bank selection not needed for this device.";
+    return "Page or Bank selection not needed for this device.  No code generated.";
   case GPM_CBLOCK:
     return "CBLOCK constants will start with a value of 0.";
   case GPM_W_MODIFIED:
