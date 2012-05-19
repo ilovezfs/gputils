@@ -1,5 +1,7 @@
 2012-05-19  Borut Razem  <borutr@users.sourceforge.net>
-  * 
+  * gpasm/directive.c, gpasm/gperror.c: ixed bug #3528221 -
+    gpasm generates the pagesel code for one page devices,
+    generate relocation code for movlp instruction
 
 2012-05-16  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/Makefile.am, gplink/Makefile.am, gputils/Makefile.am:
