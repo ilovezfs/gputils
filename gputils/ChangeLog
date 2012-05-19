@@ -1,3 +1,6 @@
+2012-05-19  Borut Razem  <borutr@users.sourceforge.net>
+  * 
+
 2012-05-16  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/Makefile.am, gplink/Makefile.am, gputils/Makefile.am:
     fixed bug #3517180 - Out-of-source-tree builds fail,
