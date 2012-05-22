@@ -1376,7 +1376,7 @@ static int reloc_movlb_pic16e(unsigned int address)
 static int
 reloc_bra_pic16e(gp_section_type *section, unsigned value, unsigned int byte_org)
 {
-  int offset = (value - byte_org - 2) >> 1;
+  int offset = ((int)(value - byte_org - 2)) >> 1;
   if (offset > 0x3ff || offset < -0x400) {
     gp_warning("relative branch out of range in at %#x of section \"%s\"",
                byte_org,

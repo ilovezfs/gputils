@@ -1,3 +1,7 @@
+2012-05-22  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpprocessor.c:
+    fixed bug #3528790 - misleading warn of gplink
+
 2012-05-19  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c, gpasm/gperror.c: ixed bug #3528221 -
     gpasm generates the pagesel code for one page devices,
