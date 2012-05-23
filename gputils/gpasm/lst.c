@@ -42,14 +42,18 @@ Boston, MA 02111-1307, USA.  */
 #define STRINGIFY(s) _str(s)
 #define _str(s) #s
 
-void lst_throw(void)
+void
+lst_throw(void)
 {
   if(state.lst.f) {
     state.lst.page++;
     fprintf(state.lst.f,
-            "%s%-29s%-19s%-29sPAGE %2d\n%s\n%s\n",
+/*            "%s%-29s%-19s%-29sPAGE %2d\n%s\n%s\n", */
+            "%s%s %*.*s   %-28sPAGE %2d\n%s\n%s\n",
             (state.lst.page == 1) ? "" : "\f",
             GPASM_VERSION_STRING,
+            45 - sizeof(GPASM_VERSION_STRING),
+            45 - sizeof(GPASM_VERSION_STRING),
             state.srcfilename,
             state.lst.startdate,
             state.lst.page,
@@ -63,7 +67,8 @@ void lst_throw(void)
   }
 }
 
-static void lst_check_page_start(void)
+static void
+lst_check_page_start(void)
 {
   if (state.lst.linesperpage != 0 &&
       (state.lst.lineofpage == 0 ||
@@ -88,7 +93,8 @@ static void lst_check_page_start(void)
   }
 }
 
-static int lst_spaces(int n)
+static int
+lst_spaces(int n)
 {
   int i = n;
 
@@ -99,7 +105,8 @@ static int lst_spaces(int n)
   return n;
 }
 
-static void lst_eol(void)
+static void
+lst_eol(void)
 {
   if (state.lst.f) {
     fputc('\n', state.lst.f);
@@ -109,7 +116,8 @@ static void lst_eol(void)
   }
 }
 
-void lst_line(const char *format, ...)
+void
+lst_line(const char *format, ...)
 {
   if (state.lst.f) {
     va_list args;
@@ -123,7 +131,8 @@ void lst_line(const char *format, ...)
 
 /* Print part of a line. Output must not contain newline. Needs call
    to lst_eol at end of line. */
-static int lst_printf(const char *format, ...)
+static int
+lst_printf(const char *format, ...)
 {
   int r = 0;
   if (state.lst.f) {
@@ -136,7 +145,8 @@ static int lst_printf(const char *format, ...)
   return r;
 }
 
-void lst_init(void)
+void
+lst_init(void)
 {
   state.lst.lineofpage = 0;
   state.lst.page = 0;
@@ -183,10 +193,10 @@ void lst_init(void)
   }
 
   cod_lst_line(COD_FIRST_LST_LINE);
-
 }
 
-void lst_memory_map(MemBlock *m)
+void
+lst_memory_map(MemBlock *m)
 {
 #define MEM_IS_USED(m, i)   (IS_16BIT_CORE ? ((m)->memory[i] & BYTE_USED_MASK) : (((m)->memory[2 * (i)] & BYTE_USED_MASK) || ((m)->memory[2 * (i) + 1] & BYTE_USED_MASK)))
 
@@ -252,7 +262,8 @@ void lst_memory_map(MemBlock *m)
   */
 }
 
-void lst_close(void)
+void
+lst_close(void)
 {
   cod_lst_line(COD_LAST_LST_LINE);
 
@@ -274,7 +285,8 @@ void lst_close(void)
   }
 }
 
-unsigned int lst_data(unsigned int pos, unsigned int byte_org,
+unsigned int
+lst_data(unsigned int pos, unsigned int byte_org,
                       unsigned int bytes_emitted)
 {
   int lst_bytes = 0;
@@ -325,7 +337,8 @@ unsigned int lst_data(unsigned int pos, unsigned int byte_org,
   return lst_bytes;
 }
 
-void lst_format_line(const char *src_line, int value)
+void
+lst_format_line(const char *src_line, int value)
 {
   unsigned int emitted = 0;
   unsigned int byte_org = 0;
@@ -340,13 +353,6 @@ void lst_format_line(const char *src_line, int value)
   switch (state.lst.line.linetype) {
   case insn:
     emitted = state.org - state.lst.line.was_org;
-    break;
-
-  case data:
-    if (SECTION_FLAGS & STYP_TEXT) {
-      /* generate line numbers for data directives in program memory */
-      emitted = state.org - state.lst.line.was_org;
-    }
     break;
 
   case res:
@@ -505,7 +511,8 @@ void lst_format_line(const char *src_line, int value)
 
 /* append the symbol table to the .lst file */
 
-void lst_symbol_table(struct symbol_table *table)
+void
+lst_symbol_table(struct symbol_table *table)
 {
   int i;
   const char *symbol_format = "%-32s  %08X";
@@ -538,7 +545,8 @@ void lst_symbol_table(struct symbol_table *table)
   cod_write_symbols(lst,table->count);
 }
 
-void lst_defines_table(struct symbol_table *table)
+void
+lst_defines_table(struct symbol_table *table)
 {
   int i;
   const char *symbol_format = "%-32s  %s";
