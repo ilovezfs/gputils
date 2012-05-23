@@ -48,7 +48,6 @@ lst_throw(void)
   if(state.lst.f) {
     state.lst.page++;
     fprintf(state.lst.f,
-/*            "%s%-29s%-19s%-29sPAGE %2d\n%s\n%s\n", */
             "%s%s %*.*s   %-28sPAGE %2d\n%s\n%s\n",
             (state.lst.page == 1) ? "" : "\f",
             GPASM_VERSION_STRING,
