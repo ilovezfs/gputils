@@ -36,12 +36,14 @@ int yyparse(void);
 extern int yydebug;
 
 /* return the number of missing symbols */
-int count_missing(void)
+int
+count_missing(void)
 {
   return state.symbol.missing->count;
 }
 
-void object_append(gp_object_type *file, char *name)
+void
+object_append(gp_object_type *file, char *name)
 {
   /* append the entry to the list */
   if (state.object == NULL) {
@@ -56,33 +58,31 @@ void object_append(gp_object_type *file, char *name)
       list = list->next;
     }
     list->next = file;
-    
+
     if (file->class != state.class) {
       gp_error("processor family mismatch in \"%s\"", file->filename);
     } else if ((0 != processor_mismatch_warning) &&
                (file->processor != state.processor)) {
       gp_warning("processor mismatch in \"%s\"", file->filename);
     }
-
   }
 
   if (state.optimize.weak_symbols) {
     gp_coffopt_remove_weak(file);
   }
-
-  return;
 }
 
-void archive_append(gp_archive_type *file, char *name)
+void
+archive_append(gp_archive_type *file, char *name)
 {
   struct archivelist *new;
 
-  /* make the new entry */  
+  /* make the new entry */
   new = (struct archivelist *)malloc(sizeof(*new));
-  new->name = strdup(name); 
+  new->name = strdup(name);
   new->archive = file;
   new->next = NULL;
-  
+
   /* append the entry to the list */
   if (state.archives == NULL) {
     state.archives = new;
@@ -94,13 +94,11 @@ void archive_append(gp_archive_type *file, char *name)
     }
     list->next = new;
   }
-
-  return;
 }
 
 /* Scan the archive for missing symbol definitions.  This has to be done
    recursively.  The order of the archive members is unknown and there
-   might be inter member dependancies.  Scan the archive muliple times.  
+   might be inter member dependancies.  Scan the archive muliple times.
    Stop whenever a complete pass through the archive happens and no
    objects are added. */
 
@@ -121,35 +119,35 @@ scan_index(struct symbol_table *table, gp_archive_type *archive)
     num_added = 0;
     for (i = 0; i < HASH_SIZE; i++) {
       for (s = state.symbol.missing->hash_table[i]; s; s = s->next) {
-	name = get_symbol_name(s);
+        name = get_symbol_name(s);
         assert(name != NULL);
         /* Search for missing symbol name in archive symbol table */
         m = get_symbol(table, name);
         if (m != NULL) {
-          /* Fetch the archive member, convert its binary data to an object 
-	     file, and add the object to the object list */ 
+          /* Fetch the archive member, convert its binary data to an object
+             file, and add the object to the object list */
           member = get_symbol_annotation(m);
           object_name = gp_archive_member_name(member);
           object = gp_convert_file(object_name, member->file);
-          object_append(object, object_name);	
-          gp_link_add_symbols(state.symbol.definition, 
-                              state.symbol.missing, 
-			      object);		
+          object_append(object, object_name);
+          gp_link_add_symbols(state.symbol.definition,
+                              state.symbol.missing,
+                              object);
           /* The symbol tables have been modified.  Need to take another
-	     pass to make sure we get everything. */
+             pass to make sure we get everything. */
           num_added++;
           modified = true;
           free(object_name);
           /* This branch of the table has been modified. Go to the next one */
-	  break;
-	}      
+          break;
+        }
       }
     }
   }
 
   return modified;
 }
-    
+
 gp_boolean
 scan_archive(gp_archive_type *archive, char *name)
 {
@@ -160,7 +158,7 @@ scan_archive(gp_archive_type *archive, char *name)
   /* If necessary, build a symbol index for the archive. */
   if (gp_archive_have_index(archive) == 0) {
     struct symbol_table *archive_tbl = NULL;
-  
+
     archive_tbl = push_symbol_table(NULL, true);
     gp_archive_make_index(archive, archive_tbl);
     archive = gp_archive_add_index(archive_tbl, archive);
@@ -191,8 +189,6 @@ remove_linker_symbol(char *name)
   if (sym != NULL) {
     gp_link_remove_symbol(state.symbol.missing, name);
   }
-
-  return;
 }
 
 /* Add a symbol the linker created to the symbol table. */
@@ -215,8 +211,6 @@ add_linker_symbol(char *name)
 
   assert(found != NULL);
   gp_link_add_symbol(state.symbol.definition, found, NULL);
-
-  return;
 }
 
 /* Search the object list for an idata section. */
@@ -232,20 +226,19 @@ search_idata(void)
     while (section != NULL) {
       if (section->flags & STYP_DATA) {
         state.has_idata = true;
-        return;    
+        return;
       }
       section = section->next;
     }
     list = list->next;
   }
-
-  return;
 }
 
-/* Build the symbol tables.  Determine which objects from the archives are 
+/* Build the symbol tables.  Determine which objects from the archives are
    required for linking */
-    
-void build_tables(void)
+
+void
+build_tables(void)
 {
   gp_object_type *list = state.object;
   struct archivelist *arlist;
@@ -255,11 +248,11 @@ void build_tables(void)
   const char *name;
   gp_coffsymbol_type *var;
 
-  /* Create the object file symbol tables */  
+  /* Create the object file symbol tables */
   while (list != NULL) {
-    gp_link_add_symbols(state.symbol.definition, 
-                        state.symbol.missing, 
-			list);
+    gp_link_add_symbols(state.symbol.definition,
+                        state.symbol.missing,
+                        list);
     list = list->next;
   }
 
@@ -318,15 +311,14 @@ void build_tables(void)
     }
     exit(1);
   }
-
-  return;
 }
 
 /* Read a coff object or archive.  gplink doesn't care about file extensions.
-   This allows alternate extensions such as .a archives and .obj coff 
+   This allows alternate extensions such as .a archives and .obj coff
    objects.  */
 
-void gplink_open_coff(const char *name)
+void
+gplink_open_coff(const char *name)
 {
   gp_object_type *object;
   gp_archive_type *archive;
@@ -336,20 +328,20 @@ void gplink_open_coff(const char *name)
   strncpy(file_name, name, sizeof(file_name));
 
   coff = fopen(file_name, "rb");
-  if ((coff == NULL) && (strchr(file_name, PATH_CHAR) == 0)) { 
+  if ((coff == NULL) && (strchr(file_name, PATH_CHAR) == 0)) {
     /* If no "/" in name, try searching include pathes */
     int i;
 
     for(i = 0; i < state.numpaths; i++) {
       snprintf(file_name, sizeof(file_name),
-	       "%s" COPY_CHAR "%s", state.paths[i], name);
+               "%s" COPY_CHAR "%s", state.paths[i], name);
       coff = fopen(file_name, "rb");
       if (coff != NULL) {
         break;
       }
-    }  
+    }
   }
-  
+
   if (coff == NULL) {
     perror(name);
     exit(1);
@@ -360,31 +352,29 @@ void gplink_open_coff(const char *name)
   switch(gp_identify_coff_file(file_name)) {
   case object_file_v2:
   case object_file:
-    /* read the object */  
+    /* read the object */
     object = gp_read_coff(file_name);
     object_append(object, file_name);
     break;
   case archive_file:
-    /* read the archive */  
+    /* read the archive */
     archive = gp_archive_read(file_name);
     archive_append(archive, file_name);
     break;
   case sys_err_file:
-    gp_error("can't open file \"%s\"", file_name);     
+    gp_error("can't open file \"%s\"", file_name);
     break;
   case unknown_file:
-    gp_error("\"%s\" is not a valid coff object or archive", file_name);     
-    break; 
+    gp_error("\"%s\" is not a valid coff object or archive", file_name);
+    break;
   default:
     assert(0);
   }
-
-}   
+}
 
 static void
 set_optimize_level(void)
 {
-
   /* default */
   state.optimize.dead_sections = false;
   state.optimize.weak_symbols = false;
@@ -403,38 +393,35 @@ set_optimize_level(void)
   default:
     gp_error("invalid optimization level");
   }
-
-  return;
 }
 
 #define GET_OPTIONS "?a:cdf:hI:lmo:O:qrs:t:u:vw"
 
-  static struct option longopts[] =
-  {
-    { "hex-format",          1, 0, 'a' },
-    { "object",              0, 0, 'c' },
-    { "debug",               0, 0, 'd' },
-    { "fill",                1, 0, 'f' },
-    { "help",                0, 0, 'h' },
-    { "include",             1, 0, 'I' },
-    { "no-list",             0, 0, 'l' },
-    { "map",                 0, 0, 'm' },
-    { "output",              1, 0, 'o' },
-    { "optimize",            1, 0, 'O' },
-    { "quiet",               0, 0, 'q' },
-    { "use-shared",          0, 0, 'r' },
-    { "script",              1, 0, 's' },
-    { "stack",               1, 0, 't' },
-    { "macro",               1, 0, 'u' },
-    { "version",             0, 0, 'v' },
-    { "processor-mismatch",  0, 0, 'w' },
-    { 0, 0, 0, 0 }
-  };
+static struct option longopts[] =
+{
+  { "hex-format",          1, 0, 'a' },
+  { "object",              0, 0, 'c' },
+  { "debug",               0, 0, 'd' },
+  { "fill",                1, 0, 'f' },
+  { "help",                0, 0, 'h' },
+  { "include",             1, 0, 'I' },
+  { "no-list",             0, 0, 'l' },
+  { "map",                 0, 0, 'm' },
+  { "output",              1, 0, 'o' },
+  { "optimize",            1, 0, 'O' },
+  { "quiet",               0, 0, 'q' },
+  { "use-shared",          0, 0, 'r' },
+  { "script",              1, 0, 's' },
+  { "stack",               1, 0, 't' },
+  { "macro",               1, 0, 'u' },
+  { "version",             0, 0, 'v' },
+  { "processor-mismatch",  0, 0, 'w' },
+  { 0, 0, 0, 0 }
+};
 
 void
 init(void)
 {
-
   gp_init();
 
   /* initialize */
@@ -468,11 +455,10 @@ init(void)
   state.symbol.missing = push_symbol_table(NULL, false);
   state.section.definition = push_symbol_table(NULL, false);
   state.section.logical = push_symbol_table(NULL, false);
-
-  return;
 }
 
-void gplink_add_path(const char *path)
+void
+gplink_add_path(const char *path)
 {
   if(state.numpaths < MAX_PATHS) {
     state.paths[state.numpaths++] = strdup(path);
@@ -484,9 +470,8 @@ void gplink_add_path(const char *path)
 /* I have this take the func in anticipation of the option
   printf("  -z, --defsym symbol=value      Add symbol value to symbol table.\n");
 */
-static
-void parse_define(const char *optarg,
-		  void (*func)(const char* name, long value))
+static void
+parse_define(const char *optarg, void (*func)(const char* name, long value))
 {
   long value = 0;
   char *pc = strchr(optarg, '=');
@@ -497,7 +482,8 @@ void parse_define(const char *optarg,
   func(optarg, value);
 }
 
-void show_usage(void)
+void
+show_usage(void)
 {
   printf("Usage: gplink [options] [objects] [libraries] \n");
   printf("Options: [defaults in brackets after descriptions]\n");
@@ -525,12 +511,12 @@ void show_usage(void)
   } else {
     printf("Default linker script path NOT SET\n");
   }
-  if (gp_lkr_path) {
+  if (gp_lib_path) {
     printf("Default library path %s\n", gp_lib_path);
   } else {
     printf("Default library path NOT SET\n");
   }
-  printf("\n");    
+  printf("\n");
 #endif
   printf("Report bugs to:\n");
   printf("%s\n", PACKAGE_BUGREPORT);
@@ -681,11 +667,10 @@ process_args( int argc, char *argv[])
     gplink_add_path(gp_lkr_path);
   }
 
-  /* Open all objects and archives in the file list. */ 
+  /* Open all objects and archives in the file list. */
   for ( ; optind < argc; optind++) {
     gplink_open_coff(argv[optind]);
   }
-
 }
 
 int
@@ -695,11 +680,11 @@ linker(void)
 
   /* setup output filenames */
   snprintf(state.hexfilename, sizeof(state.hexfilename),
-	   "%s.hex", state.basefilename);
+           "%s.hex", state.basefilename);
   snprintf(state.mapfilename, sizeof(state.mapfilename),
-	   "%s.map", state.basefilename);
+           "%s.map", state.basefilename);
   snprintf(state.objfilename, sizeof(state.objfilename),
-	   "%s.cof", state.basefilename);
+           "%s.cof", state.basefilename);
 
   /* Read the script */
   if (state.srcfilename) {
@@ -711,38 +696,38 @@ linker(void)
        use one of the default scripts that are distributed with gputils. */
     char file_name[BUFSIZ];
     const char *script_name;
-    
-    assert(state.processor != no_processor); 
+
+    assert(state.processor != no_processor);
     script_name = gp_processor_script(state.processor);
     if (script_name == NULL) {
       gp_error("linker script not specified and can't determine default script");
-      return EXIT_FAILURE; 
+      return EXIT_FAILURE;
     }
     snprintf(file_name, sizeof(file_name),
-	     "%s" COPY_CHAR "%s", gp_lkr_path, script_name);
+             "%s" COPY_CHAR "%s", gp_lkr_path, script_name);
     gp_message("using default linker script \"%s\"", file_name);
     open_src(file_name, 0);
     yyparse();
 #endif
   } else {
     /* The user must supply the linker script name.  The processor isn't
-       commanded so the linker has no way to pick. */ 
+       commanded so the linker has no way to pick. */
     gp_error("linker script not specified");
-    return EXIT_FAILURE; 
+    return EXIT_FAILURE;
   }
 
   if (state.object == NULL) {
     gp_error("missing input object file");
-    return EXIT_FAILURE; 
+    return EXIT_FAILURE;
   }
 
   /* An error occured while reading the input files, no need to continue */
   if (gp_num_errors)
     return EXIT_FAILURE;
 
-  /* Construct the symbol tables. Determine which archive members are 
+  /* Construct the symbol tables. Determine which archive members are
      required to resolve external references. */
-  build_tables();  
+  build_tables();
 
   /* combine all object files into one object */
   gp_cofflink_combine_objects(state.object);
@@ -775,53 +760,53 @@ linker(void)
   /* create ROM data for initialized data sections */
   gp_cofflink_make_idata(state.object);
 
-  /* create memory representing target memory */ 
+  /* create memory representing target memory */
   data = i_memory_create();
   program = i_memory_create();
 
   /* allocate memory for absolute sections */
   gp_debug("verifying absolute sections.");
-  gp_cofflink_reloc_abs(program, 
+  gp_cofflink_reloc_abs(program,
                         state.class->org_to_byte_shift,
                         state.object->sections,
                         STYP_TEXT | STYP_DATA_ROM);
-  gp_cofflink_reloc_abs(data, 
+  gp_cofflink_reloc_abs(data,
                         0,
-                        state.object->sections, 
-                        STYP_DATA | STYP_BSS | STYP_SHARED | 
+                        state.object->sections,
+                        STYP_DATA | STYP_BSS | STYP_SHARED |
                         STYP_OVERLAY | STYP_ACCESS);
 
-  /* FIXME: allocate assigned stacks */ 
+  /* FIXME: allocate assigned stacks */
 
   /* allocate memory for relocatable assigned sections */
   gp_debug("relocating assigned sections.");
-  gp_cofflink_reloc_assigned(program, 
+  gp_cofflink_reloc_assigned(program,
                              state.class->org_to_byte_shift,
                              state.object->sections,
                              STYP_TEXT | STYP_DATA_ROM,
                              state.section.definition,
                              state.section.logical);
-  gp_cofflink_reloc_assigned(data, 
+  gp_cofflink_reloc_assigned(data,
                              0,
-                             state.object->sections, 
-                             STYP_DATA | STYP_BSS | STYP_SHARED | 
+                             state.object->sections,
+                             STYP_DATA | STYP_BSS | STYP_SHARED |
                              STYP_OVERLAY | STYP_ACCESS,
                              state.section.definition,
                              state.section.logical);
-  
-  /* FIXME: allocate unassigned stacks */ 
+
+  /* FIXME: allocate unassigned stacks */
 
   /* allocate memory for relocatable unassigned sections */
   gp_debug("relocating unassigned sections.");
-  gp_cofflink_reloc_unassigned(program, 
+  gp_cofflink_reloc_unassigned(program,
                                state.class->org_to_byte_shift,
                                state.object->sections,
                                STYP_TEXT | STYP_DATA_ROM,
                                state.section.definition);
-  gp_cofflink_reloc_unassigned(data, 
+  gp_cofflink_reloc_unassigned(data,
                                0,
-                               state.object->sections, 
-                               STYP_DATA | STYP_BSS | STYP_SHARED | 
+                               state.object->sections,
+                               STYP_DATA | STYP_BSS | STYP_SHARED |
                                STYP_OVERLAY | STYP_ACCESS,
                                state.section.definition);
 
@@ -853,14 +838,14 @@ linker(void)
 
   /* convert the executable object into a hex file */
   state.i_memory = gp_cofflink_make_memory(state.object);
-  
+
   /* write hex file */
   writehex(state.basefilename,
            state.i_memory,
            state.hex_format,
            gp_num_errors,
            0,
-	   state.class->core_size);
+           state.class->core_size);
 
   /* convert the executable object into a cod file and list file */
   cod_init();
@@ -871,15 +856,14 @@ linker(void)
   make_map();
 
   i_memory_free(state.i_memory);
-  
+
   if (gp_num_errors > 0)
     return EXIT_FAILURE;
   else
     return EXIT_SUCCESS;
-
 }
 
-int 
+int
 main(int argc, char *argv[])
 {
   init();
