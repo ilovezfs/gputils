@@ -1,5 +1,9 @@
 2012-05-23  Borut Razem  <borutr@users.sourceforge.net>
   * gplink/gplink.c: fixed typo
+  * gpasm/lst.c:
+    fixed bug #3529152 - idata db doesn't generate object code in .lst file
+  * gpasm/testsuite/gpasm.project/hexfiles/*.hex:
+    set svn:eol-style to native
 
 2012-05-22  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpprocessor.c:
