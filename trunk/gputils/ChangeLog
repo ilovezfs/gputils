@@ -1,3 +1,6 @@
+2012-05-23  Borut Razem  <borutr@users.sourceforge.net>
+  * gplink/gplink.c: fixed typo
+
 2012-05-22  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpprocessor.c:
     fixed bug #3528790 - misleading warn of gplink
