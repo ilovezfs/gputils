@@ -1,7 +1,8 @@
 2012-05-24  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/lst.c:
     really fixed bug #3529152 - idata db doesn't generate object code in .lst file
-  * doc/Makefi
+  * doc/Makefile.am, doc/Makefile.in:
+    fixed bug #3529377 - Out-of-source-tree make dist fails
 
 2012-05-23  Borut Razem  <borutr@users.sourceforge.net>
   * gplink/gplink.c: fixed typo
