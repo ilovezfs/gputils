@@ -351,6 +351,7 @@ lst_format_line(const char *src_line, int value)
 
   switch (state.lst.line.linetype) {
   case insn:
+  case data:
     emitted = state.org - state.lst.line.was_org;
     break;
 
