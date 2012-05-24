@@ -340,6 +340,7 @@ void
 lst_format_line(const char *src_line, int value)
 {
   unsigned int emitted = 0;
+  unsigned int emitted_lines = 0;
   unsigned int byte_org = 0;
   unsigned int bytes_emitted = 0;
   unsigned int lst_bytes;
@@ -351,14 +352,21 @@ lst_format_line(const char *src_line, int value)
 
   switch (state.lst.line.linetype) {
   case insn:
+    emitted_lines = emitted = state.org - state.lst.line.was_org;
+    break;
+
   case data:
     emitted = state.org - state.lst.line.was_org;
+    if ((SECTION_FLAGS & (STYP_TEXT | STYP_BPACK)) == STYP_TEXT) {
+      /* generate line numbers for data directives in program memory and not code_pack */
+      emitted_lines = emitted;
+    }
     break;
 
   case res:
     if (!IS_RAM_ORG) {
       /* generate line numbers for res directives in program memory */
-      emitted = state.org - state.lst.line.was_org;
+      emitted_lines = emitted = state.org - state.lst.line.was_org;
     }
     break;
 
@@ -366,7 +374,7 @@ lst_format_line(const char *src_line, int value)
     break;
   }
 
-  coff_linenum(emitted);
+  coff_linenum(emitted_lines);
 
   /* Don't write to file if list is disabled with NOLIST directive */
   if (!state.lst.enabled)
