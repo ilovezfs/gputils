@@ -1,3 +1,7 @@
+2012-05-25  Borut Razem  <borutr@users.sourceforge.net>
+  * doc/Makefile.am, doc/Makefile.in:
+    force copying gputils.lyx if out-of-source-tee
+
 2012-05-24  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/lst.c:
     really fixed bug #3529152 - idata db doesn't generate object code in .lst file
