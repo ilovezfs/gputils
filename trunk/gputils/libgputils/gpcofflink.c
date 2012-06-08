@@ -116,7 +116,6 @@ gp_link_add_symbols(struct symbol_table *definition,
     }
 
     symbol = symbol->next;
-
   }
 
   return 0;
@@ -232,12 +231,10 @@ gp_cofflink_clean_table(gp_object_type *object,
 static void
 _update_line_numbers(gp_linenum_type *line_number, int offset)
 {
-
   while (line_number != NULL) {
     line_number->address += offset;
     line_number = line_number->next;
   }
-
 }
 
 /* Combine overlay sections in an object file. */
@@ -575,7 +572,7 @@ _read_table_data(const struct proc_class *class,
   unsigned short data[2];
 
   class->i_memory_get(section->data, address, data);
-  class->i_memory_get(section->data, address + 2, data+1);
+  class->i_memory_get(section->data, address + 2, data + 1);
 
   return (data[0] & 0xff) | ((data[1] & 0xff) << 8);
 }
@@ -727,7 +724,6 @@ gp_add_cinit_section(gp_object_type *object)
       number = _read_table_data(object->class, new, new->address);
     }
     assert(number == count);
-
   }
 }
 
@@ -768,11 +764,9 @@ gp_cofflink_reloc_abs(MemBlock *m,
 
       /* Set the relocated flag */
       section->flags |= STYP_RELOC;
-
     }
     section = section->next;
   }
-
 }
 
 /* Search through all the sections in the object list.  Locate the biggest
@@ -1184,7 +1178,6 @@ gp_cofflink_update_table(gp_object_type *object, int org_to_byte_shift)
     section->flags &= ~(STYP_RELOC);
     section = section->next;
   }
-
 }
 
 /* Create sections to fill unused memory in the pages with constant data. */
@@ -1270,7 +1263,7 @@ static void
 check_relative(gp_section_type *section, int org, int argument, int range)
 {
   /* If the branch is too far then issue a warning */
-  if ((argument > range) || (argument < -(range+1))) {
+  if ((argument > range) || (argument < -(range + 1))) {
     gp_warning("relative branch out of range in at %#x of section \"%s\"",
                org,
                section->name);
@@ -1314,18 +1307,23 @@ gp_cofflink_patch_addr(proc_class_t class,
   case RELOCT_CALL:
     data = class->reloc_call(value);
     break;
+
   case RELOCT_GOTO:
     data = class->reloc_goto(value);
     break;
+
   case RELOCT_HIGH:
     data = (value >> 8) & 0xff;
     break;
+
   case RELOCT_LOW:
     data = value & 0xff;
     break;
+
   case RELOCT_P:
     data = (value & 0x1f) << 8;
     break;
+
   case RELOCT_BANKSEL:
     {
       int bank = gp_processor_check_bank(class, value);
@@ -1333,52 +1331,76 @@ gp_cofflink_patch_addr(proc_class_t class,
       write_data = 0;
     }
     break;
+
   case RELOCT_ALL:
     data = value & 0xffff;
     break;
+
   case RELOCT_IBANKSEL:
     data = class->reloc_ibanksel(value);
     break;
+
   case RELOCT_F:
     data = class->reloc_f(value);
     break;
+
   case RELOCT_TRIS:
     data = class->reloc_tris(value);
     break;
+
   case RELOCT_MOVLR:
     data = (value << 4) & 0xf0;
     break;
+
   case RELOCT_MOVLB:
     data = class->reloc_movlb(value);
     break;
+
   case RELOCT_GOTO2:
     /* This is only used for PIC16E (pic18) */
     data = (value >> 9) & 0xfff;
     break;
+
   case RELOCT_FF1:
     data = value & 0xfff;
     break;
+
   case RELOCT_FF2:
     data = value & 0xfff;
     break;
+
   case RELOCT_LFSR1:
     data = (value >> 8) & 0xf;
     break;
+
   case RELOCT_LFSR2:
     data = value & 0xff;
     break;
+
   case RELOCT_BRA:
+    if (value & 1) {
+      gp_warning("destination address must be word aligned at %#x of section \"%s\"",
+                 org, section->name);
+    }
     data = class->reloc_bra(section, value, org);
     break;
+
   case RELOCT_CONDBRA:
     /* This is only used for PIC16E (pic18) */
-    offset = (value - org - 2) >> 1;
+    offset = value - org - 2;
+    if (offset & 1) {
+      gp_warning("destination address must be word aligned at %#x of section \"%s\"",
+                 org, section->name);
+    }
+    offset >>= 1;
     check_relative(section, org, offset, 0x7f);
     data = offset & 0xff;
     break;
+
   case RELOCT_UPPER:
     data = (value >> 16) & 0xff;
     break;
+
   case RELOCT_ACCESS:
     if ((value >= 0 && value < bsr_boundary) ||
         (value >= 0xf00 + bsr_boundary && value < 0x1000))
@@ -1386,6 +1408,7 @@ gp_cofflink_patch_addr(proc_class_t class,
     else
       data = 0x100;
     break;
+
   case RELOCT_PAGESEL_WREG:
     {
       int page = gp_processor_check_page(class, value);
@@ -1393,6 +1416,7 @@ gp_cofflink_patch_addr(proc_class_t class,
       write_data = 0;
     }
     break;
+
   case RELOCT_PAGESEL_BITS:
   case RELOCT_PAGESEL_MOVLP:
     {
@@ -1401,6 +1425,7 @@ gp_cofflink_patch_addr(proc_class_t class,
       write_data = 0;
     }
     break;
+
   /* unimplemented relocations */
   case RELOCT_PAGESEL:
   case RELOCT_SCNSZ_LOW:

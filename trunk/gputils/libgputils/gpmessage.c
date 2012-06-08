@@ -34,11 +34,11 @@ int gp_num_errors = 0;
 int gp_num_warnings = 0;
 int gp_num_messages = 0;
 
-void 
+void
 gp_error(const char *format, ...)
 {
   va_list args;
-  char buffer[BUFSIZ]; 
+  char buffer[BUFSIZ];
 
   if (gp_message_disable)
     return;
@@ -49,19 +49,17 @@ gp_error(const char *format, ...)
     return;
 
   va_start(args, format);
-  vsnprintf(buffer, sizeof(buffer), format, args);
+  vsnprintf(buffer, sizeof (buffer), format, args);
   va_end(args);
 
-  printf("%s %s\n", "error:", buffer);
-
-  return;
+  printf("error: %s\n", buffer);
 }
 
-void 
+void
 gp_warning(const char *format, ...)
 {
   va_list args;
-  char buffer[BUFSIZ]; 
+  char buffer[BUFSIZ];
 
   if (gp_message_disable)
     return;
@@ -72,19 +70,17 @@ gp_warning(const char *format, ...)
     return;
 
   va_start(args, format);
-  vsnprintf(buffer, sizeof(buffer), format, args);
+  vsnprintf(buffer, sizeof (buffer), format, args);
   va_end(args);
 
-  printf("%s %s\n", "warning:", buffer);
-
-  return;
+  printf("warning: %s\n", buffer);
 }
 
-void 
+void
 gp_message(const char *format, ...)
 {
   va_list args;
-  char buffer[BUFSIZ]; 
+  char buffer[BUFSIZ];
 
   if (gp_message_disable)
     return;
@@ -95,19 +91,17 @@ gp_message(const char *format, ...)
     return;
 
   va_start(args, format);
-  vsnprintf(buffer, sizeof(buffer), format, args);
+  vsnprintf(buffer, sizeof (buffer), format, args);
   va_end(args);
 
-  printf("%s %s\n", "message:", buffer);
-
-  return;
+  printf("message: %s\n", buffer);
 }
 
-void 
+void
 gp_debug(const char *format, ...)
 {
   va_list args;
-  char buffer[BUFSIZ]; 
+  char buffer[BUFSIZ];
 
   if (gp_debug_disable)
     return;
@@ -116,10 +110,8 @@ gp_debug(const char *format, ...)
     return;
 
   va_start(args, format);
-  vsnprintf(buffer, sizeof(buffer), format, args);
+  vsnprintf(buffer, sizeof (buffer), format, args);
   va_end(args);
 
-  printf("%s %s\n", "debug:", buffer);
-
-  return;
+  printf("debug: %s\n", buffer);
 }
