@@ -1,3 +1,6 @@
+2011-06-10  Borut Razem  <borutr@users.sourceforge.net>
+  * doc/gputils.lyx, configure.ac, configure: version changed to 0.14.2
+
 2012-05-08  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpcofflink.c, libgputils/gpmessage.c:
     fixed bug #3153394: PIC18 - relative branch - revision v595:
