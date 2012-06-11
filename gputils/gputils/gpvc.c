@@ -33,7 +33,6 @@ char *source_file_names[MAX_SOURCE_FILES];
 FILE *source_files[MAX_SOURCE_FILES];
 DirBlockInfo main_dir;
 
-unsigned char directory_block_data[COD_BLOCK_SIZE];
 char * SymbolType4[154] = {
   "a_reg          ", "x_reg          ", "c_short        ", "c_long         ",
   "c_ushort       ", "c_ulong        ", "c_pointer      ", "c_upointer     ",
@@ -197,9 +196,6 @@ int main(int argc, char *argv[])
 
   processor_info = gp_find_processor(processor_name);
   processor_class = gp_processor_class(processor_info);
-
-  fseek(codefile, 0,SEEK_SET);
-  fread(directory_block_data, 1, COD_BLOCK_SIZE, codefile);
 
   if(display_flags & DISPLAY_DIR)
     directory_block();
