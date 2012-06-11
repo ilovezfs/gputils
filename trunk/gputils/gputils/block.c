@@ -61,7 +61,7 @@ void directory_block(void)
                           8);
   printf("Processor         %s\n", processor_name);
 
-  bytes_for_address = gp_getl16(&block[COD_DIR_ADDRSIZE]);
+  bytes_for_address = block[COD_DIR_ADDRSIZE];
   printf("Bytes for address: %d\n", bytes_for_address);
   if (bytes_for_address != 4) {
     printf("WARNING: address size looks suspicious\n");

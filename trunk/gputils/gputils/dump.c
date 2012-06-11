@@ -259,11 +259,11 @@ void dump_symbols( void )
   unsigned short i,j,start_block,end_block;
   char b[16];
 
-  start_block = gp_getu16(&directory_block_data[COD_DIR_SYMTAB]);
+  start_block = gp_getu16(&main_dir.dir.block[COD_DIR_SYMTAB]);
 
   if(start_block) {
 
-    end_block = gp_getu16(&directory_block_data[COD_DIR_SYMTAB+2]);
+    end_block = gp_getu16(&main_dir.dir.block[COD_DIR_SYMTAB+2]);
 
     printf("\nSymbol Table Information\n");
     printf("------------------------\n\n");
@@ -301,11 +301,11 @@ void dump_lsymbols( void )
   unsigned short i,j,start_block,end_block, value;
   char b[256];
 
-  start_block = gp_getu16(&directory_block_data[COD_DIR_LSYMTAB]);
+  start_block = gp_getu16(&main_dir.dir.block[COD_DIR_LSYMTAB]);
 
   if(start_block) {
 
-    end_block = gp_getu16(&directory_block_data[COD_DIR_LSYMTAB+2]);
+    end_block = gp_getu16(&main_dir.dir.block[COD_DIR_LSYMTAB+2]);
 
     printf("\nLong Symbol Table Information\n");
     printf("------------------------\n\n");
@@ -352,11 +352,11 @@ void dump_source_files( void )
   unsigned short i,j,start_block,end_block,offset;
   char b[FILE_SIZE];
 
-  start_block = gp_getu16(&directory_block_data[COD_DIR_NAMTAB]);
+  start_block = gp_getu16(&main_dir.dir.block[COD_DIR_NAMTAB]);
 
   if(start_block) {
 
-    end_block = gp_getu16(&directory_block_data[COD_DIR_NAMTAB+2]);
+    end_block = gp_getu16(&main_dir.dir.block[COD_DIR_NAMTAB+2]);
 
     printf("\nSource File Information\n");
     printf("------------------------\n\n");
@@ -422,46 +422,43 @@ void dump_line_symbols(void)
   static int lst_line_number = 1;
   static int last_src_line = 0;
   char buf[2048];
-  unsigned short i,j,start_block,end_block;
+  unsigned short i, j, start_block, end_block;
 
-  LineSymbol *ls;
+  start_block = gp_getu16(&main_dir.dir.block[COD_DIR_LSTTAB]);
 
-  start_block = gp_getu16(&directory_block_data[COD_DIR_LSTTAB]);
-
-  if(start_block) {
-
-    end_block = gp_getu16(&directory_block_data[COD_DIR_LSTTAB+2]);
+  if (start_block) {
+    end_block = gp_getu16(&main_dir.dir.block[COD_DIR_LSTTAB + 2]);
 
     printf("\n\nLine Number Information\n");
     printf(" LstLn  SrcLn  Addr   Flags         FileName\n");
     printf(" -----  -----  ----   -----------   ---------------------------------------\n");
 
-    for(j=start_block; j<=end_block; j++) {
-      unsigned short sline;
-      unsigned short sloc;
-
+    for (j = start_block; j <= end_block; j++) {
       read_block(temp, j);
 
-      ls = (LineSymbol *) temp;
+      for (i = 0; i < 84; i++) {
+        unsigned int offset = i * COD_LINE_SYM_SIZE;
 
-      for(i=0; i<84; i++) {
-        sline = gp_getl16((unsigned char *)&ls[i].sline);
-        sloc = gp_getl16((unsigned char *)&ls[i].sloc);
+        unsigned char sfile = temp[offset + COD_LS_SFILE];
+        unsigned char smod = temp[offset + COD_LS_SMOD];
+        unsigned short sline = gp_getl16(&temp[offset + COD_LS_SLINE]);
+        unsigned short sloc = gp_getl16(&temp[offset + COD_LS_SLOC]);
 
-        if((ls[i].smod & 4) == 0) {
-          assert(ls[i].sfile < number_of_source_files);
+        if ((sfile != 0 || smod != 0 || sline != 0 || sloc != 0) &&
+          (smod & 4) == 0) {
+          assert(sfile < number_of_source_files);
           printf(" %5d  %5d %06X   %2x %s   %-50s\n",
                  lst_line_number++,
                  sline,
                  sloc,
-                 ls[i].smod,
-                 smod_flags(ls[i].smod),
-                 source_file_names[ls[i].sfile]);
+                 smod,
+                 smod_flags(smod),
+                 source_file_names[sfile]);
         }
-        if(source_files[ls[i].sfile] && (sline != last_src_line)) {
-          /*fgets(buf, sizeof(buf), source_files[ls[i].sfile]);*/
-          fget_line(sline, buf, sizeof(buf), source_files[ls[i].sfile]);
-          printf("%s",buf);
+        if (source_files[sfile] && (sline != last_src_line)) {
+          /*fgets(buf, sizeof(buf), source_files[sfile]);*/
+          fget_line(sline, buf, sizeof (buf), source_files[sfile]);
+          printf("%s", buf);
         }
         last_src_line = sline;
       }
@@ -469,6 +466,7 @@ void dump_line_symbols(void)
   } else
     printf("No line number info\n");
 }
+
 /*---------------------------------------------*/
 /*
  * Debug Message area
@@ -482,11 +480,11 @@ void dump_message_area(void)
   unsigned short i,j,start_block,end_block;
   unsigned short laddress;
 
-  start_block = gp_getu16(&directory_block_data[COD_DIR_MESSTAB]);
+  start_block = gp_getu16(&main_dir.dir.block[COD_DIR_MESSTAB]);
 
   if(start_block) {
 
-    end_block = gp_getu16(&directory_block_data[COD_DIR_MESSTAB+2]);
+    end_block = gp_getu16(&main_dir.dir.block[COD_DIR_MESSTAB+2]);
 
     printf("\n\nDebug Message area\n");
     printf("     Addr  Cmd  Message\n");
@@ -556,11 +554,11 @@ void dump_local_vars(proc_class_t proc_class)
 
   unsigned short i,j,start_block,end_block;
 
-  start_block = gp_getu16(&directory_block_data[COD_DIR_LOCALVAR]);
+  start_block = gp_getu16(&main_dir.dir.block[COD_DIR_LOCALVAR]);
 
   if(start_block) {
 
-    end_block = gp_getu16(&directory_block_data[COD_DIR_LOCALVAR+2]);
+    end_block = gp_getu16(&main_dir.dir.block[COD_DIR_LOCALVAR+2]);
 
     printf("\n\nLocal Symbol Scoping Information\n");
     printf("--------------------------------\n");

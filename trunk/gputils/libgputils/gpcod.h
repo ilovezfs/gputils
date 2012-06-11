@@ -46,7 +46,7 @@ Boston, MA 02111-1307, USA.  */
  *     the memory locations used by functions.
  * Source file names - a list of the files used to assemble the source file.
  * Debug messages - [not supported by gpasm] this provides a list of messages
- *     that can control the simulator or emulator. 
+ *     that can control the simulator or emulator.
  */
 
 #define COD_BLOCK_BITS     9       /* COD_BLOCK_SIZE = 2^COD_BLOCK_BITS */
@@ -58,7 +58,7 @@ Boston, MA 02111-1307, USA.  */
  * offset is the number of bytes from the beginning of the block. Note that
  * it would be much more clever to alias a properly sized structure onto the
  * block. However, without using compiler dependent flags, it's not possible
- * to control how the data members of a structure are packed. Portability 
+ * to control how the data members of a structure are packed. Portability
  * has its costs.
  */
 
@@ -88,88 +88,6 @@ Boston, MA 02111-1307, USA.  */
 #define COD_FILE_SIZE      64      /* Length of filename strings */
 #define COD_MAX_LINE_SYM   84      /* Number of source lines per cod block */
 #define COD_LINE_SYM_SIZE   6      /* Line symbol structure size */
-
-enum cod_block_types {
-  cb_nobody,
-  cb_dir,
-  cb_file,
-  cb_list,
-  cb_ssymbols,
-  cb_lsymbols,
-  cb_code,
-  cb_range
-};
-
-/* If you're using gnu's gcc compiler you could get direct access to the
- * block structure by specifying the '-fpack-struct' compiler option and
- * overlaying (i.e. alias or typecast) the structures on top of the blocks.
- */
-#define notice_len      63
-#define version_len     19
-#define compiler_len    11
-#define source_len      63
-#define spare_len       42
-
-typedef struct directory {
-  unsigned short index[128];       /* code block pointers */
-  char source_strlen;              /* Length of the source string */
-  char source[source_len];         /* Source file name */
-  char date_strlen;                /* Length of the date string */
-  char date[7];                    /* Date string */
-  unsigned short time;             /* Hours*100 + Minutes */
-  char version_strlen;             /* Length of the version string */
-  char version[version_len];       /* Compiler Version number */
-  char compiler_strlen;            /* Length of the compiler string */
-  char compiler[compiler_len];     /* Name of the compiler */
-  char notice_strlen;              /* Length of the notice string */
-  char notice[notice_len];         /* Notice */
-
-  unsigned short 
-    symtab, symend, 
-    namtab, namend, 
-    lsttab, lstend;
-  char AddrSize;                   /* # of bytes for address: 2,3,4   0 = 2   */
-  unsigned short HighAddr;         /* High word of address for 64K Code block */
-  unsigned short NextDir;          /* Block number of the next directory      */
-
-  unsigned short 
-  MemMapOFS, MemMapend;            /* Memory map block number  0 = all used   */
-  unsigned short
-  LocalVARS,Localend;              /* Local variables and scope start block   */
-
-  unsigned short codtype;
-
-  char processor_strlen;           /* Length of the processor string */
-  char processor[8];
-
-  unsigned short 
-  Lsymtab, Lsymend;                /* long symbol table        */
-
-  unsigned short 
-  MessTab, MessEnd;                /* Debug Message area */
-
-  unsigned char spare[spare_len + 1];
-} Directory;
-
-/*
- * LineSymbol
- *
- * An array of Line symbols provides cross reference info between
- * the assembled object code, the source asm file(s), and the lst
- * file. The index into the array corresponds to the lst file line
- * number, hence the lst file cross reference information is not
- * explicitly written to the cod file. The symbol provides information
- * about the source file and its current line number and to which
- * program memory address within the pic that these correspond.
- *
- */
-
-typedef struct LineSymbol {
-  unsigned char sfile;
-  unsigned char smod;
-  unsigned short sline;
-  unsigned short sloc;
-} LineSymbol;
 
 typedef struct block_struct {
   unsigned char *block;

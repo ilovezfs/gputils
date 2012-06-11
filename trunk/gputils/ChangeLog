@@ -1,3 +1,11 @@
+2011-06-11  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/cod.c, gplink/cod.c, gputils/block.c:
+    fixed: COD_DIR_ADDRSIZE is byte
+  * gputils/dump.c, gputils/gpvc.c, gputils/gpvc.h.in:
+    removed directory_block_data, replaced by main_dir.dir.block
+  * gputils/dump.c, libgputils/gpcod.h:
+    dump_line_symbols() - access by offsets instead by struct members
+
 2011-06-10  Borut Razem  <borutr@users.sourceforge.net>
   * doc/gputils.lyx, configure.ac, configure: version changed to 0.14.2
 
