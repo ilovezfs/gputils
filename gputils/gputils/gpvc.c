@@ -31,7 +31,7 @@ char filename[BUFFER_LENGTH];
 unsigned char temp[COD_BLOCK_SIZE];
 char *source_file_names[MAX_SOURCE_FILES];
 FILE *source_files[MAX_SOURCE_FILES];
-DirBlockInfo main_dir;
+DirBlockInfo *main_dir = NULL;
 
 char * SymbolType4[154] = {
   "a_reg          ", "x_reg          ", "c_short        ", "c_long         ",
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
   /* Determine if byte address and org are different */
   processor_name = substr(temp_buf,
                           sizeof(temp_buf),
-                          &main_dir.dir.block[COD_DIR_PROCESSOR],
+                          &main_dir->dir.block[COD_DIR_PROCESSOR],
                           8);
 
   processor_info = gp_find_processor(processor_name);

@@ -35,7 +35,7 @@ extern char filename[BUFFER_LENGTH];
 extern unsigned char temp[COD_BLOCK_SIZE];
 extern char *source_file_names[MAX_SOURCE_FILES];
 extern FILE *source_files[MAX_SOURCE_FILES];
-extern DirBlockInfo main_dir;
+extern DirBlockInfo *main_dir;
 
 extern char * SymbolType4[154];
 
