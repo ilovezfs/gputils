@@ -147,7 +147,7 @@ void dump_memmap(proc_class_t proc_class)
   unsigned short i,j,start_block,end_block;
   int first = 1;
 
-  dbi = &main_dir;
+  dbi = main_dir;
 
   do {
 
@@ -203,7 +203,7 @@ void dump_code(proc_class_t proc_class)
   printf("\n\nFormatted Code Dump\n");
   printf("-------------------\n");
 
-  dbi = &main_dir;
+  dbi = main_dir;
 
   do {
     _64k_base = gp_getu16(&dbi->dir.block[COD_DIR_HIGHADDR]) << 16;
@@ -259,11 +259,11 @@ void dump_symbols( void )
   unsigned short i,j,start_block,end_block;
   char b[16];
 
-  start_block = gp_getu16(&main_dir.dir.block[COD_DIR_SYMTAB]);
+  start_block = gp_getu16(&main_dir->dir.block[COD_DIR_SYMTAB]);
 
   if(start_block) {
 
-    end_block = gp_getu16(&main_dir.dir.block[COD_DIR_SYMTAB+2]);
+    end_block = gp_getu16(&main_dir->dir.block[COD_DIR_SYMTAB+2]);
 
     printf("\nSymbol Table Information\n");
     printf("------------------------\n\n");
@@ -301,11 +301,11 @@ void dump_lsymbols( void )
   unsigned short i,j,start_block,end_block, value;
   char b[256];
 
-  start_block = gp_getu16(&main_dir.dir.block[COD_DIR_LSYMTAB]);
+  start_block = gp_getu16(&main_dir->dir.block[COD_DIR_LSYMTAB]);
 
   if(start_block) {
 
-    end_block = gp_getu16(&main_dir.dir.block[COD_DIR_LSYMTAB+2]);
+    end_block = gp_getu16(&main_dir->dir.block[COD_DIR_LSYMTAB+2]);
 
     printf("\nLong Symbol Table Information\n");
     printf("------------------------\n\n");
@@ -352,11 +352,11 @@ void dump_source_files( void )
   unsigned short i,j,start_block,end_block,offset;
   char b[FILE_SIZE];
 
-  start_block = gp_getu16(&main_dir.dir.block[COD_DIR_NAMTAB]);
+  start_block = gp_getu16(&main_dir->dir.block[COD_DIR_NAMTAB]);
 
   if(start_block) {
 
-    end_block = gp_getu16(&main_dir.dir.block[COD_DIR_NAMTAB+2]);
+    end_block = gp_getu16(&main_dir->dir.block[COD_DIR_NAMTAB+2]);
 
     printf("\nSource File Information\n");
     printf("------------------------\n\n");
@@ -424,10 +424,10 @@ void dump_line_symbols(void)
   char buf[2048];
   unsigned short i, j, start_block, end_block;
 
-  start_block = gp_getu16(&main_dir.dir.block[COD_DIR_LSTTAB]);
+  start_block = gp_getu16(&main_dir->dir.block[COD_DIR_LSTTAB]);
 
   if (start_block) {
-    end_block = gp_getu16(&main_dir.dir.block[COD_DIR_LSTTAB + 2]);
+    end_block = gp_getu16(&main_dir->dir.block[COD_DIR_LSTTAB + 2]);
 
     printf("\n\nLine Number Information\n");
     printf(" LstLn  SrcLn  Addr   Flags         FileName\n");
@@ -480,11 +480,11 @@ void dump_message_area(void)
   unsigned short i,j,start_block,end_block;
   unsigned short laddress;
 
-  start_block = gp_getu16(&main_dir.dir.block[COD_DIR_MESSTAB]);
+  start_block = gp_getu16(&main_dir->dir.block[COD_DIR_MESSTAB]);
 
   if(start_block) {
 
-    end_block = gp_getu16(&main_dir.dir.block[COD_DIR_MESSTAB+2]);
+    end_block = gp_getu16(&main_dir->dir.block[COD_DIR_MESSTAB+2]);
 
     printf("\n\nDebug Message area\n");
     printf("     Addr  Cmd  Message\n");
@@ -554,11 +554,11 @@ void dump_local_vars(proc_class_t proc_class)
 
   unsigned short i,j,start_block,end_block;
 
-  start_block = gp_getu16(&main_dir.dir.block[COD_DIR_LOCALVAR]);
+  start_block = gp_getu16(&main_dir->dir.block[COD_DIR_LOCALVAR]);
 
   if(start_block) {
 
-    end_block = gp_getu16(&main_dir.dir.block[COD_DIR_LOCALVAR+2]);
+    end_block = gp_getu16(&main_dir->dir.block[COD_DIR_LOCALVAR+2]);
 
     printf("\n\nLocal Symbol Scoping Information\n");
     printf("--------------------------------\n");

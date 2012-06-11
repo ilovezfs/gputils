@@ -34,7 +34,7 @@ void directory_block(void)
   int time;
   int bytes_for_address;
 
-  block = main_dir.dir.block;
+  block = main_dir->dir.block;
 
   printf("directory block \n");
 
@@ -138,10 +138,10 @@ void read_directory(void)
 {
   DirBlockInfo *dbi;
 
-  create_block(&main_dir.dir);
-  read_block(main_dir.dir.block, 0);
+  create_block(&main_dir->dir);
+  read_block(main_dir->dir.block, 0);
 
-  dbi = &main_dir;
+  dbi = main_dir;
 
   do {
     int next_dir_block = gp_getl16(&dbi->dir.block[COD_DIR_NEXTDIR]);
