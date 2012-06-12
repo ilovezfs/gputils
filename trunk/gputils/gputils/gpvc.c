@@ -33,7 +33,7 @@ char *source_file_names[MAX_SOURCE_FILES];
 FILE *source_files[MAX_SOURCE_FILES];
 DirBlockInfo *main_dir = NULL;
 
-char * SymbolType4[154] = {
+char *SymbolType4[154] = {
   "a_reg          ", "x_reg          ", "c_short        ", "c_long         ",
   "c_ushort       ", "c_ulong        ", "c_pointer      ", "c_upointer     ",
   "table          ", "m_byte         ", "m_boolean      ", "m_index        ",
@@ -77,7 +77,8 @@ char * SymbolType4[154] = {
 };
 
 
-void show_usage(void)
+static void
+show_usage(void)
 {
   printf("Usage: gpvc [options] file\n");
   printf("Options: [defaults in brackets after descriptions]\n");
@@ -97,26 +98,27 @@ void show_usage(void)
 
 #define GET_OPTIONS "?adhlmrsv"
 
-  /* Used: adhlmrsv */
-  static struct option longopts[] =
-  {
-    { "all",         0, 0, 'a' },
-    { "directory",   0, 0, 'd' },
-    { "help",        0, 0, 'h' },
-    { "listing",     0, 0, 'l' },
-    { "message",     0, 0, 'm' },
-    { "rom",         0, 0, 'r' },
-    { "symbols",     0, 0, 's' },
-    { "version",     0, 0, 'v' },
-    { 0, 0, 0, 0 }
-  };
+/* Used: adhlmrsv */
+static struct option longopts[] =
+{
+  { "all",         0, 0, 'a' },
+  { "directory",   0, 0, 'd' },
+  { "help",        0, 0, 'h' },
+  { "listing",     0, 0, 'l' },
+  { "message",     0, 0, 'm' },
+  { "rom",         0, 0, 'r' },
+  { "symbols",     0, 0, 's' },
+  { "version",     0, 0, 'v' },
+  { 0, 0, 0, 0 }
+};
 
 #define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
   extern int optind;
-  int c, usage=0;
+  int c, usage = 0;
   int display_flags;
 
   char temp_buf[12];
@@ -141,24 +143,31 @@ int main(int argc, char *argv[])
     case 'h':
       usage = 1;
       break;
+
     case 'a':
       display_flags = DISPLAY_ALL;
       break;
+
     case 'd':
       display_flags |= DISPLAY_DIR;
       break;
+
     case 's':
       display_flags |= DISPLAY_SYM;
       break;
+
     case 'r':
       display_flags |= DISPLAY_ROM;
       break;
+
     case 'l':
       display_flags |= DISPLAY_SRC;
       break;
+
     case 'm':
       display_flags |= DISPLAY_MESS;
       break;
+
     case 'v':
       fprintf(stderr, "%s\n", GPVC_VERSION_STRING);
       exit(0);
@@ -172,7 +181,7 @@ int main(int argc, char *argv[])
   else
     usage = 1;
 
-  if(display_flags == DISPLAY_NOTHING)
+  if (display_flags == DISPLAY_NOTHING)
     display_flags = DISPLAY_ALL;
 
   if (usage) {
@@ -180,13 +189,13 @@ int main(int argc, char *argv[])
   }
 
   codefile = fopen(filename,"rb");
-  if(codefile == NULL) {
+  if (codefile == NULL) {
     perror(filename);
     exit(1);
   }
 
   /* Start off by reading the directory block */
-  read_directory();
+  main_dir = read_directory();
 
   /* Determine if byte address and org are different */
   processor_name = substr(temp_buf,
@@ -197,13 +206,13 @@ int main(int argc, char *argv[])
   processor_info = gp_find_processor(processor_name);
   processor_class = gp_processor_class(processor_info);
 
-  if(display_flags & DISPLAY_DIR)
+  if (display_flags & DISPLAY_DIR)
     directory_block();
 
-  if(display_flags & DISPLAY_ROM)
+  if (display_flags & DISPLAY_ROM)
     dump_code(processor_class);
 
-  if(display_flags & DISPLAY_SYM) {
+  if (display_flags & DISPLAY_SYM) {
     dump_symbols();
     dump_lsymbols();
     dump_local_vars(processor_class);
@@ -211,10 +220,10 @@ int main(int argc, char *argv[])
 
   dump_source_files();
 
-  if(display_flags & DISPLAY_SRC)
+  if (display_flags & DISPLAY_SRC)
     dump_line_symbols();
 
-  if(display_flags & DISPLAY_MESS)
+  if (display_flags & DISPLAY_MESS)
     dump_message_area();
 
   return EXIT_SUCCESS;
