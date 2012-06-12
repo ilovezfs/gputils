@@ -1,3 +1,7 @@
+2011-06-12  Borut Razem  <borutr@users.sourceforge.net>
+  * gputils/block.c, gputils/block.h, gputils/gpvc.c:
+    read_directory() returns pointer to DirBlockInfo
+
 2011-06-11  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/cod.c, gplink/cod.c, gputils/block.c:
     fixed: COD_DIR_ADDRSIZE is byte
