@@ -26,79 +26,6 @@ Boston, MA 02111-1307, USA.  */
 #include "dump.h"
 #include "block.h"
 
-void directory_block(void)
-{
-  char temp_buf[256];
-  unsigned char *block;
-  char *processor_name;
-  int time;
-  int bytes_for_address;
-
-  block = main_dir->dir.block;
-
-  printf("directory block\n");
-
-  printf("COD file version  %d\n",
-         gp_getl16(&block[COD_DIR_CODTYPE]));
-  printf("Source file       %s\n",
-         &block[COD_DIR_SOURCE]);
-  printf("Date              %s\n",
-         substr(temp_buf, sizeof (temp_buf), &block[COD_DIR_DATE],7));
-
-  time = gp_getl16(&block[COD_DIR_TIME]);
-
-  printf("Time              %02d:%02d\n", time / 100, time % 100);
-  printf("Compiler version  %s\n",
-         substr(temp_buf, sizeof (temp_buf), &block[COD_DIR_VERSION],19));
-  printf("Compiler          %s\n",
-         substr(temp_buf, sizeof (temp_buf), &block[COD_DIR_COMPILER],12));
-  printf("Notice            %s\n",
-         substr(temp_buf, sizeof (temp_buf), &block[COD_DIR_NOTICE],64));
-
-  processor_name = substr(temp_buf,
-                          sizeof (temp_buf),
-                          &block[COD_DIR_PROCESSOR],
-                          8);
-  printf("Processor         %s\n", processor_name);
-
-  bytes_for_address = block[COD_DIR_ADDRSIZE];
-  printf("Bytes for address: %d\n", bytes_for_address);
-  if (bytes_for_address != 4) {
-    printf("WARNING: address size looks suspicious\n");
-  }
-
-  printf("High word of 64k address %04x\n",
-         gp_getl16(&block[COD_DIR_HIGHADDR]));
-
-  printf("Short symbol table start block:  0x%04x  end block:  0x%04x\n",
-         gp_getl16(&block[COD_DIR_SYMTAB]),
-         gp_getl16(&block[COD_DIR_SYMTAB + 2]));
-  printf("Long symbol table start block:   0x%04x  end block:  0x%04x\n",
-         gp_getl16(&block[COD_DIR_LSYMTAB]),
-         gp_getl16(&block[COD_DIR_LSYMTAB + 2]));
-  printf("File name table start block:     0x%04x  end block:  0x%04x\n",
-         gp_getl16(&block[COD_DIR_NAMTAB]),
-         gp_getl16(&block[COD_DIR_NAMTAB + 2]));
-  printf("Source info table start block:   0x%04x  end block:  0x%04x\n",
-         gp_getl16(&block[COD_DIR_LSTTAB]),
-         gp_getl16(&block[COD_DIR_LSTTAB + 2]));
-  printf("Rom table start block:           0x%04x  end block:  0x%04x\n",
-         gp_getl16(&block[COD_DIR_MEMMAP]),
-         gp_getl16(&block[COD_DIR_MEMMAP + 2]));
-  printf("Local scope table start block:   0x%04x  end block:  0x%04x\n",
-         gp_getl16(&block[COD_DIR_LOCALVAR]),
-         gp_getl16(&block[COD_DIR_LOCALVAR + 2]));
-  printf("Debug messages start block:      0x%04x  end block:  0x%04x\n",
-         gp_getl16(&block[COD_DIR_MESSTAB]),
-         gp_getl16(&block[COD_DIR_MESSTAB + 2]));
-
-  printf("\nNext directory block");
-  if (gp_getl16(&block[COD_DIR_NEXTDIR]))
-    printf(":  %d\n",gp_getl16(&block[COD_DIR_NEXTDIR]));
-  else
-    printf(" is empty\n");
-}
-
 void
 read_block(unsigned char * block, int block_number)
 {
@@ -106,7 +33,8 @@ read_block(unsigned char * block, int block_number)
   fread(block, COD_BLOCK_SIZE, 1, codefile);
 }
 
-void
+/* TODO: should be replaced by gp_cod_create() */
+static void
 create_block(Block *b)
 {
   assert(b != NULL);
