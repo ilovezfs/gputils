@@ -1,3 +1,8 @@
+2011-06-13  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/cod.c, gplink/cod.c, gputils/block.c, gputils/block.h,
+    gputils/dump.c, gputils/dump.h, gputils/gpvc.c, libgputils/gpcod.h:
+    gpvc: support for multiple dir info blocks in cod file
+
 2011-06-12  Borut Razem  <borutr@users.sourceforge.net>
   * gputils/block.c, gputils/block.h, gputils/gpvc.c:
     read_directory() returns pointer to DirBlockInfo

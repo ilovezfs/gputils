@@ -172,6 +172,7 @@ main(int argc, char *argv[])
       fprintf(stderr, "%s\n", GPVC_VERSION_STRING);
       exit(0);
     }
+
     if (usage)
       break;
   }
@@ -207,7 +208,7 @@ main(int argc, char *argv[])
   processor_class = gp_processor_class(processor_info);
 
   if (display_flags & DISPLAY_DIR)
-    directory_block();
+    dump_directory_blocks();
 
   if (display_flags & DISPLAY_ROM)
     dump_code(processor_class);
