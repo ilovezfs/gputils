@@ -1,3 +1,6 @@
+2011-06-16  Borut Razem  <borutr@users.sourceforge.net>
+  * gputils/dump.c: added missing newline in dump_code()
+
 2011-06-13  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/cod.c, gplink/cod.c, gputils/block.c, gputils/block.h,
     gputils/dump.c, gputils/dump.h, gputils/gpvc.c, libgputils/gpcod.h:
