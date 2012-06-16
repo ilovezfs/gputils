@@ -126,23 +126,23 @@ dump_directory_block(unsigned char *block, unsigned block_num)
 
   printf("%03x,%03x - Short symbol table start block: %04x  end block: %04x\n",
          COD_DIR_SYMTAB, COD_DIR_SYMTAB + 2,
-	 gp_getl16(&block[COD_DIR_SYMTAB]),
+         gp_getl16(&block[COD_DIR_SYMTAB]),
          gp_getl16(&block[COD_DIR_SYMTAB + 2]));
   printf("%03x,%03x - File name table start block:    %04x  end block: %04x\n",
          COD_DIR_NAMTAB, COD_DIR_NAMTAB + 2,
-	 gp_getl16(&block[COD_DIR_NAMTAB]),
+         gp_getl16(&block[COD_DIR_NAMTAB]),
          gp_getl16(&block[COD_DIR_NAMTAB + 2]));
   printf("%03x,%03x - Source info table start block:  %04x  end block: %04x\n",
          COD_DIR_LSTTAB, COD_DIR_LSTTAB + 2,
-	 gp_getl16(&block[COD_DIR_LSTTAB]),
+         gp_getl16(&block[COD_DIR_LSTTAB]),
          gp_getl16(&block[COD_DIR_LSTTAB + 2]));
   printf("%03x,%03x - Rom table start block:          %04x  end block: %04x\n",
          COD_DIR_MEMMAP, COD_DIR_MEMMAP + 2,
-	 gp_getl16(&block[COD_DIR_MEMMAP]),
+         gp_getl16(&block[COD_DIR_MEMMAP]),
          gp_getl16(&block[COD_DIR_MEMMAP + 2]));
   printf("%03x,%03x - Local scope table start block:  %04x  end block: %04x\n",
          COD_DIR_LOCALVAR, COD_DIR_LOCALVAR + 2,
-	 gp_getl16(&block[COD_DIR_LOCALVAR]),
+         gp_getl16(&block[COD_DIR_LOCALVAR]),
          gp_getl16(&block[COD_DIR_LOCALVAR + 2]));
   printf("%03x,%03x - Long symbol table start block:  %04x  end block: %04x\n",
          COD_DIR_LSYMTAB, COD_DIR_LSYMTAB + 2,
@@ -150,7 +150,7 @@ dump_directory_block(unsigned char *block, unsigned block_num)
          gp_getl16(&block[COD_DIR_LSYMTAB + 2]));
   printf("%03x,%03x - Debug messages start block:     %04x  end block: %04x\n",
          COD_DIR_MESSTAB, COD_DIR_MESSTAB + 2,
-	 gp_getl16(&block[COD_DIR_MESSTAB]),
+         gp_getl16(&block[COD_DIR_MESSTAB]),
          gp_getl16(&block[COD_DIR_MESSTAB + 2]));
   putchar('\n');
 }
@@ -170,7 +170,7 @@ dump_index(unsigned char *block)
          "Block range    Block number\n"
          "---------------------------\n");
 
-  for (i = 0; i < 128; ++i) {
+  for (i = 0; i < COD_CODE_IMAGE_BLOCKS; ++i) {
     int curr_block;
 
     if (0 != (curr_block = gp_getu16(&block[i * 2])))
@@ -223,13 +223,13 @@ dump_memmap(proc_class_t proc_class)
 
       if (first) {
         printf("ROM Usage:\n"
-	       "--------------------------------\n");
+               "--------------------------------\n");
         first = 0;
       }
       for (j = start_block; j <= end_block; j++) {
         read_block(temp, j);
 
-        for (i = 0; i < 128; i++) {
+        for (i = 0; i < COD_CODE_IMAGE_BLOCKS; i++) {
           unsigned short start;
           unsigned short last;
           start = gp_getl16(&temp[i * COD_MAPENTRY_SIZE + COD_MAPTAB_START]);
@@ -271,7 +271,7 @@ dump_code(proc_class_t proc_class)
 
   do {
     _64k_base = gp_getu16(&dbi->dir.block[COD_DIR_HIGHADDR]) << 16;
-    for (k = 0; k <= 127; k++) {
+    for (k = 0; k < COD_CODE_IMAGE_BLOCKS; k++) {
       index = gp_getu16(&dbi->dir.block[2 * (COD_DIR_CODE + k)]);
       if (index != 0) {
         read_block(temp, index);
@@ -288,9 +288,10 @@ dump_code(proc_class_t proc_class)
             printf("%06x:  ", gp_processor_byte_to_org(proc_class, _64k_base + 2 * (i + k * 256)));
 
             for (j = 0; j < 8; j++)
-              printf("%04x ",gp_getu16(&temp[2 * i++]));
-          }
+              printf("%04x ", gp_getu16(&temp[2 * i++]));
 
+            putchar('\n');
+          }
         } while (i < COD_BLOCK_SIZE / 2);
 
         putchar('\n');
@@ -496,8 +497,8 @@ dump_line_symbols(void)
         has_line_num_info = 1;
 
         printf("Line Number Information:\n"
-	       " LstLn  SrcLn  Addr    Flags        FileName\n"
-	       " -----  -----  ------  -----------  ---------------------------------------\n");
+               " LstLn  SrcLn  Addr    Flags        FileName\n"
+               " -----  -----  ------  -----------  ---------------------------------------\n");
       }
 
       for (j = start_block; j <= end_block; j++) {
@@ -559,7 +560,7 @@ dump_message_area(void)
 
     printf("Debug Message area:\n"
            "     Addr  Cmd  Message\n"
-	   " --------  ---  -------------------------------------\n");
+           " --------  ---  -------------------------------------\n");
 
     for (i = start_block; i <= end_block; i++) {
       read_block(temp, i);
