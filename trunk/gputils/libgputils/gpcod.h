@@ -1,6 +1,7 @@
 /* .cod file support
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Scott Dattalo
+   Copyright (C) 2012 Borut Razem
 
 This file is part of gputils.
 
@@ -152,26 +153,42 @@ Boston, MA 02111-1307, USA.  */
 #define COD_DEBUG_EXTRA    6        /* symbol name length + 6 is total structure size */
 #define MAX_STRING_LEN     255      /* Maximum length of a debug message */
 
-typedef struct block_struct {
+typedef struct {
   unsigned char *block;
-  int  block_number;
 } Block;
+
+typedef struct block_list_struct {
+  unsigned char block[COD_BLOCK_SIZE];
+  struct block_list_struct *next;
+} BlockList;
 
 #define COD_CODE_IMAGE_BLOCKS 128  /* Max # of blocks for the opcodes */
 
+typedef struct {
+  BlockList *blocks;            /* pointer to the list of blocks */
+  unsigned int offset;          /* offsrt to empty slot in last block */
+} Blocks;
+
 typedef struct dir_block_info {
-  Block dir;
+  unsigned char dir[COD_BLOCK_SIZE];
   Block cod_image_blocks[COD_CODE_IMAGE_BLOCKS];
-  struct dir_block_info *next_dir_block_info;
+  Blocks src;                   /* source files blocks */
+  Blocks lst;                   /* pointer to the list of line number information blocks */
+  Blocks sym;                   /* pointer to the list of long symbol blocks */
+  Blocks rng;                   /* pointer to the list of range blocks */
+  Blocks dbg;                   /* pointer to the list of debug messages blocks */
+  struct dir_block_info *next;  /* pointer to the next dirdctory info block */
 } DirBlockInfo;
 
 /* common cod functions */
 void gp_cod_strncpy(unsigned char *dest, const char *src, int max_len);
-void gp_cod_clear(Block *b);
-void gp_cod_delete(Block *b);
-void gp_cod_next(Block *b, int *block_number);
-void gp_cod_create(Block *b, int *block_number);
 void gp_cod_date(unsigned char *buffer, size_t sizeof_buffer);
 void gp_cod_time(unsigned char *buffer, size_t sizeof_buffer);
+void gp_cod_create(Block *b);
+BlockList *gp_blocks_new(void);
+BlockList *gp_blocks_append(Blocks *bl, BlockList *b);
+BlockList *gp_blocks_get_last(Blocks *bl);
+BlockList *gp_blocks_get_last_or_new(Blocks *bl);
+int gp_blocks_count(Blocks *bl);
 
 #endif

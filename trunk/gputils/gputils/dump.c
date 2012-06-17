@@ -1,6 +1,7 @@
 /* Displays contents of ".COD" files
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Scott Dattalo
+   Copyright (C) 2012 Borut Razem
 
 This file is part of gputils.
 
@@ -191,10 +192,10 @@ dump_directory_blocks(void)
   unsigned block_num = 0;
 
   do {
-    dump_directory_block(dbi->dir.block, block_num);
-    dump_index(dbi->dir.block);
-    block_num = gp_getl16(&dbi->dir.block[COD_DIR_NEXTDIR]);
-    dbi = dbi->next_dir_block_info;
+    dump_directory_block(dbi->dir, block_num);
+    dump_index(dbi->dir);
+    block_num = gp_getl16(&dbi->dir[COD_DIR_NEXTDIR]);
+    dbi = dbi->next;
   } while (NULL != dbi);
 }
 
@@ -215,11 +216,11 @@ dump_memmap(proc_class_t proc_class)
   dbi = main_dir;
 
   do {
-    _64k_base = gp_getu16(&dbi->dir.block[COD_DIR_HIGHADDR]) << 16;
-    start_block = gp_getu16(&dbi->dir.block[COD_DIR_MEMMAP]);
+    _64k_base = gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]) << 16;
+    start_block = gp_getu16(&dbi->dir[COD_DIR_MEMMAP]);
 
     if (start_block) {
-      end_block = gp_getu16(&dbi->dir.block[COD_DIR_MEMMAP + 2]);
+      end_block = gp_getu16(&dbi->dir[COD_DIR_MEMMAP + 2]);
 
       if (first) {
         printf("ROM Usage:\n"
@@ -246,7 +247,7 @@ dump_memmap(proc_class_t proc_class)
 
     putchar('\n');
 
-    dbi = dbi->next_dir_block_info;
+    dbi = dbi->next;
   } while (dbi);
 }
 
@@ -270,9 +271,9 @@ dump_code(proc_class_t proc_class)
   dbi = main_dir;
 
   do {
-    _64k_base = gp_getu16(&dbi->dir.block[COD_DIR_HIGHADDR]) << 16;
+    _64k_base = gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]) << 16;
     for (k = 0; k < COD_CODE_IMAGE_BLOCKS; k++) {
-      index = gp_getu16(&dbi->dir.block[2 * (COD_DIR_CODE + k)]);
+      index = gp_getu16(&dbi->dir[2 * (COD_DIR_CODE + k)]);
       if (index != 0) {
         read_block(temp, index);
 
@@ -300,7 +301,7 @@ dump_code(proc_class_t proc_class)
 
     putchar('\n');
 
-    dbi = dbi->next_dir_block_info;
+    dbi = dbi->next;
   } while (dbi);
 }
 
@@ -315,12 +316,10 @@ dump_symbols(void)
   unsigned short i, j, start_block, end_block;
   char b[16];
 
-  start_block = gp_getu16(&main_dir->dir.block[COD_DIR_SYMTAB]);
+  start_block = gp_getu16(&main_dir->dir[COD_DIR_SYMTAB]);
 
   if (start_block) {
-    end_block = gp_getu16(&main_dir->dir.block[COD_DIR_SYMTAB + 2]);
-
-    end_block = gp_getu16(&main_dir->dir.block[COD_DIR_SYMTAB + 2]);
+    end_block = gp_getu16(&main_dir->dir[COD_DIR_SYMTAB + 2]);
 
     printf("Symbol Table Information:\n"
            "-------------------------\n");
@@ -357,12 +356,12 @@ dump_lsymbols(void)
   unsigned value;
   char b[256];
 
-  start_block = gp_getu16(&main_dir->dir.block[COD_DIR_LSYMTAB]);
+  start_block = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB]);
 
   if (start_block) {
-    end_block = gp_getu16(&main_dir->dir.block[COD_DIR_LSYMTAB + 2]);
+    end_block = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB + 2]);
 
-    end_block = gp_getu16(&main_dir->dir.block[COD_DIR_LSYMTAB+2]);
+    end_block = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB+2]);
 
     printf("Long Symbol Table Information:\n"
            "------------------------------\n");
@@ -407,12 +406,12 @@ dump_source_files(void)
   unsigned short i, j, start_block, end_block, offset;
   char b[FILE_SIZE];
 
-  start_block = gp_getu16(&main_dir->dir.block[COD_DIR_NAMTAB]);
+  start_block = gp_getu16(&main_dir->dir[COD_DIR_NAMTAB]);
 
   if (start_block) {
-    end_block = gp_getu16(&main_dir->dir.block[COD_DIR_NAMTAB + 2]);
+    end_block = gp_getu16(&main_dir->dir[COD_DIR_NAMTAB + 2]);
 
-    end_block = gp_getu16(&main_dir->dir.block[COD_DIR_NAMTAB+2]);
+    end_block = gp_getu16(&main_dir->dir[COD_DIR_NAMTAB+2]);
 
     printf("Source File Information:\n"
            "------------------------\n");
@@ -486,12 +485,12 @@ dump_line_symbols(void)
   int _64k_base;
 
   do {
-    _64k_base = gp_getu16(&dbi->dir.block[COD_DIR_HIGHADDR]);
+    _64k_base = gp_getu16(&dbi->dir[COD_DIR_HIGHADDR]);
 
-    start_block = gp_getu16(&dbi->dir.block[COD_DIR_LSTTAB]);
+    start_block = gp_getu16(&dbi->dir[COD_DIR_LSTTAB]);
 
     if (start_block) {
-      end_block = gp_getu16(&dbi->dir.block[COD_DIR_LSTTAB + 2]);
+      end_block = gp_getu16(&dbi->dir[COD_DIR_LSTTAB + 2]);
 
       if (!has_line_num_info) {
         has_line_num_info = 1;
@@ -532,7 +531,7 @@ dump_line_symbols(void)
         }
       } /* for */
     } /* if */
-    dbi = dbi->next_dir_block_info;
+    dbi = dbi->next;
   } while (dbi);
 
   if (!has_line_num_info)
@@ -553,10 +552,10 @@ dump_message_area(void)
   unsigned short i, j, start_block, end_block;
   unsigned short laddress;
 
-  start_block = gp_getu16(&main_dir->dir.block[COD_DIR_MESSTAB]);
+  start_block = gp_getu16(&main_dir->dir[COD_DIR_MESSTAB]);
 
   if (start_block) {
-    end_block = gp_getu16(&main_dir->dir.block[COD_DIR_MESSTAB + 2]);
+    end_block = gp_getu16(&main_dir->dir[COD_DIR_MESSTAB + 2]);
 
     printf("Debug Message area:\n"
            "     Addr  Cmd  Message\n"
@@ -602,10 +601,10 @@ dump_local_vars(proc_class_t proc_class)
   unsigned char *sh; /* scope_head */
   unsigned short i, j, start_block, end_block;
 
-  start_block = gp_getu16(&main_dir->dir.block[COD_DIR_LOCALVAR]);
+  start_block = gp_getu16(&main_dir->dir[COD_DIR_LOCALVAR]);
 
   if (start_block) {
-    end_block = gp_getu16(&main_dir->dir.block[COD_DIR_LOCALVAR + 2]);
+    end_block = gp_getu16(&main_dir->dir[COD_DIR_LOCALVAR + 2]);
 
     printf("Local Symbol Scoping Information:\n"
            "---------------------------------\n");

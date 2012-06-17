@@ -1,6 +1,7 @@
 /* Displays contents of ".COD" files
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Scott Dattalo
+   Copyright (C) 2012 Borut Razem
 
 This file is part of gputils.
 

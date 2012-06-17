@@ -201,7 +201,7 @@ main(int argc, char *argv[])
   /* Determine if byte address and org are different */
   processor_name = substr(temp_buf,
                           sizeof(temp_buf),
-                          &main_dir->dir.block[COD_DIR_PROCESSOR],
+                          &main_dir->dir[COD_DIR_PROCESSOR],
                           8);
 
   processor_info = gp_find_processor(processor_name);
