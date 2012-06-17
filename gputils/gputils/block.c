@@ -1,6 +1,7 @@
 /* Displays contents of ".COD" files
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Scott Dattalo
+   Copyright (C) 2012 Borut Razem
 
 This file is part of gputils.
 
@@ -27,20 +28,10 @@ Boston, MA 02111-1307, USA.  */
 #include "block.h"
 
 void
-read_block(unsigned char * block, int block_number)
+read_block(unsigned char *block, int block_number)
 {
   fseek(codefile, block_number * COD_BLOCK_SIZE, SEEK_SET);
   fread(block, COD_BLOCK_SIZE, 1, codefile);
-}
-
-/* TODO: should be replaced by gp_cod_create() */
-static void
-create_block(Block *b)
-{
-  assert(b != NULL);
-
-  b->block = malloc(COD_BLOCK_SIZE);
-  gp_cod_clear(b);
 }
 
 DirBlockInfo *
@@ -50,19 +41,18 @@ read_directory(void)
   int next_dir_block = 0;
 
   do {
-    DirBlockInfo *p = (DirBlockInfo *)malloc(sizeof (DirBlockInfo));
+    DirBlockInfo *p = malloc(sizeof (DirBlockInfo));
     assert(p);
     if (NULL == dbi)
       start = dbi = p;
     else {
-      dbi->next_dir_block_info = p;
+      dbi->next = p;
       dbi = p;
     }
-    create_block(&dbi->dir);
-    read_block(dbi->dir.block, next_dir_block);
-  } while (0 != (next_dir_block = gp_getl16(&dbi->dir.block[COD_DIR_NEXTDIR])));
+    read_block(dbi->dir, next_dir_block);
+  } while (0 != (next_dir_block = gp_getl16(&dbi->dir[COD_DIR_NEXTDIR])));
 
-  dbi->next_dir_block_info = NULL;
+  dbi->next = NULL;
 
   return start;
 }

@@ -1,6 +1,6 @@
 /* .cod file support
-   Copyright (C) 2003, 2004, 2005
-   Craig Franklin
+   Copyright (C) 2003, 2004, 2005 Craig Franklin
+   Copyright (C) 2012 Borut Razem
 
 This file is part of gputils.
 
@@ -31,56 +31,6 @@ gp_cod_strncpy(unsigned char *dest, const char *src, int max_len)
   int len = strlen(src);
   dest[-1] = ( (max_len>len) ? len : max_len );
   memcpy(dest, src, dest[-1]);
-}
-
-/* gp_cod_clear - write zeroes to a code block, unless the code block ptr 
-   is null. */
-
-void
-gp_cod_clear(Block *b)
-{
-  int i;
-
-  if(b && b->block)
-    for(i=0; i<COD_BLOCK_SIZE; i++)
-      b->block[i] = 0;
-  else
-    assert(0);
-}
-
-void
-gp_cod_delete(Block *b)
-{
-
-  if(b && b->block) {
-    free(b->block);
-    b->block = NULL;
-  }
-  else
-    assert(0);
-
-}
-
-void
-gp_cod_next(Block *b, int *block_number)
-{
-  assert(b != NULL);
-  gp_cod_clear(b);
-  b->block_number = *block_number;
-  *block_number = *block_number + 1;
-}
-
-void
-gp_cod_create(Block *b, int *block_number)
-{
-
-  assert(b != NULL);
-
-  b->block = malloc(COD_BLOCK_SIZE);
-  gp_cod_clear(b);
-  b->block_number = *block_number;
-  *block_number = *block_number + 1;
-
 }
 
 void
@@ -123,3 +73,84 @@ gp_cod_time(unsigned char *buffer, size_t sizeof_buffer)
   buffer[1] = (value >> 8) & 0xff;
   buffer[2] = now_tm->tm_sec & 0xff;
 }
+
+/*********************************************************************/
+void
+gp_cod_create(Block *b)
+{
+  assert(b != NULL);
+
+  b->block = malloc(COD_BLOCK_SIZE);
+  memset(b->block, 0, COD_BLOCK_SIZE);
+}
+
+BlockList *
+gp_blocks_new(void)
+{
+  BlockList *b = malloc(sizeof (BlockList));
+  assert(b);
+  memset(b, 0, sizeof (BlockList));
+
+  return b;
+}
+
+BlockList *
+gp_blocks_append(Blocks *bl, BlockList *b)
+{
+  if (NULL == bl->blocks)
+    bl->blocks = b;
+  else {
+    BlockList *p;
+    
+    for (p = bl->blocks; p->next; p = p->next)
+      ;
+
+    p->next = b;
+  }
+  bl->offset = 0;
+
+  return b;
+}
+
+BlockList *
+gp_blocks_get_last(Blocks *bl)
+{
+  if (NULL == bl->blocks)
+    return NULL;
+  else {
+    BlockList *p;
+
+    for (p = bl->blocks; p->next; p = p->next)
+      ;
+
+    return p;
+  }
+}
+
+BlockList *
+gp_blocks_get_last_or_new(Blocks *bl)
+{
+  if (NULL != bl->blocks)
+    return gp_blocks_get_last(bl);
+  else {
+    bl->offset = 0;
+    return bl->blocks = gp_blocks_new();
+  }
+}
+
+int
+gp_blocks_count(Blocks *bl)
+{
+  if (NULL == bl->blocks)
+    return 0;
+  else {
+    int n;
+    BlockList *p;
+
+    for (n = 1, p = bl->blocks; p->next; ++n, p = p->next)
+      ;
+
+    return n;
+  }
+}
+/*********************************************************************/
