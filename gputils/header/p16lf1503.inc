@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16LF1503 processor include
 ; 
-;  (c) Copyright 1999-2011 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -23,6 +23,14 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
+
+;==========================================================================
+;
+;       Gputils Specific Revision History
+;
+;==========================================================================
+
+;       19 Jun 2012  Added ADCS{0,1,2} bits to "ADCON1 Bits".
 
 ;==========================================================================
 ;
@@ -122,21 +130,21 @@ PMCON2           EQU  H'0196'
 
 ;-----Bank4------------------
 WPUA             EQU  H'020C'
-SSP1BUF          EQU  H'020D'
-SSPBUF           EQU  H'020D'
-SSP1ADD          EQU  H'020E'
-SSPADD           EQU  H'020E'
-SSP1MSK          EQU  H'020F'
-SSPMSK           EQU  H'020F'
-SSP1STAT         EQU  H'0210'
-SSPSTAT          EQU  H'0210'
-SSP1CON1         EQU  H'0211'
-SSPCON           EQU  H'0211'
-SSPCON1          EQU  H'0211'
-SSP1CON2         EQU  H'0212'
-SSPCON2          EQU  H'0212'
-SSP1CON3         EQU  H'0213'
-SSPCON3          EQU  H'0213'
+SSP1BUF          EQU  H'0211'
+SSPBUF           EQU  H'0211'
+SSP1ADD          EQU  H'0212'
+SSPADD           EQU  H'0212'
+SSP1MSK          EQU  H'0213'
+SSPMSK           EQU  H'0213'
+SSP1STAT         EQU  H'0214'
+SSPSTAT          EQU  H'0214'
+SSP1CON1         EQU  H'0215'
+SSPCON           EQU  H'0215'
+SSPCON1          EQU  H'0215'
+SSP1CON2         EQU  H'0216'
+SSPCON2          EQU  H'0216'
+SSP1CON3         EQU  H'0217'
+SSPCON3          EQU  H'0217'
 
 ;-----Bank7------------------
 IOCAP            EQU  H'0391'
@@ -309,10 +317,10 @@ TMR2ON           EQU  H'0002'
 
 T2CKPS0          EQU  H'0000'
 T2CKPS1          EQU  H'0001'
-TOUTPS0          EQU  H'0003'
-TOUTPS1          EQU  H'0004'
-TOUTPS2          EQU  H'0005'
-TOUTPS3          EQU  H'0006'
+T2OUTPS0         EQU  H'0003'
+T2OUTPS1         EQU  H'0004'
+T2OUTPS2         EQU  H'0005'
+T2OUTPS3         EQU  H'0006'
 
 
 ;----- TRISA Bits -----------------------------------------------------
@@ -418,6 +426,16 @@ GO               EQU  H'0001'
 
 ;----- ADCON1 Bits -----------------------------------------------------
 ADFM             EQU  H'0007'
+;;;; Begin: Added in gputils
+
+ADCS0            EQU  H'0004'
+ADCS1            EQU  H'0005'
+ADCS2            EQU  H'0006'
+;;;; End: Added in gputils
+
+ADCS0            EQU  H'0004'
+ADCS1            EQU  H'0005'
+ADCS2            EQU  H'0006'
 
 ADPREF0          EQU  H'0000'
 ADPREF1          EQU  H'0001'
@@ -501,6 +519,8 @@ SBOREN           EQU  H'0007'
 
 
 ;----- FVRCON Bits -----------------------------------------------------
+TSRNG            EQU  H'0004'
+TSEN             EQU  H'0005'
 FVRRDY           EQU  H'0006'
 FVREN            EQU  H'0007'
 
@@ -1273,7 +1293,8 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'018F'-H'0190'
        __BADRAM  H'0197'-H'019F'
        __BADRAM  H'01A0'-H'01EF'
-       __BADRAM  H'0214'-H'021F'
+       __BADRAM  H'020D'-H'0210'
+       __BADRAM  H'0218'-H'021F'
        __BADRAM  H'0220'-H'026F'
        __BADRAM  H'028C'-H'029F'
        __BADRAM  H'02A0'-H'02EF'
@@ -1385,8 +1406,8 @@ _WRT_OFF         EQU  H'FFFF'    ; Write protection off
 _STVREN_OFF      EQU  H'FDFF'    ; Stack Overflow or Underflow will not cause a Reset
 _STVREN_ON       EQU  H'FFFF'    ; Stack Overflow or Underflow will cause a Reset
 
-_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (VBOR) set to 2.7V
-_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (VBOR) set to 1.9V
+_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (Vbor), high trip point selected.
+_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
 
 _LPBOR_ON        EQU  H'F7FF'    ; Low-Power BOR is enabled
 _LPBOR_OFF       EQU  H'FFFF'    ; Low-Power BOR is disabled

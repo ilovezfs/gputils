@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16F1508 processor include
 ; 
-;  (c) Copyright 1999-2011 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -23,6 +23,14 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
+
+;==========================================================================
+;
+;       Gputils Specific Revision History
+;
+;==========================================================================
+
+;       19 Jun 2012  Added ADCS{0,1,2} bits to "ADCON1 Bits".
 
 ;==========================================================================
 ;
@@ -364,10 +372,10 @@ TMR2ON           EQU  H'0002'
 
 T2CKPS0          EQU  H'0000'
 T2CKPS1          EQU  H'0001'
-TOUTPS0          EQU  H'0003'
-TOUTPS1          EQU  H'0004'
-TOUTPS2          EQU  H'0005'
-TOUTPS3          EQU  H'0006'
+T2OUTPS0         EQU  H'0003'
+T2OUTPS1         EQU  H'0004'
+T2OUTPS2         EQU  H'0005'
+T2OUTPS3         EQU  H'0006'
 
 
 ;----- TRISA Bits -----------------------------------------------------
@@ -416,7 +424,7 @@ OSFIE            EQU  H'0007'
 
 
 ;----- PIE3 Bits -----------------------------------------------------
-CLC1E            EQU  H'0000'
+CLC1IE           EQU  H'0000'
 CLC2IE           EQU  H'0001'
 CLC3IE           EQU  H'0002'
 CLC4IE           EQU  H'0003'
@@ -489,6 +497,12 @@ GO               EQU  H'0001'
 
 ;----- ADCON1 Bits -----------------------------------------------------
 ADFM             EQU  H'0007'
+;;;; Begin: Added in gputils
+
+ADCS0            EQU  H'0004'
+ADCS1            EQU  H'0005'
+ADCS2            EQU  H'0006'
+;;;; End: Added in gputils
 
 ADPREF0          EQU  H'0000'
 ADPREF1          EQU  H'0001'
@@ -540,6 +554,7 @@ C1ON             EQU  H'0007'
 ;----- CM1CON1 Bits -----------------------------------------------------
 C1NCH0           EQU  H'0000'
 C1NCH1           EQU  H'0001'
+C1NCH2           EQU  H'0002'
 C1PCH0           EQU  H'0004'
 C1PCH1           EQU  H'0005'
 C1INTN           EQU  H'0006'
@@ -560,6 +575,7 @@ C2ON             EQU  H'0007'
 ;----- CM2CON1 Bits -----------------------------------------------------
 C2NCH0           EQU  H'0000'
 C2NCH1           EQU  H'0001'
+C2NCH2           EQU  H'0002'
 C2PCH0           EQU  H'0004'
 C2PCH1           EQU  H'0005'
 C2INTN           EQU  H'0006'
@@ -579,6 +595,8 @@ SBOREN           EQU  H'0007'
 
 
 ;----- FVRCON Bits -----------------------------------------------------
+TSRNG            EQU  H'0004'
+TSEN             EQU  H'0005'
 FVRRDY           EQU  H'0006'
 FVREN            EQU  H'0007'
 
@@ -604,10 +622,12 @@ DACR4            EQU  H'0004'
 
 
 ;----- APFCON Bits -----------------------------------------------------
-NCOSEL           EQU  H'0000'
+NCO1SEL          EQU  H'0000'
 CLC1SEL          EQU  H'0001'
 T1GSEL           EQU  H'0003'
 SSSEL            EQU  H'0004'
+
+NCOSEL           EQU  H'0000'
 
 
 ;----- ANSELA Bits -----------------------------------------------------
@@ -646,8 +666,8 @@ EEPGD            EQU  H'0007'
 
 
 ;----- VREGCON Bits -----------------------------------------------------
-VREGPM0          EQU  H'0000'
-VREGPM1          EQU  H'0001'
+Reserved         EQU  H'0000'
+VREGPM           EQU  H'0001'
 
 
 ;----- RCSTA Bits -----------------------------------------------------
@@ -722,37 +742,37 @@ SMP              EQU  H'0007'
 
 
 ;----- SSP1CON1 Bits -----------------------------------------------------
-SSP1M0           EQU  H'0000'
-SSP1M1           EQU  H'0001'
-SSP1M2           EQU  H'0002'
-SSP1M3           EQU  H'0003'
+SSPM0            EQU  H'0000'
+SSPM1            EQU  H'0001'
+SSPM2            EQU  H'0002'
+SSPM3            EQU  H'0003'
 CKP              EQU  H'0004'
-SSP1EN           EQU  H'0005'
-SSP1OV           EQU  H'0006'
+SSPEN            EQU  H'0005'
+SSPOV            EQU  H'0006'
 WCOL             EQU  H'0007'
 
 
 
 ;----- SSPCON Bits -----------------------------------------------------
-SSP1M0           EQU  H'0000'
-SSP1M1           EQU  H'0001'
-SSP1M2           EQU  H'0002'
-SSP1M3           EQU  H'0003'
+SSPM0            EQU  H'0000'
+SSPM1            EQU  H'0001'
+SSPM2            EQU  H'0002'
+SSPM3            EQU  H'0003'
 CKP              EQU  H'0004'
-SSP1EN           EQU  H'0005'
-SSP1OV           EQU  H'0006'
+SSPEN            EQU  H'0005'
+SSPOV            EQU  H'0006'
 WCOL             EQU  H'0007'
 
 
 
 ;----- SSPCON1 Bits -----------------------------------------------------
-SSP1M0           EQU  H'0000'
-SSP1M1           EQU  H'0001'
-SSP1M2           EQU  H'0002'
-SSP1M3           EQU  H'0003'
+SSPM0            EQU  H'0000'
+SSPM1            EQU  H'0001'
+SSPM2            EQU  H'0002'
+SSPM3            EQU  H'0003'
 CKP              EQU  H'0004'
-SSP1EN           EQU  H'0005'
-SSP1OV           EQU  H'0006'
+SSPEN            EQU  H'0005'
+SSPOV            EQU  H'0006'
 WCOL             EQU  H'0007'
 
 
@@ -1770,9 +1790,9 @@ BKA14            EQU  H'0006'
 
 
 ;----- STATUS_SHAD Bits -----------------------------------------------------
-C                EQU  H'0000'
-DC               EQU  H'0001'
-Z                EQU  H'0002'
+C_SHAD           EQU  H'0000'
+DC_SHAD          EQU  H'0001'
+Z_SHAD           EQU  H'0002'
 
 
 
@@ -1926,8 +1946,8 @@ _WRT_OFF         EQU  H'FFFF'    ; Write protection off
 _STVREN_OFF      EQU  H'FDFF'    ; Stack Overflow or Underflow will not cause a Reset
 _STVREN_ON       EQU  H'FFFF'    ; Stack Overflow or Underflow will cause a Reset
 
-_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (VBOR) set to 2.7V
-_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (VBOR) set to 2.4V
+_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (Vbor), high trip point selected.
+_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
 
 _LPBOR_ON        EQU  H'F7FF'    ; Low-Power BOR is enabled
 _LPBOR_OFF       EQU  H'FFFF'    ; Low-Power BOR is disabled

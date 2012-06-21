@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16LF1507 processor include
 ; 
-;  (c) Copyright 1999-2011 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -264,7 +264,7 @@ TMR1GIF          EQU  H'0007'
 
 
 ;----- PIR2 Bits -----------------------------------------------------
-NCOIF            EQU  H'0002'
+NCO1IF           EQU  H'0002'
 
 
 ;----- PIR3 Bits -----------------------------------------------------
@@ -341,11 +341,11 @@ TMR1GIE          EQU  H'0007'
 
 
 ;----- PIE2 Bits -----------------------------------------------------
-NCOIE            EQU  H'0002'
+NCO1IE           EQU  H'0002'
 
 
 ;----- PIE3 Bits -----------------------------------------------------
-CLC1E            EQU  H'0000'
+CLC1IE           EQU  H'0000'
 CLC2IE           EQU  H'0001'
 
 
@@ -464,6 +464,8 @@ SBOREN           EQU  H'0007'
 
 
 ;----- FVRCON Bits -----------------------------------------------------
+TSRNG            EQU  H'0004'
+TSEN             EQU  H'0005'
 FVRRDY           EQU  H'0006'
 FVREN            EQU  H'0007'
 
@@ -472,7 +474,7 @@ ADFVR1           EQU  H'0001'
 
 
 ;----- APFCON Bits -----------------------------------------------------
-NCOSEL           EQU  H'0000'
+NCO1SEL          EQU  H'0000'
 CLC1SEL          EQU  H'0001'
 
 
@@ -1144,12 +1146,17 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'010F'-H'0115'
        __BADRAM  H'0118'-H'011C'
        __BADRAM  H'011E'-H'011F'
+       __BADRAM  H'0120'-H'016F'
        __BADRAM  H'018F'-H'0190'
        __BADRAM  H'0197'
        __BADRAM  H'0198'-H'019F'
+       __BADRAM  H'01A0'-H'01EF'
        __BADRAM  H'020E'-H'021F'
+       __BADRAM  H'0220'-H'026F'
        __BADRAM  H'028C'-H'029F'
+       __BADRAM  H'02A0'-H'02EF'
        __BADRAM  H'030C'-H'031F'
+       __BADRAM  H'0320'-H'036F'
        __BADRAM  H'038C'-H'0390'
        __BADRAM  H'0397'-H'039F'
        __BADRAM  H'03A0'-H'03EF'
@@ -1256,8 +1263,8 @@ _WRT_OFF         EQU  H'FFFF'    ; Write protection off
 _STVREN_OFF      EQU  H'FDFF'    ; Stack Overflow or Underflow will not cause a Reset
 _STVREN_ON       EQU  H'FFFF'    ; Stack Overflow or Underflow will cause a Reset
 
-_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (VBOR) set to 2.7V
-_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (VBOR) set to 1.9V
+_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (Vbor), high trip point selected.
+_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
 
 _LPBOR_ON        EQU  H'F7FF'    ; Low-Power BOR is enabled
 _LPBOR_OFF       EQU  H'FFFF'    ; Low-Power BOR is disabled
