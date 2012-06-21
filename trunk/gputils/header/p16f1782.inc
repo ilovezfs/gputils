@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16F1782 processor include
 ; 
-;  (c) Copyright 1999-2011 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -23,6 +23,16 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
+
+;==========================================================================
+;
+;       Gputils Specific Revision History
+;
+;==========================================================================
+
+;       19 Jun 2012  Added TSRNG and TSEN bits to "FVRCON Bits".
+;                    Removed P1M{0,1} bits from "CCP1CON Bits".
+;                    Removed P2M{0,1} bits from "CCP2CON Bits".
 
 ;==========================================================================
 ;
@@ -577,6 +587,7 @@ CHS1             EQU  H'0003'
 CHS2             EQU  H'0004'
 CHS3             EQU  H'0005'
 CHS4             EQU  H'0006'
+ADRMD            EQU  H'0007'
 
 ADGO             EQU  H'0001'
 
@@ -648,6 +659,7 @@ LATC7            EQU  H'0007'
 C1SYNC           EQU  H'0000'
 C1HYS            EQU  H'0001'
 C1SP             EQU  H'0002'
+C1ZLF            EQU  H'0003'
 C1POL            EQU  H'0004'
 C1OE             EQU  H'0005'
 C1OUT            EQU  H'0006'
@@ -670,6 +682,7 @@ C1INTP           EQU  H'0007'
 C2SYNC           EQU  H'0000'
 C2HYS            EQU  H'0001'
 C2SP             EQU  H'0002'
+C2ZLF            EQU  H'0003'
 C2POL            EQU  H'0004'
 C2OE             EQU  H'0005'
 C2OUT            EQU  H'0006'
@@ -705,6 +718,10 @@ ADFVR0           EQU  H'0000'
 ADFVR1           EQU  H'0001'
 CDAFVR0          EQU  H'0002'
 CDAFVR1          EQU  H'0003'
+;;;; Begin: Added in gputils
+TSRNG            EQU  H'0004'
+TSEN             EQU  H'0005'
+;;;; End: Added in gputils
 FVRRDY           EQU  H'0006'
 FVREN            EQU  H'0007'
 
@@ -758,6 +775,7 @@ C2OUTSEL         EQU  H'0007'
 C3SYNC           EQU  H'0000'
 C3HYS            EQU  H'0001'
 C3SP             EQU  H'0002'
+C3ZLF            EQU  H'0003'
 C3POL            EQU  H'0004'
 C3OE             EQU  H'0005'
 C3OUT            EQU  H'0006'
@@ -809,8 +827,7 @@ EEPGD            EQU  H'0007'
 
 
 ;----- VREGCON Bits -----------------------------------------------------
-VREGPM0          EQU  H'0000'
-VREGPM1          EQU  H'0001'
+VREGPM           EQU  H'0001'
 
 
 ;----- RC1STA Bits -----------------------------------------------------
@@ -1109,8 +1126,10 @@ CCP1M2           EQU  H'0002'
 CCP1M3           EQU  H'0003'
 DC1B0            EQU  H'0004'
 DC1B1            EQU  H'0005'
-P1M0             EQU  H'0006'
-P1M1             EQU  H'0007'
+;;;; Begin: Removed in gputils
+;;;;P1M0             EQU  H'0006'
+;;;;P1M1             EQU  H'0007'
+;;;; End: Removed in gputils
 
 
 
@@ -1121,8 +1140,10 @@ CCP2M2           EQU  H'0002'
 CCP2M3           EQU  H'0003'
 DC2B0            EQU  H'0004'
 DC2B1            EQU  H'0005'
-P2M0             EQU  H'0006'
-P2M1             EQU  H'0007'
+;;;; Begin: Removed in gputils
+;;;;P2M0             EQU  H'0006'
+;;;;P2M1             EQU  H'0007'
+;;;; End: Removed in gputils
 
 
 
@@ -2060,11 +2081,8 @@ _WRT_HALF        EQU  H'FFFD'    ; 000h to 3FFh write protected, 400h to 7FFh ma
 _WRT_BOOT        EQU  H'FFFE'    ; 000h to 1FFh write protected, 200h to 7FFh may be modified by EECON control
 _WRT_OFF         EQU  H'FFFF'    ; Write protection off
 
-_VCAPEN0_ON      EQU  H'FFEF'    ; Vcap functionality is enabled on RA0 (Vddcore is connected to the pad)
-_VCAPEN0_OFF     EQU  H'FFFF'    ; Vcap functionality is disabled on RA0.
-
-_VCAPEN1_ON      EQU  H'FFDF'    ; Vcap functionality is enabled on RA6 (Vddcore is connected to the pad)
-_VCAPEN1_OFF     EQU  H'FFFF'    ; Vcap functionality is disabled on RA6
+_VCAPEN_ON       EQU  H'FFDF'    ; Vcap functionality is enabled on RA6 (Vddcore is connected to the pad)
+_VCAPEN_OFF      EQU  H'FFFF'    ; Vcap functionality is disabled on RA6.
 
 _PLLEN_OFF       EQU  H'FEFF'    ; 4x PLL disabled
 _PLLEN_ON        EQU  H'FFFF'    ; 4x PLL enabled
@@ -2072,8 +2090,8 @@ _PLLEN_ON        EQU  H'FFFF'    ; 4x PLL enabled
 _STVREN_OFF      EQU  H'FDFF'    ; Stack Overflow or Underflow will not cause a Reset
 _STVREN_ON       EQU  H'FFFF'    ; Stack Overflow or Underflow will cause a Reset
 
-_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (VBOR) set to 2.7V
-_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (VBOR) set to 2.4V
+_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (Vbor), high trip point selected.
+_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
 
 _LPBOR_ON        EQU  H'F7FF'    ; Low power brown-out is enabled
 _LPBOR_OFF       EQU  H'FFFF'    ; Low power brown-out is disabled

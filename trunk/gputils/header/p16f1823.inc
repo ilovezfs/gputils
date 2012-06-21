@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16F1823 processor include
 ; 
-;  (c) Copyright 1999-2011 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -23,6 +23,15 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
+
+;==========================================================================
+;
+;       Gputils Specific Revision History
+;
+;==========================================================================
+
+;       19 Jun 2012  Removed CCP1SEL and P1BSEL bits from "APFCON Bits".
+;                    Removed CCP1SEL and P1BSEL bits from "APFCON0 Bits".
 
 ;==========================================================================
 ;
@@ -631,8 +640,10 @@ SRSPE            EQU  H'0007'
 
 
 ;----- APFCON Bits -----------------------------------------------------
-CCP1SEL          EQU  H'0000'
-P1BSEL           EQU  H'0001'
+;;;; Begin: Removed in gputils
+;;;;CCP1SEL          EQU  H'0000'
+;;;;P1BSEL           EQU  H'0001'
+;;;; End: Removed in gputils
 TXCKSEL          EQU  H'0002'
 T1GSEL           EQU  H'0003'
 SSSEL            EQU  H'0005'
@@ -644,8 +655,10 @@ SDO1SEL          EQU  H'0006'
 
 
 ;----- APFCON0 Bits -----------------------------------------------------
-CCP1SEL          EQU  H'0000'
-P1BSEL           EQU  H'0001'
+;;;; Begin: Removed in gputils
+;;;;CCP1SEL          EQU  H'0000'
+;;;;P1BSEL           EQU  H'0001'
+;;;; End: Removed in gputils
 TXCKSEL          EQU  H'0002'
 T1GSEL           EQU  H'0003'
 SSSEL            EQU  H'0005'
@@ -1135,8 +1148,8 @@ _PLLEN_ON        EQU  H'FFFF'    ; 4x PLL enabled
 _STVREN_OFF      EQU  H'FDFF'    ; Stack Overflow or Underflow will not cause a Reset
 _STVREN_ON       EQU  H'FFFF'    ; Stack Overflow or Underflow will cause a Reset
 
-_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (VBOR) set to 2.7V
-_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (VBOR) set to 2.4V
+_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (Vbor), high trip point selected.
+_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
 
 _LVP_OFF         EQU  H'DFFF'    ; High-voltage on MCLR/VPP must be used for programming
 _LVP_ON          EQU  H'FFFF'    ; Low-voltage programming enabled
