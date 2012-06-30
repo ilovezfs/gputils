@@ -1,3 +1,24 @@
+2011-06-30  Borut Razem  <borutr@users.sourceforge.net>
+  * header/p18lf26j11.inc, header/p18lf46j11.inc,
+    header/p18lf26j50.inc, header/p18lf46j50.inc,
+    header/p18f26j11.inc, header/p18f46j11.inc,
+    header/p18f26j50.inc, header/p18f46j50.inc,
+    header/p18f66j50.inc, header/p18f86j50.inc,
+    header/p18lf24j11.inc, header/p18lf44j11.inc,
+    header/p18lf24j50.inc, header/p18lf44j50.inc,
+    header/p18f24j11.inc, header/p18f44j11.inc,
+    header/p18f24j50.inc, header/p18f44j50.inc,
+    header/p18f4420.inc, header/p18f66j55.inc,
+    header/p18f86j55.inc, header/p18f67j50.inc,
+    header/p18f87j50.inc, header/p18lf25j11.inc,
+    header/p18lf45j11.inc, header/p18lf25j50.inc,
+    header/p18lf45j50.inc, header/p18f4520.inc,
+    header/p18f25j11.inc, header/p18f45j11.inc,
+    header/p18f25j50.inc, header/p18f45j50.inc,
+    header/p18f65j50.inc, header/p18f85j50.inc:
+    applied patch #3538038 -Bugfix of some INC files.,
+    thanks to Karoly Molnar
+
 2011-06-21  Borut Razem  <borutr@users.sourceforge.net>
   * p12f629.inc, p16f1503.inc, p16f1508.inc, p16f1509.inc. p16f1782.inc,
     p16f1783.inc, p16f1823.inc, p16lf1503.inc, p16lf1508.inc,
