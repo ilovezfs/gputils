@@ -24,6 +24,16 @@
 ;Rev:   Date:    Reason:
 
 ;1.00   10/31/95 Initial Release
+;;;; Begin: Added in gputils
+
+;==========================================================================
+;
+;       Gputils Specific Revision History
+;
+;==========================================================================
+
+;       30 Jun 2012  Changed "OPTION Bits" to "OPTION_REG Bits".
+;;;; End: Added in gputils
 
 ;==========================================================================
 ;
@@ -207,7 +217,10 @@ NOT_DONE                  EQU     H'0002'
 GO_DONE                   EQU     H'0002'
 ADON                      EQU     H'0000'
 
-;----- OPTION Bits --------------------------------------------------------
+;;;; Begin: Changed in gputils
+;;;;;----- OPTION Bits --------------------------------------------------------
+;----- OPTION_REG Bits ----------------------------------------------------
+;;;; End: Changed in gputils
 
 NOT_RBPU                     EQU     H'0007'
 INTEDG                       EQU     H'0006'
