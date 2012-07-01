@@ -24,6 +24,16 @@
 ;Rev:   Date:    Reason:
 
 ;1.00   10/31/95 Initial Release
+;;;; Begin: Added in gputils
+
+;==========================================================================
+;
+;       Gputils Specific Revision History
+;
+;==========================================================================
+
+;       30 Jun 2012  Changed "OPTION Bits" to "OPTION_REG Bits".
+;;;; End: Added in gputils
 
 ;==========================================================================
 ;
@@ -60,7 +70,10 @@ OPTION_REG                   EQU     H'0081'
 TRISA                        EQU     H'0085'
 TRISB                        EQU     H'0086'
 
-;----- OPTION Bits --------------------------------------------------------
+;;;; Begin: Changed in gputils
+;;;;;----- OPTION Bits --------------------------------------------------------
+;----- OPTION_REG Bits ----------------------------------------------------
+;;;; End: Changed in gputils
 
 NOT_RBPU                     EQU     H'0007'
 INTEDG                       EQU     H'0006'

@@ -1,3 +1,23 @@
+2011-07-01  Borut Razem  <borutr@users.sourceforge.net>
+  * p16c622.inc, p16cr84.inc, p16f616.inc, p16ce623.inc, p16f690.inc,
+    p16c64.inc, p16c65b.inc, p16c712.inc, p16c554.inc, p16c716.inc,
+    p16c558.inc, p16c62b.inc, p16c73.inc, p16c74b.inc, p16c77.inc,
+    p16c621a.inc, p16cr63.inc, p16f677.inc, p16c63a.inc, p16cr72.inc,
+    p16c72a.inc, p16f73.inc, p16f77.inc, p16c662.inc, p16ce624.inc,
+    p16c61.inc, p16c65.inc, p16f785.inc, p16c74.inc, p16cr64.inc,
+    p16f631.inc, p12f635.inc, p16c923.inc, p16c765.inc, p16f639.inc,
+    p16hv616.inc, p16c622a.inc, p12f609.inc, p16f687.inc, p16c64a.inc,
+    p16f74.inc, p16c620.inc, p16f610.inc, p16ce625.inc, p16f627a.inc,
+    p16c62.inc, p16c73a.inc, p16c66.inc, p16f83.inc, p16c710.inc,
+    p16f627.inc, p16f648a.inc, p16c71.inc, p16c642.inc, p16cr65.inc,
+    p16c924.inc, p16f636.inc, p16c84.inc, p16c621.inc, p12f615.inc,
+    p16cr83.inc, p16hv785.inc, p16c745.inc, p16c63.inc, p16c65a.inc,
+    p16c73b.inc, p16c67.inc, p16f84.inc, p16c620a.inc, p16c711.inc,
+    p16c433.inc, p16c715.inc, p16c557.inc, p16f628.inc, p16f628a.inc,
+    p16c62a.inc, p16c72.inc, p16c74a.inc, p16c76.inc, p16cr62.inc,
+    p16hv610.inc, p16f526.inc, p16f685.inc, p16f689.inc, p16f72.inc,
+    p16f76.inc: applied patch #3539160 - Bugfix of some INC files. (2)
+
 2011-06-30  Borut Razem  <borutr@users.sourceforge.net>
   * header/p18lf26j11.inc, header/p18lf46j11.inc,
     header/p18lf26j50.inc, header/p18lf46j50.inc,
