@@ -1,3 +1,7 @@
+2012-07-01 Borut Razem <borut.razem AT siol.net>
+	* tools/cmp_gp_mp.sh: added script to compare gputils and
+	  mplabx .inc and .lkr files
+
 2009-03-13 Borut Razem <borut.razem AT siol.net>
 	* scripts/build/mingw/gputils.nsi:
 	  remove DISTRIBUTION.txt and NEWS.txt when uninstalling
