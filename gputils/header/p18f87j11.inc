@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC18F87J11 processor include
 ; 
-;  (c) Copyright 1999-2011 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -112,6 +112,7 @@ CVRCON           EQU  H'0F77'
 PR4              EQU  H'0F77'
 TMR4             EQU  H'0F78'
 T3CON            EQU  H'0F79'
+TMR3             EQU  H'0F7A'
 TMR3L            EQU  H'0F7A'
 TMR3H            EQU  H'0F7B'
 BAUDCON2         EQU  H'0F7C'
@@ -230,6 +231,7 @@ TMR2             EQU  H'0FCC'
 ODCON3           EQU  H'0FCD'
 T1CON            EQU  H'0FCD'
 ODCON2           EQU  H'0FCE'
+TMR1             EQU  H'0FCE'
 TMR1L            EQU  H'0FCE'
 ODCON1           EQU  H'0FCF'
 TMR1H            EQU  H'0FCF'
@@ -241,6 +243,7 @@ CM1CON1          EQU  H'0FD2'
 OSCCON           EQU  H'0FD3'
 REFOCON          EQU  H'0FD3'
 T0CON            EQU  H'0FD5'
+TMR0             EQU  H'0FD6'
 TMR0L            EQU  H'0FD6'
 TMR0H            EQU  H'0FD7'
 STATUS           EQU  H'0FD8'

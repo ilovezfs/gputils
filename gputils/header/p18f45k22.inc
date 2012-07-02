@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC18F45K22 processor include
 ; 
-;  (c) Copyright 1999-2011 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -93,6 +93,7 @@ PR6              EQU  H'0F4B'
 TMR6             EQU  H'0F4C'
 T5GCON           EQU  H'0F4D'
 T5CON            EQU  H'0F4E'
+TMR5             EQU  H'0F4F'
 TMR5L            EQU  H'0F4F'
 TMR5H            EQU  H'0F50'
 T4CON            EQU  H'0F51'
@@ -213,6 +214,7 @@ SP1BRGH          EQU  H'0FB0'
 SPBRGH           EQU  H'0FB0'
 SPBRGH1          EQU  H'0FB0'
 T3CON            EQU  H'0FB1'
+TMR3             EQU  H'0FB2'
 TMR3L            EQU  H'0FB2'
 TMR3H            EQU  H'0FB3'
 T3GCON           EQU  H'0FB4'
@@ -255,6 +257,7 @@ SSP1CON3         EQU  H'0FCB'
 SSPCON3          EQU  H'0FCB'
 T1GCON           EQU  H'0FCC'
 T1CON            EQU  H'0FCD'
+TMR1             EQU  H'0FCE'
 TMR1L            EQU  H'0FCE'
 TMR1H            EQU  H'0FCF'
 RCON             EQU  H'0FD0'
@@ -262,6 +265,7 @@ WDTCON           EQU  H'0FD1'
 OSCCON2          EQU  H'0FD2'
 OSCCON           EQU  H'0FD3'
 T0CON            EQU  H'0FD5'
+TMR0             EQU  H'0FD6'
 TMR0L            EQU  H'0FD6'
 TMR0H            EQU  H'0FD7'
 STATUS           EQU  H'0FD8'
