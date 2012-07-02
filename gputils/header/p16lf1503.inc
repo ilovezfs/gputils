@@ -435,10 +435,6 @@ ADCS1            EQU  H'0005'
 ADCS2            EQU  H'0006'
 ;;;; End: Added in gputils
 
-ADCS0            EQU  H'0004'
-ADCS1            EQU  H'0005'
-ADCS2            EQU  H'0006'
-
 ADPREF0          EQU  H'0000'
 ADPREF1          EQU  H'0001'
 
