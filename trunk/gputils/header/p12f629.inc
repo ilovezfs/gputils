@@ -186,8 +186,9 @@ TRISIO5          EQU  H'0005'
 ;----- PIE1 Bits -----------------------------------------------------
 TMR1IE           EQU  H'0000'
 CMIE             EQU  H'0003'
-;;;; Removed in gputils
+;;;; Begin: Removed in gputils
 ;;;;ADIE             EQU  H'0006'
+;;;; End: Removed in gputils
 EEIE             EQU  H'0007'
 
 T1IE             EQU  H'0000'
