@@ -23,6 +23,7 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
+;;;; Begin: Added in gputils
 
 ;==========================================================================
 ;
@@ -33,6 +34,7 @@
 ;       19 Jun 2012  Added TSRNG and TSEN bits to "FVRCON Bits".
 ;                    Removed P1M{0,1} bits from "CCP1CON Bits".
 ;                    Removed P2M{0,1} bits from "CCP2CON Bits".
+;;;; End: Added in gputils
 
 ;==========================================================================
 ;

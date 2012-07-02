@@ -23,6 +23,7 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
+;;;; Begin: Added in gputils
 
 ;==========================================================================
 ;
@@ -32,6 +33,7 @@
 
 ;       19 Jun 2012  Removed CCP1SEL and P1BSEL bits from "APFCON Bits".
 ;                    Removed CCP1SEL and P1BSEL bits from "APFCON0 Bits".
+;;;; End: Added in gputils
 
 ;==========================================================================
 ;

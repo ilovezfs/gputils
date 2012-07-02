@@ -23,6 +23,7 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
+;;;; Begin: Added in gputils
 
 ;==========================================================================
 ;
@@ -31,6 +32,7 @@
 ;==========================================================================
 
 ;       26 Jun 2012  Removed RE3 bit from "DDRE Bits" and "TRISE Bits".
+;;;; End: Added in gputils
 
 ;==========================================================================
 ;
