@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC12F683 processor include
 ; 
-;  (c) Copyright 1999-2011 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -56,6 +56,7 @@ GPIO             EQU  H'0005'
 PCLATH           EQU  H'000A'
 INTCON           EQU  H'000B'
 PIR1             EQU  H'000C'
+TMR1             EQU  H'000E'
 TMR1L            EQU  H'000E'
 TMR1H            EQU  H'000F'
 T1CON            EQU  H'0010'
@@ -358,6 +359,7 @@ ANS3             EQU  H'0003'
 ADCS0            EQU  H'0004'
 ADCS1            EQU  H'0005'
 ADCS2            EQU  H'0006'
+
 
 
 

@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC18F66J90 processor include
 ; 
-;  (c) Copyright 1999-2009 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -157,6 +157,7 @@ RCREG1           EQU  H'0FAE'
 SPBRG            EQU  H'0FAF'
 SPBRG1           EQU  H'0FAF'
 T3CON            EQU  H'0FB1'
+TMR3             EQU  H'0FB2'
 TMR3L            EQU  H'0FB2'
 TMR3H            EQU  H'0FB3'
 CMCON            EQU  H'0FB4'
@@ -190,6 +191,7 @@ T2CON            EQU  H'0FCA'
 PR2              EQU  H'0FCB'
 TMR2             EQU  H'0FCC'
 T1CON            EQU  H'0FCD'
+TMR1             EQU  H'0FCE'
 TMR1L            EQU  H'0FCE'
 TMR1H            EQU  H'0FCF'
 RCON             EQU  H'0FD0'
@@ -197,6 +199,7 @@ WDTCON           EQU  H'0FD1'
 LCDREG           EQU  H'0FD2'
 OSCCON           EQU  H'0FD3'
 T0CON            EQU  H'0FD5'
+TMR0             EQU  H'0FD6'
 TMR0L            EQU  H'0FD6'
 TMR0H            EQU  H'0FD7'
 STATUS           EQU  H'0FD8'
@@ -342,6 +345,15 @@ NOT_RC8          EQU  H'0006'
 
 RC8_9            EQU  H'0006'
 
+RX9D2            EQU  H'0000'
+OERR2            EQU  H'0001'
+FERR2            EQU  H'0002'
+ADDEN2           EQU  H'0003'
+CREN2            EQU  H'0004'
+SREN2            EQU  H'0005'
+RX92             EQU  H'0006'
+SPEN2            EQU  H'0007'
+
 
 ;----- TXSTA2 Bits -----------------------------------------------------
 TX9D             EQU  H'0000'
@@ -356,6 +368,15 @@ TXD8             EQU  H'0000'
 TX8_9            EQU  H'0006'
 
 NOT_TX8          EQU  H'0006'
+
+TX9D2            EQU  H'0000'
+TRMT2            EQU  H'0001'
+BRGH2            EQU  H'0002'
+SENDB2           EQU  H'0003'
+SYNC2            EQU  H'0004'
+TXEN2            EQU  H'0005'
+TX92             EQU  H'0006'
+CSRC2            EQU  H'0007'
 
 
 ;----- CCP2CON Bits -----------------------------------------------------
@@ -734,7 +755,6 @@ RA5              EQU  H'0005'
 RA6              EQU  H'0006'
 RA7              EQU  H'0007'
 
-
 AN0              EQU  H'0000'
 AN1              EQU  H'0001'
 AN2              EQU  H'0002'
@@ -762,7 +782,6 @@ RB4              EQU  H'0004'
 RB5              EQU  H'0005'
 RB6              EQU  H'0006'
 RB7              EQU  H'0007'
-
 
 INT0             EQU  H'0000'
 INT1             EQU  H'0001'
@@ -795,7 +814,6 @@ RC4              EQU  H'0004'
 RC5              EQU  H'0005'
 RC6              EQU  H'0006'
 RC7              EQU  H'0007'
-
 
 T1OSO            EQU  H'0000'
 T1OSI            EQU  H'0001'
@@ -832,7 +850,6 @@ RD5              EQU  H'0005'
 RD6              EQU  H'0006'
 RD7              EQU  H'0007'
 
-
 SEG0             EQU  H'0000'
 SEG1             EQU  H'0001'
 SEG2             EQU  H'0002'
@@ -854,7 +871,6 @@ RE5              EQU  H'0005'
 RE6              EQU  H'0006'
 RE7              EQU  H'0007'
 
-
 LCDBIAS1         EQU  H'0000'
 LCDBIAS2         EQU  H'0001'
 COM0             EQU  H'0003'
@@ -874,7 +890,6 @@ RF4              EQU  H'0004'
 RF5              EQU  H'0005'
 RF6              EQU  H'0006'
 RF7              EQU  H'0007'
-
 
 AN6              EQU  H'0001'
 AN7              EQU  H'0002'
@@ -913,7 +928,6 @@ RJPU             EQU  H'0005'
 REPU             EQU  H'0006'
 RDPU             EQU  H'0007'
 
-
 LCDBIAS0         EQU  H'0000'
 CK2              EQU  H'0001'
 DT2              EQU  H'0002'
@@ -938,7 +952,6 @@ LATA6            EQU  H'0006'
 LATA7            EQU  H'0007'
 
 
-
 ;----- LATB Bits -----------------------------------------------------
 LATB0            EQU  H'0000'
 LATB1            EQU  H'0001'
@@ -948,7 +961,6 @@ LATB4            EQU  H'0004'
 LATB5            EQU  H'0005'
 LATB6            EQU  H'0006'
 LATB7            EQU  H'0007'
-
 
 
 ;----- LATC Bits -----------------------------------------------------
@@ -962,7 +974,6 @@ LATC6            EQU  H'0006'
 LATC7            EQU  H'0007'
 
 
-
 ;----- LATD Bits -----------------------------------------------------
 LATD0            EQU  H'0000'
 LATD1            EQU  H'0001'
@@ -972,7 +983,6 @@ LATD4            EQU  H'0004'
 LATD5            EQU  H'0005'
 LATD6            EQU  H'0006'
 LATD7            EQU  H'0007'
-
 
 
 ;----- LATE Bits -----------------------------------------------------
@@ -985,7 +995,6 @@ LATE6            EQU  H'0006'
 LATE7            EQU  H'0007'
 
 
-
 ;----- LATF Bits -----------------------------------------------------
 LATF1            EQU  H'0001'
 LATF2            EQU  H'0002'
@@ -996,7 +1005,6 @@ LATF6            EQU  H'0006'
 LATF7            EQU  H'0007'
 
 
-
 ;----- LATG Bits -----------------------------------------------------
 LATG0            EQU  H'0000'
 LATG1            EQU  H'0001'
@@ -1005,7 +1013,6 @@ LATG3            EQU  H'0003'
 LATG4            EQU  H'0004'
 U1OD             EQU  H'0006'
 U2OD             EQU  H'0007'
-
 
 
 ;----- TRISA Bits -----------------------------------------------------
@@ -1019,7 +1026,6 @@ TRISA6           EQU  H'0006'
 TRISA7           EQU  H'0007'
 
 
-
 ;----- TRISB Bits -----------------------------------------------------
 TRISB0           EQU  H'0000'
 TRISB1           EQU  H'0001'
@@ -1029,7 +1035,6 @@ TRISB4           EQU  H'0004'
 TRISB5           EQU  H'0005'
 TRISB6           EQU  H'0006'
 TRISB7           EQU  H'0007'
-
 
 
 ;----- TRISC Bits -----------------------------------------------------
@@ -1043,7 +1048,6 @@ TRISC6           EQU  H'0006'
 TRISC7           EQU  H'0007'
 
 
-
 ;----- TRISD Bits -----------------------------------------------------
 TRISD0           EQU  H'0000'
 TRISD1           EQU  H'0001'
@@ -1053,7 +1057,6 @@ TRISD4           EQU  H'0004'
 TRISD5           EQU  H'0005'
 TRISD6           EQU  H'0006'
 TRISD7           EQU  H'0007'
-
 
 
 ;----- TRISE Bits -----------------------------------------------------
@@ -1066,7 +1069,6 @@ TRISE6           EQU  H'0006'
 TRISE7           EQU  H'0007'
 
 
-
 ;----- TRISF Bits -----------------------------------------------------
 TRISF1           EQU  H'0001'
 TRISF2           EQU  H'0002'
@@ -1075,7 +1077,6 @@ TRISF4           EQU  H'0004'
 TRISF5           EQU  H'0005'
 TRISF6           EQU  H'0006'
 TRISF7           EQU  H'0007'
-
 
 
 ;----- TRISG Bits -----------------------------------------------------
@@ -1087,7 +1088,6 @@ TRISG4           EQU  H'0004'
 CCP1OD           EQU  H'0005'
 CCP2OD           EQU  H'0006'
 SPIOD            EQU  H'0007'
-
 
 
 ;----- OSCTUNE Bits -----------------------------------------------------
@@ -1287,6 +1287,15 @@ NOT_RC8          EQU  H'0006'
 
 RC8_9            EQU  H'0006'
 
+RX9D1            EQU  H'0000'
+OERR1            EQU  H'0001'
+FERR1            EQU  H'0002'
+ADDEN1           EQU  H'0003'
+CREN1            EQU  H'0004'
+SREN1            EQU  H'0005'
+RX91             EQU  H'0006'
+SPEN1            EQU  H'0007'
+
 
 ;----- RCSTA1 Bits -----------------------------------------------------
 RX9D             EQU  H'0000'
@@ -1306,6 +1315,15 @@ NOT_RC8          EQU  H'0006'
 
 RC8_9            EQU  H'0006'
 
+RX9D1            EQU  H'0000'
+OERR1            EQU  H'0001'
+FERR1            EQU  H'0002'
+ADDEN1           EQU  H'0003'
+CREN1            EQU  H'0004'
+SREN1            EQU  H'0005'
+RX91             EQU  H'0006'
+SPEN1            EQU  H'0007'
+
 
 ;----- TXSTA Bits -----------------------------------------------------
 TX9D             EQU  H'0000'
@@ -1321,6 +1339,15 @@ TXD8             EQU  H'0000'
 TX8_9            EQU  H'0006'
 
 NOT_TX8          EQU  H'0006'
+
+TX9D1            EQU  H'0000'
+TRMT1            EQU  H'0001'
+BRGH1            EQU  H'0002'
+SENDB1           EQU  H'0003'
+SYNC1            EQU  H'0004'
+TXEN1            EQU  H'0005'
+TX91             EQU  H'0006'
+CSRC1            EQU  H'0007'
 
 
 ;----- TXSTA1 Bits -----------------------------------------------------
@@ -1338,6 +1365,15 @@ TX8_9            EQU  H'0006'
 
 NOT_TX8          EQU  H'0006'
 
+TX9D1            EQU  H'0000'
+TRMT1            EQU  H'0001'
+BRGH1            EQU  H'0002'
+SENDB1           EQU  H'0003'
+SYNC1            EQU  H'0004'
+TXEN1            EQU  H'0005'
+TX91             EQU  H'0006'
+CSRC1            EQU  H'0007'
+
 
 ;----- T3CON Bits -----------------------------------------------------
 TMR3ON           EQU  H'0000'
@@ -1350,6 +1386,7 @@ RD16             EQU  H'0007'
 T3SYNC           EQU  H'0002'
 T3CKPS0          EQU  H'0004'
 T3CKPS1          EQU  H'0005'
+T3RD16           EQU  H'0007'
 
 T3INSYNC         EQU  H'0002'
 
@@ -1763,6 +1800,7 @@ RD16             EQU  H'0007'
 T1INSYNC         EQU  H'0002'
 T1CKPS0          EQU  H'0004'
 T1CKPS1          EQU  H'0005'
+T1RD16           EQU  H'0007'
 
 T1SYNC           EQU  H'0002'
 
@@ -1781,7 +1819,7 @@ POR              EQU  H'0001'
 PD               EQU  H'0002'
 TO               EQU  H'0003'
 RI               EQU  H'0004'
-CM_RCON          EQU  H'0005'
+CM               EQU  H'0005'
 
 
 ;----- WDTCON Bits -----------------------------------------------------
@@ -1945,14 +1983,18 @@ STKPTR4          EQU  H'0004'
 ;     XINST = OFF          Disabled
 ;     XINST = ON           Enabled
 ;
+;   Background Debugger Enable bit:
+;     DEBUG = ON           Background debugger enabled; RB6 and RB7 are dedicated to In-Circuit Debug
+;     DEBUG = OFF          Background debugger disabled; RB6 and RB7 configured as general purpose I/O pins
+;
 ;   Code Protect:
 ;     CP0 = ON             Enabled
 ;     CP0 = OFF            Disabled
 ;
 ;   Oscillator Selection bits:
 ;     OSC = INTOSC         Internal oscillator, port function on RA6 and RA7 
-;     OSC = INTOSCO        Internal oscillator, CLKOUT on RA6 and port function on RA7
 ;     OSC = INTOSCPLL      INTOSC with PLL enabled, port function on RA6 and RA7
+;     OSC = INTOSCO        Internal oscillator, CLKOUT on RA6 and port function on RA7
 ;     OSC = INTOSCPLLO     INTOSC with PLL enabled, CLKOUT on RA6 and port function on RA7
 ;     OSC = HS             HS oscillator
 ;     OSC = HSPLL          HS oscillator, PLL enabled
@@ -1998,10 +2040,11 @@ STKPTR4          EQU  H'0004'
 ;     RTCSOSC = T1OSCREF   RTCC uses T1OSC/T1CKI as reference clock
 ;
 ;   CCP2 MUX:
-;     CCP2MX = ALTERNATE   RE7 <Microcontroller> / RB3
+;     CCP2MX = ALTERNATE   RE7
 ;     CCP2MX = DEFAULT     RC1
 ;
 ;==========================================================================
+;----- DEVID Equates --------------------------------------------------
 _DEVID1          EQU  H'3FFFFE'
 _DEVID2          EQU  H'3FFFFF'
 

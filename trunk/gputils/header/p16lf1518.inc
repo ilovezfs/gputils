@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16LF1518 processor include
 ; 
-;  (c) Copyright 1999-2011 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -851,9 +851,9 @@ _WRT_OFF         EQU  H'FFFF'    ; Write protection off
 _STVREN_OFF      EQU  H'FDFF'    ; Stack Overflow or Underflow will not cause a Reset
 _STVREN_ON       EQU  H'FFFF'    ; Stack Overflow or Underflow will cause a Reset
 
-_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (VBOR) set to 2.7V
-_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (VBOR) set to 1.9V
-_BORV_19         EQU  H'FFFF'    ; Brown-out Reset Voltage (VBOR) set to 1.9V
+_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (Vbor), high trip point selected.
+_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
+_BORV_19         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
 
 _LPBOR_ON        EQU  H'F7FF'    ; Low-Power BOR is enabled
 _LPBOR_OFF       EQU  H'FFFF'    ; Low-Power BOR is disabled

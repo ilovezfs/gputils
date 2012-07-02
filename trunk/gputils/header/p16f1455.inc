@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16F1455 processor include
 ; 
-;  (c) Copyright 1999-2011 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -150,7 +150,7 @@ IOCAP            EQU  H'0391'
 IOCAN            EQU  H'0392'
 IOCAF            EQU  H'0393'
 CLKRCON          EQU  H'039A'
-CRCON            EQU  H'039B'
+STCON            EQU  H'039B'
 
 ;-----Bank12------------------
 PWM1DCL          EQU  H'0611'
@@ -177,8 +177,8 @@ TST_CRLT         EQU  H'0E12'
 
 ;-----Bank29------------------
 UCON             EQU  H'0E8E'
-UIR              EQU  H'0E8F'
-USTAT            EQU  H'0E90'
+USTAT            EQU  H'0E8F'
+UIR              EQU  H'0E90'
 UCFG             EQU  H'0E91'
 UIE              EQU  H'0E92'
 UEIR             EQU  H'0E93'
@@ -187,14 +187,14 @@ UFRMH            EQU  H'0E94'
 UFRML            EQU  H'0E95'
 UADDR            EQU  H'0E96'
 UEIE             EQU  H'0E97'
-UEP7             EQU  H'0E98'
-UEP6             EQU  H'0E99'
-UEP5             EQU  H'0E9A'
-UEP4             EQU  H'0E9B'
-UEP3             EQU  H'0E9C'
-UEP2             EQU  H'0E9D'
-UEP1             EQU  H'0E9E'
-UEP0             EQU  H'0E9F'
+UEP0             EQU  H'0E98'
+UEP1             EQU  H'0E99'
+UEP2             EQU  H'0E9A'
+UEP3             EQU  H'0E9B'
+UEP4             EQU  H'0E9C'
+UEP5             EQU  H'0E9D'
+UEP6             EQU  H'0E9E'
+UEP7             EQU  H'0E9F'
 
 ;-----Bank31------------------
 ICDIO            EQU  H'0F8C'
@@ -252,7 +252,6 @@ T0IE             EQU  H'0005'
 ;----- PORTA Bits -----------------------------------------------------
 RA0              EQU  H'0000'
 RA1              EQU  H'0001'
-RA2              EQU  H'0002'
 RA3              EQU  H'0003'
 RA4              EQU  H'0004'
 RA5              EQU  H'0005'
@@ -278,7 +277,8 @@ TMR1GIF          EQU  H'0007'
 
 
 ;----- PIR2 Bits -----------------------------------------------------
-NCO1IF           EQU  H'0002'
+STIF             EQU  H'0001'
+USBIF            EQU  H'0002'
 BCL1IF           EQU  H'0003'
 C1IF             EQU  H'0005'
 C2IF             EQU  H'0006'
@@ -320,10 +320,6 @@ TOUTPS3          EQU  H'0006'
 
 
 ;----- TRISA Bits -----------------------------------------------------
-TRISA0           EQU  H'0000'
-TRISA1           EQU  H'0001'
-TRISA2           EQU  H'0002'
-TRISA3           EQU  H'0003'
 TRISA4           EQU  H'0004'
 TRISA5           EQU  H'0005'
 
@@ -348,7 +344,8 @@ TMR1GIE          EQU  H'0007'
 
 
 ;----- PIE2 Bits -----------------------------------------------------
-NCO1IE           EQU  H'0002'
+STIE             EQU  H'0001'
+USBIE            EQU  H'0002'
 BCL1IE           EQU  H'0003'
 C1IE             EQU  H'0005'
 C2IE             EQU  H'0006'
@@ -396,15 +393,19 @@ TUN2             EQU  H'0002'
 TUN3             EQU  H'0003'
 TUN4             EQU  H'0004'
 TUN5             EQU  H'0005'
+TUN6             EQU  H'0006'
 
 
 ;----- OSCCON Bits -----------------------------------------------------
+SPLLMULT         EQU  H'0006'
+SPLLEN           EQU  H'0007'
+
 SCS0             EQU  H'0000'
 SCS1             EQU  H'0001'
-IRCF0            EQU  H'0003'
-IRCF1            EQU  H'0004'
-IRCF2            EQU  H'0005'
-IRCF3            EQU  H'0006'
+IRCF0            EQU  H'0002'
+IRCF1            EQU  H'0003'
+IRCF2            EQU  H'0004'
+IRCF3            EQU  H'0005'
 
 
 ;----- OSCSTAT Bits -----------------------------------------------------
@@ -412,6 +413,7 @@ HFIOFS           EQU  H'0000'
 LFIOFR           EQU  H'0001'
 HFIOFR           EQU  H'0004'
 OSTS             EQU  H'0005'
+PLLRDY           EQU  H'0006'
 SOSCR            EQU  H'0007'
 
 
@@ -434,6 +436,9 @@ ADFM             EQU  H'0007'
 
 ADPREF0          EQU  H'0000'
 ADPREF1          EQU  H'0001'
+ADCS0            EQU  H'0004'
+ADCS1            EQU  H'0005'
+ADCS2            EQU  H'0006'
 
 
 ;----- ADCON2 Bits -----------------------------------------------------
@@ -443,9 +448,6 @@ TRIGSEL2         EQU  H'0006'
 
 
 ;----- LATA Bits -----------------------------------------------------
-LATA0            EQU  H'0000'
-LATA1            EQU  H'0001'
-LATA2            EQU  H'0002'
 LATA4            EQU  H'0004'
 LATA5            EQU  H'0005'
 
@@ -472,6 +474,7 @@ C1ON             EQU  H'0007'
 ;----- CM1CON1 Bits -----------------------------------------------------
 C1NCH0           EQU  H'0000'
 C1NCH1           EQU  H'0001'
+C1NCH2           EQU  H'0002'
 C1PCH0           EQU  H'0004'
 C1PCH1           EQU  H'0005'
 C1INTN           EQU  H'0006'
@@ -492,6 +495,7 @@ C2ON             EQU  H'0007'
 ;----- CM2CON1 Bits -----------------------------------------------------
 C2NCH0           EQU  H'0000'
 C2NCH1           EQU  H'0001'
+C2NCH2           EQU  H'0002'
 C2PCH0           EQU  H'0004'
 C2PCH1           EQU  H'0005'
 C2INTN           EQU  H'0006'
@@ -546,9 +550,6 @@ CLKRSEL          EQU  H'0007'
 
 
 ;----- ANSELA Bits -----------------------------------------------------
-ANSA0            EQU  H'0000'
-ANSA1            EQU  H'0001'
-ANSA2            EQU  H'0002'
 ANSA4            EQU  H'0004'
 
 
@@ -608,9 +609,6 @@ ABDOVF           EQU  H'0007'
 
 
 ;----- WPUA Bits -----------------------------------------------------
-WPUA0            EQU  H'0000'
-WPUA1            EQU  H'0001'
-WPUA2            EQU  H'0002'
 WPUA3            EQU  H'0003'
 WPUA4            EQU  H'0004'
 WPUA5            EQU  H'0005'
@@ -722,7 +720,6 @@ ACKTIM           EQU  H'0007'
 ;----- IOCAP Bits -----------------------------------------------------
 IOCAP0           EQU  H'0000'
 IOCAP1           EQU  H'0001'
-IOCAP2           EQU  H'0002'
 IOCAP3           EQU  H'0003'
 IOCAP4           EQU  H'0004'
 IOCAP5           EQU  H'0005'
@@ -732,7 +729,6 @@ IOCAP5           EQU  H'0005'
 ;----- IOCAN Bits -----------------------------------------------------
 IOCAN0           EQU  H'0000'
 IOCAN1           EQU  H'0001'
-IOCAN2           EQU  H'0002'
 IOCAN3           EQU  H'0003'
 IOCAN4           EQU  H'0004'
 IOCAN5           EQU  H'0005'
@@ -742,7 +738,6 @@ IOCAN5           EQU  H'0005'
 ;----- IOCAF Bits -----------------------------------------------------
 IOCAF0           EQU  H'0000'
 IOCAF1           EQU  H'0001'
-IOCAF2           EQU  H'0002'
 IOCAF3           EQU  H'0003'
 IOCAF4           EQU  H'0004'
 IOCAF5           EQU  H'0005'
@@ -761,11 +756,12 @@ CLKRCD0          EQU  H'0003'
 CLKRCD1          EQU  H'0004'
 
 
-;----- CRCON Bits -----------------------------------------------------
-CPFAIL           EQU  H'0001'
-CRLOCK           EQU  H'0003'
-CRSRC            EQU  H'0004'
-CRON             EQU  H'0007'
+;----- STCON Bits -----------------------------------------------------
+STFAIL           EQU  H'0001'
+STLOCK           EQU  H'0003'
+STSRC            EQU  H'0004'
+STUD             EQU  H'0006'
+STON             EQU  H'0007'
 
 
 ;----- PWM1DCL Bits -----------------------------------------------------
@@ -859,7 +855,6 @@ G1EN             EQU  H'0007'
 ;----- CWG1CON1 Bits -----------------------------------------------------
 G1IS0            EQU  H'0000'
 G1IS1            EQU  H'0001'
-G1IS2            EQU  H'0002'
 
 G1ASDLA0         EQU  H'0004'
 G1ASDLA1         EQU  H'0005'
@@ -868,7 +863,6 @@ G1ASDLB1         EQU  H'0007'
 
 
 ;----- CWG1CON2 Bits -----------------------------------------------------
-G1ASDSCLC2       EQU  H'0000'
 G1ASDSFLT        EQU  H'0001'
 G1ASDSC1         EQU  H'0002'
 G1ASDSC2         EQU  H'0003'
@@ -885,6 +879,16 @@ SE0              EQU  H'0005'
 PPBRST           EQU  H'0006'
 
 
+;----- USTAT Bits -----------------------------------------------------
+PPBI             EQU  H'0001'
+DIR              EQU  H'0002'
+
+ENDP0            EQU  H'0003'
+ENDP1            EQU  H'0004'
+ENDP2            EQU  H'0005'
+ENDP3            EQU  H'0006'
+
+
 ;----- UIR Bits -----------------------------------------------------
 URSTIF           EQU  H'0000'
 UERRIF           EQU  H'0001'
@@ -893,11 +897,6 @@ TRNIF            EQU  H'0003'
 IDLEIF           EQU  H'0004'
 STALLIF          EQU  H'0005'
 SOFIF            EQU  H'0006'
-
-
-;----- USTAT Bits -----------------------------------------------------
-PPBI             EQU  H'0001'
-DIR              EQU  H'0002'
 
 
 ;----- UCFG Bits -----------------------------------------------------
@@ -964,47 +963,7 @@ BTOEE            EQU  H'0004'
 BTSEE            EQU  H'0007'
 
 
-;----- UEP7 Bits -----------------------------------------------------
-EPSTALL          EQU  H'0000'
-EPINEN           EQU  H'0001'
-EPOUTEN          EQU  H'0002'
-EPCONDIS         EQU  H'0003'
-EPHSHK           EQU  H'0004'
-
-
-;----- UEP6 Bits -----------------------------------------------------
-EPSTALL          EQU  H'0000'
-EPINEN           EQU  H'0001'
-EPOUTEN          EQU  H'0002'
-EPCONDIS         EQU  H'0003'
-EPHSHK           EQU  H'0004'
-
-
-;----- UEP5 Bits -----------------------------------------------------
-EPSTALL          EQU  H'0000'
-EPINEN           EQU  H'0001'
-EPOUTEN          EQU  H'0002'
-EPCONDIS         EQU  H'0003'
-EPHSHK           EQU  H'0004'
-
-
-;----- UEP4 Bits -----------------------------------------------------
-EPSTALL          EQU  H'0000'
-EPINEN           EQU  H'0001'
-EPOUTEN          EQU  H'0002'
-EPCONDIS         EQU  H'0003'
-EPHSHK           EQU  H'0004'
-
-
-;----- UEP3 Bits -----------------------------------------------------
-EPSTALL          EQU  H'0000'
-EPINEN           EQU  H'0001'
-EPOUTEN          EQU  H'0002'
-EPCONDIS         EQU  H'0003'
-EPHSHK           EQU  H'0004'
-
-
-;----- UEP2 Bits -----------------------------------------------------
+;----- UEP0 Bits -----------------------------------------------------
 EPSTALL          EQU  H'0000'
 EPINEN           EQU  H'0001'
 EPOUTEN          EQU  H'0002'
@@ -1020,7 +979,47 @@ EPCONDIS         EQU  H'0003'
 EPHSHK           EQU  H'0004'
 
 
-;----- UEP0 Bits -----------------------------------------------------
+;----- UEP2 Bits -----------------------------------------------------
+EPSTALL          EQU  H'0000'
+EPINEN           EQU  H'0001'
+EPOUTEN          EQU  H'0002'
+EPCONDIS         EQU  H'0003'
+EPHSHK           EQU  H'0004'
+
+
+;----- UEP3 Bits -----------------------------------------------------
+EPSTALL          EQU  H'0000'
+EPINEN           EQU  H'0001'
+EPOUTEN          EQU  H'0002'
+EPCONDIS         EQU  H'0003'
+EPHSHK           EQU  H'0004'
+
+
+;----- UEP4 Bits -----------------------------------------------------
+EPSTALL          EQU  H'0000'
+EPINEN           EQU  H'0001'
+EPOUTEN          EQU  H'0002'
+EPCONDIS         EQU  H'0003'
+EPHSHK           EQU  H'0004'
+
+
+;----- UEP5 Bits -----------------------------------------------------
+EPSTALL          EQU  H'0000'
+EPINEN           EQU  H'0001'
+EPOUTEN          EQU  H'0002'
+EPCONDIS         EQU  H'0003'
+EPHSHK           EQU  H'0004'
+
+
+;----- UEP6 Bits -----------------------------------------------------
+EPSTALL          EQU  H'0000'
+EPINEN           EQU  H'0001'
+EPOUTEN          EQU  H'0002'
+EPCONDIS         EQU  H'0003'
+EPHSHK           EQU  H'0004'
+
+
+;----- UEP7 Bits -----------------------------------------------------
 EPSTALL          EQU  H'0000'
 EPINEN           EQU  H'0001'
 EPOUTEN          EQU  H'0002'
@@ -1260,8 +1259,8 @@ _CPUDIV_CLKDIV2  EQU  H'FFDF'    ; CPU system clock divided by 2
 _CPUDIV_CLKDIV3  EQU  H'FFEF'    ; CPU system clock divided by 3
 _CPUDIV_CLKDIV6  EQU  H'FFFF'    ; CPU system clock divided by 6
 
-_USBLSCLK_24MHz  EQU  H'FFBF'    ; System clock expects 24 MHz, FS/LS USB CLKEN's divide-by is set to 4.
-_USBLSCLK_48MHz  EQU  H'FFFF'    ; System clock expects 48 MHz, FS/LS USB CLKEN's divide-by is set to 8.
+_USBLSCLK_24MHz  EQU  H'FFBF'    ; System clock expects 24 MHz, FS/LS USB CLKENs divide-by is set to 4.
+_USBLSCLK_48MHz  EQU  H'FFFF'    ; System clock expects 48 MHz, FS/LS USB CLKENs divide-by is set to 8.
 
 _PLLMULT_4x      EQU  H'FF7F'    ; 4x Output Frequency Selected
 _PLLMULT_3x      EQU  H'FFFF'    ; 3x Output Frequency Selected
@@ -1272,8 +1271,8 @@ _PLLEN_ENABLED   EQU  H'FFFF'    ; 3x or 4x PLL Enabled
 _STVREN_OFF      EQU  H'FDFF'    ; Stack Overflow or Underflow will not cause a Reset
 _STVREN_ON       EQU  H'FFFF'    ; Stack Overflow or Underflow will cause a Reset
 
-_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (VBOR) set to 2.7V
-_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (VBOR) set to 2.4V
+_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (Vbor), high trip point selected.
+_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
 
 _LPBOR_ON        EQU  H'F7FF'    ; Low-Power BOR is enabled
 _LPBOR_OFF       EQU  H'FFFF'    ; Low-Power BOR is disabled

@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16LF720 processor include
 ; 
-;  (c) Copyright 1999-2011 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -432,6 +432,7 @@ WREN             EQU  H'0002'
 FREE             EQU  H'0004'
 LWLO             EQU  H'0005'
 CFGS             EQU  H'0006'
+
 
 
 
