@@ -1,3 +1,10 @@
+2011-07-03  Borut Razem  <borutr@users.sourceforge.net>
+  * header/p16c61.inc, header/p16c62.inc, header/p16c64.inc,
+    header/p16c65.inc, header/p16c73.inc, header/p16c74.inc,
+    header/p16c84.inc:
+    applied patch #3539706 - "Supplement to incomplete inc files.",
+    thanks to Molanr Karoly
+
 2011-07-02  Borut Razem  <borutr@users.sourceforge.net>
   * header/p16f1508.inc, header/p16f1783.inc, header/p16f1787.inc,
     header/p18f4520.inc, header/p18f26j11.inc, header/p18f46j11.inc,
@@ -125,7 +132,7 @@
     header/p18f43k20.inc, header/p18f64j11.inc, header/p18f8393.inc,
     header/p16f720.inc, header/p18f84j11.inc, header/p18c452.inc:
     applied patch #3539456 - "Update the inc files.",
-    tahnks to Molanr Karoly
+    thanks to Molanr Karoly
   * header/p10f320.inc, header/p10f322.inc, header/p10lf320.inc,
     header/p10lf322.inc, header/p12f1501.inc, header/p12f520.inc,
     header/p12f529t39a.inc, header/p12f529t48a.inc, header/p12f617.inc,
@@ -198,7 +205,7 @@
     lkr/Makefile.in: modified
     header/p16f5x.inc: removed
     applied patch #3539517 - "Support of new CPUs.",
-    tahnks to Molanr Karoly
+    thanks to Molanr Karoly
 
 2011-07-01  Borut Razem  <borutr@users.sourceforge.net>
   * p16c622.inc, p16cr84.inc, p16f616.inc, p16ce623.inc, p16f690.inc,
