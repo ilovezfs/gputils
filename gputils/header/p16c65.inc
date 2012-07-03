@@ -33,6 +33,7 @@
 ;==========================================================================
 
 ;       30 Jun 2012  Changed "OPTION Bits" to "OPTION_REG Bits".
+;       3 July 2012  Added definition of "_CONFIG1".
 ;;;; End: Added in gputils
 
 ;==========================================================================
@@ -289,9 +290,18 @@ TXD8                         EQU     H'0000'    ; Backward compatibility only
 ;==========================================================================
 ;
 ;       Configuration Bits
+;;;; Begin: Added in gputils
+;   NAME            Address
+;   CONFIG1           2007h
+;;;; End: Added in gputils
 ;
 ;==========================================================================
 
+;;;; Begin: Added in gputils
+_CONFIG1         EQU  H'2007'
+
+;----- CONFIG1 Options --------------------------------------------------
+;;;; End: Added in gputils
 _CP_ALL                      EQU     H'3F8F'
 _CP_75                       EQU     H'3F9F'
 _CP_50                       EQU     H'3FAF'

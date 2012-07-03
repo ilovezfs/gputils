@@ -33,6 +33,7 @@
 ;==========================================================================
 
 ;       30 Jun 2012  Changed "OPTION Bits" to "OPTION_REG Bits".
+;       3 July 2012  Added definition of "_CONFIG1".
 ;;;; End: Added in gputils
 
 ;==========================================================================
@@ -130,9 +131,18 @@ RD                           EQU     H'0000'
 ;==========================================================================
 ;
 ;       Configuration Bits
+;;;; Begin: Added in gputils
+;   NAME            Address
+;   CONFIG1           2007h
+;;;; End: Added in gputils
 ;
 ;==========================================================================
 
+;;;; Begin: Added in gputils
+_CONFIG1         EQU  H'2007'
+
+;----- CONFIG1 Options --------------------------------------------------
+;;;; End: Added in gputils
 _CP_ON                       EQU     H'3FEF'
 _CP_OFF                      EQU     H'3FFF'
 _PWRTE_ON                    EQU     H'3FFF'
