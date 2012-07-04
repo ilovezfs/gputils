@@ -1,6 +1,13 @@
 2011-07-04  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpprocessor.c.$$, lkr/*.lkr:
     lkr/*.lkr renamed to lkr/*_g.lkr, synchronized with MPLABx v1.20
+  * 12f683_g.lkr, 16c505_g.lkr, 16c771_g.lkr, 16f636_g.lkr,
+    16f639_g.lkr, 16f677_g.lkr, 16f684_g.lkr, 16f687_g.lkr,
+    16f716_g.lkr, 16f737_g.lkr, 16f747_g.lkr, 16f767_g.lkr,
+    16f777_g.lkr, 16f785_g.lkr, 16f818_g.lkr, 16f819_g.lkr,
+    16f916_g.lkr, 16f917_g.lkr, 16f946_g.lkr, 16hv785_g.lkr,
+    mcv08a_g.lkr, mcv14a_g.lkr, mcv18a_g.lkr, mcv28a_g.lkr,
+    ps500_g.lkr, ps810_g.lkr: synchronized with MPLABx v1.20
 
 2011-07-03  Borut Razem  <borutr@users.sourceforge.net>
   * header/p16c61.inc, header/p16c62.inc, header/p16c64.inc,
