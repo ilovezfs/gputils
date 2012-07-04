@@ -345,6 +345,7 @@ HEADER_FILES = \
 	p16f54.inc \
 	p16f57.inc \
 	p16f59.inc \
+	p16f5x.inc \
 	p16f610.inc \
 	p16f616.inc \
 	p16f627a.inc \
@@ -795,9 +796,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign header/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu header/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign header/Makefile
+	  $(AUTOMAKE) --gnu header/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
