@@ -166,6 +166,7 @@ HEADER_FILES =\
 	p16f54.inc \
 	p16f57.inc \
 	p16f59.inc \
+	p16f5x.inc \
 	p16f610.inc \
 	p16f616.inc \
 	p16f627a.inc \

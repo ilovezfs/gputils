@@ -8,6 +8,9 @@
     16f916_g.lkr, 16f917_g.lkr, 16f946_g.lkr, 16hv785_g.lkr,
     mcv08a_g.lkr, mcv14a_g.lkr, mcv18a_g.lkr, mcv28a_g.lkr,
     ps500_g.lkr, ps810_g.lkr: synchronized with MPLABx v1.20
+  * header/Makefile.am, patching file header/Makefile.in,
+    header/p16f5x.inc: applied the back-16f5x.inc.patch.tar.7z patch
+    #3539517 - "Support of new CPUs.", thanks to Molnar Karoly
 
 2011-07-03  Borut Razem  <borutr@users.sourceforge.net>
   * header/p16c61.inc, header/p16c62.inc, header/p16c64.inc,
