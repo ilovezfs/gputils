@@ -1,3 +1,7 @@
+2011-07-05  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpprocessor.c: added comment for devices not documented
+    by Microchip: 18f2681, 18f4681, 18f64j15 and 18f84j15
+
 2011-07-04  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpprocessor.c, lkr/*.lkr:
     lkr/*.lkr renamed to lkr/*_g.lkr, synchronized with MPLABx v1.20
