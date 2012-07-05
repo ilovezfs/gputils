@@ -448,7 +448,7 @@ static struct px pics[] = {
   { PROC_CLASS_PIC16E,  "__18F26K80", { "pic18f26k80", "p18f26k80", "18f26k80" }, 0xd680, 0, 0x60, 0xf003ff, { 0x10000, 0xefffff }, { 0x300000, 0x30000D }, "18f26k80_g.lkr"  },
   { PROC_CLASS_PIC16E,  "__18LF26K80",{ "pic18lf26k80","p18lf26k80","18lf26k80"}, 0xb680, 0, 0x60, 0xf003ff, { 0x10000, 0xefffff }, { 0x300000, 0x30000D }, "18lf26k80_g.lkr" },
   { PROC_CLASS_PIC16E,  "__18F2680",  { "pic18f2680",  "p18f2680",  "18f2680"  }, 0x2680, 0, 0x60, 0xf003ff, { 0x10000, 0xefffff }, { 0x300000, 0x30000D }, "18f2680_g.lkr"   },
-  { PROC_CLASS_PIC16E,  "__18F2681",  { "pic18f2681",  "p18f2681",  "18f2681"  }, 0x2681, 0, 0x60, -1,       { -1, -1 },            { -1, -1 },             "18f2681.lkr"     },
+  { PROC_CLASS_PIC16E,  "__18F2681",  { "pic18f2681",  "p18f2681",  "18f2681"  }, 0x2681, 0, 0x60, -1,       { -1, -1 },            { -1, -1 },             "18f2681.lkr"     }, /* not documented by Microchip, added in svn rev. #317, see http://osdir.com/ml/hardware.microcontrollers.gnupic/2008-05/msg00013.html */
   { PROC_CLASS_PIC16E,  "__18F2682",  { "pic18f2682",  "p18f2682",  "18f2682"  }, 0x2682, 0, 0x60, 0xf003ff, { 0x14000, 0xefffff }, { 0x300000, 0x30000D }, "18f2682_g.lkr"   },
   { PROC_CLASS_PIC16E,  "__18F2685",  { "pic18f2685",  "p18f2685",  "18f2685"  }, 0x2685, 0, 0x60, 0xf003ff, { 0x18000, 0xefffff }, { 0x300000, 0x30000D }, "18f2685_g.lkr"   },
   { PROC_CLASS_PIC16E,  "__18F27J13", { "pic18f27j13", "p18f27j13", "18f27j13" }, 0xd713, 0, 0x60, 0x1fff7,  { -1, -1 },            { 0x1FFF8, 0x1FFFF },   "18f27j13_g.lkr"  },
@@ -526,7 +526,7 @@ static struct px pics[] = {
   { PROC_CLASS_PIC16E,  "__18F4680",  { "pic18f4680",  "p18f4680",  "18f4680"  }, 0x4680, 0, 0x60, 0xf003ff, { 0x10000, 0xefffff }, { 0x300000, 0x30000D }, "18f4680_g.lkr"   },
   { PROC_CLASS_PIC16E,  "__18F46K80", { "pic18f46k80", "p18f46k80", "18f46k80" }, 0xd68c, 0, 0x60, 0xf003ff, { 0x10000, 0xefffff }, { 0x300000, 0x30000D }, "18f46k80_g.lkr"  },
   { PROC_CLASS_PIC16E,  "__18LF46K80",{ "pic18lf46k80","p18lf46k80","18lf46k80"}, 0xb68a, 0, 0x60, 0xf003ff, { 0x10000, 0xefffff }, { 0x300000, 0x30000D }, "18lf46k80_g.lkr" },
-  { PROC_CLASS_PIC16E,  "__18F4681",  { "pic18f4681",  "p18f4681",  "18f4681"  }, 0x4681, 0, 0x60, -1,       { -1, -1 },            { -1, -1 },             "18f4681.lkr"     },
+  { PROC_CLASS_PIC16E,  "__18F4681",  { "pic18f4681",  "p18f4681",  "18f4681"  }, 0x4681, 0, 0x60, -1,       { -1, -1 },            { -1, -1 },             "18f4681.lkr"     }, /* not documented by Microchip, added in svn rev. #317, see http://osdir.com/ml/hardware.microcontrollers.gnupic/2008-05/msg00013.html */
   { PROC_CLASS_PIC16E,  "__18F4682",  { "pic18f4682",  "p18f4682",  "18f4682"  }, 0x4682, 0, 0x60, 0xf003ff, { 0x14000, 0xefffff }, { 0x300000, 0x30000D }, "18f4682_g.lkr"   },
   { PROC_CLASS_PIC16E,  "__18F4685",  { "pic18f4685",  "p18f4685",  "18f4685"  }, 0x4685, 0, 0x60, 0xf003ff, { 0x18000, 0xefffff }, { 0x300000, 0x30000D }, "18f4685_g.lkr"   },
   { PROC_CLASS_PIC16E,  "__18F47J13", { "pic18f47j13", "p18f47j13", "18f47j13" }, 0xe713, 0, 0x60, 0x1fff7,  { -1, -1 },            { 0x1FFF8, 0x1FFFF },   "18f47j13_g.lkr"  },
@@ -541,7 +541,7 @@ static struct px pics[] = {
   { PROC_CLASS_PIC16E,  "__18F6393",  { "pic18f6393",  "p18f6393",  "18f6393"  }, 0x6393, 0, 0x60, 0x1fffff, { -1, -1 },            { 0x300000, 0x30000C }, "18f6393_g.lkr"   },
   { PROC_CLASS_PIC16E,  "__18F6410",  { "pic18f6410",  "p18f6410",  "18f6410"  }, 0x6410, 0, 0x60, 0x3fff,   { -1, -1 },            { 0x300000, 0x30000C }, "18f6410_g.lkr"   },
   { PROC_CLASS_PIC16E,  "__18F64J11", { "pic18f64j11", "p18f64j11", "18f64j11" }, 0x6411, 0, 0x60, 0x1fffff, { -1, -1 },            { 0x3FF8, 0x3FFD },     "18f64j11_g.lkr"  },
-  { PROC_CLASS_PIC16E,  "__18F64J15", { "pic18f64j15", "p18f64j15", "18f64j15" }, 0xb415, 0, 0x60, -1,       { -1, -1 },            { -1, -1 },             "18f64j15.lkr"    },
+  { PROC_CLASS_PIC16E,  "__18F64J15", { "pic18f64j15", "p18f64j15", "18f64j15" }, 0xb415, 0, 0x60, -1,       { -1, -1 },            { -1, -1 },             "18f64j15.lkr"    }, /* not documented by Microchip, added in svn rev. #378, see http://osdir.com/ml/hardware.microcontrollers.gnupic/2008-05/msg00013.html */
   { PROC_CLASS_PIC16E,  "__18F6490",  { "pic18f6490",  "p18f6490",  "18f6490"  }, 0x6490, 0, 0x60, 0x3fff,   { -1, -1 },            { 0x300000, 0x30000C }, "18f6490_g.lkr"   },
   { PROC_CLASS_PIC16E,  "__18F64J90", { "pic18f64j90", "p18f64j90", "18f64j90" }, 0xb490, 0, 0x60, 0x1fffff, { -1, -1 },            { 0x3FF8, 0x3FFD },     "18f64j90_g.lkr"  },
   { PROC_CLASS_PIC16E,  "__18F6493",  { "pic18f6493",  "p18f6493",  "18f6493"  }, 0x6493, 0, 0x60, 0x1fffff, { -1, -1 },            { 0x300000, 0x30000C }, "18f6493_g.lkr"   },
@@ -600,7 +600,7 @@ static struct px pics[] = {
   { PROC_CLASS_PIC16E,  "__18F8393",  { "pic18f8393",  "p18f8393",  "18f8393"  }, 0x8393, 0, 0x60, 0x1fffff, { -1, -1 },            { 0x300000, 0x30000C }, "18f8393_g.lkr"   },
   { PROC_CLASS_PIC16E,  "__18F8410",  { "pic18f8410",  "p18f8410",  "18f8410"  }, 0x8410, 0, 0x60, 0x3fff,   { -1, -1 },            { 0x300000, 0x30000C }, "18f8410_g.lkr"   },
   { PROC_CLASS_PIC16E,  "__18F84J11", { "pic18f84j11", "p18f84j11", "18f84j11" }, 0x8411, 0, 0x60, 0x1fffff, { -1, -1 },            { 0x3FF8, 0x3FFD },     "18f84j11_g.lkr"  },
-  { PROC_CLASS_PIC16E,  "__18F84J15", { "pic18f84j15", "p18f84j15", "18f84j15" }, 0xc415, 0, 0x60, -1,       { -1, -1 },            { -1, -1 },             "18f84j15.lkr"    },
+  { PROC_CLASS_PIC16E,  "__18F84J15", { "pic18f84j15", "p18f84j15", "18f84j15" }, 0xc415, 0, 0x60, -1,       { -1, -1 },            { -1, -1 },             "18f84j15.lkr"    }, /* not documented by Microchip, added in svn rev. #378, see http://osdir.com/ml/hardware.microcontrollers.gnupic/2008-05/msg00013.html */
   { PROC_CLASS_PIC16E,  "__18F8490",  { "pic18f8490",  "p18f8490",  "18f8490"  }, 0x8490, 0, 0x60, 0x3fff,   { -1, -1 },            { 0x300000, 0x30000C }, "18f8490_g.lkr"   },
   { PROC_CLASS_PIC16E,  "__18F84J90", { "pic18f84j90", "p18f84j90", "18f84j90" }, 0xc490, 0, 0x60, 0x1fffff, { -1, -1 },            { 0x3FF8, 0x3FFD },     "18f84j90_g.lkr"  },
   { PROC_CLASS_PIC16E,  "__18F8493",  { "pic18f8493",  "p18f8493",  "18f8493"  }, 0x8493, 0, 0x60, 0x1fffff, { -1, -1 },            { 0x300000, 0x30000C }, "18f8493_g.lkr"   },
