@@ -1,3 +1,12 @@
+2012-07-07 Borut Razem <borut.razem AT siol.net>
+	* tools/cmp_gp_mp.sh:
+	  detection of changed .inc files with gputils specific
+	  modifications (lines starting with '@@@'),
+	  detection of devices from gpprocessor.c in lkr folder,
+	  detection of .lkr from lkr folder in gpprocessor.c,
+	  detection of devices from gpprocessor.c in header folder,
+	  added command line options
+
 2012-07-01 Borut Razem <borut.razem AT siol.net>
 	* tools/cmp_gp_mp.sh: added script to compare gputils and
 	  mplabx .inc and .lkr files

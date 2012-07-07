@@ -33,7 +33,7 @@ then
   GPUTILS_PATH=/cygdrive/c/svn_snapshots/gputils/gputils/gputils
 else
   MPLABX_PATH=/opt/microchip/mplabx
-  GPUTILS_PATH=~/svn_snapshots/gputils/gputils
+  GPUTILS_PATH=$HOME/svn_snapshots/gputils/gputils
 fi
 
 MPLABX_INC=$MPLABX_PATH/mpasmx
@@ -45,8 +45,16 @@ GPUTILS_LKR=$GPUTILS_PATH/lkr
 #usage
 usage()
 {
-  echo "Usage: $(basename $0)"
+  echo "Usage: $(basename $0) [-mi] [-ml] [-pl] [-lp] [-pi]"
   echo "Compare gputils and mplabx .inc and .lkr files."
+  echo "Options:"
+  echo "  -mi     mplabx .inc files in header folder"
+  echo "  -ml     mplabx .lkr files in lkr folder"
+  echo "  -pl     devices from gpprocessor.c in lkr folder"
+  echo "  -lp     .lkr from lkr folder in gpprocessor.c"
+  echo "  -pi     devices from gpprocessor.c in header folder"
+  echo "  -all    same as -mi -ml -pl -lp -pi"
+  echo "  <none>  same as -mi -ml"
   exit 1
 }
 
@@ -101,14 +109,32 @@ gpspec()
   fi
 }
 
-# main compare procedure
-do_cmp()
+# extract .lkr files from gpprocessor.c
+lkr_from_proc()
 {
-  # compare .inc files
-  local equ=0 equ_spec=0 diff=0 no_ex=0
+  sed -n -e 's/^.*,  *"\([^"]*\)" *},$/\1/p' < $GPUTILS_PATH/libgputils/gpprocessor.c
+}
+
+# extract device name from gpprocessor.c
+dev_from_proc()
+{
+  local devs='' dev names i
+
+#  { PROC_CLASS_PIC12,   "__12F529T48A", { "pic12f529t48a", "p12f529t48a", "12f529t48a" }, 0xa548, 2, 8, 0x5ff, { -1, -1 },       { 0xFFF, 0xFFF },       "12f529t48a_g.lkr"   },
+  case $1 in
+  0) sed -n -e 's/  *{[^,]*,[^,]*, *{ *"\([^"]*\)" *, *"[^"]*" *, *"[^"]*" *}.*/\1/p' < $GPUTILS_PATH/libgputils/gpprocessor.c;;
+  1) sed -n -e 's/  *{[^,]*,[^,]*, *{ *"[^"]*" *, *"\([^"]*\)" *, *"[^"]*" *}.*/\1/p' < $GPUTILS_PATH/libgputils/gpprocessor.c;;
+  2) sed -n -e 's/  *{[^,]*,[^,]*, *{ *"[^"]*" *, *"[^"]*" *, *"\([^"]*\)" *}.*/\1/p' < $GPUTILS_PATH/libgputils/gpprocessor.c;;
+  esac
+}
+
+# compare .inc with mplabx
+cmp_mp_inc()
+{
+  local equ=0 equ_spec=0 diff=0 diff_spec=0 no_ex=0
   local mpp mpf gpp gpf
 
-  echo ".inc files:"
+  echo "mplabx .inc files in header folder:"
   for mpp in "$MPLABX_INC"/*.[Ii][Nn][Cc]
   do
     mpf=$(basename "$mpp")
@@ -129,8 +155,14 @@ do_cmp()
           echo "### $gpf is up to date with gputils specifics."
           equ_spec=$(expr $equ_spec + 1)
         else
-          echo "--- $gpf differs."
-          diff=$(expr $diff + 1)
+          if grep '^;;;; Begin:' $gpf > /dev/null 2>&1
+          then
+            echo "@@@ $gpf differs with gputils specifics."
+            diff_spec=$(expr $diff_spec + 1)
+          else
+            echo "--- $gpf differs."
+            diff=$(expr $diff + 1)
+          fi
         fi
       fi
     else
@@ -143,16 +175,18 @@ do_cmp()
   echo "Up to date: $equ"
   echo "Up to date gp spec: $equ_spec"
   echo "Different: $diff"
+  echo "Different gp spec: $diff_spec"
   echo "Non existing: $no_ex"
   echo
+}
 
-  # compare .lkr files
-  equ=0
-  diff=0
-  no_ex=0
-  equ_spec=0
+# compare .lkr with mplabx
+cmp_mp_lkr()
+{
+  local equ=0 old=0 diff=0 no_ex=0
+  local mpp mpf gpp gpf
 
-  echo ".lkr files:"
+  echo "mplabx .lkr files in lkr folder:"
   for mpp in "$MPLABX_LKR"/*.[Ll][Kk][Rr]
   do
     mpf=$(basename "$mpp")
@@ -175,7 +209,7 @@ do_cmp()
       if ls ${gpp%_g.lkr}.lkr > /dev/null 2>&1
       then
         echo "??? old version: $(basename $(ls ${gpp%_g.lkr}.lkr))"
-        equ_spec=$(expr $equ_spec + 1)
+        old=$(expr $old + 1)
       else
         echo "!!! $gpf does not exist in gputils."
         no_ex=$(expr $no_ex + 1)
@@ -187,12 +221,102 @@ do_cmp()
   echo "Up to date: $equ"
   echo "Different: $diff"
   echo "Non existing: $no_ex"
-  echo "Old version: $equ_spec"
+  echo "Old version: $old"
+  echo
 }
 
-test $# = 0 || usage
+# is elemant in the list
+is_in()
+{
+  local e=$1 l
+
+  shift
+  l=$*
+
+  for i in $l
+  do
+    if [ $i = $e ]
+    then
+      return 0
+    fi
+  done
+  return 1
+}
+    
+# compare gpproccessor.c  with lkr
+cmp_pl()
+{
+  local f n
+
+  echo "devices from gpprocessor.c in lkr folder:"
+  for f in $(lkr_from_proc)
+  do
+    if [ ! -e $GPUTILS_LKR/$f ]
+    then
+      n=$(echo $f | sed -e 's/^\([^.]*\)\.lkr/\1/' -e 's/^\([^_]*\)_.*/\1/' -e 's/^\([^_]*\)_.*/\1/' -e 's/^\([^i]*\)i.*/\1/')
+      echo "%%% $GPUTILS_LKR/$f does not exist. Similar: " $(ls $GPUTILS_LKR/$n* 2> /dev/null)
+    fi
+  done
+  echo
+}
+
+# compare lkr with gpproccessor.c
+cmp_lp()
+{
+  local f
+
+  echo ".lkr from lkr folder in gpprocessor.c:"
+  for f in $GPUTILS_LKR/*.lkr
+  do
+    if ! is_in $(basename $f) $(lkr_from_proc)
+    then
+      echo "$f not in gpprocessor.c!"
+    fi
+  done
+  echo
+}
+
+# compare gpproccessor.c with header
+cmp_pi()
+{
+  local f n
+
+  # check .inc files
+  echo "devices from gpprocessor.c in header folder:"
+  for f in $(dev_from_proc 1)
+  do
+    n=${f}.inc
+    if [ ! -e $GPUTILS_INC/$n ]
+    then
+      echo "*** $GPUTILS_INC/$n does not exist."
+    fi
+  done
+  echo
+}
+
+# main procrdure
+for arg in $*
+do
+  case $arg
+  in
+  -mi) mi=1; has_opt=1;;
+  -ml) ml=1; has_opt=1;;
+  -pl) pl=1; has_opt=1;;
+  -lp) lp=1; has_opt=1;;
+  -pi) pi=1; has_opt=1;;
+  -all) mi=1; ml=1; pl=1; lp=1; pi=1;;
+  -*) echo "Unknown option $arg!"; usage; exit 1;;
+  *) usage; exit 1;;
+  esac
+done
+
+test -z "$has_opt" && ml=1 && mp=1
 
 # execute main compare procedure
-do_cmp
+test -n "$mi" && cmp_mp_inc
+test -n "$ml" && cmp_mp_lkr
+test -n "$pl" && cmp_pl
+test -n "$lp" && cmp_lp
+test -n "$pi" && cmp_pi
 
 exit 0
