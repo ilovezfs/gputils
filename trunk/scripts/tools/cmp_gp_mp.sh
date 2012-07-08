@@ -42,19 +42,24 @@ MPLABX_LKR=$MPLABX_PATH/mpasmx/LKR
 GPUTILS_INC=$GPUTILS_PATH/header
 GPUTILS_LKR=$GPUTILS_PATH/lkr
 
+# diff ignore space change and ignore space change
+BLANK_OPTS=
+
 #usage
 usage()
 {
   echo "Usage: $(basename $0) [-mi] [-ml] [-pl] [-lp] [-pi]"
   echo "Compare gputils and mplabx .inc and .lkr files."
   echo "Options:"
-  echo "  -mi     mplabx .inc files in header folder"
-  echo "  -ml     mplabx .lkr files in lkr folder"
-  echo "  -pl     devices from gpprocessor.c in lkr folder"
-  echo "  -lp     .lkr from lkr folder in gpprocessor.c"
-  echo "  -pi     devices from gpprocessor.c in header folder"
-  echo "  -all    same as -mi -ml -pl -lp -pi"
-  echo "  <none>  same as -mi -ml"
+  echo "  -mi       mplabx .inc files in header folder"
+  echo "  -ml       mplabx .lkr files in lkr folder"
+  echo "  -pl       devices from gpprocessor.c in lkr folder"
+  echo "  -lp       .lkr from lkr folder in gpprocessor.c"
+  echo "  -pi       devices from gpprocessor.c in header folder"
+  echo "  -all      same as -mi -ml -pl -lp -pi"
+  echo "  <none>    same as -mi -ml"
+  echo "  --strict  don't ignore blank line and spaces during comparison"
+  echo "  -h --help print this usage and exit" 
   exit 1
 }
 
@@ -145,7 +150,7 @@ cmp_mp_inc()
 
     if [ -e "$gpp" ]
     then
-      if diff --strip-trailing-cr --brief "$gpp" "$mpp" > /dev/null
+      if diff $BLANK_OPTS --strip-trailing-cr --brief "$gpp" "$mpp" > /dev/null
       then
         echo "+++ $gpf is up to date."
         equ=$(expr $equ + 1)
@@ -197,7 +202,7 @@ cmp_mp_lkr()
 
     if [ -e "$gpp" ]
     then
-      if diff --strip-trailing-cr --brief "$gpp" "$mpp" > /dev/null
+      if diff $BLANK_OPTS --strip-trailing-cr --brief "$gpp" "$mpp" > /dev/null
       then
         echo "+++ $gpf is up to date."
         equ=$(expr $equ + 1)
@@ -305,12 +310,16 @@ do
   -lp) lp=1; has_opt=1;;
   -pi) pi=1; has_opt=1;;
   -all) mi=1; ml=1; pl=1; lp=1; pi=1;;
+  --strict) strict=1;;
+  -h|--help) usage; exit 0;;
   -*) echo "Unknown option $arg!"; usage; exit 1;;
   *) usage; exit 1;;
   esac
 done
 
-test -z "$has_opt" && ml=1 && mp=1
+test -z "$has_opt" && mi=1 && ml=1
+
+test -n "$strict" && BLANK_OPTS='--ignore-space-change --ignore-blank-lines'
 
 # execute main compare procedure
 test -n "$mi" && cmp_mp_inc

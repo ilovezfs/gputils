@@ -1,3 +1,7 @@
+2012-07-08 Borut Razem <borut.razem AT siol.net>
+	* tools/cmp_gp_mp.sh:
+	  added command line options --strict, --help and -h
+
 2012-07-07 Borut Razem <borut.razem AT siol.net>
 	* tools/cmp_gp_mp.sh:
 	  detection of changed .inc files with gputils specific
