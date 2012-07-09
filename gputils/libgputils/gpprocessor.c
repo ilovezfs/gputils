@@ -773,7 +773,7 @@ pic_processor_t
 gp_processor_coff_proc(unsigned long coff_type)
 {
   int i;
-  pic_processor_t processor = no_processor;
+  pic_processor_t processor = NULL;
 
   for (i = 0; i < NUM_PICS; i++) {
     if (pics[i].coff_type == coff_type) {

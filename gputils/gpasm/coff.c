@@ -94,10 +94,12 @@ _update_reloc_ptr(void)
       while (symbol != NULL) {
         if (reloc->symbol_number == symbol->number) {
           reloc->symbol = symbol;
-          break;
+          goto l1;
         }
         symbol = symbol->next;
       }
+      assert(0);
+    l1:
       reloc = reloc->next;
     }
     section = section->next;
@@ -317,7 +319,7 @@ coff_new_section(const char *name, int addr, int flags)
    the coff is written the symbol pointer is updated. */
 
 void
-coff_reloc(int symbol, short offset, unsigned short type)
+coff_reloc(int symbol, short offset, enum gpasmValTypes type)
 {
   gp_reloc_type *new = NULL;
   int origin;

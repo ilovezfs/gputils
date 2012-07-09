@@ -152,7 +152,7 @@ _read_opt_header(gp_object_type *object, const unsigned char *file)
   offset += 4;
 
   object->processor = gp_processor_coff_proc(proc_code);
-  if (object->processor == no_processor) {
+  if (!object->processor) {
     /* Fallback to a generic processor of matching rom width */
     switch(rom_width) {
     case 8: object->processor = gp_find_processor("pic18cxx"); break;
@@ -160,7 +160,7 @@ _read_opt_header(gp_object_type *object, const unsigned char *file)
     case 14: object->processor = gp_find_processor("pic16cxx"); break;
     case 16: object->processor = gp_find_processor("pic17cxx"); break;
     }
-    if (object->processor == no_processor)
+    if (!object->processor)
       gp_error("invalid processor type (%#04lx) in \"%s\"",
                proc_code,
                object->filename);

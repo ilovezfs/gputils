@@ -36,9 +36,9 @@ void select_processor(char *name)
     found = gp_find_processor(name);
     if (found) {
       int badrom_idx;
-      if (state.processor == no_processor) {
+      if (!state.processor) {
         state.processor = found;
-           state.maxrom = found->maxrom;
+        state.maxrom = found->maxrom;
         /* initialize badrom from internal processor info */
         state.badrom = NULL;
         for (badrom_idx = 0; badrom_idx < MAX_BADROM; badrom_idx+=2) {
@@ -71,7 +71,7 @@ void select_processor(char *name)
     }
     /* load the instruction sets if necessary */
     if ((state.processor_chosen == 0) &&
-        (state.processor != no_processor)) {
+        (state.processor)) {
       opcode_init(1);   /* General directives */
       /* seperate the directives from the opcodes */
       state.stBuiltin = push_symbol_table(state.stBuiltin, true);

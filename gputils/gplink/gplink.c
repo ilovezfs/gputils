@@ -428,7 +428,7 @@ init(void)
   gp_date_string(state.startdate, sizeof(state.startdate));
   state.hex_format = inhx32;
   state.numpaths = 0;
-  state.processor = no_processor;
+  state.processor = NULL;
   state.optimize.level = 1;
   state.codfile = normal;
   state.hexfile = normal;
@@ -697,7 +697,7 @@ linker(void)
     char file_name[BUFSIZ];
     const char *script_name;
 
-    assert(state.processor != no_processor);
+    assert(state.processor);
     script_name = gp_processor_script(state.processor);
     if (script_name == NULL) {
       gp_error("linker script not specified and can't determine default script");

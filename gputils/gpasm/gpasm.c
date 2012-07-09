@@ -119,7 +119,7 @@ init(void)
   state.num.warnings_suppressed = 0;
   state.num.messages_suppressed = 0;
 
-  state.processor = no_processor;
+  state.processor = NULL;
   state.processor_chosen = 0;
 
   state.cod.enabled = false;
@@ -418,6 +418,15 @@ assemble(void)
   cod_init();
   deps_init();
   lst_init();
+
+  /* reset the processor for 2nd pass */
+  state.processor = NULL;
+  state.processor_chosen = 0;
+  state.cmd_line.processor = false;
+  if (cmd_processor) {
+    select_processor(processor_name);
+    state.cmd_line.processor = true;
+  }
 
   open_src(state.srcfilename, 0);
   if (!gp_debug_disable) {
