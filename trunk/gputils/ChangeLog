@@ -1,3 +1,10 @@
+2011-07-09  Borut Razem  <borutr@users.sourceforge.net>
+  * gplink/gplink.c, gputils/gpdasm.c, libgputils/gpreadobj.c,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.h, gpasm/gpasm.c,
+    gpasm/directive.c, gpasm/processor.c, gpasm/evaluate.c,
+    gpasm/coff.c, gpasm/coff.h:
+    fixed bug #3539481 - Segmentation fault generating COFF file
+
 2011-07-05  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpprocessor.c: added comment for devices not documented
     by Microchip: 18f2681, 18f4681, 18f64j15 and 18f84j15

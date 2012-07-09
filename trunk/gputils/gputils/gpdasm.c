@@ -27,7 +27,7 @@ Boston, MA 02111-1307, USA.  */
 char *processor_name = NULL;
 
 struct gpdasm_state state = {
-  no_processor,         /* processor type */
+  NULL,                 /* processor type */
   PROC_CLASS_GENERIC,   /* 12 bit device */
   1                     /* output format */
 };

@@ -102,7 +102,6 @@ extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices 
 #define IS_16BIT_CORE (state.device.class == PROC_CLASS_PIC16E)
 
 typedef const struct px *pic_processor_t;
-#define no_processor ((const struct px *)0)
 
 #define MAX_NAMES 3 /* Maximum number of names a processor can have */
 #define MAX_BADROM (1*2) /* Maximum number of BADROM ranges a processor can be */

@@ -423,7 +423,6 @@ set_bankisel(int address)
     /* movlb bank */
     emit(0xb800 | gp_processor_check_bank(state.device.class, address));
   }
-
 }
 
 static gpasmVal do_bankisel(gpasmVal r,
@@ -471,6 +470,11 @@ static gpasmVal do_banksel(gpasmVal r,
   int address;
   int bank;
   int num_reloc;
+
+  if (!state.processor) {
+    gperror(GPE_UNDEF_PROC, NULL);
+    return r;
+  }
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
@@ -699,8 +703,15 @@ static gpasmVal do_config(gpasmVal r,
   int ca;
   int value;
 
+
+  if (!state.processor) {
+    gperror(GPE_UNDEF_PROC, NULL);
+    return r;
+  }
+
   config_us_used = true;
-  if(config_16_used) {
+
+  if (config_16_used) {
     gperror(GPE_CONFIG_usCONFIG, NULL);
     return r;
   }
@@ -1389,7 +1400,7 @@ static gpasmVal do_direct(gpasmVal r,
       direct_command = value;
     }
 
-    p= HEAD(TAIL(parms));
+    p = HEAD(TAIL(parms));
     if (p->tag == string) {
       if (strlen(p->value.string) < 255) {
         direct_string = convert_escaped_char(p->value.string,'"');
@@ -1926,6 +1937,11 @@ static gpasmVal do_idlocs(gpasmVal r,
   unsigned int id_location;
   unsigned int idreg;
 
+  if (!state.processor) {
+    gperror(GPE_UNDEF_PROC, NULL);
+    return r;
+  }
+
   id_location = gp_processor_id_location(state.processor);
   if (id_location == 0) {
     gperror(GPE_ILLEGAL_DIR, NULL);
@@ -2455,6 +2471,11 @@ static gpasmVal _do_pagesel(gpasmVal r,
   int num_reloc;
   int use_wreg = 0;
 
+  if (!state.processor) {
+    gperror(GPE_UNDEF_PROC, NULL);
+    return r;
+  }
+
   if ((reloc_type == RELOCT_PAGESEL_WREG) ||
       (state.device.class == PROC_CLASS_PIC16)) {
     use_wreg = 1;
@@ -2466,7 +2487,7 @@ static gpasmVal _do_pagesel(gpasmVal r,
     /* do nothing */
     return r;
   }
-  
+
   if (state.processor->num_pages == 1) {
     gpmessage(GPM_EXTPAGE, NULL);
     /* do nothing */
@@ -3480,7 +3501,6 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
           emit_check(i->opcode, reloc_evaluate(HEAD(parms), RELOCT_FF1), 0xfff);
           emit_check(0xf000, reloc_evaluate(HEAD(TAIL(parms)), RELOCT_FF2), 0xfff);
-
         }
         break;
 
@@ -4125,9 +4145,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
         }
       }
     } else {
-
       if (asm_enabled()) {
-        if (state.processor_chosen == 0){
+        if (state.processor_chosen == 0) {
           gperror(GPE_UNDEF_PROC, NULL);
         } else {
           char mesg[80];
@@ -4135,7 +4154,6 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           gperror(GPE_UNKNOWN, mesg);
         }
       }
-
     }
   }
 

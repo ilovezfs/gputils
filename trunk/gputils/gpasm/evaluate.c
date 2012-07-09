@@ -405,7 +405,7 @@ int count_reloc(struct pnode *p)
    [UPPER|HIGH|LOW]([<relocatable symbol>] + [<offset>]) */
 
 static void
-add_reloc(struct pnode *p, short offset, unsigned short type)
+add_reloc(struct pnode *p, short offset, enum gpasmValTypes type)
 {
   char *string = NULL;
   struct symbol *s = NULL;
