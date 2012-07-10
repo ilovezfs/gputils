@@ -169,8 +169,10 @@ AADPRE           EQU  H'0716'
 AADACQ           EQU  H'0717'
 AADGRD           EQU  H'0718'
 AADCAP           EQU  H'0719'
+AADRES0          EQU  H'071A'
 AADRES0L         EQU  H'071A'
 AADRES0H         EQU  H'071B'
+AADRES1          EQU  H'071C'
 AADRES1L         EQU  H'071C'
 AADRES1H         EQU  H'071D'
 
@@ -754,7 +756,7 @@ ADFM             EQU  H'0007'
 ;----- AADCON2 Bits -----------------------------------------------------
 TRIGSEL0         EQU  H'0004'
 TRIGSEL1         EQU  H'0005'
-TRIGLEL2         EQU  H'0006'
+TRIGSEL2         EQU  H'0006'
 
 
 ;----- AADCON3 Bits -----------------------------------------------------

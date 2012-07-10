@@ -150,7 +150,7 @@ IOCAP            EQU  H'0391'
 IOCAN            EQU  H'0392'
 IOCAF            EQU  H'0393'
 CLKRCON          EQU  H'039A'
-STCON            EQU  H'039B'
+ACTCON           EQU  H'039B'
 
 ;-----Bank12------------------
 PWM1DCL          EQU  H'0611'
@@ -277,7 +277,7 @@ TMR1GIF          EQU  H'0007'
 
 
 ;----- PIR2 Bits -----------------------------------------------------
-STIF             EQU  H'0001'
+ACTIF            EQU  H'0001'
 USBIF            EQU  H'0002'
 BCL1IF           EQU  H'0003'
 C1IF             EQU  H'0005'
@@ -344,7 +344,7 @@ TMR1GIE          EQU  H'0007'
 
 
 ;----- PIE2 Bits -----------------------------------------------------
-STIE             EQU  H'0001'
+ACTIE            EQU  H'0001'
 USBIE            EQU  H'0002'
 BCL1IE           EQU  H'0003'
 C1IE             EQU  H'0005'
@@ -756,12 +756,12 @@ CLKRCD0          EQU  H'0003'
 CLKRCD1          EQU  H'0004'
 
 
-;----- STCON Bits -----------------------------------------------------
-STFAIL           EQU  H'0001'
-STLOCK           EQU  H'0003'
-STSRC            EQU  H'0004'
-STUD             EQU  H'0006'
-STON             EQU  H'0007'
+;----- ACTCON Bits -----------------------------------------------------
+ACTORS           EQU  H'0001'
+ACTLOCK          EQU  H'0003'
+ACTSRC           EQU  H'0004'
+ACTUD            EQU  H'0006'
+ACTEN            EQU  H'0007'
 
 
 ;----- PWM1DCL Bits -----------------------------------------------------
@@ -1119,8 +1119,7 @@ Z                EQU  H'0002'
        __BADRAM  H'000F'
        __BADRAM  H'0010'
        __BADRAM  H'0013'-H'0014'
-       __BADRAM  H'001D'-H'001E'
-       __BADRAM  H'001F'
+       __BADRAM  H'001D'-H'001F'
        __BADRAM  H'008D'
        __BADRAM  H'008F'
        __BADRAM  H'0090'
@@ -1141,8 +1140,7 @@ Z                EQU  H'0002'
        __BADRAM  H'0394'-H'0399'
        __BADRAM  H'039C'-H'039F'
        __BADRAM  H'040C'-H'041F'
-       __BADRAM  H'048C'-H'0497'
-       __BADRAM  H'0498'-H'049F'
+       __BADRAM  H'048C'-H'049F'
        __BADRAM  H'050C'-H'051F'
        __BADRAM  H'058C'-H'059F'
        __BADRAM  H'060C'-H'0610'
@@ -1184,8 +1182,8 @@ Z                EQU  H'0002'
        __BADRAM  H'0E20'-H'0E6F'
        __BADRAM  H'0E8C'-H'0E8D'
        __BADRAM  H'0EA0'-H'0EEF'
-       __BADRAM  H'0F0C'-H'0F0E'
-       __BADRAM  H'0F0F'-H'0F6F'
+       __BADRAM  H'0F0C'-H'0F1F'
+       __BADRAM  H'0F20'-H'0F6F'
        __BADRAM  H'0F8E'-H'0F90'
        __BADRAM  H'0F92'-H'0F94'
        __BADRAM  H'0F98'-H'0F9B'

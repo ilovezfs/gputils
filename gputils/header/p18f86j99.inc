@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-;  MPASM PIC18F97J94 processor include
+;  MPASM PIC18F86J99 processor include
 ; 
 ;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
 ;==========================================================================
@@ -10,16 +10,16 @@
 
 ;==========================================================================
 ;  This header file defines configurations, registers, and other useful
-;  bits of information for the PIC18F97J94 microcontroller.  These names
+;  bits of information for the PIC18F86J99 microcontroller.  These names
 ;  are taken to match the data sheets as closely as possible.
 ;
 ;  Note that the processor must be selected before this file is included.
 ;  The processor may be selected the following ways:
 ;
 ;       1. Command line switch:
-;               C:\MPASM MYFILE.ASM /PIC18F97J94
+;               C:\MPASM MYFILE.ASM /PIC18F86J99
 ;       2. LIST directive in the source file
-;               LIST   P=PIC18F97J94
+;               LIST   P=PIC18F86J99
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
@@ -29,7 +29,7 @@
 ;       Verify Processor
 ;
 ;==========================================================================
-        IFNDEF __18F97J94
+        IFNDEF __18F86J99
            MESSG "Processor-header file mismatch.  Verify selected processor."
         ENDIF
 
@@ -318,12 +318,6 @@ REFO1CON2        EQU  H'0EE0'
 REFO1CON1        EQU  H'0EE1'
 REFO1CON         EQU  H'0EE2'
 MEMCON           EQU  H'0EE3'
-PORTL            EQU  H'0EE4'
-LATL             EQU  H'0EE5'
-TRISL            EQU  H'0EE6'
-PORTK            EQU  H'0EE7'
-LATK             EQU  H'0EE8'
-TRISK            EQU  H'0EE9'
 ODCON2           EQU  H'0EEA'
 ODCON1           EQU  H'0EEB'
 MDCARL           EQU  H'0EEC'
@@ -2520,72 +2514,6 @@ WAIT0            EQU  H'0004'
 WAIT1            EQU  H'0005'
 
 
-;----- PORTL Bits -----------------------------------------------------
-RL0              EQU  H'0000'
-RL1              EQU  H'0001'
-RL2              EQU  H'0002'
-RL3              EQU  H'0003'
-RL4              EQU  H'0004'
-RL5              EQU  H'0005'
-RL6              EQU  H'0006'
-RL7              EQU  H'0007'
-
-
-;----- LATL Bits -----------------------------------------------------
-LATL0            EQU  H'0000'
-LATL1            EQU  H'0001'
-LATL2            EQU  H'0002'
-LATL3            EQU  H'0003'
-LATL4            EQU  H'0004'
-LATL5            EQU  H'0005'
-LATL6            EQU  H'0006'
-LATL7            EQU  H'0007'
-
-
-;----- TRISL Bits -----------------------------------------------------
-TRISL0           EQU  H'0000'
-TRISL1           EQU  H'0001'
-TRISL2           EQU  H'0002'
-TRISL3           EQU  H'0003'
-TRISL4           EQU  H'0004'
-TRISL5           EQU  H'0005'
-TRISL6           EQU  H'0006'
-TRISL7           EQU  H'0007'
-
-
-;----- PORTK Bits -----------------------------------------------------
-RK0              EQU  H'0000'
-RK1              EQU  H'0001'
-RK2              EQU  H'0002'
-RK3              EQU  H'0003'
-RK4              EQU  H'0004'
-RK5              EQU  H'0005'
-RK6              EQU  H'0006'
-RK7              EQU  H'0007'
-
-
-;----- LATK Bits -----------------------------------------------------
-LATK0            EQU  H'0000'
-LATK1            EQU  H'0001'
-LATK2            EQU  H'0002'
-LATK3            EQU  H'0003'
-LATK4            EQU  H'0004'
-LATK5            EQU  H'0005'
-LATK6            EQU  H'0006'
-LATK7            EQU  H'0007'
-
-
-;----- TRISK Bits -----------------------------------------------------
-TRISK0           EQU  H'0000'
-TRISK1           EQU  H'0001'
-TRISK2           EQU  H'0002'
-TRISK3           EQU  H'0003'
-TRISK4           EQU  H'0004'
-TRISK5           EQU  H'0005'
-TRISK6           EQU  H'0006'
-TRISK7           EQU  H'0007'
-
-
 ;----- ODCON2 Bits -----------------------------------------------------
 ECCP3OD          EQU  H'0000'
 CCP4OD           EQU  H'0001'
@@ -4004,7 +3932,6 @@ TRISE7           EQU  H'0007'
 
 
 ;----- TRISF Bits -----------------------------------------------------
-TRISF1           EQU  H'0001'
 TRISF2           EQU  H'0002'
 TRISF3           EQU  H'0003'
 TRISF4           EQU  H'0004'
@@ -4019,7 +3946,6 @@ TRISG1           EQU  H'0001'
 TRISG2           EQU  H'0002'
 TRISG3           EQU  H'0003'
 TRISG4           EQU  H'0004'
-TRISG5           EQU  H'0005'
 TRISG6           EQU  H'0006'
 TRISG7           EQU  H'0007'
 
@@ -4673,6 +4599,7 @@ STKOVF           EQU  H'0007'
 ;
 ;==========================================================================
        __MAXRAM  H'0FFF'
+       __BADRAM  H'0EE4'-H'0EE9'
        __BADRAM  H'0FD4'
 
 ;==========================================================================

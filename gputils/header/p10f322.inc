@@ -129,10 +129,16 @@ IRP              EQU  H'0007'
 
 
 ;----- PORTA Bits -----------------------------------------------------
-PORTA0           EQU  H'0000'
-PORTA1           EQU  H'0001'
-PORTA2           EQU  H'0002'
-PORTA3           EQU  H'0003'
+RA0              EQU  H'0000'
+RA1              EQU  H'0001'
+RA2              EQU  H'0002'
+RA3              EQU  H'0003'
+
+
+;----- TRISA Bits -----------------------------------------------------
+TRISA0           EQU  H'0000'
+TRISA1           EQU  H'0001'
+TRISA2           EQU  H'0002'
 
 
 ;----- LATA Bits -----------------------------------------------------
@@ -204,6 +210,7 @@ NOT_POR          EQU  H'0001'
 HFIOFS           EQU  H'0000'
 LFIOFR           EQU  H'0001'
 HFIOFR           EQU  H'0003'
+
 IRCF0            EQU  H'0004'
 IRCF1            EQU  H'0005'
 IRCF2            EQU  H'0006'
@@ -405,7 +412,6 @@ N1CKS1           EQU  H'0001'
 N1PWS0           EQU  H'0005'
 N1PWS1           EQU  H'0006'
 N1PWS2           EQU  H'0007'
-
 
 
 ;----- WDTCON Bits -----------------------------------------------------

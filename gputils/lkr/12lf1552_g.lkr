@@ -8,19 +8,17 @@
 
 LIBPATH .
 
-CODEPAGE   NAME=page0      START=0x0               END=0x7FF                    
 
 #IFDEF _DEBUGCODESTART
-  CODEPAGE   NAME=page1      START=0x800             END=_CODEEND
+  CODEPAGE   NAME=page0      START=0x0               END=_CODEEND
   CODEPAGE   NAME=debug      START=_DEBUGCODESTART   END=_CEND        PROTECTED
 #ELSE
-  CODEPAGE   NAME=page1      START=0x800             END=0xFFF                    
+  CODEPAGE   NAME=page0      START=0x0               END=0x7FF                    
 #FI
 
 CODEPAGE   NAME=.idlocs    START=0x8000            END=0x8003         PROTECTED 
 CODEPAGE   NAME=.devid     START=0x8006            END=0x8006         PROTECTED 
 CODEPAGE   NAME=.config    START=0x8007            END=0x8008         PROTECTED 
-CODEPAGE   NAME=eedata     START=0xF000            END=0xF0FF         PROTECTED 
 
 LINEARMEM  NAME=linear0    START=0x2000            END=0x20EF         PROTECTED
 
@@ -170,8 +168,6 @@ DATABANK   NAME=gpr1       START=0xA0              END=0xEF           SHADOW=lin
 #FI
 
 SECTION    NAME=PROG0      ROM=page0           // ROM code space - page0
-SECTION    NAME=PROG1      ROM=page1           // ROM code space - page1
 SECTION    NAME=IDLOCS     ROM=.idlocs         // ID locations
-SECTION    NAME=DEEPROM    ROM=eedata          // Data EEPROM
 SECTION    NAME=LINEAR0    RAM=linear0         // Linear Memory
 

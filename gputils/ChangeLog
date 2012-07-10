@@ -1,3 +1,31 @@
+2011-07-10  Borut Razem  <borutr@users.sourceforge.net>
+  * lkr/16f818_g.lkr, lkr/16f1513_g.lkr, lkr/16f1455_g.lkr,
+    lkr/16lf1513_g.lkr, lkr/16lf1455_g.lkr, lkr/16f527_g.lkr,
+    lkr/12lf1552_g.lkr, lkr/Makefile.am, lkr/Makefile.in,
+    lkr/16f1459_g.lkr, lkr/16lf1459_g.lkr, header/p18f45k50.inc,
+    header/p16lf1455.inc, header/p12f529t39a.inc, header/p12f529t48a.inc,
+    header/p10f320.inc, header/p16f1784.inc, header/Makefile.am,
+    header/p16lf1786.inc, header/p18f86j94.inc, header/p16f1455.inc,
+    header/p16lf1512.inc, header/mcp250xx.inc, header/p18lf45k50.inc,
+    header/p18f24k50.inc, header/p16lf1787.inc, header/p16lf1513.inc,
+    header/p10f322.inc, header/p16f1786.inc, header/p10lf320.inc,
+    header/p16f1512.inc, header/Makefile.in, header/p18f87j94.inc,
+    header/p18f96j94.inc, header/p16f1787.inc, header/p16f1513.inc,
+    header/p18f25k50.inc, header/p16lf1459.inc, header/p18lf24k50.inc,
+    header/p12lf1552.inc, header/p10lf322.inc, header/p18f97j94.inc,
+    header/p18f66j94.inc, header/p16f1459.inc, header/p18lf25k50.inc,
+    header/p16f527.inc, header/p18f67j94.inc, header/p16lf1784.inc:
+    applied patch #3541077 - "This a mplabx-1.3 based on update.",
+    thanks to Molnar Karoly
+  * libgputils/gpprocessor.c, doc/gputils.lyx, lkr/18f86j99_g.lkr,
+    lkr/18f95j94_g.lkr, lkr/18f65j94_g.lkr, lkr/18f96j99_g.lkr,
+    lkr/18f66j99_g.lkr, lkr/16f1454_g.lkr, lkr/18f85j94_g.lkr,
+    lkr/16lf1454_g.lkr, header/p18f65j94.inc, header/p16f1454.inc,
+    header/p18f86j99.inc, header/p16lf1454.inc, header/p18f85j94.inc,
+    header/p18f96j99.inc, header/p18f95j94.inc, header/p18f66j99.inc:
+    applied patch #3541079 - "New devices based on the mplabx-1.3",
+    thanks to Molnar Karoly
+
 2011-07-09  Borut Razem  <borutr@users.sourceforge.net>
   * gplink/gplink.c, gputils/gpdasm.c, libgputils/gpreadobj.c,
     libgputils/gpprocessor.c, libgputils/gpprocessor.h, gpasm/gpasm.c,

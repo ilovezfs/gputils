@@ -159,6 +159,7 @@ TMR3             EQU  H'0FB2'
 TMR3L            EQU  H'0FB2'
 TMR3H            EQU  H'0FB3'
 T3GCON           EQU  H'0FB4'
+ACTCON           EQU  H'0FB5'
 STCON            EQU  H'0FB5'
 ECCP1AS          EQU  H'0FB6'
 ECCP1DEL         EQU  H'0FB7'
@@ -564,8 +565,11 @@ FVRS1            EQU  H'0005'
 TMR1MD           EQU  H'0000'
 TMR2MD           EQU  H'0001'
 TMR3MD           EQU  H'0002'
-STMD             EQU  H'0004'
+ACTMD            EQU  H'0004'
 USBMD            EQU  H'0005'
+UARTMD           EQU  H'0006'
+
+STMD             EQU  H'0004'
 UART1MD          EQU  H'0006'
 
 
@@ -576,9 +580,11 @@ ADCMD            EQU  H'0002'
 CMP1MD           EQU  H'0003'
 CMP2MD           EQU  H'0004'
 CTMUMD           EQU  H'0005'
-MSSP1MD          EQU  H'0006'
+MSSPMD           EQU  H'0006'
 
 SSP1MD           EQU  H'0006'
+
+MSSP1MD          EQU  H'0006'
 
 
 ;----- PORTA Bits -----------------------------------------------------
@@ -988,10 +994,15 @@ HLVDL3           EQU  H'0003'
 TMR1IE           EQU  H'0000'
 TMR2IE           EQU  H'0001'
 CCP1IE           EQU  H'0002'
+SSPIE            EQU  H'0003'
+TXIE             EQU  H'0004'
+RCIE             EQU  H'0005'
+ADIE             EQU  H'0006'
+ACTIE            EQU  H'0007'
+
 SSP1IE           EQU  H'0003'
 TX1IE            EQU  H'0004'
 RC1IE            EQU  H'0005'
-ADIE             EQU  H'0006'
 STIE             EQU  H'0007'
 
 
@@ -999,10 +1010,15 @@ STIE             EQU  H'0007'
 TMR1IF           EQU  H'0000'
 TMR2IF           EQU  H'0001'
 CCP1IF           EQU  H'0002'
+SSPIF            EQU  H'0003'
+TXIF             EQU  H'0004'
+RCIF             EQU  H'0005'
+ADIF             EQU  H'0006'
+ACTIF            EQU  H'0007'
+
 SSP1IF           EQU  H'0003'
 TX1IF            EQU  H'0004'
 RC1IF            EQU  H'0005'
-ADIF             EQU  H'0006'
 STIF             EQU  H'0007'
 
 
@@ -1010,10 +1026,15 @@ STIF             EQU  H'0007'
 TMR1IP           EQU  H'0000'
 TMR2IP           EQU  H'0001'
 CCP1IP           EQU  H'0002'
+SSPIP            EQU  H'0003'
+TXIP             EQU  H'0004'
+RCIP             EQU  H'0005'
+ADIP             EQU  H'0006'
+ACTIP            EQU  H'0007'
+
 SSP1IP           EQU  H'0003'
 TX1IP            EQU  H'0004'
 RC1IP            EQU  H'0005'
-ADIP             EQU  H'0006'
 STIP             EQU  H'0007'
 
 
@@ -1178,12 +1199,40 @@ T3DONE           EQU  H'0003'
 T3GGO_NOT_DONE   EQU  H'0003'
 
 
-;----- STCON Bits -----------------------------------------------------
+;----- ACTCON Bits -----------------------------------------------------
+ACTORS           EQU  H'0001'
+ACTLOCK          EQU  H'0003'
+ACTSRC           EQU  H'0004'
+ACTUD            EQU  H'0006'
+ACTEN            EQU  H'0007'
+
 STOR             EQU  H'0001'
 STLOCK           EQU  H'0003'
 STSRC            EQU  H'0004'
 STUD             EQU  H'0006'
 STEN             EQU  H'0007'
+
+ACTOR            EQU  H'0001'
+ACTD             EQU  H'0006'
+ACTSEL           EQU  H'0007'
+
+
+;----- STCON Bits -----------------------------------------------------
+ACTORS           EQU  H'0001'
+ACTLOCK          EQU  H'0003'
+ACTSRC           EQU  H'0004'
+ACTUD            EQU  H'0006'
+ACTEN            EQU  H'0007'
+
+STOR             EQU  H'0001'
+STLOCK           EQU  H'0003'
+STSRC            EQU  H'0004'
+STUD             EQU  H'0006'
+STEN             EQU  H'0007'
+
+ACTOR            EQU  H'0001'
+ACTD             EQU  H'0006'
+ACTSEL           EQU  H'0007'
 
 
 ;----- ECCP1AS Bits -----------------------------------------------------
@@ -1719,8 +1768,10 @@ STKOVF           EQU  H'0007'
 ;     BOREN = SBORDIS      BOR enabled in hardware (SBOREN is ignored)
 ;
 ;   Brown-out Reset Voltage:
-;     BORV = 2V85          BOR set to 2.85V nominal
-;     BORV = 2V5           BOR set to 2.5V nominal
+;     BORV = 285           BOR set to 2.85V nominal
+;     BORV = 250           BOR set to 2.5V nominal
+;     BORV = 220           BOR set to 2.2V nominal
+;     BORV = 190           BOR set to 1.9V nominal
 ;
 ;   Low-Power Brown-out Reset:
 ;     nLPBOR = ON          Low-Power Brown-out Reset enabled
@@ -1943,8 +1994,10 @@ _BOREN_ON_2L         EQU  H'FB'    ; BOR controlled by firmware (SBOREN is enabl
 _BOREN_NOSLP_2L      EQU  H'FD'    ; BOR enabled in hardware, disabled in Sleep mode (SBOREN is ignored)
 _BOREN_SBORDIS_2L    EQU  H'FF'    ; BOR enabled in hardware (SBOREN is ignored)
 
-_BORV_2V85_2L        EQU  H'E7'    ; BOR set to 2.85V nominal
-_BORV_2V5_2L         EQU  H'EF'    ; BOR set to 2.5V nominal
+_BORV_285_2L         EQU  H'E7'    ; BOR set to 2.85V nominal
+_BORV_250_2L         EQU  H'EF'    ; BOR set to 2.5V nominal
+_BORV_220_2L         EQU  H'F7'    ; BOR set to 2.2V nominal
+_BORV_190_2L         EQU  H'FF'    ; BOR set to 1.9V nominal
 
 _nLPBOR_ON_2L        EQU  H'BF'    ; Low-Power Brown-out Reset enabled
 _nLPBOR_OFF_2L       EQU  H'FF'    ; Low-Power Brown-out Reset disabled
