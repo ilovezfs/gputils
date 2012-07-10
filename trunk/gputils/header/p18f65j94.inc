@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-;  MPASM PIC18F97J94 processor include
+;  MPASM PIC18F65J94 processor include
 ; 
 ;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
 ;==========================================================================
@@ -10,16 +10,16 @@
 
 ;==========================================================================
 ;  This header file defines configurations, registers, and other useful
-;  bits of information for the PIC18F97J94 microcontroller.  These names
+;  bits of information for the PIC18F65J94 microcontroller.  These names
 ;  are taken to match the data sheets as closely as possible.
 ;
 ;  Note that the processor must be selected before this file is included.
 ;  The processor may be selected the following ways:
 ;
 ;       1. Command line switch:
-;               C:\MPASM MYFILE.ASM /PIC18F97J94
+;               C:\MPASM MYFILE.ASM /PIC18F65J94
 ;       2. LIST directive in the source file
-;               LIST   P=PIC18F97J94
+;               LIST   P=PIC18F65J94
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
@@ -29,7 +29,7 @@
 ;       Verify Processor
 ;
 ;==========================================================================
-        IFNDEF __18F97J94
+        IFNDEF __18F65J94
            MESSG "Processor-header file mismatch.  Verify selected processor."
         ENDIF
 
@@ -317,13 +317,6 @@ REFO1CON3        EQU  H'0EDF'
 REFO1CON2        EQU  H'0EE0'
 REFO1CON1        EQU  H'0EE1'
 REFO1CON         EQU  H'0EE2'
-MEMCON           EQU  H'0EE3'
-PORTL            EQU  H'0EE4'
-LATL             EQU  H'0EE5'
-TRISL            EQU  H'0EE6'
-PORTK            EQU  H'0EE7'
-LATK             EQU  H'0EE8'
-TRISK            EQU  H'0EE9'
 ODCON2           EQU  H'0EEA'
 ODCON1           EQU  H'0EEB'
 MDCARL           EQU  H'0EEC'
@@ -494,8 +487,6 @@ PORTD            EQU  H'0F83'
 PORTE            EQU  H'0F84'
 PORTF            EQU  H'0F85'
 PORTG            EQU  H'0F86'
-PORTH            EQU  H'0F87'
-PORTJ            EQU  H'0F88'
 LATA             EQU  H'0F89'
 LATB             EQU  H'0F8A'
 LATC             EQU  H'0F8B'
@@ -503,8 +494,6 @@ LATD             EQU  H'0F8C'
 LATE             EQU  H'0F8D'
 LATF             EQU  H'0F8E'
 LATG             EQU  H'0F8F'
-LATH             EQU  H'0F90'
-LATJ             EQU  H'0F91'
 TRISA            EQU  H'0F92'
 TRISB            EQU  H'0F93'
 TRISC            EQU  H'0F94'
@@ -512,8 +501,6 @@ TRISD            EQU  H'0F95'
 TRISE            EQU  H'0F96'
 TRISF            EQU  H'0F97'
 TRISG            EQU  H'0F98'
-TRISH            EQU  H'0F99'
-TRISJ            EQU  H'0F9A'
 OSCTUNE          EQU  H'0F9B'
 PSTR1CON         EQU  H'0F9C'
 PIE1             EQU  H'0F9D'
@@ -1530,8 +1517,8 @@ CHONB2           EQU  H'0007'
 ;----- ADCON5L Bits -----------------------------------------------------
 CM0              EQU  H'0000'
 CM1              EQU  H'0001'
-WM0_ADCON5L      EQU  H'0002'
-WM1_ADCON5L      EQU  H'0003'
+WM0              EQU  H'0002'
+WM1              EQU  H'0003'
 
 
 ;----- ADCON5H Bits -----------------------------------------------------
@@ -2509,81 +2496,6 @@ RSLP             EQU  H'0003'
 OE               EQU  H'0004'
 SIDL             EQU  H'0005'
 ON               EQU  H'0007'
-
-
-;----- MEMCON Bits -----------------------------------------------------
-EBDIS            EQU  H'0007'
-
-WM0_MEMCON       EQU  H'0000'
-WM1_MEMCON       EQU  H'0001'
-WAIT0            EQU  H'0004'
-WAIT1            EQU  H'0005'
-
-
-;----- PORTL Bits -----------------------------------------------------
-RL0              EQU  H'0000'
-RL1              EQU  H'0001'
-RL2              EQU  H'0002'
-RL3              EQU  H'0003'
-RL4              EQU  H'0004'
-RL5              EQU  H'0005'
-RL6              EQU  H'0006'
-RL7              EQU  H'0007'
-
-
-;----- LATL Bits -----------------------------------------------------
-LATL0            EQU  H'0000'
-LATL1            EQU  H'0001'
-LATL2            EQU  H'0002'
-LATL3            EQU  H'0003'
-LATL4            EQU  H'0004'
-LATL5            EQU  H'0005'
-LATL6            EQU  H'0006'
-LATL7            EQU  H'0007'
-
-
-;----- TRISL Bits -----------------------------------------------------
-TRISL0           EQU  H'0000'
-TRISL1           EQU  H'0001'
-TRISL2           EQU  H'0002'
-TRISL3           EQU  H'0003'
-TRISL4           EQU  H'0004'
-TRISL5           EQU  H'0005'
-TRISL6           EQU  H'0006'
-TRISL7           EQU  H'0007'
-
-
-;----- PORTK Bits -----------------------------------------------------
-RK0              EQU  H'0000'
-RK1              EQU  H'0001'
-RK2              EQU  H'0002'
-RK3              EQU  H'0003'
-RK4              EQU  H'0004'
-RK5              EQU  H'0005'
-RK6              EQU  H'0006'
-RK7              EQU  H'0007'
-
-
-;----- LATK Bits -----------------------------------------------------
-LATK0            EQU  H'0000'
-LATK1            EQU  H'0001'
-LATK2            EQU  H'0002'
-LATK3            EQU  H'0003'
-LATK4            EQU  H'0004'
-LATK5            EQU  H'0005'
-LATK6            EQU  H'0006'
-LATK7            EQU  H'0007'
-
-
-;----- TRISK Bits -----------------------------------------------------
-TRISK0           EQU  H'0000'
-TRISK1           EQU  H'0001'
-TRISK2           EQU  H'0002'
-TRISK3           EQU  H'0003'
-TRISK4           EQU  H'0004'
-TRISK5           EQU  H'0005'
-TRISK6           EQU  H'0006'
-TRISK7           EQU  H'0007'
 
 
 ;----- ODCON2 Bits -----------------------------------------------------
@@ -3830,28 +3742,6 @@ RG6              EQU  H'0006'
 RG7              EQU  H'0007'
 
 
-;----- PORTH Bits -----------------------------------------------------
-RH0              EQU  H'0000'
-RH1              EQU  H'0001'
-RH2              EQU  H'0002'
-RH3              EQU  H'0003'
-RH4              EQU  H'0004'
-RH5              EQU  H'0005'
-RH6              EQU  H'0006'
-RH7              EQU  H'0007'
-
-
-;----- PORTJ Bits -----------------------------------------------------
-RJ0              EQU  H'0000'
-RJ1              EQU  H'0001'
-RJ2              EQU  H'0002'
-RJ3              EQU  H'0003'
-RJ4              EQU  H'0004'
-RJ5              EQU  H'0005'
-RJ6              EQU  H'0006'
-RJ7              EQU  H'0007'
-
-
 ;----- LATA Bits -----------------------------------------------------
 LATA0            EQU  H'0000'
 LATA1            EQU  H'0001'
@@ -3926,28 +3816,6 @@ LATG6            EQU  H'0006'
 LATG7            EQU  H'0007'
 
 
-;----- LATH Bits -----------------------------------------------------
-LATH0            EQU  H'0000'
-LATH1            EQU  H'0001'
-LATH2            EQU  H'0002'
-LATH3            EQU  H'0003'
-LATH4            EQU  H'0004'
-LATH5            EQU  H'0005'
-LATH6            EQU  H'0006'
-LATH7            EQU  H'0007'
-
-
-;----- LATJ Bits -----------------------------------------------------
-LATJ0            EQU  H'0000'
-LATJ1            EQU  H'0001'
-LATJ2            EQU  H'0002'
-LATJ3            EQU  H'0003'
-LATJ4            EQU  H'0004'
-LATJ5            EQU  H'0005'
-LATJ6            EQU  H'0006'
-LATJ7            EQU  H'0007'
-
-
 ;----- TRISA Bits -----------------------------------------------------
 TRISA0           EQU  H'0000'
 TRISA1           EQU  H'0001'
@@ -4004,7 +3872,6 @@ TRISE7           EQU  H'0007'
 
 
 ;----- TRISF Bits -----------------------------------------------------
-TRISF1           EQU  H'0001'
 TRISF2           EQU  H'0002'
 TRISF3           EQU  H'0003'
 TRISF4           EQU  H'0004'
@@ -4019,31 +3886,8 @@ TRISG1           EQU  H'0001'
 TRISG2           EQU  H'0002'
 TRISG3           EQU  H'0003'
 TRISG4           EQU  H'0004'
-TRISG5           EQU  H'0005'
 TRISG6           EQU  H'0006'
 TRISG7           EQU  H'0007'
-
-
-;----- TRISH Bits -----------------------------------------------------
-TRISH0           EQU  H'0000'
-TRISH1           EQU  H'0001'
-TRISH2           EQU  H'0002'
-TRISH3           EQU  H'0003'
-TRISH4           EQU  H'0004'
-TRISH5           EQU  H'0005'
-TRISH6           EQU  H'0006'
-TRISH7           EQU  H'0007'
-
-
-;----- TRISJ Bits -----------------------------------------------------
-TRISJ0           EQU  H'0000'
-TRISJ1           EQU  H'0001'
-TRISJ2           EQU  H'0002'
-TRISJ3           EQU  H'0003'
-TRISJ4           EQU  H'0004'
-TRISJ5           EQU  H'0005'
-TRISJ6           EQU  H'0006'
-TRISJ7           EQU  H'0007'
 
 
 ;----- OSCTUNE Bits -----------------------------------------------------
@@ -4673,6 +4517,10 @@ STKOVF           EQU  H'0007'
 ;
 ;==========================================================================
        __MAXRAM  H'0FFF'
+       __BADRAM  H'0EE3'-H'0EE9'
+       __BADRAM  H'0F87'-H'0F88'
+       __BADRAM  H'0F90'-H'0F91'
+       __BADRAM  H'0F99'-H'0F9A'
        __BADRAM  H'0FD4'
 
 ;==========================================================================
@@ -5029,24 +4877,6 @@ STKOVF           EQU  H'0007'
 ;   CxINA Gate Select bit:
 ;     CINASEL = RA5        C1INA and C3INA are all re-mapped to pin RA5
 ;     CINASEL = DEFAULT    C1INA and C3INA are on their default pin locations
-;
-;   External Address Shift bit:
-;     EASHFT = OFF         Address Shifting disabled
-;     EASHFT = ON          Address Shifting enabled
-;
-;   Address Bus Width Select bits:
-;     ABW = XM20           20-bit address bus
-;     ABW = XM16           16-bit address bus
-;     ABW = XM12           12-bit address bus
-;     ABW = MM             8-bit address bus
-;
-;   Data Bus Width:
-;     BW = 8               8-bit external bus mode
-;     BW = 16              16-bit external bus mode
-;
-;   External Bus Wait:
-;     WAIT = ON            Enabled
-;     WAIT = OFF           Disabled
 ;
 ;   IOLOCK One-Way Set Enable bit:
 ;     IOL1WAY = OFF        the IOLOCK bit can be set and cleared using the unlock sequence

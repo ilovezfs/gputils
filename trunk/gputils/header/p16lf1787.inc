@@ -23,16 +23,6 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
-;;;; Begin: Added in gputils
-
-;==========================================================================
-;
-;       Gputils Specific Revision History
-;
-;==========================================================================
-
-;       26 Jun 2012  Added TSRNG and TSEN bits to "FVRCON Bits".
-;;;; End: Added in gputils
 
 ;==========================================================================
 ;
@@ -840,10 +830,6 @@ ADFVR0           EQU  H'0000'
 ADFVR1           EQU  H'0001'
 CDAFVR0          EQU  H'0002'
 CDAFVR1          EQU  H'0003'
-;;;; Begin: Added in gputils
-TSRNG            EQU  H'0004'
-TSEN             EQU  H'0005'
-;;;; End: Added in gputils
 FVRRDY           EQU  H'0006'
 FVREN            EQU  H'0007'
 
@@ -1696,8 +1682,8 @@ P1MSRC3          EQU  H'0003'
 P1SYNC0          EQU  H'0000'
 P1SYNC1          EQU  H'0001'
 P1SYNC2          EQU  H'0002'
-P1PRPOL          EQU  H'0005'
-P1DCPOL          EQU  H'0006'
+P1DCPOL          EQU  H'0005'
+P1PRPOL          EQU  H'0006'
 P1POFST          EQU  H'0007'
 
 
@@ -1994,8 +1980,8 @@ P2MSRC3          EQU  H'0003'
 P2SYNC0          EQU  H'0000'
 P2SYNC1          EQU  H'0001'
 P2SYNC2          EQU  H'0002'
-P2PRPOL          EQU  H'0005'
-P2DCPOL          EQU  H'0006'
+P2DCPOL          EQU  H'0005'
+P2PRPOL          EQU  H'0006'
 P2POFST          EQU  H'0007'
 
 
@@ -2276,8 +2262,8 @@ P3MSRC3          EQU  H'0003'
 P3SYNC0          EQU  H'0000'
 P3SYNC1          EQU  H'0001'
 P3SYNC2          EQU  H'0002'
-P3PRPOL          EQU  H'0005'
-P3DCPOL          EQU  H'0006'
+P3DCPOL          EQU  H'0005'
+P3PRPOL          EQU  H'0006'
 P3POFST          EQU  H'0007'
 
 

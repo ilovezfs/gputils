@@ -94,7 +94,7 @@ DATABANK   NAME=sfr26      START=0xD00             END=0xD1F          PROTECTED
 DATABANK   NAME=sfr27      START=0xD80             END=0xD9F          PROTECTED
 DATABANK   NAME=sfr28      START=0xE00             END=0xE1F          PROTECTED
 DATABANK   NAME=sfr29      START=0xE80             END=0xE9F          PROTECTED
-DATABANK   NAME=sfr30      START=0xF00             END=0xF6F          PROTECTED
+DATABANK   NAME=sfr30      START=0xF00             END=0xF1F          PROTECTED
 DATABANK   NAME=sfr31      START=0xF80             END=0xFEF          PROTECTED
 
 DATABANK   NAME=gpr6       START=0x330             END=0x36F          SHADOW=linear0:0x21F0

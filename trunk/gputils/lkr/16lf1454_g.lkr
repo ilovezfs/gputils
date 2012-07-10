@@ -1,5 +1,5 @@
-// File: 16f1459_g.lkr
-// Generic linker script for the PIC16F1459 processor
+// File: 16lf1454_g.lkr
+// Generic linker script for the PIC16LF1454 processor
 
 #DEFINE _CODEEND _DEBUGCODESTART - 1
 #DEFINE _CEND _CODEEND + _DEBUGCODELEN

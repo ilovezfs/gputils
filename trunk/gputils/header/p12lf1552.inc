@@ -710,9 +710,9 @@ _CLKOUTEN_ON     EQU  H'F7FF'    ; CLKOUT function is enabled on the CLKOUT pin
 _CLKOUTEN_OFF    EQU  H'FFFF'    ; CLKOUT function is disabled. I/O or oscillator function on the CLKOUT pin
 
 ;----- CONFIG2 Options --------------------------------------------------
-_WRT_ALL         EQU  H'FFFC'    ; 000h to FFFh write protected, no addresses may be modified by EECON control
-_WRT_HALF        EQU  H'FFFD'    ; 000h to 7FFh write protected, 800h to FFFh may be modified by EECON control
-_WRT_BOOT        EQU  H'FFFE'    ; 000h to 1FFh write protected, 200h to FFFh may be modified by EECON control
+_WRT_ALL         EQU  H'FFFC'    ; 000h to FFFh write protected, no addresses may be modified by PMCON control
+_WRT_HALF        EQU  H'FFFD'    ; 000h to 7FFh write protected, 800h to FFFh may be modified by PMCON control
+_WRT_BOOT        EQU  H'FFFE'    ; 000h to 1FFh write protected, 200h to FFFh may be modified by PMCON control
 _WRT_OFF         EQU  H'FFFF'    ; Write protection off
 
 _STVREN_OFF      EQU  H'FDFF'    ; Stack Overflow or Underflow will not cause a Reset

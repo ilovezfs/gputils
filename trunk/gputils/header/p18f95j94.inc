@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-;  MPASM PIC18F97J94 processor include
+;  MPASM PIC18F95J94 processor include
 ; 
 ;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
 ;==========================================================================
@@ -10,16 +10,16 @@
 
 ;==========================================================================
 ;  This header file defines configurations, registers, and other useful
-;  bits of information for the PIC18F97J94 microcontroller.  These names
+;  bits of information for the PIC18F95J94 microcontroller.  These names
 ;  are taken to match the data sheets as closely as possible.
 ;
 ;  Note that the processor must be selected before this file is included.
 ;  The processor may be selected the following ways:
 ;
 ;       1. Command line switch:
-;               C:\MPASM MYFILE.ASM /PIC18F97J94
+;               C:\MPASM MYFILE.ASM /PIC18F95J94
 ;       2. LIST directive in the source file
-;               LIST   P=PIC18F97J94
+;               LIST   P=PIC18F95J94
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
@@ -29,7 +29,7 @@
 ;       Verify Processor
 ;
 ;==========================================================================
-        IFNDEF __18F97J94
+        IFNDEF __18F95J94
            MESSG "Processor-header file mismatch.  Verify selected processor."
         ENDIF
 
@@ -4004,7 +4004,6 @@ TRISE7           EQU  H'0007'
 
 
 ;----- TRISF Bits -----------------------------------------------------
-TRISF1           EQU  H'0001'
 TRISF2           EQU  H'0002'
 TRISF3           EQU  H'0003'
 TRISF4           EQU  H'0004'
@@ -4019,7 +4018,6 @@ TRISG1           EQU  H'0001'
 TRISG2           EQU  H'0002'
 TRISG3           EQU  H'0003'
 TRISG4           EQU  H'0004'
-TRISG5           EQU  H'0005'
 TRISG6           EQU  H'0006'
 TRISG7           EQU  H'0007'
 

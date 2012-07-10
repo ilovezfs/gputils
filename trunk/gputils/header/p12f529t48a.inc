@@ -136,8 +136,8 @@ _OSC_EXTRC           EQU  H'0FFF'    ; EXTRC With 1 ms DRT
 _WDT_OFF             EQU  H'0FFB'    ; Disabled
 _WDT_ON              EQU  H'0FFF'    ; Enabled
 
-_CP_CLEAR            EQU  H'0FF7'    ; Parity bit clear
-_CP_SET              EQU  H'0FFF'    ; Parity bit set
+_PARITY_CLEAR        EQU  H'0FF7'    ; Parity bit clear
+_PARITY_SET          EQU  H'0FFF'    ; Parity bit set
 
 _MCLRE_OFF           EQU  H'0FEF'    ; RB3/MCLR Functions as RB3
 _MCLRE_ON            EQU  H'0FFF'    ; RB3/MCLR Functions as MCLR
@@ -145,11 +145,11 @@ _MCLRE_ON            EQU  H'0FFF'    ; RB3/MCLR Functions as MCLR
 _IOSCFS_4MHz         EQU  H'0FDF'    ; 4 MHz INTOSC Speed
 _IOSCFS_8MHz         EQU  H'0FFF'    ; 8 MHz INTOSC Speed
 
-_CPDF_ON             EQU  H'0FBF'    ; On
-_CPDF_OFF            EQU  H'0FFF'    ; Off
+_CPDF_ON             EQU  H'0FBF'    ; Code protection on
+_CPDF_OFF            EQU  H'0FFF'    ; Code protection off
 
-_CPUN_ENABLE         EQU  H'097F'    ; Code Protect Enabled
-_CPUN_DISABLE        EQU  H'0DFF'    ; Code Protect Disabled
+_CP_ENABLE           EQU  H'097F'    ; Code Protect Enabled
+_CP_DISABLE          EQU  H'0DFF'    ; Disabled
 
 
 ;----- IDLOC Equates --------------------------------------------------
