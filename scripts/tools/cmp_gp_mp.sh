@@ -155,7 +155,7 @@ cmp_mp_inc()
         echo "+++ $gpf is up to date."
         equ=$(expr $equ + 1)
       else
-        if gpspec "$gpp" | diff --strip-trailing-cr --brief - "$mpp" > /dev/null
+        if gpspec "$gpp" | diff $BLANK_OPTS --strip-trailing-cr --brief - "$mpp" > /dev/null
         then
           echo "### $gpf is up to date with gputils specifics."
           equ_spec=$(expr $equ_spec + 1)
@@ -319,7 +319,7 @@ done
 
 test -z "$has_opt" && mi=1 && ml=1
 
-test -n "$strict" && BLANK_OPTS='--ignore-space-change --ignore-blank-lines'
+test -z "$strict" && BLANK_OPTS='--ignore-space-change --ignore-blank-lines'
 
 # execute main compare procedure
 test -n "$mi" && cmp_mp_inc
