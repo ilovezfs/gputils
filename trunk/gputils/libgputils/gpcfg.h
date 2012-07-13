@@ -26,25 +26,25 @@ Boston, MA 02111-1307, USA.  */
 struct gp_cfg_option
 {
   const char *name;        /* name of the value */
-  unsigned char byte;      /* it's data value */
+  unsigned short byte;     /* it's data value */
 };
 
 /* a directive, i.e., FOSC */
 struct gp_cfg_directive
 {
   const char *name;                /* directive name */
-  unsigned char mask;              /* mask of bytes in the config address that apply to its value */
-  unsigned char option_count;      /* number of possible values */
-  struct gp_cfg_option *options;   /* array of values */
+  unsigned short mask;              /* mask of bytes in the config address that apply to its value */
+  unsigned short option_count;      /* number of possible values */
+  const struct gp_cfg_option *options; /* array of values */
 };
 
 /* one particular configuration address, i.e., 0x300001 */
 struct gp_cfg_addr
 {
-  int addr;                              /* the address */
-  unsigned char defval;                  /* its default */
+  unsigned addr;                              /* the address */
+  unsigned short defval;                  /* its default */
   unsigned char directive_count;         /* count of relavent directives */
-  struct gp_cfg_directive *directives;   /* array of directives */
+  const struct gp_cfg_directive *directives;   /* array of directives */
 };
 
 /* a device - that is, a colllection of configuration addresses */
@@ -52,12 +52,12 @@ struct gp_cfg_device
 {
   const char *device;                  /* device name */
   unsigned char addr_count;            /* number of configuration addresses */
-  struct gp_cfg_addr *config_addrs;    /* array of configuration addresses */
+  const struct gp_cfg_addr *config_addrs;    /* array of configuration addresses */
 };
 
 /* the big table */
-extern struct gp_cfg_device gp_cfg_devices[];
-extern int gp_cfg_device_count;
+extern const struct gp_cfg_device gp_cfg_devices[];
+extern const unsigned gp_cfg_device_count;
 
 /* helper API */
 const struct gp_cfg_device *gp_cfg_find_pic(const char *pic);

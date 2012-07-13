@@ -1,3 +1,7 @@
+2012-07-13  Marko Kohtala  <marko.kohtala@gmail.com>
+  * libgputils/gpcfg-table.c: Updated using scripts/tools/cfg-import.py
+    to add configuration options for new parts from MPASM 5.46.
+
 2011-07-10  Borut Razem  <borutr@users.sourceforge.net>
   * lkr/16f818_g.lkr, lkr/16f1513_g.lkr, lkr/16f1455_g.lkr,
     lkr/16lf1513_g.lkr, lkr/16lf1455_g.lkr, lkr/16f527_g.lkr,
