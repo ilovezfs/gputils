@@ -1,3 +1,9 @@
+2011-07-14  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpprocessor.c, lkr/16lf1786_g.lkr, lkr/16lf1787_g.lkr,
+    lkr/16f1786_g.lkr, lkr/16f1787_g.lkr: applied patch
+    #3543935 - "Correction of 16l?f178[67]_g.lkr and gpprocessor.c",
+    thanks to Molnar Karoly
+
 2012-07-13  Marko Kohtala  <marko.kohtala@gmail.com>
   * libgputils/gpcfg-table.c: Updated using scripts/tools/cfg-import.py
     to add configuration options for new parts from MPASM 5.46.
