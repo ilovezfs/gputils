@@ -71,7 +71,7 @@
      INCLUDE <p18f14k22.inc>
   ENDIF
   IFDEF __18F14K22LIN
-     INCLUDE <p18f14k22LIN.inc>
+     INCLUDE <p18f14k22lin.inc>
   ENDIF
   IFDEF __18F14K50
      INCLUDE <p18f14k50.inc>
