@@ -1,5 +1,16 @@
 // File: 16f1786_g.lkr
 // Generic linker script for the PIC16F1786 processor
+//// Begin: Added in gputils
+//=========================================================================
+//
+//      Gputils Specific Revision History
+//
+//=========================================================================
+//
+//      14 Jul 2012  Removed the page2 and page1.
+//                   Changed the page3 onto page0.
+//
+//// End: Added in gputils
 
 #DEFINE _CODEEND _DEBUGCODESTART - 1
 #DEFINE _CEND _CODEEND + _DEBUGCODELEN
@@ -8,15 +19,23 @@
 
 LIBPATH .
 
-CODEPAGE   NAME=page0      START=0x0               END=0x7FF                    
-CODEPAGE   NAME=page1      START=0x800             END=0xFFF                    
-CODEPAGE   NAME=page2      START=0x1000            END=0x17FF                   
+//// Begin: Removed in gputils
+////CODEPAGE   NAME=page0      START=0x0               END=0x7FF                    
+////CODEPAGE   NAME=page1      START=0x800             END=0xFFF                    
+////CODEPAGE   NAME=page2      START=0x1000            END=0x17FF                   
+//// End: Removed in gputils
 
 #IFDEF _DEBUGCODESTART
-  CODEPAGE   NAME=page3      START=0x1800            END=_CODEEND
+//// Begin: Changed in gputils
+////  CODEPAGE   NAME=page3      START=0x1800            END=_CODEEND
+  CODEPAGE   NAME=page0      START=0x0               END=_CODEEND
+//// End: Changed in gputils
   CODEPAGE   NAME=debug      START=_DEBUGCODESTART   END=_CEND        PROTECTED
 #ELSE
-  CODEPAGE   NAME=page3      START=0x1800            END=0x1FFF                   
+//// Begin: Changed in gputils
+////  CODEPAGE   NAME=page3      START=0x1800            END=0x1FFF                   
+  CODEPAGE   NAME=page0      START=0x0               END=0x7FF
+//// End: Changed in gputils
 #FI
 
 CODEPAGE   NAME=.idlocs    START=0x8000            END=0x8003         PROTECTED 
