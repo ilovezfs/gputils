@@ -85,24 +85,53 @@ fixnl()
   fi
 }
 
-# gputils specific processing:
+# gputils .inc specific processing:
 # process ";;;; Begin: - ;;;; End:" blocks
-gpspec()
+inc_spec()
 {
-  local sed_cmd='/^;;;; Begin: Removed in gputils/,/^;;;; End: Removed in gputils/ {
-  /^;;;; / d
-  /^;;;; /! {
+  local sed_cmd='/^;;;; Begin: Removed in gputils$/,/^;;;; End: Removed in gputils$/ {
+  /^;;;; [BEegind]*: Removed in gputils$/ d
+  /^;;;; [BEegind]*: Removed in gputils$/! {
     s/^;;;;//
   }
 }
-/^;;;; Begin: Added in gputils/,/^;;;; End: Added in gputils/ {
+/^;;;; Begin: Added in gputils$/,/^;;;; End: Added in gputils$/ {
   d
 }
-/^;;;; Begin: Changed in gputils/,/^;;;; End: Changed in gputils/ {
-  /^;;;; / d
-  /^;;;; /! {
+/^;;;; Begin: Changed in gputils$/,/^;;;; End: Changed in gputils$/ {
+  /^;;;; [BEegind]*: Changed in gputils$/ d
+  /^;;;; [BEegind]*: Changed in gputils$/! {
     /;;;;/! d
     /;;;;/ s/^;;;;//
+  }
+}'
+
+  if [ -n "$1" ]
+  then
+    cat "$1" | sed -s "$sed_cmd"
+  else
+    sed -s "$sed_cmd"
+  fi
+}
+
+# gputils .lkr specific processing:
+# process "//// Begin: - //// End:" blocks
+lkr_spec()
+{
+  local sed_cmd='/^\/\/\/\/ Begin: Removed in gputils$/,/^\/\/\/\/ End: Removed in gputils$/ {
+  /^\/\/\/\/ [BEegind]*: Removed in gputils$/ d
+  /^\/\/\/\/ [BEegind]*: Removed in gputils$/! {
+    s/^\/\/\/\///
+  }
+}
+/^\/\/\/\/ Begin: Added in gputils$/,/^\/\/\/\/ End: Added in gputils$/ {
+  d
+}
+/^\/\/\/\/ Begin: Changed in gputils$/,/^\/\/\/\/ End: Changed in gputils$/ {
+  /^\/\/\/\/ [BEegind]*: Changed in gputils$/ d
+  /^\/\/\/\/ [BEegind]*: Changed in gputils$/! {
+    /\/\/\/\//! d
+    /\/\/\/\// s/^\/\/\/\///
   }
 }'
 
@@ -155,7 +184,7 @@ cmp_mp_inc()
         echo "+++ $gpf is up to date."
         equ=$(expr $equ + 1)
       else
-        if gpspec "$gpp" | diff $BLANK_OPTS --strip-trailing-cr --brief - "$mpp" > /dev/null
+        if inc_spec "$gpp" | diff $BLANK_OPTS --strip-trailing-cr --brief - "$mpp" > /dev/null
         then
           echo "### $gpf is up to date with gputils specifics."
           equ_spec=$(expr $equ_spec + 1)
@@ -188,7 +217,7 @@ cmp_mp_inc()
 # compare .lkr with mplabx
 cmp_mp_lkr()
 {
-  local equ=0 old=0 diff=0 no_ex=0
+  local equ=0 equ_spec=0 diff=0 diff_spec=0 old=0 no_ex=0
   local mpp mpf gpp gpf
 
   echo "mplabx .lkr files in lkr folder:"
@@ -207,8 +236,20 @@ cmp_mp_lkr()
         echo "+++ $gpf is up to date."
         equ=$(expr $equ + 1)
       else
-        echo "--- $gpf differs."
-        diff=$(expr $diff + 1)
+        if lkr_spec "$gpp" | diff $BLANK_OPTS --strip-trailing-cr --brief - "$mpp" > /dev/null
+        then
+          echo "### $gpf is up to date with gputils specifics."
+          equ_spec=$(expr $equ_spec + 1)
+        else
+          if grep '^\/\/\/\/\ Begin:' $gpf > /dev/null 2>&1
+          then
+            echo "@@@ $gpf differs with gputils specifics."
+            diff_spec=$(expr $diff_spec + 1)
+          else
+            echo "--- $gpf differs."
+            diff=$(expr $diff + 1)
+          fi
+        fi
       fi
     else
       if ls ${gpp%_g.lkr}.lkr > /dev/null 2>&1
@@ -224,7 +265,9 @@ cmp_mp_lkr()
 
   echo "-----------------------------------------------------------------------"
   echo "Up to date: $equ"
+  echo "Up to date gp spec: $equ_spec"
   echo "Different: $diff"
+  echo "Different gp spec: $diff_spec"
   echo "Non existing: $no_ex"
   echo "Old version: $old"
   echo

@@ -1,3 +1,6 @@
+2012-07-14 Borut Razem <borut.razem AT siol.net>
+	* tools/cmp_gp_mp.sh: detect gputils specifics in lkr files
+
 2012-07-12 Borut Razem <borut.razem AT siol.net>
 	* tools/cmp_gp_mp.sh:
 	  corrected (reverted) the logic of the command line options --strict,
