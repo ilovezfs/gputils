@@ -1,3 +1,8 @@
+2011-07-16  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpprocessor.c: applied patch
+    #3544649 - "Incorrect lines in the gpprocessor.c II.",
+    thanks to Molnar Karoly
+
 2011-07-15  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpprocessor.c: applied patch
     #3544356 - "Incorrect lines in the gpprocessor.c",
