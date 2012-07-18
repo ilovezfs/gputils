@@ -1,4 +1,8 @@
 2011-07-17  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/directive.c: fixed bug
+    #2876860 - "MOVFF should not allow indexed literal offsets"
+
+2011-07-17  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpprocessor.c: applied patch gpprocessor.c-3.patch.tar.7z
     #3544649 - "Incorrect lines in the gpprocessor.c II.",
     thanks to Molnar Karoly

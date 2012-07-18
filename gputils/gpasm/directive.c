@@ -3104,6 +3104,39 @@ static int check_flag(int flag)
   return flag & 0x1;
 }
 
+/* values and masks for types_mask */
+#define AR_BITS          1
+#define AR_MASK          ((1 << AR_BITS) - 1)
+#define AR_GET(types, i) ((types >> (AR_BITS * (i))) && AR_MASK)
+#define AR_DIRECT        0 /* direct addressing */
+#define AR_INDEX         1 /* indexed addressing with literal offset */
+
+static int
+check_16e_arg_types(struct pnode *parms, int arity, unsigned int types)
+{
+  int ret = 1;
+
+  if (state.extended_pic16e) {
+    struct pnode *p = parms;
+    int i;
+
+    for (i = 0; i < arity; ++i) {
+      assert(p != NULL);
+      if (AR_INDEX != AR_GET(types, i) && offset == HEAD(p)->tag) {
+        gperror(GPE_BADCHAR, "Illegal character ([)");
+        ret = 0;
+      }
+      else if (AR_INDEX == AR_GET(types, i) && offset != HEAD(p)->tag) {
+        gperror(GPE_MISSING_BRACKET, NULL);
+        ret = 0;
+      }
+      p = TAIL(p);
+    }
+  }
+
+  return ret;
+}
+
 gpasmVal do_insn(char *name, struct pnode *parms)
 {
   struct symbol *s;
@@ -3148,6 +3181,9 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_LIT1:
         {
           int s = 0;
+
+          check_16e_arg_types(parms, arity, 0);
+
           switch (arity) {
           case 1:
             s = check_flag(reloc_evaluate(HEAD(parms), RELOCT_F));
@@ -3188,6 +3224,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
       case INSN_CLASS_LIT6:
         if (enforce_arity(arity, 1)) {
+          check_16e_arg_types(parms, arity, 0);
+
           p = HEAD(parms);
           /* The literal cannot be a relocatable address */
           emit_check(i->opcode, maybe_evaluate(p), 0x3f);
@@ -3203,6 +3241,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
       case INSN_CLASS_LIT8:
         if (enforce_arity(arity, 1)) {
+          check_16e_arg_types(parms, arity, 0);
+
           p = HEAD(parms);
           coerce_str1(p); /* literal instructions can coerce string literals */
           if (strcasecmp(i->name, "movlb") == 0) {
@@ -3344,6 +3384,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           int value;
           int fsr;
 
+          check_16e_arg_types(parms, arity, 0);
+
           p = HEAD(parms);
           fsr = maybe_evaluate(p);
           if ((fsr < 0) || (fsr > 2))
@@ -3363,6 +3405,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
         /* used only in PROC_CLASS_PIC16E */
         if (enforce_arity(arity, 1)) {
           int offset;
+
+          check_16e_arg_types(parms, arity, 0);
 
           p = HEAD(parms);
           if (count_reloc(p) == 0) {
@@ -3404,6 +3448,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
         if (enforce_arity(arity, 1)) {
           int offset;
 
+          check_16e_arg_types(parms, arity, 0);
+
           p = HEAD(parms);
           if (count_reloc(p) == 0) {
             offset = maybe_evaluate(p) - (r + 2);
@@ -3422,6 +3468,9 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_LIT20:
         if (enforce_arity(arity, 1)) {
           int dest;
+
+          check_16e_arg_types(parms, arity, 0);
+
           p = HEAD(parms);
           dest = reloc_evaluate(p, RELOCT_GOTO);
           dest = gp_processor_org_to_byte(state.device.class, dest) >> 1;
@@ -3440,6 +3489,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           if (arity < 1) {
             enforce_arity(arity, 2);
           } else {
+            check_16e_arg_types(parms, arity, 0);
+
             p = HEAD(parms);
             switch (arity) {
             case 2:
@@ -3470,9 +3521,11 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
       case INSN_CLASS_FLIT12:
         {
-          int k;
-
           if (enforce_arity(arity, 2)) {
+            int k;
+
+            check_16e_arg_types(parms, arity, 0);
+
             p = HEAD(parms);
             file = maybe_evaluate(p);
             if(file > 3)
@@ -3489,7 +3542,11 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
       case INSN_CLASS_FF:
         if (enforce_arity(arity, 2)) {
-          int dest = maybe_evaluate(HEAD(TAIL(parms)));
+          int dest;
+
+          check_16e_arg_types(parms, arity, 0);
+
+          dest = maybe_evaluate(HEAD(TAIL(parms)));
 
           /* destination can't be PCL, TOSU, TOSH, TOSL */
           if ((dest == 0xff9) ||
@@ -3537,9 +3594,9 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           int source;
           int dest;
 
+          check_16e_arg_types(parms, arity, AR_INDEX);
+
           p = HEAD(parms);
-          if (p->tag != offset)
-            gperror(GPE_MISSING_BRACKET, NULL);
           source = maybe_evaluate(p);
 
           p = HEAD(TAIL(parms));
@@ -3563,14 +3620,12 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           int source;
           int dest;
 
+          check_16e_arg_types(parms, arity, (AR_INDEX << AR_BITS) | AR_INDEX);
+
           p = HEAD(parms);
-          if (p->tag != offset)
-            gperror(GPE_MISSING_BRACKET, NULL);
           source = maybe_evaluate(p);
 
           p = HEAD(TAIL(parms));
-          if (p->tag != offset)
-            gperror(GPE_MISSING_BRACKET, NULL);
           dest = maybe_evaluate(p);
 
           emit_check(i->opcode, source, 0x7f);
@@ -3795,6 +3850,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             break;
           }
 
+          check_16e_arg_types(parms, arity, AR_INDEX);
+
           p = HEAD(parms);
           file = reloc_evaluate(p, RELOCT_F);
           file_ok(file);
@@ -3843,12 +3900,14 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_BA8:
         {
           struct pnode *f, *b,*par;
-          int bit,a=0;
+          int bit, a = 0;
 
           if ((arity != 2) && (arity != 3)) {
             enforce_arity(arity, 3);
             break;
           }
+
+          check_16e_arg_types(parms, arity, AR_INDEX);
 
           f = HEAD(parms);
           file = reloc_evaluate(f, RELOCT_F);
@@ -3867,7 +3926,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             /* If extended instructions are enabled, access bit should default to 1 for low-end */
             /* of Access Memory unless the file is explicitly an offset (e.g. [foo]) */
             if ((state.extended_pic16e == true) && (file <= 0x5f)) {
-              if (f->tag == offset) {
+              if (f->tag == offset)
+              {
                 a = 0;
               } else {
                 a = 1;
@@ -3903,6 +3963,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             enforce_arity(arity, 2);
             break;
           }
+
+          check_16e_arg_types(parms, arity, AR_INDEX);
 
           p = HEAD(parms);
           file = reloc_evaluate(p, RELOCT_F);
@@ -3975,6 +4037,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
       case INSN_CLASS_TBL:
         if (enforce_arity(arity, 1)) {
+          check_16e_arg_types(parms, arity, 0);
+
           p = HEAD(parms);
           switch(maybe_evaluate(p))
             {
