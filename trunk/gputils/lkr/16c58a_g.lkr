@@ -1,5 +1,16 @@
 // File: 16c58a_g.lkr
 // Generic linker script for the PIC16C58A processor
+//// Begin: Added in gputils
+//=========================================================================
+//
+//      Gputils Specific Revision History
+//
+//=========================================================================
+//
+//      18 Jul 2012  Changed the page onto page3.
+//                   Added the page0, page1, page2.
+//
+//// End: Added in gputils
 
 #DEFINE _CODEEND _DEBUGCODESTART - 1
 #DEFINE _CEND _CODEEND + _DEBUGCODELEN
@@ -8,12 +19,23 @@
 
 LIBPATH .
 
+//// Begin: Added in gputils
+CODEPAGE     NAME=page0      START=0x0               END=0x1FF
+CODEPAGE     NAME=page1      START=0x200             END=0x3FF
+CODEPAGE     NAME=page2      START=0x400             END=0x5FF
+//// End: Added in gputils
 
 #IFDEF _DEBUGCODESTART
-  CODEPAGE   NAME=page       START=0x0               END=_CODEEND
+//// Begin: Changed in gputils
+////  CODEPAGE   NAME=page       START=0x0               END=_CODEEND
+  CODEPAGE   NAME=page3      START=0x600             END=_CODEEND
+//// End: Changed in gputils
   CODEPAGE   NAME=debug      START=_DEBUGCODESTART   END=_CEND        PROTECTED
 #ELSE
-  CODEPAGE   NAME=page       START=0x0               END=0x7FF                    
+//// Begin: Changed in gputils
+////  CODEPAGE   NAME=page       START=0x0               END=0x7FF                    
+  CODEPAGE   NAME=page       START=0x600             END=0x7FF
+//// End: Changed in gputils
 #FI
 
 CODEPAGE   NAME=.idlocs    START=0x800             END=0x803          PROTECTED 
