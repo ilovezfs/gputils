@@ -1,4 +1,11 @@
-2011-07-17  Borut Razem  <borutr@users.sourceforge.net>
+2011-07-19  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpprocessor.c, lkr/rf509ag_g.lkr, lkr/12c509_g.lkr,
+    lkr/12c509a_g.lkr, lkr/16c505_g.lkr, lkr/16c58a_g.lkr,
+    lkr/12ce519_g.lkr, lkr/rf509af_g.lkr, lkr/12cr509a_g.lkr:
+    fixed bug #3545482 - "Correction of gpprocessor.c and some lkr file.",
+    thanks to Molnar Karoly
+
+2011-07-18  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c: fixed bug
     #2876860 - "MOVFF should not allow indexed literal offsets"
 
