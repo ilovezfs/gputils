@@ -4,6 +4,9 @@
     lkr/12ce519_g.lkr, lkr/rf509af_g.lkr, lkr/12cr509a_g.lkr:
     fixed bug #3545482 - "Correction of gpprocessor.c and some lkr file.",
     thanks to Molnar Karoly
+  * libgputils/gpprocessor.c: applied patch
+    #3545897 - "Fix the coff_type differences of gpprocessor.c.",
+    thanks to Molnar Karoly
 
 2011-07-18  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c: fixed bug
