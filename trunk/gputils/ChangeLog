@@ -7,6 +7,9 @@
   * libgputils/gpprocessor.c: applied patch
     #3545897 - "Fix the coff_type differences of gpprocessor.c.",
     thanks to Molnar Karoly
+  * libgputils/gpprocessor.c: applied patch
+    #3545975 - "Fix the coff_type differences of gpprocessor.c. II",
+    thanks to Molnar Karoly
 
 2011-07-18  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c: fixed bug
