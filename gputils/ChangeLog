@@ -1,3 +1,8 @@
+2011-07-22  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpreadobj.c, libgputils/gpcoffgen.c,
+    libgputils/gpcoffgen.h, gpasm/coff.c, gputils/gpstrip.c:
+    fixed bug #2788304 - "[gpasm] Section and label namespaces overlap"
+
 2011-07-19  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpprocessor.c, lkr/rf509ag_g.lkr, lkr/12c509_g.lkr,
     lkr/12c509a_g.lkr, lkr/16c505_g.lkr, lkr/16c58a_g.lkr,
