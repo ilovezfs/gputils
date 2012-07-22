@@ -225,7 +225,30 @@ gp_coffgen_findsymbol(gp_object_type *object, const char *name)
   current = object->symbols;
 
   while (current != NULL) {
-    if ((current->name != NULL) &&
+    if ((current->class != C_SECTION) && (current->name != NULL) &&
+        (strcmp(current->name, name) == 0)) {
+      found = current;
+      break;
+    }
+    current = current->next;
+  }
+
+  return found;
+}
+
+gp_symbol_type *
+gp_coffgen_findsectionsymbol(gp_object_type *object, const char *name)
+{
+  gp_symbol_type *current = NULL;
+  gp_symbol_type *found = NULL;
+
+  if (object == NULL)
+    return NULL;
+
+  current = object->symbols;
+
+  while (current != NULL) {
+    if ((current->class == C_SECTION) && (current->name != NULL) &&
         (strcmp(current->name, name) == 0)) {
       found = current;
       break;
