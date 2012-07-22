@@ -424,7 +424,7 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
 
   /* verify the duplicate extern has the same properties */
   if ((new != NULL) && (type == gvt_extern))  {
-    if ((new->type != class) ||
+    if ((new->type != type) || (new->class != class) ||
         (new->section_number != section_number)) {
       snprintf(message, sizeof(message),
                "Duplicate label or redefining symbol that cannot be redefined. (%s)",

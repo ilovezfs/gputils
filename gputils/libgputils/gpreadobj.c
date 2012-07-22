@@ -209,7 +209,7 @@ _read_section_header(gp_object_type *object,
     section->name = strdup(buffer);
   }
 
-  section->symbol = gp_coffgen_findsymbol(object, section->name);
+  section->symbol = gp_coffgen_findsectionsymbol(object, section->name);
 
   section->address = gp_getl32(&file[8]);
   section->virtual_address = gp_getl32(&file[12]);

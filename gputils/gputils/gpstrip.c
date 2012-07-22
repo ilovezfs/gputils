@@ -39,7 +39,6 @@ conditional_remove(gp_symbol_type *symbol)
     }
     gp_coffgen_delsymbol(state.object, symbol);
   }
-
 }
 
 void
@@ -70,7 +69,6 @@ remove_sections(void)
       }
     }
   }
-
 }
 
 void
@@ -90,7 +88,6 @@ remove_symbols(void)
       }
     }
   }
-
 }
 
 void
@@ -122,7 +119,6 @@ strip_all(void)
   } else {
     gp_error("can not strip all symbols because the object file is not executable");
   }
-
 }
 
 void
@@ -150,7 +146,6 @@ strip_debug(void)
       conditional_remove(symbol);
     }
   }
-
 }
 
 void
@@ -170,7 +165,6 @@ strip_unneeded(void)
       conditional_remove(symbol);
     }
   }
-
 }
 
 void
@@ -198,7 +192,6 @@ add_name(struct symbol_table *table, char *name)
   sym = get_symbol(table, name);
   if (sym == NULL)
     sym = add_symbol(table, name);
-
 }
 
 void show_usage(void)
