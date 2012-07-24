@@ -1,4 +1,11 @@
-2011-07-24  Molnár Károly  <proton7@freemail.hu>
+2011-07-24  Molnar Karoly  <proton7@freemail.hu>
+  * lkr/12c509a_g.lkr, lkr/12c509_g.lkr, lkr/12ce519_g.lkr,
+    lkr/12cr509a_g.lkr, lkr/16c505_g.lkr, lkr/16f1786_g.lkr,
+    lkr/16f1787_g.lkr, lkr/16lf1786_g.lkr, lkr/16lf1787_g.lkr,
+    lkr/rf509af_g.lkr, lkr/rf509ag_g.lkr:
+    Correct the SECTION NAME=PROG entries.
+
+2011-07-24  Molnar Karoly  <proton7@freemail.hu>
   * doc/gputils.lyx:
     Sorted the list of supported processors.
 

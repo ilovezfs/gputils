@@ -10,6 +10,8 @@
 //      14 Jul 2012  Removed the page2.
 //                   Changed the page3 onto page1.
 //
+//      24 Jul 2012  Removed the SECTION NAME=PROG{2-3}.
+//
 //// End: Added in gputils
 
 #DEFINE _CODEEND _DEBUGCODESTART - 1
@@ -202,8 +204,10 @@ DATABANK   NAME=gpr11      START=0x5A0             END=0x5EF          SHADOW=lin
 
 SECTION    NAME=PROG0      ROM=page0           // ROM code space - page0
 SECTION    NAME=PROG1      ROM=page1           // ROM code space - page1
-SECTION    NAME=PROG2      ROM=page2           // ROM code space - page2
-SECTION    NAME=PROG3      ROM=page3           // ROM code space - page3
+//// Begin: Removed in gputils
+//SECTION    NAME=PROG2      ROM=page2           // ROM code space - page2
+//SECTION    NAME=PROG3      ROM=page3           // ROM code space - page3
+//// End: Removed in gputils
 SECTION    NAME=IDLOCS     ROM=.idlocs         // ID locations
 SECTION    NAME=DEEPROM    ROM=eedata          // Data EEPROM
 SECTION    NAME=LINEAR0    RAM=linear0         // Linear Memory
