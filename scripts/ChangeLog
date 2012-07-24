@@ -1,3 +1,8 @@
+2012-07-24 Molnár Károly <proton7@freemail.hu>
+	* tools/device-manager.pl:
+	  Added script to adding and deleting of the processors and
+	  variety investigations.
+
 2012-07-14 Borut Razem <borut.razem AT siol.net>
 	* tools/cmp_gp_mp.sh: detect gputils specifics in lkr files
 
