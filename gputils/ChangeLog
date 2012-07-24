@@ -1,3 +1,7 @@
+2011-07-24  Molnár Károly  <proton7@freemail.hu>
+  * doc/gputils.lyx:
+    Sorted the list of supported processors.
+
 2011-07-22  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpreadobj.c, libgputils/gpcoffgen.c,
     libgputils/gpcoffgen.h, gpasm/coff.c, gputils/gpstrip.c:
