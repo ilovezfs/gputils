@@ -1,3 +1,21 @@
+2012-07-25  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gparchive.c, libgputils/gpreadobj.c, gpasm/parse.y,
+    gpasm/cod.c, gplink/script.c, gplink/cod.c, gputils/dump.c
+    gputils/block.c: fixed warnings, additional tests for object and
+    arhive file consistency
+  * gplink/testsuite/gplink.project/lkrfiles/badbank1.lkr,
+    gplink/testsuite/gplink.project/lkrfiles/badpage1.lkr,
+    gplink/testsuite/gplink.project/lkrfiles/gblconflict.lkr,
+    gplink/testsuite/gplink.project/lkrfiles/absconflict.lkr,
+    gplink/testsuite/gplink.project/lkrfiles/reloc12.lkr,
+    gplink/testsuite/gplink.project/lkrfiles/reloc14.lkr,
+    gplink/testsuite/gplink.project/lkrfiles/memseg.lkr,
+    gplink/testsuite/gplink.project/lkrfiles/fullbank1.lkr,
+    gplink/testsuite/gplink.project/lkrfiles/accesso.lkr,
+    gplink/testsuite/gplink.project/lkrfiles/fullpage1.lkr,
+    gplink/testsuite/gplink.project/lkrfiles/reloc16e.lkr,
+    gplink/testsuite/test: fixed device .lkr file names
+
 2012-07-24  Molnar Karoly  <proton7@freemail.hu>
   * lkr/12c509a_g.lkr, lkr/12c509_g.lkr, lkr/12ce519_g.lkr,
     lkr/12cr509a_g.lkr, lkr/16c505_g.lkr, lkr/16f1786_g.lkr,

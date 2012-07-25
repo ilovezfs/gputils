@@ -19,9 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with gputils; see the file COPYING.  If not, write to
 # the Free Software Foundation, 59 Temple Place - Suite 330,
-# Boston, MA 02111-1307, USA.  
+# Boston, MA 02111-1307, USA.
 
-# FIXME: This is a poorly written script. This is temporary.  In 
+# FIXME: This is a poorly written script. This is temporary.  In
 # the future, dejagnu will be used to replace this script.
 
 # Defines
@@ -83,7 +83,7 @@ printversion() {
 
 printheader () {
   printversion
-  echo "NAME:      $NAME" 
+  echo "NAME:      $NAME"
   echo "DATE:      $(date +%x)"
   echo "TIME:      $(date +%r)"
   echo "HOST:      $(hostname)"
@@ -101,12 +101,12 @@ test_gplink_compile () {
     do
       # split the base file name from the extension
       basefilename="${x%%.asm}"
-      ../../$GPASMBIN $GPASMFLAGS -I ../../$HEADER $x 
+      ../../$GPASMBIN $GPASMFLAGS -I ../../$HEADER $x
       if test -e $basefilename.o; then
-        echo "$x compiled"	
+        echo "$x compiled"
       else
         echo "$x failed to compile"
-        exit 1	
+        exit 1
       fi
     done
 
@@ -182,34 +182,34 @@ test_gplink_sub() {
     do
       # split the base file name from the extension
       basefilename="${x%%.lkr}"
-      if test -e ../hexfiles/$basefilename.hex; then 
-	# a hex file exists so these files must not have errors
-	tested=$((tested+1))
-	echo "linking $basefilename.o"
-	echo "../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
-	../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
-	if test -e $basefilename.hex; then
-	  compiled=$((compiled+1))
-	  diff -s -u ../hexfiles/$basefilename.hex $basefilename.hex
-	  if diff -q ../hexfiles/$basefilename.hex $basefilename.hex; then 
-	    passed=$((passed+1))
-	    echo "$basefilename.lkr tested successfully"	
-	  fi
-	else
-	  echo "$basefilename.lkr failed to link"	
-	fi
+      if test -e ../hexfiles/$basefilename.hex; then
+        # a hex file exists so these files must not have errors
+        tested=$((tested+1))
+        echo "linking $basefilename.o"
+        echo "../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
+        ../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
+        if test -e $basefilename.hex; then
+          compiled=$((compiled+1))
+          diff -s -u ../hexfiles/$basefilename.hex $basefilename.hex
+          if diff -q ../hexfiles/$basefilename.hex $basefilename.hex; then
+            passed=$((passed+1))
+            echo "$basefilename.lkr tested successfully"
+          fi
+        else
+          echo "$basefilename.lkr failed to link"
+        fi
       else
-	# a hex file doesn't exist so these files must have intentional
-	# errors
-	errortested=$((errortested+1))
-	echo "linking $basefilename.lkr"
-	../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
-	if test -e $basefilename.hex; then
-	  echo "$basefilename.lkr failed to generate an error"	
-	else
-	  notcompiled=$((notcompiled+1))
-	  echo "$basefilename.lkr tested successfully"	
-	fi
+        # a hex file doesn't exist so these files must have intentional
+        # errors
+        errortested=$((errortested+1))
+        echo "linking $basefilename.lkr"
+        ../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
+        if test -e $basefilename.hex; then
+          echo "$basefilename.lkr failed to generate an error"
+        else
+          notcompiled=$((notcompiled+1))
+          echo "$basefilename.lkr tested successfully"
+        fi
       fi
       echo
     done
@@ -217,14 +217,14 @@ test_gplink_sub() {
   cd ..
   printbanner "./$1 testing complete"
   echo "$tested files tested without intentional errors"
-  echo "$compiled compiled without errors"  
-  echo "$passed generated identical hex files"  
+  echo "$compiled compiled without errors"
+  echo "$passed generated identical hex files"
   echo
-  echo "$errortested files tested with intentional errors"  
-  echo "$notcompiled generated errors during compilation"  
+  echo "$errortested files tested with intentional errors"
+  echo "$notcompiled generated errors during compilation"
   echo
   if ! test $tested -eq $passed; then
-    return 1  
+    return 1
   elif ! test $errortested -eq $notcompiled; then
     return 1
   else
@@ -235,7 +235,7 @@ test_gplink_sub() {
 test_gplink() {
   printbanner "Start of gplink testing"
   binexists $GPASMBIN
-  binexists $GPLIBBIN  
+  binexists $GPLIBBIN
   binexists $GPLINKBIN
   binexists $GPVOBIN
   RETVAL=$?
@@ -262,7 +262,7 @@ case "$1" in
     if [ $RETVAL -eq 1 ]; then
       exit 1
     else
-      printbanner "All testing sucessful"    
+      printbanner "All testing sucessful"
     fi
     exit
     ;;
@@ -283,7 +283,7 @@ case "$1" in
     ;;
   *)
     echo "$0: Invalid argument. Try \"$0 help\" for help."
-    exit 1  
+    exit 1
 
 esac
 
