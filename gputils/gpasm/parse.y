@@ -146,7 +146,10 @@ void next_line(int value)
     }
   } else if ((state.src->type == src_file) &&
              (state.src->lst.f != NULL)) {
-    fgets(l, BUFSIZ, state.src->lst.f);
+    char *s;
+
+    s = fgets(l, BUFSIZ, state.src->lst.f);
+    assert(s == l);
     l[strlen(l) - 1] = '\0';    /* Eat the trailing newline */
 
     if (state.mac_prev) {
