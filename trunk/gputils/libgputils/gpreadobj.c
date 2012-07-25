@@ -27,6 +27,7 @@ gp_identify_coff_file(const char *filename)
 {
   FILE *file;
   char magic[SARMAG + 1];
+  int n;
 
   if ((file = fopen(filename, "rb")) == NULL) {
     return sys_err_file;
@@ -34,16 +35,19 @@ gp_identify_coff_file(const char *filename)
 
   /* Read the magic number. Archive magic numbers are longest, so read
      their size */
-  fread(&magic[0], 1, SARMAG, file);
+  n = fread(&magic[0], 1, SARMAG, file);
   fclose(file);
 
-  if (((magic[1]<<8) + magic[0]) == MICROCHIP_MAGIC_v1)
-    return object_file;
-  if (((magic[1]<<8) + magic[0]) == MICROCHIP_MAGIC_v2)
-    return object_file_v2;
+  if (SARMAG == n) {
+    if (((magic[1]<<8) + magic[0]) == MICROCHIP_MAGIC_v1)
+      return object_file;
 
-  if (strncmp(magic, ARMAG, SARMAG) == 0)
-    return archive_file;
+    if (((magic[1]<<8) + magic[0]) == MICROCHIP_MAGIC_v2)
+      return object_file_v2;
+
+    if (strncmp(magic, ARMAG, SARMAG) == 0)
+      return archive_file;
+  }
 
   return unknown_file;
 }
@@ -56,6 +60,7 @@ gp_read_file(const char *filename)
   FILE *infile;
   gp_binary_type *file;
   struct stat statbuf;
+  int n;
 
   infile = fopen(filename,"rb");
   if (infile == NULL) {
@@ -71,7 +76,9 @@ gp_read_file(const char *filename)
 
   /* read the object file into memory */
   file->file = (unsigned char *)malloc(file->size);
-  fread(file->file, 1, file->size, infile);
+  n = fread(file->file, 1, file->size, infile);
+  if (n != file->size)
+    gp_error("file \"%s\" size doesn't match the statbuf.st_size", filename);
 
   fclose(infile);
 
@@ -548,7 +555,7 @@ _clean_symtbl(gp_object_type *object)
 {
   gp_symbol_type *current = NULL;
   gp_symbol_type *next_symbol = NULL;
-  gp_symbol_type *old_symbol = NULL;
+  /* gp_symbol_type *old_symbol = NULL; */
   unsigned int i;
 
   current = object->symbols;
@@ -563,7 +570,7 @@ _clean_symtbl(gp_object_type *object)
     if (current->num_auxsym != 0) {
       next_symbol = current->next;
       for (i = 0; i < current->num_auxsym; i++) {
-        old_symbol = next_symbol;
+        /* old_symbol = next_symbol; */
         next_symbol = next_symbol->next;
         /* FIXME: Can't free the single symbols because they were allocated
            in blocks.  This won't be a problem once obstacks are used.

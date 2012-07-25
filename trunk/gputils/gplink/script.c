@@ -446,7 +446,6 @@ static int do_stack(char *name, enum section_type type, struct pnode *parms)
   };
   struct pnode *p;
   gp_boolean found_size  = false;
-  gp_boolean found_ram   = false;
   char *ram_name = NULL;
   struct symbol *sym;
 
@@ -482,7 +481,6 @@ static int do_stack(char *name, enum section_type type, struct pnode *parms)
 
         case id_ram:
           if (enforce_simple(p->value.binop.p1)) {
-            found_ram = true;
             ram_name = strdup(p->value.binop.p1->value.symbol);
           }
           break;

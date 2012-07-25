@@ -341,8 +341,8 @@ cod_write_code(void)
   int mem_base, i;
   int start_address = 0, used_flag = 0;
   BlockList *rb = NULL;
-  int _64k_base;
-  DirBlockInfo *dbi = NULL;
+  static DirBlockInfo *dbi = NULL;
+  int _64k_base = 0;
 
   while (m) {
     int high_addr;

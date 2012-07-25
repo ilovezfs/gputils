@@ -52,6 +52,7 @@ fget_line(int line, char *s, int size, FILE *pFile)
   static FILE *plastFile = NULL;
   static int lastline = -1;
   static long lastPos = -1;
+  char *ps;
 
   if (!pFile)
     return NULL;
@@ -69,10 +70,13 @@ fget_line(int line, char *s, int size, FILE *pFile)
     lastPos = -1;
   }
 
-  while (line >= ++lastline)
-    fgets(s, size, plastFile);
+  while (line >= ++lastline) {
+    ps = fgets(s, size, plastFile);
+    assert(ps == s);
+  }
 
-  fgets(s, size, plastFile);
+  ps = fgets(s, size, plastFile);
+  assert(ps == s);
 
   lastPos = ftell(plastFile);
 
