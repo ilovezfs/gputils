@@ -1844,6 +1844,8 @@ static gpasmVal do_idata(gpasmVal r,
 
   if (state.mode == absolute) {
     gperror(GPE_OBJECT_ONLY, NULL);
+  } else if (PROC_CLASS_PIC12 == state.device.class) {
+    gperror (GPE_ILLEGAL_DIR, NULL);
   } else {
     switch (arity) {
     case 0:
@@ -1881,6 +1883,8 @@ static gpasmVal do_idata_acs(gpasmVal r,
 
   if (state.mode == absolute) {
     gperror(GPE_OBJECT_ONLY, NULL);
+  } else if (PROC_CLASS_PIC12 == state.device.class) {
+    gperror (GPE_ILLEGAL_DIR, NULL);
   } else {
     switch (arity) {
     case 0:

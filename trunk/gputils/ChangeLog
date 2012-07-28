@@ -1,3 +1,9 @@
+2012-07-28  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/directive.c: idata and idata_acs directives are not available
+    for 12-bit instruction width (PIC10, some PIC12/PIC16) devices,
+    according to "MPASM Assembler, MPLINK Object Linker, MPLIB Object
+    Librarian User’s Guide"
+
 2012-07-25  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gparchive.c, libgputils/gpreadobj.c, gpasm/parse.y,
     gpasm/cod.c, gplink/script.c, gplink/cod.c, gputils/dump.c
