@@ -1,3 +1,6 @@
+2012-07-28 Molnár Károly <proton7@freemail.hu>
+	* tools/device-manager.pl: Added new command line option.
+
 2012-07-24 Molnár Károly <proton7@freemail.hu>
 	* tools/device-manager.pl:
 	  Added script to adding and deleting of the processors and

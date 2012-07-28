@@ -14,7 +14,7 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
    GNU General Public License for more details.
 
-   You should have received a copy of the GNU General Public License 
+   You should have received a copy of the GNU General Public License
    along with this library; see the file COPYING. If not, write to the
    Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
    MA 02110-1301, USA.
@@ -60,12 +60,18 @@
 =cut
 
 use strict;
-use 5.10.1;                     # Beacause of her need: ${^POSTMATCH}
+use 5.10.1;                     # Because of her need: ${^POSTMATCH}
 use feature 'switch';           # Starting from 5.10.1.
 use POSIX qw(strftime);
 
 use constant FALSE => 0;
 use constant TRUE  => 1;
+
+use constant ST_WAIT   => 0;
+use constant ST_LISTEN => 1;
+
+use constant AL_NAME => 17;
+use constant AL_ADDR => 22;
 
 use constant OP_NULL         => 0;
 use constant OP_ADD          => 1;
@@ -172,11 +178,26 @@ my $list_file;
 my %list_file_members;
 my $mcu;
 my $operation;
+my $add_config_bits = FALSE;
 my $extended_list = FALSE;
 my $examine_exist_device = TRUE;
 my $time_str = '';
 my $out_handler;
 my $timestamp = FALSE;
+
+#-------------------------------------------------------------------------------
+
+my $gp_border = ';' . ('=' x 74);
+my $igh = ';;;;';
+my $gp_added_start = "$igh Begin: Added in gputils";
+my $gp_added_end   = "$igh End: Added in gputils";
+my $gp_spec_hist   = 'Gputils Specific Revision History';
+my $conf_sect      = 'Configuration Bits';
+
+my $gp_rev_hist_begin;  # The begin of the "Gputils Specific Revision History" the in the include file.
+my $gp_rev_hist_end;    # The end of the "Gputils Specific Revision History" in the include file.
+
+my $config_mask = 0xFFFF;
 
 ################################################################################
 ################################################################################
@@ -186,7 +207,7 @@ my %pp_defines = ();            # Value of definitions.
 
 my @pp_conditions = ();
 my @pp_else_conditions = ();
-my $pp_level = 0;		# Shows the lowest level.
+my $pp_level = 0;   # Shows the lowest level.
 my $pp_line_number;             # Line number of a lkr file.
 
 ################################################################################
@@ -264,7 +285,7 @@ my %mp_mcus_by_name;
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-	# Examines that the parameter is defined or not defined.
+  # Examines that the parameter is defined or not defined.
 
 sub _defined($)
   {
@@ -273,7 +294,7 @@ sub _defined($)
 
 #-------------------------------------------------------------------------------
 
-	# Records a definition.
+  # Records a definition.
 
 sub define($)
   {
@@ -290,7 +311,7 @@ sub define($)
 
 #-------------------------------------------------------------------------------
 
-	# Evaluation of the #if give a boolean value. This procedure preserves it.
+  # Evaluation of the #if give a boolean value. This procedure preserves it.
 
 sub if_condition($)
   {
@@ -303,7 +324,7 @@ sub if_condition($)
 
 #-------------------------------------------------------------------------------
 
-	# Evaluation of the #else give a boolean value. This procedure preserves it.
+  # Evaluation of the #else give a boolean value. This procedure preserves it.
 
 sub else_condition($)
   {
@@ -323,7 +344,7 @@ sub else_condition($)
 
 #-------------------------------------------------------------------------------
 
-	# Closes a logical unit which starts with a #if.
+  # Closes a logical unit which starts with a #if.
 
 sub endif_condition($)
   {
@@ -361,13 +382,13 @@ sub run_preprocessor($$$)
     {
     if ($pp_conditions[$last])
       {
-	# The ancestor is valid, therefore it should be determined that
+  # The ancestor is valid, therefore it should be determined that
         # the descendants what kind.
       if_condition(_defined($1));
       }
     else
       {
-	# The ancestor is invalid, so the descendants will invalid also.
+  # The ancestor is invalid, so the descendants will invalid also.
       if_condition(FALSE);
       }
     }
@@ -430,6 +451,34 @@ sub Outl
 
 #-------------------------------------------------------------------------------
 
+sub Outf
+  {
+  printf $out_handler (shift(@_), @_);
+  }
+
+#-------------------------------------------------------------------------------
+
+sub Outfl
+  {
+  Outf(@_);
+  print $out_handler "\n";
+  }
+
+#-------------------------------------------------------------------------------
+
+sub align($$)
+  {
+  my $Text = $_[0];
+  my $al   = $_[1] - length($Text);
+
+        # One space will surely becomes behind it.
+  $al = 1 if ($al < 1);
+
+  return ($Text . ' ' x $al);
+  }
+
+#-------------------------------------------------------------------------------
+
 sub str2dec($)
   {
   my $Str = $_[0];
@@ -437,7 +486,7 @@ sub str2dec($)
   return hex($1)   if ($Str =~ /^0x([[:xdigit:]]+)$/io);
   return int($Str) if ($Str =~ /^-?\d+$/o);
 
-  die "str2dec(): This string not number: \"$Str\"";
+  die "str2dec(): This string is not a number: \"$Str\"";
   }
 
 #-------------------------------------------------------------------------------
@@ -448,7 +497,7 @@ sub smartCompare($$)
 
   if (${$Str1} =~ /^\d/o && ${$Str2} =~ /^\d/o)
     {
-	# $Str1 number and $Str2 number
+        # $Str1 number and $Str2 number
     return (int(${$Str1}) <=> int(${$Str2}));
     }
 
@@ -543,6 +592,339 @@ sub read_file($$)
 
 #-------------------------------------------------------------------------------
 
+        # Searches for the possible location of the gputils history.
+        # Also went out looking section of the Configuration Bits as well.
+
+sub assess_include($)
+  {
+  my $n = 0;
+  my $start = -1;
+
+  $gp_rev_hist_begin = -1;
+  $gp_rev_hist_end   = -1;
+  foreach (@{$_[0]})
+    {
+    if ($_ =~ /^\s*;\s*=+\s*$/io)
+      {
+      $start = $n;
+      $gp_border = $_;
+      }
+    elsif ($start > 0 && $_ =~ /^\s*;\s*Verify\s+Processor\s*$/io)
+      {
+      $gp_rev_hist_begin = $start - 1;
+      $gp_rev_hist_end   = $start;
+      }
+    elsif ($_ =~ /^\s*;\s*Configuration\s+Bits\s*$/io)
+      {
+      return TRUE;
+      }
+
+    ++$n;
+    } # foreach (@{$_[0]})
+
+  return FALSE;
+  }
+
+#-------------------------------------------------------------------------------
+
+        # Delete the last LIST line.
+
+sub delete_last_list($)
+  {
+  my $Array = $_[0];
+  my $i;
+
+  for ($i = $#{$Array}; $i >= 0; --$i)
+    {
+    if ($Array->[$i] =~ /^\s*LIST\s*$/io)
+      {
+      splice(@{$Array}, $i, 1);
+      last;
+      }
+    }
+  }
+
+#-------------------------------------------------------------------------------
+
+        # Reads config bits of $Mcu from the $Info.
+
+sub read_config_bits($$$)
+  {
+  my ($Info, $Mcu, $Configs) = @_;
+  my $addr = 0;
+  my $config_count = 0;
+  my $switch_count = 0;
+  my $setting_count = 0;
+  my $switch_info = undef;
+  my $state = ST_WAIT;
+
+  open(IN, '<', $Info) || die "Could not open for reading: $Info\n";
+
+=back
+        The structure of one element of the %{$Configs} hash:
+
+        '300005' => [
+                      {
+                      'HEAD' => 'CCP2MX',
+                      'BITS' => [
+                                  {
+                                  'NAME'  => 'OFF',
+                                  'VALUE' => 0,
+                                  'EXPL'  => 'CCP2 input/output is multiplexed with RB3'
+                                  },
+
+                                  ...
+
+                                  {}
+                                ],
+                      'MASK' => 1,
+                      'EXPL' => 'CCP2 MUX bit'
+                      },
+
+                      ...
+
+                      {}
+                    ]
+=cut
+
+  %{$Configs} = ();
+
+  while (<IN>)
+    {
+    my @fields = ($_ =~ /<([^<>]*)>/go);
+
+    next if (@fields < 3);
+
+    if ($fields[0] eq 'PART_INFO_TYPE')
+      {
+        # <PART_INFO_TYPE><f220><PIC10F220><16c5x><0><0><ff><1><1f><0><0><0><1>
+        # <PART_INFO_TYPE><e529><PIC12F529T39A><16c5xe><0><3><5ff><8><1f><0><0><3f><1>
+        # <PART_INFO_TYPE><6628><PIC16F628><16xxxx><0><1><7ff><4><7f><7f><0><0><1>
+        # <PART_INFO_TYPE><a829><PIC16LF1829><16Exxx><2><4><1fff><20><7f><ff><0><0><2>
+        # <PART_INFO_TYPE><1330><PIC18F1330><18xxxx><6><1><1fff><10><ff><7f><7f><0><c>
+
+      if (lc($fields[2]) eq $Mcu)
+        {
+        $config_count = hex($fields[12]);
+        $switch_count = 0;
+        $setting_count = 0;
+        $config_mask = 0xFFFF;
+
+        given ($fields[3])
+          {
+          when (/^16c5xe?$/io)
+            {
+            $config_mask = 0x0FFF;
+            }
+
+          when (/^16xxxx$/io)
+            {
+            $config_mask = 0x3FFF;
+            }
+
+          when (/^16Exxx$/io)
+            {
+            $config_mask = 0xFFFF;
+            }
+
+          when (/^18xxxx$/io)
+            {
+            $config_mask = 0x00FF;
+            }
+          }
+
+        $state = ST_LISTEN;
+        $addr = 0;
+        %{$Configs} = ();
+        }
+      else
+        {
+        $state = ST_WAIT;
+        }
+
+      next;
+      } # if ($fields[0] eq 'PART_INFO_TYPE')
+
+    if ($state == ST_LISTEN)
+      {
+      given ($fields[0])
+        {
+        when ('CONFIGREG_INFO_TYPE')
+          {
+        # <CONFIGREG_INFO_TYPE><2007><0><ffff><9>
+        # <CONFIGREG_INFO_TYPE><2008><0><ffff><0>
+        # <CONFIGREG_INFO_TYPE><300001><0><7><3>
+
+          die "Too much the number of \"CONFIGREG_INFO_TYPE\"!\n" if ($config_count <= 0);
+
+          $switch_count = hex($fields[4]);
+          $addr = hex($fields[1]);
+          --$config_count;
+          } # when ('CONFIGREG_INFO_TYPE')
+
+        when ('SWITCH_INFO_TYPE')
+          {
+        # <SWITCH_INFO_TYPE><FOSC><Oscillator Selection bits><7><8>
+        # <SWITCH_INFO_TYPE><DEBUG><In-Circuit Debugger Mode bit><2000><2>
+
+          die "Too much the number of \"SWITCH_INFO_TYPE\"!\n" if ($switch_count <= 0);
+
+          $switch_info = {
+                         HEAD => $fields[1],
+                         BITS => [],
+                         MASK => hex($fields[3]),
+                         EXPL => (defined($fields[2]) ? $fields[2] : '')
+                         };
+
+          $setting_count = hex($fields[4]);
+          push(@{$Configs->{$addr}}, $switch_info);
+          --$switch_count;
+          } # when ('SWITCH_INFO_TYPE')
+
+        when ('SETTING_VALUE_TYPE')
+          {
+        # <SETTING_VALUE_TYPE><LP><LP oscillator: Low-power crystal on RA6/OSC2/CLKOUT and RA7/OSC1/CLKIN><0>
+        # <SETTING_VALUE_TYPE><OFF><WDT disabled and can be enabled by SWDTEN bit of the WDTCON register><0>
+        # <SETTING_VALUE_TYPE><ON><WDT enabled><8>
+        # <SETTING_VALUE_TYPE><2><><10>
+
+          die "Too much the number of \"SETTING_VALUE_TYPE\"!\n" if ($setting_count <= 0);
+          die "There is no actual \"SWITCH_INFO_TYPE\"!\n" if (! defined($switch_info));
+
+          my $setting = {
+                        NAME  => $fields[1],
+                        VALUE => hex($fields[3]),
+                        EXPL  => (defined($fields[2]) ? $fields[2] : '')
+                        };
+
+          push(@{$switch_info->{BITS}}, $setting);
+          --$setting_count;
+
+        # All information is together.
+          last if (! $setting_count && ! $switch_count && ! $config_count);
+          } # when ('SETTING_VALUE_TYPE')
+        } # given ($fields[0])
+      } # if ($state == ST_LISTEN)
+    } # while (<IN>)
+
+  close(IN);
+  }
+
+#-------------------------------------------------------------------------------
+
+        # Writes out the $Configs.
+
+sub dump_config($)
+  {
+  my $Configs = $_[0];
+  my @addresses = sort {$a <=> $b} keys(%{$Configs});
+  my @sections;
+  my $count = @addresses;
+  my $str;
+  my $len;
+  my $i;
+
+  return if (! $count);
+
+  $len = 4;
+
+  if ($count < 2)
+    {
+        # PIC10F, PIC12, PIC16
+
+    $sections[0] = 'CONFIG';
+    $str = align('_CONFIG', AL_NAME);
+    Outfl(align("${str}EQU", AL_ADDR) . "H'%0${len}X'", $addresses[0]);
+    }
+  else
+    {
+    if ($config_mask == 0x00FF)
+      {
+        # PIC18
+      my $v;
+      my $n;
+      my $h;
+
+      if ($addresses[0] < 0x300000)
+        {
+        # PIC18FxxJ
+
+        for ($i = 0; $i < $count; ++$i)
+          {
+          $v = $addresses[$i];
+          $n = int(($i & 0x0F) / 2 + 1);
+          $h = ($i & 1) ? 'H' : 'L';
+          $str = "CONFIG$n$h";
+          $sections[$i] = $str;
+          $str = align("_$str", AL_NAME);
+          Outfl(align("${str}EQU", AL_ADDR) . "H'%06X'", $v);
+          }
+        }
+      else
+        {
+        # PIC18Fxx
+
+        for ($i = 0; $i < $count; ++$i)
+          {
+          $v = $addresses[$i];
+          $n = int(($v & 0x0F) / 2 + 1);
+          $h = ($v & 1) ? 'H' : 'L';
+          $str = "CONFIG$n$h";
+          $sections[$i] = $str;
+          $str = align("_$str", AL_NAME);
+          Outfl(align("${str}EQU", AL_ADDR) . "H'%06X'", $v);
+          }
+        }
+
+      $len = 2;
+      }
+    else
+      {
+      # PIC12, PIC16
+
+      for ($i = 0; $i < $count; ++$i)
+        {
+        $str = sprintf "CONFIG%u", $i + 1;
+        $sections[$i] = $str;
+        $str = align("_$str", AL_NAME);
+        Outfl(align("${str}EQU", AL_ADDR) . "H'%04X'", $addresses[$i]);
+        }
+      }
+    }
+
+  for ($i = 0; $i < $count; ++$i)
+    {
+    Outl("\n;----- $sections[$i] options ------------------------------------------------\n");
+
+    foreach (@{$Configs->{$addresses[$i]}})
+      {
+      my $head = "_$_->{HEAD}";
+      my $mask = ($_->{MASK} ^ $config_mask) & $config_mask;
+
+      Outl("        ; $_->{EXPL}");
+
+      foreach (@{$_->{BITS}})
+        {
+        $str = align("${head}_$_->{NAME}", 28);
+        $str = sprintf(align("${str}EQU", 33) . "H'%0${len}X'", $_->{VALUE} | $mask);
+
+        if ($_->{EXPL} ne '')
+          {
+          Outl(align($str, 42), "; $_->{EXPL}");
+          }
+        else
+          {
+          Outl($str);
+          }
+        }
+
+      Outl();
+      }
+    }
+  }
+
+#-------------------------------------------------------------------------------
+
         # Reads a '.inc' or a '.lkr' file from $Source_dir. In the readed
         # file to removes the DOS end of line characters from, after that
         # from it creates a new file.
@@ -568,7 +950,45 @@ sub convert_file($$$$)
   read_file("$Source_dir/$in_file", \@array);
   open($out_handler, '>', $out_file) || die "convert_file(): Could not create the \"$out_file\" file!\n";
   Log("Create the $out_file file.", 6);
-  Outl(join("\n", @array));
+
+  if ($Lkr || assess_include(\@array))
+    {
+    Outl(join("\n", @array));
+    }
+  elsif (! $add_config_bits)
+    {
+    Outl(join("\n", @array));
+    }
+  else
+    {
+        # There are, so inc files (eg p18f25j11.inc) from which is missing in the Configuration Bits section.
+        # This section complement such a deficiency.
+
+    my %configs;
+
+    delete_last_list(\@array);
+    read_config_bits("$Source_dir/$mplabx_dev_info", "pic$Name", \%configs);
+
+    Outl(join("\n", @array[ 0 .. $gp_rev_hist_begin ]));
+
+    Outl("$gp_added_start\n\n$gp_border\n;\n;       $gp_spec_hist\n;\n$gp_border\n");
+    Outl(';       ', strftime('%F', gmtime), "  Added entire $conf_sect section.");
+    Outl("$gp_added_end\n");
+
+    Out(join("\n", @array[ $gp_rev_hist_end .. $#array ]));
+
+    print $out_handler <<EOT
+$gp_added_start\n
+; This section is generated automatically by the $PROGRAM.
+\n$gp_border\n;\n;       $conf_sect\n;\n$gp_border\n
+EOT
+;
+    dump_config(\%configs);
+    Outl($gp_added_end);
+
+    Outl("\n        LIST");
+    }
+
   close($out_handler);
   }
 
@@ -734,7 +1154,7 @@ EOT
       given ($Action)
         {
         when (RP_ADD)
-          { 
+          {
           ${$Array} .= sprintf "| %-17s | %-20s |\n", @_;
           }
 
@@ -1107,7 +1527,7 @@ sub read_list_file($)
     chomp;
     s/\r$//o;
 
-	# Empty line.
+  # Empty line.
     next if ($_ =~ /^\s*$/o);
 
     s/^\s*|\s*$//go;
@@ -1219,6 +1639,7 @@ sub extract_px_struct()
         }
 
         # Does not deal with the generic devices. Otherwise this would cause a false error message.
+
 
       if ($name0 ne 'pic16c5x' &&
           $name0 !~ /^pic1[6-8]cxx$/o &&
@@ -1483,7 +1904,7 @@ sub addition_helper2($$$$)
   my $coff = $Info->{COFF};
   my $px   = $gp_px_rows_by_coff{$coff};
 
-  report(RP_ADD, E_COFF_COLL, $Coff_error, $coff, $px->{NAMES}->[0], $Name) if (defined($px));
+  report(RP_ADD, E_COFF_COLL, $Coff_error, $coff, $px->{NAMES}->[0], "pic$Name") if (defined($px));
 
   $px = new_px_row($Mem_error, $Info, undef);
   push(@gp_px_struct, $px);
@@ -1531,6 +1952,7 @@ sub add_more_mcu()
   foreach my $name (sort { smartSort($a, $b, FALSE) } keys(%list_file_members))
     {
     $name = addition_helper1($name);
+
     return if (! defined($name));
 
     addition_helper2(\$coff_error, \$mem_error, $name, $mp_mcus_by_name{$name});
@@ -1691,25 +2113,29 @@ Usage: $PROGRAM [options]
 
     Options are:
 
-	-gp <path> or --gputils-path <path>
+        -gp <path> or --gputils-path <path>
 
-	    The program on this path looks for the gputils.
+            The program on this path looks for the gputils.
 
-	-mp <path> or --mplabx-path <path>
+        -mp <path> or --mplabx-path <path>
 
-	    The program on this path looks for the mplabx.
+            The program on this path looks for the mplabx.
 
-	-p <p12f1822> or --processor <p12f1822>
+        -p <p12f1822> or --processor <p12f1822>
 
-	    The name of MCU. The prefix of name can be: 'p', 'pic' or nothing
+            The name of MCU. The prefix of name can be: 'p', 'pic' or nothing
 
-	-a or --add
+        -a or --add
 
             Adds the MCU from the gputils.
             If the program received a list file, then each member adds.
             (In this case the '-p' switch does not matter.)
 
-	-r or --remove
+        -ac or --add-config-bits
+
+            Adds the missing $conf_sect section.
+
+        -r or --remove
 
             Removes the MCU from the gputils.
             If the program received a list file, then each member removes.
@@ -1721,7 +2147,7 @@ Usage: $PROGRAM [options]
             that sorts the table rows, uniformly formatted the whole table and
             make a gpprocessor.c.gen file.
 
-	-l <file> or --list-file <file>
+        -l <file> or --list-file <file>
 
             The name of the MCUs, reads from the file. In this way
             at the same time, may be given more MCUs to the gputils.
@@ -1733,11 +2159,11 @@ Usage: $PROGRAM [options]
             Only the surveying section run. Surveys the errors in databases
             of mplabx and gputils.
 
-	-lg or --list-gputils
+        -lg or --list-gputils
 
             Lists all MCU is what gputils know.
 
-	-lm or --list-mplabx
+        -lm or --list-mplabx
 
             Lists all MCU is what mplabx know.
 
@@ -1751,7 +2177,7 @@ Usage: $PROGRAM [options]
             (The case of mplabx, this structure only exists in theory.)
             (Only those MCU deals which exist both in package.)
 
-	-e or --extended-list
+        -e or --extended-list
 
             Shows a detailed list from all MCU. (The '-lm' and the '-lg' switches relates.)
             If the program received a list file, the it works like a filter.
@@ -1761,18 +2187,18 @@ Usage: $PROGRAM [options]
             Does not examine the existence of the MCU, what you want to add.
             This switch, only to test recommended to used.
 
-	-t or --timestamp
+        -t or --timestamp
 
             There will be timestamp in the header files. (default: no)
 
-	-v <level> or --verbose <level>
+        -v <level> or --verbose <level>
 
-	    It provides information on from the own operation.
-	    Possible value of the level between 0 and 10. (default: 0)
+            It provides information on from the own operation.
+            Possible value of the level between 0 and 10. (default: 0)
 
-	-h or --help
+        -h or --help
 
-	    This text.
+            This text.
 EOT
 ;
   }
@@ -1797,33 +2223,38 @@ for (my $i = 0; $i < @ARGV; )
 
   given ($opt)
     {
-    when ('-gp' || '--gputils-path')
+    when (/^-(gp|-gputils-path)$/o)
       {
       die "This option \"$opt\" requires a parameter.\n" if ($i > $#ARGV);
 
       $gputils_path = $ARGV[$i++];
       }
 
-    when ('-mp' || '--mplabx-path')
+    when (/^-(mp|-mplabx-path)$/o)
       {
       die "This option \"$opt\" requires a parameter.\n" if ($i > $#ARGV);
 
       $mplabx_path = $ARGV[$i++];
       }
 
-    when ('-p' || '--processor')
+    when (/^-(p|-processor)$/o)
       {
       die "This option \"$opt\" requires a parameter.\n" if ($i > $#ARGV);
 
       $mcu = $ARGV[$i++];
       }
 
-    when ('-a' || '--add')
+    when (/^-(a|-add)$/o)
       {
       $operation = OP_ADD;
       }
 
-    when ('-r' || '--remove')
+    when (/^-(ac|-add-config-bits)$/o)
+      {
+      $add_config_bits = TRUE;
+      }
+
+    when (/^-(r|-remove)$/o)
       {
       $operation = OP_REMOVE;
       }
@@ -1833,54 +2264,54 @@ for (my $i = 0; $i < @ARGV; )
       $operation = OP_REGENERATE;
       }
 
-    when ('-l' || '--list-file')
+    when (/^-(l|-list-file)$/o)
       {
       die "This option \"$opt\" requires a parameter.\n" if ($i > $#ARGV);
 
       $list_file = $ARGV[$i++];
       }
 
-    when ('-lg' || '--list-gputils')
+    when (/^-(lg|-list-gputils)$/o)
       {
       $operation = OP_LIST_GP;
       }
 
-    when ('-lm' || '--list-mplabx')
+    when (/^-(lm|-list-mplabx)$/o)
       {
       $operation = OP_LIST_MP;
       }
 
-    when ('-o' || '--only-survey')
+    when (/^-(o|-only-survey)$/o)
       {
       $operation = OP_SURVEY;
       }
 
-    when ('-dc' || '--show-diff-coff-types')
+    when (/^-(dc|-show-diff-coff-types)$/o)
       {
       $operation = OP_SHOWS_CDIFF;
       }
 
-    when ('-dp' || '--show-diff-px-struct')
+    when (/^-(dp|-show-diff-px-struct)$/o)
       {
       $operation = OP_SHOWS_PXDIFF;
       }
 
-    when ('-e' || '--extended-list')
+    when (/^-(e|-extended-list)$/o)
       {
       $extended_list = TRUE;
       }
 
-    when ('-ne' || '--no-examine-exist')
+    when (/^-(ne|-no-examine-exist)$/o)
       {
       $examine_exist_device = FALSE;
       }
 
-    when ('-t' || '--timestamp')
+    when (/^-(t|-timestamp)$/o)
       {
       $timestamp = TRUE;
       }
 
-    when ('-v' || '--verbose')
+    when (/^-(v|-verbose)$/o)
       {
       die "This option \"$opt\" requires a parameter.\n" if ($i > $#ARGV);
 
@@ -1889,7 +2320,7 @@ for (my $i = 0; $i < @ARGV; )
       $verbose = 10 if ($verbose > 10);
       }
 
-    when ('-h' || '--help')
+    when (/^-(h|-help)$/)
       {
       usage();
       exit(0);
