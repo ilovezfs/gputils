@@ -77,11 +77,13 @@ use constant OP_NULL         => 0;
 use constant OP_ADD          => 1;
 use constant OP_REMOVE       => 2;
 use constant OP_REGENERATE   => 3;
-use constant OP_LIST_GP      => 4;
-use constant OP_LIST_MP      => 5;
-use constant OP_SURVEY       => 6;
-use constant OP_SHOWS_CDIFF  => 7;
-use constant OP_SHOWS_PXDIFF => 8;
+use constant OP_FABR_INC     => 4;
+use constant OP_FABR_LKR     => 5;
+use constant OP_LIST_GP      => 6;
+use constant OP_LIST_MP      => 7;
+use constant OP_SURVEY       => 8;
+use constant OP_SHOWS_CDIFF  => 9;
+use constant OP_SHOWS_PXDIFF => 10;
 
 use constant SORT_DEFINED_AS => 0;
 use constant SORT_NAME0      => 1;
@@ -152,6 +154,16 @@ my @eeprom_starts =
         -1,     # PROC_CLASS_PIC16
   0xF00000,     # PROC_CLASS_PIC16E
         -1      # PROC_CLASS_SX
+  );
+
+my %config_word_masks =
+  (
+  '16c5x'  => 0x0FFF,
+  '16c5xe' => 0x0FFF,
+  '16xxxx' => 0x3FFF,
+  '16exxx' => 0xFFFF,
+  '17xxxx' => 0x00FF,
+  '18xxxx' => 0x00FF
   );
 
 my $name_filter = qr/10l?f\d+[a-z]*|1[26]((c(e|r)?)|hv)\d+[a-z]*|17c\d+[a-z]*|1[268]l?f\d+([a-z]*|[a-z]+\d+[a-z]*)/i;
@@ -708,31 +720,8 @@ sub read_config_bits($$$)
         $config_count = hex($fields[12]);
         $switch_count = 0;
         $setting_count = 0;
-        $config_mask = 0xFFFF;
-
-        given ($fields[3])
-          {
-          when (/^16c5xe?$/io)
-            {
-            $config_mask = 0x0FFF;
-            }
-
-          when (/^16xxxx$/io)
-            {
-            $config_mask = 0x3FFF;
-            }
-
-          when (/^16Exxx$/io)
-            {
-            $config_mask = 0xFFFF;
-            }
-
-          when (/^18xxxx$/io)
-            {
-            $config_mask = 0x00FF;
-            }
-          }
-
+        $config_mask = $config_word_masks{$fields[3]};
+        $config_mask = 0xFFFF if (! defined($config_mask));
         $state = ST_LISTEN;
         $addr = 0;
         %{$Configs} = ();
@@ -963,6 +952,8 @@ sub convert_file($$$$)
     {
         # There are, so inc files (eg p18f25j11.inc) from which is missing in the Configuration Bits section.
         # This section complement such a deficiency.
+
+    die "In $in_file missing the \"Verify Processor\" header." if ($gp_rev_hist_begin < 0 || $gp_rev_hist_begin > $gp_rev_hist_end);
 
     my %configs;
 
@@ -1869,6 +1860,66 @@ sub remove_more_mcu()
 
 #-------------------------------------------------------------------------------
 
+        # Fabricate .inc file of the $Name MCU.
+
+sub fabricate_inc($)
+  {
+  my $Name = $_[0];
+
+  die "fabricate_inc(): Miss the name of MCU!\n" if ($Name eq '');
+  die "fabricate_inc(): This name is wrong: \"$Name\"\n" if ($Name !~ /^(p(ic)?)?$name_filter$/io);
+
+  $Name =~ s/^(p(ic)?)?//io;
+  Log("Fabricate the p${Name}.inc file.", 2);
+  convert_file($mplabx_inc, lc($Name), '.inc', FALSE);
+  }
+
+#-------------------------------------------------------------------------------
+
+        # Fabricate more .inc file of MCUs from a list.
+
+sub fabricate_more_inc()
+  {
+  return if (! scalar(keys(%list_file_members)));
+
+  foreach (sort { smartSort($a, $b, FALSE) } keys(%list_file_members))
+    {
+    fabricate_inc($_);
+    }
+  }
+
+#-------------------------------------------------------------------------------
+
+        # Fabricate .lkr file of the $Name MCU.
+
+sub fabricate_lkr($)
+  {
+  my $Name = $_[0];
+
+  die "fabricate_lkr(): Miss the name of MCU!\n" if ($Name eq '');
+  die "fabricate_lkr(): This name is wrong: \"$Name\"\n" if ($Name !~ /^(p(ic)?)?$name_filter$/io);
+
+  $Name =~ s/^(p(ic)?)?//io;
+  Log("Fabricate the ${Name}_g.lkr file.", 2);
+  convert_file($mplabx_lkr, lc($Name), '.lkr', TRUE);
+  }
+
+#-------------------------------------------------------------------------------
+
+        # Fabricate more .lkr file of MCUs from a list.
+
+sub fabricate_more_lkr()
+  {
+  return if (! scalar(keys(%list_file_members)));
+
+  foreach (sort { smartSort($a, $b, FALSE) } keys(%list_file_members))
+    {
+    fabricate_lkr($_);
+    }
+  }
+
+#-------------------------------------------------------------------------------
+
         # This the 1th helper of addition.
 
 sub addition_helper1($)
@@ -2123,29 +2174,7 @@ Usage: $PROGRAM [options]
 
         -p <p12f1822> or --processor <p12f1822>
 
-            The name of MCU. The prefix of name can be: 'p', 'pic' or nothing
-
-        -a or --add
-
-            Adds the MCU from the gputils.
-            If the program received a list file, then each member adds.
-            (In this case the '-p' switch does not matter.)
-
-        -ac or --add-config-bits
-
-            Adds the missing $conf_sect section.
-
-        -r or --remove
-
-            Removes the MCU from the gputils.
-            If the program received a list file, then each member removes.
-            (In this case the '-p' switch does not matter.)
-
-        --regenerate
-
-            Regenerates the px struct in the gpprocessor.c file. This means
-            that sorts the table rows, uniformly formatted the whole table and
-            make a gpprocessor.c.gen file.
+            The name of MCU. The prefix of name can be: 'pic', 'p' or nothing
 
         -l <file> or --list-file <file>
 
@@ -2154,7 +2183,36 @@ Usage: $PROGRAM [options]
             (The file construction of is very simple: One name per line. The names
              of processors in a form to be described as the '-p' switch is case.)
 
-        -o or --only-survey
+        -a or --add
+
+            Adds the MCU to the gputils.
+            If the program received a list file, then each member adds.
+            (In this case the '-p' switch does not matter.)
+            See: '-ac' option.
+
+        -r or --remove
+
+            Removes the MCU from the gputils.
+            If the program received a list file, then each member removes.
+            (In this case the '-p' switch does not matter.)
+
+        -fi or --fabricate-inc
+
+            Fabricate the .inc files, but only those. See: -p <p12f1822> or -l <file>
+            This is especially useful together with the '-ac' option then
+            if the $conf_sect section missing from the inc file. (eg: p18f25j11.inc)
+
+        -fl or --fabricate-lkr
+
+            Fabricate the .lkr files, but only those. See: -p <p12f1822> or -l <file>
+
+        --regenerate
+
+            Regenerates the px struct in the gpprocessor.c file. This means
+            that sorts the table rows, uniformly formatted the whole table and
+            make a gpprocessor.c.gen file.
+
+        -os or --only-survey
 
             Only the surveying section run. Surveys the errors in databases
             of mplabx and gputils.
@@ -2177,9 +2235,13 @@ Usage: $PROGRAM [options]
             (The case of mplabx, this structure only exists in theory.)
             (Only those MCU deals which exist both in package.)
 
-        -e or --extended-list
+        -ac or --add-config-bits
 
-            Shows a detailed list from all MCU. (The '-lm' and the '-lg' switches relates.)
+            Adds the missing $conf_sect section. See: '-a' or '-fi' options.
+
+        -el or --extended-list
+
+            Shows a detailed list from all MCU. (The '-lm' and the '-lg' options relates.)
             If the program received a list file, the it works like a filter.
 
         -ne or --no-examine-exist
@@ -2244,26 +2306,6 @@ for (my $i = 0; $i < @ARGV; )
       $mcu = $ARGV[$i++];
       }
 
-    when (/^-(a|-add)$/o)
-      {
-      $operation = OP_ADD;
-      }
-
-    when (/^-(ac|-add-config-bits)$/o)
-      {
-      $add_config_bits = TRUE;
-      }
-
-    when (/^-(r|-remove)$/o)
-      {
-      $operation = OP_REMOVE;
-      }
-
-    when ('--regenerate')
-      {
-      $operation = OP_REGENERATE;
-      }
-
     when (/^-(l|-list-file)$/o)
       {
       die "This option \"$opt\" requires a parameter.\n" if ($i > $#ARGV);
@@ -2271,45 +2313,20 @@ for (my $i = 0; $i < @ARGV; )
       $list_file = $ARGV[$i++];
       }
 
-    when (/^-(lg|-list-gputils)$/o)
-      {
-      $operation = OP_LIST_GP;
-      }
-
-    when (/^-(lm|-list-mplabx)$/o)
-      {
-      $operation = OP_LIST_MP;
-      }
-
-    when (/^-(o|-only-survey)$/o)
-      {
-      $operation = OP_SURVEY;
-      }
-
-    when (/^-(dc|-show-diff-coff-types)$/o)
-      {
-      $operation = OP_SHOWS_CDIFF;
-      }
-
-    when (/^-(dp|-show-diff-px-struct)$/o)
-      {
-      $operation = OP_SHOWS_PXDIFF;
-      }
-
-    when (/^-(e|-extended-list)$/o)
-      {
-      $extended_list = TRUE;
-      }
-
-    when (/^-(ne|-no-examine-exist)$/o)
-      {
-      $examine_exist_device = FALSE;
-      }
-
-    when (/^-(t|-timestamp)$/o)
-      {
-      $timestamp = TRUE;
-      }
+    when (/^-(a|-add)$/o)                   { $operation = OP_ADD; }
+    when (/^-(r|-remove)$/o)                { $operation = OP_REMOVE; }
+    when (/^-(fi|-fabricate-inc)$/o)        { $operation = OP_FABR_INC; }
+    when (/^-(fl|-fabricate-lkr)$/o)        { $operation = OP_FABR_LKR; }
+    when ('--regenerate')                   { $operation = OP_REGENERATE; }
+    when (/^-(os|-only-survey)$/o)          { $operation = OP_SURVEY; }
+    when (/^-(lg|-list-gputils)$/o)         { $operation = OP_LIST_GP; }
+    when (/^-(lm|-list-mplabx)$/o)          { $operation = OP_LIST_MP; }
+    when (/^-(dc|-show-diff-coff-types)$/o) { $operation = OP_SHOWS_CDIFF; }
+    when (/^-(dp|-show-diff-px-struct)$/o)  { $operation = OP_SHOWS_PXDIFF; }
+    when (/^-(ac|-add-config-bits)$/o)      { $add_config_bits = TRUE; }
+    when (/^-(el|-extended-list)$/o)        { $extended_list = TRUE; }
+    when (/^-(ne|-no-examine-exist)$/o)     { $examine_exist_device = FALSE; }
+    when (/^-(t|-timestamp)$/o)             { $timestamp = TRUE; }
 
     when (/^-(v|-verbose)$/o)
       {
@@ -2397,24 +2414,56 @@ given ($operation)
 
 if (scalar(keys(%list_file_members)))
   {
-  if ($operation == OP_ADD)
+  given ($operation)
     {
-    add_more_mcu();
-    }
-  elsif ($operation == OP_REMOVE)
-    {
-    remove_more_mcu();
+    when (OP_ADD)
+      {
+      add_more_mcu();
+      }
+
+    when (OP_FABR_INC)
+      {
+      fabricate_more_inc();
+      exit(0);
+      }
+
+    when (OP_FABR_LKR)
+      {
+      fabricate_more_lkr();
+      exit(0);
+      }
+
+    when (OP_REMOVE)
+      {
+      remove_more_mcu();
+      }
     }
   }
 elsif ($mcu ne '')
   {
-  if ($operation == OP_ADD)
+  given ($operation)
     {
-    add_mcu($mcu);
-    }
-  elsif ($operation == OP_REMOVE)
-    {
-    remove_mcu($mcu);
+    when (OP_ADD)
+      {
+      add_mcu($mcu);
+      }
+
+    when (OP_FABR_INC)
+      {
+      fabricate_inc($mcu);
+      exit(0);
+      }
+
+    when (OP_FABR_LKR)
+      {
+      fabricate_lkr($mcu);
+      exit(0);
+      }
+
+    when (OP_REMOVE)
+      {
+      remove_mcu($mcu);
+      }
     }
   }
 else
