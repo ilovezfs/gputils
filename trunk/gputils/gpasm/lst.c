@@ -293,6 +293,35 @@ lst_close(void)
 #define ASSERT(expr)    ((void) 0)
 #endif
 
+/* find relocation by address */
+static gp_reloc_type *
+find_reloc_by_address(unsigned short address)
+{
+  gp_reloc_type *p;
+
+  for (p = state.obj.section->relocations; p; p = p->next) {
+    if (p->address == address)
+      break;
+  }
+
+  return p;
+}
+
+/* get previous relocation type */
+static unsigned short
+prev_reloc_type(void)
+{
+  gp_reloc_type *p;
+
+  if (state.obj.section->relocations == state.obj.section->relocations_tail)
+    return 0;
+
+  for (p = state.obj.section->relocations; p->next && p->next != state.obj.section->relocations_tail; p = p->next)
+    ;
+  assert(p->next);
+  return (p->address == p->next->address) ? p->type : 0;
+}
+
 static int
 print_reloc(unsigned short type, unsigned short current_value)
 {
@@ -300,10 +329,10 @@ print_reloc(unsigned short type, unsigned short current_value)
   case RELOCT_CALL:
     if (PROC_CLASS_PIC12 == state.device.class || PROC_CLASS_SX == state.device.class || PROC_CLASS_PIC16E == state.device.class) {
       ASSERT(0 == (current_value & 0xff));
-      return lst_printf("%02x?? ", (current_value >> 8) & 0x00ff);
+      return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     } else if (PROC_CLASS_PIC14 == state.device.class || PROC_CLASS_PIC14E == state.device.class) {
       ASSERT(0 == (current_value & 0x7ff));
-      return lst_printf("%01x??? ", (current_value >> 12) & 0x000f);
+      return lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
     } else if (PROC_CLASS_PIC16 == state.device.class) {
       ASSERT(0 == (current_value & 0x1fff));
       return lst_printf("???? ");
@@ -316,16 +345,16 @@ print_reloc(unsigned short type, unsigned short current_value)
   case RELOCT_GOTO:
     if (PROC_CLASS_PIC12 == state.device.class || PROC_CLASS_SX == state.device.class) {
       ASSERT(0 == (current_value & 0x1ff));
-      return lst_printf("%01x??? ", (current_value >> 12) & 0x000f);
+      return lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
     } else if (PROC_CLASS_PIC14 == state.device.class || PROC_CLASS_PIC14E == state.device.class) {
       ASSERT(0 == (current_value & 0x7ff));
-      return lst_printf("%01x??? ", (current_value >> 12) & 0x000f);
+      return lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
     } else if (PROC_CLASS_PIC16 == state.device.class) {
       ASSERT(0 == (current_value & 0x1fff));
       return lst_printf("???? ");
     } else if (PROC_CLASS_PIC16E == state.device.class) {
       ASSERT(0 == (current_value & 0xff));
-      return lst_printf("%02x?? ", (current_value >> 8) & 0x00ff);
+      return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     } else {
       ASSERT(0);
       return 0;
@@ -338,17 +367,24 @@ print_reloc(unsigned short type, unsigned short current_value)
   case RELOCT_UPPER:
   case RELOCT_CONDBRA:
     ASSERT(0 == (current_value & 0xff));
-    return lst_printf("%02x?? ", ((current_value & 0xff00) >> 8) & 0x00ff);
+    return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     break;
 
   case RELOCT_P:
-    ASSERT(0 == (current_value & 0x1f00));
-    return lst_printf("??00 ");
+    {
+      char buf[5] = "????";
+
+      if (RELOCT_F != prev_reloc_type()) {
+        sprintf(&buf[2], "%02X", current_value & 0x00ff);
+      }
+      ASSERT(0 == (current_value & 0x1f00));
+      return lst_printf("%s ", buf);
+    }
     break;
 
   case RELOCT_BANKSEL:
     /* TODO: to be implemented */
-    return 0;
+    return lst_printf("???? ");
     break;
 
   case RELOCT_ALL:
@@ -361,7 +397,7 @@ print_reloc(unsigned short type, unsigned short current_value)
       return lst_printf("1?83 ");
     } else if (PROC_CLASS_PIC16 == state.device.class) {
       ASSERT(0 == (current_value & 0x00ff));
-      return lst_printf("%02x?? ", (current_value >> 8) & 0x00ff);
+      return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     } else {
       ASSERT(0);
       return 0;
@@ -371,6 +407,7 @@ print_reloc(unsigned short type, unsigned short current_value)
   case RELOCT_F:
     if (PROC_CLASS_SX == state.device.class) {
       ASSERT(0 == (current_value & 0x0007));
+      return lst_printf("%03X?? ", (current_value >> 4) & 0x000f);
     } else if (PROC_CLASS_PIC12 == state.device.class) {
       ASSERT(0 == (current_value & 0x001f));
     } else if (PROC_CLASS_PIC14 == state.device.class || PROC_CLASS_PIC14E == state.device.class) {
@@ -381,24 +418,25 @@ print_reloc(unsigned short type, unsigned short current_value)
       ASSERT(0);
       return 0;
     }
-    return lst_printf("%02x?? ", (current_value >> 8) & 0x00ff);
+    return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     break;
 
   case RELOCT_TRIS:
     if (PROC_CLASS_PIC12 == state.device.class || PROC_CLASS_SX == state.device.class) {
       ASSERT(0 == (current_value & 0x0007));
+      return lst_printf("%03X? ", (current_value >> 4) & 0x000f);
     } else if (PROC_CLASS_PIC14 == state.device.class || PROC_CLASS_PIC14E == state.device.class) {
       ASSERT(0 == (current_value & 0x001f));
+      return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     } else {
       ASSERT(0);
       return 0;
     }
-    return lst_printf("%02x?? ", (current_value >> 8) & 0x00ff);
     break;
 
   case RELOCT_MOVLR:
     ASSERT(0 == (current_value & 0x00f0));
-    return lst_printf("%02x?%01x ", ((current_value & 0xff00) >> 8) & 0xff, current_value & 0x000f);
+    return lst_printf("%02X?%01X ", (current_value >> 8) & 0xff, current_value & 0x000f);
     break;
 
   case RELOCT_GOTO2:
@@ -406,12 +444,11 @@ print_reloc(unsigned short type, unsigned short current_value)
   case RELOCT_FF1:
   case RELOCT_FF2:
     ASSERT(0 == (current_value & 0x0fff));
-    return lst_printf("%01x??? ", ((current_value & 0xf000) >> 12) & 0x000f);
+    return lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
     break;
 
   case RELOCT_LFSR1:
-    ASSERT(0 == (current_value & 0x00f0));
-    return lst_printf("%03x? ", ((current_value & 0xfff0) >> 4) & 0x0fff);
+    return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     break;
 
   case RELOCT_BRA:
@@ -423,19 +460,20 @@ print_reloc(unsigned short type, unsigned short current_value)
       ASSERT(0);
       return 0;
     }
-    return lst_printf("%01x??? ", ((current_value & 0xf000) >> 12) & 0x000f);
+    return lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
     break;
 
   case RELOCT_MOVLB:
     if (PROC_CLASS_PIC14E == state.device.class) {
       ASSERT(0 == (current_value & 0x001f));
+      return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     } else if (PROC_CLASS_PIC16 == state.device.class || PROC_CLASS_PIC16E == state.device.class) {
       ASSERT(0 == (current_value & 0x000f));
+      return lst_printf("%03X? ", (current_value >> 4) & 0x0fff);
     } else {
       ASSERT(0);
       return 0;
     }
-    return lst_printf("%02x?? ", ((current_value & 0xff00) >> 8) & 0x00ff);
     break;
 
   case RELOCT_ACCESS:
@@ -445,18 +483,23 @@ print_reloc(unsigned short type, unsigned short current_value)
       ASSERT(0);
       return 0;
     }
-    return lst_printf("%02x?? ", ((current_value & 0xff00) >> 8) & 0x00ff);
+    return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     break;
 
   case RELOCT_PAGESEL_WREG:
+  case RELOCT_PAGESEL_BITS:
     /* TODO: to be implemented */
-    return 0;
+    return lst_printf("???? ");
     break;
 
-  case RELOCT_PAGESEL_BITS:
   case RELOCT_PAGESEL_MOVLP:
-    /* TODO: to be implemented */
-    return 0;
+    if (PROC_CLASS_PIC14E == state.device.class) {
+      ASSERT(0 == (current_value & 0x007f));
+    } else {
+      ASSERT(0);
+      return 0;
+    }
+    return lst_printf("31?? ", (current_value >> 16) & 0xff);
     break;
 
   /* unimplemented relocations */
@@ -511,13 +554,29 @@ lst_data(unsigned int pos, unsigned int byte_org,
       if (state.mode == relocatable &&
           state.obj.section &&
           state.obj.new_sec_flags & STYP_TEXT &&
-          state.obj.section->relocations_tail &&
-          state.obj.section->address + state.obj.section->relocations_tail->address == byte_org) {
-        int n = print_reloc(state.obj.section->relocations_tail->type, emit_word);
-        if (0 == n) {
-          pos += lst_printf("%04X ", emit_word);
+          state.obj.section->relocations_tail) {
+        if (state.obj.section->address + state.obj.section->relocations_tail->address > byte_org) {
+          /* already passed it, go back to the history */
+          gp_reloc_type *p = find_reloc_by_address(byte_org);
+          if (p) {
+            int n = print_reloc(p->type, emit_word);
+            if (0 == n) {
+              pos += lst_printf("%04X ", emit_word);
+            } else {
+              pos += n;
+            }
+          } else {
+            pos += lst_printf("%04X ", emit_word);
+          }
+        } else if (state.obj.section->address + state.obj.section->relocations_tail->address == byte_org) {
+          int n = print_reloc(state.obj.section->relocations_tail->type, emit_word);
+          if (0 == n) {
+            pos += lst_printf("%04X ", emit_word);
+          } else {
+            pos += n;
+          }
         } else {
-          pos += n;
+          pos += lst_printf("%04X ", emit_word);
         }
       } else {
         pos += lst_printf("%04X ", emit_word);
