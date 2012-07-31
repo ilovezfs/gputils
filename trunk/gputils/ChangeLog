@@ -1,3 +1,7 @@
+2012-07-31  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/lst.c:
+    print word value in code sction with undefined nibbles repleced by "?"
+
 2012-07-28  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c: idata and idata_acs directives are not available
     for 12-bit instruction width (PIC10, some PIC12/PIC16) devices,
