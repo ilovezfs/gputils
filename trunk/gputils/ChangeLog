@@ -1,3 +1,7 @@
+2012-08-01  Borut Razem  <borutr@users.sourceforge.net>
+  * doc/gputils.lyx:
+    documented __config deprecation for 16-bit PIC MCU devices
+
 2012-07-31  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/lst.c:
     print word value in code sction with undefined nibbles repleced by "?"

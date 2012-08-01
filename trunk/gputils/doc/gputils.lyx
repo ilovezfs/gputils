@@ -71,7 +71,7 @@ James Bowman, Craig Franklin, and David Barnett
 \end_layout
 
 \begin_layout Date
-July 24, 2012
+August 1, 2012
 \end_layout
 
 \begin_layout Standard
@@ -3421,10 +3421,14 @@ Configuration
 \end_layout
 
 \begin_layout Standard
-You can choose the fuse settings for your PIC implementation using the __CONFIG
- directive, so that the hex file set the fuses explicitly.
+You can choose the fuse settings for your PIC implementation using the __CONFIG,
+ __FUSES and CONFIG (PIC18 MCUs) directive, so that the hex file set the
+ fuses explicitly.
  Naturally you should make sure that these settings match your PIC hardware
  design.
+ CONFIG and __CONFIG directives cannot both be used in the same project.
+ __CONFIG and __FUSES directives are deprecated for 16-bit PIC MCU devices
+ (PIC18FXXX), CONFIG directive should be used instead.
 \end_layout
 
 \begin_layout Standard
@@ -3907,6 +3911,15 @@ Sets the PIC processor's configuration fuses.
 
 \begin_layout Standard
 See also: CONFIG, __FUSES
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+NOTE: __CONFIG and __FUSES directives are deprecated for 16-bit PIC MCU
+ devices (PIC18FXXX), CONFIG directive should be used instead.
 \end_layout
 
 \begin_layout Subsection*
@@ -3953,11 +3966,21 @@ __FUSES <expression>
 \end_layout
 
 \begin_layout Standard
-Alias for __CONFIG.Sets the PIC processor's configuration fuses.
+Alias for __CONFIG.
+ Sets the PIC processor's configuration fuses
 \end_layout
 
 \begin_layout Standard
 See also: CONFIG
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+NOTE: __CONFIG and __FUSES directives are deprecated for 16-bit PIC MCU
+ devices (PIC18FXXX), CONFIG directive should be used instead.
 \end_layout
 
 \begin_layout Subsection*
@@ -4186,7 +4209,7 @@ CONFIG
 status collapsed
 
 \begin_layout Plain Layout
-CBLOCK
+CONFIG
 \end_layout
 
 \end_inset
@@ -4199,7 +4222,7 @@ CONFIG <expression>[, <expression>]*
 \end_layout
 
 \begin_layout Standard
-Sets configuration fuses on 16-bit PIC devices.
+Sets configuration fuses on 16-bit PIC MCU devices (PIC18FXXX).
 \end_layout
 
 \begin_layout Standard
