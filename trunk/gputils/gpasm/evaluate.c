@@ -207,6 +207,57 @@ int can_evaluate(struct pnode *p)
   return 0;
 }
 
+int can_evaluate_value(struct pnode *p)
+{
+  char buf[BUFSIZ];
+
+  if ((p->tag == binop) && (p->value.binop.op == CONCAT)) {
+    return can_evaluate_concatenation(p);
+  }
+  switch (p->tag) {
+  case constant:
+    return 1;
+
+  case offset:
+    if (state.extended_pic16e == false) {
+      gperror(GPE_BADCHAR, "Illegal character ([)");
+    }
+    return can_evaluate_value(p->value.offset);
+
+  case symbol:
+    /* '$' means current org, which we can evaluate if section at absolute address */
+    if (strcmp(p->value.symbol, "$") == 0)
+      return (0 != (state.obj.new_sec_flags & STYP_ABS));
+    else {
+      /* Otherwise look it up */
+      struct symbol *s = get_symbol(state.stTop, p->value.symbol);
+
+      if (s == NULL)
+        return 0;
+      else {
+        struct variable *var = get_symbol_annotation(s);
+        return (var != NULL && var->type != gvt_extern);
+      }
+    }
+
+  case unop:
+    return can_evaluate_value(p->value.unop.p0);
+
+  case binop:
+    return can_evaluate_value(p->value.binop.p0) && can_evaluate_value(p->value.binop.p1);
+
+  case string:
+    snprintf(buf, sizeof(buf), "Illegal argument (%s).", p->value.string);
+    gperror(GPE_ILLEGAL_ARGU, buf);
+    return 0;
+
+  default:
+    assert(0);
+  }
+
+  return 0;
+}
+
 gpasmVal evaluate(struct pnode *p)
 {
   struct variable *var;

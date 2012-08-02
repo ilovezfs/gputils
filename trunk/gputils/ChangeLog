@@ -1,3 +1,7 @@
+2012-08-02  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/directive.c, gpasm/evaluate.c, gpasm/evaluate.h:
+    fixed bug #3542579 - "Option -c for gpasm causes different errors"
+
 2012-08-01  Borut Razem  <borutr@users.sourceforge.net>
   * doc/gputils.lyx:
     documented __config deprecation for 16-bit PIC MCU devices
