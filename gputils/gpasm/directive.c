@@ -3259,22 +3259,22 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
       case INSN_CLASS_LIT8C12:
         if (enforce_arity(arity, 1)) {
-          int value;
-
           p = HEAD(parms);
-          value = reloc_evaluate(p, RELOCT_CALL);
+          if (can_evaluate_value(p)) {
+            int value = evaluate(p);
 
-          /* PC is 11 bits.  mpasm checks the maximum device address. */
-          if (value & (~0x7ff))
-            gperror(GPE_RANGE, NULL);
+            /* PC is 11 bits.  mpasm checks the maximum device address. */
+            if (value & (~0x7ff))
+              gperror(GPE_RANGE, NULL);
 
-          if ((value & 0x600) != (r & 0x600))
-            gpmessage(GPM_PAGE, NULL);
+            if ((value & 0x600) != (r & 0x600))
+              gpmessage(GPM_PAGE, NULL);
 
-          if (value & 0x100)
-            gperror(GPE_BAD_CALL_ADDR, NULL);
+            if (value & 0x100)
+              gperror(GPE_BAD_CALL_ADDR, NULL);
+          }
 
-          emit(i->opcode | (value & 0xff));
+          emit(i->opcode | (reloc_evaluate(p, RELOCT_CALL) & 0xff));
         }
         break;
 
@@ -3295,70 +3295,62 @@ gpasmVal do_insn(char *name, struct pnode *parms)
 
       case INSN_CLASS_LIT9:
         if (enforce_arity(arity, 1)) {
-          int value;
-
           p = HEAD(parms);
-          value = reloc_evaluate(p, RELOCT_GOTO);
+          if (can_evaluate_value(p)) {
+            int value = evaluate(p);
 
-          /* PC is 11 bits.  mpasm checks the maximum device address. */
-          if (value & (~0x7ff))
-            gperror(GPE_RANGE, NULL);
+            /* PC is 11 bits.  mpasm checks the maximum device address. */
+            if (value & (~0x7ff))
+              gperror(GPE_RANGE, NULL);
 
-          if ((value & 0x600) != (r & 0x600))
-            gpmessage(GPM_PAGE, NULL);
+            if ((value & 0x600) != (r & 0x600))
+              gpmessage(GPM_PAGE, NULL);
+          }
 
-          emit(i->opcode | (value & 0x1ff));
+          emit(i->opcode | (reloc_evaluate(p, RELOCT_GOTO) & 0x1ff));
         }
         break;
 
       case INSN_CLASS_LIT11:
         if (enforce_arity(arity, 1)) {
-          int value;
-
           p = HEAD(parms);
-          if (strcasecmp(i->name, "goto") == 0) {
-            value = reloc_evaluate(p, RELOCT_GOTO);
-          } else {
-            value = reloc_evaluate(p, RELOCT_CALL);
+          if (can_evaluate_value(p)) {
+            int value = evaluate(p);
+
+            if (state.device.class == PROC_CLASS_PIC14E) {
+              /* PC is 15 bits.  mpasm checks the maximum device address. */
+              if (value & (~0x7fff))
+                gperror(GPE_RANGE, NULL);
+              if ((value & 0x7800) != (r & 0x7800))
+                gpmessage(GPM_PAGE, NULL);
+            } else {
+              /* PC is 13 bits.  mpasm checks the maximum device address. */
+              if (value & (~0x1fff))
+                gperror(GPE_RANGE, NULL);
+              if ((value & 0x1800) != (r & 0x1800))
+                gpmessage(GPM_PAGE, NULL);
+            }
           }
 
-          if (state.device.class == PROC_CLASS_PIC14E) {
-            /* PC is 15 bits.  mpasm checks the maximum device address. */
-            if (value & (~0x7fff))
-              gperror(GPE_RANGE, NULL);
-            if ((value & 0x7800) != (r & 0x7800))
-              gpmessage(GPM_PAGE, NULL);
-          } else {
-            /* PC is 13 bits.  mpasm checks the maximum device address. */
-            if (value & (~0x1fff))
-              gperror(GPE_RANGE, NULL);
-            if ((value & 0x1800) != (r & 0x1800))
-              gpmessage(GPM_PAGE, NULL);
-          }
-
-          emit(i->opcode | (value & 0x7ff));
+          emit(i->opcode | (reloc_evaluate(p, strcasecmp(i->name, "goto") ? RELOCT_CALL : RELOCT_GOTO) & 0x7ff));
         }
         break;
 
       case INSN_CLASS_LIT13:
         if (enforce_arity(arity, 1)) {
-          int value;
-
           p = HEAD(parms);
-          if (strcasecmp(i->name, "goto") == 0) {
-            value = reloc_evaluate(p, RELOCT_GOTO);
-          } else {
-            value = reloc_evaluate(p, RELOCT_CALL);
+          if (can_evaluate_value(p)) {
+            int value = evaluate(p);
+
+            /* PC is 16 bits.  mpasm checks the maximum device address. */
+            if (value & (~0xffff))
+              gperror(GPE_RANGE, NULL);
+
+            if ((value & 0xe000) != (r & 0xe000))
+              gpmessage(GPM_PAGE, NULL);
           }
 
-          /* PC is 16 bits.  mpasm checks the maximum device address. */
-          if (value & (~0xffff))
-            gperror(GPE_RANGE, NULL);
-
-          if ((value & 0xe000) != (r & 0xe000))
-            gpmessage(GPM_PAGE, NULL);
-
-          emit(i->opcode | (value & 0x1fff));
+          emit(i->opcode | (reloc_evaluate(p, strcasecmp(i->name, "goto") ? RELOCT_CALL : RELOCT_GOTO) & 0x1fff));
         }
         break;
 

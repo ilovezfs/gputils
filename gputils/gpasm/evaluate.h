@@ -31,6 +31,7 @@ char *evaluate_concatenation(struct pnode *p);
 char *maybe_evaluate_concat(struct pnode *p);
 
 int can_evaluate(struct pnode *p);
+int can_evaluate_value(struct pnode *p);
 gpasmVal evaluate(struct pnode *p);
 gpasmVal maybe_evaluate(struct pnode *p);
 
