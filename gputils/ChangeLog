@@ -1,3 +1,7 @@
+2012-08-03  Molnar Karoly  <proton7@freemail.hu>
+  * header/p16f1516.inc, header/p16f1517.inc, header/p16f1518.inc,
+    header/p16f1519.inc: Removed ANSC{0,1} bits from "ANSELC Bits".
+
 2012-08-02  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c, gpasm/evaluate.c, gpasm/evaluate.h:
     fixed bug #3542579 - "Option -c for gpasm causes different errors"
