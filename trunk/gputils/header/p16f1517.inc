@@ -23,6 +23,16 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
+;;;; Begin: Added in gputils
+
+;==========================================================================
+;
+;       Gputils Specific Revision History
+;
+;==========================================================================
+
+;       3 Aug 2012  Removed ANSC{0,1} bits from "ANSELC Bits".
+;;;; End: Added in gputils
 
 ;==========================================================================
 ;
@@ -544,8 +554,10 @@ ANSB5            EQU  H'0005'
 
 
 ;----- ANSELC Bits -----------------------------------------------------
-ANSC0            EQU  H'0000'
-ANSC1            EQU  H'0001'
+;;;; Begin: Removed in gputils
+;;;;ANSC0            EQU  H'0000'
+;;;;ANSC1            EQU  H'0001'
+;;;; End: Removed in gputils
 ANSC2            EQU  H'0002'
 ANSC3            EQU  H'0003'
 ANSC4            EQU  H'0004'
