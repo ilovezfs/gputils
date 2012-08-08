@@ -66,10 +66,10 @@ my $header = ('=' x 70);
 
 my $XHTML_1_Frameset = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">';
 
-my $out_dir = 'html-help';
-my $css     = 'main.css';
-
-my $file;
+my $out_dir   = 'html-help';
+my $css       = 'main.css';
+my $conf_tag  = 'conf';
+my $trait_tag = 'trait';
 
 my @fields;
 my $mcu_name;
@@ -79,42 +79,73 @@ my $config_mask;
 my $addr;
 my $mask;
 
-my %mcu_classes =
+use constant PROC_CLASS_PIC12  => 0;
+use constant PROC_CLASS_PIC12E => 1;
+use constant PROC_CLASS_PIC14  => 2;
+use constant PROC_CLASS_PIC14E => 3;
+use constant PROC_CLASS_PIC16  => 4;
+use constant PROC_CLASS_PIC16E => 5;
+
+my %mcu_traits =
   (
   '16c5x'  => {
-              ENHANCED => FALSE,
-              WORDSIZE => 12,
-              CONFSIZE => 12
+              CLASS     => PROC_CLASS_PIC12,
+              ENHANCED  => FALSE,
+              PAGE_SIZE => 512,
+              WORD_SIZE => 12,
+              CONF_SIZE => 12,
+              EE_START  => 0,
+              BANK_SIZE => 32
               },
 
   '16c5xe' => {
-              ENHANCED => TRUE,
-              WORDSIZE => 12,
-              CONFSIZE => 12
+              CLASS     => PROC_CLASS_PIC12E,
+              ENHANCED  => TRUE,
+              PAGE_SIZE => 512,
+              WORD_SIZE => 12,
+              CONF_SIZE => 12,
+              EE_START  => 0,
+              BANK_SIZE => 32
               },
 
   '16xxxx' => {
-              ENHANCED => FALSE,
-              WORDSIZE => 14,
-              CONFSIZE => 14
+              CLASS     => PROC_CLASS_PIC14,
+              ENHANCED  => FALSE,
+              PAGE_SIZE => 2048,
+              WORD_SIZE => 14,
+              CONF_SIZE => 14,
+              EE_START  => 0x2100,
+              BANK_SIZE => 128
               },
 
   '16exxx' => {
-              ENHANCED => TRUE,
-              WORDSIZE => 14,
-              CONFSIZE => 16
+              CLASS     => PROC_CLASS_PIC14E,
+              ENHANCED  => TRUE,
+              PAGE_SIZE => 2048,
+              WORD_SIZE => 14,
+              CONF_SIZE => 16,
+              EE_START  => 0xF000,
+              BANK_SIZE => 128
               },
 
   '17xxxx' => {
-              ENHANCED => FALSE,
-              WORDSIZE => 16,
-              CONFSIZE => 8
+              CLASS     => PROC_CLASS_PIC16,
+              ENHANCED  => FALSE,
+              PAGE_SIZE => 0,
+              WORD_SIZE => 16,
+              CONF_SIZE => 8,
+              EE_START  => 0,
+              BANK_SIZE => 256
               },
 
   '18xxxx' => {
-              ENHANCED => TRUE,
-              WORDSIZE => 16,
-              CONFSIZE => 8
+              CLASS     => PROC_CLASS_PIC16E,
+              ENHANCED  => TRUE,
+              PAGE_SIZE => 0,
+              WORD_SIZE => 16,
+              CONF_SIZE => 8,
+              EE_START  => 0xF00000,
+              BANK_SIZE => 256
               }
   );
 
@@ -124,11 +155,29 @@ my %mcu_classes =
         The structure of one element of the %mcus_by_names hash:
 
         {
-        CLASS    => {
-                    ENHANCED => FALSE,
-                    WORDSIZE => 0,      # Instruction size of MCU.
-                    CONFSIZE => 0       # Width of a config word.
+        TRAITS   => {
+                    CLASS     => PROC_CLASS_PIC1XX,
+                    ENHANCED  => FALSE,
+                    WORD_SIZE => 0,     # Instruction size of MCU.
+                    CONF_SIZE => 0      # Width of a config word.
+                    EE_START  => 0      # Start address of EEPROM.
+                    BANK_SIZE => 0      # Size of RAM Banks.
+
+                    COFF      => 0,     # Coff ID of device. (16 bit wide)
+                    PAGES     => 0,     # Number of ROM/FLASH pages.
+                    CF_START  => 0,     # Address of first Configuration byte/word.
+                    CF_END    => 0,     # Address of last Configuration byte/word.
+
+                # These addresses relative, compared to the beginning of the blocks.
+                    ROM       => 0,     # Last address of ROM/FLASH.
+                    FLASHDATA => 0,     # Last address of FLASH Data.
+                    EEPROM    => 0,     # Last address of EEPROM.
+
+                    CONFIGS   => 0,     # Number of Configuration bytes/words.
+                    BANKS     => 0,     # Number of RAM Banks.
+                    ACCESS    => 0      # Last address of lower Access RAM of pic18f series.
                     },
+
         CONFIGS  => {
                     '300000' => [],
 
@@ -507,13 +556,14 @@ sub extract_mcu_names()
 sub read_all_config_bits()
   {
   my ($configs, $name, $class);
-  my $pclass = undef;
+  my $traits = undef;
   my $addr = 0;
   my $config_count = 0;
   my $switch_count = 0;
   my $setting_count = 0;
   my $switch_info = undef;
   my $state = ST_WAIT;
+  my ($cf_addr_min, $cf_addr_max);
 
   open(IN, '<', $dev_info) || die "Could not open for reading: $dev_info\n";
 
@@ -542,15 +592,41 @@ sub read_all_config_bits()
 
       if ($fields[2] =~ /^$pic_name_mask$/io)
         {
-        $name = uc($fields[2]);
-        $class = lc($fields[3]);
-        $config_count = hex($fields[12]);
-        $switch_count = 0;
+        $name          = uc($fields[2]);
+        $class         = lc($fields[3]);
+        $config_count  = hex($fields[12]);
+        $switch_count  = 0;
         $setting_count = 0;
+        $cf_addr_min   = ULONG_MAX;
+        $cf_addr_max   = 0;
 
-        $pclass = $mcu_classes{$class};
+        my $tr = $mcu_traits{$class};
 
-        die "Unknown class of $name MCU!" if (! defined($pclass));
+        die "Unknown class of $name MCU!" if (! defined($tr));
+
+        $traits = {
+                  CLASS     => $tr->{CLASS},
+                  ENHANCED  => $tr->{ENHANCED},
+                  PAGE_SIZE => $tr->{PAGE_SIZE}, # Size of program memory pages.
+                  WORD_SIZE => $tr->{WORD_SIZE}, # Size of instructions.
+                  CONF_SIZE => $tr->{CONF_SIZE}, # Size of Config Words.
+                  EE_START  => $tr->{EE_START},  # Start address of EEPROM.
+                  BANK_SIZE => $tr->{BANK_SIZE}, # Size of RAM Banks.
+
+                  COFF      => hex($fields[1]),  # Coff ID of device. (16 bit wide)
+                  PAGES     => hex($fields[5]),  # Number of ROM/FLASH pages.
+                  CF_START  => 0,                # Address of first Configuration byte/word.
+                  CF_END    => 0,                # Address of last Configuration byte/word.
+
+                # These addresses relative, compared to the beginning of the blocks.
+                  ROM       => hex($fields[6]),  # Last address of ROM/FLASH.
+                  FLASHDATA => hex($fields[11]), # Last address of FLASH Data.
+                  EEPROM    => hex($fields[9]),  # Last address of EEPROM.
+
+                  CONFIGS   => hex($fields[12]), # Number of Configuration bytes/words.
+                  BANKS     => hex($fields[7]),  # Number of RAM Banks.
+                  ACCESS    => hex($fields[10])  # Last address of lower Access RAM of pic18f series.
+                  };
 
         if (defined($gp_mcus_by_names{$name}))
           {
@@ -587,6 +663,8 @@ sub read_all_config_bits()
 
           $switch_count = hex($fields[4]);
           $addr = hex($fields[1]);
+          $cf_addr_min = $addr if ($cf_addr_min > $addr);
+          $cf_addr_max = $addr if ($cf_addr_max < $addr);
           --$config_count;
           } # when ('CONFIGREG_INFO_TYPE')
 
@@ -633,7 +711,9 @@ sub read_all_config_bits()
             {
             die "$name MCU already exist!" if (defined($mcus_by_names{$name}));
 
-            $mcus_by_names{$name}{CLASS}   = $pclass;
+            $traits->{CF_START} = $cf_addr_min;
+            $traits->{CF_END}   = $cf_addr_max;
+            $mcus_by_names{$name}{TRAITS}  = $traits;
             $mcus_by_names{$name}{CONFIGS} = $configs;
             $configs = {};
             }
@@ -704,11 +784,11 @@ sub print_mcu_list($$)
 
   foreach (sort smartSort keys %mcus_by_names)
     {
-    my $td_href  = "<td id=mcuLinkName><a id=mcuLink href=\"$_.html\">$_</a></td>";
-    my $pclass   = $mcus_by_names{$_}->{CLASS};
-    my $td_wsize = "<td id=mcuAttr>$pclass->{WORDSIZE}</td>";
-    my $td_csize = "<td id=mcuAttr>$pclass->{CONFSIZE}</td>";
-    my $td_class = ($pclass->{ENHANCED}) ? '<td id=mcuAttrEnh>enhanced</td>' : '<td id=mcuAttrReg>regular</td>';
+    my $td_href  = "<td id=mcuLinkName><a id=mcuLink href=\"${_}-$conf_tag.html\">$_</a></td>";
+    my $traits   = $mcus_by_names{$_}->{TRAITS};
+    my $td_wsize = "<td id=mcuAttr>$traits->{WORD_SIZE}</td>";
+    my $td_csize = "<td id=mcuAttr>$traits->{CONF_SIZE}</td>";
+    my $td_class = ($traits->{ENHANCED}) ? '<td id=mcuAttrEnh>enhanced</td>' : '<td id=mcuAttrReg>regular</td>';
 
     given ($Class)
       {
@@ -724,7 +804,7 @@ sub print_mcu_list($$)
 
       when (PRI_MENU_ENH)
         {
-        if ($pclass->{ENHANCED})
+        if ($traits->{ENHANCED})
           {
           aOutl($Align + 6, '<tr>');
           aOutl($Align + 8, $td_href);
@@ -736,7 +816,7 @@ sub print_mcu_list($$)
 
       when (PRI_MENU_REG)
         {
-        if (! $pclass->{ENHANCED})
+        if (! $traits->{ENHANCED})
           {
           aOutl($Align + 6, '<tr>');
           aOutl($Align + 8, $td_href);
@@ -748,7 +828,7 @@ sub print_mcu_list($$)
 
       when (PRI_MENU_12_BIT)
         {
-        if ($pclass->{WORDSIZE} == 12)
+        if ($traits->{WORD_SIZE} == 12)
           {
           aOutl($Align + 6, '<tr>');
           aOutl($Align + 8, $td_href);
@@ -760,7 +840,7 @@ sub print_mcu_list($$)
 
       when (PRI_MENU_14_BIT)
         {
-        if ($pclass->{WORDSIZE} == 14)
+        if ($traits->{WORD_SIZE} == 14)
           {
           aOutl($Align + 6, '<tr>');
           aOutl($Align + 8, $td_href);
@@ -772,7 +852,7 @@ sub print_mcu_list($$)
 
       when (PRI_MENU_16_BIT)
         {
-        if ($pclass->{WORDSIZE} == 16)
+        if ($traits->{WORD_SIZE} == 16)
           {
           aOutl($Align + 6, '<tr>');
           aOutl($Align + 8, $td_href);
@@ -845,13 +925,13 @@ sub dump_all_config_word($$)
   my $conf_bits = $Configs->{CONFIGS};
   my @addresses = sort {$a <=> $b} keys(%{$conf_bits});
   my @sections;
-  my $config_mask = (ULONG_MAX << $Configs->{CLASS}->{CONFSIZE}) ^ ULONG_MAX;
+  my $config_mask = (ULONG_MAX << $Configs->{TRAITS}->{CONF_SIZE}) ^ ULONG_MAX;
   my $count = @addresses;
   my ($str, $len, $i, $head_s, $head_e, $gap);
 
   return if (! $count);
 
-  $str = "$out_dir/$Name.html";
+  $str = "$out_dir/${Name}-$conf_tag.html";
   open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
 
   Outml($XHTML_1_Frameset, '<html>');
@@ -879,6 +959,17 @@ sub dump_all_config_word($$)
   aOutl(4, '</div>');
 
         #------------------------------------
+
+        # The tabs.
+
+  aOutl(4, '<ul id=tabs>');
+  aOutl(6, "<li id=selected><a href=\"${Name}-$conf_tag.html\">Configuration Bits</a></li>");
+  aOutl(6, "<li><a href=\"${Name}-$trait_tag.html\">MCU traits</a></li>");
+  aOutl(4, '</ul>');
+
+        #------------------------------------
+
+        # The table of Config Bits.
 
   aOutl(4, '<div id=configList>');
   aOutl(6, '<table>');
@@ -951,6 +1042,160 @@ sub dump_all_config_word($$)
         }
       }
     }
+
+  aOutl(6, '</table>');
+  src_info(6);
+  aOutl(4, '</div>');
+  aOutl(2, "</body>\n</html>");
+  close($out_handler);
+  }
+
+#-------------------------------------------------------------------------------
+
+        # Dump the traits of $Name MCU.
+
+sub dump_traits($$)
+  {
+  my ($Name, $Configs) = @_;
+  my $traits = $Configs->{TRAITS};
+  my ($str, $len, $rom_size, $word_size, $i, $t);
+
+  $str = "$out_dir/${Name}-$trait_tag.html";
+  open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
+
+  Outml($XHTML_1_Frameset, '<html>');
+  print_head($Name, undef);
+  aOutl(2, '<body>');
+
+        #------------------------------------
+
+        # The main menu.
+
+  aOutl(4, '<div>');
+  aOutl(6, '<ul id=classMenu>');
+
+  foreach (@pri_menu_elems)
+    {
+    aOutl(8, "<li><a href=\"$_->{HREF}\">$_->{NAME}</a></li>");
+    }
+
+  aOutl(6, '</ul>');
+  aOutl(4, '</div>');
+
+        #------------------------------------
+
+        # The tabs.
+
+  aOutl(4, '<ul id=tabs>');
+  aOutl(6, "<li><a href=\"${Name}-$conf_tag.html\">Configuration Bits</a></li>");
+  aOutl(6, "<li id=selected><a href=\"${Name}-$trait_tag.html\">MCU traits</a></li>");
+  aOutl(4, '</ul>');
+
+        #------------------------------------
+
+        # The table of traits of MCU.
+
+  $word_size = $traits->{WORD_SIZE};
+  $len = ($word_size == 16) ? 6 : 4;
+  $rom_size = $traits->{ROM} + 1;
+
+  aOutl(4, '<div id=traitList>');
+  aOutl(6, '<table>');
+  aOutl(8, "<caption id=traitTableName>$Name</caption>");
+
+  aOutl(8, '<tr id=traitGap></tr>');
+
+        #------------------------------------
+
+  aOutl(8, '<tr id=traitLine>');
+  aOutl(10, '<td id=traitVertMargin></td>');
+  aOutl(10, '<th id=traitName>Coff ID of device</th>');
+  aOutfl(10, '<td id=traitValue>0x%04X</td>', $traits->{COFF});
+  aOutl(10, '<td id=traitVertMargin></td>');
+  aOutl(8, '</tr>');
+
+        #------------------------------------
+
+  aOutl(8, '<tr id=traitLine>');
+  aOutl(10, '<td id=traitVertMargin></td>');
+  aOutl(10, '<th id=traitName>Number of ROM/FLASH pages</th>');
+  aOutl(10, "<td id=traitValue>$traits->{PAGES} ($traits->{PAGE_SIZE} words/pages)</td>");
+  aOutl(8, '</tr>');
+
+        #------------------------------------
+
+  aOutl(8, '<tr id=traitLine>');
+  aOutl(10, '<td id=traitVertMargin></td>');
+  aOutl(10, '<th id=traitName>Last address of ROM/FLASH</th>');
+
+  $t = ($word_size == 16) ? 'bytes' : 'words';
+  aOutfl(10, "<td id=traitValue>0x%0${len}X   ($rom_size $t)</td>", $traits->{ROM});
+  aOutl(8, '</tr>');
+
+        #------------------------------------
+
+  if ($traits->{FLASHDATA} > 0)
+    {
+    aOutl(8, '<tr id=traitLine>');
+    aOutl(10, '<td id=traitVertMargin></td>');
+    aOutl(10, '<th id=traitName>Address space of FLASH Data</th>');
+
+    aOutfl(10, "<td id=traitValue>0x%0${len}X - 0x%0${len}X   (%i words)</td>",
+               $rom_size,
+               $rom_size + $traits->{FLASHDATA},
+               $traits->{FLASHDATA} + 1);
+
+    aOutl(8, '</tr>');
+    }
+
+        #------------------------------------
+
+  $i = $traits->{CONFIGS};
+  $t = ($word_size == 16) ? 'Byte' : 'Word';
+  $t .= 's' if ($i > 1);
+  aOutl(8, '<tr id=traitLine>');
+  aOutl(10, '<td id=traitVertMargin></td>');
+  aOutl(10, "<th id=traitName>Address space of Configuration $t</th>");
+  aOutfl(10, "<td id=traitValue>0x%0${len}X - 0x%0${len}X   ($i %s)</td>",
+             $traits->{CF_START}, $traits->{CF_END}, lc($t));
+  aOutl(8, '</tr>');
+
+        #------------------------------------
+
+  if ($traits->{EEPROM} > 0)
+    {
+    aOutl(8, '<tr id=traitLine>');
+    aOutl(10, '<td id=traitVertMargin></td>');
+    aOutl(10, '<th id=traitName>Address space of EEPROM</th>');
+
+    aOutfl(10, "<td id=traitValue>0x%0${len}X - 0x%0${len}X   (%i bytes)</td>",
+               $traits->{EE_START},
+               $traits->{EE_START} + $traits->{EEPROM},
+               $traits->{EEPROM} + 1);
+
+    aOutl(8, '</tr>');
+    }
+
+        #------------------------------------
+
+  aOutl(8, '<tr id=traitLine>');
+  aOutl(10, '<td id=traitVertMargin></td>');
+  aOutl(10, '<th id=traitName>Number of RAM Banks</th>');
+  aOutl(10, "<td id=traitValue>$traits->{BANKS} ($traits->{BANK_SIZE} bytes/banks)</td>");
+  aOutl(8, '</tr>');
+
+        #------------------------------------
+
+  if ($word_size == 16)
+    {
+    aOutl(8, '<tr id=traitLine>');
+    aOutl(10, '<td id=traitVertMargin></td>');
+    aOutl(10, '<th id=traitName>Last address of lower Access RAM</th>');
+    aOutfl(10, "<td id=traitValue>0x%02X</td>", $traits->{ACCESS});
+    aOutl(8, '</tr>');
+    }
+
+        #------------------------------------
 
   aOutl(6, '</table>');
   src_info(6);
@@ -1125,7 +1370,8 @@ EOT
   -pie-background: linear-gradient($content_background, $tab_background 100%);
   }
 
-#mcuListHeader, #mcuList, #configList, #classMenu li, #mcuLinkName, #mcuLink, #mcuAttr, #mcuAttrEnh, #mcuAttrReg, #confTableName, #configWord, #confOptName, #srcInfo
+#mcuListHeader, #mcuList, #classMenu li, #mcuLinkName, #mcuLink, #mcuAttr, #mcuAttrEnh, #mcuAttrReg,
+#configList, #confTableName, #configWord, #confOptName, #traitList, #traitTableName, #traitName, #srcInfo
   {
 EOT
 ;
@@ -1133,13 +1379,9 @@ EOT
   print $out_handler <<EOT
   }
 
-#mcuList
+#mcuList, #configList, #traitList
   {
   z-index: 2;
-  }
-
-#mcuList, #configList
-  {
   padding: 1em 1em;
   position: relative;
   clear: left;
@@ -1174,7 +1416,7 @@ EOT
 
 /*----------------------------------------------*/
 
-#mcuListHeader, #confTableName
+#mcuListHeader, #confTableName, #traitTableName
   {
   background: $header_background;
   border-color: $header_background;
@@ -1226,19 +1468,19 @@ EOT
 
 /*----------------------------------------------*/
 
-#confTableName, #configWord
+#confTableName, #configWord, #traitTableName
   {
   text-align: center;
   border-width: 4px;
   }
 
-#confTableName
+#confTableName, #traitTableName
   {
   font:bold 1.5em Georgia;
   line-height: 1.75em;
   }
 
-#confGap
+#confGap, #traitGap
   {
   height: 1em;
   }
@@ -1252,24 +1494,24 @@ EOT
   border-style: ridge;
   }
 
-#confLine
+#confLine, #traitValue
   {
   background: #BAE7B8;
   }
 
-#confSwName, #confSwValue, #confSwExpl
+#confSwName, #confSwValue, #confSwExpl, #traitValue
   {
   padding: 0.2em 0.625em;
   text-align: left;
   }
 
-#confVertMargin
+#confVertMargin, #traitVertMargin
   {
   width: 2%;
   background: $content_background;
   }
 
-#confOptName
+#confOptName, #traitName
   {
   padding: 0.5em 0.75em;
   text-align: left;
@@ -1384,14 +1626,9 @@ for (my $i = 0; $i < scalar(@ARGV); )
       exit(0);
       }
 
-    when (/^-+/o)
-      {
-      die "Unknown option: \"$opt\"!\n";
-      }
-
     default
       {
-      $file = $opt;
+      die "Unknown option: \"$opt\"!\n";
       }
     } # given ($opt)
   }
@@ -1430,4 +1667,5 @@ create_class_htmls();
 foreach (sort smartSort keys %mcus_by_names)
   {
   dump_all_config_word($_, $mcus_by_names{$_});
+  dump_traits($_, $mcus_by_names{$_});
   }

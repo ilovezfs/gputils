@@ -1,4 +1,7 @@
 2012-08-08 Molnár Károly <proton7@freemail.hu>
+	* tools/config-help.pl: New tab in MCU info pages.
+
+2012-08-08 Molnár Károly <proton7@freemail.hu>
 	* tools/config-help.pl: Create some html files from mplab-x
 	  8bit_device.info file. All MCU to belongs an html file,
           in which are listed in the Config bits.
