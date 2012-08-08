@@ -1,3 +1,6 @@
+2012-08-08 Molnár Károly <proton7@freemail.hu>
+	* tools/device-manager.pl: Minor change in the license.
+
 2012-07-29 Molnár Károly <proton7@freemail.hu>
 	* tools/device-manager.pl: Added further new command line option.
 
