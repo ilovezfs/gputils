@@ -37,6 +37,7 @@
     $Id$
 =cut
 
+use Data::Dumper;
 use strict;
 use warnings;
 use 5.12.0;                     # when (regex)
@@ -165,6 +166,8 @@ my %mcu_traits =
 
                     COFF      => 0,     # Coff ID of device. (16 bit wide)
                     PAGES     => 0,     # Number of ROM/FLASH pages.
+                    RAM_SIZE  => 0,     # Full size of all SFR and GPR.
+                    SFRS      => 0,     # Number of SFRs.
                     CF_START  => 0,     # Address of first Configuration byte/word.
                     CF_END    => 0,     # Address of last Configuration byte/word.
 
@@ -469,10 +472,36 @@ sub read_list_file()
 
     $name = "pic$name" if ($name =~ /^rf/o);        # rfXXX -> picrfXXX
 
-    $gp_mcus_by_names{uc($name)} = TRUE;
+    $gp_mcus_by_names{uc($name)} = '';
     }
 
   close(LIST);
+  }
+
+#-------------------------------------------------------------------------------
+
+        # Finds to all the MCU the corresponding inc file.
+
+sub find_inc_files($)
+  {
+  my $Dir = $_[0];
+
+  opendir(DIR, $Dir) || die "Can not open. -> \"$Dir\"\n";
+
+  foreach (grep(-f "$Dir/$_" && /^\w+\.inc$/io, readdir(DIR)))
+    {
+    my $name = lc($_);
+
+    $name =~ s/^p//o;
+    $name =~ s/\.inc$//o;
+    $name = uc("pic$name");
+
+        # Remember the name of inc file;
+
+    $gp_mcus_by_names{$name} = $_ if (defined($gp_mcus_by_names{$name}));
+    }
+
+  closedir(DIR);
   }
 
 #-------------------------------------------------------------------------------
@@ -533,7 +562,7 @@ sub extract_mcu_names()
         {
         $name = "pic$name" if ($name =~ /^rf/o);        # rfXXX -> picrfXXX
 
-        $gp_mcus_by_names{uc($name)} = TRUE;
+        $gp_mcus_by_names{uc($name)} = '';
         }
       }
     else
@@ -547,6 +576,107 @@ sub extract_mcu_names()
 
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@                        @@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@  Handle the .inc files.  @@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@                        @@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+use constant INC_NULL => 0;
+use constant INC_SFR  => 1;
+use constant INC_BITS => 2;
+use constant INC_RAM  => 3;
+
+        # It establishes the RAM size of a device from $Inc file.
+
+sub establishes_ram_size($$)
+  {
+  my ($Inc, $NumSfr) = @_;
+  my ($line, $full_ram, $state, $num_sfr);
+
+  open(INC, '<', $Inc) || die "Could not open for reading: $Inc\n";
+
+  $full_ram = 0;
+  $num_sfr  = 0;
+  $state = INC_NULL;
+  foreach (grep(! /^\s*$/o, <INC>))
+    {
+    chomp;
+    s/\r$//o;
+    s/^\s*|\s*$//go;
+    $line = $_;
+
+    given ($state)
+      {
+      when (INC_NULL)
+        {
+        $state = INC_SFR if ($line =~ /^;-+\s*Register\s+Files\s*-+$/io);
+        }
+
+      when (INC_SFR)
+        {
+        if ($line =~ /^;-+\s*(.+)Bits\s*-+$/io)
+          {
+          $state = INC_BITS;
+          }
+        elsif ($line =~ /^(\w+)\s+EQU\s+([\w']+)$/io)  #'
+          {
+          ++$num_sfr;
+          }
+        }
+
+      when (INC_BITS)
+        {
+        $state = INC_RAM if ($line =~ /^;\s*RAM\s+Definitions?$/io);
+        }
+
+      when (INC_RAM)
+        {
+        if ($line =~ /^__MAXRAM\s+H'([[:xdigit:]]+)'$/io)
+          {
+        # __MAXRAM  H'001F'
+        # __MAXRAM  H'01FF'
+
+          $full_ram = hex($1) + 1;
+          }
+        elsif ($line =~ /^__BADRAM\s+/io)
+          {
+
+        # __BADRAM  H'000F'
+        # __BADRAM  H'0013'-H'0014'
+        # __BADRAM  H'118'-H'1FF', H'218'-H'2FF', H'318'-H'3FF'
+        # __BADRAM  H'0F9C'
+        # __BADRAM  H'0FA3'-H'0FA5'
+
+          foreach (split(/\s*,\s*/o, ${^POSTMATCH}))
+            {
+            if ($_ =~ /^H'([[:xdigit:]]+)'\s*-\s*H'([[:xdigit:]]+)'$/io)
+              {
+              my ($s, $e) = (hex($1), hex($2));
+
+              $full_ram -= ($s < $e) ? ($e - $s + 1) : ($s - $e + 1);
+              }
+            elsif ($_ =~ /^H'([[:xdigit:]]+)'$/io)
+              {
+              --$full_ram;
+              }
+            else
+              {
+              die "Unknown value in \"$Inc\" file: $_\n";
+              }
+            } # foreach (split(/\s*,\s*/o, ${^POSTMATCH}))
+          }
+        } # when (INC_RAM)
+      } # given ($state)
+    } # foreach (grep(! /^\s*$/o, <INC>))
+
+  close(INC);
+  ${$NumSfr} = $num_sfr;
+  return $full_ram;
+  }
+
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #@@@@@@@@@@@@@                                                  @@@@@@@@@@@@@@@@
 #@@@@@@@@@@@@  Read all config options from the $dev_info file.  @@@@@@@@@@@@@@@
 #@@@@@@@@@@@@@                                                  @@@@@@@@@@@@@@@@
@@ -555,7 +685,7 @@ sub extract_mcu_names()
 
 sub read_all_config_bits()
   {
-  my ($configs, $name, $class);
+  my ($configs, $name, $inc, $class);
   my $traits = undef;
   my $addr = 0;
   my $config_count = 0;
@@ -567,9 +697,7 @@ sub read_all_config_bits()
 
   open(IN, '<', $dev_info) || die "Could not open for reading: $dev_info\n";
 
-  my $msg = 'Gputils';
-
-  $msg = 'list file' if ($list_file ne '');
+  my $msg = ($list_file ne '') ? 'list file' : 'Gputils';
 
   while (<IN>)
     {
@@ -615,6 +743,8 @@ sub read_all_config_bits()
 
                   COFF      => hex($fields[1]),  # Coff ID of device. (16 bit wide)
                   PAGES     => hex($fields[5]),  # Number of ROM/FLASH pages.
+                  RAM_SIZE  => 0,                # Full size of all SFR and GPR.
+                  SFRS      => 0,                # Number of SFRs.
                   CF_START  => 0,                # Address of first Configuration byte/word.
                   CF_END    => 0,                # Address of last Configuration byte/word.
 
@@ -628,8 +758,14 @@ sub read_all_config_bits()
                   ACCESS    => hex($fields[10])  # Last address of lower Access RAM of pic18f series.
                   };
 
-        if (defined($gp_mcus_by_names{$name}))
+        $inc = $gp_mcus_by_names{$name};
+
+        if (defined($inc))
           {
+          my $sfr = 0;
+
+          $traits->{RAM_SIZE} = establishes_ram_size("$gputils_path/header/$inc", \$sfr);
+          $traits->{SFRS} = $sfr;
           $state = ST_LISTEN;
           $addr = 0;
           $configs = {};
@@ -1116,11 +1252,15 @@ sub dump_traits($$)
 
         #------------------------------------
 
-  aOutl(8, '<tr id=traitLine>');
-  aOutl(10, '<td id=traitVertMargin></td>');
-  aOutl(10, '<th id=traitName>Number of ROM/FLASH pages</th>');
-  aOutl(10, "<td id=traitValue>$traits->{PAGES} ($traits->{PAGE_SIZE} words/pages)</td>");
-  aOutl(8, '</tr>');
+  $i = $traits->{PAGE_SIZE};
+  if ($i > 0)
+    {
+    aOutl(8, '<tr id=traitLine>');
+    aOutl(10, '<td id=traitVertMargin></td>');
+    aOutl(10, '<th id=traitName>Number of ROM/FLASH pages</th>');
+    aOutl(10, "<td id=traitValue>$traits->{PAGES} ($i words/pages)</td>");
+    aOutl(8, '</tr>');
+    }
 
         #------------------------------------
 
@@ -1134,16 +1274,15 @@ sub dump_traits($$)
 
         #------------------------------------
 
-  if ($traits->{FLASHDATA} > 0)
+  $i = $traits->{FLASHDATA};
+  if ($i > 0)
     {
     aOutl(8, '<tr id=traitLine>');
     aOutl(10, '<td id=traitVertMargin></td>');
     aOutl(10, '<th id=traitName>Address space of FLASH Data</th>');
 
     aOutfl(10, "<td id=traitValue>0x%0${len}X - 0x%0${len}X   (%i words)</td>",
-               $rom_size,
-               $rom_size + $traits->{FLASHDATA},
-               $traits->{FLASHDATA} + 1);
+               $rom_size, $rom_size + $i, $i + 1);
 
     aOutl(8, '</tr>');
     }
@@ -1162,16 +1301,15 @@ sub dump_traits($$)
 
         #------------------------------------
 
-  if ($traits->{EEPROM} > 0)
+  $i = $traits->{EEPROM};
+  if ($i > 0)
     {
     aOutl(8, '<tr id=traitLine>');
     aOutl(10, '<td id=traitVertMargin></td>');
     aOutl(10, '<th id=traitName>Address space of EEPROM</th>');
 
     aOutfl(10, "<td id=traitValue>0x%0${len}X - 0x%0${len}X   (%i bytes)</td>",
-               $traits->{EE_START},
-               $traits->{EE_START} + $traits->{EEPROM},
-               $traits->{EEPROM} + 1);
+               $traits->{EE_START}, $traits->{EE_START} + $i, $i + 1);
 
     aOutl(8, '</tr>');
     }
@@ -1183,6 +1321,40 @@ sub dump_traits($$)
   aOutl(10, '<th id=traitName>Number of RAM Banks</th>');
   aOutl(10, "<td id=traitValue>$traits->{BANKS} ($traits->{BANK_SIZE} bytes/banks)</td>");
   aOutl(8, '</tr>');
+
+        #------------------------------------
+
+  $i = $traits->{SFRS};
+  if ($i > 0)
+    {
+    aOutl(8, '<tr id=traitLine>');
+    aOutl(10, '<td id=traitVertMargin></td>');
+    aOutl(10, '<th id=traitName>Size of SFRs</th>');
+    aOutl(10, "<td id=traitValue>$i bytes</td>");
+    aOutl(8, '</tr>');
+
+    if ($traits->{RAM_SIZE} > 0)
+      {
+      $i = $traits->{RAM_SIZE} - $i;
+      aOutl(8, '<tr id=traitLine>');
+      aOutl(10, '<td id=traitVertMargin></td>');
+      aOutl(10, '<th id=traitName>Size of GPRs</th>');
+      aOutl(10, "<td id=traitValue>$i bytes</td>");
+      aOutl(8, '</tr>');
+      }
+    }
+
+        #------------------------------------
+
+  $i = $traits->{RAM_SIZE};
+  if ($i > 0)
+    {
+    aOutl(8, '<tr id=traitLine>');
+    aOutl(10, '<td id=traitVertMargin></td>');
+    aOutl(10, '<th id=traitName>Full size of SFRs + GPRs</th>');
+    aOutl(10, "<td id=traitValue>$i bytes</td>");
+    aOutl(8, '</tr>');
+    }
 
         #------------------------------------
 
@@ -1328,13 +1500,17 @@ sub create_css()
 
 #tabs li, #classMenu li
   {
-  margin: 0 0.25em;
+  margin: 1em 0.5em 0;
   padding: 0.5em 0.5em;
   float: left;
   list-style: none;
-  color: $tab_color;
   background: $tab_background;
+  color: $tab_color;
   border: ${border_width}px solid $tab_border_color;
+EOT
+;
+  css_shadow(2, "$tab_border_color 0 0 1em");
+  print $out_handler <<EOT
   }
 
 #tabs li
@@ -1385,8 +1561,8 @@ EOT
   padding: 1em 1em;
   position: relative;
   clear: left;
-  border: ${border_width}px solid $tab_border_color;
   background: $content_background;
+  border: ${border_width}px solid $tab_border_color;
 EOT
 ;
   css_shadow(2, "$tab_border_color 0 0 1em");
@@ -1423,10 +1599,15 @@ EOT
   border-style: outset;
   }
 
+#mcuListHeader, #mcuLinkName, #mcuAttrEnh, #mcuAttrReg, #configWord,
+#confSwName, #confSwValue, #confSwExpl, #traitValue
+  {
+  padding: 0.2em 0.625em;
+  }
+
 #mcuListHeader
   {
   text-align: left;
-  padding: 0.2em 0.625em;
   font-size: 1.2em;
   border-width: 4px;
   }
@@ -1443,7 +1624,6 @@ EOT
 #mcuLinkName
   {
   text-align: left;
-  padding: 0.2em 0.625em;
   }
 
 #mcuLink:active
@@ -1452,18 +1632,19 @@ EOT
   border-width: 2px;
   }
 
+#mcuAttrEnh, #mcuAttrReg
+  {
+  font: bold 1em Georgia;
+  }
+
 #mcuAttrEnh
   {
   color: #D24E4E;
-  padding: 0.2em 0.625em;
-  font:bold 1em Georgia;
   }
 
 #mcuAttrReg
   {
   color: #318C31;
-  padding: 0.2em 0.625em;
-  font:bold 1em Georgia;
   }
 
 /*----------------------------------------------*/
@@ -1488,7 +1669,6 @@ EOT
 #configWord
   {
   font-size: 1.3em;
-  padding: 0.2em 0.625em;
   background: $attr_background;
   border-color: $attr_background;
   border-style: ridge;
@@ -1499,9 +1679,8 @@ EOT
   background: #BAE7B8;
   }
 
-#confSwName, #confSwValue, #confSwExpl, #traitValue
+#confOptName, #confSwName, #confSwValue, #confSwExpl, #traitName, #traitValue
   {
-  padding: 0.2em 0.625em;
   text-align: left;
   }
 
@@ -1514,7 +1693,6 @@ EOT
 #confOptName, #traitName
   {
   padding: 0.5em 0.75em;
-  text-align: left;
   background: #A5BDE4;
   border-style: solid;
   border-width: 0;
@@ -1660,6 +1838,7 @@ if ($only_css)
   exit(0);
   }
 
+find_inc_files("$gputils_path/header");
 read_all_config_bits();
 create_css();
 create_class_htmls();
