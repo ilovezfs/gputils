@@ -1,3 +1,6 @@
+2012-08-10 Molnár Károly <proton7@freemail.hu>
+	* tools/config-help.pl: New tab - "SFR map" in MCU info pages.
+
 2012-08-09 Molnár Károly <proton7@freemail.hu>
 	* tools/config-help.pl: Compute the size of SFRs and GPRs
           from gputils inc files.
