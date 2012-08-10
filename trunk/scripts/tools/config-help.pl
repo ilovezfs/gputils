@@ -52,6 +52,8 @@ use constant ST_LISTEN => 1;
 
 my $PROGRAM = 'config-help.pl';
 
+my $verbose = 0;
+
 my $gputils_local_repo  = "$ENV{HOME}/svn_snapshots/gputils";
 my $gputils_path        = "$gputils_local_repo/gputils";
 my $gpprocessor_c = 'gpprocessor.c';
@@ -67,10 +69,11 @@ my $header = ('=' x 70);
 
 my $XHTML_1_Frameset = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">';
 
-my $out_dir   = 'html-help';
-my $css       = 'main.css';
-my $conf_tag  = 'conf';
-my $trait_tag = 'trait';
+my $out_dir  = 'html-help';
+my $css      = 'main.css';
+my $conf_tag = 'conf';
+my $feat_tag = 'feat';
+my $sfr_tag  = 'sfr';
 
 my @fields;
 my $mcu_name;
@@ -87,7 +90,7 @@ use constant PROC_CLASS_PIC14E => 3;
 use constant PROC_CLASS_PIC16  => 4;
 use constant PROC_CLASS_PIC16E => 5;
 
-my %mcu_traits =
+my %mcu_features =
   (
   '16c5x'  => {
               CLASS     => PROC_CLASS_PIC12,
@@ -156,7 +159,7 @@ my %mcu_traits =
         The structure of one element of the %mcus_by_names hash:
 
         {
-        TRAITS   => {
+        FEATURES => {
                     CLASS     => PROC_CLASS_PIC1XX,
                     ENHANCED  => FALSE,
                     WORD_SIZE => 0,     # Instruction size of MCU.
@@ -167,7 +170,6 @@ my %mcu_traits =
                     COFF      => 0,     # Coff ID of device. (16 bit wide)
                     PAGES     => 0,     # Number of ROM/FLASH pages.
                     RAM_SIZE  => 0,     # Full size of all SFR and GPR.
-                    SFRS      => 0,     # Number of SFRs.
                     CF_START  => 0,     # Address of first Configuration byte/word.
                     CF_END    => 0,     # Address of last Configuration byte/word.
 
@@ -179,6 +181,28 @@ my %mcu_traits =
                     CONFIGS   => 0,     # Number of Configuration bytes/words.
                     BANKS     => 0,     # Number of RAM Banks.
                     ACCESS    => 0      # Last address of lower Access RAM of pic18f series.
+                    BAD_RAM   => [
+                                   {
+                                   START => 0,
+                                   END   => 0
+                                   },
+
+                                   ...
+
+                                   {
+                                   }
+                                 ],
+                    SFRS      => [      # List of SFRs.
+                                   {
+                                   NAME => '',
+                                   ADDR => 0
+                                   },
+
+                                   ...
+
+                                   {
+                                   }
+                                 ]
                     },
 
         CONFIGS  => {
@@ -289,6 +313,28 @@ my @pri_menu_elems =
 sub basename($)
   {
   return ($_[0] =~ /([^\/]+)$/) ? $1 : '';
+  }
+
+#-------------------------------------------------------------------------------
+
+sub str2dec($)
+  {
+  my $Str = $_[0];
+
+  return hex($1)   if ($Str =~ /^H'([[:xdigit:]]+)'$/io);
+  return hex($1)   if ($Str =~ /^0x([[:xdigit:]]+)$/io);
+  return int($Str) if ($Str =~ /^\d+$/o);
+
+  die "This string not number: \"$Str\"";
+  }
+
+#-------------------------------------------------------------------------------
+
+sub Log
+  {
+  return if (pop(@_) > $verbose);
+  foreach (@_) { print STDERR $_; }
+  print STDERR "\n";
   }
 
 #-------------------------------------------------------------------------------
@@ -410,10 +456,10 @@ sub smartCompare($$)
 
 #-------------------------------------------------------------------------------
 
-sub smartSort
+sub smartSort($$)
   {
-  my @a_s = ($a =~ /(\d+|\D+)/go);
-  my @b_s = ($b =~ /(\d+|\D+)/go);
+  my @a_s = ($_[0] =~ /(\d+|\D+)/go);
+  my @b_s = ($_[1] =~ /(\d+|\D+)/go);
   my ($i, $k, $end, $ret);
 
   $i = scalar(@a_s);
@@ -587,17 +633,21 @@ use constant INC_SFR  => 1;
 use constant INC_BITS => 2;
 use constant INC_RAM  => 3;
 
-        # It establishes the RAM size of a device from $Inc file.
+        # Read the RAM features from $Inc file.
 
-sub establishes_ram_size($$)
+sub read_ram_features($$)
   {
-  my ($Inc, $NumSfr) = @_;
-  my ($line, $full_ram, $state, $num_sfr);
+  my ($Inc, $Features) = @_;
+  my ($line, $full_ram, $state);
+  my ($sfrs, $bad_ram);
 
   open(INC, '<', $Inc) || die "Could not open for reading: $Inc\n";
 
+  Log("Read the RAM features from $Inc.", 4);
+
   $full_ram = 0;
-  $num_sfr  = 0;
+  $sfrs = [];
+  $bad_ram = [];
   $state = INC_NULL;
   foreach (grep(! /^\s*$/o, <INC>))
     {
@@ -621,7 +671,7 @@ sub establishes_ram_size($$)
           }
         elsif ($line =~ /^(\w+)\s+EQU\s+([\w']+)$/io)  #'
           {
-          ++$num_sfr;
+          push(@{$sfrs}, { NAME => $1, ADDR => str2dec($2) });
           }
         }
 
@@ -654,10 +704,25 @@ sub establishes_ram_size($$)
               {
               my ($s, $e) = (hex($1), hex($2));
 
-              $full_ram -= ($s < $e) ? ($e - $s + 1) : ($s - $e + 1);
+              if ($s > $e)
+                {
+                # It is unlikely that the values in reverse order there are,
+                # but it is advisable to pay attention.
+
+                my $t = $s;
+
+                $s = $e;
+                $e = $t;
+                }
+
+              push(@{$bad_ram}, { START => $s, END => $e });
+              $full_ram -= $e - $s + 1;
               }
             elsif ($_ =~ /^H'([[:xdigit:]]+)'$/io)
               {
+              my $s = hex($1);
+
+              push(@{$bad_ram}, { START => $s, END => $s });
               --$full_ram;
               }
             else
@@ -671,8 +736,12 @@ sub establishes_ram_size($$)
     } # foreach (grep(! /^\s*$/o, <INC>))
 
   close(INC);
-  ${$NumSfr} = $num_sfr;
-  return $full_ram;
+
+  $Features->{RAM_SIZE} = $full_ram;
+  $Features->{BAD_RAM}  = $bad_ram;
+
+  @{$sfrs} = sort {$a->{ADDR} <=> $b->{ADDR}} @{$sfrs};
+  $Features->{SFRS}     = $sfrs;
   }
 
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -686,7 +755,7 @@ sub establishes_ram_size($$)
 sub read_all_config_bits()
   {
   my ($configs, $name, $inc, $class);
-  my $traits = undef;
+  my $features = undef;
   my $addr = 0;
   my $config_count = 0;
   my $switch_count = 0;
@@ -696,6 +765,8 @@ sub read_all_config_bits()
   my ($cf_addr_min, $cf_addr_max);
 
   open(IN, '<', $dev_info) || die "Could not open for reading: $dev_info\n";
+
+  Log("Reads all config options from $dev_info.", 4);
 
   my $msg = ($list_file ne '') ? 'list file' : 'Gputils';
 
@@ -728,44 +799,42 @@ sub read_all_config_bits()
         $cf_addr_min   = ULONG_MAX;
         $cf_addr_max   = 0;
 
-        my $tr = $mcu_traits{$class};
+        my $tr = $mcu_features{$class};
 
         die "Unknown class of $name MCU!" if (! defined($tr));
 
-        $traits = {
-                  CLASS     => $tr->{CLASS},
-                  ENHANCED  => $tr->{ENHANCED},
-                  PAGE_SIZE => $tr->{PAGE_SIZE}, # Size of program memory pages.
-                  WORD_SIZE => $tr->{WORD_SIZE}, # Size of instructions.
-                  CONF_SIZE => $tr->{CONF_SIZE}, # Size of Config Words.
-                  EE_START  => $tr->{EE_START},  # Start address of EEPROM.
-                  BANK_SIZE => $tr->{BANK_SIZE}, # Size of RAM Banks.
+        $features = {
+                    CLASS     => $tr->{CLASS},
+                    ENHANCED  => $tr->{ENHANCED},
+                    PAGE_SIZE => $tr->{PAGE_SIZE}, # Size of program memory pages.
+                    WORD_SIZE => $tr->{WORD_SIZE}, # Size of instructions.
+                    CONF_SIZE => $tr->{CONF_SIZE}, # Size of Config Words.
+                    EE_START  => $tr->{EE_START},  # Start address of EEPROM.
+                    BANK_SIZE => $tr->{BANK_SIZE}, # Size of RAM Banks.
 
-                  COFF      => hex($fields[1]),  # Coff ID of device. (16 bit wide)
-                  PAGES     => hex($fields[5]),  # Number of ROM/FLASH pages.
-                  RAM_SIZE  => 0,                # Full size of all SFR and GPR.
-                  SFRS      => 0,                # Number of SFRs.
-                  CF_START  => 0,                # Address of first Configuration byte/word.
-                  CF_END    => 0,                # Address of last Configuration byte/word.
+                    COFF      => hex($fields[1]),  # Coff ID of device. (16 bit wide)
+                    PAGES     => hex($fields[5]),  # Number of ROM/FLASH pages.
+                    RAM_SIZE  => 0,                # Full size of all SFR and GPR.
+                    CF_START  => 0,                # Address of first Configuration byte/word.
+                    CF_END    => 0,                # Address of last Configuration byte/word.
 
                 # These addresses relative, compared to the beginning of the blocks.
-                  ROM       => hex($fields[6]),  # Last address of ROM/FLASH.
-                  FLASHDATA => hex($fields[11]), # Last address of FLASH Data.
-                  EEPROM    => hex($fields[9]),  # Last address of EEPROM.
+                    ROM       => hex($fields[6]),  # Last address of ROM/FLASH.
+                    FLASHDATA => hex($fields[11]), # Last address of FLASH Data.
+                    EEPROM    => hex($fields[9]),  # Last address of EEPROM.
 
-                  CONFIGS   => hex($fields[12]), # Number of Configuration bytes/words.
-                  BANKS     => hex($fields[7]),  # Number of RAM Banks.
-                  ACCESS    => hex($fields[10])  # Last address of lower Access RAM of pic18f series.
-                  };
+                    CONFIGS   => hex($fields[12]), # Number of Configuration bytes/words.
+                    BANKS     => hex($fields[7]),  # Number of RAM Banks.
+                    ACCESS    => hex($fields[10]),  # Last address of lower Access RAM of pic18f series.
+                    BAD_RAM   => [],
+                    SFRS      => []
+                    };
 
         $inc = $gp_mcus_by_names{$name};
 
         if (defined($inc))
           {
-          my $sfr = 0;
-
-          $traits->{RAM_SIZE} = establishes_ram_size("$gputils_path/header/$inc", \$sfr);
-          $traits->{SFRS} = $sfr;
+          read_ram_features("$gputils_path/header/$inc", $features);
           $state = ST_LISTEN;
           $addr = 0;
           $configs = {};
@@ -847,9 +916,9 @@ sub read_all_config_bits()
             {
             die "$name MCU already exist!" if (defined($mcus_by_names{$name}));
 
-            $traits->{CF_START} = $cf_addr_min;
-            $traits->{CF_END}   = $cf_addr_max;
-            $mcus_by_names{$name}{TRAITS}  = $traits;
+            $features->{CF_START} = $cf_addr_min;
+            $features->{CF_END}   = $cf_addr_max;
+            $mcus_by_names{$name}{FEATURES}  = $features;
             $mcus_by_names{$name}{CONFIGS} = $configs;
             $configs = {};
             }
@@ -869,11 +938,11 @@ sub read_all_config_bits()
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-sub src_info($)
+sub src_info($$)
   {
-  my $Align = $_[0];
+  my ($Align, $GapId) = @_;
 
-  aOutl($Align, '<p id=confGap></p>');
+  aOutl($Align, "<p id=$GapId></p>");
   aOutl($Align, "<p id=srcInfo>This page generated automatically by the " .
                 "$PROGRAM program from the MPASM " . basename($dev_info) .
                 " file (rev: $dev_info_rev) " .
@@ -888,6 +957,8 @@ sub print_mcu_list($$)
   {
   my ($Align, $Class) = @_;
   my $lst = '<th id=mcuListHeader>';
+
+  Log("Print list of MCUs.", 4);
 
   aOutl($Align + 2, '<div id=mcuList>');
   aOutl($Align + 4, '<table>');
@@ -918,13 +989,13 @@ sub print_mcu_list($$)
 
   aOutl($Align + 6, '</tr>');
 
-  foreach (sort smartSort keys %mcus_by_names)
+  foreach (sort { smartSort($a, $b) } keys %mcus_by_names)
     {
     my $td_href  = "<td id=mcuLinkName><a id=mcuLink href=\"${_}-$conf_tag.html\">$_</a></td>";
-    my $traits   = $mcus_by_names{$_}->{TRAITS};
-    my $td_wsize = "<td id=mcuAttr>$traits->{WORD_SIZE}</td>";
-    my $td_csize = "<td id=mcuAttr>$traits->{CONF_SIZE}</td>";
-    my $td_class = ($traits->{ENHANCED}) ? '<td id=mcuAttrEnh>enhanced</td>' : '<td id=mcuAttrReg>regular</td>';
+    my $features = $mcus_by_names{$_}->{FEATURES};
+    my $td_wsize = "<td id=mcuAttr>$features->{WORD_SIZE}</td>";
+    my $td_csize = "<td id=mcuAttr>$features->{CONF_SIZE}</td>";
+    my $td_class = ($features->{ENHANCED}) ? '<td id=mcuAttrEnh>enhanced</td>' : '<td id=mcuAttrReg>regular</td>';
 
     given ($Class)
       {
@@ -940,7 +1011,7 @@ sub print_mcu_list($$)
 
       when (PRI_MENU_ENH)
         {
-        if ($traits->{ENHANCED})
+        if ($features->{ENHANCED})
           {
           aOutl($Align + 6, '<tr>');
           aOutl($Align + 8, $td_href);
@@ -952,7 +1023,7 @@ sub print_mcu_list($$)
 
       when (PRI_MENU_REG)
         {
-        if (! $traits->{ENHANCED})
+        if (! $features->{ENHANCED})
           {
           aOutl($Align + 6, '<tr>');
           aOutl($Align + 8, $td_href);
@@ -964,7 +1035,7 @@ sub print_mcu_list($$)
 
       when (PRI_MENU_12_BIT)
         {
-        if ($traits->{WORD_SIZE} == 12)
+        if ($features->{WORD_SIZE} == 12)
           {
           aOutl($Align + 6, '<tr>');
           aOutl($Align + 8, $td_href);
@@ -976,7 +1047,7 @@ sub print_mcu_list($$)
 
       when (PRI_MENU_14_BIT)
         {
-        if ($traits->{WORD_SIZE} == 14)
+        if ($features->{WORD_SIZE} == 14)
           {
           aOutl($Align + 6, '<tr>');
           aOutl($Align + 8, $td_href);
@@ -988,7 +1059,7 @@ sub print_mcu_list($$)
 
       when (PRI_MENU_16_BIT)
         {
-        if ($traits->{WORD_SIZE} == 16)
+        if ($features->{WORD_SIZE} == 16)
           {
           aOutl($Align + 6, '<tr>');
           aOutl($Align + 8, $td_href);
@@ -1001,7 +1072,7 @@ sub print_mcu_list($$)
     }
 
   aOutl($Align + 4, '</table>');
-  src_info($Align + 4);
+  src_info($Align + 4, 'confGap');
   aOutl($Align + 2, '</div>');
   }
 
@@ -1061,7 +1132,7 @@ sub dump_all_config_word($$)
   my $conf_bits = $Configs->{CONFIGS};
   my @addresses = sort {$a <=> $b} keys(%{$conf_bits});
   my @sections;
-  my $config_mask = (ULONG_MAX << $Configs->{TRAITS}->{CONF_SIZE}) ^ ULONG_MAX;
+  my $config_mask = (ULONG_MAX << $Configs->{FEATURES}->{CONF_SIZE}) ^ ULONG_MAX;
   my $count = @addresses;
   my ($str, $len, $i, $head_s, $head_e, $gap);
 
@@ -1069,6 +1140,8 @@ sub dump_all_config_word($$)
 
   $str = "$out_dir/${Name}-$conf_tag.html";
   open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
+
+  Log("Dump the Config Options of $Name.", 4);
 
   Outml($XHTML_1_Frameset, '<html>');
   print_head($Name, undef);
@@ -1083,16 +1156,14 @@ sub dump_all_config_word($$)
 
         # The main menu.
 
-  aOutl(4, '<div>');
-  aOutl(6, '<ul id=classMenu>');
+  aOutl(4, '<ul id=classMenu>');
 
   foreach (@pri_menu_elems)
     {
-    aOutl(8, "<li><a href=\"$_->{HREF}\">$_->{NAME}</a></li>");
+    aOutl(6, "<li><a href=\"$_->{HREF}\">$_->{NAME}</a></li>");
     }
 
-  aOutl(6, '</ul>');
-  aOutl(4, '</div>');
+  aOutl(4, '</ul>');
 
         #------------------------------------
 
@@ -1100,25 +1171,25 @@ sub dump_all_config_word($$)
 
   aOutl(4, '<ul id=tabs>');
   aOutl(6, "<li id=selected><a href=\"${Name}-$conf_tag.html\">Configuration Bits</a></li>");
-  aOutl(6, "<li><a href=\"${Name}-$trait_tag.html\">MCU traits</a></li>");
+  aOutl(6, "<li><a href=\"${Name}-$feat_tag.html\">MCU features</a></li>");
+  aOutl(6, "<li><a href=\"${Name}-$sfr_tag.html\">SFR map</a></li>");
   aOutl(4, '</ul>');
 
         #------------------------------------
 
         # The table of Config Bits.
 
-  aOutl(4, '<div id=configList>');
-  aOutl(6, '<table>');
-  aOutl(8, "<caption id=confTableName>$Name</caption>");
+  aOutl(4, '<table id=configList>');
+  aOutl(4, "<tr><th colspan=5 id=confTableName>$Name</th></tr>");
 
   if ($count < 2)
     {
         # PIC10F, PIC12, PIC16
 
     $sections[0] = 'CONFIG';
-    aOutl(8, $gap);
-    aOutfl(8, "${head_s}CONFIG (0x%0${len}X)$head_e", $addresses[0]);
-    dump_config_word(8, \@{$conf_bits->{$addresses[0]}}, $len, $config_mask, $gap);
+    aOutl(6, $gap);
+    aOutfl(6, "${head_s}CONFIG (0x%0${len}X)$head_e", $addresses[0]);
+    dump_config_word(6, \@{$conf_bits->{$addresses[0]}}, $len, $config_mask, $gap);
     }
   else
     {
@@ -1142,9 +1213,9 @@ sub dump_all_config_word($$)
           $h = ($i & 1) ? 'H' : 'L';
           $str = "CONFIG$n$h";
           $sections[$i] = $str;
-          aOutl(8, $gap);
-          aOutfl(8, "$head_s$str (0x%06X)$head_e", $v);
-          dump_config_word(8, \@{$conf_bits->{$addresses[$i]}}, $len, $config_mask, $gap);
+          aOutl(6, $gap);
+          aOutfl(6, "$head_s$str (0x%06X)$head_e", $v);
+          dump_config_word(6, \@{$conf_bits->{$addresses[$i]}}, $len, $config_mask, $gap);
           }
         }
       else
@@ -1158,9 +1229,9 @@ sub dump_all_config_word($$)
           $h = ($v & 1) ? 'H' : 'L';
           $str = "CONFIG$n$h";
           $sections[$i] = $str;
-          aOutl(8, $gap);
-          aOutfl(8, "$head_s$str (0x%06X)$head_e", $v);
-          dump_config_word(8, \@{$conf_bits->{$addresses[$i]}}, $len, $config_mask, $gap);
+          aOutl(6, $gap);
+          aOutfl(6, "$head_s$str (0x%06X)$head_e", $v);
+          dump_config_word(6, \@{$conf_bits->{$addresses[$i]}}, $len, $config_mask, $gap);
           }
         }
       }
@@ -1172,32 +1243,33 @@ sub dump_all_config_word($$)
         {
         $str = sprintf "CONFIG%u", $i + 1;
         $sections[$i] = $str;
-        aOutl(8, $gap);
-        aOutfl(8, "$head_s$str (0x%04X)$head_e", $addresses[$i]);
-        dump_config_word(8, \@{$conf_bits->{$addresses[$i]}}, $len, $config_mask, $gap);
+        aOutl(6, $gap);
+        aOutfl(6, "$head_s$str (0x%04X)$head_e", $addresses[$i]);
+        dump_config_word(6, \@{$conf_bits->{$addresses[$i]}}, $len, $config_mask, $gap);
         }
       }
     }
 
-  aOutl(6, '</table>');
-  src_info(6);
-  aOutl(4, '</div>');
+  aOutl(4, '</table>');
+  src_info(4, 'confGap');
   aOutl(2, "</body>\n</html>");
   close($out_handler);
   }
 
 #-------------------------------------------------------------------------------
 
-        # Dump the traits of $Name MCU.
+        # Dump the features of $Name MCU.
 
-sub dump_traits($$)
+sub dump_features($$)
   {
   my ($Name, $Configs) = @_;
-  my $traits = $Configs->{TRAITS};
+  my $features = $Configs->{FEATURES};
   my ($str, $len, $rom_size, $word_size, $i, $t);
 
-  $str = "$out_dir/${Name}-$trait_tag.html";
+  $str = "$out_dir/${Name}-$feat_tag.html";
   open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
+
+  Log("Dump the features of $Name.", 4);
 
   Outml($XHTML_1_Frameset, '<html>');
   print_head($Name, undef);
@@ -1207,16 +1279,14 @@ sub dump_traits($$)
 
         # The main menu.
 
-  aOutl(4, '<div>');
-  aOutl(6, '<ul id=classMenu>');
+  aOutl(4, '<ul id=classMenu>');
 
   foreach (@pri_menu_elems)
     {
-    aOutl(8, "<li><a href=\"$_->{HREF}\">$_->{NAME}</a></li>");
+    aOutl(6, "<li><a href=\"$_->{HREF}\">$_->{NAME}</a></li>");
     }
 
-  aOutl(6, '</ul>');
-  aOutl(4, '</div>');
+  aOutl(4, '</ul>');
 
         #------------------------------------
 
@@ -1224,154 +1294,284 @@ sub dump_traits($$)
 
   aOutl(4, '<ul id=tabs>');
   aOutl(6, "<li><a href=\"${Name}-$conf_tag.html\">Configuration Bits</a></li>");
-  aOutl(6, "<li id=selected><a href=\"${Name}-$trait_tag.html\">MCU traits</a></li>");
+  aOutl(6, "<li id=selected><a href=\"${Name}-$feat_tag.html\">MCU features</a></li>");
+  aOutl(6, "<li><a href=\"${Name}-$sfr_tag.html\">SFR map</a></li>");
   aOutl(4, '</ul>');
 
         #------------------------------------
 
-        # The table of traits of MCU.
+        # The table of features of MCU.
 
-  $word_size = $traits->{WORD_SIZE};
+  $word_size = $features->{WORD_SIZE};
   $len = ($word_size == 16) ? 6 : 4;
-  $rom_size = $traits->{ROM} + 1;
+  $rom_size = $features->{ROM} + 1;
 
-  aOutl(4, '<div id=traitList>');
-  aOutl(6, '<table>');
-  aOutl(8, "<caption id=traitTableName>$Name</caption>");
-
-  aOutl(8, '<tr id=traitGap></tr>');
+  aOutl(4, '<table id=featList>');
+  aOutl(6, "<tr><th colspan=4 id=featTableName>$Name</th></tr>");
+  aOutl(6, '<tr id=featGap></tr>');
 
         #------------------------------------
 
-  aOutl(8, '<tr id=traitLine>');
-  aOutl(10, '<td id=traitVertMargin></td>');
-  aOutl(10, '<th id=traitName>Coff ID of device</th>');
-  aOutfl(10, '<td id=traitValue>0x%04X</td>', $traits->{COFF});
-  aOutl(10, '<td id=traitVertMargin></td>');
-  aOutl(8, '</tr>');
+  aOutl(6, '<tr id=featLine>');
+  aOutl(8, '<td id=featVertMargin></td>');
+  aOutl(8, '<th id=featName>Coff ID of device</th>');
+  aOutfl(8, '<td id=featValue>0x%04X</td>', $features->{COFF});
+  aOutl(8, '<td id=featVertMargin></td>');
+  aOutl(6, '</tr>');
 
         #------------------------------------
 
-  $i = $traits->{PAGE_SIZE};
+  $i = $features->{PAGE_SIZE};
   if ($i > 0)
     {
-    aOutl(8, '<tr id=traitLine>');
-    aOutl(10, '<td id=traitVertMargin></td>');
-    aOutl(10, '<th id=traitName>Number of ROM/FLASH pages</th>');
-    aOutl(10, "<td id=traitValue>$traits->{PAGES} ($i words/pages)</td>");
-    aOutl(8, '</tr>');
+    aOutl(6, '<tr id=featLine>');
+    aOutl(8, '<td id=featVertMargin></td>');
+    aOutl(8, '<th id=featName>Number of ROM/FLASH pages</th>');
+    aOutl(8, "<td id=featValue>$features->{PAGES} ($i words/pages)</td>");
+    aOutl(6, '</tr>');
     }
 
         #------------------------------------
 
-  aOutl(8, '<tr id=traitLine>');
-  aOutl(10, '<td id=traitVertMargin></td>');
-  aOutl(10, '<th id=traitName>Last address of ROM/FLASH</th>');
+  aOutl(6, '<tr id=featLine>');
+  aOutl(8, '<td id=featVertMargin></td>');
+  aOutl(8, '<th id=featName>Last address of ROM/FLASH</th>');
 
   $t = ($word_size == 16) ? 'bytes' : 'words';
-  aOutfl(10, "<td id=traitValue>0x%0${len}X   ($rom_size $t)</td>", $traits->{ROM});
-  aOutl(8, '</tr>');
+  aOutfl(8, "<td id=featValue>0x%0${len}X   ($rom_size $t)</td>", $features->{ROM});
+  aOutl(6, '</tr>');
 
         #------------------------------------
 
-  $i = $traits->{FLASHDATA};
+  $i = $features->{FLASHDATA};
   if ($i > 0)
     {
-    aOutl(8, '<tr id=traitLine>');
-    aOutl(10, '<td id=traitVertMargin></td>');
-    aOutl(10, '<th id=traitName>Address space of FLASH Data</th>');
+    aOutl(6, '<tr id=featLine>');
+    aOutl(8, '<td id=featVertMargin></td>');
+    aOutl(8, '<th id=featName>Address space of FLASH Data</th>');
 
-    aOutfl(10, "<td id=traitValue>0x%0${len}X - 0x%0${len}X   (%i words)</td>",
+    aOutfl(8, "<td id=featValue>0x%0${len}X - 0x%0${len}X   (%i words)</td>",
                $rom_size, $rom_size + $i, $i + 1);
 
-    aOutl(8, '</tr>');
+    aOutl(6, '</tr>');
     }
 
         #------------------------------------
 
-  $i = $traits->{CONFIGS};
+  $i = $features->{CONFIGS};
   $t = ($word_size == 16) ? 'Byte' : 'Word';
   $t .= 's' if ($i > 1);
-  aOutl(8, '<tr id=traitLine>');
-  aOutl(10, '<td id=traitVertMargin></td>');
-  aOutl(10, "<th id=traitName>Address space of Configuration $t</th>");
-  aOutfl(10, "<td id=traitValue>0x%0${len}X - 0x%0${len}X   ($i %s)</td>",
-             $traits->{CF_START}, $traits->{CF_END}, lc($t));
-  aOutl(8, '</tr>');
+  aOutl(6, '<tr id=featLine>');
+  aOutl(8, '<td id=featVertMargin></td>');
+  aOutl(8, "<th id=featName>Address space of Configuration $t</th>");
+  aOutfl(8, "<td id=featValue>0x%0${len}X - 0x%0${len}X   ($i %s)</td>",
+             $features->{CF_START}, $features->{CF_END}, lc($t));
+  aOutl(6, '</tr>');
 
         #------------------------------------
 
-  $i = $traits->{EEPROM};
+  $i = $features->{EEPROM};
   if ($i > 0)
     {
-    aOutl(8, '<tr id=traitLine>');
-    aOutl(10, '<td id=traitVertMargin></td>');
-    aOutl(10, '<th id=traitName>Address space of EEPROM</th>');
+    aOutl(6, '<tr id=featLine>');
+    aOutl(8, '<td id=featVertMargin></td>');
+    aOutl(8, '<th id=featName>Address space of EEPROM</th>');
 
-    aOutfl(10, "<td id=traitValue>0x%0${len}X - 0x%0${len}X   (%i bytes)</td>",
-               $traits->{EE_START}, $traits->{EE_START} + $i, $i + 1);
+    aOutfl(8, "<td id=featValue>0x%0${len}X - 0x%0${len}X   (%i bytes)</td>",
+               $features->{EE_START}, $features->{EE_START} + $i, $i + 1);
 
-    aOutl(8, '</tr>');
+    aOutl(6, '</tr>');
     }
 
         #------------------------------------
 
-  aOutl(8, '<tr id=traitLine>');
-  aOutl(10, '<td id=traitVertMargin></td>');
-  aOutl(10, '<th id=traitName>Number of RAM Banks</th>');
-  aOutl(10, "<td id=traitValue>$traits->{BANKS} ($traits->{BANK_SIZE} bytes/banks)</td>");
-  aOutl(8, '</tr>');
+  aOutl(6, '<tr id=featLine>');
+  aOutl(8, '<td id=featVertMargin></td>');
+  aOutl(8, '<th id=featName>Number of RAM Banks</th>');
+  aOutl(8, "<td id=featValue>$features->{BANKS} ($features->{BANK_SIZE} bytes/banks)</td>");
+  aOutl(6, '</tr>');
 
         #------------------------------------
 
-  $i = $traits->{SFRS};
+  $i = @{$features->{SFRS}};
   if ($i > 0)
     {
-    aOutl(8, '<tr id=traitLine>');
-    aOutl(10, '<td id=traitVertMargin></td>');
-    aOutl(10, '<th id=traitName>Size of SFRs</th>');
-    aOutl(10, "<td id=traitValue>$i bytes</td>");
-    aOutl(8, '</tr>');
+    aOutl(6, '<tr id=featLine>');
+    aOutl(8, '<td id=featVertMargin></td>');
+    aOutl(8, '<th id=featName>Number of SFRs</th>');
+    aOutl(8, "<td id=featValue>$i</td>");
+    aOutl(6, '</tr>');
 
-    if ($traits->{RAM_SIZE} > 0)
+    if ($features->{RAM_SIZE} > 0)
       {
-      $i = $traits->{RAM_SIZE} - $i;
-      aOutl(8, '<tr id=traitLine>');
-      aOutl(10, '<td id=traitVertMargin></td>');
-      aOutl(10, '<th id=traitName>Size of GPRs</th>');
-      aOutl(10, "<td id=traitValue>$i bytes</td>");
-      aOutl(8, '</tr>');
+      $i = $features->{RAM_SIZE} - $i;
+      aOutl(6, '<tr id=featLine>');
+      aOutl(8, '<td id=featVertMargin></td>');
+      aOutl(8, '<th id=featName>Size of GPRs</th>');
+      aOutl(8, "<td id=featValue>$i bytes</td>");
+      aOutl(6, '</tr>');
       }
     }
 
         #------------------------------------
 
-  $i = $traits->{RAM_SIZE};
+  $i = $features->{RAM_SIZE};
   if ($i > 0)
     {
-    aOutl(8, '<tr id=traitLine>');
-    aOutl(10, '<td id=traitVertMargin></td>');
-    aOutl(10, '<th id=traitName>Full size of SFRs + GPRs</th>');
-    aOutl(10, "<td id=traitValue>$i bytes</td>");
-    aOutl(8, '</tr>');
+    aOutl(6, '<tr id=featLine>');
+    aOutl(8, '<td id=featVertMargin></td>');
+    aOutl(8, '<th id=featName>Full size of SFRs + GPRs</th>');
+    aOutl(8, "<td id=featValue>$i bytes</td>");
+    aOutl(6, '</tr>');
     }
 
         #------------------------------------
 
   if ($word_size == 16)
     {
-    aOutl(8, '<tr id=traitLine>');
-    aOutl(10, '<td id=traitVertMargin></td>');
-    aOutl(10, '<th id=traitName>Last address of lower Access RAM</th>');
-    aOutfl(10, "<td id=traitValue>0x%02X</td>", $traits->{ACCESS});
-    aOutl(8, '</tr>');
+    aOutl(6, '<tr id=featLine>');
+    aOutl(8, '<td id=featVertMargin></td>');
+    aOutl(8, '<th id=featName>Last address of lower Access RAM</th>');
+    aOutfl(8, "<td id=featValue>0x%02X</td>", $features->{ACCESS});
+    aOutl(6, '</tr>');
     }
 
         #------------------------------------
 
-  aOutl(6, '</table>');
-  src_info(6);
-  aOutl(4, '</div>');
+  aOutl(4, '</table>');
+  src_info(4, 'featGap');
+  aOutl(2, "</body>\n</html>");
+  close($out_handler);
+  }
+
+#-------------------------------------------------------------------------------
+
+        # Dump the SFR map of $Name MCU.
+
+sub dump_sfr_map($$)
+  {
+  my ($Name, $Configs) = @_;
+  my $sfrs = $Configs->{FEATURES}->{SFRS};
+  my $bank_size = $Configs->{FEATURES}->{BANK_SIZE};
+  my @bank_array;
+  my ($str, $bank, $i, $max_x, $max_y, $x, $y, $t);
+
+  $str = "$out_dir/${Name}-$sfr_tag.html";
+  open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
+
+  Log("Dump the SFR map of $Name.", 4);
+
+  Outml($XHTML_1_Frameset, '<html>');
+  print_head($Name, undef);
+  aOutl(2, '<body>');
+
+        #------------------------------------
+
+        # The main menu.
+
+  aOutl(4, '<ul id=classMenu>');
+
+  foreach (@pri_menu_elems)
+    {
+    aOutl(6, "<li><a href=\"$_->{HREF}\">$_->{NAME}</a></li>");
+    }
+
+  aOutl(4, '</ul>');
+
+        #------------------------------------
+
+        # The tabs.
+
+  aOutl(4, '<ul id=tabs>');
+  aOutl(6, "<li><a href=\"${Name}-$conf_tag.html\">Configuration Bits</a></li>");
+  aOutl(6, "<li><a href=\"${Name}-$feat_tag.html\">MCU features</a></li>");
+  aOutl(6, "<li id=selected><a href=\"${Name}-$sfr_tag.html\">SFR map</a></li>");
+  aOutl(4, '</ul>');
+
+        #------------------------------------
+
+        # Tabulate the SFRs.
+
+  $i = -1;
+  $bank = -1;
+  $y = -1;
+  $max_y = 0;
+  foreach (@{$sfrs})
+    {
+    my $b = int($_->{ADDR} / $bank_size);
+
+    if ($bank != $b)
+      {
+      $bank = $b;
+      ++$i;
+      $bank_array[$i]->{NUM} = $bank;
+      $max_y = $y if ($max_y < $y);
+      $y = -1;
+      }
+
+    push(@{$bank_array[$i]->{BANK}}, $_);
+    ++$y;
+    }
+
+  $max_y = $y if ($max_y < $y);
+  $max_x = @bank_array;
+
+        #------------------------------------
+
+        # The table of SFR map of MCU.
+
+  aOutl(4, '<table id=sfrMap>');
+  aOutfl(6, "<tr><th colspan=%i id=sfrTableName>$Name</th></tr>", $max_x * 4);
+  aOutl(6, '<tr id=sfrGap></tr>');
+
+        #------------------------------------
+
+        # header
+
+  aOutl(6, '<tr id=sfrLine>');
+
+  for ($x = 0; $x < $max_x; ++$x)
+    {
+    aOutl(8, '<td id=sfrVertMargin>');
+    aOutl(8, "<th colspan=2 id=sfrBank>Bank $bank_array[$x]->{NUM}</th>");
+    aOutl(8, '<td id=sfrVertMargin>');
+    }
+
+  aOutl(6, '</tr>');
+
+        #------------------------------------
+
+  for ($y = 0; $y < $max_y; ++$y)
+    {
+    aOutl(6, '<tr id=sfrLine>');
+
+    for ($x = 0; $x < $max_x; ++$x)
+      {
+      $t = $bank_array[$x]->{BANK}[$y];
+
+      aOutl(8, '<td id=sfrVertMargin></td>');
+
+      if (defined($t))
+        {
+        aOutl(8, "<th id=sfrName>$t->{NAME}</th>");
+        aOutfl(8, '<td id=sfrAddr>0x%04X</td>', $t->{ADDR});
+        }
+      else
+        {
+        aOutl(8, '<th id=sfrName></th>');
+        aOutl(8, '<td id=sfrAddr></td>');
+        }
+
+      aOutl(8, '<td id=sfrVertMargin></td>');
+      }
+
+    aOutl(6, '</tr>');
+    }
+
+        #------------------------------------
+
+  aOutl(4, '</table>');
+  src_info(4, 'sfrGap');
   aOutl(2, "</body>\n</html>");
   close($out_handler);
   }
@@ -1503,6 +1703,7 @@ sub create_css()
   margin: 1em 0.5em 0;
   padding: 0.5em 0.5em;
   float: left;
+  display: inline;
   list-style: none;
   background: $tab_background;
   color: $tab_color;
@@ -1547,7 +1748,10 @@ EOT
   }
 
 #mcuListHeader, #mcuList, #classMenu li, #mcuLinkName, #mcuLink, #mcuAttr, #mcuAttrEnh, #mcuAttrReg,
-#configList, #confTableName, #configWord, #confOptName, #traitList, #traitTableName, #traitName, #srcInfo
+#configList, #confTableName, #configWord, #confOptName,
+#featList, #featTableName, #featName,
+#sfrMap, #sfrTableName, #sfrBank, #sfrName,
+#srcInfo
   {
 EOT
 ;
@@ -1555,12 +1759,12 @@ EOT
   print $out_handler <<EOT
   }
 
-#mcuList, #configList, #traitList
+#mcuList, #configList, #featList, #sfrMap
   {
   z-index: 2;
+  width: auto;
   padding: 1em 1em;
   position: relative;
-  clear: left;
   background: $content_background;
   border: ${border_width}px solid $tab_border_color;
 EOT
@@ -1592,7 +1796,7 @@ EOT
 
 /*----------------------------------------------*/
 
-#mcuListHeader, #confTableName, #traitTableName
+#mcuListHeader, #confTableName, #featTableName, #sfrTableName
   {
   background: $header_background;
   border-color: $header_background;
@@ -1600,7 +1804,9 @@ EOT
   }
 
 #mcuListHeader, #mcuLinkName, #mcuAttrEnh, #mcuAttrReg, #configWord,
-#confSwName, #confSwValue, #confSwExpl, #traitValue
+#confSwName, #confSwValue, #confSwExpl,
+#featValue,
+#sfrBank, #sfrAddr
   {
   padding: 0.2em 0.625em;
   }
@@ -1649,24 +1855,24 @@ EOT
 
 /*----------------------------------------------*/
 
-#confTableName, #configWord, #traitTableName
+#confTableName, #configWord, #featTableName, #sfrBank, #sfrTableName
   {
   text-align: center;
   border-width: 4px;
   }
 
-#confTableName, #traitTableName
+#confTableName, #featTableName, #sfrTableName
   {
   font:bold 1.5em Georgia;
   line-height: 1.75em;
   }
 
-#confGap, #traitGap
+#confGap, #featGap, #sfrGap
   {
   height: 1em;
   }
 
-#configWord
+#configWord, #sfrBank
   {
   font-size: 1.3em;
   background: $attr_background;
@@ -1674,28 +1880,35 @@ EOT
   border-style: ridge;
   }
 
-#confLine, #traitValue
+#confLine, #featValue, #sfrAddr
   {
   background: #BAE7B8;
   }
 
-#confOptName, #confSwName, #confSwValue, #confSwExpl, #traitName, #traitValue
+#confOptName, #confSwName, #confSwValue, #confSwExpl,
+#featName, #featValue,
+#sfrName, #sfrAddr
   {
   text-align: left;
   }
 
-#confVertMargin, #traitVertMargin
+#confVertMargin, #featVertMargin, #sfrVertMargin
   {
   width: 2%;
   background: $content_background;
   }
 
-#confOptName, #traitName
+#confOptName, #featName, #sfrName
   {
   padding: 0.5em 0.75em;
   background: #A5BDE4;
   border-style: solid;
   border-width: 0;
+  }
+
+#sfrMap
+  {
+  min-width: 50%;
   }
 
 #srcInfo
@@ -1798,6 +2011,15 @@ for (my $i = 0; $i < scalar(@ARGV); )
       $only_css = TRUE;
       }
 
+    when (/^-(v|-verbose)$/o)
+      {
+      die "This option \"$opt\" requires a parameter.\n" if ($i > $#ARGV);
+
+      $verbose = int($ARGV[$i++]);
+      $verbose = 0 if (! defined($verbose) || $verbose < 0);
+      $verbose = 10 if ($verbose > 10);
+      }
+
     when (/^-(h|-help)$/o)
       {
       usage();
@@ -1843,8 +2065,9 @@ read_all_config_bits();
 create_css();
 create_class_htmls();
 
-foreach (sort smartSort keys %mcus_by_names)
+foreach (sort { smartSort($a, $b) } keys %mcus_by_names)
   {
   dump_all_config_word($_, $mcus_by_names{$_});
-  dump_traits($_, $mcus_by_names{$_});
+  dump_features($_, $mcus_by_names{$_});
+  dump_sfr_map($_, $mcus_by_names{$_});
   }
