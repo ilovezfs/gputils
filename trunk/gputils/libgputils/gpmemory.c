@@ -352,22 +352,22 @@ unsigned int b_memory_get_unlisted_size(MemBlock *m, unsigned int address)
 {
   unsigned int n_bytes = 0;
 
-  assert(m->memory != NULL);
-
-  do {
+  if (m && m->memory) {
     do {
-      if (((address >> I_MEM_BITS) & 0xFFFF) == m->base) {
-        if (BYTE_USED_MASK == (m->memory[address & I_MEM_MASK] & (BYTE_LISTED_MASK | BYTE_USED_MASK)))
-          break;
-        else
-          return n_bytes;
-      }
+      do {
+        if (((address >> I_MEM_BITS) & 0xFFFF) == m->base) {
+          if (BYTE_USED_MASK == (m->memory[address & I_MEM_MASK] & (BYTE_LISTED_MASK | BYTE_USED_MASK)))
+            break;
+          else
+            return n_bytes;
+        }
 
-      m = m->next;
-    } while(m);
-    ++address;
-    ++n_bytes;
-  } while (n_bytes < 4);
+        m = m->next;
+      } while(m);
+      ++address;
+      ++n_bytes;
+    } while (n_bytes < 4);
+  }
 
   return n_bytes;
 }
