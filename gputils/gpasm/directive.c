@@ -3149,20 +3149,22 @@ gpasmVal do_insn(char *name, struct pnode *parms)
   int file;             /* register file address, if applicable */
   gpasmVal r;           /* Return value */
 
-  if (!IS_RAM_ORG)
-    /* We want to have r as the value to assign to label */
-    r = gp_processor_byte_to_org(state.device.class, state.org);
-  else
-    r = state.org;
+  /* We want to have r as the value to assign to label */
+  r = IS_RAM_ORG ? state.org : gp_processor_byte_to_org(state.device.class, state.org);
 
   arity = list_length(parms);
 
   s = get_symbol(state.stBuiltin, name);
 
   if (s) {
-    struct insn *i;
+    struct insn *i = get_symbol_annotation(s);
 
-    i = get_symbol_annotation(s);
+    /* Instructions in data sections are not allowed */
+    if (i->class != INSN_CLASS_FUNC && IS_RAM_ORG) {
+      gperror(GPE_WRONG_SECTION, NULL);
+      return r;
+    }
+
     /* Interpret the instruction if assembly is enabled, or if it's a
        conditional. */
     if (asm_enabled() || (i->attribs & ATTRIB_COND)) {
