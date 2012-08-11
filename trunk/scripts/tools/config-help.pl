@@ -37,7 +37,6 @@
     $Id$
 =cut
 
-use Data::Dumper;
 use strict;
 use warnings;
 use 5.12.0;                     # when (regex)
@@ -73,6 +72,7 @@ my $out_dir  = 'html-help';
 my $css      = 'main.css';
 my $conf_tag = 'conf';
 my $feat_tag = 'feat';
+my $ram_tag  = 'ram';
 my $sfr_tag  = 'sfr';
 
 my @fields;
@@ -99,7 +99,10 @@ my %mcu_features =
               WORD_SIZE => 12,
               CONF_SIZE => 12,
               EE_START  => 0,
-              BANK_SIZE => 32
+              BANK_SIZE => 32,
+              CORE_REGS => [
+                           0x00, 0x02, 0x03, 0x04
+                           ]
               },
 
   '16c5xe' => {
@@ -109,7 +112,10 @@ my %mcu_features =
               WORD_SIZE => 12,
               CONF_SIZE => 12,
               EE_START  => 0,
-              BANK_SIZE => 32
+              BANK_SIZE => 32,
+              CORE_REGS => [
+                           0x00, 0x02, 0x03, 0x04
+                           ]
               },
 
   '16xxxx' => {
@@ -119,7 +125,11 @@ my %mcu_features =
               WORD_SIZE => 14,
               CONF_SIZE => 14,
               EE_START  => 0x2100,
-              BANK_SIZE => 128
+              BANK_SIZE => 128,
+              CORE_REGS => [
+                           0x00, 0x02, 0x03, 0x04,
+                           0x0A, 0x0B
+                           ]
               },
 
   '16exxx' => {
@@ -129,7 +139,12 @@ my %mcu_features =
               WORD_SIZE => 14,
               CONF_SIZE => 16,
               EE_START  => 0xF000,
-              BANK_SIZE => 128
+              BANK_SIZE => 128,
+              CORE_REGS => [
+                           0x00, 0x01, 0x02, 0x03,
+                           0x04, 0x05, 0x06, 0x07,
+                           0x08, 0x09, 0x0A, 0x0B
+                           ]
               },
 
   '17xxxx' => {
@@ -139,7 +154,13 @@ my %mcu_features =
               WORD_SIZE => 16,
               CONF_SIZE => 8,
               EE_START  => 0,
-              BANK_SIZE => 256
+              BANK_SIZE => 256,
+              CORE_REGS => [
+                           0x00, 0x01, 0x02, 0x03,
+                           0x04, 0x05, 0x06, 0x07,
+                           0x08, 0x09, 0x0A, 0x0B,
+                           0x0C, 0x0D, 0x0E, 0x0F
+                           ]
               },
 
   '18xxxx' => {
@@ -149,7 +170,8 @@ my %mcu_features =
               WORD_SIZE => 16,
               CONF_SIZE => 8,
               EE_START  => 0xF00000,
-              BANK_SIZE => 256
+              BANK_SIZE => 256,
+              CORE_REGS => undef
               }
   );
 
@@ -162,13 +184,16 @@ my %mcu_features =
         FEATURES => {
                     CLASS     => PROC_CLASS_PIC1XX,
                     ENHANCED  => FALSE,
+                    PAGE_SIZE => 0,
                     WORD_SIZE => 0,     # Instruction size of MCU.
-                    CONF_SIZE => 0      # Width of a config word.
-                    EE_START  => 0      # Start address of EEPROM.
-                    BANK_SIZE => 0      # Size of RAM Banks.
+                    CONF_SIZE => 0,     # Width of a config word.
+                    EE_START  => 0,     # Start address of EEPROM.
+                    BANK_SIZE => 0,     # Size of RAM Banks.
+                    CORE_REGS => [],
 
                     COFF      => 0,     # Coff ID of device. (16 bit wide)
                     PAGES     => 0,     # Number of ROM/FLASH pages.
+                    MAX_RAM   => 0,     # The highest address of RAM.
                     RAM_SIZE  => 0,     # Full size of all SFR and GPR.
                     CF_START  => 0,     # Address of first Configuration byte/word.
                     CF_END    => 0,     # Address of last Configuration byte/word.
@@ -301,6 +326,42 @@ my @pri_menu_elems =
     CLASS => PRI_MENU_16_BIT
     }
   );
+
+use constant MCU_MENU_CONF => 0;
+use constant MCU_MENU_FEAT => 1;
+use constant MCU_MENU_RAM  => 2;
+use constant MCU_MENU_SFR  => 3;
+
+my @mcu_menu_elems =
+  (
+    {
+    HREF  => "-$feat_tag.html",
+    NAME  => 'Features',
+    CLASS => MCU_MENU_FEAT
+    },
+
+    {
+    HREF  => "-$conf_tag.html",
+    NAME  => 'Configuration Bits',
+    CLASS => MCU_MENU_CONF
+    },
+
+    {
+    HREF  => "-$ram_tag.html",
+    NAME  => 'RAM map',
+    CLASS => MCU_MENU_RAM
+    },
+
+    {
+    HREF  => "-$sfr_tag.html",
+    NAME  => 'SFR map',
+    CLASS => MCU_MENU_SFR
+    }
+  );
+
+use constant RAM_BAD => 0;
+use constant RAM_GPR => 1;
+use constant RAM_SFR => 2;
 
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -687,7 +748,9 @@ sub read_ram_features($$)
         # __MAXRAM  H'001F'
         # __MAXRAM  H'01FF'
 
-          $full_ram = hex($1) + 1;
+          $full_ram = hex($1);
+          $Features->{MAX_RAM} = $full_ram;
+          ++$full_ram;
           }
         elsif ($line =~ /^__BADRAM\s+/io)
           {
@@ -811,9 +874,11 @@ sub read_all_config_bits()
                     CONF_SIZE => $tr->{CONF_SIZE}, # Size of Config Words.
                     EE_START  => $tr->{EE_START},  # Start address of EEPROM.
                     BANK_SIZE => $tr->{BANK_SIZE}, # Size of RAM Banks.
+                    CORE_REGS => $tr->{CORE_REGS},
 
                     COFF      => hex($fields[1]),  # Coff ID of device. (16 bit wide)
                     PAGES     => hex($fields[5]),  # Number of ROM/FLASH pages.
+                    MAX_RAM   => 0,                # The highest address of RAM.
                     RAM_SIZE  => 0,                # Full size of all SFR and GPR.
                     CF_START  => 0,                # Address of first Configuration byte/word.
                     CF_END    => 0,                # Address of last Configuration byte/word.
@@ -832,7 +897,7 @@ sub read_all_config_bits()
 
         $inc = $gp_mcus_by_names{$name};
 
-        if (defined($inc))
+        if (defined($inc) && $inc ne '')
           {
           read_ram_features("$gputils_path/header/$inc", $features);
           $state = ST_LISTEN;
@@ -938,6 +1003,24 @@ sub read_all_config_bits()
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
+        # Print the head of html file.
+
+sub print_html_head($)
+  {
+  print $out_handler <<EOT
+$XHTML_1_Frameset
+<html>
+  <head>
+    <title>$_[0]</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="$css">
+  </head>
+EOT
+;
+  }
+
+#-------------------------------------------------------------------------------
+
 sub src_info($$)
   {
   my ($Align, $GapId) = @_;
@@ -960,38 +1043,38 @@ sub print_mcu_list($$)
 
   Log("Print list of MCUs.", 4);
 
-  aOutl($Align + 2, '<div id=mcuList>');
-  aOutl($Align + 4, '<table>');
-  aOutl($Align + 6, '<tr>');
-  aOutl($Align + 8, "${lst}name</th>");
+  aOutl($Align + 2, '<table id=mcuList>');
+  aOutl($Align + 4, '<tr>');
+  aOutl($Align + 6, "${lst}name</th>");
 
   given ($Class)
     {
     when (PRI_MENU_ALL)
       {
-      aOutl($Align + 8, "${lst}instruction size (bit)</th>");
-      aOutl($Align + 8, "${lst}config word size (bit)</th>");
-      aOutl($Align + 8, "${lst}class</th>");
+      aOutl($Align + 6, "${lst}instruction size (bit)</th>");
+      aOutl($Align + 6, "${lst}config word size (bit)</th>");
+      aOutl($Align + 6, "${lst}class</th>");
       }
 
     when ([ PRI_MENU_ENH, PRI_MENU_REG ])
       {
-      aOutl($Align + 8, "${lst}instruction size (bit)</th>");
-      aOutl($Align + 8, "${lst}config word size (bit)</th>");
+      aOutl($Align + 6, "${lst}instruction size (bit)</th>");
+      aOutl($Align + 6, "${lst}config word size (bit)</th>");
       }
 
     default
       {
-      aOutl($Align + 8, "${lst}config word size (bit)</th>");
-      aOutl($Align + 8, "${lst}class</th>");
+      aOutl($Align + 6, "${lst}config word size (bit)</th>");
+      aOutl($Align + 6, "${lst}class</th>");
       }
     }
 
-  aOutl($Align + 6, '</tr>');
+  aOutl($Align + 4, '</tr>');
+  aOutl($Align + 4, '<tr id=mcuGap></tr>');
 
   foreach (sort { smartSort($a, $b) } keys %mcus_by_names)
     {
-    my $td_href  = "<td id=mcuLinkName><a id=mcuLink href=\"${_}-$conf_tag.html\">$_</a></td>";
+    my $td_href  = "<td id=mcuLinkName><a id=mcuLink href=\"${_}-$feat_tag.html\">$_</a></td>";
     my $features = $mcus_by_names{$_}->{FEATURES};
     my $td_wsize = "<td id=mcuAttr>$features->{WORD_SIZE}</td>";
     my $td_csize = "<td id=mcuAttr>$features->{CONF_SIZE}</td>";
@@ -1001,23 +1084,23 @@ sub print_mcu_list($$)
       {
       when (PRI_MENU_ALL)
         {
-        aOutl($Align + 6, '<tr>');
-        aOutl($Align + 8, $td_href);
-        aOutl($Align + 8, $td_wsize);
-        aOutl($Align + 8, $td_csize);
-        aOutl($Align + 8, $td_class);
-        aOutl($Align + 6, '</tr>');
+        aOutl($Align + 4, '<tr>');
+        aOutl($Align + 6, $td_href);
+        aOutl($Align + 6, $td_wsize);
+        aOutl($Align + 6, $td_csize);
+        aOutl($Align + 6, $td_class);
+        aOutl($Align + 4, '</tr>');
         }
 
       when (PRI_MENU_ENH)
         {
         if ($features->{ENHANCED})
           {
-          aOutl($Align + 6, '<tr>');
-          aOutl($Align + 8, $td_href);
-          aOutl($Align + 8, $td_wsize);
-          aOutl($Align + 8, $td_csize);
-          aOutl($Align + 6, '</tr>');
+          aOutl($Align + 4, '<tr>');
+          aOutl($Align + 6, $td_href);
+          aOutl($Align + 6, $td_wsize);
+          aOutl($Align + 6, $td_csize);
+          aOutl($Align + 4, '</tr>');
           }
         }
 
@@ -1025,11 +1108,11 @@ sub print_mcu_list($$)
         {
         if (! $features->{ENHANCED})
           {
-          aOutl($Align + 6, '<tr>');
-          aOutl($Align + 8, $td_href);
-          aOutl($Align + 8, $td_wsize);
-          aOutl($Align + 8, $td_csize);
-          aOutl($Align + 6, '</tr>');
+          aOutl($Align + 4, '<tr>');
+          aOutl($Align + 6, $td_href);
+          aOutl($Align + 6, $td_wsize);
+          aOutl($Align + 6, $td_csize);
+          aOutl($Align + 4, '</tr>');
           }
         }
 
@@ -1037,11 +1120,11 @@ sub print_mcu_list($$)
         {
         if ($features->{WORD_SIZE} == 12)
           {
-          aOutl($Align + 6, '<tr>');
-          aOutl($Align + 8, $td_href);
-          aOutl($Align + 8, $td_csize);
-          aOutl($Align + 8, $td_class);
-          aOutl($Align + 6, '</tr>');
+          aOutl($Align + 4, '<tr>');
+          aOutl($Align + 6, $td_href);
+          aOutl($Align + 6, $td_csize);
+          aOutl($Align + 6, $td_class);
+          aOutl($Align + 4, '</tr>');
           }
         }
 
@@ -1049,11 +1132,11 @@ sub print_mcu_list($$)
         {
         if ($features->{WORD_SIZE} == 14)
           {
-          aOutl($Align + 6, '<tr>');
-          aOutl($Align + 8, $td_href);
-          aOutl($Align + 8, $td_csize);
-          aOutl($Align + 8, $td_class);
-          aOutl($Align + 6, '</tr>');
+          aOutl($Align + 4, '<tr>');
+          aOutl($Align + 6, $td_href);
+          aOutl($Align + 6, $td_csize);
+          aOutl($Align + 6, $td_class);
+          aOutl($Align + 4, '</tr>');
           }
         }
 
@@ -1061,199 +1144,38 @@ sub print_mcu_list($$)
         {
         if ($features->{WORD_SIZE} == 16)
           {
-          aOutl($Align + 6, '<tr>');
-          aOutl($Align + 8, $td_href);
-          aOutl($Align + 8, $td_csize);
-          aOutl($Align + 8, $td_class);
-          aOutl($Align + 6, '</tr>');
+          aOutl($Align + 4, '<tr>');
+          aOutl($Align + 6, $td_href);
+          aOutl($Align + 6, $td_csize);
+          aOutl($Align + 6, $td_class);
+          aOutl($Align + 4, '</tr>');
           }
         }
       }
     }
 
-  aOutl($Align + 4, '</table>');
-  src_info($Align + 4, 'confGap');
-  aOutl($Align + 2, '</div>');
+  aOutl($Align + 2, '</table>');
+  src_info($Align + 2, 'confGap');
   }
 
 #-------------------------------------------------------------------------------
 
-        # Dump the entire contents of a Config word.
+        # Print the local menu of $Name MCU page.
 
-sub dump_config_word($$$$$)
+sub print_mcu_menu($$)
   {
-  my ($Align, $Config, $Length, $Mask, $Gap) = @_;
-
-  foreach (@{$Config})
-    {
-    my $head = $_->{HEAD};
-    my $name = $_->{NAME};
-    my $mask = ($_->{MASK} ^ $Mask) & $Mask;
-
-    if ($name ne '')
-      {
-        # Exist a long name.
-      $name = "$head -- $name";
-      }
-    else
-      {
-      $name = $head;
-      }
-
-    aOutl($Align, $Gap);
-    aOutl($Align, "<tr><th colspan=3 id=confOptName>$name</th></tr>");
-
-    foreach (@{$_->{BITS}})
-      {
-      my $str  = "$head = $_->{NAME}";
-      my $expl = $_->{EXPL};
-
-        # Improve a spelling error: On the end of a sentence a point must be.
-      $expl .= '.' if ($expl ne '' && $expl !~ /\.$/o);
-
-      aOutl ($Align, '<tr id=confLine>');
-      aOutl ($Align + 2, '<td id=confVertMargin></td>');
-      aOutl ($Align + 2, "<td id=confSwName>$str</td>");
-      aOutfl($Align + 2, "<td id=confSwValue>0x%0${Length}X</td>", $_->{VALUE} | $mask);
-      aOutl ($Align + 2, "<td id=confSwExpl>$expl</td>");
-      aOutl ($Align + 2, '<td id=confVertMargin></td>');
-      aOutl ($Align, '</tr>');
-      }
-    }
-  }
-
-#-------------------------------------------------------------------------------
-
-        # Dump the entire contents of all Config word of $Name MCU.
-
-sub dump_all_config_word($$)
-  {
-  my ($Name, $Configs) = @_;
-  my $conf_bits = $Configs->{CONFIGS};
-  my @addresses = sort {$a <=> $b} keys(%{$conf_bits});
-  my @sections;
-  my $config_mask = (ULONG_MAX << $Configs->{FEATURES}->{CONF_SIZE}) ^ ULONG_MAX;
-  my $count = @addresses;
-  my ($str, $len, $i, $head_s, $head_e, $gap);
-
-  return if (! $count);
-
-  $str = "$out_dir/${Name}-$conf_tag.html";
-  open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
-
-  Log("Dump the Config Options of $Name.", 4);
-
-  Outml($XHTML_1_Frameset, '<html>');
-  print_head($Name, undef);
-  aOutl(2, '<body>');
-
-  $len = 4;
-  $head_s = '<tr><th colspan=4 id=configWord>';
-  $head_e = '</th></tr>';
-  $gap    = '<tr id=confGap></tr>';
-
-        #------------------------------------
-
-        # The main menu.
-
-  aOutl(4, '<ul id=classMenu>');
-
-  foreach (@pri_menu_elems)
-    {
-    aOutl(6, "<li><a href=\"$_->{HREF}\">$_->{NAME}</a></li>");
-    }
-
-  aOutl(4, '</ul>');
-
-        #------------------------------------
-
-        # The tabs.
+  my ($Name, $Selected) = @_;
 
   aOutl(4, '<ul id=tabs>');
-  aOutl(6, "<li id=selected><a href=\"${Name}-$conf_tag.html\">Configuration Bits</a></li>");
-  aOutl(6, "<li><a href=\"${Name}-$feat_tag.html\">MCU features</a></li>");
-  aOutl(6, "<li><a href=\"${Name}-$sfr_tag.html\">SFR map</a></li>");
+
+  foreach (@mcu_menu_elems)
+    {
+    my $id = ($_->{CLASS} == $Selected) ? ' id=selected' : '';
+
+    aOutl(6, "<li$id><a href=\"${Name}$_->{HREF}\">$_->{NAME}</a></li>");
+    }
+
   aOutl(4, '</ul>');
-
-        #------------------------------------
-
-        # The table of Config Bits.
-
-  aOutl(4, '<table id=configList>');
-  aOutl(4, "<tr><th colspan=5 id=confTableName>$Name</th></tr>");
-
-  if ($count < 2)
-    {
-        # PIC10F, PIC12, PIC16
-
-    $sections[0] = 'CONFIG';
-    aOutl(6, $gap);
-    aOutfl(6, "${head_s}CONFIG (0x%0${len}X)$head_e", $addresses[0]);
-    dump_config_word(6, \@{$conf_bits->{$addresses[0]}}, $len, $config_mask, $gap);
-    }
-  else
-    {
-    if ($config_mask == 0x00FF)
-      {
-        # PIC18
-      my $v;
-      my $n;
-      my $h;
-
-      $len = 2;
-
-      if ($addresses[0] < 0x300000)
-        {
-        # PIC18FxxJ
-
-        for ($i = 0; $i < $count; ++$i)
-          {
-          $v = $addresses[$i];
-          $n = int(($i & 0x0F) / 2 + 1);
-          $h = ($i & 1) ? 'H' : 'L';
-          $str = "CONFIG$n$h";
-          $sections[$i] = $str;
-          aOutl(6, $gap);
-          aOutfl(6, "$head_s$str (0x%06X)$head_e", $v);
-          dump_config_word(6, \@{$conf_bits->{$addresses[$i]}}, $len, $config_mask, $gap);
-          }
-        }
-      else
-        {
-        # PIC18Fxx
-
-        for ($i = 0; $i < $count; ++$i)
-          {
-          $v = $addresses[$i];
-          $n = int(($v & 0x0F) / 2 + 1);
-          $h = ($v & 1) ? 'H' : 'L';
-          $str = "CONFIG$n$h";
-          $sections[$i] = $str;
-          aOutl(6, $gap);
-          aOutfl(6, "$head_s$str (0x%06X)$head_e", $v);
-          dump_config_word(6, \@{$conf_bits->{$addresses[$i]}}, $len, $config_mask, $gap);
-          }
-        }
-      }
-    else
-      {
-        # PIC12, PIC16
-
-      for ($i = 0; $i < $count; ++$i)
-        {
-        $str = sprintf "CONFIG%u", $i + 1;
-        $sections[$i] = $str;
-        aOutl(6, $gap);
-        aOutfl(6, "$head_s$str (0x%04X)$head_e", $addresses[$i]);
-        dump_config_word(6, \@{$conf_bits->{$addresses[$i]}}, $len, $config_mask, $gap);
-        }
-      }
-    }
-
-  aOutl(4, '</table>');
-  src_info(4, 'confGap');
-  aOutl(2, "</body>\n</html>");
-  close($out_handler);
   }
 
 #-------------------------------------------------------------------------------
@@ -1271,11 +1193,10 @@ sub dump_features($$)
 
   Log("Dump the features of $Name.", 4);
 
-  Outml($XHTML_1_Frameset, '<html>');
-  print_head($Name, undef);
-  aOutl(2, '<body>');
-
         #------------------------------------
+
+  print_html_head($Name);
+  aOutl(2, '<body>');
 
         # The main menu.
 
@@ -1288,15 +1209,7 @@ sub dump_features($$)
 
   aOutl(4, '</ul>');
 
-        #------------------------------------
-
-        # The tabs.
-
-  aOutl(4, '<ul id=tabs>');
-  aOutl(6, "<li><a href=\"${Name}-$conf_tag.html\">Configuration Bits</a></li>");
-  aOutl(6, "<li id=selected><a href=\"${Name}-$feat_tag.html\">MCU features</a></li>");
-  aOutl(6, "<li><a href=\"${Name}-$sfr_tag.html\">SFR map</a></li>");
-  aOutl(4, '</ul>');
+  print_mcu_menu($Name, MCU_MENU_FEAT);
 
         #------------------------------------
 
@@ -1446,26 +1359,80 @@ sub dump_features($$)
 
 #-------------------------------------------------------------------------------
 
-        # Dump the SFR map of $Name MCU.
+        # Dump the entire contents of a Config word.
 
-sub dump_sfr_map($$)
+sub dump_config_word($$$$$)
+  {
+  my ($Align, $Config, $Length, $Mask, $Gap) = @_;
+
+  foreach (@{$Config})
+    {
+    my $head = $_->{HEAD};
+    my $name = $_->{NAME};
+    my $mask = ($_->{MASK} ^ $Mask) & $Mask;
+
+    if ($name ne '')
+      {
+        # Exist a long name.
+      $name = "$head -- $name";
+      }
+    else
+      {
+      $name = $head;
+      }
+
+    aOutl($Align, $Gap);
+    aOutl($Align, "<tr><th colspan=3 id=confOptName>$name</th></tr>");
+
+    foreach (@{$_->{BITS}})
+      {
+      my $str  = "$head = $_->{NAME}";
+      my $expl = $_->{EXPL};
+
+        # Improve a spelling error: On the end of a sentence a point must be.
+      $expl .= '.' if ($expl ne '' && $expl !~ /\.$/o);
+
+      aOutl ($Align, '<tr id=confLine>');
+      aOutl ($Align + 2, '<td id=confVertMargin></td>');
+      aOutl ($Align + 2, "<td id=confSwName>$str</td>");
+      aOutfl($Align + 2, "<td id=confSwValue>0x%0${Length}X</td>", $_->{VALUE} | $mask);
+      aOutl ($Align + 2, "<td id=confSwExpl>$expl</td>");
+      aOutl ($Align + 2, '<td id=confVertMargin></td>');
+      aOutl ($Align, '</tr>');
+      }
+    }
+  }
+
+#-------------------------------------------------------------------------------
+
+        # Dump the entire contents of all Config word of $Name MCU.
+
+sub dump_all_config_word($$)
   {
   my ($Name, $Configs) = @_;
-  my $sfrs = $Configs->{FEATURES}->{SFRS};
-  my $bank_size = $Configs->{FEATURES}->{BANK_SIZE};
-  my @bank_array;
-  my ($str, $bank, $i, $max_x, $max_y, $x, $y, $t);
+  my $conf_bits = $Configs->{CONFIGS};
+  my @addresses = sort {$a <=> $b} keys(%{$conf_bits});
+  my @sections;
+  my $config_mask = (ULONG_MAX << $Configs->{FEATURES}->{CONF_SIZE}) ^ ULONG_MAX;
+  my $count = @addresses;
+  my ($str, $len, $i, $head_s, $head_e, $gap);
 
-  $str = "$out_dir/${Name}-$sfr_tag.html";
+  return if (! $count);
+
+  $str = "$out_dir/${Name}-$conf_tag.html";
   open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
 
-  Log("Dump the SFR map of $Name.", 4);
+  Log("Dump the Config Options of $Name.", 4);
 
-  Outml($XHTML_1_Frameset, '<html>');
-  print_head($Name, undef);
-  aOutl(2, '<body>');
+  $len = 4;
+  $head_s = '<tr><th colspan=4 id=configWord>';
+  $head_e = '</th></tr>';
+  $gap    = '<tr id=confGap></tr>';
 
         #------------------------------------
+
+  print_html_head($Name);
+  aOutl(2, '<body>');
 
         # The main menu.
 
@@ -1478,15 +1445,386 @@ sub dump_sfr_map($$)
 
   aOutl(4, '</ul>');
 
+  print_mcu_menu($Name, MCU_MENU_CONF);
+
         #------------------------------------
 
-        # The tabs.
+        # The table of Config Bits.
 
-  aOutl(4, '<ul id=tabs>');
-  aOutl(6, "<li><a href=\"${Name}-$conf_tag.html\">Configuration Bits</a></li>");
-  aOutl(6, "<li><a href=\"${Name}-$feat_tag.html\">MCU features</a></li>");
-  aOutl(6, "<li id=selected><a href=\"${Name}-$sfr_tag.html\">SFR map</a></li>");
+  aOutl(4, '<table id=configList>');
+  aOutl(4, "<tr><th colspan=5 id=confTableName>$Name</th></tr>");
+
+  if ($count < 2)
+    {
+        # PIC10F, PIC12, PIC16
+
+    $sections[0] = 'CONFIG';
+    aOutl(6, $gap);
+    aOutfl(6, "${head_s}CONFIG (0x%0${len}X)$head_e", $addresses[0]);
+    dump_config_word(6, \@{$conf_bits->{$addresses[0]}}, $len, $config_mask, $gap);
+    }
+  else
+    {
+    if ($config_mask == 0x00FF)
+      {
+        # PIC18
+      my $v;
+      my $n;
+      my $h;
+
+      $len = 2;
+
+      if ($addresses[0] < 0x300000)
+        {
+        # PIC18FxxJ
+
+        for ($i = 0; $i < $count; ++$i)
+          {
+          $v = $addresses[$i];
+          $n = int(($i & 0x0F) / 2 + 1);
+          $h = ($i & 1) ? 'H' : 'L';
+          $str = "CONFIG$n$h";
+          $sections[$i] = $str;
+          aOutl(6, $gap);
+          aOutfl(6, "$head_s$str (0x%06X)$head_e", $v);
+          dump_config_word(6, \@{$conf_bits->{$addresses[$i]}}, $len, $config_mask, $gap);
+          }
+        }
+      else
+        {
+        # PIC18Fxx
+
+        for ($i = 0; $i < $count; ++$i)
+          {
+          $v = $addresses[$i];
+          $n = int(($v & 0x0F) / 2 + 1);
+          $h = ($v & 1) ? 'H' : 'L';
+          $str = "CONFIG$n$h";
+          $sections[$i] = $str;
+          aOutl(6, $gap);
+          aOutfl(6, "$head_s$str (0x%06X)$head_e", $v);
+          dump_config_word(6, \@{$conf_bits->{$addresses[$i]}}, $len, $config_mask, $gap);
+          }
+        }
+      }
+    else
+      {
+        # PIC12, PIC16
+
+      for ($i = 0; $i < $count; ++$i)
+        {
+        $str = sprintf "CONFIG%u", $i + 1;
+        $sections[$i] = $str;
+        aOutl(6, $gap);
+        aOutfl(6, "$head_s$str (0x%04X)$head_e", $addresses[$i]);
+        dump_config_word(6, \@{$conf_bits->{$addresses[$i]}}, $len, $config_mask, $gap);
+        }
+      }
+    }
+
+  aOutl(4, '</table>');
+  src_info(4, 'confGap');
+  aOutl(2, "</body>\n</html>");
+  close($out_handler);
+  }
+
+#-------------------------------------------------------------------------------
+
+        # Marks in $Array the non GPR regions of RAM.
+
+sub mark_non_gpr_ram($$)
+  {
+  my ($Array, $Features) = @_;
+  my $bank_num  = $Features->{BANKS};
+  my $bank_size = $Features->{BANK_SIZE};
+  my $ram_size  = $Features->{MAX_RAM} + 1;
+  my $bad_ram   = $Features->{BAD_RAM};
+  my $core_regs = $Features->{CORE_REGS};
+  my $sfrs      = $Features->{SFRS};
+  my ($bank, $bank_prev, $i, $k, $max_sfr, $sfr_count, $x);
+
+        # Prepares the RAM map.
+
+  @{$Array} = ((RAM_GPR) x $ram_size);
+  $k = $bank_num * $bank_size;
+        # Another deletion if the real RAM less than the possible max RAM.
+  push(@{$Array}, (RAM_BAD) x ($k - $ram_size)) if ($ram_size < $k);
+
+        # Marks the areas that do not exist.
+
+  foreach (@{$bad_ram})
+    {
+    my $start = $_->{START};
+    my $size  = $_->{END} - $start + 1;
+
+    splice(@{$Array}, $start, $size, ((RAM_BAD) x $size));
+    }
+
+        # Not exist GPR before the last SFR in bank.
+
+  $bank_prev = -1;
+  $max_sfr = 0;
+  $sfr_count = @{$sfrs};
+  $i = 0;
+  while (TRUE)
+    {
+    my $addr = $sfrs->[$i]->{ADDR};
+    my $offs = $addr % $bank_size;
+
+    $bank = int($addr / $bank_size);
+
+    if ($bank_prev == $bank)
+      {
+      $max_sfr = $offs if ($max_sfr < $offs);
+      }
+    else
+      {
+      if ($bank_prev >= 0)
+        {
+        # In the previous bank there is no GPR before the last SFR.
+
+        $bank_prev *= $bank_size;
+        ++$max_sfr;
+        splice(@{$Array}, $bank_prev, $max_sfr, ((RAM_BAD) x $max_sfr));
+        }
+
+      $bank_prev = $bank;
+      $max_sfr = 0;
+      }
+
+    ++$i;
+
+    if ($i == $sfr_count)
+      {
+        # In the current bank there is no GPR before the last SFR.
+
+      $bank *= $bank_size;
+      ++$max_sfr;
+      splice(@{$Array}, $bank, $max_sfr, ((RAM_BAD) x $max_sfr));
+      last;
+      }
+    }
+
+        # None of in bank does not exists GPR before the last mirror SFR.
+
+  if (defined($core_regs))
+    {
+    $k = $core_regs->[$#{$core_regs}] + 1;
+    $bank = 0;
+    for ($x = 0; $x < $bank_num; ++$x)
+      {
+      splice(@{$Array}, $bank, $k, ((RAM_BAD) x $k));
+      $bank += $bank_size;
+      }
+    }
+  }
+
+#-------------------------------------------------------------------------------
+
+        # Marks in $Array the SFR regions of RAM.
+
+sub mark_sfr_ram($$)
+  {
+  my ($Array, $Features) = @_;
+  my $bank_num  = $Features->{BANKS};
+  my $bank_size = $Features->{BANK_SIZE};
+  my $core_regs = $Features->{CORE_REGS};
+  my $sfrs      = $Features->{SFRS};
+  my ($bank, $x);
+
+        # Places the core registers. These at the same address there is in the all banks.
+
+  if (defined($core_regs))
+    {
+    foreach (@{$core_regs})
+      {
+      $bank = 0;
+      for ($x = 0; $x < $bank_num; ++$x)
+        {
+        $Array->[$bank + $_] = RAM_SFR;
+        $bank += $bank_size;
+        }
+      }
+    }
+
+        # Places the SFRs.
+
+  foreach (@{$sfrs})
+    {
+    $Array->[$_->{ADDR}] = RAM_SFR;
+    }
+  }
+
+#-------------------------------------------------------------------------------
+
+        # Dump the RAM map of $Name MCU.
+
+sub dump_ram_map($$)
+  {
+  my ($Name, $Configs) = @_;
+  my $features  = $Configs->{FEATURES};
+  my $bank_num  = $features->{BANKS};
+  my $bank_size = $features->{BANK_SIZE};
+  my $core_regs = $features->{CORE_REGS};
+  my $sfrs      = $features->{SFRS};
+  my @ram_array;
+  my @map_array;
+  my ($map, $bank, $k, $x, $y, $t);
+
+  $t = "$out_dir/${Name}-$ram_tag.html";
+  open($out_handler, '>', $t) || die "Could not create the \"$t\" file!\n";
+
+  Log("Dump the RAM map of $Name.", 4);
+
+  mark_non_gpr_ram(\@ram_array, $features);
+  mark_sfr_ram(\@ram_array, $features);
+
+        #------------------------------------
+
+        # Creates groups from the related fields of RAM.
+
+  $bank = 0;
+  for ($x = 0; $x < $bank_num; ++$x)
+    {
+    my $map_index = 0;
+    my $t_prev = -1;
+    my $size = 0;
+
+    $map = $map_array[$x] = [];
+
+    $y = 0;
+    while (TRUE)
+      {
+      $t = $ram_array[$bank + $y];
+
+      if ($t_prev == $t)
+        {
+        ++$size;
+        }
+      else
+        {
+        # The $size for the first time is zero.
+
+        if ($size > 0)
+          {
+          $map->[$map_index] = { TYPE => $t_prev, SIZE => $size };
+          ++$map_index;
+          }
+
+        $t_prev = $t;
+        $size = 1;
+        }
+
+      ++$y;
+
+      if ($y == $bank_size)
+        {
+        $map->[$map_index] = { TYPE => $t, SIZE => $size };
+        last;
+        }
+      }
+
+    $bank += $bank_size;
+    }
+        #------------------------------------
+
+        # After a lot of work has finally can be written the html code.
+
+  print_html_head($Name);
+  aOutl(2, '<body>');
+
+        # The main menu.
+
+  aOutl(4, '<ul id=classMenu>');
+
+  foreach (@pri_menu_elems)
+    {
+    aOutl(6, "<li><a href=\"$_->{HREF}\">$_->{NAME}</a></li>");
+    }
+
   aOutl(4, '</ul>');
+
+  print_mcu_menu($Name, MCU_MENU_RAM);
+
+        #------------------------------------
+
+        # The table of RAM map of MCU.
+
+  aOutl(4, '<table id=ramMap>');
+  aOutfl(6, "<tr><th colspan=%i id=ramTableName>$Name</th></tr>", $bank_num * 3);
+  aOutl(6, '<tr id=ramGap></tr>');
+
+        #------------------------------------
+
+        # header
+
+  aOutl(6, '<tr id=ramHead>');
+
+  for ($x = 0; $x < $bank_num; ++$x)
+    {
+    aOutl(8, '<td id=ramVertMargin>');
+    aOutl(8, "<th id=ramBank>Bank $x</th>");
+    aOutl(8, '<td id=ramVertMargin>');
+    }
+
+  aOutl(6, '</tr>');
+  aOutl(6, '<tr id=ramGap></tr>');
+
+        #------------------------------------
+
+  aOutl(6, '<tr>');
+
+  $k = int(256 / $bank_size);
+  for ($x = 0; $x < $bank_num; ++$x)
+    {
+    $map = $map_array[$x];
+
+    aOutl(8, '<td id=ramVertMargin></td>');
+    aOutl(8, '<td id=ramColumn>');
+
+    foreach (@{$map})
+      {
+      given ($_->{TYPE})
+        {
+        when (RAM_GPR) { $t = 'ramGPR'; }
+        when (RAM_SFR) { $t = 'ramSFR'; }
+        default        { $t = 'ramBAD'; }
+        }
+
+      aOutfl(10, "<a id=$t style=\"height: %ipx\"></a>", $_->{SIZE} * $k);
+      }
+
+    aOutl(8, '</td>');
+    aOutl(8, '<td id=ramVertMargin></td>');
+    }
+
+  aOutl(6, '</tr>');
+
+        #------------------------------------
+
+  aOutl(4, '</table>');
+  src_info(4, 'ramGap');
+  aOutl(2, "</body>\n</html>");
+  close($out_handler);
+  }
+
+#-------------------------------------------------------------------------------
+
+        # Dump the SFR map of $Name MCU.
+
+sub dump_sfr_map($$)
+  {
+  my ($Name, $Configs) = @_;
+  my $features  = $Configs->{FEATURES};
+  my $bank_size = $features->{BANK_SIZE};
+  my $sfrs      = $features->{SFRS};
+  my @bank_array;
+  my ($bank, $i, $max_x, $max_y, $x, $y, $t);
+
+  $t = "$out_dir/${Name}-$sfr_tag.html";
+  open($out_handler, '>', $t) || die "Could not create the \"$t\" file!\n";
+
+  Log("Dump the SFR map of $Name.", 4);
 
         #------------------------------------
 
@@ -1504,7 +1842,7 @@ sub dump_sfr_map($$)
       {
       $bank = $b;
       ++$i;
-      $bank_array[$i]->{NUM} = $bank;
+      $bank_array[$i]->{BANKNUM} = $bank;
       $max_y = $y if ($max_y < $y);
       $y = -1;
       }
@@ -1518,6 +1856,24 @@ sub dump_sfr_map($$)
 
         #------------------------------------
 
+  print_html_head($Name);
+  aOutl(2, '<body>');
+
+        # The main menu.
+
+  aOutl(4, '<ul id=classMenu>');
+
+  foreach (@pri_menu_elems)
+    {
+    aOutl(6, "<li><a href=\"$_->{HREF}\">$_->{NAME}</a></li>");
+    }
+
+  aOutl(4, '</ul>');
+
+  print_mcu_menu($Name, MCU_MENU_SFR);
+
+        #------------------------------------
+
         # The table of SFR map of MCU.
 
   aOutl(4, '<table id=sfrMap>');
@@ -1528,16 +1884,17 @@ sub dump_sfr_map($$)
 
         # header
 
-  aOutl(6, '<tr id=sfrLine>');
+  aOutl(6, '<tr id=sfrHead>');
 
   for ($x = 0; $x < $max_x; ++$x)
     {
     aOutl(8, '<td id=sfrVertMargin>');
-    aOutl(8, "<th colspan=2 id=sfrBank>Bank $bank_array[$x]->{NUM}</th>");
+    aOutl(8, "<th colspan=2 id=sfrBank>Bank $bank_array[$x]->{BANKNUM}</th>");
     aOutl(8, '<td id=sfrVertMargin>');
     }
 
   aOutl(6, '</tr>');
+  aOutl(6, '<tr id=sfrGap></tr>');
 
         #------------------------------------
 
@@ -1578,25 +1935,9 @@ sub dump_sfr_map($$)
 
 #-------------------------------------------------------------------------------
 
-        # Print the head of html file.
-
-sub print_head($)
-  {
-  print $out_handler <<EOT
-  <head>
-    <title>$_[0]</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" type="text/css" href="$css">
-  </head>
-EOT
-;
-  }
-
-#-------------------------------------------------------------------------------
-
         # Print the menu of class of MCUs.
 
-sub print_menu($)
+sub print_pri_menu($)
   {
   my $Menu = $_[0];
 
@@ -1627,10 +1968,9 @@ sub create_class_htmls()
 
     open($out_handler, '>', $html) || die "Could not create the \"$html\" file!\n";
 
-    Outml($XHTML_1_Frameset, '<html>');
-    print_head($_->{NAME});
+    print_html_head($_->{NAME});
     aOutl(2, '<body>');
-    print_menu($_);
+    print_pri_menu($_);
 
         # print_mcu_list()
     my $func = $_->{PFUNC};
@@ -1693,17 +2033,17 @@ sub create_css()
 #tabs
   {
   margin: 0;
-  padding: 0 0.625em;
+  padding: 1em 1em 0;
   overflow: hidden;
   margin-bottom: -${border_width}px;
   }
 
 #tabs li, #classMenu li
   {
-  margin: 1em 0.5em 0;
+  z-index: 1;
+  position: relative;
   padding: 0.5em 0.5em;
-  float: left;
-  display: inline;
+  display: table-cell;
   list-style: none;
   background: $tab_background;
   color: $tab_color;
@@ -1716,8 +2056,6 @@ EOT
 
 #tabs li
   {
-  z-index: 1;
-  position: relative;
 EOT
 ;
   css_border_radius(2, '0.5em 0.5em 0 0');
@@ -1750,6 +2088,7 @@ EOT
 #mcuListHeader, #mcuList, #classMenu li, #mcuLinkName, #mcuLink, #mcuAttr, #mcuAttrEnh, #mcuAttrReg,
 #configList, #confTableName, #configWord, #confOptName,
 #featList, #featTableName, #featName,
+#ramMap, #ramTableName, #ramBank,
 #sfrMap, #sfrTableName, #sfrBank, #sfrName,
 #srcInfo
   {
@@ -1759,12 +2098,12 @@ EOT
   print $out_handler <<EOT
   }
 
-#mcuList, #configList, #featList, #sfrMap
+#mcuList, #configList, #featList, #ramMap, #sfrMap
   {
   z-index: 2;
+  position: relative;
   width: auto;
   padding: 1em 1em;
-  position: relative;
   background: $content_background;
   border: ${border_width}px solid $tab_border_color;
 EOT
@@ -1773,12 +2112,17 @@ EOT
   print $out_handler <<EOT
   }
 
+#mcuList
+  {
+  min-width: 95%;
+  }
+
 /*----------------------------------------------*/
 
 #classMenu
   {
   height: 2em;
-  margin-bottom: 2.5em;
+  margin-bottom: 1.5em;
   }
 
 #classMenu li
@@ -1796,7 +2140,7 @@ EOT
 
 /*----------------------------------------------*/
 
-#mcuListHeader, #confTableName, #featTableName, #sfrTableName
+#mcuListHeader, #confTableName, #featTableName, #ramTableName, #sfrTableName
   {
   background: $header_background;
   border-color: $header_background;
@@ -1806,6 +2150,7 @@ EOT
 #mcuListHeader, #mcuLinkName, #mcuAttrEnh, #mcuAttrReg, #configWord,
 #confSwName, #confSwValue, #confSwExpl,
 #featValue,
+#ramBank,
 #sfrBank, #sfrAddr
   {
   padding: 0.2em 0.625em;
@@ -1855,24 +2200,26 @@ EOT
 
 /*----------------------------------------------*/
 
-#confTableName, #configWord, #featTableName, #sfrBank, #sfrTableName
+#confTableName, #configWord, #featTableName,
+#ramBank, #ramTableName,
+#sfrBank, #sfrTableName
   {
   text-align: center;
   border-width: 4px;
   }
 
-#confTableName, #featTableName, #sfrTableName
+#confTableName, #featTableName, #ramTableName, #sfrTableName
   {
   font:bold 1.5em Georgia;
   line-height: 1.75em;
   }
 
-#confGap, #featGap, #sfrGap
+#mcuGap, #confGap, #featGap, #ramGap, #sfrGap
   {
   height: 1em;
   }
 
-#configWord, #sfrBank
+#configWord, #ramBank, #sfrBank
   {
   font-size: 1.3em;
   background: $attr_background;
@@ -1898,6 +2245,12 @@ EOT
   background: $content_background;
   }
 
+#ramVertMargin
+  {
+  width: auto;
+  background: $content_background;
+  }
+
 #confOptName, #featName, #sfrName
   {
   padding: 0.5em 0.75em;
@@ -1906,14 +2259,45 @@ EOT
   border-width: 0;
   }
 
-#sfrMap
+#ramColumn
   {
-  min-width: 50%;
+  width: 100px;
+  }
+
+#ramColumn a
+  {
+  float: left;
+  width: 100px;
+  }
+
+#ramBAD
+  {
+  background: $tab_border_color;
+  }
+
+#ramGPR
+  {
+  background: #4EB34E;
+  }
+
+#ramSFR
+  {
+  background: #C54141;
+  }
+
+#ramMap, #sfrMap
+  {
+  min-width: 60%;
+  }
+
+#sfrLine
+  {
+  font-size: 0.75em;
   }
 
 #srcInfo
   {
-  font-size: 0.5em;
+  font-size: 0.75em;
   padding: 0.3em 0.5em;
   background: #A5BDE4;
   }
@@ -2069,5 +2453,6 @@ foreach (sort { smartSort($a, $b) } keys %mcus_by_names)
   {
   dump_all_config_word($_, $mcus_by_names{$_});
   dump_features($_, $mcus_by_names{$_});
+  dump_ram_map($_, $mcus_by_names{$_});
   dump_sfr_map($_, $mcus_by_names{$_});
   }

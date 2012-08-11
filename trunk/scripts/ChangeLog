@@ -1,3 +1,6 @@
+2012-08-11 Molnár Károly <proton7@freemail.hu>
+	* tools/config-help.pl: New tab - "RAM map" in MCU info pages.
+
 2012-08-10 Molnár Károly <proton7@freemail.hu>
 	* tools/config-help.pl: New tab - "SFR map" in MCU info pages.
 
