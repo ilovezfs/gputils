@@ -87,8 +87,8 @@
         <td colspan="2" width="90%">
           <p>
             GPUTILS was created by Craig Franklin and James Bowman. Currently,
-            it is primarily supported by Marko Kohtala and Borut Ražem. In the
-            past it has been supported by David Barnett and Scott Dattalo.
+            it is primarily supported by Marko Kohtala, Borut Ražem and Molnár Károly.
+            In the past it has been supported by David Barnett and Scott Dattalo.
           </p>
         </td>
       </tr>
@@ -145,32 +145,34 @@
       <A HREF="http://sourceforge.net/docman/?group_id=1">here</A>.</P>-->
           <p>
             The latest development sources are available from our svn server.
-            <i>Note: we migrated from CVS and the CVS server is no longer in
-            use.</i>
+            <!-- <i>Note: we migrated from CVS and the CVS server is no longer in
+            use.</i> -->
           </p>
           <p>
-            The following command will checkout all of the sources and place
+            The following commands will checkout all of the sources and place
             them in a gputils subdirectory:
           </p>
           <p>
-            <tt>svn co https://gputils.svn.sourceforge.net/svnroot/gputils
-            <i>local_target_dir</i></tt>
-          </p>
-          <p>
-            Of course, you will probably want to add "/trunk" to the URL to
-            check out the main trunk of development.
+            <ul>
+              <li>RW access:<br />
+                <tt>svn checkout --username=<i>user_name</i> svn+ssh://<i>user_name</i>@svn.code.sf.net/p/gputils/code/trunk gputils-code</tt></li>
+              <li>RO access:<br />
+                    <tt>svn checkout svn://svn.code.sf.net/p/gputils/code/trunk gputils-code</tt></li>
+              <li>HTTP access:<br />
+                <tt>svn checkout --username=<i>user_name</i> https://svn.code.sf.net/p/gputils/code/trunk gputils-code</tt></li>
+            </ul>
           </p>
           <p>
             You can browse our svn tree <a href=
-            "http://gputils.svn.sourceforge.net/gputils/">here</a>.
+            "https://sourceforge.net/p/gputils/code/768/tree/">here</a>.
           </p>
-          <p>
+          <!-- <p>
             SourceForge has further documentation on accessing a svn tree
             <a href="https://sourceforge.net/docs/E09">here</a>.
-          </p>
+          </p> -->
           <p>
             Older <a href=
-            "http://prdownloads.sourceforge.net/gputils/">gputils</a> and
+            "https://sourceforge.net/projects/gputils/files/">gputils</a> and
             <a href="http://gputils.sourceforge.net/gpasm/">gpasm</a> releases
             are available.
           </p>
@@ -333,7 +335,7 @@
             </li>
             <li>
               <p>
-                <a href="http://sourceforge.net/apps/trac/gputils">gputils
+                <a href="http://sourceforge.net/p/gputils/wiki/Home/">gputils
                 Wiki</a> - for in-depth documentation, etc. (additions
                 welcome).
               </p>
@@ -440,7 +442,7 @@
             <a href="mailto:gnupic@linuxhacker.org">Webmaster</a>
           </p>
           <p>
-            Last updated: 2012-06-25
+            Last updated: 2012-08-12
           </p>
         </td>
       </tr>
