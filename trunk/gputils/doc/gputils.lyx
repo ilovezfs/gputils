@@ -71,7 +71,7 @@ James Bowman, Craig Franklin, and David Barnett
 \end_layout
 
 \begin_layout Date
-August 1, 2012
+August 16, 2012
 \end_layout
 
 \begin_layout Standard
@@ -1791,7 +1791,8 @@ Expressions
 \end_layout
 
 \begin_layout Standard
-gpasm supports a full set of 
+gpasm expressions are implemented using 32-bit arithmetic.
+ gpasm supports a full set of 
 \begin_inset Index idx
 status collapsed
 
