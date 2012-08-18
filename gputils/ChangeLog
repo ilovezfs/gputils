@@ -1,3 +1,8 @@
+2012-08-18  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/evaluate.c: implemented but ifdef-ed out the fix for bug
+    #252 - "Problems interpreting hex numbers in gpasm" since the current
+    behavior is MPASM compatible.
+
 2012-08-16  Borut Razem  <borutr@users.sourceforge.net>
   * doc/gputils.lyx: gpasm expressions are implemented using 32-bit arithmetic.
   * gpasm/util.c: implemented gp_strtoi(), partially fixed bug 

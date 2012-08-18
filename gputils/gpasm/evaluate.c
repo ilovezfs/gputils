@@ -349,7 +349,17 @@ gpasmVal evaluate(struct pnode *p)
     case '|':      return p0 | p1;
     case '^':      return p0 ^ p1;
     case LSH:      return p0 << p1;
-    case RSH:      return p0 >> p1;
+    case RSH:
+#if 1
+      /* MPASM compatible: see https://sourceforge.net/p/gputils/bugs/252/ 
+       * It seems that x >> n is actually x >> (n % (sizeof(int) * 8))
+       * on x86 architectures, so 0x1234 >> 32 results 0x1234
+       * which is wrong but compatible with MPASM */
+                   return p0 >> p1;
+#else
+      /* x >> n results 0 for n >= (sizeof(int) * 8) */
+                   return (p1 >= sizeof(int) * 8) ? 0 : p0 >> p1;
+#endif
     case EQUAL:    return p0 == p1;
     case '<':      return p0 < p1;
     case '>':      return p0 > p1;
