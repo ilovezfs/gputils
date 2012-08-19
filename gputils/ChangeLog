@@ -1,3 +1,7 @@
+2012-08-19  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/evaluate.c: implemented but ifdef-ed out the fix for shift left > 32,
+    another fix for shift right > 32, taking into accont the sign extension
+
 2012-08-18  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/evaluate.c: implemented but ifdef-ed out the fix for bug
     #252 - "Problems interpreting hex numbers in gpasm" since the current
