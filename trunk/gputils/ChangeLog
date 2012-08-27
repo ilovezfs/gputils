@@ -5,6 +5,8 @@
   * pasm/evaluate.c: iterative reimplementation of list_length()
   * libgputils/gpsymbol.c, libgputils/gpsymbol.h:
     added functions hashfunc_len() and get_symbol_len()
+  * gpasm/directive.c:
+    fixed bug #253 - "[PIC16F]#ifdef problem around macro"
 
 2012-08-19  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/evaluate.c: implemented but ifdef-ed out the fix for shift left > 32,
