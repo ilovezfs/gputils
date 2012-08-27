@@ -206,6 +206,7 @@ HEADER_FILES = \
 	p12ce519.inc \
 	p12ce673.inc \
 	p12ce674.inc \
+	p12cr509a.inc \
 	p12f1501.inc \
 	p12f1822.inc \
 	p12f1840.inc \

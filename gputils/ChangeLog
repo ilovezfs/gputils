@@ -1,3 +1,9 @@
+2012-08-27  Molnar Karoly  <proton7@freemail.hu>
+  * lkr/18c601_g.lkr: Changed in "NAME=page" the "END=0x1FFFFF" onto
+    the "END=0x3FFFF".
+  * header/p12cr509a.inc: New? So far not exist, but the MCU included in
+    the gpprocessor.c.
+
 2012-08-27  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/testsuite/gpasm.old/testall:
     don't stop at the first failure, report the number of tests failed
