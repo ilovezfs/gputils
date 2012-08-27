@@ -55,11 +55,15 @@ int enforce_simple(struct pnode *p)
 
 int list_length(struct pnode *L)
 {
-  if (L == NULL) {
-    return 0;
-  } else {
-    return 1 + list_length(TAIL(L));
+  struct pnode *p = L;
+  int n = 0;
+
+  while (p) {
+    ++n;
+    p = TAIL(p);
   }
+
+  return n;
 }
 
 int can_evaluate_concatenation(struct pnode *p)
