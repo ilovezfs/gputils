@@ -1,4 +1,5 @@
 %option noyywrap
+%option always-interactive
 %x bquote
 %x lnquote
 %x define
@@ -71,27 +72,18 @@ int force_ident;   /* Used to force numbers to identifiers for processor names *
       int c = '*'; \
       size_t n; \
       for ( n = 0; n < max_size && \
-        (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
+        (c = getc(yyin)) != EOF && c != '\n'; ++n ) \
         buf[n] = (char) c; \
-      if ( c == '\n' ) \
+      if (c == '\n') \
         buf[n++] = (char) c; \
-      if ( c == EOF && ferror( yyin ) ) \
-        YY_FATAL_ERROR( "input in flex scanner failed" ); \
+      if (c == EOF && ferror(yyin)) \
+        YY_FATAL_ERROR("input in flex scanner failed"); \
       result = n; \
     } \
   else \
     { \
-      errno=0; \
-      while ( (result = fread(buf, 1, max_size, yyin))==0 && ferror(yyin)) \
-        { \
-          if( errno != EINTR) \
-            { \
-              YY_FATAL_ERROR( "input in flex scanner failed" ); \
-              break; \
-            } \
-          errno=0; \
-          clearerr(yyin); \
-        } \
+      YY_FATAL_ERROR("internal error: interactive scanner should be used"); \
+      result = 0; \
     }
 
 #define YY_INPUT(buf,result,max_size) \

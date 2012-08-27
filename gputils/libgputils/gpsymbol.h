@@ -23,7 +23,7 @@ Boston, MA 02111-1307, USA.  */
 #define __GPSYMBOL_H__
 
 #define HASH_SIZE 173  /* Too small and we get collisions.  Too big
-			* and we use up memory and run slow.. */
+                        * and we use up memory and run slow.. */
 
 struct symbol {
   const char *name;
@@ -35,17 +35,19 @@ struct symbol_table {
   int count;
   gp_boolean case_insensitive;
   int (*compare)(const char *__s1, const char *__s2);
+  int (*compare_len)(const char *__s1, const char *__s2, size_t len);
   struct symbol *hash_table[HASH_SIZE];
   struct symbol_table *prev;
 };
 
-struct symbol_table *push_symbol_table(struct symbol_table *, 
+struct symbol_table *push_symbol_table(struct symbol_table *,
                                        gp_boolean case_insensitive);
 struct symbol_table *pop_symbol_table(struct symbol_table *);
 
 struct symbol *add_symbol(struct symbol_table *, const char *name);
 int remove_symbol(struct symbol_table *table, const char *name);
 struct symbol *get_symbol(struct symbol_table *, const char *name);
+struct symbol *get_symbol_len(struct symbol_table *, const char *name, size_t len);
 
 void annotate_symbol(struct symbol *, void *);
 

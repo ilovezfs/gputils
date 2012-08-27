@@ -24,9 +24,11 @@
 GPASM=../../gpasm
 FLAGS=-q
 
+FAILURES=0
+
 testfailed() {
   echo FAILED
-  exit 1
+  FAILURES=$(expr $FAILURES + 1)
 }
 
 if [ ! $1 ]; then
@@ -84,7 +86,12 @@ case "$1" in
     echo XXXXXX End of Intentional errors XXXXXX
     echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-    echo "All tests sucessful"
+    if [ "$FAILURES" = 0 ]
+    then
+      echo "All tests sucessful"
+    else
+      echo "$FAILURES test(s) failed"
+    fi
     exit
     ;;
   clean)

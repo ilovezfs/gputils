@@ -25,17 +25,15 @@ Boston, MA 02111-1307, USA.  */
 /* Base the hash func on the 1st, 2nd, 3rd and last characters of the
    string, and its length. */
 
-static int hashfunc(struct symbol_table *t, const char *s)
+static int hashfunc_len(struct symbol_table *t, const char *s, size_t len)
 {
   union {
     char b[4];
     unsigned long ul;
   } change;
-  int len;
 
   change.ul = 0;
 
-  len = strlen(s);
   change.b[0] = s[0];
   if (len > 1) {
     change.b[1] = s[1];
@@ -52,16 +50,25 @@ static int hashfunc(struct symbol_table *t, const char *s)
   return (change.ul % HASH_SIZE);
 }
 
+static int hashfunc(struct symbol_table *t, const char *s)
+{
+  return hashfunc_len(t, s, strlen(s));
+}
+
 struct symbol_table *push_symbol_table(struct symbol_table * table,
-				       gp_boolean case_insensitive)
+                                       gp_boolean case_insensitive)
 {
   struct symbol_table *new = calloc(sizeof(*new), 1);
 
   new->case_insensitive = case_insensitive;
-  if (case_insensitive)
+  if (case_insensitive) {
     new->compare = strcasecmp;
-  else
+    new->compare_len = strncasecmp;
+  }
+  else {
     new->compare = strcmp;
+    new->compare_len = strncmp;
+  }
   new->prev = table;
   return new;
 }
@@ -97,7 +104,7 @@ struct symbol *add_symbol(struct symbol_table *table, const char *name)
     table->hash_table[index] = r;
     table->count++;
   }
-  
+
   return r;
 }
 
@@ -106,7 +113,7 @@ Maybe this is ok, but it seems wrong. */
 
 int remove_symbol(struct symbol_table *table, const char *name)
 {
-  struct symbol *r = NULL; 
+  struct symbol *r = NULL;
   struct symbol *last = NULL;
   int index;
   int found_symbol = 0;
@@ -152,6 +159,27 @@ struct symbol *get_symbol(struct symbol_table *table, const char *name)
 
     r = table->hash_table[index];
     while (r && ((*table->compare)(name, r->name) != 0))
+      r = r->next;
+
+    /* If r is still NULL, we didn't match.  Try the prev table on the stack */
+    if (r == NULL)
+      r = get_symbol(table->prev, name);
+  }
+
+  return r;
+}
+
+struct symbol *get_symbol_len(struct symbol_table *table, const char *name, size_t len)
+{
+  struct symbol *r = NULL;
+
+  assert(name != NULL);
+
+  if (table != NULL) {
+    int index = hashfunc_len(table, name, len);
+
+    r = table->hash_table[index];
+    while (r && ((*table->compare_len)(name, r->name, len) != 0))
       r = r->next;
 
     /* If r is still NULL, we didn't match.  Try the prev table on the stack */
