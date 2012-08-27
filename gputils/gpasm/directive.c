@@ -3160,7 +3160,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
     struct insn *i = get_symbol_annotation(s);
 
     /* Instructions in data sections are not allowed */
-    if (i->class != INSN_CLASS_FUNC && IS_RAM_ORG) {
+    if (asm_enabled() && i->class != INSN_CLASS_FUNC && IS_RAM_ORG) {
       gperror(GPE_WRONG_SECTION, NULL);
       return r;
     }
