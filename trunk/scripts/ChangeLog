@@ -1,31 +1,44 @@
-2012-08-11 Molnár Károly <proton7@freemail.hu>
+2012-08-24 Molnar Karoly <proton7@freemail.hu>
+	* tools/config-help.pl: Tooltip in "RAM map". Created links to
+	  "SFR map" from "RAM map". More information in "Features",
+	  "RAM map" and "SFR map" tabs. New tabs in the main page:
+	  "by RAM size", "by ROM size" and "by EEPROM size".
+          New commandline option: --remote-url Error correction:
+          The "class" html attribute is use the "id" instead.
+          New capability: Highlights the Access area in the "RAM map" tab.
+          Improvement unto the Opera web browser and some Chrome specific
+          optimizations. Indicate the Access area in the "SFR map". Footer
+          expansion on all pages. Improving the appearance.
+          Good approximation it can be said that it is ready.
+
+2012-08-11 Molnar Karoly <proton7@freemail.hu>
 	* tools/config-help.pl: New tab - "RAM map" in MCU info pages.
 
-2012-08-10 Molnár Károly <proton7@freemail.hu>
+2012-08-10 Molnar Karoly <proton7@freemail.hu>
 	* tools/config-help.pl: New tab - "SFR map" in MCU info pages.
 
-2012-08-09 Molnár Károly <proton7@freemail.hu>
+2012-08-09 Molnar Karoly <proton7@freemail.hu>
 	* tools/config-help.pl: Compute the size of SFRs and GPRs
           from gputils inc files.
 
-2012-08-08 Molnár Károly <proton7@freemail.hu>
+2012-08-08 Molnar Karoly <proton7@freemail.hu>
 	* tools/config-help.pl: New tab in MCU info pages.
 
-2012-08-08 Molnár Károly <proton7@freemail.hu>
+2012-08-08 Molnar Karoly <proton7@freemail.hu>
 	* tools/config-help.pl: Create some html files from mplab-x
 	  8bit_device.info file. All MCU to belongs an html file,
           in which are listed in the Config bits.
 
-2012-08-08 Molnár Károly <proton7@freemail.hu>
+2012-08-08 Molnar Karoly <proton7@freemail.hu>
 	* tools/device-manager.pl: Minor change in the license.
 
-2012-07-29 Molnár Károly <proton7@freemail.hu>
+2012-07-29 Molnar Karoly <proton7@freemail.hu>
 	* tools/device-manager.pl: Added further new command line option.
 
-2012-07-28 Molnár Károly <proton7@freemail.hu>
+2012-07-28 Molnar Karoly <proton7@freemail.hu>
 	* tools/device-manager.pl: Added new command line option.
 
-2012-07-24 Molnár Károly <proton7@freemail.hu>
+2012-07-24 Molnar Karoly <proton7@freemail.hu>
 	* tools/device-manager.pl:
 	  Added script to adding and deleting of the processors and
 	  variety investigations.
