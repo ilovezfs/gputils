@@ -1,5 +1,16 @@
 // File: 18c601_g.lkr
 // Generic linker script for the PIC18C601 processor
+//// Begin: Added in gputils
+//=========================================================================
+//
+//      Gputils Specific Revision History
+//
+//=========================================================================
+//
+//      16 Aug 2012  Changed in "NAME=page" the "END=0x1FFFFF" onto
+//                   the "END=0x3FFFF".
+//
+//// End: Added in gputils
 
 #DEFINE _CODEEND _DEBUGCODESTART - 1
 #DEFINE _CEND _CODEEND + _DEBUGCODELEN
@@ -18,7 +29,10 @@ LIBPATH .
   CODEPAGE   NAME=page       START=0x0               END=_CODEEND
   CODEPAGE   NAME=debug      START=_DEBUGCODESTART   END=_CEND        PROTECTED
 #ELSE
-  CODEPAGE   NAME=page       START=0x0               END=0x1FFFFF
+//// Begin: Changed in gputils
+//  CODEPAGE   NAME=page       START=0x0               END=0x1FFFFF
+  CODEPAGE   NAME=page       START=0x0               END=0x3FFFF
+//// End: Changed in gputils
 #FI
 
 CODEPAGE   NAME=config     START=0x300000          END=0x300007       PROTECTED
