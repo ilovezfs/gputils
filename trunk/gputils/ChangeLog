@@ -1,3 +1,9 @@
+2012-08-28  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/directive.c: terative reimplementation of macro_parms_simple(),
+    macro_parms_unique(), macro_parms_ok();
+    goto & call: don't check range, page boundary or bad address in
+    relocatble sections
+
 2012-08-27  Molnar Karoly  <proton7@freemail.hu>
   * lkr/18c601_g.lkr: Changed in "NAME=page" the "END=0x1FFFFF" onto
     the "END=0x3FFFF".
