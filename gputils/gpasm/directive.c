@@ -265,45 +265,48 @@ static void enter_if(void)
 
 static int macro_parms_simple(struct pnode *parms)
 {
-  if (parms == NULL) {
-    return 1;
-  } else if (HEAD(parms)->tag != symbol) {
-    gperror(GPE_ILLEGAL_ARGU, NULL);
-    return 0;
-  } else {
-    return (macro_parms_simple(TAIL(parms)));
+  while (parms) {
+    if (HEAD(parms)->tag != symbol) {
+      gperror(GPE_ILLEGAL_ARGU, NULL);
+      return 0;
+    }
+    parms = TAIL(parms);
   }
+  return 1;
 }
 
-static int list_symbol_member(struct pnode *M, struct pnode *L)
+static int macro_parm_unique(struct pnode *M, struct pnode *L)
 {
-  if (L == NULL) {
-    return 0;
-  } else if (STRCMP(M->value.symbol, HEAD(L)->value.symbol) == 0) {
-    char buf[BUFSIZ];
-    snprintf(buf,
-             sizeof(buf),
-             "Duplicate macro parameter (%s).",
-             HEAD(L)->value.symbol);
-    gperror(GPE_UNKNOWN, buf);
-    return 1;
-  } else {
-    return list_symbol_member(M, TAIL(L));
+  while (L) {
+    if (0 == STRCMP(M->value.symbol, HEAD(L)->value.symbol)) {
+      char buf[BUFSIZ];
+      snprintf(buf,
+               sizeof(buf),
+               "Duplicate macro parameter (%s).",
+               HEAD(L)->value.symbol);
+      gperror(GPE_UNKNOWN, buf);
+      return 0;
+    }
+    L = TAIL(L);
   }
-}
-
-static int macro_parms_unique(struct pnode *parms)
-{
-  if (parms == NULL)
-    return 1;
-  else
-    return (!list_symbol_member(HEAD(parms), TAIL(parms)) &&
-            macro_parms_unique(TAIL(parms)));
+  return 1;
 }
 
 static int macro_parms_ok(struct pnode *parms)
 {
-  return (macro_parms_simple(parms) && macro_parms_unique(parms));
+  /* Check if all params are symbols */
+  if (!macro_parms_simple(parms))
+    return 0;
+
+  /* Check if params are unique */
+  while (parms) {
+    if (!macro_parm_unique(HEAD(parms), TAIL(parms))) {
+      return 0;
+    }
+    parms = TAIL(parms);
+  }
+
+  return 1;
 }
 
 /************************************************************************/
@@ -3262,7 +3265,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_LIT8C12:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          if (can_evaluate_value(p)) {
+          if ((state.obj.new_sec_flags & STYP_ABS) && can_evaluate_value(p)) {
             int value = evaluate(p);
 
             /* PC is 11 bits.  mpasm checks the maximum device address. */
@@ -3298,7 +3301,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_LIT9:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          if (can_evaluate_value(p)) {
+          if ((state.obj.new_sec_flags & STYP_ABS) && can_evaluate_value(p)) {
             int value = evaluate(p);
 
             /* PC is 11 bits.  mpasm checks the maximum device address. */
@@ -3316,7 +3319,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_LIT11:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          if (can_evaluate_value(p)) {
+          if ((state.obj.new_sec_flags & STYP_ABS) && can_evaluate_value(p)) {
             int value = evaluate(p);
 
             if (state.device.class == PROC_CLASS_PIC14E) {
@@ -3341,7 +3344,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_LIT13:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          if (can_evaluate_value(p)) {
+          if ((state.obj.new_sec_flags & STYP_ABS) && can_evaluate_value(p)) {
             int value = evaluate(p);
 
             /* PC is 16 bits.  mpasm checks the maximum device address. */
