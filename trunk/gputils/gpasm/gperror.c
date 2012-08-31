@@ -33,13 +33,14 @@ struct error_list {
 
 static struct error_list *errorcodes_list = NULL;
 
-void add_code(int code)
+void
+add_code(int code)
 {
   struct error_list *new;
   struct error_list *list;
 
   if ((code <= -100) && (code >= -199)) {
-    gpwarning(GPW_DISABLE_ERROR, NULL);
+    gpvwarning(GPW_DISABLE_ERROR);
   } else {
     new = (struct error_list *)malloc(sizeof(*new));
     new->value = code;
@@ -58,7 +59,8 @@ void add_code(int code)
   }
 }
 
-static int check_code(int code)
+static int
+check_code(int code)
 {
   struct error_list *p;
   int print = 1;
@@ -67,10 +69,10 @@ static int check_code(int code)
 
   while(p) {
 
-    if (p->value == code){
-        print = 1;
+    if (p->value == code) {
+      print = 1;
     } else if (p->value == -(code)) {
-  print = 0;
+      print = 0;
     }
 
     p = p->next;
@@ -79,9 +81,41 @@ static int check_code(int code)
   return print;
 }
 
-char *gp_geterror(unsigned int code)
+static void
+verr(const char *type, unsigned int code, const char *message, va_list ap)
 {
+  /* standard output */
+  if (!state.quiet) {
+    if (state.src)
+      printf("%s:%d:%s[%03d] %s",
+        state.src->name, state.src->line_number, type, code,
+        (('E' == type[0]) ? "  " : ""));
+    else
+      printf("%s[%03d] %s",
+        type, code, (('E' == type[0]) ? "  " : ""));
+    vprintf(message, ap);
+    putchar('\n');
+  }
+}
 
+static void
+err(const char *type, unsigned int code, const char *message)
+{
+  /* standard output */
+  if (!state.quiet) {
+    if (state.src)
+      printf("%s:%d:%s[%03d] %s%s\n",
+        state.src->name, state.src->line_number, type, code,
+        (('E' == type[0]) ? "  " : ""), message);
+    else
+      printf("%s[%03d] %s%s\n",
+        type, code, (('E' == type[0]) ? "  " : ""), message);
+  }
+}
+
+static char *
+gp_geterror(unsigned int code)
+{
   switch(code) {
   case GPE_BADCHAR:
     return "Illegal character.";
@@ -94,7 +128,7 @@ char *gp_geterror(unsigned int code)
   case GPE_DIVBY0:
     return "Divide by zero.";
   case GPE_DUPLAB:
-    return "Duplicate label or redefining symbol that cannot be redefined.";
+    return "Duplicate label (\"%s\" or redefining symbol that cannot be redefined)";
   case GPE_DIFFLAB:
     return "Address label duplicated or different in second pass.";
   case GPE_ADDROVF:
@@ -116,7 +150,7 @@ char *gp_geterror(unsigned int code)
   case GPE_TOO_MANY_ARGU:
     return "Too many arguments.";
   case GPE_MISSING_ARGU:
-    return "Missing argument(s).";
+    return "Missing argument(s)";
   case GPE_EXPECTED:
     return "Expected";
   case GPE_EXTRA_PROC:
@@ -171,41 +205,46 @@ char *gp_geterror(unsigned int code)
   }
 }
 
-void gperror(unsigned int code,
-       char *message)
+void
+gperror(unsigned int code, char *message)
 {
   if (state.pass == 2) {
     if(message == NULL)
       message = gp_geterror(code);
 
-#ifndef GP_USER_ERROR
     /* standard output */
-    if (!state.quiet) {
-      if (state.src)
-        printf("%s:%d:Error[%03d]   %s\n",
-         state.src->name,
-         state.src->line_number,
-         code,
-         message);
-      else
-        printf("Error[%03d]   %s\n",
-         code,
-         message);
-    }
-#else
-    user_error(code, message);
-#endif
+    err("Error", code, message);
 
     /* list file output */
-    lst_line("Error[%03d]  : %s",
-       code,
-       message);
+    lst_line("Error[%03d]  : %s", code, message);
 
     state.num.errors++;
   }
 }
 
-char *gp_getwarning(unsigned int code)
+void
+gpverror(unsigned int code, ...)
+{
+  if (state.pass == 2) {
+    va_list(ap);
+    const char *message = gp_geterror(code);
+
+    /* standard output */
+    va_start(ap, code);
+    verr("Error", code, message, ap);
+    va_end(ap);
+
+    /* list file output */
+    va_start(ap, code);
+    lst_err_line("Error", code, message, ap);
+    va_end(ap);
+
+    state.num.errors++;
+  }
+}
+
+static char *
+gp_getwarning(unsigned int code)
 {
   switch(code) {
   case GPW_NOT_DEFINED:
@@ -253,37 +292,19 @@ char *gp_getwarning(unsigned int code)
   }
 }
 
-void gpwarning(unsigned int code,
-         char *message)
+void
+gpwarning(unsigned int code, char *message)
 {
-  if (state.pass ==2) {
-
+  if (state.pass == 2) {
     if ((state.error_level <= 1) && check_code(code)) {
-      if(message == NULL)
+      if (message == NULL)
         message = gp_getwarning(code);
 
-#ifndef GP_USER_WARNING
       /* standard output */
-      if (!state.quiet) {
-        if (state.src)
-          printf("%s:%d:Warning[%03d] %s\n",
-     state.src->name,
-     state.src->line_number,
-     code,
-     message);
-        else
-          printf("Warning[%03d] %s\n",
-     code,
-     message);
-      }
-#else
-      user_warning(code, message);
-#endif
+      err("Warning", code, message);
 
       /* list file output */
-      lst_line("Warning[%03d]: %s",
-         code,
-         message);
+      lst_line("Warning[%03d]: %s", code, message);
 
       state.num.warnings++;
     } else {
@@ -292,7 +313,32 @@ void gpwarning(unsigned int code,
   }
 }
 
-char *gp_getmessage(unsigned int code)
+void
+gpvwarning(unsigned int code, ...)
+{
+  if (state.pass == 2) {
+    if ((state.error_level <= 1) && check_code(code)) {
+      va_list(ap);
+      const char *message = gp_getwarning(code);
+
+      /* standard output */
+      va_start(ap, code);
+      verr("Warning", code, message, ap);
+      va_end(ap);
+
+      va_start(ap, code);
+      lst_err_line("Warning", code, message, ap);
+      va_end(ap);
+
+      state.num.warnings++;
+    } else {
+      state.num.warnings_suppressed++;
+    }
+  }
+}
+
+static char *
+gp_getmessage(unsigned int code)
 {
   switch(code) {
   case GPM_USER:
@@ -329,37 +375,46 @@ char *gp_getmessage(unsigned int code)
   }
 }
 
-void gpmessage(unsigned int code,
+void
+gpmessage(unsigned int code,
          char *message)
 {
   if (state.pass==2) {
-
     if ((state.error_level == 0) && check_code(code)){
       if(message == NULL)
         message = gp_getmessage(code);
 
-#ifndef GP_USER_MESSAGE
       /* standard output */
-      if (!state.quiet) {
-        if (state.src)
-          printf("%s:%d:Message[%03d] %s\n",
-     state.src->name,
-     state.src->line_number,
-     code,
-     message);
-        else
-          printf("Message[%03d] %s\n",
-     code,
-     message);
-      }
-#else
-      user_message(code, message);
-#endif
+      err("Message", code, message);
 
       /* list file output */
-      lst_line("Message[%03d]: %s",
-               code,
-               message);
+      lst_line("Message[%03d]: %s", code, message);
+
+      state.num.messages++;
+    } else {
+      state.num.messages_suppressed++;
+    }
+  }
+}
+
+void
+gpvmessage(unsigned int code, ...)
+{
+  if (state.pass == 2) {
+
+    if ((state.error_level == 0) && check_code(code)){
+      va_list(ap);
+      const char *message = gp_getmessage(code);
+
+      /* standard output */
+      va_start(ap, code);
+      verr("Message", code, message, ap);
+      va_end(ap);
+
+      /* list file output */
+      va_start(ap, code);
+      lst_err_line("Message", code, message, ap);
+      va_end(ap);
 
       state.num.messages++;
     } else {

@@ -49,7 +49,7 @@ static gpasmVal do_addcf(gpasmVal r,
                          struct pnode *parms)
 {
 
-  gpmessage(GPM_SPECIAL_MNEMONIC, NULL);
+  gpvmessage(GPM_SPECIAL_MNEMONIC);
 
   do_insn("btfsc", make_constant_list(3, 0));
   do_insn("incf", parms);
@@ -159,7 +159,7 @@ static gpasmVal do_clrc(gpasmVal r,
 {
 
   if (arity) {
-    gperror(GPE_TOO_MANY_ARGU, NULL);
+    gpverror(GPE_TOO_MANY_ARGU);
   }
 
   do_insn("bcf", make_constant_list(3, 0));
@@ -174,7 +174,7 @@ static gpasmVal do_clrdc(gpasmVal r,
 {
 
   if (arity) {
-    gperror(GPE_TOO_MANY_ARGU, NULL);
+    gpverror(GPE_TOO_MANY_ARGU);
   }
 
   do_insn("bcf", make_constant_list(3, 1));
@@ -189,7 +189,7 @@ static gpasmVal do_clrz(gpasmVal r,
 {
 
   if (arity) {
-    gperror(GPE_TOO_MANY_ARGU, NULL);
+    gpverror(GPE_TOO_MANY_ARGU);
   }
 
   do_insn("bcf", make_constant_list(3, 2));
@@ -257,7 +257,7 @@ static gpasmVal do_setc(gpasmVal r,
 {
 
   if (arity) {
-    gperror(GPE_TOO_MANY_ARGU, NULL);
+    gpverror(GPE_TOO_MANY_ARGU);
   }
 
   do_insn("bsf", make_constant_list(3, 0));
@@ -272,7 +272,7 @@ static gpasmVal do_setdc(gpasmVal r,
 {
 
   if (arity) {
-    gperror(GPE_TOO_MANY_ARGU, NULL);
+    gpverror(GPE_TOO_MANY_ARGU);
   }
 
   do_insn("bsf", make_constant_list(3, 1));
@@ -287,7 +287,7 @@ static gpasmVal do_setz(gpasmVal r,
 {
 
   if (arity) {
-    gperror(GPE_TOO_MANY_ARGU, NULL);
+    gpverror(GPE_TOO_MANY_ARGU);
   }
 
   do_insn("bsf", make_constant_list(3, 2));
@@ -302,7 +302,7 @@ static gpasmVal do_skpc(gpasmVal r,
 {
 
   if (arity) {
-    gperror(GPE_TOO_MANY_ARGU, NULL);
+    gpverror(GPE_TOO_MANY_ARGU);
   }
 
   do_insn("btfss", make_constant_list(3, 0));
@@ -317,7 +317,7 @@ static gpasmVal do_skpdc(gpasmVal r,
 {
 
   if (arity) {
-    gperror(GPE_TOO_MANY_ARGU, NULL);
+    gpverror(GPE_TOO_MANY_ARGU);
   }
 
   do_insn("btfss", make_constant_list(3, 1));
@@ -332,7 +332,7 @@ static gpasmVal do_skpz(gpasmVal r,
 {
 
   if (arity) {
-    gperror(GPE_TOO_MANY_ARGU, NULL);
+    gpverror(GPE_TOO_MANY_ARGU);
   }
 
   do_insn("btfss", make_constant_list(3, 2));
@@ -347,7 +347,7 @@ static gpasmVal do_skpnc(gpasmVal r,
 {
 
   if (arity) {
-    gperror(GPE_TOO_MANY_ARGU, NULL);
+    gpverror(GPE_TOO_MANY_ARGU);
   }
 
   do_insn("btfsc", make_constant_list(3, 0));
@@ -362,7 +362,7 @@ static gpasmVal do_skpndc(gpasmVal r,
 {
 
   if (arity) {
-    gperror(GPE_TOO_MANY_ARGU, NULL);
+    gpverror(GPE_TOO_MANY_ARGU);
   }
 
   do_insn("btfsc", make_constant_list(3, 1));
@@ -377,7 +377,7 @@ static gpasmVal do_skpnz(gpasmVal r,
 {
 
   if (arity) {
-    gperror(GPE_TOO_MANY_ARGU, NULL);
+    gpverror(GPE_TOO_MANY_ARGU);
   }
 
   do_insn("btfsc", make_constant_list(3, 2));
@@ -431,7 +431,7 @@ static gpasmVal do_mode(gpasmVal r,
     struct pnode* val = HEAD(parms);
     if ((val->tag == constant) &&
         (val->value.constant > 0x1f)) {
-      gpwarning(GPW_RANGE, NULL);
+      gpvwarning(GPW_RANGE);
       val->value.constant &= 0x1f;
     }
     do_insn("movlw", parms);

@@ -21,8 +21,10 @@ Boston, MA 02111-1307, USA.  */
 
 #ifndef __LST_H__
 #define __LST_H__
+#include <stdarg.h>
 
 void lst_line(const char *format, ...);
+void lst_err_line(const char *type, unsigned int code, const char *format, va_list args);
 void lst_throw(void);
 void lst_init(void);
 void lst_memory_map(MemBlock *m);

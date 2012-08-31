@@ -31,7 +31,7 @@ void select_processor(char *name)
   const struct px *found = NULL;
 
   if (state.cmd_line.processor) {
-    gpwarning(GPW_CMDLINE_PROC, NULL);
+    gpvwarning(GPW_CMDLINE_PROC);
   } else {
     found = gp_find_processor(name);
     if (found) {
@@ -57,12 +57,12 @@ void select_processor(char *name)
         }
         set_global(found->defined_as, 1, PERMANENT, gvt_constant);
       } else if (state.processor != found ) {
-        gpwarning(GPW_REDEFINING_PROC, NULL);
-        gperror(GPE_EXTRA_PROC, NULL);
+        gpvwarning(GPW_REDEFINING_PROC);
+        gpverror(GPE_EXTRA_PROC);
       }
     } else {
       if (state.pass) {
-        gperror(GPE_UNKNOWN_PROC, NULL);
+        gpverror(GPE_UNKNOWN_PROC);
       } else {
         printf("Didn't find any processor named: %s\nHere are the supported processors:\n",name);
         gp_dump_processor_list(true, 0);
