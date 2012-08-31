@@ -345,7 +345,7 @@ void purge_temp_symbols(struct symbol_table *table) {
 void select_errorlevel(int level)
 {
   if (state.cmd_line.error_level) {
-    gpmessage(GPM_SUPVAL, NULL);
+    gpvmessage(GPM_SUPVAL);
   } else {
     if (level == 0) {
       state.error_level = 0;
@@ -368,7 +368,7 @@ void select_errorlevel(int level)
 void select_expand(const char *expand)
 {
   if (state.cmd_line.macro_expand) {
-    gpmessage(GPM_SUPLIN, NULL);
+    gpvmessage(GPM_SUPLIN);
   } else {
     if (strcasecmp(expand, "ON") == 0) {
       state.lst.expand = true;
@@ -390,7 +390,7 @@ void select_expand(const char *expand)
 void select_hexformat(const char *format_name)
 {
   if (state.cmd_line.hex_format) {
-    gpwarning(GPW_CMDLINE_HEXFMT, NULL);
+    gpvwarning(GPW_CMDLINE_HEXFMT);
   } else {
     if (strcasecmp(format_name, "inhx8m") == 0) {
       state.hex_format = inhx8m;
@@ -416,7 +416,7 @@ void select_hexformat(const char *format_name)
 void select_radix(const char *radix_name)
 {
   if (state.cmd_line.radix) {
-    gpwarning(GPW_CMDLINE_RADIX, NULL);
+    gpvwarning(GPW_CMDLINE_RADIX);
   } else {
     if (strcasecmp(radix_name, "h") == 0 ||
         strcasecmp(radix_name, "hex") == 0 ||
@@ -437,7 +437,7 @@ void select_radix(const char *radix_name)
                 "invalid radix \"%s\", will use hex.\n",
                 radix_name);
       } else {
-        gpwarning(GPW_RADIX, NULL);
+        gpvwarning(GPW_RADIX);
       }
     }
   }
@@ -592,7 +592,7 @@ void hex_init(void)
   }
 
   if (check_writehex(state.i_memory, state.hex_format)) {
-    gperror(GPE_IHEX,NULL);
+    gpverror(GPE_IHEX);
     writehex(state.basefilename, state.i_memory,
              state.hex_format, 1,
              state.dos_newlines, 1);

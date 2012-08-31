@@ -128,6 +128,17 @@ lst_line(const char *format, ...)
   }
 }
 
+void
+lst_err_line(const char *type, unsigned int code, const char *format, va_list args)
+{
+  if (state.lst.f) {
+    lst_check_page_start();
+    fprintf(state.lst.f, "%s[%03d]  : ", type, code);
+    vfprintf(state.lst.f, format, args);
+    lst_eol();
+  }
+}
+
 /* Print part of a line. Output must not contain newline. Needs call
    to lst_eol at end of line. */
 static int

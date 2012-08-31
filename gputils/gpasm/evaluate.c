@@ -35,9 +35,9 @@ int enforce_arity(int arity, int must_be)
     return 1;
   else {
     if (arity < must_be) {
-      gperror(GPE_MISSING_ARGU, NULL);
+      gpverror(GPE_MISSING_ARGU);
     } else {
-      gperror(GPE_TOO_MANY_ARGU, NULL);
+      gpverror(GPE_TOO_MANY_ARGU);
     }
     return 0;
   }
@@ -48,7 +48,7 @@ int enforce_simple(struct pnode *p)
   if (p->tag == symbol) {
     return 1;
   } else {
-    gperror(GPE_ILLEGAL_ARGU, NULL);
+    gpverror(GPE_ILLEGAL_ARGU);
     return 0;
   }
 }
@@ -139,7 +139,7 @@ char *maybe_evaluate_concat(struct pnode *p)
 
   if (((p->tag == unop) && (p->value.unop.op != VAR)) ||
       ((p->tag == binop) && (p->value.binop.op != CONCAT))) {
-    gperror(GPE_ILLEGAL_ARGU, NULL);
+    gpverror(GPE_ILLEGAL_ARGU);
   } else if (p && can_evaluate_concatenation(p)) {
     r = evaluate_concatenation(p);
   }
@@ -337,14 +337,14 @@ gpasmVal evaluate(struct pnode *p)
     case '*':      return p0 * p1;
     case '/':
       if (p1 == 0){
-        gperror(GPE_DIVBY0, NULL);
+        gpverror(GPE_DIVBY0);
         return 0;
       } else {
         return p0 / p1;
       }
     case '%':
       if (p1 == 0){
-        gperror(GPE_DIVBY0, NULL);
+        gpverror(GPE_DIVBY0);
         return 0;
       } else {
         return p0 % p1;
@@ -557,7 +557,7 @@ add_reloc(struct pnode *p, short offset, enum gpasmValTypes type)
     case '~':
     case INCREMENT:
     case DECREMENT:
-      gperror(GPE_UNRESOLVABLE, NULL);
+      gpverror(GPE_UNRESOLVABLE);
       return;
     default:
       assert(0);
@@ -577,7 +577,7 @@ add_reloc(struct pnode *p, short offset, enum gpasmValTypes type)
       if (count_reloc(p->value.binop.p0) == 1) {
         add_reloc(p->value.binop.p0, offset - maybe_evaluate(p->value.binop.p1), type);
       } else {
-        gperror(GPE_UNRESOLVABLE, NULL);
+        gpverror(GPE_UNRESOLVABLE);
       }
       return;
     case '*':
@@ -597,7 +597,7 @@ add_reloc(struct pnode *p, short offset, enum gpasmValTypes type)
     case LOGICAL_AND:
     case LOGICAL_OR:
     case '=':
-      gperror(GPE_UNRESOLVABLE, NULL);
+      gpverror(GPE_UNRESOLVABLE);
       return;
     default:
       assert(0); /* Unhandled binary operator */
@@ -682,7 +682,7 @@ gpasmVal reloc_evaluate(struct pnode *p, unsigned short type)
         r = maybe_evaluate(p);
       } else {
         /* too many relocatable addresses */
-        gperror(GPE_UNRESOLVABLE, NULL);
+        gpverror(GPE_UNRESOLVABLE);
         r = 0;
       }
     } else {
@@ -702,7 +702,7 @@ int eval_fill_number(struct pnode *p)
 
   number = maybe_evaluate(p);
   if (state.device.class->rom_width == 8 && (number & 0x1) == 1)
-    gperror(GPE_FILL_ODD, NULL);
+    gpverror(GPE_FILL_ODD);
   number = gp_processor_org_to_byte(state.device.class, number) >> 1;
 
   return number;

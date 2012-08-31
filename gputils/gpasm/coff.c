@@ -199,7 +199,7 @@ _copy_config(void)
         printf("address = %x\n", i);
         if (b_memory_get(state.c_memory, i, &byte)) {
           if (found_break) {
-            gperror(GPE_CONTIG_IDLOC, NULL);
+            gpverror(GPE_CONTIG_IDLOC);
           }
           b_memory_put(config_section->data, i, byte);
           config_section->size += 1;
@@ -282,11 +282,11 @@ coff_new_section(const char *name, int addr, int flags)
          sections in the same source file to share the same data memory. */
       if ((flags != found->flags) ||
           (addr != found->address)) {
-        gperror(GPE_CONTIG_SECTION, NULL);
+        gpverror(GPE_CONTIG_SECTION);
         return;
       }
     } else {
-      gperror(GPE_CONTIG_SECTION, NULL);
+      gpverror(GPE_CONTIG_SECTION);
       return;
     }
   }

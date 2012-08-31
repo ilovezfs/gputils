@@ -1,5 +1,11 @@
+2012-08-31  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/gperror.c, gpasm/gperror.h, gpasm/special.c,
+    gpasm/processor.c, gpasm/lst.c, gpasm/evaluate.c,
+    gpasm/lst.h, gpasm/coff.c, gpasm/util.c, gpasm/directive.c:
+    error handling reorganization
+
 2012-08-28  Borut Razem  <borutr@users.sourceforge.net>
-  * gpasm/directive.c: terative reimplementation of macro_parms_simple(),
+  * gpasm/directive.c: iterative reimplementation of macro_parms_simple(),
     macro_parms_unique(), macro_parms_ok();
     goto & call: don't check range, page boundary or bad address in
     relocatble sections
