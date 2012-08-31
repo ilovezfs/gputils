@@ -3,6 +3,7 @@
     gpasm/processor.c, gpasm/lst.c, gpasm/evaluate.c,
     gpasm/lst.h, gpasm/coff.c, gpasm/util.c, gpasm/directive.c:
     error handling reorganization
+  * gpasm/directive.c: don't die on symbol redefindefinition
 
 2012-08-28  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c: iterative reimplementation of macro_parms_simple(),

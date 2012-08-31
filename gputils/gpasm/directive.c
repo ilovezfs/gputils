@@ -1268,28 +1268,22 @@ static gpasmVal do_define(gpasmVal r,
   state.lst.line.linetype = dir;
 
   if (arity < 1) {
-    /* FIXME: find a more elegant way to do this */
-    state.pass = 2;
     gpverror(GPE_MISSING_ARGU);
-    exit(1);
-  }
-  assert(arity <= 2);
+  } else {
+    assert(list == parms->tag);
+    p = HEAD(parms);
+    assert(string == p->tag);
+    if ((asm_enabled()) && (!state.mac_prev)) {
+      if (get_symbol(state.stDefines, p->value.string) != NULL) {
+        gpverror(GPE_DUPLAB, p->value.string);
+      } else {
+        current_definition = add_symbol(state.stDefines, p->value.string);
 
-  p = HEAD(parms);
-  if (p->tag == string) {
-    if((asm_enabled()) && (!state.mac_prev)) {
-      if ((get_symbol(state.stDefines, p->value.string) != NULL)
-          && (state.pass == 1)) {
-        /* FIXME: find a more elegant way to do this */
-        state.pass = 2;
-        gpverror(GPE_DUPLAB);
-        exit(1);
-      }
-      current_definition = add_symbol(state.stDefines, p->value.string);
-      if (TAIL(parms)) {
-        struct pnode *p2 = HEAD(TAIL(parms));
-        assert(p2->tag == string);
-        annotate_symbol(current_definition, strdup(p2->value.string));
+        p = TAIL(parms);
+        if (p) {
+          assert(list == p->tag);
+          annotate_symbol(current_definition, p);
+        }
       }
     }
   }
@@ -1816,7 +1810,7 @@ static gpasmVal do_global(gpasmVal r,
               /* make the symbol global */
               var->type = gvt_global;
             } else if (var->previous_type == gvt_extern) {
-              gpverror(GPE_DUPLAB);
+              gpverror(GPE_DUPLAB, s);
             } else {
               snprintf(buf,
                        sizeof(buf),
