@@ -1,3 +1,6 @@
+2012-09-01  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/directive.c: reverted changes introduced by mistake
+
 2012-08-31  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/gperror.c, gpasm/gperror.h, gpasm/special.c,
     gpasm/processor.c, gpasm/lst.c, gpasm/evaluate.c,
