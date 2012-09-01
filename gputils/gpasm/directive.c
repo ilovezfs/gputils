@@ -1262,27 +1262,29 @@ static gpasmVal do_define(gpasmVal r,
                        int arity,
                        struct pnode *parms)
 {
-  struct pnode *p;
-  struct symbol *current_definition;
-
   state.lst.line.linetype = dir;
 
   if (arity < 1) {
     gpverror(GPE_MISSING_ARGU);
   } else {
-    assert(list == parms->tag);
-    p = HEAD(parms);
-    assert(string == p->tag);
-    if ((asm_enabled()) && (!state.mac_prev)) {
-      if (get_symbol(state.stDefines, p->value.string) != NULL) {
-        gpverror(GPE_DUPLAB, p->value.string);
-      } else {
-        current_definition = add_symbol(state.stDefines, p->value.string);
+    struct pnode *p;
 
-        p = TAIL(parms);
-        if (p) {
-          assert(list == p->tag);
-          annotate_symbol(current_definition, p);
+    assert(arity <= 2);
+
+    p = HEAD(parms);
+    if (p->tag == string) {
+      if((asm_enabled()) && (!state.mac_prev)) {
+        if ((get_symbol(state.stDefines, p->value.string) != NULL)
+             && (state.pass == 1)) {
+          gpverror(GPE_DUPLAB, p->value.string);
+        } else {
+          struct symbol *current_definition = add_symbol(state.stDefines, p->value.string);
+
+          if (TAIL(parms)) {
+            struct pnode *p2 = HEAD(TAIL(parms));
+            assert(p2->tag == string);
+            annotate_symbol(current_definition, strdup(p2->value.string));
+          }
         }
       }
     }
