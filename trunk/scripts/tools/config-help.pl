@@ -3163,6 +3163,11 @@ Usage: $PROGRAM [options]
 
             Only make the $out_dir/$css file.
 
+        -v <level> or --verbose <level>
+
+            It provides information on from the own operation.
+            Possible value of the level between 0 and 10. (default: 0)
+
         -h or --help
 
             This text.

@@ -1,3 +1,6 @@
+2012-09-02 Molnar Karoly <proton7@freemail.hu>
+	* tools/config-help.pl: Help unto the "--verbose" switch.
+
 2012-08-24 Molnar Karoly <proton7@freemail.hu>
 	* tools/config-help.pl: Tooltip in "RAM map". Created links to
 	  "SFR map" from "RAM map". More information in "Features",
