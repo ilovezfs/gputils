@@ -1,6 +1,7 @@
 /* Error handling for gpasm
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Craig Franklin
+   Copyright (C) 2012 Borut Razem
 
 This file is part of gputils.
 
@@ -81,35 +82,49 @@ check_code(int code)
   return print;
 }
 
+enum err_type_e {
+  et_error,
+  et_warning,
+  et_message
+};
+
 static void
-verr(const char *type, unsigned int code, const char *message, va_list ap)
+verr(enum err_type_e err_type, unsigned int code, const char *message, va_list ap)
 {
   /* standard output */
   if (!state.quiet) {
     if (state.src)
-      printf("%s:%d:%s[%03d] %s",
-        state.src->name, state.src->line_number, type, code,
-        (('E' == type[0]) ? "  " : ""));
+      printf("%s:%d:%s[%03d] %s", state.src->name, state.src->line_number,
+        (et_error == err_type) ? "Error" : (et_warning == err_type) ? "Warning" : "Message",
+        code,
+        ((et_error == err_type) ? "  " : ""));
     else
       printf("%s[%03d] %s",
-        type, code, (('E' == type[0]) ? "  " : ""));
+        (et_error == err_type) ? "Error" : (et_warning == err_type) ? "Warning" : "Message",
+        code,
+        ((et_error == err_type) ? "  " : ""));
     vprintf(message, ap);
     putchar('\n');
   }
 }
 
 static void
-err(const char *type, unsigned int code, const char *message)
+err(enum err_type_e err_type, unsigned int code, const char *message)
 {
   /* standard output */
   if (!state.quiet) {
     if (state.src)
-      printf("%s:%d:%s[%03d] %s%s\n",
-        state.src->name, state.src->line_number, type, code,
-        (('E' == type[0]) ? "  " : ""), message);
+      printf("%s:%d:%s[%03d] %s%s\n", state.src->name, state.src->line_number,
+        (et_error == err_type) ? "Error" : (et_warning == err_type) ? "Warning" : "Message",
+        code,
+        ((et_error == err_type) ? "  " : ""),
+        message);
     else
       printf("%s[%03d] %s%s\n",
-        type, code, (('E' == type[0]) ? "  " : ""), message);
+        (et_error == err_type) ? "Error" : (et_warning == err_type) ? "Warning" : "Message",
+        code,
+        ((et_error == err_type) ? "  " : ""),
+        message);
   }
 }
 
@@ -118,7 +133,7 @@ gp_geterror(unsigned int code)
 {
   switch(code) {
   case GPE_BADCHAR:
-    return "Illegal character.";
+    return "Illegal character (%c).";
   case GPE_OPENPAR:
     return "Unmatched (";
   case GPE_CLOSEPAR:
@@ -200,6 +215,15 @@ gp_geterror(unsigned int code)
   case GPE_RES_ODD_PIC16EA:
     return "RES directive cannot reserve odd number of bytes in PIC18 absolute mode.";
   case GPE_UNKNOWN:
+
+  /* gputils special errors */
+  case GPE_INTERNAL:
+    return "Internal error: %s";
+  case GPE_PARSER:
+    return "Parser error: %s";
+  case GPE_SCANNER:
+    return "Scanner error: %s";
+
   default:
     return "UNKNOWN";
   }
@@ -213,7 +237,7 @@ gperror(unsigned int code, char *message)
       message = gp_geterror(code);
 
     /* standard output */
-    err("Error", code, message);
+    err(et_error, code, message);
 
     /* list file output */
     lst_line("Error[%03d]  : %s", code, message);
@@ -231,7 +255,7 @@ gpverror(unsigned int code, ...)
 
     /* standard output */
     va_start(ap, code);
-    verr("Error", code, message, ap);
+    verr(et_error, code, message, ap);
     va_end(ap);
 
     /* list file output */
@@ -301,7 +325,7 @@ gpwarning(unsigned int code, char *message)
         message = gp_getwarning(code);
 
       /* standard output */
-      err("Warning", code, message);
+      err(et_warning, code, message);
 
       /* list file output */
       lst_line("Warning[%03d]: %s", code, message);
@@ -323,7 +347,7 @@ gpvwarning(unsigned int code, ...)
 
       /* standard output */
       va_start(ap, code);
-      verr("Warning", code, message, ap);
+      verr(et_warning, code, message, ap);
       va_end(ap);
 
       va_start(ap, code);
@@ -376,8 +400,7 @@ gp_getmessage(unsigned int code)
 }
 
 void
-gpmessage(unsigned int code,
-         char *message)
+gpmessage(unsigned int code, char *message)
 {
   if (state.pass==2) {
     if ((state.error_level == 0) && check_code(code)){
@@ -385,7 +408,7 @@ gpmessage(unsigned int code,
         message = gp_getmessage(code);
 
       /* standard output */
-      err("Message", code, message);
+      err(et_message, code, message);
 
       /* list file output */
       lst_line("Message[%03d]: %s", code, message);
@@ -408,7 +431,7 @@ gpvmessage(unsigned int code, ...)
 
       /* standard output */
       va_start(ap, code);
-      verr("Message", code, message, ap);
+      verr(et_message, code, message, ap);
       va_end(ap);
 
       /* list file output */

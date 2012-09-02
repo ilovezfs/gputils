@@ -34,7 +34,7 @@ Boston, MA 02111-1307, USA.  */
 
 void yyerror(char *message)
 {
-  gperror(103, message);
+  gpverror(GPE_PARSER, message);
 }
 
 int yylex(void);
@@ -195,7 +195,6 @@ void next_line(int value)
     default:
       break;
   }
-
 }
 
 
@@ -386,7 +385,7 @@ line:
                  we're in pass 2. */
               if (h &&
                   !((h->pass == 1) && (state.pass == 2))) {
-                gperror(GPE_DUPLICATE_MACRO, NULL);
+                gpverror(GPE_DUPLICATE_MACRO);
               } else {
                 if (!mac)
                   mac = add_symbol(state.stMacros, $1);
@@ -424,7 +423,7 @@ line:
                   set_global($1, $2, PERMANENT, gvt_address);
                 break;
               case dir:
-                gperror(GPE_ILLEGAL_LABEL, NULL);
+                gpverror(GPE_ILLEGAL_LABEL);
                 break;
               default:
                 break;
@@ -439,7 +438,7 @@ line:
           if (state.mac_head) {
             /* This is a macro definition, but the label was missing */
             state.mac_head = NULL;
-            gperror(GPE_NO_MACRO_NAME, NULL);
+            gpverror(GPE_NO_MACRO_NAME);
           } else {
             if (state.found_end) {
               switch (state.src->type) {

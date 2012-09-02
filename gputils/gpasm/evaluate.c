@@ -159,7 +159,7 @@ int can_evaluate(struct pnode *p)
     return 1;
   case offset:
     if (state.extended_pic16e == false) {
-      gperror(GPE_BADCHAR, "Illegal character ([)");
+      gpverror(GPE_BADCHAR, '[');
     }
     return can_evaluate(p->value.offset);
   case symbol:
@@ -224,7 +224,7 @@ int can_evaluate_value(struct pnode *p)
 
   case offset:
     if (state.extended_pic16e == false) {
-      gperror(GPE_BADCHAR, "Illegal character ([)");
+      gpverror(GPE_BADCHAR, '[');
     }
     return can_evaluate_value(p->value.offset);
 
@@ -383,7 +383,7 @@ gpasmVal evaluate(struct pnode *p)
     case LOGICAL_AND:        return p0 && p1;
     case LOGICAL_OR:         return p0 || p1;
     case '=':
-      gperror(GPE_BADCHAR, "Illegal character (=)");
+      gpverror(GPE_BADCHAR, '=');
       return 0;
     default:
       assert(0); /* Unhandled binary operator */
