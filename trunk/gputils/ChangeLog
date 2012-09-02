@@ -1,3 +1,7 @@
+2012-09-02  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/gperror.c, gpasm/gperror.h, gpasm/scan.l, gpasm/parse.y,
+    gpasm/evaluate.c: error handling reorganization, part 2
+
 2012-09-01  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c: reverted changes introduced by mistake
 

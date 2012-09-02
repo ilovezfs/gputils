@@ -77,12 +77,12 @@ int force_ident;   /* Used to force numbers to identifiers for processor names *
       if (c == '\n') \
         buf[n++] = (char) c; \
       if (c == EOF && ferror(yyin)) \
-        YY_FATAL_ERROR("input in flex scanner failed"); \
+        YY_FATAL_ERROR("Input in flex scanner failed."); \
       result = n; \
     } \
   else \
     { \
-      YY_FATAL_ERROR("internal error: interactive scanner should be used"); \
+      YY_FATAL_ERROR("Interactive scanner should be used."); \
       result = 0; \
     }
 
@@ -243,7 +243,7 @@ processor                {
                              case directives:
                                gpwarning(GPW_DIR_COLUMN_ONE, NULL);
                                if (has_collon)
-                                 gperror(GPE_BADCHAR, "Illegal character (:)");
+                                 gpverror(GPE_BADCHAR, ':');
                                return IDENTIFIER;
                                break;
                              case macros:
@@ -257,8 +257,7 @@ processor                {
                                  } else {
                                    gpwarning(GPW_MACRO_COLUMN_ONE, NULL);
                                    if (has_collon)
-                                    gperror(GPE_BADCHAR,
-                                             "Illegal character (:)");
+                                    gpverror(GPE_BADCHAR, ':');
                                    return IDENTIFIER;
                                  }
                                } else {
@@ -271,7 +270,7 @@ processor                {
                              case opcodes:
                                gpwarning(GPW_OP_COLUMN_ONE, NULL);
                                if (has_collon)
-                                 gperror(GPE_BADCHAR, "Illegal character (:)");
+                                 gpverror(GPE_BADCHAR, ':');
                                return IDENTIFIER;
                                break;
                              case unknown_type:
@@ -546,11 +545,11 @@ void open_src(const char *name, int isinclude)
       char complaint[BUFSIZ];
 
       snprintf(complaint, sizeof(complaint),
-               "Unable to open file \"%s\" - %s",
+               "Unable to open file \"%s\" - %s.",
                name,
                strerror(errno));
       state.pass = 2; /* Ensure error actually gets displayed */
-      gperror(GPE_UNKNOWN, complaint);
+      gpverror(GPE_INTERNAL, complaint);
     } else {
       perror(name);
     }
@@ -690,7 +689,7 @@ void close_file(void)
     state.stTop = pop_symbol_table(state.stTop);
     state.stTopDefines = pop_symbol_table(state.stTopDefines);
     if (state.src->astack != state.astack) {
-      gperror(GPE_ILLEGAL_NESTING, NULL);
+      gpverror(GPE_ILLEGAL_NESTING);
     }
     assert(state.stTop != NULL);
     assert(state.stTopDefines != NULL);
@@ -744,7 +743,7 @@ static int found_eof(void)
   if (state.src->type == src_while) {
     if (maybe_evaluate(state.src->h->parms)) {
       if (state.src->loop_number > 255) {
-        gperror(GPE_BAD_WHILE_LOOP, NULL);
+        gpverror(GPE_BAD_WHILE_LOOP);
       } else {
         /* repeat the while loop */
         repeat_while();

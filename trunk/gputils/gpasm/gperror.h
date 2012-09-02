@@ -1,6 +1,7 @@
 /* Error handling
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Craig Franklin
+   Copyright (C) 2012 Borut Razem
 
 This file is part of gputils.
 
@@ -96,7 +97,12 @@ enum GPE_codes {
   GPE_CONFIG_UNKNOWN   = 176,
   GPE_CONFIG_usCONFIG  = 177,
   GPE_RES_ODD_PIC16EA  = 180,
-  GPE_UNKNOWN
+  GPE_UNKNOWN          = 181,
+
+  /* gputils special errors */
+  GPE_INTERNAL         = 901,  /* Internal error */
+  GPE_PARSER           = 902,  /* Parser error */
+  GPE_SCANNER          = 903   /* Scanner error */
 };
 
 /* Warning codes
