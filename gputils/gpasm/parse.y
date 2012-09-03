@@ -123,43 +123,30 @@ int return_op(int operation);
 
 void next_line(int value)
 {
-  char l[BUFSIZ];
-  char *e = l;
-
   if ((state.src->type == src_macro) ||
       (state.src->type == src_while)) {
     /* while loops can be defined inside a macro or nested */
     if (state.mac_prev) {
       state.lst.line.linetype = none;
       if (state.mac_body)
-        state.mac_body->src_line = strdup(state.src->lst.m->src_line);
+        state.mac_body->src_line = strdup(state.src->m->src_line);
     }
 
     if (((state.src->type == src_while) || (state.lst.expand)) &&
         (state.pass == 2)) {
-      assert(state.src->lst.m->src_line != NULL);
-      lst_format_line(state.src->lst.m->src_line, value);
+      lst_format_line(state.curr_src_line.line, value);
     }
 
-    if (state.src->lst.m->next) {
-      state.src->lst.m = state.src->lst.m->next;
-    }
-  } else if ((state.src->type == src_file) &&
-             (state.src->lst.f != NULL)) {
-    char *s;
-
-    s = fgets(l, BUFSIZ, state.src->lst.f);
-    assert(s == l);
-    l[strlen(l) - 1] = '\0';    /* Eat the trailing newline */
-
+    state.src->m = state.src->m->next;
+  } else if (state.src->type == src_file) {
     if (state.mac_prev) {
       state.lst.line.linetype = none;
       if (state.mac_body)
-        state.mac_body->src_line = strdup(l);
+        state.mac_body->src_line = strdup(state.curr_src_line.line);
     }
 
     if (state.pass == 2) {
-      lst_format_line(e, value);
+      lst_format_line(state.curr_src_line.line, value);
     }
   }
 

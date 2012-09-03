@@ -1,3 +1,8 @@
+2012-09-03  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/scan.l, gpasm/parse.y, gpasm/macro.c, gpasm/macro.h,
+    gpasm/gpasm.h.in: cache the source line before tokenization
+    so there is no need to re-read the line for source file
+
 2012-09-02  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/gperror.c, gpasm/gperror.h, gpasm/scan.l, gpasm/parse.y,
     gpasm/evaluate.c: error handling reorganization, part 2
