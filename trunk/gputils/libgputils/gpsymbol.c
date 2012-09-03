@@ -179,7 +179,7 @@ struct symbol *get_symbol_len(struct symbol_table *table, const char *name, size
     int index = hashfunc_len(table, name, len);
 
     r = table->hash_table[index];
-    while (r && ((*table->compare_len)(name, r->name, len) != 0))
+    while (r && (strlen(r->name) != len || (*table->compare_len)(name, r->name, len) != 0))
       r = r->next;
 
     /* If r is still NULL, we didn't match.  Try the prev table on the stack */
