@@ -66,40 +66,94 @@ static int quoted; /* Used to prevent #define expansion in ifdef and
 int force_decimal; /* Used to force radix to decimal for some directives */
 int force_ident;   /* Used to force numbers to identifiers for processor names */
 
-#define GP_INPUT(buf,result,max_size) \
-  if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
-    { \
-      int c = '*'; \
-      size_t n; \
-      for ( n = 0; n < max_size && \
-        (c = getc(yyin)) != EOF && c != '\n'; ++n ) \
-        buf[n] = (char) c; \
-      if (c == '\n') \
-        buf[n++] = (char) c; \
-      if (c == EOF && ferror(yyin)) \
-        YY_FATAL_ERROR("Input in flex scanner failed."); \
-      result = n; \
-    } \
-  else \
-    { \
-      YY_FATAL_ERROR("Interactive scanner should be used."); \
-      result = 0; \
+static void
+set_source_line(const char *line, size_t len, struct src_line_s *src_line)
+{
+  if (!src_line->line)
+    {
+      src_line->size = 128;
+      src_line->line = malloc(src_line->size);
     }
+  if (src_line->size < len)  /* newline replaced with '\0' */
+    {
+      do
+        {
+          src_line->size *= 2;
+        }
+      while (src_line->size < len);  /* newline replaced with '\0' */
+      src_line->line = realloc(src_line->line, src_line->size);
+    }
+  if (len > 0)
+    {
+      memcpy(src_line->line, line, len - 1); /* no newline */
+      src_line->line[len - 1] = '\0';
+    }
+  else
+    src_line->line[0] = '\0';
+}
 
-#define YY_INPUT(buf,result,max_size) \
-  { \
-    GP_INPUT(buf,result,max_size); \
-    if (result) \
-      { \
-        state.src->last_char_is_nl = (buf[result - 1] == '\n'); \
-      } \
-    else if (!state.src->last_char_is_nl) \
-      { \
-        *buf = '\n'; \
-        result = 1; \
-        state.src->last_char_is_nl = true; \
-      } \
-  }
+static inline size_t
+gp_input(char *buf, size_t max_size)
+{
+  if (src_file == state.src->type)
+    {
+      if (YY_CURRENT_BUFFER_LVALUE->yy_is_interactive)
+        {
+          int c = '*';
+          size_t n;
+          for (n = 0; n < max_size &&
+            (c = getc(yyin)) != EOF && c != '\n'; ++n)
+            buf[n] = (char) c;
+          if (c == '\n')
+            buf[n++] = (char) c;
+          if (c == EOF && ferror(yyin))
+            gpverror(GPE_SCANNER, "Input in flex scanner failed");
+          return n;
+        }
+      else
+        {
+          gpverror(GPE_SCANNER, "Interactive scanner should be used");
+          return 0;
+        }
+    }
+  else
+    {
+      if (state.src->m)
+        {
+          size_t n = strlen(state.src->m->src_line);
+          if (n > max_size - 1)
+            n = max_size - 2;
+          strncpy(buf, state.src->m->src_line, n);
+          buf[n++] = '\n'; /* add newline */
+          return n;
+        }
+      else
+        {
+          buf[0] = buf[1] = YY_END_OF_BUFFER_CHAR;
+          return 0;
+        }
+    }
+}
+
+static inline size_t
+gp_yyinput(char *buf, size_t max_size)
+{
+  size_t result = gp_input(buf, max_size);
+  if (result)
+    {
+      set_source_line(buf, result, &state.curr_src_line);
+      state.src->last_char_is_nl = (buf[result - 1] == '\n');
+    }
+  else if (!state.src->last_char_is_nl)
+    {
+      *buf = '\n';
+      result = 1;
+      state.src->last_char_is_nl = true;
+    }
+  return result;
+}
+
+#define YY_INPUT(buf, result, max_size) result = gp_yyinput(buf, max_size)
 %}
 
 IDENT  [.]?[a-z_\x80-\xff?@#][a-z_0-9\x80-\xff.?@#]*
@@ -213,7 +267,7 @@ processor                {
 ^{IDENT}#v\(             {
                            char *symbol;
 
-                           yytext[strlen(yytext) - 3] = '\0';
+                           yytext[yyleng - 3] = '\0';
 
                            symbol = check_defines(yytext);
                            if (symbol) {
@@ -229,8 +283,8 @@ processor                {
                            struct macro_head *h;
                            char *subst;
 
-                           if (yytext[strlen(yytext) - 1] == ':') {
-                             yytext[strlen(yytext) - 1] = '\0';
+                           if (yytext[yyleng - 1] == ':') {
+                             yytext[yyleng - 1] = '\0';
                              has_collon = 1;
                            }
                            yylval.s = strdup(yytext);
@@ -282,7 +336,7 @@ processor                {
 {IDENT}#v\(              {
                            char *symbol;
 
-                           yytext[strlen(yytext) - 3] = '\0';
+                           yytext[yyleng - 3] = '\0';
 
                            symbol = check_defines(yytext);
                            if (symbol) {
@@ -295,11 +349,11 @@ processor                {
 \)[a-z_0-9\x80-\xff?.]+  {
                            char *symbol;
 
-                           symbol = check_defines(yytext+1);
+                           symbol = check_defines(yytext + 1);
                            if (symbol) {
                              yylval.s = strdup(symbol);
                            } else {
-                             yylval.s = strdup(yytext+1);
+                             yylval.s = strdup(yytext + 1);
                            }
                            return VAR_END;
                          }
@@ -536,8 +590,6 @@ void open_src(const char *name, int isinclude)
         gpwarning(GPW_UNKNOWN, "found lower case match for include filename");
     }
   }
-  if(new->f)
-    new->lst.f = fopen(new->name, "rt");
 
   yyin = new->f;
   if (new->f == NULL) {
@@ -591,18 +643,11 @@ void open_src(const char *name, int isinclude)
 void execute_macro(struct macro_head *h, int is_while)
 {
   struct source_context *new = malloc(sizeof(*new));
-  yy_size_t macro_src_size = 0;
-  char *macro_src;
 
   assert(state.src != NULL);
   state.src->yybuf = YY_CURRENT_BUFFER;
   /* store the stack so it can be returned when the macro is complete */
   state.src->astack = state.astack;
-
-  macro_src = make_macro_buffer(h);
-  macro_src_size = strlen(macro_src) + 2;
-  /* Initialize the flex end marker */
-  memset(macro_src + macro_src_size - 2, 0, 2);
 
   /* create new source_context */
   new->name = strdup(h->src_name);
@@ -616,33 +661,27 @@ void execute_macro(struct macro_head *h, int is_while)
   new->file_symbol = h->file_symbol;
   new->f = NULL;
   new->h = h;
-  new->lst.m = h->body;
+  new->m = h->body;
 
   new->prev = state.src;
   state.src = new;
 
   state.src->fc = add_file(ft_src, new->name); /* scan list for fc */
-  yy_scan_buffer(macro_src, macro_src_size);
+  yy_switch_to_buffer(yy_create_buffer(NULL, YY_BUF_SIZE));
 }
 
 void repeat_while(void)
 {
   struct macro_head *h;
-  yy_size_t macro_src_size = 0;
-  char *macro_src;
 
   h = state.src->h;
 
-  /* rebuild the macro buffer, because it may have been modified */
-  macro_src = make_macro_buffer(h);
-  macro_src_size = strlen(macro_src) + 2;
-
   state.src->line_number = h->line_number + 1;
   state.src->loop_number++;
-  state.src->lst.m = h->body;
+  state.src->m = h->body;
 
   yy_delete_buffer(YY_CURRENT_BUFFER);
-  yy_scan_buffer(macro_src, macro_src_size);
+  yy_switch_to_buffer(yy_create_buffer(NULL, YY_BUF_SIZE));
 }
 
 static void push_string(char *str)
@@ -659,7 +698,6 @@ static void push_string(char *str)
   new->file_symbol = state.src->file_symbol;
   new->f = NULL;
   new->h = NULL;
-  new->lst.f = NULL;
   new->fc = add_file(ft_src, new->name); /* scan list for fc */
 
   yy_scan_string(str);
@@ -679,8 +717,6 @@ void close_file(void)
     if (old->f != NULL) {
       fclose(old->f);
     }
-    if (old->lst.f != NULL)
-      fclose(old->lst.f);
     free(old->name);
     if (!state.debug_info) {
       coff_add_eofsym();
