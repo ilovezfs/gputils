@@ -59,7 +59,7 @@ enum identtype identify(char *);
 static void push_string(char *str);
 static int found_eof(void);
 
-static char *check_defines(char *symbol);
+static char *check_defines(char *symbol, size_t len);
 
 static int quoted; /* Used to prevent #define expansion in ifdef and
                       ifndef... */
@@ -267,13 +267,11 @@ processor                {
 ^{IDENT}#v\(             {
                            char *symbol;
 
-                           yytext[yyleng - 3] = '\0';
-
-                           symbol = check_defines(yytext);
+                           symbol = check_defines(yytext, yyleng - 3);
                            if (symbol) {
                              yylval.s = strdup(symbol);
                            } else {
-                             yylval.s = strdup(yytext);
+                             yylval.s = strndup(yytext, yyleng - 3);
                            }
                            return VARLAB_BEGIN;
                          }
@@ -282,15 +280,18 @@ processor                {
                            struct symbol *sym;
                            struct macro_head *h;
                            char *subst;
+                           size_t len;
 
                            if (yytext[yyleng - 1] == ':') {
-                             yytext[yyleng - 1] = '\0';
+                             len = yyleng - 1;
                              has_collon = 1;
-                           }
-                           yylval.s = strdup(yytext);
-                           switch(identify(yytext)) {
+                           } else
+                             len = yyleng;
+
+                           yylval.s = strndup(yytext, len);
+                           switch(identify(yylval.s)) {
                              case defines:
-                               sym = get_symbol(state.stTopDefines, yytext);
+                               sym = get_symbol_len(state.stTopDefines, yytext, len);
                                subst = get_symbol_annotation(sym);
                                push_string(subst);
                                break;
@@ -304,7 +305,7 @@ processor                {
                                if(asm_enabled()) {
                                  /* make sure macro definition on second pass
                                     is ignored */
-                                 sym = get_symbol(state.stMacros, yytext);
+                                 sym = get_symbol_len(state.stMacros, yytext, len);
                                  h = get_symbol_annotation(sym);
                                  if (h->line_number == state.src->line_number) {
                                    return LABEL;
@@ -336,20 +337,18 @@ processor                {
 {IDENT}#v\(              {
                            char *symbol;
 
-                           yytext[yyleng - 3] = '\0';
-
-                           symbol = check_defines(yytext);
+                           symbol = check_defines(yytext, yyleng - 3);
                            if (symbol) {
                              yylval.s = strdup(symbol);
                            } else {
-                             yylval.s = strdup(yytext);
+                             yylval.s = strndup(yytext, yyleng - 3);
                            }
                            return VAR_BEGIN;
                          }
 \)[a-z_0-9\x80-\xff?.]+  {
                            char *symbol;
 
-                           symbol = check_defines(yytext + 1);
+                           symbol = check_defines(yytext + 1, yyleng - 1);
                            if (symbol) {
                              yylval.s = strdup(symbol);
                            } else {
@@ -360,7 +359,7 @@ processor                {
 {IDENT}                  {
                            char *symbol;
 
-                           symbol = check_defines(yytext);
+                           symbol = check_defines(yytext, yyleng);
                            if (symbol) {
                              char buffer[BUFSIZ];
 
@@ -460,12 +459,15 @@ h'-?{NUMCHAR}+'          {
                            }
                          }
 <INITIAL,bquote>\"{STR_QCHAR}*\"?        {
-                           char *pc = &yytext[yyleng - 1];
-                           if ((yyleng > 1) && (*pc == '"'))
-                             *pc = '\0';
-                           else
+                           size_t len;
+
+                           if (yyleng > 1 && yytext[yyleng - 1] == '"') {
+                             len = yyleng - 2;
+                           } else {
                              gpwarning(GPW_MISSING_QUOTE, NULL);
-                           yylval.s = strdup(yytext + 1);
+                             len = yyleng - 1;
+                           }
+                           yylval.s = strndup(yytext + 1, len);
                            BEGIN(INITIAL);
                            return STRING;
                          }
@@ -479,8 +481,7 @@ A'{STR_QCHAR}'           {
                            return NUMBER;
                          }
 <bquote>\<{STR_BCHAR}*\> {
-                           yytext[yyleng - 1] = '\0';
-                           yylval.s = strdup(&yytext[1]);
+                           yylval.s = strndup(yytext + 1, yyleng - 2);
                            BEGIN(INITIAL);
                            return STRING;
                          }
@@ -492,8 +493,7 @@ A'{STR_QCHAR}'           {
                          }
 <lnquote>\"{STR_QCHAR}*\" {
                            /* if valid, must match with length >= unquoted token below */
-                           yytext[yyleng - 1] = '\0';
-                           yylval.s = strdup(&yytext[1]);
+                           yylval.s = strndup(yytext + 1, yyleng - 2);
                            BEGIN(INITIAL);
                            return STRING;
                          }
@@ -547,7 +547,7 @@ A'{STR_QCHAR}'           {
 %%
 
 static void
-search_pathes(struct source_context *new, const char *name)
+search_paths(struct source_context *new, const char *name)
 {
   char tryname[PATH_MAX + 1];
   int i;
@@ -563,7 +563,8 @@ search_pathes(struct source_context *new, const char *name)
   }
 }
 
-void open_src(const char *name, int isinclude)
+void
+open_src(const char *name, int isinclude)
 {
   extern FILE *yyin;
   struct source_context *new = malloc(sizeof(*new));
@@ -576,14 +577,14 @@ void open_src(const char *name, int isinclude)
   else if(isinclude && (strchr(name, PATH_CHAR) == 0)) {
     /* If include file and no PATH_CHAR in name, try searching include
        path */
-    search_pathes(new, name);
+    search_paths(new, name);
 
     if (new->f == NULL) {
       /* We didn't find a match so check for lower case.  This is mainly for
          Microchip examples and some includes in which filenames were written
          without regard to case */
       char *lower_case_name = gp_lower_case(name);
-      search_pathes(new, lower_case_name);
+      search_paths(new, lower_case_name);
       free(lower_case_name);
 
       if (new->f != NULL)
@@ -640,7 +641,8 @@ void open_src(const char *name, int isinclude)
   state.found_end = 0;
 }
 
-void execute_macro(struct macro_head *h, int is_while)
+void
+execute_macro(struct macro_head *h, int is_while)
 {
   struct source_context *new = malloc(sizeof(*new));
 
@@ -670,7 +672,8 @@ void execute_macro(struct macro_head *h, int is_while)
   yy_switch_to_buffer(yy_create_buffer(NULL, YY_BUF_SIZE));
 }
 
-void repeat_while(void)
+void
+repeat_while(void)
 {
   struct macro_head *h;
 
@@ -684,7 +687,8 @@ void repeat_while(void)
   yy_switch_to_buffer(yy_create_buffer(NULL, YY_BUF_SIZE));
 }
 
-static void push_string(char *str)
+static
+void push_string(char *str)
 {
   struct source_context *new = malloc(sizeof(*new));
 
@@ -706,7 +710,8 @@ static void push_string(char *str)
   state.src = new;
 }
 
-void close_file(void)
+void
+close_file(void)
 {
   struct source_context *old;
 
@@ -736,7 +741,8 @@ void close_file(void)
   free(old);
 }
 
-void execute_exitm(void)
+void
+execute_exitm(void)
 {
   struct amode *previous;
   struct amode *old;
@@ -758,7 +764,8 @@ void execute_exitm(void)
 }
 
 /* found end directive, close all files and stop the parser */
-int found_end(void)
+int
+found_end(void)
 {
   /* close all open files */
   while(state.src) {
@@ -772,7 +779,8 @@ int found_end(void)
   return 1;
 }
 
-static int found_eof(void)
+static int
+found_eof(void)
 {
   int terminate = 0;
 
@@ -802,7 +810,8 @@ static int found_eof(void)
   return terminate;
 }
 
-enum identtype identify(char *text)
+enum identtype 
+identify(char *text)
 {
   enum identtype type;
   struct symbol *sym;
@@ -825,18 +834,18 @@ enum identtype identify(char *text)
 }
 
 static char *
-check_defines(char *symbol)
+check_defines(char *symbol, size_t len)
 {
   struct symbol *sym;
   char *subst = NULL;
 
   /* If not quoted, check for #define substitution */
   if (!quoted &&
-     (sym = get_symbol(state.stTopDefines, symbol)) != NULL) {
+     (sym = get_symbol_len(state.stTopDefines, symbol, len)) != NULL) {
     subst = get_symbol_annotation(sym);
     if (subst == NULL)
       subst = "";
-    if (strcmp(symbol, subst) == 0) {
+    if (strlen(subst) == len && 0 == strncmp(symbol, subst, len)) {
       /* check for a bad subsitution */
       subst = NULL;
     }
