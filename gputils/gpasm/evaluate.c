@@ -176,11 +176,7 @@ int can_evaluate(struct pnode *p)
         s = get_symbol(state.stTop, p->value.symbol);
 
         if (s == NULL) {
-          snprintf(buf,
-                   sizeof(buf),
-                   "Symbol not previously defined (%s).",
-                   p->value.symbol);
-          gperror(GPE_NOSYM, buf);
+          gpverror(GPE_NOSYM, p->value.symbol);
         } else {
           var = get_symbol_annotation(s);
 
@@ -274,9 +270,7 @@ gpasmVal evaluate(struct pnode *p)
 
     s = get_symbol(state.stTop, string);
     if (s == NULL) {
-      char buf[BUFSIZ];
-      snprintf(buf, sizeof(buf), "Symbol not previously defined (%s).", string);
-      gperror(GPE_NOSYM, buf);
+      gpverror(GPE_NOSYM, string);
       return 0;
     } else {
       var = get_symbol_annotation(s);

@@ -1,3 +1,7 @@
+2012-09-06  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/gperror.c, gpasm/directive.c, gpasm/expression.c:
+    GPE_NOSYM gperror to gpverror conversion
+
 2012-09-03  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/scan.l, gpasm/parse.y, gpasm/macro.c, gpasm/macro.h,
     gpasm/gpasm.h.in: cache the source line before tokenization
