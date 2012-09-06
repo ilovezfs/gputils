@@ -139,7 +139,7 @@ gp_geterror(unsigned int code)
   case GPE_CLOSEPAR:
     return "Unmatched )";
   case GPE_NOSYM:
-    return "Symbol not previously defined.";
+    return "Symbol not previously defined (%s)";
   case GPE_DIVBY0:
     return "Divide by zero.";
   case GPE_DUPLAB:
