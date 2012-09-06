@@ -100,9 +100,9 @@ enum GPE_codes {
   GPE_UNKNOWN          = 181,
 
   /* gputils special errors */
-  GPE_INTERNAL         = 901,  /* Internal error */
-  GPE_PARSER           = 902,  /* Parser error */
-  GPE_SCANNER          = 903   /* Scanner error */
+  GPE_INTERNAL         = 1101,  /* Internal error */
+  GPE_PARSER           = 1102,  /* Parser error */
+  GPE_SCANNER          = 1103   /* Scanner error */
 };
 
 /* Warning codes
@@ -133,7 +133,10 @@ enum GPW_codes {
   GPW_NOT_RECOMMENDED  = 224,
   GPW_WORD_ALIGNED     = 226,
   GPW_INVALID_ROM      = 228,
-  GPW_UNKNOWN          = 231
+  GPW_UNKNOWN          = 231,
+
+  /* gputils special warnings */
+  GPW_BANK_PAGE_SEL_AFTER_SKIP = 1201 /* %s after skip instruction. I this really what you intended? */
 };
 
 /* Message codes
