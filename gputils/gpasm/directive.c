@@ -40,6 +40,8 @@ Boston, MA 02111-1307, USA.  */
 
 extern struct pnode *mk_constant(int value);
 
+static int prev_btfsx = 0;
+
 static unsigned short checkwrite(unsigned short value)
 {
   unsigned short insn;
@@ -442,6 +444,9 @@ static gpasmVal do_bankisel(gpasmVal r,
     return r;
   }
 
+  if (prev_btfsx)
+    gpvwarning(GPW_BANK_PAGE_SEL_AFTER_SKIP, "Bankisel");
+
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (state.mode == absolute) {
@@ -478,6 +483,9 @@ static gpasmVal do_banksel(gpasmVal r,
     gpverror(GPE_UNDEF_PROC);
     return r;
   }
+
+  if (prev_btfsx)
+    gpvwarning(GPW_BANK_PAGE_SEL_AFTER_SKIP, "Banksel");
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
@@ -2559,6 +2567,9 @@ static gpasmVal do_pagesel(gpasmVal r,
                            int arity,
                            struct pnode *parms)
 {
+  if (prev_btfsx)
+    gpvwarning(GPW_BANK_PAGE_SEL_AFTER_SKIP, "Pagesel");
+
   return _do_pagesel(r, name, arity, parms, RELOCT_PAGESEL_BITS);
 }
 
@@ -2567,6 +2578,9 @@ static gpasmVal do_pageselw(gpasmVal r,
                            int arity,
                            struct pnode *parms)
 {
+  if (prev_btfsx)
+    gpvwarning(GPW_BANK_PAGE_SEL_AFTER_SKIP, "Pageselw");
+
   return _do_pagesel(r, name, arity, parms, RELOCT_PAGESEL_WREG);
 }
 
@@ -3143,6 +3157,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
   struct pnode *p;
   int file;             /* register file address, if applicable */
   gpasmVal r;           /* Return value */
+  int is_btfsx = 0;
 
   /* We want to have r as the value to assign to label */
   r = IS_RAM_ORG ? state.org : gp_processor_byte_to_org(state.device.class, state.org);
@@ -3157,7 +3172,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
     /* Instructions in data sections are not allowed */
     if (asm_enabled() && i->class != INSN_CLASS_FUNC && IS_RAM_ORG) {
       gpverror(GPE_WRONG_SECTION);
-      return r;
+      goto leave;
     }
 
     /* Interpret the instruction if assembly is enabled, or if it's a
@@ -3691,6 +3706,9 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             if (!((0 <= bit) && (bit <= 7)))
               gpvwarning(GPW_RANGE);
             file_ok(file);
+            if (0 == strncasecmp(i->name, "btfs", 4))
+              is_btfsx = 1;
+
             emit(i->opcode | ((bit & 7) << 5) |(file & 0x1f));
           }
         }
@@ -3709,6 +3727,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             if (!((0 <= bit) && (bit <= 7)))
               gpvwarning(GPW_RANGE);
             file_ok(file);
+            if (0 == strncasecmp(i->name, "btfs", 4))
+              is_btfsx = 1;
             emit(i->opcode | ((bit & 7) << 8) | (file & 0xff));
           }
         }
@@ -3828,6 +3848,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             if (!((0 <= bit) && (bit <= 7)))
               gpvwarning(GPW_RANGE);
             file_ok(file);
+            if (0 == strncasecmp(i->name, "btfs", 4))
+              is_btfsx = 1;
             emit(i->opcode | ((bit & 7) << 7) | (file & 0x7f));
           }
         }
@@ -3942,6 +3964,8 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           if (!((0 <= bit) && (bit <= 7)))
             gpvwarning(GPW_RANGE);
           file_ok(file);
+          if (0 == strncasecmp(i->name, "btfs", 4))
+            is_btfsx = 1;
           emit(i->opcode | ( a << 8) | ((bit & 7) << 9) | (file & 0xff));
         }
         break;
@@ -4213,6 +4237,9 @@ gpasmVal do_insn(char *name, struct pnode *parms)
       }
     }
   }
+
+leave:
+  prev_btfsx = is_btfsx;
 
   return r;
 }

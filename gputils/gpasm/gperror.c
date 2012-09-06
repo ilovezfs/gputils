@@ -311,6 +311,11 @@ gp_getwarning(unsigned int code)
     return "Destination address must be word aligned.";
   case GPW_INVALID_ROM:
     return "Invalid ROM location specified.";
+
+  /* gputils special warnings */
+  case GPW_BANK_PAGE_SEL_AFTER_SKIP:
+    return "%s after skip instruction. I this really what you intended?";
+
   default:
     return "UNKNOWN";
   }
