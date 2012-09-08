@@ -54,13 +54,13 @@ AC_TYPE_SIZE_T
 AC_STRUCT_TM
 
 # Checks for library functions.
-AC_CHECK_FUNCS([strcasecmp stricmp])
+AC_CHECK_FUNCS([strcasecmp strncasecmp stricmp strnicmp])
 
 # Check for functions to compile into libiberty (getopt is always compiled).
 IBERTYOBJS=
-AC_CHECK_FUNC(bzero, , [IBERTYOBJS="$IBERTYOBJS bzero.o"])
 AC_CHECK_FUNC(vsnprintf, , [IBERTYOBJS="$IBERTYOBJS vasprintf.o vsnprintf.o"])
 AC_CHECK_FUNC(snprintf, , [IBERTYOBJS="$IBERTYOBJS snprintf.o"])
+AC_CHECK_FUNC(strndup, , [IBERTYOBJS="$IBERTYOBJS strndup.o"])
 
 AM_CFLAGS=
 AM_LDFLAGS=
