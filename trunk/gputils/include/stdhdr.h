@@ -58,6 +58,17 @@ Boston, MA 02111-1307, USA.  */
 #endif
 #endif
 
+#ifndef HAVE_STRNCASECMP
+#ifdef HAVE_STRNICMP
+#define strncasecmp strnicmp
+#endif
+#endif
+
+#ifndef HAVE_STRNDUP
+/* no system strndup: use the one iplemented in libiberty */
+char *strndup (const char *s, size_t n);
+#endif
+
 #if defined(HAVE_STRING_H)
 #include <string.h>
 #elif defined(HAVE_STRINGS_H)
