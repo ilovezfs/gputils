@@ -26,8 +26,8 @@
 
    -------------------------------------------------------------------
 
-    This program prepares the html lists from Config words of PIC MCU-s.
-    The data reads from the 8bit_device.info called file of MPLAB-X.
+    This program prepares the html lists from Config words and other properties
+    of the PIC MCU-s. The data reads from the 8bit_device.info called file of MPLAB-X.
     On Linux is usually located on this path:
 
                 /opt/microchip/mplabx/mpasmx/8bit_device.info
@@ -431,9 +431,9 @@ sub str2dec($)
 
   return hex($1)   if ($Str =~ /^H'([[:xdigit:]]+)'$/io);
   return hex($1)   if ($Str =~ /^0x([[:xdigit:]]+)$/io);
-  return int($Str) if ($Str =~ /^\d+$/o);
+  return int($Str) if ($Str =~ /^-?\d+$/o);
 
-  die "This string not number: \"$Str\"";
+  die "This string not integer: \"$Str\"";
   }
 
 #-------------------------------------------------------------------------------
@@ -695,7 +695,7 @@ sub read_gp_svn_revision()
 
 sub extract_mcu_names()
   {
-  open(LIB, '<', $gpproc_path) || die "read_gpproc_c_content(): Can not open. -> \"$gpproc_path\"\n";
+  open(LIB, '<', $gpproc_path) || die "extract_mcu_names(): Can not open. -> \"$gpproc_path\"\n";
 
         # static struct px pics[] = {
         # { PROC_CLASS_PIC14E   , "__16F1526"     , { "pic16f1526"     , "p16f1526"       , "16f1526"         }, 0x1526,  4,   32, 0x001FFF, {       -1,       -1 }, { 0x008007, 0x008008 }, "16f1526_g.lkr"      },
@@ -928,7 +928,7 @@ sub read_rom_features($$)
       }
     } # foreach (grep(! /^\s*$/o, <LKR>))
 
-  close(INC);
+  close(LKR);
   }
 
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -951,13 +951,13 @@ sub read_all_config_bits()
   my $state = ST_WAIT;
   my ($cf_addr_min, $cf_addr_max);
 
-  open(IN, '<', $dev_info) || die "Could not open for reading: $dev_info\n";
+  open(INFO, '<', $dev_info) || die "Could not open for reading: $dev_info\n";
 
   Log("Reads all config options from $dev_info.", 4);
 
   my $msg = ($list_file ne '') ? 'list file' : 'Gputils';
 
-  while (<IN>)
+  while (<INFO>)
     {
     my @fields = ($_ =~ /<([^<>]*)>/go);
 
@@ -1122,9 +1122,9 @@ sub read_all_config_bits()
           } # when ('SETTING_VALUE_TYPE')
         } # given ($fields[0])
       } # if ($state == ST_LISTEN)
-    } # while (<IN>)
+    } # while (<INFO>)
 
-  close(IN);
+  close(INFO);
   }
 
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -2533,9 +2533,9 @@ sub css_gradient($$)
   my ($Align, $Gradient) = @_;
 
   foreach ('   -moz-',          # Firefox 3.6+
-           '-webkit-',          # Chrome 10+
            '    -ms-',          # IE10+
            '     -o-',          # Opera 11.10+
+           '-webkit-',          # Chrome 10+
            '        ')          # future CSS3 browsers
     {
     aOutl($Align, "background: ${_}linear-gradient($Gradient);");
@@ -2610,6 +2610,7 @@ EOT
   css_gradient(2, 'left, #FF8080, #FFFF80, #80FF80, #8080FF, #FF80FF');
   print $out_handler <<EOT
   background: -webkit-gradient(linear, left top, right top, from(#FF8080), to(#FF80FF));
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FF8080', endColorstr='#FF80FF');
   }
 
 .tabs
@@ -2659,6 +2660,7 @@ EOT
   css_gradient(2, "$content_background, $tab_background 100%");
   print $out_handler <<EOT
   background: -webkit-gradient(linear, 0 0, 0 100%, from($content_background), to($tab_background));
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$content_background', endColorstr='$tab_background');
   }
 
 .tabs li.selected
@@ -3151,6 +3153,7 @@ Usage: $PROGRAM [options]
         -ru <url> or --remote-url <url>
 
             Remote URL to the all html files. For example: www.desert-ice.com
+            This option enable the online use the generated html files.
 
         -l <file> or --list-file <file>
 
