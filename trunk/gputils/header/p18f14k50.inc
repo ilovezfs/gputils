@@ -23,6 +23,16 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
+;;;; Begin: Added in gputils
+
+;==========================================================================
+;
+;       Gputils Specific Revision History
+;
+;==========================================================================
+
+;       10 Sep 2012  Added LATA{0,1,3} bits to "LATA Bits".
+;;;; End: Added in gputils
 
 ;==========================================================================
 ;
@@ -572,6 +582,11 @@ SDO              EQU  H'0007'
 
 
 ;----- LATA Bits -----------------------------------------------------
+;;;; Begin: Added in gputils
+LATA0            EQU  H'0000'
+LATA1            EQU  H'0001'
+LATA3            EQU  H'0003'
+;;;; End: Added in gputils
 LATA4            EQU  H'0004'
 LATA5            EQU  H'0005'
 
