@@ -155,7 +155,7 @@ gp_geterror(unsigned int code)
   case GPE_ILLEGAL_LABEL:
     return "Illegal label.";
   case GPE_ILLEGAL_DIR:
-    return "Illegal directive (Not Valid for this processor).";
+    return "Illegal directive";
   case GPE_ILLEGAL_ARGU:
     return "Illegal argument.";
   case GPE_ILLEGAL_COND:
