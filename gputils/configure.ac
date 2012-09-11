@@ -29,6 +29,13 @@ AC_ARG_ENABLE(path,
   [  --disable-path          disable adding default search paths],
   [], [enable_gputils_path=yes])
 
+AC_ARG_WITH(mplabx-path,
+  AC_HELP_STRING([--with-mplabx-path=DIR],
+                 [location of MPLAB-X (default=/opt/microchip/mplabx)]),
+  [DEFAULT_MPLABX_PATH="$withval"],
+  [DEFAULT_MPLABX_PATH="/opt/microchip/mplabx"])
+AC_SUBST(DEFAULT_MPLABX_PATH)
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_YACC
@@ -128,6 +135,7 @@ AC_SUBST(MAKE_SUBDIRS)
 # Generate Makefiles
 AC_CONFIG_FILES([Makefile
                  doc/Makefile
+                 doc/html-help/Makefile
                  gpasm/Makefile
                  gplink/Makefile
                  gputils/Makefile
@@ -166,5 +174,6 @@ gputils-$PACKAGE_VERSION is now configured for $canonical_host_type
   Source directory:     $srcdir
   Installation prefix:  $prefix
   C compiler:           $CC $CFLAGS
+  Location of MPLAB-X:  $DEFAULT_MPLABX_PATH
 
 ])

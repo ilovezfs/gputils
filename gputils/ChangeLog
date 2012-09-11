@@ -1,3 +1,10 @@
+2012-09-11  Molnar Karoly  <proton7@freemail.hu>
+  * doc/html-help, doc/html-help/Makefile.am:
+    Implemented html help for PIC devices.
+  * doc/Makefile.am: modified
+  * configure.ac, configure, doc/Makefile.in,
+    doc/html-help/Makefile.in: updated autotools
+
 2012-09-11  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c: fixed gperror -> gpverror
 
