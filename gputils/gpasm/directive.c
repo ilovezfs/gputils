@@ -1800,7 +1800,7 @@ static gpasmVal do_global(gpasmVal r,
       if (p) {
         s = get_symbol(state.stTop, p);
         if (s == NULL) {
-          gperror(GPE_NOSYM, p);
+          gpverror(GPE_NOSYM, p);
         } else {
           var = get_symbol_annotation(s);
           if (var == NULL) {
@@ -3708,7 +3708,6 @@ gpasmVal do_insn(char *name, struct pnode *parms)
             file_ok(file);
             if (0 == strncasecmp(i->name, "btfs", 4))
               is_btfsx = 1;
-
             emit(i->opcode | ((bit & 7) << 5) |(file & 0x1f));
           }
         }
