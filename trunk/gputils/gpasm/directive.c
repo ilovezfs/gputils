@@ -60,7 +60,7 @@ static unsigned short checkwrite(unsigned short value)
     gpverror(GPE_ADDROVF);
   }
   else if (state.device.class != PROC_CLASS_PIC16E &&
-           (state.org & 0x1FFFF) == 0 && (int)state.org > 0) {
+           (state.org & 0x1ffff) == 0 && (int)state.org > 0) {
     /* We cast state.org to signed int on purpose to repeat a bug from
        MPASM 5.34 and pass tb.asm testcase. */
     gperror(GPE_ADDROVF, "Address wrapped around 0");
@@ -121,7 +121,7 @@ static void emit_byte(unsigned char value)
         gpverror(GPE_ADDROVF);
       }
       else if (state.device.class != PROC_CLASS_PIC16E &&
-               (state.org & 0x1FFFF) == 0 && (int)state.org > 0) {
+               (state.org & 0x1ffff) == 0 && (int)state.org > 0) {
         gperror(GPE_ADDROVF, "Address wrapped around 0");
       }
 
@@ -211,7 +211,7 @@ static int emit_data(struct pnode *L, int char_shift)
           int value;
           unsigned short v;
           pc = convert_escape_chars(pc, &value);
-          value &= 0xFF;
+          value &= 0xff;
           /* If idata or packed and not db or de, emit one character per word */
           if (SECTION_FLAGS & (STYP_DATA|STYP_BPACK)) {
             v = value;
@@ -220,7 +220,7 @@ static int emit_data(struct pnode *L, int char_shift)
             v = value << char_shift;
             if (*pc) {
               pc = convert_escape_chars(pc, &value);
-              v |= value & 0xFF;
+              v |= value & 0xff;
             }
           }
           emit(v);
@@ -230,7 +230,7 @@ static int emit_data(struct pnode *L, int char_shift)
           emit(0);
       }
     }
-    else if (state.device.class->core_size > 0xFF) {
+    else if (state.device.class->core_size > 0xff) {
       unsigned short v;
       v = reloc_evaluate(p, RELOCT_ALL);
       emit(v);
@@ -1141,13 +1141,13 @@ static gpasmVal do_de(gpasmVal r,
       while (*pc) {
         int value;
         pc = convert_escape_chars(pc, &value);
-        emit(value & 0xFF);
+        emit(value & 0xff);
       }
     }
     else {
       unsigned short v;
       v = reloc_evaluate(p, RELOCT_ALL);
-      emit(v & 0xFF);
+      emit(v & 0xff);
     }
   }
 
@@ -1448,13 +1448,45 @@ static gpasmVal do_dt(gpasmVal r,
       while (*pc) {
         int value;
         pc = convert_escape_chars(pc, &value);
-        emit((value & 0xFF) | retlw);
+        emit((value & 0xff) | retlw);
       }
     }
     else {
       unsigned short v;
       v = reloc_evaluate(p, RELOCT_ALL);
-      emit((v & 0xFF) | retlw);
+      emit((v & 0xff) | retlw);
+    }
+  }
+
+  return r;
+}
+
+static gpasmVal do_dtm(gpasmVal r,
+                      char *name,
+                      int arity,
+                      struct pnode *parms)
+{
+  struct symbol *s = get_symbol(state.stBuiltin, "movlw");
+  struct insn *i = get_symbol_annotation(s);
+  struct pnode *p;
+ 
+  if (state.device.class != PROC_CLASS_PIC14E)
+    gpverror(GPE_ILLEGAL_DIR);
+
+  for(; parms; parms = TAIL(parms)) {
+    p = HEAD(parms);
+    if (p->tag == string) {
+      const char *pc = p->value.string;
+      while (*pc) {
+        int value;
+        pc = convert_escape_chars(pc, &value);
+        emit(i->opcode | (value & 0xff));
+      }
+    }
+    else {
+      unsigned short v;
+      v = reloc_evaluate(p, RELOCT_ALL);
+      emit(i->opcode | (v & 0xff));
     }
   }
 
@@ -4330,6 +4362,7 @@ struct insn op_1[] = {
   { "db",         0, 0, INSN_CLASS_FUNC, 0, do_db },
   { "de",         0, 0, INSN_CLASS_FUNC, 0, do_de },
   { "dt",         0, 0, INSN_CLASS_FUNC, 0, do_dt },
+  { "dtm",        0, 0, INSN_CLASS_FUNC, 0, do_dtm },
   { "dw",         0, 0, INSN_CLASS_FUNC, 0, do_dw },
   { "fill",       0, 0, INSN_CLASS_FUNC, 0, do_fill },
   { "org",        0, 0, INSN_CLASS_FUNC, 0, do_org },
