@@ -97,6 +97,9 @@ my %mcu_features =
   (
   '16c5x'  => {
               CLASS     => PROC_CLASS_PIC12,
+              NAME      => '12 bit MCU',
+              CSS_CLASS => 'mcuAttrP12',
+              CSS_BGRND => '#FFB4B4',
               ENHANCED  => FALSE,
               PAGE_SIZE => 512,
               WORD_SIZE => 12,
@@ -110,6 +113,9 @@ my %mcu_features =
 
   '16c5xe' => {
               CLASS     => PROC_CLASS_PIC12E,
+              NAME      => '12 bit enhanced MCU',
+              CSS_CLASS => 'mcuAttrP12E',
+              CSS_BGRND => '#FFB4FF',
               ENHANCED  => TRUE,
               PAGE_SIZE => 512,
               WORD_SIZE => 12,
@@ -123,6 +129,9 @@ my %mcu_features =
 
   '16xxxx' => {
               CLASS     => PROC_CLASS_PIC14,
+              NAME      => '14 bit MCU',
+              CSS_CLASS => 'mcuAttrP14',
+              CSS_BGRND => '#B4B4FF',
               ENHANCED  => FALSE,
               PAGE_SIZE => 2048,
               WORD_SIZE => 14,
@@ -137,6 +146,9 @@ my %mcu_features =
 
   '16exxx' => {
               CLASS     => PROC_CLASS_PIC14E,
+              NAME      => '14 bit enhanced MCU',
+              CSS_CLASS => 'mcuAttrP14E',
+              CSS_BGRND => '#B4FFFF',
               ENHANCED  => TRUE,
               PAGE_SIZE => 2048,
               WORD_SIZE => 14,
@@ -152,6 +164,9 @@ my %mcu_features =
 
   '17xxxx' => {
               CLASS     => PROC_CLASS_PIC16,
+              NAME      => '16 bit MCU',
+              CSS_CLASS => 'mcuAttrP16',
+              CSS_BGRND => '#B4FFB4',
               ENHANCED  => FALSE,
               PAGE_SIZE => 0,
               WORD_SIZE => 16,
@@ -168,6 +183,9 @@ my %mcu_features =
 
   '18xxxx' => {
               CLASS     => PROC_CLASS_PIC16E,
+              NAME      => '16 bit extended MCU',
+              CSS_CLASS => 'mcuAttrP16E',
+              CSS_BGRND => '#FFFFB4',
               ENHANCED  => TRUE,
               PAGE_SIZE => 0,
               WORD_SIZE => 16,
@@ -186,6 +204,7 @@ my %mcu_features =
         {
         FEATURES => {
                     CLASS     => PROC_CLASS_PIC1XX,
+                    CSS_CLASS => 'mcuAttrP1xx',
                     ENHANCED  => FALSE,
                     PAGE_SIZE => 0,
                     WORD_SIZE => 0,     # Instruction size of MCU.
@@ -300,13 +319,14 @@ my $only_css = FALSE;
 
 use constant PRI_MENU_ALL    => 0;
 use constant PRI_MENU_ENH    => 1;
-use constant PRI_MENU_REG    => 2;
-use constant PRI_MENU_12_BIT => 3;
-use constant PRI_MENU_14_BIT => 4;
-use constant PRI_MENU_16_BIT => 5;
-use constant PRI_MENU_RAM    => 6;
-use constant PRI_MENU_ROM    => 7;
-use constant PRI_MENU_EEPROM => 8;
+use constant PRI_MENU_EXT    => 2;
+use constant PRI_MENU_REG    => 3;
+use constant PRI_MENU_12_BIT => 4;
+use constant PRI_MENU_14_BIT => 5;
+use constant PRI_MENU_16_BIT => 6;
+use constant PRI_MENU_RAM    => 7;
+use constant PRI_MENU_ROM    => 8;
+use constant PRI_MENU_EEPROM => 9;
 
 my @pri_menu_elems =
   (
@@ -317,11 +337,18 @@ my @pri_menu_elems =
     CLASS => PRI_MENU_ALL
     },
 
-    {                                   # PRI_MENU_ENH
+    {                                   # PRI_MENU_ENH  (14 bit)
     HREF  => 'enhanced-mcus.html',
     NAME  => 'Enhanced',
     PFUNC => \&print_mcu_list,
     CLASS => PRI_MENU_ENH
+    },
+
+    {                                   # PRI_MENU_EXT  (16 bit)
+    HREF  => 'extended-mcus.html',
+    NAME  => 'Extended',
+    PFUNC => \&print_mcu_list,
+    CLASS => PRI_MENU_EXT
     },
 
     {                                   # PRI_MENU_REG
@@ -992,6 +1019,8 @@ sub read_all_config_bits()
 
         $features = {
                     CLASS     => $tr->{CLASS},
+                    CSS_CLASS => $tr->{CSS_CLASS}, # Css class name.
+                    CSS_BGRND => $tr->{CSS_BGRND}, # Background color.
                     ENHANCED  => $tr->{ENHANCED},
                     PAGE_SIZE => $tr->{PAGE_SIZE}, # Size of program memory pages.
                     WORD_SIZE => $tr->{WORD_SIZE}, # Size of instructions.
@@ -1156,7 +1185,7 @@ EOT
 sub src_info($)
   {
   my $Align = $_[0];
-  my $href = "<a href=\"http://$gputils_url\">gputils</a> source package";
+  my $href = "<a href=\"http://${gputils_url}#Download\">gputils</a> source package";
 
   aOutl($Align, '<div class="legendContainer">');
   aOutl($Align + 2, "<p class=\"srcInfo\">This page generated automatically by the " .
@@ -1195,7 +1224,7 @@ sub print_mcu_list($$)
       aOutl($Align + 8, "${lst}class</th>");
       }
 
-    when ([ PRI_MENU_ENH, PRI_MENU_REG ])
+    when ([ PRI_MENU_ENH, PRI_MENU_EXT, PRI_MENU_REG ])
       {
       aOutl($Align + 8, "${lst}instruction size (bit)</td>");
       aOutl($Align + 8, "${lst}config word size (bit)</td>");
@@ -1263,12 +1292,16 @@ sub print_mcu_list($$)
 
   foreach my $name (@array)
     {
-    my $margin   = '<td class="vMargin"></td>';
-    my $td_href  = "<th class=\"mcuLink\"><a href=\"$remote_url${name}-$feat_tag.html\">$name</a></th>";
-    my $features = $mcus_by_names{$name}->{FEATURES};
-    my $td_wsize = "<td class=\"mcuAttr\">$features->{WORD_SIZE}</td>";
-    my $td_csize = "<td class=\"mcuAttr\">$features->{CONF_SIZE}</td>";
-    my $td_class = ($features->{ENHANCED}) ? '<td class="mcuAttrEnh">enhanced</td>' : '<td class="mcuAttrReg">regular</td>';
+    my $margin    = '<td class="vMargin"></td>';
+    my $td_href   = "<th class=\"mcuLink\"><a href=\"$remote_url${name}-$feat_tag.html\">$name</a></th>";
+    my $features  = $mcus_by_names{$name}->{FEATURES};
+    my $class     = $features->{CLASS};
+    my $css_class = $features->{CSS_CLASS};
+    my $wsize     = $features->{WORD_SIZE};
+    my $enh       = ($wsize == 16) ? 'extended' : 'enhanced';
+    my $td_wsize  = "<td class=\"$css_class\">$wsize</td>";
+    my $td_csize  = "<td class=\"$css_class\">$features->{CONF_SIZE}</td>";
+    my $td_class  = "<td class=\"$css_class\">" . (($features->{ENHANCED}) ? $enh : 'regular') . '</td>';
 
     given ($Class)
       {
@@ -1286,7 +1319,21 @@ sub print_mcu_list($$)
 
       when (PRI_MENU_ENH)
         {
-        if ($features->{ENHANCED})
+        if ($class == PROC_CLASS_PIC12E || $class == PROC_CLASS_PIC14E)
+          {
+          aOutl($Align + 6, '<tr>');
+          aOutl($Align + 8, $margin);
+          aOutl($Align + 8, $td_href);
+          aOutl($Align + 8, $td_wsize);
+          aOutl($Align + 8, $td_csize);
+          aOutl($Align + 8, $margin);
+          aOutl($Align + 6, '</tr>');
+          }
+        }
+
+      when (PRI_MENU_EXT)
+        {
+        if ($class == PROC_CLASS_PIC16E)
           {
           aOutl($Align + 6, '<tr>');
           aOutl($Align + 8, $margin);
@@ -1314,7 +1361,7 @@ sub print_mcu_list($$)
 
       when (PRI_MENU_12_BIT)
         {
-        if ($features->{WORD_SIZE} == 12)
+        if ($wsize == 12)
           {
           aOutl($Align + 6, '<tr>');
           aOutl($Align + 8, $margin);
@@ -1328,7 +1375,7 @@ sub print_mcu_list($$)
 
       when (PRI_MENU_14_BIT)
         {
-        if ($features->{WORD_SIZE} == 14)
+        if ($wsize == 14)
           {
           aOutl($Align + 6, '<tr>');
           aOutl($Align + 8, $margin);
@@ -1342,7 +1389,7 @@ sub print_mcu_list($$)
 
       when (PRI_MENU_16_BIT)
         {
-        if ($features->{WORD_SIZE} == 16)
+        if ($wsize == 16)
           {
           aOutl($Align + 6, '<tr>');
           aOutl($Align + 8, $margin);
@@ -1359,7 +1406,7 @@ sub print_mcu_list($$)
         aOutl($Align + 6, '<tr>');
         aOutl($Align + 8, $margin);
         aOutl($Align + 8, "<th class=\"mcuLink\"><a href=\"$remote_url${name}-$ram_tag.html\">$name</a></th>");
-        aOutl($Align + 8, "<td class=\"mcuAttr\">$features->{RAM_SIZE}</td>");
+        aOutl($Align + 8, "<td class=\"$css_class\">$features->{RAM_SIZE}</td>");
         aOutl($Align + 8, $td_wsize);
         aOutl($Align + 8, $td_csize);
         aOutl($Align + 8, $td_class);
@@ -1372,7 +1419,7 @@ sub print_mcu_list($$)
         aOutl($Align + 6, '<tr>');
         aOutl($Align + 8, $margin);
         aOutl($Align + 8, $td_href);
-        aOutfl($Align + 8, "<td class=\"mcuAttr\">%u</td>", $features->{ROM} + 1);
+        aOutfl($Align + 8, "<td class=\"$css_class\">%u</td>", $features->{ROM} + 1);
         aOutl($Align + 8, $td_wsize);
         aOutl($Align + 8, $td_csize);
         aOutl($Align + 8, $td_class);
@@ -1385,7 +1432,7 @@ sub print_mcu_list($$)
         aOutl($Align + 6, '<tr>');
         aOutl($Align + 8, $margin);
         aOutl($Align + 8, $td_href);
-        aOutfl($Align + 8, "<td class=\"mcuAttr\">%u</td>", $features->{EEPROM} + 1);
+        aOutfl($Align + 8, "<td class=\"$css_class\">%u</td>", $features->{EEPROM} + 1);
         aOutl($Align + 8, $td_wsize);
         aOutl($Align + 8, $td_csize);
         aOutl($Align + 8, $td_class);
@@ -1397,6 +1444,43 @@ sub print_mcu_list($$)
 
   aOutl($Align + 4, '</table>');
   aOutl($Align + 2, '</div>');
+
+        #------------------------------------
+
+  aOutl($Align + 2, '<div class="legendContainer">');
+
+  my @mcu_feat_names = sort {
+                            $mcu_features{$a}->{ENHANCED} <=> $mcu_features{$b}->{ENHANCED} ||
+                            $mcu_features{$a}->{CLASS}    <=> $mcu_features{$b}->{CLASS}
+                            } keys(%mcu_features);
+  my $v = @mcu_feat_names;
+  my $level;
+
+  aOutl($Align + 4, '<div class="legend">');
+  $level = 1;
+  for (my $i = 0; $i < $v;)
+    {
+    my $cl = $mcu_features{$mcu_feat_names[$i]};
+
+    aOutl($Align + 6, "<p class=\"$cl->{CSS_CLASS} menuEx\">&nbsp;<span class=\"explanation\">$cl->{NAME}</span></p>");
+    ++$i;
+
+    if (! ($i % 3))
+      {
+      aOutl($Align + 4, '</div>');
+      --$level;
+
+      if ($i < $v)
+        {
+        aOutl($Align + 4, '<div class="legend">');
+        ++$level;
+        }
+      }
+    }
+
+  aOutl($Align + 4, '</div>') if ($level > 0);  # The closure of last div, if it miss.
+  aOutl($Align + 2, '</div>');
+
   src_info($Align + 2);
   }
 
@@ -2111,7 +2195,7 @@ sub dump_ram_map($$)
     foreach (@{$map})
       {
       my ($addr, $size) = ($_->{ADDR}, $_->{SIZE});
-      my $l_e    = '';
+      my $l_e = '';
       my $tt_top;
       my $d;
 
@@ -2177,7 +2261,7 @@ sub dump_ram_map($$)
 
       if ($size > 1)
         {
-        Outfl("$r<br>0x%03X - 0x%03X$l_e</div></div>", $addr, $addr + $size - 1);
+        Outfl("$r<br>0x%03X - 0x%03X<br>$size bytes$l_e</div></div>", $addr, $addr + $size - 1);
         }
       else
         {
@@ -2708,7 +2792,7 @@ EOT
 .mcuList
   {
   display: inline-block;
-  min-width: 90%;
+  min-width: 95%;
   }
 
 .mcuTable
@@ -2748,7 +2832,46 @@ EOT
   border-style: outset;
   }
 
-.mcuListHeader, .mcuAttrEnh, .mcuAttrReg, .configWord,
+EOT
+;
+  my @mcu_feat_names = sort {
+                            $mcu_features{$a}->{ENHANCED} <=> $mcu_features{$b}->{ENHANCED} ||
+                            $mcu_features{$a}->{CLASS}    <=> $mcu_features{$b}->{CLASS}
+                            } keys(%mcu_features);
+  my $i = 0;
+  my $v = @mcu_feat_names;
+  while (TRUE)
+    {
+    Out(".$mcu_features{$mcu_feat_names[$i]}->{CSS_CLASS}");
+    ++$i;
+
+    if ($i < $v)
+      {
+      Out(', ');
+      }
+    else
+      {
+      Outl();
+      last;
+      }
+    }
+
+  aOutl(2, "{");
+  aOutl(2, "padding: 0.2em 0.625em;");
+  aOutl(2, 'text-align: center;');
+  aOutl(2, 'font: bold 1em Georgia;');
+  aOutl(2, "}\n");
+
+  foreach (@mcu_feat_names)
+    {
+    Outl(".$mcu_features{$_}->{CSS_CLASS}");
+    aOutl(2, "{");
+    aOutl(2, "background: $mcu_features{$_}->{CSS_BGRND};");
+    aOutl(2, "}\n");
+    }
+
+  print $out_handler <<EOT
+.mcuListHeader, .configWord,
 .featValue,
 .confSwName, .confSwValue, .confSwExpl,
 .ramBank,
@@ -2800,38 +2923,11 @@ EOT
   background: #49DDFF;
   }
 
-.mcuAttr
-  {
-  width: 15em;
-  }
-
-.mcuAttr, .mcuAttrEnh, .mcuAttrReg
-  {
-  text-align: center;
-  }
-
-.mcuAttr, .mcuAttrEnh, .mcuAttrReg,
 .featValue,
 .confSwName, .confSwValue, .confSwExpl,
 .sfrAddr
   {
   background: #BAE7B8;
-  }
-
-.mcuAttrEnh, .mcuAttrReg
-  {
-  width: 6em;
-  font: bold 1em Georgia;
-  }
-
-.mcuAttrEnh
-  {
-  color: #D24E4E;
-  }
-
-.mcuAttrReg
-  {
-  color: #318C31;
   }
 
 /*----------------------------------------------*/
@@ -3054,8 +3150,9 @@ EOT
   }
 
 .ramSFREx, .ramGPREx, .ramBADEx,
-.sfrNameEx, .sfrNameXEx
+.sfrNameEx, .sfrNameXEx, .menuEx
   {
+  padding: 0;
   width: ${Ex_color_width}px;
   margin-left: 20px;
 EOT
