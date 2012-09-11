@@ -16,25 +16,30 @@ AC_CANONICAL_HOST
 GPUTILS_HEADER_PATH="\$(datadir)/gputils/header"
 GPUTILS_LKR_PATH="\$(datadir)/gputils/lkr"
 GPUTILS_LIB_PATH="\$(datadir)/gputils/lib"
+GPUTILS_HTMLDOC_PATH="\$(datadir)/doc/gputils-\$(PACKAGE_VERSION)/html"
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
 MAKE_SUBDIRS="libgputils libiberty gpasm gplink gputils header lkr doc man"
 
 # Check for additional parameters
-AC_ARG_ENABLE(debug, 
+AC_ARG_ENABLE(debug,
   [  --enable-debug          enable gputils debug features],
-  [enable_gputils_debug=yes])    
+  [enable_gputils_debug=yes])
 
 AC_ARG_ENABLE(path,
   [  --disable-path          disable adding default search paths],
   [], [enable_gputils_path=yes])
+
+AC_ARG_ENABLE(html-doc,
+  [  --disable-html-doc      disable creating the html device doc],
+  [ENABLE_HTML_DOC="$enableval"],
+  [ENABLE_HTML_DOC=yes])
 
 AC_ARG_WITH(mplabx-path,
   AC_HELP_STRING([--with-mplabx-path=DIR],
                  [location of MPLAB-X (default=/opt/microchip/mplabx)]),
   [DEFAULT_MPLABX_PATH="$withval"],
   [DEFAULT_MPLABX_PATH="/opt/microchip/mplabx"])
-AC_SUBST(DEFAULT_MPLABX_PATH)
 
 # Checks for programs.
 AC_PROG_CC
@@ -112,21 +117,24 @@ esac
 
 # Process the options
 if test x$enable_gputils_debug = xyes; then
-  AC_DEFINE(GPUTILS_DEBUG, 1, 
+  AC_DEFINE(GPUTILS_DEBUG, 1,
     [Define if you want to enable GPUTILS debug features. ])
 fi
 
 if test x$enable_gputils_path = xyes; then
-  AC_DEFINE(USE_DEFAULT_PATHS, 1, 
+  AC_DEFINE(USE_DEFAULT_PATHS, 1,
     [Define if you want to add default search paths. ])
 fi
 
 # Substitute configuration variables
+AC_SUBST(ENABLE_HTML_DOC)
+AC_SUBST(DEFAULT_MPLABX_PATH)
 AC_SUBST(AM_CFLAGS)
 AC_SUBST(AM_LDFLAGS)
 AC_SUBST(GPUTILS_HEADER_PATH)
 AC_SUBST(GPUTILS_LKR_PATH)
 AC_SUBST(GPUTILS_LIB_PATH)
+AC_SUBST(GPUTILS_HTMLDOC_PATH)
 AC_SUBST(IBERTYOBJS)
 AC_SUBST(LIBGPUTILS)
 AC_SUBST(LIBIBERTY)

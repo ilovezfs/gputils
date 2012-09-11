@@ -610,11 +610,14 @@ MAKE_SUBDIRS
 LIBIBERTY
 LIBGPUTILS
 IBERTYOBJS
+GPUTILS_HTMLDOC_PATH
 GPUTILS_LIB_PATH
 GPUTILS_LKR_PATH
 GPUTILS_HEADER_PATH
 AM_LDFLAGS
 AM_CFLAGS
+DEFAULT_MPLABX_PATH
+ENABLE_HTML_DOC
 EGREP
 GREP
 CPP
@@ -642,7 +645,6 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
-DEFAULT_MPLABX_PATH
 host_os
 host_vendor
 host_cpu
@@ -721,6 +723,7 @@ enable_option_checking
 enable_maintainer_mode
 enable_debug
 enable_path
+enable_html_doc
 with_mplabx_path
 enable_dependency_tracking
 '
@@ -1359,6 +1362,7 @@ Optional Features:
 			  (and sometimes confusing) to the casual installer
   --enable-debug          enable gputils debug features
   --disable-path          disable adding default search paths
+  --disable-html-doc      disable creating the html device doc
   --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors
 
@@ -2877,6 +2881,7 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 GPUTILS_HEADER_PATH="\$(datadir)/gputils/header"
 GPUTILS_LKR_PATH="\$(datadir)/gputils/lkr"
 GPUTILS_LIB_PATH="\$(datadir)/gputils/lib"
+GPUTILS_HTMLDOC_PATH="\$(datadir)/doc/gputils-\$(PACKAGE_VERSION)/html"
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
 MAKE_SUBDIRS="libgputils libiberty gpasm gplink gputils header lkr doc man"
@@ -2896,6 +2901,14 @@ else
 fi
 
 
+# Check whether --enable-html-doc was given.
+if test "${enable_html_doc+set}" = set; then :
+  enableval=$enable_html_doc; ENABLE_HTML_DOC="$enableval"
+else
+  ENABLE_HTML_DOC=yes
+fi
+
+
 
 # Check whether --with-mplabx-path was given.
 if test "${with_mplabx_path+set}" = set; then :
@@ -2903,7 +2916,6 @@ if test "${with_mplabx_path+set}" = set; then :
 else
   DEFAULT_MPLABX_PATH="/opt/microchip/mplabx"
 fi
-
 
 
 # Checks for programs.
@@ -4961,6 +4973,9 @@ $as_echo "#define USE_DEFAULT_PATHS 1" >>confdefs.h
 fi
 
 # Substitute configuration variables
+
+
+
 
 
 
