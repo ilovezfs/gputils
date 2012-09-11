@@ -642,6 +642,7 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+DEFAULT_MPLABX_PATH
 host_os
 host_vendor
 host_cpu
@@ -720,6 +721,7 @@ enable_option_checking
 enable_maintainer_mode
 enable_debug
 enable_path
+with_mplabx_path
 enable_dependency_tracking
 '
       ac_precious_vars='build_alias
@@ -1359,6 +1361,11 @@ Optional Features:
   --disable-path          disable adding default search paths
   --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors
+
+Optional Packages:
+  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-mplabx-path=DIR  location of MPLAB-X (default=/opt/microchip/mplabx)
 
 Some influential environment variables:
   CC          C compiler command
@@ -2887,6 +2894,16 @@ if test "${enable_path+set}" = set; then :
 else
   enable_gputils_path=yes
 fi
+
+
+
+# Check whether --with-mplabx-path was given.
+if test "${with_mplabx_path+set}" = set; then :
+  withval=$with_mplabx_path; DEFAULT_MPLABX_PATH="$withval"
+else
+  DEFAULT_MPLABX_PATH="/opt/microchip/mplabx"
+fi
+
 
 
 # Checks for programs.
@@ -4955,7 +4972,7 @@ fi
 
 
 # Generate Makefiles
-ac_config_files="$ac_config_files Makefile doc/Makefile gpasm/Makefile gplink/Makefile gputils/Makefile header/Makefile libgputils/Makefile libiberty/Makefile lkr/Makefile man/Makefile man/gpasm.1 man/gpdasm.1 man/gplib.1 man/gplink.1 man/gpstrip.1 man/gputils.1 man/gpvc.1 man/gpvo.1 man/fr/Makefile man/fr/gpasm.1 man/fr/gpdasm.1 man/fr/gplib.1 man/fr/gplink.1 man/fr/gpstrip.1 man/fr/gputils.1 man/fr/gpvc.1 man/fr/gpvo.1 gputils.spec"
+ac_config_files="$ac_config_files Makefile doc/Makefile doc/html-help/Makefile gpasm/Makefile gplink/Makefile gputils/Makefile header/Makefile libgputils/Makefile libiberty/Makefile lkr/Makefile man/Makefile man/gpasm.1 man/gpdasm.1 man/gplib.1 man/gplink.1 man/gpstrip.1 man/gputils.1 man/gpvc.1 man/gpvo.1 man/fr/Makefile man/fr/gpasm.1 man/fr/gpdasm.1 man/fr/gplib.1 man/fr/gplink.1 man/fr/gpstrip.1 man/fr/gputils.1 man/fr/gpvc.1 man/fr/gpvo.1 gputils.spec"
 
 
 cat >confcache <<\_ACEOF
@@ -5695,6 +5712,7 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
+    "doc/html-help/Makefile") CONFIG_FILES="$CONFIG_FILES doc/html-help/Makefile" ;;
     "gpasm/Makefile") CONFIG_FILES="$CONFIG_FILES gpasm/Makefile" ;;
     "gplink/Makefile") CONFIG_FILES="$CONFIG_FILES gplink/Makefile" ;;
     "gputils/Makefile") CONFIG_FILES="$CONFIG_FILES gputils/Makefile" ;;
@@ -6459,6 +6477,7 @@ gputils-$PACKAGE_VERSION is now configured for $canonical_host_type
   Source directory:     $srcdir
   Installation prefix:  $prefix
   C compiler:           $CC $CFLAGS
+  Location of MPLAB-X:  $DEFAULT_MPLABX_PATH
 
 " >&5
 $as_echo "
@@ -6470,5 +6489,6 @@ gputils-$PACKAGE_VERSION is now configured for $canonical_host_type
   Source directory:     $srcdir
   Installation prefix:  $prefix
   C compiler:           $CC $CFLAGS
+  Location of MPLAB-X:  $DEFAULT_MPLABX_PATH
 
 " >&6; }
