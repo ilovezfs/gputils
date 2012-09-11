@@ -15,7 +15,6 @@
 
 @SET_MAKE@
 VPATH = @srcdir@
-pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkglibexecdir = $(libexecdir)/@PACKAGE@
@@ -46,6 +45,7 @@ CONFIG_CLEAN_VPATH_FILES =
 SOURCES =
 DIST_SOURCES =
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+pkgdatadir = @GPUTILS_HTMLDOC_PATH@
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AM_CFLAGS = @AM_CFLAGS@
@@ -68,8 +68,10 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ENABLE_HTML_DOC = @ENABLE_HTML_DOC@
 EXEEXT = @EXEEXT@
 GPUTILS_HEADER_PATH = @GPUTILS_HEADER_PATH@
+GPUTILS_HTMLDOC_PATH = @GPUTILS_HTMLDOC_PATH@
 GPUTILS_LIB_PATH = @GPUTILS_LIB_PATH@
 GPUTILS_LKR_PATH = @GPUTILS_LKR_PATH@
 GREP = @GREP@
@@ -293,8 +295,6 @@ install-dvi-am:
 
 install-exec-am:
 
-install-html: install-html-am
-
 install-html-am:
 
 install-info: install-info-am
@@ -344,10 +344,18 @@ uninstall-am:
 	mostlyclean-generic pdf pdf-am ps ps-am uninstall uninstall-am
 
 
-all: index.html
+all: html-doc
 
-index.html: $(DEFAULT_MPLABX_PATH)/mpasmx/8bit_device.info
-	$(top_srcdir)/../scripts/tools/config-help.pl -gp $(top_srcdir)/.. -od ./ -v 4
+html-doc: $(DEFAULT_MPLABX_PATH)/mpasmx/8bit_device.info
+	@if [ "$(ENABLE_HTML_DOC)" == "yes" ]; then \
+	  $(top_srcdir)/../scripts/tools/config-help.pl -gp $(top_srcdir)/.. -od ./ -v 4; \
+	fi
+
+install-html:
+	@if [ "$(ENABLE_HTML_DOC)" == "yes" ]; then \
+	  $(install_sh) -d "$(DESTDIR)$(pkgdatadir)"; \
+	  $(install_sh) -c -m 644 *.css *.html "$(DESTDIR)$(pkgdatadir)"; \
+	fi
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
