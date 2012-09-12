@@ -2058,6 +2058,7 @@ sub dump_ram_map($$)
   my $sfr_names = $features->{SFR_NAMES};
   my @ram_array;
   my @map_array;
+  my @bank_sum = ();
   my $margin = '<td class="vMargin"></td>';
   my ($map, $bank, $height, $k, $r, $t, $x, $y);
   my $mcu16_bit = ($features->{WORD_SIZE} == 16) ? TRUE : FALSE;
@@ -2171,6 +2172,8 @@ sub dump_ram_map($$)
   $k = int(256 / $bank_size) * 3;
   for ($x = 0; $x < $bank_num; ++$x)
     {
+    my ($sfr_size, $gpr_size, $bad_size) = (0, 0, 0);
+
     $map = $map_array[$x];
 
     aOutl(8, '<td class="ramColumn">');
@@ -2222,9 +2225,26 @@ sub dump_ram_map($$)
 
       given ($_->{TYPE})
         {
-        when (RAM_GPR) { $t = 'ramGPR'; $r = 'GPR'; }
-        when (RAM_SFR) { $t = 'ramSFR'; $r = 'SFR'; }
-        default        { $t = 'ramBAD'; $r = 'BLANK'; }
+        when (RAM_SFR)
+          {
+          $t = 'ramSFR';
+          $r = 'SFR';
+          $sfr_size += $size;
+          }
+
+        when (RAM_GPR)
+          {
+          $t = 'ramGPR';
+          $r = 'GPR';
+          $gpr_size += $size;
+          }
+
+        default
+          {
+          $t = 'ramBAD';
+          $r = 'Unimplemented';
+          $bad_size += $size;
+          }
         }
 
       aOutf(12, "<div class=\"$t\" style=\"height: %upx\"><div class=\"ramTt\" style=\"top: %upx\">",
@@ -2269,6 +2289,33 @@ sub dump_ram_map($$)
         }
       } # foreach (@{$map})
 
+    $bank_sum[$x] = { SFR => $sfr_size, GPR => $gpr_size, BAD => $bad_size };
+
+    aOutl(10, '</div>');
+    aOutl(8, '</td>');
+    aOutl(8, $margin);
+    }
+
+  aOutl(6, '</tr>');
+  aOutl(4, '</table>');
+
+        #------------------------------------
+
+        # Summary of banks.
+
+  aOutl(4, '<table class="ramMap">');
+  aOutl(6, '<tr>');
+  aOutl(8, $margin);
+
+  for ($x = 0; $x < $bank_num; ++$x)
+    {
+    my $sum = $bank_sum[$x];
+
+    aOutl(8, '<td class="ramColumn">');
+    aOutl(10, '<div class="ramColCont">');
+    aOutl(12, "<div class=\"ramSFR ramSum\">SFR<br>$sum->{SFR} bytes</div>");
+    aOutl(12, "<div class=\"ramGPR ramSum\">GPR<br>$sum->{GPR} bytes</div>");
+    aOutl(12, "<div class=\"ramBAD ramSum\">Unimplemented<br>$sum->{BAD} bytes</div>");
     aOutl(10, '</div>');
     aOutl(8, '</td>');
     aOutl(8, $margin);
@@ -2276,7 +2323,11 @@ sub dump_ram_map($$)
 
   aOutl(6, '</tr>');
 
-        #------------------------------------
+  if ($bank_num > 1 && ! $mcu16_bit)
+    {
+    aOutl(6, '<tr class="ramGap"><td></td></tr>');
+    aOutfl(6, "<tr><td colspan=%u class=\"ramSumEx\">It is possible that the tables is inaccurate due to the mirror-SFRs.</td></tr>", $bank_num * 2 + 1);
+    }
 
   aOutl(4, '</table>');
 
@@ -3113,6 +3164,13 @@ EOT
   min-width: 55%;
   }
 
+.ramSum
+  {
+  padding: 0.4em 0;
+  font-size: 0.75em;
+  text-align: center;
+  }
+
 .sfrColumn
   {
   vertical-align: top;
@@ -3199,19 +3257,28 @@ EOT
   print $out_handler <<EOT
   }
 
-.explanation
+.explanation, .ramSumEx
   {
-  position: relative;
   font-size: ${expl_font_size}em;
-  padding: ${expl_y_padding}em 0.4em;
-  top: -1px;
-  left: 55px;
   background: #BAA78F;
-  white-space: nowrap;
 EOT
 ;
   css_border_radius(2, '0.5em');
   print $out_handler <<EOT
+  }
+
+.explanation
+  {
+  position: relative;
+  padding: ${expl_y_padding}em 0.4em;
+  top: -1px;
+  left: 55px;
+  white-space: nowrap;
+  }
+
+.ramSumEx
+  {
+  padding: 0.3em 0.4em;
   }
 
 .srcInfo
