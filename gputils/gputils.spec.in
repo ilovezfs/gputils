@@ -29,7 +29,6 @@ make
 
 %install
 make DESTDIR="$RPM_BUILD_ROOT" install
-make DESTDIR="$RPM_BUILD_ROOT" install-html
 
 %clean
 [ ${RPM_BUILD_ROOT} != "/" ] && rm -rf ${RPM_BUILD_ROOT}
@@ -48,4 +47,4 @@ make DESTDIR="$RPM_BUILD_ROOT" install-html
 %{_datadir}/gputils/header
 %{_datadir}/gputils/lkr
 %doc AUTHORS COPYING ChangeLog NEWS README 
-%doc doc/gputils.pdf doc/gputils.ps doc/html/*.css doc/html/*.html
+%doc doc/gputils.pdf doc/gputils.ps
