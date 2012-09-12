@@ -1,4 +1,7 @@
 2012-09-12  Molnar Karoly  <proton7@freemail.hu>
+  * gputils.spec.in: Configure with --disable-html-doc option.
+
+2012-09-12  Molnar Karoly  <proton7@freemail.hu>
   * gputils.spec.in: Revert changes.
 
 2012-09-11  Molnar Karoly  <proton7@freemail.hu>
