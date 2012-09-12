@@ -24,7 +24,7 @@ an up-to-date list of what gputils can do.
 %setup
 
 %build
-./configure --prefix=/usr --mandir=/usr/share/man
+./configure --prefix=/usr --mandir=/usr/share/man --disable-html-doc
 make
 
 %install
