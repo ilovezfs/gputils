@@ -249,6 +249,24 @@ my @mcu_feat_names = sort {
                                  END   => 0
                                  },
 
+                    LINEARMEM => {      # Linear RAM of enhanced pic14 MCUs.
+                                 NAME     => '',
+                                 START    => 0,
+                                 END      => 0,
+                                 SEGMENTS => [
+                                               {
+                                               RSTART => 0, # Real start of section.
+                                               LSTART => 0, # Logical start of section.
+                                               SIZE   => 0  # Size of section.
+                                               },
+
+                                               ...
+
+                                               {
+                                               }
+                                             ]
+                                 },
+
                     BAD_RAM   => [      # List of bad RAM sectors.
                                    {
                                    START => 0,
@@ -441,6 +459,151 @@ my @mcu_menu_elems =
 use constant RAM_BAD => 0;
 use constant RAM_GPR => 1;
 use constant RAM_SFR => 2;
+
+################################################################################
+################################################################################
+
+my @pp_def_names = ();          # Names of definitions.
+my %pp_defines = ();            # Value of definitions.
+
+my @pp_conditions = ();
+my @pp_else_conditions = ();
+my $pp_level = 0;   # Shows the lowest level.
+my $pp_line_number;             # Line number of a lkr file.
+
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@                             @@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@  This a simple preprocessor.  @@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@                             @@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+  # Examines that the parameter is defined or not defined.
+
+sub _defined($)
+  {
+  return defined($pp_defines{$_[0]});
+  }
+
+#-------------------------------------------------------------------------------
+
+  # Records a definition.
+
+sub define($)
+  {
+  my ($Name, $Body) = ($_[0] =~ /^(\S+)\s+(.+)$/o);
+
+  die "define(): This definition already exists: \"$Name\"\n" if (_defined($Name));
+
+  push(@pp_def_names, $Name);
+        # This the location of name in the @pp_def_names array.
+  $pp_defines{$Name}{INDEX} = $#pp_def_names;
+        # (The definition is in fact unnecessary.)
+  $pp_defines{$Name}{BODY}  = $Body;
+  }
+
+#-------------------------------------------------------------------------------
+
+  # Evaluation of the #if give a boolean value. This procedure preserves it.
+
+sub if_condition($)
+  {
+  my $Val = $_[0];
+
+  push(@pp_conditions, $Val);
+  push(@pp_else_conditions, $Val);
+  ++$pp_level;
+  }
+
+#-------------------------------------------------------------------------------
+
+  # Evaluation of the #else give a boolean value. This procedure preserves it.
+
+sub else_condition($)
+  {
+  die "else_condition(): The ${pp_line_number}th line of $_[0] there is a #else, but does not belong him #if.\n" if ($pp_level <= 0);
+
+  my $last = $#pp_conditions;
+
+  if ($last > 0 && $pp_conditions[$last - 1])
+    {
+    $pp_conditions[$last] = ($pp_else_conditions[$#pp_else_conditions]) ? FALSE : TRUE;
+    }
+  else
+    {
+    $pp_conditions[$last] = FALSE;
+    }
+  }
+
+#-------------------------------------------------------------------------------
+
+  # Closes a logical unit which starts with a #if.
+
+sub endif_condition($)
+  {
+  die "endif_condition(): The ${pp_line_number}th line of $_[0] there is a #endif, but does not belong him #if.\n" if ($pp_level <= 0);
+
+  pop(@pp_conditions);
+  pop(@pp_else_conditions);
+  --$pp_level;
+  }
+
+#-------------------------------------------------------------------------------
+
+sub reset_preprocessor()
+  {
+  @pp_def_names = ();
+  %pp_defines = ();
+  @pp_conditions = ();
+  push(@pp_conditions, TRUE);
+  @pp_else_conditions = ();
+  push(@pp_else_conditions, FALSE);
+  $pp_line_number = 1;
+  $pp_level = 0;
+  }
+
+#-------------------------------------------------------------------------------
+
+        # This the preprocessor.
+
+sub run_preprocessor($$$$)
+  {
+  my ($Fname, $Function, $Line, $Features) = @_;
+
+  if ($Line =~ /^#\s*IFDEF\s+(\S+)$/io)
+    {
+    if ($pp_conditions[$#pp_conditions])
+      {
+        # The ancestor is valid, therefore it should be determined that
+        # the descendants what kind.
+      if_condition(_defined($1));
+      }
+    else
+      {
+        # The ancestor is invalid, so the descendants will invalid also.
+      if_condition(FALSE);
+      }
+    }
+  elsif ($Line =~ /^#\s*ELSE/io)
+    {
+    else_condition($Fname);
+    }
+  elsif ($Line =~ /^#\s*FI/io)
+    {
+    endif_condition($Fname);
+    }
+  elsif ($Line =~ /^#\s*DEFINE\s+(.+)$/io)
+    {
+        # This level is valid, so it should be recorded in the definition.
+    define($1) if ($pp_conditions[$#pp_conditions]);
+    }
+  elsif ($pp_conditions[$#pp_conditions])
+    {
+        # This is a valid line. (The whole magic is in fact therefore there is.)
+    $Function->($Line, $Features);
+    }
+  }
 
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -903,28 +1066,22 @@ sub read_ram_features($$)
   $Features->{SFRS}      = $sfrs;
   }
 
-#-------------------------------------------------------------------------------
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@                     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@  Process a lkr file.  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@                     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-        # Read the ROM features from the $Lkr file.
+        # Process one line of a lkr file.
 
-sub read_rom_features($$)
+sub process_lkr_line($$)
   {
-  my ($Lkr, $Features) = @_;
-  my $line;
+  my ($Line, $Features) = @_;
 
-  open(LKR, '<', $Lkr) || die "Could not open for reading: $Lkr\n";
-
-  Log("Read the ROM features from $Lkr.", 4);
-
-  foreach (grep(! /^\s*$/o, <LKR>))
+  if ($Line =~ /^CODEPAGE\s+NAME=(\S+)\s+START=(\w+)\s+END=(\w+)\s+PROTECTED$/io)
     {
-    chomp;
-    s/\r$//o;
-    s/^\s*|\s*$//go;
-    $line = $_;
-
-    if ($line =~ /^CODEPAGE\s+NAME=(\S+)\s+START=(\w+)\s+END=(\w+)\s+PROTECTED$/io)
-      {
         # CODEPAGE   NAME=.oscval    START=0x3FF             END=0x3FF          PROTECTED
         # CODEPAGE   NAME=oscval     START=0x3FF             END=0x3FF          PROTECTED
 
@@ -938,27 +1095,79 @@ sub read_rom_features($$)
         # CODEPAGE   NAME=.devid     START=0x8006            END=0x8006         PROTECTED
         # CODEPAGE   NAME=devid      START=0x3FFFFE          END=0x3FFFFF       PROTECTED
 
-      my ($name, $start, $end) = ($1, $2, $3);
+    my ($name, $start, $end) = ($1, $2, $3);
 
-      given ($name)
+    given ($name)
+      {
+      when (/oscval$/io)
         {
-        when (/oscval$/io)
-          {
-          $Features->{OSCVAL} = { START => str2dec($start), END => str2dec($end) };
-          }
+        $Features->{OSCVAL} = { START => str2dec($start), END => str2dec($end) };
+        }
 
-        when (/(idlocs|^userid)$/io)
-          {
-          $Features->{USERID} = { START => str2dec($start), END => str2dec($end) };
-          }
+      when (/(idlocs|^userid)$/io)
+        {
+        $Features->{USERID} = { START => str2dec($start), END => str2dec($end) };
+        }
 
-        when (/dev(ice_)?id$/io)
-          {
-          $Features->{DEVID} = { START => str2dec($start), END => str2dec($end) };
-          }
+      when (/dev(ice_)?id$/io)
+        {
+        $Features->{DEVID} = { START => str2dec($start), END => str2dec($end) };
         }
       }
-    } # foreach (grep(! /^\s*$/o, <LKR>))
+    }
+  elsif ($Line =~ /^LINEARMEM\s+NAME=(\S+)\s+START=(\w+)\s+END=(\w+)\s+PROTECTED$/io)
+    {
+        # LINEARMEM  NAME=linear0    START=0x2000            END=0x21EF         PROTECTED
+        # LINEARMEM  NAME=linear0    START=0x2000            END=0x23EF         PROTECTED
+
+    $Features->{LINEARMEM} = { NAME => $1, START => str2dec($2), END => str2dec($3), SEGMENTS => [] };
+    }
+  elsif ($Line =~ /^DATABANK\s+NAME=(\S+)\s+START=(\w+)\s+END=(\w+)\s+SHADOW=(\w+):(\w+)$/io)
+    {
+        # DATABANK   NAME=gpr0       START=0x20              END=0x6F           SHADOW=linear0:0x2000
+        # DATABANK   NAME=gpr4       START=0x220             END=0x26F          SHADOW=linear0:0x2140
+        # DATABANK   NAME=gpr12      START=0x620             END=0x64F          SHADOW=linear0:0x23C0
+
+    my ($name, $rstart, $rend, $lname, $lstart) = ($1, str2dec($2), str2dec($3), $4, str2dec($5));
+    my $size = $rend - $rstart + 1;
+    my $linear = $Features->{LINEARMEM};
+
+    die "Unknown linearmem name: $lname" if (! defined($linear->{NAME}) || $linear->{NAME} ne $lname);
+
+    push(@{$linear->{SEGMENTS}}, { RSTART => $rstart, LSTART => $lstart, SIZE => $size });
+    }
+  }
+
+#-------------------------------------------------------------------------------
+
+        # Read the RAM and ROM features from the $Lkr file.
+        # The work was assisted by a very simple preprocessor.
+
+sub read_ram_and_rom_features($$)
+  {
+  my ($Lkr, $Features) = @_;
+  my $name;
+
+  open(LKR, '<', $Lkr) || die "Could not open for reading: $Lkr\n";
+
+  Log("Read the RAM and ROM features from $Lkr.", 4);
+
+  $name = basename($Lkr);
+  reset_preprocessor();
+
+  while (<LKR>)
+    {
+    chomp;
+    s/\r$//o;
+
+    if ($_ !~ /^\s*$/o)
+      {
+      s/^\s*|\s*$//go;
+      run_preprocessor($name, \&process_lkr_line, $_, $Features) if ($_ !~ m|^//|o);
+      }
+
+    ++$pp_line_number;
+    }
 
   close(LKR);
   }
@@ -1052,6 +1261,7 @@ sub read_all_config_bits()
                     OSCVAL    => undef,            # Oscillator Calibration Value.
                     USERID    => undef,            # User ID.
                     DEVID     => undef,            # Device ID.
+                    LINEARMEM => undef,            # Linear RAM of enhanced pic14 MCUs.
                     BAD_RAM   => [],               # List of bad RAM sectors.
                     SFRS      => [],               # List of SFRs.
                     SFR_NAMES => {},               # List names of SFRs by addresses.
@@ -1065,7 +1275,7 @@ sub read_all_config_bits()
           $lkr = $inc;
           $lkr =~ s/^p//o;
           read_ram_features("$gputils_path/header/${inc}.inc", $features);
-          read_rom_features("$gputils_path/lkr/${lkr}_g.lkr", $features);
+          read_ram_and_rom_features("$gputils_path/lkr/${lkr}_g.lkr", $features);
           $state = ST_LISTEN;
           $addr = 0;
           $configs = {};
@@ -1677,6 +1887,23 @@ sub dump_features($$)
 
         #------------------------------------
 
+  $i = $features->{LINEARMEM};          # Only in the enhanced pic14 MCUs.
+  if (defined($i))
+    {
+    aOutl(6, '<tr class="featLine">');
+    aOutml(8, $margin, '<th class="featName">Linear RAM start</th>');
+    aOutfl(8, "<td class=\"featValue\">0x%04X</td>", $i->{START});
+    aOutml(6, '</tr>', '<tr class="featLine">');
+    aOutml(8, $margin, '<th class="featName">Linear RAM size</th>');
+    aOutfl(8, "<td class=\"featValue\">%u bytes</td>", $i->{END} - $i->{START} + 1);
+    aOutml(6, '</tr>', '<tr class="featLine">');
+    aOutml(8, $margin, '<th class="featName">Number of Linear RAM segments</th>');
+    aOutfl(8, "<td class=\"featValue\">%u</td>", scalar @{$i->{SEGMENTS}});
+    aOutl(6, '</tr>');
+    }
+
+        #------------------------------------
+
   if ($word_size == 16)
     {
     aOutl(6, '<tr class="featLine">');
@@ -1704,8 +1931,7 @@ sub dump_config_word($$$$$)
 
   foreach (@{$Config})
     {
-    my $head = $_->{HEAD};
-    my $name = $_->{NAME};
+    my ($head, $name) = ($_->{HEAD}, $_->{NAME});
     my $mask = ($_->{MASK} ^ $Mask) & $Mask;
 
     if ($name ne '')
@@ -2003,6 +2229,9 @@ sub dump_ram_map($$)
   my $bank_size = $features->{BANK_SIZE};
   my $sfrs      = $features->{SFRS};
   my $sfr_names = $features->{SFR_NAMES};
+  my $linearmem = $features->{LINEARMEM};       # Only in the enhanced pic14 MCUs.
+  my $lin_name  = '';
+  my $segments  = undef;
   my @ram_array;
   my @map_array;
   my @bank_sum = ();
@@ -2014,6 +2243,12 @@ sub dump_ram_map($$)
   open($out_handler, '>', $t) || die "Could not create the \"$t\" file!\n";
 
   Log("Dump the RAM map of $Name.", 4);
+
+  if (defined($linearmem))
+    {
+    $lin_name = $linearmem->{NAME};
+    $segments = $linearmem->{SEGMENTS};
+    }
 
   mark_non_gpr_ram(\@ram_array, $features);
   mark_sfr_ram(\@ram_array, $features);
@@ -2129,13 +2364,12 @@ sub dump_ram_map($$)
 
       if ($x == 0)
         {
-        aOutfl(12, '<div class="ramAcc" style="top: 0; height: %upx;"></div>',
-                   $height);
+        aOutl(12, "<div class=\"ramAcc\" style=\"top: 0; height: ${height}px;\"></div>");
         }
       elsif (($x + 1) == $bank_num)
         {
-        aOutfl(12, '<div class="ramAcc" style="top: %upx; height: %upx;"></div>',
-                   $height, ($bank_size * $k) - $height);
+        aOutfl(12, "<div class=\"ramAcc\" style=\"top: ${height}px; height: %upx;\"></div>",
+                   ($bank_size * $k) - $height);
         }
       }
 
@@ -2191,8 +2425,7 @@ sub dump_ram_map($$)
           }
         }
 
-      aOutf(12, "<div class=\"$t\" style=\"height: %upx\"><div class=\"ramTt\" style=\"top: %upx\">",
-                $height, $tt_top);
+      aOut(12, "<div class=\"$t\" style=\"height: ${height}px\"><div class=\"ramTt\" style=\"top: ${tt_top}px\">");
 
       if ($_->{TYPE} == RAM_SFR)
         {
@@ -2221,15 +2454,44 @@ sub dump_ram_map($$)
 
         Out("<a href=\"$remote_url${Name}-$sfr_tag.html#$name\">");
         $l_e = '</a>';
-        }
+        } # if ($_->{TYPE} == RAM_SFR)
 
-      if ($size > 1)
+      if ($_->{TYPE} == RAM_GPR && defined($segments))
         {
-        Outfl("$r<br>0x%03X - 0x%03X<br>$size bytes$l_e</div></div>", $addr, $addr + $size - 1);
+        if ($size > 1)
+          {
+          my $end = $addr + $size - 1;
+
+          Outf("$r<br>0x%03X - 0x%03X<br>$size bytes", $addr, $end);
+
+        # Linear RAM segments.
+
+          foreach (@{$segments})
+            {
+            my ($rstart, $lstart, $lsize) = ($_->{RSTART}, $_->{LSTART}, $_->{SIZE});
+
+            last if ($end < $rstart);
+
+            Outf("<br>$lin_name: 0x%04X<br>$lsize bytes", $lstart) if ($addr <= $rstart);
+            }
+
+          Outl('</div></div>');
+          }
+        else
+          {
+          Outfl("$r<br>0x%03X</div></div>", $addr);
+          }
         }
       else
         {
-        Outfl("$r<br>0x%03X$l_e</div></div>", $addr);
+        if ($size > 1)
+          {
+          Outfl("$r<br>0x%03X - 0x%03X<br>$size bytes$l_e</div></div>", $addr, $addr + $size - 1);
+          }
+        else
+          {
+          Outfl("$r<br>0x%03X$l_e</div></div>", $addr);
+          }
         }
       } # foreach (@{$map})
 
@@ -2251,8 +2513,8 @@ sub dump_ram_map($$)
     {
     my $sum = $bank_sum[$x];
 
-    aOutl(8, '<td class="ramColumn">');
-    aOutl(10, '<div class="ramColCont">');
+    aOutml(8, '<td class="ramColumn">',
+              '  <div class="ramColCont">');
     aOutml(12, "<div class=\"ramSFR ramSum\">SFR<br>$sum->{SFR} bytes</div>",
                "<div class=\"ramGPR ramSum\">GPR<br>$sum->{GPR} bytes</div>",
                "<div class=\"ramBAD ramSum\">Unimplemented<br>$sum->{BAD} bytes</div>");
@@ -2409,11 +2671,10 @@ sub dump_sfr_map($$)
       if (defined($t))
         {
         my $v = @{$t};
-        my $name = $t->[0]{NAME};
-        my $addr = $t->[0]{ADDR};
-        my $second_class = '';
+        my ($name, $addr) = ($t->[0]{NAME}, $t->[0]{ADDR});
+        my $second_class;
 
-        $second_class = ' sfrAccess' if ($last_bank && $addr >= $accessSfr);
+        $second_class = ($last_bank && $addr >= $accessSfr) ? ' sfrAccess' : '';
 
         aOutl(12, "<tr id=\"$name\">");
 
