@@ -196,6 +196,11 @@ my %mcu_features =
               }
   );
 
+my @mcu_feat_names = sort {
+                          $mcu_features{$a}->{ENHANCED} <=> $mcu_features{$b}->{ENHANCED} ||
+                          $mcu_features{$a}->{CLASS}    <=> $mcu_features{$b}->{CLASS}
+                          } keys(%mcu_features);
+
 #-----------------------------------------------
 
 =back
@@ -337,7 +342,7 @@ my @pri_menu_elems =
     CLASS => PRI_MENU_ALL
     },
 
-    {                                   # PRI_MENU_ENH  (14 bit)
+    {                                   # PRI_MENU_ENH  (12 and 14 bit)
     HREF  => 'enhanced-mcus.html',
     NAME  => 'Enhanced',
     PFUNC => \&print_mcu_list,
@@ -1209,61 +1214,61 @@ sub print_mcu_list($$)
 
   Log("Print list of MCUs.", 4);
 
-  aOutl($Align + 2, '<div class="mcuList">');
-  aOutl($Align + 4, '<table class="mcuTable">');
-  aOutl($Align + 6, '<tr>');
-  aOutl($Align + 8, '<td class="vMargin"></td>');
-  aOutl($Align + 8, "${lst}name</th>");
+  aOutml($Align + 2, '<div class="mcuList">',
+                     '  <table class="mcuTable">',
+                     '    <tr>');
+  aOutml($Align + 8, '<td class="vMargin"></td>',
+                     "${lst}name</th>");
 
   given ($Class)
     {
     when (PRI_MENU_ALL)
       {
-      aOutl($Align + 8, "${lst}instruction size (bit)</td>");
-      aOutl($Align + 8, "${lst}config word size (bit)</td>");
-      aOutl($Align + 8, "${lst}class</th>");
+      aOutml($Align + 8, "${lst}instruction size (bit)</td>",
+                         "${lst}config word size (bit)</td>",
+                         "${lst}class</th>");
       }
 
     when ([ PRI_MENU_ENH, PRI_MENU_EXT, PRI_MENU_REG ])
       {
-      aOutl($Align + 8, "${lst}instruction size (bit)</td>");
-      aOutl($Align + 8, "${lst}config word size (bit)</td>");
+      aOutml($Align + 8, "${lst}instruction size (bit)</td>",
+                         "${lst}config word size (bit)</td>");
       }
 
     when (PRI_MENU_RAM)
       {
-      aOutl($Align + 8, "${lst}RAM size (byte)</th>");
-      aOutl($Align + 8, "${lst}instruction size (bit)</td>");
-      aOutl($Align + 8, "${lst}config word size (bit)</td>");
-      aOutl($Align + 8, "${lst}class</th>");
+      aOutml($Align + 8, "${lst}RAM size (byte)</th>",
+                         "${lst}instruction size (bit)</td>",
+                         "${lst}config word size (bit)</td>",
+                         "${lst}class</th>");
       }
 
     when (PRI_MENU_ROM)
       {
-      aOutl($Align + 8, "${lst}ROM size (word/byte)</td>");
-      aOutl($Align + 8, "${lst}instruction size (bit)</td>");
-      aOutl($Align + 8, "${lst}config word size (bit)</td>");
-      aOutl($Align + 8, "${lst}class</td>");
+      aOutml($Align + 8, "${lst}ROM size (word/byte)</td>",
+                         "${lst}instruction size (bit)</td>",
+                         "${lst}config word size (bit)</td>",
+                         "${lst}class</td>");
       }
 
     when (PRI_MENU_EEPROM)
       {
-      aOutl($Align + 8, "${lst}EEPROM size (byte)</td>");
-      aOutl($Align + 8, "${lst}instruction size (bit)</td>");
-      aOutl($Align + 8, "${lst}config word size (bit)</td>");
-      aOutl($Align + 8, "${lst}class</td>");
+      aOutml($Align + 8, "${lst}EEPROM size (byte)</td>",
+                         "${lst}instruction size (bit)</td>",
+                         "${lst}config word size (bit)</td>",
+                         "${lst}class</td>");
       }
 
     default
       {
-      aOutl($Align + 8, "${lst}config word size (bit)</td>");
-      aOutl($Align + 8, "${lst}class</td>");
+      aOutml($Align + 8, "${lst}config word size (bit)</td>",
+                         "${lst}class</td>");
       }
     }
 
-  aOutl($Align + 8, '<td class="vMargin"></td>');
-  aOutl($Align + 6, '</tr>');
-  aOutl($Align + 6, '<tr class="mcuGap"><td></td></tr>');
+  aOutml($Align + 6, '  <td class="vMargin"></td>',
+                     '</tr>',
+                     '<tr class="mcuGap"><td></td></tr>');
 
   if ($Class == PRI_MENU_RAM)
     {
@@ -1308,12 +1313,7 @@ sub print_mcu_list($$)
       when (PRI_MENU_ALL)
         {
         aOutl($Align + 6, '<tr>');
-        aOutl($Align + 8, $margin);
-        aOutl($Align + 8, $td_href);
-        aOutl($Align + 8, $td_wsize);
-        aOutl($Align + 8, $td_csize);
-        aOutl($Align + 8, $td_class);
-        aOutl($Align + 8, $margin);
+        aOutml($Align + 8, $margin, $td_href, $td_wsize, $td_csize, $td_class, $margin);
         aOutl($Align + 6, '</tr>');
         }
 
@@ -1322,11 +1322,7 @@ sub print_mcu_list($$)
         if ($class == PROC_CLASS_PIC12E || $class == PROC_CLASS_PIC14E)
           {
           aOutl($Align + 6, '<tr>');
-          aOutl($Align + 8, $margin);
-          aOutl($Align + 8, $td_href);
-          aOutl($Align + 8, $td_wsize);
-          aOutl($Align + 8, $td_csize);
-          aOutl($Align + 8, $margin);
+          aOutml($Align + 8, $margin, $td_href, $td_wsize, $td_csize, $margin);
           aOutl($Align + 6, '</tr>');
           }
         }
@@ -1336,11 +1332,7 @@ sub print_mcu_list($$)
         if ($class == PROC_CLASS_PIC16E)
           {
           aOutl($Align + 6, '<tr>');
-          aOutl($Align + 8, $margin);
-          aOutl($Align + 8, $td_href);
-          aOutl($Align + 8, $td_wsize);
-          aOutl($Align + 8, $td_csize);
-          aOutl($Align + 8, $margin);
+          aOutml($Align + 8, $margin, $td_href, $td_wsize, $td_csize, $margin);
           aOutl($Align + 6, '</tr>');
           }
         }
@@ -1350,11 +1342,7 @@ sub print_mcu_list($$)
         if (! $features->{ENHANCED})
           {
           aOutl($Align + 6, '<tr>');
-          aOutl($Align + 8, $margin);
-          aOutl($Align + 8, $td_href);
-          aOutl($Align + 8, $td_wsize);
-          aOutl($Align + 8, $td_csize);
-          aOutl($Align + 8, $margin);
+          aOutml($Align + 8, $margin, $td_href, $td_wsize, $td_csize, $margin);
           aOutl($Align + 6, '</tr>');
           }
         }
@@ -1364,11 +1352,7 @@ sub print_mcu_list($$)
         if ($wsize == 12)
           {
           aOutl($Align + 6, '<tr>');
-          aOutl($Align + 8, $margin);
-          aOutl($Align + 8, $td_href);
-          aOutl($Align + 8, $td_csize);
-          aOutl($Align + 8, $td_class);
-          aOutl($Align + 8, $margin);
+          aOutml($Align + 8, $margin, $td_href, $td_csize, $td_class, $margin);
           aOutl($Align + 6, '</tr>');
           }
         }
@@ -1378,11 +1362,7 @@ sub print_mcu_list($$)
         if ($wsize == 14)
           {
           aOutl($Align + 6, '<tr>');
-          aOutl($Align + 8, $margin);
-          aOutl($Align + 8, $td_href);
-          aOutl($Align + 8, $td_csize);
-          aOutl($Align + 8, $td_class);
-          aOutl($Align + 8, $margin);
+          aOutml($Align + 8, $margin, $td_href, $td_csize, $td_class, $margin);
           aOutl($Align + 6, '</tr>');
           }
         }
@@ -1392,11 +1372,7 @@ sub print_mcu_list($$)
         if ($wsize == 16)
           {
           aOutl($Align + 6, '<tr>');
-          aOutl($Align + 8, $margin);
-          aOutl($Align + 8, $td_href);
-          aOutl($Align + 8, $td_csize);
-          aOutl($Align + 8, $td_class);
-          aOutl($Align + 8, $margin);
+          aOutml($Align + 8, $margin, $td_href, $td_csize, $td_class, $margin);
           aOutl($Align + 6, '</tr>');
           }
         }
@@ -1404,55 +1380,39 @@ sub print_mcu_list($$)
       when (PRI_MENU_RAM)
         {
         aOutl($Align + 6, '<tr>');
-        aOutl($Align + 8, $margin);
-        aOutl($Align + 8, "<th class=\"mcuLink\"><a href=\"$remote_url${name}-$ram_tag.html\">$name</a></th>");
-        aOutl($Align + 8, "<td class=\"$css_class\">$features->{RAM_SIZE}</td>");
-        aOutl($Align + 8, $td_wsize);
-        aOutl($Align + 8, $td_csize);
-        aOutl($Align + 8, $td_class);
-        aOutl($Align + 8, $margin);
+        aOutml($Align + 8, $margin,
+                           "<th class=\"mcuLink\"><a href=\"$remote_url${name}-$ram_tag.html\">$name</a></th>",
+                           "<td class=\"$css_class\">$features->{RAM_SIZE}</td>",
+                           $td_wsize, $td_csize, $td_class, $margin);
         aOutl($Align + 6, '</tr>');
         }
 
       when (PRI_MENU_ROM)
         {
         aOutl($Align + 6, '<tr>');
-        aOutl($Align + 8, $margin);
-        aOutl($Align + 8, $td_href);
+        aOutml($Align + 8, $margin, $td_href);
         aOutfl($Align + 8, "<td class=\"$css_class\">%u</td>", $features->{ROM} + 1);
-        aOutl($Align + 8, $td_wsize);
-        aOutl($Align + 8, $td_csize);
-        aOutl($Align + 8, $td_class);
-        aOutl($Align + 8, $margin);
+        aOutml($Align + 8, $td_wsize, $td_csize, $td_class, $margin);
         aOutl($Align + 6, '</tr>');
         }
 
       when (PRI_MENU_EEPROM)
         {
         aOutl($Align + 6, '<tr>');
-        aOutl($Align + 8, $margin);
-        aOutl($Align + 8, $td_href);
+        aOutml($Align + 8, $margin, $td_href);
         aOutfl($Align + 8, "<td class=\"$css_class\">%u</td>", $features->{EEPROM} + 1);
-        aOutl($Align + 8, $td_wsize);
-        aOutl($Align + 8, $td_csize);
-        aOutl($Align + 8, $td_class);
-        aOutl($Align + 8, $margin);
+        aOutml($Align + 8, $td_wsize, $td_csize, $td_class, $margin);
         aOutl($Align + 6, '</tr>');
         }
       }
     }
 
-  aOutl($Align + 4, '</table>');
-  aOutl($Align + 2, '</div>');
+  aOutml($Align + 2, '  </table>', '</div>');
 
         #------------------------------------
 
   aOutl($Align + 2, '<div class="legendContainer">');
 
-  my @mcu_feat_names = sort {
-                            $mcu_features{$a}->{ENHANCED} <=> $mcu_features{$b}->{ENHANCED} ||
-                            $mcu_features{$a}->{CLASS}    <=> $mcu_features{$b}->{CLASS}
-                            } keys(%mcu_features);
   my $v = @mcu_feat_names;
   my $level;
 
@@ -1515,9 +1475,7 @@ sub print_devid($$$$)
     my ($start, $end) = ($Devid->{START}, $Devid->{END});
 
     aOutl($Align, '<tr class="featLine">');
-    aOutl($Align + 2, $Margin);
-    aOutl($Align + 2, '<th class="featName">Device ID</th>');
-
+    aOutml($Align + 2, $Margin, '<th class="featName">Device ID</th>');
     aOutfl($Align + 2, "<td class=\"featValue\">0x%0${Length}X - 0x%0${Length}X   (%u bytes)</td>",
                        $start, $end, $end - $start + 1);
 
@@ -1568,14 +1526,13 @@ sub dump_features($$)
   $rom_size = $features->{ROM} + 1;
 
   aOutl(4, '<table class="featList">');
-  aOutl(6, "<tr><th colspan=4 class=\"featTableName\">$Name</th></tr>");
-  aOutl(6, '<tr class="featGap"><td></td></tr>');
+  aOutml(6, "<tr><th colspan=4 class=\"featTableName\">$Name</th></tr>",
+            '<tr class="featGap"><td></td></tr>');
 
         #------------------------------------
 
   aOutl(6, '<tr class="featLine">');
-  aOutl(8, $margin);
-  aOutl(8, '<th class="featName">Coff ID of device</th>');
+  aOutml(8, $margin, '<th class="featName">Coff ID of device</th>');
   aOutfl(8, '<td class="featValue">0x%04X</td>', $features->{COFF});
   aOutl(8, $margin);
   aOutl(6, '</tr>');
@@ -1586,17 +1543,16 @@ sub dump_features($$)
   if ($i > 0)
     {
     aOutl(6, '<tr class="featLine">');
-    aOutl(8, $margin);
-    aOutl(8, '<th class="featName">Number of ROM/FLASH pages</th>');
-    aOutl(8, "<td class=\"featValue\">$features->{PAGES} ($i words/pages)</td>");
+    aOutml(8, $margin,
+              '<th class="featName">Number of ROM/FLASH pages</th>',
+              "<td class=\"featValue\">$features->{PAGES} ($i words/pages)</td>");
     aOutl(6, '</tr>');
     }
 
         #------------------------------------
 
   aOutl(6, '<tr class="featLine">');
-  aOutl(8, $margin);
-  aOutl(8, '<th class="featName">Last address of ROM/FLASH</th>');
+  aOutml(8, $margin, '<th class="featName">Last address of ROM/FLASH</th>');
 
   $t = ($word_size == 16) ? 'bytes' : 'words';
   aOutfl(8, "<td class=\"featValue\">0x%0${len}X   ($rom_size $t)</td>", $features->{ROM});
@@ -1608,8 +1564,7 @@ sub dump_features($$)
   if (defined($i))
     {
     aOutl(6, '<tr class="featLine">');
-    aOutl(8, $margin);
-    aOutl(8, '<th class="featName">Oscillator calibration value</th>');
+    aOutml(8, $margin, '<th class="featName">Oscillator calibration value</th>');
 
     aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X   (%u words)</td>",
                $i->{START}, $i->{END}, $i->{END} - $i->{START} + 1);
@@ -1623,8 +1578,7 @@ sub dump_features($$)
   if ($i > 0)
     {
     aOutl(6, '<tr class="featLine">');
-    aOutl(8, $margin);
-    aOutl(8, '<th class="featName">Address space of FLASH Data</th>');
+    aOutml(8, $margin, '<th class="featName">Address space of FLASH Data</th>');
 
     aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X   (%u words)</td>",
                $rom_size, $rom_size + $i, $i + 1);
@@ -1638,8 +1592,7 @@ sub dump_features($$)
   if (defined($i))
     {
     aOutl(6, '<tr class="featLine">');
-    aOutl(8, $margin);
-    aOutl(8, '<th class="featName">User ID</th>');
+    aOutml(8, $margin, '<th class="featName">User ID</th>');
 
     aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X   (%u bytes)</td>",
                $i->{START}, $i->{END}, $i->{END} - $i->{START} + 1);
@@ -1657,8 +1610,7 @@ sub dump_features($$)
   $t = ($word_size == 16) ? 'Byte' : 'Word';
   $t .= 's' if ($i > 1);
   aOutl(6, '<tr class="featLine">');
-  aOutl(8, $margin);
-  aOutl(8, "<th class=\"featName\">Address space of Configuration $t</th>");
+  aOutml(8, $margin, "<th class=\"featName\">Address space of Configuration $t</th>");
   aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X   ($i %s)</td>",
              $features->{CF_START}, $features->{CF_END}, lc($t));
   aOutl(6, '</tr>');
@@ -1673,8 +1625,7 @@ sub dump_features($$)
   if ($i > 0)
     {
     aOutl(6, '<tr class="featLine">');
-    aOutl(8, $margin);
-    aOutl(8, '<th class="featName">Address space of EEPROM</th>');
+    aOutml(8, $margin, '<th class="featName">Address space of EEPROM</th>');
 
     aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X   (%u bytes)</td>",
                $features->{EE_START}, $features->{EE_START} + $i, $i + 1);
@@ -1685,9 +1636,9 @@ sub dump_features($$)
         #------------------------------------
 
   aOutl(6, '<tr class="featLine">');
-  aOutl(8, $margin);
-  aOutl(8, '<th class="featName">Number of RAM Banks</th>');
-  aOutl(8, "<td class=\"featValue\">$features->{BANKS} ($features->{BANK_SIZE} bytes/banks)</td>");
+  aOutml(8, $margin,
+            '<th class="featName">Number of RAM Banks</th>',
+            "<td class=\"featValue\">$features->{BANKS} ($features->{BANK_SIZE} bytes/banks)</td>");
   aOutl(6, '</tr>');
 
         #------------------------------------
@@ -1696,18 +1647,18 @@ sub dump_features($$)
   if ($i > 0)
     {
     aOutl(6, '<tr class="featLine">');
-    aOutl(8, $margin);
-    aOutl(8, '<th class="featName">Number of SFRs</th>');
-    aOutl(8, "<td class=\"featValue\">$i</td>");
+    aOutml(8, $margin,
+              '<th class="featName">Number of SFRs</th>',
+              "<td class=\"featValue\">$i</td>");
     aOutl(6, '</tr>');
 
     if ($features->{RAM_SIZE} > 0)
       {
       $i = $features->{RAM_SIZE} - $i;
       aOutl(6, '<tr class="featLine">');
-      aOutl(8, $margin);
-      aOutl(8, '<th class="featName">Size of GPRs</th>');
-      aOutl(8, "<td class=\"featValue\">$i bytes</td>");
+      aOutml(8, $margin,
+                '<th class="featName">Size of GPRs</th>',
+                "<td class=\"featValue\">$i bytes</td>");
       aOutl(6, '</tr>');
       }
     }
@@ -1718,9 +1669,9 @@ sub dump_features($$)
   if ($i > 0)
     {
     aOutl(6, '<tr class="featLine">');
-    aOutl(8, $margin);
-    aOutl(8, '<th class="featName">Full size of SFRs + GPRs</th>');
-    aOutl(8, "<td class=\"featValue\">$i bytes</td>");
+    aOutml(8, $margin,
+              '<th class="featName">Full size of SFRs + GPRs</th>',
+              "<td class=\"featValue\">$i bytes</td>");
     aOutl(6, '</tr>');
     }
 
@@ -1729,8 +1680,7 @@ sub dump_features($$)
   if ($word_size == 16)
     {
     aOutl(6, '<tr class="featLine">');
-    aOutl(8, $margin);
-    aOutl(8, '<th class="featName">Last address of lower Access RAM</th>');
+    aOutml(8, $margin, '<th class="featName">Last address of lower Access RAM</th>');
     aOutfl(8, "<td class=\"featValue\">0x%02X</td>", $features->{ACCESS});
     aOutl(6, '</tr>');
     }
@@ -1768,8 +1718,7 @@ sub dump_config_word($$$$$)
       $name = $head;
       }
 
-    aOutl($Align, $Gap);
-    aOutl($Align, "<tr><th colspan=3 class=\"confOptName\">$name</th></tr>");
+    aOutml($Align, $Gap, "<tr><th colspan=3 class=\"confOptName\">$name</th></tr>");
 
     foreach (@{$_->{BITS}})
       {
@@ -1780,11 +1729,9 @@ sub dump_config_word($$$$$)
       $expl .= '.' if ($expl ne '' && $expl !~ /\.$/o);
 
       aOutl($Align, '<tr>');
-      aOutl($Align + 2, $margin);
-      aOutl($Align + 2, "<td class=\"confSwName\">$str</td>");
+      aOutml($Align + 2, $margin, "<td class=\"confSwName\">$str</td>");
       aOutfl($Align + 2, "<td class=\"confSwValue\">0x%0${Length}X</td>", $_->{VALUE} | $mask);
-      aOutl($Align + 2, "<td class=\"confSwExpl\">$expl</td>");
-      aOutl($Align + 2, $margin);
+      aOutml($Align + 2, "<td class=\"confSwExpl\">$expl</td>", $margin);
       aOutl($Align, '</tr>');
       }
     }
@@ -1838,8 +1785,8 @@ sub dump_all_config_word($$)
 
         # The table of Config Bits.
 
-  aOutl(4, '<table class="configList">');
-  aOutl(6, "<tr><th colspan=5 class=\"confTableName\">$Name</th></tr>");
+  aOutml(4, '<table class="configList">',
+            "  <tr><th colspan=5 class=\"confTableName\">$Name</th></tr>");
 
   if ($count < 2)
     {
@@ -2157,12 +2104,10 @@ sub dump_ram_map($$)
 
   for ($x = 0; $x < $bank_num; ++$x)
     {
-    aOutl(8, "<th class=\"ramBank\">Bank&nbsp;$x</th>");
-    aOutl(8, $margin);
+    aOutml(8, "<th class=\"ramBank\">Bank&nbsp;$x</th>", $margin);
     }
 
-  aOutl(6, '</tr>');
-  aOutl(6, '<tr class="ramGap"><td></td></tr>');
+  aOutml(6, '</tr>', '<tr class="ramGap"><td></td></tr>');
 
         #------------------------------------
 
@@ -2176,8 +2121,7 @@ sub dump_ram_map($$)
 
     $map = $map_array[$x];
 
-    aOutl(8, '<td class="ramColumn">');
-    aOutl(10, '<div class="ramColCont">');
+    aOutml(8, '<td class="ramColumn">', '  <div class="ramColCont">');
 
     if ($mcu16_bit)
       {
@@ -2291,20 +2235,16 @@ sub dump_ram_map($$)
 
     $bank_sum[$x] = { SFR => $sfr_size, GPR => $gpr_size, BAD => $bad_size };
 
-    aOutl(10, '</div>');
-    aOutl(8, '</td>');
-    aOutl(8, $margin);
+    aOutml(8, '  </div>', '</td>', $margin);
     }
 
-  aOutl(6, '</tr>');
-  aOutl(4, '</table>');
+  aOutml(4, '  </tr>', '</table>');
 
         #------------------------------------
 
         # Summary of banks.
 
-  aOutl(4, '<table class="ramMap">');
-  aOutl(6, '<tr>');
+  aOutml(4, '<table class="ramMap">', '  <tr>');
   aOutl(8, $margin);
 
   for ($x = 0; $x < $bank_num; ++$x)
@@ -2313,12 +2253,11 @@ sub dump_ram_map($$)
 
     aOutl(8, '<td class="ramColumn">');
     aOutl(10, '<div class="ramColCont">');
-    aOutl(12, "<div class=\"ramSFR ramSum\">SFR<br>$sum->{SFR} bytes</div>");
-    aOutl(12, "<div class=\"ramGPR ramSum\">GPR<br>$sum->{GPR} bytes</div>");
-    aOutl(12, "<div class=\"ramBAD ramSum\">Unimplemented<br>$sum->{BAD} bytes</div>");
+    aOutml(12, "<div class=\"ramSFR ramSum\">SFR<br>$sum->{SFR} bytes</div>",
+               "<div class=\"ramGPR ramSum\">GPR<br>$sum->{GPR} bytes</div>",
+               "<div class=\"ramBAD ramSum\">Unimplemented<br>$sum->{BAD} bytes</div>");
     aOutl(10, '</div>');
-    aOutl(8, '</td>');
-    aOutl(8, $margin);
+    aOutml(8, '</td>', $margin);
     }
 
   aOutl(6, '</tr>');
@@ -2333,19 +2272,19 @@ sub dump_ram_map($$)
 
         #------------------------------------
 
-  aOutl(4, '<div class="legendContainer">');
-  aOutl(6, '<div class="legend">');
-  aOutl(8, '<p class="ramSFREx">&nbsp;<span class="explanation">Special Function Register.</span></p>');
-  aOutl(8, '<p class="ramGPREx">&nbsp;<span class="explanation">General-purpose RAM.</span></p>');
-  aOutl(8, '<p class="ramBADEx">&nbsp;<span class="explanation">In this place no RAM.</span></p>');
+  aOutml(4, '<div class="legendContainer">',
+            '  <div class="legend">');
+  aOutml(8, '<p class="ramSFREx">&nbsp;<span class="explanation">Special Function Register.</span></p>',
+            '<p class="ramGPREx">&nbsp;<span class="explanation">General-purpose RAM.</span></p>',
+            '<p class="ramBADEx">&nbsp;<span class="explanation">In this place no RAM.</span></p>');
   aOutl(6, '</div>');
 
   if ($mcu16_bit)
     {
     aOutl(6, '<div class="legend">');
-    aOutl(8, '<p class="ramSFREx"><span class="ramAccEx"></span>&nbsp;<span class="explanation">Special Function Register on Access Area.</span></p>');
-    aOutl(8, '<p class="ramGPREx"><span class="ramAccEx"></span>&nbsp;<span class="explanation">General-purpose RAM on Access Area.</span></p>');
-    aOutl(8, '<p class="ramBADEx"><span class="ramAccEx"></span>&nbsp;<span class="explanation">In this place no RAM on Access Area.</span></p>');
+    aOutml(8, '<p class="ramSFREx"><span class="ramAccEx"></span>&nbsp;<span class="explanation">Special Function Register on Access Area.</span></p>',
+              '<p class="ramGPREx"><span class="ramAccEx"></span>&nbsp;<span class="explanation">General-purpose RAM on Access Area.</span></p>',
+              '<p class="ramBADEx"><span class="ramAccEx"></span>&nbsp;<span class="explanation">In this place no RAM on Access Area.</span></p>');
     aOutl(6, '</div>');
     }
 
@@ -2364,6 +2303,7 @@ sub dump_sfr_map($$)
   {
   my ($Name, $Configs) = @_;
   my $features  = $Configs->{FEATURES};
+  my $bank_num  = $features->{BANKS};
   my $bank_size = $features->{BANK_SIZE};
   my $sfrs      = $features->{SFRS};
   my @bank_array = ();
@@ -2445,12 +2385,10 @@ sub dump_sfr_map($$)
 
   for ($x = 0; $x < $max_x; ++$x)
     {
-    aOutl(8, "<th class=\"sfrBank\">Bank&nbsp;$bank_array[$x]->{BANKNUM}</th>");
-    aOutl(8, $margin);
+    aOutml(8, "<th class=\"sfrBank\">Bank&nbsp;$bank_array[$x]->{BANKNUM}</th>", $margin);
     }
 
-  aOutl(6, '</tr>');
-  aOutl(6, '<tr class="sfrGap"><td></td></tr>');
+  aOutml(6, '</tr>', '<tr class="sfrGap"><td></td></tr>');
 
   aOutl(6, '<tr>');
   aOutl(8, $margin);
@@ -2521,30 +2459,34 @@ sub dump_sfr_map($$)
         }
       }
 
-    aOutl(10, '</table>');
-    aOutl(8, '</td>');
-    aOutl(8, $margin);
+    aOutml(8, '  </table>', '</td>', $margin);
     }
 
   aOutl(6, '</tr>');
 
         #------------------------------------
 
+  if ($bank_num > 1 && ! $mcu16_bit)
+    {
+    aOutl(6, '<tr class="ramGap"><td></td></tr>');
+    aOutfl(6, "<tr><td colspan=%u class=\"ramSumEx\">The mirror of [PCL, STATUS, ...] are not shown.</td></tr>", $bank_num * 2 + 1);
+    }
+
   aOutl(4, '</table>');
 
         #------------------------------------
 
-  aOutl(4, '<div class="legendContainer">');
-  aOutl(6, '<div class="legend">');
-  aOutl(8, '<p class="sfrNameEx">&nbsp;<span class="explanation">SFR</span></p>');
-  aOutl(8, '<p class="sfrNameXEx">&nbsp;<span class="explanation">SFR with alias name.</span></p>');
+  aOutml(4, '<div class="legendContainer">',
+            '  <div class="legend">');
+  aOutml(8, '<p class="sfrNameEx">&nbsp;<span class="explanation">SFR</span></p>',
+            '<p class="sfrNameXEx">&nbsp;<span class="explanation">SFR with alias name.</span></p>');
   aOutl(6, '</div>');
 
   if ($mcu16_bit)
     {
-    aOutl(6, '<div class="legend">');
-    aOutl(8, '<p class="sfrNameEx sfrAccess">&nbsp;<span class="explanation">SFR on Access Area.</span></p>');
-    aOutl(6, '</div>');
+    aOutml(6, '<div class="legend">',
+              '  <p class="sfrNameEx sfrAccess">&nbsp;<span class="explanation">SFR on Access Area.</span></p>',
+              '</div>');
     }
 
   aOutl(4, '</div>');
@@ -2589,11 +2531,11 @@ sub create_class_htmls()
     open($out_handler, '>', $html) || die "Could not create the \"$html\" file!\n";
 
     print_html_head($_->{NAME});
-    aOutl(2, '<body>');
-    aOutl(4, '<div class="headContainer">');
-    aOutl(6, '<div class="headSide">&nbsp;</div>');
-    aOutl(6, '<div class="heading">Informations about the PIC microcontrollers</div>');
-    aOutl(6, '<div class="headSide">&nbsp;</div>');
+    aOutml(2, '<body>',
+              '  <div class="headContainer">');
+    aOutml(6, '<div class="headSide">&nbsp;</div>',
+              '<div class="heading">Informations about the PIC microcontrollers</div>',
+              '<div class="headSide">&nbsp;</div>');
     print_pri_menu($_);
 
         # print_mcu_list()
@@ -2601,8 +2543,7 @@ sub create_class_htmls()
 
     $func->(4, $_->{CLASS}) if (defined($func));
 
-    aOutl(4, '</div>');
-    aOutl(2, "</body>\n</html>");
+    aOutml(2, '  </div>', "</body>\n</html>");
 
     close($out_handler);
     }
@@ -2885,10 +2826,6 @@ EOT
 
 EOT
 ;
-  my @mcu_feat_names = sort {
-                            $mcu_features{$a}->{ENHANCED} <=> $mcu_features{$b}->{ENHANCED} ||
-                            $mcu_features{$a}->{CLASS}    <=> $mcu_features{$b}->{CLASS}
-                            } keys(%mcu_features);
   my $i = 0;
   my $v = @mcu_feat_names;
   while (TRUE)
@@ -2907,18 +2844,18 @@ EOT
       }
     }
 
-  aOutl(2, "{");
-  aOutl(2, "padding: 0.2em 0.625em;");
-  aOutl(2, 'text-align: center;');
-  aOutl(2, 'font: bold 1em Georgia;');
-  aOutl(2, "}\n");
+  aOutml(2, "{",
+            "padding: 0.2em 0.625em;",
+            'text-align: center;',
+            'font: bold 1em Georgia;',
+            "}\n");
 
   foreach (@mcu_feat_names)
     {
     Outl(".$mcu_features{$_}->{CSS_CLASS}");
-    aOutl(2, "{");
-    aOutl(2, "background: $mcu_features{$_}->{CSS_BGRND};");
-    aOutl(2, "}\n");
+    aOutml(2, "{",
+              "background: $mcu_features{$_}->{CSS_BGRND};",
+              "}\n");
     }
 
   print $out_handler <<EOT

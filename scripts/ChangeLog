@@ -1,4 +1,9 @@
 2012-09-12 Molnar Karoly <proton7@freemail.hu>
+	* tools/config-help.pl: Code optimization. Warning the bottom
+          of "SFR map" pages, if the page belongs to 12 or 14 bits
+          MCU and bank number > 1.
+
+2012-09-12 Molnar Karoly <proton7@freemail.hu>
 	* tools/config-help.pl: Summary of banks in the "RAM map".
 
 2012-09-11 Molnar Karoly <proton7@freemail.hu>
