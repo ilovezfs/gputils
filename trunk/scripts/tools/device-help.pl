@@ -49,7 +49,7 @@ use constant TRUE  => 1;
 use constant ST_WAIT   => 0;
 use constant ST_LISTEN => 1;
 
-my $PROGRAM = 'config-help.pl';
+my $PROGRAM = 'device-help.pl';
 
 my $verbose = 0;
 
@@ -481,7 +481,7 @@ my %pp_defines = ();            # Value of definitions.
 
 my @pp_conditions = ();
 my @pp_else_conditions = ();
-my $pp_level = 0;   # Shows the lowest level.
+my $pp_level = 0;               # Shows the lowest level.
 my $pp_line_number;             # Line number of a lkr file.
 
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -1052,7 +1052,7 @@ sub read_ram_features($$)
               {
               my ($s, $e) = (hex($1), hex($2));
 
-              swap_reverse(\$s, \$e);
+              swap_reverse(\$s, \$e);   # paranoia
               push(@{$bad_ram}, { START => $s, END => $e });
               $full_ram -= $e - $s + 1;
               }
@@ -1104,6 +1104,7 @@ sub process_lkr_line($$)
     my $tail = ${^POSTMATCH};
 
     $tail =~ s/^\s+//o;
+    swap_reverse(\$start, \$end);       # paranoia
 
     if ($section eq 'CODEPAGE')
       {
@@ -1206,13 +1207,14 @@ sub read_ram_and_rom_features($$)
 
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@                                                  @@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@  Read all config options from the $dev_info file.  @@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@                                                  @@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@                                                   @@@@@@@@@@@@@@@
+#@@@@@@@@@@@@  Read all informations from the $dev_info file and  @@@@@@@@@@@@@@
+#@@@@@@@@@@@@  from the device specific .inc and .lkr files.      @@@@@@@@@@@@@@
+#@@@@@@@@@@@@@                                                   @@@@@@@@@@@@@@@
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-sub read_all_config_bits()
+sub read_all_informations()
   {
   my ($configs, $name, $inc, $lkr, $class);
   my $features = undef;
@@ -1234,10 +1236,7 @@ sub read_all_config_bits()
     {
     my @fields = ($_ =~ /<([^<>]*)>/go);
 
-    if ($fields[0] eq 'RES_FILE_VERSION_INFO_TYPE')
-      {
-      $dev_info_rev = $fields[1];
-      }
+    $dev_info_rev = $fields[1] if ($fields[0] eq 'RES_FILE_VERSION_INFO_TYPE');
 
     next if (@fields < 3);
 
@@ -1693,13 +1692,13 @@ sub print_mcu_list($$)
 
 sub print_mcu_menu($$)
   {
-  my ($Name, $Selected) = @_;
+  my ($Name, $Default) = @_;
 
   aOutl(4, '<ul class="tabs">');
 
   foreach (@mcu_menu_elems)
     {
-    my $class = ($_->{CLASS} == $Selected) ? ' class="selected"' : '';
+    my $class = ($_->{CLASS} == $Default) ? ' class="selected"' : '';
 
     aOutl(6, "<li$class><a href=\"$remote_url${Name}$_->{HREF}\">$_->{NAME}</a></li>");
     }
@@ -1716,11 +1715,22 @@ sub print_devid($$$$)
   if (defined($Devid))
     {
     my ($start, $end) = ($Devid->{START}, $Devid->{END});
+    my $size = $end - $start + 1;
+    my $tail = ($size > 1) ? ' space' : '';
 
     aOutl($Align, '<tr class="featLine">');
-    aOutml($Align + 2, $Margin, '<th class="featName">Device ID</th>');
-    aOutfl($Align + 2, "<td class=\"featValue\">0x%0${Length}X - 0x%0${Length}X   (%u bytes)</td>",
-                       $start, $end, $end - $start + 1);
+    aOutml($Align + 2, $Margin, "<th class=\"featName\">Address$tail of Device ID</th>");
+
+    if ($size > 1)
+      {
+      aOutfl($Align + 2, "<td class=\"featValue\">0x%0${Length}X - 0x%0${Length}X&nbsp;&nbsp;(%u bytes)</td>",
+                         $start, $end, $size);
+      }
+    else
+      {
+      aOutfl($Align + 2, "<td class=\"featValue\">0x%0${Length}X&nbsp;&nbsp;(%u byte)</td>",
+                         $start, $size);
+      }
 
     aOutl($Align, '</tr>');
     }
@@ -1788,7 +1798,7 @@ sub dump_features($$)
     aOutl(6, '<tr class="featLine">');
     aOutml(8, $margin,
               '<th class="featName">Number of ROM/FLASH pages</th>',
-              "<td class=\"featValue\">$features->{PAGES} ($i words/pages)</td>");
+              "<td class=\"featValue\">$features->{PAGES}&nbsp;&nbsp;($i words/pages)</td>");
     aOutl(6, '</tr>');
     }
 
@@ -1798,7 +1808,7 @@ sub dump_features($$)
   aOutml(8, $margin, '<th class="featName">Last address of ROM/FLASH</th>');
 
   $t = ($word_size == 16) ? 'bytes' : 'words';
-  aOutfl(8, "<td class=\"featValue\">0x%0${len}X   ($rom_size $t)</td>", $features->{ROM});
+  aOutfl(8, "<td class=\"featValue\">0x%0${len}X&nbsp;&nbsp;($rom_size $t)</td>", $features->{ROM});
   aOutl(6, '</tr>');
 
         #------------------------------------
@@ -1806,11 +1816,21 @@ sub dump_features($$)
   $i = $features->{OSCVAL};
   if (defined($i))
     {
+    my $size = $i->{END} - $i->{START} + 1;
+
     aOutl(6, '<tr class="featLine">');
     aOutml(8, $margin, '<th class="featName">Oscillator calibration value</th>');
 
-    aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X   (%u words)</td>",
-               $i->{START}, $i->{END}, $i->{END} - $i->{START} + 1);
+    if ($size > 1)
+      {
+      aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X&nbsp;&nbsp;(%u words)</td>",
+                 $i->{START}, $i->{END}, $size);
+      }
+    else
+      {
+      aOutfl(8, "<td class=\"featValue\">0x%0${len}X&nbsp;&nbsp;(%u word)</td>",
+                 $i->{START}, $size);
+      }
 
     aOutl(6, '</tr>');
     }
@@ -1823,7 +1843,7 @@ sub dump_features($$)
     aOutl(6, '<tr class="featLine">');
     aOutml(8, $margin, '<th class="featName">Address space of FLASH Data</th>');
 
-    aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X   (%u words)</td>",
+    aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X&nbsp;&nbsp;(%u words)</td>",
                $rom_size, $rom_size + $i, $i + 1);
 
     aOutl(6, '</tr>');
@@ -1834,11 +1854,14 @@ sub dump_features($$)
   $i = $features->{USERID};
   if (defined($i))
     {
-    aOutl(6, '<tr class="featLine">');
-    aOutml(8, $margin, '<th class="featName">User ID</th>');
+    my $size = $i->{END} - $i->{START} + 1;
+    my $tail = ($size > 1) ? ' space' : '';
 
-    aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X   (%u bytes)</td>",
-               $i->{START}, $i->{END}, $i->{END} - $i->{START} + 1);
+    aOutl(6, '<tr class="featLine">');
+    aOutml(8, $margin, "<th class=\"featName\">Address$tail of User ID</th>");
+
+    aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X&nbsp;&nbsp;(%u bytes)</td>",
+               $i->{START}, $i->{END}, $size);
 
     aOutl(6, '</tr>');
     }
@@ -1851,11 +1874,31 @@ sub dump_features($$)
 
   $i = $features->{CONFIGS};
   $t = ($word_size == 16) ? 'Byte' : 'Word';
-  $t .= 's' if ($i > 1);
+
+  if ($i > 1)
+    {
+    $t .= 's';
+    $str = ' space';
+    }
+  else
+    {
+    $str = '';
+    }
+
   aOutl(6, '<tr class="featLine">');
-  aOutml(8, $margin, "<th class=\"featName\">Address space of Configuration $t</th>");
-  aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X   ($i %s)</td>",
-             $features->{CF_START}, $features->{CF_END}, lc($t));
+  aOutml(8, $margin, "<th class=\"featName\">Address$str of Configuration $t</th>");
+
+  if ($i > 1)
+    {
+    aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X&nbsp;&nbsp;($i %s)</td>",
+               $features->{CF_START}, $features->{CF_END}, lc($t));
+    }
+  else
+    {
+    aOutfl(8, "<td class=\"featValue\">0x%0${len}X&nbsp;&nbsp;($i %s)</td>",
+               $features->{CF_START}, lc($t));
+    }
+
   aOutl(6, '</tr>');
 
         #------------------------------------
@@ -1870,7 +1913,7 @@ sub dump_features($$)
     aOutl(6, '<tr class="featLine">');
     aOutml(8, $margin, '<th class="featName">Address space of EEPROM</th>');
 
-    aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X   (%u bytes)</td>",
+    aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X&nbsp;&nbsp;(%u bytes)</td>",
                $features->{EE_START}, $features->{EE_START} + $i, $i + 1);
 
     aOutl(6, '</tr>');
@@ -1881,7 +1924,7 @@ sub dump_features($$)
   aOutl(6, '<tr class="featLine">');
   aOutml(8, $margin,
             '<th class="featName">Number of RAM Banks</th>',
-            "<td class=\"featValue\">$features->{BANKS} ($features->{BANK_SIZE} bytes/banks)</td>");
+            "<td class=\"featValue\">$features->{BANKS}&nbsp;&nbsp;($features->{BANK_SIZE} bytes/banks)</td>");
   aOutl(6, '</tr>');
 
         #------------------------------------
@@ -1913,7 +1956,7 @@ sub dump_features($$)
     {
     aOutl(6, '<tr class="featLine">');
     aOutml(8, $margin,
-              '<th class="featName">Full size of SFRs + GPRs</th>',
+              '<th class="featName">Joint size of SFRs + GPRs</th>',
               "<td class=\"featValue\">$i bytes</td>");
     aOutl(6, '</tr>');
     }
@@ -1924,13 +1967,13 @@ sub dump_features($$)
   if (defined($i))
     {
     aOutl(6, '<tr class="featLine">');
-    aOutml(8, $margin, '<th class="featName">Linear RAM start</th>');
+    aOutml(8, $margin, '<th class="featName">Start address of Linear RAM</th>');
     aOutfl(8, "<td class=\"featValue\">0x%04X</td>", $i->{START});
     aOutml(6, '</tr>', '<tr class="featLine">');
-    aOutml(8, $margin, '<th class="featName">Linear RAM size</th>');
+    aOutml(8, $margin, '<th class="featName">Size of Linear RAM</th>');
     aOutfl(8, "<td class=\"featValue\">%u bytes</td>", $i->{END} - $i->{START} + 1);
     aOutml(6, '</tr>', '<tr class="featLine">');
-    aOutml(8, $margin, '<th class="featName">Number of Linear RAM segments</th>');
+    aOutml(8, $margin, '<th class="featName">Number of Linear RAM sections</th>');
     aOutfl(8, "<td class=\"featValue\">%u</td>", scalar @{$i->{SEGMENTS}});
     aOutl(6, '</tr>');
     }
@@ -2272,6 +2315,21 @@ sub mark_shared_ram($$)
 
 #-------------------------------------------------------------------------------
 
+sub print_column_warning($$$)
+  {
+  my ($Align, $Bank_num, $Mcu16_bit) = @_;
+
+  if ($Bank_num > 1 && ! $Mcu16_bit)
+    {
+    aOutl($Align, '<tr class="ramGap"><td></td></tr>');
+    aOutfl($Align,
+           "<tr><td colspan=%u class=\"ramSumEx\">It is possible that this colums is inaccurate due to the mirror-SFRs.</td></tr>",
+           $Bank_num * 2 + 1);
+    }
+  }
+
+#-------------------------------------------------------------------------------
+
         # Dump the RAM map of $Name MCU.
 
 sub dump_ram_map($$)
@@ -2289,6 +2347,7 @@ sub dump_ram_map($$)
   my @map_array;
   my @bank_sum = ();
   my $margin = '<td class="vMargin"></td>';
+  my $c_expl = '<span class="explanation">';
   my ($map, $bank, $height, $k, $r, $t, $x, $y);
   my $mcu16_bit = ($features->{WORD_SIZE} == 16) ? TRUE : FALSE;
 
@@ -2561,7 +2620,9 @@ sub dump_ram_map($$)
     aOutml(8, '  </div>', '</td>', $margin);
     }
 
-  aOutml(4, '  </tr>', '</table>');
+  aOutl(6, '</tr>');
+  print_column_warning(6, $bank_num, $mcu16_bit);
+  aOutml(4, '</table>', '<p></p>');
 
         #------------------------------------
 
@@ -2590,13 +2651,7 @@ sub dump_ram_map($$)
     }
 
   aOutl(6, '</tr>');
-
-  if ($bank_num > 1 && ! $mcu16_bit)
-    {
-    aOutl(6, '<tr class="ramGap"><td></td></tr>');
-    aOutfl(6, "<tr><td colspan=%u class=\"ramSumEx\">It is possible that the tables is inaccurate due to the mirror-SFRs.</td></tr>", $bank_num * 2 + 1);
-    }
-
+  print_column_warning(6, $bank_num, $mcu16_bit);
   aOutl(4, '</table>');
 
         #------------------------------------
@@ -2604,23 +2659,23 @@ sub dump_ram_map($$)
   aOutml(4, '<div class="legendContainer">',
             '  <div class="legend">');
 
-  aOutml(8, '<p class="ramSFREx">&nbsp;<span class="explanation">Special Function Register.</span></p>',
-            '<p class="ramGPREx">&nbsp;<span class="explanation">General-purpose RAM.</span></p>');
+  aOutml(8, "<p class=\"ramSFREx\">&nbsp;${c_expl}Special Function Register.</span></p>",
+            "<p class=\"ramGPREx\">&nbsp;${c_expl}General-purpose RAM.</span></p>");
 
   if ($bank_num > 1 && ! $mcu16_bit)
     {
-    aOutl(8, '<p class="ramSHAEx">&nbsp;<span class="explanation">Shared RAM.</span></p>');
+    aOutl(8, "<p class=\"ramSHAEx\">&nbsp;${c_expl}Shared RAM.</span></p>");
     }
 
-  aOutml(6, '  <p class="ramBADEx">&nbsp;<span class="explanation">In this place no RAM.</span></p>',
+  aOutml(6, "  <p class=\"ramBADEx\">&nbsp;${c_expl}In this place no RAM.</span></p>",
             '</div>');
 
   if ($mcu16_bit)
     {
     aOutl(6, '<div class="legend">');
-    aOutml(8, '<p class="ramSFREx"><span class="ramAccEx"></span>&nbsp;<span class="explanation">Special Function Register on Access Area.</span></p>',
-              '<p class="ramGPREx"><span class="ramAccEx"></span>&nbsp;<span class="explanation">General-purpose RAM on Access Area.</span></p>',
-              '<p class="ramBADEx"><span class="ramAccEx"></span>&nbsp;<span class="explanation">In this place no RAM on Access Area.</span></p>');
+    aOutml(8, "<p class=\"ramSFREx\"><span class=\"ramAccEx\"></span>&nbsp;${c_expl}Special Function Register on Access Area.</span></p>",
+              "<p class=\"ramGPREx\"><span class=\"ramAccEx\"></span>&nbsp;${c_expl}General-purpose RAM on Access Area.</span></p>",
+              "<p class=\"ramBADEx\"><span class=\"ramAccEx\"></span>&nbsp;${c_expl}In this place no RAM on Access Area.</span></p>");
     aOutl(6, '</div>');
     }
 
@@ -2644,6 +2699,7 @@ sub dump_sfr_map($$)
   my $sfrs      = $features->{SFRS};
   my @bank_array = ();
   my $margin = '<td class="vMargin"></td>';
+  my $c_expl = '<span class="explanation">';
   my ($bank, $i, $max_x, $x, $min_y, $max_y, $y, $t);
   my $mcu16_bit = ($features->{WORD_SIZE} == 16) ? TRUE : FALSE;
   my $accessSfr = 0xF00 + $features->{ACCESS} + 1;
@@ -2746,9 +2802,7 @@ sub dump_sfr_map($$)
         {
         my $v = @{$t};
         my ($name, $addr) = ($t->[0]{NAME}, $t->[0]{ADDR});
-        my $second_class;
-
-        $second_class = ($last_bank && $addr >= $accessSfr) ? ' sfrAccess' : '';
+        my $second_class = ($last_bank && $addr >= $accessSfr) ? ' sfrAccess' : '';
 
         aOutl(12, "<tr id=\"$name\">");
 
@@ -2813,14 +2867,14 @@ sub dump_sfr_map($$)
 
   aOutml(4, '<div class="legendContainer">',
             '  <div class="legend">');
-  aOutml(8, '<p class="sfrNameEx">&nbsp;<span class="explanation">SFR</span></p>',
-            '<p class="sfrNameXEx">&nbsp;<span class="explanation">SFR with alias name.</span></p>');
+  aOutml(8, "<p class=\"sfrNameEx\">&nbsp;${c_expl}SFR</span></p>",
+            "<p class=\"sfrNameXEx\">&nbsp;${c_expl}SFR with alias name.</span></p>");
   aOutl(6, '</div>');
 
   if ($mcu16_bit)
     {
     aOutml(6, '<div class="legend">',
-              '  <p class="sfrNameEx sfrAccess">&nbsp;<span class="explanation">SFR on Access Area.</span></p>',
+              "  <p class=\"sfrNameEx sfrAccess\">&nbsp;${c_expl}SFR on Access Area.</span></p>",
               '</div>');
     }
 
@@ -2839,10 +2893,8 @@ sub print_pri_menu($)
   {
   my $Menu = $_[0];
 
-  print $out_handler <<EOT
-      <ul class="tabs">
-EOT
-;
+  aOutl(6, '<ul class="tabs">');
+
   foreach (@pri_menu_elems)
     {
     my $class = ($Menu == $_) ? ' class="selected"' : '';
@@ -2879,7 +2931,6 @@ sub create_class_htmls()
     $func->(4, $_->{CLASS}) if (defined($func));
 
     aOutml(2, '  </div>', "</body>\n</html>");
-
     close($out_handler);
     }
   }
@@ -2902,7 +2953,7 @@ my $border_width       = 1;             # px
 my $attr_background    = '#D7DEB2';
 my $header_background  = '#CAB2DE';
 my $ramSFR_color       = '#F48282';
-my $ramColumn_width    = 120;           # px
+my $ramColumn_width    = 130;           # px
 my $stripe_color       = '#303030';
 my $expl_font_size     = 0.75;          # em
 my $expl_y_padding     = 0.2;           # em
@@ -3735,7 +3786,7 @@ if ($only_css)
   }
 
 find_inc_files("$gputils_path/header");
-read_all_config_bits();
+read_all_informations();
 create_css();
 create_class_htmls();
 
