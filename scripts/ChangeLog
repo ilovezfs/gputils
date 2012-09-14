@@ -1,3 +1,7 @@
+2012-09-14 Molnar Karoly <proton7@freemail.hu>
+        * tools/config-help.pl: Support to the Shared RAM of pic14 MCUs.
+          Appear: The "RAM map" tab.
+
 2012-09-12 Molnar Karoly <proton7@freemail.hu>
 	* tools/config-help.pl: Support to the Linear RAM of enhanced
           pic14 MCUs. Affected: The "Features" tab and tooltips on the
