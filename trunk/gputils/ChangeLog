@@ -1,4 +1,10 @@
 2012-09-14  Molnar Karoly  <proton7@freemail.hu>
+  * lkr/16f873_g.lkr, lkr/16f873a_g.lkr, lkr/16f874_g.lkr,
+    lkr/16f874a_g.lkr: Added "NAME=gpr[0-2]" sections. Added the new
+    "#IFDEF _DEBUGDATASTART" section. Changed more lines in the
+    original "#IFDEF _DEBUGDATASTART" section.
+
+2012-09-14  Molnar Karoly  <proton7@freemail.hu>
   * lkr/16f73_g.lkr, lkr/16f74_g.lkr: Changed the "NAME=sfr2" and
     "NAME=sfr3" sections. Added the new "#IFDEF _DEBUGDATASTART" section.
     Changed more lines in the original "#IFDEF _DEBUGDATASTART" section.
