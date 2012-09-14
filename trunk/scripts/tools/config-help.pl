@@ -208,91 +208,103 @@ my @mcu_feat_names = sort {
 
         {
         FEATURES => {
-                    CLASS     => PROC_CLASS_PIC1XX,
-                    CSS_CLASS => 'mcuAttrP1xx',
-                    ENHANCED  => FALSE,
-                    PAGE_SIZE => 0,
-                    WORD_SIZE => 0,     # Instruction size of MCU.
-                    CONF_SIZE => 0,     # Width of a config word.
-                    EE_START  => 0,     # Start address of EEPROM.
-                    BANK_SIZE => 0,     # Size of RAM Banks.
-                    CORE_SFRS => [],
+                    CLASS      => PROC_CLASS_PIC1XX,
+                    CSS_CLASS  => 'mcuAttrP1xx',
+                    ENHANCED   => FALSE,
+                    PAGE_SIZE  => 0,
+                    WORD_SIZE  => 0,    # Instruction size of MCU.
+                    CONF_SIZE  => 0,    # Width of a config word.
+                    EE_START   => 0,    # Start address of EEPROM.
+                    BANK_SIZE  => 0,    # Size of RAM Banks.
+                    CORE_SFRS  => [],
 
-                    COFF      => 0,     # Coff ID of device. (16 bit wide)
-                    PAGES     => 0,     # Number of ROM/FLASH pages.
-                    MAX_RAM   => 0,     # The highest address of RAM.
-                    RAM_SIZE  => 0,     # Full size of all SFR and GPR.
-                    CF_START  => 0,     # Address of first Configuration byte/word.
-                    CF_END    => 0,     # Address of last Configuration byte/word.
+                    COFF       => 0,    # Coff ID of device. (16 bit wide)
+                    PAGES      => 0,    # Number of ROM/FLASH pages.
+                    MAX_RAM    => 0,    # The highest address of RAM.
+                    RAM_SIZE   => 0,    # Full size of all SFR and GPR.
+                    CF_START   => 0,    # Address of first Configuration byte/word.
+                    CF_END     => 0,    # Address of last Configuration byte/word.
 
                 # These addresses relative, compared to the beginning of the blocks.
-                    ROM       => 0,     # Last address of ROM/FLASH.
-                    FLASHDATA => 0,     # Last address of FLASH Data.
-                    EEPROM    => 0,     # Last address of EEPROM.
+                    ROM        => 0,    # Last address of ROM/FLASH.
+                    FLASHDATA  => 0,    # Last address of FLASH Data.
+                    EEPROM     => 0,    # Last address of EEPROM.
 
-                    CONFIGS   => 0,     # Number of Configuration bytes/words.
-                    BANKS     => 0,     # Number of RAM Banks.
-                    ACCESS    => 0,     # Last address of lower Access RAM of pic18f series.
+                    CONFIGS    => 0,    # Number of Configuration bytes/words.
+                    BANKS      => 0,    # Number of RAM Banks.
+                    ACCESS     => 0,    # Last address of lower Access RAM of pic18f series.
 
-                    OSCVAL    => {      # Oscillator Calibration Value.
-                                 START => 0,
-                                 END   => 0
-                                 },
+                    OSCVAL     => {     # Oscillator Calibration Value.
+                                  START => 0,
+                                  END   => 0
+                                  },
 
-                    USERID    => {      # User ID.
-                                 START => 0,
-                                 END   => 0
-                                 },
+                    USERID     => {     # User ID.
+                                  START => 0,
+                                  END   => 0
+                                  },
 
-                    DEVID     => {      # Device ID.
-                                 START => 0,
-                                 END   => 0
-                                 },
+                    DEVID      => {     # Device ID.
+                                  START => 0,
+                                  END   => 0
+                                  },
 
-                    LINEARMEM => {      # Linear RAM of enhanced pic14 MCUs.
-                                 NAME     => '',
-                                 START    => 0,
-                                 END      => 0,
-                                 SEGMENTS => [
-                                               {
-                                               RSTART => 0, # Real start of section.
-                                               LSTART => 0, # Logical start of section.
-                                               SIZE   => 0  # Size of section.
-                                               },
+                    LINEARMEM  => {     # Linear RAM of enhanced pic14 MCUs.
+                                  NAME     => '',
+                                  START    => 0,
+                                  END      => 0,
+                                  SEGMENTS => [
+                                                {
+                                                RSTART => 0,    # Real start of section.
+                                                LSTART => 0,    # Logical start of section.
+                                                SIZE   => 0     # Size of section.
+                                                },
 
-                                               ...
+                                                ...
 
-                                               {
-                                               }
-                                             ]
-                                 },
+                                                {
+                                                }
+                                              ]
+                                  },
 
-                    BAD_RAM   => [      # List of bad RAM sectors.
-                                   {
-                                   START => 0,
-                                   END   => 0
-                                   },
+                    SHARED_RAM => [     # List of shared RAM sections.
+                                    {
+                                    START => 0,
+                                    END   => 0
+                                    },
 
-                                   ...
+                                    ...
 
-                                   {
-                                   }
-                                 ],
+                                    {
+                                    }
+                                  ],
 
-                    SFRS      => [      # List of SFRs.
-                                   {
-                                   NAME => '',
-                                   ADDR => 0
-                                   },
+                    BAD_RAM    => [     # List of bad RAM sections.
+                                    {
+                                    START => 0,
+                                    END   => 0
+                                    },
 
-                                   ...
+                                    ...
 
-                                   {
-                                   }
-                                 ],
+                                    {
+                                    }
+                                  ],
 
-                    SFR_NAMES => {},    # List names of SFRs by addresses.
-                    SFR_ADDRS => {}     # List addresses of SFRs by names.
+                    SFRS       => [     # List of SFRs.
+                                    {
+                                    NAME => '',
+                                    ADDR => 0
+                                    },
+
+                                    ...
+
+                                    {
+                                    }
+                                  ],
+
+                    SFR_NAMES  => {},   # List names of SFRs by addresses.
+                    SFR_ADDRS  => {}    # List addresses of SFRs by names.
                     },
 
         CONFIGS  => {
@@ -456,9 +468,10 @@ my @mcu_menu_elems =
     }
   );
 
-use constant RAM_BAD => 0;
-use constant RAM_GPR => 1;
-use constant RAM_SFR => 2;
+use constant RAM_BAD    => 0;
+use constant RAM_GPR    => 1;
+use constant RAM_SFR    => 2;
+use constant RAM_SHARED => 3;
 
 ################################################################################
 ################################################################################
@@ -629,6 +642,21 @@ sub str2dec($)
   return int($Str) if ($Str =~ /^-?\d+$/o);
 
   die "This string not integer: \"$Str\"";
+  }
+
+#-------------------------------------------------------------------------------
+
+sub swap_reverse($$)
+  {
+  my ($Min, $Max) = @_;
+
+  if (${$Min} > ${$Max})
+    {
+    my $t = ${$Min};
+
+    ${$Min} = ${$Max};
+    ${$Max} = $t;
+    }
   }
 
 #-------------------------------------------------------------------------------
@@ -1024,17 +1052,7 @@ sub read_ram_features($$)
               {
               my ($s, $e) = (hex($1), hex($2));
 
-              if ($s > $e)
-                {
-                # It is unlikely that the values in reverse order there are,
-                # but it is advisable to pay attention.
-
-                my $t = $s;
-
-                $s = $e;
-                $e = $t;
-                }
-
+              swap_reverse(\$s, \$e);
               push(@{$bad_ram}, { START => $s, END => $e });
               $full_ram -= $e - $s + 1;
               }
@@ -1080,8 +1098,15 @@ sub process_lkr_line($$)
   {
   my ($Line, $Features) = @_;
 
-  if ($Line =~ /^CODEPAGE\s+NAME=(\S+)\s+START=(\w+)\s+END=(\w+)\s+PROTECTED$/io)
+  if ($Line =~ /^(\S+)\s+NAME=(\S+)\s+START=(\S+)\s+END=(\S+)/io)
     {
+    my ($section, $name, $start, $end) = ($1, $2, str2dec($3), str2dec($4));
+    my $tail = ${^POSTMATCH};
+
+    $tail =~ s/^\s+//o;
+
+    if ($section eq 'CODEPAGE')
+      {
         # CODEPAGE   NAME=.oscval    START=0x3FF             END=0x3FF          PROTECTED
         # CODEPAGE   NAME=oscval     START=0x3FF             END=0x3FF          PROTECTED
 
@@ -1095,46 +1120,53 @@ sub process_lkr_line($$)
         # CODEPAGE   NAME=.devid     START=0x8006            END=0x8006         PROTECTED
         # CODEPAGE   NAME=devid      START=0x3FFFFE          END=0x3FFFFF       PROTECTED
 
-    my ($name, $start, $end) = ($1, $2, $3);
-
-    given ($name)
-      {
-      when (/oscval$/io)
+      given ($name)
         {
-        $Features->{OSCVAL} = { START => str2dec($start), END => str2dec($end) };
-        }
+        when (/oscval$/io)
+          {
+          $Features->{OSCVAL} = { START => $start, END => $end };
+          }
 
-      when (/(idlocs|^userid)$/io)
-        {
-        $Features->{USERID} = { START => str2dec($start), END => str2dec($end) };
-        }
+        when (/(idlocs|^userid)$/io)
+          {
+          $Features->{USERID} = { START => $start, END => $end };
+          }
 
-      when (/dev(ice_)?id$/io)
-        {
-        $Features->{DEVID} = { START => str2dec($start), END => str2dec($end) };
+        when (/dev(ice_)?id$/io)
+          {
+          $Features->{DEVID} = { START => $start, END => $end };
+          }
         }
       }
-    }
-  elsif ($Line =~ /^LINEARMEM\s+NAME=(\S+)\s+START=(\w+)\s+END=(\w+)\s+PROTECTED$/io)
-    {
+    elsif ($section eq 'LINEARMEM' && $tail eq 'PROTECTED')
+      {
         # LINEARMEM  NAME=linear0    START=0x2000            END=0x21EF         PROTECTED
         # LINEARMEM  NAME=linear0    START=0x2000            END=0x23EF         PROTECTED
 
-    $Features->{LINEARMEM} = { NAME => $1, START => str2dec($2), END => str2dec($3), SEGMENTS => [] };
-    }
-  elsif ($Line =~ /^DATABANK\s+NAME=(\S+)\s+START=(\w+)\s+END=(\w+)\s+SHADOW=(\w+):(\w+)$/io)
-    {
+      $Features->{LINEARMEM} = { NAME => $name, START => $start, END => $end, SEGMENTS => [] };
+      }
+    elsif ($section eq 'DATABANK' && $tail =~ /^SHADOW=(\w+):(\w+)$/io)
+      {
         # DATABANK   NAME=gpr0       START=0x20              END=0x6F           SHADOW=linear0:0x2000
         # DATABANK   NAME=gpr4       START=0x220             END=0x26F          SHADOW=linear0:0x2140
         # DATABANK   NAME=gpr12      START=0x620             END=0x64F          SHADOW=linear0:0x23C0
 
-    my ($name, $rstart, $rend, $lname, $lstart) = ($1, str2dec($2), str2dec($3), $4, str2dec($5));
-    my $size = $rend - $rstart + 1;
-    my $linear = $Features->{LINEARMEM};
+      my ($lname, $lstart) = ($1, str2dec($2));
+      my $size = $end - $start + 1;
+      my $linear = $Features->{LINEARMEM};
 
-    die "Unknown linearmem name: $lname" if (! defined($linear->{NAME}) || $linear->{NAME} ne $lname);
+      die "Unknown linearmem name: $lname" if (! defined($linear->{NAME}) || $linear->{NAME} ne $lname);
 
-    push(@{$linear->{SEGMENTS}}, { RSTART => $rstart, LSTART => $lstart, SIZE => $size });
+      push(@{$linear->{SEGMENTS}}, { RSTART => $start, LSTART => $lstart, SIZE => $size });
+      }
+    elsif ($section  eq 'SHAREBANK')
+      {
+        # SHAREBANK  NAME=gprnobank  START=0x70            END=0x7F
+        # SHAREBANK  NAME=gprnobank  START=0xF0            END=0xFF           PROTECTED
+        # SHAREBANK  NAME=gprnobank  START=0x170           END=0x17F          PROTECTED
+
+      push(@{$Features->{SHARED_RAM}}, { START => $start, END => $end });
+      }
     }
   }
 
@@ -1232,40 +1264,41 @@ sub read_all_config_bits()
         die "Unknown class of $name MCU!" if (! defined($tr));
 
         $features = {
-                    CLASS     => $tr->{CLASS},
-                    CSS_CLASS => $tr->{CSS_CLASS}, # Css class name.
-                    CSS_BGRND => $tr->{CSS_BGRND}, # Background color.
-                    ENHANCED  => $tr->{ENHANCED},
-                    PAGE_SIZE => $tr->{PAGE_SIZE}, # Size of program memory pages.
-                    WORD_SIZE => $tr->{WORD_SIZE}, # Size of instructions.
-                    CONF_SIZE => $tr->{CONF_SIZE}, # Size of Config Words.
-                    EE_START  => $tr->{EE_START},  # Start address of EEPROM.
-                    BANK_SIZE => $tr->{BANK_SIZE}, # Size of RAM Banks.
-                    CORE_SFRS => $tr->{CORE_SFRS}, # Core SFRs of 12 and 14 bit MCUs.
+                    CLASS      => $tr->{CLASS},
+                    CSS_CLASS  => $tr->{CSS_CLASS}, # Css class name.
+                    CSS_BGRND  => $tr->{CSS_BGRND}, # Background color.
+                    ENHANCED   => $tr->{ENHANCED},
+                    PAGE_SIZE  => $tr->{PAGE_SIZE}, # Size of program memory pages.
+                    WORD_SIZE  => $tr->{WORD_SIZE}, # Size of instructions.
+                    CONF_SIZE  => $tr->{CONF_SIZE}, # Size of Config Words.
+                    EE_START   => $tr->{EE_START},  # Start address of EEPROM.
+                    BANK_SIZE  => $tr->{BANK_SIZE}, # Size of RAM Banks.
+                    CORE_SFRS  => $tr->{CORE_SFRS}, # Core SFRs of 12 and 14 bit MCUs.
 
-                    COFF      => hex($fields[1]),  # Coff ID of device. (16 bit wide)
-                    PAGES     => hex($fields[5]),  # Number of ROM/FLASH pages.
-                    MAX_RAM   => 0,                # The highest address of RAM.
-                    RAM_SIZE  => 0,                # Full size of all SFR and GPR.
-                    CF_START  => 0,                # Address of first Configuration byte/word.
-                    CF_END    => 0,                # Address of last Configuration byte/word.
+                    COFF       => hex($fields[1]),  # Coff ID of device. (16 bit wide)
+                    PAGES      => hex($fields[5]),  # Number of ROM/FLASH pages.
+                    MAX_RAM    => 0,                # The highest address of RAM.
+                    RAM_SIZE   => 0,                # Full size of all SFR and GPR.
+                    CF_START   => 0,                # Address of first Configuration byte/word.
+                    CF_END     => 0,                # Address of last Configuration byte/word.
 
                 # These addresses relative, compared to the beginning of the blocks.
-                    ROM       => hex($fields[6]),  # Last address of ROM/FLASH.
-                    FLASHDATA => hex($fields[11]), # Last address of FLASH Data.
-                    EEPROM    => hex($fields[9]),  # Last address of EEPROM.
+                    ROM        => hex($fields[6]),  # Last address of ROM/FLASH.
+                    FLASHDATA  => hex($fields[11]), # Last address of FLASH Data.
+                    EEPROM     => hex($fields[9]),  # Last address of EEPROM.
 
-                    CONFIGS   => hex($fields[12]), # Number of Configuration bytes/words.
-                    BANKS     => hex($fields[7]),  # Number of RAM Banks.
-                    ACCESS    => hex($fields[10]), # Last address of lower Access RAM of pic18f series.
-                    OSCVAL    => undef,            # Oscillator Calibration Value.
-                    USERID    => undef,            # User ID.
-                    DEVID     => undef,            # Device ID.
-                    LINEARMEM => undef,            # Linear RAM of enhanced pic14 MCUs.
-                    BAD_RAM   => [],               # List of bad RAM sectors.
-                    SFRS      => [],               # List of SFRs.
-                    SFR_NAMES => {},               # List names of SFRs by addresses.
-                    SFR_ADDRS => {}                # List addresses of SFRs by names.
+                    CONFIGS    => hex($fields[12]), # Number of Configuration bytes/words.
+                    BANKS      => hex($fields[7]),  # Number of RAM Banks.
+                    ACCESS     => hex($fields[10]), # Last address of lower Access RAM of pic18f series.
+                    OSCVAL     => undef,            # Oscillator Calibration Value.
+                    USERID     => undef,            # User ID.
+                    DEVID      => undef,            # Device ID.
+                    LINEARMEM  => undef,            # Linear RAM of enhanced pic14 MCUs.
+                    SHARED_RAM => [],               # List of shared RAM sections.
+                    BAD_RAM    => [],               # List of bad RAM sections.
+                    SFRS       => [],               # List of SFRs.
+                    SFR_NAMES  => {},               # List names of SFRs by addresses.
+                    SFR_ADDRS  => {}                # List addresses of SFRs by names.
                     };
 
         $inc = $gp_mcus_by_names{$name};
@@ -2106,7 +2139,7 @@ sub mark_non_gpr_ram($$)
   @{$Array} = ((RAM_GPR) x $ram_size);
   $k = $bank_num * $bank_size;
         # Another deletion if the real RAM less than the possible max RAM.
-  push(@{$Array}, (RAM_BAD) x ($k - $ram_size)) if ($ram_size < $k);
+  push(@{$Array}, ((RAM_BAD) x ($k - $ram_size))) if ($ram_size < $k);
 
         # Marks the areas that do not exist.
 
@@ -2219,6 +2252,26 @@ sub mark_sfr_ram($$)
 
 #-------------------------------------------------------------------------------
 
+        # Marks in $Array the shared regions of RAM.
+
+sub mark_shared_ram($$)
+  {
+  my ($Array, $Features) = @_;
+  my $shared = $Features->{SHARED_RAM};
+
+  return if (! defined($shared) || ! @{$shared});
+
+  foreach (@{$shared})
+    {
+    my $start = $_->{START};
+    my $size  = $_->{END} - $start + 1;
+
+    splice(@{$Array}, $start, $size, ((RAM_SHARED) x $size));
+    }
+  }
+
+#-------------------------------------------------------------------------------
+
         # Dump the RAM map of $Name MCU.
 
 sub dump_ram_map($$)
@@ -2252,6 +2305,7 @@ sub dump_ram_map($$)
 
   mark_non_gpr_ram(\@ram_array, $features);
   mark_sfr_ram(\@ram_array, $features);
+  mark_shared_ram(\@ram_array, $features);
 
         #------------------------------------
 
@@ -2352,7 +2406,7 @@ sub dump_ram_map($$)
   $k = int(256 / $bank_size) * 3;
   for ($x = 0; $x < $bank_num; ++$x)
     {
-    my ($sfr_size, $gpr_size, $bad_size) = (0, 0, 0);
+    my ($sfr_size, $gpr_size, $shared_size, $bad_size) = (0, 0, 0, 0);
 
     $map = $map_array[$x];
 
@@ -2415,6 +2469,13 @@ sub dump_ram_map($$)
           $t = 'ramGPR';
           $r = 'GPR';
           $gpr_size += $size;
+          }
+
+        when (RAM_SHARED)
+          {
+          $t = 'ramSHA';
+          $r = 'Shared';
+          $shared_size += $size;
           }
 
         default
@@ -2495,7 +2556,7 @@ sub dump_ram_map($$)
         }
       } # foreach (@{$map})
 
-    $bank_sum[$x] = { SFR => $sfr_size, GPR => $gpr_size, BAD => $bad_size };
+    $bank_sum[$x] = { SFR => $sfr_size, GPR => $gpr_size, SHARED => $shared_size, BAD => $bad_size };
 
     aOutml(8, '  </div>', '</td>', $margin);
     }
@@ -2516,8 +2577,14 @@ sub dump_ram_map($$)
     aOutml(8, '<td class="ramColumn">',
               '  <div class="ramColCont">');
     aOutml(12, "<div class=\"ramSFR ramSum\">SFR<br>$sum->{SFR} bytes</div>",
-               "<div class=\"ramGPR ramSum\">GPR<br>$sum->{GPR} bytes</div>",
-               "<div class=\"ramBAD ramSum\">Unimplemented<br>$sum->{BAD} bytes</div>");
+               "<div class=\"ramGPR ramSum\">GPR<br>$sum->{GPR} bytes</div>");
+
+    if ($bank_num > 1 && ! $mcu16_bit)
+      {
+      aOutl(12, "<div class=\"ramSHA ramSum\">Shared<br>$sum->{SHARED} bytes</div>");
+      }
+
+    aOutl(12, "<div class=\"ramBAD ramSum\">Unimplemented<br>$sum->{BAD} bytes</div>");
     aOutl(10, '</div>');
     aOutml(8, '</td>', $margin);
     }
@@ -2536,10 +2603,17 @@ sub dump_ram_map($$)
 
   aOutml(4, '<div class="legendContainer">',
             '  <div class="legend">');
+
   aOutml(8, '<p class="ramSFREx">&nbsp;<span class="explanation">Special Function Register.</span></p>',
-            '<p class="ramGPREx">&nbsp;<span class="explanation">General-purpose RAM.</span></p>',
-            '<p class="ramBADEx">&nbsp;<span class="explanation">In this place no RAM.</span></p>');
-  aOutl(6, '</div>');
+            '<p class="ramGPREx">&nbsp;<span class="explanation">General-purpose RAM.</span></p>');
+
+  if ($bank_num > 1 && ! $mcu16_bit)
+    {
+    aOutl(8, '<p class="ramSHAEx">&nbsp;<span class="explanation">Shared RAM.</span></p>');
+    }
+
+  aOutml(6, '  <p class="ramBADEx">&nbsp;<span class="explanation">In this place no RAM.</span></p>',
+            '</div>');
 
   if ($mcu16_bit)
     {
@@ -3297,7 +3371,10 @@ EOT
   print $out_handler <<EOT
   }
 
-.ramGPR:hover .ramTt, .ramSFR:hover .ramTt, .ramBAD:hover .ramTt
+.ramGPR:hover .ramTt,
+.ramSFR:hover .ramTt,
+.ramSHA:hover .ramTt,
+.ramBAD:hover .ramTt
   {
   z-index: 100;
   display: block;
@@ -3305,7 +3382,10 @@ EOT
 
 /* This accessories of the tooltip. This is a beak which point towards the left side. */
 
-.ramGPR:hover .ramTt:before, .ramSFR:hover .ramTt:before, .ramBAD:hover .ramTt:before
+.ramGPR:hover .ramTt:before,
+.ramSFR:hover .ramTt:before,
+.ramSHA:hover .ramTt:before,
+.ramBAD:hover .ramTt:before
   {
   display: block;
   position: absolute;
@@ -3341,12 +3421,17 @@ EOT
   background: $ramSFR_color;
   }
 
+.ramSHA, .ramSHAEx
+  {
+  background: #76CBFF;
+  }
+
 .ramBAD, .ramBADEx
   {
   background: $tab_border_color;
   }
 
-.ramGPR, .ramSFR, .ramBAD
+.ramGPR, .ramSFR, .ramSHA, .ramBAD
   {
   position: relative;
   width: ${ramColumn_width}px;
@@ -3405,7 +3490,7 @@ EOT
   cursor: text;
   }
 
-.ramSFREx, .ramGPREx, .ramBADEx,
+.ramSFREx, .ramGPREx, .ramSHAEx, .ramBADEx,
 .sfrNameEx, .sfrNameXEx, .menuEx
   {
   padding: 0;
