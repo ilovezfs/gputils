@@ -1,3 +1,8 @@
+2012-09-14  Molnar Karoly  <proton7@freemail.hu>
+  * lkr/16f73_g.lkr, lkr/16f74_g.lkr: Changed the "NAME=sfr2" and
+    "NAME=sfr3" sections. Added the new "#IFDEF _DEBUGDATASTART" section.
+    Changed more lines in the original "#IFDEF _DEBUGDATASTART" section.
+
 2012-09-12  Molnar Karoly  <proton7@freemail.hu>
   * gputils.spec.in: Configure with --disable-html-doc option.
 
