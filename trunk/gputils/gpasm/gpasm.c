@@ -42,31 +42,36 @@ extern int yydebug;
 
 #define GET_OPTIONS "?D:I:a:cCde:ghilLmMno:p:qr:uvw:y"
 
+enum {
+  OPT_MPASM_COMPATIBLE = 0x100
+};
+
 static struct option longopts[] =
 {
-  { "define",      1, 0, 'D' },
-  { "include",     1, 0, 'I' },
-  { "hex-format",  1, 0, 'a' },
-  { "object",      0, 0, 'c' },
-  { "new-coff",    0, 0, 'C' },
-  { "debug",       0, 0, 'd' },
-  { "expand",      1, 0, 'e' },
-  { "debug-info",  0, 0, 'g' },
-  { "help",        0, 0, 'h' },
-  { "ignore-case", 0, 0, 'i' },
-  { "list-chips",  0, 0, 'l' },
-  { "force-list",  0, 0, 'L' },
-  { "dump",        0, 0, 'm' },
-  { "deps",        0, 0, 'M' },
-  { "dos",         0, 0, 'n' },
-  { "output",      1, 0, 'o' },
-  { "processor",   1, 0, 'p' },
-  { "quiet",       0, 0, 'q' },
-  { "radix",       1, 0, 'r' },
-  { "absolute",    0, 0, 'u' },
-  { "version",     0, 0, 'v' },
-  { "warning",     1, 0, 'w' },
-  { "extended",    0, 0, 'y' },
+  { "define",           required_argument, NULL, 'D' },
+  { "include",          required_argument, NULL, 'I' },
+  { "hex-format",       required_argument, NULL, 'a' },
+  { "object",           no_argument,       NULL, 'c' },
+  { "new-coff",         no_argument,       NULL, 'C' },
+  { "debug",            no_argument,       NULL, 'd' },
+  { "expand",           required_argument, NULL, 'e' },
+  { "debug-info",       no_argument,       NULL, 'g' },
+  { "help",             no_argument,       NULL, 'h' },
+  { "ignore-case",      no_argument,       NULL, 'i' },
+  { "list-chips",       no_argument,       NULL, 'l' },
+  { "force-list",       no_argument,       NULL, 'L' },
+  { "dump",             no_argument,       NULL, 'm' },
+  { "deps",             no_argument,       NULL, 'M' },
+  { "dos",              no_argument,       NULL, 'n' },
+  { "output",           required_argument, NULL, 'o' },
+  { "processor",        required_argument, NULL, 'p' },
+  { "quiet",            no_argument,       NULL, 'q' },
+  { "radix",            required_argument, NULL, 'r' },
+  { "absolute",         no_argument,       NULL, 'u' },
+  { "version",          no_argument,       NULL, 'v' },
+  { "warning",          required_argument, NULL, 'w' },
+  { "extended",         no_argument,       NULL, 'y' },
+  { "mpasm-compatible", no_argument,       NULL, OPT_MPASM_COMPATIBLE },
   { 0, 0, 0, 0 }
 };
 
@@ -181,6 +186,7 @@ show_usage(void)
   printf("  -v, --version                  Show version.\n");
   printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n");
   printf("  -y, --extended                 Enable 18xx extended mode.\n");
+  printf("      --mpasm-compatible         MPASM copatibility mode\n");
   printf("\n");
 #ifdef USE_DEFAULT_PATHS
   if (gp_header_path) {
@@ -224,13 +230,16 @@ process_args( int argc, char *argv[])
     switch (c) {
     case '?':
       usage_code = 1;
+
     case 'h':
       usage = true;
       break;
+
     case 'a':
       select_hexformat(optarg);
       state.cmd_line.hex_format = true;
       break;
+
     case 'c':
       state.mode    = relocatable;
       state.codfile = suppress;
@@ -238,12 +247,15 @@ process_args( int argc, char *argv[])
       state.lstfile = normal;
       state.objfile = normal;
       break;
+
     case 'C':
       state.obj.newcoff = 0;
       break;
+
     case 'd':
       gp_debug_disable = false;
       break;
+
     case 'D':
       if ((optarg != NULL) && (strlen(optarg) > 0)) {
         struct symbol *sym;
@@ -263,37 +275,47 @@ process_args( int argc, char *argv[])
           annotate_symbol(sym, rhs);
       }
       break;
+
     case 'e':
       select_expand(optarg);
       state.cmd_line.macro_expand = true;
       break;
+
     case 'g':
       state.debug_info = true;
       break;
+
     case 'I':
       add_path(optarg);
       break;
+
     case 'i':
       state.case_insensitive = true;
       break;
+
     case 'L':
       state.cmd_line.lst_force = true;
       break;
+
     case 'l':
       gp_dump_processor_list(true, 0);
       exit(0);
       break;
+
     case 'M':
       state.depfile = normal;
       break;
+
     case 'm':
       state.memory_dump = true;
       break;
+
     case 'n':
       #ifndef HAVE_DOS_BASED_FILE_SYSTEM
         state.dos_newlines = true;
       #endif
       break;
+
     case 'o':
       strncpy(state.objfilename, optarg, sizeof(state.objfilename));
       strncpy(state.basefilename, optarg, sizeof(state.basefilename));
@@ -301,31 +323,41 @@ process_args( int argc, char *argv[])
       if (pc)
         *pc = 0;
       break;
+
     case 'p':
       cmd_processor = true;
       processor_name = optarg;
       break;
+
     case 'q':
       state.quiet = true;
       break;
+
     case 'r':
       select_radix(optarg);
       state.cmd_line.radix = true;
       break;
+
     case 'u':
       state.use_absolute_path = true;
       break;
+
     case 'w':
       select_errorlevel(atoi(optarg));
       state.cmd_line.error_level = true;
       break;
+
     case 'y':
       state.extended_pic16e = true;
       break;
+
     case 'v':
       fprintf(stderr, "%s\n", GPASM_VERSION_STRING);
       exit(0);
 
+    case OPT_MPASM_COMPATIBLE:
+      state.mpasm_compatible = 1;
+      break;
     }
     if (usage)
       break;

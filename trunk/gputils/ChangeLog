@@ -1,3 +1,9 @@
+2012-09-15  Borut Razem  <borutr@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/gpasm.c, gpasm/gpasm.h.in,
+    gpasm/testsuite/test: 
+    introdiced --mpasm-compatible command line option
+  * gpasm/lst.c, gpasm/coff.c: fixed #255 Bug #227 regressed
+
 2012-09-14  Molnar Karoly  <proton7@freemail.hu>
   * doc/html-help/Makefile.am, doc/html-help/Makefile.in:
     Renamed the config-help.pl to device-help.pl.

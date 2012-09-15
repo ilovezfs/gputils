@@ -84,6 +84,7 @@ struct src_line_s {
 
 extern struct gpasm_state {
   enum gpasm_modes mode;
+  gp_boolean mpasm_compatible;      /* MAPASM compatibility mode */
   gp_boolean extended_pic16e;
   int radix;
   enum formats hex_format;

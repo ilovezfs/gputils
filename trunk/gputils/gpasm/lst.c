@@ -633,8 +633,9 @@ lst_format_line(const char *src_line, int value)
 
   case data:
     emitted = state.org - state.lst.line.was_org;
-    if ((SECTION_FLAGS & (STYP_TEXT | STYP_BPACK)) == STYP_TEXT) {
-      /* generate line numbers for data directives in program memory and not code_pack */
+    if ((SECTION_FLAGS & (STYP_TEXT | (state.mpasm_compatible ? STYP_BPACK : 0))) == STYP_TEXT) {
+      /* generate line numbers for data directives in program memory;
+       * in mpasm compatibility mode code_pack doesn't generate line numbers */
       emitted_lines = emitted;
     }
     break;

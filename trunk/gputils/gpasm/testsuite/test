@@ -163,7 +163,7 @@ test_gpasm_sub() {
         # a hex file exists so these files must not have errors
         tested=$((tested+1))
         echo "Compiling $1/asmfiles/$x"
-        if verbose ../../$GPASMBIN -q -I ../../$HEADER "$basefilename.asm" ; then
+        if verbose ../../$GPASMBIN --mpasm-compatible -q -I ../../$HEADER "$basefilename.asm" ; then
           if test -e "$basefilename.hex" ; then
             compiled=$((compiled+1))
             if diff -s -u "../hexfiles/$basefilename.hex" "$basefilename.hex" ; then
@@ -173,7 +173,7 @@ test_gpasm_sub() {
                 processor="$(get_processor $x)"
                 if test "$(expr $processor : 'EEPROM')" = 0; then
                   disass "$basefilename.hex" "${basefilename}_dasm.asm" $processor
-                  verbose ../../$GPASMBIN -q -I ../../$HEADER -a  $(get_hex_format "$basefilename.hex" $processor) "${basefilename}_dasm.asm"
+                  verbose ../../$GPASMBIN --mpasm-compatible -q -I ../../$HEADER -a  $(get_hex_format "$basefilename.hex" $processor) "${basefilename}_dasm.asm"
                   diff -s -u "$basefilename.hex" "${basefilename}_dasm.hex"
                 fi
               fi
@@ -196,7 +196,7 @@ test_gpasm_sub() {
         # errors
         errortested=$((errortested+1))
         echo "Compiling $1/asmfiles/$x"
-        if verbose ../../$GPASMBIN -q -I ../../$HEADER "$basefilename.asm" ; then
+        if verbose ../../$GPASMBIN --mpasm-compatible -q -I ../../$HEADER "$basefilename.asm" ; then
           if test -e "$basefilename.hex" ; then
             echo "$basefilename.asm failed to generate an error"
           else
@@ -272,7 +272,7 @@ test_gpasm_obj() {
         # a object file exists so these files must not have errors
         tested=$((tested+1))
         echo "Compiling $1/objasm/$basefilename.asm"
-        if verbose ../../$GPASMBIN -c -q -I ../../$HEADER "$basefilename.asm" ; then
+        if verbose ../../$GPASMBIN --mpasm-compatible -c -q -I ../../$HEADER "$basefilename.asm" ; then
           if test -e "$basefilename.o" ; then
             compiled=$((compiled+1))
             ../../$GPVOBIN -n -s -t "$basefilename.o" > "$basefilename.dump"
@@ -299,7 +299,7 @@ test_gpasm_obj() {
         # errors
         errortested=$((errortested+1))
         echo "Compiling $1/objasm/$basefilename.asm"
-        if verbose ../../$GPASMBIN -c -q -I ../../$HEADER "$basefilename.asm" ; then
+        if verbose ../../$GPASMBIN --mpasm-compatible -c -q -I ../../$HEADER "$basefilename.asm" ; then
           if test -e "$basefilename.o" ; then
             echo "$basefilename.asm failed to generate an error"
           else
@@ -431,4 +431,3 @@ case "$ACTION" in
 esac
 
 exit 0
-
