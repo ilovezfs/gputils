@@ -64,7 +64,6 @@ _update_section_symbol(gp_section_type *section)
 
   section->symbol->aux_list->_aux_symbol._aux_scn.nlineno =
     section->num_lineno;
-
 }
 
 static void
@@ -340,7 +339,7 @@ void
 coff_linenum(int emitted)
 {
   gp_linenum_type *new = NULL;
-  int i;
+  int end;
   int origin;
   static gp_boolean show_bad_debug = true;
 
@@ -362,8 +361,8 @@ coff_linenum(int emitted)
     return;
   }
 
-  for (i = 0; i < emitted; i += 2) {
-
+  end = origin + emitted;
+  while (origin < end) {
     new = gp_coffgen_addlinenum(state.obj.section);
     if (state.debug_info) {
       new->symbol = state.obj.debug_file;
@@ -372,8 +371,9 @@ coff_linenum(int emitted)
       new->symbol = state.src->file_symbol;
       new->line_number = state.src->line_number;
     }
+    new->address = origin;
 
-    new->address = origin + i;
+    origin += (origin & 1) ? 1 : 2;
   }
 }
 
