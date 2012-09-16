@@ -15,5 +15,7 @@ install-html:
 	  $(install_sh) -c -m 644 *.css *.html "$(DESTDIR)$(pkgdatadir)"; \
 	fi
 
-EXTRA_DIST = *.css *.html
-CLEANFILES = *.css *.html
+dist-hook: html-doc
+	cp *.html *.css $(distdir)
+
+MAINTAINERCLEANFILES = *.css *.html

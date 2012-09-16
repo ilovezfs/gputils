@@ -160,8 +160,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-EXTRA_DIST = *.css *.html
-CLEANFILES = *.css *.html
+MAINTAINERCLEANFILES = *.css *.html
 all: all-am
 
 .SUFFIXES:
@@ -232,6 +231,9 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
+	  dist-hook
 check-am: all-am
 check: check-am
 all-am: Makefile
@@ -258,7 +260,6 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -267,6 +268,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
 clean-am: clean-generic mostlyclean-am
@@ -333,15 +335,16 @@ uninstall-am:
 
 .MAKE: install-am install-strip
 
-.PHONY: all all-am check check-am clean clean-generic distclean \
-	distclean-generic distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic pdf pdf-am ps ps-am uninstall uninstall-am
+.PHONY: all all-am check check-am clean clean-generic dist-hook \
+	distclean distclean-generic distdir dvi dvi-am html html-am \
+	info info-am install install-am install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am uninstall \
+	uninstall-am
 
 
 all: html-doc
@@ -356,6 +359,9 @@ install-html:
 	  $(install_sh) -d "$(DESTDIR)$(pkgdatadir)"; \
 	  $(install_sh) -c -m 644 *.css *.html "$(DESTDIR)$(pkgdatadir)"; \
 	fi
+
+dist-hook: html-doc
+	cp *.html *.css $(distdir)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
