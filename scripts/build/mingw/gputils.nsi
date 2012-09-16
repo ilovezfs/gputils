@@ -367,7 +367,7 @@ ${SectionEnd}
 ${Section} "gputils devices HTML help" SEC05
   SectionIn 1 2
   SetOutPath "$INSTDIR\doc\html-help"
-;  File "${GPUTILS_ROOT}}\doc\html-help\*.html"
+  File "${GPUTILS_ROOT}}\doc\html-help\*.html"
   File "${GPUTILS_ROOT}\doc\html-help\*.css"
 ${SectionEnd}
 
