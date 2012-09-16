@@ -16,7 +16,7 @@ AC_CANONICAL_HOST
 GPUTILS_HEADER_PATH="\$(datadir)/gputils/header"
 GPUTILS_LKR_PATH="\$(datadir)/gputils/lkr"
 GPUTILS_LIB_PATH="\$(datadir)/gputils/lib"
-GPUTILS_HTMLDOC_PATH="\$(datadir)/doc/gputils-\$(PACKAGE_VERSION)/html"
+GPUTILS_HTMLDOC_PATH=${GPUTILS_HTMLDOC_PATH:-"\$(datadir)/doc/gputils-\$(PACKAGE_VERSION)/html"}
 LIBGPUTILS=libgputils/libgputils.a
 LIBIBERTY=libiberty/libiberty.a
 MAKE_SUBDIRS="libgputils libiberty gpasm gplink gputils header lkr doc man"
