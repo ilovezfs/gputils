@@ -1,3 +1,7 @@
+2012-09-16  Borut Razem  <borutr@users.sourceforge.net>
+  * doc/html-doc/Makefile.am, doc/html-doc/Makefile.in:
+    fixed make dist
+
 2012-09-15  Borut Razem  <borutr@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/gpasm.c, gpasm/gpasm.h.in,
     gpasm/testsuite/test: 
