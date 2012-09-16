@@ -261,7 +261,7 @@ echo "checking distribution name... $distname"
 ################################################################################
 
 print_banner "Configuring project"
-CC=$CC CFLAGS=$CFLAGS ./configure --prefix=$dist_dir/gputils --datadir=$dist_dir \
+CC=$CC CFLAGS=$CFLAGS GPUTILS_HTMLDOC_PATH=$dist_dir/gputils/doc/html-help ./configure --prefix=$dist_dir/gputils --datadir=$dist_dir \
   $config_options
 RETVAL=$?
 if [ $RETVAL -ne 0 ]; then
