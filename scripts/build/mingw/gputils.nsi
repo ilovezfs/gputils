@@ -146,7 +146,7 @@ SetCompressor /SOLID lzma
 
 !define DEV_ROOT "${GPUTILS_ROOT}"
 
-InstType "Full (Bin, Doc, Hdr, Lkr)"
+InstType "Full (Bin, Hdr, Lkr, Doc, HTML help)"
 InstType "Compact (Bin, Doc)"
 
 ;--------------------------------
@@ -334,16 +334,10 @@ ${Section} "gputils application files" SEC01
   File "${GPUTILS_ROOT}\bin\gpvo.exe"
 ${SectionEnd}
 
-${Section} "gputils documentation" SEC02
-  SectionIn 1 2
-  SetOutPath "$INSTDIR\doc"
-  File "${GPUTILS_ROOT}\doc\gputils.pdf"
-${SectionEnd}
-
-${Section} "gputils header files" SEC03
+${Section} "gputils header files" SEC02
   SectionIn 1
   SetOutPath "$INSTDIR\header"
-  File "${DEV_ROOT}\header\*.inc"
+  File "${GPUTILS_ROOT}\header\*.inc"
 
   ; Set GPUTILS_HEADER_PATH environment variable
   ${DebugMsg} "defining environment variable GPUTILS_HEADER_PATH=$INSTDIR\header"
@@ -352,10 +346,10 @@ ${Section} "gputils header files" SEC03
   Call GPUTILS.WriteEnvStr
 ${SectionEnd}
 
-${Section} "gputils lkr files" SEC04
+${Section} "gputils lkr files" SEC03
   SectionIn 1
   SetOutPath "$INSTDIR\lkr"
-  File "${DEV_ROOT}\lkr\*.lkr"
+  File "${GPUTILS_ROOT}\lkr\*.lkr"
 
   ; Set GPUTILS_LKR_PATH environment variable
   ${DebugMsg} "defining environment variable GPUTILS_LKR_PATH=$INSTDIR\lkr"
@@ -364,14 +358,28 @@ ${Section} "gputils lkr files" SEC04
   Call GPUTILS.WriteEnvStr
 ${SectionEnd}
 
+${Section} "gputils documentation" SEC04
+  SectionIn 1 2
+  SetOutPath "$INSTDIR\doc"
+  File "${GPUTILS_ROOT}\doc\gputils.pdf"
+${SectionEnd}
+
+${Section} "gputils devices HTML help" SEC05
+  SectionIn 1 2
+  SetOutPath "$INSTDIR\doc\html-help"
+;  File "${GPUTILS_ROOT}}\doc\html-help\*.html"
+  File "${GPUTILS_ROOT}\doc\html-help\*.css"
+${SectionEnd}
+
 ;--------------------------------
 ;Descriptions
 
 ;Language strings
 LangString DESC_SEC01 ${LANG_ENGLISH} "gputils application files"
-LangString DESC_SEC02 ${LANG_ENGLISH} "gputils documentation"
-LangString DESC_SEC03 ${LANG_ENGLISH} "gputils header files"
-LangString DESC_SEC04 ${LANG_ENGLISH} "gputils lkr files"
+LangString DESC_SEC02 ${LANG_ENGLISH} "gputils header files"
+LangString DESC_SEC03 ${LANG_ENGLISH} "gputils lkr files"
+LangString DESC_SEC04 ${LANG_ENGLISH} "gputils documentation"
+LangString DESC_SEC05 ${LANG_ENGLISH} "gputils devices HTML help"
 
 ;Assign language strings to sections
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -379,6 +387,7 @@ LangString DESC_SEC04 ${LANG_ENGLISH} "gputils lkr files"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} $(DESC_SEC02)
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} $(DESC_SEC03)
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} $(DESC_SEC04)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} $(DESC_SEC05)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 ;--------------------------------
 
@@ -387,6 +396,7 @@ ${Section} -Icons SECICONS
   CreateDirectory "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE"
   CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Uninstall gputils.lnk" "$INSTDIR\uninstall.exe"
   CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Documentation.lnk" "$INSTDIR\doc\gputils.pdf"
+  CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Devices HTML help.lnk" "$INSTDIR\doc\html-help\index.html"
   CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\README.lnk" "$INSTDIR\README.TXT"
   CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Change Log.lnk" "$INSTDIR\ChangeLog.txt"
   CreateShortCut "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\GPL 2 License.lnk" "$INSTDIR\COPYING.txt"
@@ -435,6 +445,7 @@ ${Section} Uninstall SECUNINSTALL
   Delete "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Change Log.lnk"
   Delete "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\README.lnk"
   Delete "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Documentation.lnk"
+  Delete "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Devices HTML help.lnk"
   Delete "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\Uninstall gputils.lnk"
   Delete "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\gputils on the Web.url"
 
@@ -465,6 +476,10 @@ ${Section} Uninstall SECUNINSTALL
 
   Delete "$INSTDIR\doc\*.pdf"
   RMDir "$INSTDIR\doc"
+
+  Delete "$INSTDIR\doc\html-help\*.html"
+  Delete "$INSTDIR\doc\html-help\*.css"
+  RMDir "$INSTDIR\doc\html-help"
 
   Delete "$INSTDIR\uninstall.exe"
   Delete "$INSTDIR\ChangeLog.txt"
