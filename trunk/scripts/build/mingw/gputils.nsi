@@ -144,8 +144,6 @@ SetCompressor /SOLID lzma
 
 !define GPUTILS_ROOT "."
 
-!define DEV_ROOT "${GPUTILS_ROOT}"
-
 InstType "Full (Bin, Hdr, Lkr, Doc, HTML help)"
 InstType "Compact (Bin, Doc)"
 
@@ -367,7 +365,7 @@ ${SectionEnd}
 ${Section} "gputils devices HTML help" SEC05
   SectionIn 1 2
   SetOutPath "$INSTDIR\doc\html-help"
-  File "${GPUTILS_ROOT}}\doc\html-help\*.html"
+  File "${GPUTILS_ROOT}\doc\html-help\*.html"
   File "${GPUTILS_ROOT}\doc\html-help\*.css"
 ${SectionEnd}
 
@@ -404,7 +402,7 @@ ${Section} -Icons SECICONS
 ${SectionEnd}
 
 ${Section} -INI SECINI
-  WriteIniStr "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\gputils on the Web.url "InternetShortcut" "URL" "http://gputils.sourceforge.net/"
+  WriteIniStr "$SMPROGRAMS\$MUI_STARTMENUPAGE_VARIABLE\gputils on the Web.url" "InternetShortcut" "URL" "http://gputils.sourceforge.net/"
 ${SectionEnd}
 
 ${Section} -PostInstall SECPOSTINSTALL
@@ -474,12 +472,12 @@ ${Section} Uninstall SECUNINSTALL
   Delete "$INSTDIR\header\*.inc"
   RMDir "$INSTDIR\header"
 
-  Delete "$INSTDIR\doc\*.pdf"
-  RMDir "$INSTDIR\doc"
-
   Delete "$INSTDIR\doc\html-help\*.html"
   Delete "$INSTDIR\doc\html-help\*.css"
   RMDir "$INSTDIR\doc\html-help"
+
+  Delete "$INSTDIR\doc\*.pdf"
+  RMDir "$INSTDIR\doc"
 
   Delete "$INSTDIR\uninstall.exe"
   Delete "$INSTDIR\ChangeLog.txt"
