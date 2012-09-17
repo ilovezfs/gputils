@@ -1,4 +1,7 @@
 2012-09-17  Molnar Karoly  <borutr@users.sourceforge.net>
+  * lkr/16f73_g.lkr: The repair of repair.
+
+2012-09-17  Molnar Karoly  <borutr@users.sourceforge.net>
   * lkr/12c509_g.lkr, lkr/12c509a_g.lkr, lkr/12ce519_g.lkr,
     lkr/12cr509a_g.lkr, lkr/16c505_g.lkr, lkr/16f73_g.lkr,
     lkr/16f74_g.lkr, lkr/16f873_g.lkr, lkr/16f873a_g.lkr,
