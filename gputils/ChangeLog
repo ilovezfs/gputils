@@ -1,3 +1,12 @@
+2012-09-17  Molnar Karoly  <borutr@users.sourceforge.net>
+  * lkr/12c509_g.lkr, lkr/12c509a_g.lkr, lkr/12ce519_g.lkr,
+    lkr/12cr509a_g.lkr, lkr/16c505_g.lkr, lkr/16f73_g.lkr,
+    lkr/16f74_g.lkr, lkr/16f873_g.lkr, lkr/16f873a_g.lkr,
+    lkr/16f874_g.lkr, lkr/16f874a_g.lkr, lkr/16f1786_g.lkr,
+    lkr/16f1787_g.lkr, lkr/16lf1786_g.lkr, lkr/16lf1787_g.lkr,
+    lkr/18c601_g.lkr, lkr/rf509af_g.lkr, lkr/rf509ag_g.lkr:
+    Uniform gputils comments.
+
 2012-09-16  Borut Razem  <borutr@users.sourceforge.net>
   * doc/html-doc/Makefile.am, doc/html-doc/Makefile.in, configure.am,
     configure: fixed make dist

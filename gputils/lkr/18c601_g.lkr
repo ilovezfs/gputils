@@ -30,7 +30,7 @@ LIBPATH .
   CODEPAGE   NAME=debug      START=_DEBUGCODESTART   END=_CEND        PROTECTED
 #ELSE
 //// Begin: Changed in gputils
-//  CODEPAGE   NAME=page       START=0x0               END=0x1FFFFF
+////  CODEPAGE   NAME=page       START=0x0               END=0x1FFFFF
   CODEPAGE   NAME=page       START=0x0               END=0x3FFFF
 //// End: Changed in gputils
 #FI
