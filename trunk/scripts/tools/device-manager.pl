@@ -2,7 +2,7 @@
 
 =back
 
-   Copyright (C) 2012, Molnár Károly <proton7@freemail.hu>
+   Copyright (C) 2012, Molnár Károly <molnarkaroly@users.sf.net>
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
@@ -53,6 +53,7 @@
 =cut
 
 use strict;
+use warnings;
 use 5.10.1;                     # Because of her need: ${^POSTMATCH}
 use feature 'switch';           # Starting from 5.10.1.
 use POSIX qw(strftime);
@@ -381,19 +382,18 @@ sub reset_preprocessor()
 sub run_preprocessor($$$)
   {
   my ($Fname, $Function, $Line) = @_;
-  my $last = $#pp_conditions;
 
   if ($Line =~ /^#\s*IFDEF\s+(\S+)$/io)
     {
-    if ($pp_conditions[$last])
+    if ($pp_conditions[$#pp_conditions])
       {
-  # The ancestor is valid, therefore it should be determined that
+        # The ancestor is valid, therefore it should be determined that
         # the descendants what kind.
       if_condition(_defined($1));
       }
     else
       {
-  # The ancestor is invalid, so the descendants will invalid also.
+        # The ancestor is invalid, so the descendants will invalid also.
       if_condition(FALSE);
       }
     }
@@ -408,9 +408,9 @@ sub run_preprocessor($$$)
   elsif ($Line =~ /^#\s*DEFINE\s+(.+)$/io)
     {
         # This level is valid, so it should be recorded in the definition.
-    define($1) if ($pp_conditions[$last]);
+    define($1) if ($pp_conditions[$#pp_conditions]);
     }
-  elsif ($pp_conditions[$last])
+  elsif ($pp_conditions[$#pp_conditions])
     {
         # This is a valid line. (The whole magic is in fact therefore there is.)
     $Function->($Line);
@@ -491,7 +491,7 @@ sub str2dec($)
   return hex($1)   if ($Str =~ /^0x([[:xdigit:]]+)$/io);
   return int($Str) if ($Str =~ /^-?\d+$/o);
 
-  die "str2dec(): This string is not a number: \"$Str\"";
+  die "str2dec(): This string is not integer: \"$Str\"";
   }
 
 #-------------------------------------------------------------------------------
@@ -1829,7 +1829,7 @@ sub remove_mcu($)
   die "remove_mcu(): Miss the name of MCU!\n" if ($Name eq '');
   die "remove_mcu(): This name is wrong: \"$Name\"\n" if ($Name !~ /^(p(ic)?)?$name_filter$/io);
 
-  $Name =~ s/^(p(ic)?)?//io;
+  $Name =~ s/^p(ic)?//io;
   $Name = lc($Name);
   delete_mcu($Name);
   Log("The $Name MCU removed of gputils.", 2);
@@ -1860,7 +1860,7 @@ sub fabricate_inc($)
   die "fabricate_inc(): Miss the name of MCU!\n" if ($Name eq '');
   die "fabricate_inc(): This name is wrong: \"$Name\"\n" if ($Name !~ /^(p(ic)?)?$name_filter$/io);
 
-  $Name =~ s/^(p(ic)?)?//io;
+  $Name =~ s/^p(ic)?//io;
   Log("Fabricate the p${Name}.inc file.", 2);
   convert_file($mplabx_inc, lc($Name), '.inc', FALSE);
   }
@@ -1890,7 +1890,7 @@ sub fabricate_lkr($)
   die "fabricate_lkr(): Miss the name of MCU!\n" if ($Name eq '');
   die "fabricate_lkr(): This name is wrong: \"$Name\"\n" if ($Name !~ /^(p(ic)?)?$name_filter$/io);
 
-  $Name =~ s/^(p(ic)?)?//io;
+  $Name =~ s/^p(ic)?//io;
   Log("Fabricate the ${Name}_g.lkr file.", 2);
   convert_file($mplabx_lkr, lc($Name), '.lkr', TRUE);
   }
@@ -1920,7 +1920,7 @@ sub addition_helper1($)
   die "addition_helper1(): Miss the name of MCU!\n" if ($Name eq '');
   die "addition_helper1(): This name is wrong: \"$Name\"\n" if ($Name !~ /^(p(ic)?)?$name_filter$/io);
 
-  $Name =~ s/^(p(ic)?)?//io;
+  $Name =~ s/^p(ic)?//io;
   $Name = lc($Name);
 
   if ($examine_exist_device && defined($gp_px_rows_by_name{$Name}))
