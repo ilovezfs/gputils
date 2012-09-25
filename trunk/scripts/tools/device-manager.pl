@@ -432,11 +432,38 @@ sub basename($)
 
 #-------------------------------------------------------------------------------
 
+sub param_exist($$)
+  {
+  die "This option \"$_[0]\" requires a parameter.\n" if ($_[1] > $#ARGV);
+  }
+
+#-------------------------------------------------------------------------------
+
 sub Log
   {
   return if (pop(@_) > $verbose);
   foreach (@_) { print STDERR $_; }
   print STDERR "\n";
+  }
+
+#-------------------------------------------------------------------------------
+
+sub Open($$)
+  {
+  my ($Name, $Function) = @_;
+  my $handle;
+
+  open($handle, '<', $Name) || die "${Function}(): Could not open the \"$Name\" file.\n";
+  return $handle;
+  }
+
+#-------------------------------------------------------------------------------
+
+sub Create($$)
+  {
+  my ($Name, $Function) = @_;
+
+  open($out_handler, '>', $Name) || die "${Function}(): Could not create the \"$Name\" file.\n";
   }
 
 #-------------------------------------------------------------------------------
@@ -589,10 +616,12 @@ sub read_file($$)
   {
   my ($Name, $Array) = @_;
 
-  open(IN, '<', $Name) || die "read_file(): Can not open. -> \"$Name\"\n";
   Log("Reads the $Name file.", 4);
-  @{$Array} = map { chomp($_); $_ =~ s/\r$//o; $_; } <IN>;
-  close(IN);
+
+  my $in = Open($Name, 'read_file');
+
+  @{$Array} = map { chomp($_); $_ =~ s/\r$//o; $_; } <$in>;
+  close($in);
   }
 
 #-------------------------------------------------------------------------------
@@ -662,8 +691,7 @@ sub read_config_bits($$$)
   my $setting_count = 0;
   my $switch_info = undef;
   my $state = ST_WAIT;
-
-  open(IN, '<', $Info) || die "Could not open for reading: $Info\n";
+  my $in = Open($Info, 'read_config_bits');
 
 =back
         The structure of one element of the %{$Configs} hash:
@@ -694,7 +722,7 @@ sub read_config_bits($$$)
 
   %{$Configs} = ();
 
-  while (<IN>)
+  while (<$in>)
     {
     my @fields = ($_ =~ /<([^<>]*)>/go);
 
@@ -787,9 +815,9 @@ sub read_config_bits($$$)
           } # when ('SETTING_VALUE_TYPE')
         } # given ($fields[0])
       } # if ($state == ST_LISTEN)
-    } # while (<IN>)
+    } # while (<$in>)
 
-  close(IN);
+  close($in);
   }
 
 #-------------------------------------------------------------------------------
@@ -802,9 +830,7 @@ sub dump_config($)
   my @addresses = sort {$a <=> $b} keys(%{$Configs});
   my @sections;
   my $count = @addresses;
-  my $str;
-  my $len;
-  my $i;
+  my ($str, $len, $i);
 
   return if (! $count);
 
@@ -916,8 +942,7 @@ sub convert_file($$$$)
   my ($Source_dir, $Name, $Tail, $Lkr) = @_;
   my @dir_list;
   my @array;
-  my $in_file;
-  my $out_file;
+  my ($in_file, $out_file);
 
   $out_file = ($Lkr) ? "${Name}_g$Tail" : "p$Name$Tail";
   $in_file  = $out_file;
@@ -930,8 +955,8 @@ sub convert_file($$$$)
   $in_file = $1 if (/^($in_file)$/i ~~ @dir_list);
 
   read_file("$Source_dir/$in_file", \@array);
-  open($out_handler, '>', $out_file) || die "convert_file(): Could not create the \"$out_file\" file!\n";
   Log("Create the $out_file file.", 6);
+  Create($out_file, 'convert_file');
 
   if ($Lkr || assess_include(\@array))
     {
@@ -1210,11 +1235,12 @@ sub process_lkr_line($)
 
 sub read_lkr($)
   {
-  open(IN, '<', $_[0]) || die "read_lkr(): Could not open the $_[0] file!\n";
+  my $Lkr = $_[0];
 
-  Log("Reads the $_[0] file.", 4);
+  Log("Reads the $Lkr file.", 4);
 
-  my $name = basename($_[0]);
+  my $in = Open($Lkr, 'read_lkr');
+  my $name = basename($Lkr);
 
   reset_preprocessor();
 
@@ -1222,7 +1248,7 @@ sub read_lkr($)
   $lkr_config_start = -1;
   $lkr_config_end   = -1;
 
-  while (<IN>)
+  while (<$in>)
     {
     chomp;
     s/\r$//o;
@@ -1237,7 +1263,7 @@ sub read_lkr($)
     }
 
   die "read_lkr(): There is no one program memory page either. ($name)\n" if (! @lkr_pages);
-  close(IN);
+  close($in);
   }
 
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -1255,14 +1281,14 @@ sub read_mcu_info_from_mplabx($)
   my $Name = $_[0];
   my $path = "$mplabx_inc/$mplabx_dev_info";
 
-  open(IN, '<', $path) || die "read_mcu_info_from_mplabx(): Could not open for reading: $path\n";
-
   Log("Reads from the $path file.", 4);
+
+  my $in = Open($path, 'read_mcu_info_from_mplabx');
 
   my $proc = 'PIC' . uc($Name);
   my $info = undef;
 
-  while (<IN>)
+  while (<$in>)
     {
     if ($_ =~ /^<PART_INFO_TYPE><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)>/io && $2 eq $proc)
       {
@@ -1286,7 +1312,7 @@ sub read_mcu_info_from_mplabx($)
       }
     }
 
-  close(IN);
+  close($in);
   return $info;
   }
 
@@ -1300,13 +1326,14 @@ sub read_all_mcu_info_from_mplabx()
   my $prev;
   my $name_error = '';
 
-  open(IN, '<', $path) || die "read_all_mcu_info_from_mplabx(): Could not open for reading: $path\n";
-
   Log("Reads the $path file.", 4);
+
+  my $in = Open($path, 'read_all_mcu_info_from_mplabx');
+
   @mp_mcus = ();
   %mp_mcus_by_name = ();
 
-  while (<IN>)
+  while (<$in>)
     {
         # <PART_INFO_TYPE><e529><PIC12F529T39A><16c5xe><0><3><5ff><8><1f><0><0><3f><1>
         # <PART_INFO_TYPE><1840><PIC12F1840><16Exxx><2><2><fff><20><7f><ff><0><0><2>
@@ -1358,7 +1385,7 @@ sub read_all_mcu_info_from_mplabx()
       }
     }
 
-  close(IN);
+  close($in);
   report(RP_PRINT, E_NAME_COLL, \$name_error, 'mplabx', *STDERR);
   }
 
@@ -1369,8 +1396,7 @@ sub read_all_mcu_info_from_mplabx()
 sub new_px_row($$$)
   {
   my ($Error, $Info, $Script) = @_;
-  my $name = $Info->{NAME};
-  my $rom_end = $Info->{ROM};
+  my ($name, $rom_end) = ($Info->{NAME}, $Info->{ROM});
   my $lkr_rom_end = $lkr_pages[$#lkr_pages]->{END};
 
   $Script = "${name}_g.lkr" if (! defined($Script));
@@ -1483,30 +1509,19 @@ sub create_px_struct_from_mplabx()
 ################################################################################
 ################################################################################
 
-        # Creates a unique coff_type identifier.
-=back
-sub generate_coff_type()
-  {
-  for (my $i = 1; $i <= 0xFFFF; ++$i)
-    {
-    return $i if (! defined($gp_px_rows_by_coff{$i}));
-    }
-
-  return -1;
-  }
-=cut
-#-------------------------------------------------------------------------------
-
         # Reads the content of the list file.
 
 sub read_list_file($)
   {
-  open(LIST, '<', $_[0]) || die "read_list_file(): Can not open. -> \"$_[0]\"\n";
+  my $List = $_[0];
 
-  Log("Reads the $_[0] file.", 4);
+  Log("Reads the $List file.", 4);
+
+  my $in = Open($List, 'read_list_file');
+
   %list_file_members = ();
 
-  while (<LIST>)
+  while (<$in>)
     {
     chomp;
     s/\r$//o;
@@ -1522,7 +1537,7 @@ sub read_list_file($)
     $list_file_members{$_} = TRUE;
     }
 
-  close(LIST);
+  close($in);
   }
 
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -1537,10 +1552,12 @@ sub read_list_file($)
 
 sub read_gpproc_c_content()
   {
-  open(LIB, '<', $gpproc_path) || die "read_gpproc_c_content(): Can not open. -> \"$gpproc_path\"\n";
   Log("Reads the $gpproc_path file.", 4);
-  @gpproc_c_content = <LIB>;
-  close(LIB);
+
+  my $in = Open($gpproc_path, 'read_gpproc_c_content');
+
+  @gpproc_c_content = <$in>;
+  close($in);
   chomp(@gpproc_c_content);
   }
 
@@ -1799,7 +1816,8 @@ sub create_gpprocessor_c()
   {
   my $name = "$gpprocessor_c$out_tail";
 
-  open($out_handler, '>', $name) || die "create_gpprocessor_c(): Could not create the \"$name\" file!\n";
+  Log("Create the $name file.", 6);
+  Create($name, 'create_gpprocessor_c');
 
         # This the part of the gpprocessor.c file before the table.
 
@@ -2013,9 +2031,8 @@ sub create_p16f1xxx_inc()
   {
   my $name = "$p16f1xxx_inc$out_tail";
 
-  open($out_handler, '>', $name) || die "create_p16f1xxx_inc(): Could not create the \"$name\" file!\n";
-
   Log("Create the $name file.", 6);
+  Create($name, 'create_p16f1xxx_inc');
 
   print $out_handler <<EOT
 ;$border0\n;\n; p16f1xxx.inc - Common include file to PIC16XXXX enhanced families.
@@ -2026,7 +2043,7 @@ EOT
 
   foreach (@gp_px_struct)
     {
-    my $name = $_->{DEFINED_AS};
+    $name = $_->{DEFINED_AS};
 
     next if ($name !~ /^__1[26]L?F\d{4}/o);
 
@@ -2044,9 +2061,8 @@ sub create_p18cxxx_inc()
   {
   my $name = "$p18cxxx_inc$out_tail";
 
-  open($out_handler, '>', $name) || die "create_p18cxxx_inc(): Could not create the \"$name\" file!\n";
-
   Log("Create the $name file.", 6);
+  Create($name, 'create_p18cxxx_inc');
 
   print $out_handler <<EOT
 ;$border0\n;\n; p18cxxx.inc - Common include file to PIC18XXXX families.
@@ -2056,7 +2072,7 @@ EOT
 ;
   foreach (@gp_px_struct)
     {
-    my $name = $_->{DEFINED_AS};
+    $name = $_->{DEFINED_AS};
 
     next if ($name !~ /^__18/o);
 
@@ -2278,29 +2294,25 @@ for (my $i = 0; $i < @ARGV; )
     {
     when (/^-(gp|-gputils-path)$/o)
       {
-      die "This option \"$opt\" requires a parameter.\n" if ($i > $#ARGV);
-
+      param_exist($opt, $i);
       $gputils_path = $ARGV[$i++];
       }
 
     when (/^-(mp|-mplabx-path)$/o)
       {
-      die "This option \"$opt\" requires a parameter.\n" if ($i > $#ARGV);
-
+      param_exist($opt, $i);
       $mplabx_path = $ARGV[$i++];
       }
 
     when (/^-(p|-processor)$/o)
       {
-      die "This option \"$opt\" requires a parameter.\n" if ($i > $#ARGV);
-
+      param_exist($opt, $i);
       $mcu = $ARGV[$i++];
       }
 
     when (/^-(l|-list-file)$/o)
       {
-      die "This option \"$opt\" requires a parameter.\n" if ($i > $#ARGV);
-
+      param_exist($opt, $i);
       $list_file = $ARGV[$i++];
       }
 
@@ -2321,8 +2333,7 @@ for (my $i = 0; $i < @ARGV; )
 
     when (/^-(v|-verbose)$/o)
       {
-      die "This option \"$opt\" requires a parameter.\n" if ($i > $#ARGV);
-
+      param_exist($opt, $i);
       $verbose = int($ARGV[$i++]);
       $verbose = 0 if (! defined($verbose) || $verbose < 0);
       $verbose = 10 if ($verbose > 10);

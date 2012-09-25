@@ -1,3 +1,6 @@
+2012-09-25 Molnar Karoly <molnarkaroly@users.sf.net>
+	* tools/device-manager.pl: Code cleaning.
+
 2012-09-22 Molnar Karoly <molnarkaroly@users.sf.net>
         * tools/device-help.pl, tools/device-manager.pl: I changed of my
           email address.
