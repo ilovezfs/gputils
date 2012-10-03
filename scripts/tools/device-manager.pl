@@ -76,8 +76,9 @@ use constant OP_FABR_LKR     => 5;
 use constant OP_LIST_GP      => 6;
 use constant OP_LIST_MP      => 7;
 use constant OP_SURVEY       => 8;
-use constant OP_SHOWS_CDIFF  => 9;
-use constant OP_SHOWS_PXDIFF => 10;
+use constant OP_SHOWS_SPDIFF => 9;
+use constant OP_SHOWS_CDIFF  => 10;
+use constant OP_SHOWS_PXDIFF => 11;
 
 use constant SORT_DEFINED_AS => 0;
 use constant SORT_NAME0      => 1;
@@ -2164,6 +2165,38 @@ sub show_diff_px_struct()
 
 #-------------------------------------------------------------------------------
 
+sub show_differences_mp_gp()
+  {
+  my $out = '';
+
+  Log('Shows the supported MCUs in the mplabx and the gputils.', 6);
+
+  foreach (sort { smartSort($a, $b, FALSE) } keys(%mp_mcus_by_name))
+    {
+    $out .= "$_\n" if (! defined($gp_px_rows_by_name{$_}));
+    }
+
+  print (($out ne '') ? "The mplabx supports, but the gputils not:\n$out" : "No differences.\n");
+  }
+
+#-------------------------------------------------------------------------------
+
+sub show_differences_gp_mp()
+  {
+  my $out = '';
+
+  Log('Shows the supported MCUs in the gputils and the mplabx.', 6);
+
+  foreach (sort { smartSort($a, $b, FALSE) } keys(%gp_px_rows_by_name))
+    {
+    $out .= "$_\n" if (! defined($mp_mcus_by_name{$_}));
+    }
+
+  print (($out ne '') ? "The gputils supports, but the mplabx not:\n$out" : "No differences.\n");
+  }
+
+#-------------------------------------------------------------------------------
+
 sub usage()
   {
   print <<EOT
@@ -2231,6 +2264,10 @@ Usage: $PROGRAM [options]
         -lm or --list-mplabx
 
             Lists all MCU is what mplabx know.
+
+        -ld or --list-support-differences
+
+            Shows differences between the gputils and the mplabx MCU support.
 
         -dc or --show-diff-coff-types
 
@@ -2316,20 +2353,21 @@ for (my $i = 0; $i < @ARGV; )
       $list_file = $ARGV[$i++];
       }
 
-    when (/^-(a|-add)$/o)                   { $operation = OP_ADD; }
-    when (/^-(r|-remove)$/o)                { $operation = OP_REMOVE; }
-    when (/^-(fi|-fabricate-inc)$/o)        { $operation = OP_FABR_INC; }
-    when (/^-(fl|-fabricate-lkr)$/o)        { $operation = OP_FABR_LKR; }
-    when ('--regenerate')                   { $operation = OP_REGENERATE; }
-    when (/^-(os|-only-survey)$/o)          { $operation = OP_SURVEY; }
-    when (/^-(lg|-list-gputils)$/o)         { $operation = OP_LIST_GP; }
-    when (/^-(lm|-list-mplabx)$/o)          { $operation = OP_LIST_MP; }
-    when (/^-(dc|-show-diff-coff-types)$/o) { $operation = OP_SHOWS_CDIFF; }
-    when (/^-(dp|-show-diff-px-struct)$/o)  { $operation = OP_SHOWS_PXDIFF; }
-    when (/^-(ac|-add-config-bits)$/o)      { $add_config_bits = TRUE; }
-    when (/^-(el|-extended-list)$/o)        { $extended_list = TRUE; }
-    when (/^-(ne|-no-examine-exist)$/o)     { $examine_exist_device = FALSE; }
-    when (/^-(t|-timestamp)$/o)             { $timestamp = TRUE; }
+    when (/^-(a|-add)$/o)                       { $operation = OP_ADD; }
+    when (/^-(r|-remove)$/o)                    { $operation = OP_REMOVE; }
+    when (/^-(fi|-fabricate-inc)$/o)            { $operation = OP_FABR_INC; }
+    when (/^-(fl|-fabricate-lkr)$/o)            { $operation = OP_FABR_LKR; }
+    when ('--regenerate')                       { $operation = OP_REGENERATE; }
+    when (/^-(os|-only-survey)$/o)              { $operation = OP_SURVEY; }
+    when (/^-(lg|-list-gputils)$/o)             { $operation = OP_LIST_GP; }
+    when (/^-(lm|-list-mplabx)$/o)              { $operation = OP_LIST_MP; }
+    when (/^-(ld|-list-support-differences)$/o) { $operation = OP_SHOWS_SPDIFF; }
+    when (/^-(dc|-show-diff-coff-types)$/o)     { $operation = OP_SHOWS_CDIFF; }
+    when (/^-(dp|-show-diff-px-struct)$/o)      { $operation = OP_SHOWS_PXDIFF; }
+    when (/^-(ac|-add-config-bits)$/o)          { $add_config_bits = TRUE; }
+    when (/^-(el|-extended-list)$/o)            { $extended_list = TRUE; }
+    when (/^-(ne|-no-examine-exist)$/o)         { $examine_exist_device = FALSE; }
+    when (/^-(t|-timestamp)$/o)                 { $timestamp = TRUE; }
 
     when (/^-(v|-verbose)$/o)
       {
@@ -2398,6 +2436,14 @@ given ($operation)
     {
     sort_px_struct(\@gp_px_struct, SORT_NAME0);
     list_known_mcu(\@gp_px_struct);
+    exit(0);
+    }
+
+  when (OP_SHOWS_SPDIFF)
+    {
+    read_all_mcu_info_from_mplabx();
+    show_differences_mp_gp();
+    show_differences_gp_mp();
     exit(0);
     }
 
