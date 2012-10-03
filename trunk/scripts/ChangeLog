@@ -1,3 +1,6 @@
+2012-10-03 Molnar Karoly <molnarkaroly@users.sf.net>
+	* tools/device-manager.pl: New command line option: --list-support-differences
+
 2012-09-25 Molnar Karoly <molnarkaroly@users.sf.net>
 	* tools/device-manager.pl: Code cleaning.
 
