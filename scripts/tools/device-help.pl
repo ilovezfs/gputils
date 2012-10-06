@@ -308,36 +308,35 @@ my @mcu_feat_names = sort {
                     },
 
         CONFIGS  => {
-                    '300000' => [],
+                    '300000' => {},
 
                     ...
 
-                    '300005' => [
-                                  {
-                                  'HEAD' => 'CCP2MX',
-                                  'NAME' => 'CCP2 MUX bit',
-                                  'BITS' => [
+                    '300005' => {
+                                SWITCHES => [
                                               {
-                                              'NAME'  => 'OFF',
-                                              'VALUE' => 0,
-                                              'EXPL'  => 'CCP2 input/output is multiplexed with RB3'
+                                              'HEAD' => 'CCP2MX',
+                                              'NAME' => 'CCP2 MUX bit',
+                                              'BITS' => [
+                                                          {
+                                                          'NAME'  => 'OFF',
+                                                          'VALUE' => 0,
+                                                          'EXPL'  => 'CCP2 input/output is multiplexed with RB3'
+                                                          },
+
+                                                          ...
+
+                                                          {}
+                                                        ],
+                                              'MASK' => 1
                                               },
 
                                               ...
 
                                               {}
                                             ],
-                                  'MASK' => 1
-                                  },
-
-                                  ...
-
-                                  {}
-                                ],
-
-                                ...
-
-                                []
+                                MASK     => 0
+                                }
                     }
         }
 =cut
@@ -436,8 +435,8 @@ my @pri_menu_elems =
     }
   );
 
-use constant MCU_MENU_CONF => 0;
-use constant MCU_MENU_FEAT => 1;
+use constant MCU_MENU_FEAT => 0;
+use constant MCU_MENU_CONF => 1;
 use constant MCU_MENU_RAM  => 2;
 use constant MCU_MENU_SFR  => 3;
 
@@ -1216,7 +1215,7 @@ sub read_ram_and_rom_features($$)
 
 sub read_all_informations()
   {
-  my ($configs, $name, $inc, $lkr, $class);
+  my ($configs, $config_reg, $name, $inc, $lkr, $class);
   my $features = undef;
   my $addr = 0;
   my $config_count = 0;
@@ -1343,8 +1342,16 @@ sub read_all_informations()
 
           die "Too much the number of \"CONFIGREG_INFO_TYPE\"!\n" if ($config_count <= 0);
 
+          $config_reg = {
+                        SWITCHES => [],
+                        MASK     => hex($fields[3])
+                        };
+
           $switch_count = hex($fields[4]);
           $addr = hex($fields[1]);
+
+          $configs->{$addr} = $config_reg;
+
           $cf_addr_min = $addr if ($cf_addr_min > $addr);
           $cf_addr_max = $addr if ($cf_addr_max < $addr);
           --$config_count;
@@ -1365,7 +1372,7 @@ sub read_all_informations()
                          };
 
           $setting_count = hex($fields[4]);
-          push(@{$configs->{$addr}}, $switch_info);
+          push(@{$config_reg->{SWITCHES}}, $switch_info);
           --$switch_count;
           } # when ('SWITCH_INFO_TYPE')
 
@@ -1373,6 +1380,8 @@ sub read_all_informations()
           {
         # <SETTING_VALUE_TYPE><LP><LP oscillator: Low-power crystal on RA6/OSC2/CLKOUT and RA7/OSC1/CLKIN><0>
         # <SETTING_VALUE_TYPE><OFF><WDT disabled and can be enabled by SWDTEN bit of the WDTCON register><0>
+        # <SETTING_VALUE_TYPE><HSHP><HS oscillator (high power > 16 MHz)><2>
+        # <SETTING_VALUE_TYPE><ECLPIO6><EC oscillator (low power, <500 kHz)><d>
         # <SETTING_VALUE_TYPE><ON><WDT enabled><8>
         # <SETTING_VALUE_TYPE><2><><10>
 
@@ -2055,7 +2064,7 @@ sub dump_all_config_word($$)
   my @sections;
   my $config_mask = (ULONG_MAX << $Configs->{FEATURES}->{CONF_SIZE}) ^ ULONG_MAX;
   my $count = @addresses;
-  my ($str, $len, $i, $head_s, $head_e, $gap);
+  my ($conf_reg, $str, $len, $i, $head_s, $head_e, $gap, $v);
 
   return if (! $count);
 
@@ -2100,15 +2109,16 @@ sub dump_all_config_word($$)
 
     $sections[0] = 'CONFIG';
     aOutl(6, $gap);
-    aOutfl(6, "${head_s}CONFIG (0x%0${len}X)$head_e", $addresses[0]);
-    dump_config_word(6, \@{$conf_bits->{$addresses[0]}}, $len, $config_mask, $gap);
+    $conf_reg = $conf_bits->{$addresses[0]};
+    aOutfl(6, "${head_s}CONFIG (address:0x%0${len}X, mask:0x%0${len}X)$head_e", $addresses[0], $conf_reg->{MASK});
+    dump_config_word(6, \@{$conf_reg->{SWITCHES}}, $len, $config_mask, $gap);
     }
   else
     {
     if ($config_mask == 0x00FF)
       {
         # PIC18
-      my ($v, $n, $h);
+      my ($n, $h);
 
       $len = 2;
 
@@ -2119,13 +2129,14 @@ sub dump_all_config_word($$)
         for ($i = 0; $i < $count; ++$i)
           {
           $v = $addresses[$i];
+          $conf_reg = $conf_bits->{$v};
           $n = int(($i & 0x0F) / 2 + 1);
           $h = ($i & 1) ? 'H' : 'L';
           $str = "CONFIG$n$h";
           $sections[$i] = $str;
           aOutl(6, $gap);
-          aOutfl(6, "$head_s$str (0x%06X)$head_e", $v);
-          dump_config_word(6, \@{$conf_bits->{$addresses[$i]}}, $len, $config_mask, $gap);
+          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X)$head_e", $v, $conf_reg->{MASK});
+          dump_config_word(6, \@{$conf_reg->{SWITCHES}}, $len, $config_mask, $gap);
           }
         }
       else
@@ -2135,13 +2146,14 @@ sub dump_all_config_word($$)
         for ($i = 0; $i < $count; ++$i)
           {
           $v = $addresses[$i];
+          $conf_reg = $conf_bits->{$v};
           $n = int(($v & 0x0F) / 2 + 1);
           $h = ($v & 1) ? 'H' : 'L';
           $str = "CONFIG$n$h";
           $sections[$i] = $str;
           aOutl(6, $gap);
-          aOutfl(6, "$head_s$str (0x%06X)$head_e", $v);
-          dump_config_word(6, \@{$conf_bits->{$addresses[$i]}}, $len, $config_mask, $gap);
+          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X)$head_e", $v, $conf_reg->{MASK});
+          dump_config_word(6, \@{$conf_reg->{SWITCHES}}, $len, $config_mask, $gap);
           }
         }
       }
@@ -2151,11 +2163,13 @@ sub dump_all_config_word($$)
 
       for ($i = 0; $i < $count; ++$i)
         {
+        $v = $addresses[$i];
+        $conf_reg = $conf_bits->{$v};
         $str = sprintf "CONFIG%u", $i + 1;
         $sections[$i] = $str;
         aOutl(6, $gap);
-        aOutfl(6, "$head_s$str (0x%04X)$head_e", $addresses[$i]);
-        dump_config_word(6, \@{$conf_bits->{$addresses[$i]}}, $len, $config_mask, $gap);
+        aOutfl(6, "$head_s$str (address:0x%04X, mask:0x%0${len}X)$head_e", $v, $conf_reg->{MASK});
+        dump_config_word(6, \@{$conf_reg->{SWITCHES}}, $len, $config_mask, $gap);
         }
       }
     }
