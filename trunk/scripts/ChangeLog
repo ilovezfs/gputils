@@ -1,4 +1,10 @@
 2012-10-03 Molnar Karoly <molnarkaroly@users.sf.net>
+        * tools/device-help.pl: Correction of a minor bug in
+          the read_all_informations() function. If one of
+          in field had a '<' or '>' characters, incorrectly
+          recognized the borders of fields.
+
+2012-10-03 Molnar Karoly <molnarkaroly@users.sf.net>
 	* tools/device-manager.pl: New command line option: --list-support-differences
 
 2012-09-25 Molnar Karoly <molnarkaroly@users.sf.net>

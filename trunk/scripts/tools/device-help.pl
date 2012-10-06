@@ -1234,7 +1234,11 @@ sub read_all_informations()
 
   while (<INFO>)
     {
-    my @fields = ($_ =~ /<([^<>]*)>/go);
+    chomp;
+    s/\r$//o;
+    s/^<|>$//go;
+
+    my @fields = split('><', $_, -1);
 
     $dev_info_rev = $fields[1] if ($fields[0] eq 'RES_FILE_VERSION_INFO_TYPE');
 
