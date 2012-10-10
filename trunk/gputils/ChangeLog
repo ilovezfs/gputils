@@ -2,6 +2,8 @@
   * evaluate.c: fixed list_length() for cases where tail of the list is
     not a list; MPASM(X) compatible shift operations in mpasm
     compatibility mode
+  * doc/gputils.lyx: documented MPASM(X) compatible shift operations in mpasm
+    compatibility mode
 
 2012-09-17  Molnar Karoly  <borutr@users.sourceforge.net>
   * lkr/16f73_g.lkr: The repair of repair.
