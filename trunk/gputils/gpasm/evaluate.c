@@ -58,12 +58,12 @@ int list_length(struct pnode *L)
   struct pnode *p = L;
   int n = 0;
 
-  while (p) {
+  while (p && list == p->tag) {
     ++n;
     p = TAIL(p);
   }
 
-  return n;
+  return (NULL != p) ? n + 1: n;
 }
 
 int can_evaluate_concatenation(struct pnode *p)
@@ -347,27 +347,30 @@ gpasmVal evaluate(struct pnode *p)
     case '|':      return p0 | p1;
     case '^':      return p0 ^ p1;
     case LSH:
-#if 1
-      /* MPASM compatible:
-       * It seems that x << n is actually x << (n % (sizeof(int) * 8))
-       * on x86 architectures, so 0x1234 << 32 results 0x1234
-       * which is wrong but compatible with MPASM */
-                   return p0 << p1;
-#else
+      if (state.mpasm_compatible) {
+        /* MPASM compatible:
+         * It seems that x << n is actually x << (n % (sizeof(int) * 8))
+         * on x86 architectures, so 0x1234 << 32 results 0x1234
+         * which is wrong but compatible with MPASM */
+        return p0 << p1;
+      }
+      else {
       /* x << n results sign extension for n >= (sizeof(int) * 8) */
-                   return (p1 >= sizeof(int) * 8) ? ((p0 < 0) ? -1 : 0) : p0 << p1;
-#endif
+        return (p1 >= sizeof(int) * 8) ? ((p0 < 0) ? -1 : 0) : p0 << p1;
+      }
+
     case RSH:
-#if 1
-      /* MPASM compatible: see https://sourceforge.net/p/gputils/bugs/252/ 
-       * It seems that x >> n is actually x >> (n % (sizeof(int) * 8))
-       * on x86 architectures, so 0x1234 >> 32 results 0x1234
-       * which is wrong but compatible with MPASM */
-                   return p0 >> p1;
-#else
+      if (state.mpasm_compatible) {
+        /* MPASM compatible: see https://sourceforge.net/p/gputils/bugs/252/ 
+         * It seems that x >> n is actually x >> (n % (sizeof(int) * 8))
+         * on x86 architectures, so 0x1234 >> 32 results 0x1234
+         * which is wrong but compatible with MPASM */
+        return p0 >> p1;
+      }
+      else {
       /* x >> n results sign extension for n >= (sizeof(int) * 8) */
-                   return (p1 >= sizeof(int) * 8) ? ((p0 < 0) ? -1 : 0) : p0 >> p1;
-#endif
+        return (p1 >= sizeof(int) * 8) ? ((p0 < 0) ? -1 : 0) : p0 >> p1;
+      }
     case EQUAL:    return p0 == p1;
     case '<':      return p0 < p1;
     case '>':      return p0 > p1;
