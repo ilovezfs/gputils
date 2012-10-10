@@ -71,7 +71,7 @@ James Bowman, Craig Franklin, and David Barnett
 \end_layout
 
 \begin_layout Date
-August 16, 2012
+October 10, 2012
 \end_layout
 
 \begin_layout Standard
@@ -1677,7 +1677,7 @@ Enable 18xx extended mode
 \begin_inset Text
 
 \begin_layout Plain Layout
-MPASM copatibility mode
+MPASM(X) copatibility mode
 \end_layout
 
 \end_inset
@@ -1759,17 +1759,22 @@ gpasm always produces a
 \end_layout
 
 \begin_layout Subsection
-MPASM compatibility mode
+MPASM(X) compatibility mode
 \end_layout
 
 \begin_layout Standard
 When the --mpasm-compatibe command line option is specified gputils tries
- to mimic MPASM behaviour:
+ to mimic MPASM(X) behaviour:
 \end_layout
 
 \begin_layout Itemize
 code_pack section doesn't generate line symbols in coff file; the consequence
- is missing object file info in the generated lisnker listing file.
+ is missing object file info in the generated linker listing file.
+\end_layout
+
+\begin_layout Itemize
+x << n is actually x << (n % (sizeof(int) * 8)) * on x86 architectures,
+ so 0x1234 << 32 results 0x1234 which is wrong but compatible with MPASM(X)
 \end_layout
 
 \begin_layout Subsection
