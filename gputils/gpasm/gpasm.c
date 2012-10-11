@@ -490,8 +490,7 @@ assemble(void)
   /* Maybe produce a symbol table */
   if (state.lst.symboltable) {
     lst_throw(); /* Start symbol table on a fresh page */
-    lst_symbol_table(state.stGlobal);
-    lst_defines_table(state.stDefines);
+    lst_symbol_table();
   }
 
   /* Maybe produce a memory map */
