@@ -4166,7 +4166,6 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           break;
 
         case 3:
-        case 4:
           p2 = HEAD(TAIL(parms));
           fsr = maybe_evaluate(p2);
           if (fsr == 4 || fsr == 6) {

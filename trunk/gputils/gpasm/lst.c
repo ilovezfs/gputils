@@ -22,6 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 
 #include "libgputils.h"
+#include "directive.h"
 #include "gpasm.h"
 #include "cod.h"
 #include "coff.h"
@@ -794,65 +795,102 @@ lst_format_line(const char *src_line, int value)
   }
 }
 
-/* append the symbol table to the .lst file */
-
-void
-lst_symbol_table(struct symbol_table *table)
+static void
+cod_symbol_table(void)
 {
   int i;
-  const char *symbol_format = "%-32s  %08X";
   struct symbol **lst, **ps, *s;
 
+  ps = lst = malloc(state.stGlobal->count * sizeof (struct symbol *));
+
+  for (i = 0; i < HASH_SIZE; i++)
+    for (s = state.stGlobal->hash_table[i]; s; s = s->next)
+      if (NULL != s)
+        *ps++ = s;
+
+  assert(ps == &lst[state.stGlobal->count]);
+
+  qsort(lst, state.stGlobal->count, sizeof (struct symbol *), symbol_compare);
+
+  cod_write_symbols(lst, state.stGlobal->count);
+
+  free(lst);
+}
+
+/* append the symbol table to the .lst file */
+struct lst_symbol_s {
+  struct symbol *sym;
+  enum lst_sym_type_e { LST_SYMBOL, LST_DEFINE, LST_MACRO } type;
+};
+
+static int
+lst_symbol_compare(const void *p0, const void *p1)
+{
+  return strcmp(((struct lst_symbol_s *)p0)->sym->name, ((struct lst_symbol_s *)p1)->sym->name);
+}
+
+void
+lst_symbol_table(void)
+{
+  int i;
+  struct lst_symbol_s *lst, *ps;
+  struct symbol *s;
+  int count = state.stGlobal->count + state.stDefines->count + state.stMacros->count;
   state.lst.lst_state = in_symtab;
 
   lst_line("SYMBOL TABLE");
   lst_line("  LABEL                             VALUE");
   lst_line("");
 
-  ps = lst = malloc(table->count * sizeof(lst[0]));
+  cod_symbol_table();
+
+  ps = lst = malloc(count * sizeof (struct lst_symbol_s));
 
   for (i = 0; i < HASH_SIZE; i++)
-    for (s = table->hash_table[i]; s; s = s->next)
-      *ps++ = s;
-
-  assert(ps == &lst[table->count]);
-
-  qsort(lst, table->count, sizeof(lst[0]), symbol_compare);
-
-  for (i = 0; i < table->count; i++) {
-    struct variable *var;
-
-    var = get_symbol_annotation(lst[i]);
-    lst_line(symbol_format,
-             get_symbol_name(lst[i]),
-             var ? var->value : 0);
-  }
-  cod_write_symbols(lst,table->count);
-}
-
-void
-lst_defines_table(struct symbol_table *table)
-{
-  int i;
-  const char *symbol_format = "%-32s  %s";
-  struct symbol **lst, **ps, *s;
-
-  ps = lst = malloc(table->count * sizeof(lst[0]));
+    for (s = state.stGlobal->hash_table[i]; s; s = s->next) {
+      ps->sym = s;
+      ps->type = LST_SYMBOL;
+      ++ps;
+    }
 
   for (i = 0; i < HASH_SIZE; i++)
-    for (s = table->hash_table[i]; s; s = s->next)
-      *ps++ = s;
+    for (s = state.stDefines->hash_table[i]; s; s = s->next) {
+      ps->sym = s;
+      ps->type = LST_DEFINE;
+      ++ps;
+    }
 
-  assert(ps == &lst[table->count]);
+  for (i = 0; i < HASH_SIZE; i++)
+    for (s = state.stMacros->hash_table[i]; s; s = s->next) {
+      ps->sym = s;
+      ps->type = LST_MACRO;
+      ++ps;
+    }
 
-  qsort(lst, table->count, sizeof(lst[0]), symbol_compare);
+  assert(ps == &lst[count]);
 
-  for (i = 0; i < table->count; i++) {
-    char *defined_as;
+  qsort(lst, count, sizeof (struct lst_symbol_s), lst_symbol_compare);
 
-    defined_as = get_symbol_annotation(lst[i]);
-    lst_line(symbol_format,
-             get_symbol_name(lst[i]),
-             defined_as);
+  for (i = 0; i < count; i++) {
+    void *p = get_symbol_annotation(lst[i].sym);
+    char *name = get_symbol_name(lst[i].sym);
+
+    switch (lst[i].type) {
+    case LST_SYMBOL:
+      /* symbol */
+      lst_line("%-32s  %08X", name, p ? ((struct variable *)p)->value : 0);
+      break;
+
+    case LST_DEFINE:
+      /* define */
+      lst_line("%-32s  %s", name, p ? (char *)p : "");
+      break;
+
+    case LST_MACRO:
+      /* define */
+      lst_line("%-32s  ", name);
+      break;
+    }
   }
+  free(lst);
 }

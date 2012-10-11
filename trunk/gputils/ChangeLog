@@ -1,3 +1,12 @@
+2012-10-11  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/lst.c, gpasm/lst.h, gpasm/gpasm.c: list / sort all symbols,
+    defines and macros
+  * gpasm/directive.c: arity of INSN_CLASS_MOVINDF can't be 4, due to
+    fix of list_length()
+  * libgputils/Makefile.in, header/Makefile.in, libiberty/Makefile.in,
+    lkr/Makefile.in, man/Makefile.in, man/fr/Makefile.in,
+    gplink/Makefile.in, gputile/Makefile.in, gpasm/Makefile.in: regenerated
+
 2012-10-10  Borut Razem  <borutr@users.sourceforge.net>
   * evaluate.c: fixed list_length() for cases where tail of the list is
     not a list; MPASM(X) compatible shift operations in mpasm
