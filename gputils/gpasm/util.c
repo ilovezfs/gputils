@@ -292,14 +292,8 @@ void set_global(const char *name,
   } else if (state.pass == 2) {
     char *coff_name;
 
-    if (var->value != value) {
-      char message[BUFSIZ];
-
-      snprintf(message, sizeof(message),
-               "Value of symbol \"%s\" differs on second pass\n pass 1=%d,  pass 2=%d",
-               name,var->value,value);
-      gperror(GPE_DIFFLAB, message);
-    }
+    if (var->value != value)
+      gpverror(GPE_DIFFLAB, name);
 
     coff_name = coff_local_name(name);
     coff_add_sym(coff_name, value, var->type);
