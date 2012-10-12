@@ -145,7 +145,7 @@ gp_geterror(unsigned int code)
   case GPE_DUPLAB:
     return "Duplicate label (\"%s\" or redefining symbol that cannot be redefined)";
   case GPE_DIFFLAB:
-    return "Address label duplicated or different in second pass.";
+    return "Address label duplicated or different in second pass (%s)";
   case GPE_ADDROVF:
     return "Address wrapped around 0.";
   case GPE_ADDROVR:

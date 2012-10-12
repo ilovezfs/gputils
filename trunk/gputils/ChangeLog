@@ -1,3 +1,7 @@
+2012-10-13  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/gperror.c, gpasm/util.c:
+    synched GPE_DIFFLAB error message with MPASM(X)
+
 2012-10-11  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/lst.c, gpasm/lst.h, gpasm/gpasm.c: list / sort all symbols,
     defines and macros
