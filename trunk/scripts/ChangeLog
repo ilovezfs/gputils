@@ -1,3 +1,7 @@
+2012-10-14 Molnar Karoly <molnarkaroly@users.sf.net>
+        * tools/device-help.pl: The footer of each page included
+          the creation date.
+
 2012-10-06 Molnar Karoly <molnarkaroly@users.sf.net>
         * tools/device-help.pl: New feature in the "Configuration Bits" tabs.
           The "CONFIGx" label thereafter shows the mask also.
