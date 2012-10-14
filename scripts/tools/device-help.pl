@@ -41,7 +41,7 @@ use strict;
 use warnings;
 use 5.12.0;                     # when (regex)
 use feature 'switch';
-use POSIX 'ULONG_MAX';
+use POSIX 'strftime', 'ULONG_MAX';
 
 use constant FALSE => 0;
 use constant TRUE  => 1;
@@ -1446,10 +1446,11 @@ sub src_info($)
   {
   my $Align = $_[0];
   my $href = "<a href=\"http://${gputils_url}#Download\">gputils</a> source package";
+  my $time = strftime('%F %T UTC', gmtime);
 
   aOutl($Align, '<div class="legendContainer">');
   aOutl($Align + 2, "<p class=\"srcInfo\">This page generated automatically by the " .
-                    "<em>$PROGRAM</em> program from the <em>" . basename($dev_info) .
+                    "<em>$PROGRAM</em> program ($time) from the <em>" . basename($dev_info) .
                     "</em> file (rev: $dev_info_rev) of <em>mpasmx</em> and from the $href " .
                     "(rev: svn $svn_rev). The <em>mpasmx</em> is included in the " .
                     "<a href=\"http://$mplabx_url\">MPLAB X</a>. The <em>$PROGRAM</em> " .
