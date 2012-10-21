@@ -457,7 +457,7 @@ line:
               }
             }
 
-            next_line(0);
+            next_line($1);
 
             if (state.found_end) {
               found_end();

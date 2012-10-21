@@ -665,6 +665,11 @@ lst_format_line(const char *src_line, int value)
     lst_spaces(LINENUM_POS - pos);
     break;
 
+  case set4:
+    pos += lst_printf("  %04X", value & 0xffff);
+    lst_spaces(LINENUM_POS - pos);
+    break;
+
   case org:
     pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, state.org));
     lst_spaces(LINENUM_POS - pos);
