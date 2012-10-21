@@ -2,7 +2,8 @@
   * gplink/gplink.h.in, gplink/scan.l:
     fixed bug #256: atrtificially addding a \n ate EOF if missing
   * gpasm/lst.c: fixed warning
-  * 
+  * gpasm/gperror.c, gpasm/scan.l, gpasm/parse.y:
+    produce the listing file in case that included file doesn't exist
 
 2012-10-13  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/gperror.c, gpasm/util.c:
