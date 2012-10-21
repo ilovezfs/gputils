@@ -1,4 +1,5 @@
 %option noyywrap
+%option always-interactive
 
 %{
 /* lexical analyser for gplink
@@ -36,74 +37,115 @@ Boston, MA 02111-1307, USA.  */
 
 static void bad_char(char *character);
 
+static inline size_t
+gp_input(char *buf, size_t max_size)
+{
+  if (YY_CURRENT_BUFFER_LVALUE->yy_is_interactive)
+    {
+      int c = '*';
+      size_t n;
+      for (n = 0; n < max_size &&
+        (c = getc(yyin)) != EOF && c != '\n'; ++n)
+        buf[n] = (char) c;
+      if (c == '\n')
+        buf[n++] = (char) c;
+      if (c == EOF && ferror(yyin))
+        script_error("Internal error", "Input in flex scanner failed");
+      return n;
+    }
+  else
+    {
+      script_error("Internal error", "Interactive scanner should be used");
+      return 0;
+    }
+}
+
+static inline size_t
+gp_yyinput(char *buf, size_t max_size)
+{
+  size_t result = gp_input(buf, max_size);
+  if (result)
+    {
+      state.src->last_char_is_nl = (buf[result - 1] == '\n');
+    }
+  else if (!state.src->last_char_is_nl)
+    {
+      *buf = '\n';
+      result = 1;
+      state.src->last_char_is_nl = true;
+    }
+  return result;
+}
+
+#define YY_INPUT(buf, result, max_size) result = gp_yyinput(buf, max_size)
 %}
 
 SYM \/?([a-z0-9_.\\:]+\/?)+
 
 %%
-<<EOF>>		 	 {
-			   if (close_file())
-			     return LEXEOF;
-			 }
-libpath			 {
-			   return LIBPATH;
-			 }
-lkrpath			 {
-			   return LKRPATH;
-			 }
-#define/[ \t]		 {
-			   return DEFINE;
-			 }
-#ifdef/[ \t]		 {
-			   return IFDEF;
-			 }
-#else/[^a-z0-9]		 {
-			   return ELSE;
-			 }
-#fi/[^a-z0-9]		 {
-			   return FI;
-			 }
-error([ \t].*)?		 {
+<<EOF>>                  {
+                           if (close_file())
+                             return LEXEOF;
+                         }
+libpath                  {
+                           return LIBPATH;
+                         }
+lkrpath                  {
+                           return LKRPATH;
+                         }
+#define/[ \t]            {
+                           return DEFINE;
+                         }
+#ifdef/[ \t]             {
+                           return IFDEF;
+                         }
+#else/[^a-z0-9]          {
+                           return ELSE;
+                         }
+#fi/[^a-z0-9]            {
+                           return FI;
+                         }
+error([ \t].*)?          {
                            yylval.s = strdup(yytext);
-			   return ERROR;
-			 }
+                           return ERROR;
+                         }
 [0-9]+                   {
                            char *endptr;
 
-		           yylval.i = strtol(yytext, &endptr, 10);
+                           yylval.i = strtol(yytext, &endptr, 10);
                            if ((endptr == NULL) || (*endptr != '\0')) {
                              bad_char(endptr);
                            }
-			   return NUMBER;
+                           return NUMBER;
                          }
-0x[0-9a-f]+	         {
+0x[0-9a-f]+              {
                            char *endptr;
 
-		           yylval.l = strtol(yytext + 2, &endptr, 16);
+                           yylval.l = strtol(yytext + 2, &endptr, 16);
                            if ((endptr == NULL) || (*endptr != '\0')) {
                              bad_char(endptr);
                            }
-			   return NUMBER;
-			 }
-{SYM}			 {
+                           return NUMBER;
+                         }
+{SYM}                    {
                            yylval.s = strdup(yytext);
                            return SYMBOL;
-			 }
+                         }
 [ \t\r]*
-[\n]		         {
- 			   return yytext[0];
-			 }
-\/\/.*			 {  }
-.			 { 
-			   yylval.i = yytext[0];
-		           return yytext[0];
-			 }
+[\n]                     {
+                           return yytext[0];
+                         }
+\/\/.*                   {  }
+.                        {
+                           yylval.i = yytext[0];
+                           return yytext[0];
+                         }
 %%
 
 static void bad_char(char *character)
 {
   char complaint[80];
-			 
+
   snprintf(complaint, sizeof(complaint),
     isprint(*character) ?
       "Illegal character '%c' in numeric constant" :
@@ -125,14 +167,14 @@ void open_src(const char *name, int isinclude)
   new->f = fopen(name, "rt");
   if(new->f)
     new->name = strdup(name);
-  else if(isinclude && (strchr(name, PATH_CHAR) == 0)) { 
+  else if(isinclude && (strchr(name, PATH_CHAR) == 0)) {
     /* If include file and no "/" in name, try searching include path */
     char tryname[BUFSIZ];
     int i;
 
     for(i = 0; i < state.numpaths; i++) {
       snprintf(tryname, sizeof(tryname),
-	       "%s" COPY_CHAR "%s", state.paths[i], name);
+               "%s" COPY_CHAR "%s", state.paths[i], name);
       new->f = fopen(tryname, "rt");
       if(new->f) {
         new->name = strdup(tryname);
@@ -147,7 +189,7 @@ void open_src(const char *name, int isinclude)
     if (state.src) {
       gp_error("Unable to open file \"%s\" - %s",
                name,
-               strerror(errno));    
+               strerror(errno));
     } else {
       perror(name);
     }
@@ -160,6 +202,7 @@ void open_src(const char *name, int isinclude)
 
   new->line_number = 1;
   new->prev = state.src;
+  new->last_char_is_nl = true;
   state.src = new;
 }
 
