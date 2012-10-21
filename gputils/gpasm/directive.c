@@ -624,9 +624,8 @@ static gpasmVal do_constant(gpasmVal r,
                        struct pnode *parms)
 {
   struct pnode *p;
-  int value;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = set4;
 
   for (; parms; parms = TAIL(parms)) {
     p = HEAD(parms);
@@ -637,9 +636,9 @@ static gpasmVal do_constant(gpasmVal r,
         /* fetch the symbol */
         lhs = p->value.binop.p0->value.symbol;
         /* constants must be assigned a value at declaration */
-        value = maybe_evaluate(p->value.binop.p1);
+        r = maybe_evaluate(p->value.binop.p1);
         /* put the symbol and value in the table*/
-        set_global(lhs, value, PERMANENT, gvt_constant);
+        set_global(lhs, r, PERMANENT, gvt_constant);
       }
     } else {
       gpverror(GPE_ILLEGAL_ARGU);
@@ -860,7 +859,7 @@ static gpasmVal _do_16_config(gpasmVal r,
   char v_buff[64];
   int ca;
 
-  state.lst.line.linetype = config;
+  state.lst.line.linetype = dir;
   config_16_used = true;
   if (config_us_used) {
     gpverror(GPE_CONFIG_usCONFIG);
@@ -2017,7 +2016,7 @@ static gpasmVal do_idlocs(gpasmVal r,
         unsigned char curvalue;
         state.lst.line.linetype = config;
         state.lst.config_address = idreg;
-        if(value > 0xff) {
+        if (value > 0xff) {
           gpvmessage(GPM_IDLOC);
         }
         if (idreg <= state.device.id_location) {
@@ -2304,7 +2303,7 @@ static gpasmVal do_local(gpasmVal r,
 {
   struct pnode *p;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = set4;
 
   /* like variable except it is put in TOP instead of GLOBAL */
 
@@ -2317,13 +2316,12 @@ static gpasmVal do_local(gpasmVal r,
           (p->value.binop.op == '=')) {
         if (enforce_simple(p->value.binop.p0)) {
           char *lhs;
-          gpasmVal value;
           /* fetch the symbol */
           lhs = p->value.binop.p0->value.symbol;
-          value = maybe_evaluate(p->value.binop.p1);
+          r = maybe_evaluate(p->value.binop.p1);
           /* put the symbol and value in the TOP table*/
           add_symbol(state.stTop, lhs);
-          set_global(lhs, value, TEMPORARY, gvt_constant);
+          set_global(lhs, r, TEMPORARY, gvt_constant);
         }
       } else if (p->tag == symbol) {
         /* put the symbol in the Top table */
@@ -3017,9 +3015,8 @@ static gpasmVal do_variable(gpasmVal r,
                        struct pnode *parms)
 {
   struct pnode *p;
-  int value;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = set4;
 
   for (; parms; parms = TAIL(parms)) {
     p = HEAD(parms);
@@ -3029,9 +3026,9 @@ static gpasmVal do_variable(gpasmVal r,
         char *lhs;
         /* fetch the symbol */
         lhs = p->value.binop.p0->value.symbol;
-        value = maybe_evaluate(p->value.binop.p1);
+        r = maybe_evaluate(p->value.binop.p1);
         /* put the symbol and value in the table*/
-        set_global(lhs, value, TEMPORARY, gvt_constant);
+        set_global(lhs, r, TEMPORARY, gvt_constant);
       }
     } else if (p->tag == symbol) {
       /* put the symbol with a 0 value in the table*/

@@ -4,6 +4,8 @@
   * gpasm/lst.c: fixed warning
   * gpasm/gperror.c, gpasm/scan.l, gpasm/parse.y:
     produce the listing file in case that included file doesn't exist
+  * gpasm/parse.y, gpasm/lst.c, gpasm/directive.c, gpasm/gpasm.h.in:
+    fixed listing fot VARIABLE, CONSTANT and LOCAL directives
 
 2012-10-13  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/gperror.c, gpasm/util.c:

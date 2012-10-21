@@ -187,6 +187,7 @@ extern struct gpasm_state {
              res,                   /*     reserve memory */
              sec,                   /*     new coff section */
              set,                   /*     A SET or '=' */
+             set4,                  /*     A 2 byte variable, constant or local */
              config }               /*     A __config line */
         linetype;
     } line;
