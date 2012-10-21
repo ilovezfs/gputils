@@ -873,7 +873,7 @@ lst_symbol_table(void)
 
   for (i = 0; i < count; i++) {
     void *p = get_symbol_annotation(lst[i].sym);
-    char *name = get_symbol_name(lst[i].sym);
+    const char *name = get_symbol_name(lst[i].sym);
 
     switch (lst[i].type) {
     case LST_SYMBOL:
