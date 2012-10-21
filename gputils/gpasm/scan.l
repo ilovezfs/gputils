@@ -592,53 +592,47 @@ open_src(const char *name, int isinclude)
     }
   }
 
-  yyin = new->f;
   if (new->f == NULL) {
     if (state.src) {
-      char complaint[BUFSIZ];
-
-      snprintf(complaint, sizeof(complaint),
-               "Unable to open file \"%s\" - %s.",
-               name,
-               strerror(errno));
-      state.pass = 2; /* Ensure error actually gets displayed */
-      gpverror(GPE_INTERNAL, complaint);
+      gpverror(GPE_NOENT, name);
     } else {
       perror(name);
+      exit(1);
     }
-    exit(1);
-  }
-
-  if (state.src) {
-    yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
-  }
-
-  if (state.use_absolute_path) {
-    new->name = gp_absolute_path(new->name);
-  }
-  new->type = src_file;
-  new->h = NULL;
-  new->line_number = 1;
-  new->loop_number = 1;
-  if (state.debug_info) {
-    new->file_symbol = NULL;
   } else {
-    new->file_symbol = coff_add_filesym(new->name, isinclude);
-  }
-  new->prev = state.src;
+    yyin = new->f;
 
-  state.src = new;
-  state.src->fc = add_file(ft_src, new->name);
-  deps_add(new->name);
+    if (state.src) {
+      yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
+    }
 
-  if (!isinclude) {
-    /* it is the top level file so initialize the lexer */
-    quoted = 0;
-    force_decimal = 0;
-    force_ident = 0;
+    if (state.use_absolute_path) {
+      new->name = gp_absolute_path(new->name);
+    }
+    new->type = src_file;
+    new->h = NULL;
+    new->line_number = 1;
+    new->loop_number = 1;
+    if (state.debug_info) {
+      new->file_symbol = NULL;
+    } else {
+      new->file_symbol = coff_add_filesym(new->name, isinclude);
+    }
+    new->prev = state.src;
+
+    state.src = new;
+    state.src->fc = add_file(ft_src, new->name);
+    deps_add(new->name);
+
+    if (!isinclude) {
+      /* it is the top level file so initialize the lexer */
+      quoted = 0;
+      force_decimal = 0;
+      force_ident = 0;
+    }
+    state.src->last_char_is_nl = true;
+    state.found_end = 0;
   }
-  state.src->last_char_is_nl = true;
-  state.found_end = 0;
 }
 
 void
