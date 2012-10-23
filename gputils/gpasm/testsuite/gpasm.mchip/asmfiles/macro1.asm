@@ -9,16 +9,28 @@ Label#v(Num)
 	DATA	Num
 	ENDM
 
-	I = 4
+;;;; Begin: Changed in gputils
+;;;;	I = 4
+I = 4
+;;;; End: Changed in gputils
 	WHILE I > 0
 	   MakLab	I
-	   I--
+;;;; Begin: Changed in gputils
+;;;;	   I--
+I--
+;;;; End: Changed in gputils
 	ENDW
 
-	I = 4
+;;;; Begin: Changed in gputils
+;;;;	I = 4
+I = 4
+;;;; End: Changed in gputils
 	WHILE I > 0
 	   GOTO	Label#V(I)
-	   I--
+;;;; Begin: Changed in gputils
+;;;;	   I--
+I--
+;;;; End: Changed in gputils
 	ENDW
 
 	GOTO	Label1
