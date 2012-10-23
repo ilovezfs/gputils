@@ -1,3 +1,12 @@
+2012-10-23  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/testsuite/gpasm.mchip/asmfiles/macro1.asm,
+    gpasm/testsuite/gpasm.mchip/asmfiles/macro3.asm,
+    gpasm/testsuite/gpasm.mchip/asmfiles/poundv1.asm:
+    fixed MPASM(X) "Warning[207]: Found label after column 1." which
+    generates an error on gpasm
+  * gpasm/testsuite/test: tests performed with --mpasm-compatible gpasm
+    command line option
+
 2012-10-21  Borut Razem  <borutr@users.sourceforge.net>
   * gplink/gplink.h.in, gplink/scan.l:
     fixed bug #256: atrtificially addding a \n ate EOF if missing
@@ -5,7 +14,7 @@
   * gpasm/gperror.c, gpasm/scan.l, gpasm/parse.y:
     produce the listing file in case that included file doesn't exist
   * gpasm/parse.y, gpasm/lst.c, gpasm/directive.c, gpasm/gpasm.h.in:
-    fixed listing fot VARIABLE, CONSTANT and LOCAL directives
+    fixed listing for VARIABLE, CONSTANT, LOCAL and CONFIG directives
 
 2012-10-13  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/gperror.c, gpasm/util.c:

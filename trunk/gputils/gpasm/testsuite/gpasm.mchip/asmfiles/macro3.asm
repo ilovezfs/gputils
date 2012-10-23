@@ -8,10 +8,16 @@
 
 LocMac	MACRO	Num
 	LOCAL	X
-	X = Num
+;;;; Begin: Changed in gputils
+;;;;	X = Num
+X = Num
+;;;; End: Changed in gputils
 	WHILE X > 0
 	   DATA	X
-	   X--
+;;;; Begin: Changed in gputils
+;;;;	   X--
+X--
+;;;; End: Changed in gputils
 	ENDW
 	ENDM
 

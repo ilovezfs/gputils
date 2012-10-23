@@ -775,7 +775,7 @@ static gpasmVal do_config(gpasmVal r,
 
     if (IS_16BIT_CORE) {
       const struct gp_cfg_device *p_dev;
-      if(value > 0xff) {
+      if (value > 0xff) {
         gpvwarning(GPW_RANGE);
       }
       p_dev = gp_cfg_find_pic_multi(sizeof(state.processor->names) /

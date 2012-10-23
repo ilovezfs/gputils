@@ -5,7 +5,10 @@
         list    p=16c71,r=dec
 
 #define d1 5
-        v1 = 1
+;;;; Begin: Changed in gputils
+;;;;        v1 = 1
+v1 = 1
+;;;; End: Changed in gputils
 
 mult#v(1)and#v(2)  ; col 20
 
@@ -25,28 +28,43 @@ label#v(num)a      instruction dat
 
 funny   macro vv
 lab#v(vv)     ; col 15
-        vv = vv + 1
+;;;; Begin: Changed in gputils
+;;;;        vv = vv + 1
+vv = vv + 1
+;;;; End: Changed in gputils
 lab#v(vv)     ; col 15 myfunnylabel1  may not be substituted correctly
 lab#v(vv)a    ; col 15 myfunnylabel2  may not be substituted correctly
         endm
 
-        var = 1
+;;;; Begin: Changed in gputils
+;;;;        var = 1
+var = 1
+;;;; End: Changed in gputils
         funny var
 
 
 test    macro
         local   i
-        i=0
+;;;; Begin: Changed in gputils
+;;;;        i=0
+i=0
+;;;; End: Changed in gputils
         while i < 3
 addr#v(i)  goto addr#v(i)a   ; col 30
 addr#v(i)a data addr#v(i)    ; col 30
-           i++
+;;;; Begin: Changed in gputils
+;;;;           i++
+i++
+;;;; End: Changed in gputils
         endw
         endm
 
         test
 
-        v2 = 1
+;;;; Begin: Changed in gputils
+;;;;        v2 = 1
+v2 = 1
+;;;; End: Changed in gputils
 
 label#v(v1)        ; col 20
 v1++
