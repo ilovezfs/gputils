@@ -1,3 +1,50 @@
+2012-10-31  Borut Razem  <borutr@users.sourceforge.net>
+  * Merge from preprocessor branch:
+    - gpasm/util.c, gpasm/parse.y, gpasm/directive.c, gpasm/gpasm.h.in,
+      gpasm/scan.l:
+      use IN_MACRO_DEFINITION, IN_MACRO_EXPANSION, IN_WHILE_EXPANSION and
+      IN_FILE_EXPANSION defines
+    - gpasm/gpasm.c: reinitialize macro symbol table before second pass
+    - gpasm/parse.y: corrected identation
+    - gpasm/scan.l: evaluate macro parameters as comma delimited literal
+      symbols - identifiers
+    - gpasm/macro.c: get rid of now unneeded functions node_to_string(),
+      cat_symbol() and cat_string()
+    - gpasm/preprocess.c, gpasm/preprocess.h, gpasm/scan.l,
+      gpasm/ppscan.l, gpasm/ppparse.y: redesigned to handle recursive #v
+    - gpasm/macro.c, gpasm/preprocess.c, gpasm/preprocess.h,
+      gpasm/gpasm.c, gpasm/gpasm.h.in, gpasm/scan.l:
+      separate preprocessing step for macro parameters
+    - gpasm/ppscan.l: inner #v handling
+    - gpasm/parse.y, gpasm/directive.c, gpasm/evaluate.c, gpasm/evaluate.h:
+      removed concatenation functionality
+    - gpasm/lst.c, gpasm/lst.h, gpasm/gpasm.c: list / sort all symbols,
+      defines and macros
+    - gpasm/macro.c: removed concatenation functionality
+    - gpasm/Makefile.am, gpasm/Makefile.in, ppcan.l, ppparse.y:
+      added ppcan.l and ppparse.y to the project: #v evaluation moved to
+      the preprocessor
+    - evaluate.c: fixed list_length() for cases where tail of the list is
+      not a list; removed concatenation functionality, MPASM(X) compatible
+      shift operations in mpasm compatibility mode
+    - preprocess.c, gpasm/preprocess.h, gpasm/scan.l, gpasm/parse.y:
+      #v evaluation moved to the preprocessor
+    - gpasm.h.in: introduced IN_MACRO_DEFINITION, IN_MACRO_EXPANSION,
+      IN_WHILE_EXPANSION and IN_FILE_EXPANSION macros
+    - gpasm/preprocess.c: preprocessing defines called as macros -
+      without parentheses around argumets
+    - gpasm/gpasm.h.in, gpasm/scan.l, gpasm/parse.y, gpasm/macro.c,
+      gpasm/macro.h: implemented enhancement request
+      #16 - "macro argument expansion in lists": expanded macros contain
+      actual macro args instead of formal parameters.
+    - gpasm/scan.l: removed unused code
+    - gpasm/preprocess.c: recursive call preprocess()
+    - gpasm/preprocess.c, gpasm/scan.l: #define preprocessing
+    - gpasm/Makefile.am, gpasm/Makefile.in, gpasm/preprocess.c,
+      gpasm/preprocess.h, gpasm/scan.l, gpasm/parse.y, gpasm/macro.c,
+      gpasm/lst.c, gpasm/gpasm.c, gpasm/directive.c, gpasm/gpasm.h.in:
+      #define preprocessing performed before tokenization
+
 2012-10-28  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/testsuite/gpasm.mchip/asmfiles/files2.asm:
     fixed MPASM(X) "Warning[207]: Found label after column 1." which
@@ -17,7 +64,7 @@
 
 2012-10-21  Borut Razem  <borutr@users.sourceforge.net>
   * gplink/gplink.h.in, gplink/scan.l:
-    fixed bug #256: atrtificially addding a \n ate EOF if missing
+    fixed bug #256: atrtificially addding a \n at EOF if missing
   * gpasm/lst.c: fixed warning
   * gpasm/gperror.c, gpasm/scan.l, gpasm/parse.y:
     produce the listing file in case that included file doesn't exist

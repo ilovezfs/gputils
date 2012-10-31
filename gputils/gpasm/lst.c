@@ -888,7 +888,11 @@ lst_symbol_table(void)
 
     case LST_DEFINE:
       /* define */
-      lst_line("%-32s  %s", name, p ? (char *)p : "");
+      if (p) {
+        assert(list == ((struct pnode *)p)->tag);
+        assert(string == HEAD((struct pnode *)p)->tag);
+      }
+      lst_line("%-32s  %s", name, p ? HEAD((struct pnode *)p)->value.string : "");
       break;
 
     case LST_MACRO:

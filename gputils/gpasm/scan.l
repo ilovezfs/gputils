@@ -4,6 +4,8 @@
 %x lnquote
 %x define
 %x definition
+%x defargs
+%x macpar
 
 %{
 /* lexical analyser for gpasm
@@ -48,55 +50,26 @@ Boston, MA 02111-1307, USA.  */
 #include "evaluate.h"
 #include "macro.h"
 #include "coff.h"
+#include "preprocess.h"
 
 #define OPERATOR(x)  return (yylval.i = (x))
 /* YY_UNPUT not used, suppress the warning */
 #define YY_NO_UNPUT
 
-enum identtype { defines, directives, globals, macros, opcodes, unknown_type };
+enum identtype { unknown_type, macro_params, defines, directives, globals, macros, opcodes };
 enum identtype identify(char *);
 
-static void push_string(char *str);
 static int found_eof(void);
 
-static char *check_defines(char *symbol, size_t len);
-
-static int quoted; /* Used to prevent #define expansion in ifdef and
-                      ifndef... */
 int force_decimal; /* Used to force radix to decimal for some directives */
 int force_ident;   /* Used to force numbers to identifiers for processor names */
-
-static void
-set_source_line(const char *line, size_t len, struct src_line_s *src_line)
-{
-  if (!src_line->line)
-    {
-      src_line->size = 128;
-      src_line->line = malloc(src_line->size);
-    }
-  if (src_line->size < len)  /* newline replaced with '\0' */
-    {
-      do
-        {
-          src_line->size *= 2;
-        }
-      while (src_line->size < len);  /* newline replaced with '\0' */
-      src_line->line = realloc(src_line->line, src_line->size);
-    }
-  if (len > 0)
-    {
-      memcpy(src_line->line, line, len - 1); /* no newline */
-      src_line->line[len - 1] = '\0';
-    }
-  else
-    src_line->line[0] = '\0';
-}
 
 static inline size_t
 gp_input(char *buf, size_t max_size)
 {
-  if (src_file == state.src->type)
+  if (IN_FILE_EXPANSION)
     {
+      /* not in macro expansion */
       if (YY_CURRENT_BUFFER_LVALUE->yy_is_interactive)
         {
           int c = '*';
@@ -118,6 +91,7 @@ gp_input(char *buf, size_t max_size)
     }
   else
     {
+      /* in macro expansion */
       if (state.src->m)
         {
           size_t n = strlen(state.src->m->src_line);
@@ -138,10 +112,12 @@ gp_input(char *buf, size_t max_size)
 static inline size_t
 gp_yyinput(char *buf, size_t max_size)
 {
-  size_t result = gp_input(buf, max_size);
+  int result = gp_input(buf, max_size);
   if (result)
     {
-      set_source_line(buf, result, &state.curr_src_line);
+      /* preprocess line */
+      preprocess_line(buf, &result, max_size);
+
       state.src->last_char_is_nl = (buf[result - 1] == '\n');
     }
   else if (!state.src->last_char_is_nl)
@@ -197,10 +173,28 @@ fill[ \t]*\(             {
                            yylval.i = FILL;
                            return FILL;
                          }
+^[ \t]*#define[ \t]*$    {
+                           yylval.s = "#define";
+                           return DEFINE;
+                         }
 ^[ \t]*#define[ \t]+     {
                            BEGIN(define);
                            yylval.s = "#define";
                            return DEFINE;
+                         }
+<define>{IDENT}\(        {
+                           BEGIN(defargs);
+                           yylval.s = strndup(yytext, yyleng - 1);
+                           return IDENT_BRACKET;
+                         }
+<defargs>{IDENT}         {
+                           yylval.s = strdup(yytext);
+                           return IDENTIFIER;
+                         }
+<defargs>\)              {
+                           BEGIN(definition);
+                           yylval.i = yytext[0];
+                           return ')';
                          }
 <define>{IDENT}          {
                            BEGIN(definition);
@@ -244,19 +238,16 @@ processor                {
                          }
 #?ifdef                  {
                            /* #ifdef and ifdef can appear in column 1 */
-                           quoted = 1;
                            yylval.s = strdup(yytext);
                            return IDENTIFIER;
                          }
 #?ifndef                 {
                            /* #ifndef and ifndef can appear in column 1 */
-                           quoted = 1;
                            yylval.s = strdup(yytext);
                            return IDENTIFIER;
                          }
 #undefine                {
                            /* #undefine can appear in column 1 */
-                           quoted = 1;
                            yylval.s = strdup(yytext);
                            return IDENTIFIER;
                          }
@@ -264,113 +255,63 @@ processor                {
                            yylval.s = strdup(yytext);
                            return DEBUG_LINE;
                          }
-^{IDENT}#v\(             {
-                           char *symbol;
-
-                           symbol = check_defines(yytext, yyleng - 3);
-                           if (symbol) {
-                             yylval.s = strdup(symbol);
-                           } else {
-                             yylval.s = strndup(yytext, yyleng - 3);
-                           }
-                           return VARLAB_BEGIN;
-                         }
 ^{IDENT}:?               {
                            int has_collon = 0;
                            struct symbol *sym;
                            struct macro_head *h;
-                           char *subst;
-                           size_t len;
 
-                           if (yytext[yyleng - 1] == ':') {
-                             len = yyleng - 1;
+                           if (yytext[strlen(yytext) - 1] == ':') {
+                             yytext[strlen(yytext) - 1] = '\0';
                              has_collon = 1;
-                           } else
-                             len = yyleng;
-
-                           yylval.s = strndup(yytext, len);
-                           switch(identify(yylval.s)) {
-                             case defines:
-                               sym = get_symbol_len(state.stTopDefines, yytext, len);
-                               subst = get_symbol_annotation(sym);
-                               push_string(subst);
-                               break;
+                           }
+                           yylval.s = strdup(yytext);
+                           switch (identify(yytext)) {
                              case directives:
                                gpwarning(GPW_DIR_COLUMN_ONE, NULL);
                                if (has_collon)
                                  gpverror(GPE_BADCHAR, ':');
                                return IDENTIFIER;
                                break;
+
                              case macros:
-                               if(asm_enabled()) {
-                                 /* make sure macro definition on second pass
-                                    is ignored */
-                                 sym = get_symbol_len(state.stMacros, yytext, len);
-                                 h = get_symbol_annotation(sym);
-                                 if (h->line_number == state.src->line_number) {
-                                   return LABEL;
-                                 } else {
-                                   gpwarning(GPW_MACRO_COLUMN_ONE, NULL);
-                                   if (has_collon)
-                                    gpverror(GPE_BADCHAR, ':');
-                                   return IDENTIFIER;
-                                 }
-                               } else {
-                                 /* if assembly is not enabled don't issue
-                                 warnings about macro calls in column 1, they
-                                 could be an alternate definition */
+                               /* Macro invocation */
+                               BEGIN(macpar);
+                               sym = get_symbol(state.stMacros, yytext);
+                               h = get_symbol_annotation(sym);
+                               /* TODO: this conditio shoul be probably removed
+                                * since the symbol table is reinitialised before
+                                * the second pass */
+                               if (h->line_number == state.src->line_number) {
                                  return LABEL;
+                               } else {
+                                 gpwarning(GPW_MACRO_COLUMN_ONE, NULL);
+                                 if (has_collon)
+                                  gpverror(GPE_BADCHAR, ':');
+                                 return IDENTIFIER;
                                }
                                break;
+
                              case opcodes:
                                gpwarning(GPW_OP_COLUMN_ONE, NULL);
                                if (has_collon)
                                  gpverror(GPE_BADCHAR, ':');
                                return IDENTIFIER;
                                break;
+
                              case unknown_type:
                                return LABEL;
+
                              default:
                                return LABEL;
                            }
                          }
-{IDENT}#v\(              {
-                           char *symbol;
-
-                           symbol = check_defines(yytext, yyleng - 3);
-                           if (symbol) {
-                             yylval.s = strdup(symbol);
-                           } else {
-                             yylval.s = strndup(yytext, yyleng - 3);
-                           }
-                           return VAR_BEGIN;
-                         }
-\)[a-z_0-9\x80-\xff?.]+  {
-                           char *symbol;
-
-                           symbol = check_defines(yytext + 1, yyleng - 1);
-                           if (symbol) {
-                             yylval.s = strdup(symbol);
-                           } else {
-                             yylval.s = strdup(yytext + 1);
-                           }
-                           return VAR_END;
-                         }
 {IDENT}                  {
-                           char *symbol;
-
-                           symbol = check_defines(yytext, yyleng);
-                           if (symbol) {
-                             char buffer[BUFSIZ];
-
-                             /* Make the substitution with a leading space,
-                                so it won't be a label */
-                             sprintf(buffer, " %s", symbol);
-                             push_string(buffer);
-                           } else {
-                             yylval.s = strdup(yytext);
-                             return IDENTIFIER;
+                           if (NULL != get_symbol(state.stMacros, yytext)) {
+                             /* Macro invocation */
+                             BEGIN(macpar);
                            }
+                           yylval.s = strdup(yytext);
+                           return IDENTIFIER;
                          }
 0x{NUMCHAR}+             {
                            yylval.i = stringtolong(yytext + 2, 16);
@@ -458,16 +399,12 @@ h'-?{NUMCHAR}+'          {
                              return NUMBER;
                            }
                          }
-<INITIAL,bquote>\"{STR_QCHAR}*\"?        {
-                           size_t len;
-
-                           if (yyleng > 1 && yytext[yyleng - 1] == '"') {
-                             len = yyleng - 2;
-                           } else {
+<INITIAL,bquote>\"{STR_QCHAR}*\"? {
+                           if ((yyleng > 1) && (yytext[yyleng - 1] == '"'))
+                             --yyleng;
+                           else
                              gpwarning(GPW_MISSING_QUOTE, NULL);
-                             len = yyleng - 1;
-                           }
-                           yylval.s = strndup(yytext + 1, len);
+                           yylval.s = strndup(yytext + 1, yyleng - 1);
                            BEGIN(INITIAL);
                            return STRING;
                          }
@@ -485,7 +422,7 @@ A'{STR_QCHAR}'           {
                            BEGIN(INITIAL);
                            return STRING;
                          }
-<bquote>[^ \t<>";\r\n]+ {
+<bquote>[^ \t<>";\r\n]+  {
                            /* unquoted (special-case) string */
                            yylval.s = strdup(yytext);
                            BEGIN(INITIAL);
@@ -531,15 +468,32 @@ A'{STR_QCHAR}'           {
 "*-"                     OPERATOR(TBL_POST_DEC);
 "+*"                     OPERATOR(TBL_PRE_INC);
 
-<INITIAL,bquote,lnquote,definition>[ \t\r]*
+<INITIAL,bquote,lnquote,definition,defargs,macpar>[ \t\r]*
+<macpar>([^,;'"\n]*('{STR_QCHAR}*')?(\"{STR_QCHAR}*\")?[^,;'"\n]*)+ {
+                           int begin = 0, len;
+
+                           /* skip leading spaces */
+                           while (isspace(yytext[begin]))
+                             ++begin;
+
+                           /* skip trailing spaces */
+                           len = yyleng - begin - 1;
+                           while (len >= 0 && isspace(yytext[begin + len]))
+                             --len;
+                           ++len;
+
+                           yylval.s = strndup(&yytext[begin], len);
+                           return IDENTIFIER;
+                         }
 <*>[\n]                  {
-                           quoted = 0;
                            force_decimal = 0;
                            force_ident = 0;
                            BEGIN(INITIAL);  /* no multiline states yet */
                            return yytext[0];
                          }
-<*>;.*                   {  }
+<*>;.*                   {
+                           BEGIN(INITIAL);
+                         }
 <*>.                     {
                            yylval.i = yytext[0];
                            return yytext[0];
@@ -626,7 +580,6 @@ open_src(const char *name, int isinclude)
 
     if (!isinclude) {
       /* it is the top level file so initialize the lexer */
-      quoted = 0;
       force_decimal = 0;
       force_ident = 0;
     }
@@ -681,29 +634,6 @@ repeat_while(void)
   yy_switch_to_buffer(yy_create_buffer(NULL, YY_BUF_SIZE));
 }
 
-static
-void push_string(char *str)
-{
-  struct source_context *new = malloc(sizeof(*new));
-
-  assert(state.src != NULL);
-  state.src->yybuf = YY_CURRENT_BUFFER;
-
-  new->name = strdup(state.src->name);
-  new->type = src_substitution;
-  new->line_number = state.src->line_number;
-  new->loop_number = 1;
-  new->file_symbol = state.src->file_symbol;
-  new->f = NULL;
-  new->h = NULL;
-  new->fc = add_file(ft_src, new->name); /* scan list for fc */
-
-  yy_scan_string(str);
-
-  new->prev = state.src;
-  state.src = new;
-}
-
 void
 close_file(void)
 {
@@ -722,12 +652,12 @@ close_file(void)
     }
   } else if (old->type == src_macro) {
     state.stTop = pop_symbol_table(state.stTop);
-    state.stTopDefines = pop_symbol_table(state.stTopDefines);
+    state.stMacroParams = pop_symbol_table(state.stMacroParams);
     if (state.src->astack != state.astack) {
       gpverror(GPE_ILLEGAL_NESTING);
     }
     assert(state.stTop != NULL);
-    assert(state.stTopDefines != NULL);
+    assert(state.stMacroParams != NULL);
     free(old->name);
   } else if (old->type == src_while) {
     free(old->name);
@@ -778,7 +708,7 @@ found_eof(void)
 {
   int terminate = 0;
 
-  if (state.src->type == src_while) {
+  if (IN_WHILE_EXPANSION) {
     if (maybe_evaluate(state.src->h->parms)) {
       if (state.src->loop_number > 255) {
         gpverror(GPE_BAD_WHILE_LOOP);
@@ -804,13 +734,15 @@ found_eof(void)
   return terminate;
 }
 
-enum identtype 
+enum identtype
 identify(char *text)
 {
   enum identtype type;
   struct symbol *sym;
 
-  if ((sym = get_symbol(state.stTopDefines, text)) != NULL) {
+  if ((sym = get_symbol(state.stMacroParams, text)) != NULL) {
+    type = macro_params;
+  } else if ((sym = get_symbol(state.stDefines, text)) != NULL) {
     type = defines;
   } else if ((sym = get_symbol(state.stDirective, text)) != NULL) {
     type = directives;
@@ -825,25 +757,4 @@ identify(char *text)
   }
 
   return type;
-}
-
-static char *
-check_defines(char *symbol, size_t len)
-{
-  struct symbol *sym;
-  char *subst = NULL;
-
-  /* If not quoted, check for #define substitution */
-  if (!quoted &&
-     (sym = get_symbol_len(state.stTopDefines, symbol, len)) != NULL) {
-    subst = get_symbol_annotation(sym);
-    if (subst == NULL)
-      subst = "";
-    if (strlen(subst) == len && 0 == strncmp(symbol, subst, len)) {
-      /* check for a bad subsitution */
-      subst = NULL;
-    }
-  }
-
-  return subst;
 }

@@ -32,10 +32,85 @@ Boston, MA 02111-1307, USA.  */
 #include "coff.h"
 #include "scan.h"
 
-void yyerror(char *message)
+/* #define DEBUG */
+
+#ifdef DEBUG
+/* enable debugging */
+#include "parse.h"
+
+int yydebug = 1;
+
+#define YYPRINT(file, type, value)   yyprint (file, type, value)
+
+static void
+yyprint (FILE *file, int type, YYSTYPE value)
 {
-  gpverror(GPE_PARSER, message);
+  switch (type) {
+  case LABEL:
+  case IDENTIFIER:
+  case IDENT_BRACKET:
+  case DEBUG_LINE:
+  case ERRORLEVEL:
+  case FILL:
+  case LIST:
+  case PROCESSOR:
+  case DEFINE:
+    fprintf (file, "%s", value.s);
+    break;
+
+  case STRING:
+    fprintf (file, "\"%s\"", value.s);
+    break;
+
+  case NUMBER:
+  case UPPER:
+  case HIGH:
+  case LOW:
+  case LSH:
+  case RSH:
+  case GREATER_EQUAL:
+  case LESS_EQUAL:
+  case EQUAL:
+  case NOT_EQUAL:
+  case '<':
+  case '>':
+  case '&':
+  case '|':
+  case '^':
+  case LOGICAL_AND:
+  case LOGICAL_OR:
+  case '=':
+  case ASSIGN_PLUS:
+  case ASSIGN_MINUS:
+  case ASSIGN_MULTIPLY:
+  case ASSIGN_DIVIDE:
+  case ASSIGN_MODULUS:
+  case ASSIGN_LSH:
+  case ASSIGN_RSH:
+  case ASSIGN_AND:
+  case ASSIGN_OR:
+  case ASSIGN_XOR:
+  case INCREMENT:
+  case DECREMENT:
+  case POSTINCREMENT:
+  case POSTDECREMENT:
+  case INDFOFFSET:
+  case TBL_NO_CHANGE:
+  case TBL_POST_INC:
+  case TBL_POST_DEC:
+  case TBL_PRE_INC:
+  case '[':
+  case ']':
+    fprintf (file, "%d", value.i);
+    break;
+
+  case CBLOCK:
+  case ENDC:
+  default:
+    break;
+  }
 }
+#endif
 
 int yylex(void);
 
@@ -64,14 +139,14 @@ struct pnode *mk_offset(struct pnode *p)
   return new;
 }
 
-static struct pnode *mk_symbol(char *value)
+struct pnode *mk_symbol(char *value)
 {
   struct pnode *new = mk_pnode(symbol);
   new->value.symbol = value;
   return new;
 }
 
-static struct pnode *mk_string(char *value)
+struct pnode *mk_string(char *value)
 {
   struct pnode *new = mk_pnode(string);
   new->value.string = value;
@@ -86,7 +161,7 @@ struct pnode *mk_list(struct pnode *head, struct pnode *tail)
   return new;
 }
 
-static struct pnode *mk_2op(int op, struct pnode *p0, struct pnode *p1)
+struct pnode *mk_2op(int op, struct pnode *p0, struct pnode *p1)
 {
   struct pnode *new = mk_pnode(binop);
   new->value.binop.op = op;
@@ -95,7 +170,7 @@ static struct pnode *mk_2op(int op, struct pnode *p0, struct pnode *p1)
   return new;
 }
 
-static struct pnode *mk_1op(int op, struct pnode *p0)
+struct pnode *mk_1op(int op, struct pnode *p0)
 {
   struct pnode *new = mk_pnode(unop);  new->value.unop.op = op;
   new->value.unop.p0 = p0;
@@ -111,7 +186,7 @@ gpasmVal set_label(char *label, struct pnode *parms)
 
   if (asm_enabled()) {
     value = do_or_append_insn("set", parms);
-    if (!state.mac_prev) {
+    if (!IN_MACRO_DEFINITION) {
       set_global(label, value, TEMPORARY, gvt_constant);
     }
   }
@@ -123,33 +198,25 @@ int return_op(int operation);
 
 void next_line(int value)
 {
-  if ((state.src->type == src_macro) ||
-      (state.src->type == src_while)) {
+  if (IN_WHILE_EXPANSION || IN_MACRO_EXPANSION) {
     /* while loops can be defined inside a macro or nested */
-    if (state.mac_prev) {
+    if (IN_MACRO_DEFINITION) {
       state.lst.line.linetype = none;
       if (state.mac_body)
         state.mac_body->src_line = strdup(state.src->m->src_line);
     }
 
-    if (((state.src->type == src_while) || (state.lst.expand)) &&
+    if ((IN_WHILE_EXPANSION || (state.lst.expand)) &&
         (state.pass == 2)) {
       lst_format_line(state.curr_src_line.line, value);
     }
 
     state.src->m = state.src->m->next;
-  } else if (state.src->type == src_file) {
-    if (state.mac_prev) {
+  } else if (IN_FILE_EXPANSION) {
+    if (IN_MACRO_DEFINITION) {
       state.lst.line.linetype = none;
       if (state.mac_body)
         state.mac_body->src_line = strdup(state.curr_src_line.line);
-    }
-
-    if (state_include == state.next_state) {
-      /* includes have to be evaluated here and not in the following
-       * switch statetems so that the errors are reported correctly */
-      open_src(state.next_buffer.file, 1);
-      free(state.next_buffer.file);
     }
 
     if (state.pass == 2) {
@@ -162,6 +229,11 @@ void next_line(int value)
   switch (state.next_state) {
     case state_exitmacro:
       execute_exitm();
+      break;
+
+    case state_include:
+      open_src(state.next_buffer.file, 1);
+      free(state.next_buffer.file);
       break;
 
     case state_macro:
@@ -181,13 +253,18 @@ void next_line(int value)
       execute_macro(state.next_buffer.macro, 1);
       break;
 
-    case state_include:
-      /* already evaluated */
     default:
       break;
   }
 }
 
+void yyerror(char *message)
+{
+  if (!IN_MACRO_DEFINITION) {
+    /* throw error if not in macro definition */
+    gpverror(GPE_PARSER, message);
+  }
+}
 
 /************************************************************************/
 
@@ -203,6 +280,7 @@ void next_line(int value)
 
 %token <s> LABEL
 %token <s> IDENTIFIER
+%token <s> IDENT_BRACKET
 %token <s> CBLOCK
 %token <s> DEBUG_LINE
 %token <s> ENDC
@@ -249,11 +327,6 @@ void next_line(int value)
 %token <i> TBL_POST_INC
 %token <i> TBL_POST_DEC
 %token <i> TBL_PRE_INC
-%token <i> CONCAT
-%token <i> VAR
-%token <s> VARLAB_BEGIN
-%token <s> VAR_BEGIN
-%token <s> VAR_END
 %token <i> '['
 %token <i> ']'
 
@@ -265,7 +338,6 @@ void next_line(int value)
 %type <i> '!'
 %type <i> '~'
 %type <s> line
-%type <s> label_concat
 %type <s> decimal_ops
 %type <i> statement
 %type <p> parameter_list
@@ -292,6 +364,7 @@ void next_line(int value)
 %type <i> assign_equal_ops
 %type <p> list_block
 %type <p> list_expr
+%type <p> list_args
 
 %%
 /* Grammar rules */
@@ -307,12 +380,17 @@ program:
         } line
         | program error '\n'
         {
+          yyerrok;  /* generate multiple errors */
+          if (IN_MACRO_DEFINITION) {
+            /* in macro definition: append the macro */
+            macro_append();
+          }
           next_line(0);
         }
         ;
 
 line:
-        label_concat assign_equal_ops expr '\n'
+        LABEL assign_equal_ops expr '\n'
         {
           struct pnode *parms;
           int exp_result;
@@ -324,7 +402,7 @@ line:
           next_line(set_label($1, parms));
         }
         |
-        label_concat '=' expr '\n'
+        LABEL '=' expr '\n'
         {
           struct pnode *parms;
 
@@ -333,7 +411,7 @@ line:
           next_line(set_label($1, parms));
         }
         |
-        label_concat DECREMENT '\n'
+        LABEL DECREMENT '\n'
         {
           struct pnode *parms;
 
@@ -342,7 +420,7 @@ line:
           next_line(set_label($1, parms));
         }
         |
-        label_concat INCREMENT '\n'
+        LABEL INCREMENT '\n'
         {
           struct pnode *parms;
 
@@ -351,7 +429,7 @@ line:
           next_line(set_label($1, parms));
         }
         |
-        label_concat statement
+        LABEL statement
         {
           if (asm_enabled() && (state.lst.line.linetype == none)) {
             if (IS_RAM_ORG) {
@@ -392,8 +470,8 @@ line:
                 h->defined = 1;
 
               state.mac_head = NULL;
-            } else if (!state.mac_prev) {
-              /* Outside a macro, just define the label. */
+            } else if (!IN_MACRO_DEFINITION) {
+              /* Outside a macro definition, just define the label. */
               switch (state.lst.line.linetype) {
               case sec:
                 strncpy(state.obj.new_sec_name, $1, 78);
@@ -472,7 +550,7 @@ decimal_ops: ERRORLEVEL | DEBUG_LINE;
 statement:
         '\n'
         {
-          if (!state.mac_prev) {
+          if (!IN_MACRO_DEFINITION) {
             if (!IS_RAM_ORG)
               /* We want to have r as the value to assign to label */
               $$ = gp_processor_byte_to_org(state.device.class, state.org);
@@ -515,6 +593,18 @@ statement:
               mk_list(mk_string($3), NULL)));
         }
         |
+        DEFINE IDENT_BRACKET list_args ')' STRING '\n'
+        {
+          $$ = do_or_append_insn($1, mk_list(mk_string($2),
+              mk_list(mk_string($5), $3)));
+        }
+        |
+        DEFINE IDENT_BRACKET ')' STRING '\n'
+        {
+          $$ = do_or_append_insn($1, mk_list(mk_string($2),
+              mk_list(mk_string($4), NULL)));
+        }
+        |
         DEFINE IDENTIFIER '\n'
         {
           $$ = do_or_append_insn($1, mk_list(mk_string($2), NULL));
@@ -540,7 +630,7 @@ statement:
           int number;
           int i;
 
-          if (!state.mac_prev) {
+          if (!IN_MACRO_DEFINITION) {
             number = eval_fill_number($5);
 
             for (i = 0; i < number; i++) {
@@ -556,7 +646,7 @@ statement:
           int number;
           int i;
 
-          if (!state.mac_prev) {
+          if (!IN_MACRO_DEFINITION) {
             number = eval_fill_number($6);
 
             for (i = 0; i < number; i++) {
@@ -569,7 +659,7 @@ statement:
         |
         CBLOCK expr '\n'
         {
-          if (!state.mac_prev) {
+          if (!IN_MACRO_DEFINITION) {
             begin_cblock($2);
           } else {
             macro_append();
@@ -579,7 +669,7 @@ statement:
         const_block
         ENDC '\n'
         {
-          if (state.mac_prev) {
+          if (IN_MACRO_DEFINITION) {
             macro_append();
           }
           $$ = 0;
@@ -587,7 +677,7 @@ statement:
         |
         CBLOCK '\n'
         {
-          if (!state.mac_prev) {
+          if (!IN_MACRO_DEFINITION) {
             continue_cblock();
           } else {
             macro_append();
@@ -597,7 +687,7 @@ statement:
         const_block
         ENDC '\n'
         {
-          if (state.mac_prev) {
+          if (IN_MACRO_DEFINITION) {
             macro_append();
           }
           $$ = 0;
@@ -622,23 +712,23 @@ const_line:
         |
         const_def_list '\n'
         {
-          if (state.mac_prev) {
+          if (IN_MACRO_DEFINITION) {
             macro_append();
           }
         }
         |
-        label_concat '\n'
+        LABEL '\n'
         {
-          if (!state.mac_prev) {
+          if (!IN_MACRO_DEFINITION) {
             cblock_expr(mk_symbol($1));
           } else {
             macro_append();
           }
         }
         |
-        label_concat expr '\n'
+        LABEL expr '\n'
         {
-          if (!state.mac_prev) {
+          if (!IN_MACRO_DEFINITION) {
             cblock_expr_incr(mk_symbol($1), $2);
           } else {
             macro_append();
@@ -655,14 +745,14 @@ const_def_list:
 const_def:
         cidentifier
         {
-          if (!state.mac_prev) {
+          if (!IN_MACRO_DEFINITION) {
             cblock_expr($1);
           }
         }
         |
         cidentifier ':' expr
         {
-          if (!state.mac_prev) {
+          if (!IN_MACRO_DEFINITION) {
             cblock_expr_incr($1, $3);
           }
         }
@@ -908,40 +998,6 @@ cidentifier:
         {
           $$ = mk_symbol($1);
         }
-        |
-        VAR_BEGIN expr ')'
-        {
-          $$ = mk_2op(CONCAT, mk_symbol($1), mk_1op(VAR, $2));
-        }
-        |
-        VAR_BEGIN expr VAR_END
-        {
-          $$ = mk_2op(CONCAT, mk_symbol($1),
-                        mk_2op(CONCAT, mk_1op(VAR, $2), mk_symbol($3)));
-        }
-        ;
-
-label_concat:
-        LABEL
-        {
-          $$ = $1;
-        }
-        |
-        VARLAB_BEGIN expr ')'
-        {
-          if (asm_enabled() && !state.mac_prev) {
-            $$ = evaluate_concatenation(mk_2op(CONCAT,  mk_symbol($1),
-                           mk_1op(VAR, $2)));
-          }
-        }
-        |
-        VARLAB_BEGIN expr VAR_END
-        {
-          if (asm_enabled() && !state.mac_prev) {
-            $$ = evaluate_concatenation(mk_2op(CONCAT,  mk_symbol($1),
-                      mk_2op(CONCAT, mk_1op(VAR, $2), mk_symbol($3))));
-          }
-        }
         ;
 
 list_block:
@@ -975,6 +1031,17 @@ list_expr:
         }
         ;
 
+list_args:
+        IDENTIFIER
+        {
+          $$ = mk_list(mk_symbol($1), NULL);
+        }
+        |
+        IDENTIFIER ',' list_args
+        {
+          $$ = mk_list(mk_symbol($1), $3);
+        }
+        ;
 %%
 
 int return_op(int operation)

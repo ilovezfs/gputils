@@ -34,6 +34,11 @@ Boston, MA 02111-1307, USA.  */
 
 #define MAX_PATHS 100
 
+#define IN_MACRO_DEFINITION (NULL != state.mac_prev)
+#define IN_MACRO_EXPANSION  (src_macro == state.src->type)
+#define IN_WHILE_EXPANSION  (src_while == state.src->type)
+#define IN_FILE_EXPANSION   (src_file == state.src->type)
+
 enum gpasmValTypes {
   gvt_constant,
   gvt_cblock,
@@ -142,7 +147,7 @@ extern struct gpasm_state {
     *stGlobal,                      /* Global symbols */
     *stTop,                         /* Top of locals stack (stGlobal is base) */
     *stDefines,                     /* Preprocessor #defines */
-    *stTopDefines,                  /* Macro #defines (stDefines is base) */
+    *stMacroParams,                 /* Macro #defines (stDefines is base) */
     *stMacros;                      /* Macros */
   MemBlock *i_memory;               /* Instruction memory linked list */
   MemBlock *c_memory;               /* Configuration memory linked list (shadow) */
@@ -285,7 +290,6 @@ enum src_types {
   src_unknown,
   src_file,
   src_macro,
-  src_substitution,
   src_while
 };
 
@@ -330,6 +334,15 @@ void hex_init(void);
 
 /* gpasm.c */
 void add_path(const char *path);
+
+/* parse.y */
+struct pnode *mk_constant(int value);
+struct pnode *mk_offset(struct pnode *p);
+struct pnode *mk_symbol(char *value);
+struct pnode *mk_string(char *value);
+struct pnode *mk_list(struct pnode *head, struct pnode *tail);
+struct pnode *mk_2op(int op, struct pnode *p0, struct pnode *p1);
+struct pnode *mk_1op(int op, struct pnode *p0);
 
 /************************************************************************/
 
