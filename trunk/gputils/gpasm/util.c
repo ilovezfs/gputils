@@ -456,7 +456,7 @@ gpasmVal do_or_append_insn(char *op, struct pnode *parms)
 {
   gpasmVal r;
 
-  if (!state.mac_prev ||
+  if (!IN_MACRO_DEFINITION ||
       (strcasecmp(op, "endm") == 0) ||
       (state.while_head && (strcasecmp(op, "endw") == 0))) {
     r = do_insn(op, parms);

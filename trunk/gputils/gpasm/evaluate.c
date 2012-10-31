@@ -66,102 +66,20 @@ int list_length(struct pnode *L)
   return (NULL != p) ? n + 1: n;
 }
 
-int can_evaluate_concatenation(struct pnode *p)
-{
-  char buf[BUFSIZ];
-
-  switch (p->tag) {
-  case constant:
-    return 1;
-  case offset:
-    return can_evaluate_concatenation(p->value.offset);
-  case symbol:
-    return 1;
-  case unop:
-    return can_evaluate_concatenation(p->value.unop.p0);
-  case binop:
-    return can_evaluate_concatenation(p->value.binop.p0) &&
-           can_evaluate_concatenation(p->value.binop.p1);
-  case string:
-    snprintf(buf, sizeof(buf), "Illegal argument (%s).", p->value.string);
-    gperror(GPE_ILLEGAL_ARGU, buf);
-    return 0;
-  default:
-    assert(0);
-  }
-
-  return 0;
-}
-
-char *evaluate_concatenation(struct pnode *p)
-{
-  switch (p->tag) {
-  case symbol:
-    return p->value.symbol;
-  case binop:
-    assert(p->value.binop.op == CONCAT);
-    {
-      char *s0, *s1, *new;
-      size_t size0, size1;
-
-      s0 = evaluate_concatenation(p->value.binop.p0);
-      s1 = evaluate_concatenation(p->value.binop.p1);
-      size0 = strlen(s0);
-      size1 = strlen(s1);
-      new = malloc(size0 + size1 + 1);
-      if (new) {
-        memcpy(new, s0, size0);
-        memcpy(new + size0, s1, size1);
-        new[size0 + size1] = '\0';
-      }
-      return new;
-    }
-  case unop:
-    assert(p->value.unop.op == VAR);
-    {
-      char buf[80];
-      snprintf(buf, sizeof(buf), "%d", maybe_evaluate(p->value.unop.p0));
-      return (strdup(buf));
-    }
-  default:
-    assert(0);
-  }
-
-  return NULL;
-}
-
-/* Attempt to evaluate concatenation 'p'.  Return its value if
- * successful, otherwise generate an error message and return NULL.  */
-
-char *maybe_evaluate_concat(struct pnode *p)
-{
-  char *r = NULL;
-
-  if (((p->tag == unop) && (p->value.unop.op != VAR)) ||
-      ((p->tag == binop) && (p->value.binop.op != CONCAT))) {
-    gpverror(GPE_ILLEGAL_ARGU);
-  } else if (p && can_evaluate_concatenation(p)) {
-    r = evaluate_concatenation(p);
-  }
-
-  return r;
-}
-
 int can_evaluate(struct pnode *p)
 {
   char buf[BUFSIZ];
 
-  if ((p->tag == binop) && (p->value.binop.op == CONCAT)) {
-    return can_evaluate_concatenation(p);
-  }
   switch (p->tag) {
   case constant:
     return 1;
+
   case offset:
     if (state.extended_pic16e == false) {
       gpverror(GPE_BADCHAR, '[');
     }
     return can_evaluate(p->value.offset);
+
   case symbol:
     {
       struct symbol *s;
@@ -192,14 +110,18 @@ int can_evaluate(struct pnode *p)
         return ((s != NULL) && (var != NULL));
       }
     }
+
   case unop:
     return can_evaluate(p->value.unop.p0);
+
   case binop:
     return can_evaluate(p->value.binop.p0) && can_evaluate(p->value.binop.p1);
+
   case string:
     snprintf(buf, sizeof(buf), "Illegal argument (%s).", p->value.string);
     gperror(GPE_ILLEGAL_ARGU, buf);
     return 0;
+
   default:
     assert(0);
   }
@@ -211,9 +133,6 @@ int can_evaluate_value(struct pnode *p)
 {
   char buf[BUFSIZ];
 
-  if ((p->tag == binop) && (p->value.binop.op == CONCAT)) {
-    return can_evaluate_concatenation(p);
-  }
   switch (p->tag) {
   case constant:
     return 1;
@@ -263,27 +182,13 @@ gpasmVal evaluate(struct pnode *p)
   struct variable *var;
   gpasmVal p0, p1;
 
-  if (((p->tag == binop) && (p->value.binop.op == CONCAT)) ||
-      ((p->tag == unop) && (p->value.unop.op == VAR))) {
-    char *string = evaluate_concatenation(p);
-    struct symbol *s;
-
-    s = get_symbol(state.stTop, string);
-    if (s == NULL) {
-      gpverror(GPE_NOSYM, string);
-      return 0;
-    } else {
-      var = get_symbol_annotation(s);
-      assert(var != NULL);
-      return var->value;
-    }
-  }
-
   switch (p->tag) {
   case constant:
     return p->value.constant;
+
   case offset:
     return evaluate(p->value.offset);
+
   case symbol:
     {
       struct symbol *s;
@@ -299,36 +204,53 @@ gpasmVal evaluate(struct pnode *p)
         return var->value;
       }
     }
+
   case unop:
     switch (p->value.unop.op) {
     case '!':
       return !evaluate(p->value.unop.p0);
+
     case '+':
       return  evaluate(p->value.unop.p0);
+
     case '-':
       return -evaluate(p->value.unop.p0);
+
     case '~':
       return ~evaluate(p->value.unop.p0);
+
     case UPPER:
       return (evaluate(p->value.unop.p0) >> 16) & 0xff;
+
     case HIGH:
       return (evaluate(p->value.unop.p0) >> 8) & 0xff;
+
     case LOW:
       return evaluate(p->value.unop.p0) & 0xff;
+
     case INCREMENT:
       return evaluate(p->value.unop.p0) + 1;
+
     case DECREMENT:
       return evaluate(p->value.unop.p0) - 1;
+
     default:
       assert(0);
     }
+
   case binop:
     p0 = evaluate(p->value.binop.p0);
     p1 = evaluate(p->value.binop.p1);
     switch (p->value.binop.op) {
-    case '+':      return p0 + p1;
-    case '-':      return p0 - p1;
-    case '*':      return p0 * p1;
+    case '+':
+      return p0 + p1;
+
+    case '-':
+      return p0 - p1;
+
+    case '*':
+      return p0 * p1;
+
     case '/':
       if (p1 == 0){
         gpverror(GPE_DIVBY0);
@@ -336,6 +258,7 @@ gpasmVal evaluate(struct pnode *p)
       } else {
         return p0 / p1;
       }
+
     case '%':
       if (p1 == 0){
         gpverror(GPE_DIVBY0);
@@ -343,9 +266,16 @@ gpasmVal evaluate(struct pnode *p)
       } else {
         return p0 % p1;
       }
-    case '&':      return p0 & p1;
-    case '|':      return p0 | p1;
-    case '^':      return p0 ^ p1;
+
+    case '&':
+      return p0 & p1;
+
+    case '|':
+      return p0 | p1;
+
+    case '^':
+      return p0 ^ p1;
+
     case LSH:
       if (state.mpasm_compatible) {
         /* MPASM compatible:
@@ -371,20 +301,38 @@ gpasmVal evaluate(struct pnode *p)
       /* x >> n results sign extension for n >= (sizeof(int) * 8) */
         return (p1 >= sizeof(int) * 8) ? ((p0 < 0) ? -1 : 0) : p0 >> p1;
       }
-    case EQUAL:    return p0 == p1;
-    case '<':      return p0 < p1;
-    case '>':      return p0 > p1;
-    case NOT_EQUAL:          return p0 != p1;
-    case GREATER_EQUAL:      return p0 >= p1;
-    case LESS_EQUAL:         return p0 <= p1;
-    case LOGICAL_AND:        return p0 && p1;
-    case LOGICAL_OR:         return p0 || p1;
+
+    case EQUAL:
+      return p0 == p1;
+
+    case '<':
+      return p0 < p1;
+
+    case '>':
+      return p0 > p1;
+
+    case NOT_EQUAL:
+      return p0 != p1;
+
+    case GREATER_EQUAL:
+      return p0 >= p1;
+
+    case LESS_EQUAL:
+      return p0 <= p1;
+
+    case LOGICAL_AND:
+      return p0 && p1;
+
+    case LOGICAL_OR:
+      return p0 || p1;
+
     case '=':
       gpverror(GPE_BADCHAR, '=');
       return 0;
     default:
       assert(0); /* Unhandled binary operator */
     }
+
   default:
     assert(0); /* Unhandled parse node tag */
   }
@@ -413,34 +361,17 @@ int count_reloc(struct pnode *p)
 {
   struct symbol *s;
   struct variable *var;
-  char *string;
 
   if (state.mode == absolute)
     return 0;
 
-  if ((p->tag == binop) && (p->value.binop.op == CONCAT)) {
-    string = evaluate_concatenation(p);
-    s = get_symbol(state.stTop, string);
-    if (s != NULL) {
-      var = get_symbol_annotation(s);
-      assert(var != NULL);
-      switch(var->type) {
-      case gvt_extern:
-      case gvt_global:
-      case gvt_static:
-      case gvt_address:
-        return 1;
-      default:
-        return 0;
-      }
-    }
-    return 0;
-  }
   switch (p->tag) {
   case constant:
     return 0;
+
   case offset:
     return count_reloc(p->value.offset);
+
   case symbol:
     if (strcmp(p->value.symbol, "$") == 0) {
       return 1;
@@ -455,6 +386,7 @@ int count_reloc(struct pnode *p)
           case gvt_static:
           case gvt_address:
             return 1;
+
           default:
             return 0;
           }
@@ -462,10 +394,13 @@ int count_reloc(struct pnode *p)
       }
     }
     return 0;
+
   case unop:
     return count_reloc(p->value.unop.p0);
+
   case binop:
     return count_reloc(p->value.binop.p0) + count_reloc(p->value.binop.p1);
+
   default:
     assert(0);
   }
@@ -479,29 +414,9 @@ int count_reloc(struct pnode *p)
 static void
 add_reloc(struct pnode *p, short offset, enum gpasmValTypes type)
 {
-  char *string = NULL;
   struct symbol *s = NULL;
   struct variable *var = NULL;
 
-  if ((p->tag == binop) && (p->value.binop.op == CONCAT)) {
-    string = evaluate_concatenation(p);
-    s = get_symbol(state.stTop, string);
-    if (s != NULL) {
-      var = get_symbol_annotation(s);
-      assert(var != NULL);
-      switch(var->type) {
-      case gvt_extern:
-      case gvt_global:
-      case gvt_static:
-      case gvt_address:
-        coff_reloc(var->coff_num, offset, type);
-        return;
-      default:
-        return;
-      }
-    }
-    return;
-  }
   switch (p->tag) {
   case symbol:
     if (strcmp(p->value.symbol, "$") == 0) {
@@ -531,23 +446,28 @@ add_reloc(struct pnode *p, short offset, enum gpasmValTypes type)
         case gvt_address:
           coff_reloc(var->coff_num, offset, type);
           return;
+
         default:
           return;
         }
       }
     }
     return;
+
   case unop:
     switch (p->value.unop.op) {
     case UPPER:
       add_reloc(p->value.unop.p0, offset, RELOCT_UPPER);
       return;
+
     case HIGH:
       add_reloc(p->value.unop.p0, offset, RELOCT_HIGH);
       return;
+
     case LOW:
       add_reloc(p->value.unop.p0, offset, RELOCT_LOW);
       return;
+
     case '!':
     case '+':
     case '-':
@@ -556,9 +476,11 @@ add_reloc(struct pnode *p, short offset, enum gpasmValTypes type)
     case DECREMENT:
       gpverror(GPE_UNRESOLVABLE);
       return;
+
     default:
       assert(0);
     }
+
   case binop:
     switch (p->value.binop.op) {
     case '+':
@@ -569,6 +491,7 @@ add_reloc(struct pnode *p, short offset, enum gpasmValTypes type)
         add_reloc(p->value.binop.p1, offset + maybe_evaluate(p->value.binop.p0), type);
       }
       return;
+
     case '-':
       /* The symbol has to be first */
       if (count_reloc(p->value.binop.p0) == 1) {
@@ -577,6 +500,7 @@ add_reloc(struct pnode *p, short offset, enum gpasmValTypes type)
         gpverror(GPE_UNRESOLVABLE);
       }
       return;
+
     case '*':
     case '/':
     case '%':
@@ -596,10 +520,12 @@ add_reloc(struct pnode *p, short offset, enum gpasmValTypes type)
     case '=':
       gpverror(GPE_UNRESOLVABLE);
       return;
+
     default:
       assert(0); /* Unhandled binary operator */
     }
     return;
+
   case constant:
   default:
     assert(0);

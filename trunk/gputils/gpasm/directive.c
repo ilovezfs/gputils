@@ -1276,22 +1276,19 @@ static gpasmVal do_define(gpasmVal r,
   } else {
     struct pnode *p;
 
-    assert(arity <= 2);
-
+    assert(list == parms->tag);
     p = HEAD(parms);
-    if (p->tag == string) {
-      if((asm_enabled()) && (!state.mac_prev)) {
-        if ((get_symbol(state.stDefines, p->value.string) != NULL)
-             && (state.pass == 1)) {
-          gpverror(GPE_DUPLAB, p->value.string);
-        } else {
-          struct symbol *current_definition = add_symbol(state.stDefines, p->value.string);
+    assert(string == p->tag);
+    if (asm_enabled() && !IN_MACRO_DEFINITION) {
+      if (get_symbol(state.stDefines, p->value.string) != NULL) {
+        gpverror(GPE_DUPLAB, p->value.string);
+      } else {
+        struct symbol *curr_def = add_symbol(state.stDefines, p->value.string);
 
-          if (TAIL(parms)) {
-            struct pnode *p2 = HEAD(TAIL(parms));
-            assert(p2->tag == string);
-            annotate_symbol(current_definition, strdup(p2->value.string));
-          }
+        p = TAIL(parms);
+        if (p) {
+          assert(list == p->tag);
+          annotate_symbol(curr_def, p);
         }
       }
     }
@@ -1574,7 +1571,7 @@ static gpasmVal do_endm(gpasmVal r,
 {
   assert(!state.mac_head);
   state.lst.line.linetype = dir;
-  if (state.mac_prev == NULL)
+  if (!IN_MACRO_DEFINITION)
     gpverror(GPE_UNMATCHED_ENDM);
   else
     state.mac_prev = NULL;
@@ -1592,7 +1589,7 @@ static gpasmVal do_endw(gpasmVal r,
   state.lst.line.linetype = dir;
 
   assert(!state.mac_head);
-  if (state.mac_prev == NULL) {
+  if (!IN_MACRO_DEFINITION) {
     gperror(GPE_ILLEGAL_COND, "Illegal condition (ENDW).");
   } else if (maybe_evaluate(state.while_head->parms)) {
     state.next_state = state_while;
@@ -1751,7 +1748,7 @@ static gpasmVal do_extern(gpasmVal r,
     gpverror(GPE_OBJECT_ONLY);
   } else {
     for (; parms; parms = TAIL(parms)) {
-      p = maybe_evaluate_concat(HEAD(parms));
+      p = HEAD(parms)->value.symbol;
       if (p) {
         set_global(p, 0, PERMANENT, gvt_extern);
       }
@@ -1827,7 +1824,7 @@ static gpasmVal do_global(gpasmVal r,
     gpverror(GPE_OBJECT_ONLY);
   } else {
     for (; parms; parms = TAIL(parms)) {
-      p = maybe_evaluate_concat(HEAD(parms));
+      p = HEAD(parms)->value.symbol;
       if (p) {
         s = get_symbol(state.stTop, p);
         if (s == NULL) {
@@ -2016,7 +2013,7 @@ static gpasmVal do_idlocs(gpasmVal r,
         unsigned char curvalue;
         state.lst.line.linetype = config;
         state.lst.config_address = idreg;
-        if (value > 0xff) {
+        if(value > 0xff) {
           gpvmessage(GPM_IDLOC);
         }
         if (idreg <= state.device.id_location) {
@@ -3049,7 +3046,7 @@ static gpasmVal do_while(gpasmVal r,
   struct macro_head *head = malloc(sizeof(*head));
   struct pnode *p;
 
-  if (state.src->type == src_while) {
+  if (IN_WHILE_EXPANSION) {
     state.pass = 2; /* Ensure error actually gets displayed */
     gperror(GPE_UNKNOWN, "gpasm does not yet support nested while loops");
     exit (1);
@@ -4163,6 +4160,7 @@ gpasmVal do_insn(char *name, struct pnode *parms)
           break;
 
         case 3:
+        case 4:
           p2 = HEAD(TAIL(parms));
           fsr = maybe_evaluate(p2);
           if (fsr == 4 || fsr == 6) {
@@ -4482,16 +4480,16 @@ void continue_cblock(void)
 
 void cblock_expr(struct pnode *s)
 {
-  if ((asm_enabled()) && (can_evaluate_concatenation(s))) {
-    set_global(evaluate_concatenation(s), state.cblock, PERMANENT, gvt_cblock);
+  if (asm_enabled()) {
+    set_global(s->value.symbol, state.cblock, PERMANENT, gvt_cblock);
     state.cblock++;
   }
 }
 
 void cblock_expr_incr(struct pnode *s, struct pnode *incr)
 {
-  if ((asm_enabled()) && (can_evaluate_concatenation(s))) {
-    set_global(evaluate_concatenation(s), state.cblock, PERMANENT, gvt_cblock);
+  if (asm_enabled()) {
+    set_global(s->value.symbol, state.cblock, PERMANENT, gvt_cblock);
     state.cblock += maybe_evaluate(incr);
   }
 }

@@ -1,6 +1,5 @@
-/* evaluates variables
-   Copyright (C) 2002, 2003, 2004, 2005
-   Craig Franklin
+/* gpasm preprocessor defines and includes
+   Copyright (C) 1012 Borut Razem
 
 This file is part of gputils.
 
@@ -19,20 +18,19 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-#ifndef __EVALUATE_H__
-#define __EVALUATE_H__
+#ifndef __PREPROCESS_H__
+#define __PREPROCESS_H__
 
-int enforce_arity(int arity, int must_be);
-int enforce_simple(struct pnode *p);
-int list_length(struct pnode *L);
+/* from preprocess.c */
+void preprocess_line(char *buf, int *n, int max_size);
 
-int can_evaluate(struct pnode *p);
-int can_evaluate_value(struct pnode *p);
-gpasmVal evaluate(struct pnode *p);
-gpasmVal maybe_evaluate(struct pnode *p);
+/* from ppscan.c */
+int ppparse_chunk(char *buf, int begin, int end);
+int pplex(void);
+extern int ppcol_begin;
+extern int ppcol_end;
 
-int count_reloc(struct pnode *p);
-gpasmVal reloc_evaluate(struct pnode *p, unsigned short type);
-int eval_fill_number(struct pnode *p);
-
+/* from ppparse.c */
+int ppparse(void);
+extern int ppresult;
 #endif

@@ -38,7 +38,7 @@ host_triplet = @host@
 bin_PROGRAMS = gpasm$(EXEEXT)
 subdir = gpasm
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in parse.c \
-	parse.h scan.c
+	parse.h ppparse.c ppparse.h ppscan.c scan.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -51,11 +51,12 @@ LIBRARIES = $(noinst_LIBRARIES)
 ARFLAGS = cru
 libgpasm_a_AR = $(AR) $(ARFLAGS)
 libgpasm_a_LIBADD =
-am_libgpasm_a_OBJECTS = parse.$(OBJEXT) cod.$(OBJEXT) coff.$(OBJEXT) \
-	deps.$(OBJEXT) directive.$(OBJEXT) evaluate.$(OBJEXT) \
-	gpasm.$(OBJEXT) scan.$(OBJEXT) gperror.$(OBJEXT) lst.$(OBJEXT) \
-	macro.$(OBJEXT) processor.$(OBJEXT) special.$(OBJEXT) \
-	util.$(OBJEXT)
+am_libgpasm_a_OBJECTS = cod.$(OBJEXT) coff.$(OBJEXT) deps.$(OBJEXT) \
+	directive.$(OBJEXT) evaluate.$(OBJEXT) gpasm.$(OBJEXT) \
+	gperror.$(OBJEXT) lst.$(OBJEXT) macro.$(OBJEXT) \
+	preprocess.$(OBJEXT) processor.$(OBJEXT) special.$(OBJEXT) \
+	util.$(OBJEXT) ppscan.$(OBJEXT) scan.$(OBJEXT) parse.$(OBJEXT) \
+	ppparse.$(OBJEXT)
 libgpasm_a_OBJECTS = $(am_libgpasm_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
@@ -198,17 +199,16 @@ top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libgpasm.a
 AM_CPPFLAGS = -I${top_srcdir}/libgputils -I${top_srcdir}/include
 libgpasm_a_SOURCES = \
-	parse.y \
 	cod.c \
 	coff.c \
 	deps.c \
 	directive.c \
 	evaluate.c \
 	gpasm.c \
-	scan.l \
 	gperror.c \
 	lst.c \
 	macro.c \
+	preprocess.c \
 	processor.c \
 	special.c \
 	util.c \
@@ -217,14 +217,19 @@ libgpasm_a_SOURCES = \
 	deps.h \
 	directive.h \
 	evaluate.h \
-	gpasm.h.in \
 	gperror.h \
 	libgpasm.h \
 	lst.h \
 	macro.h \
+	preprocess.h \
 	processor.h \
 	scan.h \
-	special.h
+	special.h \
+	gpasm.h.in \
+	ppscan.l \
+	scan.l \
+	parse.y \
+	ppparse.y
 
 gpasm_SOURCES = main.c
 gpasm_LDADD = libgpasm.a ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
@@ -234,8 +239,8 @@ AM_YFLAGS = -d -vt
 AM_LFLAGS = -i
 
 # Make sure we have parse.h when compiling other sources
-BUILT_SOURCES = parse.h gpasm.h
-CLEANFILES = parse.output gpasm.h
+BUILT_SOURCES = parse.c parse.h ppparse.c ppparse.h scan.c ppscan.c gpasm.h
+CLEANFILES = parse.output parse.c parse.h pppase.output ppparse.c ppparse.h scan.c ppscan.c gpasm.h
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -277,6 +282,9 @@ clean-noinstLIBRARIES:
 parse.h: parse.c
 	@if test ! -f $@; then rm -f parse.c; else :; fi
 	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) parse.c; else :; fi
+ppparse.h: ppparse.c
+	@if test ! -f $@; then rm -f ppparse.c; else :; fi
+	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) ppparse.c; else :; fi
 libgpasm.a: $(libgpasm_a_OBJECTS) $(libgpasm_a_DEPENDENCIES) $(EXTRA_libgpasm_a_DEPENDENCIES) 
 	-rm -f libgpasm.a
 	$(libgpasm_a_AR) libgpasm.a $(libgpasm_a_OBJECTS) $(libgpasm_a_LIBADD)
@@ -339,6 +347,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/macro.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parse.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ppparse.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ppscan.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/preprocess.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/processor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scan.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/special.Po@am__quote@
@@ -488,6 +499,9 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 	-rm -f parse.c
 	-rm -f parse.h
+	-rm -f ppparse.c
+	-rm -f ppparse.h
+	-rm -f ppscan.c
 	-rm -f scan.c
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
@@ -578,6 +592,13 @@ uninstall-am: uninstall-binPROGRAMS
 
 gpasm.h: gpasm.h.in
 	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" "$<" > "$@"
+
+ppparse.c: YFLAGS += -p pp
+
+#ppscan.c: LFLAGS += -P pp
+
+ppscan.c: ppscan.l
+	flex $(AM_LFLAGS) -P pp -o $@ $<
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
