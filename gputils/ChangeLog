@@ -1,3 +1,6 @@
+2012-11-01  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpsymbol.c: merged from preprocessor branch
+
 2012-10-31  Borut Razem  <borutr@users.sourceforge.net>
   * Merge from preprocessor branch:
     - gpasm/util.c, gpasm/parse.y, gpasm/directive.c, gpasm/gpasm.h.in,
