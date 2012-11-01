@@ -1,5 +1,12 @@
 2012-11-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
-  * libgputils/gpcfg-table.c: Update basis of the MPLAB-X v1.5.
+  * header/p16f1788.inc, header/p16f1789.inc, header/p16lf1788.inc,
+    header/p16lf1789.inc, header/Makefile.in, header/Makefile.am,
+    libgputils/gprocessor.c, lkr/16f1788_g.lkr, lkr/16f1789_g.lkr,
+    lkr/16lf1788_g.lkr, lkr/16lf1789_g.lkr, lkr/Makefile.in,
+    lkr/Makefile.am: New devices basis of the MPLAB-X v1.5.
+
+2012-11-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpcfg-table.c: Updated basis of the MPLAB-X v1.5.
 
 2012-11-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/p12f529t39a.inc, header/p12f529t48a.inc, header/p12f1840.inc,
@@ -33,7 +40,7 @@
     lkr/18f85j94_g.lkr, lkr/18f86j94_g.lkr, lkr/18f86j99_g.lkr,
     lkr/18f87j94_g.lkr, lkr/18f95j94_g.lkr, lkr/18f96j94_g.lkr,
     lkr/18f96j99_g.lkr, lkr/18f97j94_g.lkr, lkr/18lf13k50_g.lkr,
-    lkr/18lf14k50_g.lkr: Update basis of the MPLAB-X v1.5.
+    lkr/18lf14k50_g.lkr: Updated basis of the MPLAB-X v1.5.
 
 2012-11-01  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpsymbol.c: merged from preprocessor branch
