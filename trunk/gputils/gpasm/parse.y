@@ -222,6 +222,7 @@ void next_line(int value)
    if (state_include == state.next_state) {
       /* includes have to be evaluated here and not in the following
        * switch statetems so that the errors are reported correctly */
+      state.src->line_number++;
       open_src(state.next_buffer.file, 1);
       free(state.next_buffer.file);
     }
@@ -231,20 +232,21 @@ void next_line(int value)
     }
   }
 
-  state.src->line_number++;
-
   switch (state.next_state) {
     case state_exitmacro:
+      state.src->line_number++;
       execute_exitm();
       break;
 
     case state_macro:
+      state.src->line_number++;
       /* push the label for local directive */
       state.stTop = push_macro_symbol_table(state.stTop);
       execute_macro(state.next_buffer.macro, 0);
       break;
 
     case state_section:
+      state.src->line_number++;
       /* create a new coff section */
       coff_new_section(state.obj.new_sec_name,
                        state.obj.new_sec_addr,
@@ -252,12 +254,16 @@ void next_line(int value)
       break;
 
     case state_while:
+      state.src->line_number++;
       execute_macro(state.next_buffer.macro, 1);
       break;
 
     case state_include:
       /* already evaluated */
+      break;
+
     default:
+      state.src->line_number++;
       break;
   }
 }
