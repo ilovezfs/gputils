@@ -1,4 +1,7 @@
 2012-11-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx: updated
+
+2012-11-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/p16f1788.inc, header/p16f1789.inc, header/p16lf1788.inc,
     header/p16lf1789.inc, header/Makefile.in, header/Makefile.am,
     libgputils/gprocessor.c, lkr/16f1788_g.lkr, lkr/16f1789_g.lkr,
