@@ -440,7 +440,7 @@ init(void)
   state.has_stack = false;
   state.stack_size = 0;
   state.has_idata = false;
-  state.srcfilename = NULL;
+  state.srcfilenames = NULL;
   state.object  = NULL;
   state.archives = NULL;
 
@@ -607,7 +607,23 @@ process_args( int argc, char *argv[])
       gp_relocate_to_shared = true;
       break;
     case 's':
-      state.srcfilename = optarg;
+      {
+        struct srcfns *fn;
+
+        fn = malloc(sizeof (struct srcfns));
+        fn->filename = strdup(optarg);
+        fn->next = NULL;
+
+        if (NULL == state.srcfilenames)
+          state.srcfilenames = fn;
+        else {
+          struct srcfns *p;
+
+          for (p = state.srcfilenames; p->next; p = p->next)
+            ;
+          p->next = fn;
+        }
+      }
       break;
     case 't':
       state.stack_size = strtol(optarg, &pc, 10);
@@ -636,17 +652,25 @@ process_args( int argc, char *argv[])
   if (argv[optind]) {
     pc = strrchr(argv[optind], '.');
     if (pc && strcasecmp(pc, ".lkr") == 0) {
-      if (state.srcfilename == NULL) {
-        state.srcfilename = argv[optind++];
-      } else {
-        gp_error("linker script specified twice (%s and %s)",
-                 state.srcfilename,
-                 argv[optind]);
+      struct srcfns *fn;
+
+      fn = malloc(sizeof (struct srcfns));
+      fn->filename = strdup(argv[optind++]);
+      fn->next = NULL;
+
+      if (NULL == state.srcfilenames)
+        state.srcfilenames = fn;
+      else {
+        struct srcfns *p;
+
+        for (p = state.srcfilenames; p->next; p = p->next)
+          ;
+        p->next = fn;
       }
     }
   }
 
-  if ((state.srcfilename == NULL) &&
+  if ((state.srcfilenames == NULL) &&
       (optind >= argc)) {
     /* No linker script was specified and no object filenames were provided,
        so print the usage */
@@ -687,9 +711,14 @@ linker(void)
            "%s.cof", state.basefilename);
 
   /* Read the script */
-  if (state.srcfilename) {
-    open_src(state.srcfilename, 0);
-    yyparse();
+  if (state.srcfilenames) {
+    struct srcfns *p = state.srcfilenames;
+
+    do {
+      open_src(p->filename, 0);
+      yyparse();
+      p = p->next;
+    } while (NULL != p);
 #ifdef USE_DEFAULT_PATHS
   } else if ((state.object) && (gp_lkr_path)) {
     /* The processor is known because an object was on the command line. So

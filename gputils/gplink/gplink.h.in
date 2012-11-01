@@ -34,6 +34,11 @@ struct archivelist {
 
 enum outfile { normal, suppress, named };
 
+struct srcfns {
+  char *filename;
+  struct srcfns *next;
+};
+
 extern struct gplink_state {
   char startdate[80];              /* When gplink ran */
   enum formats hex_format;         /* format of the output */
@@ -57,8 +62,8 @@ extern struct gplink_state {
   gp_boolean has_stack;            /* Has stack directive in linker script */
   unsigned int stack_size;         /* Value to fill program memory with */
   gp_boolean has_idata;            /* Has initialized data memory */
-  char  *srcfilename,              /* Script file name */
-    basefilename[BUFSIZ],          /* basename for generating hex,list,symbol filenames */
+  struct srcfns *srcfilenames;     /* List of script file names */
+  char basefilename[BUFSIZ],       /* basename for generating hex,list,symbol filenames */
     codfilename[BUFSIZ],           /* Symbol (.cod) file name */
     hexfilename[BUFSIZ],           /* Hex (.hex) file name */
     lstfilename[BUFSIZ],           /* Symbol (.lst) file name */
