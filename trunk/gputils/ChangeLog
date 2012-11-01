@@ -1,5 +1,7 @@
 2012-11-01  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpsymbol.c: merged from preprocessor branch
+  * gpasm/parse.y: re-introduced fix for
+    "produce the listing file in case that included file doesn't exist"
 
 2012-10-31  Borut Razem  <borutr@users.sourceforge.net>
   * Merge from preprocessor branch:

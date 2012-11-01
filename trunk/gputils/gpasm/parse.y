@@ -219,6 +219,13 @@ void next_line(int value)
         state.mac_body->src_line = strdup(state.curr_src_line.line);
     }
 
+   if (state_include == state.next_state) {
+      /* includes have to be evaluated here and not in the following
+       * switch statetems so that the errors are reported correctly */
+      open_src(state.next_buffer.file, 1);
+      free(state.next_buffer.file);
+    }
+
     if (state.pass == 2) {
       lst_format_line(state.curr_src_line.line, value);
     }
@@ -229,11 +236,6 @@ void next_line(int value)
   switch (state.next_state) {
     case state_exitmacro:
       execute_exitm();
-      break;
-
-    case state_include:
-      open_src(state.next_buffer.file, 1);
-      free(state.next_buffer.file);
       break;
 
     case state_macro:
@@ -253,6 +255,8 @@ void next_line(int value)
       execute_macro(state.next_buffer.macro, 1);
       break;
 
+    case state_include:
+      /* already evaluated */
     default:
       break;
   }
