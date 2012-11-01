@@ -149,7 +149,7 @@ _CPDF_ON             EQU  H'0FBF'    ; Code protection on
 _CPDF_OFF            EQU  H'0FFF'    ; Code protection off
 
 _CP_ENABLE           EQU  H'097F'    ; Enabled
-_CP_DISABLE          EQU  H'0DFF'    ; Disabled
+_CP_DISABLE          EQU  H'0EFF'    ; Disabled
 
 
 ;----- IDLOC Equates --------------------------------------------------

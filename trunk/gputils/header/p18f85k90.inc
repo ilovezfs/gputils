@@ -542,12 +542,12 @@ MSK7             EQU  H'0007'
 ;----- T4CON Bits -----------------------------------------------------
 T4CKPS0          EQU  H'0000'
 T4CKPS1          EQU  H'0001'
+TMR4ON           EQU  H'0002'
 T4OUTPS0         EQU  H'0003'
 T4OUTPS1         EQU  H'0004'
 T4OUTPS2         EQU  H'0005'
 T4OUTPS3         EQU  H'0006'
 
-TMR4ON           EQU  H'0002'
 
 
 ;----- CCP7CON Bits -----------------------------------------------------
@@ -2852,8 +2852,8 @@ STKOVF           EQU  H'0007'
 ;     FOSC = RCIO          External RC oscillator
 ;     FOSC = INTIO2        Internal RC oscillator
 ;     FOSC = INTIO1        Internal RC oscillator, CLKOUT function on OSC2
-;     FOSC = EC2IO         EC oscillator, CLKOUT function on OSC2 (Medium power, 160 kHz - 4 MHz)
-;     FOSC = EC2           EC oscillator (Medium power, 160 kHz - 4 MHz)
+;     FOSC = EC2IO         EC oscillator, CLKOUT function on OSC2 (Medium power, 160 kHz - 16 MHz)
+;     FOSC = EC2           EC oscillator (Medium power, 160 kHz - 16 MHz)
 ;     FOSC = EC1IO         EC oscillator, CLKOUT function on OSC2 (Low power, DC - 160 kHz)
 ;     FOSC = EC1           EC oscillator (Low power, DC - 160 kHz)
 ;
@@ -3087,8 +3087,8 @@ _FOSC_RC_1H          EQU  H'F6'    ; External RC oscillator, CLKOUT function on 
 _FOSC_RCIO_1H        EQU  H'F7'    ; External RC oscillator
 _FOSC_INTIO2_1H      EQU  H'F8'    ; Internal RC oscillator
 _FOSC_INTIO1_1H      EQU  H'F9'    ; Internal RC oscillator, CLKOUT function on OSC2
-_FOSC_EC2IO_1H       EQU  H'FA'    ; EC oscillator, CLKOUT function on OSC2 (Medium power, 160 kHz - 4 MHz)
-_FOSC_EC2_1H         EQU  H'FB'    ; EC oscillator (Medium power, 160 kHz - 4 MHz)
+_FOSC_EC2IO_1H       EQU  H'FA'    ; EC oscillator, CLKOUT function on OSC2 (Medium power, 160 kHz - 16 MHz)
+_FOSC_EC2_1H         EQU  H'FB'    ; EC oscillator (Medium power, 160 kHz - 16 MHz)
 _FOSC_EC1IO_1H       EQU  H'FC'    ; EC oscillator, CLKOUT function on OSC2 (Low power, DC - 160 kHz)
 _FOSC_EC1_1H         EQU  H'FD'    ; EC oscillator (Low power, DC - 160 kHz)
 

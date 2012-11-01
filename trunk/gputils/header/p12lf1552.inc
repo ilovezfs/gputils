@@ -722,8 +722,8 @@ _BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (Vbor), high trip poi
 _BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
 _BORV_19         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
 
-_LPBOR_ON        EQU  H'F7FF'    ; Low Power BOR is enabled
-_LPBOR_OFF       EQU  H'FFFF'    ; Low Power BOR is disabled
+_LPBOR_ON        EQU  H'F7FF'    ; Low-Power BOR is enabled
+_LPBOR_OFF       EQU  H'FFFF'    ; Low-Power BOR is disabled
 
 _LVP_OFF         EQU  H'DFFF'    ; High-voltage on MCLR/VPP must be used for programming
 _LVP_ON          EQU  H'FFFF'    ; Low-voltage programming enabled

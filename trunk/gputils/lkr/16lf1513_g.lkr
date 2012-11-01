@@ -38,7 +38,7 @@ DATABANK   NAME=sfr11      START=0x580             END=0x59F          PROTECTED
 DATABANK   NAME=sfr12      START=0x600             END=0x61F          PROTECTED
 DATABANK   NAME=sfr13      START=0x680             END=0x69F          PROTECTED
 DATABANK   NAME=sfr14      START=0x700             END=0x71F          PROTECTED
-DATABANK   NAME=sfr15      START=0x780             END=0x7EF          PROTECTED
+DATABANK   NAME=sfr15      START=0x780             END=0x79F          PROTECTED
 DATABANK   NAME=sfr16      START=0x800             END=0x81F          PROTECTED
 DATABANK   NAME=sfr17      START=0x880             END=0x89F          PROTECTED
 DATABANK   NAME=sfr18      START=0x900             END=0x91F          PROTECTED

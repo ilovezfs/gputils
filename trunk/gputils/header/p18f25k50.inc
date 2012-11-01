@@ -148,11 +148,17 @@ EECON1           EQU  H'0FA6'
 EECON2           EQU  H'0FA7'
 EEDATA           EQU  H'0FA8'
 EEADR            EQU  H'0FA9'
+RCSTA            EQU  H'0FAB'
 RCSTA1           EQU  H'0FAB'
+TXSTA            EQU  H'0FAC'
 TXSTA1           EQU  H'0FAC'
+TXREG            EQU  H'0FAD'
 TXREG1           EQU  H'0FAD'
+RCREG            EQU  H'0FAE'
 RCREG1           EQU  H'0FAE'
+SPBRG            EQU  H'0FAF'
 SPBRG1           EQU  H'0FAF'
+SPBRGH           EQU  H'0FB0'
 SPBRGH1          EQU  H'0FB0'
 T3CON            EQU  H'0FB1'
 TMR3             EQU  H'0FB2'
@@ -164,6 +170,7 @@ STCON            EQU  H'0FB5'
 ECCP1AS          EQU  H'0FB6'
 ECCP1DEL         EQU  H'0FB7'
 PWM1CON          EQU  H'0FB7'
+BAUDCON          EQU  H'0FB8'
 BAUDCON1         EQU  H'0FB8'
 PSTR1CON         EQU  H'0FB9'
 T2CON            EQU  H'0FBA'
@@ -285,7 +292,6 @@ ANSA0            EQU  H'0000'
 ANSA1            EQU  H'0001'
 ANSA2            EQU  H'0002'
 ANSA3            EQU  H'0003'
-ANSA4            EQU  H'0004'
 ANSA5            EQU  H'0005'
 
 
@@ -1117,6 +1123,19 @@ CFGS             EQU  H'0006'
 EEPGD            EQU  H'0007'
 
 
+;----- RCSTA Bits -----------------------------------------------------
+RX9D             EQU  H'0000'
+OERR             EQU  H'0001'
+FERR             EQU  H'0002'
+ADDEN            EQU  H'0003'
+CREN             EQU  H'0004'
+SREN             EQU  H'0005'
+RX9              EQU  H'0006'
+SPEN             EQU  H'0007'
+
+ADEN             EQU  H'0003'
+
+
 ;----- RCSTA1 Bits -----------------------------------------------------
 RX9D             EQU  H'0000'
 OERR             EQU  H'0001'
@@ -1130,6 +1149,17 @@ SPEN             EQU  H'0007'
 ADEN             EQU  H'0003'
 
 
+;----- TXSTA Bits -----------------------------------------------------
+TX9D             EQU  H'0000'
+TRMT             EQU  H'0001'
+BRGH             EQU  H'0002'
+SENDB            EQU  H'0003'
+SYNC             EQU  H'0004'
+TXEN             EQU  H'0005'
+TX9              EQU  H'0006'
+CSRC             EQU  H'0007'
+
+
 ;----- TXSTA1 Bits -----------------------------------------------------
 TX9D             EQU  H'0000'
 TRMT             EQU  H'0001'
@@ -1141,6 +1171,17 @@ TX9              EQU  H'0006'
 CSRC             EQU  H'0007'
 
 
+;----- SPBRG Bits -----------------------------------------------------
+BRG0             EQU  H'0000'
+BRG1             EQU  H'0001'
+BRG2             EQU  H'0002'
+BRG3             EQU  H'0003'
+BRG4             EQU  H'0004'
+BRG5             EQU  H'0005'
+BRG6             EQU  H'0006'
+BRG7             EQU  H'0007'
+
+
 ;----- SPBRG1 Bits -----------------------------------------------------
 BRG0             EQU  H'0000'
 BRG1             EQU  H'0001'
@@ -1150,6 +1191,17 @@ BRG4             EQU  H'0004'
 BRG5             EQU  H'0005'
 BRG6             EQU  H'0006'
 BRG7             EQU  H'0007'
+
+
+;----- SPBRGH Bits -----------------------------------------------------
+BRG8             EQU  H'0000'
+BRG9             EQU  H'0001'
+BRG10            EQU  H'0002'
+BRG11            EQU  H'0003'
+BRG12            EQU  H'0004'
+BRG13            EQU  H'0005'
+BRG14            EQU  H'0006'
+BRG15            EQU  H'0007'
 
 
 ;----- SPBRGH1 Bits -----------------------------------------------------
@@ -1278,6 +1330,22 @@ PDC4             EQU  H'0004'
 PDC5             EQU  H'0005'
 PDC6             EQU  H'0006'
 PR1SEN           EQU  H'0007'
+
+
+;----- BAUDCON Bits -----------------------------------------------------
+ABDEN            EQU  H'0000'
+WUE              EQU  H'0001'
+BRG16            EQU  H'0003'
+TXCKP            EQU  H'0004'
+RXDTP            EQU  H'0005'
+RCIDL            EQU  H'0006'
+ABDOVF           EQU  H'0007'
+
+CKTXP            EQU  H'0004'
+DTRXP            EQU  H'0005'
+
+SCKP             EQU  H'0004'
+RCMT             EQU  H'0006'
 
 
 ;----- BAUDCON1 Bits -----------------------------------------------------
@@ -1829,6 +1897,9 @@ STKOVF           EQU  H'0007'
 ;     LVP = OFF            Single-Supply ICSP disabled
 ;     LVP = ON             Single-Supply ICSP enabled if MCLRE is also 1
 ;
+;   Dedicated In-Circuit Debug/Programming Port Enable:
+;     ICPRT = OFF          ICPORT disabled
+;
 ;   Extended Instruction Set Enable bit:
 ;     XINST = OFF          Instruction set extension and Indexed Addressing mode disabled
 ;     XINST = ON           Instruction set extension and Indexed Addressing mode enabled
@@ -2047,6 +2118,8 @@ _STVREN_ON_4L        EQU  H'FF'    ; Stack full/underflow will cause Reset
 
 _LVP_OFF_4L          EQU  H'FB'    ; Single-Supply ICSP disabled
 _LVP_ON_4L           EQU  H'FF'    ; Single-Supply ICSP enabled if MCLRE is also 1
+
+_ICPRT_OFF_4L        EQU  H'DF'    ; ICPORT disabled
 
 _XINST_OFF_4L        EQU  H'BF'    ; Instruction set extension and Indexed Addressing mode disabled
 _XINST_ON_4L         EQU  H'FF'    ; Instruction set extension and Indexed Addressing mode enabled

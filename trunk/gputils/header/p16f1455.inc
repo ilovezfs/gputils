@@ -169,12 +169,6 @@ CWG1CON0         EQU  H'0693'
 CWG1CON1         EQU  H'0694'
 CWG1CON2         EQU  H'0695'
 
-;-----Bank28------------------
-CRRC             EQU  H'0E10'
-TST_CRRCL        EQU  H'0E10'
-TST_CRRCH        EQU  H'0E11'
-TST_CRLT         EQU  H'0E12'
-
 ;-----Bank29------------------
 UCON             EQU  H'0E8E'
 USTAT            EQU  H'0E8F'
@@ -197,16 +191,6 @@ UEP6             EQU  H'0E9E'
 UEP7             EQU  H'0E9F'
 
 ;-----Bank31------------------
-ICDIO            EQU  H'0F8C'
-ICDCON0          EQU  H'0F8D'
-ICDSTAT          EQU  H'0F91'
-DEVSEL           EQU  H'0F95'
-ICDINSTL         EQU  H'0F96'
-ICDINSTH         EQU  H'0F97'
-ICDBK0CON        EQU  H'0F9C'
-ICDBK0L          EQU  H'0F9D'
-ICDBK0H          EQU  H'0F9E'
-BSRICDSHAD       EQU  H'0FE3'
 STATUS_SHAD      EQU  H'0FE4'
 WREG_SHAD        EQU  H'0FE5'
 BSR_SHAD         EQU  H'0FE6'
@@ -313,10 +297,10 @@ TMR2ON           EQU  H'0002'
 
 T2CKPS0          EQU  H'0000'
 T2CKPS1          EQU  H'0001'
-TOUTPS0          EQU  H'0003'
-TOUTPS1          EQU  H'0004'
-TOUTPS2          EQU  H'0005'
-TOUTPS3          EQU  H'0006'
+T2OUTPS0         EQU  H'0003'
+T2OUTPS1         EQU  H'0004'
+T2OUTPS2         EQU  H'0005'
+T2OUTPS3         EQU  H'0006'
 
 
 ;----- TRISA Bits -----------------------------------------------------
@@ -643,10 +627,12 @@ SSP1M1           EQU  H'0001'
 SSP1M2           EQU  H'0002'
 SSP1M3           EQU  H'0003'
 CKP              EQU  H'0004'
-SSP1EN           EQU  H'0005'
-SSP1OV           EQU  H'0006'
+SSPEN            EQU  H'0005'
+SSPOV            EQU  H'0006'
 WCOL             EQU  H'0007'
 
+SSP1EN           EQU  H'0005'
+SSP1OV           EQU  H'0006'
 
 
 ;----- SSPCON Bits -----------------------------------------------------
@@ -655,10 +641,12 @@ SSP1M1           EQU  H'0001'
 SSP1M2           EQU  H'0002'
 SSP1M3           EQU  H'0003'
 CKP              EQU  H'0004'
-SSP1EN           EQU  H'0005'
-SSP1OV           EQU  H'0006'
+SSPEN            EQU  H'0005'
+SSPOV            EQU  H'0006'
 WCOL             EQU  H'0007'
 
+SSP1EN           EQU  H'0005'
+SSP1OV           EQU  H'0006'
 
 
 ;----- SSPCON1 Bits -----------------------------------------------------
@@ -667,10 +655,12 @@ SSP1M1           EQU  H'0001'
 SSP1M2           EQU  H'0002'
 SSP1M3           EQU  H'0003'
 CKP              EQU  H'0004'
-SSP1EN           EQU  H'0005'
-SSP1OV           EQU  H'0006'
+SSPEN            EQU  H'0005'
+SSPOV            EQU  H'0006'
 WCOL             EQU  H'0007'
 
+SSP1EN           EQU  H'0005'
+SSP1OV           EQU  H'0006'
 
 
 ;----- SSP1CON2 Bits -----------------------------------------------------
@@ -1027,81 +1017,6 @@ EPCONDIS         EQU  H'0003'
 EPHSHK           EQU  H'0004'
 
 
-;----- ICDIO Bits -----------------------------------------------------
-TRIS_ICDCLK      EQU  H'0002'
-TRIS_ICDDAT      EQU  H'0003'
-LAT_ICDCLK       EQU  H'0004'
-LAT_ICDDAT       EQU  H'0005'
-PORT_ICDCLK      EQU  H'0006'
-PORT_ICDDAT      EQU  H'0007'
-
-
-;----- ICDCON0 Bits -----------------------------------------------------
-RSTVEC           EQU  H'0000'
-DBGINEX          EQU  H'0003'
-SSTEP            EQU  H'0005'
-FREEZ            EQU  H'0006'
-INBUG            EQU  H'0007'
-
-
-;----- ICDSTAT Bits -----------------------------------------------------
-USRHLTF          EQU  H'0001'
-TRP0HLTF         EQU  H'0006'
-TRP1HLTF         EQU  H'0007'
-
-
-;----- DEVSEL Bits -----------------------------------------------------
-DEVSEL0          EQU  H'0000'
-DEVSEL1          EQU  H'0001'
-DEVSEL2          EQU  H'0002'
-
-
-;----- ICDINSTL Bits -----------------------------------------------------
-DBGIN0           EQU  H'0000'
-DBGIN1           EQU  H'0001'
-DBGIN2           EQU  H'0002'
-DBGIN3           EQU  H'0003'
-DBGIN4           EQU  H'0004'
-DBGIN5           EQU  H'0005'
-DBGIN6           EQU  H'0006'
-DBGIN7           EQU  H'0007'
-
-
-;----- ICDINSTH Bits -----------------------------------------------------
-DBGIN8           EQU  H'0000'
-DBGIN9           EQU  H'0001'
-DBGIN10          EQU  H'0002'
-DBGIN11          EQU  H'0003'
-DBGIN12          EQU  H'0004'
-DBGIN13          EQU  H'0005'
-
-
-;----- ICDBK0CON Bits -----------------------------------------------------
-BKHLT            EQU  H'0000'
-BKEN             EQU  H'0007'
-
-
-;----- ICDBK0L Bits -----------------------------------------------------
-BKA0             EQU  H'0000'
-BKA1             EQU  H'0001'
-BKA2             EQU  H'0002'
-BKA3             EQU  H'0003'
-BKA4             EQU  H'0004'
-BKA5             EQU  H'0005'
-BKA6             EQU  H'0006'
-BKA7             EQU  H'0007'
-
-
-;----- ICDBK0H Bits -----------------------------------------------------
-BKA8             EQU  H'0000'
-BKA9             EQU  H'0001'
-BKA10            EQU  H'0002'
-BKA11            EQU  H'0003'
-BKA12            EQU  H'0004'
-BKA13            EQU  H'0005'
-BKA14            EQU  H'0006'
-
-
 ;----- STATUS_SHAD Bits -----------------------------------------------------
 C                EQU  H'0000'
 DC               EQU  H'0001'
@@ -1177,20 +1092,13 @@ Z                EQU  H'0002'
        __BADRAM  H'0D20'-H'0D6F'
        __BADRAM  H'0D8C'-H'0D9F'
        __BADRAM  H'0DA0'-H'0DEF'
-       __BADRAM  H'0E0C'-H'0E0F'
-       __BADRAM  H'0E13'-H'0E1F'
+       __BADRAM  H'0E0C'-H'0E1F'
        __BADRAM  H'0E20'-H'0E6F'
        __BADRAM  H'0E8C'-H'0E8D'
        __BADRAM  H'0EA0'-H'0EEF'
        __BADRAM  H'0F0C'-H'0F1F'
        __BADRAM  H'0F20'-H'0F6F'
-       __BADRAM  H'0F8E'-H'0F90'
-       __BADRAM  H'0F92'-H'0F94'
-       __BADRAM  H'0F98'-H'0F9B'
-       __BADRAM  H'0F9F'
-       __BADRAM  H'0FA0'-H'0FBF'
-       __BADRAM  H'0FC0'-H'0FCF'
-       __BADRAM  H'0FD0'-H'0FE2'
+       __BADRAM  H'0F8C'-H'0FE3'
        __BADRAM  H'0FEC'
 
 ;==========================================================================

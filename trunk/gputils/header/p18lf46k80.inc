@@ -5060,8 +5060,8 @@ STKOVF           EQU  H'0007'
 ;     FOSC = RCIO          External RC oscillator
 ;     FOSC = INTIO2        Internal RC oscillator
 ;     FOSC = INTIO1        Internal RC oscillator, CLKOUT function on OSC2
-;     FOSC = EC2IO         EC oscillator, CLKOUT function on OSC2 (Medium power, 160 kHz - 4 MHz)
-;     FOSC = EC2           EC oscillator (Medium power, 160 kHz - 4 MHz)
+;     FOSC = EC2IO         EC oscillator, CLKOUT function on OSC2 (Medium power, 160 kHz - 16 MHz)
+;     FOSC = EC2           EC oscillator (Medium power, 160 kHz - 16 MHz)
 ;     FOSC = EC1IO         EC oscillator, CLKOUT function on OSC2 (Low power, DC - 160 kHz)
 ;     FOSC = EC1           EC oscillator (Low power, DC - 160 kHz)
 ;
@@ -5138,7 +5138,7 @@ STKOVF           EQU  H'0007'
 ;
 ;   Master Clear Enable:
 ;     MCLRE = OFF          MCLR Disabled, RG5 Enabled
-;     MCLRE = ON           MCLR Enabled, RG5 Disabled
+;     MCLRE = ON           MCLR Enabled, RE3 Disabled
 ;
 ;   Stack Overflow Reset:
 ;     STVREN = OFF         Disabled
@@ -5281,8 +5281,8 @@ _FOSC_RC_1H          EQU  H'F6'    ; External RC oscillator, CLKOUT function on 
 _FOSC_RCIO_1H        EQU  H'F7'    ; External RC oscillator
 _FOSC_INTIO2_1H      EQU  H'F8'    ; Internal RC oscillator
 _FOSC_INTIO1_1H      EQU  H'F9'    ; Internal RC oscillator, CLKOUT function on OSC2
-_FOSC_EC2IO_1H       EQU  H'FA'    ; EC oscillator, CLKOUT function on OSC2 (Medium power, 160 kHz - 4 MHz)
-_FOSC_EC2_1H         EQU  H'FB'    ; EC oscillator (Medium power, 160 kHz - 4 MHz)
+_FOSC_EC2IO_1H       EQU  H'FA'    ; EC oscillator, CLKOUT function on OSC2 (Medium power, 160 kHz - 16 MHz)
+_FOSC_EC2_1H         EQU  H'FB'    ; EC oscillator (Medium power, 160 kHz - 16 MHz)
 _FOSC_EC1IO_1H       EQU  H'FC'    ; EC oscillator, CLKOUT function on OSC2 (Low power, DC - 160 kHz)
 _FOSC_EC1_1H         EQU  H'FD'    ; EC oscillator (Low power, DC - 160 kHz)
 
@@ -5350,7 +5350,7 @@ _MSSPMSK_MSK5_3H     EQU  H'F7'    ; 5 bit address masking mode
 _MSSPMSK_MSK7_3H     EQU  H'FF'    ; 7 Bit address masking mode
 
 _MCLRE_OFF_3H        EQU  H'7F'    ; MCLR Disabled, RG5 Enabled
-_MCLRE_ON_3H         EQU  H'FF'    ; MCLR Enabled, RG5 Disabled
+_MCLRE_ON_3H         EQU  H'FF'    ; MCLR Enabled, RE3 Disabled
 
 ;----- CONFIG4L Options --------------------------------------------------
 _STVREN_OFF_4L       EQU  H'FE'    ; Disabled

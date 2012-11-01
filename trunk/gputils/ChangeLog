@@ -1,3 +1,37 @@
+2012-11-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/p12f529t39a.inc, header/p12f529t48a.inc, header/p12f1840.inc,
+    header/p12lf1552.inc, header/p12lf1840.inc, header/p12lf1840t39a.inc,
+    header/p12lf1840t48a.inc, header/p16f527.inc, header/p16f1454.inc,
+    header/p16f1455.inc, header/p16f1459.inc, header/p16f1512.inc,
+    header/p16f1513.inc, header/p16f1787.inc, header/p16f1946.inc,
+    header/p16f1947.inc, header/p16lf1454.inc, header/p16lf1455.inc,
+    header/p16lf1459.inc, header/p16lf1512.inc, header/p16lf1513.inc,
+    header/p16lf1946.inc, header/p16lf1947.inc, header/p18cxxx.inc,
+    header/p18f24k50.inc, header/p18f25k50.inc, header/p18f25k80.inc,
+    header/p18f26k80.inc, header/p18f45k50.inc, header/p18f45k80.inc,
+    header/p18f46k80.inc, header/p18f65j94.inc, header/p18f65k22.inc,
+    header/p18f65k80.inc, header/p18f65k90.inc, header/p18f66j60.inc,
+    header/p18f66j65.inc, header/p18f66j94.inc, header/p18f66j99.inc,
+    header/p18f66k22.inc, header/p18f66k80.inc, header/p18f66k90.inc,
+    header/p18f67j60.inc, header/p18f67j94.inc, header/p18f67k22.inc,
+    header/p18f67k90.inc, header/p18f85j94.inc, header/p18f85k22.inc,
+    header/p18f85k90.inc, header/p18f86j60.inc, header/p18f86j65.inc,
+    header/p18f86j94.inc, header/p18f86j99.inc, header/p18f86k22.inc,
+    header/p18f86k90.inc, header/p18f87j60.inc, header/p18f87j94.inc,
+    header/p18f87k22.inc, header/p18f87k90.inc, header/p18f95j94.inc,
+    header/p18f96j60.inc, header/p18f96j65.inc, header/p18f96j94.inc,
+    header/p18f96j99.inc, header/p18f97j60.inc, header/p18f97j94.inc,
+    header/p18lf24k50.inc, header/p18lf25k50.inc, header/p18lf25k80.inc,
+    header/p18lf26k80.inc, header/p18lf45k50.inc, header/p18lf45k80.inc,
+    header/p18lf46k80.inc, header/p18lf65k80.inc, header/p18lf66k80.inc,
+    lkr/16f527_g.lkr, lkr/16f1512_g.lkr, lkr/16f1513_g.lkr,
+    lkr/16lf1512_g.lkr, lkr/16lf1513_g.lkr, lkr/18f65j94_g.lkr,
+    lkr/18f66j94_g.lkr, lkr/18f66j99_g.lkr, lkr/18f67j94_g.lkr,
+    lkr/18f85j94_g.lkr, lkr/18f86j94_g.lkr, lkr/18f86j99_g.lkr,
+    lkr/18f87j94_g.lkr, lkr/18f95j94_g.lkr, lkr/18f96j94_g.lkr,
+    lkr/18f96j99_g.lkr, lkr/18f97j94_g.lkr, lkr/18lf13k50_g.lkr,
+    lkr/18lf14k50_g.lkr: Update basis of the MPLAB-X v1.5.
+
 2012-11-01  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpsymbol.c: merged from preprocessor branch
   * gpasm/parse.y: re-introduced fix for

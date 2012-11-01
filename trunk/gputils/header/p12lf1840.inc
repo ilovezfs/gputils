@@ -434,6 +434,7 @@ MC1OUT           EQU  H'0000'
 
 ;----- BORCON Bits -----------------------------------------------------
 BORRDY           EQU  H'0000'
+BORFS            EQU  H'0006'
 SBOREN           EQU  H'0007'
 
 
