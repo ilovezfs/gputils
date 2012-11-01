@@ -679,6 +679,7 @@ CHS1             EQU  H'0003'
 CHS2             EQU  H'0004'
 CHS3             EQU  H'0005'
 CHS4             EQU  H'0006'
+ADRMD            EQU  H'0007'
 
 ADGO             EQU  H'0001'
 

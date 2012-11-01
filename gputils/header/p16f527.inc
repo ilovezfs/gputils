@@ -58,7 +58,8 @@ PORTB            EQU  H'0007'
 PORTC            EQU  H'0008'
 ADCON0           EQU  H'0009'
 ADRES            EQU  H'000A'
-PIR              EQU  H'000B'
+INTCON           EQU  H'000B'
+INTCON0          EQU  H'000B'
 
 ;-----Bank1------------------
 EECON            EQU  H'0021'
@@ -71,7 +72,8 @@ ANSEL            EQU  H'002A'
 
 ;-----Bank3------------------
 IW               EQU  H'0061'
-PIE              EQU  H'0065'
+INTCON1          EQU  H'0065'
+INTIE_REG        EQU  H'0065'
 ISTATUS          EQU  H'0066'
 IFSR             EQU  H'0067'
 IBSR             EQU  H'0068'
@@ -150,7 +152,15 @@ ADRES6           EQU  H'0006'
 ADRES7           EQU  H'0007'
 
 
-;----- PIR Bits -----------------------------------------------------
+;----- INTCON Bits -----------------------------------------------------
+GIE              EQU  H'0000'
+RAIF             EQU  H'0004'
+T0IF             EQU  H'0005'
+CWIF             EQU  H'0006'
+ADIF             EQU  H'0007'
+
+
+;----- INTCON0 Bits -----------------------------------------------------
 GIE              EQU  H'0000'
 RAIF             EQU  H'0004'
 T0IF             EQU  H'0005'
@@ -210,7 +220,15 @@ ANS6             EQU  H'0006'
 ANS7             EQU  H'0007'
 
 
-;----- PIE Bits -----------------------------------------------------
+;----- INTCON1 Bits -----------------------------------------------------
+WUR              EQU  H'0000'
+RAIE             EQU  H'0004'
+T0IE             EQU  H'0005'
+CWIE             EQU  H'0006'
+ADIE             EQU  H'0007'
+
+
+;----- INTIE_REG Bits -----------------------------------------------------
 WUR              EQU  H'0000'
 RAIE             EQU  H'0004'
 T0IE             EQU  H'0005'
@@ -264,6 +282,14 @@ TRISB6           EQU  H'0006'
 TRISB7           EQU  H'0007'
 
 
+;----- TRISA Bits -----------------------------------------------------
+TRISA0           EQU  H'0000'
+TRISA1           EQU  H'0001'
+TRISA2           EQU  H'0002'
+TRISA4           EQU  H'0004'
+TRISA5           EQU  H'0005'
+
+
 
 ;==========================================================================
 ;
@@ -271,47 +297,38 @@ TRISB7           EQU  H'0007'
 ;
 ;==========================================================================
        __MAXRAM  H'007F'
-       __BADRAM  H'006B'
 
 ;==========================================================================
 ;
 ;       Configuration Bits
 ;
 ;   NAME            Address
-;   CONFIG             FFFh
+;   CONFIG             7FFh
 ;
 ;==========================================================================
 
 ; The following is an assignment of address values for all of the
 ; configuration registers for the purpose of table reads
-_CONFIG          EQU  H'FFF'
+_CONFIG          EQU  H'7FF'
 
 ;----- CONFIG Options --------------------------------------------------
-_FOSC_LP             EQU  H'0FF8'    ; LP oscillator and 18 ms DRT
-_LP_OSC              EQU  H'0FF8'    ; LP oscillator and 18 ms DRT
-_FOSC_XT             EQU  H'0FF9'    ; XT oscillator and 18 ms DRT
-_XT_OSC              EQU  H'0FF9'    ; XT oscillator and 18 ms DRT
-_FOSC_HS             EQU  H'0FFA'    ; HS oscillator and 18 ms DRT
-_HS_OSC              EQU  H'0FFA'    ; HS oscillator and 18 ms DRT
-_FOSC_EC             EQU  H'0FFB'    ; EC oscillator with I/O function on OSC2/CLKOUT and 10 us DRT
-_EC_OSC              EQU  H'0FFB'    ; EC oscillator with I/O function on OSC2/CLKOUT and 10 us DRT
-_FOSC_INTRC_IO       EQU  H'0FFC'    ; INTRC with I/O function on OSC2/CLKOUT and 10 us DRT
-_IntRC_OSC_RB4       EQU  H'0FFC'    ; INTRC with I/O function on OSC2/CLKOUT and 10 us DRT
-_FOSC_INTRC_CLKOUT   EQU  H'0FFD'    ; INTRC with CLKOUT function on OSC2/CLKOUT and 10 us DRT
-_IntRC_OSC_CLKOUT    EQU  H'0FFD'    ; INTRC with CLKOUT function on OSC2/CLKOUT and 10 us DRT
-_FOSC_ExtRC_IO       EQU  H'0FFE'    ; EXTRC with I/O function on OSC2/CLKOUT and 10 us DRT
-_ExtRC_OSC_RB4       EQU  H'0FFE'    ; EXTRC with I/O function on OSC2/CLKOUT and 10 us DRT
-_FOSC_ExtRC_CLKOUT   EQU  H'0FFF'    ; EXTRC with CLKOUT function on OSC2/CLKOUT and 10 us DRT
-_ExtRC_OSC_CLKOUT    EQU  H'0FFF'    ; EXTRC with CLKOUT function on OSC2/CLKOUT and 10 us DRT
+_FOSC_LP             EQU  H'0FF8'    ; LP oscillator and automatic 18 ms DRT (DRTEN ignored)
+_FOSC_XT             EQU  H'0FF9'    ; XT oscillator and automatic 18 ms DRT (DRTEN ignored)
+_FOSC_HS             EQU  H'0FFA'    ; HS oscillator and automatic 18 ms DRT (DRTEN ignored)
+_FOSC_EC             EQU  H'0FFB'    ; EC oscillator with I/O function on OSC2/CLKOUT and 10 us startup time
+_FOSC_INTRC_IO       EQU  H'0FFC'    ; INTRC with I/O function on OSC2/CLKOUT and 10 us startup time
+_FOSC_INTRC_CLKOUT   EQU  H'0FFD'    ; INTRC with CLKOUT function on OSC2/CLKOUT and 10 us startup time
+_FOSC_EXTRC_IO       EQU  H'0FFE'    ; EXTRC with I/O function on OSC2/CLKOUT and 10 us startup time
+_FOSC_EXTRC_CLKOUT   EQU  H'0FFF'    ; EXTRC with CLKOUT function on OSC2/CLKOUT and 10 us startup time
 
-_WDTE_OFF            EQU  H'0FF7'    ; Disabled
-_WDTE_ON             EQU  H'0FFF'    ; Enabled
+_WDTE_OFF            EQU  H'0FF7'    ; WDT Disabled
+_WDTE_ON             EQU  H'0FFF'    ; WDT Enabled
 
 _CP_ON               EQU  H'0FEF'    ; Code protection on
 _CP_OFF              EQU  H'0FFF'    ; Code protection off
 
-_MCLRE_OFF           EQU  H'0FDF'    ; MCLR functions as I/O, MCLR internally tied to Vdd
-_MCLRE_ON            EQU  H'0FFF'    ; MCLR functions as MCLR
+_MCLRE_OFF           EQU  H'0FDF'    ; MCLR pin functions as I/O, MCLR internally tied to Vdd
+_MCLRE_ON            EQU  H'0FFF'    ; MCLR pin functions as MCLR
 
 _IOSCFS_4MHz         EQU  H'0FBF'    ; 4 MHz INTOSC Speed
 _IOSCFS_8MHz         EQU  H'0FFF'    ; 8 MHz INTOSC Speed
@@ -323,7 +340,7 @@ _BOREN_OFF           EQU  H'0EFF'    ; BOR Disabled
 _BOREN_ON            EQU  H'0FFF'    ; BOR Enabled
 
 _DRTEN_OFF           EQU  H'0DFF'    ; DRT Disabled
-_DRTEN_ON            EQU  H'0FFF'    ; DRT Enabled
+_DRTEN_ON            EQU  H'0FFF'    ; DRT Enabled (18 ms)
 
 
 ;----- IDLOC Equates --------------------------------------------------
