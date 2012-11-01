@@ -1,3 +1,7 @@
+2012-11-01  Borut Razem  <borutr@users.sourceforge.net>
+  * gplink/gplink.c, gplink/gplink.h.in:
+    fixed bug #175 - [gplink] Multiple linker command files not accepted
+
 2012-11-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * AUTHORS: Updated my email address.
 
