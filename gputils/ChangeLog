@@ -1,4 +1,7 @@
 2012-11-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpcfg-table.c: Update basis of the MPLAB-X v1.5.
+
+2012-11-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/p12f529t39a.inc, header/p12f529t48a.inc, header/p12f1840.inc,
     header/p12lf1552.inc, header/p12lf1840.inc, header/p12lf1840t39a.inc,
     header/p12lf1840t48a.inc, header/p16f527.inc, header/p16f1454.inc,
