@@ -154,16 +154,18 @@ struct symbol *get_symbol(struct symbol_table *table, const char *name)
 
   assert(name != NULL);
 
-  if (table != NULL) {
+  while (table != NULL) {
     int index = hashfunc(table, name);
 
     r = table->hash_table[index];
     while (r && ((*table->compare)(name, r->name) != 0))
       r = r->next;
 
+    if (NULL != r)
+      break;
+
     /* If r is still NULL, we didn't match.  Try the prev table on the stack */
-    if (r == NULL)
-      r = get_symbol(table->prev, name);
+    table = table->prev;
   }
 
   return r;
@@ -175,16 +177,18 @@ struct symbol *get_symbol_len(struct symbol_table *table, const char *name, size
 
   assert(name != NULL);
 
-  if (table != NULL) {
+  while (table != NULL) {
     int index = hashfunc_len(table, name, len);
 
     r = table->hash_table[index];
-    while (r && (strlen(r->name) != len || (*table->compare_len)(name, r->name, len) != 0))
+    while (r && ((*table->compare_len)(name, r->name, len) != 0))
       r = r->next;
 
+    if (NULL != r)
+      break;
+
     /* If r is still NULL, we didn't match.  Try the prev table on the stack */
-    if (r == NULL)
-      r = get_symbol(table->prev, name);
+    table = table->prev;
   }
 
   return r;
