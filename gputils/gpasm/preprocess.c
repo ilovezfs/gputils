@@ -133,7 +133,7 @@ free_arg_list(void)
 }
 
 static int
-substitute_define_param(char *buf, int begin, int *end, int *n, int max_size)
+substitute_define_param(char *buf, int begin, int *end, int *n, int max_size, int level)
 {
   int mlen = *end - begin;
   struct arg_list_s *argp = arg_list;
@@ -166,10 +166,10 @@ substitute_define_param(char *buf, int begin, int *end, int *n, int max_size)
   return 0; /* no substitutuon */
 }
 
-static int preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitute)(char *buf, int begin, int *end, int *n, int max_size), int level);
+static int preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitute)(char *buf, int begin, int *end, int *n, int max_size, int level), int level);
 
 static int
-substitute_define(char *buf, int begin, int *end, int *n, int max_size)
+substitute_define(char *buf, int begin, int *end, int *n, int max_size, int level)
 {
   int mlen = *end - begin;
   char *sub;
@@ -248,11 +248,13 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size)
 
                 BUF_REPLACE(buf, begin, *end, *n, sub, len, max_size);
 
-                preprocess(buf, begin, end, n, max_size, &substitute_define_param, 1);
+                /* recurse preprocess with increased level */
+                preprocess(buf, begin, end, n, max_size, &substitute_define_param, level + 1);
                 free_arg_list();
 
                 /* substitute defines */
-                preprocess(buf, begin, end, n, max_size, &substitute_define, 1);
+                /* recurse preprocess with increased level */
+                preprocess(buf, begin, end, n, max_size, &substitute_define, level + 1);
 
                 DBG_printf("with %*.*s\n", *end - begin, *end - begin, &buf[begin]);
               }
@@ -290,7 +292,8 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size)
         DBG_printf("@2@substituting define %*.*s ", mlen, mlen, &buf[begin]);
 
         BUF_REPLACE(buf, begin, *end, *n, sub, len, max_size);
-        preprocess(buf, begin, end, n, max_size, &substitute_define, 1);
+        /* recurse preprocess with increased level */
+        preprocess(buf, begin, end, n, max_size, &substitute_define, level + 1);
 
         DBG_printf("with %*.*s\n", *end - begin, *end - begin, &buf[begin]);
       }
@@ -323,7 +326,7 @@ no_process_iden(const char *iden, int len)
 }
 
 static int
-preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitute)(char *buf, int begin, int *end, int *n, int max_size), int level)
+preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitute)(char *buf, int begin, int *end, int *n, int max_size, int level), int level)
 {
   int start = -1;
   int state = 0;        /* '"': in double quotes; '\'': in single quotes; ';': in comment */
@@ -332,6 +335,11 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
   int number_start = 0; /* 1: possible start of a x'nnn' formatted number */
   int substituted = 0;  /* if there was a substitution in the preprocess run */
   int i;
+
+  if (level >= PREPROC_MAX_DEPTH) {
+    gpverror(GPE_STRCPLX);
+    return 0;
+  }
 
   DBG_printf("---Preprocessing %*.*s\n", *end - begin, *end - begin, &buf[begin]);
 
@@ -351,7 +359,7 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
             int prev_n = *n;
 
             DBG_printf("@1@Preprocessing identifier: %*.*s\n", end1 - start, end1 - start, &buf[start]);
-            substituted |= (*substitute)(buf, start, &end1, n, max_size);
+            substituted |= (*substitute)(buf, start, &end1, n, max_size, level);
             *end += *n - prev_n;
             i = end1 + 2;
           }
@@ -389,7 +397,7 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
             int prev_n = *n;
 
             DBG_printf("@2@Preprocessing identifier: %*.*s\n", i - start, i - start, &buf[start]);
-            substituted |= (*substitute)(buf, start, &i, n, max_size);
+            substituted |= (*substitute)(buf, start, &i, n, max_size, level);
             *end += *n - prev_n;
           }
           start = -1;
@@ -423,7 +431,7 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
     int prev_n = *n;
 
     DBG_printf("@3@Preprocessing identifier: %*.*s\n", i - start, i - start, &buf[start]);
-    substituted |= (*substitute)(buf, start, &i, n, max_size);
+    substituted |= (*substitute)(buf, start, &i, n, max_size, level);
     *end += *n - prev_n;
   }
 
@@ -585,7 +593,7 @@ check_macro_params(char *symbol, int symlen)
 }
 
 static int
-substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size)
+substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, int level)
 {
   int mlen = *end - begin;
   char *sub;

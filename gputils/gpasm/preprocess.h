@@ -21,6 +21,8 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __PREPROCESS_H__
 #define __PREPROCESS_H__
 
+#define PREPROC_MAX_DEPTH       16
+
 /* from preprocess.c */
 void preprocess_line(char *buf, int *n, int max_size);
 

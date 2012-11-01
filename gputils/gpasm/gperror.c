@@ -134,6 +134,8 @@ gp_geterror(unsigned int code)
   switch(code) {
   case GPE_NOENT:
     return "Cannot open file (Include File \"%s\" not found)";
+  case GPE_STRCPLX:
+    return "String substitution too complex";
   case GPE_BADCHAR:
     return "Illegal character (%c).";
   case GPE_OPENPAR:
