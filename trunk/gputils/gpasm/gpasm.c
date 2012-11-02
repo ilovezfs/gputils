@@ -437,10 +437,8 @@ assemble(void)
   state.obj.symbol_num = 0;
   state.obj.section_num = 0;
 
-  /* Initial section for absolute mode */
-  if (state.mode == absolute) {
-    state.obj.new_sec_flags = STYP_TEXT;
-  }
+  /* Initial section */
+  state.obj.new_sec_flags = (state.mode == absolute) ? STYP_TEXT : 0;
 
   state.found_config = false;
   state.found_devid = false;

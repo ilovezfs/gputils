@@ -191,7 +191,7 @@ static int emit_data(struct pnode *L, int char_shift)
     if (p->tag == string) {
       pc = p->value.string;
       if (state.device.class == PROC_CLASS_PIC16E &&
-          !(SECTION_FLAGS & (STYP_DATA|STYP_BPACK))) {
+          !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
         /* Special case of PIC16E strings in code */
         int n = 0;
         while(*pc) {
@@ -213,7 +213,7 @@ static int emit_data(struct pnode *L, int char_shift)
           pc = convert_escape_chars(pc, &value);
           value &= 0xff;
           /* If idata or packed and not db or de, emit one character per word */
-          if (SECTION_FLAGS & (STYP_DATA|STYP_BPACK)) {
+          if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
             v = value;
           }
           else {
@@ -226,7 +226,7 @@ static int emit_data(struct pnode *L, int char_shift)
           emit(v);
         }
         /* For data and packed emit a terminating nul for strings */
-        if (SECTION_FLAGS & (STYP_DATA|STYP_BPACK))
+        if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK))
           emit(0);
       }
     }
@@ -989,7 +989,7 @@ static gpasmVal do_da(gpasmVal r,
 {
   int char_shift = state.device.class == PROC_CLASS_PIC14 ? 7 : 8;
   if ((state.mode == relocatable) &&
-      (SECTION_FLAGS & (STYP_DATA|STYP_BPACK))) {
+      (SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
     /* This is a data memory not program */
     state.lst.line.linetype = data;
     char_shift = 8;
@@ -1019,7 +1019,7 @@ static gpasmVal do_data(gpasmVal r,
                         struct pnode *parms)
 {
   if ((state.mode == relocatable) &&
-      (SECTION_FLAGS & (STYP_DATA|STYP_BPACK))) {
+      (SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
     /* This is a data memory not program */
     state.lst.line.linetype = data;
   }
@@ -1045,26 +1045,28 @@ static gpasmVal do_db(gpasmVal r,
   struct pnode *L = parms;
   struct pnode *p;
 
-  if ((state.mode == relocatable) &&
-      (SECTION_FLAGS & (STYP_DATA|STYP_BPACK))) {
-    /* This is a data memory not program */
-    state.lst.line.linetype = data;
-
-    /* only valid in initialized data sections */
-    if (SECTION_FLAGS & STYP_BSS)
+  if (state.mode == relocatable) {
+    if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
+      /* This is a data memory not program */
+      state.lst.line.linetype = data;
+    }
+    else if (!(SECTION_FLAGS & STYP_TEXT)) {
+      /* only valid in initialized data and text sections */
       gpverror(GPE_WRONG_SECTION);
+      return r;
+    }
   }
 
   if (state.device.class == PROC_CLASS_PIC16E ||
       (SECTION_FLAGS & STYP_DATA)) {
     unsigned begin_org = state.org;
-    for(; L; L = TAIL(L)) {
+    for (; L; L = TAIL(L)) {
       const char *pc;
       p = HEAD(L);
       if (p->tag == string) {
         int n = 0;
         pc = p->value.string;
-        while(*pc) {
+        while (*pc) {
           int value;
           pc = convert_escape_chars(pc, &value);
           emit_byte(value);
@@ -1080,7 +1082,7 @@ static gpasmVal do_db(gpasmVal r,
         emit_byte(value);
       }
     }
-    if (state.mode == absolute || !(SECTION_FLAGS & (STYP_DATA|STYP_BPACK))) {
+    if (state.mode == absolute || !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
       if ((state.org - begin_org) & 1) {
         emit_byte(0);
       }
@@ -1095,7 +1097,7 @@ static gpasmVal do_db(gpasmVal r,
       p = HEAD(L);
       if (p->tag == string)
         pc = p->value.string;
-      for(;;) {
+      for (; ; ) {
         if (p->tag == string) {
           pc = convert_escape_chars(pc, &value);
         }
@@ -1467,7 +1469,7 @@ static gpasmVal do_dtm(gpasmVal r,
   struct pnode *p;
  
   if (state.device.class != PROC_CLASS_PIC14E)
-    gpverror(GPE_ILLEGAL_DIR);
+    gpverror(GPE_ILLEGAL_DIR, name);
 
   for(; parms; parms = TAIL(parms)) {
     p = HEAD(parms);
@@ -1500,14 +1502,16 @@ static gpasmVal do_dw(gpasmVal r,
                       int arity,
                       struct pnode *parms)
 {
-  if ((state.mode == relocatable) &&
-      (SECTION_FLAGS & (STYP_DATA|STYP_BPACK))) {
-    /* This is a data memory not program */
-    state.lst.line.linetype = data;
-
-    /* only valid in initialized data sections */
-    if (SECTION_FLAGS & STYP_BSS)
+  if (state.mode == relocatable) {
+    if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
+      /* This is a data memory not program */
+      state.lst.line.linetype = data;
+    }
+    else if (!(SECTION_FLAGS & STYP_TEXT)) {
+      /* only valid in initialized data and text sections */
       gpverror(GPE_WRONG_SECTION);
+      return r;
+    }
   }
   /* MPASM 5.34 seems to do this same for p18cxxx as for others. */
   emit_data(parms, 8);
@@ -1876,7 +1880,7 @@ static gpasmVal do_idata(gpasmVal r,
   if (state.mode == absolute) {
     gpverror(GPE_OBJECT_ONLY);
   } else if (PROC_CLASS_PIC12 == state.device.class) {
-    gpverror(GPE_ILLEGAL_DIR);
+    gpverror(GPE_ILLEGAL_DIR, name);
   } else {
     switch (arity) {
     case 0:
@@ -1915,7 +1919,7 @@ static gpasmVal do_idata_acs(gpasmVal r,
   if (state.mode == absolute) {
     gpverror(GPE_OBJECT_ONLY);
   } else if (PROC_CLASS_PIC12 == state.device.class) {
-    gpverror(GPE_ILLEGAL_DIR);
+    gpverror(GPE_ILLEGAL_DIR, name);
   } else {
     switch (arity) {
     case 0:
@@ -1979,7 +1983,7 @@ static gpasmVal do_idlocs(gpasmVal r,
 
   id_location = gp_processor_id_location(state.processor);
   if (id_location == 0) {
-    gpverror(GPE_ILLEGAL_DIR);
+    gpverror(GPE_ILLEGAL_DIR, name);
     return r;
   }
 

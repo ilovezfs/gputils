@@ -1,3 +1,14 @@
+2012-11-02  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/directive.c:
+    db, dw: don't generate code if not in appropriate section;
+    error GPE_ILLEGAL_DIR prints the illegal directive
+  * gpasm/coff.h, gpasm/scan.l: cosmetic changes
+  * gpasm/gpasm.c:
+    initialize new_sec_flags to none on second pass for relative mode
+  * gpasm/gperror.c, gpasm/gperror.h: introduced GPE_LABEL_IN_SECTION;
+    error GPE_ILLEGAL_DIR prints the illegal directive
+  * gpasm/parse.y: introduced GPE_LABEL_IN_SECTION
+
 2012-11-01  Borut Razem  <borutr@users.sourceforge.net>
   * gplink/gplink.c, gplink/gplink.h.in:
     fixed bug #175 - [gplink] Multiple linker command files not accepted
