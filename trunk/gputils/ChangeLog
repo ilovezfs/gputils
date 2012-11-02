@@ -13,6 +13,17 @@
     gplink/testsuite/gplink.project/asmfiles/reloc12_2.asm:
     idata section replaced with udata since idata is not supported on
     12bit devices
+  * gpasm/testsuite/test, gplink/testsuite/test:
+    tests can be executed using MPLABX tools
+  * gpasm/testsuite/gpasm.project/asmfiles/baddefine.asm,
+    gpasm/testsuite/gpasm.project/objasm/config2.asm
+    gpasm/testsuite/gpasm.project/objasm/pageselw2.asm,
+    gpasm/testsuite/gpasm.project/objasm/data2.asm,
+    gpasm/testsuite/gpasm.project/objasm/code_pack.asm:
+    adapted for MPLABX tools
+  * gpasm/testsuite/gpasm.project/objasm/op16.asm,
+    gpasm/testsuite/gpasm.project/objfiles/op16.o:
+    test extended
 
 2012-11-01  Borut Razem  <borutr@users.sourceforge.net>
   * gplink/gplink.c, gplink/gplink.h.in:
