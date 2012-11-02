@@ -185,6 +185,10 @@ gpasmVal set_label(char *label, struct pnode *parms)
   gpasmVal value = 0;
 
   if (asm_enabled()) {
+    if (relocatable == state.mode && !IN_MACRO_DEFINITION &&
+      !(SECTION_FLAGS & (STYP_TEXT | STYP_DATA | STYP_BPACK | STYP_BSS)))
+      gpverror(GPE_LABEL_IN_SECTION);
+
     value = do_or_append_insn("set", parms);
     if (!IN_MACRO_DEFINITION) {
       set_global(label, value, TEMPORARY, gvt_constant);
@@ -496,6 +500,9 @@ line:
               case insn:
               case data:
               case res:
+                if (relocatable == state.mode && !IN_MACRO_DEFINITION &&
+                  !(SECTION_FLAGS & (STYP_TEXT | STYP_DATA | STYP_BPACK | STYP_BSS)))
+                  gpverror(GPE_LABEL_IN_SECTION);
                 if (IS_RAM_ORG)
                   set_global($1, $2, PERMANENT, gvt_static);
                 else

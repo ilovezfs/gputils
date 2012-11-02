@@ -278,8 +278,8 @@ processor                {
                                BEGIN(macpar);
                                sym = get_symbol(state.stMacros, yytext);
                                h = get_symbol_annotation(sym);
-                               /* TODO: this conditio shoul be probably removed
-                                * since the symbol table is reinitialised before
+                               /* TODO: this condition shoul be probably removed
+                                * since the symbol table is reinitialized before
                                 * the second pass */
                                if (h->line_number == state.src->line_number) {
                                  return LABEL;

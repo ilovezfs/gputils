@@ -159,7 +159,7 @@ gp_geterror(unsigned int code)
   case GPE_ILLEGAL_LABEL:
     return "Illegal label.";
   case GPE_ILLEGAL_DIR:
-    return "Illegal directive";
+    return "Illegal directive (%s)";
   case GPE_ILLEGAL_ARGU:
     return "Illegal argument.";
   case GPE_ILLEGAL_COND:
@@ -192,6 +192,8 @@ gp_geterror(unsigned int code)
     return "Unmatched ENDM.";
   case GPE_OBJECT_ONLY:
     return "Directive only allowed when generating an object file.";
+  case GPE_LABEL_IN_SECTION:
+    return"Labels must be defined in a code or data section when making an object file";
   case GPE_UNRESOLVABLE:
     return "Operand contains unresolvable labels or is too complex.";
   case GPE_WRONG_SECTION:

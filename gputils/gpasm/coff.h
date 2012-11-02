@@ -23,7 +23,7 @@ Boston, MA 02111-1307, USA.  */
 #define __COFF_H__
 
 #define SECTION_FLAGS state.obj.flags
-#define IS_RAM_ORG (SECTION_FLAGS & (STYP_BSS|STYP_DATA))
+#define IS_RAM_ORG (SECTION_FLAGS & (STYP_BSS | STYP_DATA))
 
 void coff_init(void);
 void coff_close_file(void);
