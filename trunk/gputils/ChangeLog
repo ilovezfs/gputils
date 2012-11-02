@@ -24,6 +24,8 @@
   * gpasm/testsuite/gpasm.project/objasm/op16.asm,
     gpasm/testsuite/gpasm.project/objfiles/op16.o:
     test extended
+  * gputils/testsuite/gpdasm.project/op16e.asm:
+    added MOVLB Argument out of range test
 
 2012-11-01  Borut Razem  <borutr@users.sourceforge.net>
   * gplink/gplink.c, gplink/gplink.h.in:
