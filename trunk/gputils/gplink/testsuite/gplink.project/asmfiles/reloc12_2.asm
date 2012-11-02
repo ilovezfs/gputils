@@ -3,7 +3,7 @@
 	extern	c1, c2
 	global	c3, d3, d4, p6, code2
 
-.data06	udata 6
+.data06	udata 0x16
 p6	res 1
 
 .code3	code 0x200
@@ -27,11 +27,11 @@ d4	res 1
 c5	goto c5
 	dw c5
 
-.data5	idata
-	db 1
-d5	db $,3
-	dw $-1
-	dw c1
+.data5	udata
+	res 1
+d5	res 1
+	res 2
+	res 2
 
 	;; This tests symbol value adjustment when the section is
 	;; merged and relocated.

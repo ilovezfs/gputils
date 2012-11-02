@@ -137,8 +137,8 @@ c2
 	opwf5	SWAPF
 	TRIS	6
 	TRIS	7
-	TRIS	p6
-	TRIS	p7
+	TRIS	8
+	TRIS	9
 	lit8	XORLW
 	opwf5	XORWF
 
@@ -154,13 +154,13 @@ c2
 
 	DW	c1,c2,c3
 
-.data2	idata 0x18
-	db 1
-d2	db $,3
-	dw $-1
-	dw c3
+.data2	udata 0x18
+	res 1
+d2	res 2
+	res 2
+	res 2
 
-.data0	udata 7
+.data0	udata 0x17
 p7	res 1
 
 	;; Test symbol values when merging code sections

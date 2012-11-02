@@ -373,8 +373,18 @@ print_reloc(unsigned short type, unsigned short current_value)
     }
     break;
 
-  case RELOCT_HIGH:
   case RELOCT_LOW:
+    /* on non-16bits devices DB directive generates velues with
+     * low byte != 0 if more then one byte is defined, for example
+     * DB 0x12, 0x34 generates 0x1234, so the following assertion fails
+     * in such cases.
+     * TODO: this should be solved in DB directive handling function
+     * do_db(), file directive.c.
+     * ASSERT(0 == (current_value & 0xff)); */
+    return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
+    break;
+
+  case RELOCT_HIGH:
   case RELOCT_LFSR2:
   case RELOCT_UPPER:
   case RELOCT_CONDBRA:

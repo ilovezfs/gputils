@@ -8,6 +8,11 @@
   * gpasm/gperror.c, gpasm/gperror.h: introduced GPE_LABEL_IN_SECTION;
     error GPE_ILLEGAL_DIR prints the illegal directive
   * gpasm/parse.y: introduced GPE_LABEL_IN_SECTION
+  * gpasm/lst.c: fixed DB assertion
+  * gplink/testsuite/gplink.project/asmfiles/reloc12_1.asm,
+    gplink/testsuite/gplink.project/asmfiles/reloc12_2.asm:
+    idata section replaced with udata since idata is not supported on
+    12bit devices
 
 2012-11-01  Borut Razem  <borutr@users.sourceforge.net>
   * gplink/gplink.c, gplink/gplink.h.in:
