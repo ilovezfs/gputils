@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # test tests gplink
-# Copyright (C) 2003
-# Craig Franklin
+# Copyright (C) 2003 Craig Franklin
+# Copyright (C) 2012 Borut Razem
 #
 # This file is part of gputils.
 #
@@ -25,26 +25,38 @@
 # the future, dejagnu will be used to replace this script.
 
 # Defines
-version=1.0
+version=1.1
+
+HERE=$(pwd)
+
 TESTDIR=./test
-HEADER=../../header
-LKR=../../lkr
-GPASMBIN=../../gpasm/gpasm
+HEADER=${HERE}/../../header
+LKR=${HERE}/../../lkr
+
+GPPATH=${HERE}/../..
+GPASMBIN=${GPPATH}/gpasm/gpasm
 GPASMFLAGS="-q -c"
-GPLIBBIN=../../gputils/gplib
-GPLINKBIN=../gplink
+GPLIBBIN=${GPPATH}/gputils/gplib
+GPLINKBIN=${GPPATH}/gplink/gplink
 GPLINKFLAGS="-m"
-GPVOBIN=../../gputils/gpvo
+
+MPPATH=/opt/microchip/mplabx/mpasmx
+MPASMBIN=${MPPATH}/mpasmx
+MPASMFLAGS="-o"
+MPLIB=${MPPATH}/mplb
+MPLINK=${MPPATH}/mplink
+MPFLAGS="-m"
 
 # general functions
 
-testfailed() {
+testfailed()
+{
   echo "TEST FAILED"
   exit 1
 }
 
-binexists() {
-
+binexists()
+{
   # Test syntax.
   if [ $# = 0 ] ; then
     echo "Usage: binexists {program}"
@@ -60,10 +72,10 @@ binexists() {
     echo
     return 0
   fi
-
 }
 
-printbanner() {
+printbanner()
+{
   # Test syntax.
   if [ $# = 0 ] ; then
     echo "Usage: printbanner {message}"
@@ -76,12 +88,14 @@ printbanner() {
   return 0
 }
 
-printversion() {
+printversion()
+{
   printbanner " test v$version - gplink test script."
   return 0
 }
 
-printheader () {
+printheader ()
+{
   printversion
   echo "NAME:      $NAME"
   echo "DATE:      $(date +%x)"
@@ -95,13 +109,13 @@ printheader () {
 
 # gplink test functions
 
-test_gplink_compile () {
-
+test_gplink_compile ()
+{
   for x in *.asm
     do
       # split the base file name from the extension
       basefilename="${x%%.asm}"
-      ../../$GPASMBIN $GPASMFLAGS -I ../../$HEADER $x
+      $GPASMBIN $GPASMFLAGS -I $HEADER $x
       if test -e $basefilename.o; then
         echo "$x compiled"
       else
@@ -109,11 +123,10 @@ test_gplink_compile () {
         exit 1
       fi
     done
-
 }
 
-test_gplink_lib() {
-
+test_gplink_lib()
+{
   # Test syntax.
   if [ $# = 0 ] ; then
     echo "Usage: test_gplink_lib {library}"
@@ -122,16 +135,15 @@ test_gplink_lib() {
 
   echo "archiving $1"
   LIST=*.o
-  ../../$GPLIBBIN -c $1 $LIST
+  $GPLIBBIN -c $1 $LIST
   if test -e $1; then
     echo "failed to archive"
     exit 1
   fi
-
 }
 
-test_gplink_sub() {
-
+test_gplink_sub()
+{
   tested=0
   compiled=0
   passed=0
@@ -186,8 +198,8 @@ test_gplink_sub() {
         # a hex file exists so these files must not have errors
         tested=$((tested+1))
         echo "linking $basefilename.o"
-        echo "../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
-        ../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
+        echo "$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
+        $GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I $LKR -s $basefilename.lkr
         if test -e $basefilename.hex; then
           compiled=$((compiled+1))
           diff -s -u ../hexfiles/$basefilename.hex $basefilename.hex
@@ -203,7 +215,7 @@ test_gplink_sub() {
         # errors
         errortested=$((errortested+1))
         echo "linking $basefilename.lkr"
-        ../../$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR -s $basefilename.lkr
+        $GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I $LKR -s $basefilename.lkr
         if test -e $basefilename.hex; then
           echo "$basefilename.lkr failed to generate an error"
         else
@@ -232,12 +244,12 @@ test_gplink_sub() {
   fi
 }
 
-test_gplink() {
+test_gplink()
+{
   printbanner "Start of gplink testing"
   binexists $GPASMBIN
   binexists $GPLIBBIN
   binexists $GPLINKBIN
-  binexists $GPVOBIN
   RETVAL=$?
   if [ $RETVAL -eq 0 ]; then
     test_gplink_sub gplink.project || testfailed
@@ -254,7 +266,6 @@ if [ ! $1 ]; then
 fi
 
 case "$1" in
-
   all)
     printheader
     test_gplink
@@ -284,8 +295,6 @@ case "$1" in
   *)
     echo "$0: Invalid argument. Try \"$0 help\" for help."
     exit 1
-
 esac
 
 exit
-

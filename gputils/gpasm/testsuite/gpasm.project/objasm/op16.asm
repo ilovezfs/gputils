@@ -183,6 +183,8 @@
 	lcall	address
 
 	movfp	0,0
+	movfp	0x12, file2
+	movfp	file, 0x12
 	movfp	file, file2
 
 	movlb	0
@@ -197,6 +199,8 @@
 	movlw	file
 
 	movpf	0,0
+	movpf	0x34, file2
+	movpf	file, 0x34
 	movpf	file, file2
 
 	movwf	0
