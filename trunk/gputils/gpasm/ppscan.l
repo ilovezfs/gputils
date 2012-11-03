@@ -216,9 +216,10 @@ NUMCHAR [0-9a-z]
                            return yytext[0];
                          }
 <INITIAL,def>.
-<*>\n                   {
-                          BEGIN(INITIAL);
-                        }
+;.*                      |
+<*>\n                    {
+                           BEGIN(INITIAL);
+                         }
 %%
 
 #if 0
