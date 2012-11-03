@@ -1,7 +1,8 @@
 2012-11-03  Borut Razem  <borutr@users.sourceforge.net>
-  * gpasm/directive.c, gpasm/lst.c, gpasm/gpasm.h.in:
-    implemented LIST directive c=xxx option
+  * gpasm/directive.c, gpasm/lst.c, gpasm/lst.h, gpasm/gperror.c,
+    gpasm/gpasm.h.in: implemented LIST directive c=xxx option
   * gpasm/scan.l, gplink/scan.l: skip CR followed by LF
+  * gpasm/ppscan.l: don't preprocess #v in comments
 
 2012-11-02  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c:
