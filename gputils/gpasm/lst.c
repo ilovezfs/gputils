@@ -32,6 +32,9 @@ Boston, MA 02111-1307, USA.  */
 #include <stdarg.h>
 #endif
 
+#define STRINGIFY(s) _str(s)
+#define _str(s) #s
+
 #define MPASM_LIST
 
 #ifdef MPASM_LIST
@@ -39,9 +42,8 @@ Boston, MA 02111-1307, USA.  */
 #else
 #define LINENUM_POS 15
 #endif
+#define SRC_POS (LINENUM_POS + 6)
 
-#define STRINGIFY(s) _str(s)
-#define _str(s) #s
 
 void
 lst_throw(void)
@@ -100,7 +102,7 @@ lst_spaces(int n)
 
   lst_check_page_start();
   while (i--)
-    fputc(' ', state.lst.f);
+    putc(' ', state.lst.f);
 
   return n;
 }
@@ -109,7 +111,7 @@ static void
 lst_eol(void)
 {
   if (state.lst.f) {
-    fputc('\n', state.lst.f);
+    putc('\n', state.lst.f);
     state.lst.line_number++;
     state.lst.lineofpage++;
     cod_lst_line(COD_NORMAL_LST_LINE);
@@ -183,6 +185,7 @@ lst_init(void)
   state.lst.title_name[0] = '\0';
   state.lst.subtitle_name[0] = '\0';
   state.lst.tabstop = 8;        /* Default tabstop every 8 */
+  state.lst.line_width = 132;   /* Default line widst is 132 */
 
   if (state.lstfile != named) {
     snprintf(state.lstfilename, sizeof(state.lstfilename),
@@ -290,7 +293,7 @@ lst_close(void)
              state.num.messages,
              state.num.messages_suppressed);
     lst_line("");
-    fputc('\f', state.lst.f);
+    putc('\f', state.lst.f);
 
     fclose(state.lst.f);
   }
@@ -761,23 +764,35 @@ lst_format_line(const char *src_line, int value)
 
   /* Now copy source line to listing, expanding tabs as required */
   {
-    int column = 0;
-    const char *old = src_line;
+    int src_column = 0; /* current source line column */
+    int lst_column = 1; /* current listing column after the SRC_POS */
+    const char *p = src_line;
 
-    while (*old) {
-      if (*old == '\t') {
-        int len = state.lst.tabstop - column % state.lst.tabstop;
+    while (*p) {
+      if (*p == '\t') {
+        int len = state.lst.tabstop - src_column % state.lst.tabstop;
 
-        column += len;
-
-        while (len--)
-          lst_printf(" ");
+        while (len--) {
+          if (lst_column + SRC_POS > state.lst.line_width) {
+            lst_eol();
+            lst_spaces(SRC_POS);
+            lst_column = 1;
+          }
+          ++lst_column;
+          ++src_column;
+          putc(' ', state.lst.f);
+        }
       } else {
-        ++column;
-
-        lst_printf("%c", *old);
+        if (lst_column + SRC_POS > state.lst.line_width) {
+          lst_eol();
+          lst_spaces(SRC_POS);
+          lst_column = 1;
+        }
+        ++lst_column;
+        ++src_column;
+        putc(*p, state.lst.f);
       }
-      old++;
+      ++p;
     }
   }
 

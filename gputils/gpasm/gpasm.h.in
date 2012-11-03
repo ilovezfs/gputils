@@ -204,6 +204,7 @@ extern struct gpasm_state {
     char title_name[80];            /*   given in TITLE directive */
     char subtitle_name[80];         /*   given in SUBTITLE directive */
     int tabstop;                    /*   tab-stop distance */
+    int line_width;                 /*   listing line width - list c=xxx option */
   } lst;
   struct {                          /* Object file state: */
     gp_object_type *object;         /*   Object file */
