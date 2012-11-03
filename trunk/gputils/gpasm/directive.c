@@ -2216,7 +2216,11 @@ static gpasmVal do_list(gpasmVal r,
           if (b != 0)
             state.lst.tabstop = b;
         } else if (strcasecmp(lhs, "c") == 0) {
-          ; /* Ignore this for now: column width not used */
+          int c;
+
+          c = maybe_evaluate(p->value.binop.p1);
+          if (c != 0)
+            state.lst.line_width = c;
         } else if (strcasecmp(lhs, "f") == 0) {
           if (enforce_simple(p->value.binop.p1))
             select_hexformat(p->value.binop.p1->value.symbol);
