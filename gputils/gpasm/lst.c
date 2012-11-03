@@ -35,16 +35,6 @@ Boston, MA 02111-1307, USA.  */
 #define STRINGIFY(s) _str(s)
 #define _str(s) #s
 
-#define MPASM_LIST
-
-#ifdef MPASM_LIST
-#define LINENUM_POS 22
-#else
-#define LINENUM_POS 15
-#endif
-#define SRC_POS (LINENUM_POS + 6)
-
-
 void
 lst_throw(void)
 {
@@ -550,7 +540,7 @@ lst_data(unsigned int pos, unsigned int byte_org,
 
   /* when in a idata or byte packed section, print byte by byte */
   if (state.obj.new_sec_flags & (STYP_DATA | STYP_BPACK)) {
-    while (bytes_emitted > lst_bytes && pos + 3 <= LINENUM_POS) {
+    while (bytes_emitted > lst_bytes && pos + 3 <= LST_LINENUM_POS) {
       unsigned char emit_byte;
 
       b_memory_get(state.i_memory, byte_org, &emit_byte);
@@ -570,7 +560,7 @@ lst_data(unsigned int pos, unsigned int byte_org,
       ++lst_bytes;
     }
     /* list full words */
-    while (bytes_emitted - lst_bytes > 1 && pos + 5 <= LINENUM_POS) {
+    while (bytes_emitted - lst_bytes > 1 && pos + 5 <= LST_LINENUM_POS) {
       unsigned short emit_word;
 
       state.device.class->i_memory_get(state.i_memory, byte_org, &emit_word);
@@ -610,7 +600,7 @@ lst_data(unsigned int pos, unsigned int byte_org,
       byte_org += 2;
       lst_bytes += 2;
     }
-    if (bytes_emitted - lst_bytes == 1 && pos + 3 <= LINENUM_POS) {
+    if (bytes_emitted - lst_bytes == 1 && pos + 3 <= LST_LINENUM_POS) {
       unsigned char emit_byte;
 
       b_memory_get(state.i_memory, byte_org, &emit_byte);
@@ -621,7 +611,7 @@ lst_data(unsigned int pos, unsigned int byte_org,
   }
 
   /* append appropriate spacing */
-  lst_spaces(LINENUM_POS - pos);
+  lst_spaces(LST_LINENUM_POS - pos);
 
   return lst_bytes;
 }
@@ -675,17 +665,17 @@ lst_format_line(const char *src_line, int value)
   case equ:
   case set:
     pos += lst_printf("  %08X", value);
-    lst_spaces(LINENUM_POS - pos);
+    lst_spaces(LST_LINENUM_POS - pos);
     break;
 
   case set4:
     pos += lst_printf("  %04X", value & 0xffff);
-    lst_spaces(LINENUM_POS - pos);
+    lst_spaces(LST_LINENUM_POS - pos);
     break;
 
   case org:
     pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, state.org));
-    lst_spaces(LINENUM_POS - pos);
+    lst_spaces(LST_LINENUM_POS - pos);
     break;
 
   case idlocs:
@@ -696,7 +686,7 @@ lst_format_line(const char *src_line, int value)
       state.device.class->i_memory_get(state.i_memory, state.device.id_location+2, id+1);
       pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, gp_processor_id_location(state.processor)));
       pos += lst_printf("%04X %04X", id[0], id[1]);
-      lst_spaces(LINENUM_POS - pos);
+      lst_spaces(LST_LINENUM_POS - pos);
     }
     break;
 
@@ -724,17 +714,17 @@ lst_format_line(const char *src_line, int value)
                                          state.lst.config_address, &word);
         pos += lst_printf(addr_fmt, state.lst.config_address);
         pos += lst_printf("%04X", word);
-        lst_spaces(LINENUM_POS - pos);
+        lst_spaces(LST_LINENUM_POS - pos);
       } else if((state.lst.config_address & 0x1) == 0) {
         /* if it is an even address don't print anything */
-        lst_spaces(LINENUM_POS);
+        lst_spaces(LST_LINENUM_POS);
       } else {
         unsigned short word;
         state.device.class->i_memory_get(state.i_memory,
                                          state.lst.config_address - 1, &word);
         pos += lst_printf(addr_fmt, state.lst.config_address - 1);
         pos += lst_printf("%04X", word);
-        lst_spaces(LINENUM_POS - pos);
+        lst_spaces(LST_LINENUM_POS - pos);
       }
     } else {
       unsigned short word;
@@ -744,7 +734,7 @@ lst_format_line(const char *src_line, int value)
                         gp_processor_byte_to_org(state.device.class,
                                                  state.lst.config_address));
       pos += lst_printf("%04X", word);
-      lst_spaces(LINENUM_POS - pos);
+      lst_spaces(LST_LINENUM_POS - pos);
     }
     break;
 
@@ -752,7 +742,7 @@ lst_format_line(const char *src_line, int value)
   case dir:
   case none:
   default:
-    lst_spaces(LINENUM_POS);
+    lst_spaces(LST_LINENUM_POS);
     break;
   }
 
@@ -764,8 +754,8 @@ lst_format_line(const char *src_line, int value)
 
   /* Now copy source line to listing, expanding tabs as required */
   {
-    int src_column = 0; /* current source line column */
-    int lst_column = 1; /* current listing column after the SRC_POS */
+    int src_column = 0;           /* current source line column */
+    int lst_column = LST_SRC_POS; /* current listing column after the SRC_POS */
     const char *p = src_line;
 
     while (*p) {
@@ -773,20 +763,20 @@ lst_format_line(const char *src_line, int value)
         int len = state.lst.tabstop - src_column % state.lst.tabstop;
 
         while (len--) {
-          if (lst_column + SRC_POS > state.lst.line_width) {
+          if (lst_column >= state.lst.line_width) {
             lst_eol();
-            lst_spaces(SRC_POS);
-            lst_column = 1;
+            lst_spaces(LST_SRC_POS);
+            lst_column = LST_SRC_POS;
           }
           ++lst_column;
           ++src_column;
           putc(' ', state.lst.f);
         }
       } else {
-        if (lst_column + SRC_POS > state.lst.line_width) {
+        if (lst_column >= state.lst.line_width) {
           lst_eol();
-          lst_spaces(SRC_POS);
-          lst_column = 1;
+          lst_spaces(LST_SRC_POS);
+          lst_column = LST_SRC_POS;
         }
         ++lst_column;
         ++src_column;

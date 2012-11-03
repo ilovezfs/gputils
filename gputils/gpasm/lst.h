@@ -23,6 +23,15 @@ Boston, MA 02111-1307, USA.  */
 #define __LST_H__
 #include <stdarg.h>
 
+#define MPASM_LIST
+
+#ifdef MPASM_LIST
+#define LST_LINENUM_POS 22
+#else
+#define LST_LINENUM_POS 15
+#endif
+#define LST_SRC_POS (LST_LINENUM_POS + 6)
+
 void lst_line(const char *format, ...);
 void lst_err_line(const char *type, unsigned int code, const char *format, va_list args);
 void lst_throw(void);

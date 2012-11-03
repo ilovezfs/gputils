@@ -2219,8 +2219,13 @@ static gpasmVal do_list(gpasmVal r,
           int c;
 
           c = maybe_evaluate(p->value.binop.p1);
-          if (c != 0)
+          if (c > LST_SRC_POS)
             state.lst.line_width = c;
+          else {
+            char message[BUFSIZ];
+            snprintf(message, sizeof(message), "Argument out of range (%d)", c);
+            gperror(GPE_RANGE, message);
+          }
         } else if (strcasecmp(lhs, "f") == 0) {
           if (enforce_simple(p->value.binop.p1))
             select_hexformat(p->value.binop.p1->value.symbol);

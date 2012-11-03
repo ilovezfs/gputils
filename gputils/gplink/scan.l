@@ -48,7 +48,12 @@ gp_input(char *buf, size_t max_size)
         (c = getc(yyin)) != EOF && c != '\n'; ++n)
         buf[n] = (char) c;
       if (c == '\n')
-        buf[n++] = (char) c;
+        {
+          /* skip CR followed by LF */
+          if (n > 0 && '\r' == buf[n - 1])
+            --n;
+          buf[n++] = (char) c;
+        }
       if (c == EOF && ferror(yyin))
         script_error("Internal error", "Input in flex scanner failed");
       return n;

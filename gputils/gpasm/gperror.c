@@ -165,7 +165,7 @@ gp_geterror(unsigned int code)
   case GPE_ILLEGAL_COND:
     return "Illegal condition.";
   case GPE_RANGE:
-    return "Argument out of range.";
+    return "Argument out of range";
   case GPE_TOO_MANY_ARGU:
     return "Too many arguments.";
   case GPE_MISSING_ARGU:
