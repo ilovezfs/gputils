@@ -1746,7 +1746,7 @@ static gpasmVal do_extern(gpasmVal r,
                           struct pnode *parms)
 {
   char *p;
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = set4;
 
   if (state.mode == absolute) {
     gpverror(GPE_OBJECT_ONLY);
