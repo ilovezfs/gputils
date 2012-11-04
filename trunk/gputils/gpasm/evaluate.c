@@ -578,8 +578,11 @@ same_section(struct pnode *p)
   var1 = get_symbol_annotation(sym1);
 
   /* They must come from the same section. Debug symbols are not placed
-     in the global symbol table, so don't worry about symbol type.  */
-  if (var0->coff_section_num != var1->coff_section_num)
+     in the global symbol table, so don't worry about symbol type. */
+  /* Fail if sections are not known (== 0) or not the same */
+  if (0 == var0->coff_section_num ||
+    0 == var1->coff_section_num ||
+    var0->coff_section_num != var1->coff_section_num)
     return 0;
 
   return 1;

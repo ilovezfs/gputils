@@ -195,7 +195,7 @@ gp_geterror(unsigned int code)
   case GPE_LABEL_IN_SECTION:
     return"Labels must be defined in a code or data section when making an object file";
   case GPE_UNRESOLVABLE:
-    return "Operand contains unresolvable labels or is too complex.";
+    return "Operand contains unresolvable labels or is too complex";
   case GPE_WRONG_SECTION:
     return "Executable code and data must be defined in an appropriate section.";
   case GPE_CONTIG_SECTION:
