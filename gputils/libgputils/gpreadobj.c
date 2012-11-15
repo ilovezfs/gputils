@@ -242,8 +242,11 @@ _read_section_header(gp_object_type *object,
   section->line_numbers_tail = NULL;
   section->is_used = false;
 
-  if (section->flags & (STYP_TEXT|STYP_DATA_ROM))
+  if (section->flags & (STYP_TEXT | STYP_DATA_ROM))
     section->address = gp_processor_org_to_byte(object->class, section->address);
+  if (((STYP_TEXT | STYP_ABS) == (section->flags & (STYP_TEXT | STYP_ABS))) && section->address & 1) {
+    gp_error("absolute code section '%s' must start at a word-aligned address.\n", section->name);
+  }
   section->shadow_address = section->address;
 }
 
@@ -405,7 +408,7 @@ _read_aux(gp_object_type *object, int i, gp_aux_type *aux, int aux_type,
       /* First symbol index is 0 */
       if (calleendx < i)
         aux->_aux_symbol._aux_fcn_calls.callee = lazy_linking[calleendx].read.symbol;
-      else if (calleendx == 0xFFFFFFFF)
+      else if (calleendx == 0xffffffff)
         /* "higher order function", call through a pointer */
         aux->_aux_symbol._aux_fcn_calls.callee = NULL;
       else {
@@ -444,20 +447,26 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol,
   }
 
   file_off = 8;
-  symbol->value = gp_getl32(&file[file_off]);           file_off += 4;
-  symbol->section_number = gp_getl16(&file[file_off]);  file_off += 2;
+  symbol->value = gp_getl32(&file[file_off]);
+  file_off += 4;
+  symbol->section_number = gp_getl16(&file[file_off]);
+  file_off += 2;
   if(object->isnew) {
-    unsigned type = gp_getl32(&file[file_off]);         file_off += 4;
+    unsigned type = gp_getl32(&file[file_off]);
+    file_off += 4;
     symbol->type = type & 0x1F;
     symbol->derived_type = type >> 5;
   } else {
     /* TODO Make sure the old format had this alignment */
-    unsigned type = gp_getl16(&file[file_off]);         file_off += 2;
+    unsigned type = gp_getl16(&file[file_off]);
+    file_off += 2;
     symbol->type = type & 0x0F;
     symbol->derived_type = type >> 4;
   }
-  symbol->class = file[file_off];                                               file_off += 1;
-  symbol->num_auxsym = file[file_off];                                  file_off += 1;
+  symbol->class = file[file_off];
+  file_off += 1;
+  symbol->num_auxsym = file[file_off];
+  file_off += 1;
 
   symbol->section = NULL;
   symbol->aux_list = NULL;
