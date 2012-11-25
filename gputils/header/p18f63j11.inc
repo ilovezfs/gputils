@@ -23,6 +23,17 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
+;;;; Begin: Added in gputils
+
+;==========================================================================
+;
+;       Gputils Specific Revision History
+;
+;==========================================================================
+
+;       2012.11.25   Repaired wrong address of RCREG.
+
+;;;; End: Added in gputils
 
 ;==========================================================================
 ;
@@ -125,6 +136,9 @@ TXSTA            EQU  H'0FAC'
 TXSTA1           EQU  H'0FAC'
 TXREG            EQU  H'0FAD'
 TXREG1           EQU  H'0FAD'
+;;;; Begin: Added in gputils
+RCREG            EQU  H'0FAE'
+;;;; End: Added in gputils
 RCREG1           EQU  H'0FAE'
 SPBRG            EQU  H'0FAF'
 SPBRG1           EQU  H'0FAF'
@@ -159,7 +173,9 @@ TMR1             EQU  H'0FCE'
 TMR1L            EQU  H'0FCE'
 TMR1H            EQU  H'0FCF'
 RCON             EQU  H'0FD0'
-RCREG            EQU  H'0FD0'
+;;;; Begin: Removed in gputils
+;;;;RCREG            EQU  H'0FD0'
+;;;; End: Removed in gputils
 WDTCON           EQU  H'0FD1'
 OSCCON           EQU  H'0FD3'
 T0CON            EQU  H'0FD5'
