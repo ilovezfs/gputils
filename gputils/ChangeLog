@@ -1,4 +1,7 @@
 2012-11-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/p18f6390.inc: Repaired wrong address of RCREG, H'0FA0' --> H'0FAE'.
+
+2012-11-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/p18f63j11.inc: Repaired wrong address of RCREG, H'0FD0' --> H'0FAE'.
 
 2012-11-15  Borut Razem  <borutr@users.sourceforge.net>
