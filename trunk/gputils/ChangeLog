@@ -1,3 +1,6 @@
+2012-11-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/p18f63j11.inc: Repaired wrong address of RCREG, H'0FD0' --> H'0FAE'.
+
 2012-11-15  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpreadobj.c:
     fixed bug #258 - [GPLINK] error: multiple sections using address 0xYYYY
