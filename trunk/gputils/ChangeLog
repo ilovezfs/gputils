@@ -1,3 +1,12 @@
+2012-11-26  Borut Razem  <borutr@users.sourceforge.net>
+  * gputils/libgputils/gpprocessor.c, gputils/libgputils/gpprocessor.h,
+    gputils/libgputils/gpcofflink.c, gputils/gpasm/directive.c:
+    implemented feature request #62 - "BANKISEL with enhaced PIC series"
+  * gputils/gpasm/testsuite/gpasm.project/listfiles/bankisel5.lst,
+    gputils/gpasm/testsuite/gpasm.project/asmfiles/bankisel5.asm,
+    gputils/gpasm/testsuite/gpasm.project/hexfiles/bankisel5.hex:
+    added regression test for feature request #62 - "BANKISEL with enhaced PIC series"
+
 2012-11-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/p18f6390.inc: Repaired wrong address of RCREG, H'0FA0' --> H'0FAE'.
 

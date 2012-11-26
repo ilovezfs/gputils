@@ -48,6 +48,15 @@ struct proc_class {
                   MemBlock *m,
                   unsigned int address);
 
+  /* Determine which ibank of data memory the address is located */
+  int (*check_ibank)(unsigned int address);
+
+  /* Set the ibank bits, return the number of instructions required. */
+  int (*set_ibank)(int num_banks,
+                  int bank,
+                  MemBlock *m,
+                  unsigned int address);
+
   /* Determine which page of program memory the address is located */
   int (*check_page)(unsigned int address);
 
@@ -61,7 +70,6 @@ struct proc_class {
   /* These return the bits to set in instruction for given address */
   int (*reloc_call)(unsigned int address);
   int (*reloc_goto)(unsigned int address);
-  int (*reloc_ibanksel)(unsigned int address);
   int (*reloc_f)(unsigned int address);
   int (*reloc_tris)(unsigned int address);
   int (*reloc_movlb)(unsigned int address);
@@ -176,6 +184,11 @@ int gp_processor_set_page(proc_class_t class,
                           unsigned int address,
                           int use_wreg);
 int gp_processor_set_bank(proc_class_t class,
+                          int num_banks,
+                          int bank,
+                          MemBlock *m,
+                          unsigned int address);
+int gp_processor_set_ibank(proc_class_t class,
                           int num_banks,
                           int bank,
                           MemBlock *m,
