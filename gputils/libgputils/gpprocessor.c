@@ -875,6 +875,16 @@ gp_processor_set_bank(proc_class_t class,
   return class->set_bank(num_banks, bank, m, address);
 }
 
+int
+gp_processor_set_ibank(proc_class_t class,
+                      int num_banks,
+                      int bank,
+                      MemBlock *m,
+                      unsigned int address)
+{
+  return class->set_ibank(num_banks, bank, m, address);
+}
+
 /* determine the value for retlw */
 
 int
@@ -934,16 +944,33 @@ gp_processor_check_bank(proc_class_t class, unsigned int address)
   return class->check_bank(address);
 }
 
+/* determine which bank of data memory the address is located */
+int
+gp_processor_check_ibank(proc_class_t class, unsigned int address)
+{
+  return class->check_ibank(address);
+}
+
 /* When unsupported on the class */
 static int
-gp_processor_check_page_unsupported(unsigned int org)
+gp_processor_check_xbank_unsupported(unsigned int address)
 {
   assert(0);
   return 0;
 }
 
 static int
-gp_processor_check_bank_unsupported(unsigned int address)
+gp_processor_set_xbank_unsupported(int num_banks,
+                                  int bank,
+                                  MemBlock *m,
+                                  unsigned int address)
+{
+  assert(0);
+  return 0;
+}
+
+static int
+gp_processor_check_page_unsupported(unsigned int org)
 {
   assert(0);
   return 0;
@@ -960,21 +987,12 @@ gp_processor_set_page_unsupported(int num_pages,
     return 0;
 }
 
-static int
-gp_processor_set_bank_unsupported(int num_banks,
-                                  int bank,
-                                  MemBlock *m,
-                                  unsigned int address)
-{
-  assert(0);
-  return 0;
-}
-
 static int reloc_unsupported(unsigned int address)
 {
   assert(0);
   return 0;
 }
+
 static int
 reloc_bra_unsupported(gp_section_type *section, unsigned value, unsigned int byte_org)
 {
@@ -990,6 +1008,7 @@ find_insn_generic(proc_class_t cls, long int opcode)
   const struct insn *base = cls->instructions;
   int count = base == NULL ? 0 : *cls->num_instructions;
   int i;
+
   for(i = 0; i < count; i++) {
     if((base[i].mask & opcode) == base[i].opcode) {
       return &base[i];
@@ -1134,15 +1153,29 @@ id_location_pic12(const struct px *processor)
 }
 
 static int
-gp_processor_check_page_pic12(unsigned int org)
-{
-  return (org >> 9) & 0x3;
-}
-
-static int
 gp_processor_check_bank_pic12(unsigned int address)
 {
   return (address >> 5) & 0x3;
+}
+
+static int
+gp_processor_set_bank_pic12(int num_banks,
+                            int bank,
+                            MemBlock *m,
+                            unsigned int address)
+{
+  return gp_processor_set_bank_pic12_14(num_banks, bank, m, address,
+                                        0x400,
+                                        0x500,
+                                        0x4,
+                                        5 << 5,
+                                        6 << 5);
+}
+
+static int
+gp_processor_check_page_pic12(unsigned int org)
+{
+  return (org >> 9) & 0x3;
 }
 
 static int
@@ -1167,33 +1200,27 @@ gp_processor_set_page_pic12(int num_pages,
                                         6 << 5);
 }
 
-static int
-gp_processor_set_bank_pic12(int num_banks,
-                            int bank,
-                            MemBlock *m,
-                            unsigned int address)
-{
-  return gp_processor_set_bank_pic12_14(num_banks, bank, m, address,
-                                        0x400,
-                                        0x500,
-                                        0x4,
-                                        5 << 5,
-                                        6 << 5);
-}
 
-static int reloc_call_pic12(unsigned int org)
+static int
+reloc_call_pic12(unsigned int org)
 {
   return org & 0xff;
 }
-static int reloc_goto_pic12(unsigned int org)
+
+static int
+reloc_goto_pic12(unsigned int org)
 {
   return org & 0x1ff;
 }
-static int reloc_f_pic12(unsigned int address)
+
+static int
+reloc_f_pic12(unsigned int address)
 {
   return address & 0x1f;
 }
-static int reloc_tris_pic12(unsigned int address)
+
+static int
+reloc_tris_pic12(unsigned int address)
 {
   /* TODO This is not accurate, for example PIC12F510/16F506 only has
      three bits and allowed values of 6 and 7. MPASM 5.34 has
@@ -1216,15 +1243,46 @@ id_location_pic14(const struct px *processor)
 }
 
 static int
-gp_processor_check_page_pic14(unsigned int org)
-{
-  return (org >> 11) & 0x3;
-}
-
-static int
 gp_processor_check_bank_pic14(unsigned int address)
 {
   return (address >> 7) & 0x3;
+}
+
+static int
+gp_processor_set_bank_pic14(int num_banks,
+                            int bank,
+                            MemBlock *m,
+                            unsigned int address)
+{
+  return gp_processor_set_bank_pic12_14(num_banks, bank, m, address,
+                                        0x1000,
+                                        0x1400,
+                                        0x3,
+                                        5 << 7,
+                                        6 << 7);
+}
+
+static int
+gp_processor_check_ibank_pic14(unsigned int address)
+{
+  return (address >> 8) & 0x0f;
+}
+
+static int
+gp_processor_set_ibank_pic14(int num_banks,
+                            int bank,
+                            MemBlock *m,
+                            unsigned int address)
+{
+  /* bcf 3,7 or bsf 3,7 */
+  i_memory_put_le(m, address, (0 == bank) ? 0x1383 : 0x1783);
+  return 2;
+}
+
+static int
+gp_processor_check_page_pic14(unsigned int org)
+{
+  return (org >> 11) & 0x3;
 }
 
 static int
@@ -1249,47 +1307,31 @@ gp_processor_set_page_pic14(int num_pages,
 }
 
 static int
-gp_processor_set_bank_pic14(int num_banks,
-                            int bank,
-                            MemBlock *m,
-                            unsigned int address)
+reloc_call_pic14(unsigned int org)
 {
-  return gp_processor_set_bank_pic12_14(num_banks, bank, m, address,
-                                        0x1000,
-                                        0x1400,
-                                        0x3,
-                                        5 << 7,
-                                        6 << 7);
+  return org & 0x7ff;
 }
 
-static int reloc_call_pic14(unsigned int org)
+static int
+reloc_goto_pic14(unsigned int org)
 {
   return org & 0x7ff;
 }
-static int reloc_goto_pic14(unsigned int org)
-{
-  return org & 0x7ff;
-}
-static int reloc_ibanksel_pic14(unsigned int address)
-{
-  if (address < 0x100) {
-    /* bcf 0x3, 0x7 */
-    return 0x1383;
-  } else {
-    /* bsf 0x3, 0x7 */
-    return 0x1783;
-  }
-}
-static int reloc_f_pic14(unsigned int address)
-{
-  return address & 0x7f;
-}
-static int reloc_tris_pic14(unsigned int address)
+
+static int
+reloc_f_pic14(unsigned int address)
 {
   return address & 0x7f;
 }
 
-static void patch_strict_pic14(void)
+static int
+reloc_tris_pic14(unsigned int address)
+{
+  return address & 0x7f;
+}
+
+static void
+patch_strict_pic14(void)
 {
   int i, j = 0;
   for (i = 0; i < num_op_16cxx && j < num_op_16cxx_strict_mask; ++i) {
@@ -1303,15 +1345,52 @@ static void patch_strict_pic14(void)
 /* PIC14E */
 
 static int
-gp_processor_check_page_pic14e(unsigned int org)
-{
-  return (org >> 8) & 0x7f;
-}
-
-static int
 gp_processor_check_bank_pic14e(unsigned int address)
 {
   return (address >> 7) & 0x1f;
+}
+
+static int
+gp_processor_set_bank_pic14e(int num_banks,
+                             int bank,
+                             MemBlock *m,
+                             unsigned int address)
+{
+  unsigned int data;
+  data = 0x0020 | (bank & 0x1f);
+  i_memory_put_le(m, address, data);
+  return 2;
+}
+
+static int
+gp_processor_check_ibank_pic14e(unsigned int address)
+{
+  return (address >> 8) & 0x0f;
+}
+
+static int
+gp_processor_set_ibank_pic14e(int num_banks,
+                               int bank,
+                               MemBlock *m,
+                               unsigned int address)
+{
+  /* bcf: 01 00bb bfff ffff 
+   * bsf: 01 01bb bfff ffff
+   * FSR0H: 0000bbbb bllllllll */
+  unsigned int mask;
+  unsigned int bit;
+
+  num_banks >>= 1;
+  for (bit = 0, mask = 0x01; mask < num_banks; ++bit, mask <<= 1, address += 2)
+    i_memory_put_le(m, address, ((bank & mask) ? 0x1400 : 0x1000) | (bit << 7) | 0x5);
+
+  return bit * 2;
+}
+
+static int
+gp_processor_check_page_pic14e(unsigned int org)
+{
+  return (org >> 8) & 0x7f;
 }
 
 static int
@@ -1342,21 +1421,11 @@ gp_processor_set_page_pic14e(int num_pages,
 }
 
 static int
-gp_processor_set_bank_pic14e(int num_banks,
-                             int bank,
-                             MemBlock *m,
-                             unsigned int address)
-{
-  unsigned int data;
-  data = 0x0020 | (bank & 0x1f);
-  i_memory_put_le(m, address, data);
-  return 2;
-}
-
-static int reloc_movlb_pic14e(unsigned int address)
+reloc_movlb_pic14e(unsigned int address)
 {
   return (address >> 7) & 0xff;
 }
+
 static int
 reloc_bra_pic14e(gp_section_type *section, unsigned value, unsigned int byte_org)
 {
@@ -1390,16 +1459,9 @@ find_insn_pic14e(proc_class_t cls, long int opcode)
 /* PIC16 */
 
 static int
-gp_processor_check_page_pic16(unsigned int org)
-{
-  return (org >> 8) & 0xff;
-}
-
-
-static int
 gp_processor_check_bank_pic16(unsigned int address)
 {
-  if ((address & 0xFF) < 0x20)
+  if ((address & 0xff) < 0x20)
     return (address >> 8) & 0xff;
   else
     /* 0x200 turns MOVLB to MOVLR for setting GPR RAM bank in
@@ -1407,6 +1469,22 @@ gp_processor_check_bank_pic16(unsigned int address)
     return 0x200 + ((address >> 8) & 0xff);
 }
 
+static int
+gp_processor_set_bank_pic16(int num_banks,
+                            int bank,
+                            MemBlock *m,
+                            unsigned int address)
+{
+  /* movlb bank */
+  i_memory_put_le(m, address, 0xb800 | bank);
+  return 2;
+}
+
+static int
+gp_processor_check_page_pic16(unsigned int org)
+{
+  return (org >> 8) & 0xff;
+}
 
 static int
 gp_processor_set_page_pic16(int num_pages,
@@ -1426,30 +1504,19 @@ gp_processor_set_page_pic16(int num_pages,
 }
 
 static int
-gp_processor_set_bank_pic16(int num_banks,
-                            int bank,
-                            MemBlock *m,
-                            unsigned int address)
+reloc_call_pic16(unsigned int org)
 {
-  /* movlb bank */
-  i_memory_put_le(m, address,
-                  0xb800 | bank);
-  return 2;
+  return org & 0x1fff;
 }
 
-static int reloc_call_pic16(unsigned int org)
+static int
+reloc_goto_pic16(unsigned int org)
 {
   return org & 0x1fff;
 }
-static int reloc_goto_pic16(unsigned int org)
-{
-  return org & 0x1fff;
-}
-static int reloc_ibanksel_pic16(unsigned int address)
-{
-  return 0xb800 | gp_processor_check_bank_pic16(address);
-}
-static int reloc_f_pic16(unsigned int address)
+
+static int
+reloc_f_pic16(unsigned int address)
 {
   return address & 0xff;
 }
@@ -1535,21 +1602,24 @@ const struct proc_class proc_class_eeprom8 = {
   0,                                    /* bank_mask */
   (1<<8)-1,                             /* core_size */
   0,                                    /* id_location */
-  gp_processor_check_bank_unsupported,
-  gp_processor_set_bank_unsupported,
-  gp_processor_check_page_unsupported,
-  gp_processor_set_page_unsupported,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_bra_unsupported,
-  NULL, NULL,
-  NULL,
-  i_memory_get_le, i_memory_put_le,
-  NULL,
+  gp_processor_check_xbank_unsupported,  /* check_bank */
+  gp_processor_set_xbank_unsupported,    /* set_bank */
+  gp_processor_check_xbank_unsupported, /* check_ibank */
+  gp_processor_set_xbank_unsupported,   /* set_ibank */
+  gp_processor_check_page_unsupported,  /* check_page */
+  gp_processor_set_page_unsupported,    /* set_page */
+  reloc_unsupported,                    /* reloc_call */
+  reloc_unsupported,                    /* reloc_goto */
+  reloc_unsupported,                    /* reloc_f */
+  reloc_unsupported,                    /* reloc_tris */
+  reloc_unsupported,                    /* reloc_movlb */
+  reloc_bra_unsupported,                /* reloc_bra */
+  NULL,                                 /* instructions */
+  NULL,                                 /* num_instructions */
+  NULL,                                 /* find_insn */
+  i_memory_get_le,                      /* i_memory_get */
+  i_memory_put_le,                      /* i_memory_put */
+  NULL,                                 /* patch_strict */
 };
 
 const struct proc_class proc_class_eeprom16 = {
@@ -1559,21 +1629,24 @@ const struct proc_class proc_class_eeprom16 = {
   0,                                    /* bank_mask */
   (1<<16)-1,                            /* core_size */
   0,                                    /* id_location */
-  gp_processor_check_bank_unsupported,
-  gp_processor_set_bank_unsupported,
-  gp_processor_check_page_unsupported,
-  gp_processor_set_page_unsupported,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_bra_unsupported,
-  NULL, NULL,
-  NULL,
-  i_memory_get_be, i_memory_put_be,
-  NULL,
+  gp_processor_check_xbank_unsupported,  /* check_bank */
+  gp_processor_set_xbank_unsupported,    /* set_bank */
+  gp_processor_check_xbank_unsupported, /* check_ibank */
+  gp_processor_set_xbank_unsupported,   /* set_ibank */
+  gp_processor_check_page_unsupported,  /* check_page */
+  gp_processor_set_page_unsupported,    /* set_page */
+  reloc_unsupported,                    /* reloc_call */
+  reloc_unsupported,                    /* reloc_goto */
+  reloc_unsupported,                    /* reloc_f */
+  reloc_unsupported,                    /* reloc_tris */
+  reloc_unsupported,                    /* reloc_movlb */
+  reloc_bra_unsupported,                /* reloc_bra */
+  NULL,                                 /* instructions */
+  NULL,                                 /* num_instructions */
+  NULL,                                 /* find_insn */
+  i_memory_get_be,                      /* i_memory_get */
+  i_memory_put_be,                      /* i_memory_put */
+  NULL,                                 /* patch_strict */
 };
 
 const struct proc_class proc_class_generic = {
@@ -1583,21 +1656,24 @@ const struct proc_class proc_class_generic = {
   ~0x1fu,                               /* bank_mask */
   (1<<12)-1,                            /* core_size */
   id_location_pic12,                    /* id_location */
-  gp_processor_check_bank_pic12,
-  gp_processor_set_bank_pic12,
-  gp_processor_check_page_pic12,
-  gp_processor_set_page_pic12,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_bra_unsupported,
-  NULL, NULL,
-  NULL,
-  i_memory_get_le, i_memory_put_le,
-  NULL,
+  gp_processor_check_bank_pic12,        /* check_bank */
+  gp_processor_set_bank_pic12,          /* set_bank */
+  gp_processor_check_xbank_unsupported, /* check_ibank */
+  gp_processor_set_xbank_unsupported,   /* set_ibank */
+  gp_processor_check_page_pic12,        /* check_page */
+  gp_processor_set_page_pic12,          /* set_page */
+  reloc_unsupported,                    /* reloc_call */
+  reloc_unsupported,                    /* reloc_goto */
+  reloc_unsupported,                    /* reloc_f */
+  reloc_unsupported,                    /* reloc_tris */
+  reloc_unsupported,                    /* reloc_movlb */
+  reloc_bra_unsupported,                /* reloc_bra */
+  NULL,                                 /* instructions */
+  NULL,                                 /* num_instructions */
+  NULL,                                 /* find_insn */
+  i_memory_get_le,                      /* i_memory_get */
+  i_memory_put_le,                      /* i_memory_put */
+  NULL,                                 /* patch_strict */
 };
 
 const struct proc_class proc_class_pic12 = {
@@ -1607,21 +1683,24 @@ const struct proc_class proc_class_pic12 = {
   ~0x1fu,                               /* bank_mask */
   (1<<12)-1,                            /* core_size */
   id_location_pic12,                    /* id_location */
-  gp_processor_check_bank_pic12,
-  gp_processor_set_bank_pic12,
-  gp_processor_check_page_pic12,
-  gp_processor_set_page_pic12,
-  reloc_call_pic12,
-  reloc_goto_pic12,
-  reloc_unsupported,
-  reloc_f_pic12,
-  reloc_tris_pic12,
-  reloc_unsupported,
-  reloc_bra_unsupported,
-  op_12c5xx, &num_op_12c5xx,
-  find_insn_generic,
-  i_memory_get_le, i_memory_put_le,
-  NULL,
+  gp_processor_check_bank_pic12,        /* check_bank */
+  gp_processor_set_bank_pic12,          /* set_bank */
+  gp_processor_check_xbank_unsupported, /* check_ibank */
+  gp_processor_set_xbank_unsupported,   /* set_ibank */
+  gp_processor_check_page_pic12,        /* check_page */
+  gp_processor_set_page_pic12,          /* set_page */
+  reloc_call_pic12,                     /* reloc_call */
+  reloc_goto_pic12,                     /* reloc_goto */
+  reloc_f_pic12,                        /* reloc_f */
+  reloc_tris_pic12,                     /* reloc_tris */
+  reloc_unsupported,                    /* reloc_movlb */
+  reloc_bra_unsupported,                /* reloc_bra */
+  op_12c5xx,                            /* instructions */
+  &num_op_12c5xx,                       /* num_instructions */
+  find_insn_generic,                    /* find_insn */
+  i_memory_get_le,                      /* i_memory_get */
+  i_memory_put_le,                      /* i_memory_put */
+  NULL,                                 /* patch_strict */
 };
 
 const struct proc_class proc_class_sx = {
@@ -1631,21 +1710,24 @@ const struct proc_class proc_class_sx = {
   ~0x1fu,                               /* bank_mask */
   (1<<12)-1,                            /* core_size */
   id_location_pic12,                    /* id_location */
-  gp_processor_check_bank_pic12,
-  gp_processor_set_bank_pic12,
-  gp_processor_check_page_pic12,
-  gp_processor_set_page_pic12,
-  reloc_call_pic12,
-  reloc_goto_pic12,
-  reloc_unsupported,
-  reloc_f_pic12,
-  reloc_tris_pic12,
-  reloc_unsupported,
-  reloc_bra_unsupported,
-  op_sx, &num_op_sx,
-  find_insn_generic,
-  i_memory_get_le, i_memory_put_le,
-  NULL,
+  gp_processor_check_bank_pic12,        /* check_bank */
+  gp_processor_set_bank_pic12,          /* set_bank */
+  gp_processor_check_xbank_unsupported, /* check_ibank */
+  gp_processor_set_xbank_unsupported,   /* set_ibank */
+  gp_processor_check_page_pic12,        /* check_page */
+  gp_processor_set_page_pic12,          /* set_page */
+  reloc_call_pic12,                     /* reloc_call */
+  reloc_goto_pic12,                     /* reloc_goto */
+  reloc_f_pic12,                        /* reloc_f */
+  reloc_tris_pic12,                     /* reloc_tris */
+  reloc_unsupported,                    /* reloc_movlb */
+  reloc_bra_unsupported,                /* reloc_bra */
+  op_sx,                                /* instructions */
+  &num_op_sx,                           /* num_instructions */
+  find_insn_generic,                    /* find_insn */
+  i_memory_get_le,                      /* i_memory_get */
+  i_memory_put_le,                      /* i_memory_put */
+  NULL,                                 /* patch_strict */
 };
 
 const struct proc_class proc_class_pic14 = {
@@ -1655,21 +1737,24 @@ const struct proc_class proc_class_pic14 = {
   ~0x7fu,                               /* bank_mask */
   (1<<14)-1,                            /* core_size */
   id_location_pic14,                    /* id_location */
-  gp_processor_check_bank_pic14,
-  gp_processor_set_bank_pic14,
-  gp_processor_check_page_pic14,
-  gp_processor_set_page_pic14,
-  reloc_call_pic14,
-  reloc_goto_pic14,
-  reloc_ibanksel_pic14,
-  reloc_f_pic14,
-  reloc_tris_pic14,
-  reloc_unsupported,
-  reloc_bra_unsupported,
-  op_16cxx, &num_op_16cxx,
-  find_insn_generic,
-  i_memory_get_le, i_memory_put_le,
-  patch_strict_pic14,
+  gp_processor_check_bank_pic14,        /* check_bank */
+  gp_processor_set_bank_pic14,          /* set_bank */
+  gp_processor_check_ibank_pic14,       /* check_ibank */
+  gp_processor_set_ibank_pic14,         /* set_ibank */
+  gp_processor_check_page_pic14,        /* check_page */
+  gp_processor_set_page_pic14,          /* set_page */
+  reloc_call_pic14,                     /* reloc_call */
+  reloc_goto_pic14,                     /* reloc_goto */
+  reloc_f_pic14,                        /* reloc_f */
+  reloc_tris_pic14,                     /* reloc_tris */
+  reloc_unsupported,                    /* reloc_movlb */
+  reloc_bra_unsupported,                /* reloc_bra */
+  op_16cxx,                             /* instructions */
+  &num_op_16cxx,                        /* num_instructions */
+  find_insn_generic,                    /* find_insn */
+  i_memory_get_le,                      /* i_memory_get */
+  i_memory_put_le,                      /* i_memory_put */
+  patch_strict_pic14,                   /* patch_strict */
 };
 
 const struct proc_class proc_class_pic14e = {
@@ -1679,21 +1764,24 @@ const struct proc_class proc_class_pic14e = {
   0,                                    /* bank_mask */
   (1<<14)-1,                            /* core_size */
   id_location_pic14,                    /* id_location */
-  gp_processor_check_bank_pic14e,
-  gp_processor_set_bank_pic14e,
-  gp_processor_check_page_pic14e,
-  gp_processor_set_page_pic14e,
-  reloc_call_pic14,
-  reloc_goto_pic14,
-  reloc_ibanksel_pic14,
-  reloc_f_pic14,
-  reloc_tris_pic14,
-  reloc_movlb_pic14e,
-  reloc_bra_pic14e,
-  op_16cxx, &num_op_16cxx,
-  find_insn_pic14e,
-  i_memory_get_le, i_memory_put_le,
-  patch_strict_pic14,
+  gp_processor_check_bank_pic14e,       /* check_bank */
+  gp_processor_set_bank_pic14e,         /* set_bank */
+  gp_processor_check_ibank_pic14e,      /* check_ibank */
+  gp_processor_set_ibank_pic14e,        /* set_ibank */
+  gp_processor_check_page_pic14e,       /* check_page */
+  gp_processor_set_page_pic14e,         /* set_page */
+  reloc_call_pic14,                     /* reloc_call */
+  reloc_goto_pic14,                     /* reloc_goto */
+  reloc_f_pic14,                        /* reloc_f */
+  reloc_tris_pic14,                     /* reloc_tris */
+  reloc_movlb_pic14e,                   /* reloc_movlb */
+  reloc_bra_pic14e,                     /* reloc_bra */
+  op_16cxx,                             /* instructions */
+  &num_op_16cxx,                        /* num_instructions */
+  find_insn_pic14e,                     /* find_insn */
+  i_memory_get_le,                      /* i_memory_get */
+  i_memory_put_le,                      /* i_memory_put */
+  patch_strict_pic14,                   /* patch_strict */
 };
 
 const struct proc_class proc_class_pic16 = {
@@ -1703,21 +1791,24 @@ const struct proc_class proc_class_pic16 = {
   ~0xffu,                               /* bank_mask */
   (1<<16)-1,                            /* core_size */
   0,                                    /* id_location */
-  gp_processor_check_bank_pic16,
-  gp_processor_set_bank_pic16,
-  gp_processor_check_page_pic16,
-  gp_processor_set_page_pic16,
-  reloc_call_pic16,
-  reloc_goto_pic16,
-  reloc_ibanksel_pic16,
-  reloc_f_pic16,
-  reloc_unsupported,
-  reloc_unsupported,
-  reloc_bra_unsupported,
-  op_17cxx, &num_op_17cxx,
-  find_insn_generic,
-  i_memory_get_le, i_memory_put_le,
-  NULL,
+  gp_processor_check_bank_pic16,        /* check_bank */
+  gp_processor_set_bank_pic16,          /* set_bank */
+  gp_processor_check_bank_pic16,        /* check_ibank: same as check_bank */
+  gp_processor_set_bank_pic16,          /* set_ibank: same as set_bank */
+  gp_processor_check_page_pic16,        /* check_page */
+  gp_processor_set_page_pic16,          /* set_page */
+  reloc_call_pic16,                     /* reloc_call */
+  reloc_goto_pic16,                     /* reloc_goto */
+  reloc_f_pic16,                        /* reloc_f */
+  reloc_unsupported,                    /* reloc_tris */
+  reloc_unsupported,                    /* reloc_movlb */
+  reloc_bra_unsupported,                /* reloc_bra */
+  op_17cxx,                             /* instructions */
+  &num_op_17cxx,                        /* num_instructions */
+  find_insn_generic,                    /* find_insn */
+  i_memory_get_le,                      /* i_memory_get */
+  i_memory_put_le,                      /* i_memory_put */
+  NULL,                                 /* patch_strict */
 };
 
 const struct proc_class proc_class_pic16e = {
@@ -1727,19 +1818,22 @@ const struct proc_class proc_class_pic16e = {
   0,                                    /* bank_mask */
   (1<<16)-1,                            /* core_size */
   id_location_pic16e,                   /* id_location */
-  gp_processor_check_bank_pic16,        /* Same as for pic16 */
-  gp_processor_set_bank_pic16e,
-  gp_processor_check_page_unsupported,
-  gp_processor_set_page_unsupported,
-  reloc_call_pic16e,
-  reloc_goto_pic16e,
-  reloc_unsupported,
-  reloc_f_pic16,        /* Same as for pic16 */
-  reloc_unsupported,
-  reloc_movlb_pic16e,
-  reloc_bra_pic16e,
-  op_18cxx, &num_op_18cxx,
-  find_insn_pic16e,
-  i_memory_get_le, i_memory_put_le,
-  NULL,
+  gp_processor_check_bank_pic16,        /* check_bank: Same as for pic16 */
+  gp_processor_set_bank_pic16e,         /* set_bank */
+  gp_processor_check_xbank_unsupported, /* check_ibank */
+  gp_processor_set_xbank_unsupported,   /* set_ibank */
+  gp_processor_check_page_unsupported,  /* check_page */
+  gp_processor_set_page_unsupported,    /* set_page */
+  reloc_call_pic16e,                    /* reloc_call */
+  reloc_goto_pic16e,                    /* reloc_goto */
+  reloc_f_pic16,                        /* reloc_f: same as for pic16 */
+  reloc_unsupported,                    /* reloc_tris */
+  reloc_movlb_pic16e,                   /* reloc_movlb */
+  reloc_bra_pic16e,                     /* reloc_bra */
+  op_18cxx,                             /* instructions */
+  &num_op_18cxx,                        /* num_instructions */
+  find_insn_pic16e,                     /* find_insn */
+  i_memory_get_le,                      /* i_memory_get */
+  i_memory_put_le,                      /* i_memory_put */
+  NULL,                                 /* patch_strict */
 };

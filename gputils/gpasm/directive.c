@@ -413,23 +413,6 @@ static gpasmVal do_badrom(gpasmVal r,
   return r;
 }
 
-static void
-set_bankisel(int address)
-{
-  if (state.device.class == PROC_CLASS_PIC14) {
-    if (address < 0x100) {
-      /* bcf 0x3, 0x7 */
-      emit(0x1383);
-    } else {
-      /* bsf 0x3, 0x7 */
-      emit(0x1783);
-    }
-  } else {
-    /* movlb bank */
-    emit(0xb800 | gp_processor_check_bank(state.device.class, address));
-  }
-}
-
 static gpasmVal do_bankisel(gpasmVal r,
                             char *name,
                             int arity,
@@ -439,6 +422,7 @@ static gpasmVal do_bankisel(gpasmVal r,
   int num_reloc;
 
   if ((state.device.class != PROC_CLASS_PIC14) &&
+      (state.device.class != PROC_CLASS_PIC14E) &&
       (state.device.class != PROC_CLASS_PIC16)) {
     gpvmessage(GPM_EXTPAGE);
     return r;
@@ -450,18 +434,31 @@ static gpasmVal do_bankisel(gpasmVal r,
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (state.mode == absolute) {
-      set_bankisel(maybe_evaluate(p));
+      state.org += gp_processor_set_ibank(state.device.class,
+        state.processor->num_banks,
+        gp_processor_check_ibank(state.device.class, maybe_evaluate(p)),
+        state.i_memory, state.org);
     } else {
       num_reloc = count_reloc(p);
 
       if (num_reloc == 0) {
         /* it is an absolute address, generate the bankisel but no relocation */
-        set_bankisel(maybe_evaluate(p));
+        state.org += gp_processor_set_ibank(state.device.class,
+          state.processor->num_banks,
+          gp_processor_check_ibank(state.device.class, maybe_evaluate(p)),
+          state.i_memory, state.org);
       } else if (num_reloc != 1) {
         gpverror(GPE_UNRESOLVABLE);
       } else {
         reloc_evaluate(p, RELOCT_IBANKSEL);
-        emit(0);
+        if (state.device.class == PROC_CLASS_PIC14E) {
+         unsigned int mask;
+
+         for (mask = 0x100; mask < (state.processor->num_banks << 7); mask <<= 1)
+           emit(0);
+        }
+        else
+          emit(0);
       }
     }
   }
