@@ -11,6 +11,9 @@
   * gpasm/gpasm.h.in, gpasm/preprocess.c, gpasm/parse.y,
     gpasm/gpasm.c, gpasm/util.c, gpasm/directive.c:
     implemented nested WHILE loops
+  * gpasm/parse.y, gpasm/macro.c, gpasm/macro.h, gpasm/directive.c,
+    gpasm/gpasm.h.in, gpasm/preprocess.c, gpasm/scan.l:
+    WHILE listing compatible with MPASM(X)
 
 2012-11-30  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/lst.c: data sections listing fixes, ibank listing fix

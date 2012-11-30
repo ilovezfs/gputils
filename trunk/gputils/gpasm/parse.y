@@ -202,7 +202,19 @@ int return_op(int operation);
 
 void next_line(int value)
 {
+  if (state.pass == 2 && dolist_dir == state.lst.line.linetype) {
+    state.lst.line.linetype = none;
+    lst_format_line(state.src->curr_src_line.line, value);
+  }
+
   if (IN_WHILE_EXPANSION || IN_MACRO_EXPANSION) {
+    if (!IN_WHILE_DEFINITION && state.lst.expand &&
+        state.pass == 2 &&
+        dolist_dir != state.lst.line.linetype &&
+        nolist_dir != state.lst.line.linetype) {
+      lst_format_line(state.src->curr_src_line.line, value);
+    }
+
     /* while loops can be defined inside a macro or nested */
     if (IN_MACRO_WHILE_DEFINITION) {
       state.lst.line.linetype = none;
@@ -210,17 +222,18 @@ void next_line(int value)
         state.mac_body->src_line = strdup(state.src->m->src_line);
     }
 
-    if ((IN_WHILE_EXPANSION || (state.lst.expand)) &&
-        (state.pass == 2)) {
-      lst_format_line(state.curr_src_line.line, value);
-    }
-
     state.src->m = state.src->m->next;
   } else if (IN_FILE_EXPANSION) {
+    if (!IN_WHILE_DEFINITION && state.pass == 2 &&
+      dolist_dir != state.lst.line.linetype &&
+      nolist_dir != state.lst.line.linetype) {
+      lst_format_line(state.src->curr_src_line.line, value);
+    }
+
     if (IN_MACRO_WHILE_DEFINITION) {
       state.lst.line.linetype = none;
       if (state.mac_body)
-        state.mac_body->src_line = strdup(state.curr_src_line.line);
+        state.mac_body->src_line = strdup(state.src->curr_src_line.line);
     }
 
    if (state_include == state.next_state) {
@@ -229,10 +242,6 @@ void next_line(int value)
       state.src->line_number++;
       open_src(state.next_buffer.file, 1);
       free(state.next_buffer.file);
-    }
-
-    if (state.pass == 2) {
-      lst_format_line(state.curr_src_line.line, value);
     }
   }
 

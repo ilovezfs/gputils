@@ -194,7 +194,9 @@ extern struct gpasm_state {
              sec,                   /*     new coff section */
              set,                   /*     A SET or '=' */
              set4,                  /*     A 2 byte variable, constant or local */
-             config }               /*     A __config line */
+             config,                /*     A __config line */
+             nolist_dir,           /*     Don't list the directive (ENDW) */
+             dolist_dir }          /*     Force list the directive (WHILE) */
         linetype;
     } line;
     char startdate[80];             /*   When assembly started */
@@ -236,7 +238,6 @@ extern struct gpasm_state {
     char *file;
     struct macro_head *macro;
   } next_buffer;
-  struct src_line_s curr_src_line;  /* Current source line */
 } state;
 
 enum globalLife { TEMPORARY, PERMANENT };
@@ -301,14 +302,15 @@ struct source_context {
   enum src_types type;
   FILE *f;
   struct macro_head *h;
-  struct macro_body *m;           /* Macro line to parse */
+  struct macro_body *m;             /* Macro line to parse */
   struct yy_buffer_state *yybuf;
   unsigned int line_number;
-  unsigned int loop_number;       /* Loop number for while loops */
+  unsigned int loop_number;         /* Loop number for while loops */
   gp_symbol_type *file_symbol;
-  struct file_context *fc;        /* Position in the file context stack */
-  struct amode *astack;           /* Stack of amodes when a macro was called */
-  gp_boolean last_char_is_nl;     /* If the last read character is a newline */
+  struct file_context *fc;          /* Position in the file context stack */
+  struct amode *astack;             /* Stack of amodes when a macro was called */
+  gp_boolean last_char_is_nl;       /* If the last read character is a newline */
+  struct src_line_s curr_src_line;  /* Current source line */
   struct source_context *prev;
 };
 
