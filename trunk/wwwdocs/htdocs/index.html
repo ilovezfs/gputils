@@ -272,43 +272,15 @@
       <tr>
         <td colspan="2" width="90%">
           <p>
-            <b>October 31, 2012 -- gputils-0.14.3 Released</b>
+            <b>November 30, 2012 -- gputils-0.15.0 Released</b>
           </p>
           <p>
-            <li>gputils 0.14.3 supports all pic devices supported by latest MPASM(X) from MPLAB v1.41</li>
-          <p>
-            <b>June 25, 2012 -- gputils-0.14.2 Released</b>
-          </p>
-          <p>
-            <li>partial .inc file synchronization with MPLABX 1.20</li>
-            <li>fixed COD file generation for devices with program memory > 64KB</li>
-            <li>gpvc improvements</li>
-            <li>added devices 16f720, 16lf720, 16f721, 16lf721</li>
-            <li>man pages updated</li>
-            <li>genaration of absolute coff file (F_ABSOLURE header flag)</li>
-            <li>added regression test for pic 14 bit enhanced devices</li>
-          </p>
-           <p>
-            <b>January 7, 2012 -- gputils-0.14.1 Released</b>
-          </p>
-          <p>
-            <li>gpasm, gplink: generate coff files with the new Microchip COFF format version 2 by default</li>
-            <li>gpasm -C option reverted: now it genetares old Microchip COFF format version 1</li>
-            <li>gpasm --new-coff option removed, added --old-coff</li>
-            <li>emitted config words are masked with the word size</li>
-            <li>gpasm messages, warnings and errors more compatible with MPASM</li>
-            <li>gpasm list file format more compatible with MPASM</li>
-            <li>proper "end" line handling, include the "end" line in the asm listing</li>
-            <li>--version command line option now shows also the gputils build date</li>
-            <li>added support for all pic 14 bit enhanced devices supported by MPASM 5.43</li>
-          </p>
-          <p>
-            <b>October 29, 2011 -- gputils-0.14.0 Released</b>
-          </p>
-          <p>
-            Added support for pic 14 bit devices enhanced instruction set<br>
-            Added support for pic18f2xk22 / pic18f4xk22 family<br>
-            Added support for EEPROM16
+            <li>major redesign of gpasm lexer and parser</li>
+            <li>introduction of a separate preprocessing pass</li>
+            <li>fixed bugs / missing implementation of defines with parameters</li>
+            <li>improved / multiple / nested #v() handling</li>
+            <li>improved macro parameters handling</li>
+            <li>pic inc and lkr files synced with MPLABX 1.50</li>
           </p>
           <p>
             <a href="previous.html">Previous News</a>
