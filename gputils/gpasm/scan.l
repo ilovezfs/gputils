@@ -51,6 +51,7 @@ Boston, MA 02111-1307, USA.  */
 #include "macro.h"
 #include "coff.h"
 #include "preprocess.h"
+#include "lst.h"
 
 #define OPERATOR(x)  return (yylval.i = (x))
 /* YY_UNPUT not used, suppress the warning */
@@ -526,14 +527,16 @@ void
 open_src(const char *name, int isinclude)
 {
   extern FILE *yyin;
-  struct source_context *new = malloc(sizeof(*new));
+  struct source_context *new = malloc(sizeof (struct source_context));
+  memset(new, 0, sizeof (struct source_context));
+
   if (state.src)
     state.src->yybuf = YY_CURRENT_BUFFER;
 
   new->f = fopen(name, "rt");
-  if(new->f)
+  if (new->f)
     new->name = strdup(name);
-  else if(isinclude && (strchr(name, PATH_CHAR) == 0)) {
+  else if (isinclude && (strchr(name, PATH_CHAR) == 0)) {
     /* If include file and no PATH_CHAR in name, try searching include
        path */
     search_paths(new, name);
@@ -596,7 +599,8 @@ open_src(const char *name, int isinclude)
 void
 execute_macro(struct macro_head *h, int is_while)
 {
-  struct source_context *new = malloc(sizeof(*new));
+  struct source_context *new = malloc(sizeof (struct source_context));
+  memset(new, 0, sizeof (struct source_context));
 
   assert(state.src != NULL);
   state.src->yybuf = YY_CURRENT_BUFFER;
@@ -712,6 +716,7 @@ static int
 found_eof(void)
 {
   int terminate = 0;
+  enum src_types prev_type;
 
   if (IN_WHILE_EXPANSION) {
     if (maybe_evaluate(state.src->h->parms)) {
@@ -725,11 +730,22 @@ found_eof(void)
     }
   }
 
+  prev_type = state.src->type;
   close_file();
   if (state.src) {
     /* Just an include file */
     yy_delete_buffer(YY_CURRENT_BUFFER);
     yy_switch_to_buffer(state.src->yybuf);
+
+    if (state.pass == 2 && src_while == prev_type) {
+      /* Force ENDW listing */
+      state.lst.line.linetype = dir;
+      /* Line number was alreay incremented, so it has to be decremented,
+       * source line listed and line number incremented again */
+      --state.src->line_number;
+      lst_format_line(state.src->curr_src_line.line, 0);
+      ++state.src->line_number;
+    }
   } else {
     if (!state.found_end)
       gperror(GPE_ILLEGAL_COND, "Illegal condition (EOF encountered before END)");

@@ -24,5 +24,6 @@ Boston, MA 02111-1307, USA.  */
 
 void setup_macro(struct macro_head *h, int arity, struct pnode *parms);
 struct symbol_table *push_macro_symbol_table(struct symbol_table *table);
+void list_macro(struct macro_body *p);
 
 #endif

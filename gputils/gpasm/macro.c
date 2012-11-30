@@ -128,3 +128,19 @@ push_macro_symbol_table(struct symbol_table *table)
 
   return new;
 }
+
+void
+list_macro(struct macro_body *p)
+{
+  unsigned int old_line_number = state.src->line_number;
+ 
+  /* Never executed: list the macro body */
+  state.lst.line.linetype = dir;
+  state.src->line_number = state.while_head->line_number;
+  while (p) {
+    ++state.src->line_number;
+    lst_format_line(p->src_line, 0);
+    p = p->next;
+  }
+  state.src->line_number = old_line_number;
+}

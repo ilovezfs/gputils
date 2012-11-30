@@ -686,7 +686,7 @@ preprocess_line(char *buf, int *n, int max_size)
 
   if (IN_MACRO_WHILE_DEFINITION) {
     /* don't preprocess source line if in macro definition */
-    set_source_line(buf, *n, &state.curr_src_line);
+    set_source_line(buf, *n, &state.src->curr_src_line);
   }
   else {
     int macro_expansion = in_macro_expansion();
@@ -702,7 +702,7 @@ preprocess_line(char *buf, int *n, int max_size)
 
     if (!macro_expansion) {
       /* set only #v processed source line if not in macro expansion */
-      set_source_line(buf, *n, &state.curr_src_line);
+      set_source_line(buf, *n, &state.src->curr_src_line);
     }
 
     /* preprocess line */
@@ -714,7 +714,7 @@ preprocess_line(char *buf, int *n, int max_size)
 
     if (macro_expansion) {
       /* set processed source line if in macro expansion */
-      set_source_line(buf, *n, &state.curr_src_line);
+      set_source_line(buf, *n, &state.src->curr_src_line);
     }
   }
 }
