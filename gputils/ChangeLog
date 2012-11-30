@@ -1,4 +1,18 @@
 2012-11-30  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/testsuite/gpasm.mchip/asmfiles/while1.asm,
+    gpasm/testsuite/gpasm.mchip/asmfiles/while2.asm,
+    gpasm/testsuite/gpasm.mchip/listfiles/while1.lst,
+    gpasm/testsuite/gpasm.mchip/listfiles/while2.lst,
+    gpasm/testsuite/gpasm.mchip/listfiles/while3.lst,
+    gpasm/testsuite/gpasm.mchip/hexfiles/while1.hex,
+    gpasm/testsuite/gpasm.mchip/hexfiles/while2.hex:
+    fixed MPASM(X) "Warning[207]: Found label after column 1." which
+    generates an error on gpasm
+  * gpasm/gpasm.h.in, gpasm/preprocess.c, gpasm/parse.y,
+    gpasm/gpasm.c, gpasm/util.c, gpasm/directive.c:
+    implemented nested WHILE loops
+
+2012-11-30  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/lst.c: data sections listing fixes, ibank listing fix
   * gpasm/directive.c: global directive listing fix
   * gpasm/preprocess.c:

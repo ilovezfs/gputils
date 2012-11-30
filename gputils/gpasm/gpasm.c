@@ -142,7 +142,7 @@ init(void)
 
   state.next_state = state_nochange;
 
-  return;
+  state.while_depth = 0;
 }
 
 void
@@ -436,6 +436,9 @@ assemble(void)
     state.radix = 16;
   state.obj.symbol_num = 0;
   state.obj.section_num = 0;
+  /* finih the MACRO and WHILE definition */
+  state.mac_prev = state.mac_head = state.while_head = NULL;
+  state.while_depth = 0;
 
   /* Initial section */
   state.obj.new_sec_flags = (state.mode == absolute) ? STYP_TEXT : 0;

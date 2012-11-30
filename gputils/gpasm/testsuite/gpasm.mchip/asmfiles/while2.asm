@@ -4,13 +4,22 @@
 
 	LIST	P=17C44, R=DEC
 
-	I = 256
+;;;; Begin: Changed in gputils
+;;;;	I = 256
+I = 256
+;;;; End: Changed in gputils
 	WHILE I > 0	; Maximum iterations
 	   DATA	I
-	   I--
+;;;; Begin: Changed in gputils
+;;;;	   I--
+I--
+;;;; End: Changed in gputils
 	ENDW
 
-	I = 10
+;;;; Begin: Changed in gputils
+;;;;	I = 10
+I = 10
+;;;; End: Changed in gputils
 	WHILE I == 10	; Single pass, maximum lines internal
 	   DATA	1
 	   DATA	2
@@ -109,43 +118,97 @@
 	   DATA	95
 	   DATA	96
 	   DATA	97
-	   DATA	98
-	   I++
+;;;; Begin: Added in gputils
+I++
 	ENDW
+;;;; End: Added in gputils
+;;;; Begin: Removed in gputils
+;;;;	   DATA 98
+;;;;	   I++
+;;;;	ENDW
+;;;; End: Removed in gputils
 ;	   DATA	99
 
-	I = 1
+;;;; Begin: Changed in gputils
+;;;;	I = 1
+I = 1
+;;;; End: Changed in gputils
 	WHILE I >= 0		; Maximum nesting
-	   J = 1
+;;;; Begin: Changed in gputils
+;;;;	   J = 1
+J = 1
+;;;; End: Changed in gputils
 	   WHILE J >= 0
-	      K = 1 
+;;;; Begin: Changed in gputils
+;;;;	      K = 1 
+K = 1 
+;;;; End: Changed in gputils
 	      WHILE K >= 0
-	         L = 1
+;;;; Begin: Changed in gputils
+;;;;	         L = 1
+L = 1
+;;;; End: Changed in gputils
 	         WHILE L >= 0
-	            M = 1
+;;;; Begin: Changed in gputils
+;;;;	            M = 1
+M = 1
+;;;; End: Changed in gputils
 	            WHILE M >= 0
-	               N = 1
+;;;; Begin: Changed in gputils
+;;;;	               N = 1
+N = 1
+;;;; End: Changed in gputils
 	               WHILE N >= 0
-	                  O = 1
+;;;; Begin: Changed in gputils
+;;;;	                  O = 1
+O = 1
+;;;; End: Changed in gputils
 	                  WHILE O >= 0
-	                     P = 1
+;;;; Begin: Changed in gputils
+;;;;	                     P = 1
+P = 1
+;;;; End: Changed in gputils
 	                     WHILE P >= 0
 	                        DATA	((((((I*2 + J)*2 + K)*2 + L)*2 + M)*2 + N)*2 + O)*2 + P
-	                        P--
+;;;; Begin: Changed in gputils
+;;;;	                        P--
+P--
+;;;; End: Changed in gputils
 	                     ENDW
-	                     O--
+;;;; Begin: Changed in gputils
+;;;;	                     O--
+O--
+;;;; End: Changed in gputils
 	                  ENDW
-	                  N--
+;;;; Begin: Changed in gputils
+;;;;	                  N--
+N--
+;;;; End: Changed in gputils
 	               ENDW
-	               M--
+;;;; Begin: Changed in gputils
+;;;;	               M--
+M--
+;;;; End: Changed in gputils
 	            ENDW
-	            L--
+;;;; Begin: Changed in gputils
+;;;;	            L--
+L--
+;;;; End: Changed in gputils
 	         ENDW
-	         K--
+;;;; Begin: Changed in gputils
+;;;;	         K--
+K--
+;;;; End: Changed in gputils
 	      ENDW
-	      J--
+;;;; Begin: Changed in gputils
+;;;;	      J--
+J--
+;;;; End: Changed in gputils
 	   ENDW
-	   I--
+;;;; Begin: Changed in gputils
+;;;;	   I--
+I--
+;;;; End: Changed in gputils
 	ENDW
 
 	END
