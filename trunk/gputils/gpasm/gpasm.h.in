@@ -34,10 +34,11 @@ Boston, MA 02111-1307, USA.  */
 
 #define MAX_PATHS 100
 
-#define IN_MACRO_DEFINITION (NULL != state.mac_prev)
-#define IN_MACRO_EXPANSION  (src_macro == state.src->type)
-#define IN_WHILE_EXPANSION  (src_while == state.src->type)
-#define IN_FILE_EXPANSION   (src_file == state.src->type)
+#define IN_MACRO_WHILE_DEFINITION (NULL != state.mac_prev)
+#define IN_WHILE_DEFINITION       (IN_MACRO_WHILE_DEFINITION && NULL != state.while_head)
+#define IN_MACRO_EXPANSION        (src_macro == state.src->type)
+#define IN_WHILE_EXPANSION        (src_while == state.src->type)
+#define IN_FILE_EXPANSION         (src_file == state.src->type)
 
 enum gpasmValTypes {
   gvt_constant,
@@ -229,6 +230,7 @@ extern struct gpasm_state {
   struct macro_body **mac_prev;     /* Stitching ptr */
   struct macro_body *mac_body;      /* While we're building a macro */
   struct macro_head *while_head;    /* WHILEs work a lot like macros... */
+  unsigned int while_depth;         /* WHILE nesting depth, used in WHILE definition */
   enum state_types next_state;
   union {
     char *file;

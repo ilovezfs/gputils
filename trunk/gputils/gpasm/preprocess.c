@@ -684,7 +684,7 @@ preprocess_line(char *buf, int *n, int max_size)
   int res;
   int end = *n;
 
-  if (IN_MACRO_DEFINITION) {
+  if (IN_MACRO_WHILE_DEFINITION) {
     /* don't preprocess source line if in macro definition */
     set_source_line(buf, *n, &state.curr_src_line);
   }

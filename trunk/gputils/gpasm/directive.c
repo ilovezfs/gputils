@@ -42,7 +42,8 @@ extern struct pnode *mk_constant(int value);
 
 static int prev_btfsx = 0;
 
-static unsigned short checkwrite(unsigned short value)
+static unsigned short
+checkwrite(unsigned short value)
 {
   unsigned short insn;
 
@@ -96,7 +97,8 @@ static unsigned short checkwrite(unsigned short value)
 
 /* Write a word into the memory image at the current location */
 
-static void emit(unsigned short value)
+static void
+emit(unsigned short value)
 {
   /* only write the program data to memory on the second pass */
   if (state.pass == 2) {
@@ -107,7 +109,8 @@ static void emit(unsigned short value)
   state.org += 2;
 }
 
-static void emit_byte(unsigned char value)
+static void
+emit_byte(unsigned char value)
 {
   if (state.pass == 2) {
     unsigned char byte;
@@ -152,7 +155,8 @@ static void emit_byte(unsigned char value)
   ++state.org;
 }
 
-static int off_or_on(struct pnode *p)
+static int
+off_or_on(struct pnode *p)
 {
   int had_error = 0, ret = 0;
 
@@ -180,7 +184,8 @@ static int off_or_on(struct pnode *p)
  * int char_shift -  Character width in bits (8 but 7 for da on 14-bit PIC).
  */
 
-static int emit_data(struct pnode *L, int char_shift)
+static int
+emit_data(struct pnode *L, int char_shift)
 {
   unsigned begin_org = state.org;
   struct pnode *p;
@@ -249,7 +254,8 @@ static int emit_data(struct pnode *L, int char_shift)
    disabled by default.  This is used by do_if, do_ifdef and
    do_ifndef. */
 
-static void enter_if(void)
+static void
+enter_if(void)
 {
   struct amode *new = malloc(sizeof(*new));
 
@@ -265,7 +271,8 @@ static void enter_if(void)
 
 /* Checking that a macro definition's parameters are correct */
 
-static int macro_parms_simple(struct pnode *parms)
+static int
+macro_parms_simple(struct pnode *parms)
 {
   while (parms) {
     if (HEAD(parms)->tag != symbol) {
@@ -277,7 +284,8 @@ static int macro_parms_simple(struct pnode *parms)
   return 1;
 }
 
-static int macro_parm_unique(struct pnode *M, struct pnode *L)
+static int
+macro_parm_unique(struct pnode *M, struct pnode *L)
 {
   while (L) {
     if (0 == STRCMP(M->value.symbol, HEAD(L)->value.symbol)) {
@@ -294,7 +302,8 @@ static int macro_parm_unique(struct pnode *M, struct pnode *L)
   return 1;
 }
 
-static int macro_parms_ok(struct pnode *parms)
+static int
+macro_parms_ok(struct pnode *parms)
 {
   /* Check if all params are symbols */
   if (!macro_parms_simple(parms))
@@ -313,10 +322,8 @@ static int macro_parms_ok(struct pnode *parms)
 
 /************************************************************************/
 
-static gpasmVal do_access_ovr(gpasmVal r,
-                              char *name,
-                              int arity,
-                              struct pnode *parms)
+static gpasmVal
+do_access_ovr(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -354,10 +361,8 @@ static gpasmVal do_access_ovr(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_badram(gpasmVal r,
-                          char *name,
-                          int arity,
-                          struct pnode *parms)
+static gpasmVal
+do_badram(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -399,10 +404,8 @@ static gpasmVal do_badram(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_badrom(gpasmVal r,
-                          char *name,
-                          int arity,
-                          struct pnode *parms)
+static gpasmVal
+do_badrom(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
 
   state.lst.line.linetype = dir;
@@ -413,10 +416,8 @@ static gpasmVal do_badrom(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_bankisel(gpasmVal r,
-                            char *name,
-                            int arity,
-                            struct pnode *parms)
+static gpasmVal
+do_bankisel(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   int num_reloc;
@@ -466,10 +467,8 @@ static gpasmVal do_bankisel(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_banksel(gpasmVal r,
-                           char *name,
-                           int arity,
-                           struct pnode *parms)
+static gpasmVal
+do_banksel(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   int address;
@@ -537,10 +536,8 @@ static gpasmVal do_banksel(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_code(gpasmVal r,
-                        char *name,
-                        int arity,
-                        struct pnode *parms)
+static gpasmVal
+do_code(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -574,10 +571,8 @@ static gpasmVal do_code(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_code_pack(gpasmVal r,
-                             char *name,
-                             int arity,
-                             struct pnode *parms)
+static gpasmVal
+do_code_pack(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -615,10 +610,8 @@ static gpasmVal do_code_pack(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_constant(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_constant(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -667,7 +660,8 @@ static gp_boolean config_16_used;
  * creates the configuration or device id COFF section for do_config and
  * do_16_config. returns true when a section is created.
  */
-static gp_boolean config_add_section(int ca)
+static gp_boolean
+config_add_section(int ca)
 {
   if (state.mode == relocatable) {
     if ((!state.found_devid) && ((ca == DEVID1) || (ca == DEVID2))) {
@@ -687,7 +681,8 @@ static gp_boolean config_add_section(int ca)
 }
 
 /* helper to write configuration data, grabbing defaults when necessary */
-static void config_16_set_mem(const struct gp_cfg_device *p_dev, int ca, unsigned char byte, unsigned char mask)
+static void
+config_16_set_mem(const struct gp_cfg_device *p_dev, int ca, unsigned char byte, unsigned char mask)
 {
   unsigned char other_byte;
   unsigned char old_byte;
@@ -701,15 +696,12 @@ static void config_16_set_mem(const struct gp_cfg_device *p_dev, int ca, unsigne
   b_memory_put(state.c_memory, ca, (old_byte & ~mask) | byte);
 }
 
-static gpasmVal do_config(gpasmVal r,
-                          char *name,
-                          int arity,
-                          struct pnode *parms)
+static gpasmVal
+do_config(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   int ca;
   int value;
-
 
   if (!state.processor) {
     gpverror(GPE_UNDEF_PROC);
@@ -815,7 +807,8 @@ static gpasmVal do_config(gpasmVal r,
 }
 
 /* Sets defaults over unused portions of configuration memory. */
-static void config_16_check_defaults(const struct gp_cfg_device *p_dev)
+static void
+config_16_check_defaults(const struct gp_cfg_device *p_dev)
 {
   const struct gp_cfg_addr *addrs = p_dev->config_addrs;
   int t;
@@ -833,19 +826,18 @@ static void config_16_check_defaults(const struct gp_cfg_device *p_dev)
    * if this is commented out, the calls to config_16_set_mem below _will_
    * use defaults for adjacent values.
    */
-  for(t=0; t<p_dev->addr_count; addrs++, t++) {
+  for (t = 0; t < p_dev->addr_count; ++addrs, ++t) {
     unsigned char byte;
-    if(!b_memory_get(state.c_memory, addrs->addr, &byte)) {
+
+    if (!b_memory_get(state.c_memory, addrs->addr, &byte)) {
       config_16_set_mem(p_dev, addrs->addr, addrs->defval, 0xff);
     }
   }
 }
 
 /* Support MPASM style CONFIG xxx = yyy syntax. */
-static gpasmVal _do_16_config(gpasmVal r,
-                             char *name,
-                             int arity,
-                             struct pnode *parms)
+static gpasmVal
+_do_16_config(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   static unsigned char double_mask[64];
   const struct gp_cfg_device *p_dev;
@@ -950,10 +942,8 @@ static gpasmVal _do_16_config(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_16_config(gpasmVal r,
-               char *name,
-               int arity,
-               struct pnode *parms)
+static gpasmVal
+do_16_config(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   /* FIXME: MPASM creates .config_<address>_<filename>.O sections for
      each configuration byte for relative files. For absolute it
@@ -979,10 +969,8 @@ static gpasmVal do_16_config(gpasmVal r,
  *  do_da - The 'da' directive. Identical to 'data' directive, except
  *          for 14-bit cores it packs two 7-bit characters into one word.
  */
-static gpasmVal do_da(gpasmVal r,
-                      char *name,
-                      int arity,
-                      struct pnode *parms)
+static gpasmVal
+do_da(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   int char_shift = state.device.class == PROC_CLASS_PIC14 ? 7 : 8;
   if ((state.mode == relocatable) &&
@@ -1010,10 +998,8 @@ static gpasmVal do_da(gpasmVal r,
  *           When in idata section, generate initialization data.
  */
 
-static gpasmVal do_data(gpasmVal r,
-                        char *name,
-                        int arity,
-                        struct pnode *parms)
+static gpasmVal
+do_data(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   if ((state.mode == relocatable) &&
       (SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
@@ -1025,6 +1011,7 @@ static gpasmVal do_data(gpasmVal r,
 
   return r;
 }
+
 /*-------------------------------------------------------------------------
  * do_db  - Reserve program memory words with packed 8-bit values. On the
  *          18cxxx families, dw and db are the same. For the 12 and 14 bit
@@ -1033,11 +1020,8 @@ static gpasmVal do_data(gpasmVal r,
  *          in a db directive are meaningless.
  */
 
-
-static gpasmVal do_db(gpasmVal r,
-                      char *name,
-                      int arity,
-                      struct pnode *parms)
+static gpasmVal
+do_db(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *L = parms;
   struct pnode *p;
@@ -1122,10 +1106,8 @@ static gpasmVal do_db(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_de(gpasmVal r,
-                      char *name,
-                      int arity,
-                      struct pnode *parms)
+static gpasmVal
+do_de(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -1153,10 +1135,8 @@ static gpasmVal do_de(gpasmVal r,
 }
 
 /* Extension to MPASM, used at least by LLVM to emit debugging information. */
-static gpasmVal do_def(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_def(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   char *symbol_name = NULL;
@@ -1263,10 +1243,8 @@ static gpasmVal do_def(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_define(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_define(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
 
@@ -1278,7 +1256,7 @@ static gpasmVal do_define(gpasmVal r,
     assert(list == parms->tag);
     p = HEAD(parms);
     assert(string == p->tag);
-    if (asm_enabled() && !IN_MACRO_DEFINITION) {
+    if (asm_enabled() && !IN_MACRO_WHILE_DEFINITION) {
       if (get_symbol(state.stDefines, p->value.string) != NULL) {
         gpverror(GPE_DUPLAB, p->value.string);
       } else {
@@ -1297,10 +1275,8 @@ static gpasmVal do_define(gpasmVal r,
 }
 
 /* Extension to MPASM, used at least by LLVM to emit debugging information. */
-static gpasmVal do_dim(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_dim(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   char *symbol_name = NULL;
@@ -1377,12 +1353,9 @@ static gpasmVal do_dim(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_direct(gpasmVal r,
-                          char *name,
-                          int arity,
-                          struct pnode *parms)
+static gpasmVal
+do_direct(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
-
   struct pnode *p;
   int value;
   unsigned char direct_command = 0;
@@ -1428,10 +1401,8 @@ static gpasmVal do_direct(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_dt(gpasmVal r,
-                      char *name,
-                      int arity,
-                      struct pnode *parms)
+static gpasmVal
+do_dt(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   int retlw = gp_processor_retlw(state.device.class);
   struct pnode *p;
@@ -1456,10 +1427,8 @@ static gpasmVal do_dt(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_dtm(gpasmVal r,
-                      char *name,
-                      int arity,
-                      struct pnode *parms)
+static gpasmVal
+do_dtm(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct symbol *s = get_symbol(state.stBuiltin, "movlw");
   struct insn *i = get_symbol_annotation(s);
@@ -1494,10 +1463,8 @@ static gpasmVal do_dtm(gpasmVal r,
  *          it's the same as the 'db' directive. (That's strange, but it's
  *          also the way mpasm does it).
  */
-static gpasmVal do_dw(gpasmVal r,
-                      char *name,
-                      int arity,
-                      struct pnode *parms)
+static gpasmVal
+do_dw(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   if (state.mode == relocatable) {
     if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
@@ -1517,10 +1484,8 @@ static gpasmVal do_dw(gpasmVal r,
 }
 
 
-static gpasmVal do_else(gpasmVal r,
-                        char *name,
-                        int arity,
-                        struct pnode *parms)
+static gpasmVal
+do_else(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
   if (state.astack == NULL)
@@ -1533,10 +1498,8 @@ static gpasmVal do_else(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_end(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_end(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.found_end = 1;
   state.lst.line.linetype = dir;
@@ -1544,10 +1507,8 @@ static gpasmVal do_end(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_endif(gpasmVal r,
-                         char *name,
-                         int arity,
-                         struct pnode *parms)
+static gpasmVal
+do_endif(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
   if (state.astack == NULL) {
@@ -1565,14 +1526,12 @@ static gpasmVal do_endif(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_endm(gpasmVal r,
-                        char *name,
-                        int arity,
-                        struct pnode *parms)
+static gpasmVal
+do_endm(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   assert(!state.mac_head);
   state.lst.line.linetype = dir;
-  if (!IN_MACRO_DEFINITION)
+  if (!IN_MACRO_WHILE_DEFINITION)
     gpverror(GPE_UNMATCHED_ENDM);
   else
     state.mac_prev = NULL;
@@ -1582,17 +1541,16 @@ static gpasmVal do_endm(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_endw(gpasmVal r,
-                        char *name,
-                        int arity,
-                        struct pnode *parms)
+static gpasmVal
+do_endw(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
 
   assert(!state.mac_head);
-  if (!IN_MACRO_DEFINITION) {
+  if (!IN_MACRO_WHILE_DEFINITION) {
     gperror(GPE_ILLEGAL_COND, "Illegal condition (ENDW).");
-  } else if (maybe_evaluate(state.while_head->parms)) {
+  }
+  else if (maybe_evaluate(state.while_head->parms)) {
     state.next_state = state_while;
     state.next_buffer.macro = state.while_head;
   }
@@ -1604,10 +1562,8 @@ static gpasmVal do_endw(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_eof(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_eof(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
 
@@ -1624,10 +1580,8 @@ static gpasmVal do_eof(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_equ(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_equ(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = equ;
   if (enforce_arity(arity, 1)) {
@@ -1637,10 +1591,8 @@ static gpasmVal do_equ(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_error(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_error(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
@@ -1672,10 +1624,8 @@ static gpasmVal do_error(gpasmVal r,
  *
  ************************************************************************/
 
-static gpasmVal do_errlvl(gpasmVal r,
-                          char *name,
-                          int arity,
-                          struct pnode *parms)
+static gpasmVal
+do_errlvl(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
@@ -1704,10 +1654,8 @@ static gpasmVal do_errlvl(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_exitm(gpasmVal r,
-                         char *name,
-                         int arity,
-                         struct pnode *parms)
+static gpasmVal
+do_exitm(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
   if (enforce_arity(arity, 0)) {
@@ -1721,10 +1669,8 @@ static gpasmVal do_exitm(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_expand(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_expand(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
   if (state.cmd_line.macro_expand) {
@@ -1737,10 +1683,8 @@ static gpasmVal do_expand(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_extern(gpasmVal r,
-                          char *name,
-                          int arity,
-                          struct pnode *parms)
+static gpasmVal
+do_extern(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   char *p;
   state.lst.line.linetype = set4;
@@ -1759,10 +1703,8 @@ static gpasmVal do_extern(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_file(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_file(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
@@ -1788,10 +1730,8 @@ static gpasmVal do_file(gpasmVal r,
 /* Filling constants is handled here. Filling instructions is handled
    in the parser. */
 
-static gpasmVal do_fill(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_fill(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *h;
   int number;
@@ -1809,10 +1749,8 @@ static gpasmVal do_fill(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_global(gpasmVal r,
-                          char *name,
-                          int arity,
-                          struct pnode *parms)
+static gpasmVal
+do_global(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   char *p;
   char buf[BUFSIZ];
@@ -1864,10 +1802,8 @@ static gpasmVal do_global(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_idata(gpasmVal r,
-                         char *name,
-                         int arity,
-                         struct pnode *parms)
+static gpasmVal
+do_idata(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -1903,10 +1839,8 @@ static gpasmVal do_idata(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_idata_acs(gpasmVal r,
-                             char *name,
-                             int arity,
-                             struct pnode *parms)
+static gpasmVal
+do_idata_acs(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -1942,10 +1876,8 @@ static gpasmVal do_idata_acs(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_ident(gpasmVal r,
-                         char *name,
-                         int arity,
-                         struct pnode *parms)
+static gpasmVal
+do_ident(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
@@ -1964,10 +1896,8 @@ static gpasmVal do_ident(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_idlocs(gpasmVal r,
-                          char *name,
-                          int arity,
-                          struct pnode *parms)
+static gpasmVal
+do_idlocs(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   int value;
   unsigned int id_location;
@@ -2054,10 +1984,8 @@ static gpasmVal do_idlocs(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_if(gpasmVal r,
-                      char *name,
-                      int arity,
-                      struct pnode *parms)
+static gpasmVal
+do_if(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
@@ -2074,10 +2002,8 @@ static gpasmVal do_if(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_ifdef(gpasmVal r,
-                         char *name,
-                         int arity,
-                         struct pnode *parms)
+static gpasmVal
+do_ifdef(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
@@ -2100,10 +2026,8 @@ static gpasmVal do_ifdef(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_ifndef(gpasmVal r,
-                          char *name,
-                          int arity,
-                          struct pnode *parms)
+static gpasmVal
+do_ifndef(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
@@ -2126,10 +2050,8 @@ static gpasmVal do_ifndef(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_include(gpasmVal r,
-                           char *name,
-                           int arity,
-                           struct pnode *parms)
+static gpasmVal
+do_include(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2148,10 +2070,8 @@ static gpasmVal do_include(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_line(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_line(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2188,10 +2108,8 @@ static gpasmVal do_line(gpasmVal r,
  *
  ************************************************************************/
 
-static gpasmVal do_list(gpasmVal r,
-                        char *name,
-                        int arity,
-                        struct pnode *parms)
+static gpasmVal
+do_list(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2303,10 +2221,8 @@ static gpasmVal do_list(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_local(gpasmVal r,
-                         char *name,
-                         int arity,
-                         struct pnode *parms)
+static gpasmVal
+do_local(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2342,10 +2258,8 @@ static gpasmVal do_local(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_noexpand(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_noexpand(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
   if (state.cmd_line.macro_expand) {
@@ -2358,10 +2272,8 @@ static gpasmVal do_noexpand(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_nolist(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_nolist(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
 
@@ -2373,10 +2285,8 @@ static gpasmVal do_nolist(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_maxram(gpasmVal r,
-                          char *name,
-                          int arity,
-                          struct pnode *parms)
+static gpasmVal
+do_maxram(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2390,10 +2300,8 @@ static gpasmVal do_maxram(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_maxrom(gpasmVal r,
-                          char *name,
-                          int arity,
-                          struct pnode *parms)
+static gpasmVal
+do_maxrom(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2407,10 +2315,8 @@ static gpasmVal do_maxrom(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_macro(gpasmVal r,
-                         char *name,
-                         int arity,
-                         struct pnode *parms)
+static gpasmVal
+do_macro(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct macro_head *head = malloc(sizeof(*head));
 
@@ -2433,10 +2339,8 @@ static gpasmVal do_macro(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_messg(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_messg(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
@@ -2452,10 +2356,8 @@ static gpasmVal do_messg(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_org(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_org(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2490,10 +2392,8 @@ static gpasmVal do_org(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_page(gpasmVal r,
-                        char *name,
-                        int arity,
-                        struct pnode *parms)
+static gpasmVal
+do_page(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
   if (enforce_arity(arity, 0) && state.lst.enabled)
@@ -2504,11 +2404,8 @@ static gpasmVal do_page(gpasmVal r,
 
 /* Called by both do_pagesel and do_pageselw, which have a very slight
  * difference between them */
-static gpasmVal _do_pagesel(gpasmVal r,
-                           char *name,
-                           int arity,
-                           struct pnode *parms,
-                           unsigned short reloc_type)
+static gpasmVal
+_do_pagesel(gpasmVal r, char *name, int arity, struct pnode *parms, unsigned short reloc_type)
 {
   struct pnode *p;
   int page;
@@ -2599,10 +2496,8 @@ static gpasmVal _do_pagesel(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_pagesel(gpasmVal r,
-                           char *name,
-                           int arity,
-                           struct pnode *parms)
+static gpasmVal
+do_pagesel(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   if (prev_btfsx)
     gpvwarning(GPW_BANK_PAGE_SEL_AFTER_SKIP, "Pagesel");
@@ -2610,10 +2505,8 @@ static gpasmVal do_pagesel(gpasmVal r,
   return _do_pagesel(r, name, arity, parms, RELOCT_PAGESEL_BITS);
 }
 
-static gpasmVal do_pageselw(gpasmVal r,
-                           char *name,
-                           int arity,
-                           struct pnode *parms)
+static gpasmVal
+do_pageselw(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   if (prev_btfsx)
     gpvwarning(GPW_BANK_PAGE_SEL_AFTER_SKIP, "Pageselw");
@@ -2621,10 +2514,8 @@ static gpasmVal do_pageselw(gpasmVal r,
   return _do_pagesel(r, name, arity, parms, RELOCT_PAGESEL_WREG);
 }
 
-static gpasmVal do_processor(gpasmVal r,
-                             char *name,
-                             int arity,
-                             struct pnode *parms)
+static gpasmVal
+do_processor(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
   if (enforce_arity(arity, 1)) {
@@ -2637,10 +2528,8 @@ static gpasmVal do_processor(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_radix(gpasmVal r,
-                         char *name,
-                         int arity,
-                         struct pnode *parms)
+static gpasmVal
+do_radix(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2655,10 +2544,8 @@ static gpasmVal do_radix(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_res(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_res(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   int count;
@@ -2703,10 +2590,8 @@ static gpasmVal do_res(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_set(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_set(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2722,10 +2607,8 @@ static gpasmVal do_set(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_space(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_space(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2755,10 +2638,8 @@ static gpasmVal do_space(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_subtitle(gpasmVal r,
-                        char *name,
-                        int arity,
-                        struct pnode *parms)
+static gpasmVal
+do_subtitle(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2776,10 +2657,8 @@ static gpasmVal do_subtitle(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_title(gpasmVal r,
-                        char *name,
-                        int arity,
-                        struct pnode *parms)
+static gpasmVal
+do_title(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2797,10 +2676,8 @@ static gpasmVal do_title(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_type(gpasmVal r,
-                        char *name,
-                        int arity,
-                        struct pnode *parms)
+static gpasmVal
+do_type(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   char *symbol_name = NULL;
@@ -2834,10 +2711,8 @@ static gpasmVal do_type(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_udata(gpasmVal r,
-                         char *name,
-                         int arity,
-                         struct pnode *parms)
+static gpasmVal
+do_udata(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2871,10 +2746,8 @@ static gpasmVal do_udata(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_udata_acs(gpasmVal r,
-                             char *name,
-                             int arity,
-                             struct pnode *parms)
+static gpasmVal
+do_udata_acs(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2912,10 +2785,8 @@ static gpasmVal do_udata_acs(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_udata_ovr(gpasmVal r,
-                             char *name,
-                             int arity,
-                             struct pnode *parms)
+static gpasmVal
+do_udata_ovr(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2953,10 +2824,8 @@ static gpasmVal do_udata_ovr(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_udata_shr(gpasmVal r,
-                             char *name,
-                             int arity,
-                             struct pnode *parms)
+static gpasmVal
+do_udata_shr(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2994,10 +2863,8 @@ static gpasmVal do_udata_shr(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_undefine(gpasmVal r,
-                            char *name,
-                            int arity,
-                            struct pnode *parms)
+static gpasmVal
+do_undefine(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -3016,10 +2883,8 @@ static gpasmVal do_undefine(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_variable(gpasmVal r,
-                       char *name,
-                       int arity,
-                       struct pnode *parms)
+static gpasmVal
+do_variable(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -3048,29 +2913,17 @@ static gpasmVal do_variable(gpasmVal r,
   return r;
 }
 
-static gpasmVal do_while(gpasmVal r,
-                         char *name,
-                         int arity,
-                         struct pnode *parms)
+static gpasmVal
+do_while(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct macro_head *head = malloc(sizeof(*head));
-  struct pnode *p;
 
-  if (IN_WHILE_EXPANSION) {
-    state.pass = 2; /* Ensure error actually gets displayed */
-    gperror(GPE_UNKNOWN, "gpasm does not yet support nested while loops");
-    exit (1);
-  }
+  assert(0 == state.while_depth);
 
   state.lst.line.linetype = dir;
-  if (enforce_arity(arity, 1)) {
-    p = HEAD(parms);
-    head->parms = p;
-  } else {
-    head->parms = NULL;
-  }
-
+  head->parms = (enforce_arity(arity, 1)) ? HEAD(parms) : NULL;
   head->body = NULL;
+
   /* Record data for the list, cod, and coff files */
   head->line_number = state.src->line_number;
   head->file_symbol = state.src->file_symbol;
@@ -3083,10 +2936,13 @@ static gpasmVal do_while(gpasmVal r,
   state.mac_prev = &(head->body);
   state.mac_body = NULL;
 
+  state.while_depth = 1;
+
   return r;
 }
 
-int asm_enabled(void)
+int
+asm_enabled(void)
 {
   return ((state.astack == NULL) ||
           (state.astack->enabled &&
@@ -3094,7 +2950,8 @@ int asm_enabled(void)
 }
 
 /* Check that a register file address is ok */
-void file_ok(unsigned int file)
+void
+file_ok(unsigned int file)
 {
   /* don't check address, the linker takes care of it */
   if (state.mode == relocatable)
@@ -3109,7 +2966,8 @@ void file_ok(unsigned int file)
     gpvmessage(GPM_BANK);
 }
 
-static void emit_check(int insn, int argument, int mask)
+static void
+emit_check(int insn, int argument, int mask)
 {
   int test = argument;
 
@@ -3127,7 +2985,8 @@ static void emit_check(int insn, int argument, int mask)
    For relative branches, issue a warning if the absolute value of
    argument is greater than range
 */
-static void emit_check_relative(int insn, int argument, int mask, int range)
+static void
+emit_check_relative(int insn, int argument, int mask, int range)
 {
   char full_message[BUFSIZ];
 
@@ -3145,7 +3004,8 @@ static void emit_check_relative(int insn, int argument, int mask, int range)
   emit(insn | (argument & mask));
 }
 
-static int check_flag(int flag)
+static int
+check_flag(int flag)
 {
   if ((flag != 0) && (flag != 1))
     gpvwarning(GPW_RANGE);
@@ -3186,7 +3046,8 @@ check_16e_arg_types(struct pnode *parms, int arity, unsigned int types)
   return ret;
 }
 
-gpasmVal do_insn(char *name, struct pnode *parms)
+gpasmVal
+do_insn(char *name, struct pnode *parms)
 {
   struct symbol *s;
   int arity;
@@ -4377,7 +4238,8 @@ struct insn op_1[] = {
 
 const int num_op_1 = TABLE_SIZE(op_1);
 
-void opcode_init(int stage)
+void
+opcode_init(int stage)
 {
   int i;
   int count = 0;
@@ -4473,7 +4335,8 @@ void opcode_init(int stage)
 
 /************************************************************************/
 
-void begin_cblock(struct pnode *c)
+void
+begin_cblock(struct pnode *c)
 {
   if (asm_enabled()) {
     state.cblock_defined = 1;
@@ -4481,14 +4344,16 @@ void begin_cblock(struct pnode *c)
   }
 }
 
-void continue_cblock(void)
+void
+continue_cblock(void)
 {
   if (state.cblock_defined == 0)
     gpvmessage(GPM_CBLOCK);
   state.cblock_defined = 1;
 }
 
-void cblock_expr(struct pnode *s)
+void
+cblock_expr(struct pnode *s)
 {
   if (asm_enabled()) {
     set_global(s->value.symbol, state.cblock, PERMANENT, gvt_cblock);
@@ -4496,7 +4361,8 @@ void cblock_expr(struct pnode *s)
   }
 }
 
-void cblock_expr_incr(struct pnode *s, struct pnode *incr)
+void
+cblock_expr_incr(struct pnode *s, struct pnode *incr)
 {
   if (asm_enabled()) {
     set_global(s->value.symbol, state.cblock, PERMANENT, gvt_cblock);

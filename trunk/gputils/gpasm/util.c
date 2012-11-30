@@ -90,7 +90,8 @@ stringtolong(const char *string, int radix)
   return value;
 }
 
-int gpasm_magic(const char *c)
+int
+gpasm_magic(const char *c)
 {
   if (c[0] == '\\') {
     switch (c[1]) {
@@ -223,7 +224,8 @@ convert_escape_chars(const char *ps, int *value)
  * single-character string literal in an expression can be coerced to a
  * character literal. coerce_str1 converts a string-type pnode to a
  * constant-type pnode in-place. */
-void coerce_str1(struct pnode *exp)
+void
+coerce_str1(struct pnode *exp)
 {
   if ((exp != NULL) && (exp->tag == string)) {
     int value;
@@ -236,7 +238,8 @@ void coerce_str1(struct pnode *exp)
   }
 }
 
-void set_global(const char *name,
+void
+set_global(const char *name,
                 gpasmVal value,
                 enum globalLife lifetime,
                 enum gpasmValTypes type)
@@ -303,7 +306,8 @@ void set_global(const char *name,
   }
 }
 
-void purge_temp_symbols(struct symbol_table *table) {
+void
+purge_temp_symbols(struct symbol_table *table) {
   int i;
   if (table != NULL) {
     for (i = 0; i < HASH_SIZE; ++i) {
@@ -336,7 +340,8 @@ void purge_temp_symbols(struct symbol_table *table) {
   }
 }
 
-void select_errorlevel(int level)
+void
+select_errorlevel(int level)
 {
   if (state.cmd_line.error_level) {
     gpvmessage(GPM_SUPVAL);
@@ -359,7 +364,8 @@ void select_errorlevel(int level)
   }
 }
 
-void select_expand(const char *expand)
+void
+select_expand(const char *expand)
 {
   if (state.cmd_line.macro_expand) {
     gpvmessage(GPM_SUPLIN);
@@ -381,7 +387,8 @@ void select_expand(const char *expand)
   }
 }
 
-void select_hexformat(const char *format_name)
+void
+select_hexformat(const char *format_name)
 {
   if (state.cmd_line.hex_format) {
     gpvwarning(GPW_CMDLINE_HEXFMT);
@@ -407,7 +414,8 @@ void select_hexformat(const char *format_name)
   }
 }
 
-void select_radix(const char *radix_name)
+void
+select_radix(const char *radix_name)
 {
   if (state.cmd_line.radix) {
     gpvwarning(GPW_CMDLINE_RADIX);
@@ -440,7 +448,8 @@ void select_radix(const char *radix_name)
 /************************************************************************/
 
 /* Function to append a line to an ongoing macro definition */
-void macro_append(void)
+void
+macro_append(void)
 {
   struct macro_body *body = malloc(sizeof(*body));
 
@@ -452,23 +461,32 @@ void macro_append(void)
   body->next = NULL;            /* make sure it's terminated */
 }
 
-gpasmVal do_or_append_insn(char *op, struct pnode *parms)
+gpasmVal
+do_or_append_insn(char *op, struct pnode *parms)
 {
-  gpasmVal r;
-
-  if (!IN_MACRO_DEFINITION ||
-      (strcasecmp(op, "endm") == 0) ||
-      (state.while_head && (strcasecmp(op, "endw") == 0))) {
-    r = do_insn(op, parms);
-  } else {
+  if (IN_MACRO_WHILE_DEFINITION) {
+    if (0 == strcasecmp(op, "endm"))
+      return do_insn(op, parms);
+    else if (IN_WHILE_DEFINITION) {
+      if (0 == strcasecmp(op, "while")) {
+        assert(0 != state.while_depth);
+        ++state.while_depth;
+      }
+      else if (state.while_head && 0 == strcasecmp(op, "endw")) {
+        assert(0 != state.while_depth);
+        if (0 == --state.while_depth)
+          return do_insn(op, parms);
+      }
+    }
     macro_append();
-    r = 0;
+    return 0;
   }
-
-  return r;
+  else
+    return do_insn(op, parms);
 }
 
-void print_pnode(struct pnode *p)
+void
+print_pnode(struct pnode *p)
 {
   if(!p) {
     printf("Null\n");
@@ -501,7 +519,8 @@ void print_pnode(struct pnode *p)
   }
 }
 
-void print_macro_node(struct macro_body *mac)
+void
+print_macro_node(struct macro_body *mac)
 {
   if(mac->src_line)
     printf(" src_line = %s\n",mac->src_line);
@@ -525,7 +544,8 @@ void print_macro_body(struct macro_body *mac)
 /* add_file: add a file of type 'type' to the file_context stack.
  */
 
-struct file_context * add_file(unsigned int type, const char *name)
+struct file_context *
+add_file(unsigned int type, const char *name)
 {
   static unsigned int file_id = 0;
   struct file_context *new;
@@ -559,7 +579,8 @@ struct file_context * add_file(unsigned int type, const char *name)
 /* free_files: free memory allocated to the file_context stack
  */
 
-void free_files(void)
+void
+free_files(void)
 {
   struct file_context *old;
 
@@ -571,7 +592,8 @@ void free_files(void)
   }
 }
 
-void hex_init(void)
+void
+hex_init(void)
 {
 
   if (state.hexfile == suppress) {

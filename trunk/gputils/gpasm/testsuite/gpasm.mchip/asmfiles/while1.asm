@@ -4,32 +4,62 @@
 
 	LIST	P=17C44, R=DEC
 
-	I = 5
+;;;; Begin: Changed in gputils
+;;;;	I = 5
+I = 5
+;;;; End: Changed in gputils
 	WHILE I > 0	; Multiple passes
 	   DATA	I
-	   I--
+;;;; Begin: Changed in gputils
+;;;;	   I--
+I--
+;;;; End: Changed in gputils
 	ENDW
 
-	I = 10
+;;;; Begin: Changed in gputils
+;;;;	I = 10
+I = 10
+;;;; End: Changed in gputils
 	WHILE I == 10	; Single pass
 	   DATA	I
-	   I++
+;;;; Begin: Changed in gputils
+;;;;	   I++
+I++
+;;;; End: Changed in gputils
 	ENDW
 
-	I = 10
+;;;; Begin: Changed in gputils
+;;;;	I = 10
+I = 10
+;;;; End: Changed in gputils
 	WHILE I == 0	; No pass
 	   DATA	I
-	   I++
+;;;; Begin: Changed in gputils
+;;;;	   I++
+I++
+;;;; End: Changed in gputils
 	ENDW
 
-	I = 2
+;;;; Begin: Changed in gputils
+;;;;	I = 2
+I = 2
+;;;; End: Changed in gputils
 	WHILE I > 0		; Nested WHILE
-	   J = 3
+;;;; Begin: Changed in gputils
+;;;;	   J = 3
+J = 3
+;;;; End: Changed in gputils
 	   WHILE J > 0
 	      DATA	I * J
-	      J--
+;;;; Begin: Changed in gputils
+;;;;	      J--
+J--
+;;;; End: Changed in gputils
 	   ENDW
-	   I--
+;;;; Begin: Changed in gputils
+;;;;	   I--
+I--
+;;;; End: Changed in gputils
 	ENDW
 
 ;SSR 1351, Multiple line macro called from within a WHILE
@@ -40,10 +70,16 @@ TEST	MACRO	NUM
 	ADDLW	NUM
 	ENDM
 
-	I = 3
+;;;; Begin: Changed in gputils
+;;;;	I = 3
+I = 3
+;;;; End: Changed in gputils
 	WHILE I > 0
 	   TEST	I
-	   I--
+;;;; Begin: Changed in gputils
+;;;;	   I--
+I--
+;;;; End: Changed in gputils
 	ENDW
 
 	END
