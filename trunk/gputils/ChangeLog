@@ -4,6 +4,8 @@
   * gpasm/preprocess.c:
     fixed nested define with parameters substitution,
     fixed substitution of mltiple define with parameters in the same line
+  * libgputils/gpprocessor.h:
+    added gp_processor_check_ibank() declaration
 
 2012-11-26  Borut Razem  <borutr@users.sourceforge.net>
   * gputils/libgputils/gpprocessor.c, gputils/libgputils/gpprocessor.h,
