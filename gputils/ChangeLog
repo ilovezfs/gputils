@@ -1,3 +1,10 @@
+2012-11-30  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/lst.c: data sections listing fixes, ibank listing fix
+  * gpasm/directive.c: global directive listing fix
+  * gpasm/preprocess.c:
+    fixed nested define with parameters substitution,
+    fixed substitution of mltiple define with parameters in the same line
+
 2012-11-26  Borut Razem  <borutr@users.sourceforge.net>
   * gputils/libgputils/gpprocessor.c, gputils/libgputils/gpprocessor.h,
     gputils/libgputils/gpcofflink.c, gputils/gpasm/directive.c:

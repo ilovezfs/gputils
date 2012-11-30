@@ -185,11 +185,11 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
     DBG_printf("define %*.*s has %d parameters\n", mlen, mlen, &buf[begin], n_params);
     if (0 != n_params) {
       /* has parameters: collect arguments */
-      int bracket;
+      int bracket = 0;
       int n_args = 0;
 
       skip_spaces(buf, end);
-      if (buf[*end] == '(') {
+      if ('(' == buf[*end]) {
         ++(*end);
         bracket = 1;
       }
@@ -199,12 +199,23 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
         int end1;
         int state = 0;
         int prev_esc = 0;
+        int brackdepth = 0;
 
         skip_spaces(buf, end);
         start1 = *end;
 
-        while (*end < *n && (0 != state || (buf[*end] != ',' && ((bracket && buf[*end] != ')') || (!bracket && buf[*end] != '\n'))))) {
+        while (*end < *n && (0 != state || 0 != brackdepth || (',' != buf[*end] && ';' != buf[*end] && ((bracket && ')' != buf[*end]) || (!bracket && '\n' != buf[*end]))))) {
           switch (buf[*end]) {
+          case '(':
+            if (0 == state)
+              ++brackdepth;
+            break;
+
+          case ')':
+            if (0 == state)
+              --brackdepth;
+            break;
+
           case '\\':
             prev_esc = (0 != state) ? !prev_esc : 0;
             break;
@@ -230,10 +241,16 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
         ++n_args;
 
         if (*end < *n) {
-          if ((bracket && ')' == buf[*end]) || (!bracket && '\n' == buf[*end])) {
-            /* Don't eat newline! */
-            if ('\n' != buf[*end])
-              ++(*end);
+          if ((bracket && ')' == buf[*end]) || (!bracket && ('\n' == buf[*end] || ';' == buf[*end]))) {
+            if (';' == buf[*end]) {
+              /* skip to the trailing newline */
+              *end = *n - 1;
+            }
+            else {
+              /* don't eat newline! */
+              if ('\n' != buf[*end])
+                ++(*end);
+            }
 
             if (n_args == n_params) {
               int len = strlen(sub);
@@ -257,6 +274,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
                 preprocess(buf, begin, end, n, max_size, &substitute_define, level + 1);
 
                 DBG_printf("with %*.*s\n", *end - begin, *end - begin, &buf[begin]);
+                return 1;
               }
             }
             else {
