@@ -407,9 +407,11 @@ print_reloc(unsigned short type, unsigned short current_value)
     break;
 
   case RELOCT_IBANKSEL:
-    if (PROC_CLASS_PIC14 == state.device.class || PROC_CLASS_PIC14E == state.device.class) {
+    if (PROC_CLASS_PIC14 == state.device.class) {
       ASSERT(0 == (current_value & 0x0f00));  /* 1383 or 1783 */
       return lst_printf("1?83 ");
+    } else if (PROC_CLASS_PIC14E == state.device.class) {
+      return lst_printf("???? ");
     } else if (PROC_CLASS_PIC16 == state.device.class) {
       ASSERT(0 == (current_value & 0x00ff));
       return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
@@ -534,7 +536,7 @@ print_reloc(unsigned short type, unsigned short current_value)
 
 unsigned int
 lst_data(unsigned int pos, unsigned int byte_org,
-                      unsigned int bytes_emitted)
+                      unsigned int bytes_emitted, unsigned short reloc_type)
 {
   int lst_bytes = 0;
 
@@ -566,40 +568,17 @@ lst_data(unsigned int pos, unsigned int byte_org,
       state.device.class->i_memory_get(state.i_memory, byte_org, &emit_word);
 
       /* display '?' for undefined bytes if it is a relocatable code */
-      if (state.mode == relocatable &&
-          state.obj.section &&
-          state.obj.new_sec_flags & STYP_TEXT &&
-          state.obj.section->relocations_tail) {
-        if (state.obj.section->address + state.obj.section->relocations_tail->address > byte_org) {
-          /* already passed it, go back to the history */
-          gp_reloc_type *p = find_reloc_by_address(byte_org);
-          if (p) {
-            int n = print_reloc(p->type, emit_word);
-            if (0 == n) {
-              pos += lst_printf("%04X ", emit_word);
-            } else {
-              pos += n;
-            }
-          } else {
-            pos += lst_printf("%04X ", emit_word);
-          }
-        } else if (state.obj.section->address + state.obj.section->relocations_tail->address == byte_org) {
-          int n = print_reloc(state.obj.section->relocations_tail->type, emit_word);
-          if (0 == n) {
-            pos += lst_printf("%04X ", emit_word);
-          } else {
-            pos += n;
-          }
-        } else {
-          pos += lst_printf("%04X ", emit_word);
-        }
-      } else {
-        pos += lst_printf("%04X ", emit_word);
+      if (0 != reloc_type) {
+        int n = print_reloc(reloc_type, emit_word);
+        pos += (0 == n) ? lst_printf("%04X ", emit_word) : n;
       }
+      else
+        pos += lst_printf("%04X ", emit_word);
 
       byte_org += 2;
       lst_bytes += 2;
     }
+
     if (bytes_emitted - lst_bytes == 1 && pos + 3 <= LST_LINENUM_POS) {
       unsigned char emit_byte;
 
@@ -627,8 +606,27 @@ lst_format_line(const char *src_line, int value)
   const char *addr_fmt = IS_16BIT_CORE ? "%06X " : "%04X   ";
 #define ADDR_LEN 7
   unsigned int pos = 0;
+  unsigned short reloc_type;
 
   assert(src_line != NULL);
+
+  if (state.mode == relocatable &&
+    state.obj.section &&
+    state.obj.new_sec_flags & STYP_TEXT &&
+    state.obj.section->relocations_tail) {
+      if (state.obj.section->address + state.obj.section->relocations_tail->address > state.lst.line.was_org) {
+        /* already passed it, go back to the history */
+        gp_reloc_type *p = find_reloc_by_address(state.lst.line.was_org);
+        reloc_type = p ? p->type : 0;
+      }
+      else if (state.obj.section->address + state.obj.section->relocations_tail->address == state.lst.line.was_org) {
+        reloc_type = state.obj.section->relocations_tail->type;
+      }
+      else
+        reloc_type = 0;
+    }
+   else
+     reloc_type = 0;
 
   switch (state.lst.line.linetype) {
   case insn:
@@ -690,17 +688,17 @@ lst_format_line(const char *src_line, int value)
     }
     break;
 
-  case insn:
   case data:
   case res:
-    {
-      byte_org = state.lst.line.was_org;
-      bytes_emitted = emitted;
-      pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, state.lst.line.was_org));
-      lst_bytes = lst_data(pos, byte_org, bytes_emitted);
-      byte_org += lst_bytes;
-      bytes_emitted -= lst_bytes;
-    }
+    pos += lst_printf(addr_fmt, state.lst.line.was_org);
+    goto lst_data;
+
+  case insn:
+    pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, state.lst.line.was_org));
+  lst_data:
+    lst_bytes = lst_data(pos, state.lst.line.was_org, emitted, reloc_type);
+    byte_org = state.lst.line.was_org + lst_bytes;
+    bytes_emitted = emitted - lst_bytes;
     break;
 
   case config:
@@ -806,7 +804,7 @@ lst_format_line(const char *src_line, int value)
       /* data left to print on separate lines */
 
       pos = lst_spaces(ADDR_LEN);
-      lst_bytes = lst_data(pos, byte_org, bytes_emitted);
+      lst_bytes = lst_data(pos, byte_org, bytes_emitted, reloc_type);
       byte_org += lst_bytes;
       bytes_emitted -= lst_bytes;
       lst_eol();

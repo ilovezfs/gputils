@@ -1819,7 +1819,7 @@ static gpasmVal do_global(gpasmVal r,
   struct symbol *s;
   struct variable *var;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = set4;
 
   if (state.mode == absolute) {
     gpverror(GPE_OBJECT_ONLY);

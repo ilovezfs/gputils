@@ -175,24 +175,25 @@ const char *gp_processor_coff_name(unsigned long coff_type, unsigned int choice)
 const char *gp_processor_script(pic_processor_t processor);
 unsigned int gp_processor_id_location(pic_processor_t processor);
 int gp_processor_rom_width(proc_class_t class);
-int gp_processor_check_page(proc_class_t class, unsigned int address);
 int gp_processor_check_bank(proc_class_t class, unsigned int address);
+int gp_processor_set_bank(proc_class_t class,
+                          int num_banks,
+                          int bank,
+                          MemBlock *m,
+                          unsigned int address);
+int gp_processor_check_ibank(proc_class_t class, unsigned int address);
+int gp_processor_set_ibank(proc_class_t class,
+                          int num_banks,
+                          int bank,
+                          MemBlock *m,
+                          unsigned int address);
+int gp_processor_check_page(proc_class_t class, unsigned int address);
 int gp_processor_set_page(proc_class_t class,
                           int num_pages,
                           int page,
                           MemBlock *m,
                           unsigned int address,
                           int use_wreg);
-int gp_processor_set_bank(proc_class_t class,
-                          int num_banks,
-                          int bank,
-                          MemBlock *m,
-                          unsigned int address);
-int gp_processor_set_ibank(proc_class_t class,
-                          int num_banks,
-                          int bank,
-                          MemBlock *m,
-                          unsigned int address);
 
 int gp_processor_retlw(proc_class_t class);
 
