@@ -30,6 +30,10 @@ struct proc_class {
   int retlw;
   /* Value in COFF header */
   int rom_width;
+  /* The page size of the program memory. */
+  int page_size;
+  /* The bank size of the RAM memory. */
+  int bank_size;
   /* Bits to shift assembly code address for COFF file byte address */
   unsigned int org_to_byte_shift;
   /* Mask of address bits for bank */
@@ -124,6 +128,7 @@ struct px {
   int num_banks;
   /* These are in org to make it easier to fill from datasheet */
   int maxrom;
+  int prog_mem_size;
   int badrom[MAX_BADROM];
   int config_addrs[2];
   const char *script;
