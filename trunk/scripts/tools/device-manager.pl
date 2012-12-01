@@ -238,6 +238,7 @@ my $px_struct_end;              # The end of the px structure in the gpprocessor
         NUM_PAGES    => 0,
         NUM_BANKS    => 0,
         MAXROM       => 0,
+        PROGSIZE     => 0,              Size of program memory.
         BADROM       => [0, 0],
         CONFIG_ADDRS => [0, 0],
         SCRIPT       => '',
@@ -1439,6 +1440,7 @@ sub new_px_row($$$)
            NUM_PAGES    => ($p16e) ? 0 : $num_pages,
            NUM_BANKS    => ($p16e) ? ($Info->{ACCESS} + 1) : $Info->{BANKS},
            MAXROM       => $rom_end,
+           PROGSIZE     => $lkr_rom_end + 1,
            BADROM       => [ $bad_start, $bad_end ],
            CONFIG_ADDRS => [ $lkr_config_start, $lkr_config_end ],
            SCRIPT       => $Script,
@@ -1575,8 +1577,8 @@ sub extract_px_struct()
   my $lkr_error = '';
 
         # static struct px pics[] = {
-        # { PROC_CLASS_EEPROM8, "__EEPROM8",  { "eeprom8",     "eeprom8",   "eeprom8"  }, 0x1fff, 0, 0, 0xff,     { -1, -1 },            { -1, -1 },             NULL                 },
-        # { PROC_CLASS_PIC14E,  "__16LF1526", { "pic16lf1526", "p16lf1526", "16lf1526" }, 0xa526, 4, 0x1f, 0x1fff,{     -1,     -1 },    { 0x8007, 0x8008 },     "16lf1526_g.lkr"     },
+        #   { PROC_CLASS_PIC12    , "__12F529T39A"  , { "pic12f529t39a"  , "p12f529t39a"    , "12f529t39a"      }, 0xE529,  3,    8, 0x0005FF, 0x000600, {       -1,       -1 }, { 0x000FFF, 0x000FFF }, "12f529t39a_g.lkr"   },
+        #   { PROC_CLASS_PIC14E   , "__16LF1517"    , { "pic16lf1517"    , "p16lf1517"      , "16lf1517"        }, 0xA517,  4,   32, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008007, 0x008008 }, "16lf1517_g.lkr"     },
 
   Log('Extract the table of px struct.', 4);
   $in_table = FALSE;
@@ -1597,12 +1599,12 @@ sub extract_px_struct()
         $px_struct_begin = $n;
         }
       }
-    elsif ($_ =~ /\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\S+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*\"?([\.\w]+)\"?\s*\}/io)
+    elsif ($_ =~ /\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\S+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*\"?([\.\w]+)\"?\s*\}/io)
       {
       my $name0 = $3;
       my $name2 = $5;
       my $coff = str2dec($6);
-      my $script = $14;
+      my $script = $15;
       my $prev;
       my $px = {
                IGNORED      => FALSE,
@@ -1613,8 +1615,9 @@ sub extract_px_struct()
                NUM_PAGES    => str2dec($7),
                NUM_BANKS    => str2dec($8),
                MAXROM       => str2dec($9),
-               BADROM       => [ str2dec($10), str2dec($11) ],
-               CONFIG_ADDRS => [ str2dec($12), str2dec($13) ],
+               PROGSIZE     => str2dec($10),
+               BADROM       => [ str2dec($11), str2dec($12) ],
+               CONFIG_ADDRS => [ str2dec($13), str2dec($14) ],
                SCRIPT       => $script,
                COMMENT      => ''
                };
@@ -1723,6 +1726,7 @@ EOT
       $i = $_->{NUM_BANKS};
       printf((($i <= 32) ? "%u\n"  : "0x%02X\n"), $i);
       print ('maxrom      : ' . neg_form($_->{MAXROM}) . "\n");
+      print ('prog_size   : ' . neg_form($_->{PROGSIZE}) . "\n");
       print ('badrom      : ' . neg_form($_->{BADROM}->[0]) . ', ' . neg_form($_->{BADROM}->[1]) . "\n");
       print ('config_addrs: ' . neg_form($_->{CONFIG_ADDRS}->[0]) . ', ' . neg_form($_->{CONFIG_ADDRS}->[1]) . "\n");
       print  "script      : $_->{SCRIPT}\n";
@@ -1786,6 +1790,8 @@ sub create_one_px_row($$)
   $line .= sprintf((($i <= 32) ? '%4u, ' : '0x%02X, '), $i);
 
   $line .= neg_form($Row->{MAXROM});
+  $line .= ', ';
+  $line .= neg_form($Row->{PROGSIZE});
   $line .= ', ';
 
   $line .= '{ ';
@@ -2149,6 +2155,7 @@ sub show_diff_px_struct()
         $_->{NUM_PAGES}         != $mp->{NUM_PAGES} ||
         $_->{NUM_BANKS}         != $mp->{NUM_BANKS} ||
         $_->{MAXROM}            != $mp->{MAXROM} ||
+        $_->{PROGSIZE}          != $mp->{PROGSIZE} ||
         $_->{BADROM}->[0]       != $mp->{BADROM}->[0] ||
         $_->{BADROM}->[1]       != $mp->{BADROM}->[1] ||
         $_->{CONFIG_ADDRS}->[0] != $mp->{CONFIG_ADDRS}->[0] ||
