@@ -1,4 +1,7 @@
 2012-11-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpprocessor.c: Minor correction of prog_mem_size.
+
+2012-11-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpprocessor.c.
     libgputils/gpprocessor.h:
     New members in the struct proc_class: page_size, bank_size
