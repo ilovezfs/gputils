@@ -244,7 +244,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
           if ((bracket && ')' == buf[*end]) || (!bracket && ('\n' == buf[*end] || ';' == buf[*end]))) {
             if (';' == buf[*end]) {
               /* skip to the trailing newline */
-              *end = ('\n' == buf[*n]) ? *n - 1 : *n;
+              *end = ('\n' == buf[*n - 1]) ? *n - 1 : *n;
             }
             else {
               /* don't eat newline! */
