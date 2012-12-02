@@ -2,6 +2,7 @@
   * gpasm/list.c: added info about amount of free program memory to the
     listing
   * gpasm/macro.c, gpasm/gpasm.c: fixed warnings
+  * gpasm/preprocess.c: fix for eof without newline
 
 2012-12-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpprocessor.c: Minor correction of prog_mem_size.
