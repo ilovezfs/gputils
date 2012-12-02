@@ -244,7 +244,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
           if ((bracket && ')' == buf[*end]) || (!bracket && ('\n' == buf[*end] || ';' == buf[*end]))) {
             if (';' == buf[*end]) {
               /* skip to the trailing newline */
-              *end = *n - 1;
+              *end = ('\n' == buf[*n]) ? *n - 1 : *n;
             }
             else {
               /* don't eat newline! */
@@ -646,19 +646,22 @@ set_source_line(const char *line, int len, struct src_line_s *src_line)
       src_line->size = 128;
       src_line->line = malloc(src_line->size);
     }
-  if (src_line->size < len)  /* newline replaced with '\0' */
+  if ('\n' == line[len - 1])  /* ignore trailing newline */
+    --len;
+ 
+  if (src_line->size <= len)
     {
       do
         {
           src_line->size *= 2;
         }
-      while (src_line->size < len);  /* newline replaced with '\0' */
+      while (src_line->size <= len);
       src_line->line = realloc(src_line->line, src_line->size);
     }
   if (len > 0)
     {
-      memcpy(src_line->line, line, len - 1); /* no newline */
-      src_line->line[len - 1] = '\0';
+      memcpy(src_line->line, line, len);
+      src_line->line[len] = '\0';
     }
   else
     src_line->line[0] = '\0';
