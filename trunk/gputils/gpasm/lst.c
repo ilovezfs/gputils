@@ -261,9 +261,9 @@ lst_memory_map(MemBlock *m)
       gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[0])) :
     b_memory_used(state.i_memory));
   lst_line("Program Memory %s Used: %5i", IS_16BIT_CORE ? "Bytes" : "Words", used);
-  /* maxrom is not the program memory size.
-  lst_line("Program Memory %s Free: %5d", IS_16BIT_CORE ? "Bytes" : "Words", state.maxrom - used);
-  */
+  if (NULL != state.processor && 0 <= state.processor->prog_mem_size)
+    lst_line("Program Memory %s Free: %5u", IS_16BIT_CORE ? "Bytes" : "Words", state.processor->prog_mem_size - used);
+  lst_line("");
 }
 
 void

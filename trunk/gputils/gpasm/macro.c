@@ -29,6 +29,7 @@ Boston, MA 02111-1307, USA.  */
 #include "macro.h"
 #include "parse.h"
 #include "preprocess.h"
+#include "lst.h"
 
 /* Create a new defines table and place the macro parms in it. */
 
