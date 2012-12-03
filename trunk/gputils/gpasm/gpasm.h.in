@@ -195,8 +195,8 @@ extern struct gpasm_state {
              set,                   /*     A SET or '=' */
              set4,                  /*     A 2 byte variable, constant or local */
              config,                /*     A __config line */
-             nolist_dir,           /*     Don't list the directive (ENDW) */
-             dolist_dir }          /*     Force list the directive (WHILE) */
+             nolist_dir,            /*     Don't list the directive (ENDW) */
+             dolist_dir }           /*     Force list the directive (WHILE) */
         linetype;
     } line;
     char startdate[80];             /*   When assembly started */
@@ -208,6 +208,7 @@ extern struct gpasm_state {
     char subtitle_name[80];         /*   given in SUBTITLE directive */
     int tabstop;                    /*   tab-stop distance */
     int line_width;                 /*   listing line width - list c=xxx option */
+    gpasmVal cblock_lst;            /*   cblock constant for listing */
   } lst;
   struct {                          /* Object file state: */
     gp_object_type *object;         /*   Object file */
