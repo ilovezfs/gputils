@@ -59,30 +59,35 @@ lst_throw(void)
   }
 }
 
+void
+lst_page_start(void)
+{
+  lst_throw();
+  switch (state.lst.lst_state) {
+  case in_mem:
+    lst_line("LOC  OBJECT CODE     LINE SOURCE TEXT");
+    lst_line("  VALUE");
+    break;
+
+  case in_symtab:
+    lst_line("SYMBOL TABLE");
+    lst_line("%-32s  %-8s", "  LABEL", "  VALUE");
+    break;
+
+  default:
+    lst_line("");
+    break;
+  }
+  lst_line("");
+}
+
 static void
 lst_check_page_start(void)
 {
   if (state.lst.linesperpage != 0 &&
       (state.lst.lineofpage == 0 ||
-       state.lst.lineofpage > state.lst.linesperpage)) {
-    lst_throw();
-    switch (state.lst.lst_state) {
-    case in_mem:
-      lst_line("LOC  OBJECT CODE     LINE SOURCE TEXT");
-      lst_line("  VALUE");
-      break;
-
-    case in_symtab:
-      lst_line("SYMBOL TABLE");
-      lst_line("%-32s  %-8s", "  LABEL", "  VALUE");
-      break;
-
-    default:
-      lst_line("");
-      break;
-    }
-    lst_line("");
-  }
+       state.lst.lineofpage > state.lst.linesperpage))
+    lst_page_start();
 }
 
 static int
@@ -126,7 +131,7 @@ lst_err_line(const char *type, unsigned int code, const char *format, va_list ar
 {
   if (state.lst.f) {
     lst_check_page_start();
-    fprintf(state.lst.f, "%s[%03d]  : ", type, code);
+    fprintf(state.lst.f, "%s[%03d]%s: ", type, code, (0 == strcmp(type, "Error")) ? "  " : "");
     vfprintf(state.lst.f, format, args);
     lst_eol();
   }
