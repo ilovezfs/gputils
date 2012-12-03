@@ -112,42 +112,66 @@ HH = 1
 	WHILE AA+BB+CC+DD+EE+FF+GG+HH > 0
 	   IF AA > 0
 	      DATA                      "A+"
-	      AA--
+;;;; Begin: Changed in gputils
+;;;;	      AA--
+AA--
+;;;; End: Changed in gputils
 	   ELSE
 	      DATA                      "A-"
 	      IF BB > 0
 		 DATA                   "B+"
-		 BB--
+;;;; Begin: Changed in gputils
+;;;;		 BB--
+BB--
+;;;; End: Changed in gputils
 	      ELSE
 		 DATA                   "B-"
 		 IF CC > 0
 		    DATA                "C+"
-		    CC--
+;;;; Begin: Changed in gputils
+;;;;		    CC--
+CC--
+;;;; End: Changed in gputils
 		 ELSE
 		    DATA                "C-"
 		    IF DD > 0
 		       DATA             "D+"
-		       DD--
+;;;; Begin: Changed in gputils
+;;;;		       DD--
+DD--
+;;;; End: Changed in gputils
 		    ELSE
 		       DATA             "D-"
 		       IF EE > 0
 			  DATA          "E+"
-			  EE--
+;;;; Begin: Changed in gputils
+;;;;			  EE--
+EE--
+;;;; End: Changed in gputils
 		       ELSE
 			  DATA          "E-"
 			  IF FF > 0
 			     DATA       "F+"
-			     FF--
+;;;; Begin: Changed in gputils
+;;;;			     FF--
+FF--
+;;;; End: Changed in gputils
 			  ELSE
 			     DATA       "F-"
 			     IF GG > 0
 				DATA    "G+"
-				GG--
+;;;; Begin: Changed in gputils
+;;;;				GG--
+GG--
+;;;; End: Changed in gputils
 			     ELSE
 				DATA    "G-"
 				IF HH > 0
 				   DATA "H+"
-				   HH--
+;;;; Begin: Changed in gputils
+;;;;				   HH--
+HH--
+;;;; End: Changed in gputils
 				ELSE
 				   DATA "H-"
 				ENDIF

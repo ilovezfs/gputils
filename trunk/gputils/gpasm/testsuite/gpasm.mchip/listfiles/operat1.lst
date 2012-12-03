@@ -1,4 +1,4 @@
-MPASM 03.20.02 Released       OPERAT1.ASM   11-21-2002  20:21:10         PAGE  1
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  16:51:21         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -13,8 +13,8 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0000   0001           00007         DATA    (1)                     ; 1
 0001   0000           00008         DATA    !1                      ; 0
 0002   0001           00009         DATA    !0                      ; 1
-0003   0FFE           00010         DATA    -2                      ; -2
-0004   0FF8           00011         DATA    ~7                      ; FFF8
+0003   FFFE           00010         DATA    -2                      ; -2
+0004   FFF8           00011         DATA    ~7                      ; FFF8
 0005   0012           00012         DATA    HIGH 1234               ; 12
 0006   0034           00013         DATA    LOW 1234                ; 34
 0007   0006           00014         DATA    2*3                     ; 6
@@ -54,56 +54,88 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0029   0001           00048         DATA    1||0                    ; 1
 002A   0000           00049         DATA    0 || 0                  ; 0
                       00050 
-Warning[207]: Found label after column 1. (I)
-  00000004            00051         I = 4
-002B   0004           00052         DATA    I                       ; 4
-MPASM 03.20.02 Released       OPERAT1.ASM   11-21-2002  20:21:10         PAGE  2
+                      00051 ;;;; Begin: Changed in gputils
+                      00052 ;;;;    I = 4
+  00000004            00053 I = 4
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  16:51:21         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-Warning[207]: Found label after column 1. (I)
-  00000005            00053         I += 1
-002C   0005           00054         DATA    I                       ; 5
-Warning[207]: Found label after column 1. (I)
-  00000003            00055         I -= 2
-002D   0003           00056         DATA    I                       ; 3
-Warning[207]: Found label after column 1. (I)
-  00000006            00057         I *= 2
-002E   0006           00058         DATA    I                       ; 6
-Warning[207]: Found label after column 1. (I)
-  00000002            00059         I /= 3
-002F   0002           00060         DATA    I                       ; 2
-Warning[207]: Found label after column 1. (I)
-  00000003            00061         I++
-0030   0003           00062         DATA    I                       ; 3
-Warning[207]: Found label after column 1. (I)
-  00000001            00063         I %= 2
-0031   0001           00064         DATA    I                       ; 1
-Warning[207]: Found label after column 1. (I)
-  00000008            00065         I <<= 3
-0032   0008           00066         DATA    I                       ; 8
-Warning[207]: Found label after column 1. (I)
-  00000004            00067         I >>= 1
-0033   0004           00068         DATA    I                       ; 4
-Warning[207]: Found label after column 1. (I)
-  00000003            00069         I--
-0034   0003           00070         DATA    I                       ; 3
-Warning[207]: Found label after column 1. (I)
-  00000002            00071         I &= 2
-0035   0002           00072         DATA    I                       ; 2
-Warning[207]: Found label after column 1. (I)
-  00000006            00073         I |= 4
-0036   0006           00074         DATA    I                       ; 6
-Warning[207]: Found label after column 1. (I)
-  00000001            00075         I ^= 7
-0037   0001           00076         DATA    I                       ; 1
-                      00077 
-0038   0038           00078         DATA    $
-                      00079 
-                      00080         END
-MPASM 03.20.02 Released       OPERAT1.ASM   11-21-2002  20:21:10         PAGE  3
+                      00054 ;;;; End: Changed in gputils
+002B   0004           00055         DATA    I                       ; 4
+                      00056 ;;;; Begin: Changed in gputils
+                      00057 ;;;;    I += 1
+  00000005            00058 I += 1
+                      00059 ;;;; End: Changed in gputils
+002C   0005           00060         DATA    I                       ; 5
+                      00061 ;;;; Begin: Changed in gputils
+                      00062 ;;;;    I -= 2
+  00000003            00063 I -= 2
+                      00064 ;;;; End: Changed in gputils
+002D   0003           00065         DATA    I                       ; 3
+                      00066 ;;;; Begin: Changed in gputils
+                      00067 ;;;;    I *= 2
+  00000006            00068 I *= 2
+                      00069 ;;;; End: Changed in gputils
+002E   0006           00070         DATA    I                       ; 6
+                      00071 ;;;; Begin: Changed in gputils
+                      00072 ;;;;    I /= 3
+  00000002            00073 I /= 3
+                      00074 ;;;; End: Changed in gputils
+002F   0002           00075         DATA    I                       ; 2
+                      00076 ;;;; Begin: Changed in gputils
+                      00077 ;;;;    I++
+  00000003            00078 I++
+                      00079 ;;;; End: Changed in gputils
+0030   0003           00080         DATA    I                       ; 3
+                      00081 ;;;; Begin: Changed in gputils
+                      00082 ;;;;    I %= 2
+  00000001            00083 I %= 2
+                      00084 ;;;; End: Changed in gputils
+0031   0001           00085         DATA    I                       ; 1
+                      00086 ;;;; Begin: Changed in gputils
+                      00087 ;;;;    I <<= 3
+  00000008            00088 I <<= 3
+                      00089 ;;;; End: Changed in gputils
+0032   0008           00090         DATA    I                       ; 8
+                      00091 ;;;; Begin: Changed in gputils
+                      00092 ;;;;    I >>= 1
+  00000004            00093 I >>= 1
+                      00094 ;;;; End: Changed in gputils
+0033   0004           00095         DATA    I                       ; 4
+                      00096 ;;;; Begin: Changed in gputils
+                      00097 ;;;;    I--
+  00000003            00098 I--
+                      00099 ;;;; End: Changed in gputils
+0034   0003           00100         DATA    I                       ; 3
+                      00101 ;;;; Begin: Changed in gputils
+                      00102 ;;;;    I &= 2
+  00000002            00103 I &= 2
+                      00104 ;;;; End: Changed in gputils
+0035   0002           00105         DATA    I                       ; 2
+                      00106 ;;;; Begin: Changed in gputils
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  16:51:21         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00107 ;;;;    I |= 4
+  00000006            00108 I |= 4
+                      00109 ;;;; End: Changed in gputils
+0036   0006           00110         DATA    I                       ; 6
+                      00111 ;;;; Begin: Changed in gputils
+                      00112 ;;;;    I ^= 7
+  00000001            00113 I ^= 7
+                      00114 ;;;; End: Changed in gputils
+0037   0001           00115         DATA    I                       ; 1
+                      00116 
+0038   0038           00117         DATA    $
+                      00118 
+                      00119         END
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  16:51:21         PAGE  4
 
 
 SYMBOL TABLE
@@ -124,7 +156,7 @@ Program Memory Words Free:   455
 
 
 Errors   :     0
-Warnings :    13 reported,     0 suppressed
+Warnings :     0 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 
 

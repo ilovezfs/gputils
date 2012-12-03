@@ -48,31 +48,70 @@
 	DATA	1||0			; 1
 	DATA	0 || 0			; 0
 
-	I = 4
+;;;; Begin: Changed in gputils
+;;;;	I = 4
+I = 4
+;;;; End: Changed in gputils
 	DATA	I			; 4
-	I += 1
+;;;; Begin: Changed in gputils
+;;;;	I += 1
+I += 1
+;;;; End: Changed in gputils
 	DATA	I			; 5
-	I -= 2
+;;;; Begin: Changed in gputils
+;;;;	I -= 2
+I -= 2
+;;;; End: Changed in gputils
 	DATA	I			; 3
-	I *= 2
+;;;; Begin: Changed in gputils
+;;;;	I *= 2
+I *= 2
+;;;; End: Changed in gputils
 	DATA	I			; 6
-	I /= 3
+;;;; Begin: Changed in gputils
+;;;;	I /= 3
+I /= 3
+;;;; End: Changed in gputils
 	DATA	I			; 2
-	I++
+;;;; Begin: Changed in gputils
+;;;;	I++
+I++
+;;;; End: Changed in gputils
 	DATA	I			; 3
-	I %= 2
+;;;; Begin: Changed in gputils
+;;;;	I %= 2
+I %= 2
+;;;; End: Changed in gputils
 	DATA	I			; 1
-	I <<= 3
+;;;; Begin: Changed in gputils
+;;;;	I <<= 3
+I <<= 3
+;;;; End: Changed in gputils
 	DATA	I			; 8
-	I >>= 1
+;;;; Begin: Changed in gputils
+;;;;	I >>= 1
+I >>= 1
+;;;; End: Changed in gputils
 	DATA	I			; 4
-	I--
+;;;; Begin: Changed in gputils
+;;;;	I--
+I--
+;;;; End: Changed in gputils
 	DATA	I			; 3
-	I &= 2
+;;;; Begin: Changed in gputils
+;;;;	I &= 2
+I &= 2
+;;;; End: Changed in gputils
 	DATA	I			; 2
-	I |= 4
+;;;; Begin: Changed in gputils
+;;;;	I |= 4
+I |= 4
+;;;; End: Changed in gputils
 	DATA	I			; 6
-	I ^= 7
+;;;; Begin: Changed in gputils
+;;;;	I ^= 7
+I ^= 7
+;;;; End: Changed in gputils
 	DATA	I			; 1
 
 	DATA	$

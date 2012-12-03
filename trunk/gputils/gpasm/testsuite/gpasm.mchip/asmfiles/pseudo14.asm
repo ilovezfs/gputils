@@ -94,25 +94,37 @@
 	BTFSS    3,2
 	GOTO     160
 
-	Dest = 0
+;;;; Begin: Changed in gputils
+;;;;	Dest = 0
+Dest = 0
+;;;; End: Changed in gputils
 	LCALL Dest
 	BCF	0xa, 3
 	BCF	0xa, 4
 	CALL     Dest
 
-	Dest = 0800
+;;;; Begin: Changed in gputils
+;;;;	Dest = 0800
+Dest = 0800
+;;;; End: Changed in gputils
 	LCALL Dest
 	BSF	0xa, 3
 	BCF	0xa, 4
 	CALL     Dest
 
-	Dest = 1000
+;;;; Begin: Changed in gputils
+;;;;	Dest = 1000
+Dest = 1000
+;;;; End: Changed in gputils
 	LCALL Dest
 	BCF	0xa, 3
 	BSF	0xa, 4
 	CALL     Dest
 
-	Dest = 1800
+;;;; Begin: Changed in gputils
+;;;;	Dest = 1800
+Dest = 1800
+;;;; End: Changed in gputils
 	LCALL Dest
 	BSF	0xa, 3
 	BSF	0xa, 4

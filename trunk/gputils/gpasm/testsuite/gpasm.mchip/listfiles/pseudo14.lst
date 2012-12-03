@@ -1,4 +1,4 @@
-MPASM 03.20.02 Released      PSEUDO14.ASM   11-21-2002  20:21:35         PAGE  1
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  16:51:22         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -8,153 +8,163 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00002 
                       00003 ; This file tests the special instructions for the 14-bit core.
                       00004 
-  00001FFF            00005         LIST    P=16CXX,R=HEX,M=0x1FFF  ; For LCALL test, MaxROM is expanded
-                      00006 
-0000   1003           00007         CLRC
-0001   1003           00008         BCF      3,0
-                      00009 
-0002   1403           00010         SETC
-0003   1403           00011         BSF      3,0
-                      00012 
-0004   1083           00013         CLRDC
-0005   1083           00014         BCF      3,1
-                      00015 
-0006   1483           00016         SETDC
-0007   1483           00017         BSF      3,1
-                      00018 
-0008   1103           00019         CLRZ
-0009   1103           00020         BCF      3,2
-                      00021 
-000A   1503           00022         SETZ
-000B   1503           00023         BSF      3,2
-                      00024 
-000C   1C03           00025         SKPC
-000D   1C03           00026         BTFSS    3,0
-                      00027 
-000E   1803           00028         SKPNC
-000F   1803           00029         BTFSC    3,0
-                      00030 
-0010   1C83           00031         SKPDC
-0011   1C83           00032         BTFSS    3,1
-                      00033 
-0012   1883           00034         SKPNDC
-0013   1883           00035         BTFSC    3,1
-                      00036 
-0014   1D03           00037         SKPZ
-0015   1D03           00038         BTFSS    3,2
-                      00039 
-0016   1903           00040         SKPNZ
-0017   1903           00041         BTFSC    3,2
-                      00042 
-0018   0885           00043         TSTF 5
-0019   0885           00044         MOVF     5,1
-                      00045 
-001A   0806           00046         MOVFW 6
-001B   0806           00047         MOVF     6,0
-                      00048 
-001C   0987 0A87      00049         NEGF 7,1
-001E   0987           00050         COMF     7,1
-001F   0A87           00051         INCF     7,1
-                      00052 
-0020   1803 0A08      00053         ADDCF 8,0
-MPASM 03.20.02 Released      PSEUDO14.ASM   11-21-2002  20:21:35         PAGE  2
+                      00005 ;     05/06/01 Craig Franklin - removed M=0x1FFF
+                      00006         LIST    P=16CXX,R=HEX
+                      00007 
+0000   1003           00008         CLRC
+0001   1003           00009         BCF      3,0
+                      00010 
+0002   1403           00011         SETC
+0003   1403           00012         BSF      3,0
+                      00013 
+0004   1083           00014         CLRDC
+0005   1083           00015         BCF      3,1
+                      00016 
+0006   1483           00017         SETDC
+0007   1483           00018         BSF      3,1
+                      00019 
+0008   1103           00020         CLRZ
+0009   1103           00021         BCF      3,2
+                      00022 
+000A   1503           00023         SETZ
+000B   1503           00024         BSF      3,2
+                      00025 
+000C   1C03           00026         SKPC
+000D   1C03           00027         BTFSS    3,0
+                      00028 
+000E   1803           00029         SKPNC
+000F   1803           00030         BTFSC    3,0
+                      00031 
+0010   1C83           00032         SKPDC
+0011   1C83           00033         BTFSS    3,1
+                      00034 
+0012   1883           00035         SKPNDC
+0013   1883           00036         BTFSC    3,1
+                      00037 
+0014   1D03           00038         SKPZ
+0015   1D03           00039         BTFSS    3,2
+                      00040 
+0016   1903           00041         SKPNZ
+0017   1903           00042         BTFSC    3,2
+                      00043 
+0018   0885           00044         TSTF 5
+0019   0885           00045         MOVF     5,1
+                      00046 
+001A   0806           00047         MOVFW 6
+001B   0806           00048         MOVF     6,0
+                      00049 
+001C   0987 0A87      00050         NEGF 7,1
+001E   0987           00051         COMF     7,1
+001F   0A87           00052         INCF     7,1
+                      00053 
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  16:51:22         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0022   1803           00054         BTFSC    3,0
-0023   0A08           00055         INCF     8,0
-                      00056 
-0024   1803 0389      00057         SUBCF 9,1
-0026   1803           00058         BTFSC    3,0
-0027   0389           00059         DECF     9,1
-                      00060 
-0028   1883 0A02      00061         ADDDCF 2,0
-002A   1883           00062         BTFSC    3,1
-002B   0A02           00063         INCF     2,0
-                      00064 
-002C   1883 0383      00065         SUBDCF 3,1
-002E   1883           00066         BTFSC    3,1
-002F   0383           00067         DECF     3,1
-                      00068 
-0030   2900           00069         B 100
-0031   2900           00070         GOTO     100
-                      00071 
-0032   1803 2910      00072         BC 110
-0034   1803           00073         BTFSC    3,0
-0035   2910           00074         GOTO     110
-                      00075 
-0036   1C03 2920      00076         BNC 120
-0038   1C03           00077         BTFSS    3,0
-0039   2920           00078         GOTO     120
-                      00079 
-003A   1883 2930      00080         BDC 130
-003C   1883           00081         BTFSC    3,1
-003D   2930           00082         GOTO     130
-                      00083 
-003E   1C83 2940      00084         BNDC 140
-0040   1C83           00085         BTFSS    3,1
-0041   2940           00086         GOTO     140
-                      00087 
-0042   1903 2950      00088         BZ 150
-0044   1903           00089         BTFSC    3,2
-0045   2950           00090         GOTO     150
-                      00091 
-0046   1D03 2960      00092         BNZ 160
-0048   1D03           00093         BTFSS    3,2
-0049   2960           00094         GOTO     160
-                      00095 
-Warning[207]: Found label after column 1. (Dest)
-  00000000            00096         Dest = 0
+0020   1803 0A08      00054         ADDCF 8,0
+0022   1803           00055         BTFSC    3,0
+0023   0A08           00056         INCF     8,0
+                      00057 
+0024   1803 0389      00058         SUBCF 9,1
+0026   1803           00059         BTFSC    3,0
+0027   0389           00060         DECF     9,1
+                      00061 
+0028   1883 0A02      00062         ADDDCF 2,0
+002A   1883           00063         BTFSC    3,1
+002B   0A02           00064         INCF     2,0
+                      00065 
+002C   1883 0383      00066         SUBDCF 3,1
+002E   1883           00067         BTFSC    3,1
+002F   0383           00068         DECF     3,1
+                      00069 
+0030   2900           00070         B 100
+0031   2900           00071         GOTO     100
+                      00072 
+0032   1803 2910      00073         BC 110
+0034   1803           00074         BTFSC    3,0
+0035   2910           00075         GOTO     110
+                      00076 
+0036   1C03 2920      00077         BNC 120
+0038   1C03           00078         BTFSS    3,0
+0039   2920           00079         GOTO     120
+                      00080 
+003A   1883 2930      00081         BDC 130
+003C   1883           00082         BTFSC    3,1
+003D   2930           00083         GOTO     130
+                      00084 
+003E   1C83 2940      00085         BNDC 140
+0040   1C83           00086         BTFSS    3,1
+0041   2940           00087         GOTO     140
+                      00088 
+0042   1903 2950      00089         BZ 150
+0044   1903           00090         BTFSC    3,2
+0045   2950           00091         GOTO     150
+                      00092 
+0046   1D03 2960      00093         BNZ 160
+0048   1D03           00094         BTFSS    3,2
+0049   2960           00095         GOTO     160
+                      00096 
+                      00097 ;;;; Begin: Changed in gputils
+                      00098 ;;;;    Dest = 0
+  00000000            00099 Dest = 0
+                      00100 ;;;; End: Changed in gputils
 Message[307]: Setting page bits.
-004A   118A 120A 2000 00097         LCALL Dest
-004D   118A           00098         BCF     0xa, 3
-004E   120A           00099         BCF     0xa, 4
-004F   2000           00100         CALL     Dest
-                      00101 
-Warning[207]: Found label after column 1. (Dest)
-  00000800            00102         Dest = 0800
-Message[307]: Setting page bits.
-MPASM 03.20.02 Released      PSEUDO14.ASM   11-21-2002  20:21:35         PAGE  3
+004A   118A 120A 2000 00101         LCALL Dest
+004D   118A           00102         BCF     0xa, 3
+004E   120A           00103         BCF     0xa, 4
+004F   2000           00104         CALL     Dest
+                      00105 
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  16:51:22         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0050   158A 120A 2000 00103         LCALL Dest
-0053   158A           00104         BSF     0xa, 3
-0054   120A           00105         BCF     0xa, 4
-Message[306]: Crossing page boundary -- ensure page bits are set.
-0055   2000           00106         CALL     Dest
-                      00107 
-Warning[207]: Found label after column 1. (Dest)
-  00001000            00108         Dest = 1000
+                      00106 ;;;; Begin: Changed in gputils
+                      00107 ;;;;    Dest = 0800
+  00000800            00108 Dest = 0800
+                      00109 ;;;; End: Changed in gputils
 Message[307]: Setting page bits.
-0056   118A 160A 2000 00109         LCALL Dest
-0059   118A           00110         BCF     0xa, 3
-005A   160A           00111         BSF     0xa, 4
+0050   158A 120A 2000 00110         LCALL Dest
+0053   158A           00111         BSF     0xa, 3
+0054   120A           00112         BCF     0xa, 4
 Message[306]: Crossing page boundary -- ensure page bits are set.
-005B   2000           00112         CALL     Dest
-                      00113 
-Warning[207]: Found label after column 1. (Dest)
-  00001800            00114         Dest = 1800
+0055   2000           00113         CALL     Dest
+                      00114 
+                      00115 ;;;; Begin: Changed in gputils
+                      00116 ;;;;    Dest = 1000
+  00001000            00117 Dest = 1000
+                      00118 ;;;; End: Changed in gputils
 Message[307]: Setting page bits.
-005C   158A 160A 2000 00115         LCALL Dest
-005F   158A           00116         BSF     0xa, 3
-0060   160A           00117         BSF     0xa, 4
+0056   118A 160A 2000 00119         LCALL Dest
+0059   118A           00120         BCF     0xa, 3
+005A   160A           00121         BSF     0xa, 4
 Message[306]: Crossing page boundary -- ensure page bits are set.
-0061   2000           00118         CALL     Dest
-                      00119 
-0062   0061           00120         HALT
-                      00121 
-0063   000C           00122         SETLAT  0
-0064   000D           00123         SETLAT  1
-0065   000E           00124         SETLAT  2
-0066   000F           00125         SETLAT  3
-                      00126 
-                      00127         END
-MPASM 03.20.02 Released      PSEUDO14.ASM   11-21-2002  20:21:35         PAGE  4
+005B   2000           00122         CALL     Dest
+                      00123 
+                      00124 ;;;; Begin: Changed in gputils
+                      00125 ;;;;    Dest = 1800
+  00001800            00126 Dest = 1800
+                      00127 ;;;; End: Changed in gputils
+Message[307]: Setting page bits.
+005C   158A 160A 2000 00128         LCALL Dest
+005F   158A           00129         BSF     0xa, 3
+0060   160A           00130         BSF     0xa, 4
+Message[306]: Crossing page boundary -- ensure page bits are set.
+0061   2000           00131         CALL     Dest
+                      00132 
+                      00133 ;     05/06/01 Craig Franklin - removed microchip internal tests
+                      00134 ;       HALT
+                      00135 
+                      00136 ;       SETLAT  0
+                      00137 ;       SETLAT  1
+                      00138 ;       SETLAT  2
+                      00139 ;       SETLAT  3
+                      00140 
+                      00141         END
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  16:51:22         PAGE  4
 
 
 SYMBOL TABLE
@@ -167,16 +177,16 @@ __16CXX                           00000001
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 
 0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
-0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX--------- ----------------
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XX-------------- ----------------
 
 All other memory blocks unused.
 
-Program Memory Words Used:   103
-Program Memory Words Free:  8089
+Program Memory Words Used:    98
+Program Memory Words Free:  8094
 
 
 Errors   :     0
-Warnings :     4 reported,     0 suppressed
+Warnings :     0 reported,     0 suppressed
 Messages :     7 reported,     0 suppressed
 
 

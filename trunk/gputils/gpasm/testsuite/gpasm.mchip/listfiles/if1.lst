@@ -1,4 +1,4 @@
-MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  1
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  14:50:42         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -57,7 +57,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00051            ENDIF
                       00052         ELSE
                       00053            IF 2==2
-MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  2
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  14:50:42         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -116,7 +116,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
   00000001            00104 BB = 1
   00000001            00105 CC = 1
   00000001            00106 DD = 1
-MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  3
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  14:50:42         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -130,442 +130,650 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00112         WHILE AA+BB+CC+DD+EE+FF+GG+HH > 0
                       00113            IF AA > 0
 000A   412B           00114               DATA                      "A+"
-Warning[207]: Found label after column 1. (AA)
-  00000000            00115               AA--
-                      00116            ELSE
-                      00117               DATA                      "A-"
-                      00118               IF BB > 0
-                      00119                  DATA                   "B+"
-                      00120                  BB--
-                      00121               ELSE
-                      00122                  DATA                   "B-"
-                      00123                  IF CC > 0
-                      00124                     DATA                "C+"
-                      00125                     CC--
-                      00126                  ELSE
-                      00127                     DATA                "C-"
-                      00128                     IF DD > 0
-                      00129                        DATA             "D+"
-                      00130                        DD--
-                      00131                     ELSE
-                      00132                        DATA             "D-"
-                      00133                        IF EE > 0
-                      00134                           DATA          "E+"
-                      00135                           EE--
-                      00136                        ELSE
-                      00137                           DATA          "E-"
-                      00138                           IF FF > 0
-                      00139                              DATA       "F+"
-                      00140                              FF--
-                      00141                           ELSE
-                      00142                              DATA       "F-"
-                      00143                              IF GG > 0
-                      00144                                 DATA    "G+"
-                      00145                                 GG--
-                      00146                              ELSE
-                      00147                                 DATA    "G-"
-                      00148                                 IF HH > 0
-                      00149                                    DATA "H+"
-                      00150                                    HH--
-                      00151                                 ELSE
-                      00152                                    DATA "H-"
-                      00153                                 ENDIF
-                      00154                              ENDIF
-                      00155                           ENDIF
-                      00156                        ENDIF
-                      00157                     ENDIF
-                      00158                  ENDIF
-MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  4
+                      00115 ;;;; Begin: Changed in gputils
+                      00116 ;;;;          AA--
+  00000000            00117 AA--
+                      00118 ;;;; End: Changed in gputils
+                      00119            ELSE
+                      00120               DATA                      "A-"
+                      00121               IF BB > 0
+                      00122                  DATA                   "B+"
+                      00123 ;;;; Begin: Changed in gputils
+                      00124 ;;;;             BB--
+                      00125 BB--
+                      00126 ;;;; End: Changed in gputils
+                      00127               ELSE
+                      00128                  DATA                   "B-"
+                      00129                  IF CC > 0
+                      00130                     DATA                "C+"
+                      00131 ;;;; Begin: Changed in gputils
+                      00132 ;;;;                CC--
+                      00133 CC--
+                      00134 ;;;; End: Changed in gputils
+                      00135                  ELSE
+                      00136                     DATA                "C-"
+                      00137                     IF DD > 0
+                      00138                        DATA             "D+"
+                      00139 ;;;; Begin: Changed in gputils
+                      00140 ;;;;                   DD--
+                      00141 DD--
+                      00142 ;;;; End: Changed in gputils
+                      00143                     ELSE
+                      00144                        DATA             "D-"
+                      00145                        IF EE > 0
+                      00146                           DATA          "E+"
+                      00147 ;;;; Begin: Changed in gputils
+                      00148 ;;;;                      EE--
+                      00149 EE--
+                      00150 ;;;; End: Changed in gputils
+                      00151                        ELSE
+                      00152                           DATA          "E-"
+                      00153                           IF FF > 0
+                      00154                              DATA       "F+"
+                      00155 ;;;; Begin: Changed in gputils
+                      00156 ;;;;                         FF--
+                      00157 FF--
+                      00158 ;;;; End: Changed in gputils
+                      00159                           ELSE
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  14:50:42         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00159               ENDIF
-                      00160            ENDIF
+                      00160                              DATA       "F-"
+                      00161                              IF GG > 0
+                      00162                                 DATA    "G+"
+                      00163 ;;;; Begin: Changed in gputils
+                      00164 ;;;;                            GG--
+                      00165 GG--
+                      00166 ;;;; End: Changed in gputils
+                      00167                              ELSE
+                      00168                                 DATA    "G-"
+                      00169                                 IF HH > 0
+                      00170                                    DATA "H+"
+                      00171 ;;;; Begin: Changed in gputils
+                      00172 ;;;;                               HH--
+                      00173 HH--
+                      00174 ;;;; End: Changed in gputils
+                      00175                                 ELSE
+                      00176                                    DATA "H-"
+                      00177                                 ENDIF
+                      00178                              ENDIF
+                      00179                           ENDIF
+                      00180                        ENDIF
+                      00181                     ENDIF
+                      00182                  ENDIF
+                      00183               ENDIF
+                      00184            ENDIF
                       00113            IF AA > 0
                       00114               DATA                      "A+"
-                      00115               AA--
-                      00116            ELSE
-000B   412D           00117               DATA                      "A-"
-                      00118               IF BB > 0
-000C   422B           00119                  DATA                   "B+"
-Warning[207]: Found label after column 1. (BB)
-  00000000            00120                  BB--
-                      00121               ELSE
-                      00122                  DATA                   "B-"
-                      00123                  IF CC > 0
-                      00124                     DATA                "C+"
-                      00125                     CC--
-                      00126                  ELSE
-                      00127                     DATA                "C-"
-                      00128                     IF DD > 0
-                      00129                        DATA             "D+"
-                      00130                        DD--
-                      00131                     ELSE
-                      00132                        DATA             "D-"
-                      00133                        IF EE > 0
-                      00134                           DATA          "E+"
-                      00135                           EE--
-                      00136                        ELSE
-                      00137                           DATA          "E-"
-                      00138                           IF FF > 0
-                      00139                              DATA       "F+"
-                      00140                              FF--
-                      00141                           ELSE
-                      00142                              DATA       "F-"
-                      00143                              IF GG > 0
-                      00144                                 DATA    "G+"
-                      00145                                 GG--
-                      00146                              ELSE
-                      00147                                 DATA    "G-"
-                      00148                                 IF HH > 0
-                      00149                                    DATA "H+"
-                      00150                                    HH--
-                      00151                                 ELSE
-                      00152                                    DATA "H-"
-                      00153                                 ENDIF
-                      00154                              ENDIF
-                      00155                           ENDIF
-                      00156                        ENDIF
-                      00157                     ENDIF
-                      00158                  ENDIF
-                      00159               ENDIF
-                      00160            ENDIF
-                      00113            IF AA > 0
-                      00114               DATA                      "A+"
-MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  5
+                      00115 ;;;; Begin: Changed in gputils
+                      00116 ;;;;          AA--
+                      00117 AA--
+                      00118 ;;;; End: Changed in gputils
+                      00119            ELSE
+000B   412D           00120               DATA                      "A-"
+                      00121               IF BB > 0
+000C   422B           00122                  DATA                   "B+"
+                      00123 ;;;; Begin: Changed in gputils
+                      00124 ;;;;             BB--
+  00000000            00125 BB--
+                      00126 ;;;; End: Changed in gputils
+                      00127               ELSE
+                      00128                  DATA                   "B-"
+                      00129                  IF CC > 0
+                      00130                     DATA                "C+"
+                      00131 ;;;; Begin: Changed in gputils
+                      00132 ;;;;                CC--
+                      00133 CC--
+                      00134 ;;;; End: Changed in gputils
+                      00135                  ELSE
+                      00136                     DATA                "C-"
+                      00137                     IF DD > 0
+                      00138                        DATA             "D+"
+                      00139 ;;;; Begin: Changed in gputils
+                      00140 ;;;;                   DD--
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  14:50:42         PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00115               AA--
-                      00116            ELSE
-000D   412D           00117               DATA                      "A-"
-                      00118               IF BB > 0
-                      00119                  DATA                   "B+"
-                      00120                  BB--
-                      00121               ELSE
-000E   422D           00122                  DATA                   "B-"
-                      00123                  IF CC > 0
-000F   432B           00124                     DATA                "C+"
-Warning[207]: Found label after column 1. (CC)
-  00000000            00125                     CC--
-                      00126                  ELSE
-                      00127                     DATA                "C-"
-                      00128                     IF DD > 0
-                      00129                        DATA             "D+"
-                      00130                        DD--
-                      00131                     ELSE
-                      00132                        DATA             "D-"
-                      00133                        IF EE > 0
-                      00134                           DATA          "E+"
-                      00135                           EE--
-                      00136                        ELSE
-                      00137                           DATA          "E-"
-                      00138                           IF FF > 0
-                      00139                              DATA       "F+"
-                      00140                              FF--
-                      00141                           ELSE
-                      00142                              DATA       "F-"
-                      00143                              IF GG > 0
-                      00144                                 DATA    "G+"
-                      00145                                 GG--
-                      00146                              ELSE
-                      00147                                 DATA    "G-"
-                      00148                                 IF HH > 0
-                      00149                                    DATA "H+"
-                      00150                                    HH--
-                      00151                                 ELSE
-                      00152                                    DATA "H-"
-                      00153                                 ENDIF
-                      00154                              ENDIF
-                      00155                           ENDIF
-                      00156                        ENDIF
-                      00157                     ENDIF
-                      00158                  ENDIF
-                      00159               ENDIF
-                      00160            ENDIF
+                      00141 DD--
+                      00142 ;;;; End: Changed in gputils
+                      00143                     ELSE
+                      00144                        DATA             "D-"
+                      00145                        IF EE > 0
+                      00146                           DATA          "E+"
+                      00147 ;;;; Begin: Changed in gputils
+                      00148 ;;;;                      EE--
+                      00149 EE--
+                      00150 ;;;; End: Changed in gputils
+                      00151                        ELSE
+                      00152                           DATA          "E-"
+                      00153                           IF FF > 0
+                      00154                              DATA       "F+"
+                      00155 ;;;; Begin: Changed in gputils
+                      00156 ;;;;                         FF--
+                      00157 FF--
+                      00158 ;;;; End: Changed in gputils
+                      00159                           ELSE
+                      00160                              DATA       "F-"
+                      00161                              IF GG > 0
+                      00162                                 DATA    "G+"
+                      00163 ;;;; Begin: Changed in gputils
+                      00164 ;;;;                            GG--
+                      00165 GG--
+                      00166 ;;;; End: Changed in gputils
+                      00167                              ELSE
+                      00168                                 DATA    "G-"
+                      00169                                 IF HH > 0
+                      00170                                    DATA "H+"
+                      00171 ;;;; Begin: Changed in gputils
+                      00172 ;;;;                               HH--
+                      00173 HH--
+                      00174 ;;;; End: Changed in gputils
+                      00175                                 ELSE
+                      00176                                    DATA "H-"
+                      00177                                 ENDIF
+                      00178                              ENDIF
+                      00179                           ENDIF
+                      00180                        ENDIF
+                      00181                     ENDIF
+                      00182                  ENDIF
+                      00183               ENDIF
+                      00184            ENDIF
                       00113            IF AA > 0
                       00114               DATA                      "A+"
-                      00115               AA--
-                      00116            ELSE
-0010   412D           00117               DATA                      "A-"
-                      00118               IF BB > 0
-MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  6
+                      00115 ;;;; Begin: Changed in gputils
+                      00116 ;;;;          AA--
+                      00117 AA--
+                      00118 ;;;; End: Changed in gputils
+                      00119            ELSE
+000D   412D           00120               DATA                      "A-"
+                      00121               IF BB > 0
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  14:50:42         PAGE  6
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00119                  DATA                   "B+"
-                      00120                  BB--
-                      00121               ELSE
-0011   422D           00122                  DATA                   "B-"
-                      00123                  IF CC > 0
-                      00124                     DATA                "C+"
-                      00125                     CC--
-                      00126                  ELSE
-0012   432D           00127                     DATA                "C-"
-                      00128                     IF DD > 0
-0013   442B           00129                        DATA             "D+"
-Warning[207]: Found label after column 1. (DD)
-  00000000            00130                        DD--
-                      00131                     ELSE
-                      00132                        DATA             "D-"
-                      00133                        IF EE > 0
-                      00134                           DATA          "E+"
-                      00135                           EE--
-                      00136                        ELSE
-                      00137                           DATA          "E-"
-                      00138                           IF FF > 0
-                      00139                              DATA       "F+"
-                      00140                              FF--
-                      00141                           ELSE
-                      00142                              DATA       "F-"
-                      00143                              IF GG > 0
-                      00144                                 DATA    "G+"
-                      00145                                 GG--
-                      00146                              ELSE
-                      00147                                 DATA    "G-"
-                      00148                                 IF HH > 0
-                      00149                                    DATA "H+"
-                      00150                                    HH--
-                      00151                                 ELSE
-                      00152                                    DATA "H-"
-                      00153                                 ENDIF
-                      00154                              ENDIF
-                      00155                           ENDIF
-                      00156                        ENDIF
-                      00157                     ENDIF
-                      00158                  ENDIF
-                      00159               ENDIF
-                      00160            ENDIF
-                      00113            IF AA > 0
-                      00114               DATA                      "A+"
-                      00115               AA--
-                      00116            ELSE
-0014   412D           00117               DATA                      "A-"
-                      00118               IF BB > 0
-                      00119                  DATA                   "B+"
-                      00120                  BB--
-                      00121               ELSE
-0015   422D           00122                  DATA                   "B-"
-MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  7
+                      00122                  DATA                   "B+"
+                      00123 ;;;; Begin: Changed in gputils
+                      00124 ;;;;             BB--
+                      00125 BB--
+                      00126 ;;;; End: Changed in gputils
+                      00127               ELSE
+000E   422D           00128                  DATA                   "B-"
+                      00129                  IF CC > 0
+000F   432B           00130                     DATA                "C+"
+                      00131 ;;;; Begin: Changed in gputils
+                      00132 ;;;;                CC--
+  00000000            00133 CC--
+                      00134 ;;;; End: Changed in gputils
+                      00135                  ELSE
+                      00136                     DATA                "C-"
+                      00137                     IF DD > 0
+                      00138                        DATA             "D+"
+                      00139 ;;;; Begin: Changed in gputils
+                      00140 ;;;;                   DD--
+                      00141 DD--
+                      00142 ;;;; End: Changed in gputils
+                      00143                     ELSE
+                      00144                        DATA             "D-"
+                      00145                        IF EE > 0
+                      00146                           DATA          "E+"
+                      00147 ;;;; Begin: Changed in gputils
+                      00148 ;;;;                      EE--
+                      00149 EE--
+                      00150 ;;;; End: Changed in gputils
+                      00151                        ELSE
+                      00152                           DATA          "E-"
+                      00153                           IF FF > 0
+                      00154                              DATA       "F+"
+                      00155 ;;;; Begin: Changed in gputils
+                      00156 ;;;;                         FF--
+                      00157 FF--
+                      00158 ;;;; End: Changed in gputils
+                      00159                           ELSE
+                      00160                              DATA       "F-"
+                      00161                              IF GG > 0
+                      00162                                 DATA    "G+"
+                      00163 ;;;; Begin: Changed in gputils
+                      00164 ;;;;                            GG--
+                      00165 GG--
+                      00166 ;;;; End: Changed in gputils
+                      00167                              ELSE
+                      00168                                 DATA    "G-"
+                      00169                                 IF HH > 0
+                      00170                                    DATA "H+"
+                      00171 ;;;; Begin: Changed in gputils
+                      00172 ;;;;                               HH--
+                      00173 HH--
+                      00174 ;;;; End: Changed in gputils
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  14:50:42         PAGE  7
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00123                  IF CC > 0
-                      00124                     DATA                "C+"
-                      00125                     CC--
-                      00126                  ELSE
-0016   432D           00127                     DATA                "C-"
-                      00128                     IF DD > 0
-                      00129                        DATA             "D+"
-                      00130                        DD--
-                      00131                     ELSE
-0017   442D           00132                        DATA             "D-"
-                      00133                        IF EE > 0
-0018   452B           00134                           DATA          "E+"
-Warning[207]: Found label after column 1. (EE)
-  00000000            00135                           EE--
-                      00136                        ELSE
-                      00137                           DATA          "E-"
-                      00138                           IF FF > 0
-                      00139                              DATA       "F+"
-                      00140                              FF--
-                      00141                           ELSE
-                      00142                              DATA       "F-"
-                      00143                              IF GG > 0
-                      00144                                 DATA    "G+"
-                      00145                                 GG--
-                      00146                              ELSE
-                      00147                                 DATA    "G-"
-                      00148                                 IF HH > 0
-                      00149                                    DATA "H+"
-                      00150                                    HH--
-                      00151                                 ELSE
-                      00152                                    DATA "H-"
-                      00153                                 ENDIF
-                      00154                              ENDIF
-                      00155                           ENDIF
-                      00156                        ENDIF
-                      00157                     ENDIF
-                      00158                  ENDIF
-                      00159               ENDIF
-                      00160            ENDIF
+                      00175                                 ELSE
+                      00176                                    DATA "H-"
+                      00177                                 ENDIF
+                      00178                              ENDIF
+                      00179                           ENDIF
+                      00180                        ENDIF
+                      00181                     ENDIF
+                      00182                  ENDIF
+                      00183               ENDIF
+                      00184            ENDIF
                       00113            IF AA > 0
                       00114               DATA                      "A+"
-                      00115               AA--
-                      00116            ELSE
-0019   412D           00117               DATA                      "A-"
-                      00118               IF BB > 0
-                      00119                  DATA                   "B+"
-                      00120                  BB--
-                      00121               ELSE
-001A   422D           00122                  DATA                   "B-"
-                      00123                  IF CC > 0
-                      00124                     DATA                "C+"
-                      00125                     CC--
-                      00126                  ELSE
-MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  8
+                      00115 ;;;; Begin: Changed in gputils
+                      00116 ;;;;          AA--
+                      00117 AA--
+                      00118 ;;;; End: Changed in gputils
+                      00119            ELSE
+0010   412D           00120               DATA                      "A-"
+                      00121               IF BB > 0
+                      00122                  DATA                   "B+"
+                      00123 ;;;; Begin: Changed in gputils
+                      00124 ;;;;             BB--
+                      00125 BB--
+                      00126 ;;;; End: Changed in gputils
+                      00127               ELSE
+0011   422D           00128                  DATA                   "B-"
+                      00129                  IF CC > 0
+                      00130                     DATA                "C+"
+                      00131 ;;;; Begin: Changed in gputils
+                      00132 ;;;;                CC--
+                      00133 CC--
+                      00134 ;;;; End: Changed in gputils
+                      00135                  ELSE
+0012   432D           00136                     DATA                "C-"
+                      00137                     IF DD > 0
+0013   442B           00138                        DATA             "D+"
+                      00139 ;;;; Begin: Changed in gputils
+                      00140 ;;;;                   DD--
+  00000000            00141 DD--
+                      00142 ;;;; End: Changed in gputils
+                      00143                     ELSE
+                      00144                        DATA             "D-"
+                      00145                        IF EE > 0
+                      00146                           DATA          "E+"
+                      00147 ;;;; Begin: Changed in gputils
+                      00148 ;;;;                      EE--
+                      00149 EE--
+                      00150 ;;;; End: Changed in gputils
+                      00151                        ELSE
+                      00152                           DATA          "E-"
+                      00153                           IF FF > 0
+                      00154                              DATA       "F+"
+                      00155 ;;;; Begin: Changed in gputils
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  14:50:42         PAGE  8
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-001B   432D           00127                     DATA                "C-"
-                      00128                     IF DD > 0
-                      00129                        DATA             "D+"
-                      00130                        DD--
-                      00131                     ELSE
-001C   442D           00132                        DATA             "D-"
-                      00133                        IF EE > 0
-                      00134                           DATA          "E+"
-                      00135                           EE--
-                      00136                        ELSE
-001D   452D           00137                           DATA          "E-"
-                      00138                           IF FF > 0
-001E   462B           00139                              DATA       "F+"
-Warning[207]: Found label after column 1. (FF)
-  00000000            00140                              FF--
-                      00141                           ELSE
-                      00142                              DATA       "F-"
-                      00143                              IF GG > 0
-                      00144                                 DATA    "G+"
-                      00145                                 GG--
-                      00146                              ELSE
-                      00147                                 DATA    "G-"
-                      00148                                 IF HH > 0
-                      00149                                    DATA "H+"
-                      00150                                    HH--
-                      00151                                 ELSE
-                      00152                                    DATA "H-"
-                      00153                                 ENDIF
-                      00154                              ENDIF
-                      00155                           ENDIF
-                      00156                        ENDIF
-                      00157                     ENDIF
-                      00158                  ENDIF
-                      00159               ENDIF
-                      00160            ENDIF
+                      00156 ;;;;                         FF--
+                      00157 FF--
+                      00158 ;;;; End: Changed in gputils
+                      00159                           ELSE
+                      00160                              DATA       "F-"
+                      00161                              IF GG > 0
+                      00162                                 DATA    "G+"
+                      00163 ;;;; Begin: Changed in gputils
+                      00164 ;;;;                            GG--
+                      00165 GG--
+                      00166 ;;;; End: Changed in gputils
+                      00167                              ELSE
+                      00168                                 DATA    "G-"
+                      00169                                 IF HH > 0
+                      00170                                    DATA "H+"
+                      00171 ;;;; Begin: Changed in gputils
+                      00172 ;;;;                               HH--
+                      00173 HH--
+                      00174 ;;;; End: Changed in gputils
+                      00175                                 ELSE
+                      00176                                    DATA "H-"
+                      00177                                 ENDIF
+                      00178                              ENDIF
+                      00179                           ENDIF
+                      00180                        ENDIF
+                      00181                     ENDIF
+                      00182                  ENDIF
+                      00183               ENDIF
+                      00184            ENDIF
                       00113            IF AA > 0
                       00114               DATA                      "A+"
-                      00115               AA--
-                      00116            ELSE
-001F   412D           00117               DATA                      "A-"
-                      00118               IF BB > 0
-                      00119                  DATA                   "B+"
-                      00120                  BB--
-                      00121               ELSE
-0020   422D           00122                  DATA                   "B-"
-                      00123                  IF CC > 0
-                      00124                     DATA                "C+"
-                      00125                     CC--
-                      00126                  ELSE
-0021   432D           00127                     DATA                "C-"
-                      00128                     IF DD > 0
-                      00129                        DATA             "D+"
-                      00130                        DD--
-MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE  9
+                      00115 ;;;; Begin: Changed in gputils
+                      00116 ;;;;          AA--
+                      00117 AA--
+                      00118 ;;;; End: Changed in gputils
+                      00119            ELSE
+0014   412D           00120               DATA                      "A-"
+                      00121               IF BB > 0
+                      00122                  DATA                   "B+"
+                      00123 ;;;; Begin: Changed in gputils
+                      00124 ;;;;             BB--
+                      00125 BB--
+                      00126 ;;;; End: Changed in gputils
+                      00127               ELSE
+0015   422D           00128                  DATA                   "B-"
+                      00129                  IF CC > 0
+                      00130                     DATA                "C+"
+                      00131 ;;;; Begin: Changed in gputils
+                      00132 ;;;;                CC--
+                      00133 CC--
+                      00134 ;;;; End: Changed in gputils
+                      00135                  ELSE
+0016   432D           00136                     DATA                "C-"
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  14:50:42         PAGE  9
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00131                     ELSE
-0022   442D           00132                        DATA             "D-"
-                      00133                        IF EE > 0
-                      00134                           DATA          "E+"
-                      00135                           EE--
-                      00136                        ELSE
-0023   452D           00137                           DATA          "E-"
-                      00138                           IF FF > 0
-                      00139                              DATA       "F+"
-                      00140                              FF--
-                      00141                           ELSE
-0024   462D           00142                              DATA       "F-"
-                      00143                              IF GG > 0
-0025   472B           00144                                 DATA    "G+"
-Warning[207]: Found label after column 1. (GG)
-  00000000            00145                                 GG--
-                      00146                              ELSE
-                      00147                                 DATA    "G-"
-                      00148                                 IF HH > 0
-                      00149                                    DATA "H+"
-                      00150                                    HH--
-                      00151                                 ELSE
-                      00152                                    DATA "H-"
-                      00153                                 ENDIF
-                      00154                              ENDIF
-                      00155                           ENDIF
-                      00156                        ENDIF
-                      00157                     ENDIF
-                      00158                  ENDIF
-                      00159               ENDIF
-                      00160            ENDIF
+                      00137                     IF DD > 0
+                      00138                        DATA             "D+"
+                      00139 ;;;; Begin: Changed in gputils
+                      00140 ;;;;                   DD--
+                      00141 DD--
+                      00142 ;;;; End: Changed in gputils
+                      00143                     ELSE
+0017   442D           00144                        DATA             "D-"
+                      00145                        IF EE > 0
+0018   452B           00146                           DATA          "E+"
+                      00147 ;;;; Begin: Changed in gputils
+                      00148 ;;;;                      EE--
+  00000000            00149 EE--
+                      00150 ;;;; End: Changed in gputils
+                      00151                        ELSE
+                      00152                           DATA          "E-"
+                      00153                           IF FF > 0
+                      00154                              DATA       "F+"
+                      00155 ;;;; Begin: Changed in gputils
+                      00156 ;;;;                         FF--
+                      00157 FF--
+                      00158 ;;;; End: Changed in gputils
+                      00159                           ELSE
+                      00160                              DATA       "F-"
+                      00161                              IF GG > 0
+                      00162                                 DATA    "G+"
+                      00163 ;;;; Begin: Changed in gputils
+                      00164 ;;;;                            GG--
+                      00165 GG--
+                      00166 ;;;; End: Changed in gputils
+                      00167                              ELSE
+                      00168                                 DATA    "G-"
+                      00169                                 IF HH > 0
+                      00170                                    DATA "H+"
+                      00171 ;;;; Begin: Changed in gputils
+                      00172 ;;;;                               HH--
+                      00173 HH--
+                      00174 ;;;; End: Changed in gputils
+                      00175                                 ELSE
+                      00176                                    DATA "H-"
+                      00177                                 ENDIF
+                      00178                              ENDIF
+                      00179                           ENDIF
+                      00180                        ENDIF
+                      00181                     ENDIF
+                      00182                  ENDIF
+                      00183               ENDIF
+                      00184            ENDIF
                       00113            IF AA > 0
                       00114               DATA                      "A+"
-                      00115               AA--
-                      00116            ELSE
-0026   412D           00117               DATA                      "A-"
-                      00118               IF BB > 0
-                      00119                  DATA                   "B+"
-                      00120                  BB--
-                      00121               ELSE
-0027   422D           00122                  DATA                   "B-"
-                      00123                  IF CC > 0
-                      00124                     DATA                "C+"
-                      00125                     CC--
-                      00126                  ELSE
-0028   432D           00127                     DATA                "C-"
-                      00128                     IF DD > 0
-                      00129                        DATA             "D+"
-                      00130                        DD--
-                      00131                     ELSE
-0029   442D           00132                        DATA             "D-"
-                      00133                        IF EE > 0
-                      00134                           DATA          "E+"
-MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE 10
+                      00115 ;;;; Begin: Changed in gputils
+                      00116 ;;;;          AA--
+                      00117 AA--
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  14:50:42         PAGE 10
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00135                           EE--
-                      00136                        ELSE
-002A   452D           00137                           DATA          "E-"
-                      00138                           IF FF > 0
-                      00139                              DATA       "F+"
-                      00140                              FF--
-                      00141                           ELSE
-002B   462D           00142                              DATA       "F-"
-                      00143                              IF GG > 0
-                      00144                                 DATA    "G+"
-                      00145                                 GG--
-                      00146                              ELSE
-002C   472D           00147                                 DATA    "G-"
-                      00148                                 IF HH > 0
-002D   482B           00149                                    DATA "H+"
-Warning[207]: Found label after column 1. (HH)
-  00000000            00150                                    HH--
-                      00151                                 ELSE
-                      00152                                    DATA "H-"
-                      00153                                 ENDIF
-                      00154                              ENDIF
-                      00155                           ENDIF
-                      00156                        ENDIF
-                      00157                     ENDIF
-                      00158                  ENDIF
-                      00159               ENDIF
-                      00160            ENDIF
-                      00161         ENDW
-                      00162 
-                      00163         END
-MPASM 03.20.02 Released           IF1.ASM   11-21-2002  20:21:02         PAGE 11
+                      00118 ;;;; End: Changed in gputils
+                      00119            ELSE
+0019   412D           00120               DATA                      "A-"
+                      00121               IF BB > 0
+                      00122                  DATA                   "B+"
+                      00123 ;;;; Begin: Changed in gputils
+                      00124 ;;;;             BB--
+                      00125 BB--
+                      00126 ;;;; End: Changed in gputils
+                      00127               ELSE
+001A   422D           00128                  DATA                   "B-"
+                      00129                  IF CC > 0
+                      00130                     DATA                "C+"
+                      00131 ;;;; Begin: Changed in gputils
+                      00132 ;;;;                CC--
+                      00133 CC--
+                      00134 ;;;; End: Changed in gputils
+                      00135                  ELSE
+001B   432D           00136                     DATA                "C-"
+                      00137                     IF DD > 0
+                      00138                        DATA             "D+"
+                      00139 ;;;; Begin: Changed in gputils
+                      00140 ;;;;                   DD--
+                      00141 DD--
+                      00142 ;;;; End: Changed in gputils
+                      00143                     ELSE
+001C   442D           00144                        DATA             "D-"
+                      00145                        IF EE > 0
+                      00146                           DATA          "E+"
+                      00147 ;;;; Begin: Changed in gputils
+                      00148 ;;;;                      EE--
+                      00149 EE--
+                      00150 ;;;; End: Changed in gputils
+                      00151                        ELSE
+001D   452D           00152                           DATA          "E-"
+                      00153                           IF FF > 0
+001E   462B           00154                              DATA       "F+"
+                      00155 ;;;; Begin: Changed in gputils
+                      00156 ;;;;                         FF--
+  00000000            00157 FF--
+                      00158 ;;;; End: Changed in gputils
+                      00159                           ELSE
+                      00160                              DATA       "F-"
+                      00161                              IF GG > 0
+                      00162                                 DATA    "G+"
+                      00163 ;;;; Begin: Changed in gputils
+                      00164 ;;;;                            GG--
+                      00165 GG--
+                      00166 ;;;; End: Changed in gputils
+                      00167                              ELSE
+                      00168                                 DATA    "G-"
+                      00169                                 IF HH > 0
+                      00170                                    DATA "H+"
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  14:50:42         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00171 ;;;; Begin: Changed in gputils
+                      00172 ;;;;                               HH--
+                      00173 HH--
+                      00174 ;;;; End: Changed in gputils
+                      00175                                 ELSE
+                      00176                                    DATA "H-"
+                      00177                                 ENDIF
+                      00178                              ENDIF
+                      00179                           ENDIF
+                      00180                        ENDIF
+                      00181                     ENDIF
+                      00182                  ENDIF
+                      00183               ENDIF
+                      00184            ENDIF
+                      00113            IF AA > 0
+                      00114               DATA                      "A+"
+                      00115 ;;;; Begin: Changed in gputils
+                      00116 ;;;;          AA--
+                      00117 AA--
+                      00118 ;;;; End: Changed in gputils
+                      00119            ELSE
+001F   412D           00120               DATA                      "A-"
+                      00121               IF BB > 0
+                      00122                  DATA                   "B+"
+                      00123 ;;;; Begin: Changed in gputils
+                      00124 ;;;;             BB--
+                      00125 BB--
+                      00126 ;;;; End: Changed in gputils
+                      00127               ELSE
+0020   422D           00128                  DATA                   "B-"
+                      00129                  IF CC > 0
+                      00130                     DATA                "C+"
+                      00131 ;;;; Begin: Changed in gputils
+                      00132 ;;;;                CC--
+                      00133 CC--
+                      00134 ;;;; End: Changed in gputils
+                      00135                  ELSE
+0021   432D           00136                     DATA                "C-"
+                      00137                     IF DD > 0
+                      00138                        DATA             "D+"
+                      00139 ;;;; Begin: Changed in gputils
+                      00140 ;;;;                   DD--
+                      00141 DD--
+                      00142 ;;;; End: Changed in gputils
+                      00143                     ELSE
+0022   442D           00144                        DATA             "D-"
+                      00145                        IF EE > 0
+                      00146                           DATA          "E+"
+                      00147 ;;;; Begin: Changed in gputils
+                      00148 ;;;;                      EE--
+                      00149 EE--
+                      00150 ;;;; End: Changed in gputils
+                      00151                        ELSE
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  14:50:42         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0023   452D           00152                           DATA          "E-"
+                      00153                           IF FF > 0
+                      00154                              DATA       "F+"
+                      00155 ;;;; Begin: Changed in gputils
+                      00156 ;;;;                         FF--
+                      00157 FF--
+                      00158 ;;;; End: Changed in gputils
+                      00159                           ELSE
+0024   462D           00160                              DATA       "F-"
+                      00161                              IF GG > 0
+0025   472B           00162                                 DATA    "G+"
+                      00163 ;;;; Begin: Changed in gputils
+                      00164 ;;;;                            GG--
+  00000000            00165 GG--
+                      00166 ;;;; End: Changed in gputils
+                      00167                              ELSE
+                      00168                                 DATA    "G-"
+                      00169                                 IF HH > 0
+                      00170                                    DATA "H+"
+                      00171 ;;;; Begin: Changed in gputils
+                      00172 ;;;;                               HH--
+                      00173 HH--
+                      00174 ;;;; End: Changed in gputils
+                      00175                                 ELSE
+                      00176                                    DATA "H-"
+                      00177                                 ENDIF
+                      00178                              ENDIF
+                      00179                           ENDIF
+                      00180                        ENDIF
+                      00181                     ENDIF
+                      00182                  ENDIF
+                      00183               ENDIF
+                      00184            ENDIF
+                      00113            IF AA > 0
+                      00114               DATA                      "A+"
+                      00115 ;;;; Begin: Changed in gputils
+                      00116 ;;;;          AA--
+                      00117 AA--
+                      00118 ;;;; End: Changed in gputils
+                      00119            ELSE
+0026   412D           00120               DATA                      "A-"
+                      00121               IF BB > 0
+                      00122                  DATA                   "B+"
+                      00123 ;;;; Begin: Changed in gputils
+                      00124 ;;;;             BB--
+                      00125 BB--
+                      00126 ;;;; End: Changed in gputils
+                      00127               ELSE
+0027   422D           00128                  DATA                   "B-"
+                      00129                  IF CC > 0
+                      00130                     DATA                "C+"
+                      00131 ;;;; Begin: Changed in gputils
+                      00132 ;;;;                CC--
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  14:50:42         PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00133 CC--
+                      00134 ;;;; End: Changed in gputils
+                      00135                  ELSE
+0028   432D           00136                     DATA                "C-"
+                      00137                     IF DD > 0
+                      00138                        DATA             "D+"
+                      00139 ;;;; Begin: Changed in gputils
+                      00140 ;;;;                   DD--
+                      00141 DD--
+                      00142 ;;;; End: Changed in gputils
+                      00143                     ELSE
+0029   442D           00144                        DATA             "D-"
+                      00145                        IF EE > 0
+                      00146                           DATA          "E+"
+                      00147 ;;;; Begin: Changed in gputils
+                      00148 ;;;;                      EE--
+                      00149 EE--
+                      00150 ;;;; End: Changed in gputils
+                      00151                        ELSE
+002A   452D           00152                           DATA          "E-"
+                      00153                           IF FF > 0
+                      00154                              DATA       "F+"
+                      00155 ;;;; Begin: Changed in gputils
+                      00156 ;;;;                         FF--
+                      00157 FF--
+                      00158 ;;;; End: Changed in gputils
+                      00159                           ELSE
+002B   462D           00160                              DATA       "F-"
+                      00161                              IF GG > 0
+                      00162                                 DATA    "G+"
+                      00163 ;;;; Begin: Changed in gputils
+                      00164 ;;;;                            GG--
+                      00165 GG--
+                      00166 ;;;; End: Changed in gputils
+                      00167                              ELSE
+002C   472D           00168                                 DATA    "G-"
+                      00169                                 IF HH > 0
+002D   482B           00170                                    DATA "H+"
+                      00171 ;;;; Begin: Changed in gputils
+                      00172 ;;;;                               HH--
+  00000000            00173 HH--
+                      00174 ;;;; End: Changed in gputils
+                      00175                                 ELSE
+                      00176                                    DATA "H-"
+                      00177                                 ENDIF
+                      00178                              ENDIF
+                      00179                           ENDIF
+                      00180                        ENDIF
+                      00181                     ENDIF
+                      00182                  ENDIF
+                      00183               ENDIF
+                      00184            ENDIF
+                      00185         ENDW
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  14:50:42         PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00186 
+                      00187         END
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  14:50:42         PAGE 15
 
 
 SYMBOL TABLE
@@ -594,7 +802,7 @@ Program Memory Words Used:    46
 
 
 Errors   :     0
-Warnings :     8 reported,     0 suppressed
+Warnings :     0 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 
 
