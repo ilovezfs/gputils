@@ -67,7 +67,7 @@ checkwrite(unsigned short value)
     gperror(GPE_ADDROVF, "Address wrapped around 0");
   }
 
-  if(value > state.device.class->core_size) {
+  if (value > state.device.class->core_size) {
     gpvmessage(GPM_RANGE);
     value &= state.device.class->core_size;
   }
@@ -110,22 +110,27 @@ emit(unsigned short value)
 }
 
 static void
-emit_byte(unsigned char value)
+emit_byte(unsigned short value)
 {
   if (state.pass == 2) {
-    unsigned char byte;
-
     if ((state.mode == relocatable) && (state.obj.section == NULL)) {
       gpverror(GPE_WRONG_SECTION);
     }
 
     if (!IS_RAM_ORG) {
+      unsigned char byte;
+
       if (state.device.class == PROC_CLASS_PIC16 && (state.org > 0x1ffff)) {
         gpverror(GPE_ADDROVF);
       }
       else if (state.device.class != PROC_CLASS_PIC16E &&
                (state.org & 0x1ffff) == 0 && (int)state.org > 0) {
         gperror(GPE_ADDROVF, "Address wrapped around 0");
+      }
+
+      if (value > state.device.class->core_size) {
+        gpvwarning(GPW_RANGE);
+        value &= state.device.class->core_size;
       }
 
       if (0 == state.num.errors && b_memory_get(state.i_memory, state.org, &byte)) {
@@ -4160,6 +4165,7 @@ leave:
 
 struct insn op_0[] = {
   { "access_ovr", 0, 0, INSN_CLASS_FUNC, 0, do_access_ovr },
+  { "bcdirect",   0, 0, INSN_CLASS_FUNC, 0, do_direct },
   { "code",       0, 0, INSN_CLASS_FUNC, 0, do_code },
   { "code_pack",  0, 0, INSN_CLASS_FUNC, 0, do_code_pack },
   { "constant",   0, 0, INSN_CLASS_FUNC, 0, do_constant },

@@ -422,6 +422,7 @@ do
       echo "Options:"
       echo "  -h, --help        display this help message"
       echo "  -d, --disasm      disassemble and reassemble the assembled hex file"
+      echo "  -m                use Microchip toolset"
       echo
       exit 0
       ;;
@@ -440,7 +441,7 @@ do
       ;;
     clean)
       if test -n "$ACTION"; then
-        echo "$0: Multipla actions not supported. Try \"$0 help\" for help."
+        echo "$0: Multiple actions not supported. Try \"$0 help\" for help."
         exit 0
       fi
       ACTION=CLEAN

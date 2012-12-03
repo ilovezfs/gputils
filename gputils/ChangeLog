@@ -7,6 +7,11 @@
   * gpasm/evaluate.c, gpasm/util.c, gpasm/gperror.c,
     gpasm/ppscan.l, gpasm/directive.c, gpasm/processor.c:
     error message and listing enhancements
+  * gpasm/scan.l, gpasm/gperror.c: error message enhancements
+  * gpasm/lst.c: EEPROM listing fixes
+  * gpasm/directive.c: implemented BCDIRECT as alias of .DIRECT;
+    range check for emit_byte DATA
+  * gpasm/testsuite/test: added -m option to usage
 
 2012-12-02  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/list.c: added info about amount of free program memory to the

@@ -273,7 +273,7 @@ processor                {
                            yylval.s = strdup(yytext);
                            switch (identify(yytext)) {
                              case directives:
-                               gpwarning(GPW_DIR_COLUMN_ONE, NULL);
+                               gpvwarning(GPW_DIR_COLUMN_ONE, yytext);
                                if (has_collon)
                                  gpverror(GPE_BADCHAR, ':');
                                return IDENTIFIER;
@@ -290,7 +290,7 @@ processor                {
                                if (h->line_number == state.src->line_number) {
                                  return LABEL;
                                } else {
-                                 gpwarning(GPW_MACRO_COLUMN_ONE, NULL);
+                                 gpvwarning(GPW_MACRO_COLUMN_ONE, yytext);
                                  if (has_collon)
                                   gpverror(GPE_BADCHAR, ':');
                                  return IDENTIFIER;
@@ -298,7 +298,7 @@ processor                {
                                break;
 
                              case opcodes:
-                               gpwarning(GPW_OP_COLUMN_ONE, NULL);
+                               gpvwarning(GPW_OP_COLUMN_ONE, yytext);
                                if (has_collon)
                                  gpverror(GPE_BADCHAR, ':');
                                return IDENTIFIER;
