@@ -695,6 +695,7 @@ statement:
         const_block
         ENDC '\n'
         {
+          state.lst.line.linetype = none;
           if (IN_MACRO_WHILE_DEFINITION) {
             macro_append();
           }
@@ -713,6 +714,7 @@ statement:
         const_block
         ENDC '\n'
         {
+          state.lst.line.linetype = none;
           if (IN_MACRO_WHILE_DEFINITION) {
             macro_append();
           }
@@ -721,6 +723,7 @@ statement:
         |
         CBLOCK error ENDC '\n'
         {
+          state.lst.line.linetype = none;
           $$ = 0;
         }
         ;
@@ -729,7 +732,8 @@ const_block:
         |
         const_block const_line
         {
-          next_line(0);
+          state.lst.line.linetype = set;
+          next_line(state.lst.cblock_lst);
         }
         ;
 
@@ -763,6 +767,9 @@ const_line:
         ;
 
 const_def_list:
+        {
+          state.lst.cblock_lst = state.cblock;
+        }
         const_def
         |
         const_def_list ',' const_def

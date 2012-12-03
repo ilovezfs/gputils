@@ -2,6 +2,8 @@
   * gpasm/lst.c, gpasm/lst.h, gpasm/directive.c:
     fixed listing of PAGE directive;
     error, warning, message spacing like in MPASM(X)
+  * gpasm/parse.y, gpasm/gpasm.h.in: improved CBLOCK listing
+  * gpasm/gpasm.c: initialize astack before the second pass
 
 2012-12-02  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/list.c: added info about amount of free program memory to the

@@ -441,6 +441,8 @@ assemble(void)
   state.mac_head = state.while_head = NULL;
   state.while_depth = 0;
 
+  state.astack = NULL;
+
   /* Initial section */
   state.obj.new_sec_flags = (state.mode == absolute) ? STYP_TEXT : 0;
 
