@@ -40,5 +40,5 @@ void lst_memory_map(MemBlock *m);
 void lst_close(void);
 void lst_format_line(const char *line, int value);
 void lst_symbol_table(void);
-
+void lst_page_start(void);
 #endif
