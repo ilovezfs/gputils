@@ -275,8 +275,8 @@ static int
 macro_parms_simple(struct pnode *parms)
 {
   while (parms) {
-    if (HEAD(parms)->tag != symbol) {
-      gpverror(GPE_ILLEGAL_ARGU);
+    if (symbol != HEAD(parms)->tag) {
+      gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
       return 0;
     }
     parms = TAIL(parms);
@@ -367,36 +367,40 @@ do_badram(gpasmVal r, char *name, int arity, struct pnode *parms)
   struct pnode *p;
 
   state.lst.line.linetype = dir;
-  for (; parms != NULL; parms = TAIL(parms)) {
-    p = HEAD(parms);
-    if ((p->tag == binop) &&
-        (p->value.binop.op == '-')) {
-      int start, end;
+  if (NULL == parms)
+    gpverror(GPE_MISSING_ARGU);
+  else {
+    for (; parms != NULL; parms = TAIL(parms)) {
+      p = HEAD(parms);
+      if ((p->tag == binop) &&
+          (p->value.binop.op == '-')) {
+        int start, end;
 
-      if (can_evaluate(p->value.binop.p0) &&
-          can_evaluate(p->value.binop.p1)) {
-        start = evaluate(p->value.binop.p0);
-        end = evaluate(p->value.binop.p1);
+        if (can_evaluate(p->value.binop.p0) &&
+            can_evaluate(p->value.binop.p1)) {
+          start = evaluate(p->value.binop.p0);
+          end = evaluate(p->value.binop.p1);
 
-        if ((end < start) ||
-            (start < 0) ||
-            (MAX_RAM <= end)) {
-          gpvwarning(GPW_INVALID_RAM);
-        } else {
-          for (; start <= end; start++)
-            state.badram[start] = 1;
+          if ((end < start) ||
+              (start < 0) ||
+              (MAX_RAM <= end)) {
+            gpvwarning(GPW_INVALID_RAM);
+          } else {
+            for (; start <= end; start++)
+              state.badram[start] = 1;
+          }
         }
-      }
-    } else {
-      if (can_evaluate(p)) {
-        int loc;
+      } else {
+        if (can_evaluate(p)) {
+          int loc;
 
-        loc = evaluate(p);
-        if ((loc < 0) ||
-            (MAX_RAM <= loc)) {
-          gpvwarning(GPW_INVALID_RAM);
-         } else
-          state.badram[loc] = 1;
+          loc = evaluate(p);
+          if ((loc < 0) ||
+              (MAX_RAM <= loc)) {
+            gpvwarning(GPW_INVALID_RAM);
+           } else
+            state.badram[loc] = 1;
+        }
       }
     }
   }
@@ -407,7 +411,6 @@ do_badram(gpasmVal r, char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_badrom(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
-
   state.lst.line.linetype = dir;
 
   /* FIXME: implement this directive */
@@ -422,9 +425,11 @@ do_bankisel(gpasmVal r, char *name, int arity, struct pnode *parms)
   struct pnode *p;
   int num_reloc;
 
-  if ((state.device.class != PROC_CLASS_PIC14) &&
-      (state.device.class != PROC_CLASS_PIC14E) &&
-      (state.device.class != PROC_CLASS_PIC16)) {
+  if ((state.device.class != PROC_CLASS_PIC14 &&
+      state.device.class != PROC_CLASS_PIC14E &&
+      state.device.class != PROC_CLASS_PIC16) ||
+      state.processor->num_banks == 1) {
+    state.lst.line.linetype = none;
     gpvmessage(GPM_EXTPAGE);
     return r;
   }
@@ -477,6 +482,13 @@ do_banksel(gpasmVal r, char *name, int arity, struct pnode *parms)
 
   if (!state.processor) {
     gpverror(GPE_UNDEF_PROC);
+    return r;
+  }
+
+  if (state.processor->num_banks == 1) {
+    state.lst.line.linetype = none;
+    gpvmessage(GPM_EXTPAGE);
+    /* do nothing */
     return r;
   }
 
@@ -631,7 +643,7 @@ do_constant(gpasmVal r, char *name, int arity, struct pnode *parms)
         set_global(lhs, r, PERMANENT, gvt_constant);
       }
     } else {
-      gpverror(GPE_ILLEGAL_ARGU);
+      gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
     }
   }
 
@@ -1199,7 +1211,7 @@ do_def(gpasmVal r, char *name, int arity, struct pnode *parms)
               coff_class = eval;
             }
           } else {
-            gpverror(GPE_ILLEGAL_ARGU);
+            gpverror(GPE_ILLEGAL_ARGU, lhs);
           }
         }
       } else {
@@ -1220,7 +1232,7 @@ do_def(gpasmVal r, char *name, int arity, struct pnode *parms)
             type = gvt_static;
             value = IS_RAM_ORG ? state.org : gp_processor_byte_to_org(state.device.class, state.org);
           } else {
-            gpverror(GPE_ILLEGAL_ARGU);
+            gpverror(GPE_ILLEGAL_ARGU, p->value.symbol);
           }
         }
       }
@@ -1378,12 +1390,12 @@ do_direct(gpasmVal r, char *name, int arity, struct pnode *parms)
     p = HEAD(TAIL(parms));
     if (p->tag == string) {
       if (strlen(p->value.string) < 255) {
-        direct_string = convert_escaped_char(p->value.string,'"');
+        direct_string = convert_escaped_char(p->value.string, '"');
       } else {
         gperror(GPE_UNKNOWN, "string must be less than 255 bytes long");
       }
     } else {
-      gpverror(GPE_ILLEGAL_ARGU);
+      gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
     }
 
     if (direct_string == NULL) {
@@ -1603,7 +1615,7 @@ do_error(gpasmVal r, char *name, int arity, struct pnode *parms)
     if (p->tag == string) {
       gperror(GPE_USER, p->value.string);
     } else {
-      gpverror(GPE_ILLEGAL_ARGU);
+      gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
     }
   }
 
@@ -1719,7 +1731,7 @@ do_file(gpasmVal r, char *name, int arity, struct pnode *parms)
       if (p->tag == string) {
         state.obj.debug_file = coff_add_filesym(p->value.string, 0);
       } else {
-        gpverror(GPE_ILLEGAL_ARGU);
+        gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
       }
     } else {
       gpwarning(GPW_UNKNOWN, "directive ignored when debug info is disabled");
@@ -1796,7 +1808,7 @@ do_global(gpasmVal r, char *name, int arity, struct pnode *parms)
           }
         }
       } else {
-        gpverror(GPE_ILLEGAL_ARGU);
+        gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
       }
     }
   }
@@ -1891,7 +1903,7 @@ do_ident(gpasmVal r, char *name, int arity, struct pnode *parms)
     if (p->tag == string) {
       coff_add_identsym(p->value.string);
     } else {
-      gpverror(GPE_ILLEGAL_ARGU);
+      gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
     }
   }
 
@@ -1947,7 +1959,7 @@ do_idlocs(gpasmVal r, char *name, int arity, struct pnode *parms)
         state.lst.line.linetype = config;
         state.lst.config_address = idreg;
         if(value > 0xff) {
-          gpvmessage(GPM_IDLOC);
+          gpmessage(GPM_IDLOC, "ID Locations value too large. Last four two digits used.");
         }
         if (idreg <= state.device.id_location) {
           gpverror(GPE_IDLOCS_ORDER);
@@ -1956,14 +1968,13 @@ do_idlocs(gpasmVal r, char *name, int arity, struct pnode *parms)
           gpverror(GPE_ADDROVR);
         b_memory_put(state.c_memory, idreg, value);
       }
-
     } else {
       unsigned short word;
       state.lst.line.linetype = idlocs;
 
       if (value > 0xffff) {
-        gpvmessage(GPM_IDLOC);
         value &= 0xffff;
+        gpvmessage(GPM_IDLOC, value);
       }
 
       if (state.device.class->i_memory_get(state.c_memory, idreg, &word)) {
@@ -2065,7 +2076,7 @@ do_include(gpasmVal r, char *name, int arity, struct pnode *parms)
       state.next_state = state_include;
       state.next_buffer.file = strdup(p->value.string);
     } else {
-      gpverror(GPE_ILLEGAL_ARGU);
+      gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
     }
   }
 
@@ -2195,7 +2206,7 @@ do_list(gpasmVal r, char *name, int arity, struct pnode *parms)
           if (enforce_simple(p->value.binop.p1))
             select_expand(p->value.binop.p1->value.symbol);
         } else {
-          gpverror(GPE_ILLEGAL_ARGU);
+          gpverror(GPE_ILLEGAL_ARGU, lhs);
         }
       }
     } else {
@@ -2209,7 +2220,7 @@ do_list(gpasmVal r, char *name, int arity, struct pnode *parms)
         } else if (strcasecmp(p->value.symbol, "wrap") == 0) {
           ; /* Ignore this directive */
         } else {
-          gpverror(GPE_ILLEGAL_ARGU);
+          gpverror(GPE_ILLEGAL_ARGU, p->value.symbol);
         }
       }
     }
@@ -2252,7 +2263,7 @@ do_local(gpasmVal r, char *name, int arity, struct pnode *parms)
         /* put the symbol in the Top table */
         add_symbol(state.stTop, p->value.symbol);
       } else {
-        gpverror(GPE_ILLEGAL_ARGU);
+        gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
       }
     }
   }
@@ -2349,9 +2360,9 @@ do_messg(gpasmVal r, char *name, int arity, struct pnode *parms)
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (p->tag == string) {
-      gpmessage(GPM_USER, p->value.string);
+      gpvmessage(GPM_USER, p->value.string);
     } else {
-      gpverror(GPE_ILLEGAL_ARGU);
+      gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
     }
   }
 
@@ -2424,16 +2435,12 @@ _do_pagesel(gpasmVal r, char *name, int arity, struct pnode *parms, unsigned sho
     use_wreg = 1;
   }
 
-  if ((state.device.class == PROC_CLASS_EEPROM8) ||
-      (state.device.class == PROC_CLASS_EEPROM16) ||
-      (state.device.class == PROC_CLASS_PIC16E)) {
-    /* do nothing */
-    return r;
-  }
-
-  if (state.processor->num_pages == 1) {
+  if (state.device.class == PROC_CLASS_EEPROM8 ||
+      state.device.class == PROC_CLASS_EEPROM16 ||
+      state.device.class == PROC_CLASS_PIC16E ||
+      state.processor->num_pages == 1) {
+    state.lst.line.linetype = none;
     gpvmessage(GPM_EXTPAGE);
-    /* do nothing */
     return r;
   }
 
@@ -2652,7 +2659,7 @@ do_subtitle(gpasmVal r, char *name, int arity, struct pnode *parms)
       strncpy(state.lst.subtitle_name, p->value.string, LEN);
 #undef LEN
     } else {
-      gpverror(GPE_ILLEGAL_ARGU);
+      gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
     }
   }
 
@@ -2662,16 +2669,16 @@ do_subtitle(gpasmVal r, char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_title(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
-  struct pnode *p;
+  state.lst.line.linetype = none;
 
   if (enforce_arity(arity, 1)) {
-    p = HEAD(parms);
+    struct pnode *p = HEAD(parms);
     if (p->tag == string) {
 #define LEN sizeof(state.lst.title_name)
       strncpy(state.lst.title_name, p->value.string, LEN);
 #undef LEN
     } else {
-      gpverror(GPE_ILLEGAL_ARGU);
+      gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
     }
   }
 
@@ -2876,9 +2883,9 @@ do_undefine(gpasmVal r, char *name, int arity, struct pnode *parms)
     p = HEAD(parms);
     if (p->tag == symbol) {
       if (remove_symbol(state.stDefines, p->value.symbol) == 0)
-        gpvwarning(GPW_NOT_DEFINED);
+        gpvwarning(GPW_NOT_DEFINED, p->value.symbol);
     } else {
-      gpverror(GPE_ILLEGAL_ARGU);
+      gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
     }
   }
 
@@ -2908,7 +2915,7 @@ do_variable(gpasmVal r, char *name, int arity, struct pnode *parms)
       /* put the symbol with a 0 value in the table*/
       set_global(p->value.symbol, 0, TEMPORARY, gvt_constant);
     } else {
-      gpverror(GPE_ILLEGAL_ARGU);
+      gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
     }
   }
 
@@ -3956,26 +3963,26 @@ do_insn(char *name, struct pnode *parms)
 
           p = HEAD(parms);
           switch(maybe_evaluate(p))
-            {
-            case TBL_NO_CHANGE:
-              emit(i->opcode);
-              break;
+          {
+          case TBL_NO_CHANGE:
+            emit(i->opcode);
+            break;
 
-            case TBL_POST_INC:
-              emit(i->opcode | 1);
-              break;
+          case TBL_POST_INC:
+            emit(i->opcode | 1);
+            break;
 
-            case TBL_POST_DEC:
-              emit(i->opcode | 2);
-              break;
+          case TBL_POST_DEC:
+            emit(i->opcode | 2);
+            break;
 
-            case TBL_PRE_INC:
-              emit(i->opcode | 3);
-              break;
+          case TBL_PRE_INC:
+            emit(i->opcode | 3);
+            break;
 
-            default:
-              gpverror(GPE_ILLEGAL_ARGU);
-            }
+          default:
+            gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
+          }
         }
         break;
 
@@ -4003,7 +4010,7 @@ do_insn(char *name, struct pnode *parms)
               opcode = 0x3f80 | fsr;
             emit(opcode);
           } else
-            gpverror(GPE_ILLEGAL_ARGU);
+            gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
           break;
 
         case 2:
@@ -4029,7 +4036,7 @@ do_insn(char *name, struct pnode *parms)
               break;
             }
           } else
-            gpverror(GPE_ILLEGAL_ARGU);
+            gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
           break;
 
         case 3:
@@ -4055,10 +4062,10 @@ do_insn(char *name, struct pnode *parms)
               break;
 
             default:
-              gpverror(GPE_ILLEGAL_ARGU);
+              gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
             }
           } else
-            gpverror(GPE_ILLEGAL_ARGU);
+            gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
         }
         break;
 

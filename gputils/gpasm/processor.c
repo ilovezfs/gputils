@@ -62,9 +62,9 @@ void select_processor(char *name)
       }
     } else {
       if (state.pass) {
-        gpverror(GPE_UNKNOWN_PROC);
+        gpverror(GPE_UNKNOWN_PROC, name);
       } else {
-        printf("Didn't find any processor named: %s\nHere are the supported processors:\n",name);
+        printf("Didn't find any processor named: %s\nHere are the supported processors:\n", name);
         gp_dump_processor_list(true, 0);
         exit(1);
       }

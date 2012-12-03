@@ -4,6 +4,9 @@
     error, warning, message spacing like in MPASM(X)
   * gpasm/parse.y, gpasm/gpasm.h.in: improved CBLOCK listing
   * gpasm/gpasm.c: initialize astack before the second pass
+  * gpasm/evaluate.c, gpasm/util.c, gpasm/gperror.c,
+    gpasm/ppscan.l, gpasm/directive.c, gpasm/processor.c:
+    error message and listing enhancements
 
 2012-12-02  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/list.c: added info about amount of free program memory to the
