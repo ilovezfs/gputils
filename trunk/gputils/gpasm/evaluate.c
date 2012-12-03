@@ -45,12 +45,19 @@ int enforce_arity(int arity, int must_be)
 
 int enforce_simple(struct pnode *p)
 {
-  if (p->tag == symbol) {
+  switch (p->tag) {
+  case symbol:
     return 1;
-  } else {
-    gpverror(GPE_ILLEGAL_ARGU);
-    return 0;
+    break;
+
+  case string:
+    gpverror(GPE_ILLEGAL_ARGU, p->value.string);
+    break;
+
+  default:
+    gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
   }
+  return 0;
 }
 
 int list_length(struct pnode *L)
@@ -68,8 +75,6 @@ int list_length(struct pnode *L)
 
 int can_evaluate(struct pnode *p)
 {
-  char buf[BUFSIZ];
-
   switch (p->tag) {
   case constant:
     return 1;
@@ -82,6 +87,7 @@ int can_evaluate(struct pnode *p)
 
   case symbol:
     {
+      char buf[BUFSIZ];
       struct symbol *s;
 
       /* '$' means current org, which we can always evaluate */
@@ -94,7 +100,10 @@ int can_evaluate(struct pnode *p)
         s = get_symbol(state.stTop, p->value.symbol);
 
         if (s == NULL) {
-          gpverror(GPE_NOSYM, p->value.symbol);
+          if ('\0' == *p->value.symbol)
+            gpverror(GPE_MISSING_ARGU);
+          else
+            gpverror(GPE_NOSYM, p->value.symbol);
         } else {
           var = get_symbol_annotation(s);
 
@@ -118,8 +127,7 @@ int can_evaluate(struct pnode *p)
     return can_evaluate(p->value.binop.p0) && can_evaluate(p->value.binop.p1);
 
   case string:
-    snprintf(buf, sizeof(buf), "Illegal argument (%s).", p->value.string);
-    gperror(GPE_ILLEGAL_ARGU, buf);
+    gpverror(GPE_ILLEGAL_ARGU, p->value.string);
     return 0;
 
   default:
@@ -131,8 +139,6 @@ int can_evaluate(struct pnode *p)
 
 int can_evaluate_value(struct pnode *p)
 {
-  char buf[BUFSIZ];
-
   switch (p->tag) {
   case constant:
     return 1;
@@ -166,8 +172,7 @@ int can_evaluate_value(struct pnode *p)
     return can_evaluate_value(p->value.binop.p0) && can_evaluate_value(p->value.binop.p1);
 
   case string:
-    snprintf(buf, sizeof(buf), "Illegal argument (%s).", p->value.string);
-    gperror(GPE_ILLEGAL_ARGU, buf);
+    gpverror(GPE_ILLEGAL_ARGU, p->value.string);
     return 0;
 
   default:

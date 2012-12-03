@@ -177,7 +177,7 @@ NUMCHAR [0-9a-z]
 
                            pc = convert_escape_chars(yytext + 1, &pplval.i);
                            if (pc != &yytext[yyleng]);
-                             gpverror(GPE_ILLEGAL_ARGU);
+                             gpverror(GPE_ILLEGAL_ARGU, yytext);
 
                            return NUMBER;
                          }

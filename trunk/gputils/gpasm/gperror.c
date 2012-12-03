@@ -161,7 +161,7 @@ gp_geterror(unsigned int code)
   case GPE_ILLEGAL_DIR:
     return "Illegal directive (%s)";
   case GPE_ILLEGAL_ARGU:
-    return "Illegal argument.";
+    return "Illegal argument (%s)";
   case GPE_ILLEGAL_COND:
     return "Illegal condition.";
   case GPE_RANGE:
@@ -175,9 +175,9 @@ gp_geterror(unsigned int code)
   case GPE_EXTRA_PROC:
     return "Processor type previously defined.";
   case GPE_UNDEF_PROC:
-    return "Processor type is undefined.";
+    return "Processor type is undefined";
   case GPE_UNKNOWN_PROC:
-    return "Unknown processor.";
+    return "Unknown processor (%s)";
   case GPE_IHEX:
     return "Hex file format INHX32 required.";
   case GPE_NO_MACRO_NAME:
@@ -239,7 +239,7 @@ void
 gperror(unsigned int code, char *message)
 {
   if (state.pass == 2) {
-    if(message == NULL)
+    if (message == NULL)
       message = gp_geterror(code);
 
     /* standard output */
@@ -278,7 +278,7 @@ gp_getwarning(unsigned int code)
 {
   switch(code) {
   case GPW_NOT_DEFINED:
-    return "Symbol not previously defined.";
+    return "Symbol not previously defined (%s)";
   case GPW_RANGE:
     return "Argument out of range. Least significant bits used.";
   case GPW_OP_COLUMN_ONE:
@@ -377,13 +377,13 @@ gp_getmessage(unsigned int code)
 {
   switch(code) {
   case GPM_USER:
-    return "MESSAGE:";
+    return "MESSAGE: (%s)";
   case GPM_BANK:
-    return "Register in operand not in bank 0. Ensure bank bits are correct.";
+    return "Register in operand not in bank 0. Ensure that bank bits are correct.";
   case GPM_RANGE:
     return "Program word too large. Truncated to core size.";
   case GPM_IDLOC:
-    return "ID Locations value too large. Last four hex digits used.";
+    return "ID Locations value too large. Last four hex digits used. (%04X)";
   case GPM_NOF:
     return "Using default destination of 1 (file).";
   case GPM_PAGE:
@@ -415,7 +415,7 @@ gpmessage(unsigned int code, char *message)
 {
   if (state.pass==2) {
     if ((state.error_level == 0) && check_code(code)){
-      if(message == NULL)
+      if (message == NULL)
         message = gp_getmessage(code);
 
       /* standard output */

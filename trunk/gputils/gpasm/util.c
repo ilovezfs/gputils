@@ -381,7 +381,7 @@ select_expand(const char *expand)
                 "Error: invalid option \"%s\"\n",
                 expand);
       } else {
-        gpwarning(GPE_ILLEGAL_ARGU, "Expected ON or OFF");
+        gperror(GPE_ILLEGAL_ARGU, "Expected ON or OFF");
       }
     }
   }
