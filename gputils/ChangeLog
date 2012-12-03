@@ -12,6 +12,24 @@
   * gpasm/directive.c: implemented BCDIRECT as alias of .DIRECT;
     range check for emit_byte DATA
   * gpasm/testsuite/test: added -m option to usage
+  * gpasm/testsuite/gpasm.mchip/asmfiles/end2.asm,
+    gpasm/testsuite/gpasm.mchip/listfiles/end2.lst,
+    gpasm/testsuite/gpasm.mchip/asmfiles/if1.asm,
+    gpasm/testsuite/gpasm.mchip/listfiles/if1.lst,
+    gpasm/testsuite/gpasm.mchip/listfiles/local1.lst,
+    gpasm/testsuite/gpasm.mchip/asmfiles/local1.asm,
+    gpasm/testsuite/gpasm.mchip/asmfiles/operat1.asm,
+    gpasm/testsuite/gpasm.mchip/listfiles/operat1.lst,
+    gpasm/testsuite/gpasm.mchip/asmfiles/pseudo14.asm,
+    gpasm/testsuite/gpasm.mchip/listfiles/pseudo14.lst,
+    gpasm/testsuite/gpasm.mchip/hexfiles/pseudo14.hex,
+    gpasm/testsuite/gpasm.mchip/asmfiles/var1.asm,
+    gpasm/testsuite/gpasm.mchip/listfiles/var1.lst,
+    gpasm/testsuite/gpasm.mchip/hexfiles/var1.hex:
+    regression tests adopted for gpasm
+  * gpasm/testsuite/gpasm.project/hexfiles/eeprom8.hex,
+    gpasm/testsuite/gpasm.project/listfiles/eeprom8.lst,
+    gpasm/testsuite/gpasm.project/asmfiles/eeprom8.asm: added
 
 2012-12-02  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/list.c: added info about amount of free program memory to the

@@ -1,0 +1,387 @@
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  12:35:36         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; HDMEM2.ASM
+                      00002 
+                      00003 ; This file tests header file usage for the specified processor.
+                      00004 
+                      00005         LIST    P=EEPROM8
+                      00006         INCLUDE "MEMORY.INC"
+                      00001         LIST
+                      00002 ; MEMORY.INC  Standard Header File, Version 1.02    Microchip Technology, Inc.
+                      00297         LIST
+                      00007 
+                      00008 ;==========================================================================
+                      00009 ;
+                      00010 ;       2-Wire Bus Protocol
+                      00011 ;
+                      00012 ;==========================================================================
+                      00013 ;--------------------------------------------------------------------------
+                      00014 ;
+                      00015 ;       Standard C-Series
+                      00016 ;
+                      00017 ;--------------------------------------------------------------------------
+                      00018 
+0000 7F 7F            00019         DATA    _24C01A  , H'007F'
+0002 FF FF            00020         DATA    _24C02A  , H'00FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0004 FF FF            00021         DATA    _24C04A  , H'01FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0006 FF FF            00022         DATA    _24C08B  , H'03FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0008 FF FF            00023         DATA    _24C16B  , H'07FF'
+                      00024 
+000A 7F 7F            00025         DATA    _85C72   , H'007F'
+000C FF FF            00026         DATA    _85C82   , H'00FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+000E FF FF            00027         DATA    _85C92   , H'01FF'
+                      00028 
+                      00029 ;--------------------------------------------------------------------------
+                      00030 ;
+                      00031 ;       Low-Voltage LC Series and AA Series
+                      00032 ;
+                      00033 ;--------------------------------------------------------------------------
+                      00034 
+0010 7F 7F            00035         DATA    _24LC01B , H'007F'
+0012 7F 7F            00036         DATA    _24AA01  , H'007F'
+0014 FF FF            00037         DATA    _24LC02B , H'00FF'
+0016 FF FF            00038         DATA    _24AA02  , H'00FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0018 FF FF            00039         DATA    _24LC04B , H'01FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  12:35:36         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[202]: Argument out of range.  Least significant bits used.
+001A FF FF            00040         DATA    _24AA04  , H'01FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+001C FF FF            00041         DATA    _24LC08B , H'03FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+001E FF FF            00042         DATA    _24AA08  , H'03FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0020 FF FF            00043         DATA    _24LC16B , H'07FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0022 FF FF            00044         DATA    _24AA16  , H'07FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0024 FF FF            00045         DATA    _24FC16  , H'07FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0026 FF FF            00046         DATA    _24LC164 , H'07FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0028 FF FF            00047         DATA    _24AA164 , H'07FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+002A FF FF            00048         DATA    _24LC174 , H'07FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+002C FF FF            00049         DATA    _24AA174 , H'07FF'
+                      00050 
+                      00051 ;--------------------------------------------------------------------------
+                      00052 ;
+                      00053 ;       High Density
+                      00054 ;
+                      00055 ;--------------------------------------------------------------------------
+                      00056 
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+002E FF FF            00057         DATA    _24C32   , H'0FFF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0030 FF FF            00058         DATA    _24LC32  , H'0FFF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0032 FF FF            00059         DATA    _24AA32  , H'0FFF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0034 FF FF            00060         DATA    _24FC32  , H'0FFF'
+                      00061 
+                      00062 ;--------------------------------------------------------------------------
+                      00063 ;
+                      00064 ;       Smart Serial (tm) Family
+                      00065 ;
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  12:35:36         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00066 ;--------------------------------------------------------------------------
+                      00067 
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0036 FF FF            00068         DATA    _24C65   , H'1FFF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0038 FF FF            00069         DATA    _24LC65  , H'1FFF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+003A FF FF            00070         DATA    _24AA65  , H'1FFF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+003C FF FF            00071         DATA    _24FC65  , H'1FFF'
+                      00072 
+                      00073 ;--------------------------------------------------------------------------
+                      00074 ;
+                      00075 ;       VESA (tm) / DDC (tm)
+                      00076 ;
+                      00077 ;--------------------------------------------------------------------------
+                      00078 
+003E 7F 7F            00079         DATA    _24LC21  , H'007F'
+0040 7F 7F            00080         DATA    _24LCS21 , H'007F'
+                      00081 
+                      00082 ;==========================================================================
+                      00083 ;
+                      00084 ;       3-Wire/4-Wire Bus Protocol
+                      00085 ;
+                      00086 ;==========================================================================
+                      00087 ;--------------------------------------------------------------------------
+                      00088 ;
+                      00089 ;       G.I.
+                      00090 ;
+                      00091 ;--------------------------------------------------------------------------
+                      00092 
+0042 7F 7F            00093         DATA    _59C11   , H'007F'
+                      00094 
+                      00095 ;--------------------------------------------------------------------------
+                      00096 ;
+                      00097 ;       Standard C-Series
+                      00098 ;
+                      00099 ;--------------------------------------------------------------------------
+                      00100 
+0044 1F 1F            00101         DATA    _93C06   , H'001F'
+0046 7F 7F            00102         DATA    _93C46   , H'007F'
+                      00103 
+                      00104 ;--------------------------------------------------------------------------
+                      00105 ;
+                      00106 ;       Low-Voltage LC Series
+                      00107 ;
+                      00108 ;--------------------------------------------------------------------------
+                      00109 
+0048 7F 7F            00110         DATA    _93LC46  , H'007F'
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  12:35:36         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+004A FF FF            00111         DATA    _93LC56  , H'00FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+004C FF FF            00112         DATA    _93LC66  , H'01FF'
+                      00113 
+                      00114 ;==========================================================================
+                      00115 ;
+                      00116 ;       3-Wire Bus Protocol
+                      00117 ;
+                      00118 ;==========================================================================
+                      00119 ;--------------------------------------------------------------------------
+                      00120 ;
+                      00121 ;       Low-Voltage AA Series
+                      00122 ;
+                      00123 ;--------------------------------------------------------------------------
+                      00124 
+004E 7F 7F            00125         DATA    _93AA46  , H'007F'
+0050 FF FF            00126         DATA    _93AA56  , H'00FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0052 FF FF            00127         DATA    _93AA66  , H'01FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0054 FF FF            00128         DATA    _93AA76  , H'03FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0056 FF FF            00129         DATA    _93AA86  , H'07FF'
+                      00130 
+                      00131 ;--------------------------------------------------------------------------
+                      00132 ;
+                      00133 ;       Low-Voltage LC Series
+                      00134 ;
+                      00135 ;--------------------------------------------------------------------------
+                      00136 
+0058 7F 7F            00137         DATA    _93LC46B , H'007F'
+005A FF FF            00138         DATA    _93LC56B , H'00FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+005C FF FF            00139         DATA    _93LC66B , H'01FF'
+                      00140 ;;;; Begin: Changed in gputils
+                      00141 ;;;;        DATA    _93LC76B , H'03FF'
+                      00142 ;;;;        DATA    _93LC86B , H'07FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+005E FF FF            00143         DATA    _93LC76  , H'03FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0060 FF FF            00144         DATA    _93LC86  , H'07FF'
+                      00145 ;;;; End: Changed in gputils
+                      00146 
+                      00147 ;--------------------------------------------------------------------------
+                      00148 ;
+                      00149 ;       Secure LCS-Series
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  12:35:36         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00150 ;
+                      00151 ;--------------------------------------------------------------------------
+                      00152 
+0062 FF FF            00153         DATA    _93LCS56 , H'00FF'
+Warning[202]: Argument out of range.  Least significant bits used.
+Warning[202]: Argument out of range.  Least significant bits used.
+0064 FF FF            00154         DATA    _93LCS66 , H'01FF'
+                      00155 
+                      00156         END
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  12:35:36         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_24AA00                           H'000F'
+_24AA01                           H'007F'
+_24AA02                           H'00FF'
+_24AA04                           H'01FF'
+_24AA08                           H'03FF'
+_24AA128                          H'3FFF'
+_24AA16                           H'07FF'
+_24AA164                          H'07FF'
+_24AA174                          H'07FF'
+_24AA256                          H'7FFF'
+_24AA32                           H'0FFF'
+_24AA32A                          H'0FFF'
+_24AA64                           H'1FFF'
+_24AA65                           H'1FFF'
+_24C00                            H'000F'
+_24C01A                           H'007F'
+_24C01B                           H'007F'
+_24C01C                           H'007F'
+_24C01SC                          H'007F'
+_24C02A                           H'00FF'
+_24C02B                           H'00FF'
+_24C02C                           H'00FF'
+_24C02SC                          H'00FF'
+_24C04A                           H'01FF'
+_24C08B                           H'03FF'
+_24C16B                           H'07FF'
+_24C32                            H'0FFF'
+_24C32A                           H'0FFF'
+_24C65                            H'1FFF'
+_24FC16                           H'07FF'
+_24FC32                           H'0FFF'
+_24FC65                           H'1FFF'
+_24LC00                           H'000F'
+_24LC01B                          H'007F'
+_24LC024                          H'00FF'
+_24LC025                          H'00FF'
+_24LC02B                          H'00FF'
+_24LC04B                          H'01FF'
+_24LC08B                          H'03FF'
+_24LC128                          H'3FFF'
+_24LC128SC                        H'3FFF'
+_24LC164                          H'07FF'
+_24LC16B                          H'07FF'
+_24LC174                          H'07FF'
+_24LC21                           H'007F'
+_24LC21A                          H'007F'
+_24LC256                          H'7FFF'
+_24LC256SC                        H'7FFF'
+_24LC32                           H'0FFF'
+_24LC32A                          H'0FFF'
+_24LC32ASC                        H'0FFF'
+_24LC41A                          H'01FF'
+_24LC64                           H'1FFF'
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  12:35:36         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_24LC64SC                         H'1FFF'
+_24LC65                           H'1FFF'
+_24LCS21                          H'007F'
+_24LCS21A                         H'007F'
+_24LCS52                          H'00FF'
+_24LCS61                          H'007F'
+_24LCS62                          H'00FF'
+_25AA040                          H'01FF'
+_25AA080                          H'03FF'
+_25AA128                          H'3FFF'
+_25AA160                          H'07FF'
+_25AA256                          H'7FFF'
+_25AA640                          H'1FFF'
+_25C040                           H'01FF'
+_25C080                           H'03FF'
+_25C160                           H'07FF'
+_25C320                           H'0FFF'
+_25LC040                          H'01FF'
+_25LC080                          H'03FF'
+_25LC128                          H'3FFF'
+_25LC160                          H'07FF'
+_25LC256                          H'7FFF'
+_25LC320                          H'0FFF'
+_25LC640                          H'1FFF'
+_59C11                            H'007F'
+_85C72                            H'007F'
+_85C82                            H'00FF'
+_85C92                            H'01FF'
+_93AA46                           H'007F'
+_93AA56                           H'00FF'
+_93AA66                           H'01FF'
+_93AA76                           H'03FF'
+_93AA86                           H'07FF'
+_93C06                            H'001F'
+_93C46                            H'007F'
+_93C76                            H'03FF'
+_93C86                            H'07FF'
+_93LC46                           H'007F'
+_93LC46A                          H'007F'
+_93LC46B                          H'007F'
+_93LC56                           H'00FF'
+_93LC56A                          H'00FF'
+_93LC56B                          H'00FF'
+_93LC66                           H'01FF'
+_93LC66A                          H'01FF'
+_93LC66B                          H'01FF'
+_93LC76                           H'03FF'
+_93LC86                           H'07FF'
+_93LCS56                          H'00FF'
+_93LCS66                          H'01FF'
+__EEPROM8                         00000001
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  12:35:36         PAGE  8
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXX---------- ----------------
+
+All other memory blocks unused.
+
+Memory Bytes Used:   102
+Memory Bytes Free:    26
+
+
+Errors   :     0
+Warnings :    62 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

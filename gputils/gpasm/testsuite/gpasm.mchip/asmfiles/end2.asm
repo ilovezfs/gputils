@@ -4,7 +4,10 @@
 
 	LIST	P=16C54, R=HEX
 
-	I = 1
+;;;; Begin: Changed in gputils
+;;;;	I = 1
+I = 1
+;;;; End: Changed in gputils
 
 	DATA	1, 2, 3
 

@@ -1,44 +1,46 @@
-MPASM Version 3.00 Beta Release   VAR1.ASM   01/31/2001  12:15:14	   PAGE 1
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  16:51:23         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                        00001 ; VAR1.ASM
-                        00002 
-                        00003 ; This file tests legal usage of the VARIABLE directive.
-                        00004 
-                        00005         LIST    P=16C54, R=HEX
-                        00006 
-                        00007 #define Value1  10
-  00000020              00008 Value2  =       20
-                        00009 
-  0001                  00010         VARIABLE        Var01=1         ; One with hardcoded value
-  0010                  00011         VARIABLE        Var02 = Value1  ; One with string substitution
-  0020                  00012         VARIABLE        Var03 = Value2  ; One with variable equate
-                        00013 
-  0031                  00014         VARIABLE        Var04 = Var01 + Var02 + Var03
-                        00015                                                 ; One with expression
-                        00016 
-  0005                  00017         VARIABLE        Var05=5,Var06=6,Var07=7
-                        00018                                                 ; Multiple squished, hardcoded
-                        00019 
-  0008                  00020         VARIABLE        Var08 = 8 , Var09 = Value1 , Var10 = Value2 , Var11 = 1 + 2
-                        00021                                                 ; Multiple mishmash
-                        00022 
-  0000                  00023         VARIABLE        Var12                   ; Define later
-Warning[207]: Found label after column 1. (Var12)
-  00000012              00024         Var12 = 12
-                        00025 
-0000     0001 0010 0020 00026         DATA    Var01, Var02, Var03, Var04
-         0031 
-0004     0005 0006 0007 00027         DATA    Var05, Var06, Var07, Var08
-         0008 
-0008     0010 0020 0003 00028         DATA    Var09, Var10, Var11, Var12
-         0012 
-                        00029 
-                        00030         END
-MPASM Version 3.00 Beta Release   VAR1.ASM   01/31/2001  12:15:14	   PAGE 2
+                      00001 ; VAR1.ASM
+                      00002 
+                      00003 ; This file tests legal usage of the VARIABLE directive.
+                      00004 
+                      00005         LIST    P=16C54, R=HEX
+                      00006 
+                      00007 #define Value1  10
+  00000020            00008 Value2  =       20
+                      00009 
+  0001                00010         VARIABLE        Var01=1         ; One with hardcoded value
+  0010                00011         VARIABLE        Var02 = Value1  ; One with string substitution
+  0020                00012         VARIABLE        Var03 = Value2  ; One with variable equate
+                      00013 
+  0031                00014         VARIABLE        Var04 = Var01 + Var02 + Var03
+                      00015                                                 ; One with expression
+                      00016 
+  0005                00017         VARIABLE        Var05=5,Var06=6,Var07=7
+                      00018                                                 ; Multiple squished, hardcoded
+                      00019 
+  0008                00020         VARIABLE        Var08 = 8 , Var09 = Value1 , Var10 = Value2 , Var11 = 1 + 2
+                      00021                                                 ; Multiple mishmash
+                      00022 
+  0000                00023         VARIABLE        Var12                   ; Define later
+                      00024 ;;;; Begin: Changed in gputils
+                      00025 ;;;;    Var12 = 12
+  00000012            00026 Var12 = 12
+                      00027 ;;;; End: Changed in gputils
+                      00028 
+0000   0001 0010 0020 00029         DATA    Var01, Var02, Var03, Var04
+       0031 
+0004   0005 0006 0007 00030         DATA    Var05, Var06, Var07, Var08
+       0008 
+0008   0010 0020 0003 00031         DATA    Var09, Var10, Var11, Var12
+       0012 
+                      00032 
+                      00033         END
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  16:51:23         PAGE  2
 
 
 SYMBOL TABLE
@@ -72,7 +74,7 @@ Program Memory Words Free:   500
 
 
 Errors   :     0
-Warnings :     1 reported,     0 suppressed
+Warnings :     0 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 
 

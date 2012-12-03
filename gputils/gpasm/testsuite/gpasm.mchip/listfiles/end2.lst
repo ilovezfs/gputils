@@ -1,4 +1,4 @@
-MPASM 03.20.02 Released          END2.ASM   11-21-2002  20:20:16         PAGE  1
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  9:26:34         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -10,15 +10,17 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00004 
                       00005         LIST    P=16C54, R=HEX
                       00006 
-Warning[207]: Found label after column 1. (I)
-  00000001            00007         I = 1
-                      00008 
-0000   0001 0002 0003 00009         DATA    1, 2, 3
-                      00010 
-                      00011         IF I == 1
+                      00007 ;;;; Begin: Changed in gputils
+                      00008 ;;;;    I = 1
+  00000001            00009 I = 1
+                      00010 ;;;; End: Changed in gputils
+                      00011 
+0000   0001 0002 0003 00012         DATA    1, 2, 3
+                      00013 
+                      00014         IF I == 1
 Warning[212]: Expected (ENDIF)
-                      00012            END
-MPASM 03.20.02 Released          END2.ASM   11-21-2002  20:20:16         PAGE  2
+                      00015            END
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-3-2012  9:26:34         PAGE  2
 
 
 SYMBOL TABLE
@@ -39,7 +41,7 @@ Program Memory Words Free:   509
 
 
 Errors   :     0
-Warnings :     2 reported,     0 suppressed
+Warnings :     1 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 
 

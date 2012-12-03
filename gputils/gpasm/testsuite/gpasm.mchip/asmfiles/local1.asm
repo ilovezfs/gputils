@@ -19,10 +19,16 @@ Mac2	MACRO	Param1
 
 Mac3	MACRO	Param1
 	LOCAL	MyVar
-	MyVar = 1
+;;;; Begin: Changed in gputils
+;;;;	MyVar = 1
+MyVar = 1
+;;;; End: Changed in gputils
 	WHILE MyVar <= Param1
 	   DATA	MyVar
-	   MyVar++
+;;;; Begin: Changed in gputils
+;;;;	   MyVar++
+MyVar++
+;;;; End: Changed in gputils
 	ENDW
 	ENDM
 
@@ -31,7 +37,10 @@ Mac3	MACRO	Param1
 	Mac2	1
 	Mac2	6
 
-	MyVar = 2
+;;;; Begin: Changed in gputils
+;;;;	MyVar = 2
+MyVar = 2
+;;;; End: Changed in gputils
 	DATA	MyVar
 	Mac3	4
 	DATA	MyVar	
@@ -42,7 +51,10 @@ Mac4	macro
 	local	Var = 3
 	while Var > 0
 	   Mac5	Var
-	   Var--
+;;;; Begin: Changed in gputils
+;;;;	   Var--
+Var--
+;;;; End: Changed in gputils
 	endw
 	endm
 

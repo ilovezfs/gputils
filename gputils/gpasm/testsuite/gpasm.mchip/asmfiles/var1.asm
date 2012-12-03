@@ -21,7 +21,10 @@ Value2	=	20
 						; Multiple mishmash
 
 	VARIABLE	Var12			; Define later
-	Var12 = 12
+;;;; Begin: Changed in gputils
+;;;;	Var12 = 12
+Var12 = 12
+;;;; End: Changed in gputils
 
 	DATA	Var01, Var02, Var03, Var04
 	DATA	Var05, Var06, Var07, Var08
