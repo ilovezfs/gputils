@@ -280,13 +280,13 @@ gp_getwarning(unsigned int code)
   case GPW_NOT_DEFINED:
     return "Symbol not previously defined (%s)";
   case GPW_RANGE:
-    return "Argument out of range. Least significant bits used.";
+    return "Argument out of range.  Least significant bits used.";
   case GPW_OP_COLUMN_ONE:
-    return "Found opcode in column 1.";
+    return "Found opcode in column 1. (%s)";
   case GPW_DIR_COLUMN_ONE:
-    return "Found directive in column 1.";
+    return "Found directive in column 1. (%s)";
   case GPW_MACRO_COLUMN_ONE:
-    return "Found call to macro in column 1.";
+    return "Found call to macro in column 1. (%s)";
   case GPW_LABEL_COLUMN:
     return "Found label after column 1.";
   case GPW_MISSING_QUOTE:
