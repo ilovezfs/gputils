@@ -1,4 +1,4 @@
-MPASM 03.20.02 Released         HDMEM.ASM   11-21-2002  20:20:53         PAGE  1
+MPASM 03.20.07 Released                             HDMEM.ASM   12-4-2012  15:24:39         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -9,215 +9,220 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00003 ; This file tests header file usage for the specified processor.
                       00004 
                       00005         LIST    P=EEPROM16
-                      00006         INCLUDE "MEMORY.INC"
+                      00006 ;;;; Begin: Changed in gputils
+                      00007 ;;;;    INCLUDE "memory.inc"
+                      00008         INCLUDE "MEMORY.INC"
                       00001         LIST
                       00002 ; MEMORY.INC  Standard Header File, Version 1.02    Microchip Technology, Inc.
                       00297         LIST
-                      00007 
-                      00008 ;==========================================================================
-                      00009 ;
-                      00010 ;       2-Wire Bus Protocol
-                      00011 ;
-                      00012 ;==========================================================================
-                      00013 ;--------------------------------------------------------------------------
+                      00009 ;;;; End: Changed in gputils
+                      00010 
+                      00011 ;==========================================================================
+                      00012 ;
+                      00013 ;       2-Wire Bus Protocol
                       00014 ;
-                      00015 ;       Standard C-Series
-                      00016 ;
-                      00017 ;--------------------------------------------------------------------------
-                      00018 
-0000 007F 007F        00019         DATA    _24C01A  , H'007F'
-0004 00FF 00FF        00020         DATA    _24C02A  , H'00FF'
-0008 01FF 01FF        00021         DATA    _24C04A  , H'01FF'
-000C 03FF 03FF        00022         DATA    _24C08B  , H'03FF'
-0010 07FF 07FF        00023         DATA    _24C16B  , H'07FF'
-                      00024 
-0014 007F 007F        00025         DATA    _85C72   , H'007F'
-0018 00FF 00FF        00026         DATA    _85C82   , H'00FF'
-001C 01FF 01FF        00027         DATA    _85C92   , H'01FF'
-                      00028 
-                      00029 ;--------------------------------------------------------------------------
-                      00030 ;
-                      00031 ;       Low-Voltage LC Series and AA Series
-                      00032 ;
-                      00033 ;--------------------------------------------------------------------------
-                      00034 
-0020 007F 007F        00035         DATA    _24LC01B , H'007F'
-0024 007F 007F        00036         DATA    _24AA01  , H'007F'
-0028 00FF 00FF        00037         DATA    _24LC02B , H'00FF'
-002C 00FF 00FF        00038         DATA    _24AA02  , H'00FF'
-0030 01FF 01FF        00039         DATA    _24LC04B , H'01FF'
-0034 01FF 01FF        00040         DATA    _24AA04  , H'01FF'
-0038 03FF 03FF        00041         DATA    _24LC08B , H'03FF'
-003C 03FF 03FF        00042         DATA    _24AA08  , H'03FF'
-0040 07FF 07FF        00043         DATA    _24LC16B , H'07FF'
-0044 07FF 07FF        00044         DATA    _24AA16  , H'07FF'
-0048 07FF 07FF        00045         DATA    _24FC16  , H'07FF'
-004C 07FF 07FF        00046         DATA    _24LC164 , H'07FF'
-0050 07FF 07FF        00047         DATA    _24AA164 , H'07FF'
-0054 07FF 07FF        00048         DATA    _24LC174 , H'07FF'
-0058 07FF 07FF        00049         DATA    _24AA174 , H'07FF'
-                      00050 
-MPASM 03.20.02 Released         HDMEM.ASM   11-21-2002  20:20:53         PAGE  2
+                      00015 ;==========================================================================
+                      00016 ;--------------------------------------------------------------------------
+                      00017 ;
+                      00018 ;       Standard C-Series
+                      00019 ;
+                      00020 ;--------------------------------------------------------------------------
+                      00021 
+0000 007F 007F        00022         DATA    _24C01A  , H'007F'
+0004 00FF 00FF        00023         DATA    _24C02A  , H'00FF'
+0008 01FF 01FF        00024         DATA    _24C04A  , H'01FF'
+000C 03FF 03FF        00025         DATA    _24C08B  , H'03FF'
+0010 07FF 07FF        00026         DATA    _24C16B  , H'07FF'
+                      00027 
+0014 007F 007F        00028         DATA    _85C72   , H'007F'
+0018 00FF 00FF        00029         DATA    _85C82   , H'00FF'
+001C 01FF 01FF        00030         DATA    _85C92   , H'01FF'
+                      00031 
+                      00032 ;--------------------------------------------------------------------------
+                      00033 ;
+                      00034 ;       Low-Voltage LC Series and AA Series
+                      00035 ;
+                      00036 ;--------------------------------------------------------------------------
+                      00037 
+0020 007F 007F        00038         DATA    _24LC01B , H'007F'
+0024 007F 007F        00039         DATA    _24AA01  , H'007F'
+0028 00FF 00FF        00040         DATA    _24LC02B , H'00FF'
+002C 00FF 00FF        00041         DATA    _24AA02  , H'00FF'
+0030 01FF 01FF        00042         DATA    _24LC04B , H'01FF'
+0034 01FF 01FF        00043         DATA    _24AA04  , H'01FF'
+0038 03FF 03FF        00044         DATA    _24LC08B , H'03FF'
+003C 03FF 03FF        00045         DATA    _24AA08  , H'03FF'
+0040 07FF 07FF        00046         DATA    _24LC16B , H'07FF'
+0044 07FF 07FF        00047         DATA    _24AA16  , H'07FF'
+0048 07FF 07FF        00048         DATA    _24FC16  , H'07FF'
+004C 07FF 07FF        00049         DATA    _24LC164 , H'07FF'
+0050 07FF 07FF        00050         DATA    _24AA164 , H'07FF'
+MPASM 03.20.07 Released                             HDMEM.ASM   12-4-2012  15:24:39         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00051 ;--------------------------------------------------------------------------
-                      00052 ;
-                      00053 ;       High Density
-                      00054 ;
-                      00055 ;--------------------------------------------------------------------------
-                      00056 
-005C 0FFF 0FFF        00057         DATA    _24C32   , H'0FFF'
-0060 0FFF 0FFF        00058         DATA    _24LC32  , H'0FFF'
-0064 0FFF 0FFF        00059         DATA    _24AA32  , H'0FFF'
-0068 0FFF 0FFF        00060         DATA    _24FC32  , H'0FFF'
-                      00061 
-                      00062 ;--------------------------------------------------------------------------
-                      00063 ;
-                      00064 ;       Smart Serial (tm) Family
-                      00065 ;
-                      00066 ;--------------------------------------------------------------------------
-                      00067 
-006C 1FFF 1FFF        00068         DATA    _24C65   , H'1FFF'
-0070 1FFF 1FFF        00069         DATA    _24LC65  , H'1FFF'
-0074 1FFF 1FFF        00070         DATA    _24AA65  , H'1FFF'
-0078 1FFF 1FFF        00071         DATA    _24FC65  , H'1FFF'
-                      00072 
-                      00073 ;--------------------------------------------------------------------------
-                      00074 ;
-                      00075 ;       VESA (tm) / DDC (tm)
-                      00076 ;
-                      00077 ;--------------------------------------------------------------------------
-                      00078 
-007C 007F 007F        00079         DATA    _24LC21  , H'007F'
-Warning[220]: Address exceeds maximum range for this processor.
-Warning[220]: Address exceeds maximum range for this processor.
-0080 007F 007F        00080         DATA    _24LCS21 , H'007F'
+0054 07FF 07FF        00051         DATA    _24LC174 , H'07FF'
+0058 07FF 07FF        00052         DATA    _24AA174 , H'07FF'
+                      00053 
+                      00054 ;--------------------------------------------------------------------------
+                      00055 ;
+                      00056 ;       High Density
+                      00057 ;
+                      00058 ;--------------------------------------------------------------------------
+                      00059 
+005C 0FFF 0FFF        00060         DATA    _24C32   , H'0FFF'
+0060 0FFF 0FFF        00061         DATA    _24LC32  , H'0FFF'
+0064 0FFF 0FFF        00062         DATA    _24AA32  , H'0FFF'
+0068 0FFF 0FFF        00063         DATA    _24FC32  , H'0FFF'
+                      00064 
+                      00065 ;--------------------------------------------------------------------------
+                      00066 ;
+                      00067 ;       Smart Serial (tm) Family
+                      00068 ;
+                      00069 ;--------------------------------------------------------------------------
+                      00070 
+006C 1FFF 1FFF        00071         DATA    _24C65   , H'1FFF'
+0070 1FFF 1FFF        00072         DATA    _24LC65  , H'1FFF'
+0074 1FFF 1FFF        00073         DATA    _24AA65  , H'1FFF'
+0078 1FFF 1FFF        00074         DATA    _24FC65  , H'1FFF'
+                      00075 
+                      00076 ;--------------------------------------------------------------------------
+                      00077 ;
+                      00078 ;       VESA (tm) / DDC (tm)
+                      00079 ;
+                      00080 ;--------------------------------------------------------------------------
                       00081 
-                      00082 ;==========================================================================
-                      00083 ;
-                      00084 ;       3-Wire/4-Wire Bus Protocol
-                      00085 ;
-                      00086 ;==========================================================================
-                      00087 ;--------------------------------------------------------------------------
+007C 007F 007F        00082         DATA    _24LC21  , H'007F'
+Warning[220]: Address exceeds maximum range for this processor.
+Warning[220]: Address exceeds maximum range for this processor.
+0080 007F 007F        00083         DATA    _24LCS21 , H'007F'
+                      00084 
+                      00085 ;==========================================================================
+                      00086 ;
+                      00087 ;       3-Wire/4-Wire Bus Protocol
                       00088 ;
-                      00089 ;       G.I.
-                      00090 ;
-                      00091 ;--------------------------------------------------------------------------
-                      00092 
+                      00089 ;==========================================================================
+                      00090 ;--------------------------------------------------------------------------
+                      00091 ;
+                      00092 ;       G.I.
+                      00093 ;
+                      00094 ;--------------------------------------------------------------------------
+                      00095 
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-0084 007F 007F        00093         DATA    _59C11   , H'007F'
-                      00094 
-                      00095 ;--------------------------------------------------------------------------
-                      00096 ;
-                      00097 ;       Standard C-Series
-                      00098 ;
-                      00099 ;--------------------------------------------------------------------------
-MPASM 03.20.02 Released         HDMEM.ASM   11-21-2002  20:20:53         PAGE  3
+0084 007F 007F        00096         DATA    _59C11   , H'007F'
+                      00097 
+                      00098 ;--------------------------------------------------------------------------
+                      00099 ;
+MPASM 03.20.07 Released                             HDMEM.ASM   12-4-2012  15:24:39         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00100 
-Warning[220]: Address exceeds maximum range for this processor.
-Warning[220]: Address exceeds maximum range for this processor.
-0088 001F 001F        00101         DATA    _93C06   , H'001F'
-Warning[220]: Address exceeds maximum range for this processor.
-Warning[220]: Address exceeds maximum range for this processor.
-008C 007F 007F        00102         DATA    _93C46   , H'007F'
+                      00100 ;       Standard C-Series
+                      00101 ;
+                      00102 ;--------------------------------------------------------------------------
                       00103 
-                      00104 ;--------------------------------------------------------------------------
-                      00105 ;
-                      00106 ;       Low-Voltage LC Series
-                      00107 ;
-                      00108 ;--------------------------------------------------------------------------
-                      00109 
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-0090 007F 007F        00110         DATA    _93LC46  , H'007F'
+0088 001F 001F        00104         DATA    _93C06   , H'001F'
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-0094 00FF 00FF        00111         DATA    _93LC56  , H'00FF'
+008C 007F 007F        00105         DATA    _93C46   , H'007F'
+                      00106 
+                      00107 ;--------------------------------------------------------------------------
+                      00108 ;
+                      00109 ;       Low-Voltage LC Series
+                      00110 ;
+                      00111 ;--------------------------------------------------------------------------
+                      00112 
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-0098 01FF 01FF        00112         DATA    _93LC66  , H'01FF'
-                      00113 
-                      00114 ;==========================================================================
-                      00115 ;
-                      00116 ;       3-Wire Bus Protocol
-                      00117 ;
-                      00118 ;==========================================================================
-                      00119 ;--------------------------------------------------------------------------
+0090 007F 007F        00113         DATA    _93LC46  , H'007F'
+Warning[220]: Address exceeds maximum range for this processor.
+Warning[220]: Address exceeds maximum range for this processor.
+0094 00FF 00FF        00114         DATA    _93LC56  , H'00FF'
+Warning[220]: Address exceeds maximum range for this processor.
+Warning[220]: Address exceeds maximum range for this processor.
+0098 01FF 01FF        00115         DATA    _93LC66  , H'01FF'
+                      00116 
+                      00117 ;==========================================================================
+                      00118 ;
+                      00119 ;       3-Wire Bus Protocol
                       00120 ;
-                      00121 ;       Low-Voltage AA Series
-                      00122 ;
-                      00123 ;--------------------------------------------------------------------------
-                      00124 
+                      00121 ;==========================================================================
+                      00122 ;--------------------------------------------------------------------------
+                      00123 ;
+                      00124 ;       Low-Voltage AA Series
+                      00125 ;
+                      00126 ;--------------------------------------------------------------------------
+                      00127 
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-009C 007F 007F        00125         DATA    _93AA46  , H'007F'
+009C 007F 007F        00128         DATA    _93AA46  , H'007F'
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-00A0 00FF 00FF        00126         DATA    _93AA56  , H'00FF'
+00A0 00FF 00FF        00129         DATA    _93AA56  , H'00FF'
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-00A4 01FF 01FF        00127         DATA    _93AA66  , H'01FF'
+00A4 01FF 01FF        00130         DATA    _93AA66  , H'01FF'
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-00A8 03FF 03FF        00128         DATA    _93AA76  , H'03FF'
+00A8 03FF 03FF        00131         DATA    _93AA76  , H'03FF'
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-00AC 07FF 07FF        00129         DATA    _93AA86  , H'07FF'
-                      00130 
-                      00131 ;--------------------------------------------------------------------------
-                      00132 ;
-MPASM 03.20.02 Released         HDMEM.ASM   11-21-2002  20:20:53         PAGE  4
+00AC 07FF 07FF        00132         DATA    _93AA86  , H'07FF'
+MPASM 03.20.07 Released                             HDMEM.ASM   12-4-2012  15:24:39         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00133 ;       Low-Voltage LC Series
-                      00134 ;
-                      00135 ;--------------------------------------------------------------------------
-                      00136 
+                      00133 
+                      00134 ;--------------------------------------------------------------------------
+                      00135 ;
+                      00136 ;       Low-Voltage LC Series
+                      00137 ;
+                      00138 ;--------------------------------------------------------------------------
+                      00139 
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-00B0 007F 007F        00137         DATA    _93LC46B , H'007F'
+00B0 007F 007F        00140         DATA    _93LC46B , H'007F'
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-00B4 00FF 00FF        00138         DATA    _93LC56B , H'00FF'
+00B4 00FF 00FF        00141         DATA    _93LC56B , H'00FF'
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-00B8 01FF 01FF        00139         DATA    _93LC66B , H'01FF'
-Error[113]  : Symbol not previously defined (_93LC76B)
+00B8 01FF 01FF        00142         DATA    _93LC66B , H'01FF'
+                      00143 ;;;; Begin: Changed in gputils
+                      00144 ;;;;        DATA    _93LC76B , H'03FF'
+                      00145 ;;;;        DATA    _93LC86B , H'07FF'
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-00BC 0000 03FF        00140         DATA    _93LC76B , H'03FF'
-Error[113]  : Symbol not previously defined (_93LC86B)
+00BC 03FF 03FF        00146         DATA    _93LC76  , H'03FF'
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-00C0 0000 07FF        00141         DATA    _93LC86B , H'07FF'
-                      00142 
-                      00143 ;--------------------------------------------------------------------------
-                      00144 ;
-                      00145 ;       Secure LCS-Series
-                      00146 ;
-                      00147 ;--------------------------------------------------------------------------
-                      00148 
+00C0 07FF 07FF        00147         DATA    _93LC86  , H'07FF'
+                      00148 ;;;; End: Changed in gputils
+                      00149 
+                      00150 ;--------------------------------------------------------------------------
+                      00151 ;
+                      00152 ;       Secure LCS-Series
+                      00153 ;
+                      00154 ;--------------------------------------------------------------------------
+                      00155 
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-00C4 00FF 00FF        00149         DATA    _93LCS56 , H'00FF'
+00C4 00FF 00FF        00156         DATA    _93LCS56 , H'00FF'
 Warning[220]: Address exceeds maximum range for this processor.
 Warning[220]: Address exceeds maximum range for this processor.
-00C8 01FF 01FF        00150         DATA    _93LCS66 , H'01FF'
-                      00151 
-                      00152         END
-MPASM 03.20.02 Released         HDMEM.ASM   11-21-2002  20:20:53         PAGE  5
+00C8 01FF 01FF        00157         DATA    _93LCS66 , H'01FF'
+                      00158 
+                      00159         END
+MPASM 03.20.07 Released                             HDMEM.ASM   12-4-2012  15:24:39         PAGE  5
 
 
 SYMBOL TABLE
@@ -276,7 +281,7 @@ _24LC32A                          H'0FFF'
 _24LC32ASC                        H'0FFF'
 _24LC41A                          H'01FF'
 _24LC64                           H'1FFF'
-MPASM 03.20.02 Released         HDMEM.ASM   11-21-2002  20:20:53         PAGE  6
+MPASM 03.20.07 Released                             HDMEM.ASM   12-4-2012  15:24:39         PAGE  6
 
 
 SYMBOL TABLE
@@ -333,7 +338,7 @@ _93LC86                           H'07FF'
 _93LCS56                          H'00FF'
 _93LCS66                          H'01FF'
 __EEPROM16                        00000001
-MPASM 03.20.02 Released         HDMEM.ASM   11-21-2002  20:20:53         PAGE  7
+MPASM 03.20.07 Released                             HDMEM.ASM   12-4-2012  15:24:39         PAGE  7
 
 
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
@@ -350,7 +355,7 @@ Memory Bytes Used:   128
 Memory Bytes Free:     0
 
 
-Errors   :     2
+Errors   :     0
 Warnings :    38 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 

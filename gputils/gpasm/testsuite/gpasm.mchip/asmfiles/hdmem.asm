@@ -3,7 +3,10 @@
 ; This file tests header file usage for the specified processor.
 
 	LIST	P=EEPROM16
-	INCLUDE	"memory.inc"
+;;;; Begin: Changed in gputils
+;;;;	INCLUDE	"memory.inc"
+	INCLUDE	"MEMORY.INC"
+;;;; End: Changed in gputils
 
 ;==========================================================================
 ;
@@ -137,8 +140,12 @@
         DATA    _93LC46B , H'007F'
         DATA    _93LC56B , H'00FF'
         DATA    _93LC66B , H'01FF'
-        DATA    _93LC76B , H'03FF'
-        DATA    _93LC86B , H'07FF'
+;;;; Begin: Changed in gputils
+;;;;        DATA    _93LC76B , H'03FF'
+;;;;        DATA    _93LC86B , H'07FF'
+        DATA    _93LC76  , H'03FF'
+        DATA    _93LC86  , H'07FF'
+;;;; End: Changed in gputils
 
 ;--------------------------------------------------------------------------
 ;

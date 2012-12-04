@@ -3,7 +3,10 @@
 ; This file tests header file usage for the specified processor.
 
         LIST    P=18C252
-        INCLUDE "p18c252.inc"
+;;;; Begin: Changed in gputils
+;;;;        INCLUDE "p18c252.inc"
+        INCLUDE "P18C252.INC"
+;;;; End: Changed in gputils
 
         DATA TOSU,  H'0FFF'
         DATA TOSH,  H'0FFE'
@@ -357,7 +360,9 @@
         DATA CCP2IE,             H'0000'
 
 ;----- IPR1 Bits ----------------------------------------------------------
-        DATA PSPIP,              H'0007'
+;;;; Begin: Removed in gputils
+;;;;        DATA PSPIP,              H'0007'
+;;;; End: Removed in gputils
         DATA ADIP,               H'0006'
         DATA RCIP,               H'0005'
         DATA TXIP,               H'0004'
@@ -367,7 +372,9 @@
         DATA TMR1IP,             H'0000'
 
 ;----- PIR1 Bits ----------------------------------------------------------
-        DATA PSPIF,              H'0007'
+;;;; Begin: Removed in gputils
+;;;;        DATA PSPIF,              H'0007'
+;;;; End: Removed in gputils
         DATA ADIF,               H'0006'
         DATA RCIF,               H'0005'
         DATA TXIF,               H'0004'
@@ -377,7 +384,9 @@
         DATA TMR1IF,             H'0000'
 
 ;----- PIE1 Bits ----------------------------------------------------------
-        DATA PSPIE,              H'0007'
+;;;; Begin: Removed in gputils
+;;;;        DATA PSPIE,              H'0007'
+;;;; End: Removed in gputils
         DATA ADIE,               H'0006'
         DATA RCIE,               H'0005'
         DATA TXIE,               H'0004'
@@ -433,7 +442,10 @@
         DATA T1CKI,              0
         DATA RC1,                1
         DATA T1OSI,              1
-        DATA CCP2,               1
+;;;; Begin: Changed in gputils
+;;;;        DATA CCP2,               1
+        DATA CCP2_PORTC,         1
+;;;; End: Changed in gputils
         DATA RC2,                2
         DATA CCP1,               2
         DATA RC3,                3
