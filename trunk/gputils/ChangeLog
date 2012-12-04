@@ -1,3 +1,24 @@
+2012-12-04  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/testsuite/gpasm.mchip/asmfiles/hd242.asm,
+    gpasm/testsuite/gpasm.mchip/hexfiles/hd242.hex,
+    gpasm/testsuite/gpasm.mchip/listfiles/hd242.lst,
+    gpasm/testsuite/gpasm.mchip/asmfiles/hd252.asm,
+    gpasm/testsuite/gpasm.mchip/hexfiles/hd252.hex,
+    gpasm/testsuite/gpasm.mchip/listfiles/hd252.lst,
+    gpasm/testsuite/gpasm.mchip/asmfiles/hd442.asm,
+    gpasm/testsuite/gpasm.mchip/hexfiles/hd442.hex,
+    gpasm/testsuite/gpasm.mchip/listfiles/hd442.lst,
+    gpasm/testsuite/gpasm.mchip/asmfiles/hd452.asm,
+    gpasm/testsuite/gpasm.mchip/hexfiles/hd452.hex,
+    gpasm/testsuite/gpasm.mchip/listfiles/hd452.lst,
+    gpasm/testsuite/gpasm.mchip/asmfiles/hd715.asm,
+    gpasm/testsuite/gpasm.mchip/hexfiles/hd715.hex,
+    gpasm/testsuite/gpasm.mchip/listfiles/hd715.lst,
+    gpasm/testsuite/gpasm.mchip/asmfiles/hdmem.asm,
+    gpasm/testsuite/gpasm.mchip/hexfiles/hdmem.hex,
+    gpasm/testsuite/gpasm.mchip/listfiles/hdmem.lst:
+    regression tests adapted for gpasm
+
 2012-12-03  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/lst.c, gpasm/lst.h, gpasm/directive.c:
     fixed listing of PAGE directive;
@@ -26,7 +47,7 @@
     gpasm/testsuite/gpasm.mchip/asmfiles/var1.asm,
     gpasm/testsuite/gpasm.mchip/listfiles/var1.lst,
     gpasm/testsuite/gpasm.mchip/hexfiles/var1.hex:
-    regression tests adopted for gpasm
+    regression tests adapted for gpasm
   * gpasm/testsuite/gpasm.project/hexfiles/eeprom8.hex,
     gpasm/testsuite/gpasm.project/listfiles/eeprom8.lst,
     gpasm/testsuite/gpasm.project/asmfiles/eeprom8.asm: added

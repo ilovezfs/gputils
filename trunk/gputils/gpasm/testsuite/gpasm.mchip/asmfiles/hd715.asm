@@ -3,7 +3,10 @@
 ; This file tests header file usage for the specified processor.
 
 	LIST	P=16C715
-	INCLUDE	"p16c715.inc"
+;;;; Begin: Changed in gputils
+;;;;        INCLUDE "p16c715.inc"
+	INCLUDE	"P16C715.INC"
+;;;; End: Changed in gputils
 
  	DATA	_CP_ALL, 0x00CF		; This changes per device
 	DATA	_CP_50, 0X15DF
