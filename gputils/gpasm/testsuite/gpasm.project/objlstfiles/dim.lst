@@ -1,0 +1,41 @@
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001         list p=16f877
+                      00002 
+                      00003         CODE
+0000   3401           00004         retlw 1
+Warning[207]: Found label after column 1. (.def)
+Error[122]  : Illegal opcode (Var1)
+0000   3401           00005         .def Var1, type=2, class=6, global
+Warning[207]: Found label after column 1. (.dim)
+Error[122]  : Illegal opcode (Var1)
+0000   3401           00006         .dim Var1, 1, 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
+                      00007 
+Error[128]  : Missing argument(s)
+                      00008         DATA
+0001   0001           00009         data    1
+Warning[207]: Found label after column 1. (.def)
+Error[122]  : Illegal opcode (Data1)
+0001   0001           00010         .def Data1, type=2, class=6, global
+Warning[207]: Found label after column 1. (.dim)
+Error[122]  : Illegal opcode (Data1)
+0001   0001           00011         .dim Data1, 1, 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
+                      00012 
+                      00013         end
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16F877                          00000001
+
+Errors   :     5
+Warnings :     4 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

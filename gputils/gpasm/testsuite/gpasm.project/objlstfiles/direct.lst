@@ -1,0 +1,29 @@
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001         list p=16f877
+                      00002 
+                      00003         CODE
+                      00004 
+0000   3401           00005         retlw   1
+Warning[207]: Found label after column 1. (.direct)
+Error[108]  : Illegal character (')
+0000   3401           00006         .direct 'A',"The direct command"
+                      00007 
+                      00008         END
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__16F877                          00000001
+
+Errors   :     1
+Warnings :     1 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

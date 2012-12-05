@@ -1,0 +1,35 @@
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001      list p=18c242
+                      00002      idata
+                      00003         ;; MPASM v5.34 gives Error[152]  : Executable code and data must be defined in an appropriate se
+                            ction
+Error[152]  : Executable code and data must be defined in an appropriate section
+Error[152]  : Executable code and data must be defined in an appropriate section
+Error[152]  : Executable code and data must be defined in an appropriate section
+Error[152]  : Executable code and data must be defined in an appropriate section
+Error[152]  : Executable code and data must be defined in an appropriate section
+Error[152]  : Executable code and data must be defined in an appropriate section
+Error[152]  : Executable code and data must be defined in an appropriate section
+Error[152]  : Executable code and data must be defined in an appropriate section
+Error[152]  : Executable code and data must be defined in an appropriate section
+Error[152]  : Executable code and data must be defined in an appropriate section
+000000                00004      dt "A Message",0
+Error[129]  : Expected (END)
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__18C242                          00000001
+
+Errors   :    11
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

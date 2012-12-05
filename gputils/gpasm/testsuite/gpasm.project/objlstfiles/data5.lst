@@ -1,0 +1,39 @@
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001      list p=eeprom16
+  0000                00002      extern file
+                      00003 
+                      00004      code
+                      00005 
+0000 6162 6364 6566 6700006      data "abcdefg"
+       00 
+0008 3132 3334 3536 3700007      data "12345678",0x1421,2,3,4
+       38 1421 0002 00
+       03 0004 
+0018 0001 0002 6100 0000008      data 1,2,"a",4,"bc",5,"de",6,7
+       04 6263 0005 64
+       65 0006 0007 
+002A FFFF             00009      data 0xFFFF
+002C ????             00010      data file
+002E                  00011 cdata
+                      00012 
+                      00013      end
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__EEPROM16                        00000001
+cdata                             0000002E
+file                              00000000
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

@@ -1,0 +1,35 @@
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001     list p=16f73
+Warning[205]: Found directive in column 1. (ifndef)
+                      00002 ifndef _TEST_INC
+  00000001            00003 _TEST_INC = 1
+                      00004     list
+  0000                00005     extern foo
+Warning[205]: Found directive in column 1. (endif)
+                      00006 endif
+                      00007 
+  0000                00008     extern blah
+                      00009     code
+0000   08??           00010     movf blah, w
+                      00011     end
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_TEST_INC                         00000001
+__16F73                           00000001
+blah                              00000000
+foo                               00000000
+
+Errors   :     0
+Warnings :     2 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

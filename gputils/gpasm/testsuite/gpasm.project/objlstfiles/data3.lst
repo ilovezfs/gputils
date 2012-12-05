@@ -1,0 +1,439 @@
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001      list p=18c242
+  0000                00002      extern file
+                      00003 
+                      00004      code
+000000 6261 6463 6665 00005      da "abcdefg"
+       0067 
+000008 6261 6463 6665 00006      da "abcdefg",0
+       0067 0000 
+000012 3231 3433 3635 00007      da "12345678",0
+       3837 0000 
+00001C 0001 0002 0061 00008      da 1,2,"a",4,"bc",5,"de",6,7
+       0004 6362 0005 
+       6564 0006 0007 
+00002E FFFF           00009      da 0xFFFF
+000030 ????           00010      da file
+000032                00011 cda
+                      00012 
+000032 6261 6463 6665 00013      data "abcdefg"
+       0067 
+00003A 3231 3433 3635 00014      data "12345678",0x1421,2,3,4
+       3837 1421 0002 
+       0003 0004 
+00004A 0001 0002 0061 00015      data 1,2,"a",4,"bc",5,"de",6,7
+       0004 6362 0005 
+       6564 0006 0007 
+00005C FFFF           00016      data 0xFFFF
+00005E ????           00017      data file
+000060                00018 cdata
+                      00019 
+000060 0F74 0F65 0F73 00020      db 't',0x0f,'e',0x0f,'s',0x0f,'t','\n'
+       0A74 
+000068 0201 0461 6362 00021      db 1,2,"a",4,"bc",5,"de",6,7
+       6405 0665 0007 
+000074 FFFF           00022      db 0xFF, 0xFF
+000076 00??           00023      db file
+000078                00024 cdb
+                      00025 
+000078 794D 5020 6F72 00026      de "My Program, v1.0",0
+       7267 6D61 202C 
+       3176 302E 0000 
+00008A 0201 0461 6362 00027      de 1,2,"a",4,"bc",5,"de",6,7
+       6405 0665 0007 
+000096 00??           00028      de file
+000098                00029 cde
+                      00030 
+000098 6261 6463 6665 00031      dw "abcdefg"
+       0067 
+0000A0 3231 3433 3635 00032      dw "12345678",0
+       3837 0000 
+0000AA 0001 0002 0061 00033      dw 1,2,"a",4,"bc",5,"de",6,7
+       0004 6362 0005 
+       6564 0006 0007 
+0000BC FFFF           00034      dw 0xFFFF
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0000BE ????           00035      dw file
+0000C0                00036 cdw
+                      00037 
+0000C0 0C41 0C20 0C4D 00038      dt "A Message",0
+       0C65 0C73 0C73 
+       0C61 0C67 0C65 
+       0C00 
+0000D4 ????           00039      dt file
+0000D6                00040 cdt
+                      00041 
+                      00042         ;; TODO test that odd numbers give Error[159]  : Cannot use FILL directive with odd number of by
+                            tes
+0000D6 01FF           00043      fill 0x1ff, 4
+0000DA                00044 cfill1
+0000DA D?             00045      fill (bra cfill1), 4
+0000DE                00046 cfill2
+0000DE D7             00047      fill (bra $), 4
+0000E2                00048 cfill3
+                      00049 
+Warning[231]: No memory has been reserved by this instruction
+0000E2                00050      res 1
+0000E2                00051 cres1
+0000E2 FFFF           00052      res 2
+0000E4                00053 cres2
+0000E4 FFFF           00054      res 3
+0000E6                00055 cres3
+0000E6 FFFF FFFF      00056      res 4
+0000EA                00057 cres4
+                      00058 
+                      00059      idata
+000000 61 00 62 00 63 00060      da "abcdefg"
+       00 64 00 65 00 
+       66 00 67 00 00 
+       00 
+000010 61 00 62 00 63 00061      da "abcdefg",0
+       00 64 00 65 00 
+       66 00 67 00 00 
+       00 00 00 
+000022 31 00 32 00 33 00062      da "12345678",0
+       00 34 00 35 00 
+       36 00 37 00 38 
+       00 00 00 00 00 
+000036 01 00 02 00 61 00063      da 1,2,"a",4,"bc",5,"de",6,7
+       00 00 00 04 00 
+       62 00 63 00 00 
+       00 05 00 64 00 
+       65 00 00 00 06 
+       00 07 00 
+000052 FF FF          00064      da 0xFFFF
+000054 ?? ??          00065      da file
+000056                00066 ida
+                      00067 
+000056 61 00 62 00 63 00068      data "abcdefg"
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+       00 64 00 65 00 
+       66 00 67 00 00 
+       00 
+000066 31 00 32 00 33 00069      data "12345678",0x1421,2,3,4
+       00 34 00 35 00 
+       36 00 37 00 38 
+       00 00 00 21 14 
+       02 00 03 00 04 
+       00 
+000080 01 00 02 00 61 00070      data 1,2,"a",4,"bc",5,"de",6,7
+       00 00 00 04 00 
+       62 00 63 00 00 
+       00 05 00 64 00 
+       65 00 00 00 06 
+       00 07 00 
+00009C FF FF          00071      data 0xFFFF
+00009E ?? ??          00072      data file
+0000A0                00073 iddata
+                      00074 
+0000A0 74 0F 65 0F 73 00075      db 't',0x0f,'e',0x0f,'s',0x0f,'t','\n'
+       0F 74 0A 
+0000A8 01 02 61 04 62 00076      db 1,2,"a",4,"bc",5,"de",6,7
+       63 05 64 65 06 
+       07 
+0000B3 FF FF          00077      db 0xFF, 0xFF
+0000B5 ??             00078      db file
+0000B6                00079 idb
+                      00080 
+0000B6 4D 79 20 50 72 00081      de "My Program, v1.0",0
+       6F 67 72 61 6D 
+       2C 20 76 31 2E 
+       30 00 
+0000C7 01 02 61 04 62 00082      de 1,2,"a",4,"bc",5,"de",6,7
+       63 05 64 65 06 
+       07 
+0000D2 ??             00083      de file
+0000D3                00084 ide
+                      00085 
+0000D3 61 00 62 00 63 00086      dw "abcdefg"
+       00 64 00 65 00 
+       66 00 67 00 00 
+       00 
+0000E3 31 00 32 00 33 00087      dw "12345678",0
+       00 34 00 35 00 
+       36 00 37 00 38 
+       00 00 00 00 00 
+0000F7 01 00 02 00 61 00088      dw 1,2,"a",4,"bc",5,"de",6,7
+       00 00 00 04 00 
+       62 00 63 00 00 
+       00 05 00 64 00 
+       65 00 00 00 06 
+       00 07 00 
+000113 FF FF          00089      dw 0xFFFF
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000115 ?? ??          00090      dw file
+000117                00091 idw
+                      00092 
+                      00093         ;; MPASM gives Error[152]  : Executable code and data must be defined in an appropriate section 
+                      00094      ;dt "A Message",0
+                      00095      ;dt file
+                      00096 
+                      00097         ;; MPASM gives Error[152]  : Executable code and data must be defined in an appropriate section 
+                      00098 ;     fill 0x1ff, 4
+                      00099 ;ifill1
+                      00100 ;     fill (bra ifill1), 4
+                      00101 ;ifill2
+                      00102 ;     fill (bra $), 4
+                      00103 ;ifill3
+                      00104 
+000117 00             00105      res 1
+000118                00106 ires1
+000118 00 00          00107      res 2
+00011A                00108 ires2
+00011A 00 00 00       00109      res 3
+00011D                00110 ires3
+00011D 00 00 00 00    00111      res 4
+000121                00112 ires4
+                      00113 
+                      00114 packed code_pack
+000000 61 00 62 00 63 00115      da "abcdefg"
+       00 64 00 65 00 
+       66 00 67 00 00 
+       00 
+000010 61 00 62 00 63 00116      da "abcdefg",0
+       00 64 00 65 00 
+       66 00 67 00 00 
+       00 00 00 
+000022 31 00 32 00 33 00117      da "12345678",0
+       00 34 00 35 00 
+       36 00 37 00 38 
+       00 00 00 00 00 
+000036 01 00 02 00 61 00118      da 1,2,"a",4,"bc",5,"de",6,7
+       00 00 00 04 00 
+       62 00 63 00 00 
+       00 05 00 64 00 
+       65 00 00 00 06 
+       00 07 00 
+000052 FF FF          00119      da 0xFFFF
+000054 ?? ??          00120      da file
+000056                00121 pda
+                      00122 
+000056 61 00 62 00 63 00123      data "abcdefg"
+       00 64 00 65 00 
+       66 00 67 00 00 
+       00 
+000066 31 00 32 00 33 00124      data "12345678",0x1421,2,3,4
+       00 34 00 35 00 
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+       36 00 37 00 38 
+       00 00 00 21 14 
+       02 00 03 00 04 
+       00 
+000080 01 00 02 00 61 00125      data 1,2,"a",4,"bc",5,"de",6,7
+       00 00 00 04 00 
+       62 00 63 00 00 
+       00 05 00 64 00 
+       65 00 00 00 06 
+       00 07 00 
+00009C FF FF          00126      data 0xFFFF
+00009E ?? ??          00127      data file
+0000A0                00128 pdata
+                      00129 
+0000A0 74 0F 65 0F 73 00130      db 't',0x0f,'e',0x0f,'s',0x0f,'t','\n'
+       0F 74 0A 
+0000A8 01 02 61 04 62 00131      db 1,2,"a",4,"bc",5,"de",6,7
+       63 05 64 65 06 
+       07 
+0000B3 FF FF          00132      db 0xFF, 0xFF
+0000B5 ??             00133      db file
+0000B6                00134 pdb
+                      00135 
+0000B6 4D 79 20 50 72 00136      de "My Program, v1.0",0
+       6F 67 72 61 6D 
+       2C 20 76 31 2E 
+       30 00 
+0000C7 01 02 61 04 62 00137      de 1,2,"a",4,"bc",5,"de",6,7
+       63 05 64 65 06 
+       07 
+0000D2 ??             00138      de file
+0000D3                00139 pde
+                      00140 
+0000D3 61 00 62 00 63 00141      dw "abcdefg"
+       00 64 00 65 00 
+       66 00 67 00 00 
+       00 
+0000E3 31 00 32 00 33 00142      dw "12345678",0
+       00 34 00 35 00 
+       36 00 37 00 38 
+       00 00 00 00 00 
+0000F7 01 00 02 00 61 00143      dw 1,2,"a",4,"bc",5,"de",6,7
+       00 00 00 04 00 
+       62 00 63 00 00 
+       00 05 00 64 00 
+       65 00 00 00 06 
+       00 07 00 
+000113 FF FF          00144      dw 0xFFFF
+000115 ?? ??          00145      dw file
+000117                00146 pdw
+                      00147 
+000117 0C41 0C20 0C4D 00148      dt "A Message",0
+       0C65 0C73 0C73 
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+       0C61 0C67 0C65 
+       0C00 
+00012B ????           00149      dt file
+00012D                00150 pdt
+                      00151 
+00012D 01FF           00152      fill 0x1ff, 4
+000131                00153 pfill1
+000131 D?             00154      fill (bra pfill1), 4
+000135                00155 pfill2
+Warning[226]: Destination address must be word aligned
+Warning[226]: Destination address must be word aligned
+000135 D7             00156      fill (bra $), 4
+000139                00157 pfill3
+                      00158 
+                      00159         ;; We were left at odd address and res would give error 158
+000139 01             00160      db 1
+                      00161         ;; Warning[231]: No memory has been reserved by this instruction
+Warning[231]: No memory has been reserved by this instruction
+00013A                00162      res 1
+00013A                00163 pres1
+                      00164         ;; This should reserve 0xFFFF
+00013A FFFF           00165      res 2
+00013C                00166 pres2
+00013C FFFF           00167      res 3
+00013E                00168 pres3
+00013E FFFF FFFF      00169      res 4
+000142                00170 pres4
+                      00171 
+                      00172      udata
+000000                00173 u0
+000000                00174      res 1
+000001                00175 u1   res 2
+000003                00176 u3   res 3
+000006                00177 u6   res 4
+00000A                00178 u10
+                      00179      udata_ovr
+000000                00180 uo0
+000000                00181      res 1
+000001                00182 uo1  res 2
+000003                00183 uo3  res 3
+000006                00184 uo6  res 4
+00000A                00185 uo10
+                      00186      udata_shr
+000000                00187 us0
+000000                00188      res 1
+000001                00189 us1  res 2
+000003                00190 us3  res 3
+000006                00191 us6  res 4
+00000A                00192 us10
+                      00193      udata_acs
+000000                00194 ua0
+000000                00195      res 1
+000001                00196 ua1  res 2
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000003                00197 ua3  res 3
+000006                00198 ua6  res 4
+00000A                00199 ua10
+                      00200      end
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__18C242                          00000001
+cda                               00000032
+cdata                             00000060
+cdb                               00000078
+cde                               00000098
+cdt                               000000D6
+cdw                               000000C0
+cfill1                            000000DA
+cfill2                            000000DE
+cfill3                            000000E2
+cres1                             000000E2
+cres2                             000000E4
+cres3                             000000E6
+cres4                             000000EA
+file                              00000000
+ida                               00000056
+idb                               000000B6
+iddata                            000000A0
+ide                               000000D3
+idw                               00000117
+ires1                             00000118
+ires2                             0000011A
+ires3                             0000011D
+ires4                             00000121
+pda                               00000056
+pdata                             000000A0
+pdb                               000000B6
+pde                               000000D3
+pdt                               0000012D
+pdw                               00000117
+pfill1                            00000131
+pfill2                            00000135
+pfill3                            00000139
+pres1                             0000013A
+pres2                             0000013C
+pres3                             0000013E
+pres4                             00000142
+u0                                00000000
+u1                                00000001
+u10                               0000000A
+u3                                00000003
+u6                                00000006
+ua0                               00000000
+ua1                               00000001
+ua10                              0000000A
+ua3                               00000003
+ua6                               00000006
+uo0                               00000000
+uo1                               00000001
+uo10                              0000000A
+uo3                               00000003
+uo6                               00000006
+us0                               00000000
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+us1                               00000001
+us10                              0000000A
+us3                               00000003
+us6                               00000006
+
+Errors   :     0
+Warnings :     4 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+
