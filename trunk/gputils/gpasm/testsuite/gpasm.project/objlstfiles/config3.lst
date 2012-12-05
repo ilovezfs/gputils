@@ -1,0 +1,34 @@
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:24         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001         LIST P=18C242
+                      00002 
+                      00003         CODE
+                      00004 
+000000 0E05           00005         MOVLW 5
+                      00006 
+                      00007         CONFIG WDT=ON
+                      00008         CONFIG BOR=ON
+                      00009         CONFIG WDTPS=8          ; Adds to same byte as WDT=ON
+                      00010 
+                      00011 b       CODE
+                      00012 
+000000 0E10           00013         MOVLW 10
+                      00014         
+                      00015         END
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:24         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__18C242                          00000001
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

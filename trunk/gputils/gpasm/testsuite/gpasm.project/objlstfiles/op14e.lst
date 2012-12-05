@@ -1,0 +1,111 @@
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; This file is used to test relocatable objects with the enhanced 14 bit
+                      00002 ; instruction set. Some of the expressions are possible, but not very useful.
+                      00003 
+                      00004     list p=12f1822,r=dec
+  0000                00005     extern file, address
+                      00006 
+  00000004            00007 FSR0 equ H'0004'
+  00000006            00008 FSR1 equ H'0006'
+                      00009 
+                      00010     code
+                      00011 
+0000   3120           00012     addfsr FSR0,-32
+0001   311F           00013     addfsr FSR0,31
+0002   3160           00014     addfsr FSR1,-32
+0003   315F           00015     addfsr FSR1,31
+0004   3E??           00016     addlw file
+0005   07??           00017     addwf file,1
+0006   3D??           00018     addwfc file,1
+0007   39??           00019     andlw file
+0008   05??           00020     andwf file,1
+0009   37??           00021     asrf file,1
+000A   002?           00022     banksel file
+000B   1380           00023     bcf file,7
+000C   3???           00024     bra address
+000D   000B           00025     brw
+000E   1780           00026     bsf file,7
+000F   1880           00027     btfsc file,1
+0010   1C80           00028     btfss file,1
+0011   2???           00029     call address
+0012   000A           00030     callw
+0013   01??           00031     clrf file
+0014   0103           00032     clrw
+0015   0064           00033     clrwdt
+0016   09??           00034     comf file,1
+0017   03??           00035     decf file,1
+0018   0B??           00036     decfsz file,1
+Message[312]: Page or Bank selection not needed for this device.  No code generated.
+                      00037     pagesel address
+0019   2???           00038     goto address
+001A   0A??           00039     incf file,1
+001B   0F??           00040     incfsz file,1
+001C   38??           00041     iorlw file
+001D   04??           00042     iorwf file,1
+001E   35??           00043     lslf file,1
+001F   36??           00044     lsrf file,1
+                      00045 
+0020   0010           00046     moviw ++FSR0
+0021   0011           00047     moviw --FSR0
+0022   0012           00048     moviw FSR0++
+0023   0013           00049     moviw FSR0--
+                      00050 
+0024   08??           00051     movf  file,1
+0025   002?           00052     movlb file
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0026   3180           00053     movlp file
+0027   30??           00054     movlw file
+0028   00??           00055     movwf file
+                      00056 
+0029   0018           00057     movwi ++FSR0
+002A   0019           00058     movwi --FSR0
+002B   001A           00059     movwi FSR0++
+002C   001B           00060     movwi FSR0--
+                      00061 
+002D   0000           00062     nop
+Warning[224]: Use of this instruction is not recommended.
+002E   0062           00063     option
+002F   0001           00064     reset
+0030   0009           00065     retfie
+0031   34??           00066     retlw file
+0032   0008           00067     return
+0033   0D??           00068     rlf file,1
+0034   0C??           00069     rrf file,1
+0035   0063           00070     sleep
+0036   3C??           00071     sublw file
+0037   02??           00072     subwf file,1
+0038   3B??           00073     subwfb file,1
+0039   0E??           00074     swapf file,1
+Warning[224]: Use of this instruction is not recommended.
+003A   006?           00075     tris file
+003B   3A??           00076     xorlw file
+003C   06??           00077     xorwf file,1
+                      00078 
+                      00079     end
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR0                              00000004
+FSR1                              00000006
+__12F1822                         00000001
+address                           00000000
+file                              00000000
+
+Errors   :     0
+Warnings :     2 reported,     0 suppressed
+Messages :     1 reported,     0 suppressed
+
+

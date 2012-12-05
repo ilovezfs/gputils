@@ -1,0 +1,32 @@
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001         LIST P=18C242
+                      00002 
+                      00003         CODE
+                      00004 
+000000 0E05           00005         MOVLW 5
+                      00006 
+                      00007         CONFIG WDT=ON
+                      00008 
+                      00009         ;; Error[152]  : Executable code and data must be defined in an appropriate section
+Error[152]  : Executable code and data must be defined in an appropriate section
+000002                00010         MOVLW 10
+                      00011         
+                      00012         END
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__18C242                          00000001
+
+Errors   :     1
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

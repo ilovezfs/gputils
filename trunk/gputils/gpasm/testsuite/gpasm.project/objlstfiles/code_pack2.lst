@@ -1,0 +1,131 @@
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:24         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; this is my test file for the code_pack gpasm patch
+                      00002 
+                      00003 ;
+                      00004 ; the idea is to test as many permutations of packed data as possible,
+                      00005 ; and to make sure that the label addresses generated are always correct.
+                      00006 ;
+                      00007 
+                      00008             list p=18f2455
+                      00009 
+                      00010 blech       code_pack   0x100
+                      00011 
+000100                00012 label0
+000100 01             00013             db 1
+000101                00014 label1
+000101 02             00015             db 2
+000102                00016 label2
+000102 03 04          00017             db 3, 4
+000104                00018 label4
+000104 05             00019             db 5
+000105                00020 label5
+000105 06 07 08       00021             db 6, 7, 8
+000108                00022 label8
+000108 09 0A 0B       00023             db 9, 0xa, 0xb
+00010B                00024 label0xb
+00010B 0C             00025             db 0xc
+00010C                00026 label0xc
+00010C 0D 0E 0F 10    00027             db 0xd, 0xe, 0xf, 0x10
+000110                00028 label0x10
+000110 11 12 13 14 15 00029             db 0x11, 0x12, 0x13, 0x14, 0x15
+000115                00030 label0x15   
+000115 16 17 18 19 1A 00031             db 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b
+       1B 
+00011B                00032 label0x1b 
+00011B 1C             00033             db 0x1c
+00011C                00034 label0x1c
+00011C 1D 1E          00035             db 0x1d, 0x1e
+00011E                00036 label0x1e
+00011E 1F 20 21 22 23 00037             db 0x1f, 0x20, 0x21, 0x22, 0x23, 0x24
+       24 
+000124                00038 label0x24
+000124 25             00039             db 0x25
+000125                00040 label0x25
+000125 26 27 28 29 2A 00041             db 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c
+       2B 2C 
+00012C                00042 label0x2c
+00012C 2D             00043             db 0x2d
+                      00044 
+                      00045 blech2      code_pack   0x200
+                      00046 
+000200 01             00047 blabel0 db 1
+000201 02             00048 blabel1 db 2
+000202 03 04          00049 blabel2 db 3, 4
+000204 05             00050 blabel4 db 5
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:24         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000205 06 07 08       00051 blabel5 db 6, 7, 8
+000208 09 0A 0B       00052 blabel8 db 9, 0xa, 0xb
+00020B 0C             00053 blabel0xb db 0xc
+00020C 0D 0E 0F 10    00054 blabel0xc db 0xd, 0xe, 0xf, 0x10
+000210 11 12 13 14 15 00055 blabel0x10 db 0x11, 0x12, 0x13, 0x14, 0x15
+000215 16 17 18 19 1A 00056 blabel0x15 db 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b
+       1B 
+00021B 1C             00057 blabel0x1b db 0x1c
+00021C 1D 1E          00058 blabel0x1c db 0x1d, 0x1e
+00021E 1F 20 21 22 23 00059 blabel0x1e db 0x1f, 0x20, 0x21, 0x22, 0x23, 0x24
+       24 
+000224 25             00060 blabel0x24 db 0x25
+000225 26 27 28 29 2A 00061 blabel0x25 db 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c
+       2B 2C 
+00022C 2D             00062 blabel0x2c db 0x2d
+                      00063 
+                      00064 blech3      code
+000000 0E00           00065             movlw   0
+000002 0001           00066         db 1
+000004 FFFF           00067         res 2
+                      00068             end
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:24         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__18F2455                         00000001
+blabel0                           00000200
+blabel0x10                        00000210
+blabel0x15                        00000215
+blabel0x1b                        0000021B
+blabel0x1c                        0000021C
+blabel0x1e                        0000021E
+blabel0x24                        00000224
+blabel0x25                        00000225
+blabel0x2c                        0000022C
+blabel0xb                         0000020B
+blabel0xc                         0000020C
+blabel1                           00000201
+blabel2                           00000202
+blabel4                           00000204
+blabel5                           00000205
+blabel8                           00000208
+label0                            00000100
+label0x10                         00000110
+label0x15                         00000115
+label0x1b                         0000011B
+label0x1c                         0000011C
+label0x1e                         0000011E
+label0x24                         00000124
+label0x25                         00000125
+label0x2c                         0000012C
+label0xb                          0000010B
+label0xc                          0000010C
+label1                            00000101
+label2                            00000102
+label4                            00000104
+label5                            00000105
+label8                            00000108
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

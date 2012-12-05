@@ -1,3 +1,38 @@
+2012-12-05  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/testsuite/gpasm.project/listfiles/op16e.lst,
+    gpasm/testsuite/gpasm.project/listfiles/op12.lst
+    gpasm/testsuite/gpasm.project/listfiles/op14.lst
+    gpasm/testsuite/gpasm.project/listfiles/op16.lst
+    gpasm/testsuite/gpasm.project/listfiles/pageselw2.lst
+    gpasm/testsuite/gpasm.project/listfiles/sx.lst:
+    moved to gpasm/testsuite/gpasm.project/objlstfiles
+    gpasm/testsuite/gpasm.project/objlstfiles/op12.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/op14.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/op16.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/config2.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/config3.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/op14e.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/extern_segv.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/pageselw2.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/sx.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/data1.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/code_pack2.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/op16e.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/code_pack3.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/data2.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/data3.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/config3e.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/data4.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/data5.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/data3e.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/code_pack.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/dim.lst
+    gpasm/testsuite/gpasm.project/objlstfiles/direct.lst:
+    added
+    gpasm/testsuite/gpasm.project/asmfiles/op12.asm,
+    gpasm/testsuite/gpasm.project/hexfiles/op12.hex:
+    modified for 16c58b 12bit core
+
 2012-12-04  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/testsuite/gpasm.mchip/asmfiles/hd242.asm,
     gpasm/testsuite/gpasm.mchip/hexfiles/hd242.hex,
