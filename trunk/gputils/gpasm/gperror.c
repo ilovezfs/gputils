@@ -132,6 +132,8 @@ static char *
 gp_geterror(unsigned int code)
 {
   switch(code) {
+  case GPE_USER:
+    return "ERROR: (%s)";
   case GPE_NOENT:
     return "Cannot open file (Include File \"%s\" not found)";
   case GPE_STRCPLX:
@@ -153,11 +155,11 @@ gp_geterror(unsigned int code)
   case GPE_ADDROVF:
     return "Address wrapped around 0.";
   case GPE_ADDROVR:
-    return "Overwriting previous address contents.";
+    return "Overwriting previous address contents (%04x)";
   case GPE_BAD_CALL_ADDR:
     return "Call or jump not allowed at this address (must be in low half of page)";
   case GPE_ILLEGAL_LABEL:
-    return "Illegal label.";
+    return "Illegal label (%s)";
   case GPE_ILLEGAL_DIR:
     return "Illegal directive (%s)";
   case GPE_ILLEGAL_ARGU:
@@ -197,9 +199,9 @@ gp_geterror(unsigned int code)
   case GPE_UNRESOLVABLE:
     return "Operand contains unresolvable labels or is too complex";
   case GPE_WRONG_SECTION:
-    return "Executable code and data must be defined in an appropriate section.";
+    return "Executable code and data must be defined in an appropriate section";
   case GPE_CONTIG_SECTION:
-    return "Each object file section must be contiguous.";
+    return "Each object file section must be contiguous (section %s)";
   case GPE_MUST_BE_LABEL:
     return "Operand must be an address label.";
   case GPE_ORG_ODD:
@@ -290,7 +292,7 @@ gp_getwarning(unsigned int code)
   case GPW_LABEL_COLUMN:
     return "Found label after column 1.";
   case GPW_MISSING_QUOTE:
-    return "Missing quote.";
+    return "Missing quote";
   case GPW_EXTRANEOUS:
     return "Extraneous arguments on the line.";
   case GPW_EXPECTED:
@@ -379,9 +381,9 @@ gp_getmessage(unsigned int code)
   case GPM_USER:
     return "MESSAGE: (%s)";
   case GPM_BANK:
-    return "Register in operand not in bank 0. Ensure that bank bits are correct.";
+    return "Register in operand not in bank 0.  Ensure that bank bits are correct.";
   case GPM_RANGE:
-    return "Program word too large. Truncated to core size.";
+    return "Program word too large.  Truncated to core size. (%04x)";
   case GPM_IDLOC:
     return "ID Locations value too large. Last four hex digits used. (%04X)";
   case GPM_NOF:

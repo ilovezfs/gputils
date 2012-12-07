@@ -518,7 +518,7 @@ line:
                   set_global($1, $2, PERMANENT, gvt_address);
                 break;
               case dir:
-                gpverror(GPE_ILLEGAL_LABEL);
+                gpverror(GPE_ILLEGAL_LABEL, $1);
                 break;
               default:
                 break;

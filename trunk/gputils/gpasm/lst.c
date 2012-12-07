@@ -213,7 +213,6 @@ lst_memory_map(MemBlock *m)
 #define MEM_IS_USED(m, i)   (IS_BYTE ? ((m)->memory[i] & BYTE_USED_MASK) : (((m)->memory[2 * (i)] & BYTE_USED_MASK) || ((m)->memory[2 * (i) + 1] & BYTE_USED_MASK)))
 
   int i, j, base, row_used, num_per_line, num_per_block;
-  unsigned int used;
 
   lst_line("");
   lst_line("");
@@ -265,17 +264,17 @@ lst_memory_map(MemBlock *m)
 #define IS_PIC16  (PROC_CLASS_PIC16 == state.device.class  || PROC_CLASS_PIC16E == state.device.class)
 
   if (IS_EEPROM) {
-    used = b_memory_used(state.i_memory);
-    lst_line("Memory Bytes Used: %5i", used);
+    lst_line("Memory Bytes Used: %5i", b_memory_used(state.i_memory));
   }
   else {
-    used = gp_processor_byte_to_org(state.device.class, (!IS_PIC16 && state.processor) ?
+    unsigned int used = gp_processor_byte_to_org(state.device.class, (!IS_PIC16 && state.processor) ?
       b_range_memory_used(state.i_memory, 0,
         gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[0])) :
       b_memory_used(state.i_memory));
     lst_line("Program Memory %s Used: %5i", IS_BYTE ? "Bytes" : "Words", used);
     if (NULL != state.processor && 0 <= state.processor->prog_mem_size)
-      lst_line("Program Memory %s Free: %5u", IS_BYTE ? "Bytes" : "Words", state.processor->prog_mem_size - used);
+      lst_line("Program Memory %s Free: %5u", IS_BYTE ? "Bytes" : "Words",
+        (used <= state.processor->prog_mem_size) ? state.processor->prog_mem_size - used : 0);
   }
   lst_line("");
 }
@@ -548,8 +547,8 @@ print_reloc(unsigned short type, unsigned short current_value)
   }
 }
 
-unsigned int
-lst_data(unsigned int pos, unsigned int byte_org,
+static unsigned int
+lst_data(unsigned int pos, MemBlock *m, unsigned int byte_org,
                       unsigned int bytes_emitted, unsigned short reloc_type)
 {
   int lst_bytes = 0;
@@ -559,7 +558,7 @@ lst_data(unsigned int pos, unsigned int byte_org,
     while (bytes_emitted > lst_bytes && pos + 3 <= LST_LINENUM_POS) {
       unsigned char emit_byte;
 
-      b_memory_get(state.i_memory, byte_org, &emit_byte);
+      b_memory_get(m, byte_org, &emit_byte);
       pos += lst_printf("%02X ", emit_byte);
       ++byte_org;
       ++lst_bytes;
@@ -570,7 +569,7 @@ lst_data(unsigned int pos, unsigned int byte_org,
     if (bytes_emitted && (byte_org & 1) != 0) {
       unsigned char emit_byte;
 
-      b_memory_get(state.i_memory, byte_org, &emit_byte);
+      b_memory_get(m, byte_org, &emit_byte);
       pos += lst_printf("%02X ", emit_byte);
       ++byte_org;
       ++lst_bytes;
@@ -579,7 +578,7 @@ lst_data(unsigned int pos, unsigned int byte_org,
     while (bytes_emitted - lst_bytes > 1 && pos + 5 <= LST_LINENUM_POS) {
       unsigned short emit_word;
 
-      state.device.class->i_memory_get(state.i_memory, byte_org, &emit_word);
+      state.device.class->i_memory_get(m, byte_org, &emit_word);
 
       /* display '?' for undefined bytes if it is a relocatable code */
       if (0 != reloc_type) {
@@ -596,7 +595,7 @@ lst_data(unsigned int pos, unsigned int byte_org,
     if (bytes_emitted - lst_bytes == 1 && pos + 3 <= LST_LINENUM_POS) {
       unsigned char emit_byte;
 
-      b_memory_get(state.i_memory, byte_org, &emit_byte);
+      b_memory_get(m, byte_org, &emit_byte);
       pos += lst_printf("%02X ", emit_byte);
       ++byte_org;
       ++lst_bytes;
@@ -621,6 +620,7 @@ lst_format_line(const char *src_line, int value)
 #define ADDR_LEN 7
   unsigned int pos = 0;
   unsigned short reloc_type;
+  MemBlock *m = state.i_memory;
 
   assert(src_line != NULL);
 
@@ -657,10 +657,19 @@ lst_format_line(const char *src_line, int value)
     break;
 
   case res:
-    if (!IS_RAM_ORG) {
+    if (SECTION_FLAGS & STYP_DATA) {
+      /* generate data listing for idata */
+      emitted = state.org - state.lst.line.was_org;
+    }
+    else if (!IS_RAM_ORG) {
       /* generate line numbers for res directives in program memory */
       emitted_lines = emitted = state.org - state.lst.line.was_org;
     }
+    break;
+
+  case idlocs:
+    /* always 8 bytes (4 words) */
+    emitted = 8;
     break;
 
   default:
@@ -692,14 +701,11 @@ lst_format_line(const char *src_line, int value)
 
   case idlocs:
     /* not used for 16 bit devices, config is used */
-    {
-      unsigned short id[2];
-      state.device.class->i_memory_get(state.i_memory, state.device.id_location, id);
-      state.device.class->i_memory_get(state.i_memory, state.device.id_location+2, id+1);
-      pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, gp_processor_id_location(state.processor)));
-      pos += lst_printf("%04X %04X", id[0], id[1]);
-      lst_spaces(LST_LINENUM_POS - pos);
-    }
+    m = state.c_memory;
+    pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, state.device.id_location));
+    lst_bytes = lst_data(pos, m, state.device.id_location, emitted, reloc_type);
+    byte_org = state.device.id_location + lst_bytes;
+    bytes_emitted = emitted - lst_bytes;
     break;
 
   case data:
@@ -710,7 +716,7 @@ lst_format_line(const char *src_line, int value)
   case insn:
     pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, state.lst.line.was_org));
   lst_data:
-    lst_bytes = lst_data(pos, state.lst.line.was_org, emitted, reloc_type);
+    lst_bytes = lst_data(pos, m, state.lst.line.was_org, emitted, reloc_type);
     byte_org = state.lst.line.was_org + lst_bytes;
     bytes_emitted = emitted - lst_bytes;
     break;
@@ -722,7 +728,7 @@ lst_format_line(const char *src_line, int value)
       if (state.lst.config_address == CONFIG4L) {
         /* Special case */
         unsigned short word;
-        state.device.class->i_memory_get(state.i_memory,
+        state.device.class->i_memory_get(state.c_memory,
                                          state.lst.config_address, &word);
         pos += lst_printf(addr_fmt, state.lst.config_address);
         pos += lst_printf("%04X", word);
@@ -732,7 +738,7 @@ lst_format_line(const char *src_line, int value)
         lst_spaces(LST_LINENUM_POS);
       } else {
         unsigned short word;
-        state.device.class->i_memory_get(state.i_memory,
+        state.device.class->i_memory_get(state.c_memory,
                                          state.lst.config_address - 1, &word);
         pos += lst_printf(addr_fmt, state.lst.config_address - 1);
         pos += lst_printf("%04X", word);
@@ -740,7 +746,7 @@ lst_format_line(const char *src_line, int value)
       }
     } else {
       unsigned short word;
-      state.device.class->i_memory_get(state.i_memory,
+      state.device.class->i_memory_get(state.c_memory,
                                        state.lst.config_address, &word);
       pos += lst_printf(addr_fmt,
                         gp_processor_byte_to_org(state.device.class,
@@ -803,22 +809,12 @@ lst_format_line(const char *src_line, int value)
 
   lst_eol();
 
-  if (state.lst.line.linetype == idlocs) {
-    unsigned short id[2];
-    state.device.class->i_memory_get(state.i_memory,
-                                     state.device.id_location + 4, id);
-    state.device.class->i_memory_get(state.i_memory,
-                                     state.device.id_location + 6, id+1);
-    lst_spaces(ADDR_LEN);
-    lst_line("%04X %04X ", id[0], id[1]);
-  }
-
   if (bytes_emitted > 0) {
     while (bytes_emitted > 0) {
       /* data left to print on separate lines */
 
       pos = lst_spaces(ADDR_LEN);
-      lst_bytes = lst_data(pos, byte_org, bytes_emitted, reloc_type);
+      lst_bytes = lst_data(pos, m, byte_org, bytes_emitted, reloc_type);
       byte_org += lst_bytes;
       bytes_emitted -= lst_bytes;
       lst_eol();

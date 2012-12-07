@@ -281,11 +281,11 @@ coff_new_section(const char *name, int addr, int flags)
          sections in the same source file to share the same data memory. */
       if ((flags != found->flags) ||
           (addr != found->address)) {
-        gpverror(GPE_CONTIG_SECTION);
+        gpverror(GPE_CONTIG_SECTION, name);
         return;
       }
     } else {
-      gpverror(GPE_CONTIG_SECTION);
+      gpverror(GPE_CONTIG_SECTION, name);
       return;
     }
   }
