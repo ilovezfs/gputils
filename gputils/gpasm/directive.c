@@ -68,12 +68,12 @@ checkwrite(unsigned short value)
   }
 
   if (value > state.device.class->core_size) {
-    gpvmessage(GPM_RANGE);
+    gpvmessage(GPM_RANGE, value);
     value &= state.device.class->core_size;
   }
 
   if (0 == state.num.errors && state.device.class->i_memory_get(state.i_memory, state.org, &insn)) {
-    gpverror(GPE_ADDROVR);
+    gpverror(GPE_ADDROVR, insn);
   }
 
   if (state.maxrom >= 0) {
@@ -134,7 +134,7 @@ emit_byte(unsigned short value)
       }
 
       if (0 == state.num.errors && b_memory_get(state.i_memory, state.org, &byte)) {
-        gpverror(GPE_ADDROVR);
+        gpverror(GPE_ADDROVR, byte);
       }
 
       if (state.maxrom >= 0) {
@@ -631,6 +631,7 @@ static gpasmVal
 do_constant(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
+  int first = 1;
 
   state.lst.line.linetype = set4;
 
@@ -640,12 +641,20 @@ do_constant(gpasmVal r, char *name, int arity, struct pnode *parms)
         (p->value.binop.op == '=')) {
       if (enforce_simple(p->value.binop.p0)) {
         char *lhs;
+        gpasmVal val;
+
         /* fetch the symbol */
         lhs = p->value.binop.p0->value.symbol;
         /* constants must be assigned a value at declaration */
-        r = maybe_evaluate(p->value.binop.p1);
+        
+        val = maybe_evaluate(p->value.binop.p1);
         /* put the symbol and value in the table*/
-        set_global(lhs, r, PERMANENT, gvt_constant);
+        set_global(lhs, val, PERMANENT, gvt_constant);
+
+        if (first) {
+          r = val;
+          first = 0;
+        }
       }
     } else {
       gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
@@ -802,13 +811,13 @@ do_config(gpasmVal r, char *name, int arity, struct pnode *parms)
       /* Why are the config words 16 bits long in headers?? */
       if (state.device.class != PROC_CLASS_PIC14E) {
         if(value > state.device.class->core_size) {
-          gpvmessage(GPM_RANGE);
+          gpvmessage(GPM_RANGE, value);
           value &= state.device.class->core_size;
         }
       }
 
       if (state.device.class->i_memory_get(state.c_memory, ca, &word)) {
-        gpverror(GPE_ADDROVR);
+        gpverror(GPE_ADDROVR, word);
       }
 
       state.device.class->i_memory_put(state.c_memory, ca, value);
@@ -1618,7 +1627,7 @@ do_error(gpasmVal r, char *name, int arity, struct pnode *parms)
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
     if (p->tag == string) {
-      gperror(GPE_USER, p->value.string);
+      gpverror(GPE_USER, p->value.string);
     } else {
       gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
     }
@@ -1719,7 +1728,7 @@ do_extern(gpasmVal r, char *name, int arity, struct pnode *parms)
     }
   }
 
-  return r;
+  return 0;
 }
 
 static gpasmVal
@@ -1818,7 +1827,7 @@ do_global(gpasmVal r, char *name, int arity, struct pnode *parms)
     }
   }
 
-  return r;
+  return 0;
 }
 
 static gpasmVal
@@ -1970,7 +1979,7 @@ do_idlocs(gpasmVal r, char *name, int arity, struct pnode *parms)
           gpverror(GPE_IDLOCS_ORDER);
         }
         if (b_memory_get(state.c_memory, idreg, &curvalue))
-          gpverror(GPE_ADDROVR);
+          gpverror(GPE_ADDROVR, curvalue);
         b_memory_put(state.c_memory, idreg, value);
       }
     } else {
@@ -1983,7 +1992,7 @@ do_idlocs(gpasmVal r, char *name, int arity, struct pnode *parms)
       }
 
       if (state.device.class->i_memory_get(state.c_memory, idreg, &word)) {
-        gpverror(GPE_ADDROVR);
+        gpverror(GPE_ADDROVR, word);
       }
 
       state.device.class->i_memory_put(state.c_memory, idreg,
@@ -2032,7 +2041,7 @@ do_ifdef(gpasmVal r, char *name, int arity, struct pnode *parms)
     if (enforce_arity(arity, 1)) {
       p = HEAD(parms);
       if (p->tag != symbol) {
-        gpverror(GPE_ILLEGAL_LABEL);
+        gperror(GPE_ILLEGAL_LABEL, "Illegal label");
       } else {
         if ((get_symbol(state.stDefines, p->value.symbol)) ||
             (get_symbol(state.stTop, p->value.symbol)))
@@ -2056,7 +2065,7 @@ do_ifndef(gpasmVal r, char *name, int arity, struct pnode *parms)
     if (enforce_arity(arity, 1)) {
       p = HEAD(parms);
       if (p->tag != symbol) {
-        gpverror(GPE_ILLEGAL_LABEL);
+        gperror(GPE_ILLEGAL_LABEL, "Illegal label");
       } else {
         if ((!get_symbol(state.stDefines, p->value.symbol)) &&
             (!get_symbol(state.stTop, p->value.symbol)))
@@ -2243,6 +2252,7 @@ static gpasmVal
 do_local(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
+  int first = 1;
 
   state.lst.line.linetype = set4;
 
@@ -2257,16 +2267,28 @@ do_local(gpasmVal r, char *name, int arity, struct pnode *parms)
           (p->value.binop.op == '=')) {
         if (enforce_simple(p->value.binop.p0)) {
           char *lhs;
+          gpasmVal val;
+
           /* fetch the symbol */
           lhs = p->value.binop.p0->value.symbol;
-          r = maybe_evaluate(p->value.binop.p1);
+          val = maybe_evaluate(p->value.binop.p1);
           /* put the symbol and value in the TOP table*/
           add_symbol(state.stTop, lhs);
-          set_global(lhs, r, TEMPORARY, gvt_constant);
+          set_global(lhs, val, TEMPORARY, gvt_constant);
+
+          if (first) {
+            r = val;
+            first = 0;
+          }
         }
       } else if (p->tag == symbol) {
         /* put the symbol in the Top table */
         add_symbol(state.stTop, p->value.symbol);
+
+        if (first) {
+          r = 0;
+          first = 0;
+        }
       } else {
         gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
       }
@@ -2477,7 +2499,7 @@ _do_pagesel(gpasmVal r, char *name, int arity, struct pnode *parms, unsigned sho
                                            state.org,
                                            use_wreg);
       } else if (num_reloc != 1) {
-        gpverror(GPE_ILLEGAL_LABEL);
+        gperror(GPE_ILLEGAL_LABEL, "Illegal label");
       } else if (state.device.class == PROC_CLASS_PIC16) {
         reloc_evaluate(p, RELOCT_PAGESEL_WREG);
         emit(0);
@@ -2901,6 +2923,7 @@ static gpasmVal
 do_variable(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
+  int first = 1;
 
   state.lst.line.linetype = set4;
 
@@ -2910,15 +2933,27 @@ do_variable(gpasmVal r, char *name, int arity, struct pnode *parms)
         (p->value.binop.op == '=')) {
       if (enforce_simple(p->value.binop.p0)) {
         char *lhs;
+        gpasmVal val;
+
         /* fetch the symbol */
         lhs = p->value.binop.p0->value.symbol;
-        r = maybe_evaluate(p->value.binop.p1);
-        /* put the symbol and value in the table*/
-        set_global(lhs, r, TEMPORARY, gvt_constant);
+        val = maybe_evaluate(p->value.binop.p1);
+        /* put the symbol and value in the table */
+        set_global(lhs, val, TEMPORARY, gvt_constant);
+
+        if (first) {
+          r = val;
+          first = 0;
+        }
       }
     } else if (p->tag == symbol) {
-      /* put the symbol with a 0 value in the table*/
+      /* put the symbol with a 0 value in the table */
       set_global(p->value.symbol, 0, TEMPORARY, gvt_constant);
+
+      if (first) {
+        r = 0;
+        first = 0;
+      }
     } else {
       gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
     }

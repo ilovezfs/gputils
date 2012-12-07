@@ -27,7 +27,10 @@ MyMac	MACRO	Label, Num
 	LOCAL	MacLoc=Num
 	WHILE MacLoc > 0
 Label#v(MacLoc)	DATA	Num, MacLoc
-	   MacLoc--
+;;;; Begin: Changed in gputils
+;;;;	   MacLoc--
+MacLoc--
+;;;; End: Changed in gputils
 	ENDW
 	ENDM
 
@@ -35,13 +38,19 @@ Label#v(MacLoc)	DATA	Num, MacLoc
 	CONSTANT	Const1=111, Const2=222
 	VARIABLE	Var1, Var2 = 22
 
-	Var3 = 33
+;;;; Begin: Changed in gputils
+;;;;	Var3 = 33
+Var3 = 33
+;;;; End: Changed in gputils
 
 	DATA	Def1
 	DATA	Const1, Const2
 	DATA	Var1, Var2, Var3
 
-	Var3++
+;;;; Begin: Changed in gputils
+;;;;	Var3++
+Var3++
+;;;; End: Changed in gputils
 	DATA	Var3
 
 Label3
