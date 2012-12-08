@@ -48,7 +48,8 @@ Boston, MA 02111-1307, USA.  */
 
  ************************************************************************/
 
-MemBlock *i_memory_create(void)
+MemBlock *
+i_memory_create(void)
 {
   MemBlock *m;
 
@@ -60,19 +61,18 @@ MemBlock *i_memory_create(void)
   return m;
 }
 
-void i_memory_free(MemBlock *m)
+void
+i_memory_free(MemBlock *m)
 {
   MemBlock *n;
 
   do {
-
     if(m->memory)
       free(m->memory);
 
     n = m->next;
     free(m);
     m = n;
-
   } while(m);
 }
 
@@ -88,17 +88,17 @@ void i_memory_free(MemBlock *m)
  *
  ************************************************************************/
 
-MemBlock * i_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
+MemBlock *
+i_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
 {
   unsigned int base;
 
-  base = (base_address >> I_MEM_BITS) & 0xFFFF;
+  base = (base_address >> I_MEM_BITS) & 0xffff;
 
   mbp->memory = (unsigned short *)calloc(MAX_I_MEM, sizeof(unsigned short));
   mbp->base   = base;
 
   do {
-
     if((m->next == NULL) || (m->next->base > base)) {
       /* Insert after this block */
       mbp->next = m->next;
@@ -129,14 +129,14 @@ MemBlock * i_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
  *  the byte from that address combined with status bits
  *
  ************************************************************************/
-int b_memory_get(MemBlock *m, unsigned int address, unsigned char *byte)
+int
+b_memory_get(MemBlock *m, unsigned int address, unsigned char *byte)
 {
-
   do {
     assert(m->memory != NULL);
 
-    if( ((address >> I_MEM_BITS) & 0xFFFF) == m->base ) {
-      *byte = m->memory[address & I_MEM_MASK] & 0xFF;
+    if (((address >> I_MEM_BITS) & 0xffff) == m->base) {
+      *byte = m->memory[address & I_MEM_MASK] & 0xff;
       return (m->memory[address & I_MEM_MASK] & BYTE_USED_MASK) != 0;
     }
 
@@ -160,22 +160,22 @@ int b_memory_get(MemBlock *m, unsigned int address, unsigned char *byte)
  *   none
  *
  ************************************************************************/
-void b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value)
+void
+b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value)
 {
   MemBlock *m = NULL;
 
   do {
-
     if(m)
       m = m->next;
     else
       m = i_memory;
 
-    if(m->memory == NULL) {
+    if (m->memory == NULL) {
       i_memory_new(i_memory, m, address);
     }
 
-    if( ((address >> I_MEM_BITS) & 0xFFFF) == m->base ) {
+    if (((address >> I_MEM_BITS) & 0xffff) == m->base) {
       m->memory[address & I_MEM_MASK] = value | BYTE_USED_MASK;
       return;
     }
@@ -186,7 +186,6 @@ void b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value)
 
   m = i_memory_new(i_memory, (MemBlock *) malloc(sizeof(MemBlock)), address);
   m->memory[address & I_MEM_MASK] = value | BYTE_USED_MASK;
-
 }
 
 /************************************************************************
@@ -201,12 +200,13 @@ void b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value)
  *   none
  *
  ************************************************************************/
-void b_memory_clear(MemBlock *m, unsigned int address)
+void
+b_memory_clear(MemBlock *m, unsigned int address)
 {
   do {
     assert(m->memory != NULL);
 
-    if( ((address >> I_MEM_BITS) & 0xFFFF) == m->base ) {
+    if( ((address >> I_MEM_BITS) & 0xffff) == m->base ) {
       m->memory[address & I_MEM_MASK] = 0;
       break;
     }
@@ -215,7 +215,8 @@ void b_memory_clear(MemBlock *m, unsigned int address)
   } while(m);
 }
 
-int b_range_memory_used(MemBlock *m, int from, int to)
+int
+b_range_memory_used(MemBlock *m, int from, int to)
 {
   int i, j = 0, page = 0, bytes = 0;
 
@@ -239,7 +240,8 @@ int b_range_memory_used(MemBlock *m, int from, int to)
   return bytes;
 }
 
-int b_memory_used(MemBlock *m)
+int
+b_memory_used(MemBlock *m)
 {
   return b_range_memory_used(m, 0, INT_MAX);
 }
@@ -251,42 +253,50 @@ int b_memory_used(MemBlock *m)
  *
  *
  ************************************************************************/
-int i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word)
+int
+i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word)
 {
   unsigned char bytes[2];
+
   if (b_memory_get(m, byte_addr, bytes) &&
-      b_memory_get(m, byte_addr+1, bytes+1)) {
+      b_memory_get(m, byte_addr + 1, bytes + 1)) {
     *word = bytes[0] + (bytes[1] << 8);
     return 1;
   }
   return 0;
 }
 
-void i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word)
+void
+i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word)
 {
-  b_memory_put(m, byte_addr, word & 0xFF);
-  b_memory_put(m, byte_addr+1, word >> 8);
+  b_memory_put(m, byte_addr, word & 0xff);
+  b_memory_put(m, byte_addr + 1, word >> 8);
 }
 
-int i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word)
+int
+i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word)
 {
   unsigned char bytes[2];
+
   if (b_memory_get(m, byte_addr, bytes) &&
-      b_memory_get(m, byte_addr+1, bytes+1)) {
+      b_memory_get(m, byte_addr + 1, bytes + 1)) {
     *word = bytes[1] + (bytes[0] << 8);
     return 1;
   }
   return 0;
 }
-void i_memory_put_be(MemBlock *m, unsigned int byte_addr, unsigned short word)
+
+void
+i_memory_put_be(MemBlock *m, unsigned int byte_addr, unsigned short word)
 {
   b_memory_put(m, byte_addr, word >> 8);
-  b_memory_put(m, byte_addr+1, word & 0xFF);
+  b_memory_put(m, byte_addr + 1, word & 0xff);
 }
 
-void print_i_memory(MemBlock *m, proc_class_t class)
+void
+print_i_memory(MemBlock *m, proc_class_t class)
 {
-  int base,i,j,row_used;
+  int base, i, j, row_used;
   char c;
 
 #define WORDS_IN_ROW 8
@@ -296,25 +306,25 @@ void print_i_memory(MemBlock *m, proc_class_t class)
 
     base = m->base << I_MEM_BITS;
 
-    for(i = 0; i<MAX_I_MEM; i+=2*WORDS_IN_ROW) {
+    for (i = 0; i < MAX_I_MEM; i += 2 * WORDS_IN_ROW) {
       row_used = 0;
 
-      for(j = 0; j<2*WORDS_IN_ROW; j++)
-        if( m->memory[i+j] )
+      for (j = 0; j < 2 * WORDS_IN_ROW; j++)
+        if (m->memory[i+j])
           row_used = 1;
 
-      if(row_used) {
-        printf("%08X  ", gp_processor_byte_to_org(class, base+i));
+      if (row_used) {
+        printf("%08X  ", gp_processor_byte_to_org(class, base + i));
 
-        for(j = 0; j<WORDS_IN_ROW; j+=2) {
+        for (j = 0; j < WORDS_IN_ROW; j+=2) {
           unsigned short data;
-          class->i_memory_get(m, i+2*j, &data);
+          class->i_memory_get(m, i + 2 * j, &data);
           printf("%04X ", data);
         }
 
-        for(j = 0; j<2*WORDS_IN_ROW; j++) {
-          c = m->memory[i+j] & 0xff;
-          putchar( (isprint(c)) ? c : '.');
+        for (j = 0; j < 2 * WORDS_IN_ROW; j++) {
+          c = m->memory[i + j] & 0xff;
+          putchar(isprint(c) ? c : '.');
         }
         putchar('\n');
       }
@@ -331,13 +341,14 @@ void print_i_memory(MemBlock *m, proc_class_t class)
  *
  *
  ************************************************************************/
-void b_memory_set_listed(MemBlock *m, unsigned int address, unsigned int n_bytes)
+void
+b_memory_set_listed(MemBlock *m, unsigned int address, unsigned int n_bytes)
 {
   assert(m->memory != NULL);
 
   while (n_bytes--) {
     do {
-      if (((address >> I_MEM_BITS) & 0xFFFF) == m->base) {
+      if (((address >> I_MEM_BITS) & 0xffff) == m->base) {
         m->memory[address & I_MEM_MASK] |= BYTE_LISTED_MASK;
         break;
       }
@@ -348,14 +359,15 @@ void b_memory_set_listed(MemBlock *m, unsigned int address, unsigned int n_bytes
   }
 }
 
-unsigned int b_memory_get_unlisted_size(MemBlock *m, unsigned int address)
+unsigned int
+b_memory_get_unlisted_size(MemBlock *m, unsigned int address)
 {
   unsigned int n_bytes = 0;
 
   if (m && m->memory) {
     do {
       do {
-        if (((address >> I_MEM_BITS) & 0xFFFF) == m->base) {
+        if (((address >> I_MEM_BITS) & 0xffff) == m->base) {
           if (BYTE_USED_MASK == (m->memory[address & I_MEM_MASK] & (BYTE_LISTED_MASK | BYTE_USED_MASK)))
             break;
           else

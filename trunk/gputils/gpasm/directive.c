@@ -73,7 +73,7 @@ checkwrite(unsigned short value)
   }
 
   if (0 == state.num.errors && state.device.class->i_memory_get(state.i_memory, state.org, &insn)) {
-    gpverror(GPE_ADDROVR, insn);
+    gpverror(GPE_ADDROVR, gp_processor_byte_to_org(state.device.class, state.org));
   }
 
   if (state.maxrom >= 0) {
@@ -134,7 +134,7 @@ emit_byte(unsigned short value)
       }
 
       if (0 == state.num.errors && b_memory_get(state.i_memory, state.org, &byte)) {
-        gpverror(GPE_ADDROVR, byte);
+        gpverror(GPE_ADDROVR, gp_processor_byte_to_org(state.device.class, state.org));
       }
 
       if (state.maxrom >= 0) {
@@ -817,7 +817,7 @@ do_config(gpasmVal r, char *name, int arity, struct pnode *parms)
       }
 
       if (state.device.class->i_memory_get(state.c_memory, ca, &word)) {
-        gpverror(GPE_ADDROVR, word);
+        gpverror(GPE_ADDROVR, gp_processor_byte_to_org(state.device.class, ca));
       }
 
       state.device.class->i_memory_put(state.c_memory, ca, value);
@@ -1979,7 +1979,7 @@ do_idlocs(gpasmVal r, char *name, int arity, struct pnode *parms)
           gpverror(GPE_IDLOCS_ORDER);
         }
         if (b_memory_get(state.c_memory, idreg, &curvalue))
-          gpverror(GPE_ADDROVR, curvalue);
+          gpverror(GPE_ADDROVR, gp_processor_byte_to_org(state.device.class, idreg));
         b_memory_put(state.c_memory, idreg, value);
       }
     } else {
@@ -1992,7 +1992,7 @@ do_idlocs(gpasmVal r, char *name, int arity, struct pnode *parms)
       }
 
       if (state.device.class->i_memory_get(state.c_memory, idreg, &word)) {
-        gpverror(GPE_ADDROVR, word);
+        gpverror(GPE_ADDROVR, gp_processor_byte_to_org(state.device.class, idreg));
       }
 
       state.device.class->i_memory_put(state.c_memory, idreg,

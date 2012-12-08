@@ -155,7 +155,7 @@ gp_geterror(unsigned int code)
   case GPE_ADDROVF:
     return "Address wrapped around 0.";
   case GPE_ADDROVR:
-    return "Overwriting previous address contents (%04x)";
+    return "Overwriting previous address contents (%04X)";
   case GPE_BAD_CALL_ADDR:
     return "Call or jump not allowed at this address (must be in low half of page)";
   case GPE_ILLEGAL_LABEL:
@@ -383,7 +383,7 @@ gp_getmessage(unsigned int code)
   case GPM_BANK:
     return "Register in operand not in bank 0.  Ensure that bank bits are correct.";
   case GPM_RANGE:
-    return "Program word too large.  Truncated to core size. (%04x)";
+    return "Program word too large.  Truncated to core size. (%04X)";
   case GPM_IDLOC:
     return "ID Locations value too large. Last four hex digits used. (%04X)";
   case GPM_NOF:

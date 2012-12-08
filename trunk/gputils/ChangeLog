@@ -1,3 +1,8 @@
+2012-12-08  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/directive.c, gpasm/gperror.c, gpasm/lst.c,
+    libgputils/gpmemory.c:
+    error message and listing enhancements
+
 2012-12-07  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/coff.c, gpasm/gperror.c, gpasm/parse.y, gpasm/lst.c,
     gpasm/directive.c:
