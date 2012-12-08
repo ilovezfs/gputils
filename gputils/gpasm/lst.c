@@ -78,10 +78,10 @@ lst_page_start(void)
     break;
 
   default:
-    lst_line("");
+    lst_line(NULL);
     break;
   }
-  lst_line("");
+  lst_line(NULL);
 }
 
 static void
@@ -120,11 +120,14 @@ void
 lst_line(const char *format, ...)
 {
   if (state.lst.f) {
-    va_list args;
-    lst_check_page_start();
-    va_start(args, format);
-    vfprintf(state.lst.f, format, args);
-    va_end(args);
+    if (format) {
+      va_list args;
+
+      lst_check_page_start();
+      va_start(args, format);
+      vfprintf(state.lst.f, format, args);
+      va_end(args);
+    }
     lst_eol();
   }
 }
@@ -214,10 +217,10 @@ lst_memory_map(MemBlock *m)
 
   int i, j, base, row_used, num_per_line, num_per_block;
 
-  lst_line("");
-  lst_line("");
+  lst_line(NULL);
+  lst_line(NULL);
   lst_line("MEMORY USAGE MAP ('X' = Used,  '-' = Unused)");
-  lst_line("");
+  lst_line(NULL);
 
   num_per_line = 64;
   num_per_block = 16;
@@ -254,9 +257,9 @@ lst_memory_map(MemBlock *m)
     m = m->next;
   }
 
-  lst_line("");
+  lst_line(NULL);
   lst_line("All other memory blocks unused.");
-  lst_line("");
+  lst_line(NULL);
 
   /* it seems that MPASM includes config bytes into program memory usage
    * count for 16 bit cores. See gpasm testsuite:
@@ -269,14 +272,14 @@ lst_memory_map(MemBlock *m)
   else {
     unsigned int used = gp_processor_byte_to_org(state.device.class, (!IS_PIC16 && state.processor) ?
       b_range_memory_used(state.i_memory, 0,
-        gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[0])) :
+        gp_processor_org_to_byte(state.device.class, state.processor->prog_mem_size)) :
       b_memory_used(state.i_memory));
     lst_line("Program Memory %s Used: %5i", IS_BYTE ? "Bytes" : "Words", used);
     if (NULL != state.processor && 0 <= state.processor->prog_mem_size)
       lst_line("Program Memory %s Free: %5u", IS_BYTE ? "Bytes" : "Words",
         (used <= state.processor->prog_mem_size) ? state.processor->prog_mem_size - used : 0);
   }
-  lst_line("");
+  lst_line(NULL);
 }
 
 void
@@ -287,7 +290,7 @@ lst_close(void)
   state.lst.lst_state = in_none;
 
   if (state.lst.f) {
-    lst_line("");
+    lst_line(NULL);
     lst_line("Errors   : %5d", state.num.errors);
     lst_line("Warnings : %5d reported, %5d suppressed",
              state.num.warnings,
@@ -295,7 +298,7 @@ lst_close(void)
     lst_line("Messages : %5d reported, %5d suppressed",
              state.num.messages,
              state.num.messages_suppressed);
-    lst_line("");
+    lst_line(NULL);
     putc('\f', state.lst.f);
 
     fclose(state.lst.f);
@@ -868,7 +871,7 @@ lst_symbol_table(void)
 
   lst_line("SYMBOL TABLE");
   lst_line("  LABEL                             VALUE");
-  lst_line("");
+  lst_line(NULL);
 
   cod_symbol_table();
 
