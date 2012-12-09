@@ -1,3 +1,26 @@
+2012-12-09  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/gperror.c, gpasm/lst.c:
+    error message and listing enhancements
+  * gpasm/testsuite/gpasm.mchip/asmfiles/hd642.asm,
+    gpasm/testsuite/gpasm.mchip/listfiles/hd642.lst,
+    gpasm/testsuite/gpasm.mchip/hexfiles/hd642.hex,
+    gpasm/testsuite/gpasm.mchip/asmfiles/hd658.asm,
+    gpasm/testsuite/gpasm.mchip/listfiles/hd658.lst,
+    gpasm/testsuite/gpasm.mchip/hexfiles/hd658.hex,
+    gpasm/testsuite/gpasm.mchip/asmfiles/hd662.asm,
+    gpasm/testsuite/gpasm.mchip/listfiles/hd662.lst,
+    gpasm/testsuite/gpasm.mchip/hexfiles/hd662.hex,
+    gpasm/testsuite/gpasm.mchip/asmfiles/hd858.asm,
+    gpasm/testsuite/gpasm.mchip/listfiles/hd858.lst,
+    gpasm/testsuite/gpasm.mchip/hexfiles/hd858.hex,
+    gpasm/testsuite/gpasm.mchip/asmfiles/hd870.asm,
+    gpasm/testsuite/gpasm.mchip/listfiles/hd870.lst,
+    gpasm/testsuite/gpasm.mchip/asmfiles/hd871.asm,
+    gpasm/testsuite/gpasm.mchip/listfiles/hd871.lst,
+    gpasm/testsuite/gpasm.mchip/asmfiles/hd872.asm,
+    gpasm/testsuite/gpasm.mchip/listfiles/hd872.lst:
+    regression tests adapted for gpasm
+
 2012-12-08  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c, gpasm/gperror.c, gpasm/lst.c,
     libgputils/gpmemory.c:

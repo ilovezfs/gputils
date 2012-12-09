@@ -3,7 +3,10 @@
 ; This file tests header file usage for the specified processor.
 
         LIST    P=18C658
-        INCLUDE "p18c658.inc"
+;;;; Begin: Changed in gputils
+;;;;        INCLUDE "p18c658.inc"
+        INCLUDE "P18C658.INC"
+;;;; End: Changed in gputils
 
         DATA TOSU,  H'0FFF'
         DATA TOSH,  H'0FFE'
@@ -629,14 +632,22 @@
 
 ;----- PORTE ------------------------------------------------------------------
         DATA RE0,                 0
-        DATA ALE,                 0
+;;;; Begin: Removed in gputils
+;;;;        DATA ALE,                 0
+;;;; End: Removed in gputils
         DATA AN5,                 0
         DATA RE1,                 1
-        DATA OE,                  1
+;;;; Begin: Removed in gputils
+;;;;        DATA OE,                  1
+;;;; End: Removed in gputils
         DATA RE2,                 2
-        DATA WRL,                 2
+;;;; Begin: Removed in gputils
+;;;;        DATA WRL,                 2
+;;;; End: Removed in gputils
         DATA RE3,                 3
-        DATA WRH,                 3
+;;;; Begin: Removed in gputils
+;;;;        DATA WRH,                 3
+;;;; End: Removed in gputils
         DATA RE4,                 4
         DATA RE5,                 5
         DATA RE6,                 6

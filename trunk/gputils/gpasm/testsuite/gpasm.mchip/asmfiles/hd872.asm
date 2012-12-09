@@ -3,9 +3,15 @@
 ; This file tests header file usage for the specified processor.
 
         LIST    P=16F872
-        INCLUDE "p16f872.inc"
+;;;; Begin: Changed in gputils
+;;;;        INCLUDE "p16f872.inc"
+        INCLUDE "P16F872.INC"
+;;;; End: Changed in gputils
 
-        DATA _CP_ALL,           0x0FCF
+;;;; Begin: Changed in gputils
+;;;;        DATA _CP_ALL,           0x0FCF
+        DATA _CP_All,           0x0FCF
+;;;; End: Changed in gputils
         DATA _CP_OFF,           0x3FFF
         DATA _DEBUG_ON,         0x37FF
         DATA _DEBUG_OFF,        0x3FFF

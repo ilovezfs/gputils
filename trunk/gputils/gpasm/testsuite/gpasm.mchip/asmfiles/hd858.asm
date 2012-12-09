@@ -3,7 +3,10 @@
 ; This file tests header file usage for the specified processor.
 
         LIST    P=18C858
-        INCLUDE "p18c858.inc"
+;;;; Begin: Changed in gputils
+;;;;        INCLUDE "p18c858.inc"
+        INCLUDE "P18C858.INC"
+;;;; End: Changed in gputils
 
         DATA TOSU,  H'0FFF'
         DATA TOSH,  H'0FFE'
@@ -638,14 +641,22 @@
 
 ;----- PORTE ------------------------------------------------------------------
         DATA RE0,                 0
-        DATA ALE,                 0
+;;;; Begin: Removed in gputils
+;;;;        DATA ALE,                 0
+;;;; End: Removed in gputils
         DATA AN5,                 0
         DATA RE1,                 1
-        DATA OE,                  1
+;;;; Begin: Removed in gputils
+;;;;        DATA OE,                  1
+;;;; End: Removed in gputils
         DATA RE2,                 2
-        DATA WRL,                 2
+;;;; Begin: Removed in gputils
+;;;;        DATA WRL,                 2
+;;;; End: Removed in gputils
         DATA RE3,                 3
-        DATA WRH,                 3
+;;;; Begin: Removed in gputils
+;;;;        DATA WRH,                 3
+;;;; End: Removed in gputils
         DATA RE4,                 4
         DATA RE5,                 5
         DATA RE6,                 6
@@ -696,21 +707,37 @@
 
 ;----- PORTJ ------------------------------------------------------------------
         DATA RJ0,                 0
-        DATA AD8,                 0
+;;;; Begin: Removed in gputils
+;;;;        DATA AD8,                 0
+;;;; End: Removed in gputils
         DATA RJ1,                 1
-        DATA AD9,                 1
+;;;; Begin: Removed in gputils
+;;;;        DATA AD9,                 1
+;;;; End: Removed in gputils
         DATA RJ2,                 2
-        DATA AD10,                2
+;;;; Begin: Removed in gputils
+;;;;        DATA AD10,                2
+;;;; End: Removed in gputils
         DATA RJ3,                 3
-        DATA AD11,                3
+;;;; Begin: Removed in gputils
+;;;;        DATA AD11,                3
+;;;; End: Removed in gputils
         DATA RJ4,                 4
-        DATA AD12,                4
+;;;; Begin: Removed in gputils
+;;;;        DATA AD12,                4
+;;;; End: Removed in gputils
         DATA RJ5,                 5
-        DATA AD13,                5
+;;;; Begin: Removed in gputils
+;;;;        DATA AD13,                5
+;;;; End: Removed in gputils
         DATA RJ6,                 6
-        DATA AD14,                6
+;;;; Begin: Removed in gputils
+;;;;        DATA AD14,                6
+;;;; End: Removed in gputils
         DATA RJ7,                 7
-        DATA AD15,                7
+;;;; Begin: Removed in gputils
+;;;;        DATA AD15,                7
+;;;; End: Removed in gputils
 
 
 ;----- PORTK ------------------------------------------------------------------
