@@ -23,23 +23,27 @@ Boston, MA 02111-1307, USA.  */
 #include "libgputils.h"
 
 /* mode flags */
-#define all   0
-#define low   1
-#define high  2
-#define swap  3  /* swap bytes for inhx16 format */
+enum mode_flags_e {
+  all,
+  low,
+  high,
+  swap  /* swap bytes for inhx16 format */
+};
 
 static int sum;
 static char *newline;
 static FILE *hex;
 MemBlock *memory;
 
-static void new_record()
+static void
+new_record(void)
 {
   fprintf(hex, ":");
   sum = 0;
 }
 
-static void write_byte(int b)
+static void
+write_byte(int b)
 {
   sum += b;
 
@@ -48,26 +52,30 @@ static void write_byte(int b)
 }
 
 /* Write big-endian word */
-static void write_bg_word(int w)
+static void
+write_bg_word(int w)
 {
   write_byte((w >> 8) & 0xff);
   write_byte(w & 0xff);
 }
 
 /* Write little-endian word */
-static void write_word(int w)
+static void
+write_word(int w)
 {
   write_byte(w & 0xff);
   write_byte((w >> 8) & 0xff);
 }
 
-static void end_record()
+static void
+end_record(void)
 {
   write_byte((-sum) & 0xff);
   fprintf(hex, "%s", newline);
 }
 
-void data_line(int start, int stop, int mode)
+static void
+data_line(int start, int stop, enum mode_flags_e mode)
 {
   new_record();
   if (mode == all) {
@@ -95,7 +103,7 @@ void data_line(int start, int stop, int mode)
       write_byte(b);
     }
   } else {
-    write_byte(stop - start);
+    write_byte((stop - start) / ((low == mode || high == mode) ? 2 : 1));
     write_bg_word(start);
     write_byte(0);
     if (mode == high)
@@ -111,7 +119,8 @@ void data_line(int start, int stop, int mode)
   end_record();
 }
 
-void seg_address_line(int segment)
+static void
+seg_address_line(int segment)
 {
   new_record();
   write_byte(2);
@@ -121,7 +130,8 @@ void seg_address_line(int segment)
   end_record();
 }
 
-void last_line()
+static void
+last_line(void)
 {
   new_record();
   write_byte(0);
@@ -130,7 +140,8 @@ void last_line()
   end_record();
 }
 
-void write_i_mem(enum formats hex_format, int mode, unsigned int core_size)
+static void
+write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_size)
 {
   MemBlock *m = memory;
   int i, j, maximum;
@@ -187,12 +198,9 @@ void write_i_mem(enum formats hex_format, int mode, unsigned int core_size)
   last_line();
 }
 
-int writehex (char *basefilename,
-              MemBlock *m,
-              enum formats hex_format,
-              int numerrors,
-              int dos_newlines,
-              unsigned int core_size)
+int
+writehex (char *basefilename, MemBlock *m, enum formats hex_format,
+          int numerrors, int dos_newlines, unsigned int core_size)
 {
   char hexfilename[BUFSIZ];
   char lowhex[BUFSIZ];
@@ -221,7 +229,6 @@ int writehex (char *basefilename,
 
   /* No error: overwrite the hex file */
   if (hex_format == inhx8s) {
-
     /* Write the low memory */
     hex = fopen(lowhex, "wt");
     if (hex == NULL) {
@@ -251,7 +258,6 @@ int writehex (char *basefilename,
     fclose(hex);
 
   } else {
-
     hex = fopen(hexfilename, "wt");
     if (hex == NULL) {
       perror(hexfilename);
@@ -266,8 +272,8 @@ int writehex (char *basefilename,
 }
 
 /* scan the memory to see if it exceeds 32K limit on inhx8m limit */
-int check_writehex(MemBlock *m,
-                   enum formats hex_format)
+int
+check_writehex(MemBlock *m, enum formats hex_format)
 {
   int error = 0;
 
