@@ -20,6 +20,11 @@
     gpasm/testsuite/gpasm.mchip/asmfiles/hd872.asm,
     gpasm/testsuite/gpasm.mchip/listfiles/hd872.lst:
     regression tests adapted for gpasm
+  * libgputils/gpwritehex.c, libgputils/gpwritehex.h:
+    fixed .hxl and .hxh file generation
+  * gpasm/testsuite/test: test .hxl and .hxh files
+  * gpasm/testsuite/gpasm.mchip/listfiles/list5.hxh,
+    gpasm/testsuite/gpasm.mchip/listfiles/list5.hxl: added
 
 2012-12-08  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c, gpasm/gperror.c, gpasm/lst.c,

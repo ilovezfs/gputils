@@ -198,12 +198,12 @@ test_gpasm_sub()
       # split the base file name from the extension
       basefilename="${x%%.asm}"
       echo "To be overwritten or removed" > "$basefilename.hex"
-      if test -e "../hexfiles/$basefilename.hex" ; then
+      if test -e "../hexfiles/$basefilename.hex" -o \( -e "../hexfiles/$basefilename.hxl" -a -e "../hexfiles/$basefilename.hxh" \); then
         # a hex file exists so these files must not have errors
         tested=$((tested+1))
         echo "Compiling $1/asmfiles/$x"
         if verbose $XXASM_Q "$basefilename.asm" ; then
-          if test -e "$basefilename.hex" ; then
+          if test -e "../hexfiles/$basefilename.hex" ; then
             compiled=$((compiled+1))
             if diff -s -u "../hexfiles/$basefilename.hex" "$basefilename${XXHEXEXT}" ; then
               passed=$((passed+1))
@@ -220,7 +220,27 @@ test_gpasm_sub()
               echo "Files $1/hexfiles/$basefilename.hex and $basefilename${XXHEXEXT} differ"
             fi
           else
-            echo "$basefilename.asm failed to compile, and exit code failed to show error"
+            if test -e "../hexfiles/$basefilename.hxl" -a -e "../hexfiles/$basefilename.hxh" ; then
+              compiled=$((compiled+1))
+              if diff -s -u "../hexfiles/$basefilename.hxl" "$basefilename.hxl" && diff -s -u "../hexfiles/$basefilename.hxh" "$basefilename.hxh" ; then
+                passed=$((passed+1))
+                echo "$basefilename.asm tested successfully"
+                # TODO: how to disassemble HXL and HXH???
+                #
+                #if test $DISASM -eq 1 ; then
+                #  processor="$(get_processor $x)"
+                #  if test "$(expr $processor : 'EEPROM')" = 0; then
+                #    disass "$basefilename${XXHEXEXT}" "${basefilename}_dasm.asm" $processor
+                #    verbose $GPASMBIN -mpasm-compatible -q -I $HEADER -a  $(get_hex_format "$basefilename${XXHEXEXT}" $processor) "${basefilename}_dasm.asm"
+                #    diff -s -u "$basefilename${XXHEXEXT}" "${basefilename}_dasm${XXHEXEXT}"
+                #  fi
+                #fi
+              else
+                echo "Files $1/hexfiles/$basefilename.hxl and $basefilename.hxl or $1/hexfiles/$basefilename.hxl and $basefilename.hxh differ"
+              fi
+            else
+              echo "Files $1/hexfiles/$basefilename.hex and $basefilename${XXHEXEXT} differ"
+            fi
           fi
         else
           err=$?
