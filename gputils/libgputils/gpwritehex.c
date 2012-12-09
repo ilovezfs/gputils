@@ -199,7 +199,7 @@ write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_s
 }
 
 int
-writehex (char *basefilename, MemBlock *m, enum formats hex_format,
+writehex(char *basefilename, MemBlock *m, enum formats hex_format,
           int numerrors, int dos_newlines, unsigned int core_size)
 {
   char hexfilename[BUFSIZ];
@@ -208,11 +208,7 @@ writehex (char *basefilename, MemBlock *m, enum formats hex_format,
 
   memory = m;
 
-  if (dos_newlines) {
-    newline = "\r\n";
-  } else {
-    newline = "\n";
-  }
+  newline = dos_newlines ? "\r\n" : "\n";
 
    /* build file names */
   snprintf(hexfilename, sizeof(hexfilename), "%s.hex", basefilename);
@@ -246,9 +242,7 @@ writehex (char *basefilename, MemBlock *m, enum formats hex_format,
     }
     write_i_mem(hex_format, high, core_size);
     fclose(hex);
-
   } else if (hex_format == inhx16) {
-
     hex = fopen(hexfilename, "wt");
     if (hex == NULL) {
       perror(hexfilename);
@@ -256,7 +250,6 @@ writehex (char *basefilename, MemBlock *m, enum formats hex_format,
     }
     write_i_mem(hex_format, swap, core_size);
     fclose(hex);
-
   } else {
     hex = fopen(hexfilename, "wt");
     if (hex == NULL) {
@@ -265,7 +258,6 @@ writehex (char *basefilename, MemBlock *m, enum formats hex_format,
     }
     write_i_mem(hex_format, all, core_size);
     fclose(hex);
-
   }
 
   return 0;
@@ -278,7 +270,6 @@ check_writehex(MemBlock *m, enum formats hex_format)
   int error = 0;
 
   if (hex_format != inhx32) {
-
     while(m) {
       if (m->base > 0) {
         error = 1;
