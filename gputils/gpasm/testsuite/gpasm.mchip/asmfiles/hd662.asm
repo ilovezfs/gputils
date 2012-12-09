@@ -3,7 +3,10 @@
 ; This file tests header file usage for the specified processor.
 
 	LIST	P=16C662
-	INCLUDE	"p16c662.inc"
+;;;; Begin: Changed in gputils
+;;;;	INCLUDE	"p16c662.inc"
+	INCLUDE	"P16C662.INC"
+;;;; Begin: Changed in gputils
 
  	DATA	_CP_ALL,	0x00CF	; This changes per device
 	DATA	_CP_75,		0X15DF
@@ -101,7 +104,9 @@
 	DATA	MPEEN,		7	; PCON
 	DATA	NOT_PER,	2
 	DATA	NOT_POR,	1
-	DATA	NOT_BO,		0
+;;;; Begin: Removed in gputils
+;;;;	DATA	NOT_BO,		0
+;;;; End: Removed in gputils
 	DATA	NOT_BOR,	0
 
 	DATA	VREN,		7	; VRCON

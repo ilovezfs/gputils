@@ -1,4 +1,4 @@
-MPASM 03.20.02 Released         HD662.ASM   11-21-2002  20:20:36         PAGE  1
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-9-2012  8:44:26         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -9,132 +9,143 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00003 ; This file tests header file usage for the specified processor.
                       00004 
                       00005         LIST    P=16C662
-                      00006         INCLUDE "P16C662.INC"
+                      00006 ;;;; Begin: Changed in gputils
+                      00007 ;;;;    INCLUDE "p16c662.inc"
+                      00008         INCLUDE "P16C662.INC"
                       00001         LIST
-                      00002 ; P16C662.INC  Standard Header File, Version 1.01    Microchip Technology, Inc.
-                      00186         LIST
-                      00007 
-0000   00CF 00CF      00008         DATA    _CP_ALL,        0x00CF  ; This changes per device
-0002   15DF 15DF      00009         DATA    _CP_75,         0X15DF
-0004   2AEF 2AEF      00010         DATA    _CP_50,         0X2AEF
-0006   3FFF 3FFF      00011         DATA    _CP_OFF,        0X3FFF
-                      00012 
-0008   3FFF 3FFF      00013         DATA    _MPEEN_ON,      0x3FFF
-000A   3F7F 3F7F      00014         DATA    _MPEEN_OFF,     0x3F7F
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16C662 processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00314         LIST
+                      00009 ;;;; Begin: Changed in gputils
+                      00010 
+0000   00CF 00CF      00011         DATA    _CP_ALL,        0x00CF  ; This changes per device
+0002   15DF 15DF      00012         DATA    _CP_75,         0X15DF
+0004   2AEF 2AEF      00013         DATA    _CP_50,         0X2AEF
+0006   3FFF 3FFF      00014         DATA    _CP_OFF,        0X3FFF
                       00015 
-000C   3FFF 3FFF      00016         DATA    _BODEN_ON,      0X3FFF
-000E   3FBF 3FBF      00017         DATA    _BODEN_OFF,     0X3FBF
+0008   3FFF 3FFF      00016         DATA    _MPEEN_ON,      0x3FFF
+000A   3F7F 3F7F      00017         DATA    _MPEEN_OFF,     0x3F7F
                       00018 
-0010   3FF7 3FF7      00019         DATA    _PWRTE_ON,      0x3FF7  ; This changes per device
-0012   3FFF 3FFF      00020         DATA    _PWRTE_OFF,     0X3FFF
+000C   3FFF 3FFF      00019         DATA    _BODEN_ON,      0X3FFF
+000E   3FBF 3FBF      00020         DATA    _BODEN_OFF,     0X3FBF
                       00021 
-0014   3FFF 3FFF      00022         DATA    _WDT_ON,        0X3FFF
-0016   3FFB 3FFB      00023         DATA    _WDT_OFF,       0X3FFB
+0010   3FF7 3FF7      00022         DATA    _PWRTE_ON,      0x3FF7  ; This changes per device
+0012   3FFF 3FFF      00023         DATA    _PWRTE_OFF,     0X3FFF
                       00024 
-0018   3FFC 3FFC      00025         DATA    _LP_OSC,        0X3FFC
-001A   3FFD 3FFD      00026         DATA    _XT_OSC,        0X3FFD
-001C   3FFE 3FFE      00027         DATA    _HS_OSC,        0X3FFE
-001E   3FFF 3FFF      00028         DATA    _RC_OSC,        0X3FFF
-                      00029 
-0020   0000 0000      00030         DATA    INDF,           0       ;Register Files
-0022   0001 0001      00031         DATA    TMR0,           1
-0024   0002 0002      00032         DATA    PCL,            2
-0026   0003 0003      00033         DATA    STATUS,         3
-0028   0004 0004      00034         DATA    FSR,            4
-002A   0005 0005      00035         DATA    PORTA,          5
-002C   0006 0006      00036         DATA    PORTB,          6
-002E   0007 0007      00037         DATA    PORTC,          0x07
-0030   0008 0008      00038         DATA    PORTD,          0x08
-0032   0009 0009      00039         DATA    PORTE,          0x09
-                      00040 
-0034   000A 000A      00041         DATA    PCLATH,         0x0A
-0036   000B 000B      00042         DATA    INTCON,         0x0B
-0038   000C 000C      00043         DATA    PIR1,           0X0C    ; Processor Specific
-                      00044                                         ;
-003A   001F 001F      00045         DATA    CMCON,          0X1F    ; Register Files
-                      00046 
-003C   0081 0081      00047         DATA    OPTION_REG,     0x81
-003E   0085 0085      00048         DATA    TRISA,          0X85
-0040   0086 0086      00049         DATA    TRISB,          0X86
-0042   0087 0087      00050         DATA    TRISC,          0x87
-MPASM 03.20.02 Released         HD662.ASM   11-21-2002  20:20:36         PAGE  2
+0014   3FFF 3FFF      00025         DATA    _WDT_ON,        0X3FFF
+0016   3FFB 3FFB      00026         DATA    _WDT_OFF,       0X3FFB
+                      00027 
+0018   3FFC 3FFC      00028         DATA    _LP_OSC,        0X3FFC
+001A   3FFD 3FFD      00029         DATA    _XT_OSC,        0X3FFD
+001C   3FFE 3FFE      00030         DATA    _HS_OSC,        0X3FFE
+001E   3FFF 3FFF      00031         DATA    _RC_OSC,        0X3FFF
+                      00032 
+0020   0000 0000      00033         DATA    INDF,           0       ;Register Files
+0022   0001 0001      00034         DATA    TMR0,           1
+0024   0002 0002      00035         DATA    PCL,            2
+0026   0003 0003      00036         DATA    STATUS,         3
+0028   0004 0004      00037         DATA    FSR,            4
+002A   0005 0005      00038         DATA    PORTA,          5
+002C   0006 0006      00039         DATA    PORTB,          6
+002E   0007 0007      00040         DATA    PORTC,          0x07
+0030   0008 0008      00041         DATA    PORTD,          0x08
+0032   0009 0009      00042         DATA    PORTE,          0x09
+                      00043 
+0034   000A 000A      00044         DATA    PCLATH,         0x0A
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-9-2012  8:44:26         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0044   0088 0088      00051         DATA    TRISD,          0x88
-0046   0089 0089      00052         DATA    TRISE,          0x89
-                      00053 
-0048   008C 008C      00054         DATA    PIE1,           0X8C
-004A   008E 008E      00055         DATA    PCON,           0X8E
+0036   000B 000B      00045         DATA    INTCON,         0x0B
+0038   000C 000C      00046         DATA    PIR1,           0X0C    ; Processor Specific
+                      00047                                         ;
+003A   001F 001F      00048         DATA    CMCON,          0X1F    ; Register Files
+                      00049 
+003C   0081 0081      00050         DATA    OPTION_REG,     0x81
+003E   0085 0085      00051         DATA    TRISA,          0X85
+0040   0086 0086      00052         DATA    TRISB,          0X86
+0042   0087 0087      00053         DATA    TRISC,          0x87
+0044   0088 0088      00054         DATA    TRISD,          0x88
+0046   0089 0089      00055         DATA    TRISE,          0x89
                       00056 
-004C   009F 009F      00057         DATA    VRCON,          0X9F
-                      00058         
+0048   008C 008C      00057         DATA    PIE1,           0X8C
+004A   008E 008E      00058         DATA    PCON,           0X8E
                       00059 
-004E   0007 0007      00060         DATA    IRP,            7       ; STATUS Bits
-0050   0006 0006      00061         DATA    RP1,            6
-0052   0005 0005      00062         DATA    RP0,            5
-0054   0004 0004      00063         DATA    NOT_TO,         4
-0056   0003 0003      00064         DATA    NOT_PD,         3
-0058   0002 0002      00065         DATA    Z,              2
-005A   0001 0001      00066         DATA    DC,             1
-005C   0000 0000      00067         DATA    C,              0
-                      00068 
-005E   0007 0007      00069         DATA    GIE,            7       ; INTCON
-0060   0006 0006      00070         DATA    PEIE,           6
-0062   0005 0005      00071         DATA    T0IE,           5
-0064   0004 0004      00072         DATA    INTE,           4
-0066   0003 0003      00073         DATA    RBIE,           3
-0068   0002 0002      00074         DATA    T0IF,           2
-006A   0001 0001      00075         DATA    INTF,           1
-006C   0000 0000      00076         DATA    RBIF,           0       
-                      00077 
-006E   0007 0007      00078         DATA    PSPIF,          7       ; PIR1
-0070   0006 0006      00079         DATA    CMIF,           6       
+004C   009F 009F      00060         DATA    VRCON,          0X9F
+                      00061         
+                      00062 
+004E   0007 0007      00063         DATA    IRP,            7       ; STATUS Bits
+0050   0006 0006      00064         DATA    RP1,            6
+0052   0005 0005      00065         DATA    RP0,            5
+0054   0004 0004      00066         DATA    NOT_TO,         4
+0056   0003 0003      00067         DATA    NOT_PD,         3
+0058   0002 0002      00068         DATA    Z,              2
+005A   0001 0001      00069         DATA    DC,             1
+005C   0000 0000      00070         DATA    C,              0
+                      00071 
+005E   0007 0007      00072         DATA    GIE,            7       ; INTCON
+0060   0006 0006      00073         DATA    PEIE,           6
+0062   0005 0005      00074         DATA    T0IE,           5
+0064   0004 0004      00075         DATA    INTE,           4
+0066   0003 0003      00076         DATA    RBIE,           3
+0068   0002 0002      00077         DATA    T0IF,           2
+006A   0001 0001      00078         DATA    INTF,           1
+006C   0000 0000      00079         DATA    RBIF,           0       
                       00080 
-0072   0007 0007      00081         DATA    C2OUT,          7       ; CMCON
-0074   0006 0006      00082         DATA    C1OUT,          6
-0076   0003 0003      00083         DATA    CIS,            3
-0078   0002 0002      00084         DATA    CM2,            2
-007A   0001 0001      00085         DATA    CM1,            1
-007C   0000 0000      00086         DATA    CM0,            0
-                      00087 
-                      00088 
-007E   0007 0007      00089         DATA    NOT_RBPU,       7       ; OPTION
-0080   0006 0006      00090         DATA    INTEDG,         6
-0082   0005 0005      00091         DATA    T0CS,           5
-0084   0004 0004      00092         DATA    T0SE,           4
-0086   0003 0003      00093         DATA    PSA,            3
-0088   0002 0002      00094         DATA    PS2,            2
-008A   0001 0001      00095         DATA    PS1,            1
-008C   0000 0000      00096         DATA    PS0,            0
-                      00097 
-008E   0007 0007      00098         DATA    PSPIE,          7       ; PIE1
-0090   0006 0006      00099         DATA    CMIE,           6
-                      00100 
-0092   0007 0007      00101         DATA    MPEEN,          7       ; PCON
-0094   0002 0002      00102         DATA    NOT_PER,        2
-0096   0001 0001      00103         DATA    NOT_POR,        1
-MPASM 03.20.02 Released         HD662.ASM   11-21-2002  20:20:36         PAGE  3
+006E   0007 0007      00081         DATA    PSPIF,          7       ; PIR1
+0070   0006 0006      00082         DATA    CMIF,           6       
+                      00083 
+0072   0007 0007      00084         DATA    C2OUT,          7       ; CMCON
+0074   0006 0006      00085         DATA    C1OUT,          6
+0076   0003 0003      00086         DATA    CIS,            3
+0078   0002 0002      00087         DATA    CM2,            2
+007A   0001 0001      00088         DATA    CM1,            1
+007C   0000 0000      00089         DATA    CM0,            0
+                      00090 
+                      00091 
+007E   0007 0007      00092         DATA    NOT_RBPU,       7       ; OPTION
+0080   0006 0006      00093         DATA    INTEDG,         6
+0082   0005 0005      00094         DATA    T0CS,           5
+0084   0004 0004      00095         DATA    T0SE,           4
+0086   0003 0003      00096         DATA    PSA,            3
+0088   0002 0002      00097         DATA    PS2,            2
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-9-2012  8:44:26         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0098   0000 0000      00104         DATA    NOT_BO,         0
-009A   0000 0000      00105         DATA    NOT_BOR,        0
-                      00106 
-009C   0007 0007      00107         DATA    VREN,           7       ; VRCON
-009E   0006 0006      00108         DATA    VROE,           6
-00A0   0005 0005      00109         DATA    VRR,            5
-00A2   0003 0003      00110         DATA    VR3,            3
-00A4   0002 0002      00111         DATA    VR2,            2
-00A6   0001 0001      00112         DATA    VR1,            1
-00A8   0000 0000      00113         DATA    VR0,            0
-                      00114 
-                      00115         END
-MPASM 03.20.02 Released         HD662.ASM   11-21-2002  20:20:36         PAGE  4
+008A   0001 0001      00098         DATA    PS1,            1
+008C   0000 0000      00099         DATA    PS0,            0
+                      00100 
+008E   0007 0007      00101         DATA    PSPIE,          7       ; PIE1
+0090   0006 0006      00102         DATA    CMIE,           6
+                      00103 
+0092   0007 0007      00104         DATA    MPEEN,          7       ; PCON
+0094   0002 0002      00105         DATA    NOT_PER,        2
+0096   0001 0001      00106         DATA    NOT_POR,        1
+                      00107 ;;;; Begin: Removed in gputils
+                      00108 ;;;;    DATA    NOT_BO,         0
+                      00109 ;;;; End: Removed in gputils
+0098   0000 0000      00110         DATA    NOT_BOR,        0
+                      00111 
+009A   0007 0007      00112         DATA    VREN,           7       ; VRCON
+009C   0006 0006      00113         DATA    VROE,           6
+009E   0005 0005      00114         DATA    VRR,            5
+00A0   0003 0003      00115         DATA    VR3,            3
+00A2   0002 0002      00116         DATA    VR2,            2
+00A4   0001 0001      00117         DATA    VR1,            1
+00A6   0000 0000      00118         DATA    VR0,            0
+                      00119 
+                      00120         END
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-9-2012  8:44:26         PAGE  4
 
 
 SYMBOL TABLE
@@ -154,6 +165,8 @@ DC                                00000001
 F                                 00000001
 FSR                               00000004
 GIE                               00000007
+IBF                               00000007
+IBOV                              00000005
 INDF                              00000000
 INTCON                            0000000B
 INTE                              00000004
@@ -168,6 +181,7 @@ NOT_PER                           00000002
 NOT_POR                           00000001
 NOT_RBPU                          00000007
 NOT_TO                            00000004
+OBF                               00000006
 OPTION_REG                        00000081
 PCL                               00000002
 PCLATH                            0000000A
@@ -186,27 +200,100 @@ PS2                               00000002
 PSA                               00000003
 PSPIE                             00000007
 PSPIF                             00000007
-RBIE                              00000003
-RBIF                              00000000
-RP0                               00000005
-RP1                               00000006
-STATUS                            00000003
-T0CS                              00000005
-T0IE                              00000005
-MPASM 03.20.02 Released         HD662.ASM   11-21-2002  20:20:36         PAGE  5
+PSPMODE                           00000004
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-9-2012  8:44:26         PAGE  5
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RD0                               00000000
+RD1                               00000001
+RD2                               00000002
+RD3                               00000003
+RD4                               00000004
+RD5                               00000005
+RD6                               00000006
+RD7                               00000007
+RE0                               00000000
+RE1                               00000001
+RE2                               00000002
+RP0                               00000005
+RP1                               00000006
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
 T0IF                              00000002
 T0SE                              00000004
 TMR0                              00000001
 TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
 TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-9-2012  8:44:26         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
 TRISC                             00000087
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
 TRISD                             00000088
+TRISD0                            00000000
+TRISD1                            00000001
+TRISD2                            00000002
+TRISD3                            00000003
+TRISD4                            00000004
+TRISD5                            00000005
+TRISD6                            00000006
+TRISD7                            00000007
 TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
 VR0                               00000000
 VR1                               00000001
 VR2                               00000002
@@ -219,17 +306,36 @@ W                                 00000000
 Z                                 00000002
 _BODEN_OFF                        00003FBF
 _BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG1                          00002007
 _CP_50                            00002AEF
 _CP_75                            000015DF
 _CP_ALL                           000000CF
 _CP_OFF                           00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_RC                          00003FFF
+_FOSC_XT                          00003FFD
 _HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-9-2012  8:44:26         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
 _LP_OSC                           00003FFC
 _MPEEN_OFF                        00003F7F
 _MPEEN_ON                         00003FFF
 _PWRTE_OFF                        00003FFF
 _PWRTE_ON                         00003FF7
 _RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
 _WDT_OFF                          00003FFB
 _WDT_ON                           00003FFF
 _XT_OSC                           00003FFD
@@ -240,18 +346,12 @@ MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 
 0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
-0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXX------ ----------------
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXX-------- ----------------
 
 All other memory blocks unused.
 
-Program Memory Words Used:   170
-Program Memory Words Free:  3926
-
-
-MPASM 03.20.02 Released         HD662.ASM   11-21-2002  20:20:36         PAGE  6
-
-
-
+Program Memory Words Used:   168
+Program Memory Words Free:  3928
 
 
 Errors   :     0

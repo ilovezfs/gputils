@@ -50,7 +50,7 @@ add_code(int code)
     if (errorcodes_list) {
       /* the list has been started, scan the list for the end */
       list = errorcodes_list;
-      while(list->next) {
+      while (list->next) {
         list = list->next;
       }
       list->next = new;  /* append the new value to the end of list */
@@ -69,7 +69,6 @@ check_code(int code)
   p = errorcodes_list;
 
   while(p) {
-
     if (p->value == code) {
       print = 1;
     } else if (p->value == -(code)) {
@@ -96,13 +95,11 @@ verr(enum err_type_e err_type, unsigned int code, const char *message, va_list a
     if (state.src)
       printf("%s:%d:%s[%03d] %s", state.src->name, state.src->line_number,
         (et_error == err_type) ? "Error" : (et_warning == err_type) ? "Warning" : "Message",
-        code,
-        ((et_error == err_type) ? "  " : ""));
+        code, ((et_error == err_type) ? "  " : ""));
     else
       printf("%s[%03d] %s",
         (et_error == err_type) ? "Error" : (et_warning == err_type) ? "Warning" : "Message",
-        code,
-        ((et_error == err_type) ? "  " : ""));
+        code, ((et_error == err_type) ? "  " : ""));
     vprintf(message, ap);
     putchar('\n');
   }
@@ -116,15 +113,11 @@ err(enum err_type_e err_type, unsigned int code, const char *message)
     if (state.src)
       printf("%s:%d:%s[%03d] %s%s\n", state.src->name, state.src->line_number,
         (et_error == err_type) ? "Error" : (et_warning == err_type) ? "Warning" : "Message",
-        code,
-        ((et_error == err_type) ? "  " : ""),
-        message);
+        code, ((et_error == err_type) ? "  " : ""), message);
     else
       printf("%s[%03d] %s%s\n",
         (et_error == err_type) ? "Error" : (et_warning == err_type) ? "Warning" : "Message",
-        code,
-        ((et_error == err_type) ? "  " : ""),
-        message);
+        code, ((et_error == err_type) ? "  " : ""), message);
   }
 }
 
@@ -415,7 +408,7 @@ gp_getmessage(unsigned int code)
 void
 gpmessage(unsigned int code, char *message)
 {
-  if (state.pass==2) {
+  if (state.pass == 2) {
     if ((state.error_level == 0) && check_code(code)){
       if (message == NULL)
         message = gp_getmessage(code);

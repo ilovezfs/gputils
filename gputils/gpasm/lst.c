@@ -251,6 +251,7 @@ lst_memory_map(MemBlock *m)
         }
 
         lst_eol();
+        lst_check_page_start();
       }
     }
 
