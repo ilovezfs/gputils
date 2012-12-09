@@ -1,4 +1,4 @@
-MPASM 03.20.02 Released         LIST8.ASM   11-21-2002  20:21:07         PAGE  1
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-9-2012  19:54:27         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -20,35 +20,38 @@ Warning[205]: Found directive in column 1. (list)
 0000                  00013 Label1                          ; OK
 0000   0000           00014 Label2  Nop                     ; OK
                       00015 
-Warning[207]: Found label after column 1. (Label3)
-0001                  00016  Label3                         ; Warning
-Warning[207]: Found label after column 1. (Label4)
-0001   0000           00017  Label4 Nop                     ; Warning
-                      00018 
+                      00016 ;;;; Begin: Changed in gputils
+                      00017 ;;;; Label3                             ; Warning
+                      00018 ;;;; Label4     Nop                     ; Warning
+0001                  00019 Label3                          ; Warning
+0001   0000           00020 Label4  Nop                     ; Warning
+                      00021 ;;;; End: Changed in gputils
+                      00022 
 Warning[203]: Found opcode in column 1. (Nop)
-0002   0000           00019 Nop                             ; Warning
-0003   0000           00020  Nop                            ; OK
-0004                  00021 Nep                             ; OK
-Warning[207]: Found label after column 1. (Nep)
-0004                  00022  Nep                            ; Warning
-                      00023 
-                      00024 DumbMac Macro
-                      00025         nop
-                      00026         endm
-                      00027 
+0002   0000           00023 Nop                             ; Warning
+0003   0000           00024  Nop                            ; OK
+0004                  00025 Nep                             ; OK
+                      00026 ;;;; Begin: Removed in gputils
+                      00027 ;;;; Nep                                ; Warning
+                      00028 ;;;; End: Removed in gputils
+                      00029 
+                      00030 DumbMac Macro
+                      00031         nop
+                      00032         endm
+                      00033 
 Warning[206]: Found call to macro in column 1. (DumbMac)
-                      00028 DumbMac                         ; Warning
+                      00034 DumbMac                         ; Warning
 0004   0000               M         nop
-                      00029  DumbMac                        ; OK
+                      00035  DumbMac                        ; OK
 0005   0000               M         nop
-                      00030 
-                      00031 
+                      00036 
+                      00037 
 Warning[204]: Found pseudo-op in column 1. (Setc)
-0006   1403           00032 Setc                            ; Warning
-0007   1403           00033  Setc                           ; OK
-                      00034 
-                      00035         end
-MPASM 03.20.02 Released         LIST8.ASM   11-21-2002  20:21:07         PAGE  2
+0006   1403           00038 Setc                            ; Warning
+0007   1403           00039  Setc                           ; OK
+                      00040 
+                      00041         end
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-9-2012  19:54:27         PAGE  2
 
 
 SYMBOL TABLE
@@ -76,7 +79,7 @@ Program Memory Words Free:  1016
 
 
 Errors   :     0
-Warnings :     7 reported,     0 suppressed
+Warnings :     4 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 
 

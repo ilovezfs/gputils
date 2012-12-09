@@ -1,5 +1,5 @@
 2012-12-09  Borut Razem  <borutr@users.sourceforge.net>
-  * gpasm/gperror.c, gpasm/lst.c:
+  * gpasm/gperror.c, gpasm/lst.c, gpasm/directive.c:
     error message and listing enhancements
   * gpasm/testsuite/gpasm.mchip/asmfiles/hd642.asm,
     gpasm/testsuite/gpasm.mchip/listfiles/hd642.lst,
@@ -18,7 +18,11 @@
     gpasm/testsuite/gpasm.mchip/asmfiles/hd871.asm,
     gpasm/testsuite/gpasm.mchip/listfiles/hd871.lst,
     gpasm/testsuite/gpasm.mchip/asmfiles/hd872.asm,
-    gpasm/testsuite/gpasm.mchip/listfiles/hd872.lst:
+    gpasm/testsuite/gpasm.mchip/listfiles/hd872.lst,
+    gpasm/testsuite/gpasm.mchip/asmfiles/list8.asm,
+    gpasm/testsuite/gpasm.mchip/listfiles/list8.lst,
+    gpasm/testsuite/gpasm.mchip/asmfiles/list9.asm,
+    gpasm/testsuite/gpasm.mchip/listfiles/list9.lst:
     regression tests adapted for gpasm
   * libgputils/gpwritehex.c, libgputils/gpwritehex.h:
     fixed .hxl and .hxh file generation

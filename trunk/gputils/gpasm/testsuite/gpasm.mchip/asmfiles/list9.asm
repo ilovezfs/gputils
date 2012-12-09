@@ -8,13 +8,18 @@
 EXPAND
 
 Label1	nop			; labels
-   Label2	nop
-
+;;;; Begin: Changed in gputils
+;;;;   Label2	nop
+Label2	nop
+;;;; End: Changed in gputils
 Macro1	MACRO			; macro definitions
 	addlw	1
 	ENDM
 
-   Macro2	MACRO
+;;;; Begin: Changed in gputils
+;;;;   Macro2	MACRO
+Macro2	MACRO
+;;;; End: Changed in gputils
 	addlw	1
 ENDM
 
@@ -38,13 +43,18 @@ b	0
 EXPAND
 
 Label1a	nop			; labels
-   Label2a	nop
-
+;;;; Begin: Changed in gputils
+;;;;   Label2a	nop
+Label2a	nop
+;;;; End: Changed in gputils
 Macro1a	MACRO			; macro definitions
 	addlw	1
 	ENDM
 
-   Macro2a	MACRO
+;;;; Begin: Changed in gputils
+;;;;   Macro2a	MACRO
+Macro2a	MACRO
+;;;; End: Changed in gputils
 	addlw	1
 ENDM
 
