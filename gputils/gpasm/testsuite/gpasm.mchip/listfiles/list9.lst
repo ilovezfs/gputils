@@ -1,4 +1,4 @@
-MPASM 03.20.02 Released         LIST9.ASM   11-21-2002  20:21:07         PAGE  1
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-9-2012  19:54:27         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -15,81 +15,93 @@ Warning[205]: Found directive in column 1. (EXPAND)
                       00008 EXPAND
                       00009 
 0000   0000           00010 Label1  nop                     ; labels
-Warning[207]: Found label after column 1. (Label2)
-0001   0000           00011    Label2       nop
-                      00012 
-                      00013 Macro1  MACRO                   ; macro definitions
-                      00014         addlw   1
-                      00015         ENDM
-                      00016 
-Warning[207]: Found label after column 1. (Macro2)
-                      00017    Macro2       MACRO
-                      00018         addlw   1
+                      00011 ;;;; Begin: Changed in gputils
+                      00012 ;;;;   Label2   nop
+0001   0000           00013 Label2  nop
+                      00014 ;;;; End: Changed in gputils
+                      00015 Macro1  MACRO                   ; macro definitions
+                      00016         addlw   1
+                      00017         ENDM
+                      00018 
+                      00019 ;;;; Begin: Changed in gputils
+                      00020 ;;;;   Macro2   MACRO
+                      00021 Macro2  MACRO
+                      00022 ;;;; End: Changed in gputils
+                      00023         addlw   1
 Warning[205]: Found directive in column 1. (ENDM)
-                      00019 ENDM
-                      00020 
-                      00021         Macro1                  ; macro calls
+                      00024 ENDM
+                      00025 
+                      00026         Macro1                  ; macro calls
 0002   3E01               M         addlw   1
 Warning[206]: Found call to macro in column 1. (Macro1)
-                      00022 Macro1
+                      00027 Macro1
 0003   3E01               M         addlw   1
-                      00023 
-                      00024         Macro2
+                      00028 
+                      00029         Macro2
+                          M ;;;; End: Changed in gputils
 0004   3E01               M         addlw   1
 Warning[206]: Found call to macro in column 1. (Macro2)
-                      00025 Macro2
+                      00030 Macro2
+                          M ;;;; End: Changed in gputils
 0005   3E01               M         addlw   1
-                      00026 
-0006   3E01           00027         addlw   1               ; opcodes
+                      00031 
+0006   3E01           00032         addlw   1               ; opcodes
 Warning[203]: Found opcode in column 1. (addlw)
-0007   3E01           00028 addlw   1
-                      00029 
-0008   2800           00030         b       0               ; pseudo-ops
-Warning[204]: Found pseudo-op in column 1. (b)
-0009   2800           00031 b       0
-                      00032 
-                      00033 ;**************************************************************************
+0007   3E01           00033 addlw   1
                       00034 
-                      00035         LIST    FREE
-                      00036 
-                      00037         EXPAND                  ; directives
-                      00038 EXPAND
+0008   2800           00035         b       0               ; pseudo-ops
+Warning[204]: Found pseudo-op in column 1. (b)
+0009   2800           00036 b       0
+                      00037 
+                      00038 ;**************************************************************************
                       00039 
-000A   0000           00040 Label1a nop                     ; labels
-000B   0000           00041    Label2a      nop
-MPASM 03.20.02 Released         LIST9.ASM   11-21-2002  20:21:07         PAGE  2
+                      00040         LIST    FREE
+                      00041 
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-9-2012  19:54:27         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00042 
-                      00043 Macro1a MACRO                   ; macro definitions
-                      00044         addlw   1
-                      00045         ENDM
-                      00046 
-                      00047    Macro2a      MACRO
-                      00048         addlw   1
-                      00049 ENDM
-                      00050 
-                      00051         Macro1a                 ; macro calls
-000C   3E01               M         addlw   1
-                      00052 Macro1a
-000D   3E01               M         addlw   1
+                      00042         EXPAND                  ; directives
+                      00043 EXPAND
+                      00044 
+000A   0000           00045 Label1a nop                     ; labels
+                      00046 ;;;; Begin: Changed in gputils
+                      00047 ;;;;   Label2a  nop
+000B   0000           00048 Label2a nop
+                      00049 ;;;; End: Changed in gputils
+                      00050 Macro1a MACRO                   ; macro definitions
+                      00051         addlw   1
+                      00052         ENDM
                       00053 
-                      00054         Macro2a
+                      00054 ;;;; Begin: Changed in gputils
+                      00055 ;;;;   Macro2a  MACRO
+                      00056 Macro2a MACRO
+                      00057 ;;;; End: Changed in gputils
+                      00058         addlw   1
+                      00059 ENDM
+                      00060 
+                      00061         Macro1a                 ; macro calls
+000C   3E01               M         addlw   1
+                      00062 Macro1a
+000D   3E01               M         addlw   1
+                      00063 
+                      00064         Macro2a
+                          M ;;;; End: Changed in gputils
 000E   3E01               M         addlw   1
-                      00055 Macro2a
+                      00065 Macro2a
+                          M ;;;; End: Changed in gputils
 000F   3E01               M         addlw   1
-                      00056 
-0010   3E01           00057         addlw   1               ; opcodes
-0011   3E01           00058 addlw   1
-                      00059 
-0012   2800           00060         b       0               ; pseudo-ops
-0013   2800           00061 b       0
-                      00062 
-                      00063         end
-MPASM 03.20.02 Released         LIST9.ASM   11-21-2002  20:21:07         PAGE  3
+                      00066 
+0010   3E01           00067         addlw   1               ; opcodes
+0011   3E01           00068 addlw   1
+                      00069 
+0012   2800           00070         b       0               ; pseudo-ops
+0013   2800           00071 b       0
+                      00072 
+                      00073         end
+MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-9-2012  19:54:27         PAGE  3
 
 
 SYMBOL TABLE
@@ -117,7 +129,7 @@ Program Memory Words Free:  1004
 
 
 Errors   :     0
-Warnings :     8 reported,     0 suppressed
+Warnings :     6 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 
 

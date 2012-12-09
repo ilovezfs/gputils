@@ -216,6 +216,7 @@ gp_geterror(unsigned int code)
   case GPE_RES_ODD_PIC16EA:
     return "RES directive cannot reserve odd number of bytes in PIC18 absolute mode.";
   case GPE_UNKNOWN:
+    return "";
 
   /* gputils special errors */
   case GPE_INTERNAL:

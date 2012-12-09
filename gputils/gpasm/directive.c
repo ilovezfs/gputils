@@ -4176,7 +4176,7 @@ do_insn(char *name, struct pnode *parms)
           gpverror(GPE_UNDEF_PROC);
         } else {
           char mesg[80];
-          snprintf(mesg, sizeof(mesg), "Unknown opcode \"%.40s\"", name);
+          snprintf(mesg, sizeof(mesg), "Unknown opcode (%s)", name);
           gperror(GPE_UNKNOWN, mesg);
         }
       }

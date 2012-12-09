@@ -13,13 +13,19 @@ list	p=16c71
 Label1				; OK
 Label2	Nop			; OK
 
- Label3				; Warning
- Label4	Nop			; Warning
+;;;; Begin: Changed in gputils
+;;;; Label3				; Warning
+;;;; Label4	Nop			; Warning
+Label3				; Warning
+Label4	Nop			; Warning
+;;;; End: Changed in gputils
 
 Nop				; Warning
  Nop				; OK
 Nep				; OK
- Nep				; Warning
+;;;; Begin: Removed in gputils
+;;;; Nep				; Warning
+;;;; End: Removed in gputils
 
 DumbMac	Macro
 	nop
