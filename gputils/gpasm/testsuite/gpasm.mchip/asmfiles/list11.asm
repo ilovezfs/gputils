@@ -3,7 +3,10 @@
 ;This file is used to check the generation of an INHX16 format file
 ;that has data above 7FFF.
 
-	list	p=17c44, f=inhx16
+;;;; Begin: Changed in gputils
+;;;;	list	p=17c44, f=inhx16
+	list	p=17c44, f=inhx32
+;;;; End: Changed in gputils
 
 	org	0
 	data	1234, 2345
