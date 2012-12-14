@@ -1,6 +1,7 @@
 2012-12-14  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/lst.c: removed assertion for RELOCT_FF1 and RELOCT_FF2
-    since it fails during sdcc pic16 library compilation
+    since it fails during sdcc pic16 library compilation;
+    disabled all print_reloc() assertions
 
 2012-12-09  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/testsuite/gpasm.mchip/asmfiles/list11.asm;

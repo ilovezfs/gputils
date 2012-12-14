@@ -306,15 +306,6 @@ lst_close(void)
   }
 }
 
-/* print word value with undefined nibbles repleced by "?" */
-#define DO_ASSERT
-
-#ifdef DO_ASSERT
-#define ASSERT(expr)    assert(expr)
-#else
-#define ASSERT(expr)    ((void) 0)
-#endif
-
 /* find relocation by address */
 static gp_reloc_type *
 find_reloc_by_address(unsigned short address)
@@ -343,6 +334,18 @@ prev_reloc_type(void)
   assert(p->next);
   return (p->address == p->next->address) ? p->type : 0;
 }
+
+/* print word value with undefined nibbles repleced by "?" */
+/* enable assertions
+ * #define DO_ASSERT */
+/* disable assertions */
+#undef DO_ASSERT
+
+#ifdef DO_ASSERT
+#define ASSERT(expr)    assert(expr)
+#else
+#define ASSERT(expr)    ((void) 0)
+#endif
 
 static int
 print_reloc(unsigned short type, unsigned short current_value)
