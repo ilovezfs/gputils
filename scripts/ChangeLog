@@ -1,3 +1,8 @@
+2012-12-16 Molnar Karoly <molnarkaroly@users.sf.net>
+	* tools/device-help.pl: I changed the URL of this script in all generated page.
+	* tools/device-help.pl,
+	  tools/device-manager.pl: I changed the non-ASCII characters in my name.
+
 2012-12-11 Molnar Karoly <molnarkaroly@users.sf.net>
 	* tools/device-help.pl: Synchronization with the modified gpprocessor.c.
 

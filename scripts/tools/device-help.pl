@@ -2,7 +2,7 @@
 
 =back
 
-    Copyright (C) 2012, Molnár Károly <molnarkaroly@users.sf.net>
+    Copyright (C) 2012, Molnar Karoly <molnarkaroly@users.sf.net>
 
     This file is part of gputils.
 
@@ -1450,11 +1450,12 @@ sub src_info($)
 
   aOutl($Align, '<div class="legendContainer">');
   aOutl($Align + 2, "<p class=\"srcInfo\">This page generated automatically by the " .
-                    "<em>$PROGRAM</em> program ($time) from the <em>" . basename($dev_info) .
+                    "<a href=\"https://sourceforge.net/p/gputils/code/HEAD/tree/trunk/" .
+                    "scripts/tools/device-help.pl\"><em>$PROGRAM</em></a> program ($time) from the <em>" .
+                    basename($dev_info) .
                     "</em> file (rev: $dev_info_rev) of <em>mpasmx</em> and from the $href " .
                     "(rev: svn $svn_rev). The <em>mpasmx</em> is included in the " .
-                    "<a href=\"http://$mplabx_url\">MPLAB X</a>. The <em>$PROGRAM</em> " .
-                    "is included in the $href.</p>");
+                    "<a href=\"http://$mplabx_url\">MPLAB X</a>.</p>");
   aOutl($Align, '</div>');
   }
 
