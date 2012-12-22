@@ -176,7 +176,7 @@ NUMCHAR [0-9a-z]
                              gpvwarning(GPW_MISSING_QUOTE);
 
                            pc = convert_escape_chars(yytext + 1, &pplval.i);
-                           if (pc != &yytext[yyleng]);
+                           if (pc != &yytext[yyleng])
                              gpverror(GPE_ILLEGAL_ARGU, yytext);
 
                            return NUMBER;
