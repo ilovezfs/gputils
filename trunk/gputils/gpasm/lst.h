@@ -1,6 +1,7 @@
 /* ".LST" file output for gpasm
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Craig Franklin
+   Copyright (C) 2012 Borut Razem
 
 This file is part of gputils.
 
@@ -23,6 +24,7 @@ Boston, MA 02111-1307, USA.  */
 #define __LST_H__
 #include <stdarg.h>
 
+/* MPASM(X) compatible listing */
 #define MPASM_LIST
 
 #ifdef MPASM_LIST
@@ -41,4 +43,6 @@ void lst_close(void);
 void lst_format_line(const char *line, int value);
 void lst_symbol_table(void);
 void lst_page_start(void);
+void preproc_init(void);
+void preproc_emit(void);
 #endif

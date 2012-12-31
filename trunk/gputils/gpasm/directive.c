@@ -1273,6 +1273,7 @@ static gpasmVal
 do_define(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
+  state.preproc.do_emit = false;
 
   if (arity < 1) {
     gpverror(GPE_MISSING_ARGU);
@@ -1514,6 +1515,8 @@ static gpasmVal
 do_else(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
+  state.preproc.do_emit = false;
+
   if (state.astack == NULL)
     gpverror(GPE_ILLEGAL_COND);
   else if ((state.astack->mode != in_then))
@@ -1537,6 +1540,8 @@ static gpasmVal
 do_endif(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
+  state.preproc.do_emit = false;
+
   if (state.astack == NULL) {
     gperror(GPE_ILLEGAL_COND, "Illegal condition (ENDIF).");
   } else if ((state.astack->mode != in_then) &&
@@ -1557,6 +1562,8 @@ do_endm(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   assert(!state.mac_head);
   state.lst.line.linetype = dir;
+  state.preproc.do_emit = false;
+
   if (!IN_MACRO_WHILE_DEFINITION)
     gpverror(GPE_UNMATCHED_ENDM);
   else
@@ -1580,8 +1587,10 @@ do_endw(gpasmVal r, char *name, int arity, struct pnode *parms)
     state.next_state = state_while;
     state.next_buffer.macro = state.while_head;
   }
-  else if (2 == state.pass)
+  else if (2 == state.pass) {
     list_macro(state.while_head->body);
+    state.preproc.do_emit = false;
+  }
 
   state.mac_body = NULL;
   state.mac_prev = NULL;
@@ -2016,6 +2025,8 @@ do_if(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
+  state.preproc.do_emit = false;
+
   enter_if();
 
   /* Only evaluate the conditional if it matters... */
@@ -2034,6 +2045,8 @@ do_ifdef(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
+  state.preproc.do_emit = false;
+
   enter_if();
 
   /* Only evaluate the conditional if it matters... */
@@ -2058,6 +2071,8 @@ do_ifndef(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
+  state.preproc.do_emit = false;
+
   enter_if();
 
   /* Only evaluate the conditional if it matters... */
@@ -2905,6 +2920,7 @@ do_undefine(gpasmVal r, char *name, int arity, struct pnode *parms)
   struct pnode *p;
 
   state.lst.line.linetype = dir;
+  state.preproc.do_emit = false;
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
@@ -4128,7 +4144,7 @@ do_insn(char *name, struct pnode *parms)
 
       case INSN_CLASS_TBL3:
         if (enforce_arity(arity, 3)) {
-          int inc=0,t=0;
+          int inc = 0, t = 0;
           struct pnode *p2; /* second parameter */
           struct pnode *p3; /* third parameter */
 
@@ -4168,6 +4184,7 @@ do_insn(char *name, struct pnode *parms)
           gperror(GPE_UNKNOWN, "Forward references to macros are not allowed.");
         } else {
           setup_macro(h, arity, parms);
+          state.preproc.do_emit = false;
         }
       }
     } else {

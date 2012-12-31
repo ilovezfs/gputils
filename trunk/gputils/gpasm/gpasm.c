@@ -40,7 +40,7 @@ static char *processor_name = NULL;
 int yyparse(void);
 extern int yydebug;
 
-#define GET_OPTIONS "?D:I:a:cCde:ghilLmMno:p:qr:uvw:y"
+#define GET_OPTIONS "?D:I:a:cCde:ghilLmMno:p:qr:uvw:yP:"
 
 enum {
   OPT_MPASM_COMPATIBLE = 0x100
@@ -72,6 +72,7 @@ static struct option longopts[] =
   { "warning",          required_argument, NULL, 'w' },
   { "extended",         no_argument,       NULL, 'y' },
   { "mpasm-compatible", no_argument,       NULL, OPT_MPASM_COMPATIBLE },
+  { "preprocess",       required_argument, NULL, 'P' },
   { 0, 0, 0, 0 }
 };
 
@@ -93,6 +94,7 @@ init(void)
   state.error_level = 0;
   state.debug_info = false;
   state.path_num = 0;
+  state.preproc.do_emit = true;
 
   state.cmd_line.radix = false;
   state.cmd_line.hex_format = false;
@@ -187,6 +189,7 @@ show_usage(void)
   printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n");
   printf("  -y, --extended                 Enable 18xx extended mode.\n");
   printf("      --mpasm-compatible         MPASM copatibility mode\n");
+  printf("  -P FILE, --preporocess FILE    Emit preprocessed asm file to FILE\n");
   printf("\n");
 #ifdef USE_DEFAULT_PATHS
   if (gp_header_path) {
@@ -356,7 +359,11 @@ process_args( int argc, char *argv[])
       exit(0);
 
     case OPT_MPASM_COMPATIBLE:
-      state.mpasm_compatible = 1;
+      state.mpasm_compatible = true;
+      break;
+
+    case 'P':
+      state.preproc.preprocfilename = optarg;
       break;
     }
     if (usage)
@@ -427,6 +434,7 @@ assemble(void)
   state.device.id_location = 0;
   state.cblock = 0;
   state.cblock_defined = 0;
+  state.preproc.do_emit = true;
   /* clean out defines for second pass */
   state.stMacros = push_symbol_table(NULL, state.case_insensitive);
   state.stDefines = push_symbol_table(cmd_defines, state.case_insensitive);
@@ -454,6 +462,7 @@ assemble(void)
   cod_init();
   deps_init();
   lst_init();
+  preproc_init();
 
   /* reset the processor for 2nd pass */
   state.processor = NULL;
