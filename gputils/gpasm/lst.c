@@ -1,6 +1,7 @@
 /* ".LST" file output for gpasm
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Craig Franklin
+   Copyright (C) 2012 Borut Razem
 
 This file is part of gputils.
 
@@ -41,7 +42,7 @@ Boston, MA 02111-1307, USA.  */
 void
 lst_throw(void)
 {
-  if(state.lst.f) {
+  if (state.lst.f) {
     state.lst.page++;
     fprintf(state.lst.f,
             "%s%s %*.*s   %-28sPAGE %2d\n%s\n%s\n",
@@ -934,4 +935,35 @@ lst_symbol_table(void)
     }
   }
   free(lst);
+}
+
+
+/*
+ * Preprocessed file generator
+ */
+
+void
+preproc_init(void)
+{
+  if (NULL != state.preproc.preprocfilename) {
+    if ('-' == state.preproc.preprocfilename[0] && '\0' == state.preproc.preprocfilename[1])
+      state.preproc.f = stdout;
+    else {
+      if (NULL == (state.preproc.f = fopen(state.preproc.preprocfilename, "wt"))) {
+        perror(state.preproc.preprocfilename);
+        exit(1);
+      }
+    }
+  }
+}
+
+void
+preproc_emit(void)
+{
+  if (NULL != state.preproc.f) {
+    if (state.preproc.do_emit && asm_enabled())
+      fprintf(state.preproc.f, "%s\n", state.preproc.curr_src_line.line);
+    else
+      state.preproc.do_emit = true;
+  }
 }

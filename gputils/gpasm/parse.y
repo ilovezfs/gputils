@@ -213,6 +213,7 @@ void next_line(int value)
         dolist_dir != state.lst.line.linetype &&
         nolist_dir != state.lst.line.linetype) {
       lst_format_line(state.src->curr_src_line.line, value);
+      preproc_emit();
     }
 
     /* while loops can be defined inside a macro or nested */
@@ -228,6 +229,8 @@ void next_line(int value)
       dolist_dir != state.lst.line.linetype &&
       nolist_dir != state.lst.line.linetype) {
       lst_format_line(state.src->curr_src_line.line, value);
+      if (!IN_MACRO_WHILE_DEFINITION)
+        preproc_emit();
     }
 
     if (IN_MACRO_WHILE_DEFINITION) {
@@ -499,13 +502,16 @@ line:
               case sec:
                 strncpy(state.obj.new_sec_name, $1, 78);
                 break;
+
               case set:
                 set_global($1, $2, TEMPORARY, gvt_constant);
                 break;
+
               case org:
               case equ:
                 set_global($1, $2, PERMANENT, gvt_constant);
                 break;
+
               case insn:
               case data:
               case res:
@@ -517,9 +523,11 @@ line:
                 else
                   set_global($1, $2, PERMANENT, gvt_address);
                 break;
+
               case dir:
                 gpverror(GPE_ILLEGAL_LABEL, $1);
                 break;
+
               default:
                 break;
               }

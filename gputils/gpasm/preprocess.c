@@ -720,4 +720,9 @@ preprocess_line(char *buf, int *n, int max_size)
       set_source_line(buf, *n, &state.src->curr_src_line);
     }
   }
+
+  if (NULL != state.preproc.f) {
+    /* set current preprocessed source line if preprocessed asm file emission enabeled */
+    set_source_line(buf, *n, &state.preproc.curr_src_line);
+  }
 }

@@ -210,6 +210,12 @@ extern struct gpasm_state {
     int line_width;                 /*   listing line width - list c=xxx option */
     gpasmVal cblock_lst;            /*   cblock constant for listing */
   } lst;
+  struct {                          /* Preprocessor emit state: */
+    char *preprocfilename;          /*   preprocessor output file name */
+    FILE *f;                        /*   preprocessor file pointer */
+    gp_boolean do_emit;             /*   emit current preprocessed asm line */
+    struct src_line_s curr_src_line; /*  current preprocessed source line */
+  } preproc;
   struct {                          /* Object file state: */
     gp_object_type *object;         /*   Object file */
     gp_section_type *section;       /*   Current section */
