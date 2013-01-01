@@ -134,6 +134,7 @@ struct insn op_16cxx[] = {
   { "decf",   0x3f00, 0x0300,   INSN_CLASS_OPWF7        },
   { "decfsz", 0x3f00, 0x0b00,   INSN_CLASS_OPWF7        },
   { "goto",   0x3800, 0x2800,   INSN_CLASS_LIT11        },
+  { "halt",   0x3fff, 0x0061,   INSN_CLASS_IMPLICIT     },  /* undocumented */
   { "incf",   0x3f00, 0x0a00,   INSN_CLASS_OPWF7        },
   { "incfsz", 0x3f00, 0x0f00,   INSN_CLASS_OPWF7        },
   { "iorlw",  0x3f00, 0x3800,   INSN_CLASS_LIT8         },
@@ -287,6 +288,7 @@ const struct insn op_18cxx[] = {
   { "decfsz", 0xfc00, 0x2c00,   INSN_CLASS_OPWFA8       },
   { "dcfsnz", 0xfc00, 0x4c00,   INSN_CLASS_OPWFA8       },
   { "goto",   0xff00, 0xef00,   INSN_CLASS_LIT20        },
+  { "halt",   0xffff, 0x0001,   INSN_CLASS_IMPLICIT     }, /* undocumented */
   { "incf",   0xfc00, 0x2800,   INSN_CLASS_OPWFA8       },
   { "incfsz", 0xfc00, 0x3c00,   INSN_CLASS_OPWFA8       },
   { "infsnz", 0xfc00, 0x4800,   INSN_CLASS_OPWFA8       },
@@ -322,6 +324,8 @@ const struct insn op_18cxx[] = {
   { "swapf",  0xfc00, 0x3800,   INSN_CLASS_OPWFA8       },
   { "tblrd",  0xfffc, 0x0008,   INSN_CLASS_TBL          },
   { "tblwt",  0xfffc, 0x000c,   INSN_CLASS_TBL          },
+  { "trap",   0xffff, 0x00e0,   INSN_CLASS_IMPLICIT     }, /* undocumented */
+  { "tret",   0xffff, 0x00e1,   INSN_CLASS_IMPLICIT     }, /* undocumented */
   { "tstfsz", 0xfe00, 0x6600,   INSN_CLASS_OPFA8        },
   { "xorlw",  0xff00, 0x0a00,   INSN_CLASS_LIT8         },
   { "xorwf",  0xfc00, 0x1800,   INSN_CLASS_OPWFA8       }
