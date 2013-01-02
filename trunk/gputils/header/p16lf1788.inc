@@ -113,7 +113,9 @@ CMOUT            EQU  H'0115'
 BORCON           EQU  H'0116'
 FVRCON           EQU  H'0117'
 DAC1CON0         EQU  H'0118'
+DACCON0          EQU  H'0118'
 DAC1CON1         EQU  H'0119'
+DACCON1          EQU  H'0119'
 CM4CON0          EQU  H'011A'
 CM4CON1          EQU  H'011B'
 APFCON2          EQU  H'011C'
@@ -825,24 +827,17 @@ FVREN            EQU  H'0007'
 
 
 ;----- DAC1CON0 Bits -----------------------------------------------------
-D1NSS            EQU  H'0000'
-DAC1OE0          EQU  H'0004'
+DAC1NSS          EQU  H'0000'
+DAC1OE2          EQU  H'0004'
 DAC1OE1          EQU  H'0005'
-D1EN             EQU  H'0007'
-
-DAC1PSS0         EQU  H'0002'
-DAC1PSS1         EQU  H'0003'
+DAC1EN           EQU  H'0007'
 
 
-;----- DAC1CON1 Bits -----------------------------------------------------
-DAC1R0           EQU  H'0000'
-DAC1R1           EQU  H'0001'
-DAC1R2           EQU  H'0002'
-DAC1R3           EQU  H'0003'
-DAC1R4           EQU  H'0004'
-DAC1R5           EQU  H'0005'
-DAC1R6           EQU  H'0006'
-DAC1R7           EQU  H'0007'
+;----- DACCON0 Bits -----------------------------------------------------
+DAC1NSS          EQU  H'0000'
+DAC1OE2          EQU  H'0004'
+DAC1OE1          EQU  H'0005'
+DAC1EN           EQU  H'0007'
 
 
 ;----- CM4CON0 Bits -----------------------------------------------------
@@ -1575,7 +1570,7 @@ CLKREN           EQU  H'0007'
 ;----- DAC2CON0 Bits -----------------------------------------------------
 DAC2OE0          EQU  H'0004'
 DAC2OE1          EQU  H'0005'
-D2EN             EQU  H'0007'
+DAC2EN           EQU  H'0007'
 
 DAC2PSS0         EQU  H'0002'
 DAC2PSS1         EQU  H'0003'
@@ -1592,7 +1587,7 @@ DAC2R4           EQU  H'0004'
 ;----- DAC3CON0 Bits -----------------------------------------------------
 DAC3OE0          EQU  H'0004'
 DAC3OE1          EQU  H'0005'
-D3EN             EQU  H'0007'
+DAC3EN           EQU  H'0007'
 
 DAC3PSS0         EQU  H'0002'
 DAC3PSS1         EQU  H'0003'
@@ -1609,7 +1604,7 @@ DAC3R4           EQU  H'0004'
 ;----- DAC4CON0 Bits -----------------------------------------------------
 DAC4OE0          EQU  H'0004'
 DAC4OE1          EQU  H'0005'
-D4EN             EQU  H'0007'
+DAC4EN           EQU  H'0007'
 
 DAC4PSS0         EQU  H'0002'
 DAC4PSS1         EQU  H'0003'
@@ -2820,6 +2815,7 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'0CC0'-H'0CEF'
        __BADRAM  H'0D0C'-H'0D1F'
        __BADRAM  H'0D20'-H'0D6F'
+       __BADRAM  H'0D8C'-H'0DAD'
        __BADRAM  H'0DAE'-H'0DEF'
        __BADRAM  H'0E0C'-H'0E1F'
        __BADRAM  H'0E20'-H'0E6F'

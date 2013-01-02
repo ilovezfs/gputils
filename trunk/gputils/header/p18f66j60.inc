@@ -1753,8 +1753,8 @@ SP4              EQU  H'0004'
 ;              are available for this device.
 ;
 ;   Watchdog Timer Enable bit:
-;     WDTEN = OFF          WDT disabled (control is placed on SWDTEN bit)
-;     WDTEN = ON           WDT enabled
+;     WDT = OFF            WDT disabled (control is placed on SWDTEN bit)
+;     WDT = ON             WDT enabled
 ;
 ;   Stack Overflow/Underflow Reset Enable bit:
 ;     STVR = OFF           Reset on stack overflow/underflow disabled

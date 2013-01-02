@@ -324,6 +324,17 @@ TUN4             EQU  H'0004'
 TUN5             EQU  H'0005'
 
 
+;----- SSPADD Bits -----------------------------------------------------
+ADD0             EQU  H'0000'
+ADD1             EQU  H'0001'
+ADD2             EQU  H'0002'
+ADD3             EQU  H'0003'
+ADD4             EQU  H'0004'
+ADD5             EQU  H'0005'
+ADD6             EQU  H'0006'
+ADD7             EQU  H'0007'
+
+
 ;----- SSPMSK Bits -----------------------------------------------------
 MSK0             EQU  H'0000'
 MSK1             EQU  H'0001'
