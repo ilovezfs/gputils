@@ -1,4 +1,11 @@
 2013-01-02  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/Makefile.am, header/Makefile.in, header/p16f570.inc,
+    header/p16f753.inc, header/p16hv753.inc, header/p16lf1824t39a.inc,
+    lkr/Makefile.am, lkr/Makefile.in, lkr/16f570_g.lkr, lkr/16f753_g.lkr,
+    lkr/16hv753_g.lkr, lkr/16lf1824t39a_g.lkr, libgputils/gpprocessor.c:
+    New MCU-s based on the mplabx-1.6.
+
+2013-01-02  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/p16f720.inc, header/p16f721.inc, header/p16lf720.inc,
     header/p16lf721.inc, header/p16lf1788.inc, header/p16lf1789.inc,
     header/p16lf1902.inc, header/p16lf1903.inc, header/p18f65j94.inc,
