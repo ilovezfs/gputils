@@ -2577,6 +2577,8 @@ LCDMD            EQU  H'0003'
 RTCCMD           EQU  H'0004'
 ADCMD            EQU  H'0005'
 CTMUMD           EQU  H'0006'
+MODMD            EQU  H'0007'
+
 TXMMD            EQU  H'0007'
 
 

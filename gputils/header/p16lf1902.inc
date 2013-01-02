@@ -128,6 +128,7 @@ LCDCST           EQU  H'0794'
 LCDRL            EQU  H'0795'
 LCDSE0           EQU  H'0798'
 LCDSE1           EQU  H'0799'
+LCDSE3           EQU  H'079B'
 LCDDATA0         EQU  H'07A0'
 LCDDATA1         EQU  H'07A1'
 LCDDATA3         EQU  H'07A3'
@@ -580,6 +581,12 @@ SE14             EQU  H'0006'
 SE15             EQU  H'0007'
 
 
+;----- LCDSE3 Bits -----------------------------------------------------
+SE24             EQU  H'0000'
+SE25             EQU  H'0001'
+SE26             EQU  H'0002'
+
+
 ;----- LCDDATA0 Bits -----------------------------------------------------
 SEG0COM0         EQU  H'0000'
 SEG1COM0         EQU  H'0001'
@@ -748,7 +755,8 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'0720'-H'076F'
        __BADRAM  H'078C'-H'0790'
        __BADRAM  H'0796'-H'0797'
-       __BADRAM  H'079A'-H'079F'
+       __BADRAM  H'079A'
+       __BADRAM  H'079C'-H'079F'
        __BADRAM  H'07A2'
        __BADRAM  H'07A5'
        __BADRAM  H'07A8'

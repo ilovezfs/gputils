@@ -1,3 +1,16 @@
+2013-01-02  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/p16f720.inc, header/p16f721.inc, header/p16lf720.inc,
+    header/p16lf721.inc, header/p16lf1788.inc, header/p16lf1789.inc,
+    header/p16lf1902.inc, header/p16lf1903.inc, header/p18f65j94.inc,
+    header/p18f66j60.inc, header/p18f66j65.inc, header/p18f66j94.inc,
+    header/p18f66j99.inc, header/p18f67j60.inc, header/p18f67j94.inc,
+    header/p18f85j94.inc, header/p18f86j60.inc, header/p18f86j65.inc,
+    header/p18f86j94.inc, header/p18f86j99.inc, header/p18f87j60.inc,
+    header/p18f87j94.inc, header/p18f95j94.inc, header/p18f96j60.inc,
+    header/p18f96j65.inc, header/p18f96j94.inc, header/p18f96j99.inc,
+    header/p18f97j60.inc, header/p18f97j94.inc, libgputils/gpcfg-table.c:
+    Updated based on the mplabx-1.6.
+
 2013-01-01  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpopcode.c:
     implemented RFE #31 - "Support for undowumented opcodes"
