@@ -406,6 +406,10 @@ program:
         } line
         | program error '\n'
         {
+          state.lst.line.was_org = state.org;
+          state.lst.line.linetype = none;
+          state.next_state = state_nochange;
+
           yyerrok;  /* generate multiple errors */
           if (IN_MACRO_WHILE_DEFINITION) {
             /* in macro definition: append the macro */
