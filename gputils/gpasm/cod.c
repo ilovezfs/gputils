@@ -270,10 +270,6 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
       type = COD_ST_ADDRESS;
       break;
 
-    case gvt_org:
-      type = COD_ST_ADDRESS;
-      break;
-
     case gvt_constant:
     default:
       type = COD_ST_CONSTANT;

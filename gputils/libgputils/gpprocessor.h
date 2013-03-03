@@ -104,6 +104,8 @@ extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices 
 #define PROC_CLASS_EEPROM16 (&proc_class_eeprom16)
 #define PROC_CLASS_GENERIC (&proc_class_generic)
 #define PROC_CLASS_PIC12 (&proc_class_pic12)
+/* TODO: until PROC_CLASS_PIC12E is implemented */
+#define PROC_CLASS_PIC12E PROC_CLASS_PIC12
 #define PROC_CLASS_SX (&proc_class_sx)
 #define PROC_CLASS_PIC14 (&proc_class_pic14)
 #define PROC_CLASS_PIC14E (&proc_class_pic14e)
@@ -116,8 +118,8 @@ extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices 
 typedef const struct px *pic_processor_t;
 
 #define MAX_NAMES 3 /* Maximum number of names a processor can have */
-#define MAX_BADROM (1*2) /* Maximum number of BADROM ranges a processor can be */
-                       /* initialized with */
+#define MAX_BADROM (1*2)  /* Maximum number of BADROM ranges a processor
+                             can be initialized with */
 
 struct px {
   proc_class_t class;
@@ -131,7 +133,10 @@ struct px {
   int prog_mem_size;
   int badrom[MAX_BADROM];
   int config_addrs[2];
+  /* */
   const char *script;
+  int is_16bit_extended;  /* 1 if device supports 16 bit extended instruction set,
+                             0 otherwise; Used ony for PROC_CLASS_PIC16E class */
 };
 
 /* CONFIG addresses for the 18xx parts */
