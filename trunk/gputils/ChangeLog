@@ -1,3 +1,8 @@
+2013-03-03  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpprocessor.h: added new class PROC_CLASS_PIC12E;
+    added member is_16bit_extended to px structure
+  * gpasm/gpasm.h.in, gpasm/cod.c: removed unneeded gvt_org
+
 2013-03-03  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/*.inc, lkr/*.lkr:
     Updated based on the mplabx-1.7.

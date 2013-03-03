@@ -43,7 +43,6 @@ Boston, MA 02111-1307, USA.  */
 enum gpasmValTypes {
   gvt_constant,
   gvt_cblock,
-  gvt_org,
   gvt_address,
   gvt_extern,
   gvt_global,
