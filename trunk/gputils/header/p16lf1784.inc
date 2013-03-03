@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16LF1784 processor include
 ; 
-;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -140,7 +140,6 @@ EEDATL           EQU  H'0193'
 EEDATH           EQU  H'0194'
 EECON1           EQU  H'0195'
 EECON2           EQU  H'0196'
-VREGCON          EQU  H'0197'
 RC1REG           EQU  H'0199'
 RCREG            EQU  H'0199'
 RCREG1           EQU  H'0199'
@@ -987,10 +986,6 @@ CFGS             EQU  H'0006'
 EEPGD            EQU  H'0007'
 
 
-;----- VREGCON Bits -----------------------------------------------------
-VREGPM           EQU  H'0001'
-
-
 ;----- RC1STA Bits -----------------------------------------------------
 RX9D             EQU  H'0000'
 OERR             EQU  H'0001'
@@ -1169,6 +1164,17 @@ SSP1BUF6         EQU  H'0006'
 SSP1BUF7         EQU  H'0007'
 
 
+BUF0             EQU  H'0000'
+BUF1             EQU  H'0001'
+BUF2             EQU  H'0002'
+BUF3             EQU  H'0003'
+BUF4             EQU  H'0004'
+BUF5             EQU  H'0005'
+BUF6             EQU  H'0006'
+BUF7             EQU  H'0007'
+
+
+
 ;----- SSPBUF Bits -----------------------------------------------------
 SSP1BUF0         EQU  H'0000'
 SSP1BUF1         EQU  H'0001'
@@ -1178,6 +1184,17 @@ SSP1BUF4         EQU  H'0004'
 SSP1BUF5         EQU  H'0005'
 SSP1BUF6         EQU  H'0006'
 SSP1BUF7         EQU  H'0007'
+
+
+BUF0             EQU  H'0000'
+BUF1             EQU  H'0001'
+BUF2             EQU  H'0002'
+BUF3             EQU  H'0003'
+BUF4             EQU  H'0004'
+BUF5             EQU  H'0005'
+BUF6             EQU  H'0006'
+BUF7             EQU  H'0007'
+
 
 
 ;----- SSP1ADD Bits -----------------------------------------------------
@@ -1191,6 +1208,17 @@ SSP1ADD6         EQU  H'0006'
 SSP1ADD7         EQU  H'0007'
 
 
+ADD0             EQU  H'0000'
+ADD1             EQU  H'0001'
+ADD2             EQU  H'0002'
+ADD3             EQU  H'0003'
+ADD4             EQU  H'0004'
+ADD5             EQU  H'0005'
+ADD6             EQU  H'0006'
+ADD7             EQU  H'0007'
+
+
+
 ;----- SSPADD Bits -----------------------------------------------------
 SSP1ADD0         EQU  H'0000'
 SSP1ADD1         EQU  H'0001'
@@ -1200,6 +1228,17 @@ SSP1ADD4         EQU  H'0004'
 SSP1ADD5         EQU  H'0005'
 SSP1ADD6         EQU  H'0006'
 SSP1ADD7         EQU  H'0007'
+
+
+ADD0             EQU  H'0000'
+ADD1             EQU  H'0001'
+ADD2             EQU  H'0002'
+ADD3             EQU  H'0003'
+ADD4             EQU  H'0004'
+ADD5             EQU  H'0005'
+ADD6             EQU  H'0006'
+ADD7             EQU  H'0007'
+
 
 
 ;----- SSP1MSK Bits -----------------------------------------------------
@@ -1213,6 +1252,17 @@ SSP1MSK6         EQU  H'0006'
 SSP1MSK7         EQU  H'0007'
 
 
+MSK0             EQU  H'0000'
+MSK1             EQU  H'0001'
+MSK2             EQU  H'0002'
+MSK3             EQU  H'0003'
+MSK4             EQU  H'0004'
+MSK5             EQU  H'0005'
+MSK6             EQU  H'0006'
+MSK7             EQU  H'0007'
+
+
+
 ;----- SSPMSK Bits -----------------------------------------------------
 SSP1MSK0         EQU  H'0000'
 SSP1MSK1         EQU  H'0001'
@@ -1222,6 +1272,17 @@ SSP1MSK4         EQU  H'0004'
 SSP1MSK5         EQU  H'0005'
 SSP1MSK6         EQU  H'0006'
 SSP1MSK7         EQU  H'0007'
+
+
+MSK0             EQU  H'0000'
+MSK1             EQU  H'0001'
+MSK2             EQU  H'0002'
+MSK3             EQU  H'0003'
+MSK4             EQU  H'0004'
+MSK5             EQU  H'0005'
+MSK6             EQU  H'0006'
+MSK7             EQU  H'0007'
+
 
 
 ;----- SSP1STAT Bits -----------------------------------------------------
@@ -1628,19 +1689,19 @@ IOCEF3           EQU  H'0003'
 
 
 ;----- OPA1CON Bits -----------------------------------------------------
-OPA1SP           EQU  H'0006'
-OPA1EN           EQU  H'0007'
-
 OPA1PCH0         EQU  H'0000'
 OPA1PCH1         EQU  H'0001'
 
+OPA1SP           EQU  H'0006'
+OPA1EN           EQU  H'0007'
+
 
 ;----- OPA2CON Bits -----------------------------------------------------
-OPA2SP           EQU  H'0006'
-OPA2EN           EQU  H'0007'
-
 OPA2PCH0         EQU  H'0000'
 OPA2PCH1         EQU  H'0001'
+
+OPA2SP           EQU  H'0006'
+OPA2EN           EQU  H'0007'
 
 
 ;----- CLKRCON Bits -----------------------------------------------------
@@ -2548,7 +2609,7 @@ Z_SHAD           EQU  H'0002'
        __MAXRAM  H'0FFF'
        __BADRAM  H'001D'-H'001F'
        __BADRAM  H'018E'
-       __BADRAM  H'0198'
+       __BADRAM  H'0197'-H'0198'
        __BADRAM  H'0218'-H'021F'
        __BADRAM  H'0294'-H'0297'
        __BADRAM  H'029B'-H'029F'

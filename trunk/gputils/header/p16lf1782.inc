@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16LF1782 processor include
 ; 
-;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -140,7 +140,6 @@ EEDATL           EQU  H'0193'
 EEDATH           EQU  H'0194'
 EECON1           EQU  H'0195'
 EECON2           EQU  H'0196'
-VREGCON          EQU  H'0197'
 RC1REG           EQU  H'0199'
 RCREG            EQU  H'0199'
 RCREG1           EQU  H'0199'
@@ -828,10 +827,6 @@ CFGS             EQU  H'0006'
 EEPGD            EQU  H'0007'
 
 
-;----- VREGCON Bits -----------------------------------------------------
-VREGPM           EQU  H'0001'
-
-
 ;----- RC1STA Bits -----------------------------------------------------
 RX9D             EQU  H'0000'
 OERR             EQU  H'0001'
@@ -1143,8 +1138,8 @@ CCP2M3           EQU  H'0003'
 DC2B0            EQU  H'0004'
 DC2B1            EQU  H'0005'
 ;;;; Begin: Removed in gputils
-;;;;P2M0             EQU  H'0006'
-;;;;P2M1             EQU  H'0007'
+;;;;P1M0             EQU  H'0006'
+;;;;P1M1             EQU  H'0007'
 ;;;; End: Removed in gputils
 
 
@@ -1954,7 +1949,7 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'010F'-H'0110'
        __BADRAM  H'011A'-H'011C'
        __BADRAM  H'018E'-H'0190'
-       __BADRAM  H'0198'
+       __BADRAM  H'0197'-H'0198'
        __BADRAM  H'01A0'-H'01EF'
        __BADRAM  H'020F'
        __BADRAM  H'0218'-H'021F'

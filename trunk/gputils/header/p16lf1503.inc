@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16LF1503 processor include
 ; 
-;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -428,8 +428,8 @@ GO               EQU  H'0001'
 
 ;----- ADCON1 Bits -----------------------------------------------------
 ADFM             EQU  H'0007'
-;;;; Begin: Added in gputils
 
+;;;; Begin: Added in gputils
 ADCS0            EQU  H'0004'
 ADCS1            EQU  H'0005'
 ADCS2            EQU  H'0006'
@@ -784,7 +784,6 @@ N1CKS1           EQU  H'0001'
 N1PWS0           EQU  H'0005'
 N1PWS1           EQU  H'0006'
 N1PWS2           EQU  H'0007'
-
 
 
 ;----- PWM1DCL Bits -----------------------------------------------------

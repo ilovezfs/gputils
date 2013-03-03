@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16F527 processor include
 ; 
-;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -303,13 +303,13 @@ TRISA5           EQU  H'0005'
 ;       Configuration Bits
 ;
 ;   NAME            Address
-;   CONFIG             7FFh
+;   CONFIG             FFFh
 ;
 ;==========================================================================
 
 ; The following is an assignment of address values for all of the
 ; configuration registers for the purpose of table reads
-_CONFIG          EQU  H'7FF'
+_CONFIG          EQU  H'FFF'
 
 ;----- CONFIG Options --------------------------------------------------
 _FOSC_LP             EQU  H'0FF8'    ; LP oscillator and automatic 18 ms DRT (DRTEN ignored)

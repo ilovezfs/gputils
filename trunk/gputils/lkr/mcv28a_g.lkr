@@ -1,5 +1,5 @@
 // File: mcv28a_g.lkr
-// Generic linker script for the PICMCV28A processor
+// Generic linker script for the MCV28A processor
 
 #DEFINE _CODEEND _DEBUGCODESTART - 1
 #DEFINE _CEND _CODEEND + _DEBUGCODELEN

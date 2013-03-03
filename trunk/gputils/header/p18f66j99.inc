@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC18F66J99 processor include
 ; 
-;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -3748,8 +3748,6 @@ RG1              EQU  H'0001'
 RG2              EQU  H'0002'
 RG3              EQU  H'0003'
 RG4              EQU  H'0004'
-RG6              EQU  H'0006'
-RG7              EQU  H'0007'
 
 
 ;----- LATA Bits -----------------------------------------------------
@@ -3822,8 +3820,6 @@ LATG1            EQU  H'0001'
 LATG2            EQU  H'0002'
 LATG3            EQU  H'0003'
 LATG4            EQU  H'0004'
-LATG6            EQU  H'0006'
-LATG7            EQU  H'0007'
 
 
 ;----- TRISA Bits -----------------------------------------------------
@@ -3896,8 +3892,6 @@ TRISG1           EQU  H'0001'
 TRISG2           EQU  H'0002'
 TRISG3           EQU  H'0003'
 TRISG4           EQU  H'0004'
-TRISG6           EQU  H'0006'
-TRISG7           EQU  H'0007'
 
 
 ;----- OSCTUNE Bits -----------------------------------------------------

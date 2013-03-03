@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC18F97J94 processor include
 ; 
-;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
