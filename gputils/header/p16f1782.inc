@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16F1782 processor include
 ; 
-;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -1143,8 +1143,8 @@ CCP2M3           EQU  H'0003'
 DC2B0            EQU  H'0004'
 DC2B1            EQU  H'0005'
 ;;;; Begin: Removed in gputils
-;;;;P2M0             EQU  H'0006'
-;;;;P2M1             EQU  H'0007'
+;;;;P1M0             EQU  H'0006'
+;;;;P1M1             EQU  H'0007'
 ;;;; End: Removed in gputils
 
 

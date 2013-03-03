@@ -19,7 +19,7 @@ CODEPAGE   NAME=page0      START=0x0               END=0x1FF
 
 CODEPAGE   NAME=flashdata  START=0x400             END=0x43F          PROTECTED 
 CODEPAGE   NAME=.idlocs    START=0x440             END=0x443          PROTECTED 
-CODEPAGE   NAME=.config    START=0x7FF             END=0x7FF          PROTECTED 
+CODEPAGE   NAME=.config    START=0xFFF             END=0xFFF          PROTECTED 
 
 DATABANK   NAME=sfr0       START=0x0               END=0xB            PROTECTED
 DATABANK   NAME=sfr1       START=0x20              END=0x2B           PROTECTED

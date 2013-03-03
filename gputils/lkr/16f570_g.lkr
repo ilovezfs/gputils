@@ -9,12 +9,14 @@
 LIBPATH .
 
 CODEPAGE   NAME=page0      START=0x0               END=0x1FF                    
+CODEPAGE   NAME=page1      START=0x200             END=0x3FF                    
+CODEPAGE   NAME=page2      START=0x400             END=0x5FF                    
 
 #IFDEF _DEBUGCODESTART
-  CODEPAGE   NAME=page1      START=0x200             END=_CODEEND
+  CODEPAGE   NAME=page3      START=0x600             END=_CODEEND
   CODEPAGE   NAME=debug      START=_DEBUGCODESTART   END=_CEND        PROTECTED
 #ELSE
-  CODEPAGE   NAME=page1      START=0x200             END=0x3FF                    
+  CODEPAGE   NAME=page3      START=0x600             END=0x7FF                    
 #FI
 
 CODEPAGE   NAME=flashdata  START=0x800             END=0x83F          PROTECTED 
@@ -69,6 +71,8 @@ DATABANK   NAME=gpr7a      START=0xEC              END=0xEF
 
 SECTION    NAME=PROG0      ROM=page0           // ROM code space
 SECTION    NAME=PROG1      ROM=page1           // ROM code space
+SECTION    NAME=PROG2      ROM=page2           // ROM code space
+SECTION    NAME=PROG3      ROM=page3           // ROM code space
 SECTION    NAME=FLASHDATA  ROM=flashdata       // Writable Flash Data Memory
 SECTION    NAME=IDLOCS     ROM=.idlocs         // ID locations
 

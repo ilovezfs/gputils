@@ -1,25 +1,25 @@
         LIST
 
 ;==========================================================================
-;  MPASM PICMCV28A processor include
+;  MPASM MCV28A processor include
 ; 
-;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
 
 ;==========================================================================
 ;  This header file defines configurations, registers, and other useful
-;  bits of information for the PICMCV28A microcontroller.  These names
+;  bits of information for the MCV28A microcontroller.  These names
 ;  are taken to match the data sheets as closely as possible.
 ;
 ;  Note that the processor must be selected before this file is included.
 ;  The processor may be selected the following ways:
 ;
 ;       1. Command line switch:
-;               C:\MPASM MYFILE.ASM /PICMCV28A
+;               C:\MPASM MYFILE.ASM /MCV28A
 ;       2. LIST directive in the source file
-;               LIST   P=PICMCV28A
+;               LIST   P=MCV28A
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================

@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16F1788 processor include
 ; 
-;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -825,13 +825,21 @@ FVREN            EQU  H'0007'
 
 
 ;----- DAC1CON0 Bits -----------------------------------------------------
-D1NSS            EQU  H'0000'
-DAC1OE0          EQU  H'0004'
+DAC1NSS          EQU  H'0000'
+DAC1OE2          EQU  H'0004'
 DAC1OE1          EQU  H'0005'
-D1EN             EQU  H'0007'
+DAC1EN           EQU  H'0007'
 
 DAC1PSS0         EQU  H'0002'
 DAC1PSS1         EQU  H'0003'
+
+DACNSS           EQU  H'0000'
+DACOE0           EQU  H'0004'
+DACOE1           EQU  H'0005'
+DACEN            EQU  H'0007'
+
+DACPSS0          EQU  H'0002'
+DACPSS1          EQU  H'0003'
 
 
 ;----- DAC1CON1 Bits -----------------------------------------------------
@@ -843,6 +851,15 @@ DAC1R4           EQU  H'0004'
 DAC1R5           EQU  H'0005'
 DAC1R6           EQU  H'0006'
 DAC1R7           EQU  H'0007'
+
+DACR0            EQU  H'0000'
+DACR1            EQU  H'0001'
+DACR2            EQU  H'0002'
+DACR3            EQU  H'0003'
+DACR4            EQU  H'0004'
+DACR5            EQU  H'0005'
+DACR6            EQU  H'0006'
+DACR7            EQU  H'0007'
 
 
 ;----- CM4CON0 Bits -----------------------------------------------------
@@ -1139,6 +1156,17 @@ SSP1BUF6         EQU  H'0006'
 SSP1BUF7         EQU  H'0007'
 
 
+BUF0             EQU  H'0000'
+BUF1             EQU  H'0001'
+BUF2             EQU  H'0002'
+BUF3             EQU  H'0003'
+BUF4             EQU  H'0004'
+BUF5             EQU  H'0005'
+BUF6             EQU  H'0006'
+BUF7             EQU  H'0007'
+
+
+
 ;----- SSPBUF Bits -----------------------------------------------------
 SSP1BUF0         EQU  H'0000'
 SSP1BUF1         EQU  H'0001'
@@ -1148,6 +1176,17 @@ SSP1BUF4         EQU  H'0004'
 SSP1BUF5         EQU  H'0005'
 SSP1BUF6         EQU  H'0006'
 SSP1BUF7         EQU  H'0007'
+
+
+BUF0             EQU  H'0000'
+BUF1             EQU  H'0001'
+BUF2             EQU  H'0002'
+BUF3             EQU  H'0003'
+BUF4             EQU  H'0004'
+BUF5             EQU  H'0005'
+BUF6             EQU  H'0006'
+BUF7             EQU  H'0007'
+
 
 
 ;----- SSP1ADD Bits -----------------------------------------------------
@@ -1161,6 +1200,17 @@ SSP1ADD6         EQU  H'0006'
 SSP1ADD7         EQU  H'0007'
 
 
+ADD0             EQU  H'0000'
+ADD1             EQU  H'0001'
+ADD2             EQU  H'0002'
+ADD3             EQU  H'0003'
+ADD4             EQU  H'0004'
+ADD5             EQU  H'0005'
+ADD6             EQU  H'0006'
+ADD7             EQU  H'0007'
+
+
+
 ;----- SSPADD Bits -----------------------------------------------------
 SSP1ADD0         EQU  H'0000'
 SSP1ADD1         EQU  H'0001'
@@ -1170,6 +1220,17 @@ SSP1ADD4         EQU  H'0004'
 SSP1ADD5         EQU  H'0005'
 SSP1ADD6         EQU  H'0006'
 SSP1ADD7         EQU  H'0007'
+
+
+ADD0             EQU  H'0000'
+ADD1             EQU  H'0001'
+ADD2             EQU  H'0002'
+ADD3             EQU  H'0003'
+ADD4             EQU  H'0004'
+ADD5             EQU  H'0005'
+ADD6             EQU  H'0006'
+ADD7             EQU  H'0007'
+
 
 
 ;----- SSP1MSK Bits -----------------------------------------------------
@@ -1183,6 +1244,17 @@ SSP1MSK6         EQU  H'0006'
 SSP1MSK7         EQU  H'0007'
 
 
+MSK0             EQU  H'0000'
+MSK1             EQU  H'0001'
+MSK2             EQU  H'0002'
+MSK3             EQU  H'0003'
+MSK4             EQU  H'0004'
+MSK5             EQU  H'0005'
+MSK6             EQU  H'0006'
+MSK7             EQU  H'0007'
+
+
+
 ;----- SSPMSK Bits -----------------------------------------------------
 SSP1MSK0         EQU  H'0000'
 SSP1MSK1         EQU  H'0001'
@@ -1192,6 +1264,17 @@ SSP1MSK4         EQU  H'0004'
 SSP1MSK5         EQU  H'0005'
 SSP1MSK6         EQU  H'0006'
 SSP1MSK7         EQU  H'0007'
+
+
+MSK0             EQU  H'0000'
+MSK1             EQU  H'0001'
+MSK2             EQU  H'0002'
+MSK3             EQU  H'0003'
+MSK4             EQU  H'0004'
+MSK5             EQU  H'0005'
+MSK6             EQU  H'0006'
+MSK7             EQU  H'0007'
+
 
 
 ;----- SSP1STAT Bits -----------------------------------------------------
@@ -1545,19 +1628,21 @@ IOCEF3           EQU  H'0003'
 
 
 ;----- OPA1CON Bits -----------------------------------------------------
+OPA1PCH0         EQU  H'0000'
+OPA1PCH1         EQU  H'0001'
+OPA1PCH2         EQU  H'0002'
+
 OPA1SP           EQU  H'0006'
 OPA1EN           EQU  H'0007'
 
-OPA1PCH0         EQU  H'0000'
-OPA1PCH1         EQU  H'0001'
-
 
 ;----- OPA2CON Bits -----------------------------------------------------
-OPA2SP           EQU  H'0006'
-OPA2EN           EQU  H'0007'
-
 OPA2PCH0         EQU  H'0000'
 OPA2PCH1         EQU  H'0001'
+OPA2PCH2         EQU  H'0002'
+
+OPA2SP           EQU  H'0006'
+OPA2EN           EQU  H'0007'
 
 
 ;----- CLKRCON Bits -----------------------------------------------------
@@ -1573,54 +1658,21 @@ CLKREN           EQU  H'0007'
 
 
 ;----- DAC2CON0 Bits -----------------------------------------------------
-DAC2OE0          EQU  H'0004'
+DAC2OE2          EQU  H'0004'
 DAC2OE1          EQU  H'0005'
-D2EN             EQU  H'0007'
-
-DAC2PSS0         EQU  H'0002'
-DAC2PSS1         EQU  H'0003'
-
-
-;----- DAC2CON1 Bits -----------------------------------------------------
-DAC2R0           EQU  H'0000'
-DAC2R1           EQU  H'0001'
-DAC2R2           EQU  H'0002'
-DAC2R3           EQU  H'0003'
-DAC2R4           EQU  H'0004'
+DAC2EN           EQU  H'0007'
 
 
 ;----- DAC3CON0 Bits -----------------------------------------------------
-DAC3OE0          EQU  H'0004'
+DAC3OE2          EQU  H'0004'
 DAC3OE1          EQU  H'0005'
-D3EN             EQU  H'0007'
-
-DAC3PSS0         EQU  H'0002'
-DAC3PSS1         EQU  H'0003'
-
-
-;----- DAC3CON1 Bits -----------------------------------------------------
-DAC3R0           EQU  H'0000'
-DAC3R1           EQU  H'0001'
-DAC3R2           EQU  H'0002'
-DAC3R3           EQU  H'0003'
-DAC3R4           EQU  H'0004'
+DAC3EN           EQU  H'0007'
 
 
 ;----- DAC4CON0 Bits -----------------------------------------------------
-DAC4OE0          EQU  H'0004'
+DAC4OE2          EQU  H'0004'
 DAC4OE1          EQU  H'0005'
-D4EN             EQU  H'0007'
-
-DAC4PSS0         EQU  H'0002'
-DAC4PSS1         EQU  H'0003'
-
-
-;----- DAC4CON1 Bits -----------------------------------------------------
-DAC4R0           EQU  H'0000'
-DAC4R1           EQU  H'0001'
-DAC4R2           EQU  H'0002'
-DAC4R3           EQU  H'0003'
-DAC4R4           EQU  H'0004'
+DAC4EN           EQU  H'0007'
 
 
 ;----- PSMC1CON Bits -----------------------------------------------------
@@ -2820,6 +2872,7 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'0CC0'-H'0CEF'
        __BADRAM  H'0D0C'-H'0D1F'
        __BADRAM  H'0D20'-H'0D6F'
+       __BADRAM  H'0D8C'-H'0DAD'
        __BADRAM  H'0DAE'-H'0DEF'
        __BADRAM  H'0E0C'-H'0E1F'
        __BADRAM  H'0E20'-H'0E6F'

@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC18F96J99 processor include
 ; 
-;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -4694,7 +4694,7 @@ STKOVF           EQU  H'0007'
 ;     STVREN = OFF         Disabled
 ;     STVREN = ON          Enabled
 ;
-;   Stack Overflow/Underflow Reset:
+;   Extended Instruction Set:
 ;     XINST = OFF          Disabled
 ;     XINST = ON           Enabled
 ;

@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC12F529T39A processor include
 ; 
-;  (c) Copyright 1999-2012 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -149,7 +149,7 @@ _CPDF_ON             EQU  H'0FBF'    ; Code protection on
 _CPDF_OFF            EQU  H'0FFF'    ; Code protection off
 
 _CP_ENABLE           EQU  H'097F'    ; Enabled
-_CP_DISABLE          EQU  H'0EFF'    ; Disabled
+_CP_DISABLE          EQU  H'0DFF'    ; Disabled
 
 
 ;----- IDLOC Equates --------------------------------------------------
