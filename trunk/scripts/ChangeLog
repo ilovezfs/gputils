@@ -1,4 +1,7 @@
 2013-03-04 Molnar Karoly <molnarkaroly@users.sf.net>
+	* tools/device-help.pl: Synchronization with the modified gpprocessor.c.
+
+2013-03-04 Molnar Karoly <molnarkaroly@users.sf.net>
 	* tools/device-manager.pl: Synchronization with the modified gpprocessor.c.
 
 2012-12-16 Molnar Karoly <molnarkaroly@users.sf.net>
