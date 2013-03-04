@@ -110,11 +110,12 @@ use constant PROC_CLASS_EEPROM8  => 0;
 use constant PROC_CLASS_EEPROM16 => 1;
 use constant PROC_CLASS_GENERIC  => 2;
 use constant PROC_CLASS_PIC12    => 3;
-use constant PROC_CLASS_PIC14    => 4;
-use constant PROC_CLASS_PIC14E   => 5;
-use constant PROC_CLASS_PIC16    => 6;
-use constant PROC_CLASS_PIC16E   => 7;
-use constant PROC_CLASS_SX       => 8;
+use constant PROC_CLASS_PIC12E   => 4;
+use constant PROC_CLASS_PIC14    => 5;
+use constant PROC_CLASS_PIC14E   => 6;
+use constant PROC_CLASS_PIC16    => 7;
+use constant PROC_CLASS_PIC16E   => 8;
+use constant PROC_CLASS_SX       => 9;
 
 my @classnames =
   (
@@ -122,6 +123,7 @@ my @classnames =
   'PROC_CLASS_EEPROM16',
   'PROC_CLASS_GENERIC',
   'PROC_CLASS_PIC12',
+  'PROC_CLASS_PIC12E',
   'PROC_CLASS_PIC14',
   'PROC_CLASS_PIC14E',
   'PROC_CLASS_PIC16',
@@ -135,7 +137,7 @@ my %exist_classes =
   'eeprom16' => PROC_CLASS_EEPROM16,
   'generic'  => PROC_CLASS_GENERIC,
   '16c5x'    => PROC_CLASS_PIC12,
-  '16c5xe'   => PROC_CLASS_PIC12,
+  '16c5xe'   => PROC_CLASS_PIC12E,
   '16xxxx'   => PROC_CLASS_PIC14,
   '16exxx'   => PROC_CLASS_PIC14E,
   '17xxxx'   => PROC_CLASS_PIC16,
@@ -149,6 +151,7 @@ my @eeprom_starts =
         -1,     # PROC_CLASS_EEPROM16
         -1,     # PROC_CLASS_GENERIC
         -1,     # PROC_CLASS_PIC12
+        -1,     # PROC_CLASS_PIC12E
   0x002100,     # PROC_CLASS_PIC14
   0x00F000,     # PROC_CLASS_PIC14E
         -1,     # PROC_CLASS_PIC16
@@ -234,7 +237,7 @@ my $px_struct_end;              # The end of the px structure in the gpprocessor
 =back
         The structure of one element of the @gp_px_struct and @mp_px_struct arrays:
 
-        [
+        {
         IGNORED      => FALSE,          True if line is commented.
         CLASS        => '',
         DEFINED_AS   => '',
@@ -247,8 +250,9 @@ my $px_struct_end;              # The end of the px structure in the gpprocessor
         BADROM       => [0, 0],
         CONFIG_ADDRS => [0, 0],
         SCRIPT       => '',
+        EXTENDED     => 0,
         COMMENT      => ''              Comment on the end of line.
-        ]
+        }
 =cut
 
 my @gp_px_struct;
@@ -270,7 +274,7 @@ my $lkr_config_end;
 
 =back
         The structure of one element of the @mp_mcus arrays:
-        [
+        {
         NAME      => '',
         CLASS     => 0,
         COFF      => 0,
@@ -280,8 +284,9 @@ my $lkr_config_end;
         EEPROM    => 0,
         CONFIGS   => 0,
         BANKS     => 0,
-        ACCESS    => 0
-        ]
+        ACCESS    => 0,
+        EXTENDED  => 0
+        }
 =cut
 
 my @mp_mcus;
@@ -1244,6 +1249,8 @@ sub read_lkr($)
   {
   my $Lkr = $_[0];
 
+  return FALSE if (! -e $Lkr);
+
   Log("Reads the $Lkr file.", 4);
 
   my $in = Open($Lkr, 'read_lkr');
@@ -1271,6 +1278,7 @@ sub read_lkr($)
 
   die "read_lkr(): There is no one program memory page either. ($name)\n" if (! @lkr_pages);
   close($in);
+  return TRUE;
   }
 
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -1297,27 +1305,43 @@ sub read_mcu_info_from_mplabx($)
 
   while (<$in>)
     {
-    if ($_ =~ /^<PART_INFO_TYPE><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)>/io && $2 eq $proc)
+    s/\r$//o;
+    s/^<|>$//go;
+
+    my @fields = split('><', $_, -1);
+
+    if ($fields[0] eq 'PART_INFO_TYPE')
       {
-      $info = {
-              NAME      => $Name,
-              CLASS     => str2class($3),
-              COFF      => hex($1),             # Coff ID of device. (16 bit wide)
-              PAGES     => hex($5),             # Number of ROM/FLASH pages.
+      if ($fields[2] eq $proc)
+        {
+        $info = {
+                NAME      => $fields[2],
+                CLASS     => str2class($fields[3]),
+                COFF      => hex($fields[1]),             # Coff ID of device. (16 bit wide)
+                PAGES     => hex($fields[5]),             # Number of ROM/FLASH pages.
 
                 # These addresses relative, compared to the beginning of the blocks.
-              ROM       => hex($6),             # Last address of ROM/FLASH.
-              FLASHDATA => hex($11),            # Last address of FLASH Data.
-              EEPROM    => hex($9),             # Last address of EEPROM.
+                ROM       => hex($fields[6]),             # Last address of ROM/FLASH.
+                FLASHDATA => hex($fields[11]),            # Last address of FLASH Data.
+                EEPROM    => hex($fields[9]),             # Last address of EEPROM.
 
-              CONFIGS   => hex($12),            # Number of Configuration bytes/words.
-              BANKS     => hex($7),             # Number of RAM Banks.
-              ACCESS    => hex($10)             # Last address of lower Access RAM of pic18f series.
-              };
-
+                CONFIGS   => hex($fields[12]),            # Number of Configuration bytes/words.
+                BANKS     => hex($fields[7]),             # Number of RAM Banks.
+                ACCESS    => hex($fields[10]),            # Last address of lower Access RAM of pic18f series.
+    	        EXTENDED  => 0
+                };
+        }
+      elsif (defined($info))
+        {
+        last;
+        }
+      }
+    elsif ($fields[0] eq 'SWITCH_INFO_TYPE' && $fields[1] eq 'XINST')
+      {
+      $info->{EXTENDED} = 1 if (defined($info));
       last;
       }
-    }
+    } # while (<$in>)
 
   close($in);
   return $info;
@@ -1336,6 +1360,7 @@ sub read_all_mcu_info_from_mplabx()
   Log("Reads the $path file.", 4);
 
   my $in = Open($path, 'read_all_mcu_info_from_mplabx');
+  my $info = undef;
 
   @mp_mcus = ();
   %mp_mcus_by_name = ();
@@ -1350,8 +1375,27 @@ sub read_all_mcu_info_from_mplabx()
 
     if ($_ =~ /^<PART_INFO_TYPE><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)>/io)
       {
-      my ($coff, $name, $class, $pages, $rom) = (hex($1), lc($2), str2class($3), hex($5), hex($6));
-      my ($banks, $eeprom, $split, $fdata, $configs) = (hex($7), hex($9), hex($10), hex($11), hex($12));
+      if (defined($info))
+        {
+	my $n = $info->{NAME};
+
+	$prev = $mp_mcus_by_name{$n};
+
+	if (defined($prev))
+	  {
+	  report(RP_ADD, E_NAME_COLL, \$name_error, $n);
+	  }
+        else
+          {
+          $mp_mcus_by_name{$n} = $info;
+          }
+
+	push(@mp_mcus, $info);
+	$info = undef;
+        }
+
+      my ($coff,  $name,   $class, $pages, $rom)     = (hex($1), lc($2),  str2class($3), hex($5),  hex($6));
+      my ($banks, $eeprom, $split, $fdata, $configs) = (hex($7), hex($9), hex($10),      hex($11), hex($12));
 
       $name =~ s/^pic//o;
 
@@ -1361,35 +1405,45 @@ sub read_all_mcu_info_from_mplabx()
                $name eq 'ap7675' || $name =~ /^eeprom/o ||
                $name =~ /^mcp25/o);
 
-      my $info = {
-                 NAME      => $name,
-                 CLASS     => $class,
-                 COFF      => $coff,            # Coff ID of device. (16 bit wide)
-                 PAGES     => $pages,           # Number of ROM/FLASH pages.
+      $info = {
+              NAME      => $name,
+              CLASS     => $class,
+              COFF      => $coff,            # Coff ID of device. (16 bit wide)
+              PAGES     => $pages,           # Number of ROM/FLASH pages.
 
                 # These addresses relative, compared to the beginning of the blocks.
-                 ROM       => $rom,             # Last address of ROM/FLASH.
-                 FLASHDATA => $fdata,           # Last address of FLASH Data.
-                 EEPROM    => $eeprom,          # Last address of EEPROM.
+              ROM       => $rom,             # Last address of ROM/FLASH.
+              FLASHDATA => $fdata,           # Last address of FLASH Data.
+              EEPROM    => $eeprom,          # Last address of EEPROM.
 
-                 CONFIGS   => $configs,         # Number of Configuration bytes/words.
-                 BANKS     => $banks,           # Number of RAM Banks.
-                 ACCESS    => $split            # Last address of lower Access RAM of pic18f series.
-                 };
-
-      $prev = $mp_mcus_by_name{$name};
-
-      if (defined($prev))
-        {
-        report(RP_ADD, E_NAME_COLL, \$name_error, $name);
-        }
-      else
-        {
-        $mp_mcus_by_name{$name} = $info;
-        }
-
-      push(@mp_mcus, $info);
+              CONFIGS   => $configs,         # Number of Configuration bytes/words.
+              BANKS     => $banks,           # Number of RAM Banks.
+              ACCESS    => $split,           # Last address of lower Access RAM of pic18f series.
+    	      EXTENDED  => 0
+              };
       }
+    elsif ($_ =~ /^<SWITCH_INFO_TYPE><XINST>/io)
+      {
+      $info->{EXTENDED} = 1 if (defined($info));
+      }
+    }
+
+  if (defined($info))
+    {
+    my $n = $info->{NAME};
+
+    $prev = $mp_mcus_by_name{$n};
+
+    if (defined($prev))
+      {
+      report(RP_ADD, E_NAME_COLL, \$name_error, $n);
+      }
+    else
+      {
+      $mp_mcus_by_name{$n} = $info;
+      }
+
+    push(@mp_mcus, $info);
     }
 
   close($in);
@@ -1449,6 +1503,7 @@ sub new_px_row($$$)
            BADROM       => [ $bad_start, $bad_end ],
            CONFIG_ADDRS => [ $lkr_config_start, $lkr_config_end ],
            SCRIPT       => $Script,
+    	   EXTENDED     => $Info->{EXTENDED},
            COMMENT      => ''
            };
 
@@ -1487,7 +1542,7 @@ sub create_px_struct_from_mplabx()
 
     $script = $1 if (/^($script)$/i ~~ @dir_list);
 
-    read_lkr("$mplabx_lkr/$script");
+    next if (! read_lkr("$mplabx_lkr/$script"));
 
     my $px = new_px_row(\$mem_error, $info, $script);
 
@@ -1582,8 +1637,8 @@ sub extract_px_struct()
   my $lkr_error = '';
 
         # static struct px pics[] = {
-        #   { PROC_CLASS_PIC12    , "__12F529T39A"  , { "pic12f529t39a"  , "p12f529t39a"    , "12f529t39a"      }, 0xE529,  3,    8, 0x0005FF, 0x000600, {       -1,       -1 }, { 0x000FFF, 0x000FFF }, "12f529t39a_g.lkr"   },
-        #   { PROC_CLASS_PIC14E   , "__16LF1517"    , { "pic16lf1517"    , "p16lf1517"      , "16lf1517"        }, 0xA517,  4,   32, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008007, 0x008008 }, "16lf1517_g.lkr"     },
+        #   { PROC_CLASS_PIC12E   , "__12F529T39A"  , { "pic12f529t39a"  , "p12f529t39a"    , "12f529t39a"      }, 0xE529,  3,    8, 0x0005FF, 0x000600, {       -1,       -1 }, { 0x000FFF, 0x000FFF }, "12f529t39a_g.lkr"  , 0 },
+        #   { PROC_CLASS_PIC14E   , "__16LF1517"    , { "pic16lf1517"    , "p16lf1517"      , "16lf1517"        }, 0xA517,  4,   32, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008007, 0x008008 }, "16lf1517_g.lkr"    , 0 },
 
   Log('Extract the table of px struct.', 4);
   $in_table = FALSE;
@@ -1604,7 +1659,7 @@ sub extract_px_struct()
         $px_struct_begin = $n;
         }
       }
-    elsif ($_ =~ /\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\S+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*\"?([\.\w]+)\"?\s*\}/io)
+    elsif ($_ =~ /\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\S+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*\"?([\.\w]+)\"?\s*,\s*(\d+)\s*\}/io)
       {
       my $name0 = $3;
       my $name2 = $5;
@@ -1624,6 +1679,7 @@ sub extract_px_struct()
                BADROM       => [ str2dec($11), str2dec($12) ],
                CONFIG_ADDRS => [ str2dec($13), str2dec($14) ],
                SCRIPT       => $script,
+    	       EXTENDED     => str2dec($16),
                COMMENT      => ''
                };
 
@@ -1735,6 +1791,7 @@ EOT
       print ('badrom      : ' . neg_form($_->{BADROM}->[0]) . ', ' . neg_form($_->{BADROM}->[1]) . "\n");
       print ('config_addrs: ' . neg_form($_->{CONFIG_ADDRS}->[0]) . ', ' . neg_form($_->{CONFIG_ADDRS}->[1]) . "\n");
       print  "script      : $_->{SCRIPT}\n";
+      print  "extended    : $_->{EXTENDED}\n";
       }
     else
       {
@@ -1812,7 +1869,9 @@ sub create_one_px_row($$)
   $line .= ' }, ';
 
   $i = $Row->{SCRIPT};
-  $line .= sprintf('%-20s },', (($i ne 'NULL') ? "\"$i\"" : $i));
+  $line .= sprintf('%-20s, ', (($i ne 'NULL') ? "\"$i\"" : $i));
+  $i = $Row->{EXTENDED};
+  $line .= sprintf('%i },', $i);
 
   $line = "/*$line*/" if ($Row->{IGNORED});
 
@@ -2170,6 +2229,8 @@ sub show_diff_px_struct()
       $out .= 'mplabx  ' . create_one_px_row($mp, FALSE) . "\n";
       $out .= 'gputils ' . create_one_px_row($_, FALSE)  . "\n";
       }
+
+#    print "  " . create_one_px_row($mp, TRUE) . "\n";
     }
 
   print (($out ne '') ? "$out$border\n" : "No differences.\n");
