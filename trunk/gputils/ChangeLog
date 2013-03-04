@@ -1,3 +1,7 @@
+2013-03-04  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpprocessor.c: Changed some class to PROC_CLASS_PIC12E,
+    new member in the struct px pics[]: is_16bit_extended
+
 2013-03-03  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpprocessor.h: added new class PROC_CLASS_PIC12E;
     added member is_16bit_extended to px structure
