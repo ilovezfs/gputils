@@ -93,7 +93,9 @@ enum GPE_codes {
   GPE_FILL_ODD         = 159,
   GPE_CONTIG_CONFIG    = 163,
   GPE_CONTIG_IDLOC     = 164,
+  GPE_NO_EXTENDED_MODE = 165,  /*  Extended mode not available for this device */
   GPE_MISSING_BRACKET  = 168,
+  GPE_CONSTANT         = 170,  /* Expression within brackets must be constant */
   GPE_IDLOCS_ORDER     = 175,
   GPE_CONFIG_UNKNOWN   = 176,
   GPE_CONFIG_usCONFIG  = 177,

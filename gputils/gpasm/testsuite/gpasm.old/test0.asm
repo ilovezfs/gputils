@@ -1,14 +1,14 @@
-	list	p=16c84
+	list	p=16f84
 	include <foo.inc>
 
 	title	"haddock is a tasty fish"
-	
+
 keylen	equ 10
 	cblock	0x600
 key:	keylen
-key1:	
+key1:
 	endc
-	
+
 	cblock	0xc
 	turkey:	100
 	roast
@@ -18,8 +18,8 @@ key1:
 	what_is, the_matter, my_dear; ?
 
 tennis:	1
-feeble_minded:	
-	
+feeble_minded:
+
 	endc
 
 	cblock
@@ -30,13 +30,13 @@ fooyah	macro	kung
 	data	kung
 	data	x1
 	endm
-		
+
 barry	EQU	h'd0'
 x2	equ	h'd0'
 x1	equ	h'd0'
 x3	equ	h'd0'
 x4	equ	h'd0'
-	
+
 	org 0
 here:
 	movlw	0x09
@@ -45,7 +45,7 @@ here:
 	xorlw	(there - here)
 	movlw	there
 	movlw	faraway
-there:	
+there:
 	movlw	(59 - 3 - 3)
 	nop
 
@@ -63,7 +63,7 @@ there:
 faraway:
 	dt	$,$,$
 
-sayit	macro	x	
+sayit	macro	x
 	if ((x & 2) == 0)
 		if	((x & 1) == 0)
 			messg	"zero"
@@ -80,7 +80,7 @@ sayit	macro	x
 	endm
 
 #define foo x
-	
+
 	ifdef	foo
 		messg	"def"
 	endif
@@ -121,14 +121,14 @@ silly	nop
 	else
 	   messg "HEX IS BROKEN"
 	endif
-	
-halt	macro
+
+_halt	macro
 	local	loop
 loop:	goto	loop
 	endm
 
-	halt
-	
+	_halt
+
 	;; *****************************************************************
-	
+
 	end

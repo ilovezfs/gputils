@@ -161,7 +161,22 @@ int can_evaluate_value(struct pnode *p)
         return 0;
       else {
         struct variable *var = get_symbol_annotation(s);
-        return (var != NULL && var->type != gvt_extern);
+        if (NULL == var) {
+          return 0;
+        }
+        else {
+          switch (var->type) {
+          case gvt_extern:
+          case gvt_global:
+          case gvt_static:
+          case gvt_absolute:
+          case gvt_debug:
+            return 0;
+            
+          default:
+            return 1;
+          }
+        }
       }
     }
 
@@ -414,15 +429,19 @@ int count_reloc(struct pnode *p)
 }
 
 /* When generating object files, operands with relocatable addresses can only be
-   [UPPER|HIGH|LOW]([<relocatable symbol>] + [<offset>]) */
+   [UPPER|HIGH|LOW]([<relocatable symbol>] + [<offs>]) */
 
 static void
-add_reloc(struct pnode *p, short offset, enum gpasmValTypes type)
+add_reloc(struct pnode *p, short offs, unsigned short type)
 {
   struct symbol *s = NULL;
   struct variable *var = NULL;
 
   switch (p->tag) {
+  case offset:
+    add_reloc(p->value.offset, offs, type);
+    break;
+
   case symbol:
     if (strcmp(p->value.symbol, "$") == 0) {
       char buffer[BUFSIZ];
@@ -449,7 +468,7 @@ add_reloc(struct pnode *p, short offset, enum gpasmValTypes type)
         case gvt_global:
         case gvt_static:
         case gvt_address:
-          coff_reloc(var->coff_num, offset, type);
+          coff_reloc(var->coff_num, offs, type);
           return;
 
         default:
@@ -462,15 +481,15 @@ add_reloc(struct pnode *p, short offset, enum gpasmValTypes type)
   case unop:
     switch (p->value.unop.op) {
     case UPPER:
-      add_reloc(p->value.unop.p0, offset, RELOCT_UPPER);
+      add_reloc(p->value.unop.p0, offs, RELOCT_UPPER);
       return;
 
     case HIGH:
-      add_reloc(p->value.unop.p0, offset, RELOCT_HIGH);
+      add_reloc(p->value.unop.p0, offs, RELOCT_HIGH);
       return;
 
     case LOW:
-      add_reloc(p->value.unop.p0, offset, RELOCT_LOW);
+      add_reloc(p->value.unop.p0, offs, RELOCT_LOW);
       return;
 
     case '!':
@@ -491,16 +510,16 @@ add_reloc(struct pnode *p, short offset, enum gpasmValTypes type)
     case '+':
       /* The symbol can be in either position */
       if (count_reloc(p->value.binop.p0) == 1) {
-        add_reloc(p->value.binop.p0, offset + maybe_evaluate(p->value.binop.p1), type);
+        add_reloc(p->value.binop.p0, offs + maybe_evaluate(p->value.binop.p1), type);
       } else {
-        add_reloc(p->value.binop.p1, offset + maybe_evaluate(p->value.binop.p0), type);
+        add_reloc(p->value.binop.p1, offs + maybe_evaluate(p->value.binop.p0), type);
       }
       return;
 
     case '-':
       /* The symbol has to be first */
       if (count_reloc(p->value.binop.p0) == 1) {
-        add_reloc(p->value.binop.p0, offset - maybe_evaluate(p->value.binop.p1), type);
+        add_reloc(p->value.binop.p0, offs - maybe_evaluate(p->value.binop.p1), type);
       } else {
         gpverror(GPE_UNRESOLVABLE);
       }

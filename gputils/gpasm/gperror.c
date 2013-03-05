@@ -205,8 +205,12 @@ gp_geterror(unsigned int code)
     return "__CONFIG directives must be contiguous.";
   case GPE_CONTIG_IDLOC:
     return "__IDLOC directives must be contiguous.";
+  case GPE_NO_EXTENDED_MODE:
+    return "Extended mode not available for this device.";
   case GPE_MISSING_BRACKET:
-    return "Square brackets required around offset operand.";
+    return "Square brackets required around offset operand";
+  case GPE_CONSTANT:
+    return "Expression within brackets must be constant";
   case GPE_IDLOCS_ORDER:
     return "__IDLOCS directives must be listed in ascending order.";
   case GPE_CONFIG_UNKNOWN:

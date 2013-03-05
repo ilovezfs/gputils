@@ -37,6 +37,10 @@ void select_processor(char *name)
     if (found) {
       int badrom_idx;
       if (!state.processor) {
+        /* if in extended mode: check if processor supports extended instruction set */
+        if (state.extended_pic16e && !found->is_16bit_extended) {
+          gpverror(GPE_NO_EXTENDED_MODE);
+        }
         state.processor = found;
         state.maxrom = found->maxrom;
         /* initialize badrom from internal processor info */

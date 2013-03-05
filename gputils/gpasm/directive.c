@@ -3084,6 +3084,9 @@ check_flag(int flag)
 #define AR_GET(types, i) ((types >> (AR_BITS * (i))) && AR_MASK)
 #define AR_DIRECT        0 /* direct addressing */
 #define AR_INDEX         1 /* indexed addressing with literal offset */
+#define AR_BIT_BYTE      0x8000 /* Byte-Oriented and Bit-Oriented
+                                 * Instructions in Indexed Literal
+                                 * Offset Mode */
 
 static int
 check_16e_arg_types(struct pnode *parms, int arity, unsigned int types)
@@ -3099,6 +3102,24 @@ check_16e_arg_types(struct pnode *parms, int arity, unsigned int types)
       if (AR_INDEX != AR_GET(types, i) && offset == HEAD(p)->tag) {
         gperror(GPE_BADCHAR, "Illegal character ([)");
         ret = 0;
+      }
+      else if (AR_BIT_BYTE & types) {
+        if (AR_INDEX == AR_GET(types, i) && offset == HEAD(p)->tag) {
+          struct pnode *p1 = HEAD(p)->value.offset;
+          if (can_evaluate_value(p1)) {
+            int val = evaluate(p1);
+            if (val < 0 || val > 0x5f) {
+              char buf[64];
+              snprintf(buf, sizeof buf, "Argument out of range (%d not between 0 and 95)", val);
+              gperror(GPE_RANGE, buf);
+              ret = 0;
+            }
+          }
+          else {
+            gpverror(GPE_CONSTANT);
+            ret = 0;
+          }
+        }
       }
       else if (AR_INDEX == AR_GET(types, i) && offset != HEAD(p)->tag) {
         gpverror(GPE_MISSING_BRACKET);
@@ -3826,7 +3847,7 @@ do_insn(char *name, struct pnode *parms)
             break;
           }
 
-          check_16e_arg_types(parms, arity, AR_INDEX);
+          check_16e_arg_types(parms, arity, AR_BIT_BYTE | AR_INDEX);
 
           p = HEAD(parms);
           file = reloc_evaluate(p, RELOCT_F);
@@ -3883,7 +3904,7 @@ do_insn(char *name, struct pnode *parms)
             break;
           }
 
-          check_16e_arg_types(parms, arity, AR_INDEX);
+          check_16e_arg_types(parms, arity, AR_BIT_BYTE | AR_INDEX);
 
           f = HEAD(parms);
           file = reloc_evaluate(f, RELOCT_F);
@@ -3942,7 +3963,7 @@ do_insn(char *name, struct pnode *parms)
             break;
           }
 
-          check_16e_arg_types(parms, arity, AR_INDEX);
+          check_16e_arg_types(parms, arity, AR_BIT_BYTE | AR_INDEX);
 
           p = HEAD(parms);
           file = reloc_evaluate(p, RELOCT_F);
