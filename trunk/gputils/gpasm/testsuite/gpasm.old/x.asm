@@ -1,13 +1,12 @@
-	processor p16c84
+	processor 16f84
 	
-halt	macro
+_halt	macro
 	local	loop
 loop:	goto	loop
 	endm
 
 	nop
-	halt
+	_halt
 	nop
-	
+
 	end
-	

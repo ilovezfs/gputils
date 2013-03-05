@@ -1,3 +1,13 @@
+2013-03-05  Borut Razem  <borutr@users.sourceforge.net>
+  * gputils/gpasm/evaluate.c, gputils/gpasm/directive.c,
+    gputils/gpasm/processor.c, gputils/gpasm/gperror.c,
+    gputils/gpasm/gperror.h: fix for 16 bit extended instruction set,
+    Byte-Oriented and Bit-Oriented Instructions in Indexed Literal
+    Offset Mode
+  * gputils/gpasm/testsuite/gpasm.old/test0.asm,
+    gputils/gpasm/testsuite/gpasm.old/x.asm: dont use halt as a label
+    since it is a preudo operatin code
+
 2013-03-04  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpprocessor.c: Changed some class to PROC_CLASS_PIC12E,
     new member in the struct px pics[]: is_16bit_extended
