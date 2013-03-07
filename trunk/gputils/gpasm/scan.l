@@ -416,10 +416,11 @@ h'-?{NUMCHAR}+'          {
                          }
 '{STR_QCHAR}'            {
                            const char *pc = convert_escape_chars(yytext + 1, &yylval.i);
-                           assert(pc == &yytext[yyleng - 1]);
+                           if (pc != &yytext[yyleng - 1])
+                             gpverror(GPE_ILLEGAL_ARGU, "expected single character");
                            return NUMBER;
                          }
-A'{STR_QCHAR}'           {
+a'{STR_QCHAR}'           {
                            yylval.i = yytext[2];
                            return NUMBER;
                          }
@@ -475,30 +476,89 @@ A'{STR_QCHAR}'           {
 "+*"                     OPERATOR(TBL_PRE_INC);
 
 <INITIAL,bquote,lnquote,definition,defargs,macpar>[ \t\r]*
-<macpar>([^,;'"\n]*('{STR_QCHAR}*')?(\"{STR_QCHAR}*\")?[^,;'"\n]*)+ {
-                           int begin = 0, len;
+<macpar>.                {
+#define CHUNCK  64
+                           int len = CHUNCK;
+                           char *buf = malloc(len);
+                           char *p = buf;
+                           int c = yytext[0];
+                           static int emit_comma = 0;
+                           int prev_esc = 0, state = 0;
+
+                           if (emit_comma) {
+                             unput(c);
+                             emit_comma = 0;
+                             yylval.i = ',';
+                             return ',';
+                           }
 
                            /* skip leading spaces */
-                           while (isspace(yytext[begin]))
-                             ++begin;
+                           while (isspace(c))
+                             c = input();
 
-                           /* skip trailing spaces */
-                           len = yyleng - begin - 1;
-                           while (len >= 0 && isspace(yytext[begin + len]))
-                             --len;
-                           ++len;
+                           for (; ; ) {
+                             switch (c) {
+                             case ',':
+                               if (0 != state)
+                                 goto no_esc;
 
-                           yylval.s = strndup(&yytext[begin], len);
-                           return IDENTIFIER;
+                               emit_comma = 1;
+                               goto skip_trailing;
+
+                             case ';':
+                               if (0 != state)
+                                 goto no_esc;
+
+                               /* eat the rest of line */
+                               while (EOF != (c = input()) && '\n' != c)
+                                 ;
+                               /* fall through */
+                             case '\n':
+                               unput('\n');
+                               /* fall through */
+                             skip_trailing:
+                               /* skip trailing spaces */
+                               while (p > buf && isspace(*(p - 1)))
+                                 --p;
+                               /* fall through */
+                             case EOF:
+                             emit:
+                               yylval.s = strndup(buf, p - buf);
+                               free(buf);
+                               return IDENTIFIER;
+
+                             case '\\':
+                               prev_esc = !prev_esc;
+                               break;
+
+                             case '"':
+                             case '\'':
+                               /* escaping out of string doesn't have any special meaning */
+                               if (0 == state || (0 != state && !prev_esc))
+                                 state = (0 == state) ? c : ((state == c) ? 0 : state);
+                               /* fall through */
+                             default:
+                             no_esc:
+                               prev_esc = 0;
+                               break;
+                             }
+
+                             *p++ = c;
+                             if (len <= p - buf) {
+                               len += CHUNCK;
+                               buf = realloc(buf, len);
+                             }
+                             c = input();
+                           }
                          }
 <*>[\n]                  {
                            force_decimal = 0;
                            force_ident = 0;
-                           BEGIN(INITIAL);  /* no multiline states yet */
+                           BEGIN(INITIAL);  /* switch to INITIAL state */
                            return yytext[0];
                          }
 <*>;.*                   {
-                           BEGIN(INITIAL);
+                           BEGIN(INITIAL);  /* switch to INITIAL state */
                          }
 <*>.                     {
                            yylval.i = yytext[0];

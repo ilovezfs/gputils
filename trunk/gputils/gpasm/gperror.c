@@ -162,7 +162,7 @@ gp_geterror(unsigned int code)
   case GPE_RANGE:
     return "Argument out of range";
   case GPE_TOO_MANY_ARGU:
-    return "Too many arguments.";
+    return "Too many arguments";
   case GPE_MISSING_ARGU:
     return "Missing argument(s)";
   case GPE_EXPECTED:

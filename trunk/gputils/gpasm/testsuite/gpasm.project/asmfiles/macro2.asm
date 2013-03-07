@@ -35,6 +35,8 @@ test5 macro number
 
   test1 1, 2, 3, constant1
 
+  test1 b'1', o'2', h'3', constant1
+
   test2 "hello"
 
   test3 myvar1
