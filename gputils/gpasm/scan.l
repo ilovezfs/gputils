@@ -522,7 +522,6 @@ a'{STR_QCHAR}'           {
                                  --p;
                                /* fall through */
                              case EOF:
-                             emit:
                                yylval.s = strndup(buf, p - buf);
                                free(buf);
                                return IDENTIFIER;
