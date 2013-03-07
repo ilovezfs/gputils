@@ -63,7 +63,7 @@
 \begin_body
 
 \begin_layout Title
-gputils 1.0.0
+gputils 1.1.0
 \end_layout
 
 \begin_layout Author
@@ -71,7 +71,7 @@ James Bowman, Craig Franklin, and David Barnett
 \end_layout
 
 \begin_layout Date
-December 28, 2012
+March 07, 2013
 \end_layout
 
 \begin_layout Standard
@@ -3641,7 +3641,7 @@ number equ 5
 \begin_inset Newline newline
 \end_inset
 
-label_#v( (number +1) * 5 )_suffix equ 0x10
+label_#v((number + 1) * 5)_suffix equ 0x10
 \end_layout
 
 \begin_layout Standard
