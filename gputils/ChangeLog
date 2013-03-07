@@ -5,6 +5,12 @@
     gpasm/testsuite/gpasm.project/hexfiles/macro2.hex:
     fixed bug #261 - Example from assembly manual for the Blue Room
     Electronics Junebug Pickit 2 clone thows "missing argument" errors
+  * Makefile.in, gputils/Makefile.in, doc/Makefile.in,
+    doc/html-help/Makefile.in, man/Makefile.in, man/fr/Makefile.in,
+    gplink/Makefile.in, libiberty/Makefile.in, lkr/Makefile.in,
+    header/Makefile.in, gpasm/Makefile.in, aclocal.m4,
+    libgputils/Makefile.in: autotools upgrade
+  * configure.ac, configure, doc/gputils.lyx: version changed to 1.1.0
 
 2013-03-05  Borut Razem  <borutr@users.sourceforge.net>
   * gputils/gpasm/evaluate.c, gputils/gpasm/directive.c,
