@@ -1,3 +1,11 @@
+2013-03-07  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/scan.l, gpasm/gperror.c,
+    gpasm/testsuite/gpasm.project/asmfiles/macro2.asm,
+    gpasm/testsuite/gpasm.project/listfiles/macro2.lst,
+    gpasm/testsuite/gpasm.project/hexfiles/macro2.hex:
+    fixed bug #261 - Example from assembly manual for the Blue Room
+    Electronics Junebug Pickit 2 clone thows "missing argument" errors
+
 2013-03-05  Borut Razem  <borutr@users.sourceforge.net>
   * gputils/gpasm/evaluate.c, gputils/gpasm/directive.c,
     gputils/gpasm/processor.c, gputils/gpasm/gperror.c,

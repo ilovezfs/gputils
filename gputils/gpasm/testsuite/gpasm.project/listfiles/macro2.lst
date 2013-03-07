@@ -1,10 +1,10 @@
-MPASM 03.20.02 Released        MACRO2.ASM   11-22-2002  11:18:05         PAGE  1
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-7-2013  10:57:08         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00001   processor 16c84
+                      00001   processor 16f84
                       00002 
                       00003   list n=0
                       00004 
@@ -46,40 +46,45 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0002   30                 M   fill (movlw 2),       3
 0005   3005               M   movlw constant1
                       00037 
-                      00038   test2 "hello"
+                      00038   test1 b'1', o'2', h'3', constant1
+0006   3001               M   movlw b'1'
+0007   30                 M   fill (movlw o'2'),    h'3'
+000A   3005               M   movlw constant1
+                      00039 
+                      00040   test2 "hello"
 Message[301]: MESSAGE: (hello)
                           M   messg "hello"
-                      00039 
-                      00040   test3 myvar1
+                      00041 
+                      00042   test3 myvar1
   00000005                M myvar1 equ 5
-0006   3005           00041   movlw myvar1
-                      00042   
-                      00043   test4 3, 4
+000B   3005           00043   movlw myvar1
+                      00044   
+                      00045   test4 3, 4
   00000004                M label_3          equ 4
-0007   3004           00044   movlw label_3
-                      00045 
-                      00046   test5 0
+000C   3004           00046   movlw label_3
+                      00047 
+                      00048   test5 0
                           M   if (0==1)
                           M     exitm
                           M   else
-0008   3000               M     movlw 0
+000D   3000               M     movlw 0
                           M   endif
-0009   3000               M   movlw 0
-                      00047 
-                      00048   test5 1
+000E   3000               M   movlw 0
+                      00049 
+                      00050   test5 1
                           M   if (1==1)
                           M     exitm
-                      00049 
-000A   3005           00050   movlw 5
                       00051 
-                      00052   end
-MPASM 03.20.02 Released        MACRO2.ASM   11-22-2002  11:18:05         PAGE  2
+000F   3005           00052   movlw 5
+                      00053 
+                      00054   end
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-7-2013  10:57:08         PAGE  2
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
-__16C84                           00000001
+__16F84                           00000001
 constant1                         00000005
 label_3                           00000004
 myvar1                            00000005
@@ -92,12 +97,12 @@ test5
 
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 
-0000 : XXXXXXXXXXX----- ---------------- ---------------- ----------------
+0000 : XXXXXXXXXXXXXXXX ---------------- ---------------- ----------------
 
 All other memory blocks unused.
 
-Program Memory Words Used:    11
-Program Memory Words Free:  1013
+Program Memory Words Used:    16
+Program Memory Words Free:  1008
 
 
 Errors   :     0
