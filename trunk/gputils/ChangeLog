@@ -1,30 +1,24 @@
 2013-03-08  Borut Razem  <borutr@users.sourceforge.net>
-  * gpasm/directive.c, gpasm/lst.c
-
-M       libgputils/gpopcode.c
-M       libgputils/gpopcode.h
-M       libgputils/gpcoff.h
-M       libgputils/gpdis.c
-M       libgputils/gpcofflink.c
-M       libgputils/gpprocessor.c
-M       libgputils/gpprocessor.h
-M       gpasm/directive.c
-M       gpasm/directive.h
-A       gpasm/testsuite/gpasm.project/asmfiles/op12e_12f529.asm
-A       gpasm/testsuite/gpasm.project/asmfiles/op12e_16f570.asm
-A       gpasm/testsuite/gpasm.project/hexfiles/op12e_16f570.hex
-A       gpasm/testsuite/gpasm.project/hexfiles/op12e_12f529.hex
-A       gpasm/testsuite/gpasm.project/objasm/op12e_16f570.asm
-A       gpasm/testsuite/gpasm.project/objasm/op12e_12f529.asm
-A       gpasm/testsuite/gpasm.project/objlstfiles/op12e_12f529.lst
-A       gpasm/testsuite/gpasm.project/objlstfiles/op12e_16f570.lst
-M       gpasm/testsuite/gpasm.project/objfiles/op12.o
-A       gpasm/testsuite/gpasm.project/objfiles/op12e_16f570.o
-A       gpasm/testsuite/gpasm.project/objfiles/op12e_12f529.o
-A       gpasm/testsuite/gpasm.project/listfiles/op12e_12f529.lst
-A       gpasm/testsuite/gpasm.project/listfiles/op12e_16f570.lst
-M       gpasm/testsuite/gpasm.mchip/objfiles/reloc2.o
-
+  * gpasm/directive.c, gpasm/lst.c, libgputils/gpopcode.c,
+    libgputils/gpopcode.h, libgputils/gpcoff.h, libgputils/gpdis.c.
+    libgputils/gpcofflink.c, libgputils/gpprocessor.c,
+    libgputils/gpprocessor.h,
+    gpasm/testsuite/gpasm.project/asmfiles/op12e_12f529.asm,
+    gpasm/testsuite/gpasm.project/asmfiles/op12e_16f570.asm,
+    gpasm/testsuite/gpasm.project/hexfiles/op12e_16f570.hex,
+    gpasm/testsuite/gpasm.project/hexfiles/op12e_12f529.hex,
+    gpasm/testsuite/gpasm.project/objasm/op12e_16f570.asm,
+    gpasm/testsuite/gpasm.project/objasm/op12e_12f529.asm,
+    gpasm/testsuite/gpasm.project/objlstfiles/op12e_12f529.lst,
+    gpasm/testsuite/gpasm.project/objlstfiles/op12e_16f570.lst,
+    gpasm/testsuite/gpasm.project/objfiles/op12.o,
+    gpasm/testsuite/gpasm.project/objfiles/op12e_16f570.o,
+    gpasm/testsuite/gpasm.project/objfiles/op12e_12f529.o,
+    gpasm/testsuite/gpasm.project/listfiles/op12e_12f529.lst,
+    gpasm/testsuite/gpasm.project/listfiles/op12e_16f570.lst,
+    gpasm/testsuite/gpasm.mchip/objfiles/reloc2.o:
+    fixed support for 12 bit extended instruction set, devices
+    PIC12F529T48A, PIC12F529T39A, 16F527 and PIC16F570
 
 2013-03-07  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpprocessor.c: bugfix
