@@ -1305,6 +1305,7 @@ sub read_mcu_info_from_mplabx($)
 
   while (<$in>)
     {
+    chomp;
     s/\r$//o;
     s/^<|>$//go;
 
@@ -1314,8 +1315,11 @@ sub read_mcu_info_from_mplabx($)
       {
       if ($fields[2] eq $proc)
         {
+        my $name = lc($fields[2]);
+
+        $name =~ s/^pic//o;
         $info = {
-                NAME      => $fields[2],
+                NAME      => $name,
                 CLASS     => str2class($fields[3]),
                 COFF      => hex($fields[1]),             # Coff ID of device. (16 bit wide)
                 PAGES     => hex($fields[5]),             # Number of ROM/FLASH pages.
