@@ -24,7 +24,8 @@ Boston, MA 02111-1307, USA.  */
 
 enum insn_class {
   INSN_CLASS_LIT1,      /* bit 0 contains a 1 bit literal               */
-  INSN_CLASS_LIT4S,     /* Bits 7:4 contain a 4 bit literal, bits 3:0 are unused   */
+  INSN_CLASS_LIT3,      /* bits 2:0 contains a 3 bit literal            */
+  INSN_CLASS_LIT4S,     /* bits 7:4 contain a 4 bit literal, bits 3:0 are unused   */
   INSN_CLASS_LIT5,      /* bits 4:0 contain an 4 bit literal            */
   INSN_CLASS_LIT6,      /* bits 5:0 contain an 6 bit literal            */
   INSN_CLASS_LIT7,      /* bits 6:0 contain an 7 bit literal            */
@@ -37,6 +38,7 @@ enum insn_class {
   INSN_CLASS_LITFSR_14, /* bits 5:0 contain an 6 bit literal for fsr (14bit enh. cores) */
   INSN_CLASS_LITFSR_16, /* bits 5:0 contain an 6 bit literal for fsr 7:6 (16bit cores)  */
   INSN_CLASS_IMPLICIT,  /* instruction has no variable bits at all      */
+  INSN_CLASS_OPF3,      /* bits 2:0 contain a register address          */
   INSN_CLASS_OPF5,      /* bits 4:0 contain a register address          */
   INSN_CLASS_OPWF5,     /* as above, but bit 5 has a destination flag   */
   INSN_CLASS_B5,        /* as for OPF5, but bits 7:5 have bit number    */
@@ -102,6 +104,9 @@ struct strict_insn {
 
 extern const struct insn op_12c5xx[];
 extern const int num_op_12c5xx;
+
+extern const struct insn op_16c5xx_enh[];
+extern const int num_op_16c5xx_enh;
 
 extern const struct insn op_sx[];
 extern const int num_op_sx;

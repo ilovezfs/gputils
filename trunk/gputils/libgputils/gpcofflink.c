@@ -1347,6 +1347,7 @@ gp_cofflink_patch_addr(proc_class_t class,
     break;
 
   case RELOCT_TRIS:
+  case RELOCT_TRIS_3BIT:
     data = class->reloc_tris(value);
     break;
 

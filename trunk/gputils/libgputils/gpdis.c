@@ -116,8 +116,11 @@ gp_disassemble(MemBlock *m,
     case INSN_CLASS_LIT1:
       DECODE_ARG1(opcode & 1);
       break;
+    case INSN_CLASS_LIT3:
+      DECODE_ARG1(opcode & 0x07);
+      break;
     case INSN_CLASS_LIT4:
-      DECODE_ARG1(opcode & 0xf);
+      DECODE_ARG1(opcode & 0x0f);
       break;
     case INSN_CLASS_LIT4S:
       DECODE_ARG1((opcode & 0xf0) >> 4);
@@ -267,6 +270,9 @@ gp_disassemble(MemBlock *m,
         offset2 &= 0x7f;
         DECODE_ARG2(offset1, offset2);
       }
+      break;
+    case INSN_CLASS_OPF3:
+      DECODE_ARG1(opcode & 0x07);
       break;
     case INSN_CLASS_OPF5:
       DECODE_ARG1(opcode & 0x1f);

@@ -524,6 +524,9 @@ do_banksel(gpasmVal r, char *name, int arity, struct pnode *parms)
                                            state.org);
       } else if (num_reloc != 1) {
         gpverror(GPE_UNRESOLVABLE);
+      } else if (state.device.class == PROC_CLASS_PIC12E) {
+        reloc_evaluate(p, RELOCT_MOVLB);
+        emit(0x10);
       } else if (state.device.class == PROC_CLASS_PIC14E) {
         reloc_evaluate(p, RELOCT_MOVLB);
         emit(0x20);
@@ -2529,13 +2532,11 @@ _do_pagesel(gpasmVal r, char *name, int arity, struct pnode *parms, unsigned sho
           emit(0);
         }
       } else {
-        if ((use_wreg == 0) &&
-            (state.processor->num_pages == 2)) {
+        if (use_wreg == 0 && state.processor->num_pages == 2) {
           reloc_evaluate(p, RELOCT_PAGESEL_BITS);
           emit(0);
         }
-        else if ((state.processor->num_pages == 2) ||
-            (state.processor->num_pages == 4)) {
+        else if (state.processor->num_pages >= 2) {
           reloc_evaluate(p, reloc_type);
           emit(0);
           emit(0);
@@ -3196,6 +3197,17 @@ do_insn(char *name, struct pnode *parms)
         }
         break;
 
+      case INSN_CLASS_LIT3:
+        if (enforce_arity(arity, 1)) {
+          p = HEAD(parms);
+          if (strcasecmp(i->name, "movlb") == 0) {
+            emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), 0x07);
+          } else {
+            emit_check(i->opcode, maybe_evaluate(p), 0x07);
+          }
+        }
+        break;
+
       case INSN_CLASS_LIT4:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
@@ -3206,7 +3218,7 @@ do_insn(char *name, struct pnode *parms)
       case INSN_CLASS_LIT5:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-         if (strcasecmp(i->name, "movlb") == 0) {
+          if (strcasecmp(i->name, "movlb") == 0) {
             emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), 0x1f);
           } else {
             emit_check(i->opcode, maybe_evaluate(p), 0x1f);
@@ -3624,12 +3636,22 @@ do_insn(char *name, struct pnode *parms)
         }
         break;
 
+      case INSN_CLASS_OPF3:
+        if (enforce_arity(arity, 1)) {
+          p = HEAD(parms);
+          file = reloc_evaluate(p, RELOCT_TRIS_3BIT);
+          file_ok(file);
+          emit(i->opcode | (file & 0x1f));
+        }
+        break;
+
       case INSN_CLASS_OPF5:
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          if (strcasecmp(i->name, "tris") == 0) {
+          if (PROC_CLASS_SX == state.device.class && 0 == strcasecmp(i->name, "tris")) {
             file = reloc_evaluate(p, RELOCT_TRIS);
-          } else {
+          }
+          else {
             file = reloc_evaluate(p, RELOCT_F);
           }
           file_ok(file);
@@ -4359,20 +4381,20 @@ opcode_init(int stage)
       /* The 16_bit core special macros are encoded directly into the
        * symbol table like regular instructions. */
       for (i = 0; i < num_op_18cxx_sp; i++)
-        annotate_symbol( add_symbol(state.stBuiltin, op_18cxx_sp[i].name),
-                         (void*)&op_18cxx_sp[i]);
+        annotate_symbol(add_symbol(state.stBuiltin, op_18cxx_sp[i].name),
+                         (void *)&op_18cxx_sp[i]);
 
       if (state.extended_pic16e) {
         /* Some 18xx devices have an extended instruction set. */
         for (i = 0; i < num_op_18cxx_ext; i++)
-          annotate_symbol( add_symbol(state.stBuiltin, op_18cxx_ext[i].name),
-                           (void*)&op_18cxx_ext[i]);
+          annotate_symbol(add_symbol(state.stBuiltin, op_18cxx_ext[i].name),
+                           (void *)&op_18cxx_ext[i]);
       }
     }
     else if (state.device.class == PROC_CLASS_PIC14E) {
       for (i = 0; i < num_op_16cxx_enh; i++)
-        annotate_symbol( add_symbol(state.stBuiltin, op_16cxx_enh[i].name),
-                         (void*)&op_16cxx_enh[i]);
+        annotate_symbol(add_symbol(state.stBuiltin, op_16cxx_enh[i].name),
+                         (void *)&op_16cxx_enh[i]);
     }
     break;
 
@@ -4387,37 +4409,53 @@ opcode_init(int stage)
   }
 
   for (i = 0; i < count; i++)
-    annotate_symbol(add_symbol(state.stBuiltin, base[i].name), (void*)&base[i]);
+    annotate_symbol(add_symbol(state.stBuiltin, base[i].name), (void *)&base[i]);
 
-  if (stage == 1 && state.device.class == PROC_CLASS_PIC14E) {
-    /* pageselw directive not supported on pic14 enhanced devices*/
-    remove_symbol(state.stBuiltin, "pageselw");
-  }
+  switch (stage) {
+  case 1:
+    if (state.device.class == PROC_CLASS_PIC14E) {
+      /* pageselw directive not supported on pic14 enhanced devices*/
+      remove_symbol(state.stBuiltin, "pageselw");
+    }
+    break;
 
-  if (state.processor) {
-    const char *name = gp_processor_name(state.processor, 0);
+  case 2:
+    if (state.processor) {
+      const char *name = gp_processor_name(state.processor, 0);
 
-    /* Special Case, Some instructions not available on 17c42 devices */
-    if (strcmp(name, "pic17c42") == 0) {
-      remove_symbol(state.stBuiltin, "MULWF");
-      remove_symbol(state.stBuiltin, "MOVLR");
-      remove_symbol(state.stBuiltin, "MULLW");
+      /* Special Case, Some instructions not available on 17c42 devices */
+      if (strcmp(name, "pic17c42") == 0) {
+        remove_symbol(state.stBuiltin, "MULWF");
+        remove_symbol(state.stBuiltin, "MOVLR");
+        remove_symbol(state.stBuiltin, "MULLW");
+      }
+      /* Special Case, Some instructions not available on 16f5x devices */
+      else if (strcmp(name, "pic16f54") == 0 ||
+          strcmp(name, "pic16f57") == 0 ||
+          strcmp(name, "pic16f59") == 0) {
+        remove_symbol(state.stBuiltin, "ADDLW");
+        remove_symbol(state.stBuiltin, "SUBLW");
+        remove_symbol(state.stBuiltin, "RETURN");
+        remove_symbol(state.stBuiltin, "RETFIE");
+      }
+      else if (strcmp(name, "sx48bd") == 0 ||
+          strcmp(name, "sx52bd") == 0) {
+        struct symbol *mode_sym = get_symbol(state.stBuiltin, "MODE");
+        if (mode_sym != NULL)
+          annotate_symbol(mode_sym, &op_sx_mode);
+      }
+      else if (state.device.class == PROC_CLASS_PIC12E) {
+        remove_symbol(state.stBuiltin, "return");
+        for (i = 0; i < num_op_16c5xx_enh; i++)
+          annotate_symbol(add_symbol(state.stBuiltin, op_16c5xx_enh[i].name),
+                           (void *)&op_16c5xx_enh[i]);
+        if (0 == strcmp(name, "pic12f529t39a") || 0 == strcmp(name, "pic12f529t48a")) {
+          remove_symbol(state.stBuiltin, "retfie");
+          remove_symbol(state.stBuiltin, "return");
+        }
+      }
     }
-    /* Special Case, Some instructions not available on 16f5x devices */
-    else if (strcmp(name, "pic16f54") == 0 ||
-        strcmp(name, "pic16f57") == 0 ||
-        strcmp(name, "pic16f59") == 0) {
-      remove_symbol(state.stBuiltin, "ADDLW");
-      remove_symbol(state.stBuiltin, "SUBLW");
-      remove_symbol(state.stBuiltin, "RETURN");
-      remove_symbol(state.stBuiltin, "RETFIE");
-    }
-    else if (strcmp(name, "sx48bd") == 0 ||
-        strcmp(name, "sx52bd") == 0) {
-      struct symbol *mode_sym = get_symbol(state.stBuiltin, "MODE");
-      if (mode_sym != NULL)
-        annotate_symbol(mode_sym, &op_sx_mode);
-    }
+    break;
   }
 }
 

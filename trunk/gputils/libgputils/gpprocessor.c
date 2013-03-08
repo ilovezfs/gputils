@@ -185,7 +185,7 @@ static struct px pics[] = {
   { PROC_CLASS_PIC12    , "__16F506"      , { "pic16f506"      , "p16f506"        , "16f506"          }, 0xF506,  2,    4, 0x0003FF, 0x000400, {       -1,       -1 }, { 0x000FFF, 0x000FFF }, "16f506_g.lkr"      , 0 },
   { PROC_CLASS_PIC12    , "__16F526"      , { "pic16f526"      , "p16f526"        , "16f526"          }, 0xF526,  2,    4, 0x0003FF, 0x000400, {       -1,       -1 }, { 0x000FFF, 0x000FFF }, "16f526_g.lkr"      , 0 },
   { PROC_CLASS_PIC12E   , "__16F527"      , { "pic16f527"      , "p16f527"        , "16f527"          }, 0xF527,  2,    4, 0x0003FF, 0x000400, {       -1,       -1 }, { 0x000FFF, 0x000FFF }, "16f527_g.lkr"      , 0 },
-  { PROC_CLASS_PIC12E   , "__16F570"      , { "pic16f570"      , "p16f570"        , "16f570"          }, 0xF570,  2,    8, 0x0003FF, 0x000400, {       -1,       -1 }, { 0x000FFF, 0x000FFF }, "16f570_g.lkr"      , 0 },
+  { PROC_CLASS_PIC12E   , "__16F570"      , { "pic16f570"      , "p16f570"        , "16f570"          }, 0xF570,  4,    8, 0x0007FF, 0x000800, {       -1,       -1 }, { 0x000FFF, 0x000FFF }, "16f570_g.lkr"      , 0 },
   { PROC_CLASS_PIC14    , "__16F610"      , { "pic16f610"      , "p16f610"        , "16f610"          }, 0xF610,  1,    2, 0x0003FF, 0x000400, {       -1,       -1 }, { 0x002007, 0x002007 }, "16f610_g.lkr"      , 0 },
   { PROC_CLASS_PIC14    , "__16F616"      , { "pic16f616"      , "p16f616"        , "16f616"          }, 0xF616,  1,    2, 0x0007FF, 0x000800, {       -1,       -1 }, { 0x002007, 0x002007 }, "16f616_g.lkr"      , 0 },
   { PROC_CLASS_PIC14    , "__16F627"      , { "pic16f627"      , "p16f627"        , "16f627"          }, 0x6627,  1,    4, 0x00217F, 0x000400, { 0x000400, 0x0020FF }, { 0x002007, 0x002007 }, "16f627_g.lkr"      , 0 },
@@ -1038,7 +1038,9 @@ gp_processor_set_page_pic12_14(int num_pages,
                                int page1)
 {
   unsigned int data;
-  int count = 4;
+
+  assert(num_pages <= 4);
+
   if (num_pages == 1) {
     return 0;
   }
@@ -1048,6 +1050,8 @@ gp_processor_set_page_pic12_14(int num_pages,
     i_memory_put_le(m, address, data);
     data = movwf_insn | location;
     i_memory_put_le(m, address + 2, data);
+
+    return 4;
   }
   else {
     /* page low bit */
@@ -1055,18 +1059,13 @@ gp_processor_set_page_pic12_14(int num_pages,
     i_memory_put_le(m, address, data);
 
     /* page high bit */
-    if (num_pages == 4) {
+    if (num_pages > 2) {
       data = (page & 2 ? bsf_insn : bcf_insn) | page1 | location;
       i_memory_put_le(m, address + 2, data);
     }
 
-    if (num_pages == 2) {
-      count = 2;
-    } else {
-      count = 4;
-    }
+    return (num_pages == 2) ? 2 : 4;
   }
-  return count;
 }
 
 static int
@@ -1231,6 +1230,32 @@ reloc_tris_pic12(unsigned int address)
      Error[126]  : Argument out of range (0000 not between 0005 and 0009)
   */
   return address & 0x1f;
+}
+
+/* PIC12E */
+
+static int
+gp_processor_check_bank_pic12e(unsigned int address)
+{
+  return (address >> 5) & 0x07;
+}
+
+static int
+gp_processor_set_bank_pic12e(int num_banks,
+                             int bank,
+                             MemBlock *m,
+                             unsigned int address)
+{
+  unsigned int data;
+  data = 0x0010 | (bank & 0x07);
+  i_memory_put_le(m, address, data);
+  return 2;
+}
+
+static int
+reloc_tris_pic12e(unsigned int address)
+{
+  return address & 0x07;
 }
 
 /* PIC14 */
@@ -1705,6 +1730,35 @@ const struct proc_class proc_class_pic12 = {
   reloc_goto_pic12,                     /* reloc_goto */
   reloc_f_pic12,                        /* reloc_f */
   reloc_tris_pic12,                     /* reloc_tris */
+  reloc_unsupported,                    /* reloc_movlb */
+  reloc_bra_unsupported,                /* reloc_bra */
+  op_12c5xx,                            /* instructions */
+  &num_op_12c5xx,                       /* num_instructions */
+  find_insn_generic,                    /* find_insn */
+  i_memory_get_le,                      /* i_memory_get */
+  i_memory_put_le,                      /* i_memory_put */
+  NULL,                                 /* patch_strict */
+};
+
+const struct proc_class proc_class_pic12e = {
+  0x800,                                /* retlw */
+  12,                                   /* rom_width */
+  512,                                  /* page size */
+  32,                                   /* bank size */
+  1,                                    /* org_to_byte_shift */
+  ~0x1fu,                               /* bank_mask */
+  (1<<12)-1,                            /* core_size */
+  id_location_pic12,                    /* id_location */
+  gp_processor_check_bank_pic12e,       /* check_bank */
+  gp_processor_set_bank_pic12e,         /* set_bank */
+  gp_processor_check_xbank_unsupported, /* check_ibank */
+  gp_processor_set_xbank_unsupported,   /* set_ibank */
+  gp_processor_check_page_pic12,        /* check_page */
+  gp_processor_set_page_pic12,          /* set_page */
+  reloc_call_pic12,                     /* reloc_call */
+  reloc_goto_pic12,                     /* reloc_goto */
+  reloc_f_pic12,                        /* reloc_f */
+  reloc_tris_pic12e,                    /* reloc_tris */
   reloc_unsupported,                    /* reloc_movlb */
   reloc_bra_unsupported,                /* reloc_bra */
   op_12c5xx,                            /* instructions */

@@ -1,0 +1,71 @@
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-8-2013  16:22:14         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;  This file is used to test relocatable objects with the 12 bit extended
+                      00002 ;  instruction set.  Some of the expressions are possible, but not very useful.
+                      00003      list p=12f529t39a
+                      00004 
+  0000                00005      extern file, address
+                      00006 
+                      00007      code
+0000   001?           00008      banksel file
+0001   01??           00009      addwf file,1 
+0002   0E??           00010      andlw address
+0003   01??           00011      andwf file,1
+0004   04E0           00012      bcf file,7
+0005   05E0           00013      bsf file,7
+0006   0620           00014      btfsc file,1
+0007   0720           00015      btfss file,1
+0008   09??           00016      call address
+0009   00??           00017      clrf file
+000A   0040           00018      clrw
+000B   0004           00019      clrwdt
+000C   02??           00020      comf file,1
+000D   00??           00021      decf file,1
+000E   02??           00022      decfsz file,1
+000F   ???? ????      00023      pagesel address
+0011   0A??           00024      goto address
+0012   02??           00025      incf file,1
+0013   03??           00026      incfsz file,1
+0014   0D??           00027      iorlw file
+0015   01??           00028      iorwf file,1
+0016   02??           00029      movf  file,1
+0017   0C??           00030      movlw file
+0018   00??           00031      movwf file
+0019   0000           00032      nop
+001A   0002           00033      option 
+001B   08??           00034      retlw file
+001C   03??           00035      rlf file,1
+001D   03??           00036      rrf file,1
+001E   0003           00037      sleep
+001F   00??           00038      subwf file,1
+0020   03??           00039      swapf file,1
+0021   000?           00040      tris file
+0022   0F??           00041      xorlw file
+0023   01??           00042      xorwf file,1
+                      00043 
+0024   0010           00044      movlb   0
+0025   0011           00045      movlb   1
+0026   0016           00046      movlb   6
+0027   0017           00047      movlb   7
+0028   001?           00048      movlb   address
+                      00049 
+                      00050      end
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-8-2013  16:22:14         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__12F529T39A                      00000001
+address                           00000000
+file                              00000000
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+
