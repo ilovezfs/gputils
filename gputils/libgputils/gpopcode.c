@@ -118,7 +118,7 @@ const struct insn op_sx[] = {
   { "sleep",  0xfff, 0x003,     INSN_CLASS_IMPLICIT     },
   { "subwf",  0xfc0, 0x080,     INSN_CLASS_OPWF5        },
   { "swapf",  0xfc0, 0x380,     INSN_CLASS_OPWF5        },
-  { "tris",   0xff8, 0x000,     INSN_CLASS_OPF5         },
+  { "tris",   0xff8, 0x000,     INSN_CLASS_OPF5         }, /* FIXME: this should probably be INSN_CLASS_OPF3 as for 12c5xx? */
   { "xorlw",  0xf00, 0xf00,     INSN_CLASS_LIT8         },
   { "xorwf",  0xfc0, 0x180,     INSN_CLASS_OPWF5        }
 };
