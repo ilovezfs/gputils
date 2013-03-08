@@ -353,7 +353,8 @@ print_reloc(unsigned short type, unsigned short current_value)
 {
   switch (type) {
   case RELOCT_CALL:
-    if (PROC_CLASS_PIC12 == state.device.class || PROC_CLASS_SX == state.device.class || PROC_CLASS_PIC16E == state.device.class) {
+    if (PROC_CLASS_PIC12 == state.device.class || PROC_CLASS_PIC12E == state.device.class ||
+      PROC_CLASS_SX == state.device.class || PROC_CLASS_PIC16E == state.device.class) {
       ASSERT(0 == (current_value & 0xff));
       return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
     } else if (PROC_CLASS_PIC14 == state.device.class || PROC_CLASS_PIC14E == state.device.class) {
@@ -369,7 +370,8 @@ print_reloc(unsigned short type, unsigned short current_value)
     break;
 
   case RELOCT_GOTO:
-    if (PROC_CLASS_PIC12 == state.device.class || PROC_CLASS_SX == state.device.class) {
+    if (PROC_CLASS_PIC12 == state.device.class || PROC_CLASS_PIC12E == state.device.class
+      || PROC_CLASS_SX == state.device.class) {
       ASSERT(0 == (current_value & 0x1ff));
       return lst_printf("%01X??? ", (current_value >> 12) & 0x000f);
     } else if (PROC_CLASS_PIC14 == state.device.class || PROC_CLASS_PIC14E == state.device.class) {
@@ -446,7 +448,7 @@ print_reloc(unsigned short type, unsigned short current_value)
     if (PROC_CLASS_SX == state.device.class) {
       ASSERT(0 == (current_value & 0x0007));
       return lst_printf("%03X?? ", (current_value >> 4) & 0x000f);
-    } else if (PROC_CLASS_PIC12 == state.device.class) {
+    } else if (PROC_CLASS_PIC12 == state.device.class || PROC_CLASS_PIC12E == state.device.class) {
       ASSERT(0 == (current_value & 0x001f));
     } else if (PROC_CLASS_PIC14 == state.device.class || PROC_CLASS_PIC14E == state.device.class) {
       ASSERT(0 == (current_value & 0x007f));
