@@ -193,13 +193,10 @@ gp_cofflink_clean_table(gp_object_type *object,
           (symbol->section_number == N_UNDEF)) {
         /* This is an external symbol defined elsewhere */
         sym = get_symbol(symbols, symbol->name);
-        //if (!state.partial)
-        //  assert(sym != NULL);
-        if (NULL != sym) {
-          var = get_symbol_annotation(sym);
-          assert(var != NULL);
-          relocation->symbol = var->symbol;
-        }
+        assert(sym != NULL);
+        var = get_symbol_annotation(sym);
+        assert(var != NULL);
+        relocation->symbol = var->symbol;
       }
       relocation = relocation->next;
     }
