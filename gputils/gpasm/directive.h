@@ -22,8 +22,10 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __OPCODE_H__
 #define __OPCODE_H__
 
-#define HEAD(L) (L)->value.list.head
-#define TAIL(L) (L)->value.list.tail
+/* #define HEAD(L) (L)->value.list.head
+ * #define TAIL(L) (L)->value.list.tail */
+#define HEAD(L) (assert(list == (L)->tag), (L)->value.list.head)
+#define TAIL(L) (assert(list == (L)->tag), (L)->value.list.tail)
 
 #define CORE_8BIT_MASK  0xff
 #define CORE_12BIT_MASK 0xfff

@@ -1,29 +1,37 @@
-MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  1
+gpasm-1.1.0 #946 (Mar 17 2013)     direct.asm   3-17-2013  17:39:41         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00001         list p=16f877
+                      00001     list p=16f877
                       00002 
-                      00003         CODE
-                      00004 
-0000   3401           00005         retlw   1
-Warning[207]: Found label after column 1. (.direct)
-Error[108]  : Illegal character (')
-0000   3401           00006         .direct 'A',"The direct command"
-                      00007 
-                      00008         END
-MPASM  5.47  /MNT/A1A5D1F2-0B60-42B4-9012-910   12-5-2012  14:32:25         PAGE  2
+                      00003 .assert macro x
+                      00004     .direct "a", x
+                      00005     endm
+                      00006 
+                      00007     code
+                      00008     .assert "(portb & 1) == 1, \"*** FAILED digital stimulus test-interrupt not on rising edge... and pr
+                            olonging the string to be really, reallly, realllly, reallllly, realllllly, reallllllly, realllllllly,  
+                            reallllllllly, realllllllllly looooooooooooooooooooooong!\""
+                          M     .direct "a", "(portb & 1) == 1, \"*** FAILED digital stimulus test-interrupt not on rising edge... a
+                            nd prolonging the string to be really, reallly, realllly, reallllly, realllllly, reallllllly, realllllll
+                            ly,  reallllllllly, realllllllllly looooooooooooooooooooooong!\""
+0000   3401           00009     retlw   1
+                      00010     .direct 'A',"The direct command"
+                      00011 
+                      00012     end
+gpasm-1.1.0 #946 (Mar 17 2013)     direct.asm   3-17-2013  17:39:41         PAGE  2
 
 
 SYMBOL TABLE
-  LABEL                             VALUE 
+  LABEL                             VALUE
 
+.assert                           
 __16F877                          00000001
 
-Errors   :     1
-Warnings :     1 reported,     0 suppressed
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 
 

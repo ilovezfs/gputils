@@ -1,3 +1,10 @@
+2013-03-17  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/scan.l, gpasm/testsuite/gpasm.project/objasm/direct.asm,
+    gpasm/testsuite/gpasm.project/objlstfiles/direct.lst,
+    gpasm/testsuite/gpasm.project/objfiles/direct.o:
+    fixed tokenizer buf for very long macro parameters,
+    enhaced direct.asm regression test
+
 2013-03-08  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c, gpasm/lst.c, libgputils/gpopcode.c,
     libgputils/gpopcode.h, libgputils/gpcoff.h, libgputils/gpdis.c.

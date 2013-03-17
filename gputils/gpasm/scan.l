@@ -480,7 +480,7 @@ a'{STR_QCHAR}'           {
 #define CHUNCK  64
                            int len = CHUNCK;
                            char *buf = malloc(len);
-                           char *p = buf;
+                           int i = 0;
                            int c = yytext[0];
                            static int emit_comma = 0;
                            int prev_esc = 0, state = 0;
@@ -518,11 +518,11 @@ a'{STR_QCHAR}'           {
                                /* fall through */
                              skip_trailing:
                                /* skip trailing spaces */
-                               while (p > buf && isspace(*(p - 1)))
-                                 --p;
+                               while (i > 0 && isspace(buf[i - 1]))
+                                 --i;
                                /* fall through */
                              case EOF:
-                               yylval.s = strndup(buf, p - buf);
+                               yylval.s = strndup(buf, i);
                                free(buf);
                                return IDENTIFIER;
 
@@ -542,8 +542,8 @@ a'{STR_QCHAR}'           {
                                break;
                              }
 
-                             *p++ = c;
-                             if (len <= p - buf) {
+                             buf[i++] = c;
+                             if (len <= i) {
                                len += CHUNCK;
                                buf = realloc(buf, len);
                              }
