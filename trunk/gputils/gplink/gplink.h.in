@@ -61,6 +61,7 @@ extern struct gplink_state {
   unsigned int fill_value;         /* Value to fill program memory with */
   gp_boolean has_stack;            /* Has stack directive in linker script */
   unsigned int stack_size;         /* Value to fill program memory with */
+  gp_boolean partial;              /* Pertial linking */
   gp_boolean has_idata;            /* Has initialized data memory */
   struct srcfns *srcfilenames;     /* List of script file names */
   char basefilename[BUFSIZ],       /* basename for generating hex,list,symbol filenames */

@@ -284,32 +284,34 @@ build_tables(void)
     }
   }
 
-  search_idata();
+  if (!state.partial) {
+    search_idata();
 
-  if (state.has_idata) {
-    remove_linker_symbol("_cinit");
-  }
-
-  if (state.has_stack) {
-    remove_linker_symbol("_stack");
-    remove_linker_symbol("_stack_end");
-  }
-
-  /* All of the archives have been scanned.  If there are still missing
-     references, it is an error */
-  if (count_missing()) {
-    for (i = 0; i < HASH_SIZE; i++) {
-      for (s = state.symbol.missing->hash_table[i]; s; s = s->next) {
-        name = get_symbol_name(s);
-        assert(name != NULL);
-        var = get_symbol_annotation(s);
-        assert(var != NULL);
-        gp_error("missing definition for symbol \"%s\", required by \"%s\"",
-                 name,
-                 var->file->filename);
-      }
+    if (state.has_idata) {
+      remove_linker_symbol("_cinit");
     }
-    exit(1);
+
+    if (state.has_stack) {
+      remove_linker_symbol("_stack");
+      remove_linker_symbol("_stack_end");
+    }
+
+    /* All of the archives have been scanned.  If there are still missing
+       references, it is an error */
+    if (count_missing()) {
+      for (i = 0; i < HASH_SIZE; i++) {
+        for (s = state.symbol.missing->hash_table[i]; s; s = s->next) {
+          name = get_symbol_name(s);
+          assert(name != NULL);
+          var = get_symbol_annotation(s);
+          assert(var != NULL);
+          gp_error("missing definition for symbol \"%s\", required by \"%s\"",
+                   name,
+                   var->file->filename);
+        }
+      }
+      exit(1);
+    }
   }
 }
 
@@ -356,17 +358,21 @@ gplink_open_coff(const char *name)
     object = gp_read_coff(file_name);
     object_append(object, file_name);
     break;
+
   case archive_file:
     /* read the archive */
     archive = gp_archive_read(file_name);
     archive_append(archive, file_name);
     break;
+
   case sys_err_file:
     gp_error("can't open file \"%s\"", file_name);
     break;
+
   case unknown_file:
     gp_error("\"%s\" is not a valid coff object or archive", file_name);
     break;
+
   default:
     assert(0);
   }
@@ -397,25 +403,30 @@ set_optimize_level(void)
 
 #define GET_OPTIONS "?a:cdf:hI:lmo:O:qrs:t:u:vw"
 
+enum {
+  OPT_PARTIAL = 0x100
+};
+
 static struct option longopts[] =
 {
-  { "hex-format",          1, 0, 'a' },
-  { "object",              0, 0, 'c' },
-  { "debug",               0, 0, 'd' },
-  { "fill",                1, 0, 'f' },
-  { "help",                0, 0, 'h' },
-  { "include",             1, 0, 'I' },
-  { "no-list",             0, 0, 'l' },
-  { "map",                 0, 0, 'm' },
-  { "output",              1, 0, 'o' },
-  { "optimize",            1, 0, 'O' },
-  { "quiet",               0, 0, 'q' },
-  { "use-shared",          0, 0, 'r' },
-  { "script",              1, 0, 's' },
-  { "stack",               1, 0, 't' },
-  { "macro",               1, 0, 'u' },
-  { "version",             0, 0, 'v' },
-  { "processor-mismatch",  0, 0, 'w' },
+  { "hex-format",          required_argument, NULL, 'a' },
+  { "object",              no_argument,       NULL, 'c' },
+  { "debug",               no_argument,       NULL, 'd' },
+  { "fill",                required_argument, NULL, 'f' },
+  { "help",                no_argument,       NULL, 'h' },
+  { "include",             required_argument, NULL, 'I' },
+  { "no-list",             no_argument,       NULL, 'l' },
+  { "map",                 no_argument,       NULL, 'm' },
+  { "output",              required_argument, NULL, 'o' },
+  { "optimize",            required_argument, NULL, 'O' },
+  { "quiet",               no_argument,       NULL, 'q' },
+  { "use-shared",          no_argument,       NULL, 'r' },
+  { "script",              required_argument, NULL, 's' },
+  { "stack",               required_argument, NULL, 't' },
+  { "macro",               required_argument, NULL, 'u' },
+  { "version",             no_argument,       NULL, 'v' },
+  { "processor-mismatch",  no_argument,       NULL, 'w' },
+  { "partial",             no_argument,       NULL, OPT_PARTIAL },
   { 0, 0, 0, 0 }
 };
 
@@ -504,6 +515,7 @@ show_usage(void)
   printf("  -u, --macro symbol[=value]     Add macro value for script.\n");
   printf("  -v, --version                  Show version.\n");
   printf("  -w, --processor-mismatch       Disable \"processor mismatch\" warning.\n");
+  printf("      --partial                  Partial linking.\n");
   printf("\n");
 #ifdef USE_DEFAULT_PATHS
   if (gp_lkr_path) {
@@ -561,13 +573,16 @@ process_args( int argc, char *argv[])
                  optarg);
       }
       break;
+
     case 'c':
       state.objfile = normal;
       break;
+
     case 'd':
       gp_debug_disable = false;
       yydebug = 1;
       break;
+
     case 'f':
       state.fill_value = strtol(optarg, &pc, 16);
       if ((pc == NULL) || (*pc != '\0')) {
@@ -578,34 +593,43 @@ process_args( int argc, char *argv[])
         state.fill_enable = true;
       }
       break;
+
     case '?':
     case 'h':
       usage = true;
       break;
+
     case 'I':
       gplink_add_path(optarg);
       break;
+
     case 'l':
       state.lstfile = suppress;
       break;
+
     case 'm':
       state.mapfile = normal;
       break;
+
     case 'o':
       strncpy(state.basefilename, optarg, sizeof(state.basefilename));
       pc = strrchr(state.basefilename, '.');
       if (pc)
         *pc = 0;
       break;
+
     case 'O':
       /* do nothing */
       break;
+
     case 'q':
       gp_quiet = true;
       break;
+
     case 'r':
       gp_relocate_to_shared = true;
       break;
+
     case 's':
       {
         struct srcfns *fn;
@@ -625,6 +649,7 @@ process_args( int argc, char *argv[])
         }
       }
       break;
+
     case 't':
       state.stack_size = strtol(optarg, &pc, 10);
       if ((pc == NULL) || (*pc != '\0')) {
@@ -633,17 +658,26 @@ process_args( int argc, char *argv[])
         state.has_stack = true;
       }
       break;
+
     case 'u':
       parse_define(optarg, add_script_macro);
       break;
+
     case 'v':
       fprintf(stderr, "%s\n", GPLINK_VERSION_STRING);
       exit(0);
       break;
+
     case 'w':
       processor_mismatch_warning = 0;
       break;
+
+    case OPT_PARTIAL:
+      state.partial = true;
+      state.objfile = normal;
+      break;
     }
+
     if (usage)
       break;
   }
@@ -856,7 +890,8 @@ linker(void)
 
   /* modify the executable object data */
   state.object->filename = strdup(state.objfilename);
-  state.object->flags |= F_EXEC;
+  if (!state.partial)
+    state.object->flags |= F_EXEC;
 
   if (state.objfile == normal) {
     /* write the executable object in memory */
