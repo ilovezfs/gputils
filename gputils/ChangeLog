@@ -1,8 +1,12 @@
+2013-03-29  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpsymbol.c: fixed bug
+    #262 - "Define and macro arguments: Error[124] : Illegal argument"
+
 2013-03-17  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/scan.l, gpasm/testsuite/gpasm.project/objasm/direct.asm,
     gpasm/testsuite/gpasm.project/objlstfiles/direct.lst,
     gpasm/testsuite/gpasm.project/objfiles/direct.o:
-    fixed tokenizer buf for very long macro parameters,
+    fixed tokenizer bug for very long macro parameters,
     enhaced direct.asm regression test
 
 2013-03-08  Borut Razem  <borutr@users.sourceforge.net>

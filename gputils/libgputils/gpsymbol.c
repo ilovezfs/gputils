@@ -55,6 +55,16 @@ static int hashfunc(struct symbol_table *t, const char *s)
   return hashfunc_len(t, s, strlen(s));
 }
 
+static int compare_len_case(const char *s1, const char *s2, size_t n)
+{
+  return (n == strlen(s2)) ? strncasecmp(s1, s2, n) : -1;
+}
+
+static int compare_len(const char *s1, const char *s2, size_t n)
+{
+  return (n == strlen(s2)) ? strncmp(s1, s2, n) : -1;
+}
+
 struct symbol_table *push_symbol_table(struct symbol_table * table,
                                        gp_boolean case_insensitive)
 {
@@ -63,11 +73,11 @@ struct symbol_table *push_symbol_table(struct symbol_table * table,
   new->case_insensitive = case_insensitive;
   if (case_insensitive) {
     new->compare = strcasecmp;
-    new->compare_len = strncasecmp;
+    new->compare_len = compare_len_case;
   }
   else {
     new->compare = strcmp;
-    new->compare_len = strncmp;
+    new->compare_len = compare_len;
   }
   new->prev = table;
   return new;
