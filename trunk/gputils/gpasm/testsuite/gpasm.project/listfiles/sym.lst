@@ -1,0 +1,40 @@
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-29-2013  23:31:46         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001         list P=PIC18F4550, F=INHX32
+                      00002 
+                      00003 #define bmRequestType 0x01
+                      00004 
+                      00005 inrtgt  macro   a, b
+                      00006 a#v(b)
+                      00007         endm
+                      00008 
+                      00009         end
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-29-2013  23:31:46         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__18F4550                         00000001
+bmRequestType                     0x01
+inrtgt                            
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+All other memory blocks unused.
+
+Program Memory Bytes Used:     0
+Program Memory Bytes Free: 32768
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

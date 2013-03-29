@@ -1,6 +1,10 @@
 2013-03-29  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpsymbol.c: fixed bug
     #262 - "Define and macro arguments: Error[124] : Illegal argument"
+  * gpasm/testsuite/gpasm.project/asmfiles/sym.asm,
+    gpasm/testsuite/gpasm.project/listfiles/sym.lst,
+    gpasm/testsuite/gpasm.project/hexfiles/sym.hex:
+    added regression test for bug #262
 
 2013-03-17  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/scan.l, gpasm/testsuite/gpasm.project/objasm/direct.asm,
