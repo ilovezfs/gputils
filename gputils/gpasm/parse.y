@@ -762,6 +762,7 @@ const_line:
         LABEL '\n'
         {
           if (!IN_MACRO_WHILE_DEFINITION) {
+            state.lst.cblock_lst = state.cblock;
             cblock_expr(mk_symbol($1));
           } else {
             macro_append();
@@ -771,6 +772,7 @@ const_line:
         LABEL expr '\n'
         {
           if (!IN_MACRO_WHILE_DEFINITION) {
+            state.lst.cblock_lst = state.cblock;
             cblock_expr_incr(mk_symbol($1), $2);
           } else {
             macro_append();

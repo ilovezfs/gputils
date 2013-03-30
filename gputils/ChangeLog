@@ -1,3 +1,6 @@
+2013-03-30  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/parse.y: fixed cblock listing
+
 2013-03-29  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpsymbol.c: fixed bug
     #262 - "Define and macro arguments: Error[124] : Illegal argument"
