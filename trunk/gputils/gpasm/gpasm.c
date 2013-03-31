@@ -497,7 +497,7 @@ assemble(void)
 
   hex_init();
 
-  if(state.memory_dump)
+  if (state.memory_dump)
     print_i_memory(state.i_memory, state.device.class);
 
   /* Maybe produce a symbol table */

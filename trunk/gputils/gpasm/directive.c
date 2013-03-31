@@ -711,18 +711,25 @@ config_add_section(int ca)
 
 /* helper to write configuration data, grabbing defaults when necessary */
 static void
-config_16_set_mem(const struct gp_cfg_device *p_dev, int ca, unsigned char byte, unsigned char mask)
+config_16_set_byte_mem(const struct gp_cfg_device *p_dev, int ca, unsigned char byte, unsigned char mask)
 {
-  unsigned char other_byte;
   unsigned char old_byte;
 
-  if (!b_memory_get(state.c_memory, ca ^ 1, &other_byte)) {
-    unsigned char fill_val = gp_cfg_get_default(p_dev, ca ^ 1);
-    b_memory_put(state.c_memory, ca ^ 1, fill_val);
-  }
   if (!b_memory_get(state.c_memory, ca, &old_byte))
     old_byte = gp_cfg_get_default(p_dev, ca);
   b_memory_put(state.c_memory, ca, (old_byte & ~mask) | byte);
+}
+
+static void
+config_16_set_word_mem(const struct gp_cfg_device *p_dev, int ca, unsigned char byte, unsigned char mask)
+{
+  unsigned char other_byte;
+
+  if (!b_memory_get(state.c_memory, ca ^ 1, &other_byte)) {
+    other_byte = gp_cfg_get_default(p_dev, ca ^ 1);
+    b_memory_put(state.c_memory, ca ^ 1, other_byte);
+  }
+  config_16_set_byte_mem(p_dev, ca, byte, mask);
 }
 
 static gpasmVal
@@ -801,7 +808,7 @@ do_config(gpasmVal r, char *name, int arity, struct pnode *parms)
                                     state.processor->names);
       if (p_dev) {
         /* We do this to also set the other byte in a word. */
-        config_16_set_mem(p_dev, ca, value, 0xff);
+        config_16_set_word_mem(p_dev, ca, value, 0xff);
       }
       else {
         /* Hack in case the config defaults are not available. */
@@ -851,15 +858,12 @@ config_16_check_defaults(const struct gp_cfg_device *p_dev)
    * entire section with 0xff. That puts the 0xff's in the hex file. MPASM puts
    * nothing in the hex file for unspecified bytes. I'm not sure the best
    * approach here - defaults or nothing. going to go with defaults.
-   *
-   * if this is commented out, the calls to config_16_set_mem below _will_
-   * use defaults for adjacent values.
    */
   for (t = 0; t < p_dev->addr_count; ++addrs, ++t) {
     unsigned char byte;
 
     if (!b_memory_get(state.c_memory, addrs->addr, &byte)) {
-      config_16_set_mem(p_dev, addrs->addr, addrs->defval, 0xff);
+      config_16_set_byte_mem(p_dev, addrs->addr, addrs->defval, 0xff);
     }
   }
 }
@@ -965,7 +969,7 @@ _do_16_config(gpasmVal r, char *name, int arity, struct pnode *parms)
     }
 
     /* let the helper set the data. */
-    config_16_set_mem(p_dev, ca, p_opt->byte, p_dir->mask);
+    config_16_set_byte_mem(p_dev, ca, p_opt->byte, p_dir->mask);
   }
 
   return r;

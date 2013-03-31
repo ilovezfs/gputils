@@ -68,6 +68,15 @@ write_word(int w)
 }
 
 static void
+start_record(int start, int len)
+{
+  new_record();
+  write_byte(len);
+  write_bg_word(start);
+  write_byte(0);
+}
+
+static void
 end_record(void)
 {
   write_byte((-sum) & 0xff);
@@ -77,39 +86,37 @@ end_record(void)
 static void
 data_line(int start, int stop, enum mode_flags_e mode)
 {
-  new_record();
   if (mode == all) {
-    write_byte(stop - start);
-    write_bg_word(start);
-    write_byte(0);
+    start_record(start, stop - start);
     while (start < stop) {
       unsigned char b;
+
       if (!b_memory_get(memory, start++, &b))
         b = 0xff;
       write_byte(b);
     }
-  } else if (mode == swap) {
+  }
+  else if (mode == swap) {
     /* MPLINK 2.40, 3.80, 4.11 and 4.3x do not support inhx16 format.
      * (FIXME I have no idea where it comes from or if it can be used
      * for whatever purpose it was written for.) */
     assert(start % 2 == 0 && stop % 2 == 0);
-    write_byte((stop - start) / 2);
-    write_bg_word(start / 2);
-    write_byte(0);
+    start_record(start / 2, (stop  - start) / 2);
     while (start < stop) {
       unsigned char b;
+
       if (!b_memory_get(memory, (start++) ^ 1, &b))
         b = 0xff;
       write_byte(b);
     }
-  } else {
-    write_byte((stop - start) / ((low == mode || high == mode) ? 2 : 1));
-    write_bg_word(start);
-    write_byte(0);
+  }
+  else {
+    start_record(start, (stop - start) / ((low == mode || high == mode) ? 2 : 1));
     if (mode == high)
       ++start;
     while (start < stop) {
       unsigned char b;
+
       if (!b_memory_get(memory, start, &b))
         b = 0xff;
       write_byte(b);
@@ -146,7 +153,7 @@ write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_s
   MemBlock *m = memory;
   int i, j, maximum;
 
-  while(m) {
+  while (m) {
     i = m->base << I_MEM_BITS;
 
     maximum = i + MAX_I_MEM;
@@ -163,13 +170,13 @@ write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_s
       unsigned char b;
       if (!b_memory_get(memory, i, &b)) {
         ++i;
-      } else {
+      }
+      else {
         j = i;
         while (b_memory_get(memory, i, &b)) {
           ++i;
-          if (((mode == all) || (mode == swap))  && ((i & 0xf) == 0))
-            break;
-          if ((i & 0x1f) == 0)
+          if (((mode == all || mode == swap) && (i & 0xf) == 0) ||
+            (i & 0x1f) == 0)
             break;
         }
 #if 0
@@ -242,7 +249,8 @@ writehex(char *basefilename, MemBlock *m, enum formats hex_format,
     }
     write_i_mem(hex_format, high, core_size);
     fclose(hex);
-  } else if (hex_format == inhx16) {
+  }
+  else if (hex_format == inhx16) {
     hex = fopen(hexfilename, "wt");
     if (hex == NULL) {
       perror(hexfilename);
@@ -250,7 +258,8 @@ writehex(char *basefilename, MemBlock *m, enum formats hex_format,
     }
     write_i_mem(hex_format, swap, core_size);
     fclose(hex);
-  } else {
+  }
+  else {
     hex = fopen(hexfilename, "wt");
     if (hex == NULL) {
       perror(hexfilename);
@@ -270,7 +279,7 @@ check_writehex(MemBlock *m, enum formats hex_format)
   int error = 0;
 
   if (hex_format != inhx32) {
-    while(m) {
+    while (m) {
       if (m->base > 0) {
         error = 1;
       }

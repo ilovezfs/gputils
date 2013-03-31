@@ -1,3 +1,17 @@
+2013-03-31  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/lst.c: print only lower 4 addres bytes in mempry map listing
+  * libgputils/gpwritehex.c: added function start_record() and other
+    small changes
+  * gpasm/gpasm.c, libgputils/gpcfg.h:  cosmetic changes
+  * gpasm/testsuite/gpasm.project/asmfiles/config3.asm: make it assemble
+    with MPASM(X)
+  * gpasm/directive.c,
+    gpasm/testsuite/gpasm.project/asmfiles/config4.asm,
+    gpasm/testsuite/gpasm.project/hexfiles/config4.hex,
+    gpasm/testsuite/gpasm.project/listfiles/config4.lst:
+    don't emit untouched bytes to the hex file for CONFIG directive;
+    added regression test
+
 2013-03-30  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/parse.y: fixed cblock listing
 
