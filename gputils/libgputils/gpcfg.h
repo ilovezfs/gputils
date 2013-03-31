@@ -25,34 +25,34 @@ Boston, MA 02111-1307, USA.  */
 /* a directive value */
 struct gp_cfg_option
 {
-  const char *name;        /* name of the value */
-  unsigned short byte;     /* it's data value */
+  const char *name;                           /* name of the value */
+  unsigned short byte;                        /* it's data value */
 };
 
 /* a directive, i.e., FOSC */
 struct gp_cfg_directive
 {
-  const char *name;                /* directive name */
-  unsigned short mask;              /* mask of bytes in the config address that apply to its value */
-  unsigned short option_count;      /* number of possible values */
-  const struct gp_cfg_option *options; /* array of values */
+  const char *name;                           /* directive name */
+  unsigned short mask;                        /* mask of bytes in the config address that apply to its value */
+  unsigned short option_count;                /* number of possible values */
+  const struct gp_cfg_option *options;        /* array of values */
 };
 
 /* one particular configuration address, i.e., 0x300001 */
 struct gp_cfg_addr
 {
   unsigned addr;                              /* the address */
-  unsigned short defval;                  /* its default */
-  unsigned char directive_count;         /* count of relavent directives */
-  const struct gp_cfg_directive *directives;   /* array of directives */
+  unsigned short defval;                      /* its default */
+  unsigned char directive_count;              /* count of relavent directives */
+  const struct gp_cfg_directive *directives;  /* array of directives */
 };
 
 /* a device - that is, a colllection of configuration addresses */
 struct gp_cfg_device
 {
-  const char *device;                  /* device name */
-  unsigned char addr_count;            /* number of configuration addresses */
-  const struct gp_cfg_addr *config_addrs;    /* array of configuration addresses */
+  const char *device;                         /* device name */
+  unsigned char addr_count;                   /* number of configuration addresses */
+  const struct gp_cfg_addr *config_addrs;     /* array of configuration addresses */
 };
 
 /* the big table */
@@ -68,4 +68,3 @@ const struct gp_cfg_option *gp_cfg_find_option(const struct gp_cfg_directive *di
 unsigned char gp_cfg_get_default(const struct gp_cfg_device *dev, int address);
 
 #endif /* __GPCFG_H__ */
-

@@ -1,0 +1,39 @@
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-31-2013  17:26:00         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001         LIST P=PIC18F4550, F=INHX32
+                      00002 
+  0123                00003         variable ffffffff = 123
+                      00004 
+00 05 1F 1F 83 85 0F C00005         config PLLDIV   = 1             ; 4Mhz crystal
+       0 0F E0 0F 40 
+                      00006 
+                      00007         end
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-31-2013  17:26:00         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+__18F4550                         00000001
+ffffffff                          00000123
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXX-XX-XXXXXX-- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Bytes Used:    12
+Program Memory Bytes Free: 32756
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

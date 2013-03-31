@@ -1,5 +1,5 @@
      list p=18c242,f=inhx32
-     include "p18c242.inc"
+     include "P18C242.INC"
 
      org 0
      movlw 0Xaa

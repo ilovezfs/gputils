@@ -243,7 +243,8 @@ lst_memory_map(MemBlock *m)
       }
 
       if(row_used) {
-        lst_printf("%04X :", i + base);
+        /* MPASM(X) compatible: print only lower 4 addres bytes */
+        lst_printf("%04X :", (i + base) & 0xffff);
         for (j = 0; j < num_per_line; j++) {
           if ((j % num_per_block) == 0) {
             lst_printf(" ");
