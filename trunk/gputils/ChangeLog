@@ -1,3 +1,6 @@
+2013-04-01  Borut Razem  <borutr@users.sourceforge.net>
+  * gputils/gpvo.c: fixed printing 1 byte config data
+
 2013-03-31  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/lst.c: print only lower 4 addres bytes in mempry map listing
   * libgputils/gpwritehex.c: added function start_record() and other
