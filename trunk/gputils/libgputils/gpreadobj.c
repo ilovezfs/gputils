@@ -22,6 +22,38 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
+static gp_binary_type *file_buf;
+
+static short
+check_getl16(const unsigned char *addr)
+{
+  assert(NULL != file_buf);
+
+  if (addr < file_buf->file + file_buf->size)
+    return gp_getl16(addr);
+  else {
+    gp_error("bad object file format");
+    exit(0);
+    /* just to make the compiler satisfied */
+    return 0;
+  }
+}
+
+static long
+check_getl32(const unsigned char *addr)
+{
+  assert(NULL != file_buf);
+
+  if (addr < file_buf->file + file_buf->size)
+    return gp_getl32(addr);
+  else {
+    gp_error("bad object file format");
+    exit(0);
+    /* just to make the compiler satisfied */
+    return 0;
+  }
+}
+
 gp_coff_type
 gp_identify_coff_file(const char *filename)
 {
@@ -39,10 +71,10 @@ gp_identify_coff_file(const char *filename)
   fclose(file);
 
   if (SARMAG == n) {
-    if (((magic[1]<<8) + magic[0]) == MICROCHIP_MAGIC_v1)
+    if (((magic[1] << 8) + magic[0]) == MICROCHIP_MAGIC_v1)
       return object_file;
 
-    if (((magic[1]<<8) + magic[0]) == MICROCHIP_MAGIC_v2)
+    if (((magic[1] << 8) + magic[0]) == MICROCHIP_MAGIC_v2)
       return object_file_v2;
 
     if (strncmp(magic, ARMAG, SARMAG) == 0)
@@ -95,8 +127,7 @@ gp_free_file(gp_binary_type *file)
 
   free(file->file);
   free(file);
-
-  return;
+  file_buf = NULL;
 }
 
 /* Return optional header size (0 for no header) */
@@ -106,25 +137,25 @@ _read_file_header(gp_object_type *object, const unsigned char *file)
   int isnew = 0;
   int opt_hdr;
 
-  if (gp_getl16(&file[0]) == MICROCHIP_MAGIC_v2)
+  if (check_getl16(&file[0]) == MICROCHIP_MAGIC_v2)
     isnew = 1;
-  else if (gp_getl16(&file[0]) != MICROCHIP_MAGIC_v1)
+  else if (check_getl16(&file[0]) != MICROCHIP_MAGIC_v1)
     gp_error("invalid magic number in \"%s\"", object->filename);
 
   object->isnew = isnew;
-  object->version      = gp_getl16(&file[0]);
-  object->num_sections = gp_getl16(&file[2]);
-  object->time         = gp_getl32(&file[4]);
-  object->symbol_ptr   = gp_getl32(&file[8]);
-  object->num_symbols  = gp_getl32(&file[12]);
+  object->version      = check_getl16(&file[0]);
+  object->num_sections = check_getl16(&file[2]);
+  object->time         = check_getl32(&file[4]);
+  object->symbol_ptr   = check_getl32(&file[8]);
+  object->num_symbols  = check_getl32(&file[12]);
 
-  opt_hdr = gp_getl16(&file[16]);
+  opt_hdr = check_getl16(&file[16]);
   if (opt_hdr != 0 && opt_hdr != (isnew ? OPT_HDR_SIZ_v2 : OPT_HDR_SIZ_v1) )
     gp_error("incorrect optional header size (%d) in \"%s\"", opt_hdr, object->filename);
 
   object->symbol_size = (object->version == MICROCHIP_MAGIC_v1 ?
                          SYMBOL_SIZE_v1 : SYMBOL_SIZE_v2);
-  object->flags = gp_getl16(&file[18]);
+  object->flags = check_getl16(&file[18]);
 
   return opt_hdr;
 }
@@ -136,26 +167,27 @@ _read_opt_header(gp_object_type *object, const unsigned char *file)
   unsigned long vstamp, proc_code, rom_width, ram_width;
   size_t offset = 0;
 
-  optmagic = gp_getl16(&file[0]);
+  optmagic = check_getl16(&file[0]);
   if (optmagic != (object->isnew ? OPTMAGIC_v2 : OPTMAGIC_v1))
     gp_error("invalid optional magic number (%#04x) in \"%s\"", optmagic, object->filename);
 
   offset = 2;
   if (object->isnew) {
-    vstamp = gp_getl32(&file[offset]);
+    vstamp = check_getl32(&file[offset]);
     offset += 4;
-  } else {
-    vstamp = gp_getl16(&file[offset]);
+  }
+  else {
+    vstamp = check_getl16(&file[offset]);
     offset += 2;
   }
 
   if (!object->isnew && vstamp != 1)
     gp_error("invalid assembler version (%ld) in \"%s\"", vstamp, object->filename);
 
-  proc_code = gp_getl32(&file[offset]);
+  proc_code = check_getl32(&file[offset]);
   offset += 4;
 
-  rom_width = gp_getl32(&file[offset]);
+  rom_width = check_getl32(&file[offset]);
   offset += 4;
 
   object->processor = gp_processor_coff_proc(proc_code);
@@ -190,7 +222,7 @@ _read_opt_header(gp_object_type *object, const unsigned char *file)
                object->filename);
   }
 
-  ram_width = gp_getl32(&file[offset]);
+  ram_width = check_getl32(&file[offset]);
   if (ram_width != 8)
     gp_error("invalid ram width (%ld) in \"%s\"", ram_width, object->filename);
   offset += 4;
@@ -205,11 +237,12 @@ _read_section_header(gp_object_type *object,
   char buffer[9];
   unsigned int offset;
 
-  if (gp_getl32(&file[0]) == 0) {
+  if (check_getl32(&file[0]) == 0) {
     /* read name from the string table */
-    offset = gp_getl32(&file[4]);
+    offset = check_getl32(&file[4]);
     section->name = strdup(&string_table[offset]);
-  } else {
+  }
+  else {
     memcpy(buffer, &file[0], 8);
     /* the name can occupy all 8 chars without a null terminator */
     buffer[8] = '\0';
@@ -218,19 +251,19 @@ _read_section_header(gp_object_type *object,
 
   section->symbol = gp_coffgen_findsectionsymbol(object, section->name);
 
-  section->address = gp_getl32(&file[8]);
-  section->virtual_address = gp_getl32(&file[12]);
+  section->address = check_getl32(&file[8]);
+  section->virtual_address = check_getl32(&file[12]);
   if (section->address != section->virtual_address)
     gp_error("virtual address does not equal physical address in \"%s\"",
              object->filename);
 
-  section->size       = gp_getl32(&file[16]);
-  section->data_ptr   = gp_getl32(&file[20]);
-  section->reloc_ptr  = gp_getl32(&file[24]);
-  section->lineno_ptr = gp_getl32(&file[28]);
-  section->num_reloc  = gp_getl16(&file[32]);
-  section->num_lineno = gp_getl16(&file[34]);
-  section->flags      = gp_getl32(&file[36]);
+  section->size       = check_getl32(&file[16]);
+  section->data_ptr   = check_getl32(&file[20]);
+  section->reloc_ptr  = check_getl32(&file[24]);
+  section->lineno_ptr = check_getl32(&file[28]);
+  section->num_reloc  = check_getl16(&file[32]);
+  section->num_lineno = check_getl16(&file[34]);
+  section->flags      = check_getl32(&file[36]);
 
   if (section->data_ptr)
     section->data = i_memory_create();
@@ -256,17 +289,16 @@ _read_reloc(gp_object_type *object,
             gp_reloc_type *relocation,
             const unsigned char *file)
 {
-  relocation->address = gp_getl32(&file[0]);
-  relocation->symbol  = &object->symbols[gp_getl32(&file[4])];
-  relocation->offset  = gp_getl16(&file[8]);
-  relocation->type    = gp_getl16(&file[10]);
+  relocation->address = check_getl32(&file[0]);
+  relocation->symbol  = &object->symbols[check_getl32(&file[4])];
+  relocation->offset  = check_getl16(&file[8]);
+  relocation->type    = check_getl16(&file[10]);
 
   if (relocation->address > section->size)
     gp_error("relocation at address %#x in section \"%s\" of \"%s\" exceeds the section size",
              relocation->address,
              section->name,
              object->filename);
-
 }
 
 static void
@@ -276,15 +308,14 @@ _read_lineno(gp_object_type *object,
              const unsigned char *file)
 {
 
-  line_number->symbol      = &object->symbols[gp_getl32(&file[0])];
-  line_number->line_number = gp_getl16(&file[4]);
-  line_number->address     = gp_org_to_byte(org_to_byte_shift, gp_getl32(&file[6]));
+  line_number->symbol      = &object->symbols[check_getl32(&file[0])];
+  line_number->line_number = check_getl16(&file[4]);
+  line_number->address     = gp_org_to_byte(org_to_byte_shift, check_getl32(&file[6]));
 
   /* FIXME: function index and flags are unused, so far.
-  line_number->l_flags  = gp_getl16(&file[10]);
-  line_number->l_fcnndx = gp_getl32(&file[12]);
+  line_number->l_flags  = check_getl16(&file[10]);
+  line_number->l_fcnndx = check_getl32(&file[12]);
   */
-
 }
 
 static void
@@ -364,7 +395,6 @@ _read_sections(gp_object_type *object, const unsigned char *file)
     object->sections_tail = current;
     current = current->next;
   }
-
 }
 
 struct lazy_linking_s {
@@ -386,25 +416,29 @@ _read_aux(gp_object_type *object, int i, gp_aux_type *aux, int aux_type,
     case AUX_DIRECT:
       aux->_aux_symbol._aux_direct.command = file[0];
       aux->_aux_symbol._aux_direct.string =
-        strdup(&string_table[gp_getl32(&file[4])]);
+        strdup(&string_table[check_getl32(&file[4])]);
       break;
+
     case AUX_FILE:
       aux->_aux_symbol._aux_file.filename =
-        strdup(&string_table[gp_getl32(&file[0])]);
-      aux->_aux_symbol._aux_file.line_number = gp_getl32(&file[4]);
+        strdup(&string_table[check_getl32(&file[0])]);
+      aux->_aux_symbol._aux_file.line_number = check_getl32(&file[4]);
       aux->_aux_symbol._aux_file.flags = file[8];
       break;
+
     case AUX_IDENT:
       aux->_aux_symbol._aux_ident.string =
-        strdup(&string_table[gp_getl32(&file[0])]);
+        strdup(&string_table[check_getl32(&file[0])]);
       break;
+
     case AUX_SCN:
-      aux->_aux_symbol._aux_scn.length  = gp_getl32(&file[0]);
-      aux->_aux_symbol._aux_scn.nreloc  = gp_getl16(&file[4]);
-      aux->_aux_symbol._aux_scn.nlineno = gp_getl16(&file[6]);
+      aux->_aux_symbol._aux_scn.length  = check_getl32(&file[0]);
+      aux->_aux_symbol._aux_scn.nreloc  = check_getl16(&file[4]);
+      aux->_aux_symbol._aux_scn.nlineno = check_getl16(&file[6]);
       break;
+
     case AUX_FCN_CALLS: {
-      unsigned long calleendx = gp_getl32(&file[0]);
+      unsigned long calleendx = check_getl32(&file[0]);
       /* First symbol index is 0 */
       if (calleendx < i)
         aux->_aux_symbol._aux_fcn_calls.callee = lazy_linking[calleendx].read.symbol;
@@ -417,13 +451,13 @@ _read_aux(gp_object_type *object, int i, gp_aux_type *aux, int aux_type,
         lazy_linking[i].next = lazy_linking[calleendx].next;
         lazy_linking[calleendx].next = &lazy_linking[i];
       }
-      aux->_aux_symbol._aux_fcn_calls.is_interrupt = gp_getl32(&file[4]);
+      aux->_aux_symbol._aux_fcn_calls.is_interrupt = check_getl32(&file[4]);
       break;
     }
+
     default:
       memcpy(&aux->_aux_symbol.data[0], file, object->symbol_size);
   }
-
 }
 
 static void
@@ -435,11 +469,12 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol,
   size_t file_off = 0;
   struct lazy_linking_s *current_lazy;
 
-  if (gp_getl32(&file[0]) == 0) {
+  if (check_getl32(&file[0]) == 0) {
     /* read name from the string table */
-    offset = gp_getl32(&file[4]);
+    offset = check_getl32(&file[4]);
     symbol->name = strdup(&string_table[offset]);
-  } else {
+  }
+  else {
     memcpy(buffer, &file[0], 8);
     /* the name can occupy all 8 chars without a null terminator */
     buffer[8] = '\0';
@@ -447,18 +482,19 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol,
   }
 
   file_off = 8;
-  symbol->value = gp_getl32(&file[file_off]);
+  symbol->value = check_getl32(&file[file_off]);
   file_off += 4;
-  symbol->section_number = gp_getl16(&file[file_off]);
+  symbol->section_number = check_getl16(&file[file_off]);
   file_off += 2;
   if(object->isnew) {
-    unsigned type = gp_getl32(&file[file_off]);
+    unsigned type = check_getl32(&file[file_off]);
     file_off += 4;
     symbol->type = type & 0x1F;
     symbol->derived_type = type >> 5;
-  } else {
+  }
+  else {
     /* TODO Make sure the old format had this alignment */
-    unsigned type = gp_getl16(&file[file_off]);
+    unsigned type = check_getl16(&file[file_off]);
     file_off += 2;
     symbol->type = type & 0x0F;
     symbol->derived_type = type >> 4;
@@ -480,6 +516,7 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol,
     case AUX_FCN_CALLS:
       current_lazy->read.aux->_aux_symbol._aux_fcn_calls.callee = symbol;
       break;
+
     default:
       assert(!"Lazy symbol binding not implemented");
     }
@@ -548,7 +585,6 @@ _read_symtbl(gp_object_type *object, const unsigned char *file)
              relocations. */
           current = current->next;
         }
-
       }
 
       current = current->next;
@@ -592,7 +628,6 @@ _clean_symtbl(gp_object_type *object)
     object->symbols_tail = current;
     current = current->next;
   }
-
 }
 
 gp_object_type *
@@ -617,15 +652,15 @@ gp_convert_file(const char *filename, const unsigned char *file)
 gp_object_type *
 gp_read_coff(const char *filename)
 {
-  gp_binary_type *file;
   gp_object_type *object;
 
-  file = gp_read_file(filename);
-  if (file == NULL)
+  file_buf = gp_read_file(filename);
+
+  if (file_buf == NULL)
     return NULL;
 
-  object = gp_convert_file(filename, file->file);
-  gp_free_file(file);
+  object = gp_convert_file(filename, file_buf->file);
+  gp_free_file(file_buf);
 
   return object;
 }
