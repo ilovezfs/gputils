@@ -1,3 +1,6 @@
+2013-04-03  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpreadobj.c: strengthened bad object format detection
+
 2013-04-01  Borut Razem  <borutr@users.sourceforge.net>
   * gputils/gpvo.c: fixed printing 1 byte config data
 
