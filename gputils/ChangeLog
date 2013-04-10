@@ -1,5 +1,8 @@
 2013-04-10  Borut Razem  <borutr@users.sourceforge.net>
-  *
+  *  gpasm/testsuite/gpasm.mchip/objfiles/objsec2.o,
+     gpasm/testsuite/gpasm.mchip/objfiles/objsec3.o:
+     regenerated with MPASMX 5.49
+  * config3.lst: regenerated with MPASMX 5.49
 
 2013-04-03  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpreadobj.c: strengthened bad object format detection

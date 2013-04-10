@@ -1,60 +1,51 @@
-MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  1
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-31-2013  17:03:20         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
                       00001      list p=18c242,f=inhx32
-                      00002 
-                      00003      include "p18c242.inc"
+                      00002      include "P18C242.INC"
                       00001         LIST
-                      00002 ; P18C242.INC  Standard Header File, Version 0.10   Microchip Technology, Inc.
-                      00733         LIST
-                      00004 
-                      00005 
-                      00006 
-000000                00007      org 0
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC18C242 processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
                       00008 
-000000 0EAA           00009      movlw 0Xaa
-                      00010 
-                      00011 
-                      00012 
-                      00013      __CONFIG    _CONFIG0, _CP_OFF_0
-                      00014 
-300000 DFFF           00015      __CONFIG    _CONFIG1, _OSCS_ON_1 & _RCIO_OSC_1
+                      00941         LIST
+                      00003 
+000000                00004      org 0
+000000 0EAA           00005      movlw 0Xaa
+                      00006 
+Warning[230]: __CONFIG has been deprecated for PIC18 devices.  Use directive CONFIG.
+                      00007      __CONFIG    _CONFIG0, _CP_OFF_0
+Warning[230]: __CONFIG has been deprecated for PIC18 devices.  Use directive CONFIG.
+300000 DFFF           00008      __CONFIG    _CONFIG1, _OSCS_ON_1 & _RCIO_OSC_1
+Warning[230]: __CONFIG has been deprecated for PIC18 devices.  Use directive CONFIG.
+                      00009      __CONFIG    _CONFIG2, _BOR_OFF_2 & _BORV_25_2 & _PWRT_ON_2
+Warning[230]: __CONFIG has been deprecated for PIC18 devices.  Use directive CONFIG.
+300002 FFFC           00010      __CONFIG    _CONFIG3, _WDT_ON_3 & _WDTPS_128_3
+Warning[230]: __CONFIG has been deprecated for PIC18 devices.  Use directive CONFIG.
+300004 FEFF           00011      __CONFIG    _CONFIG5, _CCP2MX_OFF_5
+Warning[230]: __CONFIG has been deprecated for PIC18 devices.  Use directive CONFIG.
+300006 FFFE           00012      __CONFIG    _CONFIG6, _STVR_OFF_6
+Warning[230]: __CONFIG has been deprecated for PIC18 devices.  Use directive CONFIG.
+                      00013      __CONFIG    _DEVID1, 0x55
+Warning[230]: __CONFIG has been deprecated for PIC18 devices.  Use directive CONFIG.
+3FFFFE AA55           00014      __CONFIG    _DEVID2, 0xAA
+                      00015 
                       00016 
-                      00017      __CONFIG    _CONFIG2, _BOR_OFF_2 & _BORV_25_2 & _PWRT_ON_2
+000100                00017      org 0x100
                       00018 
-300002 FFFC           00019      __CONFIG    _CONFIG3, _WDT_ON_3 & _WDTPS_128_3
-                      00020 
-300004 FEFF           00021      __CONFIG    _CONFIG5, _CCP2MX_OFF_5
-                      00022 
-300006 FFFE           00023      __CONFIG    _CONFIG6, _STVR_OFF_6
-                      00024 
-                      00025      __CONFIG    _DEVID1, 0x55
-                      00026 
-3FFFFE AA55           00027      __CONFIG    _DEVID2, 0xAA
-                      00028 
-                      00029 
-                      00030 
-                      00031 
-                      00032 
-000100                00033      org 0x100
-                      00034 
-                      00035 
-                      00036 
-000100 0E05           00037      movlw 0x5
-                      00038 
-000102 0023           00039      fill 0x23, 14
-                      00040 
-000116 00FF           00041      fill 0xff, 58
-                      00042 
-00016E 5534           00043      fill 0x5534, 0xF00
-                      00044 
-                      00045      
-                      00046 
-                      00047      eNd
-MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  2
+000100 0E05           00019      movlw 0x5
+000102 0023           00020      fill 0x23, 14
+000116 00FF           00021      fill 0xff, 58
+00016E 5534           00022      fill 0x5534, 0xF00
+                      00023      
+                      00024      eNd
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-31-2013  17:03:20         PAGE  2
 
 
 SYMBOL TABLE
@@ -76,6 +67,7 @@ ADIE                              00000006
 ADIF                              00000006
 ADIP                              00000006
 ADON                              00000000
+ADRES                             00000FC3
 ADRESH                            00000FC4
 ADRESL                            00000FC3
 AN0                               00000000
@@ -88,6 +80,7 @@ BCLIE                             00000003
 BCLIF                             00000003
 BCLIP                             00000003
 BF                                00000000
+BGST                              00000005
 BOR                               00000000
 BRGH                              00000002
 BSR                               00000FE0
@@ -103,7 +96,6 @@ CCP1M2                            00000002
 CCP1M3                            00000003
 CCP1X                             00000005
 CCP1Y                             00000004
-CCP2                              00000001
 CCP2A                             00000003
 CCP2CON                           00000FBA
 CCP2IE                            00000000
@@ -112,17 +104,21 @@ CCP2IP                            00000000
 CCP2M0                            00000000
 CCP2M1                            00000001
 CCP2M2                            00000002
-CCP2M3                            00000003
-MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  3
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-31-2013  17:03:20         PAGE  3
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+CCP2M3                            00000003
 CCP2X                             00000005
 CCP2Y                             00000004
+CCP2_PORTB                        00000003
+CCP2_PORTC                        00000001
+CCPR1                             00000FBE
 CCPR1H                            00000FBF
 CCPR1L                            00000FBE
+CCPR2                             00000FBB
 CCPR2H                            00000FBC
 CCPR2L                            00000FBB
 CHS0                              00000003
@@ -132,7 +128,7 @@ CK                                00000006
 CKE                               00000006
 CKP                               00000004
 CLKO                              00000006
-CLRW                              CLRF WREG
+CLKOUT                            00000006
 CREN                              00000004
 CSRC                              00000007
 D                                 00000005
@@ -145,8 +141,11 @@ DC2B1                             00000005
 DDRA                              TRISA
 DDRB                              TRISB
 DDRC                              TRISC
+DDRD                              TRISD
+DDRE                              TRISE
 DONE                              00000002
 D_A                               00000005
+D_NOT_A                           00000005
 FAST                              00000001
 FERR                              00000002
 FSR0                              00000000
@@ -162,9 +161,18 @@ GCEN                              00000007
 GIE                               00000007
 GIEH                              00000007
 GIEL                              00000006
+GIE_GIEH                          00000007
 GO                                00000002
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-31-2013  17:03:20         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
 GO_DONE                           00000002
+GO_NOT_DONE                       00000002
 I2C_DAT                           00000005
+I2C_DATA                          00000005
 I2C_READ                          00000002
 I2C_START                         00000003
 I2C_STOP                          00000004
@@ -172,24 +180,24 @@ INDF0                             00000FEF
 INDF1                             00000FE7
 INDF2                             00000FDF
 INT0                              00000000
-MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  4
-
-
-SYMBOL TABLE
-  LABEL                             VALUE 
-
 INT0E                             00000004
 INT0F                             00000001
 INT0IE                            00000004
 INT0IF                            00000001
 INT1                              00000001
+INT1E                             00000003
+INT1F                             00000000
 INT1IE                            00000003
 INT1IF                            00000000
 INT1IP                            00000006
+INT1P                             00000006
 INT2                              00000002
+INT2E                             00000004
+INT2F                             00000001
 INT2IE                            00000004
 INT2IF                            00000001
 INT2IP                            00000007
+INT2P                             00000007
 INTCON                            00000FF2
 INTCON1                           00000FF2
 INTCON2                           00000FF1
@@ -202,10 +210,37 @@ IPR1                              00000F9F
 IPR2                              00000FA2
 IRVST                             00000005
 LATA                              00000F89
+LATA0                             00000000
+LATA1                             00000001
+LATA2                             00000002
+LATA3                             00000003
+LATA4                             00000004
+LATA5                             00000005
+LATA6                             00000006
 LATB                              00000F8A
+LATB0                             00000000
+LATB1                             00000001
+LATB2                             00000002
+LATB3                             00000003
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-31-2013  17:03:20         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+LATB4                             00000004
+LATB5                             00000005
+LATB6                             00000006
+LATB7                             00000007
 LATC                              00000F8B
-LCALL                             CALL
-LGOTO                             GOTO
+LATC0                             00000000
+LATC1                             00000001
+LATC2                             00000002
+LATC3                             00000003
+LATC4                             00000004
+LATC5                             00000005
+LATC6                             00000006
+LATC7                             00000007
 LVDCON                            00000FD2
 LVDEN                             00000004
 LVDIE                             00000002
@@ -216,11 +251,12 @@ LVDL0                             00000000
 LVDL1                             00000001
 LVDL2                             00000002
 LVDL3                             00000003
+LVV0                              00000000
+LVV1                              00000001
+LVV2                              00000002
+LVV3                              00000003
 LWRT                              00000006
-MOVFP                             MOVFF
-MOVPF                             MOVFF
 N                                 00000004
-NEGW                              NEGF WREG
 NOT_A                             00000005
 NOT_ADDRESS                       00000005
 NOT_BOR                           00000000
@@ -231,12 +267,6 @@ NOT_RBPU                          00000007
 NOT_RC8                           00000006
 NOT_RI                            00000004
 NOT_T1SYNC                        00000002
-MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  5
-
-
-SYMBOL TABLE
-  LABEL                             VALUE 
-
 NOT_T3SYNC                        00000002
 NOT_TO                            00000003
 NOT_TX8                           00000006
@@ -247,15 +277,23 @@ OSC2                              00000006
 OSCCON                            00000FD3
 OV                                00000003
 P                                 00000004
+PC                                00000FF9
 PCFG0                             00000000
 PCFG1                             00000001
 PCFG2                             00000002
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-31-2013  17:03:20         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
 PCFG3                             00000003
 PCL                               00000FF9
 PCLATH                            00000FFA
 PCLATU                            00000FFB
 PD                                00000002
 PEIE                              00000006
+PEIE_GIEL                         00000006
 PEN                               00000002
 PIE1                              00000F9D
 PIE2                              00000FA0
@@ -278,24 +316,16 @@ PR2                               00000FCB
 PREINC0                           00000FEC
 PREINC1                           00000FE4
 PREINC2                           00000FDC
+PROD                              00000FF3
 PRODH                             00000FF4
 PRODL                             00000FF3
 PSA                               00000003
-PSPIE                             00000007
-PSPIF                             00000007
-PSPIP                             00000007
 R                                 00000002
 RA0                               00000000
 RA1                               00000001
 RA2                               00000002
 RA3                               00000003
 RA4                               00000004
-MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  6
-
-
-SYMBOL TABLE
-  LABEL                             VALUE 
-
 RA5                               00000005
 RA6                               00000006
 RB0                               00000000
@@ -310,6 +340,12 @@ RBIE                              00000003
 RBIF                              00000000
 RBIP                              00000000
 RBPU                              00000007
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-31-2013  17:03:20         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
 RC0                               00000000
 RC1                               00000001
 RC2                               00000002
@@ -335,6 +371,7 @@ RSEN                              00000001
 RX                                00000007
 RX9                               00000006
 RX9D                              00000000
+R_NOT_W                           00000002
 R_W                               00000002
 S                                 00000003
 SCK                               00000003
@@ -345,16 +382,15 @@ SDI                               00000004
 SDO                               00000005
 SEN                               00000000
 SMP                               00000007
+SP0                               00000000
+SP1                               00000001
+SP2                               00000002
+SP3                               00000003
+SP4                               00000004
 SPBRG                             00000FAF
 SPEN                              00000007
 SREN                              00000005
 SS                                00000005
-MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  7
-
-
-SYMBOL TABLE
-  LABEL                             VALUE 
-
 SSPADD                            00000FC8
 SSPBUF                            00000FC9
 SSPCON1                           00000FC6
@@ -363,6 +399,12 @@ SSPEN                             00000005
 SSPIE                             00000003
 SSPIF                             00000003
 SSPIP                             00000003
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-31-2013  17:03:20         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
 SSPM0                             00000000
 SSPM1                             00000001
 SSPM2                             00000002
@@ -371,8 +413,15 @@ SSPOV                             00000006
 SSPSTAT                           00000FC7
 STATUS                            00000FD8
 STKFUL                            00000007
+STKOVF                            00000007
 STKPTR                            00000FFC
+STKPTR0                           00000000
+STKPTR1                           00000001
+STKPTR2                           00000002
+STKPTR3                           00000003
+STKPTR4                           00000004
 STKUNF                            00000006
+SWDTE                             00000000
 SWDTEN                            00000000
 SYNC                              00000004
 T08BIT                            00000006
@@ -406,21 +455,24 @@ T3CON                             00000FB1
 T3INSYNC                          00000002
 T3SYNC                            00000002
 TABLAT                            00000FF5
+TBLPTR                            00000FF6
 TBLPTRH                           00000FF7
 TBLPTRL                           00000FF6
-MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  8
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-31-2013  17:03:20         PAGE  9
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
 TBLPTRU                           00000FF8
+TMR0                              00000FD6
 TMR0H                             00000FD7
 TMR0IE                            00000005
 TMR0IF                            00000002
 TMR0IP                            00000002
 TMR0L                             00000FD6
 TMR0ON                            00000007
+TMR1                              00000FCE
 TMR1CS                            00000001
 TMR1H                             00000FCF
 TMR1IE                            00000000
@@ -433,6 +485,7 @@ TMR2IE                            00000001
 TMR2IF                            00000001
 TMR2IP                            00000001
 TMR2ON                            00000002
+TMR3                              00000FB2
 TMR3CS                            00000001
 TMR3H                             00000FB3
 TMR3IE                            00000001
@@ -441,6 +494,7 @@ TMR3IP                            00000001
 TMR3L                             00000FB2
 TMR3ON                            00000000
 TO                                00000003
+TOS                               00000FFD
 TOSH                              00000FFE
 TOSL                              00000FFD
 TOSU                              00000FFF
@@ -449,8 +503,37 @@ TOUTPS1                           00000004
 TOUTPS2                           00000005
 TOUTPS3                           00000006
 TRISA                             00000F92
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
+TRISA6                            00000006
 TRISB                             00000F93
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-31-2013  17:03:20         PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TRISB6                            00000006
+TRISB7                            00000007
 TRISC                             00000F94
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
 TRMT                              00000001
 TX                                00000006
 TX8_9                             00000006
@@ -467,12 +550,6 @@ UA                                00000001
 VREFM                             00000002
 VREFP                             00000003
 W                                 00000000
-MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE  9
-
-
-SYMBOL TABLE
-  LABEL                             VALUE 
-
 WCOL                              00000007
 WDTCON                            00000FD1
 WREG                              00000FE8
@@ -489,10 +566,8 @@ _CONFIG0                          00300000
 _CONFIG1                          00300001
 _CONFIG2                          00300002
 _CONFIG3                          00300003
-_CONFIG4                          00300004
 _CONFIG5                          00300005
 _CONFIG6                          00300006
-_CONFIG7                          00300007
 _CP_OFF_0                         000000FF
 _CP_ON_0                          00000000
 _DEVID1                           003FFFFE
@@ -501,6 +576,12 @@ _ECIO_OSC_1                       000000FD
 _EC_OSC_1                         000000FC
 _HSPLL_OSC_1                      000000FE
 _HS_OSC_1                         000000FA
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-31-2013  17:03:20         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
 _IDLOC0                           00200000
 _IDLOC1                           00200001
 _IDLOC2                           00200002
@@ -526,22 +607,10 @@ _WDTPS_32_3                       000000FB
 _WDTPS_4_3                        000000F5
 _WDTPS_64_3                       000000FD
 _WDTPS_8_3                        000000F7
-MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE 10
-
-
-SYMBOL TABLE
-  LABEL                             VALUE 
-
 _WDT_OFF_3                        000000FE
 _WDT_ON_3                         000000FF
 _XT_OSC_1                         000000F9
 __18C242                          00000001
-clrw                              clrf WREG
-lcall                             call
-lgoto                             goto
-movfp                             movff
-movpf                             movff
-negw                              negf WREG
 
 
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
@@ -559,6 +628,12 @@ MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 0340 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0380 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 03C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-31-2013  17:03:20         PAGE 12
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
 0400 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0440 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0480 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
@@ -578,12 +653,6 @@ MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 0800 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0840 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0880 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
-MPASM 03.20.02 Released       CONFIG3.ASM   11-22-2002  11:18:03         PAGE 11
-
-
-MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
-
-
 08C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0900 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0940 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
@@ -611,6 +680,12 @@ MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 0EC0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0F00 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0F40 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   3-31-2013  17:03:20         PAGE 13
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
 0F80 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0FC0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 1000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
@@ -625,7 +700,7 @@ Program Memory Bytes Free: 12424
 
 
 Errors   :     0
-Warnings :     0 reported,     0 suppressed
+Warnings :     8 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 
 
