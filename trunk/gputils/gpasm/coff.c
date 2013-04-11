@@ -37,10 +37,12 @@ coff_init(void)
   if (state.objfile == suppress) {
     state.obj.enabled = false;
     unlink(state.objfilename);
-  } else {
+  }
+  else {
     if (state.processor_chosen == 0) {
       state.obj.enabled = false;
-    } else {
+    }
+    else {
       state.obj.object = gp_coffgen_init();
       state.obj.object->filename = strdup(state.objfilename);
       state.obj.object->processor = state.processor;
@@ -66,8 +68,8 @@ _update_section_symbol(gp_section_type *section)
     section->num_lineno;
 }
 
-static void
-_update_section_size(void)
+void
+coff_close_section(void)
 {
 
   if (state.obj.section == NULL)
@@ -105,119 +107,104 @@ _update_reloc_ptr(void)
   }
 }
 
-/* FIXME: Now that gpasm stores bytes, this should go away. */
-/* Copy data from c_memory into the coff section.  This kludge is for the
-   18xx devices.  Their memory is byte addressable, but words are stored
-   in gpasm memory.  The user isn't guaranteed to put the config directives
-   in accending order.  They might also skip addresses.  */
+static void
+_new_config_section(const char *name, int addr, int flags, MemBlock *data, gp_boolean new_config)
+{
+  gp_symbol_type *new = NULL;
+  gp_aux_type *new_aux;
+
+  state.obj.symbol_num += 2;
+
+  /* increment the section number */
+  state.obj.section_num++;
+
+  /* store the flags so they are available for pass 1 */
+  state.obj.flags = flags;
+
+  if (!state.obj.enabled) {
+    state.org = addr;
+    return;
+  }
+
+  assert(state.obj.object != NULL);
+
+  state.obj.section = gp_coffgen_addsection(state.obj.object, name, data);
+  state.obj.section->shadow_address = state.obj.section->address = addr;
+  state.obj.section->flags = flags;
+
+  /* add a section symbol */
+  new = gp_coffgen_addsymbol(state.obj.object);
+  new->name           = strdup(name);
+  new->value          = IS_RAM_ORG ? addr : gp_processor_byte_to_org(state.device.class, addr);
+  new->section_number = state.obj.section_num;  /* Modified later. */
+  new->section        = state.obj.section;
+  new->type           = T_NULL;
+  new->class          = C_SECTION;
+
+  state.obj.section->symbol = new;
+
+  new_aux = gp_coffgen_addaux(state.obj.object, new);
+  new_aux->type = AUX_SCN;
+}
 
 static void
-_copy_config(void)
+_create_config_sections(void)
 {
-  gp_section_type *config_section = NULL;
-  int i;
-  int start;
-  int stop;
-  unsigned char byte;
-  gp_boolean found_break;
+  struct conf_mem_block_s *conf_sec_mem;
+  gp_linenum_type *linenum;
 
+  for (conf_sec_mem = state.conf_sec_mem; conf_sec_mem; conf_sec_mem = conf_sec_mem->next) {
+    char section_name[BUFSIZ];
+    char *p;
+
+    snprintf(section_name, sizeof section_name, ".config_%X_%s", gp_processor_byte_to_org(state.device.class, conf_sec_mem->addr), state.objfilename);
+    for (p = &section_name[13]; *p; ++p)
+      *p = toupper(*p);
+
+    _new_config_section(section_name, conf_sec_mem->addr, STYP_ABS | (conf_sec_mem->new_config ? STYP_DATA_ROM : STYP_TEXT), conf_sec_mem->m, conf_sec_mem->new_config);
+
+    if (!state.obj.enabled)
+      return;
+
+    state.obj.section->size = gp_processor_org_to_byte(state.device.class, 1);
+    state.lst.line.was_org = conf_sec_mem->addr;
+
+    if ((!state.obj.enabled) || (state.obj.section == NULL))
+      return;
+
+    if (state.debug_info && (state.obj.debug_file == NULL)) {
+      gperror(GPE_UNKNOWN, ".file directive required to generate debug info");
+      return;
+    }
+
+    linenum = gp_coffgen_addlinenum(state.obj.section);
+    linenum->symbol = conf_sec_mem->file_symbol;
+    /* MPASM(X) bug compatibility */
+    linenum->line_number = state.mpasm_compatible ? state.src->line_number - 1: conf_sec_mem->line_number;
+    linenum->address = conf_sec_mem->addr;
+
+    _update_section_symbol(state.obj.section);
+  }
+}
+
+void
+coff_cleanup_before_eof(void)
+{
   if(!state.obj.enabled)
     return;
 
-  if (state.found_config) {
-    config_section = gp_coffgen_findsection(state.obj.object,
-                                            state.obj.object->sections,
-                                            ".config");
+  /* store data from the last section */
+  coff_close_section();
 
-    assert(config_section != NULL);
+  /* update relocation symbol pointers */
+  _update_reloc_ptr();
 
-    start = gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[0]);
-    stop = gp_processor_org_to_byte(state.device.class, state.processor->config_addrs[1] + 1);
-    /* find the last used byte */
-    {
-      int first_used = stop, last_used = start;
+  /* combine overlayed sections */
+  gp_cofflink_combine_overlay(state.obj.object, 1);
 
-      for (i = start; i < stop; ++i)
-        if (b_memory_get(state.c_memory, i, &byte)) {
-          if (first_used == stop)
-            first_used = i;
-          last_used = i;
-        }
-      /* stop and start should be at even address */
-      start = first_used & ~1;
-      stop = (last_used + 2) & ~1;
-    }
-    config_section->shadow_address = config_section->address = start;
-    config_section->size = stop - start;
-    for (i = start; i < stop; i++) {
-      if (b_memory_get(state.c_memory, i, &byte)) {
-        b_memory_put(config_section->data, i, byte);
-      } else {
-        /* fill undefined configuration registers with core_size mask */
-        b_memory_put(config_section->data, i, (i & 1) ? state.device.class->core_size >> 8 : state.device.class->core_size);
-      }
-    }
-    _update_section_symbol(config_section);
-  }
-
-  if (state.found_devid) {
-    config_section = gp_coffgen_findsection(state.obj.object,
-                                            state.obj.object->sections,
-                                            ".devid");
-
-    assert(config_section != NULL);
-    assert(IS_16BIT_CORE);
-
-    if (b_memory_get(state.c_memory, DEVID1, &byte))
-      b_memory_put(config_section->data, DEVID1, byte);
-    else
-      assert(0);
-    if (b_memory_get(state.c_memory, DEVID2, &byte))
-      b_memory_put(config_section->data, DEVID2, byte);
-    else
-      assert(0);
-
-    config_section->size = 2;
-
-    _update_section_symbol(config_section);
-  }
-
-  if (state.found_idlocs) {
-    config_section = gp_coffgen_findsection(state.obj.object,
-                                            state.obj.object->sections,
-                                            ".idlocs");
-
-    assert(config_section != NULL);
-
-    if (IS_16BIT_CORE) {
-      config_section->size = 0;
-      start = config_section->address;
-      stop = IDLOC7;
-      found_break = false;
-      for (i = start; i <= stop; i++) {
-        printf("address = %x\n", i);
-        if (b_memory_get(state.c_memory, i, &byte)) {
-          if (found_break) {
-            gpverror(GPE_CONTIG_IDLOC);
-          }
-          b_memory_put(config_section->data, i, byte);
-          config_section->size += 1;
-        } else {
-          found_break = true;
-        }
-      }
-
-    } else {
-      start = gp_processor_id_location(state.processor);
-      stop = start + 8;
-      for (i = start; i < stop; i++) {
-        b_memory_assert_get(state.c_memory, i, &byte);
-  b_memory_put(config_section->data, i, byte);
-      }
-      config_section->size = 8;
-    }
-
-    _update_section_symbol(config_section);
+  if (relocatable == state.mode) {
+    /* create config_sections */
+    _create_config_sections();
   }
 }
 
@@ -227,17 +214,6 @@ coff_close_file(void)
 
   if(!state.obj.enabled)
     return;
-
-  /* store data from the last section */
-  _update_section_size();
-
-  /* update relocation symbol pointers */
-  _update_reloc_ptr();
-
-  /* combine overlayed sections */
-  gp_cofflink_combine_overlay(state.obj.object, 1);
-
-  _copy_config();
 
   if (gp_write_coff(state.obj.object, (state.num.errors + gp_num_errors)) == 1)
     gperror(GPE_UNKNOWN, "system error while writing object file");
@@ -268,7 +244,7 @@ coff_new_section(const char *name, int addr, int flags)
   assert(state.obj.object != NULL);
 
   /* store data from the last section */
-  _update_section_size();
+  coff_close_section();
 
   found = gp_coffgen_findsection(state.obj.object,
                                  state.obj.object->sections,
@@ -290,7 +266,7 @@ coff_new_section(const char *name, int addr, int flags)
     }
   }
 
-  state.obj.section = gp_coffgen_addsection(state.obj.object, name);
+  state.obj.section = gp_coffgen_addsection(state.obj.object, name, NULL);
   state.obj.section->shadow_address = state.obj.section->address = addr;
   state.obj.section->flags = flags;
 
@@ -438,7 +414,8 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
              "Duplicate label or redefining symbol that cannot be redefined. (%s)",
              name);
     gperror(GPE_DUPLAB, message);
-  } else {
+  }
+  else {
     new = gp_coffgen_addsymbol(state.obj.object);
     new->name           = strdup(name);
     new->value          = value;

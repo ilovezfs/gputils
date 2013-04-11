@@ -36,7 +36,8 @@ int enforce_arity(int arity, int must_be)
   else {
     if (arity < must_be) {
       gpverror(GPE_MISSING_ARGU);
-    } else {
+    }
+    else {
       gpverror(GPE_TOO_MANY_ARGU);
     }
     return 0;
@@ -93,7 +94,8 @@ int can_evaluate(struct pnode *p)
       /* '$' means current org, which we can always evaluate */
       if (strcmp(p->value.symbol, "$") == 0) {
         return 1;
-      } else {
+      }
+      else {
         struct variable *var = NULL;
 
         /* Otherwise look it up */
@@ -104,7 +106,8 @@ int can_evaluate(struct pnode *p)
             gpverror(GPE_MISSING_ARGU);
           else
             gpverror(GPE_NOSYM, p->value.symbol);
-        } else {
+        }
+        else {
           var = get_symbol_annotation(s);
 
           if (var == NULL) {
@@ -217,7 +220,8 @@ gpasmVal evaluate(struct pnode *p)
         if (IS_RAM_ORG)
           return state.org;
         return gp_processor_byte_to_org(state.device.class, state.org);
-      } else {
+      }
+      else {
         s = get_symbol(state.stTop, p->value.symbol);
         var = get_symbol_annotation(s);
         assert(var != NULL);
@@ -275,7 +279,8 @@ gpasmVal evaluate(struct pnode *p)
       if (p1 == 0){
         gpverror(GPE_DIVBY0);
         return 0;
-      } else {
+      }
+      else {
         return p0 / p1;
       }
 
@@ -283,7 +288,8 @@ gpasmVal evaluate(struct pnode *p)
       if (p1 == 0){
         gpverror(GPE_DIVBY0);
         return 0;
-      } else {
+      }
+      else {
         return p0 % p1;
       }
 
@@ -368,7 +374,8 @@ gpasmVal maybe_evaluate(struct pnode *p)
 
   if (p && can_evaluate(p)) {
     r = evaluate(p);
-  } else {
+  }
+  else {
     r = 0;
   }
 
@@ -395,7 +402,8 @@ int count_reloc(struct pnode *p)
   case symbol:
     if (strcmp(p->value.symbol, "$") == 0) {
       return 1;
-    } else {
+    }
+    else {
       s = get_symbol(state.stTop, p->value.symbol);
       if (s != NULL) {
         var = get_symbol_annotation(s);
@@ -457,7 +465,8 @@ add_reloc(struct pnode *p, short offs, unsigned short type)
       if (type != RELOCT_ACCESS)
         set_global(buffer, org, PERMANENT, IS_RAM_ORG ? gvt_static : gvt_address);
       s = get_symbol(state.stTop, buffer);
-    } else {
+    }
+    else {
       s = get_symbol(state.stTop, p->value.symbol);
     }
     if (s != NULL) {
@@ -511,7 +520,8 @@ add_reloc(struct pnode *p, short offs, unsigned short type)
       /* The symbol can be in either position */
       if (count_reloc(p->value.binop.p0) == 1) {
         add_reloc(p->value.binop.p0, offs + maybe_evaluate(p->value.binop.p1), type);
-      } else {
+      }
+      else {
         add_reloc(p->value.binop.p1, offs + maybe_evaluate(p->value.binop.p0), type);
       }
       return;
@@ -520,7 +530,8 @@ add_reloc(struct pnode *p, short offs, unsigned short type)
       /* The symbol has to be first */
       if (count_reloc(p->value.binop.p0) == 1) {
         add_reloc(p->value.binop.p0, offs - maybe_evaluate(p->value.binop.p1), type);
-      } else {
+      }
+      else {
         gpverror(GPE_UNRESOLVABLE);
       }
       return;
@@ -574,7 +585,7 @@ same_section(struct pnode *p)
   struct variable *var0;
   struct variable *var1;
 
-  if(!state.obj.enabled)
+  if (!state.obj.enabled)
     return 0;
 
   if ((p->tag == unop) &&
@@ -620,22 +631,26 @@ gpasmVal reloc_evaluate(struct pnode *p, unsigned short type)
 
   if (state.mode == absolute) {
     r = maybe_evaluate(p);
-  } else {
+  }
+  else {
     count = count_reloc(p);
     if (count == 0) {
       /* no relocatable addresses */
       r = maybe_evaluate(p);
-    } else if (count > 1) {
+    }
+    else if (count > 1) {
       if ((count == 2) && (same_section(p))) {
         /* It is valid to take the difference between two symbols in the same
            section.  Evaluate, but don't add a relocation. */
         r = maybe_evaluate(p);
-      } else {
+      }
+      else {
         /* too many relocatable addresses */
         gpverror(GPE_UNRESOLVABLE);
         r = 0;
       }
-    } else {
+    }
+    else {
       /* add the coff relocation */
       add_reloc(p, 0, type);
       r = 0;

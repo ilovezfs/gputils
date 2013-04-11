@@ -440,7 +440,7 @@ void print_sym_table (gp_object_type *object)
   symbol = object->symbols;
 
   printf("Symbol Table\n");
-  printf("Idx  Name                     Section          Value      Type     DT           Class     NumAux \n");
+  printf("Idx  Name                     Section          Value      Type     DT           Class     NumAux\n");
 
   while (symbol != NULL) {
     if (symbol->section_number == N_DEBUG) {
@@ -615,21 +615,21 @@ void show_usage(void)
 
 #define GET_OPTIONS "?bcfhnstvx:y"
 
-  /* Used: himpsv */
-  static struct option longopts[] =
-  {
-    { "binary",      0, 0, 'b' },
-    { "mnemonics",   0, 0, 'c' },
-    { "file",        0, 0, 'f' },
-    { "help",        0, 0, 'h' },
-    { "no-names",    0, 0, 'n' },
-    { "section",     0, 0, 's' },
-    { "symbol",      0, 0, 't' },
-    { "version",     0, 0, 'v' },
-    { "export",      1, 0, 'x' },
-    { "extended",    0, 0, 'y' },
-    { 0, 0, 0, 0 }
-  };
+/* Used: himpsv */
+static struct option longopts[] =
+{
+  { "binary",    no_argument,       NULL, 'b' },
+  { "mnemonics", no_argument,       NULL, 'c' },
+  { "file",      no_argument,       NULL, 'f' },
+  { "help",      no_argument,       NULL, 'h' },
+  { "no-names",  no_argument,       NULL, 'n' },
+  { "section",   no_argument,       NULL, 's' },
+  { "symbol",    no_argument,       NULL, 't' },
+  { "version",   no_argument,       NULL, 'v' },
+  { "export",    required_argument, NULL, 'x' },
+  { "extended",  no_argument,       NULL, 'y' },
+  { NULL,        no_argument,       NULL, '\0' }
+};
 
 #define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
 

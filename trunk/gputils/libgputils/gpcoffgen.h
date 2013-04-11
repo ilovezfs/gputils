@@ -29,29 +29,19 @@ typedef struct gp_coffsymbol_type {
 } gp_coffsymbol_type;
 
 gp_object_type *gp_coffgen_init(void);
-gp_section_type *gp_coffgen_findsection(gp_object_type *object, 
-                                          gp_section_type *start,
-                                          const char *name);
-gp_section_type *gp_coffgen_newsection(const char *name);
-gp_section_type *gp_coffgen_addsection(gp_object_type *object,
-                                         const char *name);
-void gp_coffgen_delsectionsyms(gp_object_type *object,
-                               gp_section_type *section);
-gp_section_type *gp_coffgen_delsection(gp_object_type *object,
-                                        gp_section_type *section);
+gp_section_type *gp_coffgen_findsection(gp_object_type *object, gp_section_type *start, const char *name);
+gp_section_type *gp_coffgen_newsection(const char *name, MemBlock *data);
+gp_section_type *gp_coffgen_addsection(gp_object_type *object, const char *name, MemBlock *data);
+void gp_coffgen_delsectionsyms(gp_object_type *object, gp_section_type *section);
+gp_section_type *gp_coffgen_delsection(gp_object_type *object, gp_section_type *section);
 gp_reloc_type *gp_coffgen_addreloc(gp_section_type *section);
 gp_linenum_type *gp_coffgen_addlinenum(gp_section_type *section);
-gp_symbol_type * gp_coffgen_findsymbol(gp_object_type *object,
-                                         const char *name);
-gp_symbol_type * gp_coffgen_findsectionsymbol(gp_object_type *object,
-                                                const char *name);
-gp_aux_type *gp_coffgen_addaux(gp_object_type *object,
-                                gp_symbol_type *symbol);
+gp_symbol_type * gp_coffgen_findsymbol(gp_object_type *object, const char *name);
+gp_symbol_type * gp_coffgen_findsectionsymbol(gp_object_type *object, const char *name);
+gp_aux_type *gp_coffgen_addaux(gp_object_type *object, gp_symbol_type *symbol);
 gp_symbol_type *gp_coffgen_addsymbol(gp_object_type *object);
-gp_symbol_type *gp_coffgen_delsymbol(gp_object_type *object,
-                                     gp_symbol_type *symbol);
-gp_boolean gp_coffgen_has_reloc(gp_object_type *object,
-                                gp_symbol_type *symbol);
+gp_symbol_type *gp_coffgen_delsymbol(gp_object_type *object, gp_symbol_type *symbol);
+gp_boolean gp_coffgen_has_reloc(gp_object_type *object, gp_symbol_type *symbol);
 gp_boolean gp_coffgen_is_global(gp_symbol_type *symbol);
 gp_boolean gp_coffgen_is_external(gp_symbol_type *symbol);
 gp_boolean gp_coffgen_is_debug(gp_symbol_type *symbol);

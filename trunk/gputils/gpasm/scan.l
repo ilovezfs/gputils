@@ -289,7 +289,8 @@ processor                {
                                 * the second pass */
                                if (h->line_number == state.src->line_number) {
                                  return LABEL;
-                               } else {
+                               }
+                               else {
                                  gpvwarning(GPW_MACRO_COLUMN_ONE, yytext);
                                  if (has_collon)
                                   gpverror(GPE_BADCHAR, ':');
@@ -327,10 +328,12 @@ processor                {
                            if (force_ident) {
                              yylval.s = strdup(yytext);
                              return IDENTIFIER;
-                           } else if (state.radix == 16) {
+                           }
+                           else if (state.radix == 16) {
                              yylval.i = stringtolong(yytext, 16);
                              return NUMBER;
-                           } else {
+                           }
+                           else {
                              yytext[yyleng - 1] = '\0';
                              yylval.i = stringtolong(yytext, 2);
                              return NUMBER;
@@ -345,7 +348,8 @@ b'-?{NUMCHAR}+'          {
                            if (force_ident) {
                              yylval.s = strdup(yytext);
                              return IDENTIFIER;
-                           } else {
+                           }
+                           else {
                              yytext[yyleng - 1] = '\0';
                              yylval.i = stringtolong(yytext, 8);
                              return NUMBER;
@@ -360,10 +364,12 @@ b'-?{NUMCHAR}+'          {
                            if (force_ident) {
                              yylval.s = strdup(yytext);
                              return IDENTIFIER;
-                           } else if (state.radix == 16) {
+                           }
+                           else if (state.radix == 16) {
                              yylval.i = stringtolong(yytext, 16);
                              return NUMBER;
-                           } else {
+                           }
+                           else {
                              yytext[yyleng - 1] = '\0';
                              yylval.i = stringtolong(yytext, 10);
                              return NUMBER;
@@ -382,7 +388,8 @@ d'-?[0-9]+'              {
                            if (force_ident) {
                              yylval.s = strdup(yytext);
                              return IDENTIFIER;
-                           } else {
+                           }
+                           else {
                              yytext[yyleng - 1] = '\0';
                              yylval.i = stringtolong(yytext, 16);
                              return NUMBER;
@@ -397,10 +404,12 @@ h'-?{NUMCHAR}+'          {
                            if (force_ident) {
                              yylval.s = strdup(yytext);
                              return IDENTIFIER;
-                           } else if (force_decimal) {
+                           } 
+                           else if (force_decimal) {
                              yylval.i = stringtolong(yytext, 10);
                              return NUMBER;
-                           } else {
+                           }
+                           else {
                              yylval.i = stringtolong(yytext, state.radix);
                              return NUMBER;
                            }
@@ -575,7 +584,7 @@ search_paths(struct source_context *new, const char *name)
     snprintf(tryname, sizeof(tryname),
              "%s" COPY_CHAR "%s", state.paths[i], name);
     new->f = fopen(tryname, "rt");
-    if(new->f) {
+    if (new->f) {
       new->name = strdup(tryname);
       break;
     }
@@ -616,11 +625,13 @@ open_src(const char *name, int isinclude)
   if (new->f == NULL) {
     if (state.src) {
       gpverror(GPE_NOENT, name);
-    } else {
+    }
+    else {
       perror(name);
       exit(1);
     }
-  } else {
+  }
+  else {
     yyin = new->f;
 
     if (state.src) {
@@ -636,7 +647,8 @@ open_src(const char *name, int isinclude)
     new->loop_number = 1;
     if (state.debug_info) {
       new->file_symbol = NULL;
-    } else {
+    }
+    else {
       new->file_symbol = coff_add_filesym(new->name, isinclude);
     }
     new->prev = state.src;
@@ -670,7 +682,8 @@ execute_macro(struct macro_head *h, int is_while)
   new->name = strdup(h->src_name);
   if (is_while) {
     new->type = src_while;
-  } else {
+  }
+  else {
     new->type = src_macro;
   }
   new->line_number = h->line_number + 1;
@@ -705,20 +718,25 @@ repeat_while(void)
 void
 close_file(void)
 {
-  struct source_context *old;
+  struct source_context *old = state.src;
 
-  old = state.src;
-  state.src = state.src->prev;
-
-  if (old->type == src_file) {
-    if (old->f != NULL) {
-      fclose(old->f);
+  if (state.src->type == src_file) {
+    if (state.src->f != NULL) {
+      fclose(state.src->f);
     }
-    free(old->name);
+    free(state.src->name);
+
+    if (NULL == state.src->prev)
+      coff_cleanup_before_eof();
+
     if (!state.debug_info) {
       coff_add_eofsym();
     }
-  } else if (old->type == src_macro) {
+    state.src = state.src->prev;
+  }
+  else if (state.src->type == src_macro) {
+    state.src = state.src->prev;
+
     state.stTop = pop_symbol_table(state.stTop);
     state.stMacroParams = pop_symbol_table(state.stMacroParams);
     if (state.src->astack != state.astack) {
@@ -727,8 +745,10 @@ close_file(void)
     assert(state.stTop != NULL);
     assert(state.stMacroParams != NULL);
     free(old->name);
-  } else if (old->type == src_while) {
-    free(old->name);
+  }
+  else if (state.src->type == src_while) {
+    free(state.src->name);
+    state.src = state.src->prev;
   }
   free(old);
 }
@@ -781,7 +801,8 @@ found_eof(void)
     if (maybe_evaluate(state.src->h->parms)) {
       if (state.src->loop_number > 255) {
         gpverror(GPE_BAD_WHILE_LOOP);
-      } else {
+      }
+      else {
         /* repeat the while loop */
         repeat_while();
         return 0;
@@ -805,7 +826,8 @@ found_eof(void)
       lst_format_line(state.src->curr_src_line.line, 0);
       ++state.src->line_number;
     }
-  } else {
+  }
+  else {
     if (!state.found_end)
       gperror(GPE_ILLEGAL_COND, "Illegal condition (EOF encountered before END)");
     terminate = found_end();
@@ -822,17 +844,23 @@ identify(char *text)
 
   if ((sym = get_symbol(state.stMacroParams, text)) != NULL) {
     type = macro_params;
-  } else if ((sym = get_symbol(state.stDefines, text)) != NULL) {
+  }
+  else if ((sym = get_symbol(state.stDefines, text)) != NULL) {
     type = defines;
-  } else if ((sym = get_symbol(state.stDirective, text)) != NULL) {
+  }
+  else if ((sym = get_symbol(state.stDirective, text)) != NULL) {
     type = directives;
-  } else if ((sym = get_symbol(state.stBuiltin, text)) != NULL) {
+  }
+  else if ((sym = get_symbol(state.stBuiltin, text)) != NULL) {
     type = opcodes;
-  } else if ((sym = get_symbol(state.stGlobal, text)) != NULL) {
+  }
+  else if ((sym = get_symbol(state.stGlobal, text)) != NULL) {
     type = globals;
-  } else if ((sym = get_symbol(state.stMacros, text)) != NULL) {
+  }
+  else if ((sym = get_symbol(state.stMacros, text)) != NULL) {
     type = macros;
-  } else {
+  }
+  else {
     type = unknown_type;
   }
 
