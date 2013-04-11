@@ -51,12 +51,11 @@ Boston, MA 02111-1307, USA.  */
 MemBlock *
 i_memory_create(void)
 {
-  MemBlock *m;
+  MemBlock *m  = (MemBlock *)malloc(sizeof(MemBlock));
 
-  m         = (MemBlock *)malloc(sizeof(MemBlock));
-  m->base   = 0;
-  m->memory = (unsigned short *)calloc(MAX_I_MEM, sizeof(unsigned short));
-  m->next   = NULL;
+  m->base  = 0;
+  m->memory = NULL;
+  m->next = NULL;
 
   return m;
 }
@@ -67,13 +66,13 @@ i_memory_free(MemBlock *m)
   MemBlock *n;
 
   do {
-    if(m->memory)
+    if (m->memory)
       free(m->memory);
 
     n = m->next;
     free(m);
     m = n;
-  } while(m);
+  } while (m);
 }
 
 /************************************************************************
@@ -91,27 +90,55 @@ i_memory_free(MemBlock *m)
 MemBlock *
 i_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
 {
-  unsigned int base;
-
-  base = (base_address >> I_MEM_BITS) & 0xffff;
+  unsigned int base = (base_address >> I_MEM_BITS) & 0xffff;
 
   mbp->memory = (unsigned short *)calloc(MAX_I_MEM, sizeof(unsigned short));
-  mbp->base   = base;
+  mbp->base = base;
 
-  do {
-    if((m->next == NULL) || (m->next->base > base)) {
+  do
+  {
+    if ((m->next == NULL) || (m->next->base > base)) {
       /* Insert after this block */
       mbp->next = m->next;
-      m->next   = mbp;
+      m->next = mbp;
       return mbp;
     }
 
     m = m->next;
-  } while(m);
+  } while (m);
 
   assert(0);
 
   return NULL;
+}
+
+/************************************************************************
+ * b_memory_is_used
+ *
+ * Check if byte at address is used. This function will traverse through
+ * the linked list of memory blocks searching for the address from the
+ * word will be fetched.
+ *
+ * Inputs:
+ *  address -
+ *  m - start of the instruction memory
+ * Returns
+ *  1 if byte at address is used, 0 if not
+ *
+ ************************************************************************/
+int
+b_memory_is_used(MemBlock *m, unsigned int address)
+{
+  do
+  {
+    if (((address >> I_MEM_BITS) & 0xffff) == m->base) {
+      return (NULL == m->memory) ? 0 : ((m->memory[address & I_MEM_MASK] & BYTE_USED_MASK) != 0);
+    }
+
+    m = m->next;
+  } while (m);
+
+  return 0;
 }
 
 /************************************************************************
@@ -132,16 +159,21 @@ i_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
 int
 b_memory_get(MemBlock *m, unsigned int address, unsigned char *byte)
 {
-  do {
-    assert(m->memory != NULL);
-
+  do
+  {
     if (((address >> I_MEM_BITS) & 0xffff) == m->base) {
-      *byte = m->memory[address & I_MEM_MASK] & 0xff;
-      return (m->memory[address & I_MEM_MASK] & BYTE_USED_MASK) != 0;
+      if (m->memory) {
+        *byte = m->memory[address & I_MEM_MASK] & 0xff;
+        return (m->memory[address & I_MEM_MASK] & BYTE_USED_MASK) != 0;
+      }
+      else {
+        *byte = 0;
+        return 0;
+      }
     }
 
     m = m->next;
-  } while(m);
+  } while (m);
 
   return 0;
 }
@@ -165,17 +197,13 @@ b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value)
 {
   MemBlock *m = NULL;
 
-  do {
-    if(m)
-      m = m->next;
-    else
-      m = i_memory;
-
-    if (m->memory == NULL) {
-      i_memory_new(i_memory, m, address);
-    }
+  do
+  {
+    m = m ? m->next : i_memory;
 
     if (((address >> I_MEM_BITS) & 0xffff) == m->base) {
+      if (NULL == m->memory)
+        m->memory = (unsigned short *)calloc(MAX_I_MEM, sizeof(unsigned short));
       m->memory[address & I_MEM_MASK] = value | BYTE_USED_MASK;
       return;
     }
@@ -184,7 +212,7 @@ b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value)
   /* Couldn't find an address to write this value. This must be
      the first time we've tried to write to high memory some place. */
 
-  m = i_memory_new(i_memory, (MemBlock *) malloc(sizeof(MemBlock)), address);
+  m = i_memory_new(i_memory, (MemBlock *)malloc(sizeof(MemBlock)), address);
   m->memory[address & I_MEM_MASK] = value | BYTE_USED_MASK;
 }
 
@@ -203,16 +231,17 @@ b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value)
 void
 b_memory_clear(MemBlock *m, unsigned int address)
 {
-  do {
-    assert(m->memory != NULL);
-
-    if( ((address >> I_MEM_BITS) & 0xffff) == m->base ) {
-      m->memory[address & I_MEM_MASK] = 0;
+  do
+  {
+    if (((address >> I_MEM_BITS) & 0xffff) == m->base ) {
+      if (NULL != m->memory) {
+        m->memory[address & I_MEM_MASK] = 0;
+      }
       break;
     }
 
     m = m->next;
-  } while(m);
+  } while (m);
 }
 
 int
@@ -229,7 +258,7 @@ b_range_memory_used(MemBlock *m, int from, int to)
   /* count used bytes */
   while (m && j < to) {
     for (i = 0; i < MAX_I_MEM && j < to; ++i) {
-      if (m->memory[i & I_MEM_MASK] & BYTE_USED_MASK) {
+      if (NULL != m->memory && m->memory[i & I_MEM_MASK] & BYTE_USED_MASK) {
         ++bytes;
       }
       ++j;
@@ -301,23 +330,25 @@ print_i_memory(MemBlock *m, proc_class_t class)
 
 #define WORDS_IN_ROW 8
 
-  do {
-    assert(m->memory != NULL);
-
+  do
+  {
     base = m->base << I_MEM_BITS;
 
     for (i = 0; i < MAX_I_MEM; i += 2 * WORDS_IN_ROW) {
       row_used = 0;
 
-      for (j = 0; j < 2 * WORDS_IN_ROW; j++)
-        if (m->memory[i+j])
-          row_used = 1;
+      if (NULL != m->memory) {
+        for (j = 0; j < 2 * WORDS_IN_ROW; j++)
+          if (m->memory[i + j])
+            row_used = 1;
+      }
 
       if (row_used) {
         printf("%08X  ", gp_processor_byte_to_org(class, base + i));
 
-        for (j = 0; j < WORDS_IN_ROW; j+=2) {
+        for (j = 0; j < WORDS_IN_ROW; j += 2) {
           unsigned short data;
+
           class->i_memory_get(m, i + 2 * j, &data);
           printf("%04X ", data);
         }
@@ -331,7 +362,7 @@ print_i_memory(MemBlock *m, proc_class_t class)
     }
 
     m = m->next;
-  } while(m);
+  } while (m);
 }
 
 /************************************************************************
@@ -344,17 +375,18 @@ print_i_memory(MemBlock *m, proc_class_t class)
 void
 b_memory_set_listed(MemBlock *m, unsigned int address, unsigned int n_bytes)
 {
-  assert(m->memory != NULL);
-
   while (n_bytes--) {
     do {
       if (((address >> I_MEM_BITS) & 0xffff) == m->base) {
+        if (NULL == m->memory)
+          m->memory = (unsigned short *)calloc(MAX_I_MEM, sizeof(unsigned short));
         m->memory[address & I_MEM_MASK] |= BYTE_LISTED_MASK;
         break;
       }
 
       m = m->next;
-    } while(m);
+    } while (m);
+
     ++address;
   }
 }
@@ -365,17 +397,19 @@ b_memory_get_unlisted_size(MemBlock *m, unsigned int address)
   unsigned int n_bytes = 0;
 
   if (m && m->memory) {
-    do {
-      do {
+    do
+    {
+      do
+      {
         if (((address >> I_MEM_BITS) & 0xffff) == m->base) {
-          if (BYTE_USED_MASK == (m->memory[address & I_MEM_MASK] & (BYTE_LISTED_MASK | BYTE_USED_MASK)))
+          if (NULL != m->memory && BYTE_USED_MASK == (m->memory[address & I_MEM_MASK] & (BYTE_LISTED_MASK | BYTE_USED_MASK)))
             break;
           else
             return n_bytes;
         }
 
         m = m->next;
-      } while(m);
+      } while (m);
       ++address;
       ++n_bytes;
     } while (n_bytes < 4);

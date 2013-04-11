@@ -2,10 +2,12 @@
   * gpasm/directive.c, gpasm/gpasm.h.in, gpasm/coff.c, gpasm/coff.h,
     gpasm/gpasm.c, gpasm/scan.l, libgputils/gpcofflink.c,
     libgputils/gpcoffgen.c, libgputils/gpcoffgen.h:
-    fixed enhancement requests
+    implemented enhancement requests
     #61 - "__idlocs and __config generate line numbers" and
     #58 Generate mpasm compatible .config sections
   * gputils/gpvo.c, gpasm/evaluate.c: cosmetic changes
+  * libgputils/gpmemory.c, gpasm/lst.c:
+    don't allocate memory until it is used - written
 
 2013-04-10  Borut Razem  <borutr@users.sourceforge.net>
   *  gpasm/testsuite/gpasm.mchip/objfiles/objsec2.o,
