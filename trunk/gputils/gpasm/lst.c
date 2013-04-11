@@ -214,7 +214,7 @@ lst_init(void)
 void
 lst_memory_map(MemBlock *m)
 {
-#define MEM_IS_USED(m, i)   (IS_BYTE ? ((m)->memory[i] & BYTE_USED_MASK) : (((m)->memory[2 * (i)] & BYTE_USED_MASK) || ((m)->memory[2 * (i) + 1] & BYTE_USED_MASK)))
+#define MEM_IS_USED(m, i)  ((m)->memory ? (IS_BYTE ? ((m)->memory[i] & BYTE_USED_MASK) : (((m)->memory[2 * (i)] & BYTE_USED_MASK) || ((m)->memory[2 * (i) + 1] & BYTE_USED_MASK))) : 0)
 
   int i, j, base, row_used, num_per_line, num_per_block;
 
@@ -228,7 +228,6 @@ lst_memory_map(MemBlock *m)
 
   while (m) {
     unsigned int max_mem = MAX_I_MEM  >> !IS_BYTE;
-    assert(m->memory != NULL);
 
     base = (m->base << I_MEM_BITS) >> !IS_BYTE;
 
