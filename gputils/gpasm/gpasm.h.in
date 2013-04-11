@@ -87,6 +87,15 @@ struct src_line_s {
   size_t size;      /* Source line allocated size */
 };
 
+struct conf_mem_block_s {
+  int addr;
+  MemBlock *m;
+  gp_boolean new_config;
+  gp_symbol_type *file_symbol;
+  unsigned int line_number;
+  struct conf_mem_block_s *next;
+};
+
 extern struct gpasm_state {
   enum gpasm_modes mode;
   gp_boolean mpasm_compatible;      /* MAPASM compatibility mode */
@@ -139,7 +148,6 @@ extern struct gpasm_state {
     int id_location;                /* address of last __idlocs */
     int bsr_boundary;               /* 18xx bsr boundary location */
   } device;
-  unsigned int c_memory_base;       /* Base address of configuration memory */
   char badram[MAX_RAM];             /* nonzero indicates illegal memory */
   struct symbol_table
     *stBuiltin,                     /* Built-ins: instructions, pseudo-ops */
@@ -150,7 +158,8 @@ extern struct gpasm_state {
     *stMacroParams,                 /* Macro #defines (stDefines is base) */
     *stMacros;                      /* Macros */
   MemBlock *i_memory;               /* Instruction memory linked list */
-  MemBlock *c_memory;               /* Configuration memory linked list (shadow) */
+  MemBlock *c_memory;               /* Configuration memory linked list */
+  struct conf_mem_block_s *conf_sec_mem;  /* Configuration section memory linked list */
   char *srcfilename,                /* Source (.asm) file name */
     basefilename[BUFSIZ],           /* basename for generating hex,list,symbol filenames */
     codfilename[BUFSIZ],            /* Symbol (.cod) file name */

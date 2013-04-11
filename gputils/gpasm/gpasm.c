@@ -73,7 +73,7 @@ static struct option longopts[] =
   { "extended",         no_argument,       NULL, 'y' },
   { "mpasm-compatible", no_argument,       NULL, OPT_MPASM_COMPATIBLE },
   { "preprocess",       required_argument, NULL, 'P' },
-  { 0, 0, 0, 0 }
+  { NULL,               no_argument,       NULL, '\0' }
 };
 
 void
@@ -150,9 +150,10 @@ init(void)
 void
 add_path(const char *path)
 {
-  if(state.path_num < MAX_PATHS) {
+  if (state.path_num < MAX_PATHS) {
     state.paths[state.path_num++] = strdup(path);
-  } else {
+  }
+  else {
     fprintf(stderr, "too many -I paths\n");
     exit(1);
   }
@@ -194,7 +195,8 @@ show_usage(void)
 #ifdef USE_DEFAULT_PATHS
   if (gp_header_path) {
     printf("Default header file path %s\n", gp_header_path);
-  } else {
+  }
+  else {
     printf("Default header file path NOT SET\n");
   }
   printf("\n");
@@ -401,7 +403,7 @@ assemble(void)
   cmd_defines = state.stDefines;
   state.c_memory = state.i_memory = i_memory_create();
 
-  if(state.basefilename[0] == '\0') {
+  if (state.basefilename[0] == '\0') {
     strncpy(state.basefilename, state.srcfilename, sizeof(state.basefilename));
     pc = strrchr(state.basefilename, '.');
     if (pc)
@@ -476,7 +478,8 @@ assemble(void)
   open_src(state.srcfilename, 0);
   if (!gp_debug_disable) {
     yydebug = 1;
-  } else {
+  }
+  else {
     yydebug = 0;
   }
   yyparse();
@@ -485,7 +488,7 @@ assemble(void)
 
   if (state.obj.object) {
     /* Set F_ABSOLUTE COFF flag if absolute mode */
-    if (gp_is_absolute_object(state.obj.object))
+    if (absolute == state.mode)
       state.obj.object->flags |= F_ABSOLUTE;
 
     /* Set F_EXTENDED18 COFF flag if 18xx extended mode enabled */

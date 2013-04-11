@@ -65,7 +65,7 @@ gp_coffgen_findsection(gp_object_type *object,
 }
 
 gp_section_type *
-gp_coffgen_newsection(const char *name)
+gp_coffgen_newsection(const char *name, MemBlock *data)
 {
   gp_section_type *new = NULL;
 
@@ -75,25 +75,26 @@ gp_coffgen_newsection(const char *name)
 
   /* initialize section */
   new->name = strdup(name);
-  new->data = i_memory_create();
+  new->data = data ? data : i_memory_create();
 
   return new;
 }
 
 gp_section_type *
-gp_coffgen_addsection(gp_object_type *object, const char *name)
+gp_coffgen_addsection(gp_object_type *object, const char *name, MemBlock *data)
 {
   gp_section_type *new = NULL;
 
   if (object == NULL)
     return NULL;
 
-  new = gp_coffgen_newsection(name);
+  new = gp_coffgen_newsection(name, data);
 
   if (object->sections == NULL) {
     /* the list is empty */
     object->sections = new;
-  } else {
+  }
+  else {
     /* append the new object to the end of the list */
     object->sections_tail->next = new;
   }
@@ -120,8 +121,6 @@ gp_coffgen_delsectionsyms(gp_object_type *object, gp_section_type *section)
       gp_coffgen_delsymbol(object, symbol);
     }
   }
-
-  return;
 }
 
 gp_section_type *
@@ -144,11 +143,13 @@ gp_coffgen_delsection(gp_object_type *object, gp_section_type *section)
         if (object->sections == NULL) {
           /* there are no sections in the list */
           object->sections_tail = NULL;
-        } else if (object->sections->next == NULL) {
+        }
+        else if (object->sections->next == NULL) {
           /* there is one section in the list */
           object->sections_tail = object->sections;
         }
-      } else {
+      }
+      else {
         previous->next = list->next;
         if (list->next == NULL) {
           /* The last section in the list is being removed, so update
@@ -181,7 +182,8 @@ gp_coffgen_addreloc(gp_section_type *section)
   if (section->relocations == NULL) {
     /* the list is empty */
     section->relocations = new;
-  } else {
+  }
+  else {
     section->relocations_tail->next = new;
   }
   section->relocations_tail = new;
@@ -203,7 +205,8 @@ gp_coffgen_addlinenum(gp_section_type *section)
   if (section->line_numbers == NULL) {
     /* the list is empty */
     section->line_numbers = new;
-  } else {
+  }
+  else {
     section->line_numbers_tail->next = new;
   }
   section->line_numbers_tail = new;
@@ -272,7 +275,8 @@ gp_coffgen_addaux(gp_object_type *object, gp_symbol_type *symbol)
   if (symbol->aux_list == NULL) {
     /* the list is empty */
     symbol->aux_list = new;
-  } else {
+  }
+  else {
     /* append the new object to the end of the list */
     list = symbol->aux_list;
     while (list->next != NULL) {
@@ -300,7 +304,8 @@ gp_coffgen_addsymbol(gp_object_type *object)
   if (object->symbols == NULL) {
     /* the list is empty */
     object->symbols = new;
-  } else {
+  }
+  else {
     object->symbols_tail->next = new;
   }
   object->symbols_tail = new;
@@ -330,11 +335,13 @@ gp_coffgen_delsymbol(gp_object_type *object, gp_symbol_type *symbol)
         if (object->symbols == NULL) {
           /* there are no symbols in the list */
           object->symbols_tail = NULL;
-        } else if (object->symbols->next == NULL) {
+        }
+        else if (object->symbols->next == NULL) {
           /* there is one symbol in the list */
           object->symbols_tail = object->symbols;
         }
-      } else {
+      }
+      else {
         previous->next = list->next;
         if (list->next == NULL) {
           /* The last symbol in the list is being removed, so update

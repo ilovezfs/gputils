@@ -1,3 +1,12 @@
+2013-04-11  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/directive.c, gpasm/gpasm.h.in, gpasm/coff.c, gpasm/coff.h,
+    gpasm/gpasm.c, gpasm/scan.l, libgputils/gpcofflink.c,
+    libgputils/gpcoffgen.c, libgputils/gpcoffgen.h:
+    fixed enhancement requests
+    #61 - "__idlocs and __config generate line numbers" and
+    #58 Generate mpasm compatible .config sections
+  * gputils/gpvo.c, gpasm/evaluate.c: cosmetic changes
+
 2013-04-10  Borut Razem  <borutr@users.sourceforge.net>
   *  gpasm/testsuite/gpasm.mchip/objfiles/objsec2.o,
      gpasm/testsuite/gpasm.mchip/objfiles/objsec3.o:
