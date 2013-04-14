@@ -628,7 +628,7 @@ static struct option longopts[] =
   { "version",   no_argument,       NULL, 'v' },
   { "export",    required_argument, NULL, 'x' },
   { "extended",  no_argument,       NULL, 'y' },
-  { NULL,        no_argument,       NULL, '\0' }
+  { NULL,        no_argument,       NULL, '\0'}
 };
 
 #define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
