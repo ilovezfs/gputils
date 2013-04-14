@@ -1,3 +1,8 @@
+2013-04-14  Borut Razem  <borutr@users.sourceforge.net>
+  * gplink/gplink.c, libgputils/gparchive.c, libgputils/gparchive.h,
+    libgputils/gpreadobj.c, libgputils/gpreadobj.h:
+    fixed bug #263 segmentation fault - svn 961
+
 2013-04-11  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c, gpasm/gpasm.h.in, gpasm/coff.c, gpasm/coff.h,
     gpasm/gpasm.c, gpasm/scan.l, libgputils/gpcofflink.c,
