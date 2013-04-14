@@ -128,7 +128,7 @@ scan_index(struct symbol_table *table, gp_archive_type *archive)
              file, and add the object to the object list */
           member = get_symbol_annotation(m);
           object_name = gp_archive_member_name(member);
-          object = gp_convert_file(object_name, member->file);
+          object = gp_convert_file(object_name, &member->data);
           object_append(object, object_name);
           gp_link_add_symbols(state.symbol.definition,
                               state.symbol.missing,
@@ -399,24 +399,24 @@ set_optimize_level(void)
 
 static struct option longopts[] =
 {
-  { "hex-format",          1, 0, 'a' },
-  { "object",              0, 0, 'c' },
-  { "debug",               0, 0, 'd' },
-  { "fill",                1, 0, 'f' },
-  { "help",                0, 0, 'h' },
-  { "include",             1, 0, 'I' },
-  { "no-list",             0, 0, 'l' },
-  { "map",                 0, 0, 'm' },
-  { "output",              1, 0, 'o' },
-  { "optimize",            1, 0, 'O' },
-  { "quiet",               0, 0, 'q' },
-  { "use-shared",          0, 0, 'r' },
-  { "script",              1, 0, 's' },
-  { "stack",               1, 0, 't' },
-  { "macro",               1, 0, 'u' },
-  { "version",             0, 0, 'v' },
-  { "processor-mismatch",  0, 0, 'w' },
-  { 0, 0, 0, 0 }
+  { "hex-format",          required_argument, NULL, 'a' },
+  { "object",              no_argument,       NULL, 'c' },
+  { "debug",               no_argument,       NULL, 'd' },
+  { "fill",                required_argument, NULL, 'f' },
+  { "help",                no_argument,       NULL, 'h' },
+  { "include",             required_argument, NULL, 'I' },
+  { "no-list",             no_argument,       NULL, 'l' },
+  { "map",                 no_argument,       NULL, 'm' },
+  { "output",              required_argument, NULL, 'o' },
+  { "optimize",            required_argument, NULL, 'O' },
+  { "quiet",               no_argument,       NULL, 'q' },
+  { "use-shared",          no_argument,       NULL, 'r' },
+  { "script",              required_argument, NULL, 's' },
+  { "stack",               required_argument, NULL, 't' },
+  { "macro",               required_argument, NULL, 'u' },
+  { "version",             no_argument,       NULL, 'v' },
+  { "processor-mismatch",  no_argument,       NULL, 'w' },
+  { NULL,                  no_argument,       NULL, '\0'}
 };
 
 void
@@ -460,7 +460,7 @@ init(void)
 void
 gplink_add_path(const char *path)
 {
-  if(state.numpaths < MAX_PATHS) {
+  if (state.numpaths < MAX_PATHS) {
     state.paths[state.numpaths++] = strdup(path);
   } else {
     gp_error("too many -I paths");

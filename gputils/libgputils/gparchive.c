@@ -117,8 +117,8 @@ int
 gp_archive_free_member(gp_archive_type *archive)
 {
 
-  if (archive->file != NULL)
-    free(archive->file);
+  if (archive->data.file != NULL)
+    free(archive->data.file);
   if (archive != NULL)
     free(archive);
 
@@ -176,7 +176,7 @@ gp_archive_add_member(gp_archive_type *archive,
 
   /* Point the archive member file to the object file.  The object is never
      freed, so this is ok.  It will be cleaned up later */
-  newmember->file = newobject->file;
+  newmember->data = *newobject;
 
   /* fill in the archive header */
   memset(&newmember->header, 0x20, AR_HDR_SIZ); /* fill the header with space */
@@ -249,7 +249,7 @@ gp_archive_extract_member(gp_archive_type *archive,
   }
 
   sscanf(object->header.ar_size, "%il", &size);
-  fwrite(object->file, 1, size, output_file);
+  fwrite(object->data.file, 1, size, output_file);
 
   fclose(output_file);
 
@@ -278,7 +278,7 @@ gp_archive_write(gp_archive_type *archive,
   while (archive != NULL) {
     fwrite(&archive->header, 1, AR_HDR_SIZ, output_file);
     sscanf(archive->header.ar_size, "%il", &size);
-    fwrite(archive->file, 1, size, output_file);
+    fwrite(archive->data.file, 1, size, output_file);
     archive = archive->next;
   }
 
@@ -347,8 +347,9 @@ gp_archive_read(char *filename)
 
     /* read the object file or symbol index into memory */
     sscanf(new->header.ar_size, "%il", &object_size);
-    new->file = (unsigned char *)malloc(object_size);
-    n = fread(new->file, sizeof(char), object_size, infile);
+    new->data.size = object_size;
+    new->data.file = (unsigned char *)malloc(object_size);
+    n = fread(new->data.file, sizeof(char), object_size, infile);
     if (n != object_size)
       gp_error("bad archive \"%s\"", filename);
 
@@ -429,7 +430,8 @@ gp_archive_make_index(gp_archive_type *archive,
     end = strchr(&name[0], '/');
     if (end != NULL)
       *end = '\0';
-    object = gp_convert_file(name, archive->file);
+
+    object = gp_convert_file(name, &archive->data);
     assert(object != NULL);
     gp_link_add_symbols(definition, NULL, object);
     archive = archive->next;
@@ -477,11 +479,12 @@ gp_archive_add_index(struct symbol_table *table,
     fprintf(stderr, " error allocating memory\n");
     exit(1);
   }
-  newmember->file = (unsigned char *)malloc(indexsize);
-  if(!newmember->file) {
+  newmember->data.file = (unsigned char *)malloc(indexsize);
+  if(!newmember->data.file) {
     fprintf(stderr, " error allocating memory\n");
     exit(1);
   }
+  newmember->data.size = indexsize;
   newmember->next = NULL;
 
   /* fill in the archive header */
@@ -504,7 +507,7 @@ gp_archive_add_index(struct symbol_table *table,
   gp_archive_update_offsets(archive);
 
   /* write the number of symbols to the member */
-  ptr = archive->file;
+  ptr = archive->data.file;
   gp_putl32(ptr, table->count);
   ptr += 4;
 
@@ -566,7 +569,7 @@ gp_archive_read_index(struct symbol_table *table,
 
   assert(gp_archive_have_index(archive));
 
-  file = archive->file;
+  file = archive->data.file;
 
   /* read the number of symbols */
   number = gp_getl32(file);
