@@ -1,3 +1,7 @@
+2013-04-17  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/directive.c:
+    fixed the gpasm part of bug #263 segmentation fault - svn 961
+
 2013-04-14  Borut Razem  <borutr@users.sourceforge.net>
   * gplink/gplink.c, libgputils/gparchive.c, libgputils/gparchive.h,
     libgputils/gpreadobj.c, libgputils/gpreadobj.h:
