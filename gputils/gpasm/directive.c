@@ -731,8 +731,14 @@ add_conf_sec_mem(int ca, gp_boolean new_config)
   new->addr = (state.device.class == PROC_CLASS_PIC16 || state.device.class == PROC_CLASS_PIC16E) ? ca : ca - (ca & 1);
   new->m = i_memory_create();
   new->new_config = new_config;
-  new->file_symbol = state.src->file_symbol;
-  new->line_number = state.src->line_number;
+  if (state.debug_info) {
+    new->file_symbol = state.obj.debug_file;
+    new->line_number = state.obj.debug_line;
+  }
+  else {
+    new->file_symbol = state.src->file_symbol;
+    new->line_number = state.src->line_number;
+  }
   new->next = NULL;
 
   if (state.conf_sec_mem) {
