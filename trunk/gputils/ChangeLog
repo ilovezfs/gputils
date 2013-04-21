@@ -1,3 +1,12 @@
+2013-04-21  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/testsuite/gpasm.project/objfiles/config2.o,
+    gpasm/testsuite/gpasm.project/objfiles/code_pack.o,
+    gpasm/testsuite/gpasm.project/objfiles/pageselw2.o,
+    gpasm/testsuite/gpasm.project/objlstfiles/config2.lst,
+    gpasm/testsuite/gpasm.project/objlstfiles/code_pack.lst,
+    gpasm/testsuite/gpasm.project/objlstfiles/pageselw2.lst:
+    regenerated with MPASMX 5.49
+
 2013-04-17  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c:
     fixed the gpasm part of bug #263 segmentation fault - svn 961
