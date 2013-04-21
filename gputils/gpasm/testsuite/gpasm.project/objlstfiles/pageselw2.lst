@@ -1,14 +1,20 @@
-MPASM  5.11                     PAGESELW2.ASM   6-25-2007  15:07:15         PAGE  1
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   4-21-2013  16:31:51         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
                       00001   list p=16f73
-                      00002   #include "p16f73.inc"
+                      00002   #include "P16F73.INC"
                       00001         LIST
-                      00002 ; P16F73.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
-                      00320         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F73 processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00455         LIST
                       00003 
                       00004 vars udata
 0000                  00005 tmp res 1
@@ -38,7 +44,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0004   2???           00029   call tbl_lookup
                       00030 
                       00031   end
-MPASM  5.11                     PAGESELW2.ASM   6-25-2007  15:07:15         PAGE  2
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   4-21-2013  16:31:51         PAGE  2
 
 
 SYMBOL TABLE
@@ -73,8 +79,10 @@ CCP2M2                            00000002
 CCP2M3                            00000003
 CCP2X                             00000005
 CCP2Y                             00000004
+CCPR1                             00000015
 CCPR1H                            00000016
 CCPR1L                            00000015
+CCPR2                             0000001B
 CCPR2H                            0000001C
 CCPR2L                            0000001B
 CHS0                              00000003
@@ -88,21 +96,23 @@ D                                 00000005
 DATA_ADDRESS                      00000005
 DC                                00000001
 D_A                               00000005
+D_NOT_A                           00000005
 F                                 00000001
 FERR                              00000002
 FSR                               00000004
 GIE                               00000007
 GO                                00000002
 GO_DONE                           00000002
-I2C_DATA                          00000005
-I2C_READ                          00000002
-I2C_START                         00000003
-MPASM  5.11                     PAGESELW2.ASM   6-25-2007  15:07:15         PAGE  3
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   4-21-2013  16:31:51         PAGE  3
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+GO_NOT_DONE                       00000002
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
 I2C_STOP                          00000004
 INDF                              00000000
 INTCON                            0000000B
@@ -152,16 +162,38 @@ PS1                               00000001
 PS2                               00000002
 PSA                               00000003
 R                                 00000002
-RBIE                              00000003
-RBIF                              00000000
-RC8_9                             00000006
-RC9                               00000006
-MPASM  5.11                     PAGESELW2.ASM   6-25-2007  15:07:15         PAGE  4
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   4-21-2013  16:31:51         PAGE  4
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RC8_9                             00000006
+RC9                               00000006
 RCD8                              00000000
 RCIE                              00000005
 RCIF                              00000005
@@ -173,6 +205,7 @@ RP0                               00000005
 RP1                               00000006
 RX9                               00000006
 RX9D                              00000000
+R_NOT_W                           00000002
 R_W                               00000002
 S                                 00000003
 SMP                               00000007
@@ -188,6 +221,12 @@ SSPIF                             00000003
 SSPM0                             00000000
 SSPM1                             00000001
 SSPM2                             00000002
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   4-21-2013  16:31:51         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
 SSPM3                             00000003
 SSPOV                             00000006
 SSPSTAT                           00000094
@@ -206,6 +245,9 @@ T2CKPS0                           00000000
 T2CKPS1                           00000001
 T2CON                             00000012
 TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
 TMR1CS                            00000001
 TMR1H                             0000000F
 TMR1IE                            00000000
@@ -215,20 +257,42 @@ TMR1ON                            00000000
 TMR2                              00000011
 TMR2IE                            00000001
 TMR2IF                            00000001
-MPASM  5.11                     PAGESELW2.ASM   6-25-2007  15:07:15         PAGE  5
-
-
-SYMBOL TABLE
-  LABEL                             VALUE 
-
 TMR2ON                            00000002
 TOUTPS0                           00000003
 TOUTPS1                           00000004
 TOUTPS2                           00000005
 TOUTPS3                           00000006
 TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
 TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
 TRISC                             00000087
+TRISC0                            00000000
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   4-21-2013  16:31:51         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
 TRMT                              00000001
 TX8_9                             00000006
 TX9                               00000006
@@ -245,13 +309,28 @@ WCOL                              00000007
 Z                                 00000002
 _BODEN_OFF                        00003FBF
 _BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
 _CP_ALL                           00003FEF
 _CP_OFF                           00003FFF
+_CP_ON                            00003FEF
+_DEVID1                           00002006
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_RC                          00003FFF
+_FOSC_XT                          00003FFD
 _HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
 _LP_OSC                           00003FFC
 _PWRTE_OFF                        00003FFF
 _PWRTE_ON                         00003FF7
 _RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
 _WDT_OFF                          00003FFB
 _WDT_ON                           00003FFF
 _XT_OSC                           00003FFD
@@ -260,6 +339,12 @@ main                              00000000
 tbl_dat                           00000000
 tbl_lookup                        00000000
 tmp                               00000000
+MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   4-21-2013  16:31:51         PAGE  7
+
+
+
+
+
 
 Errors   :     0
 Warnings :     0 reported,     0 suppressed
