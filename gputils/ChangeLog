@@ -1,3 +1,6 @@
+2013-04-29  Borut Razem  <borutr@users.sourceforge.net>
+  * configure.ac, configure, doc/gputils.lyx: version changed to 1.2.0
+
 2013-04-21  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/testsuite/gpasm.project/objfiles/config2.o,
     gpasm/testsuite/gpasm.project/objfiles/code_pack.o,
