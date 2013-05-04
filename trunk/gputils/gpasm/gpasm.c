@@ -177,20 +177,20 @@ show_usage(void)
   printf("  -l, --list-chips               List supported processors.\n");
   printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -m, --dump                     Memory dump.\n");
+  printf("      --mpasm-compatible         MPASM copatibility mode\n");
   printf("  -M, --deps                     Output dependency file.\n");
 #ifndef HAVE_DOS_BASED_FILE_SYSTEM
   printf("  -n, --dos                      Use DOS newlines in hex file.\n");
 #endif
   printf("  -o FILE, --output FILE         Alternate name of output file.\n");
   printf("  -p PROC, --processor PROC      Select processor.\n");
+  printf("  -P FILE, --preporocess FILE    Emit preprocessed asm file to FILE\n");
   printf("  -q, --quiet                    Quiet.\n");
   printf("  -r RADIX, --radix RADIX        Select radix. [hex]\n");
   printf("  -u, --absolute                 Use absolute pathes. \n");
   printf("  -v, --version                  Show version.\n");
   printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n");
   printf("  -y, --extended                 Enable 18xx extended mode.\n");
-  printf("      --mpasm-compatible         MPASM copatibility mode\n");
-  printf("  -P FILE, --preporocess FILE    Emit preprocessed asm file to FILE\n");
   printf("\n");
 #ifdef USE_DEFAULT_PATHS
   if (gp_header_path) {

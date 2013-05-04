@@ -24,7 +24,7 @@ options.
 .B gpasm
 options always supersede any settings in the source code.
 .TP
-.BR "\-a FMT" , " \-\-hex\-format FMT
+.BR "\-a FMT", " \-\-hex\-format FMT
 GPASM supports inhx8m, inhx8s, inhx16, and inhx32 hex file formats.  This
 option controls which hex file format is used.  The default is inhx32.
 .TP
@@ -37,11 +37,11 @@ Output a relocatable object (old COFF format).
 .BR \-d ", " \-\-debug
 Output debug messages.
 .TP
-.BR "\-D SYM=VAL" , " \-\-define SYM=VAL"
+.BR "\-D SYM=VAL", " \-\-define SYM=VAL"
 Define SYM with value VAL. This is equivalent to placing "#define SYM VAL" in
 the source.
 .TP
-.BR "\-e [ON|OFF]" , " \-\-expand [ON|OFF]"
+.BR "\-e [ON|OFF]", " \-\-expand [ON|OFF]"
 Macro expansion in the listing file is controlled using the EXPAND and NOEXPAND
 directives.  This option can force either directive to be ignored.  When "ON"
 is selected the macros are always expanded regardless of the presence of
@@ -57,7 +57,7 @@ Show the usage message and exit.
 All user defined symbols and macros are case sensitive.  This option makes them
 case insensitive.
 .TP
-.BR "\-I DIR" , " \-\-include DIR"
+.BR "\-I DIR", " \-\-include DIR"
 The top level assembly file is passed to gpasm as an argument.  This file can
 contain INCLUDE directives.  These directives open the specified file and
 then its contents are assembled.  GPASM searches for these files in the local
@@ -75,6 +75,9 @@ the list file output.
 Upon completion of the final pass of assembly, display the contents of
 instruction memory.
 .TP
+.BR "\-\-mpasm\-compatible"
+This option sets the MPASM copatibility mode.
+.TP
 .BR \-M ", "\-\-deps
 Output a dependency file.
 .TP
@@ -83,16 +86,19 @@ By default, gpasm generates hex files using ISO format.  However, some device
 programmers required a DOS formatted file.  This option will cause gpasm to
 generate a DOS formatted hex file.
 .TP
-.BR "\-o FILE" , " \-\-output FILE"
+.BR "\-o FILE", " \-\-output FILE"
 Alternate name of the output file.
 .TP
-.BR "\-p PROC" , " \-\-processor PROC"
+.BR "\-p PROC", " \-\-processor PROC"
 Select the processor.
+.TP
+.BR "\-P FILE", " \-\-preporocess FILE"
+Emit preprocessed asm file to FILE.
 .TP
 .BR \-q ", "\-\-quiet
 Suppress anything sent to standard output.
 .TP
-.BR "\-r RADIX" , " \-\-radix RADIX"
+.BR "\-r RADIX", " \-\-radix RADIX"
 The supported radices are BIN, DEC, OCT, and HEX.  The default is HEX.
 .TP
 .BR \-u ", "\-\-absolute
@@ -101,7 +107,7 @@ Use absolute paths.
 .BR \-v ", "\-\-version
 Show the version information and exit.
 .TP
-.BR "\-w [0|1|2]" , " \-\-warning [0|1|2]"
+.BR "\-w [0|1|2]", " \-\-warning [0|1|2]"
 This option sets the message level. "0" is the default.  It will allow all 
 messages, warnings, and errors to be reported.  "1" will suppress the messages.
 "2" will suppress the messages and warnings.

@@ -23,7 +23,7 @@ Les options de
 .B gpasm
 supplantent toujours toute configuration contenue dans le code source.
 .TP
-.BR "\-a FMT" , " \-\-hex-format FMT
+.BR "\-a FMT", " \-\-hex-format FMT
 GPASM reconnaît les formats de fichiers hexadécimaux inhx8m, inhx8s, inhx16
 et inhx32. Cette option contrôle quel format de fichier hexadécimal est
 utilisé. La valeur par défaut est inhx32.
@@ -37,11 +37,11 @@ Produire en sortie un objet relogeable (ancien format COFF).
 .BR \-d ", " \-\-debug
 Afficher les messages de débogage.
 .TP
-.BR "\-D SYM=VAL" , " \-\-define SYM=VAL"
+.BR "\-D SYM=VAL", " \-\-define SYM=VAL"
 Définir SYM avec la valeur VAL. Ceci est équivalent à placer
 «\ #define SYM VAL\ » dans le code source.
 .TP
-.BR "\-e [ON|OFF]" , " \-\-expand [ON|OFF]"
+.BR "\-e [ON|OFF]", " \-\-expand [ON|OFF]"
 Le développement des macros dans le fichier listage est contrôlé en utilisant
 les directives EXPAND et NOEXPAND. Cette option permet d'ignorer l'une ou
 l'autre directive. Lorsque «\ ON\ » est sélectionné, les macros sont toujours
@@ -58,7 +58,7 @@ Afficher un message d'utilisation et quitter.
 Tous les symboles et macros définis par l'utilisateur sont sensibles à la
 casse. Cette option permet de les rendre insensibles à la casse.
 .TP
-.BR "\-I RÉP" , " \-\-include RÉP"
+.BR "\-I RÉP", " \-\-include RÉP"
 Le fichier d'assemblage de plus haut niveau hiérarchique est passé comme
 argument à gpasm. Ce fichier peut contenir des directives INCLUDE. Ces
 directives ouvrent les fichiers spécifiés et leurs contenus sont alors
@@ -77,6 +77,9 @@ assemblée dans le fichier listage de sortie.
 À la fin de la dernière étape d'assemblage, afficher le contenu de la mémoire
 programme.
 .TP
+.BR "\-\-mpasm\-compatible"
+This option sets the MPASM copatibility mode.
+.TP
 .BR \-M ", "\-\-deps
 Produire un fichier des dépendances.
 .TP
@@ -85,16 +88,19 @@ Par défaut, gpasm génère des fichiers hexadécimaux au format ISO. Toutefois,
 certains programmateurs de composants requièrent un fichier au format DOS.
 Cette option fait que gpasm génèrera un fichier au format DOS.
 .TP
-.BR "\-o FICHIER" , " \-\-output FICHIER"
+.BR "\-o FICHIER", " \-\-output FICHIER"
 Nom alternatif du fichier de sortie.
 .TP
-.BR "\-p PROC" , " \-\-processor PROC"
+.BR "\-p PROC", " \-\-processor PROC"
 Sélectionner le processeur.
+.TP
+.BR "\-P FILE", " \-\-preporocess FILE"
+Emit preprocessed asm file to FILE.
 .TP
 .BR \-q ", "\-\-quiet
 Supprimer tout ce qui est envoyé sur la sortie standard.
 .TP
-.BR "\-r BASE" , " \-\-radix BASE"
+.BR "\-r BASE", " \-\-radix BASE"
 Les bases reconnues sont BIN, DEC, OCT, et HEX. La base par défaut est HEX.
 .TP
 .BR \-u ", "\-\-absolute
@@ -103,7 +109,7 @@ Utiliser des chemins absolus.
 .BR \-v ", "\-\-version
 Afficher les informations de version et quitter.
 .TP
-.BR "\-w [0|1|2]" , " \-\-warning [0|1|2]"
+.BR "\-w [0|1|2]", " \-\-warning [0|1|2]"
 Cette option configure le niveau d'affichage des messages. La valeur par défaut
 est «\ 0\ ». Elle permet l'affichage des messages, des avertissements et des
 erreurs. «\ 1\ » supprimera les messages. «\ 2\ » supprimera les messages et
