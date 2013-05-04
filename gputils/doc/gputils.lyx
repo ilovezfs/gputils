@@ -1351,7 +1351,7 @@ Memory dump
 \begin_inset Text
 
 \begin_layout Plain Layout
-MPASM(X) copatibility mode
+MPASM(X) compatibility mode
 \end_layout
 
 \end_inset
@@ -1497,7 +1497,7 @@ Select target processor
 \begin_inset Text
 
 \begin_layout Plain Layout
-Emit preprocessed asm file to <file>
+Write preprocessed asm file to <file>
 \end_layout
 
 \end_inset

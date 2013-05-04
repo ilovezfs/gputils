@@ -1,4 +1,4 @@
-.TH GPASM 1 "2012-03-04" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
+.TH GPASM 1 "2013-05-04" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
 .SH NAME
 gpasm \- GNU PIC assembler
 .SH SYNOPSIS
@@ -76,7 +76,7 @@ Upon completion of the final pass of assembly, display the contents of
 instruction memory.
 .TP
 .BR "\-\-mpasm\-compatible"
-This option sets the MPASM copatibility mode.
+This option sets the MPASM compatibility mode.
 .TP
 .BR \-M ", "\-\-deps
 Output a dependency file.
@@ -92,8 +92,8 @@ Alternate name of the output file.
 .BR "\-p PROC", " \-\-processor PROC"
 Select the processor.
 .TP
-.BR "\-P FILE", " \-\-preporocess FILE"
-Emit preprocessed asm file to FILE.
+.BR "\-P FILE", " \-\-preprocess FILE"
+Write preprocessed asm file to FILE.
 .TP
 .BR \-q ", "\-\-quiet
 Suppress anything sent to standard output.

@@ -1,3 +1,9 @@
+2013-05-05  Borut Razem  <borutr@users.sourceforge.net>
+  * man/gpasm.1.in, man/fr/gpasm.1.in, gpasm/gpasm.c, doc/gputils.lyx:
+    fixed English typos, applied patch
+    #265 French trenslation of gputils/man/fr/gpasm.1.in,
+    thanks to Alain Portal
+
 2013-05-04  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/gpasm.c, doc/gputils.lyx:
     reorder the usage options listing
