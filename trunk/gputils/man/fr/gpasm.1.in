@@ -1,4 +1,4 @@
-.TH GPASM 1 "4 mars 2012" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Manuel de l'utilisateur Linux"
+.TH GPASM 1 "4 mai 2013" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Manuel de l'utilisateur Linux"
 .SH NOM
 gpasm \- Assembleur GNU pour PIC
 .SH SYNOPSIS
@@ -78,7 +78,7 @@ assemblée dans le fichier listage de sortie.
 programme.
 .TP
 .BR "\-\-mpasm\-compatible"
-This option sets the MPASM copatibility mode.
+Cette option définit le mode de compatibilité MPASM.
 .TP
 .BR \-M ", "\-\-deps
 Produire un fichier des dépendances.
@@ -94,8 +94,8 @@ Nom alternatif du fichier de sortie.
 .BR "\-p PROC", " \-\-processor PROC"
 Sélectionner le processeur.
 .TP
-.BR "\-P FILE", " \-\-preporocess FILE"
-Emit preprocessed asm file to FILE.
+.BR "\-P FILE", " \-\-preprocess FICHIER"
+Enregistrer le fichier assembleur prétraité dans FICHIER.
 .TP
 .BR \-q ", "\-\-quiet
 Supprimer tout ce qui est envoyé sur la sortie standard.
@@ -125,7 +125,7 @@ Craig Franklin <craigfranklin@users.sourceforge.net>
 .PP
 Ce document est une traduction réalisée par Alain Portal
 <alain DOT portal AT univ-montp2 DOT fr> le 14\ octobre\ 2004
-et révisée le 4\ mars\ 2012.
+et révisée le 4\ mai\ 2013.
 .PP
 L'équipe de traduction a fait le maximum pour réaliser une adaptation
 française de qualité. La version anglaise la plus à jour de ce document est
