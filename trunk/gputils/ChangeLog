@@ -1,8 +1,8 @@
 2013-05-04  Borut Razem  <borutr@users.sourceforge.net>
-  * gputils/gpasm/gpasm.c:
+  * gpasm/gpasm.c, doc/gputils.lyx:
     reorder the usage options listing
-  * gputils/man/gpasm.1.in: added missing --mpasm-compatible and -P options
-  * gputils/man/fr/gpasm.1.in: added missing --mpasm-compatible and -P
+  * man/gpasm.1.in: added missing --mpasm-compatible and -P options
+  * man/fr/gpasm.1.in: added missing --mpasm-compatible and -P
     options, prepared for French translation
 
 2013-04-29  Borut Razem  <borutr@users.sourceforge.net>
