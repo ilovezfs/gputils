@@ -287,12 +287,9 @@ int
 i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word)
 {
   unsigned char bytes[2];
-  int used = 0;
 
-  used = b_memory_get(m, byte_addr, bytes);
-  used |= b_memory_get(m, byte_addr + 1, bytes + 1);
-
-  if (used) {
+  /* use bitwise or to prevent short-circuit evaluation */
+  if (b_memory_get(m, byte_addr, bytes) | b_memory_get(m, byte_addr + 1, bytes + 1)) {
     *word = bytes[0] + (bytes[1] << 8);
     return 1;
   }
@@ -310,12 +307,9 @@ int
 i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word)
 {
   unsigned char bytes[2];
-  int used = 0;
 
-  used = b_memory_get(m, byte_addr, bytes);
-  used |= b_memory_get(m, byte_addr + 1, bytes + 1);
-
-  if (used) {
+  /* use bitwise or to prevent short-circuit evaluation */
+  if (b_memory_get(m, byte_addr, bytes) | b_memory_get(m, byte_addr + 1, bytes + 1)) {
     *word = bytes[1] + (bytes[0] << 8);
     return 1;
   }
