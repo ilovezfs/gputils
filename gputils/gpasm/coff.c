@@ -166,7 +166,7 @@ _create_config_sections(void)
     if (!state.obj.enabled)
       return;
 
-    state.obj.section->size = gp_processor_org_to_byte(state.device.class, 1);
+    state.obj.section->size = conf_sec_mem->new_config ? gp_processor_org_to_byte(state.device.class, 1) : 2;
     state.lst.line.was_org = conf_sec_mem->addr;
 
     if ((!state.obj.enabled) || (state.obj.section == NULL))
