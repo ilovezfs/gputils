@@ -35,24 +35,19 @@ Boston, MA 02111-1307, USA.  */
 #define SECTION_IDATA   3
 #define SECTION_UDATA   4
 
-/* FIXME: Sort symbols by name and size. */
-
 void
 map_line(const char *format, ...)
 {
   va_list args;
-  char buffer[BUFSIZ];
 
-  if (state.map.f == NULL)
-    return;
-
-  va_start(args, format);
-  vsnprintf(buffer, sizeof(buffer), format, args);
-  va_end(args);
-
-  fprintf(state.map.f, "%s\n", buffer);
-
-  return;
+  if (state.map.f) {
+    if (format) {
+      va_start(args, format);
+      vfprintf(state.map.f, format, args);
+      va_end(args);
+    }
+    putc('\n', state.map.f);
+  }
 }
 
 static int
@@ -60,17 +55,20 @@ _section_value(gp_section_type *section)
 {
   int value = 0;
 
-  if ((section->flags & STYP_TEXT) ||
-      (section->flags & STYP_DATA_ROM))  {
+  if (section->flags & STYP_TEXT) {
     value = SECTION_CODE;
-  } else if (section->flags & STYP_DATA) {
+  }
+  else if (section->flags & STYP_DATA) {
     value = SECTION_IDATA;
-  } else if ((section->flags & STYP_BSS) ||
+  }
+  else if ((section->flags & STYP_BSS) ||
              (section->flags & STYP_OVERLAY)) {
     value = SECTION_UDATA;
-  } else if (section->flags & STYP_DATA_ROM) {
+  }
+  else if (section->flags & STYP_DATA_ROM) {
     value = SECTION_ROMDATA;
-  } else {
+  }
+  else {
     value = SECTION_UNKNOWN;
   }
 
@@ -139,12 +137,15 @@ _write_sections(void)
     case SECTION_ROMDATA:
       type = "romdata";
       break;
+
     case SECTION_CODE:
       type = "code";
       break;
+
     case SECTION_IDATA:
       type = "idata";
       break;
+
     case SECTION_UDATA:
       type = "udata";
       break;
@@ -156,7 +157,8 @@ _write_sections(void)
     if ((section->flags & STYP_TEXT) ||
         (section->flags & STYP_DATA_ROM))  {
       location = "program";
-    } else {
+    }
+    else {
       location = "data";
       org_to_byte_shift = 0;
     }
@@ -164,7 +166,7 @@ _write_sections(void)
     assert(section->name != NULL);
 
     if (section->size != 0) {
-      map_line("%25s %10s   %#08x %10s   %#08x",
+      map_line("%25s %10s   0x%06x %10s   0x%06x",
                section->name,
                type,
                gp_byte_to_org(org_to_byte_shift, section->address),
@@ -172,9 +174,11 @@ _write_sections(void)
                section->size);
     }
   }
-  map_line(" ");
-
   free(section_list);
+
+  map_line(NULL);
+  map_line(NULL);
+  map_line(NULL);
 }
 
 static void
@@ -191,17 +195,23 @@ _write_program_memory(void)
   while (section != NULL) {
     if (((section->flags & STYP_TEXT) ||
          (section->flags & STYP_DATA_ROM)) && (section->size != 0)) {
-      map_line("                            %#08x    %#08x",
+      map_line("                            0x%06x    0x%06x",
                gp_processor_byte_to_org(state.class, section->address),
                gp_processor_byte_to_org(state.class, section->address + section->size - 1));
       prog_size += section->size;
     }
     section = section->next;
   }
-  map_line(" ");
-  map_line("                            %i program addresses used",
-           prog_size >> 1);
-  map_line(" ");
+  map_line("                            %d program addresses used",
+           gp_processor_byte_to_org(state.class, prog_size));
+/*
+  map_line("                            %d out of %d program addresses used, program memory utilization is %d%%",
+           gp_processor_byte_to_org(state.class, prog_size),
+           state.processor->prog_mem_size, state.processor->prog_mem_size * 100 / prog_size);
+*/
+  map_line(NULL);
+  map_line(NULL);
+  map_line(NULL);
 }
 
 struct file_stack {
@@ -237,68 +247,103 @@ pop_file(struct file_stack *stack)
   return stack;
 }
 
+struct syms_s {
+  gp_symbol_type *symbol;
+  gp_symbol_type *file;
+};
+
+static int
+cmp_name(const void *p1, const void *p2)
+{
+  return strcmp(((struct syms_s *)p1)->symbol->name, ((struct syms_s *)p2)->symbol->name);
+}
+
+static int
+cmp_address(const void *p1, const void *p2)
+{
+  return ((struct syms_s *)p1)->symbol->value - ((struct syms_s *)p2)->symbol->value;
+}
+
 static void
 _write_symbols(void)
 {
+  struct syms_s *syms;
+  int num_syms;
+  int i;
   struct file_stack *stack = NULL;
-  gp_symbol_type *file = NULL;
   gp_symbol_type *symbol = NULL;
-  char *location;
-  char *storage;
-  char *file_name;
 
-  map_line("                              Symbols");
-  map_line("                     Name    Address   Location    Storage File");
-  map_line("                ---------  ---------  ---------  --------- ---------");
+  syms = malloc(sizeof (struct syms_s) * state.object->num_symbols);
+  assert(syms);
 
   symbol = state.object->symbols;
+  num_syms = 0;
 
   while (symbol != NULL) {
     if (symbol->class == C_FILE) {
       stack = push_file(stack, symbol);
-    } else if (symbol->class == C_EOF) {
+    }
+    else if (symbol->class == C_EOF) {
       stack = pop_file(stack);
-    } else if ((symbol->section_number > 0) &&
+    }
+    else if ((symbol->section_number > 0) &&
                (symbol->class != C_SECTION)) {
       if (stack == NULL) {
         /* the symbol is not between a .file/.eof pair */
-        file_name = " ";
-      } else {
-        file = stack->symbol;
-        assert(file != NULL);
-        assert(file->aux_list != NULL);
-        file_name = file->aux_list->_aux_symbol._aux_file.filename;
+        syms[num_syms].file = NULL;
+      }
+      else {
+        syms[num_syms].file = stack->symbol;
+        assert(syms[num_syms].file != NULL);
+        assert(syms[num_syms].file->aux_list != NULL);
       }
 
       assert(symbol->section != NULL);
       assert(symbol->name != NULL);
 
-      if ((symbol->section->flags & STYP_TEXT) ||
-          (symbol->section->flags & STYP_DATA_ROM)) {
-        location = "program";
-      } else {
-        location = "data";
-      }
-
-      if (symbol->class == C_EXT) {
-        storage = "extern";
-      } else {
-        storage = "static";
-      }
-
-      map_line("%25s   %#08x %10s %10s %s",
-               symbol->name,
-               symbol->value,
-               location,
-               storage,
-               file_name);
-
+      syms[num_syms].symbol = symbol;
+      ++num_syms;
+      assert(num_syms <= state.object->num_symbols);
     }
     symbol = symbol->next;
   }
-  map_line(" ");
-}
 
+  qsort(syms, num_syms, sizeof (struct syms_s), cmp_name);
+
+  map_line("                              Symbols - Sorted by Name");
+  map_line("                     Name    Address   Location    Storage File");
+  map_line("                ---------  ---------  ---------  --------- ---------");
+
+  for (i = 0; i < num_syms; ++i) {
+    map_line("%25s   0x%06x %10s %10s %s",
+             syms[i].symbol->name,
+             syms[i].symbol->value,
+             ((syms[i].symbol->section->flags & STYP_TEXT) || (syms[i].symbol->section->flags & STYP_DATA_ROM)) ? "program" : "data",
+             (syms[i].symbol->class == C_EXT) ? "extern" : "static",
+             syms[i].file ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
+  }
+  map_line(NULL);
+  map_line(NULL);
+  map_line(NULL);
+
+  qsort(syms, num_syms, sizeof (struct syms_s), cmp_address);
+
+  map_line("                              Symbols - Sorted by Address");
+  map_line("                     Name    Address   Location    Storage File");
+  map_line("                ---------  ---------  ---------  --------- ---------");
+
+  for (i = 0; i < num_syms; ++i) {
+    map_line("%25s   0x%06x %10s %10s %s",
+             syms[i].symbol->name,
+             syms[i].symbol->value,
+             ((syms[i].symbol->section->flags & STYP_TEXT) || (syms[i].symbol->section->flags & STYP_DATA_ROM)) ? "program" : "data",
+             (syms[i].symbol->class == C_EXT) ? "extern" : "static",
+             syms[i].file ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
+  }
+  free(syms);
+  map_line(NULL);
+  map_line(NULL);
+}
 
 void
 make_map(void)
@@ -316,7 +361,7 @@ make_map(void)
 
   map_line("%s", GPLINK_VERSION_STRING);
   map_line("Map File - Created %s", state.startdate);
-  map_line(" ");
+  map_line(NULL);
 
   /* write sections */
   _write_sections();
