@@ -1,6 +1,7 @@
 /* Supports instruction memory.
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Scott Dattalo
+   Copyright (C) 2013 Borut Razem
 
 This file is part of gputils.
 
@@ -286,9 +287,12 @@ int
 i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word)
 {
   unsigned char bytes[2];
+  int used = 0;
 
-  if (b_memory_get(m, byte_addr, bytes) &&
-      b_memory_get(m, byte_addr + 1, bytes + 1)) {
+  used = b_memory_get(m, byte_addr, bytes);
+  used |= b_memory_get(m, byte_addr + 1, bytes + 1);
+
+  if (used) {
     *word = bytes[0] + (bytes[1] << 8);
     return 1;
   }
@@ -306,9 +310,12 @@ int
 i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word)
 {
   unsigned char bytes[2];
+  int used = 0;
 
-  if (b_memory_get(m, byte_addr, bytes) &&
-      b_memory_get(m, byte_addr + 1, bytes + 1)) {
+  used = b_memory_get(m, byte_addr, bytes);
+  used |= b_memory_get(m, byte_addr + 1, bytes + 1);
+
+  if (used) {
     *word = bytes[1] + (bytes[0] << 8);
     return 1;
   }
