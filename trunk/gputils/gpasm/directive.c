@@ -728,7 +728,7 @@ add_conf_sec_mem(int ca, gp_boolean new_config)
 {
   struct conf_mem_block_s *new = malloc(sizeof (struct conf_mem_block_s));
 
-  new->addr = (state.device.class == PROC_CLASS_PIC16 || state.device.class == PROC_CLASS_PIC16E) ? ca : ca - (ca & 1);
+  new->addr = ((state.device.class == PROC_CLASS_PIC16 || state.device.class == PROC_CLASS_PIC16E) && new_config) ? ca : ca & ~1;
   new->m = i_memory_create();
   new->new_config = new_config;
   if (state.debug_info) {

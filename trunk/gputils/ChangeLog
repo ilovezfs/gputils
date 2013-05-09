@@ -3,6 +3,10 @@
     fixed bug #264 gpasm 1.1.0 core dumps using mixed CONFIG __CONFIG
     word memory location is used if at least one byte is used
   * include/stdhdr.h: updated copyright year
+  * gpasm/directive.c:
+    fixed default access RAM argument for 16bit extended instructions
+  * gpasm/directive.c, gpasm/coff.c: fixed __CONFIG section generation
+    for configs on odd address
 
 2013-05-05  Borut Razem  <borutr@users.sourceforge.net>
   * man/gpasm.1.in, man/fr/gpasm.1.in, gpasm/gpasm.c, doc/gputils.lyx:
