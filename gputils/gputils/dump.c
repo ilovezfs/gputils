@@ -423,8 +423,7 @@ dump_source_files(void)
     for (j = start_block; j <= end_block; j++) {
       read_block(temp, j);
 
-      for (i = 0; i < FILES_PER_BLOCK; i++) {
-        offset = i * FILE_SIZE;
+      for (i = 0, offset = 0; i < FILES_PER_BLOCK; ++i, offset += FILE_SIZE) {
         substr(b, sizeof (b), &temp[offset + 1], FILE_SIZE);
 
         if (temp[offset]) {
@@ -436,10 +435,6 @@ dump_source_files(void)
           printf("%s\n", source_file_names[number_of_source_files]);
           source_files[number_of_source_files] =
             fopen(source_file_names[number_of_source_files], "rt");
-          if (source_files[number_of_source_files] == NULL) {
-            perror(source_file_names[number_of_source_files]);
-            exit(1);
-          }
           number_of_source_files++;
           if (number_of_source_files >= MAX_SOURCE_FILES) {
             fprintf(stderr, " too many source files; increase MAX_SOURCE_FILES and recompile\n");
@@ -517,18 +512,33 @@ dump_line_symbols(void)
 
           if ((sfile != 0 || smod != 0 || sline != 0 || sloc != 0) &&
             (smod & 4) == 0) {
-            assert(sfile < number_of_source_files);
+            char *source_file_name;
+            
+            if (sfile < number_of_source_files)
+              source_file_name = source_file_names[sfile];
+            else {
+              char buf[128];
+
+              snprintf(buf, sizeof (buf), "Bad source file index: %d", sfile);
+              source_file_name = buf;
+            }
+              
             printf(" %5d  %5d  %06X  %2x %s  %-50s\n",
                    lst_line_number++,
                    sline,
                    (_64k_base << 16) | sloc,
                    smod,
                    smod_flags(smod),
-                   source_file_names[sfile]);
-            if (source_files[sfile] && (sline != last_src_line)) {
-              /*fgets(buf, sizeof(buf), source_files[sfile]);*/
-              fget_line(sline, buf, sizeof (buf), source_files[sfile]);
-              printf("%s", buf);
+                   source_file_name);
+            if (sfile < number_of_source_files && sline != last_src_line) {
+              if (NULL != source_files[sfile]) {
+                /*fgets(buf, sizeof(buf), source_files[sfile]);*/
+                fget_line(sline, buf, sizeof (buf), source_files[sfile]);
+                printf("%s", buf);
+              }
+              else {
+                printf("ERROR: Source file \"%s\" does not exist.\n", source_file_names[sfile]);
+              }
             }
           }
           last_src_line = sline;

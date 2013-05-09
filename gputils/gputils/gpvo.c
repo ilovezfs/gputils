@@ -450,8 +450,14 @@ void print_sym_table (gp_object_type *object)
     } else if (symbol->section_number == N_UNDEF) {
       section = "UNDEFINED";
     } else {
-      assert(symbol->section != NULL);
-      section = symbol->section->name;
+      if (symbol->section)
+        section = symbol->section->name;
+      else {
+        static char buf[64];
+
+        snprintf(buf, sizeof (buf), "Bad num.: %d", symbol->section_number);
+        section = buf;
+      }
     }
 
     printf("%04d %-24s %-16s %#-10lx %-8s %-12s %-9s %-4i\n",
@@ -653,31 +659,40 @@ int main(int argc, char *argv[])
     case 'h':
       usage = 1;
       break;
+
     case 'b':
       state.dump_flags |= PRINT_BINARY;
       break;
+
     case 'c':
       gp_decode_mnemonics = true;
       break;
+
     case 'f':
       state.dump_flags |= PRINT_HEADER;
       break;
+
     case 'n':
       state.suppress_names = true;
       break;
+
     case 's':
       state.dump_flags |= PRINT_SECTIONS;
       break;
+
     case 't':
       state.dump_flags |= PRINT_SYMTBL;
       break;
+
     case 'y':
       gp_decode_extended = true;
       break;
+
     case 'x':
       state.export.enabled = true;
       state.export.filename = optarg;
       break;
+
     case 'v':
       fprintf(stderr, "%s\n", GPVO_VERSION_STRING);
       exit(0);
