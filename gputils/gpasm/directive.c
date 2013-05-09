@@ -4060,8 +4060,11 @@ do_insn(char *name, struct pnode *parms)
             reloc_evaluate(p, RELOCT_ACCESS);
 
           /* Default access (use the BSR unless access is to special registers) */
-          /* If extended instructions are enabled, access bit should default to 1 for low-end */
-          /* of Access Memory unless the file is explicitly an offset (e.g. [foo]) */
+          /* borutr: I don't know where is the following coming from, but is seems not to be true for MPASM 5.49,
+           * so I commented it out:
+           * 
+           * If extended instructions are enabled, access bit should default to 1 for low-end *
+           * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
           if ((state.extended_pic16e == true) && (file <= 0x5f)) {
             if (p->tag == offset) {
               a = 0;
@@ -4076,6 +4079,17 @@ do_insn(char *name, struct pnode *parms)
           else {
             a = 1;
           }
+           * and replaced it witht the following, according to the Data Sheet:
+           * 
+           * "If the index argument is properly bracketed for Indexed
+           * Literal Offset Addressing mode, the Access RAM
+           * argument is never specified; it will automatically be
+           * assumed to be ‘0’. This is in contrast to standard
+           * operation (extended instruction set disabled) when ‘a’
+           * is set on the basis of the target address. Declaring the
+           * Access RAM bit in this mode will also generate an error
+           * in the MPASM Assembler.": */
+          a = true != state.extended_pic16e && (file >= state.device.bsr_boundary && file < (0xf00 + state.device.bsr_boundary));
 
           switch (arity) {
           case 2:
@@ -4126,24 +4140,36 @@ do_insn(char *name, struct pnode *parms)
           else {
             /* Default access (use the BSR unless access is to special
                registers) */
-            /* If extended instructions are enabled, access bit should default to 1 for low-end */
-            /* of Access Memory unless the file is explicitly an offset (e.g. [foo]) */
+            /* borutr: I don't know where is the following coming from, but is seems not to be true for MPASM 5.49,
+             * so I commented it out:
+             * 
+             * If extended instructions are enabled, access bit should default to 1 for low-end *
+             * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
             if ((state.extended_pic16e == true) && (file <= 0x5f)) {
-              if (f->tag == offset)
-              {
+              if (f->tag == offset) {
                 a = 0;
               }
               else {
                 a = 1;
               }
             }
-            else if ((file < state.device.bsr_boundary) ||
-                (file >= (0xf00 + state.device.bsr_boundary))) {
+            else if ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) {
               a = 0;
             }
             else {
               a = 1;
             }
+             * and replaced it witht the following, according to the Data Sheet:
+             * 
+             * "If the index argument is properly bracketed for Indexed
+             * Literal Offset Addressing mode, the Access RAM
+             * argument is never specified; it will automatically be
+             * assumed to be ‘0’. This is in contrast to standard
+             * operation (extended instruction set disabled) when ‘a’
+             * is set on the basis of the target address. Declaring the
+             * Access RAM bit in this mode will also generate an error
+             * in the MPASM Assembler.": */
+            a = true != state.extended_pic16e && (file >= state.device.bsr_boundary && file < (0xf00 + state.device.bsr_boundary));
           }
 
           /* add relocation for the access bit, if necessary */
@@ -4183,8 +4209,11 @@ do_insn(char *name, struct pnode *parms)
             reloc_evaluate(p, RELOCT_ACCESS);
 
           /* Default access (use the BSR unless access is to special registers) */
-          /* If extended instructions are enabled, access bit should default to 1 for low-end */
-          /* of Access Memory */
+          /* borutr: I don't know where is the following coming from, but is seems not to be true for MPASM 5.49,
+           * so I commented it out:
+           * 
+           * If extended instructions are enabled, access bit should default to 1 for low-end *
+           * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
           if ((state.extended_pic16e == true) && (file <= 0x5f)) {
             if (p->tag == offset) {
               a = 0;
@@ -4199,6 +4228,17 @@ do_insn(char *name, struct pnode *parms)
           else {
             a = 1;
           }
+           * and replaced it witht the following, according to the Data Sheet:
+           * 
+           * "If the index argument is properly bracketed for Indexed
+           * Literal Offset Addressing mode, the Access RAM
+           * argument is never specified; it will automatically be
+           * assumed to be ‘0’. This is in contrast to standard
+           * operation (extended instruction set disabled) when ‘a’
+           * is set on the basis of the target address. Declaring the
+           * Access RAM bit in this mode will also generate an error
+           * in the MPASM Assembler.": */
+          a = true != state.extended_pic16e && (file >= state.device.bsr_boundary && file < (0xf00 + state.device.bsr_boundary));
 
           switch (arity) {
           case 3:
