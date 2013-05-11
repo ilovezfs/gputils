@@ -1,3 +1,7 @@
+2013-05-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpprocessor.c, libgputils/gpcfg-table.c:
+    Repair and supplement.
+
 2013-05-11  Borut Razem  <borutr@users.sourceforge.net>
   * doc/gputils.lyx: various updates
 
