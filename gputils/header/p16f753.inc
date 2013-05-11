@@ -120,7 +120,9 @@ TMR6A            EQU  H'0117'
 PR6A             EQU  H'0118'
 T6ACON0          EQU  H'0119'
 T6ACON1          EQU  H'011A'
+SLPC1CON0        EQU  H'011E'
 SLPCCON0         EQU  H'011E'
+SLPC1CON1        EQU  H'011F'
 SLPCCON1         EQU  H'011F'
 
 ;-----Bank3------------------
@@ -593,6 +595,16 @@ T6ARIMS          EQU  H'0006'
 T6AFIMS          EQU  H'0007'
 
 
+;----- SLPC1CON0 Bits -----------------------------------------------------
+SC1INS           EQU  H'0000'
+SC1TSS0          EQU  H'0002'
+SC1TSS1          EQU  H'0003'
+SC1POL           EQU  H'0004'
+SC1MRPE          EQU  H'0005'
+SC1EN            EQU  H'0007'
+
+
+
 ;----- SLPCCON0 Bits -----------------------------------------------------
 SC1INS           EQU  H'0000'
 SC1TSS0          EQU  H'0002'
@@ -602,12 +614,23 @@ SC1MRPE          EQU  H'0005'
 SC1EN            EQU  H'0007'
 
 
+
+;----- SLPC1CON1 Bits -----------------------------------------------------
+SC1ISET0         EQU  H'0000'
+SC1ISET1         EQU  H'0001'
+SC1ISET2         EQU  H'0002'
+SC1ISET3         EQU  H'0003'
+SC1ISET4         EQU  H'0004'
+
+
+
 ;----- SLPCCON1 Bits -----------------------------------------------------
 SC1ISET0         EQU  H'0000'
 SC1ISET1         EQU  H'0001'
 SC1ISET2         EQU  H'0002'
 SC1ISET3         EQU  H'0003'
 SC1ISET4         EQU  H'0004'
+
 
 
 ;----- ANSELA Bits -----------------------------------------------------
