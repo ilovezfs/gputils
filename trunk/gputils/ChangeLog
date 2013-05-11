@@ -1,3 +1,6 @@
+2013-05-11  Borut Razem  <borutr@users.sourceforge.net>
+  * doc/gputils.lyx: various updates
+
 2013-05-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/Makefile.am, header/Makefile.in, header/p16f1704.inc,
     header/p16f1708.inc, header/p16lf1704.inc, header/p16lf1708.inc,
@@ -20,6 +23,9 @@
     fixed default access RAM argument for 16bit extended instructions
   * gpasm/directive.c, gpasm/coff.c: fixed __CONFIG section generation
     for configs on odd address
+  * gplink/map.c: Symbols - Sorted by Name, Symbols - Sorted by Address
+  * gputils/gpvo.c, gputils/dump.c: don't exit if source file not found,
+    don't crash (assert) on bed section number
 
 2013-05-05  Borut Razem  <borutr@users.sourceforge.net>
   * man/gpasm.1.in, man/fr/gpasm.1.in, gpasm/gpasm.c, doc/gputils.lyx:
