@@ -1,3 +1,7 @@
+2013-05-14 Borut Razem <borut.razem AT gmail.com>
+	* tools/device-help.pl: take the svn revision number from the gputils
+	  soruce directory instead from the repository root
+
 2013-03-08 Molnar Karoly <molnarkaroly@users.sf.net>
 	* tools/device-manager.pl: bugfix
 

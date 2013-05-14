@@ -2,7 +2,7 @@
 
 =back
 
-    Copyright (C) 2012, Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2012,2013 Molnar Karoly <molnarkaroly@users.sf.net>
 
     This file is part of gputils.
 
@@ -56,8 +56,7 @@ my $verbose = 0;
 my $gputils_url = 'gputils.sourceforge.net';
 my $mplabx_url  = 'www.microchip.com/pagehandler/en-us/family/mplabx';
 
-my $gputils_local_repo = "$ENV{HOME}/svn_snapshots/gputils";
-my $gputils_path       = "$gputils_local_repo/gputils";
+my $gputils_path       = "$ENV{HOME}/svn_snapshots/gputils/gputils";
 my $gpprocessor_c      = 'gpprocessor.c';
 my $gpproc_path;
 my $svn_rev = -1;
@@ -895,7 +894,7 @@ sub read_gp_svn_revision()
   {
   $svn_rev = -1;
 
-  foreach (qx/cd $gputils_local_repo; svn info/)
+  foreach (qx/cd $gputils_path; svn info/)
     {
     if ($_ =~ /^\s*Revision\s*:\s*(\d+)\s*$/io)
       {
@@ -3656,9 +3655,9 @@ Usage: $PROGRAM [options]
 
     Options are:
 
-        -gp <path> or --gputils-local-repo <path>
+        -gp <path> or --gputils-path <path>
 
-            The program on this path looks for the gputils local repository.
+            Path to gputils source files.
 
         -mi <path> or --mp-info-file <path>
 
@@ -3714,11 +3713,11 @@ for (my $i = 0; $i < scalar(@ARGV); )
 
   given ($opt)
     {
-    when (/^-(gp|-gputils-local-repo)$/o)
+    when (/^-(gp|-gputils-path)$/o)
       {
       die "This option \"$opt\" requires a parameter.\n" if ($i > $#ARGV);
 
-      $gputils_local_repo = $ARGV[$i++];
+      $gputils_path = $ARGV[$i++];
       }
 
     when (/^-(mi|-mp-info-file)$/o)
@@ -3776,11 +3775,10 @@ for (my $i = 0; $i < scalar(@ARGV); )
     } # given ($opt)
   }
 
-die "This directory - $gputils_local_repo - not exist!" if (! -d $gputils_local_repo);
+die "This directory - $gputils_path - not exist!" if (! -d $gputils_path);
 
 read_gp_svn_revision();
 
-$gputils_path = "$gputils_local_repo/gputils";
 $gpproc_path  = "$gputils_path/libgputils/$gpprocessor_c";
 
 if ($list_file ne '')
