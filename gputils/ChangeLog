@@ -1,3 +1,8 @@
+2013-05-14  Borut Razem  <borutr@users.sourceforge.net>
+  * doc/html-help/Makefile.am, doc/html-help/Makefile.in:
+    define -gp option as gputils source directory instead of
+    repository root
+
 2013-05-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpprocessor.c, libgputils/gpcfg-table.c:
     Repair and supplement.
