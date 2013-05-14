@@ -11,7 +11,7 @@ html-doc:
 	  if [ ! -e $(DEFAULT_MPLABX_PATH)/mpasmx/8bit_device.info ]; then \
 	    @echo "Can't find mplabx installation; HTML documentation will not be built."; \
 	  else \
-	    $(top_srcdir)/../scripts/tools/device-help.pl -gp $(top_srcdir)/.. -od ./ -v 4; \
+	    $(top_srcdir)/../scripts/tools/device-help.pl -gp $(top_srcdir) -od ./ -v 4; \
 	  fi; \
 	fi
 
