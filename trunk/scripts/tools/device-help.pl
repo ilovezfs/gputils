@@ -892,16 +892,7 @@ sub find_inc_files($)
 
 sub read_gp_svn_revision()
   {
-  $svn_rev = -1;
-
-  foreach (qx/cd $gputils_path; svn info/)
-    {
-    if ($_ =~ /^\s*Revision\s*:\s*(\d+)\s*$/io)
-      {
-      $svn_rev = int($1);
-      last;
-      }
-    }
+  chomp($svn_rev = qx/cd $gputils_path; svnversion/);
   }
 
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
