@@ -1,3 +1,7 @@
+2013-05-17  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/directive.c: generate error if CONFIG directive is used with
+    non 16 bit devices
+
 2013-05-14  Borut Razem  <borutr@users.sourceforge.net>
   * doc/html-help/Makefile.am, doc/html-help/Makefile.in:
     define -gp option as gputils source directory instead of
