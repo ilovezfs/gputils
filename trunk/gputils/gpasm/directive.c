@@ -1029,6 +1029,16 @@ _do_16_config(gpasmVal r, char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_16_config(gpasmVal r, char *name, int arity, struct pnode *parms)
 {
+  /* valid only for 16 bit devices */
+  if (state.device.class != PROC_CLASS_PIC16 && state.device.class != PROC_CLASS_PIC16E) {
+    char buf[128];
+
+    snprintf(buf, sizeof (buf), "CONFIG Directive Error:  (processor \"%s\" is invalid for CONFIG directive)", state.processor->names[2]);
+    gperror(GPE_CONFIG_UNKNOWN, buf);
+
+    return r;
+  }
+
   if (state.mpasm_compatible) {
     /* store data from the last section */
     coff_close_section();
