@@ -1,6 +1,6 @@
 # gputils.nsi - NSIS installer script for gputils
 #
-# Copyright (c) 2004-2008 Borut Razem
+# Copyright (c) 2004-2013 Borut Razem
 #
 # This file is part of gputils.
 #
@@ -250,6 +250,7 @@ Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 BrandingText ""
 OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}${DASH_RELEASE}.exe"
 InstallDir "$PROGRAMFILES\gputils"
+RequestExecutionLevel admin ;Require admin rights on NT6+ (When UAC is turned on)
 
 ${Function} .onInit
   ${DebugMsg} "Pre INSTDIR = $INSTDIR"

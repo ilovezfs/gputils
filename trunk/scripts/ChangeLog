@@ -1,3 +1,6 @@
+2013-05-21 Borut Razem <borut.razem AT gmail.com>
+	* scripts/build/mingw/gputils.nsi: added RequestExecutionLevel admin
+
 2013-05-14 Borut Razem <borut.razem AT gmail.com>
 	* tools/device-help.pl: take the svn revision number from the gputils
 	  soruce directory instead from the repository root;
@@ -27,18 +30,18 @@
 	* tools/device-manager.pl: Synchronization with the modified gpprocessor.c.
 
 2012-10-14 Molnar Karoly <molnarkaroly@users.sf.net>
-        * tools/device-help.pl: The footer of each page included
-          the creation date.
+	* tools/device-help.pl: The footer of each page included
+	  the creation date.
 
 2012-10-06 Molnar Karoly <molnarkaroly@users.sf.net>
-        * tools/device-help.pl: New feature in the "Configuration Bits" tabs.
-          The "CONFIGx" label thereafter shows the mask also.
+	* tools/device-help.pl: New feature in the "Configuration Bits" tabs.
+	  The "CONFIGx" label thereafter shows the mask also.
 
 2012-10-06 Molnar Karoly <molnarkaroly@users.sf.net>
-        * tools/device-help.pl: Correction of a minor bug in
-          the read_all_informations() function. If one of
-          in field had a '<' or '>' characters, incorrectly
-          recognized the borders of fields.
+	* tools/device-help.pl: Correction of a minor bug in
+	  the read_all_informations() function. If one of
+	  in field had a '<' or '>' characters, incorrectly
+	  recognized the borders of fields.
 
 2012-10-03 Molnar Karoly <molnarkaroly@users.sf.net>
 	* tools/device-manager.pl: New command line option: --list-support-differences
@@ -47,8 +50,8 @@
 	* tools/device-manager.pl: Code cleaning.
 
 2012-09-22 Molnar Karoly <molnarkaroly@users.sf.net>
-        * tools/device-help.pl, tools/device-manager.pl: I changed of my
-          email address.
+	* tools/device-help.pl, tools/device-manager.pl: I changed of my
+	  email address.
 
 2012-09-16 Borut Razem <borut.razem AT siol.net>
 	* scripts/build/mingw/gputils.nsi,
