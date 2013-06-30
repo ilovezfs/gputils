@@ -1,3 +1,9 @@
+2013-06-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/p16f753.inc, p16hv753.inc, header/p16f1704.inc,
+    header/p16f1708.inc, header/p16lf1704.inc, header/p16lf1708.inc,
+    lkr/16f753_g.lkr, lkr/16hv753_g.lkr:
+    Fresh based on the mplabx-1.85.
+
 2013-05-17  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/directive.c: generate error if CONFIG directive is used with
     non 16 bit devices

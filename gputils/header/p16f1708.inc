@@ -164,7 +164,9 @@ SSPMSK           EQU  H'0213'
 SSP1STAT         EQU  H'0214'
 SSPSTAT          EQU  H'0214'
 SSP1CON          EQU  H'0215'
+SSP1CON1         EQU  H'0215'
 SSPCON           EQU  H'0215'
+SSPCON1          EQU  H'0215'
 SSP1CON2         EQU  H'0216'
 SSPCON2          EQU  H'0216'
 SSP1CON3         EQU  H'0217'
@@ -238,7 +240,7 @@ COG1CON0         EQU  H'0697'
 COG1CON1         EQU  H'0698'
 COG1RIS          EQU  H'0699'
 COG1RSIM         EQU  H'069A'
-GOX1FIS          EQU  H'069B'
+COG1FIS          EQU  H'069B'
 COG1FSIM         EQU  H'069C'
 COG1ASD0         EQU  H'069D'
 COG1ASD1         EQU  H'069E'
@@ -1079,7 +1081,31 @@ SSPM2            EQU  H'0002'
 SSPM3            EQU  H'0003'
 
 
+;----- SSP1CON1 Bits -----------------------------------------------------
+CKP              EQU  H'0004'
+SSPEN            EQU  H'0005'
+SSPOV            EQU  H'0006'
+WCOL             EQU  H'0007'
+
+SSPM0            EQU  H'0000'
+SSPM1            EQU  H'0001'
+SSPM2            EQU  H'0002'
+SSPM3            EQU  H'0003'
+
+
 ;----- SSPCON Bits -----------------------------------------------------
+CKP              EQU  H'0004'
+SSPEN            EQU  H'0005'
+SSPOV            EQU  H'0006'
+WCOL             EQU  H'0007'
+
+SSPM0            EQU  H'0000'
+SSPM1            EQU  H'0001'
+SSPM2            EQU  H'0002'
+SSPM3            EQU  H'0003'
+
+
+;----- SSPCON1 Bits -----------------------------------------------------
 CKP              EQU  H'0004'
 SSPEN            EQU  H'0005'
 SSPOV            EQU  H'0006'
@@ -1532,7 +1558,6 @@ G1RIS3           EQU  H'0003'
 G1RIS4           EQU  H'0004'
 G1RIS5           EQU  H'0005'
 G1RIS6           EQU  H'0006'
-G1RIS7           EQU  H'0007'
 
 
 ;----- COG1RSIM Bits -----------------------------------------------------
@@ -1543,10 +1568,9 @@ G1RSIM3          EQU  H'0003'
 G1RSIM4          EQU  H'0004'
 G1RSIM5          EQU  H'0005'
 G1RSIM6          EQU  H'0006'
-G1RSIM7          EQU  H'0007'
 
 
-;----- GOX1FIS Bits -----------------------------------------------------
+;----- COG1FIS Bits -----------------------------------------------------
 G1FIS0           EQU  H'0000'
 G1FIS1           EQU  H'0001'
 G1FIS2           EQU  H'0002'
@@ -1554,7 +1578,6 @@ G1FIS3           EQU  H'0003'
 G1FIS4           EQU  H'0004'
 G1FIS5           EQU  H'0005'
 G1FIS6           EQU  H'0006'
-G1FIS7           EQU  H'0007'
 
 
 ;----- COG1FSIM Bits -----------------------------------------------------
@@ -1565,7 +1588,6 @@ G1FSIM3          EQU  H'0003'
 G1FSIM4          EQU  H'0004'
 G1FSIM5          EQU  H'0005'
 G1FSIM6          EQU  H'0006'
-G1FSIM7          EQU  H'0007'
 
 
 ;----- COG1ASD0 Bits -----------------------------------------------------
