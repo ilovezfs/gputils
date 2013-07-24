@@ -1,3 +1,8 @@
+2013-07-24  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpcofflink.c, libgputils/gpprocessor.c:
+    applied modified patch [PATCH] Bad warning for BRA on 16F code,
+    thanks to Richard Hodges
+
 2013-06-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/p16f753.inc, p16hv753.inc, header/p16f1704.inc,
     header/p16f1708.inc, header/p16lf1704.inc, header/p16lf1708.inc,

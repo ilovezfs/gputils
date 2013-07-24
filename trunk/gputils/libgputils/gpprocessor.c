@@ -1462,7 +1462,7 @@ reloc_movlb_pic14e(unsigned int address)
 static int
 reloc_bra_pic14e(gp_section_type *section, unsigned value, unsigned int byte_org)
 {
-  int offset = value - byte_org/2 - 1;
+  int offset = value - byte_org / 2 - 1;
   if (offset > 0xff || offset < -0x100) {
     gp_warning("relative branch out of range in at %#x of section \"%s\"",
                byte_org << 1,
@@ -1593,10 +1593,15 @@ static int
 reloc_bra_pic16e(gp_section_type *section, unsigned value, unsigned int byte_org)
 {
   int offset = ((int)(value - byte_org - 2)) >> 1;
+
+  if (value & 1) {
+    gp_warning("destination address must be word aligned at %#x of section \"%s\"",
+               byte_org, section->name);
+  }
+
   if (offset > 0x3ff || offset < -0x400) {
     gp_warning("relative branch out of range in at %#x of section \"%s\"",
-               byte_org,
-               section->name);
+               byte_org, section->name);
   }
   return offset & 0x7ff;
 }
