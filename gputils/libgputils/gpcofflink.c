@@ -1415,10 +1415,6 @@ gp_cofflink_patch_addr(proc_class_t class,
     break;
 
   case RELOCT_BRA:
-    if (value & 1) {
-      gp_warning("destination address must be word aligned at %#x of section \"%s\"",
-                 org, section->name);
-    }
     data = class->reloc_bra(section, value, org);
     break;
 
