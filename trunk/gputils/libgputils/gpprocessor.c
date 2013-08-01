@@ -1008,6 +1008,13 @@ reloc_bra_unsupported(gp_section_type *section, unsigned value, unsigned int byt
   return 0;
 }
 
+static int
+reloc_high_unsupported(gp_boolean is_code, int value)
+{
+  assert(0);
+  return 0;
+}
+
 /* Common to most */
 
 static const struct insn *
@@ -1023,6 +1030,12 @@ find_insn_generic(proc_class_t cls, long int opcode)
     }
   }
   return NULL;
+}
+
+static int
+reloc_high_generic(gp_boolean is_code, int value)
+{
+  return (value >> 8) & 0xff;
 }
 
 /* Common to PIC12 and PIC14 */
@@ -1471,11 +1484,18 @@ reloc_bra_pic14e(gp_section_type *section, unsigned value, unsigned int byte_org
   return offset & 0x1ff;
 }
 
+static int
+reloc_high_pic14e(gp_boolean is_code, int value)
+{
+  /* set 7th bit if in is_code */
+  return ((value >> 8) & 0xff) | (is_code ? 0x80 : 0);
+}
+
 static const struct insn *
 find_insn_pic14e(proc_class_t cls, long int opcode)
 {
   int i;
-  /* might be from the enganced instruction set */
+  /* might be from the enhanced instruction set */
   for(i = 0; i < num_op_16cxx_enh; i++) {
     if((op_16cxx_enh[i].mask & opcode) == op_16cxx_enh[i].opcode) {
       return &op_16cxx_enh[i];
@@ -1654,6 +1674,7 @@ const struct proc_class proc_class_eeprom8 = {
   reloc_unsupported,                    /* reloc_tris */
   reloc_unsupported,                    /* reloc_movlb */
   reloc_bra_unsupported,                /* reloc_bra */
+  reloc_high_unsupported,               /* reloc_high */
   NULL,                                 /* instructions */
   NULL,                                 /* num_instructions */
   NULL,                                 /* find_insn */
@@ -1683,6 +1704,7 @@ const struct proc_class proc_class_eeprom16 = {
   reloc_unsupported,                    /* reloc_tris */
   reloc_unsupported,                    /* reloc_movlb */
   reloc_bra_unsupported,                /* reloc_bra */
+  reloc_high_unsupported,               /* reloc_high */
   NULL,                                 /* instructions */
   NULL,                                 /* num_instructions */
   NULL,                                 /* find_insn */
@@ -1712,6 +1734,7 @@ const struct proc_class proc_class_generic = {
   reloc_unsupported,                    /* reloc_tris */
   reloc_unsupported,                    /* reloc_movlb */
   reloc_bra_unsupported,                /* reloc_bra */
+  reloc_high_unsupported,               /* reloc_high */
   NULL,                                 /* instructions */
   NULL,                                 /* num_instructions */
   NULL,                                 /* find_insn */
@@ -1741,6 +1764,7 @@ const struct proc_class proc_class_pic12 = {
   reloc_tris_pic12,                     /* reloc_tris */
   reloc_unsupported,                    /* reloc_movlb */
   reloc_bra_unsupported,                /* reloc_bra */
+  reloc_high_generic,                   /* reloc_high */
   op_12c5xx,                            /* instructions */
   &num_op_12c5xx,                       /* num_instructions */
   find_insn_generic,                    /* find_insn */
@@ -1770,6 +1794,7 @@ const struct proc_class proc_class_pic12e = {
   reloc_tris_pic12e,                    /* reloc_tris */
   reloc_unsupported,                    /* reloc_movlb */
   reloc_bra_unsupported,                /* reloc_bra */
+  reloc_high_generic,                   /* reloc_high */
   op_12c5xx,                            /* instructions */
   &num_op_12c5xx,                       /* num_instructions */
   find_insn_generic,                    /* find_insn */
@@ -1799,6 +1824,7 @@ const struct proc_class proc_class_sx = {
   reloc_tris_pic12,                     /* reloc_tris */
   reloc_unsupported,                    /* reloc_movlb */
   reloc_bra_unsupported,                /* reloc_bra */
+  reloc_high_generic,                   /* reloc_high */
   op_sx,                                /* instructions */
   &num_op_sx,                           /* num_instructions */
   find_insn_generic,                    /* find_insn */
@@ -1828,6 +1854,7 @@ const struct proc_class proc_class_pic14 = {
   reloc_tris_pic14,                     /* reloc_tris */
   reloc_unsupported,                    /* reloc_movlb */
   reloc_bra_unsupported,                /* reloc_bra */
+  reloc_high_generic,                   /* reloc_high */
   op_16cxx,                             /* instructions */
   &num_op_16cxx,                        /* num_instructions */
   find_insn_generic,                    /* find_insn */
@@ -1857,6 +1884,7 @@ const struct proc_class proc_class_pic14e = {
   reloc_tris_pic14,                     /* reloc_tris */
   reloc_movlb_pic14e,                   /* reloc_movlb */
   reloc_bra_pic14e,                     /* reloc_bra */
+  reloc_high_pic14e,                    /* reloc_high */
   op_16cxx,                             /* instructions */
   &num_op_16cxx,                        /* num_instructions */
   find_insn_pic14e,                     /* find_insn */
@@ -1886,6 +1914,7 @@ const struct proc_class proc_class_pic16 = {
   reloc_unsupported,                    /* reloc_tris */
   reloc_unsupported,                    /* reloc_movlb */
   reloc_bra_unsupported,                /* reloc_bra */
+  reloc_high_generic,                   /* reloc_high */
   op_17cxx,                             /* instructions */
   &num_op_17cxx,                        /* num_instructions */
   find_insn_generic,                    /* find_insn */
@@ -1915,6 +1944,7 @@ const struct proc_class proc_class_pic16e = {
   reloc_unsupported,                    /* reloc_tris */
   reloc_movlb_pic16e,                   /* reloc_movlb */
   reloc_bra_pic16e,                     /* reloc_bra */
+  reloc_high_generic,                   /* reloc_high */
   op_18cxx,                             /* instructions */
   &num_op_18cxx,                        /* num_instructions */
   find_insn_pic16e,                     /* find_insn */

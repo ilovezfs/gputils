@@ -78,6 +78,7 @@ struct proc_class {
   int (*reloc_tris)(unsigned int address);
   int (*reloc_movlb)(unsigned int address);
   int (*reloc_bra)(struct gp_section_type *section, unsigned value, unsigned int byte_org);
+  int (*reloc_high)(gp_boolean is_code, int value);
 
   const struct insn *instructions;
   const int *num_instructions;

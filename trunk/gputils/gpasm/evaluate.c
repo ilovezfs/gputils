@@ -200,6 +200,19 @@ int can_evaluate_value(struct pnode *p)
   return 0;
 }
 
+static int is_program_segment(struct pnode *p)
+{
+  if (symbol == p->tag && 0 != strcmp(p->value.symbol, "$")) {
+    struct symbol *s = get_symbol(state.stTop, p->value.symbol);
+    struct variable *var = get_symbol_annotation(s);
+    assert(var != NULL);
+    /* if var type is gvt_cblock return 1, else return 0 */
+    return gvt_cblock != var->type;
+  }
+  else
+    return 0;
+}
+
 gpasmVal evaluate(struct pnode *p)
 {
   struct variable *var;
@@ -247,7 +260,17 @@ gpasmVal evaluate(struct pnode *p)
       return (evaluate(p->value.unop.p0) >> 16) & 0xff;
 
     case HIGH:
-      return (evaluate(p->value.unop.p0) >> 8) & 0xff;
+      {
+        gpasmVal val = (evaluate(p->value.unop.p0) >> 8) & 0xff;
+        /* set 7th bit if in absolute mode and PROC_CLASS_PIC14E and not in cblock;
+         * relative mode is handeled by the lonker */
+        if (absolute == state.mode &&
+          PROC_CLASS_PIC14E == state.device.class &&
+          is_program_segment(p->value.unop.p0)) {
+          val |= 0x80;
+        }
+        return val;
+      }
 
     case LOW:
       return evaluate(p->value.unop.p0) & 0xff;

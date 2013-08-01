@@ -1,3 +1,9 @@
+2013-08-01  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/evaluate.c, libgputils/gpcofflink.c, libgputils/gpprocessor.c,
+    libgputils/gpprocessor.h: fixed bug
+    #268 PIC14e: HIGH directive not setting bit-7
+  * gputils/gpvo.c: display symbolic value of relocation type
+
 2013-07-24  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpcofflink.c, libgputils/gpprocessor.c:
     applied modified patch [PATCH] Bad warning for BRA on 16F code,
