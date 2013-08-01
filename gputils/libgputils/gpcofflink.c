@@ -1347,7 +1347,7 @@ gp_cofflink_patch_addr(proc_class_t class,
     break;
 
   case RELOCT_HIGH:
-    data = (value >> 8) & 0xff;
+    data = class->reloc_high((symbol->section->flags & (STYP_TEXT | STYP_DATA_ROM)), value);
     break;
 
   case RELOCT_LOW:

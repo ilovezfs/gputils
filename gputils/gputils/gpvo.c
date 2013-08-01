@@ -85,18 +85,66 @@ void print_header(gp_object_type *object)
   printf("\n");
 }
 
+static const char *format_reloc_type(unsigned short type, char *buffer, size_t sizeof_buffer)
+{
+  static const char * const type_str[] = {
+    "",
+    "RELOCT_CALL",
+    "RELOCT_GOTO",
+    "RELOCT_HIGH",
+    "RELOCT_LOW",
+    "RELOCT_P",
+    "RELOCT_BANKSEL",
+    "RELOCT_PAGESEL",
+    "RELOCT_ALL",
+    "RELOCT_IBANKSEL",
+    "RELOCT_F",
+    "RELOCT_TRIS",
+    "RELOCT_MOVLR",
+    "RELOCT_MOVLB",
+    "RELOCT_GOTO2/CALL2",
+    "RELOCT_FF1",
+    "RELOCT_FF2",
+    "RELOCT_LFSR1",
+    "RELOCT_LFSR2",
+    "RELOCT_BRA/RCALL",
+    "RELOCT_CONDBRA",
+    "RELOCT_UPPER",
+    "RELOCT_ACCESS",
+    "RELOCT_PAGESEL_WREG",
+    "RELOCT_PAGESEL_BITS",
+    "RELOCT_SCNSZ_LOW",
+    "RELOCT_SCNSZ_HIGH",
+    "RELOCT_SCNSZ_UPPER",
+    "RELOCT_SCNEND_LOW",
+    "RELOCT_SCNEND_HIGH",
+    "RELOCT_SCNEND_UPPER",
+    "RELOCT_SCNEND_LFSR1",
+    "RELOCT_SCNEND_LFSR2",
+    "RELOCT_TRIS_3BIT",
+    "RELOCT_PAGESEL_MOVLP",
+  };
+
+  if (type >= NELEM(type_str))
+    type = 0;
+
+  snprintf(buffer, sizeof_buffer, "%#-4x %-20s", type, type_str[type]);
+  return buffer;
+}
+
 void print_reloc_list(proc_class_t class, gp_reloc_type *relocation)
 {
   int word_addr = class->org_to_byte_shift;
+  char buffer[32];
 
   printf("Relocations Table\n");
-  printf("Address    Offset     Type   Symbol\n");
+  printf("Address    Offset     Type                      Symbol\n");
 
   while (relocation != NULL) {
-    printf("%#-10lx %#-10x %#-6x %-s\n",
+    printf("%#-10lx %#-10x %-25s %-s\n",
            relocation->address >> word_addr,
            relocation->offset,
-           relocation->type,
+           format_reloc_type(relocation->type, buffer, sizeof(buffer)),
            relocation->symbol->name);
 
     relocation = relocation->next;
@@ -365,7 +413,7 @@ static const char *format_sym_type(int type, char *buffer, size_t sizeof_buffer)
     "T_SLONG",
     "T_USLONG"
   };
-  if (type < sizeof(type_str)/sizeof(type_str[0]))
+  if (type < NELEM(type_str))
     return type_str[type];
   snprintf(buffer, sizeof_buffer, "%d", type);
   return buffer;
@@ -381,7 +429,7 @@ static const char *format_sym_derived_type(int type, char *buffer, size_t sizeof
     "DT_ROMPTR",
     "DT_FARROMPTR",
   };
-  if (type < sizeof(type_str)/sizeof(type_str[0]))
+  if (type < NELEM(type_str))
     return type_str[type];
   snprintf(buffer, sizeof_buffer, "%d", type);
   return buffer;
