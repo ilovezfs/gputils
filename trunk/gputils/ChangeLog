@@ -1,3 +1,13 @@
+2013-08-02  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/testsuite/gpasm.project/asmfiles/op14e.asm,
+    gpasm/testsuite/gpasm.project/listfiles/op14e.lst,
+    gpasm/testsuite/gpasm.project/hexfiles/op14e.hex,
+    gpasm/testsuite/gpasm.project/objasm/op14e.asm,
+    gpasm/testsuite/gpasm.project/objlstfiles/op14e.lst,
+    gpasm/testsuite/gpasm.project/objfiles/op14e.o:
+    added gpasm regression tests for bug
+    #268 PIC14e: HIGH directive not setting bit-7
+
 2013-08-01  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/evaluate.c, libgputils/gpcofflink.c, libgputils/gpprocessor.c,
     libgputils/gpprocessor.h: fixed bug
