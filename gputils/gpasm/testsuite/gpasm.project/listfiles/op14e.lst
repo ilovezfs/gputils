@@ -1,771 +1,771 @@
-MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  1
+MPASM  5.51  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   8-2-2013  11:43:32         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
                       00001         processor 16f1933
-                      00002         radix dec
+                      00002         radix   dec
                       00003 
-  00000004            00004 FSR0    equ H'0004'
-  00000006            00005 FSR1    equ H'0006'
+  00000004            00004 FSR0    equ     H'0004'
+  00000006            00005 FSR1    equ     H'0006'
                       00006 
                       00007 ; INSN_CLASS_MOVINDF
-0000   0010           00008         moviw ++FSR0
-0001   0011           00009         moviw --FSR0
-0002   0012           00010         moviw FSR0++
-0003   0013           00011         moviw FSR0--
+0000   0010           00008         moviw   ++FSR0
+0001   0011           00009         moviw   --FSR0
+0002   0012           00010         moviw   FSR0++
+0003   0013           00011         moviw   FSR0--
                       00012 
-0004   0014           00013         moviw ++FSR1
-0005   0015           00014         moviw --FSR1
-0006   0016           00015         moviw FSR1++
-0007   0017           00016         moviw FSR1--
+0004   0014           00013         moviw   ++FSR1
+0005   0015           00014         moviw   --FSR1
+0006   0016           00015         moviw   FSR1++
+0007   0017           00016         moviw   FSR1--
                       00017 
-0008   0018           00018         movwi ++FSR0
-0009   0019           00019         movwi --FSR0
-000A   001A           00020         movwi FSR0++
-000B   001B           00021         movwi FSR0--
+0008   0018           00018         movwi   ++FSR0
+0009   0019           00019         movwi   --FSR0
+000A   001A           00020         movwi   FSR0++
+000B   001B           00021         movwi   FSR0--
                       00022 
-000C   001C           00023         movwi ++FSR1
-000D   001D           00024         movwi --FSR1
-000E   001E           00025         movwi FSR1++
-000F   001F           00026         movwi FSR1--
+000C   001C           00023         movwi   ++FSR1
+000D   001D           00024         movwi   --FSR1
+000E   001E           00025         movwi   FSR1++
+000F   001F           00026         movwi   FSR1--
                       00027 
-                      00028 moviwx  macro val
-                      00029         moviw val[FSR0]
-                      00030         moviw val[FSR1]
+                      00028 moviwx  macro   val
+                      00029         moviw   val[FSR0]
+                      00030         moviw   val[FSR1]
                       00031         endm
                       00032 
-                      00033         moviwx 0
-0010   3F00               M         moviw 0[FSR0]
-0011   3F40               M         moviw 0[FSR1]
-                      00034         moviwx 1
-0012   3F01               M         moviw 1[FSR0]
-0013   3F41               M         moviw 1[FSR1]
-                      00035         moviwx 2
-0014   3F02               M         moviw 2[FSR0]
-0015   3F42               M         moviw 2[FSR1]
-                      00036         moviwx 3
-0016   3F03               M         moviw 3[FSR0]
-0017   3F43               M         moviw 3[FSR1]
-                      00037         moviwx 4
-0018   3F04               M         moviw 4[FSR0]
-0019   3F44               M         moviw 4[FSR1]
-                      00038         moviwx 5
-001A   3F05               M         moviw 5[FSR0]
-001B   3F45               M         moviw 5[FSR1]
-                      00039         moviwx 6
-001C   3F06               M         moviw 6[FSR0]
-001D   3F46               M         moviw 6[FSR1]
-MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  2
+                      00033         moviwx  0
+0010   3F00               M         moviw   0[FSR0]
+0011   3F40               M         moviw   0[FSR1]
+                      00034         moviwx  1
+0012   3F01               M         moviw   1[FSR0]
+0013   3F41               M         moviw   1[FSR1]
+                      00035         moviwx  2
+0014   3F02               M         moviw   2[FSR0]
+0015   3F42               M         moviw   2[FSR1]
+                      00036         moviwx  3
+0016   3F03               M         moviw   3[FSR0]
+0017   3F43               M         moviw   3[FSR1]
+                      00037         moviwx  4
+0018   3F04               M         moviw   4[FSR0]
+0019   3F44               M         moviw   4[FSR1]
+                      00038         moviwx  5
+001A   3F05               M         moviw   5[FSR0]
+001B   3F45               M         moviw   5[FSR1]
+                      00039         moviwx  6
+001C   3F06               M         moviw   6[FSR0]
+001D   3F46               M         moviw   6[FSR1]
+MPASM  5.51  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   8-2-2013  11:43:32         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00040         moviwx 7
-001E   3F07               M         moviw 7[FSR0]
-001F   3F47               M         moviw 7[FSR1]
-                      00041         moviwx 8
-0020   3F08               M         moviw 8[FSR0]
-0021   3F48               M         moviw 8[FSR1]
-                      00042         moviwx 9
-0022   3F09               M         moviw 9[FSR0]
-0023   3F49               M         moviw 9[FSR1]
-                      00043         moviwx 10
-0024   3F0A               M         moviw 10[FSR0]
-0025   3F4A               M         moviw 10[FSR1]
-                      00044         moviwx 11
-0026   3F0B               M         moviw 11[FSR0]
-0027   3F4B               M         moviw 11[FSR1]
-                      00045         moviwx 12
-0028   3F0C               M         moviw 12[FSR0]
-0029   3F4C               M         moviw 12[FSR1]
-                      00046         moviwx 13
-002A   3F0D               M         moviw 13[FSR0]
-002B   3F4D               M         moviw 13[FSR1]
-                      00047         moviwx 14
-002C   3F0E               M         moviw 14[FSR0]
-002D   3F4E               M         moviw 14[FSR1]
-                      00048         moviwx 15
-002E   3F0F               M         moviw 15[FSR0]
-002F   3F4F               M         moviw 15[FSR1]
-                      00049         moviwx 16
-0030   3F10               M         moviw 16[FSR0]
-0031   3F50               M         moviw 16[FSR1]
-                      00050         moviwx 17
-0032   3F11               M         moviw 17[FSR0]
-0033   3F51               M         moviw 17[FSR1]
-                      00051         moviwx 18
-0034   3F12               M         moviw 18[FSR0]
-0035   3F52               M         moviw 18[FSR1]
-                      00052         moviwx 19
-0036   3F13               M         moviw 19[FSR0]
-0037   3F53               M         moviw 19[FSR1]
-                      00053         moviwx 20
-0038   3F14               M         moviw 20[FSR0]
-0039   3F54               M         moviw 20[FSR1]
-                      00054         moviwx 21
-003A   3F15               M         moviw 21[FSR0]
-003B   3F55               M         moviw 21[FSR1]
-                      00055         moviwx 22
-003C   3F16               M         moviw 22[FSR0]
-003D   3F56               M         moviw 22[FSR1]
-                      00056         moviwx 23
-003E   3F17               M         moviw 23[FSR0]
-003F   3F57               M         moviw 23[FSR1]
-                      00057         moviwx 24
-0040   3F18               M         moviw 24[FSR0]
-MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  3
+                      00040         moviwx  7
+001E   3F07               M         moviw   7[FSR0]
+001F   3F47               M         moviw   7[FSR1]
+                      00041         moviwx  8
+0020   3F08               M         moviw   8[FSR0]
+0021   3F48               M         moviw   8[FSR1]
+                      00042         moviwx  9
+0022   3F09               M         moviw   9[FSR0]
+0023   3F49               M         moviw   9[FSR1]
+                      00043         moviwx  10
+0024   3F0A               M         moviw   10[FSR0]
+0025   3F4A               M         moviw   10[FSR1]
+                      00044         moviwx  11
+0026   3F0B               M         moviw   11[FSR0]
+0027   3F4B               M         moviw   11[FSR1]
+                      00045         moviwx  12
+0028   3F0C               M         moviw   12[FSR0]
+0029   3F4C               M         moviw   12[FSR1]
+                      00046         moviwx  13
+002A   3F0D               M         moviw   13[FSR0]
+002B   3F4D               M         moviw   13[FSR1]
+                      00047         moviwx  14
+002C   3F0E               M         moviw   14[FSR0]
+002D   3F4E               M         moviw   14[FSR1]
+                      00048         moviwx  15
+002E   3F0F               M         moviw   15[FSR0]
+002F   3F4F               M         moviw   15[FSR1]
+                      00049         moviwx  16
+0030   3F10               M         moviw   16[FSR0]
+0031   3F50               M         moviw   16[FSR1]
+                      00050         moviwx  17
+0032   3F11               M         moviw   17[FSR0]
+0033   3F51               M         moviw   17[FSR1]
+                      00051         moviwx  18
+0034   3F12               M         moviw   18[FSR0]
+0035   3F52               M         moviw   18[FSR1]
+                      00052         moviwx  19
+0036   3F13               M         moviw   19[FSR0]
+0037   3F53               M         moviw   19[FSR1]
+                      00053         moviwx  20
+0038   3F14               M         moviw   20[FSR0]
+0039   3F54               M         moviw   20[FSR1]
+                      00054         moviwx  21
+003A   3F15               M         moviw   21[FSR0]
+003B   3F55               M         moviw   21[FSR1]
+                      00055         moviwx  22
+003C   3F16               M         moviw   22[FSR0]
+003D   3F56               M         moviw   22[FSR1]
+                      00056         moviwx  23
+003E   3F17               M         moviw   23[FSR0]
+003F   3F57               M         moviw   23[FSR1]
+                      00057         moviwx  24
+0040   3F18               M         moviw   24[FSR0]
+MPASM  5.51  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   8-2-2013  11:43:32         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0041   3F58               M         moviw 24[FSR1]
-                      00058         moviwx 25
-0042   3F19               M         moviw 25[FSR0]
-0043   3F59               M         moviw 25[FSR1]
-                      00059         moviwx 26
-0044   3F1A               M         moviw 26[FSR0]
-0045   3F5A               M         moviw 26[FSR1]
-                      00060         moviwx 27
-0046   3F1B               M         moviw 27[FSR0]
-0047   3F5B               M         moviw 27[FSR1]
-                      00061         moviwx 28
-0048   3F1C               M         moviw 28[FSR0]
-0049   3F5C               M         moviw 28[FSR1]
-                      00062         moviwx 29
-004A   3F1D               M         moviw 29[FSR0]
-004B   3F5D               M         moviw 29[FSR1]
-                      00063         moviwx 30
-004C   3F1E               M         moviw 30[FSR0]
-004D   3F5E               M         moviw 30[FSR1]
-                      00064         moviwx 31
-004E   3F1F               M         moviw 31[FSR0]
-004F   3F5F               M         moviw 31[FSR1]
+0041   3F58               M         moviw   24[FSR1]
+                      00058         moviwx  25
+0042   3F19               M         moviw   25[FSR0]
+0043   3F59               M         moviw   25[FSR1]
+                      00059         moviwx  26
+0044   3F1A               M         moviw   26[FSR0]
+0045   3F5A               M         moviw   26[FSR1]
+                      00060         moviwx  27
+0046   3F1B               M         moviw   27[FSR0]
+0047   3F5B               M         moviw   27[FSR1]
+                      00061         moviwx  28
+0048   3F1C               M         moviw   28[FSR0]
+0049   3F5C               M         moviw   28[FSR1]
+                      00062         moviwx  29
+004A   3F1D               M         moviw   29[FSR0]
+004B   3F5D               M         moviw   29[FSR1]
+                      00063         moviwx  30
+004C   3F1E               M         moviw   30[FSR0]
+004D   3F5E               M         moviw   30[FSR1]
+                      00064         moviwx  31
+004E   3F1F               M         moviw   31[FSR0]
+004F   3F5F               M         moviw   31[FSR1]
                       00065 
-                      00066         moviwx -1
-0050   3F3F               M         moviw -1[FSR0]
-0051   3F7F               M         moviw -1[FSR1]
-                      00067         moviwx -2
-0052   3F3E               M         moviw -2[FSR0]
-0053   3F7E               M         moviw -2[FSR1]
-                      00068         moviwx -3
-0054   3F3D               M         moviw -3[FSR0]
-0055   3F7D               M         moviw -3[FSR1]
-                      00069         moviwx -4
-0056   3F3C               M         moviw -4[FSR0]
-0057   3F7C               M         moviw -4[FSR1]
-                      00070         moviwx -5
-0058   3F3B               M         moviw -5[FSR0]
-0059   3F7B               M         moviw -5[FSR1]
-                      00071         moviwx -6
-005A   3F3A               M         moviw -6[FSR0]
-005B   3F7A               M         moviw -6[FSR1]
-                      00072         moviwx -7
-005C   3F39               M         moviw -7[FSR0]
-005D   3F79               M         moviw -7[FSR1]
-                      00073         moviwx -8
-005E   3F38               M         moviw -8[FSR0]
-005F   3F78               M         moviw -8[FSR1]
-                      00074         moviwx -9
-0060   3F37               M         moviw -9[FSR0]
-0061   3F77               M         moviw -9[FSR1]
-                      00075         moviwx -10
-0062   3F36               M         moviw -10[FSR0]
-0063   3F76               M         moviw -10[FSR1]
-MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  4
+                      00066         moviwx  -1
+0050   3F3F               M         moviw   -1[FSR0]
+0051   3F7F               M         moviw   -1[FSR1]
+                      00067         moviwx  -2
+0052   3F3E               M         moviw   -2[FSR0]
+0053   3F7E               M         moviw   -2[FSR1]
+                      00068         moviwx  -3
+0054   3F3D               M         moviw   -3[FSR0]
+0055   3F7D               M         moviw   -3[FSR1]
+                      00069         moviwx  -4
+0056   3F3C               M         moviw   -4[FSR0]
+0057   3F7C               M         moviw   -4[FSR1]
+                      00070         moviwx  -5
+0058   3F3B               M         moviw   -5[FSR0]
+0059   3F7B               M         moviw   -5[FSR1]
+                      00071         moviwx  -6
+005A   3F3A               M         moviw   -6[FSR0]
+005B   3F7A               M         moviw   -6[FSR1]
+                      00072         moviwx  -7
+005C   3F39               M         moviw   -7[FSR0]
+005D   3F79               M         moviw   -7[FSR1]
+                      00073         moviwx  -8
+005E   3F38               M         moviw   -8[FSR0]
+005F   3F78               M         moviw   -8[FSR1]
+                      00074         moviwx  -9
+0060   3F37               M         moviw   -9[FSR0]
+0061   3F77               M         moviw   -9[FSR1]
+                      00075         moviwx  -10
+0062   3F36               M         moviw   -10[FSR0]
+0063   3F76               M         moviw   -10[FSR1]
+MPASM  5.51  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   8-2-2013  11:43:32         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00076         moviwx -11
-0064   3F35               M         moviw -11[FSR0]
-0065   3F75               M         moviw -11[FSR1]
-                      00077         moviwx -12
-0066   3F34               M         moviw -12[FSR0]
-0067   3F74               M         moviw -12[FSR1]
-                      00078         moviwx -13
-0068   3F33               M         moviw -13[FSR0]
-0069   3F73               M         moviw -13[FSR1]
-                      00079         moviwx -14
-006A   3F32               M         moviw -14[FSR0]
-006B   3F72               M         moviw -14[FSR1]
-                      00080         moviwx -15
-006C   3F31               M         moviw -15[FSR0]
-006D   3F71               M         moviw -15[FSR1]
-                      00081         moviwx -16
-006E   3F30               M         moviw -16[FSR0]
-006F   3F70               M         moviw -16[FSR1]
-                      00082         moviwx -17
-0070   3F2F               M         moviw -17[FSR0]
-0071   3F6F               M         moviw -17[FSR1]
-                      00083         moviwx -18
-0072   3F2E               M         moviw -18[FSR0]
-0073   3F6E               M         moviw -18[FSR1]
-                      00084         moviwx -19
-0074   3F2D               M         moviw -19[FSR0]
-0075   3F6D               M         moviw -19[FSR1]
-                      00085         moviwx -20
-0076   3F2C               M         moviw -20[FSR0]
-0077   3F6C               M         moviw -20[FSR1]
-                      00086         moviwx -21
-0078   3F2B               M         moviw -21[FSR0]
-0079   3F6B               M         moviw -21[FSR1]
-                      00087         moviwx -22
-007A   3F2A               M         moviw -22[FSR0]
-007B   3F6A               M         moviw -22[FSR1]
-                      00088         moviwx -23
-007C   3F29               M         moviw -23[FSR0]
-007D   3F69               M         moviw -23[FSR1]
-                      00089         moviwx -24
-007E   3F28               M         moviw -24[FSR0]
-007F   3F68               M         moviw -24[FSR1]
-                      00090         moviwx -25
-0080   3F27               M         moviw -25[FSR0]
-0081   3F67               M         moviw -25[FSR1]
-                      00091         moviwx -26
-0082   3F26               M         moviw -26[FSR0]
-0083   3F66               M         moviw -26[FSR1]
-                      00092         moviwx -27
-0084   3F25               M         moviw -27[FSR0]
-0085   3F65               M         moviw -27[FSR1]
-                      00093         moviwx -28
-0086   3F24               M         moviw -28[FSR0]
-MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  5
+                      00076         moviwx  -11
+0064   3F35               M         moviw   -11[FSR0]
+0065   3F75               M         moviw   -11[FSR1]
+                      00077         moviwx  -12
+0066   3F34               M         moviw   -12[FSR0]
+0067   3F74               M         moviw   -12[FSR1]
+                      00078         moviwx  -13
+0068   3F33               M         moviw   -13[FSR0]
+0069   3F73               M         moviw   -13[FSR1]
+                      00079         moviwx  -14
+006A   3F32               M         moviw   -14[FSR0]
+006B   3F72               M         moviw   -14[FSR1]
+                      00080         moviwx  -15
+006C   3F31               M         moviw   -15[FSR0]
+006D   3F71               M         moviw   -15[FSR1]
+                      00081         moviwx  -16
+006E   3F30               M         moviw   -16[FSR0]
+006F   3F70               M         moviw   -16[FSR1]
+                      00082         moviwx  -17
+0070   3F2F               M         moviw   -17[FSR0]
+0071   3F6F               M         moviw   -17[FSR1]
+                      00083         moviwx  -18
+0072   3F2E               M         moviw   -18[FSR0]
+0073   3F6E               M         moviw   -18[FSR1]
+                      00084         moviwx  -19
+0074   3F2D               M         moviw   -19[FSR0]
+0075   3F6D               M         moviw   -19[FSR1]
+                      00085         moviwx  -20
+0076   3F2C               M         moviw   -20[FSR0]
+0077   3F6C               M         moviw   -20[FSR1]
+                      00086         moviwx  -21
+0078   3F2B               M         moviw   -21[FSR0]
+0079   3F6B               M         moviw   -21[FSR1]
+                      00087         moviwx  -22
+007A   3F2A               M         moviw   -22[FSR0]
+007B   3F6A               M         moviw   -22[FSR1]
+                      00088         moviwx  -23
+007C   3F29               M         moviw   -23[FSR0]
+007D   3F69               M         moviw   -23[FSR1]
+                      00089         moviwx  -24
+007E   3F28               M         moviw   -24[FSR0]
+007F   3F68               M         moviw   -24[FSR1]
+                      00090         moviwx  -25
+0080   3F27               M         moviw   -25[FSR0]
+0081   3F67               M         moviw   -25[FSR1]
+                      00091         moviwx  -26
+0082   3F26               M         moviw   -26[FSR0]
+0083   3F66               M         moviw   -26[FSR1]
+                      00092         moviwx  -27
+0084   3F25               M         moviw   -27[FSR0]
+0085   3F65               M         moviw   -27[FSR1]
+                      00093         moviwx  -28
+0086   3F24               M         moviw   -28[FSR0]
+MPASM  5.51  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   8-2-2013  11:43:32         PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0087   3F64               M         moviw -28[FSR1]
-                      00094         moviwx -29
-0088   3F23               M         moviw -29[FSR0]
-0089   3F63               M         moviw -29[FSR1]
-                      00095         moviwx -30
-008A   3F22               M         moviw -30[FSR0]
-008B   3F62               M         moviw -30[FSR1]
-                      00096         moviwx -31
-008C   3F21               M         moviw -31[FSR0]
-008D   3F61               M         moviw -31[FSR1]
-                      00097         moviwx -32
-008E   3F20               M         moviw -32[FSR0]
-008F   3F60               M         moviw -32[FSR1]
+0087   3F64               M         moviw   -28[FSR1]
+                      00094         moviwx  -29
+0088   3F23               M         moviw   -29[FSR0]
+0089   3F63               M         moviw   -29[FSR1]
+                      00095         moviwx  -30
+008A   3F22               M         moviw   -30[FSR0]
+008B   3F62               M         moviw   -30[FSR1]
+                      00096         moviwx  -31
+008C   3F21               M         moviw   -31[FSR0]
+008D   3F61               M         moviw   -31[FSR1]
+                      00097         moviwx  -32
+008E   3F20               M         moviw   -32[FSR0]
+008F   3F60               M         moviw   -32[FSR1]
                       00098 
-                      00099 movwix  macro val
-                      00100         movwi val[FSR0]
-                      00101         movwi val[FSR1]
+                      00099 movwix  macro   val
+                      00100         movwi   val[FSR0]
+                      00101         movwi   val[FSR1]
                       00102         endm
                       00103 
-                      00104         movwix 0
-0090   3F80               M         movwi 0[FSR0]
-0091   3FC0               M         movwi 0[FSR1]
-                      00105         movwix 1
-0092   3F81               M         movwi 1[FSR0]
-0093   3FC1               M         movwi 1[FSR1]
-                      00106         movwix 2
-0094   3F82               M         movwi 2[FSR0]
-0095   3FC2               M         movwi 2[FSR1]
-                      00107         movwix 3
-0096   3F83               M         movwi 3[FSR0]
-0097   3FC3               M         movwi 3[FSR1]
-                      00108         movwix 3
-0098   3F83               M         movwi 3[FSR0]
-0099   3FC3               M         movwi 3[FSR1]
-                      00109         movwix 4
-009A   3F84               M         movwi 4[FSR0]
-009B   3FC4               M         movwi 4[FSR1]
-                      00110         movwix 5
-009C   3F85               M         movwi 5[FSR0]
-009D   3FC5               M         movwi 5[FSR1]
-                      00111         movwix 6
-009E   3F86               M         movwi 6[FSR0]
-009F   3FC6               M         movwi 6[FSR1]
-                      00112         movwix 7
-00A0   3F87               M         movwi 7[FSR0]
-00A1   3FC7               M         movwi 7[FSR1]
-                      00113         movwix 8
-00A2   3F88               M         movwi 8[FSR0]
-00A3   3FC8               M         movwi 8[FSR1]
-                      00114         movwix 9
-00A4   3F89               M         movwi 9[FSR0]
-00A5   3FC9               M         movwi 9[FSR1]
-                      00115         movwix 10
-MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  6
+                      00104         movwix  0
+0090   3F80               M         movwi   0[FSR0]
+0091   3FC0               M         movwi   0[FSR1]
+                      00105         movwix  1
+0092   3F81               M         movwi   1[FSR0]
+0093   3FC1               M         movwi   1[FSR1]
+                      00106         movwix  2
+0094   3F82               M         movwi   2[FSR0]
+0095   3FC2               M         movwi   2[FSR1]
+                      00107         movwix  3
+0096   3F83               M         movwi   3[FSR0]
+0097   3FC3               M         movwi   3[FSR1]
+                      00108         movwix  3
+0098   3F83               M         movwi   3[FSR0]
+0099   3FC3               M         movwi   3[FSR1]
+                      00109         movwix  4
+009A   3F84               M         movwi   4[FSR0]
+009B   3FC4               M         movwi   4[FSR1]
+                      00110         movwix  5
+009C   3F85               M         movwi   5[FSR0]
+009D   3FC5               M         movwi   5[FSR1]
+                      00111         movwix  6
+009E   3F86               M         movwi   6[FSR0]
+009F   3FC6               M         movwi   6[FSR1]
+                      00112         movwix  7
+00A0   3F87               M         movwi   7[FSR0]
+00A1   3FC7               M         movwi   7[FSR1]
+                      00113         movwix  8
+00A2   3F88               M         movwi   8[FSR0]
+00A3   3FC8               M         movwi   8[FSR1]
+                      00114         movwix  9
+00A4   3F89               M         movwi   9[FSR0]
+00A5   3FC9               M         movwi   9[FSR1]
+                      00115         movwix  10
+MPASM  5.51  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   8-2-2013  11:43:32         PAGE  6
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-00A6   3F8A               M         movwi 10[FSR0]
-00A7   3FCA               M         movwi 10[FSR1]
-                      00116         movwix 11
-00A8   3F8B               M         movwi 11[FSR0]
-00A9   3FCB               M         movwi 11[FSR1]
-                      00117         movwix 12
-00AA   3F8C               M         movwi 12[FSR0]
-00AB   3FCC               M         movwi 12[FSR1]
-                      00118         movwix 13
-00AC   3F8D               M         movwi 13[FSR0]
-00AD   3FCD               M         movwi 13[FSR1]
-                      00119         movwix 14
-00AE   3F8E               M         movwi 14[FSR0]
-00AF   3FCE               M         movwi 14[FSR1]
-                      00120         movwix 15
-00B0   3F8F               M         movwi 15[FSR0]
-00B1   3FCF               M         movwi 15[FSR1]
-                      00121         movwix 16
-00B2   3F90               M         movwi 16[FSR0]
-00B3   3FD0               M         movwi 16[FSR1]
-                      00122         movwix 17
-00B4   3F91               M         movwi 17[FSR0]
-00B5   3FD1               M         movwi 17[FSR1]
-                      00123         movwix 18
-00B6   3F92               M         movwi 18[FSR0]
-00B7   3FD2               M         movwi 18[FSR1]
-                      00124         movwix 19
-00B8   3F93               M         movwi 19[FSR0]
-00B9   3FD3               M         movwi 19[FSR1]
-                      00125         movwix 20
-00BA   3F94               M         movwi 20[FSR0]
-00BB   3FD4               M         movwi 20[FSR1]
-                      00126         movwix 21
-00BC   3F95               M         movwi 21[FSR0]
-00BD   3FD5               M         movwi 21[FSR1]
-                      00127         movwix 22
-00BE   3F96               M         movwi 22[FSR0]
-00BF   3FD6               M         movwi 22[FSR1]
-                      00128         movwix 23
-00C0   3F97               M         movwi 23[FSR0]
-00C1   3FD7               M         movwi 23[FSR1]
-                      00129         movwix 24
-00C2   3F98               M         movwi 24[FSR0]
-00C3   3FD8               M         movwi 24[FSR1]
-                      00130         movwix 25
-00C4   3F99               M         movwi 25[FSR0]
-00C5   3FD9               M         movwi 25[FSR1]
-                      00131         movwix 26
-00C6   3F9A               M         movwi 26[FSR0]
-00C7   3FDA               M         movwi 26[FSR1]
-                      00132         movwix 27
-00C8   3F9B               M         movwi 27[FSR0]
-00C9   3FDB               M         movwi 27[FSR1]
-MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  7
+00A6   3F8A               M         movwi   10[FSR0]
+00A7   3FCA               M         movwi   10[FSR1]
+                      00116         movwix  11
+00A8   3F8B               M         movwi   11[FSR0]
+00A9   3FCB               M         movwi   11[FSR1]
+                      00117         movwix  12
+00AA   3F8C               M         movwi   12[FSR0]
+00AB   3FCC               M         movwi   12[FSR1]
+                      00118         movwix  13
+00AC   3F8D               M         movwi   13[FSR0]
+00AD   3FCD               M         movwi   13[FSR1]
+                      00119         movwix  14
+00AE   3F8E               M         movwi   14[FSR0]
+00AF   3FCE               M         movwi   14[FSR1]
+                      00120         movwix  15
+00B0   3F8F               M         movwi   15[FSR0]
+00B1   3FCF               M         movwi   15[FSR1]
+                      00121         movwix  16
+00B2   3F90               M         movwi   16[FSR0]
+00B3   3FD0               M         movwi   16[FSR1]
+                      00122         movwix  17
+00B4   3F91               M         movwi   17[FSR0]
+00B5   3FD1               M         movwi   17[FSR1]
+                      00123         movwix  18
+00B6   3F92               M         movwi   18[FSR0]
+00B7   3FD2               M         movwi   18[FSR1]
+                      00124         movwix  19
+00B8   3F93               M         movwi   19[FSR0]
+00B9   3FD3               M         movwi   19[FSR1]
+                      00125         movwix  20
+00BA   3F94               M         movwi   20[FSR0]
+00BB   3FD4               M         movwi   20[FSR1]
+                      00126         movwix  21
+00BC   3F95               M         movwi   21[FSR0]
+00BD   3FD5               M         movwi   21[FSR1]
+                      00127         movwix  22
+00BE   3F96               M         movwi   22[FSR0]
+00BF   3FD6               M         movwi   22[FSR1]
+                      00128         movwix  23
+00C0   3F97               M         movwi   23[FSR0]
+00C1   3FD7               M         movwi   23[FSR1]
+                      00129         movwix  24
+00C2   3F98               M         movwi   24[FSR0]
+00C3   3FD8               M         movwi   24[FSR1]
+                      00130         movwix  25
+00C4   3F99               M         movwi   25[FSR0]
+00C5   3FD9               M         movwi   25[FSR1]
+                      00131         movwix  26
+00C6   3F9A               M         movwi   26[FSR0]
+00C7   3FDA               M         movwi   26[FSR1]
+                      00132         movwix  27
+00C8   3F9B               M         movwi   27[FSR0]
+00C9   3FDB               M         movwi   27[FSR1]
+MPASM  5.51  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   8-2-2013  11:43:32         PAGE  7
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00133         movwix 28
-00CA   3F9C               M         movwi 28[FSR0]
-00CB   3FDC               M         movwi 28[FSR1]
-                      00134         movwix 29
-00CC   3F9D               M         movwi 29[FSR0]
-00CD   3FDD               M         movwi 29[FSR1]
-                      00135         movwix 30
-00CE   3F9E               M         movwi 30[FSR0]
-00CF   3FDE               M         movwi 30[FSR1]
-                      00136         movwix 31
-00D0   3F9F               M         movwi 31[FSR0]
-00D1   3FDF               M         movwi 31[FSR1]
+                      00133         movwix  28
+00CA   3F9C               M         movwi   28[FSR0]
+00CB   3FDC               M         movwi   28[FSR1]
+                      00134         movwix  29
+00CC   3F9D               M         movwi   29[FSR0]
+00CD   3FDD               M         movwi   29[FSR1]
+                      00135         movwix  30
+00CE   3F9E               M         movwi   30[FSR0]
+00CF   3FDE               M         movwi   30[FSR1]
+                      00136         movwix  31
+00D0   3F9F               M         movwi   31[FSR0]
+00D1   3FDF               M         movwi   31[FSR1]
                       00137 
-                      00138         movwix -1
-00D2   3FBF               M         movwi -1[FSR0]
-00D3   3FFF               M         movwi -1[FSR1]
-                      00139         movwix -2
-00D4   3FBE               M         movwi -2[FSR0]
-00D5   3FFE               M         movwi -2[FSR1]
-                      00140         movwix -3
-00D6   3FBD               M         movwi -3[FSR0]
-00D7   3FFD               M         movwi -3[FSR1]
-                      00141         movwix -3
-00D8   3FBD               M         movwi -3[FSR0]
-00D9   3FFD               M         movwi -3[FSR1]
-                      00142         movwix -4
-00DA   3FBC               M         movwi -4[FSR0]
-00DB   3FFC               M         movwi -4[FSR1]
-                      00143         movwix -5
-00DC   3FBB               M         movwi -5[FSR0]
-00DD   3FFB               M         movwi -5[FSR1]
-                      00144         movwix -6
-00DE   3FBA               M         movwi -6[FSR0]
-00DF   3FFA               M         movwi -6[FSR1]
-                      00145         movwix -7
-00E0   3FB9               M         movwi -7[FSR0]
-00E1   3FF9               M         movwi -7[FSR1]
-                      00146         movwix -8
-00E2   3FB8               M         movwi -8[FSR0]
-00E3   3FF8               M         movwi -8[FSR1]
-                      00147         movwix -9
-00E4   3FB7               M         movwi -9[FSR0]
-00E5   3FF7               M         movwi -9[FSR1]
-                      00148         movwix -10
-00E6   3FB6               M         movwi -10[FSR0]
-00E7   3FF6               M         movwi -10[FSR1]
-                      00149         movwix -11
-00E8   3FB5               M         movwi -11[FSR0]
-00E9   3FF5               M         movwi -11[FSR1]
-                      00150         movwix -12
-00EA   3FB4               M         movwi -12[FSR0]
-00EB   3FF4               M         movwi -12[FSR1]
-                      00151         movwix -13
-MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  8
+                      00138         movwix  -1
+00D2   3FBF               M         movwi   -1[FSR0]
+00D3   3FFF               M         movwi   -1[FSR1]
+                      00139         movwix  -2
+00D4   3FBE               M         movwi   -2[FSR0]
+00D5   3FFE               M         movwi   -2[FSR1]
+                      00140         movwix  -3
+00D6   3FBD               M         movwi   -3[FSR0]
+00D7   3FFD               M         movwi   -3[FSR1]
+                      00141         movwix  -3
+00D8   3FBD               M         movwi   -3[FSR0]
+00D9   3FFD               M         movwi   -3[FSR1]
+                      00142         movwix  -4
+00DA   3FBC               M         movwi   -4[FSR0]
+00DB   3FFC               M         movwi   -4[FSR1]
+                      00143         movwix  -5
+00DC   3FBB               M         movwi   -5[FSR0]
+00DD   3FFB               M         movwi   -5[FSR1]
+                      00144         movwix  -6
+00DE   3FBA               M         movwi   -6[FSR0]
+00DF   3FFA               M         movwi   -6[FSR1]
+                      00145         movwix  -7
+00E0   3FB9               M         movwi   -7[FSR0]
+00E1   3FF9               M         movwi   -7[FSR1]
+                      00146         movwix  -8
+00E2   3FB8               M         movwi   -8[FSR0]
+00E3   3FF8               M         movwi   -8[FSR1]
+                      00147         movwix  -9
+00E4   3FB7               M         movwi   -9[FSR0]
+00E5   3FF7               M         movwi   -9[FSR1]
+                      00148         movwix  -10
+00E6   3FB6               M         movwi   -10[FSR0]
+00E7   3FF6               M         movwi   -10[FSR1]
+                      00149         movwix  -11
+00E8   3FB5               M         movwi   -11[FSR0]
+00E9   3FF5               M         movwi   -11[FSR1]
+                      00150         movwix  -12
+00EA   3FB4               M         movwi   -12[FSR0]
+00EB   3FF4               M         movwi   -12[FSR1]
+                      00151         movwix  -13
+MPASM  5.51  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   8-2-2013  11:43:32         PAGE  8
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-00EC   3FB3               M         movwi -13[FSR0]
-00ED   3FF3               M         movwi -13[FSR1]
-                      00152         movwix -14
-00EE   3FB2               M         movwi -14[FSR0]
-00EF   3FF2               M         movwi -14[FSR1]
-                      00153         movwix -15
-00F0   3FB1               M         movwi -15[FSR0]
-00F1   3FF1               M         movwi -15[FSR1]
-                      00154         movwix -16
-00F2   3FB0               M         movwi -16[FSR0]
-00F3   3FF0               M         movwi -16[FSR1]
-                      00155         movwix -17
-00F4   3FAF               M         movwi -17[FSR0]
-00F5   3FEF               M         movwi -17[FSR1]
-                      00156         movwix -18
-00F6   3FAE               M         movwi -18[FSR0]
-00F7   3FEE               M         movwi -18[FSR1]
-                      00157         movwix -19
-00F8   3FAD               M         movwi -19[FSR0]
-00F9   3FED               M         movwi -19[FSR1]
-                      00158         movwix -20
-00FA   3FAC               M         movwi -20[FSR0]
-00FB   3FEC               M         movwi -20[FSR1]
-                      00159         movwix -21
-00FC   3FAB               M         movwi -21[FSR0]
-00FD   3FEB               M         movwi -21[FSR1]
-                      00160         movwix -22
-00FE   3FAA               M         movwi -22[FSR0]
-00FF   3FEA               M         movwi -22[FSR1]
-                      00161         movwix -23
-0100   3FA9               M         movwi -23[FSR0]
-0101   3FE9               M         movwi -23[FSR1]
-                      00162         movwix -24
-0102   3FA8               M         movwi -24[FSR0]
-0103   3FE8               M         movwi -24[FSR1]
-                      00163         movwix -25
-0104   3FA7               M         movwi -25[FSR0]
-0105   3FE7               M         movwi -25[FSR1]
-                      00164         movwix -26
-0106   3FA6               M         movwi -26[FSR0]
-0107   3FE6               M         movwi -26[FSR1]
-                      00165         movwix -27
-0108   3FA5               M         movwi -27[FSR0]
-0109   3FE5               M         movwi -27[FSR1]
-                      00166         movwix -28
-010A   3FA4               M         movwi -28[FSR0]
-010B   3FE4               M         movwi -28[FSR1]
-                      00167         movwix -29
-010C   3FA3               M         movwi -29[FSR0]
-010D   3FE3               M         movwi -29[FSR1]
-                      00168         movwix -30
-010E   3FA2               M         movwi -30[FSR0]
-010F   3FE2               M         movwi -30[FSR1]
-MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE  9
+00EC   3FB3               M         movwi   -13[FSR0]
+00ED   3FF3               M         movwi   -13[FSR1]
+                      00152         movwix  -14
+00EE   3FB2               M         movwi   -14[FSR0]
+00EF   3FF2               M         movwi   -14[FSR1]
+                      00153         movwix  -15
+00F0   3FB1               M         movwi   -15[FSR0]
+00F1   3FF1               M         movwi   -15[FSR1]
+                      00154         movwix  -16
+00F2   3FB0               M         movwi   -16[FSR0]
+00F3   3FF0               M         movwi   -16[FSR1]
+                      00155         movwix  -17
+00F4   3FAF               M         movwi   -17[FSR0]
+00F5   3FEF               M         movwi   -17[FSR1]
+                      00156         movwix  -18
+00F6   3FAE               M         movwi   -18[FSR0]
+00F7   3FEE               M         movwi   -18[FSR1]
+                      00157         movwix  -19
+00F8   3FAD               M         movwi   -19[FSR0]
+00F9   3FED               M         movwi   -19[FSR1]
+                      00158         movwix  -20
+00FA   3FAC               M         movwi   -20[FSR0]
+00FB   3FEC               M         movwi   -20[FSR1]
+                      00159         movwix  -21
+00FC   3FAB               M         movwi   -21[FSR0]
+00FD   3FEB               M         movwi   -21[FSR1]
+                      00160         movwix  -22
+00FE   3FAA               M         movwi   -22[FSR0]
+00FF   3FEA               M         movwi   -22[FSR1]
+                      00161         movwix  -23
+0100   3FA9               M         movwi   -23[FSR0]
+0101   3FE9               M         movwi   -23[FSR1]
+                      00162         movwix  -24
+0102   3FA8               M         movwi   -24[FSR0]
+0103   3FE8               M         movwi   -24[FSR1]
+                      00163         movwix  -25
+0104   3FA7               M         movwi   -25[FSR0]
+0105   3FE7               M         movwi   -25[FSR1]
+                      00164         movwix  -26
+0106   3FA6               M         movwi   -26[FSR0]
+0107   3FE6               M         movwi   -26[FSR1]
+                      00165         movwix  -27
+0108   3FA5               M         movwi   -27[FSR0]
+0109   3FE5               M         movwi   -27[FSR1]
+                      00166         movwix  -28
+010A   3FA4               M         movwi   -28[FSR0]
+010B   3FE4               M         movwi   -28[FSR1]
+                      00167         movwix  -29
+010C   3FA3               M         movwi   -29[FSR0]
+010D   3FE3               M         movwi   -29[FSR1]
+                      00168         movwix  -30
+010E   3FA2               M         movwi   -30[FSR0]
+010F   3FE2               M         movwi   -30[FSR1]
+MPASM  5.51  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   8-2-2013  11:43:32         PAGE  9
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00169         movwix -31
-0110   3FA1               M         movwi -31[FSR0]
-0111   3FE1               M         movwi -31[FSR1]
-                      00170         movwix -32
-0112   3FA0               M         movwi -32[FSR0]
-0113   3FE0               M         movwi -32[FSR1]
+                      00169         movwix  -31
+0110   3FA1               M         movwi   -31[FSR0]
+0111   3FE1               M         movwi   -31[FSR1]
+                      00170         movwix  -32
+0112   3FA0               M         movwi   -32[FSR0]
+0113   3FE0               M         movwi   -32[FSR1]
                       00171 
                       00172 ; INSN_CLASS_LITFSR
-                      00173 addfsrx macro val
-                      00174         addfsr FSR0,val
-                      00175         addfsr FSR1,val
+                      00173 addfsrx macro   val
+                      00174         addfsr  FSR0,val
+                      00175         addfsr  FSR1,val
                       00176         endm
                       00177 
                       00178         addfsrx 0
-0114   3100               M         addfsr FSR0,0
-0115   3140               M         addfsr FSR1,0
+0114   3100               M         addfsr  FSR0,0
+0115   3140               M         addfsr  FSR1,0
                       00179         addfsrx 1
-0116   3101               M         addfsr FSR0,1
-0117   3141               M         addfsr FSR1,1
+0116   3101               M         addfsr  FSR0,1
+0117   3141               M         addfsr  FSR1,1
                       00180         addfsrx 2
-0118   3102               M         addfsr FSR0,2
-0119   3142               M         addfsr FSR1,2
+0118   3102               M         addfsr  FSR0,2
+0119   3142               M         addfsr  FSR1,2
                       00181         addfsrx 3
-011A   3103               M         addfsr FSR0,3
-011B   3143               M         addfsr FSR1,3
+011A   3103               M         addfsr  FSR0,3
+011B   3143               M         addfsr  FSR1,3
                       00182         addfsrx 4
-011C   3104               M         addfsr FSR0,4
-011D   3144               M         addfsr FSR1,4
+011C   3104               M         addfsr  FSR0,4
+011D   3144               M         addfsr  FSR1,4
                       00183         addfsrx 5
-011E   3105               M         addfsr FSR0,5
-011F   3145               M         addfsr FSR1,5
+011E   3105               M         addfsr  FSR0,5
+011F   3145               M         addfsr  FSR1,5
                       00184         addfsrx 6
-0120   3106               M         addfsr FSR0,6
-0121   3146               M         addfsr FSR1,6
+0120   3106               M         addfsr  FSR0,6
+0121   3146               M         addfsr  FSR1,6
                       00185         addfsrx 7
-0122   3107               M         addfsr FSR0,7
-0123   3147               M         addfsr FSR1,7
+0122   3107               M         addfsr  FSR0,7
+0123   3147               M         addfsr  FSR1,7
                       00186         addfsrx 8
-0124   3108               M         addfsr FSR0,8
-0125   3148               M         addfsr FSR1,8
+0124   3108               M         addfsr  FSR0,8
+0125   3148               M         addfsr  FSR1,8
                       00187         addfsrx 9
-0126   3109               M         addfsr FSR0,9
-0127   3149               M         addfsr FSR1,9
+0126   3109               M         addfsr  FSR0,9
+0127   3149               M         addfsr  FSR1,9
                       00188         addfsrx 10
-0128   310A               M         addfsr FSR0,10
-0129   314A               M         addfsr FSR1,10
+0128   310A               M         addfsr  FSR0,10
+0129   314A               M         addfsr  FSR1,10
                       00189         addfsrx 11
-012A   310B               M         addfsr FSR0,11
-012B   314B               M         addfsr FSR1,11
+012A   310B               M         addfsr  FSR0,11
+012B   314B               M         addfsr  FSR1,11
                       00190         addfsrx 12
-012C   310C               M         addfsr FSR0,12
-012D   314C               M         addfsr FSR1,12
+012C   310C               M         addfsr  FSR0,12
+012D   314C               M         addfsr  FSR1,12
                       00191         addfsrx 13
-MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE 10
+MPASM  5.51  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   8-2-2013  11:43:32         PAGE 10
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-012E   310D               M         addfsr FSR0,13
-012F   314D               M         addfsr FSR1,13
+012E   310D               M         addfsr  FSR0,13
+012F   314D               M         addfsr  FSR1,13
                       00192         addfsrx 14
-0130   310E               M         addfsr FSR0,14
-0131   314E               M         addfsr FSR1,14
+0130   310E               M         addfsr  FSR0,14
+0131   314E               M         addfsr  FSR1,14
                       00193         addfsrx 15
-0132   310F               M         addfsr FSR0,15
-0133   314F               M         addfsr FSR1,15
+0132   310F               M         addfsr  FSR0,15
+0133   314F               M         addfsr  FSR1,15
                       00194         addfsrx 16
-0134   3110               M         addfsr FSR0,16
-0135   3150               M         addfsr FSR1,16
+0134   3110               M         addfsr  FSR0,16
+0135   3150               M         addfsr  FSR1,16
                       00195         addfsrx 17
-0136   3111               M         addfsr FSR0,17
-0137   3151               M         addfsr FSR1,17
+0136   3111               M         addfsr  FSR0,17
+0137   3151               M         addfsr  FSR1,17
                       00196         addfsrx 18
-0138   3112               M         addfsr FSR0,18
-0139   3152               M         addfsr FSR1,18
+0138   3112               M         addfsr  FSR0,18
+0139   3152               M         addfsr  FSR1,18
                       00197         addfsrx 19
-013A   3113               M         addfsr FSR0,19
-013B   3153               M         addfsr FSR1,19
+013A   3113               M         addfsr  FSR0,19
+013B   3153               M         addfsr  FSR1,19
                       00198         addfsrx 20
-013C   3114               M         addfsr FSR0,20
-013D   3154               M         addfsr FSR1,20
+013C   3114               M         addfsr  FSR0,20
+013D   3154               M         addfsr  FSR1,20
                       00199         addfsrx 21
-013E   3115               M         addfsr FSR0,21
-013F   3155               M         addfsr FSR1,21
+013E   3115               M         addfsr  FSR0,21
+013F   3155               M         addfsr  FSR1,21
                       00200         addfsrx 22
-0140   3116               M         addfsr FSR0,22
-0141   3156               M         addfsr FSR1,22
+0140   3116               M         addfsr  FSR0,22
+0141   3156               M         addfsr  FSR1,22
                       00201         addfsrx 23
-0142   3117               M         addfsr FSR0,23
-0143   3157               M         addfsr FSR1,23
+0142   3117               M         addfsr  FSR0,23
+0143   3157               M         addfsr  FSR1,23
                       00202         addfsrx 24
-0144   3118               M         addfsr FSR0,24
-0145   3158               M         addfsr FSR1,24
+0144   3118               M         addfsr  FSR0,24
+0145   3158               M         addfsr  FSR1,24
                       00203         addfsrx 25
-0146   3119               M         addfsr FSR0,25
-0147   3159               M         addfsr FSR1,25
+0146   3119               M         addfsr  FSR0,25
+0147   3159               M         addfsr  FSR1,25
                       00204         addfsrx 26
-0148   311A               M         addfsr FSR0,26
-0149   315A               M         addfsr FSR1,26
+0148   311A               M         addfsr  FSR0,26
+0149   315A               M         addfsr  FSR1,26
                       00205         addfsrx 27
-014A   311B               M         addfsr FSR0,27
-014B   315B               M         addfsr FSR1,27
+014A   311B               M         addfsr  FSR0,27
+014B   315B               M         addfsr  FSR1,27
                       00206         addfsrx 28
-014C   311C               M         addfsr FSR0,28
-014D   315C               M         addfsr FSR1,28
+014C   311C               M         addfsr  FSR0,28
+014D   315C               M         addfsr  FSR1,28
                       00207         addfsrx 29
-014E   311D               M         addfsr FSR0,29
-014F   315D               M         addfsr FSR1,29
+014E   311D               M         addfsr  FSR0,29
+014F   315D               M         addfsr  FSR1,29
                       00208         addfsrx 30
-0150   311E               M         addfsr FSR0,30
-0151   315E               M         addfsr FSR1,30
-MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE 11
+0150   311E               M         addfsr  FSR0,30
+0151   315E               M         addfsr  FSR1,30
+MPASM  5.51  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   8-2-2013  11:43:32         PAGE 11
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
                       00209         addfsrx 31
-0152   311F               M         addfsr FSR0,31
-0153   315F               M         addfsr FSR1,31
+0152   311F               M         addfsr  FSR0,31
+0153   315F               M         addfsr  FSR1,31
                       00210 
                       00211         addfsrx -1
-0154   313F               M         addfsr FSR0,-1
-0155   317F               M         addfsr FSR1,-1
+0154   313F               M         addfsr  FSR0,-1
+0155   317F               M         addfsr  FSR1,-1
                       00212         addfsrx -2
-0156   313E               M         addfsr FSR0,-2
-0157   317E               M         addfsr FSR1,-2
+0156   313E               M         addfsr  FSR0,-2
+0157   317E               M         addfsr  FSR1,-2
                       00213         addfsrx -3
-0158   313D               M         addfsr FSR0,-3
-0159   317D               M         addfsr FSR1,-3
+0158   313D               M         addfsr  FSR0,-3
+0159   317D               M         addfsr  FSR1,-3
                       00214         addfsrx -4
-015A   313C               M         addfsr FSR0,-4
-015B   317C               M         addfsr FSR1,-4
+015A   313C               M         addfsr  FSR0,-4
+015B   317C               M         addfsr  FSR1,-4
                       00215         addfsrx -5
-015C   313B               M         addfsr FSR0,-5
-015D   317B               M         addfsr FSR1,-5
+015C   313B               M         addfsr  FSR0,-5
+015D   317B               M         addfsr  FSR1,-5
                       00216         addfsrx -6
-015E   313A               M         addfsr FSR0,-6
-015F   317A               M         addfsr FSR1,-6
+015E   313A               M         addfsr  FSR0,-6
+015F   317A               M         addfsr  FSR1,-6
                       00217         addfsrx -7
-0160   3139               M         addfsr FSR0,-7
-0161   3179               M         addfsr FSR1,-7
+0160   3139               M         addfsr  FSR0,-7
+0161   3179               M         addfsr  FSR1,-7
                       00218         addfsrx -8
-0162   3138               M         addfsr FSR0,-8
-0163   3178               M         addfsr FSR1,-8
+0162   3138               M         addfsr  FSR0,-8
+0163   3178               M         addfsr  FSR1,-8
                       00219         addfsrx -9
-0164   3137               M         addfsr FSR0,-9
-0165   3177               M         addfsr FSR1,-9
+0164   3137               M         addfsr  FSR0,-9
+0165   3177               M         addfsr  FSR1,-9
                       00220         addfsrx -10
-0166   3136               M         addfsr FSR0,-10
-0167   3176               M         addfsr FSR1,-10
+0166   3136               M         addfsr  FSR0,-10
+0167   3176               M         addfsr  FSR1,-10
                       00221         addfsrx -11
-0168   3135               M         addfsr FSR0,-11
-0169   3175               M         addfsr FSR1,-11
+0168   3135               M         addfsr  FSR0,-11
+0169   3175               M         addfsr  FSR1,-11
                       00222         addfsrx -12
-016A   3134               M         addfsr FSR0,-12
-016B   3174               M         addfsr FSR1,-12
+016A   3134               M         addfsr  FSR0,-12
+016B   3174               M         addfsr  FSR1,-12
                       00223         addfsrx -13
-016C   3133               M         addfsr FSR0,-13
-016D   3173               M         addfsr FSR1,-13
+016C   3133               M         addfsr  FSR0,-13
+016D   3173               M         addfsr  FSR1,-13
                       00224         addfsrx -14
-016E   3132               M         addfsr FSR0,-14
-016F   3172               M         addfsr FSR1,-14
+016E   3132               M         addfsr  FSR0,-14
+016F   3172               M         addfsr  FSR1,-14
                       00225         addfsrx -15
-0170   3131               M         addfsr FSR0,-15
-0171   3171               M         addfsr FSR1,-15
+0170   3131               M         addfsr  FSR0,-15
+0171   3171               M         addfsr  FSR1,-15
                       00226         addfsrx -16
-0172   3130               M         addfsr FSR0,-16
-0173   3170               M         addfsr FSR1,-16
+0172   3130               M         addfsr  FSR0,-16
+0173   3170               M         addfsr  FSR1,-16
                       00227         addfsrx -17
-MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE 12
+MPASM  5.51  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   8-2-2013  11:43:32         PAGE 12
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0174   312F               M         addfsr FSR0,-17
-0175   316F               M         addfsr FSR1,-17
+0174   312F               M         addfsr  FSR0,-17
+0175   316F               M         addfsr  FSR1,-17
                       00228         addfsrx -18
-0176   312E               M         addfsr FSR0,-18
-0177   316E               M         addfsr FSR1,-18
+0176   312E               M         addfsr  FSR0,-18
+0177   316E               M         addfsr  FSR1,-18
                       00229         addfsrx -19
-0178   312D               M         addfsr FSR0,-19
-0179   316D               M         addfsr FSR1,-19
+0178   312D               M         addfsr  FSR0,-19
+0179   316D               M         addfsr  FSR1,-19
                       00230         addfsrx -20
-017A   312C               M         addfsr FSR0,-20
-017B   316C               M         addfsr FSR1,-20
+017A   312C               M         addfsr  FSR0,-20
+017B   316C               M         addfsr  FSR1,-20
                       00231         addfsrx -21
-017C   312B               M         addfsr FSR0,-21
-017D   316B               M         addfsr FSR1,-21
+017C   312B               M         addfsr  FSR0,-21
+017D   316B               M         addfsr  FSR1,-21
                       00232         addfsrx -22
-017E   312A               M         addfsr FSR0,-22
-017F   316A               M         addfsr FSR1,-22
+017E   312A               M         addfsr  FSR0,-22
+017F   316A               M         addfsr  FSR1,-22
                       00233         addfsrx -23
-0180   3129               M         addfsr FSR0,-23
-0181   3169               M         addfsr FSR1,-23
+0180   3129               M         addfsr  FSR0,-23
+0181   3169               M         addfsr  FSR1,-23
                       00234         addfsrx -24
-0182   3128               M         addfsr FSR0,-24
-0183   3168               M         addfsr FSR1,-24
+0182   3128               M         addfsr  FSR0,-24
+0183   3168               M         addfsr  FSR1,-24
                       00235         addfsrx -25
-0184   3127               M         addfsr FSR0,-25
-0185   3167               M         addfsr FSR1,-25
+0184   3127               M         addfsr  FSR0,-25
+0185   3167               M         addfsr  FSR1,-25
                       00236         addfsrx -26
-0186   3126               M         addfsr FSR0,-26
-0187   3166               M         addfsr FSR1,-26
+0186   3126               M         addfsr  FSR0,-26
+0187   3166               M         addfsr  FSR1,-26
                       00237         addfsrx -27
-0188   3125               M         addfsr FSR0,-27
-0189   3165               M         addfsr FSR1,-27
+0188   3125               M         addfsr  FSR0,-27
+0189   3165               M         addfsr  FSR1,-27
                       00238         addfsrx -28
-018A   3124               M         addfsr FSR0,-28
-018B   3164               M         addfsr FSR1,-28
+018A   3124               M         addfsr  FSR0,-28
+018B   3164               M         addfsr  FSR1,-28
                       00239         addfsrx -29
-018C   3123               M         addfsr FSR0,-29
-018D   3163               M         addfsr FSR1,-29
+018C   3123               M         addfsr  FSR0,-29
+018D   3163               M         addfsr  FSR1,-29
                       00240         addfsrx -30
-018E   3122               M         addfsr FSR0,-30
-018F   3162               M         addfsr FSR1,-30
+018E   3122               M         addfsr  FSR0,-30
+018F   3162               M         addfsr  FSR1,-30
                       00241         addfsrx -31
-0190   3121               M         addfsr FSR0,-31
-0191   3161               M         addfsr FSR1,-31
+0190   3121               M         addfsr  FSR0,-31
+0191   3161               M         addfsr  FSR1,-31
                       00242         addfsrx -32
-0192   3120               M         addfsr FSR0,-32
-0193   3160               M         addfsr FSR1,-32
+0192   3120               M         addfsr  FSR0,-32
+0193   3160               M         addfsr  FSR1,-32
                       00243 
                       00244 ; INSN_CLASS_OPWF7
                       00245 
   000007FF            00246 MAXROM = H'07FF'
   0000007F            00247 MAXRAM = H'007F'
                       00248 
-MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE 13
+MPASM  5.51  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   8-2-2013  11:43:32         PAGE 13
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
 Message[305]: Using default destination of 1 (file).
-0194   3D80           00249         addwfc 0
-0195   3D80           00250         addwfc 0,1
-0196   3D80           00251         addwfc 0,F
-0197   3D00           00252         addwfc 0,0
-0198   3D00           00253         addwfc 0,W
+0194   3D80           00249         addwfc  0
+0195   3D80           00250         addwfc  0,1
+0196   3D80           00251         addwfc  0,F
+0197   3D00           00252         addwfc  0,0
+0198   3D00           00253         addwfc  0,W
 Message[305]: Using default destination of 1 (file).
-0199   3DFF           00254         addwfc MAXRAM
+0199   3DFF           00254         addwfc  MAXRAM
                       00255 
 Message[305]: Using default destination of 1 (file).
-019A   3780           00256         asrf 0
-019B   3780           00257         asrf 0,1
-019C   3780           00258         asrf 0,F
-019D   3700           00259         asrf 0,0
-019E   3700           00260         asrf 0,W
+019A   3780           00256         asrf    0
+019B   3780           00257         asrf    0,1
+019C   3780           00258         asrf    0,F
+019D   3700           00259         asrf    0,0
+019E   3700           00260         asrf    0,W
 Message[305]: Using default destination of 1 (file).
-019F   37FF           00261         asrf MAXRAM
+019F   37FF           00261         asrf    MAXRAM
                       00262 
 Message[305]: Using default destination of 1 (file).
-01A0   3580           00263         lslf 0
-01A1   3580           00264         lslf 0,1
-01A2   3580           00265         lslf 0,F
-01A3   3500           00266         lslf 0,0
-01A4   3500           00267         lslf 0,W
+01A0   3580           00263         lslf    0
+01A1   3580           00264         lslf    0,1
+01A2   3580           00265         lslf    0,F
+01A3   3500           00266         lslf    0,0
+01A4   3500           00267         lslf    0,W
 Message[305]: Using default destination of 1 (file).
-01A5   35FF           00268         lslf MAXRAM
+01A5   35FF           00268         lslf    MAXRAM
                       00269 
 Message[305]: Using default destination of 1 (file).
-01A6   3680           00270         lsrf 0
-01A7   3680           00271         lsrf 0,1
-01A8   3680           00272         lsrf 0,F
-01A9   3600           00273         lsrf 0,0
-01AA   3600           00274         lsrf 0,W
+01A6   3680           00270         lsrf    0
+01A7   3680           00271         lsrf    0,1
+01A8   3680           00272         lsrf    0,F
+01A9   3600           00273         lsrf    0,0
+01AA   3600           00274         lsrf    0,W
 Message[305]: Using default destination of 1 (file).
-01AB   36FF           00275         lsrf MAXRAM
+01AB   36FF           00275         lsrf    MAXRAM
                       00276 
 Message[305]: Using default destination of 1 (file).
-01AC   3B80           00277         subwfb 0
-01AD   3B80           00278         subwfb 0,1
-01AE   3B80           00279         subwfb 0,F
-01AF   3B00           00280         subwfb 0,0
-01B0   3B00           00281         subwfb 0,W
+01AC   3B80           00277         subwfb  0
+01AD   3B80           00278         subwfb  0,1
+01AE   3B80           00279         subwfb  0,F
+01AF   3B00           00280         subwfb  0,0
+01B0   3B00           00281         subwfb  0,W
 Message[305]: Using default destination of 1 (file).
-01B1   3BFF           00282         subwfb MAXRAM
+01B1   3BFF           00282         subwfb  MAXRAM
                       00283 
                       00284 ; INSN_CLASS_RBRA9
                       00285 
-01B2   32FF           00286         bra $+256
-01B3   3300           00287         bra $-255
+01B2   32FF           00286         bra     $+256
+01B3   3300           00287         bra     $-255
                       00288 
                       00289 ; INSN_CLASS_IMPLICIT
 01B4   000B           00290         brw
 01B5   000A           00291         callw
-MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE 14
+MPASM  5.51  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   8-2-2013  11:43:32         PAGE 14
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -774,15 +774,24 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 01B6   0001           00292         reset
                       00293 
                       00294 ; INSN_CLASS_LIT5
-01B7   0020           00295         movlb 0
-01B8   003F           00296         movlb 31
+01B7   0020           00295         movlb   0
+01B8   003F           00296         movlb   31
                       00297 
                       00298 ; INSN_CLASS_LIT7
-01B9   3180           00299         movlp 0
-01BA   31FF           00300         movlp 127
+01B9   3180           00299         movlp   0
+01BA   31FF           00300         movlp   127
                       00301 
-                      00302         end
-MPASM  5.42                         OP14E.ASM   9-28-2011  22:49:14         PAGE 15
+                      00302 ; HIGH
+                      00303         cblock  0x10
+  00000010            00304         table_data: 1
+                      00305         endc
+                      00306 
+01BB   0081           00307         data    HIGH table_code
+01BC   0000           00308         data    HIGH table_data
+                      00309 
+01BD                  00310 table_code
+                      00311         end
+MPASM  5.51  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   8-2-2013  11:43:32         PAGE 15
 
 
 SYMBOL TABLE
@@ -796,6 +805,8 @@ __16F1933                         00000001
 addfsrx                           
 moviwx                            
 movwix                            
+table_code                        000001BD
+table_data                        00000010
 
 
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
@@ -806,12 +817,12 @@ MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
 0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
-0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXX-----
+0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXX---
 
 All other memory blocks unused.
 
-Program Memory Words Used:   443
-Program Memory Words Free:  3653
+Program Memory Words Used:   445
+Program Memory Words Free:  3651
 
 
 Errors   :     0
