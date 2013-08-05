@@ -48,6 +48,9 @@ Ne pas produire en sortie le fichier listing.
 .BR \-m ", "\-\-map
 Produire en sortie un fichier d'équivalence.
 .TP
+.BR "\-\-mplink\-compatible"
+Cette option définit le mode de compatibilité MPLINK.
+.TP
 .BR "\-o FICHIER" , " \-\-output FICHIER
 Nom alternatif du fichier de sortie.
 .TP

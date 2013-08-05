@@ -397,6 +397,10 @@ set_optimize_level(void)
 
 #define GET_OPTIONS "?a:cdf:hI:lmo:O:qrs:t:u:vw"
 
+enum {
+  OPT_MPLINK_COMPATIBLE = 0x100
+};
+
 static struct option longopts[] =
 {
   { "hex-format",          required_argument, NULL, 'a' },
@@ -416,6 +420,7 @@ static struct option longopts[] =
   { "macro",               required_argument, NULL, 'u' },
   { "version",             no_argument,       NULL, 'v' },
   { "processor-mismatch",  no_argument,       NULL, 'w' },
+  { "mplink-compatible",   no_argument,       NULL, OPT_MPLINK_COMPATIBLE },
   { NULL,                  no_argument,       NULL, '\0'}
 };
 
@@ -495,6 +500,7 @@ show_usage(void)
   printf("  -I DIR, --include DIR          Specify include directory.\n");
   printf("  -l, --no-list                  Disable list file output.\n");
   printf("  -m, --map                      Output a map file.\n");
+  printf("      --mplink-compatible         MPLINK compatibility mode\n");
   printf("  -o FILE, --output FILE         Alternate name of output file.\n");
   printf("  -O OPT, --optimize OPT         Optimization level [1].\n");
   printf("  -q, --quiet                    Quiet.\n");
@@ -561,13 +567,16 @@ process_args( int argc, char *argv[])
                  optarg);
       }
       break;
+
     case 'c':
       state.objfile = normal;
       break;
+
     case 'd':
       gp_debug_disable = false;
       yydebug = 1;
       break;
+
     case 'f':
       state.fill_value = strtol(optarg, &pc, 16);
       if ((pc == NULL) || (*pc != '\0')) {
@@ -578,34 +587,43 @@ process_args( int argc, char *argv[])
         state.fill_enable = true;
       }
       break;
+
     case '?':
     case 'h':
       usage = true;
       break;
+
     case 'I':
       gplink_add_path(optarg);
       break;
+
     case 'l':
       state.lstfile = suppress;
       break;
+
     case 'm':
       state.mapfile = normal;
       break;
+
     case 'o':
       strncpy(state.basefilename, optarg, sizeof(state.basefilename));
       pc = strrchr(state.basefilename, '.');
       if (pc)
         *pc = 0;
       break;
+
     case 'O':
       /* do nothing */
       break;
+
     case 'q':
       gp_quiet = true;
       break;
+
     case 'r':
       gp_relocate_to_shared = true;
       break;
+
     case 's':
       {
         struct srcfns *fn;
@@ -625,6 +643,7 @@ process_args( int argc, char *argv[])
         }
       }
       break;
+
     case 't':
       state.stack_size = strtol(optarg, &pc, 10);
       if ((pc == NULL) || (*pc != '\0')) {
@@ -633,15 +652,22 @@ process_args( int argc, char *argv[])
         state.has_stack = true;
       }
       break;
+
     case 'u':
       parse_define(optarg, add_script_macro);
       break;
+
     case 'v':
       fprintf(stderr, "%s\n", GPLINK_VERSION_STRING);
       exit(0);
       break;
+
     case 'w':
       processor_mismatch_warning = 0;
+      break;
+
+    case OPT_MPLINK_COMPATIBLE:
+      state.mplink_compatible = true;
       break;
     }
     if (usage)
@@ -697,7 +723,7 @@ process_args( int argc, char *argv[])
   }
 }
 
-int
+gp_boolean
 linker(void)
 {
   MemBlock *data, *program;
@@ -787,7 +813,7 @@ linker(void)
   gp_cofflink_merge_sections(state.object);
 
   /* create ROM data for initialized data sections */
-  gp_cofflink_make_idata(state.object);
+  gp_cofflink_make_idata(state.object, state.mplink_compatible);
 
   /* create memory representing target memory */
   data = i_memory_create();
@@ -804,6 +830,21 @@ linker(void)
                         state.object->sections,
                         STYP_DATA | STYP_BSS | STYP_SHARED |
                         STYP_OVERLAY | STYP_ACCESS);
+
+  if (state.mplink_compatible) {
+    /* allocate cinit section to the lowest possible address */
+    gp_section_type *cinit_section;
+
+    cinit_section = gp_coffgen_findsection(state.object,
+                       state.object->sections,
+                       ".cinit");
+    if (cinit_section) {
+      gp_cofflink_reloc_cinit(program,
+                              state.class->org_to_byte_shift,
+                              cinit_section,
+                              state.section.definition);
+    }
+  }
 
   /* FIXME: allocate assigned stacks */
 
@@ -886,10 +927,7 @@ linker(void)
 
   i_memory_free(state.i_memory);
 
-  if (gp_num_errors > 0)
-    return EXIT_FAILURE;
-  else
-    return EXIT_SUCCESS;
+  return gp_num_errors <= 0;
 }
 
 int
@@ -898,5 +936,5 @@ main(int argc, char *argv[])
   init();
   process_args(argc, argv);
 
-  return linker();
+  return linker() ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -1,3 +1,8 @@
+2013-08-05  Borut Razem  <borutr@users.sourceforge.net>
+  * gplink/gplink.c, libgputils/gpcofflink.c, libgputils/gpcofflink.h,
+    gplink/gplink.h.in, doc/gputils.lyx, man/gplink.1.in,
+    man/fr/gplink.1.in: implemented --mplink-compatble in gplink
+
 2013-08-02  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/testsuite/gpasm.project/asmfiles/op14e.asm,
     gpasm/testsuite/gpasm.project/listfiles/op14e.lst,

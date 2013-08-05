@@ -78,7 +78,7 @@ void gp_cofflink_merge_sections(gp_object_type *object);
 
 void gp_cofflink_make_cinit(gp_object_type *object);
 
-void gp_cofflink_make_idata(gp_object_type *object);
+void gp_cofflink_make_idata(gp_object_type *object, gp_boolean force_cinit);
 
 void gp_add_cinit_section(gp_object_type *object);
 
@@ -93,6 +93,11 @@ void gp_cofflink_reloc_assigned(MemBlock *m,
                                 unsigned long flags,
                                 struct symbol_table *sections,
                                 struct symbol_table *logical_sections);
+
+void gp_cofflink_reloc_cinit(MemBlock *m,
+                             int org_to_byte_shift,
+                             gp_section_type *cinit_section,
+                             struct symbol_table *sections);
 
 void gp_cofflink_reloc_unassigned(MemBlock *m,
                                   int org_to_byte_shift,

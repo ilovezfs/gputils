@@ -1,4 +1,4 @@
-.TH GPLINK 1 "2012-03-04" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
+.TH GPLINK 1 "2013-05-10" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
 .SH NAME
 gplink \- GNU PIC linker
 .SH SYNOPSIS
@@ -45,6 +45,9 @@ Disable list file output.
 .TP
 .BR \-m ", "\-\-map
 Output a map file.
+.TP
+.BR "\-\-mplink\-compatible"
+This option sets the MPLINK compatibility mode.
 .TP
 .BR "\-o FILE" , " \-\-output FILE
 Alternate name of the output file.

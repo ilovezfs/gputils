@@ -71,7 +71,7 @@ James Bowman, Craig Franklin, David Barnett and Borut Ražem
 \end_layout
 
 \begin_layout Date
-May 11, 2013
+August 4, 2013
 \end_layout
 
 \begin_layout Standard
@@ -10602,7 +10602,7 @@ Where options can be one of:
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="18" columns="3">
+<lyxtabular version="3" rows="19" columns="3">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
@@ -10864,6 +10864,35 @@ Disable the list file output
 
 \begin_layout Plain Layout
 Output a map file
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--mplink-compatible
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MPLINK compatibility mode
 \end_layout
 
 \end_inset
@@ -11143,6 +11172,25 @@ Disable processor mismatch warning.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+MPLINK compatibility mode
+\end_layout
+
+\begin_layout Standard
+When the --mplink-compatibe command line option is specified gpl tries to
+ mimic MPLINK behaviour:
+\end_layout
+
+\begin_layout Itemize
+.cinit initialized data section is generated always, even if initialized
+ data is not defined
+\end_layout
+
+\begin_layout Itemize
+.cinit initialized data section is generated at the lowest possible address
+ in the nonvolatile program memory (ROM)
 \end_layout
 
 \begin_layout Section
