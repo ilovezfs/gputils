@@ -2,6 +2,11 @@
   * gplink/gplink.c, libgputils/gpcofflink.c, libgputils/gpcofflink.h,
     gplink/gplink.h.in, doc/gputils.lyx, man/gplink.1.in,
     man/fr/gplink.1.in: implemented --mplink-compatble in gplink
+  * gplink/testsuite/gplink.project/asmfiles/op14e.asm,
+    gplink/testsuite/gplink.project/lkrfiles/op14e.lkr,
+    gplink/testsuite/gplink.project/hexfiles/op14e.hex:
+    added gplink regression tests for bug
+    #268 PIC14e: HIGH directive not setting bit-7
 
 2013-08-02  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/testsuite/gpasm.project/asmfiles/op14e.asm,
