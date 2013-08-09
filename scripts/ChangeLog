@@ -1,7 +1,11 @@
-2013-05-21 Borut Razem <borut.razem AT gmail.com>
+2013-08-09 Borut Razem <borut.razem@users.sourceforge.net>
+	* build/mingw/do_setup.sh, build/mingw/make-mingw:
+	  revived the Linux cross compilation build
+
+2013-05-21 Borut Razem <borut.razem@users.sourceforge.net>
 	* scripts/build/mingw/gputils.nsi: added RequestExecutionLevel admin
 
-2013-05-14 Borut Razem <borut.razem AT gmail.com>
+2013-05-14 Borut Razem <borut.razem@users.sourceforge.net>
 	* tools/device-help.pl: take the svn revision number from the gputils
 	  soruce directory instead from the repository root;
 	  use svnversion instead svn info to get the current svn revision
@@ -53,7 +57,7 @@
 	* tools/device-help.pl, tools/device-manager.pl: I changed of my
 	  email address.
 
-2012-09-16 Borut Razem <borut.razem AT siol.net>
+2012-09-16 Borut Razem <borut.razem@users.sourceforge.net>
 	* scripts/build/mingw/gputils.nsi,
 	  scripts/build/mingw/make-mingw: install html-help
 
@@ -88,7 +92,7 @@
 2012-09-10 Molnar Karoly <molnarkaroly@users.sf.net>
 	* tools/config-help.pl: Minor code cleaning.
 
-2012-09-09 Borut Razem <borut.razem AT siol.net>
+2012-09-09 Borut Razem <borut.razem@users.sourceforge.net>
 	* scripts/build/mingw/do_setup.sh: 
 	  detect gputils version from configure.ac, cygwin gcc-4
 
@@ -140,19 +144,19 @@
 	  Added script to adding and deleting of the processors and
 	  variety investigations.
 
-2012-07-14 Borut Razem <borut.razem AT siol.net>
+2012-07-14 Borut Razem <borut.razem@users.sourceforge.net>
 	* tools/cmp_gp_mp.sh: detect gputils specifics in lkr files
 
-2012-07-12 Borut Razem <borut.razem AT siol.net>
+2012-07-12 Borut Razem <borut.razem@users.sourceforge.net>
 	* tools/cmp_gp_mp.sh:
 	  corrected (reverted) the logic of the command line options --strict,
 	  $BLANK_OPTS added when diffing .inc files
 
-2012-07-08 Borut Razem <borut.razem AT siol.net>
+2012-07-08 Borut Razem <borut.razem@users.sourceforge.net>
 	* tools/cmp_gp_mp.sh:
 	  added command line options --strict, --help and -h
 
-2012-07-07 Borut Razem <borut.razem AT siol.net>
+2012-07-07 Borut Razem <borut.razem@users.sourceforge.net>
 	* tools/cmp_gp_mp.sh:
 	  detection of changed .inc files with gputils specific
 	  modifications (lines starting with '@@@'),
@@ -161,16 +165,16 @@
 	  detection of devices from gpprocessor.c in header folder,
 	  added command line options
 
-2012-07-01 Borut Razem <borut.razem AT siol.net>
+2012-07-01 Borut Razem <borut.razem@users.sourceforge.net>
 	* tools/cmp_gp_mp.sh: added script to compare gputils and
 	  mplabx .inc and .lkr files
 
-2009-03-13 Borut Razem <borut.razem AT siol.net>
+2009-03-13 Borut Razem <borut.razem@users.sourceforge.net>
 	* scripts/build/mingw/gputils.nsi:
 	  remove DISTRIBUTION.txt and NEWS.txt when uninstalling
 	* scripts/build/mingw/do_setup.sh: added
 
-2008-05-19 Borut Razem <borut.razem AT siol.net>
+2008-05-19 Borut Razem <borut.razem@users.sourceforge.net>
 	* scripts/ChangeLog: created
 	* scripts/build/mingw/gputils.nsi.in: renamed to
 	  scripts/build/mingw/gputils.nsi

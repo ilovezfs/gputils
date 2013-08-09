@@ -27,14 +27,23 @@
 # elsewhere, so this script only has to take care of mingw.
 
 # Options for the system on which the package will run.
-if test "$CC" == ""
-then
-  CC=i386-mingw32msvc-gcc      
-fi
-if test "$CFLAGS" == ""
-then
-  CFLAGS="-s -O2"
-fi
+case $(uname) in
+*MINGW*|*CYGWIN*)
+  TOOLSPREFIX=i386-mingw32msvc-
+  MAKENSIS="c:/Program Files/NSIS/makensis"
+  ;;
+*)
+  TOOLSPREFIX=i686-w64-mingw32-
+  MAKENSIS=makensis
+  ;;
+esac
+
+test -z "${CC}" && CC=${TOOLSPREFIX}gcc
+test -z "${AR}" && AR=${TOOLSPREFIX}ar
+test -z "${RANLIB}" && RANLIB=${TOOLSPREFIX}ranlib
+test -z "${STRIP}" && STRIP=${TOOLSPREFIX}strip 
+
+test -z "$CFLAGS" && CFLAGS="-s -O2"
 
 distname="mingw32"
 host=i386-mingw32msvc
@@ -261,7 +270,7 @@ echo "checking distribution name... $distname"
 ################################################################################
 
 print_banner "Configuring project"
-CC=$CC CFLAGS=$CFLAGS GPUTILS_HTMLDOC_PATH=$dist_dir/gputils/doc/html-help ./configure --prefix=$dist_dir/gputils --datadir=$dist_dir \
+CC=${CC} CFLAGS=${CFLAGS} AR=${AR} RANLIB=${RANLIB} STRIP=${STRIP} GPUTILS_HTMLDOC_PATH=${dist_dir}/gputils/doc/html-help ./configure --prefix=${dist_dir}/gputils --datadir=${dist_dir} \
   $config_options
 RETVAL=$?
 if [ $RETVAL -ne 0 ]; then
@@ -349,15 +358,7 @@ if test x$clean = xyes; then
   rm -Rf $dist_dir 
 fi
 
-case `uname` in
-*MINGW*)  ac_win32=1 ;;
-*CYGWIN*) ac_win32=1 ;;
-*)        ac_win32=0 ;;
-esac
-
-if [ $ac_win32 ]; then
-  cd dist/gputils
-  "c:/Program Files/NSIS/makensis" -DVER_MAJOR=$ver_major -DVER_MINOR=$ver_minor -DVER_REVISION=$ver_revision -DVER_BUILD=$ver_build -DDASH_RELEASE="" gputils.nsi
-fi
+cd dist/gputils
+${MAKENSIS} -DVER_MAJOR=$ver_major -DVER_MINOR=$ver_minor -DVER_REVISION=$ver_revision -DVER_BUILD=$ver_build -DDASH_RELEASE="" gputils.nsi
 
 exit
