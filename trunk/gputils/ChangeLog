@@ -1,3 +1,8 @@
+2013-08-09  Borut Razem  <borutr@users.sourceforge.net>
+  * config.guess, config.sub: updated from git head
+  * depcomp: updated
+  * README: updated MinGW build info
+
 2013-08-05  Borut Razem  <borutr@users.sourceforge.net>
   * gplink/gplink.c, libgputils/gpcofflink.c, libgputils/gpcofflink.h,
     gplink/gplink.h.in, doc/gputils.lyx, man/gplink.1.in,
