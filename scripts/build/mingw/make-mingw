@@ -29,7 +29,7 @@
 # Options for the system on which the package will run.
 case $(uname) in
 *MINGW*|*CYGWIN*)
-  TOOLSPREFIX=i386-mingw32msvc-
+  TOOLSPREFIX=i686-pc-mingw32-
   MAKENSIS="c:/Program Files/NSIS/makensis"
   ;;
 *)
@@ -359,6 +359,6 @@ if test x$clean = xyes; then
 fi
 
 cd dist/gputils
-${MAKENSIS} -DVER_MAJOR=$ver_major -DVER_MINOR=$ver_minor -DVER_REVISION=$ver_revision -DVER_BUILD=$ver_build -DDASH_RELEASE="" gputils.nsi
+"${MAKENSIS}" -DVER_MAJOR=$ver_major -DVER_MINOR=$ver_minor -DVER_REVISION=$ver_revision -DVER_BUILD=$ver_build -DDASH_RELEASE="" gputils.nsi
 
 exit
