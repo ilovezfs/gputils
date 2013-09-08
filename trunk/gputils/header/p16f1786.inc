@@ -175,7 +175,9 @@ SSPMSK           EQU  H'0213'
 SSP1STAT         EQU  H'0214'
 SSPSTAT          EQU  H'0214'
 SSP1CON          EQU  H'0215'
+SSP1CON1         EQU  H'0215'
 SSPCON           EQU  H'0215'
+SSPCON1          EQU  H'0215'
 SSP1CON2         EQU  H'0216'
 SSPCON2          EQU  H'0216'
 SSP1CON3         EQU  H'0217'
@@ -558,6 +560,8 @@ PSMC2SIE         EQU  H'0001'
 PSMC3SIE         EQU  H'0002'
 PSMC1TIE         EQU  H'0004'
 PSMC2TIE         EQU  H'0005'
+PSMC3TIE         EQU  H'0006'
+
 PMSC3TIE         EQU  H'0006'
 
 
@@ -1231,7 +1235,31 @@ SSPM2            EQU  H'0002'
 SSPM3            EQU  H'0003'
 
 
+;----- SSP1CON1 Bits -----------------------------------------------------
+CKP              EQU  H'0004'
+SSPEN            EQU  H'0005'
+SSPOV            EQU  H'0006'
+WCOL             EQU  H'0007'
+
+SSPM0            EQU  H'0000'
+SSPM1            EQU  H'0001'
+SSPM2            EQU  H'0002'
+SSPM3            EQU  H'0003'
+
+
 ;----- SSPCON Bits -----------------------------------------------------
+CKP              EQU  H'0004'
+SSPEN            EQU  H'0005'
+SSPOV            EQU  H'0006'
+WCOL             EQU  H'0007'
+
+SSPM0            EQU  H'0000'
+SSPM1            EQU  H'0001'
+SSPM2            EQU  H'0002'
+SSPM3            EQU  H'0003'
+
+
+;----- SSPCON1 Bits -----------------------------------------------------
 CKP              EQU  H'0004'
 SSPEN            EQU  H'0005'
 SSPOV            EQU  H'0006'

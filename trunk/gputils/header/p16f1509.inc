@@ -23,16 +23,6 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
-;;;; Begin: Added in gputils
-
-;==========================================================================
-;
-;       Gputils Specific Revision History
-;
-;==========================================================================
-
-;       19 Jun 2012  Added ADCS{0,1,2} bits to "ADCON1 Bits".
-;;;; End: Added in gputils
 
 ;==========================================================================
 ;
@@ -136,6 +126,7 @@ PMCON2           EQU  H'0196'
 VREGCON          EQU  H'0197'
 RCREG            EQU  H'0199'
 TXREG            EQU  H'019A'
+SPBRG            EQU  H'019B'
 SPBRGL           EQU  H'019B'
 SPBRGH           EQU  H'019C'
 RCSTA            EQU  H'019D'
@@ -499,12 +490,6 @@ GO               EQU  H'0001'
 
 ;----- ADCON1 Bits -----------------------------------------------------
 ADFM             EQU  H'0007'
-
-;;;; Begin: Added in gputils
-ADCS0            EQU  H'0004'
-ADCS1            EQU  H'0005'
-ADCS2            EQU  H'0006'
-;;;; End: Added in gputils
 
 ADPREF0          EQU  H'0000'
 ADPREF1          EQU  H'0001'

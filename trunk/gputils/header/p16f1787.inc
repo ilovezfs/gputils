@@ -182,7 +182,9 @@ SSPMSK           EQU  H'0213'
 SSP1STAT         EQU  H'0214'
 SSPSTAT          EQU  H'0214'
 SSP1CON          EQU  H'0215'
+SSP1CON1         EQU  H'0215'
 SSPCON           EQU  H'0215'
+SSPCON1          EQU  H'0215'
 SSP1CON2         EQU  H'0216'
 SSPCON2          EQU  H'0216'
 SSP1CON3         EQU  H'0217'
@@ -236,6 +238,7 @@ IOCEF            EQU  H'039F'
 ;-----Bank10------------------
 OPA1CON          EQU  H'0511'
 OPA2CON          EQU  H'0513'
+OPA3CON          EQU  H'0515'
 CLKRCON          EQU  H'051A'
 
 ;-----Bank16------------------
@@ -602,6 +605,8 @@ PSMC2SIE         EQU  H'0001'
 PSMC3SIE         EQU  H'0002'
 PSMC1TIE         EQU  H'0004'
 PSMC2TIE         EQU  H'0005'
+PSMC3TIE         EQU  H'0006'
+
 PMSC3TIE         EQU  H'0006'
 
 
@@ -1324,7 +1329,31 @@ SSPM2            EQU  H'0002'
 SSPM3            EQU  H'0003'
 
 
+;----- SSP1CON1 Bits -----------------------------------------------------
+CKP              EQU  H'0004'
+SSPEN            EQU  H'0005'
+SSPOV            EQU  H'0006'
+WCOL             EQU  H'0007'
+
+SSPM0            EQU  H'0000'
+SSPM1            EQU  H'0001'
+SSPM2            EQU  H'0002'
+SSPM3            EQU  H'0003'
+
+
 ;----- SSPCON Bits -----------------------------------------------------
+CKP              EQU  H'0004'
+SSPEN            EQU  H'0005'
+SSPOV            EQU  H'0006'
+WCOL             EQU  H'0007'
+
+SSPM0            EQU  H'0000'
+SSPM1            EQU  H'0001'
+SSPM2            EQU  H'0002'
+SSPM3            EQU  H'0003'
+
+
+;----- SSPCON1 Bits -----------------------------------------------------
 CKP              EQU  H'0004'
 SSPEN            EQU  H'0005'
 SSPOV            EQU  H'0006'
@@ -1707,6 +1736,14 @@ OPA2PCH1         EQU  H'0001'
 
 OPA2SP           EQU  H'0006'
 OPA2EN           EQU  H'0007'
+
+
+;----- OPA3CON Bits -----------------------------------------------------
+OPA3PCH0         EQU  H'0000'
+OPA3PCH1         EQU  H'0001'
+
+OPA3SP           EQU  H'0006'
+OPA3EN           EQU  H'0007'
 
 
 ;----- CLKRCON Bits -----------------------------------------------------
@@ -2624,7 +2661,8 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'048C'-H'049F'
        __BADRAM  H'050C'-H'0510'
        __BADRAM  H'0512'
-       __BADRAM  H'0514'-H'0519'
+       __BADRAM  H'0514'
+       __BADRAM  H'0516'-H'0519'
        __BADRAM  H'051B'-H'051F'
        __BADRAM  H'058C'-H'059F'
        __BADRAM  H'060C'-H'061F'

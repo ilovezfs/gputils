@@ -196,9 +196,9 @@ ADRESL           EQU  H'0FC3'
 ADRESH           EQU  H'0FC4'
 SSP1CON2         EQU  H'0FC5'
 SSPCON2          EQU  H'0FC5'
-SSP1CON          EQU  H'0FC6'
 SSP1CON1         EQU  H'0FC6'
 SSPCON           EQU  H'0FC6'
+SSPCON1          EQU  H'0FC6'
 SSP1STAT         EQU  H'0FC7'
 SSPSTAT          EQU  H'0FC7'
 SSP1ADD          EQU  H'0FC8'
@@ -1603,18 +1603,6 @@ ACKSTAT          EQU  H'0006'
 GCEN             EQU  H'0007'
 
 
-;----- SSP1CON Bits -----------------------------------------------------
-CKP              EQU  H'0004'
-SSPEN            EQU  H'0005'
-SSPOV            EQU  H'0006'
-WCOL             EQU  H'0007'
-
-SSPM0            EQU  H'0000'
-SSPM1            EQU  H'0001'
-SSPM2            EQU  H'0002'
-SSPM3            EQU  H'0003'
-
-
 ;----- SSP1CON1 Bits -----------------------------------------------------
 CKP              EQU  H'0004'
 SSPEN            EQU  H'0005'
@@ -1628,6 +1616,18 @@ SSPM3            EQU  H'0003'
 
 
 ;----- SSPCON Bits -----------------------------------------------------
+CKP              EQU  H'0004'
+SSPEN            EQU  H'0005'
+SSPOV            EQU  H'0006'
+WCOL             EQU  H'0007'
+
+SSPM0            EQU  H'0000'
+SSPM1            EQU  H'0001'
+SSPM2            EQU  H'0002'
+SSPM3            EQU  H'0003'
+
+
+;----- SSPCON1 Bits -----------------------------------------------------
 CKP              EQU  H'0004'
 SSPEN            EQU  H'0005'
 SSPOV            EQU  H'0006'

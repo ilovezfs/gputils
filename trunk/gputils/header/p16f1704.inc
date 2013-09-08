@@ -372,6 +372,8 @@ RCIF             EQU  H'0005'
 ADIF             EQU  H'0006'
 TMR1GIF          EQU  H'0007'
 
+CCPIF            EQU  H'0002'
+
 
 ;----- PIR2 Bits -----------------------------------------------------
 CCP2IF           EQU  H'0000'
@@ -445,12 +447,14 @@ TRISC5           EQU  H'0005'
 ;----- PIE1 Bits -----------------------------------------------------
 TMR1IE           EQU  H'0000'
 TMR2IE           EQU  H'0001'
-CCPIE            EQU  H'0002'
+CCP1IE           EQU  H'0002'
 SSP1IE           EQU  H'0003'
 TXIE             EQU  H'0004'
 RCIE             EQU  H'0005'
 ADIE             EQU  H'0006'
 TMR1GIE          EQU  H'0007'
+
+CCPIE            EQU  H'0002'
 
 
 ;----- PIE2 Bits -----------------------------------------------------
