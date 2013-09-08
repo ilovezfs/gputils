@@ -1,3 +1,7 @@
+2013-09-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/*.inc:
+    Updated based on the mplabx-1.9.
+
 2013-08-09  Borut Razem  <borutr@users.sourceforge.net>
   * config.guess, config.sub: updated from git head
   * depcomp: updated
