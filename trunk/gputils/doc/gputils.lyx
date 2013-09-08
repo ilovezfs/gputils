@@ -279,13 +279,18 @@ p12f617        p12f629        p12f635        p12f675        p12f683
 \begin_inset Newline newline
 \end_inset
 
-p12f1501       p12f1822       p12f1840       p12hv609       p12hv615   
-    p12hv752        
+p12f1501       p12f1571       p12f1572       p12f1822       p12f1840   
+    p12hv609        
 \begin_inset Newline newline
 \end_inset
 
-p12lf1501      p12lf1552      p12lf1822      p12lf1840      p12lf1840t39a
-  p12lf1840t48a   
+p12hv615       p12hv752       p12lf1501      p12lf1571      p12lf1572  
+    p12lf1552       
+\begin_inset Newline newline
+\end_inset
+
+p12lf1822      p12lf1840      p12lf1840t39a  p12lf1840t48a             
+                    
 \begin_inset Newline newline
 \end_inset
 
@@ -445,26 +450,31 @@ p16f1509       p16f1512       p16f1513       p16f1516       p16f1517
 \end_inset
 
 p16f1519       p16f1526       p16f1527       p16f1704       p16f1708   
-    p16f1782        
+    p16f1713        
 \begin_inset Newline newline
 \end_inset
 
-p16f1783       p16f1784       p16f1786       p16f1787       p16f1788   
-    p16f1789        
+p16f1716       p16f1782       p16f1783       p16f1784       p16f1786   
+    p16f1787        
 \begin_inset Newline newline
 \end_inset
 
-p16f1823       p16f1824       p16f1825       p16f1826       p16f1827   
-    p16f1828        
+p16f1788       p16f1789       p16f1823       p16f1824       p16f1825   
+    p16f1826        
 \begin_inset Newline newline
 \end_inset
 
-p16f1829       p16f1847       p16f1933       p16f1934       p16f1936   
-    p16f1937        
+p16f1827       p16f1828       p16f1829       p16f1829lin    p16f1847   
+    p16f1933        
 \begin_inset Newline newline
 \end_inset
 
-p16f1938       p16f1939       p16f1946       p16f1947       p16f1xxx   
+p16f1934       p16f1936       p16f1937       p16f1938       p16f1939   
+    p16f1946        
+\begin_inset Newline newline
+\end_inset
+
+p16f1947       p16f1xxx                                                
                     
 \begin_inset Newline newline
 \end_inset
@@ -494,32 +504,32 @@ p16lf1512      p16lf1513      p16lf1516      p16lf1517      p16lf1518
 \begin_inset Newline newline
 \end_inset
 
-p16lf1526      p16lf1527      p16lf1704      p16lf1708      p16lf1782  
-    p16lf1783       
+p16lf1526      p16lf1527      p16lf1704      p16lf1708      p16lf1713  
+    p16lf1716       
 \begin_inset Newline newline
 \end_inset
 
-p16lf1784      p16lf1786      p16lf1787      p16lf1788      p16lf1789  
-    p16lf1823       
+p16lf1782      p16lf1783      p16lf1784      p16lf1786      p16lf1787  
+    p16lf1788       
 \begin_inset Newline newline
 \end_inset
 
-p16lf1824      p16lf1824t39a  p16lf1825      p16lf1826      p16lf1827  
-    p16lf1828       
+p16lf1789      p16lf1823      p16lf1824      p16lf1824t39a  p16lf1825  
+    p16lf1826       
 \begin_inset Newline newline
 \end_inset
 
-p16lf1829      p16lf1847      p16lf1902      p16lf1903      p16lf1904  
-    p16lf1906       
+p16lf1827      p16lf1828      p16lf1829      p16lf1847      p16lf1902  
+    p16lf1903       
 \begin_inset Newline newline
 \end_inset
 
-p16lf1907      p16lf1933      p16lf1934      p16lf1936      p16lf1937  
-    p16lf1938       
+p16lf1904      p16lf1906      p16lf1907      p16lf1933      p16lf1934  
+    p16lf1936       
 \begin_inset Newline newline
 \end_inset
 
-p16lf1939      p16lf1946      p16lf1947                                
+p16lf1937      p16lf1938      p16lf1939      p16lf1946      p16lf1947  
                     
 \begin_inset Newline newline
 \end_inset

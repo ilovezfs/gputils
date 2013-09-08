@@ -1,4 +1,16 @@
 2013-09-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, header/Makefile.am, header/Makefile.in
+    header/p12f1571.inc, header/p12f1572.inc, header/p12lf1571.inc
+    header/p12lf1572.inc, header/p16f1713.inc, header/p16f1716.inc
+    header/p16f1829lin.inc, header/p16lf1713.inc, header/p16lf1716.inc
+    libgputils/gpcfg-table.c, libgputils/gpprocessor.c
+    lkr/12f1571_g.lkr, lkr/12f1572_g.lkr, lkr/12lf1571_g.lkr
+    lkr/12lf1572_g.lkr, lkr/16f1713_g.lkr, lkr/16f1716_g.lkr
+    lkr/16f1829lin_g.lkr, lkr/16lf1713_g.lkr, lkr/16lf1716_g.lkr
+    lkr/Makefile.am, lkr/Makefile.in
+    New devices based on the mplabx-1.9.
+
+2013-09-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/*.inc:
     Updated based on the mplabx-1.9.
 
