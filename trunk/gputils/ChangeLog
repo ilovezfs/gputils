@@ -1,3 +1,7 @@
+2013-09-25  Borut Razem  <borutr@users.sourceforge.net>
+  * gpasm/scan.l, gpasm/ppscan.l: fixed bug
+    #270 Gputils doesn't compile with newer versions of bison and flex
+
 2013-09-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, header/Makefile.am, header/Makefile.in
     header/p12f1571.inc, header/p12f1572.inc, header/p12lf1571.inc
@@ -64,6 +68,9 @@
   * doc/html-help/Makefile.am, doc/html-help/Makefile.in:
     define -gp option as gputils source directory instead of
     repository root
+
+2013-05-11  Borut Razem  <borutr@users.sourceforge.net>
+  * doc/gputils.lyx: various updates
 
 2013-05-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpprocessor.c, libgputils/gpcfg-table.c:

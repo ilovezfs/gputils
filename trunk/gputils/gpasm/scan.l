@@ -54,8 +54,6 @@ Boston, MA 02111-1307, USA.  */
 #include "lst.h"
 
 #define OPERATOR(x)  return (yylval.i = (x))
-/* YY_UNPUT not used, suppress the warning */
-#define YY_NO_UNPUT
 
 enum identtype { unknown_type, macro_params, defines, directives, globals, macros, opcodes };
 enum identtype identify(char *);

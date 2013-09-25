@@ -43,9 +43,6 @@ Boston, MA 02111-1307, USA.  */
 
 #define OPERATOR(x)  return (pplval.i = (x))
 
-/* YY_UNPUT not used, suppress the warning */
-#define YY_NO_UNPUT
-
 #define YY_INPUT(buf, result, max_size) \
 do \
   { \
