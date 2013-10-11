@@ -1,3 +1,7 @@
+2013-10-11  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpmemory.c: fixed bug
+    #269 18F26j50, gplink crash on WPDIS
+
 2013-09-25  Borut Razem  <borutr@users.sourceforge.net>
   * gpasm/scan.l, gpasm/ppscan.l: fixed bug
     #270 Gputils doesn't compile with newer versions of bison and flex
