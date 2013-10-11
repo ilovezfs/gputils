@@ -398,22 +398,24 @@ b_memory_get_unlisted_size(MemBlock *m, unsigned int address)
   unsigned int n_bytes = 0;
 
   if (m && m->memory) {
-    do
-    {
-      do
-      {
-        if (((address >> I_MEM_BITS) & 0xffff) == m->base) {
-          if (NULL != m->memory && BYTE_USED_MASK == (m->memory[address & I_MEM_MASK] & (BYTE_LISTED_MASK | BYTE_USED_MASK)))
-            break;
-          else
-            return n_bytes;
-        }
-
+    while (n_bytes < 4) {
+      /* find memory block belonging to the address */
+      while (((address >> I_MEM_BITS) & 0xffff) != m->base) {
         m = m->next;
-      } while (m);
-      ++address;
-      ++n_bytes;
-    } while (n_bytes < 4);
+        if (!m)
+         return n_bytes;
+      }
+
+      if (NULL != m->memory && BYTE_USED_MASK == (m->memory[address & I_MEM_MASK] & (BYTE_LISTED_MASK | BYTE_USED_MASK))) {
+        /* byte at address not listed */
+        ++address;
+        ++n_bytes;
+      }
+      else {
+        /* byte at adress already listed */
+        break;
+      }
+    }
   }
 
   return n_bytes;
