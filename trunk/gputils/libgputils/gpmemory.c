@@ -176,6 +176,7 @@ b_memory_get(MemBlock *m, unsigned int address, unsigned char *byte)
     m = m->next;
   } while (m);
 
+  *byte = 0;
   return 0;
 }
 
