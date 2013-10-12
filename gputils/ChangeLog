@@ -1,3 +1,6 @@
+2013-10-12  Borut Razem  <borutr@users.sourceforge.net>
+  * libgputils/gpmemory.c: fixed b_memory_get()
+
 2013-10-11  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpmemory.c: fixed bug
     #269 18F26j50, gplink crash on WPDIS
