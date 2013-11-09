@@ -294,7 +294,6 @@ PWM3IF           EQU  H'0006'
 ;----- T1CON Bits -----------------------------------------------------
 TMR1ON           EQU  H'0000'
 NOT_T1SYNC       EQU  H'0002'
-T1OSCEN          EQU  H'0003'
 T1CKPS0          EQU  H'0004'
 T1CKPS1          EQU  H'0005'
 TMR1CS0          EQU  H'0006'
@@ -416,7 +415,6 @@ LFIOFR           EQU  H'0001'
 MFIOFR           EQU  H'0002'
 HFIOFL           EQU  H'0003'
 HFIOFR           EQU  H'0004'
-OSTS             EQU  H'0005'
 PLLR             EQU  H'0006'
 
 
@@ -476,6 +474,7 @@ C1ON             EQU  H'0007'
 ;----- CM1CON1 Bits -----------------------------------------------------
 C1NCH0           EQU  H'0000'
 C1NCH1           EQU  H'0001'
+C1NCH2           EQU  H'0002'
 C1PCH0           EQU  H'0004'
 C1PCH1           EQU  H'0005'
 C1INTN           EQU  H'0006'
@@ -846,8 +845,8 @@ PWM1OUT          EQU  H'0005'
 PWM1OE           EQU  H'0006'
 PWM1EN           EQU  H'0007'
 
-PWM1MOD0         EQU  H'0000'
-PWM1MOD1         EQU  H'0001'
+PWM1MOD0         EQU  H'0002'
+PWM1MOD1         EQU  H'0003'
 
 
 ;----- PWM1INTCON Bits -----------------------------------------------------
@@ -1005,8 +1004,8 @@ PWM2OUT          EQU  H'0005'
 PWM2OE           EQU  H'0006'
 PWM2EN           EQU  H'0007'
 
-PWM2MOD0         EQU  H'0000'
-PWM2MOD1         EQU  H'0001'
+PWM2MOD0         EQU  H'0002'
+PWM2MOD1         EQU  H'0003'
 
 
 ;----- PWM2INTCON Bits -----------------------------------------------------
@@ -1164,8 +1163,8 @@ PWM3OUT          EQU  H'0005'
 PWM3OE           EQU  H'0006'
 PWM3EN           EQU  H'0007'
 
-PWM3MOD0         EQU  H'0000'
-PWM3MOD1         EQU  H'0001'
+PWM3MOD0         EQU  H'0002'
+PWM3MOD1         EQU  H'0003'
 
 
 ;----- PWM3INTCON Bits -----------------------------------------------------
@@ -1225,12 +1224,10 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'001D'-H'001F'
        __BADRAM  H'008D'-H'0090'
        __BADRAM  H'0094'
-       __BADRAM  H'00C0'-H'00EF'
        __BADRAM  H'010D'-H'0110'
        __BADRAM  H'0113'-H'0114'
        __BADRAM  H'011A'-H'011C'
        __BADRAM  H'011E'-H'011F'
-       __BADRAM  H'0120'-H'016F'
        __BADRAM  H'018D'-H'0190'
        __BADRAM  H'0198'
        __BADRAM  H'01A0'-H'01EF'

@@ -2840,7 +2840,20 @@ static const struct gp_cfg_directive pic16f1512_008008[] =
 	{ "LVP",       0x2000,  2, pic12f1501_lvp_opts },
 };
 
-static const struct gp_cfg_directive pic16f1704_008008[] =
+static const struct gp_cfg_directive pic16f1703_008007[] =
+{
+	{ "FOSC",      0x03,  4, pic12f1501_fosc_opts },
+	{ "WDTE",      0x18,  4, pic10f320_wdte_opts },
+	{ "PWRTE",     0x20,  2, pic10f320_pwrte_opts },
+	{ "MCLRE",     0x40,  2, pic10f320_mclre_opts },
+	{ "CP",        0x80,  2, pic10f320_cp_opts },
+	{ "BOREN",     0x600,  4, pic12f1501_boren_opts },
+	{ "CLKOUTEN",  0x800,  2, pic12f1501_clkouten_opts },
+	{ "IESO",      0x1000,  2, pic12f1822_ieso_opts },
+	{ "FCMEN",     0x2000,  2, pic12f1501_lvp_opts },
+};
+
+static const struct gp_cfg_directive pic16f1703_008008[] =
 {
 	{ "WRT",       0x03,  4, pic12f1501_wrt_opts },
 	{ "PPS1WAY",   0x04,  2, pic10f200_wdte_opts },
@@ -4725,10 +4738,16 @@ static const struct gp_cfg_addr gp_cfg_pic16f1512_addrs[] =
 	{ 0x008008, 0xffff,  6, pic16f1512_008008 },
 };
 
+static const struct gp_cfg_addr gp_cfg_pic16f1703_addrs[] =
+{
+	{ 0x008007, 0xffff,  9, pic16f1703_008007 },
+	{ 0x008008, 0xffff,  8, pic16f1703_008008 },
+};
+
 static const struct gp_cfg_addr gp_cfg_pic16f1704_addrs[] =
 {
 	{ 0x008007, 0xffff,  9, pic16f1454_008007 },
-	{ 0x008008, 0xffff,  8, pic16f1704_008008 },
+	{ 0x008008, 0xffff,  8, pic16f1703_008008 },
 };
 
 static const struct gp_cfg_addr gp_cfg_pic16f1782_addrs[] =
@@ -7025,7 +7044,7 @@ static const struct gp_cfg_addr gp_cfg_ps810_addrs[] =
  * Devices Table
  */
 
-const unsigned gp_cfg_device_count = 636;
+const unsigned gp_cfg_device_count = 644;
 const struct gp_cfg_device gp_cfg_devices[] =
 {
 	{ "MCP19110",      1, gp_cfg_mcp19110_addrs },
@@ -7195,8 +7214,12 @@ const struct gp_cfg_device gp_cfg_devices[] =
 	{ "PIC16F1519",    2, gp_cfg_pic16f1512_addrs },
 	{ "PIC16F1526",    2, gp_cfg_pic16f1512_addrs },
 	{ "PIC16F1527",    2, gp_cfg_pic16f1512_addrs },
+	{ "PIC16F1703",    2, gp_cfg_pic16f1703_addrs },
 	{ "PIC16F1704",    2, gp_cfg_pic16f1704_addrs },
+	{ "PIC16F1705",    2, gp_cfg_pic16f1704_addrs },
+	{ "PIC16F1707",    2, gp_cfg_pic16f1703_addrs },
 	{ "PIC16F1708",    2, gp_cfg_pic16f1704_addrs },
+	{ "PIC16F1709",    2, gp_cfg_pic16f1704_addrs },
 	{ "PIC16F1713",    2, gp_cfg_pic16f1704_addrs },
 	{ "PIC16F1716",    2, gp_cfg_pic16f1704_addrs },
 	{ "PIC16F1782",    2, gp_cfg_pic16f1782_addrs },
@@ -7320,8 +7343,12 @@ const struct gp_cfg_device gp_cfg_devices[] =
 	{ "PIC16LF1519",   2, gp_cfg_pic16f1508_addrs },
 	{ "PIC16LF1526",   2, gp_cfg_pic16f1508_addrs },
 	{ "PIC16LF1527",   2, gp_cfg_pic16f1508_addrs },
+	{ "PIC16LF1703",   2, gp_cfg_pic16f1703_addrs },
 	{ "PIC16LF1704",   2, gp_cfg_pic16f1704_addrs },
+	{ "PIC16LF1705",   2, gp_cfg_pic16f1704_addrs },
+	{ "PIC16LF1707",   2, gp_cfg_pic16f1703_addrs },
 	{ "PIC16LF1708",   2, gp_cfg_pic16f1704_addrs },
+	{ "PIC16LF1709",   2, gp_cfg_pic16f1704_addrs },
 	{ "PIC16LF1713",   2, gp_cfg_pic16f1704_addrs },
 	{ "PIC16LF1716",   2, gp_cfg_pic16f1704_addrs },
 	{ "PIC16LF1782",   2, gp_cfg_pic16lf1782_addrs },

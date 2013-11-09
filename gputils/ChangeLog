@@ -1,3 +1,27 @@
+2013-11-09  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, header/Makefile.am, header/Makefile.in,
+    header/p16f1703.inc, header/p16f1705.inc, header/p16f1707.inc,
+    header/p16f1709.inc, header/p16lf1703.inc, header/p16lf1705.inc,
+    header/p16lf1707.inc, header/p16lf1709.inc,
+    libgputils/gpcfg-table.c, libgputils/gpprocessor.c,
+    lkr/16f1703_g.lkr, lkr/16f1705_g.lkr, lkr/16f1707_g.lkr,
+    lkr/16f1709_g.lkr, lkr/16lf1703_g.lkr, lkr/16lf1705_g.lkr,
+    lkr/16lf1707_g.lkr, lkr/16lf1709_g.lkr, 
+    lkr/Makefile.am, lkr/Makefile.in:
+    New devices based on the mplabx-1.95.
+
+  * header/p12f1571.inc, header/p12f1572.inc, header/p12f1822.inc,
+    header/p12lf1571.inc, header/p12lf1572.inc, header/p16f1784.inc,
+    header/p16lf1784.inc,
+    lkr/12f1572_g.lkr, lkr/12lf1572_g.lkr, lkr/16f1509_g.lkr,
+    lkr/16f1783_g.lkr, lkr/16f1936_g.lkr, lkr/16f1937_g.lkr,
+    lkr/16lf1509_g.lkr, lkr/16lf1783_g.lkr, lkr/16lf1906_g.lkr,
+    lkr/16lf1907_g.lkr, lkr/16lf1936_g.lkr, lkr/16lf1937_g.lkr:
+    Updated based on the mplabx-1.95.
+
+  * AUTHORS:
+    Corrected my email.
+
 2013-10-12  Borut Razem  <borutr@users.sourceforge.net>
   * libgputils/gpmemory.c: fixed b_memory_get()
 
@@ -10,15 +34,15 @@
     #270 Gputils doesn't compile with newer versions of bison and flex
 
 2013-09-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
-  * doc/gputils.lyx, header/Makefile.am, header/Makefile.in
-    header/p12f1571.inc, header/p12f1572.inc, header/p12lf1571.inc
-    header/p12lf1572.inc, header/p16f1713.inc, header/p16f1716.inc
-    header/p16f1829lin.inc, header/p16lf1713.inc, header/p16lf1716.inc
-    libgputils/gpcfg-table.c, libgputils/gpprocessor.c
-    lkr/12f1571_g.lkr, lkr/12f1572_g.lkr, lkr/12lf1571_g.lkr
-    lkr/12lf1572_g.lkr, lkr/16f1713_g.lkr, lkr/16f1716_g.lkr
-    lkr/16f1829lin_g.lkr, lkr/16lf1713_g.lkr, lkr/16lf1716_g.lkr
-    lkr/Makefile.am, lkr/Makefile.in
+  * doc/gputils.lyx, header/Makefile.am, header/Makefile.in,
+    header/p12f1571.inc, header/p12f1572.inc, header/p12lf1571.inc,
+    header/p12lf1572.inc, header/p16f1713.inc, header/p16f1716.inc,
+    header/p16f1829lin.inc, header/p16lf1713.inc, header/p16lf1716.inc,
+    libgputils/gpcfg-table.c, libgputils/gpprocessor.c,
+    lkr/12f1571_g.lkr, lkr/12f1572_g.lkr, lkr/12lf1571_g.lkr,
+    lkr/12lf1572_g.lkr, lkr/16f1713_g.lkr, lkr/16f1716_g.lkr,
+    lkr/16f1829lin_g.lkr, lkr/16lf1713_g.lkr, lkr/16lf1716_g.lkr,
+    lkr/Makefile.am, lkr/Makefile.in:
     New devices based on the mplabx-1.9.
 
 2013-09-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>

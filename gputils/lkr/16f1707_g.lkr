@@ -1,5 +1,5 @@
-// File: 12lf1572_g.lkr
-// Generic linker script for the PIC12LF1572 processor
+// File: 16f1707_g.lkr
+// Generic linker script for the PIC16F1707 processor
 
 #DEFINE _CODEEND _DEBUGCODESTART - 1
 #DEFINE _CEND _CODEEND + _DEBUGCODELEN
@@ -49,10 +49,10 @@ DATABANK   NAME=sfr23      START=0xB80             END=0xB9F          PROTECTED
 DATABANK   NAME=sfr24      START=0xC00             END=0xC1F          PROTECTED
 DATABANK   NAME=sfr25      START=0xC80             END=0xC9F          PROTECTED
 DATABANK   NAME=sfr26      START=0xD00             END=0xD1F          PROTECTED
-DATABANK   NAME=sfr27      START=0xD80             END=0xDC0          PROTECTED
-DATABANK   NAME=sfr28      START=0xE00             END=0xE1F          PROTECTED
-DATABANK   NAME=sfr29      START=0xE80             END=0xE9F          PROTECTED
-DATABANK   NAME=sfr30      START=0xF00             END=0xF1F          PROTECTED
+DATABANK   NAME=sfr27      START=0xD80             END=0xD9F          PROTECTED
+DATABANK   NAME=sfr28      START=0xE00             END=0xE6F          PROTECTED
+DATABANK   NAME=sfr29      START=0xE80             END=0xEEF          PROTECTED
+DATABANK   NAME=sfr30      START=0xF00             END=0xF6F          PROTECTED
 DATABANK   NAME=sfr31      START=0xF80             END=0xFEF          PROTECTED
 
 DATABANK   NAME=gpr0       START=0x20              END=0x6F           SHADOW=linear0:0x2000
