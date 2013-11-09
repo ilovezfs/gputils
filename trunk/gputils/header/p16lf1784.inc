@@ -237,6 +237,7 @@ IOCEF            EQU  H'039F'
 ;-----Bank10------------------
 OPA1CON          EQU  H'0511'
 OPA2CON          EQU  H'0513'
+OPA3CON          EQU  H'0515'
 CLKRCON          EQU  H'051A'
 
 ;-----Bank16------------------
@@ -1732,6 +1733,14 @@ OPA2SP           EQU  H'0006'
 OPA2EN           EQU  H'0007'
 
 
+;----- OPA3CON Bits -----------------------------------------------------
+OPA3PCH0         EQU  H'0000'
+OPA3PCH1         EQU  H'0001'
+
+OPA3SP           EQU  H'0006'
+OPA3EN           EQU  H'0007'
+
+
 ;----- CLKRCON Bits -----------------------------------------------------
 CLKRDIV0         EQU  H'0000'
 CLKRDIV1         EQU  H'0001'
@@ -2651,7 +2660,8 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'04A0'-H'04EF'
        __BADRAM  H'050C'-H'0510'
        __BADRAM  H'0512'
-       __BADRAM  H'0514'-H'0519'
+       __BADRAM  H'0514'
+       __BADRAM  H'0516'-H'0519'
        __BADRAM  H'051B'-H'051F'
        __BADRAM  H'0520'-H'056F'
        __BADRAM  H'058C'-H'059F'

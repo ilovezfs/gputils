@@ -1,5 +1,5 @@
-// File: 12lf1572_g.lkr
-// Generic linker script for the PIC12LF1572 processor
+// File: 16lf1705_g.lkr
+// Generic linker script for the PIC16LF1705 processor
 
 #DEFINE _CODEEND _DEBUGCODESTART - 1
 #DEFINE _CEND _CODEEND + _DEBUGCODELEN
@@ -8,19 +8,22 @@
 
 LIBPATH .
 
+CODEPAGE   NAME=page0      START=0x0               END=0x7FF                    
+CODEPAGE   NAME=page1      START=0x800             END=0xFFF                    
+CODEPAGE   NAME=page2      START=0x1000            END=0x17FF                   
 
 #IFDEF _DEBUGCODESTART
-  CODEPAGE   NAME=page0      START=0x0               END=_CODEEND
+  CODEPAGE   NAME=page3      START=0x1800            END=_CODEEND
   CODEPAGE   NAME=debug      START=_DEBUGCODESTART   END=_CEND        PROTECTED
 #ELSE
-  CODEPAGE   NAME=page0      START=0x0               END=0x7FF                    
+  CODEPAGE   NAME=page3      START=0x1800            END=0x1FFF                   
 #FI
 
 CODEPAGE   NAME=.idlocs    START=0x8000            END=0x8003         PROTECTED 
 CODEPAGE   NAME=.devid     START=0x8006            END=0x8006         PROTECTED 
 CODEPAGE   NAME=.config    START=0x8007            END=0x8008         PROTECTED 
 
-LINEARMEM  NAME=linear0    START=0x2000            END=0x20EF         PROTECTED
+LINEARMEM  NAME=linear0    START=0x2000            END=0x23EF         PROTECTED
 
 DATABANK   NAME=sfr0       START=0x0               END=0x1F           PROTECTED
 DATABANK   NAME=sfr1       START=0x80              END=0x9F           PROTECTED
@@ -49,20 +52,30 @@ DATABANK   NAME=sfr23      START=0xB80             END=0xB9F          PROTECTED
 DATABANK   NAME=sfr24      START=0xC00             END=0xC1F          PROTECTED
 DATABANK   NAME=sfr25      START=0xC80             END=0xC9F          PROTECTED
 DATABANK   NAME=sfr26      START=0xD00             END=0xD1F          PROTECTED
-DATABANK   NAME=sfr27      START=0xD80             END=0xDC0          PROTECTED
-DATABANK   NAME=sfr28      START=0xE00             END=0xE1F          PROTECTED
-DATABANK   NAME=sfr29      START=0xE80             END=0xE9F          PROTECTED
-DATABANK   NAME=sfr30      START=0xF00             END=0xF1F          PROTECTED
+DATABANK   NAME=sfr27      START=0xD80             END=0xD9F          PROTECTED
+DATABANK   NAME=sfr28      START=0xE00             END=0xE6F          PROTECTED
+DATABANK   NAME=sfr29      START=0xE80             END=0xEEF          PROTECTED
+DATABANK   NAME=sfr30      START=0xF00             END=0xF6F          PROTECTED
 DATABANK   NAME=sfr31      START=0xF80             END=0xFEF          PROTECTED
 
 DATABANK   NAME=gpr0       START=0x20              END=0x6F           SHADOW=linear0:0x2000
 DATABANK   NAME=gpr1       START=0xA0              END=0xEF           SHADOW=linear0:0x2050
+DATABANK   NAME=gpr2       START=0x120             END=0x16F          SHADOW=linear0:0x20A0
+DATABANK   NAME=gpr3       START=0x1A0             END=0x1EF          SHADOW=linear0:0x20F0
+DATABANK   NAME=gpr4       START=0x220             END=0x26F          SHADOW=linear0:0x2140
+DATABANK   NAME=gpr5       START=0x2A0             END=0x2EF          SHADOW=linear0:0x2190
+DATABANK   NAME=gpr6       START=0x320             END=0x36F          SHADOW=linear0:0x21E0
+DATABANK   NAME=gpr7       START=0x3A0             END=0x3EF          SHADOW=linear0:0x2230
+DATABANK   NAME=gpr8       START=0x420             END=0x46F          SHADOW=linear0:0x2280
+DATABANK   NAME=gpr9       START=0x4A0             END=0x4EF          SHADOW=linear0:0x22D0
+DATABANK   NAME=gpr10      START=0x520             END=0x56F          SHADOW=linear0:0x2320
+DATABANK   NAME=gpr11      START=0x5A0             END=0x5EF          SHADOW=linear0:0x2370
 
 #IFDEF _DEBUGDATASTART
-  DATABANK   NAME=gpr2       START=0x120             END=_DATAEND     SHADOW=linear0:0x20A0
+  DATABANK   NAME=gpr12      START=0x620             END=_DATAEND     SHADOW=linear0:0x23C0
   DATABANK   NAME=dbgspr     START=_DEBUGDATASTART   END=_DEND        PROTECTED
 #ELSE //no debug
-  DATABANK   NAME=gpr2       START=0x120             END=0x16F          SHADOW=linear0:0x20A0
+  DATABANK   NAME=gpr12      START=0x620             END=0x64F          SHADOW=linear0:0x23C0
 #FI
 
 
@@ -168,6 +181,9 @@ DATABANK   NAME=gpr1       START=0xA0              END=0xEF           SHADOW=lin
 #FI
 
 SECTION    NAME=PROG0      ROM=page0           // ROM code space - page0
+SECTION    NAME=PROG1      ROM=page1           // ROM code space - page1
+SECTION    NAME=PROG2      ROM=page2           // ROM code space - page2
+SECTION    NAME=PROG3      ROM=page3           // ROM code space - page3
 SECTION    NAME=IDLOCS     ROM=.idlocs         // ID locations
 SECTION    NAME=LINEAR0    RAM=linear0         // Linear Memory
 
