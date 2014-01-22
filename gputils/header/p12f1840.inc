@@ -23,6 +23,16 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
+;;;; Begin: Added in gputils
+
+;==========================================================================
+;
+;       Gputils Specific Revision History
+;
+;==========================================================================
+
+;       22 Jan 2014  Added the _DEBUG_ON and _DEBUG_OFF config options.
+;;;; End: Added in gputils
 
 ;==========================================================================
 ;
@@ -983,6 +993,11 @@ _BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (Vbor), high trip poi
 _BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
 _BORV_19         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
 
+;;;; Begin: Added in gputils
+_DEBUG_ON        EQU  H'EFFF'    ; In-Circuit Debugger enabled
+_DEBUG_OFF       EQU  H'FFFF'    ; In-Circuit Debugger disabled
+
+;;;; End: Added in gputils
 _LVP_OFF         EQU  H'DFFF'    ; High-voltage on MCLR/VPP must be used for programming
 _LVP_ON          EQU  H'FFFF'    ; Low-voltage programming enabled
 
