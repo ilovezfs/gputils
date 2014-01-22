@@ -1,3 +1,10 @@
+2014-01-22  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/p12f1822.inc, header/p12f1840.inc, header/p12lf1822.inc,
+    header/p12lf1840.inc, header/p12lf1840t39a.inc, header/p12lf1840t48a.inc:
+    Added the missing CONFIG2 Options: _DEBUG_ON, _DEBUG_OFF
+    "#62 Missing CONFIG2 DEBUG file definition in some pic12f inc files"
+    thanks to Ludrao.
+
 2013-11-09  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, header/Makefile.am, header/Makefile.in,
     header/p16f1703.inc, header/p16f1705.inc, header/p16f1707.inc,
