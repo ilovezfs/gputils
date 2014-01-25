@@ -770,6 +770,8 @@ ADFVR0           EQU  H'0000'
 ADFVR1           EQU  H'0001'
 CDAFVR0          EQU  H'0002'
 CDAFVR1          EQU  H'0003'
+TSRNG            EQU  H'0004'
+TSEN             EQU  H'0005'
 FVRRDY           EQU  H'0006'
 FVREN            EQU  H'0007'
 

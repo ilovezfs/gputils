@@ -167,8 +167,10 @@ PWM1TMR          EQU  H'0D99'
 PWM1TMRL         EQU  H'0D99'
 PWM1TMRH         EQU  H'0D9A'
 PWM1CON          EQU  H'0D9B'
+PWM1IE           EQU  H'0D9C'
 PWM1INTCON       EQU  H'0D9C'
 PWM1INTFLG       EQU  H'0D9D'
+PWM1IR           EQU  H'0D9D'
 PWM1CLKCON       EQU  H'0D9E'
 PWM1LDCON        EQU  H'0D9F'
 PWM1OFCON        EQU  H'0DA0'
@@ -188,8 +190,10 @@ PWM2TMR          EQU  H'0DA9'
 PWM2TMRL         EQU  H'0DA9'
 PWM2TMRH         EQU  H'0DAA'
 PWM2CON          EQU  H'0DAB'
+PWM2IE           EQU  H'0DAC'
 PWM2INTCON       EQU  H'0DAC'
 PWM2INTFLG       EQU  H'0DAD'
+PWM2IR           EQU  H'0DAD'
 PWM2CLKCON       EQU  H'0DAE'
 PWM2LDCON        EQU  H'0DAF'
 PWM2OFCON        EQU  H'0DB0'
@@ -209,8 +213,10 @@ PWM3TMR          EQU  H'0DB9'
 PWM3TMRL         EQU  H'0DB9'
 PWM3TMRH         EQU  H'0DBA'
 PWM3CON          EQU  H'0DBB'
+PWM3IE           EQU  H'0DBC'
 PWM3INTCON       EQU  H'0DBC'
 PWM3INTFLG       EQU  H'0DBD'
+PWM3IR           EQU  H'0DBD'
 PWM3CLKCON       EQU  H'0DBE'
 PWM3LDCON        EQU  H'0DBF'
 PWM3OFCON        EQU  H'0DC0'
@@ -355,9 +361,9 @@ PWM3IE           EQU  H'0006'
 
 
 ;----- OPTION_REG Bits -----------------------------------------------------
-PS0              EQU  H'0000'
-PS1              EQU  H'0001'
-PS2              EQU  H'0002'
+PS0_OPTION_REG   EQU  H'0000'
+PS1_OPTION_REG   EQU  H'0001'
+PS2_OPTION_REG   EQU  H'0002'
 PSA              EQU  H'0003'
 TMR0SE           EQU  H'0004'
 TMR0CS           EQU  H'0005'
@@ -415,6 +421,7 @@ LFIOFR           EQU  H'0001'
 MFIOFR           EQU  H'0002'
 HFIOFL           EQU  H'0003'
 HFIOFR           EQU  H'0004'
+OSTS             EQU  H'0005'
 PLLR             EQU  H'0006'
 
 
@@ -712,21 +719,33 @@ G1ASE            EQU  H'0007'
 
 
 ;----- PWMEN Bits -----------------------------------------------------
-MPWM0EN          EQU  H'0000'
-MPWM1EN          EQU  H'0001'
-MPWM2EN          EQU  H'0002'
+PWM1EN_A         EQU  H'0000'
+PWM2EN_A         EQU  H'0001'
+PWM3EN_A         EQU  H'0002'
+
+MPWM1EN          EQU  H'0000'
+MPWM2EN          EQU  H'0001'
+MPWM3EN          EQU  H'0002'
 
 
 ;----- PWMLD Bits -----------------------------------------------------
-MPWM0LD          EQU  H'0000'
-MPWM1LD          EQU  H'0001'
-MPWM2LD          EQU  H'0002'
+PWM1LDA_A        EQU  H'0000'
+PWM2LDA_A        EQU  H'0001'
+PWM3LDA_A        EQU  H'0002'
+
+MPWM1LD          EQU  H'0000'
+MPWM2LD          EQU  H'0001'
+MPWM3LD          EQU  H'0002'
 
 
 ;----- PWMOUT Bits -----------------------------------------------------
-MPWM0OUT         EQU  H'0000'
-MPWM1OUT         EQU  H'0001'
-MPWM2OUT         EQU  H'0002'
+PWM1OUT_A        EQU  H'0000'
+PWM2OUT_A        EQU  H'0001'
+PWM3OUT_A        EQU  H'0002'
+
+MPWM1OUT         EQU  H'0000'
+MPWM2OUT         EQU  H'0001'
+MPWM3OUT         EQU  H'0002'
 
 
 ;----- PWM1PHL Bits -----------------------------------------------------
@@ -740,6 +759,16 @@ PWM1PHL6         EQU  H'0006'
 PWM1PHL7         EQU  H'0007'
 
 
+PH0              EQU  H'0000'
+PH1              EQU  H'0001'
+PH2              EQU  H'0002'
+PH3              EQU  H'0003'
+PH4              EQU  H'0004'
+PH5              EQU  H'0005'
+PH6              EQU  H'0006'
+PH7              EQU  H'0007'
+
+
 ;----- PWM1PHH Bits -----------------------------------------------------
 PWM1PHH0         EQU  H'0000'
 PWM1PHH1         EQU  H'0001'
@@ -749,6 +778,16 @@ PWM1PHH4         EQU  H'0004'
 PWM1PHH5         EQU  H'0005'
 PWM1PHH6         EQU  H'0006'
 PWM1PHH7         EQU  H'0007'
+
+
+PH8              EQU  H'0000'
+PH9              EQU  H'0001'
+PH10             EQU  H'0002'
+PH11             EQU  H'0003'
+PH12             EQU  H'0004'
+PH13             EQU  H'0005'
+PH14             EQU  H'0006'
+PH15             EQU  H'0007'
 
 
 ;----- PWM1DCL Bits -----------------------------------------------------
@@ -762,6 +801,16 @@ PWM1DCL6         EQU  H'0006'
 PWM1DCL7         EQU  H'0007'
 
 
+DC0              EQU  H'0000'
+DC1              EQU  H'0001'
+DC2              EQU  H'0002'
+DC3              EQU  H'0003'
+DC4              EQU  H'0004'
+DC5              EQU  H'0005'
+DC6              EQU  H'0006'
+DC7              EQU  H'0007'
+
+
 ;----- PWM1DCH Bits -----------------------------------------------------
 PWM1DCH0         EQU  H'0000'
 PWM1DCH1         EQU  H'0001'
@@ -771,6 +820,16 @@ PWM1DCH4         EQU  H'0004'
 PWM1DCH5         EQU  H'0005'
 PWM1DCH6         EQU  H'0006'
 PWM1DCH7         EQU  H'0007'
+
+
+DC8              EQU  H'0000'
+DC9              EQU  H'0001'
+DC10             EQU  H'0002'
+DC11             EQU  H'0003'
+DC12             EQU  H'0004'
+DC13             EQU  H'0005'
+DC14             EQU  H'0006'
+DC15             EQU  H'0007'
 
 
 ;----- PWM1PRL Bits -----------------------------------------------------
@@ -784,6 +843,16 @@ PWM1PRL6         EQU  H'0006'
 PWM1PRL7         EQU  H'0007'
 
 
+PR0              EQU  H'0000'
+PR1              EQU  H'0001'
+PR2              EQU  H'0002'
+PR3              EQU  H'0003'
+PR4              EQU  H'0004'
+PR5              EQU  H'0005'
+PR6              EQU  H'0006'
+PR7              EQU  H'0007'
+
+
 ;----- PWM1PRH Bits -----------------------------------------------------
 PWM1PRH0         EQU  H'0000'
 PWM1PRH1         EQU  H'0001'
@@ -793,6 +862,16 @@ PWM1PRH4         EQU  H'0004'
 PWM1PRH5         EQU  H'0005'
 PWM1PRH6         EQU  H'0006'
 PWM1PRH7         EQU  H'0007'
+
+
+PR8              EQU  H'0000'
+PR9              EQU  H'0001'
+PR10             EQU  H'0002'
+PR11             EQU  H'0003'
+PR12             EQU  H'0004'
+PR13             EQU  H'0005'
+PR14             EQU  H'0006'
+PR15             EQU  H'0007'
 
 
 ;----- PWM1OFL Bits -----------------------------------------------------
@@ -806,6 +885,16 @@ PWM1OFL6         EQU  H'0006'
 PWM1OFL7         EQU  H'0007'
 
 
+OF0              EQU  H'0000'
+OF1              EQU  H'0001'
+OF2              EQU  H'0002'
+OF3              EQU  H'0003'
+OF4              EQU  H'0004'
+OF5              EQU  H'0005'
+OF6              EQU  H'0006'
+OF7              EQU  H'0007'
+
+
 ;----- PWM1OFH Bits -----------------------------------------------------
 PWM1OFH0         EQU  H'0000'
 PWM1OFH1         EQU  H'0001'
@@ -815,6 +904,16 @@ PWM1OFH4         EQU  H'0004'
 PWM1OFH5         EQU  H'0005'
 PWM1OFH6         EQU  H'0006'
 PWM1OFH7         EQU  H'0007'
+
+
+OF8              EQU  H'0000'
+OF9              EQU  H'0001'
+OF10             EQU  H'0002'
+OF11             EQU  H'0003'
+OF12             EQU  H'0004'
+OF13             EQU  H'0005'
+OF14             EQU  H'0006'
+OF15             EQU  H'0007'
 
 
 ;----- PWM1TMRL Bits -----------------------------------------------------
@@ -828,6 +927,16 @@ PWM1TMRL6        EQU  H'0006'
 PWM1TMRL7        EQU  H'0007'
 
 
+TMR0             EQU  H'0000'
+TMR1             EQU  H'0001'
+TMR2             EQU  H'0002'
+TMR3             EQU  H'0003'
+TMR4             EQU  H'0004'
+TMR5             EQU  H'0005'
+TMR6             EQU  H'0006'
+TMR7             EQU  H'0007'
+
+
 ;----- PWM1TMRH Bits -----------------------------------------------------
 PWM1TMRH0        EQU  H'0000'
 PWM1TMRH1        EQU  H'0001'
@@ -839,17 +948,52 @@ PWM1TMRH6        EQU  H'0006'
 PWM1TMRH7        EQU  H'0007'
 
 
+TMR8             EQU  H'0000'
+TMR9             EQU  H'0001'
+TMR10            EQU  H'0002'
+TMR11            EQU  H'0003'
+TMR12            EQU  H'0004'
+TMR13            EQU  H'0005'
+TMR14            EQU  H'0006'
+TMR15            EQU  H'0007'
+
+
 ;----- PWM1CON Bits -----------------------------------------------------
+POL              EQU  H'0004'
+OUT              EQU  H'0005'
+OE               EQU  H'0006'
+EN               EQU  H'0007'
+
+PWM1MOD0         EQU  H'0002'
+PWM1MOD1         EQU  H'0003'
+
 PWM1POL          EQU  H'0004'
 PWM1OUT          EQU  H'0005'
 PWM1OE           EQU  H'0006'
 PWM1EN           EQU  H'0007'
 
-PWM1MOD0         EQU  H'0002'
-PWM1MOD1         EQU  H'0003'
+MODE0            EQU  H'0002'
+MODE1            EQU  H'0003'
+
+
+;----- PWM1IE Bits -----------------------------------------------------
+PRIE             EQU  H'0000'
+DCIE             EQU  H'0001'
+PHIE             EQU  H'0002'
+OFIE             EQU  H'0003'
+
+PWM1PRIE         EQU  H'0000'
+PWM1DCIE         EQU  H'0001'
+PWM1PHIE         EQU  H'0002'
+PWM1OFIE         EQU  H'0003'
 
 
 ;----- PWM1INTCON Bits -----------------------------------------------------
+PRIE             EQU  H'0000'
+DCIE             EQU  H'0001'
+PHIE             EQU  H'0002'
+OFIE             EQU  H'0003'
+
 PWM1PRIE         EQU  H'0000'
 PWM1DCIE         EQU  H'0001'
 PWM1PHIE         EQU  H'0002'
@@ -857,6 +1001,23 @@ PWM1OFIE         EQU  H'0003'
 
 
 ;----- PWM1INTFLG Bits -----------------------------------------------------
+PRIF             EQU  H'0000'
+DCIF             EQU  H'0001'
+PHIF             EQU  H'0002'
+OFIF             EQU  H'0003'
+
+PWM1PRIF         EQU  H'0000'
+PWM1DCIF         EQU  H'0001'
+PWM1PHIF         EQU  H'0002'
+PWM1OFIF         EQU  H'0003'
+
+
+;----- PWM1IR Bits -----------------------------------------------------
+PRIF             EQU  H'0000'
+DCIF             EQU  H'0001'
+PHIF             EQU  H'0002'
+OFIF             EQU  H'0003'
+
 PWM1PRIF         EQU  H'0000'
 PWM1DCIF         EQU  H'0001'
 PWM1PHIF         EQU  H'0002'
@@ -871,21 +1032,41 @@ PWM1PS1          EQU  H'0005'
 PWM1PS2          EQU  H'0006'
 
 
+CS0              EQU  H'0000'
+CS1              EQU  H'0001'
+PS0_PWM1CLKCON   EQU  H'0004'
+PS1_PWM1CLKCON   EQU  H'0005'
+PS2_PWM1CLKCON   EQU  H'0006'
+
+
 ;----- PWM1LDCON Bits -----------------------------------------------------
-PWM1LDM          EQU  H'0006'
-PWM1LD           EQU  H'0007'
+LDT              EQU  H'0006'
+LDA              EQU  H'0007'
 
 PWM1LDS0         EQU  H'0000'
 PWM1LDS1         EQU  H'0001'
 
+PWM1LDM          EQU  H'0006'
+PWM1LD           EQU  H'0007'
+
+LDS0             EQU  H'0000'
+LDS1             EQU  H'0001'
+
 
 ;----- PWM1OFCON Bits -----------------------------------------------------
-PWM1OFMC         EQU  H'0004'
+OFO              EQU  H'0004'
 
 PWM1OFS0         EQU  H'0000'
 PWM1OFS1         EQU  H'0001'
 PWM1OFM0         EQU  H'0005'
 PWM1OFM1         EQU  H'0006'
+
+PWM1OFMC         EQU  H'0004'
+
+OFS0             EQU  H'0000'
+OFS1             EQU  H'0001'
+OFM0             EQU  H'0005'
+OFM1             EQU  H'0006'
 
 
 ;----- PWM2PHL Bits -----------------------------------------------------
@@ -899,6 +1080,16 @@ PWM2PHL6         EQU  H'0006'
 PWM2PHL7         EQU  H'0007'
 
 
+PH0              EQU  H'0000'
+PH1              EQU  H'0001'
+PH2              EQU  H'0002'
+PH3              EQU  H'0003'
+PH4              EQU  H'0004'
+PH5              EQU  H'0005'
+PH6              EQU  H'0006'
+PH7              EQU  H'0007'
+
+
 ;----- PWM2PHH Bits -----------------------------------------------------
 PWM2PHH0         EQU  H'0000'
 PWM2PHH1         EQU  H'0001'
@@ -908,6 +1099,16 @@ PWM2PHH4         EQU  H'0004'
 PWM2PHH5         EQU  H'0005'
 PWM2PHH6         EQU  H'0006'
 PWM2PHH7         EQU  H'0007'
+
+
+PH8              EQU  H'0000'
+PH9              EQU  H'0001'
+PH10             EQU  H'0002'
+PH11             EQU  H'0003'
+PH12             EQU  H'0004'
+PH13             EQU  H'0005'
+PH14             EQU  H'0006'
+PH15             EQU  H'0007'
 
 
 ;----- PWM2DCL Bits -----------------------------------------------------
@@ -921,6 +1122,16 @@ PWM2DCL6         EQU  H'0006'
 PWM2DCL7         EQU  H'0007'
 
 
+DC0              EQU  H'0000'
+DC1              EQU  H'0001'
+DC2              EQU  H'0002'
+DC3              EQU  H'0003'
+DC4              EQU  H'0004'
+DC5              EQU  H'0005'
+DC6              EQU  H'0006'
+DC7              EQU  H'0007'
+
+
 ;----- PWM2DCH Bits -----------------------------------------------------
 PWM2DCH0         EQU  H'0000'
 PWM2DCH1         EQU  H'0001'
@@ -930,6 +1141,16 @@ PWM2DCH4         EQU  H'0004'
 PWM2DCH5         EQU  H'0005'
 PWM2DCH6         EQU  H'0006'
 PWM2DCH7         EQU  H'0007'
+
+
+DC8              EQU  H'0000'
+DC9              EQU  H'0001'
+DC10             EQU  H'0002'
+DC11             EQU  H'0003'
+DC12             EQU  H'0004'
+DC13             EQU  H'0005'
+DC14             EQU  H'0006'
+DC15             EQU  H'0007'
 
 
 ;----- PWM2PRL Bits -----------------------------------------------------
@@ -943,6 +1164,16 @@ PWM2PRL6         EQU  H'0006'
 PWM2PRL7         EQU  H'0007'
 
 
+PR0              EQU  H'0000'
+PR1              EQU  H'0001'
+PR2              EQU  H'0002'
+PR3              EQU  H'0003'
+PR4              EQU  H'0004'
+PR5              EQU  H'0005'
+PR6              EQU  H'0006'
+PR7              EQU  H'0007'
+
+
 ;----- PWM2PRH Bits -----------------------------------------------------
 PWM2PRH0         EQU  H'0000'
 PWM2PRH1         EQU  H'0001'
@@ -952,6 +1183,16 @@ PWM2PRH4         EQU  H'0004'
 PWM2PRH5         EQU  H'0005'
 PWM2PRH6         EQU  H'0006'
 PWM2PRH7         EQU  H'0007'
+
+
+PR8              EQU  H'0000'
+PR9              EQU  H'0001'
+PR10             EQU  H'0002'
+PR11             EQU  H'0003'
+PR12             EQU  H'0004'
+PR13             EQU  H'0005'
+PR14             EQU  H'0006'
+PR15             EQU  H'0007'
 
 
 ;----- PWM2OFL Bits -----------------------------------------------------
@@ -965,6 +1206,16 @@ PWM2OFL6         EQU  H'0006'
 PWM2OFL7         EQU  H'0007'
 
 
+OF0              EQU  H'0000'
+OF1              EQU  H'0001'
+OF2              EQU  H'0002'
+OF3              EQU  H'0003'
+OF4              EQU  H'0004'
+OF5              EQU  H'0005'
+OF6              EQU  H'0006'
+OF7              EQU  H'0007'
+
+
 ;----- PWM2OFH Bits -----------------------------------------------------
 PWM2OFH0         EQU  H'0000'
 PWM2OFH1         EQU  H'0001'
@@ -974,6 +1225,16 @@ PWM2OFH4         EQU  H'0004'
 PWM2OFH5         EQU  H'0005'
 PWM2OFH6         EQU  H'0006'
 PWM2OFH7         EQU  H'0007'
+
+
+OF8              EQU  H'0000'
+OF9              EQU  H'0001'
+OF10             EQU  H'0002'
+OF11             EQU  H'0003'
+OF12             EQU  H'0004'
+OF13             EQU  H'0005'
+OF14             EQU  H'0006'
+OF15             EQU  H'0007'
 
 
 ;----- PWM2TMRL Bits -----------------------------------------------------
@@ -987,6 +1248,16 @@ PWM2TMRL6        EQU  H'0006'
 PWM2TMRL7        EQU  H'0007'
 
 
+TMR0             EQU  H'0000'
+TMR1             EQU  H'0001'
+TMR2             EQU  H'0002'
+TMR3             EQU  H'0003'
+TMR4             EQU  H'0004'
+TMR5             EQU  H'0005'
+TMR6             EQU  H'0006'
+TMR7             EQU  H'0007'
+
+
 ;----- PWM2TMRH Bits -----------------------------------------------------
 PWM2TMRH0        EQU  H'0000'
 PWM2TMRH1        EQU  H'0001'
@@ -998,17 +1269,52 @@ PWM2TMRH6        EQU  H'0006'
 PWM2TMRH7        EQU  H'0007'
 
 
+TMR8             EQU  H'0000'
+TMR9             EQU  H'0001'
+TMR10            EQU  H'0002'
+TMR11            EQU  H'0003'
+TMR12            EQU  H'0004'
+TMR13            EQU  H'0005'
+TMR14            EQU  H'0006'
+TMR15            EQU  H'0007'
+
+
 ;----- PWM2CON Bits -----------------------------------------------------
+POL              EQU  H'0004'
+OUT              EQU  H'0005'
+OE               EQU  H'0006'
+EN               EQU  H'0007'
+
+PWM2MOD0         EQU  H'0002'
+PWM2MOD1         EQU  H'0003'
+
 PWM2POL          EQU  H'0004'
 PWM2OUT          EQU  H'0005'
 PWM2OE           EQU  H'0006'
 PWM2EN           EQU  H'0007'
 
-PWM2MOD0         EQU  H'0002'
-PWM2MOD1         EQU  H'0003'
+MODE0            EQU  H'0002'
+MODE1            EQU  H'0003'
+
+
+;----- PWM2IE Bits -----------------------------------------------------
+PRIE             EQU  H'0000'
+DCIE             EQU  H'0001'
+PHIE             EQU  H'0002'
+OFIE             EQU  H'0003'
+
+PWM2PRIE         EQU  H'0000'
+PWM2DCIE         EQU  H'0001'
+PWM2PHIE         EQU  H'0002'
+PWM2OFIE         EQU  H'0003'
 
 
 ;----- PWM2INTCON Bits -----------------------------------------------------
+PRIE             EQU  H'0000'
+DCIE             EQU  H'0001'
+PHIE             EQU  H'0002'
+OFIE             EQU  H'0003'
+
 PWM2PRIE         EQU  H'0000'
 PWM2DCIE         EQU  H'0001'
 PWM2PHIE         EQU  H'0002'
@@ -1016,6 +1322,23 @@ PWM2OFIE         EQU  H'0003'
 
 
 ;----- PWM2INTFLG Bits -----------------------------------------------------
+PRIF             EQU  H'0000'
+DCIF             EQU  H'0001'
+PHIF             EQU  H'0002'
+OFIF             EQU  H'0003'
+
+PWM2PRIF         EQU  H'0000'
+PWM2DCIF         EQU  H'0001'
+PWM2PHIF         EQU  H'0002'
+PWM2OFIF         EQU  H'0003'
+
+
+;----- PWM2IR Bits -----------------------------------------------------
+PRIF             EQU  H'0000'
+DCIF             EQU  H'0001'
+PHIF             EQU  H'0002'
+OFIF             EQU  H'0003'
+
 PWM2PRIF         EQU  H'0000'
 PWM2DCIF         EQU  H'0001'
 PWM2PHIF         EQU  H'0002'
@@ -1030,21 +1353,41 @@ PWM2PS1          EQU  H'0005'
 PWM2PS2          EQU  H'0006'
 
 
+CS0              EQU  H'0000'
+CS1              EQU  H'0001'
+PS0_PWM2CLKCON   EQU  H'0004'
+PS1_PWM2CLKCON   EQU  H'0005'
+PS2_PWM2CLKCON   EQU  H'0006'
+
+
 ;----- PWM2LDCON Bits -----------------------------------------------------
-PWM2LDM          EQU  H'0006'
-PWM2LD           EQU  H'0007'
+LDT              EQU  H'0006'
+LDA              EQU  H'0007'
 
 PWM2LDS0         EQU  H'0000'
 PWM2LDS1         EQU  H'0001'
 
+PWM2LDM          EQU  H'0006'
+PWM2LD           EQU  H'0007'
+
+LDS0             EQU  H'0000'
+LDS1             EQU  H'0001'
+
 
 ;----- PWM2OFCON Bits -----------------------------------------------------
-PWM2OFMC         EQU  H'0004'
+OFO              EQU  H'0004'
 
 PWM2OFS0         EQU  H'0000'
 PWM2OFS1         EQU  H'0001'
 PWM2OFM0         EQU  H'0005'
 PWM2OFM1         EQU  H'0006'
+
+PWM2OFMC         EQU  H'0004'
+
+OFS0             EQU  H'0000'
+OFS1             EQU  H'0001'
+OFM0             EQU  H'0005'
+OFM1             EQU  H'0006'
 
 
 ;----- PWM3PHL Bits -----------------------------------------------------
@@ -1058,6 +1401,16 @@ PWM3PHL6         EQU  H'0006'
 PWM3PHL7         EQU  H'0007'
 
 
+PH0              EQU  H'0000'
+PH1              EQU  H'0001'
+PH2              EQU  H'0002'
+PH3              EQU  H'0003'
+PH4              EQU  H'0004'
+PH5              EQU  H'0005'
+PH6              EQU  H'0006'
+PH7              EQU  H'0007'
+
+
 ;----- PWM3PHH Bits -----------------------------------------------------
 PWM3PHH0         EQU  H'0000'
 PWM3PHH1         EQU  H'0001'
@@ -1067,6 +1420,16 @@ PWM3PHH4         EQU  H'0004'
 PWM3PHH5         EQU  H'0005'
 PWM3PHH6         EQU  H'0006'
 PWM3PHH7         EQU  H'0007'
+
+
+PH8              EQU  H'0000'
+PH9              EQU  H'0001'
+PH10             EQU  H'0002'
+PH11             EQU  H'0003'
+PH12             EQU  H'0004'
+PH13             EQU  H'0005'
+PH14             EQU  H'0006'
+PH15             EQU  H'0007'
 
 
 ;----- PWM3DCL Bits -----------------------------------------------------
@@ -1080,6 +1443,16 @@ PWM3DCL6         EQU  H'0006'
 PWM3DCL7         EQU  H'0007'
 
 
+DC0              EQU  H'0000'
+DC1              EQU  H'0001'
+DC2              EQU  H'0002'
+DC3              EQU  H'0003'
+DC4              EQU  H'0004'
+DC5              EQU  H'0005'
+DC6              EQU  H'0006'
+DC7              EQU  H'0007'
+
+
 ;----- PWM3DCH Bits -----------------------------------------------------
 PWM3DCH0         EQU  H'0000'
 PWM3DCH1         EQU  H'0001'
@@ -1089,6 +1462,16 @@ PWM3DCH4         EQU  H'0004'
 PWM3DCH5         EQU  H'0005'
 PWM3DCH6         EQU  H'0006'
 PWM3DCH7         EQU  H'0007'
+
+
+DC8              EQU  H'0000'
+DC9              EQU  H'0001'
+DC10             EQU  H'0002'
+DC11             EQU  H'0003'
+DC12             EQU  H'0004'
+DC13             EQU  H'0005'
+DC14             EQU  H'0006'
+DC15             EQU  H'0007'
 
 
 ;----- PWM3PRL Bits -----------------------------------------------------
@@ -1102,6 +1485,16 @@ PWM3PRL6         EQU  H'0006'
 PWM3PRL7         EQU  H'0007'
 
 
+PR0              EQU  H'0000'
+PR1              EQU  H'0001'
+PR2              EQU  H'0002'
+PR3              EQU  H'0003'
+PR4              EQU  H'0004'
+PR5              EQU  H'0005'
+PR6              EQU  H'0006'
+PR7              EQU  H'0007'
+
+
 ;----- PWM3PRH Bits -----------------------------------------------------
 PWM3PRH0         EQU  H'0000'
 PWM3PRH1         EQU  H'0001'
@@ -1111,6 +1504,16 @@ PWM3PRH4         EQU  H'0004'
 PWM3PRH5         EQU  H'0005'
 PWM3PRH6         EQU  H'0006'
 PWM3PRH7         EQU  H'0007'
+
+
+PR8              EQU  H'0000'
+PR9              EQU  H'0001'
+PR10             EQU  H'0002'
+PR11             EQU  H'0003'
+PR12             EQU  H'0004'
+PR13             EQU  H'0005'
+PR14             EQU  H'0006'
+PR15             EQU  H'0007'
 
 
 ;----- PWM3OFL Bits -----------------------------------------------------
@@ -1124,6 +1527,16 @@ PWM3OFL6         EQU  H'0006'
 PWM3OFL7         EQU  H'0007'
 
 
+OF0              EQU  H'0000'
+OF1              EQU  H'0001'
+OF2              EQU  H'0002'
+OF3              EQU  H'0003'
+OF4              EQU  H'0004'
+OF5              EQU  H'0005'
+OF6              EQU  H'0006'
+OF7              EQU  H'0007'
+
+
 ;----- PWM3OFH Bits -----------------------------------------------------
 PWM3OFH0         EQU  H'0000'
 PWM3OFH1         EQU  H'0001'
@@ -1133,6 +1546,16 @@ PWM3OFH4         EQU  H'0004'
 PWM3OFH5         EQU  H'0005'
 PWM3OFH6         EQU  H'0006'
 PWM3OFH7         EQU  H'0007'
+
+
+OF8              EQU  H'0000'
+OF9              EQU  H'0001'
+OF10             EQU  H'0002'
+OF11             EQU  H'0003'
+OF12             EQU  H'0004'
+OF13             EQU  H'0005'
+OF14             EQU  H'0006'
+OF15             EQU  H'0007'
 
 
 ;----- PWM3TMRL Bits -----------------------------------------------------
@@ -1146,6 +1569,16 @@ PWM3TMRL6        EQU  H'0006'
 PWM3TMRL7        EQU  H'0007'
 
 
+TMR0             EQU  H'0000'
+TMR1             EQU  H'0001'
+TMR2             EQU  H'0002'
+TMR3             EQU  H'0003'
+TMR4             EQU  H'0004'
+TMR5             EQU  H'0005'
+TMR6             EQU  H'0006'
+TMR7             EQU  H'0007'
+
+
 ;----- PWM3TMRH Bits -----------------------------------------------------
 PWM3TMRH0        EQU  H'0000'
 PWM3TMRH1        EQU  H'0001'
@@ -1157,17 +1590,52 @@ PWM3TMRH6        EQU  H'0006'
 PWM3TMRH7        EQU  H'0007'
 
 
+TMR8             EQU  H'0000'
+TMR9             EQU  H'0001'
+TMR10            EQU  H'0002'
+TMR11            EQU  H'0003'
+TMR12            EQU  H'0004'
+TMR13            EQU  H'0005'
+TMR14            EQU  H'0006'
+TMR15            EQU  H'0007'
+
+
 ;----- PWM3CON Bits -----------------------------------------------------
+POL              EQU  H'0004'
+OUT              EQU  H'0005'
+OE               EQU  H'0006'
+EN               EQU  H'0007'
+
+PWM3MOD0         EQU  H'0002'
+PWM3MOD1         EQU  H'0003'
+
 PWM3POL          EQU  H'0004'
 PWM3OUT          EQU  H'0005'
 PWM3OE           EQU  H'0006'
 PWM3EN           EQU  H'0007'
 
-PWM3MOD0         EQU  H'0002'
-PWM3MOD1         EQU  H'0003'
+MODE0            EQU  H'0002'
+MODE1            EQU  H'0003'
+
+
+;----- PWM3IE Bits -----------------------------------------------------
+PRIE             EQU  H'0000'
+DCIE             EQU  H'0001'
+PHIE             EQU  H'0002'
+OFIE             EQU  H'0003'
+
+PWM3PRIE         EQU  H'0000'
+PWM3DCIE         EQU  H'0001'
+PWM3PHIE         EQU  H'0002'
+PWM3OFIE         EQU  H'0003'
 
 
 ;----- PWM3INTCON Bits -----------------------------------------------------
+PRIE             EQU  H'0000'
+DCIE             EQU  H'0001'
+PHIE             EQU  H'0002'
+OFIE             EQU  H'0003'
+
 PWM3PRIE         EQU  H'0000'
 PWM3DCIE         EQU  H'0001'
 PWM3PHIE         EQU  H'0002'
@@ -1175,6 +1643,23 @@ PWM3OFIE         EQU  H'0003'
 
 
 ;----- PWM3INTFLG Bits -----------------------------------------------------
+PRIF             EQU  H'0000'
+DCIF             EQU  H'0001'
+PHIF             EQU  H'0002'
+OFIF             EQU  H'0003'
+
+PWM3PRIF         EQU  H'0000'
+PWM3DCIF         EQU  H'0001'
+PWM3PHIF         EQU  H'0002'
+PWM3OFIF         EQU  H'0003'
+
+
+;----- PWM3IR Bits -----------------------------------------------------
+PRIF             EQU  H'0000'
+DCIF             EQU  H'0001'
+PHIF             EQU  H'0002'
+OFIF             EQU  H'0003'
+
 PWM3PRIF         EQU  H'0000'
 PWM3DCIF         EQU  H'0001'
 PWM3PHIF         EQU  H'0002'
@@ -1189,21 +1674,41 @@ PWM3PS1          EQU  H'0005'
 PWM3PS2          EQU  H'0006'
 
 
+CS0              EQU  H'0000'
+CS1              EQU  H'0001'
+PS0_PWM3CLKCON   EQU  H'0004'
+PS1_PWM3CLKCON   EQU  H'0005'
+PS2_PWM3CLKCON   EQU  H'0006'
+
+
 ;----- PWM3LDCON Bits -----------------------------------------------------
-PWM3LDM          EQU  H'0006'
-PWM3LD           EQU  H'0007'
+LDT              EQU  H'0006'
+LDA              EQU  H'0007'
 
 PWM3LDS0         EQU  H'0000'
 PWM3LDS1         EQU  H'0001'
 
+PWM3LDM          EQU  H'0006'
+PWM3LD           EQU  H'0007'
+
+LDS0             EQU  H'0000'
+LDS1             EQU  H'0001'
+
 
 ;----- PWM3OFCON Bits -----------------------------------------------------
-PWM3OFMC         EQU  H'0004'
+OFO              EQU  H'0004'
 
 PWM3OFS0         EQU  H'0000'
 PWM3OFS1         EQU  H'0001'
 PWM3OFM0         EQU  H'0005'
 PWM3OFM1         EQU  H'0006'
+
+PWM3OFMC         EQU  H'0004'
+
+OFS0             EQU  H'0000'
+OFS1             EQU  H'0001'
+OFM0             EQU  H'0005'
+OFM1             EQU  H'0006'
 
 
 ;----- STATUS_SHAD Bits -----------------------------------------------------
