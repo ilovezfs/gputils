@@ -23,18 +23,6 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
-;;;; Begin: Added in gputils
-
-;==========================================================================
-;
-;       Gputils Specific Revision History
-;
-;==========================================================================
-
-;       19 Jun 2012  Added TSRNG and TSEN bits to "FVRCON Bits".
-;                    Removed P1M{0,1} bits from "CCP1CON Bits".
-;                    Removed P2M{0,1} bits from "CCP2CON Bits".
-;;;; End: Added in gputils
 
 ;==========================================================================
 ;
@@ -719,10 +707,8 @@ ADFVR0           EQU  H'0000'
 ADFVR1           EQU  H'0001'
 CDAFVR0          EQU  H'0002'
 CDAFVR1          EQU  H'0003'
-;;;; Begin: Added in gputils
 TSRNG            EQU  H'0004'
 TSEN             EQU  H'0005'
-;;;; End: Added in gputils
 FVRRDY           EQU  H'0006'
 FVREN            EQU  H'0007'
 
@@ -1123,10 +1109,8 @@ CCP1M2           EQU  H'0002'
 CCP1M3           EQU  H'0003'
 DC1B0            EQU  H'0004'
 DC1B1            EQU  H'0005'
-;;;; Begin: Removed in gputils
-;;;;P1M0             EQU  H'0006'
-;;;;P1M1             EQU  H'0007'
-;;;; End: Removed in gputils
+P1M0             EQU  H'0006'
+P1M1             EQU  H'0007'
 
 
 
@@ -1137,10 +1121,8 @@ CCP2M2           EQU  H'0002'
 CCP2M3           EQU  H'0003'
 DC2B0            EQU  H'0004'
 DC2B1            EQU  H'0005'
-;;;; Begin: Removed in gputils
-;;;;P2M0             EQU  H'0006'
-;;;;P2M1             EQU  H'0007'
-;;;; End: Removed in gputils
+P2M0             EQU  H'0006'
+P2M1             EQU  H'0007'
 
 
 

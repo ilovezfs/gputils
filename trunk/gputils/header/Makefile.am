@@ -31,6 +31,7 @@ HEADER_FILES =\
 	p12f1501.inc \
 	p12f1571.inc \
 	p12f1572.inc \
+	p12f1612.inc \
 	p12f1822.inc \
 	p12f1840.inc \
 	p12f508.inc \
@@ -55,6 +56,7 @@ HEADER_FILES =\
 	p12lf1552.inc \
 	p12lf1571.inc \
 	p12lf1572.inc \
+	p12lf1612.inc \
 	p12lf1822.inc \
 	p12lf1840.inc \
 	p12lf1840t39a.inc \
@@ -144,6 +146,7 @@ HEADER_FILES =\
 	p16f1519.inc \
 	p16f1526.inc \
 	p16f1527.inc \
+	p16f1613.inc \
 	p16f1703.inc \
 	p16f1704.inc \
 	p16f1705.inc \
@@ -276,6 +279,7 @@ HEADER_FILES =\
 	p16lf1519.inc \
 	p16lf1526.inc \
 	p16lf1527.inc \
+	p16lf1613.inc \
 	p16lf1703.inc \
 	p16lf1704.inc \
 	p16lf1705.inc \

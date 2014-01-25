@@ -1104,12 +1104,6 @@ _BOREN_ON        EQU  H'FFFF'    ; Brown-out Reset enabled
 _CLKOUTEN_ON     EQU  H'F7FF'    ; CLKOUT function is enabled on the CLKOUT pin
 _CLKOUTEN_OFF    EQU  H'FFFF'    ; CLKOUT function is disabled. I/O or oscillator function on the CLKOUT pin
 
-_IESO_OFF        EQU  H'EFFF'    ; Internal/External Switchover Mode is disabled
-_IESO_ON         EQU  H'FFFF'    ; Internal/External Switchover Mode is enabled
-
-_FCMEN_OFF       EQU  H'DFFF'    ; Fail-Safe Clock Monitor is disabled
-_FCMEN_ON        EQU  H'FFFF'    ; Fail-Safe Clock Monitor is enabled
-
 ;----- CONFIG2 Options --------------------------------------------------
 _WRT_ALL         EQU  H'FFFC'    ; 000h to 1FFFh write protected, no addresses may be modified by EECON control
 _WRT_HALF        EQU  H'FFFD'    ; 000h to FFFh write protected, 1000h to 1FFFh may be modified by EECON control
