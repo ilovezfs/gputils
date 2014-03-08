@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16F1503 processor include
 ; 
-;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -735,6 +735,7 @@ NCO1ACC6         EQU  H'0006'
 NCO1ACC7         EQU  H'0007'
 
 
+
 ;----- NCO1ACCH Bits -----------------------------------------------------
 NCO1ACC8         EQU  H'0000'
 NCO1ACC9         EQU  H'0001'
@@ -746,11 +747,13 @@ NCO1ACC14        EQU  H'0006'
 NCO1ACC15        EQU  H'0007'
 
 
+
 ;----- NCO1ACCU Bits -----------------------------------------------------
 NCO1ACC16        EQU  H'0000'
 NCO1ACC17        EQU  H'0001'
 NCO1ACC18        EQU  H'0002'
 NCO1ACC19        EQU  H'0003'
+
 
 
 ;----- NCO1INCL Bits -----------------------------------------------------
@@ -764,6 +767,7 @@ NCO1INC6         EQU  H'0006'
 NCO1INC7         EQU  H'0007'
 
 
+
 ;----- NCO1INCH Bits -----------------------------------------------------
 NCO1INC8         EQU  H'0000'
 NCO1INC9         EQU  H'0001'
@@ -773,6 +777,7 @@ NCO1INC12        EQU  H'0004'
 NCO1INC13        EQU  H'0005'
 NCO1INC14        EQU  H'0006'
 NCO1INC15        EQU  H'0007'
+
 
 
 ;----- NCO1CON Bits -----------------------------------------------------
@@ -789,6 +794,7 @@ N1CKS1           EQU  H'0001'
 N1PWS0           EQU  H'0005'
 N1PWS1           EQU  H'0006'
 N1PWS2           EQU  H'0007'
+
 
 
 ;----- PWM1DCL Bits -----------------------------------------------------

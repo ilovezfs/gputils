@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16F1454 processor include
 ; 
-;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -95,6 +95,7 @@ FVRCON           EQU  H'0117'
 APFCON           EQU  H'011D'
 
 ;-----Bank3------------------
+ANSELA           EQU  H'018C'
 ANSELC           EQU  H'018E'
 PMADR            EQU  H'0191'
 PMADRL           EQU  H'0191'
@@ -404,6 +405,11 @@ FVREN            EQU  H'0007'
 T1GSEL           EQU  H'0003'
 SSSEL            EQU  H'0005'
 CLKRSEL          EQU  H'0007'
+
+
+;----- ANSELA Bits -----------------------------------------------------
+ANSA4            EQU  H'0005'
+
 
 
 ;----- ANSELC Bits -----------------------------------------------------
@@ -866,7 +872,7 @@ Z                EQU  H'0002'
        __BADRAM  H'010F'-H'0115'
        __BADRAM  H'0118'-H'011C'
        __BADRAM  H'011E'-H'011F'
-       __BADRAM  H'018C'-H'018D'
+       __BADRAM  H'018D'
        __BADRAM  H'018F'-H'0190'
        __BADRAM  H'0198'
        __BADRAM  H'020D'

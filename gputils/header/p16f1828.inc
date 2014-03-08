@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16F1828 processor include
 ; 
-;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -663,8 +663,6 @@ ANSA4            EQU  H'0004'
 ;----- ANSELB Bits -----------------------------------------------------
 ANSB4            EQU  H'0004'
 ANSB5            EQU  H'0005'
-ANSB6            EQU  H'0006'
-ANSB7            EQU  H'0007'
 
 
 

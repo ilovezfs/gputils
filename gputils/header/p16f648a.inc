@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16F648A processor include
 ; 
-;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -365,9 +365,9 @@ _LVP_OFF             EQU  H'3F7F'    ; RB4/PGM pin has digital I/O function, HV 
 _LVP_ON              EQU  H'3FFF'    ; RB4/PGM pin has PGM function, low-voltage programming enabled
 
 _CPD_ON              EQU  H'3EFF'    ; Data memory code-protected
-DATA_CP_ON           EQU  H'3EFF'    ; Data memory code-protected
+_DATA_CP_ON          EQU  H'3EFF'    ; Data memory code-protected
 _CPD_OFF             EQU  H'3FFF'    ; Data memory code protection off
-DATA_CP_OFF          EQU  H'3FFF'    ; Data memory code protection off
+_DATA_CP_OFF         EQU  H'3FFF'    ; Data memory code protection off
 
 _CP_ON               EQU  H'1FFF'    ; 0000h to 0FFFh code-protected
 _CP_OFF              EQU  H'3FFF'    ; Code protection off

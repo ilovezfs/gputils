@@ -384,6 +384,9 @@ LKR_FILES = \
 	16f1709_g.lkr \
 	16f1713_g.lkr \
 	16f1716_g.lkr \
+	16f1717_g.lkr \
+	16f1718_g.lkr \
+	16f1719_g.lkr \
 	16f1782_g.lkr \
 	16f1783_g.lkr \
 	16f1784_g.lkr \
@@ -515,6 +518,9 @@ LKR_FILES = \
 	16lf1709_g.lkr \
 	16lf1713_g.lkr \
 	16lf1716_g.lkr \
+	16lf1717_g.lkr \
+	16lf1718_g.lkr \
+	16lf1719_g.lkr \
 	16lf1782_g.lkr \
 	16lf1783_g.lkr \
 	16lf1784_g.lkr \
