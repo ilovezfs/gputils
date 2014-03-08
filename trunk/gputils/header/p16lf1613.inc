@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16LF1613 processor include
 ; 
-;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -201,8 +201,10 @@ WDTCON1          EQU  H'0712'
 WDTPSL           EQU  H'0713'
 WDTPSH           EQU  H'0714'
 WDTTMR           EQU  H'0715'
+SCANLADR         EQU  H'0718'
 SCANLADRL        EQU  H'0718'
 SCANLADRH        EQU  H'0719'
+SCANHADR         EQU  H'071A'
 SCANHADRL        EQU  H'071A'
 SCANHADRH        EQU  H'071B'
 SCANCON0         EQU  H'071C'
@@ -2291,7 +2293,7 @@ _CONFIG2         EQU  H'8008'
 _CONFIG3         EQU  H'8009'
 
 ;----- CONFIG1 Options --------------------------------------------------
-_FOSC_INOSC      EQU  H'FFFC'    ; INTOSC oscillator: I/O function on CLKIN pin
+_FOSC_INTOSC     EQU  H'FFFC'    ; INTOSC oscillator: I/O function on CLKIN pin
 _FOSC_ECL        EQU  H'FFFD'    ; ECL, External Clock, Low Power Mode (0-0.5 MHz): device clock supplied to CLKIN pins
 _FOSC_ECM        EQU  H'FFFE'    ; ECM, External Clock, Medium Power Mode (0.5-4 MHz): device clock supplied to CLKIN pins
 _FOSC_ECH        EQU  H'FFFF'    ; ECH, External Clock, High Power Mode (4-20 MHz): device clock supplied to CLKIN pins

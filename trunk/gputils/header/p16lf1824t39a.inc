@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC16LF1824T39A processor include
 ; 
-;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST

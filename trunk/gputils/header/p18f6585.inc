@@ -3,7 +3,7 @@
 ;==========================================================================
 ;  MPASM PIC18F6585 processor include
 ; 
-;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST

@@ -1,3 +1,16 @@
+2014-03-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, header/Makefile.am, header/Makefile.in,
+    header/p16f1717.inc, header/p16f1718.inc, header/p16f1719.inc,
+    header/p16lf1717.inc, header/p16lf1718.inc, header/p16lf1719.inc,
+    header/p16f1xxx.inc, libgputils/gpcfg-table.c, libgputils/gpprocessor.c,
+    lkr/Makefile.am, lkr/Makefile.in, lkr/16f1717_g.lkr,
+    lkr/16f1718_g.lkr, lkr/16f1719_g.lkr, lkr/16lf1717_g.lkr,
+    lkr/16lf1718_g.lkr, lkr/16lf1719_g.lkr:
+    New devices based on the mplabx-2.05.
+
+  * header/*.inc, lkr/*.lkr:
+    Updated based on the mplabx-2.05.
+
 2014-01-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, header/Makefile.am, header/Makefile.in,
     header/p12f1612.inc, header/p12lf1612.inc, header/p16f1613.inc,
@@ -15,7 +28,7 @@
     header/p16lf1703.inc, header/p16lf1707.inc, header/p16lf1713.inc,
     header/p16lf1716.inc, header/p16lf1782.inc, header/p16lf1783.inc,
     header/p16lf1784.inc, header/p16lf1786.inc, header/p16lf1787.inc,
-    header/p16lf1788.inc, header/p16lf1789.inc, lkr/*_g.lkr:
+    header/p16lf1788.inc, header/p16lf1789.inc, lkr/*.lkr:
     Updated based on the mplabx-2.0.
 
 2014-01-22  Molnar Karoly  <molnarkaroly@users.sourceforge.net>

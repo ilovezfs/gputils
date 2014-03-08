@@ -201,14 +201,6 @@ static const struct gp_cfg_option pic12f1501_wrt_opts[] =
 	{ "OFF",       0x03 },
 };
 
-static const struct gp_cfg_option pic12f1612_fosc_opts[] =
-{ /* for FOSC: */
-	{ "INOSC",     0x00 },
-	{ "ECL",       0x01 },
-	{ "ECM",       0x02 },
-	{ "ECH",       0x03 },
-};
-
 static const struct gp_cfg_option pic12f1612_wdtccs_opts[] =
 { /* for WDTCCS: */
 	{ "LFINTOSC",  0x00 },
@@ -2572,7 +2564,7 @@ static const struct gp_cfg_directive pic12f1571_008008[] =
 
 static const struct gp_cfg_directive pic12f1612_008007[] =
 {
-	{ "FOSC",      0x03,  4, pic12f1612_fosc_opts },
+	{ "FOSC",      0x03,  4, pic12f1501_fosc_opts },
 	{ "PWRTE",     0x20,  2, pic10f320_pwrte_opts },
 	{ "MCLRE",     0x40,  2, pic10f320_mclre_opts },
 	{ "CP",        0x80,  2, pic10f320_cp_opts },
@@ -7126,7 +7118,7 @@ static const struct gp_cfg_addr gp_cfg_ps810_addrs[] =
  * Devices Table
  */
 
-const unsigned gp_cfg_device_count = 648;
+const unsigned gp_cfg_device_count = 654;
 const struct gp_cfg_device gp_cfg_devices[] =
 {
 	{ "MCP19110",      1, gp_cfg_mcp19110_addrs },
@@ -7307,6 +7299,9 @@ const struct gp_cfg_device gp_cfg_devices[] =
 	{ "PIC16F1709",    2, gp_cfg_pic16f1704_addrs },
 	{ "PIC16F1713",    2, gp_cfg_pic16f1704_addrs },
 	{ "PIC16F1716",    2, gp_cfg_pic16f1704_addrs },
+	{ "PIC16F1717",    2, gp_cfg_pic16f1704_addrs },
+	{ "PIC16F1718",    2, gp_cfg_pic16f1704_addrs },
+	{ "PIC16F1719",    2, gp_cfg_pic16f1704_addrs },
 	{ "PIC16F1782",    2, gp_cfg_pic16f1782_addrs },
 	{ "PIC16F1783",    2, gp_cfg_pic16f1782_addrs },
 	{ "PIC16F1784",    2, gp_cfg_pic16f1782_addrs },
@@ -7437,6 +7432,9 @@ const struct gp_cfg_device gp_cfg_devices[] =
 	{ "PIC16LF1709",   2, gp_cfg_pic16f1704_addrs },
 	{ "PIC16LF1713",   2, gp_cfg_pic16f1704_addrs },
 	{ "PIC16LF1716",   2, gp_cfg_pic16f1704_addrs },
+	{ "PIC16LF1717",   2, gp_cfg_pic16f1704_addrs },
+	{ "PIC16LF1718",   2, gp_cfg_pic16f1704_addrs },
+	{ "PIC16LF1719",   2, gp_cfg_pic16f1704_addrs },
 	{ "PIC16LF1782",   2, gp_cfg_pic16lf1782_addrs },
 	{ "PIC16LF1783",   2, gp_cfg_pic16lf1782_addrs },
 	{ "PIC16LF1784",   2, gp_cfg_pic16lf1782_addrs },
