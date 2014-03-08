@@ -1,4 +1,11 @@
 2014-03-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/p16c554.inc, header/p16c557.inc, header/p16c558.inc,
+    header/pmcv08a.inc, header/pmcv14a.inc, header/pmcv18a.inc,
+    header/pmcv28a.inc, lkr/12f1612_g.lkr, lkr/12lf1612_g.lkr,
+    lkr/16f1613_g.lkr, lkr/16lf1613_g.lkr:
+    Updated based on the mplabx-2.05.
+
+2014-03-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, header/Makefile.am, header/Makefile.in,
     header/p16f1717.inc, header/p16f1718.inc, header/p16f1719.inc,
     header/p16lf1717.inc, header/p16lf1718.inc, header/p16lf1719.inc,
