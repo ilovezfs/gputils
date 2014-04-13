@@ -1,3 +1,10 @@
+2014-04-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/gpasm.c:
+    Expanding the listing option of processors.
+
+  * include/stdhdr.h:
+    Updated the copyright date.
+
 2014-03-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/p16c554.inc, header/p16c557.inc, header/p16c558.inc,
     header/pmcv08a.inc, header/pmcv14a.inc, header/pmcv18a.inc,

@@ -40,7 +40,7 @@ static char *processor_name = NULL;
 int yyparse(void);
 extern int yydebug;
 
-#define GET_OPTIONS "?D:I:a:cCde:ghilLmMno:p:qr:uvw:yP:"
+#define GET_OPTIONS "?D:I:a:cCde:ghil::LmMno:p:qr:uvw:yP:"
 
 enum {
   OPT_MPASM_COMPATIBLE = 0x100
@@ -58,7 +58,7 @@ static struct option longopts[] =
   { "debug-info",       no_argument,       NULL, 'g' },
   { "help",             no_argument,       NULL, 'h' },
   { "ignore-case",      no_argument,       NULL, 'i' },
-  { "list-chips",       no_argument,       NULL, 'l' },
+  { "list-chips",       optional_argument, NULL, 'l' },
   { "force-list",       no_argument,       NULL, 'L' },
   { "dump",             no_argument,       NULL, 'm' },
   { "deps",             no_argument,       NULL, 'M' },
@@ -174,7 +174,8 @@ show_usage(void)
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -i, --ignore-case              Case insensitive.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
-  printf("  -l, --list-chips               List supported processors.\n");
+  printf("  -l[12[ce]|14[ce]|16[ce]], --list-chips[=([12[ce]|14[ce]|16[ce]])]\n");
+  printf("                                 List supported processors based on various aspects.\n");
   printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -m, --dump                     Memory dump.\n");
   printf("      --mpasm-compatible         MPASM compatibility mode\n");
@@ -302,10 +303,52 @@ process_args( int argc, char *argv[])
       state.cmd_line.lst_force = true;
       break;
 
-    case 'l':
-      gp_dump_processor_list(true, 0);
+    case 'l': {
+      long pic_family = -1;
+
+      if (optarg != NULL) {
+        pic_family = strtol(optarg, NULL, 16);
+        }
+
+      switch (pic_family) {
+        case 0x12C:
+          gp_dump_processor_list(false, PROC_CLASS_PIC12);
+          break;
+
+        case 0x12:
+          gp_dump_processor_list(false, PROC_CLASS_PIC12);
+        case 0x12E:
+          gp_dump_processor_list(false, PROC_CLASS_PIC12E);
+          break;
+
+        case 0x14C:
+          gp_dump_processor_list(false, PROC_CLASS_PIC14);
+          break;
+
+        case 0x14:
+          gp_dump_processor_list(false, PROC_CLASS_PIC14);
+        case 0x14E:
+          gp_dump_processor_list(false, PROC_CLASS_PIC14E);
+          break;
+
+        case 0x16C:
+          gp_dump_processor_list(false, PROC_CLASS_PIC16);
+          break;
+
+        case 0x16:
+          gp_dump_processor_list(false, PROC_CLASS_PIC16);
+        case 0x16E:
+          gp_dump_processor_list(false, PROC_CLASS_PIC16E);
+          break;
+
+        default: {
+          gp_dump_processor_list(true, NULL);
+          }
+        }
+
       exit(0);
       break;
+      }
 
     case 'M':
       state.depfile = normal;
