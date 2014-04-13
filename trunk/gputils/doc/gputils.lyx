@@ -989,7 +989,7 @@ hex file in one of four formats: inhx8m, inhx8s, inhx16, inhx32 (the default).
 \begin_inset Text
 
 \begin_layout Plain Layout
-Output a relocatable object in the older version of the Microchip COFF format
+Output a relocatable object in the older version of the Microchip COFF format.
 \end_layout
 
 \end_inset
@@ -1018,7 +1018,7 @@ Output a relocatable object in the older version of the Microchip COFF format
 \begin_inset Text
 
 \begin_layout Plain Layout
-Output a relocatable object in the old Microchip COFF format
+Output a relocatable object in the old Microchip COFF format.
 \end_layout
 
 \end_inset
@@ -1047,7 +1047,7 @@ Output a relocatable object in the old Microchip COFF format
 \begin_inset Text
 
 \begin_layout Plain Layout
-Output debug messages
+Output debug messages.
 \end_layout
 
 \end_inset
@@ -1084,7 +1084,7 @@ Equivalent to
 \begin_inset Quotes erd
 \end_inset
 
-
+.
 \end_layout
 
 \end_inset
@@ -1113,7 +1113,7 @@ Equivalent to
 \begin_inset Text
 
 \begin_layout Plain Layout
-Expand macros in listing file
+Expand macros in listing file.
 \end_layout
 
 \end_inset
@@ -1142,7 +1142,7 @@ Expand macros in listing file
 \begin_inset Text
 
 \begin_layout Plain Layout
-Use debug directives for COFF
+Use debug directives for COFF.
 \end_layout
 
 \end_inset
@@ -1171,7 +1171,7 @@ Use debug directives for COFF
 \begin_inset Text
 
 \begin_layout Plain Layout
-Display the help message
+Display the help message.
 \end_layout
 
 \end_inset
@@ -1255,7 +1255,7 @@ FOOYA
 \begin_inset Text
 
 \begin_layout Plain Layout
-Specify an include directory
+Specify an include directory.
 \end_layout
 
 \end_inset
@@ -1266,7 +1266,7 @@ Specify an include directory
 \begin_inset Text
 
 \begin_layout Plain Layout
--l
+-l[12[ce]|14[ce]|16[ce]]
 \end_layout
 
 \end_inset
@@ -1275,7 +1275,7 @@ Specify an include directory
 \begin_inset Text
 
 \begin_layout Plain Layout
---list-chips
+--list-chips[=(12[ce]|14[ce]|16[ce]])]
 \end_layout
 
 \end_inset
@@ -1284,7 +1284,7 @@ Specify an include directory
 \begin_inset Text
 
 \begin_layout Plain Layout
-List the supported processors
+List the supported processors based on various acpects.
 \end_layout
 
 \end_inset
@@ -1313,7 +1313,7 @@ List the supported processors
 \begin_inset Text
 
 \begin_layout Plain Layout
-Ignore nolist directives
+Ignore nolist directives.
 \end_layout
 
 \end_inset
@@ -1342,7 +1342,7 @@ Ignore nolist directives
 \begin_inset Text
 
 \begin_layout Plain Layout
-Memory dump
+Memory dump.
 \end_layout
 
 \end_inset
@@ -1371,7 +1371,7 @@ Memory dump
 \begin_inset Text
 
 \begin_layout Plain Layout
-MPASM(X) compatibility mode
+MPASM(X) compatibility mode.
 \end_layout
 
 \end_inset
@@ -1400,7 +1400,7 @@ MPASM(X) compatibility mode
 \begin_inset Text
 
 \begin_layout Plain Layout
-Output a dependency file
+Output a dependency file.
 \end_layout
 
 \end_inset
@@ -1459,7 +1459,7 @@ Use DOS style newlines (CRLF) in hex file.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Alternate name of hex output file
+Alternate name of hex output file.
 \end_layout
 
 \end_inset
@@ -1488,7 +1488,7 @@ Alternate name of hex output file
 \begin_inset Text
 
 \begin_layout Plain Layout
-Select target processor
+Select target processor.
 \end_layout
 
 \end_inset
@@ -1517,7 +1517,7 @@ Select target processor
 \begin_inset Text
 
 \begin_layout Plain Layout
-Write preprocessed asm file to <file>
+Write preprocessed asm file to <file>.
 \end_layout
 
 \end_inset
@@ -1546,7 +1546,7 @@ Write preprocessed asm file to <file>
 \begin_inset Text
 
 \begin_layout Plain Layout
-Quiet
+Quiet.
 \end_layout
 
 \end_inset
@@ -1649,7 +1649,7 @@ hex
 \begin_inset Text
 
 \begin_layout Plain Layout
-Use absolute paths
+Use absolute paths.
 \end_layout
 
 \end_inset
@@ -1678,7 +1678,7 @@ Use absolute paths
 \begin_inset Text
 
 \begin_layout Plain Layout
-Print gpasm version information and exit
+Print gpasm version information and exit.
 \end_layout
 
 \end_inset
@@ -1707,7 +1707,7 @@ Print gpasm version information and exit
 \begin_inset Text
 
 \begin_layout Plain Layout
-Set the message level
+Set the message level.
 \end_layout
 
 \end_inset
@@ -1736,7 +1736,7 @@ Set the message level
 \begin_inset Text
 
 \begin_layout Plain Layout
-Enable 18xx extended mode
+Enable 18xx extended mode.
 \end_layout
 
 \end_inset

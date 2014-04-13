@@ -89,6 +89,6 @@ char *strndup (const char *s, size_t n);
   #define COPY_CHAR "/"
 #endif
 
-#define GPUTILS_COPYRIGHT_STRING "Copyright (c) 1998-2013 gputils project"
+#define GPUTILS_COPYRIGHT_STRING "Copyright (c) 1998-2014 gputils project"
 
 #endif
