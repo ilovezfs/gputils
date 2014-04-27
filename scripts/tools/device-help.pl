@@ -2,7 +2,7 @@
 
 =back
 
-    Copyright (C) 2012,2013 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2012-2014 Molnar Karoly <molnarkaroly@users.sf.net>
 
     This file is part of gputils.
 
@@ -56,8 +56,8 @@ my $verbose = 0;
 my $gputils_url = 'gputils.sourceforge.net';
 my $mplabx_url  = 'www.microchip.com/pagehandler/en-us/family/mplabx';
 
-my $gputils_path       = "$ENV{HOME}/svn_snapshots/gputils/gputils";
-my $gpprocessor_c      = 'gpprocessor.c';
+my $gputils_path  = "$ENV{HOME}/svn_snapshots/gputils/gputils";
+my $gpprocessor_c = 'gpprocessor.c';
 my $gpproc_path;
 my $svn_rev = -1;
 
