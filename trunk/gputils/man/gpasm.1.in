@@ -64,8 +64,8 @@ then its contents are assembled.  GPASM searches for these files in the local
 directory.  If the file is not located, the default header path is checked.
 Finally, all paths specified using this argument are searched.
 .TP
-.BR \-l ", "\-\-list\-chips
-List the supported processors.
+.BR \-l[12[ce]|14[ce]|16[ce]] ", " \-\-list-chips[=([12[ce]|14[ce]|16[ce]])]
+List supported processors based on various aspects.
 .TP
 .BR \-L ", "\-\-force-list
 Ignore NOLIST directives.  This forces gpasm to print every line assembled in
