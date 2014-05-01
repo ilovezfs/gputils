@@ -3128,6 +3128,7 @@ EOT
 
 .tabs li:hover, .classMenu li:hover
   {
+  z-index: 2;
 EOT
 ;
   css_gradient(2, "$content_background, $tab_background 100%");
