@@ -147,7 +147,7 @@ my %mcu_features =
               CLASS     => PROC_CLASS_PIC14E,
               NAME      => '14 bit enhanced MCU',
               CSS_CLASS => 'mcuAttrP14E',
-              CSS_BGRND => '#B4FFFF',
+              CSS_BGRND => '#9BF0F0',
               ENHANCED  => TRUE,
               PAGE_SIZE => 2048,
               WORD_SIZE => 14,
@@ -184,7 +184,7 @@ my %mcu_features =
               CLASS     => PROC_CLASS_PIC16E,
               NAME      => '16 bit extended MCU',
               CSS_CLASS => 'mcuAttrP16E',
-              CSS_BGRND => '#FFFFB4',
+              CSS_BGRND => '#EBEB81',
               ENHANCED  => TRUE,
               PAGE_SIZE => 0,
               WORD_SIZE => 16,
@@ -1423,7 +1423,8 @@ $HTML_1_Frameset
 <html lang="en">
   <head>
     <title>$_[0]</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="author" content="Molnár Károly">
     <link rel="stylesheet" type="text/css" href="$remote_url$css">
   </head>
 EOT
@@ -1465,7 +1466,7 @@ sub print_mcu_list($$)
                      '  <table class="mcuTable">',
                      '    <tr>');
   aOutml($Align + 8, '<td class="vMargin"></td>',
-                     "${lst}name</th>");
+                     "${lst}name</td>");
 
   given ($Class)
     {
@@ -1473,7 +1474,7 @@ sub print_mcu_list($$)
       {
       aOutml($Align + 8, "${lst}instruction size (bit)</td>",
                          "${lst}config word size (bit)</td>",
-                         "${lst}class</th>");
+                         "${lst}class</td>");
       }
 
     when ([ PRI_MENU_ENH, PRI_MENU_EXT, PRI_MENU_REG ])
@@ -1487,7 +1488,7 @@ sub print_mcu_list($$)
       aOutml($Align + 8, "${lst}RAM size (byte)</th>",
                          "${lst}instruction size (bit)</td>",
                          "${lst}config word size (bit)</td>",
-                         "${lst}class</th>");
+                         "${lst}class</td>");
       }
 
     when (PRI_MENU_ROM)
@@ -1545,7 +1546,7 @@ sub print_mcu_list($$)
   foreach my $name (@array)
     {
     my $margin    = '<td class="vMargin"></td>';
-    my $td_href   = "<th class=\"mcuLink\"><a href=\"$remote_url${name}-$feat_tag.html\">$name</a></th>";
+    my $td_href   = "<th><a class=\"mcuLink\" href=\"$remote_url${name}-$feat_tag.html\">$name</a></th>";
     my $features  = $mcus_by_names{$name}->{FEATURES};
     my $class     = $features->{CLASS};
     my $css_class = $features->{CSS_CLASS};
@@ -1628,7 +1629,7 @@ sub print_mcu_list($$)
         {
         aOutl($Align + 6, '<tr>');
         aOutml($Align + 8, $margin,
-                           "<th class=\"mcuLink\"><a href=\"$remote_url${name}-$ram_tag.html\">$name</a></th>",
+                           "<th><a class=\"mcuLink\" href=\"$remote_url${name}-$ram_tag.html\">$name</a></th>",
                            "<td class=\"$css_class\">$features->{RAM_SIZE}</td>",
                            $td_wsize, $td_csize, $td_class, $margin);
         aOutl($Align + 6, '</tr>');
@@ -3133,6 +3134,7 @@ EOT
   print $out_handler <<EOT
   background: -webkit-gradient(linear, 0 0, 0 100%, from($content_background), to($tab_background));
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$content_background', endColorstr='$tab_background');
+  transform: scale(1.1, 1.3);
   }
 
 .tabs li.selected
@@ -3274,11 +3276,24 @@ EOT
 
 .mcuLink
   {
+  display: block;
   width: 12em;
-  padding: 0.2em;
+  padding: 0.14em 0 0.14em 0.6em;
   text-align: left;
-  background: $attr_background;
+  text-decoration: none;
+  background: #49DDFF;
   border: 2px outset $attr_background;
+EOT
+;
+  css_border_radius(2, '0.5em');
+  css_shadow(2, "0 0 2px 4px $attr_background inset");
+  print $out_handler <<EOT
+  }
+
+.mcuLink:hover
+  {
+  background: $tooltip_background;
+  transform: scale(1.1, 1.3);
   }
 
 .mcuLink:active
@@ -3288,23 +3303,6 @@ EOT
 ;
   css_shadow(2, "0 0 10px 6px #B7BD97 inset");
   print $out_handler <<EOT
-  }
-
-.mcuLink a
-  {
-  display: block;
-  padding: 0 0.5em 0 0.5em;
-  text-decoration: none;
-EOT
-;
-  css_border_radius(2, '0.3em');
-  css_shadow(2, "0 0 10px 6px $tooltip_background inset");
-  print $out_handler <<EOT
-  }
-
-.mcuLink a:hover
-  {
-  background: #49DDFF;
   }
 
 .featValue,
@@ -3618,6 +3616,10 @@ EOT
   top: -1px;
   left: 55px;
   white-space: nowrap;
+EOT
+;
+  css_shadow(2, "0 0 0.5em $tab_border_color");
+  print $out_handler <<EOT
   }
 
 .ramSumEx
@@ -3631,6 +3633,10 @@ EOT
   font-size: 0.8em;
   padding: 0.3em 0.5em;
   background: #BA8F94;
+EOT
+;
+  css_shadow(2, "0 0 0.5em $tab_border_color");
+  print $out_handler <<EOT
   }
 EOT
 ;
