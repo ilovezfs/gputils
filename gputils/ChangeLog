@@ -1,6 +1,13 @@
+2014-05-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, configure, configure.ac:
+    Version changed to 1.3.0.
+
+  * man/gpasm.1.in, man/fr/gpasm.1.in:
+    Expanded the --list-chips option.
+
 2014-04-27  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx:
-    Inputencoding now utf8.
+    Input encoding now utf8.
 
 2014-04-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/gpasm.c:

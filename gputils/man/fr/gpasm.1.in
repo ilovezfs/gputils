@@ -66,7 +66,7 @@ assemblés. GPASM recherche ces fichiers dans le répertoire courant. Si le
 fichier n'est pas localisé, le chemin par défaut des en-têtes est parcouru.
 Enfin, tous les chemins spécifiés par cet argument sont parcourus.
 .TP
-.BR \-l ", "\-\-list-chips
+.BR \-l[12[ce]|14[ce]|16[ce]] ", " \-\-list-chips[=([12[ce]|14[ce]|16[ce]])]
 Afficher la liste des processeurs reconnus.
 .TP
 .BR \-L ", "\-\-force-list
