@@ -1,3 +1,6 @@
+2014-05-01 Molnar Karoly <molnarkaroly@users.sf.net>
+	* tools/device-help.pl: Updated the style sheet and minor error corrections.
+
 2013-08-09 Borut Razem <borut.razem@users.sourceforge.net>
 	* build/mingw/do_setup.sh, build/mingw/make-mingw:
 	  revived the Linux cross compilation build
