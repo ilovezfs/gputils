@@ -402,8 +402,10 @@ FVREN            EQU  H'0007'
 
 
 ;----- APFCON Bits -----------------------------------------------------
+P2SEL            EQU  H'0002'
 T1GSEL           EQU  H'0003'
 SSSEL            EQU  H'0005'
+SDOSEL           EQU  H'0006'
 CLKRSEL          EQU  H'0007'
 
 

@@ -318,7 +318,6 @@ CLC3GLS2         EQU  H'0F2C'
 CLC3GLS3         EQU  H'0F2D'
 
 ;-----Bank31------------------
-ICDBK0H          EQU  H'0F9E'
 STATUS_SHAD      EQU  H'0FE4'
 WREG_SHAD        EQU  H'0FE5'
 BSR_SHAD         EQU  H'0FE6'
@@ -2166,16 +2165,6 @@ G4D4N            EQU  H'0006'
 G4D4T            EQU  H'0007'
 
 
-;----- ICDBK0H Bits -----------------------------------------------------
-BKA8             EQU  H'0000'
-BKA9             EQU  H'0001'
-BKA10            EQU  H'0002'
-BKA11            EQU  H'0003'
-BKA12            EQU  H'0004'
-BKA13            EQU  H'0005'
-BKA14            EQU  H'0006'
-
-
 ;----- STATUS_SHAD Bits -----------------------------------------------------
 C_SHAD           EQU  H'0000'
 DC_SHAD          EQU  H'0001'
@@ -2271,13 +2260,7 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'0EA8'-H'0EEF'
        __BADRAM  H'0F0C'-H'0F0E'
        __BADRAM  H'0F2E'-H'0F6F'
-       __BADRAM  H'0F8E'-H'0F90'
-       __BADRAM  H'0F93'-H'0F94'
-       __BADRAM  H'0F98'-H'0F9B'
-       __BADRAM  H'0F9F'
-       __BADRAM  H'0FA0'-H'0FBF'
-       __BADRAM  H'0FC0'-H'0FCF'
-       __BADRAM  H'0FD0'-H'0FE2'
+       __BADRAM  H'0F8C'-H'0FE3'
        __BADRAM  H'0FEC'
 
 ;==========================================================================
