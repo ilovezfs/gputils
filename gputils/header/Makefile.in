@@ -492,6 +492,8 @@ HEADER_FILES = \
 	p16lf1519.inc \
 	p16lf1526.inc \
 	p16lf1527.inc \
+	p16lf1554.inc \
+	p16lf1559.inc \
 	p16lf1613.inc \
 	p16lf1703.inc \
 	p16lf1704.inc \

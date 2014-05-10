@@ -273,6 +273,12 @@ endif
 ifdef __16LF1527
   include <p16lf1527.inc>
 endif
+ifdef __16LF1554
+  include <p16lf1554.inc>
+endif
+ifdef __16LF1559
+  include <p16lf1559.inc>
+endif
 ifdef __16LF1613
   include <p16lf1613.inc>
 endif
