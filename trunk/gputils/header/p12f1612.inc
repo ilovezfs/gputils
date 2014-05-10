@@ -698,6 +698,16 @@ CCPR16           EQU  H'0006'
 CCPR17           EQU  H'0007'
 
 
+CCP1R0           EQU  H'0000'
+CCP1R1           EQU  H'0001'
+CCP1R2           EQU  H'0002'
+CCP1R3           EQU  H'0003'
+CCP1R4           EQU  H'0004'
+CCP1R5           EQU  H'0005'
+CCP1R6           EQU  H'0006'
+CCP1R7           EQU  H'0007'
+
+
 ;----- CCPR1L Bits -----------------------------------------------------
 CCPR10           EQU  H'0000'
 CCPR11           EQU  H'0001'
@@ -707,6 +717,16 @@ CCPR14           EQU  H'0004'
 CCPR15           EQU  H'0005'
 CCPR16           EQU  H'0006'
 CCPR17           EQU  H'0007'
+
+
+CCP1R0           EQU  H'0000'
+CCP1R1           EQU  H'0001'
+CCP1R2           EQU  H'0002'
+CCP1R3           EQU  H'0003'
+CCP1R4           EQU  H'0004'
+CCP1R5           EQU  H'0005'
+CCP1R6           EQU  H'0006'
+CCP1R7           EQU  H'0007'
 
 
 ;----- CCP1RH Bits -----------------------------------------------------
@@ -720,6 +740,16 @@ CCPR114          EQU  H'0006'
 CCPR115          EQU  H'0007'
 
 
+CCP1R8           EQU  H'0000'
+CCP1R9           EQU  H'0001'
+CCP1R10          EQU  H'0002'
+CCP1R11          EQU  H'0003'
+CCP1R12          EQU  H'0004'
+CCP1R13          EQU  H'0005'
+CCP1R14          EQU  H'0006'
+CCP1R15          EQU  H'0007'
+
+
 ;----- CCPR1H Bits -----------------------------------------------------
 CCPR18           EQU  H'0000'
 CCPR19           EQU  H'0001'
@@ -731,7 +761,22 @@ CCPR114          EQU  H'0006'
 CCPR115          EQU  H'0007'
 
 
+CCP1R8           EQU  H'0000'
+CCP1R9           EQU  H'0001'
+CCP1R10          EQU  H'0002'
+CCP1R11          EQU  H'0003'
+CCP1R12          EQU  H'0004'
+CCP1R13          EQU  H'0005'
+CCP1R14          EQU  H'0006'
+CCP1R15          EQU  H'0007'
+
+
 ;----- CCP1CON Bits -----------------------------------------------------
+CCP1FMT          EQU  H'0004'
+CCP1OUT          EQU  H'0005'
+CCP1OE           EQU  H'0006'
+CCP1EN           EQU  H'0007'
+
 FMT              EQU  H'0004'
 OUT              EQU  H'0005'
 OE               EQU  H'0006'
@@ -742,11 +787,6 @@ MODE1            EQU  H'0001'
 MODE2            EQU  H'0002'
 MODE3            EQU  H'0003'
 
-CCP1FMT          EQU  H'0004'
-CCP1OUT          EQU  H'0005'
-CCP1OE           EQU  H'0006'
-CCP1EN           EQU  H'0007'
-
 CCP1MODE0        EQU  H'0000'
 CCP1MODE1        EQU  H'0001'
 CCP1MODE2        EQU  H'0002'
@@ -754,6 +794,11 @@ CCP1MODE3        EQU  H'0003'
 
 
 ;----- CCP1CAP Bits -----------------------------------------------------
+CCP1CTS0         EQU  H'0000'
+CCP1CTS1         EQU  H'0001'
+
+
+
 CTS0             EQU  H'0000'
 CTS1             EQU  H'0001'
 
@@ -769,6 +814,16 @@ CCPR26           EQU  H'0006'
 CCPR27           EQU  H'0007'
 
 
+CCP2R0           EQU  H'0000'
+CCP2R1           EQU  H'0001'
+CCP2R2           EQU  H'0002'
+CCP2R3           EQU  H'0003'
+CCP2R4           EQU  H'0004'
+CCP2R5           EQU  H'0005'
+CCP2R6           EQU  H'0006'
+CCP2R7           EQU  H'0007'
+
+
 ;----- CCPR2L Bits -----------------------------------------------------
 CCPR20           EQU  H'0000'
 CCPR21           EQU  H'0001'
@@ -778,6 +833,16 @@ CCPR24           EQU  H'0004'
 CCPR25           EQU  H'0005'
 CCPR26           EQU  H'0006'
 CCPR27           EQU  H'0007'
+
+
+CCP2R0           EQU  H'0000'
+CCP2R1           EQU  H'0001'
+CCP2R2           EQU  H'0002'
+CCP2R3           EQU  H'0003'
+CCP2R4           EQU  H'0004'
+CCP2R5           EQU  H'0005'
+CCP2R6           EQU  H'0006'
+CCP2R7           EQU  H'0007'
 
 
 ;----- CCP2RH Bits -----------------------------------------------------
@@ -791,6 +856,16 @@ CCPR214          EQU  H'0006'
 CCPR215          EQU  H'0007'
 
 
+CCP2R8           EQU  H'0000'
+CCP2R9           EQU  H'0001'
+CCP2R10          EQU  H'0002'
+CCP2R11          EQU  H'0003'
+CCP2R12          EQU  H'0004'
+CCP2R13          EQU  H'0005'
+CCP2R14          EQU  H'0006'
+CCP2R15          EQU  H'0007'
+
+
 ;----- CCPR2H Bits -----------------------------------------------------
 CCPR28           EQU  H'0000'
 CCPR29           EQU  H'0001'
@@ -802,7 +877,22 @@ CCPR214          EQU  H'0006'
 CCPR215          EQU  H'0007'
 
 
+CCP2R8           EQU  H'0000'
+CCP2R9           EQU  H'0001'
+CCP2R10          EQU  H'0002'
+CCP2R11          EQU  H'0003'
+CCP2R12          EQU  H'0004'
+CCP2R13          EQU  H'0005'
+CCP2R14          EQU  H'0006'
+CCP2R15          EQU  H'0007'
+
+
 ;----- CCP2CON Bits -----------------------------------------------------
+CCP2FMT          EQU  H'0004'
+CCP2OUT          EQU  H'0005'
+CCP2OE           EQU  H'0006'
+CCP2EN           EQU  H'0007'
+
 FMT              EQU  H'0004'
 OUT              EQU  H'0005'
 OE               EQU  H'0006'
@@ -813,11 +903,6 @@ MODE1            EQU  H'0001'
 MODE2            EQU  H'0002'
 MODE3            EQU  H'0003'
 
-CCP2FMT          EQU  H'0004'
-CCP2OUT          EQU  H'0005'
-CCP2OE           EQU  H'0006'
-CCP2EN           EQU  H'0007'
-
 CCP2MODE0        EQU  H'0000'
 CCP2MODE1        EQU  H'0001'
 CCP2MODE2        EQU  H'0002'
@@ -825,12 +910,17 @@ CCP2MODE3        EQU  H'0003'
 
 
 ;----- CCP2CAP Bits -----------------------------------------------------
+CCP2CTS0         EQU  H'0000'
+CCP2CTS1         EQU  H'0001'
+
+
+
 CTS0             EQU  H'0000'
 CTS1             EQU  H'0001'
 
 
 ;----- CCPTMRS Bits -----------------------------------------------------
-CCPTSEL0         EQU  H'0000'
+CCP1TSEL0        EQU  H'0000'
 CCP1TSEL1        EQU  H'0001'
 CCP2TSEL0        EQU  H'0002'
 CCP2TSEL1        EQU  H'0003'

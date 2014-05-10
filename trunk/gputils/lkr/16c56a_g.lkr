@@ -4,13 +4,13 @@
 LIBPATH .
 
 CODEPAGE   NAME=page0      START=0x0               END=0x1FF                    
-  CODEPAGE   NAME=page1      START=0x200             END=0x3FF                    
+CODEPAGE   NAME=page1      START=0x200             END=0x3FF                    
 CODEPAGE   NAME=.idlocs    START=0x400             END=0x403          PROTECTED 
 CODEPAGE   NAME=.config    START=0xFFF             END=0xFFF          PROTECTED 
 
 DATABANK   NAME=sfrs       START=0x0               END=0x6            PROTECTED
 
-  DATABANK   NAME=gprs       START=0x7               END=0x1F           
+DATABANK   NAME=gprs       START=0x7               END=0x1F           
 
 SECTION    NAME=PROG1      ROM=page0           // ROM code space - page0
 SECTION    NAME=PROG2      ROM=page1           // ROM code space - page1
