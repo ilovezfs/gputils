@@ -383,6 +383,8 @@ HEADER_FILES = \
 	p16f1828.inc \
 	p16f1829.inc \
 	p16f1829lin.inc \
+	p16f18313.inc \
+	p16f18323.inc \
 	p16f1847.inc \
 	p16f1933.inc \
 	p16f1934.inc \
@@ -521,6 +523,8 @@ HEADER_FILES = \
 	p16lf1827.inc \
 	p16lf1828.inc \
 	p16lf1829.inc \
+	p16lf18313.inc \
+	p16lf18323.inc \
 	p16lf1847.inc \
 	p16lf1902.inc \
 	p16lf1903.inc \

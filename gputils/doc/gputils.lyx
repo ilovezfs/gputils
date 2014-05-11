@@ -71,7 +71,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-May 10, 2014
+May 11, 2014
 \end_layout
 
 \begin_layout Standard
@@ -479,8 +479,8 @@ p16f1847       p16f1933       p16f1934       p16f1936       p16f1937
 \begin_inset Newline newline
 \end_inset
 
-p16f1939       p16f1946       p16f1947       p16f1xxx                  
-                   
+p16f1939       p16f1946       p16f1947       p16f18313      p16f18323  
+    p16f1xxx       
 \begin_inset Newline newline
 \end_inset
 
@@ -544,7 +544,7 @@ p16lf1907      p16lf1933      p16lf1934      p16lf1936      p16lf1937
 \begin_inset Newline newline
 \end_inset
 
-p16lf1939      p16lf1946      p16lf1947                                
+p16lf1939      p16lf1946      p16lf1947      p16lf18313     p16lf18323 
                    
 \begin_inset Newline newline
 \end_inset

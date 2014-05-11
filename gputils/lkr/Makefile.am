@@ -192,6 +192,8 @@ LKR_FILES =\
 	16f1828_g.lkr \
 	16f1829_g.lkr \
 	16f1829lin_g.lkr \
+	16f18313_g.lkr \
+	16f18323_g.lkr \
 	16f1847_g.lkr \
 	16f1933_g.lkr \
 	16f1934_g.lkr \
@@ -328,6 +330,8 @@ LKR_FILES =\
 	16lf1827_g.lkr \
 	16lf1828_g.lkr \
 	16lf1829_g.lkr \
+	16lf18313_g.lkr \
+	16lf18323_g.lkr \
 	16lf1847_g.lkr \
 	16lf1902_g.lkr \
 	16lf1903_g.lkr \

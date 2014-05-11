@@ -1,3 +1,11 @@
+2014-05-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, header/Makefile.am, header/Makefile.in,
+    header/p16f18313.inc, header/p16f18323.inc, header/p16lf18313.inc,
+    header/p16lf18323.inc, header/p16f1xxx.inc, libgputils/gpprocessor.c,
+    lkr/Makefile.am, lkr/Makefile.in, lkr/16f18313_g.lkr, lkr/16f18323_g.lkr,
+    lkr/16lf18313_g.lkr, lkr/16lf18323_g.lkr:
+    New devices based on the mplabx-2.0.
+
 2014-05-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, header/Makefile.am, header/Makefile.in,
     header/p16lf1554.inc, header/p16lf1559.inc, header/p16f1xxx.inc,
