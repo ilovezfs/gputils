@@ -1,4 +1,8 @@
 2014-05-17  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * man/gpasm.1.in, man/fr/gpasm.1.in:
+    Updated the date.
+
+2014-05-17  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * configure: Updated the version strings.
 
 2014-05-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
