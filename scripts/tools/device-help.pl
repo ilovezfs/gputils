@@ -3398,8 +3398,8 @@ EOT
   text-decoration: none;
 EOT
 ;
-  css_border_radius(2, '0.75em 0.75em 0.75em 1.5em');
-  css_shadow(2, "0 0 10px 6px $tooltip_background inset");
+  css_border_radius(2, '0.875em 0.875em 0.875em 1.75em');
+  css_shadow(2, "0 0 10px 10px $tooltip_background inset");
   print $out_handler <<EOT
   }
 
@@ -3411,6 +3411,7 @@ EOT
 .ramColCont a:hover
   {
   background: #49DDFF;
+  transform: scale(1.2, 1.3);
   }
 
 /* This a tooltip. */
