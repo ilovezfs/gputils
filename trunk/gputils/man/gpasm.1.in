@@ -1,4 +1,4 @@
-.TH GPASM 1 "2013-05-04" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
+.TH GPASM 1 "2014-05-01" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
 .SH NAME
 gpasm \- GNU PIC assembler
 .SH SYNOPSIS
