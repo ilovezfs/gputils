@@ -1,3 +1,6 @@
+2014-05-17  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * configure: Updated the version strings.
+
 2014-05-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, header/Makefile.am, header/Makefile.in,
     header/p16f18313.inc, header/p16f18323.inc, header/p16lf18313.inc,
