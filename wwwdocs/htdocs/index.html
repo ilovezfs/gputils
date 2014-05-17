@@ -1,11 +1,10 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="author" content="Craig Franklin and Molnár Károly">
     <title>GPUTILS - GNU PIC Utilities</title>
     <style type="text/css" media="screen, print, projection">
-
 html
   {
   margin: 0.4em 0.4em;
@@ -24,22 +23,25 @@ tt
   margin-bottom: 1em;
   background: #DEFFFE;
   border: 1px solid #C0C0C0;
-     -moz-border-radius: 0.3em;
-  -webkit-border-radius: 0.3em;
-	  border-radius: 0.3em;
-     -moz-box-shadow: 0 0 1em #C0C0C0;
-  -webkit-box-shadow: 0 0 1em #C0C0C0;
-	  box-shadow: 0 0 1em #C0C0C0;
+     -moz-border-radius: 0.5em;
+  -webkit-border-radius: 0.5em;
+          border-radius: 0.5em;
+     -moz-box-shadow: 0.2em 0.2em 0.8em #000, inset 0 0 0.5em #C000C0;
+  -webkit-box-shadow: 0.2em 0.2em 0.8em #000, inset 0 0 0.5em #C000C0;
+          box-shadow: 0.2em 0.2em 0.8em #000, inset 0 0 0.5em #C000C0;
   }
 
 .header, .menu_item, .label, .footer
   {
-     -moz-border-radius: 0.5em 0.5em 0.5em 0.5em;
-  -webkit-border-radius: 0.5em 0.5em 0.5em 0.5em;
-	  border-radius: 0.5em 0.5em 0.5em 0.5em;
-     -moz-box-shadow: 0 0 1em #A2BAB9;
-  -webkit-box-shadow: 0 0 1em #A2BAB9;
-	  box-shadow: 0 0 1em #A2BAB9;
+     -moz-border-style: outset;
+  -webkit-border-style: outset;
+          border-style: outset;
+     -moz-border-width: 0.25em 0.5em;
+  -webkit-border-width: 0.25em 0.5em;
+          border-width: 0.25em 0.5em;
+     -moz-border-radius: 0.5em / 0.25em;
+  -webkit-border-radius: 0.5em / 0.25em;
+          border-radius: 0.5em / 0.25em;
   }
 
 .header
@@ -47,10 +49,13 @@ tt
   position: relative;
   clear: both;
   width: 20%;
-  margin: 2em auto 3em;
+  margin: 2em auto 2.5em;
   text-align: center;
   background-color: #BDFF87;
-  border: 3px outset #97FF41;
+  border-color: #97FF41;
+     -moz-box-shadow: 0.2em 0.2em 0.8em #505050, inset 0 0 1em #C987FF;
+  -webkit-box-shadow: 0.2em 0.2em 0.8em #505050, inset 0 0 1em #C987FF;
+          box-shadow: 0.2em 0.2em 0.8em #505050, inset 0 0 1em #C987FF;
   }
 
 .container
@@ -64,6 +69,7 @@ tt
   position: relative;
   float: left;
   width: 15%;
+  margin-top: 0.3em;
   }
 
 .menu_item
@@ -74,7 +80,10 @@ tt
   padding: 0.3em 0.3em 0.3em 1em;
   text-decoration: none;
   font-style: italic;
-  border: 3px outset #FFD642;
+  border-color: #FFD642;
+     -moz-box-shadow: 0.2em 0.2em 0.8em #505050, inset 0 0 0.5em #87A1FF;
+  -webkit-box-shadow: 0.2em 0.2em 0.8em #505050, inset 0 0 0.5em #87A1FF;
+          box-shadow: 0.2em 0.2em 0.8em #505050, inset 0 0 0.5em #87A1FF;
   }
 
 .menu_item:hover
@@ -82,15 +91,21 @@ tt
   border-color: #FFA245;
   background-color: #FFC387;
   transform: scale(1.05, 1.05);
+     -moz-transition: all 0.2s ease-in-out;
+      -ms-transition: all 0.2s ease-in-out;
+       -o-transition: all 0.2s ease-in-out;
+  -webkit-transition: all 0.2s ease-in-out;
+          transition: all 0.2s ease-in-out;
   }
 
 .menu_item:active
   {
-  border: 3px inset #FF8A92;
+  border-style: inset;
+  border-color: #FF8A92;
   background-color: #FFB9BE;
      -moz-box-shadow: 0 0 0;
   -webkit-box-shadow: 0 0 0;
-	  box-shadow: 0 0 0;
+          box-shadow: 0 0 0;
   }
 
 .content
@@ -100,18 +115,53 @@ tt
   width: 84%;
   }
 
+.obituarist
+  {
+  border: 2px solid black;
+  }
+
 .label
   {
   background-color: #00B8FF;
   font-style: italic;
   font-weight: bold;
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
   padding: 0.3em 0.3em 0.3em 1em;
-  border: 3px outset #008EC4;
+  border-color: #008EC4;
+     -moz-box-shadow: 0.2em 0.2em 0.8em #505050, inset 0 0 0.5em #FF4800;
+  -webkit-box-shadow: 0.2em 0.2em 0.8em #505050, inset 0 0 0.5em #FF4800;
+          box-shadow: 0.2em 0.2em 0.8em #505050, inset 0 0 0.5em #FF4800;
+  }
+
+.label:target
+  {
+  background-color: #F061FF;
+  border-color: #B100C4;
+     -moz-box-shadow: 0.2em 0.2em 0.8em #505050, inset 0 0 0.5em #71FF61;
+  -webkit-box-shadow: 0.2em 0.2em 0.8em #505050, inset 0 0 0.5em #71FF61;
+          box-shadow: 0.2em 0.2em 0.8em #505050, inset 0 0 0.5em #71FF61;
+  }
+
+.list1
+  {
+  padding-left: 0.5em;
+  }
+
+.list2
+  {
+  padding-bottom: 0.5em;
+  }
+
+.list3
+  {
+  padding: 0.6em 0;
   }
 
 .slice
   {
-  padding: 0.75em;
+  margin-left: 0.5em;
+  padding: 0.5em;
   }
 
 .link
@@ -120,9 +170,9 @@ tt
   background-color: #DEF2FF;
   padding: 0 0.2em;
   border: 1px outset;
-     -moz-border-radius: 0.3em 0.3em 0.3em 0.3em;
-  -webkit-border-radius: 0.3em 0.3em 0.3em 0.3em;
-	  border-radius: 0.3em 0.3em 0.3em 0.3em;
+     -moz-border-radius: 0.3em;
+  -webkit-border-radius: 0.3em;
+          border-radius: 0.3em;
   }
 
 .link:hover
@@ -130,12 +180,23 @@ tt
   background-color: #B8E3FF;
      -moz-box-shadow: 0 0 1em #A2BAB9;
   -webkit-box-shadow: 0 0 1em #A2BAB9;
-	  box-shadow: 0 0 1em #A2BAB9;
+          box-shadow: 0 0 1em #A2BAB9;
   }
 
 .link:active
   {
   border: 1px inset;
+  }
+
+.excl
+  {
+  background-color: #FFE4D6;
+  padding: 0 0.2em;
+  border-color: #FFEDE3;
+  border: 1px outset;
+     -moz-border-radius: 0.3em;
+  -webkit-border-radius: 0.3em;
+          border-radius: 0.3em;
   }
 
 .footer
@@ -146,7 +207,10 @@ tt
   padding: 0.5em 0;
   margin-bottom: 1em;
   background-color: #FFD2B4;
-  border: 3px outset #FFC189;
+  border-color: #FFC189;
+     -moz-box-shadow: 0.2em 0.2em 0.8em #505050, inset 0 0 1em #B4E1FF;
+  -webkit-box-shadow: 0.2em 0.2em 0.8em #505050, inset 0 0 1em #B4E1FF;
+          box-shadow: 0.2em 0.2em 0.8em #505050, inset 0 0 1em #B4E1FF;
   }
 
 .footer_left, .footer_right
@@ -171,7 +235,14 @@ tt
   {
   padding: 0.3em 1em;
   }
-  </style>
+
+.valid
+  {
+  border: 0;
+  width: 88px;
+  height: 31px;
+  }
+    </style>
   </head>
   <body>
     <div class="page">
@@ -195,78 +266,85 @@ tt
 	<div class="content">
 	  <div class="label" id="What">What is GPUTILS?</div>
 	  <div class="slice">
-	    GPUTILS is a collection of tools for the <a class="link" class="link" href="http://www.microchip.com/">Microchip</a>
-	    (TM) PIC microcontrollers. It includes gpasm, gplink, and gplib. It's
-	    distributed under the terms of the <a class="link" href="COPYING">GNU Public License</a>.
-	    There are other GNU PIC tools available such as
+	    GPUTILS is a collection of tools for the <a class="link" href="http://www.microchip.com/">Microchip</a>
+	    (TM) PIC microcontrollers. It includes gpasm, gplink, and gplib. It's distributed under the terms of the
+	    <a class="link" href="COPYING">GNU Public License</a>. There are other GNU PIC tools available such as
 	    <a class="link" href="http://gpsim.sourceforge.net">gpsim</a>, a gputils compatible simulator.
 	  </div>
 	  <div class="label" id="Who">Who is GPUTILS?</div>
 	  <div class="slice">
-	    GPUTILS was created by Craig Franklin and James Bowman. Currently, it is primarily supported by
-	    Marko Kohtala and Molnár Károly. Until recently has been supported <span style="border:2px solid black;">Borut Ražem</span>.
+	    GPUTILS was created by Craig Franklin and James Bowman. Currently, it is primarily supported
+	    by Marko Kohtala and Molnár Károly. Until recently has been supported <span class="obituarist">Borut Ražem</span>.
 	    In the past it has been supported by David Barnett and Scott Dattalo.
 	  </div>
 	  <div class="label" id="Platforms">What Platforms are Supported?</div>
 	  <div class="slice">
-	    Linux (and other unixes), Mac OS X, and MS-Windows are supported.
-	    GPUTILS will compile natively on Linux using <a class="link" href="http://gcc.gnu.org/">gcc</a>.
-	    Mac OS X users will need the December 2001 Developer Tools. Windows 98/NT users will need
-	    <a class="link" href="http://www.mingw.org/">MinGW32</a> if they wish to compile the tools.
+	    Linux (and other unixes), Mac OS X, and MS-Windows are supported. GPUTILS will compile natively on Linux
+	    using <a class="link" href="http://gcc.gnu.org/">gcc</a>. Mac OS X users will need the December 2001
+	    Developer Tools. Windows 98/NT users will need <a class="link" href="http://www.mingw.org/">MinGW32</a>
+	    if they wish to compile the tools.
 	  </div>
 	  <div class="label" id="Download">Downloading GPUTILS</div>
 	  <div class="slice">
-	    See the <a class="link" href="https://sourceforge.net/projects/gputils/files/">
-	    Sourceforge download page</a> for source and binary packages.
+	    See the <a class="link" href="https://sourceforge.net/projects/gputils/files/">Sourceforge download page</a>
+	    for source and binary packages.
 	  </div>
-	  <div class="slice">The latest development sources are available from our svn server.</div>
-	  <div class="slice">The following commands will checkout all of the sources and place them in a gputils subdirectory:
+	  <div class="slice">
+	    The latest development sources are available from our svn server.
+	  </div>
+	  <div class="slice">
+	    The following commands will checkout all of the sources and place them in a gputils subdirectory:
 	    <ul>
-	      <li>
-		<div class="slice">
-		  RW access:<br />
-		  <tt>svn checkout --username=<i>user_name</i> svn+ssh://<i>user_name</i>@svn.code.sf.net/p/gputils/code/trunk .</tt>
-		</div>
+	      <li class="list2">
+		RW access:<br>
+		<tt class="excl">svn checkout --username=<i>user_name</i> svn+ssh://<i>user_name</i>@svn.code.sf.net/p/gputils/code/trunk .</tt>
 	      </li>
-	      <li>
-		<div class="slice">
-		  RO access:<br />
-		  <tt>svn checkout svn://svn.code.sf.net/p/gputils/code/trunk .</tt>
-		</div>
+	      <li class="list2">
+		RO access:<br>
+		<tt class="excl">svn checkout svn://svn.code.sf.net/p/gputils/code/trunk .</tt>
 	      </li>
-	      <li>
-		<div class="slice">
-		  HTTP access:<br />
-		  <tt>svn checkout --username=<i>user_name</i> https://svn.code.sf.net/p/gputils/code/trunk .</tt>
-		</div>
+	      <li class="list2">
+		HTTP access:<br>
+		<tt class="excl">svn checkout --username=<i>user_name</i> https://svn.code.sf.net/p/gputils/code/trunk .</tt>
 	      </li>
 	    </ul>
 	    You can browse our svn tree <a class="link" href="https://sourceforge.net/p/gputils/code/">here</a>.
 	  </div>
 	  <div class="slice">
 	    Older <a class="link" href="https://sourceforge.net/projects/gputils/files/">gputils</a> and
-	    <a class="link" href="https://sourceforge.net/projects/gputils/files/old_gpasm/">gpasm</a> releases
-	    are available.
+	    <a class="link" href="https://sourceforge.net/projects/gputils/files/old_gpasm/">gpasm</a>
+	    releases are available.
 	  </div>
-	  <div class="slice">Users have ported gputils to many other platforms. Some of these binaries are for the old gpasm package.</div>
-	  <div class="slice"><a class="link" href="http://www.freebsd.org/cgi/cvsweb.cgi/ports/devel/gputils/">GPUTILS FreeBSD</a></div>
 	  <div class="slice">
-	    <a class="link" href="http://packages.debian.org/unstable/electronics/gputils">GPUTILS Debian Linux</a>
+	    Users have ported gputils to many other platforms. Some of these binaries are for the old gpasm package.
+	    <ul>
+	      <li class="list2">
+		<a class="link" href="http://www.freebsd.org/cgi/cvsweb.cgi/ports/devel/gputils/">GPUTILS FreeBSD</a>
+	      </li>
+	      <li class="list2">
+		<a class="link" href="http://packages.debian.org/unstable/electronics/gputils">GPUTILS Debian Linux</a>
+	      </li>
+	      <li class="list2">
+		<a class="link" href="http://hobbes.nmsu.edu/h-search.php?key=gputils&amp;pushbutton=Search">GPUTILS OS/2</a>
+	      </li>
+	    </ul>
+	    If you have generated a binary of gputils please notify the maintainer of this website,
+	    so that it can be added.
 	  </div>
-	  <div class="slice"><a class="link" href="http://hobbes.nmsu.edu/h-search.php?key=gputils&amp;pushbutton=Search">GPUTILS OS/2</a></div>
-	  <div class="slice">If you have generated a binary of gputils please notify the maintainer of this website, so that it can be added.</div>
 	  <div class="label" id="Mplab">MPLAB Plugin</div>
 	  <div class="slice">
-	    <a class="link" href="http://www.microchip.com/">Microchip</a> offers an integrated development environment called MPLAB.
-	    This environment is only available for MS-Windows. The gputils project has developed an MPLAB plugin.
-	    With this plugin, <a class="link" href="https://sourceforge.net/projects/gputils/files/gputils-mplab/">gputils-mplab</a>,
+	    <a class="link" href="http://www.microchip.com/">Microchip</a> offers an integrated
+	    development environment called MPLAB. This environment is only available for MS-Windows.
+	    The gputils project has developed an MPLAB plugin. With this plugin,
+	    <a class="link" href="https://sourceforge.net/projects/gputils/files/gputils-mplab/">gputils-mplab</a>,
 	    MPLAB can be used as an IDE for gputils.
 	  </div>
 	  <div class="label" id="Test">Test Files</div>
 	  <div class="slice">
-	    <a class="link" href="http://www.microchip.com/">Microchip</a> provided the project with a set of test files that
-	    they use to test MPASM for each release. These files were reformatted, some typos were fixed, and scripts
-	    to run the tests were generated. The files and scripts are located in svn and can be accessed
+	    <a class="link" href="http://www.microchip.com/">Microchip</a> provided the project
+	    with a set of test files that they use to test MPASM for each release. These files
+	    were reformatted, some typos were fixed, and scripts to run the tests were generated.
+	    The files and scripts are located in svn and can be accessed
 	    <a class="link" href="https://sourceforge.net/p/gputils/code/768/tree/trunk/gputils/gpasm/testsuite/">here</a>.
 	  </div>
 	  <div class="slice">
@@ -274,141 +352,111 @@ tt
 	    <a class="link" href="http://gputils.sourceforge.net/microchip/mpasmtst.zip">archive</a>.
 	    For information about the archive please read this
 	    <a class="link" href="http://gputils.sourceforge.net/microchip/mpasmtst.txt">file</a>.
-	    These files were provided by Microchip without any warranty or any level of support. If you
-	    have a question about the files ask the current gputils project administrator, not Microchip.
+	    These files were provided by Microchip without any warranty or any level of support.
+	    If you have a question about the files ask the current gputils project administrator,
+	    not Microchip.
 	  </div>
 	  <div class="label" id="News">Recent NEWS</div>
-	  <div class="slice"><b>May 1, 2014 -- gputils-1.3.0-RC1 Released</b>
+	  <div class="slice">
+	    <b>May 17, 2014 -- gputils-1.3.0 Released</b>
 	    <ul>
-	      <li>Expanding the listing option of processors.</li>
-	      <li>Added the missing CONFIG2 DEBUG file definition in some pic12f inc files.</li>
-	      <li>The gputils can be compiled with newer versions of bison and flex.</li>
-	      <li>French translation of gputils/man/fr/gpasm.1.in.</li>
-	      <li>inc and lkr files are synced with MPLABX 2.05</li>
+	      <li class="list1">Expanding the listing option of processors.</li>
+	      <li class="list1">Added the missing CONFIG2 DEBUG file definition in some pic12f inc files.</li>
+	      <li class="list1">The gputils can be compiled with newer versions of bison and flex.</li>
+	      <li class="list1">French translation of gputils/man/fr/gpasm.1.in.</li>
+	      <li class="list1">inc and lkr files are synced with MPLABX 2.10</li>
 	    </ul>
 	    <a class="link" href="previous.html">Previous News</a>
 	  </div>
 	  <div class="label" id="Support">Support for GPUTILS</div>
 	  <div class="slice">
-	    <b>GPUTILS</b> comes with some documentation and examples. When
-	    that isn't enough, you can find help in the following places:
-	  </div>
-	  <ul>
-	    <li>
-	      <div class="slice">
+	    <b>GPUTILS</b> comes with some documentation and examples. When that isn't
+	    enough, you can find help in the following places:
+	    <ul>
+	      <li class="list3">
 		<a class="link" href="gputils.pdf">User Manual</a> - for information on the tools in
-		<a class="link" href="http://www.adobe.com/">Acrobat</a> format. You might also want to take a look at
-		<a class="link" href="http://www.microchip.com/">Microchip's</a> MPASM
+		<a class="link" href="http://www.adobe.com/">Acrobat</a> format. You might also want
+		to take a look at <a class="link" href="http://www.microchip.com/">Microchip's</a> MPASM
 		<a class="link" href="33014K.pdf">manual</a>. For information on
 		<a class="link" href="http://www.microchip.com/">Microchip's</a> COFF files, look in this
 		<a class="link" href="C18_User_Guide_51288j.pdf">manual</a>.
-	      </div>
-	    </li>
-	    <li>
-	      <div class="slice">
+	      </li>
+	      <li class="list3">
 		<a class="link" href="https://sourceforge.net/p/gputils/wiki/Home/">gputils Wiki</a>
 		- for in-depth documentation, etc. (additions welcome).
-	      </div>
-	    </li>
-	    <li>
-	      <div class="slice">
-		<a class="link" href="http://gputils.sourceforge.net/faq.html">FAQ</a> - for
-		frequently asked questions.
-	      </div>
-	    </li>
-	    <li>
-	      <div class="slice">
-		<a class="link" href="http://gputils.sourceforge.net/reloc_howto.html">Relocatable
-		object HOWTO</a> - for brief information about using gputils with relocatable objects.
-	      </div>
-	    </li>
-	    <li>
-	      <div class="slice">
-		<a class="link" href="mailto:gnupic@linuxhacker.org">Mailing list</a> - if
-		you have a general question about PIC micro controllers or the
-		tools. Subscribe to the <a class="link" href="http://www.gnupic.org/">GNUPIC</a> mailing list by sending a
-		message to:
-	      </div>
-	      <div class="slice">
+	      </li>
+	      <li class="list3">
+		<a class="link" href="http://gputils.sourceforge.net/faq.html">FAQ</a>
+		- for frequently asked questions.
+	      </li>
+	      <li class="list3">
+		<a class="link" href="http://gputils.sourceforge.net/reloc_howto.html">Relocatable object HOWTO</a>
+		- for brief information about using gputils with relocatable objects.
+	      </li>
+	      <li class="list3">
+		<a class="link" href="mailto:gnupic@linuxhacker.org">Mailing list</a>
+		- if you have a general question about PIC micro controllers or the tools.
+		Subscribe to the <a class="link" href="http://www.gnupic.org/">GNUPIC</a>
+		mailing list by sending a message to:
 		<a class="link" href="mailto:gnupic-subscribe@linuxhacker.org">gnupic-subscribe@linuxhacker.org</a>
-	      </div>
-	      <div class="slice">with the word <b>subscribe</b> in the body.</div>
-	      <div class="slice">
-		<a class="link" href="mailto:gnupic@linuxhacker.org">gnupic@linuxhacker.org</a> is
-		the address of the list.
-	      </div>
-	      <div class="slice">
+		with the word <b>subscribe</b> in the body.
+		<a class="link" href="mailto:gnupic@linuxhacker.org">gnupic@linuxhacker.org</a>
+		is the address of the list.
+		<br><br>
 		There's also the <a class="link" href="http://www.linuxhacker.org/ezmlm-browse/index.cgi?list=gnupic">gnupic archive</a>.
-	      </div>
-	    </li>
-	    <li>
-	      <div class="slice">
+	      </li>
+	      <li class="list3">
 		<a class="link" href="https://sourceforge.net/p/gputils/bugs/">Bug Reporting</a>
 		- if you have a problem using GPUTILS, we need to hear about it.
-	      </div>
-	    </li>
-	    <li>
-	      <div class="slice">
+	      </li>
+	      <li class="list3">
 		<a class="link" href="https://sourceforge.net/p/gputils/feature-requests/">Feature Requests</a>
 		- if you would like to see a new feature.
-	      </div>
-	    </li>
-	    <li>
-	      <div class="slice">
+	      </li>
+	      <li class="list3">
 		<a class="link" href="https://sourceforge.net/projects/gputils/">Source Forge Website</a>
 		- for further information.
-	      </div>
-	    </li>
-	    <li>
-	      <div class="slice">
+	      </li>
+	      <li class="list3">
 		<a class="link" href="http://gpsim.sourceforge.net/">GPSIM Information</a>
 		- for information on the gputils compatible simulator.
-	      </div>
-	    </li>
-	    <li>
-	      <div class="slice">
+	      </li>
+	      <li class="list3">
 		<a class="link" href="http://xizard.free.fr/logiciels/xgpasm/xgpasm.html">XGPASM Information</a>
 		- for information on a gui for gpasm.
-	      </div>
-	    </li>
-	    <li>
-	      <div class="slice">
+	      </li>
+	      <li class="list3">
 		<a class="link" href="http://pikdev.free.fr/">PiKdev Information</a>
 		- for information on an IDE for gpasm.
-	      </div>
-	    </li>
-	    <li>
-	      <div class="slice">
+	      </li>
+	      <li class="list3">
 		<a class="link" href="http://piklab.sourceforge.net/">Piklab Information</a>
 		- for information on another IDE for gpasm.
-	      </div>
-	    </li>
-	  </ul>
+	      </li>
+	    </ul>
+	  </div>
 	</div>
 	<div class="footer">
 	  <div class="footer_left">
 	    <div class="slice"><i>This site hosted by</i></div>
-	    <div>
-	      <a href="https://sourceforge.net/projects/gputils/">
-		<img src="http://sourceforge.net/sflogo.php?group_id=41924">
-	      </a>
-	    </div>
+	    <a href="https://sourceforge.net/projects/gputils/">
+	      <img src="http://sourceforge.net/sflogo.php?group_id=41924" alt="SourceForge">
+	    </a>
 	  </div>
 	  <div class="footer_left">
-	    <div>
-	      <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://gputils.sourceforge.net">
-	        <img style="border:0;width:88px;height:31px" src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS!">
-	      </a>
-	    </div>
-	    <div>
-	      <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://gputils.sourceforge.net">
-	        <img style="border:0;width:88px;height:31px" src="http://jigsaw.w3.org/css-validator/images/vcss-blue" alt="Valid CSS!">
-	      </a>
-	    </div>
+	    <a href="http://validator.w3.org/check?uri=http://gputils.sourceforge.net">
+	      <img class="valid" src="http://www.w3.org/Icons/valid-html401" alt="Valid HTML 4.01 Transitional">
+	    </a>
+	    <br>
+	    <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://gputils.sourceforge.net">
+	      <img class="valid" src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS!">
+	    </a>
 	  </div>
 	  <div class="footer_right">
-	    <div class="slice"><a class="link" href="mailto:gnupic@linuxhacker.org">Webmaster</a></div>
-	    <div class="slice">Last updated: 2014-05-01</div>
+	    <div class="slice">
+	      <a class="link" href="mailto:gnupic@linuxhacker.org">Webmaster</a>
+	    </div>
+	    <div class="slice">Last updated: 2014-05-17</div>
 	  </div>
 	</div>
       </div>

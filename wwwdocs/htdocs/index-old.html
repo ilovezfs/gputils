@@ -2,16 +2,10 @@
 <html>
   <head>
     <meta name="generator" content="HTML Tidy for Windows (vers 14 February 2006), see www.w3.org">
-    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <title>GPUTILS - GNU PIC Utilities</title>
     <meta name="AUTHOR" content="Craig Franklin">
     <meta name="CREATED" content="20010305;1020400">
-    <style type="text/css">
-<!--
-    A:link { color: #008080 }
-    A:visited { color: #483d8b }
-    -->
-    </style>
   </head>
   <body link="teal" vlink="#483D8B" bgcolor="white">
     <h1 align="center">gputils</h1>
@@ -56,7 +50,7 @@
         <td colspan="2" width="90%" bgcolor="#00B8FF">
           <p>
             <a name="What" id="What"></a>
-              <i><b>What is GPUTILS?</b></i>
+            <i><b>What is GPUTILS?</b></i>
           </p>
         </td>
       </tr>
@@ -67,16 +61,15 @@
             (TM) PIC microcontrollers. It includes gpasm, gplink, and gplib. It's
             distributed under the terms of the <a href="COPYING">GNU Public License</a>.
             There are other GNU PIC tools available such as
-            <a href="http://gpsim.sourceforge.net">gpsim</a>, a
-            gputils compatible simulator.
+            <a href="http://gpsim.sourceforge.net">gpsim</a>, a gputils compatible simulator.
           </p>
         </td>
       </tr>
       <tr>
         <td colspan="2" width="90%" valign="top" bgcolor="#00B8FF">
           <p>
-            <a name="Who" id="Who"></a><font size="3">
-              <i><b>Who is GPUTILS?</b></i></font>
+            <a name="Who" id="Who"></a>
+            <font size="3"><i><b>Who is GPUTILS?</b></i></font>
           </p>
         </td>
       </tr>
@@ -94,7 +87,7 @@
         <td colspan="2" width="90%" valign="top" bgcolor="#00B8FF">
           <p>
             <a name="Platforms" id="Platforms"></a>
-              <i><b>What Platforms are Supported?</b></i>
+            <i><b>What Platforms are Supported?</b></i>
           </p>
         </td>
       </tr>
@@ -104,8 +97,7 @@
             Linux (and other unixes), Mac OS X, and MS-Windows are supported.
             GPUTILS will compile natively on Linux using <a href="http://gcc.gnu.org/">gcc</a>.
             Mac OS X users will need the December 2001 Developer Tools. Windows 98/NT users will need
-            <a href="http://www.mingw.org/">MinGW32</a> if they wish to compile
-            the tools.
+            <a href="http://www.mingw.org/">MinGW32</a> if they wish to compile the tools.
           </p>
         </td>
       </tr>
@@ -113,7 +105,7 @@
         <td colspan="2" width="90%" valign="top" bgcolor="#00B8FF">
           <p>
             <a name="Download" id="Download"></a>
-              <i><b>Downloading GPUTILS</b></i>
+            <i><b>Downloading GPUTILS</b></i>
           </p>
         </td>
       </tr>
@@ -123,48 +115,27 @@
             See the <a href="http://sourceforge.net/projects/gputils/files/">Sourceforge download page</a>
             for source and binary packages.
           </p>
-          <!--      A nightly snapshot of gputils is available <A HREF="http://gputils.sourceforge.net/snapshots/gputils.tar.gz">here</A>.
-      This snapshot is automatically updated each night from the
-      developmental code on the __CVS__ server. It is <I>not</I> an official
-      release. This snapshot is provided as a convience to potential
-      contributors and as a way to decrease the load on the SourceForge
-      servers.</P>-->
-          <!--      <P>Of course, pserver access to the CVS repository is still
-      provided. The following command will checkout all of the sources
-      and place them in a gputils subdirectory:
-      </P>
-      <P>cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/gputils co gputils
-      </P>
-      <P>You can browse our CVS tree <A HREF="http://gputils.cvs.sourceforge.net/gputils/">here</A>.
-            </P>
-      <P>SourceForge has further documentation on accessing a CVS tree
-      <A HREF="http://sourceforge.net/docman/?group_id=1">here</A>.</P>-->
           <p>
             The latest development sources are available from our svn server.
-            <!-- <i>Note: we migrated from CVS and the CVS server is no longer in
-            use.</i> -->
           </p>
           <p>
             The following commands will checkout all of the sources and place
             them in a gputils subdirectory:
           </p>
-          <p>
-            <ul>
-              <li>RW access:<br />
-                <tt>svn checkout --username=<i>user_name</i> svn+ssh://<i>user_name</i>@svn.code.sf.net/p/gputils/code/trunk .</tt></li>
-              <li>RO access:<br />
-                    <tt>svn checkout svn://svn.code.sf.net/p/gputils/code/trunk .</tt></li>
-              <li>HTTP access:<br />
-                <tt>svn checkout --username=<i>user_name</i> https://svn.code.sf.net/p/gputils/code/trunk .</tt></li>
-            </ul>
-          </p>
+          <ul>
+            <li>RW access:<br>
+              <tt>svn checkout --username=<i>user_name</i> svn+ssh://<i>user_name</i>@svn.code.sf.net/p/gputils/code/trunk .</tt>
+            </li>
+            <li>RO access:<br>
+              <tt>svn checkout svn://svn.code.sf.net/p/gputils/code/trunk .</tt>
+            </li>
+            <li>HTTP access:<br>
+              <tt>svn checkout --username=<i>user_name</i> https://svn.code.sf.net/p/gputils/code/trunk .</tt>
+            </li>
+          </ul>
           <p>
             You can browse our svn tree <a href="https://sourceforge.net/p/gputils/code/">here</a>.
           </p>
-          <!-- <p>
-            SourceForge has further documentation on accessing a svn tree
-            <a href="https://sourceforge.net/docs/E09">here</a>.
-          </p> -->
           <p>
             Older <a href="https://sourceforge.net/projects/gputils/files/">gputils</a> and
             <a href="https://sourceforge.net/projects/gputils/files/old_gpasm/">gpasm</a> releases
@@ -178,17 +149,13 @@
             <a href="http://www.freebsd.org/cgi/cvsweb.cgi/ports/devel/gputils/">GPUTILS FreeBSD</a>
           </p>
           <p>
-            <a href="http://packages.debian.org/unstable/electronics/gputils"><span style="background: transparent">
-            GPUTILS Debian Linux</span></a>
+            <a href="http://packages.debian.org/unstable/electronics/gputils">
+              <span style="background: transparent">GPUTILS Debian Linux</span>
+            </a>
           </p>
           <p>
             <a href="http://hobbes.nmsu.edu/h-search.php?key=gputils&amp;pushbutton=Search">GPUTILS OS/2</a>
-          </p><!--<P><A HREF="http://gputils.sourceforge.net/djgpp">GPUTILS
-      DOS (DJGPP)</A></P>
-      <P><A HREF="http://www.traklink.com/component/option,com_docman/task,view_category/Itemid,26/subcat,8/catid,69/limitstart,0/limit,5/">GPUTILS
-      Sharp Zaurus</A></P>
-      <P><A HREF="http://homepages.ihug.co.nz/~jamjars/michael/software.html">GPASM
-      RISC OS</A></P>-->
+          </p>
           <p>
             If you have generated a binary of gputils please notify the
             maintainer of this website, so that it can be added.
@@ -198,18 +165,18 @@
       <tr>
         <td colspan="2" width="90%" valign="top" bgcolor="#00B8FF">
           <p>
-            <a name="Mplab" id="Mplab"></a><i><b>MPLAB Plugin</b></i>
+            <a name="Mplab" id="Mplab"></a>
+            <i><b>MPLAB Plugin</b></i>
           </p>
         </td>
       </tr>
       <tr>
         <td colspan="2" width="90%">
           <p>
-            <a href="http://www.microchip.com/">Microchip</a> offers an
-            integrated development environment called MPLAB. This environment
-            is only available for MS-Windows. The gputils project has developed
-            an MPLAB plugin. With this plugin, <a href=
-            "https://sourceforge.net/project/showfiles.php?group_id=41924">gputils-mplab</a>,
+            <a href="http://www.microchip.com/">Microchip</a> offers an integrated development
+            environment called MPLAB. This environment is only available for MS-Windows.
+            The gputils project has developed an MPLAB plugin. With this plugin,
+            <a href="https://sourceforge.net/project/showfiles.php?group_id=41924">gputils-mplab</a>,
             MPLAB can be used as an IDE for gputils.
           </p>
         </td>
@@ -217,27 +184,25 @@
       <tr>
         <td colspan="2" width="90%" valign="top" bgcolor="#00B8FF">
           <p>
-            <a name="Test" id="Test"></a><i><b>Test Files</b></i>
+            <a name="Test" id="Test"></a>
+            <i><b>Test Files</b></i>
           </p>
         </td>
       </tr>
       <tr>
         <td colspan="2" width="90%">
           <p>
-            <a href="http://www.microchip.com/">Microchip</a> provided the
-            project with a set of test files that they use to test MPASM for
-            each release. These files were reformatted, some typos were fixed,
-            and scripts to run the tests were generated. The files and scripts
-            are located in svn and can be accessed <a href=
-            "http://sourceforge.net/p/gputils/code/768/tree/trunk/gputils/gpasm/testsuite/">
-            here</a>.
+            <a href="http://www.microchip.com/">Microchip</a> provided the project with
+            a set of test files that they use to test MPASM for each release. These files
+            were reformatted, some typos were fixed, and scripts to run the tests were
+            generated. The files and scripts are located in svn and can be accessed
+            <a href="http://sourceforge.net/p/gputils/code/768/tree/trunk/gputils/gpasm/testsuite/">here</a>.
           </p>
           <p>
-            For anyone interested, the original unaltered files are available
-            in this <a href=
-            "http://gputils.sourceforge.net/microchip/mpasmtst.zip">archive</a>.
-            For information about the archive please read this <a href=
-            "http://gputils.sourceforge.net/microchip/mpasmtst.txt">file</a>.
+            For anyone interested, the original unaltered files are available in this
+            <a href="http://gputils.sourceforge.net/microchip/mpasmtst.zip">archive</a>.
+            For information about the archive please read this
+            <a href="http://gputils.sourceforge.net/microchip/mpasmtst.txt">file</a>.
             These files were provided by Microchip without any warranty or any
             level of support. If you have a question about the files ask the
             current gputils project administrator, not Microchip.
@@ -247,22 +212,23 @@
       <tr>
         <td colspan="2" width="90%" valign="top" bgcolor="#00B8FF">
           <p>
-            <a name="News" id="News"></a><i><b>Recent NEWS</b></i>
+            <a name="News" id="News"></a>
+            <i><b>Recent NEWS</b></i>
           </p>
         </td>
       </tr>
       <tr>
         <td colspan="2" width="90%">
 	  <p>
-	    <b>May 1, 2014 -- gputils-1.3.0 Released</b>
+	    <b>May 17, 2014 -- gputils-1.3.0 Released</b>
 	  </p>
-	  <p>
+	  <ul>
 	    <li>Expanding the listing option of processors.</li>
 	    <li>Added the missing CONFIG2 DEBUG file definition in some pic12f inc files.</li>
 	    <li>The gputils can be compiled with newer versions of bison and flex.</li>
 	    <li>French translation of gputils/man/fr/gpasm.1.in.</li>
-	    <li>inc and lkr files are synced with MPLABX 2.05</li>
-	  </p>
+	    <li>inc and lkr files are synced with MPLABX 2.10</li>
+	  </ul>
           <p>
             <a href="previous.html">Previous News</a>
           </p>
@@ -271,8 +237,8 @@
       <tr>
         <td colspan="2" width="90%" valign="top" bgcolor="#00B8FF">
           <p>
-            <a name="Support" id="Support"></a><i><b>Support for
-            GPUTILS</b></i>
+            <a name="Support" id="Support"></a>
+            <i><b>Support for GPUTILS</b></i>
           </p>
         </td>
       </tr>
@@ -285,13 +251,12 @@
           <ul>
             <li>
               <p>
-                <a href="gputils.pdf">User Manual</a> - for information on the
-                tools in <a href="http://www.adobe.com/">Acrobat</a> format.
-                You might also want to take a look at <a href=
-                "http://www.microchip.com/">Microchip's</a> MPASM <a href=
-                "33014K.pdf">manual</a>. For information on <a href=
-                "http://www.microchip.com/">Microchip's</a> COFF files, look in
-                this <a href="C18_User_Guide_51288j.pdf">manual</a>.
+                <a href="gputils.pdf">User Manual</a> - for information on the tools in
+                <a href="http://www.adobe.com/">Acrobat</a> format. You might also want
+                to take a look at <a href="http://www.microchip.com/">Microchip's</a> MPASM
+                <a href="33014K.pdf">manual</a>. For information on
+                <a href="http://www.microchip.com/">Microchip's</a> COFF files, look in this
+                <a href="C18_User_Guide_51288j.pdf">manual</a>.
               </p>
             </li>
             <li>
@@ -302,37 +267,32 @@
             </li>
             <li>
               <p>
-                <a href="http://gputils.sourceforge.net/faq.html">FAQ</a> - for
-                frequently asked questions.
+                <a href="http://gputils.sourceforge.net/faq.html">FAQ</a>
+                - for frequently asked questions.
               </p>
             </li>
             <li>
               <p>
-                <a href=
-                "http://gputils.sourceforge.net/reloc_howto.html">Relocatable
+                <a href="http://gputils.sourceforge.net/reloc_howto.html">Relocatable
                 object HOWTO</a> - for brief information about using gputils
                 with relocatable objects.
               </p>
             </li>
             <li>
               <p>
-                <a href="mailto:gnupic@linuxhacker.org">Mailing list</a> - if
-                you have a general question about PIC micro controllers or the
-                tools. Subscribe to the <a href=
-                "http://www.gnupic.org/">GNUPIC</a> mailing list by sending a
-                message to:
+                <a href="mailto:gnupic@linuxhacker.org">Mailing list</a> - if you have a
+                general question about PIC micro controllers or the tools. Subscribe to the
+                <a href="http://www.gnupic.org/">GNUPIC</a> mailing list by sending a message to:
               </p>
               <p>
-                <a href=
-                "mailto:gnupic-subscribe@linuxhacker.org">gnupic-subscribe@linuxhacker.org</a>
+                <a href="mailto:gnupic-subscribe@linuxhacker.org">gnupic-subscribe@linuxhacker.org</a>
               </p>
               <p>
                 with the word <b>subscribe</b> in the body.
               </p>
               <p>
-                <a href=
-                "mailto:gnupic@linuxhacker.org">gnupic@linuxhacker.org</a> is
-                the address of the list.
+                <a href="mailto:gnupic@linuxhacker.org">gnupic@linuxhacker.org</a>
+                is the address of the list.
               </p>
               <p>
                 There's also the <a href="http://www.linuxhacker.org/ezmlm-browse/index.cgi?list=gnupic">gnupic archive</a>.
@@ -346,8 +306,8 @@
             </li>
             <li>
               <p>
-                <a href="https://sourceforge.net/p/gputils/feature-requests/">
-                Feature Requests</a> - if you would like to see a new feature.
+                <a href="https://sourceforge.net/p/gputils/feature-requests/">Feature Requests</a>
+                - if you would like to see a new feature.
               </p>
             </li>
             <li>
@@ -391,16 +351,16 @@
           </p>
           <p>
             <a href="https://sourceforge.net/projects/gputils/">
-            <img src="http://sourceforge.net/sflogo.php?group_id=41924" name="Graphic1"
-            alt="SourceForge" align="bottom" width="88" height="31" border="0"
-            id="Graphic1"></a>
+              <img src="http://sourceforge.net/sflogo.php?group_id=41924" name="Graphic1"
+              alt="SourceForge" align="bottom" width="88" height="31" border="0" id="Graphic1">
+            </a>
           </p>
         </td>
         <td width="27%">
           <p style="margin-bottom: 0cm">
             <a href="mailto:gnupic@linuxhacker.org">Webmaster</a>
           </p>
-          <p>Last updated: 2013-05-19</p>
+          <p>Last updated: 2014-05-17</p>
         </td>
       </tr>
     </table>
