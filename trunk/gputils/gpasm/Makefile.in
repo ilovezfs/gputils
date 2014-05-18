@@ -623,7 +623,7 @@ ppparse.c: YFLAGS += -p pp
 #ppscan.c: LFLAGS += -P pp
 
 ppscan.c: ppscan.l
-	flex $(AM_LFLAGS) -P pp -o $@ $<
+	$(LEX) $(AM_LFLAGS) -P pp -o $@ $<
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
