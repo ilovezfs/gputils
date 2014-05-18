@@ -60,4 +60,4 @@ ppparse.c: YFLAGS += -p pp
 #ppscan.c: LFLAGS += -P pp
 
 ppscan.c: ppscan.l
-	flex $(AM_LFLAGS) -P pp -o $@ $<
+	$(LEX) $(AM_LFLAGS) -P pp -o $@ $<
