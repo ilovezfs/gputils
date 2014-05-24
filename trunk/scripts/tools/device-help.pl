@@ -1465,8 +1465,7 @@ sub print_mcu_list($$)
   aOutml($Align + 2, '<div class="mcuList">',
                      '  <table class="mcuTable">',
                      '    <tr>');
-  aOutml($Align + 8, '<td class="vMargin"></td>',
-                     "${lst}name</td>");
+  aOutl($Align + 8, "${lst}name</td>");
 
   given ($Class)
     {
@@ -1514,8 +1513,7 @@ sub print_mcu_list($$)
       }
     }
 
-  aOutml($Align + 6, '  <td class="vMargin"></td>',
-                     '</tr>',
+  aOutml($Align + 6, '</tr>',
                      '<tr class="mcuGap"><td></td></tr>');
 
   if ($Class == PRI_MENU_RAM)
@@ -1545,7 +1543,6 @@ sub print_mcu_list($$)
 
   foreach my $name (@array)
     {
-    my $margin    = '<td class="vMargin"></td>';
     my $td_href   = "<th><a class=\"mcuLink\" href=\"$remote_url${name}-$feat_tag.html\">$name</a></th>";
     my $features  = $mcus_by_names{$name}->{FEATURES};
     my $class     = $features->{CLASS};
@@ -1561,7 +1558,7 @@ sub print_mcu_list($$)
       when (PRI_MENU_ALL)
         {
         aOutl($Align + 6, '<tr>');
-        aOutml($Align + 8, $margin, $td_href, $td_wsize, $td_csize, $td_class, $margin);
+        aOutml($Align + 8, $td_href, $td_wsize, $td_csize, $td_class);
         aOutl($Align + 6, '</tr>');
         }
 
@@ -1570,7 +1567,7 @@ sub print_mcu_list($$)
         if ($class == PROC_CLASS_PIC12E || $class == PROC_CLASS_PIC14E)
           {
           aOutl($Align + 6, '<tr>');
-          aOutml($Align + 8, $margin, $td_href, $td_wsize, $td_csize, $margin);
+          aOutml($Align + 8, $td_href, $td_wsize, $td_csize);
           aOutl($Align + 6, '</tr>');
           }
         }
@@ -1580,7 +1577,7 @@ sub print_mcu_list($$)
         if ($class == PROC_CLASS_PIC16E)
           {
           aOutl($Align + 6, '<tr>');
-          aOutml($Align + 8, $margin, $td_href, $td_wsize, $td_csize, $margin);
+          aOutml($Align + 8, $td_href, $td_wsize, $td_csize);
           aOutl($Align + 6, '</tr>');
           }
         }
@@ -1590,7 +1587,7 @@ sub print_mcu_list($$)
         if (! $features->{ENHANCED})
           {
           aOutl($Align + 6, '<tr>');
-          aOutml($Align + 8, $margin, $td_href, $td_wsize, $td_csize, $margin);
+          aOutml($Align + 8, $td_href, $td_wsize, $td_csize);
           aOutl($Align + 6, '</tr>');
           }
         }
@@ -1600,7 +1597,7 @@ sub print_mcu_list($$)
         if ($wsize == 12)
           {
           aOutl($Align + 6, '<tr>');
-          aOutml($Align + 8, $margin, $td_href, $td_csize, $td_class, $margin);
+          aOutml($Align + 8, $td_href, $td_csize, $td_class);
           aOutl($Align + 6, '</tr>');
           }
         }
@@ -1610,7 +1607,7 @@ sub print_mcu_list($$)
         if ($wsize == 14)
           {
           aOutl($Align + 6, '<tr>');
-          aOutml($Align + 8, $margin, $td_href, $td_csize, $td_class, $margin);
+          aOutml($Align + 8, $td_href, $td_csize, $td_class);
           aOutl($Align + 6, '</tr>');
           }
         }
@@ -1620,7 +1617,7 @@ sub print_mcu_list($$)
         if ($wsize == 16)
           {
           aOutl($Align + 6, '<tr>');
-          aOutml($Align + 8, $margin, $td_href, $td_csize, $td_class, $margin);
+          aOutml($Align + 8, $td_href, $td_csize, $td_class);
           aOutl($Align + 6, '</tr>');
           }
         }
@@ -1628,28 +1625,27 @@ sub print_mcu_list($$)
       when (PRI_MENU_RAM)
         {
         aOutl($Align + 6, '<tr>');
-        aOutml($Align + 8, $margin,
-                           "<th><a class=\"mcuLink\" href=\"$remote_url${name}-$ram_tag.html\">$name</a></th>",
+        aOutml($Align + 8, "<th><a class=\"mcuLink\" href=\"$remote_url${name}-$ram_tag.html\">$name</a></th>",
                            "<td class=\"$css_class\">$features->{RAM_SIZE}</td>",
-                           $td_wsize, $td_csize, $td_class, $margin);
+                           $td_wsize, $td_csize, $td_class);
         aOutl($Align + 6, '</tr>');
         }
 
       when (PRI_MENU_ROM)
         {
         aOutl($Align + 6, '<tr>');
-        aOutml($Align + 8, $margin, $td_href);
+        aOutl($Align + 8, $td_href);
         aOutfl($Align + 8, "<td class=\"$css_class\">%u</td>", $features->{ROM} + 1);
-        aOutml($Align + 8, $td_wsize, $td_csize, $td_class, $margin);
+        aOutml($Align + 8, $td_wsize, $td_csize, $td_class);
         aOutl($Align + 6, '</tr>');
         }
 
       when (PRI_MENU_EEPROM)
         {
         aOutl($Align + 6, '<tr>');
-        aOutml($Align + 8, $margin, $td_href);
+        aOutl($Align + 8, $td_href);
         aOutfl($Align + 8, "<td class=\"$css_class\">%u</td>", $features->{EEPROM} + 1);
-        aOutml($Align + 8, $td_wsize, $td_csize, $td_class, $margin);
+        aOutml($Align + 8, $td_wsize, $td_csize, $td_class);
         aOutl($Align + 6, '</tr>');
         }
       }
@@ -1700,23 +1696,23 @@ sub print_mcu_menu($$)
   {
   my ($Name, $Default) = @_;
 
-  aOutl(4, '<ul class="tabs">');
+  aOutl(4, '<div class="tabs">');
 
   foreach (@mcu_menu_elems)
     {
     my $class = ($_->{CLASS} == $Default) ? ' class="selected"' : '';
 
-    aOutl(6, "<li$class><a href=\"$remote_url${Name}$_->{HREF}\">$_->{NAME}</a></li>");
+    aOutl(6, "<a$class href=\"$remote_url${Name}$_->{HREF}\">$_->{NAME}</a>");
     }
 
-  aOutl(4, '</ul>');
+  aOutl(4, '</div>');
   }
 
 #-------------------------------------------------------------------------------
 
-sub print_devid($$$$)
+sub print_devid($$$)
   {
-  my ($Align, $Devid, $Margin, $Length) = @_;
+  my ($Align, $Devid, $Length) = @_;
 
   if (defined($Devid))
     {
@@ -1725,7 +1721,7 @@ sub print_devid($$$$)
     my $tail = ($size > 1) ? ' space' : '';
 
     aOutl($Align, '<tr class="featLine">');
-    aOutml($Align + 2, $Margin, "<th class=\"featName\">Address$tail of Device ID</th>");
+    aOutl($Align + 2, "<th class=\"featName\">Address$tail of Device ID</th>");
 
     if ($size > 1)
       {
@@ -1750,7 +1746,6 @@ sub dump_features($$)
   {
   my ($Name, $Configs) = @_;
   my $features = $Configs->{FEATURES};
-  my $margin   = '<td class="vMargin"></td>';
   my ($str, $len, $rom_size, $word_size, $i, $t);
 
   $str = "$out_dir/${Name}-$feat_tag.html";
@@ -1765,14 +1760,14 @@ sub dump_features($$)
 
         # The main menu.
 
-  aOutl(4, '<ul class="classMenu">');
+  aOutl(4, '<div class="classMenu">');
 
   foreach (@pri_menu_elems)
     {
-    aOutl(6, "<li><a href=\"$remote_url$_->{HREF}\">$_->{NAME}</a></li>");
+    aOutl(6, "<a href=\"$remote_url$_->{HREF}\">$_->{NAME}</a>");
     }
 
-  aOutl(4, '</ul>');
+  aOutl(4, '</div>');
 
   print_mcu_menu($Name, MCU_MENU_FEAT);
 
@@ -1791,9 +1786,8 @@ sub dump_features($$)
         #------------------------------------
 
   aOutl(6, '<tr class="featLine">');
-  aOutml(8, $margin, '<th class="featName">Coff ID of device</th>');
+  aOutl(8, '<th class="featName">Coff ID of device</th>');
   aOutfl(8, '<td class="featValue">0x%04X</td>', $features->{COFF});
-  aOutl(8, $margin);
   aOutl(6, '</tr>');
 
         #------------------------------------
@@ -1802,8 +1796,7 @@ sub dump_features($$)
   if ($i > 0)
     {
     aOutl(6, '<tr class="featLine">');
-    aOutml(8, $margin,
-              '<th class="featName">Number of ROM/FLASH pages</th>',
+    aOutml(8, '<th class="featName">Number of ROM/FLASH pages</th>',
               "<td class=\"featValue\">$features->{PAGES}&nbsp;&nbsp;($i words/pages)</td>");
     aOutl(6, '</tr>');
     }
@@ -1811,7 +1804,7 @@ sub dump_features($$)
         #------------------------------------
 
   aOutl(6, '<tr class="featLine">');
-  aOutml(8, $margin, '<th class="featName">Last address of ROM/FLASH</th>');
+  aOutl(8, '<th class="featName">Last address of ROM/FLASH</th>');
 
   $t = ($word_size == 16) ? 'bytes' : 'words';
   aOutfl(8, "<td class=\"featValue\">0x%0${len}X&nbsp;&nbsp;($rom_size $t)</td>", $features->{ROM});
@@ -1825,7 +1818,7 @@ sub dump_features($$)
     my $size = $i->{END} - $i->{START} + 1;
 
     aOutl(6, '<tr class="featLine">');
-    aOutml(8, $margin, '<th class="featName">Oscillator calibration value</th>');
+    aOutl(8, '<th class="featName">Oscillator calibration value</th>');
 
     if ($size > 1)
       {
@@ -1847,7 +1840,7 @@ sub dump_features($$)
   if ($i > 0)
     {
     aOutl(6, '<tr class="featLine">');
-    aOutml(8, $margin, '<th class="featName">Address space of FLASH Data</th>');
+    aOutl(8, '<th class="featName">Address space of FLASH Data</th>');
 
     aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X&nbsp;&nbsp;(%u words)</td>",
                $rom_size, $rom_size + $i, $i + 1);
@@ -1864,7 +1857,7 @@ sub dump_features($$)
     my $tail = ($size > 1) ? ' space' : '';
 
     aOutl(6, '<tr class="featLine">');
-    aOutml(8, $margin, "<th class=\"featName\">Address$tail of User ID</th>");
+    aOutl(8, "<th class=\"featName\">Address$tail of User ID</th>");
 
     aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X&nbsp;&nbsp;(%u bytes)</td>",
                $i->{START}, $i->{END}, $size);
@@ -1874,7 +1867,7 @@ sub dump_features($$)
 
         #------------------------------------
 
-  print_devid(6, $features->{DEVID}, $margin, $len) if ($word_size != 16);
+  print_devid(6, $features->{DEVID}, $len) if ($word_size != 16);
 
         #------------------------------------
 
@@ -1892,7 +1885,7 @@ sub dump_features($$)
     }
 
   aOutl(6, '<tr class="featLine">');
-  aOutml(8, $margin, "<th class=\"featName\">Address$str of Configuration $t</th>");
+  aOutl(8, "<th class=\"featName\">Address$str of Configuration $t</th>");
 
   if ($i > 1)
     {
@@ -1909,7 +1902,7 @@ sub dump_features($$)
 
         #------------------------------------
 
-  print_devid(6, $features->{DEVID}, $margin, $len) if ($word_size == 16);
+  print_devid(6, $features->{DEVID}, $len) if ($word_size == 16);
 
         #------------------------------------
 
@@ -1917,7 +1910,7 @@ sub dump_features($$)
   if ($i > 0)
     {
     aOutl(6, '<tr class="featLine">');
-    aOutml(8, $margin, '<th class="featName">Address space of EEPROM</th>');
+    aOutl(8, '<th class="featName">Address space of EEPROM</th>');
 
     aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X&nbsp;&nbsp;(%u bytes)</td>",
                $features->{EE_START}, $features->{EE_START} + $i, $i + 1);
@@ -1928,8 +1921,7 @@ sub dump_features($$)
         #------------------------------------
 
   aOutl(6, '<tr class="featLine">');
-  aOutml(8, $margin,
-            '<th class="featName">Number of RAM Banks</th>',
+  aOutml(8, '<th class="featName">Number of RAM Banks</th>',
             "<td class=\"featValue\">$features->{BANKS}&nbsp;&nbsp;($features->{BANK_SIZE} bytes/banks)</td>");
   aOutl(6, '</tr>');
 
@@ -1939,8 +1931,7 @@ sub dump_features($$)
   if ($i > 0)
     {
     aOutl(6, '<tr class="featLine">');
-    aOutml(8, $margin,
-              '<th class="featName">Number of SFRs</th>',
+    aOutml(8, '<th class="featName">Number of SFRs</th>',
               "<td class=\"featValue\">$i</td>");
     aOutl(6, '</tr>');
 
@@ -1948,8 +1939,7 @@ sub dump_features($$)
       {
       $i = $features->{RAM_SIZE} - $i;
       aOutl(6, '<tr class="featLine">');
-      aOutml(8, $margin,
-                '<th class="featName">Size of GPRs</th>',
+      aOutml(8, '<th class="featName">Size of GPRs</th>',
                 "<td class=\"featValue\">$i bytes</td>");
       aOutl(6, '</tr>');
       }
@@ -1961,8 +1951,7 @@ sub dump_features($$)
   if ($i > 0)
     {
     aOutl(6, '<tr class="featLine">');
-    aOutml(8, $margin,
-              '<th class="featName">Joint size of SFRs + GPRs</th>',
+    aOutml(8, '<th class="featName">Joint size of SFRs + GPRs</th>',
               "<td class=\"featValue\">$i bytes</td>");
     aOutl(6, '</tr>');
     }
@@ -1973,13 +1962,13 @@ sub dump_features($$)
   if (defined($i))
     {
     aOutl(6, '<tr class="featLine">');
-    aOutml(8, $margin, '<th class="featName">Start address of Linear RAM</th>');
+    aOutl (8, '<th class="featName">Start address of Linear RAM</th>');
     aOutfl(8, "<td class=\"featValue\">0x%04X</td>", $i->{START});
     aOutml(6, '</tr>', '<tr class="featLine">');
-    aOutml(8, $margin, '<th class="featName">Size of Linear RAM</th>');
+    aOutl (8, '<th class="featName">Size of Linear RAM</th>');
     aOutfl(8, "<td class=\"featValue\">%u bytes</td>", $i->{END} - $i->{START} + 1);
     aOutml(6, '</tr>', '<tr class="featLine">');
-    aOutml(8, $margin, '<th class="featName">Number of Linear RAM sections</th>');
+    aOutl (8, '<th class="featName">Number of Linear RAM sections</th>');
     aOutfl(8, "<td class=\"featValue\">%u</td>", scalar @{$i->{SEGMENTS}});
     aOutl(6, '</tr>');
     }
@@ -1989,7 +1978,7 @@ sub dump_features($$)
   if ($word_size == 16)
     {
     aOutl(6, '<tr class="featLine">');
-    aOutml(8, $margin, '<th class="featName">Last address of lower Access RAM</th>');
+    aOutl(8, '<th class="featName">Last address of lower Access RAM</th>');
     aOutfl(8, "<td class=\"featValue\">0x%02X</td>", $features->{ACCESS});
     aOutl(6, '</tr>');
     }
@@ -2009,7 +1998,6 @@ sub dump_features($$)
 sub dump_config_word($$$$$)
   {
   my ($Align, $Config, $Length, $Mask, $Gap) = @_;
-  my $margin = '<td class="vMargin"></td>';
 
   foreach (@{$Config})
     {
@@ -2037,9 +2025,9 @@ sub dump_config_word($$$$$)
       $expl .= '.' if ($expl ne '' && $expl !~ /\.$/o);
 
       aOutl($Align, '<tr>');
-      aOutml($Align + 2, $margin, "<td class=\"confSwName\">$str</td>");
+      aOutl($Align + 2, "<td class=\"confSwName\">$str</td>");
       aOutfl($Align + 2, "<td class=\"confSwValue\">0x%0${Length}X</td>", $_->{VALUE} | $mask);
-      aOutml($Align + 2, "<td class=\"confSwExpl\">$expl</td>", $margin);
+      aOutl($Align + 2, "<td class=\"confSwExpl\">$expl</td>");
       aOutl($Align, '</tr>');
       }
     }
@@ -2078,14 +2066,14 @@ sub dump_all_config_word($$)
 
         # The main menu.
 
-  aOutl(4, '<ul class="classMenu">');
+  aOutl(4, '<div class="classMenu">');
 
   foreach (@pri_menu_elems)
     {
-    aOutl(6, "<li><a href=\"$remote_url$_->{HREF}\">$_->{NAME}</a></li>");
+    aOutl(6, "<a href=\"$remote_url$_->{HREF}\">$_->{NAME}</a>");
     }
 
-  aOutl(4, '</ul>');
+  aOutl(4, '</div>');
 
   print_mcu_menu($Name, MCU_MENU_CONF);
 
@@ -2357,7 +2345,6 @@ sub dump_ram_map($$)
   my @ram_array;
   my @map_array;
   my @bank_sum = ();
-  my $margin = '<td class="vMargin"></td>';
   my $c_expl = '<span class="explanation">';
   my ($map, $bank, $height, $k, $r, $t, $x, $y);
   my $mcu16_bit = ($features->{WORD_SIZE} == 16) ? TRUE : FALSE;
@@ -2435,14 +2422,14 @@ sub dump_ram_map($$)
 
         # The main menu.
 
-  aOutl(4, '<ul class="classMenu">');
+  aOutl(4, '<div class="classMenu">');
 
   foreach (@pri_menu_elems)
     {
-    aOutl(6, "<li><a href=\"$remote_url$_->{HREF}\">$_->{NAME}</a></li>");
+    aOutl(6, "<a href=\"$remote_url$_->{HREF}\">$_->{NAME}</a>");
     }
 
-  aOutl(4, '</ul>');
+  aOutl(4, '</div>');
 
   print_mcu_menu($Name, MCU_MENU_RAM);
 
@@ -2459,11 +2446,10 @@ sub dump_ram_map($$)
         # header
 
   aOutl(6, '<tr class="ramHead">');
-  aOutl(8, $margin);
 
   for ($x = 0; $x < $bank_num; ++$x)
     {
-    aOutml(8, "<th class=\"ramBank\">Bank&nbsp;$x</th>", $margin);
+    aOutl(8, "<th class=\"ramBank\">Bank&nbsp;$x</th>");
     }
 
   aOutml(6, '</tr>', '<tr class="ramGap"><td></td></tr>');
@@ -2471,7 +2457,6 @@ sub dump_ram_map($$)
         #------------------------------------
 
   aOutl(6, '<tr>');
-  aOutl(8, $margin);
 
   $k = int(256 / $bank_size) * 3;
   for ($x = 0; $x < $bank_num; ++$x)
@@ -2628,7 +2613,7 @@ sub dump_ram_map($$)
 
     $bank_sum[$x] = { SFR => $sfr_size, GPR => $gpr_size, SHARED => $shared_size, BAD => $bad_size };
 
-    aOutml(8, '  </div>', '</td>', $margin);
+    aOutml(8, '  </div>', '</td>');
     }
 
   aOutl(6, '</tr>');
@@ -2640,7 +2625,6 @@ sub dump_ram_map($$)
         # Summary of banks.
 
   aOutml(4, '<table class="ramMap">', '  <tr>');
-  aOutl(8, $margin);
 
   for ($x = 0; $x < $bank_num; ++$x)
     {
@@ -2658,7 +2642,7 @@ sub dump_ram_map($$)
 
     aOutl(12, "<div class=\"ramBAD ramSum\">Unimplemented<br>$sum->{BAD} bytes</div>");
     aOutl(10, '</div>');
-    aOutml(8, '</td>', $margin);
+    aOutl(8, '</td>');
     }
 
   aOutl(6, '</tr>');
@@ -2709,7 +2693,6 @@ sub dump_sfr_map($$)
   my $bank_size = $features->{BANK_SIZE};
   my $sfrs      = $features->{SFRS};
   my @bank_array = ();
-  my $margin = '<td class="vMargin"></td>';
   my $c_expl = '<span class="explanation">';
   my ($bank, $i, $max_x, $x, $min_y, $max_y, $y, $t);
   my $mcu16_bit = ($features->{WORD_SIZE} == 16) ? TRUE : FALSE;
@@ -2760,14 +2743,14 @@ sub dump_sfr_map($$)
 
         # The main menu.
 
-  aOutl(4, '<ul class="classMenu">');
+  aOutl(4, '<div class="classMenu">');
 
   foreach (@pri_menu_elems)
     {
-    aOutl(6, "<li><a href=\"$remote_url$_->{HREF}\">$_->{NAME}</a></li>");
+    aOutl(6, "<a href=\"$remote_url$_->{HREF}\">$_->{NAME}</a>");
     }
 
-  aOutl(4, '</ul>');
+  aOutl(4, '</div>');
 
   print_mcu_menu($Name, MCU_MENU_SFR);
 
@@ -2784,17 +2767,15 @@ sub dump_sfr_map($$)
         # header
 
   aOutl(6, '<tr class="sfrHead">');
-  aOutl(8, $margin);
 
   for ($x = 0; $x < $max_x; ++$x)
     {
-    aOutml(8, "<th class=\"sfrBank\">Bank&nbsp;$bank_array[$x]->{BANKNUM}</th>", $margin);
+    aOutl(8, "<th class=\"sfrBank\">Bank&nbsp;$bank_array[$x]->{BANKNUM}</th>");
     }
 
   aOutml(6, '</tr>', '<tr class="sfrGap"><td></td></tr>');
 
   aOutl(6, '<tr>');
-  aOutl(8, $margin);
 
   for ($x = 0; $x < $max_x; ++$x)
     {
@@ -2859,7 +2840,7 @@ sub dump_sfr_map($$)
         }
       }
 
-    aOutml(8, '  </table>', '</td>', $margin);
+    aOutml(8, '  </table>', '</td>');
     }
 
   aOutl(6, '</tr>');
@@ -2904,16 +2885,16 @@ sub print_pri_menu($)
   {
   my $Menu = $_[0];
 
-  aOutl(6, '<ul class="tabs">');
+  aOutl(6, '<div class="tabs">');
 
   foreach (@pri_menu_elems)
     {
     my $class = ($Menu == $_) ? ' class="selected"' : '';
 
-    aOutl(8, "<li$class><a href=\"$remote_url$_->{HREF}\">$_->{NAME}</a></li>");
+    aOutl(8, "<a$class href=\"$remote_url$_->{HREF}\">$_->{NAME}</a>");
     }
 
-  aOutl(6, '</ul>');
+  aOutl(6, '</div>');
   }
 
 #-------------------------------------------------------------------------------
@@ -2956,7 +2937,7 @@ sub create_class_htmls()
 
 my $page_width         = 1024;          # px
 my $content_background = '#FFFFFF';
-my $tab_color          = '#000000';
+my $tab_color          = '#0000E0';
 my $tab_background     = '#E0E0F0';
 my $tab_border_color   = '#C0C0C0';
 my $tooltip_background = '#F0FFA1';
@@ -3095,7 +3076,13 @@ EOT
   margin-bottom: -${border_width}px;
   }
 
-.tabs li, .classMenu li
+.classMenu
+  {
+  height: 2em;
+  margin: 1.5em 0 1.5em 3em;
+  }
+
+.tabs a, .classMenu a
   {
   z-index: 1;
   position: relative;
@@ -3104,6 +3091,8 @@ EOT
   list-style: none;
   background: $tab_background;
   color: $tab_color;
+  white-space: nowrap;
+  text-decoration: none;
   border: ${border_width}px solid $tab_border_color;
 EOT
 ;
@@ -3111,7 +3100,7 @@ EOT
   print $out_handler <<EOT
   }
 
-.tabs li
+.tabs a
   {
 EOT
 ;
@@ -3120,13 +3109,25 @@ EOT
   border-bottom: 0;
   }
 
-.tabs a
+.classMenu a
   {
-  white-space: nowrap;
-  text-decoration: none;
+EOT
+;
+  css_shadow(2, "0 0 1em $tab_border_color");
+  print $out_handler <<EOT
   }
 
-.tabs li:hover, .classMenu li:hover
+.tabs a.selected
+  {
+  z-index: 3;
+EOT
+;
+  css_shadow(2, "0.2em 0.2em 0.8em #505050, inset 0 0 0.5em #C000C0");
+  print $out_handler <<EOT
+  background: $content_background;
+  }
+
+.tabs a:hover, .classMenu a:hover
   {
   z-index: 2;
 EOT
@@ -3138,13 +3139,20 @@ EOT
   transform: scale(1.1, 1.3);
   }
 
-.tabs li.selected
+.tabs a.selected:hover
   {
   z-index: 3;
-  background: $content_background;
   }
 
-.classMenu li:active
+.classMenu a:hover
+  {
+EOT
+;
+  css_shadow(2, "0.2em 0.2em 0.8em #505050");
+  print $out_handler <<EOT
+  }
+
+.classMenu a:active
   {
 EOT
 ;
@@ -3153,7 +3161,7 @@ EOT
   }
 
 .heading,
-.mcuListHeader, .mcuList, .classMenu li, .mcuLink,
+.mcuListHeader, .mcuList, .classMenu a, .mcuLink,
 .featList, .featTableName, .featName,
 .configList, .confTableName, .configWord, .confOptName,
 .ramMap, .ramTableName, .ramBank,
@@ -3176,7 +3184,7 @@ EOT
   border: ${border_width}px solid $tab_border_color;
 EOT
 ;
-  css_shadow(2, "0 0 1em $tab_border_color");
+  css_shadow(2, "0.2em 0.2em 0.8em #505050, inset 0 0 0.5em #C000C0");
   print $out_handler <<EOT
   }
 
@@ -3190,28 +3198,6 @@ EOT
   {
   display: inline;
   table-layout: fixed;
-  }
-
-/*----------------------------------------------*/
-
-.classMenu
-  {
-  white-space: nowrap;
-  height: 2em;
-  margin-bottom: 1.5em;
-  }
-
-.classMenu li
-  {
-EOT
-;
-  css_shadow(2, "0 0 1em $tab_border_color");
-  print $out_handler <<EOT
-  }
-
-.classMenu a
-  {
-  text-decoration: none;
   }
 
 /*----------------------------------------------*/
@@ -3294,6 +3280,10 @@ EOT
 .mcuLink:hover
   {
   background: $tooltip_background;
+EOT
+;
+  css_shadow(2, "0.2em 0.2em 0.8em #505050, 0 0 2px 4px $attr_background inset");
+  print $out_handler <<EOT
   transform: scale(1.1, 1.3);
   }
 
@@ -3351,12 +3341,6 @@ EOT
   text-align: left;
   }
 
-.vMargin
-  {
-  width: auto;
-  background: transparent;
-  }
-
 .featName, .confOptName, .sfrName, .sfrNameX, .sfrSep
   {
   padding: 0.5em 0.75em;
@@ -3389,29 +3373,6 @@ EOT
 .ramColCont
   {
   position: relative;
-  }
-
-.ramColCont a
-  {
-  display: block;
-  background: $tooltip_background;
-  text-decoration: none;
-EOT
-;
-  css_border_radius(2, '0.875em 0.875em 0.875em 1.75em');
-  css_shadow(2, "0 0 10px 10px $tooltip_background inset");
-  print $out_handler <<EOT
-  }
-
-.ramColCont a:link
-  {
-  color: #874EAD;
-  }
-
-.ramColCont a:hover
-  {
-  background: #49DDFF;
-  transform: scale(1.2, 1.3);
   }
 
 /* This a tooltip. */
@@ -3457,6 +3418,29 @@ EOT
   left: -15px;
   border-right: 15px solid $tooltip_background;
   border-bottom: 5px solid transparent;
+  }
+
+.ramTt a
+  {
+  display: block;
+  background: $tooltip_background;
+  text-decoration: none;
+EOT
+;
+  css_border_radius(2, '0.875em 0.875em 0.875em 1.75em');
+  css_shadow(2, "0 0 10px 10px $tooltip_background inset");
+  print $out_handler <<EOT
+  }
+
+.ramTt a:link
+  {
+  color: #874EAD;
+  }
+
+.ramTt a:hover
+  {
+  background: #49DDFF;
+  transform: scale(1.2, 1.3);
   }
 
 .ramAcc
