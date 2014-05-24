@@ -1,3 +1,9 @@
+2014-05-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/testsuite/gpasm.project/listfiles/op14e.lst,
+    gpasm/testsuite/gpasm.project/listfiles/pageselw1.lst,
+    gpasm/testsuite/gpasm.project/objlstfiles/pageselw2.lst:
+    Removed the executable flags.
+
 2014-05-18  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/Makefile.am, gpasm/Makefile.in:
     FreeBSD specific changes. Thanks to Tijl Coosemans.
