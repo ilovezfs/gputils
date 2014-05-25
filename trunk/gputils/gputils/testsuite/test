@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #   tests gpdasm
 #   Copyright (C) 2001, 2002, 2003
@@ -22,124 +22,99 @@
 # Boston, MA 02111-1307, USA.  
 
 # Defines
-GPASMFLAGS=-q
 TESTDIR=./test
 GPDASMBIN=../gpdasm
 GPASMBIN=../../gpasm/gpasm
+GPASMFLAGS=-q
 
-# general functions
+# General functions
 
-testfailed() {
-  echo "TEST FAILED"
+function testfailed() {
+  echo "TEST FAILED $1"
   exit 1
 }
 
-binexists() {
-
+function binexists() {
   # Test syntax.
-  if [ $# = 0 ] ; then
+  if [ $# = 0 ]; then
     echo "Usage: binexists {program}"
     return 1
   fi
-  echo "testing for $1"
-  if ! test -e $1; then
-    echo "$1 not found.  Aborting."
+  echo "Testing for $1:"
+  if [ ! -e $1 ]; then
+    echo "$1 not found, aborting."
     return 1
   else
     $1 -v
-    echo "executable found."
-    echo
+    echo -e "Executable found.\n"
     return 0
   fi
-
 }
 
-printbanner() {
+function printbanner() {
   # Test syntax.
-  if [ $# = 0 ] ; then
+  if [ $# = 0 ]; then
     echo "Usage: printbanner {message}"
     return 1
   fi
-  echo "-----------------------------------------------------------"
-  echo "$1"
-  echo "-----------------------------------------------------------"
-  echo
+  echo -e "+----------------------------------------------------------
+|   $1
++----------------------------------------------------------\n"
   return 0
 }
 
-printheader () {
-  printversion
-  echo "NAME:      $NAME" 
-  echo "DATE:      $(date +%x)"
-  echo "TIME:      $(date +%r)"
-  echo "HOST:      $HOSTNAME"
-  echo "HOST TYPE: $HOSTTYPE"
-  echo "HOST OS:   $OSTYPE"
-  echo
-  return 0
+function run_test() {
+  # Test syntax.
+  if [ $# -lt 1 ]; then
+    echo "Usage: run_test <test file> <mcu type>"
+  fi
+  ../../$GPASMBIN $GPASMFLAGS $1.asm || testfailed "$GPASMBIN $GPASMFLAGS $1.asm"
+  ../../$GPDASMBIN -p $2 -s $1.hex > $1.dis || testfailed "$GPDASMBIN -p $2 -s $1.hex"
+  ../../$GPASMBIN $GPASMFLAGS -o $1.dis.hex $1.dis || testfailed "$GPASMBIN $GPASMFLAGS -o $1.dis.hex $1.dis"
+  diff -us $1.hex $1.dis.hex || testfailed ""
 }
 
   printbanner "Start of gpdasm testing" 
-  # Test for executable
+  # Test for executable.
   binexists $GPDASMBIN
   RETVAL=$?
-  if [ $RETVAL -eq 1 ]; then
-    exit 1
-  fi
-  # testing gpdasm requires gpasm
+  [ $RETVAL -eq 1 ] && exit 1
+  # Testing gpdasm requires gpasm.
   binexists $GPASMBIN
   RETVAL=$?
-  if [ $RETVAL -eq 1 ]; then
-    exit 1
-  fi
+  [ $RETVAL -eq 1 ] && exit 1
 
-  # create the test directory if it doesn't already exist
+  # Create the test directory if it doesn't already exist.
   cd gpdasm.project
-  test -d $TESTDIR || mkdir $TESTDIR || exit 1
-  # copy the test files to the test directory
+  [ -d $TESTDIR ] || mkdir $TESTDIR || exit 1
+  # Copy the test files to the test directory.
   cd $TESTDIR
-  # clean the directory
+  # Clean the directory.
   rm -Rf *
   cp ../*.asm .
 
-  printbanner "testing 12 bit core"
-  ../../$GPASMBIN  -q op12.asm || testfailed
-  ../../$GPDASMBIN -p 12c508 -s op12.hex > op12.dis || testfailed
-  ../../$GPASMBIN -q -o op12.dis.hex op12.dis || testfailed
-  diff -us op12.hex op12.dis.hex || testfailed    
-  echo "12 bit core passed."
-  echo
+  printbanner "Testing 12 bit core"
+  run_test op12 12c508
+  echo -e "12 bit core passed.\n"
 
-  printbanner "testing sx core"
-  ../../$GPASMBIN  -q sx.asm || testfailed
-  ../../$GPDASMBIN -p sx18 -s sx.hex > sx.dis || testfailed
-  ../../$GPASMBIN -q -o sx.dis.hex sx.dis || testfailed
-  diff -us sx.hex sx.dis.hex || testfailed    
-  echo "sx core passed."
-  echo
+  printbanner "Testing sx core"
+  run_test sx sx18
+  echo -e "sx core passed.\n"
 
-  printbanner "testing 14 bit core"
-  ../../$GPASMBIN  -q op14.asm || testfailed
-  ../../$GPDASMBIN -p 16c84 -s op14.hex > op14.dis || testfailed
-  ../../$GPASMBIN -q -o op14.dis.hex op14.dis || testfailed
-  diff -us op14.hex op14.dis.hex || testfailed    
-  echo "14 bit core passed."
-  echo
-  
-  printbanner "testing 16 bit core"
-  ../../$GPASMBIN  -q op16.asm || testfailed
-  ../../$GPDASMBIN -p 17c44 -s op16.hex > op16.dis || testfailed
-  ../../$GPASMBIN -q -o op16.dis.hex op16.dis || testfailed
-  diff -us op16.hex op16.dis.hex || testfailed    
-  echo "16 bit core passed."
-  echo
-  
-  printbanner "testing enhanced 16 bit core"
-  ../../$GPASMBIN  -q op16e.asm || testfailed
-  ../../$GPDASMBIN -p 18c452 -s op16e.hex > op16e.dis || testfailed
-  ../../$GPASMBIN -q -o op16e.dis.hex op16e.dis || testfailed
-  diff -us op16e.hex op16e.dis.hex || testfailed    
-  echo "enhanced 16 bit core passed."
-  echo
+  printbanner "Testing 14 bit core"
+  run_test op14 16c84
+  echo -e "14 bit core passed.\n"
+
+  printbanner "Testing enhanced 14 bit core"
+  run_test op14e 12f1501
+  echo -e "Enhanced 14 bit core passed.\n"
+
+  printbanner "Testing 16 bit core"
+  run_test op16 17c44
+  echo -e "16 bit core passed.\n"
+
+  printbanner "Testing extended 16 bit core"
+  run_test op16e 18c452
+  echo -e "Extended 16 bit core passed.\n"
 
   printbanner "gpdasm testing sucessful"
