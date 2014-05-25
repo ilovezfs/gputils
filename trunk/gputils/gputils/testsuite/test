@@ -67,11 +67,13 @@ function run_test() {
   # Test syntax.
   if [ $# -lt 1 ]; then
     echo "Usage: run_test <test file> <mcu type>"
+    return 1
   fi
   ../../$GPASMBIN $GPASMFLAGS $1.asm || testfailed "$GPASMBIN $GPASMFLAGS $1.asm"
   ../../$GPDASMBIN -p $2 -s $1.hex > $1.dis || testfailed "$GPDASMBIN -p $2 -s $1.hex"
   ../../$GPASMBIN $GPASMFLAGS -o $1.dis.hex $1.dis || testfailed "$GPASMBIN $GPASMFLAGS -o $1.dis.hex $1.dis"
   diff -us $1.hex $1.dis.hex || testfailed ""
+  return 0
 }
 
   printbanner "Start of gpdasm testing" 
@@ -96,6 +98,10 @@ function run_test() {
   printbanner "Testing 12 bit core"
   run_test op12 12c508
   echo -e "12 bit core passed.\n"
+
+  printbanner "Testing enhanced 12 bit core"
+  run_test op12e 16f527
+  echo -e "Enhanced 12 bit core passed.\n"
 
   printbanner "Testing sx core"
   run_test sx sx18
