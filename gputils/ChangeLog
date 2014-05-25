@@ -1,3 +1,8 @@
+2014-05-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gputils/testsuite/gpdasm.project/op14e.asm,
+    gputils/testsuite/test:
+    Added the enhanced 14 bit core test.
+
 2014-05-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/testsuite/gpasm.project/listfiles/op14e.lst,
     gpasm/testsuite/gpasm.project/listfiles/pageselw1.lst,
