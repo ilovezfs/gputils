@@ -151,7 +151,7 @@ substitute_define_param(char *buf, int begin, int *end, int *n, int max_size, in
       DBG_printf("@@@substituting parameter %*.*s with %s\n", mlen, mlen, &buf[begin], argp->str);
 
       if (*n + len - mlen >= max_size) {
-        gpverror(GPE_INTERNAL, "Flex buffer too small.");
+        gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
         return 0;
       }
       else {
@@ -257,7 +257,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
 
               /* substitute define parameters */
               if (*n + len - mlen >= max_size) {
-                gpverror(GPE_INTERNAL, "Flex buffer too small.");
+                gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
                 return 0;
               }
               else {
@@ -303,7 +303,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
 
       /* substitute define */
       if (*n + len - mlen >= max_size) {
-        gpverror(GPE_INTERNAL, "Flex buffer too small.");
+        gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
         return 0;
       }
       else {
@@ -355,7 +355,7 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
   int i;
 
   if (level >= PREPROC_MAX_DEPTH) {
-    gpverror(GPE_STRCPLX);
+    gpverror(GPE_STRCPLX, NULL);
     return 0;
   }
 
@@ -476,7 +476,7 @@ preprocess_hv(char *buf, int begin, int *end, int *n, int max_size)
       res_len = snprintf (res_buf, sizeof (res_buf), "%d", ppresult);
 
       if (*n + res_len - (ppcol_end - ppcol_begin) >= max_size) {
-        gpverror(GPE_INTERNAL, "Flex buffer too small.");
+        gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
         return 0;
       }
       else {
@@ -625,7 +625,7 @@ substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, int
     int len = strlen(sub);
 
     if (*n + len - mlen >= max_size) {
-      gpverror(GPE_INTERNAL, "Flex buffer too small.");
+      gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
       return 0;
     }
     else {

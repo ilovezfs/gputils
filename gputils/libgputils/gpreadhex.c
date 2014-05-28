@@ -123,7 +123,7 @@ readhex(char *filename, MemBlock *m)
     if (type == 4) {
 
       if (info->hex_format == inhx16) {
-        printf("\nhex format error\n");
+        printf("\nHex Format Error\n");
         fclose(infile);
         info->error = 1;
         return info;      
@@ -138,10 +138,10 @@ readhex(char *filename, MemBlock *m)
       for (i = 0; i < length; ++i) {
 	data = readbyte();
 	if (info->hex_format == inhx16) {
-	  b_memory_put( m, page | ((address + i) ^ 1), data);
+	  b_memory_put(m, page | ((address + i) ^ 1), data, filename);
 	}
 	else {
-	  b_memory_put(m, page | (address + i), data);
+	  b_memory_put(m, page | (address + i),       data, filename);
 	}
       }
 

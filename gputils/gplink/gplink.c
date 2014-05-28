@@ -60,10 +60,10 @@ object_append(gp_object_type *file, char *name)
     list->next = file;
 
     if (file->class != state.class) {
-      gp_error("processor family mismatch in \"%s\"", file->filename);
+      gp_error("Processor family mismatch in \"%s\".", file->filename);
     } else if ((0 != processor_mismatch_warning) &&
                (file->processor != state.processor)) {
-      gp_warning("processor mismatch in \"%s\"", file->filename);
+      gp_warning("Processor mismatch in \"%s\".", file->filename);
     }
   }
 
@@ -162,7 +162,7 @@ scan_archive(gp_archive_type *archive, char *name)
     archive_tbl = push_symbol_table(NULL, true);
     gp_archive_make_index(archive, archive_tbl);
     archive = gp_archive_add_index(archive_tbl, archive);
-    gp_warning("\"%s\" is missing symbol index", name);
+    gp_warning("\"%s\" is missing symbol index.", name);
     archive_tbl = pop_symbol_table(archive_tbl);
   }
 
@@ -304,7 +304,7 @@ build_tables(void)
         assert(name != NULL);
         var = get_symbol_annotation(s);
         assert(var != NULL);
-        gp_error("missing definition for symbol \"%s\", required by \"%s\"",
+        gp_error("Missing definition for symbol \"%s\", required by \"%s\".",
                  name,
                  var->file->filename);
       }
@@ -362,10 +362,10 @@ gplink_open_coff(const char *name)
     archive_append(archive, file_name);
     break;
   case sys_err_file:
-    gp_error("can't open file \"%s\"", file_name);
+    gp_error("Can't open file \"%s\".", file_name);
     break;
   case unknown_file:
-    gp_error("\"%s\" is not a valid coff object or archive", file_name);
+    gp_error("\"%s\" is not a valid coff object or archive.", file_name);
     break;
   default:
     assert(0);
@@ -391,7 +391,7 @@ set_optimize_level(void)
   case 0:
     break;
   default:
-    gp_error("invalid optimization level");
+    gp_error("Invalid optimization level: %i", state.optimize.level);
   }
 }
 
@@ -468,7 +468,7 @@ gplink_add_path(const char *path)
   if (state.numpaths < MAX_PATHS) {
     state.paths[state.numpaths++] = strdup(path);
   } else {
-    gp_error("too many -I paths");
+    gp_error("Too many -I paths.");
   }
 }
 
@@ -563,7 +563,7 @@ process_args( int argc, char *argv[])
       } else if (strcasecmp(optarg, "inhx32") == 0) {
         state.hex_format = inhx32;
       } else {
-        gp_error("invalid hex format \"%s\", expected inhx8m, inhx16, or inhx32",
+        gp_error("Invalid hex format \"%s\", expected inhx8m, inhx16, or inhx32.",
                  optarg);
       }
       break;
@@ -580,9 +580,9 @@ process_args( int argc, char *argv[])
     case 'f':
       state.fill_value = strtol(optarg, &pc, 16);
       if ((pc == NULL) || (*pc != '\0')) {
-        gp_error("invalid character %#x in number constant", *pc);
+        gp_error("Invalid character %#x in number constant.", *pc);
       } else if (state.fill_value > 0xffff) {
-        gp_error("fill value exceeds 0xffff", *pc);
+        gp_error("Fill value exceeds 0xffff: %#x", *pc);
       } else {
         state.fill_enable = true;
       }
@@ -647,7 +647,7 @@ process_args( int argc, char *argv[])
     case 't':
       state.stack_size = strtol(optarg, &pc, 10);
       if ((pc == NULL) || (*pc != '\0')) {
-        gp_error("invalid character %#x in number constant", *pc);
+        gp_error("Invalid character %#x in number constant.", *pc);
       } else {
         state.has_stack = true;
       }
@@ -755,24 +755,24 @@ linker(void)
     assert(state.processor);
     script_name = gp_processor_script(state.processor);
     if (script_name == NULL) {
-      gp_error("linker script not specified and can't determine default script");
+      gp_error("Linker script not specified and can't determine default script.");
       return EXIT_FAILURE;
     }
     snprintf(file_name, sizeof(file_name),
              "%s" COPY_CHAR "%s", gp_lkr_path, script_name);
-    gp_message("using default linker script \"%s\"", file_name);
+    gp_message("Using default linker script \"%s\".", file_name);
     open_src(file_name, 0);
     yyparse();
 #endif
   } else {
     /* The user must supply the linker script name.  The processor isn't
        commanded so the linker has no way to pick. */
-    gp_error("linker script not specified");
+    gp_error("Linker script not specified.");
     return EXIT_FAILURE;
   }
 
   if (state.object == NULL) {
-    gp_error("missing input object file");
+    gp_error("Missing input object file.");
     return EXIT_FAILURE;
   }
 

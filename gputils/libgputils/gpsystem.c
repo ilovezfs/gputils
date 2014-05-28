@@ -273,7 +273,7 @@ gp_absolute_path(char *file_name)
                               file_buffer,
                               &file_ptr);
   if (num_chars == 0) {
-    gp_error("can't fetch full path of %s", file_name);
+    gp_error("Can't fetch full path of %s.", file_name);
     return file_name;
   } else {
     return strdup(file_buffer);
@@ -281,7 +281,7 @@ gp_absolute_path(char *file_name)
 #else
 
   if (absolute_path_warning) {
-    gp_warning("host system does not support absolute paths");
+    gp_warning("Host system does not support absolute paths.");
     absolute_path_warning = false;
   }
   

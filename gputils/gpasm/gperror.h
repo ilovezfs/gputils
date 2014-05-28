@@ -27,9 +27,9 @@ void gperror(unsigned int code, char *message);
 void gpwarning(unsigned int code, char *message);
 void gpmessage(unsigned int code, char *message);
 
-void gpverror(unsigned int code, ...);
-void gpvwarning(unsigned int code, ...);
-void gpvmessage(unsigned int code, ...);
+void gpverror(unsigned int code, const char *message, ...);
+void gpvwarning(unsigned int code, const char *message, ...);
+void gpvmessage(unsigned int code, const char *message, ...);
 
 /* Alternate message functions. Only the prototypes are provided, the user
    must link their own function into gpasm. */

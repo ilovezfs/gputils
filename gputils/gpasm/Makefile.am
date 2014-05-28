@@ -50,7 +50,7 @@ AM_LFLAGS = -i
 # Make sure we have parse.h when compiling other sources
 BUILT_SOURCES = parse.c parse.h ppparse.c ppparse.h scan.c ppscan.c gpasm.h
 
-CLEANFILES = parse.output parse.c parse.h pppase.output ppparse.c ppparse.h scan.c ppscan.c gpasm.h
+CLEANFILES = parse.output parse.c parse.h ppparse.output ppparse.c ppparse.h scan.c ppscan.c gpasm.h
 
 gpasm.h: gpasm.h.in
 	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" "$<" > "$@"

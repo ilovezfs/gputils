@@ -30,7 +30,7 @@ check_getl16(const unsigned char *addr, gp_binary_type *data)
   if (addr < data->file + data->size)
     return gp_getl16(addr);
   else {
-    gp_error("bad object file format");
+    gp_error("Bad object file format.");
     exit(0);
     /* just to make the compiler satisfied */
     return 0;
@@ -45,7 +45,7 @@ check_getl32(const unsigned char *addr, gp_binary_type *data)
   if (addr < data->file + data->size)
     return gp_getl32(addr);
   else {
-    gp_error("bad object file format");
+    gp_error("Bad object file format.");
     exit(0);
     /* just to make the compiler satisfied */
     return 0;
@@ -108,7 +108,7 @@ gp_read_file(const char *filename)
   file->file = (unsigned char *)malloc(file->size);
   n = fread(file->file, 1, file->size, infile);
   if (n != file->size)
-    gp_error("file \"%s\" size doesn't match the statbuf.st_size", filename);
+    gp_error("File \"%s\" size doesn't match the statbuf.st_size.", filename);
 
   fclose(infile);
 
@@ -137,7 +137,7 @@ _read_file_header(gp_object_type *object, const unsigned char *file, gp_binary_t
   if (check_getl16(&file[0], data) == MICROCHIP_MAGIC_v2)
     isnew = 1;
   else if (check_getl16(&file[0], data) != MICROCHIP_MAGIC_v1)
-    gp_error("invalid magic number in \"%s\"", object->filename);
+    gp_error("Invalid magic number in \"%s\".", object->filename);
 
   object->isnew = isnew;
   object->version      = check_getl16(&file[0], data);
@@ -148,7 +148,7 @@ _read_file_header(gp_object_type *object, const unsigned char *file, gp_binary_t
 
   opt_hdr = check_getl16(&file[16], data);
   if (opt_hdr != 0 && opt_hdr != (isnew ? OPT_HDR_SIZ_v2 : OPT_HDR_SIZ_v1) )
-    gp_error("incorrect optional header size (%d) in \"%s\"", opt_hdr, object->filename);
+    gp_error("Incorrect optional header size (%d) in \"%s\".", opt_hdr, object->filename);
 
   object->symbol_size = (object->version == MICROCHIP_MAGIC_v1 ?
                          SYMBOL_SIZE_v1 : SYMBOL_SIZE_v2);
@@ -166,7 +166,7 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_ty
 
   optmagic = check_getl16(&file[0], data);
   if (optmagic != (object->isnew ? OPTMAGIC_v2 : OPTMAGIC_v1))
-    gp_error("invalid optional magic number (%#04x) in \"%s\"", optmagic, object->filename);
+    gp_error("Invalid optional magic number (%#04x) in \"%s\".", optmagic, object->filename);
 
   offset = 2;
   if (object->isnew) {
@@ -179,7 +179,7 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_ty
   }
 
   if (!object->isnew && vstamp != 1)
-    gp_error("invalid assembler version (%ld) in \"%s\"", vstamp, object->filename);
+    gp_error("Invalid assembler version (%ld) in \"%s\".", vstamp, object->filename);
 
   proc_code = check_getl32(&file[offset], data);
   offset += 4;
@@ -197,11 +197,11 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_ty
     case 16: object->processor = gp_find_processor("pic17cxx"); break;
     }
     if (!object->processor)
-      gp_error("invalid processor type (%#04lx) in \"%s\"",
+      gp_error("Invalid processor type (%#04lx) in \"%s\".",
                proc_code,
                object->filename);
     else
-      gp_warning("unknown processor type (%#04lx) in \"%s\" defaulted to %s",
+      gp_warning("Unknown processor type (%#04lx) in \"%s\" defaulted to %s.",
                  proc_code,
                  object->filename,
                  gp_processor_name(object->processor, 0));
@@ -214,14 +214,14 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_ty
       object->class = gp_processor_class(object->processor);
     }
     else
-      gp_error("invalid rom width for selected processor (%ld) in \"%s\"",
+      gp_error("Invalid rom width for selected processor (%ld) in \"%s\".",
                rom_width,
                object->filename);
   }
 
   ram_width = check_getl32(&file[offset], data);
   if (ram_width != 8)
-    gp_error("invalid ram width (%ld) in \"%s\"", ram_width, object->filename);
+    gp_error("Invalid ram width (%ld) in \"%s\".", ram_width, object->filename);
   offset += 4;
 }
 
@@ -251,7 +251,7 @@ _read_section_header(gp_object_type *object,
   section->address = check_getl32(&file[8], data);
   section->virtual_address = check_getl32(&file[12], data);
   if (section->address != section->virtual_address)
-    gp_error("virtual address does not equal physical address in \"%s\"",
+    gp_error("Virtual address does not equal physical address in \"%s\".",
              object->filename);
 
   section->size       = check_getl32(&file[16], data);
@@ -275,7 +275,7 @@ _read_section_header(gp_object_type *object,
   if (section->flags & (STYP_TEXT | STYP_DATA_ROM))
     section->address = gp_processor_org_to_byte(object->class, section->address);
   if (((STYP_TEXT | STYP_ABS) == (section->flags & (STYP_TEXT | STYP_ABS))) && section->address & 1) {
-    gp_error("absolute code section '%s' must start at a word-aligned address.\n", section->name);
+    gp_error("Absolute code section \"%s\" must start at a word-aligned address.\n", section->name);
   }
   section->shadow_address = section->address;
 }
@@ -292,7 +292,7 @@ _read_reloc(gp_object_type *object,
   relocation->type    = check_getl16(&file[10], data);
 
   if (relocation->address > section->size)
-    gp_error("relocation at address %#x in section \"%s\" of \"%s\" exceeds the section size",
+    gp_error("Relocation at address %#x in section \"%s\" of \"%s\" exceeds the section size.",
              relocation->address,
              section->name,
              object->filename);
@@ -352,7 +352,7 @@ _read_sections(gp_object_type *object, const unsigned char *file, gp_binary_type
       loc = &file[current->data_ptr];
       number = current->size;
       for (j = 0; j < number; j++) {
-        b_memory_put(current->data, org + j, loc[j]);
+        b_memory_put(current->data, org + j, loc[j], object->filename);
       }
     }
 
@@ -515,7 +515,7 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol,
       break;
 
     default:
-      assert(!"Lazy symbol binding not implemented");
+      assert(!"Lazy symbol binding not implemented.");
     }
     current_lazy = current_lazy->next;
   }

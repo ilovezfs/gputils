@@ -31,7 +31,7 @@ void select_processor(char *name)
   const struct px *found = NULL;
 
   if (state.cmd_line.processor) {
-    gpvwarning(GPW_CMDLINE_PROC);
+    gpvwarning(GPW_CMDLINE_PROC, NULL);
   } else {
     found = gp_find_processor(name);
     if (found) {
@@ -39,7 +39,7 @@ void select_processor(char *name)
       if (!state.processor) {
         /* if in extended mode: check if processor supports extended instruction set */
         if (state.extended_pic16e && !found->is_16bit_extended) {
-          gpverror(GPE_NO_EXTENDED_MODE);
+          gpverror(GPE_NO_EXTENDED_MODE, NULL);
         }
         state.processor = found;
         state.maxrom = found->maxrom;
@@ -60,13 +60,13 @@ void select_processor(char *name)
           }
         }
         set_global(found->defined_as, 1, PERMANENT, gvt_constant);
-      } else if (state.processor != found ) {
-        gpvwarning(GPW_REDEFINING_PROC);
-        gpverror(GPE_EXTRA_PROC);
+      } else if (state.processor != found) {
+        gpvwarning(GPW_REDEFINING_PROC, NULL);
+        gpverror(GPE_EXTRA_PROC, NULL);
       }
     } else {
       if (state.pass) {
-        gpverror(GPE_UNKNOWN_PROC, name);
+        gpverror(GPE_UNKNOWN_PROC, NULL, name);
       } else {
         printf("Didn't find any processor named: %s\nHere are the supported processors:\n", name);
         gp_dump_processor_list(true, 0);

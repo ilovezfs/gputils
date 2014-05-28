@@ -1,3 +1,19 @@
+2014-05-28  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/Makefile.am, gpasm/Makefile.in, gplink/Makefile.am,
+    gplink/Makefile.in:
+    Minor update.
+
+  * gpasm/coff.c, gpasm/directive.c, gpasm/evaluate.c,
+    gpasm/gperror.c, gpasm/gperror.h, gpasm/parse.y,
+    gpasm/ppscan.l, gpasm/preprocess.c, gpasm/processor.c,
+    gpasm/scan.l, gpasm/special.c, gpasm/util.c,
+    gplink/gplink.c, gplink/lst.c, libgputils/gpcofflink.c,
+    libgputils/gpmemory.c, libgputils/gpmemory.h,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.h,
+    libgputils/gpreadhex.c, libgputils/gpreadobj.c,
+    libgputils/gpsymbol.c, libgputils/gpsystem.c:
+    Extended error and warning messages.
+
 2014-05-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gputils/testsuite/gpdasm.project/op12e.asm,
     gputils/testsuite/test:

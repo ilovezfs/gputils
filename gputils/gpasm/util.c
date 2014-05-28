@@ -81,8 +81,8 @@ stringtolong(const char *string, int radix)
 
     snprintf(complaint, sizeof(complaint),
              isprint(*endptr) ?
-             "Illegal character '%c' in numeric constant " :
-             "Illegal character %#x in numeric constant" ,
+             "Illegal character '%c' in numeric constant." :
+             "Illegal character %#x in numeric constant." ,
              *endptr);
     gperror(GPE_UNKNOWN, complaint);
   }
@@ -187,7 +187,7 @@ convert_escape_chars(const char *ps, int *value)
     case 'x':
       /* hex number */
       if ((ps[2] == '\0') || (ps[3] == '\0')) {
-        gperror(GPE_UNKNOWN, "missing hex value in \\x escape character");
+        gperror(GPE_UNKNOWN, "Missing hex value in \\x escape character.");
         *value = 0;
         /* return a NULL character */
         ps += 2;
@@ -205,7 +205,7 @@ convert_escape_chars(const char *ps, int *value)
       break;
     default:
       if (ps[1] == '\0') {
-        gperror(GPE_UNKNOWN, "missing value in \\ escape character");
+        gperror(GPE_UNKNOWN, "Missing value in \\ escape character.");
         *value = 0;
         /* return a NULL character */
         ps++;
@@ -296,7 +296,7 @@ set_global(const char *name,
     char *coff_name;
 
     if (var->value != value)
-      gpverror(GPE_DIFFLAB, name);
+      gpverror(GPE_DIFFLAB, NULL, name);
 
     coff_name = coff_local_name(name);
     coff_add_sym(coff_name, value, var->type);
@@ -344,7 +344,7 @@ void
 select_errorlevel(int level)
 {
   if (state.cmd_line.error_level) {
-    gpvmessage(GPM_SUPVAL);
+    gpvmessage(GPM_SUPVAL, NULL);
   } else {
     if (level == 0) {
       state.error_level = 0;
@@ -368,7 +368,7 @@ void
 select_expand(const char *expand)
 {
   if (state.cmd_line.macro_expand) {
-    gpvmessage(GPM_SUPLIN);
+    gpvmessage(GPM_SUPLIN, NULL);
   } else {
     if (strcasecmp(expand, "ON") == 0) {
       state.lst.expand = true;
@@ -381,7 +381,7 @@ select_expand(const char *expand)
                 "Error: invalid option \"%s\"\n",
                 expand);
       } else {
-        gperror(GPE_ILLEGAL_ARGU, "Expected ON or OFF");
+        gperror(GPE_ILLEGAL_ARGU, "Expected ON or OFF.");
       }
     }
   }
@@ -391,7 +391,7 @@ void
 select_hexformat(const char *format_name)
 {
   if (state.cmd_line.hex_format) {
-    gpvwarning(GPW_CMDLINE_HEXFMT);
+    gpvwarning(GPW_CMDLINE_HEXFMT, NULL);
   } else {
     if (strcasecmp(format_name, "inhx8m") == 0) {
       state.hex_format = inhx8m;
@@ -408,7 +408,7 @@ select_hexformat(const char *format_name)
                 "Error: invalid format \"%s\"\n",
                 format_name);
       } else {
-        gperror(GPE_ILLEGAL_ARGU, "Expected inhx8m, inhx8s, inhx16, or inhx32");
+        gperror(GPE_ILLEGAL_ARGU, "Expected inhx8m, inhx8s, inhx16, or inhx32.");
       }
     }
   }
@@ -418,7 +418,7 @@ void
 select_radix(const char *radix_name)
 {
   if (state.cmd_line.radix) {
-    gpvwarning(GPW_CMDLINE_RADIX);
+    gpvwarning(GPW_CMDLINE_RADIX, NULL);
   } else {
     if (strcasecmp(radix_name, "h") == 0 ||
         strcasecmp(radix_name, "hex") == 0 ||
@@ -439,7 +439,7 @@ select_radix(const char *radix_name)
                 "invalid radix \"%s\", will use hex.\n",
                 radix_name);
       } else {
-        gpvwarning(GPW_RADIX);
+        gpvwarning(GPW_RADIX, NULL);
       }
     }
   }
@@ -608,7 +608,7 @@ hex_init(void)
   }
 
   if (check_writehex(state.i_memory, state.hex_format)) {
-    gpverror(GPE_IHEX);
+    gpverror(GPE_IHEX, NULL);
     writehex(state.basefilename, state.i_memory,
              state.hex_format, 1,
              state.dos_newlines, 1);
@@ -617,7 +617,7 @@ hex_init(void)
                  state.hex_format, state.num.errors,
                  state.dos_newlines,
                  state.device.class->core_size)) {
-      gperror(GPE_UNKNOWN,"Error generating hex file");
+      gperror(GPE_UNKNOWN, "Error generating hex file.");
     }
   } else {
     /* Won't have anything to write, just remove any old files */
