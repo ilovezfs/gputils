@@ -41,7 +41,7 @@ add_code(int code)
   struct error_list *list;
 
   if ((code <= -100) && (code >= -199)) {
-    gpvwarning(GPW_DISABLE_ERROR);
+    gpvwarning(GPW_DISABLE_ERROR, NULL);
   } else {
     new = (struct error_list *)malloc(sizeof(*new));
     new->value = code;
@@ -92,14 +92,34 @@ verr(enum err_type_e err_type, unsigned int code, const char *message, va_list a
 {
   /* standard output */
   if (!state.quiet) {
-    if (state.src)
+    const char *type;
+    const char *gap;
+
+    switch (err_type) {
+      case et_error:
+        type = "Error";
+        gap  = "  ";
+        break;
+
+      case et_warning:
+        type = "Warning";
+        gap  = "";
+        break;
+
+      case et_message:
+      default:
+        type = "Message";
+        gap  = "";
+        break;
+    }
+
+    if (state.src) {
       printf("%s:%d:%s[%03d] %s", state.src->name, state.src->line_number,
-        (et_error == err_type) ? "Error" : (et_warning == err_type) ? "Warning" : "Message",
-        code, ((et_error == err_type) ? "  " : ""));
-    else
-      printf("%s[%03d] %s",
-        (et_error == err_type) ? "Error" : (et_warning == err_type) ? "Warning" : "Message",
-        code, ((et_error == err_type) ? "  " : ""));
+             type, code, gap);
+    }
+    else {
+      printf("%s[%03d] %s", type, code, gap);
+    }
     vprintf(message, ap);
     putchar('\n');
   }
@@ -110,14 +130,34 @@ err(enum err_type_e err_type, unsigned int code, const char *message)
 {
   /* standard output */
   if (!state.quiet) {
-    if (state.src)
+    const char *type;
+    const char *gap;
+
+    switch (err_type) {
+      case et_error:
+        type = "Error";
+        gap  = "  ";
+        break;
+
+      case et_warning:
+        type = "Warning";
+        gap  = "";
+        break;
+
+      case et_message:
+      default:
+        type = "Message";
+        gap  = "";
+        break;
+    }
+
+    if (state.src) {
       printf("%s:%d:%s[%03d] %s%s\n", state.src->name, state.src->line_number,
-        (et_error == err_type) ? "Error" : (et_warning == err_type) ? "Warning" : "Message",
-        code, ((et_error == err_type) ? "  " : ""), message);
-    else
-      printf("%s[%03d] %s%s\n",
-        (et_error == err_type) ? "Error" : (et_warning == err_type) ? "Warning" : "Message",
-        code, ((et_error == err_type) ? "  " : ""), message);
+             type, code, gap, message);
+    }
+    else {
+      printf("%s[%03d] %s%s\n", type, code, gap, message);
+    }
   }
 }
 
@@ -128,51 +168,51 @@ gp_geterror(unsigned int code)
   case GPE_USER:
     return "ERROR: (%s)";
   case GPE_NOENT:
-    return "Cannot open file (Include File \"%s\" not found)";
+    return "Cannot open file. Include file \"%s\" not found.";
   case GPE_STRCPLX:
-    return "String substitution too complex";
+    return "String substitution too complex.";
   case GPE_BADCHAR:
-    return "Illegal character (%c).";
+    return "Illegal character: '%c'";
   case GPE_OPENPAR:
     return "Unmatched (";
   case GPE_CLOSEPAR:
     return "Unmatched )";
   case GPE_NOSYM:
-    return "Symbol not previously defined (%s)";
+    return "Symbol not previously defined: \"%s\"";
   case GPE_DIVBY0:
     return "Divide by zero.";
   case GPE_DUPLAB:
-    return "Duplicate label (\"%s\" or redefining symbol that cannot be redefined)";
+    return "Duplicate label, \"%s\" or redefining symbol that cannot be redefined.";
   case GPE_DIFFLAB:
-    return "Address label duplicated or different in second pass (%s)";
+    return "Address label duplicated or different in second pass: \"%s\"";
   case GPE_ADDROVF:
     return "Address wrapped around 0.";
   case GPE_ADDROVR:
-    return "Overwriting previous address contents (%04X)";
+    return "Overwriting previous address contents: 0x%04X";
   case GPE_BAD_CALL_ADDR:
-    return "Call or jump not allowed at this address (must be in low half of page)";
+    return "Call or jump not allowed at this address, must be in low half of page.";
   case GPE_ILLEGAL_LABEL:
-    return "Illegal label (%s)";
+    return "Illegal label: \"%s\"";
   case GPE_ILLEGAL_DIR:
-    return "Illegal directive (%s)";
+    return "Illegal directive: \"%s\"";
   case GPE_ILLEGAL_ARGU:
-    return "Illegal argument (%s)";
+    return "Illegal argument: \"%s\"";
   case GPE_ILLEGAL_COND:
     return "Illegal condition.";
   case GPE_RANGE:
-    return "Argument out of range";
+    return "Argument out of range.";
   case GPE_TOO_MANY_ARGU:
-    return "Too many arguments";
+    return "Too many arguments.";
   case GPE_MISSING_ARGU:
-    return "Missing argument(s)";
+    return "Missing argument(s).";
   case GPE_EXPECTED:
-    return "Expected";
+    return "Expected.";
   case GPE_EXTRA_PROC:
     return "Processor type previously defined.";
   case GPE_UNDEF_PROC:
-    return "Processor type is undefined";
+    return "Processor type is undefined.";
   case GPE_UNKNOWN_PROC:
-    return "Unknown processor (%s)";
+    return "Unknown processor: \"%s\"";
   case GPE_IHEX:
     return "Hex file format INHX32 required.";
   case GPE_NO_MACRO_NAME:
@@ -186,15 +226,15 @@ gp_geterror(unsigned int code)
   case GPE_UNMATCHED_ENDM:
     return "Unmatched ENDM.";
   case GPE_OBJECT_ONLY:
-    return "Directive only allowed when generating an object file.";
+    return "Directive only allowed when generating an object file: \"%s\"";
   case GPE_LABEL_IN_SECTION:
-    return"Labels must be defined in a code or data section when making an object file";
+    return "Labels must be defined in a code or data section when making an object file.";
   case GPE_UNRESOLVABLE:
-    return "Operand contains unresolvable labels or is too complex";
+    return "Operand contains unresolvable labels or is too complex.";
   case GPE_WRONG_SECTION:
-    return "Executable code and data must be defined in an appropriate section";
+    return "Executable code and data must be defined in an appropriate section.";
   case GPE_CONTIG_SECTION:
-    return "Each object file section must be contiguous (section %s)";
+    return "Each object file section must be contiguous: \"%s\"";
   case GPE_MUST_BE_LABEL:
     return "Operand must be an address label.";
   case GPE_ORG_ODD:
@@ -208,9 +248,9 @@ gp_geterror(unsigned int code)
   case GPE_NO_EXTENDED_MODE:
     return "Extended mode not available for this device.";
   case GPE_MISSING_BRACKET:
-    return "Square brackets required around offset operand";
+    return "Square brackets required around offset operand.";
   case GPE_CONSTANT:
-    return "Expression within brackets must be constant";
+    return "Expression within brackets must be constant.";
   case GPE_IDLOCS_ORDER:
     return "__IDLOCS directives must be listed in ascending order.";
   case GPE_CONFIG_UNKNOWN:
@@ -253,20 +293,27 @@ gperror(unsigned int code, char *message)
 }
 
 void
-gpverror(unsigned int code, ...)
+gpverror(unsigned int code, const char *message, ...)
 {
   if (state.pass == 2) {
     va_list(ap);
-    const char *message = gp_geterror(code);
+    const char *msg = gp_geterror(code);
+
+    if (message != NULL && *message != '\0') {
+      char buf[BUFSIZ];
+
+      snprintf(buf, sizeof(buf), "%s %s", msg, message);
+      msg = buf;
+    }
 
     /* standard output */
-    va_start(ap, code);
-    verr(et_error, code, message, ap);
+    va_start(ap, message);
+    verr(et_error, code, msg, ap);
     va_end(ap);
 
     /* list file output */
-    va_start(ap, code);
-    lst_err_line("Error", code, message, ap);
+    va_start(ap, message);
+    lst_err_line("Error", code, msg, ap);
     va_end(ap);
 
     state.num.errors++;
@@ -278,19 +325,19 @@ gp_getwarning(unsigned int code)
 {
   switch(code) {
   case GPW_NOT_DEFINED:
-    return "Symbol not previously defined (%s)";
+    return "Symbol not previously defined: \"%s\"";
   case GPW_RANGE:
-    return "Argument out of range.  Least significant bits used.";
+    return "Argument out of range. Least significant bits used.";
   case GPW_OP_COLUMN_ONE:
-    return "Found opcode in column 1. (%s)";
+    return "Found opcode in column 1: \"%s\"";
   case GPW_DIR_COLUMN_ONE:
-    return "Found directive in column 1. (%s)";
+    return "Found directive in column 1: \"%s\"";
   case GPW_MACRO_COLUMN_ONE:
-    return "Found call to macro in column 1. (%s)";
+    return "Found call to macro in column 1: \"%s\"";
   case GPW_LABEL_COLUMN:
     return "Found label after column 1.";
   case GPW_MISSING_QUOTE:
-    return "Missing quote";
+    return "Missing quote.";
   case GPW_EXTRANEOUS:
     return "Extraneous arguments on the line.";
   case GPW_EXPECTED:
@@ -312,7 +359,7 @@ gp_getwarning(unsigned int code)
   case GPW_REDEFINING_PROC:
     return "Redefining processor.";
   case GPW_NOT_RECOMMENDED:
-    return "Use of this instruction is not recommended.";
+    return "Use of this instruction is not recommended:";
   case GPW_WORD_ALIGNED:
     return "Destination address must be word aligned.";
   case GPW_INVALID_ROM:
@@ -349,20 +396,27 @@ gpwarning(unsigned int code, char *message)
 }
 
 void
-gpvwarning(unsigned int code, ...)
+gpvwarning(unsigned int code, const char *message, ...)
 {
   if (state.pass == 2) {
     if ((state.error_level <= 1) && check_code(code)) {
       va_list(ap);
-      const char *message = gp_getwarning(code);
+      const char *msg = gp_getwarning(code);
+
+      if (message != NULL && *message != '\0') {
+        char buf[BUFSIZ];
+
+        snprintf(buf, sizeof(buf), "%s %s", msg, message);
+        msg = buf;
+      }
 
       /* standard output */
-      va_start(ap, code);
-      verr(et_warning, code, message, ap);
+      va_start(ap, message);
+      verr(et_warning, code, msg, ap);
       va_end(ap);
 
-      va_start(ap, code);
-      lst_err_line("Warning", code, message, ap);
+      va_start(ap, message);
+      lst_err_line("Warning", code, msg, ap);
       va_end(ap);
 
       state.num.warnings++;
@@ -377,13 +431,13 @@ gp_getmessage(unsigned int code)
 {
   switch(code) {
   case GPM_USER:
-    return "MESSAGE: (%s)";
+    return "MESSAGE: \"%s\"";
   case GPM_BANK:
-    return "Register in operand not in bank 0.  Ensure that bank bits are correct.";
+    return "Register in operand not in bank 0. Ensure that bank bits are correct.";
   case GPM_RANGE:
-    return "Program word too large.  Truncated to core size. (%04X)";
+    return "Program word too large. Truncated to core size: 0x%04X";
   case GPM_IDLOC:
-    return "ID Locations value too large. Last four hex digits used. (%04X)";
+    return "ID Locations value too large. Last four hex digits used: 0x%04X";
   case GPM_NOF:
     return "Using default destination of 1 (file).";
   case GPM_PAGE:
@@ -391,13 +445,13 @@ gp_getmessage(unsigned int code)
   case GPM_PAGEBITS:
     return "Setting page bits.";
   case GPM_SUPVAL:
-    return "Warning level superceded by command line value.";
+    return "Warning level superseded by command line value.";
   case GPM_SUPLIN:
-    return "Macro expansion superceded by command line value.";
+    return "Macro expansion superseded by command line value.";
   case GPM_SUPRAM:
-    return "Superceding current maximum RAM and RAM map.";
+    return "Superseding current maximum RAM and RAM map.";
   case GPM_EXTPAGE:
-    return "Page or Bank selection not needed for this device.  No code generated.";
+    return "Page or Bank selection not needed for this device. No code generated.";
   case GPM_CBLOCK:
     return "CBLOCK constants will start with a value of 0.";
   case GPM_W_MODIFIED:
@@ -414,7 +468,7 @@ void
 gpmessage(unsigned int code, char *message)
 {
   if (state.pass == 2) {
-    if ((state.error_level == 0) && check_code(code)){
+    if ((state.error_level == 0) && check_code(code)) {
       if (message == NULL)
         message = gp_getmessage(code);
 
@@ -432,22 +486,27 @@ gpmessage(unsigned int code, char *message)
 }
 
 void
-gpvmessage(unsigned int code, ...)
+gpvmessage(unsigned int code, const char *message, ...)
 {
   if (state.pass == 2) {
-
-    if ((state.error_level == 0) && check_code(code)){
+    if ((state.error_level == 0) && check_code(code)) {
       va_list(ap);
-      const char *message = gp_getmessage(code);
+      const char *msg = gp_getmessage(code);
 
+      if (message != NULL && *message != '\0') {
+        char buf[BUFSIZ];
+
+        snprintf(buf, sizeof(buf), "%s %s", msg, message);
+        msg = buf;
+      }
       /* standard output */
-      va_start(ap, code);
-      verr(et_message, code, message, ap);
+      va_start(ap, message);
+      verr(et_message, code, msg, ap);
       va_end(ap);
 
       /* list file output */
-      va_start(ap, code);
-      lst_err_line("Message", code, message, ap);
+      va_start(ap, message);
+      lst_err_line("Message", code, msg, ap);
       va_end(ap);
 
       state.num.messages++;

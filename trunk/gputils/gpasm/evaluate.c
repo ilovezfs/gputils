@@ -35,10 +35,10 @@ int enforce_arity(int arity, int must_be)
     return 1;
   else {
     if (arity < must_be) {
-      gpverror(GPE_MISSING_ARGU);
+      gpverror(GPE_MISSING_ARGU, NULL);
     }
     else {
-      gpverror(GPE_TOO_MANY_ARGU);
+      gpverror(GPE_TOO_MANY_ARGU, NULL);
     }
     return 0;
   }
@@ -52,7 +52,7 @@ int enforce_simple(struct pnode *p)
     break;
 
   case string:
-    gpverror(GPE_ILLEGAL_ARGU, p->value.string);
+    gpverror(GPE_ILLEGAL_ARGU, NULL, p->value.string);
     break;
 
   default:
@@ -82,7 +82,7 @@ int can_evaluate(struct pnode *p)
 
   case offset:
     if (state.extended_pic16e == false) {
-      gpverror(GPE_BADCHAR, '[');
+      gpverror(GPE_BADCHAR, NULL, '[');
     }
     return can_evaluate(p->value.offset);
 
@@ -103,9 +103,9 @@ int can_evaluate(struct pnode *p)
 
         if (s == NULL) {
           if ('\0' == *p->value.symbol)
-            gpverror(GPE_MISSING_ARGU);
+            gpverror(GPE_MISSING_ARGU, NULL);
           else
-            gpverror(GPE_NOSYM, p->value.symbol);
+            gpverror(GPE_NOSYM, NULL, p->value.symbol);
         }
         else {
           var = get_symbol_annotation(s);
@@ -130,7 +130,7 @@ int can_evaluate(struct pnode *p)
     return can_evaluate(p->value.binop.p0) && can_evaluate(p->value.binop.p1);
 
   case string:
-    gpverror(GPE_ILLEGAL_ARGU, p->value.string);
+    gpverror(GPE_ILLEGAL_ARGU, NULL, p->value.string);
     return 0;
 
   default:
@@ -148,7 +148,7 @@ int can_evaluate_value(struct pnode *p)
 
   case offset:
     if (state.extended_pic16e == false) {
-      gpverror(GPE_BADCHAR, '[');
+      gpverror(GPE_BADCHAR, NULL, '[');
     }
     return can_evaluate_value(p->value.offset);
 
@@ -190,7 +190,7 @@ int can_evaluate_value(struct pnode *p)
     return can_evaluate_value(p->value.binop.p0) && can_evaluate_value(p->value.binop.p1);
 
   case string:
-    gpverror(GPE_ILLEGAL_ARGU, p->value.string);
+    gpverror(GPE_ILLEGAL_ARGU, NULL, p->value.string);
     return 0;
 
   default:
@@ -300,7 +300,7 @@ gpasmVal evaluate(struct pnode *p)
 
     case '/':
       if (p1 == 0){
-        gpverror(GPE_DIVBY0);
+        gpverror(GPE_DIVBY0, NULL);
         return 0;
       }
       else {
@@ -309,7 +309,7 @@ gpasmVal evaluate(struct pnode *p)
 
     case '%':
       if (p1 == 0){
-        gpverror(GPE_DIVBY0);
+        gpverror(GPE_DIVBY0, NULL);
         return 0;
       }
       else {
@@ -376,7 +376,7 @@ gpasmVal evaluate(struct pnode *p)
       return p0 || p1;
 
     case '=':
-      gpverror(GPE_BADCHAR, '=');
+      gpverror(GPE_BADCHAR, NULL, '=');
       return 0;
     default:
       assert(0); /* Unhandled binary operator */
@@ -530,7 +530,7 @@ add_reloc(struct pnode *p, short offs, unsigned short type)
     case '~':
     case INCREMENT:
     case DECREMENT:
-      gpverror(GPE_UNRESOLVABLE);
+      gpverror(GPE_UNRESOLVABLE, NULL);
       return;
 
     default:
@@ -555,7 +555,7 @@ add_reloc(struct pnode *p, short offs, unsigned short type)
         add_reloc(p->value.binop.p0, offs - maybe_evaluate(p->value.binop.p1), type);
       }
       else {
-        gpverror(GPE_UNRESOLVABLE);
+        gpverror(GPE_UNRESOLVABLE, NULL);
       }
       return;
 
@@ -576,7 +576,7 @@ add_reloc(struct pnode *p, short offs, unsigned short type)
     case LOGICAL_AND:
     case LOGICAL_OR:
     case '=':
-      gpverror(GPE_UNRESOLVABLE);
+      gpverror(GPE_UNRESOLVABLE, NULL);
       return;
 
     default:
@@ -669,7 +669,7 @@ gpasmVal reloc_evaluate(struct pnode *p, unsigned short type)
       }
       else {
         /* too many relocatable addresses */
-        gpverror(GPE_UNRESOLVABLE);
+        gpverror(GPE_UNRESOLVABLE, NULL);
         r = 0;
       }
     }
@@ -690,7 +690,7 @@ int eval_fill_number(struct pnode *p)
 
   number = maybe_evaluate(p);
   if (state.device.class->rom_width == 8 && (number & 0x1) == 1)
-    gpverror(GPE_FILL_ODD);
+    gpverror(GPE_FILL_ODD, NULL);
   number = gp_processor_org_to_byte(state.device.class, number) >> 1;
 
   return number;

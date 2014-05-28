@@ -68,7 +68,7 @@ static int compare_len(const char *s1, const char *s2, size_t n)
 struct symbol_table *push_symbol_table(struct symbol_table * table,
                                        gp_boolean case_insensitive)
 {
-  struct symbol_table *new = calloc(sizeof(*new), 1);
+  struct symbol_table *new = calloc(1, sizeof(struct symbol_table));
 
   new->case_insensitive = case_insensitive;
   if (case_insensitive) {

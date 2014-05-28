@@ -84,12 +84,12 @@ gp_input(char *buf, size_t max_size)
               buf[n++] = (char) c;
             }
           if (c == EOF && ferror(yyin))
-            gpverror(GPE_SCANNER, "Input in flex scanner failed");
+            gpverror(GPE_SCANNER, NULL, "Input in flex scanner failed.");
           return n;
         }
       else
         {
-          gpverror(GPE_SCANNER, "Interactive scanner should be used");
+          gpverror(GPE_SCANNER, NULL, "Interactive scanner should be used.");
           return 0;
         }
     }
@@ -271,9 +271,9 @@ processor                {
                            yylval.s = strdup(yytext);
                            switch (identify(yytext)) {
                              case directives:
-                               gpvwarning(GPW_DIR_COLUMN_ONE, yytext);
+                               gpvwarning(GPW_DIR_COLUMN_ONE, NULL, yytext);
                                if (has_collon)
-                                 gpverror(GPE_BADCHAR, ':');
+                                 gpverror(GPE_BADCHAR, NULL, ':');
                                return IDENTIFIER;
                                break;
 
@@ -289,17 +289,17 @@ processor                {
                                  return LABEL;
                                }
                                else {
-                                 gpvwarning(GPW_MACRO_COLUMN_ONE, yytext);
+                                 gpvwarning(GPW_MACRO_COLUMN_ONE, NULL, yytext);
                                  if (has_collon)
-                                  gpverror(GPE_BADCHAR, ':');
+                                  gpverror(GPE_BADCHAR, NULL, ':');
                                  return IDENTIFIER;
                                }
                                break;
 
                              case opcodes:
-                               gpvwarning(GPW_OP_COLUMN_ONE, yytext);
+                               gpvwarning(GPW_OP_COLUMN_ONE, NULL, yytext);
                                if (has_collon)
-                                 gpverror(GPE_BADCHAR, ':');
+                                 gpverror(GPE_BADCHAR, NULL, ':');
                                return IDENTIFIER;
                                break;
 
@@ -424,7 +424,7 @@ h'-?{NUMCHAR}+'          {
 '{STR_QCHAR}'            {
                            const char *pc = convert_escape_chars(yytext + 1, &yylval.i);
                            if (pc != &yytext[yyleng - 1])
-                             gpverror(GPE_ILLEGAL_ARGU, "expected single character");
+                             gpverror(GPE_ILLEGAL_ARGU, NULL, "Expected single character.");
                            return NUMBER;
                          }
 a'{STR_QCHAR}'           {
@@ -616,13 +616,13 @@ open_src(const char *name, int isinclude)
       free(lower_case_name);
 
       if (new->f != NULL)
-        gpwarning(GPW_UNKNOWN, "found lower case match for include filename");
+        gpwarning(GPW_UNKNOWN, "Found lower case match for include filename.");
     }
   }
 
   if (new->f == NULL) {
     if (state.src) {
-      gpverror(GPE_NOENT, name);
+      gpverror(GPE_NOENT, NULL, name);
     }
     else {
       perror(name);
@@ -738,7 +738,7 @@ close_file(void)
     state.stTop = pop_symbol_table(state.stTop);
     state.stMacroParams = pop_symbol_table(state.stMacroParams);
     if (state.src->astack != state.astack) {
-      gpverror(GPE_ILLEGAL_NESTING);
+      gpverror(GPE_ILLEGAL_NESTING, NULL);
     }
     assert(state.stTop != NULL);
     assert(state.stMacroParams != NULL);
@@ -798,7 +798,7 @@ found_eof(void)
   if (IN_WHILE_EXPANSION) {
     if (maybe_evaluate(state.src->h->parms)) {
       if (state.src->loop_number > 255) {
-        gpverror(GPE_BAD_WHILE_LOOP);
+        gpverror(GPE_BAD_WHILE_LOOP, NULL);
       }
       else {
         /* repeat the while loop */
@@ -827,7 +827,7 @@ found_eof(void)
   }
   else {
     if (!state.found_end)
-      gperror(GPE_ILLEGAL_COND, "Illegal condition (EOF encountered before END)");
+      gperror(GPE_ILLEGAL_COND, "Illegal condition: EOF encountered before END.");
     terminate = found_end();
   }
 

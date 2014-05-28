@@ -723,6 +723,123 @@ static struct px pics[] = {
 
 #define NUM_PICS        (sizeof(pics) / sizeof(pics[0]))
 
+/******************************************
+        PIC12 definitions
+******************************************/
+
+    /* movwf: 0000 001f ffff */
+#define INSN_PIC12_MOVWF            0x020
+
+    /* bcf  : 0100 bbbf ffff */
+#define INSN_PIC12_BCF              0x400
+
+    /* bsf  : 0101 bbbf ffff */
+#define INSN_PIC12_BSF              0x500
+
+    /* movlw: 1100 kkkk kkkk */
+#define INSN_PIC12_MOVLW            0xC00
+
+#define REG_PIC12_STATUS            0x03
+#define REG_PIC12_FSR               0x04
+
+/******************************************
+        PIC12E definitions
+******************************************/
+
+    /* movlb: 0000 0001 0kkk */
+#define INSN_PIC12E_MOVLB           0x010
+
+#define MASK_PIC12E_BANK            0x007
+
+/******************************************
+        PIC14 definitions
+******************************************/
+
+    /* movwf: 00 0000 1fff ffff */
+#define INSN_PIC14_MOVWF            0x0080
+
+    /* bcf  : 01 00bb bfff ffff */
+#define INSN_PIC14_BCF              0x1000
+
+    /* bsf  : 01 01bb bfff ffff */
+#define INSN_PIC14_BSF              0x1400
+
+#define INSN_PIC14_BxF_BITSHIFT     7
+
+    /* movlw: 11 00xx kkkk kkkk */
+#define INSN_PIC14_MOVLW            0x3000
+
+#define MASK_PIC14_BANK             0x0003
+#define MASK_PIC14_PAGE             0x0003
+
+#define REG_PIC14_STATUS            0x03
+
+#define BIT_PIC14_STATUS_RP0        5
+#define BIT_PIC14_STATUS_RP1        6
+#define BIT_PIC14_STATUS_IRP        7
+
+#define REG_PIC14_PCLATH            0x0A
+
+/******************************************
+        PIC14E definitions
+******************************************/
+
+    /* movlb: 00 0000 001k kkkk */
+#define INSN_PIC14E_MOVLB           0x0020
+
+    /* movwf: 00 0000 1fff ffff */
+#define INSN_PIC14E_MOVWF           0x0080
+
+    /* bcf  : 01 00bb bfff ffff */
+#define INSN_PIC14E_BCF             0x1000
+
+    /* bsf  : 01 01bb bfff ffff */
+#define INSN_PIC14E_BSF             0x1400
+
+#define INSN_PIC14E_BxF_BITSHIFT    7
+
+    /* movlw: 11 0000 kkkk kkkk */
+#define INSN_PIC14E_MOVLW           0x3000
+
+    /* movlp: 11 0001 1kkk kkkk */
+#define INSN_PIC14E_MOVLP           0x3180
+
+#define MASK_PIC14E_BANK            0x001F
+#define MASK_PIC14E_PAGE            0x007F
+
+#define REG_PIC14E_FSR0H            0x05
+#define REG_PIC14E_PCLATH           0x0A
+
+/******************************************
+        PIC16 definitions
+******************************************/
+
+    /* movwf: 0000 0001 ffff ffff */
+#define INSN_PIC16_MOVWF            0x0100
+
+    /* movlw: 1011 0000 kkkk kkkk */
+#define INSN_PIC16_MOVLW            0xB000
+
+    /* movlb: 1011 1000 uuuu kkkk */
+#define INSN_PIC16_MOVLB            0xB800
+
+    /* movlr: 1011 101x kkkk uuuu */
+#define INSN_PIC16_MOVLR            0xBA00
+
+#define MASK_PIC16_BANK             0x00FF
+#define MASK_PIC16_PAGE             0x00FF
+
+#define REG_PIC16_PCLATH            0x03
+
+/******************************************
+        PIC16E definitions
+******************************************/
+
+    /* movlb: 0000 0001 0000 kkkk */
+#define INSN_PIC16E_MOVLB           0x0100
+
+#define MASK_PIC16E_BANK            0x000F
+
 /*
  * Display a list of the processor names
  */
@@ -744,7 +861,7 @@ void gp_dump_processor_list(gp_boolean list_all, proc_class_t class)
       longest = length;
   }
 
-  for(i = 0; i < NUM_PICS; i++) {
+  for (i = 0; i < NUM_PICS; i++) {
     if (list_all || (pics[i].class == class)) {
       num++;
       printf("%s", pics[i].names[FAVORITE]);
@@ -761,7 +878,6 @@ void gp_dump_processor_list(gp_boolean list_all, proc_class_t class)
   if ((num % COLUMNS) != 0) {
     putchar('\n');
   }
-
 }
 
 const struct px *
@@ -944,7 +1060,7 @@ gp_processor_org_to_byte(proc_class_t class, int org)
   if (!class)
     return org;
 
-  return org << class->org_to_byte_shift;
+  return (org << class->org_to_byte_shift);
 }
 
 int
@@ -956,19 +1072,19 @@ gp_processor_byte_to_org(proc_class_t class, int byte)
   if (!class)
     return byte;
 
-  return byte >> class->org_to_byte_shift;
+  return (byte >> class->org_to_byte_shift);
 }
 
 int
 gp_org_to_byte(unsigned shift, int org)
 {
-  return org << shift;
+  return (org << shift);
 }
 
 int
 gp_byte_to_org(unsigned shift, int byte)
 {
-  return byte >> shift;
+  return (byte >> shift);
 }
 
 /* determine which page of program memory the byte address is located */
@@ -1057,8 +1173,8 @@ find_insn_generic(proc_class_t cls, long int opcode)
   int count = base == NULL ? 0 : *cls->num_instructions;
   int i;
 
-  for(i = 0; i < count; i++) {
-    if((base[i].mask & opcode) == base[i].opcode) {
+  for (i = 0; i < count; i++) {
+    if ((base[i].mask & opcode) == base[i].opcode) {
       return &base[i];
     }
   }
@@ -1068,7 +1184,7 @@ find_insn_generic(proc_class_t cls, long int opcode)
 static int
 reloc_high_generic(gp_boolean is_code, int value)
 {
-  return (value >> 8) & 0xff;
+  return ((value >> 8) & 0xff);
 }
 
 /* Common to PIC12 and PIC14 */
@@ -1088,6 +1204,7 @@ gp_processor_set_page_pic12_14(int num_pages,
                                int page1)
 {
   unsigned int data;
+  char buf[BUFSIZ];
 
   assert(num_pages <= 4);
 
@@ -1095,26 +1212,28 @@ gp_processor_set_page_pic12_14(int num_pages,
     return 0;
   }
 
+  snprintf(buf, sizeof(buf), "page_%i", page);
+
   if (use_wreg) {
     data = movlw_insn | page;
-    i_memory_put_le(m, address, data);
+    i_memory_put_le(m, address,     data, buf);
     data = movwf_insn | location;
-    i_memory_put_le(m, address + 2, data);
+    i_memory_put_le(m, address + 2, data, buf);
 
     return 4;
   }
   else {
     /* page low bit */
-    data = (page & 1 ? bsf_insn : bcf_insn) | page0 | location;
-    i_memory_put_le(m, address, data);
+    data = ((page & 1) ? bsf_insn : bcf_insn) | page0 | location;
+    i_memory_put_le(m, address, data, buf);
 
-    /* page high bit */
     if (num_pages > 2) {
-      data = (page & 2 ? bsf_insn : bcf_insn) | page1 | location;
-      i_memory_put_le(m, address + 2, data);
+      /* page high bit */
+      data = ((page & 2) ? bsf_insn : bcf_insn) | page1 | location;
+      i_memory_put_le(m, address + 2, data, buf);
     }
 
-    return (num_pages == 2) ? 2 : 4;
+    return ((num_pages == 2) ? 2 : 4);
   }
 }
 
@@ -1130,64 +1249,26 @@ gp_processor_set_bank_pic12_14(int num_banks,
                                int bank1)
 {
   unsigned int data;
-  int count;
+  char buf[BUFSIZ];
+
+  assert(num_banks <= 4);
+
   if (num_banks == 1) {
     return 0;
   }
 
-  switch(bank) {
-  case 0:
-    /* bcf location, bank0 */
-    data = bcf_insn | bank0 | location;
-    i_memory_put_le(m, address, data);
-    if (num_banks == 4) {
-      /* bcf location, bank1 */
-      data = bcf_insn | bank1 | location;
-      i_memory_put_le(m, address + 2, data);
-    }
-    break;
-  case 1:
-    /* bsf location, bank0 */
-    data = bsf_insn | bank0 | location;
-    i_memory_put_le(m, address, data);
-    if (num_banks == 4) {
-      /* bcf location, bank1 */
-      data = bcf_insn | bank1 | location;
-      i_memory_put_le(m, address + 2, data);
-    }
-    break;
-  case 2:
-    /* bcf location, bank0 */
-    data = bcf_insn | bank0 | location;
-    i_memory_put_le(m, address, data);
-    if (num_banks == 4) {
-      /* bsf location, bank1 */
-      data = bsf_insn | bank1 | location;
-      i_memory_put_le(m, address + 2, data);
-    }
-    break;
-  case 3:
-    /* bsf location, bank0 */
-    data = bsf_insn | bank0 | location;
-    i_memory_put_le(m, address, data);
-    if (num_banks == 4) {
-      /* bsf location, bank1 */
-      data = bsf_insn | bank1 | location;
-      i_memory_put_le(m, address + 2, data);
-    }
-    break;
-  default:
-    assert(0);
-    break;
+  snprintf(buf, sizeof(buf), "bank_%i", bank);
+
+  /* bank low bit */
+  data = ((bank & 1) ? bsf_insn : bcf_insn) | bank0 | location;
+  i_memory_put_le(m, address, data, buf);
+  if (num_banks > 2) {
+    /* bank high bit */
+    data = ((bank & 2) ? bsf_insn : bcf_insn) | bank1 | location;
+    i_memory_put_le(m, address + 2, data, buf);
   }
 
-  if (num_banks == 2) {
-    count = 2;
-  } else {
-    count = 4;
-  }
-
-  return count;
+  return ((num_banks == 2) ? 2 : 4);
 }
 
 /* PIC12 */
@@ -1208,7 +1289,7 @@ id_location_pic12(const struct px *processor)
 static int
 gp_processor_check_bank_pic12(unsigned int address)
 {
-  return (address >> 5) & 0x3;
+  return ((address >> 5) & 0x3);
 }
 
 static int
@@ -1218,9 +1299,9 @@ gp_processor_set_bank_pic12(int num_banks,
                             unsigned int address)
 {
   return gp_processor_set_bank_pic12_14(num_banks, bank, m, address,
-                                        0x400,
-                                        0x500,
-                                        0x4,
+                                        INSN_PIC12_BCF,
+                                        INSN_PIC12_BSF,
+                                        REG_PIC12_FSR,
                                         5 << 5,
                                         6 << 5);
 }
@@ -1228,7 +1309,7 @@ gp_processor_set_bank_pic12(int num_banks,
 static int
 gp_processor_check_page_pic12(unsigned int org)
 {
-  return (org >> 9) & 0x3;
+  return ((org >> 9) & 0x3);
 }
 
 static int
@@ -1244,11 +1325,11 @@ gp_processor_set_page_pic12(int num_pages,
                                         m,
                                         address,
                                         use_wreg,
-                                        0x400,
-                                        0x500,
-                                        0xc00,
-                                        0x020,
-                                        0x3,
+                                        INSN_PIC12_BCF,
+                                        INSN_PIC12_BSF,
+                                        INSN_PIC12_MOVLW,
+                                        INSN_PIC12_MOVWF,
+                                        REG_PIC12_STATUS,
                                         5 << 5,
                                         6 << 5);
 }
@@ -1257,19 +1338,19 @@ gp_processor_set_page_pic12(int num_pages,
 static int
 reloc_call_pic12(unsigned int org)
 {
-  return org & 0xff;
+  return (org & 0xff);
 }
 
 static int
 reloc_goto_pic12(unsigned int org)
 {
-  return org & 0x1ff;
+  return (org & 0x1ff);
 }
 
 static int
 reloc_f_pic12(unsigned int address)
 {
-  return address & 0x1f;
+  return (address & 0x1f);
 }
 
 static int
@@ -1279,7 +1360,7 @@ reloc_tris_pic12(unsigned int address)
      three bits and allowed values of 6 and 7. MPASM 5.34 has
      Error[126]  : Argument out of range (0000 not between 0005 and 0009)
   */
-  return address & 0x1f;
+  return (address & 0x1f);
 }
 
 /* PIC12E */
@@ -1287,7 +1368,7 @@ reloc_tris_pic12(unsigned int address)
 static int
 gp_processor_check_bank_pic12e(unsigned int address)
 {
-  return (address >> 5) & 0x07;
+  return ((address >> 5) & MASK_PIC12E_BANK);
 }
 
 static int
@@ -1297,15 +1378,20 @@ gp_processor_set_bank_pic12e(int num_banks,
                              unsigned int address)
 {
   unsigned int data;
-  data = 0x0010 | (bank & 0x07);
-  i_memory_put_le(m, address, data);
+  char buf[BUFSIZ];
+
+  bank &= MASK_PIC12E_BANK;
+  data = INSN_PIC12E_MOVLB | bank;
+  snprintf(buf, sizeof(buf), "bank_%i", bank);
+
+  i_memory_put_le(m, address, data, buf);
   return 2;
 }
 
 static int
 reloc_tris_pic12e(unsigned int address)
 {
-  return address & 0x07;
+  return (address & 0x07);
 }
 
 /* PIC14 */
@@ -1317,14 +1403,14 @@ id_location_pic14(const struct px *processor)
     /* I only know of 0x2007 to 0x2000 and 0x8007 to 0x8000 and this
        returns correct for both. */
     /* We carry org in the struct px, but return byte address. */
-    return (processor->config_addrs[0] & ~0xFFF) << 1;
+    return ((processor->config_addrs[0] & ~0xFFF) << 1);
   return 0;
 }
 
 static int
 gp_processor_check_bank_pic14(unsigned int address)
 {
-  return (address >> 7) & 0x3;
+  return ((address >> 7) & MASK_PIC14_BANK);
 }
 
 static int
@@ -1334,17 +1420,17 @@ gp_processor_set_bank_pic14(int num_banks,
                             unsigned int address)
 {
   return gp_processor_set_bank_pic12_14(num_banks, bank, m, address,
-                                        0x1000,
-                                        0x1400,
-                                        0x3,
-                                        5 << 7,
-                                        6 << 7);
+                                        INSN_PIC14_BCF,
+                                        INSN_PIC14_BSF,
+                                        REG_PIC14_STATUS,
+                                        BIT_PIC14_STATUS_RP0 << INSN_PIC14_BxF_BITSHIFT,
+                                        BIT_PIC14_STATUS_RP1 << INSN_PIC14_BxF_BITSHIFT);
 }
 
 static int
 gp_processor_check_ibank_pic14(unsigned int address)
 {
-  return (address >> 8) & 0x0f;
+  return ((address >> 8) & 0x0f);
 }
 
 static int
@@ -1354,14 +1440,14 @@ gp_processor_set_ibank_pic14(int num_banks,
                             unsigned int address)
 {
   /* bcf 3,7 or bsf 3,7 */
-  i_memory_put_le(m, address, (0 == bank) ? 0x1383 : 0x1783);
+  i_memory_put_le(m, address, (bank == 0) ? 0x1383 : 0x1783, (bank == 0) ? "ibank0" : "ibank1");
   return 2;
 }
 
 static int
 gp_processor_check_page_pic14(unsigned int org)
 {
-  return (org >> 11) & 0x3;
+  return ((org >> 11) & MASK_PIC14_PAGE);
 }
 
 static int
@@ -1376,37 +1462,37 @@ gp_processor_set_page_pic14(int num_pages,
                                         m,
                                         address,
                                         use_wreg,
-                                        0x1000,
-                                        0x1400,
-                                        0x3000,
-                                        0x0080,
-                                        0xa,
-                                        3 << 7,
-                                        4 << 7);
+                                        INSN_PIC14_BCF,
+                                        INSN_PIC14_BSF,
+                                        INSN_PIC14_MOVLW,
+                                        INSN_PIC14_MOVWF,
+                                        REG_PIC14_PCLATH,
+                                        3 << INSN_PIC14_BxF_BITSHIFT,
+                                        4 << INSN_PIC14_BxF_BITSHIFT);
 }
 
 static int
 reloc_call_pic14(unsigned int org)
 {
-  return org & 0x7ff;
+  return (org & 0x7ff);
 }
 
 static int
 reloc_goto_pic14(unsigned int org)
 {
-  return org & 0x7ff;
+  return (org & 0x7ff);
 }
 
 static int
 reloc_f_pic14(unsigned int address)
 {
-  return address & 0x7f;
+  return (address & 0x7f);
 }
 
 static int
 reloc_tris_pic14(unsigned int address)
 {
-  return address & 0x7f;
+  return (address & 0x7f);
 }
 
 static void
@@ -1426,8 +1512,9 @@ patch_strict_pic14(void)
 static int
 gp_processor_check_bank_pic14e(unsigned int address)
 {
-  return (address >> 7) & 0x1f;
+  return ((address >> 7) & MASK_PIC14E_BANK);
 }
+
 
 static int
 gp_processor_set_bank_pic14e(int num_banks,
@@ -1436,40 +1523,53 @@ gp_processor_set_bank_pic14e(int num_banks,
                              unsigned int address)
 {
   unsigned int data;
-  data = 0x0020 | (bank & 0x1f);
-  i_memory_put_le(m, address, data);
+  char buf[BUFSIZ];
+
+  bank &= MASK_PIC14E_BANK;
+  data = INSN_PIC14E_MOVLB | bank;
+  snprintf(buf, sizeof(buf), "bank_%i", bank);
+
+  i_memory_put_le(m, address, data, buf);
   return 2;
 }
 
 static int
 gp_processor_check_ibank_pic14e(unsigned int address)
 {
-  return (address >> 8) & 0x0f;
+  return ((address >> 8) & 0x0f);
 }
 
 static int
 gp_processor_set_ibank_pic14e(int num_banks,
-                               int bank,
-                               MemBlock *m,
-                               unsigned int address)
+                              int bank,
+                              MemBlock *m,
+                              unsigned int address)
 {
   /* bcf: 01 00bb bfff ffff 
    * bsf: 01 01bb bfff ffff
    * FSR0H: 0000bbbb bllllllll */
   unsigned int mask;
   unsigned int bit;
+  char buf[BUFSIZ];
+
+  snprintf(buf, sizeof(buf), "bank_%i", bank);
 
   num_banks >>= 1;
   for (bit = 0, mask = 0x01; mask < num_banks; ++bit, mask <<= 1, address += 2)
-    i_memory_put_le(m, address, ((bank & mask) ? 0x1400 : 0x1000) | (bit << 7) | 0x5);
+    i_memory_put_le(m,
+                    address,
+                    ((bank & mask) ? INSN_PIC14E_BSF : INSN_PIC14E_BCF) |
+                        (bit << INSN_PIC14E_BxF_BITSHIFT) |
+                        REG_PIC14E_FSR0H,
+                    buf);
 
-  return bit * 2;
+  return (bit * 2);
 }
 
 static int
 gp_processor_check_page_pic14e(unsigned int org)
 {
-  return (org >> 8) & 0x7f;
+  return ((org >> 8) & MASK_PIC14E_PAGE);
 }
 
 static int
@@ -1480,21 +1580,26 @@ gp_processor_set_page_pic14e(int num_pages,
                              int use_wreg)
 {
   unsigned int data;
+  char buf[BUFSIZ];
+
   if (num_pages == 1) {
     return 0;
   }
 
+  /* Page is in bits 6:0 of PCLATH. */
+  page &= MASK_PIC14E_PAGE;
+  snprintf(buf, sizeof(buf), "page_%02x", page);
+
   if (use_wreg) {
-    /* page is in bits 3:6 of PCLATH */
-    data = 0x3000 | (page & 0x74); /* movlw */
-    i_memory_put_le(m, address, data);
-    data = 0x0080 | 0xa; /* movwf 0xa*/
-    i_memory_put_le(m, address + 2, data);
+    data = INSN_PIC14E_MOVLW | page;
+    i_memory_put_le(m, address,     data, buf);
+    data = INSN_PIC14E_MOVWF | REG_PIC14E_PCLATH;
+    i_memory_put_le(m, address + 2, data, buf);
     return 4;
   }
   else {
-    data = 0x3180 | (page & 0x7f); /* movlp */
-    i_memory_put_le(m, address, data);
+    data = INSN_PIC14E_MOVLP | page;
+    i_memory_put_le(m, address, data, buf);
     return 2;
   }
 }
@@ -1502,7 +1607,7 @@ gp_processor_set_page_pic14e(int num_pages,
 static int
 reloc_movlb_pic14e(unsigned int address)
 {
-  return (address >> 7) & 0xff;
+  return ((address >> 7) & 0xff);
 }
 
 static int
@@ -1510,18 +1615,18 @@ reloc_bra_pic14e(gp_section_type *section, unsigned value, unsigned int byte_org
 {
   int offset = value - byte_org / 2 - 1;
   if (offset > 0xff || offset < -0x100) {
-    gp_warning("relative branch out of range in at %#x of section \"%s\"",
+    gp_warning("Relative branch out of range in at %#x of section \"%s\".",
                byte_org << 1,
                section->name);
   }
-  return offset & 0x1ff;
+  return (offset & 0x1ff);
 }
 
 static int
 reloc_high_pic14e(gp_boolean is_code, int value)
 {
   /* set 7th bit if in is_code */
-  return ((value >> 8) & 0xff) | (is_code ? 0x80 : 0);
+  return (((value >> 8) & 0xff) | (is_code ? 0x80 : 0));
 }
 
 static const struct insn *
@@ -1529,13 +1634,13 @@ find_insn_pic14e(proc_class_t cls, long int opcode)
 {
   int i;
   /* might be from the enhanced instruction set */
-  for(i = 0; i < num_op_16cxx_enh; i++) {
-    if((op_16cxx_enh[i].mask & opcode) == op_16cxx_enh[i].opcode) {
+  for (i = 0; i < num_op_16cxx_enh; i++) {
+    if ((op_16cxx_enh[i].mask & opcode) == op_16cxx_enh[i].opcode) {
       return &op_16cxx_enh[i];
     }
   }
-  for(i = 0; i < num_op_16cxx; i++) {
-    if((op_16cxx[i].mask & opcode) == op_16cxx[i].opcode) {
+  for (i = 0; i < num_op_16cxx; i++) {
+    if ((op_16cxx[i].mask & opcode) == op_16cxx[i].opcode) {
       return &op_16cxx[i];
     }
   }
@@ -1548,12 +1653,12 @@ static int
 gp_processor_check_bank_pic16(unsigned int address)
 {
   if ((address & 0xff) < 0x20)
-    return (address >> 8) & 0xff;
+    return (address >> 8) & MASK_PIC16_BANK;
   else
-    /* 0x200 turns MOVLB to MOVLR for setting GPR RAM bank in
-       set_bank */
-    return 0x200 + ((address >> 8) & 0xff);
+    /* 0x200 turns MOVLB to MOVLR for setting GPR RAM bank in set_bank. */
+    return (0x200 + ((address >> 8) & MASK_PIC16_BANK));
 }
+
 
 static int
 gp_processor_set_bank_pic16(int num_banks,
@@ -1561,15 +1666,19 @@ gp_processor_set_bank_pic16(int num_banks,
                             MemBlock *m,
                             unsigned int address)
 {
-  /* movlb bank */
-  i_memory_put_le(m, address, 0xb800 | bank);
+  char buf[BUFSIZ];
+
+  bank &= 0x200 | MASK_PIC16_BANK;
+  snprintf(buf, sizeof(buf), "bank_%i", bank & MASK_PIC16_BANK);
+
+  i_memory_put_le(m, address, INSN_PIC16_MOVLB | bank, buf);
   return 2;
 }
 
 static int
 gp_processor_check_page_pic16(unsigned int org)
 {
-  return (org >> 8) & 0xff;
+  return ((org >> 8) & MASK_PIC16_PAGE);
 }
 
 static int
@@ -1580,31 +1689,34 @@ gp_processor_set_page_pic16(int num_pages,
                             int use_wreg)
 {
   unsigned int data;
-  /* movlw <page> */
-  data = 0xb000 | (page & 0xff);
-  i_memory_put_le(m, address, data);
-  /* movwf 0x3 */
-  data = 0x0100 | 0x3;
-  i_memory_put_le(m, address + 2, data);
+  char buf[BUFSIZ];
+
+  page &= MASK_PIC16_PAGE;
+  snprintf(buf, sizeof(buf), "page_%02x", page);
+
+  data = INSN_PIC16_MOVLW | page;
+  i_memory_put_le(m, address, data, buf);
+  data = INSN_PIC16_MOVWF | REG_PIC16_PCLATH;
+  i_memory_put_le(m, address + 2, data, buf);
   return 4;
 }
 
 static int
 reloc_call_pic16(unsigned int org)
 {
-  return org & 0x1fff;
+  return (org & 0x1fff);
 }
 
 static int
 reloc_goto_pic16(unsigned int org)
 {
-  return org & 0x1fff;
+  return (org & 0x1fff);
 }
 
 static int
 reloc_f_pic16(unsigned int address)
 {
-  return address & 0xff;
+  return (address & 0xff);
 }
 
 /* PIC16E */
@@ -1615,32 +1727,36 @@ id_location_pic16e(const struct px *processor)
   return IDLOC0;
 }
 
+
 static int
 gp_processor_set_bank_pic16e(int num_banks,
                              int bank,
                              MemBlock *m,
                              unsigned int address)
 {
-  /* movlb bank */
-  i_memory_put_le(m, address,
-                  0x0100 | (bank & 0xff));
+  char buf[BUFSIZ];
+
+  bank &= 0xf;
+  snprintf(buf, sizeof(buf), "bank_%i", bank);
+
+  i_memory_put_le(m, address, INSN_PIC16E_MOVLB | bank, buf);
   return 2;
 }
 
 static int reloc_call_pic16e(unsigned int org)
 {
-  return (org >> 1) & 0xff;
+  return ((org >> 1) & 0xff);
 }
 static int reloc_goto_pic16e(unsigned int org)
 {
-  return (org >> 1) & 0xff;
+  return ((org >> 1) & 0xff);
 }
 static int reloc_movlb_pic16e(unsigned int address)
 {
   /* The upper byte of the symbol is used for the BSR.  This is inconsistent
      with the datasheet and the assembler, but is done to maintain
      compatibility with mplink. */
-  return (address >> 8) & 0xff;
+  return ((address >> 8) & 0xff);
 }
 static int
 reloc_bra_pic16e(gp_section_type *section, unsigned value, unsigned int byte_org)
@@ -1648,15 +1764,15 @@ reloc_bra_pic16e(gp_section_type *section, unsigned value, unsigned int byte_org
   int offset = ((int)(value - byte_org - 2)) >> 1;
 
   if (value & 1) {
-    gp_warning("destination address must be word aligned at %#x of section \"%s\"",
+    gp_warning("Destination address must be word aligned at %#x of section \"%s\".",
                byte_org, section->name);
   }
 
   if (offset > 0x3ff || offset < -0x400) {
-    gp_warning("relative branch out of range in at %#x of section \"%s\"",
+    gp_warning("Relative branch out of range in at %#x of section \"%s\".",
                byte_org, section->name);
   }
-  return offset & 0x7ff;
+  return (offset & 0x7ff);
 }
 
 static const struct insn *
@@ -1664,21 +1780,21 @@ find_insn_pic16e(proc_class_t cls, long int opcode)
 {
   int i;
   if (gp_decode_mnemonics) {
-    for(i = 0; i < num_op_18cxx_sp; i++) {
-      if((op_18cxx_sp[i].mask & opcode) == op_18cxx_sp[i].opcode) {
+    for (i = 0; i < num_op_18cxx_sp; i++) {
+      if ((op_18cxx_sp[i].mask & opcode) == op_18cxx_sp[i].opcode) {
         return &op_18cxx_sp[i];
       }
     }
   }
-  for(i = 0; i < num_op_18cxx; i++) {
-    if((op_18cxx[i].mask & opcode) == op_18cxx[i].opcode) {
+  for (i = 0; i < num_op_18cxx; i++) {
+    if ((op_18cxx[i].mask & opcode) == op_18cxx[i].opcode) {
       return &op_18cxx[i];
     }
   }
   if (gp_decode_extended) {
     /* might be from the extended instruction set */
-    for(i = 0; i < num_op_18cxx_ext; i++) {
-      if((op_18cxx_ext[i].mask & opcode) == op_18cxx_ext[i].opcode) {
+    for (i = 0; i < num_op_18cxx_ext; i++) {
+      if ((op_18cxx_ext[i].mask & opcode) == op_18cxx_ext[i].opcode) {
         return &op_18cxx_ext[i];
       }
     }

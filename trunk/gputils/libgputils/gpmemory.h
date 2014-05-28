@@ -40,6 +40,7 @@ struct proc_class;
 typedef struct MemBlock {
   unsigned int base;
   unsigned short *memory;
+  char *name;
   struct MemBlock *next;
 } MemBlock;
 
@@ -51,7 +52,7 @@ int b_memory_get(MemBlock *m, unsigned int byte_address, unsigned char *byte);
 #else
 #define b_memory_assert_get(m, byte_address, byte) b_memory_get(m, byte_address, byte)
 #endif
-void b_memory_put(MemBlock *b_memory, unsigned int byte_address, unsigned char value);
+void b_memory_put(MemBlock *b_memory, unsigned int byte_address, unsigned char value, const char *name);
 void b_memory_clear(MemBlock *b_memory, unsigned int byte_address);
 int b_range_memory_used(MemBlock *m, int from, int to);
 int b_memory_used(MemBlock *m);
@@ -60,8 +61,8 @@ void print_i_memory(MemBlock *m, const struct proc_class *class);
 
 int i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word);
 int i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word);
-void i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word);
-void i_memory_put_be(MemBlock *m, unsigned int byte_addr, unsigned short word);
+void i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word, const char *name);
+void i_memory_put_be(MemBlock *m, unsigned int byte_addr, unsigned short word, const char *name);
 
 void b_memory_set_listed(MemBlock *m, unsigned int address, unsigned int n_bytes);
 unsigned int b_memory_get_unlisted_size(MemBlock *m, unsigned int address);

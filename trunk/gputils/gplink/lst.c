@@ -75,7 +75,7 @@ open_src(const char *name, gp_symbol_type *symbol)
   } else {
     new->missing_source = true;
     if (getenv("GPUTILS_WARN_MISSING_SRC"))
-      gp_warning("Cannot find source file \"%s\"", name);
+      gp_warning("Cannot find source file \"%s\".", name);
   }
 
   new->symbol = symbol;

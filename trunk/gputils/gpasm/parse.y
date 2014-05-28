@@ -187,7 +187,7 @@ gpasmVal set_label(char *label, struct pnode *parms)
   if (asm_enabled()) {
     if (relocatable == state.mode && !IN_MACRO_WHILE_DEFINITION &&
       !(SECTION_FLAGS & (STYP_TEXT | STYP_DATA | STYP_BPACK | STYP_BSS)))
-      gpverror(GPE_LABEL_IN_SECTION);
+      gpverror(GPE_LABEL_IN_SECTION, NULL);
 
     value = do_or_append_insn("set", parms);
     if (!IN_MACRO_WHILE_DEFINITION) {
@@ -288,7 +288,7 @@ void yyerror(char *message)
 {
   if (!IN_MACRO_WHILE_DEFINITION) {
     /* throw error if not in macro definition */
-    gpverror(GPE_PARSER, message);
+    gpverror(GPE_PARSER, NULL, message);
   }
 }
 
@@ -484,7 +484,7 @@ line:
                  we're in pass 2. */
               if (h &&
                   !((h->pass == 1) && (state.pass == 2))) {
-                gpverror(GPE_DUPLICATE_MACRO);
+                gpverror(GPE_DUPLICATE_MACRO, NULL);
               } else {
                 if (!mac)
                   mac = add_symbol(state.stMacros, $1);
@@ -521,7 +521,7 @@ line:
               case res:
                 if (relocatable == state.mode && !IN_MACRO_WHILE_DEFINITION &&
                   !(SECTION_FLAGS & (STYP_TEXT | STYP_DATA | STYP_BPACK | STYP_BSS)))
-                  gpverror(GPE_LABEL_IN_SECTION);
+                  gpverror(GPE_LABEL_IN_SECTION, NULL);
                 if (IS_RAM_ORG)
                   set_global($1, $2, PERMANENT, gvt_static);
                 else
@@ -529,7 +529,7 @@ line:
                 break;
 
               case dir:
-                gpverror(GPE_ILLEGAL_LABEL, $1);
+                gpverror(GPE_ILLEGAL_LABEL, NULL, $1);
                 break;
 
               default:
@@ -545,7 +545,7 @@ line:
           if (state.mac_head) {
             /* This is a macro definition, but the label was missing */
             state.mac_head = NULL;
-            gpverror(GPE_NO_MACRO_NAME);
+            gpverror(GPE_NO_MACRO_NAME, NULL);
           } else {
             if (state.found_end) {
               switch (state.src->type) {

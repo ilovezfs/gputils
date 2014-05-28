@@ -230,8 +230,8 @@ AM_YFLAGS = -d -vt
 AM_LFLAGS = -i
 
 # Make sure we have parse.h when compiling other sources
-BUILT_SOURCES = parse.h gplink.h
-CLEANFILES = parse.output gplink.h
+BUILT_SOURCES = gplink.h parse.h
+CLEANFILES = gplink.h parse.c parse.h parse.output scan.c
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
