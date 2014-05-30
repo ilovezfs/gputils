@@ -1053,7 +1053,7 @@ static const struct insn *
 find_insn_generic(proc_class_t cls, long int opcode)
 {
   const struct insn *base = cls->instructions;
-  int count = base == NULL ? 0 : *cls->num_instructions;
+  int count = (base == NULL) ? 0 : *cls->num_instructions;
   int i;
 
   for (i = 0; i < count; i++) {
@@ -1221,19 +1221,19 @@ gp_processor_set_page_pic12(int num_pages,
 static int
 reloc_call_pic12(unsigned int org)
 {
-  return (org & 0xff);
+  return (org & MASK_PIC12_CALL);
 }
 
 static int
 reloc_goto_pic12(unsigned int org)
 {
-  return (org & 0x1ff);
+  return (org & MASK_PIC12_GOTO);
 }
 
 static int
 reloc_f_pic12(unsigned int address)
 {
-  return (address & 0x1f);
+  return (address & MASK_PIC12_FILE);
 }
 
 static int
@@ -1274,7 +1274,7 @@ gp_processor_set_bank_pic12e(int num_banks,
 static int
 reloc_tris_pic12e(unsigned int address)
 {
-  return (address & 0x07);
+  return (address & MASK_PIC12_TRIS);
 }
 
 /* PIC14 */
@@ -1357,19 +1357,19 @@ gp_processor_set_page_pic14(int num_pages,
 static int
 reloc_call_pic14(unsigned int org)
 {
-  return (org & 0x7ff);
+  return (org & MASK_PIC14_BRANCH);
 }
 
 static int
 reloc_goto_pic14(unsigned int org)
 {
-  return (org & 0x7ff);
+  return (org & MASK_PIC14_BRANCH);
 }
 
 static int
 reloc_f_pic14(unsigned int address)
 {
-  return (address & 0x7f);
+  return (address & MASK_PIC14_FILE);
 }
 
 static int
@@ -1502,7 +1502,7 @@ reloc_bra_pic14e(gp_section_type *section, unsigned value, unsigned int byte_org
                byte_org << 1,
                section->name);
   }
-  return (offset & 0x1ff);
+  return (offset & MASK_PIC14E_RBRA9);
 }
 
 static int
@@ -1587,19 +1587,19 @@ gp_processor_set_page_pic16(int num_pages,
 static int
 reloc_call_pic16(unsigned int org)
 {
-  return (org & 0x1fff);
+  return (org & MASK_PIC16_BRANCH);
 }
 
 static int
 reloc_goto_pic16(unsigned int org)
 {
-  return (org & 0x1fff);
+  return (org & MASK_PIC16_BRANCH);
 }
 
 static int
 reloc_f_pic16(unsigned int address)
 {
-  return (address & 0xff);
+  return (address & MASK_PIC16_FILE);
 }
 
 /* PIC16E */
@@ -1619,7 +1619,7 @@ gp_processor_set_bank_pic16e(int num_banks,
 {
   char buf[BUFSIZ];
 
-  bank &= 0xf;
+  bank &= MASK_PIC16E_BANK;
   snprintf(buf, sizeof(buf), "bank_%i", bank);
 
   i_memory_put_le(m, address, INSN_PIC16E_MOVLB | bank, buf);
@@ -1628,12 +1628,14 @@ gp_processor_set_bank_pic16e(int num_banks,
 
 static int reloc_call_pic16e(unsigned int org)
 {
-  return ((org >> 1) & 0xff);
+  return ((org >> 1) & MASK_PIC16E_BRANCH_LOWER);
 }
+
 static int reloc_goto_pic16e(unsigned int org)
 {
-  return ((org >> 1) & 0xff);
+  return ((org >> 1) & MASK_PIC16E_BRANCH_LOWER);
 }
+
 static int reloc_movlb_pic16e(unsigned int address)
 {
   /* The upper byte of the symbol is used for the BSR.  This is inconsistent
@@ -1641,6 +1643,7 @@ static int reloc_movlb_pic16e(unsigned int address)
      compatibility with mplink. */
   return ((address >> 8) & 0xff);
 }
+
 static int
 reloc_bra_pic16e(gp_section_type *section, unsigned value, unsigned int byte_org)
 {
@@ -1655,7 +1658,7 @@ reloc_bra_pic16e(gp_section_type *section, unsigned value, unsigned int byte_org
     gp_warning("Relative branch out of range in at %#x of section \"%s\".",
                byte_org, section->name);
   }
-  return (offset & 0x7ff);
+  return (offset & MASK_PIC16E_RBRA11);
 }
 
 static const struct insn *
@@ -1694,8 +1697,8 @@ const struct proc_class proc_class_eeprom8 = {
   0,                                    /* bank_mask */
   (1<<8)-1,                             /* core_size */
   0,                                    /* id_location */
-  gp_processor_check_xbank_unsupported,  /* check_bank */
-  gp_processor_set_xbank_unsupported,    /* set_bank */
+  gp_processor_check_xbank_unsupported, /* check_bank */
+  gp_processor_set_xbank_unsupported,   /* set_bank */
   gp_processor_check_xbank_unsupported, /* check_ibank */
   gp_processor_set_xbank_unsupported,   /* set_ibank */
   gp_processor_check_page_unsupported,  /* check_page */
@@ -1724,8 +1727,8 @@ const struct proc_class proc_class_eeprom16 = {
   0,                                    /* bank_mask */
   (1<<16)-1,                            /* core_size */
   0,                                    /* id_location */
-  gp_processor_check_xbank_unsupported,  /* check_bank */
-  gp_processor_set_xbank_unsupported,    /* set_bank */
+  gp_processor_check_xbank_unsupported, /* check_bank */
+  gp_processor_set_xbank_unsupported,   /* set_bank */
   gp_processor_check_xbank_unsupported, /* check_ibank */
   gp_processor_set_xbank_unsupported,   /* set_ibank */
   gp_processor_check_page_unsupported,  /* check_page */

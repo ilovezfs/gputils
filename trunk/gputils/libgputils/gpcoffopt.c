@@ -84,8 +84,7 @@ gp_coffopt_remove_dead_sections(gp_object_type *object, int pass)
   section = object->sections;
   while (section != NULL) {
     /* FIXME: maybe don't remove if it is in protected memory */
-    if ((!section->is_used) &&
-        !(section->flags & STYP_ABS)) {
+    if ((!section->is_used) && !(section->flags & STYP_ABS)) {
       gp_debug("removing section %s", section->name);
       gp_coffgen_delsectionsyms(object, section);
       gp_coffgen_delsection(object, section);

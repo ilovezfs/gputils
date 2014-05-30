@@ -1,4 +1,14 @@
 2014-05-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gputils/testsuite/gpdasm.project/op14e.asm,
+    gputils/testsuite/gpdasm.project/op16e.asm:
+    updated
+
+  * gpasm/directive.c, libgputils/gpcfg.c, libgputils/gpcofflink.c
+    libgputils/gpcoffopt.c, libgputils/gpdis.c, libgputils/gpprocessor.c,
+    libgputils/gpprocessor.h:
+    Some simplification. This codes uses some new definitions.
+
+2014-05-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c, libgputils/gpopcode.c, libgputils/gpopcode.h,
     libgputils/gpprocessor.c, libgputils/gpprocessor.h:
     The instruction codes were given own definition.

@@ -26,6 +26,14 @@ Boston, MA 02111-1307, USA.  */
         PIC12 definitions
 ******************************************/
 
+#define MASK_PIC12_FILE             0x1F
+#define MASK_PIC12_TRIS             0x07
+
+    /* Call address mask. */
+#define MASK_PIC12_CALL             0x0FF
+    /* Goto address mask. */
+#define MASK_PIC12_GOTO             0x1FF
+
 #define REG_PIC12_STATUS            0x03
 #define REG_PIC12_FSR               0x04
 
@@ -38,6 +46,11 @@ Boston, MA 02111-1307, USA.  */
 /******************************************
         PIC14 definitions
 ******************************************/
+
+#define MASK_PIC14_FILE             0x7F
+
+    /* Call and goto address mask. */
+#define MASK_PIC14_BRANCH           0x07FF
 
 #define MASK_PIC14_BANK             0x0003
 #define MASK_PIC14_PAGE             0x0003
@@ -54,6 +67,8 @@ Boston, MA 02111-1307, USA.  */
         PIC14E definitions
 ******************************************/
 
+#define MASK_PIC14E_RBRA9           0x01FF
+
 #define MASK_PIC14E_BANK            0x001F
 #define MASK_PIC14E_PAGE            0x007F
 
@@ -63,6 +78,11 @@ Boston, MA 02111-1307, USA.  */
         PIC16 definitions
 ******************************************/
 
+#define MASK_PIC16_FILE             0xFF
+
+    /* Call and goto address mask. */
+#define MASK_PIC16_BRANCH           0x1FFF
+
 #define MASK_PIC16_BANK             0x00FF
 #define MASK_PIC16_PAGE             0x00FF
 
@@ -71,6 +91,13 @@ Boston, MA 02111-1307, USA.  */
 /******************************************
         PIC16E definitions
 ******************************************/
+
+    /* Call and goto address mask for lower 8 bits. */
+#define MASK_PIC16E_BRANCH_LOWER    0x00FF
+    /* Call and goto address mask for higher 12 bits. */
+#define MASK_PIC16E_BRANCH_HIGHER   0x0FFF
+
+#define MASK_PIC16E_RBRA11          0x07FF
 
 #define MASK_PIC16E_BANK            0x000F
 

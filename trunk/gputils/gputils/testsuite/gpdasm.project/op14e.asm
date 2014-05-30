@@ -14,6 +14,7 @@ moviw_test macro fsr
 	MOVIW	fsr--
 	MOVIW	0[fsr]
 	MOVIW	0x1f[fsr]
+	MOVIW	-0x20[fsr]
     endm
 
 movwi_test macro fsr
@@ -23,11 +24,14 @@ movwi_test macro fsr
 	MOVWI	fsr--
 	MOVWI	0[fsr]
 	MOVWI	0x1f[fsr]
+	MOVWI	-0x20[fsr]
     endm
 
 insn macro file 
 	ADDFSR	FSR0, 0x1f
+	ADDFSR	FSR0, -0x20
 	ADDFSR	FSR1, 0x1f
+	ADDFSR	FSR1, -0x20
 	ADDLW	0xff
 	ADDWF	file, F
 	ADDWFC	file, F

@@ -110,5 +110,3 @@ unsigned char gp_cfg_get_default(const struct gp_cfg_device *device, int address
 
   return 0xff;
 }
-
-
