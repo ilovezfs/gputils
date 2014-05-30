@@ -1277,6 +1277,27 @@ reloc_tris_pic12e(unsigned int address)
   return (address & MASK_PIC12_TRIS);
 }
 
+static const struct insn *
+find_insn_pic12e(proc_class_t cls, long int opcode)
+{
+  int i;
+
+  /* First explore the enhanced instruction set. */
+  for (i = 0; i < num_op_16c5xx_enh; i++) {
+    if ((op_16c5xx_enh[i].mask & opcode) == op_16c5xx_enh[i].opcode) {
+      return &op_16c5xx_enh[i];
+    }
+  }
+
+  for (i = 0; i < num_op_12c5xx; i++) {
+    if ((op_12c5xx[i].mask & opcode) == op_12c5xx[i].opcode) {
+      return &op_12c5xx[i];
+    }
+  }
+
+  return NULL;
+}
+
 /* PIC14 */
 
 static unsigned int
@@ -1832,7 +1853,7 @@ const struct proc_class proc_class_pic12e = {
   reloc_high_generic,                   /* reloc_high */
   op_12c5xx,                            /* instructions */
   &num_op_12c5xx,                       /* num_instructions */
-  find_insn_generic,                    /* find_insn */
+  find_insn_pic12e,                     /* find_insn */
   i_memory_get_le,                      /* i_memory_get */
   i_memory_put_le,                      /* i_memory_put */
   NULL,                                 /* patch_strict */
