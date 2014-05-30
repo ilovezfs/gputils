@@ -333,21 +333,13 @@ W       EQU     0
         SWAPF   MAXRAM
 
         TBLRD *
-        TBLRD *
-        TBLRD *+
         TBLRD *+
         TBLRD *-
-        TBLRD *-
-        TBLRD +*
         TBLRD +*
 
         TBLWT *
-        TBLWT *
-        TBLWT *+
         TBLWT *+
         TBLWT *-
-        TBLWT *-
-        TBLWT +*
         TBLWT +*
 
         TSTFSZ  0
