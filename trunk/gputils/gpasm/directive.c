@@ -551,11 +551,11 @@ do_banksel(gpasmVal r, char *name, int arity, struct pnode *parms)
       }
       else if (state.device.class == PROC_CLASS_PIC12E) {
         reloc_evaluate(p, RELOCT_MOVLB);
-        emit(0x010, name);
+        emit(INSN_PIC12E_MOVLB, name);
       }
       else if (state.device.class == PROC_CLASS_PIC14E) {
         reloc_evaluate(p, RELOCT_MOVLB);
-        emit(0x0020, name);
+        emit(INSN_PIC14E_MOVLB, name);
       }
       else if (state.device.class == PROC_CLASS_PIC16) {
         reloc_evaluate(p, RELOCT_BANKSEL);
@@ -563,7 +563,7 @@ do_banksel(gpasmVal r, char *name, int arity, struct pnode *parms)
       }
       else if (state.device.class == PROC_CLASS_PIC16E) {
         reloc_evaluate(p, RELOCT_BANKSEL);
-        emit(0x0100, name);
+        emit(INSN_PIC16E_MOVLB, name);
       }
       else {
         switch (state.processor->num_banks) {
@@ -2732,7 +2732,7 @@ _do_pagesel(gpasmVal r, char *name, int arity, struct pnode *parms, unsigned sho
       else if (state.device.class == PROC_CLASS_PIC14E) {
         if (use_wreg == 0) {
           reloc_evaluate(p, RELOCT_PAGESEL_MOVLP);
-          emit(0x3180, name);
+          emit(INSN_PIC14E_MOVLP, name);
         }
         else {
           reloc_evaluate(p, RELOCT_PAGESEL_WREG);
@@ -3801,10 +3801,10 @@ do_insn(char *name, struct pnode *parms)
           dest = maybe_evaluate(HEAD(TAIL(parms)));
 
           /* destination can't be PCL, TOSU, TOSH, TOSL */
-          if ((dest == 0xff9) ||
-              (dest == 0xfff) ||
-              (dest == 0xffe) ||
-              (dest == 0xffd)) {
+          if ((dest == REG_PIC16E_PCL) ||
+              (dest == REG_PIC16E_TOSU) ||
+              (dest == REG_PIC16E_TOSH) ||
+              (dest == REG_PIC16E_TOSL)) {
             gperror(GPE_UNKNOWN, "Invalid destination.");
           }
 
@@ -3853,10 +3853,10 @@ do_insn(char *name, struct pnode *parms)
           dest = maybe_evaluate(p);
 
           /* destination can't be PCL, TOSU, TOSH, TOSL */
-          if ((dest == 0xff9) ||
-              (dest == 0xfff) ||
-              (dest == 0xffe) ||
-              (dest == 0xffd)) {
+          if ((dest == REG_PIC16E_PCL) ||
+              (dest == REG_PIC16E_TOSU) ||
+              (dest == REG_PIC16E_TOSH) ||
+              (dest == REG_PIC16E_TOSL)) {
             gperror(GPE_UNKNOWN, "Invalid destination.");
           }
 
@@ -4390,9 +4390,9 @@ do_insn(char *name, struct pnode *parms)
           if (fsr == 4 || fsr == 6) {
             fsr = (fsr == 6) ? 0x40 : 0x00;
             if (strcasecmp(i->name, "moviw") == 0)
-              opcode = 0x3f00 | fsr;
+              opcode = INSN_PIC14E_MOVIW_IDX | fsr;
             else
-              opcode = 0x3f80 | fsr;
+              opcode = INSN_PIC14E_MOVWI_IDX | fsr;
             emit(opcode, s->name);
           }
           else
@@ -4443,9 +4443,9 @@ do_insn(char *name, struct pnode *parms)
               else {
                 /* New opcode for indexed indirect */
                 if (strcasecmp(i->name, "moviw") == 0)
-                  opcode = 0x3f00 | fsr;
+                  opcode = INSN_PIC14E_MOVIW_IDX | fsr;
                 else
-                  opcode = 0x3f80 | fsr;
+                  opcode = INSN_PIC14E_MOVWI_IDX | fsr;
                 emit(opcode | (k & 0x3f), s->name);
               }
               break;

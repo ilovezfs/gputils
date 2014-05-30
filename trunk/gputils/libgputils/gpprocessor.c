@@ -723,123 +723,6 @@ static struct px pics[] = {
 
 #define NUM_PICS        (sizeof(pics) / sizeof(pics[0]))
 
-/******************************************
-        PIC12 definitions
-******************************************/
-
-    /* movwf: 0000 001f ffff */
-#define INSN_PIC12_MOVWF            0x020
-
-    /* bcf  : 0100 bbbf ffff */
-#define INSN_PIC12_BCF              0x400
-
-    /* bsf  : 0101 bbbf ffff */
-#define INSN_PIC12_BSF              0x500
-
-    /* movlw: 1100 kkkk kkkk */
-#define INSN_PIC12_MOVLW            0xC00
-
-#define REG_PIC12_STATUS            0x03
-#define REG_PIC12_FSR               0x04
-
-/******************************************
-        PIC12E definitions
-******************************************/
-
-    /* movlb: 0000 0001 0kkk */
-#define INSN_PIC12E_MOVLB           0x010
-
-#define MASK_PIC12E_BANK            0x007
-
-/******************************************
-        PIC14 definitions
-******************************************/
-
-    /* movwf: 00 0000 1fff ffff */
-#define INSN_PIC14_MOVWF            0x0080
-
-    /* bcf  : 01 00bb bfff ffff */
-#define INSN_PIC14_BCF              0x1000
-
-    /* bsf  : 01 01bb bfff ffff */
-#define INSN_PIC14_BSF              0x1400
-
-#define INSN_PIC14_BxF_BITSHIFT     7
-
-    /* movlw: 11 00xx kkkk kkkk */
-#define INSN_PIC14_MOVLW            0x3000
-
-#define MASK_PIC14_BANK             0x0003
-#define MASK_PIC14_PAGE             0x0003
-
-#define REG_PIC14_STATUS            0x03
-
-#define BIT_PIC14_STATUS_RP0        5
-#define BIT_PIC14_STATUS_RP1        6
-#define BIT_PIC14_STATUS_IRP        7
-
-#define REG_PIC14_PCLATH            0x0A
-
-/******************************************
-        PIC14E definitions
-******************************************/
-
-    /* movlb: 00 0000 001k kkkk */
-#define INSN_PIC14E_MOVLB           0x0020
-
-    /* movwf: 00 0000 1fff ffff */
-#define INSN_PIC14E_MOVWF           0x0080
-
-    /* bcf  : 01 00bb bfff ffff */
-#define INSN_PIC14E_BCF             0x1000
-
-    /* bsf  : 01 01bb bfff ffff */
-#define INSN_PIC14E_BSF             0x1400
-
-#define INSN_PIC14E_BxF_BITSHIFT    7
-
-    /* movlw: 11 0000 kkkk kkkk */
-#define INSN_PIC14E_MOVLW           0x3000
-
-    /* movlp: 11 0001 1kkk kkkk */
-#define INSN_PIC14E_MOVLP           0x3180
-
-#define MASK_PIC14E_BANK            0x001F
-#define MASK_PIC14E_PAGE            0x007F
-
-#define REG_PIC14E_FSR0H            0x05
-#define REG_PIC14E_PCLATH           0x0A
-
-/******************************************
-        PIC16 definitions
-******************************************/
-
-    /* movwf: 0000 0001 ffff ffff */
-#define INSN_PIC16_MOVWF            0x0100
-
-    /* movlw: 1011 0000 kkkk kkkk */
-#define INSN_PIC16_MOVLW            0xB000
-
-    /* movlb: 1011 1000 uuuu kkkk */
-#define INSN_PIC16_MOVLB            0xB800
-
-    /* movlr: 1011 101x kkkk uuuu */
-#define INSN_PIC16_MOVLR            0xBA00
-
-#define MASK_PIC16_BANK             0x00FF
-#define MASK_PIC16_PAGE             0x00FF
-
-#define REG_PIC16_PCLATH            0x03
-
-/******************************************
-        PIC16E definitions
-******************************************/
-
-    /* movlb: 0000 0001 0000 kkkk */
-#define INSN_PIC16E_MOVLB           0x0100
-
-#define MASK_PIC16E_BANK            0x000F
-
 /*
  * Display a list of the processor names
  */
@@ -1558,8 +1441,8 @@ gp_processor_set_ibank_pic14e(int num_banks,
   for (bit = 0, mask = 0x01; mask < num_banks; ++bit, mask <<= 1, address += 2)
     i_memory_put_le(m,
                     address,
-                    ((bank & mask) ? INSN_PIC14E_BSF : INSN_PIC14E_BCF) |
-                        (bit << INSN_PIC14E_BxF_BITSHIFT) |
+                    ((bank & mask) ? INSN_PIC14_BSF : INSN_PIC14_BCF) |
+                        (bit << INSN_PIC14_BxF_BITSHIFT) |
                         REG_PIC14E_FSR0H,
                     buf);
 
@@ -1591,9 +1474,9 @@ gp_processor_set_page_pic14e(int num_pages,
   snprintf(buf, sizeof(buf), "page_%02x", page);
 
   if (use_wreg) {
-    data = INSN_PIC14E_MOVLW | page;
+    data = INSN_PIC14_MOVLW | page;
     i_memory_put_le(m, address,     data, buf);
-    data = INSN_PIC14E_MOVWF | REG_PIC14E_PCLATH;
+    data = INSN_PIC14_MOVWF | REG_PIC14_PCLATH;
     i_memory_put_le(m, address + 2, data, buf);
     return 4;
   }
@@ -1893,7 +1776,7 @@ const struct proc_class proc_class_generic = {
 };
 
 const struct proc_class proc_class_pic12 = {
-  0x800,                                /* retlw */
+  INSN_PIC12_RETLW,                     /* retlw */
   12,                                   /* rom_width */
   512,                                  /* page size */
   32,                                   /* bank size */
@@ -1923,7 +1806,7 @@ const struct proc_class proc_class_pic12 = {
 };
 
 const struct proc_class proc_class_pic12e = {
-  0x800,                                /* retlw */
+  INSN_PIC12_RETLW,                     /* retlw */
   12,                                   /* rom_width */
   512,                                  /* page size */
   32,                                   /* bank size */
@@ -1953,7 +1836,7 @@ const struct proc_class proc_class_pic12e = {
 };
 
 const struct proc_class proc_class_sx = {
-  0x800,                                /* retlw */
+  INSN_PIC12_RETLW,                     /* retlw */
   12,                                   /* rom_width */
   0,                                    /* page size */
   0,                                    /* bank size */
@@ -1983,7 +1866,7 @@ const struct proc_class proc_class_sx = {
 };
 
 const struct proc_class proc_class_pic14 = {
-  0x3400,                               /* retlw */
+  INSN_PIC14_RETLW,                     /* retlw */
   14,                                   /* rom_width */
   2048,                                 /* page size */
   128,                                  /* bank size */
@@ -2013,7 +1896,7 @@ const struct proc_class proc_class_pic14 = {
 };
 
 const struct proc_class proc_class_pic14e = {
-  0x3400,                               /* retlw */
+  INSN_PIC14_RETLW,                     /* retlw */
   14,                                   /* rom_width */
   2048,                                 /* page size */
   128,                                  /* bank size */
@@ -2043,7 +1926,7 @@ const struct proc_class proc_class_pic14e = {
 };
 
 const struct proc_class proc_class_pic16 = {
-  0xb600,                               /* retlw */
+  INSN_PIC16_RETLW,                     /* retlw */
   16,                                   /* rom_width */
   0,                                    /* page size */
   256,                                  /* bank size */
@@ -2073,7 +1956,7 @@ const struct proc_class proc_class_pic16 = {
 };
 
 const struct proc_class proc_class_pic16e = {
-  0x0c00,                               /* retlw */
+  INSN_PIC16E_RETLW,                    /* retlw */
   8,                                    /* rom_width */
   0,                                    /* page size */
   256,                                  /* bank size */

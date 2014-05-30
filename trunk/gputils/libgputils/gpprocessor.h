@@ -22,28 +22,87 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPPROCESSOR_H__
 #define __GPPROCESSOR_H__
 
+/******************************************
+        PIC12 definitions
+******************************************/
+
+#define REG_PIC12_STATUS            0x03
+#define REG_PIC12_FSR               0x04
+
+/******************************************
+        PIC12E definitions
+******************************************/
+
+#define MASK_PIC12E_BANK            0x007
+
+/******************************************
+        PIC14 definitions
+******************************************/
+
+#define MASK_PIC14_BANK             0x0003
+#define MASK_PIC14_PAGE             0x0003
+
+#define REG_PIC14_STATUS            0x03
+
+#define BIT_PIC14_STATUS_RP0        5
+#define BIT_PIC14_STATUS_RP1        6
+#define BIT_PIC14_STATUS_IRP        7
+
+#define REG_PIC14_PCLATH            0x0A
+
+/******************************************
+        PIC14E definitions
+******************************************/
+
+#define MASK_PIC14E_BANK            0x001F
+#define MASK_PIC14E_PAGE            0x007F
+
+#define REG_PIC14E_FSR0H            0x05
+
+/******************************************
+        PIC16 definitions
+******************************************/
+
+#define MASK_PIC16_BANK             0x00FF
+#define MASK_PIC16_PAGE             0x00FF
+
+#define REG_PIC16_PCLATH            0x03
+
+/******************************************
+        PIC16E definitions
+******************************************/
+
+#define MASK_PIC16E_BANK            0x000F
+
+#define REG_PIC16E_PCL              0xFF9
+#define REG_PIC16E_TOSL             0xFFD
+#define REG_PIC16E_TOSH             0xFFE
+#define REG_PIC16E_TOSU             0xFFF
+
+/******************************************************************************/
+
 struct px;
 struct gp_section_type;
 
 struct proc_class {
-  /* Instruction used in making initialization data sections */
+  /* Instruction used in making initialization data sections. */
   int retlw;
-  /* Value in COFF header */
+  /* Value in COFF header. */
   int rom_width;
   /* The page size of the program memory. */
   int page_size;
   /* The bank size of the RAM memory. */
   int bank_size;
-  /* Bits to shift assembly code address for COFF file byte address */
+  /* Bits to shift assembly code address for COFF file byte address. */
   unsigned int org_to_byte_shift;
-  /* Mask of address bits for bank */
+  /* Mask of address bits for bank. */
   unsigned int bank_mask;
-  /* Bitmask of bits that can be stored in code section address */
+  /* Bitmask of bits that can be stored in code section address. */
   unsigned int core_size;
-  /* Get the address for ID location */
+  /* Get the address for ID location. */
   unsigned int (*id_location)(const struct px *processor);
 
-  /* Determine which bank of data memory the address is located */
+  /* Determine which bank of data memory the address is located. */
   int (*check_bank)(unsigned int address);
 
   /* Set the bank bits, return the number of instructions required. */
@@ -52,7 +111,7 @@ struct proc_class {
                   MemBlock *m,
                   unsigned int address);
 
-  /* Determine which ibank of data memory the address is located */
+  /* Determine which ibank of data memory the address is located. */
   int (*check_ibank)(unsigned int address);
 
   /* Set the ibank bits, return the number of instructions required. */
@@ -61,7 +120,7 @@ struct proc_class {
                   MemBlock *m,
                   unsigned int address);
 
-  /* Determine which page of program memory the address is located */
+  /* Determine which page of program memory the address is located. */
   int (*check_page)(unsigned int address);
 
   /* Set the page bits, return the number of instructions required. */
@@ -71,7 +130,7 @@ struct proc_class {
                   unsigned int address,
                   int use_wreg);
 
-  /* These return the bits to set in instruction for given address */
+  /* These return the bits to set in instruction for given address. */
   int (*reloc_call)(unsigned int address);
   int (*reloc_goto)(unsigned int address);
   int (*reloc_f)(unsigned int address);
@@ -118,9 +177,9 @@ extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices 
 
 typedef const struct px *pic_processor_t;
 
-#define MAX_NAMES 3 /* Maximum number of names a processor can have */
+#define MAX_NAMES 3 /* Maximum number of names a processor can have. */
 #define MAX_BADROM (1*2)  /* Maximum number of BADROM ranges a processor
-                             can be initialized with */
+                             can be initialized with. */
 
 struct px {
   proc_class_t class;
@@ -129,7 +188,7 @@ struct px {
   unsigned int coff_type;
   int num_pages;
   int num_banks;
-  /* These are in org to make it easier to fill from datasheet */
+  /* These are in org to make it easier to fill from datasheet. */
   int maxrom;
   int prog_mem_size;
   int badrom[MAX_BADROM];
@@ -137,7 +196,7 @@ struct px {
   /* */
   const char *script;
   int is_16bit_extended;  /* 1 if device supports 16 bit extended instruction set,
-                             0 otherwise; Used ony for PROC_CLASS_PIC16E class */
+                             0 otherwise; Used ony for PROC_CLASS_PIC16E class. */
 };
 
 /* CONFIG addresses for the 18xx parts */
@@ -158,7 +217,7 @@ struct px {
 #define DEVID1    0x3ffffe
 #define DEVID2    0x3fffff
 
-/* ID Locations for the 18xx parts */
+/* ID Locations for the 18xx parts. */
 #define IDLOC0    0x200000
 #define IDLOC1    0x200001
 #define IDLOC2    0x200002
@@ -168,7 +227,7 @@ struct px {
 #define IDLOC6    0x200006
 #define IDLOC7    0x200007
 
-/* Config address for everything else */
+/* Config address for everything else. */
 #define CONFIG_17CXX 0xfe00
 #define CONFIG_ADDRESS_14  0x2007
 #define CONFIG_ADDRESS_12  0x0fff

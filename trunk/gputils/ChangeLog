@@ -1,3 +1,8 @@
+2014-05-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c, libgputils/gpopcode.c, libgputils/gpopcode.h,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.h:
+    The instruction codes were given own definition.
+
 2014-05-28  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/Makefile.am, gpasm/Makefile.in, gplink/Makefile.am,
     gplink/Makefile.in:
