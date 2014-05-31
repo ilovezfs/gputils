@@ -48,6 +48,7 @@ Boston, MA 02111-1307, USA.  */
 ******************************************/
 
 #define MASK_PIC14_FILE             0x7F
+#define MASK_PIC14_TRIS             0x07
 
     /* Call and goto address mask. */
 #define MASK_PIC14_BRANCH           0x07FF

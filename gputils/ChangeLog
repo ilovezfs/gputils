@@ -1,3 +1,7 @@
+2014-05-31  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpprocessor.c, libgputils/gpprocessor.h:
+    Simpler gp_dump_processor_list() and fixed reloc_tris_pic12() functions.
+
 2014-05-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpprocessor.c:
     Fixed bug: gpdasm does not recognize the PIC12E instructions.
