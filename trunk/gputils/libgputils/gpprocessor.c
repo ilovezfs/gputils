@@ -733,32 +733,39 @@ void gp_dump_processor_list(gp_boolean list_all, proc_class_t class)
 #define FAVORITE 1        /* there are 3 names to choose from */
 
   int i;
-  int j;
   int length;
+  int column_width = 0;
   int num = 0;
-  int longest = 0;
-
-  for(i = 0; i < NUM_PICS; i++) {
-    length = strlen(pics[i].names[FAVORITE]);
-    if (length > longest)
-      longest = length;
-  }
+  int newline = 0;
 
   for (i = 0; i < NUM_PICS; i++) {
+    length = strlen(pics[i].names[FAVORITE]);
+
+    if (length > column_width) {
+      column_width = length;
+    }
+  }
+
+  column_width += SPACE_BETWEEN;
+  for (i = 0; i < NUM_PICS; i++) {
+
     if (list_all || (pics[i].class == class)) {
       num++;
-      printf("%s", pics[i].names[FAVORITE]);
-      length = longest + SPACE_BETWEEN - strlen(pics[i].names[FAVORITE]);
-      for(j = 0; j < length; j++) {
-        putchar(' ');
+      newline = ((num % COLUMNS) == 0);
+
+      if (i >= (NUM_PICS - 1)) {
+        printf("%s", pics[i].names[FAVORITE]);
       }
-      if ((num % COLUMNS) == 0) {
-        putchar('\n');
+      else if (newline != 0) {
+        printf("%s\n", pics[i].names[FAVORITE]);
+      }
+      else {
+        printf("%-*s", column_width, pics[i].names[FAVORITE]);
       }
     }
   }
 
-  if ((num % COLUMNS) != 0) {
+  if (newline == 0) {
     putchar('\n');
   }
 }
@@ -1243,7 +1250,9 @@ reloc_tris_pic12(unsigned int address)
      three bits and allowed values of 6 and 7. MPASM 5.34 has
      Error[126]  : Argument out of range (0000 not between 0005 and 0009)
   */
-  return (address & 0x1f);
+
+  /* Seen in the data sheets that everywhere three bits there are in the PIC12 family. */
+  return (address & MASK_PIC12_TRIS);
 }
 
 /* PIC12E */
@@ -1396,7 +1405,8 @@ reloc_f_pic14(unsigned int address)
 static int
 reloc_tris_pic14(unsigned int address)
 {
-  return (address & 0x7f);
+  /* According to the data sheets, the TRIS instruction does not exist in the PIC14 family. */
+  return (address & MASK_PIC14_TRIS);
 }
 
 static void
