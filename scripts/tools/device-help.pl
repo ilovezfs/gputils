@@ -68,7 +68,7 @@ my $list_file;
 my $pic_name_mask = qr/PIC1(2(C[ER]?|HV)\d+\w+|6(C[ER]?|HV)\d+\w+|[0268](C|L?F)\d+\w+)|PIC(RF\d+\w+|MCV\d+\w+)|PS\d+/;
 my $header = ('=' x 70);
 
-my $HTML_1_Frameset = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">';
+my $HTML_1_Frameset = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
 my $remote_url = '';
 my $out_dir  = 'html-help';
 my $css      = 'main.css';
@@ -1422,9 +1422,9 @@ sub print_html_head($)
 $HTML_1_Frameset
 <html lang="en">
   <head>
-    <title>$_[0]</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="author" content="Molnár Károly">
+    <title>$_[0]</title>
     <link rel="stylesheet" type="text/css" href="$remote_url$css">
   </head>
 EOT
@@ -1440,13 +1440,13 @@ sub src_info($)
   my $time = strftime('%F %T UTC', gmtime);
 
   aOutl($Align, '<div class="legendContainer">');
-  aOutl($Align + 2, "<p class=\"srcInfo\">This page generated automatically by the " .
-                    "<a href=\"https://sourceforge.net/p/gputils/code/HEAD/tree/trunk/" .
-                    "scripts/tools/device-help.pl\"><em>$PROGRAM</em></a> program ($time) from the <em>" .
-                    basename($dev_info) .
-                    "</em> file (rev: $dev_info_rev) of <em>mpasmx</em> and from the $href " .
-                    "(rev: svn $svn_rev). The <em>mpasmx</em> is included in the " .
-                    "<a href=\"http://$mplabx_url\">MPLAB X</a>.</p>");
+  aOutml($Align + 2, '<p class="srcInfo">',
+		     '  This page generated automatically by the',
+                     "  <a href=\"https://sourceforge.net/p/gputils/code/HEAD/tree/trunk/scripts/tools/device-help.pl\"><em>$PROGRAM</em></a>",
+                     "  program ($time) from the <em>" . basename($dev_info) . "</em> file (rev: $dev_info_rev) of <em>mpasmx</em> and from the",
+                     "  $href (rev: svn $svn_rev). The <em>mpasmx</em>",
+                     "  is included in the <a href=\"http://$mplabx_url\">MPLAB X</a>.",
+                     "</p>");
   aOutl($Align, '</div>');
   }
 
@@ -3562,7 +3562,7 @@ EOT
   {
   position: relative;
   width: ${page_width}px;
-  margin: 0 auto;
+  margin: 1.5em auto 0 auto;
   }
 
 .legend
