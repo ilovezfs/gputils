@@ -24,7 +24,7 @@
 
     3. This notice may not be removed or altered from any source distribution.
 
-   -------------------------------------------------------------------
+   -----------------------------------------------------------------------------------
 
     This program prepares the html lists from Config words and other properties
     of the PIC MCU-s. The data reads from the 8bit_device.info called file of MPLAB-X.
@@ -65,10 +65,10 @@ my $dev_info = '/opt/microchip/mplabx/mpasmx/8bit_device.info';
 my $dev_info_rev = '';
 my $list_file;
 
-my $pic_name_mask = qr/PIC1(2(C[ER]?|HV)\d+\w+|6(C[ER]?|HV)\d+\w+|[0268](C|L?F)\d+\w+)|PIC(RF\d+\w+|MCV\d+\w+)|PS\d+/;
+my $pic_name_mask = qr/PIC1(2(C[ER]?|HV)\d+\w+|6(C[ER]?|HV)\d+\w+|7C[R]?\d+\w+|[0268](C|L?F)\d+\w+)|PIC(RF\d+\w+|MCV\d+\w+)|PS\d+/;
 my $header = ('=' x 70);
 
-my $HTML_1_Frameset = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
+my $HTML_Doctype = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
 my $remote_url = '';
 my $out_dir  = 'html-help';
 my $css      = 'main.css';
@@ -198,9 +198,9 @@ my %mcu_features =
 my @mcu_feat_names = sort {
                           $mcu_features{$a}->{ENHANCED} <=> $mcu_features{$b}->{ENHANCED} ||
                           $mcu_features{$a}->{CLASS}    <=> $mcu_features{$b}->{CLASS}
-                          } keys(%mcu_features);
+                          } keys %mcu_features;
 
-#-----------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------
 
 =back
         The structure of one element of the %mcus_by_names hash:
@@ -212,6 +212,7 @@ my @mcu_feat_names = sort {
                     ENHANCED   => FALSE,
                     PAGE_SIZE  => 0,
                     WORD_SIZE  => 0,    # Instruction size of MCU.
+                    ROM_SIZE   => 0,    # Size of program memory.
                     CONF_SIZE  => 0,    # Width of a config word.
                     EE_START   => 0,    # Start address of EEPROM.
                     BANK_SIZE  => 0,    # Size of RAM Banks.
@@ -221,6 +222,8 @@ my @mcu_feat_names = sort {
                     PAGES      => 0,    # Number of ROM/FLASH pages.
                     MAX_RAM    => 0,    # The highest address of RAM.
                     RAM_SIZE   => 0,    # Full size of all SFR and GPR.
+                    GPR_SIZE   => 0,    # Full size of all GPR.
+                    SGPR_SIZE  => 0,    # Size of shared GPRs.
                     CF_START   => 0,    # Address of first Configuration byte/word.
                     CF_END     => 0,    # Address of last Configuration byte/word.
 
@@ -348,7 +351,7 @@ my $out_handler;
 
 my $only_css = FALSE;
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 use constant PRI_MENU_ALL    => 0;
 use constant PRI_MENU_ENH    => 1;
@@ -497,7 +500,7 @@ sub _defined($)
   return defined($pp_defines{$_[0]});
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
   # Records a definition.
 
@@ -514,7 +517,7 @@ sub define($)
   $pp_defines{$Name}{BODY}  = $Body;
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
   # Evaluation of the #if give a boolean value. This procedure preserves it.
 
@@ -527,7 +530,7 @@ sub if_condition($)
   ++$pp_level;
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
   # Evaluation of the #else give a boolean value. This procedure preserves it.
 
@@ -547,7 +550,7 @@ sub else_condition($)
     }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
   # Closes a logical unit which starts with a #if.
 
@@ -560,7 +563,7 @@ sub endif_condition($)
   --$pp_level;
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub reset_preprocessor()
   {
@@ -574,7 +577,7 @@ sub reset_preprocessor()
   $pp_level = 0;
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # This the preprocessor.
 
@@ -629,7 +632,7 @@ sub basename($)
   return ($_[0] =~ /([^\/]+)$/) ? $1 : '';
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub str2dec($)
   {
@@ -642,7 +645,7 @@ sub str2dec($)
   die "This string not integer: \"$Str\"";
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub swap_reverse($$)
   {
@@ -657,7 +660,7 @@ sub swap_reverse($$)
     }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub Log
   {
@@ -666,14 +669,14 @@ sub Log
   print STDERR "\n";
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub Out
   {
   foreach (@_) { print $out_handler $_; }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub Outl
   {
@@ -681,14 +684,14 @@ sub Outl
   print $out_handler "\n";
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub Outml
   {
   foreach (@_) { print $out_handler "$_\n"; }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub aOut
   {
@@ -703,7 +706,7 @@ sub aOut
   foreach (@_) { print $out_handler $_; }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub aOutl
   {
@@ -711,7 +714,7 @@ sub aOutl
   print $out_handler "\n";
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub aOutml
   {
@@ -730,14 +733,14 @@ sub aOutml
   foreach (@_) { print $out_handler "$Align$_\n"; }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub Outf
   {
   printf $out_handler (shift(@_), @_);
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub Outfl
   {
@@ -745,7 +748,7 @@ sub Outfl
   print $out_handler "\n";
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub aOutf
   {
@@ -760,7 +763,7 @@ sub aOutf
   printf $out_handler (shift(@_), @_);
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub aOutfl
   {
@@ -768,7 +771,7 @@ sub aOutfl
   print $out_handler "\n";
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub smartCompare($$)
   {
@@ -783,7 +786,7 @@ sub smartCompare($$)
   return (${$Str1} cmp ${$Str2});
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub smartSort($$)
   {
@@ -820,7 +823,7 @@ sub smartSort($$)
   return $ret;
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Reads the content of the $list_file.
 
@@ -836,12 +839,12 @@ sub read_list_file()
     s/\r$//o;
 
         # Empty line.
-    next if ($_ =~ /^\s*$/o);
+    next if (/^\s*$/o);
 
     s/^\s*|\s*$//go;
 
         # Comment line.
-    next if ($_ =~ /^#/o);
+    next if (/^#/o);
 
     my $name = lc($_);
     my $n;
@@ -858,7 +861,7 @@ sub read_list_file()
   close(LIST);
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Finds to all the MCU the corresponding inc file.
 
@@ -879,18 +882,17 @@ sub find_inc_files($)
     $name = uc("pic$name");
 
         # Remember the name of inc file;
-
     $gp_mcus_by_names{$name} = $n if (defined($gp_mcus_by_names{$name}));
     }
 
   closedir(DIR);
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Reads SVN revision of the gputils source.
 
-sub read_gp_svn_revision()
+sub read_gp_svn_version()
   {
   chomp($svn_rev = qx/cd $gputils_path; svnversion/);
   }
@@ -910,9 +912,9 @@ sub extract_mcu_names()
   open(LIB, '<', $gpproc_path) || die "extract_mcu_names(): Can not open. -> \"$gpproc_path\"\n";
 
         # static struct px pics[] = {
-	# { PROC_CLASS_PIC14E   , "__16F1526"     , { "pic16f1526"     , "p16f1526"       , "16f1526"         }, 0x1526,  4,   32, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008007, 0x008008 }, "16f1526_g.lkr"     , 0 },
-	# { PROC_CLASS_EEPROM8  , "__EEPROM8"     , { "eeprom8"        , "eeprom8"        , "eeprom8"         }, 0x1FFF,  0,    0, 0x0000FF,       -1, {       -1,       -1 }, {       -1,       -1 }, NULL                , 0 },
-	# { PROC_CLASS_PIC14    , "__RF675H"      , { "rf675h"         , "rf675h"         , "rf675h"          }, 0x4675,  1,    2, 0x00217F, 0x000400, { 0x0003FF, 0x0020FF }, { 0x002007, 0x002007 }, "rf675h_g.lkr"      , 0 },
+        # { PROC_CLASS_PIC14E   , "__16F1526"     , { "pic16f1526"     , "p16f1526"       , "16f1526"         }, 0x1526,  4,   32, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008007, 0x008008 }, "16f1526_g.lkr"     , 0 },
+        # { PROC_CLASS_EEPROM8  , "__EEPROM8"     , { "eeprom8"        , "eeprom8"        , "eeprom8"         }, 0x1FFF,  0,    0, 0x0000FF,       -1, {       -1,       -1 }, {       -1,       -1 }, NULL                , 0 },
+        # { PROC_CLASS_PIC14    , "__RF675H"      , { "rf675h"         , "rf675h"         , "rf675h"          }, 0x4675,  1,    2, 0x00217F, 0x000400, { 0x0003FF, 0x0020FF }, { 0x002007, 0x002007 }, "rf675h_g.lkr"      , 0 },
 
   my $in_table = FALSE;
 
@@ -924,9 +926,9 @@ sub extract_mcu_names()
 
     if (! $in_table)
       {
-      $in_table = TRUE if ($_ =~ /^\s*static\s+struct\s+px\s+pics\[\s*\]\s*=\s*\{\s*$/io);
+      $in_table = TRUE if (/^\s*static\s+struct\s+px\s+pics\[\s*\]\s*=\s*\{\s*$/io);
       }
-    elsif ($_ =~ /\{\s*PROC_CLASS_\w+\s*,\s*"\w+"\s*,\s*\{\s*"(\w+)"\s*,\s*"\w+"\s*,\s*"\w+"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*\S+\s*,\s*\S+\s*,\s*\{\s*\S+\s*,\s*\S+\s*\}\s*,\s*{\s*\S+\s*,\s*\S+\s*\}\s*,\s*"?[\.\w]+"?\s*\,\s*(\d+)\s*\}/io)
+    elsif (/\{\s*PROC_CLASS_\w+\s*,\s*"\w+"\s*,\s*\{\s*"(\w+)"\s*,\s*"\w+"\s*,\s*"\w+"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*\S+\s*,\s*\S+\s*,\s*\{\s*\S+\s*,\s*\S+\s*\}\s*,\s*{\s*\S+\s*,\s*\S+\s*\}\s*,\s*"?[\.\w]+"?\s*\,\s*(\d+)\s*\}/io)
       {
       my $name = $1;
 
@@ -956,24 +958,38 @@ sub extract_mcu_names()
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-use constant INC_NULL => 0;
-use constant INC_SFR  => 1;
-use constant INC_BITS => 2;
-use constant INC_RAM  => 3;
+use constant INC_NULL   => 0;
+use constant INC_SFR    => 1;
+use constant INC_BITS   => 2;
+use constant INC_RAM    => 3;
+use constant INC_CONFIG => 4;
+
+my %pic17_conf_switch_expl =
+  (
+  'MODE'  => 'Processor Mode Select bits',
+  'BODEN' => 'Brown-out Detect Enable',
+  'OSC'   => 'Oscillator Select bits',
+  'WDT'   => 'WDT Postscaler Select bits'
+  );
 
         # Read the RAM features from the $Inc file.
 
-sub read_ram_features($$)
+sub read_ram_features($$$)
   {
-  my ($Inc, $Features) = @_;
+  my ($Inc, $Features, $Pic17) = @_;
   my ($line, $full_ram, $state);
   my ($sfrs, $sfr_names, $sfr_addrs, $bad_ram);
+  my $configs;
+  my $config_reg  = undef;
+  my $switch_info = undef;
+  my $prev_switch_info_name = '';
 
   open(INC, '<', $Inc) || die "Could not open for reading: $Inc\n";
 
   Log("Read the RAM features from $Inc.", 4);
 
   $full_ram = 0;
+  $configs   = {};  # For the PIC17Cxx devices.
   $sfrs      = [];
   $sfr_names = {};
   $sfr_addrs = {};
@@ -1001,8 +1017,7 @@ sub read_ram_features($$)
           }
         elsif ($line =~ /^(\w+)\s+EQU\s+([\w']+)$/io)  #'
           {
-          my $name = $1;
-          my $addr = str2dec($2);
+          my ($name, $addr) = ($1, str2dec($2));
 
           $sfr_names->{$addr} = $name if (! defined($sfr_names->{$addr}));
           $sfr_addrs->{$name} = $addr if (! defined($sfr_names->{$name}));
@@ -1037,7 +1052,7 @@ sub read_ram_features($$)
 
           foreach (split(/\s*,\s*/o, ${^POSTMATCH}))
             {
-            if ($_ =~ /^H'([[:xdigit:]]+)'\s*-\s*H'([[:xdigit:]]+)'$/io)
+            if (/^H'([[:xdigit:]]+)'\s*-\s*H'([[:xdigit:]]+)'$/io)
               {
               my ($s, $e) = (hex($1), hex($2));
 
@@ -1045,7 +1060,7 @@ sub read_ram_features($$)
               push(@{$bad_ram}, { START => $s, END => $e });
               $full_ram -= $e - $s + 1;
               }
-            elsif ($_ =~ /^H'([[:xdigit:]]+)'$/io)
+            elsif (/^H'([[:xdigit:]]+)'$/io)
               {
               my $s = hex($1);
 
@@ -1057,8 +1072,71 @@ sub read_ram_features($$)
               die "Unknown value in \"$Inc\" file: $_\n";
               }
             } # foreach (split(/\s*,\s*/o, ${^POSTMATCH}))
+
+          } # elsif ($line =~ /^__BADRAM\s+/io)
+        elsif ($Pic17 && $line =~ /^;\s*Configuration\s+Bits$/io)
+          {
+          $config_reg = {
+                        SWITCHES => [],
+                        MASK     => 0
+                        };
+
+          $state = INC_CONFIG;
+          $configs->{$Features->{CF_START}} = $config_reg;
           }
         } # when (INC_RAM)
+
+      when (INC_CONFIG)
+        {
+        # For the PIC17Cxx devices.
+
+        if ($line =~ /^_(DEVID\d*)\s+EQU\s+([\w']+)$/io)  #'
+          {
+          $state = INC_NULL;
+          }
+        elsif ($line =~ /^_(IDLOC\d*)\s+EQU\s+([\w']+)$/io)  #'
+          {
+          $state = INC_NULL;
+          }
+        elsif ($line =~ /^(\w+)\s+EQU\s+([\w']+)(.+)?$/io)  #'
+          {
+        # _PMC_MODE                       EQU     H'7FAF'
+        # _BODEN_ON                       EQU     H'FFFF'
+        # _WDT_256                        EQU     H'FFFB'
+        # _XT_OSC                         EQU     H'FFFE'
+
+          my ($name, $value) = ($1, str2dec($2));
+          my $expl = '';
+
+          if (defined($3))
+            {
+            $expl = $3;
+            $expl =~ s/\s*;\s*//;
+            }
+
+          foreach my $sw_name (keys %pic17_conf_switch_expl)
+            {
+            if ($name =~ /$sw_name/)
+              {
+              if ($prev_switch_info_name ne $sw_name)
+                {
+                $switch_info = {
+                               HEAD => $sw_name,
+                               NAME => $pic17_conf_switch_expl{$sw_name},
+                               BITS => [],
+                               MASK => 0xFFFF
+                               };
+
+                push(@{$config_reg->{SWITCHES}}, $switch_info);
+                $prev_switch_info_name = $sw_name;
+                }
+
+              push(@{$switch_info->{BITS}}, { NAME => $name, VALUE => $value, EXPL => '' });
+              last;
+              }
+            } # foreach my $sw_name (keys %pic17_conf_switch_expl)
+          } # elsif ($line =~ /^(\w+)\s+EQU\s+([\w']+)(.+)?$/io)
+        } # when (INC_CONFIG)
       } # given ($state)
     } # foreach (grep(! /^\s*$/o, <INC>))
 
@@ -1071,6 +1149,7 @@ sub read_ram_features($$)
 
   @{$sfrs} = sort {$a->{ADDR} <=> $b->{ADDR}} @{$sfrs};
   $Features->{SFRS}      = $sfrs;
+  return $configs;
   }
 
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -1090,6 +1169,7 @@ sub process_lkr_line($$)
   if ($Line =~ /^(\S+)\s+NAME=(\S+)\s+START=(\S+)\s+END=(\S+)/io)
     {
     my ($section, $name, $start, $end) = ($1, $2, str2dec($3), str2dec($4));
+    my $size = $end - $start + 1;
     my $tail = ${^POSTMATCH};
 
     $tail =~ s/^\s+//o;
@@ -1097,6 +1177,9 @@ sub process_lkr_line($$)
 
     if ($section eq 'CODEPAGE')
       {
+        # CODEPAGE   NAME=.config    START=0x8007            END=0x8008         PROTECTED
+        # CODEPAGE   NAME=config     START=0xFE00            END=0xFE0F         PROTECTED
+
         # CODEPAGE   NAME=.oscval    START=0x3FF             END=0x3FF          PROTECTED
         # CODEPAGE   NAME=oscval     START=0x3FF             END=0x3FF          PROTECTED
 
@@ -1112,6 +1195,14 @@ sub process_lkr_line($$)
 
       given ($name)
         {
+        when (/config$/io)
+          {
+        # For the PIC17Cxx devices.
+
+          $Features->{CF_START} = $start;
+          $Features->{CF_END}   = $end;
+          }
+
         when (/oscval$/io)
           {
           $Features->{OSCVAL} = { START => $start, END => $end };
@@ -1126,6 +1217,11 @@ sub process_lkr_line($$)
           {
           $Features->{DEVID} = { START => $start, END => $end };
           }
+
+        when (/^page/io)
+          {
+          $Features->{ROM_SIZE} += $size;
+          }
         }
       }
     elsif ($section eq 'LINEARMEM' && $tail eq 'PROTECTED')
@@ -1135,32 +1231,45 @@ sub process_lkr_line($$)
 
       $Features->{LINEARMEM} = { NAME => $name, START => $start, END => $end, SEGMENTS => [] };
       }
-    elsif ($section eq 'DATABANK' && $tail =~ /^SHADOW=(\w+):(\w+)$/io)
+    elsif ($section eq 'ACCESSBANK' && $name =~ /ram$/io)
       {
+      $Features->{GPR_SIZE} += $size;
+      }
+    elsif ($section eq 'DATABANK')
+      {
+      if ($tail =~ /^SHADOW=(\w+):(\w+)$/io)
+        {
         # DATABANK   NAME=gpr0       START=0x20              END=0x6F           SHADOW=linear0:0x2000
         # DATABANK   NAME=gpr4       START=0x220             END=0x26F          SHADOW=linear0:0x2140
         # DATABANK   NAME=gpr12      START=0x620             END=0x64F          SHADOW=linear0:0x23C0
 
-      my ($lname, $lstart) = ($1, str2dec($2));
-      my $size = $end - $start + 1;
-      my $linear = $Features->{LINEARMEM};
+        my ($lname, $lstart) = ($1, str2dec($2));
+        my $linear = $Features->{LINEARMEM};
 
-      die "Unknown linearmem name: $lname" if (! defined($linear->{NAME}) || $linear->{NAME} ne $lname);
+        die "Unknown linearmem name: $lname" if (! defined($linear->{NAME}) || $linear->{NAME} ne $lname);
 
-      push(@{$linear->{SEGMENTS}}, { RSTART => $start, LSTART => $lstart, SIZE => $size });
+        push(@{$linear->{SEGMENTS}}, { RSTART => $start, LSTART => $lstart, SIZE => $size });
+        }
+
+      $Features->{GPR_SIZE} += $size if ($name =~ /^(dpr|gpr|reg)/io);
       }
-    elsif ($section  eq 'SHAREBANK')
+    elsif ($section eq 'SHAREBANK' && $name =~ /^(dpr|gpr|reg)/io)
       {
         # SHAREBANK  NAME=gprnobank  START=0x70            END=0x7F
         # SHAREBANK  NAME=gprnobank  START=0xF0            END=0xFF           PROTECTED
         # SHAREBANK  NAME=gprnobank  START=0x170           END=0x17F          PROTECTED
+        # SHAREBANK  NAME=gprnobnk   START=0x170           END=0x17F          PROTECTED
+        # SHAREBANK  NAME=sfrnobnk   START=0x300           END=0x30F          PROTECTED
+        # SHAREBANK  NAME=gprs       START=0x318           END=0x3FF
+        # SHAREBANK  NAME=registers  START=0x1A            END=0x1F
+        # SHAREBANK  NAME=dprnobank  START=0x70            END=0x7F           PROTECTED
 
       push(@{$Features->{SHARED_RAM}}, { START => $start, END => $end });
       }
     }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Read the RAM and ROM features from the $Lkr file.
         # The work was assisted by a very simple preprocessor.
@@ -1182,10 +1291,10 @@ sub read_ram_and_rom_features($$)
     chomp;
     s/\r$//o;
 
-    if ($_ !~ /^\s*$/o)
+    if ($_ !~ /^\s*$/o && $_ !~ m|^//|o)
       {
       s/^\s*|\s*$//go;
-      run_preprocessor($name, \&process_lkr_line, $_, $Features) if ($_ !~ m|^//|o);
+      run_preprocessor($name, \&process_lkr_line, $_, $Features);
       }
 
     ++$pp_line_number;
@@ -1205,13 +1314,14 @@ sub read_ram_and_rom_features($$)
 
 sub read_all_informations()
   {
-  my ($configs, $config_reg, $name, $inc, $lkr, $class);
-  my $features = undef;
-  my $addr = 0;
-  my $config_count = 0;
-  my $switch_count = 0;
-  my $setting_count = 0;
+  my ($configs, $name, $inc, $lkr, $class);
+  my $features    = undef;
+  my $config_reg  = undef;
   my $switch_info = undef;
+  my $addr = 0;
+  my $config_count  = 0;
+  my $switch_count  = 0;
+  my $setting_count = 0;
   my $state = ST_WAIT;
   my ($cf_addr_min, $cf_addr_max);
 
@@ -1239,6 +1349,7 @@ sub read_all_informations()
         # <PART_INFO_TYPE><e529><PIC12F529T39A><16c5xe><0><3><5ff><8><1f><0><0><3f><1>
         # <PART_INFO_TYPE><6628><PIC16F628><16xxxx><0><1><7ff><4><7f><7f><0><0><1>
         # <PART_INFO_TYPE><a829><PIC16LF1829><16Exxx><2><4><1fff><20><7f><ff><0><0><2>
+        # <PART_INFO_TYPE><7752><PIC17C752><17xxxx><0><1><ffff><9><ff><0><0><0><0>
         # <PART_INFO_TYPE><1330><PIC18F1330><18xxxx><6><1><1fff><10><ff><7f><7f><0><c>
 
       if ($fields[2] =~ /^$pic_name_mask$/io)
@@ -1262,6 +1373,7 @@ sub read_all_informations()
                     ENHANCED   => $tr->{ENHANCED},
                     PAGE_SIZE  => $tr->{PAGE_SIZE}, # Size of program memory pages.
                     WORD_SIZE  => $tr->{WORD_SIZE}, # Size of instructions.
+                    ROM_SIZE   => 0,                # Size of program memory.
                     CONF_SIZE  => $tr->{CONF_SIZE}, # Size of Config Words.
                     EE_START   => $tr->{EE_START},  # Start address of EEPROM.
                     BANK_SIZE  => $tr->{BANK_SIZE}, # Size of RAM Banks.
@@ -1271,6 +1383,8 @@ sub read_all_informations()
                     PAGES      => hex($fields[5]),  # Number of ROM/FLASH pages.
                     MAX_RAM    => 0,                # The highest address of RAM.
                     RAM_SIZE   => 0,                # Full size of all SFR and GPR.
+                    GPR_SIZE   => 0,                # Full size of all GPR.
+                    SGPR_SIZE  => 0,                # Size of shared GPRs.
                     CF_START   => 0,                # Address of first Configuration byte/word.
                     CF_END     => 0,                # Address of last Configuration byte/word.
 
@@ -1299,11 +1413,36 @@ sub read_all_informations()
           {
           $lkr = $inc;
           $lkr =~ s/^p//o;
-          read_ram_features("$gputils_path/header/${inc}.inc", $features);
+
+          my $pic17 = ($inc =~ /^p17/o) ? TRUE : FALSE;
+
           read_ram_and_rom_features("$gputils_path/lkr/${lkr}_g.lkr", $features);
+          $configs = read_ram_features("$gputils_path/header/${inc}.inc", $features, $pic17);
+
+          my $shared_ram = $features->{SHARED_RAM};
+
+          if (scalar(@{$shared_ram}) > 0)
+            {
+            # Present the shared GPR.
+
+            my $first = ${$shared_ram}[0];
+            my $size  = $first->{END} - $first->{START} + 1;
+
+            $features->{SGPR_SIZE} = $size;
+            $features->{GPR_SIZE} += $size;
+            }
+
+          $features->{RAM_SIZE} = $features->{GPR_SIZE} + scalar(keys %{$features->{SFR_NAMES}});
+
+          if ($pic17)
+            {
+            $features->{CONF_SIZE} = $features->{CF_END} - $features->{CF_START} + 1;
+            $mcus_by_names{$name}{FEATURES} = $features;
+            $mcus_by_names{$name}{CONFIGS}  = $configs;
+            }
+
           $state = ST_LISTEN;
           $addr = 0;
-          $configs = {};
           }
         else
           {
@@ -1419,7 +1558,7 @@ sub read_all_informations()
 sub print_html_head($)
   {
   print $out_handler <<EOT
-$HTML_1_Frameset
+$HTML_Doctype
 <html lang="en">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -1431,7 +1570,7 @@ EOT
 ;
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub src_info($)
   {
@@ -1441,7 +1580,7 @@ sub src_info($)
 
   aOutl($Align, '<div class="legendContainer">');
   aOutml($Align + 2, '<p class="srcInfo">',
-		     '  This page generated automatically by the',
+                     '  This page generated automatically by the',
                      "  <a href=\"https://sourceforge.net/p/gputils/code/HEAD/tree/trunk/scripts/tools/device-help.pl\"><em>$PROGRAM</em></a>",
                      "  program ($time) from the <em>" . basename($dev_info) . "</em> file (rev: $dev_info_rev) of <em>mpasmx</em> and from the",
                      "  $href (rev: svn $svn_rev). The <em>mpasmx</em>",
@@ -1450,7 +1589,7 @@ sub src_info($)
   aOutl($Align, '</div>');
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Prepares multiple list of MCUs.
 
@@ -1523,7 +1662,7 @@ sub print_mcu_list($$)
     }
   elsif ($Class == PRI_MENU_ROM)
     {
-    @array = sort { $mcus_by_names{$a}->{FEATURES}{ROM} <=> $mcus_by_names{$b}->{FEATURES}{ROM} ||
+    @array = sort { $mcus_by_names{$a}->{FEATURES}{ROM_SIZE} <=> $mcus_by_names{$b}->{FEATURES}{ROM_SIZE} ||
                     smartSort($a, $b) } keys %mcus_by_names;
     }
   elsif ($Class == PRI_MENU_EEPROM)
@@ -1557,18 +1696,18 @@ sub print_mcu_list($$)
       {
       when (PRI_MENU_ALL)
         {
-        aOutl($Align + 6, '<tr>');
+        aOutl ($Align + 6, '<tr>');
         aOutml($Align + 8, $td_href, $td_wsize, $td_csize, $td_class);
-        aOutl($Align + 6, '</tr>');
+        aOutl ($Align + 6, '</tr>');
         }
 
       when (PRI_MENU_ENH)
         {
         if ($class == PROC_CLASS_PIC12E || $class == PROC_CLASS_PIC14E)
           {
-          aOutl($Align + 6, '<tr>');
+          aOutl ($Align + 6, '<tr>');
           aOutml($Align + 8, $td_href, $td_wsize, $td_csize);
-          aOutl($Align + 6, '</tr>');
+          aOutl ($Align + 6, '</tr>');
           }
         }
 
@@ -1576,9 +1715,9 @@ sub print_mcu_list($$)
         {
         if ($class == PROC_CLASS_PIC16E)
           {
-          aOutl($Align + 6, '<tr>');
+          aOutl ($Align + 6, '<tr>');
           aOutml($Align + 8, $td_href, $td_wsize, $td_csize);
-          aOutl($Align + 6, '</tr>');
+          aOutl ($Align + 6, '</tr>');
           }
         }
 
@@ -1586,9 +1725,9 @@ sub print_mcu_list($$)
         {
         if (! $features->{ENHANCED})
           {
-          aOutl($Align + 6, '<tr>');
+          aOutl ($Align + 6, '<tr>');
           aOutml($Align + 8, $td_href, $td_wsize, $td_csize);
-          aOutl($Align + 6, '</tr>');
+          aOutl ($Align + 6, '</tr>');
           }
         }
 
@@ -1596,9 +1735,9 @@ sub print_mcu_list($$)
         {
         if ($wsize == 12)
           {
-          aOutl($Align + 6, '<tr>');
+          aOutl ($Align + 6, '<tr>');
           aOutml($Align + 8, $td_href, $td_csize, $td_class);
-          aOutl($Align + 6, '</tr>');
+          aOutl ($Align + 6, '</tr>');
           }
         }
 
@@ -1606,9 +1745,9 @@ sub print_mcu_list($$)
         {
         if ($wsize == 14)
           {
-          aOutl($Align + 6, '<tr>');
+          aOutl ($Align + 6, '<tr>');
           aOutml($Align + 8, $td_href, $td_csize, $td_class);
-          aOutl($Align + 6, '</tr>');
+          aOutl ($Align + 6, '</tr>');
           }
         }
 
@@ -1616,37 +1755,37 @@ sub print_mcu_list($$)
         {
         if ($wsize == 16)
           {
-          aOutl($Align + 6, '<tr>');
+          aOutl ($Align + 6, '<tr>');
           aOutml($Align + 8, $td_href, $td_csize, $td_class);
-          aOutl($Align + 6, '</tr>');
+          aOutl ($Align + 6, '</tr>');
           }
         }
 
       when (PRI_MENU_RAM)
         {
-        aOutl($Align + 6, '<tr>');
+        aOutl ($Align + 6, '<tr>');
         aOutml($Align + 8, "<th><a class=\"mcuLink\" href=\"$remote_url${name}-$ram_tag.html\">$name</a></th>",
                            "<td class=\"$css_class\">$features->{RAM_SIZE}</td>",
                            $td_wsize, $td_csize, $td_class);
-        aOutl($Align + 6, '</tr>');
+        aOutl ($Align + 6, '</tr>');
         }
 
       when (PRI_MENU_ROM)
         {
-        aOutl($Align + 6, '<tr>');
-        aOutl($Align + 8, $td_href);
-        aOutfl($Align + 8, "<td class=\"$css_class\">%u</td>", $features->{ROM} + 1);
-        aOutml($Align + 8, $td_wsize, $td_csize, $td_class);
-        aOutl($Align + 6, '</tr>');
+        aOutl ($Align + 6, '<tr>');
+        aOutml($Align + 8, $td_href,
+                           "<td class=\"$css_class\">$features->{ROM_SIZE}</td>",
+                           $td_wsize, $td_csize, $td_class);
+        aOutl ($Align + 6, '</tr>');
         }
 
       when (PRI_MENU_EEPROM)
         {
-        aOutl($Align + 6, '<tr>');
-        aOutl($Align + 8, $td_href);
+        aOutl ($Align + 6, '<tr>');
+        aOutl ($Align + 8, $td_href);
         aOutfl($Align + 8, "<td class=\"$css_class\">%u</td>", $features->{EEPROM} + 1);
         aOutml($Align + 8, $td_wsize, $td_csize, $td_class);
-        aOutl($Align + 6, '</tr>');
+        aOutl ($Align + 6, '</tr>');
         }
       }
     }
@@ -1688,7 +1827,7 @@ sub print_mcu_list($$)
   src_info($Align + 2);
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Print the local menu of $Name MCU page.
 
@@ -1708,7 +1847,7 @@ sub print_mcu_menu($$)
   aOutl(4, '</div>');
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub print_devid($$$)
   {
@@ -1738,7 +1877,7 @@ sub print_devid($$$)
     }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Dump the features of $Name MCU.
 
@@ -1747,6 +1886,8 @@ sub dump_features($$)
   my ($Name, $Configs) = @_;
   my $features = $Configs->{FEATURES};
   my ($str, $len, $rom_size, $word_size, $i, $t);
+  my $mcu16_bit = ($features->{WORD_SIZE} == 16 && $Name =~ /^PIC18/io) ? TRUE : FALSE;
+  my $pic17 = ($Name =~ /^PIC17/io) ? TRUE : FALSE;
 
   $str = "$out_dir/${Name}-$feat_tag.html";
   open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
@@ -1776,39 +1917,49 @@ sub dump_features($$)
         # The table of features of MCU.
 
   $word_size = $features->{WORD_SIZE};
-  $len = ($word_size == 16) ? 6 : 4;
+  $len = ($mcu16_bit) ? 6 : 4;
   $rom_size = $features->{ROM} + 1;
 
-  aOutl(4, '<table class="featList">');
+  aOutl (4, '<table class="featList">');
   aOutml(6, "<tr><th colspan=4 class=\"featTableName\">$Name</th></tr>",
             '<tr class="featGap"><td></td></tr>');
 
         #------------------------------------
 
-  aOutl(6, '<tr class="featLine">');
-  aOutl(8, '<th class="featName">Coff ID of device</th>');
+  aOutl (6, '<tr class="featLine">');
+  aOutl (8, '<th class="featName">Coff ID of device</th>');
   aOutfl(8, '<td class="featValue">0x%04X</td>', $features->{COFF});
-  aOutl(6, '</tr>');
+  aOutl (6, '</tr>');
 
         #------------------------------------
 
   $i = $features->{PAGE_SIZE};
   if ($i > 0)
     {
-    aOutl(6, '<tr class="featLine">');
+    aOutl (6, '<tr class="featLine">');
     aOutml(8, '<th class="featName">Number of ROM/FLASH pages</th>',
               "<td class=\"featValue\">$features->{PAGES}&nbsp;&nbsp;($i words/pages)</td>");
-    aOutl(6, '</tr>');
+    aOutl (6, '</tr>');
     }
 
         #------------------------------------
 
-  aOutl(6, '<tr class="featLine">');
-  aOutl(8, '<th class="featName">Last address of ROM/FLASH</th>');
+  aOutl (6, '<tr class="featLine">');
+  aOutl (8, '<th class="featName">Last address of ROM/FLASH</th>');
+  aOutfl(8, "<td class=\"featValue\">0x%0${len}X</td>", $features->{ROM});
+  aOutl (6, '</tr>');
 
-  $t = ($word_size == 16) ? 'bytes' : 'words';
-  aOutfl(8, "<td class=\"featValue\">0x%0${len}X&nbsp;&nbsp;($rom_size $t)</td>", $features->{ROM});
-  aOutl(6, '</tr>');
+        #------------------------------------
+
+  $i = $features->{ROM_SIZE};
+  if ($i)
+    {
+    $t = ($word_size == 16) ? 'bytes' : 'words';
+    aOutl (6, '<tr class="featLine">');
+    aOutml(8, '<th class="featName">Size of ROM</th>',
+              "<td class=\"featValue\">$i $t</td>");
+    aOutl (6, '</tr>');
+    }
 
         #------------------------------------
 
@@ -1839,13 +1990,12 @@ sub dump_features($$)
   $i = $features->{FLASHDATA};
   if ($i > 0)
     {
-    aOutl(6, '<tr class="featLine">');
-    aOutl(8, '<th class="featName">Address space of FLASH Data</th>');
-
+    aOutl (6, '<tr class="featLine">');
+    aOutl (8, '<th class="featName">Address space of FLASH Data</th>');
     aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X&nbsp;&nbsp;(%u words)</td>",
                $rom_size, $rom_size + $i, $i + 1);
 
-    aOutl(6, '</tr>');
+    aOutl (6, '</tr>');
     }
 
         #------------------------------------
@@ -1856,13 +2006,12 @@ sub dump_features($$)
     my $size = $i->{END} - $i->{START} + 1;
     my $tail = ($size > 1) ? ' space' : '';
 
-    aOutl(6, '<tr class="featLine">');
-    aOutl(8, "<th class=\"featName\">Address$tail of User ID</th>");
-
+    aOutl (6, '<tr class="featLine">');
+    aOutl (8, "<th class=\"featName\">Address$tail of User ID</th>");
     aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X&nbsp;&nbsp;(%u bytes)</td>",
                $i->{START}, $i->{END}, $size);
 
-    aOutl(6, '</tr>');
+    aOutl (6, '</tr>');
     }
 
         #------------------------------------
@@ -1871,17 +2020,35 @@ sub dump_features($$)
 
         #------------------------------------
 
-  $i = $features->{CONFIGS};
-  $t = ($word_size == 16) ? 'Byte' : 'Word';
-
-  if ($i > 1)
+  if ($pic17)
     {
-    $t .= 's';
-    $str = ' space';
+    $i = $features->{CONF_SIZE};
+    $t = 'Bit';
+
+    if ($i > 1)
+      {
+      $t .= 's';
+      $str = ' space';
+      }
+    else
+      {
+      $str = '';
+      }
     }
   else
     {
-    $str = '';
+    $i = $features->{CONFIGS};
+    $t = ($mcu16_bit) ? 'Byte' : 'Word';
+
+    if ($i > 1)
+      {
+      $t .= 's';
+      $str = ' space';
+      }
+    else
+      {
+      $str = '';
+      }
     }
 
   aOutl(6, '<tr class="featLine">');
@@ -1909,40 +2076,52 @@ sub dump_features($$)
   $i = $features->{EEPROM};
   if ($i > 0)
     {
-    aOutl(6, '<tr class="featLine">');
-    aOutl(8, '<th class="featName">Address space of EEPROM</th>');
-
+    aOutl (6, '<tr class="featLine">');
+    aOutl (8, '<th class="featName">Address space of EEPROM</th>');
     aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X&nbsp;&nbsp;(%u bytes)</td>",
                $features->{EE_START}, $features->{EE_START} + $i, $i + 1);
 
-    aOutl(6, '</tr>');
+    aOutl (6, '</tr>');
     }
 
         #------------------------------------
 
-  aOutl(6, '<tr class="featLine">');
+  aOutl (6, '<tr class="featLine">');
   aOutml(8, '<th class="featName">Number of RAM Banks</th>',
             "<td class=\"featValue\">$features->{BANKS}&nbsp;&nbsp;($features->{BANK_SIZE} bytes/banks)</td>");
-  aOutl(6, '</tr>');
+  aOutl (6, '</tr>');
 
         #------------------------------------
 
   $i = scalar(keys %{$features->{SFR_NAMES}});
   if ($i > 0)
     {
-    aOutl(6, '<tr class="featLine">');
+    aOutl (6, '<tr class="featLine">');
     aOutml(8, '<th class="featName">Number of SFRs</th>',
               "<td class=\"featValue\">$i</td>");
-    aOutl(6, '</tr>');
+    aOutl (6, '</tr>');
+    }
 
-    if ($features->{RAM_SIZE} > 0)
-      {
-      $i = $features->{RAM_SIZE} - $i;
-      aOutl(6, '<tr class="featLine">');
-      aOutml(8, '<th class="featName">Size of GPRs</th>',
-                "<td class=\"featValue\">$i bytes</td>");
-      aOutl(6, '</tr>');
-      }
+        #------------------------------------
+
+  $i = $features->{SGPR_SIZE};
+  if ($i > 0)
+    {
+    aOutl (6, '<tr class="featLine">');
+    aOutml(8, '<th class="featName">Size of shared GPRs</th>',
+              "<td class=\"featValue\">$i bytes</td>");
+    aOutl (6, '</tr>');
+    }
+
+        #------------------------------------
+
+  $i = $features->{GPR_SIZE};
+  if ($i > 0)
+    {
+    aOutl (6, '<tr class="featLine">');
+    aOutml(8, '<th class="featName">Size of all GPRs</th>',
+              "<td class=\"featValue\">$i bytes</td>");
+    aOutl (6, '</tr>');
     }
 
         #------------------------------------
@@ -1950,10 +2129,10 @@ sub dump_features($$)
   $i = $features->{RAM_SIZE};
   if ($i > 0)
     {
-    aOutl(6, '<tr class="featLine">');
+    aOutl (6, '<tr class="featLine">');
     aOutml(8, '<th class="featName">Joint size of SFRs + GPRs</th>',
               "<td class=\"featValue\">$i bytes</td>");
-    aOutl(6, '</tr>');
+    aOutl (6, '</tr>');
     }
 
         #------------------------------------
@@ -1961,7 +2140,7 @@ sub dump_features($$)
   $i = $features->{LINEARMEM};          # Only in the enhanced pic14 MCUs.
   if (defined($i))
     {
-    aOutl(6, '<tr class="featLine">');
+    aOutl (6, '<tr class="featLine">');
     aOutl (8, '<th class="featName">Start address of Linear RAM</th>');
     aOutfl(8, "<td class=\"featValue\">0x%04X</td>", $i->{START});
     aOutml(6, '</tr>', '<tr class="featLine">');
@@ -1970,17 +2149,17 @@ sub dump_features($$)
     aOutml(6, '</tr>', '<tr class="featLine">');
     aOutl (8, '<th class="featName">Number of Linear RAM sections</th>');
     aOutfl(8, "<td class=\"featValue\">%u</td>", scalar @{$i->{SEGMENTS}});
-    aOutl(6, '</tr>');
+    aOutl (6, '</tr>');
     }
 
         #------------------------------------
 
-  if ($word_size == 16)
+  if ($mcu16_bit)
     {
-    aOutl(6, '<tr class="featLine">');
-    aOutl(8, '<th class="featName">Last address of lower Access RAM</th>');
+    aOutl (6, '<tr class="featLine">');
+    aOutl (8, '<th class="featName">Last address of lower Access RAM</th>');
     aOutfl(8, "<td class=\"featValue\">0x%02X</td>", $features->{ACCESS});
-    aOutl(6, '</tr>');
+    aOutl (6, '</tr>');
     }
 
         #------------------------------------
@@ -1991,7 +2170,7 @@ sub dump_features($$)
   close($out_handler);
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Dump the entire contents of a Config word.
 
@@ -2033,7 +2212,7 @@ sub dump_config_word($$$$$)
     }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Dump the entire contents of all Config word of $Name MCU.
 
@@ -2041,11 +2220,12 @@ sub dump_all_config_word($$)
   {
   my ($Name, $Configs) = @_;
   my $conf_bits = $Configs->{CONFIGS};
-  my @addresses = sort {$a <=> $b} keys(%{$conf_bits});
+  my @addresses = sort {$a <=> $b} keys %{$conf_bits};
   my @sections;
-  my $config_mask = (ULONG_MAX << $Configs->{FEATURES}->{CONF_SIZE}) ^ ULONG_MAX;
+  my $features = $Configs->{FEATURES};
+  my $config_mask = (ULONG_MAX << $features->{CONF_SIZE}) ^ ULONG_MAX;
   my $count = @addresses;
-  my ($conf_reg, $str, $len, $i, $head_s, $head_e, $gap, $v);
+  my ($addr, $conf_reg, $str, $len, $i, $head_s, $head_e, $gap, $v);
 
   return if (! $count);
 
@@ -2086,12 +2266,30 @@ sub dump_all_config_word($$)
 
   if ($count < 2)
     {
-        # PIC10F, PIC12, PIC16
+        # PIC10F, PIC12, PIC16, PIC17
 
     $sections[0] = 'CONFIG';
     aOutl(6, $gap);
     $conf_reg = $conf_bits->{$addresses[0]};
-    aOutfl(6, "${head_s}CONFIG (address:0x%0${len}X, mask:0x%0${len}X)$head_e", $addresses[0], $conf_reg->{MASK});
+
+    if ($Name =~ /^PIC17/)
+      {
+      $addr = sprintf("address:0x%0${len}X-0x%0${len}X", $features->{CF_START}, $features->{CF_END});
+      }
+    else
+      {
+      $addr = sprintf("address:0x%0${len}X", $addresses[0]);
+      }
+
+    if ($conf_reg->{MASK} > 0)
+      {
+      aOutfl(6, "${head_s}CONFIG ($addr, mask:0x%0${len}X)$head_e", $addresses[0], $conf_reg->{MASK});
+      }
+    else
+      {
+      aOutfl(6, "${head_s}CONFIG ($addr)$head_e");
+      }
+
     dump_config_word(6, \@{$conf_reg->{SWITCHES}}, $len, $config_mask, $gap);
     }
   else
@@ -2161,7 +2359,7 @@ sub dump_all_config_word($$)
   close($out_handler);
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Marks in $Array the non GPR regions of RAM.
 
@@ -2255,7 +2453,7 @@ sub mark_non_gpr_ram($$)
     }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Marks in $Array the SFR regions of RAM.
 
@@ -2292,7 +2490,7 @@ sub mark_sfr_ram($$)
     }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Marks in $Array the shared regions of RAM.
 
@@ -2312,7 +2510,7 @@ sub mark_shared_ram($$)
     }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub print_column_warning($$$)
   {
@@ -2327,7 +2525,7 @@ sub print_column_warning($$$)
     }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Dump the RAM map of $Name MCU.
 
@@ -2347,7 +2545,7 @@ sub dump_ram_map($$)
   my @bank_sum = ();
   my $c_expl = '<span class="explanation">';
   my ($map, $bank, $height, $k, $r, $t, $x, $y);
-  my $mcu16_bit = ($features->{WORD_SIZE} == 16) ? TRUE : FALSE;
+  my $mcu16_bit = ($features->{WORD_SIZE} == 16 && $Name =~ /^PIC18/io) ? TRUE : FALSE;
 
   $t = "$out_dir/${Name}-$ram_tag.html";
   open($out_handler, '>', $t) || die "Could not create the \"$t\" file!\n";
@@ -2409,10 +2607,10 @@ sub dump_ram_map($$)
         $map->[$map_index] = { TYPE => $t, ADDR => $addr, SIZE => $size };
         last;
         }
-      }
+      } # while (TRUE)
 
     $bank += $bank_size;
-    }
+    } # for ($x = 0; $x < $bank_num; ++$x)
         #------------------------------------
 
         # After a lot of work has finally can be written the html code.
@@ -2667,11 +2865,11 @@ sub dump_ram_map($$)
 
   if ($mcu16_bit)
     {
-    aOutl(6, '<div class="legend">');
+    aOutl (6, '<div class="legend">');
     aOutml(8, "<p class=\"ramSFREx\"><span class=\"ramAccEx\"></span>&nbsp;${c_expl}Special Function Register on Access Area.</span></p>",
               "<p class=\"ramGPREx\"><span class=\"ramAccEx\"></span>&nbsp;${c_expl}General-purpose RAM on Access Area.</span></p>",
               "<p class=\"ramBADEx\"><span class=\"ramAccEx\"></span>&nbsp;${c_expl}In this place no RAM on Access Area.</span></p>");
-    aOutl(6, '</div>');
+    aOutl (6, '</div>');
     }
 
   aOutl(4, '</div>');
@@ -2681,7 +2879,7 @@ sub dump_ram_map($$)
   close($out_handler);
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Dump the SFR map of $Name MCU.
 
@@ -2695,7 +2893,7 @@ sub dump_sfr_map($$)
   my @bank_array = ();
   my $c_expl = '<span class="explanation">';
   my ($bank, $i, $max_x, $x, $min_y, $max_y, $y, $t);
-  my $mcu16_bit = ($features->{WORD_SIZE} == 16) ? TRUE : FALSE;
+  my $mcu16_bit = ($features->{WORD_SIZE} == 16 && $Name =~ /^PIC18/io) ? TRUE : FALSE;
   my $accessSfr = 0xF00 + $features->{ACCESS} + 1;
 
   $t = "$out_dir/${Name}-$sfr_tag.html";
@@ -2832,7 +3030,7 @@ sub dump_sfr_map($$)
           }
 
         aOutfl(14, "<td class=\"sfrAddr$second_class\">0x%03X</td>", $addr);
-        aOutl(12, '</tr>');
+        aOutl (12, '</tr>');
         } # if (defined($t))
       else
         {
@@ -2849,8 +3047,9 @@ sub dump_sfr_map($$)
 
   if ($bank_num > 1 && ! $mcu16_bit)
     {
-    aOutl(6, '<tr class="ramGap"><td></td></tr>');
-    aOutfl(6, "<tr><td colspan=%u class=\"ramSumEx\">The mirror of [PCL, STATUS, ...] are not shown.</td></tr>", $bank_num * 2 + 1);
+    aOutl (6, '<tr class="ramGap"><td></td></tr>');
+    aOutfl(6, "<tr><td colspan=%u class=\"ramSumEx\">The mirror of [PCL, PCLATH, ...] are not shown.</td></tr>",
+           $bank_num * 2 + 1);
     }
 
   aOutl(4, '</table>');
@@ -2861,7 +3060,7 @@ sub dump_sfr_map($$)
             '  <div class="legend">');
   aOutml(8, "<p class=\"sfrNameEx\">&nbsp;${c_expl}SFR</span></p>",
             "<p class=\"sfrNameXEx\">&nbsp;${c_expl}SFR with alias name.</span></p>");
-  aOutl(6, '</div>');
+  aOutl (6, '</div>');
 
   if ($mcu16_bit)
     {
@@ -2877,7 +3076,7 @@ sub dump_sfr_map($$)
   close($out_handler);
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Print the menu of class of MCUs.
 
@@ -2897,7 +3096,7 @@ sub print_pri_menu($)
   aOutl(6, '</div>');
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
         # Print the class html files of MCUs.
 
@@ -2952,7 +3151,7 @@ my $expl_y_padding     = 0.2;           # em
 my $ramAccEx_height    = $expl_font_size + 2 * $expl_y_padding;
 my $Ex_color_width     = 50;            # px
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub css_border_radius($$)
   {
@@ -2966,7 +3165,7 @@ sub css_border_radius($$)
     }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub css_shadow($$)
   {
@@ -2980,7 +3179,7 @@ sub css_shadow($$)
     }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub css_gradient($$)
   {
@@ -2998,7 +3197,7 @@ sub css_gradient($$)
   aOutl($Align, "-pie-background:    linear-gradient($Gradient);");     # IE 6..8
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub css_vertical_lines($$$$)
   {
@@ -3023,7 +3222,7 @@ sub css_vertical_lines($$$$)
     }
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub create_css()
   {
@@ -3122,7 +3321,7 @@ EOT
   z-index: 3;
 EOT
 ;
-  css_shadow(2, "0.2em 0.2em 0.8em #505050, inset 0 0 0.5em #C000C0");
+  css_shadow(2, "0.2em 0.2em 0.8em #000000, inset 0 0 0.5em #C000C0");
   print $out_handler <<EOT
   background: $content_background;
   }
@@ -3139,16 +3338,28 @@ EOT
   transform: scale(1.1, 1.3);
   }
 
+.tabs a:hover
+  {
+EOT
+;
+  css_shadow(2, "0.2em 0.2em 0.8em #000000");
+  print $out_handler <<EOT
+  }
+
 .tabs a.selected:hover
   {
   z-index: 3;
+EOT
+;
+  css_shadow(2, "0.2em 0.2em 0.8em #000000, inset 0 0 0.5em #C000C0");
+  print $out_handler <<EOT
   }
 
 .classMenu a:hover
   {
 EOT
 ;
-  css_shadow(2, "0.2em 0.2em 0.8em #505050");
+  css_shadow(2, "0.2em 0.2em 0.8em #000000");
   print $out_handler <<EOT
   }
 
@@ -3184,7 +3395,7 @@ EOT
   border: ${border_width}px solid $tab_border_color;
 EOT
 ;
-  css_shadow(2, "0.2em 0.2em 0.8em #505050, inset 0 0 0.5em #C000C0");
+  css_shadow(2, "0.2em 0.2em 0.8em #000000, inset 0 0 0.5em #C000C0");
   print $out_handler <<EOT
   }
 
@@ -3282,7 +3493,7 @@ EOT
   background: $tooltip_background;
 EOT
 ;
-  css_shadow(2, "0.2em 0.2em 0.8em #505050, 0 0 2px 4px $attr_background inset");
+  css_shadow(2, "0.2em 0.2em 0.8em #000000, 0 0 2px 4px $attr_background inset");
   print $out_handler <<EOT
   transform: scale(1.1, 1.3);
   }
@@ -3440,6 +3651,10 @@ EOT
 .ramTt a:hover
   {
   background: #49DDFF;
+EOT
+;
+  css_shadow(2, "0.2em 0.2em 0.8em #000000, 0 0 10px 10px $tooltip_background inset");
+  print $out_handler <<EOT
   transform: scale(1.2, 1.3);
   }
 
@@ -3524,7 +3739,7 @@ EOT
 EOT
 ;
   css_border_radius(2, '0 0.75em 0.75em 0.75em');
-  css_shadow(2, "0 0 1.5em $tab_border_color");
+  css_shadow(2, "0.2em 0.2em 0.8em #000000");
   print $out_handler <<EOT
   }
 
@@ -3536,7 +3751,7 @@ EOT
   }
 
 .ramSFREx, .ramGPREx, .ramSHAEx, .ramBADEx,
-.sfrNameEx, .sfrNameXEx, .menuEx
+.sfrNameEx, .sfrNameXEx, .sfrAccess, .menuEx
   {
   padding: 0;
   width: ${Ex_color_width}px;
@@ -3552,10 +3767,6 @@ EOT
   {
   background: #C87548;
   color: #FDFFC7;
-EOT
-;
-  css_border_radius(2, '0');
-  print $out_handler <<EOT
   }
 
 .legendContainer
@@ -3629,7 +3840,7 @@ EOT
   close($out_handler);
   }
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
 sub usage()
   {
@@ -3760,7 +3971,7 @@ for (my $i = 0; $i < scalar(@ARGV); )
 
 die "This directory - $gputils_path - not exist!" if (! -d $gputils_path);
 
-read_gp_svn_revision();
+read_gp_svn_version();
 
 $gpproc_path  = "$gputils_path/libgputils/$gpprocessor_c";
 
