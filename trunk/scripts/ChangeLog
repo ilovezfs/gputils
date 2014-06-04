@@ -1,3 +1,6 @@
+2014-06-04 Molnar Karoly <molnarkaroly@users.sf.net>
+	* tools/device-help.pl: Added the "Common SFRs" tab.
+
 2014-06-02 Molnar Karoly <molnarkaroly@users.sf.net>
 	* tools/device-help.pl: More precise RAM size and added the PIC17 family.
 
