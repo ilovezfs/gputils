@@ -215,7 +215,7 @@ b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value, cons
         m->memory = (unsigned short *)calloc(MAX_I_MEM, sizeof(unsigned short));
       }
 
-      if (name != NULL && *name != '\0') {
+      if (m->name == NULL && name != NULL && *name != '\0') {
         m->name = strdup(name);
       }
 
