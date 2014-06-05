@@ -1,3 +1,7 @@
+2014-06-05  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpmemory.c:
+    Fix memory leak in b_memory_put() function.
+
 2014-06-02  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * lkr/16f1718_g.lkr, lkr/16lf1718_g.lkr, lkr/16f1719_g.lkr,
     lkr/16lf1719_g.lkr:
