@@ -152,6 +152,11 @@ int remove_symbol(struct symbol_table *table, const char *name)
     }
     table->count--;
     found_symbol = 1;
+
+    if (r->name != NULL) {
+      free((void *)r->name);
+    }
+
     free(r);
   }
 
