@@ -100,7 +100,7 @@ i_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
   do
   {
     if ((m->next == NULL) || (m->next->base > base)) {
-      /* Insert after this block */
+      /* Insert after this block. */
       mbp->next = m->next;
       m->next = mbp;
       return mbp;
@@ -417,7 +417,7 @@ print_i_memory(MemBlock *m, proc_class_t class)
         for (j = 0; j < WORDS_IN_ROW; j += 2) {
           unsigned short data;
 
-          class->i_memory_get(m, i + (2 * j), &data, NULL, NULL);
+          class->i_memory_get(m, i + 2 * j, &data, NULL, NULL);
           printf("%04X ", data);
         }
 

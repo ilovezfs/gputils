@@ -40,13 +40,15 @@ gp_error(const char *format, ...)
   va_list args;
   char buffer[BUFSIZ];
 
-  if (gp_message_disable)
+  if (gp_message_disable) {
     return;
+  }
 
   gp_num_errors++;
 
-  if (gp_quiet)
+  if (gp_quiet) {
     return;
+  }
 
   va_start(args, format);
   vsnprintf(buffer, sizeof (buffer), format, args);
@@ -61,13 +63,15 @@ gp_warning(const char *format, ...)
   va_list args;
   char buffer[BUFSIZ];
 
-  if (gp_message_disable)
+  if (gp_message_disable) {
     return;
+  }
 
   gp_num_warnings++;
 
-  if (gp_quiet)
+  if (gp_quiet) {
     return;
+  }
 
   va_start(args, format);
   vsnprintf(buffer, sizeof (buffer), format, args);
@@ -82,13 +86,15 @@ gp_message(const char *format, ...)
   va_list args;
   char buffer[BUFSIZ];
 
-  if (gp_message_disable)
+  if (gp_message_disable) {
     return;
+  }
 
   gp_num_messages++;
 
-  if (gp_quiet)
+  if (gp_quiet) {
     return;
+  }
 
   va_start(args, format);
   vsnprintf(buffer, sizeof (buffer), format, args);
@@ -103,11 +109,13 @@ gp_debug(const char *format, ...)
   va_list args;
   char buffer[BUFSIZ];
 
-  if (gp_debug_disable)
+  if (gp_debug_disable) {
     return;
+  }
 
-  if (gp_quiet)
+  if (gp_quiet) {
     return;
+  }
 
   va_start(args, format);
   vsnprintf(buffer, sizeof (buffer), format, args);

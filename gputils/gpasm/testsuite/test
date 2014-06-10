@@ -490,6 +490,7 @@ case "$ACTION" in
       rm -Rf ./gpasm.project/objtest_mp
     else
       rm -Rf ./gpasm.mchip/test
+      rm -Rf ./gpasm.mchip/objtest
       rm -Rf ./gpasm.project/test
       rm -Rf ./gpasm.project/objtest
     fi

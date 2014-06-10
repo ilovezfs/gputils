@@ -34,31 +34,39 @@ void select_processor(char *name)
     gpvwarning(GPW_CMDLINE_PROC, NULL);
   } else {
     found = gp_find_processor(name);
+
     if (found) {
       int badrom_idx;
+
       if (!state.processor) {
         /* if in extended mode: check if processor supports extended instruction set */
         if (state.extended_pic16e && !found->is_16bit_extended) {
           gpverror(GPE_NO_EXTENDED_MODE, NULL);
         }
+
         state.processor = found;
         state.maxrom = found->maxrom;
         /* initialize badrom from internal processor info */
         state.badrom = NULL;
+
         for (badrom_idx = 0; badrom_idx < MAX_BADROM; badrom_idx+=2) {
           long start, end;
           start = found->badrom[badrom_idx];
           end = found->badrom[badrom_idx+1];
-          if ((start == -1) || (end == -1))
+
+          if ((start == -1) || (end == -1)) {
             break;
+          }
           else {
             struct range_pair *new_pair = malloc(sizeof(struct range_pair));
+
             new_pair->start = start;
             new_pair->end = end;
             new_pair->next = state.badrom;
             state.badrom = new_pair;
           }
         }
+
         set_global(found->defined_as, 1, PERMANENT, gvt_constant);
       } else if (state.processor != found) {
         gpvwarning(GPW_REDEFINING_PROC, NULL);
@@ -74,15 +82,14 @@ void select_processor(char *name)
       }
     }
     /* load the instruction sets if necessary */
-    if ((state.processor_chosen == 0) &&
-        (state.processor)) {
-      opcode_init(1);   /* General directives */
+    if ((state.processor_chosen == 0) && (state.processor)) {
+      opcode_init(1);   /* General directives. */
       /* seperate the directives from the opcodes */
       state.stBuiltin = push_symbol_table(state.stBuiltin, true);
-      opcode_init(2);   /* Processor-specific */
-      if (state.device.class != PROC_CLASS_PIC16E &&
-          state.device.class != PROC_CLASS_PIC16) {
-        opcode_init(3);   /* Special pseudo ops for 12 and 14 bit devices */
+      opcode_init(2);   /* Processor-specific. */
+
+      if (state.device.class != PROC_CLASS_PIC16E && state.device.class != PROC_CLASS_PIC16) {
+        opcode_init(3);   /* Special pseudo ops for 12 and 14 bit devices. */
       }
       state.processor_chosen = 1;
     }

@@ -76,6 +76,7 @@ function run_test() {
   return 0
 }
 
+function all_test() {
   printbanner "Start of gpdasm testing" 
   # Test for executable.
   binexists $GPDASMBIN
@@ -124,3 +125,35 @@ function run_test() {
   echo -e "Extended 16 bit core passed.\n"
 
   printbanner "gpdasm testing sucessful"
+}
+
+ACTION="test"
+
+for i in $@; do
+  case "$i" in
+    -h|--help)
+      echo "Usage: $0 <option> [clean]"
+      echo "                    run all tests"
+      echo "  clean             clean all test directories"
+      echo
+      echo "Options:"
+      echo "  -h, --help        display this help message"
+      echo
+      exit 0
+      ;;
+
+    clean)
+      ACTION="clean"
+      ;;
+  esac
+done
+
+case "$ACTION" in
+  test)
+    all_test
+    ;;
+
+  clean)
+    rm -Rf ./gpdasm.project/test
+    ;;
+esac
