@@ -329,6 +329,7 @@ cod_write_code(void)
 
     mem_base = m->base << I_MEM_BITS;
     high_addr = (mem_base >> 16) & 0xffff;
+
     if (NULL == dbi || high_addr != _64k_base) {
       _64k_base = high_addr;
       dbi = find_dir_block_by_high_addr(_64k_base);
@@ -336,9 +337,11 @@ cod_write_code(void)
 
     for (i = mem_base; (i - mem_base) <= MAX_I_MEM; i += 2) {
       unsigned short insn;
+
       if (((i - mem_base) < MAX_I_MEM) &&
           state.device.class->i_memory_get(state.i_memory, i, &insn, NULL, NULL)) {
         cod_emit_opcode(dbi, i, insn);
+
         if (used_flag == 0) {
           /* Save the start address in a range of opcodes */
           start_address = i;
