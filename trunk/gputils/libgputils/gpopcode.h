@@ -646,7 +646,7 @@ struct pnode;           /* forward declaration; defined in
                          * script.h for linker */
 
 struct insn {
-  char *name;
+  const char *name;
   long int mask;
   long int opcode;
   enum insn_class class;
@@ -655,7 +655,7 @@ struct insn {
 };
 
 struct strict_insn {
-  char *name;
+  const char *name;
   long int mask;
 };
 

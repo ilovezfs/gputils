@@ -352,7 +352,7 @@ _read_sections(gp_object_type *object, const unsigned char *file, gp_binary_type
       loc = &file[current->data_ptr];
       number = current->size;
       for (j = 0; j < number; j++) {
-        b_memory_put(current->data, org + j, loc[j], object->filename);
+        b_memory_put(current->data, org + j, loc[j], current->name, NULL);
       }
     }
 
@@ -533,8 +533,9 @@ _read_symtbl(gp_object_type *object, const unsigned char *file, gp_binary_type *
   gp_aux_type *current_aux = NULL;
   const char *string_table;
   struct lazy_linking_s *lazy_linking;
+  const char *section_name = NULL;
 
-  if (number != 0) {
+  if (number > 0) {
     /* create a block of symbols */
     object->symbols = gp_coffgen_blocksym(number);
 
@@ -543,8 +544,7 @@ _read_symtbl(gp_object_type *object, const unsigned char *file, gp_binary_type *
       &file[object->symbol_ptr + (object->symbol_size * number)];
 
     /* setup lazy linking of symbol table indices */
-    lazy_linking = (struct lazy_linking_s*)malloc(sizeof(struct lazy_linking_s)*number);
-    memset(lazy_linking, 0, sizeof(struct lazy_linking_s)*number);
+    lazy_linking = (struct lazy_linking_s *)calloc(number, sizeof(struct lazy_linking_s));
 
     /* read the symbols */
     file = &file[object->symbol_ptr];
@@ -552,18 +552,25 @@ _read_symtbl(gp_object_type *object, const unsigned char *file, gp_binary_type *
     for (i = 0; i < number; i++) {
       /* read the symbol */
       _read_symbol(object, i, current, file, string_table, lazy_linking, data);
+
+      if ((current->class == C_SECTION) || (current->class == C_FILE)) {
+        section_name = current->name;
+      }
+
+      current->section_name = section_name;
+
       current->number = i;
       num_auxsym = current->num_auxsym;
       file += object->symbol_size;
 
-      if (num_auxsym != 0) {
+      if (num_auxsym > 0) {
         current->aux_list = gp_coffgen_blockaux(current->num_auxsym);
         current_aux = current->aux_list;
         aux_type = gp_determine_aux(current);
 
         /* read the aux symbols */
         for (j = 0; j < num_auxsym; j++) {
-          _read_aux(object, i+1, current_aux, aux_type, file, string_table, lazy_linking, data);
+          _read_aux(object, i + 1, current_aux, aux_type, file, string_table, lazy_linking, data);
           /* AUX_FCN may be followed by AUX_FCN_CALLS */
           if (aux_type == AUX_FCN)
             aux_type = AUX_FCN_CALLS;
@@ -609,7 +616,7 @@ _clean_symtbl(gp_object_type *object)
     else
       current->section = NULL;
 
-    if (current->num_auxsym != 0) {
+    if (current->num_auxsym > 0) {
       next_symbol = current->next;
       for (i = 0; i < current->num_auxsym; i++) {
         /* old_symbol = next_symbol; */

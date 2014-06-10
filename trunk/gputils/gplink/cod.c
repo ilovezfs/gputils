@@ -358,7 +358,7 @@ cod_write_code(void)
       unsigned short insn;
 
       if (i - mem_base < MAX_I_MEM &&
-          state.class->i_memory_get(state.i_memory, i, &insn)) {
+          state.class->i_memory_get(state.i_memory, i, &insn, NULL, NULL)) {
         cod_emit_opcode(dbi, i, insn);
         if (used_flag == 0) {
           /* Save the start address in a range of opcodes */

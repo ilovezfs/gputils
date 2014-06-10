@@ -91,7 +91,7 @@ data_line(int start, int stop, enum mode_flags_e mode)
     while (start < stop) {
       unsigned char b;
 
-      if (!b_memory_get(memory, start++, &b))
+      if (!b_memory_get(memory, start++, &b, NULL, NULL))
         b = 0xff;
       write_byte(b);
     }
@@ -105,7 +105,7 @@ data_line(int start, int stop, enum mode_flags_e mode)
     while (start < stop) {
       unsigned char b;
 
-      if (!b_memory_get(memory, (start++) ^ 1, &b))
+      if (!b_memory_get(memory, (start++) ^ 1, &b, NULL, NULL))
         b = 0xff;
       write_byte(b);
     }
@@ -117,7 +117,7 @@ data_line(int start, int stop, enum mode_flags_e mode)
     while (start < stop) {
       unsigned char b;
 
-      if (!b_memory_get(memory, start, &b))
+      if (!b_memory_get(memory, start, &b, NULL, NULL))
         b = 0xff;
       write_byte(b);
       start += 2;
@@ -168,12 +168,12 @@ write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_s
 
     while (i < maximum) {
       unsigned char b;
-      if (!b_memory_get(memory, i, &b)) {
+      if (!b_memory_get(memory, i, &b, NULL, NULL)) {
         ++i;
       }
       else {
         j = i;
-        while (b_memory_get(memory, i, &b)) {
+        while (b_memory_get(memory, i, &b, NULL, NULL)) {
           ++i;
           if (((mode == all || mode == swap) && (i & 0xf) == 0) ||
             (i & 0x1f) == 0)

@@ -37,32 +37,56 @@ Boston, MA 02111-1307, USA.  */
 struct proc_class;
 
 /* See beginning of gpmemory.c for documentation. */
+typedef struct MemWord {
+  unsigned short data;
+  const char *section_name;
+  const char *symbol_name;
+} MemWord;
+
 typedef struct MemBlock {
   unsigned int base;
-  unsigned short *memory;
-  char *name;
+  MemWord *memory;
   struct MemBlock *next;
 } MemBlock;
 
 MemBlock *i_memory_create(void);
 void i_memory_free(MemBlock *m);
-int b_memory_get(MemBlock *m, unsigned int byte_address, unsigned char *byte);
+
+int b_memory_get(MemBlock *m, unsigned int byte_address, unsigned char *byte,
+                 const char **section_name, const char **symbol_name);
+
 #ifndef NDEBUG
-#define b_memory_assert_get(m, byte_address, byte) assert(b_memory_get(m, byte_address, byte))
+
+#define b_memory_assert_get(m, byte_address, byte, section_name, symbol_name) \
+    assert(b_memory_get(m, byte_address, byte, section_name, symbol_name))
+
 #else
-#define b_memory_assert_get(m, byte_address, byte) b_memory_get(m, byte_address, byte)
+
+#define b_memory_assert_get(m, byte_address, byte, section_name, symbol_name) \
+    b_memory_get(m, byte_address, byte, section_name, symbol_name)
+
 #endif
-void b_memory_put(MemBlock *b_memory, unsigned int byte_address, unsigned char value, const char *name);
+
+void b_memory_put(MemBlock *b_memory, unsigned int byte_address, unsigned char value,
+                  const char *section_name, const char *symbol_name);
+
 void b_memory_clear(MemBlock *b_memory, unsigned int byte_address);
 int b_range_memory_used(MemBlock *m, int from, int to);
 int b_memory_used(MemBlock *m);
 struct proc_class;
 void print_i_memory(MemBlock *m, const struct proc_class *class);
 
-int i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word);
-int i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word);
-void i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word, const char *name);
-void i_memory_put_be(MemBlock *m, unsigned int byte_addr, unsigned short word, const char *name);
+int i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word,
+                    const char **section_name, const char **symbol_name);
+
+int i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word,
+                    const char **section_name, const char **symbol_name);
+
+void i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word,
+                     const char *section_name, const char *symbol_name);
+
+void i_memory_put_be(MemBlock *m, unsigned int byte_addr, unsigned short word,
+                     const char *section_name, const char *symbol_name);
 
 void b_memory_set_listed(MemBlock *m, unsigned int address, unsigned int n_bytes);
 unsigned int b_memory_get_unlisted_size(MemBlock *m, unsigned int address);

@@ -821,13 +821,13 @@ linker(void)
 
   /* allocate memory for absolute sections */
   gp_debug("verifying absolute sections.");
-  gp_cofflink_reloc_abs(program,
+  gp_cofflink_reloc_abs(state.object,
+                        program,
                         state.class->org_to_byte_shift,
-                        state.object->sections,
                         STYP_TEXT | STYP_DATA_ROM);
-  gp_cofflink_reloc_abs(data,
+  gp_cofflink_reloc_abs(state.object,
+                        data,
                         0,
-                        state.object->sections,
                         STYP_DATA | STYP_BSS | STYP_SHARED |
                         STYP_OVERLAY | STYP_ACCESS);
 
@@ -839,7 +839,8 @@ linker(void)
                        state.object->sections,
                        ".cinit");
     if (cinit_section) {
-      gp_cofflink_reloc_cinit(program,
+      gp_cofflink_reloc_cinit(state.object,
+                              program,
                               state.class->org_to_byte_shift,
                               cinit_section,
                               state.section.definition);
@@ -850,15 +851,15 @@ linker(void)
 
   /* allocate memory for relocatable assigned sections */
   gp_debug("relocating assigned sections.");
-  gp_cofflink_reloc_assigned(program,
+  gp_cofflink_reloc_assigned(state.object,
+                             program,
                              state.class->org_to_byte_shift,
-                             state.object->sections,
                              STYP_TEXT | STYP_DATA_ROM,
                              state.section.definition,
                              state.section.logical);
-  gp_cofflink_reloc_assigned(data,
+  gp_cofflink_reloc_assigned(state.object,
+                             data,
                              0,
-                             state.object->sections,
                              STYP_DATA | STYP_BSS | STYP_SHARED |
                              STYP_OVERLAY | STYP_ACCESS,
                              state.section.definition,
@@ -868,14 +869,14 @@ linker(void)
 
   /* allocate memory for relocatable unassigned sections */
   gp_debug("relocating unassigned sections.");
-  gp_cofflink_reloc_unassigned(program,
+  gp_cofflink_reloc_unassigned(state.object,
+                               program,
                                state.class->org_to_byte_shift,
-                               state.object->sections,
                                STYP_TEXT | STYP_DATA_ROM,
                                state.section.definition);
-  gp_cofflink_reloc_unassigned(data,
+  gp_cofflink_reloc_unassigned(state.object,
+                               data,
                                0,
-                               state.object->sections,
                                STYP_DATA | STYP_BSS | STYP_SHARED |
                                STYP_OVERLAY | STYP_ACCESS,
                                state.section.definition);

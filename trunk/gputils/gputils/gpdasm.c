@@ -103,7 +103,7 @@ void dasm(MemBlock *memory)
 
     while (i < maximum) {
       unsigned short data;
-      if (state.class->i_memory_get(memory, i, &data)) {
+      if (state.class->i_memory_get(memory, i, &data, NULL, NULL)) {
         int org = gp_processor_byte_to_org(state.class, i);
         if (last_loc != i - 2){
           writeorg(org);
@@ -124,7 +124,7 @@ void dasm(MemBlock *memory)
           i += 2;
           /* some 18xx instructions use two words */
           if (state.format) {
-            state.class->i_memory_get(memory, i, &data);
+            state.class->i_memory_get(memory, i, &data, NULL, NULL);
             printf("%06x:  %04x\n", gp_processor_byte_to_org(state.class, i), data);
           }
         }

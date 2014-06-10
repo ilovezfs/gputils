@@ -38,6 +38,7 @@ gp_reloc_type *gp_coffgen_addreloc(gp_section_type *section);
 gp_linenum_type *gp_coffgen_addlinenum(gp_section_type *section);
 gp_symbol_type * gp_coffgen_findsymbol(gp_object_type *object, const char *name);
 gp_symbol_type * gp_coffgen_findsectionsymbol(gp_object_type *object, const char *name);
+gp_symbol_type *gp_coffgen_findsymbol_sect_val(gp_object_type *object, const char *section_section, long value);
 gp_aux_type *gp_coffgen_addaux(gp_object_type *object, gp_symbol_type *symbol);
 gp_symbol_type *gp_coffgen_addsymbol(gp_object_type *object);
 gp_symbol_type *gp_coffgen_delsymbol(gp_object_type *object, gp_symbol_type *symbol);

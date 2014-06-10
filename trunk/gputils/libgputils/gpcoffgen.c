@@ -262,6 +262,36 @@ gp_coffgen_findsectionsymbol(gp_object_type *object, const char *name)
   return found;
 }
 
+/* Search for a symbol, based on the value and name of host section.
+   The function is slow, but only need the error messages. */
+
+gp_symbol_type *
+gp_coffgen_findsymbol_sect_val(gp_object_type *object, const char *section_name, long value)
+{
+  gp_symbol_type *current = NULL;
+  gp_symbol_type *found = NULL;
+
+  if ((object == NULL) || (section_name == NULL)) {
+    return NULL;
+  }
+
+  current = object->symbols;
+
+  while (current != NULL) {
+    if ((current->class != C_SECTION) &&
+        (current->class != C_FILE) &&
+        (current->section_name != NULL) &&
+        (strcmp(current->section_name, section_name) == 0) &&
+        (current->value == value)) {
+      found = current;
+      break;
+    }
+    current = current->next;
+  }
+
+  return found;
+}
+
 gp_aux_type *
 gp_coffgen_addaux(gp_object_type *object, gp_symbol_type *symbol)
 {

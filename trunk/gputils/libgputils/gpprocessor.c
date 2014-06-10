@@ -1106,21 +1106,21 @@ gp_processor_set_page_pic12_14(int num_pages,
 
   if (use_wreg) {
     data = movlw_insn | page;
-    i_memory_put_le(m, address,     data, buf);
+    i_memory_put_le(m, address,     data, buf, NULL);
     data = movwf_insn | location;
-    i_memory_put_le(m, address + 2, data, buf);
+    i_memory_put_le(m, address + 2, data, buf, NULL);
 
     return 4;
   }
   else {
     /* page low bit */
     data = ((page & 1) ? bsf_insn : bcf_insn) | page0 | location;
-    i_memory_put_le(m, address, data, buf);
+    i_memory_put_le(m, address, data, buf, NULL);
 
     if (num_pages > 2) {
       /* page high bit */
       data = ((page & 2) ? bsf_insn : bcf_insn) | page1 | location;
-      i_memory_put_le(m, address + 2, data, buf);
+      i_memory_put_le(m, address + 2, data, buf, NULL);
     }
 
     return ((num_pages == 2) ? 2 : 4);
@@ -1151,11 +1151,11 @@ gp_processor_set_bank_pic12_14(int num_banks,
 
   /* bank low bit */
   data = ((bank & 1) ? bsf_insn : bcf_insn) | bank0 | location;
-  i_memory_put_le(m, address, data, buf);
+  i_memory_put_le(m, address, data, buf, NULL);
   if (num_banks > 2) {
     /* bank high bit */
     data = ((bank & 2) ? bsf_insn : bcf_insn) | bank1 | location;
-    i_memory_put_le(m, address + 2, data, buf);
+    i_memory_put_le(m, address + 2, data, buf, NULL);
   }
 
   return ((num_banks == 2) ? 2 : 4);
@@ -1276,7 +1276,7 @@ gp_processor_set_bank_pic12e(int num_banks,
   data = INSN_PIC12E_MOVLB | bank;
   snprintf(buf, sizeof(buf), "bank_%i", bank);
 
-  i_memory_put_le(m, address, data, buf);
+  i_memory_put_le(m, address, data, buf, NULL);
   return 2;
 }
 
@@ -1353,7 +1353,7 @@ gp_processor_set_ibank_pic14(int num_banks,
                             unsigned int address)
 {
   /* bcf 3,7 or bsf 3,7 */
-  i_memory_put_le(m, address, (bank == 0) ? 0x1383 : 0x1783, (bank == 0) ? "ibank0" : "ibank1");
+  i_memory_put_le(m, address, (bank == 0) ? 0x1383 : 0x1783, (bank == 0) ? "ibank0" : "ibank1", NULL);
   return 2;
 }
 
@@ -1443,7 +1443,7 @@ gp_processor_set_bank_pic14e(int num_banks,
   data = INSN_PIC14E_MOVLB | bank;
   snprintf(buf, sizeof(buf), "bank_%i", bank);
 
-  i_memory_put_le(m, address, data, buf);
+  i_memory_put_le(m, address, data, buf, NULL);
   return 2;
 }
 
@@ -1475,7 +1475,7 @@ gp_processor_set_ibank_pic14e(int num_banks,
                     ((bank & mask) ? INSN_PIC14_BSF : INSN_PIC14_BCF) |
                         (bit << INSN_PIC14_BxF_BITSHIFT) |
                         REG_PIC14E_FSR0H,
-                    buf);
+                    buf, NULL);
 
   return (bit * 2);
 }
@@ -1506,14 +1506,14 @@ gp_processor_set_page_pic14e(int num_pages,
 
   if (use_wreg) {
     data = INSN_PIC14_MOVLW | page;
-    i_memory_put_le(m, address,     data, buf);
+    i_memory_put_le(m, address,     data, buf, NULL);
     data = INSN_PIC14_MOVWF | REG_PIC14_PCLATH;
-    i_memory_put_le(m, address + 2, data, buf);
+    i_memory_put_le(m, address + 2, data, buf, NULL);
     return 4;
   }
   else {
     data = INSN_PIC14E_MOVLP | page;
-    i_memory_put_le(m, address, data, buf);
+    i_memory_put_le(m, address, data, buf, NULL);
     return 2;
   }
 }
@@ -1585,7 +1585,7 @@ gp_processor_set_bank_pic16(int num_banks,
   bank &= 0x200 | MASK_PIC16_BANK;
   snprintf(buf, sizeof(buf), "bank_%i", bank & MASK_PIC16_BANK);
 
-  i_memory_put_le(m, address, INSN_PIC16_MOVLB | bank, buf);
+  i_memory_put_le(m, address, INSN_PIC16_MOVLB | bank, buf, NULL);
   return 2;
 }
 
@@ -1609,9 +1609,9 @@ gp_processor_set_page_pic16(int num_pages,
   snprintf(buf, sizeof(buf), "page_%02x", page);
 
   data = INSN_PIC16_MOVLW | page;
-  i_memory_put_le(m, address, data, buf);
+  i_memory_put_le(m, address,     data, buf, NULL);
   data = INSN_PIC16_MOVWF | REG_PIC16_PCLATH;
-  i_memory_put_le(m, address + 2, data, buf);
+  i_memory_put_le(m, address + 2, data, buf, NULL);
   return 4;
 }
 
@@ -1653,7 +1653,7 @@ gp_processor_set_bank_pic16e(int num_banks,
   bank &= MASK_PIC16E_BANK;
   snprintf(buf, sizeof(buf), "bank_%i", bank);
 
-  i_memory_put_le(m, address, INSN_PIC16E_MOVLB | bank, buf);
+  i_memory_put_le(m, address, INSN_PIC16E_MOVLB | bank, buf, NULL);
   return 2;
 }
 

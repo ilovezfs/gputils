@@ -138,10 +138,10 @@ readhex(char *filename, MemBlock *m)
       for (i = 0; i < length; ++i) {
 	data = readbyte();
 	if (info->hex_format == inhx16) {
-	  b_memory_put(m, page | ((address + i) ^ 1), data, filename);
+	  b_memory_put(m, page | ((address + i) ^ 1), data, filename, NULL);
 	}
 	else {
-	  b_memory_put(m, page | (address + i),       data, filename);
+	  b_memory_put(m, page | (address + i),       data, filename, NULL);
 	}
       }
 
