@@ -54,15 +54,14 @@ object_append(gp_object_type *file, char *name)
   } else {
     gp_object_type *list = state.object;
 
-    while(list->next != NULL){
+    while (list->next != NULL) {
       list = list->next;
     }
     list->next = file;
 
     if (file->class != state.class) {
       gp_error("Processor family mismatch in \"%s\".", file->filename);
-    } else if ((0 != processor_mismatch_warning) &&
-               (file->processor != state.processor)) {
+    } else if ((processor_mismatch_warning != 0) && (file->processor != state.processor)) {
       gp_warning("Processor mismatch in \"%s\".", file->filename);
     }
   }
@@ -89,7 +88,7 @@ archive_append(gp_archive_type *file, char *name)
   } else {
     struct archivelist *list = state.archives;
 
-    while(list->next != NULL){
+    while (list->next != NULL){
       list = list->next;
     }
     list->next = new;
@@ -121,11 +120,12 @@ scan_index(struct symbol_table *table, gp_archive_type *archive)
       for (s = state.symbol.missing->hash_table[i]; s; s = s->next) {
         name = get_symbol_name(s);
         assert(name != NULL);
-        /* Search for missing symbol name in archive symbol table */
+        /* Search for missing symbol name in archive symbol table. */
         m = get_symbol(table, name);
+
         if (m != NULL) {
           /* Fetch the archive member, convert its binary data to an object
-             file, and add the object to the object list */
+             file, and add the object to the object list. */
           member = get_symbol_annotation(m);
           object_name = gp_archive_member_name(member);
           object = gp_convert_file(object_name, &member->data);
@@ -133,12 +133,12 @@ scan_index(struct symbol_table *table, gp_archive_type *archive)
           gp_link_add_symbols(state.symbol.definition,
                               state.symbol.missing,
                               object);
-          /* The symbol tables have been modified.  Need to take another
+          /* The symbol tables have been modified. Need to take another
              pass to make sure we get everything. */
           num_added++;
           modified = true;
           free(object_name);
-          /* This branch of the table has been modified. Go to the next one */
+          /* This branch of the table has been modified. Go to the next one. */
           break;
         }
       }
@@ -166,7 +166,7 @@ scan_archive(gp_archive_type *archive, char *name)
     archive_tbl = pop_symbol_table(archive_tbl);
   }
 
-  /* Read the symbol index */
+  /* Read the symbol index. */
   gp_archive_read_index(state.symbol.archive, archive);
 
   /* Scan the symbol index for symbols in the missing symbol table.  If
@@ -178,7 +178,7 @@ scan_archive(gp_archive_type *archive, char *name)
   return modified;
 }
 
-/* Remove a symbol the linker created from the missing table */
+/* Remove a symbol the linker created from the missing table. */
 
 static void
 remove_linker_symbol(char *name)
@@ -194,7 +194,7 @@ remove_linker_symbol(char *name)
 /* Add a symbol the linker created to the symbol table. */
 
 static void
-add_linker_symbol(char *name)
+add_linker_symbol(const char *name)
 {
   gp_symbol_type *current = state.object->symbols;
   gp_symbol_type *found = NULL;
@@ -234,8 +234,8 @@ search_idata(void)
   }
 }
 
-/* Build the symbol tables.  Determine which objects from the archives are
-   required for linking */
+/* Build the symbol tables. Determine which objects from the archives are
+   required for linking. */
 
 void
 build_tables(void)
@@ -248,15 +248,13 @@ build_tables(void)
   const char *name;
   gp_coffsymbol_type *var;
 
-  /* Create the object file symbol tables */
+  /* Create the object file symbol tables. */
   while (list != NULL) {
-    gp_link_add_symbols(state.symbol.definition,
-                        state.symbol.missing,
-                        list);
+    gp_link_add_symbols(state.symbol.definition, state.symbol.missing, list);
     list = list->next;
   }
 
-  /* All of the objects have been scanned.  If there are remaining references
+  /* All of the objects have been scanned. If there are remaining references
      to symbols, then the archives must contain the missing references. */
   if (count_missing() && (state.archives != NULL)) {
     modified = false;
@@ -295,8 +293,8 @@ build_tables(void)
     remove_linker_symbol("_stack_end");
   }
 
-  /* All of the archives have been scanned.  If there are still missing
-     references, it is an error */
+  /* All of the archives have been scanned. If there are still missing
+     references, it is an error. */
   if (count_missing()) {
     for (i = 0; i < HASH_SIZE; i++) {
       for (s = state.symbol.missing->hash_table[i]; s; s = s->next) {
@@ -313,9 +311,9 @@ build_tables(void)
   }
 }
 
-/* Read a coff object or archive.  gplink doesn't care about file extensions.
+/* Read a coff object or archive. gplink doesn't care about file extensions.
    This allows alternate extensions such as .a archives and .obj coff
-   objects.  */
+   objects. */
 
 void
 gplink_open_coff(const char *name)
@@ -329,13 +327,13 @@ gplink_open_coff(const char *name)
 
   coff = fopen(file_name, "rb");
   if ((coff == NULL) && (strchr(file_name, PATH_CHAR) == 0)) {
-    /* If no "/" in name, try searching include pathes */
+    /* If no "/" in name, try searching include pathes. */
     int i;
 
-    for(i = 0; i < state.numpaths; i++) {
-      snprintf(file_name, sizeof(file_name),
-               "%s" COPY_CHAR "%s", state.paths[i], name);
+    for (i = 0; i < state.numpaths; i++) {
+      snprintf(file_name, sizeof(file_name), "%s" COPY_CHAR "%s", state.paths[i], name);
       coff = fopen(file_name, "rb");
+
       if (coff != NULL) {
         break;
       }
@@ -347,7 +345,7 @@ gplink_open_coff(const char *name)
     exit(1);
   }
 
-  /* FIXME: Three files are opened, surely one is sufficent */
+  /* FIXME: Three files are opened, surely one is sufficent. */
 
   switch(gp_identify_coff_file(file_name)) {
   case object_file_v2:
@@ -455,7 +453,7 @@ init(void)
   state.ifdef = NULL;
   state.script_symbols = push_symbol_table(NULL, false);
 
-  /* The symbols are case sensitive */
+  /* The symbols are case sensitive. */
   state.symbol.definition = push_symbol_table(NULL, false);
   state.symbol.missing = push_symbol_table(NULL, false);
   state.section.definition = push_symbol_table(NULL, false);
@@ -512,12 +510,12 @@ show_usage(void)
   printf("  -w, --processor-mismatch       Disable \"processor mismatch\" warning.\n");
   printf("\n");
 #ifdef USE_DEFAULT_PATHS
-  if (gp_lkr_path) {
+  if (gp_lkr_path != NULL) {
     printf("Default linker script path %s\n", gp_lkr_path);
   } else {
     printf("Default linker script path NOT SET\n");
   }
-  if (gp_lib_path) {
+  if (gp_lib_path != NULL) {
     printf("Default library path %s\n", gp_lib_path);
   } else {
     printf("Default library path NOT SET\n");
@@ -608,8 +606,10 @@ process_args( int argc, char *argv[])
     case 'o':
       strncpy(state.basefilename, optarg, sizeof(state.basefilename));
       pc = strrchr(state.basefilename, '.');
-      if (pc)
-        *pc = 0;
+
+      if (pc != NULL) {
+        *pc = '\0';
+      }
       break;
 
     case 'O':
@@ -632,8 +632,9 @@ process_args( int argc, char *argv[])
         fn->filename = strdup(optarg);
         fn->next = NULL;
 
-        if (NULL == state.srcfilenames)
+        if (NULL == state.srcfilenames) {
           state.srcfilenames = fn;
+        }
         else {
           struct srcfns *p;
 
@@ -670,22 +671,26 @@ process_args( int argc, char *argv[])
       state.mplink_compatible = true;
       break;
     }
-    if (usage)
+
+    if (usage) {
       break;
+    }
   }
 
   /* check if the first file is the linker script */
   if (argv[optind]) {
     pc = strrchr(argv[optind], '.');
-    if (pc && strcasecmp(pc, ".lkr") == 0) {
+
+    if ((pc != NULL) && (strcasecmp(pc, ".lkr") == 0)) {
       struct srcfns *fn;
 
       fn = malloc(sizeof (struct srcfns));
       fn->filename = strdup(argv[optind++]);
       fn->next = NULL;
 
-      if (NULL == state.srcfilenames)
+      if (state.srcfilenames == NULL) {
         state.srcfilenames = fn;
+      }
       else {
         struct srcfns *p;
 
@@ -696,10 +701,9 @@ process_args( int argc, char *argv[])
     }
   }
 
-  if ((state.srcfilenames == NULL) &&
-      (optind >= argc)) {
+  if ((state.srcfilenames == NULL) && (optind >= argc)) {
     /* No linker script was specified and no object filenames were provided,
-       so print the usage */
+       so print the usage. */
     usage = true;
   }
 
@@ -708,12 +712,12 @@ process_args( int argc, char *argv[])
   }
 
   /* Add the library path to the include paths list last, so that the user
-     specified directories are searched first */
-  if (gp_lib_path) {
+     specified directories are searched first. */
+  if (gp_lib_path != NULL) {
     gplink_add_path(gp_lib_path);
   }
 
-  if (gp_lkr_path) {
+  if (gp_lkr_path != NULL) {
     gplink_add_path(gp_lkr_path);
   }
 
@@ -736,7 +740,7 @@ linker(void)
   snprintf(state.objfilename, sizeof(state.objfilename),
            "%s.cof", state.basefilename);
 
-  /* Read the script */
+  /* Read the script. */
   if (state.srcfilenames) {
     struct srcfns *p = state.srcfilenames;
 
@@ -746,7 +750,8 @@ linker(void)
       p = p->next;
     } while (NULL != p);
 #ifdef USE_DEFAULT_PATHS
-  } else if ((state.object) && (gp_lkr_path)) {
+  }
+  else if ((state.object != NULL) && (gp_lkr_path != NULL)) {
     /* The processor is known because an object was on the command line. So
        use one of the default scripts that are distributed with gputils. */
     char file_name[BUFSIZ];
@@ -754,17 +759,20 @@ linker(void)
 
     assert(state.processor);
     script_name = gp_processor_script(state.processor);
+
     if (script_name == NULL) {
       gp_error("Linker script not specified and can't determine default script.");
       return EXIT_FAILURE;
     }
+
     snprintf(file_name, sizeof(file_name),
              "%s" COPY_CHAR "%s", gp_lkr_path, script_name);
     gp_message("Using default linker script \"%s\".", file_name);
     open_src(file_name, 0);
     yyparse();
 #endif
-  } else {
+  }
+  else {
     /* The user must supply the linker script name.  The processor isn't
        commanded so the linker has no way to pick. */
     gp_error("Linker script not specified.");
@@ -776,9 +784,10 @@ linker(void)
     return EXIT_FAILURE;
   }
 
-  /* An error occured while reading the input files, no need to continue */
-  if (gp_num_errors)
+  /* An error occured while reading the input files, no need to continue. */
+  if (gp_num_errors > 0) {
     return EXIT_FAILURE;
+  }
 
   /* Construct the symbol tables. Determine which archive members are
      required to resolve external references. */
@@ -820,7 +829,7 @@ linker(void)
   program = i_memory_create();
 
   /* allocate memory for absolute sections */
-  gp_debug("verifying absolute sections.");
+  gp_debug("Verifying absolute sections.");
   gp_cofflink_reloc_abs(state.object,
                         program,
                         state.class->org_to_byte_shift,
@@ -850,7 +859,7 @@ linker(void)
   /* FIXME: allocate assigned stacks */
 
   /* allocate memory for relocatable assigned sections */
-  gp_debug("relocating assigned sections.");
+  gp_debug("Relocating assigned sections.");
   gp_cofflink_reloc_assigned(state.object,
                              program,
                              state.class->org_to_byte_shift,
@@ -868,7 +877,7 @@ linker(void)
   /* FIXME: allocate unassigned stacks */
 
   /* allocate memory for relocatable unassigned sections */
-  gp_debug("relocating unassigned sections.");
+  gp_debug("Relocating unassigned sections.");
   gp_cofflink_reloc_unassigned(state.object,
                                program,
                                state.class->org_to_byte_shift,
@@ -886,9 +895,7 @@ linker(void)
 
   gp_cofflink_update_table(state.object, state.class->org_to_byte_shift);
 
-  gp_cofflink_fill_pages(state.object,
-                         program,
-                         state.section.definition);
+  gp_cofflink_fill_pages(state.object, program, state.section.definition);
 
   i_memory_free(data);
   i_memory_free(program);
@@ -928,7 +935,7 @@ linker(void)
 
   i_memory_free(state.i_memory);
 
-  return gp_num_errors <= 0;
+  return (gp_num_errors <= 0);
 }
 
 int
@@ -937,5 +944,5 @@ main(int argc, char *argv[])
   init();
   process_args(argc, argv);
 
-  return linker() ? EXIT_SUCCESS : EXIT_FAILURE;
+  return (linker() ? EXIT_SUCCESS : EXIT_FAILURE);
 }

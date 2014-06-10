@@ -68,7 +68,7 @@ check_code(int code)
 
   p = errorcodes_list;
 
-  while(p) {
+  while (p) {
     if (p->value == code) {
       print = 1;
     } else if (p->value == -(code)) {
@@ -279,8 +279,9 @@ void
 gperror(unsigned int code, char *message)
 {
   if (state.pass == 2) {
-    if (message == NULL)
+    if (message == NULL) {
       message = gp_geterror(code);
+    }
 
     /* standard output */
     err(et_error, code, message);
@@ -379,8 +380,9 @@ gpwarning(unsigned int code, char *message)
 {
   if (state.pass == 2) {
     if ((state.error_level <= 1) && check_code(code)) {
-      if (message == NULL)
+      if (message == NULL) {
         message = gp_getwarning(code);
+      }
 
       /* standard output */
       err(et_warning, code, message);
@@ -469,8 +471,9 @@ gpmessage(unsigned int code, char *message)
 {
   if (state.pass == 2) {
     if ((state.error_level == 0) && check_code(code)) {
-      if (message == NULL)
+      if (message == NULL) {
         message = gp_getmessage(code);
+      }
 
       /* standard output */
       err(et_message, code, message);

@@ -31,8 +31,9 @@ gp_archive_count_members(gp_archive_type *archive)
   int number = 0;
 
   /* If present, skip the symbol index. */
-  if (gp_archive_have_index(archive))
+  if (gp_archive_have_index(archive)) {
     archive = archive->next;
+  }
 
   while (archive != NULL) {
     number++;
@@ -52,8 +53,9 @@ gp_archive_member_name(gp_archive_type *archive)
 
   sscanf(archive->header.ar_name, "%255s/", name);
   end = strchr(&name[0], '/');
-  if (end != NULL)
+  if (end != NULL) {
     *end = '\0';
+  }
 
   return strdup(name);
 }
@@ -77,8 +79,9 @@ gp_archive_list_members(gp_archive_type *archive)
     sscanf(archive->header.ar_date, "%il", &date);
     sscanf(archive->header.ar_size, "%il", &size);
     end = strchr(&name[0], '/');
-    if (end != NULL)
+    if (end != NULL) {
       *end = '\0';
+    }
     time = date;
     printf(format, name, size, ctime(&time));
     archive = archive->next;
@@ -101,8 +104,10 @@ gp_archive_find_member(gp_archive_type *archive, char *objectname)
   while (archive != NULL) {
     sscanf(archive->header.ar_name, "%255s/", name);
     end = strrchr(&name[0], '/');
-    if (end != NULL)
+    if (end != NULL) {
       *end = '\0';
+    }
+
     if (strcmp(objectname, name) == 0) {
       found = archive;
       break;
@@ -320,15 +325,15 @@ gp_archive_read(char *filename)
   int object_size;
   char buffer[SARMAG + 1];
 
-  infile = fopen(filename,"rb");
+  infile = fopen(filename, "rb");
   if (infile == NULL) {
     perror(filename);
     exit(1);
   }
 
   /* read the magic number */
-  if (SARMAG != fread(&buffer[0], 1, SARMAG, infile) ||
-    0 != strncmp(buffer, ARMAG, SARMAG)) {
+  if ((fread(&buffer[0], 1, SARMAG, infile) != SARMAG) ||
+      (strncmp(buffer, ARMAG, SARMAG) != 0)) {
     fclose(infile);
     return NULL;
   }
@@ -342,16 +347,18 @@ gp_archive_read(char *filename)
 
     /* read the archive header */
     n = fread(&new->header, 1, AR_HDR_SIZ, infile);
-    if (AR_HDR_SIZ != n)
+    if (AR_HDR_SIZ != n) {
       gp_error("bad archive \"%s\"", filename);
+    }
 
     /* read the object file or symbol index into memory */
     sscanf(new->header.ar_size, "%il", &object_size);
     new->data.size = object_size;
     new->data.file = (unsigned char *)malloc(object_size);
     n = fread(new->data.file, sizeof(char), object_size, infile);
-    if (n != object_size)
+    if (n != object_size) {
       gp_error("bad archive \"%s\"", filename);
+    }
 
     /* insert the new member in the archive list */
     if (archive == NULL) {
@@ -367,8 +374,9 @@ gp_archive_read(char *filename)
        while eof test passes, but there are no other members.  Test for
        it. */
     fgetpos(infile, &position);
-    if (AR_HDR_SIZ != fread(&tmpheader, 1, AR_HDR_SIZ, infile))
+    if (AR_HDR_SIZ != fread(&tmpheader, 1, AR_HDR_SIZ, infile)) {
       break;
+    }
     fsetpos(infile, &position);
   }
 
@@ -384,11 +392,7 @@ gp_archive_read(char *filename)
 int
 gp_archive_have_index(gp_archive_type *archive)
 {
-
-  if ((archive != NULL) && (archive->header.ar_name[0] == '/'))
-    return 1;
-
-  return 0;
+  return (((archive != NULL) && (archive->header.ar_name[0] == '/')) ? 1 : 0);
 }
 
 /* Remove the symbol index if one exists */
@@ -422,14 +426,16 @@ gp_archive_make_index(gp_archive_type *archive,
   char *end;
 
   /* If present, skip the symbol index. */
-  if (gp_archive_have_index(archive))
+  if (gp_archive_have_index(archive)) {
     archive = archive->next;
+  }
 
   while (archive != NULL) {
     sscanf(archive->header.ar_name, "%255s/", name);
     end = strchr(&name[0], '/');
-    if (end != NULL)
+    if (end != NULL) {
       *end = '\0';
+    }
 
     object = gp_convert_file(name, &archive->data);
     assert(object != NULL);
@@ -455,14 +461,17 @@ gp_archive_add_index(struct symbol_table *table,
   long int indexsize = 0;
   const char *symname;
 
-  if ((archive == NULL) || (table == NULL))
+  if ((archive == NULL) || (table == NULL)) {
     return NULL;
+  }
 
   /* sort the index */
   ps = lst = malloc(table->count * sizeof(lst[0]));
-  for (i = 0; i < HASH_SIZE; i++)
-    for (s = table->hash_table[i]; s; s = s->next)
+  for (i = 0; i < HASH_SIZE; i++) {
+    for (s = table->hash_table[i]; s; s = s->next) {
       *ps++ = s;
+    }
+  }
   assert(ps == &lst[table->count]);
   qsort(lst, table->count, sizeof(lst[0]), symbol_compare);
 
@@ -493,12 +502,8 @@ gp_archive_add_index(struct symbol_table *table,
   newmember->header.ar_name[0] = '/';
   snprintf(size, sizeof(size), "%lil", indexsize);
 
-  strncpy(newmember->header.ar_size,
-          &size[0],
-          sizeof(newmember->header.ar_size));
-  strncpy(newmember->header.ar_fmag,
-          ARMAG,
-          sizeof(newmember->header.ar_fmag));
+  strncpy(newmember->header.ar_size, size,  sizeof(newmember->header.ar_size));
+  strncpy(newmember->header.ar_fmag, ARMAG, sizeof(newmember->header.ar_fmag));
 
   newmember->next = archive;
   archive = newmember;
@@ -521,8 +526,9 @@ gp_archive_add_index(struct symbol_table *table,
 
   /* write the symbol names to the member */
   for (i = 0; i < table->count; i++) {
-    const char*  symbol_name = get_symbol_name(lst[i]);
-    const size_t symbol_len  = strlen(symbol_name) + 1;
+    const char *symbol_name = get_symbol_name(lst[i]);
+    const size_t symbol_len = strlen(symbol_name) + 1;
+
     memcpy(ptr, symbol_name, symbol_len);
     ptr += symbol_len;
   }
@@ -539,8 +545,8 @@ gp_archive_add_symbol(struct symbol_table *table,
 {
   struct symbol *sym;
 
-  /* Search the for the symbol.  If not found, then add it to
-     the global symbol table.  */
+  /* Search the for the symbol. If not found, then add it to
+     the global symbol table. */
   sym = get_symbol(table, name);
   if (sym != NULL) {
     return 1;
@@ -576,7 +582,7 @@ gp_archive_read_index(struct symbol_table *table,
 
   /* set the pointers to the offsets and symbol names */
   offset = &file[AR_INDEX_NUMBER_SIZ];
-  name = (const char*)offset + (AR_INDEX_OFFSET_SIZ * number);
+  name = (const char *)offset + (AR_INDEX_OFFSET_SIZ * number);
 
   for (i = 0; i < number; i++) {
     /* get the symbol offset from the symbol index */
@@ -586,8 +592,9 @@ gp_archive_read_index(struct symbol_table *table,
        have the same offset */
     list = archive;
     while (list != NULL) {
-      if (list->offset == offset_value)
+      if (list->offset == offset_value) {
         break;
+      }
       list = list->next;
     }
 
@@ -618,9 +625,12 @@ gp_archive_print_table(struct symbol_table *table)
 
   /* sort the index */
   ps = lst = malloc(table->count * sizeof(lst[0]));
-  for (i = 0; i < HASH_SIZE; i++)
-    for (s = table->hash_table[i]; s; s = s->next)
+  for (i = 0; i < HASH_SIZE; i++) {
+    for (s = table->hash_table[i]; s; s = s->next) {
       *ps++ = s;
+    }
+  }
+
   assert(ps == &lst[table->count]);
   qsort(lst, table->count, sizeof(lst[0]), symbol_compare);
 
@@ -631,8 +641,9 @@ gp_archive_print_table(struct symbol_table *table)
     /* determine the archive member name */
     sscanf(member->header.ar_name, "%255s/", name);
     end = strchr(&name[0], '/');
-    if (end != NULL)
+    if (end != NULL) {
       *end = '\0';
+    }
     /* print it */
     printf(format, get_symbol_name(lst[i]), name);
   }

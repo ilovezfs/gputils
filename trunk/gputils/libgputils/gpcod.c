@@ -29,7 +29,8 @@ void
 gp_cod_strncpy(unsigned char *dest, const char *src, int max_len)
 {
   int len = strlen(src);
-  dest[-1] = ( (max_len>len) ? len : max_len );
+
+  dest[-1] = (max_len > len) ? len : max_len;
   memcpy(dest, src, dest[-1]);
 }
 
@@ -115,7 +116,7 @@ gp_blocks_append(Blocks *bl, BlockList *b)
 BlockList *
 gp_blocks_get_last(Blocks *bl)
 {
-  if (NULL == bl->blocks)
+  if (bl->blocks == NULL)
     return NULL;
   else {
     BlockList *p;
@@ -130,8 +131,9 @@ gp_blocks_get_last(Blocks *bl)
 BlockList *
 gp_blocks_get_last_or_new(Blocks *bl)
 {
-  if (NULL != bl->blocks)
+  if (bl->blocks != NULL) {
     return gp_blocks_get_last(bl);
+  }
   else {
     bl->offset = 0;
     return bl->blocks = gp_blocks_new();
@@ -141,8 +143,9 @@ gp_blocks_get_last_or_new(Blocks *bl)
 int
 gp_blocks_count(Blocks *bl)
 {
-  if (NULL == bl->blocks)
+  if (bl->blocks == NULL) {
     return 0;
+  }
   else {
     int n;
     BlockList *p;

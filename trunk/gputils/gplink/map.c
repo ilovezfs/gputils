@@ -40,8 +40,8 @@ map_line(const char *format, ...)
 {
   va_list args;
 
-  if (state.map.f) {
-    if (format) {
+  if (state.map.f != NULL) {
+    if (format != NULL) {
       va_start(args, format);
       vfprintf(state.map.f, format, args);
       va_end(args);
@@ -61,8 +61,7 @@ _section_value(gp_section_type *section)
   else if (section->flags & STYP_DATA) {
     value = SECTION_IDATA;
   }
-  else if ((section->flags & STYP_BSS) ||
-             (section->flags & STYP_OVERLAY)) {
+  else if ((section->flags & STYP_BSS) || (section->flags & STYP_OVERLAY)) {
     value = SECTION_UDATA;
   }
   else if (section->flags & STYP_DATA_ROM) {
@@ -121,9 +120,7 @@ _write_sections(void)
     section = section->next;
   }
 
-  qsort((void *)section_list,
-        state.object->num_sections,
-        sizeof(gp_section_type *),
+  qsort((void *)section_list, state.object->num_sections, sizeof(gp_section_type *),
         compare_sections);
 
   map_line("                                 Section Info");
@@ -154,8 +151,7 @@ _write_sections(void)
       type = "UNKNOWN";
     }
 
-    if ((section->flags & STYP_TEXT) ||
-        (section->flags & STYP_DATA_ROM))  {
+    if ((section->flags & STYP_TEXT) || (section->flags & STYP_DATA_ROM))  {
       location = "program";
     }
     else {
@@ -238,7 +234,7 @@ pop_file(struct file_stack *stack)
 {
   struct file_stack *old;
 
-  if (stack) {
+  if (stack != NULL) {
     old = stack;
     stack = stack->previous;
     free(old);
@@ -286,8 +282,7 @@ _write_symbols(void)
     else if (symbol->class == C_EOF) {
       stack = pop_file(stack);
     }
-    else if ((symbol->section_number > 0) &&
-               (symbol->class != C_SECTION)) {
+    else if ((symbol->section_number > 0) && (symbol->class != C_SECTION)) {
       if (stack == NULL) {
         /* the symbol is not between a .file/.eof pair */
         syms[num_syms].file = NULL;

@@ -31,8 +31,9 @@ Boston, MA 02111-1307, USA.  */
 
 int enforce_arity(int arity, int must_be)
 {
-  if (arity == must_be)
+  if (arity == must_be) {
     return 1;
+  }
   else {
     if (arity < must_be) {
       gpverror(GPE_MISSING_ARGU, NULL);
@@ -56,7 +57,7 @@ int enforce_simple(struct pnode *p)
     break;
 
   default:
-    gperror(GPE_ILLEGAL_ARGU, "Illegal argument");
+    gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
   }
   return 0;
 }
@@ -113,7 +114,7 @@ int can_evaluate(struct pnode *p)
           if (var == NULL) {
             snprintf(buf,
                      sizeof(buf),
-                     "Symbol not assigned a value (%s).",
+                     "Symbol not assigned a value: \"%s\"",
                      p->value.symbol);
             gpwarning(GPW_UNKNOWN, buf);
           }
@@ -263,7 +264,7 @@ gpasmVal evaluate(struct pnode *p)
       {
         gpasmVal val = (evaluate(p->value.unop.p0) >> 8) & 0xff;
         /* set 7th bit if in absolute mode and PROC_CLASS_PIC14E and not in cblock;
-         * relative mode is handeled by the lonker */
+         * relative mode is handeled by the linker */
         if (absolute == state.mode &&
           PROC_CLASS_PIC14E == state.device.class &&
           is_program_segment(p->value.unop.p0)) {

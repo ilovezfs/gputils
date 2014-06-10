@@ -178,14 +178,14 @@ show_usage(void)
   printf("                                 List supported processors based on various aspects.\n");
   printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -m, --dump                     Memory dump.\n");
-  printf("      --mpasm-compatible         MPASM compatibility mode\n");
+  printf("      --mpasm-compatible         MPASM compatibility mode.\n");
   printf("  -M, --deps                     Output dependency file.\n");
 #ifndef HAVE_DOS_BASED_FILE_SYSTEM
   printf("  -n, --dos                      Use DOS newlines in hex file.\n");
 #endif
   printf("  -o FILE, --output FILE         Alternate name of output file.\n");
   printf("  -p PROC, --processor PROC      Select processor.\n");
-  printf("  -P FILE, --preprocess FILE     Write preprocessed asm file to FILE\n");
+  printf("  -P FILE, --preprocess FILE     Write preprocessed asm file to FILE.\n");
   printf("  -q, --quiet                    Quiet.\n");
   printf("  -r RADIX, --radix RADIX        Select radix. [hex]\n");
   printf("  -u, --absolute                 Use absolute pathes. \n");
@@ -217,7 +217,7 @@ process_args( int argc, char *argv[])
   char *pc;
 
   /* Scan through the options for the -i flag.  It must be set before the
-     defines are read */
+     defines are read. */
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
     switch (c) {
     case 'i':
@@ -269,16 +269,21 @@ process_args( int argc, char *argv[])
 
         lhs = strdup(optarg);
         rhs = strchr(lhs, '=');
+
         if (rhs != NULL) {
           *rhs = '\0';  /* Terminate the left-hand side */
           rhs++;        /* right-hand side begins after the '=' */
         }
 
         sym = get_symbol(state.stDefines, lhs);
-        if (sym == NULL)
+
+        if (sym == NULL) {
           sym = add_symbol(state.stDefines, lhs);
-        if (rhs)
+        }
+
+        if (rhs) {
           annotate_symbol(sym, mk_list(mk_string(rhs), NULL));
+        }
       }
       break;
 
@@ -368,8 +373,10 @@ process_args( int argc, char *argv[])
       strncpy(state.objfilename, optarg, sizeof(state.objfilename));
       strncpy(state.basefilename, optarg, sizeof(state.basefilename));
       pc = strrchr(state.basefilename, '.');
-      if (pc)
-        *pc = 0;
+
+      if (pc != NULL) {
+        *pc = '\0';
+      }
       break;
 
     case 'p':
@@ -411,14 +418,18 @@ process_args( int argc, char *argv[])
       state.preproc.preprocfilename = optarg;
       break;
     }
-    if (usage)
+
+    if (usage) {
       break;
+    }
   }
 
-  if ((optind + 1) == argc)
+  if ((optind + 1) == argc) {
     state.srcfilename = argv[optind];
-  else
+  }
+  else {
     usage = true;
+  }
 
   if (usage) {
     show_usage();
@@ -426,7 +437,7 @@ process_args( int argc, char *argv[])
   }
 
   /* Add the header path to the include paths list last, so that the user
-     specified directories are searched first */
+     specified directories are searched first. */
   if (gp_header_path) {
     add_path(gp_header_path);
   }
@@ -449,11 +460,13 @@ assemble(void)
   if (state.basefilename[0] == '\0') {
     strncpy(state.basefilename, state.srcfilename, sizeof(state.basefilename));
     pc = strrchr(state.basefilename, '.');
-    if (pc)
-      *pc = 0;
+
+    if (pc != NULL) {
+      *pc = '\0';
+    }
   }
 
-  /* Builtins are always case insensitive */
+  /* Builtins are always case insensitive. */
   state.stBuiltin = push_symbol_table(NULL, true);
   state.stDirective = state.stBuiltin;
   state.stMacros = push_symbol_table(NULL, state.case_insensitive);
@@ -485,18 +498,21 @@ assemble(void)
   state.stDefines = push_symbol_table(cmd_defines, state.case_insensitive);
   state.stMacroParams = push_symbol_table(NULL, state.case_insensitive);
   purge_temp_symbols(state.stTop);
-  if (!state.cmd_line.radix)
+
+  if (!state.cmd_line.radix) {
     state.radix = 16;
+  }
+
   state.obj.symbol_num = 0;
   state.obj.section_num = 0;
-  /* finih the MACRO and WHILE definition */
+  /* finish the MACRO and WHILE definition */
   state.mac_prev = NULL;
   state.mac_head = state.while_head = NULL;
   state.while_depth = 0;
 
   state.astack = NULL;
 
-  /* Initial section */
+  /* Initial section. */
   state.obj.new_sec_flags = (state.mode == absolute) ? STYP_TEXT : 0;
 
   state.found_config = false;
@@ -513,6 +529,7 @@ assemble(void)
   state.processor = NULL;
   state.processor_chosen = 0;
   state.cmd_line.processor = false;
+
   if (cmd_processor) {
     select_processor(processor_name);
     state.cmd_line.processor = true;
@@ -530,44 +547,51 @@ assemble(void)
   assert(state.pass == 2);
 
   if (state.obj.object) {
-    /* Set F_ABSOLUTE COFF flag if absolute mode */
-    if (absolute == state.mode)
+    /* Set F_ABSOLUTE COFF flag if absolute mode. */
+    if (absolute == state.mode) {
       state.obj.object->flags |= F_ABSOLUTE;
+    }
 
-    /* Set F_EXTENDED18 COFF flag if 18xx extended mode enabled */
-    if (state.extended_pic16e)
+    /* Set F_EXTENDED18 COFF flag if 18xx extended mode enabled. */
+    if (state.extended_pic16e) {
       state.obj.object->flags |= F_EXTENDED18;
+    }
   }
 
   pop_symbol_table(state.stBuiltin);
 
   hex_init();
 
-  if (state.memory_dump)
+  if (state.memory_dump) {
     print_i_memory(state.i_memory, state.device.class);
+  }
 
-  /* Maybe produce a symbol table */
+  /* Maybe produce a symbol table. */
   if (state.lst.symboltable) {
-    lst_throw(); /* Start symbol table on a fresh page */
+    lst_throw(); /* Start symbol table on a fresh page. */
     lst_symbol_table();
   }
 
-  /* Maybe produce a memory map */
+  /* Maybe produce a memory map. */
   if ((state.mode == absolute) && (state.lst.memorymap)) {
     lst_memory_map(state.i_memory);
   }
 
-  /* Finish off the object, dependency, listing, and symbol files */
+  /* Finish off the object, dependency, listing, and symbol files. */
   coff_close_file();
   deps_close();
   lst_close();
-  if (state.processor)
+
+  if (state.processor) {
     cod_close_file();
+  }
+
   free_files();
 
-  if ((state.num.errors > 0) ||
-      (gp_num_errors > 0))
+  if ((state.num.errors > 0) || (gp_num_errors > 0)) {
     return EXIT_FAILURE;
-  else
+  }
+  else {
     return EXIT_SUCCESS;
+  }
 }
