@@ -193,7 +193,7 @@ void print_data(proc_class_t class, gp_section_type *section)
     if ((section->flags & STYP_TEXT) && class->find_insn != NULL) {
       unsigned short memory;
 
-      if (!class->i_memory_get(section->data, address, &memory))
+      if (!class->i_memory_get(section->data, address, &memory, NULL, NULL))
         break;
       num_words = gp_disassemble(section->data,
                                  address,
@@ -202,7 +202,7 @@ void print_data(proc_class_t class, gp_section_type *section)
                                  sizeof(buffer));
       printf("%06x:  %04x  %s\n", gp_processor_byte_to_org(class, address), memory, buffer);
       if (num_words != 1) {
-        class->i_memory_get(section->data, address + 2, &memory);
+        class->i_memory_get(section->data, address + 2, &memory, NULL, NULL);
         printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address + 2), memory);
       }
       address += 2 * num_words;
@@ -210,14 +210,14 @@ void print_data(proc_class_t class, gp_section_type *section)
     else if (section->flags & STYP_DATA_ROM || class == PROC_CLASS_EEPROM16) {
       unsigned short word;
 
-      if (class->i_memory_get(section->data, address, &word)) {
+      if (class->i_memory_get(section->data, address, &word, NULL, NULL)) {
         printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address), word);
         address += 2;
       }
       else {
         unsigned char byte;
 
-        if (b_memory_get(section->data, address, &byte)) {
+        if (b_memory_get(section->data, address, &byte, NULL, NULL)) {
           printf("%06x:  %02x\n", gp_processor_byte_to_org(class, address), byte);
         }
         break;
@@ -227,7 +227,7 @@ void print_data(proc_class_t class, gp_section_type *section)
       /* STYP_DATA or STYP_ACTREC, or EEPROM8 */
       unsigned char byte;
 
-      if (!b_memory_get(section->data, address, &byte))
+      if (!b_memory_get(section->data, address, &byte, NULL, NULL))
         break;
       printf("%06x:  %02x\n", address, byte);
       ++address;

@@ -219,7 +219,7 @@ write_src(int last_line)
             if (0 != len) {
               unsigned char byte;
 
-              b_memory_assert_get(line_section->data, org, &byte);
+              b_memory_assert_get(line_section->data, org, &byte, NULL, NULL);
               gp_disassemble_byte(line_section->data,
                                   org,
                                   state.class,
@@ -239,7 +239,7 @@ write_src(int last_line)
           else {
             unsigned short word;
             int num_bytes;
-            state.class->i_memory_get(line_section->data, org, &word);
+            state.class->i_memory_get(line_section->data, org, &word, NULL, NULL);
             num_bytes = gp_disassemble_size(line_section->data,
                                        org,
                                        state.class,
@@ -256,7 +256,7 @@ write_src(int last_line)
             org += 2;
             if (num_bytes > 2) {
               state.lst.was_org = org;
-              state.class->i_memory_get(line_section->data, org, &word);
+              state.class->i_memory_get(line_section->data, org, &word, NULL, NULL);
               lst_line("%06lx   %04x", gp_processor_byte_to_org(state.class, org), word);
               cod_lst_line(COD_NORMAL_LST_LINE);
               org += 2;

@@ -70,7 +70,7 @@ gp_disassemble(MemBlock *m,
     return 0;
   }
 
-  class->i_memory_get(m, byte_address, &opcode);
+  class->i_memory_get(m, byte_address, &opcode, NULL, NULL);
 
   /* Special case for pic14 enhanced moviw k[FSRn] & movwi k[FSRn]. */
   if (PROC_CLASS_PIC14E == class) {
@@ -216,7 +216,7 @@ gp_disassemble(MemBlock *m,
         short unsigned int dest;
 
         num_words = 2;
-        class->i_memory_get(m, byte_address + 2, &dest);
+        class->i_memory_get(m, byte_address + 2, &dest, NULL, NULL);
         dest = (dest & MASK_PIC16E_BRANCH_HIGHER) << 8;
         dest |= opcode & MASK_PIC16E_BRANCH_LOWER;
         DECODE_ARG1(gp_processor_byte_to_org(class, dest * 2));
@@ -228,7 +228,7 @@ gp_disassemble(MemBlock *m,
         short unsigned int dest;
 
         num_words = 2;
-        class->i_memory_get(m, byte_address + 2, &dest);
+        class->i_memory_get(m, byte_address + 2, &dest, NULL, NULL);
         dest = (dest & MASK_PIC16E_BRANCH_HIGHER) << 8;
         dest |= opcode & MASK_PIC16E_BRANCH_LOWER;
         snprintf(buffer, sizeof_buffer, "%s\t%#x, %#x", instruction->name,
@@ -242,7 +242,7 @@ gp_disassemble(MemBlock *m,
         unsigned short file;
 
         num_words = 2;
-        class->i_memory_get(m, byte_address + 2, &k);
+        class->i_memory_get(m, byte_address + 2, &k, NULL, NULL);
         k = ((opcode & 0xf) << 8) | (k & 0xff);
         file = (opcode >> 4) & 0x3;
         DECODE_ARG2(file, k);
@@ -256,7 +256,7 @@ gp_disassemble(MemBlock *m,
 
         num_words = 2;
         file1 = opcode & 0xfff;
-        class->i_memory_get(m, byte_address + 2, &file2);
+        class->i_memory_get(m, byte_address + 2, &file2, NULL, NULL);
         file2 &= 0xfff;
         DECODE_ARG2(file1, file2);
       }
@@ -277,7 +277,7 @@ gp_disassemble(MemBlock *m,
 
         num_words = 2;
         offset = opcode & 0x7f;
-        class->i_memory_get(m, byte_address + 2, &file);
+        class->i_memory_get(m, byte_address + 2, &file, NULL, NULL);
         file &= 0xfff;
         DECODE_ARG2(offset, file);
       }
@@ -290,7 +290,7 @@ gp_disassemble(MemBlock *m,
 
         num_words = 2;
         offset1 = opcode & 0x7f;
-        class->i_memory_get(m, byte_address + 2, &offset2);
+        class->i_memory_get(m, byte_address + 2, &offset2, NULL, NULL);
         offset2 &= 0x7f;
         DECODE_ARG2(offset1, offset2);
       }
@@ -393,7 +393,7 @@ gp_disassemble_byte(MemBlock *m,
 {
   unsigned char byte;
 
-  b_memory_assert_get(m, byte_address, &byte);
+  b_memory_assert_get(m, byte_address, &byte, NULL, NULL);
   snprintf(buffer, sizeof_buffer, "db\t%#x", (unsigned int)byte);
   return 1;
 }
@@ -407,7 +407,7 @@ gp_disassemble_word(MemBlock *m,
 {
   unsigned short word;
 
-  class->i_memory_get(m, byte_address, &word);
+  class->i_memory_get(m, byte_address, &word, NULL, NULL);
   snprintf(buffer, sizeof_buffer, "dw\t%#x", word);
   return 2;
 }

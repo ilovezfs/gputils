@@ -526,6 +526,9 @@ typedef struct gp_symbol_type
   /* symbol value */
   long value;
 
+  /* section name of symbol */
+  const char *section_name;
+
   /* section number, only for used for determining symbol type:
      N_DEBUG = -2, N_ABS = -1, N_UNDEF = 0, or N_SCNUM = 1 if defined */
   short section_number;

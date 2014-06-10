@@ -171,8 +171,11 @@ struct proc_class {
   const int *num_instructions;
   const struct insn *(*find_insn)(const struct proc_class *cls, long int opcode);
 
-  int (*i_memory_get)(MemBlock *m, unsigned int byte_address, unsigned short *word);
-  void (*i_memory_put)(MemBlock *m, unsigned int byte_address, unsigned short value, const char *name);
+  int (*i_memory_get)(MemBlock *m, unsigned int byte_address, unsigned short *word,
+                      const char **section_name, const char **symbol_name);
+
+  void (*i_memory_put)(MemBlock *m, unsigned int byte_address, unsigned short value,
+                       const char *section_name, const char *symbol_name);
 
   void (*patch_strict)(void);
 };

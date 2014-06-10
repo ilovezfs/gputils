@@ -153,7 +153,7 @@ _gp_coffgen_write_data(proc_class_t class,
 
   for ( ; org < last; org++) {
     unsigned char b;
-    b_memory_assert_get(section->data, org, &b);
+    b_memory_assert_get(section->data, org, &b, NULL, NULL);
     fputc(b, fp);
   }
 }
@@ -275,10 +275,10 @@ _gp_coffgen_write_symbols(gp_object_type *object, unsigned char *table, FILE *fp
       gp_fputl16(current->section->number, fp);
     }
     if (object->isnew) {
-      gp_fputl32(current->type | current->derived_type << 5, fp);
+      gp_fputl32(current->type | (current->derived_type << 5), fp);
     }
     else {
-      gp_fputl16(current->type | current->derived_type << 4, fp);
+      gp_fputl16(current->type | (current->derived_type << 4), fp);
     }
     fputc(current->class, fp);
     fputc(current->num_auxsym, fp);

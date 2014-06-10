@@ -72,7 +72,7 @@ checkwrite(unsigned short value)
     value &= state.device.class->core_size;
   }
 
-  if (state.num.errors == 0 && state.device.class->i_memory_get(state.i_memory, state.org, &insn)) {
+  if (state.num.errors == 0 && state.device.class->i_memory_get(state.i_memory, state.org, &insn, NULL, NULL)) {
     gpverror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, state.org));
   }
 
@@ -105,7 +105,7 @@ emit(unsigned short value, const char *name)
   /* only write the program data to memory on the second pass */
   if (state.pass == 2) {
     value = checkwrite(value);
-    state.device.class->i_memory_put(state.i_memory, state.org, value, name);
+    state.device.class->i_memory_put(state.i_memory, state.org, value, name, NULL);
   }
 
   state.org += 2;
@@ -137,7 +137,7 @@ emit_byte(unsigned short value, const char *name)
         value = v;
       }
 
-      if (0 == state.num.errors && b_memory_get(state.i_memory, state.org, &byte)) {
+      if (0 == state.num.errors && b_memory_get(state.i_memory, state.org, &byte, NULL, NULL)) {
         gpverror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, state.org));
       }
 
@@ -161,7 +161,7 @@ emit_byte(unsigned short value, const char *name)
       }
     }
 
-    b_memory_put(state.i_memory, state.org, value, name);
+    b_memory_put(state.i_memory, state.org, value, name, NULL);
   }
   ++state.org;
 }
@@ -792,9 +792,10 @@ config_16_set_byte_mem(MemBlock *config_mem, const struct gp_cfg_device *p_dev, 
 
   snprintf(buf, sizeof(buf), "CONFIG_%#x", ca);
 
-  if (!b_memory_get(config_mem, ca, &old_byte))
+  if (!b_memory_get(config_mem, ca, &old_byte, NULL, NULL)) {
     old_byte = gp_cfg_get_default(p_dev, ca);
-  b_memory_put(config_mem, ca, (old_byte & ~mask) | byte, buf);
+  }
+  b_memory_put(config_mem, ca, (old_byte & ~mask) | byte, buf, NULL);
 }
 
 static void
@@ -803,10 +804,10 @@ config_16_set_word_mem(MemBlock *config_mem, const struct gp_cfg_device *p_dev, 
   unsigned char other_byte;
   char buf[BUFSIZ];
 
-  if (!b_memory_get(config_mem, ca ^ 1, &other_byte)) {
+  if (!b_memory_get(config_mem, ca ^ 1, &other_byte, NULL, NULL)) {
     snprintf(buf, sizeof(buf), "CONFIG_%#x", ca);
     other_byte = gp_cfg_get_default(p_dev, ca ^ 1);
-    b_memory_put(config_mem, ca ^ 1, other_byte, buf);
+    b_memory_put(config_mem, ca ^ 1, other_byte, buf, NULL);
   }
   config_16_set_byte_mem(config_mem, p_dev, ca, byte, mask);
 }
@@ -882,7 +883,7 @@ do_config(gpasmVal r, char *name, int arity, struct pnode *parms)
       }
       else {
         assert(0); /* this shouldn't happen */
-        b_memory_put(config_mem, ca, value, NULL);
+        b_memory_put(config_mem, ca, value, NULL, NULL);
         /* Hack in case the config defaults are not available. */
       }
     }
@@ -899,12 +900,12 @@ do_config(gpasmVal r, char *name, int arity, struct pnode *parms)
         }
       }
 
-      if (state.device.class->i_memory_get(state.c_memory, ca, &word)) {
+      if (state.device.class->i_memory_get(state.c_memory, ca, &word, NULL, NULL)) {
         gpverror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, ca));
       }
 
       snprintf(buf, sizeof(buf), "CONFIG_%#x", ca);
-      state.device.class->i_memory_put(config_mem, ca, value, buf);
+      state.device.class->i_memory_put(config_mem, ca, value, buf, NULL);
     }
   }
 
@@ -931,7 +932,7 @@ config_16_check_defaults(MemBlock *config_mem, const struct gp_cfg_device *p_dev
   for (t = 0; t < p_dev->addr_count; ++addrs, ++t) {
     unsigned char byte;
 
-    if (!b_memory_get(config_mem, addrs->addr, &byte)) {
+    if (!b_memory_get(config_mem, addrs->addr, &byte, NULL, NULL)) {
       config_16_set_byte_mem(config_mem, p_dev, addrs->addr, addrs->defval, 0xff);
     }
   }
@@ -2149,11 +2150,11 @@ do_idlocs(gpasmVal r, char *name, int arity, struct pnode *parms)
         if (idreg <= state.device.id_location) {
           gpverror(GPE_IDLOCS_ORDER, NULL);
         }
-        if (b_memory_get(m, idreg, &curvalue))
+        if (b_memory_get(m, idreg, &curvalue, NULL, NULL))
           gpverror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, idreg));
 
         snprintf(buf, sizeof(buf), "IDLOCS_%#x", idreg);
-        b_memory_put(m, idreg, value, buf);
+        b_memory_put(m, idreg, value, buf, NULL);
         state.lst.line.was_org = idreg;
         coff_linenum(1);
         if (relocatable == state.mode)
@@ -2170,18 +2171,18 @@ do_idlocs(gpasmVal r, char *name, int arity, struct pnode *parms)
         gpvmessage(GPM_IDLOC, NULL, value);
       }
 
-      if (state.device.class->i_memory_get(m, idreg, &word)) {
+      if (state.device.class->i_memory_get(m, idreg, &word, NULL, NULL)) {
         gpverror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, idreg));
       }
 
       snprintf(buf, sizeof(buf), "IDLOCS_%#x", idreg);
-      state.device.class->i_memory_put(m, idreg,     (value & 0xf000) >> 12, buf);
+      state.device.class->i_memory_put(m, idreg,     (value & 0xf000) >> 12, buf, NULL);
       snprintf(buf, sizeof(buf), "IDLOCS_%#x", idreg + 2);
-      state.device.class->i_memory_put(m, idreg + 2, (value & 0x0f00) >> 8,  buf);
+      state.device.class->i_memory_put(m, idreg + 2, (value & 0x0f00) >> 8,  buf, NULL);
       snprintf(buf, sizeof(buf), "IDLOCS_%#x", idreg + 4);
-      state.device.class->i_memory_put(m, idreg + 4, (value & 0x00f0) >> 4,  buf);
+      state.device.class->i_memory_put(m, idreg + 4, (value & 0x00f0) >> 4,  buf, NULL);
       snprintf(buf, sizeof(buf), "IDLOCS_%#x", idreg + 6);
-      state.device.class->i_memory_put(m, idreg + 6, (value & 0x000f),       buf);
+      state.device.class->i_memory_put(m, idreg + 6, (value & 0x000f),       buf, NULL);
       state.lst.line.was_org = idreg;
       coff_linenum(8);
       if (relocatable == state.mode)
