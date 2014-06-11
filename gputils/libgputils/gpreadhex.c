@@ -94,7 +94,7 @@ readhex(char *filename, MemBlock *m)
   linept = linebuf;
 
   /* read a line of data from the file, if NULL stop */
-  while(fgets(linept, LINESIZ, infile))
+  while (fgets(linept, LINESIZ, infile))
   {
     /* set the line pointer to the beginning of the line buffer */
     linept = linebuf;
@@ -137,6 +137,7 @@ readhex(char *filename, MemBlock *m)
       /* read the data (skipping last byte if at odd address) */
       for (i = 0; i < length; ++i) {
 	data = readbyte();
+
 	if (info->hex_format == inhx16) {
 	  b_memory_put(m, page | ((address + i) ^ 1), data, filename, NULL);
 	}

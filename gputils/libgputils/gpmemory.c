@@ -35,8 +35,8 @@ Boston, MA 02111-1307, USA.  */
 
      typedef struct MemWord {
        unsigned short data;
-       const char *section_name;
-       const char *symbol_name;
+       char *section_name;
+       char *symbol_name;
      } MemWord;
 
      typedef struct MemBlock {
@@ -65,9 +65,22 @@ void
 i_memory_free(MemBlock *m)
 {
   MemBlock *n;
+  MemWord *w;
+  unsigned int i;
 
   do {
     if (m->memory != NULL) {
+      w = m->memory;
+      for (i = MAX_I_MEM; i; ++w, --i) {
+        if (w->section_name != NULL) {
+          free((void *)w->section_name);
+        }
+
+        if (w->symbol_name != NULL) {
+          free((void *)w->symbol_name);
+        }
+      }
+
       free(m->memory);
     }
 
@@ -212,6 +225,22 @@ b_memory_get(MemBlock *m, unsigned int address, unsigned char *byte,
   return 0;
 }
 
+static void
+i_memory_store_section_name(MemWord *mw, const char *name)
+{
+  if (name != NULL && *name != '\0') {
+    mw->section_name = strdup(name);
+  }
+}
+
+static void
+i_memory_store_symbol_name(MemWord *mw, const char *name)
+{
+  if (name != NULL && *name != '\0') {
+    mw->symbol_name = strdup(name);
+  }
+}
+
 /************************************************************************
  *  b_memory_put
  *
@@ -248,11 +277,11 @@ b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value,
       w = &m->memory[offset];
 
       if (w->section_name == NULL) {
-        w->section_name = section_name;
+        i_memory_store_section_name(w, section_name);
       }
 
       if (w->symbol_name == NULL) {
-        w->symbol_name = symbol_name;
+        i_memory_store_symbol_name(w, symbol_name);
       }
 
       w->data = value | BYTE_USED_MASK;
@@ -266,8 +295,8 @@ b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value,
   m = i_memory_new(i_memory, (MemBlock *)malloc(sizeof(MemBlock)), address);
   w = &m->memory[offset];
   w->data = value | BYTE_USED_MASK;
-  w->section_name = section_name;
-  w->symbol_name  = symbol_name;
+  i_memory_store_section_name(w, section_name);
+  i_memory_store_symbol_name(w, symbol_name);
 }
 
 /************************************************************************
@@ -293,9 +322,19 @@ b_memory_clear(MemBlock *m, unsigned int address)
     if (((address >> I_MEM_BITS) & 0xffff) == m->base) {
       if (m->memory != NULL) {
         w = &m->memory[offset];
-        w->data         = 0;
+        w->data = 0;
+
+        if (w->section_name != NULL) {
+          free((void *)w->section_name);
+        }
+
         w->section_name = NULL;
-        w->symbol_name  = NULL;
+
+        if (w->symbol_name != NULL) {
+          free((void *)w->symbol_name);
+        }
+
+        w->symbol_name = NULL;
       }
       break;
     }
@@ -417,7 +456,7 @@ print_i_memory(MemBlock *m, proc_class_t class)
         for (j = 0; j < WORDS_IN_ROW; j += 2) {
           unsigned short data;
 
-          class->i_memory_get(m, i + 2 * j, &data, NULL, NULL);
+          class->i_memory_get(m, i + (2 * j), &data, NULL, NULL);
           printf("%04X ", data);
         }
 

@@ -557,6 +557,14 @@ typedef struct gp_symbol_type
   struct gp_symbol_type *next;
 } gp_symbol_type;
 
+/* hash table for find symbol name */
+
+typedef struct gp_hash
+{
+  unsigned int hash;
+  const gp_symbol_type *symbol;
+} gp_hash_type;
+
 /* section linked list */
 
 typedef struct gp_section_type
@@ -664,6 +672,10 @@ typedef struct gp_object_type
 
   /* tail of symbols */
   gp_symbol_type *symbols_tail;
+
+  /* hash table of symbols */
+  gp_hash_type *symbol_hashtable;
+  unsigned int symbol_hashtable_size;
 
   /* symbol table pointer, only valid when writing coff file */
   unsigned long symbol_ptr;

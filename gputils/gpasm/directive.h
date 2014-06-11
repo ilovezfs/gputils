@@ -30,7 +30,7 @@ Boston, MA 02111-1307, USA.  */
 #define CORE_14BIT_MASK 0x3fff
 #define CORE_16BIT_MASK 0xffff
 
-gpasmVal do_insn(char *name, struct pnode *parms);
+gpasmVal do_insn(const char *name, struct pnode *parms);
 void opcode_init(int stage);
 void begin_cblock(struct pnode *c);
 void continue_cblock(void);

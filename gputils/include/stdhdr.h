@@ -65,7 +65,7 @@ Boston, MA 02111-1307, USA.  */
 #endif
 
 #ifndef HAVE_STRNDUP
-/* no system strndup: use the one iplemented in libiberty */
+/* No system strndup: Use the one implemented in libiberty. */
 char *strndup (const char *s, size_t n);
 #endif
 

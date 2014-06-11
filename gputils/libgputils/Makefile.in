@@ -67,7 +67,7 @@ libgputils_a_AR = $(AR) $(ARFLAGS)
 libgputils_a_LIBADD =
 am_libgputils_a_OBJECTS = gparchive.$(OBJEXT) gpcod.$(OBJEXT) \
 	gpcoffgen.$(OBJEXT) gpcofflink.$(OBJEXT) gpcoffopt.$(OBJEXT) \
-	gpdis.$(OBJEXT) gpmemory.$(OBJEXT) gpmessage.$(OBJEXT) \
+	gpdis.$(OBJEXT) gphash.$(OBJEXT) gpmemory.$(OBJEXT) gpmessage.$(OBJEXT) \
 	gpopcode.$(OBJEXT) gpprocessor.$(OBJEXT) gpreadhex.$(OBJEXT) \
 	gpreadobj.$(OBJEXT) gpsymbol.$(OBJEXT) gpsystem.$(OBJEXT) \
 	gpwritehex.$(OBJEXT) gpwriteobj.$(OBJEXT) gpcfg.$(OBJEXT) \
@@ -215,11 +215,14 @@ AM_CPPFLAGS = \
 noinst_LIBRARIES = libgputils.a
 libgputils_a_SOURCES = \
 	gparchive.c \
+	gpcfg.c \
+	gpcfg-table.c \
 	gpcod.c \
 	gpcoffgen.c \
 	gpcofflink.c \
 	gpcoffopt.c \
 	gpdis.c \
+	gphash.c \
 	gpmemory.c \
 	gpmessage.c \
 	gpopcode.c \
@@ -231,15 +234,14 @@ libgputils_a_SOURCES = \
 	gpwritehex.c \
 	gpwriteobj.c \
 	gparchive.h \
-	gpcfg.c \
 	gpcfg.h \
-	gpcfg-table.c \
 	gpcod.h \
-        gpcoff.h \
+	gpcoff.h \
 	gpcoffgen.h \
 	gpcofflink.h \
 	gpcoffopt.h \
 	gpdis.h \
+	gphash.h \
 	gpmemory.h \
 	gpmessage.h \
 	gpopcode.h \
@@ -309,6 +311,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpcofflink.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpcoffopt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpdis.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gphash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpmemory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpmessage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpopcode.Po@am__quote@
