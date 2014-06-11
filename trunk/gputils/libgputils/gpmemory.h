@@ -39,8 +39,8 @@ struct proc_class;
 /* See beginning of gpmemory.c for documentation. */
 typedef struct MemWord {
   unsigned short data;
-  const char *section_name;
-  const char *symbol_name;
+  char *section_name;
+  char *symbol_name;
 } MemWord;
 
 typedef struct MemBlock {

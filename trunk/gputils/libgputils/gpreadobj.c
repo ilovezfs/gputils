@@ -156,7 +156,8 @@ _read_file_header(gp_object_type *object, const unsigned char *file, gp_binary_t
   object->num_symbols  = check_getl32(&file[12], data);
 
   opt_hdr = check_getl16(&file[16], data);
-  if (opt_hdr != 0 && opt_hdr != (isnew ? OPT_HDR_SIZ_v2 : OPT_HDR_SIZ_v1)) {
+
+  if ((opt_hdr != 0) && (opt_hdr != (isnew ? OPT_HDR_SIZ_v2 : OPT_HDR_SIZ_v1))) {
     gp_error("Incorrect optional header size (%d) in \"%s\".", opt_hdr, object->filename);
   }
 
@@ -174,11 +175,13 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_ty
   size_t offset = 0;
 
   optmagic = check_getl16(&file[0], data);
+
   if (optmagic != ((object->isnew) ? OPTMAGIC_v2 : OPTMAGIC_v1)) {
     gp_error("Invalid optional magic number (%#04x) in \"%s\".", optmagic, object->filename);
   }
 
   offset = 2;
+
   if (object->isnew) {
     vstamp = check_getl32(&file[offset], data);
     offset += 4;
@@ -199,6 +202,7 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_ty
   offset += 4;
 
   object->processor = gp_processor_coff_proc(proc_code);
+
   if (!object->processor) {
     /* Fallback to a generic processor of matching rom width */
     switch(rom_width) {
@@ -220,6 +224,7 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_ty
   }
 
   object->class = gp_processor_class(object->processor);
+
   if (gp_processor_rom_width(object->class) != rom_width) {
     if (object->class == PROC_CLASS_EEPROM8 && rom_width == 16) {
       object->processor = gp_find_processor("eeprom16");
@@ -232,9 +237,11 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_ty
   }
 
   ram_width = check_getl32(&file[offset], data);
+
   if (ram_width != 8) {
     gp_error("Invalid ram width (%ld) in \"%s\".", ram_width, object->filename);
   }
+
   offset += 4;
 }
 
@@ -289,6 +296,7 @@ _read_section_header(gp_object_type *object, gp_section_type *section,
   if (((section->flags & (STYP_TEXT | STYP_ABS)) == (STYP_TEXT | STYP_ABS)) && (section->address & 1)) {
     gp_error("Absolute code section \"%s\" must start at a word-aligned address.\n", section->name);
   }
+
   section->shadow_address = section->address;
 }
 
@@ -575,7 +583,6 @@ _read_symtbl(gp_object_type *object, const unsigned char *file, gp_binary_type *
       }
 
       current->section_name = section_name;
-
       current->number = i;
       num_auxsym = current->num_auxsym;
       file += object->symbol_size;

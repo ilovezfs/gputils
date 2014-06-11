@@ -651,7 +651,7 @@ struct insn {
   long int opcode;
   enum insn_class class;
   int attribs;
-  gpasmVal (*doer)(gpasmVal r, char *name, int arity, struct pnode *parms);
+  gpasmVal (*doer)(gpasmVal r, const char *name, int arity, struct pnode *parms);
 };
 
 struct strict_insn {

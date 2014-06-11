@@ -1,6 +1,7 @@
-/* libgputils header
-   Copyright (C) 2001, 2002, 2003, 2004, 2005
-   Craig Franklin
+
+/* Fowler–Noll–Vo hash making header file.
+
+   Copyright (C) 2014 Molnar Karoly
 
 This file is part of gputils.
 
@@ -19,35 +20,20 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-#ifndef __LIBGPUTILS_H__
-#define __LIBGPUTILS_H__
+#ifndef __GPHASH_H__
+#define __GPHASH_H__
 
-/* library files */
-#include <gptypes.h>
-#include <gpsystem.h>
-#include <gpmessage.h>
+#define FNV1A32_INIT			0x811C9DC5UL
+#define FNV1A32_PRIME			0x01000193UL
 
-/* common files */
-#include <gpmemory.h>
-#include <gpopcode.h>
-#include <gpprocessor.h>
-#include <gpsymbol.h>
-#include <gpdis.h>
-#include <gpwritehex.h>
-#include <gpreadhex.h>
+unsigned int gp_fnv1a_hash(const void *Ptr, unsigned int Size, unsigned int Hash);
 
-/* COFF files */
-#include <gpcoff.h>
-#include <gparchive.h>
-#include <gpcoffgen.h>
-#include <gpcofflink.h>
-#include <gpcoffopt.h>
-#include <gpreadobj.h>
-#include <gpwriteobj.h>
+unsigned int gp_fnv1a_hash_str(const char *String, unsigned int Hash);
 
-/* COD files */
-#include <gpcod.h>
+unsigned int gp_fnv1a_hash_symbol(const gp_symbol_type *Symbol);
 
-#include <gphash.h>
+gp_hash_type *gp_make_hash_table(gp_object_type *Object);
 
-#endif
+const gp_symbol_type *gp_find_symbol_hash_table(const gp_object_type *Object, const char *Section_name, long Symbol_value);
+
+#endif /* __GPHASH_H__ */

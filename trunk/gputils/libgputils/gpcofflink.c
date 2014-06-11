@@ -478,6 +478,8 @@ gp_cofflink_merge_sections(gp_object_type *object)
     }
     first = first->next;
   }
+
+  gp_make_hash_table(object);
 }
 
 /* copy data from idata section to the ROM section */
@@ -773,10 +775,11 @@ gp_add_cinit_section(gp_object_type *object)
 
 static void
 _set_used(gp_object_type *object, MemBlock *m, int org_to_byte_shift, unsigned int address,
-          unsigned int size, const char *type, const char *section_name, const char *symbol_name)
+          unsigned int size, const char *type, const char *section_name)
 {
   unsigned char data;
-  gp_symbol_type *symbol;
+  const gp_symbol_type *symbol;
+  const char *symbol_name;
   const char *old_section_name;
   const char *old_symbol_name;
 
@@ -788,16 +791,8 @@ _set_used(gp_object_type *object, MemBlock *m, int org_to_byte_shift, unsigned i
   for ( ; size; address++, size--) {
     if (b_memory_get(m, address, &data, &old_section_name, &old_symbol_name)) {
       if (old_section_name != NULL && section_name != NULL) {
-        if ((old_symbol_name == NULL) || (*old_symbol_name == '\0')) {
-          symbol = gp_coffgen_findsymbol_sect_val(object, old_section_name, address);
-          old_symbol_name = (symbol != NULL) ? symbol->name : NULL;
-        }
-
-        if ((symbol_name == NULL) || (*symbol_name == '\0')) {
-          symbol = gp_coffgen_findsymbol_sect_val(object, section_name, address);
-          symbol_name = (symbol != NULL) ? symbol->name : NULL;
-        }
-
+        symbol = gp_find_symbol_hash_table(object, section_name, address);
+        symbol_name = (symbol != NULL) ? symbol->name : NULL;
         gp_error("More %s sections use same address: %#x -- \"%s/%s\", \"%s/%s\"",
                  type, gp_byte_to_org(org_to_byte_shift, address),
                  old_section_name, old_symbol_name, section_name, symbol_name);
@@ -808,6 +803,8 @@ _set_used(gp_object_type *object, MemBlock *m, int org_to_byte_shift, unsigned i
       return;
     }
     else {
+      symbol = gp_find_symbol_hash_table(object, section_name, address);
+      symbol_name = (symbol != NULL) ? symbol->name : NULL;
       b_memory_put(m, address, 0, section_name, symbol_name);
     }
   }
@@ -823,7 +820,7 @@ gp_cofflink_reloc_abs(gp_object_type *object, MemBlock *m,
 
   while (section != NULL) {
     if ((section->flags & STYP_ABS) && (section->flags & flags)) {
-      _set_used(object, m, org_to_byte_shift, section->address, section->size, "absolute", section->name, NULL);
+      _set_used(object, m, org_to_byte_shift, section->address, section->size, "absolute", section->name);
 
       /* Set the relocated flag. */
       section->flags |= STYP_RELOC;
@@ -988,8 +985,9 @@ _move_data(MemBlock *m,
   const char *section_name;
   const char *symbol_name;
 
-  if (address == new_address)
+  if (address == new_address) {
     return;
+  }
 
   gp_debug("    moving %#x bytes from %#x to %#x", size, address, new_address);
 
@@ -1081,7 +1079,7 @@ gp_cofflink_reloc_assigned(gp_object_type *object,
       }
       current->address = _unmap_from_shadow_address(section_def, current_shadow_address);
       current->shadow_address = current_shadow_address;
-      _set_used(object, m, 0, current_shadow_address, current->size, "relocatable assigned", section_name, NULL);
+      _set_used(object, m, 0, current_shadow_address, current->size, "relocatable assigned", section_name);
 
       /* Update the line number offsets. */
       _update_line_numbers(current->line_numbers, current->address);
@@ -1176,7 +1174,7 @@ gp_cofflink_reloc_cinit(gp_object_type *object,
     }
     cinit_section->shadow_address = smallest_shadow_address;
     cinit_section->address = smallest_address;
-    _set_used(object, m, 0, smallest_shadow_address, size, "cinit", cinit_section->name, NULL);
+    _set_used(object, m, 0, smallest_shadow_address, size, "cinit", cinit_section->name);
 
     /* Update the line number offsets */
     _update_line_numbers(cinit_section->line_numbers, cinit_section->address);
@@ -1309,7 +1307,7 @@ next_pass:
 
       current->shadow_address = smallest_shadow_address;
       current->address = smallest_address;
-      _set_used(object, m, 0, smallest_shadow_address, size, msg, current->name, NULL);
+      _set_used(object, m, 0, smallest_shadow_address, size, msg, current->name);
 
       /* Update the line number offsets */
       _update_line_numbers(current->line_numbers, current->address);
@@ -1430,7 +1428,7 @@ gp_cofflink_fill_pages(gp_object_type *object,
 
               /* mark the memory as used */
               _set_used(object, m, object->class->org_to_byte_shift,
-                        current_shadow_address, current_size, "fill", section->name, NULL);
+                        current_shadow_address, current_size, "fill", section->name);
 
               /* fill the section memory */
               org = current_shadow_address;

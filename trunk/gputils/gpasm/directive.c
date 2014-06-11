@@ -149,8 +149,7 @@ emit_byte(unsigned short value, const char *name)
         else {
           /* check if current org is within a bad address range */
           struct range_pair *cur_badrom;
-          for (cur_badrom = state.badrom; cur_badrom != NULL;
-               cur_badrom = cur_badrom->next) {
+          for (cur_badrom = state.badrom; cur_badrom != NULL; cur_badrom = cur_badrom->next) {
             if (org >= cur_badrom->start && org <= cur_badrom->end) {
               gpvwarning(GPW_EXCEED_ROM, "BADROM_START{%#x} <= Address{%#x} <= BADROM_END{%#x}",
                          cur_badrom->start, org, cur_badrom->end);
@@ -339,7 +338,7 @@ macro_parms_ok(struct pnode *parms)
 /************************************************************************/
 
 static gpasmVal
-do_access_ovr(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_access_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -379,7 +378,7 @@ do_access_ovr(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_badram(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_badram(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -431,7 +430,7 @@ do_badram(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_badrom(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_badrom(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
 
@@ -442,7 +441,7 @@ do_badrom(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_bankisel(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_bankisel(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   int num_reloc;
@@ -501,7 +500,7 @@ do_bankisel(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_banksel(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   int address;
@@ -588,7 +587,7 @@ do_banksel(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_code(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_code(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -624,7 +623,7 @@ do_code(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_code_pack(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_code_pack(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -664,7 +663,7 @@ do_code_pack(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_constant(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_constant(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   int first = 1;
@@ -819,7 +818,7 @@ config_16_set_word_mem(MemBlock *config_mem, const struct gp_cfg_device *p_dev, 
 }
 
 static gpasmVal
-do_config(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   int ca;
@@ -948,7 +947,7 @@ config_16_check_defaults(MemBlock *config_mem, const struct gp_cfg_device *p_dev
 
 /* Support MPASM style CONFIG xxx = yyy syntax. */
 static gpasmVal
-_do_16_config(gpasmVal r, char *name, int arity, struct pnode *parms)
+_do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   static unsigned char double_mask[64];
   const struct gp_cfg_device *p_dev;
@@ -1058,7 +1057,7 @@ _do_16_config(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_16_config(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   /* valid only for 16 bit devices */
   if (state.device.class != PROC_CLASS_PIC16 && state.device.class != PROC_CLASS_PIC16E) {
@@ -1092,7 +1091,7 @@ do_16_config(gpasmVal r, char *name, int arity, struct pnode *parms)
  *          for 14-bit cores it packs two 7-bit characters into one word.
  */
 static gpasmVal
-do_da(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_da(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   int char_shift = state.device.class == PROC_CLASS_PIC14 ? 7 : 8;
 
@@ -1121,7 +1120,7 @@ do_da(gpasmVal r, char *name, int arity, struct pnode *parms)
  */
 
 static gpasmVal
-do_data(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_data(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   if ((state.mode == relocatable) && (SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
     /* This is a data memory not program. */
@@ -1142,7 +1141,7 @@ do_data(gpasmVal r, char *name, int arity, struct pnode *parms)
  */
 
 static gpasmVal
-do_db(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *L = parms;
   struct pnode *p;
@@ -1250,7 +1249,7 @@ do_db(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_de(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_de(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -1283,7 +1282,7 @@ do_de(gpasmVal r, char *name, int arity, struct pnode *parms)
 
 /* Extension to MPASM, used at least by LLVM to emit debugging information. */
 static gpasmVal
-do_def(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_def(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   char *symbol_name = NULL;
@@ -1419,7 +1418,7 @@ do_def(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_define(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_define(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
   state.preproc.do_emit = false;
@@ -1456,7 +1455,7 @@ do_define(gpasmVal r, char *name, int arity, struct pnode *parms)
 
 /* Extension to MPASM, used at least by LLVM to emit debugging information. */
 static gpasmVal
-do_dim(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_dim(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   char *symbol_name = NULL;
@@ -1541,7 +1540,7 @@ do_dim(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_direct(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_direct(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   int value;
@@ -1598,7 +1597,7 @@ do_direct(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_dt(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_dt(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   int retlw = gp_processor_retlw(state.device.class);
   struct pnode *p;
@@ -1628,7 +1627,7 @@ do_dt(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_dtm(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_dtm(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct symbol *s = get_symbol(state.stBuiltin, "movlw");
   struct insn *i = get_symbol_annotation(s);
@@ -1669,7 +1668,7 @@ do_dtm(gpasmVal r, char *name, int arity, struct pnode *parms)
  *          also the way mpasm does it).
  */
 static gpasmVal
-do_dw(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_dw(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   if (state.mode == relocatable) {
     if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
@@ -1690,7 +1689,7 @@ do_dw(gpasmVal r, char *name, int arity, struct pnode *parms)
 
 
 static gpasmVal
-do_else(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_else(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
   state.preproc.do_emit = false;
@@ -1709,7 +1708,7 @@ do_else(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_end(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_end(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.found_end = 1;
   state.lst.line.linetype = dir;
@@ -1718,7 +1717,7 @@ do_end(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_endif(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_endif(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
   state.preproc.do_emit = false;
@@ -1741,7 +1740,7 @@ do_endif(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_endm(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_endm(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   assert(!state.mac_head);
   state.lst.line.linetype = dir;
@@ -1760,7 +1759,7 @@ do_endm(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_endw(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_endw(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = nolist_dir;
 
@@ -1786,7 +1785,7 @@ do_endw(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_eof(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_eof(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
 
@@ -1806,7 +1805,7 @@ do_eof(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_equ(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_equ(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = equ;
   if (enforce_arity(arity, 1)) {
@@ -1817,7 +1816,7 @@ do_equ(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_error(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_error(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -1854,7 +1853,7 @@ do_error(gpasmVal r, char *name, int arity, struct pnode *parms)
  ************************************************************************/
 
 static gpasmVal
-do_errlvl(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_errlvl(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
@@ -1889,7 +1888,7 @@ do_errlvl(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_exitm(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_exitm(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
   if (enforce_arity(arity, 0)) {
@@ -1905,7 +1904,7 @@ do_exitm(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_expand(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_expand(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
   if (state.cmd_line.macro_expand) {
@@ -1920,7 +1919,7 @@ do_expand(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_extern(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_extern(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   char *p;
 
@@ -1943,7 +1942,7 @@ do_extern(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_file(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_file(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
@@ -1974,7 +1973,7 @@ do_file(gpasmVal r, char *name, int arity, struct pnode *parms)
    in the parser. */
 
 static gpasmVal
-do_fill(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_fill(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *h;
   int number;
@@ -1993,7 +1992,7 @@ do_fill(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_global(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_global(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   char *p;
   struct symbol *s;
@@ -2055,7 +2054,7 @@ do_global(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_idata(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_idata(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2094,7 +2093,7 @@ do_idata(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_idata_acs(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_idata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2133,7 +2132,7 @@ do_idata_acs(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_ident(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_ident(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
@@ -2156,7 +2155,7 @@ do_ident(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_idlocs(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   int value;
   unsigned int id_location;
@@ -2271,7 +2270,7 @@ do_idlocs(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_if(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_if(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
@@ -2291,7 +2290,7 @@ do_if(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_ifdef(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_ifdef(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
@@ -2320,7 +2319,7 @@ do_ifdef(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_ifndef(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_ifndef(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   state.lst.line.linetype = dir;
@@ -2349,7 +2348,7 @@ do_ifndef(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_include(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_include(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2371,7 +2370,7 @@ do_include(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_line(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_line(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2411,7 +2410,7 @@ do_line(gpasmVal r, char *name, int arity, struct pnode *parms)
  ************************************************************************/
 
 static gpasmVal
-do_list(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_list(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2560,7 +2559,7 @@ do_list(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_local(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_local(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   int first = 1;
@@ -2613,7 +2612,7 @@ do_local(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_noexpand(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_noexpand(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
 
@@ -2629,7 +2628,7 @@ do_noexpand(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_nolist(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_nolist(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
 
@@ -2643,7 +2642,7 @@ do_nolist(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_maxram(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_maxram(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2661,7 +2660,7 @@ do_maxram(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_maxrom(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_maxrom(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2679,7 +2678,7 @@ do_maxrom(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_macro(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_macro(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct macro_head *head = malloc(sizeof(*head));
 
@@ -2705,7 +2704,7 @@ do_macro(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_messg(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_messg(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2726,7 +2725,7 @@ do_messg(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_org(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_org(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2769,7 +2768,7 @@ do_org(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_page(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_page(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
 
@@ -2783,7 +2782,7 @@ do_page(gpasmVal r, char *name, int arity, struct pnode *parms)
 /* Called by both do_pagesel and do_pageselw, which have a very slight
  * difference between them */
 static gpasmVal
-_do_pagesel(gpasmVal r, char *name, int arity, struct pnode *parms, unsigned short reloc_type)
+_do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsigned short reloc_type)
 {
   struct pnode *p;
   int page;
@@ -2876,7 +2875,7 @@ _do_pagesel(gpasmVal r, char *name, int arity, struct pnode *parms, unsigned sho
 }
 
 static gpasmVal
-do_pagesel(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   if (prev_btfsx) {
     gpvwarning(GPW_BANK_PAGE_SEL_AFTER_SKIP, NULL, "Pagesel");
@@ -2886,7 +2885,7 @@ do_pagesel(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_pageselw(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_pageselw(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   if (prev_btfsx) {
     gpvwarning(GPW_BANK_PAGE_SEL_AFTER_SKIP, NULL, "Pageselw");
@@ -2896,7 +2895,7 @@ do_pageselw(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_processor(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_processor(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
 
@@ -2912,7 +2911,7 @@ do_processor(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_radix(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_radix(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -2930,7 +2929,7 @@ do_radix(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_res(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_res(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   int count;
@@ -2984,7 +2983,7 @@ do_res(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_set(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_set(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -3005,7 +3004,7 @@ do_set(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_space(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_space(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -3038,7 +3037,7 @@ do_space(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_subtitle(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_subtitle(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -3059,7 +3058,7 @@ do_subtitle(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_title(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_title(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = none;
 
@@ -3080,7 +3079,7 @@ do_title(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_type(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_type(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   char *symbol_name = NULL;
@@ -3124,7 +3123,7 @@ do_type(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_udata(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_udata(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -3160,7 +3159,7 @@ do_udata(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_udata_acs(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_udata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -3200,7 +3199,7 @@ do_udata_acs(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_udata_ovr(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_udata_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -3240,7 +3239,7 @@ do_udata_ovr(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_udata_shr(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_udata_shr(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -3280,7 +3279,7 @@ do_udata_shr(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_undefine(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_undefine(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
@@ -3304,7 +3303,7 @@ do_undefine(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_variable(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_variable(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   int first = 1;
@@ -3348,7 +3347,7 @@ do_variable(gpasmVal r, char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_while(gpasmVal r, char *name, int arity, struct pnode *parms)
+do_while(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct macro_head *head = malloc(sizeof(*head));
 
@@ -3518,7 +3517,7 @@ check_16e_arg_types(struct pnode *parms, int arity, unsigned int types)
 }
 
 gpasmVal
-do_insn(char *name, struct pnode *parms)
+do_insn(const char *name, struct pnode *parms)
 {
   struct symbol *s;
   int arity;

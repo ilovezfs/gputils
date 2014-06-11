@@ -11,11 +11,14 @@ noinst_LIBRARIES = libgputils.a
 
 libgputils_a_SOURCES =\
 	gparchive.c \
+	gpcfg.c \
+	gpcfg-table.c \
 	gpcod.c \
 	gpcoffgen.c \
 	gpcofflink.c \
 	gpcoffopt.c \
 	gpdis.c \
+	gphash.c \
 	gpmemory.c \
 	gpmessage.c \
 	gpopcode.c \
@@ -27,15 +30,14 @@ libgputils_a_SOURCES =\
 	gpwritehex.c \
 	gpwriteobj.c \
 	gparchive.h \
-	gpcfg.c \
 	gpcfg.h \
-	gpcfg-table.c \
 	gpcod.h \
-        gpcoff.h \
+	gpcoff.h \
 	gpcoffgen.h \
 	gpcofflink.h \
 	gpcoffopt.h \
 	gpdis.h \
+	gphash.h \
 	gpmemory.h \
 	gpmessage.h \
 	gpopcode.h \
