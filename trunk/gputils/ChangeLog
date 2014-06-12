@@ -1,4 +1,8 @@
 2014-06-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/gpasm.c:
+    Feature request: #44 Output path and filename options
+
+2014-06-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpcfg.c:
     Text format.
 
