@@ -27,6 +27,7 @@ static int cb_find_pic(const void *p1, const void *p2)
 {
   const struct gp_cfg_device *d1 = p1;
   const struct gp_cfg_device *d2 = p2;
+
   return strcasecmp(d1->device, d2->device);
 }
 
@@ -36,6 +37,7 @@ static int cb_find_pic(const void *p1, const void *p2)
 const struct gp_cfg_device *gp_cfg_find_pic(const char *pic)
 {
   struct gp_cfg_device fake_dev = { NULL, 0, NULL };
+
   fake_dev.device = pic;
   return bsearch(&fake_dev, gp_cfg_devices, gp_cfg_device_count, sizeof(gp_cfg_devices[0]), cb_find_pic);
 }
@@ -46,10 +48,13 @@ const struct gp_cfg_device *gp_cfg_find_pic(const char *pic)
 const struct gp_cfg_device *gp_cfg_find_pic_multi(int count, const char * const *pics)
 {
   int t;
-  for(t=0; t<count; t++) {
+
+  for (t = 0; t < count; t++) {
     const struct gp_cfg_device *d = gp_cfg_find_pic(pics[t]);
-    if(d)
+
+    if (d != NULL) {
       return d;
+    }
   }
 
   return NULL;
@@ -63,15 +68,21 @@ const struct gp_cfg_directive *gp_cfg_find_directive(const struct gp_cfg_device 
 {
   size_t t, u;
 
-  for(t=0; t<device->addr_count; t++) {
+  for (t = 0; t < device->addr_count; t++) {
     const struct gp_cfg_addr *addr = device->config_addrs + t;
-    for(u=0; u<addr->directive_count; u++) {
+
+    for (u = 0; u < addr->directive_count; u++) {
       const struct gp_cfg_directive *directive = addr->directives + u;
-      if(strcasecmp(dname, directive->name) == 0) {
-        if(config_addr)
+
+      if (strcasecmp(dname, directive->name) == 0) {
+        if (config_addr != NULL) {
           *(config_addr) = addr->addr;
-        if(def_value)
+        }
+
+        if (def_value != NULL) {
           *(def_value) = addr->defval;
+        }
+
         return directive;
       }
     }
@@ -87,10 +98,12 @@ const struct gp_cfg_option *gp_cfg_find_option(const struct gp_cfg_directive *di
 {
   size_t t;
 
-  for(t=0; t<directive->option_count; t++) {
+  for (t = 0; t < directive->option_count; t++) {
     const struct gp_cfg_option *p = directive->options + t;
-    if(strcasecmp(p->name, option) == 0)
+
+    if (strcasecmp(p->name, option) == 0) {
       return p;
+    }
   }
 
   return NULL;
@@ -102,10 +115,13 @@ const struct gp_cfg_option *gp_cfg_find_option(const struct gp_cfg_directive *di
 unsigned char gp_cfg_get_default(const struct gp_cfg_device *device, int address)
 {
   size_t t;
-  for(t=0; t<device->addr_count; t++) {
+
+  for (t = 0; t < device->addr_count; t++) {
     const struct gp_cfg_addr *addr = device->config_addrs + t;
-    if(addr->addr == address)
+
+    if (addr->addr == address) {
       return addr->defval;
+    }
   }
 
   return 0xff;
