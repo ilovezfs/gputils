@@ -524,7 +524,7 @@ typedef struct gp_symbol_type
   char *name;
 
   /* symbol value */
-  long value;
+  gp_symvalue_t value;
 
   /* section name of symbol */
   const char *section_name;

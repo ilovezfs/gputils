@@ -22,6 +22,11 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPTYPES_H__
 #define __GPTYPES_H__
 
-typedef enum { false = (0 == 1), true = (0 == 0) } gp_boolean;
+typedef enum {
+  false = (0 == 1),
+  true  = (0 == 0)
+} gp_boolean;
+
+typedef long    gp_symvalue_t;
 
 #endif
