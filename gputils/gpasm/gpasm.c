@@ -183,7 +183,13 @@ show_usage(void)
 #ifndef HAVE_DOS_BASED_FILE_SYSTEM
   printf("  -n, --dos                      Use DOS newlines in hex file.\n");
 #endif
-  printf("  -o FILE, --output FILE         Alternate name of output file.\n");
+  printf("  -o FILE, --output FILE         Alternate name of output files. Option effect of:\n");
+  printf("                                 -- If the \"-c\" option included in the command line:\n");
+  printf("                                      FILE.o, FILE.lst\n");
+  printf("                                        (The \"FILE.o\" should specified.)\n");
+  printf("                                 -- If the \"-c\" option not included in the command line:\n");
+  printf("                                      FILE.hex, FILE.cod, FILE.lst\n");
+  printf("                                        (The \"FILE.hex\" should specified.)\n");
   printf("  -p PROC, --processor PROC      Select processor.\n");
   printf("  -P FILE, --preprocess FILE     Write preprocessed asm file to FILE.\n");
   printf("  -q, --quiet                    Quiet.\n");

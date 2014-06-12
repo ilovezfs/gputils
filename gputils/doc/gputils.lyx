@@ -71,7 +71,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-May 11, 2014
+Jun 12, 2014
 \end_layout
 
 \begin_layout Standard
@@ -240,7 +240,7 @@ Supported processors
 \end_layout
 
 \begin_layout Standard
-gputils currently supports most processors supported by MPLABX v1.80.
+gputils currently supports most processors supported by MPLABX v2.10.
  This includes the following processors:
 \begin_inset Newline newline
 \end_inset
@@ -1459,7 +1459,192 @@ Use DOS style newlines (CRLF) in hex file.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Alternate name of hex output file.
+Alternate name of output files.
+ Option effect of:
+\end_layout
+
+\begin_layout Plain Layout
+-- If the 
+\begin_inset Quotes eld
+\end_inset
+
+-c
+\begin_inset Quotes erd
+\end_inset
+
+ option included in the command line: 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+file.
+\emph on
+o
+\emph default
+, file.
+\emph on
+lst
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+(The 
+\begin_inset Quotes eld
+\end_inset
+
+file.
+\emph on
+o
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ should specified.)
+\end_layout
+
+\begin_layout Plain Layout
+-- If the 
+\begin_inset Quotes eld
+\end_inset
+
+-c
+\begin_inset Quotes erd
+\end_inset
+
+ option 
+\emph on
+not
+\emph default
+ included in the command line:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+file.
+\emph on
+hex
+\emph default
+, file.
+\emph on
+cod
+\emph default
+, file.
+\emph on
+lst
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+(The 
+\begin_inset Quotes eld
+\end_inset
+
+file.
+\emph on
+hex
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ should specified.)
 \end_layout
 
 \end_inset
