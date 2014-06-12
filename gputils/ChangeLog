@@ -1,4 +1,9 @@
 2014-06-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpcoff.h, libgputils/gphash.c, libgputils/gphash.h,
+    libgputils/gptypes.h:
+    New type: gp_symvalue_t
+
+2014-06-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/gpasm.c:
     Feature request: #44 Output path and filename options
 

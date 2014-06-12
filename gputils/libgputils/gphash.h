@@ -34,6 +34,6 @@ unsigned int gp_fnv1a_hash_symbol(const gp_symbol_type *Symbol);
 
 gp_hash_type *gp_make_hash_table(gp_object_type *Object);
 
-const gp_symbol_type *gp_find_symbol_hash_table(const gp_object_type *Object, const char *Section_name, long Symbol_value);
+const gp_symbol_type *gp_find_symbol_hash_table(const gp_object_type *Object, const char *Section_name, gp_symvalue_t Symbol_value);
 
 #endif /* __GPHASH_H__ */
