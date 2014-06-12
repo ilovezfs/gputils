@@ -1,4 +1,8 @@
 2014-06-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpcfg.c:
+    Text format.
+
+2014-06-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/scan.l:
     Fixed bug: #272 Problem with CONFIG and reserved keywords
 
