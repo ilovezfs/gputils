@@ -1,3 +1,4 @@
+/* %option debug */
 %option noyywrap
 %option always-interactive
 %x bquote
@@ -206,20 +207,43 @@ fill[ \t]*\(             {
                            return IDENTIFIER;
                          }
 upper                    {
-                           yylval.i = UPPER;
-                           return UPPER;
+                           if (force_ident) {
+                             yylval.s = strdup(yytext);
+                             return IDENTIFIER;
+                           }
+                           else {
+                             yylval.i = UPPER;
+                             return UPPER;
+                           }
                          }
 high                     {
-                           yylval.i = HIGH;
-                           return HIGH;
+                           if (force_ident) {
+                             yylval.s = strdup(yytext);
+                             return IDENTIFIER;
+                           }
+                           else {
+                             yylval.i = HIGH;
+                             return HIGH;
+                          }
                          }
 low                      {
-                           yylval.i = LOW;
-                           return LOW;
+                           if (force_ident) {
+                             yylval.s = strdup(yytext);
+                             return IDENTIFIER;
+                           }
+                           else {
+                             yylval.i = LOW;
+                             return LOW;
+                           }
                          }
 list                     {
                            yylval.s = strdup(yytext);
                            return LIST;
+                         }
+config                   {
+                           force_ident = 1;
+                           yylval.s = strdup(yytext);
+                           return IDENTIFIER;
                          }
 processor                {
                            yylval.s = strdup(yytext);
