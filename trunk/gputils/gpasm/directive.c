@@ -46,46 +46,85 @@ static unsigned short
 checkwrite(unsigned short value)
 {
   unsigned short insn;
+  int org;
 
   if (state.mode == relocatable) {
     if (state.obj.section == NULL) {
       gpverror(GPE_WRONG_SECTION, NULL);
       return value;
     }
-    /* Don't do program memory checks for data memory */
-    if (IS_RAM_ORG)
+    /* Don't do program memory checks for data memory. */
+    if (IS_RAM_ORG) {
       return value;
+    }
   }
 
-  if (state.device.class == PROC_CLASS_PIC16 && (state.org > 0x1ffff)) {
+  if ((state.device.class == PROC_CLASS_PIC16) && (state.org > 0x1ffff)) {
     gpverror(GPE_ADDROVF, "Address{%#x}", state.org);
   }
-  else if (state.device.class != PROC_CLASS_PIC16E &&
-           (state.org & 0x1ffff) == 0 && (int)state.org > 0) {
+  else if ((state.device.class != PROC_CLASS_PIC16E) &&
+           ((state.org & 0x1ffff) == 0) && (int)state.org > 0) {
     /* We cast state.org to signed int on purpose to repeat a bug from
        MPASM 5.34 and pass tb.asm testcase. */
     gperror(GPE_ADDROVF, "Address wrapped around 0.");
   }
 
-  if (value > state.device.class->core_size) {
-    gpvmessage(GPM_RANGE, NULL, value);
-    value &= state.device.class->core_size;
-  }
+  org = gp_processor_byte_to_org(state.device.class, state.org);
 
-  if (state.num.errors == 0 && state.device.class->i_memory_get(state.i_memory, state.org, &insn, NULL, NULL)) {
-    gpverror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, state.org));
+  if (state.mpasm_compatible) {
+    /* MPASM(X) compatible mode. */
+    if (value > state.device.class->core_size) {
+      gpvmessage(GPM_RANGE, NULL, value);
+      value &= state.device.class->core_size;
+    }
+
+    if ((state.num.errors == 0) &&
+        state.device.class->i_memory_get(state.i_memory, state.org, &insn, NULL, NULL)) {
+      gpverror(GPE_ADDROVR, NULL, org);
+    }
+  }
+  else {
+    /* GPASM compatible mode. */
+    gp_boolean is_config = gp_processor_is_config_addr(state.processor, org);
+
+    if (value > state.device.class->core_size) {
+    /* The size of the config words may be differ the size of the program words. */
+      if (!is_config) {
+        gpvmessage(GPM_RANGE, NULL, value);
+        value &= state.device.class->core_size;
+      }
+      else if (value > state.device.class->config_size) {
+        gpvmessage(GPM_RANGE, NULL, value);
+        value &= state.device.class->config_size;
+      }
+    }
+
+    if (state.num.errors == 0) {
+      if (is_config && (state.device.class->config_size <= 0xFF)) {
+        unsigned char byte;
+
+        if (b_memory_get(state.i_memory, state.org, &byte, NULL, NULL)) {
+          gpverror(GPE_ADDROVR, NULL, org);
+        }
+      }
+      else {
+        if (state.device.class->i_memory_get(state.i_memory, state.org, &insn, NULL, NULL)) {
+          gpverror(GPE_ADDROVR, NULL, org);
+        }
+      }
+    }
   }
 
   if (state.maxrom >= 0) {
-    int org = gp_processor_byte_to_org(state.device.class, state.org);
     if (org > state.maxrom) {
       gpvwarning(GPW_EXCEED_ROM, "Address{%#x} > MAXROM{%#x}", org, state.maxrom);
     }
     else {
       /* check if current org is within a bad address range */
       struct range_pair *cur_badrom;
+
       for (cur_badrom = state.badrom; cur_badrom != NULL;
-            cur_badrom = cur_badrom->next) {
+           cur_badrom = cur_badrom->next) {
         if (org >= cur_badrom->start && org <= cur_badrom->end) {
           gpvwarning(GPW_EXCEED_ROM, "BADROM_START{%#x} <= Address{%#x} <= BADROM_END{%#x}",
                      cur_badrom->start, org, cur_badrom->end);
@@ -97,7 +136,7 @@ checkwrite(unsigned short value)
   return value;
 }
 
-/* Write a word into the memory image at the current location */
+/* Write a word into the memory image at the current location. */
 
 static void
 emit(unsigned short value, const char *name)
@@ -121,12 +160,13 @@ emit_byte(unsigned short value, const char *name)
 
     if (!IS_RAM_ORG) {
       unsigned char byte;
+      int org;
 
-      if (state.device.class == PROC_CLASS_PIC16 && (state.org > 0x1ffff)) {
+      if ((state.device.class == PROC_CLASS_PIC16) && (state.org > 0x1ffff)) {
         gpverror(GPE_ADDROVF, "Address{%#x} > 0x1ffff", state.org);
       }
-      else if (state.device.class != PROC_CLASS_PIC16E &&
-               (state.org & 0x1ffff) == 0 && (int)state.org > 0) {
+      else if ((state.device.class != PROC_CLASS_PIC16E) &&
+               ((state.org & 0x1ffff) == 0) && ((int)state.org > 0)) {
         gperror(GPE_ADDROVF, "Address wrapped around 0.");
       }
 
@@ -137,20 +177,23 @@ emit_byte(unsigned short value, const char *name)
         value = v;
       }
 
-      if (0 == state.num.errors && b_memory_get(state.i_memory, state.org, &byte, NULL, NULL)) {
-        gpverror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, state.org));
+      org = gp_processor_byte_to_org(state.device.class, state.org);
+
+      if ((state.num.errors == 0) &&
+          b_memory_get(state.i_memory, state.org, &byte, NULL, NULL)) {
+        gpverror(GPE_ADDROVR, NULL, org);
       }
 
       if (state.maxrom >= 0) {
-        int org = gp_processor_byte_to_org(state.device.class, state.org);
         if (org > state.maxrom) {
           gpvwarning(GPW_EXCEED_ROM, "Address{%#x} > MAXROM{%#x}", org, state.maxrom);
         }
         else {
           /* check if current org is within a bad address range */
           struct range_pair *cur_badrom;
+
           for (cur_badrom = state.badrom; cur_badrom != NULL; cur_badrom = cur_badrom->next) {
-            if (org >= cur_badrom->start && org <= cur_badrom->end) {
+            if ((org >= cur_badrom->start) && (org <= cur_badrom->end)) {
               gpvwarning(GPW_EXCEED_ROM, "BADROM_START{%#x} <= Address{%#x} <= BADROM_END{%#x}",
                          cur_badrom->start, org, cur_badrom->end);
               break;
@@ -208,14 +251,17 @@ emit_data(struct pnode *L, int char_shift, const char *name)
   for(; L; L = TAIL(L)) {
     const char *pc;
     p = HEAD(L);
+
     if (p->tag == string) {
       pc = p->value.string;
-      if (state.device.class == PROC_CLASS_PIC16E &&
+
+      if ((state.device.class == PROC_CLASS_PIC16E) &&
           !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
         /* Special case of PIC16E strings in code */
         int n = 0;
         while(*pc) {
           int value;
+
           pc = convert_escape_chars(pc, &value);
           emit_byte(value, name);
           ++n;
@@ -230,6 +276,7 @@ emit_data(struct pnode *L, int char_shift, const char *name)
         while (*pc) {
           int value;
           unsigned short v;
+
           pc = convert_escape_chars(pc, &value);
           value &= 0xff;
           /* If idata or packed and not db or de, emit one character per word */
@@ -246,12 +293,14 @@ emit_data(struct pnode *L, int char_shift, const char *name)
           emit(v, name);
         }
         /* For data and packed emit a terminating nul for strings */
-        if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK))
+        if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
           emit(0, name);
+        }
       }
     }
     else if (state.device.class->core_size > 0xff) {
       unsigned short v;
+
       v = reloc_evaluate(p, RELOCT_ALL);
       emit(v, name);
     }
@@ -262,7 +311,8 @@ emit_data(struct pnode *L, int char_shift, const char *name)
       emit_byte(v, name);
     }
   }
-  return state.org - begin_org;
+
+  return (state.org - begin_org);
 }
 
 /* Do the work for beginning a conditional assembly block.  Leave it
@@ -276,10 +326,14 @@ enter_if(void)
 
   new->mode = in_then;
   new->prev = state.astack;
-  if (state.astack == NULL)
+
+  if (state.astack == NULL) {
     new->prev_enabled = 1;
-  else
+  }
+  else {
     new->prev_enabled = state.astack->enabled && state.astack->prev_enabled;
+  }
+
   new->enabled = 0;     /* Only the default */
   state.astack = new;
 }
@@ -321,11 +375,12 @@ static int
 macro_parms_ok(struct pnode *parms)
 {
   /* Check if all params are symbols */
-  if (!macro_parms_simple(parms))
+  if (!macro_parms_simple(parms)) {
     return 0;
+  }
 
   /* Check if params are unique */
-  while (parms) {
+  while (parms != NULL) {
     if (!macro_parm_unique(HEAD(parms), TAIL(parms))) {
       return 0;
     }
@@ -383,8 +438,9 @@ do_badram(gpasmVal r, const char *name, int arity, struct pnode *parms)
   struct pnode *p;
 
   state.lst.line.linetype = dir;
-  if (parms == NULL)
+  if (parms == NULL) {
     gpverror(GPE_MISSING_ARGU, NULL);
+  }
   else {
     for (; parms != NULL; parms = TAIL(parms)) {
       p = HEAD(parms);
@@ -405,8 +461,9 @@ do_badram(gpasmVal r, const char *name, int arity, struct pnode *parms)
             gpvwarning(GPW_INVALID_RAM, "End{%#x} >= MAXRAM{%#x}", end, MAX_RAM);
           }
           else {
-            for (; start <= end; start++)
+            for (; start <= end; start++) {
               state.badram[start] = 1;
+            }
           }
         }
       }
@@ -415,12 +472,13 @@ do_badram(gpasmVal r, const char *name, int arity, struct pnode *parms)
           int loc;
 
           loc = evaluate(p);
-          if ((loc < 0) ||
-              (MAX_RAM <= loc)) {
+
+          if ((loc < 0) || (MAX_RAM <= loc)) {
             gpvwarning(GPW_INVALID_RAM, "Address{%#x} >= MAXRAM{%#x}", loc, MAX_RAM);
-           }
-           else
+          }
+          else {
             state.badram[loc] = 1;
+          }
         }
       }
     }
@@ -447,8 +505,8 @@ do_bankisel(gpasmVal r, const char *name, int arity, struct pnode *parms)
   int num_reloc;
 
   if ((state.device.class != PROC_CLASS_PIC14 &&
-      state.device.class != PROC_CLASS_PIC14E &&
-      state.device.class != PROC_CLASS_PIC16) ||
+       state.device.class != PROC_CLASS_PIC14E &&
+       state.device.class != PROC_CLASS_PIC16) ||
       state.processor->num_banks == 1) {
     state.lst.line.linetype = none;
     gpvmessage(GPM_EXTPAGE, NULL);
@@ -507,7 +565,7 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
   int bank;
   int num_reloc;
 
-  if (!state.processor) {
+  if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, NULL);
     return r;
   }
@@ -878,13 +936,15 @@ do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
     if (IS_16BIT_CORE) {
       const struct gp_cfg_device *p_dev;
+
       if (value > 0xff) {
         gpvwarning(GPW_RANGE, "%i (%#x) > 0xff", value, value);
       }
+
       p_dev = gp_cfg_find_pic_multi(sizeof(state.processor->names) /
                                     sizeof(*state.processor->names),
                                     state.processor->names);
-      if (p_dev) {
+      if (p_dev != NULL) {
         /* We do this to also set the other byte in a word. */
         config_16_set_word_mem(config_mem, p_dev, ca, value, 0xff);
       }
@@ -975,7 +1035,7 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   }
 
   /* validate argument format */
-  if (!parms || parms->tag != binop || parms->value.binop.op != '=') {
+  if ((parms == NULL) || (parms->tag != binop) || (parms->value.binop.op != '=')) {
     gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. use `CONFIG KEY = VALUE'");
     return r;
   }
@@ -983,13 +1043,15 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   /* validate parameter types */
   k = parms->value.binop.p0;
   v = parms->value.binop.p1;
-  if (k->tag != symbol || (v->tag != symbol && v->tag != constant)) {
+
+  if ((k->tag != symbol) || ((v->tag != symbol) && (v->tag != constant))) {
     gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. use `CONFIG KEY = VALUE'");
     return r;
   }
 
   /* grab string representations */
   k_str = k->value.symbol;
+
   if (v->tag != constant) {
     v_str = v->value.symbol;
   }
@@ -1013,7 +1075,7 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   /* find the directive */
   p_dir = gp_cfg_find_directive(p_dev, k_str, &ca, NULL);
-  if (!p_dir) {
+  if (p_dir == NULL) {
     gperror(GPE_CONFIG_UNKNOWN, "CONFIG Directive Error: Setting not found for selected processor.");
     return r;
   }
@@ -1023,7 +1085,7 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   /* find the option */
   p_opt = gp_cfg_find_option(p_dir, v_str);
-  if (!p_opt) {
+  if (p_opt == NULL) {
     gperror(GPE_CONFIG_UNKNOWN, "CONFIG Directive Error: Specified value not valid for directive.");
     return r;
   }
@@ -1075,6 +1137,7 @@ do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   for (; parms != NULL; parms = TAIL(parms)) {
     struct pnode *p = HEAD(parms);
+
     _do_16_config(r, name, arity, p);
   }
 
@@ -1158,8 +1221,9 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
     }
   }
 
-  if (state.device.class == PROC_CLASS_PIC16E || (SECTION_FLAGS & STYP_DATA)) {
+  if ((state.device.class == PROC_CLASS_PIC16E) || (SECTION_FLAGS & STYP_DATA)) {
     unsigned begin_org = state.org;
+
     for (; L; L = TAIL(L)) {
       const char *pc;
 
@@ -1177,9 +1241,7 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
         }
       }
       else {
-        int value;
-
-        value = reloc_evaluate(p, RELOCT_LOW);
+        int value = reloc_evaluate(p, RELOCT_LOW);
 
         if (value < 0) {
           gpvwarning(GPW_RANGE, "%i (%#x) < 0", value, value);
@@ -1187,12 +1249,27 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
         else if (value > 0xFF) {
           gpvwarning(GPW_RANGE, "%i (%#x) > 0xff", value, value);
         }
+
         emit_byte(value, name);
       }
     }
-    if (state.mode == absolute || !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
-      if ((state.org - begin_org) & 1) {
-        emit_byte(0, name);
+
+    if (state.mpasm_compatible) {
+      if ((state.mode == absolute) || !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
+        if ((state.org - begin_org) & 1) {
+          emit_byte(0, name);
+        }
+      }
+    }
+    else {
+      int org = gp_processor_byte_to_org(state.device.class, begin_org);
+
+      if (!gp_processor_is_config_addr(state.processor, org)) {
+        if ((state.mode == absolute) || !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
+          if ((state.org - begin_org) & 1) {
+            emit_byte(0, name);
+          }
+        }
       }
     }
   }
@@ -1234,7 +1311,7 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
         ++n;
 
-        if (p->tag != string || !*pc) {
+        if ((p->tag != string) || !*pc) {
           L = TAIL(L);
           break;
         }
@@ -2734,13 +2811,16 @@ do_org(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
     if (can_evaluate(p)) {
       gpasmVal new_org;
+
       r = evaluate(p);
-
-      if ((r & 0x1) && state.device.class == PROC_CLASS_PIC16E) {
-        gpverror(GPE_ORG_ODD, "Address{%#x}", r);
-      }
-
       new_org = gp_processor_org_to_byte(state.device.class, r);
+
+      if (state.mpasm_compatible ||
+          !gp_processor_is_config_addr(state.processor, new_org)) {
+        if ((state.device.class == PROC_CLASS_PIC16E) && (r & 1)) {
+          gpverror(GPE_ORG_ODD, "Address{%#x}", r);
+        }
+      }
 
       if (state.mode == absolute) {
         state.lst.line.linetype = org;
@@ -2789,7 +2869,7 @@ _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsign
   int num_reloc;
   int use_wreg = 0;
 
-  if (!state.processor) {
+  if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, NULL);
     return r;
   }
@@ -2858,7 +2938,7 @@ _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsign
         }
       }
       else {
-        if (use_wreg == 0 && state.processor->num_pages == 2) {
+        if ((use_wreg == 0) && (state.processor->num_pages == 2)) {
           reloc_evaluate(p, RELOCT_PAGESEL_BITS);
           emit(0, name);
         }
@@ -2944,13 +3024,13 @@ do_res(gpasmVal r, const char *name, int arity, struct pnode *parms)
       state.lst.line.linetype = res;
 
       if (state.mode == absolute) {
-        if (state.device.class == PROC_CLASS_PIC16E && count % 2 != 0) {
+        if ((state.device.class == PROC_CLASS_PIC16E) && ((count % 2) != 0)) {
           gpverror(GPE_RES_ODD_PIC16EA, "res = %i", count);
         }
 
         count = gp_processor_org_to_byte(state.device.class, count);
 
-        for (i = 0; i + 1 < count; i += 2) {
+        for (i = 0; (i + 1) < count; i += 2) {
           emit(state.device.class->core_size, name);
         }
       }
@@ -2964,7 +3044,7 @@ do_res(gpasmVal r, const char *name, int arity, struct pnode *parms)
               gpwarning(GPW_UNKNOWN, "No memory has been reserved by this instruction.");
             }
           }
-          for (i = 0; i + 1 < count; i += 2) {
+          for (i = 0; (i + 1) < count; i += 2) {
             /* For some reason program memory is filled with a different
                value. */
             emit(state.device.class->core_size, name);

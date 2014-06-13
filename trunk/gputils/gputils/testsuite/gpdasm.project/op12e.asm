@@ -2,8 +2,9 @@
 
 	list p=16f527
 
-F	EQU	1
-W	EQU	0
+include p16f527.inc
+
+	__config _CONFIG, _FOSC_INTRC_IO & _WDTE_ON & _CP_ON & _MCLRE_OFF & _IOSCFS_8MHz & _CPSW_ON & _BOREN_ON & _DRTEN_OFF
 
 insn macro file
 	ADDWF	file, F

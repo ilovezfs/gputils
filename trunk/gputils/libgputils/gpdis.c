@@ -77,12 +77,14 @@ gp_disassemble(MemBlock *m,
     int masked = opcode & 0x3f80;
     const char *instr = NULL;
 
-    if (masked == INSN_PIC14E_MOVIW_IDX)
+    if (masked == INSN_PIC14E_MOVIW_IDX) {
       instr = "moviw";
-    else if (masked == INSN_PIC14E_MOVWI_IDX)
+    }
+    else if (masked == INSN_PIC14E_MOVWI_IDX) {
       instr = "movwi";
+    }
 
-    if (instr) {
+    if (instr != NULL) {
       /* twos complement number */
       const char *neg;
 
@@ -372,8 +374,9 @@ gp_disassemble(MemBlock *m,
       {
         const char *op_pre[]  = { "++", "--", "",   ""   };
         const char *op_post[] = { "",   "",   "++", "--" };
+        int index = opcode & 0x03;
 
-        DECODE_MOVINDF(op_pre[(opcode & 0x03)], (opcode & 0x04) ? 6 : 4, op_post[(opcode & 0x03)]);
+        DECODE_MOVINDF(op_pre[index], (opcode & 0x04) ? 6 : 4, op_post[index]);
       }
       break;
 
@@ -394,7 +397,7 @@ gp_disassemble_byte(MemBlock *m,
   unsigned char byte;
 
   b_memory_assert_get(m, byte_address, &byte, NULL, NULL);
-  snprintf(buffer, sizeof_buffer, "db\t%#x", (unsigned int)byte);
+  snprintf(buffer, sizeof_buffer, "db\t0x%02x", (unsigned int)byte);
   return 1;
 }
 
@@ -408,7 +411,7 @@ gp_disassemble_word(MemBlock *m,
   unsigned short word;
 
   class->i_memory_get(m, byte_address, &word, NULL, NULL);
-  snprintf(buffer, sizeof_buffer, "dw\t%#x", word);
+  snprintf(buffer, sizeof_buffer, "dw\t0x%04x", (unsigned int)word);
   return 2;
 }
 
@@ -420,15 +423,18 @@ gp_disassemble_size(MemBlock *m,
                     size_t sizeof_buffer,
                     unsigned int size)
 {
-  if (size == 1)
+  if (size == 1) {
     return gp_disassemble_byte(m, byte_address, class, buffer, sizeof_buffer);
+  }
   else if (size == 2) {
     char dasmbuf[512];
     int num_words;
 
     num_words = gp_disassemble(m, byte_address, class, dasmbuf, sizeof(dasmbuf));
-    if (num_words != 1)
+
+    if (num_words != 1) {
       return gp_disassemble_word(m, byte_address, class, buffer, sizeof_buffer);
+    }
     else {
       strncpy(buffer, dasmbuf, sizeof_buffer);
       return (2 * num_words);

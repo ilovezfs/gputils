@@ -56,28 +56,20 @@ coff_init(void)
 static void
 _update_section_symbol(gp_section_type *section)
 {
-
   /* write data to the auxiliary section symbol */
-  section->symbol->aux_list->_aux_symbol._aux_scn.length =
-    section->size;
-
-  section->symbol->aux_list->_aux_symbol._aux_scn.nreloc =
-    section->num_reloc;
-
-  section->symbol->aux_list->_aux_symbol._aux_scn.nlineno =
-    section->num_lineno;
+  section->symbol->aux_list->_aux_symbol._aux_scn.length  = section->size;
+  section->symbol->aux_list->_aux_symbol._aux_scn.nreloc  = section->num_reloc;
+  section->symbol->aux_list->_aux_symbol._aux_scn.nlineno = section->num_lineno;
 }
 
 void
 coff_close_section(void)
 {
-
-  if (state.obj.section == NULL)
+  if (state.obj.section == NULL) {
     return;
+  }
 
-  state.obj.section->size =
-    (state.org - state.obj.section->address);
-
+  state.obj.section->size = state.org - state.obj.section->address;
   _update_section_symbol(state.obj.section);
 }
 
@@ -100,7 +92,7 @@ _update_reloc_ptr(void)
         symbol = symbol->next;
       }
       assert(0);
-    l1:
+l1:
       reloc = reloc->next;
     }
     section = section->next;
@@ -158,19 +150,22 @@ _create_config_sections(void)
     char *p;
 
     snprintf(section_name, sizeof section_name, ".config_%X_%s", gp_processor_byte_to_org(state.device.class, conf_sec_mem->addr), state.objfilename);
-    for (p = &section_name[13]; *p; ++p)
+    for (p = &section_name[13]; *p; ++p) {
       *p = toupper(*p);
+    }
 
     _new_config_section(section_name, conf_sec_mem->addr, STYP_ABS | (conf_sec_mem->new_config ? STYP_DATA_ROM : STYP_TEXT), conf_sec_mem->m, conf_sec_mem->new_config);
 
-    if (!state.obj.enabled)
+    if (!state.obj.enabled) {
       return;
+    }
 
     state.obj.section->size = conf_sec_mem->new_config ? gp_processor_org_to_byte(state.device.class, 1) : 2;
     state.lst.line.was_org = conf_sec_mem->addr;
 
-    if ((!state.obj.enabled) || (state.obj.section == NULL))
+    if ((!state.obj.enabled) || (state.obj.section == NULL)) {
       return;
+    }
 
     if (state.debug_info && (state.obj.debug_file == NULL)) {
       gperror(GPE_UNKNOWN, ".file directive required to generate debug info");
@@ -180,7 +175,7 @@ _create_config_sections(void)
     linenum = gp_coffgen_addlinenum(state.obj.section);
     linenum->symbol = conf_sec_mem->file_symbol;
     /* MPASM(X) bug compatibility */
-    linenum->line_number = state.mpasm_compatible ? state.src->line_number - 1: conf_sec_mem->line_number;
+    linenum->line_number = state.mpasm_compatible ? (state.src->line_number - 1) : conf_sec_mem->line_number;
     linenum->address = conf_sec_mem->addr;
 
     _update_section_symbol(state.obj.section);
@@ -190,8 +185,9 @@ _create_config_sections(void)
 void
 coff_cleanup_before_eof(void)
 {
-  if(!state.obj.enabled)
+  if (!state.obj.enabled) {
     return;
+  }
 
   /* store data from the last section */
   coff_close_section();
@@ -211,12 +207,13 @@ coff_cleanup_before_eof(void)
 void
 coff_close_file(void)
 {
-
-  if(!state.obj.enabled)
+  if (!state.obj.enabled) {
     return;
+  }
 
-  if (gp_write_coff(state.obj.object, (state.num.errors + gp_num_errors)) == 1)
+  if (gp_write_coff(state.obj.object, (state.num.errors + gp_num_errors)) == 1) {
     gperror(GPE_UNKNOWN, "system error while writing object file");
+  }
 
   gp_coffgen_free(state.obj.object);
 }
@@ -251,12 +248,10 @@ coff_new_section(const char *name, int addr, int flags)
                                  name);
 
   if (found != NULL) {
-    if ((flags & STYP_OVERLAY) &&
-        (found->flags & STYP_OVERLAY)) {
+    if ((flags & STYP_OVERLAY) && (found->flags & STYP_OVERLAY)) {
       /* Overlayed sections can be duplicated.  This allows multiple code
          sections in the same source file to share the same data memory. */
-      if ((flags != found->flags) ||
-          (addr != found->address)) {
+      if ((flags != found->flags) || (addr != found->address)) {
         gpverror(GPE_CONTIG_SECTION, NULL, name);
         return;
       }
@@ -299,8 +294,9 @@ coff_reloc(int symbol, short offset, enum gpasmValTypes type)
   gp_reloc_type *new = NULL;
   int origin;
 
-  if ((!state.obj.enabled) || (state.obj.section == NULL))
+  if ((!state.obj.enabled) || (state.obj.section == NULL)) {
     return;
+  }
 
   origin = state.org - state.obj.section->address;
 
@@ -319,8 +315,9 @@ coff_linenum(int emitted)
   int origin;
   static gp_boolean show_bad_debug = true;
 
-  if ((!state.obj.enabled) || (state.obj.section == NULL))
+  if ((!state.obj.enabled) || (state.obj.section == NULL)) {
     return;
+  }
 
   /* If the section is absolute, use the abolute address. */
   origin = state.lst.line.was_org;
@@ -364,34 +361,41 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
   int section_number = 0;
   int class = C_EXT;
 
-  if(!state.obj.enabled)
+  if (!state.obj.enabled) {
     return NULL;
+  }
 
   switch (type) {
   case gvt_extern:
     section_number = N_UNDEF;
     class = C_EXT;
     break;
+
   case gvt_global:
     section_number = state.obj.section_num;
     class = C_EXT;
     break;
+
   case gvt_static:
     section_number = state.obj.section_num;
     class = C_STAT;
     break;
+
   case gvt_address:
     section_number = state.obj.section_num;
     class = C_LABEL;
     break;
+
   case gvt_debug:
     section_number = N_DEBUG;
     class = C_NULL;
     break;
+
   case gvt_absolute:
     section_number = N_ABS;
     class = C_NULL;
     break;
+
   default:
     return new;
   }
@@ -438,8 +442,9 @@ coff_add_filesym(const char *name, int isinclude)
 
   state.obj.symbol_num += 2;
 
-  if(!state.obj.enabled)
+  if (!state.obj.enabled) {
     return NULL;
+  }
 
   /* add .file symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
@@ -453,12 +458,15 @@ coff_add_filesym(const char *name, int isinclude)
   new_aux = gp_coffgen_addaux(state.obj.object, new);
   new_aux->type = AUX_FILE;
   new_aux->_aux_symbol._aux_file.filename = strdup(name);
-  if (isinclude == 1)
-    new_aux->_aux_symbol._aux_file.line_number = state.src->line_number - 1;
-  else
-    new_aux->_aux_symbol._aux_file.line_number = 0;
-  new_aux->_aux_symbol._aux_file.flags = 0;
 
+  if (isinclude == 1) {
+    new_aux->_aux_symbol._aux_file.line_number = state.src->line_number - 1;
+  }
+  else {
+    new_aux->_aux_symbol._aux_file.line_number = 0;
+  }
+
+  new_aux->_aux_symbol._aux_file.flags = 0;
   return new;
 }
 
@@ -471,8 +479,9 @@ coff_add_eofsym(void)
 
   state.obj.symbol_num++;
 
-  if(!state.obj.enabled)
+  if (!state.obj.enabled) {
     return;
+  }
 
   /* add .eof symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
@@ -491,13 +500,15 @@ coff_add_listsym(void)
 {
   gp_symbol_type *new;
 
-  if (state.debug_info)
+  if (state.debug_info) {
     return;
+  }
 
   state.obj.symbol_num++;
 
-  if(!state.obj.enabled)
+  if (!state.obj.enabled) {
     return;
+  }
 
   /* add .eof symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
@@ -514,13 +525,15 @@ coff_add_nolistsym(void)
 {
   gp_symbol_type *new;
 
-  if (state.debug_info)
+  if (state.debug_info) {
     return;
+  }
 
   state.obj.symbol_num++;
 
-  if(!state.obj.enabled)
+  if (!state.obj.enabled) {
     return;
+  }
 
   /* add .nolist symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
@@ -542,8 +555,9 @@ coff_add_directsym(unsigned char command, const char *string)
 
   state.obj.symbol_num += 2;
 
-  if(!state.obj.enabled)
+  if (!state.obj.enabled) {
     return;
+  }
 
   /* add .cod symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
@@ -570,8 +584,9 @@ coff_add_identsym(const char *string)
 
   state.obj.symbol_num += 2;
 
-  if(!state.obj.enabled)
+  if (!state.obj.enabled) {
     return;
+  }
 
   /* add .cod symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
@@ -598,8 +613,9 @@ coff_local_name(const char *name)
   char buffer[BUFSIZ];
   int count = 1;
 
-  if(!state.obj.enabled)
+  if (!state.obj.enabled) {
     return NULL;
+  }
 
   local = get_symbol(state.stGlobal, name);
   if (local == NULL) {
@@ -607,8 +623,11 @@ coff_local_name(const char *name)
     while(1) {
       snprintf(buffer, sizeof(buffer), "_%d%s", count, name);
       symbol = gp_coffgen_findsymbol(state.obj.object, buffer);
-      if (symbol == NULL)
+
+      if (symbol == NULL) {
         break;
+      }
+
       count++;
     }
   } else {

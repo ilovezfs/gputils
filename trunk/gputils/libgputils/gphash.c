@@ -147,11 +147,9 @@ gp_make_hash_table(gp_object_type *Object)
     return NULL;
   }
 
-//fprintf(stderr, "%s(Object: %s) [%p]\n", __FUNCTION__, Object->filename, (void *)Object);
   current = Object->symbols;
   num_symbols = 0;
   while (current != NULL) {
-//fprintf(stderr, "    %3u -- %s/%s: %lu (0x%08lX)\n", current->class, current->section_name, current->name, current->value, current->value);
     if ((current->class != C_FILE)    && (current->class != C_EOF) &&
         (current->class != C_SECTION) && (current->section_name != NULL)) {
       ++num_symbols;
@@ -165,7 +163,6 @@ gp_make_hash_table(gp_object_type *Object)
     return NULL;
   }
 
-//fprintf(stderr, "    num_symbols: %u, table: %p\n", num_symbols, (void *)table);
   Object->symbol_hashtable      = table;
   Object->symbol_hashtable_size = num_symbols;
 
@@ -175,7 +172,6 @@ gp_make_hash_table(gp_object_type *Object)
     if ((current->class != C_FILE)    && (current->class != C_EOF) &&
         (current->class != C_SECTION) && (current->section_name != NULL)) {
       table[idx].hash   = gp_fnv1a_hash_symbol(current);
-//fprintf(stderr, "    %s/%s: %lu (0x%08lX), hash: 0x%08X\n", current->section_name, current->name, current->value, current->value, table[idx].hash);
       table[idx].symbol = current;
       ++idx;
     }
@@ -183,16 +179,6 @@ gp_make_hash_table(gp_object_type *Object)
   }
 
   qsort(table, num_symbols, sizeof(gp_hash_type), hash_sort_cmp);
-
-/*fprintf(stderr, "    @@@@@@@@@@ A rendezés után: @@@@@@@@@@\n");
-{
-idx = 0;
-while (idx < num_symbols) {
-  fprintf(stderr, " ## [%p] hash: 0x%08X, symbol: %p, name: %s\n", (void *)&table[idx], table[idx].hash, (void *)table[idx].symbol, table[idx].symbol->name);
-  ++idx;
-}
-}*/
-
   return table;
 }
 
@@ -212,10 +198,8 @@ gp_find_symbol_hash_table(const gp_object_type *Object, const char *Section_name
     return NULL;
   }
 
-//fprintf(stderr, "%s(Object: %s) %s, %lu (0x%08lX)\n", __FUNCTION__, Object->filename, Section_name, Symbol_value, Symbol_value);
   gp_hash.hash = gp_fnv1a_hash_str(Section_name, FNV1A32_INIT);
   gp_hash.hash = gp_fnv1a_hash(&Symbol_value, sizeof(Symbol_value), gp_hash.hash);
-//fprintf(stderr, "    hash: 0x%08X, table: %p\n", gp_hash.hash, (void *)Object->symbol_hashtable);
 
   ret = (gp_hash_type *)bsearch(&gp_hash, Object->symbol_hashtable, Object->symbol_hashtable_size,
                                 sizeof(gp_hash_type), hash_find_cmp);

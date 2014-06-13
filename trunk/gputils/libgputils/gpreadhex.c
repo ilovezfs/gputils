@@ -58,19 +58,19 @@ unsigned int readword()
 {
   unsigned int number;
   number = readbyte();  
-  number = (readbyte() << 8) | number; 
+  number = (readbyte() << 8) | number;
   return number; 
 }
 
 unsigned int swapword(unsigned int input)
 {
   unsigned int number;
-  number = ((input & 0xFF) << 8) | ((input & 0xFF00) >> 8); 
-  return number; 
+  number = ((input & 0xFF) << 8) | ((input & 0xFF00) >> 8);
+  return number;
 }
 
 struct hex_data *
-readhex(char *filename, MemBlock *m)
+readhex(const char *filename, MemBlock *m)
 {
   struct hex_data *info = malloc(sizeof(*info));
   unsigned int length, address, type, data;
@@ -82,19 +82,19 @@ readhex(char *filename, MemBlock *m)
   info->error = 0;
 
   /* Open the input file */
-  if ( (infile = fopen(filename,"rt")) == NULL ){
+  if ((infile = fopen(filename, "rt")) == NULL) {
     perror(filename);
     exit(1);
   }
     
   /* go to the beginning of the file */
-  fseek(infile, 0L, 0);	  
+  fseek(infile, 0L, 0);
 
   /* set the line pointer to the beginning of the line buffer */
   linept = linebuf;
 
   /* read a line of data from the file, if NULL stop */
-  while (fgets(linept, LINESIZ, infile))
+  while (fgets(linept, LINESIZ, infile) != NULL)
   {
     /* set the line pointer to the beginning of the line buffer */
     linept = linebuf;
@@ -116,12 +116,11 @@ readhex(char *filename, MemBlock *m)
       address *= 2;
       length *= 2;
     }
-    
+
     /* read the type of record */
     type = readbyte();
 
     if (type == 4) {
-
       if (info->hex_format == inhx16) {
         printf("\nHex Format Error\n");
         fclose(infile);
@@ -132,7 +131,6 @@ readhex(char *filename, MemBlock *m)
       /* inhx32 segment line*/
       page = ((readbyte() << 8) + readbyte()) << 16;
       info->hex_format = inhx32;
-
     } else {
       /* read the data (skipping last byte if at odd address) */
       for (i = 0; i < length; ++i) {
@@ -147,12 +145,11 @@ readhex(char *filename, MemBlock *m)
       }
 
       info->size += length;
-
     }
-    
+
     /* read the checksum, data is thrown away*/
     data = readbyte();
-    
+
     if ((checksum & 0xFF) != 0) { 
       if (info->hex_format == inhx8m) {
         /*  first attempt at inhx8m failed, try inhx16 */
@@ -172,7 +169,6 @@ readhex(char *filename, MemBlock *m)
 
     /* set the line pointer to the beginning of the line buffer */
     linept = linebuf;
-     
   }
 
   fclose(infile);

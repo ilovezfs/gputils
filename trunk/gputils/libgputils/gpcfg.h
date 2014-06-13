@@ -47,7 +47,7 @@ struct gp_cfg_addr
   const struct gp_cfg_directive *directives;  /* array of directives */
 };
 
-/* a device - that is, a colllection of configuration addresses */
+/* a device - that is, a collection of configuration addresses */
 struct gp_cfg_device
 {
   const char *device;                         /* device name */

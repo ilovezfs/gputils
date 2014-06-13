@@ -2,10 +2,10 @@
 
 	list p=12f1501
 
-F	EQU	1
-W	EQU	0
-FSR0	EQU	4
-FSR1	EQU	6
+include p12f1501.inc
+
+	__config _CONFIG1, _FOSC_INTOSC & _WDTE_OFF & _PWRTE_ON & _MCLRE_OFF & _CP_ON & _BOREN_SBODEN & _CLKOUTEN_OFF
+	__config _CONFIG2, _WRT_BOOT & _STVREN_ON & _BORV_HI & _LPBOR_ON & _LVP_OFF
 
 moviw_test macro fsr
 	MOVIW	++fsr

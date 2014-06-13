@@ -789,9 +789,7 @@ gp_find_processor(const char *name)
 proc_class_t
 gp_processor_class(pic_processor_t processor)
 {
-  if (processor)
-    return processor->class;
-  return PROC_CLASS_UNKNOWN;
+  return ((processor != NULL) ? processor->class : PROC_CLASS_UNKNOWN);
 }
 
 /* 18xx bsr boundary location */
@@ -799,32 +797,32 @@ gp_processor_class(pic_processor_t processor)
 int
 gp_processor_bsr_boundary(pic_processor_t processor)
 {
-  if (processor && processor->class == PROC_CLASS_PIC16E)
+  if ((processor != NULL) && (processor->class == PROC_CLASS_PIC16E)) {
     return processor->num_banks;
+  }
+
   return 0;
 }
 
 unsigned long
 gp_processor_coff_type(pic_processor_t processor)
 {
-  if (processor)
-    return processor->coff_type;
-  return 0;
+  return ((processor != NULL) ? processor->coff_type : 0);
 }
 
 int
 gp_processor_num_pages(pic_processor_t processor)
 {
-  if (processor)
-    return processor->num_pages;
-  return 0;
+  return ((processor != NULL) ? processor->num_pages : 0);
 }
 
 int
 gp_processor_num_banks(pic_processor_t processor)
 {
-  if (processor && processor->class != PROC_CLASS_PIC16E)
+  if ((processor != NULL) && (processor->class != PROC_CLASS_PIC16E)) {
     return processor->num_banks;
+  }
+
   return 0;
 }
 
@@ -849,10 +847,7 @@ gp_processor_name(pic_processor_t processor, unsigned int choice)
 {
   assert(!(choice > MAX_NAMES - 1));
 
-  if (processor)
-    return processor->names[choice];
-
-  return NULL;
+  return ((processor != NULL) ? processor->names[choice] : NULL);
 }
 
 const char *
@@ -860,8 +855,9 @@ gp_processor_coff_name(unsigned long coff_type, unsigned int choice)
 {
   int i;
 
-  if (coff_type == 0)
+  if (coff_type == 0) {
     return NULL;
+  }
 
   assert(!(choice > MAX_NAMES - 1));
 
@@ -877,17 +873,25 @@ gp_processor_coff_name(unsigned long coff_type, unsigned int choice)
 const char *
 gp_processor_script(pic_processor_t processor)
 {
-  if (processor)
-    return processor->script;
-  return NULL;
+  return ((processor != NULL) ? processor->script : NULL);
 }
 
 unsigned int
 gp_processor_id_location(pic_processor_t processor)
 {
-  if (processor->class->id_location)
-    return processor->class->id_location(processor);
-  return 0;
+  return ((processor->class->id_location != NULL) ? processor->class->id_location(processor) : 0);
+}
+
+gp_boolean
+gp_processor_is_config_addr(pic_processor_t processor, int address)
+{
+  if ((processor->config_addrs[0] > 0) && (processor->config_addrs[1] > 0)) {
+    if ((processor->config_addrs[0] <= address) && (address <= processor->config_addrs[1])) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 int
@@ -947,8 +951,9 @@ gp_processor_org_to_byte(proc_class_t class, int org)
   /* FIXME: In some places we use this value before we know what the
      processor is. Rather than fix those now, I'll just return some
      value. */
-  if (!class)
+  if (class == NULL) {
     return org;
+  }
 
   return (org << class->org_to_byte_shift);
 }
@@ -959,8 +964,9 @@ gp_processor_byte_to_org(proc_class_t class, int byte)
   /* FIXME: In some places we use this value before we know what the
      processor is. Rather than fix those now, I'll just return some
      value. */
-  if (!class)
+  if (class == NULL) {
     return byte;
+  }
 
   return (byte >> class->org_to_byte_shift);
 }
@@ -1164,7 +1170,7 @@ gp_processor_set_bank_pic12_14(int num_banks,
 /* PIC12 */
 
 static unsigned int
-id_location_pic12(const struct px *processor)
+id_location_pic12(pic_processor_t processor)
 {
   if (processor->maxrom > 0) {
     /* Sometimes the last hex digit is e due to some calibration
@@ -1310,13 +1316,15 @@ find_insn_pic12e(proc_class_t cls, long int opcode)
 /* PIC14 */
 
 static unsigned int
-id_location_pic14(const struct px *processor)
+id_location_pic14(pic_processor_t processor)
 {
-  if (processor->config_addrs[0] > 0)
+  if (processor->config_addrs[0] > 0) {
     /* I only know of 0x2007 to 0x2000 and 0x8007 to 0x8000 and this
        returns correct for both. */
     /* We carry org in the struct px, but return byte address. */
     return ((processor->config_addrs[0] & ~0xFFF) << 1);
+  }
+
   return 0;
 }
 
@@ -1636,7 +1644,7 @@ reloc_f_pic16(unsigned int address)
 /* PIC16E */
 
 static unsigned int
-id_location_pic16e(const struct px *processor)
+id_location_pic16e(pic_processor_t processor)
 {
   return IDLOC0;
 }
@@ -1726,7 +1734,8 @@ const struct proc_class proc_class_eeprom8 = {
   0,                                    /* bank size */
   0,                                    /* org_to_byte_shift */
   0,                                    /* bank_mask */
-  (1<<8)-1,                             /* core_size */
+  (1 << 8) - 1,                         /* core_size */
+  0,                                    /* config_size */
   0,                                    /* id_location */
   gp_processor_check_xbank_unsupported, /* check_bank */
   gp_processor_set_xbank_unsupported,   /* set_bank */
@@ -1756,7 +1765,8 @@ const struct proc_class proc_class_eeprom16 = {
   0,                                    /* bank size */
   0,                                    /* org_to_byte_shift */
   0,                                    /* bank_mask */
-  (1<<16)-1,                            /* core_size */
+  (1 << 16) - 1,                        /* core_size */
+  0,                                    /* config_size */
   0,                                    /* id_location */
   gp_processor_check_xbank_unsupported, /* check_bank */
   gp_processor_set_xbank_unsupported,   /* set_bank */
@@ -1786,7 +1796,8 @@ const struct proc_class proc_class_generic = {
   32,                                   /* bank size */
   1,                                    /* org_to_byte_shift */
   ~0x1fu,                               /* bank_mask */
-  (1<<12)-1,                            /* core_size */
+  (1 << 12) - 1,                        /* core_size */
+  (1 << 12) - 1,                        /* config_size */
   id_location_pic12,                    /* id_location */
   gp_processor_check_bank_pic12,        /* check_bank */
   gp_processor_set_bank_pic12,          /* set_bank */
@@ -1816,7 +1827,8 @@ const struct proc_class proc_class_pic12 = {
   32,                                   /* bank size */
   1,                                    /* org_to_byte_shift */
   ~0x1fu,                               /* bank_mask */
-  (1<<12)-1,                            /* core_size */
+  (1 << 12) - 1,                        /* core_size */
+  (1 << 12) - 1,                        /* config_size */
   id_location_pic12,                    /* id_location */
   gp_processor_check_bank_pic12,        /* check_bank */
   gp_processor_set_bank_pic12,          /* set_bank */
@@ -1846,7 +1858,8 @@ const struct proc_class proc_class_pic12e = {
   32,                                   /* bank size */
   1,                                    /* org_to_byte_shift */
   ~0x1fu,                               /* bank_mask */
-  (1<<12)-1,                            /* core_size */
+  (1 << 12) - 1,                        /* core_size */
+  (1 << 12) - 1,                        /* config_size */
   id_location_pic12,                    /* id_location */
   gp_processor_check_bank_pic12e,       /* check_bank */
   gp_processor_set_bank_pic12e,         /* set_bank */
@@ -1876,7 +1889,8 @@ const struct proc_class proc_class_sx = {
   0,                                    /* bank size */
   1,                                    /* org_to_byte_shift */
   ~0x1fu,                               /* bank_mask */
-  (1<<12)-1,                            /* core_size */
+  (1 << 12) - 1,                        /* core_size */
+  (1 << 12) - 1,                        /* config_size */
   id_location_pic12,                    /* id_location */
   gp_processor_check_bank_pic12,        /* check_bank */
   gp_processor_set_bank_pic12,          /* set_bank */
@@ -1906,7 +1920,8 @@ const struct proc_class proc_class_pic14 = {
   128,                                  /* bank size */
   1,                                    /* org_to_byte_shift */
   ~0x7fu,                               /* bank_mask */
-  (1<<14)-1,                            /* core_size */
+  (1 << 14) - 1,                        /* core_size */
+  (1 << 14) - 1,                        /* config_size */
   id_location_pic14,                    /* id_location */
   gp_processor_check_bank_pic14,        /* check_bank */
   gp_processor_set_bank_pic14,          /* set_bank */
@@ -1936,7 +1951,8 @@ const struct proc_class proc_class_pic14e = {
   128,                                  /* bank size */
   1,                                    /* org_to_byte_shift */
   0,                                    /* bank_mask */
-  (1<<14)-1,                            /* core_size */
+  (1 << 14) - 1,                        /* core_size */
+  (1 << 16) - 1,                        /* config_size */
   id_location_pic14,                    /* id_location */
   gp_processor_check_bank_pic14e,       /* check_bank */
   gp_processor_set_bank_pic14e,         /* set_bank */
@@ -1966,7 +1982,8 @@ const struct proc_class proc_class_pic16 = {
   256,                                  /* bank size */
   1,                                    /* org_to_byte_shift */
   ~0xffu,                               /* bank_mask */
-  (1<<16)-1,                            /* core_size */
+  (1 << 16) - 1,                         /* core_size */
+  (1 << 8) - 1,                         /* config_size */
   0,                                    /* id_location */
   gp_processor_check_bank_pic16,        /* check_bank */
   gp_processor_set_bank_pic16,          /* set_bank */
@@ -1996,7 +2013,8 @@ const struct proc_class proc_class_pic16e = {
   256,                                  /* bank size */
   0,                                    /* org_to_byte_shift */
   0,                                    /* bank_mask */
-  (1<<16)-1,                            /* core_size */
+  (1 << 16) - 1,                        /* core_size */
+  (1 << 8) - 1,                         /* config_size */
   id_location_pic16e,                   /* id_location */
   gp_processor_check_bank_pic16,        /* check_bank: Same as for pic16 */
   gp_processor_set_bank_pic16e,         /* set_bank */

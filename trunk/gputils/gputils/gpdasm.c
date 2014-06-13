@@ -32,7 +32,7 @@ struct gpdasm_state state = {
   1                     /* output format */
 };
 
-void
+static void
 select_processor(void)
 {
   const struct px *found = NULL;
@@ -44,7 +44,7 @@ select_processor(void)
 
   found = gp_find_processor(processor_name);
 
-  if (found) {
+  if (found != NULL) {
     state.processor = found;
   } else {
     printf("Didn't find any processor named: %s\nHere are the supported processors:\n",
@@ -63,7 +63,8 @@ select_processor(void)
   return;
 }
 
-void writeheader()
+static void
+writeheader(void)
 {
   if (!state.format) {
     printf("\n");
@@ -71,14 +72,16 @@ void writeheader()
   }
 }
 
-void closeasm()
+static void
+closeasm(void)
 {
   if (!state.format) {
     printf("        end\n");
   }
 }
 
-void writeorg(int org)
+static void
+writeorg(int org)
 {
   if (!state.format) {
     printf("\n");
@@ -86,50 +89,110 @@ void writeorg(int org)
   }
 }
 
-void dasm(MemBlock *memory)
+static void
+dasm(MemBlock *memory)
 {
   MemBlock *m = memory;
   int i, maximum;
-  int last_loc = 0;
+  int step;
+  int last_loc;
   int num_words;
   char buffer[80];
 
   writeheader();
 
-  while(m) {
+  last_loc = 0;
+  while (m != NULL) {
     i = m->base << I_MEM_BITS;
 
     maximum = i + MAX_I_MEM;
 
+    step = 2;
     while (i < maximum) {
+      int org = gp_processor_byte_to_org(state.class, i);
       unsigned short data;
-      if (state.class->i_memory_get(memory, i, &data, NULL, NULL)) {
-        int org = gp_processor_byte_to_org(state.class, i);
-        if (last_loc != i - 2){
-          writeorg(org);
-        }
-        last_loc = i;
-        if (state.format) {
-          printf("%06x:  %04x  ", org, data);
-        } else {
-          printf("        ");
-        }
-        num_words = gp_disassemble(memory,
-                                   i,
-                                   state.class,
-                                   buffer,
-                                   sizeof(buffer));
-        printf("%s\n", buffer);
-        if (num_words != 1) {
-          i += 2;
-          /* some 18xx instructions use two words */
-          if (state.format) {
-            state.class->i_memory_get(memory, i, &data, NULL, NULL);
-            printf("%06x:  %04x\n", gp_processor_byte_to_org(state.class, i), data);
+
+      if (gp_processor_is_config_addr(state.processor, org)) {
+        /* This is config word/bytes. Not need disassemble. */
+        if (state.class->config_size <= 0xFF) {
+          unsigned char byte;
+
+          if (b_memory_get(m, i, &byte, NULL, NULL)) {
+            if (last_loc != (i - step)) {
+              writeorg(org);
+            }
+
+            last_loc = i;
+
+            if (state.format) {
+              printf("%06x:  %02x  ", org, (unsigned int)byte);
+            } else {
+              printf("        ");
+            }
+
+            printf("db\t0x%02x\n", (unsigned int)byte);
           }
+          else {
+            last_loc = 0;
+          }
+
+          step = 1;
+        }
+        else {
+          if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
+            if (last_loc != (i - step)) {
+              writeorg(org);
+            }
+
+            last_loc = i;
+
+            if (state.format) {
+              printf("%06x:  %04x  ", org, (unsigned int)data);
+            } else {
+              printf("        ");
+            }
+
+            printf("dw\t0x%04x\n", (unsigned int)data);
+          }
+          else {
+            last_loc = 0;
+          }
+
+          step = 2;
         }
       }
-      i += 2;
+      else {
+        /* This is program word. */
+        if (state.class->i_memory_get(memory, i, &data, NULL, NULL)) {
+          if (last_loc != (i - step)) {
+            writeorg(org);
+          }
+
+          last_loc = i;
+
+          if (state.format) {
+            printf("%06x:  %04x  ", org, data);
+          } else {
+            printf("        ");
+          }
+
+          num_words = gp_disassemble(memory, i, state.class, buffer, sizeof(buffer));
+          printf("%s\n", buffer);
+
+          if (num_words != 1) {
+            i += step;
+            /* some 18xx instructions use two words */
+            if (state.format) {
+              state.class->i_memory_get(memory, i, &data, NULL, NULL);
+              printf("%06x:  %04x\n", gp_processor_byte_to_org(state.class, i), data);
+            }
+          }
+
+          step = 2;
+        }
+      }
+
+      i += step;
     }
 
     m = m->next;
@@ -139,7 +202,8 @@ void dasm(MemBlock *memory)
 
 }
 
-void show_usage(void)
+static void
+show_usage(void)
 {
   printf("Usage: gpdasm [options] file\n");
   printf("Options: [defaults in brackets after descriptions]\n");
@@ -200,36 +264,49 @@ int main(int argc, char *argv[])
     case 'h':
       usage = 1;
       break;
+
     case 'c':
       gp_decode_mnemonics = true;
       break;
+
     case 'i':
       print_hex_info = 1;
       break;
+
     case 'l':
       gp_dump_processor_list(true, 0);
       exit(0);
       break;
+
     case 'm':
       memory_dump = 1;
       break;
+
     case 'p':
       processor_name = optarg;
       break;
+
     case 's':
       state.format = 0;
       break;
+
     case 'y':
       gp_decode_extended = true;
       break;
+
     case 'v':
       fprintf(stderr, "%s\n", GPDASM_VERSION_STRING);
       exit(0);
+      break;
+
     case 't':
       strict = true;
-    }
-    if (usage)
       break;
+    }
+
+    if (usage) {
+      break;
+    }
   }
 
   if ((optind + 1) == argc) {
@@ -250,13 +327,14 @@ int main(int argc, char *argv[])
     state.num.errors++;
   }
 
-  if (strict && state.class && state.class->patch_strict) {
+  if (strict && (state.class != NULL) && (state.class->patch_strict != NULL)) {
     state.class->patch_strict();
   }
 
   if (print_hex_info) {
     printf("hex file name:   %s\n", filename);
     printf("hex file format: ");
+
     if (state.hex_info->hex_format == inhx8m) {
       printf("inhx8m\n");
     } else if (state.hex_info->hex_format == inhx16) {
@@ -266,12 +344,13 @@ int main(int argc, char *argv[])
     } else {
       printf("UNKNOWN\n");
     }
+
     printf("number of bytes: %i\n", state.hex_info->size);
     printf("\n");
   }
 
   if (state.num.errors == 0) {
-    if(memory_dump) {
+    if (memory_dump) {
       print_i_memory(state.i_memory, state.class);
     } else {
       dasm(state.i_memory);
@@ -280,8 +359,5 @@ int main(int argc, char *argv[])
 
   i_memory_free(state.i_memory);
 
-  if (state.num.errors > 0)
-    return EXIT_FAILURE;
-  else
-    return EXIT_SUCCESS;
+  return ((state.num.errors > 0) ? EXIT_FAILURE : EXIT_SUCCESS);
 }

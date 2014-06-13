@@ -287,7 +287,7 @@ process_args( int argc, char *argv[])
           sym = add_symbol(state.stDefines, lhs);
         }
 
-        if (rhs) {
+        if (rhs != NULL) {
           annotate_symbol(sym, mk_list(mk_string(rhs), NULL));
         }
       }

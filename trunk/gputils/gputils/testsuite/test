@@ -25,7 +25,7 @@
 TESTDIR=./test
 GPDASMBIN=../gpdasm
 GPASMBIN=../../gpasm/gpasm
-GPASMFLAGS=-q
+GPASMFLAGS="-q -I`pwd`/../../header"
 
 # General functions
 
@@ -69,9 +69,12 @@ function run_test() {
     echo "Usage: run_test <test file> <mcu type>"
     return 1
   fi
+  echo "$GPASMBIN $GPASMFLAGS $1.asm"
   ../../$GPASMBIN $GPASMFLAGS $1.asm || testfailed "$GPASMBIN $GPASMFLAGS $1.asm"
+  echo "$GPDASMBIN -p $2 -s $1.hex > $1.dis"
   ../../$GPDASMBIN -p $2 -s $1.hex > $1.dis || testfailed "$GPDASMBIN -p $2 -s $1.hex"
-  ../../$GPASMBIN $GPASMFLAGS -o $1.dis.hex $1.dis || testfailed "$GPASMBIN $GPASMFLAGS -o $1.dis.hex $1.dis"
+  echo "$GPASMBIN $GPASMFLAGS $1.dis -o $1.dis.hex"
+  ../../$GPASMBIN $GPASMFLAGS $1.dis -o $1.dis.hex || testfailed "$GPASMBIN $GPASMFLAGS -o $1.dis.hex $1.dis"
   diff -us $1.hex $1.dis.hex || testfailed ""
   return 0
 }
@@ -120,8 +123,12 @@ function all_test() {
   run_test op16 17c44
   echo -e "16 bit core passed.\n"
 
-  printbanner "Testing extended 16 bit core"
+  printbanner "Testing extended 16 bit core 1."
   run_test op16e 18c452
+  echo -e "Extended 16 bit core passed.\n"
+
+  printbanner "Testing extended 16 bit core 2."
+  run_test op16e2 18f4520
   echo -e "Extended 16 bit core passed.\n"
 
   printbanner "gpdasm testing sucessful"
