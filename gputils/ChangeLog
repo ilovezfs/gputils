@@ -1,3 +1,36 @@
+2014-06-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/coff.c, gpasm/gpasm.c, gpasm/processor.c, gpasm/processor.h,
+    libgputils/gpcfg.h, libgputils/gpreadhex.c, libgputils/gpreadhex.h,
+    libgputils/gpwritehex.c, libgputils/gpwritehex.h:
+    Changed text format.
+
+  * libgputils/gphash.c:
+    Removed the dead code.
+
+  * gpasm/lst.c, libgputils/gpdis.c:
+    Simplification and changed text format.
+
+  * gpasm/directive.c:
+    Correctly processed the output of the modified gpdasm.
+
+  * gputils/gpdasm.c:
+    Feature request: #40 Disassemble configuration memory 
+    - Do not disassemble the section of config bits.
+
+  * gputils/testsuite/test, gputils/testsuite/gpdasm.project/op12.asm,
+    gputils/testsuite/gpdasm.project/op12e.asm,
+    gputils/testsuite/gpdasm.project/op14.asm,
+    gputils/testsuite/gpdasm.project/op14e.asm,
+    gputils/testsuite/gpdasm.project/op16e2.asm
+    Added the config options.
+
+  * libgputils/gpmemory.c, libgputils/gpmemory.h:
+    Changed the return type of some functions.
+
+  * libgputils/gpprocessor.c, libgputils/gpprocessor.h:
+    New function - gp_processor_is_config_addr() - and added one
+    new element to the "px" structure.
+
 2014-06-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpcoff.h, libgputils/gphash.c, libgputils/gphash.h,
     libgputils/gptypes.h:
@@ -9,7 +42,7 @@
 
 2014-06-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpcfg.c:
-    Text format.
+    Changed text format.
 
 2014-06-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/scan.l:
@@ -31,7 +64,7 @@
 
 2014-06-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gpasm/directive.c:
-    Text format.
+    Changed text format.
 
 2014-06-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/testsuite/test, gputils/testsuite/test:
@@ -44,7 +77,7 @@
     libgputils/gpmemory.c, libgputils/gpmessage.c,
     libgputils/gpreadobj.c, libgputils/gpsymbol.c,
     libgputils/gpwriteobj.c:
-    Text format.
+    Changed text format.
 
 2014-06-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gpasm/directive.c, gpasm/lst.c, gplink/cod.c,

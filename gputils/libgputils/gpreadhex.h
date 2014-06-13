@@ -28,6 +28,6 @@ struct hex_data {
   int          error;
 };
 
-struct hex_data *readhex(char *filename, MemBlock *m);
+struct hex_data *readhex(const char *filename, MemBlock *m);
 
 #endif

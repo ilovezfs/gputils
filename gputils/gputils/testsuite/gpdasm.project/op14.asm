@@ -2,6 +2,10 @@
 
      list p=16c84
 
+include p16c84.inc
+
+	__config _CONFIG1, _CP_ON & _PWRTE_ON & _WDT_ON & _XT_OSC
+
 insn macro file 
      ADDLW 0xff
      ADDWF file,1 

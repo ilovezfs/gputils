@@ -28,7 +28,7 @@ Boston, MA 02111-1307, USA.  */
    inhx32 has 04 record for upper bits of 32-bit address */
 enum formats { inhx8m, inhx8s, inhx16, inhx32 };
 
-int writehex (char *basefilename, MemBlock *m, enum formats hex_format,
+int writehex (const char *basefilename, MemBlock *m, enum formats hex_format,
               int numerrors, int dos_newlines, unsigned int core_size);
 
 int check_writehex(MemBlock *m, enum formats hex_format);

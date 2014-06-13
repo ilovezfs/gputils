@@ -138,22 +138,22 @@ i_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
  *  address -
  *  m - start of the instruction memory
  * Returns
- *  1 if byte at address is used, 0 if not
+ *  true if byte at address is used, false if not
  *
  ************************************************************************/
-int
+gp_boolean
 b_memory_is_used(MemBlock *m, unsigned int address)
 {
   do
   {
     if (((address >> I_MEM_BITS) & 0xffff) == m->base) {
-      return (m->memory == NULL) ? 0 : ((m->memory[address & I_MEM_MASK].data & BYTE_USED_MASK) != 0);
+      return (((m->memory != NULL) && (m->memory[address & I_MEM_MASK].data & BYTE_USED_MASK)) ? true : false);
     }
 
     m = m->next;
   } while (m != NULL);
 
-  return 0;
+  return false;
 }
 
 /************************************************************************
@@ -168,10 +168,11 @@ b_memory_is_used(MemBlock *m, unsigned int address)
  *  address -
  *  m - start of the instruction memory
  * Returns
- *  the byte from that address combined with status bits
+ *  If is used the address the byte at address and true.
+ *  Otherwise 0 and false.
  *
  ************************************************************************/
-int
+gp_boolean
 b_memory_get(MemBlock *m, unsigned int address, unsigned char *byte,
              const char **section_name, const char **symbol_name)
 {
@@ -193,7 +194,7 @@ b_memory_get(MemBlock *m, unsigned int address, unsigned char *byte,
           *symbol_name = w->symbol_name;
         }
 
-        return ((w->data & BYTE_USED_MASK) != 0);
+        return ((w->data & BYTE_USED_MASK) ? true : false);
       }
       else {
         *byte = 0;
@@ -206,7 +207,7 @@ b_memory_get(MemBlock *m, unsigned int address, unsigned char *byte,
           *symbol_name = NULL;
         }
 
-        return 0;
+        return false;
       }
     }
 
@@ -222,7 +223,7 @@ b_memory_get(MemBlock *m, unsigned int address, unsigned char *byte,
   }
 
   *byte = 0;
-  return 0;
+  return false;
 }
 
 static void
@@ -381,7 +382,7 @@ b_memory_used(MemBlock *m)
  *
  *
  ************************************************************************/
-int
+gp_boolean
 i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word,
                 const char **section_name, const char **symbol_name)
 {
@@ -391,9 +392,9 @@ i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word,
   if (b_memory_get(m, byte_addr,     bytes,     section_name, symbol_name) |
       b_memory_get(m, byte_addr + 1, bytes + 1, NULL,         NULL)) {
     *word = bytes[0] | (bytes[1] << 8);
-    return 1;
+    return true;
   }
-  return 0;
+  return false;
 }
 
 void
@@ -404,7 +405,7 @@ i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word,
   b_memory_put(m, byte_addr + 1, word >> 8,   section_name, symbol_name);
 }
 
-int
+gp_boolean
 i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word,
                 const char **section_name, const char **symbol_name)
 {
@@ -414,9 +415,9 @@ i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word,
   if (b_memory_get(m, byte_addr,     bytes,     section_name, symbol_name) |
       b_memory_get(m, byte_addr + 1, bytes + 1, NULL,         NULL)) {
     *word = bytes[1] | (bytes[0] << 8);
-    return 1;
+    return true;
   }
-  return 0;
+  return false;
 }
 
 void

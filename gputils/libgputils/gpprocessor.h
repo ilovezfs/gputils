@@ -127,6 +127,8 @@ struct proc_class {
   unsigned int bank_mask;
   /* Bitmask of bits that can be stored in code section address. */
   unsigned int core_size;
+  /* Bitmask of bits that can be stored in config section address. */
+  unsigned int config_size;
   /* Get the address for ID location. */
   unsigned int (*id_location)(const struct px *processor);
 
@@ -171,8 +173,8 @@ struct proc_class {
   const int *num_instructions;
   const struct insn *(*find_insn)(const struct proc_class *cls, long int opcode);
 
-  int (*i_memory_get)(MemBlock *m, unsigned int byte_address, unsigned short *word,
-                      const char **section_name, const char **symbol_name);
+  gp_boolean (*i_memory_get)(MemBlock *m, unsigned int byte_address, unsigned short *word,
+                             const char **section_name, const char **symbol_name);
 
   void (*i_memory_put)(MemBlock *m, unsigned int byte_address, unsigned short value,
                        const char *section_name, const char *symbol_name);
@@ -275,6 +277,7 @@ const char *gp_processor_name(pic_processor_t processor, unsigned int choice);
 const char *gp_processor_coff_name(unsigned long coff_type, unsigned int choice);
 const char *gp_processor_script(pic_processor_t processor);
 unsigned int gp_processor_id_location(pic_processor_t processor);
+gp_boolean gp_processor_is_config_addr(pic_processor_t processor, int address);
 int gp_processor_rom_width(proc_class_t class);
 int gp_processor_check_bank(proc_class_t class, unsigned int address);
 int gp_processor_set_bank(proc_class_t class,

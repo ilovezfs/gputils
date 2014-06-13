@@ -26,7 +26,7 @@ Boston, MA 02111-1307, USA.  */
 #include "directive.h"
 #include "gperror.h"
 
-void select_processor(char *name)
+void select_processor(const char *name)
 {
   const struct px *found = NULL;
 
@@ -38,7 +38,7 @@ void select_processor(char *name)
     if (found) {
       int badrom_idx;
 
-      if (!state.processor) {
+      if (state.processor == NULL) {
         /* if in extended mode: check if processor supports extended instruction set */
         if (state.extended_pic16e && !found->is_16bit_extended) {
           gpverror(GPE_NO_EXTENDED_MODE, NULL);
@@ -82,13 +82,13 @@ void select_processor(char *name)
       }
     }
     /* load the instruction sets if necessary */
-    if ((state.processor_chosen == 0) && (state.processor)) {
+    if ((state.processor_chosen == 0) && (state.processor != NULL)) {
       opcode_init(1);   /* General directives. */
       /* seperate the directives from the opcodes */
       state.stBuiltin = push_symbol_table(state.stBuiltin, true);
       opcode_init(2);   /* Processor-specific. */
 
-      if (state.device.class != PROC_CLASS_PIC16E && state.device.class != PROC_CLASS_PIC16) {
+      if ((state.device.class != PROC_CLASS_PIC16E) && (state.device.class != PROC_CLASS_PIC16)) {
         opcode_init(3);   /* Special pseudo ops for 12 and 14 bit devices. */
       }
       state.processor_chosen = 1;

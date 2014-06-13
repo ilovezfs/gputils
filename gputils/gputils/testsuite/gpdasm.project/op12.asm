@@ -2,6 +2,10 @@
 
      list p=12c508
 
+include p12c508.inc
+
+     __config _CONFIG, _OSC_XT & _WDT_OFF & _CP_ON & _MCLRE_OFF
+
 insn macro file
      ADDWF file,1 
      ANDLW 0xff
