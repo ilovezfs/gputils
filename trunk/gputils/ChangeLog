@@ -1,3 +1,7 @@
+2014-06-14  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/lst.c:
+    Use more definitions.
+
 2014-06-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/coff.c, gpasm/gpasm.c, gpasm/processor.c, gpasm/processor.h,
     libgputils/gpcfg.h, libgputils/gpreadhex.c, libgputils/gpreadhex.h,
