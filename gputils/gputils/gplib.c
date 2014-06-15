@@ -67,21 +67,18 @@ object_name(char *file_name)
 }
 
 static gp_boolean
-has_path(char *file_name)
+has_path(const char *file_name)
 {
   char *name;
 
   name = strrchr(file_name, PATH_CHAR);
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
-  if (!name)
+  if (name != NULL) {
     name = strrchr(file_name, UNIX_PATH_CHAR);
+  }
 #endif
 
-  if (name) {
-    return true;
-  } else {
-    return false;  
-  }
+  return ((name == NULL) ? true : false);
 }
 
 void show_usage(void)
@@ -312,13 +309,10 @@ int main(int argc, char *argv[])
 
   /* write the new or modified archive */
   if (update_archive && (gp_num_errors == 0)) {
-    if (gp_archive_write(state.archive, state.filename))
+    if (gp_archive_write(state.archive, state.filename)) {
       gp_error("can't write the new archive file");
+    }
   }
 
-  if (gp_num_errors > 0)
-    return EXIT_FAILURE;
-  else
-    return EXIT_SUCCESS;
-
+  return ((gp_num_errors > 0) ? EXIT_FAILURE : EXIT_SUCCESS);
 }

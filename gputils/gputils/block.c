@@ -34,8 +34,10 @@ read_block(unsigned char *block, int block_number)
 
   fseek(codefile, block_number * COD_BLOCK_SIZE, SEEK_SET);
   n = fread(block, 1, COD_BLOCK_SIZE, codefile);
-  if (COD_BLOCK_SIZE != n)
+
+  if (COD_BLOCK_SIZE != n) {
     gp_error("bad block number %d", block_number);
+  }
 }
 
 DirBlockInfo *
@@ -45,14 +47,17 @@ read_directory(void)
   int next_dir_block = 0;
 
   do {
-    DirBlockInfo *p = malloc(sizeof (DirBlockInfo));
+    DirBlockInfo *p = malloc(sizeof(DirBlockInfo));
     assert(p);
-    if (NULL == dbi)
+
+    if (NULL == dbi) {
       start = dbi = p;
+    }
     else {
       dbi->next = p;
       dbi = p;
     }
+
     read_block(dbi->dir, next_dir_block);
   } while (0 != (next_dir_block = gp_getl16(&dbi->dir[COD_DIR_NEXTDIR])));
 

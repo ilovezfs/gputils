@@ -190,8 +190,9 @@ add_name(struct symbol_table *table, char *name)
   struct symbol *sym;
 
   sym = get_symbol(table, name);
-  if (sym == NULL)
+  if (sym == NULL) {
     sym = add_symbol(table, name);
+  }
 }
 
 void show_usage(void)
@@ -316,7 +317,7 @@ int main(int argc, char *argv[])
 
     state.object = gp_read_coff(state.input_file);
 
-    if (state.object) {
+    if (state.object != NULL) {
       remove_sections();
       remove_symbols();
     
@@ -348,7 +349,7 @@ int main(int argc, char *argv[])
         }
       }
 
-      if (state.output_file) {
+      if (state.output_file != NULL) {
         state.object->filename = state.output_file;
       }
 
@@ -359,8 +360,9 @@ int main(int argc, char *argv[])
     
       if (gp_num_errors == 0) {
         /* no errors have occured so write the file */
-        if (gp_write_coff(state.object, 0))
+        if (gp_write_coff(state.object, 0)) {
           gp_error("system error while writing object file");
+        }
       } else if (state.output_file) {
         /* a new file is being written, but errors have occurred, delete
            the file if it exists */
@@ -372,8 +374,5 @@ int main(int argc, char *argv[])
   }
 
 
-  if (gp_num_errors)
-    return EXIT_FAILURE;
-  else
-    return EXIT_SUCCESS;
+  return ((gp_num_errors != 0) ? EXIT_FAILURE : EXIT_SUCCESS);
 }
