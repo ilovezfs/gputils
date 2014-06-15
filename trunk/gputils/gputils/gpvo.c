@@ -63,21 +63,27 @@ void print_header(gp_object_type *object)
   if (object->flags & F_RELFLG) {
     printf("  Relocation info has been stripped.\n");
   }
+
   if (object->flags & F_EXEC) {
     printf("  File is executable.\n");
   }
+
   if (object->flags & F_LNNO) {
     printf("  Line numbers have been stripped.\n");
   }
+
   if (object->flags & F_ABSOLUTE) {
     printf("  The MPASM assembler object file is from absolute assembly code.\n");
   }
+
   if (object->flags & L_SYMS) {
     printf("  Local symbols have been stripped.\n");
   }
+
   if (object->flags & F_EXTENDED18) {
     printf("  The COFF file produced utilizing the Extended mode.\n");
   }
+
   if (object->flags & F_GENERIC) {
     printf("  Processor independent file for a core.\n");
   }
@@ -253,30 +259,39 @@ void print_sec_header(proc_class_t class, gp_section_type *section)
   printf("Number of Relocations   %i\n",   section->num_reloc);
   printf("Number of Line Numbers  %i\n",   section->num_lineno);
   printf("Flags                   %#lx\n", section->flags);
+
   if (section->flags & STYP_TEXT) {
     printf("  Executable code.\n");
   }
+
   if (section->flags & STYP_DATA) {
     printf("  Initialized data.\n");
   }
+
   if (section->flags & STYP_BSS) {
     printf("  Uninitialized data.\n");
   }
+
   if (section->flags & STYP_DATA_ROM) {
     printf("  Initialized data for ROM.\n");
   }
+
   if (section->flags & STYP_ABS) {
     printf("  Absolute.\n");
   }
+
   if (section->flags & STYP_SHARED) {
     printf("  Shared across banks.\n");
   }
+
   if (section->flags & STYP_OVERLAY) {
     printf("  Overlaid with other sections from different objects modules.\n");
   }
+
   if (section->flags & STYP_ACCESS) {
     printf("  Available using access bit.\n");
   }
+
   if (section->flags & STYP_ACTREC) {
     printf("  Contains the activation record for a function.\n");
   }
@@ -294,9 +309,11 @@ void print_sec_list(gp_object_type *object)
     if (section->size && section->data_ptr) {
       print_data(object->class, section);
     }
+
     if (section->num_reloc) {
       print_reloc_list(object->class, section->relocations);
     }
+
     if (section->num_lineno) {
       print_linenum_list(object->class, section->line_numbers);
     }
@@ -312,78 +329,97 @@ void coff_type(int type, char *buffer, size_t sizeof_buffer)
     /* null */
     snprintf(buffer, sizeof_buffer, "NULL");
     break;
+
   case T_VOID:
     /* void */
     snprintf(buffer, sizeof_buffer, "void");
     break;
+
   case T_CHAR:
     /* character */
     snprintf(buffer, sizeof_buffer, "char");
     break;
+
   case T_SHORT:
     /* short integer */
     snprintf(buffer, sizeof_buffer, "short");
     break;
+
   case T_INT:
     /* integer */
     snprintf(buffer, sizeof_buffer, "int");
     break;
+
   case T_LONG:
     /* long integer */
     snprintf(buffer, sizeof_buffer, "long int");
     break;
+
   case T_FLOAT:
     /* floating point */
     snprintf(buffer, sizeof_buffer, "float");
     break;
+
   case T_DOUBLE:
     /* double length floating point */
     snprintf(buffer, sizeof_buffer, "double");
     break;
+
   case T_STRUCT:
     /* structure */
     snprintf(buffer, sizeof_buffer, "struct");
     break;
+
   case T_UNION:
     /* union */
     snprintf(buffer, sizeof_buffer, "union");
     break;
+
   case T_ENUM:
     /* enumeration */
     snprintf(buffer, sizeof_buffer, "enum");
     break;
+
   case T_MOE:
     /* member of enumeration */
     snprintf(buffer, sizeof_buffer, "enum");
     break;
+
   case T_UCHAR:
     /* unsigned character */
     snprintf(buffer, sizeof_buffer, "unsigned char");
     break;
+
   case T_USHORT:
     /* unsigned short */
     snprintf(buffer, sizeof_buffer, "unsigned short");
     break;
+
   case T_UINT:
     /* unsigned integer */
     snprintf(buffer, sizeof_buffer, "unsigned int");
     break;
+
   case T_ULONG:
     /* unsigned long */
     snprintf(buffer, sizeof_buffer, "unsigned long");
     break;
+
   case T_LNGDBL:
     /* long double floating point */
     snprintf(buffer, sizeof_buffer, "long double");
     break;
+
   case T_SLONG:
     /* short long */
     snprintf(buffer, sizeof_buffer, "short long");
     break;
+
   case T_USLONG:
     /* unsigned short long */
     snprintf(buffer, sizeof_buffer, "unsigned short long");
     break;
+
   default:
     snprintf(buffer, sizeof_buffer, "unknown(%d)", type);
     break;
@@ -444,37 +480,37 @@ static const char *format_sym_derived_type(int type, char *buffer, size_t sizeof
 static const char *format_sym_class(int cls, char *buffer, size_t sizeof_buffer)
 {
   switch(cls) {
-  case C_EFCN: return "C_EFCN";
-  case C_NULL: return "C_NULL";
-  case C_AUTO: return "C_AUTO";
-  case C_EXT: return "C_EXT";
-  case C_STAT: return "C_STAT";
-  case C_REG: return "C_REG";
-  case C_EXTDEF: return "C_EXTDEF";
-  case C_LABEL: return "C_LABEL";
-  case C_ULABEL: return "C_ULABEL";
-  case C_MOS: return "C_MOS";
-  case C_ARG: return "C_ARG";
-  case C_STRTAG: return "C_STRTAG";
-  case C_MOU: return "C_MOU";
-  case C_UNTAG: return "C_UNTAG";
-  case C_TPDEF: return "C_TPDEF";
+  case C_EFCN:    return "C_EFCN";
+  case C_NULL:    return "C_NULL";
+  case C_AUTO:    return "C_AUTO";
+  case C_EXT:     return "C_EXT";
+  case C_STAT:    return "C_STAT";
+  case C_REG:     return "C_REG";
+  case C_EXTDEF:  return "C_EXTDEF";
+  case C_LABEL:   return "C_LABEL";
+  case C_ULABEL:  return "C_ULABEL";
+  case C_MOS:     return "C_MOS";
+  case C_ARG:     return "C_ARG";
+  case C_STRTAG:  return "C_STRTAG";
+  case C_MOU:     return "C_MOU";
+  case C_UNTAG:   return "C_UNTAG";
+  case C_TPDEF:   return "C_TPDEF";
   case C_USTATIC: return "C_USTATIC";
-  case C_ENTAG: return "C_ENTAG";
-  case C_MOE: return "C_MOE";
+  case C_ENTAG:   return "C_ENTAG";
+  case C_MOE:     return "C_MOE";
   case C_REGPARM: return "C_REGPARM";
-  case C_FIELD: return "C_FIELD";
+  case C_FIELD:   return "C_FIELD";
   case C_AUTOARG: return "C_AUTOARG";
   case C_LASTENT: return "C_LASTENT";
-  case C_BLOCK: return "C_BLOCK";
-  case C_FCN: return "C_FCN";
-  case C_EOS: return "C_EOS";
-  case C_FILE: return "C_FILE";
-  case C_LINE: return "C_LINE";
-  case C_ALIAS: return "C_ALIAS";
-  case C_HIDDEN: return "C_HIDDEN";
-  case C_EOF: return "C_EOF";
-  case C_LIST: return "C_LIST";
+  case C_BLOCK:   return "C_BLOCK";
+  case C_FCN:     return "C_FCN";
+  case C_EOS:     return "C_EOS";
+  case C_FILE:    return "C_FILE";
+  case C_LINE:    return "C_LINE";
+  case C_ALIAS:   return "C_ALIAS";
+  case C_HIDDEN:  return "C_HIDDEN";
+  case C_EOF:     return "C_EOF";
+  case C_LIST:    return "C_LIST";
   case C_SECTION: return "C_SECTION";
   default:
     snprintf(buffer, sizeof_buffer, "%d", cls);
@@ -482,7 +518,7 @@ static const char *format_sym_class(int cls, char *buffer, size_t sizeof_buffer)
   }
 }
 
-void print_sym_table (gp_object_type *object)
+void print_sym_table(gp_object_type *object)
 {
   gp_symbol_type *symbol;
   gp_aux_type *aux;
@@ -532,55 +568,55 @@ void print_sym_table (gp_object_type *object)
 
       switch (aux->type) {
       case AUX_DIRECT:
-        printf(AUX_INDENT "command = \"%c\"\n",
-               aux->_aux_symbol._aux_direct.command);
-        printf(AUX_INDENT "string = \"%s\"\n",
-               aux->_aux_symbol._aux_direct.string);
+        printf(AUX_INDENT "command = \"%c\"\n", aux->_aux_symbol._aux_direct.command);
+        printf(AUX_INDENT "string = \"%s\"\n", aux->_aux_symbol._aux_direct.string);
         break;
+
       case AUX_FILE:
         if (!state.suppress_names) {
-          printf(AUX_INDENT "file = %s\n",
-                 aux->_aux_symbol._aux_file.filename);
+          printf(AUX_INDENT "file = %s\n", aux->_aux_symbol._aux_file.filename);
         }
-        printf(AUX_INDENT "line included = %li\n",
-               aux->_aux_symbol._aux_file.line_number);
-        printf(AUX_INDENT "flags = %x\n",
-               aux->_aux_symbol._aux_file.flags);
+        printf(AUX_INDENT "line included = %li\n", aux->_aux_symbol._aux_file.line_number);
+        printf(AUX_INDENT "flags = %x\n", aux->_aux_symbol._aux_file.flags);
         break;
+
       case AUX_IDENT:
-        printf(AUX_INDENT "string = \"%s\"\n",
-               aux->_aux_symbol._aux_ident.string);
+        printf(AUX_INDENT "string = \"%s\"\n", aux->_aux_symbol._aux_ident.string);
         break;
+
       case AUX_SCN:
-        printf(AUX_INDENT "length = %li\n",
-               aux->_aux_symbol._aux_scn.length);
-        printf(AUX_INDENT "number of relocations = %i\n",
-               aux->_aux_symbol._aux_scn.nreloc);
-        printf(AUX_INDENT "number of line numbers = %i\n",
-               aux->_aux_symbol._aux_scn.nlineno);
+        printf(AUX_INDENT "length = %li\n", aux->_aux_symbol._aux_scn.length);
+        printf(AUX_INDENT "number of relocations = %i\n", aux->_aux_symbol._aux_scn.nreloc);
+        printf(AUX_INDENT "number of line numbers = %i\n", aux->_aux_symbol._aux_scn.nlineno);
         break;
+
       case AUX_FCN_CALLS: {
         struct gp_symbol_type *callee = aux->_aux_symbol._aux_fcn_calls.callee;
+
         printf(AUX_INDENT "callee = %s\n",
                callee != NULL ? callee->name : "higher order");
         printf(AUX_INDENT "is_interrupt = %lu\n",
                aux->_aux_symbol._aux_fcn_calls.is_interrupt);
         break;
       }
+
       default:
         printf("%ld  ", aux->type);
         for (i = 0; i < object->symbol_size; i++) {
           printf("%02x", aux->_aux_symbol.data[i] & 0xFF);
+
           if (i & 1) {
-            printf(" ");
+            putchar(' ');
           }
         }
         for (i = 0; i < object->symbol_size; i++) {
           int c = aux->_aux_symbol.data[i] & 0xFF;
+
           putchar((isprint(c)) ? c : '.');
         }
         putchar('\n');
-      }
+      } /* switch (aux->type) { */
+
       aux = aux->next;
       ++idx;
     }
@@ -600,14 +636,10 @@ void export_sym_table(gp_object_type *object)
   symbol = object->symbols;
 
   while (symbol != NULL) {
-    if ((state.export.enabled) &&
-        (symbol->class == C_EXT) &&
+    if ((state.export.enabled) && (symbol->class == C_EXT) &&
         (symbol->section_number > 0)) {
-
       coff_type(symbol->type, buffer, sizeof(buffer));
-      fprintf(state.export.f, "  extern %s ; %s\n",
-              symbol->name,
-              buffer);
+      fprintf(state.export.f, "  extern %s ; %s\n", symbol->name, buffer);
     }
 
     symbol = symbol->next;
@@ -629,6 +661,7 @@ void print_binary(unsigned char *data, long int file_size)
 
     for(j = 0; j < 16; j += 2) {
       memory = (data[i + j] << 8) | data[i+j+1];
+
       if ((i+j) >= file_size) {
         printf("     ");
       } else {
@@ -638,7 +671,7 @@ void print_binary(unsigned char *data, long int file_size)
 
     printf(" ");
 
-    for(j = 0; j < 16; j += 2) {
+    for (j = 0; j < 16; j += 2) {
       if ((i+j) < file_size) {
         c = data[i + j];
         putchar((isprint(c)) ? c : '.');
@@ -770,8 +803,8 @@ int main(int argc, char *argv[])
     state.dump_flags = PRINT_HEADER | PRINT_SECTIONS | PRINT_SYMTBL;
   }
 
-  if (gp_identify_coff_file(state.filename) != object_file_v2 &&
-      gp_identify_coff_file(state.filename) != object_file) {
+  if ((gp_identify_coff_file(state.filename) != object_file_v2) &&
+      (gp_identify_coff_file(state.filename) != object_file)) {
     gp_error("\"%s\" is not a valid object file", state.filename);
     exit(1);
   }
@@ -781,6 +814,7 @@ int main(int argc, char *argv[])
 
   if (state.export.enabled) {
     state.export.f = fopen(state.export.filename, "w");
+
     if (state.export.f == NULL) {
       perror(state.export.filename);
       exit(1);
@@ -789,11 +823,8 @@ int main(int argc, char *argv[])
     gp_date_string(buffer, sizeof(buffer));
 
     fprintf(state.export.f, "; %s\n", state.export.filename);
-    fprintf(state.export.f, "; generated by %s on %s\n",
-            GPVO_VERSION_STRING,
-            buffer);
-    fprintf(state.export.f, "; from %s\n\n",
-            state.filename);
+    fprintf(state.export.f, "; generated by %s on %s\n", GPVO_VERSION_STRING, buffer);
+    fprintf(state.export.f, "; from %s\n\n", state.filename);
 
     export_sym_table(state.object);
 

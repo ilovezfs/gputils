@@ -173,17 +173,21 @@ main(int argc, char *argv[])
       exit(0);
     }
 
-    if (usage)
+    if (usage) {
       break;
+    }
   }
 
-  if ((optind + 1) == argc)
+  if ((optind + 1) == argc) {
     strncpy(filename, argv[optind], sizeof(filename));
-  else
+  }
+  else {
     usage = 1;
+  }
 
-  if (display_flags == DISPLAY_NOTHING)
+  if (display_flags == DISPLAY_NOTHING) {
     display_flags = DISPLAY_ALL;
+  }
 
   if (usage) {
     show_usage();
@@ -207,11 +211,13 @@ main(int argc, char *argv[])
   processor_info = gp_find_processor(processor_name);
   processor_class = gp_processor_class(processor_info);
 
-  if (display_flags & DISPLAY_DIR)
+  if (display_flags & DISPLAY_DIR) {
     dump_directory_blocks();
+  }
 
-  if (display_flags & DISPLAY_ROM)
+  if (display_flags & DISPLAY_ROM) {
     dump_code(processor_class);
+  }
 
   if (display_flags & DISPLAY_SYM) {
     dump_symbols();
@@ -221,11 +227,13 @@ main(int argc, char *argv[])
 
   dump_source_files();
 
-  if (display_flags & DISPLAY_SRC)
+  if (display_flags & DISPLAY_SRC) {
     dump_line_symbols();
+  }
 
-  if (display_flags & DISPLAY_MESS)
+  if (display_flags & DISPLAY_MESS) {
     dump_message_area();
+  }
 
   return EXIT_SUCCESS;
 }

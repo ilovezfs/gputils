@@ -1,4 +1,9 @@
 2014-06-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gputils/block.c, gputils/dump.c, gputils/gplib.c,
+    gputils/gpstrip.c, gputils/gpvc.c, gputils/gpvo.c:
+    Changed text format.
+
+2014-06-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c:
     Changed text format.
 
