@@ -4452,7 +4452,7 @@ do_insn(const char *name, struct pnode *parms)
           else {
             a = 1;
           }
-           * and replaced it witht the following, according to the Data Sheet:
+           * and replaced it with the following, according to the Data Sheet:
            * 
            * "If the index argument is properly bracketed for Indexed
            * Literal Offset Addressing mode, the Access RAM
@@ -4535,7 +4535,7 @@ do_insn(const char *name, struct pnode *parms)
             else {
               a = 1;
             }
-             * and replaced it witht the following, according to the Data Sheet:
+             * and replaced it with the following, according to the Data Sheet:
              * 
              * "If the index argument is properly bracketed for Indexed
              * Literal Offset Addressing mode, the Access RAM
@@ -4612,7 +4612,7 @@ do_insn(const char *name, struct pnode *parms)
           else {
             a = 1;
           }
-           * and replaced it witht the following, according to the Data Sheet:
+           * and replaced it with the following, according to the Data Sheet:
            * 
            * "If the index argument is properly bracketed for Indexed
            * Literal Offset Addressing mode, the Access RAM

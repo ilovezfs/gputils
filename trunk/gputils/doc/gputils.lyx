@@ -71,7 +71,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Jun 12, 2014
+Jun 15, 2014
 \end_layout
 
 \begin_layout Standard
@@ -8172,12 +8172,109 @@ Xor W and <f>, result in <dst>
 \end_layout
 
 \begin_layout Subsubsection
+12 Bit Devices Enhanced Instruction Set
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0pt">
+<column alignment="left" valignment="top" width="0pt">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Syntax
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MOVLB <k>
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Move literal to BSR register
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RETFIE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Return from interrupt
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RETURN
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Return, maintain W
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
 14 Bit Devices (PIC16CXX)
 \end_layout
 
 \begin_layout Standard
 \begin_inset Tabular
-<lyxtabular version="3" rows="39" columns="2">
+<lyxtabular version="3" rows="38" columns="2">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
@@ -8596,26 +8693,6 @@ IORWF <f>,<dst>
 
 \begin_layout Plain Layout
 Or W and <f>, result in <dst>
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
 \end_layout
 
 \end_inset
@@ -10851,7 +10928,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
--a <formta>
+-a <format>
 \end_layout
 
 \end_inset
@@ -12108,7 +12185,7 @@ Where options can be one of:
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="11" columns="3">
+<lyxtabular version="3" rows="12" columns="3">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
@@ -12165,7 +12242,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
-Decode special mnemonics
+Decode special mnemonics.
 \end_layout
 
 \end_inset
@@ -12185,7 +12262,7 @@ Decode special mnemonics
 \begin_inset Text
 
 \begin_layout Plain Layout
--help
+--help
 \end_layout
 
 \end_inset
@@ -12194,7 +12271,7 @@ Decode special mnemonics
 \begin_inset Text
 
 \begin_layout Plain Layout
-Display the help message
+Display the help message.
 \end_layout
 
 \end_inset
@@ -12223,7 +12300,7 @@ Display the help message
 \begin_inset Text
 
 \begin_layout Plain Layout
-Display hex file information
+Display hex file information.
 \end_layout
 
 \end_inset
@@ -12252,7 +12329,7 @@ Display hex file information
 \begin_inset Text
 
 \begin_layout Plain Layout
-List supported processors
+List supported processors.
 \end_layout
 
 \end_inset
@@ -12272,7 +12349,7 @@ List supported processors
 \begin_inset Text
 
 \begin_layout Plain Layout
--dump
+--dump
 \end_layout
 
 \end_inset
@@ -12281,7 +12358,36 @@ List supported processors
 \begin_inset Text
 
 \begin_layout Plain Layout
-Memory dump hex file
+Memory dump hex file.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-n
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--show-names
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+For some case of SFR, shows the name of instead of the address.
 \end_layout
 
 \end_inset
@@ -12310,7 +12416,7 @@ Memory dump hex file
 \begin_inset Text
 
 \begin_layout Plain Layout
-Select processor
+Select processor.
 \end_layout
 
 \end_inset
@@ -12339,7 +12445,7 @@ Select processor
 \begin_inset Text
 
 \begin_layout Plain Layout
-Print short form output
+Print short form output.
 \end_layout
 
 \end_inset
@@ -12368,7 +12474,7 @@ Print short form output
 \begin_inset Text
 
 \begin_layout Plain Layout
-Print gpdasm version information and exit
+Print gpdasm version information and exit.
 \end_layout
 
 \end_inset
@@ -12397,7 +12503,7 @@ Print gpdasm version information and exit
 \begin_inset Text
 
 \begin_layout Plain Layout
-Enable 18xx extended mode
+Enable 18xx extended mode.
 \end_layout
 
 \end_inset
@@ -12427,7 +12533,7 @@ Enable 18xx extended mode
 
 \begin_layout Plain Layout
 Disassemble only opcodes generated by gpasm in case of instructions with
- several opcodes
+ several opcodes.
 \end_layout
 
 \end_inset

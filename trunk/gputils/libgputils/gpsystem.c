@@ -92,8 +92,9 @@ gp_fputvar(const void *data_, int number, FILE *fp)
   const unsigned char *data = data_;
   int i;
   
-  for(i = 0; i < number; i++)
+  for (i = 0; i < number; i++) {
     fputc(data[i], fp);
+  }
 
   return;
 }
@@ -133,8 +134,6 @@ gp_putl16(unsigned char *addr, short data)
 {
   addr[1] = (data >> 8) & 0xff;
   addr[0] = data & 0xff;
-
-  return;
 }
 
 void 
@@ -144,8 +143,6 @@ gp_putl32(unsigned char *addr, long data)
   addr[1] = (data >> 8)  & 0xff;
   addr[2] = (data >> 16) & 0xff;
   addr[3] = (data >> 24) & 0xff;
-
-  return;
 }
 
 /* big endian functions */
@@ -170,8 +167,6 @@ gp_putb32(unsigned char *addr, long data)
   addr[1] = (data >> 16) & 0xff;
   addr[2] = (data >> 8)  & 0xff;
   addr[3] = data & 0xff;
-
-  return;
 }
 
 void
@@ -190,8 +185,6 @@ gp_date_string(char *buffer, size_t sizeof_buffer)
            now_tm->tm_hour,
            now_tm->tm_min,
            now_tm->tm_sec);
-
-  return;
 }
 
 char *

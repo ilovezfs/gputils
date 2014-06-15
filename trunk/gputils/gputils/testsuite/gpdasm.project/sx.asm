@@ -48,9 +48,9 @@ insn macro file
      endm
 
      org 0
-     insn 10
-     org 400
-     insn 20
-     org 800
-     insn 25
+     insn 0x10
+     org 0x400
+     insn 0x20
+     org 0x800
+     insn 0x25
      end

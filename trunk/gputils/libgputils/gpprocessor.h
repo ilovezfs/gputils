@@ -112,6 +112,11 @@ Boston, MA 02111-1307, USA.  */
 struct px;
 struct gp_section_type;
 
+typedef struct _core_sfr_ {
+  int address;
+  const char *name;
+} core_sfr_t;
+
 struct proc_class {
   /* Instruction used in making initialization data sections. */
   int retlw;
@@ -129,6 +134,10 @@ struct proc_class {
   unsigned int core_size;
   /* Bitmask of bits that can be stored in config section address. */
   unsigned int config_size;
+  /* These SFRs exist in each MCU which fall within into the PIC1xx family. */
+  const core_sfr_t *core_sfr_table;
+  /* Number of core SFRs. */
+  unsigned int core_sfr_number;
   /* Get the address for ID location. */
   unsigned int (*id_location)(const struct px *processor);
 
@@ -306,5 +315,7 @@ int gp_processor_byte_to_org(proc_class_t class, int byte);
 
 int gp_org_to_byte(unsigned shift, int org);
 int gp_byte_to_org(unsigned shift, int byte);
+
+const core_sfr_t *gp_processor_find_sfr(proc_class_t class, int address);
 
 #endif

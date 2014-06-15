@@ -39,6 +39,7 @@ extern struct gpdasm_state {
     int warnings;
     int messages;
   } num;
+  gp_boolean show_names;
 } state;
 
 #endif

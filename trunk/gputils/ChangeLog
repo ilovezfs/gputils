@@ -1,3 +1,32 @@
+2014-06-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c:
+    Changed text format.
+
+  * gplink/lst.c:
+    Changed the parameter number of gp_disassemble_byte() function and text format.
+
+  * gputils/gpvo.c:
+    Changed the parameter number of gp_disassemble() function and text format.
+
+  * gputils/gpdasm.c, gputils/gpdasm.h.in, libgputils/gpdis.c,
+    libgputils/gpdis.h, libgputils/gpprocessor.c, libgputils/gpprocessor.h,
+    libgputils/gpsystem.c:
+    New option in gpdasm: -n, --show-names
+        For some case of SFR, shows the name of instead of the address.
+
+  * gputils/testsuite/test, gputils/testsuite/gpdasm.project/op12.asm,
+    gputils/testsuite/gpdasm.project/op12e.asm,
+    gputils/testsuite/gpdasm.project/op14.asm,
+    gputils/testsuite/gpdasm.project/op14e.asm,
+    gputils/testsuite/gpdasm.project/op16.asm,
+    gputils/testsuite/gpdasm.project/op16e.asm,
+    gputils/testsuite/gpdasm.project/op16e2.asm:
+    changed
+
+  * doc/gputils.lyx:
+    New option in gpdasm: -n, --show-names
+    Added the PIC12 enhanced instructions.
+
 2014-06-14  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/lst.c:
     Use more definitions.
