@@ -146,11 +146,11 @@ expand(const char *buf)
   int is, id;
   static char dest[520], c;
 
-  for (is = 0, id = 0; (c = buf[is]) != '\0' && id < sizeof(dest) - 2; ++is) {
+  for (is = 0, id = 0; (c = buf[is]) != '\0' && id < (sizeof(dest) - 2); ++is) {
     if (c == '\t') {
       unsigned int n = 8 - (id % 8);
 
-      while (n-- && id < sizeof(dest) - 2) {
+      while (n-- && id < (sizeof(dest) - 2)) {
         dest[id++] = ' ';
       }
     }
@@ -174,8 +174,9 @@ write_src(int last_line)
   int org = 0;
 
   /* if the source file wasn't found, can't write it to the list file */
-  if (state.lst.src->missing_source)
+  if (state.lst.src->missing_source) {
     return;
+  }
 
   while (1) {
     /* when last_line is 0 print all lines, else print to last_line */
@@ -223,20 +224,16 @@ write_src(int last_line)
           cod_lst_line(COD_NORMAL_LST_LINE);
         }
         else {
-          if (org & 1 || len < 2) {
+          if ((org & 1) || (len < 2)) {
             /* even address or less then two byts to disassemble: disassemble one byte */
-            if (0 != len) {
+            if (len != 0) {
               unsigned char byte;
 
               b_memory_assert_get(line_section->data, org, &byte, NULL, NULL);
-              gp_disassemble_byte(line_section->data,
-                                  org,
-                                  state.class,
-                                  dasmbuf,
-                                  sizeof(dasmbuf));
+              gp_disassemble_byte(line_section->data, org, state.class, dasmbuf, sizeof(dasmbuf));
               lst_line("%06lx   %02x       %-24s %s",
                        gp_processor_byte_to_org(state.class, org),
-                       (unsigned short)byte,
+                       (unsigned int)byte,
                        expand(dasmbuf),
                        linebuf);
               b_memory_set_listed(line_section->data, org, 1);
@@ -250,16 +247,11 @@ write_src(int last_line)
             int num_bytes;
 
             state.class->i_memory_get(line_section->data, org, &word, NULL, NULL);
-            num_bytes = gp_disassemble_size(line_section->data,
-                                       org,
-                                       state.class,
-                                       dasmbuf,
-                                       sizeof(dasmbuf), len);
+            num_bytes = gp_disassemble_size(line_section->data, org, state.class, 0x80,
+                                            false, dasmbuf, sizeof(dasmbuf), len);
             lst_line("%06lx   %04x     %-24s %s",
-                     gp_processor_byte_to_org(state.class, org),
-                     word,
-                     expand(dasmbuf),
-                     linebuf);
+                     gp_processor_byte_to_org(state.class, org), word,
+                     expand(dasmbuf), linebuf);
             b_memory_set_listed(line_section->data, org, num_bytes);
             state.lst.was_org = org;
             cod_lst_line(COD_NORMAL_LST_LINE);
@@ -301,7 +293,6 @@ write_src(int last_line)
 static void
 lst_init(void)
 {
-
   if (state.lstfile != named) {
     snprintf(state.lstfilename, sizeof(state.lstfilename),
              "%s.lst", state.basefilename);

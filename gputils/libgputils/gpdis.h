@@ -26,25 +26,31 @@ extern gp_boolean gp_decode_mnemonics;
 extern gp_boolean gp_decode_extended;
 
 int gp_disassemble(MemBlock *m,
-                   int byte_address,
-                   proc_class_t class,
-                   char *buffer,
-                   size_t sizeof_buffer);
+                    int byte_address,
+                    proc_class_t class,
+                    int bsr_boundary,
+                    gp_boolean show_core_sfrs,
+                    char *buffer,
+                    size_t sizeof_buffer);
+
 int gp_disassemble_byte(MemBlock *m,
                     int byte_address,
                     proc_class_t class,
                     char *buffer,
                     size_t sizeof_buffer);
+
 int gp_disassemble_word(MemBlock *m,
                     int byte_address,
                     proc_class_t class,
                     char *buffer,
                     size_t sizeof_buffer);
+
 int gp_disassemble_size(MemBlock *m,
                     int byte_address,
                     proc_class_t class,
+                    int bsr_boundary,
+                    gp_boolean show_core_sfrs,
                     char *buffer,
                     size_t sizeof_buffer,
                     unsigned int size);
-
 #endif

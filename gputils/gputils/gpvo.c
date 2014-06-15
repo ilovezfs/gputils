@@ -125,8 +125,9 @@ static const char *format_reloc_type(unsigned short type, char *buffer, size_t s
     "RELOCT_PAGESEL_MOVLP",
   };
 
-  if (type >= NELEM(type_str))
+  if (type >= NELEM(type_str)) {
     type = 0;
+  }
 
   snprintf(buffer, sizeof_buffer, "%#-4x %-20s", type, type_str[type]);
   return buffer;
@@ -190,24 +191,24 @@ void print_data(proc_class_t class, gp_section_type *section)
 
   printf("Data\n");
   while (1) {
-    if ((section->flags & STYP_TEXT) && class->find_insn != NULL) {
+    if ((section->flags & STYP_TEXT) && (class->find_insn != NULL)) {
       unsigned short memory;
 
-      if (!class->i_memory_get(section->data, address, &memory, NULL, NULL))
+      if (!class->i_memory_get(section->data, address, &memory, NULL, NULL)) {
         break;
-      num_words = gp_disassemble(section->data,
-                                 address,
-                                 class,
-                                 buffer,
-                                 sizeof(buffer));
+      }
+
+      num_words = gp_disassemble(section->data, address, class, 0x80, false, buffer, sizeof(buffer));
       printf("%06x:  %04x  %s\n", gp_processor_byte_to_org(class, address), memory, buffer);
+
       if (num_words != 1) {
         class->i_memory_get(section->data, address + 2, &memory, NULL, NULL);
         printf("%06x:  %04x\n", gp_processor_byte_to_org(class, address + 2), memory);
       }
+
       address += 2 * num_words;
     }
-    else if (section->flags & STYP_DATA_ROM || class == PROC_CLASS_EEPROM16) {
+    else if (section->flags & STYP_DATA_ROM || (class == PROC_CLASS_EEPROM16)) {
       unsigned short word;
 
       if (class->i_memory_get(section->data, address, &word, NULL, NULL)) {
@@ -227,8 +228,10 @@ void print_data(proc_class_t class, gp_section_type *section)
       /* STYP_DATA or STYP_ACTREC, or EEPROM8 */
       unsigned char byte;
 
-      if (!b_memory_get(section->data, address, &byte, NULL, NULL))
+      if (!b_memory_get(section->data, address, &byte, NULL, NULL)) {
         break;
+      }
+
       printf("%06x:  %02x\n", address, byte);
       ++address;
     }
@@ -240,10 +243,7 @@ void print_sec_header(proc_class_t class, gp_section_type *section)
 {
   int org_to_byte_shift;
 
-  if (section->flags & (STYP_TEXT|STYP_DATA_ROM))
-    org_to_byte_shift = class->org_to_byte_shift;
-  else
-    org_to_byte_shift = 0;
+  org_to_byte_shift = (section->flags & (STYP_TEXT|STYP_DATA_ROM)) ? class->org_to_byte_shift : 0;
 
   printf("Section Header\n");
   printf("Name                    %s\n",   section->name);
@@ -413,8 +413,11 @@ static const char *format_sym_type(int type, char *buffer, size_t sizeof_buffer)
     "T_SLONG",
     "T_USLONG"
   };
-  if (type < NELEM(type_str))
+
+  if (type < NELEM(type_str)) {
     return type_str[type];
+  }
+
   snprintf(buffer, sizeof_buffer, "%d", type);
   return buffer;
 }
@@ -429,8 +432,11 @@ static const char *format_sym_derived_type(int type, char *buffer, size_t sizeof
     "DT_ROMPTR",
     "DT_FARROMPTR",
   };
-  if (type < NELEM(type_str))
+
+  if (type < NELEM(type_str)) {
     return type_str[type];
+  }
+
   snprintf(buffer, sizeof_buffer, "%d", type);
   return buffer;
 }
@@ -498,8 +504,9 @@ void print_sym_table (gp_object_type *object)
     } else if (symbol->section_number == N_UNDEF) {
       section = "UNDEFINED";
     } else {
-      if (symbol->section)
+      if (symbol->section != NULL) {
         section = symbol->section->name;
+      }
       else {
         static char buf[64];
 
@@ -570,7 +577,7 @@ void print_sym_table (gp_object_type *object)
         }
         for (i = 0; i < object->symbol_size; i++) {
           int c = aux->_aux_symbol.data[i] & 0xFF;
-          putchar( (isprint(c)) ? c : '.');
+          putchar((isprint(c)) ? c : '.');
         }
         putchar('\n');
       }
@@ -593,7 +600,6 @@ void export_sym_table(gp_object_type *object)
   symbol = object->symbols;
 
   while (symbol != NULL) {
-
     if ((state.export.enabled) &&
         (symbol->class == C_EXT) &&
         (symbol->section_number > 0)) {
@@ -635,10 +641,10 @@ void print_binary(unsigned char *data, long int file_size)
     for(j = 0; j < 16; j += 2) {
       if ((i+j) < file_size) {
         c = data[i + j];
-        putchar( (isprint(c)) ? c : '.');
+        putchar((isprint(c)) ? c : '.');
 
         c = data[i + j + 1];
-        putchar( (isprint(c)) ? c : '.');
+        putchar((isprint(c)) ? c : '.');
       }
     }
 

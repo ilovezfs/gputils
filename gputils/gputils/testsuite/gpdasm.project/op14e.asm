@@ -87,6 +87,9 @@ insn macro file
     endm
 
 	org	0
+	insn	0
+
+	org	0x80
 	insn	.10
 
 	org	0x100

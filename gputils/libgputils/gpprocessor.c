@@ -1727,6 +1727,159 @@ find_insn_pic16e(proc_class_t cls, long int opcode)
   return NULL;
 }
 
+static int
+core_sfr_cmp(const void *P0, const void *P1)
+{
+  const core_sfr_t *s0 = (const core_sfr_t *)P0;
+  const core_sfr_t *s1 = (const core_sfr_t *)P1;
+  unsigned int address0 = s0->address;
+  unsigned int address1 = s1->address;
+
+  if (address0 < address1) {
+    return -1;
+  }
+  else if (address0 > address1) {
+    return 1;
+  }
+  else {
+    return 0;
+  }
+}
+
+const core_sfr_t *
+gp_processor_find_sfr(proc_class_t class, int address)
+{
+  core_sfr_t sfr;
+
+  if ((class == NULL) || (class->core_sfr_table == NULL) ||
+      (class->core_sfr_number == 0)) {
+    return NULL;
+  }
+
+  sfr.address = address;
+  return (core_sfr_t *)bsearch(&sfr, class->core_sfr_table, class->core_sfr_number,
+                                sizeof(core_sfr_t), core_sfr_cmp);
+}
+
+static const core_sfr_t core_sfr_table_pic12[] = {
+  { 0x000, "INDF"   },
+  { 0x002, "PCL"    },
+  { 0x003, "STATUS" },
+  { 0x004, "FSR"    }
+};
+
+static const core_sfr_t core_sfr_table_pic14[] = {
+  { 0x000, "INDF"   },
+  { 0x002, "PCL"    },
+  { 0x003, "STATUS" },
+  { 0x004, "FSR"    },
+  { 0x00A, "PCLATH" },
+  { 0x00B, "INTCON" }
+};
+
+static const core_sfr_t core_sfr_table_pic14e[] = {
+  { 0x000, "INDF0"  },
+  { 0x001, "INDF1"  },
+  { 0x002, "PCL"    },
+  { 0x003, "STATUS" },
+  { 0x004, "FSR0L"  },
+  { 0x005, "FSR0H"  },
+  { 0x006, "FSR1L"  },
+  { 0x007, "FSR1H"  },
+  { 0x008, "BSR"    },
+  { 0x009, "WREG"   },
+  { 0x00A, "PCLATH" },
+  { 0x00B, "INTCON" }
+};
+
+static const core_sfr_t core_sfr_table_pic16[] = {
+  { 0x000, "INDF0"   },
+  { 0x001, "FSR0"    },
+  { 0x002, "PCL"     },
+  { 0x003, "PCLATH"  },
+  { 0x004, "ALUSTA"  },
+  { 0x005, "T0STA"   },
+  { 0x006, "CPUSTA"  },
+  { 0x007, "INTSTA"  },
+  { 0x008, "INDF1"   },
+  { 0x009, "FSR1"    },
+  { 0x00A, "WREG"    },
+  { 0x00B, "TMR0L"   },
+  { 0x00C, "TMR0H"   },
+  { 0x00D, "TBLPTRL" },
+  { 0x00E, "TBLPTRH" },
+  { 0x00F, "BSR"     }
+};
+
+static const core_sfr_t core_sfr_table_pic16e[] = {
+  { 0xF80, "PORTA"    },
+  { 0xF81, "PORTB"    },
+
+  { 0xF89, "LATA"     },
+  { 0xF8A, "LATB"     },
+
+  { 0xF92, "TRISA"    },
+  { 0xF93, "TRISB"    },
+
+  { 0xF9D, "PIE1"     },
+  { 0xF9E, "PIR1"     },
+  { 0xF9F, "IPR1"     },
+  { 0xFA0, "PIE2"     },
+  { 0xFA1, "PIR2"     },
+  { 0xFA2, "IPR2"     },
+
+  { 0xFCD, "T1CON"    },
+  { 0xFCE, "TMR1"     },
+  { 0xFCF, "TMR1H"    },
+  { 0xFD0, "RCON"     },
+
+  { 0xFD3, "OSCCON"   },
+
+  { 0xFD5, "T0CON"    },
+  { 0xFD6, "TMR0L"    },
+  { 0xFD7, "TMR0H"    },
+  { 0xFD8, "STATUS"   },
+  { 0xFD9, "FSR2L"    },
+  { 0xFDA, "FSR2H"    },
+  { 0xFDB, "PLUSW2"   },
+  { 0xFDC, "PREINC2"  },
+  { 0xFDD, "POSTDEC2" },
+  { 0xFDE, "POSTINC2" },
+  { 0xFDF, "INDF2"    },
+  { 0xFE0, "BSR"      },
+  { 0xFE1, "FSR1L"    },
+  { 0xFE2, "FSR1H"    },
+  { 0xFE3, "PLUSW1"   },
+  { 0xFE4, "PREINC1"  },
+  { 0xFE5, "POSTDEC1" },
+  { 0xFE6, "POSTINC1" },
+  { 0xFE7, "INDF1"    },
+  { 0xFE8, "WREG"     },
+  { 0xFE9, "FSR0L"    },
+  { 0xFEA, "FSR0H"    },
+  { 0xFEB, "PLUSW0"   },
+  { 0xFEC, "PREINC0"  },
+  { 0xFED, "POSTDEC0" },
+  { 0xFEE, "POSTINC0" },
+  { 0xFEF, "INDF0"    },
+  { 0xFF0, "INTCON3"  },
+  { 0xFF1, "INTCON2"  },
+  { 0xFF2, "INTCON"   },
+  { 0xFF3, "PRODL"    },
+  { 0xFF4, "PRODH"    },
+  { 0xFF5, "TABLAT"   },
+  { 0xFF6, "TBLPTR"   },
+  { 0xFF7, "TBLPTRH"  },
+  { 0xFF8, "TBLPTRU"  },
+  { 0xFF9, "PC"       },
+  { 0xFFA, "PCLATH"   },
+  { 0xFFB, "PCLATU"   },
+  { 0xFFC, "STKPTR"   },
+  { 0xFFD, "TOS"      },
+  { 0xFFE, "TOSH"     },
+  { 0xFFF, "TOSU"     }
+};
+
 const struct proc_class proc_class_eeprom8 = {
   -1,                                   /* retlw */
   8,                                    /* rom_width */
@@ -1736,6 +1889,8 @@ const struct proc_class proc_class_eeprom8 = {
   0,                                    /* bank_mask */
   (1 << 8) - 1,                         /* core_size */
   0,                                    /* config_size */
+  NULL,                                 /* core_sfr_table */
+  0,                                    /* core_sfr_number */
   0,                                    /* id_location */
   gp_processor_check_xbank_unsupported, /* check_bank */
   gp_processor_set_xbank_unsupported,   /* set_bank */
@@ -1767,6 +1922,8 @@ const struct proc_class proc_class_eeprom16 = {
   0,                                    /* bank_mask */
   (1 << 16) - 1,                        /* core_size */
   0,                                    /* config_size */
+  NULL,                                 /* core_sfr_table */
+  0,                                    /* core_sfr_number */
   0,                                    /* id_location */
   gp_processor_check_xbank_unsupported, /* check_bank */
   gp_processor_set_xbank_unsupported,   /* set_bank */
@@ -1798,6 +1955,8 @@ const struct proc_class proc_class_generic = {
   ~0x1fu,                               /* bank_mask */
   (1 << 12) - 1,                        /* core_size */
   (1 << 12) - 1,                        /* config_size */
+  core_sfr_table_pic12,                 /* core_sfr_table */
+  TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
   id_location_pic12,                    /* id_location */
   gp_processor_check_bank_pic12,        /* check_bank */
   gp_processor_set_bank_pic12,          /* set_bank */
@@ -1829,6 +1988,8 @@ const struct proc_class proc_class_pic12 = {
   ~0x1fu,                               /* bank_mask */
   (1 << 12) - 1,                        /* core_size */
   (1 << 12) - 1,                        /* config_size */
+  core_sfr_table_pic12,                 /* core_sfr_table */
+  TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
   id_location_pic12,                    /* id_location */
   gp_processor_check_bank_pic12,        /* check_bank */
   gp_processor_set_bank_pic12,          /* set_bank */
@@ -1860,6 +2021,8 @@ const struct proc_class proc_class_pic12e = {
   ~0x1fu,                               /* bank_mask */
   (1 << 12) - 1,                        /* core_size */
   (1 << 12) - 1,                        /* config_size */
+  core_sfr_table_pic12,                 /* core_sfr_table */
+  TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
   id_location_pic12,                    /* id_location */
   gp_processor_check_bank_pic12e,       /* check_bank */
   gp_processor_set_bank_pic12e,         /* set_bank */
@@ -1891,6 +2054,8 @@ const struct proc_class proc_class_sx = {
   ~0x1fu,                               /* bank_mask */
   (1 << 12) - 1,                        /* core_size */
   (1 << 12) - 1,                        /* config_size */
+  NULL,                                 /* core_sfr_table */
+  0,                                    /* core_sfr_number */
   id_location_pic12,                    /* id_location */
   gp_processor_check_bank_pic12,        /* check_bank */
   gp_processor_set_bank_pic12,          /* set_bank */
@@ -1922,6 +2087,8 @@ const struct proc_class proc_class_pic14 = {
   ~0x7fu,                               /* bank_mask */
   (1 << 14) - 1,                        /* core_size */
   (1 << 14) - 1,                        /* config_size */
+  core_sfr_table_pic14,                 /* core_sfr_table */
+  TABLE_SIZE(core_sfr_table_pic14),     /* core_sfr_number */
   id_location_pic14,                    /* id_location */
   gp_processor_check_bank_pic14,        /* check_bank */
   gp_processor_set_bank_pic14,          /* set_bank */
@@ -1953,6 +2120,8 @@ const struct proc_class proc_class_pic14e = {
   0,                                    /* bank_mask */
   (1 << 14) - 1,                        /* core_size */
   (1 << 16) - 1,                        /* config_size */
+  core_sfr_table_pic14e,                /* core_sfr_table */
+  TABLE_SIZE(core_sfr_table_pic14e),    /* core_sfr_number */
   id_location_pic14,                    /* id_location */
   gp_processor_check_bank_pic14e,       /* check_bank */
   gp_processor_set_bank_pic14e,         /* set_bank */
@@ -1982,8 +2151,10 @@ const struct proc_class proc_class_pic16 = {
   256,                                  /* bank size */
   1,                                    /* org_to_byte_shift */
   ~0xffu,                               /* bank_mask */
-  (1 << 16) - 1,                         /* core_size */
+  (1 << 16) - 1,                        /* core_size */
   (1 << 8) - 1,                         /* config_size */
+  core_sfr_table_pic16,                 /* core_sfr_table */
+  TABLE_SIZE(core_sfr_table_pic16),     /* core_sfr_number */
   0,                                    /* id_location */
   gp_processor_check_bank_pic16,        /* check_bank */
   gp_processor_set_bank_pic16,          /* set_bank */
@@ -2015,6 +2186,8 @@ const struct proc_class proc_class_pic16e = {
   0,                                    /* bank_mask */
   (1 << 16) - 1,                        /* core_size */
   (1 << 8) - 1,                         /* config_size */
+  core_sfr_table_pic16e,                /* core_sfr_table */
+  TABLE_SIZE(core_sfr_table_pic16e),    /* core_sfr_number */
   id_location_pic16e,                   /* id_location */
   gp_processor_check_bank_pic16,        /* check_bank: Same as for pic16 */
   gp_processor_set_bank_pic16e,         /* set_bank */
