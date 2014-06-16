@@ -185,13 +185,13 @@ gpasmVal set_label(char *label, struct pnode *parms)
   gpasmVal value = 0;
 
   if (asm_enabled()) {
-    if (relocatable == state.mode && !IN_MACRO_WHILE_DEFINITION &&
+    if (MODE_RELOCATABLE == state.mode && !IN_MACRO_WHILE_DEFINITION &&
       !(SECTION_FLAGS & (STYP_TEXT | STYP_DATA | STYP_BPACK | STYP_BSS)))
       gpverror(GPE_LABEL_IN_SECTION, NULL);
 
     value = do_or_append_insn("set", parms);
     if (!IN_MACRO_WHILE_DEFINITION) {
-      set_global(label, value, TEMPORARY, gvt_constant);
+      set_global(label, value, TEMPORARY, GVT_CONSTANT);
     }
   }
 
@@ -219,8 +219,10 @@ void next_line(int value)
     /* while loops can be defined inside a macro or nested */
     if (IN_MACRO_WHILE_DEFINITION) {
       state.lst.line.linetype = none;
-      if (state.mac_body)
+
+      if (state.mac_body) {
         state.mac_body->src_line = strdup(state.src->m->src_line);
+      }
     }
 
     state.src->m = state.src->m->next;
@@ -229,17 +231,21 @@ void next_line(int value)
       dolist_dir != state.lst.line.linetype &&
       nolist_dir != state.lst.line.linetype) {
       lst_format_line(state.src->curr_src_line.line, value);
-      if (!IN_MACRO_WHILE_DEFINITION)
+
+      if (!IN_MACRO_WHILE_DEFINITION) {
         preproc_emit();
+      }
     }
 
     if (IN_MACRO_WHILE_DEFINITION) {
       state.lst.line.linetype = none;
-      if (state.mac_body)
+
+      if (state.mac_body) {
         state.mac_body->src_line = strdup(state.src->curr_src_line.line);
+      }
     }
 
-   if (state_include == state.next_state) {
+   if (STATE_INCLUDE == state.next_state) {
       /* includes have to be evaluated here and not in the following
        * switch statetems so that the errors are reported correctly */
       state.src->line_number++;
@@ -249,19 +255,19 @@ void next_line(int value)
   }
 
   switch (state.next_state) {
-    case state_exitmacro:
+    case STATE_EXITMACRO:
       state.src->line_number++;
       execute_exitm();
       break;
 
-    case state_macro:
+    case STATE_MACRO:
       state.src->line_number++;
       /* push the label for local directive */
       state.stTop = push_macro_symbol_table(state.stTop);
       execute_macro(state.next_buffer.macro, 0);
       break;
 
-    case state_section:
+    case STATE_SECTION:
       state.src->line_number++;
       /* create a new coff section */
       coff_new_section(state.obj.new_sec_name,
@@ -269,12 +275,12 @@ void next_line(int value)
                        state.obj.new_sec_flags);
       break;
 
-    case state_while:
+    case STATE_WHILE:
       state.src->line_number++;
       execute_macro(state.next_buffer.macro, 1);
       break;
 
-    case state_include:
+    case STATE_INCLUDE:
       /* already evaluated */
       break;
 
@@ -402,13 +408,13 @@ program:
         {
           state.lst.line.was_org = state.org;
           state.lst.line.linetype = none;
-          state.next_state = state_nochange;
+          state.next_state = STATE_NOCHANGE;
         } line
         | program error '\n'
         {
           state.lst.line.was_org = state.org;
           state.lst.line.linetype = none;
-          state.next_state = state_nochange;
+          state.next_state = STATE_NOCHANGE;
 
           yyerrok;  /* generate multiple errors */
           if (IN_MACRO_WHILE_DEFINITION) {
@@ -466,8 +472,9 @@ line:
               /* alias to next definition */
               state.lst.line.linetype = res;
             }
-            else
+            else {
               state.lst.line.linetype = insn;
+            }
           }
 
           if (asm_enabled()) {
@@ -477,17 +484,18 @@ line:
               struct macro_head *h = NULL;
 
               mac = get_symbol(state.stMacros, $1);
-              if (mac)
+              if (mac != NULL) {
                 h = get_symbol_annotation(mac);
+              }
 
               /* It's not an error if macro was defined on pass 1 and
                  we're in pass 2. */
-              if (h &&
-                  !((h->pass == 1) && (state.pass == 2))) {
+              if ((h != NULL) && !((h->pass == 1) && (state.pass == 2))) {
                 gpverror(GPE_DUPLICATE_MACRO, NULL);
               } else {
-                if (!mac)
+                if (mac == NULL) {
                   mac = add_symbol(state.stMacros, $1);
+                }
                 annotate_symbol(mac, state.mac_head);
                 h = state.mac_head;
                 h->line_number = state.src->line_number;
@@ -496,8 +504,9 @@ line:
               h->pass = state.pass;
 
               /* The macro is defined so allow calls. */
-              if (state.pass == 2)
+              if (state.pass == 2) {
                 h->defined = 1;
+              }
 
               state.mac_head = NULL;
             } else if (!IN_MACRO_WHILE_DEFINITION) {
@@ -508,24 +517,28 @@ line:
                 break;
 
               case set:
-                set_global($1, $2, TEMPORARY, gvt_constant);
+                set_global($1, $2, TEMPORARY, GVT_CONSTANT);
                 break;
 
               case org:
               case equ:
-                set_global($1, $2, PERMANENT, gvt_constant);
+                set_global($1, $2, PERMANENT, GVT_CONSTANT);
                 break;
 
               case insn:
               case data:
               case res:
-                if (relocatable == state.mode && !IN_MACRO_WHILE_DEFINITION &&
-                  !(SECTION_FLAGS & (STYP_TEXT | STYP_DATA | STYP_BPACK | STYP_BSS)))
+                if ((MODE_RELOCATABLE == state.mode) && !IN_MACRO_WHILE_DEFINITION &&
+                    !(SECTION_FLAGS & (STYP_TEXT | STYP_DATA | STYP_BPACK | STYP_BSS))) {
                   gpverror(GPE_LABEL_IN_SECTION, NULL);
-                if (IS_RAM_ORG)
-                  set_global($1, $2, PERMANENT, gvt_static);
-                else
-                  set_global($1, $2, PERMANENT, gvt_address);
+                }
+
+                if (IS_RAM_ORG) {
+                  set_global($1, $2, PERMANENT, GVT_STATIC);
+                }
+                else {
+                  set_global($1, $2, PERMANENT, GVT_ADDRESS);
+                }
                 break;
 
               case dir:
@@ -564,7 +577,7 @@ line:
               if (state.astack != NULL) {
                 struct amode *old;
 
-                while (state.astack) {
+                while (state.astack != NULL) {
                   old = state.astack;
                   state.astack = state.astack->prev;
                   free(old);
@@ -589,11 +602,13 @@ statement:
         '\n'
         {
           if (!IN_MACRO_WHILE_DEFINITION) {
-            if (!IS_RAM_ORG)
+            if (!IS_RAM_ORG) {
               /* We want to have r as the value to assign to label */
               $$ = gp_processor_byte_to_org(state.device.class, state.org);
-            else
+            }
+            else {
               $$ = state.org;
+            }
           } else {
             macro_append();
           }
@@ -628,19 +643,19 @@ statement:
         DEFINE IDENTIFIER STRING '\n'
         {
           $$ = do_or_append_insn($1, mk_list(mk_string($2),
-              mk_list(mk_string($3), NULL)));
+                                 mk_list(mk_string($3), NULL)));
         }
         |
         DEFINE IDENT_BRACKET list_args ')' STRING '\n'
         {
           $$ = do_or_append_insn($1, mk_list(mk_string($2),
-              mk_list(mk_string($5), $3)));
+                                 mk_list(mk_string($5), $3)));
         }
         |
         DEFINE IDENT_BRACKET ')' STRING '\n'
         {
           $$ = do_or_append_insn($1, mk_list(mk_string($2),
-              mk_list(mk_string($4), NULL)));
+                                 mk_list(mk_string($4), NULL)));
         }
         |
         DEFINE IDENTIFIER '\n'
@@ -812,8 +827,7 @@ assign_equal_ops: ASSIGN_PLUS | ASSIGN_MINUS | ASSIGN_MULTIPLY |
 parameter_list:
         expr '[' expr ']'
         {
-          $$ = mk_list(mk_constant(INDFOFFSET),
-                       mk_list($3, $1));
+          $$ = mk_list(mk_constant(INDFOFFSET), mk_list($3, $1));
         }
         |
         expr

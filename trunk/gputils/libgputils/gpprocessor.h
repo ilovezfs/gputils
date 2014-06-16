@@ -73,7 +73,13 @@ Boston, MA 02111-1307, USA.  */
 #define MASK_PIC14E_BANK            0x001F
 #define MASK_PIC14E_PAGE            0x007F
 
+#define REG_PIC14E_FSR0             0x04
+#define REG_PIC14E_FSR0L            0x04
 #define REG_PIC14E_FSR0H            0x05
+
+#define REG_PIC14E_FSR1             0x06
+#define REG_PIC14E_FSR1L            0x06
+#define REG_PIC14E_FSR1H            0x07
 
 /******************************************
         PIC16 definitions
@@ -192,7 +198,8 @@ struct proc_class {
 };
 typedef const struct proc_class *proc_class_t;
 
-#define PROC_CLASS_UNKNOWN ((proc_class_t)0) /* Unknown device */
+#define PROC_CLASS_UNKNOWN  ((proc_class_t)0)        /* Unknown device. */
+
 extern const struct proc_class proc_class_eeprom8;   /* 8 bit EEPROM */
 extern const struct proc_class proc_class_eeprom16;  /* 16 bit EEPROM */
 extern const struct proc_class proc_class_generic;   /* 12 bit device */
@@ -203,19 +210,27 @@ extern const struct proc_class proc_class_pic14;     /* 14 bit devices */
 extern const struct proc_class proc_class_pic14e;    /* enhanced 14 bit devices */
 extern const struct proc_class proc_class_pic16;     /* 16 bit devices */
 extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices */
-#define PROC_CLASS_EEPROM8 (&proc_class_eeprom8)
-#define PROC_CLASS_EEPROM16 (&proc_class_eeprom16)
-#define PROC_CLASS_GENERIC (&proc_class_generic)
-#define PROC_CLASS_PIC12 (&proc_class_pic12)
-#define PROC_CLASS_PIC12E (&proc_class_pic12e)
-#define PROC_CLASS_SX (&proc_class_sx)
-#define PROC_CLASS_PIC14 (&proc_class_pic14)
-#define PROC_CLASS_PIC14E (&proc_class_pic14e)
-#define PROC_CLASS_PIC16 (&proc_class_pic16)
-#define PROC_CLASS_PIC16E (&proc_class_pic16e)
 
-/* The 16bit core is handled differently in some instances. */
-#define IS_16BIT_CORE (state.device.class == PROC_CLASS_PIC16E)
+#define PROC_CLASS_EEPROM8  (&proc_class_eeprom8)
+#define PROC_CLASS_EEPROM16 (&proc_class_eeprom16)
+#define PROC_CLASS_GENERIC  (&proc_class_generic)
+#define PROC_CLASS_PIC12    (&proc_class_pic12)
+#define PROC_CLASS_PIC12E   (&proc_class_pic12e)
+#define PROC_CLASS_SX       (&proc_class_sx)
+#define PROC_CLASS_PIC14    (&proc_class_pic14)
+#define PROC_CLASS_PIC14E   (&proc_class_pic14e)
+#define PROC_CLASS_PIC16    (&proc_class_pic16)
+#define PROC_CLASS_PIC16E   (&proc_class_pic16e)
+
+#define IS_EEPROM8          (state.device.class == PROC_CLASS_EEPROM8)
+#define IS_EEPROM16         (state.device.class == PROC_CLASS_EEPROM16)
+#define IS_SX_CORE          (state.device.class == PROC_CLASS_SX)
+#define IS_PIC12_CORE       (state.device.class == PROC_CLASS_PIC12)
+#define IS_PIC12E_CORE      (state.device.class == PROC_CLASS_PIC12E)
+#define IS_PIC14_CORE       (state.device.class == PROC_CLASS_PIC14)
+#define IS_PIC14E_CORE      (state.device.class == PROC_CLASS_PIC14E)
+#define IS_PIC16_CORE       (state.device.class == PROC_CLASS_PIC16)
+#define IS_PIC16E_CORE      (state.device.class == PROC_CLASS_PIC16E)
 
 typedef const struct px *pic_processor_t;
 

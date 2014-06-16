@@ -128,7 +128,7 @@ gp_disassemble(MemBlock *m,
       }
       else {
         snprintf(buffer, sizeof_buffer, "%s\t%s.%d[%u]", instr, neg, value,
-                 (opcode & 0x40) ? 6 : 4);
+                 (opcode & 0x40) ? REG_PIC14E_FSR1 : REG_PIC14E_FSR0);
       }
 
       return num_words;
@@ -190,7 +190,9 @@ gp_disassemble(MemBlock *m,
       break;
 
     case INSN_CLASS_LIT8:
-      /* PIC1xx (addlw, andlw, iorlw, movlw, retlw, sublw, xorlw), PIC16x movlb, PIC16x mullw, PIC16E pushl */
+      /* PIC1xx (addlw, andlw, iorlw, movlw, retlw, sublw, xorlw),
+         PIC16x (movlb, mullw),
+         PIC16E pushl */
     case INSN_CLASS_LIT8C12:
       /* PIC12x call, SX call */
     case INSN_CLASS_LIT8C16:
@@ -233,7 +235,7 @@ gp_disassemble(MemBlock *m,
         }
         else {
           snprintf(buffer, sizeof_buffer, "%s\t%u, %s.%d", instruction->name,
-                   (opcode & 0x40) ? 6 : 4, neg, value);
+                   (opcode & 0x40) ? REG_PIC14E_FSR1 : REG_PIC14E_FSR0, neg, value);
         }
       }
       break;
@@ -724,7 +726,7 @@ gp_disassemble(MemBlock *m,
           DECODE_MOVINDF_S_S_S(op_pre[tmp], (file1) ? "FSR1" : "FSR0", op_post[tmp]);
         }
         else {
-          DECODE_MOVINDF_S_N_S(op_pre[tmp], (file1) ? 6 : 4, op_post[tmp]);
+          DECODE_MOVINDF_S_N_S(op_pre[tmp], (file1) ? REG_PIC14E_FSR1 : REG_PIC14E_FSR0, op_post[tmp]);
         }
       }
       break;

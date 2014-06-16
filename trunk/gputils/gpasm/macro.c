@@ -61,7 +61,7 @@ void setup_macro(struct macro_head *h, int arity, struct pnode *parms)
       }
     }
 
-    state.next_state = state_macro;
+    state.next_state = STATE_MACRO;
     state.next_buffer.macro = h;
     state.lst.line.linetype = none;
   }
@@ -134,7 +134,7 @@ void
 list_macro(struct macro_body *p)
 {
   unsigned int old_line_number = state.src->line_number;
- 
+
   /* Never executed: list the macro body */
   state.lst.line.linetype = dir;
   state.src->line_number = state.while_head->line_number;

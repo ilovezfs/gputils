@@ -676,7 +676,7 @@ open_src(const char *name, int isinclude)
     new->prev = state.src;
 
     state.src = new;
-    state.src->fc = add_file(ft_src, new->name);
+    state.src->fc = add_file(FT_SRC, new->name);
     deps_add(new->name);
 
     if (!isinclude) {
@@ -718,7 +718,7 @@ execute_macro(struct macro_head *h, int is_while)
   new->prev = state.src;
   state.src = new;
 
-  state.src->fc = add_file(ft_src, new->name); /* scan list for fc */
+  state.src->fc = add_file(FT_SRC, new->name); /* scan list for fc */
   yy_switch_to_buffer(yy_create_buffer(NULL, YY_BUF_SIZE));
 }
 

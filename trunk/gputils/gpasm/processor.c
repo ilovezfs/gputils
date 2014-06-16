@@ -67,7 +67,7 @@ void select_processor(const char *name)
           }
         }
 
-        set_global(found->defined_as, 1, PERMANENT, gvt_constant);
+        set_global(found->defined_as, 1, PERMANENT, GVT_CONSTANT);
       } else if (state.processor != found) {
         gpvwarning(GPW_REDEFINING_PROC, NULL);
         gpverror(GPE_EXTRA_PROC, NULL);
@@ -88,7 +88,7 @@ void select_processor(const char *name)
       state.stBuiltin = push_symbol_table(state.stBuiltin, true);
       opcode_init(2);   /* Processor-specific. */
 
-      if ((state.device.class != PROC_CLASS_PIC16E) && (state.device.class != PROC_CLASS_PIC16)) {
+      if ((!IS_PIC16_CORE) && (!IS_PIC16E_CORE)) {
         opcode_init(3);   /* Special pseudo ops for 12 and 14 bit devices. */
       }
       state.processor_chosen = 1;

@@ -29,12 +29,12 @@ Boston, MA 02111-1307, USA.  */
 void
 coff_init(void)
 {
-  if (state.objfile != named) {
+  if (state.objfile != OUT_NAMED) {
     snprintf(state.objfilename, sizeof(state.objfilename),
        "%s.o", state.basefilename);
   }
 
-  if (state.objfile == suppress) {
+  if (state.objfile == OUT_SUPPRESS) {
     state.obj.enabled = false;
     unlink(state.objfilename);
   }
@@ -198,7 +198,7 @@ coff_cleanup_before_eof(void)
   /* combine overlayed sections */
   gp_cofflink_combine_overlay(state.obj.object, 1);
 
-  if (relocatable == state.mode) {
+  if (state.mode == MODE_RELOCATABLE) {
     /* create config_sections */
     _create_config_sections();
   }
@@ -366,32 +366,32 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
   }
 
   switch (type) {
-  case gvt_extern:
+  case GVT_EXTERN:
     section_number = N_UNDEF;
     class = C_EXT;
     break;
 
-  case gvt_global:
+  case GVT_GLOBAL:
     section_number = state.obj.section_num;
     class = C_EXT;
     break;
 
-  case gvt_static:
+  case GVT_STATIC:
     section_number = state.obj.section_num;
     class = C_STAT;
     break;
 
-  case gvt_address:
+  case GVT_ADDRESS:
     section_number = state.obj.section_num;
     class = C_LABEL;
     break;
 
-  case gvt_debug:
+  case GVT_DEBUG:
     section_number = N_DEBUG;
     class = C_NULL;
     break;
 
-  case gvt_absolute:
+  case GVT_ABSOLUTE:
     section_number = N_ABS;
     class = C_NULL;
     break;
@@ -403,7 +403,7 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
   new = gp_coffgen_findsymbol(state.obj.object, name);
 
   /* verify the duplicate extern has the same properties */
-  if ((new != NULL) && (type == gvt_extern))  {
+  if ((new != NULL) && (type == GVT_EXTERN))  {
     if ((new->type != type) || (new->class != class) ||
         (new->section_number != section_number)) {
       snprintf(message, sizeof(message),
@@ -413,7 +413,7 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
     }
   }
 
-  if ((new != NULL) && (type != gvt_extern) && (type != gvt_debug))  {
+  if ((new != NULL) && (type != GVT_EXTERN) && (type != GVT_DEBUG))  {
     snprintf(message, sizeof(message),
              "Duplicate label or redefining symbol that cannot be redefined. (%s)",
              name);

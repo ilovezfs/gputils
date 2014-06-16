@@ -29,12 +29,12 @@ deps_init(void)
 {
   char output_file[BUFSIZ];
 
-  if (state.depfile != named) {
+  if (state.depfile != OUT_NAMED) {
     snprintf(state.depfilename, sizeof(state.depfilename),
              "%s.d", state.basefilename);
   }
 
-  if (state.depfile == suppress) {
+  if (state.depfile == OUT_SUPPRESS) {
     state.dep.enabled = false;
   } else {
     state.dep.f = fopen(state.depfilename, "w");
@@ -45,7 +45,7 @@ deps_init(void)
     state.dep.enabled = true;
 
     /* output file names may not be setup, so make one */
-    if (state.mode == relocatable) {
+    if (state.mode == MODE_RELOCATABLE) {
       snprintf(output_file, sizeof(output_file),
                "%s.o", state.basefilename);
     } else {
