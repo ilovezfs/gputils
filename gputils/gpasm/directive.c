@@ -259,7 +259,7 @@ emit_data(struct pnode *L, int char_shift, const char *name)
           !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
         /* Special case of PIC16E strings in code */
         int n = 0;
-        while(*pc) {
+        while (*pc) {
           int value;
 
           pc = convert_escape_chars(pc, &value);
@@ -285,6 +285,7 @@ emit_data(struct pnode *L, int char_shift, const char *name)
           }
           else {
             v = value << char_shift;
+
             if (*pc) {
               pc = convert_escape_chars(pc, &value);
               v |= value & 0xff;
@@ -343,7 +344,7 @@ enter_if(void)
 static int
 macro_parms_simple(struct pnode *parms)
 {
-  while (parms) {
+  while (parms != NULL) {
     if (symbol != HEAD(parms)->tag) {
       gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
       return 0;
@@ -353,41 +354,40 @@ macro_parms_simple(struct pnode *parms)
   return 1;
 }
 
-static int
+static gp_boolean
 macro_parm_unique(struct pnode *M, struct pnode *L)
 {
-  while (L) {
-    if (0 == STRCMP(M->value.symbol, HEAD(L)->value.symbol)) {
+  while (L != NULL) {
+    if (STRCMP(M->value.symbol, HEAD(L)->value.symbol) == 0) {
       char buf[BUFSIZ];
-      snprintf(buf,
-               sizeof(buf),
-               "Duplicate macro parameter (%s).",
+
+      snprintf(buf, sizeof(buf), "Duplicate macro parameter (%s).",
                HEAD(L)->value.symbol);
       gperror(GPE_UNKNOWN, buf);
-      return 0;
+      return false;
     }
     L = TAIL(L);
   }
-  return 1;
+  return true;
 }
 
-static int
+static gp_boolean
 macro_parms_ok(struct pnode *parms)
 {
   /* Check if all params are symbols */
   if (!macro_parms_simple(parms)) {
-    return 0;
+    return false;
   }
 
   /* Check if params are unique */
   while (parms != NULL) {
     if (!macro_parm_unique(HEAD(parms), TAIL(parms))) {
-      return 0;
+      return false;
     }
     parms = TAIL(parms);
   }
 
-  return 1;
+  return true;
 }
 
 /************************************************************************/
@@ -407,9 +407,7 @@ do_access_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strncpy(state.obj.new_sec_name,
-              ".access_ovr",
-              sizeof(state.obj.new_sec_name));
+      strncpy(state.obj.new_sec_name, ".access_ovr", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_ACCESS | STYP_BSS | STYP_OVERLAY;
       break;
@@ -417,9 +415,7 @@ do_access_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strncpy(state.obj.new_sec_name,
-              ".access_ovr",
-              sizeof(state.obj.new_sec_name));
+      strncpy(state.obj.new_sec_name, ".access_ovr", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_ACCESS | STYP_ABS | STYP_BSS | STYP_OVERLAY;
       break;
@@ -438,12 +434,14 @@ do_badram(gpasmVal r, const char *name, int arity, struct pnode *parms)
   struct pnode *p;
 
   state.lst.line.linetype = dir;
+
   if (parms == NULL) {
     gpverror(GPE_MISSING_ARGU, NULL);
   }
   else {
     for (; parms != NULL; parms = TAIL(parms)) {
       p = HEAD(parms);
+
       if ((p->tag == binop) && (p->value.binop.op == '-')) {
         int start, end;
 
@@ -518,6 +516,7 @@ do_bankisel(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
+
     if (state.mode == absolute) {
       state.org += gp_processor_set_ibank(state.device.class,
                                           state.processor->num_banks,
@@ -583,6 +582,7 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
+
     if (state.mode == absolute) {
       address = maybe_evaluate(p);
       bank = gp_processor_check_bank(state.device.class, address);
@@ -685,8 +685,9 @@ do_code_pack(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  if (!IS_16BIT_CORE)
+  if (!IS_16BIT_CORE) {
     gperror(GPE_UNKNOWN, "code_pack is only supported on 16bit cores.");
+  }
   else {
     state.lst.line.linetype = sec;
     state.next_state = state_section;
@@ -739,7 +740,7 @@ do_constant(gpasmVal r, const char *name, int arity, struct pnode *parms)
         /* fetch the symbol */
         lhs = p->value.binop.p0->value.symbol;
         /* constants must be assigned a value at declaration */
-        
+
         val = maybe_evaluate(p->value.binop.p1);
         /* put the symbol and value in the table*/
         set_global(lhs, val, PERMANENT, gvt_constant);
@@ -804,6 +805,7 @@ add_conf_sec_mem(int ca, gp_boolean new_config)
   new->addr = ((state.device.class == PROC_CLASS_PIC16 || state.device.class == PROC_CLASS_PIC16E) && new_config) ? ca : ca & ~1;
   new->m = i_memory_create();
   new->new_config = new_config;
+
   if (state.debug_info) {
     new->file_symbol = state.obj.debug_file;
     new->line_number = state.obj.debug_line;
@@ -814,7 +816,7 @@ add_conf_sec_mem(int ca, gp_boolean new_config)
   }
   new->next = NULL;
 
-  if (state.conf_sec_mem) {
+  if (state.conf_sec_mem != NULL) {
     struct conf_mem_block_s *p;
 
     for (p = state.conf_sec_mem; p->next; p = p->next)
@@ -837,7 +839,7 @@ get_config_mem(int ca, gp_boolean new_config)
   else {
     MemBlock *mem = find_conf_sec_mem(ca);
 
-    if (!mem) {
+    if (mem == NULL) {
       mem = add_conf_sec_mem(ca, new_config);
     }
 
@@ -882,7 +884,7 @@ do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   int ca;
   int value;
 
-  if (!state.processor) {
+  if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, NULL);
     return r;
   }
@@ -923,7 +925,7 @@ do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
     break;
 
   default:
-    enforce_arity(arity,2);
+    enforce_arity(arity, 2);
     return r;
   }
 
@@ -1020,6 +1022,7 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   state.lst.line.linetype = dir;
   config_16_used = true;
+
   if (config_us_used) {
     gpverror(GPE_CONFIG_usCONFIG, NULL);
     return r;
@@ -1029,7 +1032,7 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   p_dev = gp_cfg_find_pic_multi(sizeof(state.processor->names) /
                 sizeof(*state.processor->names),
                 state.processor->names);
-  if (!p_dev) {
+  if (p_dev == NULL) {
     gperror(GPE_UNKNOWN, "The selected processor has no entries in the config db. CONFIG cannot be used.");
     return r;
   }
@@ -1125,7 +1128,7 @@ do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   if (state.device.class != PROC_CLASS_PIC16 && state.device.class != PROC_CLASS_PIC16E) {
     char buf[128];
 
-    snprintf(buf, sizeof (buf), "CONFIG Directive Error: Processor \"%s\" is invalid for CONFIG directive.", state.processor->names[2]);
+    snprintf(buf, sizeof(buf), "CONFIG Directive Error: Processor \"%s\" is invalid for CONFIG directive.", state.processor->names[2]);
     gperror(GPE_CONFIG_UNKNOWN, buf);
     return r;
   }
@@ -1156,7 +1159,7 @@ do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_da(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  int char_shift = state.device.class == PROC_CLASS_PIC14 ? 7 : 8;
+  int char_shift = (state.device.class == PROC_CLASS_PIC14) ? 7 : 8;
 
   if ((state.mode == relocatable) && (SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
     /* This is a data memory not program. */
@@ -1276,7 +1279,7 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
   else {
     unsigned short v = 0;
     unsigned n = 0;
-    while (L) {
+    while (L != NULL) {
       const char *pc = NULL;
       int value;
 
@@ -1588,7 +1591,7 @@ do_dim(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
     /* write the data to the auxiliary symbols */
     i = 0;
-    while(parms) {
+    while (parms != NULL) {
       p = HEAD(parms);
       value = maybe_evaluate(p);
 
@@ -1628,7 +1631,6 @@ do_direct(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   if (state.mode == absolute) {
     gpverror(GPE_OBJECT_ONLY, NULL, name);
-
   }
   else if (enforce_arity(arity, 2)) {
     p = HEAD(parms);
@@ -1840,7 +1842,7 @@ do_endw(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = nolist_dir;
 
-  assert(!state.mac_head);
+  assert(state.mac_head == NULL);
 
   if (!IN_MACRO_WHILE_DEFINITION) {
     gperror(GPE_ILLEGAL_COND, "Illegal condition: \"ENDW\"");
@@ -1849,7 +1851,7 @@ do_endw(gpasmVal r, const char *name, int arity, struct pnode *parms)
     state.next_state = state_while;
     state.next_buffer.macro = state.while_head;
   }
-  else if (2 == state.pass) {
+  else if (state.pass == 2) {
     list_macro(state.while_head->body);
     state.preproc.do_emit = false;
   }
@@ -1885,6 +1887,7 @@ static gpasmVal
 do_equ(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = equ;
+
   if (enforce_arity(arity, 1)) {
     r = maybe_evaluate(HEAD(parms));
   }
@@ -1968,6 +1971,7 @@ static gpasmVal
 do_exitm(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = dir;
+
   if (enforce_arity(arity, 0)) {
     if (state.stGlobal == state.stTop) {
       gperror(GPE_UNKNOWN, "Attempt to use \"exitm\" outside of macro.");
@@ -2239,19 +2243,20 @@ do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
   unsigned int idreg;
   char buf[BUFSIZ];
 
-  if (!state.processor) {
+  if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, NULL);
     return r;
   }
 
   id_location = gp_processor_id_location(state.processor);
+
   if (id_location == 0) {
     gpverror(GPE_ILLEGAL_DIR, NULL, name);
     return r;
   }
 
   if (state.device.class == PROC_CLASS_PIC16E) {
-    if (enforce_arity(arity,2)) {
+    if (enforce_arity(arity, 2)) {
       idreg = gp_processor_org_to_byte(state.device.class, maybe_evaluate(HEAD(parms)));
       value = maybe_evaluate(HEAD(TAIL(parms)));
     }
@@ -2261,7 +2266,7 @@ do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
     }
   }
   else {
-    if (enforce_arity(arity,1)) {
+    if (enforce_arity(arity, 1)) {
       idreg = id_location;
       value = maybe_evaluate(HEAD(parms));
     }
@@ -2792,7 +2797,7 @@ do_messg(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
     if (p->tag == string) {
       gpvmessage(GPM_USER, NULL, p->value.string);
-    } 
+    }
     else {
       gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
     }
@@ -3613,10 +3618,10 @@ do_insn(const char *name, struct pnode *parms)
 
   s = get_symbol(state.stBuiltin, name);
 
-  if (s) {
+  if (s != NULL) {
     struct insn *i = get_symbol_annotation(s);
 
-    /* Instructions in data sections are not allowed */
+    /* Instructions in data sections are not allowed. */
     if (asm_enabled() && (i->class != INSN_CLASS_FUNC) && IS_RAM_ORG) {
       gpverror(GPE_WRONG_SECTION, NULL);
       goto leave;
@@ -3628,6 +3633,7 @@ do_insn(const char *name, struct pnode *parms)
       state.lst.line.linetype = insn;
       switch (i->class) {
       case INSN_CLASS_LIT3_BANK:
+        /* SX bank */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
           emit_check(i->opcode, (reloc_evaluate(p, RELOCT_F) >> 5), 0x07, s->name);
@@ -3635,6 +3641,7 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_LIT3_PAGE:
+        /* SX page */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
           emit_check(i->opcode, (reloc_evaluate(p, RELOCT_F) >> 9), 0x07, s->name);
@@ -3642,6 +3649,7 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_LIT1:
+        /* PIC16E (retfie, return) */
         {
           int flag = 0;
 
@@ -3662,6 +3670,7 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_LIT3:
+        /* PIC12E movlb */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
 
@@ -3675,33 +3684,37 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_LIT4:
+        /* SX mode */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
           emit_check(i->opcode, reloc_evaluate(p, RELOCT_F), 0x0f, s->name);
         }
         break;
 
-      case INSN_CLASS_LIT5:
-        if (enforce_arity(arity, 1)) {
-          p = HEAD(parms);
-
-          if (strcasecmp(i->name, "movlb") == 0) {
-            emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), 0x1f, s->name);
-          }
-          else {
-            emit_check(i->opcode, maybe_evaluate(p), 0x1f, s->name);
-          }
-        }
-        break;
-
       case INSN_CLASS_LIT4S:
+        /* PIC16 movlr */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
           emit_check(i->opcode, (reloc_evaluate(p, RELOCT_MOVLR) << 4), 0xf0, s->name);
         }
         break;
 
+      case INSN_CLASS_LIT5:
+        /* PIC14E movlb */
+        if (enforce_arity(arity, 1)) {
+          p = HEAD(parms);
+
+          if (strcasecmp(i->name, "movlb") == 0) {
+            emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), MASK_PIC14E_BANK, s->name);
+          }
+          else {
+            emit_check(i->opcode, maybe_evaluate(p), MASK_PIC14E_BANK, s->name);
+          }
+        }
+        break;
+
       case INSN_CLASS_LIT6:
+        /* PIC16E (addulnk, subulnk) */
         if (enforce_arity(arity, 1)) {
           check_16e_arg_types(parms, arity, 0);
 
@@ -3712,13 +3725,15 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_LIT7:
+        /* PIC14E movlp */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          emit_check(i->opcode, reloc_evaluate(p, RELOCT_PAGESEL_MOVLP), 0x7f, s->name);
+          emit_check(i->opcode, reloc_evaluate(p, RELOCT_PAGESEL_MOVLP), MASK_PIC14E_PAGE, s->name);
         }
         break;
 
       case INSN_CLASS_LIT8:
+        /* PIC1xx (addlw, andlw, iorlw, movlw, retlw, sublw, xorlw), PIC16x movlb, PIC16x mullw, PIC16E pushl */
         if (enforce_arity(arity, 1)) {
           check_16e_arg_types(parms, arity, 0);
 
@@ -3735,6 +3750,7 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_LIT8C12:
+        /* PIC12x call, SX call */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
 
@@ -3760,6 +3776,7 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_LIT8C16:
+        /* PIC16 lcall */
         if (enforce_arity(arity, 1)) {
           int value;
 
@@ -3776,6 +3793,7 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_LIT9:
+        /* PIC12 goto, SX goto */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
 
@@ -3792,11 +3810,12 @@ do_insn(const char *name, struct pnode *parms)
             }
           }
 
-          emit(i->opcode | (reloc_evaluate(p, RELOCT_GOTO) & 0x1ff), s->name);
+          emit(i->opcode | (reloc_evaluate(p, RELOCT_GOTO) & MASK_PIC12_GOTO), s->name);
         }
         break;
 
       case INSN_CLASS_LIT11:
+        /* PIC14x (call, goto) */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
 
@@ -3825,11 +3844,15 @@ do_insn(const char *name, struct pnode *parms)
             }
           }
 
-          emit(i->opcode | (reloc_evaluate(p, strcasecmp(i->name, "goto") ? RELOCT_CALL : RELOCT_GOTO) & 0x7ff), s->name);
+          emit(i->opcode |
+	           (reloc_evaluate(p, strcasecmp(i->name, "goto") ? RELOCT_CALL : RELOCT_GOTO) &
+	               MASK_PIC14_BRANCH),
+	       s->name);
         }
         break;
 
       case INSN_CLASS_LIT13:
+        /* PIC16 (call, goto) */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
 
@@ -3846,11 +3869,15 @@ do_insn(const char *name, struct pnode *parms)
             }
           }
 
-          emit(i->opcode | (reloc_evaluate(p, strcasecmp(i->name, "goto") ? RELOCT_CALL : RELOCT_GOTO) & 0x1fff), s->name);
+          emit(i->opcode |
+	           (reloc_evaluate(p, strcasecmp(i->name, "goto") ? RELOCT_CALL : RELOCT_GOTO) &
+		       MASK_PIC16_BRANCH),
+	       s->name);
         }
         break;
 
       case INSN_CLASS_LITFSR_14:
+        /* PIC14E addfsr */
         if (enforce_arity(arity, 2)) {
           int value;
           int fsr;
@@ -3880,6 +3907,7 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_LITFSR_16:
+        /* PIC16E (addfsr, subfsr) */
         if (enforce_arity(arity, 2)) {
           int value;
           int fsr;
@@ -3909,7 +3937,7 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_RBRA8:
-        /* used only in PROC_CLASS_PIC16E */
+        /* PIC16E (bc, bn, bnc, bnn, bnov, bnz, bov, bz) */
         if (enforce_arity(arity, 1)) {
           int offset;
 
@@ -3937,6 +3965,7 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_RBRA9:
+        /* PIC14E bra */
         if (enforce_arity(arity, 1)) {
           int offset;
 
@@ -3953,12 +3982,12 @@ do_insn(const char *name, struct pnode *parms)
 
           /* The offset for the relative branch must be
              between -256 <= offset <= 255. */
-          emit_check_relative(i->opcode, offset, 0x1ff, 255, s->name);
+          emit_check_relative(i->opcode, offset, MASK_PIC14E_RBRA9, 255, s->name);
         }
         break;
 
       case INSN_CLASS_RBRA11:
-        /* used only in PROC_CLASS_PIC16E */
+        /* PIC16E (bra, rcall) */
         if (enforce_arity(arity, 1)) {
           int offset;
 
@@ -3979,11 +4008,12 @@ do_insn(const char *name, struct pnode *parms)
 
           offset = gp_processor_org_to_byte(state.device.class, offset) >> 1;
 
-          emit_check_relative(i->opcode, offset, 0x7ff, 0x3ff, s->name);
+          emit_check_relative(i->opcode, offset, MASK_PIC16E_RBRA11, 0x3ff, s->name);
         }
         break;
 
       case INSN_CLASS_LIT20:
+        /* PIC16E goto */
         if (enforce_arity(arity, 1)) {
           int dest;
 
@@ -3992,16 +4022,17 @@ do_insn(const char *name, struct pnode *parms)
           p = HEAD(parms);
           dest = reloc_evaluate(p, RELOCT_GOTO);
           dest = gp_processor_org_to_byte(state.device.class, dest) >> 1;
-          emit(i->opcode | (dest & 0xff), s->name);
+          emit(i->opcode | (dest & MASK_PIC16E_BRANCH_LOWER), s->name);
           reloc_evaluate(p, RELOCT_GOTO2);     /* add the second relocation */
-          emit_check(0xf000, dest >> 8, 0xfff, s->name);
+          emit_check(0xf000, dest >> 8, MASK_PIC16E_BRANCH_HIGHER, s->name);
         }
         break;
 
       case INSN_CLASS_CALL20:
+        /* PIC16E call */
         {
           int dest;
-          int flag = 0; /* By default, fast push is not used */
+          int flag = 0; /* By default, fast push is not used. */
           struct pnode *p2; /* second parameter */
 
           if (arity < 1) {
@@ -4034,14 +4065,15 @@ do_insn(const char *name, struct pnode *parms)
 
             dest = reloc_evaluate(p, RELOCT_CALL);
             dest = gp_processor_org_to_byte(state.device.class, dest) >> 1;
-            emit(i->opcode | (flag << 8) | (dest & 0xff), s->name);
+            emit(i->opcode | (flag << 8) | (dest & MASK_PIC16E_BRANCH_LOWER), s->name);
             reloc_evaluate(p, RELOCT_CALL2);     /* add the second relocation */
-            emit_check(0xf000, (dest >> 8), 0xfff, s->name);
+            emit_check(0xf000, (dest >> 8), MASK_PIC16E_BRANCH_HIGHER, s->name);
           }
         }
         break;
 
       case INSN_CLASS_FLIT12:
+        /* PIC16E lfsr */
         {
           if (enforce_arity(arity, 2)) {
             int k;
@@ -4065,6 +4097,7 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_FF:
+        /* PIC16E movff */
         if (enforce_arity(arity, 2)) {
           int dest;
 
@@ -4086,8 +4119,10 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_FP:
+        /* PIC16 movfp */
         if (enforce_arity(arity, 2)) {
           int reg = 0;
+
           file = reloc_evaluate(HEAD(parms), RELOCT_F);
           reg = reloc_evaluate(HEAD(TAIL(parms)), RELOCT_P);
           file_ok(file);
@@ -4096,13 +4131,15 @@ do_insn(const char *name, struct pnode *parms)
             gpvwarning(GPW_RANGE, "(%#x & ~0xf1f) != 0", reg, reg);
           }
 
-          emit(i->opcode | ((reg & 0x1f) << 8) | (file & 0xff), s->name);
+          emit(i->opcode | ((reg & 0x1f) << 8) | (file & MASK_PIC16_FILE), s->name);
         }
         break;
 
       case INSN_CLASS_PF:
+        /* PIC16 movpf */
         if (enforce_arity(arity, 2)) {
           int reg = 0;
+
           file = reloc_evaluate(HEAD(TAIL(parms)), RELOCT_F);
           reg = reloc_evaluate(HEAD(parms), RELOCT_P);
           file_ok(file);
@@ -4111,11 +4148,12 @@ do_insn(const char *name, struct pnode *parms)
             gpvwarning(GPW_RANGE, "(%#x & ~0xf1f) != 0", reg, reg);
           }
 
-          emit(i->opcode | ((reg & 0x1f) << 8) | (file & 0xff), s->name);
+          emit(i->opcode | ((reg & 0x1f) << 8) | (file & MASK_PIC16_FILE), s->name);
         }
         break;
 
       case INSN_CLASS_SF:
+        /* PIC16E movsf */
         if (enforce_arity(arity, 2)) {
           int source;
           int dest;
@@ -4142,6 +4180,7 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_SS:
+        /* PIC16E movss */
         if (enforce_arity(arity, 2)) {
           int source;
           int dest;
@@ -4160,15 +4199,17 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_OPF3:
+        /* PIC12 tris */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
           file = reloc_evaluate(p, RELOCT_TRIS_3BIT);
           file_ok(file);
-          emit(i->opcode | (file & 0x1f), s->name);
+          emit(i->opcode | (file & MASK_PIC12_TRIS), s->name);
         }
         break;
 
       case INSN_CLASS_OPF5:
+        /* {PIC12x, SX} (clrf, movwf), SX tris */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
 
@@ -4180,11 +4221,13 @@ do_insn(const char *name, struct pnode *parms)
           }
 
           file_ok(file);
-          emit(i->opcode | (file & 0x1f), s->name);
+          emit(i->opcode | (file & MASK_PIC12_FILE), s->name);
         }
         break;
 
       case INSN_CLASS_OPWF5:
+        /* {PIC12E, SX} (addwf, andwf, comf, decf, decfsz, incf, incfsz,
+                         iorwf, movf, rlf, rrf, subwf, swapf, xorwf) */
         {
           int d = 1; /* Default destination of 1 (file) */
           struct pnode *p2; /* second parameter */
@@ -4221,11 +4264,12 @@ do_insn(const char *name, struct pnode *parms)
 
           file = reloc_evaluate(p, RELOCT_F);
           file_ok(file);
-          emit(i->opcode | (d << 5) | (file & 0x1f), s->name);
+          emit(i->opcode | (d << 5) | (file & MASK_PIC12_FILE), s->name);
         }
         break;
 
       case INSN_CLASS_B5:
+        /* {PIC12x, SX} (bcf, bsf, btfsc, btfss) */
         {
           struct pnode *f, *b;
           int bit;
@@ -4236,8 +4280,11 @@ do_insn(const char *name, struct pnode *parms)
             file = reloc_evaluate(f, RELOCT_F);
             bit = maybe_evaluate(b);
 
-            if (!((0 <= bit) && (bit <= 7))) {
-              gpvwarning(GPW_RANGE, "bit = %i", bit);
+            if (bit < 0) {
+              gpvwarning(GPW_RANGE, "Bit{%i} < 0.", bit);
+            }
+            else if (bit > 7) {
+              gpvwarning(GPW_RANGE, "Bit{%i} > 7.", bit);
             }
 
             file_ok(file);
@@ -4246,12 +4293,13 @@ do_insn(const char *name, struct pnode *parms)
               is_btfsx = 1;
             }
 
-            emit(i->opcode | ((bit & 7) << 5) | (file & 0x1f), s->name);
+            emit(i->opcode | ((bit & 7) << 5) | (file & MASK_PIC12_FILE), s->name);
           }
         }
         break;
 
       case INSN_CLASS_B8:
+        /* PIC16 (bcf, bsf, btfsc, btfss, btg) */
         {
           struct pnode *f, *b;
           int bit;
@@ -4262,8 +4310,11 @@ do_insn(const char *name, struct pnode *parms)
             file = reloc_evaluate(f, RELOCT_F);
             bit = maybe_evaluate(b);
 
-            if (!((0 <= bit) && (bit <= 7))) {
-              gpvwarning(GPW_RANGE, "bit = %i", bit);
+            if (bit < 0) {
+              gpvwarning(GPW_RANGE, "Bit{%i} < 0.", bit);
+            }
+            else if (bit > 7) {
+              gpvwarning(GPW_RANGE, "Bit{%i} > 7.", bit);
             }
 
             file_ok(file);
@@ -4272,12 +4323,13 @@ do_insn(const char *name, struct pnode *parms)
               is_btfsx = 1;
             }
 
-            emit(i->opcode | ((bit & 7) << 8) | (file & 0xff), s->name);
+            emit(i->opcode | ((bit & 7) << 8) | (file & MASK_PIC16_FILE), s->name);
           }
         }
         break;
 
       case INSN_CLASS_OPF7:
+        /* PIC14x (clrf, movwf, tris) */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
 
@@ -4290,20 +4342,24 @@ do_insn(const char *name, struct pnode *parms)
           }
 
           file_ok(file);
-          emit(i->opcode | (file & 0x7f), s->name);
+          emit(i->opcode | (file & MASK_PIC14_FILE), s->name);
         }
         break;
 
       case INSN_CLASS_OPF8:
+        /* PIC16 (cpfseq, cpfsgt, cpfslt, movwf, mulwf, tstfsz) */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
           file = reloc_evaluate(p, RELOCT_F);
           file_ok(file);
-          emit(i->opcode | (file & 0xff), s->name);
+          emit(i->opcode | (file & MASK_PIC16_FILE), s->name);
         }
         break;
 
       case INSN_CLASS_OPWF7:
+        /* PIC14x (addwf, andwf, comf, decf, decfsz, incf, incfsz, iorwf, movf,
+                   rlf, rrf, subwf, swapf, xorwf)
+           PIC14E (addwfc, asrf, lslf, lsrf, subwfb) */
         {
           int d = 1; /* Default destination of 1 (file) */
           struct pnode *p2; /* second parameter */
@@ -4340,13 +4396,16 @@ do_insn(const char *name, struct pnode *parms)
 
           file = reloc_evaluate(p, RELOCT_F);
           file_ok(file);
-          emit(i->opcode | (d << 7) | (file & 0x7f), s->name);
+          emit(i->opcode | (d << 7) | (file & MASK_PIC14_FILE), s->name);
         }
         break;
 
       case INSN_CLASS_OPWF8:
+        /* PIC16 (addwf, addwfc, andwf, clrf, comf, daw, decf, decfsz, dcfsnz, incf,
+                  incfsz, infsnz, iorwf, rlcf, rlncf, rrcf, rrncf, setf, subwf, subwfb,
+                  swapf, xorwf) */
         {
-          int d = 1; /* Default destination of 1 (file) */
+          int d = 1; /* Default destination of 1 (file). */
           struct pnode *p2; /* second parameter */
 
           if (arity == 0) {
@@ -4358,7 +4417,7 @@ do_insn(const char *name, struct pnode *parms)
           switch (arity) {
           case 2:
             p2 = HEAD(TAIL(parms));
-            /* Allow "w" and "f" as destinations */
+            /* Allow "w" and "f" as destinations. */
             if ((p2->tag == symbol) && (strcasecmp(p2->value.symbol, "f") == 0)) {
               d = 1;
             }
@@ -4381,11 +4440,12 @@ do_insn(const char *name, struct pnode *parms)
 
           file = reloc_evaluate(p, RELOCT_F);
           file_ok(file);
-          emit(i->opcode | (d << 8) | (file & 0xff), s->name);
+          emit(i->opcode | (d << 8) | (file & MASK_PIC16_FILE), s->name);
         }
         break;
 
       case INSN_CLASS_B7:
+        /* PIC14x (bcf, bsf, btfsc, btfss) */
         {
           struct pnode *f, *b;
           int bit;
@@ -4396,8 +4456,11 @@ do_insn(const char *name, struct pnode *parms)
             file = reloc_evaluate(f, RELOCT_F);
             bit = maybe_evaluate(b);
 
-            if (!((0 <= bit) && (bit <= 7))) {
-              gpvwarning(GPW_RANGE, "bit = %i", bit);
+            if (bit < 0) {
+              gpvwarning(GPW_RANGE, "Bit{%i} < 0.", bit);
+            }
+            else if (bit > 7) {
+              gpvwarning(GPW_RANGE, "Bit{%i} > 7.", bit);
             }
 
             file_ok(file);
@@ -4406,12 +4469,13 @@ do_insn(const char *name, struct pnode *parms)
               is_btfsx = 1;
             }
 
-            emit(i->opcode | ((bit & 7) << 7) | (file & 0x7f), s->name);
+            emit(i->opcode | ((bit & 7) << 7) | (file & MASK_PIC14_FILE), s->name);
           }
         }
         break;
 
       case INSN_CLASS_OPFA8:
+        /* PIC16E (clrf, cpfseq, cpfsgt, cpfslt, movwf, mulwf, negf, setf, tstfsz) */
         {
           int a = 0;
           struct pnode *p2; /* second parameter */
@@ -4435,7 +4499,7 @@ do_insn(const char *name, struct pnode *parms)
           /* Default access (use the BSR unless access is to special registers) */
           /* borutr: I don't know where is the following coming from, but is seems not to be true for MPASM 5.49,
            * so I commented it out:
-           * 
+           *
            * If extended instructions are enabled, access bit should default to 1 for low-end *
            * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
           if ((state.extended_pic16e == true) && (file <= 0x5f)) {
@@ -4453,7 +4517,7 @@ do_insn(const char *name, struct pnode *parms)
             a = 1;
           }
            * and replaced it with the following, according to the Data Sheet:
-           * 
+           *
            * "If the index argument is properly bracketed for Indexed
            * Literal Offset Addressing mode, the Access RAM
            * argument is never specified; it will automatically be
@@ -4484,11 +4548,12 @@ do_insn(const char *name, struct pnode *parms)
             enforce_arity(arity, 2);
           }
 
-          emit(i->opcode | (a << 8) | (file & 0xff), s->name);
+          emit(i->opcode | (a << 8) | (file & MASK_PIC16_FILE), s->name);
         }
         break;
 
       case INSN_CLASS_BA8:
+        /* PIC16E (bcf, bsf, btfsc, btfss, btg) */
         {
           struct pnode *f, *b,*par;
           int bit, a = 0;
@@ -4518,7 +4583,7 @@ do_insn(const char *name, struct pnode *parms)
                registers) */
             /* borutr: I don't know where is the following coming from, but is seems not to be true for MPASM 5.49,
              * so I commented it out:
-             * 
+             *
              * If extended instructions are enabled, access bit should default to 1 for low-end *
              * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
             if ((state.extended_pic16e == true) && (file <= 0x5f)) {
@@ -4536,7 +4601,7 @@ do_insn(const char *name, struct pnode *parms)
               a = 1;
             }
              * and replaced it with the following, according to the Data Sheet:
-             * 
+             *
              * "If the index argument is properly bracketed for Indexed
              * Literal Offset Addressing mode, the Access RAM
              * argument is never specified; it will automatically be
@@ -4556,8 +4621,11 @@ do_insn(const char *name, struct pnode *parms)
           b = HEAD(TAIL(parms));
           bit = maybe_evaluate(b);
 
-          if (!((0 <= bit) && (bit <= 7))) {
-            gpvwarning(GPW_RANGE, "bit = %i", bit);
+          if (bit < 0) {
+            gpvwarning(GPW_RANGE, "Bit{%i} < 0.", bit);
+          }
+          else if (bit > 7) {
+            gpvwarning(GPW_RANGE, "Bit{%i} > 7.", bit);
           }
 
           file_ok(file);
@@ -4566,11 +4634,14 @@ do_insn(const char *name, struct pnode *parms)
             is_btfsx = 1;
           }
 
-          emit(i->opcode | (a << 8) | ((bit & 7) << 9) | (file & 0xff), s->name);
+          emit(i->opcode | (a << 8) | ((bit & 7) << 9) | (file & MASK_PIC16_FILE), s->name);
         }
         break;
 
       case INSN_CLASS_OPWFA8:
+        /* PIC16E (addwf, addwfc, andwf, comf, decf, decfsz, dcfsnz, incf, incfsz,
+                   infsnz, iorwf, movf, rlcf, rlncf, rrcf, rrncf, subfwb, subwf,
+                   subwfb, swapf, xorwf) */
         {
           int d = 1; /* Default destination of 1 (file) */
           int a = 0;
@@ -4595,7 +4666,7 @@ do_insn(const char *name, struct pnode *parms)
           /* Default access (use the BSR unless access is to special registers) */
           /* borutr: I don't know where is the following coming from, but is seems not to be true for MPASM 5.49,
            * so I commented it out:
-           * 
+           *
            * If extended instructions are enabled, access bit should default to 1 for low-end *
            * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
           if ((state.extended_pic16e == true) && (file <= 0x5f)) {
@@ -4613,7 +4684,7 @@ do_insn(const char *name, struct pnode *parms)
             a = 1;
           }
            * and replaced it with the following, according to the Data Sheet:
-           * 
+           *
            * "If the index argument is properly bracketed for Indexed
            * Literal Offset Addressing mode, the Access RAM
            * argument is never specified; it will automatically be
@@ -4657,11 +4728,19 @@ do_insn(const char *name, struct pnode *parms)
           default:
             enforce_arity(arity, 3);
           }
-          emit(i->opcode | (d << 9) | (a << 8) | (file & 0xff), s->name);
+          emit(i->opcode | (d << 9) | (a << 8) | (file & MASK_PIC16_FILE), s->name);
         }
         break;
 
       case INSN_CLASS_IMPLICIT:
+        /* PIC12x  (clrw, clrwdt, nop, option, return, sleep)
+           PIC12E  (retfie, return)
+           SX      (iread, movmw, movwm, reti, retiw, retp, return)
+           PIC14x  (clrw, clrwdt, halt, nop, option, retfie, return, sleep)
+           PIC14E  (brw, callw, reset)
+           PIC16   (clrwdt, nop, retfie, return, sleep)
+           PIC16E  (clrwdt, daw, halt, nop, pop, push, reset, sleep, trap, tret)
+           PIX16EX callw */
         if (arity != 0) {
           gpvwarning(GPW_EXTRANEOUS, NULL);
         }
@@ -4672,6 +4751,7 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_TBL:
+        /* PIC16E (tblrd, tblwt) */
         if (enforce_arity(arity, 1)) {
           check_16e_arg_types(parms, arity, 0);
 
@@ -4700,7 +4780,49 @@ do_insn(const char *name, struct pnode *parms)
         }
         break;
 
+      case INSN_CLASS_TBL2:
+        /* PIC16 (tlrd, tlwt) */
+        if (enforce_arity(arity, 2)) {
+          int t=0; /* read low byte by default */
+          struct pnode *p2; /* second parameter */
+
+          /* "0" (lower byte) and "1" (upper byte) */
+          p = HEAD(parms);
+          t = check_flag(maybe_evaluate(p));
+
+          p2 = HEAD(TAIL(parms));
+          file = reloc_evaluate(p2, RELOCT_F);
+
+          file_ok(file);
+          emit(i->opcode | (t << 9) | (file & MASK_PIC16_FILE), s->name);
+        }
+        break;
+
+      case INSN_CLASS_TBL3:
+      /* PIC16 (tablrd, tablwt) */
+        if (enforce_arity(arity, 3)) {
+          int inc = 0, t = 0;
+          struct pnode *p2; /* second parameter */
+          struct pnode *p3; /* third parameter */
+
+          /* "0" (lower byte) and "1" (upper byte) */
+          p = HEAD(parms);
+          t = check_flag(maybe_evaluate(p));
+
+          /* "0" (no change) and "1" (postincrement) */
+          p2 = HEAD(TAIL(parms));
+          inc = check_flag(maybe_evaluate(p2));
+
+          p3 = HEAD(TAIL(TAIL(parms)));
+          file = reloc_evaluate(p3, RELOCT_F);
+
+          file_ok(file);
+          emit(i->opcode | (t << 9) | (inc << 8) | (file & MASK_PIC16_FILE), s->name);
+        }
+        break;
+
       case INSN_CLASS_MOVINDF:
+        /* PIC14E (moviw, movwi) */
         if (arity == 0) {
           enforce_arity(arity, 1);
           break;
@@ -4776,10 +4898,10 @@ do_insn(const char *name, struct pnode *parms)
               k = maybe_evaluate(p3); /* Index */
 
               if (k < -32) {
-                gpverror(GPE_RANGE, "%i < -32", k);
+                gpverror(GPE_RANGE, "index{%i} < -32", k);
               }
               else if (k > 31) {
-                gpverror(GPE_RANGE, "%i > 31", k);
+                gpverror(GPE_RANGE, "index{%i} > 31", k);
               }
               else {
                 /* New opcode for indexed indirect */
@@ -4803,45 +4925,6 @@ do_insn(const char *name, struct pnode *parms)
         }
         break;
 
-      case INSN_CLASS_TBL2:
-        if (enforce_arity(arity, 2)) {
-          int t=0; /* read low byte by default */
-          struct pnode *p2; /* second parameter */
-
-          /* "0" (lower byte) and "1" (upper byte) */
-          p = HEAD(parms);
-          t = check_flag(maybe_evaluate(p));
-
-          p2 = HEAD(TAIL(parms));
-          file = reloc_evaluate(p2, RELOCT_F);
-
-          file_ok(file);
-          emit(i->opcode | (t << 9) | (file & 0xff), s->name);
-        }
-        break;
-
-      case INSN_CLASS_TBL3:
-        if (enforce_arity(arity, 3)) {
-          int inc = 0, t = 0;
-          struct pnode *p2; /* second parameter */
-          struct pnode *p3; /* third parameter */
-
-          /* "0" (lower byte) and "1" (upper byte) */
-          p = HEAD(parms);
-          t = check_flag(maybe_evaluate(p));
-
-          /* "0" (no change) and "1" (postincrement) */
-          p2 = HEAD(TAIL(parms));
-          inc = check_flag(maybe_evaluate(p2));
-
-          p3 = HEAD(TAIL(TAIL(parms)));
-          file = reloc_evaluate(p3, RELOCT_F);
-
-          file_ok(file);
-          emit(i->opcode | (t << 9) | (inc << 8) | (file & 0xff), s->name);
-        }
-        break;
-
       case INSN_CLASS_FUNC:
         r = (*i->doer)(r, name, arity, parms);
         break;
@@ -4855,7 +4938,7 @@ do_insn(const char *name, struct pnode *parms)
   else {
     s = get_symbol(state.stMacros, name);
 
-    if (s) {
+    if (s != NULL) {
       struct macro_head *h = get_symbol_annotation(s);
 
       /* Found the macro: execute it */
@@ -4876,6 +4959,7 @@ do_insn(const char *name, struct pnode *parms)
         }
         else {
           char mesg[80];
+
           snprintf(mesg, sizeof(mesg), "Unknown opcode: \"%s\"", name);
           gperror(GPE_UNKNOWN, mesg);
         }
@@ -5069,22 +5153,22 @@ opcode_init(int stage)
 
       /* Special Case, Some instructions not available on 17c42 devices */
       if (strcmp(name, "pic17c42") == 0) {
-        remove_symbol(state.stBuiltin, "MULWF");
-        remove_symbol(state.stBuiltin, "MOVLR");
-        remove_symbol(state.stBuiltin, "MULLW");
+        remove_symbol(state.stBuiltin, "mulwf");
+        remove_symbol(state.stBuiltin, "movlr");
+        remove_symbol(state.stBuiltin, "mullw");
       }
       /* Special Case, Some instructions not available on 16f5x devices */
       else if (strcmp(name, "pic16f54") == 0 ||
                strcmp(name, "pic16f57") == 0 ||
                strcmp(name, "pic16f59") == 0) {
-        remove_symbol(state.stBuiltin, "ADDLW");
-        remove_symbol(state.stBuiltin, "SUBLW");
-        remove_symbol(state.stBuiltin, "RETURN");
-        remove_symbol(state.stBuiltin, "RETFIE");
+        remove_symbol(state.stBuiltin, "addlw");
+        remove_symbol(state.stBuiltin, "sublw");
+        remove_symbol(state.stBuiltin, "return");
+        remove_symbol(state.stBuiltin, "retfie");
       }
       else if (strcmp(name, "sx48bd") == 0 ||
                strcmp(name, "sx52bd") == 0) {
-        struct symbol *mode_sym = get_symbol(state.stBuiltin, "MODE");
+        struct symbol *mode_sym = get_symbol(state.stBuiltin, "mode");
 
         if (mode_sym != NULL) {
           annotate_symbol(mode_sym, &op_sx_mode);
