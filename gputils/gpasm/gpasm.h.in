@@ -34,47 +34,47 @@ Boston, MA 02111-1307, USA.  */
 
 #define MAX_PATHS 100
 
-#define IN_MACRO_WHILE_DEFINITION (NULL != state.mac_prev)
-#define IN_WHILE_DEFINITION       (IN_MACRO_WHILE_DEFINITION && NULL != state.while_head)
+#define IN_MACRO_WHILE_DEFINITION (state.mac_prev != NULL)
+#define IN_WHILE_DEFINITION       (IN_MACRO_WHILE_DEFINITION && (state.while_head != NULL))
 #define IN_MACRO_EXPANSION        (src_macro == state.src->type)
 #define IN_WHILE_EXPANSION        (src_while == state.src->type)
 #define IN_FILE_EXPANSION         (src_file == state.src->type)
 
 enum gpasmValTypes {
-  gvt_constant,
-  gvt_cblock,
-  gvt_address,
-  gvt_extern,
-  gvt_global,
-  gvt_static,
-  gvt_debug,
-  gvt_absolute
+  GVT_CONSTANT,
+  GVT_CBLOCK,
+  GVT_ADDRESS,
+  GVT_EXTERN,
+  GVT_GLOBAL,
+  GVT_STATIC,
+  GVT_DEBUG,
+  GVT_ABSOLUTE
 };
 
 enum state_types {
-  state_nochange,
-  state_exitmacro,
-  state_include,
-  state_macro,
-  state_section,
-  state_substitution,
-  state_while
+  STATE_NOCHANGE,
+  STATE_EXITMACRO,
+  STATE_INCLUDE,
+  STATE_MACRO,
+  STATE_SECTION,
+  STATE_SUBSTITUTION,
+  STATE_WHILE
 };
 
 enum outfile {
-  normal,
-  suppress,
-  named
+  OUT_NORMAL,
+  OUT_SUPPRESS,
+  OUT_NAMED
 };
 
 enum file_types {
-  ft_src,
-  ft_other
+  FT_SRC,
+  FT_OTHER
 };
 
 enum gpasm_modes {
-  absolute,
-  relocatable
+  MODE_ABSOLUTE,
+  MODE_RELOCATABLE
 };
 
 struct range_pair {
@@ -109,6 +109,7 @@ extern struct gpasm_state {
   gp_boolean debug_info;            /* use debug directives for coff outputs */
   int path_num;                     /* number of paths in the list */
   char *paths[MAX_PATHS];           /* the list of include paths */
+
   struct {                          /* Command line override flags */
     gp_boolean radix;               /* value is specified by the command line */
     gp_boolean hex_format;
@@ -117,6 +118,7 @@ extern struct gpasm_state {
     gp_boolean processor;
     gp_boolean lst_force;
   } cmd_line;
+
   int pass;                         /* 1 or 2 */
   unsigned int org;                 /* Current code-generation point */
   gp_boolean dos_newlines;          /* Use DOS newlines in hex file */
@@ -128,12 +130,14 @@ extern struct gpasm_state {
   unsigned int maxram;              /* Highest legal memory location */
   long maxrom;                      /* Highest legal program memory location */
   struct range_pair *badrom;
+
   enum outfile
     codfile,                        /* Symbol output file control */
     depfile,                        /* Dependency output file control */
     hexfile,                        /* Hex output file control */
     lstfile,                        /* List output file control */
     objfile;                        /* Relocatable object file control */
+
   struct {                          /* Totals for errors, warnings, messages */
     int errors;
     int warnings;
@@ -141,13 +145,16 @@ extern struct gpasm_state {
     int warnings_suppressed;
     int messages_suppressed;
   } num;
+
   pic_processor_t processor;
   int processor_chosen;             /* Nonzero after processor-specific init */
+
   struct {                          /* Processor data */
     proc_class_t class;             /* Processor class */
     int id_location;                /* address of last __idlocs */
     int bsr_boundary;               /* 18xx bsr boundary location */
   } device;
+
   char badram[MAX_RAM];             /* nonzero indicates illegal memory */
   struct symbol_table
     *stBuiltin,                     /* Built-ins: instructions, pseudo-ops */
@@ -157,24 +164,29 @@ extern struct gpasm_state {
     *stDefines,                     /* Preprocessor #defines */
     *stMacroParams,                 /* Macro #defines (stDefines is base) */
     *stMacros;                      /* Macros */
+
   MemBlock *i_memory;               /* Instruction memory linked list */
   MemBlock *c_memory;               /* Configuration memory linked list */
   struct conf_mem_block_s *conf_sec_mem;  /* Configuration section memory linked list */
+
   char *srcfilename,                /* Source (.asm) file name */
     basefilename[BUFSIZ],           /* basename for generating hex,list,symbol filenames */
     codfilename[BUFSIZ],            /* Symbol (.cod) file name */
     depfilename[BUFSIZ],            /* Dependency (.d) file name */
     lstfilename[BUFSIZ],            /* List (.lst) file name */
     objfilename[BUFSIZ];            /* Object (.o) file name */
+
   struct {                          /* Symbol file state: */
     FILE *f;                        /*   Symbol file output */
     gp_boolean enabled;             /*   true if symbol file is enabled */
     int emitting;                   /*   flag indicating when an opcode is emitted */
   } cod;
+
   struct {                          /* Dep file state: */
     FILE *f;                        /*   Dep file output */
     gp_boolean enabled;             /*   true if dep file is enabled */
   } dep;
+
   struct {                          /* List file state: */
     FILE *f;                        /*   List file output */
     unsigned int
@@ -184,29 +196,34 @@ extern struct gpasm_state {
       line_number,                  /*   What line are we at within the file */
       memorymap,                    /*   Memory Map dump enabled */
       symboltable;                  /*   Symbol table dump enabled */
-      enum { in_none,
-             in_mem,
-             in_symtab }
-        lst_state;                  /*   Listing state */
+
+    enum {
+      in_none,
+      in_mem,
+      in_symtab
+    } lst_state;                    /*   Listing state */
+
     struct {
       unsigned int was_org;         /*   value of state.org at start of line */
                                     /*   What kind of line was it? */
-      enum { none,                  /*     Nothing - blank line */
-             org,                   /*     ORG pseudo-op */
-             dir,                   /*     Directive, non-code generating */
-             idlocs,                /*     ID locations for 12 and 14 bit cores */
-             insn,                  /*     Some other instruction or pseudo */
-             equ,                   /*     An equate */
-             data,                  /*     Data */
-             res,                   /*     reserve memory */
-             sec,                   /*     new coff section */
-             set,                   /*     A SET or '=' */
-             set4,                  /*     A 2 byte variable, constant or local */
-             config,                /*     A __config line */
-             nolist_dir,            /*     Don't list the directive (ENDW) */
-             dolist_dir }           /*     Force list the directive (WHILE) */
-        linetype;
+      enum {
+        none,                       /*     Nothing - blank line */
+        org,                        /*     ORG pseudo-op */
+        dir,                        /*     Directive, non-code generating */
+        idlocs,                     /*     ID locations for 12 and 14 bit cores */
+        insn,                       /*     Some other instruction or pseudo */
+        equ,                        /*     An equate */
+        data,                       /*     Data */
+        res,                        /*     reserve memory */
+        sec,                        /*     new coff section */
+        set,                        /*     A SET or '=' */
+        set4,                       /*     A 2 byte variable, constant or local */
+        config,                     /*     A __config line */
+        nolist_dir,                 /*     Don't list the directive (ENDW) */
+        dolist_dir                  /*     Force list the directive (WHILE) */
+      } linetype;
     } line;
+
     char startdate[80];             /*   When assembly started */
     gp_boolean enabled;             /*   listing is enabled */
     gp_boolean expand;              /*   macro listings are expanded */
@@ -218,12 +235,14 @@ extern struct gpasm_state {
     int line_width;                 /*   listing line width - list c=xxx option */
     gpasmVal cblock_lst;            /*   cblock constant for listing */
   } lst;
+
   struct {                          /* Preprocessor emit state: */
     char *preprocfilename;          /*   preprocessor output file name */
     FILE *f;                        /*   preprocessor file pointer */
     gp_boolean do_emit;             /*   emit current preprocessed asm line */
     struct src_line_s curr_src_line; /*  current preprocessed source line */
   } preproc;
+
   struct {                          /* Object file state: */
     gp_object_type *object;         /*   Object file */
     gp_section_type *section;       /*   Current section */
@@ -238,6 +257,7 @@ extern struct gpasm_state {
     unsigned int debug_line;
     int newcoff;
   } obj;
+
   struct source_context *src;       /* Top of the stack of source files */
   struct file_context *files;       /* Top of the stack of all files */
   struct amode *astack;             /* Stack of amodes (macros, etc) */
@@ -249,13 +269,17 @@ extern struct gpasm_state {
   struct macro_head *while_head;    /* WHILEs work a lot like macros... */
   unsigned int while_depth;         /* WHILE nesting depth, used in WHILE definition */
   enum state_types next_state;
+
   union {
     char *file;
     struct macro_head *macro;
   } next_buffer;
 } state;
 
-enum globalLife { TEMPORARY, PERMANENT };
+enum globalLife {
+  TEMPORARY,
+  PERMANENT
+};
 
 struct variable {
   int value;
@@ -271,22 +295,35 @@ struct variable {
 /* Parse node: created by the parser, interpreted by the 'backend' */
 
 struct pnode {
-  enum pnode_tag { constant, offset, symbol, string, list, binop, unop } tag;
+  enum pnode_tag {
+    constant,
+    offset,
+    symbol,
+    string,
+    list,
+    binop,
+    unop
+  } tag;
+
   union {
     int constant;
     struct pnode *offset;
     char *symbol;
+
     struct {
       struct pnode *head, *tail;
     } list;
+
     struct {
       int op;
       struct pnode *p0, *p1;
     } binop;
+
     struct {
       int op;
       struct pnode *p0;
     } unop;
+
     char *string;
   } value;
 };
@@ -382,7 +419,11 @@ struct macro_body {
 };
 
 struct amode {
-  enum { in_then, in_else } mode;
+  enum {
+    in_then,
+    in_else
+  } mode;
+
   int enabled;  /* Are we currently enabled? */
   int prev_enabled;
   struct amode *prev;

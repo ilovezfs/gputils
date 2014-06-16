@@ -36,8 +36,8 @@ Boston, MA 02111-1307, USA.  */
 #define STRINGIFY(s) _str(s)
 #define _str(s) #s
 
-#define IS_EEPROM (PROC_CLASS_EEPROM8 == state.device.class || PROC_CLASS_EEPROM16 == state.device.class)
-#define IS_BYTE   (IS_16BIT_CORE || IS_EEPROM)
+#define IS_EEPROM (IS_EEPROM8 || IS_EEPROM16)
+#define IS_BYTE   (IS_PIC16E_CORE || IS_EEPROM)
 
 void
 lst_throw(void)
@@ -190,12 +190,12 @@ lst_init(void)
   state.lst.tabstop = 8;        /* Default tabstop every 8 */
   state.lst.line_width = 132;   /* Default line widst is 132 */
 
-  if (state.lstfile != named) {
+  if (state.lstfile != OUT_NAMED) {
     snprintf(state.lstfilename, sizeof(state.lstfilename),
              "%s.lst", state.basefilename);
   }
 
-  if (state.lstfile == suppress) {
+  if (state.lstfile == OUT_SUPPRESS) {
     state.lst.f = NULL;
     state.lst.enabled = false;
     unlink(state.lstfilename);
@@ -267,13 +267,13 @@ lst_memory_map(MemBlock *m)
   /* it seems that MPASM includes config bytes into program memory usage
    * count for 16 bit cores. See gpasm testsuite:
    * gpasm/testsuite/gpasm.mchip/listfiles/configX.lst */
-#define IS_PIC16  (PROC_CLASS_PIC16 == state.device.class  || PROC_CLASS_PIC16E == state.device.class)
+#define IS_PIC16  (IS_PIC16_CORE || IS_PIC16E_CORE)
 
   if (IS_EEPROM) {
     lst_line("Memory Bytes Used: %5i", b_memory_used(state.i_memory));
   }
   else {
-    unsigned int used = gp_processor_byte_to_org(state.device.class, (!IS_PIC16 && state.processor) ?
+    unsigned int used = gp_processor_byte_to_org(state.device.class, ((!IS_PIC16) && state.processor) ?
       b_range_memory_used(state.i_memory, 0,
                           gp_processor_org_to_byte(state.device.class, state.processor->prog_mem_size)) :
       b_memory_used(state.i_memory));
@@ -318,7 +318,7 @@ find_reloc_by_address(unsigned short address)
 {
   gp_reloc_type *p;
 
-  for (p = state.obj.section->relocations; p; p = p->next) {
+  for (p = state.obj.section->relocations; p != NULL; p = p->next) {
     if (p->address == address) {
       break;
     }
@@ -338,7 +338,7 @@ prev_reloc_type(void)
   }
 
   for (p = state.obj.section->relocations;
-       p->next && (p->next != state.obj.section->relocations_tail); p = p->next)
+       (p->next != NULL) && (p->next != state.obj.section->relocations_tail); p = p->next)
     ;
   assert(p->next);
   return ((p->address == p->next->address) ? p->type : 0);
@@ -400,11 +400,11 @@ print_reloc(unsigned short type, unsigned short current_value)
     break;
 
   case RELOCT_LOW:
-    /* on non-16bits devices DB directive generates velues with
+    /* On non-16bits devices DB directive generates values with
      * low byte != 0 if more then one byte is defined, for example
      * DB 0x12, 0x34 generates 0x1234, so the following assertion fails
      * in such cases.
-     * TODO: this should be solved in DB directive handling function
+     * TODO: This should be solved in DB directive handling function
      * do_db(), file directive.c.
      * ASSERT(0 == (current_value & 0xff)); */
     return lst_printf("%02X?? ", (current_value >> 8) & 0x00ff);
@@ -487,7 +487,7 @@ print_reloc(unsigned short type, unsigned short current_value)
     break;
 
   case RELOCT_GOTO2:
-    /* This is only used for PIC16E (pic18) */
+    /* This is only used for PIC16E (pic18). */
   case RELOCT_FF1:
   case RELOCT_FF2:
     /* removed assertion since it fails during sdcc pic16 library
@@ -639,7 +639,7 @@ lst_format_line(const char *src_line, int value)
   unsigned int byte_org = 0;
   unsigned int bytes_emitted = 0;
   unsigned int lst_bytes;
-  const char *addr_fmt = IS_16BIT_CORE ? "%06X " : (IS_EEPROM ? "%04X " : "%04X   ");
+  const char *addr_fmt = IS_PIC16E_CORE ? "%06X " : (IS_EEPROM ? "%04X " : "%04X   ");
 #define ADDR_LEN 7
   unsigned int pos = 0;
   unsigned short reloc_type;
@@ -647,8 +647,8 @@ lst_format_line(const char *src_line, int value)
 
   assert(src_line != NULL);
 
-  if ((state.mode == relocatable) && state.obj.section &&
-      (state.obj.new_sec_flags & STYP_TEXT) && state.obj.section->relocations_tail) {
+  if ((state.mode == MODE_RELOCATABLE) && (state.obj.section != NULL) &&
+      (state.obj.new_sec_flags & STYP_TEXT) && (state.obj.section->relocations_tail != NULL)) {
       if ((state.obj.section->address + state.obj.section->relocations_tail->address) > state.lst.line.was_org) {
         /* already passed it, go back to the history */
         gp_reloc_type *p = find_reloc_by_address(state.lst.line.was_org);
@@ -743,12 +743,13 @@ lst_data:
     break;
 
   case config:
-    if (IS_16BIT_CORE) {
+    if (IS_PIC16E_CORE) {
       /* config data is byte addressable, but we only want to print
          words in the list file. */
       if (state.lst.config_address == CONFIG4L) {
         /* Special case */
         unsigned short word;
+
         state.device.class->i_memory_get(state.c_memory,
                                          state.lst.config_address, &word, NULL, NULL);
         pos += lst_printf(addr_fmt, state.lst.config_address);
@@ -855,7 +856,7 @@ cod_symbol_table(void)
   ps = lst = malloc(state.stGlobal->count * sizeof (struct symbol *));
 
   for (i = 0; i < HASH_SIZE; i++) {
-    for (s = state.stGlobal->hash_table[i]; s; s = s->next) {
+    for (s = state.stGlobal->hash_table[i]; s != NULL; s = s->next) {
       if (s != NULL) {
         *ps++ = s;
       }
@@ -864,7 +865,7 @@ cod_symbol_table(void)
 
   assert(ps == &lst[state.stGlobal->count]);
 
-  qsort(lst, state.stGlobal->count, sizeof (struct symbol *), symbol_compare);
+  qsort(lst, state.stGlobal->count, sizeof(struct symbol *), symbol_compare);
 
   cod_write_symbols(lst, state.stGlobal->count);
 
@@ -884,7 +885,8 @@ struct lst_symbol_s {
 static int
 lst_symbol_compare(const void *p0, const void *p1)
 {
-  return strcmp(((struct lst_symbol_s *)p0)->sym->name, ((struct lst_symbol_s *)p1)->sym->name);
+  return strcmp(((const struct lst_symbol_s *)p0)->sym->name,
+                ((const struct lst_symbol_s *)p1)->sym->name);
 }
 
 void
@@ -905,7 +907,7 @@ lst_symbol_table(void)
   ps = lst = malloc(count * sizeof(struct lst_symbol_s));
 
   for (i = 0; i < HASH_SIZE; i++) {
-    for (s = state.stGlobal->hash_table[i]; s; s = s->next) {
+    for (s = state.stGlobal->hash_table[i]; s != NULL; s = s->next) {
       ps->sym = s;
       ps->type = LST_SYMBOL;
       ++ps;
@@ -913,7 +915,7 @@ lst_symbol_table(void)
   }
 
   for (i = 0; i < HASH_SIZE; i++) {
-    for (s = state.stDefines->hash_table[i]; s; s = s->next) {
+    for (s = state.stDefines->hash_table[i]; s != NULL; s = s->next) {
       ps->sym = s;
       ps->type = LST_DEFINE;
       ++ps;
@@ -921,7 +923,7 @@ lst_symbol_table(void)
   }
 
   for (i = 0; i < HASH_SIZE; i++) {
-    for (s = state.stMacros->hash_table[i]; s; s = s->next) {
+    for (s = state.stMacros->hash_table[i]; s != NULL; s = s->next) {
       ps->sym = s;
       ps->type = LST_MACRO;
       ++ps;
@@ -930,7 +932,7 @@ lst_symbol_table(void)
 
   assert(ps == &lst[count]);
 
-  qsort(lst, count, sizeof (struct lst_symbol_s), lst_symbol_compare);
+  qsort(lst, count, sizeof(struct lst_symbol_s), lst_symbol_compare);
 
   for (i = 0; i < count; i++) {
     void *p = get_symbol_annotation(lst[i].sym);
@@ -939,7 +941,7 @@ lst_symbol_table(void)
     switch (lst[i].type) {
     case LST_SYMBOL:
       /* symbol */
-      lst_line("%-32s  %08X", name, p ? ((struct variable *)p)->value : 0);
+      lst_line("%-32s  %08X", name, (p != NULL) ? ((struct variable *)p)->value : 0);
       break;
 
     case LST_DEFINE:
@@ -948,7 +950,7 @@ lst_symbol_table(void)
         assert(list == ((struct pnode *)p)->tag);
         assert(string == HEAD((struct pnode *)p)->tag);
       }
-      lst_line("%-32s  %s", name, p ? HEAD((struct pnode *)p)->value.string : "");
+      lst_line("%-32s  %s", name, (p != NULL) ? HEAD((struct pnode *)p)->value.string : "");
       break;
 
     case LST_MACRO:

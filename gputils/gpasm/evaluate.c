@@ -67,12 +67,12 @@ int list_length(struct pnode *L)
   struct pnode *p = L;
   int n = 0;
 
-  while (p && list == p->tag) {
+  while (p != NULL && list == p->tag) {
     ++n;
     p = TAIL(p);
   }
 
-  return (NULL != p) ? n + 1: n;
+  return ((p != NULL) ? (n + 1) : n);
 }
 
 int can_evaluate(struct pnode *p)
@@ -103,10 +103,12 @@ int can_evaluate(struct pnode *p)
         s = get_symbol(state.stTop, p->value.symbol);
 
         if (s == NULL) {
-          if ('\0' == *p->value.symbol)
+          if (*p->value.symbol == '\0') {
             gpverror(GPE_MISSING_ARGU, NULL);
-          else
+          }
+          else {
             gpverror(GPE_NOSYM, NULL, p->value.symbol);
+          }
         }
         else {
           var = get_symbol_annotation(s);
@@ -155,14 +157,16 @@ int can_evaluate_value(struct pnode *p)
 
   case symbol:
     /* '$' means current org, which we can evaluate if section at absolute address */
-    if (strcmp(p->value.symbol, "$") == 0)
+    if (strcmp(p->value.symbol, "$") == 0) {
       return (0 != (state.obj.new_sec_flags & STYP_ABS));
+    }
     else {
       /* Otherwise look it up */
       struct symbol *s = get_symbol(state.stTop, p->value.symbol);
 
-      if (s == NULL)
+      if (s == NULL) {
         return 0;
+      }
       else {
         struct variable *var = get_symbol_annotation(s);
         if (NULL == var) {
@@ -170,13 +174,13 @@ int can_evaluate_value(struct pnode *p)
         }
         else {
           switch (var->type) {
-          case gvt_extern:
-          case gvt_global:
-          case gvt_static:
-          case gvt_absolute:
-          case gvt_debug:
+          case GVT_EXTERN:
+          case GVT_GLOBAL:
+          case GVT_STATIC:
+          case GVT_ABSOLUTE:
+          case GVT_DEBUG:
             return 0;
-            
+
           default:
             return 1;
           }
@@ -207,11 +211,12 @@ static int is_program_segment(struct pnode *p)
     struct symbol *s = get_symbol(state.stTop, p->value.symbol);
     struct variable *var = get_symbol_annotation(s);
     assert(var != NULL);
-    /* if var type is gvt_cblock return 1, else return 0 */
-    return gvt_cblock != var->type;
+    /* if var type is GVT_CBLOCK return 1, else return 0 */
+    return (var->type != GVT_CBLOCK);
   }
-  else
+  else {
     return 0;
+  }
 }
 
 gpasmVal evaluate(struct pnode *p)
@@ -231,9 +236,8 @@ gpasmVal evaluate(struct pnode *p)
       struct symbol *s;
 
       if (strcmp(p->value.symbol, "$") == 0) {
-        if (IS_RAM_ORG)
-          return state.org;
-        return gp_processor_byte_to_org(state.device.class, state.org);
+        return ((IS_RAM_ORG) ? state.org :
+                               gp_processor_byte_to_org(state.device.class, state.org));
       }
       else {
         s = get_symbol(state.stTop, p->value.symbol);
@@ -265,9 +269,8 @@ gpasmVal evaluate(struct pnode *p)
         gpasmVal val = (evaluate(p->value.unop.p0) >> 8) & 0xff;
         /* set 7th bit if in absolute mode and PROC_CLASS_PIC14E and not in cblock;
          * relative mode is handeled by the linker */
-        if (absolute == state.mode &&
-          PROC_CLASS_PIC14E == state.device.class &&
-          is_program_segment(p->value.unop.p0)) {
+        if ((state.mode == MODE_ABSOLUTE) && IS_PIC14E_CORE &&
+            is_program_segment(p->value.unop.p0)) {
           val |= 0x80;
         }
         return val;
@@ -331,25 +334,25 @@ gpasmVal evaluate(struct pnode *p)
         /* MPASM compatible:
          * It seems that x << n is actually x << (n % (sizeof(int) * 8))
          * on x86 architectures, so 0x1234 << 32 results 0x1234
-         * which is wrong but compatible with MPASM */
+         * which is wrong but compatible with MPASM. */
         return p0 << p1;
       }
       else {
       /* x << n results sign extension for n >= (sizeof(int) * 8) */
-        return (p1 >= sizeof(int) * 8) ? ((p0 < 0) ? -1 : 0) : p0 << p1;
+        return ((p1 >= (sizeof(int) * 8)) ? ((p0 < 0) ? -1 : 0) : (p0 << p1));
       }
 
     case RSH:
       if (state.mpasm_compatible) {
-        /* MPASM compatible: see https://sourceforge.net/p/gputils/bugs/252/ 
+        /* MPASM compatible: see https://sourceforge.net/p/gputils/bugs/252/
          * It seems that x >> n is actually x >> (n % (sizeof(int) * 8))
          * on x86 architectures, so 0x1234 >> 32 results 0x1234
-         * which is wrong but compatible with MPASM */
+         * which is wrong but compatible with MPASM. */
         return p0 >> p1;
       }
       else {
       /* x >> n results sign extension for n >= (sizeof(int) * 8) */
-        return (p1 >= sizeof(int) * 8) ? ((p0 < 0) ? -1 : 0) : p0 >> p1;
+        return ((p1 >= (sizeof(int) * 8)) ? ((p0 < 0) ? -1 : 0) : (p0 >> p1));
       }
 
     case EQUAL:
@@ -379,6 +382,7 @@ gpasmVal evaluate(struct pnode *p)
     case '=':
       gpverror(GPE_BADCHAR, NULL, '=');
       return 0;
+
     default:
       assert(0); /* Unhandled binary operator */
     }
@@ -396,7 +400,7 @@ gpasmVal maybe_evaluate(struct pnode *p)
 {
   gpasmVal r;
 
-  if (p && can_evaluate(p)) {
+  if (p != NULL && can_evaluate(p)) {
     r = evaluate(p);
   }
   else {
@@ -413,8 +417,9 @@ int count_reloc(struct pnode *p)
   struct symbol *s;
   struct variable *var;
 
-  if (state.mode == absolute)
+  if (state.mode == MODE_ABSOLUTE) {
     return 0;
+  }
 
   switch (p->tag) {
   case constant:
@@ -431,12 +436,13 @@ int count_reloc(struct pnode *p)
       s = get_symbol(state.stTop, p->value.symbol);
       if (s != NULL) {
         var = get_symbol_annotation(s);
+
         if (var != NULL) {
           switch(var->type) {
-          case gvt_extern:
-          case gvt_global:
-          case gvt_static:
-          case gvt_address:
+          case GVT_EXTERN:
+          case GVT_GLOBAL:
+          case GVT_STATIC:
+          case GVT_ADDRESS:
             return 1;
 
           default:
@@ -478,16 +484,17 @@ add_reloc(struct pnode *p, short offs, unsigned short type)
     if (strcmp(p->value.symbol, "$") == 0) {
       char buffer[BUFSIZ];
       unsigned org;
-      if (IS_RAM_ORG)
-        org = state.org;
-      else
-        org = gp_processor_byte_to_org(state.device.class, state.org);
+
+      org = (IS_RAM_ORG) ? state.org :
+                           gp_processor_byte_to_org(state.device.class, state.org);
 
       snprintf(buffer, sizeof(buffer), "_%s_%04X", state.obj.new_sec_name, org);
       /* RELOCT_ACCESS has always also RELOCT_F, which has already
          created this symbol.*/
-      if (type != RELOCT_ACCESS)
-        set_global(buffer, org, PERMANENT, IS_RAM_ORG ? gvt_static : gvt_address);
+      if (type != RELOCT_ACCESS) {
+        set_global(buffer, org, PERMANENT, IS_RAM_ORG ? GVT_STATIC : GVT_ADDRESS);
+      }
+
       s = get_symbol(state.stTop, buffer);
     }
     else {
@@ -495,12 +502,13 @@ add_reloc(struct pnode *p, short offs, unsigned short type)
     }
     if (s != NULL) {
       var = get_symbol_annotation(s);
+
       if (var != NULL) {
         switch(var->type) {
-        case gvt_extern:
-        case gvt_global:
-        case gvt_static:
-        case gvt_address:
+        case GVT_EXTERN:
+        case GVT_GLOBAL:
+        case GVT_STATIC:
+        case GVT_ADDRESS:
           coff_reloc(var->coff_num, offs, type);
           return;
 
@@ -609,8 +617,9 @@ same_section(struct pnode *p)
   struct variable *var0;
   struct variable *var1;
 
-  if (!state.obj.enabled)
+  if (!state.obj.enabled) {
     return 0;
+  }
 
   if ((p->tag == unop) &&
       ((p->value.unop.op == UPPER) ||
@@ -621,15 +630,16 @@ same_section(struct pnode *p)
 
   if ((p->tag != binop) ||
       (p->value.binop.op != '-') ||
-      (count_reloc(p->value.binop.p0) != 1))
+      (count_reloc(p->value.binop.p0) != 1)) {
     return 0;
+  }
 
   p0 = p->value.binop.p0;
   p1 = p->value.binop.p1;
 
-  if ((p0->tag != symbol) ||
-      (p1->tag != symbol))
+  if ((p0->tag != symbol) || (p1->tag != symbol)) {
     return 0;
+  }
 
   sym0 = get_symbol(state.stTop, p0->value.symbol);
   sym1 = get_symbol(state.stTop, p1->value.symbol);
@@ -638,14 +648,14 @@ same_section(struct pnode *p)
 
   /* They must come from the same section. Debug symbols are not placed
      in the global symbol table, so don't worry about symbol type. */
-  /* Fail if sections are not known (== 0) or not the same */
+  /* Fail if sections are not known (== 0) or not the same. */
   if (0 == var0->coff_section_num ||
-    0 == var1->coff_section_num ||
-    var0->coff_section_num != var1->coff_section_num)
+      0 == var1->coff_section_num ||
+      var0->coff_section_num != var1->coff_section_num) {
     return 0;
+  }
 
   return 1;
-
 }
 
 gpasmVal reloc_evaluate(struct pnode *p, unsigned short type)
@@ -653,7 +663,7 @@ gpasmVal reloc_evaluate(struct pnode *p, unsigned short type)
   gpasmVal r = 0;
   int count = 0;
 
-  if (state.mode == absolute) {
+  if (state.mode == MODE_ABSOLUTE) {
     r = maybe_evaluate(p);
   }
   else {
@@ -690,8 +700,11 @@ int eval_fill_number(struct pnode *p)
   int number;
 
   number = maybe_evaluate(p);
-  if (state.device.class->rom_width == 8 && (number & 0x1) == 1)
+
+  if ((state.device.class->rom_width == 8) && ((number & 0x1) == 1)) {
     gpverror(GPE_FILL_ODD, NULL);
+  }
+
   number = gp_processor_org_to_byte(state.device.class, number) >> 1;
 
   return number;

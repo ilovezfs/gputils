@@ -83,7 +83,7 @@ init(void)
   gp_init();
 
   /* restore gpasm to its initialized state */
-  state.mode = absolute;
+  state.mode = MODE_ABSOLUTE;
   state.extended_pic16e = false;
 
   state.radix = 16;
@@ -114,11 +114,11 @@ init(void)
   state.found_end = false;
   state.maxram = (MAX_RAM - 1);
 
-  state.codfile = normal;
-  state.depfile = suppress;
-  state.hexfile = normal;
-  state.lstfile = normal;
-  state.objfile = suppress;
+  state.codfile = OUT_NORMAL;
+  state.depfile = OUT_SUPPRESS;
+  state.hexfile = OUT_NORMAL;
+  state.lstfile = OUT_NORMAL;
+  state.objfile = OUT_SUPPRESS;
 
   state.num.errors    = 0;
   state.num.warnings  = 0;
@@ -142,7 +142,7 @@ init(void)
 
   state.astack = NULL;
 
-  state.next_state = state_nochange;
+  state.next_state = STATE_NOCHANGE;
 
   state.while_depth = 0;
 }
@@ -253,11 +253,11 @@ process_args( int argc, char *argv[])
       break;
 
     case 'c':
-      state.mode    = relocatable;
-      state.codfile = suppress;
-      state.hexfile = suppress;
-      state.lstfile = normal;
-      state.objfile = normal;
+      state.mode    = MODE_RELOCATABLE;
+      state.codfile = OUT_SUPPRESS;
+      state.hexfile = OUT_SUPPRESS;
+      state.lstfile = OUT_NORMAL;
+      state.objfile = OUT_NORMAL;
       break;
 
     case 'C':
@@ -362,7 +362,7 @@ process_args( int argc, char *argv[])
       }
 
     case 'M':
-      state.depfile = normal;
+      state.depfile = OUT_NORMAL;
       break;
 
     case 'm':
@@ -519,7 +519,7 @@ assemble(void)
   state.astack = NULL;
 
   /* Initial section. */
-  state.obj.new_sec_flags = (state.mode == absolute) ? STYP_TEXT : 0;
+  state.obj.new_sec_flags = (state.mode == MODE_ABSOLUTE) ? STYP_TEXT : 0;
 
   state.found_config = false;
   state.found_devid = false;
@@ -554,7 +554,7 @@ assemble(void)
 
   if (state.obj.object) {
     /* Set F_ABSOLUTE COFF flag if absolute mode. */
-    if (absolute == state.mode) {
+    if (state.mode == MODE_ABSOLUTE) {
       state.obj.object->flags |= F_ABSOLUTE;
     }
 
@@ -579,7 +579,7 @@ assemble(void)
   }
 
   /* Maybe produce a memory map. */
-  if ((state.mode == absolute) && (state.lst.memorymap)) {
+  if ((state.mode == MODE_ABSOLUTE) && (state.lst.memorymap)) {
     lst_memory_map(state.i_memory);
   }
 

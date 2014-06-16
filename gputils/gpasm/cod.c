@@ -75,12 +75,12 @@ init_dir_block(void)
 void
 cod_init(void)
 {
-  if (state.codfile != named) {
+  if (state.codfile != OUT_NAMED) {
     snprintf(state.codfilename, sizeof (state.codfilename),
              "%s.cod", state.basefilename);
   }
 
-  if (state.codfile == suppress) {
+  if (state.codfile == OUT_SUPPRESS) {
     state.cod.f = NULL;
     state.cod.enabled = false;
     unlink(state.codfilename);
@@ -262,15 +262,15 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
     gp_cod_strncpy(&sb->block[main_dir->sym.offset + 1], s, MAX_SYM_LEN);
 
     switch (var->type) {
-    case gvt_cblock:
+    case GVT_CBLOCK:
       type = COD_ST_C_SHORT;    /* byte craft's nomenclature for a memory byte. */
       break;
 
-    case gvt_address:
+    case GVT_ADDRESS:
       type = COD_ST_ADDRESS;
       break;
 
-    case gvt_constant:
+    case GVT_CONSTANT:
     default:
       type = COD_ST_CONSTANT;
     }

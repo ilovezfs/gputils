@@ -35,7 +35,7 @@ static struct file_context *last = NULL;
  * strtoul returns ULONG_MAX if the correct value is outside the range
  * of representable values (see man strtoul). The behavior is also
  * platform dependent: (int)strtoul("123456789", 16) returns -1 on 32 bit
- * plaforms and 0x23456789 on 64 bit platforms. */ 
+ * platforms and 0x23456789 on 64 bit platforms. */
 static int
 gp_strtoi(const char *string, char **endptr, int radix)
 {
@@ -49,19 +49,25 @@ gp_strtoi(const char *string, char **endptr, int radix)
   }
 
   while (1) {
-    if (isdigit(*string))
+    if (isdigit(*string)) {
       digit = *string - '0';
-    else if (islower(*string))
+    }
+    else if (islower(*string)) {
       digit = *string - ('a' - 10);
-    else if (isupper(*string))
+    }
+    else if (isupper(*string)) {
       digit = *string - ('A' - 10);
-    else
+    }
+    else {
       break;
+    }
 
-    if (digit < radix)
+    if (digit < radix) {
       value = value * radix + digit;
-    else
+    }
+    else {
       break;
+    }
 
     ++string;
   }
@@ -137,15 +143,18 @@ convert_escaped_char(char *str, char c)
   char *src  = str;
   char *dest = str;
 
-  if (!str)
+  if (str == NULL) {
     return str;
+  }
 
   while (*src) {
-    if (*src =='\\' && src[1] == c)
+    if (*src =='\\' && src[1] == c) {
       src++;
+    }
     *dest++ = *src++;
   }
-  *dest=0;
+
+  *dest = '\0';
 
   return str;
 }
@@ -177,8 +186,10 @@ convert_escape_chars(const char *ps, int *value)
       ps++;
 
       while (count < 3) {
-        if (*ps < '0' || *ps > '7')
+        if (*ps < '0' || *ps > '7') {
           break;
+        }
+
         *value = (*value << 3) + *ps - '0';
         ps++;
         count++;
@@ -191,8 +202,10 @@ convert_escape_chars(const char *ps, int *value)
         *value = 0;
         /* return a NULL character */
         ps += 2;
-        if (*ps)
+
+        if (*ps) {
           ++ps;
+        }
       } else {
         char buffer[3];
 
@@ -229,7 +242,9 @@ coerce_str1(struct pnode *exp)
 {
   if ((exp != NULL) && (exp->tag == string)) {
     int value;
+
     const char *pc = convert_escape_chars(exp->value.string, &value);
+
     if (*pc == '\0') {
       /* castable string, make the conversion */
       exp->tag = constant;
@@ -251,9 +266,13 @@ set_global(const char *name,
      tables) for the symbol.  If not found, then add it to the global
      symbol table.  */
   sym = get_symbol(state.stTop, name);
-  if (sym == NULL)
+
+  if (sym == NULL) {
     sym = add_symbol(state.stGlobal, name);
+  }
+
   var = get_symbol_annotation(sym);
+
   if (var == NULL) {
     /* new symbol */
     var = malloc(sizeof(*var));
@@ -267,14 +286,15 @@ set_global(const char *name,
 
     /* increment the index into the coff symbol table for the relocations */
     switch(type) {
-    case gvt_extern:
-    case gvt_global:
-    case gvt_static:
-    case gvt_address:
-    case gvt_debug:
-    case gvt_absolute:
+    case GVT_EXTERN:
+    case GVT_GLOBAL:
+    case GVT_STATIC:
+    case GVT_ADDRESS:
+    case GVT_DEBUG:
+    case GVT_ABSOLUTE:
       state.obj.symbol_num++;
       break;
+
     default:
       break;
     }
@@ -295,37 +315,47 @@ set_global(const char *name,
   } else if (state.pass == 2) {
     char *coff_name;
 
-    if (var->value != value)
+    if (var->value != value) {
       gpverror(GPE_DIFFLAB, NULL, name);
+    }
 
     coff_name = coff_local_name(name);
     coff_add_sym(coff_name, value, var->type);
 
-    if (coff_name != NULL)
+    if (coff_name != NULL) {
       free(coff_name);
+    }
   }
 }
 
 void
 purge_temp_symbols(struct symbol_table *table) {
   int i;
+
   if (table != NULL) {
     for (i = 0; i < HASH_SIZE; ++i) {
       struct symbol *cur_symbol;
       struct symbol *last_symbol = NULL;
+
       cur_symbol = table->hash_table[i];
       while (cur_symbol != NULL) {
         if (cur_symbol != NULL) {
           struct variable *var = (struct variable *)get_symbol_annotation(cur_symbol);
+
           if (var != NULL) {
             if (var->lifetime == TEMPORARY) {
               struct symbol *next_symbol = cur_symbol->next;
+
               free(cur_symbol);
               table->count--;
-              if (last_symbol == NULL)
+
+              if (last_symbol == NULL) {
                 table->hash_table[i] = next_symbol;
-              else
+              }
+              else {
                 last_symbol->next = next_symbol;
+              }
+
               cur_symbol = next_symbol;
               continue;
             }
@@ -355,8 +385,7 @@ select_errorlevel(int level)
     } else {
       if (state.pass == 0) {
         fprintf(stderr,
-                "Error: invalid warning level \"%i\"\n",
-                level);
+                "Error: invalid warning level \"%i\"\n", level);
       } else {
         gperror(GPE_ILLEGAL_ARGU, "Expected w= 0, 1, 2");
       }
@@ -376,10 +405,10 @@ select_expand(const char *expand)
       state.lst.expand = false;
     } else {
       state.lst.expand = true;
+
       if (state.pass == 0) {
         fprintf(stderr,
-                "Error: invalid option \"%s\"\n",
-                expand);
+                "Error: invalid option \"%s\"\n", expand);
       } else {
         gperror(GPE_ILLEGAL_ARGU, "Expected ON or OFF.");
       }
@@ -405,8 +434,7 @@ select_hexformat(const char *format_name)
       state.hex_format = inhx8m;
       if (state.pass == 0) {
         fprintf(stderr,
-                "Error: invalid format \"%s\"\n",
-                format_name);
+                "Error: invalid format \"%s\"\n", format_name);
       } else {
         gperror(GPE_ILLEGAL_ARGU, "Expected inhx8m, inhx8s, inhx16, or inhx32.");
       }
@@ -434,10 +462,10 @@ select_radix(const char *radix_name)
       state.radix = 8;
     } else {
       state.radix = 16;
+
       if (state.pass == 0) {
         fprintf(stderr,
-                "invalid radix \"%s\", will use hex.\n",
-                radix_name);
+                "invalid radix \"%s\", will use hex.\n", radix_name);
       } else {
         gpvwarning(GPW_RADIX, NULL);
       }
@@ -465,8 +493,9 @@ gpasmVal
 do_or_append_insn(char *op, struct pnode *parms)
 {
   if (IN_MACRO_WHILE_DEFINITION) {
-    if (0 == strcasecmp(op, "endm"))
+    if (0 == strcasecmp(op, "endm")) {
       return do_insn(op, parms);
+    }
     else if (IN_WHILE_DEFINITION) {
       if (0 == strcasecmp(op, "while")) {
         assert(0 != state.while_depth);
@@ -474,42 +503,48 @@ do_or_append_insn(char *op, struct pnode *parms)
       }
       else if (state.while_head && 0 == strcasecmp(op, "endw")) {
         assert(0 != state.while_depth);
-        if (0 == --state.while_depth)
+        if (0 == --state.while_depth) {
           return do_insn(op, parms);
+        }
       }
     }
     macro_append();
     return 0;
   }
-  else
+  else {
     return do_insn(op, parms);
+  }
 }
 
 void
 print_pnode(struct pnode *p)
 {
-  if(!p) {
+  if (p == NULL) {
     printf("Null\n");
     return;
   }
 
   switch(p->tag) {
   case constant:
-    printf("  constant: %d\n",p->value.constant);
+    printf("  constant: %d\n", p->value.constant);
     break;
+
   case symbol:
-    printf("  symbol: %s\n",p->value.symbol);
+    printf("  symbol: %s\n", p->value.symbol);
     break;
+
   case unop:
-    printf("  unop: %d\n",p->value.unop.op);
+    printf("  unop: %d\n", p->value.unop.op);
     break;
 
   case binop:
-    printf("  binop: %d\n",p->value.binop.op);
+    printf("  binop: %d\n", p->value.binop.op);
     break;
+
   case string:
-    printf("  string: %s\n",p->value.string);
+    printf("  string: %s\n", p->value.string);
     break;
+
   case list:
     printf("  list:\n");
     break;
@@ -522,8 +557,9 @@ print_pnode(struct pnode *p)
 void
 print_macro_node(struct macro_body *mac)
 {
-  if(mac->src_line)
-    printf(" src_line = %s\n",mac->src_line);
+  if (mac->src_line) {
+    printf(" src_line = %s\n", mac->src_line);
+  }
 }
 
 void print_macro_body(struct macro_body *mac)
@@ -552,11 +588,12 @@ add_file(unsigned int type, const char *name)
 
   /* First check to make sure this file is not already in the list */
 
-  if(last) {
+  if (last != NULL) {
     new = last;
     do {
-      if(strcmp(new->name, name) == 0)
+      if (strcmp(new->name, name) == 0) {
         return(new);
+      }
       new = new->prev;
     } while(new != NULL);
   }
@@ -568,8 +605,10 @@ add_file(unsigned int type, const char *name)
   new->prev = last;
   new->id = file_id++;
   new->next = NULL;
-  if(last)
+
+  if (last != NULL) {
     last->next = new;
+  }
 
   last = new;
   state.files = new;
@@ -584,7 +623,7 @@ free_files(void)
 {
   struct file_context *old;
 
-  while(last != NULL) {
+  while (last != NULL) {
     old = last;
     last = old->prev;
     free(old->name);
@@ -596,7 +635,7 @@ void
 hex_init(void)
 {
 
-  if (state.hexfile == suppress) {
+  if (state.hexfile == OUT_SUPPRESS) {
     /* Must delete hex file when suppressed. */
     writehex(state.basefilename,
              state.i_memory,
