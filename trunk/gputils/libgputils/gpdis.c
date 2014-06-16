@@ -476,7 +476,8 @@ gp_disassemble(MemBlock *m,
       break;
 
     case INSN_CLASS_OPWF5:
-      /* {PIC12E, SX} (addwf, andwf, comf, decf, decfsz, incf, incfsz, iorwf, movf, rlf, rrf, subwf, swapf, xorwf) */
+      /* {PIC12E, SX} (addwf, andwf, comf, decf, decfsz, incf, incfsz,
+                       iorwf, movf, rlf, rrf, subwf, swapf, xorwf) */
       file1 = opcode & MASK_PIC12_FILE;
       tmp   = (opcode >> 5) & 1;
       sfr   = (show_core_sfrs) ? gp_processor_find_sfr(class, file1) : NULL;
@@ -547,7 +548,8 @@ gp_disassemble(MemBlock *m,
       break;
 
     case INSN_CLASS_OPWF7:
-      /* PIC14x (addwf, andwf, comf, decf, decfsz, incf, incfsz, iorwf, movf, rlf, rrf, subwf, swapf, xorwf)
+      /* PIC14x (addwf, andwf, comf, decf, decfsz, incf, incfsz, iorwf, movf,
+                 rlf, rrf, subwf, swapf, xorwf)
          PIC14E (addwfc, asrf, lslf, lsrf, subwfb) */
       file1 = opcode & MASK_PIC14_FILE;
       tmp   = (opcode >> 7) & 1;

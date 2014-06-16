@@ -1868,7 +1868,7 @@ static const core_sfr_t core_sfr_table_pic16e[] = {
   { 0xFF3, "PRODL"    },
   { 0xFF4, "PRODH"    },
   { 0xFF5, "TABLAT"   },
-  { 0xFF6, "TBLPTR"   },
+  { 0xFF6, "TBLPTRL"  },
   { 0xFF7, "TBLPTRH"  },
   { 0xFF8, "TBLPTRU"  },
   { 0xFF9, "PC"       },
