@@ -40,7 +40,7 @@ static char *processor_name = NULL;
 int yyparse(void);
 extern int yydebug;
 
-#define GET_OPTIONS "?D:I:a:cCde:ghil::LmMno:p:qr:uvw:yP:"
+#define GET_OPTIONS "?D:I:a:cCde:ghikl::LmMno:p:qr:uvw:yP:"
 
 enum {
   OPT_MPASM_COMPATIBLE = 0x100
@@ -58,6 +58,7 @@ static struct option longopts[] =
   { "debug-info",       no_argument,       NULL, 'g' },
   { "help",             no_argument,       NULL, 'h' },
   { "ignore-case",      no_argument,       NULL, 'i' },
+  { "error",            no_argument,       NULL, 'k' },
   { "list-chips",       optional_argument, NULL, 'l' },
   { "force-list",       no_argument,       NULL, 'L' },
   { "dump",             no_argument,       NULL, 'm' },
@@ -79,7 +80,6 @@ static struct option longopts[] =
 void
 init(void)
 {
-
   gp_init();
 
   /* restore gpasm to its initialized state */
@@ -116,6 +116,7 @@ init(void)
 
   state.codfile = OUT_NORMAL;
   state.depfile = OUT_SUPPRESS;
+  state.errfile = OUT_SUPPRESS;
   state.hexfile = OUT_NORMAL;
   state.lstfile = OUT_NORMAL;
   state.objfile = OUT_SUPPRESS;
@@ -131,6 +132,7 @@ init(void)
 
   state.cod.enabled = false;
   state.dep.enabled = false;
+  state.err.enabled = false;
   state.lst.enabled = false;
   state.obj.enabled = false;
   state.obj.newcoff = 1;  /* use new Microchip COFF format by default */
@@ -174,6 +176,7 @@ show_usage(void)
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -i, --ignore-case              Case insensitive.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
+  printf("  -k, --error                    Enables creation of the error file.\n");
   printf("  -l[12[ce]|14[ce]|16[ce]], --list-chips[=([12[ce]|14[ce]|16[ce]])]\n");
   printf("                                 List supported processors based on various aspects.\n");
   printf("  -L, --force-list               Ignore nolist directives.\n");
@@ -185,10 +188,10 @@ show_usage(void)
 #endif
   printf("  -o FILE, --output FILE         Alternate name of output files. Option effect of:\n");
   printf("                                 -- If the \"-c\" option included in the command line:\n");
-  printf("                                      FILE.o, FILE.lst\n");
+  printf("                                      FILE.o, FILE.lst, FILE.err\n");
   printf("                                        (The \"FILE.o\" should specified.)\n");
   printf("                                 -- If the \"-c\" option not included in the command line:\n");
-  printf("                                      FILE.hex, FILE.cod, FILE.lst\n");
+  printf("                                      FILE.hex, FILE.cod, FILE.lst, FILE.err\n");
   printf("                                        (The \"FILE.hex\" should specified.)\n");
   printf("  -p PROC, --processor PROC      Select processor.\n");
   printf("  -P FILE, --preprocess FILE     Write preprocessed asm file to FILE.\n");
@@ -222,7 +225,7 @@ process_args( int argc, char *argv[])
   int usage_code = 0;
   char *pc;
 
-  /* Scan through the options for the -i flag.  It must be set before the
+  /* Scan through the options for the -i flag. It must be set before the
      defines are read. */
   while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
     switch (c) {
@@ -310,6 +313,10 @@ process_args( int argc, char *argv[])
       state.case_insensitive = true;
       break;
 
+    case 'k':
+      state.errfile = OUT_NORMAL;
+      break;
+
     case 'L':
       state.cmd_line.lst_force = true;
       break;
@@ -319,7 +326,7 @@ process_args( int argc, char *argv[])
 
       if (optarg != NULL) {
         pic_family = strtol(optarg, NULL, 16);
-        }
+      }
 
       switch (pic_family) {
         case 0x12C:
@@ -527,6 +534,7 @@ assemble(void)
   state.found_end = false;
   coff_init();
   cod_init();
+  gperror_init();
   deps_init();
   lst_init();
   preproc_init();
@@ -585,6 +593,7 @@ assemble(void)
 
   /* Finish off the object, dependency, listing, and symbol files. */
   coff_close_file();
+  gperror_close();
   deps_close();
   lst_close();
 

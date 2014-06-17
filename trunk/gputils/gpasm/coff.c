@@ -145,16 +145,20 @@ _create_config_sections(void)
   struct conf_mem_block_s *conf_sec_mem;
   gp_linenum_type *linenum;
 
-  for (conf_sec_mem = state.conf_sec_mem; conf_sec_mem; conf_sec_mem = conf_sec_mem->next) {
+  for (conf_sec_mem = state.conf_sec_mem; conf_sec_mem != NULL; conf_sec_mem = conf_sec_mem->next) {
     char section_name[BUFSIZ];
     char *p;
 
-    snprintf(section_name, sizeof section_name, ".config_%X_%s", gp_processor_byte_to_org(state.device.class, conf_sec_mem->addr), state.objfilename);
-    for (p = &section_name[13]; *p; ++p) {
+    snprintf(section_name, sizeof section_name, ".config_%X_%s",
+             gp_processor_byte_to_org(state.device.class, conf_sec_mem->addr), state.objfilename);
+
+    for (p = &section_name[13]; *p != '\0'; ++p) {
       *p = toupper(*p);
     }
 
-    _new_config_section(section_name, conf_sec_mem->addr, STYP_ABS | (conf_sec_mem->new_config ? STYP_DATA_ROM : STYP_TEXT), conf_sec_mem->m, conf_sec_mem->new_config);
+    _new_config_section(section_name, conf_sec_mem->addr,
+                        STYP_ABS | (conf_sec_mem->new_config ? STYP_DATA_ROM : STYP_TEXT),
+                        conf_sec_mem->m, conf_sec_mem->new_config);
 
     if (!state.obj.enabled) {
       return;
@@ -243,9 +247,7 @@ coff_new_section(const char *name, int addr, int flags)
   /* store data from the last section */
   coff_close_section();
 
-  found = gp_coffgen_findsection(state.obj.object,
-                                 state.obj.object->sections,
-                                 name);
+  found = gp_coffgen_findsection(state.obj.object, state.obj.object->sections, name);
 
   if (found != NULL) {
     if ((flags & STYP_OVERLAY) && (found->flags & STYP_OVERLAY)) {
@@ -337,6 +339,7 @@ coff_linenum(int emitted)
   end = origin + emitted;
   while (origin < end) {
     new = gp_coffgen_addlinenum(state.obj.section);
+
     if (state.debug_info) {
       new->symbol = state.obj.debug_file;
       new->line_number = state.obj.debug_line;
@@ -344,6 +347,7 @@ coff_linenum(int emitted)
       new->symbol = state.src->file_symbol;
       new->line_number = state.src->line_number;
     }
+
     new->address = origin;
 
     origin += (origin & 1) ? 1 : 2;
@@ -620,7 +624,7 @@ coff_local_name(const char *name)
   local = get_symbol(state.stGlobal, name);
   if (local == NULL) {
     /* It isn't in the stGlobal so it must be in stTop. It's local. */
-    while(1) {
+    while (1) {
       snprintf(buffer, sizeof(buffer), "_%d%s", count, name);
       symbol = gp_coffgen_findsymbol(state.obj.object, buffer);
 
