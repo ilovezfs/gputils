@@ -1,3 +1,9 @@
+2014-06-17  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c, gpasm/evaluate.c, gpasm/gpasm.h.in,
+    gpasm/lst.c, gpasm/macro.c, gpasm/parse.y, gpasm/preprocess.c,
+    gpasm/scan.l, gpasm/special.c, gpasm/util.c:
+    Better recognizable names of constants and change of text format.
+
 2014-06-16  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gpasm/coff.c, gpasm/deps.c, gpasm/gpasm.h.in,
     gpasm/evaluate.c, gpasm/gpasm.c, gpasm/macro.c, gpasm/parse.y:

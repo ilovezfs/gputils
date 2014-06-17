@@ -37,8 +37,7 @@ void setup_macro(struct macro_head *h, int arity, struct pnode *parms)
 {
   if (enforce_arity(arity, list_length(h->parms))) {
     /* push table for the marco parms */
-    state.stMacroParams = push_symbol_table(state.stMacroParams,
-                                        state.case_insensitive);
+    state.stMacroParams = push_symbol_table(state.stMacroParams, state.case_insensitive);
 
     /* Now add the macro's declared parameter list to the new
        defines table. */
@@ -49,11 +48,11 @@ void setup_macro(struct macro_head *h, int arity, struct pnode *parms)
 
       pTo = parms;
 
-      for (pFrom = h->parms; pFrom; pFrom = TAIL(pFrom)) {
+      for (pFrom = h->parms; pFrom != NULL; pFrom = TAIL(pFrom)) {
         pToH = HEAD(pTo);
         pFromH = HEAD(pFrom);
-        assert(symbol == pFromH->tag);
-        assert(symbol == pToH->tag);
+        assert(pFromH->tag == PTAG_SYMBOL);
+        assert(pToH->tag == PTAG_SYMBOL);
 
         sym = add_symbol(state.stMacroParams, pFromH->value.symbol);
         annotate_symbol(sym, mk_list(mk_string(strdup(pToH->value.symbol)), NULL));
@@ -63,7 +62,7 @@ void setup_macro(struct macro_head *h, int arity, struct pnode *parms)
 
     state.next_state = STATE_MACRO;
     state.next_buffer.macro = h;
-    state.lst.line.linetype = none;
+    state.lst.line.linetype = LTY_NONE;
   }
 }
 
@@ -96,7 +95,7 @@ add_macro_table(struct symbol_table *table)
     struct macro_table *list = macro_table_list;
 
     /* find the end of the list */
-    while(list->next != NULL) {
+    while (list->next != NULL) {
       list = list->next;
     }
 
@@ -136,9 +135,9 @@ list_macro(struct macro_body *p)
   unsigned int old_line_number = state.src->line_number;
 
   /* Never executed: list the macro body */
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
   state.src->line_number = state.while_head->line_number;
-  while (p) {
+  while (p != NULL) {
     ++state.src->line_number;
     lst_format_line(p->src_line, 0);
     p = p->next;

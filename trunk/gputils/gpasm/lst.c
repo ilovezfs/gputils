@@ -68,12 +68,12 @@ lst_page_start(void)
 {
   lst_throw();
   switch (state.lst.lst_state) {
-  case in_mem:
+  case LST_IN_MEM:
     lst_line("LOC  OBJECT CODE     LINE SOURCE TEXT");
     lst_line("  VALUE");
     break;
 
-  case in_symtab:
+  case LST_IN_SYMTAB:
     lst_line("SYMBOL TABLE");
     lst_line("%-32s  %-8s", "  LABEL", "  VALUE");
     break;
@@ -174,7 +174,7 @@ lst_init(void)
   state.lst.line_number = 1;
   state.lst.memorymap = 1;
   state.lst.symboltable = 1;
-  state.lst.lst_state = in_mem;
+  state.lst.lst_state = LST_IN_MEM;
 
   /* Determine state.startdate */
   gp_date_string(state.lst.startdate, sizeof(state.lst.startdate));
@@ -294,7 +294,7 @@ lst_close(void)
 {
   cod_lst_line(COD_LAST_LST_LINE);
 
-  state.lst.lst_state = in_none;
+  state.lst.lst_state = LST_IN_NONE;
 
   if (state.lst.f != NULL) {
     lst_line(NULL);
@@ -576,7 +576,7 @@ lst_data(unsigned int pos, MemBlock *m, unsigned int byte_org,
   int lst_bytes = 0;
 
   /* when in a idata or byte packed section, print byte by byte */
-  if ((state.device.class == PROC_CLASS_EEPROM8) || (state.obj.new_sec_flags & (STYP_DATA | STYP_BPACK))) {
+  if (IS_EEPROM8 || (state.obj.new_sec_flags & (STYP_DATA | STYP_BPACK))) {
     while ((bytes_emitted > lst_bytes) && ((pos + 3) <= LST_LINENUM_POS)) {
       unsigned char emit_byte;
 
@@ -608,8 +608,9 @@ lst_data(unsigned int pos, MemBlock *m, unsigned int byte_org,
 
         pos += (n == 0) ? lst_printf("%04X ", emit_word) : n;
       }
-      else
+      else {
         pos += lst_printf("%04X ", emit_word);
+      }
 
       byte_org += 2;
       lst_bytes += 2;
@@ -652,23 +653,25 @@ lst_format_line(const char *src_line, int value)
       if ((state.obj.section->address + state.obj.section->relocations_tail->address) > state.lst.line.was_org) {
         /* already passed it, go back to the history */
         gp_reloc_type *p = find_reloc_by_address(state.lst.line.was_org);
-        reloc_type = p ? p->type : 0;
+        reloc_type = (p != NULL) ? p->type : 0;
       }
       else if ((state.obj.section->address + state.obj.section->relocations_tail->address) == state.lst.line.was_org) {
         reloc_type = state.obj.section->relocations_tail->type;
       }
-      else
+      else {
         reloc_type = 0;
+      }
     }
-   else
-     reloc_type = 0;
+  else {
+    reloc_type = 0;
+  }
 
   switch (state.lst.line.linetype) {
-  case insn:
+  case LTY_INSN:
     emitted_lines = emitted = state.org - state.lst.line.was_org;
     break;
 
-  case data:
+  case LTY_DATA:
     emitted = state.org - state.lst.line.was_org;
     if ((SECTION_FLAGS & (STYP_TEXT | (state.mpasm_compatible ? STYP_BPACK : 0))) == STYP_TEXT) {
       /* generate line numbers for data directives in program memory;
@@ -677,7 +680,7 @@ lst_format_line(const char *src_line, int value)
     }
     break;
 
-  case res:
+  case LTY_RES:
     if (SECTION_FLAGS & STYP_DATA) {
       /* generate data listing for idata */
       emitted = state.org - state.lst.line.was_org;
@@ -688,7 +691,7 @@ lst_format_line(const char *src_line, int value)
     }
     break;
 
-  case idlocs:
+  case LTY_IDLOCS:
     /* always 8 bytes (4 words) */
     emitted = 8;
     break;
@@ -700,27 +703,28 @@ lst_format_line(const char *src_line, int value)
   coff_linenum(emitted_lines);
 
   /* Don't write to file if list is disabled with NOLIST directive */
-  if (!state.lst.enabled)
+  if (!state.lst.enabled) {
     return;
+  }
 
   switch (state.lst.line.linetype) {
-  case equ:
-  case set:
+  case LTY_EQU:
+  case LTY_SET:
     pos += lst_printf("  %08X", value);
     lst_spaces(LST_LINENUM_POS - pos);
     break;
 
-  case set4:
+  case LTY_SET4:
     pos += lst_printf("  %04X", value & 0xffff);
     lst_spaces(LST_LINENUM_POS - pos);
     break;
 
-  case org:
+  case LTY_ORG:
     pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, state.org));
     lst_spaces(LST_LINENUM_POS - pos);
     break;
 
-  case idlocs:
+  case LTY_IDLOCS:
     /* not used for 16 bit devices, config is used */
     m = state.c_memory;
     pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, state.device.id_location));
@@ -729,12 +733,12 @@ lst_format_line(const char *src_line, int value)
     bytes_emitted = emitted - lst_bytes;
     break;
 
-  case data:
-  case res:
+  case LTY_DATA:
+  case LTY_RES:
     pos += lst_printf(addr_fmt, state.lst.line.was_org);
     goto lst_data;
 
-  case insn:
+  case LTY_INSN:
     pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, state.lst.line.was_org));
 lst_data:
     lst_bytes = lst_data(pos, m, state.lst.line.was_org, emitted, reloc_type);
@@ -742,7 +746,7 @@ lst_data:
     bytes_emitted = emitted - lst_bytes;
     break;
 
-  case config:
+  case LTY_CONFIG:
     if (IS_PIC16E_CORE) {
       /* config data is byte addressable, but we only want to print
          words in the list file. */
@@ -780,9 +784,9 @@ lst_data:
     }
     break;
 
-  case sec:
-  case dir:
-  case none:
+  case LTY_SEC:
+  case LTY_DIR:
+  case LTY_NONE:
   default:
     lst_spaces(LST_LINENUM_POS);
     break;
@@ -800,7 +804,7 @@ lst_data:
     int lst_column = LST_SRC_POS; /* current listing column after the SRC_POS */
     const char *p = src_line;
 
-    while (*p) {
+    while (*p != '\0') {
       if (*p == '\t') {
         int len = state.lst.tabstop - (src_column % state.lst.tabstop);
 
@@ -896,7 +900,7 @@ lst_symbol_table(void)
   struct lst_symbol_s *lst, *ps;
   struct symbol *s;
   int count = state.stGlobal->count + state.stDefines->count + state.stMacros->count;
-  state.lst.lst_state = in_symtab;
+  state.lst.lst_state = LST_IN_SYMTAB;
 
   lst_line("SYMBOL TABLE");
   lst_line("  LABEL                             VALUE");
@@ -946,9 +950,9 @@ lst_symbol_table(void)
 
     case LST_DEFINE:
       /* define */
-      if (p) {
-        assert(list == ((struct pnode *)p)->tag);
-        assert(string == HEAD((struct pnode *)p)->tag);
+      if (p != NULL) {
+        assert(((struct pnode *)p)->tag == PTAG_LIST);
+        assert(HEAD((struct pnode *)p)->tag == PTAG_STRING);
       }
       lst_line("%-32s  %s", name, (p != NULL) ? HEAD((struct pnode *)p)->value.string : "");
       break;

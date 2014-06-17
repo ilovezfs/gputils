@@ -57,18 +57,21 @@ check_defines(char *symbol, int symlen, struct pnode **param_list_p)
   *param_list_p = NULL;
 
   /* If not quoted, check for #define substitution */
-  if (NULL != (sym = get_symbol_len(state.stDefines, symbol, symlen))) {
+  if ((sym = get_symbol_len(state.stDefines, symbol, symlen)) != NULL) {
     p = get_symbol_annotation(sym);
-    if (p) {
+
+    if (p != NULL) {
       struct pnode *p2 = HEAD(p);
 
-      assert(list == p->tag);
-      assert(p2->tag == string);
+      assert(p->tag == PTAG_LIST);
+      assert(p2->tag == PTAG_STRING);
       subst = p2->value.string;
 
       *param_list_p = TAIL(p);
-      if (subst == NULL)
+
+      if (subst == NULL) {
         subst = "";
+      }
       else if (strlen(subst) == symlen && strncmp(symbol, subst, symlen) == 0) {
         /* check for a bad subsitution */
         subst = NULL;
@@ -84,20 +87,21 @@ check_defines(char *symbol, int symlen, struct pnode **param_list_p)
 static int
 is_first_iden(int c)
 {
-  return !isascii(c) || c == '_' || c == '.' || c == '?' || c == '@' || c == '#' || isalpha(c);
+  return (!isascii(c) || c == '_' || c == '.' || c == '?' || c == '@' || c == '#' || isalpha(c));
 }
 
 static int
 is_iden(int c)
 {
-  return is_first_iden(c) || isdigit(c);
+  return (is_first_iden(c) || isdigit(c));
 }
 
 static inline void
 skip_spaces(const char *buf, int *i)
 {
-  while (isspace(buf[*i]))
+  while (isspace(buf[*i])) {
     ++(*i);
+  }
 }
 
 static void
@@ -108,17 +112,19 @@ add_arg(const char *str)
   new->str = str;
   new->next = NULL;
 
-  if (arg_list_tail)
+  if (arg_list_tail) {
     arg_list_tail = arg_list_tail->next = new;
-  else
+  }
+  else {
     arg_list_tail = arg_list = new;
+  }
 }
 
 static void
 fal(struct arg_list_s *p)
 {
-  if (p) {
-    if (p->next) {
+  if (p != NULL) {
+    if (p->next != NULL) {
       fal(p->next);
       free(p);
     }
@@ -143,7 +149,7 @@ substitute_define_param(char *buf, int begin, int *end, int *n, int max_size, in
 
   /* find argument */
   while (parp) {
-    assert(HEAD(parp)->tag == symbol);
+    assert(HEAD(parp)->tag == PTAG_SYMBOL);
     if (0 == strncmp(&buf[begin], HEAD(parp)->value.symbol, mlen)) {
       /* substitute */
       int len = strlen(argp->str);
@@ -189,7 +195,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
       int n_args = 0;
 
       skip_spaces(buf, end);
-      if ('(' == buf[*end]) {
+      if (buf[*end] == '(') {
         ++(*end);
         bracket = 1;
       }
@@ -207,13 +213,15 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
         while (*end < *n && (0 != state || 0 != brackdepth || (',' != buf[*end] && ';' != buf[*end] && ((bracket && ')' != buf[*end]) || (!bracket && '\n' != buf[*end]))))) {
           switch (buf[*end]) {
           case '(':
-            if (0 == state)
+            if (0 == state) {
               ++brackdepth;
+            }
             break;
 
           case ')':
-            if (0 == state)
+            if (0 == state) {
               --brackdepth;
+            }
             break;
 
           case '\\':
@@ -222,8 +230,9 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
 
           case '"':
           case '\'':
-            if (!prev_esc)
+            if (!prev_esc) {
               state = (0 == state) ? buf[*end] : ((state == buf[*end]) ? 0 : state);
+            }
           default:
             prev_esc = 0;
             break;
@@ -233,8 +242,9 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
 
         /* right trim */
         end1 = *end - 1;
-        while (end1 >= 0 && isspace(buf[end1]))
+        while (end1 >= 0 && isspace(buf[end1])) {
           --end1;
+        }
         ++end1;
 
         add_arg(strndup(&buf[start1], end1 - start1));
@@ -248,15 +258,16 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
             }
             else {
               /* don't eat newline! */
-              if ('\n' != buf[*end])
+              if ('\n' != buf[*end]) {
                 ++(*end);
+              }
             }
 
             if (n_args == n_params) {
               int len = strlen(sub);
 
               /* substitute define parameters */
-              if (*n + len - mlen >= max_size) {
+              if ((*n + len - mlen) >= max_size) {
                 gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
                 return 0;
               }
@@ -288,8 +299,9 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
             free_arg_list();
             return 0;
           }
-          else
+          else {
             ++(*end);
+          }
         }
         if (*end >= *n) {
           /* error no ending bracket or newline: no substitution */
@@ -302,7 +314,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
       int len = strlen(sub);
 
       /* substitute define */
-      if (*n + len - mlen >= max_size) {
+      if ((*n + len - mlen) >= max_size) {
         gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
         return 0;
       }
@@ -337,8 +349,9 @@ no_process_iden(const char *iden, int len)
   int i;
 
   for (i = 0; i < NELEM(iden_tbl); ++i) {
-    if (strlen(iden_tbl[i]) == len && 0 == strncasecmp(iden, iden_tbl[i], len))
+    if ((strlen(iden_tbl[i]) == len) && (strncasecmp(iden, iden_tbl[i], len) == 0)) {
       return 1;
+    }
   }
   return 0;
 }
@@ -365,10 +378,12 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
     int c = buf[i];
 
     if (0 == state) {
-      if ('#' == c)
+      if ('#' == c) {
         in_hv = '#';
-      else if ('#' == in_hv && ('v' == c || 'V' == c))
+      }
+      else if ('#' == in_hv && ('v' == c || 'V' == c)) {
         in_hv = 'v';
+      }
       else if ('v' == in_hv && '(' == c) {
         if (-1 != start) {
           if (start < i - 2) {
@@ -385,8 +400,9 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
         }
         in_hv = '(';
       }
-      else
+      else {
         in_hv = 0;
+      }
 
       if (-1 == start && is_first_iden(c)) {
         switch (c) {
@@ -426,19 +442,21 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
 
     switch (c) {
     case '\\':
-      prev_esc =  ('"' == state || '\'' == state) ? !prev_esc : 0;
+      prev_esc = ('"' == state || '\'' == state) ? !prev_esc : 0;
       break;
 
     case ';':
-      if (0 == state)
+      if (0 == state) {
         state = c;
+      }
       prev_esc = 0;
       break;
 
     case '"':
     case '\'':
-      if (!prev_esc && state != ';')
+      if (!prev_esc && state != ';') {
         state = (0 == state) ? c : ((state == c) ? 0 : state);
+      }
     default:
       prev_esc = 0;
       break;
@@ -470,12 +488,12 @@ preprocess_hv(char *buf, int begin, int *end, int *n, int max_size)
     int res_len;
 
     DBG_printf("***Parsing chunck: %*.*s\n", *end - begin, *end - begin, &buf[begin]);
-    if (ppparse_chunk (buf, begin, *end)) {
+    if (ppparse_chunk(buf, begin, *end)) {
       substituted = 1;
       DBG_printf ("col_begin = %d; col_end = %d; result = %d\n", ppcol_begin, ppcol_end, ppresult);
       res_len = snprintf (res_buf, sizeof (res_buf), "%d", ppresult);
 
-      if (*n + res_len - (ppcol_end - ppcol_begin) >= max_size) {
+      if ((*n + res_len - (ppcol_end - ppcol_begin)) >= max_size) {
         gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
         return 0;
       }
@@ -491,8 +509,9 @@ preprocess_hv(char *buf, int begin, int *end, int *n, int max_size)
         DBG_printf("buf = %*.*s\n", *n, *n, buf);
       }
     }
-    else
+    else {
       begin = ppcol_end;
+    }
   }
 
   DBG_printf("+++preprocess_hv: %*.*s\n", *n, *n, buf);
@@ -520,8 +539,10 @@ preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
         start = i;
         in_hv = 0;
       }
-      if ('(' == c)
+
+      if ('(' == c) {
         ++hv_parenth;
+      }
       else if (')' == c) {
         if (0 >= --hv_parenth) {
           int prev_n = *n;
@@ -536,17 +557,20 @@ preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
       }
     }
     else if (0 == state) {
-      if ('#' == c)
+      if ('#' == c) {
         in_hv = '#';
-      else if ('#' == in_hv && ('v' == c || 'V' == c))
+      }
+      else if ('#' == in_hv && ('v' == c || 'V' == c)) {
         in_hv = 'v';
+      }
       else if ('v' == in_hv && '(' == c) {
         in_hv = '(';
         ++hv_parenth;
         state = '(';
       }
-      else
+      else {
         in_hv = 0;
+      }
     }
 
     if (0 == state) {
@@ -561,15 +585,17 @@ preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
       break;
 
     case ';':
-      if (0 == state)
+      if (0 == state) {
         state = c;
+      }
       prev_esc = 0;
       break;
 
     case '"':
     case '\'':
-      if (!prev_esc && state != ';')
+      if (!prev_esc && state != ';') {
         state = (0 == state) ? c : ((state == c) ? 0 : state);
+      }
     default:
       prev_esc = 0;
       break;
@@ -588,17 +614,19 @@ check_macro_params(char *symbol, int symlen)
 
   if (NULL != (sym = get_symbol_len(state.stMacroParams, symbol, symlen))) {
     p = get_symbol_annotation(sym);
-    if (p) {
+    if (p != NULL) {
       struct pnode *p2 = HEAD(p);
 
-      assert(list == p->tag);
-      assert(p2->tag == string);
+      assert(p->tag == PTAG_LIST);
+      assert(p2->tag == PTAG_STRING);
       subst = p2->value.string;
 
       assert(NULL == TAIL(p));
-      if (subst == NULL)
+
+      if (subst == NULL) {
         subst = "";
-      else if (strlen(subst) == symlen && strncmp(symbol, subst, symlen) == 0) {
+      }
+      else if ((strlen(subst) == symlen) && (strncmp(symbol, subst, symlen) == 0)) {
         /* check for a bad subsitution */
         subst = NULL;
       }
@@ -624,7 +652,7 @@ substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, int
   if (NULL != (sub = check_macro_params(&buf[begin], mlen))) {
     int len = strlen(sub);
 
-    if (*n + len - mlen >= max_size) {
+    if ((*n + len - mlen) >= max_size) {
       gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
       return 0;
     }
@@ -641,30 +669,30 @@ substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, int
 static void
 set_source_line(const char *line, int len, struct src_line_s *src_line)
 {
-  if (!src_line->line)
-    {
-      src_line->size = 128;
-      src_line->line = malloc(src_line->size);
-    }
-  if ('\n' == line[len - 1])  /* ignore trailing newline */
+  if (!src_line->line) {
+    src_line->size = 128;
+    src_line->line = malloc(src_line->size);
+  }
+
+  if ('\n' == line[len - 1]) {  /* ignore trailing newline */
     --len;
+  }
  
-  if (src_line->size <= len)
-    {
-      do
-        {
-          src_line->size *= 2;
-        }
-      while (src_line->size <= len);
-      src_line->line = realloc(src_line->line, src_line->size);
+  if (src_line->size <= len) {
+    do {
+      src_line->size *= 2;
     }
-  if (len > 0)
-    {
-      memcpy(src_line->line, line, len);
-      src_line->line[len] = '\0';
-    }
-  else
+    while (src_line->size <= len);
+    src_line->line = realloc(src_line->line, src_line->size);
+  }
+
+  if (len > 0) {
+    memcpy(src_line->line, line, len);
+    src_line->line[len] = '\0';
+  }
+  else {
     src_line->line[0] = '\0';
+  }
 }
 
 static inline int
@@ -672,11 +700,11 @@ in_macro_expansion(void)
 {
   struct source_context *p;
 
-  for (p = state.src; p; p = p->prev)
-    {
-      if (src_macro == p->type)
-        return 1;
+  for (p = state.src; p != NULL; p = p->prev) {
+    if (p->type == SRC_MACRO) {
+      return 1;
     }
+  }
 
   return 0;
 }
@@ -721,7 +749,7 @@ preprocess_line(char *buf, int *n, int max_size)
     }
   }
 
-  if (NULL != state.preproc.f) {
+  if (state.preproc.f != NULL) {
     /* set current preprocessed source line if preprocessed asm file emission enabeled */
     set_source_line(buf, *n, &state.preproc.curr_src_line);
   }

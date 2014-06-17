@@ -240,14 +240,14 @@ convert_escape_chars(const char *ps, int *value)
 void
 coerce_str1(struct pnode *exp)
 {
-  if ((exp != NULL) && (exp->tag == string)) {
+  if ((exp != NULL) && (exp->tag == PTAG_STRING)) {
     int value;
 
     const char *pc = convert_escape_chars(exp->value.string, &value);
 
     if (*pc == '\0') {
       /* castable string, make the conversion */
-      exp->tag = constant;
+      exp->tag = PTAG_CONSTANT;
       exp->value.constant = value;
     }
   }
@@ -525,27 +525,27 @@ print_pnode(struct pnode *p)
   }
 
   switch(p->tag) {
-  case constant:
+  case PTAG_CONSTANT:
     printf("  constant: %d\n", p->value.constant);
     break;
 
-  case symbol:
+  case PTAG_SYMBOL:
     printf("  symbol: %s\n", p->value.symbol);
     break;
 
-  case unop:
+  case PTAG_UNOP:
     printf("  unop: %d\n", p->value.unop.op);
     break;
 
-  case binop:
+  case PTAG_BINOP:
     printf("  binop: %d\n", p->value.binop.op);
     break;
 
-  case string:
+  case PTAG_STRING:
     printf("  string: %s\n", p->value.string);
     break;
 
-  case list:
+  case PTAG_LIST:
     printf("  list:\n");
     break;
 

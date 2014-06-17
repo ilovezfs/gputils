@@ -48,11 +48,11 @@ int enforce_arity(int arity, int must_be)
 int enforce_simple(struct pnode *p)
 {
   switch (p->tag) {
-  case symbol:
+  case PTAG_SYMBOL:
     return 1;
     break;
 
-  case string:
+  case PTAG_STRING:
     gpverror(GPE_ILLEGAL_ARGU, NULL, p->value.string);
     break;
 
@@ -67,7 +67,7 @@ int list_length(struct pnode *L)
   struct pnode *p = L;
   int n = 0;
 
-  while (p != NULL && list == p->tag) {
+  while ((p != NULL) && (p->tag == PTAG_LIST)) {
     ++n;
     p = TAIL(p);
   }
@@ -78,16 +78,16 @@ int list_length(struct pnode *L)
 int can_evaluate(struct pnode *p)
 {
   switch (p->tag) {
-  case constant:
+  case PTAG_CONSTANT:
     return 1;
 
-  case offset:
+  case PTAG_OFFSET:
     if (state.extended_pic16e == false) {
       gpverror(GPE_BADCHAR, NULL, '[');
     }
     return can_evaluate(p->value.offset);
 
-  case symbol:
+  case PTAG_SYMBOL:
     {
       char buf[BUFSIZ];
       struct symbol *s;
@@ -126,13 +126,13 @@ int can_evaluate(struct pnode *p)
       }
     }
 
-  case unop:
+  case PTAG_UNOP:
     return can_evaluate(p->value.unop.p0);
 
-  case binop:
+  case PTAG_BINOP:
     return can_evaluate(p->value.binop.p0) && can_evaluate(p->value.binop.p1);
 
-  case string:
+  case PTAG_STRING:
     gpverror(GPE_ILLEGAL_ARGU, NULL, p->value.string);
     return 0;
 
@@ -146,16 +146,16 @@ int can_evaluate(struct pnode *p)
 int can_evaluate_value(struct pnode *p)
 {
   switch (p->tag) {
-  case constant:
+  case PTAG_CONSTANT:
     return 1;
 
-  case offset:
+  case PTAG_OFFSET:
     if (state.extended_pic16e == false) {
       gpverror(GPE_BADCHAR, NULL, '[');
     }
     return can_evaluate_value(p->value.offset);
 
-  case symbol:
+  case PTAG_SYMBOL:
     /* '$' means current org, which we can evaluate if section at absolute address */
     if (strcmp(p->value.symbol, "$") == 0) {
       return (0 != (state.obj.new_sec_flags & STYP_ABS));
@@ -188,13 +188,13 @@ int can_evaluate_value(struct pnode *p)
       }
     }
 
-  case unop:
+  case PTAG_UNOP:
     return can_evaluate_value(p->value.unop.p0);
 
-  case binop:
+  case PTAG_BINOP:
     return can_evaluate_value(p->value.binop.p0) && can_evaluate_value(p->value.binop.p1);
 
-  case string:
+  case PTAG_STRING:
     gpverror(GPE_ILLEGAL_ARGU, NULL, p->value.string);
     return 0;
 
@@ -207,7 +207,7 @@ int can_evaluate_value(struct pnode *p)
 
 static int is_program_segment(struct pnode *p)
 {
-  if (symbol == p->tag && 0 != strcmp(p->value.symbol, "$")) {
+  if ((p->tag == PTAG_SYMBOL) && (strcmp(p->value.symbol, "$") != 0)) {
     struct symbol *s = get_symbol(state.stTop, p->value.symbol);
     struct variable *var = get_symbol_annotation(s);
     assert(var != NULL);
@@ -225,13 +225,13 @@ gpasmVal evaluate(struct pnode *p)
   gpasmVal p0, p1;
 
   switch (p->tag) {
-  case constant:
+  case PTAG_CONSTANT:
     return p->value.constant;
 
-  case offset:
+  case PTAG_OFFSET:
     return evaluate(p->value.offset);
 
-  case symbol:
+  case PTAG_SYMBOL:
     {
       struct symbol *s;
 
@@ -247,7 +247,7 @@ gpasmVal evaluate(struct pnode *p)
       }
     }
 
-  case unop:
+  case PTAG_UNOP:
     switch (p->value.unop.op) {
     case '!':
       return !evaluate(p->value.unop.p0);
@@ -289,7 +289,7 @@ gpasmVal evaluate(struct pnode *p)
       assert(0);
     }
 
-  case binop:
+  case PTAG_BINOP:
     p0 = evaluate(p->value.binop.p0);
     p1 = evaluate(p->value.binop.p1);
     switch (p->value.binop.op) {
@@ -422,13 +422,13 @@ int count_reloc(struct pnode *p)
   }
 
   switch (p->tag) {
-  case constant:
+  case PTAG_CONSTANT:
     return 0;
 
-  case offset:
+  case PTAG_OFFSET:
     return count_reloc(p->value.offset);
 
-  case symbol:
+  case PTAG_SYMBOL:
     if (strcmp(p->value.symbol, "$") == 0) {
       return 1;
     }
@@ -453,10 +453,10 @@ int count_reloc(struct pnode *p)
     }
     return 0;
 
-  case unop:
+  case PTAG_UNOP:
     return count_reloc(p->value.unop.p0);
 
-  case binop:
+  case PTAG_BINOP:
     return count_reloc(p->value.binop.p0) + count_reloc(p->value.binop.p1);
 
   default:
@@ -476,11 +476,11 @@ add_reloc(struct pnode *p, short offs, unsigned short type)
   struct variable *var = NULL;
 
   switch (p->tag) {
-  case offset:
+  case PTAG_OFFSET:
     add_reloc(p->value.offset, offs, type);
     break;
 
-  case symbol:
+  case PTAG_SYMBOL:
     if (strcmp(p->value.symbol, "$") == 0) {
       char buffer[BUFSIZ];
       unsigned org;
@@ -519,7 +519,7 @@ add_reloc(struct pnode *p, short offs, unsigned short type)
     }
     return;
 
-  case unop:
+  case PTAG_UNOP:
     switch (p->value.unop.op) {
     case UPPER:
       add_reloc(p->value.unop.p0, offs, RELOCT_UPPER);
@@ -546,7 +546,7 @@ add_reloc(struct pnode *p, short offs, unsigned short type)
       assert(0);
     }
 
-  case binop:
+  case PTAG_BINOP:
     switch (p->value.binop.op) {
     case '+':
       /* The symbol can be in either position */
@@ -593,7 +593,7 @@ add_reloc(struct pnode *p, short offs, unsigned short type)
     }
     return;
 
-  case constant:
+  case PTAG_CONSTANT:
   default:
     assert(0);
   }
@@ -621,14 +621,14 @@ same_section(struct pnode *p)
     return 0;
   }
 
-  if ((p->tag == unop) &&
+  if ((p->tag == PTAG_UNOP) &&
       ((p->value.unop.op == UPPER) ||
        (p->value.unop.op == HIGH) ||
        (p->value.unop.op == LOW))) {
     p = p->value.unop.p0;
   }
 
-  if ((p->tag != binop) ||
+  if ((p->tag != PTAG_BINOP) ||
       (p->value.binop.op != '-') ||
       (count_reloc(p->value.binop.p0) != 1)) {
     return 0;
@@ -637,7 +637,7 @@ same_section(struct pnode *p)
   p0 = p->value.binop.p0;
   p1 = p->value.binop.p1;
 
-  if ((p0->tag != symbol) || (p1->tag != symbol)) {
+  if ((p0->tag != PTAG_SYMBOL) || (p1->tag != PTAG_SYMBOL)) {
     return 0;
   }
 
@@ -649,9 +649,9 @@ same_section(struct pnode *p)
   /* They must come from the same section. Debug symbols are not placed
      in the global symbol table, so don't worry about symbol type. */
   /* Fail if sections are not known (== 0) or not the same. */
-  if (0 == var0->coff_section_num ||
-      0 == var1->coff_section_num ||
-      var0->coff_section_num != var1->coff_section_num) {
+  if ((var0->coff_section_num == 0) ||
+      (var1->coff_section_num == 0) ||
+      (var0->coff_section_num != var1->coff_section_num)) {
     return 0;
   }
 
