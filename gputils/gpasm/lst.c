@@ -42,7 +42,7 @@ Boston, MA 02111-1307, USA.  */
 void
 lst_throw(void)
 {
-  if (state.lst.f) {
+  if (state.lst.f != NULL) {
     state.lst.page++;
     fprintf(state.lst.f,
             "%s%s %*.*s   %-28sPAGE %2d\n%s\n%s\n",

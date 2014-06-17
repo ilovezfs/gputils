@@ -1,4 +1,13 @@
 2014-06-17  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/gpasm.c, gpasm/gpasm.h.in,
+    gpasm/gperror.c, gpasm/gperror.h:
+    New option in gpasm: -k, --error
+    Enables creation of the error (.err) file.
+
+  * gpasm/coff.c, gpasm/lst.c:
+    Changed text format.
+
+2014-06-17  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c, gpasm/evaluate.c, gpasm/gpasm.h.in,
     gpasm/lst.c, gpasm/macro.c, gpasm/parse.y, gpasm/preprocess.c,
     gpasm/scan.l, gpasm/special.c, gpasm/util.c:

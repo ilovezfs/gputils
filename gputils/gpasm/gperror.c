@@ -35,6 +35,28 @@ struct error_list {
 static struct error_list *errorcodes_list = NULL;
 
 void
+gperror_init(void) {
+  if (state.errfile != OUT_NAMED) {
+    snprintf(state.errfilename, sizeof(state.errfilename),
+       "%s.err", state.basefilename);
+  }
+
+  if (state.errfile == OUT_SUPPRESS) {
+    state.err.enabled = false;
+    unlink(state.errfilename);
+  } else {
+    state.err.f = fopen(state.errfilename, "wt");
+
+    if (state.err.f == NULL) {
+      perror(state.errfilename);
+      exit(1);
+    }
+
+    state.err.enabled = true;
+  }
+}
+
+void
 add_code(int code)
 {
   struct error_list *new;
@@ -68,7 +90,7 @@ check_code(int code)
 
   p = errorcodes_list;
 
-  while (p) {
+  while (p != NULL) {
     if (p->value == code) {
       print = 1;
     } else if (p->value == -(code)) {
@@ -90,6 +112,8 @@ enum err_type_e {
 static void
 verr(enum err_type_e err_type, unsigned int code, const char *message, va_list ap)
 {
+  va_list ap0;
+
   /* standard output */
   if (!state.quiet) {
     const char *type;
@@ -113,15 +137,31 @@ verr(enum err_type_e err_type, unsigned int code, const char *message, va_list a
         break;
     }
 
-    if (state.src) {
-      printf("%s:%d:%s[%03d] %s", state.src->name, state.src->line_number,
+    if (state.src != NULL) {
+      printf("%s:%d:%s[%03u] %s", state.src->name, state.src->line_number,
              type, code, gap);
     }
     else {
-      printf("%s[%03d] %s", type, code, gap);
+      printf("%s[%03u] %s", type, code, gap);
     }
-    vprintf(message, ap);
+
+    va_copy(ap0, ap);
+    vprintf(message, ap0);
+    va_end(ap0);
     putchar('\n');
+
+    if (state.err.enabled) {
+      if (state.src != NULL) {
+        fprintf(state.err.f, "%s[%03u] %s%s %d : ", type, code, gap,
+                state.src->name, state.src->line_number);
+      }
+      else {
+        fprintf(state.err.f, "%s[%03u] %s", type, code, gap);
+      }
+
+      vfprintf(state.err.f, message, ap);
+      putc('\n', state.err.f);
+    }
   }
 }
 
@@ -151,12 +191,22 @@ err(enum err_type_e err_type, unsigned int code, const char *message)
         break;
     }
 
-    if (state.src) {
-      printf("%s:%d:%s[%03d] %s%s\n", state.src->name, state.src->line_number,
+    if (state.src != NULL) {
+      printf("%s:%d:%s[%03u] %s%s\n", state.src->name, state.src->line_number,
              type, code, gap, message);
     }
     else {
-      printf("%s[%03d] %s%s\n", type, code, gap, message);
+      printf("%s[%03u] %s%s\n", type, code, gap, message);
+    }
+
+    if (state.err.enabled) {
+      if (state.src != NULL) {
+        fprintf(state.err.f, "%s[%03u] %s%s %d : %s\n", type, code, gap,
+                state.src->name, state.src->line_number, message);
+      }
+      else {
+        fprintf(state.err.f, "%s[%03u] %s%s\n", type, code, gap, message);
+      }
     }
   }
 }
@@ -516,5 +566,14 @@ gpvmessage(unsigned int code, const char *message, ...)
     } else {
       state.num.messages_suppressed++;
     }
+  }
+}
+
+void
+gperror_close(void)
+{
+  if (state.err.enabled) {
+    fprintf(state.err.f, "\n");
+    fclose(state.err.f);
   }
 }

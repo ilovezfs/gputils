@@ -71,7 +71,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Jun 15, 2014
+Jun 17, 2014
 \end_layout
 
 \begin_layout Standard
@@ -893,7 +893,7 @@ Where options can be one of:
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="26" columns="3">
+<lyxtabular version="3" rows="27" columns="3">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
@@ -1262,6 +1262,35 @@ Specify an include directory.
 </cell>
 </row>
 <row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-k
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--error
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Enables the creation of the error file.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
 <cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -1502,6 +1531,10 @@ o
 , file.
 \emph on
 lst
+\emph default
+, file.
+\emph on
+err
 \end_layout
 
 \begin_layout Plain Layout
@@ -1598,6 +1631,10 @@ cod
 , file.
 \emph on
 lst
+\emph default
+, file.
+\emph on
+err
 \end_layout
 
 \begin_layout Plain Layout

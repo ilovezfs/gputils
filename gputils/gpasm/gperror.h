@@ -23,6 +23,8 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPERROR_H__
 #define __GPERROR_H__
 
+void gperror_init(void);
+
 void gperror(unsigned int code, char *message);
 void gpwarning(unsigned int code, char *message);
 void gpmessage(unsigned int code, char *message);
@@ -38,6 +40,8 @@ void user_warning(unsigned int code, char *message);
 void user_message(unsigned int code, char *message);
 
 void add_code(int code);
+
+void gperror_close(void);
 
 /* Error codes
  *
