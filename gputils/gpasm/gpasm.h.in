@@ -28,7 +28,7 @@ Boston, MA 02111-1307, USA.  */
  * and thus allow compile-time selection of the proper macro set */
 #define __16bit_core_   "__16bit_core_"
 
-#define STRCMP(s1, s2)  (state.case_insensitive ? \
+#define STRCMP(s1, s2)  ((state.case_insensitive) ? \
                          strcasecmp((s1), (s2)) : \
                          strcmp((s1), (s2)))
 
@@ -36,9 +36,9 @@ Boston, MA 02111-1307, USA.  */
 
 #define IN_MACRO_WHILE_DEFINITION (state.mac_prev != NULL)
 #define IN_WHILE_DEFINITION       (IN_MACRO_WHILE_DEFINITION && (state.while_head != NULL))
-#define IN_MACRO_EXPANSION        (src_macro == state.src->type)
-#define IN_WHILE_EXPANSION        (src_while == state.src->type)
-#define IN_FILE_EXPANSION         (src_file == state.src->type)
+#define IN_MACRO_EXPANSION        (state.src->type == SRC_MACRO)
+#define IN_WHILE_EXPANSION        (state.src->type == SRC_WHILE)
+#define IN_FILE_EXPANSION         (state.src->type == SRC_FILE)
 
 enum gpasmValTypes {
   GVT_CONSTANT,
@@ -198,29 +198,29 @@ extern struct gpasm_state {
       symboltable;                  /*   Symbol table dump enabled */
 
     enum {
-      in_none,
-      in_mem,
-      in_symtab
+      LST_IN_NONE,
+      LST_IN_MEM,
+      LST_IN_SYMTAB
     } lst_state;                    /*   Listing state */
 
     struct {
       unsigned int was_org;         /*   value of state.org at start of line */
                                     /*   What kind of line was it? */
       enum {
-        none,                       /*     Nothing - blank line */
-        org,                        /*     ORG pseudo-op */
-        dir,                        /*     Directive, non-code generating */
-        idlocs,                     /*     ID locations for 12 and 14 bit cores */
-        insn,                       /*     Some other instruction or pseudo */
-        equ,                        /*     An equate */
-        data,                       /*     Data */
-        res,                        /*     reserve memory */
-        sec,                        /*     new coff section */
-        set,                        /*     A SET or '=' */
-        set4,                       /*     A 2 byte variable, constant or local */
-        config,                     /*     A __config line */
-        nolist_dir,                 /*     Don't list the directive (ENDW) */
-        dolist_dir                  /*     Force list the directive (WHILE) */
+        LTY_NONE,                   /*     Nothing - blank line */
+        LTY_ORG,                    /*     ORG pseudo-op */
+        LTY_DIR,                    /*     Directive, non-code generating */
+        LTY_IDLOCS,                 /*     ID locations for 12 and 14 bit cores */
+        LTY_INSN,                   /*     Some other instruction or pseudo */
+        LTY_EQU,                    /*     An equate */
+        LTY_DATA,                   /*     Data */
+        LTY_RES,                    /*     reserve memory */
+        LTY_SEC,                    /*     new coff section */
+        LTY_SET,                    /*     A SET or '=' */
+        LTY_SET4,                   /*     A 2 byte variable, constant or local */
+        LTY_CONFIG,                 /*     A __config line */
+        LTY_NOLIST_DIR,             /*     Don't list the directive (ENDW) */
+        LTY_DOLIST_DIR              /*     Force list the directive (WHILE) */
       } linetype;
     } line;
 
@@ -296,13 +296,13 @@ struct variable {
 
 struct pnode {
   enum pnode_tag {
-    constant,
-    offset,
-    symbol,
-    string,
-    list,
-    binop,
-    unop
+    PTAG_CONSTANT,
+    PTAG_OFFSET,
+    PTAG_SYMBOL,
+    PTAG_STRING,
+    PTAG_LIST,
+    PTAG_BINOP,
+    PTAG_UNOP
   } tag;
 
   union {
@@ -343,10 +343,10 @@ struct file_context {
 };
 
 enum src_types {
-  src_unknown,
-  src_file,
-  src_macro,
-  src_while
+  SRC_UNKNOWN,
+  SRC_FILE,
+  SRC_MACRO,
+  SRC_WHILE
 };
 
 struct source_context {
@@ -420,8 +420,8 @@ struct macro_body {
 
 struct amode {
   enum {
-    in_then,
-    in_else
+    IN_THEN,
+    IN_ELSE
   } mode;
 
   int enabled;  /* Are we currently enabled? */

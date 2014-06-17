@@ -402,7 +402,7 @@ static gpasmVal do_mode(gpasmVal r,
   if (enforce_arity(arity, 1)) {
     struct pnode* val = HEAD(parms);
 
-    if ((val->tag == constant) && (val->value.constant > 0x1f)) {
+    if ((val->tag == PTAG_CONSTANT) && (val->value.constant > 0x1f)) {
       gpvwarning(GPW_RANGE, NULL);
       val->value.constant &= 0x1f;
     }

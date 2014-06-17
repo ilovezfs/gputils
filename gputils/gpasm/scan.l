@@ -74,18 +74,22 @@ gp_input(char *buf, size_t max_size)
         {
           int c = '*';
           size_t n;
-          for (n = 0; n < max_size &&
-            (c = getc(yyin)) != EOF && c != '\n'; ++n)
-            buf[n] = (char) c;
-          if (c == '\n')
-            {
-              /* skip CR followed by LF */
-              if (n > 0 && '\r' == buf[n - 1])
-                --n;
-              buf[n++] = (char) c;
+
+          for (n = 0; (n < max_size) && ((c = getc(yyin)) != EOF) && (c != '\n'); ++n) {
+            buf[n] = (char)c;
+          }
+
+          if (c == '\n') {
+            /* skip CR followed by LF */
+            if ((n > 0) && (buf[n - 1] == '\r')) {
+              --n;
             }
-          if (c == EOF && ferror(yyin))
+            buf[n++] = (char)c;
+          }
+
+          if ((c == EOF) && ferror(yyin)) {
             gpverror(GPE_SCANNER, NULL, "Input in flex scanner failed.");
+          }
           return n;
         }
       else
@@ -97,11 +101,14 @@ gp_input(char *buf, size_t max_size)
   else
     {
       /* in macro expansion */
-      if (state.src->m)
+      if (state.src->m != NULL)
         {
           size_t n = strlen(state.src->m->src_line);
-          if (n > max_size - 1)
+
+          if (n > (max_size - 1)) {
             n = max_size - 2;
+          }
+
           strncpy(buf, state.src->m->src_line, n);
           buf[n++] = '\n'; /* add newline */
           return n;
@@ -118,6 +125,7 @@ static inline size_t
 gp_yyinput(char *buf, size_t max_size)
 {
   int result = gp_input(buf, max_size);
+
   if (result)
     {
       /* preprocess line */
@@ -150,8 +158,9 @@ NUMCHAR [0-9a-z]
                            return IDENTIFIER;
                          }
 <<EOF>>                  {
-                           if (found_eof())
+                           if (found_eof()) {
                              yyterminate();
+                           }
                          }
 ^[ \t]*title[ \t]+       {
                            BEGIN(lnquote);
@@ -296,8 +305,9 @@ processor                {
                            switch (identify(yytext)) {
                              case directives:
                                gpvwarning(GPW_DIR_COLUMN_ONE, NULL, yytext);
-                               if (has_collon)
+                               if (has_collon) {
                                  gpverror(GPE_BADCHAR, NULL, ':');
+                               }
                                return IDENTIFIER;
                                break;
 
@@ -314,8 +324,9 @@ processor                {
                                }
                                else {
                                  gpvwarning(GPW_MACRO_COLUMN_ONE, NULL, yytext);
-                                 if (has_collon)
-                                  gpverror(GPE_BADCHAR, NULL, ':');
+                                 if (has_collon) {
+                                   gpverror(GPE_BADCHAR, NULL, ':');
+                                 }
                                  return IDENTIFIER;
                                }
                                break;
@@ -437,18 +448,21 @@ h'-?{NUMCHAR}+'          {
                            }
                          }
 <INITIAL,bquote>\"{STR_QCHAR}*\"? {
-                           if ((yyleng > 1) && (yytext[yyleng - 1] == '"'))
+                           if ((yyleng > 1) && (yytext[yyleng - 1] == '"')) {
                              --yyleng;
-                           else
+                           }
+                           else {
                              gpwarning(GPW_MISSING_QUOTE, NULL);
+                           }
                            yylval.s = strndup(yytext + 1, yyleng - 1);
                            BEGIN(INITIAL);
                            return STRING;
                          }
 '{STR_QCHAR}'            {
                            const char *pc = convert_escape_chars(yytext + 1, &yylval.i);
-                           if (pc != &yytext[yyleng - 1])
+                           if (pc != &yytext[yyleng - 1]) {
                              gpverror(GPE_ILLEGAL_ARGU, NULL, "Expected single character.");
+                           }
                            return NUMBER;
                          }
 a'{STR_QCHAR}'           {
@@ -524,21 +538,24 @@ a'{STR_QCHAR}'           {
                            }
 
                            /* skip leading spaces */
-                           while (isspace(c))
+                           while (isspace(c)) {
                              c = input();
+                           }
 
                            for (; ; ) {
                              switch (c) {
                              case ',':
-                               if (0 != state)
+                               if (0 != state) {
                                  goto no_esc;
+                               }
 
                                emit_comma = 1;
                                goto skip_trailing;
 
                              case ';':
-                               if (0 != state)
+                               if (0 != state) {
                                  goto no_esc;
+                               }
 
                                /* eat the rest of line */
                                while (EOF != (c = input()) && '\n' != c)
@@ -549,8 +566,9 @@ a'{STR_QCHAR}'           {
                                /* fall through */
                              skip_trailing:
                                /* skip trailing spaces */
-                               while (i > 0 && isspace(buf[i - 1]))
+                               while ((i > 0) && isspace(buf[i - 1])) {
                                  --i;
+                               }
                                /* fall through */
                              case EOF:
                                yylval.s = strndup(buf, i);
@@ -564,8 +582,9 @@ a'{STR_QCHAR}'           {
                              case '"':
                              case '\'':
                                /* escaping out of string doesn't have any special meaning */
-                               if (0 == state || (0 != state && !prev_esc))
+                               if ((0 == state) || ((0 != state) && !prev_esc)) {
                                  state = (0 == state) ? c : ((state == c) ? 0 : state);
+                               }
                                /* fall through */
                              default:
                              no_esc:
@@ -602,11 +621,12 @@ search_paths(struct source_context *new, const char *name)
   char tryname[PATH_MAX + 1];
   int i;
 
-  for(i = 0; i < state.path_num; i++) {
+  for (i = 0; i < state.path_num; i++) {
     snprintf(tryname, sizeof(tryname),
              "%s" COPY_CHAR "%s", state.paths[i], name);
     new->f = fopen(tryname, "rt");
-    if (new->f) {
+
+    if (new->f != NULL) {
       new->name = strdup(tryname);
       break;
     }
@@ -620,32 +640,37 @@ open_src(const char *name, int isinclude)
   struct source_context *new = malloc(sizeof (struct source_context));
   memset(new, 0, sizeof (struct source_context));
 
-  if (state.src)
+  if (state.src != NULL) {
     state.src->yybuf = YY_CURRENT_BUFFER;
+  }
 
   new->f = fopen(name, "rt");
-  if (new->f)
+
+  if (new->f != NULL) {
     new->name = strdup(name);
+  }
   else if (isinclude && (strchr(name, PATH_CHAR) == 0)) {
     /* If include file and no PATH_CHAR in name, try searching include
-       path */
+       path. */
     search_paths(new, name);
 
     if (new->f == NULL) {
       /* We didn't find a match so check for lower case.  This is mainly for
          Microchip examples and some includes in which filenames were written
-         without regard to case */
+         without regard to case. */
       char *lower_case_name = gp_lower_case(name);
+
       search_paths(new, lower_case_name);
       free(lower_case_name);
 
-      if (new->f != NULL)
+      if (new->f != NULL) {
         gpwarning(GPW_UNKNOWN, "Found lower case match for include filename.");
+      }
     }
   }
 
   if (new->f == NULL) {
-    if (state.src) {
+    if (state.src != NULL) {
       gpverror(GPE_NOENT, NULL, name);
     }
     else {
@@ -656,23 +681,19 @@ open_src(const char *name, int isinclude)
   else {
     yyin = new->f;
 
-    if (state.src) {
+    if (state.src != NULL) {
       yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
     }
 
     if (state.use_absolute_path) {
       new->name = gp_absolute_path(new->name);
     }
-    new->type = src_file;
+
+    new->type = SRC_FILE;
     new->h = NULL;
     new->line_number = 1;
     new->loop_number = 1;
-    if (state.debug_info) {
-      new->file_symbol = NULL;
-    }
-    else {
-      new->file_symbol = coff_add_filesym(new->name, isinclude);
-    }
+    new->file_symbol = (state.debug_info) ? NULL : coff_add_filesym(new->name, isinclude);
     new->prev = state.src;
 
     state.src = new;
@@ -692,8 +713,8 @@ open_src(const char *name, int isinclude)
 void
 execute_macro(struct macro_head *h, int is_while)
 {
-  struct source_context *new = malloc(sizeof (struct source_context));
-  memset(new, 0, sizeof (struct source_context));
+  struct source_context *new = malloc(sizeof(struct source_context));
+  memset(new, 0, sizeof(struct source_context));
 
   assert(state.src != NULL);
   state.src->yybuf = YY_CURRENT_BUFFER;
@@ -702,12 +723,8 @@ execute_macro(struct macro_head *h, int is_while)
 
   /* create new source_context */
   new->name = strdup(h->src_name);
-  if (is_while) {
-    new->type = src_while;
-  }
-  else {
-    new->type = src_macro;
-  }
+  new->type = (is_while) ? SRC_WHILE : SRC_MACRO;
+
   new->line_number = h->line_number + 1;
   new->loop_number = 1;
   new->file_symbol = h->file_symbol;
@@ -742,33 +759,36 @@ close_file(void)
 {
   struct source_context *old = state.src;
 
-  if (state.src->type == src_file) {
+  if (IN_FILE_EXPANSION) {
     if (state.src->f != NULL) {
       fclose(state.src->f);
     }
     free(state.src->name);
 
-    if (NULL == state.src->prev)
+    if (state.src->prev == NULL) {
       coff_cleanup_before_eof();
+    }
 
     if (!state.debug_info) {
       coff_add_eofsym();
     }
     state.src = state.src->prev;
   }
-  else if (state.src->type == src_macro) {
+  else if (state.src->type == SRC_MACRO) {
     state.src = state.src->prev;
 
     state.stTop = pop_symbol_table(state.stTop);
     state.stMacroParams = pop_symbol_table(state.stMacroParams);
+
     if (state.src->astack != state.astack) {
       gpverror(GPE_ILLEGAL_NESTING, NULL);
     }
+
     assert(state.stTop != NULL);
     assert(state.stMacroParams != NULL);
     free(old->name);
   }
-  else if (state.src->type == src_while) {
+  else if (state.src->type == SRC_WHILE) {
     free(state.src->name);
     state.src = state.src->prev;
   }
@@ -783,15 +803,15 @@ execute_exitm(void)
 
   /* The macro is ended early, so return the stack to its previous state */
   previous = state.src->prev->astack;
-  while ((state.astack != NULL) &&
-         (state.astack != previous)) {
+  while ((state.astack != NULL) && (state.astack != previous)) {
     old = state.astack;
     state.astack = state.astack->prev;
     free(old);
   }
 
   close_file();
-  if (state.src) {
+
+  if (state.src != NULL) {
     yy_delete_buffer(YY_CURRENT_BUFFER);
     yy_switch_to_buffer(state.src->yybuf);
   }
@@ -802,13 +822,14 @@ int
 found_end(void)
 {
   /* close all open files */
-  while(state.src) {
+  while (state.src != NULL) {
     close_file();
   }
 
   /* make sure the buffer is empty when pass 2 starts */
-  if (YY_CURRENT_BUFFER)
+  if (YY_CURRENT_BUFFER) {
     yy_flush_buffer(YY_CURRENT_BUFFER);
+  }
 
   return 1;
 }
@@ -834,14 +855,15 @@ found_eof(void)
 
   prev_type = state.src->type;
   close_file();
-  if (state.src) {
+
+  if (state.src != NULL) {
     /* Just an include file */
     yy_delete_buffer(YY_CURRENT_BUFFER);
     yy_switch_to_buffer(state.src->yybuf);
 
-    if (state.pass == 2 && src_while == prev_type) {
+    if ((state.pass == 2) && (prev_type == SRC_WHILE)) {
       /* Force ENDW listing */
-      state.lst.line.linetype = dir;
+      state.lst.line.linetype = LTY_DIR;
       /* Line number was alreay incremented, so it has to be decremented,
        * source line listed and line number incremented again */
       --state.src->line_number;
@@ -850,8 +872,10 @@ found_eof(void)
     }
   }
   else {
-    if (!state.found_end)
+    if (!state.found_end) {
       gperror(GPE_ILLEGAL_COND, "Illegal condition: EOF encountered before END.");
+    }
+
     terminate = found_end();
   }
 

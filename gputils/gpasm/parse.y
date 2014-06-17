@@ -121,41 +121,47 @@ int yylex(void);
 static struct pnode *mk_pnode(enum pnode_tag tag)
 {
   struct pnode *new = malloc(sizeof(*new));
+
   new->tag = tag;
   return new;
 }
 
 struct pnode *mk_constant(int value)
 {
-  struct pnode *new = mk_pnode(constant);
+  struct pnode *new = mk_pnode(PTAG_CONSTANT);
+
   new->value.constant = value;
   return new;
 }
 
 struct pnode *mk_offset(struct pnode *p)
 {
-  struct pnode *new = mk_pnode(offset);
+  struct pnode *new = mk_pnode(PTAG_OFFSET);
+
   new->value.offset = p;
   return new;
 }
 
 struct pnode *mk_symbol(char *value)
 {
-  struct pnode *new = mk_pnode(symbol);
+  struct pnode *new = mk_pnode(PTAG_SYMBOL);
+
   new->value.symbol = value;
   return new;
 }
 
 struct pnode *mk_string(char *value)
 {
-  struct pnode *new = mk_pnode(string);
+  struct pnode *new = mk_pnode(PTAG_STRING);
+
   new->value.string = value;
   return new;
 }
 
 struct pnode *mk_list(struct pnode *head, struct pnode *tail)
 {
-  struct pnode *new = mk_pnode(list);
+  struct pnode *new = mk_pnode(PTAG_LIST);
+
   new->value.list.head = head;
   new->value.list.tail = tail;
   return new;
@@ -163,7 +169,8 @@ struct pnode *mk_list(struct pnode *head, struct pnode *tail)
 
 struct pnode *mk_2op(int op, struct pnode *p0, struct pnode *p1)
 {
-  struct pnode *new = mk_pnode(binop);
+  struct pnode *new = mk_pnode(PTAG_BINOP);
+
   new->value.binop.op = op;
   new->value.binop.p0 = p0;
   new->value.binop.p1 = p1;
@@ -172,7 +179,9 @@ struct pnode *mk_2op(int op, struct pnode *p0, struct pnode *p1)
 
 struct pnode *mk_1op(int op, struct pnode *p0)
 {
-  struct pnode *new = mk_pnode(unop);  new->value.unop.op = op;
+  struct pnode *new = mk_pnode(PTAG_UNOP);
+
+  new->value.unop.op = op;
   new->value.unop.p0 = p0;
   return new;
 }
@@ -185,8 +194,8 @@ gpasmVal set_label(char *label, struct pnode *parms)
   gpasmVal value = 0;
 
   if (asm_enabled()) {
-    if (MODE_RELOCATABLE == state.mode && !IN_MACRO_WHILE_DEFINITION &&
-      !(SECTION_FLAGS & (STYP_TEXT | STYP_DATA | STYP_BPACK | STYP_BSS)))
+    if ((state.mode == MODE_RELOCATABLE) && !IN_MACRO_WHILE_DEFINITION &&
+        !(SECTION_FLAGS & (STYP_TEXT | STYP_DATA | STYP_BPACK | STYP_BSS)))
       gpverror(GPE_LABEL_IN_SECTION, NULL);
 
     value = do_or_append_insn("set", parms);
@@ -202,23 +211,23 @@ int return_op(int operation);
 
 void next_line(int value)
 {
-  if (state.pass == 2 && dolist_dir == state.lst.line.linetype) {
-    state.lst.line.linetype = none;
+  if ((state.pass == 2) && (state.lst.line.linetype == LTY_DOLIST_DIR)) {
+    state.lst.line.linetype = LTY_NONE;
     lst_format_line(state.src->curr_src_line.line, value);
   }
 
   if (IN_WHILE_EXPANSION || IN_MACRO_EXPANSION) {
     if (!IN_WHILE_DEFINITION && state.lst.expand &&
-        state.pass == 2 &&
-        dolist_dir != state.lst.line.linetype &&
-        nolist_dir != state.lst.line.linetype) {
+        (state.pass == 2) &&
+        (state.lst.line.linetype != LTY_DOLIST_DIR) &&
+        (state.lst.line.linetype != LTY_NOLIST_DIR)) {
       lst_format_line(state.src->curr_src_line.line, value);
       preproc_emit();
     }
 
     /* while loops can be defined inside a macro or nested */
     if (IN_MACRO_WHILE_DEFINITION) {
-      state.lst.line.linetype = none;
+      state.lst.line.linetype = LTY_NONE;
 
       if (state.mac_body) {
         state.mac_body->src_line = strdup(state.src->m->src_line);
@@ -227,9 +236,9 @@ void next_line(int value)
 
     state.src->m = state.src->m->next;
   } else if (IN_FILE_EXPANSION) {
-    if (!IN_WHILE_DEFINITION && state.pass == 2 &&
-      dolist_dir != state.lst.line.linetype &&
-      nolist_dir != state.lst.line.linetype) {
+    if (!IN_WHILE_DEFINITION && (state.pass == 2) &&
+        (state.lst.line.linetype != LTY_DOLIST_DIR) &&
+        (state.lst.line.linetype != LTY_NOLIST_DIR)) {
       lst_format_line(state.src->curr_src_line.line, value);
 
       if (!IN_MACRO_WHILE_DEFINITION) {
@@ -238,14 +247,14 @@ void next_line(int value)
     }
 
     if (IN_MACRO_WHILE_DEFINITION) {
-      state.lst.line.linetype = none;
+      state.lst.line.linetype = LTY_NONE;
 
       if (state.mac_body) {
         state.mac_body->src_line = strdup(state.src->curr_src_line.line);
       }
     }
 
-   if (STATE_INCLUDE == state.next_state) {
+   if (state.next_state == STATE_INCLUDE) {
       /* includes have to be evaluated here and not in the following
        * switch statetems so that the errors are reported correctly */
       state.src->line_number++;
@@ -407,13 +416,13 @@ program:
         program
         {
           state.lst.line.was_org = state.org;
-          state.lst.line.linetype = none;
+          state.lst.line.linetype = LTY_NONE;
           state.next_state = STATE_NOCHANGE;
         } line
         | program error '\n'
         {
           state.lst.line.was_org = state.org;
-          state.lst.line.linetype = none;
+          state.lst.line.linetype = LTY_NONE;
           state.next_state = STATE_NOCHANGE;
 
           yyerrok;  /* generate multiple errors */
@@ -467,18 +476,18 @@ line:
         |
         LABEL statement
         {
-          if (asm_enabled() && (state.lst.line.linetype == none)) {
+          if (asm_enabled() && (state.lst.line.linetype == LTY_NONE)) {
             if (IS_RAM_ORG) {
               /* alias to next definition */
-              state.lst.line.linetype = res;
+              state.lst.line.linetype = LTY_RES;
             }
             else {
-              state.lst.line.linetype = insn;
+              state.lst.line.linetype = LTY_INSN;
             }
           }
 
           if (asm_enabled()) {
-            if (state.mac_head) {
+            if (state.mac_head != NULL) {
               /* This is a macro definition.  Set it up */
               struct symbol *mac;
               struct macro_head *h = NULL;
@@ -512,23 +521,23 @@ line:
             } else if (!IN_MACRO_WHILE_DEFINITION) {
               /* Outside a macro definition, just define the label. */
               switch (state.lst.line.linetype) {
-              case sec:
+              case LTY_SEC:
                 strncpy(state.obj.new_sec_name, $1, 78);
                 break;
 
-              case set:
+              case LTY_SET:
                 set_global($1, $2, TEMPORARY, GVT_CONSTANT);
                 break;
 
-              case org:
-              case equ:
+              case LTY_ORG:
+              case LTY_EQU:
                 set_global($1, $2, PERMANENT, GVT_CONSTANT);
                 break;
 
-              case insn:
-              case data:
-              case res:
-                if ((MODE_RELOCATABLE == state.mode) && !IN_MACRO_WHILE_DEFINITION &&
+              case LTY_INSN:
+              case LTY_DATA:
+              case LTY_RES:
+                if ((state.mode == MODE_RELOCATABLE) && !IN_MACRO_WHILE_DEFINITION &&
                     !(SECTION_FLAGS & (STYP_TEXT | STYP_DATA | STYP_BPACK | STYP_BSS))) {
                   gpverror(GPE_LABEL_IN_SECTION, NULL);
                 }
@@ -541,7 +550,7 @@ line:
                 }
                 break;
 
-              case dir:
+              case LTY_DIR:
                 gpverror(GPE_ILLEGAL_LABEL, NULL, $1);
                 break;
 
@@ -562,11 +571,11 @@ line:
           } else {
             if (state.found_end) {
               switch (state.src->type) {
-              case src_while:
+              case SRC_WHILE:
                 gperror(GPE_EXPECTED, "Expected (ENDW)");
                 break;
 
-              case src_macro:
+              case SRC_MACRO:
                 gperror(GPW_EXPECTED,"Expected (ENDM)");
                 /* fall through */
 
@@ -614,7 +623,7 @@ statement:
           }
         }
         |
-        PROCESSOR {  force_ident = 1; }
+        PROCESSOR { force_ident = 1; }
         IDENTIFIER '\n'
         {
           $$ = do_or_append_insn($1, mk_list(mk_symbol($3), NULL));
@@ -626,14 +635,14 @@ statement:
           $$ = do_or_append_insn($1, NULL);
         }
         |
-        LIST {  force_decimal = 1; }
+        LIST { force_decimal = 1; }
         list_block '\n'
         {
           $$ = do_or_append_insn($1, $3);
           force_decimal = 0;
         }
         |
-        decimal_ops {  force_decimal = 1; }
+        decimal_ops { force_decimal = 1; }
         parameter_list '\n'
         {
           $$ = do_or_append_insn($1, $3);
@@ -722,7 +731,7 @@ statement:
         const_block
         ENDC '\n'
         {
-          state.lst.line.linetype = none;
+          state.lst.line.linetype = LTY_NONE;
           if (IN_MACRO_WHILE_DEFINITION) {
             macro_append();
           }
@@ -741,7 +750,7 @@ statement:
         const_block
         ENDC '\n'
         {
-          state.lst.line.linetype = none;
+          state.lst.line.linetype = LTY_NONE;
           if (IN_MACRO_WHILE_DEFINITION) {
             macro_append();
           }
@@ -750,7 +759,7 @@ statement:
         |
         CBLOCK error ENDC '\n'
         {
-          state.lst.line.linetype = none;
+          state.lst.line.linetype = LTY_NONE;
           $$ = 0;
         }
         ;
@@ -759,7 +768,7 @@ const_block:
         |
         const_block const_line
         {
-          state.lst.line.linetype = set;
+          state.lst.line.linetype = LTY_SET;
           next_line(state.lst.cblock_lst);
         }
         ;

@@ -211,7 +211,7 @@ off_or_on(struct pnode *p)
 {
   int had_error = 0, ret = 0;
 
-  if (p->tag != symbol) {
+  if (p->tag != PTAG_SYMBOL) {
     had_error = 1;
   }
   else if (strcasecmp(p->value.symbol, "OFF") == 0) {
@@ -250,7 +250,7 @@ emit_data(struct pnode *L, int char_shift, const char *name)
     const char *pc;
     p = HEAD(L);
 
-    if (p->tag == string) {
+    if (p->tag == PTAG_STRING) {
       pc = p->value.string;
 
       if (IS_PIC16E_CORE && !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
@@ -322,7 +322,7 @@ enter_if(void)
 {
   struct amode *new = malloc(sizeof(*new));
 
-  new->mode = in_then;
+  new->mode = IN_THEN;
   new->prev = state.astack;
 
   if (state.astack == NULL) {
@@ -342,7 +342,7 @@ static int
 macro_parms_simple(struct pnode *parms)
 {
   while (parms != NULL) {
-    if (symbol != HEAD(parms)->tag) {
+    if (HEAD(parms)->tag != PTAG_SYMBOL) {
       gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
       return 0;
     }
@@ -394,7 +394,7 @@ do_access_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = sec;
+  state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
@@ -430,7 +430,7 @@ do_badram(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (parms == NULL) {
     gpverror(GPE_MISSING_ARGU, NULL);
@@ -439,7 +439,7 @@ do_badram(gpasmVal r, const char *name, int arity, struct pnode *parms)
     for (; parms != NULL; parms = TAIL(parms)) {
       p = HEAD(parms);
 
-      if ((p->tag == binop) && (p->value.binop.op == '-')) {
+      if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '-')) {
         int start, end;
 
         if (can_evaluate(p->value.binop.p0) && can_evaluate(p->value.binop.p1)) {
@@ -485,7 +485,7 @@ do_badram(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_badrom(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   /* FIXME: implement this directive */
   gpwarning(GPW_UNKNOWN, "gpasm doesn't support the badrom directive yet.");
@@ -501,7 +501,7 @@ do_bankisel(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   if (((!IS_PIC14_CORE) && (!IS_PIC14E_CORE) && (!IS_PIC16_CORE)) ||
       state.processor->num_banks == 1) {
-    state.lst.line.linetype = none;
+    state.lst.line.linetype = LTY_NONE;
     gpvmessage(GPM_EXTPAGE, NULL);
     return r;
   }
@@ -565,7 +565,7 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
   }
 
   if (state.processor->num_banks == 1) {
-    state.lst.line.linetype = none;
+    state.lst.line.linetype = LTY_NONE;
     gpvmessage(GPM_EXTPAGE, NULL);
     /* do nothing */
     return r;
@@ -644,7 +644,7 @@ do_code(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = sec;
+  state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
@@ -684,7 +684,7 @@ do_code_pack(gpasmVal r, const char *name, int arity, struct pnode *parms)
     gperror(GPE_UNKNOWN, "code_pack is only supported on 16bit cores.");
   }
   else {
-    state.lst.line.linetype = sec;
+    state.lst.line.linetype = LTY_SEC;
     state.next_state = STATE_SECTION;
 
     if (state.mode == MODE_ABSOLUTE) {
@@ -722,12 +722,12 @@ do_constant(gpasmVal r, const char *name, int arity, struct pnode *parms)
   struct pnode *p;
   int first = 1;
 
-  state.lst.line.linetype = set4;
+  state.lst.line.linetype = LTY_SET4;
 
   for (; parms != NULL; parms = TAIL(parms)) {
     p = HEAD(parms);
 
-    if ((p->tag == binop) && (p->value.binop.op == '=')) {
+    if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
       if (enforce_simple(p->value.binop.p0)) {
         char *lhs;
         gpasmVal val;
@@ -895,7 +895,7 @@ do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
     gpwarning(GPW_EXPECTED, "__CONFIG has been deprecated for PIC18 devices. Use directive CONFIG.");
   }
 
-  state.lst.line.linetype = config;
+  state.lst.line.linetype = LTY_CONFIG;
 
   switch(arity) {
   case 1:
@@ -1015,7 +1015,7 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   char v_buff[64];
   int ca;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
   config_16_used = true;
 
   if (config_us_used) {
@@ -1033,7 +1033,7 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   }
 
   /* validate argument format */
-  if ((parms == NULL) || (parms->tag != binop) || (parms->value.binop.op != '=')) {
+  if ((parms == NULL) || (parms->tag != PTAG_BINOP) || (parms->value.binop.op != '=')) {
     gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. use `CONFIG KEY = VALUE'");
     return r;
   }
@@ -1042,7 +1042,7 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   k = parms->value.binop.p0;
   v = parms->value.binop.p1;
 
-  if ((k->tag != symbol) || ((v->tag != symbol) && (v->tag != constant))) {
+  if ((k->tag != PTAG_SYMBOL) || ((v->tag != PTAG_SYMBOL) && (v->tag != PTAG_CONSTANT))) {
     gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. use `CONFIG KEY = VALUE'");
     return r;
   }
@@ -1050,7 +1050,7 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   /* grab string representations */
   k_str = k->value.symbol;
 
-  if (v->tag != constant) {
+  if (v->tag != PTAG_CONSTANT) {
     v_str = v->value.symbol;
   }
   else {
@@ -1159,7 +1159,7 @@ do_da(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   if ((state.mode == MODE_RELOCATABLE) && (SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
     /* This is a data memory not program. */
-    state.lst.line.linetype = data;
+    state.lst.line.linetype = LTY_DATA;
     char_shift = 8;
   }
 
@@ -1186,7 +1186,7 @@ do_data(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   if ((state.mode == MODE_RELOCATABLE) && (SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
     /* This is a data memory not program. */
-    state.lst.line.linetype = data;
+    state.lst.line.linetype = LTY_DATA;
   }
 
   emit_data(parms, 8, name);
@@ -1211,7 +1211,7 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
   if (state.mode == MODE_RELOCATABLE) {
     if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
       /* This is a data memory not program. */
-      state.lst.line.linetype = data;
+      state.lst.line.linetype = LTY_DATA;
     }
     else if (!(SECTION_FLAGS & STYP_TEXT)) {
       /* only valid in initialized data and text sections */
@@ -1228,7 +1228,7 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
       p = HEAD(L);
 
-      if (p->tag == string) {
+      if (p->tag == PTAG_STRING) {
         int n = 0;
 
         pc = p->value.string;
@@ -1281,11 +1281,11 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
       p = HEAD(L);
 
-      if (p->tag == string) {
+      if (p->tag == PTAG_STRING) {
         pc = p->value.string;
       }
       for (; ; ) {
-        if (p->tag == string) {
+        if (p->tag == PTAG_STRING) {
           pc = convert_escape_chars(pc, &value);
         }
         else {
@@ -1310,7 +1310,7 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
         ++n;
 
-        if ((p->tag != string) || !*pc) {
+        if ((p->tag != PTAG_STRING) || !*pc) {
           L = TAIL(L);
           break;
         }
@@ -1336,7 +1336,7 @@ do_de(gpasmVal r, const char *name, int arity, struct pnode *parms)
   for (; parms != NULL; parms = TAIL(parms)) {
     p = HEAD(parms);
 
-    if (p->tag == string) {
+    if (p->tag == PTAG_STRING) {
       const char *pc = p->value.string;
 
       while (*pc) {
@@ -1372,7 +1372,7 @@ do_def(gpasmVal r, const char *name, int arity, struct pnode *parms)
   int coff_type = T_NULL;
   enum gpasmValTypes type = GVT_DEBUG;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
     gpverror(GPE_OBJECT_ONLY, NULL, name);
@@ -1399,7 +1399,7 @@ do_def(gpasmVal r, const char *name, int arity, struct pnode *parms)
     for (; parms != NULL; parms = TAIL(parms)) {
       p = HEAD(parms);
 
-      if ((p->tag == binop) && (p->value.binop.op == '=')) {
+      if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
         if (enforce_simple(p->value.binop.p0)) {
           char *lhs;
 
@@ -1497,7 +1497,7 @@ do_def(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_define(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit = false;
 
   if (arity < 1) {
@@ -1506,9 +1506,9 @@ do_define(gpasmVal r, const char *name, int arity, struct pnode *parms)
   else {
     struct pnode *p;
 
-    assert(list == parms->tag);
+    assert(parms->tag == PTAG_LIST);
     p = HEAD(parms);
-    assert(string == p->tag);
+    assert(p->tag == PTAG_STRING);
 
     if (asm_enabled() && !IN_MACRO_WHILE_DEFINITION) {
       if (get_symbol(state.stDefines, p->value.string) != NULL) {
@@ -1520,7 +1520,7 @@ do_define(gpasmVal r, const char *name, int arity, struct pnode *parms)
         p = TAIL(parms);
 
         if (p != NULL) {
-          assert(list == p->tag);
+          assert(p->tag == PTAG_LIST);
           annotate_symbol(curr_def, p);
         }
       }
@@ -1542,7 +1542,7 @@ do_dim(gpasmVal r, const char *name, int arity, struct pnode *parms)
   int i;
   int value;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
     gpverror(GPE_OBJECT_ONLY, NULL, name);
@@ -1624,7 +1624,7 @@ do_direct(gpasmVal r, const char *name, int arity, struct pnode *parms)
   unsigned char direct_command = 0;
   char *direct_string = NULL;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
     gpverror(GPE_OBJECT_ONLY, NULL, name);
@@ -1645,7 +1645,7 @@ do_direct(gpasmVal r, const char *name, int arity, struct pnode *parms)
     }
 
     p = HEAD(TAIL(parms));
-    if (p->tag == string) {
+    if (p->tag == PTAG_STRING) {
       if (strlen(p->value.string) < 255) {
         direct_string = convert_escaped_char(p->value.string, '"');
       }
@@ -1681,7 +1681,7 @@ do_dt(gpasmVal r, const char *name, int arity, struct pnode *parms)
   for(; parms != NULL; parms = TAIL(parms)) {
     p = HEAD(parms);
 
-    if (p->tag == string) {
+    if (p->tag == PTAG_STRING) {
       const char *pc = p->value.string;
 
       while (*pc) {
@@ -1716,7 +1716,7 @@ do_dtm(gpasmVal r, const char *name, int arity, struct pnode *parms)
   for(; parms != NULL; parms = TAIL(parms)) {
     p = HEAD(parms);
 
-    if (p->tag == string) {
+    if (p->tag == PTAG_STRING) {
       const char *pc = p->value.string;
 
       while (*pc) {
@@ -1749,7 +1749,7 @@ do_dw(gpasmVal r, const char *name, int arity, struct pnode *parms)
   if (state.mode == MODE_RELOCATABLE) {
     if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
       /* This is a data memory not program. */
-      state.lst.line.linetype = data;
+      state.lst.line.linetype = LTY_DATA;
     }
     else if (!(SECTION_FLAGS & STYP_TEXT)) {
       /* only valid in initialized data and text sections */
@@ -1767,13 +1767,13 @@ do_dw(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_else(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit = false;
 
   if (state.astack == NULL) {
     gpverror(GPE_ILLEGAL_COND, NULL);
   }
-  else if ((state.astack->mode != in_then)) {
+  else if ((state.astack->mode != IN_THEN)) {
     gpverror(GPE_ILLEGAL_COND, NULL);
   }
   else {
@@ -1787,7 +1787,7 @@ static gpasmVal
 do_end(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.found_end = 1;
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   return r;
 }
@@ -1795,14 +1795,13 @@ do_end(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_endif(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit = false;
 
   if (state.astack == NULL) {
     gperror(GPE_ILLEGAL_COND, "Illegal condition: \"ENDIF\"");
   }
-  else if ((state.astack->mode != in_then) &&
-           (state.astack->mode != in_else)) {
+  else if ((state.astack->mode != IN_THEN) && (state.astack->mode != IN_ELSE)) {
     gperror(GPE_ILLEGAL_COND, "Illegal condition: \"ENDIF\"");
   }
   else {
@@ -1818,8 +1817,8 @@ do_endif(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_endm(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  assert(!state.mac_head);
-  state.lst.line.linetype = dir;
+  assert(state.mac_head == NULL);
+  state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit = false;
 
   if (!IN_MACRO_WHILE_DEFINITION) {
@@ -1837,8 +1836,7 @@ do_endm(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_endw(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  state.lst.line.linetype = nolist_dir;
-
+  state.lst.line.linetype = LTY_NOLIST_DIR;
   assert(state.mac_head == NULL);
 
   if (!IN_MACRO_WHILE_DEFINITION) {
@@ -1863,7 +1861,7 @@ do_endw(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_eof(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
     gpverror(GPE_OBJECT_ONLY, NULL, name);
@@ -1883,7 +1881,7 @@ do_eof(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_equ(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  state.lst.line.linetype = equ;
+  state.lst.line.linetype = LTY_EQU;
 
   if (enforce_arity(arity, 1)) {
     r = maybe_evaluate(HEAD(parms));
@@ -1897,12 +1895,12 @@ do_error(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
 
-    if (p->tag == string) {
+    if (p->tag == PTAG_STRING) {
       gpverror(GPE_USER, NULL, p->value.string);
     }
     else {
@@ -1933,13 +1931,13 @@ static gpasmVal
 do_errlvl(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (state.pass == 2) {
     for (; parms != NULL; parms = TAIL(parms)) {
       p = HEAD(parms);
 
-      if (p->tag == unop)  {
+      if (p->tag == PTAG_UNOP)  {
         gpasmVal value = evaluate(p->value.unop.p0);
 
         if (p->value.unop.op == '-') {
@@ -1952,7 +1950,7 @@ do_errlvl(gpasmVal r, const char *name, int arity, struct pnode *parms)
           gperror(GPE_ILLEGAL_ARGU, "Expected 0, 1, 2, +|-<message number>.");
         }
       }
-      else if (p->tag == constant) {
+      else if (p->tag == PTAG_CONSTANT) {
         select_errorlevel(p->value.constant);
       }
       else {
@@ -1967,7 +1965,7 @@ do_errlvl(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_exitm(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (enforce_arity(arity, 0)) {
     if (state.stGlobal == state.stTop) {
@@ -1984,7 +1982,7 @@ do_exitm(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_expand(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
   if (state.cmd_line.macro_expand) {
     gpvmessage(GPM_SUPLIN, NULL);
   }
@@ -2001,7 +1999,7 @@ do_extern(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   char *p;
 
-  state.lst.line.linetype = set4;
+  state.lst.line.linetype = LTY_SET4;
 
   if (state.mode == MODE_ABSOLUTE) {
     gpverror(GPE_OBJECT_ONLY, NULL, name);
@@ -2023,7 +2021,7 @@ static gpasmVal
 do_file(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
     gpverror(GPE_OBJECT_ONLY, NULL, name);
@@ -2032,7 +2030,7 @@ do_file(gpasmVal r, const char *name, int arity, struct pnode *parms)
     if (state.debug_info) {
       p = HEAD(parms);
 
-      if (p->tag == string) {
+      if (p->tag == PTAG_STRING) {
         state.obj.debug_file = coff_add_filesym(p->value.string, 0);
       }
       else {
@@ -2077,7 +2075,7 @@ do_global(gpasmVal r, const char *name, int arity, struct pnode *parms)
   struct variable *var;
   char buf[BUFSIZ];
 
-  state.lst.line.linetype = set4;
+  state.lst.line.linetype = LTY_SET4;
 
   if (state.mode == MODE_ABSOLUTE) {
     gpverror(GPE_OBJECT_ONLY, NULL, name);
@@ -2133,7 +2131,7 @@ do_idata(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = sec;
+  state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
@@ -2172,7 +2170,7 @@ do_idata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = sec;
+  state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
@@ -2210,7 +2208,7 @@ static gpasmVal
 do_ident(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
     gpverror(GPE_OBJECT_ONLY, NULL, name);
@@ -2218,7 +2216,7 @@ do_ident(gpasmVal r, const char *name, int arity, struct pnode *parms)
   else if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
 
-    if (p->tag == string) {
+    if (p->tag == PTAG_STRING) {
       coff_add_identsym(p->value.string);
     }
     else {
@@ -2287,7 +2285,7 @@ do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
       else {
         unsigned char curvalue;
 
-        state.lst.line.linetype = config;
+        state.lst.line.linetype = LTY_CONFIG;
         state.lst.config_address = idreg;
 
         if (value > 0xff) {
@@ -2315,7 +2313,7 @@ do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
     else {
       unsigned short word;
 
-      state.lst.line.linetype = idlocs;
+      state.lst.line.linetype = LTY_IDLOCS;
 
       if (value > 0xffff) {
         value &= 0xffff;
@@ -2351,7 +2349,7 @@ static gpasmVal
 do_if(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit = false;
 
   enter_if();
@@ -2371,7 +2369,7 @@ static gpasmVal
 do_ifdef(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit = false;
 
   enter_if();
@@ -2381,7 +2379,7 @@ do_ifdef(gpasmVal r, const char *name, int arity, struct pnode *parms)
     if (enforce_arity(arity, 1)) {
       p = HEAD(parms);
 
-      if (p->tag != symbol) {
+      if (p->tag != PTAG_SYMBOL) {
         gperror(GPE_ILLEGAL_LABEL, "Illegal label.");
       }
       else {
@@ -2400,7 +2398,7 @@ static gpasmVal
 do_ifndef(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit = false;
 
   enter_if();
@@ -2410,7 +2408,7 @@ do_ifndef(gpasmVal r, const char *name, int arity, struct pnode *parms)
     if (enforce_arity(arity, 1)) {
       p = HEAD(parms);
 
-      if (p->tag != symbol) {
+      if (p->tag != PTAG_SYMBOL) {
         gperror(GPE_ILLEGAL_LABEL, "Illegal label.");
       }
       else {
@@ -2430,12 +2428,12 @@ do_include(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
 
-    if (p->tag == string) {
+    if (p->tag == PTAG_STRING) {
       state.next_state = STATE_INCLUDE;
       state.next_buffer.file = strdup(p->value.string);
     }
@@ -2452,7 +2450,7 @@ do_line(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
     gpverror(GPE_OBJECT_ONLY, NULL, name);
@@ -2493,12 +2491,12 @@ do_list(gpasmVal r, const char *name, int arity, struct pnode *parms)
   struct pnode *p;
 
   state.lst.enabled = true;
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   for (; parms != NULL; parms = TAIL(parms)) {
     p = HEAD(parms);
 
-    if ((p->tag == binop) && (p->value.binop.op == '=')) {
+    if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
       if (enforce_simple(p->value.binop.p0)) {
         char *lhs;
 
@@ -2643,7 +2641,7 @@ do_local(gpasmVal r, const char *name, int arity, struct pnode *parms)
   struct pnode *p;
   int first = 1;
 
-  state.lst.line.linetype = set4;
+  state.lst.line.linetype = LTY_SET4;
 
   /* like variable except it is put in TOP instead of GLOBAL */
 
@@ -2654,7 +2652,7 @@ do_local(gpasmVal r, const char *name, int arity, struct pnode *parms)
     for (; parms != NULL; parms = TAIL(parms)) {
       p = HEAD(parms);
 
-      if ((p->tag == binop) && (p->value.binop.op == '=')) {
+      if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
         if (enforce_simple(p->value.binop.p0)) {
           char *lhs;
           gpasmVal val;
@@ -2672,7 +2670,7 @@ do_local(gpasmVal r, const char *name, int arity, struct pnode *parms)
           }
         }
       }
-      else if (p->tag == symbol) {
+      else if (p->tag == PTAG_SYMBOL) {
         /* put the symbol in the Top table */
         add_symbol(state.stTop, p->value.symbol);
 
@@ -2693,7 +2691,7 @@ do_local(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_noexpand(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (state.cmd_line.macro_expand) {
     gpvmessage(GPM_SUPLIN, NULL);
@@ -2709,7 +2707,7 @@ do_noexpand(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_nolist(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (!state.lst.force) {
     state.lst.enabled = false;
@@ -2725,7 +2723,7 @@ do_maxram(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = set;
+  state.lst.line.linetype = LTY_SET;
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
@@ -2743,7 +2741,7 @@ do_maxrom(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = set;
+  state.lst.line.linetype = LTY_SET;
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
@@ -2770,7 +2768,7 @@ do_macro(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   head->src_name = strdup(state.src->name);
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (macro_parms_ok(parms)) {
     state.mac_head = head;
@@ -2787,12 +2785,12 @@ do_messg(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
 
-    if (p->tag == string) {
+    if (p->tag == PTAG_STRING) {
       gpvmessage(GPM_USER, NULL, p->value.string);
     }
     else {
@@ -2825,7 +2823,7 @@ do_org(gpasmVal r, const char *name, int arity, struct pnode *parms)
       }
 
       if (state.mode == MODE_ABSOLUTE) {
-        state.lst.line.linetype = org;
+        state.lst.line.linetype = LTY_ORG;
         state.org = new_org;
       }
       else {
@@ -2834,7 +2832,7 @@ do_org(gpasmVal r, const char *name, int arity, struct pnode *parms)
                  ".org_%x", r);
         state.obj.new_sec_addr = new_org;
         state.obj.new_sec_flags = STYP_TEXT | STYP_ABS;
-        state.lst.line.linetype = sec;
+        state.lst.line.linetype = LTY_SEC;
         state.next_state = STATE_SECTION;
       }
     }
@@ -2849,7 +2847,7 @@ do_org(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_page(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (enforce_arity(arity, 0) && state.lst.enabled) {
     lst_page_start();
@@ -2879,7 +2877,7 @@ _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsign
 
   if (IS_EEPROM8 || IS_EEPROM16 || IS_PIC16E_CORE ||
       (state.processor->num_pages == 1)) {
-    state.lst.line.linetype = none;
+    state.lst.line.linetype = LTY_NONE;
     gpvmessage(GPM_EXTPAGE, NULL);
     return r;
   }
@@ -2973,7 +2971,7 @@ do_pageselw(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_processor(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (enforce_arity(arity, 1)) {
     struct pnode *p = HEAD(parms);
@@ -2991,7 +2989,7 @@ do_radix(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
@@ -3017,7 +3015,7 @@ do_res(gpasmVal r, const char *name, int arity, struct pnode *parms)
     if (can_evaluate(p)) {
       count = evaluate(p);
 
-      state.lst.line.linetype = res;
+      state.lst.line.linetype = LTY_RES;
 
       if (state.mode == MODE_ABSOLUTE) {
         if (IS_PIC16E_CORE && ((count % 2) != 0)) {
@@ -3062,7 +3060,7 @@ do_set(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = set;
+  state.lst.line.linetype = LTY_SET;
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
@@ -3083,7 +3081,7 @@ do_space(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (state.pass == 2) {
     switch (arity) {
@@ -3119,7 +3117,7 @@ do_subtitle(gpasmVal r, const char *name, int arity, struct pnode *parms)
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
 
-    if (p->tag == string) {
+    if (p->tag == PTAG_STRING) {
 #define LEN sizeof(state.lst.subtitle_name)
       strncpy(state.lst.subtitle_name, p->value.string, LEN);
 #undef LEN
@@ -3135,12 +3133,12 @@ do_subtitle(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_title(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  state.lst.line.linetype = none;
+  state.lst.line.linetype = LTY_NONE;
 
   if (enforce_arity(arity, 1)) {
     struct pnode *p = HEAD(parms);
 
-    if (p->tag == string) {
+    if (p->tag == PTAG_STRING) {
 #define LEN sizeof(state.lst.title_name)
       strncpy(state.lst.title_name, p->value.string, LEN);
 #undef LEN
@@ -3161,7 +3159,7 @@ do_type(gpasmVal r, const char *name, int arity, struct pnode *parms)
   gp_symbol_type *coff_symbol = NULL;
   int value;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
 
   if (state.mode == MODE_ABSOLUTE) {
     gpverror(GPE_OBJECT_ONLY, NULL, name);
@@ -3202,7 +3200,7 @@ do_udata(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = sec;
+  state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
@@ -3238,7 +3236,7 @@ do_udata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = sec;
+  state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
@@ -3278,7 +3276,7 @@ do_udata_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = sec;
+  state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
@@ -3318,7 +3316,7 @@ do_udata_shr(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = sec;
+  state.lst.line.linetype = LTY_SEC;
   state.next_state = STATE_SECTION;
 
   if (state.mode == MODE_ABSOLUTE) {
@@ -3358,13 +3356,13 @@ do_undefine(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
 
-  state.lst.line.linetype = dir;
+  state.lst.line.linetype = LTY_DIR;
   state.preproc.do_emit = false;
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
 
-    if (p->tag == symbol) {
+    if (p->tag == PTAG_SYMBOL) {
       if (remove_symbol(state.stDefines, p->value.symbol) == 0) {
         gpvwarning(GPW_NOT_DEFINED, NULL, p->value.symbol);
       }
@@ -3383,11 +3381,11 @@ do_variable(gpasmVal r, const char *name, int arity, struct pnode *parms)
   struct pnode *p;
   int first = 1;
 
-  state.lst.line.linetype = set4;
+  state.lst.line.linetype = LTY_SET4;
 
   for (; parms != NULL; parms = TAIL(parms)) {
     p = HEAD(parms);
-    if ((p->tag == binop) && (p->value.binop.op == '=')) {
+    if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
       if (enforce_simple(p->value.binop.p0)) {
         char *lhs;
         gpasmVal val;
@@ -3404,7 +3402,7 @@ do_variable(gpasmVal r, const char *name, int arity, struct pnode *parms)
         }
       }
     }
-    else if (p->tag == symbol) {
+    else if (p->tag == PTAG_SYMBOL) {
       /* put the symbol with a 0 value in the table */
       set_global(p->value.symbol, 0, TEMPORARY, GVT_CONSTANT);
 
@@ -3428,7 +3426,7 @@ do_while(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   assert(0 == state.while_depth);
 
-  state.lst.line.linetype = dolist_dir;
+  state.lst.line.linetype = LTY_DOLIST_DIR;
   head->parms = (enforce_arity(arity, 1)) ? HEAD(parms) : NULL;
   head->body = NULL;
 
@@ -3556,12 +3554,12 @@ check_16e_arg_types(struct pnode *parms, int arity, unsigned int types)
     for (i = 0; i < arity; ++i) {
       assert(p != NULL);
 
-      if (AR_INDEX != AR_GET(types, i) && offset == HEAD(p)->tag) {
+      if ((AR_GET(types, i) != AR_INDEX) && (HEAD(p)->tag == PTAG_OFFSET)) {
         gperror(GPE_BADCHAR, "Illegal character ([).");
         ret = 0;
       }
       else if (AR_BIT_BYTE & types) {
-        if (AR_INDEX == AR_GET(types, i) && offset == HEAD(p)->tag) {
+        if ((AR_GET(types, i) == AR_INDEX) && (HEAD(p)->tag == PTAG_OFFSET)) {
           struct pnode *p1 = HEAD(p)->value.offset;
 
           if (can_evaluate_value(p1)) {
@@ -3580,7 +3578,7 @@ check_16e_arg_types(struct pnode *parms, int arity, unsigned int types)
           }
         }
       }
-      else if (AR_INDEX == AR_GET(types, i) && offset != HEAD(p)->tag) {
+      else if ((AR_GET(types, i) == AR_INDEX) && (HEAD(p)->tag != PTAG_OFFSET)) {
         gpverror(GPE_MISSING_BRACKET, NULL);
         ret = 0;
       }
@@ -3620,7 +3618,7 @@ do_insn(const char *name, struct pnode *parms)
     /* Interpret the instruction if assembly is enabled, or if it's a
        conditional. */
     if (asm_enabled() || (i->attribs & ATTRIB_COND)) {
-      state.lst.line.linetype = insn;
+      state.lst.line.linetype = LTY_INSN;
       switch (i->class) {
       case INSN_CLASS_LIT3_BANK:
         /* SX bank */
@@ -4041,7 +4039,7 @@ do_insn(const char *name, struct pnode *parms)
             case 2:
               p2 = HEAD(TAIL(parms));
               /* Allow "s" for fast push */
-              if ((p2->tag == symbol) && (strcasecmp(p2->value.symbol, "s") == 0)) {
+              if ((p2->tag == PTAG_SYMBOL) && (strcasecmp(p2->value.symbol, "s") == 0)) {
                 flag = 1;
               }
               else {
@@ -4248,10 +4246,10 @@ do_insn(const char *name, struct pnode *parms)
           case 2:
             p2 = HEAD(TAIL(parms));
             /* Allow "w" and "f" as destinations. */
-            if ((p2->tag == symbol) && (strcasecmp(p2->value.symbol, "f") == 0)) {
+            if ((p2->tag == PTAG_SYMBOL) && (strcasecmp(p2->value.symbol, "f") == 0)) {
               d = 1;
             }
-            else if ((p2->tag == symbol) && (strcasecmp(p2->value.symbol, "w") == 0)) {
+            else if ((p2->tag == PTAG_SYMBOL) && (strcasecmp(p2->value.symbol, "w") == 0)) {
               d = 0;
             }
             else {
@@ -4380,10 +4378,10 @@ do_insn(const char *name, struct pnode *parms)
           case 2:
             p2 = HEAD(TAIL(parms));
             /* Allow "w" and "f" as destinations. */
-            if ((p2->tag == symbol) && (strcasecmp(p2->value.symbol, "f") == 0)) {
+            if ((p2->tag == PTAG_SYMBOL) && (strcasecmp(p2->value.symbol, "f") == 0)) {
               d = 1;
             }
-            else if ((p2->tag == symbol) && (strcasecmp(p2->value.symbol, "w") == 0)) {
+            else if ((p2->tag == PTAG_SYMBOL) && (strcasecmp(p2->value.symbol, "w") == 0)) {
               d = 0;
             }
             else {
@@ -4424,10 +4422,10 @@ do_insn(const char *name, struct pnode *parms)
           case 2:
             p2 = HEAD(TAIL(parms));
             /* Allow "w" and "f" as destinations. */
-            if ((p2->tag == symbol) && (strcasecmp(p2->value.symbol, "f") == 0)) {
+            if ((p2->tag == PTAG_SYMBOL) && (strcasecmp(p2->value.symbol, "f") == 0)) {
               d = 1;
             }
-            else if ((p2->tag == symbol) && (strcasecmp(p2->value.symbol, "w") == 0)) {
+            else if ((p2->tag == PTAG_SYMBOL) && (strcasecmp(p2->value.symbol, "w") == 0)) {
               d = 0;
             }
             else {
@@ -4509,7 +4507,7 @@ do_insn(const char *name, struct pnode *parms)
            * If extended instructions are enabled, access bit should default to 1 for low-end *
            * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
           if ((state.extended_pic16e == true) && (file <= 0x5f)) {
-            if (p->tag == offset) {
+            if (p->tag == PTAG_OFFSET) {
               a = 0;
             }
             else {
@@ -4538,7 +4536,7 @@ do_insn(const char *name, struct pnode *parms)
           case 2:
             p2 = HEAD(TAIL(parms));
             /* Allow "b" for BSR to select RAM bank. */
-            if ((p2->tag == symbol) && (strcasecmp(p2->value.symbol, "b") == 0)) {
+            if ((p2->tag == PTAG_SYMBOL) && (strcasecmp(p2->value.symbol, "b") == 0)) {
               a = 1;
             }
             else {
@@ -4577,7 +4575,7 @@ do_insn(const char *name, struct pnode *parms)
           if (arity == 3) {
             par = HEAD(TAIL(TAIL(parms)));
 
-            if ((par->tag == symbol) && (strcasecmp(par->value.symbol, "b") == 0)) {
+            if ((par->tag == PTAG_SYMBOL) && (strcasecmp(par->value.symbol, "b") == 0)) {
               a = 1;
             }
             else {
@@ -4593,7 +4591,7 @@ do_insn(const char *name, struct pnode *parms)
              * If extended instructions are enabled, access bit should default to 1 for low-end *
              * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
             if ((state.extended_pic16e == true) && (file <= 0x5f)) {
-              if (f->tag == offset) {
+              if (f->tag == PTAG_OFFSET) {
                 a = 0;
               }
               else {
@@ -4676,7 +4674,7 @@ do_insn(const char *name, struct pnode *parms)
            * If extended instructions are enabled, access bit should default to 1 for low-end *
            * of Access Memory unless the file is explicitly an offset (e.g. [foo]) *
           if ((state.extended_pic16e == true) && (file <= 0x5f)) {
-            if (p->tag == offset) {
+            if (p->tag == PTAG_OFFSET) {
               a = 0;
             }
             else {
@@ -4705,7 +4703,7 @@ do_insn(const char *name, struct pnode *parms)
           case 3:
             par = HEAD(TAIL(TAIL(parms)));
 
-            if ((par->tag == symbol) && (strcasecmp(par->value.symbol, "b") == 0)) {
+            if ((par->tag == PTAG_SYMBOL) && (strcasecmp(par->value.symbol, "b") == 0)) {
               a = 1;
             }
             else {
@@ -4715,10 +4713,10 @@ do_insn(const char *name, struct pnode *parms)
           case 2:
             par = HEAD(TAIL(parms));
             /* Allow "w" and "f" as destinations. */
-            if ((par->tag == symbol) && (strcasecmp(par->value.symbol, "f") == 0)) {
+            if ((par->tag == PTAG_SYMBOL) && (strcasecmp(par->value.symbol, "f") == 0)) {
               d = 1;
             }
-            else if ((par->tag == symbol) && (strcasecmp(par->value.symbol, "w") == 0)) {
+            else if ((par->tag == PTAG_SYMBOL) && (strcasecmp(par->value.symbol, "w") == 0)) {
               d = 0;
             }
             else {
