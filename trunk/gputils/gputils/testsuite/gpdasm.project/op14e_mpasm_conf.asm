@@ -2,11 +2,25 @@
 
 	list p=12f1501
 
-include p12f1501.inc
+	include p12f1501.inc
 
-	__config _CONFIG1, _FOSC_INTOSC & _WDTE_OFF & _PWRTE_ON & _MCLRE_OFF & _CP_ON & _BOREN_SBODEN & _CLKOUTEN_OFF
-	__config _CONFIG2, _WRT_BOOT & _STVREN_ON & _BORV_HI & _LPBOR_ON & _LVP_OFF
+	CONFIG	FOSC     = ECL			; 0x0001
+	CONFIG	WDTE     = SWDTEN		; 0x0008
+	CONFIG	PWRTE    = OFF			; 0x0020
+	CONFIG	MCLRE    = OFF			; 0x0000
+	CONFIG	CP       = OFF			; 0x0080
+	CONFIG	BOREN    = SBODEN		; 0x0200
+	CONFIG	CLKOUTEN = OFF			; 0x0800
+						;--------
+						; 0x0AA9
 
+	CONFIG	WRT      = BOOT			; 0x0002
+	CONFIG	STVREN   = ON			; 0x0200
+	CONFIG	BORV     = HI			; 0x0000
+	CONFIG	LPBOR    = OFF			; 0x0800
+	CONFIG	LVP      = OFF			; 0x0000
+						;--------
+						; 0x0A02
 moviw_test macro fsr
 	MOVIW	++fsr
 	MOVIW	--fsr
