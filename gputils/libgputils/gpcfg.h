@@ -26,7 +26,7 @@ Boston, MA 02111-1307, USA.  */
 struct gp_cfg_option
 {
   const char *name;                           /* name of the value */
-  unsigned short byte;                        /* it's data value */
+  unsigned short word;                        /* it's data value */
 };
 
 /* a directive, i.e., FOSC */
@@ -41,7 +41,7 @@ struct gp_cfg_directive
 /* one particular configuration address, i.e., 0x300001 */
 struct gp_cfg_addr
 {
-  unsigned addr;                              /* the address */
+  unsigned int addr;                          /* the address */
   unsigned short defval;                      /* its default */
   unsigned char directive_count;              /* count of relavent directives */
   const struct gp_cfg_directive *directives;  /* array of directives */
@@ -57,14 +57,14 @@ struct gp_cfg_device
 
 /* the big table */
 extern const struct gp_cfg_device gp_cfg_devices[];
-extern const unsigned gp_cfg_device_count;
+extern const unsigned int gp_cfg_device_count;
 
 /* helper API */
 const struct gp_cfg_device *gp_cfg_find_pic(const char *pic);
-const struct gp_cfg_device *gp_cfg_find_pic_multi(int count, const char * const *pics);
+const struct gp_cfg_device *gp_cfg_find_pic_multi_name(int count, const char * const *pics);
 const struct gp_cfg_directive *gp_cfg_find_directive(const struct gp_cfg_device *device,
                     const char *directive, int *out_config_addr, unsigned char *out_def_value);
 const struct gp_cfg_option *gp_cfg_find_option(const struct gp_cfg_directive *directive, const char *option);
-unsigned char gp_cfg_get_default(const struct gp_cfg_device *dev, int address);
+unsigned short gp_cfg_get_default(const struct gp_cfg_device *dev, int address);
 
 #endif /* __GPCFG_H__ */

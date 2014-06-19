@@ -1,3 +1,23 @@
+2014-06-18  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c, libgputils/gpcfg.c, libgputils/gpcfg.h:
+    Enabled the CONFIG directive on the PIC12(E) and PIC14(E) devices.
+
+  * gputils/testsuite/test,
+    gputils/testsuite/gpdasm.project/op12.asm,
+    gputils/testsuite/gpdasm.project/op12e_mpasm_conf.asm,
+    gputils/testsuite/gpdasm.project/op12e_old_conf.asm,
+    gputils/testsuite/gpdasm.project/op14.asm,
+    gputils/testsuite/gpdasm.project/op14_mpasm_conf.asm,
+    gputils/testsuite/gpdasm.project/op14_old_conf.asm,
+    gputils/testsuite/gpdasm.project/op14e_mpasm_conf.asm,
+    gputils/testsuite/gpdasm.project/op14e_old_conf.asm,
+    gputils/testsuite/gpdasm.project/op16e_mpasm_conf.asm,
+    gputils/testsuite/gpdasm.project/op16e_old_conf.asm:
+    New tests for __config and CONFIG options.
+
+  * gpasm/cod.c, gpasm/coff.c, gpasm/deps.c, gpasm/evaluate.c:
+    Changed text format.
+
 2014-06-17  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/gpasm.c, gpasm/gpasm.h.in,
     gpasm/gperror.c, gpasm/gperror.h:
@@ -18,9 +38,9 @@
     gpasm/evaluate.c, gpasm/gpasm.c, gpasm/macro.c, gpasm/parse.y:
     Renamed some definitions.
 
-  * gputils/testsuite/gpdasm.project/objasm/data2e.asm,
-    gputils/testsuite/gpdasm.project/objfiles/data2e.o,
-    gputils/testsuite/gpdasm.project/objlstfiles/data2e.lst:
+  * gpasm/testsuite/gpasm.project/objasm/data2e.asm,
+    gpasm/testsuite/gpasm.project/objfiles/data2e.o,
+    gpasm/testsuite/gpasm.project/objlstfiles/data2e.lst:
     A new variant (PIC14E) of test files.
 
   * libgputils/gpprocessor.h:

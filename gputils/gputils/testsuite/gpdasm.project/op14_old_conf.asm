@@ -1,14 +1,17 @@
 ;  This file is used to test gpdasm with the 14 bit instruction set.
 
-	list p=16c84
+     list p=16f887
 
-	include p16c84.inc
+	include p16f887.inc
 
-	__config	_CP_ON & _PWRTE_ON & _WDT_ON & _XT_OSC
+	__config _CONFIG1, _FOSC_HS & _WDTE_OFF & _PWRTE_ON & _MCLRE_ON & _CP_OFF & _CPD_ON & _BOREN_SBODEN & _IESO_ON & _FCMEN_OFF & _LVP_ON & _DEBUG_OFF
+	__config _CONFIG2, _BOR4V_BOR40V & _WRT_1FOURTH
+
+	__idlocs 0x1234
 
 insn macro file 
 	ADDLW	0xff
-	ADDWF	file, 1
+	ADDWF	file, 1 
 	ANDLW	0xff
 	ANDWF	file, 1
 	BCF	file, 7
@@ -33,7 +36,7 @@ insn macro file
 	NOP
 	OPTION 
 	RETFIE
-	RETLW	0
+	RETLW 0
 	RETURN
 	RLF	file, 1
 	RRF	file, 1
@@ -57,4 +60,5 @@ insn macro file
 
 	org 0x800
 	insn 0x25
+
     end

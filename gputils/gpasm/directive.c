@@ -256,7 +256,7 @@ emit_data(struct pnode *L, int char_shift, const char *name)
       if (IS_PIC16E_CORE && !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
         /* Special case of PIC16E strings in code */
         int n = 0;
-        while (*pc) {
+        while (*pc != '\0') {
           int value;
 
           pc = convert_escape_chars(pc, &value);
@@ -270,7 +270,7 @@ emit_data(struct pnode *L, int char_shift, const char *name)
         }
       }
       else {
-        while (*pc) {
+        while (*pc != '\0') {
           int value;
           unsigned short v;
 
@@ -283,7 +283,7 @@ emit_data(struct pnode *L, int char_shift, const char *name)
           else {
             v = value << char_shift;
 
-            if (*pc) {
+            if (*pc != '\0') {
               pc = convert_escape_chars(pc, &value);
               v |= value & 0xff;
             }
@@ -762,19 +762,19 @@ do_constant(gpasmVal r, const char *name, int arity, struct pnode *parms)
  * storing configuration data (e.g. code protection, wdt enable, etc.). Each
  * family of the pic microcontrollers treats this memory slightly different.
  *
- * do_config( ) - Called by the parser when a __CONFIG assembler directive
- *                is encountered.
+ * do_config() - Called by the parser when a __CONFIG assembler directive
+ *               is encountered.
  *
- * do_16_config( ) - Called by the parser to process MPASM style CONFIG xx=yy
- *                   directives for 16 bit devices.
+ * do_mpasm_config() - Called by the parser to process MPASM style CONFIG xx=yy
+ *                     directives for 16 bit devices.
  */
 
-static gp_boolean config_us_used;
-static gp_boolean config_16_used;
+static gp_boolean config_us_used = false;
+static gp_boolean config_mpasm_used = false;
 
 /*
  * Creates the configuration or device id COFF section for do_config and
- * do_16_config. Returns true when a section is created.
+ * do_mpasm_config. Returns true when a section is created.
  */
 
 static MemBlock *
@@ -844,7 +844,8 @@ get_config_mem(int ca, gp_boolean new_config)
 
 /* helper to write configuration data, grabbing defaults when necessary */
 static void
-config_16_set_byte_mem(MemBlock *config_mem, const struct gp_cfg_device *p_dev, int ca, unsigned char byte, unsigned char mask)
+config_16_set_byte_mem(MemBlock *config_mem, const struct gp_cfg_device *p_dev,
+                       int ca, unsigned char byte, unsigned char mask)
 {
   unsigned char old_byte;
   char buf[BUFSIZ];
@@ -852,14 +853,15 @@ config_16_set_byte_mem(MemBlock *config_mem, const struct gp_cfg_device *p_dev, 
   snprintf(buf, sizeof(buf), "CONFIG_%#x", ca);
 
   if (!b_memory_get(config_mem, ca, &old_byte, NULL, NULL)) {
-    old_byte = gp_cfg_get_default(p_dev, ca);
+    old_byte = (unsigned char)gp_cfg_get_default(p_dev, ca);
   }
 
   b_memory_put(config_mem, ca, (old_byte & ~mask) | byte, buf, NULL);
 }
 
 static void
-config_16_set_word_mem(MemBlock *config_mem, const struct gp_cfg_device *p_dev, int ca, unsigned char byte, unsigned char mask)
+config_16_set_word_mem(MemBlock *config_mem, const struct gp_cfg_device *p_dev,
+                       int ca, unsigned char byte, unsigned char mask)
 {
   unsigned char other_byte;
   char buf[BUFSIZ];
@@ -886,7 +888,7 @@ do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   config_us_used = true;
 
-  if (config_16_used) {
+  if (config_mpasm_used) {
     gpverror(GPE_CONFIG_usCONFIG, NULL);
     return r;
   }
@@ -938,9 +940,9 @@ do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
         gpvwarning(GPW_RANGE, "%i (%#x) > 0xff", value, value);
       }
 
-      p_dev = gp_cfg_find_pic_multi(sizeof(state.processor->names) /
-                                    sizeof(*state.processor->names),
-                                    state.processor->names);
+      p_dev = gp_cfg_find_pic_multi_name(sizeof(state.processor->names) /
+                                             sizeof(*state.processor->names),
+                                         state.processor->names);
       if (p_dev != NULL) {
         /* We do this to also set the other byte in a word. */
         config_16_set_word_mem(config_mem, p_dev, ca, value, 0xff);
@@ -968,7 +970,7 @@ do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
         gpverror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, ca));
       }
 
-      snprintf(buf, sizeof(buf), "CONFIG_%#x", ca);
+      snprintf(buf, sizeof(buf), "CONFIG_%#x", gp_processor_byte_to_org(state.device.class, ca));
       state.device.class->i_memory_put(config_mem, ca, value, buf, NULL);
     }
   }
@@ -991,7 +993,7 @@ config_16_check_defaults(MemBlock *config_mem, const struct gp_cfg_device *p_dev
    * If we don't set defaults here, then MPLINK (I'm assuming) will pad the
    * entire section with 0xff. That puts the 0xff's in the hex file. MPASM puts
    * nothing in the hex file for unspecified bytes. I'm not sure the best
-   * approach here - defaults or nothing. going to go with defaults.
+   * approach here - defaults or nothing. Going to go with defaults.
    */
   for (t = 0; t < p_dev->addr_count; ++addrs, ++t) {
     unsigned char byte;
@@ -1002,21 +1004,23 @@ config_16_check_defaults(MemBlock *config_mem, const struct gp_cfg_device *p_dev
   }
 }
 
-/* Support MPASM style CONFIG xxx = yyy syntax. */
+/* Support MPASM style CONFIG xxx = yyy syntax for PIC16(E) devices. */
 static gpasmVal
-_do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
+do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  static unsigned char double_mask[64];
+  static unsigned char double_mask[64] = { 0, };
+
   const struct gp_cfg_device *p_dev;
   const struct gp_cfg_directive *p_dir;
   const struct gp_cfg_option *p_opt;
   const char *k_str, *v_str;
   struct pnode *k, *v;
-  char v_buff[64];
   int ca;
+  char v_buff[64];
+  char buf[BUFSIZ];
 
   state.lst.line.linetype = LTY_DIR;
-  config_16_used = true;
+  config_mpasm_used = true;
 
   if (config_us_used) {
     gpverror(GPE_CONFIG_usCONFIG, NULL);
@@ -1024,11 +1028,13 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   }
 
   /* make sure we an find our device in the config DB */
-  p_dev = gp_cfg_find_pic_multi(sizeof(state.processor->names) /
-                sizeof(*state.processor->names),
-                state.processor->names);
+  p_dev = gp_cfg_find_pic_multi_name(sizeof(state.processor->names) /
+                                         sizeof(*state.processor->names),
+                                     state.processor->names);
   if (p_dev == NULL) {
-    gperror(GPE_UNKNOWN, "The selected processor has no entries in the config db. CONFIG cannot be used.");
+    gpverror(GPE_UNKNOWN,
+            "The %s processor has no entries in the config db. CONFIG cannot be used.",
+            state.processor->names[2]);
     return r;
   }
 
@@ -1042,7 +1048,8 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   k = parms->value.binop.p0;
   v = parms->value.binop.p1;
 
-  if ((k->tag != PTAG_SYMBOL) || ((v->tag != PTAG_SYMBOL) && (v->tag != PTAG_CONSTANT))) {
+  if ((k->tag != PTAG_SYMBOL) ||
+      ((v->tag != PTAG_SYMBOL) && (v->tag != PTAG_CONSTANT))) {
     gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. use `CONFIG KEY = VALUE'");
     return r;
   }
@@ -1061,7 +1068,8 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
         snprintf(v_buff, sizeof(v_buff), "%x", value);
       }
       else {
-        gperror(GPE_CONFIG_UNKNOWN, "CONFIG can't be used in source files with a radix other than 10 or 16.");
+        gperror(GPE_CONFIG_UNKNOWN,
+                "CONFIG can't be used in source files with a radix other than 10 or 16.");
       }
     }
     else {
@@ -1074,7 +1082,9 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   /* find the directive */
   p_dir = gp_cfg_find_directive(p_dev, k_str, &ca, NULL);
   if (p_dir == NULL) {
-    gperror(GPE_CONFIG_UNKNOWN, "CONFIG Directive Error: Setting not found for selected processor.");
+    snprintf(buf, sizeof(buf), "CONFIG Directive Error: Setting not found for %s processor: \"%s\"",
+             state.processor->names[2], k_str);
+    gperror(GPE_UNKNOWN, buf);
     return r;
   }
 
@@ -1084,13 +1094,14 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   /* find the option */
   p_opt = gp_cfg_find_option(p_dir, v_str);
   if (p_opt == NULL) {
-    gperror(GPE_CONFIG_UNKNOWN, "CONFIG Directive Error: Specified value not valid for directive.");
+    snprintf(buf, sizeof(buf), "CONFIG Directive Error: Specified value not valid for directive: \"%s\"", v_str);
+    gperror(GPE_UNKNOWN, buf);
     return r;
   }
 
   /* emit the bytes if appropriate */
   if (state.pass == 2) {
-    unsigned char dm_addr = (unsigned char)(ca - p_dev->config_addrs->addr);
+    unsigned int dm_addr = (ca - p_dev->config_addrs->addr) & 0xFF;
     MemBlock *config_mem = get_config_mem(ca, true);
 
     if (state.mode != MODE_RELOCATABLE) {
@@ -1100,44 +1111,234 @@ _do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
     /* make sure we've not written here yet */
     if (dm_addr < sizeof(double_mask)) {
       if (double_mask[dm_addr] & p_dir->mask) {
-        gperror(GPE_CONFIG_UNKNOWN, "CONFIG Directive Error: Multiple definitions found for setting.");
+        snprintf(buf, sizeof(buf), "CONFIG Directive Error: Multiple definitions found for %s setting.", k_str);
+        gperror(GPE_UNKNOWN, buf);
         return r;
       }
       double_mask[dm_addr] |= p_dir->mask;
     }
     else {
-      gpwarning(GPW_UNKNOWN, "Double_mask in do_16_config() needs to be adjusted to account for larger config ranges.");
+      gpwarning(GPW_UNKNOWN,
+                "Double_mask in do_16_config() needs to be adjusted to account for larger config ranges.");
     }
 
     /* Let the helper set the data. */
-    config_16_set_byte_mem(config_mem, p_dev, ca, p_opt->byte, p_dir->mask);
+    config_16_set_byte_mem(config_mem, p_dev, ca, (unsigned char)p_opt->word,
+                           (unsigned char)p_dir->mask);
+  }
+
+  return r;
+}
+
+/*-------------------------------------------------------------------------*/
+
+static void
+config_12_14_set_word_mem(MemBlock *config_mem, const struct gp_cfg_device *p_dev,
+                          int ca, unsigned short word, unsigned short mask)
+{
+  int org;
+  unsigned short old_word;
+  char buf[BUFSIZ];
+
+  org = gp_processor_byte_to_org(state.device.class, ca);
+  snprintf(buf, sizeof(buf), "CONFIG_%#x", org);
+
+  if (!state.device.class->i_memory_get(config_mem, ca, &old_word, NULL, NULL)) {
+    old_word = gp_cfg_get_default(p_dev, org);
+  }
+
+  word |= (old_word & ~mask);
+  word &= state.device.class->config_size;
+  state.device.class->i_memory_put(config_mem, ca, word, buf, NULL);
+}
+
+/* Sets defaults over unused portions of configuration memory. */
+static void
+config_12_14_check_defaults(MemBlock *config_mem, const struct gp_cfg_device *p_dev)
+{
+  const struct gp_cfg_addr *addrs = p_dev->config_addrs;
+  unsigned int addr;
+  unsigned short word;
+  int t;
+
+  for (t = 0; t < p_dev->addr_count; ++addrs, ++t) {
+    addr = gp_processor_org_to_byte(state.device.class, addrs->addr);
+
+    if (!state.device.class->i_memory_get(config_mem, addr, &word, NULL, NULL)) {
+      word = addrs->defval & state.device.class->config_size;
+      state.device.class->i_memory_put(config_mem, addr, word, NULL, NULL);
+    }
+  }
+}
+
+/* Support MPASM style CONFIG xxx = yyy syntax for PIC14(E) and PIC12(E) devices. */
+static gpasmVal
+do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
+{
+  static unsigned short double_mask[256] = { 0, };
+
+  const struct gp_cfg_device *p_dev;
+  const struct gp_cfg_directive *p_dir;
+  const struct gp_cfg_option *p_opt;
+  const char *k_str, *v_str;
+  struct pnode *k, *v;
+  int conf_org;
+  int ca;
+  char v_buff[64];
+  char buf[BUFSIZ];
+
+  state.lst.line.linetype = LTY_DIR;
+  config_mpasm_used = true;
+
+  if (config_us_used) {
+    gpverror(GPE_CONFIG_usCONFIG, NULL);
+    return r;
+  }
+
+  /* make sure we an find our device in the config DB */
+  p_dev = gp_cfg_find_pic_multi_name(sizeof(state.processor->names) /
+                                         sizeof(*state.processor->names),
+                                     state.processor->names);
+  if (p_dev == NULL) {
+    gpverror(GPE_UNKNOWN,
+            "The %s processor has no entries in the config db. CONFIG cannot be used.",
+            state.processor->names[2]);
+    return r;
+  }
+
+  /* validate argument format */
+  if ((parms == NULL) || (parms->tag != PTAG_BINOP) || (parms->value.binop.op != '=')) {
+    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. use `CONFIG KEY = VALUE'");
+    return r;
+  }
+
+  /* validate parameter types */
+  k = parms->value.binop.p0;
+  v = parms->value.binop.p1;
+
+  if ((k->tag != PTAG_SYMBOL) ||
+      ((v->tag != PTAG_SYMBOL) && (v->tag != PTAG_CONSTANT))) {
+    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. use `CONFIG KEY = VALUE'");
+    return r;
+  }
+
+  /* grab string representations */
+  k_str = k->value.symbol;
+
+  if (v->tag != PTAG_CONSTANT) {
+    v_str = v->value.symbol;
+  }
+  else {
+    int value = v->value.constant;
+
+    if (state.radix != 10) {
+      if (state.radix == 16) {
+        snprintf(v_buff, sizeof(v_buff), "%x", value);
+      }
+      else {
+        gperror(GPE_CONFIG_UNKNOWN,
+                "CONFIG can't be used in source files with a radix other than 10 or 16.");
+      }
+    }
+    else {
+      snprintf(v_buff, sizeof(v_buff), "%d", value);
+    }
+
+    v_str = v_buff;
+  }
+
+  /* find the directive */
+  p_dir = gp_cfg_find_directive(p_dev, k_str, &conf_org, NULL);
+  if (p_dir == NULL) {
+    snprintf(buf, sizeof(buf), "CONFIG Directive Error: Setting not found for %s processor: \"%s\"",
+             state.processor->names[2], k_str);
+    gperror(GPE_UNKNOWN, buf);
+    return r;
+  }
+
+  /* Note address to lister, though it doesn't seem to use it. */
+  ca = gp_processor_org_to_byte(state.device.class, conf_org);
+  state.lst.config_address = ca;
+
+  /* find the option */
+  p_opt = gp_cfg_find_option(p_dir, v_str);
+  if (p_opt == NULL) {
+    snprintf(buf, sizeof(buf), "CONFIG Directive Error: Specified value not valid for directive: \"%s\"", v_str);
+    gperror(GPE_UNKNOWN, buf);
+    return r;
+  }
+
+  /* emit the bytes if appropriate */
+  if (state.pass == 2) {
+    unsigned int dm_addr = (conf_org - p_dev->config_addrs->addr) & 0xFF;
+    MemBlock *config_mem = get_config_mem(ca, true);
+
+    if (state.mode != MODE_RELOCATABLE) {
+      config_12_14_check_defaults(config_mem, p_dev);
+    }
+
+    /* make sure we've not written here yet */
+    if (dm_addr < sizeof(double_mask)) {
+      if (double_mask[dm_addr] & p_dir->mask) {
+        snprintf(buf, sizeof(buf), "CONFIG Directive Error: Multiple definitions found for %s setting.", k_str);
+        gperror(GPE_UNKNOWN, buf);
+        return r;
+      }
+      double_mask[dm_addr] |= p_dir->mask;
+    }
+    else {
+      gpwarning(GPW_UNKNOWN,
+                "Double_mask in do_12_14_config() needs to be adjusted to account for larger config ranges.");
+    }
+
+    /* Let the helper set the data. */
+    config_12_14_set_word_mem(config_mem, p_dev, ca, p_opt->word, p_dir->mask);
   }
 
   return r;
 }
 
 static gpasmVal
-do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
+do_mpasm_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  /* valid only for 16 bit devices */
-  if ((!IS_PIC16_CORE) && (!IS_PIC16E_CORE)) {
-    char buf[128];
-
-    snprintf(buf, sizeof(buf), "CONFIG Directive Error: Processor \"%s\" is invalid for CONFIG directive.",
-             state.processor->names[2]);
-    gperror(GPE_CONFIG_UNKNOWN, buf);
-    return r;
-  }
+  struct pnode *p;
+  char buf[BUFSIZ];
 
   if (state.mpasm_compatible) {
+    /* The MPASM(X) compatible mode valid only for 16 bit devices. */
+    if ((!IS_PIC16_CORE) && (!IS_PIC16E_CORE)) {
+      snprintf(buf, sizeof(buf),
+               "CONFIG Directive Error: Processor \"%s\" is invalid for CONFIG directive in MPASM mode.",
+               state.processor->names[2]);
+      gperror(GPE_UNKNOWN, buf);
+      return r;
+    }
+
     /* store data from the last section */
     coff_close_section();
   }
+  else {
+    /* The gpasm compatible mode valid all PIC devices. */
+    if ((!IS_PIC16_CORE) && (!IS_PIC16E_CORE) &&
+        (!IS_PIC14_CORE) && (!IS_PIC14E_CORE) &&
+        (!IS_PIC12_CORE) && (!IS_PIC12E_CORE)) {
+      snprintf(buf, sizeof(buf),
+               "CONFIG Directive Error: Processor \"%s\" is invalid for CONFIG directive.",
+               state.processor->names[2]);
+      gperror(GPE_UNKNOWN, buf);
+      return r;
+    }
+  }
 
   for (; parms != NULL; parms = TAIL(parms)) {
-    struct pnode *p = HEAD(parms);
+    p = HEAD(parms);
 
-    _do_16_config(r, name, arity, p);
+    if (IS_PIC16_CORE || IS_PIC16E_CORE) {
+      do_16_config(r, name, arity, p);
+    }
+    else {
+      do_12_14_config(r, name, arity, p);
+    }
   }
 
   if (state.mpasm_compatible) {
@@ -1232,8 +1433,9 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
         int n = 0;
 
         pc = p->value.string;
-        while (*pc) {
+        while (*pc != '\0') {
           int value;
+
           pc = convert_escape_chars(pc, &value);
           emit_byte(value, name);
           ++n;
@@ -1310,7 +1512,7 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
         ++n;
 
-        if ((p->tag != PTAG_STRING) || !*pc) {
+        if ((p->tag != PTAG_STRING) || (*pc == '\0')) {
           L = TAIL(L);
           break;
         }
@@ -1339,7 +1541,7 @@ do_de(gpasmVal r, const char *name, int arity, struct pnode *parms)
     if (p->tag == PTAG_STRING) {
       const char *pc = p->value.string;
 
-      while (*pc) {
+      while (*pc != '\0') {
         int value;
 
         pc = convert_escape_chars(pc, &value);
@@ -1684,7 +1886,7 @@ do_dt(gpasmVal r, const char *name, int arity, struct pnode *parms)
     if (p->tag == PTAG_STRING) {
       const char *pc = p->value.string;
 
-      while (*pc) {
+      while (*pc != '\0') {
         int value;
 
         pc = convert_escape_chars(pc, &value);
@@ -1719,7 +1921,7 @@ do_dtm(gpasmVal r, const char *name, int arity, struct pnode *parms)
     if (p->tag == PTAG_STRING) {
       const char *pc = p->value.string;
 
-      while (*pc) {
+      while (*pc != '\0') {
         int value;
 
         pc = convert_escape_chars(pc, &value);
@@ -3596,11 +3798,11 @@ do_insn(const char *name, struct pnode *parms)
   int arity;
   struct pnode *p;
   int file;             /* register file address, if applicable */
-  gpasmVal r;           /* Return value */
+  gpasmVal r;           /* Return value. */
   int is_btfsx = 0;
 
-  /* We want to have r as the value to assign to label */
-  r = (IS_RAM_ORG) ? state.org : gp_processor_byte_to_org(state.device.class, state.org);
+  /* We want to have r as the value to assign to label. */
+  r = IS_RAM_ORG ? state.org : gp_processor_byte_to_org(state.device.class, state.org);
 
   arity = list_length(parms);
 
@@ -3761,7 +3963,7 @@ do_insn(const char *name, struct pnode *parms)
             }
           }
 
-          emit(i->opcode | (reloc_evaluate(p, RELOCT_CALL) & 0xff), s->name);
+          emit(i->opcode | (reloc_evaluate(p, RELOCT_CALL) & MASK_PIC12_CALL), s->name);
         }
         break;
 
@@ -3939,7 +4141,7 @@ do_insn(const char *name, struct pnode *parms)
             offset = maybe_evaluate(p) - (r + 2);
 
             if (offset & 1) {
-              gpvwarning(GPW_WORD_ALIGNED, "%i (%#x)", offset, offset);
+              gpvwarning(GPW_WORD_ALIGNED, "Offset{%i (%#x)}", offset, offset);
             }
           }
           else {
@@ -5063,7 +5265,7 @@ struct insn op_1[] = {
   { "__maxrom",   0, 0, INSN_CLASS_FUNC, 0, do_maxrom },
   { "bankisel",   0, 0, INSN_CLASS_FUNC, 0, do_bankisel },
   { "banksel",    0, 0, INSN_CLASS_FUNC, 0, do_banksel },
-  { "config",     0, 0, INSN_CLASS_FUNC, 0, do_16_config },
+  { "config",     0, 0, INSN_CLASS_FUNC, 0, do_mpasm_config },
   { "data",       0, 0, INSN_CLASS_FUNC, 0, do_data },
   { "da",         0, 0, INSN_CLASS_FUNC, 0, do_da },
   { "db",         0, 0, INSN_CLASS_FUNC, 0, do_db },

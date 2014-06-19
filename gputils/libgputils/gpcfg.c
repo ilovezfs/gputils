@@ -45,7 +45,7 @@ const struct gp_cfg_device *gp_cfg_find_pic(const char *pic)
 /*
  * Locate a PIC by name, pass a list of names to use, try each in order.
  */
-const struct gp_cfg_device *gp_cfg_find_pic_multi(int count, const char * const *pics)
+const struct gp_cfg_device *gp_cfg_find_pic_multi_name(int count, const char * const *pics)
 {
   int t;
 
@@ -110,9 +110,9 @@ const struct gp_cfg_option *gp_cfg_find_option(const struct gp_cfg_directive *di
 }
 
 /*
- * Return 0xff or the default for the address and device passed.
+ * Return 0xffff or the default for the address and device passed.
  */
-unsigned char gp_cfg_get_default(const struct gp_cfg_device *device, int address)
+unsigned short gp_cfg_get_default(const struct gp_cfg_device *device, int address)
 {
   size_t t;
 
@@ -124,5 +124,5 @@ unsigned char gp_cfg_get_default(const struct gp_cfg_device *device, int address
     }
   }
 
-  return 0xff;
+  return 0xffff;
 }

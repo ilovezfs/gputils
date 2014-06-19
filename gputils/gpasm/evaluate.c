@@ -114,8 +114,7 @@ int can_evaluate(struct pnode *p)
           var = get_symbol_annotation(s);
 
           if (var == NULL) {
-            snprintf(buf,
-                     sizeof(buf),
+            snprintf(buf, sizeof(buf),
                      "Symbol not assigned a value: \"%s\"",
                      p->value.symbol);
             gpwarning(GPW_UNKNOWN, buf);
@@ -169,6 +168,7 @@ int can_evaluate_value(struct pnode *p)
       }
       else {
         struct variable *var = get_symbol_annotation(s);
+
         if (NULL == var) {
           return 0;
         }
@@ -236,8 +236,8 @@ gpasmVal evaluate(struct pnode *p)
       struct symbol *s;
 
       if (strcmp(p->value.symbol, "$") == 0) {
-        return ((IS_RAM_ORG) ? state.org :
-                               gp_processor_byte_to_org(state.device.class, state.org));
+        return (IS_RAM_ORG ? state.org :
+                             gp_processor_byte_to_org(state.device.class, state.org));
       }
       else {
         s = get_symbol(state.stTop, p->value.symbol);
@@ -400,7 +400,7 @@ gpasmVal maybe_evaluate(struct pnode *p)
 {
   gpasmVal r;
 
-  if (p != NULL && can_evaluate(p)) {
+  if ((p != NULL) && can_evaluate(p)) {
     r = evaluate(p);
   }
   else {
@@ -485,8 +485,8 @@ add_reloc(struct pnode *p, short offs, unsigned short type)
       char buffer[BUFSIZ];
       unsigned org;
 
-      org = (IS_RAM_ORG) ? state.org :
-                           gp_processor_byte_to_org(state.device.class, state.org);
+      org = IS_RAM_ORG ? state.org :
+                         gp_processor_byte_to_org(state.device.class, state.org);
 
       snprintf(buffer, sizeof(buffer), "_%s_%04X", state.obj.new_sec_name, org);
       /* RELOCT_ACCESS has always also RELOCT_F, which has already

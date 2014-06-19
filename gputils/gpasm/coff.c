@@ -30,8 +30,7 @@ void
 coff_init(void)
 {
   if (state.objfile != OUT_NAMED) {
-    snprintf(state.objfilename, sizeof(state.objfilename),
-       "%s.o", state.basefilename);
+    snprintf(state.objfilename, sizeof(state.objfilename), "%s.o", state.basefilename);
   }
 
   if (state.objfile == OUT_SUPPRESS) {

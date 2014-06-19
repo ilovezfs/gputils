@@ -25,7 +25,8 @@
 TESTDIR=./test
 GPDASMBIN=../gpdasm
 GPASMBIN=../../gpasm/gpasm
-GPASMFLAGS="-q -I`pwd`/../../header"
+#GPASMFLAGS="-q -I`pwd`/../../header"
+GPASMFLAGS="-I`pwd`/../../header"
 
 # General functions
 
@@ -103,20 +104,36 @@ function all_test() {
   run_test op12 12c508
   echo -e "12 bit core passed.\n"
 
-  printbanner "Testing enhanced 12 bit core"
-  run_test op12e 16f527
+  printbanner "Testing enhanced 12 bit core 1."
+  run_test op12e_old_conf 16f527
+  echo -e "Enhanced 12 bit core passed.\n"
+
+  printbanner "Testing enhanced 12 bit core 2."
+  run_test op12e_mpasm_conf 16f527
   echo -e "Enhanced 12 bit core passed.\n"
 
   printbanner "Testing sx core"
   run_test sx sx18
   echo -e "sx core passed.\n"
 
-  printbanner "Testing 14 bit core"
+  printbanner "Testing 14 bit core 1."
   run_test op14 16c84
   echo -e "14 bit core passed.\n"
 
-  printbanner "Testing enhanced 14 bit core"
-  run_test op14e 12f1501
+  printbanner "Testing 14 bit core 2."
+  run_test op14_old_conf 16f887
+  echo -e "14 bit core passed.\n"
+
+  printbanner "Testing 14 bit core 3."
+  run_test op14_mpasm_conf 16f887
+  echo -e "14 bit core passed.\n"
+
+  printbanner "Testing enhanced 14 bit core 1."
+  run_test op14e_old_conf 12f1501
+  echo -e "Enhanced 14 bit core passed.\n"
+
+  printbanner "Testing enhanced 14 bit core 2."
+  run_test op14e_mpasm_conf 12f1501
   echo -e "Enhanced 14 bit core passed.\n"
 
   printbanner "Testing 16 bit core"
@@ -128,10 +145,14 @@ function all_test() {
   echo -e "Extended 16 bit core passed.\n"
 
   printbanner "Testing extended 16 bit core 2."
-  run_test op16e2 18f4520
+  run_test op16e_old_conf 18f25k80
   echo -e "Extended 16 bit core passed.\n"
 
-  printbanner "gpdasm testing sucessful"
+  printbanner "Testing extended 16 bit core 3."
+  run_test op16e_mpasm_conf 18f25k80
+  echo -e "Extended 16 bit core passed.\n"
+
+  printbanner "Gpdasm testing sucessful."
 }
 
 ACTION="test"
