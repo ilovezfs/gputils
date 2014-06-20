@@ -1465,7 +1465,9 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
     else {
       int org = gp_processor_byte_to_org(state.device.class, begin_org);
 
-      if (!gp_processor_is_config_addr(state.processor, org)) {
+      if ((!gp_processor_is_config_addr(state.processor, org)) &&
+          (!gp_processor_is_idlocs_addr(state.processor, org)) && 
+          (!gp_processor_is_eeprom_addr(state.processor, org))) {
         if ((state.mode == MODE_ABSOLUTE) || !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
           if ((state.org - begin_org) & 1) {
             emit_byte(0, name);
@@ -1880,7 +1882,7 @@ do_dt(gpasmVal r, const char *name, int arity, struct pnode *parms)
   int retlw = gp_processor_retlw(state.device.class);
   struct pnode *p;
 
-  for(; parms != NULL; parms = TAIL(parms)) {
+  for (; parms != NULL; parms = TAIL(parms)) {
     p = HEAD(parms);
 
     if (p->tag == PTAG_STRING) {
@@ -1915,7 +1917,7 @@ do_dtm(gpasmVal r, const char *name, int arity, struct pnode *parms)
     gpverror(GPE_ILLEGAL_DIR, NULL, name);
   }
 
-  for(; parms != NULL; parms = TAIL(parms)) {
+  for (; parms != NULL; parms = TAIL(parms)) {
     p = HEAD(parms);
 
     if (p->tag == PTAG_STRING) {
@@ -2475,14 +2477,16 @@ do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
   }
 
   if (state.pass == 2) {
-    MemBlock *m = (MODE_RELOCATABLE == state.mode) ? state.obj.section->data : state.c_memory;
+    MemBlock *m = (state.mode == MODE_RELOCATABLE) ? state.obj.section->data : state.c_memory;
 
     if (IS_PIC16E_CORE) {
-      if (idreg < IDLOC0) {
-        gpverror(GPE_RANGE, "Not a valid ID location. Address{%#x} < IDLOC0{%#x}", idreg, IDLOC0);
+      if (idreg < state.processor->idlocs_addrs[0]) {
+        gpverror(GPE_RANGE, "Not a valid ID location. Address{%#x} < IDLOCS_MIN{%#x}",
+                 idreg, state.processor->idlocs_addrs[0]);
       }
-      else if (idreg > IDLOC7) {
-        gpverror(GPE_RANGE, "Not a valid ID location. Address{%#x} > IDLOC7{%#x}", idreg, IDLOC7);
+      else if (idreg > state.processor->idlocs_addrs[1]) {
+        gpverror(GPE_RANGE, "Not a valid ID location. Address{%#x} > IDLOCS_MAX{%#x}",
+                 idreg, state.processor->idlocs_addrs[1]);
       }
       else {
         unsigned char curvalue;
@@ -2507,7 +2511,7 @@ do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
         state.lst.line.was_org = idreg;
         coff_linenum(1);
 
-        if (MODE_RELOCATABLE == state.mode) {
+        if (state.mode == MODE_RELOCATABLE) {
           state.org += 1;
         }
       }
@@ -2517,7 +2521,7 @@ do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
       state.lst.line.linetype = LTY_IDLOCS;
 
-      if (value > 0xffff) {
+      if (value & ~0xffff) {
         value &= 0xffff;
         gpvmessage(GPM_IDLOC, NULL, value);
       }
@@ -2542,6 +2546,159 @@ do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
       }
     }
   }
+  state.device.id_location = idreg;
+
+  return r;
+}
+
+/* Support IDLOCS "abcdef" or IDLOCS 'a', 'b', 'c' syntax for PIC16E devices. */
+static gpasmVal
+do_16_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
+{
+  struct pnode *p;
+  unsigned int idreg;
+  unsigned char curvalue;
+  const char *pc;
+  int value;
+  int max_bytes;
+  int n;
+  char buf[BUFSIZ];
+
+  if (state.mpasm_compatible) {
+    snprintf(buf, sizeof(buf), "Directive Error: The %s directive is invalid in MPASM mode.", name);
+    gperror(GPE_UNKNOWN, buf);
+    return r;
+  }
+
+  if (state.processor == NULL) {
+    gpverror(GPE_UNDEF_PROC, NULL);
+    return r;
+  }
+
+  if (!IS_PIC16E_CORE) {
+    gperror(GPE_IDLOCS_P16E, NULL);
+    return r;
+  }
+
+  idreg = gp_processor_id_location(state.processor);
+
+  if (idreg == 0) {
+    snprintf(buf, sizeof(buf), "The IDLOCS registers not exist in the %s MCU.",
+             state.processor->names[2]);
+    gperror(GPE_UNKNOWN, buf);
+    return r;
+  }
+
+  state.device.id_location = idreg;
+
+  if ((state.mode == MODE_RELOCATABLE) && (!state.found_idlocs)) {
+    coff_new_section(".idlocs", idreg, STYP_ABS | STYP_TEXT);
+    state.found_idlocs = true;
+  }
+
+  if (state.pass == 2) {
+    MemBlock *m = (state.mode == MODE_RELOCATABLE) ? state.obj.section->data : state.c_memory;
+
+    if (idreg < state.processor->idlocs_addrs[0]) {
+      gpverror(GPE_RANGE, "Not a valid ID location. Address{%#x} < IDLOCS_MIN{%#x}",
+               idreg, state.processor->idlocs_addrs[0]);
+      return r;
+    }
+    else if (idreg > state.processor->idlocs_addrs[1]) {
+      gpverror(GPE_RANGE, "Not a valid ID location. Address{%#x} > IDLOCS_MAX{%#x}",
+               idreg, state.processor->idlocs_addrs[1]);
+      return r;
+    }
+
+    assert(parms->tag == PTAG_LIST);
+    p = HEAD(parms);
+
+    state.lst.line.linetype = LTY_CONFIG;
+    state.lst.config_address = idreg;
+    max_bytes = state.processor->idlocs_addrs[1] - state.processor->idlocs_addrs[0] + 1;
+    n = 0;
+
+    for (; parms != NULL; parms = TAIL(parms)) {
+      p = HEAD(parms);
+
+      switch (p->tag) {
+      case PTAG_SYMBOL:
+        value = maybe_evaluate(p);
+        goto constant;
+        break;
+
+      case PTAG_CONSTANT:
+        value = p->value.constant;
+constant:
+
+        if (n >= max_bytes) {
+          gpwarning(GPW_UNKNOWN, "The number of IDLOCS registers not more than 8!");
+          goto warning;
+        }
+
+        if (value & ~0xFF) {
+          value &= 0xFF;
+          gpvmessage(GPM_IDLOC, NULL, value);
+        }
+
+        if (b_memory_get(m, idreg, &curvalue, NULL, NULL)) {
+          gpverror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, idreg));
+          return r;
+        }
+
+        snprintf(buf, sizeof(buf), "IDLOCS%i", n);
+        b_memory_put(m, idreg, value, buf, NULL);
+        state.lst.line.was_org = idreg;
+
+        if (state.mode == MODE_RELOCATABLE) {
+          state.org += 1;
+        }
+
+        ++n;
+        ++idreg;
+        break;
+
+      case PTAG_STRING:
+        pc = p->value.string;
+
+        while (*pc != '\0') {
+          if (n >= max_bytes) {
+            gpwarning(GPW_UNKNOWN, "The number of IDLOCS registers not more than 8!");
+            goto warning;
+          }
+
+          pc = convert_escape_chars(pc, &value);
+
+          if (b_memory_get(m, idreg, &curvalue, NULL, NULL)) {
+            gpverror(GPE_ADDROVR, NULL, gp_processor_byte_to_org(state.device.class, idreg));
+            return r;
+          }
+
+          snprintf(buf, sizeof(buf), "IDLOCS%i", n);
+          b_memory_put(m, idreg, value, buf, NULL);
+          state.lst.line.was_org = idreg;
+
+          if (state.mode == MODE_RELOCATABLE) {
+            state.org += 1;
+          }
+
+          ++n;
+          ++idreg;
+        }
+        break;
+
+      default:
+        gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
+        return r;
+      } /* switch (p->tag) */
+    } /* for (; parms != NULL; parms = TAIL(parms)) */
+warning:
+
+    if (n > 0) {
+      coff_linenum(1);
+    }
+  } /* if (state.pass == 2) */
+
   state.device.id_location = idreg;
 
   return r;
@@ -3018,7 +3175,8 @@ do_org(gpasmVal r, const char *name, int arity, struct pnode *parms)
       new_org = gp_processor_org_to_byte(state.device.class, r);
 
       if (state.mpasm_compatible ||
-          !gp_processor_is_config_addr(state.processor, new_org)) {
+          ((!gp_processor_is_config_addr(state.processor, new_org)) &&
+           (!gp_processor_is_eeprom_addr(state.processor, new_org)))) {
         if (IS_PIC16E_CORE && (r & 1)) {
           gpverror(GPE_ORG_ODD, "Address{%#x}", r);
         }
@@ -5274,6 +5432,7 @@ struct insn op_1[] = {
   { "dtm",        0, 0, INSN_CLASS_FUNC, 0, do_dtm },
   { "dw",         0, 0, INSN_CLASS_FUNC, 0, do_dw },
   { "fill",       0, 0, INSN_CLASS_FUNC, 0, do_fill },
+  { "idlocs",     0, 0, INSN_CLASS_FUNC, 0, do_16_idlocs },
   { "org",        0, 0, INSN_CLASS_FUNC, 0, do_org },
   { "pagesel",    0, 0, INSN_CLASS_FUNC, 0, do_pagesel },
   { "pageselw",   0, 0, INSN_CLASS_FUNC, 0, do_pageselw },

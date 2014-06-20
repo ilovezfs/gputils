@@ -3954,6 +3954,23 @@ You can choose the fuse settings for your PIC implementation using the __CONFIG,
 \end_layout
 
 \begin_layout Standard
+In 
+\begin_inset Quotes eld
+\end_inset
+
+gpasm
+\begin_inset Quotes erd
+\end_inset
+
+ mode (if the command line is 
+\emph on
+not
+\emph default
+ included the "--mpasm-compatible" option), in the case of each processor
+ (PIC12XXX, PIC14XXX, PIC18XXX) it is possible to use the CONFIG directive.
+\end_layout
+
+\begin_layout Standard
 The __MAXRAM and __BADRAM directives specify which RAM locations are legal.
  These directives are mostly used in processor-specific configuration files.
 \end_layout
@@ -4556,6 +4573,10 @@ Sets the PIC processor's identification locations.
  of expression2.
 \end_layout
 
+\begin_layout Standard
+See also: IDLOCS
+\end_layout
+
 \begin_layout Subsection*
 __MAXRAM
 \begin_inset Index idx
@@ -4744,7 +4765,25 @@ CONFIG <expression>[, <expression>]*
 \end_layout
 
 \begin_layout Standard
-Sets configuration fuses on 16-bit PIC MCU devices (PIC18FXXX).
+Sets configuration fuses only on 16-bit PIC MCU devices (PIC18FXXX) if the
+ command line is included the "--mpasm-compatible" option.
+\end_layout
+
+\begin_layout Standard
+In 
+\begin_inset Quotes eld
+\end_inset
+
+gpasm
+\begin_inset Quotes erd
+\end_inset
+
+ mode (if the command line is 
+\emph on
+not
+\emph default
+ included the "--mpasm-compatible" option), in the case of each processor
+ (PIC12XXX, PIC14XXX, PIC18XXX) it is possible to use this directive.
 \end_layout
 
 \begin_layout Standard
@@ -5620,6 +5659,77 @@ Only for relocatable mode.
 
 \begin_layout Standard
 See also: CODE, UDATA
+\end_layout
+
+\begin_layout Subsection*
+IDLOCS
+\begin_inset Index idx
+status collapsed
+
+\begin_layout Plain Layout
+IDLOCS
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+IDLOCS <expression> or IDLOCS <expression1>,<expression2>
+\end_layout
+
+\begin_layout Standard
+In 
+\begin_inset Quotes eld
+\end_inset
+
+gpasm
+\begin_inset Quotes erd
+\end_inset
+
+ mode (if the command line is 
+\emph on
+not
+\emph default
+ included the "--mpasm-compatible" option), in the case of PIC18FXXX processors
+ it is possible to use this directive.
+\end_layout
+
+\begin_layout Standard
+The expressions may be are as follows: string (
+\begin_inset Quotes eld
+\end_inset
+
+abcdef
+\begin_inset Quotes erd
+\end_inset
+
+), character ('a'), constant (0x37), symbol (NUM1)
+\end_layout
+
+\begin_layout Standard
+These may be used simultaneously: IDLOCS
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Quotes eld
+\end_inset
+
+abcd
+\begin_inset Quotes erd
+\end_inset
+
+, 0x76, 'D', NUM1
+\end_layout
+
+\begin_layout Standard
+See also: CONFIG, __IDLOCS
 \end_layout
 
 \begin_layout Subsection*

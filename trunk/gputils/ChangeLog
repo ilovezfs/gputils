@@ -1,3 +1,20 @@
+2014-06-20  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c, gpasm/gperror.c, gpasm/gperror.h,
+    gputils/gpdasm.c, libgputils/gpdis.c, libgputils/gpprocessor.c,
+    libgputils/gpprocessor.h:
+    Enabled the IDLOCS directive on the PIC16E devices.
+
+  * gputils/testsuite/test,
+    gputils/testsuite/gpdasm.project/idlocs16e1.asm,
+    gputils/testsuite/gpdasm.project/idlocs16e2.asm,
+    gputils/testsuite/gpdasm.project/idlocs16e3.asm,
+    gputils/testsuite/gpdasm.project/idlocs16e4.asm,
+    gputils/testsuite/gpdasm.project/idlocs16e5.asm,
+    gputils/testsuite/gpdasm.project/idlocs16e6.asm,
+    gputils/testsuite/gpdasm.project/idlocs16e7.asm,
+    gputils/testsuite/gpdasm.project/idlocs16e8.asm:
+    New tests for IDLOCS option.
+
 2014-06-18  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c, libgputils/gpcfg.c, libgputils/gpcfg.h:
     Enabled the CONFIG directive on the PIC12(E) and PIC14(E) devices.

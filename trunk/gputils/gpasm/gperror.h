@@ -109,7 +109,9 @@ enum GPE_codes {
   /* gputils special errors */
   GPE_INTERNAL         = 1101,  /* Internal error */
   GPE_PARSER           = 1102,  /* Parser error */
-  GPE_SCANNER          = 1103   /* Scanner error */
+  GPE_SCANNER          = 1103,  /* Scanner error */
+
+  GPE_IDLOCS_P16E      = 1501   /* IDLOCS directive use solely to the PIC16E family. */
 };
 
 /* Warning codes

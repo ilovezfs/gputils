@@ -249,7 +249,9 @@ struct px {
   int maxrom;
   int prog_mem_size;
   int badrom[MAX_BADROM];
+  int idlocs_addrs[2];
   int config_addrs[2];
+  int eeprom_addrs[2];
   /* */
   const char *script;
   int is_16bit_extended;  /* 1 if device supports 16 bit extended instruction set,
@@ -275,14 +277,14 @@ struct px {
 #define DEVID2    0x3fffff
 
 /* ID Locations for the 18xx parts. */
-#define IDLOC0    0x200000
+/*#define IDLOC0    0x200000
 #define IDLOC1    0x200001
 #define IDLOC2    0x200002
 #define IDLOC3    0x200003
 #define IDLOC4    0x200004
 #define IDLOC5    0x200005
 #define IDLOC6    0x200006
-#define IDLOC7    0x200007
+#define IDLOC7    0x200007*/
 
 /* Config address for everything else. */
 #define CONFIG_17CXX 0xfe00
@@ -301,7 +303,9 @@ const char *gp_processor_name(pic_processor_t processor, unsigned int choice);
 const char *gp_processor_coff_name(unsigned long coff_type, unsigned int choice);
 const char *gp_processor_script(pic_processor_t processor);
 unsigned int gp_processor_id_location(pic_processor_t processor);
+gp_boolean gp_processor_is_idlocs_addr(pic_processor_t processor, int address);
 gp_boolean gp_processor_is_config_addr(pic_processor_t processor, int address);
+gp_boolean gp_processor_is_eeprom_addr(pic_processor_t processor, int address);
 int gp_processor_rom_width(proc_class_t class);
 int gp_processor_check_bank(proc_class_t class, unsigned int address);
 int gp_processor_set_bank(proc_class_t class,

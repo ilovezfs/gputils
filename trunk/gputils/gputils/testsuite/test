@@ -152,6 +152,38 @@ function all_test() {
   run_test op16e_mpasm_conf 18f25k80
   echo -e "Extended 16 bit core passed.\n"
 
+  printbanner "Testing extended 16 bit core (idlocs-1)"
+  run_test idlocs16e1 18f4520
+  echo -e "Extended 16 bit core idlocs-1 passed.\n"
+
+  printbanner "Testing extended 16 bit core (idlocs-2)"
+  run_test idlocs16e2 18f4520
+  echo -e "Extended 16 bit core idlocs-2 passed.\n"
+
+  printbanner "Testing extended 16 bit core (idlocs-3)"
+  run_test idlocs16e3 18f4520
+  echo -e "Extended 16 bit core idlocs-3 passed.\n"
+
+  printbanner "Testing extended 16 bit core (idlocs-4)"
+  run_test idlocs16e4 18f4520
+  echo -e "Extended 16 bit core idlocs-4 passed.\n"
+
+  printbanner "Testing extended 16 bit core (idlocs-5)"
+  run_test idlocs16e5 18f4520
+  echo -e "Extended 16 bit core idlocs-5 passed.\n"
+
+  printbanner "Testing extended 16 bit core (idlocs-6)"
+  run_test idlocs16e6 18f4520
+  echo -e "Extended 16 bit core idlocs-6 passed.\n"
+
+  printbanner "Testing extended 16 bit core (idlocs-7)"
+  run_test idlocs16e7 18f4520
+  echo -e "Extended 16 bit core idlocs-7 passed.\n"
+
+  printbanner "Testing extended 16 bit core (idlocs-8)"
+  run_test idlocs16e8 18f4520
+  echo -e "Extended 16 bit core idlocs-8 passed.\n"
+
   printbanner "Gpdasm testing sucessful."
 }
 
