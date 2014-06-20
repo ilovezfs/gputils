@@ -320,6 +320,9 @@ gp_geterror(unsigned int code)
   case GPE_SCANNER:
     return "Scanner error: %s";
 
+  case GPE_IDLOCS_P16E:
+    return "IDLOCS directive use solely to the pic18 family.";
+
   default:
     return "UNKNOWN";
   }

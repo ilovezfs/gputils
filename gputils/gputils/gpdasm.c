@@ -115,10 +115,15 @@ closeasm(void)
 }
 
 static void
-writeorg(int org)
+writeorg(int org, const char *title)
 {
   if (!state.format) {
     printf("\n");
+
+    if (title != NULL) {
+      printf("        ; %s\n", title);
+    }
+
     printf("        org\t%#x\n", org);
   }
 }
@@ -133,6 +138,9 @@ dasm(MemBlock *memory)
   int num_words;
   int bsr_boundary;
   char buffer[80];
+  gp_boolean first_idlocs = true;
+  gp_boolean first_config = true;
+  gp_boolean first_eeprom = true;
 
   writeheader();
   write_core_sfr_list();
@@ -148,15 +156,84 @@ dasm(MemBlock *memory)
     while (i < maximum) {
       int org = gp_processor_byte_to_org(state.class, i);
       unsigned short data;
+      unsigned char byte;
 
-      if (gp_processor_is_config_addr(state.processor, org)) {
-        /* This is config word/bytes. Not need disassemble. */
-        if (state.class->config_size <= 0xFF) {
-          unsigned char byte;
-
+      if (gp_processor_is_idlocs_addr(state.processor, org)) {
+        /* This is idlocs word/bytes. Not need disassemble. */
+        if (state.class == PROC_CLASS_PIC16E) {
           if (b_memory_get(m, i, &byte, NULL, NULL)) {
             if (last_loc != (i - insn_size)) {
-              writeorg(org);
+              if (first_idlocs) {
+                writeorg(org, "idlocs");
+                first_idlocs = false;
+              }
+              else {
+                writeorg(org, NULL);
+              }
+            }
+
+            last_loc = i;
+
+            if (state.format) {
+              printf("%06x:  %02x  ", org, (unsigned int)byte);
+            } else {
+              printf("        ");
+            }
+
+            if (isprint(byte)) {
+              printf("db\t0x%02x\t\t\t; '%c'\n", (unsigned int)byte, byte);
+            }
+            else {
+              printf("db\t0x%02x\n", (unsigned int)byte);
+            }
+          }
+          else {
+            last_loc = 0;
+          }
+
+          insn_size = 1;
+        } /* if (state.class == PROC_CLASS_PIC16E) { */
+        else {
+          if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
+            if (last_loc != (i - insn_size)) {
+              if (first_idlocs) {
+                writeorg(org, "idlocs");
+                first_idlocs = false;
+              }
+              else {
+                writeorg(org, NULL);
+              }
+            }
+
+            last_loc = i;
+
+            if (state.format) {
+              printf("%06x:  %04x  ", org, (unsigned int)data);
+            } else {
+              printf("        ");
+            }
+
+            printf("dw\t0x%04x\n", (unsigned int)data);
+          }
+          else {
+            last_loc = 0;
+          }
+
+          insn_size = 2;
+        }
+      } /* if (gp_processor_is_idlocs_addr(state.processor, org)) { */
+      else if (gp_processor_is_config_addr(state.processor, org)) {
+        /* This is config word/bytes. Not need disassemble. */
+        if (state.class->config_size <= 0xFF) {
+          if (b_memory_get(m, i, &byte, NULL, NULL)) {
+            if (last_loc != (i - insn_size)) {
+              if (first_config) {
+                writeorg(org, "config");
+                first_config = false;
+              }
+              else {
+                writeorg(org, NULL);
+              }
             }
 
             last_loc = i;
@@ -178,7 +255,13 @@ dasm(MemBlock *memory)
         else {
           if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
             if (last_loc != (i - insn_size)) {
-              writeorg(org);
+              if (first_config) {
+                writeorg(org, "config");
+                first_config = false;
+              }
+              else {
+                writeorg(org, NULL);
+              }
             }
 
             last_loc = i;
@@ -197,12 +280,45 @@ dasm(MemBlock *memory)
 
           insn_size = 2;
         }
+      } /* else if (gp_processor_is_config_addr(state.processor, org)) { */
+      else if (gp_processor_is_eeprom_addr(state.processor, org)) {
+        if (b_memory_get(m, i, &byte, NULL, NULL)) {
+          if (last_loc != (i - insn_size)) {
+            if (first_eeprom) {
+              writeorg(org, "eeprom");
+              first_eeprom = false;
+            }
+            else {
+              writeorg(org, NULL);
+            }
+          }
+
+          last_loc = i;
+
+          if (state.format) {
+            printf("%06x:  %02x  ", org, (unsigned int)byte);
+          } else {
+            printf("        ");
+          }
+
+          if (isprint(byte)) {
+            printf("db\t0x%02x\t\t\t; '%c'\n", (unsigned int)byte, byte);
+          }
+          else {
+            printf("db\t0x%02x\n", (unsigned int)byte);
+          }
+        }
+        else {
+          last_loc = 0;
+        }
+
+        insn_size = 1;
       }
       else {
         /* This is program word. */
         if (state.class->i_memory_get(memory, i, &data, NULL, NULL)) {
           if (last_loc != (i - insn_size)) {
-            writeorg(org);
+            writeorg(org, NULL);
           }
 
           last_loc = i;

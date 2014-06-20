@@ -138,7 +138,18 @@ gp_disassemble(MemBlock *m,
   instruction = class->find_insn(class, opcode);
 
   if (instruction == NULL)  {
-    snprintf(buffer, sizeof_buffer, "dw\t%#x", opcode);
+    if (isprint(opcode)) {
+      snprintf(buffer, sizeof_buffer, "dw\t0x%04x\t\t\t; '%c'", (unsigned int)opcode,
+               (unsigned char)opcode);
+    }
+    else if (isprint(opcode & 0xFF) && isprint((opcode >> 8) & 0xFF)) {
+      snprintf(buffer, sizeof_buffer, "dw\t0x%04x\t\t\t; '%c%c'", (unsigned int)opcode,
+               (unsigned char)(opcode & 0xFF), (unsigned char)((opcode >> 8) & 0xFF));
+    }
+    else {
+      snprintf(buffer, sizeof_buffer, "dw\t0x%04x", (unsigned int)opcode);
+    }
+
     return num_words;
   }
 
