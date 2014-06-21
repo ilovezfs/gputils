@@ -114,6 +114,7 @@ gp_disassemble(MemBlock *m,
       const char *neg;
 
       value = opcode & 0x3f;
+      tmp   = opcode & 0x40;
 
       if (value & 0x20) {
         value = (value ^ 0x3f) + 1;
@@ -124,11 +125,11 @@ gp_disassemble(MemBlock *m,
 
       if (show_core_sfrs) {
         snprintf(buffer, sizeof_buffer, "%s\t%s.%d[%s]", instr, neg, value,
-                 (opcode & 0x40) ? "FSR1" : "FSR0");
+                 (tmp) ? "FSR1" : "FSR0");
       }
       else {
         snprintf(buffer, sizeof_buffer, "%s\t%s.%d[%u]", instr, neg, value,
-                 (opcode & 0x40) ? REG_PIC14E_FSR1 : REG_PIC14E_FSR0);
+                 (tmp) ? REG_PIC14E_FSR1 : REG_PIC14E_FSR0);
       }
 
       return num_words;
@@ -232,6 +233,7 @@ gp_disassemble(MemBlock *m,
         const char *neg;
 
         value = opcode & 0x3f;
+        tmp   = opcode & 0x40;
 
         if (value & 0x20) {
           value = (value ^ 0x3f) + 1;
@@ -242,11 +244,11 @@ gp_disassemble(MemBlock *m,
 
         if (show_core_sfrs) {
           snprintf(buffer, sizeof_buffer, "%s\t%s, %s.%d", instruction->name,
-                   (opcode & 0x40) ? "FSR1" : "FSR0", neg, value);
+                   (tmp) ? "FSR1" : "FSR0", neg, value);
         }
         else {
           snprintf(buffer, sizeof_buffer, "%s\t%u, %s.%d", instruction->name,
-                   (opcode & 0x40) ? REG_PIC14E_FSR1 : REG_PIC14E_FSR0, neg, value);
+                   (tmp) ? REG_PIC14E_FSR1 : REG_PIC14E_FSR0, neg, value);
         }
       }
       break;
@@ -299,7 +301,7 @@ gp_disassemble(MemBlock *m,
 
         num_words = 2;
         class->i_memory_get(m, byte_address + 2, &dest, NULL, NULL);
-        dest = (dest & MASK_PIC16E_BRANCH_HIGHER) << 8;
+        dest  = (dest & MASK_PIC16E_BRANCH_HIGHER) << 8;
         dest |= opcode & MASK_PIC16E_BRANCH_LOWER;
         DECODE_ARG1_N(gp_processor_byte_to_org(class, dest * 2));
       }
