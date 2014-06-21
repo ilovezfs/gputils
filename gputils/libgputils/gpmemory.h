@@ -22,23 +22,28 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPMEMORY_H__
 #define __GPMEMORY_H__
 
-#define MAX_RAM         0x1000          /* Maximum RAM */
-/* Choose bases such that each base has different hex 04 record */
-#define I_MEM_BITS      16              /* MemBlock base bit alignment */
-#define MAX_I_MEM       (1<<I_MEM_BITS) /* MemBlock base alignment */
+#define MAX_RAM         0x1000          /* Maximum RAM. */
+/* Choose bases such that each base has different hex 04 record. */
+#define I_MEM_BITS      16              /* MemBlock base bit alignment. */
+#define MAX_I_MEM       (1<<I_MEM_BITS) /* MemBlock base alignment. */
 #define I_MEM_MASK      (MAX_I_MEM-1)
 
 #define MAX_C_MEM       0x100           /* Maximum configuration memory
-                                           (only a few bytes are used) */
+                                           (only a few bytes are used). */
 
-#define BYTE_USED_MASK    0x8000 /* Means occupied in MemBlock.memory */
-#define BYTE_LISTED_MASK  0x4000 /* Means already listed */
+#define BYTE_USED_MASK    0x8000 /* Means occupied in MemBlock.memory.data. */
+#define BYTE_LISTED_MASK  0x4000 /* Means already listed. */
+#define BYTE_ATTR_MASK    (BYTE_USED_MASK | BYTE_LISTED_MASK)
+
+#define W_USED_H          (1 << 1)
+#define W_USED_L          (1 << 0)
+#define W_USED_ALL        (W_USED_H | W_USED_L)
 
 struct proc_class;
 
 /* See beginning of gpmemory.c for documentation. */
 typedef struct MemWord {
-  unsigned short data;
+  unsigned int data;
   char *section_name;
   char *symbol_name;
 } MemWord;
@@ -78,11 +83,11 @@ struct proc_class;
 
 void print_i_memory(MemBlock *m, const struct proc_class *class);
 
-gp_boolean i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word,
-                           const char **section_name, const char **symbol_name);
+unsigned int i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word,
+                             const char **section_name, const char **symbol_name);
 
-gp_boolean i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word,
-                           const char **section_name, const char **symbol_name);
+unsigned int i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word,
+                             const char **section_name, const char **symbol_name);
 
 void i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word,
                      const char *section_name, const char *symbol_name);

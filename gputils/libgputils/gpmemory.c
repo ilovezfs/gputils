@@ -25,6 +25,12 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
+typedef union
+{
+  unsigned char b[2];
+  unsigned short w;
+} bword_t;
+
 /************************************************************************
 
  gpmemory.c
@@ -110,8 +116,7 @@ i_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
   mbp->base   = base;
   mbp->memory = (MemWord *)calloc(MAX_I_MEM, sizeof(MemWord));
 
-  do
-  {
+  do {
     if ((m->next == NULL) || (m->next->base > base)) {
       /* Insert after this block. */
       mbp->next = m->next;
@@ -350,15 +355,15 @@ b_range_memory_used(MemBlock *m, int from, int to)
   int i, j = 0, page = 0, bytes = 0;
 
   /* find the starting page */
-  while (m != NULL && page < (from / MAX_I_MEM)) {
+  while ((m != NULL) && (page < (from / MAX_I_MEM))) {
     j += MAX_I_MEM;
     m = m->next;
   }
 
   /* count used bytes */
-  while (m != NULL && j < to) {
-    for (i = 0; i < MAX_I_MEM && j < to; ++i) {
-      if (m->memory != NULL && (m->memory[i & I_MEM_MASK].data & BYTE_USED_MASK)) {
+  while ((m != NULL) && (j < to)) {
+    for (i = 0; (i < MAX_I_MEM) && (j < to); ++i) {
+      if ((m->memory != NULL) && (m->memory[i & I_MEM_MASK].data & BYTE_USED_MASK)) {
         ++bytes;
       }
       ++j;
@@ -382,19 +387,17 @@ b_memory_used(MemBlock *m)
  *
  *
  ************************************************************************/
-gp_boolean
+unsigned int
 i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word,
                 const char **section_name, const char **symbol_name)
 {
-  unsigned char bytes[2];
+  unsigned int ret;
+  bword_t bw;
 
-  /* use bitwise or to prevent short-circuit evaluation */
-  if (b_memory_get(m, byte_addr,     bytes,     section_name, symbol_name) |
-      b_memory_get(m, byte_addr + 1, bytes + 1, NULL,         NULL)) {
-    *word = bytes[0] | (bytes[1] << 8);
-    return true;
-  }
-  return false;
+  ret  = (b_memory_get(m, byte_addr,     &bw.b[0], section_name, symbol_name)) ? W_USED_L : 0;
+  ret |= (b_memory_get(m, byte_addr + 1, &bw.b[1], NULL,         NULL))        ? W_USED_H : 0;
+  *word = bw.w;
+  return ret;
 }
 
 void
@@ -405,19 +408,17 @@ i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word,
   b_memory_put(m, byte_addr + 1, word >> 8,   section_name, symbol_name);
 }
 
-gp_boolean
+unsigned int
 i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word,
                 const char **section_name, const char **symbol_name)
 {
-  unsigned char bytes[2];
+  unsigned int ret;
+  bword_t bw;
 
-  /* use bitwise or to prevent short-circuit evaluation */
-  if (b_memory_get(m, byte_addr,     bytes,     section_name, symbol_name) |
-      b_memory_get(m, byte_addr + 1, bytes + 1, NULL,         NULL)) {
-    *word = bytes[1] | (bytes[0] << 8);
-    return true;
-  }
-  return false;
+  ret  = (b_memory_get(m, byte_addr,     &bw.b[1], section_name, symbol_name)) ? W_USED_H : 0;
+  ret |= (b_memory_get(m, byte_addr + 1, &bw.b[0], NULL,         NULL))        ? W_USED_L : 0;
+  *word = bw.w;
+  return ret;
 }
 
 void
@@ -431,46 +432,63 @@ i_memory_put_be(MemBlock *m, unsigned int byte_addr, unsigned short word,
 void
 print_i_memory(MemBlock *m, proc_class_t class)
 {
-  int base, i, j, row_used;
-  char c;
+  int base, i, j;
+  gp_boolean row_used;
+  unsigned int w_used;
+  bword_t data;
+  unsigned char c;
 
 #define WORDS_IN_ROW 8
 
-  do
-  {
-    base = m->base << I_MEM_BITS;
+  while (m != NULL) {
+    if (m->memory != NULL) {
+      base = m->base << I_MEM_BITS;
 
-    for (i = 0; i < MAX_I_MEM; i += 2 * WORDS_IN_ROW) {
-      row_used = 0;
+      for (i = 0; i < MAX_I_MEM; i += 2 * WORDS_IN_ROW) {
+        row_used = false;
 
-      if (m->memory != NULL) {
         for (j = 0; j < (2 * WORDS_IN_ROW); j++) {
           if (m->memory[i + j].data != 0) {
-            row_used = 1;
+            row_used = true;
+            break;
           }
         }
-      }
 
-      if (row_used) {
-        printf("%08X  ", gp_processor_byte_to_org(class, base + i));
+        if (row_used) {
+          printf("%08X  ", gp_processor_byte_to_org(class, base + i));
 
-        for (j = 0; j < WORDS_IN_ROW; j += 2) {
-          unsigned short data;
+          for (j = 0; j < WORDS_IN_ROW; j++) {
 
-          class->i_memory_get(m, i + (2 * j), &data, NULL, NULL);
-          printf("%04X ", data);
+            w_used = class->i_memory_get(m, base + i + (j * 2), &data.w, NULL, NULL);
+            switch (w_used & W_USED_ALL) {
+            case W_USED_ALL:
+              printf("%04X ", data.w);
+              break;
+
+            case W_USED_H:
+              printf("%02X-- ", data.b[1]);
+              break;
+
+            case W_USED_L:
+              printf("--%02X ", data.b[0]);
+              break;
+
+            default:
+              printf("---- ");
+            }
+          }
+
+          for (j = 0; j < (2 * WORDS_IN_ROW); j++) {
+            c = m->memory[i + j].data & 0xff;
+            putchar(isprint(c) ? c : '.');
+          }
+          putchar('\n');
         }
-
-        for (j = 0; j < (2 * WORDS_IN_ROW); j++) {
-          c = m->memory[i + j].data & 0xff;
-          putchar(isprint(c) ? c : '.');
-        }
-        putchar('\n');
       }
     }
 
     m = m->next;
-  } while (m != NULL);
+  }
 }
 
 /************************************************************************
@@ -484,17 +502,18 @@ void
 b_memory_set_listed(MemBlock *m, unsigned int address, unsigned int n_bytes)
 {
   while (n_bytes--) {
-    do {
+    while (m != NULL) {
       if (((address >> I_MEM_BITS) & 0xffff) == m->base) {
         if (m->memory == NULL) {
           m->memory = (MemWord *)calloc(MAX_I_MEM, sizeof(MemWord));
         }
+
         m->memory[address & I_MEM_MASK].data |= BYTE_LISTED_MASK;
         break;
       }
 
       m = m->next;
-    } while (m != NULL);
+    }
 
     ++address;
   }
@@ -505,23 +524,25 @@ b_memory_get_unlisted_size(MemBlock *m, unsigned int address)
 {
   unsigned int n_bytes = 0;
 
-  if (m != NULL && m->memory != NULL) {
+  if ((m != NULL) && (m->memory != NULL)) {
     while (n_bytes < 4) {
       /* find memory block belonging to the address */
       while (((address >> I_MEM_BITS) & 0xffff) != m->base) {
         m = m->next;
-        if (m == NULL)
+
+        if (m == NULL) {
           return n_bytes;
+        }
       }
 
-      if (m->memory != NULL &&
-          (m->memory[address & I_MEM_MASK].data & (BYTE_LISTED_MASK | BYTE_USED_MASK)) == BYTE_USED_MASK) {
+      if ((m->memory != NULL) &&
+          ((m->memory[address & I_MEM_MASK].data & BYTE_ATTR_MASK) == BYTE_USED_MASK)) {
         /* byte at address not listed */
         ++address;
         ++n_bytes;
       }
       else {
-        /* byte at adress already listed */
+        /* byte at address already listed */
         break;
       }
     }

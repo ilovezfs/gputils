@@ -1,3 +1,19 @@
+2014-06-21  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx:
+    Changed date of last editing.
+
+  * gputils/testsuite/test:
+    Removed the unnecessary flags.
+
+  * libgputils/gpdis.c:
+    Minor optimization.
+
+  * libgputils/gpmemory.c, libgputils/gpmemory.h:
+    bugfix
+
+  * libgputils/gpprocessor.h:
+    Code cleaning.
+
 2014-06-20  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c, gpasm/gperror.c, gpasm/gperror.h,
     gputils/gpdasm.c, libgputils/gpdis.c, libgputils/gpprocessor.c,

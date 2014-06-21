@@ -248,7 +248,9 @@ my $px_struct_end;              # The end of the px structure in the gpprocessor
         MAXROM       => 0,
         PROGSIZE     => 0,              Size of program memory.
         BADROM       => [0, 0],
+        IDLOCS_ADDRS => [0, 0],
         CONFIG_ADDRS => [0, 0],
+        EEPROM_ADDRS => [0, 0],
         SCRIPT       => '',
         EXTENDED     => 0,
         COMMENT      => ''              Comment on the end of line.
@@ -266,9 +268,15 @@ my %mp_px_rows_by_name;
 my %gp_px_rows_by_coff;
 my %mp_px_rows_by_coff;
 
+my $lkr_idlocs_start;
+my $lkr_idlocs_end;
+
 my @lkr_pages;
 my $lkr_config_start;
 my $lkr_config_end;
+
+my $lkr_eeprom_start;
+my $lkr_eeprom_end;
 
 #-----------------------------------------------
 
@@ -1227,6 +1235,20 @@ sub process_lkr_line($)
 
         push(@lkr_pages, { START => $start, END => $end });
         }
+      elsif ($name =~ /(idlocs|userid|usrlocs)$/io)
+        {
+        # CODEPAGE   NAME=.idlocs    START=0x200             END=0x203          PROTECTED 
+        # CODEPAGE   NAME=.idlocs    START=0x400             END=0x403          PROTECTED 
+        # CODEPAGE   NAME=.idlocs    START=0x440             END=0x443          PROTECTED 
+        # CODEPAGE   NAME=userid     START=0x640             END=0x643          PROTECTED 
+        # CODEPAGE   NAME=.usrlocs   START=0x2000            END=0x2003         PROTECTED 
+        # CODEPAGE   NAME=.idlocs    START=0x2000            END=0x2003         PROTECTED 
+        # CODEPAGE   NAME=.idlocs    START=0x8000            END=0x8003         PROTECTED 
+        # CODEPAGE   NAME=idlocs     START=0x200000          END=0x200007       PROTECTED
+
+        $lkr_idlocs_start = $start;
+        $lkr_idlocs_end   = $end;
+        }
       elsif ($name =~ /(config|cfgmem)$/io)
         {
         # CODEPAGE   NAME=.config    START=0xFFF             END=0xFFF          PROTECTED
@@ -1235,6 +1257,18 @@ sub process_lkr_line($)
 
         $lkr_config_start = $start;
         $lkr_config_end   = $end;
+        }
+      elsif ($name =~ /eedata$/io)
+        {
+        # CODEPAGE   NAME=eedata     START=0x2100            END=0x213F         PROTECTED
+        # CODEPAGE   NAME=eedata     START=0x2100            END=0x217F         PROTECTED 
+        # CODEPAGE   NAME=eedata     START=0x2100            END=0x21FF         PROTECTED 
+        # CODEPAGE   NAME=eedata     START=0xF000            END=0xF0FF         PROTECTED 
+        # CODEPAGE   NAME=eedata     START=0xF00000          END=0xF000FF       PROTECTED
+        # CODEPAGE   NAME=eedata     START=0xF00000          END=0xF003FF       PROTECTED
+
+        $lkr_eeprom_start = $start;
+        $lkr_eeprom_end   = $end;
         }
       }
     }
@@ -1258,9 +1292,15 @@ sub read_lkr($)
 
   reset_preprocessor();
 
+  $lkr_idlocs_start = -1;
+  $lkr_idlocs_end   = -1;
+
   @lkr_pages = ();
   $lkr_config_start = -1;
   $lkr_config_end   = -1;
+
+  $lkr_eeprom_start = -1;
+  $lkr_eeprom_end   = -1;
 
   while (<$in>)
     {
@@ -1505,7 +1545,9 @@ sub new_px_row($$$)
            MAXROM       => $rom_end,
            PROGSIZE     => $lkr_rom_end + 1,
            BADROM       => [ $bad_start, $bad_end ],
+           IDLOCS_ADDRS => [ $lkr_idlocs_start, $lkr_idlocs_end ],
            CONFIG_ADDRS => [ $lkr_config_start, $lkr_config_end ],
+           EEPROM_ADDRS => [ $lkr_eeprom_start, $lkr_eeprom_end ],
            SCRIPT       => $Script,
     	   EXTENDED     => $Info->{EXTENDED},
            COMMENT      => ''
@@ -1663,12 +1705,13 @@ sub extract_px_struct()
         $px_struct_begin = $n;
         }
       }
-    elsif ($_ =~ /\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\S+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*\"?([\.\w]+)\"?\s*,\s*(\d+)\s*\}/io)
+        #                     $1                $2                 $3            $4            $5                 $6             $7             $8           $9          $10              $11         $12                  $13         $14                  $15         $16                   $17         $18                   $19              $20
+    elsif ($_ =~ /\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\S+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*\"?([\.\w]+)\"?\s*,\s*(\d+)\s*\}/io)
       {
       my $name0 = $3;
       my $name2 = $5;
       my $coff = str2dec($6);
-      my $script = $15;
+      my $script = $19;
       my $prev;
       my $px = {
                IGNORED      => FALSE,
@@ -1681,9 +1724,11 @@ sub extract_px_struct()
                MAXROM       => str2dec($9),
                PROGSIZE     => str2dec($10),
                BADROM       => [ str2dec($11), str2dec($12) ],
-               CONFIG_ADDRS => [ str2dec($13), str2dec($14) ],
+               IDLOCS_ADDRS => [ str2dec($13), str2dec($14) ],
+               CONFIG_ADDRS => [ str2dec($15), str2dec($16) ],
+               EEPROM_ADDRS => [ str2dec($17), str2dec($18) ],
                SCRIPT       => $script,
-    	       EXTENDED     => str2dec($16),
+               EXTENDED     => str2dec($20),
                COMMENT      => ''
                };
 
@@ -1793,7 +1838,9 @@ EOT
       print ('maxrom      : ' . neg_form($_->{MAXROM}) . "\n");
       print ('prog_size   : ' . neg_form($_->{PROGSIZE}) . "\n");
       print ('badrom      : ' . neg_form($_->{BADROM}->[0]) . ', ' . neg_form($_->{BADROM}->[1]) . "\n");
+      print ('idlocs_addrs: ' . neg_form($_->{IDLOCS_ADDRS}->[0]) . ', ' . neg_form($_->{IDLOCS_ADDRS}->[1]) . "\n");
       print ('config_addrs: ' . neg_form($_->{CONFIG_ADDRS}->[0]) . ', ' . neg_form($_->{CONFIG_ADDRS}->[1]) . "\n");
+      print ('eeprom_addrs: ' . neg_form($_->{EEPROM_ADDRS}->[0]) . ', ' . neg_form($_->{EEPROM_ADDRS}->[1]) . "\n");
       print  "script      : $_->{SCRIPT}\n";
       print  "extended    : $_->{EXTENDED}\n";
       }
@@ -1867,9 +1914,21 @@ sub create_one_px_row($$)
   $line .= ' }, ';
 
   $line .= '{ ';
+  $line .= neg_form($Row->{IDLOCS_ADDRS}->[0]);
+  $line .= ', ';
+  $line .= neg_form($Row->{IDLOCS_ADDRS}->[1]);
+  $line .= ' }, ';
+
+  $line .= '{ ';
   $line .= neg_form($Row->{CONFIG_ADDRS}->[0]);
   $line .= ', ';
   $line .= neg_form($Row->{CONFIG_ADDRS}->[1]);
+  $line .= ' }, ';
+
+  $line .= '{ ';
+  $line .= neg_form($Row->{EEPROM_ADDRS}->[0]);
+  $line .= ', ';
+  $line .= neg_form($Row->{EEPROM_ADDRS}->[1]);
   $line .= ' }, ';
 
   $i = $Row->{SCRIPT};
@@ -2226,8 +2285,12 @@ sub show_diff_px_struct()
         $_->{PROGSIZE}          != $mp->{PROGSIZE} ||
         $_->{BADROM}->[0]       != $mp->{BADROM}->[0] ||
         $_->{BADROM}->[1]       != $mp->{BADROM}->[1] ||
+        $_->{IDLOCS_ADDRS}->[0] != $mp->{IDLOCS_ADDRS}->[0] ||
+        $_->{IDLOCS_ADDRS}->[1] != $mp->{IDLOCS_ADDRS}->[1] ||
         $_->{CONFIG_ADDRS}->[0] != $mp->{CONFIG_ADDRS}->[0] ||
-        $_->{CONFIG_ADDRS}->[1] != $mp->{CONFIG_ADDRS}->[1])
+        $_->{CONFIG_ADDRS}->[1] != $mp->{CONFIG_ADDRS}->[1] ||
+        $_->{EEPROM_ADDRS}->[0] != $mp->{EEPROM_ADDRS}->[0] ||
+        $_->{EEPROM_ADDRS}->[1] != $mp->{EEPROM_ADDRS}->[1])
       {
       $out .= "$border\n";
       $out .= 'mplabx  ' . create_one_px_row($mp, FALSE) . "\n";

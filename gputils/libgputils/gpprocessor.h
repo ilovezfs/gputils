@@ -188,8 +188,8 @@ struct proc_class {
   const int *num_instructions;
   const struct insn *(*find_insn)(const struct proc_class *cls, long int opcode);
 
-  gp_boolean (*i_memory_get)(MemBlock *m, unsigned int byte_address, unsigned short *word,
-                             const char **section_name, const char **symbol_name);
+  unsigned int (*i_memory_get)(MemBlock *m, unsigned int byte_address, unsigned short *word,
+                               const char **section_name, const char **symbol_name);
 
   void (*i_memory_put)(MemBlock *m, unsigned int byte_address, unsigned short value,
                        const char *section_name, const char *symbol_name);
@@ -254,8 +254,9 @@ struct px {
   int eeprom_addrs[2];
   /* */
   const char *script;
-  int is_16bit_extended;  /* 1 if device supports 16 bit extended instruction set,
-                             0 otherwise; Used ony for PROC_CLASS_PIC16E class. */
+  /* True if device supports 16 bit extended instruction set, false otherwise.
+     Used ony for PROC_CLASS_PIC16E class. */
+  int is_16bit_extended;
 };
 
 /* CONFIG addresses for the 18xx parts */
@@ -276,21 +277,6 @@ struct px {
 #define DEVID1    0x3ffffe
 #define DEVID2    0x3fffff
 
-/* ID Locations for the 18xx parts. */
-/*#define IDLOC0    0x200000
-#define IDLOC1    0x200001
-#define IDLOC2    0x200002
-#define IDLOC3    0x200003
-#define IDLOC4    0x200004
-#define IDLOC5    0x200005
-#define IDLOC6    0x200006
-#define IDLOC7    0x200007*/
-
-/* Config address for everything else. */
-#define CONFIG_17CXX 0xfe00
-#define CONFIG_ADDRESS_14  0x2007
-#define CONFIG_ADDRESS_12  0x0fff
-
 void gp_dump_processor_list(gp_boolean list_all, proc_class_t class);
 const struct px *gp_find_processor(const char *name);
 proc_class_t gp_processor_class(pic_processor_t);
@@ -308,18 +294,22 @@ gp_boolean gp_processor_is_config_addr(pic_processor_t processor, int address);
 gp_boolean gp_processor_is_eeprom_addr(pic_processor_t processor, int address);
 int gp_processor_rom_width(proc_class_t class);
 int gp_processor_check_bank(proc_class_t class, unsigned int address);
+
 int gp_processor_set_bank(proc_class_t class,
                           int num_banks,
                           int bank,
                           MemBlock *m,
                           unsigned int address);
+
 int gp_processor_check_ibank(proc_class_t class, unsigned int address);
+
 int gp_processor_set_ibank(proc_class_t class,
                           int num_banks,
                           int bank,
                           MemBlock *m,
                           unsigned int address);
 int gp_processor_check_page(proc_class_t class, unsigned int address);
+
 int gp_processor_set_page(proc_class_t class,
                           int num_pages,
                           int page,
@@ -337,4 +327,4 @@ int gp_byte_to_org(unsigned shift, int byte);
 
 const core_sfr_t *gp_processor_find_sfr(proc_class_t class, int address);
 
-#endif
+#endif /* __GPPROCESSOR_H__ */
