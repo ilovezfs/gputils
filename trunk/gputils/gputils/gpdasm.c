@@ -64,7 +64,7 @@ select_processor(void)
 }
 
 static void
-writeheader(void)
+write_header(void)
 {
   if (!state.format) {
     printf("\n");
@@ -78,7 +78,7 @@ write_core_sfr_list(void)
   int i;
   const core_sfr_t *table;
 
-  if (!state.show_names || state.format || (state.class->core_sfr_table == NULL) ||
+  if (state.format || (state.class->core_sfr_table == NULL) ||
       (state.class->core_sfr_number == 0)) {
     return;
   }
@@ -115,7 +115,7 @@ closeasm(void)
 }
 
 static void
-writeorg(int org, const char *title)
+write_org(int org, int digits, const char *title)
 {
   if (!state.format) {
     printf("\n");
@@ -124,39 +124,151 @@ writeorg(int org, const char *title)
       printf("        ; %s\n", title);
     }
 
-    printf("        org\t%#x\n", org);
+    printf("        org\t0x%0*x\n", digits, org);
+  }
+}
+
+static void
+recognize_labels(MemBlock *memory)
+{
+  MemBlock *m;
+  int i, maximum;
+  int org;
+  int insn_size;
+  int num_words;
+  unsigned short data;
+  const vector_t *vector;
+  gpdasm_fstate_t fstate;
+
+  m = memory;
+  fstate.wreg_prev = 0;
+  fstate.pclath_prev = 0;
+  fstate.pclath_valid_mask = 0xff;
+  while (m != NULL) {
+    i = m->base << I_MEM_BITS;
+    maximum = i + MAX_I_MEM;
+
+    insn_size = 2;
+    while (i < maximum) {
+      org = gp_processor_byte_to_org(state.class, i);
+
+      if (gp_processor_is_idlocs_addr(state.processor, org)) {
+        insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
+      }
+      else if (gp_processor_is_config_addr(state.processor, org)) {
+        insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
+      }
+      else if (gp_processor_is_eeprom_addr(state.processor, org)) {
+        insn_size = 1;
+      }
+      else {
+        if (state.class->i_memory_get(m, i, &data, NULL, NULL) == W_USED_ALL) {
+	  vector = gp_processor_find_vector(state.class, org);
+
+	  if (vector != NULL) {
+            b_memory_set_addr_type(m, i, W_ADDR_T_LABEL, 0);
+            b_memory_set_addr_name(m, i, vector->name);
+	  }
+
+          num_words = gp_disassemble_find_labels(m, i, state.processor, &fstate);
+          insn_size = (num_words != 1) ? 4 : 2;
+        }
+      }
+
+      i += insn_size;
+    }
+
+    m = m->next;
+  }
+}
+
+static void
+denominate_labels(MemBlock *memory)
+{
+  MemBlock *m;
+  int i, maximum;
+  unsigned int type;
+  unsigned int func_idx;
+  unsigned int label_idx;
+  char buf[BUFSIZ];
+
+  m = memory;
+  func_idx  = 0;
+  label_idx = 0;
+  while (m != NULL) {
+    i = m->base << I_MEM_BITS;
+    maximum = i + MAX_I_MEM;
+
+    while (i < maximum) {
+      type = b_memory_get_addr_type(m, i, NULL, NULL);
+
+      if (type & W_ADDR_T_FUNC) {
+        snprintf(buf, sizeof(buf), "function_%03u", func_idx);
+        b_memory_set_addr_name(m, i, buf);
+        ++func_idx;
+      }
+      else if (type & W_ADDR_T_LABEL) {
+        snprintf(buf, sizeof(buf), "label_%03u", label_idx);
+        b_memory_set_addr_name(m, i, buf);
+        ++label_idx;
+      }
+
+      i += 2;
+    }
+
+    m = m->next;
   }
 }
 
 static void
 dasm(MemBlock *memory)
 {
-  MemBlock *m = memory;
+  MemBlock *m;
   int i, maximum;
+  int org;
   int insn_size;
   int last_loc;
   int num_words;
   int bsr_boundary;
+  unsigned short data;
+  unsigned char byte;
+  gp_boolean first_idlocs;
+  gp_boolean first_config;
+  gp_boolean first_eeprom;
+  const char *label_name;
+  int addr_digits;
+  int word_digits;
   char buffer[80];
-  gp_boolean first_idlocs = true;
-  gp_boolean first_config = true;
-  gp_boolean first_eeprom = true;
 
-  writeheader();
-  write_core_sfr_list();
+  if (state.show_names) {
+    recognize_labels(memory);
+    denominate_labels(memory);
+  }
 
   bsr_boundary = gp_processor_bsr_boundary(state.processor);
+  addr_digits = state.class->addr_digits;
+  word_digits = state.class->word_digits;
+
+  write_header();
+
+  if (state.show_names) {
+    printf("\n; The recognition of labels is not always good, therefore be treated\n"
+           "; cautiously the results.\n");
+    write_core_sfr_list();
+  }
+
+  first_idlocs = true;
+  first_config = true;
+  first_eeprom = true;
+  m = memory;
   last_loc = 0;
   while (m != NULL) {
     i = m->base << I_MEM_BITS;
-
     maximum = i + MAX_I_MEM;
 
     insn_size = 2;
     while (i < maximum) {
-      int org = gp_processor_byte_to_org(state.class, i);
-      unsigned short data;
-      unsigned char byte;
+      org = gp_processor_byte_to_org(state.class, i);
 
       if (gp_processor_is_idlocs_addr(state.processor, org)) {
         /* This is idlocs word/bytes. Not need disassemble. */
@@ -164,18 +276,18 @@ dasm(MemBlock *memory)
           if (b_memory_get(m, i, &byte, NULL, NULL)) {
             if (last_loc != (i - insn_size)) {
               if (first_idlocs) {
-                writeorg(org, "idlocs");
+                write_org(org, addr_digits, "idlocs");
                 first_idlocs = false;
               }
               else {
-                writeorg(org, NULL);
+                write_org(org, addr_digits, NULL);
               }
             }
 
             last_loc = i;
 
             if (state.format) {
-              printf("%06x:  %02x  ", org, (unsigned int)byte);
+              printf("%0*x:  %02x  ", addr_digits, org, (unsigned int)byte);
             } else {
               printf("        ");
             }
@@ -192,28 +304,28 @@ dasm(MemBlock *memory)
           }
 
           insn_size = 1;
-        } /* if (state.class == PROC_CLASS_PIC16E) { */
+        } /* if (state.class == PROC_CLASS_PIC16E) */
         else {
           if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
             if (last_loc != (i - insn_size)) {
               if (first_idlocs) {
-                writeorg(org, "idlocs");
+                write_org(org, addr_digits, "idlocs");
                 first_idlocs = false;
               }
               else {
-                writeorg(org, NULL);
+                write_org(org, addr_digits, NULL);
               }
             }
 
             last_loc = i;
 
             if (state.format) {
-              printf("%06x:  %04x  ", org, (unsigned int)data);
+              printf("%0*x:  %0*x  ", addr_digits, org, word_digits, (unsigned int)data);
             } else {
               printf("        ");
             }
 
-            printf("dw\t0x%04x\n", (unsigned int)data);
+            printf("dw\t0x%0*x\n", word_digits, (unsigned int)data);
           }
           else {
             last_loc = 0;
@@ -221,25 +333,25 @@ dasm(MemBlock *memory)
 
           insn_size = 2;
         }
-      } /* if (gp_processor_is_idlocs_addr(state.processor, org)) { */
+      } /* if (gp_processor_is_idlocs_addr(state.processor, org)) */
       else if (gp_processor_is_config_addr(state.processor, org)) {
         /* This is config word/bytes. Not need disassemble. */
-        if (state.class->config_size <= 0xFF) {
+        if (state.class == PROC_CLASS_PIC16E) {
           if (b_memory_get(m, i, &byte, NULL, NULL)) {
             if (last_loc != (i - insn_size)) {
               if (first_config) {
-                writeorg(org, "config");
+                write_org(org, addr_digits, "config");
                 first_config = false;
               }
               else {
-                writeorg(org, NULL);
+                write_org(org, addr_digits, NULL);
               }
             }
 
             last_loc = i;
 
             if (state.format) {
-              printf("%06x:  %02x  ", org, (unsigned int)byte);
+              printf("%0*x:  %02x  ", addr_digits, org, (unsigned int)byte);
             } else {
               printf("        ");
             }
@@ -251,28 +363,28 @@ dasm(MemBlock *memory)
           }
 
           insn_size = 1;
-        }
+        } /* if (state.class->config_size <= 0xFF) */
         else {
           if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
             if (last_loc != (i - insn_size)) {
               if (first_config) {
-                writeorg(org, "config");
+                write_org(org, addr_digits, "config");
                 first_config = false;
               }
               else {
-                writeorg(org, NULL);
+                write_org(org, addr_digits, NULL);
               }
             }
 
             last_loc = i;
 
             if (state.format) {
-              printf("%06x:  %04x  ", org, (unsigned int)data);
+              printf("%0*x:  %0*x  ", addr_digits, org, word_digits, (unsigned int)data);
             } else {
               printf("        ");
             }
 
-            printf("dw\t0x%04x\n", (unsigned int)data);
+            printf("dw\t0x%0*x\n", word_digits, (unsigned int)data);
           }
           else {
             last_loc = 0;
@@ -280,23 +392,23 @@ dasm(MemBlock *memory)
 
           insn_size = 2;
         }
-      } /* else if (gp_processor_is_config_addr(state.processor, org)) { */
+      } /* else if (gp_processor_is_config_addr(state.processor, org)) */
       else if (gp_processor_is_eeprom_addr(state.processor, org)) {
         if (b_memory_get(m, i, &byte, NULL, NULL)) {
           if (last_loc != (i - insn_size)) {
             if (first_eeprom) {
-              writeorg(org, "eeprom");
+              write_org(org, addr_digits, "eeprom");
               first_eeprom = false;
             }
             else {
-              writeorg(org, NULL);
+              write_org(org, addr_digits, NULL);
             }
           }
 
           last_loc = i;
 
           if (state.format) {
-            printf("%06x:  %02x  ", org, (unsigned int)byte);
+            printf("%0*x:  %02x  ", addr_digits, org, (unsigned int)byte);
           } else {
             printf("        ");
           }
@@ -313,32 +425,39 @@ dasm(MemBlock *memory)
         }
 
         insn_size = 1;
-      }
+      } /* else if (gp_processor_is_eeprom_addr(state.processor, org)) */
       else {
         /* This is program word. */
-        if (state.class->i_memory_get(memory, i, &data, NULL, NULL)) {
+        if (state.class->i_memory_get(m, i, &data, NULL, &label_name) == W_USED_ALL) {
           if (last_loc != (i - insn_size)) {
-            writeorg(org, NULL);
+            write_org(org, addr_digits, NULL);
           }
 
           last_loc = i;
 
+          if (state.show_names && (label_name != NULL)) {
+            printf("\n%s:\t\t; address: 0x%0*x\n\n", label_name,
+                   addr_digits, gp_processor_byte_to_org(state.class, i));
+	  }
+
           if (state.format) {
-            printf("%06x:  %04x  ", org, data);
+            printf("%0*x:  %0*x  ", addr_digits, org, word_digits, (unsigned int)data);
           } else {
             printf("        ");
           }
 
-          num_words = gp_disassemble(memory, i, state.class, bsr_boundary, state.show_names,
+          num_words = gp_disassemble(m, i, state.class, bsr_boundary, state.show_names,
                                      buffer, sizeof(buffer));
           printf("%s\n", buffer);
 
           if (num_words != 1) {
             /* some 18xx instructions use two words */
             if (state.format) {
-              state.class->i_memory_get(memory, i + 2, &data, NULL, NULL);
-              printf("%06x:  %04x\n", gp_processor_byte_to_org(state.class, i + 2), data);
+              state.class->i_memory_get(m, i + 2, &data, NULL, NULL);
+              printf("%0*x:  %0*x  ", addr_digits, gp_processor_byte_to_org(state.class, i + 2),
+                     word_digits, (unsigned int)data);
             }
+
             insn_size = 4;
           }
           else {
@@ -363,11 +482,12 @@ show_usage(void)
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -c, --mnemonics                Decode special mnemonics.\n");
   printf("  -h, --help                     Show this usage message.\n");
-  printf("  -i, --hex-info                 Information on input hex file.\n");
+  printf("  -i, --hex-info                 Information of input hex file.\n");
   printf("  -l, --list-chips               List supported processors.\n");
-  printf("  -m, --dump                     Memory dump hex file.\n");
+  printf("  -m, --dump                     Memory dump of input hex file.\n");
   printf("  -n, --show-names               For some case of SFR, shows the name of\n"
-         "                                 instead of the address.\n");
+         "                                 instead of the address. In addition shows\n"
+         "                                 the labels also.\n");
   printf("  -p PROC, --processor PROC      Select processor.\n");
   printf("  -s, --short                    Print short format.\n");
   printf("  -v, --version                  Show version.\n");

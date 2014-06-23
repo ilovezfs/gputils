@@ -22,22 +22,28 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPMEMORY_H__
 #define __GPMEMORY_H__
 
-#define MAX_RAM         0x1000          /* Maximum RAM. */
+#define MAX_RAM                 0x1000              /* Maximum RAM. */
 /* Choose bases such that each base has different hex 04 record. */
-#define I_MEM_BITS      16              /* MemBlock base bit alignment. */
-#define MAX_I_MEM       (1<<I_MEM_BITS) /* MemBlock base alignment. */
-#define I_MEM_MASK      (MAX_I_MEM-1)
+#define I_MEM_BITS              16                  /* MemBlock base bit alignment. */
+#define MAX_I_MEM               (1 << I_MEM_BITS)   /* MemBlock base alignment. */
+#define I_MEM_MASK              (MAX_I_MEM - 1)
 
-#define MAX_C_MEM       0x100           /* Maximum configuration memory
-                                           (only a few bytes are used). */
+#define MAX_C_MEM               0x100               /* Maximum configuration memory
+                                                       (only a few bytes are used). */
 
-#define BYTE_USED_MASK    0x8000 /* Means occupied in MemBlock.memory.data. */
-#define BYTE_LISTED_MASK  0x4000 /* Means already listed. */
-#define BYTE_ATTR_MASK    (BYTE_USED_MASK | BYTE_LISTED_MASK)
+#define BYTE_USED_MASK          (1 << 15)           /* Means occupied in MemBlock.memory.data. */
+#define BYTE_LISTED_MASK        (1 << 14)           /* Means already listed. */
+#define BYTE_ATTR_MASK          (BYTE_USED_MASK | BYTE_LISTED_MASK)
 
-#define W_USED_H          (1 << 1)
-#define W_USED_L          (1 << 0)
-#define W_USED_ALL        (W_USED_H | W_USED_L)
+#define W_ADDR_T_FUNC           (1 << 10)           /* A function starts at this address. */
+#define W_ADDR_T_LABEL          (1 <<  9)           /* A label there is at this address. */
+#define W_ADDR_T_BRANCH_SRC     (1 <<  8)           /* Source of a branch there is at this address. */
+#define W_ADDR_T_MASK           (W_ADDR_T_FUNC | W_ADDR_T_LABEL | W_ADDR_T_BRANCH_SRC)
+
+
+#define W_USED_H                (1 << 1)            /* Used top half of the word. */
+#define W_USED_L                (1 << 0)            /* Used bottom half of the word. */
+#define W_USED_ALL              (W_USED_H | W_USED_L)
 
 struct proc_class;
 
@@ -46,6 +52,7 @@ typedef struct MemWord {
   unsigned int data;
   char *section_name;
   char *symbol_name;
+  unsigned int dest_byte_addr;
 } MemWord;
 
 typedef struct MemBlock {
@@ -57,7 +64,7 @@ typedef struct MemBlock {
 MemBlock *i_memory_create(void);
 void i_memory_free(MemBlock *m);
 
-gp_boolean b_memory_get(MemBlock *m, unsigned int byte_address, unsigned char *byte,
+gp_boolean b_memory_get(const MemBlock *m, unsigned int byte_address, unsigned char *byte,
                         const char **section_name, const char **symbol_name);
 
 #ifndef NDEBUG
@@ -76,17 +83,17 @@ void b_memory_put(MemBlock *b_memory, unsigned int byte_address, unsigned char v
                   const char *section_name, const char *symbol_name);
 
 void b_memory_clear(MemBlock *b_memory, unsigned int byte_address);
-int b_range_memory_used(MemBlock *m, int from, int to);
-int b_memory_used(MemBlock *m);
+int b_range_memory_used(const MemBlock *m, int from, int to);
+int b_memory_used(const MemBlock *m);
 
 struct proc_class;
 
-void print_i_memory(MemBlock *m, const struct proc_class *class);
+void print_i_memory(const MemBlock *m, const struct proc_class *class);
 
-unsigned int i_memory_get_le(MemBlock *m, unsigned int byte_addr, unsigned short *word,
+unsigned int i_memory_get_le(const MemBlock *m, unsigned int byte_addr, unsigned short *word,
                              const char **section_name, const char **symbol_name);
 
-unsigned int i_memory_get_be(MemBlock *m, unsigned int byte_addr, unsigned short *word,
+unsigned int i_memory_get_be(const MemBlock *m, unsigned int byte_addr, unsigned short *word,
                              const char **section_name, const char **symbol_name);
 
 void i_memory_put_le(MemBlock *m, unsigned int byte_addr, unsigned short word,
@@ -96,6 +103,12 @@ void i_memory_put_be(MemBlock *m, unsigned int byte_addr, unsigned short word,
                      const char *section_name, const char *symbol_name);
 
 void b_memory_set_listed(MemBlock *m, unsigned int address, unsigned int n_bytes);
-unsigned int b_memory_get_unlisted_size(MemBlock *m, unsigned int address);
+unsigned int b_memory_get_unlisted_size(const MemBlock *m, unsigned int address);
+
+gp_boolean b_memory_set_addr_type(MemBlock *m, unsigned int address, unsigned int type, unsigned int dest_byte_addr);
+unsigned int b_memory_get_addr_type(const MemBlock *m, unsigned int address, const char **label_name, unsigned int *dest_byte_addr);
+
+gp_boolean b_memory_set_addr_name(MemBlock *m, unsigned int address, const char *name);
+const char *b_memory_get_addr_name(const MemBlock *m, unsigned int address);
 
 #endif

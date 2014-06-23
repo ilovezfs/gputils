@@ -94,6 +94,8 @@ Boston, MA 02111-1307, USA.  */
 #define MASK_PIC16_PAGE             0x00FF
 
 #define REG_PIC16_PCLATH            0x03
+#define REG_PIC16_WREG              0x0A
+#define REG_PIC16_BSR               0x0F
 
 /******************************************
         PIC16E definitions
@@ -105,6 +107,7 @@ Boston, MA 02111-1307, USA.  */
 #define MASK_PIC16E_BRANCH_HIGHER   0x0FFF
 
 #define MASK_PIC16E_RBRA11          0x07FF
+#define MASK_PIC16E_RBRA8           0x00FF
 
 #define MASK_PIC16E_BANK            0x000F
 
@@ -123,6 +126,11 @@ typedef struct _core_sfr_ {
   const char *name;
 } core_sfr_t;
 
+typedef struct _vector_ {
+  int address;
+  const char *name;
+} vector_t;
+
 struct proc_class {
   /* Instruction used in making initialization data sections. */
   int retlw;
@@ -140,40 +148,41 @@ struct proc_class {
   unsigned int core_size;
   /* Bitmask of bits that can be stored in config section address. */
   unsigned int config_size;
+  /* Number of digits of maximum possible flash address. */
+  int addr_digits;
+  /* Number of digits of instruction word. */
+  int word_digits;
   /* These SFRs exist in each MCU which fall within into the PIC1xx family. */
   const core_sfr_t *core_sfr_table;
   /* Number of core SFRs. */
   unsigned int core_sfr_number;
-  /* Get the address for ID location. */
+  /* This table contains traits of the interrupt vectors. */
+  const vector_t *vector_table;
+  /* Number of interrupt vectors. */
+  unsigned int vector_number;
+  /* Get the start address for ID location. */
   unsigned int (*id_location)(const struct px *processor);
 
   /* Determine which bank of data memory the address is located. */
   int (*check_bank)(unsigned int address);
 
   /* Set the bank bits, return the number of instructions required. */
-  int (*set_bank)(int num_banks,
-                  int bank,
-                  MemBlock *m,
+  int (*set_bank)(int num_banks, int bank, MemBlock *m,
                   unsigned int address);
 
   /* Determine which ibank of data memory the address is located. */
   int (*check_ibank)(unsigned int address);
 
   /* Set the ibank bits, return the number of instructions required. */
-  int (*set_ibank)(int num_banks,
-                  int bank,
-                  MemBlock *m,
-                  unsigned int address);
+  int (*set_ibank)(int num_banks, int bank, MemBlock *m,
+                   unsigned int address);
 
   /* Determine which page of program memory the address is located. */
   int (*check_page)(unsigned int address);
 
   /* Set the page bits, return the number of instructions required. */
-  int (*set_page)(int num_pages,
-                  int page,
-                  MemBlock *m,
-                  unsigned int address,
-                  int use_wreg);
+  int (*set_page)(int num_pages, int page, MemBlock *m,
+                  unsigned int address, gp_boolean use_wreg);
 
   /* These return the bits to set in instruction for given address. */
   int (*reloc_call)(unsigned int address);
@@ -188,7 +197,7 @@ struct proc_class {
   const int *num_instructions;
   const struct insn *(*find_insn)(const struct proc_class *cls, long int opcode);
 
-  unsigned int (*i_memory_get)(MemBlock *m, unsigned int byte_address, unsigned short *word,
+  unsigned int (*i_memory_get)(const MemBlock *m, unsigned int byte_address, unsigned short *word,
                                const char **section_name, const char **symbol_name);
 
   void (*i_memory_put)(MemBlock *m, unsigned int byte_address, unsigned short value,
@@ -274,6 +283,7 @@ struct px {
 #define CONFIG6H  0x30000b
 #define CONFIG7L  0x30000c
 #define CONFIG7H  0x30000d
+
 #define DEVID1    0x3ffffe
 #define DEVID2    0x3fffff
 
@@ -315,7 +325,7 @@ int gp_processor_set_page(proc_class_t class,
                           int page,
                           MemBlock *m,
                           unsigned int address,
-                          int use_wreg);
+                          gp_boolean use_wreg);
 
 int gp_processor_retlw(proc_class_t class);
 
@@ -326,5 +336,6 @@ int gp_org_to_byte(unsigned shift, int org);
 int gp_byte_to_org(unsigned shift, int byte);
 
 const core_sfr_t *gp_processor_find_sfr(proc_class_t class, int address);
+const vector_t *gp_processor_find_vector(proc_class_t class, int address);
 
 #endif /* __GPPROCESSOR_H__ */
