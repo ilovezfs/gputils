@@ -25,32 +25,25 @@ Boston, MA 02111-1307, USA.  */
 extern gp_boolean gp_decode_mnemonics;
 extern gp_boolean gp_decode_extended;
 
-int gp_disassemble(MemBlock *m,
-                    int byte_address,
-                    proc_class_t class,
-                    int bsr_boundary,
-                    gp_boolean show_core_sfrs,
-                    char *buffer,
-                    size_t sizeof_buffer);
+typedef struct {
+  int wreg_prev;
+  int pclath_prev;
+  int pclath_valid_mask;
+} gpdasm_fstate_t;
 
-int gp_disassemble_byte(MemBlock *m,
-                    int byte_address,
-                    proc_class_t class,
-                    char *buffer,
-                    size_t sizeof_buffer);
+int gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t processor,
+                               gpdasm_fstate_t *fstate);
 
-int gp_disassemble_word(MemBlock *m,
-                    int byte_address,
-                    proc_class_t class,
-                    char *buffer,
-                    size_t sizeof_buffer);
+int gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
+                   gp_boolean show_names, char *buffer, size_t sizeof_buffer);
 
-int gp_disassemble_size(MemBlock *m,
-                    int byte_address,
-                    proc_class_t class,
-                    int bsr_boundary,
-                    gp_boolean show_core_sfrs,
-                    char *buffer,
-                    size_t sizeof_buffer,
-                    unsigned int size);
+int gp_disassemble_byte(MemBlock *m, int byte_address, proc_class_t class,
+                        char *buffer, size_t sizeof_buffer);
+
+int gp_disassemble_word(MemBlock *m, int byte_address, proc_class_t class,
+                        char *buffer, size_t sizeof_buffer);
+
+int gp_disassemble_size(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
+                        gp_boolean show_names, char *buffer, size_t sizeof_buffer,
+                        unsigned int size);
 #endif

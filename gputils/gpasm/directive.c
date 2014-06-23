@@ -3224,7 +3224,7 @@ _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsign
   struct pnode *p;
   int page;
   int num_reloc;
-  int use_wreg = 0;
+  gp_boolean use_wreg = false;
 
   if (state.processor == NULL) {
     gpverror(GPE_UNDEF_PROC, NULL);
@@ -3232,7 +3232,7 @@ _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsign
   }
 
   if ((reloc_type == RELOCT_PAGESEL_WREG) || IS_PIC16_CORE) {
-    use_wreg = 1;
+    use_wreg = true;
   }
 
   if (IS_EEPROM8 || IS_EEPROM16 || IS_PIC16E_CORE ||
@@ -3281,7 +3281,7 @@ _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsign
         emit(0x0000, name);
       }
       else if (IS_PIC14E_CORE) {
-        if (use_wreg == 0) {
+        if (!use_wreg) {
           reloc_evaluate(p, RELOCT_PAGESEL_MOVLP);
           emit(INSN_PIC14E_MOVLP, name);
         }
@@ -3292,7 +3292,7 @@ _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsign
         }
       }
       else {
-        if ((use_wreg == 0) && (state.processor->num_pages == 2)) {
+        if (!use_wreg && (state.processor->num_pages == 2)) {
           reloc_evaluate(p, RELOCT_PAGESEL_BITS);
           emit(0, name);
         }
@@ -4039,6 +4039,17 @@ do_insn(const char *name, struct pnode *parms)
         }
         break;
 
+      case INSN_CLASS_LIT4L:
+	/* PIC16E movlb */
+        if (enforce_arity(arity, 1)) {
+          check_16e_arg_types(parms, arity, 0);
+
+          p = HEAD(parms);
+          coerce_str1(p); /* literal instructions can coerce string literals */
+          emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), 0x0f, s->name);
+        }
+        break;
+
       case INSN_CLASS_LIT4S:
         /* PIC16 movlr */
         if (enforce_arity(arity, 1)) {
@@ -4082,7 +4093,8 @@ do_insn(const char *name, struct pnode *parms)
 
       case INSN_CLASS_LIT8:
         /* PIC1xx (addlw, andlw, iorlw, movlw, retlw, sublw, xorlw),
-	   PIC16x (movlb, mullw),
+	   PIC16  movlb,
+	   PIC16x mullw,
 	   PIC16E pushl */
         if (enforce_arity(arity, 1)) {
           check_16e_arg_types(parms, arity, 0);
@@ -4091,7 +4103,7 @@ do_insn(const char *name, struct pnode *parms)
           coerce_str1(p); /* literal instructions can coerce string literals */
 
           if (strcasecmp(i->name, "movlb") == 0) {
-            emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), 0xf, s->name);
+            emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), 0x0f, s->name);
           }
           else {
             emit_check(i->opcode, reloc_evaluate(p, RELOCT_LOW), 0xff, s->name);
@@ -4310,7 +4322,7 @@ do_insn(const char *name, struct pnode *parms)
 
           /* The offset for the relative branch must be
              between -127 <= offset <= 127. */
-          emit_check_relative(i->opcode, offset, 0xff, 127, s->name);
+          emit_check_relative(i->opcode, offset, MASK_PIC16E_RBRA8, 127, s->name);
         }
         break;
 

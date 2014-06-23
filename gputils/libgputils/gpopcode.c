@@ -306,7 +306,7 @@ const struct insn op_18cxx[] = {
   { "lfsr",    0xffc0, INSN_PIC16E_LFSR,     INSN_CLASS_FLIT12    },
   { "movf",    0xfc00, INSN_PIC16E_MOVF,     INSN_CLASS_OPWFA8    },
   { "movff",   0xf000, INSN_PIC16E_MOVFF,    INSN_CLASS_FF        },
-  { "movlb",   0xff00, INSN_PIC16E_MOVLB,    INSN_CLASS_LIT8      },
+  { "movlb",   0xfff0, INSN_PIC16E_MOVLB,    INSN_CLASS_LIT4L     },
   { "movlw",   0xff00, INSN_PIC16E_MOVLW,    INSN_CLASS_LIT8      },
   { "movwf",   0xfe00, INSN_PIC16E_MOVWF,    INSN_CLASS_OPFA8     },
   { "mullw",   0xff00, INSN_PIC16E_MULLW,    INSN_CLASS_LIT8      },
