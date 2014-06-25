@@ -433,11 +433,11 @@ init(void)
   state.numpaths = 0;
   state.processor = NULL;
   state.optimize.level = 1;
-  state.codfile = normal;
-  state.hexfile = normal;
-  state.lstfile = normal;
-  state.mapfile = suppress;
-  state.objfile = suppress;
+  state.codfile = OUT_NORMAL;
+  state.hexfile = OUT_NORMAL;
+  state.lstfile = OUT_NORMAL;
+  state.mapfile = OUT_SUPPRESS;
+  state.objfile = OUT_SUPPRESS;
   state.fill_enable = false;
   state.fill_value = 0;
   state.has_stack = false;
@@ -567,7 +567,7 @@ process_args( int argc, char *argv[])
       break;
 
     case 'c':
-      state.objfile = normal;
+      state.objfile = OUT_NORMAL;
       break;
 
     case 'd':
@@ -596,11 +596,11 @@ process_args( int argc, char *argv[])
       break;
 
     case 'l':
-      state.lstfile = suppress;
+      state.lstfile = OUT_SUPPRESS;
       break;
 
     case 'm':
-      state.mapfile = normal;
+      state.mapfile = OUT_NORMAL;
       break;
 
     case 'o':
@@ -907,7 +907,7 @@ linker(void)
   state.object->filename = strdup(state.objfilename);
   state.object->flags |= F_EXEC;
 
-  if (state.objfile == normal) {
+  if (state.objfile == OUT_NORMAL) {
     /* write the executable object in memory */
     gp_write_coff(state.object, gp_num_errors);
   } else {

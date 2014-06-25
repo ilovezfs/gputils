@@ -23,16 +23,16 @@ Boston, MA 02111-1307, USA.  */
 #define __EVALUATE_H__
 
 int enforce_arity(int arity, int must_be);
-int enforce_simple(struct pnode *p);
-int list_length(struct pnode *L);
+int enforce_simple(const struct pnode *p);
+int list_length(const struct pnode *L);
 
-int can_evaluate(struct pnode *p);
-int can_evaluate_value(struct pnode *p);
-gpasmVal evaluate(struct pnode *p);
-gpasmVal maybe_evaluate(struct pnode *p);
+int can_evaluate(const struct pnode *p);
+int can_evaluate_value(const struct pnode *p);
+gpasmVal evaluate(const struct pnode *p);
+gpasmVal maybe_evaluate(const struct pnode *p);
 
-int count_reloc(struct pnode *p);
-gpasmVal reloc_evaluate(struct pnode *p, unsigned short type);
-int eval_fill_number(struct pnode *p);
+int count_reloc(const struct pnode *p);
+gpasmVal reloc_evaluate(const struct pnode *p, unsigned short type);
+int eval_fill_number(const struct pnode *p);
 
 #endif

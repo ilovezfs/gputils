@@ -343,7 +343,7 @@ _write_symbols(void)
 void
 make_map(void)
 {
-  if ((gp_num_errors) || (state.mapfile == suppress)) {
+  if ((gp_num_errors > 0) || (state.mapfile == OUT_SUPPRESS)) {
     unlink(state.mapfilename);
     return;
   }

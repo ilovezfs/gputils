@@ -1087,7 +1087,7 @@ reloc_high_unsupported(gp_boolean is_code, int value)
 /* Common to most */
 
 static const struct insn *
-find_insn_generic(proc_class_t cls, long int opcode)
+find_insn_generic(proc_class_t cls, unsigned int opcode)
 {
   const struct insn *base = cls->instructions;
   int count = (base == NULL) ? 0 : *cls->num_instructions;
@@ -1314,7 +1314,7 @@ reloc_tris_pic12e(unsigned int address)
 }
 
 static const struct insn *
-find_insn_pic12e(proc_class_t cls, long int opcode)
+find_insn_pic12e(proc_class_t cls, unsigned int opcode)
 {
   int i;
 
@@ -1571,7 +1571,7 @@ reloc_high_pic14e(gp_boolean is_code, int value)
 }
 
 static const struct insn *
-find_insn_pic14e(proc_class_t cls, long int opcode)
+find_insn_pic14e(proc_class_t cls, unsigned int opcode)
 {
   int i;
   /* might be from the enhanced instruction set */
@@ -1725,7 +1725,7 @@ reloc_bra_pic16e(gp_section_type *section, unsigned value, unsigned int byte_org
 }
 
 static const struct insn *
-find_insn_pic16e(proc_class_t cls, long int opcode)
+find_insn_pic16e(proc_class_t cls, unsigned int opcode)
 {
   int i;
   if (gp_decode_mnemonics) {

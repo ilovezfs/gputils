@@ -80,6 +80,7 @@ Boston, MA 02111-1307, USA.  */
 #define REG_PIC14E_FSR1             0x06
 #define REG_PIC14E_FSR1L            0x06
 #define REG_PIC14E_FSR1H            0x07
+#define REG_PIC14E_WREG             0x09
 
 /******************************************
         PIC16 definitions
@@ -190,12 +191,12 @@ struct proc_class {
   int (*reloc_f)(unsigned int address);
   int (*reloc_tris)(unsigned int address);
   int (*reloc_movlb)(unsigned int address);
-  int (*reloc_bra)(struct gp_section_type *section, unsigned value, unsigned int byte_org);
+  int (*reloc_bra)(struct gp_section_type *section, unsigned int value, unsigned int byte_org);
   int (*reloc_high)(gp_boolean is_code, int value);
 
   const struct insn *instructions;
   const int *num_instructions;
-  const struct insn *(*find_insn)(const struct proc_class *cls, long int opcode);
+  const struct insn *(*find_insn)(const struct proc_class *cls, unsigned int opcode);
 
   unsigned int (*i_memory_get)(const MemBlock *m, unsigned int byte_address, unsigned short *word,
                                const char **section_name, const char **symbol_name);
@@ -265,7 +266,7 @@ struct px {
   const char *script;
   /* True if device supports 16 bit extended instruction set, false otherwise.
      Used ony for PROC_CLASS_PIC16E class. */
-  int is_16bit_extended;
+  gp_boolean is_16bit_extended;
 };
 
 /* CONFIG addresses for the 18xx parts */

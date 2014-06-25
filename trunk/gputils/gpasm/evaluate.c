@@ -45,7 +45,7 @@ int enforce_arity(int arity, int must_be)
   }
 }
 
-int enforce_simple(struct pnode *p)
+int enforce_simple(const struct pnode *p)
 {
   switch (p->tag) {
   case PTAG_SYMBOL:
@@ -62,9 +62,9 @@ int enforce_simple(struct pnode *p)
   return 0;
 }
 
-int list_length(struct pnode *L)
+int list_length(const struct pnode *L)
 {
-  struct pnode *p = L;
+  const struct pnode *p = L;
   int n = 0;
 
   while ((p != NULL) && (p->tag == PTAG_LIST)) {
@@ -75,7 +75,7 @@ int list_length(struct pnode *L)
   return ((p != NULL) ? (n + 1) : n);
 }
 
-int can_evaluate(struct pnode *p)
+int can_evaluate(const struct pnode *p)
 {
   switch (p->tag) {
   case PTAG_CONSTANT:
@@ -142,7 +142,7 @@ int can_evaluate(struct pnode *p)
   return 0;
 }
 
-int can_evaluate_value(struct pnode *p)
+int can_evaluate_value(const struct pnode *p)
 {
   switch (p->tag) {
   case PTAG_CONSTANT:
@@ -157,7 +157,7 @@ int can_evaluate_value(struct pnode *p)
   case PTAG_SYMBOL:
     /* '$' means current org, which we can evaluate if section at absolute address */
     if (strcmp(p->value.symbol, "$") == 0) {
-      return (0 != (state.obj.new_sec_flags & STYP_ABS));
+      return (((state.obj.new_sec_flags & STYP_ABS) != 0) ? true : false);
     }
     else {
       /* Otherwise look it up */
@@ -205,7 +205,7 @@ int can_evaluate_value(struct pnode *p)
   return 0;
 }
 
-static int is_program_segment(struct pnode *p)
+static int is_program_segment(const struct pnode *p)
 {
   if ((p->tag == PTAG_SYMBOL) && (strcmp(p->value.symbol, "$") != 0)) {
     struct symbol *s = get_symbol(state.stTop, p->value.symbol);
@@ -219,7 +219,7 @@ static int is_program_segment(struct pnode *p)
   }
 }
 
-gpasmVal evaluate(struct pnode *p)
+gpasmVal evaluate(const struct pnode *p)
 {
   struct variable *var;
   gpasmVal p0, p1;
@@ -396,7 +396,7 @@ gpasmVal evaluate(struct pnode *p)
 /* Attempt to evaluate expression 'p'.  Return its value if
  * successful, otherwise generate an error message and return 0.  */
 
-gpasmVal maybe_evaluate(struct pnode *p)
+gpasmVal maybe_evaluate(const struct pnode *p)
 {
   gpasmVal r;
 
@@ -412,7 +412,7 @@ gpasmVal maybe_evaluate(struct pnode *p)
 
 /* count the number of relocatable addesses in the expression */
 
-int count_reloc(struct pnode *p)
+int count_reloc(const struct pnode *p)
 {
   struct symbol *s;
   struct variable *var;
@@ -438,7 +438,7 @@ int count_reloc(struct pnode *p)
         var = get_symbol_annotation(s);
 
         if (var != NULL) {
-          switch(var->type) {
+          switch (var->type) {
           case GVT_EXTERN:
           case GVT_GLOBAL:
           case GVT_STATIC:
@@ -470,7 +470,7 @@ int count_reloc(struct pnode *p)
    [UPPER|HIGH|LOW]([<relocatable symbol>] + [<offs>]) */
 
 static void
-add_reloc(struct pnode *p, short offs, unsigned short type)
+add_reloc(const struct pnode *p, short offs, unsigned short type)
 {
   struct symbol *s = NULL;
   struct variable *var = NULL;
@@ -608,10 +608,10 @@ add_reloc(struct pnode *p, short offs, unsigned short type)
 */
 
 static int
-same_section(struct pnode *p)
+same_section(const struct pnode *p)
 {
-  struct pnode *p0;
-  struct pnode *p1;
+  const struct pnode *p0;
+  const struct pnode *p1;
   struct symbol *sym0;
   struct symbol *sym1;
   struct variable *var0;
@@ -658,7 +658,7 @@ same_section(struct pnode *p)
   return 1;
 }
 
-gpasmVal reloc_evaluate(struct pnode *p, unsigned short type)
+gpasmVal reloc_evaluate(const struct pnode *p, unsigned short type)
 {
   gpasmVal r = 0;
   int count = 0;
@@ -695,7 +695,7 @@ gpasmVal reloc_evaluate(struct pnode *p, unsigned short type)
 }
 
 /* evaluate the number of passes for the "fill" directive*/
-int eval_fill_number(struct pnode *p)
+int eval_fill_number(const struct pnode *p)
 {
   int number;
 

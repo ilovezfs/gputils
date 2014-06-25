@@ -40,7 +40,7 @@ Boston, MA 02111-1307, USA.  */
 
 extern struct pnode *mk_constant(int value);
 
-static int prev_btfsx = 0;
+static gp_boolean prev_btfsx = false;
 
 static unsigned short
 checkwrite(unsigned short value)
@@ -62,7 +62,7 @@ checkwrite(unsigned short value)
   if (IS_PIC16_CORE && (state.org > 0x1ffff)) {
     gpverror(GPE_ADDROVF, "Address{%#x}", state.org);
   }
-  else if ((!IS_PIC16E_CORE) && ((state.org & 0x1ffff) == 0) && (int)state.org > 0) {
+  else if ((!IS_PIC16E_CORE) && ((state.org & 0x1ffff) == 0) && ((int)state.org > 0)) {
     /* We cast state.org to signed int on purpose to repeat a bug from
        MPASM 5.34 and pass tb.asm testcase. */
     gperror(GPE_ADDROVF, "Address wrapped around 0.");
@@ -214,10 +214,10 @@ off_or_on(struct pnode *p)
   if (p->tag != PTAG_SYMBOL) {
     had_error = 1;
   }
-  else if (strcasecmp(p->value.symbol, "OFF") == 0) {
+  else if (strcasecmp(p->value.symbol, "off") == 0) {
     ret = 0;
   }
-  else if (strcasecmp(p->value.symbol, "ON") == 0) {
+  else if (strcasecmp(p->value.symbol, "on") == 0) {
     ret = 1;
   }
   else {
@@ -246,7 +246,7 @@ emit_data(struct pnode *L, int char_shift, const char *name)
   unsigned begin_org = state.org;
   struct pnode *p;
 
-  for(; L; L = TAIL(L)) {
+  for (; L != NULL; L = TAIL(L)) {
     const char *pc;
     p = HEAD(L);
 
@@ -500,14 +500,15 @@ do_bankisel(gpasmVal r, const char *name, int arity, struct pnode *parms)
   int num_reloc;
 
   if (((!IS_PIC14_CORE) && (!IS_PIC14E_CORE) && (!IS_PIC16_CORE)) ||
-      state.processor->num_banks == 1) {
+      (state.processor->num_banks == 1)) {
     state.lst.line.linetype = LTY_NONE;
     gpvmessage(GPM_EXTPAGE, NULL);
     return r;
   }
 
-  if (prev_btfsx)
+  if (prev_btfsx) {
     gpvwarning(GPW_BANK_PAGE_SEL_AFTER_SKIP, NULL, "Bankisel");
+  }
 
   if (enforce_arity(arity, 1)) {
     p = HEAD(parms);
@@ -2541,7 +2542,7 @@ do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
       state.lst.line.was_org = idreg;
       coff_linenum(8);
 
-      if (MODE_RELOCATABLE == state.mode) {
+      if (state.mode == MODE_RELOCATABLE) {
         state.org += 8;
       }
     }
@@ -3784,7 +3785,7 @@ do_while(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct macro_head *head = malloc(sizeof(*head));
 
-  assert(0 == state.while_depth);
+  assert(state.while_depth == 0);
 
   state.lst.line.linetype = LTY_DOLIST_DIR;
   head->parms = (enforce_arity(arity, 1)) ? HEAD(parms) : NULL;
@@ -3957,7 +3958,7 @@ do_insn(const char *name, struct pnode *parms)
   struct pnode *p;
   int file;             /* register file address, if applicable */
   gpasmVal r;           /* Return value. */
-  int is_btfsx = 0;
+  gp_boolean is_btfsx = false;
 
   /* We want to have r as the value to assign to label. */
   r = IS_RAM_ORG ? state.org : gp_processor_byte_to_org(state.device.class, state.org);
@@ -3967,7 +3968,8 @@ do_insn(const char *name, struct pnode *parms)
   s = get_symbol(state.stBuiltin, name);
 
   if (s != NULL) {
-    struct insn *i = get_symbol_annotation(s);
+    const struct insn *i = get_symbol_annotation(s);
+    enum common_insn icode;
 
     /* Instructions in data sections are not allowed. */
     if (asm_enabled() && (i->class != INSN_CLASS_FUNC) && IS_RAM_ORG) {
@@ -3975,10 +3977,11 @@ do_insn(const char *name, struct pnode *parms)
       goto leave;
     }
 
-    /* Interpret the instruction if assembly is enabled, or if it's a
-       conditional. */
+    /* Interpret the instruction if assembly is enabled, or if it's a conditional. */
     if (asm_enabled() || (i->attribs & ATTRIB_COND)) {
       state.lst.line.linetype = LTY_INSN;
+      icode = i->icode;
+
       switch (i->class) {
       case INSN_CLASS_LIT3_BANK:
         /* SX bank */
@@ -4006,7 +4009,6 @@ do_insn(const char *name, struct pnode *parms)
           switch (arity) {
           case 1:
             flag = check_flag(reloc_evaluate(HEAD(parms), RELOCT_F));
-
           case 0:
             emit(i->opcode | flag, s->name);
             break;
@@ -4021,13 +4023,7 @@ do_insn(const char *name, struct pnode *parms)
         /* PIC12E movlb */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-
-          if (strcasecmp(i->name, "movlb") == 0) {
-            emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), MASK_PIC12E_BANK, s->name);
-          }
-          else {
-            emit_check(i->opcode, maybe_evaluate(p), MASK_PIC12E_BANK, s->name);
-          }
+          emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), MASK_PIC12E_BANK, s->name);
         }
         break;
 
@@ -4043,10 +4039,9 @@ do_insn(const char *name, struct pnode *parms)
 	/* PIC16E movlb */
         if (enforce_arity(arity, 1)) {
           check_16e_arg_types(parms, arity, 0);
-
           p = HEAD(parms);
           coerce_str1(p); /* literal instructions can coerce string literals */
-          emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), 0x0f, s->name);
+          emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), MASK_PIC16E_BANK, s->name);
         }
         break;
 
@@ -4062,13 +4057,7 @@ do_insn(const char *name, struct pnode *parms)
         /* PIC14E movlb */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-
-          if (strcasecmp(i->name, "movlb") == 0) {
-            emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), MASK_PIC14E_BANK, s->name);
-          }
-          else {
-            emit_check(i->opcode, maybe_evaluate(p), MASK_PIC14E_BANK, s->name);
-          }
+          emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), MASK_PIC14E_BANK, s->name);
         }
         break;
 
@@ -4076,7 +4065,6 @@ do_insn(const char *name, struct pnode *parms)
         /* PIC16E (addulnk, subulnk) */
         if (enforce_arity(arity, 1)) {
           check_16e_arg_types(parms, arity, 0);
-
           p = HEAD(parms);
           /* The literal cannot be a relocatable address. */
           emit_check(i->opcode, maybe_evaluate(p), 0x3f, s->name);
@@ -4102,7 +4090,7 @@ do_insn(const char *name, struct pnode *parms)
           p = HEAD(parms);
           coerce_str1(p); /* literal instructions can coerce string literals */
 
-          if (strcasecmp(i->name, "movlb") == 0) {
+          if (icode == ICODE_MOVLB) {
             emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), 0x0f, s->name);
           }
           else {
@@ -4207,7 +4195,7 @@ do_insn(const char *name, struct pnode *parms)
           }
 
           emit(i->opcode |
-	           (reloc_evaluate(p, strcasecmp(i->name, "goto") ? RELOCT_CALL : RELOCT_GOTO) &
+	           (reloc_evaluate(p, (icode == ICODE_CALL) ? RELOCT_CALL : RELOCT_GOTO) &
 	               MASK_PIC14_BRANCH),
 	       s->name);
         }
@@ -4232,7 +4220,7 @@ do_insn(const char *name, struct pnode *parms)
           }
 
           emit(i->opcode |
-	           (reloc_evaluate(p, strcasecmp(i->name, "goto") ? RELOCT_CALL : RELOCT_GOTO) &
+	           (reloc_evaluate(p, (icode == ICODE_CALL) ? RELOCT_CALL : RELOCT_GOTO) &
 		       MASK_PIC16_BRANCH),
 	       s->name);
         }
@@ -4247,7 +4235,7 @@ do_insn(const char *name, struct pnode *parms)
           p = HEAD(parms);
           fsr = maybe_evaluate(p);
 
-          if (fsr == REG_PIC14E_FSR0 || fsr == REG_PIC14E_FSR1) {
+          if ((fsr == REG_PIC14E_FSR0) || (fsr == REG_PIC14E_FSR1)) {
             fsr = (fsr == REG_PIC14E_FSR1) ? 0x40 : 0x00;
             p = HEAD(TAIL(parms));
             /* the offset cannot be a relocatable address */
@@ -4589,7 +4577,7 @@ do_insn(const char *name, struct pnode *parms)
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
 
-          if (PROC_CLASS_SX == state.device.class && 0 == strcasecmp(i->name, "tris")) {
+          if (IS_SX_CORE && (icode == ICODE_TRIS)) {
             file = reloc_evaluate(p, RELOCT_TRIS);
           }
           else {
@@ -4666,7 +4654,7 @@ do_insn(const char *name, struct pnode *parms)
             file_ok(file);
 
             if (strncasecmp(i->name, "btfs", 4) == 0) {
-              is_btfsx = 1;
+              is_btfsx = true;
             }
 
             emit(i->opcode | ((bit & 7) << 5) | (file & MASK_PIC12_FILE), s->name);
@@ -4696,7 +4684,7 @@ do_insn(const char *name, struct pnode *parms)
             file_ok(file);
 
             if (strncasecmp(i->name, "btfs", 4) == 0) {
-              is_btfsx = 1;
+              is_btfsx = true;
             }
 
             emit(i->opcode | ((bit & 7) << 8) | (file & MASK_PIC16_FILE), s->name);
@@ -4709,7 +4697,7 @@ do_insn(const char *name, struct pnode *parms)
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
 
-          if (strcasecmp(i->name, "tris") == 0) {
+          if (icode == ICODE_TRIS) {
             gpvwarning(GPW_NOT_RECOMMENDED, "\"tris\"");
             file = reloc_evaluate(p, RELOCT_TRIS);
           }
@@ -4841,8 +4829,8 @@ do_insn(const char *name, struct pnode *parms)
 
             file_ok(file);
 
-            if (strncasecmp(i->name, "btfs", 4) == 0) {
-              is_btfsx = 1;
+            if ((icode == ICODE_BTFSC) || (icode == ICODE_BTFSS)) {
+              is_btfsx = true;
             }
 
             emit(i->opcode | ((bit & 7) << 7) | (file & MASK_PIC14_FILE), s->name);
@@ -5006,8 +4994,8 @@ do_insn(const char *name, struct pnode *parms)
 
           file_ok(file);
 
-          if (strncasecmp(i->name, "btfs", 4) == 0) {
-            is_btfsx = 1;
+          if ((icode == ICODE_BTFSC) || (icode == ICODE_BTFSS)) {
+            is_btfsx = true;
           }
 
           emit(i->opcode | (a << 8) | ((bit & 7) << 9) | (file & MASK_PIC16_FILE), s->name);
@@ -5120,9 +5108,11 @@ do_insn(const char *name, struct pnode *parms)
         if (arity != 0) {
           gpvwarning(GPW_EXTRANEOUS, NULL);
         }
-        if ((strcasecmp(i->name, "option") == 0) && (state.device.class->core_size != CORE_12BIT_MASK)){
+
+        if ((icode == ICODE_OPTION) && (state.device.class->core_size != CORE_12BIT_MASK)){
           gpvwarning(GPW_NOT_RECOMMENDED, "\"option\"");
         }
+
         emit(i->opcode, s->name);
         break;
 
@@ -5132,8 +5122,7 @@ do_insn(const char *name, struct pnode *parms)
           check_16e_arg_types(parms, arity, 0);
 
           p = HEAD(parms);
-          switch(maybe_evaluate(p))
-          {
+          switch(maybe_evaluate(p)) {
           case TBL_NO_CHANGE:
             emit(i->opcode, s->name);
             break;
@@ -5203,6 +5192,7 @@ do_insn(const char *name, struct pnode *parms)
           enforce_arity(arity, 1);
           break;
         }
+
         p = HEAD(parms);
         switch (arity) {
           int fsr;
@@ -5214,16 +5204,9 @@ do_insn(const char *name, struct pnode *parms)
           fsr = maybe_evaluate(p);
           /* New opcode for indexed indirect,
              moviw/movwi INDFn handled as moviw/movwi 0[FSRn]. */
-          if (fsr == REG_PIC14E_FSR0 || fsr == REG_PIC14E_FSR1) {
+          if ((fsr == REG_PIC14E_FSR0) || (fsr == REG_PIC14E_FSR1)) {
             fsr = (fsr == REG_PIC14E_FSR1) ? 0x40 : 0x00;
-
-            if (strcasecmp(i->name, "moviw") == 0) {
-              opcode = INSN_PIC14E_MOVIW_IDX | fsr;
-            }
-            else {
-              opcode = INSN_PIC14E_MOVWI_IDX | fsr;
-            }
-
+            opcode = ((icode == ICODE_MOVIW) ? INSN_PIC14E_MOVIW_IDX : INSN_PIC14E_MOVWI_IDX) | fsr;
             emit(opcode, s->name);
           }
           else {
@@ -5235,30 +5218,22 @@ do_insn(const char *name, struct pnode *parms)
           p2 = HEAD(TAIL(parms));
           fsr = maybe_evaluate(p2);
 
-          if (fsr == REG_PIC14E_FSR0 || fsr == REG_PIC14E_FSR1) {
+          if ((fsr == REG_PIC14E_FSR0) || (fsr == REG_PIC14E_FSR1)) {
             fsr = (fsr == REG_PIC14E_FSR1) ? 0x04 : 0x00;
+            k = 0;
 
             switch (maybe_evaluate(p)) {
-            case INCREMENT:
               /* ++FSRn */
-              emit(i->opcode | fsr | 0, s->name);
-              break;
-
-            case DECREMENT:
+            case INCREMENT:     k = 0; break;
               /* --FSRn */
-              emit(i->opcode | fsr | 1, s->name);
-              break;
-
-            case POSTINCREMENT:
+            case DECREMENT:     k = 1; break;
               /* FSRn++ */
-              emit(i->opcode | fsr | 2, s->name);
-              break;
-
-            case POSTDECREMENT:
+            case POSTINCREMENT: k = 2; break;
               /* FSRn-- */
-              emit(i->opcode | fsr | 3, s->name);
-              break;
+            case POSTDECREMENT: k = 3; break;
             }
+
+            emit(i->opcode | fsr | k, s->name);
           }
           else {
             gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
@@ -5285,13 +5260,7 @@ do_insn(const char *name, struct pnode *parms)
               }
               else {
                 /* New opcode for indexed indirect. */
-                if (strcasecmp(i->name, "moviw") == 0) {
-                  opcode = INSN_PIC14E_MOVIW_IDX | fsr;
-                }
-                else {
-                  opcode = INSN_PIC14E_MOVWI_IDX | fsr;
-                }
-
+                opcode = ((icode == ICODE_MOVIW) ? INSN_PIC14E_MOVIW_IDX : INSN_PIC14E_MOVWI_IDX) | fsr;
                 emit(opcode | (k & 0x3f), s->name);
               }
               break;
@@ -5300,9 +5269,10 @@ do_insn(const char *name, struct pnode *parms)
               gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
             }
           }
-          else
+          else {
             gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
-        }
+          }
+        } /* switch (arity) */
         break;
 
       case INSN_CLASS_FUNC:
@@ -5312,9 +5282,9 @@ do_insn(const char *name, struct pnode *parms)
       default:
         assert(0);
         break;
-      }
-    }
-  }
+      } /* switch (i->class) */
+    } /* if (asm_enabled() || (i->attribs & ATTRIB_COND)) */
+  } /* if (s != NULL) */
   else {
     s = get_symbol(state.stMacros, name);
 
@@ -5362,93 +5332,93 @@ leave:
 
 /* Note that instructions within each group are sorted alphabetically */
 
-struct insn op_0[] = {
-  { "access_ovr", 0, 0, INSN_CLASS_FUNC, 0, do_access_ovr },
-  { "bcdirect",   0, 0, INSN_CLASS_FUNC, 0, do_direct },
-  { "code",       0, 0, INSN_CLASS_FUNC, 0, do_code },
-  { "code_pack",  0, 0, INSN_CLASS_FUNC, 0, do_code_pack },
-  { "constant",   0, 0, INSN_CLASS_FUNC, 0, do_constant },
-  { "else",       0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_else },
-  { "end",        0, 0, INSN_CLASS_FUNC, 0, do_end },
-  { "endif",      0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_endif },
-  { "endm",       0, 0, INSN_CLASS_FUNC, 0, do_endm },
-  { "endw",       0, 0, INSN_CLASS_FUNC, 0, do_endw },
-  { "equ",        0, 0, INSN_CLASS_FUNC, 0, do_equ },
-  { "error",      0, 0, INSN_CLASS_FUNC, 0, do_error },
-  { "exitm",      0, 0, INSN_CLASS_FUNC, 0, do_exitm },
-  { "expand",     0, 0, INSN_CLASS_FUNC, 0, do_expand },
-  { "extern",     0, 0, INSN_CLASS_FUNC, 0, do_extern },
-  { "errorlevel", 0, 0, INSN_CLASS_FUNC, 0, do_errlvl },
-  { "global",     0, 0, INSN_CLASS_FUNC, 0, do_global },
-  { "idata",      0, 0, INSN_CLASS_FUNC, 0, do_idata },
-  { "idata_acs",  0, 0, INSN_CLASS_FUNC, 0, do_idata_acs },
-  { "if",         0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_if },
-  { "ifdef",      0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifdef },
-  { "ifndef",     0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifndef },
-  { "include",    0, 0, INSN_CLASS_FUNC, 0, do_include },
-  { "list",       0, 0, INSN_CLASS_FUNC, 0, do_list },
-  { "local",      0, 0, INSN_CLASS_FUNC, 0, do_local },
-  { "macro",      0, 0, INSN_CLASS_FUNC, 0, do_macro },
-  { "messg",      0, 0, INSN_CLASS_FUNC, 0, do_messg },
-  { "noexpand",   0, 0, INSN_CLASS_FUNC, 0, do_noexpand },
-  { "nolist",     0, 0, INSN_CLASS_FUNC, 0, do_nolist },
-  { "page",       0, 0, INSN_CLASS_FUNC, 0, do_page },
-  { "processor",  0, 0, INSN_CLASS_FUNC, 0, do_processor },
-  { "radix",      0, 0, INSN_CLASS_FUNC, 0, do_radix },
-  { "set",        0, 0, INSN_CLASS_FUNC, 0, do_set },
-  { "space",      0, 0, INSN_CLASS_FUNC, 0, do_space },
-  { "subtitle",   0, 0, INSN_CLASS_FUNC, 0, do_subtitle },
-  { "title",      0, 0, INSN_CLASS_FUNC, 0, do_title },
-  { "udata",      0, 0, INSN_CLASS_FUNC, 0, do_udata },
-  { "udata_acs",  0, 0, INSN_CLASS_FUNC, 0, do_udata_acs },
-  { "udata_ovr",  0, 0, INSN_CLASS_FUNC, 0, do_udata_ovr },
-  { "udata_shr",  0, 0, INSN_CLASS_FUNC, 0, do_udata_shr },
-  { "variable",   0, 0, INSN_CLASS_FUNC, 0, do_variable },
-  { "while",      0, 0, INSN_CLASS_FUNC, 0, do_while },
-  { ".def",       0, 0, INSN_CLASS_FUNC, 0, do_def },
-  { ".dim",       0, 0, INSN_CLASS_FUNC, 0, do_dim },
-  { ".direct",    0, 0, INSN_CLASS_FUNC, 0, do_direct },
-  { ".eof",       0, 0, INSN_CLASS_FUNC, 0, do_eof },
-  { ".file",      0, 0, INSN_CLASS_FUNC, 0, do_file },
-  { ".ident",     0, 0, INSN_CLASS_FUNC, 0, do_ident },
-  { ".line",      0, 0, INSN_CLASS_FUNC, 0, do_line },
-  { ".set",       0, 0, INSN_CLASS_FUNC, 0, do_set },
-  { ".type",      0, 0, INSN_CLASS_FUNC, 0, do_type },
-  { "#if",        0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_if },
-  { "#else",      0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_else },
-  { "#endif",     0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_endif },
-  { "#ifdef",     0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifdef },
-  { "#ifndef",    0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifndef },
-  { "#define",    0, 0, INSN_CLASS_FUNC, 0, do_define },
-  { "#undefine",  0, 0, INSN_CLASS_FUNC, 0, do_undefine }
+const struct insn op_0[] = {
+  { "access_ovr", 0, 0, 0, INSN_CLASS_FUNC, 0,           do_access_ovr },
+  { "bcdirect",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_direct     },
+  { "code",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_code       },
+  { "code_pack",  0, 0, 0, INSN_CLASS_FUNC, 0,           do_code_pack  },
+  { "constant",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_constant   },
+  { "else",       0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_else       },
+  { "end",        0, 0, 0, INSN_CLASS_FUNC, 0,           do_end        },
+  { "endif",      0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_endif      },
+  { "endm",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_endm       },
+  { "endw",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_endw       },
+  { "equ",        0, 0, 0, INSN_CLASS_FUNC, 0,           do_equ        },
+  { "error",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_error      },
+  { "exitm",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_exitm      },
+  { "expand",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_expand     },
+  { "extern",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_extern     },
+  { "errorlevel", 0, 0, 0, INSN_CLASS_FUNC, 0,           do_errlvl     },
+  { "global",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_global     },
+  { "idata",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_idata      },
+  { "idata_acs",  0, 0, 0, INSN_CLASS_FUNC, 0,           do_idata_acs  },
+  { "if",         0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_if         },
+  { "ifdef",      0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifdef      },
+  { "ifndef",     0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifndef     },
+  { "include",    0, 0, 0, INSN_CLASS_FUNC, 0,           do_include    },
+  { "list",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_list       },
+  { "local",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_local      },
+  { "macro",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_macro      },
+  { "messg",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_messg      },
+  { "noexpand",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_noexpand   },
+  { "nolist",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_nolist     },
+  { "page",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_page       },
+  { "processor",  0, 0, 0, INSN_CLASS_FUNC, 0,           do_processor  },
+  { "radix",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_radix      },
+  { "set",        0, 0, 0, INSN_CLASS_FUNC, 0,           do_set        },
+  { "space",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_space      },
+  { "subtitle",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_subtitle   },
+  { "title",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_title      },
+  { "udata",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_udata      },
+  { "udata_acs",  0, 0, 0, INSN_CLASS_FUNC, 0,           do_udata_acs  },
+  { "udata_ovr",  0, 0, 0, INSN_CLASS_FUNC, 0,           do_udata_ovr  },
+  { "udata_shr",  0, 0, 0, INSN_CLASS_FUNC, 0,           do_udata_shr  },
+  { "variable",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_variable   },
+  { "while",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_while      },
+  { ".def",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_def        },
+  { ".dim",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_dim        },
+  { ".direct",    0, 0, 0, INSN_CLASS_FUNC, 0,           do_direct     },
+  { ".eof",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_eof        },
+  { ".file",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_file       },
+  { ".ident",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_ident      },
+  { ".line",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_line       },
+  { ".set",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_set        },
+  { ".type",      0, 0, 0, INSN_CLASS_FUNC, 0,           do_type       },
+  { "#if",        0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_if         },
+  { "#else",      0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_else       },
+  { "#endif",     0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_endif      },
+  { "#ifdef",     0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifdef      },
+  { "#ifndef",    0, 0, 0, INSN_CLASS_FUNC, ATTRIB_COND, do_ifndef     },
+  { "#define",    0, 0, 0, INSN_CLASS_FUNC, 0,           do_define     },
+  { "#undefine",  0, 0, 0, INSN_CLASS_FUNC, 0,           do_undefine   }
 };
 
 const int num_op_0 = TABLE_SIZE(op_0);
 
-struct insn op_1[] = {
-  { "__badram",   0, 0, INSN_CLASS_FUNC, 0, do_badram },
-  { "__badrom",   0, 0, INSN_CLASS_FUNC, 0, do_badrom },
-  { "__config",   0, 0, INSN_CLASS_FUNC, 0, do_config },
-  { "__fuses",    0, 0, INSN_CLASS_FUNC, 0, do_config },
-  { "__idlocs",   0, 0, INSN_CLASS_FUNC, 0, do_idlocs },
-  { "__maxram",   0, 0, INSN_CLASS_FUNC, 0, do_maxram },
-  { "__maxrom",   0, 0, INSN_CLASS_FUNC, 0, do_maxrom },
-  { "bankisel",   0, 0, INSN_CLASS_FUNC, 0, do_bankisel },
-  { "banksel",    0, 0, INSN_CLASS_FUNC, 0, do_banksel },
-  { "config",     0, 0, INSN_CLASS_FUNC, 0, do_mpasm_config },
-  { "data",       0, 0, INSN_CLASS_FUNC, 0, do_data },
-  { "da",         0, 0, INSN_CLASS_FUNC, 0, do_da },
-  { "db",         0, 0, INSN_CLASS_FUNC, 0, do_db },
-  { "de",         0, 0, INSN_CLASS_FUNC, 0, do_de },
-  { "dt",         0, 0, INSN_CLASS_FUNC, 0, do_dt },
-  { "dtm",        0, 0, INSN_CLASS_FUNC, 0, do_dtm },
-  { "dw",         0, 0, INSN_CLASS_FUNC, 0, do_dw },
-  { "fill",       0, 0, INSN_CLASS_FUNC, 0, do_fill },
-  { "idlocs",     0, 0, INSN_CLASS_FUNC, 0, do_16_idlocs },
-  { "org",        0, 0, INSN_CLASS_FUNC, 0, do_org },
-  { "pagesel",    0, 0, INSN_CLASS_FUNC, 0, do_pagesel },
-  { "pageselw",   0, 0, INSN_CLASS_FUNC, 0, do_pageselw },
-  { "res",        0, 0, INSN_CLASS_FUNC, 0, do_res }
+const struct insn op_1[] = {
+  { "__badram",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_badram       },
+  { "__badrom",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_badrom       },
+  { "__config",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_config       },
+  { "__fuses",    0, 0, 0, INSN_CLASS_FUNC, 0,           do_config       },
+  { "__idlocs",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_idlocs       },
+  { "__maxram",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_maxram       },
+  { "__maxrom",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_maxrom       },
+  { "bankisel",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_bankisel     },
+  { "banksel",    0, 0, 0, INSN_CLASS_FUNC, 0,           do_banksel      },
+  { "config",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_mpasm_config },
+  { "data",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_data         },
+  { "da",         0, 0, 0, INSN_CLASS_FUNC, 0,           do_da           },
+  { "db",         0, 0, 0, INSN_CLASS_FUNC, 0,           do_db           },
+  { "de",         0, 0, 0, INSN_CLASS_FUNC, 0,           do_de           },
+  { "dt",         0, 0, 0, INSN_CLASS_FUNC, 0,           do_dt           },
+  { "dtm",        0, 0, 0, INSN_CLASS_FUNC, 0,           do_dtm          },
+  { "dw",         0, 0, 0, INSN_CLASS_FUNC, 0,           do_dw           },
+  { "fill",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_fill         },
+  { "idlocs",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_16_idlocs    },
+  { "org",        0, 0, 0, INSN_CLASS_FUNC, 0,           do_org          },
+  { "pagesel",    0, 0, 0, INSN_CLASS_FUNC, 0,           do_pagesel      },
+  { "pageselw",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_pageselw     },
+  { "res",        0, 0, 0, INSN_CLASS_FUNC, 0,           do_res          }
 };
 
 const int num_op_1 = TABLE_SIZE(op_1);
@@ -5552,7 +5522,7 @@ opcode_init(int stage)
         struct symbol *mode_sym = get_symbol(state.stBuiltin, "mode");
 
         if (mode_sym != NULL) {
-          annotate_symbol(mode_sym, &op_sx_mode);
+          annotate_symbol(mode_sym, (void *)&op_sx_mode);
         }
       }
       else if (IS_PIC12E_CORE) {

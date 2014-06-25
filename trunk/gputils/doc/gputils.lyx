@@ -71,7 +71,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Jun 20, 2014
+Jun 23, 2014
 \end_layout
 
 \begin_layout Standard
@@ -5726,6 +5726,10 @@ abcd
 \end_inset
 
 , 0x76, 'D', NUM1
+\end_layout
+
+\begin_layout Standard
+The length of IDLOCS can be at most 8 bytes.
 \end_layout
 
 \begin_layout Standard
@@ -12535,6 +12539,7 @@ Memory dump hex file.
 
 \begin_layout Plain Layout
 For some case of SFR, shows the name of instead of the address.
+ In addition shows the labels also.
 \end_layout
 
 \end_inset

@@ -47,14 +47,14 @@ static struct pnode *mk_pnode(enum pnode_tag tag)
 
 struct pnode *mk_constant(long value)
 {
-  struct pnode *new = mk_pnode(constant);
+  struct pnode *new = mk_pnode(PTAG_CONSTANT);
   new->value.constant = value;
   return new;
 }
 
 static struct pnode *mk_symbol(const char *value)
 {
-  struct pnode *new = mk_pnode(symbol);
+  struct pnode *new = mk_pnode(PTAG_SYMBOL);
   new->value.symbol = value;
   return new;
 }
@@ -62,7 +62,7 @@ static struct pnode *mk_symbol(const char *value)
 /*
 static struct pnode *mk_string(const char *value)
 {
-  struct pnode *new = mk_pnode(string);
+  struct pnode *new = mk_pnode(PTAG_STRING);
   new->value.string = value;
   return new;
 }
@@ -71,7 +71,7 @@ static struct pnode *mk_string(const char *value)
 
 struct pnode *mk_list(struct pnode *head, struct pnode *tail)
 {
-  struct pnode *new = mk_pnode(list);
+  struct pnode *new = mk_pnode(PTAG_LIST);
   new->value.list.head = head;
   new->value.list.tail = tail;
   return new;
@@ -79,7 +79,7 @@ struct pnode *mk_list(struct pnode *head, struct pnode *tail)
 
 static struct pnode *mk_2op(int op, struct pnode *p0, struct pnode *p1)
 {
-  struct pnode *new = mk_pnode(binop);
+  struct pnode *new = mk_pnode(PTAG_BINOP);
   new->value.binop.op = op;
   new->value.binop.p0 = p0;
   new->value.binop.p1 = p1;
@@ -89,7 +89,8 @@ static struct pnode *mk_2op(int op, struct pnode *p0, struct pnode *p1)
 /*
 static struct pnode *mk_1op(int op, struct pnode *p0)
 {
-  struct pnode *new = mk_pnode(unop);  new->value.unop.op = op;
+  struct pnode *new = mk_pnode(PTAG_UNOP);
+  new->value.unop.op = op;
   new->value.unop.p0 = p0;
   return new;
 }

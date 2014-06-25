@@ -87,7 +87,7 @@ check_defines(char *symbol, int symlen, struct pnode **param_list_p)
 static int
 is_first_iden(int c)
 {
-  return (!isascii(c) || c == '_' || c == '.' || c == '?' || c == '@' || c == '#' || isalpha(c));
+  return (!isascii(c) || (c == '_') || (c == '.') || (c == '?') || (c == '@') || (c == '#') || isalpha(c));
 }
 
 static int
@@ -381,10 +381,10 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
       if ('#' == c) {
         in_hv = '#';
       }
-      else if ('#' == in_hv && ('v' == c || 'V' == c)) {
+      else if (('#' == in_hv) && (('v' == c) || ('V' == c))) {
         in_hv = 'v';
       }
-      else if ('v' == in_hv && '(' == c) {
+      else if (('v' == in_hv) && ('(' == c)) {
         if (-1 != start) {
           if (start < i - 2) {
             /* preprocess the identifier before #v */
@@ -427,7 +427,7 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
             break;
           }
 
-          if (c != '\'' || !number_start) {
+          if ((c != '\'') || !number_start) {
             int prev_n = *n;
 
             DBG_printf("@2@Preprocessing identifier: %*.*s\n", i - start, i - start, &buf[start]);
@@ -442,7 +442,7 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
 
     switch (c) {
     case '\\':
-      prev_esc = ('"' == state || '\'' == state) ? !prev_esc : 0;
+      prev_esc = (('"' == state) || ('\'' == state)) ? !prev_esc : 0;
       break;
 
     case ';':
@@ -454,7 +454,7 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
 
     case '"':
     case '\'':
-      if (!prev_esc && state != ';') {
+      if (!prev_esc && (state != ';')) {
         state = (0 == state) ? c : ((state == c) ? 0 : state);
       }
     default:
@@ -560,10 +560,10 @@ preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
       if ('#' == c) {
         in_hv = '#';
       }
-      else if ('#' == in_hv && ('v' == c || 'V' == c)) {
+      else if (('#' == in_hv) && (('v' == c) || ('V' == c))) {
         in_hv = 'v';
       }
-      else if ('v' == in_hv && '(' == c) {
+      else if (('v' == in_hv) && ('(' == c)) {
         in_hv = '(';
         ++hv_parenth;
         state = '(';
@@ -581,7 +581,7 @@ preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
 
     switch (c) {
     case '\\':
-      prev_esc =  ('"' == state || '\'' == state) ? !prev_esc : 0;
+      prev_esc =  (('"' == state) || ('\'' == state)) ? !prev_esc : 0;
       break;
 
     case ';':
@@ -593,7 +593,7 @@ preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
 
     case '"':
     case '\'':
-      if (!prev_esc && state != ';') {
+      if (!prev_esc && (state != ';')) {
         state = (0 == state) ? c : ((state == c) ? 0 : state);
       }
     default:

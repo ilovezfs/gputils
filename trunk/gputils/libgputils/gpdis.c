@@ -92,6 +92,7 @@ gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t proces
   int org;
   unsigned short opcode;
   const struct insn *instruction;
+  enum common_insn icode;
   int num_words = 1;
   unsigned short file1;
   unsigned short file2;
@@ -101,7 +102,6 @@ gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t proces
   int wreg;
   int pclath;
   int pclath_valid;
-  gp_boolean flag;
 
   class = processor->class;
 
@@ -119,6 +119,8 @@ gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t proces
     return num_words;
   }
 
+  icode = instruction->icode;
+
   wreg         = fstate->wreg_prev;
   pclath       = fstate->pclath_prev;
   pclath_valid = fstate->pclath_valid_mask;
@@ -131,7 +133,7 @@ gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t proces
     case INSN_CLASS_LIT7:
       /* PIC14E movlp */
       pclath = opcode & MASK_PIC14E_PAGE;
-      pclath_valid = MASK_PIC14E_PAGE;
+      pclath_valid = 0xff;
       break;
 
     case INSN_CLASS_LIT8C12:
@@ -154,6 +156,7 @@ _class_lit8c12:
         b_memory_set_addr_type(m, dest_byte_addr, W_ADDR_T_FUNC, 0);
       }
 
+      wreg = -1;
       pclath_valid = 0;
       break;
 
@@ -177,9 +180,29 @@ _class_lit8c12:
          PIC16  movlb,
          PIC16x mullw,
          PIC16E pushl */
-      if (((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC16)) &&
-          (strcmp(instruction->name, "movlw") == 0)) {
-        wreg = opcode & 0x00ff;
+      if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC16)) {
+        tmp = opcode & 0x00ff;
+
+        if (icode == ICODE_MOVLW) {
+          wreg = tmp;
+        }
+        else if (wreg >= 0) {
+          if (icode == ICODE_ADDLW) {
+            wreg = (wreg + tmp) & 0xff;
+          }
+          else if (icode == ICODE_ANDLW) {
+            wreg = (wreg & tmp) & 0xff;
+          }
+          else if (icode == ICODE_IORLW) {
+            wreg = (wreg | tmp) & 0xff;
+          }
+          else if (icode == ICODE_SUBLW) {
+            wreg = (tmp - wreg) & 0xff;
+          }
+          else if (icode == ICODE_XORLW) {
+            wreg = (wreg ^ tmp) & 0xff;
+          }
+        }
       }
       break;
 
@@ -202,13 +225,11 @@ _class_lit9:
         b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
         b_memory_set_addr_type(m, dest_byte_addr, W_ADDR_T_FUNC, 0);
       }
-
       break;
 
     case INSN_CLASS_LIT11:
       /* PIC14x (call, goto) */
       tmp  = (class == PROC_CLASS_PIC14E) ? 0x78 : 0x18;
-      flag = (strcmp(instruction->name, "call") == 0) ? true : false;
 
       if (prog_max_org <= 0x07ff) {
         /* The PCLATH is not required. */
@@ -224,14 +245,13 @@ _class_lit9:
 _class_lit11:
 
         dest_byte_addr = gp_processor_org_to_byte(class, org);
-        type = (flag) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
+        type = (icode == ICODE_CALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
         b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
         b_memory_set_addr_type(m, dest_byte_addr, type, 0);
       }
 
-      wreg   = -1;
-
-      if (flag) {
+      if (icode == ICODE_CALL) {
+        wreg = -1;
         pclath_valid = 0;
       }
       break;
@@ -271,7 +291,7 @@ _class_lit11:
       }
 
       dest_byte_addr = byte_address + value * 2 + 2;
-      type = (strcmp(instruction->name, "bra") == 0) ? W_ADDR_T_LABEL : W_ADDR_T_FUNC;
+      type = (icode == ICODE_RCALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
       b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
       b_memory_set_addr_type(m, dest_byte_addr, type, 0);
       break;
@@ -288,7 +308,7 @@ _class_lit11:
         dest  = (dest & MASK_PIC16E_BRANCH_HIGHER) << 8;
         dest |= opcode & MASK_PIC16E_BRANCH_LOWER;
         dest_byte_addr = dest * 2;
-        type = (strcmp(instruction->name, "call") == 0) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
+        type = (icode == ICODE_CALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
         b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
         b_memory_set_addr_type(m, dest_byte_addr, type, 0);
       }
@@ -301,7 +321,11 @@ _class_lit11:
 
       if ((file1 == REG_PIC16_WREG) && (file2 == REG_PIC16_PCLATH)) {
         pclath = wreg;
-        pclath_valid = 0xff;
+        pclath_valid = (wreg >= 0) ? 0xff : 0;
+      }
+      else if (file2 == REG_PIC16_WREG) {
+        /* The destination the WREG. */
+        wreg = -1;
       }
       break;
 
@@ -312,7 +336,22 @@ _class_lit11:
 
       if ((file1 == REG_PIC16_WREG) && (file2 == REG_PIC16_PCLATH)) {
         pclath = wreg;
-        pclath_valid = 0xff;
+        pclath_valid = (wreg >= 0) ? 0xff : 0;
+      }
+      else if (file2 == REG_PIC16_WREG) {
+        /* The destination the WREG. */
+        wreg = -1;
+      }
+      break;
+
+    case INSN_CLASS_OPWF5:
+      /* {PIC12E, SX} (addwf, andwf, comf, decf, decfsz, incf, incfsz,
+                       iorwf, movf, rlf, rrf, subwf, swapf, xorwf) */
+      tmp = (opcode >> 5) & 1;
+
+      if (tmp == 0) {
+        /* The destination the WREG. */
+        wreg = -1;
       }
       break;
 
@@ -324,11 +363,11 @@ _class_lit11:
       if ((file1 == REG_PIC12_STATUS) && ((tmp == 5) || (tmp == 6))) {
         tmp = 1 << (tmp - 4);
 
-        if (strcmp(instruction->name, "bcf") == 0) {
+        if (icode == ICODE_BCF) {
           pclath &= ~tmp;
           pclath_valid |= tmp;
         }
-        else if (strcmp(instruction->name, "bsf") == 0) {
+        else if (icode == ICODE_BSF) {
           pclath |= tmp;
           pclath_valid |= tmp;
         }
@@ -339,9 +378,25 @@ _class_lit11:
       /* PIC14x (clrf, movwf, tris) */
       file1 = opcode & MASK_PIC14_FILE;
 
-      if ((file1 == REG_PIC14_PCLATH) && (strcmp(instruction->name, "clrf") == 0)) {
-        pclath = 0;
-        pclath_valid = 0xff;
+      if (icode == ICODE_CLRF) {
+        if (file1 == REG_PIC14_PCLATH) {
+          pclath = 0;
+          pclath_valid = 0xff;
+        }
+        else if ((class == PROC_CLASS_PIC14E) && (file1 == REG_PIC14E_WREG)) {
+          wreg = 0;
+        }
+      }
+      break;
+
+    case INSN_CLASS_OPWF7:
+      /* PIC14x (addwf, andwf, comf, decf, decfsz, incf, incfsz, iorwf, movf,
+                 rlf, rrf, subwf, swapf, xorwf)
+         PIC14E (addwfc, asrf, lslf, lsrf, subwfb) */
+      tmp = (opcode >> 7) & 1;
+
+      if (tmp == 0) {
+        wreg = -1;
       }
       break;
 
@@ -354,11 +409,11 @@ _class_lit11:
         if ((file1 == REG_PIC14_PCLATH) && ((tmp == 3) || (tmp == 4))) {
           tmp = 1 << tmp;
 
-          if (strcmp(instruction->name, "bcf") == 0) {
+          if (icode == ICODE_BCF) {
             pclath &= ~tmp;
             pclath_valid |= tmp;
           }
-          else if (strcmp(instruction->name, "bsf") == 0) {
+          else if (icode == ICODE_BSF) {
             pclath |= tmp;
             pclath_valid |= tmp;
           }
@@ -369,11 +424,11 @@ _class_lit11:
         if ((file1 == REG_PIC14_PCLATH) && ((tmp >= 3) || (tmp <= 6))) {
           tmp = 1 << tmp;
 
-          if (strcmp(instruction->name, "bcf") == 0) {
+          if (icode == ICODE_BCF) {
             pclath &= ~tmp;
             pclath_valid |= tmp;
           }
-          else if (strcmp(instruction->name, "bsf") == 0) {
+          else if (icode == ICODE_BSF) {
             pclath |= tmp;
             pclath_valid |= tmp;
           }
@@ -385,9 +440,47 @@ _class_lit11:
       /* PIC16 (cpfseq, cpfsgt, cpfslt, movwf, mulwf, tstfsz) */
       file1 = opcode & MASK_PIC16_FILE;
 
-      if ((file1 == REG_PIC16_PCLATH) && (strcmp(instruction->name, "movwf") == 0)) {
+      if ((file1 == REG_PIC16_PCLATH) && (icode == ICODE_MOVWF)) {
         pclath = wreg;
-        pclath_valid = 0xff;
+        pclath_valid = (wreg >= 0) ? 0xff : 0;
+      }
+      break;
+
+    case INSN_CLASS_OPWF8:
+      /* PIC16 (addwf, addwfc, andwf, clrf, comf, daw, decf, decfsz, dcfsnz, incf,
+                incfsz, infsnz, iorwf, rlcf, rlncf, rrcf, rrncf, setf, subwf, subwfb,
+                swapf, xorwf) */
+      file1 = opcode & MASK_PIC16_FILE;
+      tmp   = (opcode >> 8) & 1;
+
+      if (icode == ICODE_SETF) {
+        if ((tmp == 0) || (file1 == REG_PIC16_WREG)) {
+          wreg = 0xff;
+        }
+      }
+      else if (icode == ICODE_CLRF) {
+        if (tmp == 0) {
+          /* The destination the WREG. */
+          wreg = 0;
+        }
+      }
+      else if (tmp == 0) {
+        /* The destination the WREG. */
+        wreg = -1;
+      }
+      break;
+
+    case INSN_CLASS_IMPLICIT:
+      /* PIC12x  (clrw, clrwdt, nop, option, return, sleep)
+         PIC12E  (retfie, return)
+         SX      (iread, movmw, movwm, reti, retiw, retp, return)
+         PIC14x  (clrw, clrwdt, halt, nop, option, retfie, return, sleep)
+         PIC14E  (brw, callw, reset)
+         PIC16   (clrwdt, nop, retfie, return, sleep)
+         PIC16E  (clrwdt, daw, halt, nop, pop, push, reset, sleep, trap, tret)
+         PIX16EX callw */
+      if (icode == ICODE_CLRW) {
+        wreg = 0;
       }
       break;
 
