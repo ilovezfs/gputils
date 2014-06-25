@@ -22,9 +22,9 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __SPECIAL_H__
 #define __SPECIAL_H__
 
-extern struct insn special[];
+extern const struct insn special[];
 extern const int num_op_special;
 
-extern struct insn op_sx_mode;
+extern const struct insn op_sx_mode;
 
 #endif

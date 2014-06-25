@@ -25,21 +25,33 @@ Boston, MA 02111-1307, USA.  */
 /* Parse node: created by the parser, interpreted by the 'backend' */
 
 struct pnode {
-  enum pnode_tag { constant, symbol, string, list, binop, unop } tag;
+  enum pnode_tag {
+    PTAG_CONSTANT,
+    PTAG_SYMBOL,
+    PTAG_STRING,
+    PTAG_LIST,
+    PTAG_BINOP,
+    PTAG_UNOP
+    } tag;
+
   union {
     long constant;
     const char *symbol;
+
     struct {
       struct pnode *head, *tail;
     } list;
+
     struct {
       int op;
       struct pnode *p0, *p1;
     } binop;
+
     struct {
       int op;
       struct pnode *p0;
     } unop;
+
     const char *string;
   } value;
 };

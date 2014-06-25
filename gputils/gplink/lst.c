@@ -293,12 +293,12 @@ write_src(int last_line)
 static void
 lst_init(void)
 {
-  if (state.lstfile != named) {
+  if (state.lstfile != OUT_NAMED) {
     snprintf(state.lstfilename, sizeof(state.lstfilename),
              "%s.lst", state.basefilename);
   }
 
-  if ((gp_num_errors > 0) || (state.lstfile == suppress)) {
+  if ((gp_num_errors > 0) || (state.lstfile == OUT_SUPPRESS)) {
     state.lst.f = NULL;
     state.lst.enabled = false;
     unlink(state.lstfilename);

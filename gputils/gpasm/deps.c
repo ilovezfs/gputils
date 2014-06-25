@@ -55,7 +55,7 @@ deps_init(void)
 }
 
 void
-deps_add(char *file_name)
+deps_add(const char *file_name)
 {
   if (state.dep.enabled) {
     fprintf(state.dep.f, " \\\n  %s", file_name);

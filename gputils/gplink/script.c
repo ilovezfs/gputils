@@ -55,7 +55,7 @@ script_error(const char *messg, const char *detail)
 
 static int enforce_simple(struct pnode *p)
 {
-  if (p->tag == symbol) {
+  if (p->tag == PTAG_SYMBOL) {
     return 1;
   } else {
     script_error("illegal argument", NULL);
@@ -67,10 +67,12 @@ static long evaluate(struct pnode *p)
 {
 
   switch (p->tag) {
-  case constant:
+  case PTAG_CONSTANT:
     return p->value.constant;
-  case symbol:
+
+  case PTAG_SYMBOL:
     return get_script_macro(p->value.symbol);
+
   default:
     script_error("illegal argument", NULL);
     return 0;
@@ -78,12 +80,13 @@ static long evaluate(struct pnode *p)
 
 }
 
-static int do_files(char *name, enum section_type type, struct pnode *parms)
+static int do_files(const char *name, enum section_type type, struct pnode *parms)
 {
   struct pnode *p;
 
   for (; parms != NULL; parms = TAIL(parms)) {
     p = HEAD(parms);
+
     if (enforce_simple(p)) {
       gplink_open_coff(p->value.symbol);
     }
@@ -92,12 +95,13 @@ static int do_files(char *name, enum section_type type, struct pnode *parms)
   return 0;
 }
 
-static int do_include(char *name, enum section_type type, struct pnode *parms)
+static int do_include(const char *name, enum section_type type, struct pnode *parms)
 {
   struct pnode *p;
 
   /* FIXME: make sure only one argument is passed */
   p = HEAD(parms);
+
   if (enforce_simple(p)) {
     open_src(p->value.symbol, 1);
   }
@@ -112,6 +116,7 @@ add_path(struct pnode *parms)
 
   for (; parms != NULL; parms = TAIL(parms)) {
     p = HEAD(parms);
+
     if (enforce_simple(p)) {
       /* gplink doesn't distinguish between lib pathes and lkr pathes.  There
          is one pathes list.  This shouldn't cause any problems. */
@@ -126,12 +131,15 @@ void add_script_macro(const char *name, long value)
 {
   struct symbol *sym;
   long *val;
+
   sym = add_symbol(state.script_symbols, name);
   val = get_symbol_annotation(sym);
-  if (!val) {
+
+  if (val == NULL) {
     val = malloc(sizeof value);
     annotate_symbol(sym, val);
   }
+
   *val = value;
 }
 
@@ -139,9 +147,13 @@ long get_script_macro(const char *name)
 {
   struct symbol *sym;
   long *val;
+
   sym = get_symbol(state.script_symbols, name);
-  if (!sym)
+
+  if (sym == NULL) {
     return 0;
+  }
+
   val = get_symbol_annotation(sym);
   return *val;
 }
@@ -152,22 +164,22 @@ long get_script_macro(const char *name)
    code. */
 
 /* logical section definition */
-static int do_logsec(char *name, enum section_type type, struct pnode *parms)
+static int do_logsec(const char *name, enum section_type type, struct pnode *parms)
 {
   enum arg_id_e {
-    id_unknown = 0,
-    id_name = 1,
-    id_ram,
-    id_rom
+    ID_UNKNOWN = 0,
+    ID_NAME = 1,
+    ID_RAM,
+    ID_ROM
   } arg;
   static struct {
     enum arg_id_e id;
     const char *name;
   }
   arg_tbl[] = {
-    { id_name, "name" },
-    { id_ram,  "ram"  },
-    { id_rom,  "rom"  }
+    { ID_NAME, "name" },
+    { ID_RAM,  "ram"  },
+    { ID_ROM,  "rom"  }
   };
   struct pnode *p;
   gp_boolean found_secname = false;
@@ -181,34 +193,35 @@ static int do_logsec(char *name, enum section_type type, struct pnode *parms)
   /* read the options */
   for (; parms != NULL; parms = TAIL(parms)) {
     p = HEAD(parms);
-    if ((p->tag == binop) &&
-        (p->value.binop.op == '=')) {
+
+    if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
       if (enforce_simple(p->value.binop.p0)) {
         const char *lhs = p->value.binop.p0->value.symbol;
         int i;
 
-        arg = id_unknown;
+        arg = ID_UNKNOWN;
         for (i = 0; i < NELEM(arg_tbl); ++i) {
-          if (0 == strcasecmp(arg_tbl[i].name, lhs))
+          if (strcasecmp(arg_tbl[i].name, lhs) == 0) {
             arg = arg_tbl[i].id;
+          }
         }
 
         switch (arg) {
-        case id_name:
+        case ID_NAME:
           if (enforce_simple(p->value.binop.p1)) {
             found_secname = true;
             logical_section_name = p->value.binop.p1->value.symbol;
           }
           break;
 
-        case id_ram:
+        case ID_RAM:
           if (enforce_simple(p->value.binop.p1)) {
             found_ram = true;
             section_name = strdup(p->value.binop.p1->value.symbol);
           }
           break;
 
-        case id_rom:
+        case ID_ROM:
           if (enforce_simple(p->value.binop.p1)) {
             found_rom = true;
             section_name = strdup(p->value.binop.p1->value.symbol);
@@ -235,11 +248,13 @@ static int do_logsec(char *name, enum section_type type, struct pnode *parms)
     script_error("missing argument", "ram or rom");
   } else {
     sym = get_symbol(state.section.definition, section_name);
+
     if (sym == NULL) {
       script_error("undefined section", section_name);
     } else {
       section = get_symbol_annotation(sym);
       assert(section != NULL);
+
       if ((found_ram == 1) && (section->type == codepage)) {
         script_error("invalid argument", "ram");
       } else if ((found_rom == 1) && (section->type != codepage)) {
@@ -255,26 +270,26 @@ static int do_logsec(char *name, enum section_type type, struct pnode *parms)
 }
 
 /* general section definition processing */
-static int do_secdef(char *name, enum section_type type, struct pnode *parms)
+static int do_secdef(const char *name, enum section_type type, struct pnode *parms)
 {
   enum arg_id_e {
-    id_unknown = 0,
-    id_name = 1,
-    id_start,
-    id_end,
-    id_fill,
-    id_shadow
+    ID_UNKNOWN = 0,
+    ID_NAME = 1,
+    ID_START,
+    ID_END,
+    ID_FILL,
+    ID_SHADOW
   } arg;
   static struct {
     enum arg_id_e id;
     const char *name;
   }
   arg_tbl[] = {
-    { id_name,   "name"   },
-    { id_start,  "start"  },
-    { id_end,    "end"    },
-    { id_fill,   "fill"   },
-    { id_shadow, "shadow" }
+    { ID_NAME,   "name"   },
+    { ID_START,  "start"  },
+    { ID_END,    "end"    },
+    { ID_FILL,   "fill"   },
+    { ID_SHADOW, "shadow" }
   };
   struct pnode *p;
   gp_boolean found_start = false;
@@ -293,57 +308,61 @@ static int do_secdef(char *name, enum section_type type, struct pnode *parms)
   /* read the options */
   for (; parms != NULL; parms = TAIL(parms)) {
     p = HEAD(parms);
-    if ((p->tag == binop) &&
-        (p->value.binop.op == '=')) {
+    if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
       if (enforce_simple(p->value.binop.p0)) {
         const char *lhs = p->value.binop.p0->value.symbol;
         int i;
 
-        arg = id_unknown;
+        arg = ID_UNKNOWN;
         for (i = 0; i < NELEM(arg_tbl); ++i) {
-          if (0 == strcasecmp(arg_tbl[i].name, lhs))
+          if (strcasecmp(arg_tbl[i].name, lhs) == 0) {
             arg = arg_tbl[i].id;
+          }
         }
 
         switch (arg) {
-        case id_name:
+        case ID_NAME:
           if (enforce_simple(p->value.binop.p1)) {
             section_name = p->value.binop.p1->value.symbol;
           }
           break;
 
-        case id_start:
+        case ID_START:
           found_start = true;
           start = evaluate(p->value.binop.p1);
           break;
 
-        case id_end:
+        case ID_END:
           found_end = true;
           end = evaluate(p->value.binop.p1);
           break;
 
-        case id_fill:
+        case ID_FILL:
           found_fill = true;
           fill = evaluate(p->value.binop.p1);
           break;
 
-        case id_shadow:
+        case ID_SHADOW:
           if (enforce_simple(p->value.binop.p1)) {
             const char *begin;
             char *end;
+
             begin = p->value.binop.p1->value.symbol;
-            if (NULL != (end = strchr(begin, ':'))) {
+            if ((end = strchr(begin, ':')) != NULL) {
               if (end == begin)
                 script_error("bad shadow symbol", lhs);
               else {
                 char *shsym = (char *)malloc(end - begin + 1);
+
                 memcpy(shsym, begin, end - begin);
                 shsym[end - begin] = '\0';
                 shadow_sym = shsym;
                 begin = ++end;
                 shadow_val = strtol(begin, &end, 0);
-                if ('\0' != *end)
+
+                if (*end != '\0') {
                   script_error("bad shadow value", lhs);
+                }
               }
             } else {
               script_error("bad shadow argument", lhs);
@@ -375,6 +394,7 @@ static int do_secdef(char *name, enum section_type type, struct pnode *parms)
     script_error("missing argument", "end");
   } else {
     sym = get_symbol(state.section.definition, section_name);
+
     if (sym == NULL) {
       sym = add_symbol(state.section.definition, section_name);
       section_def = (struct linker_section *)malloc(sizeof(struct linker_section));
@@ -429,20 +449,20 @@ static int do_secdef(char *name, enum section_type type, struct pnode *parms)
   return 0;
 }
 
-static int do_stack(char *name, enum section_type type, struct pnode *parms)
+static int do_stack(const char *name, enum section_type type, struct pnode *parms)
 {
   enum arg_id_e {
-    id_unknown = 0,
-    id_size = 1,
-    id_ram
+    ID_UNKNOWN = 0,
+    ID_SIZE = 1,
+    ID_RAM
   } arg;
   static struct {
     enum arg_id_e id;
     const char *name;
   }
   arg_tbl[] = {
-    { id_size, "size" },
-    { id_ram,  "ram"  }
+    { ID_SIZE, "size" },
+    { ID_RAM,  "ram"  }
   };
   struct pnode *p;
   gp_boolean found_size  = false;
@@ -461,25 +481,26 @@ static int do_stack(char *name, enum section_type type, struct pnode *parms)
   /* read the options */
   for (; parms != NULL; parms = TAIL(parms)) {
     p = HEAD(parms);
-    if ((p->tag == binop) &&
-        (p->value.binop.op == '=')) {
+
+    if ((p->tag == PTAG_BINOP) && (p->value.binop.op == '=')) {
       if (enforce_simple(p->value.binop.p0)) {
         const char *lhs = p->value.binop.p0->value.symbol;
         int i;
 
-        arg = id_unknown;
+        arg = ID_UNKNOWN;
         for (i = 0; i < NELEM(arg_tbl); ++i) {
-          if (0 == strcasecmp(arg_tbl[i].name, lhs))
+          if (strcasecmp(arg_tbl[i].name, lhs) == 0) {
             arg = arg_tbl[i].id;
+          }
         }
 
         switch (arg) {
-        case id_size:
+        case ID_SIZE:
           found_size = true;
           state.stack_size = evaluate(p->value.binop.p1);
           break;
 
-        case id_ram:
+        case ID_RAM:
           if (enforce_simple(p->value.binop.p1)) {
             ram_name = strdup(p->value.binop.p1->value.symbol);
           }
@@ -512,7 +533,7 @@ int execute_command(char *name, struct pnode *parms)
   static struct {
     const char *name;
     enum section_type type;
-    int (*address)(char *name, enum section_type type, struct pnode *parms);
+    int (*address)(const char *name, enum section_type type, struct pnode *parms);
   } commands[] = {
     { "accessbank", accessbank, do_secdef  },
     { "codepage",   codepage,   do_secdef  },

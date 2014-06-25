@@ -1,3 +1,36 @@
+2014-06-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx:
+    Changed detail of IDLOCS directive.
+
+  * gpasm/deps.c, gpasm/deps.h:
+    Changed "char *" onto "const char *".
+
+  * gpasm/evaluate.c, gpasm/evaluate.h:
+    Changed "struct pnode *" onto "const struct pnode *".
+
+  * gpasm/preprocess.c:
+    Changed text format.
+
+  * gpasm/special.h:
+    Changed "struct insn" onto "const struct insn".
+
+  * gpasm/directive.c, gpasm/special.c:
+    Some simplification and use of extended insn structure.
+
+  * gplink/cod.c, gplink/gplink.c, gplink/gplink.h.in,
+    gplink/lst.c, gplink/map.c, gplink/parse.y, gplink/script.c,
+    gplink/script.h:
+    Changed text format and renamed some constant.
+
+  * libgputils/gpopcode.c, libgputils/gpopcode.h:
+    New element in insn structure and instruction masks.
+
+  * libgputils/gpprocessor.c, libgputils/gpprocessor.h:
+    Changed type of function parameter: "long int" onto "unsigned int".
+
+  * libgputils/gpdis.c:
+    More accurate recognition of labels.
+
 2014-06-23  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c:
     Bugfix of PIC16E movlb instruction.
