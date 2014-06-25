@@ -82,6 +82,8 @@ Boston, MA 02111-1307, USA.  */
 gp_boolean gp_decode_mnemonics = false;
 gp_boolean gp_decode_extended = false;
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t processor,
                            gpdasm_fstate_t *fstate)
@@ -140,7 +142,7 @@ gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t proces
       /* PIC12x call, SX call */
       value = opcode & MASK_PIC12_CALL;
 
-      if (prog_max_org <= (0x100 + MASK_PIC12_CALL)) {
+      if ((prog_max_org > 0) && (prog_max_org <= (0x100 + MASK_PIC12_CALL))) {
         /* The PCLATH is not required. */
         org = value;
         goto _class_lit8c12;
@@ -151,9 +153,11 @@ gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t proces
 
 _class_lit8c12:
 
-        dest_byte_addr = gp_processor_org_to_byte(class, org);
-        b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-        b_memory_set_addr_type(m, dest_byte_addr, W_ADDR_T_FUNC, 0);
+        if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+          dest_byte_addr = gp_processor_org_to_byte(class, org);
+          b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+          b_memory_set_addr_type(m, dest_byte_addr, W_ADDR_T_FUNC, 0);
+        }
       }
 
       wreg = -1;
@@ -166,9 +170,12 @@ _class_lit8c12:
         /* The value of the PCLATH is known. */
         value = opcode & 0x00ff;
         org = ((pclath & 0xff) << 8) | value;
-        dest_byte_addr = gp_processor_org_to_byte(class, org);
-        b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-        b_memory_set_addr_type(m, dest_byte_addr, W_ADDR_T_FUNC, 0);
+
+        if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+          dest_byte_addr = gp_processor_org_to_byte(class, org);
+          b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+          b_memory_set_addr_type(m, dest_byte_addr, W_ADDR_T_FUNC, 0);
+        }
       }
 
       wreg = -1;
@@ -210,7 +217,7 @@ _class_lit8c12:
       /* PIC12 goto, SX goto */
       value = opcode & MASK_PIC12_GOTO;
 
-      if (prog_max_org <= MASK_PIC12_GOTO) {
+      if ((prog_max_org > 0) && (prog_max_org <= MASK_PIC12_GOTO)) {
         /* The PCLATH is not required. */
         org = value;
         goto _class_lit9;
@@ -221,9 +228,11 @@ _class_lit8c12:
 
 _class_lit9:
 
-        dest_byte_addr = gp_processor_org_to_byte(class, org);
-        b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-        b_memory_set_addr_type(m, dest_byte_addr, W_ADDR_T_FUNC, 0);
+        if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+          dest_byte_addr = gp_processor_org_to_byte(class, org);
+          b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+          b_memory_set_addr_type(m, dest_byte_addr, W_ADDR_T_FUNC, 0);
+        }
       }
       break;
 
@@ -231,7 +240,7 @@ _class_lit9:
       /* PIC14x (call, goto) */
       tmp  = (class == PROC_CLASS_PIC14E) ? 0x78 : 0x18;
 
-      if (prog_max_org <= 0x07ff) {
+      if ((prog_max_org > 0) && (prog_max_org <= 0x07ff)) {
         /* The PCLATH is not required. */
         value = opcode & MASK_PIC14_BRANCH;
         org = value;
@@ -244,10 +253,12 @@ _class_lit9:
 
 _class_lit11:
 
-        dest_byte_addr = gp_processor_org_to_byte(class, org);
-        type = (icode == ICODE_CALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
-        b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-        b_memory_set_addr_type(m, dest_byte_addr, type, 0);
+        if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+          dest_byte_addr = gp_processor_org_to_byte(class, org);
+          type = (icode == ICODE_CALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
+          b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+          b_memory_set_addr_type(m, dest_byte_addr, type, 0);
+        }
       }
 
       if (icode == ICODE_CALL) {
@@ -265,8 +276,12 @@ _class_lit11:
       }
 
       dest_byte_addr = byte_address + value * 2 + 2;
-      b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-      b_memory_set_addr_type(m, dest_byte_addr, W_ADDR_T_LABEL, 0);
+      org = gp_processor_byte_to_org(class, dest_byte_addr);
+
+      if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+        b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+        b_memory_set_addr_type(m, dest_byte_addr, W_ADDR_T_LABEL, 0);
+      }
       break;
 
     case INSN_CLASS_RBRA9:
@@ -278,8 +293,12 @@ _class_lit11:
       }
 
       dest_byte_addr = byte_address + value * 2 + 2;
-      b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-      b_memory_set_addr_type(m, dest_byte_addr, W_ADDR_T_LABEL, 0);
+      org = gp_processor_byte_to_org(class, dest_byte_addr);
+
+      if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+        b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+        b_memory_set_addr_type(m, dest_byte_addr, W_ADDR_T_LABEL, 0);
+      }
       break;
 
     case INSN_CLASS_RBRA11:
@@ -291,9 +310,13 @@ _class_lit11:
       }
 
       dest_byte_addr = byte_address + value * 2 + 2;
-      type = (icode == ICODE_RCALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
-      b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-      b_memory_set_addr_type(m, dest_byte_addr, type, 0);
+      org = gp_processor_byte_to_org(class, dest_byte_addr);
+
+      if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+        type = (icode == ICODE_RCALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
+        b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+        b_memory_set_addr_type(m, dest_byte_addr, type, 0);
+      }
       break;
 
     case INSN_CLASS_LIT20:
@@ -308,9 +331,13 @@ _class_lit11:
         dest  = (dest & MASK_PIC16E_BRANCH_HIGHER) << 8;
         dest |= opcode & MASK_PIC16E_BRANCH_LOWER;
         dest_byte_addr = dest * 2;
-        type = (icode == ICODE_CALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
-        b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-        b_memory_set_addr_type(m, dest_byte_addr, type, 0);
+        org = gp_processor_org_to_byte(class, dest_byte_addr);
+
+        if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+          type = (icode == ICODE_CALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
+          b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+          b_memory_set_addr_type(m, dest_byte_addr, type, 0);
+        }
       }
       break;
 
@@ -504,13 +531,35 @@ _class_lit11:
   return num_words;
 }
 
+static int
+print_word(unsigned short opcode, int behavior, char *buffer, size_t sizeof_buffer) {
+  if (behavior & GPDIS_SHOW_BYTES) {
+    if (isprint(opcode)) {
+      snprintf(buffer, sizeof_buffer, "dw\t0x%04x\t\t\t; '%c'", (unsigned int)opcode,
+               (unsigned char)opcode);
+      return 1;
+    }
+    else if (isprint(opcode & 0xFF) && isprint((opcode >> 8) & 0xFF)) {
+      snprintf(buffer, sizeof_buffer, "dw\t0x%04x\t\t\t; '%c%c'", (unsigned int)opcode,
+               (unsigned char)(opcode & 0xFF), (unsigned char)((opcode >> 8) & 0xFF));
+      return 1;
+    }
+  }
+
+  snprintf(buffer, sizeof_buffer, "dw\t0x%04x", (unsigned int)opcode);
+  return 1;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
-               gp_boolean show_names, char *buffer, size_t sizeof_buffer)
+               int prog_mem_size, int behavior, char *buffer, size_t sizeof_buffer)
 {
   int value;
   unsigned short opcode;
   const struct insn *instruction = NULL;
+  int prog_max_org;
   unsigned int type;
   const char *dest_name;
   int org;
@@ -527,6 +576,8 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
     return 0;
   }
 
+  prog_max_org = (prog_mem_size > 0) ? (prog_mem_size - 1) : 0;
+
   addr_digits = class->addr_digits;
   type = 0;
   dest_name = NULL;
@@ -537,7 +588,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
     org = gp_processor_byte_to_org(class, byte_address);
     type = b_memory_get_addr_type(m, byte_address, NULL, &dest_byte_addr);
 
-    if (show_names && (type & W_ADDR_T_BRANCH_SRC)) {
+    if ((behavior & GPDIS_SHOW_NAMES) && (type & W_ADDR_T_BRANCH_SRC)) {
       b_memory_get_addr_type(m, dest_byte_addr, &dest_name, NULL);
     }
   }
@@ -546,7 +597,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
   if (class == PROC_CLASS_PIC14E) {
     const char *instr = NULL;
 
-    tmp = opcode & 0x3f80;
+    tmp = opcode & IMSK_PIC14E_MOVIW_IDX;
 
     if (tmp == INSN_PIC14E_MOVIW_IDX) {
       instr = "moviw";
@@ -560,7 +611,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       const char *neg;
 
       value = opcode & 0x003f;
-      tmp   = opcode & 0x0040;
+      tmp   = (opcode & 0x0040) >> 6;
 
       if (value & 0x20) {
         value = (value ^ 0x3f) + 1;
@@ -569,9 +620,8 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
         neg = "";
       }
 
-      if (show_names) {
-        snprintf(buffer, sizeof_buffer, "%s\t%s.%d[%s]", instr, neg, value,
-                 (tmp) ? "FSR1" : "FSR0");
+      if (behavior & GPDIS_SHOW_NAMES) {
+        snprintf(buffer, sizeof_buffer, "%s\t%s.%d[FSR%i]", instr, neg, value, tmp);
       }
       else {
         snprintf(buffer, sizeof_buffer, "%s\t%s.%d[%u]", instr, neg, value,
@@ -585,19 +635,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
   instruction = class->find_insn(class, opcode);
 
   if (instruction == NULL)  {
-    if (isprint(opcode)) {
-      snprintf(buffer, sizeof_buffer, "dw\t0x%04x\t\t\t; '%c'", (unsigned int)opcode,
-               (unsigned char)opcode);
-    }
-    else if (isprint(opcode & 0xFF) && isprint((opcode >> 8) & 0xFF)) {
-      snprintf(buffer, sizeof_buffer, "dw\t0x%04x\t\t\t; '%c%c'", (unsigned int)opcode,
-               (unsigned char)(opcode & 0xFF), (unsigned char)((opcode >> 8) & 0xFF));
-    }
-    else {
-      snprintf(buffer, sizeof_buffer, "dw\t0x%04x", (unsigned int)opcode);
-    }
-
-    return num_words;
+    return print_word(opcode, behavior, buffer, sizeof_buffer);
   }
 
   switch (instruction->class) {
@@ -662,11 +700,16 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       /* PIC16 lcall */
       org = opcode & 0x00ff;
 
-      if (dest_name != NULL) {
-        DECODE_ARG1_S(dest_name);
+      if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+        if (dest_name != NULL) {
+          DECODE_ARG1_S(dest_name);
+        }
+        else {
+          DECODE_ARG1_Nw(org);
+        }
       }
       else {
-        DECODE_ARG1_Nw(org);
+        return print_word(opcode, behavior, buffer, sizeof_buffer);
       }
       break;
 
@@ -674,11 +717,16 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       /* PIC12 goto, SX goto */
       org = opcode & MASK_PIC12_GOTO;
 
-      if (dest_name != NULL) {
-        DECODE_ARG1_S(dest_name);
+      if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+        if (dest_name != NULL) {
+          DECODE_ARG1_S(dest_name);
+        }
+        else {
+          DECODE_ARG1_Nw(org);
+        }
       }
       else {
-        DECODE_ARG1_Nw(org);
+        return print_word(opcode, behavior, buffer, sizeof_buffer);
       }
       break;
 
@@ -686,17 +734,29 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       /* PIC14x (call, goto) */
       org = opcode & MASK_PIC14_BRANCH;
 
-      if (dest_name != NULL) {
-        DECODE_ARG1_S(dest_name);
+      if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+        if (dest_name != NULL) {
+          DECODE_ARG1_S(dest_name);
+        }
+        else {
+          DECODE_ARG1_Nw(org);
+        }
       }
       else {
-        DECODE_ARG1_Nw(org);
+        return print_word(opcode, behavior, buffer, sizeof_buffer);
       }
       break;
 
     case INSN_CLASS_LIT13:
       /* PIC16 (call, goto) */
-      DECODE_ARG1_Nw(opcode & MASK_PIC16_BRANCH);
+      org = opcode & MASK_PIC16_BRANCH;
+
+      if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+        DECODE_ARG1_Nw(opcode & MASK_PIC16_BRANCH);
+      }
+      else {
+        return print_word(opcode, behavior, buffer, sizeof_buffer);
+      }
       break;
 
     case INSN_CLASS_LITFSR_14:
@@ -705,7 +765,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
         const char *neg;
 
         value = opcode & 0x003f;
-        tmp   = opcode & 0x0040;
+        tmp   = (opcode & 0x0040) >> 6;
 
         if (value & 0x20) {
           value = (value ^ 0x3f) + 1;
@@ -714,9 +774,9 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
           neg = "";
         }
 
-        if (show_names) {
-          snprintf(buffer, sizeof_buffer, "%s\t%s, %s.%d", instruction->name,
-                   (tmp) ? "FSR1" : "FSR0", neg, value);
+        if (behavior & GPDIS_SHOW_NAMES) {
+          snprintf(buffer, sizeof_buffer, "%s\tFSR%i, %s.%d", instruction->name,
+                   tmp, neg, value);
         }
         else {
           snprintf(buffer, sizeof_buffer, "%s\t%u, %s.%d", instruction->name,
@@ -740,11 +800,16 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
 
       org = gp_processor_byte_to_org(class, byte_address + value * 2 + 2);
 
-      if (dest_name != NULL) {
-        DECODE_ARG1_S(dest_name);
+      if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+        if (dest_name != NULL) {
+          DECODE_ARG1_S(dest_name);
+        }
+        else {
+          DECODE_ARG1_Nw(org);
+        }
       }
       else {
-        DECODE_ARG1_Nw(org);
+        return print_word(opcode, behavior, buffer, sizeof_buffer);
       }
       break;
 
@@ -757,7 +822,13 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       }
 
       org = gp_processor_byte_to_org(class, byte_address + value * 2 + 2);
-      DECODE_ARG1_Nw(org);
+
+      if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+        DECODE_ARG1_Nw(org);
+      }
+      else {
+        return print_word(opcode, behavior, buffer, sizeof_buffer);
+      }
       break;
 
     case INSN_CLASS_RBRA11:
@@ -770,11 +841,16 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
 
       org = gp_processor_byte_to_org(class, byte_address + value * 2 + 2);
 
-      if (dest_name != NULL) {
-        DECODE_ARG1_S_Mw(dest_name, org);
+      if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+        if (dest_name != NULL) {
+          DECODE_ARG1_S_Mw(dest_name, org);
+        }
+        else {
+          DECODE_ARG1_Nw(org);
+        }
       }
       else {
-        DECODE_ARG1_Nw(org);
+        return print_word(opcode, behavior, buffer, sizeof_buffer);
       }
       break;
 
@@ -790,12 +866,17 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
 
         org = gp_processor_byte_to_org(class, dest * 2);
 
-        if (dest_name != NULL) {
-          DECODE_ARG1_S_Mw(dest_name, org);
+        if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+          if (dest_name != NULL) {
+            DECODE_ARG1_S_Mw(dest_name, org);
+          }
+          else {
+            DECODE_ARG1_Nw(gp_processor_byte_to_org(class, org));
+          }
         }
         else {
-          DECODE_ARG1_Nw(gp_processor_byte_to_org(class, org));
-	}
+          return print_word(opcode, behavior, buffer, sizeof_buffer);
+        }
       }
       break;
 
@@ -812,12 +893,17 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
 
         org = gp_processor_byte_to_org(class, dest * 2);
 
-        if (dest_name != NULL) {
-          DECODE_ARG2_S_N_Mw(dest_name, tmp, org);
+        if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
+          if (dest_name != NULL) {
+            DECODE_ARG2_S_N_Mw(dest_name, tmp, org);
+          }
+          else {
+            DECODE_ARG2_Nw_N(org, tmp);
+          }
         }
         else {
-          DECODE_ARG2_Nw_N(org, tmp);
-	}
+          return print_word(opcode, behavior, buffer, sizeof_buffer);
+        }
       }
       break;
 
@@ -841,7 +927,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       class->i_memory_get(m, byte_address + 2, &file2, NULL, NULL);
       file2 &= 0xfff;
 
-      if (show_names) {
+      if (behavior & GPDIS_SHOW_NAMES) {
         const core_sfr_t *sfr2;
 
         sfr  = gp_processor_find_sfr(class, file1);
@@ -877,7 +963,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       file1 = opcode & MASK_PIC16_FILE;
       file2 = (opcode >> 8) & 0x1f;
 
-      if (show_names) {
+      if (behavior & GPDIS_SHOW_NAMES) {
         const core_sfr_t *sfr2;
 
         sfr  = gp_processor_find_sfr(class, file1);
@@ -913,7 +999,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       file1 = (opcode >> 8) & 0x1f;
       file2 = opcode & MASK_PIC16_FILE;
 
-      if (show_names) {
+      if (behavior & GPDIS_SHOW_NAMES) {
         const core_sfr_t *sfr2;
 
         sfr  = gp_processor_find_sfr(class, file1);
@@ -953,7 +1039,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
         offset = opcode & 0x007f;
         class->i_memory_get(m, byte_address + 2, &file1, NULL, NULL);
         file1 &= 0xfff;
-        sfr    = ((show_names) && (bsr_boundary > 0) && (file1 >= (0xF00 + bsr_boundary))) ?
+        sfr    = ((behavior & GPDIS_SHOW_NAMES) && (bsr_boundary > 0) && (file1 >= (0xF00 + bsr_boundary))) ?
                       gp_processor_find_sfr(class, file1) : NULL;
 
         if (sfr != NULL) {
@@ -984,7 +1070,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
     case INSN_CLASS_OPF5:
       /* {PIC12x, SX} (clrf, movwf), SX tris */
       file1 = opcode & MASK_PIC12_FILE;
-      sfr   = (show_names) ? gp_processor_find_sfr(class, file1) : NULL;
+      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
       if (sfr != NULL) {
         DECODE_ARG1_S(sfr->name);
@@ -999,12 +1085,12 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
                        iorwf, movf, rlf, rrf, subwf, swapf, xorwf) */
       file1 = opcode & MASK_PIC12_FILE;
       tmp   = (opcode >> 5) & 1;
-      sfr   = (show_names) ? gp_processor_find_sfr(class, file1) : NULL;
+      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
       if (sfr != NULL) {
         DECODE_ARG2_S_S(sfr->name, FLAG_FW(tmp));
       }
-      else if (show_names) {
+      else if (behavior & GPDIS_SHOW_NAMES) {
         DECODE_ARG2_N_S(file1, FLAG_FW(tmp));
       }
       else {
@@ -1016,7 +1102,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       /* {PIC12x, SX} (bcf, bsf, btfsc, btfss) */
       file1 = opcode & MASK_PIC12_FILE;
       tmp   = (opcode >> 5) & 7;
-      sfr   = (show_names) ? gp_processor_find_sfr(class, file1) : NULL;
+      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
       if (sfr != NULL) {
         DECODE_ARG2_S_N(sfr->name, tmp);
@@ -1030,7 +1116,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       /* PIC16 (bcf, bsf, btfsc, btfss, btg) */
       file1 = opcode & MASK_PIC16_FILE;
       tmp   = (opcode >> 8) & 7;
-      sfr   = (show_names) ? gp_processor_find_sfr(class, file1) : NULL;
+      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
       if (sfr != NULL) {
         DECODE_ARG2_S_N(sfr->name, tmp);
@@ -1043,7 +1129,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
     case INSN_CLASS_OPF7:
       /* PIC14x (clrf, movwf, tris) */
       file1 = opcode & MASK_PIC14_FILE;
-      sfr   = (show_names) ? gp_processor_find_sfr(class, file1) : NULL;
+      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
       if (sfr != NULL) {
         DECODE_ARG1_S(sfr->name);
@@ -1056,7 +1142,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
     case INSN_CLASS_OPF8:
       /* PIC16 (cpfseq, cpfsgt, cpfslt, movwf, mulwf, tstfsz) */
       file1 = opcode & MASK_PIC16_FILE;
-      sfr   = (show_names) ? gp_processor_find_sfr(class, file1) : NULL;
+      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
       if (sfr != NULL) {
         DECODE_ARG1_S(sfr->name);
@@ -1072,12 +1158,12 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
          PIC14E (addwfc, asrf, lslf, lsrf, subwfb) */
       file1 = opcode & MASK_PIC14_FILE;
       tmp   = (opcode >> 7) & 1;
-      sfr   = (show_names) ? gp_processor_find_sfr(class, file1) : NULL;
+      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
       if (sfr != NULL) {
         DECODE_ARG2_S_S(sfr->name, FLAG_FW(tmp));
       }
-      else if (show_names) {
+      else if (behavior & GPDIS_SHOW_NAMES) {
         DECODE_ARG2_N_S(file1, FLAG_FW(tmp));
       }
       else {
@@ -1091,12 +1177,12 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
                 swapf, xorwf) */
       file1 = opcode & MASK_PIC16_FILE;
       tmp   = (opcode >> 8) & 1;
-      sfr   = (show_names) ? gp_processor_find_sfr(class, file1) : NULL;
+      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
       if (sfr != NULL) {
         DECODE_ARG2_S_S(sfr->name, FLAG_FW(tmp));
       }
-      else if (show_names) {
+      else if (behavior & GPDIS_SHOW_NAMES) {
         DECODE_ARG2_N_S(file1, FLAG_FW(tmp));
       }
       else {
@@ -1108,7 +1194,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       /* PIC14x (bcf, bsf, btfsc, btfss) */
       file1 = opcode & MASK_PIC14_FILE;
       tmp   = (opcode >> 7) & 7;
-      sfr   = (show_names) ? gp_processor_find_sfr(class, file1) : NULL;
+      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
       if (sfr != NULL) {
         DECODE_ARG2_S_N(sfr->name, tmp);
@@ -1122,13 +1208,13 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       /* PIC16E (clrf, cpfseq, cpfsgt, cpfslt, movwf, mulwf, negf, setf, tstfsz) */
       file1   = opcode & MASK_PIC16_FILE;
       ram_acc = (opcode >> 8) & 1;
-      sfr     = ((show_names) && (ram_acc == 0) && (bsr_boundary > 0) && (file1 >= bsr_boundary)) ?
+      sfr     = ((behavior & GPDIS_SHOW_NAMES) && (ram_acc == 0) && (bsr_boundary > 0) && (file1 >= bsr_boundary)) ?
                      gp_processor_find_sfr(class, 0xF00 + file1) : NULL;
 
       if (sfr != NULL) {
         DECODE_ARG2_S_S(sfr->name, FLAG_BA(ram_acc));
       }
-      else if (show_names) {
+      else if (behavior & GPDIS_SHOW_NAMES) {
         DECODE_ARG2_N_S(file1, FLAG_BA(ram_acc));
       }
       else {
@@ -1141,13 +1227,13 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       file1   = opcode & MASK_PIC16_FILE;
       tmp     = (opcode >> 9) & 7;
       ram_acc = (opcode >> 8) & 1;
-      sfr     = ((show_names) && (ram_acc == 0) && (bsr_boundary > 0) && (file1 >= bsr_boundary)) ?
+      sfr     = ((behavior & GPDIS_SHOW_NAMES) && (ram_acc == 0) && (bsr_boundary > 0) && (file1 >= bsr_boundary)) ?
                      gp_processor_find_sfr(class, 0xF00 + file1) : NULL;
 
       if (sfr != NULL) {
         DECODE_ARG3_S_N_S(sfr->name, tmp, FLAG_BA(ram_acc));
       }
-      else if (show_names) {
+      else if (behavior & GPDIS_SHOW_NAMES) {
         DECODE_ARG3_N_N_S(file1, tmp, FLAG_BA(ram_acc));
       }
       else {
@@ -1162,13 +1248,13 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       file1   = opcode & MASK_PIC16_FILE;
       tmp     = (opcode >> 9) & 1;
       ram_acc = (opcode >> 8) & 1;
-      sfr     = ((show_names) && (ram_acc == 0) && (bsr_boundary > 0) && (file1 >= bsr_boundary)) ?
+      sfr     = ((behavior & GPDIS_SHOW_NAMES) && (ram_acc == 0) && (bsr_boundary > 0) && (file1 >= bsr_boundary)) ?
                      gp_processor_find_sfr(class, 0xF00 + file1) : NULL;
 
       if (sfr != NULL) {
         DECODE_ARG3_S_S_S(sfr->name, FLAG_FW(tmp), FLAG_BA(ram_acc));
       }
-      else if (show_names) {
+      else if (behavior & GPDIS_SHOW_NAMES) {
         DECODE_ARG3_N_S_S(file1, FLAG_FW(tmp), FLAG_BA(ram_acc));
       }
       else {
@@ -1201,7 +1287,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       /* PIC16 (tlrd, tlwt) */
       file1 = opcode & MASK_PIC16_FILE;
       tmp   = (opcode >> 9) & 1;
-      sfr   = (show_names) ? gp_processor_find_sfr(class, file1) : NULL;
+      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
       if (sfr != NULL) {
         DECODE_ARG2_N_S(tmp, sfr->name);
@@ -1219,7 +1305,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
         file1 = opcode & MASK_PIC16_FILE;
         tmp   = (opcode >> 9) & 1;
         inc   = (opcode >> 8) & 1;
-        sfr   = (show_names) ? gp_processor_find_sfr(class, file1) : NULL;
+        sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
         if (sfr != NULL) {
           DECODE_ARG3_N_N_S(tmp, inc, sfr->name);
@@ -1239,7 +1325,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
         file1 = opcode & 0x0004;
         tmp   = opcode & 0x0003;
 
-        if (show_names) {
+        if (behavior & GPDIS_SHOW_NAMES) {
           DECODE_MOVINDF_S_S_S(op_pre[tmp], (file1) ? "FSR1" : "FSR0", op_post[tmp]);
         }
         else {
@@ -1255,6 +1341,8 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
   return num_words;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_disassemble_byte(MemBlock *m, int byte_address, proc_class_t class,
                     char *buffer, size_t sizeof_buffer)
@@ -1265,6 +1353,8 @@ gp_disassemble_byte(MemBlock *m, int byte_address, proc_class_t class,
   snprintf(buffer, sizeof_buffer, "db\t0x%02x", (unsigned int)byte);
   return 1;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 gp_disassemble_word(MemBlock *m, int byte_address, proc_class_t class,
@@ -1277,9 +1367,11 @@ gp_disassemble_word(MemBlock *m, int byte_address, proc_class_t class,
   return 2;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 int
 gp_disassemble_size(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
-                    gp_boolean show_names, char *buffer, size_t sizeof_buffer,
+                    int prog_mem_size, int behavior, char *buffer, size_t sizeof_buffer,
                     unsigned int size)
 {
   if (size == 1) {
@@ -1289,7 +1381,8 @@ gp_disassemble_size(MemBlock *m, int byte_address, proc_class_t class, int bsr_b
     char dasmbuf[512];
     int num_words;
 
-    num_words = gp_disassemble(m, byte_address, class, bsr_boundary, show_names, dasmbuf, sizeof(dasmbuf));
+    num_words = gp_disassemble(m, byte_address, class, bsr_boundary, prog_mem_size, behavior,
+                               dasmbuf, sizeof(dasmbuf));
 
     if (num_words != 1) {
       return gp_disassemble_word(m, byte_address, class, buffer, sizeof_buffer);
@@ -1300,5 +1393,6 @@ gp_disassemble_size(MemBlock *m, int byte_address, proc_class_t class, int bsr_b
     }
   }
 
-  return (2 * gp_disassemble(m, byte_address, class, bsr_boundary, show_names, buffer, sizeof_buffer));
+  return (2 * gp_disassemble(m, byte_address, class, bsr_boundary, prog_mem_size, behavior,
+                             buffer, sizeof_buffer));
 }

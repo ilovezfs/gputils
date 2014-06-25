@@ -204,7 +204,8 @@ void print_data(proc_class_t class, gp_section_type *section)
         break;
       }
 
-      num_words = gp_disassemble(section->data, address, class, 0x80, false, buffer, sizeof(buffer));
+      num_words = gp_disassemble(section->data, address, class, 0x80, 0, GPDIS_SHOW_NOTHING,
+                                 buffer, sizeof(buffer));
       printf("%06x:  %04x  %s\n", gp_processor_byte_to_org(class, address), memory, buffer);
 
       if (num_words != 1) {

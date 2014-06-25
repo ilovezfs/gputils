@@ -1,4 +1,9 @@
 2014-06-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gplink/lst.c, gputils/gpdasm.c, gputils/gpvo.c,
+    libgputils/gpdis.c, libgputils/gpdis.h:
+    More accurate listing.
+
+2014-06-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx:
     Changed detail of IDLOCS directive.
 
