@@ -31,11 +31,16 @@ typedef struct {
   int pclath_valid_mask;
 } gpdasm_fstate_t;
 
+/* Values of the "behavior". */
+#define GPDIS_SHOW_NOTHING      0
+#define GPDIS_SHOW_NAMES        (1 << 0)
+#define GPDIS_SHOW_BYTES        (1 << 1)
+
 int gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t processor,
                                gpdasm_fstate_t *fstate);
 
 int gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
-                   gp_boolean show_names, char *buffer, size_t sizeof_buffer);
+                   int prog_mem_size, int behavior, char *buffer, size_t sizeof_buffer);
 
 int gp_disassemble_byte(MemBlock *m, int byte_address, proc_class_t class,
                         char *buffer, size_t sizeof_buffer);
@@ -44,6 +49,6 @@ int gp_disassemble_word(MemBlock *m, int byte_address, proc_class_t class,
                         char *buffer, size_t sizeof_buffer);
 
 int gp_disassemble_size(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
-                        gp_boolean show_names, char *buffer, size_t sizeof_buffer,
+                        int prog_mem_size, int behavior, char *buffer, size_t sizeof_buffer,
                         unsigned int size);
 #endif

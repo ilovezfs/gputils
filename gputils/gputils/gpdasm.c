@@ -446,7 +446,8 @@ dasm(MemBlock *memory)
             printf("        ");
           }
 
-          num_words = gp_disassemble(m, i, state.class, bsr_boundary, state.show_names,
+          num_words = gp_disassemble(m, i, state.class, bsr_boundary, state.processor->prog_mem_size,
+                                     (state.show_names) ? (GPDIS_SHOW_NAMES | GPDIS_SHOW_BYTES) : GPDIS_SHOW_NOTHING,
                                      buffer, sizeof(buffer));
           printf("%s\n", buffer);
 
