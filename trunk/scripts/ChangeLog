@@ -1,3 +1,6 @@
+2014-06-28 Molnar Karoly <molnarkaroly@users.sf.net>
+	* tools/device-help.pl: Updated according to the struct px.
+
 2014-06-21 Molnar Karoly <molnarkaroly@users.sf.net>
 	* tools/device-manager.pl: Added boundaries of the idlocs and eeprom.
 
