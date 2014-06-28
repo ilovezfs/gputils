@@ -429,7 +429,7 @@ init(void)
 
   /* initialize */
   gp_date_string(state.startdate, sizeof(state.startdate));
-  state.hex_format = inhx32;
+  state.hex_format = INHX32;
   state.numpaths = 0;
   state.processor = NULL;
   state.optimize.level = 1;
@@ -555,11 +555,11 @@ process_args( int argc, char *argv[])
     switch (c) {
     case 'a':
       if (strcasecmp(optarg, "inhx8m") == 0) {
-        state.hex_format = inhx8m;
+        state.hex_format = INHX8M;
       } else if (strcasecmp(optarg, "inhx16") == 0) {
-        state.hex_format = inhx16;
+        state.hex_format = INHX16;
       } else if (strcasecmp(optarg, "inhx32") == 0) {
-        state.hex_format = inhx32;
+        state.hex_format = INHX32;
       } else {
         gp_error("Invalid hex format \"%s\", expected inhx8m, inhx16, or inhx32.",
                  optarg);
@@ -923,7 +923,7 @@ linker(void)
            state.hex_format,
            gp_num_errors,
            0,
-           state.class->core_size);
+           state.class->core_mask);
 
   /* convert the executable object into a cod file and list file */
   cod_init();

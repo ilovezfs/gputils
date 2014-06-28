@@ -38,7 +38,7 @@ function testfailed() {
 
 function binexists() {
   # Test syntax.
-  if [ $# = 0 ]; then
+  if (($# == 0)); then
     echo "Usage: binexists {program}"
     return 1
   fi
@@ -55,7 +55,7 @@ function binexists() {
 
 function printbanner() {
   # Test syntax.
-  if [ $# = 0 ]; then
+  if (($# == 0)); then
     echo "Usage: printbanner {message}"
     return 1
   fi
@@ -67,16 +67,17 @@ function printbanner() {
 
 function run_test() {
   # Test syntax.
-  if [ $# -lt 1 ]; then
-    echo "Usage: run_test <test file> <mcu type>"
+  if (($# < 2)); then
+    echo "Usage: run_test <test file> <mcu type> [gpasm flags]"
     return 1
   fi
-  echo "$GPASMBIN $GPASMFLAGS $1.asm"
-  ../../$GPASMBIN $GPASMFLAGS $1.asm || testfailed "$GPASMBIN $GPASMFLAGS $1.asm"
+
+  echo "$GPASMBIN $GPASMFLAGS $3 $1.asm"
+  ../../$GPASMBIN $GPASMFLAGS $3 $1.asm || testfailed "$GPASMBIN $GPASMFLAGS $3 $1.asm"
   echo "$GPDASMBIN -p $2 $GPDASMFLAGS $1.hex > $1.dis"
   ../../$GPDASMBIN -p $2 $GPDASMFLAGS $1.hex > $1.dis || testfailed "$GPDASMBIN -p $2 $GPDASMFLAGS $1.hex"
-  echo "$GPASMBIN $GPASMFLAGS $1.dis -o $1.dis.hex"
-  ../../$GPASMBIN $GPASMFLAGS $1.dis -o $1.dis.hex || testfailed "$GPASMBIN $GPASMFLAGS $1.dis -o $1.dis.hex"
+  echo "$GPASMBIN $GPASMFLAGS $3 $1.dis -o $1.dis.hex"
+  ../../$GPASMBIN $GPASMFLAGS $3 $1.dis -o $1.dis.hex || testfailed "$GPASMBIN $GPASMFLAGS $3 $1.dis -o $1.dis.hex"
   diff -us $1.hex $1.dis.hex || testfailed ""
   return 0
 }
@@ -86,11 +87,11 @@ function all_test() {
   # Test for executable.
   binexists $GPDASMBIN
   RETVAL=$?
-  [ $RETVAL -eq 1 ] && exit 1
+  (($RETVAL == 1)) && exit 1
   # Testing gpdasm requires gpasm.
   binexists $GPASMBIN
   RETVAL=$?
-  [ $RETVAL -eq 1 ] && exit 1
+  (($RETVAL == 1)) && exit 1
 
   # Create the test directory if it doesn't already exist.
   cd gpdasm.project
@@ -110,7 +111,7 @@ function all_test() {
   echo -e "Enhanced 12 bit core passed.\n"
 
   printbanner "Testing enhanced 12 bit core 2."
-  run_test op12e_mpasm_conf 16f527
+  run_test op12e_new_conf 16f527
   echo -e "Enhanced 12 bit core passed.\n"
 
   printbanner "Testing sx core"
@@ -126,7 +127,7 @@ function all_test() {
   echo -e "14 bit core passed.\n"
 
   printbanner "Testing 14 bit core 3."
-  run_test op14_mpasm_conf 16f887
+  run_test op14_new_conf 16f887
   echo -e "14 bit core passed.\n"
 
   printbanner "Testing enhanced 14 bit core 1."
@@ -134,7 +135,7 @@ function all_test() {
   echo -e "Enhanced 14 bit core passed.\n"
 
   printbanner "Testing enhanced 14 bit core 2."
-  run_test op14e_mpasm_conf 12f1501
+  run_test op14e_new_conf 12f1501
   echo -e "Enhanced 14 bit core passed.\n"
 
   printbanner "Testing 16 bit core"
@@ -150,7 +151,7 @@ function all_test() {
   echo -e "Extended 16 bit core passed.\n"
 
   printbanner "Testing extended 16 bit core 3."
-  run_test op16e_mpasm_conf 18f25k80
+  run_test op16e_new_conf 18f25k80
   echo -e "Extended 16 bit core passed.\n"
 
   printbanner "Testing extended 16 bit core (idlocs-1)"

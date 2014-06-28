@@ -248,7 +248,7 @@ write_src(int last_line)
 
             state.class->i_memory_get(line_section->data, org, &word, NULL, NULL);
             num_bytes = gp_disassemble_size(line_section->data, org, state.class, 0x80,
-                                            state.processor->prog_mem_size, GPDIS_SHOW_NOTHING,
+                                            state.processor->prog_mem_size, GPDIS_SHOW_ALL_BRANCH,
                                             dasmbuf, sizeof(dasmbuf), len);
             lst_line("%06lx   %04x     %-24s %s",
                      gp_processor_byte_to_org(state.class, org), word,

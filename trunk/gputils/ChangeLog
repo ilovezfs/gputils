@@ -1,3 +1,38 @@
+2014-06-28  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c, gpasm/util.c, gplink/gplink.c
+    Renamed some constants.
+    Renamed core_size to core_mask.
+
+  * gpasm/gpasm.c:
+    Renamed inhx32 to INHX32.
+
+  * gplink/lst.c, gputils/gpvo.c:
+    Use the GPDIS_SHOW_ALL_BRANCH instead of GPDIS_SHOW_NOTHING.
+
+  * gputils/testsuite/test,
+    gputils/testsuite/gpdasm.project/op12e_new_conf.asm,
+    gputils/testsuite/gpdasm.project/op14_new_conf.asm,
+    gputils/testsuite/gpdasm.project/op14e_new_conf.asm,
+    gputils/testsuite/gpdasm.project/op16e_new_conf.asm:
+    Renamed this files:
+      op12e_mpasm_conf.asm ==> op12e_new_conf.asm
+      op14_mpasm_conf.asm ==> op14_new_conf.asm
+      op14e_mpasm_conf.asm ==> op14e_new_conf.asm
+      op16e_mpasm_conf.asm ==> op16e_new_conf.asm
+
+  * gputils/gpdasm.c, libgputils/gpprocessor.c, libgputils/gpprocessor.h:
+    A bit more serious support of the SX family.
+
+  * libgputils/gpdis.c:
+    More accurate recognition of labels.
+
+  * libgputils/gpdis.h:
+    New constant: GPDIS_SHOW_ALL_BRANCH
+
+  * libgputils/gpopcode.c, libgputils/gpopcode.h, libgputils/gpreadhex.c,
+    libgputils/gpwritehex.c, libgputils/gpwritehex.h:
+    New or renamed constants.
+
 2014-06-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gplink/lst.c, gputils/gpdasm.c, gputils/gpvo.c,
     libgputils/gpdis.c, libgputils/gpdis.h:

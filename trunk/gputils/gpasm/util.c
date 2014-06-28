@@ -399,16 +399,15 @@ select_expand(const char *expand)
   if (state.cmd_line.macro_expand) {
     gpvmessage(GPM_SUPLIN, NULL);
   } else {
-    if (strcasecmp(expand, "ON") == 0) {
+    if (strcasecmp(expand, "on") == 0) {
       state.lst.expand = true;
-    } else if (strcasecmp(expand, "OFF") == 0) {
+    } else if (strcasecmp(expand, "off") == 0) {
       state.lst.expand = false;
     } else {
       state.lst.expand = true;
 
       if (state.pass == 0) {
-        fprintf(stderr,
-                "Error: invalid option \"%s\"\n", expand);
+        fprintf(stderr, "Error: invalid option \"%s\"\n", expand);
       } else {
         gperror(GPE_ILLEGAL_ARGU, "Expected ON or OFF.");
       }
@@ -423,18 +422,18 @@ select_hexformat(const char *format_name)
     gpvwarning(GPW_CMDLINE_HEXFMT, NULL);
   } else {
     if (strcasecmp(format_name, "inhx8m") == 0) {
-      state.hex_format = inhx8m;
+      state.hex_format = INHX8M;
     } else if (strcasecmp(format_name, "inhx8s") == 0) {
-      state.hex_format = inhx8s;
+      state.hex_format = INHX8S;
     } else if (strcasecmp(format_name, "inhx16") == 0) {
-      state.hex_format = inhx16;
+      state.hex_format = INHX16;
     } else if (strcasecmp(format_name, "inhx32") == 0) {
-      state.hex_format = inhx32;
+      state.hex_format = INHX32;
     } else {
-      state.hex_format = inhx8m;
+      state.hex_format = INHX8M;
+
       if (state.pass == 0) {
-        fprintf(stderr,
-                "Error: invalid format \"%s\"\n", format_name);
+        fprintf(stderr, "Error: invalid format \"%s\"\n", format_name);
       } else {
         gperror(GPE_ILLEGAL_ARGU, "Expected inhx8m, inhx8s, inhx16, or inhx32.");
       }
@@ -464,8 +463,7 @@ select_radix(const char *radix_name)
       state.radix = 16;
 
       if (state.pass == 0) {
-        fprintf(stderr,
-                "invalid radix \"%s\", will use hex.\n", radix_name);
+        fprintf(stderr, "invalid radix \"%s\", will use hex.\n", radix_name);
       } else {
         gpvwarning(GPW_RADIX, NULL);
       }
@@ -655,7 +653,7 @@ hex_init(void)
     if (writehex(state.basefilename, state.i_memory,
                  state.hex_format, state.num.errors,
                  state.dos_newlines,
-                 state.device.class->core_size)) {
+                 state.device.class->core_mask)) {
       gperror(GPE_UNKNOWN, "Error generating hex file.");
     }
   } else {
