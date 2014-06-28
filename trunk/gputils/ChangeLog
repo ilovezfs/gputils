@@ -1,4 +1,8 @@
 2014-06-28  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/p16cr620a.inc:
+    This is an old deficiency repair of, only for the sake of completeness.
+
+2014-06-28  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c, gpasm/util.c, gplink/gplink.c
     Renamed some constants.
     Renamed core_size to core_mask.
