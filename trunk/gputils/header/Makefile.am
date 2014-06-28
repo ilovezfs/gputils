@@ -124,6 +124,7 @@ HEADER_FILES =\
 	p16ce624.inc \
 	p16ce625.inc \
 	p16cr62.inc \
+	p16cr620a.inc \
 	p16cr63.inc \
 	p16cr64.inc \
 	p16cr65.inc \
