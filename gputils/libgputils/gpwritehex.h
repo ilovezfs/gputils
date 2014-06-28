@@ -26,10 +26,16 @@ Boston, MA 02111-1307, USA.  */
    inhx8s creates .hxl and .hxh files for odd and even bytes
    inhx16 line length is in words that are big endian (not in MPLAB IDE 8.40)
    inhx32 has 04 record for upper bits of 32-bit address */
-enum formats { inhx8m, inhx8s, inhx16, inhx32 };
 
-int writehex (const char *basefilename, MemBlock *m, enum formats hex_format,
-              int numerrors, int dos_newlines, unsigned int core_size);
+enum formats {
+  INHX8M,
+  INHX8S,
+  INHX16,
+  INHX32
+};
+
+int writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
+             int numerrors, int dos_newlines, unsigned int core_mask);
 
 int check_writehex(MemBlock *m, enum formats hex_format);
 

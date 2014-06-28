@@ -714,11 +714,11 @@ static struct px pics[] = {
   { PROC_CLASS_PIC14    , "__RF675F"      , { "rf675f"         , "rf675f"         , "rf675f"          }, 0x3675,  1,    2, 0x00217F, 0x000400, { 0x0003FF, 0x0020FF }, { 0x002000, 0x002003 }, { 0x002007, 0x002007 }, { 0x002100, 0x00217F }, "rf675f_g.lkr"      , 0 },
   { PROC_CLASS_PIC14    , "__RF675H"      , { "rf675h"         , "rf675h"         , "rf675h"          }, 0x4675,  1,    2, 0x00217F, 0x000400, { 0x0003FF, 0x0020FF }, { 0x002000, 0x002003 }, { 0x002007, 0x002007 }, { 0x002100, 0x00217F }, "rf675h_g.lkr"      , 0 },
   { PROC_CLASS_PIC14    , "__RF675K"      , { "rf675k"         , "rf675k"         , "rf675k"          }, 0x5675,  1,    2, 0x00217F, 0x000400, { 0x0003FF, 0x0020FF }, { 0x002000, 0x002003 }, { 0x002007, 0x002007 }, { 0x002100, 0x00217F }, "rf675k_g.lkr"      , 0 },
-  { PROC_CLASS_SX       , "__SX18"        , { "sx18ac"         , "sx18"           , "sx18"            }, 0x0018,  0,    0, 0x0007FF,       -1, {       -1,       -1 }, { 0x002000, 0x002003 }, {       -1,       -1 }, { 0x002100, 0x00217F }, NULL                , 0 },
-  { PROC_CLASS_SX       , "__SX20"        , { "sx20ac"         , "sx20"           , "sx20"            }, 0x0020,  0,    0, 0x0007FF,       -1, {       -1,       -1 }, { 0x002000, 0x002003 }, {       -1,       -1 }, { 0x002100, 0x00217F }, NULL                , 0 },
-  { PROC_CLASS_SX       , "__SX28"        , { "sx28ac"         , "sx28"           , "sx28"            }, 0x0028,  0,    0, 0x0007FF,       -1, {       -1,       -1 }, { 0x002000, 0x002003 }, {       -1,       -1 }, { 0x002100, 0x00217F }, NULL                , 0 },
-  { PROC_CLASS_SX       , "__SX48"        , { "sx48bd"         , "sx48"           , "sx48"            }, 0x0048,  0,    0, 0x000FFF,       -1, {       -1,       -1 }, { 0x002000, 0x002003 }, {       -1,       -1 }, { 0x002100, 0x00217F }, NULL                , 0 },
-  { PROC_CLASS_SX       , "__SX52"        , { "sx52bd"         , "sx52"           , "sx52"            }, 0x0052,  0,    0, 0x000FFF,       -1, {       -1,       -1 }, { 0x002000, 0x002003 }, {       -1,       -1 }, { 0x002100, 0x00217F }, NULL                , 0 },
+  { PROC_CLASS_SX       , "__SX18"        , { "sx18ac"         , "sx18"           , "sx18"            }, 0x0018,  4,    4, 0x0007FF,       -1, {       -1,       -1 }, {       -1,       -1 }, {       -1,       -1 }, {       -1,       -1 }, NULL                , 0 },
+  { PROC_CLASS_SX       , "__SX20"        , { "sx20ac"         , "sx20"           , "sx20"            }, 0x0020,  4,    4, 0x0007FF,       -1, {       -1,       -1 }, {       -1,       -1 }, {       -1,       -1 }, {       -1,       -1 }, NULL                , 0 },
+  { PROC_CLASS_SX       , "__SX28"        , { "sx28ac"         , "sx28"           , "sx28"            }, 0x0028,  4,    4, 0x0007FF,       -1, {       -1,       -1 }, {       -1,       -1 }, {       -1,       -1 }, {       -1,       -1 }, NULL                , 0 },
+  { PROC_CLASS_SX       , "__SX48"        , { "sx48bd"         , "sx48"           , "sx48"            }, 0x0048,  8,    8, 0x000FFF,       -1, {       -1,       -1 }, { 0x001000, 0x00100F }, {       -1,       -1 }, {       -1,       -1 }, NULL                , 0 },
+  { PROC_CLASS_SX       , "__SX52"        , { "sx52bd"         , "sx52"           , "sx52"            }, 0x0052,  8,    8, 0x000FFF,       -1, {       -1,       -1 }, { 0x001000, 0x00100F }, {       -1,       -1 }, {       -1,       -1 }, NULL                , 0 },
 };
 
 #define NUM_PICS        (sizeof(pics) / sizeof(pics[0]))
@@ -1216,9 +1216,9 @@ gp_processor_set_bank_pic12(int num_banks,
                             unsigned int address)
 {
   return gp_processor_set_bank_pic12_14(num_banks, bank, m, address,
-                                        INSN_PIC12_BCF,
-                                        INSN_PIC12_BSF,
-                                        REG_PIC12_FSR,
+                                        PIC12_INSN_BCF,
+                                        PIC12_INSN_BSF,
+                                        PIC12_REG_FSR,
                                         5 << 5,
                                         6 << 5);
 }
@@ -1226,7 +1226,7 @@ gp_processor_set_bank_pic12(int num_banks,
 static int
 gp_processor_check_page_pic12(unsigned int org)
 {
-  return ((org >> 9) & 0x3);
+  return ((org & PIC12_PAGE_BITS) >> 9);
 }
 
 static int
@@ -1242,11 +1242,11 @@ gp_processor_set_page_pic12(int num_pages,
                                         m,
                                         address,
                                         use_wreg,
-                                        INSN_PIC12_BCF,
-                                        INSN_PIC12_BSF,
-                                        INSN_PIC12_MOVLW,
-                                        INSN_PIC12_MOVWF,
-                                        REG_PIC12_STATUS,
+                                        PIC12_INSN_BCF,
+                                        PIC12_INSN_BSF,
+                                        PIC12_INSN_MOVLW,
+                                        PIC12_INSN_MOVWF,
+                                        PIC12_REG_STATUS,
                                         5 << 5,
                                         6 << 5);
 }
@@ -1255,19 +1255,19 @@ gp_processor_set_page_pic12(int num_pages,
 static int
 reloc_call_pic12(unsigned int org)
 {
-  return (org & MASK_PIC12_CALL);
+  return (org & PIC12_BMSK_CALL);
 }
 
 static int
 reloc_goto_pic12(unsigned int org)
 {
-  return (org & MASK_PIC12_GOTO);
+  return (org & PIC12_BMSK_GOTO);
 }
 
 static int
 reloc_f_pic12(unsigned int address)
 {
-  return (address & MASK_PIC12_FILE);
+  return (address & PIC12_BMSK_FILE);
 }
 
 static int
@@ -1279,7 +1279,7 @@ reloc_tris_pic12(unsigned int address)
   */
 
   /* Seen in the data sheets that everywhere three bits there are in the PIC12 family. */
-  return (address & MASK_PIC12_TRIS);
+  return (address & PIC12_BMSK_TRIS);
 }
 
 /* PIC12E */
@@ -1287,7 +1287,7 @@ reloc_tris_pic12(unsigned int address)
 static int
 gp_processor_check_bank_pic12e(unsigned int address)
 {
-  return ((address >> 5) & MASK_PIC12E_BANK);
+  return ((address >> 5) & PIC12E_BMSK_BANK);
 }
 
 static int
@@ -1299,8 +1299,8 @@ gp_processor_set_bank_pic12e(int num_banks,
   unsigned int data;
   char buf[BUFSIZ];
 
-  bank &= MASK_PIC12E_BANK;
-  data = INSN_PIC12E_MOVLB | bank;
+  bank &= PIC12E_BMSK_BANK;
+  data = PIC12E_INSN_MOVLB | bank;
   snprintf(buf, sizeof(buf), "bank_%i", bank);
 
   i_memory_put_le(m, address, data, buf, NULL);
@@ -1310,7 +1310,7 @@ gp_processor_set_bank_pic12e(int num_banks,
 static int
 reloc_tris_pic12e(unsigned int address)
 {
-  return (address & MASK_PIC12_TRIS);
+  return (address & PIC12_BMSK_TRIS);
 }
 
 static const struct insn *
@@ -1334,6 +1334,36 @@ find_insn_pic12e(proc_class_t cls, unsigned int opcode)
   return NULL;
 }
 
+/* SX */
+
+static int
+gp_processor_check_page_sx(unsigned int org)
+{
+  return ((org & SX_PAGE_BITS) >> 9);
+}
+
+static int
+gp_processor_set_page_sx(int num_pages,
+                         int page,
+                         MemBlock *m,
+                         unsigned int address,
+                         gp_boolean use_wreg)
+{
+  unsigned int data;
+  char buf[BUFSIZ];
+
+  if (num_pages == 1) {
+    return 0;
+  }
+
+  page &= MASK_SX_PAGE;
+  snprintf(buf, sizeof(buf), "page_%02x", page);
+
+  data = SX_INSN_PAGE | page;
+  i_memory_put_le(m, address, data, buf, NULL);
+  return 2;
+}
+
 /* PIC14 */
 
 static unsigned int
@@ -1349,7 +1379,7 @@ id_location_pic14(pic_processor_t processor)
 static int
 gp_processor_check_bank_pic14(unsigned int address)
 {
-  return ((address >> 7) & MASK_PIC14_BANK);
+  return ((address >> 7) & PIC14_BMSK_BANK);
 }
 
 static int
@@ -1359,11 +1389,11 @@ gp_processor_set_bank_pic14(int num_banks,
                             unsigned int address)
 {
   return gp_processor_set_bank_pic12_14(num_banks, bank, m, address,
-                                        INSN_PIC14_BCF,
-                                        INSN_PIC14_BSF,
-                                        REG_PIC14_STATUS,
-                                        BIT_PIC14_STATUS_RP0 << INSN_PIC14_BxF_BITSHIFT,
-                                        BIT_PIC14_STATUS_RP1 << INSN_PIC14_BxF_BITSHIFT);
+                                        PIC14_INSN_BCF,
+                                        PIC14_INSN_BSF,
+                                        PIC14_REG_STATUS,
+                                        PIC14_BIT_STATUS_RP0 << PIC14_INSN_BxF_BITSHIFT,
+                                        PIC14_BIT_STATUS_RP1 << PIC14_INSN_BxF_BITSHIFT);
 }
 
 static int
@@ -1386,7 +1416,7 @@ gp_processor_set_ibank_pic14(int num_banks,
 static int
 gp_processor_check_page_pic14(unsigned int org)
 {
-  return ((org >> 11) & MASK_PIC14_PAGE);
+  return ((org & PIC14_PAGE_BITS) >> 11);
 }
 
 static int
@@ -1401,38 +1431,38 @@ gp_processor_set_page_pic14(int num_pages,
                                         m,
                                         address,
                                         use_wreg,
-                                        INSN_PIC14_BCF,
-                                        INSN_PIC14_BSF,
-                                        INSN_PIC14_MOVLW,
-                                        INSN_PIC14_MOVWF,
-                                        REG_PIC14_PCLATH,
-                                        3 << INSN_PIC14_BxF_BITSHIFT,
-                                        4 << INSN_PIC14_BxF_BITSHIFT);
+                                        PIC14_INSN_BCF,
+                                        PIC14_INSN_BSF,
+                                        PIC14_INSN_MOVLW,
+                                        PIC14_INSN_MOVWF,
+                                        PIC14_REG_PCLATH,
+                                        3 << PIC14_INSN_BxF_BITSHIFT,
+                                        4 << PIC14_INSN_BxF_BITSHIFT);
 }
 
 static int
 reloc_call_pic14(unsigned int org)
 {
-  return (org & MASK_PIC14_BRANCH);
+  return (org & PIC14_BMSK_BRANCH);
 }
 
 static int
 reloc_goto_pic14(unsigned int org)
 {
-  return (org & MASK_PIC14_BRANCH);
+  return (org & PIC14_BMSK_BRANCH);
 }
 
 static int
 reloc_f_pic14(unsigned int address)
 {
-  return (address & MASK_PIC14_FILE);
+  return (address & PIC14_BMSK_FILE);
 }
 
 static int
 reloc_tris_pic14(unsigned int address)
 {
   /* According to the data sheets, the TRIS instruction does not exist in the PIC14 family. */
-  return (address & MASK_PIC14_TRIS);
+  return (address & PIC14_BMSK_TRIS);
 }
 
 static void
@@ -1453,7 +1483,7 @@ patch_strict_pic14(void)
 static int
 gp_processor_check_bank_pic14e(unsigned int address)
 {
-  return ((address >> 7) & MASK_PIC14E_BANK);
+  return ((address >> 7) & PIC14E_BMSK_BANK);
 }
 
 
@@ -1466,8 +1496,8 @@ gp_processor_set_bank_pic14e(int num_banks,
   unsigned int data;
   char buf[BUFSIZ];
 
-  bank &= MASK_PIC14E_BANK;
-  data = INSN_PIC14E_MOVLB | bank;
+  bank &= PIC14E_BMSK_BANK;
+  data = PIC14E_INSN_MOVLB | bank;
   snprintf(buf, sizeof(buf), "bank_%i", bank);
 
   i_memory_put_le(m, address, data, buf, NULL);
@@ -1499,9 +1529,9 @@ gp_processor_set_ibank_pic14e(int num_banks,
   for (bit = 0, mask = 0x01; mask < num_banks; ++bit, mask <<= 1, address += 2)
     i_memory_put_le(m,
                     address,
-                    ((bank & mask) ? INSN_PIC14_BSF : INSN_PIC14_BCF) |
-                        (bit << INSN_PIC14_BxF_BITSHIFT) |
-                        REG_PIC14E_FSR0H,
+                    ((bank & mask) ? PIC14_INSN_BSF : PIC14_INSN_BCF) |
+                        (bit << PIC14_INSN_BxF_BITSHIFT) |
+                        PIC14E_REG_FSR0H,
                     buf, NULL);
 
   return (bit * 2);
@@ -1510,7 +1540,7 @@ gp_processor_set_ibank_pic14e(int num_banks,
 static int
 gp_processor_check_page_pic14e(unsigned int org)
 {
-  return ((org >> 8) & MASK_PIC14E_PAGE);
+  return ((org >> 8) & PIC14E_BMSK_PAGE512);
 }
 
 static int
@@ -1528,18 +1558,18 @@ gp_processor_set_page_pic14e(int num_pages,
   }
 
   /* Page is in bits 6:0 of PCLATH. */
-  page &= MASK_PIC14E_PAGE;
+  page &= PIC14E_BMSK_PAGE512;
   snprintf(buf, sizeof(buf), "page_%02x", page);
 
   if (use_wreg) {
-    data = INSN_PIC14_MOVLW | page;
+    data = PIC14_INSN_MOVLW | page;
     i_memory_put_le(m, address,     data, buf, NULL);
-    data = INSN_PIC14_MOVWF | REG_PIC14_PCLATH;
+    data = PIC14_INSN_MOVWF | PIC14_REG_PCLATH;
     i_memory_put_le(m, address + 2, data, buf, NULL);
     return 4;
   }
   else {
-    data = INSN_PIC14E_MOVLP | page;
+    data = PIC14E_INSN_MOVLP | page;
     i_memory_put_le(m, address, data, buf, NULL);
     return 2;
   }
@@ -1560,7 +1590,7 @@ reloc_bra_pic14e(gp_section_type *section, unsigned value, unsigned int byte_org
     gp_warning("Relative branch out of range in at %#x of section \"%s\".",
                byte_org << 1, section->name);
   }
-  return (offset & MASK_PIC14E_RBRA9);
+  return (offset & PIC14E_BMSK_RBRA9);
 }
 
 static int
@@ -1594,11 +1624,11 @@ static int
 gp_processor_check_bank_pic16(unsigned int address)
 {
   if ((address & 0xff) < 0x20) {
-    return (address >> 8) & MASK_PIC16_BANK;
+    return (address >> 8) & PIC16_BMSK_BANK;
   }
   else {
     /* 0x200 turns MOVLB to MOVLR for setting GPR RAM bank in set_bank. */
-    return (0x200 + ((address >> 8) & MASK_PIC16_BANK));
+    return (0x200 + ((address >> 8) & PIC16_BMSK_BANK));
   }
 }
 
@@ -1611,17 +1641,17 @@ gp_processor_set_bank_pic16(int num_banks,
 {
   char buf[BUFSIZ];
 
-  bank &= 0x200 | MASK_PIC16_BANK;
-  snprintf(buf, sizeof(buf), "bank_%i", bank & MASK_PIC16_BANK);
+  bank &= 0x200 | PIC16_BMSK_BANK;
+  snprintf(buf, sizeof(buf), "bank_%i", bank & PIC16_BMSK_BANK);
 
-  i_memory_put_le(m, address, INSN_PIC16_MOVLB | bank, buf, NULL);
+  i_memory_put_le(m, address, PIC16_INSN_MOVLB | bank, buf, NULL);
   return 2;
 }
 
 static int
 gp_processor_check_page_pic16(unsigned int org)
 {
-  return ((org >> 8) & MASK_PIC16_PAGE);
+  return ((org >> 8) & PIC16_BMSK_PAGE);
 }
 
 static int
@@ -1634,12 +1664,12 @@ gp_processor_set_page_pic16(int num_pages,
   unsigned int data;
   char buf[BUFSIZ];
 
-  page &= MASK_PIC16_PAGE;
+  page &= PIC16_BMSK_PAGE;
   snprintf(buf, sizeof(buf), "page_%02x", page);
 
-  data = INSN_PIC16_MOVLW | page;
+  data = PIC16_INSN_MOVLW | page;
   i_memory_put_le(m, address,     data, buf, NULL);
-  data = INSN_PIC16_MOVWF | REG_PIC16_PCLATH;
+  data = PIC16_INSN_MOVWF | PIC16_REG_PCLATH;
   i_memory_put_le(m, address + 2, data, buf, NULL);
   return 4;
 }
@@ -1647,19 +1677,19 @@ gp_processor_set_page_pic16(int num_pages,
 static int
 reloc_call_pic16(unsigned int org)
 {
-  return (org & MASK_PIC16_BRANCH);
+  return (org & PIC16_BMSK_BRANCH);
 }
 
 static int
 reloc_goto_pic16(unsigned int org)
 {
-  return (org & MASK_PIC16_BRANCH);
+  return (org & PIC16_BMSK_BRANCH);
 }
 
 static int
 reloc_f_pic16(unsigned int address)
 {
-  return (address & MASK_PIC16_FILE);
+  return (address & PIC16_BMSK_FILE);
 }
 
 /* PIC16E */
@@ -1682,21 +1712,21 @@ gp_processor_set_bank_pic16e(int num_banks,
 {
   char buf[BUFSIZ];
 
-  bank &= MASK_PIC16E_BANK;
+  bank &= ~PIC16E_MASK_MOVLB;
   snprintf(buf, sizeof(buf), "bank_%i", bank);
 
-  i_memory_put_le(m, address, INSN_PIC16E_MOVLB | bank, buf, NULL);
+  i_memory_put_le(m, address, PIC16E_INSN_MOVLB | bank, buf, NULL);
   return 2;
 }
 
 static int reloc_call_pic16e(unsigned int org)
 {
-  return ((org >> 1) & MASK_PIC16E_BRANCH_LOWER);
+  return ((org >> 1) & PIC16E_BMSK_BRANCH_LOWER);
 }
 
 static int reloc_goto_pic16e(unsigned int org)
 {
-  return ((org >> 1) & MASK_PIC16E_BRANCH_LOWER);
+  return ((org >> 1) & PIC16E_BMSK_BRANCH_LOWER);
 }
 
 static int reloc_movlb_pic16e(unsigned int address)
@@ -1721,7 +1751,7 @@ reloc_bra_pic16e(gp_section_type *section, unsigned value, unsigned int byte_org
     gp_warning("Relative branch out of range in at %#x of section \"%s\".",
                byte_org, section->name);
   }
-  return (offset & MASK_PIC16E_RBRA11);
+  return (offset & PIC16E_BMSK_RBRA11);
 }
 
 static const struct insn *
@@ -1828,6 +1858,21 @@ static const core_sfr_t core_sfr_table_pic12[] = {
 
 static const vector_t vector_table_pic12[] = {
   { 0x000, "vec_reset" }
+};
+
+static const core_sfr_t core_sfr_table_sx[] = {
+  { 0x000, "INDF"   },
+  { 0x001, "RTCC"   },
+  { 0x002, "PC"     },
+  { 0x003, "STATUS" },
+  { 0x004, "FSR"    },
+  { 0x005, "RA"     },
+  { 0x006, "RB"     },
+  { 0x007, "RC"     }
+};
+
+static const vector_t vector_table_sx[] = {
+  { 0x000, "vec_int" }
 };
 
 static const core_sfr_t core_sfr_table_pic14[] = {
@@ -1967,9 +2012,11 @@ const struct proc_class proc_class_eeprom8 = {
   0,                                    /* page size */
   0,                                    /* bank size */
   0,                                    /* org_to_byte_shift */
+  0,                                    /* pc_mask */
+  0,                                    /* page_mask */
   0,                                    /* bank_mask */
-  (1 << 8) - 1,                         /* core_size */
-  0,                                    /* config_size */
+  (1 << 8) - 1,                         /* core_mask */
+  0,                                    /* config_mask */
   6,                                    /* addr_digits */
   2,                                    /* word_digits */
   NULL,                                 /* core_sfr_table */
@@ -2004,9 +2051,11 @@ const struct proc_class proc_class_eeprom16 = {
   0,                                    /* page size */
   0,                                    /* bank size */
   0,                                    /* org_to_byte_shift */
+  0,                                    /* pc_mask */
+  0,                                    /* page_mask */
   0,                                    /* bank_mask */
-  (1 << 16) - 1,                        /* core_size */
-  0,                                    /* config_size */
+  (1 << 16) - 1,                        /* core_mask */
+  0,                                    /* config_mask */
   6,                                    /* addr_digits */
   4,                                    /* word_digits */
   NULL,                                 /* core_sfr_table */
@@ -2041,9 +2090,11 @@ const struct proc_class proc_class_generic = {
   512,                                  /* page size */
   32,                                   /* bank size */
   1,                                    /* org_to_byte_shift */
-  ~0x1fu,                               /* bank_mask */
-  (1 << 12) - 1,                        /* core_size */
-  (1 << 12) - 1,                        /* config_size */
+  PIC12_PC_MASK,                        /* pc_mask */
+  ~(512 - 1),                           /* page_mask */
+  ~(32 - 1),                            /* bank_mask */
+  PIC12_CORE_MASK,                      /* core_mask */
+  (1 << 12) - 1,                        /* config_mask */
   3,                                    /* addr_digits */
   3,                                    /* word_digits */
   core_sfr_table_pic12,                 /* core_sfr_table */
@@ -2073,14 +2124,16 @@ const struct proc_class proc_class_generic = {
 };
 
 const struct proc_class proc_class_pic12 = {
-  INSN_PIC12_RETLW,                     /* retlw */
+  PIC12_INSN_RETLW,                     /* retlw */
   12,                                   /* rom_width */
   512,                                  /* page size */
   32,                                   /* bank size */
   1,                                    /* org_to_byte_shift */
-  ~0x1fu,                               /* bank_mask */
-  (1 << 12) - 1,                        /* core_size */
-  (1 << 12) - 1,                        /* config_size */
+  PIC12_PC_MASK,                        /* pc_mask */
+  ~(512 - 1),                           /* page_mask */
+  ~(32 - 1),                            /* bank_mask */
+  PIC12_CORE_MASK,                      /* core_mask */
+  (1 << 12) - 1,                        /* config_mask */
   3,                                    /* addr_digits */
   3,                                    /* word_digits */
   core_sfr_table_pic12,                 /* core_sfr_table */
@@ -2110,14 +2163,16 @@ const struct proc_class proc_class_pic12 = {
 };
 
 const struct proc_class proc_class_pic12e = {
-  INSN_PIC12_RETLW,                     /* retlw */
+  PIC12_INSN_RETLW,                     /* retlw */
   12,                                   /* rom_width */
   512,                                  /* page size */
   32,                                   /* bank size */
   1,                                    /* org_to_byte_shift */
-  ~0x1fu,                               /* bank_mask */
-  (1 << 12) - 1,                        /* core_size */
-  (1 << 12) - 1,                        /* config_size */
+  PIC12_PC_MASK,                        /* pc_mask */
+  ~(512 - 1),                           /* page_mask */
+  ~(32 - 1),                            /* bank_mask */
+  PIC12_CORE_MASK,                      /* core_mask */
+  (1 << 12) - 1,                        /* config_mask */
   3,                                    /* addr_digits */
   3,                                    /* word_digits */
   core_sfr_table_pic12,                 /* core_sfr_table */
@@ -2147,27 +2202,29 @@ const struct proc_class proc_class_pic12e = {
 };
 
 const struct proc_class proc_class_sx = {
-  INSN_PIC12_RETLW,                     /* retlw */
+  PIC12_INSN_RETLW,                     /* retlw */
   12,                                   /* rom_width */
-  0,                                    /* page size */
-  0,                                    /* bank size */
+  512,                                  /* page size */
+  32,                                   /* bank size */
   1,                                    /* org_to_byte_shift */
-  ~0x1fu,                               /* bank_mask */
-  (1 << 12) - 1,                        /* core_size */
-  (1 << 12) - 1,                        /* config_size */
+  SX_PC_MASK,                           /* pc_mask */
+  ~(512 - 1),                           /* page_mask */
+  ~(32 - 1),                            /* bank_mask */
+  PIC12_CORE_MASK,                      /* core_mask */
+  (1 << 12) - 1,                        /* config_mask */
   3,                                    /* addr_digits */
   3,                                    /* word_digits */
-  NULL,                                 /* core_sfr_table */
-  0,                                    /* core_sfr_number */
-  NULL,                                 /* vector_table */
-  0,                                    /* vector_number */
+  core_sfr_table_sx,                    /* core_sfr_table */
+  TABLE_SIZE(core_sfr_table_sx),        /* core_sfr_number */
+  vector_table_sx,                      /* vector_table */
+  TABLE_SIZE(vector_table_sx),          /* vector_number */
   id_location_pic12,                    /* id_location */
   gp_processor_check_bank_pic12,        /* check_bank */
   gp_processor_set_bank_pic12,          /* set_bank */
   gp_processor_check_xbank_unsupported, /* check_ibank */
   gp_processor_set_xbank_unsupported,   /* set_ibank */
-  gp_processor_check_page_pic12,        /* check_page */
-  gp_processor_set_page_pic12,          /* set_page */
+  gp_processor_check_page_sx,           /* check_page */
+  gp_processor_set_page_sx,             /* set_page */
   reloc_call_pic12,                     /* reloc_call */
   reloc_goto_pic12,                     /* reloc_goto */
   reloc_f_pic12,                        /* reloc_f */
@@ -2184,14 +2241,16 @@ const struct proc_class proc_class_sx = {
 };
 
 const struct proc_class proc_class_pic14 = {
-  INSN_PIC14_RETLW,                     /* retlw */
+  PIC14_INSN_RETLW,                     /* retlw */
   14,                                   /* rom_width */
   2048,                                 /* page size */
   128,                                  /* bank size */
   1,                                    /* org_to_byte_shift */
-  ~0x7fu,                               /* bank_mask */
-  (1 << 14) - 1,                        /* core_size */
-  (1 << 14) - 1,                        /* config_size */
+  PIC14_PC_MASK,                        /* pc_mask */
+  ~(2048 - 1),                          /* page_mask */
+  ~(128 - 1),                           /* bank_mask */
+  PIC14_CORE_MASK,                      /* core_mask */
+  (1 << 14) - 1,                        /* config_mask */
   4,                                    /* addr_digits */
   4,                                    /* word_digits */
   core_sfr_table_pic14,                 /* core_sfr_table */
@@ -2221,14 +2280,16 @@ const struct proc_class proc_class_pic14 = {
 };
 
 const struct proc_class proc_class_pic14e = {
-  INSN_PIC14_RETLW,                     /* retlw */
+  PIC14_INSN_RETLW,                     /* retlw */
   14,                                   /* rom_width */
   2048,                                 /* page size */
   128,                                  /* bank size */
   1,                                    /* org_to_byte_shift */
+  PIC14E_PC_MASK,                       /* pc_mask */
+  ~(2048 - 1),                          /* page_mask */
   0,                                    /* bank_mask */
-  (1 << 14) - 1,                        /* core_size */
-  (1 << 16) - 1,                        /* config_size */
+  PIC14_CORE_MASK,                      /* core_mask */
+  (1 << 16) - 1,                        /* config_mask */
   4,                                    /* addr_digits */
   4,                                    /* word_digits */
   core_sfr_table_pic14e,                /* core_sfr_table */
@@ -2258,14 +2319,16 @@ const struct proc_class proc_class_pic14e = {
 };
 
 const struct proc_class proc_class_pic16 = {
-  INSN_PIC16_RETLW,                     /* retlw */
+  PIC16_INSN_RETLW,                     /* retlw */
   16,                                   /* rom_width */
   0,                                    /* page size */
   256,                                  /* bank size */
   1,                                    /* org_to_byte_shift */
-  ~0xffu,                               /* bank_mask */
-  (1 << 16) - 1,                        /* core_size */
-  (1 << 8) - 1,                         /* config_size */
+  0,                                    /* pc_mask */
+  0,                                    /* page_mask */
+  ~(256 - 1),                           /* bank_mask */
+  PIC16_CORE_MASK,                      /* core_mask */
+  (1 << 8) - 1,                         /* config_mask */
   6,                                    /* addr_digits */
   4,                                    /* word_digits */
   core_sfr_table_pic16,                 /* core_sfr_table */
@@ -2295,14 +2358,16 @@ const struct proc_class proc_class_pic16 = {
 };
 
 const struct proc_class proc_class_pic16e = {
-  INSN_PIC16E_RETLW,                    /* retlw */
+  PIC16E_INSN_RETLW,                    /* retlw */
   8,                                    /* rom_width */
   0,                                    /* page size */
   256,                                  /* bank size */
   0,                                    /* org_to_byte_shift */
+  0,                                    /* pc_mask */
+  0,                                    /* page_mask */
   0,                                    /* bank_mask */
-  (1 << 16) - 1,                        /* core_size */
-  (1 << 8) - 1,                         /* config_size */
+  PIC16_CORE_MASK,                      /* core_mask */
+  (1 << 8) - 1,                         /* config_mask */
   6,                                    /* addr_digits */
   4,                                    /* word_digits */
   core_sfr_table_pic16e,                /* core_sfr_table */

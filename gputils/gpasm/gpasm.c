@@ -87,7 +87,7 @@ init(void)
   state.extended_pic16e = false;
 
   state.radix = 16;
-  state.hex_format = inhx32;
+  state.hex_format = INHX32;
   state.case_insensitive = false;
   state.quiet = false;
   state.use_absolute_path = false;
@@ -207,7 +207,7 @@ show_usage(void)
     printf("Default header file path %s\n", gp_header_path);
   }
   else {
-    printf("Default header file path NOT SET\n");
+    printf("Default header file path NOT SET.\n");
   }
   printf("\n");
 #endif

@@ -26,96 +26,78 @@ Boston, MA 02111-1307, USA.  */
         PIC12 definitions
 ******************************************/
 
-#define MASK_PIC12_FILE             0x1F
-#define MASK_PIC12_TRIS             0x07
-
-    /* Call address mask. */
-#define MASK_PIC12_CALL             0x0FF
-    /* Goto address mask. */
-#define MASK_PIC12_GOTO             0x1FF
-
-#define REG_PIC12_STATUS            0x03
-#define REG_PIC12_FSR               0x04
+#define PIC12_REG_STATUS            0x03
+#define PIC12_REG_FSR               0x04
 
 /******************************************
         PIC12E definitions
 ******************************************/
 
-#define MASK_PIC12E_BANK            0x007
+#define PIC12E_BMSK_BANK            0x007
+
+/******************************************
+        SX definitions
+******************************************/
+
+#define MASK_SX_PAGE                0x007
 
 /******************************************
         PIC14 definitions
 ******************************************/
 
-#define MASK_PIC14_FILE             0x7F
-#define MASK_PIC14_TRIS             0x07
+#define PIC14_BMSK_BANK             0x0003
+#define PIC14_BMSK_PAGE             0x0003
 
-    /* Call and goto address mask. */
-#define MASK_PIC14_BRANCH           0x07FF
+#define PIC14_REG_STATUS            0x03
 
-#define MASK_PIC14_BANK             0x0003
-#define MASK_PIC14_PAGE             0x0003
+#define PIC14_BIT_STATUS_RP0        5
+#define PIC14_BIT_STATUS_RP1        6
+#define PIC14_BIT_STATUS_IRP        7
 
-#define REG_PIC14_STATUS            0x03
-
-#define BIT_PIC14_STATUS_RP0        5
-#define BIT_PIC14_STATUS_RP1        6
-#define BIT_PIC14_STATUS_IRP        7
-
-#define REG_PIC14_PCLATH            0x0A
+#define PIC14_REG_PCLATH            0x0A
 
 /******************************************
         PIC14E definitions
 ******************************************/
 
-#define MASK_PIC14E_RBRA9           0x01FF
+#define PIC14E_BMSK_BANK            0x001F
+#define PIC14E_BMSK_PAGE512         0x007F
 
-#define MASK_PIC14E_BANK            0x001F
-#define MASK_PIC14E_PAGE            0x007F
+#define PIC14E_REG_FSR0             0x04
+#define PIC14E_REG_FSR0L            0x04
+#define PIC14E_REG_FSR0H            0x05
 
-#define REG_PIC14E_FSR0             0x04
-#define REG_PIC14E_FSR0L            0x04
-#define REG_PIC14E_FSR0H            0x05
-
-#define REG_PIC14E_FSR1             0x06
-#define REG_PIC14E_FSR1L            0x06
-#define REG_PIC14E_FSR1H            0x07
-#define REG_PIC14E_WREG             0x09
+#define PIC14E_REG_FSR1             0x06
+#define PIC14E_REG_FSR1L            0x06
+#define PIC14E_REG_FSR1H            0x07
+#define PIC14E_REG_WREG             0x09
 
 /******************************************
         PIC16 definitions
 ******************************************/
 
-#define MASK_PIC16_FILE             0xFF
+#define PIC16_BMSK_BANK             0x00FF
+#define PIC16_BMSK_PAGE             0x00FF
 
-    /* Call and goto address mask. */
-#define MASK_PIC16_BRANCH           0x1FFF
-
-#define MASK_PIC16_BANK             0x00FF
-#define MASK_PIC16_PAGE             0x00FF
-
-#define REG_PIC16_PCLATH            0x03
-#define REG_PIC16_WREG              0x0A
-#define REG_PIC16_BSR               0x0F
+#define PIC16_REG_PCLATH            0x03
+#define PIC16_REG_WREG              0x0A
+#define PIC16_REG_BSR               0x0F
 
 /******************************************
         PIC16E definitions
 ******************************************/
 
     /* Call and goto address mask for lower 8 bits. */
-#define MASK_PIC16E_BRANCH_LOWER    0x00FF
+#define PIC16E_BMSK_BRANCH_LOWER    0x00FF
     /* Call and goto address mask for higher 12 bits. */
-#define MASK_PIC16E_BRANCH_HIGHER   0x0FFF
+#define PIC16E_BMSK_BRANCH_HIGHER   0x0FFF
 
-#define MASK_PIC16E_RBRA11          0x07FF
-#define MASK_PIC16E_RBRA8           0x00FF
+#define PIC16E_BMSK_BANK            0x000F
 
-#define MASK_PIC16E_BANK            0x000F
-
-#define REG_PIC16E_PCL              0xFF9
-#define REG_PIC16E_TOSL             0xFFD
-#define REG_PIC16E_TOSH             0xFFE
-#define REG_PIC16E_TOSU             0xFFF
+#define PIC16E_REG_PCL              0xFF9
+#define PIC16E_REG_TOSL             0xFFD
+#define PIC16E_REG_TOSH             0xFFE
+#define PIC16E_REG_TOSU             0xFFF
 
 /******************************************************************************/
 
@@ -143,12 +125,16 @@ struct proc_class {
   int bank_size;
   /* Bits to shift assembly code address for COFF file byte address. */
   unsigned int org_to_byte_shift;
+  /* Mask of address bits for Program Counter. */
+  unsigned int pc_mask;
+  /* Mask of address bits for page. */
+  unsigned int page_mask;
   /* Mask of address bits for bank. */
   unsigned int bank_mask;
   /* Bitmask of bits that can be stored in code section address. */
-  unsigned int core_size;
+  unsigned int core_mask;
   /* Bitmask of bits that can be stored in config section address. */
-  unsigned int config_size;
+  unsigned int config_mask;
   /* Number of digits of maximum possible flash address. */
   int addr_digits;
   /* Number of digits of instruction word. */

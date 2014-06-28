@@ -72,9 +72,9 @@ checkwrite(unsigned short value)
 
   if (state.mpasm_compatible) {
     /* MPASM(X) compatible mode. */
-    if (value > state.device.class->core_size) {
+    if (value > state.device.class->core_mask) {
       gpvmessage(GPM_RANGE, NULL, value);
-      value &= state.device.class->core_size;
+      value &= state.device.class->core_mask;
     }
 
     if ((state.num.errors == 0) &&
@@ -86,20 +86,20 @@ checkwrite(unsigned short value)
     /* GPASM compatible mode. */
     gp_boolean is_config = gp_processor_is_config_addr(state.processor, org);
 
-    if (value > state.device.class->core_size) {
+    if (value > state.device.class->core_mask) {
     /* The size of the config words may be differ the size of the program words. */
       if (!is_config) {
         gpvmessage(GPM_RANGE, NULL, value);
-        value &= state.device.class->core_size;
+        value &= state.device.class->core_mask;
       }
-      else if (value > state.device.class->config_size) {
+      else if (value > state.device.class->config_mask) {
         gpvmessage(GPM_RANGE, NULL, value);
-        value &= state.device.class->config_size;
+        value &= state.device.class->config_mask;
       }
     }
 
     if (state.num.errors == 0) {
-      if (is_config && (state.device.class->config_size <= 0xFF)) {
+      if (is_config && (state.device.class->config_mask <= 0xFF)) {
         unsigned char byte;
 
         if (b_memory_get(state.i_memory, state.org, &byte, NULL, NULL)) {
@@ -168,8 +168,8 @@ emit_byte(unsigned short value, const char *name)
         gperror(GPE_ADDROVF, "Address wrapped around 0.");
       }
 
-      if (value > state.device.class->core_size) {
-        unsigned short v = value & state.device.class->core_size;
+      if (value > state.device.class->core_mask) {
+        unsigned short v = value & state.device.class->core_mask;
 
         gpvwarning(GPW_RANGE, "%i (%#x) => %i (%#x)", value, value, v, v);
         value = v;
@@ -296,7 +296,7 @@ emit_data(struct pnode *L, int char_shift, const char *name)
         }
       }
     }
-    else if (state.device.class->core_size > 0xff) {
+    else if (state.device.class->core_mask > 0xff) {
       unsigned short v;
 
       v = reloc_evaluate(p, RELOCT_ALL);
@@ -606,11 +606,11 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
       }
       else if (IS_PIC12E_CORE) {
         reloc_evaluate(p, RELOCT_MOVLB);
-        emit(INSN_PIC12E_MOVLB, name);
+        emit(PIC12E_INSN_MOVLB, name);
       }
       else if (IS_PIC14E_CORE) {
         reloc_evaluate(p, RELOCT_MOVLB);
-        emit(INSN_PIC14E_MOVLB, name);
+        emit(PIC14E_INSN_MOVLB, name);
       }
       else if (IS_PIC16_CORE) {
         reloc_evaluate(p, RELOCT_BANKSEL);
@@ -618,7 +618,7 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
       }
       else if (IS_PIC16E_CORE) {
         reloc_evaluate(p, RELOCT_BANKSEL);
-        emit(INSN_PIC16E_MOVLB, name);
+        emit(PIC16E_INSN_MOVLB, name);
       }
       else {
         switch (state.processor->num_banks) {
@@ -961,9 +961,9 @@ do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
       /* Don't complain for 14 bit enhanced devices.
          Why are the config words 16 bits long in headers?? */
       if (!IS_PIC14E_CORE) {
-        if (value > state.device.class->core_size) {
+        if (value > state.device.class->core_mask) {
           gpvmessage(GPM_RANGE, NULL, value);
-          value &= state.device.class->core_size;
+          value &= state.device.class->core_mask;
         }
       }
 
@@ -1149,7 +1149,7 @@ config_12_14_set_word_mem(MemBlock *config_mem, const struct gp_cfg_device *p_de
   }
 
   word |= (old_word & ~mask);
-  word &= state.device.class->config_size;
+  word &= state.device.class->config_mask;
   state.device.class->i_memory_put(config_mem, ca, word, buf, NULL);
 }
 
@@ -1166,7 +1166,7 @@ config_12_14_check_defaults(MemBlock *config_mem, const struct gp_cfg_device *p_
     addr = gp_processor_org_to_byte(state.device.class, addrs->addr);
 
     if (!state.device.class->i_memory_get(config_mem, addr, &word, NULL, NULL)) {
-      word = addrs->defval & state.device.class->config_size;
+      word = addrs->defval & state.device.class->config_mask;
       state.device.class->i_memory_put(config_mem, addr, word, NULL, NULL);
     }
   }
@@ -3284,7 +3284,7 @@ _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsign
       else if (IS_PIC14E_CORE) {
         if (!use_wreg) {
           reloc_evaluate(p, RELOCT_PAGESEL_MOVLP);
-          emit(INSN_PIC14E_MOVLP, name);
+          emit(PIC14E_INSN_MOVLP, name);
         }
         else {
           reloc_evaluate(p, RELOCT_PAGESEL_WREG);
@@ -3386,7 +3386,7 @@ do_res(gpasmVal r, const char *name, int arity, struct pnode *parms)
         count = gp_processor_org_to_byte(state.device.class, count);
 
         for (i = 0; (i + 1) < count; i += 2) {
-          emit(state.device.class->core_size, name);
+          emit(state.device.class->core_mask, name);
         }
       }
       else {
@@ -3401,7 +3401,7 @@ do_res(gpasmVal r, const char *name, int arity, struct pnode *parms)
           }
           for (i = 0; (i + 1) < count; i += 2) {
             /* For some reason program memory is filled with a different value. */
-            emit(state.device.class->core_size, name);
+            emit(state.device.class->core_mask, name);
           }
         }
         else {
@@ -3987,7 +3987,7 @@ do_insn(const char *name, struct pnode *parms)
         /* SX bank */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          emit_check(i->opcode, (reloc_evaluate(p, RELOCT_F) >> 5), 0x07, s->name);
+          emit_check(i->opcode, (reloc_evaluate(p, RELOCT_F) >> 5), SX_BMSK_BANK, s->name);
         }
         break;
 
@@ -3995,7 +3995,7 @@ do_insn(const char *name, struct pnode *parms)
         /* SX page */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          emit_check(i->opcode, (reloc_evaluate(p, RELOCT_F) >> 9), 0x07, s->name);
+          emit_check(i->opcode, (reloc_evaluate(p, RELOCT_F) >> 9), SX_BMSK_PAGE, s->name);
         }
         break;
 
@@ -4023,7 +4023,7 @@ do_insn(const char *name, struct pnode *parms)
         /* PIC12E movlb */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), MASK_PIC12E_BANK, s->name);
+          emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), PIC12E_BMSK_BANK, s->name);
         }
         break;
 
@@ -4031,7 +4031,7 @@ do_insn(const char *name, struct pnode *parms)
         /* SX mode */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          emit_check(i->opcode, reloc_evaluate(p, RELOCT_F), 0x0f, s->name);
+          emit_check(i->opcode, reloc_evaluate(p, RELOCT_F), SX_BMSK_MODE, s->name);
         }
         break;
 
@@ -4041,15 +4041,15 @@ do_insn(const char *name, struct pnode *parms)
           check_16e_arg_types(parms, arity, 0);
           p = HEAD(parms);
           coerce_str1(p); /* literal instructions can coerce string literals */
-          emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), MASK_PIC16E_BANK, s->name);
+          emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), PIC16E_BMSK_MOVLB, s->name);
         }
         break;
 
-      case INSN_CLASS_LIT4S:
+      case INSN_CLASS_LIT4H:
         /* PIC16 movlr */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          emit_check(i->opcode, (reloc_evaluate(p, RELOCT_MOVLR) << 4), 0xf0, s->name);
+          emit_check(i->opcode, (reloc_evaluate(p, RELOCT_MOVLR) << 4), PIC16_BMSK_MOVLR, s->name);
         }
         break;
 
@@ -4057,7 +4057,7 @@ do_insn(const char *name, struct pnode *parms)
         /* PIC14E movlb */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), MASK_PIC14E_BANK, s->name);
+          emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), PIC14E_BMSK_MOVLB, s->name);
         }
         break;
 
@@ -4067,7 +4067,7 @@ do_insn(const char *name, struct pnode *parms)
           check_16e_arg_types(parms, arity, 0);
           p = HEAD(parms);
           /* The literal cannot be a relocatable address. */
-          emit_check(i->opcode, maybe_evaluate(p), 0x3f, s->name);
+          emit_check(i->opcode, maybe_evaluate(p), PIC16EX_BMSK_xxxULNK, s->name);
         }
         break;
 
@@ -4075,7 +4075,7 @@ do_insn(const char *name, struct pnode *parms)
         /* PIC14E movlp */
         if (enforce_arity(arity, 1)) {
           p = HEAD(parms);
-          emit_check(i->opcode, reloc_evaluate(p, RELOCT_PAGESEL_MOVLP), MASK_PIC14E_PAGE, s->name);
+          emit_check(i->opcode, reloc_evaluate(p, RELOCT_PAGESEL_MOVLP), PIC14E_BMSK_PAGE512, s->name);
         }
         break;
 
@@ -4091,7 +4091,7 @@ do_insn(const char *name, struct pnode *parms)
           coerce_str1(p); /* literal instructions can coerce string literals */
 
           if (icode == ICODE_MOVLB) {
-            emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), 0x0f, s->name);
+            emit_check(i->opcode, reloc_evaluate(p, RELOCT_MOVLB), PIC16_BMSK_MOVLB, s->name);
           }
           else {
             emit_check(i->opcode, reloc_evaluate(p, RELOCT_LOW), 0xff, s->name);
@@ -4108,12 +4108,12 @@ do_insn(const char *name, struct pnode *parms)
             int value = evaluate(p);
 
             /* PC is 11 bits.  mpasm checks the maximum device address. */
-            if (value & (~0x7ff)) {
-              gpverror(GPE_RANGE, "Address{%#x} > 0x7ff.", value);
+            if (value & (~PIC12_PC_MASK)) {
+              gpverror(GPE_RANGE, "Address{%#x} > %#x.", value, PIC12_PC_MASK);
             }
 
-            if ((value & 0x600) != (r & 0x600)) {
-              gpvmessage(GPM_PAGE, "%#x != %#x", (value & 0x600), (r & 0x600));
+            if ((value & PIC12_PAGE_BITS) != (r & PIC12_PAGE_BITS)) {
+              gpvmessage(GPM_PAGE, "%#x != %#x", (value & PIC12_PAGE_BITS), (r & PIC12_PAGE_BITS));
             }
 
             if (value & 0x100) {
@@ -4121,7 +4121,7 @@ do_insn(const char *name, struct pnode *parms)
             }
           }
 
-          emit(i->opcode | (reloc_evaluate(p, RELOCT_CALL) & MASK_PIC12_CALL), s->name);
+          emit(i->opcode | (reloc_evaluate(p, RELOCT_CALL) & PIC12_BMSK_CALL), s->name);
         }
         break;
 
@@ -4151,16 +4151,16 @@ do_insn(const char *name, struct pnode *parms)
             int value = evaluate(p);
 
             /* PC is 11 bits.  mpasm checks the maximum device address. */
-            if (value & (~0x7ff)) {
-              gpverror(GPE_RANGE, "Address{%#x} > 0x7ff.", value);
+            if (value & (~PIC12_PC_MASK)) {
+              gpverror(GPE_RANGE, "Address{%#x} > %#x.", value, PIC12_PC_MASK);
             }
 
-            if ((value & 0x600) != (r & 0x600)) {
-              gpvmessage(GPM_PAGE, "%#x != %#x", (value & 0x600), (r & 0x600));
+            if ((value & PIC12_PAGE_BITS) != (r & PIC12_PAGE_BITS)) {
+              gpvmessage(GPM_PAGE, "%#x != %#x", (value & PIC12_PAGE_BITS), (r & PIC12_PAGE_BITS));
             }
           }
 
-          emit(i->opcode | (reloc_evaluate(p, RELOCT_GOTO) & MASK_PIC12_GOTO), s->name);
+          emit(i->opcode | (reloc_evaluate(p, RELOCT_GOTO) & PIC12_BMSK_GOTO), s->name);
         }
         break;
 
@@ -4174,29 +4174,29 @@ do_insn(const char *name, struct pnode *parms)
 
             if (IS_PIC14E_CORE) {
               /* PC is 15 bits.  mpasm checks the maximum device address. */
-              if (value & (~0x7fff)) {
-                gpverror(GPE_RANGE, "Address{%#x} > 0x7fff.", value);
+              if (value & (~PIC14E_PC_MASK)) {
+                gpverror(GPE_RANGE, "Address{%#x} > %#x.", value, PIC14E_PC_MASK);
               }
 
-              if ((value & 0x7800) != (r & 0x7800)) {
-                gpvmessage(GPM_PAGE, "%#x != %#x", (value & 0x7800), (r & 0x7800));
+              if ((value & PIC14E_PAGE_BITS) != (r & PIC14E_PAGE_BITS)) {
+                gpvmessage(GPM_PAGE, "%#x != %#x", (value & PIC14E_PAGE_BITS), (r & PIC14E_PAGE_BITS));
               }
             }
             else {
               /* PC is 13 bits.  mpasm checks the maximum device address. */
-              if (value & (~0x1fff)) {
-                gpverror(GPE_RANGE, "Address{%#x} > 0x1fff.", value);
+              if (value & (~PIC14_PC_MASK)) {
+                gpverror(GPE_RANGE, "Address{%#x} > %#x.", value, PIC14_PC_MASK);
               }
 
-              if ((value & 0x1800) != (r & 0x1800)) {
-                gpvmessage(GPM_PAGE, "%#x != %#x", (value & 0x1800), (r & 0x1800));
+              if ((value & PIC14_PAGE_BITS) != (r & PIC14_PAGE_BITS)) {
+                gpvmessage(GPM_PAGE, "%#x != %#x", (value & PIC14_PAGE_BITS), (r & PIC14_PAGE_BITS));
               }
             }
           }
 
           emit(i->opcode |
 	           (reloc_evaluate(p, (icode == ICODE_CALL) ? RELOCT_CALL : RELOCT_GOTO) &
-	               MASK_PIC14_BRANCH),
+	               PIC14_BMSK_BRANCH),
 	       s->name);
         }
         break;
@@ -4210,18 +4210,18 @@ do_insn(const char *name, struct pnode *parms)
             int value = evaluate(p);
 
             /* PC is 16 bits.  mpasm checks the maximum device address. */
-            if (value & (~0xffff)) {
-              gpverror(GPE_RANGE, "Address{%#x} > 0xffff.", value);
+            if (value & (~PIC16_PC_MASK)) {
+              gpverror(GPE_RANGE, "Address{%#x} > %#x.", value, PIC16_PC_MASK);
             }
 
-            if ((value & 0xe000) != (r & 0xe000)) {
-              gpvmessage(GPM_PAGE, "%#x != %#x", (value & 0xe000), (r & 0xe000));
+            if ((value & PIC16_PAGE_BITS) != (r & PIC16_PAGE_BITS)) {
+              gpvmessage(GPM_PAGE, "%#x != %#x", (value & PIC16_PAGE_BITS), (r & PIC16_PAGE_BITS));
             }
           }
 
           emit(i->opcode |
 	           (reloc_evaluate(p, (icode == ICODE_CALL) ? RELOCT_CALL : RELOCT_GOTO) &
-		       MASK_PIC16_BRANCH),
+		       PIC16_BMSK_BRANCH),
 	       s->name);
         }
         break;
@@ -4235,8 +4235,8 @@ do_insn(const char *name, struct pnode *parms)
           p = HEAD(parms);
           fsr = maybe_evaluate(p);
 
-          if ((fsr == REG_PIC14E_FSR0) || (fsr == REG_PIC14E_FSR1)) {
-            fsr = (fsr == REG_PIC14E_FSR1) ? 0x40 : 0x00;
+          if ((fsr == PIC14E_REG_FSR0) || (fsr == PIC14E_REG_FSR1)) {
+            fsr = (fsr == PIC14E_REG_FSR1) ? 0x40 : 0x00;
             p = HEAD(TAIL(parms));
             /* the offset cannot be a relocatable address */
             value = maybe_evaluate(p);
@@ -4310,7 +4310,7 @@ do_insn(const char *name, struct pnode *parms)
 
           /* The offset for the relative branch must be
              between -127 <= offset <= 127. */
-          emit_check_relative(i->opcode, offset, MASK_PIC16E_RBRA8, 127, s->name);
+          emit_check_relative(i->opcode, offset, PIC16E_BMSK_RBRA8, 127, s->name);
         }
         break;
 
@@ -4332,7 +4332,7 @@ do_insn(const char *name, struct pnode *parms)
 
           /* The offset for the relative branch must be
              between -256 <= offset <= 255. */
-          emit_check_relative(i->opcode, offset, MASK_PIC14E_RBRA9, 255, s->name);
+          emit_check_relative(i->opcode, offset, PIC14E_BMSK_RBRA9, 255, s->name);
         }
         break;
 
@@ -4360,7 +4360,7 @@ do_insn(const char *name, struct pnode *parms)
 
           /* The offset for the relative branch must be
              between -1024 <= offset <= 1023. */
-          emit_check_relative(i->opcode, offset, MASK_PIC16E_RBRA11, 1023, s->name);
+          emit_check_relative(i->opcode, offset, PIC16E_BMSK_RBRA11, 1023, s->name);
         }
         break;
 
@@ -4374,9 +4374,9 @@ do_insn(const char *name, struct pnode *parms)
           p = HEAD(parms);
           dest = reloc_evaluate(p, RELOCT_GOTO);
           dest = gp_processor_org_to_byte(state.device.class, dest) >> 1;
-          emit(i->opcode | (dest & MASK_PIC16E_BRANCH_LOWER), s->name);
+          emit(i->opcode | (dest & PIC16E_BMSK_BRANCH_LOWER), s->name);
           reloc_evaluate(p, RELOCT_GOTO2);     /* add the second relocation */
-          emit_check(0xf000, dest >> 8, MASK_PIC16E_BRANCH_HIGHER, s->name);
+          emit_check(0xf000, dest >> 8, PIC16E_BMSK_BRANCH_HIGHER, s->name);
         }
         break;
 
@@ -4417,9 +4417,9 @@ do_insn(const char *name, struct pnode *parms)
 
             dest = reloc_evaluate(p, RELOCT_CALL);
             dest = gp_processor_org_to_byte(state.device.class, dest) >> 1;
-            emit(i->opcode | (flag << 8) | (dest & MASK_PIC16E_BRANCH_LOWER), s->name);
+            emit(i->opcode | (flag << 8) | (dest & PIC16E_BMSK_BRANCH_LOWER), s->name);
             reloc_evaluate(p, RELOCT_CALL2);     /* add the second relocation */
-            emit_check(0xf000, (dest >> 8), MASK_PIC16E_BRANCH_HIGHER, s->name);
+            emit_check(0xf000, (dest >> 8), PIC16E_BMSK_BRANCH_HIGHER, s->name);
           }
         }
         break;
@@ -4458,16 +4458,16 @@ do_insn(const char *name, struct pnode *parms)
           dest = maybe_evaluate(HEAD(TAIL(parms)));
 
           /* The destination can't be the PCL, TOSU, TOSH or TOSL. */
-          if (dest == REG_PIC16E_PCL) {
+          if (dest == PIC16E_REG_PCL) {
             gperror(GPE_UNKNOWN, "The destination cannot be the PCL.");
           }
-          else if (dest == REG_PIC16E_TOSU) {
+          else if (dest == PIC16E_REG_TOSU) {
             gperror(GPE_UNKNOWN, "The destination cannot be the TOSU.");
           }
-          else if (dest == REG_PIC16E_TOSH) {
+          else if (dest == PIC16E_REG_TOSH) {
             gperror(GPE_UNKNOWN, "The destination cannot be the TOSH.");
           }
-          else if (dest == REG_PIC16E_TOSL) {
+          else if (dest == PIC16E_REG_TOSL) {
             gperror(GPE_UNKNOWN, "The destination cannot be the TOSL.");
           }
 
@@ -4489,7 +4489,7 @@ do_insn(const char *name, struct pnode *parms)
             gpvwarning(GPW_RANGE, "(%#x & ~0xf1f) != 0", reg, reg);
           }
 
-          emit(i->opcode | ((reg & 0x1f) << 8) | (file & MASK_PIC16_FILE), s->name);
+          emit(i->opcode | ((reg & 0x1f) << 8) | (file & PIC16_BMSK_FILE), s->name);
         }
         break;
 
@@ -4506,7 +4506,7 @@ do_insn(const char *name, struct pnode *parms)
             gpvwarning(GPW_RANGE, "(%#x & ~0xf1f) != 0", reg, reg);
           }
 
-          emit(i->opcode | ((reg & 0x1f) << 8) | (file & MASK_PIC16_FILE), s->name);
+          emit(i->opcode | ((reg & 0x1f) << 8) | (file & PIC16_BMSK_FILE), s->name);
         }
         break;
 
@@ -4525,16 +4525,16 @@ do_insn(const char *name, struct pnode *parms)
           dest = maybe_evaluate(p);
 
           /* The destination can't be the PCL, TOSU, TOSH or TOSL. */
-          if (dest == REG_PIC16E_PCL) {
+          if (dest == PIC16E_REG_PCL) {
             gperror(GPE_UNKNOWN, "The destination cannot be the PCL.");
           }
-          else if (dest == REG_PIC16E_TOSU) {
+          else if (dest == PIC16E_REG_TOSU) {
             gperror(GPE_UNKNOWN, "The destination cannot be the TOSU.");
           }
-          else if (dest == REG_PIC16E_TOSH) {
+          else if (dest == PIC16E_REG_TOSH) {
             gperror(GPE_UNKNOWN, "The destination cannot be the TOSH.");
           }
-          else if (dest == REG_PIC16E_TOSL) {
+          else if (dest == PIC16E_REG_TOSL) {
             gperror(GPE_UNKNOWN, "The destination cannot be the TOSL.");
           }
 
@@ -4568,7 +4568,7 @@ do_insn(const char *name, struct pnode *parms)
           p = HEAD(parms);
           file = reloc_evaluate(p, RELOCT_TRIS_3BIT);
           file_ok(file);
-          emit(i->opcode | (file & MASK_PIC12_TRIS), s->name);
+          emit(i->opcode | (file & PIC12_BMSK_TRIS), s->name);
         }
         break;
 
@@ -4585,7 +4585,7 @@ do_insn(const char *name, struct pnode *parms)
           }
 
           file_ok(file);
-          emit(i->opcode | (file & MASK_PIC12_FILE), s->name);
+          emit(i->opcode | (file & PIC12_BMSK_FILE), s->name);
         }
         break;
 
@@ -4628,7 +4628,7 @@ do_insn(const char *name, struct pnode *parms)
 
           file = reloc_evaluate(p, RELOCT_F);
           file_ok(file);
-          emit(i->opcode | (d << 5) | (file & MASK_PIC12_FILE), s->name);
+          emit(i->opcode | (d << 5) | (file & PIC12_BMSK_FILE), s->name);
         }
         break;
 
@@ -4653,11 +4653,11 @@ do_insn(const char *name, struct pnode *parms)
 
             file_ok(file);
 
-            if (strncasecmp(i->name, "btfs", 4) == 0) {
+            if ((icode == ICODE_BTFSC) || (icode == ICODE_BTFSS)) {
               is_btfsx = true;
             }
 
-            emit(i->opcode | ((bit & 7) << 5) | (file & MASK_PIC12_FILE), s->name);
+            emit(i->opcode | ((bit & 7) << 5) | (file & PIC12_BMSK_FILE), s->name);
           }
         }
         break;
@@ -4683,11 +4683,11 @@ do_insn(const char *name, struct pnode *parms)
 
             file_ok(file);
 
-            if (strncasecmp(i->name, "btfs", 4) == 0) {
+            if ((icode == ICODE_BTFSC) || (icode == ICODE_BTFSS)) {
               is_btfsx = true;
             }
 
-            emit(i->opcode | ((bit & 7) << 8) | (file & MASK_PIC16_FILE), s->name);
+            emit(i->opcode | ((bit & 7) << 8) | (file & PIC16_BMSK_FILE), s->name);
           }
         }
         break;
@@ -4706,7 +4706,7 @@ do_insn(const char *name, struct pnode *parms)
           }
 
           file_ok(file);
-          emit(i->opcode | (file & MASK_PIC14_FILE), s->name);
+          emit(i->opcode | (file & PIC14_BMSK_FILE), s->name);
         }
         break;
 
@@ -4716,7 +4716,7 @@ do_insn(const char *name, struct pnode *parms)
           p = HEAD(parms);
           file = reloc_evaluate(p, RELOCT_F);
           file_ok(file);
-          emit(i->opcode | (file & MASK_PIC16_FILE), s->name);
+          emit(i->opcode | (file & PIC16_BMSK_FILE), s->name);
         }
         break;
 
@@ -4760,7 +4760,7 @@ do_insn(const char *name, struct pnode *parms)
 
           file = reloc_evaluate(p, RELOCT_F);
           file_ok(file);
-          emit(i->opcode | (d << 7) | (file & MASK_PIC14_FILE), s->name);
+          emit(i->opcode | (d << 7) | (file & PIC14_BMSK_FILE), s->name);
         }
         break;
 
@@ -4804,7 +4804,7 @@ do_insn(const char *name, struct pnode *parms)
 
           file = reloc_evaluate(p, RELOCT_F);
           file_ok(file);
-          emit(i->opcode | (d << 8) | (file & MASK_PIC16_FILE), s->name);
+          emit(i->opcode | (d << 8) | (file & PIC16_BMSK_FILE), s->name);
         }
         break;
 
@@ -4833,7 +4833,7 @@ do_insn(const char *name, struct pnode *parms)
               is_btfsx = true;
             }
 
-            emit(i->opcode | ((bit & 7) << 7) | (file & MASK_PIC14_FILE), s->name);
+            emit(i->opcode | ((bit & 7) << 7) | (file & PIC14_BMSK_FILE), s->name);
           }
         }
         break;
@@ -4912,14 +4912,14 @@ do_insn(const char *name, struct pnode *parms)
             enforce_arity(arity, 2);
           }
 
-          emit(i->opcode | (a << 8) | (file & MASK_PIC16_FILE), s->name);
+          emit(i->opcode | (a << 8) | (file & PIC16_BMSK_FILE), s->name);
         }
         break;
 
       case INSN_CLASS_BA8:
         /* PIC16E (bcf, bsf, btfsc, btfss, btg) */
         {
-          struct pnode *f, *b,*par;
+          struct pnode *f, *b, *par;
           int bit, a = 0;
 
           if ((arity != 2) && (arity != 3)) {
@@ -4998,7 +4998,7 @@ do_insn(const char *name, struct pnode *parms)
             is_btfsx = true;
           }
 
-          emit(i->opcode | (a << 8) | ((bit & 7) << 9) | (file & MASK_PIC16_FILE), s->name);
+          emit(i->opcode | (a << 8) | ((bit & 7) << 9) | (file & PIC16_BMSK_FILE), s->name);
         }
         break;
 
@@ -5092,7 +5092,7 @@ do_insn(const char *name, struct pnode *parms)
           default:
             enforce_arity(arity, 3);
           }
-          emit(i->opcode | (d << 9) | (a << 8) | (file & MASK_PIC16_FILE), s->name);
+          emit(i->opcode | (d << 9) | (a << 8) | (file & PIC16_BMSK_FILE), s->name);
         }
         break;
 
@@ -5109,7 +5109,7 @@ do_insn(const char *name, struct pnode *parms)
           gpvwarning(GPW_EXTRANEOUS, NULL);
         }
 
-        if ((icode == ICODE_OPTION) && (state.device.class->core_size != CORE_12BIT_MASK)){
+        if ((icode == ICODE_OPTION) && (state.device.class->core_mask != CORE_12BIT_MASK)){
           gpvwarning(GPW_NOT_RECOMMENDED, "\"option\"");
         }
 
@@ -5159,7 +5159,7 @@ do_insn(const char *name, struct pnode *parms)
           file = reloc_evaluate(p2, RELOCT_F);
 
           file_ok(file);
-          emit(i->opcode | (t << 9) | (file & MASK_PIC16_FILE), s->name);
+          emit(i->opcode | (t << 9) | (file & PIC16_BMSK_FILE), s->name);
         }
         break;
 
@@ -5182,7 +5182,7 @@ do_insn(const char *name, struct pnode *parms)
           file = reloc_evaluate(p3, RELOCT_F);
 
           file_ok(file);
-          emit(i->opcode | (t << 9) | (inc << 8) | (file & MASK_PIC16_FILE), s->name);
+          emit(i->opcode | (t << 9) | (inc << 8) | (file & PIC16_BMSK_FILE), s->name);
         }
         break;
 
@@ -5204,9 +5204,9 @@ do_insn(const char *name, struct pnode *parms)
           fsr = maybe_evaluate(p);
           /* New opcode for indexed indirect,
              moviw/movwi INDFn handled as moviw/movwi 0[FSRn]. */
-          if ((fsr == REG_PIC14E_FSR0) || (fsr == REG_PIC14E_FSR1)) {
-            fsr = (fsr == REG_PIC14E_FSR1) ? 0x40 : 0x00;
-            opcode = ((icode == ICODE_MOVIW) ? INSN_PIC14E_MOVIW_IDX : INSN_PIC14E_MOVWI_IDX) | fsr;
+          if ((fsr == PIC14E_REG_FSR0) || (fsr == PIC14E_REG_FSR1)) {
+            fsr = (fsr == PIC14E_REG_FSR1) ? 0x40 : 0x00;
+            opcode = ((icode == ICODE_MOVIW) ? PIC14E_INSN_MOVIW_IDX : PIC14E_INSN_MOVWI_IDX) | fsr;
             emit(opcode, s->name);
           }
           else {
@@ -5218,9 +5218,9 @@ do_insn(const char *name, struct pnode *parms)
           p2 = HEAD(TAIL(parms));
           fsr = maybe_evaluate(p2);
 
-          if ((fsr == REG_PIC14E_FSR0) || (fsr == REG_PIC14E_FSR1)) {
-            fsr = (fsr == REG_PIC14E_FSR1) ? 0x04 : 0x00;
-            k = 0;
+          if ((fsr == PIC14E_REG_FSR0) || (fsr == PIC14E_REG_FSR1)) {
+            fsr = (fsr == PIC14E_REG_FSR1) ? 0x04 : 0x00;
+            k = -1;
 
             switch (maybe_evaluate(p)) {
               /* ++FSRn */
@@ -5233,7 +5233,12 @@ do_insn(const char *name, struct pnode *parms)
             case POSTDECREMENT: k = 3; break;
             }
 
-            emit(i->opcode | fsr | k, s->name);
+            if (k >= 0) {
+              emit(i->opcode | fsr | k, s->name);
+            }
+            else {
+              gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
+            }
           }
           else {
             gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
@@ -5245,8 +5250,8 @@ do_insn(const char *name, struct pnode *parms)
           p2 = HEAD(TAIL(parms));
           fsr = maybe_evaluate(p2);
 
-          if (fsr == REG_PIC14E_FSR0 || fsr == REG_PIC14E_FSR1) {
-            fsr = (fsr == REG_PIC14E_FSR1) ? 0x40 : 0x00;
+          if (fsr == PIC14E_REG_FSR0 || fsr == PIC14E_REG_FSR1) {
+            fsr = (fsr == PIC14E_REG_FSR1) ? 0x40 : 0x00;
             switch (maybe_evaluate(p)) {
             case INDFOFFSET:
               p3 = TAIL(TAIL(parms));
@@ -5260,7 +5265,7 @@ do_insn(const char *name, struct pnode *parms)
               }
               else {
                 /* New opcode for indexed indirect. */
-                opcode = ((icode == ICODE_MOVIW) ? INSN_PIC14E_MOVIW_IDX : INSN_PIC14E_MOVWI_IDX) | fsr;
+                opcode = ((icode == ICODE_MOVIW) ? PIC14E_INSN_MOVIW_IDX : PIC14E_INSN_MOVWI_IDX) | fsr;
                 emit(opcode | (k & 0x3f), s->name);
               }
               break;

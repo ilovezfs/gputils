@@ -131,6 +131,8 @@ write_org(int org, int digits, const char *title)
 static void
 recognize_labels(MemBlock *memory)
 {
+  static const vector_t sx_reset = { -1, "vec_reset" };
+
   MemBlock *m;
   int i, maximum;
   int org;
@@ -163,7 +165,19 @@ recognize_labels(MemBlock *memory)
       }
       else {
         if (state.class->i_memory_get(m, i, &data, NULL, NULL) == W_USED_ALL) {
-	  vector = gp_processor_find_vector(state.class, org);
+          if (state.class == PROC_CLASS_SX) {
+            /* Unlike the others, the address of reset vector located
+               the top of program memory. */
+            if (org == state.processor->maxrom) {
+              vector = &sx_reset;
+            }
+            else {
+              vector = gp_processor_find_vector(state.class, org);
+            }
+          }
+          else {
+	    vector = gp_processor_find_vector(state.class, org);
+	  }
 
 	  if (vector != NULL) {
             b_memory_set_addr_type(m, i, W_ADDR_T_LABEL, 0);
@@ -363,7 +377,7 @@ dasm(MemBlock *memory)
           }
 
           insn_size = 1;
-        } /* if (state.class->config_size <= 0xFF) */
+        } /* if (state.class == PROC_CLASS_PIC16E) */
         else {
           if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
             if (last_loc != (i - insn_size)) {
@@ -620,11 +634,11 @@ int main(int argc, char *argv[])
     printf("hex file name:   %s\n", filename);
     printf("hex file format: ");
 
-    if (state.hex_info->hex_format == inhx8m) {
+    if (state.hex_info->hex_format == INHX8M) {
       printf("inhx8m\n");
-    } else if (state.hex_info->hex_format == inhx16) {
+    } else if (state.hex_info->hex_format == INHX16) {
       printf("inhx16\n");
-    } else if (state.hex_info->hex_format == inhx32) {
+    } else if (state.hex_info->hex_format == INHX32) {
       printf("inhx32\n");
     } else {
       printf("UNKNOWN\n");

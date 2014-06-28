@@ -24,10 +24,10 @@ Boston, MA 02111-1307, USA.  */
 
 /* mode flags */
 enum mode_flags_e {
-  all,
-  low,
-  high,
-  swap  /* swap bytes for inhx16 format */
+  HMODE_ALL,
+  HMODE_LOW,
+  HMODE_HIGH,
+  HMODE_SWAP  /* swap bytes for INHX16 format */
 };
 
 static int sum;
@@ -86,7 +86,7 @@ end_record(void)
 static void
 data_line(int start, int stop, enum mode_flags_e mode)
 {
-  if (mode == all) {
+  if (mode == HMODE_ALL) {
     start_record(start, stop - start);
     while (start < stop) {
       unsigned char b;
@@ -97,8 +97,8 @@ data_line(int start, int stop, enum mode_flags_e mode)
       write_byte(b);
     }
   }
-  else if (mode == swap) {
-    /* MPLINK 2.40, 3.80, 4.11 and 4.3x do not support inhx16 format.
+  else if (mode == HMODE_SWAP) {
+    /* MPLINK 2.40, 3.80, 4.11 and 4.3x do not support INHX16 format.
      * (FIXME I have no idea where it comes from or if it can be used
      * for whatever purpose it was written for.) */
     assert(((start % 2) == 0) && ((stop % 2) == 0));
@@ -113,9 +113,9 @@ data_line(int start, int stop, enum mode_flags_e mode)
     }
   }
   else {
-    start_record(start, (stop - start) / ((low == mode || high == mode) ? 2 : 1));
+    start_record(start, (stop - start) / (((mode == HMODE_LOW) || (HMODE_HIGH == mode)) ? 2 : 1));
 
-    if (mode == high) {
+    if (mode == HMODE_HIGH) {
       ++start;
     }
 
@@ -154,7 +154,7 @@ last_line(void)
 }
 
 static void
-write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_size)
+write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_mask)
 {
   MemBlock *m = memory;
   int i, j, maximum;
@@ -164,7 +164,7 @@ write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_s
 
     maximum = i + MAX_I_MEM;
 
-    if (hex_format == inhx32) {
+    if (hex_format == INHX32) {
       /* FIXME would mode swap require division by 2? */
       seg_address_line(m->base);
     }
@@ -182,14 +182,14 @@ write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_s
         j = i;
         while (b_memory_get(memory, i, &b, NULL, NULL)) {
           ++i;
-          if ((((mode == all) || (mode == swap)) && ((i & 0xf) == 0)) || ((i & 0x1f) == 0)) {
+          if ((((mode == HMODE_ALL) || (mode == HMODE_SWAP)) && ((i & 0xf) == 0)) || ((i & 0x1f) == 0)) {
             break;
           }
         }
 #if 0
         /* disabled for MPASM compatibility,
          * regression test gpasm.mchip/asmfiles/szee16.asm */
-        if (core_size > 0xFF) {
+        if (core_mask > 0xFF) {
           /* Write complete instructions, so move start down and stop up
              to even address. */
           if (j & 1) {
@@ -218,7 +218,7 @@ write_i_mem(enum formats hex_format, enum mode_flags_e mode, unsigned int core_s
 
 int
 writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
-         int numerrors, int dos_newlines, unsigned int core_size)
+         int numerrors, int dos_newlines, unsigned int core_mask)
 {
   char hexfilename[BUFSIZ];
   char lowhex[BUFSIZ];
@@ -242,7 +242,7 @@ writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
   }
 
   /* No error: overwrite the hex file */
-  if (hex_format == inhx8s) {
+  if (hex_format == INHX8S) {
     /* Write the low memory */
     hex = fopen(lowhex, "wt");
 
@@ -251,7 +251,7 @@ writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
       exit(1);
     }
 
-    write_i_mem(hex_format, low, core_size);
+    write_i_mem(hex_format, HMODE_LOW, core_mask);
     fclose(hex);
 
     /* Write the high memory */
@@ -262,10 +262,10 @@ writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
       exit(1);
     }
 
-    write_i_mem(hex_format, high, core_size);
+    write_i_mem(hex_format, HMODE_HIGH, core_mask);
     fclose(hex);
   }
-  else if (hex_format == inhx16) {
+  else if (hex_format == INHX16) {
     hex = fopen(hexfilename, "wt");
 
     if (hex == NULL) {
@@ -273,7 +273,7 @@ writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
       exit(1);
     }
 
-    write_i_mem(hex_format, swap, core_size);
+    write_i_mem(hex_format, HMODE_SWAP, core_mask);
     fclose(hex);
   }
   else {
@@ -284,20 +284,20 @@ writehex(const char *basefilename, MemBlock *m, enum formats hex_format,
       exit(1);
     }
 
-    write_i_mem(hex_format, all, core_size);
+    write_i_mem(hex_format, HMODE_ALL, core_mask);
     fclose(hex);
   }
 
   return 0;
 }
 
-/* scan the memory to see if it exceeds 32kB limit on inhx8m limit */
+/* scan the memory to see if it exceeds 32kB limit on INHX8M limit */
 int
 check_writehex(MemBlock *m, enum formats hex_format)
 {
   int error = 0;
 
-  if (hex_format != inhx32) {
+  if (hex_format != INHX32) {
     while (m != NULL) {
       if (m->base > 0) {
         error = 1;
