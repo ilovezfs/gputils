@@ -2,7 +2,7 @@
 
 pkgdatadir = @GPUTILS_HEADER_PATH@
 
-HEADER_FILES =\
+HEADER_FILES = \
 	coff.inc \
 	mcp250xx.inc \
 	memory.inc \
@@ -65,9 +65,20 @@ HEADER_FILES =\
 	p16c432.inc \
 	p16c433.inc \
 	p16c505.inc \
+	p16c54.inc \
+	p16c54a.inc \
+	p16c54c.inc \
+	p16c55.inc \
 	p16c554.inc \
 	p16c557.inc \
 	p16c558.inc \
+	p16c55a.inc \
+	p16c56.inc \
+	p16c56a.inc \
+	p16c57.inc \
+	p16c57c.inc \
+	p16c58a.inc \
+	p16c58b.inc \
 	p16c5x.inc \
 	p16c61.inc \
 	p16c620a.inc \
@@ -123,6 +134,15 @@ HEADER_FILES =\
 	p16ce623.inc \
 	p16ce624.inc \
 	p16ce625.inc \
+	p16cr54.inc \
+	p16cr54a.inc \
+	p16cr54c.inc \
+	p16cr56a.inc \
+	p16cr57a.inc \
+	p16cr57b.inc \
+	p16cr57c.inc \
+	p16cr58a.inc \
+	p16cr58b.inc \
 	p16cr62.inc \
 	p16cr620a.inc \
 	p16cr63.inc \
