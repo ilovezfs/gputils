@@ -104,8 +104,8 @@ def write_h_file(fh, data):
 	print >> fh, "/*\n * This code is automatically generated from the 8bit_device.info file.\n" \
 	             " * This data is in the public domain. Use care in modifying.\n */\n"
 	print >> fh, "/*\n" \
-	    " * since caches are enabled, directive and option structures may seem to include\n" \
-	    " * references to other PICs. this is done by caching when two or more PICs contain\n" \
+	    " * Since caches are enabled, directive and option structures may seem to include\n" \
+	    " * references to other PICs. This is done by caching when two or more PICs contain\n" \
 	    " * identical data.\n" \
 	    " */\n"
 

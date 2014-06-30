@@ -1,15 +1,16 @@
 2014-06-29  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
-  * header/p16c54.inc, header/p16c54a.inc, header/p16c54c.inc,
-    header/p16c55.inc, header/p16c55a.inc, header/p16c56.inc,
-    header/p16c56a.inc, header/p16c57.inc, header/p16c57c.inc,
-    header/p16c58a.inc, header/p16c58b.inc, header/p16cr54.inc,
-    header/p16cr54a.inc, header/p16cr54c.inc, header/p16cr56a.inc,
-    header/p16cr57a.inc, header/p16cr57b.inc, header/p16cr57c.inc,
-    header/p16cr58a.inc, header/p16cr58b.inc:
+  * header/Makefile.am, header/Makefile.in, header/p16c54.inc,
+    header/p16c54a.inc, header/p16c54c.inc, header/p16c55.inc,
+    header/p16c55a.inc, header/p16c56.inc, header/p16c56a.inc,
+    header/p16c57.inc, header/p16c57c.inc, header/p16c58a.inc,
+    header/p16c58b.inc, header/p16cr54.inc, header/p16cr54a.inc,
+    header/p16cr54c.inc, header/p16cr56a.inc, header/p16cr57a.inc,
+    header/p16cr57b.inc, header/p16cr57c.inc, header/p16cr58a.inc,
+    header/p16cr58b.inc:
     This is an old deficiency repair of, only for the sake of completeness.
 
 2014-06-28  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
-  * header/p16cr620a.inc:
+  * header/Makefile.am, header/Makefile.in, header/p16cr620a.inc:
     This is an old deficiency repair of, only for the sake of completeness.
 
 2014-06-28  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
