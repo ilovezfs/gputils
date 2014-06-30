@@ -1,3 +1,6 @@
+2014-06-30 Molnar Karoly <molnarkaroly@users.sf.net>
+	* tools/cfg-import.py: typo
+
 2014-06-28 Molnar Karoly <molnarkaroly@users.sf.net>
 	* tools/device-help.pl: Updated according to the struct px.
 
