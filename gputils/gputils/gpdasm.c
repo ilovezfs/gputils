@@ -49,7 +49,7 @@ select_processor(void)
   } else {
     printf("Didn't find any processor named: %s\nHere are the supported processors:\n",
             processor_name);
-    gp_dump_processor_list(true, 0);
+    gp_dump_processor_list(true, NULL, NULL);
     exit(1);
   }
 
@@ -569,7 +569,7 @@ int main(int argc, char *argv[])
       break;
 
     case 'l':
-      gp_dump_processor_list(true, 0);
+      gp_dump_processor_list(true, NULL, NULL);
       exit(0);
       break;
 

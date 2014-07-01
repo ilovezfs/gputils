@@ -274,7 +274,7 @@ struct px {
 #define DEVID1    0x3ffffe
 #define DEVID2    0x3fffff
 
-void gp_dump_processor_list(gp_boolean list_all, proc_class_t class);
+void gp_dump_processor_list(gp_boolean list_all, proc_class_t class1, proc_class_t class2);
 const struct px *gp_find_processor(const char *name);
 proc_class_t gp_processor_class(pic_processor_t);
 int gp_processor_bsr_boundary(pic_processor_t processor);

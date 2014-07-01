@@ -329,38 +329,44 @@ process_args( int argc, char *argv[])
       }
 
       switch (pic_family) {
-        case 0x12C:
-          gp_dump_processor_list(false, PROC_CLASS_PIC12);
-          break;
-
         case 0x12:
-          gp_dump_processor_list(false, PROC_CLASS_PIC12);
-        case 0x12E:
-          gp_dump_processor_list(false, PROC_CLASS_PIC12E);
+          gp_dump_processor_list(false, PROC_CLASS_PIC12, PROC_CLASS_PIC12E);
           break;
 
-        case 0x14C:
-          gp_dump_processor_list(false, PROC_CLASS_PIC14);
+        case 0x12C:
+          gp_dump_processor_list(false, PROC_CLASS_PIC12, NULL);
+          break;
+
+        case 0x12E:
+          gp_dump_processor_list(false, PROC_CLASS_PIC12E, NULL);
           break;
 
         case 0x14:
-          gp_dump_processor_list(false, PROC_CLASS_PIC14);
-        case 0x14E:
-          gp_dump_processor_list(false, PROC_CLASS_PIC14E);
+          gp_dump_processor_list(false, PROC_CLASS_PIC14, PROC_CLASS_PIC14E);
           break;
 
-        case 0x16C:
-          gp_dump_processor_list(false, PROC_CLASS_PIC16);
+        case 0x14C:
+          gp_dump_processor_list(false, PROC_CLASS_PIC14, NULL);
+          break;
+
+        case 0x14E:
+          gp_dump_processor_list(false, PROC_CLASS_PIC14E, NULL);
           break;
 
         case 0x16:
-          gp_dump_processor_list(false, PROC_CLASS_PIC16);
+          gp_dump_processor_list(false, PROC_CLASS_PIC16, PROC_CLASS_PIC16E);
+          break;
+
+        case 0x16C:
+          gp_dump_processor_list(false, PROC_CLASS_PIC16, NULL);
+          break;
+
         case 0x16E:
-          gp_dump_processor_list(false, PROC_CLASS_PIC16E);
+          gp_dump_processor_list(false, PROC_CLASS_PIC16E, NULL);
           break;
 
         default: {
-          gp_dump_processor_list(true, NULL);
+          gp_dump_processor_list(true, NULL, NULL);
           }
         }
 

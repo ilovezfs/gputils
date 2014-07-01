@@ -726,18 +726,20 @@ static struct px pics[] = {
 /*
  * Display a list of the processor names
  */
-void gp_dump_processor_list(gp_boolean list_all, proc_class_t class)
+void gp_dump_processor_list(gp_boolean list_all, proc_class_t class1, proc_class_t class2)
 {
-#define COLUMNS  6
-#define SPACE_BETWEEN 2   /* number of chars between columns */
-#define FAVORITE 1        /* there are 3 names to choose from */
+#define COLUMNS         6
+#define SPACE_BETWEEN   2       /* number of chars between columns */
+#define FAVORITE        1       /* there are 3 names to choose from */
 
   int i;
   int length;
-  int column_width = 0;
-  int num = 0;
-  int newline = 0;
+  int column_width;
+  int num;
+  const char *name;
+  gp_boolean newline = false;
 
+  column_width = 0;
   for (i = 0; i < NUM_PICS; i++) {
     length = strlen(pics[i].names[FAVORITE]);
 
@@ -747,25 +749,27 @@ void gp_dump_processor_list(gp_boolean list_all, proc_class_t class)
   }
 
   column_width += SPACE_BETWEEN;
-  for (i = 0; i < NUM_PICS; i++) {
 
-    if (list_all || (pics[i].class == class)) {
+  num = 0;
+  for (i = 0; i < NUM_PICS; i++) {
+    if (list_all || (pics[i].class == class1) || (pics[i].class == class2)) {
       num++;
-      newline = ((num % COLUMNS) == 0);
+      name = pics[i].names[FAVORITE];
+      newline = ((num % COLUMNS) == 0) ? true : false;
 
       if (i >= (NUM_PICS - 1)) {
-        printf("%s", pics[i].names[FAVORITE]);
+        printf("%s", name);
       }
-      else if (newline != 0) {
-        printf("%s\n", pics[i].names[FAVORITE]);
+      else if (newline) {
+        printf("%s\n", name);
       }
       else {
-        printf("%-*s", column_width, pics[i].names[FAVORITE]);
+        printf("%-*s", column_width, name);
       }
     }
   }
 
-  if (newline == 0) {
+  if (!newline) {
     putchar('\n');
   }
 }
