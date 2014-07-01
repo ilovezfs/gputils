@@ -35,7 +35,7 @@ void select_processor(const char *name)
   } else {
     found = gp_find_processor(name);
 
-    if (found) {
+    if (found != NULL) {
       int badrom_idx;
 
       if (state.processor == NULL) {
@@ -49,7 +49,7 @@ void select_processor(const char *name)
         /* initialize badrom from internal processor info */
         state.badrom = NULL;
 
-        for (badrom_idx = 0; badrom_idx < MAX_BADROM; badrom_idx+=2) {
+        for (badrom_idx = 0; badrom_idx < MAX_BADROM; badrom_idx += 2) {
           long start, end;
           start = found->badrom[badrom_idx];
           end = found->badrom[badrom_idx+1];
@@ -77,7 +77,7 @@ void select_processor(const char *name)
         gpverror(GPE_UNKNOWN_PROC, NULL, name);
       } else {
         printf("Didn't find any processor named: %s\nHere are the supported processors:\n", name);
-        gp_dump_processor_list(true, 0);
+        gp_dump_processor_list(true, NULL, NULL);
         exit(1);
       }
     }

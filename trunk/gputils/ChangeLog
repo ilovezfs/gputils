@@ -1,3 +1,8 @@
+2014-07-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/gpasm.c, gpasm/processor.c, gputils/gpdasm.c,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.h:
+    Changes in mode of processor listing.
+
 2014-06-29  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/Makefile.am, header/Makefile.in, header/p16c54.inc,
     header/p16c54a.inc, header/p16c54c.inc, header/p16c55.inc,
