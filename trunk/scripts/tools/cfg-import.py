@@ -149,7 +149,7 @@ def write_h_file(fh, data):
 	print >> fh, "/*\n" \
 	             " * Devices Table\n" \
 				 " */\n"
-	print >> fh, "const unsigned gp_cfg_device_count = %d;" % len(data.pics)
+	print >> fh, "const unsigned int gp_cfg_device_count = %d;" % len(data.pics)
 	print >> fh, "const struct gp_cfg_device gp_cfg_devices[] =\n" \
 			     "{"
 	for pic, addrs in sorted(data.pics.items()):
