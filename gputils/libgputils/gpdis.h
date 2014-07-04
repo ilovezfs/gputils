@@ -22,13 +22,20 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPDIS_H__
 #define __GPDIS_H__
 
+#include "gpregister.h"
+
 extern gp_boolean gp_decode_mnemonics;
 extern gp_boolean gp_decode_extended;
 
 typedef struct {
-  int wreg_prev;
-  int pclath_prev;
-  int pclath_valid_mask;
+  int wreg;
+  int pclath;
+  int pclath_valid;
+  int bank;
+  int bank_valid;
+  const gp_register_table_t *proc_regs;
+  int bsr_boundary;                     /* Only case of PIC16E. */
+  gp_boolean need_sfr_equ;
 } gpdasm_fstate_t;
 
 /* Values of the "behavior". */
@@ -37,19 +44,24 @@ typedef struct {
 #define GPDIS_SHOW_BYTES        (1 << 1)
 #define GPDIS_SHOW_ALL_BRANCH   (1 << 2)
 
+int gp_disassemble_mark_false_addresses(MemBlock *m, int byte_address, pic_processor_t processor);
+
 int gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t processor,
                                gpdasm_fstate_t *fstate);
 
+int gp_disassemble_find_registers(MemBlock *m, int byte_address, pic_processor_t processor,
+                                  gpdasm_fstate_t *fstate);
+
 int gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
-                   int prog_mem_size, int behavior, char *buffer, size_t sizeof_buffer);
+                   int prog_mem_size, int behavior, char *buffer, size_t buffer_length, size_t current_length);
 
 int gp_disassemble_byte(MemBlock *m, int byte_address, proc_class_t class,
-                        char *buffer, size_t sizeof_buffer);
+                        char *buffer, size_t buffer_length);
 
 int gp_disassemble_word(MemBlock *m, int byte_address, proc_class_t class,
-                        char *buffer, size_t sizeof_buffer);
+                        char *buffer, size_t buffer_length);
 
 int gp_disassemble_size(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
-                        int prog_mem_size, int behavior, char *buffer, size_t sizeof_buffer,
+                        int prog_mem_size, int behavior, char *buffer, size_t buffer_length,
                         unsigned int size);
 #endif

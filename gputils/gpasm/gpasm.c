@@ -603,7 +603,7 @@ assemble(void)
   deps_close();
   lst_close();
 
-  if (state.processor) {
+  if (state.processor != NULL) {
     cod_close_file();
   }
 

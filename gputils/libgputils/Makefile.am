@@ -25,6 +25,8 @@ libgputils_a_SOURCES =\
 	gpprocessor.c \
 	gpreadhex.c \
 	gpreadobj.c \
+	gpreg-table.c \
+	gpregister.c \
 	gpsymbol.c \
 	gpsystem.c \
 	gpwritehex.c \
@@ -44,6 +46,7 @@ libgputils_a_SOURCES =\
 	gpprocessor.h \
 	gpreadhex.h \
 	gpreadobj.h \
+	gpregister.h \
 	gpsymbol.h \
 	gpsystem.h \
 	gptypes.h \

@@ -22,6 +22,10 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPSYSTEM_H__
 #define __GPSYSTEM_H__
 
+/* Used in disasm. */
+#define EXPLANATION_DISTANCE            60
+#define TABULATOR_SIZE                  8
+
 extern const char *gp_header_path;
 extern const char *gp_lkr_path;
 extern const char *gp_lib_path;
@@ -43,6 +47,9 @@ void  gp_putb32(unsigned char *addr, long data);
 void  gp_date_string(char *buffer, size_t sizeof_buffer);
 char *gp_lower_case(const char *name);
 char *gp_upper_case(const char *name);
+
+size_t gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t Aligned_to_length);
+size_t gp_exclamation(char *Buffer, size_t Buffer_length, size_t Current_length, const char *Format, ...);
 
 typedef struct gp_list_struct gp_linked_list;
 

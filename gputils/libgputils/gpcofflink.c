@@ -1725,7 +1725,7 @@ gp_cofflink_make_memory(gp_object_type *object)
       org = section->address;
 
       stop = org + section->size;
-      gp_debug("   make memory: section \"%s\" (0x%06X - 0x%06X)\n", __FUNCTION__, section->name, org, stop - 1);
+      gp_debug("   make memory: section \"%s\" (0x%06X - 0x%06X)\n", section->name, org, stop - 1);
 
       for ( ; org < stop; org++) {
         unsigned char b;

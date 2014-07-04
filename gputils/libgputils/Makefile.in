@@ -71,7 +71,7 @@ am_libgputils_a_OBJECTS = gparchive.$(OBJEXT) gpcod.$(OBJEXT) \
 	gpopcode.$(OBJEXT) gpprocessor.$(OBJEXT) gpreadhex.$(OBJEXT) \
 	gpreadobj.$(OBJEXT) gpsymbol.$(OBJEXT) gpsystem.$(OBJEXT) \
 	gpwritehex.$(OBJEXT) gpwriteobj.$(OBJEXT) gpcfg.$(OBJEXT) \
-	gpcfg-table.$(OBJEXT)
+	gpcfg-table.$(OBJEXT) gpreg-table.$(OBJEXT) gpregister.$(OBJEXT)
 libgputils_a_OBJECTS = $(am_libgputils_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -229,6 +229,8 @@ libgputils_a_SOURCES = \
 	gpprocessor.c \
 	gpreadhex.c \
 	gpreadobj.c \
+	gpreg-table.c \
+	gpregister.c \
 	gpsymbol.c \
 	gpsystem.c \
 	gpwritehex.c \
@@ -248,6 +250,7 @@ libgputils_a_SOURCES = \
 	gpprocessor.h \
 	gpreadhex.h \
 	gpreadobj.h \
+	gpregister.h \
 	gpsymbol.h \
 	gpsystem.h \
 	gptypes.h \
@@ -318,6 +321,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpprocessor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpreadhex.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpreadobj.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpreg-table.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpregister.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpsymbol.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpsystem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpwritehex.Po@am__quote@
