@@ -251,6 +251,7 @@ my $px_struct_end;              # The end of the px structure in the gpprocessor
         IDLOCS_ADDRS => [0, 0],
         CONFIG_ADDRS => [0, 0],
         EEPROM_ADDRS => [0, 0],
+        HEADER       => '',
         SCRIPT       => '',
         EXTENDED     => 0,
         COMMENT      => ''              Comment on the end of line.
@@ -1498,9 +1499,9 @@ sub read_all_mcu_info_from_mplabx()
 
         # The basis of available data creates a new row to the px structure.
 
-sub new_px_row($$$)
+sub new_px_row($$$$)
   {
-  my ($Error, $Info, $Script) = @_;
+  my ($Error, $Info, $Header, $Script) = @_;
   my ($name, $rom_end) = ($Info->{NAME}, $Info->{ROM});
   my $lkr_rom_end = $lkr_pages[$#lkr_pages]->{END};
 
@@ -1548,6 +1549,7 @@ sub new_px_row($$$)
            IDLOCS_ADDRS => [ $lkr_idlocs_start, $lkr_idlocs_end ],
            CONFIG_ADDRS => [ $lkr_config_start, $lkr_config_end ],
            EEPROM_ADDRS => [ $lkr_eeprom_start, $lkr_eeprom_end ],
+           HEADER       => $Header,
            SCRIPT       => $Script,
     	   EXTENDED     => $Info->{EXTENDED},
            COMMENT      => ''
@@ -1578,6 +1580,7 @@ sub create_px_struct_from_mplabx()
   foreach my $info (@mp_mcus)
     {
     my ($name, $coff) = ($info->{NAME}, $info->{COFF});
+    my $header = ($name =~ /^1/o) ? "p${name}.inc" : "${name}.inc";
     my $script = "${name}_g.lkr";
 
         # The Microchip is quite has unfortunately been ported to Linux the mplabx package.
@@ -1590,7 +1593,7 @@ sub create_px_struct_from_mplabx()
 
     next if (! read_lkr("$mplabx_lkr/$script"));
 
-    my $px = new_px_row(\$mem_error, $info, $script);
+    my $px = new_px_row(\$mem_error, $info, $header, $script);
 
     $mp_px_rows_by_name{$name} = $px;
 
@@ -1683,8 +1686,8 @@ sub extract_px_struct()
   my $lkr_error = '';
 
         # static struct px pics[] = {
-        #   { PROC_CLASS_PIC12E   , "__12F529T39A"  , { "pic12f529t39a"  , "p12f529t39a"    , "12f529t39a"      }, 0xE529,  3,    8, 0x0005FF, 0x000600, {       -1,       -1 }, { 0x000FFF, 0x000FFF }, "12f529t39a_g.lkr"  , 0 },
-        #   { PROC_CLASS_PIC14E   , "__16LF1517"    , { "pic16lf1517"    , "p16lf1517"      , "16lf1517"        }, 0xA517,  4,   32, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008007, 0x008008 }, "16lf1517_g.lkr"    , 0 },
+        #   { PROC_CLASS_PIC12E   , "__12F529T39A"  , { "pic12f529t39a"  , "p12f529t39a"    , "12f529t39a"      }, 0xE529,  3,    8, 0x0005FF, 0x000600, {       -1,       -1 }, { 0x000640, 0x000643 }, { 0x000FFF, 0x000FFF }, {       -1,       -1 }, "p12f529t39a.inc"  , "12f529t39a_g.lkr"  , 0 },
+        #   { PROC_CLASS_PIC14E   , "__16LF1517"    , { "pic16lf1517"    , "p16lf1517"      , "16lf1517"        }, 0xA517,  4,   32, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, "p16lf1517.inc"    , "16lf1517_g.lkr"    , 0 },
 
   Log('Extract the table of px struct.', 4);
   $in_table = FALSE;
@@ -1705,19 +1708,21 @@ sub extract_px_struct()
         $px_struct_begin = $n;
         }
       }
-        #                     $1                $2                 $3            $4            $5                 $6             $7             $8           $9          $10              $11         $12                  $13         $14                  $15         $16                   $17         $18                   $19              $20
-    elsif ($_ =~ /\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\S+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*\"?([\.\w]+)\"?\s*,\s*(\d+)\s*\}/io)
+        #                     $1                $2                 $3            $4            $5                 $6             $7             $8           $9          $10              $11         $12                  $13         $14                  $15         $16                  $17         $18                   $19                   $20              $21
+    elsif ($_ =~ /\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\S+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*\"?([\.\w]+)\"?\s*,\s*\"?([\.\w]+)\"?\s*,\s*(\d+)\s*\}/io)
       {
-      my $name0 = $3;
-      my $name2 = $5;
+      my $long_name   = $3;
+      my $middle_name = $4;
+      my $short_name  = $5;
       my $coff = str2dec($6);
-      my $script = $19;
+      my $header = $19;
+      my $script = $20;
       my $prev;
       my $px = {
                IGNORED      => FALSE,
                CLASS        => $1,
                DEFINED_AS   => $2,
-               NAMES        => [ $name0, $4, $name2 ],
+               NAMES        => [ $long_name, $middle_name, $short_name ],
                COFF_TYPE    => $coff,
                NUM_PAGES    => str2dec($7),
                NUM_BANKS    => str2dec($8),
@@ -1727,8 +1732,9 @@ sub extract_px_struct()
                IDLOCS_ADDRS => [ str2dec($13), str2dec($14) ],
                CONFIG_ADDRS => [ str2dec($15), str2dec($16) ],
                EEPROM_ADDRS => [ str2dec($17), str2dec($18) ],
+               HEADER       => $header,
                SCRIPT       => $script,
-               EXTENDED     => str2dec($20),
+               EXTENDED     => str2dec($21),
                COMMENT      => ''
                };
 
@@ -1742,23 +1748,22 @@ sub extract_px_struct()
 
         # Watches the name collisions.
 
-      $prev = $gp_px_rows_by_name{$name2};
+      $prev = $gp_px_rows_by_name{$short_name};
 
       if (defined($prev))
         {
-        report(RP_ADD, E_NAME_COLL, \$name_error, $name2);
+        report(RP_ADD, E_NAME_COLL, \$name_error, $short_name);
         }
       else
         {
-        $gp_px_rows_by_name{$name2} = $px;
+        $gp_px_rows_by_name{$short_name} = $px;
         }
 
         # Does not deal with the generic devices. Otherwise this would cause a false error message.
 
-
-      if ($name0 ne 'pic16c5x' &&
-          $name0 !~ /^pic1[6-8]cxx$/o &&
-          $name0 !~ /^eeprom/o)
+      if ($long_name ne 'pic16c5x' &&
+          $long_name !~ /^pic1[6-8]cxx$/o &&
+          $long_name !~ /^eeprom/o)
         {
         # Watches the coff_type collisions.
 
@@ -1766,7 +1771,7 @@ sub extract_px_struct()
 
         if (defined($prev))
           {
-          report(RP_ADD, E_COFF_COLL, \$coff_error, $coff, $prev->{NAMES}->[0], $name0);
+          report(RP_ADD, E_COFF_COLL, \$coff_error, $coff, $prev->{NAMES}->[0], $long_name);
           }
         else
           {
@@ -1776,9 +1781,9 @@ sub extract_px_struct()
 
         # Watches the script name error.
 
-      if ($script ne 'NULL' && $script !~ /^${name2}(_g)?.lkr$/)
+      if ($script ne 'NULL' && $script !~ /^${short_name}(_g)?.lkr$/)
         {
-        report(RP_ADD, E_LKR_NAME, \$lkr_error, $name0, $script);
+        report(RP_ADD, E_LKR_NAME, \$lkr_error, $long_name, $script);
         }
 
       push(@gp_px_struct, $px);
@@ -1841,6 +1846,7 @@ EOT
       print ('idlocs_addrs: ' . neg_form($_->{IDLOCS_ADDRS}->[0]) . ', ' . neg_form($_->{IDLOCS_ADDRS}->[1]) . "\n");
       print ('config_addrs: ' . neg_form($_->{CONFIG_ADDRS}->[0]) . ', ' . neg_form($_->{CONFIG_ADDRS}->[1]) . "\n");
       print ('eeprom_addrs: ' . neg_form($_->{EEPROM_ADDRS}->[0]) . ', ' . neg_form($_->{EEPROM_ADDRS}->[1]) . "\n");
+      print  "header      : $_->{HEADER}\n";
       print  "script      : $_->{SCRIPT}\n";
       print  "extended    : $_->{EXTENDED}\n";
       }
@@ -1931,6 +1937,8 @@ sub create_one_px_row($$)
   $line .= neg_form($Row->{EEPROM_ADDRS}->[1]);
   $line .= ' }, ';
 
+  $i = $Row->{HEADER};
+  $line .= sprintf('%-19s, ', (($i ne 'NULL') ? "\"$i\"" : $i));
   $i = $Row->{SCRIPT};
   $line .= sprintf('%-20s, ', (($i ne 'NULL') ? "\"$i\"" : $i));
   $i = $Row->{EXTENDED};
@@ -2100,7 +2108,7 @@ sub addition_helper2($$$$)
 
   report(RP_ADD, E_COFF_COLL, $Coff_error, $coff, $px->{NAMES}->[0], "pic$Name") if (defined($px));
 
-  $px = new_px_row($Mem_error, $Info, undef);
+  $px = new_px_row($Mem_error, $Info, undef, undef);
   push(@gp_px_struct, $px);
   $gp_px_rows_by_name{$Name} = $px;
   $gp_px_rows_by_coff{$coff} = $px;
