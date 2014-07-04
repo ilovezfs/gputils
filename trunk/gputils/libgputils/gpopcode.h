@@ -634,16 +634,6 @@ enum insn_class {
 #define PIC14E_INSN_MOVLW       0x3000
 #define PIC14E_MASK_MOVLW       0x3F00
 
-    /* movwi : 00 0000 0001 1nmm
-               11 1111 1111 1000 */
-#define PIC14E_INSN_MOVWI       0x0018
-#define PIC14E_MASK_MOVWI       0x3FF8
-
-    /* movwi : 11 1111 1nkk kkkk
-               11 1111 1000 0000 */
-#define PIC14E_INSN_MOVWI_IDX   0x3F80
-#define PIC14E_MASK_MOVWI_IDX   0x3F80
-
     /* movlb : 00 0000 001k kkkk
                11 1111 1110 0000 */
 #define PIC14E_INSN_MOVLB       0x0020
@@ -654,6 +644,16 @@ enum insn_class {
                11 1111 1000 0000 */
 #define PIC14E_INSN_MOVLP       0x3180
 #define PIC14E_MASK_MOVLP       0x3F80
+
+    /* movwi : 00 0000 0001 1nmm
+               11 1111 1111 1000 */
+#define PIC14E_INSN_MOVWI       0x0018
+#define PIC14E_MASK_MOVWI       0x3FF8
+
+    /* movwi : 11 1111 1nkk kkkk
+               11 1111 1000 0000 */
+#define PIC14E_INSN_MOVWI_IDX   0x3F80
+#define PIC14E_MASK_MOVWI_IDX   0x3F80
 
     /* nop   : 00 0000 0000 0000
                11 1111 1111 1111 */

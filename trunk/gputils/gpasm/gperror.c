@@ -576,7 +576,6 @@ void
 gperror_close(void)
 {
   if (state.err.enabled) {
-    fprintf(state.err.f, "\n");
     fclose(state.err.f);
   }
 }

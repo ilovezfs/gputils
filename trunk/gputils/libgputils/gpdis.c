@@ -22,65 +22,138 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 #include "libgputils.h"
 
-#define DECODE_ARG0 \
-        snprintf(buffer, sizeof_buffer, "%s", instruction->name)
+#define IS_VALID_BANK(Mask) \
+        ((fstate->bank_valid & (Mask)) == (Mask))
 
-#define DECODE_ARG1_N(ARG1) \
-        snprintf(buffer, sizeof_buffer, "%s\t%#x", instruction->name, ARG1)
+#define IS_UNBANKED16(Addr) \
+        (((Addr) <= 0x0f) || (((Addr) >= 0x18) && ((Addr) <= 0x1f)))
 
-#define DECODE_ARG1_Nw(ARG1) \
-        snprintf(buffer, sizeof_buffer, "%s\t0x%0*x", instruction->name, addr_digits, ARG1)
+#define BANK12_ADDR(Mask) \
+        ((fstate->bank & (Mask)) << PIC12_BANK_SHIFT)
 
-#define DECODE_ARG1_S(ARG1) \
-        snprintf(buffer, sizeof_buffer, "%s\t%s", instruction->name, ARG1)
+#define BANK14_ADDR(Mask) \
+        ((fstate->bank & (Mask)) << PIC14_BANK_SHIFT)
 
-#define DECODE_ARG1_S_Mw(ARG1, ARG2) \
-        snprintf(buffer, sizeof_buffer, "%s\t%s\t\t\t; dest: 0x%0*x", instruction->name, ARG1, addr_digits, ARG2)
+#define BANK16_ADDR(Mask) \
+        ((fstate->bank & (Mask)) << PIC16_BANK_SHIFT)
 
-#define DECODE_ARG2_N_N(ARG1, ARG2) \
-        snprintf(buffer, sizeof_buffer, "%s\t%#x, %#x", instruction->name, ARG1, ARG2)
+    /*....................................................*/
 
-#define DECODE_ARG2_Nw_N(ARG1, ARG2) \
-        snprintf(buffer, sizeof_buffer, "%s\t0x%0*x, %#x", instruction->name, addr_digits, ARG1, ARG2)
+#define PRINT_ARG0() \
+        length += snprintf(&buffer[length], buffer_length - length, "%s", instruction->name)
 
-#define DECODE_ARG2_N_S(ARG1, ARG2) \
-        snprintf(buffer, sizeof_buffer, "%s\t%#x, %s", instruction->name, ARG1, ARG2)
+#define PRINT_ARG1_N(W1, Arg1) \
+        length += snprintf(&buffer[length], buffer_length - length, "%-*s0x%0*x", TABULATOR_SIZE, instruction->name, W1, Arg1)
 
-#define DECODE_ARG2_S_N(ARG1, ARG2) \
-        snprintf(buffer, sizeof_buffer, "%s\t%s, %#x", instruction->name, ARG1, ARG2)
+#define PRINT_ARG1_S(Arg1) \
+        length += snprintf(&buffer[length], buffer_length - length, "%-*s%s", TABULATOR_SIZE, instruction->name, Arg1)
 
-#define DECODE_ARG2_S_N_Mw(ARG1, ARG2, ARG3) \
-        snprintf(buffer, sizeof_buffer, "%s\t%s, %#x\t\t\t; dest: 0x%0*x", instruction->name, ARG1, ARG2, addr_digits, ARG3)
+#define PRINT_ARG2_N_N(W1, Arg1, W2, Arg2) \
+        length += snprintf(&buffer[length], buffer_length - length, "%-*s0x%0*x, 0x%0*x", TABULATOR_SIZE, instruction->name, W1, Arg1, W2, Arg2)
 
-#define DECODE_ARG2_S_S(ARG1, ARG2) \
-        snprintf(buffer, sizeof_buffer, "%s\t%s, %s", instruction->name, ARG1, ARG2)
+#define PRINT_ARG2_N_S(W1, Arg1, Arg2) \
+        length += snprintf(&buffer[length], buffer_length - length, "%-*s0x%0*x, %s", TABULATOR_SIZE, instruction->name, W1, Arg1, Arg2)
 
-#define DECODE_ARG3_N_N_N(ARG1, ARG2, ARG3) \
-        snprintf(buffer, sizeof_buffer, "%s\t%#x, %#x, %#x", instruction->name, ARG1, ARG2, ARG3)
+#define PRINT_ARG2_S_N(Arg1, W2, Arg2) \
+        length += snprintf(&buffer[length], buffer_length - length, "%-*s%s, 0x%0*x", TABULATOR_SIZE, instruction->name, Arg1, W2, Arg2)
 
-#define DECODE_ARG3_N_N_S(ARG1, ARG2, ARG3) \
-        snprintf(buffer, sizeof_buffer, "%s\t%#x, %#x, %s", instruction->name, ARG1, ARG2, ARG3)
+#define PRINT_ARG2_S_S(Arg1, Arg2) \
+        length += snprintf(&buffer[length], buffer_length - length, "%-*s%s, %s", TABULATOR_SIZE, instruction->name, Arg1, Arg2)
 
-#define DECODE_ARG3_N_S_S(ARG1, ARG2, ARG3) \
-        snprintf(buffer, sizeof_buffer, "%s\t%#x, %s, %s", instruction->name, ARG1, ARG2, ARG3)
+#define PRINT_ARG3_N_N_N(W1, Arg1, W2, Arg2, W3, Arg3) \
+        length += snprintf(&buffer[length], buffer_length - length, "%-*s0x%0*x, 0x%0*x, 0x%0*x", TABULATOR_SIZE, instruction->name, W1, Arg1, W2, Arg2, W3, Arg3)
 
-#define DECODE_ARG3_S_N_S(ARG1, ARG2, ARG3) \
-        snprintf(buffer, sizeof_buffer, "%s\t%s, %#x, %s", instruction->name, ARG1, ARG2, ARG3)
+#define PRINT_ARG3_N_N_S(W1, Arg1, W2, Arg2, Arg3) \
+        length += snprintf(&buffer[length], buffer_length - length, "%-*s0x%0*x, 0x%0*x, %s", TABULATOR_SIZE, instruction->name, W1, Arg1, W2, Arg2, Arg3)
 
-#define DECODE_ARG3_S_S_S(ARG1, ARG2, ARG3) \
-        snprintf(buffer, sizeof_buffer, "%s\t%s, %s, %s", instruction->name, ARG1, ARG2, ARG3)
+#define PRINT_ARG3_N_S_S(W1, Arg1, Arg2, Arg3) \
+        length += snprintf(&buffer[length], buffer_length - length, "%-*s0x%0*x, %s, %s", TABULATOR_SIZE, instruction->name, W1, Arg1, Arg2, Arg3)
 
-#define DECODE_MOVINDF_S_N_S(ARG1, ARG2, ARG3) \
-        snprintf(buffer, sizeof_buffer, "%s\t%s%#x%s", instruction->name, ARG1, ARG2, ARG3)
+#define PRINT_ARG3_S_N_S(Arg1, W2, Arg2, Arg3) \
+        length += snprintf(&buffer[length], buffer_length - length, "%-*s%s, 0x%0*x, %s", TABULATOR_SIZE, instruction->name, Arg1, W2, Arg2, Arg3)
 
-#define DECODE_MOVINDF_S_S_S(ARG1, ARG2, ARG3) \
-        snprintf(buffer, sizeof_buffer, "%s\t%s%s%s", instruction->name, ARG1, ARG2, ARG3)
+#define PRINT_ARG3_S_S_S(Arg1, Arg2, Arg3) \
+        length += snprintf(&buffer[length], buffer_length - length, "%-*s%s, %s, %s", TABULATOR_SIZE, instruction->name, Arg1, Arg2, Arg3)
 
-#define FLAG_FW(Flag)   ((Flag) ? "f" : "w")
-#define FLAG_BA(Flag)   ((Flag) ? "b" : "a")
+#define PRINT_MOVINDF_S_N_S(Arg1, Arg2, Arg3) \
+        length += snprintf(&buffer[length], buffer_length - length, "%-*s%s%#x%s", TABULATOR_SIZE, instruction->name, Arg1, Arg2, Arg3)
+
+#define PRINT_MOVINDF_S_S_S(Arg1, Arg2, Arg3) \
+        length += snprintf(&buffer[length], buffer_length - length, "%-*s%s%s%s", TABULATOR_SIZE, instruction->name, Arg1, Arg2, Arg3)
+
+    /*....................................................*/
+
+#define FLAG_FW(Flag)   ((Flag) ? "F" : "W")
+#define FLAG_BA(Flag)   ((Flag) ? "B" : "A")
+
+    /*....................................................*/
 
 gp_boolean gp_decode_mnemonics = false;
 gp_boolean gp_decode_extended = false;
+
+/*------------------------------------------------------------------------------------------------*/
+
+int
+gp_disassemble_mark_false_addresses(MemBlock *m, int byte_address, pic_processor_t processor)
+{
+  proc_class_t class;
+  unsigned short opcode;
+  const struct insn *instruction;
+  int num_words;
+
+  class = processor->class;
+
+  if (class->find_insn == NULL) {
+    return 0;
+  }
+
+  num_words = 1;
+
+  if (class->i_memory_get(m, byte_address, &opcode, NULL, NULL) != W_USED_ALL) {
+    return num_words;
+  }
+
+  instruction = class->find_insn(class, opcode);
+
+  if (instruction == NULL)  {
+    return num_words;
+  }
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
+
+  switch (instruction->class) {
+    case INSN_CLASS_LIT20:
+      /* PIC16E goto */
+    case INSN_CLASS_CALL20:
+      /* PIC16E call */
+    case INSN_CLASS_FLIT12:
+      /* PIC16E lfsr */
+    case INSN_CLASS_FF:
+      /* PIC16E movff */
+    case INSN_CLASS_SF:
+      /* PIC16E movsf */
+      if ((class->i_memory_get(m, byte_address + 2, &opcode, NULL, NULL) == W_USED_ALL) &&
+          ((opcode & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
+        b_memory_set_type(m, byte_address + 2, W_SECOND_WORD);
+        num_words = 2;
+      }
+      break;
+
+    case INSN_CLASS_SS:
+      /* PIC16E movss */
+      if ((class->i_memory_get(m, byte_address + 2, &opcode, NULL, NULL) == W_USED_ALL) &&
+          ((opcode & 0xff80) == PIC16E_BMSK_SEC_INSN_WORD)) {
+        b_memory_set_type(m, byte_address + 2, W_SECOND_WORD);
+        num_words = 2;
+      }
+      break;
+    } /* switch (instruction->class) */
+
+#pragma GCC diagnostic pop
+
+  return num_words;
+}
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -97,7 +170,7 @@ gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t proces
   unsigned short opcode;
   const struct insn *instruction;
   enum common_insn icode;
-  int num_words = 1;
+  int num_words;
   unsigned short file1;
   unsigned short file2;
   unsigned int tmp;
@@ -113,6 +186,8 @@ gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t proces
     return 0;
   }
 
+  num_words = 1;
+
   if (class->i_memory_get(m, byte_address, &opcode, NULL, NULL) != W_USED_ALL) {
     return num_words;
   }
@@ -125,9 +200,9 @@ gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t proces
 
   icode = instruction->icode;
 
-  wreg         = fstate->wreg_prev;
-  pclath       = fstate->pclath_prev;
-  pclath_valid = fstate->pclath_valid_mask;
+  wreg         = fstate->wreg;
+  pclath       = fstate->pclath;
+  pclath_valid = fstate->pclath_valid;
   page_mask    = (class->page_size > 0) ? ~(class->page_size - 1) : 0;
   prog_max_org = (processor->prog_mem_size > 0) ? (processor->prog_mem_size - 1) : 0;
   src_page     = gp_processor_byte_to_org(class, byte_address) & page_mask;
@@ -290,11 +365,14 @@ _class_lit11:
       }
 
       dest_byte_addr = byte_address + value * 2 + 2;
-      dst_org = gp_processor_byte_to_org(class, dest_byte_addr);
 
-      if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
-        b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-        b_memory_set_addr_type(m, dest_byte_addr, W_ADDR_T_LABEL, 0);
+      if ((b_memory_get_type(m, dest_byte_addr) & W_SECOND_WORD) == 0) {
+        dst_org = gp_processor_byte_to_org(class, dest_byte_addr);
+
+        if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
+          b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+          b_memory_set_addr_type(m, dest_byte_addr, W_ADDR_T_LABEL, 0);
+        }
       }
       break;
 
@@ -324,12 +402,15 @@ _class_lit11:
       }
 
       dest_byte_addr = byte_address + value * 2 + 2;
-      dst_org = gp_processor_byte_to_org(class, dest_byte_addr);
 
-      if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
-        type = (icode == ICODE_RCALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
-        b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-        b_memory_set_addr_type(m, dest_byte_addr, type, 0);
+      if ((b_memory_get_type(m, dest_byte_addr) & W_SECOND_WORD) == 0) {
+        dst_org = gp_processor_byte_to_org(class, dest_byte_addr);
+
+        if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
+          type = (icode == ICODE_RCALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
+          b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+          b_memory_set_addr_type(m, dest_byte_addr, type, 0);
+        }
       }
       break;
 
@@ -340,19 +421,23 @@ _class_lit11:
       {
         unsigned short dest;
 
-        if (class->i_memory_get(m, byte_address + 2, &dest, NULL, NULL) == W_USED_ALL) {
+        if ((class->i_memory_get(m, byte_address + 2, &dest, NULL, NULL) == W_USED_ALL) &&
+            ((dest & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
           dest  = (dest & PIC16E_BMSK_BRANCH_HIGHER) << 8;
           dest |= opcode & PIC16E_BMSK_BRANCH_LOWER;
           dest_byte_addr = dest * 2;
-          dst_org = gp_processor_org_to_byte(class, dest_byte_addr);
 
-          if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
-            type = (icode == ICODE_CALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
-            b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
-            b_memory_set_addr_type(m, dest_byte_addr, type, 0);
+          if ((b_memory_get_type(m, dest_byte_addr) & W_SECOND_WORD) == 0) {
+            dst_org = gp_processor_org_to_byte(class, dest_byte_addr);
+
+            if ((prog_max_org > 0) && (dst_org >= 0) && (dst_org <= prog_max_org)) {
+              type = (icode == ICODE_CALL) ? W_ADDR_T_FUNC : W_ADDR_T_LABEL;
+              b_memory_set_addr_type(m, byte_address, W_ADDR_T_BRANCH_SRC, dest_byte_addr);
+              b_memory_set_addr_type(m, dest_byte_addr, type, 0);
+            }
+
+            num_words = 2;
           }
-
-          num_words = 2;
         }
       }
       break;
@@ -388,7 +473,7 @@ _class_lit11:
       break;
 
     case INSN_CLASS_OPWF5:
-      /* {PIC12E, SX} (addwf, andwf, comf, decf, decfsz, incf, incfsz,
+      /* {PIC12x, SX} (addwf, andwf, comf, decf, decfsz, incf, incfsz,
                        iorwf, movf, rlf, rrf, subwf, swapf, xorwf) */
       /* Destination flag: 0 = W, 1 = F */
       tmp = (opcode >> 5) & 1;
@@ -537,36 +622,799 @@ _class_lit11:
       /* PIC16E movff */
     case INSN_CLASS_SF:
       /* PIC16E movsf */
+      if ((class->i_memory_get(m, byte_address + 2, &file1, NULL, NULL) == W_USED_ALL) &&
+          ((file1 & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
+        num_words = 2;
+      }
+      break;
+
     case INSN_CLASS_SS:
       /* PIC16E movss */
-      num_words = 2;
+      if ((class->i_memory_get(m, byte_address + 2, &file1, NULL, NULL) == W_USED_ALL) &&
+          ((file1 & 0xff80) == PIC16E_BMSK_SEC_INSN_WORD)) {
+        num_words = 2;
+      }
       break;
     } /* switch (instruction->class) */
 
 #pragma GCC diagnostic pop
 
-  fstate->wreg_prev         = wreg;
-  fstate->pclath_prev       = pclath;
-  fstate->pclath_valid_mask = pclath_valid;
+  fstate->wreg         = wreg;
+  fstate->pclath       = pclath;
+  fstate->pclath_valid = pclath_valid;
   return num_words;
 }
 
-static int
-print_word(unsigned short opcode, int behavior, char *buffer, size_t sizeof_buffer) {
-  if (behavior & GPDIS_SHOW_BYTES) {
-    if (isprint(opcode)) {
-      snprintf(buffer, sizeof_buffer, "dw\t0x%04x\t\t\t; '%c'", (unsigned int)opcode,
-               (unsigned char)opcode);
-      return 1;
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+pic12_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class, int file) {
+  const char *reg0, *reg1;
+  unsigned int bmask;
+
+  if (class == PROC_CLASS_SX) {
+    reg0 = gp_processor_find_sfr_name(class, file);
+    fstate->need_sfr_equ = true;
+  }
+  else {
+    reg0 = gp_processor_find_sfr_name(class, file);
+    reg1 = gp_register_find_reg_name(fstate->proc_regs, file);
+
+    if (reg0 != NULL) {
+      if (reg1 == NULL) {
+        gp_debug("%s() -- The \"%s\" core SFR not exist in the register database!\n", __FUNCTION__, reg0);
+        fstate->need_sfr_equ = true;
+      }
+      else if (strcmp(reg0, reg1) != 0) {
+        gp_debug("%s() -- These SFRs there is the same address: \"%s\", \"%s\"\n", __FUNCTION__, reg0, reg1);
+        fstate->need_sfr_equ = true;
+      }
     }
-    else if (isprint(opcode & 0xFF) && isprint((opcode >> 8) & 0xFF)) {
-      snprintf(buffer, sizeof_buffer, "dw\t0x%04x\t\t\t; '%c%c'", (unsigned int)opcode,
-               (unsigned char)(opcode & 0xFF), (unsigned char)((opcode >> 8) & 0xFF));
-      return 1;
+    else {
+      bmask = (class == PROC_CLASS_PIC12E) ? PIC12E_BMSK_BANK : PIC12_BMSK_BANK;
+
+      if (IS_VALID_BANK(bmask)) {
+        reg0 = gp_register_find_reg_name(fstate->proc_regs, file + BANK12_ADDR(bmask));
+      }
     }
   }
 
-  snprintf(buffer, sizeof_buffer, "dw\t0x%04x", (unsigned int)opcode);
+  if (reg0 != NULL) {
+    b_memory_set_reg_type(m, byte_address, W_REG_T_FIRST, reg0, NULL);
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+pic14_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class, int file) {
+  const char *reg0, *reg1;
+  unsigned int bmask;
+
+  reg0 = gp_processor_find_sfr_name(class, file);
+  reg1 = gp_register_find_reg_name(fstate->proc_regs, file);
+
+  if (reg0 != NULL) {
+    if (reg1 == NULL) {
+      gp_debug("%s() -- The \"%s\" core SFR not exist in the register database!\n", __FUNCTION__, reg0);
+      fstate->need_sfr_equ = true;
+    }
+    else if (strcmp(reg0, reg1) != 0) {
+      gp_debug("%s() -- These SFRs there is the same address: \"%s\", \"%s\"\n", __FUNCTION__, reg0, reg1);
+      fstate->need_sfr_equ = true;
+    }
+  }
+  else {
+    bmask = (class == PROC_CLASS_PIC14E) ? PIC14E_BMSK_BANK : PIC14_BMSK_BANK;
+
+    if (IS_VALID_BANK(bmask)) {
+      reg0 = gp_register_find_reg_name(fstate->proc_regs, file + BANK14_ADDR(bmask));
+    }
+  }
+
+  if (reg0 != NULL) {
+    b_memory_set_reg_type(m, byte_address, W_REG_T_FIRST, reg0, NULL);
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+pic16_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class, int file) {
+  const char *reg;
+
+  reg = NULL;
+
+  if (IS_UNBANKED16(file)) {
+    reg = gp_register_find_reg_name(fstate->proc_regs, file);
+
+    if (reg == NULL) {
+      reg = gp_processor_find_sfr_name(class, file);
+
+      if (reg != NULL) {
+        fstate->need_sfr_equ = true;
+      }
+    }
+  }
+  else if (IS_VALID_BANK(PIC16_BMSK_BANK)) {
+    reg = gp_register_find_reg_name(fstate->proc_regs, file + BANK16_ADDR(PIC16_BMSK_BANK));
+  }
+
+  if (reg != NULL) {
+    b_memory_set_reg_type(m, byte_address, W_REG_T_FIRST, reg, NULL);
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static int
+pic16e_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class, int file,
+                gp_boolean ram_acc) {
+  const char *reg;
+
+  if ((ram_acc == 0) && (fstate->bsr_boundary > 0) && (file >= fstate->bsr_boundary)) {
+        /* This register in the Access Bank can be found. */
+    file += 0xF00;
+    reg = gp_register_find_reg_name(fstate->proc_regs, file);
+
+    if (reg == NULL) {
+      reg = gp_processor_find_sfr_name(class, file);
+
+      if (reg != NULL) {
+        fstate->need_sfr_equ = true;
+      }
+    }
+  }
+  else if (IS_VALID_BANK(PIC16_BMSK_BANK)) {
+    file += (fstate->bank & PIC16_BMSK_BANK) << PIC16_BANK_SHIFT;
+    reg = gp_register_find_reg_name(fstate->proc_regs, file);
+  }
+  else {
+    file = -1;
+    reg = NULL;
+  }
+
+  if (reg != NULL) {
+    b_memory_set_reg_type(m, byte_address, W_REG_T_FIRST, reg, NULL);
+  }
+
+  return file;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+        /* This function partially handle the registers of SX family. */
+
+int
+gp_disassemble_find_registers(MemBlock *m, int byte_address, pic_processor_t processor,
+                              gpdasm_fstate_t *fstate)
+{
+  proc_class_t class;
+  unsigned short opcode;
+  const struct insn *instruction;
+  enum common_insn icode;
+  int num_words;
+  unsigned short file1;
+  unsigned short file2;
+  unsigned int tmp;
+  gp_boolean ram_acc;
+  int addr;
+  const char *reg1, *reg2;
+
+  class = processor->class;
+
+  if (class->find_insn == NULL) {
+    return 0;
+  }
+
+  num_words = 1;
+
+  if (class->i_memory_get(m, byte_address, &opcode, NULL, NULL) != W_USED_ALL) {
+    return num_words;
+  }
+
+  instruction = class->find_insn(class, opcode);
+
+  if (instruction == NULL)  {
+    return num_words;
+  }
+
+  icode = instruction->icode;
+
+  if (b_memory_get_addr_type(m, byte_address, NULL, NULL) & W_ADDR_T_MASK) {
+    /* This address is destination of a branch. */
+    fstate->wreg = -1;
+    fstate->bank_valid = 0;
+  }
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
+
+  switch (instruction->class) {
+    case INSN_CLASS_LIT3:
+      /* PIC12E movlb */
+      fstate->bank = opcode & PIC12E_BMSK_BANK;
+      fstate->bank_valid = PIC12E_BMSK_BANK;
+      break;
+
+    case INSN_CLASS_LIT4L:
+      /* PIC16E movlb */
+      fstate->bank = opcode & PIC16E_BMSK_MOVLB;
+      fstate->bank_valid = PIC16E_BMSK_MOVLB;
+      break;
+
+    case INSN_CLASS_LIT4H:
+      /* PIC16 movlr */
+      fstate->bank &= ~PIC16_BMSK_MOVLR;
+      fstate->bank |= opcode & PIC16_BMSK_MOVLR;
+      fstate->bank_valid |= PIC16_BMSK_MOVLR;
+      break;
+
+    case INSN_CLASS_LIT5:
+      /* PIC14E movlb */
+      fstate->bank = opcode & PIC14E_BMSK_BANK;
+      fstate->bank_valid = PIC14E_BMSK_BANK;
+      break;
+
+    case INSN_CLASS_LIT8:
+      /* PIC1xx (addlw, andlw, iorlw, movlw, retlw, sublw, xorlw),
+         PIC16  movlb,
+         PIC16x mullw,
+         PIC16E pushl */
+      tmp = opcode & 0xff;
+
+      if ((class == PROC_CLASS_PIC16) && (icode == ICODE_MOVLB)) {
+        fstate->bank &= ~PIC16_BMSK_MOVLB;
+        fstate->bank |= tmp & PIC16_BMSK_MOVLB;
+        fstate->bank_valid |= PIC16_BMSK_MOVLB;
+      }
+      else if (fstate->wreg >= 0) {
+        switch (icode) {
+        case ICODE_ADDLW: fstate->wreg = (fstate->wreg + tmp) & 0xff; break;
+        case ICODE_ANDLW: fstate->wreg = (fstate->wreg & tmp) & 0xff; break;
+        case ICODE_IORLW: fstate->wreg = (fstate->wreg | tmp) & 0xff; break;
+        case ICODE_SUBLW: fstate->wreg = (tmp - fstate->wreg) & 0xff; break;
+        case ICODE_XORLW: fstate->wreg = (fstate->wreg ^ tmp) & 0xff; break;
+        }
+      }
+      else if (icode == ICODE_MOVLW) {
+        fstate->wreg = tmp;
+      }
+      break;
+
+    case INSN_CLASS_LIT8C12:
+      /* PIC12x call, SX call */
+    case INSN_CLASS_LIT8C16:
+      /* PIC16 lcall */
+    case INSN_CLASS_LIT9:
+      /* PIC12 goto, SX goto */
+    case INSN_CLASS_LIT11:
+      /* PIC14x (call, goto) */
+    case INSN_CLASS_LIT13:
+      /* PIC16 (call, goto) */
+    case INSN_CLASS_RBRA8:
+      /* PIC16E (bc, bn, bnc, bnn, bnov, bnz, bov, bz) */
+    case INSN_CLASS_RBRA9:
+      /* PIC14E bra */
+    case INSN_CLASS_RBRA11:
+      /* PIC16E (bra, rcall) */
+
+      if ((icode == ICODE_CALL) || (icode == ICODE_RCALL)) {
+        fstate->wreg = -1;
+        fstate->bank_valid = 0;
+      }
+      break;
+
+    case INSN_CLASS_LIT20:
+      /* PIC16E goto */
+    case INSN_CLASS_FLIT12:
+      /* PIC16E lfsr */
+      if ((class->i_memory_get(m, byte_address + 2, &file1, NULL, NULL) == W_USED_ALL) &&
+          ((file1 & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
+        num_words = 2;
+      }
+      break;
+
+    case INSN_CLASS_SS:
+      /* PIC16E movss */
+      if ((class->i_memory_get(m, byte_address + 2, &file1, NULL, NULL) == W_USED_ALL) &&
+          ((file1 & 0xff80) == PIC16E_BMSK_SEC_INSN_WORD)) {
+        num_words = 2;
+      }
+      break;
+
+    case INSN_CLASS_CALL20:
+      /* PIC16E call */
+      if ((class->i_memory_get(m, byte_address + 2, &file1, NULL, NULL) == W_USED_ALL) &&
+          ((file1 & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
+        num_words = 2;
+      }
+
+      fstate->wreg = -1;
+      fstate->bank_valid = 0;
+      break;
+
+    case INSN_CLASS_FF:
+      /* PIC16E movff */
+      if ((class->i_memory_get(m, byte_address + 2, &file2, NULL, NULL) == W_USED_ALL) &&
+          ((file2 & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
+        file1  = opcode & 0x0fff;
+        file2 &= 0x0fff;
+        reg1   = gp_register_find_reg_name(fstate->proc_regs, file1);
+        reg2   = gp_register_find_reg_name(fstate->proc_regs, file2);
+
+        if (reg1 == NULL) {
+          reg1 = gp_processor_find_sfr_name(class, file1);
+
+          if (reg1 != NULL) {
+            fstate->need_sfr_equ = true;
+          }
+        }
+
+        if (reg2 == NULL) {
+          reg2 = gp_processor_find_sfr_name(class, file2);
+
+          if (reg2 != NULL) {
+            fstate->need_sfr_equ = true;
+          }
+        }
+
+        tmp  = (reg1 != NULL) ? W_REG_T_FIRST  : 0;
+        tmp |= (reg2 != NULL) ? W_REG_T_SECOND : 0;
+        b_memory_set_reg_type(m, byte_address, tmp, reg1, reg2);
+        num_words = 2;
+      }
+      break;
+
+    case INSN_CLASS_FP:
+      /* PIC16 movfp */
+      file1 = opcode & PIC16_BMSK_FILE;
+      file2 = (opcode >> 8) & 0x1f;
+
+      if (IS_UNBANKED16(file1)) {
+        /* This a unbanked address. */
+        reg1 = gp_register_find_reg_name(fstate->proc_regs, file1);
+
+        if (reg1 == NULL) {
+          reg1 = gp_processor_find_sfr_name(class, file1);
+
+          if (reg1 != NULL) {
+            fstate->need_sfr_equ = true;
+          }
+        }
+      }
+      else if (IS_VALID_BANK(PIC16_BMSK_BANK)) {
+        reg1 = gp_register_find_reg_name(fstate->proc_regs, file1 + BANK16_ADDR(PIC16_BMSK_BANK));
+      }
+      else {
+        reg1 = NULL;
+      }
+
+      if (IS_UNBANKED16(file2)) {
+        /* This a unbanked address. */
+        reg2 = gp_register_find_reg_name(fstate->proc_regs, file2);
+
+        if (reg2 == NULL) {
+          reg2 = gp_processor_find_sfr_name(class, file2);
+
+          if (reg2 != NULL) {
+            fstate->need_sfr_equ = true;
+          }
+        }
+      }
+      else if (IS_VALID_BANK(PIC16_BMSK_BANK)) {
+        reg2 = gp_register_find_reg_name(fstate->proc_regs, file2 + BANK16_ADDR(PIC16_BMSK_BANK));
+      }
+      else {
+        reg2 = NULL;
+      }
+
+      goto _insn_class_pf;
+      break;
+
+    case INSN_CLASS_PF:
+      /* PIC16 movpf */
+      file1 = (opcode >> 8) & 0x1f;
+      file2 = opcode & PIC16_BMSK_FILE;
+
+      if (IS_UNBANKED16(file1)) {
+        /* This a unbanked address. */
+        reg1 = gp_register_find_reg_name(fstate->proc_regs, file1);
+
+        if (reg1 == NULL) {
+          reg1 = gp_processor_find_sfr_name(class, file1);
+
+          if (reg1 != NULL) {
+            fstate->need_sfr_equ = true;
+          }
+        }
+      }
+      else if (IS_VALID_BANK(PIC16_BMSK_BANK)) {
+        reg1 = gp_register_find_reg_name(fstate->proc_regs, file1 + BANK16_ADDR(PIC16_BMSK_BANK));
+      }
+      else {
+        reg1 = NULL;
+      }
+
+      if (IS_UNBANKED16(file2)) {
+        /* This a unbanked address. */
+        reg2 = gp_register_find_reg_name(fstate->proc_regs, file2);
+
+        if (reg2 == NULL) {
+          reg2 = gp_processor_find_sfr_name(class, file2);
+
+          if (reg2 != NULL) {
+            fstate->need_sfr_equ = true;
+          }
+        }
+      }
+      else if (IS_VALID_BANK(PIC16_BMSK_BANK)) {
+        reg2 = gp_register_find_reg_name(fstate->proc_regs, file2 + BANK16_ADDR(PIC16_BMSK_BANK));
+      }
+      else {
+        reg2 = NULL;
+      }
+
+_insn_class_pf:
+
+      tmp  = (reg1 != NULL) ? W_REG_T_FIRST  : 0;
+      tmp |= (reg2 != NULL) ? W_REG_T_SECOND : 0;
+      b_memory_set_reg_type(m, byte_address, tmp, reg1, reg2);
+
+      if (file2 == PIC16_REG_WREG) {
+        /* The destination the WREG. */
+        fstate->wreg = -1;
+      }
+      else if ((file1 == PIC16_REG_WREG) && (file2 == PIC16_REG_BSR)) {
+        if (fstate->wreg < 0) {
+          fstate->bank_valid = 0;
+        }
+        else {
+          fstate->bank = fstate->wreg;
+          fstate->bank_valid = 0xff;
+        }
+      }
+      break;
+
+    case INSN_CLASS_SF:
+      /* PIC16E movsf */
+      if ((class->i_memory_get(m, byte_address + 2, &file2, NULL, NULL) == W_USED_ALL) &&
+          ((file2 & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
+        file2 &= 0x0fff;
+        reg2 = gp_register_find_reg_name(fstate->proc_regs, file2);
+
+        if (reg2 == NULL) {
+          reg2 = gp_processor_find_sfr_name(class, file2);
+
+          if (reg2 != NULL) {
+            fstate->need_sfr_equ = true;
+          }
+        }
+
+        if (reg2 != NULL) {
+          b_memory_set_reg_type(m, byte_address, W_REG_T_SECOND, NULL, reg2);
+        }
+
+        num_words = 2;
+      }
+      break;
+
+    case INSN_CLASS_OPF5:
+      /* {PIC12x, SX} (clrf, movwf), SX tris */
+      file1 = opcode & PIC12_BMSK_FILE;
+      pic12_reg_eval(m, byte_address, fstate, class, file1);
+
+      if ((class == PROC_CLASS_PIC12) && (file1 == PIC12_REG_FSR)) {
+        if (icode == ICODE_CLRF) {
+          fstate->bank = 0;
+          fstate->bank_valid = 0xff;
+        }
+        else if (icode == ICODE_MOVWF) {
+          if (fstate->wreg < 0) {
+            fstate->bank_valid = 0;
+          }
+          else {
+            fstate->bank = fstate->wreg;
+            fstate->bank_valid = 0xff;
+          }
+        }
+      }
+      break;
+
+    case INSN_CLASS_OPWF5:
+      /* {PIC12x, SX} (addwf, andwf, comf, decf, decfsz, incf, incfsz,
+                       iorwf, movf, rlf, rrf, subwf, swapf, xorwf) */
+      file1 = opcode & PIC12_BMSK_FILE;
+      /* Destination flag: 0 = W, 1 = F */
+      tmp   = (opcode >> 5) & 1;
+      pic12_reg_eval(m, byte_address, fstate, class, file1);
+
+      if (tmp == 0) {
+        /* The destination the WREG. */
+        fstate->wreg = -1;
+      }
+      else if ((class == PROC_CLASS_PIC12) && (file1 == PIC12_REG_FSR)) {
+        fstate->bank_valid = 0;
+      }
+      break;
+
+    case INSN_CLASS_B5:
+      /* {PIC12x, SX} (bcf, bsf, btfsc, btfss) */
+      file1 = opcode & PIC12_BMSK_FILE;
+      /* The bits of register. */
+      tmp   = (opcode >> 5) & 7;
+      pic12_reg_eval(m, byte_address, fstate, class, file1);
+
+      if ((file1 == PIC12_REG_FSR) && ((tmp >= 5) && (tmp <= 7))) {
+        tmp = 1 << (tmp - 5);
+
+        if (icode == ICODE_BCF) {
+          fstate->bank &= ~tmp;
+          fstate->bank_valid |= tmp;
+        }
+        else if (icode == ICODE_BSF) {
+          fstate->bank |= tmp;
+          fstate->bank_valid |= tmp;
+        }
+      }
+      break;
+
+    case INSN_CLASS_B8:
+      /* PIC16 (bcf, bsf, btfsc, btfss, btg) */
+      file1 = opcode & PIC16_BMSK_FILE;
+      /* The bits of register. */
+      tmp   = (opcode >> 8) & 7;
+
+      pic16_reg_eval(m, byte_address, fstate, class, file1);
+      /* TODO: Examination the value of WREG and BSR. */
+      break;
+
+    case INSN_CLASS_OPF7:
+      /* PIC14x (clrf, movwf, tris) */
+      file1 = opcode & PIC14_BMSK_FILE;
+
+      if ((icode == ICODE_CLRF) || (icode == ICODE_MOVWF)) {
+        pic14_reg_eval(m, byte_address, fstate, class, file1);
+      }
+
+      if (class == PROC_CLASS_PIC14) {
+        if (file1 == PIC14_REG_STATUS) {
+          if (icode == ICODE_CLRF) {
+            fstate->bank = 0;
+            fstate->bank_valid = PIC14_BMSK_BANK;
+          }
+          else if (icode == ICODE_MOVWF) {
+            fstate->bank_valid = 0;
+          }
+        }
+      }
+      else {
+        if (file1 == PIC14E_REG_BSR) {
+          if (icode == ICODE_CLRF) {
+            fstate->bank = 0;
+            fstate->bank_valid = PIC14E_BMSK_BANK;
+          }
+          else if (icode == ICODE_MOVWF) {
+            fstate->bank_valid = 0;
+          }
+        }
+      }
+      break;
+
+    case INSN_CLASS_OPF8:
+      /* PIC16 (cpfseq, cpfsgt, cpfslt, movwf, mulwf, tstfsz) */
+      file1 = opcode & PIC16_BMSK_FILE;
+
+      pic16_reg_eval(m, byte_address, fstate, class, file1);
+      /* TODO: Examination the value of WREG and BSR. */
+      break;
+
+    case INSN_CLASS_OPWF7:
+      /* PIC14x (addwf, andwf, comf, decf, decfsz, incf, incfsz, iorwf, movf,
+                 rlf, rrf, subwf, swapf, xorwf)
+         PIC14E (addwfc, asrf, lslf, lsrf, subwfb) */
+      file1 = opcode & PIC14_BMSK_FILE;
+      /* Destination flag: 0 = W, 1 = F */
+      tmp   = (opcode >> 7) & 1;
+      pic14_reg_eval(m, byte_address, fstate, class, file1);
+
+      if (tmp == 0) {
+        /* The destination the WREG. */
+        fstate->wreg = -1;
+      }
+      break;
+
+    case INSN_CLASS_OPWF8:
+      /* PIC16 (addwf, addwfc, andwf, clrf, comf, daw, decf, decfsz, dcfsnz, incf,
+                incfsz, infsnz, iorwf, rlcf, rlncf, rrcf, rrncf, setf, subwf, subwfb,
+                swapf, xorwf) */
+      file1 = opcode & PIC16_BMSK_FILE;
+      /* Destination flag: 0 = W, 1 = F */
+      tmp   = (opcode >> 8) & 1;
+      pic16_reg_eval(m, byte_address, fstate, class, file1);
+
+      if ((tmp == 0) || (file1 == PIC16_REG_WREG)) {
+        /* The destination the WREG. */
+        fstate->wreg = -1;
+      }
+      else if (file1 == PIC16_REG_BSR) {
+        fstate->bank_valid = 0;
+      }
+      break;
+
+    case INSN_CLASS_B7:
+      /* PIC14x (bcf, bsf, btfsc, btfss) */
+      file1 = opcode & PIC14_BMSK_FILE;
+      /* The bits of register. */
+      tmp   = (opcode >> 7) & 7;
+      pic14_reg_eval(m, byte_address, fstate, class, file1);
+
+      if (class == PROC_CLASS_PIC14E) {
+        tmp = 1 << tmp;
+
+        if (file1 == PIC14E_REG_BSR) {
+          if (icode == ICODE_BCF) {
+            fstate->bank &= ~tmp;
+            fstate->bank_valid |= tmp;
+          }
+          else if (icode == ICODE_BSF) {
+            fstate->bank |= tmp;
+            fstate->bank_valid |= tmp;
+          }
+        }
+        else if ((file1 == PIC14E_REG_WREG) && (fstate->wreg >= 0)) {
+          if (icode == ICODE_BCF) {
+            fstate->wreg &= ~tmp;
+          }
+          else if (icode == ICODE_BSF) {
+            fstate->wreg |= tmp;
+          }
+        }
+      }
+      else {
+        if ((file1 == PIC14_REG_STATUS) && ((tmp == PIC14_BIT_STATUS_RP0) ||
+                                            (tmp == PIC14_BIT_STATUS_RP1))) {
+          tmp = 1 << (tmp - PIC14_BIT_STATUS_RP0);
+
+          if (icode == ICODE_BCF) {
+            fstate->bank &= ~tmp;
+            fstate->bank_valid |= tmp;
+          }
+          else if (icode == ICODE_BSF) {
+            fstate->bank |= tmp;
+            fstate->bank_valid |= tmp;
+          }
+        }
+      }
+      break;
+
+    case INSN_CLASS_OPFA8:
+      /* PIC16E (clrf, cpfseq, cpfsgt, cpfslt, movwf, mulwf, negf, setf, tstfsz) */
+      file1   = opcode & PIC16_BMSK_FILE;
+      /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
+      ram_acc = (opcode & 0x100) ? true : false;
+      addr    = pic16e_reg_eval(m, byte_address, fstate, class, file1, ram_acc);
+
+      if (addr == PIC16E_REG_BSR) {
+        /* The address of register is known. */
+        if (icode == ICODE_CLRF) {
+          fstate->bank = 0;
+          fstate->bank_valid = PIC16_BMSK_BANK;
+        }
+        else if (icode == ICODE_SETF) {
+          fstate->bank = 0xff;
+          fstate->bank_valid = PIC16_BMSK_BANK;
+        }
+        else if ((icode == ICODE_MOVWF) || (icode == ICODE_NEGF)) {
+          fstate->bank_valid = 0;
+        }
+      }
+      break;
+
+    case INSN_CLASS_BA8:
+      /* PIC16E (bcf, bsf, btfsc, btfss, btg) */
+      file1   = opcode & PIC16_BMSK_FILE;
+      /* The bits of register. */
+      tmp     = (opcode >> 9) & 7;
+      /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
+      ram_acc = (opcode & 0x100) ? true : false;
+      addr    = pic16e_reg_eval(m, byte_address, fstate, class, file1, ram_acc);
+
+      if ((addr == PIC16E_REG_BSR) && IS_VALID_BANK(PIC16_BMSK_BANK)) {
+        /* The address of register is known and known the value of. */
+        tmp = 1 << tmp;
+
+        if (icode == ICODE_BCF) {
+          fstate->bank &= ~tmp;
+        }
+        else if (icode == ICODE_BSF) {
+          fstate->bank |= tmp;
+        }
+        else if (icode == ICODE_BTG) {
+          fstate->bank ^= tmp;
+        }
+      }
+      break;
+
+    case INSN_CLASS_OPWFA8:
+      /* PIC16E (addwf, addwfc, andwf, comf, decf, decfsz, dcfsnz, incf, incfsz,
+                 infsnz, iorwf, movf, rlcf, rlncf, rrcf, rrncf, subfwb, subwf,
+                 subwfb, swapf, xorwf) */
+      file1   = opcode & PIC16_BMSK_FILE;
+      /* Destination flag: 0 = W, 1 = F */
+      tmp     = (opcode >> 9) & 1;
+      /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
+      ram_acc = (opcode & 0x100) ? true : false;
+      addr    = pic16e_reg_eval(m, byte_address, fstate, class, file1, ram_acc);
+
+      if ((addr == PIC16E_REG_BSR) && (tmp != 0)) {
+        fstate->bank_valid = 0;
+      }
+      break;
+
+    case INSN_CLASS_TBL2:
+      /* PIC16 (tlrd, tlwt) */
+      file1 = opcode & PIC16_BMSK_FILE;
+      pic16_reg_eval(m, byte_address, fstate, class, file1);
+
+      if (icode == ICODE_TLRD) {
+        if (file1 == PIC16_REG_WREG) {
+          fstate->wreg = -1;
+        }
+        else if (file1 == PIC16_REG_BSR) {
+          fstate->bank_valid = 0;
+        }
+      }
+      break;
+
+    case INSN_CLASS_TBL3:
+      /* PIC16 (tablrd, tablwt) */
+      file1 = opcode & PIC16_BMSK_FILE;
+      pic16_reg_eval(m, byte_address, fstate, class, file1);
+
+      if (icode == ICODE_TABLRD) {
+        if (file1 == PIC16_REG_WREG) {
+          fstate->wreg = -1;
+        }
+        else if (file1 == PIC16_REG_BSR) {
+          fstate->bank_valid = 0;
+        }
+      }
+      break;
+    } /* switch (instruction->class) */
+
+#pragma GCC diagnostic pop
+
+  return num_words;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static int
+print_word(char *buffer, size_t buffer_length, size_t current_length,
+           unsigned short opcode, int behavior) {
+  int l;
+  size_t length;
+
+  l = snprintf(&buffer[current_length], buffer_length - current_length, "%-*s0x%04x",
+               TABULATOR_SIZE, "dw", (unsigned int)opcode);
+
+  if (l <= 0) {
+    return 0;
+  }
+
+  length = current_length + l;
+
+  if (behavior & GPDIS_SHOW_BYTES) {
+    if (isprint(opcode)) {
+      gp_exclamation(buffer, buffer_length, length, "; '%c'", (char)opcode);
+    }
+    else if (isprint(opcode & 0xFF) && isprint((opcode >> 8) & 0xFF)) {
+      gp_exclamation(buffer, buffer_length, length, "; '%c%c'", (char)(opcode & 0xFF),
+                  (char)((opcode >> 8) & 0xFF));
+    }
+  }
+
   return 1;
 }
 
@@ -574,7 +1422,7 @@ print_word(unsigned short opcode, int behavior, char *buffer, size_t sizeof_buff
 
 int
 gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
-               int prog_mem_size, int behavior, char *buffer, size_t sizeof_buffer)
+               int prog_mem_size, int behavior, char *buffer, size_t buffer_length, size_t current_length)
 {
   int value;
   unsigned short opcode;
@@ -589,11 +1437,14 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
   unsigned short file2;
   unsigned int tmp;
   unsigned int ram_acc;
-  const core_sfr_t *sfr;
+  const char *reg1, *reg2;
   int addr_digits;
+  size_t length;
+
+  length = current_length;
 
   if (class->find_insn == NULL) {
-    snprintf(buffer, sizeof_buffer, "unsupported processor class");
+    snprintf(&buffer[length], buffer_length - length, "unsupported processor class");
     return 0;
   }
 
@@ -602,6 +1453,8 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
   addr_digits = class->addr_digits;
   type = 0;
   dest_name = NULL;
+  reg1 = NULL;
+  reg2 = NULL;
 
   if (class->i_memory_get(m, byte_address, &opcode, NULL, NULL) == W_USED_ALL) {
     unsigned int dest_byte_addr;
@@ -609,8 +1462,12 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
     org = gp_processor_byte_to_org(class, byte_address);
     type = b_memory_get_addr_type(m, byte_address, NULL, &dest_byte_addr);
 
-    if ((behavior & GPDIS_SHOW_NAMES) && (type & W_ADDR_T_BRANCH_SRC)) {
-      b_memory_get_addr_type(m, dest_byte_addr, &dest_name, NULL);
+    if (behavior & GPDIS_SHOW_NAMES) {
+      if (type & W_ADDR_T_BRANCH_SRC) {
+        b_memory_get_addr_type(m, dest_byte_addr, &dest_name, NULL);
+      }
+
+      b_memory_get_reg_type(m, byte_address, &reg1, &reg2);
     }
   }
 
@@ -632,7 +1489,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       const char *neg;
 
       value = opcode & 0x003f;
-      tmp   = (opcode & 0x0040) >> 6;
+      tmp   = (opcode >> 6) & 1;
 
       if (value & 0x20) {
         value = (value ^ 0x3f) + 1;
@@ -642,10 +1499,10 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       }
 
       if (behavior & GPDIS_SHOW_NAMES) {
-        snprintf(buffer, sizeof_buffer, "%s\t%s.%d[FSR%i]", instr, neg, value, tmp);
+        snprintf(&buffer[length], buffer_length - length, "%-*s%s.%d[FSR%i]", TABULATOR_SIZE, instr, neg, value, tmp);
       }
       else {
-        snprintf(buffer, sizeof_buffer, "%s\t%s.%d[%u]", instr, neg, value,
+        snprintf(&buffer[length], buffer_length - length, "%-*s%s.%d[%u]", TABULATOR_SIZE, instr, neg, value,
                  (tmp) ? PIC14E_REG_FSR1 : PIC14E_REG_FSR0);
       }
 
@@ -656,7 +1513,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
   instruction = class->find_insn(class, opcode);
 
   if (instruction == NULL)  {
-    return print_word(opcode, behavior, buffer, sizeof_buffer);
+    return print_word(buffer, buffer_length, current_length, opcode, behavior);
   }
 
   icode = instruction->icode;
@@ -664,52 +1521,52 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
   switch (instruction->class) {
     case INSN_CLASS_LIT3_BANK:
       /* SX bank */
-      DECODE_ARG1_N((opcode & SX_BMSK_BANK) << 5);
+      PRINT_ARG1_N(1, (opcode & SX_BMSK_BANK) << 5);
       break;
 
     case INSN_CLASS_LIT3_PAGE:
       /* SX page */
-      DECODE_ARG1_N((opcode & SX_BMSK_PAGE) << 9);
+      PRINT_ARG1_N(1, (opcode & SX_BMSK_PAGE) << 9);
       break;
 
     case INSN_CLASS_LIT1:
       /* PIC16E (retfie, return) */
-      DECODE_ARG1_N(opcode & 0x0001);
+      PRINT_ARG1_N(1, opcode & 0x0001);
       break;
 
     case INSN_CLASS_LIT3:
       /* PIC12E movlb */
-      DECODE_ARG1_N(opcode & PIC12E_BMSK_BANK);
+      PRINT_ARG1_N(1, opcode & PIC12E_BMSK_BANK);
       break;
 
     case INSN_CLASS_LIT4:
       /* SX mode */
-      DECODE_ARG1_N(opcode & SX_BMSK_MODE);
+      PRINT_ARG1_N(1, opcode & SX_BMSK_MODE);
       break;
 
     case INSN_CLASS_LIT4L:
-      /* PIC16x movlb */
-      DECODE_ARG1_N(opcode & PIC16E_BMSK_MOVLB);
+      /* PIC16E movlb */
+      PRINT_ARG1_N(1, opcode & PIC16E_BMSK_MOVLB);
       break;
 
     case INSN_CLASS_LIT4H:
       /* PIC16 movlr */
-      DECODE_ARG1_N((opcode & PIC16_BMSK_MOVLR) >> 4);
+      PRINT_ARG1_N(1, (opcode & PIC16_BMSK_MOVLR) >> 4);
       break;
 
     case INSN_CLASS_LIT5:
       /* PIC14E movlb */
-      DECODE_ARG1_N(opcode & PIC14E_BMSK_BANK);
+      PRINT_ARG1_N(2, opcode & PIC14E_BMSK_BANK);
       break;
 
     case INSN_CLASS_LIT6:
       /* PIC16E (addulnk, subulnk) */
-      DECODE_ARG1_N(opcode & PIC16EX_BMSK_xxxULNK);
+      PRINT_ARG1_N(2, opcode & PIC16EX_BMSK_xxxULNK);
       break;
 
     case INSN_CLASS_LIT7:
       /* PIC14E movlp */
-      DECODE_ARG1_N(opcode & PIC14E_BMSK_PAGE512);
+      PRINT_ARG1_N(2, opcode & PIC14E_BMSK_PAGE512);
       break;
 
     case INSN_CLASS_LIT8:
@@ -718,10 +1575,10 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
          PIC16x mullw,
          PIC16E pushl */
       if ((class == PROC_CLASS_PIC16) && (icode == ICODE_MOVLB)) {
-        DECODE_ARG1_N(opcode & PIC16_BMSK_MOVLB);
+        PRINT_ARG1_N(1, opcode & PIC16_BMSK_MOVLB);
       }
       else {
-        DECODE_ARG1_N(opcode & 0x00ff);
+        PRINT_ARG1_N(2, opcode & 0x00ff);
       }
       break;
 
@@ -732,20 +1589,20 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       org = opcode & 0x00ff;
 
       if (behavior & GPDIS_SHOW_ALL_BRANCH) {
-        DECODE_ARG1_Nw(org);
+        PRINT_ARG1_N(addr_digits, org);
       }
       else if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
         /* The target address exist. */
         if (dest_name != NULL) {
-          DECODE_ARG1_S(dest_name);
+          PRINT_ARG1_S(dest_name);
         }
         else {
-          DECODE_ARG1_Nw(org);
+          PRINT_ARG1_N(addr_digits, org);
         }
       }
       else {
         /* The target address not exist. */
-        return print_word(opcode, behavior, buffer, sizeof_buffer);
+        return print_word(buffer, buffer_length, current_length, opcode, behavior);
       }
       break;
 
@@ -754,20 +1611,20 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       org = opcode & PIC12_BMSK_GOTO;
 
       if (behavior & GPDIS_SHOW_ALL_BRANCH) {
-        DECODE_ARG1_Nw(org);
+        PRINT_ARG1_N(addr_digits, org);
       }
       else if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
         /* The target address exist. */
         if (dest_name != NULL) {
-          DECODE_ARG1_S(dest_name);
+          PRINT_ARG1_S(dest_name);
         }
         else {
-          DECODE_ARG1_Nw(org);
+          PRINT_ARG1_N(addr_digits, org);
         }
       }
       else {
         /* The target address not exist. */
-        return print_word(opcode, behavior, buffer, sizeof_buffer);
+        return print_word(buffer, buffer_length, current_length, opcode, behavior);
       }
       break;
 
@@ -776,20 +1633,20 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       org = opcode & PIC14_BMSK_BRANCH;
 
       if (behavior & GPDIS_SHOW_ALL_BRANCH) {
-        DECODE_ARG1_Nw(org);
+        PRINT_ARG1_N(addr_digits, org);
       }
       else if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
         /* The target address exist. */
         if (dest_name != NULL) {
-          DECODE_ARG1_S(dest_name);
+          PRINT_ARG1_S(dest_name);
         }
         else {
-          DECODE_ARG1_Nw(org);
+          PRINT_ARG1_N(addr_digits, org);
         }
       }
       else {
         /* The target address not exist. */
-        return print_word(opcode, behavior, buffer, sizeof_buffer);
+        return print_word(buffer, buffer_length, current_length, opcode, behavior);
       }
       break;
 
@@ -798,15 +1655,15 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       org = opcode & PIC16_BMSK_BRANCH;
 
       if (behavior & GPDIS_SHOW_ALL_BRANCH) {
-        DECODE_ARG1_Nw(org);
+        PRINT_ARG1_N(addr_digits, org);
       }
       else if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
         /* The target address exist. */
-        DECODE_ARG1_Nw(org);
+        PRINT_ARG1_N(addr_digits, org);
       }
       else {
         /* The target address not exist. */
-        return print_word(opcode, behavior, buffer, sizeof_buffer);
+        return print_word(buffer, buffer_length, current_length, opcode, behavior);
       }
       break;
 
@@ -826,11 +1683,11 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
         }
 
         if (behavior & GPDIS_SHOW_NAMES) {
-          snprintf(buffer, sizeof_buffer, "%s\tFSR%i, %s.%d", instruction->name,
+          snprintf(&buffer[length], buffer_length - length, "%-*sFSR%i, %s.%d", TABULATOR_SIZE, instruction->name,
                    tmp, neg, value);
         }
         else {
-          snprintf(buffer, sizeof_buffer, "%s\t%u, %s.%d", instruction->name,
+          snprintf(&buffer[length], buffer_length - length, "%-*s%u, %s.%d", TABULATOR_SIZE, instruction->name,
                    (tmp) ? PIC14E_REG_FSR1 : PIC14E_REG_FSR0, neg, value);
         }
       }
@@ -838,7 +1695,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
 
     case INSN_CLASS_LITFSR_16:
       /* PIC16E (addfsr, subfsr) */
-      DECODE_ARG2_N_N(((opcode >> 6) & 0x3), (opcode & 0x003f));
+      PRINT_ARG2_N_N(1, ((opcode >> 6) & 0x3), 2, (opcode & 0x003f));
       break;
 
     case INSN_CLASS_RBRA8:
@@ -852,20 +1709,20 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       org = gp_processor_byte_to_org(class, byte_address + value * 2 + 2);
 
       if (behavior & GPDIS_SHOW_ALL_BRANCH) {
-        DECODE_ARG1_Nw(org);
+        PRINT_ARG1_N(addr_digits, org);
       }
       else if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
         /* The target address exist. */
         if (dest_name != NULL) {
-          DECODE_ARG1_S(dest_name);
+          PRINT_ARG1_S(dest_name);
         }
         else {
-          DECODE_ARG1_Nw(org);
+          PRINT_ARG1_N(addr_digits, org);
         }
       }
       else {
         /* The target address not exist. */
-        return print_word(opcode, behavior, buffer, sizeof_buffer);
+        return print_word(buffer, buffer_length, current_length, opcode, behavior);
       }
       break;
 
@@ -880,15 +1737,15 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       org = gp_processor_byte_to_org(class, byte_address + value * 2 + 2);
 
       if (behavior & GPDIS_SHOW_ALL_BRANCH) {
-        DECODE_ARG1_Nw(org);
+        PRINT_ARG1_N(addr_digits, org);
       }
       else if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
         /* The target address exist. */
-        DECODE_ARG1_Nw(org);
+        PRINT_ARG1_N(addr_digits, org);
       }
       else {
         /* The target address not exist. */
-        return print_word(opcode, behavior, buffer, sizeof_buffer);
+        return print_word(buffer, buffer_length, current_length, opcode, behavior);
       }
       break;
 
@@ -903,20 +1760,21 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       org = gp_processor_byte_to_org(class, byte_address + value * 2 + 2);
 
       if (behavior & GPDIS_SHOW_ALL_BRANCH) {
-        DECODE_ARG1_Nw(org);
+        PRINT_ARG1_N(addr_digits, org);
       }
       else if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
         /* The target address exist. */
         if (dest_name != NULL) {
-          DECODE_ARG1_S_Mw(dest_name, org);
+          PRINT_ARG1_S(dest_name);
+          gp_exclamation(buffer, buffer_length, length, "; dest: 0x%0*x", addr_digits, org);
         }
         else {
-          DECODE_ARG1_Nw(org);
+          PRINT_ARG1_N(addr_digits, org);
         }
       }
       else {
         /* The target address not exist. */
-        return print_word(opcode, behavior, buffer, sizeof_buffer);
+        return print_word(buffer, buffer_length, current_length, opcode, behavior);
       }
       break;
 
@@ -925,33 +1783,35 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       {
         unsigned short dest;
 
-        if (class->i_memory_get(m, byte_address + 2, &dest, NULL, NULL) == W_USED_ALL) {
+        if ((class->i_memory_get(m, byte_address + 2, &dest, NULL, NULL) == W_USED_ALL) &&
+            ((dest & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
           dest  = (dest & PIC16E_BMSK_BRANCH_HIGHER) << 8;
           dest |= opcode & PIC16E_BMSK_BRANCH_LOWER;
 
           org = gp_processor_byte_to_org(class, dest * 2);
 
           if (behavior & GPDIS_SHOW_ALL_BRANCH) {
-            DECODE_ARG1_Nw(org);
+            PRINT_ARG1_N(addr_digits, org);
           }
           else if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
             /* The target address exist. */
             if (dest_name != NULL) {
-              DECODE_ARG1_S_Mw(dest_name, org);
+              PRINT_ARG1_S(dest_name);
+              gp_exclamation(buffer, buffer_length, length, "; dest: 0x%0*x", addr_digits, org);
             }
             else {
-              DECODE_ARG1_Nw(org);
+              PRINT_ARG1_N(addr_digits, org);
             }
           }
           else {
             /* The target address not exist. */
-            return print_word(opcode, behavior, buffer, sizeof_buffer);
+            return print_word(buffer, buffer_length, current_length, opcode, behavior);
           }
 
           num_words = 2;
         }
         else {
-          return print_word(opcode, behavior, buffer, sizeof_buffer);
+          return print_word(buffer, buffer_length, current_length, opcode, behavior);
         }
       }
       break;
@@ -961,7 +1821,8 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       {
         unsigned short dest;
 
-        if (class->i_memory_get(m, byte_address + 2, &dest, NULL, NULL) == W_USED_ALL) {
+        if ((class->i_memory_get(m, byte_address + 2, &dest, NULL, NULL) == W_USED_ALL) &&
+            ((dest & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
           dest  = (dest & PIC16E_BMSK_BRANCH_HIGHER) << 8;
           dest |= opcode & PIC16E_BMSK_BRANCH_LOWER;
           tmp   = (opcode >> 8) & 1;
@@ -969,26 +1830,27 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
           org = gp_processor_byte_to_org(class, dest * 2);
 
           if (behavior & GPDIS_SHOW_ALL_BRANCH) {
-            DECODE_ARG2_Nw_N(org, tmp);
+            PRINT_ARG2_N_N(addr_digits, org, 1, tmp);
           }
           if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
             /* The target address exist. */
             if (dest_name != NULL) {
-              DECODE_ARG2_S_N_Mw(dest_name, tmp, org);
+              PRINT_ARG2_S_N(dest_name, 1, tmp);
+              gp_exclamation(buffer, buffer_length, length, "; dest: 0x%0*x", addr_digits, org);
             }
             else {
-              DECODE_ARG2_Nw_N(org, tmp);
+              PRINT_ARG2_N_N(addr_digits, org, 1, tmp);
             }
           }
           else {
             /* The target address not exist. */
-            return print_word(opcode, behavior, buffer, sizeof_buffer);
+            return print_word(buffer, buffer_length, current_length, opcode, behavior);
           }
 
           num_words = 2;
         }
         else {
-          return print_word(opcode, behavior, buffer, sizeof_buffer);
+          return print_word(buffer, buffer_length, current_length, opcode, behavior);
         }
       }
       break;
@@ -998,14 +1860,15 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       {
         unsigned short k;
 
-        if (class->i_memory_get(m, byte_address + 2, &k, NULL, NULL) == W_USED_ALL) {
+        if ((class->i_memory_get(m, byte_address + 2, &k, NULL, NULL) == W_USED_ALL) &&
+            ((k & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
           k = ((opcode & 0x000f) << 8) | (k & 0x00ff);
           file1 = (opcode >> 4) & 3;
-          DECODE_ARG2_N_N(file1, k);
+          PRINT_ARG2_N_N(1, file1, 3, k);
           num_words = 2;
         }
         else {
-          return print_word(opcode, behavior, buffer, sizeof_buffer);
+          return print_word(buffer, buffer_length, current_length, opcode, behavior);
         }
       }
       break;
@@ -1014,43 +1877,24 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       /* PIC16E movff */
       file1 = opcode & 0x0fff;
 
-      if (class->i_memory_get(m, byte_address + 2, &file2, NULL, NULL) == W_USED_ALL) {
+      if ((class->i_memory_get(m, byte_address + 2, &file2, NULL, NULL) == W_USED_ALL) &&
+          ((file2 & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
         file2 &= 0xfff;
 
-        if (behavior & GPDIS_SHOW_NAMES) {
-          const core_sfr_t *sfr2;
+        tmp  = (reg1 != NULL) ? 2 : 0;
+        tmp |= (reg2 != NULL) ? 1 : 0;
 
-          sfr  = gp_processor_find_sfr(class, file1);
-          sfr2 = gp_processor_find_sfr(class, file2);
-
-          tmp  = (sfr  != NULL) ? 2 : 0;
-          tmp |= (sfr2 != NULL) ? 1 : 0;
-
-          switch (tmp) {
-          case 3:
-            DECODE_ARG2_S_S(sfr->name, sfr2->name);
-            break;
-
-          case 2:
-            DECODE_ARG2_S_N(sfr->name, file2);
-            break;
-
-          case 1:
-            DECODE_ARG2_N_S(file1, sfr2->name);
-            break;
-
-          default:
-            DECODE_ARG2_N_N(file1, file2);
-          }
-        }
-        else {
-          DECODE_ARG2_N_N(file1, file2);
+        switch (tmp) {
+        case 3:  PRINT_ARG2_S_S(reg1, reg2);   break;
+        case 2:  PRINT_ARG2_S_N(reg1, 3, file2);  break;
+        case 1:  PRINT_ARG2_N_S(3, file1, reg2);  break;
+        default: PRINT_ARG2_N_N(3, file1, 3, file2);
         }
 
         num_words = 2;
       }
       else {
-        return print_word(opcode, behavior, buffer, sizeof_buffer);
+        return print_word(buffer, buffer_length, current_length, opcode, behavior);
       }
       break;
 
@@ -1058,36 +1902,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       /* PIC16 movfp */
       file1 = opcode & PIC16_BMSK_FILE;
       file2 = (opcode >> 8) & 0x1f;
-
-      if (behavior & GPDIS_SHOW_NAMES) {
-        const core_sfr_t *sfr2;
-
-        sfr  = gp_processor_find_sfr(class, file1);
-        sfr2 = gp_processor_find_sfr(class, file2);
-
-        tmp  = (sfr  != NULL) ? 2 : 0;
-        tmp |= (sfr2 != NULL) ? 1 : 0;
-
-        switch (tmp) {
-        case 3:
-          DECODE_ARG2_S_S(sfr->name, sfr2->name);
-          break;
-
-        case 2:
-          DECODE_ARG2_S_N(sfr->name, file2);
-          break;
-
-        case 1:
-          DECODE_ARG2_N_S(file1, sfr2->name);
-          break;
-
-        default:
-          DECODE_ARG2_N_N(file1, file2);
-        }
-      }
-      else {
-        DECODE_ARG2_N_N(file1, file2);
-      }
+      goto _insn_class_pf;
       break;
 
     case INSN_CLASS_PF:
@@ -1095,34 +1910,16 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       file1 = (opcode >> 8) & 0x1f;
       file2 = opcode & PIC16_BMSK_FILE;
 
-      if (behavior & GPDIS_SHOW_NAMES) {
-        const core_sfr_t *sfr2;
+_insn_class_pf:
 
-        sfr  = gp_processor_find_sfr(class, file1);
-        sfr2 = gp_processor_find_sfr(class, file2);
+      tmp  = (reg1 != NULL) ? 2 : 0;
+      tmp |= (reg2 != NULL) ? 1 : 0;
 
-        tmp  = (sfr  != NULL) ? 2 : 0;
-        tmp |= (sfr2 != NULL) ? 1 : 0;
-
-        switch (tmp) {
-        case 3:
-          DECODE_ARG2_S_S(sfr->name, sfr2->name);
-          break;
-
-        case 2:
-          DECODE_ARG2_S_N(sfr->name, file2);
-          break;
-
-        case 1:
-          DECODE_ARG2_N_S(file1, sfr2->name);
-          break;
-
-        default:
-          DECODE_ARG2_N_N(file1, file2);
-        }
-      }
-      else {
-        DECODE_ARG2_N_N(file1, file2);
+      switch (tmp) {
+      case 3:  PRINT_ARG2_S_S(reg1, reg2);   break;
+      case 2:  PRINT_ARG2_S_N(reg1, 2, file2);  break;
+      case 1:  PRINT_ARG2_N_S(2, file1, reg2);  break;
+      default: PRINT_ARG2_N_N(2, file1, 2, file2);
       }
       break;
 
@@ -1133,21 +1930,21 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
 
         offset = opcode & 0x007f;
 
-        if (class->i_memory_get(m, byte_address + 2, &file1, NULL, NULL) == W_USED_ALL) {
-          file1 &= 0xfff;
-          sfr    = ((behavior & GPDIS_SHOW_NAMES) && (bsr_boundary > 0) && (file1 >= (0xF00 + bsr_boundary))) ?
-                        gp_processor_find_sfr(class, file1) : NULL;
+        if ((class->i_memory_get(m, byte_address + 2, &file2, NULL, NULL) == W_USED_ALL) &&
+            ((file2 & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
+          file2 &= 0xfff;
 
-          if (sfr != NULL) {
-            DECODE_ARG2_N_S(offset, sfr->name);
+          if (reg2 != NULL) {
+            PRINT_ARG2_N_S(2, offset, reg2);
           }
           else {
-            DECODE_ARG2_N_N(offset, file1);
+            PRINT_ARG2_N_N(2, offset, 3, file2);
           }
+
           num_words = 2;
         }
         else {
-          return print_word(opcode, behavior, buffer, sizeof_buffer);
+          return print_word(buffer, buffer_length, current_length, opcode, behavior);
         }
       }
       break;
@@ -1157,50 +1954,49 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       {
         unsigned short offset2;
 
-        if (class->i_memory_get(m, byte_address + 2, &offset2, NULL, NULL) == W_USED_ALL) {
-          DECODE_ARG2_N_N(opcode & 0x007f, offset2 & 0x007f);
+        if ((class->i_memory_get(m, byte_address + 2, &offset2, NULL, NULL) == W_USED_ALL) &&
+            ((offset2 & 0xff80) == PIC16E_BMSK_SEC_INSN_WORD)) {
+          PRINT_ARG2_N_N(2, opcode & 0x007f, 2, offset2 & 0x007f);
           num_words = 2;
         }
         else {
-          return print_word(opcode, behavior, buffer, sizeof_buffer);
+          return print_word(buffer, buffer_length, current_length, opcode, behavior);
         }
       }
       break;
 
     case INSN_CLASS_OPF3:
       /* PIC12 tris */
-      DECODE_ARG1_N(opcode & PIC12_BMSK_TRIS);
+      PRINT_ARG1_N(1, opcode & PIC12_BMSK_TRIS);
       break;
 
     case INSN_CLASS_OPF5:
       /* {PIC12x, SX} (clrf, movwf), SX tris */
       file1 = opcode & PIC12_BMSK_FILE;
-      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
-      if (sfr != NULL) {
-        DECODE_ARG1_S(sfr->name);
+      if (reg1 != NULL) {
+        PRINT_ARG1_S(reg1);
       }
       else {
-        DECODE_ARG1_N(file1);
+        PRINT_ARG1_N(2, file1);
       }
       break;
 
     case INSN_CLASS_OPWF5:
-      /* {PIC12E, SX} (addwf, andwf, comf, decf, decfsz, incf, incfsz,
+      /* {PIC12x, SX} (addwf, andwf, comf, decf, decfsz, incf, incfsz,
                        iorwf, movf, rlf, rrf, subwf, swapf, xorwf) */
       file1 = opcode & PIC12_BMSK_FILE;
       /* Destination flag: 0 = W, 1 = F */
       tmp   = (opcode >> 5) & 1;
-      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
-      if (sfr != NULL) {
-        DECODE_ARG2_S_S(sfr->name, FLAG_FW(tmp));
+      if (reg1 != NULL) {
+        PRINT_ARG2_S_S(reg1, FLAG_FW(tmp));
       }
       else if (behavior & GPDIS_SHOW_NAMES) {
-        DECODE_ARG2_N_S(file1, FLAG_FW(tmp));
+        PRINT_ARG2_N_S(2, file1, FLAG_FW(tmp));
       }
       else {
-        DECODE_ARG2_N_N(file1, tmp);
+        PRINT_ARG2_N_N(2, file1, 1, tmp);
       }
       break;
 
@@ -1209,13 +2005,12 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       file1 = opcode & PIC12_BMSK_FILE;
       /* The bits of register. */
       tmp   = (opcode >> 5) & 7;
-      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
-      if (sfr != NULL) {
-        DECODE_ARG2_S_N(sfr->name, tmp);
+      if (reg1 != NULL) {
+        PRINT_ARG2_S_N(reg1, 1, tmp);
       }
       else {
-        DECODE_ARG2_N_N(file1, tmp);
+        PRINT_ARG2_N_N(2, file1, 1, tmp);
       }
       break;
 
@@ -1224,39 +2019,36 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       file1 = opcode & PIC16_BMSK_FILE;
       /* The bits of register. */
       tmp   = (opcode >> 8) & 7;
-      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
-      if (sfr != NULL) {
-        DECODE_ARG2_S_N(sfr->name, tmp);
+      if (reg1 != NULL) {
+        PRINT_ARG2_S_N(reg1, 1, tmp);
       }
       else {
-        DECODE_ARG2_N_N(file1, tmp);
+        PRINT_ARG2_N_N(2, file1, 1, tmp);
       }
       break;
 
     case INSN_CLASS_OPF7:
       /* PIC14x (clrf, movwf, tris) */
       file1 = opcode & PIC14_BMSK_FILE;
-      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
-      if (sfr != NULL) {
-        DECODE_ARG1_S(sfr->name);
+      if (reg1 != NULL) {
+        PRINT_ARG1_S(reg1);
       }
       else {
-        DECODE_ARG1_N(file1);
+        PRINT_ARG1_N(2, file1);
       }
       break;
 
     case INSN_CLASS_OPF8:
       /* PIC16 (cpfseq, cpfsgt, cpfslt, movwf, mulwf, tstfsz) */
       file1 = opcode & PIC16_BMSK_FILE;
-      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
-      if (sfr != NULL) {
-        DECODE_ARG1_S(sfr->name);
+      if (reg1 != NULL) {
+        PRINT_ARG1_S(reg1);
       }
       else {
-        DECODE_ARG1_N(file1);
+        PRINT_ARG1_N(2, file1);
       }
       break;
 
@@ -1267,16 +2059,15 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       file1 = opcode & PIC14_BMSK_FILE;
       /* Destination flag: 0 = W, 1 = F */
       tmp   = (opcode >> 7) & 1;
-      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
-      if (sfr != NULL) {
-        DECODE_ARG2_S_S(sfr->name, FLAG_FW(tmp));
+      if (reg1 != NULL) {
+        PRINT_ARG2_S_S(reg1, FLAG_FW(tmp));
       }
       else if (behavior & GPDIS_SHOW_NAMES) {
-        DECODE_ARG2_N_S(file1, FLAG_FW(tmp));
+        PRINT_ARG2_N_S(2, file1, FLAG_FW(tmp));
       }
       else {
-        DECODE_ARG2_N_N(file1, tmp);
+        PRINT_ARG2_N_N(2, file1, 1, tmp);
       }
       break;
 
@@ -1287,16 +2078,15 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       file1 = opcode & PIC16_BMSK_FILE;
       /* Destination flag: 0 = W, 1 = F */
       tmp   = (opcode >> 8) & 1;
-      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
-      if (sfr != NULL) {
-        DECODE_ARG2_S_S(sfr->name, FLAG_FW(tmp));
+      if (reg1 != NULL) {
+        PRINT_ARG2_S_S(reg1, FLAG_FW(tmp));
       }
       else if (behavior & GPDIS_SHOW_NAMES) {
-        DECODE_ARG2_N_S(file1, FLAG_FW(tmp));
+        PRINT_ARG2_N_S(2, file1, FLAG_FW(tmp));
       }
       else {
-        DECODE_ARG2_N_N(file1, tmp);
+        PRINT_ARG2_N_N(2, file1, 1, tmp);
       }
       break;
 
@@ -1305,13 +2095,12 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       file1 = opcode & PIC14_BMSK_FILE;
       /* The bits of register. */
       tmp   = (opcode >> 7) & 7;
-      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
-      if (sfr != NULL) {
-        DECODE_ARG2_S_N(sfr->name, tmp);
+      if (reg1 != NULL) {
+        PRINT_ARG2_S_N(reg1, 1, tmp);
       }
       else {
-        DECODE_ARG2_N_N(file1, tmp);
+        PRINT_ARG2_N_N(2, file1, 1, tmp);
       }
       break;
 
@@ -1320,17 +2109,15 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       file1   = opcode & PIC16_BMSK_FILE;
       /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
       ram_acc = (opcode >> 8) & 1;
-      sfr     = ((behavior & GPDIS_SHOW_NAMES) && (ram_acc == 0) && (bsr_boundary > 0) && (file1 >= bsr_boundary)) ?
-                     gp_processor_find_sfr(class, 0xF00 + file1) : NULL;
 
-      if (sfr != NULL) {
-        DECODE_ARG2_S_S(sfr->name, FLAG_BA(ram_acc));
+      if (reg1 != NULL) {
+        PRINT_ARG2_S_S(reg1, FLAG_BA(ram_acc));
       }
       else if (behavior & GPDIS_SHOW_NAMES) {
-        DECODE_ARG2_N_S(file1, FLAG_BA(ram_acc));
+        PRINT_ARG2_N_S(2, file1, FLAG_BA(ram_acc));
       }
       else {
-        DECODE_ARG2_N_N(file1, ram_acc);
+        PRINT_ARG2_N_N(2, file1, 1, ram_acc);
       }
       break;
 
@@ -1341,17 +2128,15 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       tmp     = (opcode >> 9) & 7;
       /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
       ram_acc = (opcode >> 8) & 1;
-      sfr     = ((behavior & GPDIS_SHOW_NAMES) && (ram_acc == 0) && (bsr_boundary > 0) && (file1 >= bsr_boundary)) ?
-                     gp_processor_find_sfr(class, 0xF00 + file1) : NULL;
 
-      if (sfr != NULL) {
-        DECODE_ARG3_S_N_S(sfr->name, tmp, FLAG_BA(ram_acc));
+      if (reg1 != NULL) {
+        PRINT_ARG3_S_N_S(reg1, 1, tmp, FLAG_BA(ram_acc));
       }
       else if (behavior & GPDIS_SHOW_NAMES) {
-        DECODE_ARG3_N_N_S(file1, tmp, FLAG_BA(ram_acc));
+        PRINT_ARG3_N_N_S(2, file1, 1, tmp, FLAG_BA(ram_acc));
       }
       else {
-        DECODE_ARG3_N_N_N(file1, tmp, ram_acc);
+        PRINT_ARG3_N_N_N(2, file1, 1, tmp, 1, ram_acc);
       }
       break;
 
@@ -1364,17 +2149,15 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       tmp     = (opcode >> 9) & 1;
       /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
       ram_acc = (opcode >> 8) & 1;
-      sfr     = ((behavior & GPDIS_SHOW_NAMES) && (ram_acc == 0) && (bsr_boundary > 0) && (file1 >= bsr_boundary)) ?
-                     gp_processor_find_sfr(class, 0xF00 + file1) : NULL;
 
-      if (sfr != NULL) {
-        DECODE_ARG3_S_S_S(sfr->name, FLAG_FW(tmp), FLAG_BA(ram_acc));
+      if (reg1 != NULL) {
+        PRINT_ARG3_S_S_S(reg1, FLAG_FW(tmp), FLAG_BA(ram_acc));
       }
       else if (behavior & GPDIS_SHOW_NAMES) {
-        DECODE_ARG3_N_S_S(file1, FLAG_FW(tmp), FLAG_BA(ram_acc));
+        PRINT_ARG3_N_S_S(2, file1, FLAG_FW(tmp), FLAG_BA(ram_acc));
       }
       else {
-        DECODE_ARG3_N_N_N(file1, tmp, ram_acc);
+        PRINT_ARG3_N_N_N(2, file1, 1, tmp, 1, ram_acc);
       }
       break;
 
@@ -1387,7 +2170,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
          PIC16   (clrwdt, nop, retfie, return, sleep)
          PIC16E  (clrwdt, daw, halt, nop, pop, push, reset, sleep, trap, tret)
          PIX16EX callw */
-      DECODE_ARG0;
+      PRINT_ARG0();
       break;
 
     case INSN_CLASS_TBL:
@@ -1395,7 +2178,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       {
         const char *op[] = { "*", "*+", "*-", "+*" };
 
-        snprintf(buffer, sizeof_buffer, "%s%s", instruction->name, op[opcode & 0x0003]);
+        snprintf(&buffer[length], buffer_length - length, "%s%s", instruction->name, op[opcode & 0x0003]);
       }
       break;
 
@@ -1403,13 +2186,12 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       /* PIC16 (tlrd, tlwt) */
       file1 = opcode & PIC16_BMSK_FILE;
       tmp   = (opcode >> 9) & 1;
-      sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
-      if (sfr != NULL) {
-        DECODE_ARG2_N_S(tmp, sfr->name);
+      if (reg1 != NULL) {
+        PRINT_ARG2_N_S(1, tmp, reg1);
       }
       else {
-        DECODE_ARG2_N_N(tmp, file1);
+        PRINT_ARG2_N_N(1, tmp, 2, file1);
       }
       break;
 
@@ -1421,13 +2203,12 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
         file1 = opcode & PIC16_BMSK_FILE;
         tmp   = (opcode >> 9) & 1;
         inc   = (opcode >> 8) & 1;
-        sfr   = (behavior & GPDIS_SHOW_NAMES) ? gp_processor_find_sfr(class, file1) : NULL;
 
-        if (sfr != NULL) {
-          DECODE_ARG3_N_N_S(tmp, inc, sfr->name);
+        if (reg1 != NULL) {
+          PRINT_ARG3_N_N_S(1, tmp, 1, inc, reg1);
         }
         else {
-          DECODE_ARG3_N_N_N(tmp, inc, file1);
+          PRINT_ARG3_N_N_N(1, tmp, 1, inc, 2, file1);
         }
       }
       break;
@@ -1438,14 +2219,14 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
         const char *op_pre[]  = { "++", "--", "",   ""   };
         const char *op_post[] = { "",   "",   "++", "--" };
 
-        file1 = opcode & 0x0004;
+        file1 = (opcode >> 2) & 1;
         tmp   = opcode & 0x0003;
 
         if (behavior & GPDIS_SHOW_NAMES) {
-          DECODE_MOVINDF_S_S_S(op_pre[tmp], (file1) ? "FSR1" : "FSR0", op_post[tmp]);
+          PRINT_MOVINDF_S_S_S(op_pre[tmp], (file1) ? "FSR1" : "FSR0", op_post[tmp]);
         }
         else {
-          DECODE_MOVINDF_S_N_S(op_pre[tmp], (file1) ? PIC14E_REG_FSR1 : PIC14E_REG_FSR0, op_post[tmp]);
+          PRINT_MOVINDF_S_N_S(op_pre[tmp], (file1) ? PIC14E_REG_FSR1 : PIC14E_REG_FSR0, op_post[tmp]);
         }
       }
       break;
@@ -1461,12 +2242,12 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
 
 int
 gp_disassemble_byte(MemBlock *m, int byte_address, proc_class_t class,
-                    char *buffer, size_t sizeof_buffer)
+                    char *buffer, size_t buffer_length)
 {
   unsigned char byte;
 
   b_memory_assert_get(m, byte_address, &byte, NULL, NULL);
-  snprintf(buffer, sizeof_buffer, "db\t0x%02x", (unsigned int)byte);
+  snprintf(buffer, buffer_length, "%-*s0x%02x", TABULATOR_SIZE, "db", (unsigned int)byte);
   return 1;
 }
 
@@ -1474,12 +2255,12 @@ gp_disassemble_byte(MemBlock *m, int byte_address, proc_class_t class,
 
 int
 gp_disassemble_word(MemBlock *m, int byte_address, proc_class_t class,
-                    char *buffer, size_t sizeof_buffer)
+                    char *buffer, size_t buffer_length)
 {
   unsigned short word;
 
   class->i_memory_get(m, byte_address, &word, NULL, NULL);
-  snprintf(buffer, sizeof_buffer, "dw\t0x%04x", (unsigned int)word);
+  snprintf(buffer, buffer_length, "%-*s0x%04x", TABULATOR_SIZE, "dw", (unsigned int)word);
   return 2;
 }
 
@@ -1487,28 +2268,28 @@ gp_disassemble_word(MemBlock *m, int byte_address, proc_class_t class,
 
 int
 gp_disassemble_size(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
-                    int prog_mem_size, int behavior, char *buffer, size_t sizeof_buffer,
+                    int prog_mem_size, int behavior, char *buffer, size_t buffer_length,
                     unsigned int size)
 {
   if (size == 1) {
-    return gp_disassemble_byte(m, byte_address, class, buffer, sizeof_buffer);
+    return gp_disassemble_byte(m, byte_address, class, buffer, buffer_length);
   }
   else if (size == 2) {
     char dasmbuf[512];
     int num_words;
 
     num_words = gp_disassemble(m, byte_address, class, bsr_boundary, prog_mem_size, behavior,
-                               dasmbuf, sizeof(dasmbuf));
+                               dasmbuf, sizeof(dasmbuf), 0);
 
     if (num_words != 1) {
-      return gp_disassemble_word(m, byte_address, class, buffer, sizeof_buffer);
+      return gp_disassemble_word(m, byte_address, class, buffer, buffer_length);
     }
     else {
-      strncpy(buffer, dasmbuf, sizeof_buffer);
+      strncpy(buffer, dasmbuf, buffer_length);
       return (2 * num_words);
     }
   }
 
   return (2 * gp_disassemble(m, byte_address, class, bsr_boundary, prog_mem_size, behavior,
-                             buffer, sizeof_buffer));
+                             buffer, buffer_length, 0));
 }

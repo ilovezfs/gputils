@@ -26,6 +26,11 @@ Boston, MA 02111-1307, USA.  */
         PIC12 definitions
 ******************************************/
 
+#define PIC12_BANK_SIZE             32
+#define PIC12_BANK_SHIFT            5
+#define PIC12_BMSK_BANK             0x003
+#define PIC12_PAGE_SIZE             512
+
 #define PIC12_REG_STATUS            0x03
 #define PIC12_REG_FSR               0x04
 
@@ -44,6 +49,10 @@ Boston, MA 02111-1307, USA.  */
 /******************************************
         PIC14 definitions
 ******************************************/
+
+#define PIC14_BANK_SIZE             128
+#define PIC14_BANK_SHIFT            7
+#define PIC14_PAGE_SIZE             2048
 
 #define PIC14_BMSK_BANK             0x0003
 #define PIC14_BMSK_PAGE             0x0003
@@ -70,11 +79,15 @@ Boston, MA 02111-1307, USA.  */
 #define PIC14E_REG_FSR1             0x06
 #define PIC14E_REG_FSR1L            0x06
 #define PIC14E_REG_FSR1H            0x07
+#define PIC14E_REG_BSR              0x08
 #define PIC14E_REG_WREG             0x09
 
 /******************************************
         PIC16 definitions
 ******************************************/
+
+#define PIC16_BANK_SIZE             256
+#define PIC16_BANK_SHIFT            8
 
 #define PIC16_BMSK_BANK             0x00FF
 #define PIC16_BMSK_PAGE             0x00FF
@@ -92,8 +105,12 @@ Boston, MA 02111-1307, USA.  */
     /* Call and goto address mask for higher 12 bits. */
 #define PIC16E_BMSK_BRANCH_HIGHER   0x0FFF
 
+#define PIC16E_BMSK_SEC_INSN_WORD   0xF000
+
 #define PIC16E_BMSK_BANK            0x000F
 
+#define PIC16E_REG_BSR              0xFE0
+#define PIC16E_REG_WREG             0xFE8
 #define PIC16E_REG_PCL              0xFF9
 #define PIC16E_REG_TOSL             0xFFD
 #define PIC16E_REG_TOSH             0xFFE
@@ -248,7 +265,8 @@ struct px {
   int idlocs_addrs[2];
   int config_addrs[2];
   int eeprom_addrs[2];
-  /* */
+  /* Use the gpdasm. */
+  const char *header;
   const char *script;
   /* True if device supports 16 bit extended instruction set, false otherwise.
      Used ony for PROC_CLASS_PIC16E class. */
@@ -323,6 +341,7 @@ int gp_org_to_byte(unsigned shift, int org);
 int gp_byte_to_org(unsigned shift, int byte);
 
 const core_sfr_t *gp_processor_find_sfr(proc_class_t class, int address);
+const char *gp_processor_find_sfr_name(proc_class_t class, int address);
 const vector_t *gp_processor_find_vector(proc_class_t class, int address);
 
 #endif /* __GPPROCESSOR_H__ */

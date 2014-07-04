@@ -57,12 +57,12 @@ Boston, MA 02111-1307, USA.  */
 #define OPERATOR(x)  return (yylval.i = (x))
 
 enum identtype { unknown_type, macro_params, defines, directives, globals, macros, opcodes };
-enum identtype identify(char *);
+enum identtype identify(const char *);
 
 static int found_eof(void);
 
-int force_decimal; /* Used to force radix to decimal for some directives */
-int force_ident;   /* Used to force numbers to identifiers for processor names */
+int force_decimal; /* Used to force radix to decimal for some directives. */
+int force_ident;   /* Used to force numbers to identifiers for processor names. */
 
 static inline size_t
 gp_input(char *buf, size_t max_size)
@@ -637,8 +637,7 @@ void
 open_src(const char *name, int isinclude)
 {
   extern FILE *yyin;
-  struct source_context *new = malloc(sizeof (struct source_context));
-  memset(new, 0, sizeof (struct source_context));
+  struct source_context *new = calloc(1, sizeof(struct source_context));
 
   if (state.src != NULL) {
     state.src->yybuf = YY_CURRENT_BUFFER;
@@ -713,8 +712,7 @@ open_src(const char *name, int isinclude)
 void
 execute_macro(struct macro_head *h, int is_while)
 {
-  struct source_context *new = malloc(sizeof(struct source_context));
-  memset(new, 0, sizeof(struct source_context));
+  struct source_context *new = calloc(1, sizeof(struct source_context));
 
   assert(state.src != NULL);
   state.src->yybuf = YY_CURRENT_BUFFER;
@@ -857,7 +855,7 @@ found_eof(void)
   close_file();
 
   if (state.src != NULL) {
-    /* Just an include file */
+    /* Just an include file. */
     yy_delete_buffer(YY_CURRENT_BUFFER);
     yy_switch_to_buffer(state.src->yybuf);
 
@@ -865,7 +863,7 @@ found_eof(void)
       /* Force ENDW listing */
       state.lst.line.linetype = LTY_DIR;
       /* Line number was alreay incremented, so it has to be decremented,
-       * source line listed and line number incremented again */
+       * source line listed and line number incremented again. */
       --state.src->line_number;
       lst_format_line(state.src->curr_src_line.line, 0);
       ++state.src->line_number;
@@ -883,7 +881,7 @@ found_eof(void)
 }
 
 enum identtype
-identify(char *text)
+identify(const char *text)
 {
   enum identtype type;
   struct symbol *sym;

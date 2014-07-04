@@ -1,3 +1,28 @@
+2014-07-04  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c:
+    Changed a comment.
+
+  * gpasm/gpasm.c:
+    Changed text format.
+
+  * gpasm/gperror.c
+    Removed a unnecessary newline.
+
+  * gpasm/scan.l:
+    Changed the identify(char *) to identify(const char *).
+    Changed the "malloc() + memset()" combo to calloc().
+
+  * gputils/gpdasm.c, gputils/gpdasm.h.in, gputils/gpvo.c,
+    libgputils/Makefile.am, libgputils/Makefile.in,
+    libgputils/gpcofflink.c, libgputils/gpdis.c,
+    libgputils/gpdis.h, libgputils/gpmemory.c,
+    libgputils/gpmemory.h, libgputils/gpopcode.h,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.h,
+    libgputils/gpreg-table.c, libgputils/gpregister.c,
+    libgputils/gpregister.h, libgputils/gpsystem.c,
+    libgputils/gpsystem.h, libgputils/libgputils.h:
+    The disassembler use a new database of SFRs. (--show-names)
+
 2014-07-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/gpasm.c, gpasm/processor.c, gputils/gpdasm.c,
     libgputils/gpprocessor.c, libgputils/gpprocessor.h:

@@ -30,16 +30,22 @@ extern struct gpdasm_state {
   int format;                   /* format of the output */
   int pass;                     /* 1 or 2 */
   MemBlock *i_memory;           /* Instruction memory linked list */
+
   char *srcfilename,            /* Source (.asm) file name */
     basefilename[BUFSIZ],       /* basename for generating hex,list,symbol filenames */
     hexfilename[BUFSIZ];        /* Hex (.hex) file name */
+
   struct hex_data *hex_info;    /* information on input hex file */
+  const gp_register_table_t *proc_regs;
+
   struct {                      /* Totals for errors, warnings, messages */
     int errors;
     int warnings;
     int messages;
   } num;
+
   gp_boolean show_names;
+  gp_boolean need_sfr_equ;
 } state;
 
 #endif

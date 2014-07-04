@@ -24,13 +24,15 @@ Boston, MA 02111-1307, USA.  */
 #include "libgputils.h"
 #include "gpdasm.h"
 
-char *processor_name = NULL;
+static const char *processor_name = NULL;
 
 struct gpdasm_state state = {
   NULL,                 /* processor type */
   PROC_CLASS_GENERIC,   /* 12 bit device */
   1                     /* output format */
 };
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 select_processor(void)
@@ -60,17 +62,26 @@ select_processor(void)
     exit(1);
   }
 
-  return;
+  state.proc_regs = gp_register_find_mcu(gp_register_db, gp_register_db_size,
+                                         state.processor->names[1]);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 write_header(void)
 {
   if (!state.format) {
     printf("\n");
-    printf("        processor %s\n", processor_name);
+    printf("        processor %s\n", state.processor->names[1]);
+
+    if (state.processor->header != NULL) {
+      printf("        include %s\n", state.processor->header);
+    }
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 write_core_sfr_list(void)
@@ -84,27 +95,28 @@ write_core_sfr_list(void)
   }
 
   if (state.class == PROC_CLASS_PIC16E) {
-    printf("\nf\tequ\t1\nw\tequ\t0\na\tequ\t0\n\n");
+    printf("\nF\tequ\t1\nW\tequ\t0\nA\tequ\t0\n\n");
   }
   else {
-    printf("\nf\tequ\t1\nw\tequ\t0\n\n");
+    printf("\nF\tequ\t1\nW\tequ\t0\n\n");
   }
 
   table = state.class->core_sfr_table;
   for (i = state.class->core_sfr_number; i > 0; ++table, --i) {
-    if (strcmp(table->name, "FSR0L") == 0) {
-      printf("FSR0\tequ\t0x%03x\n", table->address);
-    }
-    else if (strcmp(table->name, "FSR1L") == 0) {
-      printf("FSR1\tequ\t0x%03x\n", table->address);
-    }
-    else if (strcmp(table->name, "FSR2L") == 0) {
-      printf("FSR2\tequ\t0x%03x\n", table->address);
+    if (state.class == PROC_CLASS_PIC14E) {
+      if (strcmp(table->name, "FSR0L") == 0) {
+        printf("FSR0\tequ\t0x%03x\n", table->address);
+      }
+      else if (strcmp(table->name, "FSR1L") == 0) {
+        printf("FSR1\tequ\t0x%03x\n", table->address);
+      }
     }
 
     printf("%s\tequ\t0x%03x\n", table->name, table->address);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 closeasm(void)
@@ -113,6 +125,8 @@ closeasm(void)
     printf("        end\n");
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 write_org(int org, int digits, const char *title)
@@ -127,6 +141,52 @@ write_org(int org, int digits, const char *title)
     printf("        org\t0x%0*x\n", digits, org);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+mark_false_addresses(MemBlock *memory)
+{
+  MemBlock *m;
+  int i, maximum;
+  int org;
+  int insn_size;
+  int num_words;
+  unsigned short data;
+
+  m = memory;
+  while (m != NULL) {
+    i = m->base << I_MEM_BITS;
+    maximum = i + MAX_I_MEM;
+
+    insn_size = 2;
+    while (i < maximum) {
+      org = gp_processor_byte_to_org(state.class, i);
+
+      if (gp_processor_is_idlocs_addr(state.processor, org)) {
+        insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
+      }
+      else if (gp_processor_is_config_addr(state.processor, org)) {
+        insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
+      }
+      else if (gp_processor_is_eeprom_addr(state.processor, org)) {
+        insn_size = 1;
+      }
+      else {
+        if (state.class->i_memory_get(m, i, &data, NULL, NULL) == W_USED_ALL) {
+          num_words = gp_disassemble_mark_false_addresses(m, i, state.processor);
+          insn_size = (num_words != 1) ? 4 : 2;
+        }
+      }
+
+      i += insn_size;
+    }
+
+    m = m->next;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 recognize_labels(MemBlock *memory)
@@ -143,9 +203,9 @@ recognize_labels(MemBlock *memory)
   gpdasm_fstate_t fstate;
 
   m = memory;
-  fstate.wreg_prev = 0;
-  fstate.pclath_prev = 0;
-  fstate.pclath_valid_mask = 0xff;
+  fstate.wreg = 0;
+  fstate.pclath = 0;
+  fstate.pclath_valid = 0xff;
   while (m != NULL) {
     i = m->base << I_MEM_BITS;
     maximum = i + MAX_I_MEM;
@@ -196,6 +256,65 @@ recognize_labels(MemBlock *memory)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+recognize_registers(MemBlock *memory)
+{
+  MemBlock *m;
+  int i, maximum;
+  int org;
+  int insn_size;
+  int num_words;
+  unsigned short data;
+  gpdasm_fstate_t fstate;
+
+  if (state.class == PROC_CLASS_SX) {
+    return;
+  }
+
+  m = memory;
+  fstate.wreg = 0;
+  fstate.bank = 0;
+  fstate.bank_valid = 0;
+  fstate.proc_regs = state.proc_regs;
+  fstate.bsr_boundary = gp_processor_bsr_boundary(state.processor);
+  fstate.need_sfr_equ = false;
+  while (m != NULL) {
+    i = m->base << I_MEM_BITS;
+    maximum = i + MAX_I_MEM;
+
+    insn_size = 2;
+    while (i < maximum) {
+      org = gp_processor_byte_to_org(state.class, i);
+
+      if (gp_processor_is_idlocs_addr(state.processor, org)) {
+        insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
+      }
+      else if (gp_processor_is_config_addr(state.processor, org)) {
+        insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
+      }
+      else if (gp_processor_is_eeprom_addr(state.processor, org)) {
+        insn_size = 1;
+      }
+      else {
+        if (state.class->i_memory_get(m, i, &data, NULL, NULL) == W_USED_ALL) {
+          num_words = gp_disassemble_find_registers(m, i, state.processor, &fstate);
+          insn_size = (num_words != 1) ? 4 : 2;
+        }
+      }
+
+      i += insn_size;
+    }
+
+    m = m->next;
+  }
+
+  state.need_sfr_equ = fstate.need_sfr_equ;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 denominate_labels(MemBlock *memory)
 {
@@ -234,6 +353,31 @@ denominate_labels(MemBlock *memory)
   }
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
+static size_t byte_exclamation(char *buffer, size_t buffer_length, size_t current_length,
+                               unsigned char byte) {
+  int l;
+  size_t length;
+
+  l = snprintf(&buffer[current_length], buffer_length - current_length, "%-*s0x%02x",
+               TABULATOR_SIZE, "db", (unsigned int)byte);
+
+  if (l <= 0) {
+    return current_length;
+  }
+
+  length = current_length + l;
+
+  if (isprint(byte)) {
+    gp_exclamation(buffer, buffer_length, length, "; '%c'", byte);
+  }
+
+  return length;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 dasm(MemBlock *memory)
 {
@@ -252,10 +396,22 @@ dasm(MemBlock *memory)
   const char *label_name;
   int addr_digits;
   int word_digits;
-  char buffer[80];
+  size_t length;
+  char buffer[BUFSIZ];
 
-  if (state.show_names) {
+  if (state.show_names && ((state.class == PROC_CLASS_PIC12)  ||
+                           (state.class == PROC_CLASS_PIC12E) ||
+                           (state.class == PROC_CLASS_SX)     ||
+                           (state.class == PROC_CLASS_PIC14)  ||
+                           (state.class == PROC_CLASS_PIC14E) ||
+                           (state.class == PROC_CLASS_PIC16)  ||
+                           (state.class == PROC_CLASS_PIC16E))) {
+    if (state.class == PROC_CLASS_PIC16E) {
+      mark_false_addresses(memory);
+    }
+
     recognize_labels(memory);
+    recognize_registers(memory);
     denominate_labels(memory);
   }
 
@@ -266,9 +422,11 @@ dasm(MemBlock *memory)
   write_header();
 
   if (state.show_names) {
-    printf("\n; The recognition of labels is not always good, therefore be treated\n"
-           "; cautiously the results.\n");
-    write_core_sfr_list();
+    printf("\n; The recognition of labels and registers is not always good,\n"
+           "; therefore be treated cautiously the results.\n");
+    if (state.need_sfr_equ) {
+      write_core_sfr_list();
+    }
   }
 
   first_idlocs = true;
@@ -301,17 +459,14 @@ dasm(MemBlock *memory)
             last_loc = i;
 
             if (state.format) {
-              printf("%0*x:  %02x  ", addr_digits, org, (unsigned int)byte);
+              length = snprintf(buffer, sizeof(buffer), "%0*x:  %02x  ",
+                                addr_digits, org, (unsigned int)byte);
             } else {
-              printf("        ");
+              length = snprintf(buffer, sizeof(buffer), "        ");
             }
 
-            if (isprint(byte)) {
-              printf("db\t0x%02x\t\t\t; '%c'\n", (unsigned int)byte, byte);
-            }
-            else {
-              printf("db\t0x%02x\n", (unsigned int)byte);
-            }
+            byte_exclamation(buffer, sizeof(buffer), length, byte);
+            printf("%s\n", buffer);
           }
           else {
             last_loc = 0;
@@ -339,7 +494,7 @@ dasm(MemBlock *memory)
               printf("        ");
             }
 
-            printf("dw\t0x%0*x\n", word_digits, (unsigned int)data);
+            printf("%-*s0x%0*x\n", TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
           }
           else {
             last_loc = 0;
@@ -370,7 +525,7 @@ dasm(MemBlock *memory)
               printf("        ");
             }
 
-            printf("db\t0x%02x\n", (unsigned int)byte);
+            printf("%-*s0x%02x\n", TABULATOR_SIZE, "db", (unsigned int)byte);
           }
           else {
             last_loc = 0;
@@ -398,7 +553,7 @@ dasm(MemBlock *memory)
               printf("        ");
             }
 
-            printf("dw\t0x%0*x\n", word_digits, (unsigned int)data);
+            printf("%-*s0x%0*x\n", TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
           }
           else {
             last_loc = 0;
@@ -422,17 +577,14 @@ dasm(MemBlock *memory)
           last_loc = i;
 
           if (state.format) {
-            printf("%0*x:  %02x  ", addr_digits, org, (unsigned int)byte);
+            length = snprintf(buffer, sizeof(buffer), "%0*x:  %02x  ",
+                                addr_digits, org, (unsigned int)byte);
           } else {
-            printf("        ");
+            length = snprintf(buffer, sizeof(buffer), "        ");
           }
 
-          if (isprint(byte)) {
-            printf("db\t0x%02x\t\t\t; '%c'\n", (unsigned int)byte, byte);
-          }
-          else {
-            printf("db\t0x%02x\n", (unsigned int)byte);
-          }
+          byte_exclamation(buffer, sizeof(buffer), length, byte);
+          printf("%s\n", buffer);
         }
         else {
           last_loc = 0;
@@ -450,26 +602,29 @@ dasm(MemBlock *memory)
           last_loc = i;
 
           if (state.show_names && (label_name != NULL)) {
-            printf("\n%s:\t\t; address: 0x%0*x\n\n", label_name,
-                   addr_digits, gp_processor_byte_to_org(state.class, i));
+            length = snprintf(buffer, sizeof(buffer), "%s", label_name);
+            gp_exclamation(buffer, sizeof(buffer), length, "; address: 0x%0*x", addr_digits,
+                           gp_processor_byte_to_org(state.class, i));
+            printf("\n%s\n\n", buffer);
 	  }
 
           if (state.format) {
-            printf("%0*x:  %0*x  ", addr_digits, org, word_digits, (unsigned int)data);
+            length = snprintf(buffer, sizeof(buffer), "%0*x:  %0*x  ",
+                              addr_digits, org, word_digits, (unsigned int)data);
           } else {
-            printf("        ");
+            length = snprintf(buffer, sizeof(buffer), "        ");
           }
 
           num_words = gp_disassemble(m, i, state.class, bsr_boundary, state.processor->prog_mem_size,
                                      (state.show_names) ? (GPDIS_SHOW_NAMES | GPDIS_SHOW_BYTES) : GPDIS_SHOW_NOTHING,
-                                     buffer, sizeof(buffer));
+                                     buffer, sizeof(buffer), length);
           printf("%s\n", buffer);
 
           if (num_words != 1) {
             /* some 18xx instructions use two words */
             if (state.format) {
               state.class->i_memory_get(m, i + 2, &data, NULL, NULL);
-              printf("%0*x:  %0*x  ", addr_digits, gp_processor_byte_to_org(state.class, i + 2),
+              printf("%0*x:  %0*x\n", addr_digits, gp_processor_byte_to_org(state.class, i + 2),
                      word_digits, (unsigned int)data);
             }
 
@@ -489,6 +644,8 @@ dasm(MemBlock *memory)
 
   closeasm();
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 show_usage(void)
@@ -514,6 +671,8 @@ show_usage(void)
   printf("%s\n", PACKAGE_BUGREPORT);
   exit(0);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 #define GET_OPTIONS "?chilmnp:svy"
 

@@ -4590,7 +4590,7 @@ do_insn(const char *name, struct pnode *parms)
         break;
 
       case INSN_CLASS_OPWF5:
-        /* {PIC12E, SX} (addwf, andwf, comf, decf, decfsz, incf, incfsz,
+        /* {PIC12x, SX} (addwf, andwf, comf, decf, decfsz, incf, incfsz,
                          iorwf, movf, rlf, rrf, subwf, swapf, xorwf) */
         {
           int d = 1; /* Default destination of 1 (file). */

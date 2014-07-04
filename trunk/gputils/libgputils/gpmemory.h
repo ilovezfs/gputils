@@ -31,14 +31,23 @@ Boston, MA 02111-1307, USA.  */
 #define MAX_C_MEM               0x100               /* Maximum configuration memory
                                                        (only a few bytes are used). */
 
-#define BYTE_USED_MASK          (1 << 15)           /* Means occupied in MemBlock.memory.data. */
-#define BYTE_LISTED_MASK        (1 << 14)           /* Means already listed. */
+#define BYTE_USED_MASK          (1 << 31)           /* Means occupied in MemBlock.memory.data. */
+#define BYTE_LISTED_MASK        (1 << 30)           /* Means already listed. */
 #define BYTE_ATTR_MASK          (BYTE_USED_MASK | BYTE_LISTED_MASK)
+
+#define W_SECOND_WORD           (1 << 13)           /* PIC16E family, second word of 32 bits instruction. (movff, ...) */
+
+#define W_REG_T_FIRST           (1 << 12)           /* The first argumentum of instruction a known register. */
+#define W_REG_T_SECOND          (1 << 11)           /* The second argumentum of instruction a known register. */
+#define W_REG_T_BOTH            (W_REG_T_FIRST | W_REG_T_SECOND) /* Both argumentum of instruction a known register. */
+#define W_REG_T_MASK            W_REG_T_BOTH
 
 #define W_ADDR_T_FUNC           (1 << 10)           /* A function starts at this address. */
 #define W_ADDR_T_LABEL          (1 <<  9)           /* A label there is at this address. */
 #define W_ADDR_T_BRANCH_SRC     (1 <<  8)           /* Source of a branch there is at this address. */
 #define W_ADDR_T_MASK           (W_ADDR_T_FUNC | W_ADDR_T_LABEL | W_ADDR_T_BRANCH_SRC)
+
+#define W_TYPE_MASK             (UINT_MAX << 8)
 
 
 #define W_USED_H                (1 << 1)            /* Used top half of the word. */
@@ -53,6 +62,8 @@ typedef struct MemWord {
   char *section_name;
   char *symbol_name;
   unsigned int dest_byte_addr;
+  const char *first_reg;
+  const char *second_reg;
 } MemWord;
 
 typedef struct MemBlock {
@@ -109,6 +120,12 @@ gp_boolean b_memory_set_addr_type(MemBlock *m, unsigned int address, unsigned in
 unsigned int b_memory_get_addr_type(const MemBlock *m, unsigned int address, const char **label_name, unsigned int *dest_byte_addr);
 
 gp_boolean b_memory_set_addr_name(MemBlock *m, unsigned int address, const char *name);
-const char *b_memory_get_addr_name(const MemBlock *m, unsigned int address);
+
+gp_boolean b_memory_set_reg_type(MemBlock *m, unsigned int address, unsigned int type, const char *first_reg, const char *second_reg);
+unsigned int b_memory_get_reg_type(const MemBlock *m, unsigned int address, const char **first_reg, const char **second_reg);
+
+gp_boolean b_memory_set_type(MemBlock *m, unsigned int address, unsigned int type);
+gp_boolean b_memory_clear_type(MemBlock *m, unsigned int address, unsigned int type);
+unsigned int b_memory_get_type(const MemBlock *m, unsigned int address);
 
 #endif

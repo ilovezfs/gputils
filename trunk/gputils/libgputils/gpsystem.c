@@ -26,11 +26,17 @@ Boston, MA 02111-1307, USA.  */
 #include <windows.h>
 #endif
 
+#ifdef STDC_HEADERS
+#include <stdarg.h>
+#endif
+
 const char *gp_header_path;
 const char *gp_lkr_path;
 const char *gp_lib_path;
 
 gp_boolean absolute_path_warning = true;
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* initialize the library */
 
@@ -64,6 +70,8 @@ gp_init(void)
 
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* little endian functions */
 
 void 
@@ -75,6 +83,8 @@ gp_fputl16(short data, FILE *fp)
   return;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void 
 gp_fputl32(long data, FILE *fp) 
 {
@@ -85,6 +95,8 @@ gp_fputl32(long data, FILE *fp)
 
   return;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 gp_fputvar(const void *data_, int number, FILE *fp)
@@ -99,6 +111,8 @@ gp_fputvar(const void *data_, int number, FILE *fp)
   return;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 short 
 gp_getl16(const unsigned char *addr)
 {
@@ -110,11 +124,15 @@ gp_getl16(const unsigned char *addr)
   return value;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 unsigned short 
 gp_getu16(const unsigned char *addr)
 {
   return (unsigned short) gp_getl16(addr);
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 long 
 gp_getl32(const unsigned char *addr)
@@ -129,12 +147,16 @@ gp_getl32(const unsigned char *addr)
   return value;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void 
 gp_putl16(unsigned char *addr, short data)
 {
   addr[1] = (data >> 8) & 0xff;
   addr[0] = data & 0xff;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void 
 gp_putl32(unsigned char *addr, long data)
@@ -144,6 +166,8 @@ gp_putl32(unsigned char *addr, long data)
   addr[2] = (data >> 16) & 0xff;
   addr[3] = (data >> 24) & 0xff;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* big endian functions */
 
@@ -160,6 +184,8 @@ gp_getb32(const unsigned char *addr)
   return value;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void 
 gp_putb32(unsigned char *addr, long data)
 {
@@ -168,6 +194,8 @@ gp_putb32(unsigned char *addr, long data)
   addr[2] = (data >> 8)  & 0xff;
   addr[3] = data & 0xff;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 gp_date_string(char *buffer, size_t sizeof_buffer)
@@ -187,6 +215,8 @@ gp_date_string(char *buffer, size_t sizeof_buffer)
            now_tm->tm_sec);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 char *
 gp_lower_case(const char *name)
 {
@@ -202,6 +232,8 @@ gp_lower_case(const char *name)
 
   return new;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 char *
 gp_upper_case(const char *name)
@@ -219,6 +251,44 @@ gp_upper_case(const char *name)
   return new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
+size_t
+gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t Aligned_to_length) {
+  size_t len;
+
+  if ((Current_length < (Buffer_length - 1)) && (Aligned_to_length > Current_length)) {
+    Buffer_length -= Current_length;
+    len = Aligned_to_length - Current_length;
+
+    if (len >= Buffer_length) {
+      len = Buffer_length - 1;
+    }
+
+    len = snprintf(&Buffer[Current_length], Buffer_length - Current_length, "%*s", (int)len, " ");
+    return ((len > 0) ? (Current_length + len) : Current_length);
+  }
+
+  return Current_length;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+size_t
+gp_exclamation(char *Buffer, size_t Buffer_length, size_t Current_length, const char *Format, ...) {
+  size_t l;
+  size_t length;
+  va_list(ap);
+
+  length = gp_align_text(Buffer, Buffer_length, Current_length, EXPLANATION_DISTANCE);
+  va_start(ap, Format);
+  l = vsnprintf(&Buffer[length], Buffer_length - length, Format, ap);
+  va_end(ap);
+  return ((l >= 0) ? (length + l) : Current_length);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 /* linked list functions */
 
 gp_linked_list *
@@ -234,17 +304,23 @@ gp_list_make(void)
   return new;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void
 gp_list_annotate(gp_linked_list *link, void *a)
 {
   link->annotation = a;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 void *
 gp_list_get(gp_linked_list *link)
 {
   return link->annotation;
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 /* fetch the absolute path of the filename */
 char *
