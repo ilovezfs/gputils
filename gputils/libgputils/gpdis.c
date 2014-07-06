@@ -648,25 +648,32 @@ _class_lit11:
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-pic12_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class, int file) {
-  const char *reg0, *reg1;
+pic12_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class,
+               int file, int bit_number) {
+  const char *reg0_name;
+  const gp_register_t *reg1;
+  const char *bit_name;
   unsigned int bmask;
 
+  reg0_name = NULL;
+  reg1      = NULL;
+  bit_name  = NULL;
+
   if (class == PROC_CLASS_SX) {
-    reg0 = gp_processor_find_sfr_name(class, file);
+    reg0_name = gp_processor_find_sfr_name(class, file);
     fstate->need_sfr_equ = true;
   }
   else {
-    reg0 = gp_processor_find_sfr_name(class, file);
-    reg1 = gp_register_find_reg_name(fstate->proc_regs, file);
+    reg0_name = gp_processor_find_sfr_name(class, file);
+    reg1 = gp_register_find_reg(fstate->proc_regs, file);
 
-    if (reg0 != NULL) {
+    if (reg0_name != NULL) {
       if (reg1 == NULL) {
-        gp_debug("%s() -- The \"%s\" core SFR not exist in the register database!\n", __FUNCTION__, reg0);
+        gp_debug("%s() -- The \"%s\" core SFR not exist in the register database!\n", __FUNCTION__, reg0_name);
         fstate->need_sfr_equ = true;
       }
-      else if (strcmp(reg0, reg1) != 0) {
-        gp_debug("%s() -- These SFRs there is the same address: \"%s\", \"%s\"\n", __FUNCTION__, reg0, reg1);
+      else if (strcmp(reg0_name, reg1->name) != 0) {
+        gp_debug("%s() -- These SFRs there is the same address: \"%s\", \"%s\"\n", __FUNCTION__, reg0_name, reg1->name);
         fstate->need_sfr_equ = true;
       }
     }
@@ -674,33 +681,50 @@ pic12_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_clas
       bmask = (class == PROC_CLASS_PIC12E) ? PIC12E_BMSK_BANK : PIC12_BMSK_BANK;
 
       if (IS_VALID_BANK(bmask)) {
-        reg0 = gp_register_find_reg_name(fstate->proc_regs, file + BANK12_ADDR(bmask));
+        reg1 = gp_register_find_reg(fstate->proc_regs, file + BANK12_ADDR(bmask));
+      }
+    }
+
+    if (reg1 != NULL) {
+      reg0_name = reg1->name;
+
+      if (bit_number >= 0) {
+        bit_name = gp_register_find_bit_name(reg1, bit_number);
       }
     }
   }
 
-  if (reg0 != NULL) {
-    b_memory_set_reg_type(m, byte_address, W_REG_T_FIRST, reg0, NULL);
+  if (reg0_name != NULL) {
+    if (bit_name != NULL) {
+      b_memory_set_reg_type(m, byte_address, W_REG_T_BOTH, reg0_name, bit_name);
+    }
+    else {
+      b_memory_set_reg_type(m, byte_address, W_REG_T_FIRST, reg0_name, NULL);
+    }
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-pic14_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class, int file) {
-  const char *reg0, *reg1;
+pic14_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class,
+               int file, int bit_number) {
+  const char *reg0_name;
+  const gp_register_t *reg1;
+  const char *bit_name;
   unsigned int bmask;
 
-  reg0 = gp_processor_find_sfr_name(class, file);
-  reg1 = gp_register_find_reg_name(fstate->proc_regs, file);
+  reg0_name = gp_processor_find_sfr_name(class, file);
+  reg1      = gp_register_find_reg(fstate->proc_regs, file);
+  bit_name  = NULL;
 
-  if (reg0 != NULL) {
+  if (reg0_name != NULL) {
     if (reg1 == NULL) {
-      gp_debug("%s() -- The \"%s\" core SFR not exist in the register database!\n", __FUNCTION__, reg0);
+      gp_debug("%s() -- The \"%s\" core SFR not exist in the register database!\n", __FUNCTION__, reg0_name);
       fstate->need_sfr_equ = true;
     }
-    else if (strcmp(reg0, reg1) != 0) {
-      gp_debug("%s() -- These SFRs there is the same address: \"%s\", \"%s\"\n", __FUNCTION__, reg0, reg1);
+    else if (strcmp(reg0_name, reg1->name) != 0) {
+      gp_debug("%s() -- These SFRs there is the same address: \"%s\", \"%s\"\n", __FUNCTION__, reg0_name, reg1->name);
       fstate->need_sfr_equ = true;
     }
   }
@@ -708,74 +732,124 @@ pic14_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_clas
     bmask = (class == PROC_CLASS_PIC14E) ? PIC14E_BMSK_BANK : PIC14_BMSK_BANK;
 
     if (IS_VALID_BANK(bmask)) {
-      reg0 = gp_register_find_reg_name(fstate->proc_regs, file + BANK14_ADDR(bmask));
+      reg1 = gp_register_find_reg(fstate->proc_regs, file + BANK14_ADDR(bmask));
     }
   }
 
-  if (reg0 != NULL) {
-    b_memory_set_reg_type(m, byte_address, W_REG_T_FIRST, reg0, NULL);
+  if (reg1 != NULL) {
+    reg0_name = reg1->name;
+
+    if (bit_number >= 0) {
+      bit_name = gp_register_find_bit_name(reg1, bit_number);
+    }
+  }
+
+  if (reg0_name != NULL) {
+    if (bit_name != NULL) {
+      b_memory_set_reg_type(m, byte_address, W_REG_T_BOTH, reg0_name, bit_name);
+    }
+    else {
+      b_memory_set_reg_type(m, byte_address, W_REG_T_FIRST, reg0_name, NULL);
+    }
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-pic16_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class, int file) {
-  const char *reg;
+pic16_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class,
+               int file, int bit_number) {
+  const char *reg0_name;
+  const gp_register_t *reg1;
+  const char *bit_name;
 
-  reg = NULL;
+  reg0_name = NULL;
+  reg1      = NULL;
+  bit_name  = NULL;
 
   if (IS_UNBANKED16(file)) {
-    reg = gp_register_find_reg_name(fstate->proc_regs, file);
+    reg1 = gp_register_find_reg(fstate->proc_regs, file);
 
-    if (reg == NULL) {
-      reg = gp_processor_find_sfr_name(class, file);
+    if (reg1 == NULL) {
+      reg0_name = gp_processor_find_sfr_name(class, file);
 
-      if (reg != NULL) {
+      if (reg0_name != NULL) {
         fstate->need_sfr_equ = true;
       }
     }
   }
   else if (IS_VALID_BANK(PIC16_BMSK_BANK)) {
-    reg = gp_register_find_reg_name(fstate->proc_regs, file + BANK16_ADDR(PIC16_BMSK_BANK));
+    reg1 = gp_register_find_reg(fstate->proc_regs, file + BANK16_ADDR(PIC16_BMSK_BANK));
   }
 
-  if (reg != NULL) {
-    b_memory_set_reg_type(m, byte_address, W_REG_T_FIRST, reg, NULL);
+  if (reg1 != NULL) {
+    reg0_name = reg1->name;
+
+    if (bit_number >= 0) {
+      bit_name = gp_register_find_bit_name(reg1, bit_number);
+    }
+  }
+
+  if (reg0_name != NULL) {
+    if (bit_name != NULL) {
+      b_memory_set_reg_type(m, byte_address, W_REG_T_BOTH, reg0_name, bit_name);
+    }
+    else {
+      b_memory_set_reg_type(m, byte_address, W_REG_T_FIRST, reg0_name, NULL);
+    }
   }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-pic16e_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class, int file,
-                gp_boolean ram_acc) {
-  const char *reg;
+pic16e_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class,
+                int file, int bit_number, gp_boolean ram_acc) {
+  const char *reg0_name;
+  const gp_register_t *reg1;
+  const char *bit_name;
+
+  reg0_name = NULL;
+  reg1      = NULL;
+  bit_name  = NULL;
 
   if ((ram_acc == 0) && (fstate->bsr_boundary > 0) && (file >= fstate->bsr_boundary)) {
         /* This register in the Access Bank can be found. */
     file += 0xF00;
-    reg = gp_register_find_reg_name(fstate->proc_regs, file);
+    reg1 = gp_register_find_reg(fstate->proc_regs, file);
 
-    if (reg == NULL) {
-      reg = gp_processor_find_sfr_name(class, file);
+    if (reg1 == NULL) {
+      reg0_name = gp_processor_find_sfr_name(class, file);
 
-      if (reg != NULL) {
+      if (reg0_name != NULL) {
         fstate->need_sfr_equ = true;
       }
     }
   }
   else if (IS_VALID_BANK(PIC16_BMSK_BANK)) {
     file += (fstate->bank & PIC16_BMSK_BANK) << PIC16_BANK_SHIFT;
-    reg = gp_register_find_reg_name(fstate->proc_regs, file);
+    reg1 = gp_register_find_reg(fstate->proc_regs, file);
   }
   else {
     file = -1;
-    reg = NULL;
+    reg0_name = NULL;
   }
 
-  if (reg != NULL) {
-    b_memory_set_reg_type(m, byte_address, W_REG_T_FIRST, reg, NULL);
+  if (reg1 != NULL) {
+    reg0_name = reg1->name;
+
+    if (bit_number >= 0) {
+      bit_name = gp_register_find_bit_name(reg1, bit_number);
+    }
+  }
+
+  if (reg0_name != NULL) {
+    if (bit_name != NULL) {
+      b_memory_set_reg_type(m, byte_address, W_REG_T_BOTH, reg0_name, bit_name);
+    }
+    else {
+      b_memory_set_reg_type(m, byte_address, W_REG_T_FIRST, reg0_name, NULL);
+    }
   }
 
   return file;
@@ -1102,7 +1176,7 @@ _insn_class_pf:
     case INSN_CLASS_OPF5:
       /* {PIC12x, SX} (clrf, movwf), SX tris */
       file1 = opcode & PIC12_BMSK_FILE;
-      pic12_reg_eval(m, byte_address, fstate, class, file1);
+      pic12_reg_eval(m, byte_address, fstate, class, file1, -1);
 
       if ((class == PROC_CLASS_PIC12) && (file1 == PIC12_REG_FSR)) {
         if (icode == ICODE_CLRF) {
@@ -1127,7 +1201,7 @@ _insn_class_pf:
       file1 = opcode & PIC12_BMSK_FILE;
       /* Destination flag: 0 = W, 1 = F */
       tmp   = (opcode >> 5) & 1;
-      pic12_reg_eval(m, byte_address, fstate, class, file1);
+      pic12_reg_eval(m, byte_address, fstate, class, file1, -1);
 
       if (tmp == 0) {
         /* The destination the WREG. */
@@ -1143,7 +1217,7 @@ _insn_class_pf:
       file1 = opcode & PIC12_BMSK_FILE;
       /* The bits of register. */
       tmp   = (opcode >> 5) & 7;
-      pic12_reg_eval(m, byte_address, fstate, class, file1);
+      pic12_reg_eval(m, byte_address, fstate, class, file1, tmp);
 
       if ((file1 == PIC12_REG_FSR) && ((tmp >= 5) && (tmp <= 7))) {
         tmp = 1 << (tmp - 5);
@@ -1164,8 +1238,7 @@ _insn_class_pf:
       file1 = opcode & PIC16_BMSK_FILE;
       /* The bits of register. */
       tmp   = (opcode >> 8) & 7;
-
-      pic16_reg_eval(m, byte_address, fstate, class, file1);
+      pic16_reg_eval(m, byte_address, fstate, class, file1, tmp);
       /* TODO: Examination the value of WREG and BSR. */
       break;
 
@@ -1174,7 +1247,7 @@ _insn_class_pf:
       file1 = opcode & PIC14_BMSK_FILE;
 
       if ((icode == ICODE_CLRF) || (icode == ICODE_MOVWF)) {
-        pic14_reg_eval(m, byte_address, fstate, class, file1);
+        pic14_reg_eval(m, byte_address, fstate, class, file1, -1);
       }
 
       if (class == PROC_CLASS_PIC14) {
@@ -1204,8 +1277,7 @@ _insn_class_pf:
     case INSN_CLASS_OPF8:
       /* PIC16 (cpfseq, cpfsgt, cpfslt, movwf, mulwf, tstfsz) */
       file1 = opcode & PIC16_BMSK_FILE;
-
-      pic16_reg_eval(m, byte_address, fstate, class, file1);
+      pic16_reg_eval(m, byte_address, fstate, class, file1, -1);
       /* TODO: Examination the value of WREG and BSR. */
       break;
 
@@ -1216,7 +1288,7 @@ _insn_class_pf:
       file1 = opcode & PIC14_BMSK_FILE;
       /* Destination flag: 0 = W, 1 = F */
       tmp   = (opcode >> 7) & 1;
-      pic14_reg_eval(m, byte_address, fstate, class, file1);
+      pic14_reg_eval(m, byte_address, fstate, class, file1, -1);
 
       if (tmp == 0) {
         /* The destination the WREG. */
@@ -1231,7 +1303,7 @@ _insn_class_pf:
       file1 = opcode & PIC16_BMSK_FILE;
       /* Destination flag: 0 = W, 1 = F */
       tmp   = (opcode >> 8) & 1;
-      pic16_reg_eval(m, byte_address, fstate, class, file1);
+      pic16_reg_eval(m, byte_address, fstate, class, file1, -1);
 
       if ((tmp == 0) || (file1 == PIC16_REG_WREG)) {
         /* The destination the WREG. */
@@ -1247,7 +1319,7 @@ _insn_class_pf:
       file1 = opcode & PIC14_BMSK_FILE;
       /* The bits of register. */
       tmp   = (opcode >> 7) & 7;
-      pic14_reg_eval(m, byte_address, fstate, class, file1);
+      pic14_reg_eval(m, byte_address, fstate, class, file1, tmp);
 
       if (class == PROC_CLASS_PIC14E) {
         tmp = 1 << tmp;
@@ -1293,7 +1365,7 @@ _insn_class_pf:
       file1   = opcode & PIC16_BMSK_FILE;
       /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
       ram_acc = (opcode & 0x100) ? true : false;
-      addr    = pic16e_reg_eval(m, byte_address, fstate, class, file1, ram_acc);
+      addr    = pic16e_reg_eval(m, byte_address, fstate, class, file1, -1, ram_acc);
 
       if (addr == PIC16E_REG_BSR) {
         /* The address of register is known. */
@@ -1318,7 +1390,7 @@ _insn_class_pf:
       tmp     = (opcode >> 9) & 7;
       /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
       ram_acc = (opcode & 0x100) ? true : false;
-      addr    = pic16e_reg_eval(m, byte_address, fstate, class, file1, ram_acc);
+      addr    = pic16e_reg_eval(m, byte_address, fstate, class, file1, tmp, ram_acc);
 
       if ((addr == PIC16E_REG_BSR) && IS_VALID_BANK(PIC16_BMSK_BANK)) {
         /* The address of register is known and known the value of. */
@@ -1345,7 +1417,7 @@ _insn_class_pf:
       tmp     = (opcode >> 9) & 1;
       /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
       ram_acc = (opcode & 0x100) ? true : false;
-      addr    = pic16e_reg_eval(m, byte_address, fstate, class, file1, ram_acc);
+      addr    = pic16e_reg_eval(m, byte_address, fstate, class, file1, -1, ram_acc);
 
       if ((addr == PIC16E_REG_BSR) && (tmp != 0)) {
         fstate->bank_valid = 0;
@@ -1355,7 +1427,7 @@ _insn_class_pf:
     case INSN_CLASS_TBL2:
       /* PIC16 (tlrd, tlwt) */
       file1 = opcode & PIC16_BMSK_FILE;
-      pic16_reg_eval(m, byte_address, fstate, class, file1);
+      pic16_reg_eval(m, byte_address, fstate, class, file1, -1);
 
       if (icode == ICODE_TLRD) {
         if (file1 == PIC16_REG_WREG) {
@@ -1370,7 +1442,7 @@ _insn_class_pf:
     case INSN_CLASS_TBL3:
       /* PIC16 (tablrd, tablwt) */
       file1 = opcode & PIC16_BMSK_FILE;
-      pic16_reg_eval(m, byte_address, fstate, class, file1);
+      pic16_reg_eval(m, byte_address, fstate, class, file1, -1);
 
       if (icode == ICODE_TABLRD) {
         if (file1 == PIC16_REG_WREG) {
@@ -1517,6 +1589,9 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
   }
 
   icode = instruction->icode;
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
 
   switch (instruction->class) {
     case INSN_CLASS_LIT3_BANK:
@@ -2007,7 +2082,12 @@ _insn_class_pf:
       tmp   = (opcode >> 5) & 7;
 
       if (reg1 != NULL) {
-        PRINT_ARG2_S_N(reg1, 1, tmp);
+        if (reg2 != NULL) {
+          PRINT_ARG2_S_S(reg1, reg2);
+        }
+        else {
+          PRINT_ARG2_S_N(reg1, 1, tmp);
+        }
       }
       else {
         PRINT_ARG2_N_N(2, file1, 1, tmp);
@@ -2021,7 +2101,12 @@ _insn_class_pf:
       tmp   = (opcode >> 8) & 7;
 
       if (reg1 != NULL) {
-        PRINT_ARG2_S_N(reg1, 1, tmp);
+        if (reg2 != NULL) {
+          PRINT_ARG2_S_S(reg1, reg2);
+        }
+        else {
+          PRINT_ARG2_S_N(reg1, 1, tmp);
+        }
       }
       else {
         PRINT_ARG2_N_N(2, file1, 1, tmp);
@@ -2097,7 +2182,12 @@ _insn_class_pf:
       tmp   = (opcode >> 7) & 7;
 
       if (reg1 != NULL) {
-        PRINT_ARG2_S_N(reg1, 1, tmp);
+        if (reg2 != NULL) {
+          PRINT_ARG2_S_S(reg1, reg2);
+        }
+        else {
+          PRINT_ARG2_S_N(reg1, 1, tmp);
+        }
       }
       else {
         PRINT_ARG2_N_N(2, file1, 1, tmp);
@@ -2130,7 +2220,12 @@ _insn_class_pf:
       ram_acc = (opcode >> 8) & 1;
 
       if (reg1 != NULL) {
-        PRINT_ARG3_S_N_S(reg1, 1, tmp, FLAG_BA(ram_acc));
+        if (reg2 != NULL) {
+          PRINT_ARG3_S_S_S(reg1, reg2, FLAG_BA(ram_acc));
+        }
+        else {
+          PRINT_ARG3_S_N_S(reg1, 1, tmp, FLAG_BA(ram_acc));
+        }
       }
       else if (behavior & GPDIS_SHOW_NAMES) {
         PRINT_ARG3_N_N_S(2, file1, 1, tmp, FLAG_BA(ram_acc));
@@ -2234,6 +2329,8 @@ _insn_class_pf:
     default:
       assert(0);
     } /* switch (instruction->class) */
+
+#pragma GCC diagnostic pop
 
   return num_words;
 }

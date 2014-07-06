@@ -39,7 +39,7 @@ Boston, MA 02111-1307, USA.  */
 
 #define W_REG_T_FIRST           (1 << 12)           /* The first argumentum of instruction a known register. */
 #define W_REG_T_SECOND          (1 << 11)           /* The second argumentum of instruction a known register. */
-#define W_REG_T_BOTH            (W_REG_T_FIRST | W_REG_T_SECOND) /* Both argumentum of instruction a known register. */
+#define W_REG_T_BOTH            (W_REG_T_FIRST | W_REG_T_SECOND) /* Both argumentum of instruction a known register or bit. */
 #define W_REG_T_MASK            W_REG_T_BOTH
 
 #define W_ADDR_T_FUNC           (1 << 10)           /* A function starts at this address. */
