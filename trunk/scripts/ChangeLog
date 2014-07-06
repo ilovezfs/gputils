@@ -1,3 +1,6 @@
+2014-07-06 Molnar Karoly <molnarkaroly@users.sf.net>
+	* tools/build-register-db.pl: Updated with SFR bits.
+
 2014-07-04 Molnar Karoly <molnarkaroly@users.sf.net>
 	* tools/build-register-db.pl: New tool to build a SFR database.
 
