@@ -37,10 +37,10 @@ Boston, MA 02111-1307, USA.  */
 
 #define W_SECOND_WORD           (1 << 13)           /* PIC16E family, second word of 32 bits instruction. (movff, ...) */
 
-#define W_REG_T_FIRST           (1 << 12)           /* The first argumentum of instruction a known register. */
-#define W_REG_T_SECOND          (1 << 11)           /* The second argumentum of instruction a known register. */
-#define W_REG_T_BOTH            (W_REG_T_FIRST | W_REG_T_SECOND) /* Both argumentum of instruction a known register or bit. */
-#define W_REG_T_MASK            W_REG_T_BOTH
+#define W_ARG_T_FIRST           (1 << 12)           /* The first argumentum of instruction a known register. */
+#define W_ARG_T_SECOND          (1 << 11)           /* The second argumentum of instruction a known register. */
+#define W_ARG_T_BOTH            (W_ARG_T_FIRST | W_ARG_T_SECOND) /* Both argumentum of instruction a known register or bit. */
+#define W_ARG_T_MASK            W_ARG_T_BOTH
 
 #define W_ADDR_T_FUNC           (1 << 10)           /* A function starts at this address. */
 #define W_ADDR_T_LABEL          (1 <<  9)           /* A label there is at this address. */
@@ -57,13 +57,20 @@ Boston, MA 02111-1307, USA.  */
 struct proc_class;
 
 /* See beginning of gpmemory.c for documentation. */
+
+typedef struct MemArg {
+  const char *first_arg;
+  int first_val;
+  const char *second_arg;
+  int second_val;
+} MemArg;
+
 typedef struct MemWord {
   unsigned int data;
   char *section_name;
   char *symbol_name;
   unsigned int dest_byte_addr;
-  const char *first_reg;
-  const char *second_reg;
+  MemArg args;
 } MemWord;
 
 typedef struct MemBlock {
@@ -121,8 +128,9 @@ unsigned int b_memory_get_addr_type(const MemBlock *m, unsigned int address, con
 
 gp_boolean b_memory_set_addr_name(MemBlock *m, unsigned int address, const char *name);
 
-gp_boolean b_memory_set_reg_type(MemBlock *m, unsigned int address, unsigned int type, const char *first_reg, const char *second_reg);
-unsigned int b_memory_get_reg_type(const MemBlock *m, unsigned int address, const char **first_reg, const char **second_reg);
+gp_boolean b_memory_set_args(MemBlock *m, unsigned int address, unsigned int type, const MemArg *Args);
+
+unsigned int b_memory_get_args(const MemBlock *m, unsigned int address, MemArg *Args);
 
 gp_boolean b_memory_set_type(MemBlock *m, unsigned int address, unsigned int type);
 gp_boolean b_memory_clear_type(MemBlock *m, unsigned int address, unsigned int type);

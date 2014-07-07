@@ -39,6 +39,14 @@ typedef union
     The memory is stored in 'memory blocks' which are implemented
     with the 'MemBlock' structure:
 
+      typedef struct MemArg {
+        const char *first_arg;        Name of first argumentum (register).
+        int first_val;                Value of first argumentum (register address).
+
+        const char *second_arg;       Name of second argumentum (register or bit).
+        int second_val;               Value of second argumentum (register or bit address).
+      } MemArg;
+
       typedef struct MemWord {
         unsigned int data;            The data byte and the attributes of.
 
@@ -48,6 +56,8 @@ typedef union
 	                              After disassembly shows the name of function or label.
 
         unsigned int dest_byte_addr;  After disassembly shows the target byte-address (not org) of a branch.
+
+        MemArg args;
       } MemWord;
 
       typedef struct MemBlock {
@@ -158,8 +168,7 @@ b_memory_is_used(MemBlock *m, unsigned int address)
 {
   unsigned int block  = (address >> I_MEM_BITS) & 0xffff;
 
-  do
-  {
+  do {
     if (m->base == block) {
       return (((m->memory != NULL) && (m->memory[address & I_MEM_MASK].data & BYTE_USED_MASK)) ? true : false);
     }
@@ -683,8 +692,7 @@ b_memory_set_addr_name(MemBlock *m, unsigned int address, const char *name)
 /***********************************************************************/
 
 gp_boolean
-b_memory_set_reg_type(MemBlock *m, unsigned int address, unsigned int type,
-                      const char *first_reg, const char *second_reg)
+b_memory_set_args(MemBlock *m, unsigned int address, unsigned int type, const MemArg *Args)
 {
   unsigned int block  = (address >> I_MEM_BITS) & 0xffff;
   unsigned int offset = address & I_MEM_MASK;
@@ -695,14 +703,16 @@ b_memory_set_reg_type(MemBlock *m, unsigned int address, unsigned int type,
       w = &m->memory[offset];
 
       if (w->data & BYTE_USED_MASK) {
-        w->data |= type & W_REG_T_MASK;
+        w->data |= type & W_ARG_T_MASK;
 
-        if (type & W_REG_T_FIRST) {
-          w->first_reg = first_reg;
+        if (type & W_ARG_T_FIRST) {
+          w->args.first_arg = Args->first_arg;
+          w->args.first_val = Args->first_val;
         }
 
-        if (type & W_REG_T_SECOND) {
-          w->second_reg = second_reg;
+        if (type & W_ARG_T_SECOND) {
+          w->args.second_arg = Args->second_arg;
+          w->args.second_val = Args->second_val;
         }
 
         return true;
@@ -720,8 +730,7 @@ b_memory_set_reg_type(MemBlock *m, unsigned int address, unsigned int type,
 /*----------------------------------------------------------------------*/
 
 unsigned int
-b_memory_get_reg_type(const MemBlock *m, unsigned int address,
-                      const char **first_reg, const char **second_reg)
+b_memory_get_args(const MemBlock *m, unsigned int address, MemArg *Args)
 {
   unsigned int block  = (address >> I_MEM_BITS) & 0xffff;
   unsigned int offset = address & I_MEM_MASK;
@@ -732,28 +741,38 @@ b_memory_get_reg_type(const MemBlock *m, unsigned int address,
       w = &m->memory[offset];
 
       if (w->data & BYTE_USED_MASK) {
+        if (Args != NULL) {
+          if (w->data & W_ARG_T_FIRST) {
+            Args->first_arg = w->args.first_arg;
+            Args->first_val = w->args.first_val;
+          }
+          else {
+            Args->first_arg = NULL;
+            Args->first_val = 0;
+          }
 
-        if (first_reg != NULL) {
-          *first_reg = (w->data & W_REG_T_FIRST) ? w->first_reg : NULL;
+          if (w->data & W_ARG_T_SECOND) {
+            Args->second_arg = w->args.second_arg;
+            Args->second_val = w->args.second_val;
+          }
+          else {
+            Args->second_arg = NULL;
+            Args->second_val = 0;
+          }
         }
 
-        if (second_reg != NULL) {
-          *second_reg = (w->data & W_REG_T_SECOND) ? w->second_reg : NULL;
-        }
-
-        return (w->data & W_REG_T_MASK);
+        return (w->data & W_ARG_T_MASK);
       }
     }
 
     m = m->next;
   }
 
-  if (first_reg != NULL) {
-    *first_reg = NULL;
-  }
-
-  if (second_reg != NULL) {
-    *second_reg = NULL;
+  if (Args != NULL) {
+    Args->first_arg  = NULL;
+    Args->first_val  = 0;
+    Args->second_arg = NULL;
+    Args->second_val = 0;
   }
 
   return 0;

@@ -2300,7 +2300,7 @@ const struct proc_class proc_class_pic14e = {
   1,                                    /* org_to_byte_shift */
   PIC14E_PC_MASK,                       /* pc_mask */
   ~(PIC14_PAGE_SIZE - 1),               /* page_mask */
-  0,                                    /* bank_mask */
+  ~(PIC14_BANK_SIZE - 1),               /* bank_mask */
   PIC14_CORE_MASK,                      /* core_mask */
   (1 << 16) - 1,                        /* config_mask */
   4,                                    /* addr_digits */
