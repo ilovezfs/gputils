@@ -73,7 +73,7 @@ write_header(void)
 {
   if (!state.format) {
     printf("\n");
-    printf("        processor %s\n", state.processor->names[1]);
+    printf("        processor %s\n        radix dec\n", state.processor->names[1]);
 
     if (state.processor->header != NULL) {
       printf("        include %s\n", state.processor->header);
@@ -276,7 +276,7 @@ recognize_registers(MemBlock *memory)
   m = memory;
   fstate.wreg = 0;
   fstate.bank = 0;
-  fstate.bank_valid = 0;
+  fstate.bank_valid = 0xff;
   fstate.proc_regs = state.proc_regs;
   fstate.bsr_boundary = gp_processor_bsr_boundary(state.processor);
   fstate.need_sfr_equ = false;
@@ -616,7 +616,8 @@ dasm(MemBlock *memory)
           }
 
           num_words = gp_disassemble(m, i, state.class, bsr_boundary, state.processor->prog_mem_size,
-                                     (state.show_names) ? (GPDIS_SHOW_NAMES | GPDIS_SHOW_BYTES) : GPDIS_SHOW_NOTHING,
+                                     (state.show_names) ? (GPDIS_SHOW_NAMES | GPDIS_SHOW_BYTES | GPDIS_SHOW_EXCLAMATION) :
+                                                          GPDIS_SHOW_NOTHING,
                                      buffer, sizeof(buffer), length);
           printf("%s\n", buffer);
 

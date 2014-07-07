@@ -1,3 +1,12 @@
+2014-07-07  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c:
+    Changed text format.
+
+  * gputils/gpdasm.c, libgputils/gpdis.c, libgputils/gpdis.h,
+    libgputils/gpmemory.c, libgputils/gpmemory.h,
+    libgputils/gpprocessor.c:
+    Changed text format and simple exclamations of some instructions.
+
 2014-07-06  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpdis.c, libgputils/gpmemory.h, libgputils/gpreg-table.c,
     libgputils/gpregister.c, libgputils/gpregister.h:

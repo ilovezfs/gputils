@@ -3836,7 +3836,7 @@ file_ok(unsigned int file)
   bank_bits = file & state.device.class->bank_mask;
 
   /* Issue bank message if necessary. */
-  if (bank_bits) {
+  if (bank_bits != 0) {
     gpvmessage(GPM_BANK, "Bank_bits = %#x, register{%#x}.", bank_bits,
                file & (~state.device.class->bank_mask));
   }

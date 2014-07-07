@@ -43,6 +43,7 @@ typedef struct {
 #define GPDIS_SHOW_NAMES        (1 << 0)
 #define GPDIS_SHOW_BYTES        (1 << 1)
 #define GPDIS_SHOW_ALL_BRANCH   (1 << 2)
+#define GPDIS_SHOW_EXCLAMATION  (1 << 3)
 
 int gp_disassemble_mark_false_addresses(MemBlock *m, int byte_address, pic_processor_t processor);
 
