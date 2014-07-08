@@ -1,6 +1,7 @@
         LIST
 
 ;==========================================================================
+; Build date : May 28 2014
 ;  MPASM PIC12LF1612 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -23,6 +24,16 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
+;;;; Begin: Added in gputils
+
+;==========================================================================
+;
+;       Gputils Specific Revision History
+;
+;==========================================================================
+
+;       08 Jul 2014  Added the _DEBUG_ON and _DEBUG_OFF config options.
+;;;; End: Added in gputils
 
 ;==========================================================================
 ;
@@ -198,12 +209,16 @@ SCANCON0         EQU  H'071C'
 SCANTRIG         EQU  H'071D'
 
 ;-----Bank15------------------
+CRCDAT           EQU  H'0791'
 CRCDATL          EQU  H'0791'
 CRCDATH          EQU  H'0792'
+CRCACC           EQU  H'0793'
 CRCACCL          EQU  H'0793'
 CRCACCH          EQU  H'0794'
+CRCSHIFT         EQU  H'0795'
 CRCSHIFTL        EQU  H'0795'
 CRCSHIFTH        EQU  H'0796'
+CRCXOR           EQU  H'0797'
 CRCXORL          EQU  H'0797'
 CRCXORH          EQU  H'0798'
 CRCCON0          EQU  H'0799'
@@ -691,7 +706,6 @@ CCPR15           EQU  H'0005'
 CCPR16           EQU  H'0006'
 CCPR17           EQU  H'0007'
 
-
 CCP1R0           EQU  H'0000'
 CCP1R1           EQU  H'0001'
 CCP1R2           EQU  H'0002'
@@ -711,7 +725,6 @@ CCPR14           EQU  H'0004'
 CCPR15           EQU  H'0005'
 CCPR16           EQU  H'0006'
 CCPR17           EQU  H'0007'
-
 
 CCP1R0           EQU  H'0000'
 CCP1R1           EQU  H'0001'
@@ -733,7 +746,6 @@ CCPR113          EQU  H'0005'
 CCPR114          EQU  H'0006'
 CCPR115          EQU  H'0007'
 
-
 CCP1R8           EQU  H'0000'
 CCP1R9           EQU  H'0001'
 CCP1R10          EQU  H'0002'
@@ -754,7 +766,6 @@ CCPR113          EQU  H'0005'
 CCPR114          EQU  H'0006'
 CCPR115          EQU  H'0007'
 
-
 CCP1R8           EQU  H'0000'
 CCP1R9           EQU  H'0001'
 CCP1R10          EQU  H'0002'
@@ -766,11 +777,6 @@ CCP1R15          EQU  H'0007'
 
 
 ;----- CCP1CON Bits -----------------------------------------------------
-CCP1FMT          EQU  H'0004'
-CCP1OUT          EQU  H'0005'
-CCP1OE           EQU  H'0006'
-CCP1EN           EQU  H'0007'
-
 FMT              EQU  H'0004'
 OUT              EQU  H'0005'
 OE               EQU  H'0006'
@@ -781,6 +787,11 @@ MODE1            EQU  H'0001'
 MODE2            EQU  H'0002'
 MODE3            EQU  H'0003'
 
+CCP1FMT          EQU  H'0004'
+CCP1OUT          EQU  H'0005'
+CCP1OE           EQU  H'0006'
+CCP1EN           EQU  H'0007'
+
 CCP1MODE0        EQU  H'0000'
 CCP1MODE1        EQU  H'0001'
 CCP1MODE2        EQU  H'0002'
@@ -788,13 +799,12 @@ CCP1MODE3        EQU  H'0003'
 
 
 ;----- CCP1CAP Bits -----------------------------------------------------
-CCP1CTS0         EQU  H'0000'
-CCP1CTS1         EQU  H'0001'
-
-
-
 CTS0             EQU  H'0000'
 CTS1             EQU  H'0001'
+
+
+CCP1CTS0         EQU  H'0000'
+CCP1CTS1         EQU  H'0001'
 
 
 ;----- CCP2RL Bits -----------------------------------------------------
@@ -806,7 +816,6 @@ CCPR24           EQU  H'0004'
 CCPR25           EQU  H'0005'
 CCPR26           EQU  H'0006'
 CCPR27           EQU  H'0007'
-
 
 CCP2R0           EQU  H'0000'
 CCP2R1           EQU  H'0001'
@@ -828,7 +837,6 @@ CCPR25           EQU  H'0005'
 CCPR26           EQU  H'0006'
 CCPR27           EQU  H'0007'
 
-
 CCP2R0           EQU  H'0000'
 CCP2R1           EQU  H'0001'
 CCP2R2           EQU  H'0002'
@@ -848,7 +856,6 @@ CCPR212          EQU  H'0004'
 CCPR213          EQU  H'0005'
 CCPR214          EQU  H'0006'
 CCPR215          EQU  H'0007'
-
 
 CCP2R8           EQU  H'0000'
 CCP2R9           EQU  H'0001'
@@ -870,7 +877,6 @@ CCPR213          EQU  H'0005'
 CCPR214          EQU  H'0006'
 CCPR215          EQU  H'0007'
 
-
 CCP2R8           EQU  H'0000'
 CCP2R9           EQU  H'0001'
 CCP2R10          EQU  H'0002'
@@ -882,11 +888,6 @@ CCP2R15          EQU  H'0007'
 
 
 ;----- CCP2CON Bits -----------------------------------------------------
-CCP2FMT          EQU  H'0004'
-CCP2OUT          EQU  H'0005'
-CCP2OE           EQU  H'0006'
-CCP2EN           EQU  H'0007'
-
 FMT              EQU  H'0004'
 OUT              EQU  H'0005'
 OE               EQU  H'0006'
@@ -897,6 +898,11 @@ MODE1            EQU  H'0001'
 MODE2            EQU  H'0002'
 MODE3            EQU  H'0003'
 
+CCP2FMT          EQU  H'0004'
+CCP2OUT          EQU  H'0005'
+CCP2OE           EQU  H'0006'
+CCP2EN           EQU  H'0007'
+
 CCP2MODE0        EQU  H'0000'
 CCP2MODE1        EQU  H'0001'
 CCP2MODE2        EQU  H'0002'
@@ -904,13 +910,12 @@ CCP2MODE3        EQU  H'0003'
 
 
 ;----- CCP2CAP Bits -----------------------------------------------------
-CCP2CTS0         EQU  H'0000'
-CCP2CTS1         EQU  H'0001'
-
-
-
 CTS0             EQU  H'0000'
 CTS1             EQU  H'0001'
+
+
+CCP2CTS0         EQU  H'0000'
+CCP2CTS1         EQU  H'0001'
 
 
 ;----- CCPTMRS Bits -----------------------------------------------------
@@ -1424,7 +1429,7 @@ CRCDAT3          EQU  H'0003'
 CRCDAT4          EQU  H'0004'
 CRCDAT5          EQU  H'0005'
 CRCDAT6          EQU  H'0006'
-CRCDAT7          EQU  H'0007'
+CRDCDAT7         EQU  H'0007'
 
 
 ;----- CRCDATH Bits -----------------------------------------------------
@@ -2234,91 +2239,96 @@ _CONFIG2         EQU  H'8008'
 _CONFIG3         EQU  H'8009'
 
 ;----- CONFIG1 Options --------------------------------------------------
-_FOSC_INTOSC     EQU  H'FFFC'    ; INTOSC oscillator: I/O function on CLKIN pin
-_FOSC_ECL        EQU  H'FFFD'    ; ECL, External Clock, Low Power Mode (0-0.5 MHz): device clock supplied to CLKIN pins
-_FOSC_ECM        EQU  H'FFFE'    ; ECM, External Clock, Medium Power Mode (0.5-4 MHz): device clock supplied to CLKIN pins
-_FOSC_ECH        EQU  H'FFFF'    ; ECH, External Clock, High Power Mode (4-20 MHz): device clock supplied to CLKIN pins
+_FOSC_INTOSC     EQU  H'3FFC'    ; INTOSC oscillator: I/O function on CLKIN pin
+_FOSC_ECL        EQU  H'3FFD'    ; ECL, External Clock, Low Power Mode (0-0.5 MHz): device clock supplied to CLKIN pins
+_FOSC_ECM        EQU  H'3FFE'    ; ECM, External Clock, Medium Power Mode (0.5-4 MHz): device clock supplied to CLKIN pins
+_FOSC_ECH        EQU  H'3FFF'    ; ECH, External Clock, High Power Mode (4-20 MHz): device clock supplied to CLKIN pins
 
-_PWRTE_ON        EQU  H'FFDF'    ; PWRT enabled
-_PWRTE_OFF       EQU  H'FFFF'    ; PWRT disabled
+_PWRTE_ON        EQU  H'3FDF'    ; PWRT enabled
+_PWRTE_OFF       EQU  H'3FFF'    ; PWRT disabled
 
-_MCLRE_OFF       EQU  H'FFBF'    ; MCLR/VPP pin function is digital input
-_MCLRE_ON        EQU  H'FFFF'    ; MCLR/VPP pin function is MCLR
+_MCLRE_OFF       EQU  H'3FBF'    ; MCLR/VPP pin function is digital input
+_MCLRE_ON        EQU  H'3FFF'    ; MCLR/VPP pin function is MCLR
 
-_CP_ON           EQU  H'FF7F'    ; Program memory code protection is enabled
-_CP_OFF          EQU  H'FFFF'    ; Program memory code protection is disabled
+_CP_ON           EQU  H'3F7F'    ; Program memory code protection is enabled
+_CP_OFF          EQU  H'3FFF'    ; Program memory code protection is disabled
 
-_BOREN_OFF       EQU  H'F9FF'    ; Brown-out Reset disabled
-_BOREN_SBODEN    EQU  H'FBFF'    ; Brown-out Reset controlled by the SBOREN bit in the BORCON register
-_BOREN_NSLEEP    EQU  H'FDFF'    ; Brown-out Reset enabled while running and disabled in Sleep
-_BOREN_ON        EQU  H'FFFF'    ; Brown-out Reset enabled
+_BOREN_OFF       EQU  H'39FF'    ; Brown-out Reset disabled
+_BOREN_SBODEN    EQU  H'3BFF'    ; Brown-out Reset controlled by the SBOREN bit in the BORCON register
+_BOREN_NSLEEP    EQU  H'3DFF'    ; Brown-out Reset enabled while running and disabled in Sleep
+_BOREN_ON        EQU  H'3FFF'    ; Brown-out Reset enabled
 
-_CLKOUTEN_ON     EQU  H'F7FF'    ; CLKOUT function is enabled on the CLKOUT pin
-_CLKOUTEN_OFF    EQU  H'FFFF'    ; CLKOUT function is disabled. I/O or oscillator function on the CLKOUT pin
+_CLKOUTEN_ON     EQU  H'37FF'    ; CLKOUT function is enabled on the CLKOUT pin
+_CLKOUTEN_OFF    EQU  H'3FFF'    ; CLKOUT function is disabled. I/O or oscillator function on the CLKOUT pin
 
 ;----- CONFIG2 Options --------------------------------------------------
-_WRT_ALL         EQU  H'FFFC'    ; 000h to 1FFFh write protected, no addresses may be modified by EECON control
-_WRT_HALF        EQU  H'FFFD'    ; 000h to FFFh write protected, 1000h to 1FFFh may be modified by EECON control
-_WRT_BOOT        EQU  H'FFFE'    ; 000h to 1FFh write protected, 200h to 1FFFh may be modified by EECON control
-_WRT_OFF         EQU  H'FFFF'    ; Write protection off
+_WRT_ALL         EQU  H'3FFC'    ; 000h to 1FFFh write protected, no addresses may be modified by EECON control
+_WRT_HALF        EQU  H'3FFD'    ; 000h to FFFh write protected, 1000h to 1FFFh may be modified by EECON control
+_WRT_BOOT        EQU  H'3FFE'    ; 000h to 1FFh write protected, 200h to 1FFFh may be modified by EECON control
+_WRT_OFF         EQU  H'3FFF'    ; Write protection off
 
-_ZCDDIS_OFF      EQU  H'FF7F'    ; ZCD always enabled
-_ZCDDIS_ON       EQU  H'FFFF'    ; ZCD disable.  ZCD can be enabled by setting the ZCDSEN bit of ZCDCON
+_nZCD_ON         EQU  H'3F7F'    ; ZCD always enabled
+_nZCD_OFF        EQU  H'3FFF'    ; ZCD disable.  ZCD can be enabled by setting the ZCDSEN bit of ZCDCON
 
-_PLLEN_OFF       EQU  H'FEFF'    ; 4x PLL is enabled when software sets the SPLLEN bit
-_PLLEN_ON        EQU  H'FFFF'    ; 4x PLL is always enabled
+_PLLEN_OFF       EQU  H'3EFF'    ; 4x PLL is enabled when software sets the SPLLEN bit
+_PLLEN_ON        EQU  H'3FFF'    ; 4x PLL is always enabled
 
-_STVREN_OFF      EQU  H'FDFF'    ; Stack Overflow or Underflow will not cause a Reset
-_STVREN_ON       EQU  H'FFFF'    ; Stack Overflow or Underflow will cause a Reset
+_STVREN_OFF      EQU  H'3DFF'    ; Stack Overflow or Underflow will not cause a Reset
+_STVREN_ON       EQU  H'3FFF'    ; Stack Overflow or Underflow will cause a Reset
 
-_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (Vbor), high trip point selected.
-_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
+_BORV_HI         EQU  H'3BFF'    ; Brown-out Reset Voltage (Vbor), high trip point selected.
+_BORV_LO         EQU  H'3FFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
 
-_LPBOR_ON        EQU  H'F7FF'    ; Low-Power BOR is enabled
-_LPBOR_OFF       EQU  H'FFFF'    ; Low-Power BOR is disabled
+_LPBOR_ON        EQU  H'37FF'    ; Low-Power BOR is enabled
+_LPBOR_OFF       EQU  H'3FFF'    ; Low-Power BOR is disabled
 
-_LVP_OFF         EQU  H'DFFF'    ; High-voltage on MCLR/VPP must be used for programming
-_LVP_ON          EQU  H'FFFF'    ; Low-voltage programming enabled
+;;;; Begin: Added in gputils
+_DEBUG_ON        EQU  H'2FFF'    ; In-Circuit Debugger enabled, ICSPCLK and ICSPDAT are dedicated to the debugger.
+_DEBUG_OFF       EQU  H'3FFF'    ; In-Circuit Debugger disabled, ICSPCLK and ICSPDAT are general purpose I/O pins.
+
+;;;; End: Added in gputils
+_LVP_OFF         EQU  H'1FFF'    ; High-voltage on MCLR/VPP must be used for programming
+_LVP_ON          EQU  H'3FFF'    ; Low-voltage programming enabled
 
 ;----- CONFIG3 Options --------------------------------------------------
-_WDTCPS_WDTCPS0  EQU  H'FFE0'    ; 1:32 (1 ms period)
-_WDTCPS_WDTCPS1  EQU  H'FFE1'    ; 1:64 (2 ms period)
-_WDTCPS_WDTCPS2  EQU  H'FFE2'    ; 1:128 (4 ms period)
-_WDTCPS_WDTCPS3  EQU  H'FFE3'    ; 1:256 (8 ms period)
-_WDTCPS_WDTCPS4  EQU  H'FFE4'    ; 1:512 (16 ms period)
-_WDTCPS_WDTCPS5  EQU  H'FFE5'    ; 1:1024 (32 ms period)
-_WDTCPS_WDTCPS6  EQU  H'FFE6'    ; 1:2048 (64 ms period)
-_WDTCPS_WDTCPS7  EQU  H'FFE7'    ; 1:4096 (128 ms period)
-_WDTCPS_WDTCPS8  EQU  H'FFE8'    ; 1:8192 (256 ms period)
-_WDTCPS_WDTCPS9  EQU  H'FFE9'    ; 1:16384 (512 ms period)
-_WDTCPS_WDTCPSA  EQU  H'FFEA'    ; 1:32768 (1 s period)
-_WDTCPS_WDTCPSB  EQU  H'FFEB'    ; 1:65536 (2 s period)
-_WDTCPS_WDTCPSC  EQU  H'FFEC'    ; 1:131072 (4 s period)
-_WDTCPS_WDTCPSD  EQU  H'FFED'    ; 1:262144 (8 s period)
-_WDTCPS_WDTCPSE  EQU  H'FFEE'    ; 1:524299 (16 s period)
-_WDTCPS_WDTCPSF  EQU  H'FFEF'    ; 1:1048576 (32 s period)
-_WDTCPS_WDTCPS10 EQU  H'FFF0'    ; 1:2097152 (64 s period)
-_WDTCPS_WDTCPS11 EQU  H'FFF1'    ; 1:4194304 (128 s period)
-_WDTCPS_WDTCPS12 EQU  H'FFF2'    ; 1:8388608 (256 s period)
-_WDTCPS_WDTCPS1F EQU  H'FFFF'    ; Software Control (WDTPS)
+_WDTCPS_WDTCPS0  EQU  H'3FE0'    ; 1:32 (1 ms period)
+_WDTCPS_WDTCPS1  EQU  H'3FE1'    ; 1:64 (2 ms period)
+_WDTCPS_WDTCPS2  EQU  H'3FE2'    ; 1:128 (4 ms period)
+_WDTCPS_WDTCPS3  EQU  H'3FE3'    ; 1:256 (8 ms period)
+_WDTCPS_WDTCPS4  EQU  H'3FE4'    ; 1:512 (16 ms period)
+_WDTCPS_WDTCPS5  EQU  H'3FE5'    ; 1:1024 (32 ms period)
+_WDTCPS_WDTCPS6  EQU  H'3FE6'    ; 1:2048 (64 ms period)
+_WDTCPS_WDTCPS7  EQU  H'3FE7'    ; 1:4096 (128 ms period)
+_WDTCPS_WDTCPS8  EQU  H'3FE8'    ; 1:8192 (256 ms period)
+_WDTCPS_WDTCPS9  EQU  H'3FE9'    ; 1:16384 (512 ms period)
+_WDTCPS_WDTCPSA  EQU  H'3FEA'    ; 1:32768 (1 s period)
+_WDTCPS_WDTCPSB  EQU  H'3FEB'    ; 1:65536 (2 s period)
+_WDTCPS_WDTCPSC  EQU  H'3FEC'    ; 1:131072 (4 s period)
+_WDTCPS_WDTCPSD  EQU  H'3FED'    ; 1:262144 (8 s period)
+_WDTCPS_WDTCPSE  EQU  H'3FEE'    ; 1:524299 (16 s period)
+_WDTCPS_WDTCPSF  EQU  H'3FEF'    ; 1:1048576 (32 s period)
+_WDTCPS_WDTCPS10 EQU  H'3FF0'    ; 1:2097152 (64 s period)
+_WDTCPS_WDTCPS11 EQU  H'3FF1'    ; 1:4194304 (128 s period)
+_WDTCPS_WDTCPS12 EQU  H'3FF2'    ; 1:8388608 (256 s period)
+_WDTCPS_WDTCPS1F EQU  H'3FFF'    ; Software Control (WDTPS)
 
-_WDTE_OFF        EQU  H'FF9F'    ; WDT disabled
-_WDTE_SWDTEN     EQU  H'FFBF'    ; WDT controlled by the SWDTEN bit in the WDTCON register
-_WDTE_NSLEEP     EQU  H'FFDF'    ; WDT enabled while running and disabled in Sleep
-_WDTE_ON         EQU  H'FFFF'    ; WDT enabled
+_WDTE_OFF        EQU  H'3F9F'    ; WDT disabled
+_WDTE_SWDTEN     EQU  H'3FBF'    ; WDT controlled by the SWDTEN bit in the WDTCON register
+_WDTE_NSLEEP     EQU  H'3FDF'    ; WDT enabled while running and disabled in Sleep
+_WDTE_ON         EQU  H'3FFF'    ; WDT enabled
 
-_WDTCWS_WDTCWS125 EQU  H'F8FF'    ; 12.5 percent window open time
-_WDTCWS_WDTCWS25 EQU  H'F9FF'    ; 25 percent window open time
-_WDTCWS_WDTCWS375 EQU  H'FAFF'    ; 37.5 percent window open time
-_WDTCWS_WDTCWS50 EQU  H'FBFF'    ; 50 percent window open time
-_WDTCWS_WDTCWS625 EQU  H'FCFF'    ; 62.5 percent window open time
-_WDTCWS_WDTCWS75 EQU  H'FDFF'    ; 75 percent window open time
-_WDTCWS_WDTCWS100 EQU  H'FEFF'    ; 100 percent window open time (Legacy WDT) 
-_WDTCWS_WDTCWSSW EQU  H'FFFF'    ; Software WDT window size control (WDTWS bits)
+_WDTCWS_WDTCWS125 EQU  H'38FF'    ; 12.5 percent window open time
+_WDTCWS_WDTCWS25 EQU  H'39FF'    ; 25 percent window open time
+_WDTCWS_WDTCWS375 EQU  H'3AFF'    ; 37.5 percent window open time
+_WDTCWS_WDTCWS50 EQU  H'3BFF'    ; 50 percent window open time
+_WDTCWS_WDTCWS625 EQU  H'3CFF'    ; 62.5 percent window open time
+_WDTCWS_WDTCWS75 EQU  H'3DFF'    ; 75 percent window open time
+_WDTCWS_WDTCWS100 EQU  H'3EFF'    ; 100 percent window open time (Legacy WDT) 
+_WDTCWS_WDTCWSSW EQU  H'3FFF'    ; Software WDT window size control (WDTWS bits)
 
-_WDTCCS_LFINTOSC EQU  H'C7FF'    ; 31.0 kHz LFINTOSC
-_WDTCCS_MFINTOSC EQU  H'CFFF'    ; 31.0 kHz LFINTOSC
-_WDTCCS_SWC      EQU  H'FFFF'    ; Software control, controlled by WDTCS bits
+_WDTCCS_LFINTOSC EQU  H'7FF'    ; 31.0 kHz LFINTOSC
+_WDTCCS_MFINTOSC EQU  H'FFF'    ; 31.0 kHz LFINTOSC
+_WDTCCS_SWC      EQU  H'3FFF'    ; Software control, controlled by WDTCS bits
 
 ;----- DEVID Equates --------------------------------------------------
 _DEVID1          EQU  H'8006'

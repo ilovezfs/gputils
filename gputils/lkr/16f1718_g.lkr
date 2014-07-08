@@ -81,7 +81,7 @@ DATABANK   NAME=gpr17      START=0x8A0             END=0x8EF          SHADOW=lin
 DATABANK   NAME=gpr18      START=0x920             END=0x96F          SHADOW=linear0:0x25A0
 DATABANK   NAME=gpr19      START=0x9A0             END=0x9EF          SHADOW=linear0:0x25F0
 //// Begin: Changed in gputils
-//DATABANK   NAME=grp20      START=0xA20             END=0xA6F          SHADOW=linear0:0x2640
+////DATABANK   NAME=grp20      START=0xA20             END=0xA6F          SHADOW=linear0:0x2640
 DATABANK   NAME=gpr20      START=0xA20             END=0xA6F          SHADOW=linear0:0x2640
 //// End: Changed in gputils
 DATABANK   NAME=gpr21      START=0xAA0             END=0xAEF          SHADOW=linear0:0x2690

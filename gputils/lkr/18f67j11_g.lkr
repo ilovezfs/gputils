@@ -1,5 +1,6 @@
 // File: 18f67j11_g.lkr
 // Generic linker script for the PIC18F67J11 processor
+// Build date : May 28 2014
 
 LIBPATH .
 
