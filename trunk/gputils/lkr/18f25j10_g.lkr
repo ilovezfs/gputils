@@ -1,5 +1,6 @@
 // File: 18f25j10_g.lkr
 // Generic linker script for the PIC18F25J10 processor
+// Build date : May 28 2014
 
 LIBPATH .
 

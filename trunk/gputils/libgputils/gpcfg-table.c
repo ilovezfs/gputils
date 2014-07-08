@@ -4,8 +4,8 @@
  */
 
 /*
- * since caches are enabled, directive and option structures may seem to include
- * references to other PICs. this is done by caching when two or more PICs contain
+ * Since caches are enabled, directive and option structures may seem to include
+ * references to other PICs. This is done by caching when two or more PICs contain
  * identical data.
  */
 
@@ -2621,7 +2621,7 @@ static const struct gp_cfg_directive pic12f1612_008007[] =
 static const struct gp_cfg_directive pic12f1612_008008[] =
 {
 	{ "WRT",       0x03,  4, pic12f1501_wrt_opts },
-	{ "ZCDDIS",    0x80,  2, pic12c671_mclre_opts },
+	{ "nZCD",      0x80,  2, pic10f320_cp_opts },
 	{ "PLLEN",     0x100,  2, pic10f320_lvp_opts },
 	{ "STVREN",    0x200,  2, pic10f320_lpbor_opts },
 	{ "BORV",      0x400,  2, pic10f320_borv_opts },
@@ -7206,13 +7206,15 @@ static const struct gp_cfg_addr gp_cfg_ps810_addrs[] =
  * Devices Table
  */
 
-const unsigned gp_cfg_device_count = 660;
+const unsigned int gp_cfg_device_count = 662;
 const struct gp_cfg_device gp_cfg_devices[] =
 {
 	{ "MCP19110",      1, gp_cfg_mcp19110_addrs },
 	{ "MCP19111",      1, gp_cfg_mcp19110_addrs },
 	{ "MCP19114",      1, gp_cfg_mcp19114_addrs },
 	{ "MCP19115",      1, gp_cfg_mcp19114_addrs },
+	{ "MCP19118",      1, gp_cfg_mcp19110_addrs },
+	{ "MCP19119",      1, gp_cfg_mcp19110_addrs },
 	{ "MCP25020",      1, gp_cfg_mcp25020_addrs },
 	{ "MCP25025",      1, gp_cfg_mcp25020_addrs },
 	{ "MCP25050",      1, gp_cfg_mcp25020_addrs },

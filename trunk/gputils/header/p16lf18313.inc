@@ -1,6 +1,7 @@
         LIST
 
 ;==========================================================================
+; Build date : May 28 2014
 ;  MPASM PIC16LF18313 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -206,14 +207,14 @@ PWM4CON          EQU  H'061C'
 PWM4CON0         EQU  H'061C'
 
 ;-----Bank13------------------
-CWG1CLK          EQU  H'0691'
+CWG1CLKCON       EQU  H'0691'
 CWG1DAT          EQU  H'0692'
 CWG1DBR          EQU  H'0693'
 CWG1DBF          EQU  H'0694'
 CWG1CON0         EQU  H'0695'
 CWG1CON1         EQU  H'0696'
-CWG1ASD0         EQU  H'0697'
-CWG1ASD1         EQU  H'0698'
+CWG1AS0          EQU  H'0697'
+CWG1AS1          EQU  H'0698'
 CWG1STR          EQU  H'0699'
 
 ;-----Bank17------------------
@@ -511,14 +512,14 @@ WDTPS4           EQU  H'0005'
 ;----- ADCON0 Bits -----------------------------------------------------
 ADON             EQU  H'0000'
 GO_NOT_DONE      EQU  H'0001'
+
+ADGO             EQU  H'0001'
 CHS0             EQU  H'0002'
 CHS1             EQU  H'0003'
 CHS2             EQU  H'0004'
 CHS3             EQU  H'0005'
 CHS4             EQU  H'0006'
 CHS5             EQU  H'0007'
-
-ADGO             EQU  H'0001'
 
 GO               EQU  H'0001'
 
@@ -553,7 +554,6 @@ LATA5            EQU  H'0005'
 C1SYNC           EQU  H'0000'
 C1HYS            EQU  H'0001'
 C1SP             EQU  H'0002'
-C1ZLF            EQU  H'0003'
 C1POL            EQU  H'0004'
 C1OUT            EQU  H'0006'
 C1ON             EQU  H'0007'
@@ -1271,15 +1271,22 @@ PWM4OUT          EQU  H'0005'
 PWM4EN           EQU  H'0007'
 
 
-;----- CWG1CLK Bits -----------------------------------------------------
-WGCLK0           EQU  H'0000'
+;----- CWG1CLKCON Bits -----------------------------------------------------
+CS               EQU  H'0000'
+
+CWG1CS           EQU  H'0000'
 
 
 ;----- CWG1DAT Bits -----------------------------------------------------
-WGDAT0           EQU  H'0000'
-WGDAT1           EQU  H'0001'
-WGDAT2           EQU  H'0002'
-WGDAT3           EQU  H'0003'
+DAT0             EQU  H'0000'
+DAT1             EQU  H'0001'
+DAT2             EQU  H'0002'
+DAT3             EQU  H'0003'
+
+CWG1DAT0         EQU  H'0000'
+CWG1DAT1         EQU  H'0001'
+CWG1DAT2         EQU  H'0002'
+CWG1DAT3         EQU  H'0003'
 
 
 ;----- CWG1DBR Bits -----------------------------------------------------
@@ -1291,6 +1298,14 @@ DBR4             EQU  H'0004'
 DBR5             EQU  H'0005'
 
 
+CWG1DBR0         EQU  H'0000'
+CWG1DBR1         EQU  H'0001'
+CWG1DBR2         EQU  H'0002'
+CWG1DBR3         EQU  H'0003'
+CWG1DBR4         EQU  H'0004'
+CWG1DBR5         EQU  H'0005'
+
+
 ;----- CWG1DBF Bits -----------------------------------------------------
 DBF0             EQU  H'0000'
 DBF1             EQU  H'0001'
@@ -1300,47 +1315,91 @@ DBF4             EQU  H'0004'
 DBF5             EQU  H'0005'
 
 
-;----- CWG1CON0 Bits -----------------------------------------------------
-WGLD             EQU  H'0006'
-WGEN             EQU  H'0007'
+CWG1DBF0         EQU  H'0000'
+CWG1DBF1         EQU  H'0001'
+CWG1DBF2         EQU  H'0002'
+CWG1DBF3         EQU  H'0003'
+CWG1DBF4         EQU  H'0004'
+CWG1DBF5         EQU  H'0005'
 
-WGMD0            EQU  H'0000'
-WGMD1            EQU  H'0001'
-WGMD2            EQU  H'0002'
+
+;----- CWG1CON0 Bits -----------------------------------------------------
+LD               EQU  H'0006'
+EN               EQU  H'0007'
+
+MODE0            EQU  H'0000'
+MODE1            EQU  H'0001'
+MODE2            EQU  H'0002'
+G1EN             EQU  H'0007'
+
+CWG1LD           EQU  H'0006'
+CWG1EN           EQU  H'0007'
+
+CWG1MODE0        EQU  H'0000'
+CWG1MODE1        EQU  H'0001'
+CWG1MODE2        EQU  H'0002'
 
 
 ;----- CWG1CON1 Bits -----------------------------------------------------
-WGPOLA           EQU  H'0000'
-WGPOLB           EQU  H'0001'
-WGPOLC           EQU  H'0002'
-WGPOLD           EQU  H'0003'
-WGDATA           EQU  H'0005'
+POLA             EQU  H'0000'
+POLB             EQU  H'0001'
+POLC             EQU  H'0002'
+POLD             EQU  H'0003'
+IN               EQU  H'0005'
+
+CWG1POLA         EQU  H'0000'
+CWG1POLB         EQU  H'0001'
+CWG1POLC         EQU  H'0002'
+CWG1POLD         EQU  H'0003'
+CWG1IN           EQU  H'0005'
 
 
-;----- CWG1ASD0 Bits -----------------------------------------------------
-WGASDAC0         EQU  H'0002'
-WGASDAC1         EQU  H'0003'
-WGASDBD0         EQU  H'0004'
-WGASDBD1         EQU  H'0005'
-WGARSEN          EQU  H'0006'
-WGASE            EQU  H'0007'
+;----- CWG1AS0 Bits -----------------------------------------------------
+REN              EQU  H'0006'
+SHUTDOWN         EQU  H'0007'
+
+LSAC0            EQU  H'0002'
+LSAC1            EQU  H'0003'
+LSBD0            EQU  H'0004'
+LSBD1            EQU  H'0005'
+
+CWG1REN          EQU  H'0006'
+CWG1SHUTDOWN     EQU  H'0007'
+
+CWG1LSAC0        EQU  H'0002'
+CWG1LSAC1        EQU  H'0003'
+CWG1LSBD0        EQU  H'0004'
+CWG1LSBD1        EQU  H'0005'
 
 
-;----- CWG1ASD1 Bits -----------------------------------------------------
-WGAS0E           EQU  H'0000'
-WGAS1E           EQU  H'0001'
-WGAS3E           EQU  H'0003'
+;----- CWG1AS1 Bits -----------------------------------------------------
+AS0E             EQU  H'0000'
+AS1E             EQU  H'0001'
+AS2E             EQU  H'0002'
+AS3E             EQU  H'0003'
+AS4E             EQU  H'0004'
+AS5E             EQU  H'0005'
+AS6E             EQU  H'0006'
 
 
 ;----- CWG1STR Bits -----------------------------------------------------
-WGSTRA           EQU  H'0000'
-WGSTRB           EQU  H'0001'
-WGSTRC           EQU  H'0002'
-WGSTRD           EQU  H'0003'
-WGSDATA          EQU  H'0004'
-WGSDATB          EQU  H'0005'
-WGSDATC          EQU  H'0006'
-WGSDATD          EQU  H'0007'
+STRA             EQU  H'0000'
+STRB             EQU  H'0001'
+STRC             EQU  H'0002'
+STRD             EQU  H'0003'
+OVRA             EQU  H'0004'
+OVRB             EQU  H'0005'
+OVRC             EQU  H'0006'
+OVRD             EQU  H'0007'
+
+CWG1STRA         EQU  H'0000'
+CWG1STRB         EQU  H'0001'
+CWG1STRC         EQU  H'0002'
+CWG1STRD         EQU  H'0003'
+CWG1OVRA         EQU  H'0004'
+CWG1OVRB         EQU  H'0005'
+CWG1OVRC         EQU  H'0006'
+CWG1OVRD         EQU  H'0007'
 
 
 ;----- NVMADRL Bits -----------------------------------------------------
@@ -2191,80 +2250,80 @@ _CONFIG3         EQU  H'8009'
 _CONFIG4         EQU  H'800A'
 
 ;----- CONFIG1 Options --------------------------------------------------
-_FEXTOSC_LP      EQU  H'FFF8'    ; LP (crystal oscillator) optimized for 32.768 kHz; PFM set to low power
-_FEXTOSC_XT      EQU  H'FFF9'    ; XT (crystal oscillator) from 100 kHz to 4 MHz; PFM set to medium power
-_FEXTOSC_HS      EQU  H'FFFA'    ; HS (crystal oscillator) above 4 MHz; PFM set to high power
-_FEXTOSC_Unimplemented EQU  H'FFFB'    ; Unimplemented
-_FEXTOSC_OFF     EQU  H'FFFC'    ; Oscillator not enabled
-_FEXTOSC_ECL     EQU  H'FFFD'    ; EC (external clock) below 100 kHz; PFM set to low power
-_FEXTOSC_ECM     EQU  H'FFFE'    ; EC (external clock) for 100 kHz to 8 MHz; PFM set to medium power
-_FEXTOSC_ECH     EQU  H'FFFF'    ; EC (external clock) above 8 MHz; PFM set to high power (device manufacturing default)
+_FEXTOSC_LP      EQU  H'3FF8'    ; LP (crystal oscillator) optimized for 32.768 kHz; PFM set to low power
+_FEXTOSC_XT      EQU  H'3FF9'    ; XT (crystal oscillator) from 100 kHz to 4 MHz; PFM set to medium power
+_FEXTOSC_HS      EQU  H'3FFA'    ; HS (crystal oscillator) above 4 MHz; PFM set to high power
+_FEXTOSC_Unimplemented EQU  H'3FFB'    ; Unimplemented
+_FEXTOSC_OFF     EQU  H'3FFC'    ; Oscillator not enabled
+_FEXTOSC_ECL     EQU  H'3FFD'    ; EC (external clock) below 100 kHz; PFM set to low power
+_FEXTOSC_ECM     EQU  H'3FFE'    ; EC (external clock) for 100 kHz to 8 MHz; PFM set to medium power
+_FEXTOSC_ECH     EQU  H'3FFF'    ; EC (external clock) above 8 MHz; PFM set to high power (device manufacturing default)
 
-_RSTOSC_HFINT32  EQU  H'FF8F'    ; HFINTOSC with 2x PLL (32MHz)
-_RSTOSC_EXT4X    EQU  H'FF9F'    ; EXTOSC with 4x PLL, with EXTOSC operating per FEXTOSC bits
-_RSTOSC_EXT2X    EQU  H'FFAF'    ; EXTOSC with 2x PLL, with EXTOSC operating per FEXTOSC bits
-_RSTOSC_SOSC     EQU  H'FFBF'    ; SOSC (31kHz)
-_RSTOSC_LFINT    EQU  H'FFCF'    ; LFINTOSC (31kHz)
-_RSTOSC_Unimplemented EQU  H'FFDF'    ; Unimplemented
-_RSTOSC_HFINT1   EQU  H'FFEF'    ; HFINTOSC (1MHz)
-_RSTOSC_EXT1X    EQU  H'FFFF'    ; EXTOSC operating per FEXTOSC bits (device manufacturing default)
+_RSTOSC_HFINT32  EQU  H'3F8F'    ; HFINTOSC with 2x PLL (32MHz)
+_RSTOSC_EXT4X    EQU  H'3F9F'    ; EXTOSC with 4x PLL, with EXTOSC operating per FEXTOSC bits
+_RSTOSC_EXT2X    EQU  H'3FAF'    ; EXTOSC with 2x PLL, with EXTOSC operating per FEXTOSC bits
+_RSTOSC_SOSC     EQU  H'3FBF'    ; SOSC (31kHz)
+_RSTOSC_LFINT    EQU  H'3FCF'    ; LFINTOSC (31kHz)
+_RSTOSC_Unimplemented EQU  H'3FDF'    ; Unimplemented
+_RSTOSC_HFINT1   EQU  H'3FEF'    ; HFINTOSC (1MHz)
+_RSTOSC_EXT1X    EQU  H'3FFF'    ; EXTOSC operating per FEXTOSC bits (device manufacturing default)
 
-_CLKOUTEN_ON     EQU  H'FEFF'    ; CLKOUT function is enabled; FOSC/4 clock appears at OSC2
-_CLKOUTEN_OFF    EQU  H'FFFF'    ; CLKOUT function is disabled; I/O or oscillator function on OSC2
+_CLKOUTEN_ON     EQU  H'3EFF'    ; CLKOUT function is enabled; FOSC/4 clock appears at OSC2
+_CLKOUTEN_OFF    EQU  H'3FFF'    ; CLKOUT function is disabled; I/O or oscillator function on OSC2
 
-_CSWEN_OFF       EQU  H'F7FF'    ; The NOSC and NDIV bits cannot be changed by user software
-_CSWEN_ON        EQU  H'FFFF'    ; Writing to NOSC and NDIV is allowed
+_CSWEN_OFF       EQU  H'37FF'    ; The NOSC and NDIV bits cannot be changed by user software
+_CSWEN_ON        EQU  H'3FFF'    ; Writing to NOSC and NDIV is allowed
 
-_FCMEN_OFF       EQU  H'DFFF'    ; Fail-Safe Clock Monitor is disabled
-_FCMEN_ON        EQU  H'FFFF'    ; Fail-Safe Clock Monitor is enabled
+_FCMEN_OFF       EQU  H'1FFF'    ; Fail-Safe Clock Monitor is disabled
+_FCMEN_ON        EQU  H'3FFF'    ; Fail-Safe Clock Monitor is enabled
 
 ;----- CONFIG2 Options --------------------------------------------------
-_MCLRE_OFF       EQU  H'FFFE'    ; MCLR/VPP pin function is digital input; MCLR internally disabled; Weak pull-up under control of port pin's WPU control bit.
-_MCLRE_ON        EQU  H'FFFF'    ; MCLR/VPP pin function is MCLR; Weak pull-up enabled 
+_MCLRE_OFF       EQU  H'3FFE'    ; MCLR/VPP pin function is digital input; MCLR internally disabled; Weak pull-up under control of port pin's WPU control bit.
+_MCLRE_ON        EQU  H'3FFF'    ; MCLR/VPP pin function is MCLR; Weak pull-up enabled 
 
-_PWRTE_ON        EQU  H'FFFD'    ; PWRT enabled
-_PWRTE_OFF       EQU  H'FFFF'    ; PWRT disabled
+_PWRTE_ON        EQU  H'3FFD'    ; PWRT enabled
+_PWRTE_OFF       EQU  H'3FFF'    ; PWRT disabled
 
-_WDTE_OFF        EQU  H'FFF3'    ; WDT disabled; SWDTEN is ignored
-_WDTE_SWDTEN     EQU  H'FFF7'    ; WDT controlled by the SWDTEN bit in the WDTCON register
-_WDTE_SLEEP      EQU  H'FFFB'    ; WDT enabled while running and disabled while in SLEEP/IDLE; SWDTEN is ignored
-_WDTE_ON         EQU  H'FFFF'    ; WDT enabled, SWDTEN is ignored
+_WDTE_OFF        EQU  H'3FF3'    ; WDT disabled; SWDTEN is ignored
+_WDTE_SWDTEN     EQU  H'3FF7'    ; WDT controlled by the SWDTEN bit in the WDTCON register
+_WDTE_SLEEP      EQU  H'3FFB'    ; WDT enabled while running and disabled while in SLEEP/IDLE; SWDTEN is ignored
+_WDTE_ON         EQU  H'3FFF'    ; WDT enabled, SWDTEN is ignored
 
-_LPBOREN_ON      EQU  H'FFDF'    ; ULPBOR enabled
-_LPBOREN_OFF     EQU  H'FFFF'    ; ULPBOR disabled
+_LPBOREN_ON      EQU  H'3FDF'    ; ULPBOR enabled
+_LPBOREN_OFF     EQU  H'3FFF'    ; ULPBOR disabled
 
-_BOREN_OFF       EQU  H'FF3F'    ; Brown-out Reset disabled
-_BOREN_SBOREN    EQU  H'FF7F'    ; Brown-out Reset enabled according to SBOREN
-_BOREN_SLEEP     EQU  H'FFBF'    ; Brown-out Reset enabled while running, disabled in Sleep; SBOREN is ignored
-_BOREN_ON        EQU  H'FFFF'    ; Brown-out Reset enabled, SBOREN bit ignored
+_BOREN_OFF       EQU  H'3F3F'    ; Brown-out Reset disabled
+_BOREN_SBOREN    EQU  H'3F7F'    ; Brown-out Reset enabled according to SBOREN
+_BOREN_SLEEP     EQU  H'3FBF'    ; Brown-out Reset enabled while running, disabled in Sleep; SBOREN is ignored
+_BOREN_ON        EQU  H'3FFF'    ; Brown-out Reset enabled, SBOREN bit ignored
 
-_BORV_HIGH       EQU  H'FDFF'    ; Brown-out voltage (Vbor) set to 2.7V
-_BORV_LOW        EQU  H'FFFF'    ; Brown-out voltage (Vbor) set to 2.45V
+_BORV_HIGH       EQU  H'3DFF'    ; Brown-out voltage (Vbor) set to 2.7V
+_BORV_LOW        EQU  H'3FFF'    ; Brown-out voltage (Vbor) set to 2.45V
 
-_PPS1WAY_OFF     EQU  H'F7FF'    ; The PPSLOCK bit can be set and cleared repeatedly (subject to the unlock sequence)
-_PPS1WAY_ON      EQU  H'FFFF'    ; The PPSLOCK bit can be cleared and set only once; PPS registers remain locked after one clear/set cycle
+_PPS1WAY_OFF     EQU  H'37FF'    ; The PPSLOCK bit can be set and cleared repeatedly (subject to the unlock sequence)
+_PPS1WAY_ON      EQU  H'3FFF'    ; The PPSLOCK bit can be cleared and set only once; PPS registers remain locked after one clear/set cycle
 
-_STVREN_OFF      EQU  H'EFFF'    ; Stack Overflow or Underflow will not cause a Reset
-_STVREN_ON       EQU  H'FFFF'    ; Stack Overflow or Underflow will cause a Reset
+_STVREN_OFF      EQU  H'2FFF'    ; Stack Overflow or Underflow will not cause a Reset
+_STVREN_ON       EQU  H'3FFF'    ; Stack Overflow or Underflow will cause a Reset
 
-_DEBUG_ON        EQU  H'DFFF'    ; Background debugger enabled
-_DEBUG_OFF       EQU  H'FFFF'    ; Background debugger disabled
+_DEBUG_ON        EQU  H'1FFF'    ; Background debugger enabled
+_DEBUG_OFF       EQU  H'3FFF'    ; Background debugger disabled
 
 ;----- CONFIG3 Options --------------------------------------------------
-_WRT_ALL         EQU  H'FFFC'    ; 0000h to 07FFh write protected, no addresses may be modified
-_WRT_HALF        EQU  H'FFFD'    ; 0000h to 03FFh write-protected, 0400h to 07FFh may be modified
-_WRT_BOOT        EQU  H'FFFE'    ; 0000h to 01FFh write-protected, 0200h to 07FFh may be modified
-_WRT_OFF         EQU  H'FFFF'    ; Write protection off
+_WRT_ALL         EQU  H'3FFC'    ; 0000h to 07FFh write protected, no addresses may be modified
+_WRT_HALF        EQU  H'3FFD'    ; 0000h to 03FFh write-protected, 0400h to 07FFh may be modified
+_WRT_BOOT        EQU  H'3FFE'    ; 0000h to 01FFh write-protected, 0200h to 07FFh may be modified
+_WRT_OFF         EQU  H'3FFF'    ; Write protection off
 
-_LVP_OFF         EQU  H'DFFF'    ; HV on MCLR/VPP must be used for programming.
-_LVP_ON          EQU  H'FFFF'    ; Low voltage programming enabled. MCLR/VPP pin function is MCLR. MCLRE configuration bit is ignored.
+_LVP_OFF         EQU  H'1FFF'    ; HV on MCLR/VPP must be used for programming.
+_LVP_ON          EQU  H'3FFF'    ; Low voltage programming enabled. MCLR/VPP pin function is MCLR. MCLRE configuration bit is ignored.
 
 ;----- CONFIG4 Options --------------------------------------------------
-_CP_ON           EQU  H'FFFE'    ; User NVM code protection enabled
-_CP_OFF          EQU  H'FFFF'    ; User NVM code protection disabled
+_CP_ON           EQU  H'3FFE'    ; User NVM code protection enabled
+_CP_OFF          EQU  H'3FFF'    ; User NVM code protection disabled
 
-_CPD_ON          EQU  H'FFFD'    ; Data NVM code protection enabled
-_CPD_OFF         EQU  H'FFFF'    ; Data NVM code protection disabled
+_CPD_ON          EQU  H'3FFD'    ; Data NVM code protection enabled
+_CPD_OFF         EQU  H'3FFF'    ; Data NVM code protection disabled
 
 ;----- DEVID Equates --------------------------------------------------
 _DEVID1          EQU  H'8006'

@@ -1,4 +1,13 @@
 2014-07-07  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/*.inc, lkr/*.lkr, libgputils/gpcfg-table.c,
+    libgputils/gpreg-table.c:
+    Updated based on the mplabx-2.15.
+
+  * header/p12f1571.inc, header/p12f1572.inc, header/p12f1612.inc,
+    header/p12lf1571.inc, header/p12lf1572.inc, header/p12lf1612.inc:
+    Added the missing _DEBUG_ON and _DEBUG_OFF config options.
+
+2014-07-07  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c:
     Changed text format.
 

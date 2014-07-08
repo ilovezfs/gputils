@@ -1,6 +1,7 @@
         LIST
 
 ;==========================================================================
+; Build date : May 28 2014
 ;  MPASM PIC16LF1554 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -151,14 +152,6 @@ PWM2DCL          EQU  H'0614'
 PWM2DCH          EQU  H'0615'
 PWM2CON          EQU  H'0616'
 PWM2CON0         EQU  H'0616'
-PWM3DCL          EQU  H'0617'
-PWM3DCH          EQU  H'0618'
-PWM3CON          EQU  H'0619'
-PWM3CON0         EQU  H'0619'
-PWM4DCL          EQU  H'061A'
-PWM4DCH          EQU  H'061B'
-PWM4CON          EQU  H'061C'
-PWM4CON0         EQU  H'061C'
 
 ;-----Bank14------------------
 AAD1CON0         EQU  H'0711'
@@ -189,12 +182,17 @@ AAD1CAP          EQU  H'0719'
 AAD1CAPCON       EQU  H'0719'
 AADCAP           EQU  H'0719'
 AD1CAPCON        EQU  H'0719'
-AD1RES0          EQU  H'071A'
+AAD1RES0         EQU  H'071A'
+AAD1RES0L        EQU  H'071A'
 AD1RES0L         EQU  H'071A'
+AAD1RES0H        EQU  H'071B'
 AD1RES0H         EQU  H'071B'
-AD1RES1          EQU  H'071C'
+AAD1RES1         EQU  H'071C'
+AAD1RES1L        EQU  H'071C'
 AD1RES1L         EQU  H'071C'
+AAD1RES1H        EQU  H'071D'
 AD1RES1H         EQU  H'071D'
+AAD1CH           EQU  H'071E'
 AD1CH            EQU  H'071E'
 
 ;-----Bank15------------------
@@ -215,12 +213,17 @@ AD2GRD           EQU  H'0798'
 AAD2CAP          EQU  H'0799'
 AAD2CAPCON       EQU  H'0799'
 AD2CAPCON        EQU  H'0799'
-AD2RES0          EQU  H'079A'
+AAD2RES0         EQU  H'079A'
+AAD2RES0L        EQU  H'079A'
 AD2RES0L         EQU  H'079A'
+AAD2RES0H        EQU  H'079B'
 AD2RES0H         EQU  H'079B'
-AD2RES1          EQU  H'079C'
+AAD2RES1         EQU  H'079C'
+AAD2RES1L        EQU  H'079C'
 AD2RES1L         EQU  H'079C'
+AAD2RES1H        EQU  H'079D'
 AD2RES1H         EQU  H'079D'
+AAD2CH           EQU  H'079E'
 AD2CH            EQU  H'079E'
 
 ;-----Bank31------------------
@@ -768,66 +771,6 @@ PWM2OE           EQU  H'0006'
 PWM2EN           EQU  H'0007'
 
 
-;----- PWM3DCL Bits -----------------------------------------------------
-PWM3DCL0         EQU  H'0006'
-PWM3DCL1         EQU  H'0007'
-
-
-;----- PWM3DCH Bits -----------------------------------------------------
-PWM3DCH0         EQU  H'0000'
-PWM3DCH1         EQU  H'0001'
-PWM3DCH2         EQU  H'0002'
-PWM3DCH3         EQU  H'0003'
-PWM3DCH4         EQU  H'0004'
-PWM3DCH5         EQU  H'0005'
-PWM3DCH6         EQU  H'0006'
-PWM3DCH7         EQU  H'0007'
-
-
-;----- PWM3CON Bits -----------------------------------------------------
-PWM3POL          EQU  H'0004'
-PWM3OUT          EQU  H'0005'
-PWM3OE           EQU  H'0006'
-PWM3EN           EQU  H'0007'
-
-
-;----- PWM3CON0 Bits -----------------------------------------------------
-PWM3POL          EQU  H'0004'
-PWM3OUT          EQU  H'0005'
-PWM3OE           EQU  H'0006'
-PWM3EN           EQU  H'0007'
-
-
-;----- PWM4DCL Bits -----------------------------------------------------
-PWM4DCL0         EQU  H'0006'
-PWM4DCL1         EQU  H'0007'
-
-
-;----- PWM4DCH Bits -----------------------------------------------------
-PWM4DCH0         EQU  H'0000'
-PWM4DCH1         EQU  H'0001'
-PWM4DCH2         EQU  H'0002'
-PWM4DCH3         EQU  H'0003'
-PWM4DCH4         EQU  H'0004'
-PWM4DCH5         EQU  H'0005'
-PWM4DCH6         EQU  H'0006'
-PWM4DCH7         EQU  H'0007'
-
-
-;----- PWM4CON Bits -----------------------------------------------------
-PWM4POL          EQU  H'0004'
-PWM4OUT          EQU  H'0005'
-PWM4OE           EQU  H'0006'
-PWM4EN           EQU  H'0007'
-
-
-;----- PWM4CON0 Bits -----------------------------------------------------
-PWM4POL          EQU  H'0004'
-PWM4OUT          EQU  H'0005'
-PWM4OE           EQU  H'0006'
-PWM4EN           EQU  H'0007'
-
-
 ;----- AAD1CON0 Bits -----------------------------------------------------
 ADON             EQU  H'0000'
 GO_AAD1CON0      EQU  H'0001'
@@ -1089,11 +1032,13 @@ ADDCAP2          EQU  H'0002'
 ADDCAP3          EQU  H'0003'
 
 
+
 ;----- AAD1CAPCON Bits -----------------------------------------------------
 ADDCAP0          EQU  H'0000'
 ADDCAP1          EQU  H'0001'
 ADDCAP2          EQU  H'0002'
 ADDCAP3          EQU  H'0003'
+
 
 
 ;----- AADCAP Bits -----------------------------------------------------
@@ -1103,11 +1048,20 @@ ADDCAP2          EQU  H'0002'
 ADDCAP3          EQU  H'0003'
 
 
+
 ;----- AD1CAPCON Bits -----------------------------------------------------
 ADDCAP0          EQU  H'0000'
 ADDCAP1          EQU  H'0001'
 ADDCAP2          EQU  H'0002'
 ADDCAP3          EQU  H'0003'
+
+
+
+;----- AAD1CH Bits -----------------------------------------------------
+CH10             EQU  H'0000'
+CH11             EQU  H'0001'
+CH12             EQU  H'0002'
+CH13             EQU  H'0003'
 
 
 ;----- AD1CH Bits -----------------------------------------------------
@@ -1268,6 +1222,7 @@ ADDCAP2          EQU  H'0002'
 ADDCAP3          EQU  H'0003'
 
 
+
 ;----- AAD2CAPCON Bits -----------------------------------------------------
 ADDCAP0          EQU  H'0000'
 ADDCAP1          EQU  H'0001'
@@ -1275,11 +1230,20 @@ ADDCAP2          EQU  H'0002'
 ADDCAP3          EQU  H'0003'
 
 
+
 ;----- AD2CAPCON Bits -----------------------------------------------------
 ADDCAP0          EQU  H'0000'
 ADDCAP1          EQU  H'0001'
 ADDCAP2          EQU  H'0002'
 ADDCAP3          EQU  H'0003'
+
+
+
+;----- AAD2CH Bits -----------------------------------------------------
+CH20             EQU  H'0000'
+CH21             EQU  H'0001'
+CH22             EQU  H'0002'
+CH23             EQU  H'0003'
 
 
 ;----- AD2CH Bits -----------------------------------------------------
@@ -1410,7 +1374,7 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'058C'-H'059F'
        __BADRAM  H'05A0'-H'05EF'
        __BADRAM  H'060C'-H'0610'
-       __BADRAM  H'061D'-H'061F'
+       __BADRAM  H'0617'-H'061F'
        __BADRAM  H'0620'-H'066F'
        __BADRAM  H'068C'-H'069F'
        __BADRAM  H'06A0'-H'06EF'
@@ -1477,50 +1441,50 @@ _CONFIG1         EQU  H'8007'
 _CONFIG2         EQU  H'8008'
 
 ;----- CONFIG1 Options --------------------------------------------------
-_FOSC_INTOSC     EQU  H'FFFC'    ; INTOSC oscillator: I/O function on CLKIN pin
-_FOSC_ECL        EQU  H'FFFD'    ; ECL, External Clock, Low Power Mode (0-0.5 MHz): device clock supplied to CLKIN pins
-_FOSC_ECM        EQU  H'FFFE'    ; ECM, External Clock, Medium Power Mode (0.5-4 MHz): device clock supplied to CLKIN pins
-_FOSC_ECH        EQU  H'FFFF'    ; ECH, External Clock, High Power Mode (4-20 MHz): device clock supplied to CLKIN pins
+_FOSC_INTOSC     EQU  H'3FFC'    ; INTOSC oscillator: I/O function on CLKIN pin
+_FOSC_ECL        EQU  H'3FFD'    ; ECL, External Clock, Low Power Mode (0-0.5 MHz): device clock supplied to CLKIN pins
+_FOSC_ECM        EQU  H'3FFE'    ; ECM, External Clock, Medium Power Mode (0.5-4 MHz): device clock supplied to CLKIN pins
+_FOSC_ECH        EQU  H'3FFF'    ; ECH, External Clock, High Power Mode (4-20 MHz): device clock supplied to CLKIN pins
 
-_WDTE_OFF        EQU  H'FFE7'    ; WDT disabled. SWDTEN bit is ignored.
-_WDTE_SWDTEN     EQU  H'FFEF'    ; WDT controlled by the SWDTEN bit in the WDTCON register
-_WDTE_NSLEEP     EQU  H'FFF7'    ; WDT enabled while running and disabled in Sleep. SWDTEN bit is ignored.
-_WDTE_ON         EQU  H'FFFF'    ; WDT enabled. SWDTEN bit is ignored.
+_WDTE_OFF        EQU  H'3FE7'    ; WDT disabled. SWDTEN bit is ignored.
+_WDTE_SWDTEN     EQU  H'3FEF'    ; WDT controlled by the SWDTEN bit in the WDTCON register
+_WDTE_NSLEEP     EQU  H'3FF7'    ; WDT enabled while running and disabled in Sleep. SWDTEN bit is ignored.
+_WDTE_ON         EQU  H'3FFF'    ; WDT enabled. SWDTEN bit is ignored.
 
-_PWRTE_ON        EQU  H'FFDF'    ; PWRT enabled
-_PWRTE_OFF       EQU  H'FFFF'    ; PWRT disabled
+_PWRTE_ON        EQU  H'3FDF'    ; PWRT enabled
+_PWRTE_OFF       EQU  H'3FFF'    ; PWRT disabled
 
-_MCLRE_OFF       EQU  H'FFBF'    ; MCLR/VPP pin function is digital input
-_MCLRE_ON        EQU  H'FFFF'    ; MCLR/VPP pin function is MCLR
+_MCLRE_OFF       EQU  H'3FBF'    ; MCLR/VPP pin function is digital input
+_MCLRE_ON        EQU  H'3FFF'    ; MCLR/VPP pin function is MCLR
 
-_CP_ON           EQU  H'FF7F'    ; Program memory code protection is enabled
-_CP_OFF          EQU  H'FFFF'    ; Program memory code protection is disabled
+_CP_ON           EQU  H'3F7F'    ; Program memory code protection is enabled
+_CP_OFF          EQU  H'3FFF'    ; Program memory code protection is disabled
 
-_BOREN_OFF       EQU  H'F9FF'    ; Brown-out Reset disabled. SBOREN bit is ignored.
-_BOREN_SBODEN    EQU  H'FBFF'    ; Brown-out Reset controlled by the SBOREN bit in the BORCON register
-_BOREN_NSLEEP    EQU  H'FDFF'    ; Brown-out Reset enabled while running and disabled in Sleep. SBOREN bit is ignored.
-_BOREN_ON        EQU  H'FFFF'    ; Brown-out Reset enabled
+_BOREN_OFF       EQU  H'39FF'    ; Brown-out Reset disabled. SBOREN bit is ignored.
+_BOREN_SBODEN    EQU  H'3BFF'    ; Brown-out Reset controlled by the SBOREN bit in the BORCON register
+_BOREN_NSLEEP    EQU  H'3DFF'    ; Brown-out Reset enabled while running and disabled in Sleep. SBOREN bit is ignored.
+_BOREN_ON        EQU  H'3FFF'    ; Brown-out Reset enabled
 
-_CLKOUTEN_ON     EQU  H'F7FF'    ; CLKOUT function is enabled on the CLKOUT pin
-_CLKOUTEN_OFF    EQU  H'FFFF'    ; CLKOUT function is disabled. I/O or oscillator function on the CLKOUT pin
+_CLKOUTEN_ON     EQU  H'37FF'    ; CLKOUT function is enabled on the CLKOUT pin
+_CLKOUTEN_OFF    EQU  H'3FFF'    ; CLKOUT function is disabled. I/O or oscillator function on the CLKOUT pin
 
 ;----- CONFIG2 Options --------------------------------------------------
-_WRT_ALL         EQU  H'FFFC'    ; 000h to FFFh write protected, no addresses may be modified by PMCON control
-_WRT_HALF        EQU  H'FFFD'    ; 000h to 7FFh write protected, 800h to FFFh may be modified by PMCON control
-_WRT_BOOT        EQU  H'FFFE'    ; 000h to 1FFh write protected, 200h to FFFh may be modified by PMCON control
-_WRT_OFF         EQU  H'FFFF'    ; Write protection off
+_WRT_ALL         EQU  H'3FFC'    ; 000h to FFFh write protected, no addresses may be modified by PMCON control
+_WRT_HALF        EQU  H'3FFD'    ; 000h to 7FFh write protected, 800h to FFFh may be modified by PMCON control
+_WRT_BOOT        EQU  H'3FFE'    ; 000h to 1FFh write protected, 200h to FFFh may be modified by PMCON control
+_WRT_OFF         EQU  H'3FFF'    ; Write protection off
 
-_STVREN_OFF      EQU  H'FDFF'    ; Stack Overflow or Underflow will not cause a Reset
-_STVREN_ON       EQU  H'FFFF'    ; Stack Overflow or Underflow will cause a Reset
+_STVREN_OFF      EQU  H'3DFF'    ; Stack Overflow or Underflow will not cause a Reset
+_STVREN_ON       EQU  H'3FFF'    ; Stack Overflow or Underflow will cause a Reset
 
-_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (Vbor), 2.7V trip point selected.
-_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), 1.9V trip point selected.
+_BORV_HI         EQU  H'3BFF'    ; Brown-out Reset Voltage (Vbor), 2.7V trip point selected.
+_BORV_LO         EQU  H'3FFF'    ; Brown-out Reset Voltage (Vbor), 1.9V trip point selected.
 
-_LPBOR_ON        EQU  H'F7FF'    ; Low-Power BOR is enabled
-_LPBOR_OFF       EQU  H'FFFF'    ; Low-Power BOR is disabled
+_LPBOR_ON        EQU  H'37FF'    ; Low-Power BOR is enabled
+_LPBOR_OFF       EQU  H'3FFF'    ; Low-Power BOR is disabled
 
-_LVP_OFF         EQU  H'DFFF'    ; High-voltage on MCLR/VPP must be used for programming
-_LVP_ON          EQU  H'FFFF'    ; Low-voltage programming enabled
+_LVP_OFF         EQU  H'1FFF'    ; High-voltage on MCLR/VPP must be used for programming
+_LVP_ON          EQU  H'3FFF'    ; Low-voltage programming enabled
 
 ;----- DEVID Equates --------------------------------------------------
 _DEVID1          EQU  H'8006'

@@ -1,6 +1,7 @@
         LIST
 
 ;==========================================================================
+; Build date : May 28 2014
 ;  MPASM PIC16F1503 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -1378,50 +1379,50 @@ _CONFIG1         EQU  H'8007'
 _CONFIG2         EQU  H'8008'
 
 ;----- CONFIG1 Options --------------------------------------------------
-_FOSC_INTOSC     EQU  H'FFFC'    ; INTOSC oscillator: I/O function on CLKIN pin
-_FOSC_ECL        EQU  H'FFFD'    ; ECL, External Clock, Low Power Mode (0-0.5 MHz): device clock supplied to CLKIN pin
-_FOSC_ECM        EQU  H'FFFE'    ; ECM, External Clock, Medium Power Mode (0.5-4 MHz): device clock supplied to CLKIN pin
-_FOSC_ECH        EQU  H'FFFF'    ; ECH, External Clock, High Power Mode (4-20 MHz): device clock supplied to CLKIN pin
+_FOSC_INTOSC     EQU  H'3FFC'    ; INTOSC oscillator: I/O function on CLKIN pin
+_FOSC_ECL        EQU  H'3FFD'    ; ECL, External Clock, Low Power Mode (0-0.5 MHz): device clock supplied to CLKIN pin
+_FOSC_ECM        EQU  H'3FFE'    ; ECM, External Clock, Medium Power Mode (0.5-4 MHz): device clock supplied to CLKIN pin
+_FOSC_ECH        EQU  H'3FFF'    ; ECH, External Clock, High Power Mode (4-20 MHz): device clock supplied to CLKIN pin
 
-_WDTE_OFF        EQU  H'FFE7'    ; WDT disabled
-_WDTE_SWDTEN     EQU  H'FFEF'    ; WDT controlled by the SWDTEN bit in the WDTCON register
-_WDTE_NSLEEP     EQU  H'FFF7'    ; WDT enabled while running and disabled in Sleep
-_WDTE_ON         EQU  H'FFFF'    ; WDT enabled
+_WDTE_OFF        EQU  H'3FE7'    ; WDT disabled
+_WDTE_SWDTEN     EQU  H'3FEF'    ; WDT controlled by the SWDTEN bit in the WDTCON register
+_WDTE_NSLEEP     EQU  H'3FF7'    ; WDT enabled while running and disabled in Sleep
+_WDTE_ON         EQU  H'3FFF'    ; WDT enabled
 
-_PWRTE_ON        EQU  H'FFDF'    ; PWRT enabled
-_PWRTE_OFF       EQU  H'FFFF'    ; PWRT disabled
+_PWRTE_ON        EQU  H'3FDF'    ; PWRT enabled
+_PWRTE_OFF       EQU  H'3FFF'    ; PWRT disabled
 
-_MCLRE_OFF       EQU  H'FFBF'    ; MCLR/VPP pin function is digital input
-_MCLRE_ON        EQU  H'FFFF'    ; MCLR/VPP pin function is MCLR
+_MCLRE_OFF       EQU  H'3FBF'    ; MCLR/VPP pin function is digital input
+_MCLRE_ON        EQU  H'3FFF'    ; MCLR/VPP pin function is MCLR
 
-_CP_ON           EQU  H'FF7F'    ; Program memory code protection is enabled
-_CP_OFF          EQU  H'FFFF'    ; Program memory code protection is disabled
+_CP_ON           EQU  H'3F7F'    ; Program memory code protection is enabled
+_CP_OFF          EQU  H'3FFF'    ; Program memory code protection is disabled
 
-_BOREN_OFF       EQU  H'F9FF'    ; Brown-out Reset disabled
-_BOREN_SBODEN    EQU  H'FBFF'    ; Brown-out Reset controlled by the SBOREN bit in the BORCON register
-_BOREN_NSLEEP    EQU  H'FDFF'    ; Brown-out Reset enabled while running and disabled in Sleep
-_BOREN_ON        EQU  H'FFFF'    ; Brown-out Reset enabled
+_BOREN_OFF       EQU  H'39FF'    ; Brown-out Reset disabled
+_BOREN_SBODEN    EQU  H'3BFF'    ; Brown-out Reset controlled by the SBOREN bit in the BORCON register
+_BOREN_NSLEEP    EQU  H'3DFF'    ; Brown-out Reset enabled while running and disabled in Sleep
+_BOREN_ON        EQU  H'3FFF'    ; Brown-out Reset enabled
 
-_CLKOUTEN_ON     EQU  H'F7FF'    ; CLKOUT function is enabled on the CLKOUT pin
-_CLKOUTEN_OFF    EQU  H'FFFF'    ; CLKOUT function is disabled. I/O or oscillator function on the CLKOUT pin
+_CLKOUTEN_ON     EQU  H'37FF'    ; CLKOUT function is enabled on the CLKOUT pin
+_CLKOUTEN_OFF    EQU  H'3FFF'    ; CLKOUT function is disabled. I/O or oscillator function on the CLKOUT pin
 
 ;----- CONFIG2 Options --------------------------------------------------
-_WRT_ALL         EQU  H'FFFC'    ; 000h to 1FFFh write protected, no addresses may be modified by EECON control
-_WRT_HALF        EQU  H'FFFD'    ; 000h to FFFh write protected, 1000h to 1FFFh may be modified by EECON control
-_WRT_BOOT        EQU  H'FFFE'    ; 000h to 1FFh write protected, 200h to 1FFFh may be modified by EECON control
-_WRT_OFF         EQU  H'FFFF'    ; Write protection off
+_WRT_ALL         EQU  H'3FFC'    ; 000h to 1FFFh write protected, no addresses may be modified by EECON control
+_WRT_HALF        EQU  H'3FFD'    ; 000h to FFFh write protected, 1000h to 1FFFh may be modified by EECON control
+_WRT_BOOT        EQU  H'3FFE'    ; 000h to 1FFh write protected, 200h to 1FFFh may be modified by EECON control
+_WRT_OFF         EQU  H'3FFF'    ; Write protection off
 
-_STVREN_OFF      EQU  H'FDFF'    ; Stack Overflow or Underflow will not cause a Reset
-_STVREN_ON       EQU  H'FFFF'    ; Stack Overflow or Underflow will cause a Reset
+_STVREN_OFF      EQU  H'3DFF'    ; Stack Overflow or Underflow will not cause a Reset
+_STVREN_ON       EQU  H'3FFF'    ; Stack Overflow or Underflow will cause a Reset
 
-_BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (Vbor), high trip point selected.
-_BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
+_BORV_HI         EQU  H'3BFF'    ; Brown-out Reset Voltage (Vbor), high trip point selected.
+_BORV_LO         EQU  H'3FFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
 
-_LPBOR_ON        EQU  H'F7FF'    ; Low-Power BOR is enabled
-_LPBOR_OFF       EQU  H'FFFF'    ; Low-Power BOR is disabled
+_LPBOR_ON        EQU  H'37FF'    ; Low-Power BOR is enabled
+_LPBOR_OFF       EQU  H'3FFF'    ; Low-Power BOR is disabled
 
-_LVP_OFF         EQU  H'DFFF'    ; High-voltage on MCLR/VPP must be used for programming
-_LVP_ON          EQU  H'FFFF'    ; Low-voltage programming enabled
+_LVP_OFF         EQU  H'1FFF'    ; High-voltage on MCLR/VPP must be used for programming
+_LVP_ON          EQU  H'3FFF'    ; Low-voltage programming enabled
 
 ;----- DEVID Equates --------------------------------------------------
 _DEVID1          EQU  H'8006'

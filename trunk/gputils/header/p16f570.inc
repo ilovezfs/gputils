@@ -1,6 +1,7 @@
         LIST
 
 ;==========================================================================
+; Build date : May 28 2014
 ;  MPASM PIC16F570 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -112,6 +113,10 @@ RA7              EQU  H'0007'
 
 
 ;----- PORTB Bits -----------------------------------------------------
+RB0              EQU  H'0000'
+RB1              EQU  H'0001'
+RB2              EQU  H'0002'
+RB3              EQU  H'0003'
 RB4              EQU  H'0004'
 RB5              EQU  H'0005'
 RB6              EQU  H'0006'
