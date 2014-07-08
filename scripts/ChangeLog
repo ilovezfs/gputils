@@ -1,3 +1,6 @@
+2014-07-08 Molnar Karoly <molnarkaroly@users.sf.net>
+	* tools/device-help.pl: updated
+
 2014-07-06 Molnar Karoly <molnarkaroly@users.sf.net>
 	* tools/build-register-db.pl: Updated with SFR bits.
 
@@ -5,7 +8,7 @@
 	* tools/build-register-db.pl: New tool to build a SFR database.
 
 	* tools/device-help.pl, tools/device-manager.pl:
-	  Updated to extended px structure.
+	  Updated to the extended px structure.
 
 	* tools/cfg-import.py: Changed "unsigned" to "unsigned int".
 

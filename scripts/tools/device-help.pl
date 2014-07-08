@@ -106,7 +106,7 @@ my %class_features_p12 =
   EE_START  => 0,
   BANK_SIZE => 32,
   CORE_SFRS => [
-	       0x00, 0x02, 0x03, 0x04
+               0x00, 0x02, 0x03, 0x04
                ]
   );
 
@@ -201,12 +201,12 @@ my %class_features_p16e =
 
 my @class_features_list =
   (
-  \%class_features_p12,		# PROC_CLASS_PIC12
-  \%class_features_p12e,	# PROC_CLASS_PIC12E
-  \%class_features_p14,		# PROC_CLASS_PIC14
-  \%class_features_p14e,	# PROC_CLASS_PIC14E
-  \%class_features_p16,		# PROC_CLASS_PIC16
-  \%class_features_p16e		# PROC_CLASS_PIC16E
+  \%class_features_p12,         # PROC_CLASS_PIC12
+  \%class_features_p12e,        # PROC_CLASS_PIC12E
+  \%class_features_p14,         # PROC_CLASS_PIC14
+  \%class_features_p14e,        # PROC_CLASS_PIC14E
+  \%class_features_p16,         # PROC_CLASS_PIC16
+  \%class_features_p16e         # PROC_CLASS_PIC16E
   );
 
 my %class_features_by_mpasmx =
@@ -229,17 +229,17 @@ my @mcu_feat_names = sort {
 =back
         The structure of the %pic1.._common_SFRs hash:
 
-	{
-	'aaaaa' => {			# Name of SFR.
-		   ADDR   => 0,		# Full address.
-		   NUMBER => 0		# The number of occurrences in the family.
-		   },
+        {
+        'aaaaa' => {                    # Name of SFR.
+                   ADDR   => 0,         # Full address.
+                   NUMBER => 0          # The number of occurrences in the family.
+                   },
 
-		   .
-		   .
-		   .
+                   .
+                   .
+                   .
 
-	'zzzzz' => {}
+        'zzzzz' => {}
         }
 =cut
 
@@ -268,17 +268,19 @@ my $pic16e_mcu_number = 0;
 
         {
         FEATURES => {
-		    CLASS      => 0,    # Class of MCU. (PROC_CLASS_PIC12yy)
-		    ROM_SIZE   => 0,    # Size of program memory.
+                    CLASS      => 0,    # Class of MCU. (PROC_CLASS_PIC1yy)
+                    ROM_SIZE   => 0,    # Size of program memory.
 
                     COFF       => 0,    # Coff ID of device. (16 bit wide)
                     PAGES      => 0,    # Number of ROM/FLASH pages.
                     MAX_RAM    => 0,    # The highest address of RAM.
                     RAM_SIZE   => 0,    # Full size of all SFR and GPR.
                     GPR_SIZE   => 0,    # Full size of all GPR.
-		    SGPR_SIZE  => 0,    # Size of shared GPRs.
+                    SGPR_SIZE  => 0,    # Size of shared GPRs.
                     CF_START   => 0,    # Address of first Configuration byte/word.
                     CF_END     => 0,    # Address of last Configuration byte/word.
+                    STD_HEADER => '',   # Standard header file name of MCU.
+                    STD_SCRIPT => '',   # Standard linker script file name of MCU.
 
                 # These addresses relative, compared to the beginning of the blocks.
                     ROM        => 0,    # Last address of ROM/FLASH.
@@ -286,6 +288,7 @@ my $pic16e_mcu_number = 0;
                     EEPROM     => 0,    # Last address of EEPROM.
 
                     CONFIGS    => 0,    # Number of Configuration bytes/words.
+                    CONF_MASK  => 0,    # Mask of config words.
                     BANKS      => 0,    # Number of RAM Banks.
                     ACCESS     => 0,    # Last address of lower Access RAM of pic18f series.
 
@@ -1108,23 +1111,27 @@ my %pic17_conf_switch_expl =
 sub read_ram_features($$$)
   {
   my ($Inc, $Features, $Class_pic16) = @_;
-  my ($line, $full_ram, $state);
+  my ($inc_path, $line, $full_ram, $state);
   my ($sfrs, $sfr_names, $sfr_addrs, $bad_ram);
   my $configs;
+  my $config_mask;
   my $config_reg  = undef;
   my $switch_info = undef;
   my $prev_switch_info_name = '';
 
-  open(INC, '<', $Inc) || die "Could not open for reading: $Inc\n";
+  $inc_path = "$gputils_path/header/$Inc";
+  open(INC, '<', $inc_path) || die "Could not open for reading: $inc_path\n";
 
-  Log("Read the RAM features from $Inc.", 4);
+  $Features->{STD_HEADER} = $Inc;
+  Log("Read the RAM features from $inc_path.", 4);
 
-  $full_ram = 0;
-  $configs   = {};  # For the PIC17Cxx devices.
-  $sfrs      = [];
-  $sfr_names = {};
-  $sfr_addrs = {};
-  $bad_ram   = [];
+  $full_ram    = 0;
+  $config_mask = 0;   # For some PIC14E devices.
+  $configs     = {};  # For the PIC17Cxx devices.
+  $sfrs        = [];
+  $sfr_names   = {};
+  $sfr_addrs   = {};
+  $bad_ram     = [];
   $state = INC_NULL;
   foreach (grep(! /^\s*$/o, <INC>))
     {
@@ -1200,27 +1207,29 @@ sub read_ram_features($$$)
               }
             else
               {
-              die "Unknown value in \"$Inc\" file: $_\n";
+              die "Unknown value in \"$inc_path\" file: $_\n";
               }
             } # foreach (split(/\s*,\s*/o, ${^POSTMATCH}))
 
           } # elsif ($line =~ /^__BADRAM\s+/io)
-	elsif ($Class_pic16 && $line =~ /^;\s*Configuration\s+Bits$/io)
-	  {
-          $config_reg = {
-                        SWITCHES => [],
-                        MASK     => 0
-                        };
+        elsif ($line =~ /^;\s*Configuration\s+Bits$/io)
+          {
+          if ($Class_pic16)
+            {
+            $config_reg = {
+                          SWITCHES => [],
+                          MASK     => 0
+                          };
+
+            $configs->{$Features->{CF_START}} = $config_reg;
+            }
 
           $state = INC_CONFIG;
-          $configs->{$Features->{CF_START}} = $config_reg;
-	  }
+          }
         } # when (INC_RAM)
 
       when (INC_CONFIG)
         {
-        # For the PIC17Cxx devices.
-
         if ($line =~ /^_(DEVID\d*)\s+EQU\s+([\w']+)$/io)  #'
           {
           $state = INC_NULL;
@@ -1229,45 +1238,52 @@ sub read_ram_features($$$)
           {
           $state = INC_NULL;
           }
-        elsif ($line =~ /^(\w+)\s+EQU\s+([\w']+)(.+)?$/io)  #'
+        elsif ($line !~ /^_CONFIG/io && $line =~ /^(\w+)\s+EQU\s+([\w']+)(.+)?$/io)  #'
           {
-	# _PMC_MODE                       EQU     H'7FAF'
-	# _BODEN_ON                       EQU     H'FFFF'
-	# _WDT_256                        EQU     H'FFFB'
-	# _XT_OSC                         EQU     H'FFFE'
+        # _PMC_MODE                       EQU     H'7FAF'
+        # _BODEN_ON                       EQU     H'FFFF'
+        # _WDT_256                        EQU     H'FFFB'
+        # _XT_OSC                         EQU     H'FFFE'
 
           my ($name, $value) = ($1, str2dec($2));
           my $expl = '';
 
-          if (defined($3))
+          $config_mask |= $value;
+
+          if ($Class_pic16)
             {
-            $expl = $3;
-            $expl =~ s/\s*;\s*//;
-            }
+        # For the PIC17Cxx devices.
 
-	  foreach my $sw_name (keys %pic17_conf_switch_expl)
-	    {
-	    if ($name =~ /$sw_name/)
-	      {
-	      if ($prev_switch_info_name ne $sw_name)
-	        {
-	        $switch_info = {
-                               HEAD => $sw_name,
-                               NAME => $pic17_conf_switch_expl{$sw_name},
-                               BITS => [],
-                               MASK => 0xFFFF
-                               };
+            if (defined($3))
+              {
+              $expl = $3;
+              $expl =~ s/\s*;\s*//;
+              }
 
-                push(@{$config_reg->{SWITCHES}}, $switch_info);
-		$prev_switch_info_name = $sw_name;
-		}
+            foreach my $sw_name (keys %pic17_conf_switch_expl)
+              {
+              if ($name =~ /$sw_name/)
+                {
+                if ($prev_switch_info_name ne $sw_name)
+                  {
+                  $switch_info = {
+                                 HEAD => $sw_name,
+                                 NAME => $pic17_conf_switch_expl{$sw_name},
+                                 BITS => [],
+                                 MASK => 0xFFFF
+                                 };
 
-	      push(@{$switch_info->{BITS}}, { NAME => $name, VALUE => $value, EXPL => '' });
-	      last;
-	      }
-	    } # foreach my $sw_name (keys %pic17_conf_switch_expl)
+                  push(@{$config_reg->{SWITCHES}}, $switch_info);
+                  $prev_switch_info_name = $sw_name;
+                  }
+
+                push(@{$switch_info->{BITS}}, { NAME => $name, VALUE => $value, EXPL => '' });
+                last;
+                }
+              } # foreach my $sw_name (keys %pic17_conf_switch_expl)
+            } # if ($Class_pic16)
           } # elsif ($line =~ /^(\w+)\s+EQU\s+([\w']+)(.+)?$/io)
-	} # when (INC_CONFIG)
+        } # when (INC_CONFIG)
       } # given ($state)
     } # foreach (grep(! /^\s*$/o, <INC>))
 
@@ -1280,6 +1296,7 @@ sub read_ram_features($$$)
 
   @{$sfrs} = sort {$a->{ADDR} <=> $b->{ADDR}} @{$sfrs};
   $Features->{SFRS}      = $sfrs;
+  $Features->{CONF_MASK} = $config_mask;
   return $configs;
   }
 
@@ -1308,15 +1325,17 @@ sub process_lkr_line($$)
 
     if ($section eq 'CODEPAGE')
       {
-	# CODEPAGE   NAME=.config    START=0x8007            END=0x8008         PROTECTED
-	# CODEPAGE   NAME=config     START=0xFE00            END=0xFE0F         PROTECTED
+        # CODEPAGE   NAME=.config    START=0x8007            END=0x8008         PROTECTED
+        # CODEPAGE   NAME=config     START=0xFE00            END=0xFE0F         PROTECTED
+        # CODEPAGE   NAME=cfgmem     START=0x300000          END=0x30000D       PROTECTED
 
         # CODEPAGE   NAME=.oscval    START=0x3FF             END=0x3FF          PROTECTED
         # CODEPAGE   NAME=oscval     START=0x3FF             END=0x3FF          PROTECTED
 
         # CODEPAGE   NAME=.idlocs    START=0x2000            END=0x2003         PROTECTED
         # CODEPAGE   NAME=.idlocs    START=0x8000            END=0x8003         PROTECTED
-        # CODEPAGE   NAME=userid     START=0x200000          END=0x200007       PROTECTED
+        # CODEPAGE   NAME=userid     START=0x640             END=0x643          PROTECTED 
+        # CODEPAGE   NAME=.usrlocs   START=0x2000            END=0x2003         PROTECTED 
 
         # CODEPAGE   NAME=.device_id START=0x2006            END=0x2006         PROTECTED
         # CODEPAGE   NAME=.devid     START=0x2006            END=0x2006         PROTECTED
@@ -1326,12 +1345,12 @@ sub process_lkr_line($$)
 
       given ($name)
         {
-        when (/config$/io)
+        when (/(config|cfgmem)$/io)
           {
-	# For the PIC17Cxx devices.
+        # For the PIC17Cxx devices.
 
           $Features->{CF_START} = $start;
-	  $Features->{CF_END}   = $end;
+          $Features->{CF_END}   = $end;
           }
 
         when (/oscval$/io)
@@ -1339,7 +1358,7 @@ sub process_lkr_line($$)
           $Features->{OSCVAL} = { START => $start, END => $end };
           }
 
-        when (/(idlocs|^userid)$/io)
+        when (/(idlocs|userid|usrlocs)$/io)
           {
           $Features->{USERID} = { START => $start, END => $end };
           }
@@ -1349,10 +1368,10 @@ sub process_lkr_line($$)
           $Features->{DEVID} = { START => $start, END => $end };
           }
 
-	when (/^page/io)
-	  {
-	  $Features->{ROM_SIZE} += $size;
-	  }
+        when (/^page/io)
+          {
+          $Features->{ROM_SIZE} += $size;
+          }
         }
       }
     elsif ($section eq 'LINEARMEM' && $tail eq 'PROTECTED')
@@ -1392,8 +1411,8 @@ sub process_lkr_line($$)
         # SHAREBANK  NAME=gprnobnk   START=0x170           END=0x17F          PROTECTED
         # SHAREBANK  NAME=sfrnobnk   START=0x300           END=0x30F          PROTECTED
         # SHAREBANK  NAME=gprs       START=0x318           END=0x3FF
-	# SHAREBANK  NAME=registers  START=0x1A            END=0x1F
-	# SHAREBANK  NAME=dprnobank  START=0x70            END=0x7F           PROTECTED
+        # SHAREBANK  NAME=registers  START=0x1A            END=0x1F
+        # SHAREBANK  NAME=dprnobank  START=0x70            END=0x7F           PROTECTED
 
       push(@{$Features->{SHARED_RAM}}, { START => $start, END => $end });
       }
@@ -1408,13 +1427,14 @@ sub process_lkr_line($$)
 sub read_ram_and_rom_features($$)
   {
   my ($Lkr, $Features) = @_;
-  my $name;
+  my $lkr_path;
 
-  open(LKR, '<', $Lkr) || die "Could not open for reading: $Lkr\n";
+  $lkr_path = "$gputils_path/lkr/$Lkr";
+  open(LKR, '<', $lkr_path) || die "Could not open for reading: $lkr_path\n";
 
-  Log("Read the RAM and ROM features from $Lkr.", 4);
+  $Features->{STD_SCRIPT} = $Lkr;
+  Log("Read the RAM and ROM features from $lkr_path.", 4);
 
-  $name = basename($Lkr);
   reset_preprocessor();
 
   while (<LKR>)
@@ -1425,7 +1445,7 @@ sub read_ram_and_rom_features($$)
     if ($_ !~ /^\s*$/o && $_ !~ m|^//|o)
       {
       s/^\s*|\s*$//go;
-      run_preprocessor($name, \&process_lkr_line, $_, $Features);
+      run_preprocessor($Lkr, \&process_lkr_line, $_, $Features);
       }
 
     ++$pp_line_number;
@@ -1454,7 +1474,7 @@ sub read_all_informations()
   my $switch_count  = 0;
   my $setting_count = 0;
   my $state         = ST_WAIT;
-  my ($cf_addr_min, $cf_addr_max);
+  my ($cf_addr_min, $cf_addr_max, $config_mask);
 
   open(INFO, '<', $dev_info) || die "Could not open for reading: $dev_info\n";
 
@@ -1492,24 +1512,27 @@ sub read_all_informations()
         $setting_count = 0;
         $cf_addr_min   = ULONG_MAX;
         $cf_addr_max   = 0;
+        $config_mask   = 0;
 
         my $tr = $class_features_by_mpasmx{$class_name};
 
         die "Unknown class of $name MCU!" if (! defined($tr));
 
         $mcu_features =
-	  {
-	  CLASS      => $tr->{CLASS},     # Class of MCU. (PROC_CLASS_PIC12yy)
-	  ROM_SIZE   => 0,                # Size of program memory.
+          {
+          CLASS      => $tr->{CLASS},     # Class of MCU. (PROC_CLASS_PIC12yy)
+          ROM_SIZE   => 0,                # Size of program memory.
 
           COFF       => hex($fields[1]),  # Coff ID of device. (16 bit wide)
           PAGES      => hex($fields[5]),  # Number of ROM/FLASH pages.
           MAX_RAM    => 0,                # The highest address of RAM.
           RAM_SIZE   => 0,                # Full size of all SFR and GPR.
           GPR_SIZE   => 0,                # Full size of all GPR.
-	  SGPR_SIZE  => 0,                # Size of shared GPRs.
+          SGPR_SIZE  => 0,                # Size of shared GPRs.
           CF_START   => 0,                # Address of first Configuration byte/word.
           CF_END     => 0,                # Address of last Configuration byte/word.
+          STD_HEADER => '',               # Standard header file name of MCU.
+          STD_SCRIPT => '',               # Standard linker script file name of MCU.
 
         # These addresses relative, compared to the beginning of the blocks.
           ROM        => hex($fields[6]),  # Last address of ROM/FLASH.
@@ -1517,6 +1540,7 @@ sub read_all_informations()
           EEPROM     => hex($fields[9]),  # Last address of EEPROM.
 
           CONFIGS    => hex($fields[12]), # Number of Configuration bytes/words.
+          CONF_MASK  => 0,                # Mask of config words.
           BANKS      => hex($fields[7]),  # Number of RAM Banks.
           ACCESS     => hex($fields[10]), # Last address of lower Access RAM of pic18f series.
           OSCVAL     => undef,            # Oscillator Calibration Value.
@@ -1537,32 +1561,32 @@ sub read_all_informations()
           $lkr = $inc;
           $lkr =~ s/^p//o;
 
-	  my $class_pic16 = ($inc =~ /^p17/o) ? TRUE : FALSE;
+          my $class_pic16 = ($inc =~ /^p17/o) ? TRUE : FALSE;
 
-          read_ram_and_rom_features("$gputils_path/lkr/${lkr}_g.lkr", $mcu_features);
-          $configs = read_ram_features("$gputils_path/header/${inc}.inc", $mcu_features, $class_pic16);
+          read_ram_and_rom_features("${lkr}_g.lkr", $mcu_features);
+          $configs = read_ram_features("${inc}.inc", $mcu_features, $class_pic16);
 
-	  my $shared_ram = $mcu_features->{SHARED_RAM};
+          my $shared_ram = $mcu_features->{SHARED_RAM};
 
-	  if (scalar(@{$shared_ram}) > 0)
-	    {
-	    # Present the shared GPR.
+          if (scalar(@{$shared_ram}) > 0)
+            {
+            # Present the shared GPR.
 
-	    my $first = ${$shared_ram}[0];
-	    my $size  = $first->{END} - $first->{START} + 1;
+            my $first = ${$shared_ram}[0];
+            my $size  = $first->{END} - $first->{START} + 1;
 
-	    $mcu_features->{SGPR_SIZE} = $size;
-	    $mcu_features->{GPR_SIZE} += $size;
-	    }
+            $mcu_features->{SGPR_SIZE} = $size;
+            $mcu_features->{GPR_SIZE} += $size;
+            }
 
-	  $mcu_features->{RAM_SIZE} = $mcu_features->{GPR_SIZE} + scalar(keys %{$mcu_features->{SFR_NAMES}});
+          $mcu_features->{RAM_SIZE} = $mcu_features->{GPR_SIZE} + scalar(keys %{$mcu_features->{SFR_NAMES}});
 
-	  if ($class_pic16)
-	    {
-	    $mcu_features->{CONF_SIZE} = $mcu_features->{CF_END} - $mcu_features->{CF_START} + 1;
+          if ($class_pic16)
+            {
+            $mcu_features->{CONF_SIZE} = $mcu_features->{CF_END} - $mcu_features->{CF_START} + 1;
             $mcus_by_names{$name}{FEATURES} = $mcu_features;
             $mcus_by_names{$name}{CONFIGS}  = $configs;
-	    }
+            }
 
           $state = ST_LISTEN;
           $addr = 0;
@@ -1594,10 +1618,13 @@ sub read_all_informations()
 
           die "Too much the number of \"CONFIGREG_INFO_TYPE\"!\n" if ($config_count <= 0);
 
+          my $mask = hex($fields[3]);
+
+          $config_mask |= $mask;
           $config_reg =
-	    {
+            {
             SWITCHES => [],
-            MASK     => hex($fields[3])
+            MASK     => $mask
             };
 
           $switch_count = hex($fields[4]);
@@ -1618,7 +1645,7 @@ sub read_all_informations()
           die "Too much the number of \"SWITCH_INFO_TYPE\"!\n" if ($switch_count <= 0);
 
           $switch_info =
-	    {
+            {
             HEAD => $fields[1],
             NAME => (defined($fields[2]) ? $fields[2] : ''),
             BITS => [],
@@ -1643,7 +1670,7 @@ sub read_all_informations()
           die "There is no actual \"SWITCH_INFO_TYPE\"!\n" if (! defined($switch_info));
 
           my $setting =
-	    {
+            {
             NAME  => $fields[1],
             VALUE => hex($fields[3]),
             EXPL  => (defined($fields[2]) ? $fields[2] : '')
@@ -1657,8 +1684,9 @@ sub read_all_informations()
         # All information is together.
             die "$name MCU already exist!" if (defined($mcus_by_names{$name}));
 
-            $mcu_features->{CF_START} = $cf_addr_min;
-            $mcu_features->{CF_END}   = $cf_addr_max;
+            $mcu_features->{CF_START}  = $cf_addr_min;
+            $mcu_features->{CF_END}    = $cf_addr_max;
+            $mcu_features->{CONF_MASK} = $config_mask if ($mcu_features->{CONF_MASK} == 0);
             $mcus_by_names{$name}{FEATURES} = $mcu_features;
             $mcus_by_names{$name}{CONFIGS}  = $configs;
             $configs = {};
@@ -1706,7 +1734,7 @@ sub dump_source_info($)
 
   aOutl($Align, '<div class="legendContainer">');
   aOutml($Align + 2, '<p class="srcInfo">',
-		     '  This page generated automatically by the',
+                     '  This page generated automatically by the',
                      "  <a href=\"https://sourceforge.net/p/gputils/code/HEAD/tree/trunk/scripts/tools/device-help.pl\"><em>$PROGRAM</em></a>",
                      "  program ($time) from the <em>" . basename($dev_info) . "</em> file (rev: $dev_info_rev) of <em>mpasmx</em> and from the",
                      "  $href (rev: svn $svn_rev). The <em>mpasmx</em>",
@@ -1967,13 +1995,13 @@ sub dump_class_menu($$)
 
   foreach (@primary_menu)
     {
-    	# Hide this active menu element.
+        # Hide this active menu element.
 
     next if ($_->{CLASS} == $Active);
 
     if (defined($link) && $_->{CLASS} == PRI_COMMON_SFR)
       {
-	# Replace this URL.
+        # Replace this URL.
 
       aOutl(6, "<a href=\"${remote_url}${link}\">$_->{NAME}</a>");
       }
@@ -2030,7 +2058,7 @@ sub add_to_sfr_common_list($$)
 
 #---------------------------------------------------------------------------------------------------
 
-	# Collects into lists those registers which they exist in the class of all members.
+        # Collects into lists those registers which they exist in the class of all members.
 
 sub make_sfr_common_lists()
   {
@@ -2477,6 +2505,28 @@ sub dump_features($$)
 
         #------------------------------------
 
+  $i = $mcu_features->{STD_HEADER};
+  if ($i ne '')
+    {
+    aOutl (6, '<tr class="featLine">');
+    aOutml(8, '<th class="featName">Standard header</th>',
+              "<td class=\"featValue\">$i</td>");
+    aOutl (6, '</tr>');
+    }
+
+        #------------------------------------
+
+  $i = $mcu_features->{STD_SCRIPT};
+  if ($i ne '')
+    {
+    aOutl (6, '<tr class="featLine">');
+    aOutml(8, '<th class="featName">Standard linker script</th>',
+              "<td class=\"featValue\">$i</td>");
+    aOutl (6, '</tr>');
+    }
+
+        #------------------------------------
+
   if ($class_pic16e)
     {
     aOutl (6, '<tr class="featLine">');
@@ -2547,7 +2597,7 @@ sub dump_all_config_word($$)
   my $mcu_features = $Properties->{FEATURES};
   my $mcu_class    = $mcu_features->{CLASS};
   my $mcu_class_features = $class_features_list[$mcu_class];
-  my $config_mask  = (ULONG_MAX << $mcu_class_features->{CONF_SIZE}) ^ ULONG_MAX;
+  my $config_mask  = $mcu_features->{CONF_MASK};
   my @addresses    = sort {$a <=> $b} keys %{$conf_bits};
   my $count        = @addresses;
   my @sections;
@@ -3350,7 +3400,7 @@ sub dump_sfr_map($$)
     {
     aOutl (6, '<tr class="ramGap"><td></td></tr>');
     aOutfl(6, "<tr><td colspan=%u class=\"ramSumEx\">The mirror of [PCL, PCLATH, ...] are not shown.</td></tr>",
-	   $bank_num * 2 + 1);
+           $bank_num * 2 + 1);
     }
 
   aOutl(4, '</table>');
@@ -3429,7 +3479,7 @@ sub create_class_htmls()
     close($out_handler);
     }
 
-	#-------------------------------
+        #-------------------------------
 
   make_sfr_common_lists();
 
