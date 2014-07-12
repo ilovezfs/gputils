@@ -34,7 +34,7 @@ struct gp_cfg_directive
 {
   const char *name;                           /* directive name */
   unsigned short mask;                        /* mask of bytes in the config address that apply to its value */
-  unsigned short option_count;                /* number of possible values */
+  unsigned int option_count;                  /* number of possible values */
   const struct gp_cfg_option *options;        /* array of values */
 };
 
@@ -43,7 +43,7 @@ struct gp_cfg_addr
 {
   unsigned int addr;                          /* the address */
   unsigned short defval;                      /* its default */
-  unsigned char directive_count;              /* count of relavent directives */
+  unsigned int directive_count;               /* count of relavent directives */
   const struct gp_cfg_directive *directives;  /* array of directives */
 };
 
@@ -51,7 +51,7 @@ struct gp_cfg_addr
 struct gp_cfg_device
 {
   const char *device;                         /* device name */
-  unsigned char addr_count;                   /* number of configuration addresses */
+  unsigned int addr_count;                    /* number of configuration addresses */
   const struct gp_cfg_addr *config_addrs;     /* array of configuration addresses */
 };
 
@@ -63,7 +63,7 @@ extern const unsigned int gp_cfg_device_count;
 const struct gp_cfg_device *gp_cfg_find_pic(const char *pic);
 const struct gp_cfg_device *gp_cfg_find_pic_multi_name(int count, const char * const *pics);
 const struct gp_cfg_directive *gp_cfg_find_directive(const struct gp_cfg_device *device,
-                    const char *directive, int *out_config_addr, unsigned char *out_def_value);
+                    const char *directive, int *out_config_addr, unsigned short *out_def_value);
 const struct gp_cfg_option *gp_cfg_find_option(const struct gp_cfg_directive *directive, const char *option);
 unsigned short gp_cfg_get_default(const struct gp_cfg_device *dev, int address);
 

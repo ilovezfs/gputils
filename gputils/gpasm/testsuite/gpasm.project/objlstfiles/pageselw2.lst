@@ -1,20 +1,21 @@
-MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   4-21-2013  16:31:51         PAGE  1
+MPASM 5.57      /HOME/PROG/TMP/PAGESELW2.ASM   7-12-2014  11:37:22         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
                       00001   list p=16f73
-                      00002   #include "P16F73.INC"
+                      00002   #include "p16f73.inc"
                       00001         LIST
                       00002 
                       00003 ;==========================================================================
-                      00004 ;  MPASM PIC16F73 processor include
-                      00005 ; 
-                      00006 ;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
-                      00007 ;==========================================================================
-                      00008 
-                      00455         LIST
+                      00004 ; Build date : May 28 2014
+                      00005 ;  MPASM PIC16F73 processor include
+                      00006 ; 
+                      00007 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
+                      00008 ;==========================================================================
+                      00009 
+                      00456         LIST
                       00003 
                       00004 vars udata
 0000                  00005 tmp res 1
@@ -44,7 +45,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0004   2???           00029   call tbl_lookup
                       00030 
                       00031   end
-MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   4-21-2013  16:31:51         PAGE  2
+MPASM 5.57      /HOME/PROG/TMP/PAGESELW2.ASM   7-12-2014  11:37:22         PAGE  2
 
 
 SYMBOL TABLE
@@ -103,7 +104,7 @@ FSR                               00000004
 GIE                               00000007
 GO                                00000002
 GO_DONE                           00000002
-MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   4-21-2013  16:31:51         PAGE  3
+MPASM 5.57      /HOME/PROG/TMP/PAGESELW2.ASM   7-12-2014  11:37:22         PAGE  3
 
 
 SYMBOL TABLE
@@ -162,7 +163,7 @@ PS1                               00000001
 PS2                               00000002
 PSA                               00000003
 R                                 00000002
-MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   4-21-2013  16:31:51         PAGE  4
+MPASM 5.57      /HOME/PROG/TMP/PAGESELW2.ASM   7-12-2014  11:37:22         PAGE  4
 
 
 SYMBOL TABLE
@@ -221,7 +222,7 @@ SSPIF                             00000003
 SSPM0                             00000000
 SSPM1                             00000001
 SSPM2                             00000002
-MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   4-21-2013  16:31:51         PAGE  5
+MPASM 5.57      /HOME/PROG/TMP/PAGESELW2.ASM   7-12-2014  11:37:22         PAGE  5
 
 
 SYMBOL TABLE
@@ -280,7 +281,7 @@ TRISB6                            00000006
 TRISB7                            00000007
 TRISC                             00000087
 TRISC0                            00000000
-MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   4-21-2013  16:31:51         PAGE  6
+MPASM 5.57      /HOME/PROG/TMP/PAGESELW2.ASM   7-12-2014  11:37:22         PAGE  6
 
 
 SYMBOL TABLE
@@ -339,7 +340,7 @@ main                              00000000
 tbl_dat                           00000000
 tbl_lookup                        00000000
 tmp                               00000000
-MPASM  5.49  /HOME/BORUTR/SVN_SNAPSHOTS/GPUTI   4-21-2013  16:31:51         PAGE  7
+MPASM 5.57      /HOME/PROG/TMP/PAGESELW2.ASM   7-12-2014  11:37:22         PAGE  7
 
 
 

@@ -1,5 +1,5 @@
   list p=16f73
-  #include "P16F73.INC"
+  #include "p16f73.inc"
 
 vars udata
 tmp res 1

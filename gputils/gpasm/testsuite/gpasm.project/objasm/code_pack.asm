@@ -1,6 +1,6 @@
     radix dec
     list p=18f4550
-    #include <P18F4550.INC>
+    #include <p18f4550.inc>
 
     code_pack
     db 1,2,3
