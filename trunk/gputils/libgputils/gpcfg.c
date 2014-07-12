@@ -23,8 +23,8 @@ Boston, MA 02111-1307, USA.  */
 
 #include "gpcfg.h"
 
-static int cb_find_pic(const void *p1, const void *p2)
-{
+static int
+cb_find_pic(const void *p1, const void *p2) {
   const struct gp_cfg_device *d1 = p1;
   const struct gp_cfg_device *d2 = p2;
 
@@ -34,8 +34,8 @@ static int cb_find_pic(const void *p1, const void *p2)
 /*
  * Locate a PIC configuration device structure by name
  */
-const struct gp_cfg_device *gp_cfg_find_pic(const char *pic)
-{
+const struct gp_cfg_device *
+gp_cfg_find_pic(const char *pic) {
   struct gp_cfg_device fake_dev = { NULL, 0, NULL };
 
   fake_dev.device = pic;
@@ -45,8 +45,8 @@ const struct gp_cfg_device *gp_cfg_find_pic(const char *pic)
 /*
  * Locate a PIC by name, pass a list of names to use, try each in order.
  */
-const struct gp_cfg_device *gp_cfg_find_pic_multi_name(int count, const char * const *pics)
-{
+const struct gp_cfg_device *
+gp_cfg_find_pic_multi_name(int count, const char * const *pics) {
   int t;
 
   for (t = 0; t < count; t++) {
@@ -63,9 +63,9 @@ const struct gp_cfg_device *gp_cfg_find_pic_multi_name(int count, const char * c
 /*
  * Find a configuration directive in a processor's config db.
  */
-const struct gp_cfg_directive *gp_cfg_find_directive(const struct gp_cfg_device *device,
-                            const char *dname, int *config_addr, unsigned char *def_value)
-{
+const struct gp_cfg_directive *
+gp_cfg_find_directive(const struct gp_cfg_device *device, const char *dname,
+                      int *out_config_addr, unsigned short *out_def_value) {
   size_t t, u;
 
   for (t = 0; t < device->addr_count; t++) {
@@ -75,12 +75,12 @@ const struct gp_cfg_directive *gp_cfg_find_directive(const struct gp_cfg_device 
       const struct gp_cfg_directive *directive = addr->directives + u;
 
       if (strcasecmp(dname, directive->name) == 0) {
-        if (config_addr != NULL) {
-          *(config_addr) = addr->addr;
+        if (out_config_addr != NULL) {
+          *(out_config_addr) = addr->addr;
         }
 
-        if (def_value != NULL) {
-          *(def_value) = addr->defval;
+        if (out_def_value != NULL) {
+          *(out_def_value) = addr->defval;
         }
 
         return directive;
@@ -94,8 +94,8 @@ const struct gp_cfg_directive *gp_cfg_find_directive(const struct gp_cfg_device 
 /*
  * Locate an option for a directive. Return it or NULL.
  */
-const struct gp_cfg_option *gp_cfg_find_option(const struct gp_cfg_directive *directive, const char *option)
-{
+const struct gp_cfg_option *
+gp_cfg_find_option(const struct gp_cfg_directive *directive, const char *option) {
   size_t t;
 
   for (t = 0; t < directive->option_count; t++) {
@@ -112,8 +112,8 @@ const struct gp_cfg_option *gp_cfg_find_option(const struct gp_cfg_directive *di
 /*
  * Return 0xffff or the default for the address and device passed.
  */
-unsigned short gp_cfg_get_default(const struct gp_cfg_device *device, int address)
-{
+unsigned short
+gp_cfg_get_default(const struct gp_cfg_device *device, int address) {
   size_t t;
 
   for (t = 0; t < device->addr_count; t++) {

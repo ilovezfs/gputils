@@ -1,3 +1,27 @@
+2014-07-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c:
+    Changed text format.
+
+  * gpasm/testsuite/gpasm.project/objasm/code_pack.asm,
+    gpasm/testsuite/gpasm.project/objasm/config2.asm,
+    gpasm/testsuite/gpasm.project/objasm/pageselw2.asm,
+    gpasm/testsuite/gpasm.project/objfiles/code_pack.o,
+    gpasm/testsuite/gpasm.project/objfiles/config2.o,
+    gpasm/testsuite/gpasm.project/objfiles/data2e.o,
+    gpasm/testsuite/gpasm.project/objfiles/pageselw2.o,
+    gpasm/testsuite/gpasm.project/objlstfiles/code_pack.lst,
+    gpasm/testsuite/gpasm.project/objlstfiles/config2.lst,
+    gpasm/testsuite/gpasm.project/objlstfiles/data2e.lst,
+    gpasm/testsuite/gpasm.project/objlstfiles/pageselw2.lst:
+    updated
+
+  * ligbputils/gpcfg.c, ligbputils/gpcfg.h:
+    Changed text format and changed the "unsigned char *out_def_value" to
+    "unsigned short *out_def_value".
+
+  * ligbputils/gpmemory.c:
+    Changed text format.
+
 2014-07-07  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/*.inc, lkr/*.lkr, libgputils/gpcfg-table.c,
     libgputils/gpreg-table.c:

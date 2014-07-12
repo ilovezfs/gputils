@@ -168,7 +168,8 @@ b_memory_is_used(MemBlock *m, unsigned int address)
 {
   unsigned int block  = (address >> I_MEM_BITS) & 0xffff;
 
-  do {
+  do
+  {
     if (m->base == block) {
       return (((m->memory != NULL) && (m->memory[address & I_MEM_MASK].data & BYTE_USED_MASK)) ? true : false);
     }

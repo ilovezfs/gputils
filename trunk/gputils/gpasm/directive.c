@@ -4890,7 +4890,7 @@ do_insn(const char *name, struct pnode *parms)
            * is set on the basis of the target address. Declaring the
            * Access RAM bit in this mode will also generate an error
            * in the MPASM Assembler.": */
-          a = (state.extended_pic16e != true) && (file >= state.device.bsr_boundary && file < (0xf00 + state.device.bsr_boundary));
+          a = ((state.extended_pic16e != true) && (file >= state.device.bsr_boundary) && (file < (0xf00 + state.device.bsr_boundary))) ? 1 : 0;
 
           switch (arity) {
           case 2:
@@ -4906,6 +4906,7 @@ do_insn(const char *name, struct pnode *parms)
 
           case 1:
             /* use default a */
+            gpvmessage(GPM_NOF, NULL);
             break;
 
           default:
@@ -4974,7 +4975,7 @@ do_insn(const char *name, struct pnode *parms)
              * is set on the basis of the target address. Declaring the
              * Access RAM bit in this mode will also generate an error
              * in the MPASM Assembler.": */
-            a = true != state.extended_pic16e && (file >= state.device.bsr_boundary && file < (0xf00 + state.device.bsr_boundary));
+            a = ((state.extended_pic16e != true) && (file >= state.device.bsr_boundary) && (file < (0xf00 + state.device.bsr_boundary))) ? 1 : 0;
           }
 
           /* add relocation for the access bit, if necessary */
@@ -5057,7 +5058,7 @@ do_insn(const char *name, struct pnode *parms)
            * is set on the basis of the target address. Declaring the
            * Access RAM bit in this mode will also generate an error
            * in the MPASM Assembler.": */
-          a = (state.extended_pic16e != true) && (file >= state.device.bsr_boundary && file < (0xf00 + state.device.bsr_boundary));
+          a = ((state.extended_pic16e != true) && (file >= state.device.bsr_boundary) && (file < (0xf00 + state.device.bsr_boundary))) ? 1 : 0;
 
           switch (arity) {
           case 3:
