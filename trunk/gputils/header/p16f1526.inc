@@ -24,6 +24,16 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
+;;;; Begin: Added in gputils
+
+;==========================================================================
+;
+;       Gputils Specific Revision History
+;
+;==========================================================================
+
+;       12 Jul 2014  Added the _DEBUG_ON and _DEBUG_OFF config options.
+;;;; End: Added in gputils
 
 ;==========================================================================
 ;
@@ -1593,6 +1603,11 @@ _BORV_245        EQU  H'3FFF'    ; Brown-out Reset Voltage (Vbor), low trip poin
 _LPBOR_ON        EQU  H'37FF'    ; Low-Power BOR is enabled
 _LPBOR_OFF       EQU  H'3FFF'    ; Low-Power BOR is disabled
 
+;;;; Begin: Added in gputils
+_DEBUG_ON        EQU  H'2FFF'    ; In-Circuit Debugger enabled, ICSPCLK and ICSPDAT are dedicated to the debugger.
+_DEBUG_OFF       EQU  H'3FFF'    ; In-Circuit Debugger disabled, ICSPCLK and ICSPDAT are general purpose I/O pins.
+
+;;;; End: Added in gputils
 _LVP_OFF         EQU  H'1FFF'    ; High-voltage on MCLR/VPP must be used for programming
 _LVP_ON          EQU  H'3FFF'    ; Low-voltage programming enabled
 
