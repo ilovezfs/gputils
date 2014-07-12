@@ -1,4 +1,10 @@
 2014-07-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/p12f1yyy.inc, header/p12lf1yyy.inc, header/p16f1yyy.inc,
+    header/p16lf1yyy.inc:
+    Added the missing _DEBUG_ON and _DEBUG_OFF config options to
+    the enhanced midrange MCUs.
+
+2014-07-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c:
     Changed text format.
 

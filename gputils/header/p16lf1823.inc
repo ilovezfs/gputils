@@ -33,6 +33,7 @@
 
 ;       19 Jun 2012  Removed CCP1SEL and P1BSEL bits from "APFCON Bits".
 ;                    Removed CCP1SEL and P1BSEL bits from "APFCON0 Bits".
+;       12 Jul 2014  Added the _DEBUG_ON and _DEBUG_OFF config options.
 ;;;; End: Added in gputils
 
 ;==========================================================================
@@ -1158,6 +1159,11 @@ _BORV_HI         EQU  H'FBFF'    ; Brown-out Reset Voltage (Vbor), high trip poi
 _BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
 _BORV_19         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip point selected.
 
+;;;; Begin: Added in gputils
+_DEBUG_ON        EQU  H'2FFF'    ; In-Circuit Debugger enabled, ICSPCLK and ICSPDAT are dedicated to the debugger.
+_DEBUG_OFF       EQU  H'3FFF'    ; In-Circuit Debugger disabled, ICSPCLK and ICSPDAT are general purpose I/O pins.
+
+;;;; End: Added in gputils
 _LVP_OFF         EQU  H'DFFF'    ; High-voltage on MCLR/VPP must be used for programming
 _LVP_ON          EQU  H'FFFF'    ; Low-voltage programming enabled
 
