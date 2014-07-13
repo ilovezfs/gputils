@@ -295,8 +295,7 @@ b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value,
   MemBlock *m = NULL;
   MemWord *w;
 
-  do
-  {
+  do {
     m = m ? m->next : i_memory;
 
     if (m->base == block) {

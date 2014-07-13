@@ -1,3 +1,11 @@
+2014-07-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c, libgputils/gpcfg-table.c, libgputils/gpcfg.c,
+    libgputils/gpcfg.h, gputils/testsuite/gpdasm.project/op14e_new_conf.asm:
+    Added the missing DEBUG config option to the enhanced midrange MCUs.
+
+  * libgputils/gphash.h, libgputils/gpmemory.h:
+    Changed text format.
+
 2014-07-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/p12f1yyy.inc, header/p12lf1yyy.inc, header/p16f1yyy.inc,
     header/p16lf1yyy.inc:
@@ -21,7 +29,7 @@
     gpasm/testsuite/gpasm.project/objlstfiles/pageselw2.lst:
     updated
 
-  * ligbputils/gpcfg.c, ligbputils/gpcfg.h:
+  * libgputils/gpcfg.c, libgputils/gpcfg.h:
     Changed text format and changed the "unsigned char *out_def_value" to
     "unsigned short *out_def_value".
 

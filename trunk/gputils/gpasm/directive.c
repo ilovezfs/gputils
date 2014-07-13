@@ -845,7 +845,7 @@ get_config_mem(int ca, gp_boolean new_config)
 
 /* helper to write configuration data, grabbing defaults when necessary */
 static void
-config_16_set_byte_mem(MemBlock *config_mem, const struct gp_cfg_device *p_dev,
+config_16_set_byte_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
                        int ca, unsigned char byte, unsigned char mask)
 {
   unsigned char old_byte;
@@ -861,7 +861,7 @@ config_16_set_byte_mem(MemBlock *config_mem, const struct gp_cfg_device *p_dev,
 }
 
 static void
-config_16_set_word_mem(MemBlock *config_mem, const struct gp_cfg_device *p_dev,
+config_16_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
                        int ca, unsigned char byte, unsigned char mask)
 {
   unsigned char other_byte;
@@ -935,7 +935,7 @@ do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
     value = evaluate(p);
 
     if (IS_PIC16E_CORE) {
-      const struct gp_cfg_device *p_dev;
+      const gp_cfg_device_t *p_dev;
 
       if (value > 0xff) {
         gpvwarning(GPW_RANGE, "%i (%#x) > 0xff", value, value);
@@ -981,9 +981,9 @@ do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
 /* Sets defaults over unused portions of configuration memory. */
 static void
-config_16_check_defaults(MemBlock *config_mem, const struct gp_cfg_device *p_dev)
+config_16_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
 {
-  const struct gp_cfg_addr *addrs = p_dev->config_addrs;
+  const gp_cfg_addr_t *addrs = p_dev->addresses;
   int t;
 
   /* FIXME: We do not need to set defaults here, but during
@@ -996,11 +996,11 @@ config_16_check_defaults(MemBlock *config_mem, const struct gp_cfg_device *p_dev
    * nothing in the hex file for unspecified bytes. I'm not sure the best
    * approach here - defaults or nothing. Going to go with defaults.
    */
-  for (t = 0; t < p_dev->addr_count; ++addrs, ++t) {
+  for (t = 0; t < p_dev->address_count; ++addrs, ++t) {
     unsigned char byte;
 
-    if (!b_memory_get(config_mem, addrs->addr, &byte, NULL, NULL)) {
-      config_16_set_byte_mem(config_mem, p_dev, addrs->addr, addrs->defval, 0xff);
+    if (!b_memory_get(config_mem, addrs->address, &byte, NULL, NULL)) {
+      config_16_set_byte_mem(config_mem, p_dev, addrs->address, addrs->def_value, 0xff);
     }
   }
 }
@@ -1011,9 +1011,9 @@ do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   static unsigned char double_mask[64] = { 0, };
 
-  const struct gp_cfg_device *p_dev;
-  const struct gp_cfg_directive *p_dir;
-  const struct gp_cfg_option *p_opt;
+  const gp_cfg_device_t *p_dev;
+  const gp_cfg_directive_t *p_dir;
+  const gp_cfg_option_t *p_opt;
   const char *k_str, *v_str;
   struct pnode *k, *v;
   int ca;
@@ -1081,7 +1081,7 @@ do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   }
 
   /* find the directive */
-  p_dir = gp_cfg_find_directive(p_dev, k_str, &ca, NULL);
+  p_dir = gp_cfg_find_directive(p_dev, k_str, (unsigned int *)&ca, NULL);
   if (p_dir == NULL) {
     snprintf(buf, sizeof(buf), "CONFIG Directive Error: Setting not found for %s processor: \"%s\"",
              state.processor->names[2], k_str);
@@ -1102,7 +1102,7 @@ do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   /* emit the bytes if appropriate */
   if (state.pass == 2) {
-    unsigned int dm_addr = (ca - p_dev->config_addrs->addr) & 0xFF;
+    unsigned int dm_addr = (ca - p_dev->addresses->address) & 0xFF;
     MemBlock *config_mem = get_config_mem(ca, true);
 
     if (state.mode != MODE_RELOCATABLE) {
@@ -1124,7 +1124,7 @@ do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
     }
 
     /* Let the helper set the data. */
-    config_16_set_byte_mem(config_mem, p_dev, ca, (unsigned char)p_opt->word,
+    config_16_set_byte_mem(config_mem, p_dev, ca, (unsigned char)p_opt->value,
                            (unsigned char)p_dir->mask);
   }
 
@@ -1134,7 +1134,7 @@ do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 /*-------------------------------------------------------------------------*/
 
 static void
-config_12_14_set_word_mem(MemBlock *config_mem, const struct gp_cfg_device *p_dev,
+config_12_14_set_word_mem(MemBlock *config_mem, const gp_cfg_device_t *p_dev,
                           int ca, unsigned short word, unsigned short mask)
 {
   int org;
@@ -1155,18 +1155,18 @@ config_12_14_set_word_mem(MemBlock *config_mem, const struct gp_cfg_device *p_de
 
 /* Sets defaults over unused portions of configuration memory. */
 static void
-config_12_14_check_defaults(MemBlock *config_mem, const struct gp_cfg_device *p_dev)
+config_12_14_check_defaults(MemBlock *config_mem, const gp_cfg_device_t *p_dev)
 {
-  const struct gp_cfg_addr *addrs = p_dev->config_addrs;
+  const gp_cfg_addr_t *addrs = p_dev->addresses;
   unsigned int addr;
   unsigned short word;
   int t;
 
-  for (t = 0; t < p_dev->addr_count; ++addrs, ++t) {
-    addr = gp_processor_org_to_byte(state.device.class, addrs->addr);
+  for (t = 0; t < p_dev->address_count; ++addrs, ++t) {
+    addr = gp_processor_org_to_byte(state.device.class, addrs->address);
 
     if (!state.device.class->i_memory_get(config_mem, addr, &word, NULL, NULL)) {
-      word = addrs->defval & state.device.class->config_mask;
+      word = addrs->def_value & state.device.class->config_mask;
       state.device.class->i_memory_put(config_mem, addr, word, NULL, NULL);
     }
   }
@@ -1178,9 +1178,9 @@ do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   static unsigned short double_mask[256] = { 0, };
 
-  const struct gp_cfg_device *p_dev;
-  const struct gp_cfg_directive *p_dir;
-  const struct gp_cfg_option *p_opt;
+  const gp_cfg_device_t *p_dev;
+  const gp_cfg_directive_t *p_dir;
+  const gp_cfg_option_t *p_opt;
   const char *k_str, *v_str;
   struct pnode *k, *v;
   int conf_org;
@@ -1249,7 +1249,7 @@ do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   }
 
   /* find the directive */
-  p_dir = gp_cfg_find_directive(p_dev, k_str, &conf_org, NULL);
+  p_dir = gp_cfg_find_directive(p_dev, k_str, (unsigned int *)&conf_org, NULL);
   if (p_dir == NULL) {
     snprintf(buf, sizeof(buf), "CONFIG Directive Error: Setting not found for %s processor: \"%s\"",
              state.processor->names[2], k_str);
@@ -1271,7 +1271,7 @@ do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   /* emit the bytes if appropriate */
   if (state.pass == 2) {
-    unsigned int dm_addr = (conf_org - p_dev->config_addrs->addr) & 0xFF;
+    unsigned int dm_addr = (conf_org - p_dev->addresses->address) & 0xFF;
     MemBlock *config_mem = get_config_mem(ca, true);
 
     if (state.mode != MODE_RELOCATABLE) {
@@ -1293,7 +1293,7 @@ do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
     }
 
     /* Let the helper set the data. */
-    config_12_14_set_word_mem(config_mem, p_dev, ca, p_opt->word, p_dir->mask);
+    config_12_14_set_word_mem(config_mem, p_dev, ca, p_opt->value, p_dir->mask);
   }
 
   return r;
