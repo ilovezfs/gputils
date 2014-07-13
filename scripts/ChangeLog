@@ -1,3 +1,7 @@
+2014-07-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/cfg-import.pl:
+	  New tool to prepare the gpcfg-table.c and gpcfg.h.
+
 2014-07-08 Molnar Karoly <molnarkaroly@users.sf.net>
 	* tools/device-help.pl: updated
 

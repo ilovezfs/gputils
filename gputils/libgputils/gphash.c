@@ -26,8 +26,7 @@ Boston, MA 02111-1307, USA.  */
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-gp_fnv1a_hash(const void *Ptr, unsigned int Size, unsigned int Hash)
-{
+gp_fnv1a_hash(const void *Ptr, unsigned int Size, unsigned int Hash) {
   const unsigned char *p;
 
   if ((Ptr == NULL) || (Size == 0)) {
@@ -48,8 +47,7 @@ gp_fnv1a_hash(const void *Ptr, unsigned int Size, unsigned int Hash)
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-gp_fnv1a_hash_str(const char *String, unsigned int Hash)
-{
+gp_fnv1a_hash_str(const char *String, unsigned int Hash) {
   const unsigned char *s;
   unsigned char c;
 
@@ -71,8 +69,7 @@ gp_fnv1a_hash_str(const char *String, unsigned int Hash)
 /*------------------------------------------------------------------------------------------------*/
 
 unsigned int
-gp_fnv1a_hash_symbol(const gp_symbol_type *Symbol)
-{
+gp_fnv1a_hash_symbol(const gp_symbol_type *Symbol) {
   unsigned int hash;
 
   if (Symbol == NULL) {
@@ -86,8 +83,7 @@ gp_fnv1a_hash_symbol(const gp_symbol_type *Symbol)
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-hash_sort_cmp(const void *P0, const void *P1)
-{
+hash_sort_cmp(const void *P0, const void *P1) {
   const gp_hash_type *h0 = (const gp_hash_type *)P0;
   const gp_hash_type *h1 = (const gp_hash_type *)P1;
   unsigned int hash0 = h0->hash;
@@ -115,8 +111,7 @@ hash_sort_cmp(const void *P0, const void *P1)
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-hash_find_cmp(const void *P0, const void *P1)
-{
+hash_find_cmp(const void *P0, const void *P1) {
   const gp_hash_type *h0 = (const gp_hash_type *)P0;
   const gp_hash_type *h1 = (const gp_hash_type *)P1;
   unsigned int hash0 = h0->hash;
@@ -136,8 +131,7 @@ hash_find_cmp(const void *P0, const void *P1)
 /*------------------------------------------------------------------------------------------------*/
 
 gp_hash_type *
-gp_make_hash_table(gp_object_type *Object)
-{
+gp_make_hash_table(gp_object_type *Object) {
   gp_symbol_type *current = NULL;
   gp_hash_type *table = NULL;
   unsigned int num_symbols;
@@ -185,8 +179,7 @@ gp_make_hash_table(gp_object_type *Object)
 /*------------------------------------------------------------------------------------------------*/
 
 const gp_symbol_type *
-gp_find_symbol_hash_table(const gp_object_type *Object, const char *Section_name, gp_symvalue_t Symbol_value)
-{
+gp_find_symbol_hash_table(const gp_object_type *Object, const char *Section_name, gp_symvalue_t Symbol_value) {
   gp_hash_type gp_hash;
   gp_hash_type *ret;
 
