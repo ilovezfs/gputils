@@ -923,10 +923,8 @@ sub print_directive_prototypes()
       print $out_handler ",\n";
       }
 
-    print $out_handler "};\n";
+    print $out_handler "};\n\n";
     }
-
-  print $out_handler "\n";
   }
 
 #---------------------------------------------------------------------------------------------------
