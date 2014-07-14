@@ -268,7 +268,7 @@ my $pic16e_mcu_number = 0;
 
         {
         FEATURES => {
-                    CLASS      => 0,    # Class of MCU. (PROC_CLASS_PIC1yy)
+                    MCU_CLASS  => 0,    # Class of MCU. (PROC_CLASS_PIC1yy)
                     ROM_SIZE   => 0,    # Size of program memory.
 
                     COFF       => 0,    # Coff ID of device. (16 bit wide)
@@ -373,27 +373,27 @@ my $pic16e_mcu_number = 0;
                     '300005' => {
                                 SWITCHES => [
                                               {
-                                              'HEAD' => 'CCP2MX',
-                                              'NAME' => 'CCP2 MUX bit',
-                                              'BITS' => [
-                                                          {
-                                                          'NAME'  => 'OFF',
-                                                          'VALUE' => 0,
-                                                          'EXPL'  => 'CCP2 input/output is multiplexed with RB3'
-                                                          },
+                                              'HEAD'    => 'CCP2MX',
+                                              'NAME'    => 'CCP2 MUX bit',
+                                              'OPTIONS' => [
+                                                             {
+                                                             'NAME'  => 'OFF',
+                                                             'VALUE' => 0,
+                                                             'EXPL'  => 'CCP2 input/output is multiplexed with RB3'
+                                                             },
 
-                                                          ...
+                                                             ...
 
-                                                          {}
-                                                        ],
-                                              'MASK' => 1
+                                                             {}
+                                                           ],
+                                              'SW_MASK' => 1
                                               },
 
                                               ...
 
                                               {}
                                             ],
-                                MASK     => 0
+                                CONF_MASK     => 0
                                 }
                     }
         }
@@ -607,6 +607,40 @@ use constant RAM_BAD    => 0;
 use constant RAM_GPR    => 1;
 use constant RAM_SFR    => 2;
 use constant RAM_SHARED => 3;
+
+my @mcu_missed_debug =
+  (
+  'PIC12F1571', 'PIC12LF1571', 'PIC12F1572', 'PIC12LF1572',
+  'PIC12F1612', 'PIC12LF1612', 'PIC12F1822', 'PIC12LF1822',
+  'PIC12F1840', 'PIC12LF1840', 'PIC12LF1840T39A', 'PIC12LF1840T48A',
+  'PIC16F1454', 'PIC16LF1454', 'PIC16F1455', 'PIC16LF1455',
+  'PIC16F1458', 'PIC16LF1458', 'PIC16F1508', 'PIC16LF1508',
+  'PIC16F1509', 'PIC16LF1509', 'PIC16F1512', 'PIC16LF1512',
+  'PIC16F1513', 'PIC16LF1513', 'PIC16F1516', 'PIC16LF1516',
+  'PIC16F1517', 'PIC16LF1517', 'PIC16F1518', 'PIC16LF1518',
+  'PIC16F1519', 'PIC16LF1519', 'PIC16F1526', 'PIC16LF1526',
+  'PIC16F1527', 'PIC16LF1527', 'PIC16LF1554', 'PIC16LF1559',
+  'PIC16F1613', 'PIC16LF1613', 'PIC16F1703', 'PIC16LF1703',
+  'PIC16F1704', 'PIC16LF1704', 'PIC16F1705', 'PIC16LF1705',
+  'PIC16F1707', 'PIC16LF1707', 'PIC16F1708', 'PIC16LF1708',
+  'PIC16F1709', 'PIC16LF1709', 'PIC16F1713', 'PIC16LF1713',
+  'PIC16F1716', 'PIC16LF1716', 'PIC16F1717', 'PIC16LF1717',
+  'PIC16F1718', 'PIC16LF1718', 'PIC16F1719', 'PIC16LF1719',
+  'PIC16F1782', 'PIC16LF1782', 'PIC16F1783', 'PIC16LF1783',
+  'PIC16F1784', 'PIC16LF1784', 'PIC16F1786', 'PIC16LF1786',
+  'PIC16F1787', 'PIC16LF1787', 'PIC16F1788', 'PIC16LF1788',
+  'PIC16F1789', 'PIC16LF1789', 'PIC16F1823', 'PIC16LF1823',
+  'PIC16F1824', 'PIC16LF1824', 'PIC16LF1824T39A', 'PIC16F1825',
+  'PIC16LF1825', 'PIC16F1826', 'PIC16LF1826', 'PIC16F1827',
+  'PIC16LF1827', 'PIC16F1828', 'PIC16LF1828', 'PIC16F1829',
+  'PIC16F1829LIN', 'PIC16LF1829', 'PIC16F1847', 'PIC16LF1847',
+  'PIC16LF1902', 'PIC16LF1903', 'PIC16LF1904', 'PIC16LF1906',
+  'PIC16LF1907', 'PIC16F1933', 'PIC16LF1933', 'PIC16F1934',
+  'PIC16LF1934', 'PIC16F1936', 'PIC16LF1936', 'PIC16F1937',
+  'PIC16LF1937', 'PIC16F1938', 'PIC16LF1938', 'PIC16F1939',
+  'PIC16LF1939', 'PIC16F1946', 'PIC16LF1946', 'PIC16F1947',
+  'PIC16LF1947'
+  );
 
 ################################################################################
 ################################################################################
@@ -1217,8 +1251,8 @@ sub read_ram_features($$$)
           if ($Class_pic16)
             {
             $config_reg = {
-                          SWITCHES => [],
-                          MASK     => 0
+                          SWITCHES  => [],
+                          CONF_MASK => 0
                           };
 
             $configs->{$Features->{CF_START}} = $config_reg;
@@ -1267,17 +1301,17 @@ sub read_ram_features($$$)
                 if ($prev_switch_info_name ne $sw_name)
                   {
                   $switch_info = {
-                                 HEAD => $sw_name,
-                                 NAME => $pic17_conf_switch_expl{$sw_name},
-                                 BITS => [],
-                                 MASK => 0xFFFF
+                                 HEAD    => $sw_name,
+                                 NAME    => $pic17_conf_switch_expl{$sw_name},
+                                 OPTIONS => [],
+                                 SW_MASK => 0xFFFF
                                  };
 
                   push(@{$config_reg->{SWITCHES}}, $switch_info);
                   $prev_switch_info_name = $sw_name;
                   }
 
-                push(@{$switch_info->{BITS}}, { NAME => $name, VALUE => $value, EXPL => '' });
+                push(@{$switch_info->{OPTIONS}}, { NAME => $name, VALUE => $value, EXPL => '' });
                 last;
                 }
               } # foreach my $sw_name (keys %pic17_conf_switch_expl)
@@ -1463,18 +1497,48 @@ sub read_ram_and_rom_features($$)
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-sub read_all_informations()
+sub add_missing_debug($)
   {
-  my ($configs, $name, $inc, $lkr, $class_name);
-  my $mcu_features  = undef;
-  my $config_reg    = undef;
-  my $switch_info   = undef;
-  my $addr          = 0;
-  my $config_count  = 0;
-  my $switch_count  = 0;
-  my $setting_count = 0;
-  my $state         = ST_WAIT;
-  my ($cf_addr_min, $cf_addr_max, $config_mask);
+  my $DirRef = $_[0];
+  my $sw_ref =
+    {
+    HEAD => 'DEBUG',
+    NAME => 'Debugger enable bit',
+    OPTIONS => [
+              {
+              NAME  => 'ON',
+              VALUE => 0,
+              EXPL  => 'Background debugger enabled'
+              },
+              {
+              NAME  => 'OFF',
+              VALUE => 0x1000,
+              EXPL  => 'Background debugger disabled'
+              }
+            ],
+    SW_MASK => 0x1000
+    };
+
+  push(@{$DirRef->{SWITCHES}}, $sw_ref);
+  $DirRef->{SWITCH_COUNT} += 1;
+  return $sw_ref->{SW_MASK};
+  }
+
+#---------------------------------------------------------------------------------------------------
+
+sub read_device_informations()
+  {
+  my ($configs, $mcu_name, $inc, $lkr, $class_name);
+  my $mcu_features    = undef;
+  my $directive       = undef;
+  my $switch_info     = undef;
+  my $directive_addr  = 0;
+  my $directive_count = 0;
+  my $switch_count    = 0;
+  my $option_count    = 0;
+  my $state           = ST_WAIT;
+  my ($dir_addr_min, $dir_addr_max, $directive_mask);
+  my $debug_present;
 
   open(INFO, '<', $dev_info) || die "Could not open for reading: $dev_info\n";
 
@@ -1505,22 +1569,21 @@ sub read_all_informations()
 
       if ($fields[2] =~ /^$pic_name_mask$/io)
         {
-        $name          = uc($fields[2]);
-        $class_name    = lc($fields[3]);
-        $config_count  = hex($fields[12]);
-        $switch_count  = 0;
-        $setting_count = 0;
-        $cf_addr_min   = ULONG_MAX;
-        $cf_addr_max   = 0;
-        $config_mask   = 0;
+        ($mcu_name, $class_name, $directive_count) = (uc($fields[2]), lc($fields[3]), hex($fields[12]));
+        $switch_count   = 0;
+        $option_count   = 0;
+        $dir_addr_min   = ULONG_MAX;
+        $dir_addr_max   = 0;
+        $directive_mask = 0;
+        $debug_present  = FALSE;
 
         my $tr = $class_features_by_mpasmx{$class_name};
 
-        die "Unknown class of $name MCU!" if (! defined($tr));
+        die "Unknown class of $mcu_name MCU!" if (! defined($tr));
 
         $mcu_features =
           {
-          CLASS      => $tr->{CLASS},     # Class of MCU. (PROC_CLASS_PIC12yy)
+          MCU_CLASS  => $tr->{CLASS},     # Class of MCU. (PROC_CLASS_PIC12yy)
           ROM_SIZE   => 0,                # Size of program memory.
 
           COFF       => hex($fields[1]),  # Coff ID of device. (16 bit wide)
@@ -1554,7 +1617,7 @@ sub read_all_informations()
           SFR_ADDRS  => {}                # List addresses of SFRs by names.
           };
 
-        $inc = $gp_mcus_by_names{$name};
+        $inc = $gp_mcus_by_names{$mcu_name};
 
         if (defined($inc) && $inc ne '')
           {
@@ -1584,12 +1647,12 @@ sub read_all_informations()
           if ($class_pic16)
             {
             $mcu_features->{CONF_SIZE} = $mcu_features->{CF_END} - $mcu_features->{CF_START} + 1;
-            $mcus_by_names{$name}{FEATURES} = $mcu_features;
-            $mcus_by_names{$name}{CONFIGS}  = $configs;
+            $mcus_by_names{$mcu_name}{FEATURES} = $mcu_features;
+            $mcus_by_names{$mcu_name}{CONFIGS}  = $configs;
             }
 
           $state = ST_LISTEN;
-          $addr = 0;
+          $directive_addr = 0;
           }
         else
           {
@@ -1616,25 +1679,33 @@ sub read_all_informations()
         # <CONFIGREG_INFO_TYPE><2008><0><ffff><0>
         # <CONFIGREG_INFO_TYPE><300001><0><7><3>
 
-          die "Too much the number of \"CONFIGREG_INFO_TYPE\"!\n" if ($config_count <= 0);
+          die "Too much the number of \"CONFIGREG_INFO_TYPE\"!\n" if ($directive_count <= 0);
 
-          my $mask = hex($fields[3]);
+          my $cf_mask;
 
-          $config_mask |= $mask;
-          $config_reg =
+          ($directive_addr, $cf_mask, $switch_count) = (hex($fields[1]), hex($fields[3]), hex($fields[4]));
+
+          if ($switch_count <= 0)
             {
-            SWITCHES => [],
-            MASK     => $mask
-            };
+            printf STDERR "Database error in descriptor of $mcu_name at 0x%06X: This CONFIGREG_INFO_TYPE empty!\n", $directive_addr;
+            }
+          else
+            {
+            $directive =
+              {
+              SWITCHES  => [],
+              CONF_MASK => $cf_mask
+              };
 
-          $switch_count = hex($fields[4]);
-          $addr = hex($fields[1]);
+            $directive_mask |= $cf_mask;
 
-          $configs->{$addr} = $config_reg;
+            $configs->{$directive_addr} = $directive;
 
-          $cf_addr_min = $addr if ($cf_addr_min > $addr);
-          $cf_addr_max = $addr if ($cf_addr_max < $addr);
-          --$config_count;
+            $dir_addr_min = $directive_addr if ($dir_addr_min > $directive_addr);
+            $dir_addr_max = $directive_addr if ($dir_addr_max < $directive_addr);
+            }
+
+          --$directive_count;
           } # when ('CONFIGREG_INFO_TYPE')
 
         when ('SWITCH_INFO_TYPE')
@@ -1644,17 +1715,40 @@ sub read_all_informations()
 
           die "Too much the number of \"SWITCH_INFO_TYPE\"!\n" if ($switch_count <= 0);
 
-          $switch_info =
-            {
-            HEAD => $fields[1],
-            NAME => (defined($fields[2]) ? $fields[2] : ''),
-            BITS => [],
-            MASK => hex($fields[3])
-            };
+          my ($sw_name, $sw_mask);
 
-          $setting_count = hex($fields[4]);
-          push(@{$config_reg->{SWITCHES}}, $switch_info);
+          ($sw_name, $sw_mask, $option_count) = ($fields[1], hex($fields[3]), hex($fields[4]));
+
+          if ($option_count <= 0)
+            {
+            printf STDERR "Database error in descriptor of $mcu_name at 0x%06X, $sw_name: This SWITCH_INFO_TYPE empty!\n", $directive_addr;
+            }
+          else
+            {
+            $switch_info =
+              {
+              HEAD    => $sw_name,
+              NAME    => (defined($fields[2]) ? $fields[2] : ''),
+              OPTIONS => [],
+              SW_MASK => $sw_mask
+              };
+
+            $debug_present = TRUE if ($sw_name eq 'DEBUG');
+            push(@{$directive->{SWITCHES}}, $switch_info);
+            }
+
           --$switch_count;
+
+          if ($switch_count == 0)
+            {
+            if ($mcu_features->{MCU_CLASS} == PROC_CLASS_PIC14E && $directive_addr == 0x8008 &&
+                ! $debug_present && $mcu_name ~~ @mcu_missed_debug)
+              {
+              $directive_mask |= add_missing_debug($directive);
+              }
+
+            @{$directive->{SWITCHES}} = sort {$a->{SW_MASK} <=> $b->{SW_MASK}} @{$directive->{SWITCHES}};
+            }
           } # when ('SWITCH_INFO_TYPE')
 
         when ('SETTING_VALUE_TYPE')
@@ -1666,33 +1760,39 @@ sub read_all_informations()
         # <SETTING_VALUE_TYPE><ON><WDT enabled><8>
         # <SETTING_VALUE_TYPE><2><><10>
 
-          die "Too much the number of \"SETTING_VALUE_TYPE\"!\n" if ($setting_count <= 0);
+          die "Too much the number of \"SETTING_VALUE_TYPE\"!\n" if ($option_count <= 0);
           die "There is no actual \"SWITCH_INFO_TYPE\"!\n" if (! defined($switch_info));
 
-          my $setting =
+          my $option =
             {
             NAME  => $fields[1],
             VALUE => hex($fields[3]),
             EXPL  => (defined($fields[2]) ? $fields[2] : '')
             };
 
-          push(@{$switch_info->{BITS}}, $setting);
-          --$setting_count;
+          push(@{$switch_info->{OPTIONS}}, $option);
+          --$option_count;
 
-          if (! $setting_count && ! $switch_count && ! $config_count)
+          if ($option_count == 0)
             {
-        # All information is together.
-            die "$name MCU already exist!" if (defined($mcus_by_names{$name}));
-
-            $mcu_features->{CF_START}  = $cf_addr_min;
-            $mcu_features->{CF_END}    = $cf_addr_max;
-            $mcu_features->{CONF_MASK} = $config_mask if ($mcu_features->{CONF_MASK} == 0);
-            $mcus_by_names{$name}{FEATURES} = $mcu_features;
-            $mcus_by_names{$name}{CONFIGS}  = $configs;
-            $configs = {};
+            @{$switch_info->{OPTIONS}} = sort {$a->{VALUE} <=> $b->{VALUE}} @{$switch_info->{OPTIONS}};
             }
           } # when ('SETTING_VALUE_TYPE')
         } # given ($fields[0])
+
+      if ($directive_count == 0 && $switch_count == 0 && $option_count == 0)
+        {
+        # All information is together.
+        die "$mcu_name MCU already exist!" if (defined($mcus_by_names{$mcu_name}));
+
+        $mcu_features->{CF_START}  = $dir_addr_min;
+        $mcu_features->{CF_END}    = $dir_addr_max;
+        $mcu_features->{CONF_MASK} = $directive_mask if ($mcu_features->{CONF_MASK} == 0);
+        $mcus_by_names{$mcu_name}{FEATURES} = $mcu_features;
+        $mcus_by_names{$mcu_name}{CONFIGS}  = $configs;
+        $configs = {};
+        $state = ST_WAIT;
+        }
       } # if ($state == ST_LISTEN)
     } # while (<INFO>)
 
@@ -1839,7 +1939,7 @@ sub dump_mcu_list($$)
     {
     my $td_href      = "<th><a class=\"mcuLink\" href=\"${remote_url}${name}-$feat_tag.html\">$name</a></th>";
     my $mcu_features = $mcus_by_names{$name}->{FEATURES};
-    my $mcu_class    = $mcu_features->{CLASS};
+    my $mcu_class    = $mcu_features->{MCU_CLASS};
     my $mcu_class_features = $class_features_list[$mcu_class];
     my $css_class    = $mcu_class_features->{CSS_CLASS};
     my $wsize        = $mcu_class_features->{WORD_SIZE};
@@ -1988,7 +2088,7 @@ sub dump_mcu_list($$)
 sub dump_class_menu($$)
   {
   my ($Active, $Properties) = @_;
-  my $mcu_class = (defined($Properties)) ? $Properties->{FEATURES}->{CLASS} : -1;
+  my $mcu_class = (defined($Properties)) ? $Properties->{FEATURES}->{MCU_CLASS} : -1;
   my $link      = ($mcu_class >= 0) ? $common_sfr_menu[$mcu_class]->{HREF} : undef;
 
   aOutl(4, '<div class="classMenu">');
@@ -2076,7 +2176,7 @@ sub make_sfr_common_lists()
   foreach (keys %mcus_by_names)
     {
     $mcu_features = $mcus_by_names{$_}->{FEATURES};
-    $mcu_class    = $mcu_features->{CLASS};
+    $mcu_class    = $mcu_features->{MCU_CLASS};
     $menu         = $common_sfr_menu[$mcu_class];
 
     add_to_sfr_common_list($menu->{PARAM0}, $mcu_features);
@@ -2245,7 +2345,7 @@ sub dump_features($$)
   my ($Name, $Properties) = @_;
   my ($str, $len, $rom_size, $word_size, $i, $t);
   my $mcu_features  = $Properties->{FEATURES};
-  my $mcu_class     = $mcu_features->{CLASS};
+  my $mcu_class     = $mcu_features->{MCU_CLASS};
   my $class_pic16   = ($mcu_class == PROC_CLASS_PIC16)  ? TRUE : FALSE;
   my $class_pic16e  = ($mcu_class == PROC_CLASS_PIC16E) ? TRUE : FALSE;
   my $mcu_class_features = $class_features_list[$mcu_class];
@@ -2554,7 +2654,7 @@ sub dump_config_word($$$$$)
   foreach (@{$Config})
     {
     my ($head, $name) = ($_->{HEAD}, $_->{NAME});
-    my $mask = ($_->{MASK} ^ $Mask) & $Mask;
+    my $mask = ($_->{SW_MASK} ^ $Mask) & $Mask;
 
     if ($name ne '')
       {
@@ -2566,9 +2666,11 @@ sub dump_config_word($$$$$)
       $name = $head;
       }
 
+    $name .= sprintf " (bitmask:0x%0${Length}X)", $_->{SW_MASK};
+
     aOutml($Align, $Gap, "<tr><th colspan=3 class=\"confOptName\">$name</th></tr>");
 
-    foreach (@{$_->{BITS}})
+    foreach (@{$_->{OPTIONS}})
       {
       my $str  = "$head = $_->{NAME}";
       my $expl = $_->{EXPL};
@@ -2595,7 +2697,7 @@ sub dump_all_config_word($$)
   my ($addr, $conf_reg, $str, $len, $i, $head_s, $head_e, $gap, $v);
   my $conf_bits    = $Properties->{CONFIGS};
   my $mcu_features = $Properties->{FEATURES};
-  my $mcu_class    = $mcu_features->{CLASS};
+  my $mcu_class    = $mcu_features->{MCU_CLASS};
   my $mcu_class_features = $class_features_list[$mcu_class];
   my $config_mask  = $mcu_features->{CONF_MASK};
   my @addresses    = sort {$a <=> $b} keys %{$conf_bits};
@@ -2646,9 +2748,9 @@ sub dump_all_config_word($$)
       $addr = sprintf("address:0x%0${len}X", $addresses[0]);
       }
 
-    if ($conf_reg->{MASK} > 0)
+    if ($conf_reg->{CONF_MASK} > 0)
       {
-      aOutfl(6, "${head_s}CONFIG ($addr, mask:0x%0${len}X)$head_e", $addresses[0], $conf_reg->{MASK});
+      aOutfl(6, "${head_s}CONFIG ($addr, mask:0x%0${len}X)$head_e", $addresses[0], $conf_reg->{CONF_MASK});
       }
     else
       {
@@ -2679,7 +2781,7 @@ sub dump_all_config_word($$)
           $str = "CONFIG$n$h";
           $sections[$i] = $str;
           aOutl(6, $gap);
-          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X)$head_e", $v, $conf_reg->{MASK});
+          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X)$head_e", $v, $conf_reg->{CONF_MASK});
           dump_config_word(6, \@{$conf_reg->{SWITCHES}}, $len, $config_mask, $gap);
           }
         }
@@ -2696,7 +2798,7 @@ sub dump_all_config_word($$)
           $str = "CONFIG$n$h";
           $sections[$i] = $str;
           aOutl(6, $gap);
-          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X)$head_e", $v, $conf_reg->{MASK});
+          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X)$head_e", $v, $conf_reg->{CONF_MASK});
           dump_config_word(6, \@{$conf_reg->{SWITCHES}}, $len, $config_mask, $gap);
           }
         }
@@ -2712,7 +2814,7 @@ sub dump_all_config_word($$)
         $str = sprintf "CONFIG%u", $i + 1;
         $sections[$i] = $str;
         aOutl(6, $gap);
-        aOutfl(6, "$head_s$str (address:0x%04X, mask:0x%0${len}X)$head_e", $v, $conf_reg->{MASK});
+        aOutfl(6, "$head_s$str (address:0x%04X, mask:0x%0${len}X)$head_e", $v, $conf_reg->{CONF_MASK});
         dump_config_word(6, \@{$conf_reg->{SWITCHES}}, $len, $config_mask, $gap);
         }
       }
@@ -2736,7 +2838,7 @@ sub mark_non_gpr_ram($$)
   my $ram_size  = $Features->{MAX_RAM} + 1;
   my $bad_ram   = $Features->{BAD_RAM};
   my $sfrs      = $Features->{SFRS};
-  my $mcu_class_features = $class_features_list[$Features->{CLASS}];
+  my $mcu_class_features = $class_features_list[$Features->{MCU_CLASS}];
   my $bank_size = $mcu_class_features->{BANK_SIZE};
   my $core_sfrs = $mcu_class_features->{CORE_SFRS};
 
@@ -2829,7 +2931,7 @@ sub mark_sfr_ram($$)
   my ($bank, $x);
   my $bank_num  = $Features->{BANKS};
   my $sfr_addrs = $Features->{SFR_ADDRS};
-  my $mcu_class_features = $class_features_list[$Features->{CLASS}];
+  my $mcu_class_features = $class_features_list[$Features->{MCU_CLASS}];
   my $bank_size = $mcu_class_features->{BANK_SIZE};
   my $core_sfrs = $mcu_class_features->{CORE_SFRS};
 
@@ -2901,7 +3003,7 @@ sub dump_ram_map($$)
   my ($Name, $Properties) = @_;
   my ($map, $bank, $height, $k, $r, $t, $x, $y);
   my $mcu_features = $Properties->{FEATURES};
-  my $mcu_class    = $mcu_features->{CLASS};
+  my $mcu_class    = $mcu_features->{MCU_CLASS};
   my $class_pic16e = ($mcu_class == PROC_CLASS_PIC16E) ? TRUE : FALSE;
   my $mcu_class_features = $class_features_list[$mcu_class];
   my $bank_num     = $mcu_features->{BANKS};
@@ -3247,7 +3349,7 @@ sub dump_sfr_map($$)
   my ($Name, $Properties) = @_;
   my ($bank, $i, $max_x, $x, $min_y, $max_y, $y, $t);
   my $mcu_features = $Properties->{FEATURES};
-  my $mcu_class    = $mcu_features->{CLASS};
+  my $mcu_class    = $mcu_features->{MCU_CLASS};
   my $class_pic16e = ($mcu_class == PROC_CLASS_PIC16E) ? TRUE : FALSE;
   my $mcu_class_features = $class_features_list[$mcu_class];
   my $bank_num     = $mcu_features->{BANKS};
@@ -4383,7 +4485,7 @@ if ($only_css)
   }
 
 find_inc_files("$gputils_path/header");
-read_all_informations();
+read_device_informations();
 create_css();
 create_class_htmls();
 
