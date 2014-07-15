@@ -287,7 +287,8 @@ my $pic16e_mcu_number = 0;
                     FLASHDATA  => 0,    # Last address of FLASH Data.
                     EEPROM     => 0,    # Last address of EEPROM.
 
-                    CONFIGS    => 0,    # Number of Configuration bytes/words.
+                    DIR_COUNT  => 0,    # Number of Configuration bytes/words.
+                    DIRECTIVES => [],
                     CONF_MASK  => 0,    # Mask of config words.
                     BANKS      => 0,    # Number of RAM Banks.
                     ACCESS     => 0,    # Last address of lower Access RAM of pic18f series.
@@ -373,27 +374,27 @@ my $pic16e_mcu_number = 0;
                     '300005' => {
                                 SWITCHES => [
                                               {
-                                              'HEAD'    => 'CCP2MX',
-                                              'NAME'    => 'CCP2 MUX bit',
-                                              'OPTIONS' => [
-                                                             {
-                                                             'NAME'  => 'OFF',
-                                                             'VALUE' => 0,
-                                                             'EXPL'  => 'CCP2 input/output is multiplexed with RB3'
-                                                             },
+                                              HEAD    => 'CCP2MX',
+                                              NAME    => 'CCP2 MUX bit',
+                                              OPTIONS => [
+                                                           {
+                                                           NAME'  => 'OFF',
+                                                           VALUE' => 0,
+                                                           EXPL'  => 'CCP2 input/output is multiplexed with RB3'
+                                                           },
 
-                                                             ...
+                                                           ...
 
-                                                             {}
-                                                           ],
-                                              'SW_MASK' => 1
+                                                           {}
+                                                         ],
+                                              SW_MASK => 1
                                               },
 
                                               ...
 
                                               {}
                                             ],
-                                CONF_MASK     => 0
+                                DIR_MASK => 0
                                 }
                     }
         }
@@ -642,8 +643,49 @@ my @mcu_missed_debug =
   'PIC16LF1947'
   );
 
-################################################################################
-################################################################################
+# The Microchip created faulty database: 8bit_device.info
+# Some parts of it are missing.
+
+my %missed_directive_substitutions =
+  (
+  'PIC16LF707'  => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F707'
+                   },
+  'PIC16LF722'  => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F722'
+                   },
+  'PIC16LF722A' => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F722A'
+                   },
+  'PIC16LF723'  => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F723'
+                   },
+  'PIC16LF723A' => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F723A'
+                   },
+  'PIC16LF724'  => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F724'
+                   },
+  'PIC16LF726'  => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F726'
+                   },
+  'PIC16LF727'  => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F727'
+                   }
+  );
+
+my @insufficient_mcus = ();
+
+####################################################################################################
+####################################################################################################
 
 my @pp_def_names = ();          # Names of definitions.
 my %pp_defines = ();            # Value of definitions.
@@ -653,13 +695,13 @@ my @pp_else_conditions = ();
 my $pp_level = 0;               # Shows the lowest level.
 my $pp_line_number;             # Line number of a lkr file.
 
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@                             @@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@  This a simple preprocessor.  @@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@                             @@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                             @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  This a simple preprocessor.  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                             @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
   # Examines that the parameter is defined or not defined.
 
@@ -787,13 +829,13 @@ sub run_preprocessor($$$$)
     }
   }
 
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@@                       @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@  Auxiliary procedures.  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@@                       @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                       @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  Auxiliary procedures.  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                       @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 sub basename($)
   {
@@ -1065,13 +1107,13 @@ sub read_gp_svn_version()
   chomp($svn_rev = qx/cd $gputils_path; svnversion/);
   }
 
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@                                @@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@  Handle the gpprocessor.c file.  @@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@                                @@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                                @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  Handle the gpprocessor.c file.  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                                @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
         # Extract the MCU names from gpprocessor.c file.
 
@@ -1118,13 +1160,13 @@ sub extract_mcu_names()
   close(LIB);
   }
 
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@@@@                        @@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@@@  Handle the .inc files.  @@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@@@@                        @@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  Handle the .inc files.  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 use constant INC_NULL   => 0;
 use constant INC_SFR    => 1;
@@ -1147,9 +1189,8 @@ sub read_ram_features($$$)
   my ($Inc, $Features, $Class_pic16) = @_;
   my ($inc_path, $line, $full_ram, $state);
   my ($sfrs, $sfr_names, $sfr_addrs, $bad_ram);
-  my $configs;
   my $config_mask;
-  my $config_reg  = undef;
+  my $directive   = undef;
   my $switch_info = undef;
   my $prev_switch_info_name = '';
 
@@ -1161,7 +1202,6 @@ sub read_ram_features($$$)
 
   $full_ram    = 0;
   $config_mask = 0;   # For some PIC14E devices.
-  $configs     = {};  # For the PIC17Cxx devices.
   $sfrs        = [];
   $sfr_names   = {};
   $sfr_addrs   = {};
@@ -1250,12 +1290,13 @@ sub read_ram_features($$$)
           {
           if ($Class_pic16)
             {
-            $config_reg = {
-                          SWITCHES  => [],
-                          CONF_MASK => 0
-                          };
+            $directive = {
+                         DIR_ADDR => 0xFE00,
+                         SWITCHES => [],
+                         DIR_MASK => 0
+                         };
 
-            $configs->{$Features->{CF_START}} = $config_reg;
+            push(@{$Features->{DIRECTIVES}}, $directive);
             }
 
           $state = INC_CONFIG;
@@ -1307,7 +1348,7 @@ sub read_ram_features($$$)
                                  SW_MASK => 0xFFFF
                                  };
 
-                  push(@{$config_reg->{SWITCHES}}, $switch_info);
+                  push(@{$directive->{SWITCHES}}, $switch_info);
                   $prev_switch_info_name = $sw_name;
                   }
 
@@ -1331,16 +1372,15 @@ sub read_ram_features($$$)
   @{$sfrs} = sort {$a->{ADDR} <=> $b->{ADDR}} @{$sfrs};
   $Features->{SFRS}      = $sfrs;
   $Features->{CONF_MASK} = $config_mask;
-  return $configs;
   }
 
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@@@@                     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@@@  Process a lkr file.  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@@@@                     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  Process a lkr file.  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
         # Process one line of a lkr file.
 
@@ -1488,14 +1528,14 @@ sub read_ram_and_rom_features($$)
   close(LKR);
   }
 
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@                                                   @@@@@@@@@@@@@@@
-#@@@@@@@@@@@@  Read all informations from the $dev_info file and  @@@@@@@@@@@@@@
-#@@@@@@@@@@@@  from the device specific .inc and .lkr files.      @@@@@@@@@@@@@@
-#@@@@@@@@@@@@@                                                   @@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@                                                   @@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@  Read all informations from the $dev_info file and  @@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@  from the device specific .inc and .lkr files.      @@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@                                                   @@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 sub add_missing_debug($)
   {
@@ -1526,9 +1566,51 @@ sub add_missing_debug($)
 
 #---------------------------------------------------------------------------------------------------
 
+sub add_missing_directives()
+  {
+  my ($missed_mcu, $complete_mcu, $substitution, $dir_ref);
+
+  foreach (@insufficient_mcus)
+    {
+    $missed_mcu   = $mcus_by_names{$_};
+    $substitution = $missed_mcu->{DIR_SUBST};
+
+    if (! defined($substitution))
+      {
+      print STDERR "Substitution not exist for the MCU: $_\n";
+      exit(1);
+      }
+
+    $complete_mcu = $mcus_by_names{$substitution->{SUBST_MCU}};
+
+    if (! defined($complete_mcu))
+      {
+      print STDERR "The substitute does not exist: $substitution->{SUBST_MCU}\n";
+      exit(1);
+      }
+
+    foreach $dir_ref (@{$complete_mcu->{DIRECTIVES}})
+      {
+      if ($dir_ref->{DIR_ADDR} == $substitution->{DIR_ADDR})
+        {
+        push(@{$missed_mcu->{DIRECTIVES}}, $dir_ref);
+
+        if ($missed_mcu->{DIR_COUNT} > 1)
+          {
+          @{$missed_mcu->{DIRECTIVES}} = sort {$a->{DIR_ADDR} <=> $b->{DIR_ADDR}} @{$missed_mcu->{DIRECTIVES}};
+          }
+
+        last;
+        }
+      }
+    }
+  }
+
+#---------------------------------------------------------------------------------------------------
+
 sub read_device_informations()
   {
-  my ($configs, $mcu_name, $inc, $lkr, $class_name);
+  my ($mcu_name, $inc, $lkr, $class_name);
   my $mcu_features    = undef;
   my $directive       = undef;
   my $switch_info     = undef;
@@ -1584,6 +1666,7 @@ sub read_device_informations()
         $mcu_features =
           {
           MCU_CLASS  => $tr->{CLASS},     # Class of MCU. (PROC_CLASS_PIC12yy)
+          DIR_SUBST  => undef,
           ROM_SIZE   => 0,                # Size of program memory.
 
           COFF       => hex($fields[1]),  # Coff ID of device. (16 bit wide)
@@ -1602,7 +1685,8 @@ sub read_device_informations()
           FLASHDATA  => hex($fields[11]), # Last address of FLASH Data.
           EEPROM     => hex($fields[9]),  # Last address of EEPROM.
 
-          CONFIGS    => hex($fields[12]), # Number of Configuration bytes/words.
+          DIR_COUNT  => hex($fields[12]), # Number of Configuration bytes/words.
+          DIRECTIVES => [],
           CONF_MASK  => 0,                # Mask of config words.
           BANKS      => hex($fields[7]),  # Number of RAM Banks.
           ACCESS     => hex($fields[10]), # Last address of lower Access RAM of pic18f series.
@@ -1627,7 +1711,7 @@ sub read_device_informations()
           my $class_pic16 = ($inc =~ /^p17/o) ? TRUE : FALSE;
 
           read_ram_and_rom_features("${lkr}_g.lkr", $mcu_features);
-          $configs = read_ram_features("${inc}.inc", $mcu_features, $class_pic16);
+          read_ram_features("${inc}.inc", $mcu_features, $class_pic16);
 
           my $shared_ram = $mcu_features->{SHARED_RAM};
 
@@ -1647,8 +1731,7 @@ sub read_device_informations()
           if ($class_pic16)
             {
             $mcu_features->{CONF_SIZE} = $mcu_features->{CF_END} - $mcu_features->{CF_START} + 1;
-            $mcus_by_names{$mcu_name}{FEATURES} = $mcu_features;
-            $mcus_by_names{$mcu_name}{CONFIGS}  = $configs;
+            $mcus_by_names{$mcu_name} = $mcu_features;
             }
 
           $state = ST_LISTEN;
@@ -1681,25 +1764,33 @@ sub read_device_informations()
 
           die "Too much the number of \"CONFIGREG_INFO_TYPE\"!\n" if ($directive_count <= 0);
 
-          my $cf_mask;
+          my ($dir_mask, $dir_subst);
 
-          ($directive_addr, $cf_mask, $switch_count) = (hex($fields[1]), hex($fields[3]), hex($fields[4]));
+          ($directive_addr, $dir_mask, $switch_count) = (hex($fields[1]), hex($fields[3]), hex($fields[4]));
 
           if ($switch_count <= 0)
             {
             printf STDERR "Database error in descriptor of $mcu_name at 0x%06X: This CONFIGREG_INFO_TYPE empty!\n", $directive_addr;
+            $dir_subst = $missed_directive_substitutions{$mcu_name};
+
+            if (defined($dir_subst))
+              {
+              $mcu_features->{DIR_SUBST} = $dir_subst;
+              push(@insufficient_mcus, $mcu_name);
+              print STDERR "  The possible substitution: $dir_subst->{SUBST_MCU}\n";
+              }
             }
           else
             {
             $directive =
               {
-              SWITCHES  => [],
-              CONF_MASK => $cf_mask
+              DIR_ADDR => $directive_addr,
+              SWITCHES => [],
+              DIR_MASK => $dir_mask
               };
 
-            $directive_mask |= $cf_mask;
-
-            $configs->{$directive_addr} = $directive;
+            $directive_mask = 0;
+            push(@{$mcu_features->{DIRECTIVES}}, $directive);
 
             $dir_addr_min = $directive_addr if ($dir_addr_min > $directive_addr);
             $dir_addr_max = $directive_addr if ($dir_addr_max < $directive_addr);
@@ -1735,6 +1826,7 @@ sub read_device_informations()
 
             $debug_present = TRUE if ($sw_name eq 'DEBUG');
             push(@{$directive->{SWITCHES}}, $switch_info);
+            $directive_mask |= $sw_mask;
             }
 
           --$switch_count;
@@ -1748,6 +1840,7 @@ sub read_device_informations()
               }
 
             @{$directive->{SWITCHES}} = sort {$a->{SW_MASK} <=> $b->{SW_MASK}} @{$directive->{SWITCHES}};
+            $directive->{DIR_MASK} = $directive_mask;
             }
           } # when ('SWITCH_INFO_TYPE')
 
@@ -1787,10 +1880,7 @@ sub read_device_informations()
 
         $mcu_features->{CF_START}  = $dir_addr_min;
         $mcu_features->{CF_END}    = $dir_addr_max;
-        $mcu_features->{CONF_MASK} = $directive_mask if ($mcu_features->{CONF_MASK} == 0);
-        $mcus_by_names{$mcu_name}{FEATURES} = $mcu_features;
-        $mcus_by_names{$mcu_name}{CONFIGS}  = $configs;
-        $configs = {};
+        $mcus_by_names{$mcu_name}  = $mcu_features;
         $state = ST_WAIT;
         }
       } # if ($state == ST_LISTEN)
@@ -1799,13 +1889,13 @@ sub read_device_informations()
   close(INFO);
   }
 
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@                            @@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@  Preparation of html files.  @@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@                            @@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  Preparation of html files.  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
         # Print the head of html file.
 
@@ -1912,22 +2002,22 @@ sub dump_mcu_list($$)
 
   if ($menu_class == PRI_MENU_RAM)
     {
-    @array = sort { $mcus_by_names{$a}->{FEATURES}{RAM_SIZE} <=> $mcus_by_names{$b}->{FEATURES}{RAM_SIZE} ||
+    @array = sort { $mcus_by_names{$a}->{RAM_SIZE} <=> $mcus_by_names{$b}->{RAM_SIZE} ||
                     smartSort($a, $b) } keys %mcus_by_names;
     }
   elsif ($menu_class == PRI_MENU_ROM)
     {
-    @array = sort { $mcus_by_names{$a}->{FEATURES}{ROM_SIZE} <=> $mcus_by_names{$b}->{FEATURES}{ROM_SIZE} ||
+    @array = sort { $mcus_by_names{$a}->{ROM_SIZE} <=> $mcus_by_names{$b}->{ROM_SIZE} ||
                     smartSort($a, $b) } keys %mcus_by_names;
     }
   elsif ($menu_class == PRI_MENU_EEPROM)
     {
     foreach (keys %mcus_by_names)
       {
-      push(@array, $_) if ($mcus_by_names{$_}->{FEATURES}{EEPROM} > 0);
+      push(@array, $_) if ($mcus_by_names{$_}->{EEPROM} > 0);
       }
 
-    @array = sort { $mcus_by_names{$a}->{FEATURES}{EEPROM} <=> $mcus_by_names{$b}->{FEATURES}{EEPROM} ||
+    @array = sort { $mcus_by_names{$a}->{EEPROM} <=> $mcus_by_names{$b}->{EEPROM} ||
                     smartSort($a, $b) } @array;
     }
   else
@@ -1938,7 +2028,7 @@ sub dump_mcu_list($$)
   foreach my $name (@array)
     {
     my $td_href      = "<th><a class=\"mcuLink\" href=\"${remote_url}${name}-$feat_tag.html\">$name</a></th>";
-    my $mcu_features = $mcus_by_names{$name}->{FEATURES};
+    my $mcu_features = $mcus_by_names{$name};
     my $mcu_class    = $mcu_features->{MCU_CLASS};
     my $mcu_class_features = $class_features_list[$mcu_class];
     my $css_class    = $mcu_class_features->{CSS_CLASS};
@@ -2087,8 +2177,8 @@ sub dump_mcu_list($$)
 
 sub dump_class_menu($$)
   {
-  my ($Active, $Properties) = @_;
-  my $mcu_class = (defined($Properties)) ? $Properties->{FEATURES}->{MCU_CLASS} : -1;
+  my ($Active, $Features) = @_;
+  my $mcu_class = (defined($Features)) ? $Features->{MCU_CLASS} : -1;
   my $link      = ($mcu_class >= 0) ? $common_sfr_menu[$mcu_class]->{HREF} : undef;
 
   aOutl(4, '<div class="classMenu">');
@@ -2175,7 +2265,7 @@ sub make_sfr_common_lists()
 
   foreach (keys %mcus_by_names)
     {
-    $mcu_features = $mcus_by_names{$_}->{FEATURES};
+    $mcu_features = $mcus_by_names{$_};
     $mcu_class    = $mcu_features->{MCU_CLASS};
     $menu         = $common_sfr_menu[$mcu_class];
 
@@ -2342,10 +2432,9 @@ sub dump_devid($$$)
 
 sub dump_features($$)
   {
-  my ($Name, $Properties) = @_;
+  my ($Name, $Features) = @_;
   my ($str, $len, $rom_size, $word_size, $i, $t);
-  my $mcu_features  = $Properties->{FEATURES};
-  my $mcu_class     = $mcu_features->{MCU_CLASS};
+  my $mcu_class     = $Features->{MCU_CLASS};
   my $class_pic16   = ($mcu_class == PROC_CLASS_PIC16)  ? TRUE : FALSE;
   my $class_pic16e  = ($mcu_class == PROC_CLASS_PIC16E) ? TRUE : FALSE;
   my $mcu_class_features = $class_features_list[$mcu_class];
@@ -2360,7 +2449,7 @@ sub dump_features($$)
   dump_html_head($Name);
   aOutl(2, '<body>');
 
-  dump_class_menu(-1, $Properties);
+  dump_class_menu(-1, $Features);
   dump_local_menu(\@mcu_menu_elems, $Name, MCU_MENU_FEAT);
 
         #------------------------------------
@@ -2369,7 +2458,7 @@ sub dump_features($$)
 
   $word_size = $mcu_class_features->{WORD_SIZE};
   $len = ($class_pic16e) ? 6 : 4;
-  $rom_size = $mcu_features->{ROM} + 1;
+  $rom_size = $Features->{ROM} + 1;
 
   aOutl (4, '<table class="featList">');
   aOutml(6, "<tr><th colspan=4 class=\"featTableName\">$Name</th></tr>",
@@ -2379,7 +2468,7 @@ sub dump_features($$)
 
   aOutl (6, '<tr class="featLine">');
   aOutl (8, '<th class="featName">Coff ID of device</th>');
-  aOutfl(8, '<td class="featValue">0x%04X</td>', $mcu_features->{COFF});
+  aOutfl(8, '<td class="featValue">0x%04X</td>', $Features->{COFF});
   aOutl (6, '</tr>');
 
         #------------------------------------
@@ -2389,7 +2478,7 @@ sub dump_features($$)
     {
     aOutl (6, '<tr class="featLine">');
     aOutml(8, '<th class="featName">Number of ROM/FLASH pages</th>',
-              "<td class=\"featValue\">$mcu_features->{PAGES}&nbsp;&nbsp;($i words/pages)</td>");
+              "<td class=\"featValue\">$Features->{PAGES}&nbsp;&nbsp;($i words/pages)</td>");
     aOutl (6, '</tr>');
     }
 
@@ -2397,12 +2486,12 @@ sub dump_features($$)
 
   aOutl (6, '<tr class="featLine">');
   aOutl (8, '<th class="featName">Last address of ROM/FLASH</th>');
-  aOutfl(8, "<td class=\"featValue\">0x%0${len}X</td>", $mcu_features->{ROM});
+  aOutfl(8, "<td class=\"featValue\">0x%0${len}X</td>", $Features->{ROM});
   aOutl (6, '</tr>');
 
         #------------------------------------
 
-  $i = $mcu_features->{ROM_SIZE};
+  $i = $Features->{ROM_SIZE};
   if ($i)
     {
     $t = ($word_size == 16) ? 'bytes' : 'words';
@@ -2414,7 +2503,7 @@ sub dump_features($$)
 
         #------------------------------------
 
-  $i = $mcu_features->{OSCVAL};
+  $i = $Features->{OSCVAL};
   if (defined($i))
     {
     my $size = $i->{END} - $i->{START} + 1;
@@ -2438,7 +2527,7 @@ sub dump_features($$)
 
         #------------------------------------
 
-  $i = $mcu_features->{FLASHDATA};
+  $i = $Features->{FLASHDATA};
   if ($i > 0)
     {
     aOutl (6, '<tr class="featLine">');
@@ -2451,7 +2540,7 @@ sub dump_features($$)
 
         #------------------------------------
 
-  $i = $mcu_features->{USERID};
+  $i = $Features->{USERID};
   if (defined($i))
     {
     my $size = $i->{END} - $i->{START} + 1;
@@ -2467,7 +2556,7 @@ sub dump_features($$)
 
         #------------------------------------
 
-  dump_devid(6, $mcu_features->{DEVID}, $len) if ($word_size != 16);
+  dump_devid(6, $Features->{DEVID}, $len) if ($word_size != 16);
 
         #------------------------------------
 
@@ -2488,7 +2577,7 @@ sub dump_features($$)
     }
   else
     {
-    $i = $mcu_features->{CONFIGS};
+    $i = $Features->{DIR_COUNT};
     $t = ($class_pic16e) ? 'Byte' : 'Word';
 
     if ($i > 1)
@@ -2508,23 +2597,23 @@ sub dump_features($$)
   if ($i > 1)
     {
     aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X&nbsp;&nbsp;($i %s)</td>",
-               $mcu_features->{CF_START}, $mcu_features->{CF_END}, lc($t));
+               $Features->{CF_START}, $Features->{CF_END}, lc($t));
     }
   else
     {
     aOutfl(8, "<td class=\"featValue\">0x%0${len}X&nbsp;&nbsp;($i %s)</td>",
-               $mcu_features->{CF_START}, lc($t));
+               $Features->{CF_START}, lc($t));
     }
 
   aOutl(6, '</tr>');
 
         #------------------------------------
 
-  dump_devid(6, $mcu_features->{DEVID}, $len) if ($word_size == 16);
+  dump_devid(6, $Features->{DEVID}, $len) if ($word_size == 16);
 
         #------------------------------------
 
-  $i = $mcu_features->{EEPROM};
+  $i = $Features->{EEPROM};
   if ($i > 0)
     {
     aOutl (6, '<tr class="featLine">');
@@ -2539,12 +2628,12 @@ sub dump_features($$)
 
   aOutl (6, '<tr class="featLine">');
   aOutml(8, '<th class="featName">Number of RAM Banks</th>',
-            "<td class=\"featValue\">$mcu_features->{BANKS}&nbsp;&nbsp;($mcu_class_features->{BANK_SIZE} bytes/banks)</td>");
+            "<td class=\"featValue\">$Features->{BANKS}&nbsp;&nbsp;($mcu_class_features->{BANK_SIZE} bytes/banks)</td>");
   aOutl (6, '</tr>');
 
         #------------------------------------
 
-  $i = scalar(keys %{$mcu_features->{SFR_NAMES}});
+  $i = scalar(keys %{$Features->{SFR_NAMES}});
   if ($i > 0)
     {
     aOutl (6, '<tr class="featLine">');
@@ -2555,7 +2644,7 @@ sub dump_features($$)
 
         #------------------------------------
 
-  $i = $mcu_features->{SGPR_SIZE};
+  $i = $Features->{SGPR_SIZE};
   if ($i > 0)
     {
     aOutl (6, '<tr class="featLine">');
@@ -2566,7 +2655,7 @@ sub dump_features($$)
 
         #------------------------------------
 
-  $i = $mcu_features->{GPR_SIZE};
+  $i = $Features->{GPR_SIZE};
   if ($i > 0)
     {
     aOutl (6, '<tr class="featLine">');
@@ -2577,7 +2666,7 @@ sub dump_features($$)
 
         #------------------------------------
 
-  $i = $mcu_features->{RAM_SIZE};
+  $i = $Features->{RAM_SIZE};
   if ($i > 0)
     {
     aOutl (6, '<tr class="featLine">');
@@ -2588,7 +2677,7 @@ sub dump_features($$)
 
         #------------------------------------
 
-  $i = $mcu_features->{LINEARMEM};          # Only in the enhanced pic14 MCUs.
+  $i = $Features->{LINEARMEM};          # Only in the enhanced pic14 MCUs.
   if (defined($i))
     {
     aOutl (6, '<tr class="featLine">');
@@ -2605,7 +2694,7 @@ sub dump_features($$)
 
         #------------------------------------
 
-  $i = $mcu_features->{STD_HEADER};
+  $i = $Features->{STD_HEADER};
   if ($i ne '')
     {
     aOutl (6, '<tr class="featLine">');
@@ -2616,7 +2705,7 @@ sub dump_features($$)
 
         #------------------------------------
 
-  $i = $mcu_features->{STD_SCRIPT};
+  $i = $Features->{STD_SCRIPT};
   if ($i ne '')
     {
     aOutl (6, '<tr class="featLine">');
@@ -2631,7 +2720,7 @@ sub dump_features($$)
     {
     aOutl (6, '<tr class="featLine">');
     aOutl (8, '<th class="featName">Last address of lower Access RAM</th>');
-    aOutfl(8, "<td class=\"featValue\">0x%02X</td>", $mcu_features->{ACCESS});
+    aOutfl(8, "<td class=\"featValue\">0x%02X</td>", $Features->{ACCESS});
     aOutl (6, '</tr>');
     }
 
@@ -2693,15 +2782,13 @@ sub dump_config_word($$$$$)
 
 sub dump_all_config_word($$)
   {
-  my ($Name, $Properties) = @_;
-  my ($addr, $conf_reg, $str, $len, $i, $head_s, $head_e, $gap, $v);
-  my $conf_bits    = $Properties->{CONFIGS};
-  my $mcu_features = $Properties->{FEATURES};
-  my $mcu_class    = $mcu_features->{MCU_CLASS};
+  my ($Name, $Features) = @_;
+  my ($addr, $dir_ref, $str, $len, $i, $head_s, $head_e, $gap);
+  my $conf_bits   = $Features->{DIRECTIVES};
+  my $mcu_class   = $Features->{MCU_CLASS};
   my $mcu_class_features = $class_features_list[$mcu_class];
-  my $config_mask  = $mcu_features->{CONF_MASK};
-  my @addresses    = sort {$a <=> $b} keys %{$conf_bits};
-  my $count        = @addresses;
+  my $config_mask = $Features->{CONF_MASK};
+  my $count       = @{$conf_bits};
   my @sections;
 
   return if (! $count);
@@ -2721,7 +2808,7 @@ sub dump_all_config_word($$)
   dump_html_head($Name);
   aOutl(2, '<body>');
 
-  dump_class_menu(-1, $Properties);
+  dump_class_menu(-1, $Features);
   dump_local_menu(\@mcu_menu_elems, $Name, MCU_MENU_CONF);
 
         #------------------------------------
@@ -2737,52 +2824,51 @@ sub dump_all_config_word($$)
 
     $sections[0] = 'CONFIG';
     aOutl(6, $gap);
-    $conf_reg = $conf_bits->{$addresses[0]};
+    $dir_ref = $conf_bits->[0];
 
     if ($mcu_class == PROC_CLASS_PIC16)
       {
-      $addr = sprintf("address:0x%0${len}X-0x%0${len}X", $mcu_features->{CF_START}, $mcu_features->{CF_END});
+      $addr = sprintf("address:0x%0${len}X-0x%0${len}X", $Features->{CF_START}, $Features->{CF_END});
       }
     else
       {
-      $addr = sprintf("address:0x%0${len}X", $addresses[0]);
+      $addr = sprintf("address:0x%0${len}X", $dir_ref->{DIR_ADDR});
       }
 
-    if ($conf_reg->{CONF_MASK} > 0)
+    if ($dir_ref->{DIR_MASK} > 0)
       {
-      aOutfl(6, "${head_s}CONFIG ($addr, mask:0x%0${len}X)$head_e", $addresses[0], $conf_reg->{CONF_MASK});
+      aOutfl(6, "${head_s}CONFIG ($addr, mask:0x%0${len}X)$head_e", $dir_ref->{DIR_MASK});
       }
     else
       {
       aOutfl(6, "${head_s}CONFIG ($addr)$head_e");
       }
 
-    dump_config_word(6, \@{$conf_reg->{SWITCHES}}, $len, $config_mask, $gap);
+    dump_config_word(6, $dir_ref->{SWITCHES}, $len, $config_mask, $gap);
     }
   else
     {
-    if ($config_mask == 0x00FF)
+    if ($mcu_class == PROC_CLASS_PIC16E)
       {
         # PIC18
       my ($n, $h);
 
       $len = 2;
 
-      if ($addresses[0] < 0x300000)
+      if ($conf_bits->[0]->{DIR_ADDR} < 0x300000)
         {
         # PIC18FxxJ
 
         for ($i = 0; $i < $count; ++$i)
           {
-          $v = $addresses[$i];
-          $conf_reg = $conf_bits->{$v};
+          $dir_ref = $conf_bits->[$i];
           $n = int(($i & 0x0F) / 2 + 1);
           $h = ($i & 1) ? 'H' : 'L';
           $str = "CONFIG$n$h";
           $sections[$i] = $str;
           aOutl(6, $gap);
-          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X)$head_e", $v, $conf_reg->{CONF_MASK});
-          dump_config_word(6, \@{$conf_reg->{SWITCHES}}, $len, $config_mask, $gap);
+          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X)$head_e", $dir_ref->{DIR_ADDR}, $dir_ref->{DIR_MASK});
+          dump_config_word(6, \@{$dir_ref->{SWITCHES}}, $len, $config_mask, $gap);
           }
         }
       else
@@ -2791,15 +2877,15 @@ sub dump_all_config_word($$)
 
         for ($i = 0; $i < $count; ++$i)
           {
-          $v = $addresses[$i];
-          $conf_reg = $conf_bits->{$v};
-          $n = int(($v & 0x0F) / 2 + 1);
-          $h = ($v & 1) ? 'H' : 'L';
+          $dir_ref = $conf_bits->[$i];
+          $addr = $dir_ref->{DIR_ADDR};
+          $n = int(($addr & 0x0F) / 2 + 1);
+          $h = ($addr & 1) ? 'H' : 'L';
           $str = "CONFIG$n$h";
           $sections[$i] = $str;
           aOutl(6, $gap);
-          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X)$head_e", $v, $conf_reg->{CONF_MASK});
-          dump_config_word(6, \@{$conf_reg->{SWITCHES}}, $len, $config_mask, $gap);
+          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X)$head_e", $addr, $dir_ref->{DIR_MASK});
+          dump_config_word(6, \@{$dir_ref->{SWITCHES}}, $len, $config_mask, $gap);
           }
         }
       }
@@ -2809,13 +2895,12 @@ sub dump_all_config_word($$)
 
       for ($i = 0; $i < $count; ++$i)
         {
-        $v = $addresses[$i];
-        $conf_reg = $conf_bits->{$v};
+        $dir_ref = $conf_bits->[$i];
         $str = sprintf "CONFIG%u", $i + 1;
         $sections[$i] = $str;
         aOutl(6, $gap);
-        aOutfl(6, "$head_s$str (address:0x%04X, mask:0x%0${len}X)$head_e", $v, $conf_reg->{CONF_MASK});
-        dump_config_word(6, \@{$conf_reg->{SWITCHES}}, $len, $config_mask, $gap);
+        aOutfl(6, "$head_s$str (address:0x%04X, mask:0x%0${len}X)$head_e", $dir_ref->{DIR_ADDR}, $dir_ref->{DIR_MASK});
+        dump_config_word(6, \@{$dir_ref->{SWITCHES}}, $len, $config_mask, $gap);
         }
       }
     }
@@ -3000,17 +3085,16 @@ sub dump_column_warning($$$)
 
 sub dump_ram_map($$)
   {
-  my ($Name, $Properties) = @_;
+  my ($Name, $Features) = @_;
   my ($map, $bank, $height, $k, $r, $t, $x, $y);
-  my $mcu_features = $Properties->{FEATURES};
-  my $mcu_class    = $mcu_features->{MCU_CLASS};
+  my $mcu_class    = $Features->{MCU_CLASS};
   my $class_pic16e = ($mcu_class == PROC_CLASS_PIC16E) ? TRUE : FALSE;
   my $mcu_class_features = $class_features_list[$mcu_class];
-  my $bank_num     = $mcu_features->{BANKS};
+  my $bank_num     = $Features->{BANKS};
   my $bank_size    = $mcu_class_features->{BANK_SIZE};
-  my $sfrs         = $mcu_features->{SFRS};
-  my $sfr_names    = $mcu_features->{SFR_NAMES};
-  my $linearmem    = $mcu_features->{LINEARMEM};       # Only in the enhanced pic14 MCUs.
+  my $sfrs         = $Features->{SFRS};
+  my $sfr_names    = $Features->{SFR_NAMES};
+  my $linearmem    = $Features->{LINEARMEM};       # Only in the enhanced pic14 MCUs.
   my $lin_name     = '';
   my $segments     = undef;
   my $c_expl       = '<span class="explanation">';
@@ -3029,9 +3113,9 @@ sub dump_ram_map($$)
     $segments = $linearmem->{SEGMENTS};
     }
 
-  mark_non_gpr_ram(\@ram_array, $mcu_features);
-  mark_sfr_ram(\@ram_array, $mcu_features);
-  mark_shared_ram(\@ram_array, $mcu_features);
+  mark_non_gpr_ram(\@ram_array, $Features);
+  mark_sfr_ram(\@ram_array, $Features);
+  mark_shared_ram(\@ram_array, $Features);
 
         #------------------------------------
 
@@ -3089,7 +3173,7 @@ sub dump_ram_map($$)
   dump_html_head($Name);
   aOutl(2, '<body>');
 
-  dump_class_menu(-1, $Properties);
+  dump_class_menu(-1, $Features);
   dump_local_menu(\@mcu_menu_elems, $Name, MCU_MENU_RAM);
 
         #------------------------------------
@@ -3128,7 +3212,7 @@ sub dump_ram_map($$)
 
     if ($class_pic16e)
       {
-      $height = ($mcu_features->{ACCESS} + 1) * $k;
+      $height = ($Features->{ACCESS} + 1) * $k;
 
       if ($x == 0)
         {
@@ -3346,17 +3430,16 @@ sub dump_ram_map($$)
 
 sub dump_sfr_map($$)
   {
-  my ($Name, $Properties) = @_;
+  my ($Name, $Features) = @_;
   my ($bank, $i, $max_x, $x, $min_y, $max_y, $y, $t);
-  my $mcu_features = $Properties->{FEATURES};
-  my $mcu_class    = $mcu_features->{MCU_CLASS};
+  my $mcu_class    = $Features->{MCU_CLASS};
   my $class_pic16e = ($mcu_class == PROC_CLASS_PIC16E) ? TRUE : FALSE;
   my $mcu_class_features = $class_features_list[$mcu_class];
-  my $bank_num     = $mcu_features->{BANKS};
+  my $bank_num     = $Features->{BANKS};
   my $bank_size    = $mcu_class_features->{BANK_SIZE};
-  my $sfrs         = $mcu_features->{SFRS};
+  my $sfrs         = $Features->{SFRS};
   my $c_expl       = '<span class="explanation">';
-  my $accessSfr    = 0xF00 + $mcu_features->{ACCESS} + 1;
+  my $accessSfr    = 0xF00 + $Features->{ACCESS} + 1;
   my @bank_array   = ();
 
   $t = "$out_dir/${Name}-$sfr_tag.html";
@@ -3402,7 +3485,7 @@ sub dump_sfr_map($$)
   dump_html_head($Name);
   aOutl(2, '<body>');
 
-  dump_class_menu(-1, $Properties);
+  dump_class_menu(-1, $Features);
   dump_local_menu(\@mcu_menu_elems, $Name, MCU_MENU_SFR);
 
         #------------------------------------
@@ -3604,13 +3687,13 @@ sub create_class_htmls()
     }
   }
 
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@                              @@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@  Preparation of the css file.  @@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@                              @@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                              @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  Preparation of the css file.  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                              @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 my $page_width         = 1024;          # px
 my $content_background = '#FFFFFF';
@@ -4376,13 +4459,13 @@ EOT
 ;
   }
 
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@@@@@                   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@@@@  The main program.  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@@@@@                   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  The main program.  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 $PROGRAM = basename($0);
 $remote_url = '';
@@ -4486,6 +4569,7 @@ if ($only_css)
 
 find_inc_files("$gputils_path/header");
 read_device_informations();
+add_missing_directives();
 create_css();
 create_class_htmls();
 
