@@ -941,9 +941,7 @@ do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
         gpvwarning(GPW_RANGE, "%i (%#x) > 0xff", value, value);
       }
 
-      p_dev = gp_cfg_find_pic_multi_name(sizeof(state.processor->names) /
-                                             sizeof(*state.processor->names),
-                                         state.processor->names);
+      p_dev = gp_cfg_find_pic_multi_name(ARRAY_SIZE(state.processor->names), state.processor->names);
       if (p_dev != NULL) {
         /* We do this to also set the other byte in a word. */
         config_16_set_word_mem(config_mem, p_dev, ca, value, 0xff);
@@ -1029,9 +1027,7 @@ do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   }
 
   /* make sure we an find our device in the config DB */
-  p_dev = gp_cfg_find_pic_multi_name(sizeof(state.processor->names) /
-                                         sizeof(*state.processor->names),
-                                     state.processor->names);
+  p_dev = gp_cfg_find_pic_multi_name(ARRAY_SIZE(state.processor->names), state.processor->names);
   if (p_dev == NULL) {
     gpverror(GPE_UNKNOWN,
             "The %s processor has no entries in the config db. CONFIG cannot be used.",
@@ -1197,9 +1193,7 @@ do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   }
 
   /* make sure we an find our device in the config DB */
-  p_dev = gp_cfg_find_pic_multi_name(sizeof(state.processor->names) /
-                                         sizeof(*state.processor->names),
-                                     state.processor->names);
+  p_dev = gp_cfg_find_pic_multi_name(ARRAY_SIZE(state.processor->names), state.processor->names);
   if (p_dev == NULL) {
     gpverror(GPE_UNKNOWN,
             "The %s processor has no entries in the config db. CONFIG cannot be used.",

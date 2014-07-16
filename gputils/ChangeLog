@@ -1,3 +1,16 @@
+2014-07-16  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c, libgputils/gpsystem.h:
+    New macro: ARRAY_SIZE
+
+  * doc/gputils.lyx, gputils/gpdasm.c, gputils/gpdasm.h.in,
+    libgputils/gpcfg-table.c, libgputils/gpcfg.c, libgputils/gpcfg.h:
+    A new option: --show-config
+    As a result of this option the gpdasm shows the CONFIG directives.
+
+  * gputils/testsuite/test
+    gputils/testsuite/gpdasm.project/op14e_new_conf.asm:
+    updated
+
 2014-07-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c, libgputils/gpcfg-table.c, libgputils/gpcfg.c,
     libgputils/gpcfg.h, gputils/testsuite/gpdasm.project/op14e_new_conf.asm:

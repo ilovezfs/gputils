@@ -28,9 +28,9 @@ Boston, MA 02111-1307, USA.  */
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-cmp(const void *P1, const void *P2) {
-  const gp_cfg_device_t *d1 = P1;
-  const gp_cfg_device_t *d2 = P2;
+cmp(void const *P1, void const *P2) {
+  gp_cfg_device_t const *d1 = P1;
+  gp_cfg_device_t const *d2 = P2;
 
   return strcasecmp(d1->name, d2->name);
 }
@@ -117,18 +117,77 @@ gp_cfg_find_option(const gp_cfg_directive_t *Directive, const char *Option) {
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Find a configuration in a processor's config db. */
+
+const gp_cfg_addr_t *
+gp_cfg_find_config(const gp_cfg_device_t *Device, unsigned int Address) {
+  unsigned int i;
+  const gp_cfg_addr_t *addr;
+
+  for (i = Device->address_count, addr = Device->addresses; i; ++addr, --i) {
+    if (addr->address == Address) {
+      return addr;
+    }
+  }
+
+  return NULL;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 /* Return 0xffff or the default for the address and device passed. */
 
 unsigned short
 gp_cfg_get_default(const gp_cfg_device_t *Device, unsigned int Address) {
-  unsigned int t;
   const gp_cfg_addr_t *addr;
 
-  for (t = Device->address_count, addr = Device->addresses; t; ++addr, --t) {
-    if (addr->address == Address) {
-      return addr->def_value;
+  addr = gp_cfg_find_config(Device, Address);
+  return ((addr != NULL) ? addr->def_value : 0xFFFF);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+unsigned int
+gp_cfg_decode_directive(const gp_cfg_device_t *Device, unsigned int Address, unsigned int Value,
+                        gp_cfg_addr_hit_t *Hit) {
+  unsigned int i, j, count;
+  const gp_cfg_addr_t *addr;
+  const gp_cfg_directive_t *dir;
+  const gp_cfg_option_t **opt;
+  unsigned int val;
+  unsigned int max, len;
+
+  if ((addr = gp_cfg_find_config(Device, Address)) == NULL) {
+    return 0;
+  }
+
+  Hit->def_value = addr->def_value;
+  count = 0;
+  max = 0;
+  for (i = addr->directive_count, dir = addr->directives; i; ++dir, --i) {
+    val = Value & dir->mask;
+    for (j = dir->option_count, opt = dir->options; j; ++opt, --j) {
+      if (count >= GP_CFG_ADDR_HIT_MAX) {
+        fprintf(stderr, "%s(): The size of gp_cfg_addr_hit_t too small!\n", __FUNCTION__);
+        break;
+      }
+
+      if (val == (*opt)->value) {
+        Hit->pairs[count].directive = dir;
+        Hit->pairs[count].option    = *opt;
+        len = strlen(dir->name);
+
+        if (max < len) {
+          max = len;
+        }
+
+        ++count;
+        break;
+      }
     }
   }
 
-  return 0xFFFF;
+  Hit->pair_count    = count;
+  Hit->max_dir_width = max;
+  return count;
 }

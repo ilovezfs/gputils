@@ -288,7 +288,39 @@ my $pic16e_mcu_number = 0;
                     EEPROM     => 0,    # Last address of EEPROM.
 
                     DIR_COUNT  => 0,    # Number of Configuration bytes/words.
-                    DIRECTIVES => [],
+                    DIRECTIVES => [
+                                    {
+                                    DIR_ADDR    => 0x300005,
+                                    DIR_MASK    => 0,
+                                    DIR_DEFAULT => 0,
+                                    SWITCHES    => [
+                                                     {
+                                                     HEAD    => 'CCP2MX',
+                                                     NAME    => 'CCP2 MUX bit',
+                                                     OPTIONS => [
+                                                                  {
+                                                                  NAME'  => 'OFF',
+                                                                  VALUE' => 0,
+                                                                  EXPL'  => 'CCP2 input/output is multiplexed with RB3'
+                                                                  },
+
+                                                                  ...
+
+                                                                  {}
+                                                                ],
+                                                     SW_MASK => 1
+                                                     },
+
+                                                     ...
+
+                                                     {}
+                                                   ]
+                                    },
+
+                                    ...
+
+                                    {}
+                                  ],
                     CONF_MASK  => 0,    # Mask of config words.
                     BANKS      => 0,    # Number of RAM Banks.
                     ACCESS     => 0,    # Last address of lower Access RAM of pic18f series.
@@ -364,38 +396,6 @@ my $pic16e_mcu_number = 0;
 
                     SFR_NAMES  => {},   # List names of SFRs by addresses.
                     SFR_ADDRS  => {}    # List addresses of SFRs by names.
-                    },
-
-        CONFIGS  => {
-                    '300000' => {},
-
-                    ...
-
-                    '300005' => {
-                                SWITCHES => [
-                                              {
-                                              HEAD    => 'CCP2MX',
-                                              NAME    => 'CCP2 MUX bit',
-                                              OPTIONS => [
-                                                           {
-                                                           NAME'  => 'OFF',
-                                                           VALUE' => 0,
-                                                           EXPL'  => 'CCP2 input/output is multiplexed with RB3'
-                                                           },
-
-                                                           ...
-
-                                                           {}
-                                                         ],
-                                              SW_MASK => 1
-                                              },
-
-                                              ...
-
-                                              {}
-                                            ],
-                                DIR_MASK => 0
-                                }
                     }
         }
 =cut
@@ -1764,9 +1764,9 @@ sub read_device_informations()
 
           die "Too much the number of \"CONFIGREG_INFO_TYPE\"!\n" if ($directive_count <= 0);
 
-          my ($dir_mask, $dir_subst);
+          my ($dir_default, $dir_subst);
 
-          ($directive_addr, $dir_mask, $switch_count) = (hex($fields[1]), hex($fields[3]), hex($fields[4]));
+          ($directive_addr, $dir_default, $switch_count) = (hex($fields[1]), hex($fields[3]), hex($fields[4]));
 
           if ($switch_count <= 0)
             {
@@ -1784,9 +1784,10 @@ sub read_device_informations()
             {
             $directive =
               {
-              DIR_ADDR => $directive_addr,
-              SWITCHES => [],
-              DIR_MASK => $dir_mask
+              DIR_ADDR    => $directive_addr,
+              DIR_DEFAULT => $dir_default,
+              DIR_MASK    => 0,
+              SWITCHES    => []
               };
 
             $directive_mask = 0;
@@ -2837,7 +2838,8 @@ sub dump_all_config_word($$)
 
     if ($dir_ref->{DIR_MASK} > 0)
       {
-      aOutfl(6, "${head_s}CONFIG ($addr, mask:0x%0${len}X)$head_e", $dir_ref->{DIR_MASK});
+      aOutfl(6, "${head_s}CONFIG ($addr, mask:0x%0${len}X, default:0x%0${len}X)$head_e",
+                $dir_ref->{DIR_MASK}, $dir_ref->{DIR_DEFAULT});
       }
     else
       {
@@ -2867,7 +2869,8 @@ sub dump_all_config_word($$)
           $str = "CONFIG$n$h";
           $sections[$i] = $str;
           aOutl(6, $gap);
-          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X)$head_e", $dir_ref->{DIR_ADDR}, $dir_ref->{DIR_MASK});
+          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X, default:0x%0${len}X)$head_e",
+                    $dir_ref->{DIR_ADDR}, $dir_ref->{DIR_MASK}, $dir_ref->{DIR_DEFAULT});
           dump_config_word(6, \@{$dir_ref->{SWITCHES}}, $len, $config_mask, $gap);
           }
         }
@@ -2884,7 +2887,8 @@ sub dump_all_config_word($$)
           $str = "CONFIG$n$h";
           $sections[$i] = $str;
           aOutl(6, $gap);
-          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X)$head_e", $addr, $dir_ref->{DIR_MASK});
+          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X, default:0x%0${len}X)$head_e",
+                    $addr, $dir_ref->{DIR_MASK}, $dir_ref->{DIR_DEFAULT});
           dump_config_word(6, \@{$dir_ref->{SWITCHES}}, $len, $config_mask, $gap);
           }
         }
@@ -2899,7 +2903,8 @@ sub dump_all_config_word($$)
         $str = sprintf "CONFIG%u", $i + 1;
         $sections[$i] = $str;
         aOutl(6, $gap);
-        aOutfl(6, "$head_s$str (address:0x%04X, mask:0x%0${len}X)$head_e", $dir_ref->{DIR_ADDR}, $dir_ref->{DIR_MASK});
+        aOutfl(6, "$head_s$str (address:0x%04X, mask:0x%0${len}X, default:0x%0${len}X)$head_e",
+                  $dir_ref->{DIR_ADDR}, $dir_ref->{DIR_MASK}, $dir_ref->{DIR_DEFAULT});
         dump_config_word(6, \@{$dir_ref->{SWITCHES}}, $len, $config_mask, $gap);
         }
       }
