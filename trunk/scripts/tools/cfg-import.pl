@@ -65,44 +65,50 @@ use constant PROC_CLASS_PIC16E => 5;
 
 my %class_features_p12 =
   (
-  CLASS     => PROC_CLASS_PIC12,
-  NAME      => '12 bit MCU',
-  ENHANCED  => FALSE
+  CLASS      => PROC_CLASS_PIC12,
+  NAME       => '12 bit MCU',
+  DIR_DIGITS => 3,
+  ENHANCED   => FALSE
   );
 
 my %class_features_p12e =
   (
-  CLASS     => PROC_CLASS_PIC12E,
-  NAME      => '12 bit enhanced MCU',
-  ENHANCED  => TRUE
+  CLASS      => PROC_CLASS_PIC12E,
+  NAME       => '12 bit enhanced MCU',
+  DIR_DIGITS => 3,
+  ENHANCED   => TRUE
   );
 
 my %class_features_p14 =
   (
-  CLASS     => PROC_CLASS_PIC14,
-  NAME      => '14 bit MCU',
-  ENHANCED  => FALSE
+  CLASS      => PROC_CLASS_PIC14,
+  NAME       => '14 bit MCU',
+  DIR_DIGITS => 4,
+  ENHANCED   => FALSE
   );
 
 my %class_features_p14e =
   (
-  CLASS     => PROC_CLASS_PIC14E,
-  NAME      => '14 bit enhanced MCU',
-  ENHANCED  => TRUE
+  CLASS      => PROC_CLASS_PIC14E,
+  NAME       => '14 bit enhanced MCU',
+  DIR_DIGITS => 4,
+  ENHANCED   => TRUE
   );
 
 my %class_features_p16 =
   (
-  CLASS     => PROC_CLASS_PIC16,
-  NAME      => '16 bit MCU',
-  ENHANCED  => FALSE
+  CLASS      => PROC_CLASS_PIC16,
+  NAME       => '16 bit MCU',
+  DIR_DIGITS => 2,
+  ENHANCED   => FALSE
   );
 
 my %class_features_p16e =
   (
-  CLASS     => PROC_CLASS_PIC16E,
-  NAME      => '16 bit extended MCU',
-  ENHANCED  => TRUE
+  CLASS      => PROC_CLASS_PIC16E,
+  NAME       => '16 bit extended MCU',
+  DIR_DIGITS => 2,
+  ENHANCED   => TRUE
   );
 
 my %class_features_by_mpasmx =
@@ -115,6 +121,16 @@ my %class_features_by_mpasmx =
   '18xxxx' => \%class_features_p16e
   );
 
+my @mcu_classes =
+  (
+  \%class_features_p12,
+  \%class_features_p12e,
+  \%class_features_p14,
+  \%class_features_p14e,
+  \%class_features_p16,
+  \%class_features_p16e
+  );
+
 my @mcu_feat_names = sort {
                           $class_features_by_mpasmx{$a}->{ENHANCED} <=> $class_features_by_mpasmx{$b}->{ENHANCED} ||
                           $class_features_by_mpasmx{$a}->{CLASS}    <=> $class_features_by_mpasmx{$b}->{CLASS}
@@ -123,7 +139,9 @@ my @mcu_feat_names = sort {
 =back
         MCU_NAME     => 'PIC18F25K22',
         DIR_ADDR     => 0x300001,
+        DIR_DEFAULT  => 0,
         DIR_MASK     => 0x25,
+        DIR_DIGITS   => 2,
         SWITCH_COUNT => 5,
         DIR_HASH     => 0,
         SWITCHES     => [
@@ -132,6 +150,7 @@ my @mcu_feat_names = sort {
                           DIR_ADDR    => 0x300001,
                           SW_NAME     => 'FCMEN',
                           SW_MASK     => 0x40,
+                          SW_DIGITS   => 2,
                           OPT_COUNT   => 2,
                           SW_HASH     => 0,
                           OPTIONS     => [
@@ -140,6 +159,7 @@ my @mcu_feat_names = sort {
                                            SW_NAME     => 'FCMEN',
                                            OPT_NAME    => 'OFF',
                                            OPT_VALUE   => 0,
+                                           OPT_DIGITS  => 2,
                                            OPT_HASH    => 0x276914DB,
                                            STRUCT_NAME => 'PIC12F1822_FCMEN_OFF_0000'
                                            },
@@ -148,6 +168,7 @@ my @mcu_feat_names = sort {
                                            SW_NAME     => 'FCMEN',
                                            OPT_NAME    => 'ON',
                                            OPT_VALUE   => 0x40,
+                                           OPT_DIGITS  => 2,
                                            OPT_HASH    => 0xE8E18517,
                                            STRUCT_NAME => 'PIC18F1230_FCMEN_ON_0040',
                                            }
@@ -157,9 +178,9 @@ my @mcu_feat_names = sort {
                           {
                           MCU_NAME    => 'PIC18F25K22',
                           DIR_ADDR    => 3145729,
-
                           SW_NAME     => 'FOSC',
                           SW_MASK     => 0x0F,
+                          SW_DIGITS   => 2,
                           OPT_COUNT   => 14,
                           SW_HASH     => 0,
                           OPTIONS     => [
@@ -168,6 +189,7 @@ my @mcu_feat_names = sort {
                                            SW_NAME     => 'FOSC',
                                            OPT_NAME    => 'ECHP',
                                            OPT_VALUE   => 0x04,
+                                           OPT_DIGITS  => 2,
                                            OPT_HASH    => 396302728,
                                            STRUCT_NAME => 'PIC18F23K22_FOSC_ECHP_0004'
                                            },
@@ -176,6 +198,7 @@ my @mcu_feat_names = sort {
                                            SW_NAME     => 'FOSC',
                                            OPT_NAME    => 'ECHPIO6',
                                            OPT_VALUE   => 0x05,
+                                           OPT_DIGITS  => 2,
                                            OPT_HASH    => 3369969319,
                                            STRUCT_NAME => 'PIC18F23K22_FOSC_ECHPIO6_0005'
                                            },
@@ -184,6 +207,7 @@ my @mcu_feat_names = sort {
                                            SW_NAME     => 'FOSC',
                                            OPT_NAME    => 'ECLP',
                                            OPT_VALUE   => 0x0C,
+                                           OPT_DIGITS  => 2,
                                            OPT_HASH    => 2810990724,
                                            STRUCT_NAME => 'PIC18F23K22_FOSC_ECLP_000C'
                                            },
@@ -192,6 +216,7 @@ my @mcu_feat_names = sort {
                                            SW_NAME     => 'FOSC',
                                            OPT_NAME    => 'ECLPIO6',
                                            OPT_VALUE   => 0x0D,
+                                           OPT_DIGITS  => 2,
                                            OPT_HASH    => 825191163,
                                            STRUCT_NAME => 'PIC18F23K22_FOSC_ECLPIO6_000D'
                                            },
@@ -200,6 +225,7 @@ my @mcu_feat_names = sort {
                                            SW_NAME     => 'FOSC',
                                            OPT_NAME    => 'ECMP',
                                            OPT_VALUE   => 0x0A,
+                                           OPT_DIGITS  => 2,
                                            OPT_HASH    => 828687115,
                                            STRUCT_NAME => 'PIC18F23K22_FOSC_ECMP_000A'
                                            },
@@ -211,6 +237,7 @@ my @mcu_feat_names = sort {
                                            SW_NAME     => 'FOSC',
                                            OPT_NAME    => 'XT',
                                            OPT_VALUE   => 0x01,
+                                           OPT_DIGITS  => 2,
                                            OPT_HASH    => 0x0644FCA5,
                                            STRUCT_NAME => 'PIC12C671_FOSC_XT_0001',
                                            }
@@ -248,10 +275,13 @@ my $output_c = "${output}-table.c";
 my $output_h = "${output}.h";
 my $name_head = 'gp_cfg_';
 
-my $cfg_option_t    = "${name_head}option_t";
-my $cfg_directive_t = "${name_head}directive_t";
-my $cfg_addr_t      = "${name_head}addr_t";
-my $cfg_device_t    = "${name_head}device_t";
+my $cfg_option_t        = "${name_head}option_t";
+my $cfg_directive_t     = "${name_head}directive_t";
+my $cfg_addr_t          = "${name_head}addr_t";
+my $cfg_device_t        = "${name_head}device_t";
+my $cfg_addr_hit_pair_t = "${name_head}addr_hit_pair_t";
+my $cfg_addr_hit_t      = "${name_head}addr_hit_t";
+my $cfg_addr_pack_t     = "${name_head}addr_pack_t";
 
 my $out_handler;
 
@@ -289,6 +319,47 @@ my @mcu_missed_debug =
   'PIC16LF1947'
   );
 
+# The Microchip created faulty database: 8bit_device.info
+# Some parts of it are missing.
+
+my %missed_directive_substitutions =
+  (
+  'PIC16LF707'  => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F707'
+                   },
+  'PIC16LF722'  => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F722'
+                   },
+  'PIC16LF722A' => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F722A'
+                   },
+  'PIC16LF723'  => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F723'
+                   },
+  'PIC16LF723A' => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F723A'
+                   },
+  'PIC16LF724'  => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F724'
+                   },
+  'PIC16LF726'  => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F726'
+                   },
+  'PIC16LF727'  => {
+                   DIR_ADDR  => 0x2008,
+                   SUBST_MCU => 'PIC16F727'
+                   }
+  );
+
+my @insufficient_mcus = ();
+
 ####################################################################################################
 ####################################################################################################
 
@@ -312,9 +383,9 @@ sub fnv1a32_str($$)
   {
   my ($String, $Hash) = @_;
 
-  foreach my $byte (unpack('C*', $String))
+  foreach (unpack('C*', $String))
     {
-    $Hash ^= $byte;
+    $Hash ^= $_;
     $Hash *= FNV1A32_PRIME;
     $Hash &= 0xFFFFFFFF;
     }
@@ -403,23 +474,26 @@ sub add_missing_debug($$$)
     DIR_ADDR    => $DirAddr,
     SW_NAME     => 'DEBUG',
     SW_MASK     => 0x1000,
+    SW_DIGITS   => 4,
     OPT_COUNT   => 2,
     OPTIONS     => [
                      {
                      MCU_NAME    => $McuName,
                      SW_NAME     => 'DEBUG',
-                     OPT_NAME    => 'OFF',
-                     OPT_VALUE   => 0x1000,
+                     OPT_NAME    => 'ON',
+                     OPT_VALUE   => 0,
+                     OPT_DIGITS  => 4,
                      OPT_HASH    => 0,
-                     STRUCT_NAME => "${McuName}_DEBUG_OFF_1000"
+                     STRUCT_NAME => "${McuName}_DEBUG_ON_0000"
                      },
                      {
                      MCU_NAME    => $McuName,
                      SW_NAME     => 'DEBUG',
-                     OPT_NAME    => 'ON',
-                     OPT_VALUE   => 0,
+                     OPT_NAME    => 'OFF',
+                     OPT_VALUE   => 0x1000,
+                     OPT_DIGITS  => 4,
                      OPT_HASH    => 0,
-                     STRUCT_NAME => "${McuName}_DEBUG_ON_0000"
+                     STRUCT_NAME => "${McuName}_DEBUG_OFF_1000"
                      }
                    ],
     SW_HASH     => 0,
@@ -429,6 +503,48 @@ sub add_missing_debug($$$)
   push(@{$DirRef->{SWITCHES}}, $sw_ref);
   $DirRef->{SWITCH_COUNT} += 1;
   return $sw_ref->{SW_MASK};
+  }
+
+#---------------------------------------------------------------------------------------------------
+
+sub add_missing_directives()
+  {
+  my ($missed_mcu, $complete_mcu, $substitution, $dir_ref);
+
+  foreach (@insufficient_mcus)
+    {
+    $missed_mcu   = $mcus_by_names{$_};
+    $substitution = $missed_mcu->{DIR_SUBST};
+
+    if (! defined($substitution))
+      {
+      print STDERR "Substitution not exist for the MCU: $_\n";
+      exit(1);
+      }
+
+    $complete_mcu = $mcus_by_names{$substitution->{SUBST_MCU}};
+
+    if (! defined($complete_mcu))
+      {
+      print STDERR "The substitute does not exist: $substitution->{SUBST_MCU}\n";
+      exit(1);
+      }
+
+    foreach $dir_ref (@{$complete_mcu->{DIRECTIVES}})
+      {
+      if ($dir_ref->{DIR_ADDR} == $substitution->{DIR_ADDR})
+        {
+        push(@{$missed_mcu->{DIRECTIVES}}, $dir_ref);
+
+        if ($missed_mcu->{DIR_COUNT} > 1)
+          {
+          @{$missed_mcu->{DIRECTIVES}} = sort {$a->{DIR_ADDR} <=> $b->{DIR_ADDR}} @{$missed_mcu->{DIRECTIVES}};
+          }
+
+        last;
+        }
+      }
+    }
   }
 
 #---------------------------------------------------------------------------------------------------
@@ -445,6 +561,7 @@ sub read_device_informations()
   my $option_count    = 0;
   my $state           = ST_WAIT;
   my $directive_mask;
+  my $digits;
   my $debug_present;
 
   open(INFO, '<', $dev_info_path) || die "Could not open for reading: $dev_info_path\n";
@@ -472,24 +589,24 @@ sub read_device_informations()
 
       if ($fields[2] =~ /^$pic_name_mask$/io)
         {
-        $mcu_name        = uc($fields[2]);
-        $class_name      = lc($fields[3]);
-        $directive_count = hex($fields[12]);
-        $switch_count    = 0;
-        $option_count    = 0;
-        $directive_mask  = 0;
-        $debug_present   = FALSE;
+        ($mcu_name, $class_name, $directive_count) = (uc($fields[2]), lc($fields[3]), hex($fields[12]));
+        $switch_count  = 0;
+        $option_count  = 0;
+        $debug_present = FALSE;
 
         my $tr = $class_features_by_mpasmx{$class_name};
 
         die "Unknown class of $mcu_name MCU!" if (! defined($tr));
 
+        $digits = $tr->{DIR_DIGITS};
+
         $mcu_features =
           {
           MCU_CLASS   => $tr->{CLASS},     # Class of MCU. (PROC_CLASS_PIC12yy)
           MCU_NAME    => $mcu_name,
-          DIR_MASK    => 0,                # Mask of config words.
           DIR_COUNT   => $directive_count, # Number of Configuration bytes/words.
+          DIR_SUBST   => undef,
+          DIR_DIGITS  => $digits,
           DIRECTIVES  => [],
           MCU_HASH    => 0,
           STRUCT_NAME => "${mcu_name}_addrs"
@@ -518,14 +635,25 @@ sub read_device_informations()
 
           die "Too much the number of \"CONFIGREG_INFO_TYPE\"!\n" if ($directive_count <= 0);
 
-          my $cf_mask;
+          my ($dir_default, $dir_subst);
 
-          ($directive_addr, $cf_mask, $switch_count) = (hex($fields[1]), hex($fields[3]), hex($fields[4]));
+          ($directive_addr, $dir_default, $switch_count) = (hex($fields[1]), hex($fields[3]), hex($fields[4]));
 
           if ($switch_count <= 0)
             {
-            $mcu_features->{DIR_COUNT} -= 1;
             printf STDERR "Database error in descriptor of $mcu_name at 0x%06X: This CONFIGREG_INFO_TYPE empty!\n", $directive_addr;
+            $dir_subst = $missed_directive_substitutions{$mcu_name};
+
+            if (defined($dir_subst))
+              {
+              $mcu_features->{DIR_SUBST} = $dir_subst;
+              push(@insufficient_mcus, $mcu_name);
+              print STDERR "  The possible substitution: $dir_subst->{SUBST_MCU}\n";
+              }
+            else
+              {
+              $mcu_features->{DIR_COUNT} -= 1;
+              }
             }
           else
             {
@@ -533,23 +661,27 @@ sub read_device_informations()
               {
               MCU_NAME     => $mcu_name,
               DIR_ADDR     => $directive_addr,
-              CONF_MASK    => $cf_mask,
+              DIR_DEFAULT  => $dir_default,
+              DIR_MASK     => 0,
+              DIR_DIGITS   => $digits,
               SWITCH_COUNT => $switch_count,
               SWITCHES     => [],
               DIR_HASH     => 0,
               STRUCT_NAME  => sprintf("${mcu_name}_%06X", $directive_addr)
               };
 
-            $directive_mask |= $cf_mask;
-
+            $directive_mask = 0;
             push(@{$mcu_features->{DIRECTIVES}}, $directive);
             }
 
           --$directive_count;
 
-          if ($directive_count == 0 && $mcu_features->{DIR_COUNT} > 1)
+          if ($directive_count == 0)
             {
-            @{$mcu_features->{DIRECTIVES}} = sort {$a->{DIR_ADDR} <=> $b->{DIR_ADDR}} @{$mcu_features->{DIRECTIVES}};
+            if ($mcu_features->{DIR_COUNT} > 1)
+              {
+              @{$mcu_features->{DIRECTIVES}} = sort {$a->{DIR_ADDR} <=> $b->{DIR_ADDR}} @{$mcu_features->{DIRECTIVES}};
+              }
             }
           } # when ('CONFIGREG_INFO_TYPE')
 
@@ -577,6 +709,7 @@ sub read_device_informations()
               DIR_ADDR    => $directive_addr,
               SW_NAME     => $sw_name,
               SW_MASK     => $sw_mask,
+              SW_DIGITS   => $digits,
               OPT_COUNT   => $option_count,
               OPTIONS     => [],
               SW_HASH     => 0,
@@ -585,11 +718,12 @@ sub read_device_informations()
 
             $debug_present = TRUE if ($sw_name eq 'DEBUG');
             push(@{$directive->{SWITCHES}}, $switch_info);
+            $directive_mask |= $sw_mask;
             }
 
           --$switch_count;
 
-          if ($switch_count == 0 && $directive->{SWITCH_COUNT} > 1)
+          if ($switch_count == 0)
             {
             if ($directive_addr == 0x8008 && ! $debug_present &&
                 $mcu_features->{MCU_CLASS} == PROC_CLASS_PIC14E && $mcu_name ~~ @mcu_missed_debug)
@@ -597,7 +731,12 @@ sub read_device_informations()
               $directive_mask |= add_missing_debug($mcu_name, $directive, $directive_addr);
               }
 
-            @{$directive->{SWITCHES}} = sort {$a->{SW_NAME} cmp $b->{SW_NAME}} @{$directive->{SWITCHES}};
+            if ($directive->{SWITCH_COUNT} > 1)
+              {
+              @{$directive->{SWITCHES}} = sort {$a->{SW_MASK} <=> $b->{SW_MASK}} @{$directive->{SWITCHES}};
+              }
+
+            $directive->{DIR_MASK} = $directive_mask;
             }
           } # when ('SWITCH_INFO_TYPE')
 
@@ -622,16 +761,20 @@ sub read_device_informations()
             SW_NAME     => $sw_name,
             OPT_NAME    => $opt_name,
             OPT_VALUE   => $opt_value,
+            OPT_DIGITS  => $digits,
             OPT_HASH    => 0,
-            STRUCT_NAME => sprintf("${mcu_name}_${sw_name}_${opt_name}_%04X", $opt_value)
+            STRUCT_NAME => sprintf("${mcu_name}_${sw_name}_${opt_name}_%0*X", $digits, $opt_value)
             };
 
           push(@{$switch_info->{OPTIONS}}, $option);
           --$option_count;
 
-          if ($option_count == 0 && $switch_info->{OPT_COUNT} > 1)
+          if ($option_count == 0)
             {
-            @{$switch_info->{OPTIONS}} = sort {$a->{OPT_NAME} cmp $b->{OPT_NAME}} @{$switch_info->{OPTIONS}};
+            if ($switch_info->{OPT_COUNT} > 1)
+              {
+              @{$switch_info->{OPTIONS}} = sort {$a->{OPT_VALUE} <=> $b->{OPT_VALUE}} @{$switch_info->{OPTIONS}};
+              }
             }
           } # when ('SETTING_VALUE_TYPE')
         } # given ($fields[0])
@@ -641,7 +784,6 @@ sub read_device_informations()
         # All information is together.
         die "The $mcu_name MCU already exist!" if (defined($mcus_by_names{$mcu_name}));
 
-        $mcu_features->{DIR_MASK} = $directive_mask;
         $mcus_by_names{$mcu_name} = $mcu_features;
         $state = ST_WAIT;
         }
@@ -659,7 +801,8 @@ sub make_dir_hash($$)
   my ($DirRef, $Hash) = @_;
 
   $Hash = fnv1a32_int32($DirRef->{DIR_ADDR}, $Hash);
-  $Hash = fnv1a32_int32($DirRef->{CONF_MASK}, $Hash);
+  $Hash = fnv1a32_int32($DirRef->{DIR_DEFAULT}, $Hash);
+  $Hash = fnv1a32_int32($DirRef->{DIR_MASK}, $Hash);
   return fnv1a32_int32($DirRef->{SWITCH_COUNT}, $Hash);
   }
 
@@ -702,11 +845,10 @@ sub collect_prototypes()
   foreach $mcu_name (@sorted_mcu_names)
     {
     $mcu_features = $mcus_by_names{$mcu_name};
-    $mcu_hash = fnv1a32_int32($mcu_features->{DIR_COUNT}, FNV1A32_INIT);
-    $mcu_hash = fnv1a32_int32($mcu_features->{DIR_MASK}, $mcu_hash);
+    $dir_count    = $mcu_features->{DIR_COUNT};
+    $mcu_hash     = fnv1a32_int32($dir_count, FNV1A32_INIT);
 
     $directives = $mcu_features->{DIRECTIVES};
-    $dir_count  = $mcu_features->{DIR_COUNT};
 
     for ($i = 0; $i < $dir_count; ++$i)
       {
@@ -815,7 +957,7 @@ sub collect_prototypes()
                                        $directive_prototypes{$a}->{DIR_ADDR} <=> $directive_prototypes{$b}->{DIR_ADDR}} (keys %directive_prototypes);
 
   @sorted_switch_prototypes = sort {smartSort($switch_prototypes{$a}->{MCU_NAME}, $switch_prototypes{$b}->{MCU_NAME}) ||
-                                    smartSort($switch_prototypes{$a}->{SW_NAME}, $switch_prototypes{$b}->{SW_NAME}) ||
+                                    smartSort($switch_prototypes{$a}->{SW_MASK}, $switch_prototypes{$b}->{SW_MASK}) ||
                                     $switch_prototypes{$a}->{DIR_ADDR} <=> $switch_prototypes{$b}->{DIR_ADDR}} (keys %switch_prototypes);
 
   @sorted_option_prototypes = sort {smartSort($option_prototypes{$a}->{SW_NAME}, $option_prototypes{$b}->{SW_NAME}) ||
@@ -836,9 +978,9 @@ sub print_option_prototypes()
   foreach (@sorted_option_prototypes)
     {
     $opt_ref = $option_prototypes{$_};
-    printf $out_handler "static const $cfg_option_t %-*s = { %-16s, 0x%04X };\n",
+    printf $out_handler "static const $cfg_option_t %-*s = { %-16s, 0x%0*X };\n",
                         $option_name_width, $opt_ref->{STRUCT_NAME}, "\"$opt_ref->{OPT_NAME}\"",
-                        $opt_ref->{OPT_VALUE};
+                        $opt_ref->{OPT_DIGITS}, $opt_ref->{OPT_VALUE};
     }
 
   print $out_handler "\n";
@@ -949,8 +1091,8 @@ sub print_mcu_prototypes()
       $dir_ref = $directives->[$i];
       ++$i;
 
-      printf $out_handler "  { 0x%06X, 0x%02X, %2u, %-*s }", $dir_ref->{DIR_ADDR}, $dir_ref->{CONF_MASK},
-                          $dir_ref->{SWITCH_COUNT}, $directive_name_width, $dir_ref->{STRUCT_NAME};
+      printf $out_handler "  { 0x%06X, 0x%0*X, %2u, %-*s }", $dir_ref->{DIR_ADDR}, $dir_ref->{DIR_DIGITS},
+                          $dir_ref->{DIR_DEFAULT}, $dir_ref->{SWITCH_COUNT}, $directive_name_width, $dir_ref->{STRUCT_NAME};
 
       if ($i >= $dir_count)
         {
@@ -1075,19 +1217,45 @@ typedef struct {
   const $cfg_addr_t *addresses;           /* Array of configuration addresses. */
 } $cfg_device_t;
 
+\#define GP_CFG_ADDR_HIT_MAX         16
+\#define GP_CFG_ADDR_PACK_MAX        16
+
+typedef struct {
+  const $cfg_directive_t *directive;
+  const $cfg_option_t *option;
+} $cfg_addr_hit_pair_t;
+
+typedef struct {
+  unsigned short def_value;                 /* Default value of this $cfg_addr_t. */
+  unsigned int max_dir_width;               /* The size of the longest directive name. */
+  unsigned int pair_count;                  /* Number of the pairs. */
+  $cfg_addr_hit_pair_t pairs[GP_CFG_ADDR_HIT_MAX];
+} $cfg_addr_hit_t;
+
+typedef struct {
+  unsigned int max_dir_width;               /* The size of the longest directive name. */
+  unsigned int hit_count;                   /* Number of the hits. */
+  $cfg_addr_hit_t hits[GP_CFG_ADDR_PACK_MAX];
+} $cfg_addr_pack_t;
+
 extern const $cfg_device_t ${name_head}devices[];
 extern const int ${name_head}device_count;
 
 const $cfg_device_t *${name_head}find_pic(const char *Pic);
 
-const $cfg_device_t *${name_head}find_pic_multi_name(unsigned int Count, const char * const *Pics);
+const $cfg_device_t *${name_head}find_pic_multi_name(unsigned int Count, const char *const *Pics);
 
 const $cfg_directive_t *${name_head}find_directive(const $cfg_device_t *Device, const char *Directive,
                                                 unsigned int *Out_config_addr, unsigned short *Out_def_value);
 
 const $cfg_option_t *${name_head}find_option(const $cfg_directive_t *Directive, const char *Option);
 
+const $cfg_addr_t *${name_head}find_config(const $cfg_device_t *Device, unsigned int Address);
+
 unsigned short ${name_head}get_default(const $cfg_device_t *Device, unsigned int Address);
+
+unsigned int ${name_head}decode_directive(const $cfg_device_t *Device, unsigned int Address, unsigned int Value,
+                                     $cfg_addr_hit_t *Hit);
 
 \#endif /* $guard */
 EOT
@@ -1106,11 +1274,12 @@ Usage: $PROGRAM [options]
         -i <path> or --info-path <path>
 
             The program on this path looks for the 8bit_device.info file.
+            (Default: $dev_info_path)
 
         -v <level> or --verbose <level>
 
             It provides information on from the own operation.
-            Possible value of the level between 0 and 10. (default: 0)
+            Possible value of the level between 0 and 10. (Default: 0)
 
         -h or --help
 
@@ -1161,6 +1330,7 @@ for (my $i = 0; $i < @ARGV; )
   } # for (my $i = 0; $i < @ARGV; )
 
 read_device_informations();
+add_missing_directives();
 collect_prototypes();
 
 $time_str = strftime('%F %T UTC', gmtime);

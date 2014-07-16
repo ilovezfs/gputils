@@ -22,6 +22,7 @@ Boston, MA 02111-1307, USA.  */
 #include "stdhdr.h"
 
 #include "libgputils.h"
+#include "gpcfg.h"
 #include "gpdasm.h"
 
 static const char *processor_name = NULL;
@@ -31,6 +32,8 @@ struct gpdasm_state state = {
   PROC_CLASS_GENERIC,   /* 12 bit device */
   1                     /* output format */
 };
+
+static gp_cfg_addr_pack_t addr_pack = { 0, };
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -119,7 +122,7 @@ write_core_sfr_list(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-closeasm(void)
+end_asm(void)
 {
   if (!state.format) {
     printf("        end\n");
@@ -189,7 +192,7 @@ mark_false_addresses(MemBlock *memory)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-recognize_labels(MemBlock *memory)
+recognize_labels_and_configs(MemBlock *memory)
 {
   static const vector_t sx_reset = { -1, "vec_reset" };
 
@@ -201,11 +204,26 @@ recognize_labels(MemBlock *memory)
   unsigned short data;
   const vector_t *vector;
   gpdasm_fstate_t fstate;
+  const gp_cfg_device_t *dev;
+  gp_cfg_addr_hit_t *hit;
+  unsigned int max_width;
+
+  if (state.show_config) {
+    dev = gp_cfg_find_pic_multi_name(ARRAY_SIZE(state.processor->names), state.processor->names);
+    if (dev == NULL) {
+      fprintf(stderr, "The %s processor has no entries in the config db.", state.processor->names[2]);
+    }
+  }
+  else {
+    dev = NULL;
+  }
 
   m = memory;
   fstate.wreg = 0;
   fstate.pclath = 0;
   fstate.pclath_valid = 0xff;
+  addr_pack.hit_count = 0;
+  max_width = 0;
   while (m != NULL) {
     i = m->base << I_MEM_BITS;
     maximum = i + MAX_I_MEM;
@@ -219,7 +237,43 @@ recognize_labels(MemBlock *memory)
       }
       else if (gp_processor_is_config_addr(state.processor, org)) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
-      }
+
+        if (dev != NULL) {
+          if (addr_pack.hit_count < GP_CFG_ADDR_PACK_MAX) {
+            if (state.class == PROC_CLASS_PIC16E) {
+              unsigned char byte;
+
+              if (b_memory_get(m, i, &byte, NULL, NULL)) {
+                hit = &addr_pack.hits[addr_pack.hit_count];
+
+                if (gp_cfg_decode_directive(dev, org, byte, hit) > 0) {
+                  if (max_width < hit->max_dir_width) {
+                    max_width = hit->max_dir_width;
+                  }
+
+                  ++addr_pack.hit_count;
+                }
+              }
+            }
+            else {
+              if (state.class->i_memory_get(m, i, &data, NULL, NULL) == W_USED_ALL) {
+                hit = &addr_pack.hits[addr_pack.hit_count];
+
+                if (gp_cfg_decode_directive(dev, org, data, hit) > 0) {
+                  if (max_width < hit->max_dir_width) {
+                    max_width = hit->max_dir_width;
+                  }
+
+                  ++addr_pack.hit_count;
+                }
+              }
+            }
+          }
+          else {
+            fprintf(stderr, "The value of GP_CFG_ADDR_PACK_MAX too little: %u", GP_CFG_ADDR_PACK_MAX);
+          }
+        } /* if (dev != NULL) */
+      } /* else if (gp_processor_is_config_addr(state.processor, org)) */
       else if (gp_processor_is_eeprom_addr(state.processor, org)) {
         insn_size = 1;
       }
@@ -254,6 +308,8 @@ recognize_labels(MemBlock *memory)
 
     m = m->next;
   }
+
+  addr_pack.max_dir_width = max_width;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -410,7 +466,7 @@ dasm(MemBlock *memory)
       mark_false_addresses(memory);
     }
 
-    recognize_labels(memory);
+    recognize_labels_and_configs(memory);
     recognize_registers(memory);
     denominate_labels(memory);
   }
@@ -421,11 +477,34 @@ dasm(MemBlock *memory)
 
   write_header();
 
+  if (state.show_config) {
+    if (addr_pack.hit_count == 0) {
+      state.show_config = false;
+    }
+  }
+
   if (state.show_names) {
     printf("\n; The recognition of labels and registers is not always good,\n"
            "; therefore be treated cautiously the results.\n");
     if (state.need_sfr_equ) {
       write_core_sfr_list();
+    }
+  }
+
+  if (!state.format) {
+    if (state.show_config) {
+      gp_cfg_addr_hit_t *hit;
+      unsigned int m, n;
+
+      printf("\n");
+      for (m = 0; m < addr_pack.hit_count; ++m) {
+        hit = &addr_pack.hits[m];
+
+        for (n = 0; n < hit->pair_count; ++n) {
+          printf("        CONFIG  %-*s = %s\n", addr_pack.max_dir_width,
+                 hit->pairs[n].directive->name, hit->pairs[n].option->name);
+        }
+      }
     }
   }
 
@@ -506,57 +585,61 @@ dasm(MemBlock *memory)
       else if (gp_processor_is_config_addr(state.processor, org)) {
         /* This is config word/bytes. Not need disassemble. */
         if (state.class == PROC_CLASS_PIC16E) {
-          if (b_memory_get(m, i, &byte, NULL, NULL)) {
-            if (last_loc != (i - insn_size)) {
-              if (first_config) {
-                write_org(org, addr_digits, "config");
-                first_config = false;
+          if (!state.show_config) {
+            if (b_memory_get(m, i, &byte, NULL, NULL)) {
+              if (last_loc != (i - insn_size)) {
+                if (first_config) {
+                  write_org(org, addr_digits, "config");
+                  first_config = false;
+                }
+                else {
+                  write_org(org, addr_digits, NULL);
+                }
               }
-              else {
-                write_org(org, addr_digits, NULL);
+
+              last_loc = i;
+
+              if (state.format) {
+                printf("%0*x:  %02x  ", addr_digits, org, (unsigned int)byte);
+              } else {
+                printf("        ");
               }
+
+              printf("%-*s0x%02x\n", TABULATOR_SIZE, "db", (unsigned int)byte);
             }
-
-            last_loc = i;
-
-            if (state.format) {
-              printf("%0*x:  %02x  ", addr_digits, org, (unsigned int)byte);
-            } else {
-              printf("        ");
+            else {
+              last_loc = 0;
             }
-
-            printf("%-*s0x%02x\n", TABULATOR_SIZE, "db", (unsigned int)byte);
-          }
-          else {
-            last_loc = 0;
           }
 
           insn_size = 1;
         } /* if (state.class == PROC_CLASS_PIC16E) */
         else {
-          if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
-            if (last_loc != (i - insn_size)) {
-              if (first_config) {
-                write_org(org, addr_digits, "config");
-                first_config = false;
+          if (!state.show_config) {
+            if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
+              if (last_loc != (i - insn_size)) {
+                if (first_config) {
+                  write_org(org, addr_digits, "config");
+                  first_config = false;
+                }
+                else {
+                  write_org(org, addr_digits, NULL);
+                }
               }
-              else {
-                write_org(org, addr_digits, NULL);
+
+              last_loc = i;
+
+              if (state.format) {
+                printf("%0*x:  %0*x  ", addr_digits, org, word_digits, (unsigned int)data);
+              } else {
+                printf("        ");
               }
+
+              printf("%-*s0x%0*x\n", TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
             }
-
-            last_loc = i;
-
-            if (state.format) {
-              printf("%0*x:  %0*x  ", addr_digits, org, word_digits, (unsigned int)data);
-            } else {
-              printf("        ");
+            else {
+              last_loc = 0;
             }
-
-            printf("%-*s0x%0*x\n", TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
-          }
-          else {
-            last_loc = 0;
           }
 
           insn_size = 2;
@@ -643,7 +726,7 @@ dasm(MemBlock *memory)
     m = m->next;
   }
 
-  closeasm();
+  end_asm();
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -661,6 +744,7 @@ show_usage(void)
   printf("  -n, --show-names               For some case of SFR, shows the name of\n"
          "                                 instead of the address. In addition shows\n"
          "                                 the labels also.\n");
+  printf("  -o, --show-config              Show CONFIG directives.\n");
   printf("  -p PROC, --processor PROC      Select processor.\n");
   printf("  -s, --short                    Print short format.\n");
   printf("  -v, --version                  Show version.\n");
@@ -675,7 +759,7 @@ show_usage(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
-#define GET_OPTIONS "?chilmnp:svy"
+#define GET_OPTIONS "?chilmnop:svy"
 
   /* Used: himpsv */
   static struct option longopts[] =
@@ -686,6 +770,7 @@ show_usage(void)
     { "list-chips",  0, 0, 'l' },
     { "dump",        0, 0, 'm' },
     { "show-names",  0, 0, 'n' },
+    { "show-config", 0, 0, 'o' },
     { "processor",   1, 0, 'p' },
     { "short",       0, 0, 's' },
     { "version",     0, 0, 'v' },
@@ -712,6 +797,7 @@ int main(int argc, char *argv[])
 
   state.i_memory = i_memory_create();
   state.show_names = false;
+  state.show_config = false;
 
   while ((c = GETOPT_FUNC) != EOF) {
     switch (c) {
@@ -739,6 +825,10 @@ int main(int argc, char *argv[])
 
     case 'n':
       state.show_names = true;
+      break;
+
+    case 'o':
+      state.show_config = true;
       break;
 
     case 'p':

@@ -1,8 +1,8 @@
 ;  This file is used to test gpdasm with the 14 bit enhanced instruction set.
 
-	list p=12f1501
+	list p=12f1571
 
-	include p12f1501.inc
+	include p12f1571.inc
 
 	CONFIG	FOSC     = ECL			; 0x0001
 	CONFIG	WDTE     = SWDTEN		; 0x0008
@@ -17,7 +17,8 @@
 	CONFIG	WRT      = BOOT			; 0x0002
 	CONFIG	STVREN   = ON			; 0x0200
 	CONFIG	BORV     = HI			; 0x0000
-	CONFIG	LPBOR    = OFF			; 0x0800
+	CONFIG	LPBOREN  = OFF			; 0x0800
+	CONFIG	DEBUG    = OFF			; 0x0000
 	CONFIG	LVP      = OFF			; 0x0000
 						;--------
 						; 0x0A02

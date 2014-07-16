@@ -25,6 +25,7 @@ Boston, MA 02111-1307, USA.  */
 /* Used in disasm. */
 #define EXPLANATION_DISTANCE            60
 #define TABULATOR_SIZE                  8
+#define ARRAY_SIZE(a)                   (sizeof(a) / sizeof((a)[0]))
 
 extern const char *gp_header_path;
 extern const char *gp_lkr_path;

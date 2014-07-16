@@ -2,7 +2,7 @@
 #ifndef __GPCFG_H__
 #define __GPCFG_H__
 
-/* This file is generated automatically by the cfg-import.pl 2014-07-13 12:44:28 UTC. */
+/* This file is generated automatically by the cfg-import.pl 2014-07-16 07:44:01 UTC. */
 
 /* gpcfg.h - header file for pic object files
    Copyright (C) 2006
@@ -56,18 +56,44 @@ typedef struct {
   const gp_cfg_addr_t *addresses;           /* Array of configuration addresses. */
 } gp_cfg_device_t;
 
+#define GP_CFG_ADDR_HIT_MAX         16
+#define GP_CFG_ADDR_PACK_MAX        16
+
+typedef struct {
+  const gp_cfg_directive_t *directive;
+  const gp_cfg_option_t *option;
+} gp_cfg_addr_hit_pair_t;
+
+typedef struct {
+  unsigned int max_dir_width;               /* The size of the longest directive name. */
+  unsigned short def_value;                 /* Default value of this gp_cfg_addr_t. */
+  unsigned int pair_count;                  /* Number of the pairs. */
+  gp_cfg_addr_hit_pair_t pairs[GP_CFG_ADDR_HIT_MAX];
+} gp_cfg_addr_hit_t;
+
+typedef struct {
+  unsigned int max_dir_width;               /* The size of the longest directive name. */
+  unsigned int hit_count;                   /* Number of the hits. */
+  gp_cfg_addr_hit_t hits[GP_CFG_ADDR_PACK_MAX];
+} gp_cfg_addr_pack_t;
+
 extern const gp_cfg_device_t gp_cfg_devices[];
 extern const int gp_cfg_device_count;
 
 const gp_cfg_device_t *gp_cfg_find_pic(const char *Pic);
 
-const gp_cfg_device_t *gp_cfg_find_pic_multi_name(unsigned int Count, const char * const *Pics);
+const gp_cfg_device_t *gp_cfg_find_pic_multi_name(unsigned int Count, const char *const *Pics);
 
 const gp_cfg_directive_t *gp_cfg_find_directive(const gp_cfg_device_t *Device, const char *Directive,
                                                 unsigned int *Out_config_addr, unsigned short *Out_def_value);
 
 const gp_cfg_option_t *gp_cfg_find_option(const gp_cfg_directive_t *Directive, const char *Option);
 
+const gp_cfg_addr_t *gp_cfg_find_config(const gp_cfg_device_t *Device, unsigned int Address);
+
 unsigned short gp_cfg_get_default(const gp_cfg_device_t *Device, unsigned int Address);
+
+unsigned int gp_cfg_decode_directive(const gp_cfg_device_t *Device, unsigned int Address, unsigned int Value,
+                                     gp_cfg_addr_hit_t *Hit);
 
 #endif /* __GPCFG_H__ */
