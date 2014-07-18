@@ -71,7 +71,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Jun 23, 2014
+Jul 17, 2014
 \end_layout
 
 \begin_layout Standard
@@ -893,7 +893,7 @@ Where options can be one of:
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="27" columns="3">
+<lyxtabular version="3" rows="28" columns="3">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
@@ -1114,6 +1114,35 @@ Equivalent to
 
 \begin_layout Plain Layout
 Expand macros in listing file.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-f
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--full-address
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Show full address in .lst file at the memory map region.
 \end_layout
 
 \end_inset
@@ -12568,7 +12597,7 @@ For some case of SFR, shows the name of instead of the address.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Show CONFIG directives.
+Show CONFIG and IDLOCS - or __idlocs - directives.
 \end_layout
 
 \end_inset

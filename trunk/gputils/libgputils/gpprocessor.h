@@ -34,6 +34,8 @@ Boston, MA 02111-1307, USA.  */
 #define PIC12_REG_STATUS            0x03
 #define PIC12_REG_FSR               0x04
 
+#define PIC12_IDLOCS_SIZE           4
+
 /******************************************
         PIC12E definitions
 ******************************************/
@@ -64,6 +66,8 @@ Boston, MA 02111-1307, USA.  */
 #define PIC14_BIT_STATUS_IRP        7
 
 #define PIC14_REG_PCLATH            0x0A
+
+#define PIC14_IDLOCS_SIZE           PIC12_IDLOCS_SIZE
 
 /******************************************
         PIC14E definitions
@@ -115,6 +119,8 @@ Boston, MA 02111-1307, USA.  */
 #define PIC16E_REG_TOSL             0xFFD
 #define PIC16E_REG_TOSH             0xFFE
 #define PIC16E_REG_TOSU             0xFFF
+
+#define PIC16E_IDLOCS_SIZE          8
 
 /******************************************************************************/
 
@@ -304,9 +310,9 @@ const char *gp_processor_name(pic_processor_t processor, unsigned int choice);
 const char *gp_processor_coff_name(unsigned long coff_type, unsigned int choice);
 const char *gp_processor_script(pic_processor_t processor);
 unsigned int gp_processor_id_location(pic_processor_t processor);
-gp_boolean gp_processor_is_idlocs_addr(pic_processor_t processor, int address);
-gp_boolean gp_processor_is_config_addr(pic_processor_t processor, int address);
-gp_boolean gp_processor_is_eeprom_addr(pic_processor_t processor, int address);
+int gp_processor_is_idlocs_addr(pic_processor_t processor, int address);
+int gp_processor_is_config_addr(pic_processor_t processor, int address);
+int gp_processor_is_eeprom_addr(pic_processor_t processor, int address);
 int gp_processor_rom_width(proc_class_t class);
 int gp_processor_check_bank(proc_class_t class, unsigned int address);
 

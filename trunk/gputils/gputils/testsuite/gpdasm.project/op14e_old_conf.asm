@@ -7,6 +7,8 @@
 	__config _CONFIG1, _FOSC_ECL & _WDTE_SWDTEN & _PWRTE_OFF & _MCLRE_OFF & _CP_OFF & _BOREN_SBODEN & _CLKOUTEN_OFF
 	__config _CONFIG2, _WRT_BOOT & _STVREN_ON & _BORV_HI & _LPBOR_OFF & _LVP_OFF
 
+	__idlocs 0x1234
+
 moviw_test macro fsr
 	MOVIW	++fsr
 	MOVIW	--fsr

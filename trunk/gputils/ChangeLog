@@ -1,3 +1,25 @@
+2014-07-18  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/gpasm.c, gpasm/gpasm.h.in, gpasm/lst.c:
+    A new option: --full-address
+    Show full address in .lst file at the memory map region.
+
+  * gpasm/directive.c, gpasm/gperror.c, gputils/gpdasm.c,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.h:
+    The "--show-config" option show CONFIG and IDLOCS - or __idlocs -
+    directives.
+
+  * gputils/testsuite/test,
+    gputils/testsuite/gpdasm.project/op14e_new_conf.asm,
+    gputils/testsuite/gpdasm.project/idlocs16e8.asm: updated
+
+  * gputils/testsuite/gpdasm.project/idlocs12a.asm,
+    gputils/testsuite/gpdasm.project/idlocs12b.asm,
+    gputils/testsuite/gpdasm.project/idlocs14a.asm,
+    gputils/testsuite/gpdasm.project/idlocs14b.asm,
+    gputils/testsuite/gpdasm.project/idlocs16e9.asm,
+    gputils/testsuite/gpdasm.project/idlocs16e10.asm:
+    New test files.
+
 2014-07-16  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c, libgputils/gpsystem.h:
     New macro: ARRAY_SIZE

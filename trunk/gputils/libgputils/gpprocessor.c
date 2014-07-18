@@ -886,40 +886,40 @@ gp_processor_id_location(pic_processor_t processor)
   return ((processor->class->id_location != NULL) ? processor->class->id_location(processor) : 0);
 }
 
-gp_boolean
+int
 gp_processor_is_idlocs_addr(pic_processor_t processor, int address)
 {
   if ((processor->idlocs_addrs[0] > 0) && (processor->idlocs_addrs[1] > 0)) {
     if ((processor->idlocs_addrs[0] <= address) && (address <= processor->idlocs_addrs[1])) {
-      return true;
+      return (address - processor->idlocs_addrs[0]);
     }
   }
 
-  return false;
+  return -1;
 }
 
-gp_boolean
+int
 gp_processor_is_config_addr(pic_processor_t processor, int address)
 {
   if ((processor->config_addrs[0] > 0) && (processor->config_addrs[1] > 0)) {
     if ((processor->config_addrs[0] <= address) && (address <= processor->config_addrs[1])) {
-      return true;
+      return (address - processor->config_addrs[0]);
     }
   }
 
-  return false;
+  return -1;
 }
 
-gp_boolean
+int
 gp_processor_is_eeprom_addr(pic_processor_t processor, int address)
 {
   if ((processor->eeprom_addrs[0] > 0) && (processor->eeprom_addrs[1] > 0)) {
     if ((processor->eeprom_addrs[0] <= address) && (address <= processor->eeprom_addrs[1])) {
-      return true;
+      return (address - processor->eeprom_addrs[0]);
     }
   }
 
-  return false;
+  return -1;
 }
 
 int

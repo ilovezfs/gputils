@@ -492,7 +492,7 @@ gp_getmessage(unsigned int code)
   case GPM_RANGE:
     return "Program word too large. Truncated to core size: 0x%04X";
   case GPM_IDLOC:
-    return "ID Locations value too large. Last four hex digits used: 0x%04X";
+    return "An ID Locations value too large. Last four hex digits used: 0x%X ==> 0x%04X";
   case GPM_NOF:
     return "Using default destination of 1 (file).";
   case GPM_PAGE:
