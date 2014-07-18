@@ -84,7 +84,7 @@ checkwrite(unsigned short value)
   }
   else {
     /* GPASM compatible mode. */
-    gp_boolean is_config = gp_processor_is_config_addr(state.processor, org);
+    gp_boolean is_config = (gp_processor_is_config_addr(state.processor, org) >= 0) ? true : false;
 
     if (value > state.device.class->core_mask) {
     /* The size of the config words may be differ the size of the program words. */
@@ -1203,7 +1203,7 @@ do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   /* validate argument format */
   if ((parms == NULL) || (parms->tag != PTAG_BINOP) || (parms->value.binop.op != '=')) {
-    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. use `CONFIG KEY = VALUE'");
+    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use `CONFIG KEY = VALUE'");
     return r;
   }
 
@@ -1213,7 +1213,7 @@ do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
   if ((k->tag != PTAG_SYMBOL) ||
       ((v->tag != PTAG_SYMBOL) && (v->tag != PTAG_CONSTANT))) {
-    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. use `CONFIG KEY = VALUE'");
+    gperror(GPE_CONFIG_UNKNOWN, "Incorrect syntax. Use `CONFIG KEY = VALUE'");
     return r;
   }
 
@@ -1460,9 +1460,9 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
     else {
       int org = gp_processor_byte_to_org(state.device.class, begin_org);
 
-      if ((!gp_processor_is_config_addr(state.processor, org)) &&
-          (!gp_processor_is_idlocs_addr(state.processor, org)) && 
-          (!gp_processor_is_eeprom_addr(state.processor, org))) {
+      if ((gp_processor_is_config_addr(state.processor, org) < 0) &&
+          (gp_processor_is_idlocs_addr(state.processor, org) < 0) && 
+          (gp_processor_is_eeprom_addr(state.processor, org) < 0)) {
         if ((state.mode == MODE_ABSOLUTE) || !(SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
           if ((state.org - begin_org) & 1) {
             emit_byte(0, name);
@@ -1940,7 +1940,7 @@ do_dtm(gpasmVal r, const char *name, int arity, struct pnode *parms)
  *  do_dw - The 'dw' directive. On all families except for the p18cxxx, the
  *          dw directive is the same as the 'data' directive. For the p18cxxx
  *          it's the same as the 'db' directive. (That's strange, but it's
- *          also the way mpasm does it).
+ *          also the way mpasm does it.)
  */
 static gpasmVal
 do_dw(gpasmVal r, const char *name, int arity, struct pnode *parms)
@@ -2182,6 +2182,7 @@ static gpasmVal
 do_expand(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   state.lst.line.linetype = LTY_DIR;
+
   if (state.cmd_line.macro_expand) {
     gpvmessage(GPM_SUPLIN, NULL);
   }
@@ -2307,10 +2308,7 @@ do_global(gpasmVal r, const char *name, int arity, struct pnode *parms)
               gpverror(GPE_DUPLAB, NULL, s);
             }
             else {
-              snprintf(buf,
-                       sizeof(buf),
-                       "Operand must be an address label: \"%s\"",
-                       p);
+              snprintf(buf, sizeof(buf), "Operand must be an address label: \"%s\"", p);
               gperror(GPE_MUST_BE_LABEL, buf);
             }
           }
@@ -2429,7 +2427,7 @@ do_ident(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  int value;
+  int value, v;
   unsigned int id_location;
   unsigned int idreg;
   char buf[BUFSIZ];
@@ -2489,8 +2487,11 @@ do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
         state.lst.line.linetype = LTY_CONFIG;
         state.lst.config_address = idreg;
 
-        if (value > 0xff) {
-          gpmessage(GPM_IDLOC, "ID Locations value too large. Last four two digits used.");
+        if (value & ~0xff) {
+          v = value;
+          value &= 0xff;
+          snprintf(buf, sizeof(buf), "An ID Locations value too large. Last two hex digits used: 0x%X ==> 0x%02X", v, value);
+          gpmessage(GPM_IDLOC, buf);
         }
 
         if (idreg <= state.device.id_location) {
@@ -2517,8 +2518,9 @@ do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
       state.lst.line.linetype = LTY_IDLOCS;
 
       if (value & ~0xffff) {
+        v = value;
         value &= 0xffff;
-        gpvmessage(GPM_IDLOC, NULL, value);
+        gpvmessage(GPM_IDLOC, NULL, v, value);
       }
 
       if (state.device.class->i_memory_get(m, idreg, &word, NULL, NULL)) {
@@ -2550,11 +2552,13 @@ do_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_16_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
+  static unsigned int last_idreg = 0;
+
   struct pnode *p;
   unsigned int idreg;
   unsigned char curvalue;
   const char *pc;
-  int value;
+  int value, v;
   int max_bytes;
   int n;
   char buf[BUFSIZ];
@@ -2575,7 +2579,7 @@ do_16_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
     return r;
   }
 
-  idreg = gp_processor_id_location(state.processor);
+  idreg = (last_idreg == 0) ? gp_processor_id_location(state.processor) : last_idreg;
 
   if (idreg == 0) {
     snprintf(buf, sizeof(buf), "The IDLOCS registers not exist in the %s MCU.",
@@ -2583,8 +2587,6 @@ do_16_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
     gperror(GPE_UNKNOWN, buf);
     return r;
   }
-
-  state.device.id_location = idreg;
 
   if ((state.mode == MODE_RELOCATABLE) && (!state.found_idlocs)) {
     coff_new_section(".idlocs", idreg, STYP_ABS | STYP_TEXT);
@@ -2610,7 +2612,7 @@ do_16_idlocs(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
     state.lst.line.linetype = LTY_CONFIG;
     state.lst.config_address = idreg;
-    max_bytes = state.processor->idlocs_addrs[1] - state.processor->idlocs_addrs[0] + 1;
+    max_bytes = state.processor->idlocs_addrs[1] - idreg + 1;
     n = 0;
 
     for (; parms != NULL; parms = TAIL(parms)) {
@@ -2631,9 +2633,11 @@ constant:
           goto warning;
         }
 
-        if (value & ~0xFF) {
-          value &= 0xFF;
-          gpvmessage(GPM_IDLOC, NULL, value);
+        if (value & ~0xff) {
+          v = value;
+          value &= 0xff;
+          snprintf(buf, sizeof(buf), "An ID Locations value too large. Last two hex digits used: 0x%X ==> 0x%02X", v, value);
+          gpmessage(GPM_IDLOC, buf);
         }
 
         if (b_memory_get(m, idreg, &curvalue, NULL, NULL)) {
@@ -2641,7 +2645,7 @@ constant:
           return r;
         }
 
-        snprintf(buf, sizeof(buf), "IDLOCS%i", n);
+        snprintf(buf, sizeof(buf), "IDLOCS_%#x", idreg);
         b_memory_put(m, idreg, value, buf, NULL);
         state.lst.line.was_org = idreg;
 
@@ -2669,7 +2673,7 @@ constant:
             return r;
           }
 
-          snprintf(buf, sizeof(buf), "IDLOCS%i", n);
+          snprintf(buf, sizeof(buf), "IDLOCS_%#x", idreg);
           b_memory_put(m, idreg, value, buf, NULL);
           state.lst.line.was_org = idreg;
 
@@ -2690,11 +2694,11 @@ constant:
 warning:
 
     if (n > 0) {
-      coff_linenum(1);
+      coff_linenum(n);
     }
   } /* if (state.pass == 2) */
 
-  state.device.id_location = idreg;
+  last_idreg = idreg;
 
   return r;
 }
@@ -3170,8 +3174,8 @@ do_org(gpasmVal r, const char *name, int arity, struct pnode *parms)
       new_org = gp_processor_org_to_byte(state.device.class, r);
 
       if (state.mpasm_compatible ||
-          ((!gp_processor_is_config_addr(state.processor, new_org)) &&
-           (!gp_processor_is_eeprom_addr(state.processor, new_org)))) {
+          ((gp_processor_is_config_addr(state.processor, new_org) < 0) &&
+           (gp_processor_is_eeprom_addr(state.processor, new_org) < 0))) {
         if (IS_PIC16E_CORE && (r & 1)) {
           gpverror(GPE_ORG_ODD, "Address{%#x}", r);
         }

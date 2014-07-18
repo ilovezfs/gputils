@@ -243,8 +243,15 @@ lst_memory_map(MemBlock *m)
       }
 
       if (row_used) {
-        /* MPASM(X) compatible: print only lower 4 addres bytes */
-        lst_printf("%04X :", (i + base) & 0xffff);
+        if (state.show_full_addr && IS_PIC16E_CORE) {
+          /* Gpasm mode: Print all address digits. */
+          lst_printf("%0*X :", state.device.class->addr_digits, (i + base));
+        }
+        else {
+          /* MPASM(X) compatible: Print only lower 4 address digits. */
+          lst_printf("%04X :", (i + base) & 0xffff);
+        }
+
         for (j = 0; j < num_per_line; j++) {
           if ((j % num_per_block) == 0) {
             lst_printf(" ");

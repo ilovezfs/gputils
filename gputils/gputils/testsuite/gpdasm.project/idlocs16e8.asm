@@ -1,9 +1,12 @@
 
 	list    p=18f4520
 
-NUMBER2	equ	0x18
+CHAR	equ	'o'
 
-	IDLOCS	"four", 'z', 'd', NUMBER2
+	IDLOCS	"one", ','
+	IDLOCS	' ', 't'
+	IDLOCS	'w'
+	IDLOCS	CHAR
 
 start:
 	return

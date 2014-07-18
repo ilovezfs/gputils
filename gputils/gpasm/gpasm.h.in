@@ -103,6 +103,7 @@ extern struct gpasm_state {
   int radix;
   enum formats hex_format;
   gp_boolean case_insensitive;
+  gp_boolean show_full_addr;
   gp_boolean quiet;
   gp_boolean use_absolute_path;
   int error_level;                  /* 0, 1, 2 */

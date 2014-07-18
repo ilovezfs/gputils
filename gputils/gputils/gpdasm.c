@@ -35,6 +35,12 @@ struct gpdasm_state state = {
 
 static gp_cfg_addr_pack_t addr_pack = { 0, };
 
+static struct {
+  gp_boolean is_print;
+  unsigned int number;
+  int words[PIC16E_IDLOCS_SIZE];
+} idlocs_pack = { 0, 0, { -1, } };
+
 /*------------------------------------------------------------------------------------------------*/
 
 static void
@@ -125,7 +131,7 @@ static void
 end_asm(void)
 {
   if (!state.format) {
-    printf("        end\n");
+    printf("\n        end\n");
   }
 }
 
@@ -166,13 +172,13 @@ mark_false_addresses(MemBlock *memory)
     while (i < maximum) {
       org = gp_processor_byte_to_org(state.class, i);
 
-      if (gp_processor_is_idlocs_addr(state.processor, org)) {
+      if (gp_processor_is_idlocs_addr(state.processor, org) >= 0) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
       }
-      else if (gp_processor_is_config_addr(state.processor, org)) {
+      else if (gp_processor_is_config_addr(state.processor, org) >= 0) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
       }
-      else if (gp_processor_is_eeprom_addr(state.processor, org)) {
+      else if (gp_processor_is_eeprom_addr(state.processor, org) >= 0) {
         insn_size = 1;
       }
       else {
@@ -192,15 +198,16 @@ mark_false_addresses(MemBlock *memory)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-recognize_labels_and_configs(MemBlock *memory)
+recognize_labels_and_spec_words(MemBlock *memory)
 {
   static const vector_t sx_reset = { -1, "vec_reset" };
 
   MemBlock *m;
-  int i, maximum;
+  int i, maximum, index;
   int org;
   int insn_size;
   int num_words;
+  unsigned char byte;
   unsigned short data;
   const vector_t *vector;
   gpdasm_fstate_t fstate;
@@ -224,6 +231,8 @@ recognize_labels_and_configs(MemBlock *memory)
   fstate.pclath_valid = 0xff;
   addr_pack.hit_count = 0;
   max_width = 0;
+  idlocs_pack.number = 0;
+  idlocs_pack.is_print = true;
   while (m != NULL) {
     i = m->base << I_MEM_BITS;
     maximum = i + MAX_I_MEM;
@@ -232,17 +241,39 @@ recognize_labels_and_configs(MemBlock *memory)
     while (i < maximum) {
       org = gp_processor_byte_to_org(state.class, i);
 
-      if (gp_processor_is_idlocs_addr(state.processor, org)) {
+      if ((index = gp_processor_is_idlocs_addr(state.processor, org)) >= 0) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
+
+        if (state.class == PROC_CLASS_PIC16E) {
+          if (b_memory_get(m, i, &byte, NULL, NULL)) {
+            idlocs_pack.words[index] = byte;
+
+            if (!isprint(byte)) {
+              idlocs_pack.is_print = false;
+            }
+
+            ++idlocs_pack.number;
+          }
+          else {
+            idlocs_pack.words[index] = -1;
+          }
+        }
+        else {
+          if (state.class->i_memory_get(m, i, &data, NULL, NULL) == W_USED_ALL) {
+            idlocs_pack.words[index] = data;
+            ++idlocs_pack.number;
+          }
+          else {
+            idlocs_pack.words[index] = -1;
+          }
+        }
       }
-      else if (gp_processor_is_config_addr(state.processor, org)) {
+      else if (gp_processor_is_config_addr(state.processor, org) >= 0) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
 
         if (dev != NULL) {
           if (addr_pack.hit_count < GP_CFG_ADDR_PACK_MAX) {
             if (state.class == PROC_CLASS_PIC16E) {
-              unsigned char byte;
-
               if (b_memory_get(m, i, &byte, NULL, NULL)) {
                 hit = &addr_pack.hits[addr_pack.hit_count];
 
@@ -273,8 +304,8 @@ recognize_labels_and_configs(MemBlock *memory)
             fprintf(stderr, "The value of GP_CFG_ADDR_PACK_MAX too little: %u", GP_CFG_ADDR_PACK_MAX);
           }
         } /* if (dev != NULL) */
-      } /* else if (gp_processor_is_config_addr(state.processor, org)) */
-      else if (gp_processor_is_eeprom_addr(state.processor, org)) {
+      } /* else if (gp_processor_is_config_addr(state.processor, org) >= 0) */
+      else if (gp_processor_is_eeprom_addr(state.processor, org) >= 0) {
         insn_size = 1;
       }
       else {
@@ -344,13 +375,13 @@ recognize_registers(MemBlock *memory)
     while (i < maximum) {
       org = gp_processor_byte_to_org(state.class, i);
 
-      if (gp_processor_is_idlocs_addr(state.processor, org)) {
+      if (gp_processor_is_idlocs_addr(state.processor, org) >= 0) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
       }
-      else if (gp_processor_is_config_addr(state.processor, org)) {
+      else if (gp_processor_is_config_addr(state.processor, org) >= 0) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
       }
-      else if (gp_processor_is_eeprom_addr(state.processor, org)) {
+      else if (gp_processor_is_eeprom_addr(state.processor, org) >= 0) {
         insn_size = 1;
       }
       else {
@@ -435,6 +466,135 @@ static size_t byte_exclamation(char *buffer, size_t buffer_length, size_t curren
 /*------------------------------------------------------------------------------------------------*/
 
 static void
+show_config(void) {
+  gp_cfg_addr_hit_t *hit;
+  unsigned int m, n;
+
+  if (addr_pack.hit_count == 0) {
+    return;
+  }
+
+  printf("\n");
+  for (m = 0; m < addr_pack.hit_count; ++m) {
+    hit = &addr_pack.hits[m];
+
+    for (n = 0; n < hit->pair_count; ++n) {
+      printf("        CONFIG  %-*s = %s\n", addr_pack.max_dir_width,
+             hit->pairs[n].directive->name, hit->pairs[n].option->name);
+    }
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+show_idlocs(void) {
+  unsigned int i, j;
+  int word;
+  gp_boolean prev_exist, act_exist, aligned;
+  char buffer[PIC16E_IDLOCS_SIZE * 2];
+
+  if (idlocs_pack.number == 0) {
+    return;
+  }
+
+  if (state.class == PROC_CLASS_PIC16E) {
+    prev_exist = false;
+    act_exist  = false;
+    aligned    = false;
+    for (i = 0, word = 0; i < PIC16E_IDLOCS_SIZE; ++i) {
+      act_exist = (idlocs_pack.words[i] >= 0) ? true : false;
+
+      if (i == 0) {
+        /* Start at the beginning. */
+        aligned = act_exist;
+      }
+
+      if ((prev_exist == false) && (act_exist == true)) {
+        ++word;
+
+        if (word > 1) {
+          /* There are several separate words or characters. */
+          break;
+        }
+      }
+
+      prev_exist = act_exist;
+    }
+
+    if (aligned && (word == 1)) {
+      /* One word and start at the beginning. */
+      if (idlocs_pack.is_print) {
+        /* Only printable characters are there in it. */
+        for (i = 0, j = 0; i < PIC16E_IDLOCS_SIZE; ++i) {
+          if ((word = idlocs_pack.words[i]) > 0) {
+            buffer[j++] = (char)word;
+          }
+        }
+
+        buffer[j] = '\0';
+        printf("\n        IDLOCS  \"%s\"\n", buffer);
+      }
+      else {
+        /* Not only printable characters are there in it. */
+        printf("\n");
+        for (i = 0; i < PIC16E_IDLOCS_SIZE; ++i) {
+          if ((word = idlocs_pack.words[i]) >= 0) {
+            if (isalnum(word)) {
+              printf("        __idlocs _IDLOC%u, '%c'\n", i, word);
+            }
+            else {
+              printf("        __idlocs _IDLOC%u, 0x%02X\n", i, word);
+            }
+          }
+        }
+      }
+    } /* if (aligned && (word == 1)) */
+    else {
+      /* There are several separate words or characters, or do not start at the beginning. */
+      prev_exist = false;
+      act_exist  = false;
+      printf("\n");
+      for (i = 0; i < PIC16E_IDLOCS_SIZE; ++i) {
+        if ((word = idlocs_pack.words[i]) >= 0) {
+          act_exist = true;
+
+          if (isalnum(word)) {
+            printf("        __idlocs _IDLOC%u, '%c'\n", i, word);
+          }
+          else {
+            printf("        __idlocs _IDLOC%u, 0x%02X\n", i, word);
+          }
+        }
+        else {
+          act_exist = false;
+        }
+
+      if ((prev_exist == true) && (act_exist == false)) {
+        /* Indicates the break. */
+        printf("\n");
+      }
+
+      prev_exist = act_exist;
+      }
+    }
+  } /* if (state.class == PROC_CLASS_PIC16E) */
+  else {
+    if (idlocs_pack.number != PIC12_IDLOCS_SIZE) {
+      fprintf(stderr, "The IDLOCS size is not %u words!\n", PIC12_IDLOCS_SIZE);
+    }
+
+    word  = (idlocs_pack.words[0] & 0x000F) << 12;
+    word |= (idlocs_pack.words[1] & 0x000F) << 8;
+    word |= (idlocs_pack.words[2] & 0x000F) << 4;
+    word |= (idlocs_pack.words[3] & 0x000F);
+    printf("\n        __idlocs 0x%04X\n", word);
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
 dasm(MemBlock *memory)
 {
   MemBlock *m;
@@ -466,7 +626,7 @@ dasm(MemBlock *memory)
       mark_false_addresses(memory);
     }
 
-    recognize_labels_and_configs(memory);
+    recognize_labels_and_spec_words(memory);
     recognize_registers(memory);
     denominate_labels(memory);
   }
@@ -477,12 +637,6 @@ dasm(MemBlock *memory)
 
   write_header();
 
-  if (state.show_config) {
-    if (addr_pack.hit_count == 0) {
-      state.show_config = false;
-    }
-  }
-
   if (state.show_names) {
     printf("\n; The recognition of labels and registers is not always good,\n"
            "; therefore be treated cautiously the results.\n");
@@ -491,21 +645,9 @@ dasm(MemBlock *memory)
     }
   }
 
-  if (!state.format) {
-    if (state.show_config) {
-      gp_cfg_addr_hit_t *hit;
-      unsigned int m, n;
-
-      printf("\n");
-      for (m = 0; m < addr_pack.hit_count; ++m) {
-        hit = &addr_pack.hits[m];
-
-        for (n = 0; n < hit->pair_count; ++n) {
-          printf("        CONFIG  %-*s = %s\n", addr_pack.max_dir_width,
-                 hit->pairs[n].directive->name, hit->pairs[n].option->name);
-        }
-      }
-    }
+  if (!state.format && state.show_config) {
+    show_config();
+    show_idlocs();
   }
 
   first_idlocs = true;
@@ -521,68 +663,72 @@ dasm(MemBlock *memory)
     while (i < maximum) {
       org = gp_processor_byte_to_org(state.class, i);
 
-      if (gp_processor_is_idlocs_addr(state.processor, org)) {
+      if (gp_processor_is_idlocs_addr(state.processor, org) >= 0) {
         /* This is idlocs word/bytes. Not need disassemble. */
         if (state.class == PROC_CLASS_PIC16E) {
-          if (b_memory_get(m, i, &byte, NULL, NULL)) {
-            if (last_loc != (i - insn_size)) {
-              if (first_idlocs) {
-                write_org(org, addr_digits, "idlocs");
-                first_idlocs = false;
+          if (!state.show_config) {
+            if (b_memory_get(m, i, &byte, NULL, NULL)) {
+              if (last_loc != (i - insn_size)) {
+                if (first_idlocs) {
+                  write_org(org, addr_digits, "idlocs");
+                  first_idlocs = false;
+                }
+                else {
+                  write_org(org, addr_digits, NULL);
+                }
               }
-              else {
-                write_org(org, addr_digits, NULL);
+
+              last_loc = i;
+
+              if (state.format) {
+                length = snprintf(buffer, sizeof(buffer), "%0*x:  %02x  ",
+                                  addr_digits, org, (unsigned int)byte);
+              } else {
+                length = snprintf(buffer, sizeof(buffer), "        ");
               }
+
+              byte_exclamation(buffer, sizeof(buffer), length, byte);
+              printf("%s\n", buffer);
             }
-
-            last_loc = i;
-
-            if (state.format) {
-              length = snprintf(buffer, sizeof(buffer), "%0*x:  %02x  ",
-                                addr_digits, org, (unsigned int)byte);
-            } else {
-              length = snprintf(buffer, sizeof(buffer), "        ");
+            else {
+              last_loc = 0;
             }
-
-            byte_exclamation(buffer, sizeof(buffer), length, byte);
-            printf("%s\n", buffer);
-          }
-          else {
-            last_loc = 0;
           }
 
           insn_size = 1;
         } /* if (state.class == PROC_CLASS_PIC16E) */
         else {
-          if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
-            if (last_loc != (i - insn_size)) {
-              if (first_idlocs) {
-                write_org(org, addr_digits, "idlocs");
-                first_idlocs = false;
+          if (!state.show_config) {
+            if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
+              if (last_loc != (i - insn_size)) {
+                if (first_idlocs) {
+                  write_org(org, addr_digits, "idlocs");
+                  first_idlocs = false;
+                }
+                else {
+                  write_org(org, addr_digits, NULL);
+                }
               }
-              else {
-                write_org(org, addr_digits, NULL);
+
+              last_loc = i;
+
+              if (state.format) {
+                printf("%0*x:  %0*x  ", addr_digits, org, word_digits, (unsigned int)data);
+              } else {
+                printf("        ");
               }
+
+              printf("%-*s0x%0*x\n", TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
             }
-
-            last_loc = i;
-
-            if (state.format) {
-              printf("%0*x:  %0*x  ", addr_digits, org, word_digits, (unsigned int)data);
-            } else {
-              printf("        ");
+            else {
+              last_loc = 0;
             }
-
-            printf("%-*s0x%0*x\n", TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
-          }
-          else {
-            last_loc = 0;
           }
 
           insn_size = 2;
         }
-      } /* if (gp_processor_is_idlocs_addr(state.processor, org)) */
-      else if (gp_processor_is_config_addr(state.processor, org)) {
+      } /* if (gp_processor_is_idlocs_addr(state.processor, org) >= 0) */
+      else if (gp_processor_is_config_addr(state.processor, org) >= 0) {
         /* This is config word/bytes. Not need disassemble. */
         if (state.class == PROC_CLASS_PIC16E) {
           if (!state.show_config) {
@@ -644,8 +790,8 @@ dasm(MemBlock *memory)
 
           insn_size = 2;
         }
-      } /* else if (gp_processor_is_config_addr(state.processor, org)) */
-      else if (gp_processor_is_eeprom_addr(state.processor, org)) {
+      } /* else if (gp_processor_is_config_addr(state.processor, org) >= 0) */
+      else if (gp_processor_is_eeprom_addr(state.processor, org) >= 0) {
         if (b_memory_get(m, i, &byte, NULL, NULL)) {
           if (last_loc != (i - insn_size)) {
             if (first_eeprom) {
@@ -674,7 +820,7 @@ dasm(MemBlock *memory)
         }
 
         insn_size = 1;
-      } /* else if (gp_processor_is_eeprom_addr(state.processor, org)) */
+      } /* else if (gp_processor_is_eeprom_addr(state.processor, org) >= 0) */
       else {
         /* This is program word. */
         if (state.class->i_memory_get(m, i, &data, NULL, &label_name) == W_USED_ALL) {
@@ -744,7 +890,7 @@ show_usage(void)
   printf("  -n, --show-names               For some case of SFR, shows the name of\n"
          "                                 instead of the address. In addition shows\n"
          "                                 the labels also.\n");
-  printf("  -o, --show-config              Show CONFIG directives.\n");
+  printf("  -o, --show-config              Show CONFIG and IDLOCS - or __idlocs - directives.\n");
   printf("  -p PROC, --processor PROC      Select processor.\n");
   printf("  -s, --short                    Print short format.\n");
   printf("  -v, --version                  Show version.\n");

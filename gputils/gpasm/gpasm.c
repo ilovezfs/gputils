@@ -40,7 +40,7 @@ static char *processor_name = NULL;
 int yyparse(void);
 extern int yydebug;
 
-#define GET_OPTIONS "?D:I:a:cCde:ghikl::LmMno:p:qr:uvw:yP:"
+#define GET_OPTIONS "?D:I:a:cCde:fghikl::LmMno:p:qr:uvw:yP:"
 
 enum {
   OPT_MPASM_COMPATIBLE = 0x100
@@ -55,6 +55,7 @@ static struct option longopts[] =
   { "new-coff",         no_argument,       NULL, 'C' },
   { "debug",            no_argument,       NULL, 'd' },
   { "expand",           required_argument, NULL, 'e' },
+  { "full-address",     no_argument,       NULL, 'f' },
   { "debug-info",       no_argument,       NULL, 'g' },
   { "help",             no_argument,       NULL, 'h' },
   { "ignore-case",      no_argument,       NULL, 'i' },
@@ -91,6 +92,7 @@ init(void)
   state.case_insensitive = false;
   state.quiet = false;
   state.use_absolute_path = false;
+  state.show_full_addr = false;
   state.error_level = 0;
   state.debug_info = false;
   state.path_num = 0;
@@ -172,6 +174,7 @@ show_usage(void)
   printf("  -d, --debug                    Output debug messages.\n");
   printf("  -D SYM=VAL, --define SYM=VAL   Define SYM with value VAL.\n");
   printf("  -e [ON|OFF], --expand [ON|OFF] Macro expansion.\n");
+  printf("  -f, --full-address             Show full address in .lst file at the memory map region.\n");
   printf("  -g, --debug-info               Use debug directives for COFF.\n");
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -i, --ignore-case              Case insensitive.\n");
@@ -299,6 +302,10 @@ process_args( int argc, char *argv[])
     case 'e':
       select_expand(optarg);
       state.cmd_line.macro_expand = true;
+      break;
+
+    case 'f':
+      state.show_full_addr = true;
       break;
 
     case 'g':
