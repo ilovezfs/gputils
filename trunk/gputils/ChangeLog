@@ -1,3 +1,9 @@
+2014-07-23  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * include/stdhdr.h, libgputils/gpdis.c:
+    Applied the patch #63:
+    "GCC diagnostic pragma patch for compilers older than gcc 4.6"
+    Thanks to Vikas N Kumar.
+
 2014-07-18  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/gpasm.c, gpasm/gpasm.h.in, gpasm/lst.c:
     A new option: --full-address
@@ -748,12 +754,12 @@
     for configs on odd address
   * gplink/map.c: Symbols - Sorted by Name, Symbols - Sorted by Address
   * gputils/gpvo.c, gputils/dump.c: don't exit if source file not found,
-    don't crash (assert) on bed section number
+    don't crash (assert) on bad section number
 
 2013-05-05  Borut Razem  <borutr@users.sourceforge.net>
   * man/gpasm.1.in, man/fr/gpasm.1.in, gpasm/gpasm.c, doc/gputils.lyx:
     fixed English typos, applied patch
-    #265 French trenslation of gputils/man/fr/gpasm.1.in,
+    #265 French translation of gputils/man/fr/gpasm.1.in,
     thanks to Alain Portal
 
 2013-05-04  Borut Razem  <borutr@users.sourceforge.net>

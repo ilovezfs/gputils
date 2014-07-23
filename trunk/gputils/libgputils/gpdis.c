@@ -93,6 +93,8 @@ gp_boolean gp_decode_extended = false;
 
 /*------------------------------------------------------------------------------------------------*/
 
+GPUTILS_GCC_DIAG_TOP(switch)
+
 int
 gp_disassemble_mark_false_addresses(MemBlock *m, int byte_address, pic_processor_t processor)
 {
@@ -119,8 +121,7 @@ gp_disassemble_mark_false_addresses(MemBlock *m, int byte_address, pic_processor
     return num_words;
   }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
+GPUTILS_GCC_DIAG_OFF(switch)
 
   switch (instruction->class) {
     case INSN_CLASS_LIT20:
@@ -150,7 +151,7 @@ gp_disassemble_mark_false_addresses(MemBlock *m, int byte_address, pic_processor
       break;
     } /* switch (instruction->class) */
 
-#pragma GCC diagnostic pop
+GPUTILS_GCC_DIAG_ON(switch)
 
   return num_words;
 }
@@ -207,8 +208,7 @@ gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t proces
   prog_max_org = (processor->prog_mem_size > 0) ? (processor->prog_mem_size - 1) : 0;
   src_page     = gp_processor_byte_to_org(class, byte_address) & page_mask;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
+GPUTILS_GCC_DIAG_OFF(switch)
 
   switch (instruction->class) {
     case INSN_CLASS_LIT7:
@@ -679,7 +679,7 @@ _class_lit11:
       break;
     } /* switch (instruction->class) */
 
-#pragma GCC diagnostic pop
+GPUTILS_GCC_DIAG_ON(switch)
 
   fstate->wreg         = wreg;
   fstate->pclath       = pclath;
@@ -926,8 +926,7 @@ gp_disassemble_find_registers(MemBlock *m, int byte_address, pic_processor_t pro
     fstate->bank_valid = 0;
   }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
+GPUTILS_GCC_DIAG_OFF(switch)
 
   switch (instruction->class) {
     case INSN_CLASS_LIT3:
@@ -1566,7 +1565,7 @@ _insn_class_pf:
       break;
     } /* switch (instruction->class) */
 
-#pragma GCC diagnostic pop
+GPUTILS_GCC_DIAG_ON(switch)
 
   return num_words;
 }
@@ -1701,8 +1700,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
 
   icode = instruction->icode;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch"
+GPUTILS_GCC_DIAG_OFF(switch)
 
   switch (instruction->class) {
     case INSN_CLASS_LIT3_BANK:
@@ -2681,7 +2679,7 @@ _insn_class_pf:
       assert(0);
     } /* switch (instruction->class) */
 
-#pragma GCC diagnostic pop
+GPUTILS_GCC_DIAG_ON(switch)
 
   return num_words;
 }
