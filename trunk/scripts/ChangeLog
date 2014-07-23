@@ -1,7 +1,10 @@
+2014-07-23  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/device-help.pl: Show the default value of the config bits.
+
 2014-07-16  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/cfg-import.pl: Bugfix and update.
 
-	* tools/device-help.pl: Show the default value of config words.
+	* tools/device-help.pl: Show the default value of the config words.
 
 2014-07-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/device-help.pl: Complemented the shortages of the database.

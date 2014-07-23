@@ -299,9 +299,10 @@ my $pic16e_mcu_number = 0;
                                                      NAME    => 'CCP2 MUX bit',
                                                      OPTIONS => [
                                                                   {
-                                                                  NAME'  => 'OFF',
-                                                                  VALUE' => 0,
-                                                                  EXPL'  => 'CCP2 input/output is multiplexed with RB3'
+                                                                  NAME'   => 'OFF',
+                                                                  VALUE'  => 0,
+                                                                  EXPL'   => 'CCP2 input/output is multiplexed with RB3',
+                                                                  DEFAULT => 0
                                                                   },
 
                                                                   ...
@@ -1542,20 +1543,22 @@ sub add_missing_debug($)
   my $DirRef = $_[0];
   my $sw_ref =
     {
-    HEAD => 'DEBUG',
-    NAME => 'Debugger enable bit',
+    HEAD    => 'DEBUG',
+    NAME    => 'Debugger enable bit',
     OPTIONS => [
-              {
-              NAME  => 'ON',
-              VALUE => 0,
-              EXPL  => 'Background debugger enabled'
-              },
-              {
-              NAME  => 'OFF',
-              VALUE => 0x1000,
-              EXPL  => 'Background debugger disabled'
-              }
-            ],
+                 {
+                 NAME    => 'ON',
+                 VALUE   => 0,
+                 EXPL    => 'Background debugger enabled',
+                 DEFAULT => FALSE
+                 },
+                 {
+                 NAME    => 'OFF',
+                 VALUE   => 0x1000,
+                 EXPL    => 'Background debugger disabled',
+                 DEFAULT => TRUE
+                 }
+               ],
     SW_MASK => 0x1000
     };
 
@@ -1841,7 +1844,9 @@ sub read_device_informations()
               }
 
             @{$directive->{SWITCHES}} = sort {$a->{SW_MASK} <=> $b->{SW_MASK}} @{$directive->{SWITCHES}};
-            $directive->{DIR_MASK} = $directive_mask;
+            $directive->{DIR_MASK}     = $directive_mask;
+            # This an ex post correction which unfortunately sometimes necessary.
+            $directive->{DIR_DEFAULT} &= $directive_mask;
             }
           } # when ('SWITCH_INFO_TYPE')
 
@@ -1857,11 +1862,15 @@ sub read_device_informations()
           die "Too much the number of \"SETTING_VALUE_TYPE\"!\n" if ($option_count <= 0);
           die "There is no actual \"SWITCH_INFO_TYPE\"!\n" if (! defined($switch_info));
 
+          my $value = hex($fields[3]);
+          my $is_default = (($directive->{DIR_DEFAULT} & $switch_info->{SW_MASK}) == $value) ? TRUE : FALSE;
+
           my $option =
             {
-            NAME  => $fields[1],
-            VALUE => hex($fields[3]),
-            EXPL  => (defined($fields[2]) ? $fields[2] : '')
+            NAME    => $fields[1],
+            VALUE   => $value,
+            EXPL    => (defined($fields[2]) ? $fields[2] : ''),
+            DEFAULT => $is_default
             };
 
           push(@{$switch_info->{OPTIONS}}, $option);
@@ -2762,16 +2771,17 @@ sub dump_config_word($$$$$)
 
     foreach (@{$_->{OPTIONS}})
       {
-      my $str  = "$head = $_->{NAME}";
-      my $expl = $_->{EXPL};
+      my $str        = "$head = $_->{NAME}";
+      my $expl       = $_->{EXPL};
+      my $is_default = ($_->{DEFAULT}) ? ' confSwDefault' : '';
 
         # Improve a spelling error: On the end of a sentence a point must be.
       $expl .= '.' if ($expl ne '' && $expl !~ /\.$/o);
 
       aOutl($Align, '<tr>');
-      aOutl($Align + 2, "<td class=\"confSwName\">$str</td>");
-      aOutfl($Align + 2, "<td class=\"confSwValue\">0x%0${Length}X</td>", $_->{VALUE} | $mask);
-      aOutl($Align + 2, "<td class=\"confSwExpl\">$expl</td>");
+      aOutl($Align + 2, "<td class=\"confSwName$is_default\">$str</td>");
+      aOutfl($Align + 2, "<td class=\"confSwValue$is_default\">0x%0${Length}X</td>", $_->{VALUE} | $mask);
+      aOutl($Align + 2, "<td class=\"confSwExpl$is_default\">$expl</td>");
       aOutl($Align, '</tr>');
       }
     }
@@ -2838,7 +2848,7 @@ sub dump_all_config_word($$)
 
     if ($dir_ref->{DIR_MASK} > 0)
       {
-      aOutfl(6, "${head_s}CONFIG ($addr, mask:0x%0${len}X, default:0x%0${len}X)$head_e",
+      aOutfl(6, "${head_s}CONFIG ($addr, mask:0x%0${len}X, <span class=\"confSwDefault\">default:0x%0${len}X</span>)$head_e",
                 $dir_ref->{DIR_MASK}, $dir_ref->{DIR_DEFAULT});
       }
     else
@@ -2869,7 +2879,7 @@ sub dump_all_config_word($$)
           $str = "CONFIG$n$h";
           $sections[$i] = $str;
           aOutl(6, $gap);
-          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X, default:0x%0${len}X)$head_e",
+          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X, <span class=\"confSwDefault\">default:0x%0${len}X</span>)$head_e",
                     $dir_ref->{DIR_ADDR}, $dir_ref->{DIR_MASK}, $dir_ref->{DIR_DEFAULT});
           dump_config_word(6, \@{$dir_ref->{SWITCHES}}, $len, $config_mask, $gap);
           }
@@ -2887,7 +2897,7 @@ sub dump_all_config_word($$)
           $str = "CONFIG$n$h";
           $sections[$i] = $str;
           aOutl(6, $gap);
-          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X, default:0x%0${len}X)$head_e",
+          aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X, <span class=\"confSwDefault\">default:0x%0${len}X</span>)$head_e",
                     $addr, $dir_ref->{DIR_MASK}, $dir_ref->{DIR_DEFAULT});
           dump_config_word(6, \@{$dir_ref->{SWITCHES}}, $len, $config_mask, $gap);
           }
@@ -2903,7 +2913,7 @@ sub dump_all_config_word($$)
         $str = sprintf "CONFIG%u", $i + 1;
         $sections[$i] = $str;
         aOutl(6, $gap);
-        aOutfl(6, "$head_s$str (address:0x%04X, mask:0x%0${len}X, default:0x%0${len}X)$head_e",
+        aOutfl(6, "$head_s$str (address:0x%04X, mask:0x%0${len}X, <span class=\"confSwDefault\">default:0x%0${len}X</span>)$head_e",
                   $dir_ref->{DIR_ADDR}, $dir_ref->{DIR_MASK}, $dir_ref->{DIR_DEFAULT});
         dump_config_word(6, \@{$dir_ref->{SWITCHES}}, $len, $config_mask, $gap);
         }
@@ -4081,6 +4091,11 @@ EOT
 .sfrAddr
   {
   background: #BAE7B8;
+  }
+
+.confSwDefault
+  {
+  background: #E79C96;
   }
 
 /*----------------------------------------------*/
