@@ -1,9 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="author" content="Craig Franklin and Molnár Károly">
     <title>GPUTILS - GNU PIC Utilities</title>
+    <link rel="shortcut icon" href="http://gputils.sourceforge.net/favicon.ico">
     <style type="text/css" media="screen, print, projection">
 html
   {
@@ -178,6 +179,8 @@ tt
 
 .link
   {
+  position: relative;
+  z-index: 0;
   text-decoration: none;
   background-color: #DEF2FF;
   padding: 0 0.2em;
@@ -189,10 +192,11 @@ tt
 
 .link:hover
   {
+  z-index: 1;
   background-color: #B8E3FF;
-     -moz-box-shadow: 0 0 1em #A2BAB9;
-  -webkit-box-shadow: 0 0 1em #A2BAB9;
-          box-shadow: 0 0 1em #A2BAB9;
+     -moz-box-shadow: 0.2em 0.2em 0.8em #505050;
+  -webkit-box-shadow: 0.2em 0.2em 0.8em #505050;
+          box-shadow: 0.2em 0.2em 0.8em #505050;
   }
 
 .link:active
@@ -335,13 +339,43 @@ tt
 	    Users have ported gputils to many other platforms. Some of these binaries are for the old gpasm package.
 	    <ul>
 	      <li class="list2">
-		<a class="link" href="http://www.freebsd.org/cgi/cvsweb.cgi/ports/devel/gputils/">GPUTILS FreeBSD</a>
+		<a class="link" href="http://packages.altlinux.org/en/Sisyphus/srpms/gputils">GPUTILS ALT Linux</a>
+	      </li>
+	      <li class="list2">
+		<a class="link" href="https://www.archlinux.org/packages/community/i686/gputils/">GPUTILS Arch Linux</a>
+	      </li>
+	      <li class="list2">
+		<a class="link" href="http://archlinuxarm.org/packages?arch=&amp;search=gputils">GPUTILS Arch Linux ARM</a>
 	      </li>
 	      <li class="list2">
 		<a class="link" href="http://packages.debian.org/unstable/electronics/gputils">GPUTILS Debian Linux</a>
 	      </li>
 	      <li class="list2">
+		<a class="link" href="https://admin.fedoraproject.org/pkgdb/package/gputils/">GPUTILS Fedora</a>
+	      </li>
+	      <li class="list2">
+		<a class="link" href="http://svnweb.freebsd.org/ports/head/devel/gputils">GPUTILS FreeBSD</a>
+	      </li>
+	      <li class="list2">
+		<a class="link" href="http://packages.gentoo.org/package/dev-embedded/gputils">GPUTILS Gentoo Linux</a>
+	      </li>
+	      <li class="list2">
+		<a class="link" href="http://rudix.org/packages/gputils.html">GPUTILS Mac OS X</a>
+	      </li>
+	      <li class="list2">
+		<a class="link" href="http://ftp.netbsd.org/pub/pkgsrc/current/pkgsrc/devel/gputils/README.html">GPUTILS NetBSD</a>
+	      </li>
+	      <li class="list2">
+		<a class="link" href="http://openports.se/devel/gputils">GPUTILS OpenBSD</a>
+	      </li>
+	      <li class="list2">
+		<a class="link" href="http://www.openmamba.org/distribution/distromatic.html?tag=devel&amp;pkg=gputils.source">GPUTILS openmamba</a>
+	      </li>
+	      <li class="list2">
 		<a class="link" href="http://hobbes.nmsu.edu/h-search.php?key=gputils&amp;pushbutton=Search">GPUTILS OS/2</a>
+	      </li>
+	      <li class="list2">
+		<a class="link" href="http://packages.ubuntu.com/lucid/gputils">GPUTILS Ubuntu Linux</a>
 	      </li>
 	    </ul>
 	    If you have generated a binary of gputils please notify the maintainer of this website,
@@ -472,7 +506,7 @@ tt
 	    <div class="slice">
 	      <a class="link" href="mailto:gnupic@linuxhacker.org">Webmaster</a>
 	    </div>
-	    <div class="slice">Last updated: 2014-05-18</div>
+	    <div class="slice">Last updated: 2014-06-05</div>
 	  </div>
 	</div>
       </div>
