@@ -69,6 +69,19 @@ gp_cfg_find_pic_multi_name(unsigned int Count, const char *const *Pics) {
 
 /*------------------------------------------------------------------------------------------------*/
 
+/* Give the real boundaries of the config address section. */
+
+void
+gp_cfg_real_config_boundaries(const gp_cfg_device_t *Device, int *Address_low, int *Address_high) {
+  const gp_cfg_addr_t *addr;
+
+  addr = Device->addresses;
+  *Address_low  = addr[0].address;
+  *Address_high = addr[Device->address_count - 1].address;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 /* Find a configuration directive in a processor's config db. */
 
 const gp_cfg_directive_t *
@@ -95,6 +108,44 @@ gp_cfg_find_directive(const gp_cfg_device_t *Device, const char *Dname,
   }
 
   return NULL;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Lists in brief all configuration in a processor's config db. */
+
+void
+gp_cfg_brief_all_address(const gp_cfg_device_t *Device, const char *Head, int Addr_digits,
+                         int Word_digits, unsigned int Mask_defaults) {
+  unsigned int i, j, mask, def_value, xinst_mask;
+  const gp_cfg_addr_t *addr;
+  const gp_cfg_directive_t *dir;
+
+  for (i = Device->address_count, addr = Device->addresses; i; ++addr, --i) {
+    mask = 0;
+    xinst_mask = 0;
+    for (j = addr->directive_count, dir = addr->directives; j; ++dir, --j) {
+      mask |= dir->mask;
+
+      if (strcasecmp(dir->name, "XINST") == 0) {
+        xinst_mask = dir->mask;
+      }
+    }
+
+    def_value = addr->def_value;
+
+    if (Mask_defaults) {
+      def_value &= mask;
+    }
+
+    printf("%s0x%0*X 0x%0*X 0x%0*X", Head, Addr_digits, addr->address, Word_digits, mask, Word_digits, def_value);
+
+    if (xinst_mask > 0) {
+      printf(" 0x%0*X", Word_digits, (~xinst_mask) & ((UINT_MAX << (Word_digits * 4)) ^ UINT_MAX));
+    }
+
+    printf("\n");
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/

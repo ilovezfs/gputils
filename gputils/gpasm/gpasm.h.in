@@ -201,7 +201,9 @@ extern struct gpasm_state {
       lineofpage,                   /*   What line are we at within the page */
       page,                         /*   What page are we at */
       linesperpage,                 /*   Lines per page */
-      line_number,                  /*   What line are we at within the file */
+      line_number;                  /*   What line are we at within the file */
+
+    gp_boolean
       memorymap,                    /*   Memory Map dump enabled */
       symboltable;                  /*   Symbol table dump enabled */
 

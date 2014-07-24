@@ -1,3 +1,20 @@
+2014-07-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/gpasm.c, gpasm/processor.c,
+    libgputils/gpcfg.c, libgputils/gpcfg.h, libgputils/gpprocessor.c,
+    libgputils/gpprocessor.h:
+    A new option: -j, --sdcc-dev16-list
+    This help to the extension of the pic16devices.txt file
+    in the sdcc project.
+
+  * gpasm/directive.c:
+    Changed the return type: int off_or_on() ==> gp_boolean off_or_on()
+
+  * gpasm/gpasm.h.in, gpasm/lst.c:
+    Changed type of two global variable: ...memorymap, ...symboltable
+
+  * libgputils/gpcfg-table.c:
+    Shorter names.
+
 2014-07-23  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * include/stdhdr.h, libgputils/gpdis.c:
     Applied the patch #63:

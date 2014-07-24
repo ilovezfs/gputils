@@ -1,5 +1,5 @@
 
-/* This file is generated automatically by the cfg-import.pl 2014-07-16 12:37:56 UTC. */
+/* This file is generated automatically by the cfg-import.pl 2014-07-24 10:01:40 UTC. */
 
 /*  Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
 
@@ -4174,7 +4174,7 @@ static const gp_cfg_option_t *PS500_EBTR23[] = {
   &MCV20USB_CP1_OFF_02
 };
 
-static const gp_cfg_directive_t MCP19110_002007[] = {
+static const gp_cfg_directive_t MCP19110_2007[] = {
   { "WDTE" , 0x0008,  2, MCP19110_WDTE  },
   { "PWRTE", 0x0010,  2, MCP19110_PWRTE },
   { "MCLRE", 0x0020,  2, MCP19110_MCLRE },
@@ -4182,7 +4182,7 @@ static const gp_cfg_directive_t MCP19110_002007[] = {
   { "WRT"  , 0x0C00,  4, MCP19110_WRT   }
 };
 
-static const gp_cfg_directive_t MCP19114_002007[] = {
+static const gp_cfg_directive_t MCP19114_2007[] = {
   { "WDTE" , 0x0008,  2, MCP19110_WDTE  },
   { "PWRTE", 0x0010,  2, MCP19110_PWRTE },
   { "MCLRE", 0x0020,  2, MCP19110_MCLRE },
@@ -4191,12 +4191,12 @@ static const gp_cfg_directive_t MCP19114_002007[] = {
   { "WRT"  , 0x0C00,  4, MCP19110_WRT   }
 };
 
-static const gp_cfg_directive_t MCP25020_002007[] = {
+static const gp_cfg_directive_t MCP25020_2007[] = {
   { "OSC"  , 0x0003,  3, MCP25020_OSC   },
   { "RSTEN", 0x0004,  2, MCP25020_RSTEN }
 };
 
-static const gp_cfg_directive_t MCV08A_000FFF[] = {
+static const gp_cfg_directive_t MCV08A_FFF[] = {
   { "OSC"   , 0x0003,  4, MCV08A_OSC    },
   { "WDT"   , 0x0004,  2, MCV08A_WDT    },
   { "CP"    , 0x0008,  2, MCV08A_CP     },
@@ -4204,7 +4204,7 @@ static const gp_cfg_directive_t MCV08A_000FFF[] = {
   { "IOSCFS", 0x0020,  2, MCV08A_IOSCFS }
 };
 
-static const gp_cfg_directive_t MCV14A_000FFF[] = {
+static const gp_cfg_directive_t MCV14A_FFF[] = {
   { "FOSC"  , 0x0007,  8, MCV14A_FOSC    },
   { "WDTE"  , 0x0008,  2, MCP19110_WDTE  },
   { "CP"    , 0x0010,  2, MCV14A_CP      },
@@ -4213,13 +4213,13 @@ static const gp_cfg_directive_t MCV14A_000FFF[] = {
   { "CPDF"  , 0x0080,  2, MCV14A_CPDF    }
 };
 
-static const gp_cfg_directive_t MCV18A_000FFF[] = {
+static const gp_cfg_directive_t MCV18A_FFF[] = {
   { "OSC", 0x0003,  4, MCV18A_OSC },
   { "WDT", 0x0004,  2, MCV08A_WDT },
   { "CP" , 0x0008,  2, MCV08A_CP  }
 };
 
-static const gp_cfg_directive_t MCV18E_002007[] = {
+static const gp_cfg_directive_t MCV18E_2007[] = {
   { "FOSC"  , 0x0003,  4, MCV18E_FOSC   },
   { "WDTE"  , 0x0004,  2, MCV18E_WDTE   },
   { "PWRTE" , 0x0008,  2, MCV18E_PWRTE  },
@@ -4295,14 +4295,14 @@ static const gp_cfg_directive_t MCV20USB_30000D[] = {
   { "EBTRB", 0x0040,  2, MCV20USB_EBTRB }
 };
 
-static const gp_cfg_directive_t PIC10F200_000FFF[] = {
+static const gp_cfg_directive_t PIC10F200_FFF[] = {
   { "OSC"  , 0x0001,  1, PIC10F200_OSC },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE   },
   { "CP"   , 0x0008,  2, MCV08A_CP     },
   { "MCLRE", 0x0010,  2, MCV08A_MCLRE  }
 };
 
-static const gp_cfg_directive_t PIC10F220_000FFF[] = {
+static const gp_cfg_directive_t PIC10F220_FFF[] = {
   { "IOSCFS", 0x0001,  2, PIC10F220_IOSCFS },
   { "IOFSCS", 0x0001,  2, PIC10F220_IOFSCS },
   { "MCPU"  , 0x0002,  2, PIC10F220_MCPU   },
@@ -4311,7 +4311,7 @@ static const gp_cfg_directive_t PIC10F220_000FFF[] = {
   { "MCLRE" , 0x0010,  2, MCV08A_MCLRE     }
 };
 
-static const gp_cfg_directive_t PIC10F320_002007[] = {
+static const gp_cfg_directive_t PIC10F320_2007[] = {
   { "FOSC" , 0x0001,  2, PIC10F320_FOSC  },
   { "BOREN", 0x0006,  4, PIC10F320_BOREN },
   { "WDTE" , 0x0018,  4, PIC10F320_WDTE  },
@@ -4324,14 +4324,14 @@ static const gp_cfg_directive_t PIC10F320_002007[] = {
   { "WRT"  , 0x1800,  4, PIC10F320_WRT   }
 };
 
-static const gp_cfg_directive_t PIC12C508_000FFF[] = {
+static const gp_cfg_directive_t PIC12C508_FFF[] = {
   { "OSC"  , 0x0003,  4, MCV08A_OSC   },
   { "WDT"  , 0x0004,  2, MCV08A_WDT   },
   { "CP"   , 0x0008,  2, MCV08A_CP    },
   { "MCLRE", 0x0010,  2, MCV08A_MCLRE }
 };
 
-static const gp_cfg_directive_t PIC12C671_002007[] = {
+static const gp_cfg_directive_t PIC12C671_2007[] = {
   { "FOSC" , 0x0007,  7, PIC12C671_FOSC },
   { "WDTE" , 0x0008,  2, MCP19110_WDTE  },
   { "PWRTE", 0x0010,  2, MCP19110_PWRTE },
@@ -4339,7 +4339,7 @@ static const gp_cfg_directive_t PIC12C671_002007[] = {
   { "CP"   , 0x3F60,  4, PIC12C671_CP   }
 };
 
-static const gp_cfg_directive_t PIC12F519_000FFF[] = {
+static const gp_cfg_directive_t PIC12F519_FFF[] = {
   { "FOSC"  , 0x0003,  4, PIC12F519_FOSC   },
   { "WDTE"  , 0x0004,  2, MCV18E_WDTE      },
   { "CP"    , 0x0008,  2, MCV08A_CP        },
@@ -4348,7 +4348,7 @@ static const gp_cfg_directive_t PIC12F519_000FFF[] = {
   { "CPDF"  , 0x0040,  2, PIC12F519_CPDF   }
 };
 
-static const gp_cfg_directive_t PIC12F520_000FFF[] = {
+static const gp_cfg_directive_t PIC12F520_FFF[] = {
   { "OSC"   , 0x0003,  4, PIC12F520_OSC    },
   { "WDT"   , 0x0004,  2, MCV08A_WDT       },
   { "CP"    , 0x0008,  2, MCV08A_CP        },
@@ -4357,7 +4357,7 @@ static const gp_cfg_directive_t PIC12F520_000FFF[] = {
   { "CPDF"  , 0x0040,  2, PIC12F519_CPDF   }
 };
 
-static const gp_cfg_directive_t PIC12F529T39A_000FFF[] = {
+static const gp_cfg_directive_t PIC12F529T39A_FFF[] = {
   { "OSC"   , 0x0003,  4, PIC12F520_OSC        },
   { "WDT"   , 0x0004,  2, MCV08A_WDT           },
   { "PARITY", 0x0008,  2, PIC12F529T39A_PARITY },
@@ -4367,7 +4367,7 @@ static const gp_cfg_directive_t PIC12F529T39A_000FFF[] = {
   { "CP"    , 0x0780,  2, PIC12F529T39A_CP     }
 };
 
-static const gp_cfg_directive_t PIC12F609_002007[] = {
+static const gp_cfg_directive_t PIC12F609_2007[] = {
   { "FOSC"  , 0x0007,  8, PIC12F609_FOSC   },
   { "WDTE"  , 0x0008,  2, MCP19110_WDTE    },
   { "PWRTE" , 0x0010,  2, MCP19110_PWRTE   },
@@ -4377,7 +4377,7 @@ static const gp_cfg_directive_t PIC12F609_002007[] = {
   { "BOREN" , 0x0300,  3, PIC12F609_BOREN  }
 };
 
-static const gp_cfg_directive_t PIC12F617_002007[] = {
+static const gp_cfg_directive_t PIC12F617_2007[] = {
   { "FOSC"  , 0x0007,  8, PIC12F609_FOSC   },
   { "WDTE"  , 0x0008,  2, MCP19110_WDTE    },
   { "PWRTE" , 0x0010,  2, MCP19110_PWRTE   },
@@ -4388,7 +4388,7 @@ static const gp_cfg_directive_t PIC12F617_002007[] = {
   { "WRT"   , 0x0C00,  4, MCP19110_WRT     }
 };
 
-static const gp_cfg_directive_t PIC12F629_002007[] = {
+static const gp_cfg_directive_t PIC12F629_2007[] = {
   { "FOSC" , 0x0007,  8, PIC12F629_FOSC },
   { "WDTE" , 0x0008,  2, MCP19110_WDTE  },
   { "PWRTE", 0x0010,  2, MCP19110_PWRTE },
@@ -4398,7 +4398,7 @@ static const gp_cfg_directive_t PIC12F629_002007[] = {
   { "CPD"  , 0x0100,  2, PIC12F1822_CPD }
 };
 
-static const gp_cfg_directive_t PIC12F635_002007[] = {
+static const gp_cfg_directive_t PIC12F635_2007[] = {
   { "FOSC" , 0x0007,  8, PIC12F609_FOSC  },
   { "WDTE" , 0x0008,  2, MCP19110_WDTE   },
   { "PWRTE", 0x0010,  2, MCP19110_PWRTE  },
@@ -4411,7 +4411,7 @@ static const gp_cfg_directive_t PIC12F635_002007[] = {
   { "WURE" , 0x1000,  2, PIC12F635_WURE  }
 };
 
-static const gp_cfg_directive_t PIC12F683_002007[] = {
+static const gp_cfg_directive_t PIC12F683_2007[] = {
   { "FOSC" , 0x0007,  8, PIC12F609_FOSC  },
   { "WDTE" , 0x0008,  2, MCP19110_WDTE   },
   { "PWRTE", 0x0010,  2, MCP19110_PWRTE  },
@@ -4423,7 +4423,7 @@ static const gp_cfg_directive_t PIC12F683_002007[] = {
   { "FCMEN", 0x0800,  2, PIC12F635_FCMEN }
 };
 
-static const gp_cfg_directive_t PIC12F752_002007[] = {
+static const gp_cfg_directive_t PIC12F752_2007[] = {
   { "FOSC0"   , 0x0001,  2, PIC12F752_FOSC0    },
   { "WDTE"    , 0x0008,  2, MCP19110_WDTE      },
   { "PWRTE"   , 0x0010,  2, MCP19110_PWRTE     },
@@ -4434,7 +4434,7 @@ static const gp_cfg_directive_t PIC12F752_002007[] = {
   { "CLKOUTEN", 0x1000,  2, PIC12F752_CLKOUTEN }
 };
 
-static const gp_cfg_directive_t PIC12F1501_008007[] = {
+static const gp_cfg_directive_t PIC12F1501_8007[] = {
   { "FOSC"    , 0x0003,  4, PIC12F1501_FOSC     },
   { "WDTE"    , 0x0018,  4, PIC10F320_WDTE      },
   { "PWRTE"   , 0x0020,  2, PIC10F320_PWRTE     },
@@ -4444,7 +4444,7 @@ static const gp_cfg_directive_t PIC12F1501_008007[] = {
   { "CLKOUTEN", 0x0800,  2, PIC12F1501_CLKOUTEN }
 };
 
-static const gp_cfg_directive_t PIC12F1501_008008[] = {
+static const gp_cfg_directive_t PIC12F1501_8008[] = {
   { "WRT"   , 0x0003,  4, PIC12F1501_WRT    },
   { "STVREN", 0x0200,  2, PIC12F1501_STVREN },
   { "BORV"  , 0x0400,  2, PIC10F320_BORV    },
@@ -4452,7 +4452,7 @@ static const gp_cfg_directive_t PIC12F1501_008008[] = {
   { "LVP"   , 0x2000,  2, PIC12F1501_LVP    }
 };
 
-static const gp_cfg_directive_t PIC12F1571_008008[] = {
+static const gp_cfg_directive_t PIC12F1571_8008[] = {
   { "WRT"    , 0x0003,  4, PIC12F1501_WRT     },
   { "PLLEN"  , 0x0100,  2, PIC12F1571_PLLEN   },
   { "STVREN" , 0x0200,  2, PIC12F1501_STVREN  },
@@ -4462,7 +4462,7 @@ static const gp_cfg_directive_t PIC12F1571_008008[] = {
   { "LVP"    , 0x2000,  2, PIC12F1501_LVP     }
 };
 
-static const gp_cfg_directive_t PIC12F1612_008007[] = {
+static const gp_cfg_directive_t PIC12F1612_8007[] = {
   { "FOSC"    , 0x0003,  4, PIC12F1501_FOSC     },
   { "PWRTE"   , 0x0020,  2, PIC10F320_PWRTE     },
   { "MCLRE"   , 0x0040,  2, PIC10F320_MCLRE     },
@@ -4471,7 +4471,7 @@ static const gp_cfg_directive_t PIC12F1612_008007[] = {
   { "CLKOUTEN", 0x0800,  2, PIC12F1501_CLKOUTEN }
 };
 
-static const gp_cfg_directive_t PIC12F1612_008008[] = {
+static const gp_cfg_directive_t PIC12F1612_8008[] = {
   { "WRT"   , 0x0003,  4, PIC12F1501_WRT    },
   { "nZCD"  , 0x0080,  2, PIC12F1612_nZCD   },
   { "PLLEN" , 0x0100,  2, PIC12F1571_PLLEN  },
@@ -4482,14 +4482,14 @@ static const gp_cfg_directive_t PIC12F1612_008008[] = {
   { "LVP"   , 0x2000,  2, PIC12F1501_LVP    }
 };
 
-static const gp_cfg_directive_t PIC12F1612_008009[] = {
+static const gp_cfg_directive_t PIC12F1612_8009[] = {
   { "WDTCPS", 0x001F, 20, PIC12F1612_WDTCPS },
   { "WDTE"  , 0x0060,  4, PIC12F1612_WDTE   },
   { "WDTCWS", 0x0700,  8, PIC12F1612_WDTCWS },
   { "WDTCCS", 0x3800,  3, PIC12F1612_WDTCCS }
 };
 
-static const gp_cfg_directive_t PIC12F1822_008007[] = {
+static const gp_cfg_directive_t PIC12F1822_8007[] = {
   { "FOSC"    , 0x0007,  8, PIC12F1822_FOSC     },
   { "WDTE"    , 0x0018,  4, PIC10F320_WDTE      },
   { "PWRTE"   , 0x0020,  2, PIC10F320_PWRTE     },
@@ -4502,7 +4502,7 @@ static const gp_cfg_directive_t PIC12F1822_008007[] = {
   { "FCMEN"   , 0x2000,  2, PIC12F1822_FCMEN    }
 };
 
-static const gp_cfg_directive_t PIC12F1822_008008[] = {
+static const gp_cfg_directive_t PIC12F1822_8008[] = {
   { "WRT"   , 0x0003,  4, PIC12F1501_WRT    },
   { "PLLEN" , 0x0100,  2, PIC12F1571_PLLEN  },
   { "STVREN", 0x0200,  2, PIC12F1501_STVREN },
@@ -4511,20 +4511,20 @@ static const gp_cfg_directive_t PIC12F1822_008008[] = {
   { "LVP"   , 0x2000,  2, PIC12F1501_LVP    }
 };
 
-static const gp_cfg_directive_t PIC16C54C_000FFF[] = {
+static const gp_cfg_directive_t PIC16C54C_FFF[] = {
   { "OSC", 0x0003,  4, MCV18A_OSC   },
   { "WDT", 0x0004,  2, MCV08A_WDT   },
   { "CP" , 0x0FF8,  2, PIC16C54C_CP }
 };
 
-static const gp_cfg_directive_t PIC16C71_002007[] = {
+static const gp_cfg_directive_t PIC16C71_2007[] = {
   { "FOSC" , 0x0003,  4, MCV18E_FOSC    },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE    },
   { "PWRTE", 0x0008,  2, PIC16C71_PWRTE },
   { "CP"   , 0x0010,  2, MCV14A_CP      }
 };
 
-static const gp_cfg_directive_t PIC16C432_002007[] = {
+static const gp_cfg_directive_t PIC16C432_2007[] = {
   { "FOSC" , 0x0003,  4, MCV18E_FOSC  },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE  },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE },
@@ -4532,7 +4532,7 @@ static const gp_cfg_directive_t PIC16C432_002007[] = {
   { "CP"   , 0x3F30,  4, PIC16C432_CP }
 };
 
-static const gp_cfg_directive_t PIC16C433_002007[] = {
+static const gp_cfg_directive_t PIC16C433_2007[] = {
   { "FOSC" , 0x0007,  8, PIC16C433_FOSC },
   { "WDTE" , 0x0008,  2, MCP19110_WDTE  },
   { "PWRTE", 0x0010,  2, MCP19110_PWRTE },
@@ -4540,28 +4540,28 @@ static const gp_cfg_directive_t PIC16C433_002007[] = {
   { "CP"   , 0x3F60,  4, PIC12C671_CP   }
 };
 
-static const gp_cfg_directive_t PIC16C505_000FFF[] = {
+static const gp_cfg_directive_t PIC16C505_FFF[] = {
   { "OSC"  , 0x0007,  7, PIC16C505_OSC  },
   { "WDT"  , 0x0008,  2, PIC16C505_WDT  },
   { "MCLRE", 0x0020,  2, MCP19110_MCLRE },
   { "CP"   , 0x0FD0,  2, PIC16C505_CP   }
 };
 
-static const gp_cfg_directive_t PIC16C554_002007[] = {
+static const gp_cfg_directive_t PIC16C554_2007[] = {
   { "FOSC" , 0x0003,  4, MCV18E_FOSC  },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE  },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE },
   { "CP"   , 0x3F30,  2, PIC16C554_CP }
 };
 
-static const gp_cfg_directive_t PIC16C557_002007[] = {
+static const gp_cfg_directive_t PIC16C557_2007[] = {
   { "FOSC" , 0x0003,  4, MCV18E_FOSC  },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE  },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE },
   { "CP"   , 0x3F30,  4, PIC16C432_CP }
 };
 
-static const gp_cfg_directive_t PIC16C620_002007[] = {
+static const gp_cfg_directive_t PIC16C620_2007[] = {
   { "FOSC" , 0x0003,  4, MCV18E_FOSC  },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE  },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE },
@@ -4569,7 +4569,7 @@ static const gp_cfg_directive_t PIC16C620_002007[] = {
   { "CP"   , 0x3F30,  2, PIC16C554_CP }
 };
 
-static const gp_cfg_directive_t PIC16C621_002007[] = {
+static const gp_cfg_directive_t PIC16C621_2007[] = {
   { "FOSC" , 0x0003,  4, MCV18E_FOSC  },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE  },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE },
@@ -4577,7 +4577,7 @@ static const gp_cfg_directive_t PIC16C621_002007[] = {
   { "CP"   , 0x3F30,  3, PIC16C621_CP }
 };
 
-static const gp_cfg_directive_t PIC16C642_002007[] = {
+static const gp_cfg_directive_t PIC16C642_2007[] = {
   { "FOSC" , 0x0003,  4, MCV18E_FOSC     },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE     },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE    },
@@ -4586,7 +4586,7 @@ static const gp_cfg_directive_t PIC16C642_002007[] = {
   { "CP"   , 0x3F30,  4, PIC16C432_CP    }
 };
 
-static const gp_cfg_directive_t PIC16C710_002007[] = {
+static const gp_cfg_directive_t PIC16C710_2007[] = {
   { "FOSC" , 0x0003,  4, MCV18E_FOSC  },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE  },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE },
@@ -4594,7 +4594,7 @@ static const gp_cfg_directive_t PIC16C710_002007[] = {
   { "CP"   , 0x3FB0,  2, PIC16C710_CP }
 };
 
-static const gp_cfg_directive_t PIC16C717_002007[] = {
+static const gp_cfg_directive_t PIC16C717_2007[] = {
   { "FOSC"  , 0x0007,  8, PIC16C717_FOSC   },
   { "WDTE"  , 0x0008,  2, MCP19110_WDTE    },
   { "PWRTE" , 0x0010,  2, MCP19110_PWRTE   },
@@ -4604,14 +4604,14 @@ static const gp_cfg_directive_t PIC16C717_002007[] = {
   { "CP"    , 0x3300,  2, PIC16C717_CP     }
 };
 
-static const gp_cfg_directive_t PIC16C745_002007[] = {
+static const gp_cfg_directive_t PIC16C745_2007[] = {
   { "FOSC" , 0x0003,  4, PIC16C745_FOSC },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE    },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE   },
   { "CP"   , 0x3F30,  4, PIC16C432_CP   }
 };
 
-static const gp_cfg_directive_t PIC16C773_002007[] = {
+static const gp_cfg_directive_t PIC16C773_2007[] = {
   { "FOSC"  , 0x0003,  4, MCV18E_FOSC      },
   { "WDTE"  , 0x0004,  2, MCV18E_WDTE      },
   { "PWRTE" , 0x0008,  2, MCV18E_PWRTE     },
@@ -4620,7 +4620,7 @@ static const gp_cfg_directive_t PIC16C773_002007[] = {
   { "CP"    , 0x3330,  4, PIC16C773_CP     }
 };
 
-static const gp_cfg_directive_t PIC16C925_002007[] = {
+static const gp_cfg_directive_t PIC16C925_2007[] = {
   { "FOSC" , 0x0003,  4, MCV18E_FOSC  },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE  },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE },
@@ -4628,7 +4628,7 @@ static const gp_cfg_directive_t PIC16C925_002007[] = {
   { "BOREN", 0x0040,  2, MCV18E_BOREN }
 };
 
-static const gp_cfg_directive_t PIC16CR73_002007[] = {
+static const gp_cfg_directive_t PIC16CR73_2007[] = {
   { "FOSC" , 0x0003,  4, MCV18E_FOSC  },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE  },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE },
@@ -4636,7 +4636,7 @@ static const gp_cfg_directive_t PIC16CR73_002007[] = {
   { "BOREN", 0x0040,  2, MCV18E_BOREN }
 };
 
-static const gp_cfg_directive_t PIC16CR83_002007[] = {
+static const gp_cfg_directive_t PIC16CR83_2007[] = {
   { "FOSC" , 0x0003,  4, MCV18E_FOSC  },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE  },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE },
@@ -4644,14 +4644,14 @@ static const gp_cfg_directive_t PIC16CR83_002007[] = {
   { "CP"   , 0x3F70,  2, PIC16CR83_CP }
 };
 
-static const gp_cfg_directive_t PIC16F83_002007[] = {
+static const gp_cfg_directive_t PIC16F83_2007[] = {
   { "FOSC" , 0x0003,  4, PIC16F83_FOSC },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE   },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE  },
   { "CP"   , 0x3FF0,  2, PIC16F83_CP   }
 };
 
-static const gp_cfg_directive_t PIC16F87_002007[] = {
+static const gp_cfg_directive_t PIC16F87_2007[] = {
   { "WDTE" , 0x0004,  2, MCV18E_WDTE     },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE    },
   { "FOSC" , 0x0013,  8, PIC16F737_FOSC  },
@@ -4665,19 +4665,19 @@ static const gp_cfg_directive_t PIC16F87_002007[] = {
   { "CP"   , 0x2000,  2, MCV18E_CP       }
 };
 
-static const gp_cfg_directive_t PIC16F87_002008[] = {
+static const gp_cfg_directive_t PIC16F87_2008[] = {
   { "FCMEN", 0x0001,  2, PIC16F737_FCMEN },
   { "IESO" , 0x0002,  2, PIC16F737_IESO  }
 };
 
-static const gp_cfg_directive_t PIC16F505_000FFF[] = {
+static const gp_cfg_directive_t PIC16F505_FFF[] = {
   { "OSC"  , 0x0007,  8, PIC16F505_OSC  },
   { "WDT"  , 0x0008,  2, PIC16C505_WDT  },
   { "CP"   , 0x0010,  2, MCV14A_CP      },
   { "MCLRE", 0x0020,  2, MCP19110_MCLRE }
 };
 
-static const gp_cfg_directive_t PIC16F506_000FFF[] = {
+static const gp_cfg_directive_t PIC16F506_FFF[] = {
   { "OSC"   , 0x0007,  8, PIC16F505_OSC    },
   { "WDT"   , 0x0008,  2, PIC16C505_WDT    },
   { "CP"    , 0x0010,  2, MCV14A_CP        },
@@ -4685,7 +4685,7 @@ static const gp_cfg_directive_t PIC16F506_000FFF[] = {
   { "IOSCFS", 0x0040,  2, PIC16F506_IOSCFS }
 };
 
-static const gp_cfg_directive_t PIC16F527_000FFF[] = {
+static const gp_cfg_directive_t PIC16F527_FFF[] = {
   { "FOSC"  , 0x0007,  8, PIC16F527_FOSC  },
   { "WDTE"  , 0x0008,  2, MCP19110_WDTE   },
   { "CP"    , 0x0010,  2, MCV14A_CP       },
@@ -4696,7 +4696,7 @@ static const gp_cfg_directive_t PIC16F527_000FFF[] = {
   { "DRTEN" , 0x0200,  2, PIC16F527_DRTEN }
 };
 
-static const gp_cfg_directive_t PIC16F570_000FFF[] = {
+static const gp_cfg_directive_t PIC16F570_FFF[] = {
   { "FOSC"  , 0x0007,  8, PIC16F527_FOSC  },
   { "WDTE"  , 0x0008,  2, MCP19110_WDTE   },
   { "CP"    , 0x0010,  2, MCV14A_CP       },
@@ -4706,7 +4706,7 @@ static const gp_cfg_directive_t PIC16F570_000FFF[] = {
   { "DRTEN" , 0x0200,  2, PIC16F527_DRTEN }
 };
 
-static const gp_cfg_directive_t PIC16F627_002007[] = {
+static const gp_cfg_directive_t PIC16F627_2007[] = {
   { "WDTE" , 0x0004,  2, MCV18E_WDTE    },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE   },
   { "FOSC" , 0x0013,  8, PIC16F627_FOSC },
@@ -4717,7 +4717,7 @@ static const gp_cfg_directive_t PIC16F627_002007[] = {
   { "CP"   , 0x3C00,  4, PIC16F627_CP   }
 };
 
-static const gp_cfg_directive_t PIC16F627A_002007[] = {
+static const gp_cfg_directive_t PIC16F627A_2007[] = {
   { "WDTE" , 0x0004,  2, MCV18E_WDTE     },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE    },
   { "FOSC" , 0x0013,  8, PIC16F627A_FOSC },
@@ -4728,7 +4728,7 @@ static const gp_cfg_directive_t PIC16F627A_002007[] = {
   { "CP"   , 0x2000,  2, MCV18E_CP       }
 };
 
-static const gp_cfg_directive_t PIC16F630_002007[] = {
+static const gp_cfg_directive_t PIC16F630_2007[] = {
   { "FOSC" , 0x0007,  8, PIC12F629_FOSC },
   { "WDTE" , 0x0008,  2, MCP19110_WDTE  },
   { "PWRTE", 0x0010,  2, MCP19110_PWRTE },
@@ -4738,7 +4738,7 @@ static const gp_cfg_directive_t PIC16F630_002007[] = {
   { "CPD"  , 0x0100,  2, PIC12F1822_CPD }
 };
 
-static const gp_cfg_directive_t PIC16F631_002007[] = {
+static const gp_cfg_directive_t PIC16F631_2007[] = {
   { "FOSC" , 0x0007,  8, PIC12F629_FOSC  },
   { "WDTE" , 0x0008,  2, MCP19110_WDTE   },
   { "PWRTE", 0x0010,  2, MCP19110_PWRTE  },
@@ -4750,7 +4750,7 @@ static const gp_cfg_directive_t PIC16F631_002007[] = {
   { "FCMEN", 0x0800,  2, PIC12F635_FCMEN }
 };
 
-static const gp_cfg_directive_t PIC16F707_002007[] = {
+static const gp_cfg_directive_t PIC16F707_2007[] = {
   { "FOSC" , 0x0007,  8, PIC16F707_FOSC  },
   { "WDTE" , 0x0008,  2, MCP19110_WDTE   },
   { "PWRTE", 0x0010,  2, MCP19110_PWRTE  },
@@ -4761,11 +4761,11 @@ static const gp_cfg_directive_t PIC16F707_002007[] = {
   { "PLLEN", 0x1000,  2, PIC16F707_PLLEN }
 };
 
-static const gp_cfg_directive_t PIC16F707_002008[] = {
+static const gp_cfg_directive_t PIC16F707_2008[] = {
   { "VCAPEN", 0x0030,  4, PIC16F1933_VCAPEN }
 };
 
-static const gp_cfg_directive_t PIC16F720_002007[] = {
+static const gp_cfg_directive_t PIC16F720_2007[] = {
   { "FOSC" , 0x0003,  4, PIC16F720_FOSC  },
   { "WDTE" , 0x0008,  2, MCP19110_WDTE   },
   { "PWRTE", 0x0010,  2, MCP19110_PWRTE  },
@@ -4775,11 +4775,11 @@ static const gp_cfg_directive_t PIC16F720_002007[] = {
   { "PLLEN", 0x1000,  2, PIC16F707_PLLEN }
 };
 
-static const gp_cfg_directive_t PIC16F720_002008[] = {
+static const gp_cfg_directive_t PIC16F720_2008[] = {
   { "WRTEN", 0x0003,  4, PIC16F720_WRTEN }
 };
 
-static const gp_cfg_directive_t PIC16F722_002007[] = {
+static const gp_cfg_directive_t PIC16F722_2007[] = {
   { "FOSC" , 0x0007,  8, PIC12F609_FOSC    },
   { "WDTE" , 0x0008,  2, MCP19110_WDTE     },
   { "PWRTE", 0x0010,  2, MCP19110_PWRTE    },
@@ -4791,11 +4791,11 @@ static const gp_cfg_directive_t PIC16F722_002007[] = {
   { "DEBUG", 0x2000,  2, PIC16F18313_DEBUG }
 };
 
-static const gp_cfg_directive_t PIC16F722_002008[] = {
+static const gp_cfg_directive_t PIC16F722_2008[] = {
   { "VCAPEN", 0x0030,  4, PIC16F722_VCAPEN }
 };
 
-static const gp_cfg_directive_t PIC16F737_002007[] = {
+static const gp_cfg_directive_t PIC16F737_2007[] = {
   { "WDTE"  , 0x0004,  2, MCV18E_WDTE      },
   { "PWRTE" , 0x0008,  2, MCV18E_PWRTE     },
   { "FOSC"  , 0x0013,  8, PIC16F737_FOSC   },
@@ -4807,13 +4807,13 @@ static const gp_cfg_directive_t PIC16F737_002007[] = {
   { "CP"    , 0x2000,  2, MCV18E_CP        }
 };
 
-static const gp_cfg_directive_t PIC16F737_002008[] = {
+static const gp_cfg_directive_t PIC16F737_2008[] = {
   { "FCMEN" , 0x0001,  2, PIC16F737_FCMEN  },
   { "IESO"  , 0x0002,  2, PIC16F737_IESO   },
   { "BORSEN", 0x0040,  2, PIC16F737_BORSEN }
 };
 
-static const gp_cfg_directive_t PIC16F818_002007[] = {
+static const gp_cfg_directive_t PIC16F818_2007[] = {
   { "WDTE" , 0x0004,  2, MCV18E_WDTE     },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE    },
   { "FOSC" , 0x0013,  8, PIC16F737_FOSC  },
@@ -4827,7 +4827,7 @@ static const gp_cfg_directive_t PIC16F818_002007[] = {
   { "CP"   , 0x2000,  2, MCV18E_CP       }
 };
 
-static const gp_cfg_directive_t PIC16F819_002007[] = {
+static const gp_cfg_directive_t PIC16F819_2007[] = {
   { "WDTE" , 0x0004,  2, MCV18E_WDTE     },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE    },
   { "FOSC" , 0x0013,  8, PIC16F737_FOSC  },
@@ -4841,7 +4841,7 @@ static const gp_cfg_directive_t PIC16F819_002007[] = {
   { "CP"   , 0x2000,  2, MCV18E_CP       }
 };
 
-static const gp_cfg_directive_t PIC16F870_002007[] = {
+static const gp_cfg_directive_t PIC16F870_2007[] = {
   { "FOSC" , 0x0003,  4, PIC16F83_FOSC   },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE     },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE    },
@@ -4853,7 +4853,7 @@ static const gp_cfg_directive_t PIC16F870_002007[] = {
   { "CP"   , 0x3030,  2, PIC16F870_CP    }
 };
 
-static const gp_cfg_directive_t PIC16F873_002007[] = {
+static const gp_cfg_directive_t PIC16F873_2007[] = {
   { "FOSC" , 0x0003,  4, PIC16F83_FOSC   },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE     },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE    },
@@ -4865,7 +4865,7 @@ static const gp_cfg_directive_t PIC16F873_002007[] = {
   { "CP"   , 0x3030,  4, PIC16F873_CP    }
 };
 
-static const gp_cfg_directive_t PIC16F873A_002007[] = {
+static const gp_cfg_directive_t PIC16F873A_2007[] = {
   { "FOSC" , 0x0003,  4, PIC16F83_FOSC   },
   { "WDTE" , 0x0004,  2, MCV18E_WDTE     },
   { "PWRTE", 0x0008,  2, MCV18E_PWRTE    },
@@ -4877,7 +4877,7 @@ static const gp_cfg_directive_t PIC16F873A_002007[] = {
   { "CP"   , 0x2000,  2, MCV18E_CP       }
 };
 
-static const gp_cfg_directive_t PIC16F882_002007[] = {
+static const gp_cfg_directive_t PIC16F882_2007[] = {
   { "FOSC" , 0x0007,  8, PIC16F882_FOSC    },
   { "WDTE" , 0x0008,  2, MCP19110_WDTE     },
   { "PWRTE", 0x0010,  2, MCP19110_PWRTE    },
@@ -4891,17 +4891,17 @@ static const gp_cfg_directive_t PIC16F882_002007[] = {
   { "DEBUG", 0x2000,  2, PIC16F18313_DEBUG }
 };
 
-static const gp_cfg_directive_t PIC16F882_002008[] = {
+static const gp_cfg_directive_t PIC16F882_2008[] = {
   { "BOR4V", 0x0100,  2, PIC16F882_BOR4V },
   { "WRT"  , 0x0600,  3, PIC16F882_WRT   }
 };
 
-static const gp_cfg_directive_t PIC16F883_002008[] = {
+static const gp_cfg_directive_t PIC16F883_2008[] = {
   { "BOR4V", 0x0100,  2, PIC16F882_BOR4V },
   { "WRT"  , 0x0600,  4, PIC16F873A_WRT  }
 };
 
-static const gp_cfg_directive_t PIC16F913_002007[] = {
+static const gp_cfg_directive_t PIC16F913_2007[] = {
   { "FOSC" , 0x0007,  8, PIC12F609_FOSC   },
   { "WDTE" , 0x0008,  2, MCP19110_WDTE    },
   { "PWRTE", 0x0010,  2, MCP19110_PWRTE   },
@@ -4914,7 +4914,7 @@ static const gp_cfg_directive_t PIC16F913_002007[] = {
   { "DEBUG", 0x1000,  2, PIC12F1571_DEBUG }
 };
 
-static const gp_cfg_directive_t PIC16F1454_008007[] = {
+static const gp_cfg_directive_t PIC16F1454_8007[] = {
   { "FOSC"    , 0x0007,  8, PIC12F1822_FOSC     },
   { "WDTE"    , 0x0018,  4, PIC10F320_WDTE      },
   { "PWRTE"   , 0x0020,  2, PIC10F320_PWRTE     },
@@ -4926,7 +4926,7 @@ static const gp_cfg_directive_t PIC16F1454_008007[] = {
   { "FCMEN"   , 0x2000,  2, PIC12F1822_FCMEN    }
 };
 
-static const gp_cfg_directive_t PIC16F1454_008008[] = {
+static const gp_cfg_directive_t PIC16F1454_8008[] = {
   { "WRT"     , 0x0003,  4, PIC12F1501_WRT      },
   { "CPUDIV"  , 0x0030,  4, PIC16F1454_CPUDIV   },
   { "USBLSCLK", 0x0040,  2, PIC16F1454_USBLSCLK },
@@ -4939,7 +4939,7 @@ static const gp_cfg_directive_t PIC16F1454_008008[] = {
   { "LVP"     , 0x2000,  2, PIC12F1501_LVP      }
 };
 
-static const gp_cfg_directive_t PIC16F1459_008008[] = {
+static const gp_cfg_directive_t PIC16F1459_8008[] = {
   { "WRT"     , 0x0003,  4, PIC12F1501_WRT      },
   { "CPUDIV"  , 0x0030,  4, PIC16F1454_CPUDIV   },
   { "USBLSCLK", 0x0040,  2, PIC16F1454_USBLSCLK },
@@ -4951,7 +4951,7 @@ static const gp_cfg_directive_t PIC16F1459_008008[] = {
   { "LVP"     , 0x2000,  2, PIC12F1501_LVP      }
 };
 
-static const gp_cfg_directive_t PIC16F1508_008008[] = {
+static const gp_cfg_directive_t PIC16F1508_8008[] = {
   { "WRT"   , 0x0003,  4, PIC12F1501_WRT    },
   { "STVREN", 0x0200,  2, PIC12F1501_STVREN },
   { "BORV"  , 0x0400,  2, PIC10F320_BORV    },
@@ -4960,7 +4960,7 @@ static const gp_cfg_directive_t PIC16F1508_008008[] = {
   { "LVP"   , 0x2000,  2, PIC12F1501_LVP    }
 };
 
-static const gp_cfg_directive_t PIC16F1512_008008[] = {
+static const gp_cfg_directive_t PIC16F1512_8008[] = {
   { "WRT"   , 0x0003,  4, PIC12F1501_WRT    },
   { "VCAPEN", 0x0010,  2, PIC16F1512_VCAPEN },
   { "STVREN", 0x0200,  2, PIC12F1501_STVREN },
@@ -4970,7 +4970,7 @@ static const gp_cfg_directive_t PIC16F1512_008008[] = {
   { "LVP"   , 0x2000,  2, PIC12F1501_LVP    }
 };
 
-static const gp_cfg_directive_t PIC16F1703_008008[] = {
+static const gp_cfg_directive_t PIC16F1703_8008[] = {
   { "WRT"    , 0x0003,  4, PIC12F1501_WRT     },
   { "PPS1WAY", 0x0004,  2, PIC16F1703_PPS1WAY },
   { "ZCDDIS" , 0x0080,  2, PIC16F1703_ZCDDIS  },
@@ -4982,7 +4982,7 @@ static const gp_cfg_directive_t PIC16F1703_008008[] = {
   { "LVP"    , 0x2000,  2, PIC12F1501_LVP     }
 };
 
-static const gp_cfg_directive_t PIC16F1782_008008[] = {
+static const gp_cfg_directive_t PIC16F1782_8008[] = {
   { "WRT"   , 0x0003,  4, PIC12F1501_WRT    },
   { "VCAPEN", 0x0020,  2, PIC16F1782_VCAPEN },
   { "PLLEN" , 0x0100,  2, PIC12F1571_PLLEN  },
@@ -4993,7 +4993,7 @@ static const gp_cfg_directive_t PIC16F1782_008008[] = {
   { "LVP"   , 0x2000,  2, PIC12F1501_LVP    }
 };
 
-static const gp_cfg_directive_t PIC16F1933_008008[] = {
+static const gp_cfg_directive_t PIC16F1933_8008[] = {
   { "WRT"   , 0x0003,  4, PIC12F1501_WRT    },
   { "VCAPEN", 0x0030,  4, PIC16F1933_VCAPEN },
   { "PLLEN" , 0x0100,  2, PIC12F1571_PLLEN  },
@@ -5003,7 +5003,7 @@ static const gp_cfg_directive_t PIC16F1933_008008[] = {
   { "LVP"   , 0x2000,  2, PIC12F1501_LVP    }
 };
 
-static const gp_cfg_directive_t PIC16F1946_008008[] = {
+static const gp_cfg_directive_t PIC16F1946_8008[] = {
   { "WRT"   , 0x0003,  4, PIC12F1501_WRT    },
   { "VCAPEN", 0x0010,  2, PIC16F1512_VCAPEN },
   { "PLLEN" , 0x0100,  2, PIC12F1571_PLLEN  },
@@ -5013,7 +5013,7 @@ static const gp_cfg_directive_t PIC16F1946_008008[] = {
   { "LVP"   , 0x2000,  2, PIC12F1501_LVP    }
 };
 
-static const gp_cfg_directive_t PIC16F18313_008007[] = {
+static const gp_cfg_directive_t PIC16F18313_8007[] = {
   { "FEXTOSC" , 0x0007,  8, PIC16F18313_FEXTOSC  },
   { "RSTOSC"  , 0x0070,  8, PIC16F18313_RSTOSC   },
   { "CLKOUTEN", 0x0100,  2, PIC16F18313_CLKOUTEN },
@@ -5021,7 +5021,7 @@ static const gp_cfg_directive_t PIC16F18313_008007[] = {
   { "FCMEN"   , 0x2000,  2, PIC12F1822_FCMEN     }
 };
 
-static const gp_cfg_directive_t PIC16F18313_008008[] = {
+static const gp_cfg_directive_t PIC16F18313_8008[] = {
   { "MCLRE"  , 0x0001,  2, PIC16F18313_MCLRE   },
   { "PWRTE"  , 0x0002,  2, PIC16F18313_PWRTE   },
   { "WDTE"   , 0x000C,  4, PIC16F18313_WDTE    },
@@ -5033,17 +5033,17 @@ static const gp_cfg_directive_t PIC16F18313_008008[] = {
   { "DEBUG"  , 0x2000,  2, PIC16F18313_DEBUG   }
 };
 
-static const gp_cfg_directive_t PIC16F18313_008009[] = {
+static const gp_cfg_directive_t PIC16F18313_8009[] = {
   { "WRT", 0x0003,  4, PIC12F1501_WRT },
   { "LVP", 0x2000,  2, PIC12F1501_LVP }
 };
 
-static const gp_cfg_directive_t PIC16F18313_00800A[] = {
+static const gp_cfg_directive_t PIC16F18313_800A[] = {
   { "CP" , 0x0001,  2, PIC16F18313_CP  },
   { "CPD", 0x0002,  2, PIC16F18313_CPD }
 };
 
-static const gp_cfg_directive_t PIC16LF1782_008008[] = {
+static const gp_cfg_directive_t PIC16LF1782_8008[] = {
   { "WRT"   , 0x0003,  4, PIC12F1501_WRT    },
   { "PLLEN" , 0x0100,  2, PIC12F1571_PLLEN  },
   { "STVREN", 0x0200,  2, PIC12F1501_STVREN },
@@ -5160,33 +5160,33 @@ static const gp_cfg_directive_t PIC18F23K22_300005[] = {
   { "MCLRE" , 0x0080,  2, PIC18F23K22_MCLRE  }
 };
 
-static const gp_cfg_directive_t PIC18F24J10_003FF8[] = {
+static const gp_cfg_directive_t PIC18F24J10_3FF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     },
   { "DEBUG" , 0x0080,  2, MCV20USB_DEBUG     }
 };
 
-static const gp_cfg_directive_t PIC18F24J10_003FF9[] = {
+static const gp_cfg_directive_t PIC18F24J10_3FF9[] = {
   { "CP0", 0x0004,  2, PIC18F24J10_CP0 }
 };
 
-static const gp_cfg_directive_t PIC18F24J10_003FFA[] = {
+static const gp_cfg_directive_t PIC18F24J10_3FFA[] = {
   { "FOSC" , 0x0003,  4, PIC18F24J10_FOSC  },
   { "FOSC2", 0x0004,  2, PIC18F24J10_FOSC2 },
   { "FCMEN", 0x0040,  2, MCV20USB_FCMEN    },
   { "IESO" , 0x0080,  2, MCV20USB_IESO     }
 };
 
-static const gp_cfg_directive_t PIC18F24J10_003FFB[] = {
+static const gp_cfg_directive_t PIC18F24J10_3FFB[] = {
   { "WDTPS", 0x000F, 16, PIC18F24J10_WDTPS }
 };
 
-static const gp_cfg_directive_t PIC18F24J10_003FFD[] = {
+static const gp_cfg_directive_t PIC18F24J10_3FFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX }
 };
 
-static const gp_cfg_directive_t PIC18F24J11_003FFA[] = {
+static const gp_cfg_directive_t PIC18F24J11_3FFA[] = {
   { "OSC"    , 0x0007,  8, PIC18F24J11_OSC     },
   { "T1DIG"  , 0x0008,  2, PIC18F24J11_T1DIG   },
   { "LPT1OSC", 0x0010,  2, PIC18F24J11_LPT1OSC },
@@ -5194,7 +5194,7 @@ static const gp_cfg_directive_t PIC18F24J11_003FFA[] = {
   { "IESO"   , 0x0080,  2, MCV20USB_IESO       }
 };
 
-static const gp_cfg_directive_t PIC18F24J11_003FFC[] = {
+static const gp_cfg_directive_t PIC18F24J11_3FFC[] = {
   { "DSWDTOSC", 0x0001,  2, PIC18F24J11_DSWDTOSC },
   { "RTCOSC"  , 0x0002,  2, PIC18F24J11_RTCOSC   },
   { "DSBOREN" , 0x0004,  2, PIC18F24J11_DSBOREN  },
@@ -5202,22 +5202,22 @@ static const gp_cfg_directive_t PIC18F24J11_003FFC[] = {
   { "DSWDTPS" , 0x00F0, 16, PIC18F24J11_DSWDTPS  }
 };
 
-static const gp_cfg_directive_t PIC18F24J11_003FFD[] = {
+static const gp_cfg_directive_t PIC18F24J11_3FFD[] = {
   { "IOL1WAY"  , 0x0001,  2, PIC18F24J11_IOL1WAY   },
   { "MSSP7B_EN", 0x0008,  2, PIC18F24J11_MSSP7B_EN }
 };
 
-static const gp_cfg_directive_t PIC18F24J11_003FFE[] = {
+static const gp_cfg_directive_t PIC18F24J11_3FFE[] = {
   { "WPFP" , 0x000F, 16, PIC18F24J11_WPFP  },
   { "WPEND", 0x0040,  2, PIC18F24J11_WPEND },
   { "WPCFG", 0x0080,  2, PIC18F24J11_WPCFG }
 };
 
-static const gp_cfg_directive_t PIC18F24J11_003FFF[] = {
+static const gp_cfg_directive_t PIC18F24J11_3FFF[] = {
   { "WPDIS", 0x0001,  2, PIC18F24J11_WPDIS }
 };
 
-static const gp_cfg_directive_t PIC18F24J50_003FF8[] = {
+static const gp_cfg_directive_t PIC18F24J50_3FF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "PLLDIV", 0x000E,  8, PIC18F24J50_PLLDIV },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
@@ -5225,7 +5225,7 @@ static const gp_cfg_directive_t PIC18F24J50_003FF8[] = {
   { "DEBUG" , 0x0080,  2, MCV20USB_DEBUG     }
 };
 
-static const gp_cfg_directive_t PIC18F24J50_003FF9[] = {
+static const gp_cfg_directive_t PIC18F24J50_3FF9[] = {
   { "CPUDIV", 0x0003,  4, PIC18F24J50_CPUDIV },
   { "CP0"   , 0x0004,  2, PIC18F24J10_CP0    }
 };
@@ -5267,33 +5267,33 @@ static const gp_cfg_directive_t PIC18F24K50_300006[] = {
   { "DEBUG" , 0x0080,  2, MCV20USB_DEBUG    }
 };
 
-static const gp_cfg_directive_t PIC18F25J10_007FF8[] = {
+static const gp_cfg_directive_t PIC18F25J10_7FF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     },
   { "DEBUG" , 0x0080,  2, MCV20USB_DEBUG     }
 };
 
-static const gp_cfg_directive_t PIC18F25J10_007FF9[] = {
+static const gp_cfg_directive_t PIC18F25J10_7FF9[] = {
   { "CP0", 0x0004,  2, PIC18F24J10_CP0 }
 };
 
-static const gp_cfg_directive_t PIC18F25J10_007FFA[] = {
+static const gp_cfg_directive_t PIC18F25J10_7FFA[] = {
   { "FOSC" , 0x0003,  4, PIC18F24J10_FOSC  },
   { "FOSC2", 0x0004,  2, PIC18F24J10_FOSC2 },
   { "FCMEN", 0x0040,  2, MCV20USB_FCMEN    },
   { "IESO" , 0x0080,  2, MCV20USB_IESO     }
 };
 
-static const gp_cfg_directive_t PIC18F25J10_007FFB[] = {
+static const gp_cfg_directive_t PIC18F25J10_7FFB[] = {
   { "WDTPS", 0x000F, 16, PIC18F24J10_WDTPS }
 };
 
-static const gp_cfg_directive_t PIC18F25J10_007FFD[] = {
+static const gp_cfg_directive_t PIC18F25J10_7FFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX }
 };
 
-static const gp_cfg_directive_t PIC18F25J11_007FFA[] = {
+static const gp_cfg_directive_t PIC18F25J11_7FFA[] = {
   { "OSC"    , 0x0007,  8, PIC18F24J11_OSC     },
   { "T1DIG"  , 0x0008,  2, PIC18F24J11_T1DIG   },
   { "LPT1OSC", 0x0010,  2, PIC18F24J11_LPT1OSC },
@@ -5301,7 +5301,7 @@ static const gp_cfg_directive_t PIC18F25J11_007FFA[] = {
   { "IESO"   , 0x0080,  2, MCV20USB_IESO       }
 };
 
-static const gp_cfg_directive_t PIC18F25J11_007FFC[] = {
+static const gp_cfg_directive_t PIC18F25J11_7FFC[] = {
   { "DSWDTOSC", 0x0001,  2, PIC18F24J11_DSWDTOSC },
   { "RTCOSC"  , 0x0002,  2, PIC18F24J11_RTCOSC   },
   { "DSBOREN" , 0x0004,  2, PIC18F24J11_DSBOREN  },
@@ -5309,22 +5309,22 @@ static const gp_cfg_directive_t PIC18F25J11_007FFC[] = {
   { "DSWDTPS" , 0x00F0, 16, PIC18F24J11_DSWDTPS  }
 };
 
-static const gp_cfg_directive_t PIC18F25J11_007FFD[] = {
+static const gp_cfg_directive_t PIC18F25J11_7FFD[] = {
   { "IOL1WAY"  , 0x0001,  2, PIC18F24J11_IOL1WAY   },
   { "MSSP7B_EN", 0x0008,  2, PIC18F24J11_MSSP7B_EN }
 };
 
-static const gp_cfg_directive_t PIC18F25J11_007FFE[] = {
+static const gp_cfg_directive_t PIC18F25J11_7FFE[] = {
   { "WPFP" , 0x001F, 32, PIC18F25J11_WPFP  },
   { "WPEND", 0x0040,  2, PIC18F24J11_WPEND },
   { "WPCFG", 0x0080,  2, PIC18F24J11_WPCFG }
 };
 
-static const gp_cfg_directive_t PIC18F25J11_007FFF[] = {
+static const gp_cfg_directive_t PIC18F25J11_7FFF[] = {
   { "WPDIS", 0x0001,  2, PIC18F24J11_WPDIS }
 };
 
-static const gp_cfg_directive_t PIC18F25J50_007FF8[] = {
+static const gp_cfg_directive_t PIC18F25J50_7FF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "PLLDIV", 0x000E,  8, PIC18F24J50_PLLDIV },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
@@ -5332,7 +5332,7 @@ static const gp_cfg_directive_t PIC18F25J50_007FF8[] = {
   { "DEBUG" , 0x0080,  2, MCV20USB_DEBUG     }
 };
 
-static const gp_cfg_directive_t PIC18F25J50_007FF9[] = {
+static const gp_cfg_directive_t PIC18F25J50_7FF9[] = {
   { "CPUDIV", 0x0003,  4, PIC18F24J50_CPUDIV },
   { "CP0"   , 0x0004,  2, PIC18F24J10_CP0    }
 };
@@ -5374,18 +5374,18 @@ static const gp_cfg_directive_t PIC18F25K80_300006[] = {
   { "BBSIZ" , 0x0010,  2, PIC18F25K80_BBSIZ }
 };
 
-static const gp_cfg_directive_t PIC18F26J11_00FFF8[] = {
+static const gp_cfg_directive_t PIC18F26J11_FFF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     },
   { "DEBUG" , 0x0080,  2, MCV20USB_DEBUG     }
 };
 
-static const gp_cfg_directive_t PIC18F26J11_00FFF9[] = {
+static const gp_cfg_directive_t PIC18F26J11_FFF9[] = {
   { "CP0", 0x0004,  2, PIC18F24J10_CP0 }
 };
 
-static const gp_cfg_directive_t PIC18F26J11_00FFFA[] = {
+static const gp_cfg_directive_t PIC18F26J11_FFFA[] = {
   { "OSC"    , 0x0007,  8, PIC18F24J11_OSC     },
   { "T1DIG"  , 0x0008,  2, PIC18F24J11_T1DIG   },
   { "LPT1OSC", 0x0010,  2, PIC18F24J11_LPT1OSC },
@@ -5393,11 +5393,11 @@ static const gp_cfg_directive_t PIC18F26J11_00FFFA[] = {
   { "IESO"   , 0x0080,  2, MCV20USB_IESO       }
 };
 
-static const gp_cfg_directive_t PIC18F26J11_00FFFB[] = {
+static const gp_cfg_directive_t PIC18F26J11_FFFB[] = {
   { "WDTPS", 0x000F, 16, PIC18F24J10_WDTPS }
 };
 
-static const gp_cfg_directive_t PIC18F26J11_00FFFC[] = {
+static const gp_cfg_directive_t PIC18F26J11_FFFC[] = {
   { "DSWDTOSC", 0x0001,  2, PIC18F24J11_DSWDTOSC },
   { "RTCOSC"  , 0x0002,  2, PIC18F24J11_RTCOSC   },
   { "DSBOREN" , 0x0004,  2, PIC18F24J11_DSBOREN  },
@@ -5405,22 +5405,22 @@ static const gp_cfg_directive_t PIC18F26J11_00FFFC[] = {
   { "DSWDTPS" , 0x00F0, 16, PIC18F24J11_DSWDTPS  }
 };
 
-static const gp_cfg_directive_t PIC18F26J11_00FFFD[] = {
+static const gp_cfg_directive_t PIC18F26J11_FFFD[] = {
   { "IOL1WAY"  , 0x0001,  2, PIC18F24J11_IOL1WAY   },
   { "MSSP7B_EN", 0x0008,  2, PIC18F24J11_MSSP7B_EN }
 };
 
-static const gp_cfg_directive_t PIC18F26J11_00FFFE[] = {
+static const gp_cfg_directive_t PIC18F26J11_FFFE[] = {
   { "WPFP" , 0x003F, 64, PIC18F26J11_WPFP  },
   { "WPEND", 0x0040,  2, PIC18F24J11_WPEND },
   { "WPCFG", 0x0080,  2, PIC18F24J11_WPCFG }
 };
 
-static const gp_cfg_directive_t PIC18F26J11_00FFFF[] = {
+static const gp_cfg_directive_t PIC18F26J11_FFFF[] = {
   { "WPDIS", 0x0001,  2, PIC18F24J11_WPDIS }
 };
 
-static const gp_cfg_directive_t PIC18F26J13_00FFF8[] = {
+static const gp_cfg_directive_t PIC18F26J13_FFF8[] = {
   { "WDTEN"   , 0x0001,  2, MCV20USB_WDTEN       },
   { "PLLDIV"  , 0x000E,  8, PIC18F24J50_PLLDIV   },
   { "CFGPLLEN", 0x0010,  2, PIC18F26J13_CFGPLLEN },
@@ -5428,7 +5428,7 @@ static const gp_cfg_directive_t PIC18F26J13_00FFF8[] = {
   { "XINST"   , 0x0040,  2, MCV20USB_XINST       }
 };
 
-static const gp_cfg_directive_t PIC18F26J13_00FFFA[] = {
+static const gp_cfg_directive_t PIC18F26J13_FFFA[] = {
   { "OSC"    , 0x0007,  8, PIC18F24J11_OSC     },
   { "SOSCSEL", 0x0018,  4, PIC18F26J13_SOSCSEL },
   { "CLKOEC" , 0x0020,  2, PIC18F26J13_CLKOEC  },
@@ -5436,24 +5436,24 @@ static const gp_cfg_directive_t PIC18F26J13_00FFFA[] = {
   { "IESO"   , 0x0080,  2, MCV20USB_IESO       }
 };
 
-static const gp_cfg_directive_t PIC18F26J13_00FFFD[] = {
+static const gp_cfg_directive_t PIC18F26J13_FFFD[] = {
   { "IOL1WAY"  , 0x0001,  2, PIC18F24J11_IOL1WAY   },
   { "ADCSEL"   , 0x0002,  2, PIC18F26J13_ADCSEL    },
   { "PLLSEL"   , 0x0004,  2, PIC18F26J13_PLLSEL    },
   { "MSSP7B_EN", 0x0008,  2, PIC18F24J11_MSSP7B_EN }
 };
 
-static const gp_cfg_directive_t PIC18F26J13_00FFFE[] = {
+static const gp_cfg_directive_t PIC18F26J13_FFFE[] = {
   { "WPFP" , 0x003F, 64, PIC18F26J11_WPFP  },
   { "WPCFG", 0x0080,  2, PIC18F24J11_WPCFG }
 };
 
-static const gp_cfg_directive_t PIC18F26J13_00FFFF[] = {
+static const gp_cfg_directive_t PIC18F26J13_FFFF[] = {
   { "WPDIS", 0x0001,  2, PIC18F24J11_WPDIS },
   { "WPEND", 0x0002,  2, PIC18F26J13_WPEND }
 };
 
-static const gp_cfg_directive_t PIC18F26J50_00FFF8[] = {
+static const gp_cfg_directive_t PIC18F26J50_FFF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "PLLDIV", 0x000E,  8, PIC18F24J50_PLLDIV },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
@@ -5461,24 +5461,24 @@ static const gp_cfg_directive_t PIC18F26J50_00FFF8[] = {
   { "DEBUG" , 0x0080,  2, MCV20USB_DEBUG     }
 };
 
-static const gp_cfg_directive_t PIC18F26J50_00FFF9[] = {
+static const gp_cfg_directive_t PIC18F26J50_FFF9[] = {
   { "CPUDIV", 0x0003,  4, PIC18F24J50_CPUDIV },
   { "CP0"   , 0x0004,  2, PIC18F24J10_CP0    }
 };
 
-static const gp_cfg_directive_t PIC18F26J53_00FFFD[] = {
+static const gp_cfg_directive_t PIC18F26J53_FFFD[] = {
   { "IOL1WAY"  , 0x0001,  2, PIC18F24J11_IOL1WAY   },
   { "ADCSEL"   , 0x0002,  2, PIC18F26J13_ADCSEL    },
   { "MSSP7B_EN", 0x0008,  2, PIC18F24J11_MSSP7B_EN }
 };
 
-static const gp_cfg_directive_t PIC18F26J53_00FFFF[] = {
+static const gp_cfg_directive_t PIC18F26J53_FFFF[] = {
   { "WPDIS"  , 0x0001,  2, PIC18F24J11_WPDIS   },
   { "WPEND"  , 0x0002,  2, PIC18F26J13_WPEND   },
   { "LS48MHZ", 0x0008,  2, PIC18F26J53_LS48MHZ }
 };
 
-static const gp_cfg_directive_t PIC18F27J13_01FFF8[] = {
+static const gp_cfg_directive_t PIC18F27J13_1FFF8[] = {
   { "WDTEN"   , 0x0001,  2, MCV20USB_WDTEN       },
   { "PLLDIV"  , 0x000E,  8, PIC18F24J50_PLLDIV   },
   { "CFGPLLEN", 0x0010,  2, PIC18F26J13_CFGPLLEN },
@@ -5486,11 +5486,11 @@ static const gp_cfg_directive_t PIC18F27J13_01FFF8[] = {
   { "XINST"   , 0x0040,  2, MCV20USB_XINST       }
 };
 
-static const gp_cfg_directive_t PIC18F27J13_01FFF9[] = {
+static const gp_cfg_directive_t PIC18F27J13_1FFF9[] = {
   { "CP0", 0x0004,  2, PIC18F24J10_CP0 }
 };
 
-static const gp_cfg_directive_t PIC18F27J13_01FFFA[] = {
+static const gp_cfg_directive_t PIC18F27J13_1FFFA[] = {
   { "OSC"    , 0x0007,  8, PIC18F24J11_OSC     },
   { "SOSCSEL", 0x0018,  4, PIC18F26J13_SOSCSEL },
   { "CLKOEC" , 0x0020,  2, PIC18F26J13_CLKOEC  },
@@ -5498,11 +5498,11 @@ static const gp_cfg_directive_t PIC18F27J13_01FFFA[] = {
   { "IESO"   , 0x0080,  2, MCV20USB_IESO       }
 };
 
-static const gp_cfg_directive_t PIC18F27J13_01FFFB[] = {
+static const gp_cfg_directive_t PIC18F27J13_1FFFB[] = {
   { "WDTPS", 0x000F, 16, PIC18F24J10_WDTPS }
 };
 
-static const gp_cfg_directive_t PIC18F27J13_01FFFC[] = {
+static const gp_cfg_directive_t PIC18F27J13_1FFFC[] = {
   { "DSWDTOSC", 0x0001,  2, PIC18F24J11_DSWDTOSC },
   { "RTCOSC"  , 0x0002,  2, PIC18F24J11_RTCOSC   },
   { "DSBOREN" , 0x0004,  2, PIC18F24J11_DSBOREN  },
@@ -5510,35 +5510,35 @@ static const gp_cfg_directive_t PIC18F27J13_01FFFC[] = {
   { "DSWDTPS" , 0x00F0, 16, PIC18F24J11_DSWDTPS  }
 };
 
-static const gp_cfg_directive_t PIC18F27J13_01FFFD[] = {
+static const gp_cfg_directive_t PIC18F27J13_1FFFD[] = {
   { "IOL1WAY"  , 0x0001,  2, PIC18F24J11_IOL1WAY   },
   { "ADCSEL"   , 0x0002,  2, PIC18F26J13_ADCSEL    },
   { "PLLSEL"   , 0x0004,  2, PIC18F26J13_PLLSEL    },
   { "MSSP7B_EN", 0x0008,  2, PIC18F24J11_MSSP7B_EN }
 };
 
-static const gp_cfg_directive_t PIC18F27J13_01FFFE[] = {
+static const gp_cfg_directive_t PIC18F27J13_1FFFE[] = {
   { "WPFP" , 0x007F, 128, PIC18F27J13_WPFP  },
   { "WPCFG", 0x0080,  2, PIC18F24J11_WPCFG }
 };
 
-static const gp_cfg_directive_t PIC18F27J13_01FFFF[] = {
+static const gp_cfg_directive_t PIC18F27J13_1FFFF[] = {
   { "WPDIS", 0x0001,  2, PIC18F24J11_WPDIS },
   { "WPEND", 0x0002,  2, PIC18F26J13_WPEND }
 };
 
-static const gp_cfg_directive_t PIC18F27J53_01FFF9[] = {
+static const gp_cfg_directive_t PIC18F27J53_1FFF9[] = {
   { "CPUDIV", 0x0003,  4, PIC18F24J50_CPUDIV },
   { "CP0"   , 0x0004,  2, PIC18F24J10_CP0    }
 };
 
-static const gp_cfg_directive_t PIC18F27J53_01FFFD[] = {
+static const gp_cfg_directive_t PIC18F27J53_1FFFD[] = {
   { "IOL1WAY"  , 0x0001,  2, PIC18F24J11_IOL1WAY   },
   { "ADCSEL"   , 0x0002,  2, PIC18F26J13_ADCSEL    },
   { "MSSP7B_EN", 0x0008,  2, PIC18F24J11_MSSP7B_EN }
 };
 
-static const gp_cfg_directive_t PIC18F27J53_01FFFF[] = {
+static const gp_cfg_directive_t PIC18F27J53_1FFFF[] = {
   { "WPDIS"  , 0x0001,  2, PIC18F24J11_WPDIS   },
   { "WPEND"  , 0x0002,  2, PIC18F26J13_WPEND   },
   { "LS48MHZ", 0x0008,  2, PIC18F26J53_LS48MHZ }
@@ -5554,153 +5554,153 @@ static const gp_cfg_directive_t PIC18F43K22_300005[] = {
   { "MCLRE" , 0x0080,  2, PIC18F23K22_MCLRE  }
 };
 
-static const gp_cfg_directive_t PIC18F63J11_001FF8[] = {
+static const gp_cfg_directive_t PIC18F63J11_1FF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     },
   { "DEBUG" , 0x0080,  2, MCV20USB_DEBUG     }
 };
 
-static const gp_cfg_directive_t PIC18F63J11_001FF9[] = {
+static const gp_cfg_directive_t PIC18F63J11_1FF9[] = {
   { "CP0", 0x0004,  2, PIC18F24J10_CP0 }
 };
 
-static const gp_cfg_directive_t PIC18F63J11_001FFA[] = {
+static const gp_cfg_directive_t PIC18F63J11_1FFA[] = {
   { "FOSC" , 0x0003,  4, PIC18F24J10_FOSC  },
   { "FOSC2", 0x0004,  2, PIC18F24J10_FOSC2 },
   { "FCMEN", 0x0040,  2, MCV20USB_FCMEN    },
   { "IESO" , 0x0080,  2, MCV20USB_IESO     }
 };
 
-static const gp_cfg_directive_t PIC18F63J11_001FFB[] = {
+static const gp_cfg_directive_t PIC18F63J11_1FFB[] = {
   { "WDTPS", 0x000F, 16, PIC18F24J10_WDTPS }
 };
 
-static const gp_cfg_directive_t PIC18F63J11_001FFD[] = {
+static const gp_cfg_directive_t PIC18F63J11_1FFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX }
 };
 
-static const gp_cfg_directive_t PIC18F65J10_007FFD[] = {
+static const gp_cfg_directive_t PIC18F65J10_7FFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX }
 };
 
-static const gp_cfg_directive_t PIC18F65J15_00BFF8[] = {
+static const gp_cfg_directive_t PIC18F65J15_BFF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     },
   { "DEBUG" , 0x0080,  2, MCV20USB_DEBUG     }
 };
 
-static const gp_cfg_directive_t PIC18F65J15_00BFF9[] = {
+static const gp_cfg_directive_t PIC18F65J15_BFF9[] = {
   { "CP0", 0x0004,  2, PIC18F24J10_CP0 }
 };
 
-static const gp_cfg_directive_t PIC18F65J15_00BFFA[] = {
+static const gp_cfg_directive_t PIC18F65J15_BFFA[] = {
   { "FOSC" , 0x0003,  4, PIC18F24J10_FOSC  },
   { "FOSC2", 0x0004,  2, PIC18F24J10_FOSC2 },
   { "FCMEN", 0x0040,  2, MCV20USB_FCMEN    },
   { "IESO" , 0x0080,  2, MCV20USB_IESO     }
 };
 
-static const gp_cfg_directive_t PIC18F65J15_00BFFB[] = {
+static const gp_cfg_directive_t PIC18F65J15_BFFB[] = {
   { "WDTPS", 0x000F, 16, PIC18F24J10_WDTPS }
 };
 
-static const gp_cfg_directive_t PIC18F65J15_00BFFD[] = {
+static const gp_cfg_directive_t PIC18F65J15_BFFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX }
 };
 
-static const gp_cfg_directive_t PIC18F65J50_007FFA[] = {
+static const gp_cfg_directive_t PIC18F65J50_7FFA[] = {
   { "FOSC" , 0x0007,  8, PIC18F65J50_FOSC },
   { "FCMEN", 0x0040,  2, MCV20USB_FCMEN   },
   { "IESO" , 0x0080,  2, MCV20USB_IESO    }
 };
 
-static const gp_cfg_directive_t PIC18F65J50_007FFD[] = {
+static const gp_cfg_directive_t PIC18F65J50_7FFD[] = {
   { "CCP2MX" , 0x0001,  2, PIC18F24J10_CCP2MX  },
   { "MSSPMSK", 0x0008,  2, PIC18F25K80_MSSPMSK }
 };
 
-static const gp_cfg_directive_t PIC18F65J90_007FFA[] = {
+static const gp_cfg_directive_t PIC18F65J90_7FFA[] = {
   { "FOSC" , 0x0003,  4, PIC18F24J10_FOSC  },
   { "FOSC2", 0x0004,  2, PIC18F24J10_FOSC2 },
   { "FCMEN", 0x0040,  2, MCV20USB_FCMEN    },
   { "IESO" , 0x0080,  2, MCV20USB_IESO     }
 };
 
-static const gp_cfg_directive_t PIC18F65J94_007FF0[] = {
+static const gp_cfg_directive_t PIC18F65J94_7FF0[] = {
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     }
 };
 
-static const gp_cfg_directive_t PIC18F65J94_007FF1[] = {
+static const gp_cfg_directive_t PIC18F65J94_7FF1[] = {
   { "BOREN", 0x0001,  2, PIC18F65J94_BOREN },
   { "BORV" , 0x0002,  2, PIC18F65J94_BORV  },
   { "CP0"  , 0x0004,  2, PIC18F24J10_CP0   }
 };
 
-static const gp_cfg_directive_t PIC18F65J94_007FF2[] = {
+static const gp_cfg_directive_t PIC18F65J94_7FF2[] = {
   { "FOSC"   , 0x0007,  8, PIC18F65J94_FOSC    },
   { "SOSCSEL", 0x0008,  2, PIC18F65J94_SOSCSEL },
   { "CLKOEN" , 0x0020,  2, PIC18F65J94_CLKOEN  },
   { "IESO"   , 0x0080,  2, MCV20USB_IESO       }
 };
 
-static const gp_cfg_directive_t PIC18F65J94_007FF3[] = {
+static const gp_cfg_directive_t PIC18F65J94_7FF3[] = {
   { "PLLDIV", 0x000F, 16, PIC18F65J94_PLLDIV }
 };
 
-static const gp_cfg_directive_t PIC18F65J94_007FF4[] = {
+static const gp_cfg_directive_t PIC18F65J94_7FF4[] = {
   { "POSCMD", 0x0003,  4, PIC18F65J94_POSCMD },
   { "FSCM"  , 0x0030,  3, PIC18F65J94_FSCM   }
 };
 
-static const gp_cfg_directive_t PIC18F65J94_007FF6[] = {
+static const gp_cfg_directive_t PIC18F65J94_7FF6[] = {
   { "WPFP", 0x00FF, 256, PIC18F65J94_WPFP }
 };
 
-static const gp_cfg_directive_t PIC18F65J94_007FF7[] = {
+static const gp_cfg_directive_t PIC18F65J94_7FF7[] = {
   { "WPDIS", 0x0001,  2, PIC18F65J94_WPDIS },
   { "WPEND", 0x0002,  2, PIC18F65J94_WPEND },
   { "WPCFG", 0x0004,  2, PIC18F65J94_WPCFG }
 };
 
-static const gp_cfg_directive_t PIC18F65J94_007FF8[] = {
+static const gp_cfg_directive_t PIC18F65J94_7FF8[] = {
   { "T5GSEL" , 0x0001,  2, PIC18F65J94_T5GSEL  },
   { "CINASEL", 0x0002,  2, PIC18F65J94_CINASEL }
 };
 
-static const gp_cfg_directive_t PIC18F65J94_007FF9[] = {
+static const gp_cfg_directive_t PIC18F65J94_7FF9[] = {
   { "IOL1WAY" , 0x0001,  2, PIC18F24J11_IOL1WAY  },
   { "LS48MHZ" , 0x0002,  2, PIC18F65J94_LS48MHZ  },
   { "MSSPMSK2", 0x0004,  2, PIC18F65J94_MSSPMSK2 },
   { "MSSPMSK1", 0x0008,  2, PIC18F65J94_MSSPMSK1 }
 };
 
-static const gp_cfg_directive_t PIC18F65J94_007FFA[] = {
+static const gp_cfg_directive_t PIC18F65J94_7FFA[] = {
   { "WDTWIN", 0x0003,  4, PIC18F65J94_WDTWIN },
   { "WDTCLK", 0x000C,  4, PIC18F65J94_WDTCLK },
   { "WDTPS" , 0x00F0, 16, PIC18F65J94_WDTPS  }
 };
 
-static const gp_cfg_directive_t PIC18F65J94_007FFB[] = {
+static const gp_cfg_directive_t PIC18F65J94_7FFB[] = {
   { "WDTEN" , 0x0003,  4, PIC18F25K80_WDTEN  },
   { "WINDIS", 0x0004,  2, PIC18F65J94_WINDIS },
   { "WPSA"  , 0x0008,  2, PIC18F65J94_WPSA   }
 };
 
-static const gp_cfg_directive_t PIC18F65J94_007FFC[] = {
+static const gp_cfg_directive_t PIC18F65J94_7FFC[] = {
   { "RETEN"  , 0x0001,  2, PIC18F25K80_RETEN   },
   { "VBTBOR" , 0x0004,  2, PIC18F65J94_VBTBOR  },
   { "DSBOREN", 0x0008,  2, PIC18F65J94_DSBOREN },
   { "DSBITEN", 0x0010,  2, PIC18F65J94_DSBITEN }
 };
 
-static const gp_cfg_directive_t PIC18F65J94_007FFE[] = {
+static const gp_cfg_directive_t PIC18F65J94_7FFE[] = {
   { "DSWDTPS", 0x00F8, 32, PIC18F65J94_DSWDTPS }
 };
 
-static const gp_cfg_directive_t PIC18F65J94_007FFF[] = {
+static const gp_cfg_directive_t PIC18F65J94_7FFF[] = {
   { "DSWDTEN" , 0x0001,  2, PIC18F65J94_DSWDTEN  },
   { "DSWDTOSC", 0x0002,  2, PIC18F65J94_DSWDTOSC }
 };
@@ -5747,71 +5747,71 @@ static const gp_cfg_directive_t PIC18F65K80_300005[] = {
   { "MCLRE"  , 0x0080,  2, MCV20USB_MCLRE      }
 };
 
-static const gp_cfg_directive_t PIC18F66J10_00FFFA[] = {
+static const gp_cfg_directive_t PIC18F66J10_FFFA[] = {
   { "FOSC" , 0x0003,  4, PIC18F24J10_FOSC  },
   { "FOSC2", 0x0004,  2, PIC18F24J10_FOSC2 },
   { "FCMEN", 0x0040,  2, MCV20USB_FCMEN    },
   { "IESO" , 0x0080,  2, MCV20USB_IESO     }
 };
 
-static const gp_cfg_directive_t PIC18F66J10_00FFFD[] = {
+static const gp_cfg_directive_t PIC18F66J10_FFFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX }
 };
 
-static const gp_cfg_directive_t PIC18F66J11_00FFFA[] = {
+static const gp_cfg_directive_t PIC18F66J11_FFFA[] = {
   { "FOSC" , 0x0007,  8, PIC18F65J50_FOSC },
   { "FCMEN", 0x0040,  2, MCV20USB_FCMEN   },
   { "IESO" , 0x0080,  2, MCV20USB_IESO    }
 };
 
-static const gp_cfg_directive_t PIC18F66J11_00FFFD[] = {
+static const gp_cfg_directive_t PIC18F66J11_FFFD[] = {
   { "CCP2MX" , 0x0001,  2, PIC18F24J10_CCP2MX  },
   { "MSSPMSK", 0x0008,  2, PIC18F25K80_MSSPMSK }
 };
 
-static const gp_cfg_directive_t PIC18F66J15_017FF8[] = {
+static const gp_cfg_directive_t PIC18F66J15_17FF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     },
   { "DEBUG" , 0x0080,  2, MCV20USB_DEBUG     }
 };
 
-static const gp_cfg_directive_t PIC18F66J15_017FF9[] = {
+static const gp_cfg_directive_t PIC18F66J15_17FF9[] = {
   { "CP0", 0x0004,  2, PIC18F24J10_CP0 }
 };
 
-static const gp_cfg_directive_t PIC18F66J15_017FFA[] = {
+static const gp_cfg_directive_t PIC18F66J15_17FFA[] = {
   { "FOSC" , 0x0003,  4, PIC18F24J10_FOSC  },
   { "FOSC2", 0x0004,  2, PIC18F24J10_FOSC2 },
   { "FCMEN", 0x0040,  2, MCV20USB_FCMEN    },
   { "IESO" , 0x0080,  2, MCV20USB_IESO     }
 };
 
-static const gp_cfg_directive_t PIC18F66J15_017FFB[] = {
+static const gp_cfg_directive_t PIC18F66J15_17FFB[] = {
   { "WDTPS", 0x000F, 16, PIC18F24J10_WDTPS }
 };
 
-static const gp_cfg_directive_t PIC18F66J15_017FFD[] = {
+static const gp_cfg_directive_t PIC18F66J15_17FFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX }
 };
 
-static const gp_cfg_directive_t PIC18F66J16_017FFA[] = {
+static const gp_cfg_directive_t PIC18F66J16_17FFA[] = {
   { "FOSC" , 0x0007,  8, PIC18F65J50_FOSC },
   { "FCMEN", 0x0040,  2, MCV20USB_FCMEN   },
   { "IESO" , 0x0080,  2, MCV20USB_IESO    }
 };
 
-static const gp_cfg_directive_t PIC18F66J16_017FFD[] = {
+static const gp_cfg_directive_t PIC18F66J16_17FFD[] = {
   { "CCP2MX" , 0x0001,  2, PIC18F24J10_CCP2MX  },
   { "MSSPMSK", 0x0008,  2, PIC18F25K80_MSSPMSK }
 };
 
-static const gp_cfg_directive_t PIC18F66J50_00FFFD[] = {
+static const gp_cfg_directive_t PIC18F66J50_FFFD[] = {
   { "CCP2MX" , 0x0001,  2, PIC18F24J10_CCP2MX  },
   { "MSSPMSK", 0x0008,  2, PIC18F25K80_MSSPMSK }
 };
 
-static const gp_cfg_directive_t PIC18F66J55_017FF8[] = {
+static const gp_cfg_directive_t PIC18F66J55_17FF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "PLLDIV", 0x000E,  8, PIC18F24J50_PLLDIV },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
@@ -5819,39 +5819,39 @@ static const gp_cfg_directive_t PIC18F66J55_017FF8[] = {
   { "DEBUG" , 0x0080,  2, MCV20USB_DEBUG     }
 };
 
-static const gp_cfg_directive_t PIC18F66J55_017FF9[] = {
+static const gp_cfg_directive_t PIC18F66J55_17FF9[] = {
   { "CPUDIV", 0x0003,  4, PIC18F24J50_CPUDIV },
   { "CP0"   , 0x0004,  2, PIC18F24J10_CP0    }
 };
 
-static const gp_cfg_directive_t PIC18F66J55_017FFD[] = {
+static const gp_cfg_directive_t PIC18F66J55_17FFD[] = {
   { "CCP2MX" , 0x0001,  2, PIC18F24J10_CCP2MX  },
   { "MSSPMSK", 0x0008,  2, PIC18F25K80_MSSPMSK }
 };
 
-static const gp_cfg_directive_t PIC18F66J60_00FFF8[] = {
+static const gp_cfg_directive_t PIC18F66J60_FFF8[] = {
   { "WDT"  , 0x0001,  2, PIC18C242_WDT    },
   { "STVR" , 0x0020,  2, PIC18F66J60_STVR },
   { "XINST", 0x0040,  2, MCV20USB_XINST   },
   { "DEBUG", 0x0080,  2, MCV20USB_DEBUG   }
 };
 
-static const gp_cfg_directive_t PIC18F66J60_00FFFD[] = {
+static const gp_cfg_directive_t PIC18F66J60_FFFD[] = {
   { "ETHLED", 0x0004,  2, PIC18F66J60_ETHLED }
 };
 
-static const gp_cfg_directive_t PIC18F66J65_017FF8[] = {
+static const gp_cfg_directive_t PIC18F66J65_17FF8[] = {
   { "WDT"  , 0x0001,  2, PIC18C242_WDT    },
   { "STVR" , 0x0020,  2, PIC18F66J60_STVR },
   { "XINST", 0x0040,  2, MCV20USB_XINST   },
   { "DEBUG", 0x0080,  2, MCV20USB_DEBUG   }
 };
 
-static const gp_cfg_directive_t PIC18F66J65_017FFD[] = {
+static const gp_cfg_directive_t PIC18F66J65_17FFD[] = {
   { "ETHLED", 0x0004,  2, PIC18F66J60_ETHLED }
 };
 
-static const gp_cfg_directive_t PIC18F66J90_00FFFA[] = {
+static const gp_cfg_directive_t PIC18F66J90_FFFA[] = {
   { "OSC"    , 0x0007,  8, PIC18F66J90_OSC     },
   { "T1DIG"  , 0x0008,  2, PIC18F24J11_T1DIG   },
   { "LPT1OSC", 0x0010,  2, PIC18F24J11_LPT1OSC },
@@ -5859,204 +5859,204 @@ static const gp_cfg_directive_t PIC18F66J90_00FFFA[] = {
   { "IESO"   , 0x0080,  2, MCV20USB_IESO       }
 };
 
-static const gp_cfg_directive_t PIC18F66J90_00FFFC[] = {
+static const gp_cfg_directive_t PIC18F66J90_FFFC[] = {
   { "RTCSOSC", 0x0002,  2, PIC18F66J90_RTCSOSC }
 };
 
-static const gp_cfg_directive_t PIC18F66J90_00FFFD[] = {
+static const gp_cfg_directive_t PIC18F66J90_FFFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX }
 };
 
-static const gp_cfg_directive_t PIC18F66J93_00FFF8[] = {
+static const gp_cfg_directive_t PIC18F66J93_FFF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     }
 };
 
-static const gp_cfg_directive_t PIC18F66J94_00FFF0[] = {
+static const gp_cfg_directive_t PIC18F66J94_FFF0[] = {
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     }
 };
 
-static const gp_cfg_directive_t PIC18F66J94_00FFF1[] = {
+static const gp_cfg_directive_t PIC18F66J94_FFF1[] = {
   { "BOREN", 0x0001,  2, PIC18F65J94_BOREN },
   { "BORV" , 0x0002,  2, PIC18F65J94_BORV  },
   { "CP0"  , 0x0004,  2, PIC18F24J10_CP0   }
 };
 
-static const gp_cfg_directive_t PIC18F66J94_00FFF2[] = {
+static const gp_cfg_directive_t PIC18F66J94_FFF2[] = {
   { "FOSC"   , 0x0007,  8, PIC18F65J94_FOSC    },
   { "SOSCSEL", 0x0008,  2, PIC18F65J94_SOSCSEL },
   { "CLKOEN" , 0x0020,  2, PIC18F65J94_CLKOEN  },
   { "IESO"   , 0x0080,  2, MCV20USB_IESO       }
 };
 
-static const gp_cfg_directive_t PIC18F66J94_00FFF3[] = {
+static const gp_cfg_directive_t PIC18F66J94_FFF3[] = {
   { "PLLDIV", 0x000F, 16, PIC18F65J94_PLLDIV }
 };
 
-static const gp_cfg_directive_t PIC18F66J94_00FFF4[] = {
+static const gp_cfg_directive_t PIC18F66J94_FFF4[] = {
   { "POSCMD", 0x0003,  4, PIC18F65J94_POSCMD },
   { "FSCM"  , 0x0030,  3, PIC18F65J94_FSCM   }
 };
 
-static const gp_cfg_directive_t PIC18F66J94_00FFF6[] = {
+static const gp_cfg_directive_t PIC18F66J94_FFF6[] = {
   { "WPFP", 0x00FF, 256, PIC18F65J94_WPFP }
 };
 
-static const gp_cfg_directive_t PIC18F66J94_00FFF7[] = {
+static const gp_cfg_directive_t PIC18F66J94_FFF7[] = {
   { "WPDIS", 0x0001,  2, PIC18F65J94_WPDIS },
   { "WPEND", 0x0002,  2, PIC18F65J94_WPEND },
   { "WPCFG", 0x0004,  2, PIC18F65J94_WPCFG }
 };
 
-static const gp_cfg_directive_t PIC18F66J94_00FFF8[] = {
+static const gp_cfg_directive_t PIC18F66J94_FFF8[] = {
   { "T5GSEL" , 0x0001,  2, PIC18F65J94_T5GSEL  },
   { "CINASEL", 0x0002,  2, PIC18F65J94_CINASEL }
 };
 
-static const gp_cfg_directive_t PIC18F66J94_00FFF9[] = {
+static const gp_cfg_directive_t PIC18F66J94_FFF9[] = {
   { "IOL1WAY" , 0x0001,  2, PIC18F24J11_IOL1WAY  },
   { "LS48MHZ" , 0x0002,  2, PIC18F65J94_LS48MHZ  },
   { "MSSPMSK2", 0x0004,  2, PIC18F65J94_MSSPMSK2 },
   { "MSSPMSK1", 0x0008,  2, PIC18F65J94_MSSPMSK1 }
 };
 
-static const gp_cfg_directive_t PIC18F66J94_00FFFA[] = {
+static const gp_cfg_directive_t PIC18F66J94_FFFA[] = {
   { "WDTWIN", 0x0003,  4, PIC18F65J94_WDTWIN },
   { "WDTCLK", 0x000C,  4, PIC18F65J94_WDTCLK },
   { "WDTPS" , 0x00F0, 16, PIC18F65J94_WDTPS  }
 };
 
-static const gp_cfg_directive_t PIC18F66J94_00FFFB[] = {
+static const gp_cfg_directive_t PIC18F66J94_FFFB[] = {
   { "WDTEN" , 0x0003,  4, PIC18F25K80_WDTEN  },
   { "WINDIS", 0x0004,  2, PIC18F65J94_WINDIS },
   { "WPSA"  , 0x0008,  2, PIC18F65J94_WPSA   }
 };
 
-static const gp_cfg_directive_t PIC18F66J94_00FFFC[] = {
+static const gp_cfg_directive_t PIC18F66J94_FFFC[] = {
   { "RETEN"  , 0x0001,  2, PIC18F25K80_RETEN   },
   { "VBTBOR" , 0x0004,  2, PIC18F65J94_VBTBOR  },
   { "DSBOREN", 0x0008,  2, PIC18F65J94_DSBOREN },
   { "DSBITEN", 0x0010,  2, PIC18F65J94_DSBITEN }
 };
 
-static const gp_cfg_directive_t PIC18F66J94_00FFFE[] = {
+static const gp_cfg_directive_t PIC18F66J94_FFFE[] = {
   { "DSWDTPS", 0x00F8, 32, PIC18F65J94_DSWDTPS }
 };
 
-static const gp_cfg_directive_t PIC18F66J94_00FFFF[] = {
+static const gp_cfg_directive_t PIC18F66J94_FFFF[] = {
   { "DSWDTEN" , 0x0001,  2, PIC18F65J94_DSWDTEN  },
   { "DSWDTOSC", 0x0002,  2, PIC18F65J94_DSWDTOSC }
 };
 
-static const gp_cfg_directive_t PIC18F66J99_017FF0[] = {
+static const gp_cfg_directive_t PIC18F66J99_17FF0[] = {
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     }
 };
 
-static const gp_cfg_directive_t PIC18F66J99_017FF1[] = {
+static const gp_cfg_directive_t PIC18F66J99_17FF1[] = {
   { "BOREN", 0x0001,  2, PIC18F65J94_BOREN },
   { "BORV" , 0x0002,  2, PIC18F65J94_BORV  },
   { "CP0"  , 0x0004,  2, PIC18F24J10_CP0   }
 };
 
-static const gp_cfg_directive_t PIC18F66J99_017FF2[] = {
+static const gp_cfg_directive_t PIC18F66J99_17FF2[] = {
   { "FOSC"   , 0x0007,  8, PIC18F65J94_FOSC    },
   { "SOSCSEL", 0x0008,  2, PIC18F65J94_SOSCSEL },
   { "CLKOEN" , 0x0020,  2, PIC18F65J94_CLKOEN  },
   { "IESO"   , 0x0080,  2, MCV20USB_IESO       }
 };
 
-static const gp_cfg_directive_t PIC18F66J99_017FF3[] = {
+static const gp_cfg_directive_t PIC18F66J99_17FF3[] = {
   { "PLLDIV", 0x000F, 16, PIC18F65J94_PLLDIV }
 };
 
-static const gp_cfg_directive_t PIC18F66J99_017FF4[] = {
+static const gp_cfg_directive_t PIC18F66J99_17FF4[] = {
   { "POSCMD", 0x0003,  4, PIC18F65J94_POSCMD },
   { "FSCM"  , 0x0030,  3, PIC18F65J94_FSCM   }
 };
 
-static const gp_cfg_directive_t PIC18F66J99_017FF6[] = {
+static const gp_cfg_directive_t PIC18F66J99_17FF6[] = {
   { "WPFP", 0x00FF, 256, PIC18F65J94_WPFP }
 };
 
-static const gp_cfg_directive_t PIC18F66J99_017FF7[] = {
+static const gp_cfg_directive_t PIC18F66J99_17FF7[] = {
   { "WPDIS", 0x0001,  2, PIC18F65J94_WPDIS },
   { "WPEND", 0x0002,  2, PIC18F65J94_WPEND },
   { "WPCFG", 0x0004,  2, PIC18F65J94_WPCFG }
 };
 
-static const gp_cfg_directive_t PIC18F66J99_017FF8[] = {
+static const gp_cfg_directive_t PIC18F66J99_17FF8[] = {
   { "T5GSEL" , 0x0001,  2, PIC18F65J94_T5GSEL  },
   { "CINASEL", 0x0002,  2, PIC18F65J94_CINASEL }
 };
 
-static const gp_cfg_directive_t PIC18F66J99_017FF9[] = {
+static const gp_cfg_directive_t PIC18F66J99_17FF9[] = {
   { "IOL1WAY" , 0x0001,  2, PIC18F24J11_IOL1WAY  },
   { "LS48MHZ" , 0x0002,  2, PIC18F65J94_LS48MHZ  },
   { "MSSPMSK2", 0x0004,  2, PIC18F65J94_MSSPMSK2 },
   { "MSSPMSK1", 0x0008,  2, PIC18F65J94_MSSPMSK1 }
 };
 
-static const gp_cfg_directive_t PIC18F66J99_017FFA[] = {
+static const gp_cfg_directive_t PIC18F66J99_17FFA[] = {
   { "WDTWIN", 0x0003,  4, PIC18F65J94_WDTWIN },
   { "WDTCLK", 0x000C,  4, PIC18F65J94_WDTCLK },
   { "WDTPS" , 0x00F0, 16, PIC18F65J94_WDTPS  }
 };
 
-static const gp_cfg_directive_t PIC18F66J99_017FFB[] = {
+static const gp_cfg_directive_t PIC18F66J99_17FFB[] = {
   { "WDTEN" , 0x0003,  4, PIC18F25K80_WDTEN  },
   { "WINDIS", 0x0004,  2, PIC18F65J94_WINDIS },
   { "WPSA"  , 0x0008,  2, PIC18F65J94_WPSA   }
 };
 
-static const gp_cfg_directive_t PIC18F66J99_017FFC[] = {
+static const gp_cfg_directive_t PIC18F66J99_17FFC[] = {
   { "RETEN"  , 0x0001,  2, PIC18F25K80_RETEN   },
   { "VBTBOR" , 0x0004,  2, PIC18F65J94_VBTBOR  },
   { "DSBOREN", 0x0008,  2, PIC18F65J94_DSBOREN },
   { "DSBITEN", 0x0010,  2, PIC18F65J94_DSBITEN }
 };
 
-static const gp_cfg_directive_t PIC18F66J99_017FFE[] = {
+static const gp_cfg_directive_t PIC18F66J99_17FFE[] = {
   { "DSWDTPS", 0x00F8, 32, PIC18F65J94_DSWDTPS }
 };
 
-static const gp_cfg_directive_t PIC18F66J99_017FFF[] = {
+static const gp_cfg_directive_t PIC18F66J99_17FFF[] = {
   { "DSWDTEN" , 0x0001,  2, PIC18F65J94_DSWDTEN  },
   { "DSWDTOSC", 0x0002,  2, PIC18F65J94_DSWDTOSC }
 };
 
-static const gp_cfg_directive_t PIC18F67J10_01FFF8[] = {
+static const gp_cfg_directive_t PIC18F67J10_1FFF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     },
   { "DEBUG" , 0x0080,  2, MCV20USB_DEBUG     }
 };
 
-static const gp_cfg_directive_t PIC18F67J10_01FFFA[] = {
+static const gp_cfg_directive_t PIC18F67J10_1FFFA[] = {
   { "FOSC" , 0x0003,  4, PIC18F24J10_FOSC  },
   { "FOSC2", 0x0004,  2, PIC18F24J10_FOSC2 },
   { "FCMEN", 0x0040,  2, MCV20USB_FCMEN    },
   { "IESO" , 0x0080,  2, MCV20USB_IESO     }
 };
 
-static const gp_cfg_directive_t PIC18F67J10_01FFFD[] = {
+static const gp_cfg_directive_t PIC18F67J10_1FFFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX }
 };
 
-static const gp_cfg_directive_t PIC18F67J11_01FFFA[] = {
+static const gp_cfg_directive_t PIC18F67J11_1FFFA[] = {
   { "FOSC" , 0x0007,  8, PIC18F65J50_FOSC },
   { "FCMEN", 0x0040,  2, MCV20USB_FCMEN   },
   { "IESO" , 0x0080,  2, MCV20USB_IESO    }
 };
 
-static const gp_cfg_directive_t PIC18F67J11_01FFFD[] = {
+static const gp_cfg_directive_t PIC18F67J11_1FFFD[] = {
   { "CCP2MX" , 0x0001,  2, PIC18F24J10_CCP2MX  },
   { "MSSPMSK", 0x0008,  2, PIC18F25K80_MSSPMSK }
 };
 
-static const gp_cfg_directive_t PIC18F67J50_01FFF8[] = {
+static const gp_cfg_directive_t PIC18F67J50_1FFF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "PLLDIV", 0x000E,  8, PIC18F24J50_PLLDIV },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
@@ -6064,23 +6064,23 @@ static const gp_cfg_directive_t PIC18F67J50_01FFF8[] = {
   { "DEBUG" , 0x0080,  2, MCV20USB_DEBUG     }
 };
 
-static const gp_cfg_directive_t PIC18F67J50_01FFFD[] = {
+static const gp_cfg_directive_t PIC18F67J50_1FFFD[] = {
   { "CCP2MX" , 0x0001,  2, PIC18F24J10_CCP2MX  },
   { "MSSPMSK", 0x0008,  2, PIC18F25K80_MSSPMSK }
 };
 
-static const gp_cfg_directive_t PIC18F67J60_01FFF8[] = {
+static const gp_cfg_directive_t PIC18F67J60_1FFF8[] = {
   { "WDT"  , 0x0001,  2, PIC18C242_WDT    },
   { "STVR" , 0x0020,  2, PIC18F66J60_STVR },
   { "XINST", 0x0040,  2, MCV20USB_XINST   },
   { "DEBUG", 0x0080,  2, MCV20USB_DEBUG   }
 };
 
-static const gp_cfg_directive_t PIC18F67J60_01FFFD[] = {
+static const gp_cfg_directive_t PIC18F67J60_1FFFD[] = {
   { "ETHLED", 0x0004,  2, PIC18F66J60_ETHLED }
 };
 
-static const gp_cfg_directive_t PIC18F67J90_01FFFA[] = {
+static const gp_cfg_directive_t PIC18F67J90_1FFFA[] = {
   { "OSC"    , 0x0007,  8, PIC18F66J90_OSC     },
   { "T1DIG"  , 0x0008,  2, PIC18F24J11_T1DIG   },
   { "LPT1OSC", 0x0010,  2, PIC18F24J11_LPT1OSC },
@@ -6088,93 +6088,93 @@ static const gp_cfg_directive_t PIC18F67J90_01FFFA[] = {
   { "IESO"   , 0x0080,  2, MCV20USB_IESO       }
 };
 
-static const gp_cfg_directive_t PIC18F67J90_01FFFC[] = {
+static const gp_cfg_directive_t PIC18F67J90_1FFFC[] = {
   { "RTCSOSC", 0x0002,  2, PIC18F66J90_RTCSOSC }
 };
 
-static const gp_cfg_directive_t PIC18F67J90_01FFFD[] = {
+static const gp_cfg_directive_t PIC18F67J90_1FFFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX }
 };
 
-static const gp_cfg_directive_t PIC18F67J93_01FFF8[] = {
+static const gp_cfg_directive_t PIC18F67J93_1FFF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     }
 };
 
-static const gp_cfg_directive_t PIC18F67J94_01FFF0[] = {
+static const gp_cfg_directive_t PIC18F67J94_1FFF0[] = {
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     }
 };
 
-static const gp_cfg_directive_t PIC18F67J94_01FFF1[] = {
+static const gp_cfg_directive_t PIC18F67J94_1FFF1[] = {
   { "BOREN", 0x0001,  2, PIC18F65J94_BOREN },
   { "BORV" , 0x0002,  2, PIC18F65J94_BORV  },
   { "CP0"  , 0x0004,  2, PIC18F24J10_CP0   }
 };
 
-static const gp_cfg_directive_t PIC18F67J94_01FFF2[] = {
+static const gp_cfg_directive_t PIC18F67J94_1FFF2[] = {
   { "FOSC"   , 0x0007,  8, PIC18F65J94_FOSC    },
   { "SOSCSEL", 0x0008,  2, PIC18F65J94_SOSCSEL },
   { "CLKOEN" , 0x0020,  2, PIC18F65J94_CLKOEN  },
   { "IESO"   , 0x0080,  2, MCV20USB_IESO       }
 };
 
-static const gp_cfg_directive_t PIC18F67J94_01FFF3[] = {
+static const gp_cfg_directive_t PIC18F67J94_1FFF3[] = {
   { "PLLDIV", 0x000F, 16, PIC18F65J94_PLLDIV }
 };
 
-static const gp_cfg_directive_t PIC18F67J94_01FFF4[] = {
+static const gp_cfg_directive_t PIC18F67J94_1FFF4[] = {
   { "POSCMD", 0x0003,  4, PIC18F65J94_POSCMD },
   { "FSCM"  , 0x0030,  3, PIC18F65J94_FSCM   }
 };
 
-static const gp_cfg_directive_t PIC18F67J94_01FFF6[] = {
+static const gp_cfg_directive_t PIC18F67J94_1FFF6[] = {
   { "WPFP", 0x00FF, 256, PIC18F65J94_WPFP }
 };
 
-static const gp_cfg_directive_t PIC18F67J94_01FFF7[] = {
+static const gp_cfg_directive_t PIC18F67J94_1FFF7[] = {
   { "WPDIS", 0x0001,  2, PIC18F65J94_WPDIS },
   { "WPEND", 0x0002,  2, PIC18F65J94_WPEND },
   { "WPCFG", 0x0004,  2, PIC18F65J94_WPCFG }
 };
 
-static const gp_cfg_directive_t PIC18F67J94_01FFF8[] = {
+static const gp_cfg_directive_t PIC18F67J94_1FFF8[] = {
   { "T5GSEL" , 0x0001,  2, PIC18F65J94_T5GSEL  },
   { "CINASEL", 0x0002,  2, PIC18F65J94_CINASEL }
 };
 
-static const gp_cfg_directive_t PIC18F67J94_01FFF9[] = {
+static const gp_cfg_directive_t PIC18F67J94_1FFF9[] = {
   { "IOL1WAY" , 0x0001,  2, PIC18F24J11_IOL1WAY  },
   { "LS48MHZ" , 0x0002,  2, PIC18F65J94_LS48MHZ  },
   { "MSSPMSK2", 0x0004,  2, PIC18F65J94_MSSPMSK2 },
   { "MSSPMSK1", 0x0008,  2, PIC18F65J94_MSSPMSK1 }
 };
 
-static const gp_cfg_directive_t PIC18F67J94_01FFFA[] = {
+static const gp_cfg_directive_t PIC18F67J94_1FFFA[] = {
   { "WDTWIN", 0x0003,  4, PIC18F65J94_WDTWIN },
   { "WDTCLK", 0x000C,  4, PIC18F65J94_WDTCLK },
   { "WDTPS" , 0x00F0, 16, PIC18F65J94_WDTPS  }
 };
 
-static const gp_cfg_directive_t PIC18F67J94_01FFFB[] = {
+static const gp_cfg_directive_t PIC18F67J94_1FFFB[] = {
   { "WDTEN" , 0x0003,  4, PIC18F25K80_WDTEN  },
   { "WINDIS", 0x0004,  2, PIC18F65J94_WINDIS },
   { "WPSA"  , 0x0008,  2, PIC18F65J94_WPSA   }
 };
 
-static const gp_cfg_directive_t PIC18F67J94_01FFFC[] = {
+static const gp_cfg_directive_t PIC18F67J94_1FFFC[] = {
   { "RETEN"  , 0x0001,  2, PIC18F25K80_RETEN   },
   { "VBTBOR" , 0x0004,  2, PIC18F65J94_VBTBOR  },
   { "DSBOREN", 0x0008,  2, PIC18F65J94_DSBOREN },
   { "DSBITEN", 0x0010,  2, PIC18F65J94_DSBITEN }
 };
 
-static const gp_cfg_directive_t PIC18F67J94_01FFFE[] = {
+static const gp_cfg_directive_t PIC18F67J94_1FFFE[] = {
   { "DSWDTPS", 0x00F8, 32, PIC18F65J94_DSWDTPS }
 };
 
-static const gp_cfg_directive_t PIC18F67J94_01FFFF[] = {
+static const gp_cfg_directive_t PIC18F67J94_1FFFF[] = {
   { "DSWDTEN" , 0x0001,  2, PIC18F65J94_DSWDTEN  },
   { "DSWDTOSC", 0x0002,  2, PIC18F65J94_DSWDTOSC }
 };
@@ -6190,52 +6190,52 @@ static const gp_cfg_directive_t PIC18F67K22_30000C[] = {
   { "EBRT7", 0x0080,  2, PIC18F67K22_EBRT7 }
 };
 
-static const gp_cfg_directive_t PIC18F83J11_001FFC[] = {
+static const gp_cfg_directive_t PIC18F83J11_1FFC[] = {
   { "EASHFT", 0x0008,  2, PIC18F83J11_EASHFT },
   { "MODE"  , 0x0030,  4, PIC18F83J11_MODE   },
   { "BW"    , 0x0040,  2, PIC18C601_BW       },
   { "WAIT"  , 0x0080,  2, PIC18F8310_WAIT    }
 };
 
-static const gp_cfg_directive_t PIC18F84J11_003FFC[] = {
+static const gp_cfg_directive_t PIC18F84J11_3FFC[] = {
   { "EASHFT", 0x0008,  2, PIC18F83J11_EASHFT },
   { "MODE"  , 0x0030,  4, PIC18F83J11_MODE   },
   { "BW"    , 0x0040,  2, PIC18C601_BW       },
   { "WAIT"  , 0x0080,  2, PIC18F8310_WAIT    }
 };
 
-static const gp_cfg_directive_t PIC18F85J10_007FFC[] = {
+static const gp_cfg_directive_t PIC18F85J10_7FFC[] = {
   { "EASHFT", 0x0008,  2, PIC18F83J11_EASHFT },
   { "MODE"  , 0x0030,  4, PIC18F83J11_MODE   },
   { "BW"    , 0x0040,  2, PIC18C601_BW       },
   { "WAIT"  , 0x0080,  2, PIC18F8310_WAIT    }
 };
 
-static const gp_cfg_directive_t PIC18F85J10_007FFD[] = {
+static const gp_cfg_directive_t PIC18F85J10_7FFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX },
   { "ECCPMX", 0x0002,  2, PIC18F85J10_ECCPMX }
 };
 
-static const gp_cfg_directive_t PIC18F85J15_00BFFC[] = {
+static const gp_cfg_directive_t PIC18F85J15_BFFC[] = {
   { "EASHFT", 0x0008,  2, PIC18F83J11_EASHFT },
   { "MODE"  , 0x0030,  4, PIC18F83J11_MODE   },
   { "BW"    , 0x0040,  2, PIC18C601_BW       },
   { "WAIT"  , 0x0080,  2, PIC18F8310_WAIT    }
 };
 
-static const gp_cfg_directive_t PIC18F85J15_00BFFD[] = {
+static const gp_cfg_directive_t PIC18F85J15_BFFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX },
   { "ECCPMX", 0x0002,  2, PIC18F85J10_ECCPMX }
 };
 
-static const gp_cfg_directive_t PIC18F85J50_007FFD[] = {
+static const gp_cfg_directive_t PIC18F85J50_7FFD[] = {
   { "CCP2MX" , 0x0001,  2, PIC18F24J10_CCP2MX  },
   { "ECCPMX" , 0x0002,  2, PIC18F85J10_ECCPMX  },
   { "PMPMX"  , 0x0004,  2, PIC18F85J50_PMPMX   },
   { "MSSPMSK", 0x0008,  2, PIC18F25K80_MSSPMSK }
 };
 
-static const gp_cfg_directive_t PIC18F85J94_007FF8[] = {
+static const gp_cfg_directive_t PIC18F85J94_7FF8[] = {
   { "T5GSEL" , 0x0001,  2, PIC18F65J94_T5GSEL  },
   { "CINASEL", 0x0002,  2, PIC18F65J94_CINASEL },
   { "EASHFT" , 0x0008,  2, PIC18F83J11_EASHFT  },
@@ -6259,61 +6259,61 @@ static const gp_cfg_directive_t PIC18F85K22_300005[] = {
   { "MCLRE"  , 0x0080,  2, MCV20USB_MCLRE      }
 };
 
-static const gp_cfg_directive_t PIC18F86J10_00FFFC[] = {
+static const gp_cfg_directive_t PIC18F86J10_FFFC[] = {
   { "EASHFT", 0x0008,  2, PIC18F83J11_EASHFT },
   { "MODE"  , 0x0030,  4, PIC18F83J11_MODE   },
   { "BW"    , 0x0040,  2, PIC18C601_BW       },
   { "WAIT"  , 0x0080,  2, PIC18F8310_WAIT    }
 };
 
-static const gp_cfg_directive_t PIC18F86J10_00FFFD[] = {
+static const gp_cfg_directive_t PIC18F86J10_FFFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX },
   { "ECCPMX", 0x0002,  2, PIC18F85J10_ECCPMX }
 };
 
-static const gp_cfg_directive_t PIC18F86J11_00FFFD[] = {
+static const gp_cfg_directive_t PIC18F86J11_FFFD[] = {
   { "CCP2MX" , 0x0001,  2, PIC18F24J10_CCP2MX  },
   { "ECCPMX" , 0x0002,  2, PIC18F85J10_ECCPMX  },
   { "PMPMX"  , 0x0004,  2, PIC18F85J50_PMPMX   },
   { "MSSPMSK", 0x0008,  2, PIC18F25K80_MSSPMSK }
 };
 
-static const gp_cfg_directive_t PIC18F86J15_017FFC[] = {
+static const gp_cfg_directive_t PIC18F86J15_17FFC[] = {
   { "EASHFT", 0x0008,  2, PIC18F83J11_EASHFT },
   { "MODE"  , 0x0030,  4, PIC18F83J11_MODE   },
   { "BW"    , 0x0040,  2, PIC18C601_BW       },
   { "WAIT"  , 0x0080,  2, PIC18F8310_WAIT    }
 };
 
-static const gp_cfg_directive_t PIC18F86J15_017FFD[] = {
+static const gp_cfg_directive_t PIC18F86J15_17FFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX },
   { "ECCPMX", 0x0002,  2, PIC18F85J10_ECCPMX }
 };
 
-static const gp_cfg_directive_t PIC18F86J16_017FFD[] = {
+static const gp_cfg_directive_t PIC18F86J16_17FFD[] = {
   { "CCP2MX" , 0x0001,  2, PIC18F24J10_CCP2MX  },
   { "ECCPMX" , 0x0002,  2, PIC18F85J10_ECCPMX  },
   { "PMPMX"  , 0x0004,  2, PIC18F85J50_PMPMX   },
   { "MSSPMSK", 0x0008,  2, PIC18F25K80_MSSPMSK }
 };
 
-static const gp_cfg_directive_t PIC18F86J60_00FFFD[] = {
+static const gp_cfg_directive_t PIC18F86J60_FFFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18C452_CCP2MX   },
   { "ECCPMX", 0x0002,  2, PIC18F86J60_ECCPMX },
   { "ETHLED", 0x0004,  2, PIC18F66J60_ETHLED }
 };
 
-static const gp_cfg_directive_t PIC18F86J65_017FFD[] = {
+static const gp_cfg_directive_t PIC18F86J65_17FFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18C452_CCP2MX   },
   { "ECCPMX", 0x0002,  2, PIC18F86J60_ECCPMX },
   { "ETHLED", 0x0004,  2, PIC18F66J60_ETHLED }
 };
 
-static const gp_cfg_directive_t PIC18F86J90_00FFFC[] = {
+static const gp_cfg_directive_t PIC18F86J90_FFFC[] = {
   { "RTCSOSC", 0x0002,  2, PIC18F66J90_RTCSOSC }
 };
 
-static const gp_cfg_directive_t PIC18F86J94_00FFF8[] = {
+static const gp_cfg_directive_t PIC18F86J94_FFF8[] = {
   { "T5GSEL" , 0x0001,  2, PIC18F65J94_T5GSEL  },
   { "CINASEL", 0x0002,  2, PIC18F65J94_CINASEL },
   { "EASHFT" , 0x0008,  2, PIC18F83J11_EASHFT  },
@@ -6322,7 +6322,7 @@ static const gp_cfg_directive_t PIC18F86J94_00FFF8[] = {
   { "WAIT"   , 0x0080,  2, PIC18F8310_WAIT     }
 };
 
-static const gp_cfg_directive_t PIC18F86J99_017FF8[] = {
+static const gp_cfg_directive_t PIC18F86J99_17FF8[] = {
   { "T5GSEL" , 0x0001,  2, PIC18F65J94_T5GSEL  },
   { "CINASEL", 0x0002,  2, PIC18F65J94_CINASEL },
   { "EASHFT" , 0x0008,  2, PIC18F83J11_EASHFT  },
@@ -6331,36 +6331,36 @@ static const gp_cfg_directive_t PIC18F86J99_017FF8[] = {
   { "WAIT"   , 0x0080,  2, PIC18F8310_WAIT     }
 };
 
-static const gp_cfg_directive_t PIC18F87J10_01FFFC[] = {
+static const gp_cfg_directive_t PIC18F87J10_1FFFC[] = {
   { "EASHFT", 0x0008,  2, PIC18F83J11_EASHFT },
   { "MODE"  , 0x0030,  4, PIC18F83J11_MODE   },
   { "BW"    , 0x0040,  2, PIC18C601_BW       },
   { "WAIT"  , 0x0080,  2, PIC18F8310_WAIT    }
 };
 
-static const gp_cfg_directive_t PIC18F87J10_01FFFD[] = {
+static const gp_cfg_directive_t PIC18F87J10_1FFFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX },
   { "ECCPMX", 0x0002,  2, PIC18F85J10_ECCPMX }
 };
 
-static const gp_cfg_directive_t PIC18F87J11_01FFFD[] = {
+static const gp_cfg_directive_t PIC18F87J11_1FFFD[] = {
   { "CCP2MX" , 0x0001,  2, PIC18F24J10_CCP2MX  },
   { "ECCPMX" , 0x0002,  2, PIC18F85J10_ECCPMX  },
   { "PMPMX"  , 0x0004,  2, PIC18F85J50_PMPMX   },
   { "MSSPMSK", 0x0008,  2, PIC18F25K80_MSSPMSK }
 };
 
-static const gp_cfg_directive_t PIC18F87J60_01FFFD[] = {
+static const gp_cfg_directive_t PIC18F87J60_1FFFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18C452_CCP2MX   },
   { "ECCPMX", 0x0002,  2, PIC18F86J60_ECCPMX },
   { "ETHLED", 0x0004,  2, PIC18F66J60_ETHLED }
 };
 
-static const gp_cfg_directive_t PIC18F87J90_01FFFC[] = {
+static const gp_cfg_directive_t PIC18F87J90_1FFFC[] = {
   { "RTCSOSC", 0x0002,  2, PIC18F66J90_RTCSOSC }
 };
 
-static const gp_cfg_directive_t PIC18F87J94_01FFF8[] = {
+static const gp_cfg_directive_t PIC18F87J94_1FFF8[] = {
   { "T5GSEL" , 0x0001,  2, PIC18F65J94_T5GSEL  },
   { "CINASEL", 0x0002,  2, PIC18F65J94_CINASEL },
   { "EASHFT" , 0x0008,  2, PIC18F83J11_EASHFT  },
@@ -6960,58 +6960,58 @@ static const gp_cfg_directive_t PIC18F8585_300005[] = {
   { "MCLRE" , 0x0080,  2, MCV20USB_MCLRE    }
 };
 
-static const gp_cfg_directive_t PIC18LF24J10_003FF8[] = {
+static const gp_cfg_directive_t PIC18LF24J10_3FF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     },
   { "DEBUG" , 0x0080,  2, MCV20USB_DEBUG     }
 };
 
-static const gp_cfg_directive_t PIC18LF24J10_003FF9[] = {
+static const gp_cfg_directive_t PIC18LF24J10_3FF9[] = {
   { "CP0", 0x0004,  2, PIC18F24J10_CP0 }
 };
 
-static const gp_cfg_directive_t PIC18LF24J10_003FFA[] = {
+static const gp_cfg_directive_t PIC18LF24J10_3FFA[] = {
   { "FOSC" , 0x0003,  4, PIC18F24J10_FOSC  },
   { "FOSC2", 0x0004,  2, PIC18F24J10_FOSC2 },
   { "FCMEN", 0x0040,  2, MCV20USB_FCMEN    },
   { "IESO" , 0x0080,  2, MCV20USB_IESO     }
 };
 
-static const gp_cfg_directive_t PIC18LF24J10_003FFD[] = {
+static const gp_cfg_directive_t PIC18LF24J10_3FFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX }
 };
 
-static const gp_cfg_directive_t PIC18LF24J50_003FF8[] = {
+static const gp_cfg_directive_t PIC18LF24J50_3FF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "PLLDIV", 0x000E,  8, PIC18F24J50_PLLDIV },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     }
 };
 
-static const gp_cfg_directive_t PIC18LF25J10_007FF8[] = {
+static const gp_cfg_directive_t PIC18LF25J10_7FF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     },
   { "DEBUG" , 0x0080,  2, MCV20USB_DEBUG     }
 };
 
-static const gp_cfg_directive_t PIC18LF25J10_007FF9[] = {
+static const gp_cfg_directive_t PIC18LF25J10_7FF9[] = {
   { "CP0", 0x0004,  2, PIC18F24J10_CP0 }
 };
 
-static const gp_cfg_directive_t PIC18LF25J10_007FFD[] = {
+static const gp_cfg_directive_t PIC18LF25J10_7FFD[] = {
   { "CCP2MX", 0x0001,  2, PIC18F24J10_CCP2MX }
 };
 
-static const gp_cfg_directive_t PIC18LF25J50_007FF8[] = {
+static const gp_cfg_directive_t PIC18LF25J50_7FF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "PLLDIV", 0x000E,  8, PIC18F24J50_PLLDIV },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
   { "XINST" , 0x0040,  2, MCV20USB_XINST     }
 };
 
-static const gp_cfg_directive_t PIC18LF26J50_00FFF8[] = {
+static const gp_cfg_directive_t PIC18LF26J50_FFF8[] = {
   { "WDTEN" , 0x0001,  2, MCV20USB_WDTEN     },
   { "PLLDIV", 0x000E,  8, PIC18F24J50_PLLDIV },
   { "STVREN", 0x0020,  2, PIC18F24J10_STVREN },
@@ -7082,2239 +7082,2239 @@ static const gp_cfg_directive_t PS810_30000C[] = {
 };
 
 static const gp_cfg_addr_t MCP19110_addrs[] = {
-  { 0x002007, 0xFFFF,  5, MCP19110_002007      }
+  { 0x002007, 0xFFFF,  5, MCP19110_2007      }
 };
 
 static const gp_cfg_addr_t MCP19114_addrs[] = {
-  { 0x002007, 0xFFFF,  6, MCP19114_002007      }
+  { 0x002007, 0xFFFF,  6, MCP19114_2007      }
 };
 
 static const gp_cfg_addr_t MCP25020_addrs[] = {
-  { 0x002007, 0xFFFF,  2, MCP25020_002007      }
+  { 0x002007, 0xFFFF,  2, MCP25020_2007      }
 };
 
 static const gp_cfg_addr_t MCV08A_addrs[] = {
-  { 0x000FFF, 0xFFFF,  5, MCV08A_000FFF        }
+  { 0x000FFF, 0xFFFF,  5, MCV08A_FFF         }
 };
 
 static const gp_cfg_addr_t MCV14A_addrs[] = {
-  { 0x000FFF, 0x0FF,  6, MCV14A_000FFF        }
+  { 0x000FFF, 0x0FF,  6, MCV14A_FFF         }
 };
 
 static const gp_cfg_addr_t MCV18A_addrs[] = {
-  { 0x000FFF, 0xFFFF,  3, MCV18A_000FFF        }
+  { 0x000FFF, 0xFFFF,  3, MCV18A_FFF         }
 };
 
 static const gp_cfg_addr_t MCV18E_addrs[] = {
-  { 0x002007, 0xFFFF,  6, MCV18E_002007        }
+  { 0x002007, 0xFFFF,  6, MCV18E_2007        }
 };
 
 static const gp_cfg_addr_t MCV20USB_addrs[] = {
-  { 0x300000, 0x00,  2, MCV20USB_300000      },
-  { 0x300001, 0x27,  5, MCV20USB_300001      },
-  { 0x300002, 0x1F,  3, MCV20USB_300002      },
-  { 0x300003, 0x1F,  2, MCV20USB_300003      },
-  { 0x300005, 0x88,  2, MCV20USB_300005      },
-  { 0x300006, 0x85,  5, MCV20USB_300006      },
-  { 0x300008, 0x03,  2, MCV20USB_300008      },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x03,  2, MCV20USB_30000A      },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x03,  2, MCV20USB_30000C      },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300000, 0x00,  2, MCV20USB_300000    },
+  { 0x300001, 0x27,  5, MCV20USB_300001    },
+  { 0x300002, 0x1F,  3, MCV20USB_300002    },
+  { 0x300003, 0x1F,  2, MCV20USB_300003    },
+  { 0x300005, 0x88,  2, MCV20USB_300005    },
+  { 0x300006, 0x85,  5, MCV20USB_300006    },
+  { 0x300008, 0x03,  2, MCV20USB_300008    },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x03,  2, MCV20USB_30000A    },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x03,  2, MCV20USB_30000C    },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC10F200_addrs[] = {
-  { 0x000FFF, 0xFFFF,  4, PIC10F200_000FFF     }
+  { 0x000FFF, 0xFFFF,  4, PIC10F200_FFF      }
 };
 
 static const gp_cfg_addr_t PIC10F220_addrs[] = {
-  { 0x000FFF, 0xFFFF,  6, PIC10F220_000FFF     }
+  { 0x000FFF, 0xFFFF,  6, PIC10F220_FFF      }
 };
 
 static const gp_cfg_addr_t PIC10F320_addrs[] = {
-  { 0x002007, 0x3FFF, 10, PIC10F320_002007     }
+  { 0x002007, 0x3FFF, 10, PIC10F320_2007     }
 };
 
 static const gp_cfg_addr_t PIC12C508_addrs[] = {
-  { 0x000FFF, 0xFFFF,  4, PIC12C508_000FFF     }
+  { 0x000FFF, 0xFFFF,  4, PIC12C508_FFF      }
 };
 
 static const gp_cfg_addr_t PIC12C671_addrs[] = {
-  { 0x002007, 0xFFFF,  5, PIC12C671_002007     }
+  { 0x002007, 0xFFFF,  5, PIC12C671_2007     }
 };
 
 static const gp_cfg_addr_t PIC12F1501_addrs[] = {
-  { 0x008007, 0xFFFF,  7, PIC12F1501_008007    },
-  { 0x008008, 0xFFFF,  5, PIC12F1501_008008    }
+  { 0x008007, 0xFFFF,  7, PIC12F1501_8007    },
+  { 0x008008, 0xFFFF,  5, PIC12F1501_8008    }
 };
 
 static const gp_cfg_addr_t PIC12F1571_addrs[] = {
-  { 0x008007, 0xFFFF,  7, PIC12F1501_008007    },
-  { 0x008008, 0xFFFF,  7, PIC12F1571_008008    }
+  { 0x008007, 0xFFFF,  7, PIC12F1501_8007    },
+  { 0x008008, 0xFFFF,  7, PIC12F1571_8008    }
 };
 
 static const gp_cfg_addr_t PIC12F1612_addrs[] = {
-  { 0x008007, 0xFFFF,  6, PIC12F1612_008007    },
-  { 0x008008, 0xFFFF,  8, PIC12F1612_008008    },
-  { 0x008009, 0xFFFF,  4, PIC12F1612_008009    }
+  { 0x008007, 0xFFFF,  6, PIC12F1612_8007    },
+  { 0x008008, 0xFFFF,  8, PIC12F1612_8008    },
+  { 0x008009, 0xFFFF,  4, PIC12F1612_8009    }
 };
 
 static const gp_cfg_addr_t PIC12F1822_addrs[] = {
-  { 0x008007, 0xFFFF, 10, PIC12F1822_008007    },
-  { 0x008008, 0xFFFF,  6, PIC12F1822_008008    }
+  { 0x008007, 0xFFFF, 10, PIC12F1822_8007    },
+  { 0x008008, 0xFFFF,  6, PIC12F1822_8008    }
 };
 
 static const gp_cfg_addr_t PIC12F519_addrs[] = {
-  { 0x000FFF, 0xFFFF,  6, PIC12F519_000FFF     }
+  { 0x000FFF, 0xFFFF,  6, PIC12F519_FFF      }
 };
 
 static const gp_cfg_addr_t PIC12F520_addrs[] = {
-  { 0x000FFF, 0xFFFF,  6, PIC12F520_000FFF     }
+  { 0x000FFF, 0xFFFF,  6, PIC12F520_FFF      }
 };
 
 static const gp_cfg_addr_t PIC12F529T39A_addrs[] = {
-  { 0x000FFF, 0xDFF,  7, PIC12F529T39A_000FFF }
+  { 0x000FFF, 0xDFF,  7, PIC12F529T39A_FFF  }
 };
 
 static const gp_cfg_addr_t PIC12F609_addrs[] = {
-  { 0x002007, 0xFFFF,  7, PIC12F609_002007     }
+  { 0x002007, 0xFFFF,  7, PIC12F609_2007     }
 };
 
 static const gp_cfg_addr_t PIC12F617_addrs[] = {
-  { 0x002007, 0xFFFF,  8, PIC12F617_002007     }
+  { 0x002007, 0xFFFF,  8, PIC12F617_2007     }
 };
 
 static const gp_cfg_addr_t PIC12F629_addrs[] = {
-  { 0x002007, 0x31FF,  7, PIC12F629_002007     }
+  { 0x002007, 0x31FF,  7, PIC12F629_2007     }
 };
 
 static const gp_cfg_addr_t PIC12F635_addrs[] = {
-  { 0x002007, 0xFFFF, 10, PIC12F635_002007     }
+  { 0x002007, 0xFFFF, 10, PIC12F635_2007     }
 };
 
 static const gp_cfg_addr_t PIC12F683_addrs[] = {
-  { 0x002007, 0xFFFF,  9, PIC12F683_002007     }
+  { 0x002007, 0xFFFF,  9, PIC12F683_2007     }
 };
 
 static const gp_cfg_addr_t PIC12F752_addrs[] = {
-  { 0x002007, 0xFFFF,  8, PIC12F752_002007     }
+  { 0x002007, 0xFFFF,  8, PIC12F752_2007     }
 };
 
 static const gp_cfg_addr_t PIC16C432_addrs[] = {
-  { 0x002007, 0xFFFF,  5, PIC16C432_002007     }
+  { 0x002007, 0xFFFF,  5, PIC16C432_2007     }
 };
 
 static const gp_cfg_addr_t PIC16C433_addrs[] = {
-  { 0x002007, 0xFFFF,  5, PIC16C433_002007     }
+  { 0x002007, 0xFFFF,  5, PIC16C433_2007     }
 };
 
 static const gp_cfg_addr_t PIC16C505_addrs[] = {
-  { 0x000FFF, 0xFFFF,  4, PIC16C505_000FFF     }
+  { 0x000FFF, 0xFFFF,  4, PIC16C505_FFF      }
 };
 
 static const gp_cfg_addr_t PIC16C54C_addrs[] = {
-  { 0x000FFF, 0xFFFF,  3, PIC16C54C_000FFF     }
+  { 0x000FFF, 0xFFFF,  3, PIC16C54C_FFF      }
 };
 
 static const gp_cfg_addr_t PIC16C554_addrs[] = {
-  { 0x002007, 0xFFFF,  4, PIC16C554_002007     }
+  { 0x002007, 0xFFFF,  4, PIC16C554_2007     }
 };
 
 static const gp_cfg_addr_t PIC16C557_addrs[] = {
-  { 0x002007, 0xFFFF,  4, PIC16C557_002007     }
+  { 0x002007, 0xFFFF,  4, PIC16C557_2007     }
 };
 
 static const gp_cfg_addr_t PIC16C620_addrs[] = {
-  { 0x002007, 0xFFFF,  5, PIC16C620_002007     }
+  { 0x002007, 0xFFFF,  5, PIC16C620_2007     }
 };
 
 static const gp_cfg_addr_t PIC16C621_addrs[] = {
-  { 0x002007, 0xFFFF,  5, PIC16C621_002007     }
+  { 0x002007, 0xFFFF,  5, PIC16C621_2007     }
 };
 
 static const gp_cfg_addr_t PIC16C642_addrs[] = {
-  { 0x002007, 0xFFFF,  6, PIC16C642_002007     }
+  { 0x002007, 0xFFFF,  6, PIC16C642_2007     }
 };
 
 static const gp_cfg_addr_t PIC16C71_addrs[] = {
-  { 0x002007, 0xFFFF,  4, PIC16C71_002007      }
+  { 0x002007, 0xFFFF,  4, PIC16C71_2007      }
 };
 
 static const gp_cfg_addr_t PIC16C710_addrs[] = {
-  { 0x002007, 0xFFFF,  5, PIC16C710_002007     }
+  { 0x002007, 0xFFFF,  5, PIC16C710_2007     }
 };
 
 static const gp_cfg_addr_t PIC16C717_addrs[] = {
-  { 0x002007, 0xFFFF,  7, PIC16C717_002007     }
+  { 0x002007, 0xFFFF,  7, PIC16C717_2007     }
 };
 
 static const gp_cfg_addr_t PIC16C745_addrs[] = {
-  { 0x002007, 0xFFFF,  4, PIC16C745_002007     }
+  { 0x002007, 0xFFFF,  4, PIC16C745_2007     }
 };
 
 static const gp_cfg_addr_t PIC16C773_addrs[] = {
-  { 0x002007, 0xFFFF,  6, PIC16C773_002007     }
+  { 0x002007, 0xFFFF,  6, PIC16C773_2007     }
 };
 
 static const gp_cfg_addr_t PIC16C925_addrs[] = {
-  { 0x002007, 0xFFFF,  5, PIC16C925_002007     }
+  { 0x002007, 0xFFFF,  5, PIC16C925_2007     }
 };
 
 static const gp_cfg_addr_t PIC16CR73_addrs[] = {
-  { 0x002007, 0xFFFF,  5, PIC16CR73_002007     }
+  { 0x002007, 0xFFFF,  5, PIC16CR73_2007     }
 };
 
 static const gp_cfg_addr_t PIC16CR83_addrs[] = {
-  { 0x002007, 0xFFFF,  5, PIC16CR83_002007     }
+  { 0x002007, 0xFFFF,  5, PIC16CR83_2007     }
 };
 
 static const gp_cfg_addr_t PIC16F1454_addrs[] = {
-  { 0x008007, 0xFFFF,  9, PIC16F1454_008007    },
-  { 0x008008, 0xFFFF, 10, PIC16F1454_008008    }
+  { 0x008007, 0xFFFF,  9, PIC16F1454_8007    },
+  { 0x008008, 0xFFFF, 10, PIC16F1454_8008    }
 };
 
 static const gp_cfg_addr_t PIC16F1459_addrs[] = {
-  { 0x008007, 0xFFFF,  9, PIC16F1454_008007    },
-  { 0x008008, 0xFFFF,  9, PIC16F1459_008008    }
+  { 0x008007, 0xFFFF,  9, PIC16F1454_8007    },
+  { 0x008008, 0xFFFF,  9, PIC16F1459_8008    }
 };
 
 static const gp_cfg_addr_t PIC16F1508_addrs[] = {
-  { 0x008007, 0xFFFF,  9, PIC16F1454_008007    },
-  { 0x008008, 0xFFFF,  6, PIC16F1508_008008    }
+  { 0x008007, 0xFFFF,  9, PIC16F1454_8007    },
+  { 0x008008, 0xFFFF,  6, PIC16F1508_8008    }
 };
 
 static const gp_cfg_addr_t PIC16F1512_addrs[] = {
-  { 0x008007, 0xFFFF,  9, PIC16F1454_008007    },
-  { 0x008008, 0xFFFF,  7, PIC16F1512_008008    }
+  { 0x008007, 0xFFFF,  9, PIC16F1454_8007    },
+  { 0x008008, 0xFFFF,  7, PIC16F1512_8008    }
 };
 
 static const gp_cfg_addr_t PIC16F1703_addrs[] = {
-  { 0x008007, 0xFFFF,  7, PIC12F1501_008007    },
-  { 0x008008, 0xFFFF,  9, PIC16F1703_008008    }
+  { 0x008007, 0xFFFF,  7, PIC12F1501_8007    },
+  { 0x008008, 0xFFFF,  9, PIC16F1703_8008    }
 };
 
 static const gp_cfg_addr_t PIC16F1704_addrs[] = {
-  { 0x008007, 0xFFFF,  9, PIC16F1454_008007    },
-  { 0x008008, 0xFFFF,  9, PIC16F1703_008008    }
+  { 0x008007, 0xFFFF,  9, PIC16F1454_8007    },
+  { 0x008008, 0xFFFF,  9, PIC16F1703_8008    }
 };
 
 static const gp_cfg_addr_t PIC16F1782_addrs[] = {
-  { 0x008007, 0xFFFF, 10, PIC12F1822_008007    },
-  { 0x008008, 0xFFFF,  8, PIC16F1782_008008    }
+  { 0x008007, 0xFFFF, 10, PIC12F1822_8007    },
+  { 0x008008, 0xFFFF,  8, PIC16F1782_8008    }
 };
 
 static const gp_cfg_addr_t PIC16F18313_addrs[] = {
-  { 0x008007, 0xFFFF,  5, PIC16F18313_008007   },
-  { 0x008008, 0xFFFF,  9, PIC16F18313_008008   },
-  { 0x008009, 0xFFFF,  2, PIC16F18313_008009   },
-  { 0x00800A, 0xFFFF,  2, PIC16F18313_00800A   }
+  { 0x008007, 0xFFFF,  5, PIC16F18313_8007   },
+  { 0x008008, 0xFFFF,  9, PIC16F18313_8008   },
+  { 0x008009, 0xFFFF,  2, PIC16F18313_8009   },
+  { 0x00800A, 0xFFFF,  2, PIC16F18313_800A   }
 };
 
 static const gp_cfg_addr_t PIC16F1933_addrs[] = {
-  { 0x008007, 0xFFFF, 10, PIC12F1822_008007    },
-  { 0x008008, 0xFFFF,  7, PIC16F1933_008008    }
+  { 0x008007, 0xFFFF, 10, PIC12F1822_8007    },
+  { 0x008008, 0xFFFF,  7, PIC16F1933_8008    }
 };
 
 static const gp_cfg_addr_t PIC16F1946_addrs[] = {
-  { 0x008007, 0xFFFF, 10, PIC12F1822_008007    },
-  { 0x008008, 0xFFFF,  7, PIC16F1946_008008    }
+  { 0x008007, 0xFFFF, 10, PIC12F1822_8007    },
+  { 0x008008, 0xFFFF,  7, PIC16F1946_8008    }
 };
 
 static const gp_cfg_addr_t PIC16F505_addrs[] = {
-  { 0x000FFF, 0xFFFF,  4, PIC16F505_000FFF     }
+  { 0x000FFF, 0xFFFF,  4, PIC16F505_FFF      }
 };
 
 static const gp_cfg_addr_t PIC16F506_addrs[] = {
-  { 0x000FFF, 0xFFFF,  5, PIC16F506_000FFF     }
+  { 0x000FFF, 0xFFFF,  5, PIC16F506_FFF      }
 };
 
 static const gp_cfg_addr_t PIC16F527_addrs[] = {
-  { 0x000FFF, 0x3FF,  8, PIC16F527_000FFF     }
+  { 0x000FFF, 0x3FF,  8, PIC16F527_FFF      }
 };
 
 static const gp_cfg_addr_t PIC16F570_addrs[] = {
-  { 0x000FFF, 0x3FF,  7, PIC16F570_000FFF     }
+  { 0x000FFF, 0x3FF,  7, PIC16F570_FFF      }
 };
 
 static const gp_cfg_addr_t PIC16F627_addrs[] = {
-  { 0x002007, 0xFFFF,  8, PIC16F627_002007     }
+  { 0x002007, 0xFFFF,  8, PIC16F627_2007     }
 };
 
 static const gp_cfg_addr_t PIC16F627A_addrs[] = {
-  { 0x002007, 0xFFFF,  8, PIC16F627A_002007    }
+  { 0x002007, 0xFFFF,  8, PIC16F627A_2007    }
 };
 
 static const gp_cfg_addr_t PIC16F630_addrs[] = {
-  { 0x002007, 0xFFFF,  7, PIC16F630_002007     }
+  { 0x002007, 0xFFFF,  7, PIC16F630_2007     }
 };
 
 static const gp_cfg_addr_t PIC16F631_addrs[] = {
-  { 0x002007, 0xFFFF,  9, PIC16F631_002007     }
+  { 0x002007, 0xFFFF,  9, PIC16F631_2007     }
 };
 
 static const gp_cfg_addr_t PIC16F707_addrs[] = {
-  { 0x002007, 0xFFFF,  8, PIC16F707_002007     },
-  { 0x002008, 0xFFFF,  1, PIC16F707_002008     }
+  { 0x002007, 0xFFFF,  8, PIC16F707_2007     },
+  { 0x002008, 0xFFFF,  1, PIC16F707_2008     }
 };
 
 static const gp_cfg_addr_t PIC16F720_addrs[] = {
-  { 0x002007, 0xFFFF,  7, PIC16F720_002007     },
-  { 0x002008, 0xFFFF,  1, PIC16F720_002008     }
+  { 0x002007, 0xFFFF,  7, PIC16F720_2007     },
+  { 0x002008, 0xFFFF,  1, PIC16F720_2008     }
 };
 
 static const gp_cfg_addr_t PIC16F722_addrs[] = {
-  { 0x002007, 0xFFFF,  9, PIC16F722_002007     },
-  { 0x002008, 0xFFFF,  1, PIC16F722_002008     }
+  { 0x002007, 0xFFFF,  9, PIC16F722_2007     },
+  { 0x002008, 0xFFFF,  1, PIC16F722_2008     }
 };
 
 static const gp_cfg_addr_t PIC16F737_addrs[] = {
-  { 0x002007, 0xFFFF,  9, PIC16F737_002007     },
-  { 0x002008, 0xFFFF,  3, PIC16F737_002008     }
+  { 0x002007, 0xFFFF,  9, PIC16F737_2007     },
+  { 0x002008, 0xFFFF,  3, PIC16F737_2008     }
 };
 
 static const gp_cfg_addr_t PIC16F818_addrs[] = {
-  { 0x002007, 0xFFFF, 11, PIC16F818_002007     }
+  { 0x002007, 0xFFFF, 11, PIC16F818_2007     }
 };
 
 static const gp_cfg_addr_t PIC16F819_addrs[] = {
-  { 0x002007, 0xFFFF, 11, PIC16F819_002007     }
+  { 0x002007, 0xFFFF, 11, PIC16F819_2007     }
 };
 
 static const gp_cfg_addr_t PIC16F83_addrs[] = {
-  { 0x002007, 0xFFFF,  4, PIC16F83_002007      }
+  { 0x002007, 0xFFFF,  4, PIC16F83_2007      }
 };
 
 static const gp_cfg_addr_t PIC16F87_addrs[] = {
-  { 0x002007, 0xFFFF, 11, PIC16F87_002007      },
-  { 0x002008, 0xFFFF,  2, PIC16F87_002008      }
+  { 0x002007, 0xFFFF, 11, PIC16F87_2007      },
+  { 0x002008, 0xFFFF,  2, PIC16F87_2008      }
 };
 
 static const gp_cfg_addr_t PIC16F870_addrs[] = {
-  { 0x002007, 0xFFFF,  9, PIC16F870_002007     }
+  { 0x002007, 0xFFFF,  9, PIC16F870_2007     }
 };
 
 static const gp_cfg_addr_t PIC16F873_addrs[] = {
-  { 0x002007, 0xFFFF,  9, PIC16F873_002007     }
+  { 0x002007, 0xFFFF,  9, PIC16F873_2007     }
 };
 
 static const gp_cfg_addr_t PIC16F873A_addrs[] = {
-  { 0x002007, 0xFFFF,  9, PIC16F873A_002007    }
+  { 0x002007, 0xFFFF,  9, PIC16F873A_2007    }
 };
 
 static const gp_cfg_addr_t PIC16F882_addrs[] = {
-  { 0x002007, 0xFFFF, 11, PIC16F882_002007     },
-  { 0x002008, 0xFFFF,  2, PIC16F882_002008     }
+  { 0x002007, 0xFFFF, 11, PIC16F882_2007     },
+  { 0x002008, 0xFFFF,  2, PIC16F882_2008     }
 };
 
 static const gp_cfg_addr_t PIC16F883_addrs[] = {
-  { 0x002007, 0xFFFF, 11, PIC16F882_002007     },
-  { 0x002008, 0xFFFF,  2, PIC16F883_002008     }
+  { 0x002007, 0xFFFF, 11, PIC16F882_2007     },
+  { 0x002008, 0xFFFF,  2, PIC16F883_2008     }
 };
 
 static const gp_cfg_addr_t PIC16F913_addrs[] = {
-  { 0x002007, 0xFFFF, 10, PIC16F913_002007     }
+  { 0x002007, 0xFFFF, 10, PIC16F913_2007     }
 };
 
 static const gp_cfg_addr_t PIC16LF1554_addrs[] = {
-  { 0x008007, 0xFFFF,  7, PIC12F1501_008007    },
-  { 0x008008, 0xFFFF,  6, PIC16F1508_008008    }
+  { 0x008007, 0xFFFF,  7, PIC12F1501_8007    },
+  { 0x008008, 0xFFFF,  6, PIC16F1508_8008    }
 };
 
 static const gp_cfg_addr_t PIC16LF1782_addrs[] = {
-  { 0x008007, 0xFFFF, 10, PIC12F1822_008007    },
-  { 0x008008, 0xFFFF,  7, PIC16LF1782_008008   }
+  { 0x008007, 0xFFFF, 10, PIC12F1822_8007    },
+  { 0x008008, 0xFFFF,  7, PIC16LF1782_8008   }
 };
 
 static const gp_cfg_addr_t PIC18C242_addrs[] = {
-  { 0x300000, 0xFF,  1, PIC18C242_300000     },
-  { 0x300001, 0xE7,  2, PIC18C242_300001     },
-  { 0x300002, 0x0F,  3, PIC18C242_300002     },
-  { 0x300003, 0x0F,  2, PIC18C242_300003     },
-  { 0x300005, 0x01,  1, PIC18C242_300005     },
-  { 0x300006, 0x03,  1, PIC18C242_300006     }
+  { 0x300000, 0xFF,  1, PIC18C242_300000   },
+  { 0x300001, 0xE7,  2, PIC18C242_300001   },
+  { 0x300002, 0x0F,  3, PIC18C242_300002   },
+  { 0x300003, 0x0F,  2, PIC18C242_300003   },
+  { 0x300005, 0x01,  1, PIC18C242_300005   },
+  { 0x300006, 0x03,  1, PIC18C242_300006   }
 };
 
 static const gp_cfg_addr_t PIC18C452_addrs[] = {
-  { 0x300000, 0xFF,  1, PIC18C242_300000     },
-  { 0x300001, 0xE7,  2, PIC18C242_300001     },
-  { 0x300002, 0x0F,  3, PIC18C242_300002     },
-  { 0x300003, 0x0F,  2, PIC18C242_300003     },
-  { 0x300005, 0x01,  1, PIC18C452_300005     },
-  { 0x300006, 0x03,  1, PIC18C242_300006     }
+  { 0x300000, 0xFF,  1, PIC18C242_300000   },
+  { 0x300001, 0xE7,  2, PIC18C242_300001   },
+  { 0x300002, 0x0F,  3, PIC18C242_300002   },
+  { 0x300003, 0x0F,  2, PIC18C242_300003   },
+  { 0x300005, 0x01,  1, PIC18C452_300005   },
+  { 0x300006, 0x03,  1, PIC18C242_300006   }
 };
 
 static const gp_cfg_addr_t PIC18C601_addrs[] = {
-  { 0x300001, 0x03,  1, PIC18C601_300001     },
-  { 0x300002, 0x41,  2, PIC18C601_300002     },
-  { 0x300003, 0x0F,  2, PIC18C242_300003     },
-  { 0x300006, 0x81,  1, PIC18C601_300006     }
+  { 0x300001, 0x03,  1, PIC18C601_300001   },
+  { 0x300002, 0x41,  2, PIC18C601_300002   },
+  { 0x300003, 0x0F,  2, PIC18C242_300003   },
+  { 0x300006, 0x81,  1, PIC18C601_300006   }
 };
 
 static const gp_cfg_addr_t PIC18C658_addrs[] = {
-  { 0x300000, 0xFF,  1, PIC18C242_300000     },
-  { 0x300001, 0xE7,  2, PIC18C242_300001     },
-  { 0x300002, 0x0F,  3, PIC18C242_300002     },
-  { 0x300003, 0x0F,  2, PIC18C242_300003     },
-  { 0x300006, 0x03,  1, PIC18C242_300006     }
+  { 0x300000, 0xFF,  1, PIC18C242_300000   },
+  { 0x300001, 0xE7,  2, PIC18C242_300001   },
+  { 0x300002, 0x0F,  3, PIC18C242_300002   },
+  { 0x300003, 0x0F,  2, PIC18C242_300003   },
+  { 0x300006, 0x03,  1, PIC18C242_300006   }
 };
 
 static const gp_cfg_addr_t PIC18F1220_addrs[] = {
-  { 0x300001, 0xCF,  3, PIC18F1220_300001    },
-  { 0x300002, 0x0F,  3, PIC18F1220_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x80,  1, PIC18F1220_300005    },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x03,  2, MCV20USB_300008      },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x03,  2, MCV20USB_30000A      },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x03,  2, MCV20USB_30000C      },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0xCF,  3, PIC18F1220_300001  },
+  { 0x300002, 0x0F,  3, PIC18F1220_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x80,  1, PIC18F1220_300005  },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x03,  2, MCV20USB_300008    },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x03,  2, MCV20USB_30000A    },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x03,  2, MCV20USB_30000C    },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F1230_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F1230_300001    },
-  { 0x300002, 0x1F,  3, PIC18F1230_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300004, 0x0E,  3, PIC18F1230_300004    },
-  { 0x300005, 0x81,  3, PIC18F1230_300005    },
-  { 0x300006, 0x81,  4, PIC18F1230_300006    },
-  { 0x300008, 0x03,  2, MCV20USB_300008      },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x03,  2, MCV20USB_30000A      },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x03,  2, MCV20USB_30000C      },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F1230_300001  },
+  { 0x300002, 0x1F,  3, PIC18F1230_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300004, 0x0E,  3, PIC18F1230_300004  },
+  { 0x300005, 0x81,  3, PIC18F1230_300005  },
+  { 0x300006, 0x81,  4, PIC18F1230_300006  },
+  { 0x300008, 0x03,  2, MCV20USB_300008    },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x03,  2, MCV20USB_30000A    },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x03,  2, MCV20USB_30000C    },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F1330_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F1230_300001    },
-  { 0x300002, 0x1F,  3, PIC18F1230_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300004, 0x0E,  3, PIC18F1230_300004    },
-  { 0x300005, 0x81,  3, PIC18F1230_300005    },
-  { 0x300006, 0x81,  4, PIC18F1330_300006    },
-  { 0x300008, 0x03,  2, MCV20USB_300008      },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x03,  2, MCV20USB_30000A      },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x03,  2, MCV20USB_30000C      },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F1230_300001  },
+  { 0x300002, 0x1F,  3, PIC18F1230_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300004, 0x0E,  3, PIC18F1230_300004  },
+  { 0x300005, 0x81,  3, PIC18F1230_300005  },
+  { 0x300006, 0x81,  4, PIC18F1330_300006  },
+  { 0x300008, 0x03,  2, MCV20USB_300008    },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x03,  2, MCV20USB_30000A    },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x03,  2, MCV20USB_30000C    },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F13K22_addrs[] = {
-  { 0x300001, 0x27,  5, MCV20USB_300001      },
-  { 0x300002, 0x1F,  3, MCV20USB_300002      },
-  { 0x300003, 0x1F,  2, MCV20USB_300003      },
-  { 0x300005, 0x88,  2, MCV20USB_300005      },
-  { 0x300006, 0x85,  5, MCV20USB_300006      },
-  { 0x300008, 0x03,  2, MCV20USB_300008      },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x03,  2, MCV20USB_30000A      },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x03,  2, MCV20USB_30000C      },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x27,  5, MCV20USB_300001    },
+  { 0x300002, 0x1F,  3, MCV20USB_300002    },
+  { 0x300003, 0x1F,  2, MCV20USB_300003    },
+  { 0x300005, 0x88,  2, MCV20USB_300005    },
+  { 0x300006, 0x85,  5, MCV20USB_300006    },
+  { 0x300008, 0x03,  2, MCV20USB_300008    },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x03,  2, MCV20USB_30000A    },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x03,  2, MCV20USB_30000C    },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F13K50_addrs[] = {
-  { 0x300000, 0x00,  2, MCV20USB_300000      },
-  { 0x300001, 0x27,  5, MCV20USB_300001      },
-  { 0x300002, 0x3F,  3, PIC18F13K50_300002   },
-  { 0x300003, 0x1F,  2, MCV20USB_300003      },
-  { 0x300005, 0x88,  2, MCV20USB_300005      },
-  { 0x300006, 0x85,  5, MCV20USB_300006      },
-  { 0x300008, 0x03,  2, MCV20USB_300008      },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x03,  2, MCV20USB_30000A      },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x03,  2, MCV20USB_30000C      },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300000, 0x00,  2, MCV20USB_300000    },
+  { 0x300001, 0x27,  5, MCV20USB_300001    },
+  { 0x300002, 0x3F,  3, PIC18F13K50_300002 },
+  { 0x300003, 0x1F,  2, MCV20USB_300003    },
+  { 0x300005, 0x88,  2, MCV20USB_300005    },
+  { 0x300006, 0x85,  5, MCV20USB_300006    },
+  { 0x300008, 0x03,  2, MCV20USB_300008    },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x03,  2, MCV20USB_30000A    },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x03,  2, MCV20USB_30000C    },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2220_addrs[] = {
-  { 0x300001, 0xCF,  3, PIC18F1220_300001    },
-  { 0x300002, 0x0F,  3, PIC18F2220_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  3, PIC18F2220_300005    },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  2, PIC18F2220_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  2, PIC18F2220_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  2, PIC18F2220_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0xCF,  3, PIC18F1220_300001  },
+  { 0x300002, 0x0F,  3, PIC18F2220_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  3, PIC18F2220_300005  },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  2, PIC18F2220_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  2, PIC18F2220_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  2, PIC18F2220_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2221_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F1230_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2221_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  4, PIC18F2221_300005    },
-  { 0x300006, 0x85,  5, PIC18F2221_300006    },
-  { 0x300008, 0x03,  2, MCV20USB_300008      },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x03,  2, MCV20USB_30000A      },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x03,  2, MCV20USB_30000C      },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F1230_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2221_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  4, PIC18F2221_300005  },
+  { 0x300006, 0x85,  5, PIC18F2221_300006  },
+  { 0x300008, 0x03,  2, MCV20USB_300008    },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x03,  2, MCV20USB_30000A    },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x03,  2, MCV20USB_30000C    },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2320_addrs[] = {
-  { 0x300001, 0xCF,  3, PIC18F1220_300001    },
-  { 0x300002, 0x0F,  3, PIC18F2220_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  3, PIC18F2220_300005    },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0xCF,  3, PIC18F1220_300001  },
+  { 0x300002, 0x0F,  3, PIC18F2220_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  3, PIC18F2220_300005  },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2321_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F1230_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2221_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  4, PIC18F2221_300005    },
-  { 0x300006, 0x85,  5, PIC18F2321_300006    },
-  { 0x300008, 0x03,  2, MCV20USB_300008      },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x03,  2, MCV20USB_30000A      },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x03,  2, MCV20USB_30000C      },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F1230_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2221_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  4, PIC18F2221_300005  },
+  { 0x300006, 0x85,  5, PIC18F2321_300006  },
+  { 0x300008, 0x03,  2, MCV20USB_300008    },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x03,  2, MCV20USB_30000A    },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x03,  2, MCV20USB_30000C    },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2331_addrs[] = {
-  { 0x300001, 0xCF,  3, PIC18F2331_300001    },
-  { 0x300002, 0x0F,  3, PIC18F2331_300002    },
-  { 0x300003, 0x3F,  3, PIC18F2331_300003    },
-  { 0x300004, 0x3C,  4, PIC18F2331_300004    },
-  { 0x300005, 0x9D,  1, PIC18F2331_300005    },
-  { 0x300006, 0x85,  3, PIC18F2331_300006    },
-  { 0x300008, 0x0F,  2, PIC18F2220_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  2, PIC18F2220_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  2, PIC18F2220_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0xCF,  3, PIC18F2331_300001  },
+  { 0x300002, 0x0F,  3, PIC18F2331_300002  },
+  { 0x300003, 0x3F,  3, PIC18F2331_300003  },
+  { 0x300004, 0x3C,  4, PIC18F2331_300004  },
+  { 0x300005, 0x9D,  1, PIC18F2331_300005  },
+  { 0x300006, 0x85,  3, PIC18F2331_300006  },
+  { 0x300008, 0x0F,  2, PIC18F2220_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  2, PIC18F2220_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  2, PIC18F2220_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F23K20_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F23K20_300001   },
-  { 0x300002, 0x1F,  3, PIC18F23K20_300002   },
-  { 0x300003, 0x1F,  2, MCV20USB_300003      },
-  { 0x300005, 0x8B,  5, PIC18F23K20_300005   },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x0F,  2, PIC18F2220_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  2, PIC18F2220_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  2, PIC18F2220_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F23K20_300001 },
+  { 0x300002, 0x1F,  3, PIC18F23K20_300002 },
+  { 0x300003, 0x1F,  2, MCV20USB_300003    },
+  { 0x300005, 0x8B,  5, PIC18F23K20_300005 },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x0F,  2, PIC18F2220_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  2, PIC18F2220_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  2, PIC18F2220_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F23K22_addrs[] = {
-  { 0x300001, 0x25,  5, PIC18F23K22_300001   },
-  { 0x300002, 0x1F,  3, PIC18F23K22_300002   },
-  { 0x300003, 0x3F,  2, PIC18F23K22_300003   },
-  { 0x300005, 0xBF,  7, PIC18F23K22_300005   },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x03,  2, MCV20USB_300008      },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x03,  2, MCV20USB_30000A      },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x03,  2, MCV20USB_30000C      },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x25,  5, PIC18F23K22_300001 },
+  { 0x300002, 0x1F,  3, PIC18F23K22_300002 },
+  { 0x300003, 0x3F,  2, PIC18F23K22_300003 },
+  { 0x300005, 0xBF,  7, PIC18F23K22_300005 },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x03,  2, MCV20USB_300008    },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x03,  2, MCV20USB_30000A    },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x03,  2, MCV20USB_30000C    },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2410_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  4, PIC18F2410_300005    },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x0F,  2, PIC18F2220_300008    },
-  { 0x300009, 0x40,  1, PIC18F2410_300009    },
-  { 0x30000A, 0x0F,  2, PIC18F2220_30000A    },
-  { 0x30000B, 0x60,  2, PIC18F2410_30000B    },
-  { 0x30000C, 0x0F,  2, PIC18F2220_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  4, PIC18F2410_300005  },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x0F,  2, PIC18F2220_300008  },
+  { 0x300009, 0x40,  1, PIC18F2410_300009  },
+  { 0x30000A, 0x0F,  2, PIC18F2220_30000A  },
+  { 0x30000B, 0x60,  2, PIC18F2410_30000B  },
+  { 0x30000C, 0x0F,  2, PIC18F2220_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F242_addrs[] = {
-  { 0x300001, 0x27,  2, PIC18F242_300001     },
-  { 0x300002, 0x0F,  3, PIC18F2220_300002    },
-  { 0x300003, 0x0F,  2, PIC18C242_300003     },
-  { 0x300005, 0x01,  1, PIC18C242_300005     },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  2, PIC18F2220_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  2, PIC18F2220_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  2, PIC18F2220_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x27,  2, PIC18F242_300001   },
+  { 0x300002, 0x0F,  3, PIC18F2220_300002  },
+  { 0x300003, 0x0F,  2, PIC18C242_300003   },
+  { 0x300005, 0x01,  1, PIC18C242_300005   },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  2, PIC18F2220_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  2, PIC18F2220_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  2, PIC18F2220_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2420_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  4, PIC18F2420_300005    },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x0F,  2, PIC18F2220_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  2, PIC18F2220_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  2, PIC18F2220_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  4, PIC18F2420_300005  },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x0F,  2, PIC18F2220_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  2, PIC18F2220_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  2, PIC18F2220_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2431_addrs[] = {
-  { 0x300001, 0xCF,  3, PIC18F2331_300001    },
-  { 0x300002, 0x0F,  3, PIC18F2331_300002    },
-  { 0x300003, 0x3F,  3, PIC18F2331_300003    },
-  { 0x300004, 0x3C,  4, PIC18F2331_300004    },
-  { 0x300005, 0x9D,  1, PIC18F2331_300005    },
-  { 0x300006, 0x85,  3, PIC18F2331_300006    },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0xCF,  3, PIC18F2331_300001  },
+  { 0x300002, 0x0F,  3, PIC18F2331_300002  },
+  { 0x300003, 0x3F,  3, PIC18F2331_300003  },
+  { 0x300004, 0x3C,  4, PIC18F2331_300004  },
+  { 0x300005, 0x9D,  1, PIC18F2331_300005  },
+  { 0x300006, 0x85,  3, PIC18F2331_300006  },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2439_addrs[] = {
-  { 0x300001, 0x22,  1, PIC18F2439_300001    },
-  { 0x300002, 0x0F,  3, PIC18C242_300002     },
-  { 0x300003, 0x0F,  2, PIC18C242_300003     },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  2, PIC18F2220_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  2, PIC18F2220_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  2, PIC18F2220_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x22,  1, PIC18F2439_300001  },
+  { 0x300002, 0x0F,  3, PIC18C242_300002   },
+  { 0x300003, 0x0F,  2, PIC18C242_300003   },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  2, PIC18F2220_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  2, PIC18F2220_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  2, PIC18F2220_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2450_addrs[] = {
-  { 0x300000, 0x00,  3, PIC18F2450_300000    },
-  { 0x300001, 0x05,  3, PIC18F2450_300001    },
-  { 0x300002, 0x1F,  4, PIC18F2450_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x82,  3, PIC18F2450_300005    },
-  { 0x300006, 0x85,  5, PIC18F2450_300006    },
-  { 0x300008, 0x03,  2, MCV20USB_300008      },
-  { 0x300009, 0x40,  1, PIC18F2410_300009    },
-  { 0x30000A, 0x03,  2, MCV20USB_30000A      },
-  { 0x30000B, 0x60,  2, PIC18F2410_30000B    },
-  { 0x30000C, 0x03,  2, MCV20USB_30000C      },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300000, 0x00,  3, PIC18F2450_300000  },
+  { 0x300001, 0x05,  3, PIC18F2450_300001  },
+  { 0x300002, 0x1F,  4, PIC18F2450_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x82,  3, PIC18F2450_300005  },
+  { 0x300006, 0x85,  5, PIC18F2450_300006  },
+  { 0x300008, 0x03,  2, MCV20USB_300008    },
+  { 0x300009, 0x40,  1, PIC18F2410_300009  },
+  { 0x30000A, 0x03,  2, MCV20USB_30000A    },
+  { 0x30000B, 0x60,  2, PIC18F2410_30000B  },
+  { 0x30000C, 0x03,  2, MCV20USB_30000C    },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2455_addrs[] = {
-  { 0x300000, 0x00,  3, PIC18F2450_300000    },
-  { 0x300001, 0x05,  3, PIC18F2450_300001    },
-  { 0x300002, 0x1F,  4, PIC18F2455_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  4, PIC18F2455_300005    },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x0F,  3, PIC18F2455_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  3, PIC18F2455_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  3, PIC18F2455_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300000, 0x00,  3, PIC18F2450_300000  },
+  { 0x300001, 0x05,  3, PIC18F2450_300001  },
+  { 0x300002, 0x1F,  4, PIC18F2455_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  4, PIC18F2455_300005  },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x0F,  3, PIC18F2455_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  3, PIC18F2455_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  3, PIC18F2455_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F248_addrs[] = {
-  { 0x300001, 0x27,  2, PIC18F242_300001     },
-  { 0x300002, 0x0F,  3, PIC18C242_300002     },
-  { 0x300003, 0x0F,  2, PIC18C242_300003     },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  2, PIC18F2220_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  2, PIC18F2220_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  2, PIC18F2220_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x27,  2, PIC18F242_300001   },
+  { 0x300002, 0x0F,  3, PIC18C242_300002   },
+  { 0x300003, 0x0F,  2, PIC18C242_300003   },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  2, PIC18F2220_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  2, PIC18F2220_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  2, PIC18F2220_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2480_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2480_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2480_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x82,  3, PIC18F2450_300005    },
-  { 0x300006, 0x85,  5, PIC18F2480_300006    },
-  { 0x300008, 0x0F,  2, PIC18F2220_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  2, PIC18F2220_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  2, PIC18F2220_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2480_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2480_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x82,  3, PIC18F2450_300005  },
+  { 0x300006, 0x85,  5, PIC18F2480_300006  },
+  { 0x300008, 0x0F,  2, PIC18F2220_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  2, PIC18F2220_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  2, PIC18F2220_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F24J10_addrs[] = {
-  { 0x003FF8, 0xE1,  4, PIC18F24J10_003FF8   },
-  { 0x003FF9, 0xF4,  1, PIC18F24J10_003FF9   },
-  { 0x003FFA, 0xC7,  4, PIC18F24J10_003FFA   },
-  { 0x003FFB, 0xFF,  1, PIC18F24J10_003FFB   },
-  { 0x003FFD, 0xF1,  1, PIC18F24J10_003FFD   }
+  { 0x003FF8, 0xE1,  4, PIC18F24J10_3FF8   },
+  { 0x003FF9, 0xF4,  1, PIC18F24J10_3FF9   },
+  { 0x003FFA, 0xC7,  4, PIC18F24J10_3FFA   },
+  { 0x003FFB, 0xFF,  1, PIC18F24J10_3FFB   },
+  { 0x003FFD, 0xF1,  1, PIC18F24J10_3FFD   }
 };
 
 static const gp_cfg_addr_t PIC18F24J11_addrs[] = {
-  { 0x003FF8, 0xE1,  4, PIC18F24J10_003FF8   },
-  { 0x003FF9, 0xF4,  1, PIC18F24J10_003FF9   },
-  { 0x003FFA, 0xDF,  5, PIC18F24J11_003FFA   },
-  { 0x003FFB, 0xFF,  1, PIC18F24J10_003FFB   },
-  { 0x003FFC, 0xFF,  5, PIC18F24J11_003FFC   },
-  { 0x003FFD, 0xF9,  2, PIC18F24J11_003FFD   },
-  { 0x003FFE, 0xCF,  3, PIC18F24J11_003FFE   },
-  { 0x003FFF, 0xF1,  1, PIC18F24J11_003FFF   }
+  { 0x003FF8, 0xE1,  4, PIC18F24J10_3FF8   },
+  { 0x003FF9, 0xF4,  1, PIC18F24J10_3FF9   },
+  { 0x003FFA, 0xDF,  5, PIC18F24J11_3FFA   },
+  { 0x003FFB, 0xFF,  1, PIC18F24J10_3FFB   },
+  { 0x003FFC, 0xFF,  5, PIC18F24J11_3FFC   },
+  { 0x003FFD, 0xF9,  2, PIC18F24J11_3FFD   },
+  { 0x003FFE, 0xCF,  3, PIC18F24J11_3FFE   },
+  { 0x003FFF, 0xF1,  1, PIC18F24J11_3FFF   }
 };
 
 static const gp_cfg_addr_t PIC18F24J50_addrs[] = {
-  { 0x003FF8, 0xEF,  5, PIC18F24J50_003FF8   },
-  { 0x003FF9, 0xF7,  2, PIC18F24J50_003FF9   },
-  { 0x003FFA, 0xDF,  5, PIC18F24J11_003FFA   },
-  { 0x003FFB, 0xFF,  1, PIC18F24J10_003FFB   },
-  { 0x003FFC, 0xFF,  5, PIC18F24J11_003FFC   },
-  { 0x003FFD, 0xF9,  2, PIC18F24J11_003FFD   },
-  { 0x003FFE, 0xCF,  3, PIC18F24J11_003FFE   },
-  { 0x003FFF, 0xF1,  1, PIC18F24J11_003FFF   }
+  { 0x003FF8, 0xEF,  5, PIC18F24J50_3FF8   },
+  { 0x003FF9, 0xF7,  2, PIC18F24J50_3FF9   },
+  { 0x003FFA, 0xDF,  5, PIC18F24J11_3FFA   },
+  { 0x003FFB, 0xFF,  1, PIC18F24J10_3FFB   },
+  { 0x003FFC, 0xFF,  5, PIC18F24J11_3FFC   },
+  { 0x003FFD, 0xF9,  2, PIC18F24J11_3FFD   },
+  { 0x003FFE, 0xCF,  3, PIC18F24J11_3FFE   },
+  { 0x003FFF, 0xF1,  1, PIC18F24J11_3FFF   }
 };
 
 static const gp_cfg_addr_t PIC18F24K50_addrs[] = {
-  { 0x300000, 0x00,  4, PIC18F24K50_300000   },
-  { 0x300001, 0x25,  4, PIC18F24K50_300001   },
-  { 0x300002, 0x5F,  4, PIC18F24K50_300002   },
-  { 0x300003, 0x3F,  2, PIC18F23K22_300003   },
-  { 0x300005, 0xD3,  5, PIC18F24K50_300005   },
-  { 0x300006, 0x85,  5, PIC18F24K50_300006   },
-  { 0x300008, 0x03,  2, MCV20USB_300008      },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x03,  2, MCV20USB_30000A      },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x03,  2, MCV20USB_30000C      },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300000, 0x00,  4, PIC18F24K50_300000 },
+  { 0x300001, 0x25,  4, PIC18F24K50_300001 },
+  { 0x300002, 0x5F,  4, PIC18F24K50_300002 },
+  { 0x300003, 0x3F,  2, PIC18F23K22_300003 },
+  { 0x300005, 0xD3,  5, PIC18F24K50_300005 },
+  { 0x300006, 0x85,  5, PIC18F24K50_300006 },
+  { 0x300008, 0x03,  2, MCV20USB_300008    },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x03,  2, MCV20USB_30000A    },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x03,  2, MCV20USB_30000C    },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2510_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  4, PIC18F2410_300005    },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0x40,  1, PIC18F2410_300009    },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0x60,  2, PIC18F2410_30000B    },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  4, PIC18F2410_300005  },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0x40,  1, PIC18F2410_300009  },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0x60,  2, PIC18F2410_30000B  },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2515_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  4, PIC18F2410_300005    },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x0F,  3, PIC18F2455_300008    },
-  { 0x300009, 0x40,  1, PIC18F2410_300009    },
-  { 0x30000A, 0x0F,  3, PIC18F2455_30000A    },
-  { 0x30000B, 0x60,  2, PIC18F2410_30000B    },
-  { 0x30000C, 0x0F,  3, PIC18F2455_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  4, PIC18F2410_300005  },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x0F,  3, PIC18F2455_300008  },
+  { 0x300009, 0x40,  1, PIC18F2410_300009  },
+  { 0x30000A, 0x0F,  3, PIC18F2455_30000A  },
+  { 0x30000B, 0x60,  2, PIC18F2410_30000B  },
+  { 0x30000C, 0x0F,  3, PIC18F2455_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F252_addrs[] = {
-  { 0x300001, 0x27,  2, PIC18F242_300001     },
-  { 0x300002, 0x0F,  3, PIC18F2220_300002    },
-  { 0x300003, 0x0F,  2, PIC18C242_300003     },
-  { 0x300005, 0x01,  1, PIC18C242_300005     },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x27,  2, PIC18F242_300001   },
+  { 0x300002, 0x0F,  3, PIC18F2220_300002  },
+  { 0x300003, 0x0F,  2, PIC18C242_300003   },
+  { 0x300005, 0x01,  1, PIC18C242_300005   },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2520_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  4, PIC18F2410_300005    },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  4, PIC18F2410_300005  },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2523_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  4, PIC18F2420_300005    },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  4, PIC18F2420_300005  },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2525_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  4, PIC18F2410_300005    },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x0F,  3, PIC18F2455_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  3, PIC18F2455_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  3, PIC18F2455_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  4, PIC18F2410_300005  },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x0F,  3, PIC18F2455_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  3, PIC18F2455_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  3, PIC18F2455_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2539_addrs[] = {
-  { 0x300001, 0x22,  1, PIC18F2439_300001    },
-  { 0x300002, 0x0F,  3, PIC18C242_300002     },
-  { 0x300003, 0x0F,  2, PIC18C242_300003     },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  3, PIC18F2455_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  3, PIC18F2455_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  3, PIC18F2455_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x22,  1, PIC18F2439_300001  },
+  { 0x300002, 0x0F,  3, PIC18C242_300002   },
+  { 0x300003, 0x0F,  2, PIC18C242_300003   },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  3, PIC18F2455_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  3, PIC18F2455_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  3, PIC18F2455_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2550_addrs[] = {
-  { 0x300000, 0x00,  3, PIC18F2450_300000    },
-  { 0x300001, 0x05,  3, PIC18F2450_300001    },
-  { 0x300002, 0x1F,  4, PIC18F2455_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  4, PIC18F2455_300005    },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300000, 0x00,  3, PIC18F2450_300000  },
+  { 0x300001, 0x05,  3, PIC18F2450_300001  },
+  { 0x300002, 0x1F,  4, PIC18F2455_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  4, PIC18F2455_300005  },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F258_addrs[] = {
-  { 0x300001, 0x27,  2, PIC18F242_300001     },
-  { 0x300002, 0x0F,  3, PIC18C242_300002     },
-  { 0x300003, 0x0F,  2, PIC18C242_300003     },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x27,  2, PIC18F242_300001   },
+  { 0x300002, 0x0F,  3, PIC18C242_300002   },
+  { 0x300003, 0x0F,  2, PIC18C242_300003   },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2580_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2480_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2480_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x82,  3, PIC18F2450_300005    },
-  { 0x300006, 0x85,  5, PIC18F2480_300006    },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2480_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2480_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x82,  3, PIC18F2450_300005  },
+  { 0x300006, 0x85,  5, PIC18F2480_300006  },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2585_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2480_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2480_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x82,  3, PIC18F2450_300005    },
-  { 0x300006, 0x85,  5, PIC18F2585_300006    },
-  { 0x300008, 0x0F,  3, PIC18F2455_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  3, PIC18F2455_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  3, PIC18F2455_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2480_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2480_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x82,  3, PIC18F2450_300005  },
+  { 0x300006, 0x85,  5, PIC18F2585_300006  },
+  { 0x300008, 0x0F,  3, PIC18F2455_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  3, PIC18F2455_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  3, PIC18F2455_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F25J10_addrs[] = {
-  { 0x007FF8, 0xE1,  4, PIC18F25J10_007FF8   },
-  { 0x007FF9, 0xF4,  1, PIC18F25J10_007FF9   },
-  { 0x007FFA, 0xC7,  4, PIC18F25J10_007FFA   },
-  { 0x007FFB, 0xFF,  1, PIC18F25J10_007FFB   },
-  { 0x007FFD, 0xF1,  1, PIC18F25J10_007FFD   }
+  { 0x007FF8, 0xE1,  4, PIC18F25J10_7FF8   },
+  { 0x007FF9, 0xF4,  1, PIC18F25J10_7FF9   },
+  { 0x007FFA, 0xC7,  4, PIC18F25J10_7FFA   },
+  { 0x007FFB, 0xFF,  1, PIC18F25J10_7FFB   },
+  { 0x007FFD, 0xF1,  1, PIC18F25J10_7FFD   }
 };
 
 static const gp_cfg_addr_t PIC18F25J11_addrs[] = {
-  { 0x007FF8, 0xE1,  4, PIC18F25J10_007FF8   },
-  { 0x007FF9, 0xF4,  1, PIC18F25J10_007FF9   },
-  { 0x007FFA, 0xDF,  5, PIC18F25J11_007FFA   },
-  { 0x007FFB, 0xFF,  1, PIC18F25J10_007FFB   },
-  { 0x007FFC, 0xFF,  5, PIC18F25J11_007FFC   },
-  { 0x007FFD, 0xF9,  2, PIC18F25J11_007FFD   },
-  { 0x007FFE, 0xDF,  3, PIC18F25J11_007FFE   },
-  { 0x007FFF, 0xF1,  1, PIC18F25J11_007FFF   }
+  { 0x007FF8, 0xE1,  4, PIC18F25J10_7FF8   },
+  { 0x007FF9, 0xF4,  1, PIC18F25J10_7FF9   },
+  { 0x007FFA, 0xDF,  5, PIC18F25J11_7FFA   },
+  { 0x007FFB, 0xFF,  1, PIC18F25J10_7FFB   },
+  { 0x007FFC, 0xFF,  5, PIC18F25J11_7FFC   },
+  { 0x007FFD, 0xF9,  2, PIC18F25J11_7FFD   },
+  { 0x007FFE, 0xDF,  3, PIC18F25J11_7FFE   },
+  { 0x007FFF, 0xF1,  1, PIC18F25J11_7FFF   }
 };
 
 static const gp_cfg_addr_t PIC18F25J50_addrs[] = {
-  { 0x007FF8, 0xEF,  5, PIC18F25J50_007FF8   },
-  { 0x007FF9, 0xF7,  2, PIC18F25J50_007FF9   },
-  { 0x007FFA, 0xDF,  5, PIC18F25J11_007FFA   },
-  { 0x007FFB, 0xFF,  1, PIC18F25J10_007FFB   },
-  { 0x007FFC, 0xFF,  5, PIC18F25J11_007FFC   },
-  { 0x007FFD, 0xF9,  2, PIC18F25J11_007FFD   },
-  { 0x007FFE, 0xDF,  3, PIC18F25J11_007FFE   },
-  { 0x007FFF, 0xF1,  1, PIC18F25J11_007FFF   }
+  { 0x007FF8, 0xEF,  5, PIC18F25J50_7FF8   },
+  { 0x007FF9, 0xF7,  2, PIC18F25J50_7FF9   },
+  { 0x007FFA, 0xDF,  5, PIC18F25J11_7FFA   },
+  { 0x007FFB, 0xFF,  1, PIC18F25J10_7FFB   },
+  { 0x007FFC, 0xFF,  5, PIC18F25J11_7FFC   },
+  { 0x007FFD, 0xF9,  2, PIC18F25J11_7FFD   },
+  { 0x007FFE, 0xDF,  3, PIC18F25J11_7FFE   },
+  { 0x007FFF, 0xF1,  1, PIC18F25J11_7FFF   }
 };
 
 static const gp_cfg_addr_t PIC18F25K20_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F23K20_300001   },
-  { 0x300002, 0x1F,  3, PIC18F23K20_300002   },
-  { 0x300003, 0x1F,  2, MCV20USB_300003      },
-  { 0x300005, 0x8B,  5, PIC18F23K20_300005   },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F23K20_300001 },
+  { 0x300002, 0x1F,  3, PIC18F23K20_300002 },
+  { 0x300003, 0x1F,  2, MCV20USB_300003    },
+  { 0x300005, 0x8B,  5, PIC18F23K20_300005 },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F25K22_addrs[] = {
-  { 0x300001, 0x25,  5, PIC18F23K22_300001   },
-  { 0x300002, 0x1F,  3, PIC18F23K22_300002   },
-  { 0x300003, 0x3F,  2, PIC18F23K22_300003   },
-  { 0x300005, 0xBF,  7, PIC18F23K22_300005   },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x25,  5, PIC18F23K22_300001 },
+  { 0x300002, 0x1F,  3, PIC18F23K22_300002 },
+  { 0x300003, 0x3F,  2, PIC18F23K22_300003 },
+  { 0x300005, 0xBF,  7, PIC18F23K22_300005 },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F25K50_addrs[] = {
-  { 0x300000, 0x00,  4, PIC18F24K50_300000   },
-  { 0x300001, 0x25,  4, PIC18F24K50_300001   },
-  { 0x300002, 0x5F,  4, PIC18F24K50_300002   },
-  { 0x300003, 0x3F,  2, PIC18F23K22_300003   },
-  { 0x300005, 0xD3,  5, PIC18F24K50_300005   },
-  { 0x300006, 0x85,  5, PIC18F24K50_300006   },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300000, 0x00,  4, PIC18F24K50_300000 },
+  { 0x300001, 0x25,  4, PIC18F24K50_300001 },
+  { 0x300002, 0x5F,  4, PIC18F24K50_300002 },
+  { 0x300003, 0x3F,  2, PIC18F23K22_300003 },
+  { 0x300005, 0xD3,  5, PIC18F24K50_300005 },
+  { 0x300006, 0x85,  5, PIC18F24K50_300006 },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F25K80_addrs[] = {
-  { 0x300000, 0x5D,  4, PIC18F25K80_300000   },
-  { 0x300001, 0x08,  4, PIC18F25K80_300001   },
-  { 0x300002, 0x7F,  4, PIC18F25K80_300002   },
-  { 0x300003, 0x7F,  2, PIC18F25K80_300003   },
-  { 0x300005, 0x89,  3, PIC18F25K80_300005   },
-  { 0x300006, 0x91,  2, PIC18F25K80_300006   },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300000, 0x5D,  4, PIC18F25K80_300000 },
+  { 0x300001, 0x08,  4, PIC18F25K80_300001 },
+  { 0x300002, 0x7F,  4, PIC18F25K80_300002 },
+  { 0x300003, 0x7F,  2, PIC18F25K80_300003 },
+  { 0x300005, 0x89,  3, PIC18F25K80_300005 },
+  { 0x300006, 0x91,  2, PIC18F25K80_300006 },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2680_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2480_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2480_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x82,  3, PIC18F2450_300005    },
-  { 0x300006, 0x85,  5, PIC18F2585_300006    },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2480_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2480_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x82,  3, PIC18F2450_300005  },
+  { 0x300006, 0x85,  5, PIC18F2585_300006  },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2682_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2480_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2480_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x82,  3, PIC18F2450_300005    },
-  { 0x300006, 0x85,  5, PIC18F2585_300006    },
-  { 0x300008, 0x3F,  5, PIC18F2682_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x3F,  5, PIC18F2682_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x3F,  5, PIC18F2682_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2480_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2480_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x82,  3, PIC18F2450_300005  },
+  { 0x300006, 0x85,  5, PIC18F2585_300006  },
+  { 0x300008, 0x3F,  5, PIC18F2682_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x3F,  5, PIC18F2682_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x3F,  5, PIC18F2682_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F2685_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2480_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2480_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x82,  3, PIC18F2450_300005    },
-  { 0x300006, 0x85,  5, PIC18F2585_300006    },
-  { 0x300008, 0x3F,  6, PIC18F2685_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x3F,  6, PIC18F2685_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x3F,  6, PIC18F2685_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2480_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2480_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x82,  3, PIC18F2450_300005  },
+  { 0x300006, 0x85,  5, PIC18F2585_300006  },
+  { 0x300008, 0x3F,  6, PIC18F2685_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x3F,  6, PIC18F2685_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x3F,  6, PIC18F2685_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F26J11_addrs[] = {
-  { 0x00FFF8, 0xE1,  4, PIC18F26J11_00FFF8   },
-  { 0x00FFF9, 0xF4,  1, PIC18F26J11_00FFF9   },
-  { 0x00FFFA, 0xDF,  5, PIC18F26J11_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFC, 0xFF,  5, PIC18F26J11_00FFFC   },
-  { 0x00FFFD, 0xF9,  2, PIC18F26J11_00FFFD   },
-  { 0x00FFFE, 0xFF,  3, PIC18F26J11_00FFFE   },
-  { 0x00FFFF, 0xF1,  1, PIC18F26J11_00FFFF   }
+  { 0x00FFF8, 0xE1,  4, PIC18F26J11_FFF8   },
+  { 0x00FFF9, 0xF4,  1, PIC18F26J11_FFF9   },
+  { 0x00FFFA, 0xDF,  5, PIC18F26J11_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFC, 0xFF,  5, PIC18F26J11_FFFC   },
+  { 0x00FFFD, 0xF9,  2, PIC18F26J11_FFFD   },
+  { 0x00FFFE, 0xFF,  3, PIC18F26J11_FFFE   },
+  { 0x00FFFF, 0xF1,  1, PIC18F26J11_FFFF   }
 };
 
 static const gp_cfg_addr_t PIC18F26J13_addrs[] = {
-  { 0x00FFF8, 0xFF,  5, PIC18F26J13_00FFF8   },
-  { 0x00FFF9, 0xF4,  1, PIC18F26J11_00FFF9   },
-  { 0x00FFFA, 0xFF,  5, PIC18F26J13_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFC, 0xFF,  5, PIC18F26J11_00FFFC   },
-  { 0x00FFFD, 0xFF,  4, PIC18F26J13_00FFFD   },
-  { 0x00FFFE, 0xBF,  2, PIC18F26J13_00FFFE   },
-  { 0x00FFFF, 0xF3,  2, PIC18F26J13_00FFFF   }
+  { 0x00FFF8, 0xFF,  5, PIC18F26J13_FFF8   },
+  { 0x00FFF9, 0xF4,  1, PIC18F26J11_FFF9   },
+  { 0x00FFFA, 0xFF,  5, PIC18F26J13_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFC, 0xFF,  5, PIC18F26J11_FFFC   },
+  { 0x00FFFD, 0xFF,  4, PIC18F26J13_FFFD   },
+  { 0x00FFFE, 0xBF,  2, PIC18F26J13_FFFE   },
+  { 0x00FFFF, 0xF3,  2, PIC18F26J13_FFFF   }
 };
 
 static const gp_cfg_addr_t PIC18F26J50_addrs[] = {
-  { 0x00FFF8, 0xEF,  5, PIC18F26J50_00FFF8   },
-  { 0x00FFF9, 0xF7,  2, PIC18F26J50_00FFF9   },
-  { 0x00FFFA, 0xDF,  5, PIC18F26J11_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFC, 0xFF,  5, PIC18F26J11_00FFFC   },
-  { 0x00FFFD, 0xF9,  2, PIC18F26J11_00FFFD   },
-  { 0x00FFFE, 0xFF,  3, PIC18F26J11_00FFFE   },
-  { 0x00FFFF, 0xF1,  1, PIC18F26J11_00FFFF   }
+  { 0x00FFF8, 0xEF,  5, PIC18F26J50_FFF8   },
+  { 0x00FFF9, 0xF7,  2, PIC18F26J50_FFF9   },
+  { 0x00FFFA, 0xDF,  5, PIC18F26J11_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFC, 0xFF,  5, PIC18F26J11_FFFC   },
+  { 0x00FFFD, 0xF9,  2, PIC18F26J11_FFFD   },
+  { 0x00FFFE, 0xFF,  3, PIC18F26J11_FFFE   },
+  { 0x00FFFF, 0xF1,  1, PIC18F26J11_FFFF   }
 };
 
 static const gp_cfg_addr_t PIC18F26J53_addrs[] = {
-  { 0x00FFF8, 0xFF,  5, PIC18F26J13_00FFF8   },
-  { 0x00FFF9, 0xF7,  2, PIC18F26J50_00FFF9   },
-  { 0x00FFFA, 0xFF,  5, PIC18F26J13_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFC, 0xFF,  5, PIC18F26J11_00FFFC   },
-  { 0x00FFFD, 0xFB,  3, PIC18F26J53_00FFFD   },
-  { 0x00FFFE, 0xBF,  2, PIC18F26J13_00FFFE   },
-  { 0x00FFFF, 0xFB,  3, PIC18F26J53_00FFFF   }
+  { 0x00FFF8, 0xFF,  5, PIC18F26J13_FFF8   },
+  { 0x00FFF9, 0xF7,  2, PIC18F26J50_FFF9   },
+  { 0x00FFFA, 0xFF,  5, PIC18F26J13_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFC, 0xFF,  5, PIC18F26J11_FFFC   },
+  { 0x00FFFD, 0xFB,  3, PIC18F26J53_FFFD   },
+  { 0x00FFFE, 0xBF,  2, PIC18F26J13_FFFE   },
+  { 0x00FFFF, 0xFB,  3, PIC18F26J53_FFFF   }
 };
 
 static const gp_cfg_addr_t PIC18F27J13_addrs[] = {
-  { 0x01FFF8, 0xFF,  5, PIC18F27J13_01FFF8   },
-  { 0x01FFF9, 0xF4,  1, PIC18F27J13_01FFF9   },
-  { 0x01FFFA, 0xFF,  5, PIC18F27J13_01FFFA   },
-  { 0x01FFFB, 0xFF,  1, PIC18F27J13_01FFFB   },
-  { 0x01FFFC, 0xFF,  5, PIC18F27J13_01FFFC   },
-  { 0x01FFFD, 0xFF,  4, PIC18F27J13_01FFFD   },
-  { 0x01FFFE, 0xFF,  2, PIC18F27J13_01FFFE   },
-  { 0x01FFFF, 0xF3,  2, PIC18F27J13_01FFFF   }
+  { 0x01FFF8, 0xFF,  5, PIC18F27J13_1FFF8  },
+  { 0x01FFF9, 0xF4,  1, PIC18F27J13_1FFF9  },
+  { 0x01FFFA, 0xFF,  5, PIC18F27J13_1FFFA  },
+  { 0x01FFFB, 0xFF,  1, PIC18F27J13_1FFFB  },
+  { 0x01FFFC, 0xFF,  5, PIC18F27J13_1FFFC  },
+  { 0x01FFFD, 0xFF,  4, PIC18F27J13_1FFFD  },
+  { 0x01FFFE, 0xFF,  2, PIC18F27J13_1FFFE  },
+  { 0x01FFFF, 0xF3,  2, PIC18F27J13_1FFFF  }
 };
 
 static const gp_cfg_addr_t PIC18F27J53_addrs[] = {
-  { 0x01FFF8, 0xFF,  5, PIC18F27J13_01FFF8   },
-  { 0x01FFF9, 0xF7,  2, PIC18F27J53_01FFF9   },
-  { 0x01FFFA, 0xFF,  5, PIC18F27J13_01FFFA   },
-  { 0x01FFFB, 0xFF,  1, PIC18F27J13_01FFFB   },
-  { 0x01FFFC, 0xFF,  5, PIC18F27J13_01FFFC   },
-  { 0x01FFFD, 0xFB,  3, PIC18F27J53_01FFFD   },
-  { 0x01FFFE, 0xFF,  2, PIC18F27J13_01FFFE   },
-  { 0x01FFFF, 0xFB,  3, PIC18F27J53_01FFFF   }
+  { 0x01FFF8, 0xFF,  5, PIC18F27J13_1FFF8  },
+  { 0x01FFF9, 0xF7,  2, PIC18F27J53_1FFF9  },
+  { 0x01FFFA, 0xFF,  5, PIC18F27J13_1FFFA  },
+  { 0x01FFFB, 0xFF,  1, PIC18F27J13_1FFFB  },
+  { 0x01FFFC, 0xFF,  5, PIC18F27J13_1FFFC  },
+  { 0x01FFFD, 0xFB,  3, PIC18F27J53_1FFFD  },
+  { 0x01FFFE, 0xFF,  2, PIC18F27J13_1FFFE  },
+  { 0x01FFFF, 0xFB,  3, PIC18F27J53_1FFFF  }
 };
 
 static const gp_cfg_addr_t PIC18F4331_addrs[] = {
-  { 0x300001, 0xCF,  3, PIC18F2331_300001    },
-  { 0x300002, 0x0F,  3, PIC18F2331_300002    },
-  { 0x300003, 0x3F,  3, PIC18F2331_300003    },
-  { 0x300004, 0x3C,  4, PIC18F2331_300004    },
-  { 0x300005, 0x9D,  5, PIC18F4331_300005    },
-  { 0x300006, 0x85,  3, PIC18F2331_300006    },
-  { 0x300008, 0x0F,  2, PIC18F2220_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  2, PIC18F2220_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  2, PIC18F2220_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0xCF,  3, PIC18F2331_300001  },
+  { 0x300002, 0x0F,  3, PIC18F2331_300002  },
+  { 0x300003, 0x3F,  3, PIC18F2331_300003  },
+  { 0x300004, 0x3C,  4, PIC18F2331_300004  },
+  { 0x300005, 0x9D,  5, PIC18F4331_300005  },
+  { 0x300006, 0x85,  3, PIC18F2331_300006  },
+  { 0x300008, 0x0F,  2, PIC18F2220_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  2, PIC18F2220_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  2, PIC18F2220_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F43K22_addrs[] = {
-  { 0x300001, 0x25,  5, PIC18F23K22_300001   },
-  { 0x300002, 0x1F,  3, PIC18F23K22_300002   },
-  { 0x300003, 0x3F,  2, PIC18F23K22_300003   },
-  { 0x300005, 0xBF,  7, PIC18F43K22_300005   },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x03,  2, MCV20USB_300008      },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x03,  2, MCV20USB_30000A      },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x03,  2, MCV20USB_30000C      },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x25,  5, PIC18F23K22_300001 },
+  { 0x300002, 0x1F,  3, PIC18F23K22_300002 },
+  { 0x300003, 0x3F,  2, PIC18F23K22_300003 },
+  { 0x300005, 0xBF,  7, PIC18F43K22_300005 },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x03,  2, MCV20USB_300008    },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x03,  2, MCV20USB_30000A    },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x03,  2, MCV20USB_30000C    },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F4420_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  4, PIC18F2410_300005    },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x0F,  2, PIC18F2220_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  2, PIC18F2220_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  2, PIC18F2220_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  4, PIC18F2410_300005  },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x0F,  2, PIC18F2220_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  2, PIC18F2220_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  2, PIC18F2220_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F4431_addrs[] = {
-  { 0x300001, 0xCF,  3, PIC18F2331_300001    },
-  { 0x300002, 0x0F,  3, PIC18F2331_300002    },
-  { 0x300003, 0x3F,  3, PIC18F2331_300003    },
-  { 0x300004, 0x3C,  4, PIC18F2331_300004    },
-  { 0x300005, 0x9D,  5, PIC18F4331_300005    },
-  { 0x300006, 0x85,  3, PIC18F2331_300006    },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0xCF,  3, PIC18F2331_300001  },
+  { 0x300002, 0x0F,  3, PIC18F2331_300002  },
+  { 0x300003, 0x3F,  3, PIC18F2331_300003  },
+  { 0x300004, 0x3C,  4, PIC18F2331_300004  },
+  { 0x300005, 0x9D,  5, PIC18F4331_300005  },
+  { 0x300006, 0x85,  3, PIC18F2331_300006  },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F4450_addrs[] = {
-  { 0x300000, 0x00,  3, PIC18F2450_300000    },
-  { 0x300001, 0x05,  3, PIC18F2450_300001    },
-  { 0x300002, 0x1F,  4, PIC18F2450_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x82,  3, PIC18F2450_300005    },
-  { 0x300006, 0x85,  6, PIC18F4450_300006    },
-  { 0x300008, 0x03,  2, MCV20USB_300008      },
-  { 0x300009, 0x40,  1, PIC18F2410_300009    },
-  { 0x30000A, 0x03,  2, MCV20USB_30000A      },
-  { 0x30000B, 0x60,  2, PIC18F2410_30000B    },
-  { 0x30000C, 0x03,  2, MCV20USB_30000C      },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300000, 0x00,  3, PIC18F2450_300000  },
+  { 0x300001, 0x05,  3, PIC18F2450_300001  },
+  { 0x300002, 0x1F,  4, PIC18F2450_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x82,  3, PIC18F2450_300005  },
+  { 0x300006, 0x85,  6, PIC18F4450_300006  },
+  { 0x300008, 0x03,  2, MCV20USB_300008    },
+  { 0x300009, 0x40,  1, PIC18F2410_300009  },
+  { 0x30000A, 0x03,  2, MCV20USB_30000A    },
+  { 0x30000B, 0x60,  2, PIC18F2410_30000B  },
+  { 0x30000C, 0x03,  2, MCV20USB_30000C    },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F4455_addrs[] = {
-  { 0x300000, 0x00,  3, PIC18F2450_300000    },
-  { 0x300001, 0x05,  3, PIC18F2450_300001    },
-  { 0x300002, 0x1F,  4, PIC18F2455_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  4, PIC18F2455_300005    },
-  { 0x300006, 0x85,  5, PIC18F4455_300006    },
-  { 0x300008, 0x0F,  3, PIC18F2455_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  3, PIC18F2455_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  3, PIC18F2455_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300000, 0x00,  3, PIC18F2450_300000  },
+  { 0x300001, 0x05,  3, PIC18F2450_300001  },
+  { 0x300002, 0x1F,  4, PIC18F2455_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  4, PIC18F2455_300005  },
+  { 0x300006, 0x85,  5, PIC18F4455_300006  },
+  { 0x300008, 0x0F,  3, PIC18F2455_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  3, PIC18F2455_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  3, PIC18F2455_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F4550_addrs[] = {
-  { 0x300000, 0x00,  3, PIC18F2450_300000    },
-  { 0x300001, 0x05,  3, PIC18F2450_300001    },
-  { 0x300002, 0x1F,  4, PIC18F2455_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  4, PIC18F2455_300005    },
-  { 0x300006, 0x85,  5, PIC18F4455_300006    },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300000, 0x00,  3, PIC18F2450_300000  },
+  { 0x300001, 0x05,  3, PIC18F2450_300001  },
+  { 0x300002, 0x1F,  4, PIC18F2455_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  4, PIC18F2455_300005  },
+  { 0x300006, 0x85,  5, PIC18F4455_300006  },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F45K22_addrs[] = {
-  { 0x300001, 0x25,  5, PIC18F23K22_300001   },
-  { 0x300002, 0x1F,  3, PIC18F23K22_300002   },
-  { 0x300003, 0x3F,  2, PIC18F23K22_300003   },
-  { 0x300005, 0xBF,  7, PIC18F43K22_300005   },
-  { 0x300006, 0x85,  4, PIC18F23K20_300006   },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x25,  5, PIC18F23K22_300001 },
+  { 0x300002, 0x1F,  3, PIC18F23K22_300002 },
+  { 0x300003, 0x3F,  2, PIC18F23K22_300003 },
+  { 0x300005, 0xBF,  7, PIC18F43K22_300005 },
+  { 0x300006, 0x85,  4, PIC18F23K20_300006 },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F45K50_addrs[] = {
-  { 0x300000, 0x00,  4, PIC18F24K50_300000   },
-  { 0x300001, 0x25,  4, PIC18F24K50_300001   },
-  { 0x300002, 0x5F,  4, PIC18F24K50_300002   },
-  { 0x300003, 0x3F,  2, PIC18F23K22_300003   },
-  { 0x300005, 0xD3,  5, PIC18F24K50_300005   },
-  { 0x300006, 0x85,  5, PIC18F4455_300006    },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300000, 0x00,  4, PIC18F24K50_300000 },
+  { 0x300001, 0x25,  4, PIC18F24K50_300001 },
+  { 0x300002, 0x5F,  4, PIC18F24K50_300002 },
+  { 0x300003, 0x3F,  2, PIC18F23K22_300003 },
+  { 0x300005, 0xD3,  5, PIC18F24K50_300005 },
+  { 0x300006, 0x85,  5, PIC18F4455_300006  },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F6310_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F6310_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x81,  3, PIC18F6310_300005    },
-  { 0x300006, 0x81,  3, PIC18F6310_300006    },
-  { 0x300008, 0x01,  1, PIC18F6310_300008    }
+  { 0x300001, 0x07,  3, PIC18F6310_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x81,  3, PIC18F6310_300005  },
+  { 0x300006, 0x81,  3, PIC18F6310_300006  },
+  { 0x300008, 0x01,  1, PIC18F6310_300008  }
 };
 
 static const gp_cfg_addr_t PIC18F6390_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F6310_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x81,  3, PIC18F6390_300005    },
-  { 0x300006, 0x81,  3, PIC18F6310_300006    },
-  { 0x300008, 0x01,  1, PIC18F6310_300008    }
+  { 0x300001, 0x07,  3, PIC18F6310_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x81,  3, PIC18F6390_300005  },
+  { 0x300006, 0x81,  3, PIC18F6310_300006  },
+  { 0x300008, 0x01,  1, PIC18F6310_300008  }
 };
 
 static const gp_cfg_addr_t PIC18F63J11_addrs[] = {
-  { 0x001FF8, 0xE1,  4, PIC18F63J11_001FF8   },
-  { 0x001FF9, 0xF4,  1, PIC18F63J11_001FF9   },
-  { 0x001FFA, 0xC7,  4, PIC18F63J11_001FFA   },
-  { 0x001FFB, 0xFF,  1, PIC18F63J11_001FFB   },
-  { 0x001FFD, 0xF1,  1, PIC18F63J11_001FFD   }
+  { 0x001FF8, 0xE1,  4, PIC18F63J11_1FF8   },
+  { 0x001FF9, 0xF4,  1, PIC18F63J11_1FF9   },
+  { 0x001FFA, 0xC7,  4, PIC18F63J11_1FFA   },
+  { 0x001FFB, 0xFF,  1, PIC18F63J11_1FFB   },
+  { 0x001FFD, 0xF1,  1, PIC18F63J11_1FFD   }
 };
 
 static const gp_cfg_addr_t PIC18F6520_addrs[] = {
-  { 0x300001, 0x27,  2, PIC18F242_300001     },
-  { 0x300002, 0x0F,  3, PIC18C242_300002     },
-  { 0x300003, 0x0F,  2, PIC18C242_300003     },
-  { 0x300005, 0x03,  1, PIC18F6520_300005    },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0xFF,  4, PIC18F6520_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0xFF,  4, PIC18F6520_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0xFF,  4, PIC18F6520_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x27,  2, PIC18F242_300001   },
+  { 0x300002, 0x0F,  3, PIC18C242_300002   },
+  { 0x300003, 0x0F,  2, PIC18C242_300003   },
+  { 0x300005, 0x03,  1, PIC18F6520_300005  },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0xFF,  4, PIC18F6520_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0xFF,  4, PIC18F6520_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0xFF,  4, PIC18F6520_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F6525_addrs[] = {
-  { 0x300001, 0x2F,  2, PIC18F6525_300001    },
-  { 0x300002, 0x0F,  3, PIC18F2220_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  2, PIC18F6525_300005    },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  3, PIC18F2455_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  3, PIC18F2455_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  3, PIC18F2455_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x2F,  2, PIC18F6525_300001  },
+  { 0x300002, 0x0F,  3, PIC18F2220_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  2, PIC18F6525_300005  },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  3, PIC18F2455_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  3, PIC18F2455_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  3, PIC18F2455_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F6527_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x81,  3, PIC18F6310_300005    },
-  { 0x300006, 0x85,  5, PIC18F6527_300006    },
-  { 0x300008, 0xFF,  3, PIC18F6527_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0xFF,  3, PIC18F6527_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0xFF,  3, PIC18F6527_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x81,  3, PIC18F6310_300005  },
+  { 0x300006, 0x85,  5, PIC18F6527_300006  },
+  { 0x300008, 0xFF,  3, PIC18F6527_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0xFF,  3, PIC18F6527_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0xFF,  3, PIC18F6527_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F6585_addrs[] = {
-  { 0x300001, 0x2F,  2, PIC18F6525_300001    },
-  { 0x300002, 0x0F,  3, PIC18F2220_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  2, PIC18F6585_300005    },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  3, PIC18F2455_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  3, PIC18F2455_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  3, PIC18F2455_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x2F,  2, PIC18F6525_300001  },
+  { 0x300002, 0x0F,  3, PIC18F2220_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  2, PIC18F6585_300005  },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  3, PIC18F2455_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  3, PIC18F2455_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  3, PIC18F2455_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F65J10_addrs[] = {
-  { 0x007FF8, 0xE1,  4, PIC18F25J10_007FF8   },
-  { 0x007FF9, 0xF4,  1, PIC18F25J10_007FF9   },
-  { 0x007FFA, 0xC7,  4, PIC18F25J10_007FFA   },
-  { 0x007FFB, 0xFF,  1, PIC18F25J10_007FFB   },
-  { 0x007FFD, 0xF3,  1, PIC18F65J10_007FFD   }
+  { 0x007FF8, 0xE1,  4, PIC18F25J10_7FF8   },
+  { 0x007FF9, 0xF4,  1, PIC18F25J10_7FF9   },
+  { 0x007FFA, 0xC7,  4, PIC18F25J10_7FFA   },
+  { 0x007FFB, 0xFF,  1, PIC18F25J10_7FFB   },
+  { 0x007FFD, 0xF3,  1, PIC18F65J10_7FFD   }
 };
 
 static const gp_cfg_addr_t PIC18F65J15_addrs[] = {
-  { 0x00BFF8, 0xE1,  4, PIC18F65J15_00BFF8   },
-  { 0x00BFF9, 0xF4,  1, PIC18F65J15_00BFF9   },
-  { 0x00BFFA, 0xC7,  4, PIC18F65J15_00BFFA   },
-  { 0x00BFFB, 0xFF,  1, PIC18F65J15_00BFFB   },
-  { 0x00BFFD, 0xF3,  1, PIC18F65J15_00BFFD   }
+  { 0x00BFF8, 0xE1,  4, PIC18F65J15_BFF8   },
+  { 0x00BFF9, 0xF4,  1, PIC18F65J15_BFF9   },
+  { 0x00BFFA, 0xC7,  4, PIC18F65J15_BFFA   },
+  { 0x00BFFB, 0xFF,  1, PIC18F65J15_BFFB   },
+  { 0x00BFFD, 0xF3,  1, PIC18F65J15_BFFD   }
 };
 
 static const gp_cfg_addr_t PIC18F65J50_addrs[] = {
-  { 0x007FF8, 0xEF,  5, PIC18F25J50_007FF8   },
-  { 0x007FF9, 0xF7,  2, PIC18F25J50_007FF9   },
-  { 0x007FFA, 0xC7,  3, PIC18F65J50_007FFA   },
-  { 0x007FFB, 0xFF,  1, PIC18F25J10_007FFB   },
-  { 0x007FFD, 0xF9,  2, PIC18F65J50_007FFD   }
+  { 0x007FF8, 0xEF,  5, PIC18F25J50_7FF8   },
+  { 0x007FF9, 0xF7,  2, PIC18F25J50_7FF9   },
+  { 0x007FFA, 0xC7,  3, PIC18F65J50_7FFA   },
+  { 0x007FFB, 0xFF,  1, PIC18F25J10_7FFB   },
+  { 0x007FFD, 0xF9,  2, PIC18F65J50_7FFD   }
 };
 
 static const gp_cfg_addr_t PIC18F65J90_addrs[] = {
-  { 0x007FF8, 0xE1,  4, PIC18F25J10_007FF8   },
-  { 0x007FF9, 0xF4,  1, PIC18F25J10_007FF9   },
-  { 0x007FFA, 0xFF,  4, PIC18F65J90_007FFA   },
-  { 0x007FFB, 0xFF,  1, PIC18F25J10_007FFB   },
-  { 0x007FFD, 0xF1,  1, PIC18F25J10_007FFD   }
+  { 0x007FF8, 0xE1,  4, PIC18F25J10_7FF8   },
+  { 0x007FF9, 0xF4,  1, PIC18F25J10_7FF9   },
+  { 0x007FFA, 0xFF,  4, PIC18F65J90_7FFA   },
+  { 0x007FFB, 0xFF,  1, PIC18F25J10_7FFB   },
+  { 0x007FFD, 0xF1,  1, PIC18F25J10_7FFD   }
 };
 
 static const gp_cfg_addr_t PIC18F65J94_addrs[] = {
-  { 0x007FF0, 0xE0,  2, PIC18F65J94_007FF0   },
-  { 0x007FF1, 0xF7,  3, PIC18F65J94_007FF1   },
-  { 0x007FF2, 0xAF,  4, PIC18F65J94_007FF2   },
-  { 0x007FF3, 0xFF,  1, PIC18F65J94_007FF3   },
-  { 0x007FF4, 0x33,  2, PIC18F65J94_007FF4   },
-  { 0x007FF6, 0xFF,  1, PIC18F65J94_007FF6   },
-  { 0x007FF7, 0xF7,  3, PIC18F65J94_007FF7   },
-  { 0x007FF8, 0x03,  2, PIC18F65J94_007FF8   },
-  { 0x007FF9, 0xFF,  4, PIC18F65J94_007FF9   },
-  { 0x007FFA, 0xFF,  3, PIC18F65J94_007FFA   },
-  { 0x007FFB, 0xFF,  3, PIC18F65J94_007FFB   },
-  { 0x007FFC, 0x1D,  4, PIC18F65J94_007FFC   },
-  { 0x007FFE, 0xF8,  1, PIC18F65J94_007FFE   },
-  { 0x007FFF, 0xF3,  2, PIC18F65J94_007FFF   }
+  { 0x007FF0, 0xE0,  2, PIC18F65J94_7FF0   },
+  { 0x007FF1, 0xF7,  3, PIC18F65J94_7FF1   },
+  { 0x007FF2, 0xAF,  4, PIC18F65J94_7FF2   },
+  { 0x007FF3, 0xFF,  1, PIC18F65J94_7FF3   },
+  { 0x007FF4, 0x33,  2, PIC18F65J94_7FF4   },
+  { 0x007FF6, 0xFF,  1, PIC18F65J94_7FF6   },
+  { 0x007FF7, 0xF7,  3, PIC18F65J94_7FF7   },
+  { 0x007FF8, 0x03,  2, PIC18F65J94_7FF8   },
+  { 0x007FF9, 0xFF,  4, PIC18F65J94_7FF9   },
+  { 0x007FFA, 0xFF,  3, PIC18F65J94_7FFA   },
+  { 0x007FFB, 0xFF,  3, PIC18F65J94_7FFB   },
+  { 0x007FFC, 0x1D,  4, PIC18F65J94_7FFC   },
+  { 0x007FFE, 0xF8,  1, PIC18F65J94_7FFE   },
+  { 0x007FFF, 0xF3,  2, PIC18F65J94_7FFF   }
 };
 
 static const gp_cfg_addr_t PIC18F65K22_addrs[] = {
-  { 0x300000, 0x5D,  4, PIC18F65K22_300000   },
-  { 0x300001, 0x08,  4, PIC18F25K80_300001   },
-  { 0x300002, 0x7F,  4, PIC18F25K80_300002   },
-  { 0x300003, 0x7F,  2, PIC18F25K80_300003   },
-  { 0x300004, 0x01,  1, PIC18F65K22_300004   },
-  { 0x300005, 0x89,  3, PIC18F65K22_300005   },
-  { 0x300006, 0x91,  3, PIC18F65K22_300006   },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F65K22_30000C   },
-  { 0x30000D, 0x40,  1, PIC18F65K22_30000D   }
+  { 0x300000, 0x5D,  4, PIC18F65K22_300000 },
+  { 0x300001, 0x08,  4, PIC18F25K80_300001 },
+  { 0x300002, 0x7F,  4, PIC18F25K80_300002 },
+  { 0x300003, 0x7F,  2, PIC18F25K80_300003 },
+  { 0x300004, 0x01,  1, PIC18F65K22_300004 },
+  { 0x300005, 0x89,  3, PIC18F65K22_300005 },
+  { 0x300006, 0x91,  3, PIC18F65K22_300006 },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F65K22_30000C },
+  { 0x30000D, 0x40,  1, PIC18F65K22_30000D }
 };
 
 static const gp_cfg_addr_t PIC18F65K80_addrs[] = {
-  { 0x300000, 0x5D,  4, PIC18F25K80_300000   },
-  { 0x300001, 0x08,  4, PIC18F25K80_300001   },
-  { 0x300002, 0x7F,  4, PIC18F25K80_300002   },
-  { 0x300003, 0x7F,  2, PIC18F25K80_300003   },
-  { 0x300005, 0x8F,  5, PIC18F65K80_300005   },
-  { 0x300006, 0x91,  2, PIC18F25K80_300006   },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300000, 0x5D,  4, PIC18F25K80_300000 },
+  { 0x300001, 0x08,  4, PIC18F25K80_300001 },
+  { 0x300002, 0x7F,  4, PIC18F25K80_300002 },
+  { 0x300003, 0x7F,  2, PIC18F25K80_300003 },
+  { 0x300005, 0x8F,  5, PIC18F65K80_300005 },
+  { 0x300006, 0x91,  2, PIC18F25K80_300006 },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F6621_addrs[] = {
-  { 0x300001, 0x2F,  2, PIC18F6525_300001    },
-  { 0x300002, 0x0F,  3, PIC18F2220_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  2, PIC18F6525_300005    },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x2F,  2, PIC18F6525_300001  },
+  { 0x300002, 0x0F,  3, PIC18F2220_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  2, PIC18F6525_300005  },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F6622_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x81,  3, PIC18F6310_300005    },
-  { 0x300006, 0x85,  5, PIC18F6527_300006    },
-  { 0x300008, 0xFF,  4, PIC18F6520_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0xFF,  4, PIC18F6520_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0xFF,  4, PIC18F6520_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x81,  3, PIC18F6310_300005  },
+  { 0x300006, 0x85,  5, PIC18F6527_300006  },
+  { 0x300008, 0xFF,  4, PIC18F6520_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0xFF,  4, PIC18F6520_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0xFF,  4, PIC18F6520_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F6627_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  3, PIC18F6627_300005    },
-  { 0x300006, 0x85,  5, PIC18F6527_300006    },
-  { 0x300008, 0xFF,  6, PIC18F6627_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0xFF,  6, PIC18F6627_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0xFF,  6, PIC18F6627_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  3, PIC18F6627_300005  },
+  { 0x300006, 0x85,  5, PIC18F6527_300006  },
+  { 0x300008, 0xFF,  6, PIC18F6627_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0xFF,  6, PIC18F6627_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0xFF,  6, PIC18F6627_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F6680_addrs[] = {
-  { 0x300001, 0x2F,  2, PIC18F6525_300001    },
-  { 0x300002, 0x0F,  3, PIC18F2220_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  2, PIC18F6585_300005    },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x2F,  2, PIC18F6525_300001  },
+  { 0x300002, 0x0F,  3, PIC18F2220_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  2, PIC18F6585_300005  },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F66J10_addrs[] = {
-  { 0x00FFF8, 0xE1,  4, PIC18F26J11_00FFF8   },
-  { 0x00FFF9, 0xF4,  1, PIC18F26J11_00FFF9   },
-  { 0x00FFFA, 0xC7,  4, PIC18F66J10_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFD, 0xF3,  1, PIC18F66J10_00FFFD   }
+  { 0x00FFF8, 0xE1,  4, PIC18F26J11_FFF8   },
+  { 0x00FFF9, 0xF4,  1, PIC18F26J11_FFF9   },
+  { 0x00FFFA, 0xC7,  4, PIC18F66J10_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFD, 0xF3,  1, PIC18F66J10_FFFD   }
 };
 
 static const gp_cfg_addr_t PIC18F66J11_addrs[] = {
-  { 0x00FFF8, 0xE1,  4, PIC18F26J11_00FFF8   },
-  { 0x00FFF9, 0xF4,  1, PIC18F26J11_00FFF9   },
-  { 0x00FFFA, 0xC7,  3, PIC18F66J11_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFD, 0xFF,  2, PIC18F66J11_00FFFD   }
+  { 0x00FFF8, 0xE1,  4, PIC18F26J11_FFF8   },
+  { 0x00FFF9, 0xF4,  1, PIC18F26J11_FFF9   },
+  { 0x00FFFA, 0xC7,  3, PIC18F66J11_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFD, 0xFF,  2, PIC18F66J11_FFFD   }
 };
 
 static const gp_cfg_addr_t PIC18F66J15_addrs[] = {
-  { 0x017FF8, 0xE1,  4, PIC18F66J15_017FF8   },
-  { 0x017FF9, 0xF4,  1, PIC18F66J15_017FF9   },
-  { 0x017FFA, 0xC7,  4, PIC18F66J15_017FFA   },
-  { 0x017FFB, 0xFF,  1, PIC18F66J15_017FFB   },
-  { 0x017FFD, 0xF3,  1, PIC18F66J15_017FFD   }
+  { 0x017FF8, 0xE1,  4, PIC18F66J15_17FF8  },
+  { 0x017FF9, 0xF4,  1, PIC18F66J15_17FF9  },
+  { 0x017FFA, 0xC7,  4, PIC18F66J15_17FFA  },
+  { 0x017FFB, 0xFF,  1, PIC18F66J15_17FFB  },
+  { 0x017FFD, 0xF3,  1, PIC18F66J15_17FFD  }
 };
 
 static const gp_cfg_addr_t PIC18F66J16_addrs[] = {
-  { 0x017FF8, 0xE1,  4, PIC18F66J15_017FF8   },
-  { 0x017FF9, 0xF4,  1, PIC18F66J15_017FF9   },
-  { 0x017FFA, 0xC7,  3, PIC18F66J16_017FFA   },
-  { 0x017FFB, 0xFF,  1, PIC18F66J15_017FFB   },
-  { 0x017FFD, 0xFF,  2, PIC18F66J16_017FFD   }
+  { 0x017FF8, 0xE1,  4, PIC18F66J15_17FF8  },
+  { 0x017FF9, 0xF4,  1, PIC18F66J15_17FF9  },
+  { 0x017FFA, 0xC7,  3, PIC18F66J16_17FFA  },
+  { 0x017FFB, 0xFF,  1, PIC18F66J15_17FFB  },
+  { 0x017FFD, 0xFF,  2, PIC18F66J16_17FFD  }
 };
 
 static const gp_cfg_addr_t PIC18F66J50_addrs[] = {
-  { 0x00FFF8, 0xEF,  5, PIC18F26J50_00FFF8   },
-  { 0x00FFF9, 0xF7,  2, PIC18F26J50_00FFF9   },
-  { 0x00FFFA, 0xC7,  3, PIC18F66J11_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFD, 0xF9,  2, PIC18F66J50_00FFFD   }
+  { 0x00FFF8, 0xEF,  5, PIC18F26J50_FFF8   },
+  { 0x00FFF9, 0xF7,  2, PIC18F26J50_FFF9   },
+  { 0x00FFFA, 0xC7,  3, PIC18F66J11_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFD, 0xF9,  2, PIC18F66J50_FFFD   }
 };
 
 static const gp_cfg_addr_t PIC18F66J55_addrs[] = {
-  { 0x017FF8, 0xEF,  5, PIC18F66J55_017FF8   },
-  { 0x017FF9, 0xF7,  2, PIC18F66J55_017FF9   },
-  { 0x017FFA, 0xC7,  3, PIC18F66J16_017FFA   },
-  { 0x017FFB, 0xFF,  1, PIC18F66J15_017FFB   },
-  { 0x017FFD, 0xF9,  2, PIC18F66J55_017FFD   }
+  { 0x017FF8, 0xEF,  5, PIC18F66J55_17FF8  },
+  { 0x017FF9, 0xF7,  2, PIC18F66J55_17FF9  },
+  { 0x017FFA, 0xC7,  3, PIC18F66J16_17FFA  },
+  { 0x017FFB, 0xFF,  1, PIC18F66J15_17FFB  },
+  { 0x017FFD, 0xF9,  2, PIC18F66J55_17FFD  }
 };
 
 static const gp_cfg_addr_t PIC18F66J60_addrs[] = {
-  { 0x00FFF8, 0xE1,  4, PIC18F66J60_00FFF8   },
-  { 0x00FFF9, 0xF4,  1, PIC18F26J11_00FFF9   },
-  { 0x00FFFA, 0xC7,  4, PIC18F66J10_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFD, 0xF7,  1, PIC18F66J60_00FFFD   }
+  { 0x00FFF8, 0xE1,  4, PIC18F66J60_FFF8   },
+  { 0x00FFF9, 0xF4,  1, PIC18F26J11_FFF9   },
+  { 0x00FFFA, 0xC7,  4, PIC18F66J10_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFD, 0xF7,  1, PIC18F66J60_FFFD   }
 };
 
 static const gp_cfg_addr_t PIC18F66J65_addrs[] = {
-  { 0x017FF8, 0xE1,  4, PIC18F66J65_017FF8   },
-  { 0x017FF9, 0xF4,  1, PIC18F66J15_017FF9   },
-  { 0x017FFA, 0xC7,  4, PIC18F66J15_017FFA   },
-  { 0x017FFB, 0xFF,  1, PIC18F66J15_017FFB   },
-  { 0x017FFD, 0xF7,  1, PIC18F66J65_017FFD   }
+  { 0x017FF8, 0xE1,  4, PIC18F66J65_17FF8  },
+  { 0x017FF9, 0xF4,  1, PIC18F66J15_17FF9  },
+  { 0x017FFA, 0xC7,  4, PIC18F66J15_17FFA  },
+  { 0x017FFB, 0xFF,  1, PIC18F66J15_17FFB  },
+  { 0x017FFD, 0xF7,  1, PIC18F66J65_17FFD  }
 };
 
 static const gp_cfg_addr_t PIC18F66J90_addrs[] = {
-  { 0x00FFF8, 0xE1,  4, PIC18F26J11_00FFF8   },
-  { 0x00FFF9, 0xF4,  1, PIC18F26J11_00FFF9   },
-  { 0x00FFFA, 0xDF,  5, PIC18F66J90_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFC, 0x02,  1, PIC18F66J90_00FFFC   },
-  { 0x00FFFD, 0xF1,  1, PIC18F66J90_00FFFD   }
+  { 0x00FFF8, 0xE1,  4, PIC18F26J11_FFF8   },
+  { 0x00FFF9, 0xF4,  1, PIC18F26J11_FFF9   },
+  { 0x00FFFA, 0xDF,  5, PIC18F66J90_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFC, 0x02,  1, PIC18F66J90_FFFC   },
+  { 0x00FFFD, 0xF1,  1, PIC18F66J90_FFFD   }
 };
 
 static const gp_cfg_addr_t PIC18F66J93_addrs[] = {
-  { 0x00FFF8, 0xE1,  3, PIC18F66J93_00FFF8   },
-  { 0x00FFF9, 0xF4,  1, PIC18F26J11_00FFF9   },
-  { 0x00FFFA, 0xDF,  5, PIC18F66J90_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFC, 0x02,  1, PIC18F66J90_00FFFC   },
-  { 0x00FFFD, 0xF1,  1, PIC18F66J90_00FFFD   }
+  { 0x00FFF8, 0xE1,  3, PIC18F66J93_FFF8   },
+  { 0x00FFF9, 0xF4,  1, PIC18F26J11_FFF9   },
+  { 0x00FFFA, 0xDF,  5, PIC18F66J90_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFC, 0x02,  1, PIC18F66J90_FFFC   },
+  { 0x00FFFD, 0xF1,  1, PIC18F66J90_FFFD   }
 };
 
 static const gp_cfg_addr_t PIC18F66J94_addrs[] = {
-  { 0x00FFF0, 0xE0,  2, PIC18F66J94_00FFF0   },
-  { 0x00FFF1, 0xF7,  3, PIC18F66J94_00FFF1   },
-  { 0x00FFF2, 0xAF,  4, PIC18F66J94_00FFF2   },
-  { 0x00FFF3, 0xFF,  1, PIC18F66J94_00FFF3   },
-  { 0x00FFF4, 0x33,  2, PIC18F66J94_00FFF4   },
-  { 0x00FFF6, 0xFF,  1, PIC18F66J94_00FFF6   },
-  { 0x00FFF7, 0xF7,  3, PIC18F66J94_00FFF7   },
-  { 0x00FFF8, 0x03,  2, PIC18F66J94_00FFF8   },
-  { 0x00FFF9, 0xFF,  4, PIC18F66J94_00FFF9   },
-  { 0x00FFFA, 0xFF,  3, PIC18F66J94_00FFFA   },
-  { 0x00FFFB, 0xFF,  3, PIC18F66J94_00FFFB   },
-  { 0x00FFFC, 0x1D,  4, PIC18F66J94_00FFFC   },
-  { 0x00FFFE, 0xF8,  1, PIC18F66J94_00FFFE   },
-  { 0x00FFFF, 0xF3,  2, PIC18F66J94_00FFFF   }
+  { 0x00FFF0, 0xE0,  2, PIC18F66J94_FFF0   },
+  { 0x00FFF1, 0xF7,  3, PIC18F66J94_FFF1   },
+  { 0x00FFF2, 0xAF,  4, PIC18F66J94_FFF2   },
+  { 0x00FFF3, 0xFF,  1, PIC18F66J94_FFF3   },
+  { 0x00FFF4, 0x33,  2, PIC18F66J94_FFF4   },
+  { 0x00FFF6, 0xFF,  1, PIC18F66J94_FFF6   },
+  { 0x00FFF7, 0xF7,  3, PIC18F66J94_FFF7   },
+  { 0x00FFF8, 0x03,  2, PIC18F66J94_FFF8   },
+  { 0x00FFF9, 0xFF,  4, PIC18F66J94_FFF9   },
+  { 0x00FFFA, 0xFF,  3, PIC18F66J94_FFFA   },
+  { 0x00FFFB, 0xFF,  3, PIC18F66J94_FFFB   },
+  { 0x00FFFC, 0x1D,  4, PIC18F66J94_FFFC   },
+  { 0x00FFFE, 0xF8,  1, PIC18F66J94_FFFE   },
+  { 0x00FFFF, 0xF3,  2, PIC18F66J94_FFFF   }
 };
 
 static const gp_cfg_addr_t PIC18F66J99_addrs[] = {
-  { 0x017FF0, 0xE0,  2, PIC18F66J99_017FF0   },
-  { 0x017FF1, 0xF7,  3, PIC18F66J99_017FF1   },
-  { 0x017FF2, 0xAF,  4, PIC18F66J99_017FF2   },
-  { 0x017FF3, 0xFF,  1, PIC18F66J99_017FF3   },
-  { 0x017FF4, 0x33,  2, PIC18F66J99_017FF4   },
-  { 0x017FF6, 0xFF,  1, PIC18F66J99_017FF6   },
-  { 0x017FF7, 0xF7,  3, PIC18F66J99_017FF7   },
-  { 0x017FF8, 0x03,  2, PIC18F66J99_017FF8   },
-  { 0x017FF9, 0xFF,  4, PIC18F66J99_017FF9   },
-  { 0x017FFA, 0xFF,  3, PIC18F66J99_017FFA   },
-  { 0x017FFB, 0xFF,  3, PIC18F66J99_017FFB   },
-  { 0x017FFC, 0x1D,  4, PIC18F66J99_017FFC   },
-  { 0x017FFE, 0xF8,  1, PIC18F66J99_017FFE   },
-  { 0x017FFF, 0xF3,  2, PIC18F66J99_017FFF   }
+  { 0x017FF0, 0xE0,  2, PIC18F66J99_17FF0  },
+  { 0x017FF1, 0xF7,  3, PIC18F66J99_17FF1  },
+  { 0x017FF2, 0xAF,  4, PIC18F66J99_17FF2  },
+  { 0x017FF3, 0xFF,  1, PIC18F66J99_17FF3  },
+  { 0x017FF4, 0x33,  2, PIC18F66J99_17FF4  },
+  { 0x017FF6, 0xFF,  1, PIC18F66J99_17FF6  },
+  { 0x017FF7, 0xF7,  3, PIC18F66J99_17FF7  },
+  { 0x017FF8, 0x03,  2, PIC18F66J99_17FF8  },
+  { 0x017FF9, 0xFF,  4, PIC18F66J99_17FF9  },
+  { 0x017FFA, 0xFF,  3, PIC18F66J99_17FFA  },
+  { 0x017FFB, 0xFF,  3, PIC18F66J99_17FFB  },
+  { 0x017FFC, 0x1D,  4, PIC18F66J99_17FFC  },
+  { 0x017FFE, 0xF8,  1, PIC18F66J99_17FFE  },
+  { 0x017FFF, 0xF3,  2, PIC18F66J99_17FFF  }
 };
 
 static const gp_cfg_addr_t PIC18F6720_addrs[] = {
-  { 0x300001, 0x27,  2, PIC18F242_300001     },
-  { 0x300002, 0x0F,  3, PIC18C242_300002     },
-  { 0x300003, 0x0F,  2, PIC18C242_300003     },
-  { 0x300005, 0x03,  1, PIC18F6520_300005    },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0xFF,  8, PIC18F6720_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0xFF,  8, PIC18F6720_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0xFF,  8, PIC18F6720_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x27,  2, PIC18F242_300001   },
+  { 0x300002, 0x0F,  3, PIC18C242_300002   },
+  { 0x300003, 0x0F,  2, PIC18C242_300003   },
+  { 0x300005, 0x03,  1, PIC18F6520_300005  },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0xFF,  8, PIC18F6720_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0xFF,  8, PIC18F6720_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0xFF,  8, PIC18F6720_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F6722_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300005, 0x83,  3, PIC18F6627_300005    },
-  { 0x300006, 0x85,  5, PIC18F6527_300006    },
-  { 0x300008, 0xFF,  8, PIC18F6720_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0xFF,  8, PIC18F6720_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0xFF,  8, PIC18F6720_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300005, 0x83,  3, PIC18F6627_300005  },
+  { 0x300006, 0x85,  5, PIC18F6527_300006  },
+  { 0x300008, 0xFF,  8, PIC18F6720_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0xFF,  8, PIC18F6720_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0xFF,  8, PIC18F6720_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F67J10_addrs[] = {
-  { 0x01FFF8, 0xE1,  4, PIC18F67J10_01FFF8   },
-  { 0x01FFF9, 0xF4,  1, PIC18F27J13_01FFF9   },
-  { 0x01FFFA, 0xC7,  4, PIC18F67J10_01FFFA   },
-  { 0x01FFFB, 0xFF,  1, PIC18F27J13_01FFFB   },
-  { 0x01FFFD, 0xF3,  1, PIC18F67J10_01FFFD   }
+  { 0x01FFF8, 0xE1,  4, PIC18F67J10_1FFF8  },
+  { 0x01FFF9, 0xF4,  1, PIC18F27J13_1FFF9  },
+  { 0x01FFFA, 0xC7,  4, PIC18F67J10_1FFFA  },
+  { 0x01FFFB, 0xFF,  1, PIC18F27J13_1FFFB  },
+  { 0x01FFFD, 0xF3,  1, PIC18F67J10_1FFFD  }
 };
 
 static const gp_cfg_addr_t PIC18F67J11_addrs[] = {
-  { 0x01FFF8, 0xE1,  4, PIC18F67J10_01FFF8   },
-  { 0x01FFF9, 0xF4,  1, PIC18F27J13_01FFF9   },
-  { 0x01FFFA, 0xC7,  3, PIC18F67J11_01FFFA   },
-  { 0x01FFFB, 0xFF,  1, PIC18F27J13_01FFFB   },
-  { 0x01FFFD, 0xFF,  2, PIC18F67J11_01FFFD   }
+  { 0x01FFF8, 0xE1,  4, PIC18F67J10_1FFF8  },
+  { 0x01FFF9, 0xF4,  1, PIC18F27J13_1FFF9  },
+  { 0x01FFFA, 0xC7,  3, PIC18F67J11_1FFFA  },
+  { 0x01FFFB, 0xFF,  1, PIC18F27J13_1FFFB  },
+  { 0x01FFFD, 0xFF,  2, PIC18F67J11_1FFFD  }
 };
 
 static const gp_cfg_addr_t PIC18F67J50_addrs[] = {
-  { 0x01FFF8, 0xEF,  5, PIC18F67J50_01FFF8   },
-  { 0x01FFF9, 0xF7,  2, PIC18F27J53_01FFF9   },
-  { 0x01FFFA, 0xC7,  3, PIC18F67J11_01FFFA   },
-  { 0x01FFFB, 0xFF,  1, PIC18F27J13_01FFFB   },
-  { 0x01FFFD, 0xF9,  2, PIC18F67J50_01FFFD   }
+  { 0x01FFF8, 0xEF,  5, PIC18F67J50_1FFF8  },
+  { 0x01FFF9, 0xF7,  2, PIC18F27J53_1FFF9  },
+  { 0x01FFFA, 0xC7,  3, PIC18F67J11_1FFFA  },
+  { 0x01FFFB, 0xFF,  1, PIC18F27J13_1FFFB  },
+  { 0x01FFFD, 0xF9,  2, PIC18F67J50_1FFFD  }
 };
 
 static const gp_cfg_addr_t PIC18F67J60_addrs[] = {
-  { 0x01FFF8, 0xE1,  4, PIC18F67J60_01FFF8   },
-  { 0x01FFF9, 0xF4,  1, PIC18F27J13_01FFF9   },
-  { 0x01FFFA, 0xC7,  4, PIC18F67J10_01FFFA   },
-  { 0x01FFFB, 0xFF,  1, PIC18F27J13_01FFFB   },
-  { 0x01FFFD, 0xF7,  1, PIC18F67J60_01FFFD   }
+  { 0x01FFF8, 0xE1,  4, PIC18F67J60_1FFF8  },
+  { 0x01FFF9, 0xF4,  1, PIC18F27J13_1FFF9  },
+  { 0x01FFFA, 0xC7,  4, PIC18F67J10_1FFFA  },
+  { 0x01FFFB, 0xFF,  1, PIC18F27J13_1FFFB  },
+  { 0x01FFFD, 0xF7,  1, PIC18F67J60_1FFFD  }
 };
 
 static const gp_cfg_addr_t PIC18F67J90_addrs[] = {
-  { 0x01FFF8, 0xE1,  4, PIC18F67J10_01FFF8   },
-  { 0x01FFF9, 0xF4,  1, PIC18F27J13_01FFF9   },
-  { 0x01FFFA, 0xDF,  5, PIC18F67J90_01FFFA   },
-  { 0x01FFFB, 0xFF,  1, PIC18F27J13_01FFFB   },
-  { 0x01FFFC, 0x02,  1, PIC18F67J90_01FFFC   },
-  { 0x01FFFD, 0xF1,  1, PIC18F67J90_01FFFD   }
+  { 0x01FFF8, 0xE1,  4, PIC18F67J10_1FFF8  },
+  { 0x01FFF9, 0xF4,  1, PIC18F27J13_1FFF9  },
+  { 0x01FFFA, 0xDF,  5, PIC18F67J90_1FFFA  },
+  { 0x01FFFB, 0xFF,  1, PIC18F27J13_1FFFB  },
+  { 0x01FFFC, 0x02,  1, PIC18F67J90_1FFFC  },
+  { 0x01FFFD, 0xF1,  1, PIC18F67J90_1FFFD  }
 };
 
 static const gp_cfg_addr_t PIC18F67J93_addrs[] = {
-  { 0x01FFF8, 0xE1,  3, PIC18F67J93_01FFF8   },
-  { 0x01FFF9, 0xF4,  1, PIC18F27J13_01FFF9   },
-  { 0x01FFFA, 0xDF,  5, PIC18F67J90_01FFFA   },
-  { 0x01FFFB, 0xFF,  1, PIC18F27J13_01FFFB   },
-  { 0x01FFFC, 0x02,  1, PIC18F67J90_01FFFC   },
-  { 0x01FFFD, 0xF1,  1, PIC18F67J90_01FFFD   }
+  { 0x01FFF8, 0xE1,  3, PIC18F67J93_1FFF8  },
+  { 0x01FFF9, 0xF4,  1, PIC18F27J13_1FFF9  },
+  { 0x01FFFA, 0xDF,  5, PIC18F67J90_1FFFA  },
+  { 0x01FFFB, 0xFF,  1, PIC18F27J13_1FFFB  },
+  { 0x01FFFC, 0x02,  1, PIC18F67J90_1FFFC  },
+  { 0x01FFFD, 0xF1,  1, PIC18F67J90_1FFFD  }
 };
 
 static const gp_cfg_addr_t PIC18F67J94_addrs[] = {
-  { 0x01FFF0, 0xE0,  2, PIC18F67J94_01FFF0   },
-  { 0x01FFF1, 0xF7,  3, PIC18F67J94_01FFF1   },
-  { 0x01FFF2, 0xAF,  4, PIC18F67J94_01FFF2   },
-  { 0x01FFF3, 0xFF,  1, PIC18F67J94_01FFF3   },
-  { 0x01FFF4, 0x33,  2, PIC18F67J94_01FFF4   },
-  { 0x01FFF6, 0xFF,  1, PIC18F67J94_01FFF6   },
-  { 0x01FFF7, 0xF7,  3, PIC18F67J94_01FFF7   },
-  { 0x01FFF8, 0x03,  2, PIC18F67J94_01FFF8   },
-  { 0x01FFF9, 0xFF,  4, PIC18F67J94_01FFF9   },
-  { 0x01FFFA, 0xFF,  3, PIC18F67J94_01FFFA   },
-  { 0x01FFFB, 0xFF,  3, PIC18F67J94_01FFFB   },
-  { 0x01FFFC, 0x1D,  4, PIC18F67J94_01FFFC   },
-  { 0x01FFFE, 0xF8,  1, PIC18F67J94_01FFFE   },
-  { 0x01FFFF, 0xF3,  2, PIC18F67J94_01FFFF   }
+  { 0x01FFF0, 0xE0,  2, PIC18F67J94_1FFF0  },
+  { 0x01FFF1, 0xF7,  3, PIC18F67J94_1FFF1  },
+  { 0x01FFF2, 0xAF,  4, PIC18F67J94_1FFF2  },
+  { 0x01FFF3, 0xFF,  1, PIC18F67J94_1FFF3  },
+  { 0x01FFF4, 0x33,  2, PIC18F67J94_1FFF4  },
+  { 0x01FFF6, 0xFF,  1, PIC18F67J94_1FFF6  },
+  { 0x01FFF7, 0xF7,  3, PIC18F67J94_1FFF7  },
+  { 0x01FFF8, 0x03,  2, PIC18F67J94_1FFF8  },
+  { 0x01FFF9, 0xFF,  4, PIC18F67J94_1FFF9  },
+  { 0x01FFFA, 0xFF,  3, PIC18F67J94_1FFFA  },
+  { 0x01FFFB, 0xFF,  3, PIC18F67J94_1FFFB  },
+  { 0x01FFFC, 0x1D,  4, PIC18F67J94_1FFFC  },
+  { 0x01FFFE, 0xF8,  1, PIC18F67J94_1FFFE  },
+  { 0x01FFFF, 0xF3,  2, PIC18F67J94_1FFFF  }
 };
 
 static const gp_cfg_addr_t PIC18F67K22_addrs[] = {
-  { 0x300000, 0x5D,  4, PIC18F65K22_300000   },
-  { 0x300001, 0x08,  4, PIC18F25K80_300001   },
-  { 0x300002, 0x7F,  4, PIC18F25K80_300002   },
-  { 0x300003, 0x7F,  2, PIC18F25K80_300003   },
-  { 0x300004, 0x01,  1, PIC18F65K22_300004   },
-  { 0x300005, 0x89,  3, PIC18F65K22_300005   },
-  { 0x300006, 0x91,  3, PIC18F65K22_300006   },
-  { 0x300008, 0xFF,  8, PIC18F6720_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0xFF,  8, PIC18F6720_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0xFF,  8, PIC18F67K22_30000C   },
-  { 0x30000D, 0x40,  1, PIC18F65K22_30000D   }
+  { 0x300000, 0x5D,  4, PIC18F65K22_300000 },
+  { 0x300001, 0x08,  4, PIC18F25K80_300001 },
+  { 0x300002, 0x7F,  4, PIC18F25K80_300002 },
+  { 0x300003, 0x7F,  2, PIC18F25K80_300003 },
+  { 0x300004, 0x01,  1, PIC18F65K22_300004 },
+  { 0x300005, 0x89,  3, PIC18F65K22_300005 },
+  { 0x300006, 0x91,  3, PIC18F65K22_300006 },
+  { 0x300008, 0xFF,  8, PIC18F6720_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0xFF,  8, PIC18F6720_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0xFF,  8, PIC18F67K22_30000C },
+  { 0x30000D, 0x40,  1, PIC18F65K22_30000D }
 };
 
 static const gp_cfg_addr_t PIC18F8310_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F6310_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300004, 0xC3,  3, PIC18F8310_300004    },
-  { 0x300005, 0x81,  3, PIC18F6390_300005    },
-  { 0x300006, 0x81,  3, PIC18F6310_300006    },
-  { 0x300008, 0x01,  1, PIC18F6310_300008    },
-  { 0x30000C, 0x01,  1, PIC18F8310_30000C    }
+  { 0x300001, 0x07,  3, PIC18F6310_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300004, 0xC3,  3, PIC18F8310_300004  },
+  { 0x300005, 0x81,  3, PIC18F6390_300005  },
+  { 0x300006, 0x81,  3, PIC18F6310_300006  },
+  { 0x300008, 0x01,  1, PIC18F6310_300008  },
+  { 0x30000C, 0x01,  1, PIC18F8310_30000C  }
 };
 
 static const gp_cfg_addr_t PIC18F83J11_addrs[] = {
-  { 0x001FF8, 0xE1,  4, PIC18F63J11_001FF8   },
-  { 0x001FF9, 0xF4,  1, PIC18F63J11_001FF9   },
-  { 0x001FFA, 0xC7,  4, PIC18F63J11_001FFA   },
-  { 0x001FFB, 0xFF,  1, PIC18F63J11_001FFB   },
-  { 0x001FFC, 0xF8,  4, PIC18F83J11_001FFC   },
-  { 0x001FFD, 0xF1,  1, PIC18F63J11_001FFD   }
+  { 0x001FF8, 0xE1,  4, PIC18F63J11_1FF8   },
+  { 0x001FF9, 0xF4,  1, PIC18F63J11_1FF9   },
+  { 0x001FFA, 0xC7,  4, PIC18F63J11_1FFA   },
+  { 0x001FFB, 0xFF,  1, PIC18F63J11_1FFB   },
+  { 0x001FFC, 0xF8,  4, PIC18F83J11_1FFC   },
+  { 0x001FFD, 0xF1,  1, PIC18F63J11_1FFD   }
 };
 
 static const gp_cfg_addr_t PIC18F84J11_addrs[] = {
-  { 0x003FF8, 0xE1,  4, PIC18F24J10_003FF8   },
-  { 0x003FF9, 0xF4,  1, PIC18F24J10_003FF9   },
-  { 0x003FFA, 0xC7,  4, PIC18F24J10_003FFA   },
-  { 0x003FFB, 0xFF,  1, PIC18F24J10_003FFB   },
-  { 0x003FFC, 0xF8,  4, PIC18F84J11_003FFC   },
-  { 0x003FFD, 0xF1,  1, PIC18F24J10_003FFD   }
+  { 0x003FF8, 0xE1,  4, PIC18F24J10_3FF8   },
+  { 0x003FF9, 0xF4,  1, PIC18F24J10_3FF9   },
+  { 0x003FFA, 0xC7,  4, PIC18F24J10_3FFA   },
+  { 0x003FFB, 0xFF,  1, PIC18F24J10_3FFB   },
+  { 0x003FFC, 0xF8,  4, PIC18F84J11_3FFC   },
+  { 0x003FFD, 0xF1,  1, PIC18F24J10_3FFD   }
 };
 
 static const gp_cfg_addr_t PIC18F8520_addrs[] = {
-  { 0x300001, 0x27,  2, PIC18F242_300001     },
-  { 0x300002, 0x0F,  3, PIC18C242_300002     },
-  { 0x300003, 0x0F,  2, PIC18C242_300003     },
-  { 0x300004, 0x83,  2, PIC18F8520_300004    },
-  { 0x300005, 0x03,  1, PIC18F6520_300005    },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0xFF,  4, PIC18F6520_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0xFF,  4, PIC18F6520_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0xFF,  4, PIC18F6520_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x27,  2, PIC18F242_300001   },
+  { 0x300002, 0x0F,  3, PIC18C242_300002   },
+  { 0x300003, 0x0F,  2, PIC18C242_300003   },
+  { 0x300004, 0x83,  2, PIC18F8520_300004  },
+  { 0x300005, 0x03,  1, PIC18F6520_300005  },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0xFF,  4, PIC18F6520_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0xFF,  4, PIC18F6520_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0xFF,  4, PIC18F6520_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F8525_addrs[] = {
-  { 0x300001, 0x2F,  2, PIC18F6525_300001    },
-  { 0x300002, 0x0F,  3, PIC18F2220_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300004, 0x83,  2, PIC18F8520_300004    },
-  { 0x300005, 0x83,  3, PIC18F8525_300005    },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  3, PIC18F2455_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  3, PIC18F2455_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  3, PIC18F2455_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x2F,  2, PIC18F6525_300001  },
+  { 0x300002, 0x0F,  3, PIC18F2220_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300004, 0x83,  2, PIC18F8520_300004  },
+  { 0x300005, 0x83,  3, PIC18F8525_300005  },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  3, PIC18F2455_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  3, PIC18F2455_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  3, PIC18F2455_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F8527_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300004, 0xF3,  4, PIC18F8527_300004    },
-  { 0x300005, 0x83,  4, PIC18F8527_300005    },
-  { 0x300006, 0x85,  5, PIC18F6527_300006    },
-  { 0x300008, 0xFF,  3, PIC18F6527_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0xFF,  3, PIC18F6527_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0xFF,  3, PIC18F6527_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300004, 0xF3,  4, PIC18F8527_300004  },
+  { 0x300005, 0x83,  4, PIC18F8527_300005  },
+  { 0x300006, 0x85,  5, PIC18F6527_300006  },
+  { 0x300008, 0xFF,  3, PIC18F6527_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0xFF,  3, PIC18F6527_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0xFF,  3, PIC18F6527_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F8585_addrs[] = {
-  { 0x300001, 0x2F,  2, PIC18F6525_300001    },
-  { 0x300002, 0x0F,  3, PIC18F2220_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300004, 0x83,  2, PIC18F8520_300004    },
-  { 0x300005, 0x83,  3, PIC18F8585_300005    },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  3, PIC18F2455_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  3, PIC18F2455_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  3, PIC18F2455_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x2F,  2, PIC18F6525_300001  },
+  { 0x300002, 0x0F,  3, PIC18F2220_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300004, 0x83,  2, PIC18F8520_300004  },
+  { 0x300005, 0x83,  3, PIC18F8585_300005  },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  3, PIC18F2455_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  3, PIC18F2455_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  3, PIC18F2455_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F85J10_addrs[] = {
-  { 0x007FF8, 0xE1,  4, PIC18F25J10_007FF8   },
-  { 0x007FF9, 0xF4,  1, PIC18F25J10_007FF9   },
-  { 0x007FFA, 0xC7,  4, PIC18F25J10_007FFA   },
-  { 0x007FFB, 0xFF,  1, PIC18F25J10_007FFB   },
-  { 0x007FFC, 0xF8,  4, PIC18F85J10_007FFC   },
-  { 0x007FFD, 0xF3,  2, PIC18F85J10_007FFD   }
+  { 0x007FF8, 0xE1,  4, PIC18F25J10_7FF8   },
+  { 0x007FF9, 0xF4,  1, PIC18F25J10_7FF9   },
+  { 0x007FFA, 0xC7,  4, PIC18F25J10_7FFA   },
+  { 0x007FFB, 0xFF,  1, PIC18F25J10_7FFB   },
+  { 0x007FFC, 0xF8,  4, PIC18F85J10_7FFC   },
+  { 0x007FFD, 0xF3,  2, PIC18F85J10_7FFD   }
 };
 
 static const gp_cfg_addr_t PIC18F85J11_addrs[] = {
-  { 0x007FF8, 0xE1,  4, PIC18F25J10_007FF8   },
-  { 0x007FF9, 0xF4,  1, PIC18F25J10_007FF9   },
-  { 0x007FFA, 0xC7,  4, PIC18F25J10_007FFA   },
-  { 0x007FFB, 0xFF,  1, PIC18F25J10_007FFB   },
-  { 0x007FFC, 0xF8,  4, PIC18F85J10_007FFC   },
-  { 0x007FFD, 0xF1,  1, PIC18F25J10_007FFD   }
+  { 0x007FF8, 0xE1,  4, PIC18F25J10_7FF8   },
+  { 0x007FF9, 0xF4,  1, PIC18F25J10_7FF9   },
+  { 0x007FFA, 0xC7,  4, PIC18F25J10_7FFA   },
+  { 0x007FFB, 0xFF,  1, PIC18F25J10_7FFB   },
+  { 0x007FFC, 0xF8,  4, PIC18F85J10_7FFC   },
+  { 0x007FFD, 0xF1,  1, PIC18F25J10_7FFD   }
 };
 
 static const gp_cfg_addr_t PIC18F85J15_addrs[] = {
-  { 0x00BFF8, 0xE1,  4, PIC18F65J15_00BFF8   },
-  { 0x00BFF9, 0xF4,  1, PIC18F65J15_00BFF9   },
-  { 0x00BFFA, 0xC7,  4, PIC18F65J15_00BFFA   },
-  { 0x00BFFB, 0xFF,  1, PIC18F65J15_00BFFB   },
-  { 0x00BFFC, 0xF8,  4, PIC18F85J15_00BFFC   },
-  { 0x00BFFD, 0xF3,  2, PIC18F85J15_00BFFD   }
+  { 0x00BFF8, 0xE1,  4, PIC18F65J15_BFF8   },
+  { 0x00BFF9, 0xF4,  1, PIC18F65J15_BFF9   },
+  { 0x00BFFA, 0xC7,  4, PIC18F65J15_BFFA   },
+  { 0x00BFFB, 0xFF,  1, PIC18F65J15_BFFB   },
+  { 0x00BFFC, 0xF8,  4, PIC18F85J15_BFFC   },
+  { 0x00BFFD, 0xF3,  2, PIC18F85J15_BFFD   }
 };
 
 static const gp_cfg_addr_t PIC18F85J50_addrs[] = {
-  { 0x007FF8, 0xEF,  5, PIC18F25J50_007FF8   },
-  { 0x007FF9, 0xF7,  2, PIC18F25J50_007FF9   },
-  { 0x007FFA, 0xC7,  3, PIC18F65J50_007FFA   },
-  { 0x007FFB, 0xFF,  1, PIC18F25J10_007FFB   },
-  { 0x007FFC, 0xF8,  4, PIC18F85J10_007FFC   },
-  { 0x007FFD, 0xFF,  4, PIC18F85J50_007FFD   }
+  { 0x007FF8, 0xEF,  5, PIC18F25J50_7FF8   },
+  { 0x007FF9, 0xF7,  2, PIC18F25J50_7FF9   },
+  { 0x007FFA, 0xC7,  3, PIC18F65J50_7FFA   },
+  { 0x007FFB, 0xFF,  1, PIC18F25J10_7FFB   },
+  { 0x007FFC, 0xF8,  4, PIC18F85J10_7FFC   },
+  { 0x007FFD, 0xFF,  4, PIC18F85J50_7FFD   }
 };
 
 static const gp_cfg_addr_t PIC18F85J94_addrs[] = {
-  { 0x007FF0, 0xE0,  2, PIC18F65J94_007FF0   },
-  { 0x007FF1, 0xF7,  3, PIC18F65J94_007FF1   },
-  { 0x007FF2, 0xAF,  4, PIC18F65J94_007FF2   },
-  { 0x007FF3, 0xFF,  1, PIC18F65J94_007FF3   },
-  { 0x007FF4, 0x33,  2, PIC18F65J94_007FF4   },
-  { 0x007FF6, 0xFF,  1, PIC18F65J94_007FF6   },
-  { 0x007FF7, 0xF7,  3, PIC18F65J94_007FF7   },
-  { 0x007FF8, 0xFB,  6, PIC18F85J94_007FF8   },
-  { 0x007FF9, 0xFF,  4, PIC18F65J94_007FF9   },
-  { 0x007FFA, 0xFF,  3, PIC18F65J94_007FFA   },
-  { 0x007FFB, 0xFF,  3, PIC18F65J94_007FFB   },
-  { 0x007FFC, 0x1D,  4, PIC18F65J94_007FFC   },
-  { 0x007FFE, 0xF8,  1, PIC18F65J94_007FFE   },
-  { 0x007FFF, 0xF3,  2, PIC18F65J94_007FFF   }
+  { 0x007FF0, 0xE0,  2, PIC18F65J94_7FF0   },
+  { 0x007FF1, 0xF7,  3, PIC18F65J94_7FF1   },
+  { 0x007FF2, 0xAF,  4, PIC18F65J94_7FF2   },
+  { 0x007FF3, 0xFF,  1, PIC18F65J94_7FF3   },
+  { 0x007FF4, 0x33,  2, PIC18F65J94_7FF4   },
+  { 0x007FF6, 0xFF,  1, PIC18F65J94_7FF6   },
+  { 0x007FF7, 0xF7,  3, PIC18F65J94_7FF7   },
+  { 0x007FF8, 0xFB,  6, PIC18F85J94_7FF8   },
+  { 0x007FF9, 0xFF,  4, PIC18F65J94_7FF9   },
+  { 0x007FFA, 0xFF,  3, PIC18F65J94_7FFA   },
+  { 0x007FFB, 0xFF,  3, PIC18F65J94_7FFB   },
+  { 0x007FFC, 0x1D,  4, PIC18F65J94_7FFC   },
+  { 0x007FFE, 0xF8,  1, PIC18F65J94_7FFE   },
+  { 0x007FFF, 0xF3,  2, PIC18F65J94_7FFF   }
 };
 
 static const gp_cfg_addr_t PIC18F85K22_addrs[] = {
-  { 0x300000, 0x5D,  4, PIC18F65K22_300000   },
-  { 0x300001, 0x08,  4, PIC18F25K80_300001   },
-  { 0x300002, 0x7F,  4, PIC18F25K80_300002   },
-  { 0x300003, 0x7F,  2, PIC18F25K80_300003   },
-  { 0x300004, 0xF9,  5, PIC18F85K22_300004   },
-  { 0x300005, 0x8B,  4, PIC18F85K22_300005   },
-  { 0x300006, 0x91,  3, PIC18F65K22_300006   },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F65K22_30000C   },
-  { 0x30000D, 0x40,  1, PIC18F65K22_30000D   }
+  { 0x300000, 0x5D,  4, PIC18F65K22_300000 },
+  { 0x300001, 0x08,  4, PIC18F25K80_300001 },
+  { 0x300002, 0x7F,  4, PIC18F25K80_300002 },
+  { 0x300003, 0x7F,  2, PIC18F25K80_300003 },
+  { 0x300004, 0xF9,  5, PIC18F85K22_300004 },
+  { 0x300005, 0x8B,  4, PIC18F85K22_300005 },
+  { 0x300006, 0x91,  3, PIC18F65K22_300006 },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F65K22_30000C },
+  { 0x30000D, 0x40,  1, PIC18F65K22_30000D }
 };
 
 static const gp_cfg_addr_t PIC18F85K90_addrs[] = {
-  { 0x300000, 0x5D,  4, PIC18F65K22_300000   },
-  { 0x300001, 0x08,  4, PIC18F25K80_300001   },
-  { 0x300002, 0x7F,  4, PIC18F25K80_300002   },
-  { 0x300003, 0x7F,  2, PIC18F25K80_300003   },
-  { 0x300004, 0x01,  1, PIC18F65K22_300004   },
-  { 0x300005, 0x8B,  4, PIC18F85K22_300005   },
-  { 0x300006, 0x91,  3, PIC18F65K22_300006   },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F65K22_30000C   },
-  { 0x30000D, 0x40,  1, PIC18F65K22_30000D   }
+  { 0x300000, 0x5D,  4, PIC18F65K22_300000 },
+  { 0x300001, 0x08,  4, PIC18F25K80_300001 },
+  { 0x300002, 0x7F,  4, PIC18F25K80_300002 },
+  { 0x300003, 0x7F,  2, PIC18F25K80_300003 },
+  { 0x300004, 0x01,  1, PIC18F65K22_300004 },
+  { 0x300005, 0x8B,  4, PIC18F85K22_300005 },
+  { 0x300006, 0x91,  3, PIC18F65K22_300006 },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F65K22_30000C },
+  { 0x30000D, 0x40,  1, PIC18F65K22_30000D }
 };
 
 static const gp_cfg_addr_t PIC18F8621_addrs[] = {
-  { 0x300001, 0x2F,  2, PIC18F6525_300001    },
-  { 0x300002, 0x0F,  3, PIC18F2220_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300004, 0x83,  2, PIC18F8520_300004    },
-  { 0x300005, 0x83,  3, PIC18F8525_300005    },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x2F,  2, PIC18F6525_300001  },
+  { 0x300002, 0x0F,  3, PIC18F2220_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300004, 0x83,  2, PIC18F8520_300004  },
+  { 0x300005, 0x83,  3, PIC18F8525_300005  },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F8622_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300004, 0xF3,  4, PIC18F8527_300004    },
-  { 0x300005, 0x83,  4, PIC18F8527_300005    },
-  { 0x300006, 0x85,  5, PIC18F6527_300006    },
-  { 0x300008, 0xFF,  4, PIC18F6520_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0xFF,  4, PIC18F6520_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0xFF,  4, PIC18F6520_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300004, 0xF3,  4, PIC18F8527_300004  },
+  { 0x300005, 0x83,  4, PIC18F8527_300005  },
+  { 0x300006, 0x85,  5, PIC18F6527_300006  },
+  { 0x300008, 0xFF,  4, PIC18F6520_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0xFF,  4, PIC18F6520_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0xFF,  4, PIC18F6520_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F8627_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300004, 0xF3,  4, PIC18F8527_300004    },
-  { 0x300005, 0x83,  4, PIC18F8527_300005    },
-  { 0x300006, 0x85,  5, PIC18F6527_300006    },
-  { 0x300008, 0xFF,  6, PIC18F6627_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0xFF,  6, PIC18F6627_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0xFF,  6, PIC18F6627_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300004, 0xF3,  4, PIC18F8527_300004  },
+  { 0x300005, 0x83,  4, PIC18F8527_300005  },
+  { 0x300006, 0x85,  5, PIC18F6527_300006  },
+  { 0x300008, 0xFF,  6, PIC18F6627_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0xFF,  6, PIC18F6627_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0xFF,  6, PIC18F6627_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F8680_addrs[] = {
-  { 0x300001, 0x2F,  2, PIC18F6525_300001    },
-  { 0x300002, 0x0F,  3, PIC18F2220_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300004, 0x83,  2, PIC18F8520_300004    },
-  { 0x300005, 0x83,  3, PIC18F8585_300005    },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0x0F,  4, PIC18F2320_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0x0F,  4, PIC18F2320_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0x0F,  4, PIC18F2320_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x2F,  2, PIC18F6525_300001  },
+  { 0x300002, 0x0F,  3, PIC18F2220_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300004, 0x83,  2, PIC18F8520_300004  },
+  { 0x300005, 0x83,  3, PIC18F8585_300005  },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0x0F,  4, PIC18F2320_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0x0F,  4, PIC18F2320_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0x0F,  4, PIC18F2320_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F86J10_addrs[] = {
-  { 0x00FFF8, 0xE1,  4, PIC18F26J11_00FFF8   },
-  { 0x00FFF9, 0xF4,  1, PIC18F26J11_00FFF9   },
-  { 0x00FFFA, 0xC7,  4, PIC18F66J10_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFC, 0xF8,  4, PIC18F86J10_00FFFC   },
-  { 0x00FFFD, 0xF3,  2, PIC18F86J10_00FFFD   }
+  { 0x00FFF8, 0xE1,  4, PIC18F26J11_FFF8   },
+  { 0x00FFF9, 0xF4,  1, PIC18F26J11_FFF9   },
+  { 0x00FFFA, 0xC7,  4, PIC18F66J10_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFC, 0xF8,  4, PIC18F86J10_FFFC   },
+  { 0x00FFFD, 0xF3,  2, PIC18F86J10_FFFD   }
 };
 
 static const gp_cfg_addr_t PIC18F86J11_addrs[] = {
-  { 0x00FFF8, 0xE1,  4, PIC18F26J11_00FFF8   },
-  { 0x00FFF9, 0xF4,  1, PIC18F26J11_00FFF9   },
-  { 0x00FFFA, 0xC7,  3, PIC18F66J11_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFC, 0xF8,  4, PIC18F86J10_00FFFC   },
-  { 0x00FFFD, 0xFF,  4, PIC18F86J11_00FFFD   }
+  { 0x00FFF8, 0xE1,  4, PIC18F26J11_FFF8   },
+  { 0x00FFF9, 0xF4,  1, PIC18F26J11_FFF9   },
+  { 0x00FFFA, 0xC7,  3, PIC18F66J11_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFC, 0xF8,  4, PIC18F86J10_FFFC   },
+  { 0x00FFFD, 0xFF,  4, PIC18F86J11_FFFD   }
 };
 
 static const gp_cfg_addr_t PIC18F86J15_addrs[] = {
-  { 0x017FF8, 0xE1,  4, PIC18F66J15_017FF8   },
-  { 0x017FF9, 0xF4,  1, PIC18F66J15_017FF9   },
-  { 0x017FFA, 0xC7,  4, PIC18F66J15_017FFA   },
-  { 0x017FFB, 0xFF,  1, PIC18F66J15_017FFB   },
-  { 0x017FFC, 0xF8,  4, PIC18F86J15_017FFC   },
-  { 0x017FFD, 0xF3,  2, PIC18F86J15_017FFD   }
+  { 0x017FF8, 0xE1,  4, PIC18F66J15_17FF8  },
+  { 0x017FF9, 0xF4,  1, PIC18F66J15_17FF9  },
+  { 0x017FFA, 0xC7,  4, PIC18F66J15_17FFA  },
+  { 0x017FFB, 0xFF,  1, PIC18F66J15_17FFB  },
+  { 0x017FFC, 0xF8,  4, PIC18F86J15_17FFC  },
+  { 0x017FFD, 0xF3,  2, PIC18F86J15_17FFD  }
 };
 
 static const gp_cfg_addr_t PIC18F86J16_addrs[] = {
-  { 0x017FF8, 0xE1,  4, PIC18F66J15_017FF8   },
-  { 0x017FF9, 0xF4,  1, PIC18F66J15_017FF9   },
-  { 0x017FFA, 0xC7,  3, PIC18F66J16_017FFA   },
-  { 0x017FFB, 0xFF,  1, PIC18F66J15_017FFB   },
-  { 0x017FFC, 0xF8,  4, PIC18F86J15_017FFC   },
-  { 0x017FFD, 0xFF,  4, PIC18F86J16_017FFD   }
+  { 0x017FF8, 0xE1,  4, PIC18F66J15_17FF8  },
+  { 0x017FF9, 0xF4,  1, PIC18F66J15_17FF9  },
+  { 0x017FFA, 0xC7,  3, PIC18F66J16_17FFA  },
+  { 0x017FFB, 0xFF,  1, PIC18F66J15_17FFB  },
+  { 0x017FFC, 0xF8,  4, PIC18F86J15_17FFC  },
+  { 0x017FFD, 0xFF,  4, PIC18F86J16_17FFD  }
 };
 
 static const gp_cfg_addr_t PIC18F86J50_addrs[] = {
-  { 0x00FFF8, 0xEF,  5, PIC18F26J50_00FFF8   },
-  { 0x00FFF9, 0xF7,  2, PIC18F26J50_00FFF9   },
-  { 0x00FFFA, 0xC7,  3, PIC18F66J11_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFC, 0xF8,  4, PIC18F86J10_00FFFC   },
-  { 0x00FFFD, 0xFF,  4, PIC18F86J11_00FFFD   }
+  { 0x00FFF8, 0xEF,  5, PIC18F26J50_FFF8   },
+  { 0x00FFF9, 0xF7,  2, PIC18F26J50_FFF9   },
+  { 0x00FFFA, 0xC7,  3, PIC18F66J11_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFC, 0xF8,  4, PIC18F86J10_FFFC   },
+  { 0x00FFFD, 0xFF,  4, PIC18F86J11_FFFD   }
 };
 
 static const gp_cfg_addr_t PIC18F86J55_addrs[] = {
-  { 0x017FF8, 0xEF,  5, PIC18F66J55_017FF8   },
-  { 0x017FF9, 0xF7,  2, PIC18F66J55_017FF9   },
-  { 0x017FFA, 0xC7,  3, PIC18F66J16_017FFA   },
-  { 0x017FFB, 0xFF,  1, PIC18F66J15_017FFB   },
-  { 0x017FFC, 0xF8,  4, PIC18F86J15_017FFC   },
-  { 0x017FFD, 0xFF,  4, PIC18F86J16_017FFD   }
+  { 0x017FF8, 0xEF,  5, PIC18F66J55_17FF8  },
+  { 0x017FF9, 0xF7,  2, PIC18F66J55_17FF9  },
+  { 0x017FFA, 0xC7,  3, PIC18F66J16_17FFA  },
+  { 0x017FFB, 0xFF,  1, PIC18F66J15_17FFB  },
+  { 0x017FFC, 0xF8,  4, PIC18F86J15_17FFC  },
+  { 0x017FFD, 0xFF,  4, PIC18F86J16_17FFD  }
 };
 
 static const gp_cfg_addr_t PIC18F86J60_addrs[] = {
-  { 0x00FFF8, 0xE1,  4, PIC18F66J60_00FFF8   },
-  { 0x00FFF9, 0xF4,  1, PIC18F26J11_00FFF9   },
-  { 0x00FFFA, 0xC7,  4, PIC18F66J10_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFD, 0xF7,  3, PIC18F86J60_00FFFD   }
+  { 0x00FFF8, 0xE1,  4, PIC18F66J60_FFF8   },
+  { 0x00FFF9, 0xF4,  1, PIC18F26J11_FFF9   },
+  { 0x00FFFA, 0xC7,  4, PIC18F66J10_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFD, 0xF7,  3, PIC18F86J60_FFFD   }
 };
 
 static const gp_cfg_addr_t PIC18F86J65_addrs[] = {
-  { 0x017FF8, 0xE1,  4, PIC18F66J65_017FF8   },
-  { 0x017FF9, 0xF4,  1, PIC18F66J15_017FF9   },
-  { 0x017FFA, 0xC7,  4, PIC18F66J15_017FFA   },
-  { 0x017FFB, 0xFF,  1, PIC18F66J15_017FFB   },
-  { 0x017FFD, 0xF7,  3, PIC18F86J65_017FFD   }
+  { 0x017FF8, 0xE1,  4, PIC18F66J65_17FF8  },
+  { 0x017FF9, 0xF4,  1, PIC18F66J15_17FF9  },
+  { 0x017FFA, 0xC7,  4, PIC18F66J15_17FFA  },
+  { 0x017FFB, 0xFF,  1, PIC18F66J15_17FFB  },
+  { 0x017FFD, 0xF7,  3, PIC18F86J65_17FFD  }
 };
 
 static const gp_cfg_addr_t PIC18F86J90_addrs[] = {
-  { 0x00FFF8, 0xE1,  4, PIC18F26J11_00FFF8   },
-  { 0x00FFF9, 0xF4,  1, PIC18F26J11_00FFF9   },
-  { 0x00FFFA, 0xDF,  5, PIC18F66J90_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFC, 0xF2,  1, PIC18F86J90_00FFFC   },
-  { 0x00FFFD, 0xF1,  1, PIC18F66J90_00FFFD   }
+  { 0x00FFF8, 0xE1,  4, PIC18F26J11_FFF8   },
+  { 0x00FFF9, 0xF4,  1, PIC18F26J11_FFF9   },
+  { 0x00FFFA, 0xDF,  5, PIC18F66J90_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFC, 0xF2,  1, PIC18F86J90_FFFC   },
+  { 0x00FFFD, 0xF1,  1, PIC18F66J90_FFFD   }
 };
 
 static const gp_cfg_addr_t PIC18F86J93_addrs[] = {
-  { 0x00FFF8, 0xE1,  3, PIC18F66J93_00FFF8   },
-  { 0x00FFF9, 0xF4,  1, PIC18F26J11_00FFF9   },
-  { 0x00FFFA, 0xDF,  5, PIC18F66J90_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFC, 0xF2,  1, PIC18F86J90_00FFFC   },
-  { 0x00FFFD, 0xF1,  1, PIC18F66J90_00FFFD   }
+  { 0x00FFF8, 0xE1,  3, PIC18F66J93_FFF8   },
+  { 0x00FFF9, 0xF4,  1, PIC18F26J11_FFF9   },
+  { 0x00FFFA, 0xDF,  5, PIC18F66J90_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFC, 0xF2,  1, PIC18F86J90_FFFC   },
+  { 0x00FFFD, 0xF1,  1, PIC18F66J90_FFFD   }
 };
 
 static const gp_cfg_addr_t PIC18F86J94_addrs[] = {
-  { 0x00FFF0, 0xE0,  2, PIC18F66J94_00FFF0   },
-  { 0x00FFF1, 0xF7,  3, PIC18F66J94_00FFF1   },
-  { 0x00FFF2, 0xAF,  4, PIC18F66J94_00FFF2   },
-  { 0x00FFF3, 0xFF,  1, PIC18F66J94_00FFF3   },
-  { 0x00FFF4, 0x33,  2, PIC18F66J94_00FFF4   },
-  { 0x00FFF6, 0xFF,  1, PIC18F66J94_00FFF6   },
-  { 0x00FFF7, 0xF7,  3, PIC18F66J94_00FFF7   },
-  { 0x00FFF8, 0xFB,  6, PIC18F86J94_00FFF8   },
-  { 0x00FFF9, 0xFF,  4, PIC18F66J94_00FFF9   },
-  { 0x00FFFA, 0xFF,  3, PIC18F66J94_00FFFA   },
-  { 0x00FFFB, 0xFF,  3, PIC18F66J94_00FFFB   },
-  { 0x00FFFC, 0x1D,  4, PIC18F66J94_00FFFC   },
-  { 0x00FFFE, 0xF8,  1, PIC18F66J94_00FFFE   },
-  { 0x00FFFF, 0xF3,  2, PIC18F66J94_00FFFF   }
+  { 0x00FFF0, 0xE0,  2, PIC18F66J94_FFF0   },
+  { 0x00FFF1, 0xF7,  3, PIC18F66J94_FFF1   },
+  { 0x00FFF2, 0xAF,  4, PIC18F66J94_FFF2   },
+  { 0x00FFF3, 0xFF,  1, PIC18F66J94_FFF3   },
+  { 0x00FFF4, 0x33,  2, PIC18F66J94_FFF4   },
+  { 0x00FFF6, 0xFF,  1, PIC18F66J94_FFF6   },
+  { 0x00FFF7, 0xF7,  3, PIC18F66J94_FFF7   },
+  { 0x00FFF8, 0xFB,  6, PIC18F86J94_FFF8   },
+  { 0x00FFF9, 0xFF,  4, PIC18F66J94_FFF9   },
+  { 0x00FFFA, 0xFF,  3, PIC18F66J94_FFFA   },
+  { 0x00FFFB, 0xFF,  3, PIC18F66J94_FFFB   },
+  { 0x00FFFC, 0x1D,  4, PIC18F66J94_FFFC   },
+  { 0x00FFFE, 0xF8,  1, PIC18F66J94_FFFE   },
+  { 0x00FFFF, 0xF3,  2, PIC18F66J94_FFFF   }
 };
 
 static const gp_cfg_addr_t PIC18F86J99_addrs[] = {
-  { 0x017FF0, 0xE0,  2, PIC18F66J99_017FF0   },
-  { 0x017FF1, 0xF7,  3, PIC18F66J99_017FF1   },
-  { 0x017FF2, 0xAF,  4, PIC18F66J99_017FF2   },
-  { 0x017FF3, 0xFF,  1, PIC18F66J99_017FF3   },
-  { 0x017FF4, 0x33,  2, PIC18F66J99_017FF4   },
-  { 0x017FF6, 0xFF,  1, PIC18F66J99_017FF6   },
-  { 0x017FF7, 0xF7,  3, PIC18F66J99_017FF7   },
-  { 0x017FF8, 0xFB,  6, PIC18F86J99_017FF8   },
-  { 0x017FF9, 0xFF,  4, PIC18F66J99_017FF9   },
-  { 0x017FFA, 0xFF,  3, PIC18F66J99_017FFA   },
-  { 0x017FFB, 0xFF,  3, PIC18F66J99_017FFB   },
-  { 0x017FFC, 0x1D,  4, PIC18F66J99_017FFC   },
-  { 0x017FFE, 0xF8,  1, PIC18F66J99_017FFE   },
-  { 0x017FFF, 0xF3,  2, PIC18F66J99_017FFF   }
+  { 0x017FF0, 0xE0,  2, PIC18F66J99_17FF0  },
+  { 0x017FF1, 0xF7,  3, PIC18F66J99_17FF1  },
+  { 0x017FF2, 0xAF,  4, PIC18F66J99_17FF2  },
+  { 0x017FF3, 0xFF,  1, PIC18F66J99_17FF3  },
+  { 0x017FF4, 0x33,  2, PIC18F66J99_17FF4  },
+  { 0x017FF6, 0xFF,  1, PIC18F66J99_17FF6  },
+  { 0x017FF7, 0xF7,  3, PIC18F66J99_17FF7  },
+  { 0x017FF8, 0xFB,  6, PIC18F86J99_17FF8  },
+  { 0x017FF9, 0xFF,  4, PIC18F66J99_17FF9  },
+  { 0x017FFA, 0xFF,  3, PIC18F66J99_17FFA  },
+  { 0x017FFB, 0xFF,  3, PIC18F66J99_17FFB  },
+  { 0x017FFC, 0x1D,  4, PIC18F66J99_17FFC  },
+  { 0x017FFE, 0xF8,  1, PIC18F66J99_17FFE  },
+  { 0x017FFF, 0xF3,  2, PIC18F66J99_17FFF  }
 };
 
 static const gp_cfg_addr_t PIC18F8720_addrs[] = {
-  { 0x300001, 0x27,  2, PIC18F242_300001     },
-  { 0x300002, 0x0F,  3, PIC18C242_300002     },
-  { 0x300003, 0x0F,  2, PIC18C242_300003     },
-  { 0x300004, 0x83,  2, PIC18F8520_300004    },
-  { 0x300005, 0x03,  1, PIC18F6520_300005    },
-  { 0x300006, 0x85,  3, PIC18F1220_300006    },
-  { 0x300008, 0xFF,  8, PIC18F6720_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0xFF,  8, PIC18F6720_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0xFF,  8, PIC18F6720_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x27,  2, PIC18F242_300001   },
+  { 0x300002, 0x0F,  3, PIC18C242_300002   },
+  { 0x300003, 0x0F,  2, PIC18C242_300003   },
+  { 0x300004, 0x83,  2, PIC18F8520_300004  },
+  { 0x300005, 0x03,  1, PIC18F6520_300005  },
+  { 0x300006, 0x85,  3, PIC18F1220_300006  },
+  { 0x300008, 0xFF,  8, PIC18F6720_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0xFF,  8, PIC18F6720_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0xFF,  8, PIC18F6720_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F8722_addrs[] = {
-  { 0x300001, 0x07,  3, PIC18F2410_300001    },
-  { 0x300002, 0x1F,  3, PIC18F2410_300002    },
-  { 0x300003, 0x1F,  2, PIC18F1220_300003    },
-  { 0x300004, 0xF3,  4, PIC18F8527_300004    },
-  { 0x300005, 0x83,  4, PIC18F8527_300005    },
-  { 0x300006, 0x85,  5, PIC18F6527_300006    },
-  { 0x300008, 0xFF,  8, PIC18F6720_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0xFF,  8, PIC18F6720_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0xFF,  8, PIC18F6720_30000C    },
-  { 0x30000D, 0x40,  1, MCV20USB_30000D      }
+  { 0x300001, 0x07,  3, PIC18F2410_300001  },
+  { 0x300002, 0x1F,  3, PIC18F2410_300002  },
+  { 0x300003, 0x1F,  2, PIC18F1220_300003  },
+  { 0x300004, 0xF3,  4, PIC18F8527_300004  },
+  { 0x300005, 0x83,  4, PIC18F8527_300005  },
+  { 0x300006, 0x85,  5, PIC18F6527_300006  },
+  { 0x300008, 0xFF,  8, PIC18F6720_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0xFF,  8, PIC18F6720_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0xFF,  8, PIC18F6720_30000C  },
+  { 0x30000D, 0x40,  1, MCV20USB_30000D    }
 };
 
 static const gp_cfg_addr_t PIC18F87J10_addrs[] = {
-  { 0x01FFF8, 0xE1,  4, PIC18F67J10_01FFF8   },
-  { 0x01FFF9, 0xF4,  1, PIC18F27J13_01FFF9   },
-  { 0x01FFFA, 0xC7,  4, PIC18F67J10_01FFFA   },
-  { 0x01FFFB, 0xFF,  1, PIC18F27J13_01FFFB   },
-  { 0x01FFFC, 0xF8,  4, PIC18F87J10_01FFFC   },
-  { 0x01FFFD, 0xF3,  2, PIC18F87J10_01FFFD   }
+  { 0x01FFF8, 0xE1,  4, PIC18F67J10_1FFF8  },
+  { 0x01FFF9, 0xF4,  1, PIC18F27J13_1FFF9  },
+  { 0x01FFFA, 0xC7,  4, PIC18F67J10_1FFFA  },
+  { 0x01FFFB, 0xFF,  1, PIC18F27J13_1FFFB  },
+  { 0x01FFFC, 0xF8,  4, PIC18F87J10_1FFFC  },
+  { 0x01FFFD, 0xF3,  2, PIC18F87J10_1FFFD  }
 };
 
 static const gp_cfg_addr_t PIC18F87J11_addrs[] = {
-  { 0x01FFF8, 0xE1,  4, PIC18F67J10_01FFF8   },
-  { 0x01FFF9, 0xF4,  1, PIC18F27J13_01FFF9   },
-  { 0x01FFFA, 0xC7,  3, PIC18F67J11_01FFFA   },
-  { 0x01FFFB, 0xFF,  1, PIC18F27J13_01FFFB   },
-  { 0x01FFFC, 0xF8,  4, PIC18F87J10_01FFFC   },
-  { 0x01FFFD, 0xFF,  4, PIC18F87J11_01FFFD   }
+  { 0x01FFF8, 0xE1,  4, PIC18F67J10_1FFF8  },
+  { 0x01FFF9, 0xF4,  1, PIC18F27J13_1FFF9  },
+  { 0x01FFFA, 0xC7,  3, PIC18F67J11_1FFFA  },
+  { 0x01FFFB, 0xFF,  1, PIC18F27J13_1FFFB  },
+  { 0x01FFFC, 0xF8,  4, PIC18F87J10_1FFFC  },
+  { 0x01FFFD, 0xFF,  4, PIC18F87J11_1FFFD  }
 };
 
 static const gp_cfg_addr_t PIC18F87J50_addrs[] = {
-  { 0x01FFF8, 0xEF,  5, PIC18F67J50_01FFF8   },
-  { 0x01FFF9, 0xF7,  2, PIC18F27J53_01FFF9   },
-  { 0x01FFFA, 0xC7,  3, PIC18F67J11_01FFFA   },
-  { 0x01FFFB, 0xFF,  1, PIC18F27J13_01FFFB   },
-  { 0x01FFFC, 0xF8,  4, PIC18F87J10_01FFFC   },
-  { 0x01FFFD, 0xFF,  4, PIC18F87J11_01FFFD   }
+  { 0x01FFF8, 0xEF,  5, PIC18F67J50_1FFF8  },
+  { 0x01FFF9, 0xF7,  2, PIC18F27J53_1FFF9  },
+  { 0x01FFFA, 0xC7,  3, PIC18F67J11_1FFFA  },
+  { 0x01FFFB, 0xFF,  1, PIC18F27J13_1FFFB  },
+  { 0x01FFFC, 0xF8,  4, PIC18F87J10_1FFFC  },
+  { 0x01FFFD, 0xFF,  4, PIC18F87J11_1FFFD  }
 };
 
 static const gp_cfg_addr_t PIC18F87J60_addrs[] = {
-  { 0x01FFF8, 0xE1,  4, PIC18F67J60_01FFF8   },
-  { 0x01FFF9, 0xF4,  1, PIC18F27J13_01FFF9   },
-  { 0x01FFFA, 0xC7,  4, PIC18F67J10_01FFFA   },
-  { 0x01FFFB, 0xFF,  1, PIC18F27J13_01FFFB   },
-  { 0x01FFFD, 0xF7,  3, PIC18F87J60_01FFFD   }
+  { 0x01FFF8, 0xE1,  4, PIC18F67J60_1FFF8  },
+  { 0x01FFF9, 0xF4,  1, PIC18F27J13_1FFF9  },
+  { 0x01FFFA, 0xC7,  4, PIC18F67J10_1FFFA  },
+  { 0x01FFFB, 0xFF,  1, PIC18F27J13_1FFFB  },
+  { 0x01FFFD, 0xF7,  3, PIC18F87J60_1FFFD  }
 };
 
 static const gp_cfg_addr_t PIC18F87J90_addrs[] = {
-  { 0x01FFF8, 0xE1,  4, PIC18F67J10_01FFF8   },
-  { 0x01FFF9, 0xF4,  1, PIC18F27J13_01FFF9   },
-  { 0x01FFFA, 0xDF,  5, PIC18F67J90_01FFFA   },
-  { 0x01FFFB, 0xFF,  1, PIC18F27J13_01FFFB   },
-  { 0x01FFFC, 0xF2,  1, PIC18F87J90_01FFFC   },
-  { 0x01FFFD, 0xF1,  1, PIC18F67J90_01FFFD   }
+  { 0x01FFF8, 0xE1,  4, PIC18F67J10_1FFF8  },
+  { 0x01FFF9, 0xF4,  1, PIC18F27J13_1FFF9  },
+  { 0x01FFFA, 0xDF,  5, PIC18F67J90_1FFFA  },
+  { 0x01FFFB, 0xFF,  1, PIC18F27J13_1FFFB  },
+  { 0x01FFFC, 0xF2,  1, PIC18F87J90_1FFFC  },
+  { 0x01FFFD, 0xF1,  1, PIC18F67J90_1FFFD  }
 };
 
 static const gp_cfg_addr_t PIC18F87J93_addrs[] = {
-  { 0x01FFF8, 0xE1,  3, PIC18F67J93_01FFF8   },
-  { 0x01FFF9, 0xF4,  1, PIC18F27J13_01FFF9   },
-  { 0x01FFFA, 0xDF,  5, PIC18F67J90_01FFFA   },
-  { 0x01FFFB, 0xFF,  1, PIC18F27J13_01FFFB   },
-  { 0x01FFFC, 0xF2,  1, PIC18F87J90_01FFFC   },
-  { 0x01FFFD, 0xF1,  1, PIC18F67J90_01FFFD   }
+  { 0x01FFF8, 0xE1,  3, PIC18F67J93_1FFF8  },
+  { 0x01FFF9, 0xF4,  1, PIC18F27J13_1FFF9  },
+  { 0x01FFFA, 0xDF,  5, PIC18F67J90_1FFFA  },
+  { 0x01FFFB, 0xFF,  1, PIC18F27J13_1FFFB  },
+  { 0x01FFFC, 0xF2,  1, PIC18F87J90_1FFFC  },
+  { 0x01FFFD, 0xF1,  1, PIC18F67J90_1FFFD  }
 };
 
 static const gp_cfg_addr_t PIC18F87J94_addrs[] = {
-  { 0x01FFF0, 0xE0,  2, PIC18F67J94_01FFF0   },
-  { 0x01FFF1, 0xF7,  3, PIC18F67J94_01FFF1   },
-  { 0x01FFF2, 0xAF,  4, PIC18F67J94_01FFF2   },
-  { 0x01FFF3, 0xFF,  1, PIC18F67J94_01FFF3   },
-  { 0x01FFF4, 0x33,  2, PIC18F67J94_01FFF4   },
-  { 0x01FFF6, 0xFF,  1, PIC18F67J94_01FFF6   },
-  { 0x01FFF7, 0xF7,  3, PIC18F67J94_01FFF7   },
-  { 0x01FFF8, 0xFB,  6, PIC18F87J94_01FFF8   },
-  { 0x01FFF9, 0xFF,  4, PIC18F67J94_01FFF9   },
-  { 0x01FFFA, 0xFF,  3, PIC18F67J94_01FFFA   },
-  { 0x01FFFB, 0xFF,  3, PIC18F67J94_01FFFB   },
-  { 0x01FFFC, 0x1D,  4, PIC18F67J94_01FFFC   },
-  { 0x01FFFE, 0xF8,  1, PIC18F67J94_01FFFE   },
-  { 0x01FFFF, 0xF3,  2, PIC18F67J94_01FFFF   }
+  { 0x01FFF0, 0xE0,  2, PIC18F67J94_1FFF0  },
+  { 0x01FFF1, 0xF7,  3, PIC18F67J94_1FFF1  },
+  { 0x01FFF2, 0xAF,  4, PIC18F67J94_1FFF2  },
+  { 0x01FFF3, 0xFF,  1, PIC18F67J94_1FFF3  },
+  { 0x01FFF4, 0x33,  2, PIC18F67J94_1FFF4  },
+  { 0x01FFF6, 0xFF,  1, PIC18F67J94_1FFF6  },
+  { 0x01FFF7, 0xF7,  3, PIC18F67J94_1FFF7  },
+  { 0x01FFF8, 0xFB,  6, PIC18F87J94_1FFF8  },
+  { 0x01FFF9, 0xFF,  4, PIC18F67J94_1FFF9  },
+  { 0x01FFFA, 0xFF,  3, PIC18F67J94_1FFFA  },
+  { 0x01FFFB, 0xFF,  3, PIC18F67J94_1FFFB  },
+  { 0x01FFFC, 0x1D,  4, PIC18F67J94_1FFFC  },
+  { 0x01FFFE, 0xF8,  1, PIC18F67J94_1FFFE  },
+  { 0x01FFFF, 0xF3,  2, PIC18F67J94_1FFFF  }
 };
 
 static const gp_cfg_addr_t PIC18F87K22_addrs[] = {
-  { 0x300000, 0x5D,  4, PIC18F65K22_300000   },
-  { 0x300001, 0x08,  4, PIC18F25K80_300001   },
-  { 0x300002, 0x7F,  4, PIC18F25K80_300002   },
-  { 0x300003, 0x7F,  2, PIC18F25K80_300003   },
-  { 0x300004, 0xF9,  5, PIC18F85K22_300004   },
-  { 0x300005, 0x8B,  4, PIC18F85K22_300005   },
-  { 0x300006, 0x91,  3, PIC18F65K22_300006   },
-  { 0x300008, 0xFF,  8, PIC18F6720_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0xFF,  8, PIC18F6720_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0xFF,  8, PIC18F67K22_30000C   },
-  { 0x30000D, 0x40,  1, PIC18F65K22_30000D   }
+  { 0x300000, 0x5D,  4, PIC18F65K22_300000 },
+  { 0x300001, 0x08,  4, PIC18F25K80_300001 },
+  { 0x300002, 0x7F,  4, PIC18F25K80_300002 },
+  { 0x300003, 0x7F,  2, PIC18F25K80_300003 },
+  { 0x300004, 0xF9,  5, PIC18F85K22_300004 },
+  { 0x300005, 0x8B,  4, PIC18F85K22_300005 },
+  { 0x300006, 0x91,  3, PIC18F65K22_300006 },
+  { 0x300008, 0xFF,  8, PIC18F6720_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0xFF,  8, PIC18F6720_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0xFF,  8, PIC18F67K22_30000C },
+  { 0x30000D, 0x40,  1, PIC18F65K22_30000D }
 };
 
 static const gp_cfg_addr_t PIC18F87K90_addrs[] = {
-  { 0x300000, 0x5D,  4, PIC18F65K22_300000   },
-  { 0x300001, 0x08,  4, PIC18F25K80_300001   },
-  { 0x300002, 0x7F,  4, PIC18F25K80_300002   },
-  { 0x300003, 0x7F,  2, PIC18F25K80_300003   },
-  { 0x300004, 0x01,  1, PIC18F65K22_300004   },
-  { 0x300005, 0x8B,  4, PIC18F85K22_300005   },
-  { 0x300006, 0x91,  3, PIC18F65K22_300006   },
-  { 0x300008, 0xFF,  8, PIC18F6720_300008    },
-  { 0x300009, 0xC0,  2, MCV20USB_300009      },
-  { 0x30000A, 0xFF,  8, PIC18F6720_30000A    },
-  { 0x30000B, 0xE0,  3, MCV20USB_30000B      },
-  { 0x30000C, 0xFF,  8, PIC18F67K22_30000C   },
-  { 0x30000D, 0x40,  1, PIC18F65K22_30000D   }
+  { 0x300000, 0x5D,  4, PIC18F65K22_300000 },
+  { 0x300001, 0x08,  4, PIC18F25K80_300001 },
+  { 0x300002, 0x7F,  4, PIC18F25K80_300002 },
+  { 0x300003, 0x7F,  2, PIC18F25K80_300003 },
+  { 0x300004, 0x01,  1, PIC18F65K22_300004 },
+  { 0x300005, 0x8B,  4, PIC18F85K22_300005 },
+  { 0x300006, 0x91,  3, PIC18F65K22_300006 },
+  { 0x300008, 0xFF,  8, PIC18F6720_300008  },
+  { 0x300009, 0xC0,  2, MCV20USB_300009    },
+  { 0x30000A, 0xFF,  8, PIC18F6720_30000A  },
+  { 0x30000B, 0xE0,  3, MCV20USB_30000B    },
+  { 0x30000C, 0xFF,  8, PIC18F67K22_30000C },
+  { 0x30000D, 0x40,  1, PIC18F65K22_30000D }
 };
 
 static const gp_cfg_addr_t PIC18F96J60_addrs[] = {
-  { 0x00FFF8, 0xE1,  4, PIC18F66J60_00FFF8   },
-  { 0x00FFF9, 0xF4,  1, PIC18F26J11_00FFF9   },
-  { 0x00FFFA, 0xC7,  4, PIC18F66J10_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFC, 0xF8,  4, PIC18F86J10_00FFFC   },
-  { 0x00FFFD, 0xF7,  3, PIC18F86J60_00FFFD   }
+  { 0x00FFF8, 0xE1,  4, PIC18F66J60_FFF8   },
+  { 0x00FFF9, 0xF4,  1, PIC18F26J11_FFF9   },
+  { 0x00FFFA, 0xC7,  4, PIC18F66J10_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFC, 0xF8,  4, PIC18F86J10_FFFC   },
+  { 0x00FFFD, 0xF7,  3, PIC18F86J60_FFFD   }
 };
 
 static const gp_cfg_addr_t PIC18F96J65_addrs[] = {
-  { 0x017FF8, 0xE1,  4, PIC18F66J65_017FF8   },
-  { 0x017FF9, 0xF4,  1, PIC18F66J15_017FF9   },
-  { 0x017FFA, 0xC7,  4, PIC18F66J15_017FFA   },
-  { 0x017FFB, 0xFF,  1, PIC18F66J15_017FFB   },
-  { 0x017FFC, 0xF8,  4, PIC18F86J15_017FFC   },
-  { 0x017FFD, 0xF7,  3, PIC18F86J65_017FFD   }
+  { 0x017FF8, 0xE1,  4, PIC18F66J65_17FF8  },
+  { 0x017FF9, 0xF4,  1, PIC18F66J15_17FF9  },
+  { 0x017FFA, 0xC7,  4, PIC18F66J15_17FFA  },
+  { 0x017FFB, 0xFF,  1, PIC18F66J15_17FFB  },
+  { 0x017FFC, 0xF8,  4, PIC18F86J15_17FFC  },
+  { 0x017FFD, 0xF7,  3, PIC18F86J65_17FFD  }
 };
 
 static const gp_cfg_addr_t PIC18F97J60_addrs[] = {
-  { 0x01FFF8, 0xE1,  4, PIC18F67J60_01FFF8   },
-  { 0x01FFF9, 0xF4,  1, PIC18F27J13_01FFF9   },
-  { 0x01FFFA, 0xC7,  4, PIC18F67J10_01FFFA   },
-  { 0x01FFFB, 0xFF,  1, PIC18F27J13_01FFFB   },
-  { 0x01FFFC, 0xF8,  4, PIC18F87J10_01FFFC   },
-  { 0x01FFFD, 0xF7,  3, PIC18F87J60_01FFFD   }
+  { 0x01FFF8, 0xE1,  4, PIC18F67J60_1FFF8  },
+  { 0x01FFF9, 0xF4,  1, PIC18F27J13_1FFF9  },
+  { 0x01FFFA, 0xC7,  4, PIC18F67J10_1FFFA  },
+  { 0x01FFFB, 0xFF,  1, PIC18F27J13_1FFFB  },
+  { 0x01FFFC, 0xF8,  4, PIC18F87J10_1FFFC  },
+  { 0x01FFFD, 0xF7,  3, PIC18F87J60_1FFFD  }
 };
 
 static const gp_cfg_addr_t PIC18LF24J10_addrs[] = {
-  { 0x003FF8, 0xFF,  4, PIC18LF24J10_003FF8  },
-  { 0x003FF9, 0xF7,  1, PIC18LF24J10_003FF9  },
-  { 0x003FFA, 0xFF,  4, PIC18LF24J10_003FFA  },
-  { 0x003FFB, 0xFF,  1, PIC18F24J10_003FFB   },
-  { 0x003FFD, 0xFF,  1, PIC18LF24J10_003FFD  }
+  { 0x003FF8, 0xFF,  4, PIC18LF24J10_3FF8  },
+  { 0x003FF9, 0xF7,  1, PIC18LF24J10_3FF9  },
+  { 0x003FFA, 0xFF,  4, PIC18LF24J10_3FFA  },
+  { 0x003FFB, 0xFF,  1, PIC18F24J10_3FFB   },
+  { 0x003FFD, 0xFF,  1, PIC18LF24J10_3FFD  }
 };
 
 static const gp_cfg_addr_t PIC18LF24J50_addrs[] = {
-  { 0x003FF8, 0xEF,  4, PIC18LF24J50_003FF8  },
-  { 0x003FF9, 0xF7,  2, PIC18F24J50_003FF9   },
-  { 0x003FFA, 0xDF,  5, PIC18F24J11_003FFA   },
-  { 0x003FFB, 0xFF,  1, PIC18F24J10_003FFB   },
-  { 0x003FFC, 0xFF,  5, PIC18F24J11_003FFC   },
-  { 0x003FFD, 0xF9,  2, PIC18F24J11_003FFD   },
-  { 0x003FFE, 0xCF,  3, PIC18F24J11_003FFE   },
-  { 0x003FFF, 0xF1,  1, PIC18F24J11_003FFF   }
+  { 0x003FF8, 0xEF,  4, PIC18LF24J50_3FF8  },
+  { 0x003FF9, 0xF7,  2, PIC18F24J50_3FF9   },
+  { 0x003FFA, 0xDF,  5, PIC18F24J11_3FFA   },
+  { 0x003FFB, 0xFF,  1, PIC18F24J10_3FFB   },
+  { 0x003FFC, 0xFF,  5, PIC18F24J11_3FFC   },
+  { 0x003FFD, 0xF9,  2, PIC18F24J11_3FFD   },
+  { 0x003FFE, 0xCF,  3, PIC18F24J11_3FFE   },
+  { 0x003FFF, 0xF1,  1, PIC18F24J11_3FFF   }
 };
 
 static const gp_cfg_addr_t PIC18LF25J10_addrs[] = {
-  { 0x007FF8, 0xFF,  4, PIC18LF25J10_007FF8  },
-  { 0x007FF9, 0xF7,  1, PIC18LF25J10_007FF9  },
-  { 0x007FFA, 0xFF,  4, PIC18F65J90_007FFA   },
-  { 0x007FFB, 0xFF,  1, PIC18F25J10_007FFB   },
-  { 0x007FFD, 0xFF,  1, PIC18LF25J10_007FFD  }
+  { 0x007FF8, 0xFF,  4, PIC18LF25J10_7FF8  },
+  { 0x007FF9, 0xF7,  1, PIC18LF25J10_7FF9  },
+  { 0x007FFA, 0xFF,  4, PIC18F65J90_7FFA   },
+  { 0x007FFB, 0xFF,  1, PIC18F25J10_7FFB   },
+  { 0x007FFD, 0xFF,  1, PIC18LF25J10_7FFD  }
 };
 
 static const gp_cfg_addr_t PIC18LF25J50_addrs[] = {
-  { 0x007FF8, 0xEF,  4, PIC18LF25J50_007FF8  },
-  { 0x007FF9, 0xF7,  2, PIC18F25J50_007FF9   },
-  { 0x007FFA, 0xDF,  5, PIC18F25J11_007FFA   },
-  { 0x007FFB, 0xFF,  1, PIC18F25J10_007FFB   },
-  { 0x007FFC, 0xFF,  5, PIC18F25J11_007FFC   },
-  { 0x007FFD, 0xF9,  2, PIC18F25J11_007FFD   },
-  { 0x007FFE, 0xDF,  3, PIC18F25J11_007FFE   },
-  { 0x007FFF, 0xF1,  1, PIC18F25J11_007FFF   }
+  { 0x007FF8, 0xEF,  4, PIC18LF25J50_7FF8  },
+  { 0x007FF9, 0xF7,  2, PIC18F25J50_7FF9   },
+  { 0x007FFA, 0xDF,  5, PIC18F25J11_7FFA   },
+  { 0x007FFB, 0xFF,  1, PIC18F25J10_7FFB   },
+  { 0x007FFC, 0xFF,  5, PIC18F25J11_7FFC   },
+  { 0x007FFD, 0xF9,  2, PIC18F25J11_7FFD   },
+  { 0x007FFE, 0xDF,  3, PIC18F25J11_7FFE   },
+  { 0x007FFF, 0xF1,  1, PIC18F25J11_7FFF   }
 };
 
 static const gp_cfg_addr_t PIC18LF26J50_addrs[] = {
-  { 0x00FFF8, 0xEF,  4, PIC18LF26J50_00FFF8  },
-  { 0x00FFF9, 0xF7,  2, PIC18F26J50_00FFF9   },
-  { 0x00FFFA, 0xDF,  5, PIC18F26J11_00FFFA   },
-  { 0x00FFFB, 0xFF,  1, PIC18F26J11_00FFFB   },
-  { 0x00FFFC, 0xFF,  5, PIC18F26J11_00FFFC   },
-  { 0x00FFFD, 0xF9,  2, PIC18F26J11_00FFFD   },
-  { 0x00FFFE, 0xFF,  3, PIC18F26J11_00FFFE   },
-  { 0x00FFFF, 0xF1,  1, PIC18F26J11_00FFFF   }
+  { 0x00FFF8, 0xEF,  4, PIC18LF26J50_FFF8  },
+  { 0x00FFF9, 0xF7,  2, PIC18F26J50_FFF9   },
+  { 0x00FFFA, 0xDF,  5, PIC18F26J11_FFFA   },
+  { 0x00FFFB, 0xFF,  1, PIC18F26J11_FFFB   },
+  { 0x00FFFC, 0xFF,  5, PIC18F26J11_FFFC   },
+  { 0x00FFFD, 0xF9,  2, PIC18F26J11_FFFD   },
+  { 0x00FFFE, 0xFF,  3, PIC18F26J11_FFFE   },
+  { 0x00FFFF, 0xF1,  1, PIC18F26J11_FFFF   }
 };
 
 static const gp_cfg_addr_t PS500_addrs[] = {
-  { 0x300003, 0xFF,  1, PS500_300003         },
-  { 0x300005, 0xFF,  1, PS500_300005         },
-  { 0x300006, 0xFF,  1, PS500_300006         },
-  { 0x300008, 0xFF,  2, PS500_300008         },
-  { 0x300009, 0xFF,  2, PS500_300009         },
-  { 0x30000A, 0xFF,  2, PS500_30000A         },
-  { 0x30000B, 0xFF,  3, PS500_30000B         },
-  { 0x30000C, 0xFF,  2, PS500_30000C         },
-  { 0x30000D, 0xFF,  1, PS500_30000D         }
+  { 0x300003, 0xFF,  1, PS500_300003       },
+  { 0x300005, 0xFF,  1, PS500_300005       },
+  { 0x300006, 0xFF,  1, PS500_300006       },
+  { 0x300008, 0xFF,  2, PS500_300008       },
+  { 0x300009, 0xFF,  2, PS500_300009       },
+  { 0x30000A, 0xFF,  2, PS500_30000A       },
+  { 0x30000B, 0xFF,  3, PS500_30000B       },
+  { 0x30000C, 0xFF,  2, PS500_30000C       },
+  { 0x30000D, 0xFF,  1, PS500_30000D       }
 };
 
 static const gp_cfg_addr_t PS810_addrs[] = {
-  { 0x300003, 0xFF,  1, PS500_300003         },
-  { 0x300005, 0xFF,  1, PS500_300005         },
-  { 0x300006, 0xFF,  1, PS500_300006         },
-  { 0x300008, 0xFF,  1, PS810_300008         },
-  { 0x300009, 0xFF,  1, PS810_300009         },
-  { 0x30000A, 0xFF,  1, PS810_30000A         },
-  { 0x30000B, 0xFF,  2, PS810_30000B         },
-  { 0x30000C, 0xFF,  1, PS810_30000C         },
-  { 0x30000D, 0xFF,  1, PS500_30000D         }
+  { 0x300003, 0xFF,  1, PS500_300003       },
+  { 0x300005, 0xFF,  1, PS500_300005       },
+  { 0x300006, 0xFF,  1, PS500_300006       },
+  { 0x300008, 0xFF,  1, PS810_300008       },
+  { 0x300009, 0xFF,  1, PS810_300009       },
+  { 0x30000A, 0xFF,  1, PS810_30000A       },
+  { 0x30000B, 0xFF,  2, PS810_30000B       },
+  { 0x30000C, 0xFF,  1, PS810_30000C       },
+  { 0x30000D, 0xFF,  1, PS500_30000D       }
 };
 
 const gp_cfg_device_t gp_cfg_devices[] = {
