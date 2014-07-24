@@ -28,7 +28,7 @@ Boston, MA 02111-1307, USA.  */
 
 void select_processor(const char *name)
 {
-  const struct px *found = NULL;
+  pic_processor_t found = NULL;
 
   if (state.cmd_line.processor) {
     gpvwarning(GPW_CMDLINE_PROC, NULL);
@@ -40,7 +40,7 @@ void select_processor(const char *name)
 
       if (state.processor == NULL) {
         /* if in extended mode: check if processor supports extended instruction set */
-        if (state.extended_pic16e && !found->is_16bit_extended) {
+        if (state.extended_pic16e && !(found->pic16e_flags & PIC16E_FLAG_HAVE_EXTINST)) {
           gpverror(GPE_NO_EXTENDED_MODE, NULL);
         }
 
@@ -52,7 +52,7 @@ void select_processor(const char *name)
         for (badrom_idx = 0; badrom_idx < MAX_BADROM; badrom_idx += 2) {
           long start, end;
           start = found->badrom[badrom_idx];
-          end = found->badrom[badrom_idx+1];
+          end = found->badrom[badrom_idx + 1];
 
           if ((start == -1) || (end == -1)) {
             break;

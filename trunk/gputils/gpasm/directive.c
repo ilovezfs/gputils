@@ -206,22 +206,22 @@ emit_byte(unsigned short value, const char *name)
   ++state.org;
 }
 
-static int
+static gp_boolean
 off_or_on(struct pnode *p)
 {
-  int had_error = 0, ret = 0;
+  int had_error = false, ret = false;
 
   if (p->tag != PTAG_SYMBOL) {
-    had_error = 1;
+    had_error = true;
   }
   else if (strcasecmp(p->value.symbol, "off") == 0) {
-    ret = 0;
+    ret = false;
   }
   else if (strcasecmp(p->value.symbol, "on") == 0) {
-    ret = 1;
+    ret = true;
   }
   else {
-    had_error = 1;
+    had_error = true;
   }
 
   if (had_error) {

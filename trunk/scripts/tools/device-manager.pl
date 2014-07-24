@@ -169,6 +169,10 @@ my %config_word_masks =
   '18xxxx' => 0x00FF
   );
 
+# From the gputils/libgputils/gpprocessor.h header.
+use constant PIC16E_FLAG_HAVE_EXTINST => (1 << 0);
+use constant PIC16E_FLAG_J_SUBFAMILY  => (1 << 1);
+
 my $name_filter = qr/10l?f\d+[a-z]*|1[26]((c(e|r)?)|hv)\d+[a-z]*|17c\d+[a-z]*|1[268]l?f\d+([a-z]*|[a-z]+\d+[a-z]*)/i;
 
 my $gputils_path = "$ENV{HOME}/svn_snapshots/gputils/gputils";
@@ -253,7 +257,7 @@ my $px_struct_end;              # The end of the px structure in the gpprocessor
         EEPROM_ADDRS => [0, 0],
         HEADER       => '',
         SCRIPT       => '',
-        EXTENDED     => 0,
+        P16E_FLAGS   => 0,
         COMMENT      => ''              Comment on the end of line.
         }
 =cut
@@ -284,17 +288,17 @@ my $lkr_eeprom_end;
 =back
         The structure of one element of the @mp_mcus arrays:
         {
-        NAME      => '',
-        CLASS     => 0,
-        COFF      => 0,
-        PAGES     => 0,
-        ROM       => 0,
-        FLASHDATA => 0,
-        EEPROM    => 0,
-        CONFIGS   => 0,
-        BANKS     => 0,
-        ACCESS    => 0,
-        EXTENDED  => 0
+        NAME       => '',
+        CLASS      => 0,
+        COFF       => 0,
+        PAGES      => 0,
+        ROM        => 0,
+        FLASHDATA  => 0,
+        EEPROM     => 0,
+        CONFIGS    => 0,
+        BANKS      => 0,
+        ACCESS     => 0,
+        P16E_FLAGS => 0
         }
 =cut
 
@@ -1360,20 +1364,20 @@ sub read_mcu_info_from_mplabx($)
 
         $name =~ s/^pic//o;
         $info = {
-                NAME      => $name,
-                CLASS     => str2class($fields[3]),
-                COFF      => hex($fields[1]),             # Coff ID of device. (16 bit wide)
-                PAGES     => hex($fields[5]),             # Number of ROM/FLASH pages.
+                NAME       => $name,
+                CLASS      => str2class($fields[3]),
+                COFF       => hex($fields[1]),             # Coff ID of device. (16 bit wide)
+                PAGES      => hex($fields[5]),             # Number of ROM/FLASH pages.
 
                 # These addresses relative, compared to the beginning of the blocks.
-                ROM       => hex($fields[6]),             # Last address of ROM/FLASH.
-                FLASHDATA => hex($fields[11]),            # Last address of FLASH Data.
-                EEPROM    => hex($fields[9]),             # Last address of EEPROM.
+                ROM        => hex($fields[6]),             # Last address of ROM/FLASH.
+                FLASHDATA  => hex($fields[11]),            # Last address of FLASH Data.
+                EEPROM     => hex($fields[9]),             # Last address of EEPROM.
 
-                CONFIGS   => hex($fields[12]),            # Number of Configuration bytes/words.
-                BANKS     => hex($fields[7]),             # Number of RAM Banks.
-                ACCESS    => hex($fields[10]),            # Last address of lower Access RAM of pic18f series.
-    	        EXTENDED  => 0
+                CONFIGS    => hex($fields[12]),            # Number of Configuration bytes/words.
+                BANKS      => hex($fields[7]),             # Number of RAM Banks.
+                ACCESS     => hex($fields[10]),            # Last address of lower Access RAM of pic18f series.
+    	        P16E_FLAGS => (($name ~= /^18l?f\d+j\d+/o) PIC16E_FLAG_J_SUBFAMILY : 0)
                 };
         }
       elsif (defined($info))
@@ -1383,7 +1387,7 @@ sub read_mcu_info_from_mplabx($)
       }
     elsif ($fields[0] eq 'SWITCH_INFO_TYPE' && $fields[1] eq 'XINST')
       {
-      $info->{EXTENDED} = 1 if (defined($info));
+      $info->{P16E_FLAGS} |= PIC16E_FLAG_HAVE_EXTINST if (defined($info));
       last;
       }
     } # while (<$in>)
@@ -1451,25 +1455,25 @@ sub read_all_mcu_info_from_mplabx()
                $name =~ /^mcp25/o);
 
       $info = {
-              NAME      => $name,
-              CLASS     => $class,
-              COFF      => $coff,            # Coff ID of device. (16 bit wide)
-              PAGES     => $pages,           # Number of ROM/FLASH pages.
+              NAME       => $name,
+              CLASS      => $class,
+              COFF       => $coff,            # Coff ID of device. (16 bit wide)
+              PAGES      => $pages,           # Number of ROM/FLASH pages.
 
                 # These addresses relative, compared to the beginning of the blocks.
-              ROM       => $rom,             # Last address of ROM/FLASH.
-              FLASHDATA => $fdata,           # Last address of FLASH Data.
-              EEPROM    => $eeprom,          # Last address of EEPROM.
+              ROM        => $rom,             # Last address of ROM/FLASH.
+              FLASHDATA  => $fdata,           # Last address of FLASH Data.
+              EEPROM     => $eeprom,          # Last address of EEPROM.
 
-              CONFIGS   => $configs,         # Number of Configuration bytes/words.
-              BANKS     => $banks,           # Number of RAM Banks.
-              ACCESS    => $split,           # Last address of lower Access RAM of pic18f series.
-    	      EXTENDED  => 0
+              CONFIGS    => $configs,         # Number of Configuration bytes/words.
+              BANKS      => $banks,           # Number of RAM Banks.
+              ACCESS     => $split,           # Last address of lower Access RAM of pic18f series.
+              P16E_FLAGS => (($name ~= /^18l?f\d+j\d+/o) PIC16E_FLAG_J_SUBFAMILY : 0)
               };
       }
     elsif ($_ =~ /^<SWITCH_INFO_TYPE><XINST>/io)
       {
-      $info->{EXTENDED} = 1 if (defined($info));
+      $info->{P16E_FLAGS} |= PIC16E_FLAG_HAVE_EXTINST if (defined($info));
       }
     }
 
@@ -1551,7 +1555,7 @@ sub new_px_row($$$$)
            EEPROM_ADDRS => [ $lkr_eeprom_start, $lkr_eeprom_end ],
            HEADER       => $Header,
            SCRIPT       => $Script,
-    	   EXTENDED     => $Info->{EXTENDED},
+    	   P16E_FLAGS   => $Info->{P16E_FLAGS},
            COMMENT      => ''
            };
 
@@ -1734,7 +1738,7 @@ sub extract_px_struct()
                EEPROM_ADDRS => [ str2dec($17), str2dec($18) ],
                HEADER       => $header,
                SCRIPT       => $script,
-               EXTENDED     => str2dec($21),
+               P16E_FLAGS   => str2dec($21),
                COMMENT      => ''
                };
 
@@ -1848,7 +1852,7 @@ EOT
       print ('eeprom_addrs: ' . neg_form($_->{EEPROM_ADDRS}->[0]) . ', ' . neg_form($_->{EEPROM_ADDRS}->[1]) . "\n");
       print  "header      : $_->{HEADER}\n";
       print  "script      : $_->{SCRIPT}\n";
-      print  "extended    : $_->{EXTENDED}\n";
+      print  "pic16e_flags: $_->{P16E_FLAGS}\n";
       }
     else
       {
@@ -1941,7 +1945,7 @@ sub create_one_px_row($$)
   $line .= sprintf('%-19s, ', (($i ne 'NULL') ? "\"$i\"" : $i));
   $i = $Row->{SCRIPT};
   $line .= sprintf('%-20s, ', (($i ne 'NULL') ? "\"$i\"" : $i));
-  $i = $Row->{EXTENDED};
+  $i = $Row->{P16E_FLAGS};
   $line .= sprintf('%i },', $i);
 
   $line = "/*$line*/" if ($Row->{IGNORED});

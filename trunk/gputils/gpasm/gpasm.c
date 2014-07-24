@@ -31,16 +31,17 @@ Boston, MA 02111-1307, USA.  */
 #include "cod.h"
 #include "processor.h"
 #include "coff.h"
+#include "gpcfg.h"
 
 struct gpasm_state state;
 
 static gp_boolean cmd_processor = false;
-static char *processor_name = NULL;
+static const char *processor_name = NULL;
 
 int yyparse(void);
 extern int yydebug;
 
-#define GET_OPTIONS "?D:I:a:cCde:fghikl::LmMno:p:qr:uvw:yP:"
+#define GET_OPTIONS "?D:I:a:cCde:fghijkl::LmMno:p:qr:uvw:yP:"
 
 enum {
   OPT_MPASM_COMPATIBLE = 0x100
@@ -59,6 +60,7 @@ static struct option longopts[] =
   { "debug-info",       no_argument,       NULL, 'g' },
   { "help",             no_argument,       NULL, 'h' },
   { "ignore-case",      no_argument,       NULL, 'i' },
+  { "sdcc-dev16-list",  no_argument,       NULL, 'j' },
   { "error",            no_argument,       NULL, 'k' },
   { "list-chips",       optional_argument, NULL, 'l' },
   { "force-list",       no_argument,       NULL, 'L' },
@@ -151,6 +153,54 @@ init(void)
   state.while_depth = 0;
 }
 
+/* This is a sdcc specific helper function. */
+static void
+pic16e_lister(pic_processor_t processor)
+{
+  const gp_cfg_device_t *dev;
+  int addr0, addr1;
+
+  if (processor->class != PROC_CLASS_PIC16E) {
+    return;
+  }
+
+  if (cmd_processor && (processor != state.processor)) {
+    return;
+  }
+
+  dev = gp_cfg_find_pic_multi_name(ARRAY_SIZE(processor->names), processor->names);
+
+  if (dev == NULL) {
+    fprintf(stderr, "Warning: The %s processor has no entries in the config db.\n", processor->names[2]);
+    return;
+  }
+
+  printf("name        %s\n", processor->names[2]);
+  printf("ramsize     ???\n");
+  printf("split       0x%02X\n", gp_processor_bsr_boundary(processor));
+
+  gp_cfg_real_config_boundaries(dev, &addr0, &addr1);
+
+  if ((addr0 > 0) && (addr1 > 0)) {
+    printf("configrange 0x%06X 0x%06X\n", addr0, addr1);
+    gp_cfg_brief_all_address(dev, "configword  ", processor->class->addr_digits, 2,
+                             (processor->pic16e_flags & PIC16E_FLAG_J_SUBFAMILY) ? false : true);
+  }
+
+  if (processor->pic16e_flags & PIC16E_FLAG_HAVE_EXTINST) {
+    printf("XINST       1\n");
+  }
+
+  addr0 = processor->idlocs_addrs[0];
+  addr1 = processor->idlocs_addrs[1];
+
+  if ((addr0 > 0) && (addr1 > 0)) {
+    printf("idlocrange  0x%06X 0x%06X\n", addr0, addr1);
+  }
+
+  printf("\n");
+}
+
 void
 add_path(const char *path)
 {
@@ -179,9 +229,13 @@ show_usage(void)
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -i, --ignore-case              Case insensitive.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
+  printf("  -j, --sdcc-dev16-list          Help to the extension of the pic16devices.txt file\n");
+  printf("                                 in the sdcc project. Using by itself, displays the all\n");
+  printf("                                 '16e' devices. Along with the '-p' option, shows only\n");
+  printf("                                 the specified device.\n");
   printf("  -k, --error                    Enables creation of the error file.\n");
   printf("  -l[12[ce]|14[ce]|16[ce]], --list-chips[=([12[ce]|14[ce]|16[ce]])]\n");
-  printf("                                 List supported processors based on various aspects.\n");
+  printf("                                 Lists the supported processors, based on various aspects.\n");
   printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -m, --dump                     Memory dump.\n");
   printf("      --mpasm-compatible         MPASM compatibility mode.\n");
@@ -225,6 +279,7 @@ process_args( int argc, char *argv[])
   extern int optind;
   int c;
   gp_boolean usage = false;
+  gp_boolean sdcc_dev16 = false;
   int usage_code = 0;
   char *pc;
 
@@ -320,6 +375,10 @@ process_args( int argc, char *argv[])
       state.case_insensitive = true;
       break;
 
+    case 'j':
+      sdcc_dev16 = true;
+      break;
+
     case 'k':
       state.errfile = OUT_NORMAL;
       break;
@@ -372,9 +431,8 @@ process_args( int argc, char *argv[])
           gp_dump_processor_list(false, PROC_CLASS_PIC16E, NULL);
           break;
 
-        default: {
+        default:
           gp_dump_processor_list(true, NULL, NULL);
-          }
         }
 
       exit(0);
@@ -448,6 +506,15 @@ process_args( int argc, char *argv[])
     if (usage) {
       break;
     }
+  }
+
+  if (sdcc_dev16) {
+    if (cmd_processor) {
+      state.processor = gp_find_processor(processor_name);
+    }
+
+    gp_processor_invoke_custom_lister(pic16e_lister);
+    exit(0);
   }
 
   if ((optind + 1) == argc) {

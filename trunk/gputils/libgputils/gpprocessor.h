@@ -253,9 +253,11 @@ extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices 
 
 typedef const struct px *pic_processor_t;
 
-#define MAX_NAMES 3 /* Maximum number of names a processor can have. */
-#define MAX_BADROM (1*2)  /* Maximum number of BADROM ranges a processor
-                             can be initialized with. */
+#define MAX_NAMES                  3          /* Maximum number of names a processor can have. */
+#define MAX_BADROM                 (1 * 2)    /* Maximum number of BADROM ranges a processor can be initialized with. */
+
+#define PIC16E_FLAG_HAVE_EXTINST   (1 << 0)   /* The device supports 16 bit extended instruction set. */
+#define PIC16E_FLAG_J_SUBFAMILY    (1 << 1)   /* The device member of the "J" series. (18f..J..) */
 
 struct px {
   proc_class_t class;
@@ -274,10 +276,10 @@ struct px {
   /* Use the gpdasm. */
   const char *header;
   const char *script;
-  /* True if device supports 16 bit extended instruction set, false otherwise.
-     Used ony for PROC_CLASS_PIC16E class. */
-  gp_boolean is_16bit_extended;
+  /* Used ony for PROC_CLASS_PIC16E class. PIC16E_FLAG_yyyyy */
+  unsigned int pic16e_flags;
 };
+
 
 /* CONFIG addresses for the 18xx parts */
 #define CONFIG1L  0x300000
@@ -299,7 +301,8 @@ struct px {
 #define DEVID2    0x3fffff
 
 void gp_dump_processor_list(gp_boolean list_all, proc_class_t class1, proc_class_t class2);
-const struct px *gp_find_processor(const char *name);
+void gp_processor_invoke_custom_lister(void (*custom_lister)(pic_processor_t));
+pic_processor_t gp_find_processor(const char *name);
 proc_class_t gp_processor_class(pic_processor_t);
 int gp_processor_bsr_boundary(pic_processor_t processor);
 unsigned long gp_processor_coff_type(pic_processor_t processor);
@@ -308,6 +311,7 @@ int gp_processor_num_banks(pic_processor_t processor);
 pic_processor_t gp_processor_coff_proc(unsigned long coff_type);
 const char *gp_processor_name(pic_processor_t processor, unsigned int choice);
 const char *gp_processor_coff_name(unsigned long coff_type, unsigned int choice);
+const char *gp_processor_header(pic_processor_t processor);
 const char *gp_processor_script(pic_processor_t processor);
 unsigned int gp_processor_id_location(pic_processor_t processor);
 int gp_processor_is_idlocs_addr(pic_processor_t processor, int address);

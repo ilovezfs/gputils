@@ -84,8 +84,13 @@ const gp_cfg_device_t *gp_cfg_find_pic(const char *Pic);
 
 const gp_cfg_device_t *gp_cfg_find_pic_multi_name(unsigned int Count, const char *const *Pics);
 
+void gp_cfg_real_config_boundaries(const gp_cfg_device_t *Device, int *Address_low, int *Address_high);
+
 const gp_cfg_directive_t *gp_cfg_find_directive(const gp_cfg_device_t *Device, const char *Directive,
                                                 unsigned int *Out_config_addr, unsigned short *Out_def_value);
+
+void gp_cfg_brief_all_address(const gp_cfg_device_t *Device, const char *Head, int Addr_digits,
+                              int Word_digits, unsigned int Mask_defaults);
 
 const gp_cfg_option_t *gp_cfg_find_option(const gp_cfg_directive_t *Directive, const char *Option);
 

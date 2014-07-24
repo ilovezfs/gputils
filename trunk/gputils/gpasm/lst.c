@@ -172,8 +172,8 @@ lst_init(void)
   state.lst.page = 0;
   state.lst.linesperpage = 59;
   state.lst.line_number = 1;
-  state.lst.memorymap = 1;
-  state.lst.symboltable = 1;
+  state.lst.memorymap = true;
+  state.lst.symboltable = true;
   state.lst.lst_state = LST_IN_MEM;
 
   /* Determine state.startdate */
