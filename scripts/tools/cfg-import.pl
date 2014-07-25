@@ -47,7 +47,7 @@ use constant FNV1A32_INIT  => 0x811C9DC5;
 use constant FNV1A32_PRIME => 0x01000193;
 
 my $PROGRAM = 'cfg-import.pl';
-
+my $limit_defaults = FALSE;
 my $verbose = 0;
 
 my $dev_info_path = '/opt/microchip/mplabx/mpasmx/8bit_device.info';
@@ -560,9 +560,7 @@ sub read_device_informations()
   my $switch_count    = 0;
   my $option_count    = 0;
   my $state           = ST_WAIT;
-  my $directive_mask;
-  my $digits;
-  my $debug_present;
+  my ($directive_mask, $digits, $debug_present);
 
   open(INFO, '<', $dev_info_path) || die "Could not open for reading: $dev_info_path\n";
 
@@ -596,6 +594,7 @@ sub read_device_informations()
 
         my $tr = $class_features_by_mpasmx{$class_name};
 
+        $mcu_name =~ s/^PICRF/RF/o;
         die "Unknown class of $mcu_name MCU!" if (! defined($tr));
 
         $digits = $tr->{DIR_DIGITS};
@@ -667,7 +666,7 @@ sub read_device_informations()
               SWITCH_COUNT => $switch_count,
               SWITCHES     => [],
               DIR_HASH     => 0,
-              STRUCT_NAME  => sprintf("${mcu_name}_%06X", $directive_addr)
+              STRUCT_NAME  => sprintf("${mcu_name}_%0*X", $digits, $directive_addr)
               };
 
             $directive_mask = 0;
@@ -736,7 +735,9 @@ sub read_device_informations()
               @{$directive->{SWITCHES}} = sort {$a->{SW_MASK} <=> $b->{SW_MASK}} @{$directive->{SWITCHES}};
               }
 
-            $directive->{DIR_MASK} = $directive_mask;
+            $directive->{DIR_MASK}     = $directive_mask;
+            # This an ex post correction which unfortunately sometimes necessary. (e.g. PIC18C242)
+            $directive->{DIR_DEFAULT} &= $directive_mask if ($limit_defaults);
             }
           } # when ('SWITCH_INFO_TYPE')
 
@@ -1276,6 +1277,11 @@ Usage: $PROGRAM [options]
             The program on this path looks for the 8bit_device.info file.
             (Default: $dev_info_path)
 
+        -l or --limit-defaults
+
+            Limits the default value of the directives according to the existing config bits.
+            (Default: No limitation, remains the original values.)
+
         -v <level> or --verbose <level>
 
             It provides information on from the own operation.
@@ -1306,6 +1312,11 @@ for (my $i = 0; $i < @ARGV; )
       {
       param_exist($opt, $i);
       $dev_info_path = $ARGV[$i++];
+      }
+
+    when (/^-(l|-limit-defaults)$/o)
+      {
+      $limit_defaults = TRUE;
       }
 
     when (/^-(v|-verbose)$/o)
