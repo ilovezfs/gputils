@@ -775,12 +775,23 @@ void gp_dump_processor_list(gp_boolean list_all, proc_class_t class1, proc_class
 }
 
 void
-gp_processor_invoke_custom_lister(void (*custom_lister)(pic_processor_t))
+gp_processor_invoke_custom_lister(proc_class_t class1, proc_class_t class2,
+                                  void (*custom_lister)(pic_processor_t))
 {
   int i;
+  pic_processor_t proc;
 
   for (i = 0; i < NUM_PICS; i++) {
-    (*custom_lister)(&pics[i]);
+    proc = &pics[i];
+
+    if ((class1 != PROC_CLASS_UNKNOWN) || (class2 != PROC_CLASS_UNKNOWN)) {
+      if ((proc->class == class1) || (proc->class == class2)) {
+        (*custom_lister)(proc);
+      }
+    }
+    else {
+      (*custom_lister)(proc);
+    }
   }
 }
 
@@ -804,6 +815,44 @@ proc_class_t
 gp_processor_class(pic_processor_t processor)
 {
   return ((processor != NULL) ? processor->class : PROC_CLASS_UNKNOWN);
+}
+
+const char *
+gp_processor_class_to_str(proc_class_t class)
+{
+  if (class == PROC_CLASS_EEPROM8) {
+    return "EEPROM8";
+  }
+  else if (class == PROC_CLASS_EEPROM16) {
+    return "EEPROM16";
+  }
+  else if (class == PROC_CLASS_GENERIC) {
+    return "GENERIC";
+  }
+  else if (class == PROC_CLASS_PIC12) {
+    return "PIC12";
+  }
+  else if (class == PROC_CLASS_PIC12E) {
+    return "PIC12E";
+  }
+  else if (class == PROC_CLASS_SX) {
+    return "SX";
+  }
+  else if (class == PROC_CLASS_PIC14) {
+    return "PIC14";
+  }
+  else if (class == PROC_CLASS_PIC14E) {
+    return "PIC14E";
+  }
+  else if (class == PROC_CLASS_PIC16) {
+    return "PIC16";
+  }
+  else if (class == PROC_CLASS_PIC16E) {
+    return "PIC16E";
+  }
+  else {
+    return "UNKNOWN";
+  }
 }
 
 /* 18xx bsr boundary location */
@@ -2048,6 +2097,7 @@ const struct proc_class proc_class_eeprom8 = {
   0,                                    /* config_mask */
   6,                                    /* addr_digits */
   2,                                    /* word_digits */
+  0,                                    /* config_digits */
   NULL,                                 /* core_sfr_table */
   0,                                    /* core_sfr_number */
   NULL,                                 /* vector_table */
@@ -2087,6 +2137,7 @@ const struct proc_class proc_class_eeprom16 = {
   0,                                    /* config_mask */
   6,                                    /* addr_digits */
   4,                                    /* word_digits */
+  0,                                    /* config_digits */
   NULL,                                 /* core_sfr_table */
   0,                                    /* core_sfr_number */
   NULL,                                 /* vector_table */
@@ -2126,6 +2177,7 @@ const struct proc_class proc_class_generic = {
   (1 << 12) - 1,                        /* config_mask */
   3,                                    /* addr_digits */
   3,                                    /* word_digits */
+  0,                                    /* config_digits */
   core_sfr_table_pic12,                 /* core_sfr_table */
   TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
   vector_table_pic12,                   /* vector_table */
@@ -2165,6 +2217,7 @@ const struct proc_class proc_class_pic12 = {
   (1 << 12) - 1,                        /* config_mask */
   3,                                    /* addr_digits */
   3,                                    /* word_digits */
+  3,                                    /* config_digits */
   core_sfr_table_pic12,                 /* core_sfr_table */
   TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
   vector_table_pic12,                   /* vector_table */
@@ -2204,6 +2257,7 @@ const struct proc_class proc_class_pic12e = {
   (1 << 12) - 1,                        /* config_mask */
   3,                                    /* addr_digits */
   3,                                    /* word_digits */
+  3,                                    /* config_digits */
   core_sfr_table_pic12,                 /* core_sfr_table */
   TABLE_SIZE(core_sfr_table_pic12),     /* core_sfr_number */
   vector_table_pic12,                   /* vector_table */
@@ -2243,6 +2297,7 @@ const struct proc_class proc_class_sx = {
   (1 << 12) - 1,                        /* config_mask */
   3,                                    /* addr_digits */
   3,                                    /* word_digits */
+  3,                                    /* config_digits */
   core_sfr_table_sx,                    /* core_sfr_table */
   TABLE_SIZE(core_sfr_table_sx),        /* core_sfr_number */
   vector_table_sx,                      /* vector_table */
@@ -2282,6 +2337,7 @@ const struct proc_class proc_class_pic14 = {
   (1 << 14) - 1,                        /* config_mask */
   4,                                    /* addr_digits */
   4,                                    /* word_digits */
+  4,                                    /* config_digits */
   core_sfr_table_pic14,                 /* core_sfr_table */
   TABLE_SIZE(core_sfr_table_pic14),     /* core_sfr_number */
   vector_table_pic14,                   /* vector_table */
@@ -2321,6 +2377,7 @@ const struct proc_class proc_class_pic14e = {
   (1 << 16) - 1,                        /* config_mask */
   4,                                    /* addr_digits */
   4,                                    /* word_digits */
+  4,                                    /* config_digits */
   core_sfr_table_pic14e,                /* core_sfr_table */
   TABLE_SIZE(core_sfr_table_pic14e),    /* core_sfr_number */
   vector_table_pic14,                   /* vector_table */
@@ -2360,6 +2417,7 @@ const struct proc_class proc_class_pic16 = {
   (1 << 8) - 1,                         /* config_mask */
   6,                                    /* addr_digits */
   4,                                    /* word_digits */
+  2,                                    /* config_digits */
   core_sfr_table_pic16,                 /* core_sfr_table */
   TABLE_SIZE(core_sfr_table_pic16),     /* core_sfr_number */
   vector_table_pic16,                   /* vector_table */
@@ -2399,6 +2457,7 @@ const struct proc_class proc_class_pic16e = {
   (1 << 8) - 1,                         /* config_mask */
   6,                                    /* addr_digits */
   4,                                    /* word_digits */
+  2,                                    /* config_digits */
   core_sfr_table_pic16e,                /* core_sfr_table */
   TABLE_SIZE(core_sfr_table_pic16e),    /* core_sfr_number */
   vector_table_pic16e,                  /* vector_table */

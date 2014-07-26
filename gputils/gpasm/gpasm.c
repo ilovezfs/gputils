@@ -41,7 +41,13 @@ static const char *processor_name = NULL;
 int yyparse(void);
 extern int yydebug;
 
-#define GET_OPTIONS "?D:I:a:cCde:fghijkl::LmMno:p:qr:uvw:yP:"
+#define GET_OPTIONS "?D:I:a:cCde:fghijkl::LmMno:p:qr:s::uvw:yP:"
+
+struct list_params {
+  pic_processor_t processor;
+  proc_class_t    class1;
+  proc_class_t    class2;
+};
 
 enum {
   OPT_MPASM_COMPATIBLE = 0x100
@@ -49,36 +55,41 @@ enum {
 
 static struct option longopts[] =
 {
-  { "define",           required_argument, NULL, 'D' },
-  { "include",          required_argument, NULL, 'I' },
-  { "hex-format",       required_argument, NULL, 'a' },
-  { "object",           no_argument,       NULL, 'c' },
-  { "new-coff",         no_argument,       NULL, 'C' },
-  { "debug",            no_argument,       NULL, 'd' },
-  { "expand",           required_argument, NULL, 'e' },
-  { "full-address",     no_argument,       NULL, 'f' },
-  { "debug-info",       no_argument,       NULL, 'g' },
-  { "help",             no_argument,       NULL, 'h' },
-  { "ignore-case",      no_argument,       NULL, 'i' },
-  { "sdcc-dev16-list",  no_argument,       NULL, 'j' },
-  { "error",            no_argument,       NULL, 'k' },
-  { "list-chips",       optional_argument, NULL, 'l' },
-  { "force-list",       no_argument,       NULL, 'L' },
-  { "dump",             no_argument,       NULL, 'm' },
-  { "deps",             no_argument,       NULL, 'M' },
-  { "dos",              no_argument,       NULL, 'n' },
-  { "output",           required_argument, NULL, 'o' },
-  { "processor",        required_argument, NULL, 'p' },
-  { "quiet",            no_argument,       NULL, 'q' },
-  { "radix",            required_argument, NULL, 'r' },
-  { "absolute",         no_argument,       NULL, 'u' },
-  { "version",          no_argument,       NULL, 'v' },
-  { "warning",          required_argument, NULL, 'w' },
-  { "extended",         no_argument,       NULL, 'y' },
-  { "mpasm-compatible", no_argument,       NULL, OPT_MPASM_COMPATIBLE },
-  { "preprocess",       required_argument, NULL, 'P' },
-  { NULL,               no_argument,       NULL, '\0' }
+  { "define",                    required_argument, NULL, 'D' },
+  { "include",                   required_argument, NULL, 'I' },
+  { "hex-format",                required_argument, NULL, 'a' },
+  { "object",                    no_argument,       NULL, 'c' },
+  { "new-coff",                  no_argument,       NULL, 'C' },
+  { "debug",                     no_argument,       NULL, 'd' },
+  { "expand",                    required_argument, NULL, 'e' },
+  { "full-address",              no_argument,       NULL, 'f' },
+  { "debug-info",                no_argument,       NULL, 'g' },
+  { "help",                      no_argument,       NULL, 'h' },
+  { "ignore-case",               no_argument,       NULL, 'i' },
+  { "sdcc-dev16-list",           no_argument,       NULL, 'j' },
+  { "error",                     no_argument,       NULL, 'k' },
+  { "list-chips",                optional_argument, NULL, 'l' },
+  { "force-list",                no_argument,       NULL, 'L' },
+  { "dump",                      no_argument,       NULL, 'm' },
+  { "deps",                      no_argument,       NULL, 'M' },
+  { "dos",                       no_argument,       NULL, 'n' },
+  { "output",                    required_argument, NULL, 'o' },
+  { "processor",                 required_argument, NULL, 'p' },
+  { "quiet",                     no_argument,       NULL, 'q' },
+  { "radix",                     required_argument, NULL, 'r' },
+  { "list-processor-properties", optional_argument, NULL, 's' },
+  { "absolute",                  no_argument,       NULL, 'u' },
+  { "version",                   no_argument,       NULL, 'v' },
+  { "warning",                   required_argument, NULL, 'w' },
+  { "extended",                  no_argument,       NULL, 'y' },
+  { "mpasm-compatible",          no_argument,       NULL, OPT_MPASM_COMPATIBLE },
+  { "preprocess",                required_argument, NULL, 'P' },
+  { NULL,                        no_argument,       NULL, '\0' }
 };
+
+static struct list_params list_options;
+
+/*------------------------------------------------------------------------------------------------*/
 
 void
 init(void)
@@ -153,6 +164,8 @@ init(void)
   state.while_depth = 0;
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
 /* This is a sdcc specific helper function. */
 static void
 pic16e_lister(pic_processor_t processor)
@@ -161,10 +174,7 @@ pic16e_lister(pic_processor_t processor)
   int addr0, addr1;
 
   if (processor->class != PROC_CLASS_PIC16E) {
-    return;
-  }
-
-  if (cmd_processor && (processor != state.processor)) {
+    fprintf(stderr, "Warning: The type of the %s processor is not PIC16E!\n", processor->names[2]);
     return;
   }
 
@@ -183,8 +193,8 @@ pic16e_lister(pic_processor_t processor)
 
   if ((addr0 > 0) && (addr1 > 0)) {
     printf("configrange 0x%06X 0x%06X\n", addr0, addr1);
-    gp_cfg_brief_all_address(dev, "configword  ", processor->class->addr_digits, 2,
-                             (processor->pic16e_flags & PIC16E_FLAG_J_SUBFAMILY) ? false : true);
+    gp_cfg_brief_device(dev, "configword  ", processor->class->addr_digits, processor->class->config_digits,
+                        (processor->pic16e_flags & PIC16E_FLAG_J_SUBFAMILY) ? true : false);
   }
 
   if (processor->pic16e_flags & PIC16E_FLAG_HAVE_EXTINST) {
@@ -201,17 +211,96 @@ pic16e_lister(pic_processor_t processor)
   printf("\n");
 }
 
-void
-add_path(const char *path)
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+lister_of_devices(pic_processor_t processor)
 {
-  if (state.path_num < MAX_PATHS) {
-    state.paths[state.path_num++] = strdup(path);
+  const gp_cfg_device_t *dev;
+  int addr0, addr1;
+  int addr_digits;
+  const char *txt;
+
+  dev = gp_cfg_find_pic_multi_name(ARRAY_SIZE(processor->names), processor->names);
+
+  if (dev == NULL) {
+    fprintf(stderr, "Warning: The %s processor has no entries in the config db.\n", processor->names[2]);
+    return;
+  }
+
+  addr_digits = processor->class->addr_digits;
+  printf("Names          : %s, %s, %s\n", processor->names[0], processor->names[1], processor->names[2]);
+  printf("Class          : %s\n", gp_processor_class_to_str(processor->class));
+  printf("Bank Size      : %i bytes\n", processor->class->bank_size);
+
+  if (processor->class == PROC_CLASS_PIC16E) {
+    printf("Access Split   : 0x%02X\n", gp_processor_bsr_boundary(processor));
   }
   else {
-    fprintf(stderr, "too many -I paths\n");
-    exit(1);
+    printf("Bank Number    : %i\n", processor->num_banks);
   }
+
+  if (processor->class->page_size > 0) {
+    printf("Page Size      : %i bytes\n", processor->class->page_size);
+    printf("Page Number    : %i\n", processor->num_pages);
+  }
+
+  if (processor->class == PROC_CLASS_PIC16E) {
+    txt = "bytes";
+  }
+  else {
+    txt = "words";
+  }
+
+  printf("Program Size   : %i %s\n", processor->prog_mem_size, txt);
+
+  addr0 = processor->idlocs_addrs[0];
+  addr1 = processor->idlocs_addrs[1];
+
+  if ((addr0 > 0) && (addr1 > 0)) {
+    if (addr0 != addr1) {
+      printf("Idlocs Range   : 0x%0*X - 0x%0*X\n", addr_digits, addr0, addr_digits, addr1);
+    }
+    else {
+      printf("Idlocs         : 0x%0*X\n", addr_digits, addr0);
+    }
+  }
+
+  addr0 = processor->config_addrs[0];
+  addr1 = processor->config_addrs[1];
+
+  if ((addr0 > 0) && (addr1 > 0)) {
+    if (addr0 != addr1) {
+      printf("Config Range   : 0x%0*X - 0x%0*X\n", addr_digits, addr0, addr_digits, addr1);
+    }
+    else {
+      printf("Config         : 0x%0*X\n", addr_digits, addr0);
+    }
+
+    gp_cfg_full_list_device(dev, "  Config Word  : ", addr_digits, processor->class->config_digits);
+  }
+
+  addr0 = processor->eeprom_addrs[0];
+  addr1 = processor->eeprom_addrs[1];
+
+  if ((addr0 > 0) && (addr1 > 0)) {
+    printf("EEPROM Range   : 0x%0*X - 0x%0*X\n", addr_digits, addr0, addr_digits, addr1);
+  }
+
+  printf("Max. ROM Addr. : 0x%0*X\n", addr_digits, processor->maxrom);
+
+  if (processor->header != NULL) {
+    printf("Header File    : %s\n", processor->header);
+  }
+
+  if (processor->script != NULL) {
+    printf("Linker Script  : %s\n", processor->script);
+  }
+
+  printf("\n");
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 static void
 show_usage(void)
@@ -235,7 +324,8 @@ show_usage(void)
   printf("                                 the specified device.\n");
   printf("  -k, --error                    Enables creation of the error file.\n");
   printf("  -l[12[ce]|14[ce]|16[ce]], --list-chips[=([12[ce]|14[ce]|16[ce]])]\n");
-  printf("                                 Lists the supported processors, based on various aspects.\n");
+  printf("                                 Lists the names of the supported processors, based on\n");
+  printf("                                 various aspects.\n");
   printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -m, --dump                     Memory dump.\n");
   printf("      --mpasm-compatible         MPASM compatibility mode.\n");
@@ -254,6 +344,10 @@ show_usage(void)
   printf("  -P FILE, --preprocess FILE     Write preprocessed asm file to FILE.\n");
   printf("  -q, --quiet                    Quiet.\n");
   printf("  -r RADIX, --radix RADIX        Select radix. [hex]\n");
+  printf("  -s[12[ce]|14[ce]|16[ce]], --list-processor-properties[=([12[ce]|14[ce]|16[ce]])]\n");
+  printf("                                 Lists properties of the processors. Using by itself, displays\n");
+  printf("                                 the all devices or group of the devices. Along with the '-p'\n");
+  printf("                                 option, shows only the specified device.\n");
   printf("  -u, --absolute                 Use absolute pathes. \n");
   printf("  -v, --version                  Show version.\n");
   printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n");
@@ -272,16 +366,38 @@ show_usage(void)
   printf("%s\n", PACKAGE_BUGREPORT);
 }
 
+/*------------------------------------------------------------------------------------------------*/
+
+void
+add_path(const char *path)
+{
+  if (state.path_num < MAX_PATHS) {
+    state.paths[state.path_num++] = strdup(path);
+  }
+  else {
+    fprintf(stderr, "too many -I paths\n");
+    exit(1);
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 void
 process_args( int argc, char *argv[])
 {
   extern char *optarg;
   extern int optind;
   int c;
+  long pic_family;
   gp_boolean usage = false;
   gp_boolean sdcc_dev16 = false;
+  gp_boolean properties = false;
   int usage_code = 0;
   char *pc;
+
+  list_options.processor = NULL;
+  list_options.class1    = PROC_CLASS_UNKNOWN;
+  list_options.class2    = PROC_CLASS_UNKNOWN;
 
   /* Scan through the options for the -i flag. It must be set before the
      defines are read. */
@@ -388,53 +504,61 @@ process_args( int argc, char *argv[])
       break;
 
     case 'l': {
-      long pic_family = -1;
+      gp_boolean all;
+
+      pic_family = -1;
 
       if (optarg != NULL) {
         pic_family = strtol(optarg, NULL, 16);
       }
 
+      all = false;
+
       switch (pic_family) {
         case 0x12:
-          gp_dump_processor_list(false, PROC_CLASS_PIC12, PROC_CLASS_PIC12E);
+          list_options.class1 = PROC_CLASS_PIC12;
+          list_options.class2 = PROC_CLASS_PIC12E;
           break;
 
         case 0x12C:
-          gp_dump_processor_list(false, PROC_CLASS_PIC12, NULL);
+          list_options.class1 = PROC_CLASS_PIC12;
           break;
 
         case 0x12E:
-          gp_dump_processor_list(false, PROC_CLASS_PIC12E, NULL);
+          list_options.class1 = PROC_CLASS_PIC12E;
           break;
 
         case 0x14:
-          gp_dump_processor_list(false, PROC_CLASS_PIC14, PROC_CLASS_PIC14E);
+          list_options.class1 = PROC_CLASS_PIC14;
+          list_options.class2 = PROC_CLASS_PIC14E;
           break;
 
         case 0x14C:
-          gp_dump_processor_list(false, PROC_CLASS_PIC14, NULL);
+          list_options.class1 = PROC_CLASS_PIC14;
           break;
 
         case 0x14E:
-          gp_dump_processor_list(false, PROC_CLASS_PIC14E, NULL);
+          list_options.class1 = PROC_CLASS_PIC14E;
           break;
 
         case 0x16:
-          gp_dump_processor_list(false, PROC_CLASS_PIC16, PROC_CLASS_PIC16E);
+          list_options.class1 = PROC_CLASS_PIC16;
+          list_options.class2 = PROC_CLASS_PIC16E;
           break;
 
         case 0x16C:
-          gp_dump_processor_list(false, PROC_CLASS_PIC16, NULL);
+          list_options.class1 = PROC_CLASS_PIC16;
           break;
 
         case 0x16E:
-          gp_dump_processor_list(false, PROC_CLASS_PIC16E, NULL);
+          list_options.class1 = PROC_CLASS_PIC16E;
           break;
 
         default:
-          gp_dump_processor_list(true, NULL, NULL);
+          all = true;
         }
 
+      gp_dump_processor_list(all, list_options.class1, list_options.class2);
       exit(0);
       break;
       }
@@ -468,6 +592,10 @@ process_args( int argc, char *argv[])
       processor_name = optarg;
       break;
 
+    case 'P':
+      state.preproc.preprocfilename = optarg;
+      break;
+
     case 'q':
       state.quiet = true;
       break;
@@ -476,6 +604,62 @@ process_args( int argc, char *argv[])
       select_radix(optarg);
       state.cmd_line.radix = true;
       break;
+
+    case 's': {
+      pic_family = -1;
+
+      if (optarg != NULL) {
+        pic_family = strtol(optarg, NULL, 16);
+      }
+
+      switch (pic_family) {
+        case 0x12:
+          list_options.class1 = PROC_CLASS_PIC12;
+          list_options.class2 = PROC_CLASS_PIC12E;
+          break;
+
+        case 0x12C:
+          list_options.class1 = PROC_CLASS_PIC12;
+          break;
+
+        case 0x12E:
+          list_options.class1 = PROC_CLASS_PIC12E;
+          break;
+
+        case 0x14:
+          list_options.class1 = PROC_CLASS_PIC14;
+          list_options.class2 = PROC_CLASS_PIC14E;
+          break;
+
+        case 0x14C:
+          list_options.class1 = PROC_CLASS_PIC14;
+          break;
+
+        case 0x14E:
+          list_options.class1 = PROC_CLASS_PIC14E;
+          break;
+
+        case 0x16:
+          list_options.class1 = PROC_CLASS_PIC16;
+          list_options.class2 = PROC_CLASS_PIC16E;
+          break;
+
+        case 0x16C:
+          list_options.class1 = PROC_CLASS_PIC16;
+          break;
+
+        case 0x16E:
+          list_options.class1 = PROC_CLASS_PIC16E;
+          break;
+
+        default:
+          list_options.class1 = PROC_CLASS_UNKNOWN;
+          list_options.class2 = PROC_CLASS_UNKNOWN;
+        }
+
+      properties = true;
+      break;
+      }
 
     case 'u':
       state.use_absolute_path = true;
@@ -497,10 +681,6 @@ process_args( int argc, char *argv[])
     case OPT_MPASM_COMPATIBLE:
       state.mpasm_compatible = true;
       break;
-
-    case 'P':
-      state.preproc.preprocfilename = optarg;
-      break;
     }
 
     if (usage) {
@@ -508,12 +688,28 @@ process_args( int argc, char *argv[])
     }
   }
 
-  if (sdcc_dev16) {
-    if (cmd_processor) {
-      state.processor = gp_find_processor(processor_name);
+  if (properties) {
+    list_options.processor = (cmd_processor) ? gp_find_processor(processor_name) : NULL;
+
+    if (list_options.processor != NULL) {
+      lister_of_devices(list_options.processor);
+    }
+    else {
+      gp_processor_invoke_custom_lister(list_options.class1, list_options.class2, lister_of_devices);
     }
 
-    gp_processor_invoke_custom_lister(pic16e_lister);
+    exit(0);
+  }
+  else if (sdcc_dev16) {
+    list_options.processor = (cmd_processor) ? gp_find_processor(processor_name) : NULL;
+
+    if (list_options.processor != NULL) {
+      pic16e_lister(list_options.processor);
+    }
+    else {
+      gp_processor_invoke_custom_lister(PROC_CLASS_PIC16E, NULL, pic16e_lister);
+    }
+
     exit(0);
   }
 
@@ -539,6 +735,8 @@ process_args( int argc, char *argv[])
     state.srcfilename = gp_absolute_path(state.srcfilename);
   }
 }
+
+/*------------------------------------------------------------------------------------------------*/
 
 int
 assemble(void)

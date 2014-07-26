@@ -89,8 +89,11 @@ void gp_cfg_real_config_boundaries(const gp_cfg_device_t *Device, int *Address_l
 const gp_cfg_directive_t *gp_cfg_find_directive(const gp_cfg_device_t *Device, const char *Directive,
                                                 unsigned int *Out_config_addr, unsigned short *Out_def_value);
 
-void gp_cfg_brief_all_address(const gp_cfg_device_t *Device, const char *Head, int Addr_digits,
-                              int Word_digits, unsigned int Mask_defaults);
+void gp_cfg_brief_device(const gp_cfg_device_t *Device, const char *Head, int Addr_digits,
+                         int Word_digits, unsigned int Pic18J);
+
+void gp_cfg_full_list_device(const gp_cfg_device_t *Device, const char *Head, int Addr_digits,
+                             int Word_digits);
 
 const gp_cfg_option_t *gp_cfg_find_option(const gp_cfg_directive_t *Directive, const char *Option);
 

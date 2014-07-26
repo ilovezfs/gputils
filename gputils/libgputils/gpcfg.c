@@ -54,10 +54,10 @@ gp_cfg_find_pic(const char *Pic) {
 
 const gp_cfg_device_t *
 gp_cfg_find_pic_multi_name(unsigned int Count, const char *const *Pics) {
-  unsigned int t;
+  unsigned int i;
 
-  for (t = 0; t < Count; t++) {
-    const gp_cfg_device_t *dev = gp_cfg_find_pic(Pics[t]);
+  for (i = 0; i < Count; i++) {
+    const gp_cfg_device_t *dev = gp_cfg_find_pic(Pics[i]);
 
     if (dev != NULL) {
       return dev;
@@ -87,12 +87,12 @@ gp_cfg_real_config_boundaries(const gp_cfg_device_t *Device, int *Address_low, i
 const gp_cfg_directive_t *
 gp_cfg_find_directive(const gp_cfg_device_t *Device, const char *Dname,
                       unsigned int *Out_config_addr, unsigned short *Out_def_value) {
-  unsigned int t, u;
+  unsigned int i, j;
   const gp_cfg_addr_t *addr;
   const gp_cfg_directive_t *dir;
 
-  for (t = Device->address_count, addr = Device->addresses; t; ++addr, --t) {
-    for (u = addr->directive_count, dir = addr->directives; u; ++dir, --u) {
+  for (i = Device->address_count, addr = Device->addresses; i; ++addr, --i) {
+    for (j = addr->directive_count, dir = addr->directives; j; ++dir, --j) {
       if (strcasecmp(Dname, dir->name) == 0) {
         if (Out_config_addr != NULL) {
           *(Out_config_addr) = addr->address;
@@ -115,11 +115,14 @@ gp_cfg_find_directive(const gp_cfg_device_t *Device, const char *Dname,
 /* Lists in brief all configuration in a processor's config db. */
 
 void
-gp_cfg_brief_all_address(const gp_cfg_device_t *Device, const char *Head, int Addr_digits,
-                         int Word_digits, unsigned int Mask_defaults) {
-  unsigned int i, j, mask, def_value, xinst_mask;
+gp_cfg_brief_device(const gp_cfg_device_t *Device, const char *Head, int Addr_digits, int Word_digits,
+                    unsigned int Pic18J) {
+  unsigned int i, j, word_mask;
+  unsigned int mask, def_value, xinst_mask;
   const gp_cfg_addr_t *addr;
   const gp_cfg_directive_t *dir;
+
+  word_mask = ((UINT_MAX << (Word_digits * 4)) & UINT_MAX) ^ UINT_MAX;
 
   for (i = Device->address_count, addr = Device->addresses; i; ++addr, --i) {
     mask = 0;
@@ -134,17 +137,75 @@ gp_cfg_brief_all_address(const gp_cfg_device_t *Device, const char *Head, int Ad
 
     def_value = addr->def_value;
 
-    if (Mask_defaults) {
+    if (!Pic18J || ((addr->address & 1) == 0)) {
       def_value &= mask;
     }
 
-    printf("%s0x%0*X 0x%0*X 0x%0*X", Head, Addr_digits, addr->address, Word_digits, mask, Word_digits, def_value);
+    printf("%s0x%0*X 0x%0*X 0x%0*X", Head, Addr_digits, addr->address, Word_digits, mask,
+           Word_digits, def_value);
 
     if (xinst_mask > 0) {
-      printf(" 0x%0*X", Word_digits, (~xinst_mask) & ((UINT_MAX << (Word_digits * 4)) ^ UINT_MAX));
+      printf(" 0x%0*X", Word_digits, (~xinst_mask) & word_mask);
     }
 
     printf("\n");
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* Lists all configuration in a processor's config db. */
+
+void
+gp_cfg_full_list_device(const gp_cfg_device_t *Device, const char *Head, int Addr_digits,
+                        int Word_digits) {
+  unsigned int headlen, i, j, k, len, maxlen;
+  unsigned int mask, def_value;
+  const gp_cfg_addr_t *addr;
+  const gp_cfg_directive_t *dir;
+  const gp_cfg_option_t **opt;
+  const char *txt;
+
+  headlen = strlen(Head);
+
+  /* Determine the maximum length of the option names. */
+  maxlen = 0;
+  for (i = Device->address_count, addr = Device->addresses; i; ++addr, --i) {
+    for (j = addr->directive_count, dir = addr->directives; j; ++dir, --j) {
+      for (k = dir->option_count, opt = dir->options; k; ++opt, --k) {
+        len = strlen((*opt)->name);
+
+        if (maxlen < len) {
+          maxlen = len;
+        }
+      }
+    }
+  }
+
+  for (i = Device->address_count, addr = Device->addresses; i; ++addr, --i) {
+    for (mask = 0, j = addr->directive_count, dir = addr->directives; j; ++dir, --j) {
+      mask |= dir->mask;
+    }
+
+    printf("%saddress = 0x%0*X, mask = 0x%0*X, default = 0x%0*X\n", Head, Addr_digits,
+           addr->address, Word_digits, mask, Word_digits, addr->def_value);
+
+    for (j = addr->directive_count, dir = addr->directives; j; ++dir, --j) {
+      def_value = addr->def_value & dir->mask;
+      printf("%*s%s\n", headlen, "Directive: ", dir->name);
+
+      for (k = dir->option_count, opt = dir->options; k; ++opt, --k) {
+        if (def_value == (*opt)->value) {
+          txt = " (default)";
+        }
+        else {
+          txt = "";
+        }
+
+        printf("%*s  %-*s = 0x%0*X%s\n", headlen, "Option: ", maxlen, (*opt)->name,
+               Word_digits, (*opt)->value, txt);
+      }
+    }
   }
 }
 
@@ -154,10 +215,10 @@ gp_cfg_brief_all_address(const gp_cfg_device_t *Device, const char *Head, int Ad
 
 const gp_cfg_option_t *
 gp_cfg_find_option(const gp_cfg_directive_t *Directive, const char *Option) {
-  unsigned int t;
+  unsigned int i;
   const gp_cfg_option_t **opt;
 
-  for (t = Directive->option_count, opt = Directive->options; t; ++opt, --t) {
+  for (i = Directive->option_count, opt = Directive->options; i; ++opt, --i) {
     if (strcasecmp((*opt)->name, Option) == 0) {
       return *opt;
     }
@@ -217,10 +278,11 @@ gp_cfg_decode_directive(const gp_cfg_device_t *Device, unsigned int Address, uns
   max = 0;
   for (i = addr->directive_count, dir = addr->directives; i; ++dir, --i) {
     val = Value & dir->mask;
+
     for (j = dir->option_count, opt = dir->options; j; ++opt, --j) {
       if (count >= GP_CFG_ADDR_HIT_MAX) {
         fprintf(stderr, "%s(): The size of gp_cfg_addr_hit_t too small!\n", __FUNCTION__);
-        break;
+        goto exit_loop;
       }
 
       if (val == (*opt)->value) {
@@ -237,6 +299,7 @@ gp_cfg_decode_directive(const gp_cfg_device_t *Device, unsigned int Address, uns
       }
     }
   }
+exit_loop:
 
   Hit->pair_count    = count;
   Hit->max_dir_width = max;
