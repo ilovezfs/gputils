@@ -1,5 +1,5 @@
 
-/* This file is generated automatically by the cfg-import.pl 2014-07-24 10:01:40 UTC. */
+/* This file is generated automatically by the cfg-import.pl 2014-07-25 09:32:01 UTC. */
 
 /*  Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
 
@@ -9973,13 +9973,13 @@ const gp_cfg_device_t gp_cfg_devices[] = {
   { "PIC18LF47J53"   ,  8, PIC18F27J53_addrs   },
   { "PIC18LF65K80"   , 12, PIC18F65K80_addrs   },
   { "PIC18LF66K80"   , 12, PIC18F65K80_addrs   },
-  { "PICRF509AF"     ,  1, PIC12C508_addrs     },
-  { "PICRF509AG"     ,  1, PIC12C508_addrs     },
-  { "PICRF675F"      ,  1, PIC12F629_addrs     },
-  { "PICRF675H"      ,  1, PIC12F629_addrs     },
-  { "PICRF675K"      ,  1, PIC12F629_addrs     },
   { "PS500"          ,  9, PS500_addrs         },
-  { "PS810"          ,  9, PS810_addrs         }
+  { "PS810"          ,  9, PS810_addrs         },
+  { "RF509AF"        ,  1, PIC12C508_addrs     },
+  { "RF509AG"        ,  1, PIC12C508_addrs     },
+  { "RF675F"         ,  1, PIC12F629_addrs     },
+  { "RF675H"         ,  1, PIC12F629_addrs     },
+  { "RF675K"         ,  1, PIC12F629_addrs     }
 };
 
 const int gp_cfg_device_count = 662;

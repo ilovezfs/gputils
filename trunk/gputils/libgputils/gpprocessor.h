@@ -146,29 +146,31 @@ struct proc_class {
   int page_size;
   /* The bank size of the RAM memory. */
   int bank_size;
-  /* Bits to shift assembly code address for COFF file byte address. */
+  /* Bits to shift assembly code address for the COFF file byte address. */
   unsigned int org_to_byte_shift;
-  /* Mask of address bits for Program Counter. */
+  /* Mask of address bits for the Program Counter. */
   unsigned int pc_mask;
-  /* Mask of address bits for page. */
+  /* Mask of address bits for pages. */
   unsigned int page_mask;
-  /* Mask of address bits for bank. */
+  /* Mask of address bits for banks. */
   unsigned int bank_mask;
-  /* Bitmask of bits that can be stored in code section address. */
+  /* Bitmask of bits that can be stored in the code section address. */
   unsigned int core_mask;
-  /* Bitmask of bits that can be stored in config section address. */
+  /* Bitmask of bits that can be stored in the config section address. */
   unsigned int config_mask;
-  /* Number of digits of maximum possible flash address. */
+  /* Number of digits of the maximum possible flash address. */
   int addr_digits;
-  /* Number of digits of instruction word. */
+  /* Number of digits of the instruction word. */
   int word_digits;
+  /* Number of digits of the config word. */
+  int config_digits;
   /* These SFRs exist in each MCU which fall within into the PIC1xx family. */
   const core_sfr_t *core_sfr_table;
-  /* Number of core SFRs. */
+  /* Number of the core SFRs. */
   unsigned int core_sfr_number;
   /* This table contains traits of the interrupt vectors. */
   const vector_t *vector_table;
-  /* Number of interrupt vectors. */
+  /* Number of the interrupt vectors. */
   unsigned int vector_number;
   /* Get the start address for ID location. */
   unsigned int (*id_location)(const struct px *processor);
@@ -301,9 +303,13 @@ struct px {
 #define DEVID2    0x3fffff
 
 void gp_dump_processor_list(gp_boolean list_all, proc_class_t class1, proc_class_t class2);
-void gp_processor_invoke_custom_lister(void (*custom_lister)(pic_processor_t));
+
+void gp_processor_invoke_custom_lister(proc_class_t class0, proc_class_t class1,
+                                       void (*custom_lister)(pic_processor_t));
+
 pic_processor_t gp_find_processor(const char *name);
 proc_class_t gp_processor_class(pic_processor_t);
+const char *gp_processor_class_to_str(proc_class_t class);
 int gp_processor_bsr_boundary(pic_processor_t processor);
 unsigned long gp_processor_coff_type(pic_processor_t processor);
 int gp_processor_num_pages(pic_processor_t processor);

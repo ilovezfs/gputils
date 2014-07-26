@@ -1,3 +1,17 @@
+2014-07-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpcfg-table.c:
+    Renamed the "PICRF..." to the "RF...".
+
+  * doc/gputils.lyx, gpasm/gpasm.c, libgputils/gpcfg.c,
+    libgputils/gpcfg.h, libgputils/gpprocessor.c,
+    libgputils/gpprocessor.h:
+    A new option: -s[12[ce]|14[ce]|16[ce]],
+                  --list-processor-properties[=([12[ce]|14[ce]|16[ce]])]
+
+    Lists properties of the processors. Using by itself, displays
+    the all devices or group of the devices. Along with the '-p'
+    option, shows only the specified device.
+
 2014-07-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/gpasm.c, gpasm/processor.c,
     libgputils/gpcfg.c, libgputils/gpcfg.h, libgputils/gpprocessor.c,
