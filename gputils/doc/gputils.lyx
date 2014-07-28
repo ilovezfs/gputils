@@ -71,7 +71,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Jul 24, 2014
+Jul 28, 2014
 \end_layout
 
 \begin_layout Standard
@@ -893,7 +893,7 @@ Where options can be one of:
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="29" columns="3">
+<lyxtabular version="3" rows="30" columns="3">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
@@ -1903,6 +1903,37 @@ hex
 \end_inset
 
 .
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-s[12[ce]|14[ce]|16[ce]]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--list-processor-properties[=([12[ce]|14[ce]|16[ce]])]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Lists properties of the processors.
+ Using by itself, displays the all devices or group of the devices.
+ Along with the '-p' option, shows only the specified device.
 \end_layout
 
 \end_inset
@@ -3981,6 +4012,30 @@ gputils distributes the Microchip processor header files.
  Only the name of the file is required.
  gpasm will search the default path automatically.
  
+\end_layout
+
+\begin_layout Subsection
+Predefined constants
+\end_layout
+
+\begin_layout Standard
+The device ID:
+\end_layout
+
+\begin_layout LyX-Code
+__18F4520 -- If the type of the processor is p18f4520.
+\end_layout
+
+\begin_layout Standard
+The bounds of the EEPROM, if exist this memory area:
+\end_layout
+
+\begin_layout LyX-Code
+__EEPROM_START -- Start address of the EEPROM area.
+\end_layout
+
+\begin_layout LyX-Code
+__EEPROM_END   -- End address of the EEPROM area.
 \end_layout
 
 \begin_layout Section

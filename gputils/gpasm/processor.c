@@ -2,6 +2,8 @@
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Craig Franklin
 
+    Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -29,6 +31,7 @@ Boston, MA 02111-1307, USA.  */
 void select_processor(const char *name)
 {
   pic_processor_t found = NULL;
+  int addr0, addr1;
 
   if (state.cmd_line.processor) {
     gpvwarning(GPW_CMDLINE_PROC, NULL);
@@ -39,20 +42,21 @@ void select_processor(const char *name)
       int badrom_idx;
 
       if (state.processor == NULL) {
-        /* if in extended mode: check if processor supports extended instruction set */
+        /* If in extended mode: check if processor supports extended instruction set. */
         if (state.extended_pic16e && !(found->pic16e_flags & PIC16E_FLAG_HAVE_EXTINST)) {
           gpverror(GPE_NO_EXTENDED_MODE, NULL);
         }
 
         state.processor = found;
         state.maxrom = found->maxrom;
-        /* initialize badrom from internal processor info */
+        /* Initialize badrom from internal processor info. */
         state.badrom = NULL;
 
         for (badrom_idx = 0; badrom_idx < MAX_BADROM; badrom_idx += 2) {
           long start, end;
+
           start = found->badrom[badrom_idx];
-          end = found->badrom[badrom_idx + 1];
+          end   = found->badrom[badrom_idx + 1];
 
           if ((start == -1) || (end == -1)) {
             break;
@@ -68,6 +72,14 @@ void select_processor(const char *name)
         }
 
         set_global(found->defined_as, 1, PERMANENT, GVT_CONSTANT);
+
+        addr0 = found->eeprom_addrs[0];
+        addr1 = found->eeprom_addrs[1];
+
+        if ((addr0 > 0) && (addr1 > 0)) {
+          set_global("__EEPROM_START", addr0, PERMANENT, GVT_CONSTANT);
+          set_global("__EEPROM_END",   addr1, PERMANENT, GVT_CONSTANT);
+        }
       } else if (state.processor != found) {
         gpvwarning(GPW_REDEFINING_PROC, NULL);
         gpverror(GPE_EXTRA_PROC, NULL);
@@ -81,10 +93,10 @@ void select_processor(const char *name)
         exit(1);
       }
     }
-    /* load the instruction sets if necessary */
+    /* Load the instruction sets if necessary. */
     if ((state.processor_chosen == 0) && (state.processor != NULL)) {
       opcode_init(1);   /* General directives. */
-      /* seperate the directives from the opcodes */
+      /* Separate the directives from the opcodes. */
       state.stBuiltin = push_symbol_table(state.stBuiltin, true);
       opcode_init(2);   /* Processor-specific. */
 

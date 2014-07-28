@@ -2,6 +2,8 @@
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
 
+    Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -46,7 +48,7 @@ static struct {
 static void
 select_processor(void)
 {
-  const struct px *found = NULL;
+  pic_processor_t found = NULL;
 
   if (processor_name == NULL) {
     printf("error: must select processor\n");
@@ -216,7 +218,7 @@ recognize_labels_and_spec_words(MemBlock *memory)
   unsigned int max_width;
 
   if (state.show_config) {
-    dev = gp_cfg_find_pic_multi_name(ARRAY_SIZE(state.processor->names), state.processor->names);
+    dev = gp_cfg_find_pic_multi_name(state.processor->names, ARRAY_SIZE(state.processor->names));
     if (dev == NULL) {
       fprintf(stderr, "The %s processor has no entries in the config db.", state.processor->names[2]);
     }
@@ -311,8 +313,7 @@ recognize_labels_and_spec_words(MemBlock *memory)
       else {
         if (state.class->i_memory_get(m, i, &data, NULL, NULL) == W_USED_ALL) {
           if (state.class == PROC_CLASS_SX) {
-            /* Unlike the others, the address of reset vector located
-               the top of program memory. */
+            /* Unlike the others, the address of reset vector located the top of program memory. */
             if (org == state.processor->maxrom) {
               vector = &sx_reset;
             }

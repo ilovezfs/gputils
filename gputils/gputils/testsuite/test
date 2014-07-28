@@ -68,17 +68,18 @@ function printbanner() {
 
 function run_test() {
   # Test syntax.
-  if (($# < 2)); then
-    echo "Usage: run_test <test file> <mcu type> [gpasm flags]"
+  if (($# < 1)); then
+    echo "Usage: run_test <test file> [gpasm flags]"
     return 1
   fi
 
-  echo "$GPASMBIN $GPASMFLAGS $3 $1.asm"
-  ../../$GPASMBIN $GPASMFLAGS $3 $1.asm || testfailed "$GPASMBIN $GPASMFLAGS $3 $1.asm"
-  echo "$GPDASMBIN -p $2 $GPDASMFLAGS $1.hex > $1.dis"
-  ../../$GPDASMBIN -p $2 $GPDASMFLAGS $1.hex > $1.dis || testfailed "$GPDASMBIN -p $2 $GPDASMFLAGS $1.hex"
-  echo "$GPASMBIN $GPASMFLAGS $3 $1.dis -o $1.dis.hex"
-  ../../$GPASMBIN $GPASMFLAGS $3 $1.dis -o $1.dis.hex || testfailed "$GPASMBIN $GPASMFLAGS $3 $1.dis -o $1.dis.hex"
+  echo "$GPASMBIN $GPASMFLAGS $2 $1.asm"
+  ../../$GPASMBIN $GPASMFLAGS $2 $1.asm || testfailed "$GPASMBIN $GPASMFLAGS $2 $1.asm"
+  mcu=`sed -n '/list/Ip' $1.asm | sed -r 's/^.*p=(.*)$/\1/i'`
+  echo "$GPDASMBIN -p $mcu $GPDASMFLAGS $1.hex > $1.dis"
+  ../../$GPDASMBIN -p $mcu $GPDASMFLAGS $1.hex > $1.dis || testfailed "$GPDASMBIN -p $mcu $GPDASMFLAGS $1.hex"
+  echo "$GPASMBIN $GPASMFLAGS $2 $1.dis -o $1.dis.hex"
+  ../../$GPASMBIN $GPASMFLAGS $2 $1.dis -o $1.dis.hex || testfailed "$GPASMBIN $GPASMFLAGS $2 $1.dis -o $1.dis.hex"
   diff -us $1.hex $1.dis.hex || testfailed ""
   return 0
 }
@@ -105,138 +106,158 @@ function all_test() {
 
   printbanner "Testing 12 bit core"
   GPDASMFLAGS=$_GPDASMFLAGS
-  run_test op12 12c508
+  run_test op12
   echo -e "12 bit core passed.\n"
 
   printbanner "Testing 12 bit core (idlocs a)"
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test idlocs12a 10f200
+  run_test idlocs12a
   echo -e "12 bit core idlocs-a passed.\n"
 
   printbanner "Testing 12 bit core (idlocs b)"
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test idlocs12b 12c508
+  run_test idlocs12b
   echo -e "12 bit core idlocs-b passed.\n"
 
   printbanner "Testing enhanced 12 bit core 1."
   GPDASMFLAGS=$_GPDASMFLAGS
-  run_test op12e_old_conf 16f527
+  run_test op12e_old_conf
   echo -e "Enhanced 12 bit core passed.\n"
 
   printbanner "Testing enhanced 12 bit core 2."
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test op12e_new_conf 16f527
+  run_test op12e_new_conf
   echo -e "Enhanced 12 bit core passed.\n"
 
   printbanner "Testing sx core"
   GPDASMFLAGS=$_GPDASMFLAGS
-  run_test sx sx18
+  run_test sx
   echo -e "sx core passed.\n"
 
   printbanner "Testing 14 bit core 1."
   GPDASMFLAGS=$_GPDASMFLAGS
-  run_test op14 16c84
+  run_test op14
   echo -e "14 bit core passed.\n"
 
   printbanner "Testing 14 bit core 2."
   GPDASMFLAGS=$_GPDASMFLAGS
-  run_test op14_old_conf 16f887
+  run_test op14_old_conf
   echo -e "14 bit core passed.\n"
 
   printbanner "Testing 14 bit core 3."
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test op14_new_conf 16f887
+  run_test op14_new_conf
   echo -e "14 bit core passed.\n"
 
   printbanner "Testing 14 bit core idlocs-a"
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test idlocs14a 10f320
+  run_test idlocs14a
   echo -e "14 bit core idlocs-a passed.\n"
 
   printbanner "Testing 14 bit core idlocs-b"
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test idlocs14b 12f1501
+  run_test idlocs14b
   echo -e "14 bit core idlocs-b passed.\n"
+
+  printbanner "Testing 14 bit core EEPROM 0."
+  GPDASMFLAGS=$_GPDASMFLAGS
+  run_test eeprom14_0
+  echo -e "14 bit core EEPROM 0 passed.\n"
+
+  printbanner "Testing 14 bit core EEPROM 1."
+  GPDASMFLAGS=$_GPDASMFLAGS
+  run_test eeprom14_1
+  echo -e "14 bit core EEPROM 1 passed.\n"
 
   printbanner "Testing enhanced 14 bit core 1."
   GPDASMFLAGS=$_GPDASMFLAGS
-  run_test op14e_old_conf 12f1501
+  run_test op14e_old_conf
   echo -e "Enhanced 14 bit core passed.\n"
 
   printbanner "Testing enhanced 14 bit core 2."
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test op14e_new_conf 12f1571
+  run_test op14e_new_conf
   echo -e "Enhanced 14 bit core passed.\n"
+
+  printbanner "Testing enhanced 14 bit core EEPROM."
+  GPDASMFLAGS=$_GPDASMFLAGS
+  run_test eeprom14e
+  echo -e "14 bit enhanced core EEPROM passed.\n"
 
   printbanner "Testing 16 bit core"
   GPDASMFLAGS=$_GPDASMFLAGS
-  run_test op16 17c44
+  run_test op16
   echo -e "16 bit core passed.\n"
 
   printbanner "Testing extended 16 bit core 1."
   GPDASMFLAGS=$_GPDASMFLAGS
-  run_test op16e 18c452
+  run_test op16e
   echo -e "Extended 16 bit core passed.\n"
 
   printbanner "Testing extended 16 bit core 2."
   GPDASMFLAGS=$_GPDASMFLAGS
-  run_test op16e_old_conf 18f25k80
+  run_test op16e_old_conf
   echo -e "Extended 16 bit core passed.\n"
 
   printbanner "Testing extended 16 bit core 3."
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test op16e_new_conf 18f25k80
+  run_test op16e_new_conf
   echo -e "Extended 16 bit core passed.\n"
 
   printbanner "Testing extended 16 bit core (idlocs-1)"
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test idlocs16e1 18f4520
+  run_test idlocs16e1
   echo -e "Extended 16 bit core idlocs-1 passed.\n"
 
   printbanner "Testing extended 16 bit core (idlocs-2)"
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test idlocs16e2 18f4520
+  run_test idlocs16e2
   echo -e "Extended 16 bit core idlocs-2 passed.\n"
 
   printbanner "Testing extended 16 bit core (idlocs-3)"
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test idlocs16e3 18f4520
+  run_test idlocs16e3
   echo -e "Extended 16 bit core idlocs-3 passed.\n"
 
   printbanner "Testing extended 16 bit core (idlocs-4)"
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test idlocs16e4 18f4520
+  run_test idlocs16e4
   echo -e "Extended 16 bit core idlocs-4 passed.\n"
 
   printbanner "Testing extended 16 bit core (idlocs-5)"
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test idlocs16e5 18f4520
+  run_test idlocs16e5
   echo -e "Extended 16 bit core idlocs-5 passed.\n"
 
   printbanner "Testing extended 16 bit core (idlocs-6)"
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test idlocs16e6 18f4520
+  run_test idlocs16e6
   echo -e "Extended 16 bit core idlocs-6 passed.\n"
 
   printbanner "Testing extended 16 bit core (idlocs-7)"
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test idlocs16e7 18f4520
+  run_test idlocs16e7
   echo -e "Extended 16 bit core idlocs-7 passed.\n"
 
   printbanner "Testing extended 16 bit core (idlocs-8)"
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test idlocs16e8 18f4520
+  run_test idlocs16e8
   echo -e "Extended 16 bit core idlocs-8 passed.\n"
 
   printbanner "Testing extended 16 bit core (idlocs-9)"
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test idlocs16e9 18f4520
+  run_test idlocs16e9
   echo -e "Extended 16 bit core idlocs-9 passed.\n"
 
   printbanner "Testing extended 16 bit core (idlocs-10)"
   GPDASMFLAGS="$_GPDASMFLAGS -o"
-  run_test idlocs16e10 18f4520
+  run_test idlocs16e10
   echo -e "Extended 16 bit core idlocs-10 passed.\n"
+
+  printbanner "Testing extended 16 bit core EEPROM."
+  GPDASMFLAGS=$_GPDASMFLAGS
+  run_test eeprom16e
+  echo -e "16 bit extended core EEPROM passed.\n"
 
   printbanner "Gpdasm testing sucessful."
 }

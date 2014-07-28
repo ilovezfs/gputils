@@ -1,4 +1,4 @@
-/* gpcfg.c - header file for pic object files
+/* gpcfg.c - handler for pic configurations
    Copyright (C) 2006
    Michael Ballbach
 
@@ -53,7 +53,7 @@ gp_cfg_find_pic(const char *Pic) {
 /* Locate a PIC by name, pass a list of names to use, try each in order. */
 
 const gp_cfg_device_t *
-gp_cfg_find_pic_multi_name(unsigned int Count, const char *const *Pics) {
+gp_cfg_find_pic_multi_name(const char *const *Pics, unsigned int Count) {
   unsigned int i;
 
   for (i = 0; i < Count; i++) {
@@ -281,7 +281,7 @@ gp_cfg_decode_directive(const gp_cfg_device_t *Device, unsigned int Address, uns
 
     for (j = dir->option_count, opt = dir->options; j; ++opt, --j) {
       if (count >= GP_CFG_ADDR_HIT_MAX) {
-        fprintf(stderr, "%s(): The size of gp_cfg_addr_hit_t too small!\n", __FUNCTION__);
+        fprintf(stderr, "%s(): The size of gp_cfg_addr_hit_t too small!\n", __func__);
         goto exit_loop;
       }
 

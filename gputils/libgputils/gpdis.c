@@ -2,6 +2,8 @@
    Copyright (C) 2001, 2002, 2003, 2004, 2005
    Craig Franklin
 
+    Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -712,11 +714,11 @@ pic12_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_clas
 
     if (args.first_arg != NULL) {
       if (reg1 == NULL) {
-        gp_debug("%s() -- The \"%s\" core SFR not exist in the register database!\n", __FUNCTION__, args.first_arg);
+        gp_debug("%s() -- The \"%s\" core SFR not exist in the register database!\n", __func__, args.first_arg);
         fstate->need_sfr_equ = true;
       }
       else if (strcmp(args.first_arg, reg1->name) != 0) {
-        gp_debug("%s() -- These SFRs there is the same address: \"%s\", \"%s\"\n", __FUNCTION__, args.first_arg, reg1->name);
+        gp_debug("%s() -- These SFRs there is the same address: \"%s\", \"%s\"\n", __func__, args.first_arg, reg1->name);
         fstate->need_sfr_equ = true;
       }
     }
@@ -758,11 +760,11 @@ pic14_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_clas
 
   if (args.first_arg != NULL) {
     if (reg1 == NULL) {
-      gp_debug("%s() -- The \"%s\" core SFR not exist in the register database!\n", __FUNCTION__, args.first_arg);
+      gp_debug("%s() -- The \"%s\" core SFR not exist in the register database!\n", __func__, args.first_arg);
       fstate->need_sfr_equ = true;
     }
     else if (strcmp(args.first_arg, reg1->name) != 0) {
-      gp_debug("%s() -- These SFRs there is the same address: \"%s\", \"%s\"\n", __FUNCTION__, args.first_arg, reg1->name);
+      gp_debug("%s() -- These SFRs there is the same address: \"%s\", \"%s\"\n", __func__, args.first_arg, reg1->name);
       fstate->need_sfr_equ = true;
     }
   }

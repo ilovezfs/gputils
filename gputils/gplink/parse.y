@@ -41,6 +41,7 @@ int yylex(void);
 static struct pnode *mk_pnode(enum pnode_tag tag)
 {
   struct pnode *new = malloc(sizeof(*new));
+
   new->tag = tag;
   return new;
 }
@@ -48,6 +49,7 @@ static struct pnode *mk_pnode(enum pnode_tag tag)
 struct pnode *mk_constant(long value)
 {
   struct pnode *new = mk_pnode(PTAG_CONSTANT);
+
   new->value.constant = value;
   return new;
 }
@@ -55,6 +57,7 @@ struct pnode *mk_constant(long value)
 static struct pnode *mk_symbol(const char *value)
 {
   struct pnode *new = mk_pnode(PTAG_SYMBOL);
+
   new->value.symbol = value;
   return new;
 }
@@ -63,6 +66,7 @@ static struct pnode *mk_symbol(const char *value)
 static struct pnode *mk_string(const char *value)
 {
   struct pnode *new = mk_pnode(PTAG_STRING);
+
   new->value.string = value;
   return new;
 }
@@ -72,6 +76,7 @@ static struct pnode *mk_string(const char *value)
 struct pnode *mk_list(struct pnode *head, struct pnode *tail)
 {
   struct pnode *new = mk_pnode(PTAG_LIST);
+
   new->value.list.head = head;
   new->value.list.tail = tail;
   return new;
@@ -80,6 +85,7 @@ struct pnode *mk_list(struct pnode *head, struct pnode *tail)
 static struct pnode *mk_2op(int op, struct pnode *p0, struct pnode *p1)
 {
   struct pnode *new = mk_pnode(PTAG_BINOP);
+
   new->value.binop.op = op;
   new->value.binop.p0 = p0;
   new->value.binop.p1 = p1;
@@ -90,6 +96,7 @@ static struct pnode *mk_2op(int op, struct pnode *p0, struct pnode *p1)
 static struct pnode *mk_1op(int op, struct pnode *p0)
 {
   struct pnode *new = mk_pnode(PTAG_UNOP);
+
   new->value.unop.op = op;
   new->value.unop.p0 = p0;
   return new;
@@ -149,24 +156,24 @@ line:
 	|
 	LIBPATH path_list
 	{
-	  if (!state.ifdef || state.ifdef->istrue)
+	  if (state.ifdef == NULL || state.ifdef->istrue)
 	    add_path($2);
 	}
 	|
 	LKRPATH path_list
 	{
-	  if (!state.ifdef || state.ifdef->istrue)
+	  if (state.ifdef == NULL || state.ifdef->istrue)
 	    add_path($2);
 	}
 	|
 	SYMBOL parameter_list
 	{
-	  if (!state.ifdef || state.ifdef->istrue)
+	  if (state.ifdef == NULL || state.ifdef->istrue)
 	    execute_command($1, $2);
 	}
 	|
 	ERROR {
-	  if (!state.ifdef || state.ifdef->istrue)
+	  if (state.ifdef == NULL || state.ifdef->istrue)
 	    yyerror($1);
 	}
 	|
@@ -175,8 +182,9 @@ line:
 	  /* Contrary to documentation, the mplink 4.38 does not seem
 	     to care if the macro has already been defined or if the
 	     parameters to the operation are undefined. */
-	  if (!state.ifdef || state.ifdef->istrue) {
+	  if (state.ifdef == NULL || state.ifdef->istrue) {
 	    long newval = 0, lh = $3, rh = $5;
+
 	    switch($4) {
 	    case '+': newval = lh + rh; break;
 	    case '-': newval = lh - rh; break;
@@ -195,7 +203,8 @@ line:
 	IFDEF SYMBOL
 	{
 	  struct ifdef *ifdef = malloc(sizeof *ifdef);
-	  ifdef->istrue = ((!state.ifdef || state.ifdef->istrue) &&
+
+	  ifdef->istrue = ((state.ifdef == NULL || state.ifdef->istrue) &&
 			   get_symbol(state.script_symbols, $2));
 	  ifdef->inelse = false;
 	  ifdef->prev = state.ifdef;
@@ -204,11 +213,11 @@ line:
 	|
 	ELSE
 	{
-	  if (!state.ifdef || state.ifdef->inelse)
+	  if (state.ifdef == NULL || state.ifdef->inelse)
 	    yyerror("#ELSE without #IFDEF in linker script");
 	  else {
 	    state.ifdef->istrue = (!state.ifdef->istrue &&
-				   (!state.ifdef->prev ||
+				   (state.ifdef->prev == NULL ||
 				    state.ifdef->prev->istrue));
 	    state.ifdef->inelse = true;
 	  }
@@ -216,7 +225,7 @@ line:
 	|
 	FI
 	{
-	  if (!state.ifdef)
+	  if (state.ifdef == NULL)
 	    yyerror("#FI without #IFDEF in linker script");
 	  else {
 	    struct ifdef *ifdef = state.ifdef;

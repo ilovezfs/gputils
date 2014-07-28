@@ -4,7 +4,7 @@
 
 /* This file is generated automatically by the cfg-import.pl 2014-07-16 07:44:01 UTC. */
 
-/* gpcfg.h - header file for pic object files
+/* gpcfg.c - header file for pic configurations
    Copyright (C) 2006
    Michael Ballbach */
 
@@ -82,7 +82,7 @@ extern const int gp_cfg_device_count;
 
 const gp_cfg_device_t *gp_cfg_find_pic(const char *Pic);
 
-const gp_cfg_device_t *gp_cfg_find_pic_multi_name(unsigned int Count, const char *const *Pics);
+const gp_cfg_device_t *gp_cfg_find_pic_multi_name(const char *const *Pics, unsigned int Count);
 
 void gp_cfg_real_config_boundaries(const gp_cfg_device_t *Device, int *Address_low, int *Address_high);
 

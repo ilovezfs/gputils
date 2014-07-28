@@ -3,6 +3,8 @@
    James Bowman, Scott Dattalo
    Copyright (C) 2013 Borut Razem
 
+    Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
