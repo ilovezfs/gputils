@@ -1,3 +1,30 @@
+2014-07-28  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/directive.c, gpasm/gpasm.c,
+    gpasm/processor.c:
+    New predefined constants: __EEPROM_START and __EEPROM_END
+
+  * gplink/cod.c, gplink/parse.y:
+    Changed text format.
+
+  * gputils/gpdasm.c:
+    Changed text format and copyright.
+
+  * gputils/testsuite/test,
+    gputils/testsuite/gpdasm.project/eeprom14_0.asm,
+    gputils/testsuite/gpdasm.project/eeprom14_1.asm,
+    gputils/testsuite/gpdasm.project/eeprom14e.asm,
+    gputils/testsuite/gpdasm.project/eeprom16e.asm:
+    New test files to the EEPROM area.
+
+  * libgputils/gpcfg.c, libgputils/gpcfg.h:
+    Changed the order of parameters of the gp_cfg_find_pic_multi_name() function.
+
+  * libgputils/gpdis.c:
+    Changed __FUNCTION__ on __func__.
+
+  * libgputils/gpmemory.c, libgputils/gpprocessor.c, libgputils/gpregister.c:
+    Changed the copyright.
+
 2014-07-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpcfg-table.c:
     Renamed the "PICRF..." to the "RF...".

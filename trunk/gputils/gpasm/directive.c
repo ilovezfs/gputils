@@ -2,6 +2,8 @@
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Craig Franklin
 
+    Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -201,7 +203,7 @@ emit_byte(unsigned short value, const char *name)
       }
     }
 
-    b_memory_put(state.i_memory, state.org, value, name, NULL);
+    b_memory_put(state.i_memory, state.org, (unsigned char)value, name, NULL);
   }
   ++state.org;
 }
@@ -941,7 +943,7 @@ do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
         gpvwarning(GPW_RANGE, "%i (%#x) > 0xff", value, value);
       }
 
-      p_dev = gp_cfg_find_pic_multi_name(ARRAY_SIZE(state.processor->names), state.processor->names);
+      p_dev = gp_cfg_find_pic_multi_name(state.processor->names, ARRAY_SIZE(state.processor->names));
       if (p_dev != NULL) {
         /* We do this to also set the other byte in a word. */
         config_16_set_word_mem(config_mem, p_dev, ca, value, 0xff);
@@ -1027,7 +1029,7 @@ do_16_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   }
 
   /* make sure we an find our device in the config DB */
-  p_dev = gp_cfg_find_pic_multi_name(ARRAY_SIZE(state.processor->names), state.processor->names);
+  p_dev = gp_cfg_find_pic_multi_name(state.processor->names, ARRAY_SIZE(state.processor->names));
   if (p_dev == NULL) {
     gpverror(GPE_UNKNOWN,
             "The %s processor has no entries in the config db. CONFIG cannot be used.",
@@ -1193,7 +1195,7 @@ do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   }
 
   /* make sure we an find our device in the config DB */
-  p_dev = gp_cfg_find_pic_multi_name(ARRAY_SIZE(state.processor->names), state.processor->names);
+  p_dev = gp_cfg_find_pic_multi_name(state.processor->names, ARRAY_SIZE(state.processor->names));
   if (p_dev == NULL) {
     gpverror(GPE_UNKNOWN,
             "The %s processor has no entries in the config db. CONFIG cannot be used.",
@@ -1403,6 +1405,7 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *L = parms;
   struct pnode *p;
+  unsigned int org;
 
   if (state.mode == MODE_RELOCATABLE) {
     if (SECTION_FLAGS & (STYP_DATA | STYP_BPACK)) {
@@ -1417,7 +1420,7 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
   }
 
   if (IS_PIC16E_CORE || (SECTION_FLAGS & STYP_DATA)) {
-    unsigned begin_org = state.org;
+    unsigned int begin_org = state.org;
 
     for (; L != NULL; L = TAIL(L)) {
       const char *pc;
@@ -1458,7 +1461,7 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
       }
     }
     else {
-      int org = gp_processor_byte_to_org(state.device.class, begin_org);
+      org = gp_processor_byte_to_org(state.device.class, begin_org);
 
       if ((gp_processor_is_config_addr(state.processor, org) < 0) &&
           (gp_processor_is_idlocs_addr(state.processor, org) < 0) && 
@@ -1500,11 +1503,28 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
         value &= 0xFF;
 
-        if (!(n & 1)) {
-          v = value << 8;
+        if (state.mpasm_compatible) {
+          if (!(n & 1)) {
+            v = value << 8;
+          }
+          else {
+            emit(v | value, name);
+          }
         }
         else {
-          emit(v | value, name);
+          org = gp_processor_byte_to_org(state.device.class, state.org);
+
+          if (gp_processor_is_eeprom_addr(state.processor, org) >= 0) {
+            emit_byte(value, name);
+          }
+          else {
+            if (!(n & 1)) {
+              v = value << 8;
+            }
+            else {
+              emit(v | value, name);
+            }
+          }
         }
 
         ++n;
@@ -1516,8 +1536,19 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
       }
     }
 
-    if (n & 1) {
-      emit(v, name);
+    if (state.mpasm_compatible) {
+      if (n & 1) {
+        emit(v, name);
+      }
+    }
+    else {
+      org = gp_processor_byte_to_org(state.device.class, state.org);
+
+      if (gp_processor_is_eeprom_addr(state.processor, org) < 0) {
+        if (n & 1) {
+          emit(v, name);
+        }
+      }
     }
   }
   return r;

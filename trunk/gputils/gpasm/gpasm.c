@@ -2,6 +2,8 @@
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    James Bowman, Craig Franklin
 
+    Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
+
 This file is part of gputils.
 
 gputils is free software; you can redistribute it and/or modify
@@ -178,7 +180,7 @@ pic16e_lister(pic_processor_t processor)
     return;
   }
 
-  dev = gp_cfg_find_pic_multi_name(ARRAY_SIZE(processor->names), processor->names);
+  dev = gp_cfg_find_pic_multi_name(processor->names, ARRAY_SIZE(processor->names));
 
   if (dev == NULL) {
     fprintf(stderr, "Warning: The %s processor has no entries in the config db.\n", processor->names[2]);
@@ -221,7 +223,7 @@ lister_of_devices(pic_processor_t processor)
   int addr_digits;
   const char *txt;
 
-  dev = gp_cfg_find_pic_multi_name(ARRAY_SIZE(processor->names), processor->names);
+  dev = gp_cfg_find_pic_multi_name(processor->names, ARRAY_SIZE(processor->names));
 
   if (dev == NULL) {
     fprintf(stderr, "Warning: The %s processor has no entries in the config db.\n", processor->names[2]);
@@ -767,7 +769,7 @@ assemble(void)
   state.stMacroParams = push_symbol_table(NULL, state.case_insensitive);
   opcode_init(0);
 
-  /* the tables are built, select the processor if -p was used */
+  /* The tables are built, select the processor if -p was used. */
   if (cmd_processor) {
     select_processor(processor_name);
     state.cmd_line.processor = true;

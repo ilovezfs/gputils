@@ -447,7 +447,7 @@ cod_write_debug(void)
       gp_cod_strncpy(&db->block[main_dir->dbg.offset + COD_DEBUG_MSG], string,
                      MAX_STRING_LEN);
 
-      main_dir->dbg.offset += (len + COD_DEBUG_EXTRA);
+      main_dir->dbg.offset += len + COD_DEBUG_EXTRA;
     }
     symbol = symbol->next;
   }
