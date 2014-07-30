@@ -1,3 +1,10 @@
+2014-07-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * lkr/16f83_g.lkr, lkr/16f84_g.lkr, lkr/16f84a_g.lkr,
+    lkr/16f526_g.lkr, lkr/16f527_g.lkr, lkr/16f570_g.lkr,
+    lkr/16f818_g.lkr, lkr/16f819_g.lkr, lkr/16f870_g.lkr,
+    lkr/16f871_g.lkr, lkr/16f872_g.lkr:
+    bugfix
+
 2014-07-28  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/directive.c, gpasm/gpasm.c,
     gpasm/processor.c:

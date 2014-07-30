@@ -1,5 +1,14 @@
 // File: 16f570_g.lkr
 // Generic linker script for the PIC16F570 processor
+//=========================================================================
+//
+//      Gputils Specific Revision History
+//
+//=========================================================================
+//
+//      30 Jul 2014  Changed the gpr0a onto gpr1a, gpr2a, gpr3a.
+//
+//// End: Added in gputils
 
 LIBPATH .
 
@@ -34,9 +43,14 @@ DATABANK   NAME=gpr7a      START=0xEC              END=0xEF
 DATABANK   NAME=gpr7b      START=0xF0              END=0xFF           
 
 SHAREBANK  NAME=gpr0a      START=0xC             END=0xF            
-SHAREBANK  NAME=gpr0a      START=0x2C            END=0x2F           PROTECTED
-SHAREBANK  NAME=gpr0a      START=0x4C            END=0x4F           PROTECTED
-SHAREBANK  NAME=gpr0a      START=0x6C            END=0x6F           PROTECTED
+//// Begin: Changed in gputils
+////SHAREBANK  NAME=gpr0a      START=0x2C            END=0x2F           PROTECTED
+////SHAREBANK  NAME=gpr0a      START=0x4C            END=0x4F           PROTECTED
+////SHAREBANK  NAME=gpr0a      START=0x6C            END=0x6F           PROTECTED
+SHAREBANK  NAME=gpr1a      START=0x2C            END=0x2F           PROTECTED
+SHAREBANK  NAME=gpr2a      START=0x4C            END=0x4F           PROTECTED
+SHAREBANK  NAME=gpr3a      START=0x6C            END=0x6F           PROTECTED
+//// End: Changed in gputils
 
 SECTION    NAME=PROG0      ROM=page0           // ROM code space
 SECTION    NAME=PROG1      ROM=page1           // ROM code space
