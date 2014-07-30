@@ -1263,8 +1263,9 @@ sub process_lkr_line($)
         $lkr_config_start = $start;
         $lkr_config_end   = $end;
         }
-      elsif ($name =~ /eedata$/io)
+      elsif ($name =~ /(eedata|flashdata)$/io)
         {
+        # CODEPAGE   NAME=flashdata  START=0x400             END=0x43F          PROTECTED 
         # CODEPAGE   NAME=eedata     START=0x2100            END=0x213F         PROTECTED
         # CODEPAGE   NAME=eedata     START=0x2100            END=0x217F         PROTECTED 
         # CODEPAGE   NAME=eedata     START=0x2100            END=0x21FF         PROTECTED 
