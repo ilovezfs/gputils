@@ -1,3 +1,7 @@
+2014-07-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/device-manager.pl:
+	  The "flashdata" section equal with the "eedata" section.
+
 2014-07-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/cfg-import.pl: New option: -l or --limit-defaults
 	  Changed "PICRF..." to "RF...".
