@@ -322,6 +322,7 @@ const char *gp_processor_coff_name(unsigned long coff_type, unsigned int choice)
 const char *gp_processor_header(pic_processor_t processor);
 const char *gp_processor_script(pic_processor_t processor);
 unsigned int gp_processor_id_location(pic_processor_t processor);
+int gp_processor_is_common_ram_addr(pic_processor_t processor, int address);
 int gp_processor_is_idlocs_addr(pic_processor_t processor, int address);
 int gp_processor_is_config_addr(pic_processor_t processor, int address);
 int gp_processor_is_eeprom_addr(pic_processor_t processor, int address);

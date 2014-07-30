@@ -954,6 +954,18 @@ gp_processor_id_location(pic_processor_t processor)
 }
 
 int
+gp_processor_is_common_ram_addr(pic_processor_t processor, int address)
+{
+  if ((processor->common_ram_addrs[0] > 0) && (processor->common_ram_addrs[1] > 0)) {
+    if ((processor->common_ram_addrs[0] <= address) && (address <= processor->common_ram_addrs[1])) {
+      return (address - processor->common_ram_addrs[0]);
+    }
+  }
+
+  return -1;
+}
+
+int
 gp_processor_is_idlocs_addr(pic_processor_t processor, int address)
 {
   if ((processor->idlocs_addrs[0] > 0) && (processor->idlocs_addrs[1] > 0)) {
