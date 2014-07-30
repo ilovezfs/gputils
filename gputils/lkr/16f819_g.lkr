@@ -1,5 +1,14 @@
 // File: 16f819_g.lkr
 // Generic linker script for the PIC16F819 processor
+//=========================================================================
+//
+//      Gputils Specific Revision History
+//
+//=========================================================================
+//
+//      30 Jul 2014  Changed the gpr0 onto gpr3.
+//
+//// End: Added in gputils
 
 LIBPATH .
 
@@ -18,7 +27,10 @@ DATABANK   NAME=gpr1       START=0xA0              END=0xEF
 DATABANK   NAME=gpr2       START=0x120             END=0x16F          
 
 SHAREBANK  NAME=gpr0       START=0x20            END=0x6F           
-SHAREBANK  NAME=gpr0       START=0x1A0           END=0x1EF          PROTECTED
+//// Begin: Changed in gputils
+////SHAREBANK  NAME=gpr0       START=0x1A0           END=0x1EF          PROTECTED
+SHAREBANK  NAME=gpr3       START=0x1A0           END=0x1EF          PROTECTED
+//// End: Changed in gputils
 SHAREBANK  NAME=gprnobnk   START=0x70            END=0x7F           
 SHAREBANK  NAME=gprnobnk   START=0xF0            END=0xFF           PROTECTED
 SHAREBANK  NAME=gprnobnk   START=0x170           END=0x17F          PROTECTED
