@@ -74,12 +74,12 @@ void select_processor(const char *name)
         set_global(found->defined_as, 1, PERMANENT, GVT_CONSTANT);
 
         if (!state.mpasm_compatible) {
-          addr0 = found->shared_addrs[0];
-          addr1 = found->shared_addrs[1];
+          addr0 = found->common_ram_addrs[0];
+          addr1 = found->common_ram_addrs[1];
 
           if ((addr0 > 0) && (addr1 > 0)) {
-            set_global("__SHARED_START", addr0, PERMANENT, GVT_CONSTANT);
-            set_global("__SHARED_END",   addr1, PERMANENT, GVT_CONSTANT);
+            set_global("__COMMON_RAM_START", addr0, PERMANENT, GVT_CONSTANT);
+            set_global("__COMMON_RAM_END",   addr1, PERMANENT, GVT_CONSTANT);
           }
 
           if ((found->class->vector_table != NULL) || (found->class->vector_number > 0)) {

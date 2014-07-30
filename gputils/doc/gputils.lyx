@@ -4077,12 +4077,12 @@ if exist
 \end_layout
 
 \begin_layout LyX-Code
-__SHARED_START -- Start address of the Shared RAM area (e.g.
+__COMMON_RAM_START -- Start address of the Common RAM area (e.g.
  0x07, 0x0C, 0x70)
 \end_layout
 
 \begin_layout LyX-Code
-__SHARED_END   -- End address of the Shared RAM area   (e.g.
+__COMMON_RAM_END   -- End address of the Common RAM area   (e.g.
  0x0F, 0x2F, 0x7F)
 \begin_inset Newline newline
 \end_inset
