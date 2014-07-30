@@ -202,8 +202,6 @@ mark_false_addresses(MemBlock *memory)
 static void
 recognize_labels_and_spec_words(MemBlock *memory)
 {
-  static const vector_t sx_reset = { -1, "vec_reset" };
-
   MemBlock *m;
   int i, maximum, index;
   int org;
@@ -314,16 +312,10 @@ recognize_labels_and_spec_words(MemBlock *memory)
         if (state.class->i_memory_get(m, i, &data, NULL, NULL) == W_USED_ALL) {
           if (state.class == PROC_CLASS_SX) {
             /* Unlike the others, the address of reset vector located the top of program memory. */
-            if (org == state.processor->maxrom) {
-              vector = &sx_reset;
-            }
-            else {
-              vector = gp_processor_find_vector(state.class, org);
-            }
+            org = (org == state.processor->maxrom) ? -1 : org;
           }
-          else {
-	    vector = gp_processor_find_vector(state.class, org);
-	  }
+
+          vector = gp_processor_find_vector(state.class, org);
 
 	  if (vector != NULL) {
             b_memory_set_addr_type(m, i, W_ADDR_T_LABEL, 0);
@@ -607,9 +599,6 @@ dasm(MemBlock *memory)
   int bsr_boundary;
   unsigned short data;
   unsigned char byte;
-  gp_boolean first_idlocs;
-  gp_boolean first_config;
-  gp_boolean first_eeprom;
   const char *label_name;
   int addr_digits;
   int word_digits;
@@ -651,9 +640,6 @@ dasm(MemBlock *memory)
     show_idlocs();
   }
 
-  first_idlocs = true;
-  first_config = true;
-  first_eeprom = true;
   m = memory;
   last_loc = 0;
   while (m != NULL) {
@@ -670,13 +656,7 @@ dasm(MemBlock *memory)
           if (!state.show_config) {
             if (b_memory_get(m, i, &byte, NULL, NULL)) {
               if (last_loc != (i - insn_size)) {
-                if (first_idlocs) {
-                  write_org(org, addr_digits, "idlocs");
-                  first_idlocs = false;
-                }
-                else {
-                  write_org(org, addr_digits, NULL);
-                }
+                write_org(org, addr_digits, "idlocs");
               }
 
               last_loc = i;
@@ -702,13 +682,7 @@ dasm(MemBlock *memory)
           if (!state.show_config) {
             if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
               if (last_loc != (i - insn_size)) {
-                if (first_idlocs) {
-                  write_org(org, addr_digits, "idlocs");
-                  first_idlocs = false;
-                }
-                else {
-                  write_org(org, addr_digits, NULL);
-                }
+                write_org(org, addr_digits, "idlocs");
               }
 
               last_loc = i;
@@ -735,13 +709,7 @@ dasm(MemBlock *memory)
           if (!state.show_config) {
             if (b_memory_get(m, i, &byte, NULL, NULL)) {
               if (last_loc != (i - insn_size)) {
-                if (first_config) {
-                  write_org(org, addr_digits, "config");
-                  first_config = false;
-                }
-                else {
-                  write_org(org, addr_digits, NULL);
-                }
+                write_org(org, addr_digits, "config");
               }
 
               last_loc = i;
@@ -765,13 +733,7 @@ dasm(MemBlock *memory)
           if (!state.show_config) {
             if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
               if (last_loc != (i - insn_size)) {
-                if (first_config) {
-                  write_org(org, addr_digits, "config");
-                  first_config = false;
-                }
-                else {
-                  write_org(org, addr_digits, NULL);
-                }
+                write_org(org, addr_digits, "config");
               }
 
               last_loc = i;
@@ -795,13 +757,7 @@ dasm(MemBlock *memory)
       else if (gp_processor_is_eeprom_addr(state.processor, org) >= 0) {
         if (b_memory_get(m, i, &byte, NULL, NULL)) {
           if (last_loc != (i - insn_size)) {
-            if (first_eeprom) {
-              write_org(org, addr_digits, "eeprom");
-              first_eeprom = false;
-            }
-            else {
-              write_org(org, addr_digits, NULL);
-            }
+            write_org(org, addr_digits, "eeprom");
           }
 
           last_loc = i;

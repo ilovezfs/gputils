@@ -217,6 +217,7 @@ struct proc_class {
 
   void (*patch_strict)(void);
 };
+
 typedef const struct proc_class *proc_class_t;
 
 #define PROC_CLASS_UNKNOWN  ((proc_class_t)0)        /* Unknown device. */
@@ -253,8 +254,6 @@ extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices 
 #define IS_PIC16_CORE       (state.device.class == PROC_CLASS_PIC16)
 #define IS_PIC16E_CORE      (state.device.class == PROC_CLASS_PIC16E)
 
-typedef const struct px *pic_processor_t;
-
 #define MAX_NAMES                  3          /* Maximum number of names a processor can have. */
 #define MAX_BADROM                 (1 * 2)    /* Maximum number of BADROM ranges a processor can be initialized with. */
 
@@ -268,6 +267,8 @@ struct px {
   unsigned int coff_type;
   int num_pages;
   int num_banks;
+  /* The bounds of shared (access) RAM, if exist in the PIC12, PIC14 and PIC14E families. */
+  int shared_addrs[2];
   /* These are in org to make it easier to fill from datasheet. */
   int maxrom;
   int prog_mem_size;
@@ -282,6 +283,7 @@ struct px {
   unsigned int pic16e_flags;
 };
 
+typedef const struct px *pic_processor_t;
 
 /* CONFIG addresses for the 18xx parts */
 #define CONFIG1L  0x300000
@@ -335,10 +337,10 @@ int gp_processor_set_bank(proc_class_t class,
 int gp_processor_check_ibank(proc_class_t class, unsigned int address);
 
 int gp_processor_set_ibank(proc_class_t class,
-                          int num_banks,
-                          int bank,
-                          MemBlock *m,
-                          unsigned int address);
+                           int num_banks,
+                           int bank,
+                           MemBlock *m,
+                           unsigned int address);
 int gp_processor_check_page(proc_class_t class, unsigned int address);
 
 int gp_processor_set_page(proc_class_t class,

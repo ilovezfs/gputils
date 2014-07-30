@@ -373,12 +373,12 @@ macro_parm_unique(struct pnode *M, struct pnode *L)
 static gp_boolean
 macro_parms_ok(struct pnode *parms)
 {
-  /* Check if all params are symbols */
+  /* Check if all params are symbols. */
   if (!macro_parms_simple(parms)) {
     return false;
   }
 
-  /* Check if params are unique */
+  /* Check if params are unique. */
   while (parms != NULL) {
     if (!macro_parm_unique(HEAD(parms), TAIL(parms))) {
       return false;
@@ -1428,15 +1428,12 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
       p = HEAD(L);
 
       if (p->tag == PTAG_STRING) {
-        int n = 0;
-
         pc = p->value.string;
         while (*pc != '\0') {
           int value;
 
           pc = convert_escape_chars(pc, &value);
           emit_byte(value, name);
-          ++n;
         }
       }
       else {
@@ -1473,10 +1470,10 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
         }
       }
     }
-  }
+  } /* if (IS_PIC16E_CORE || (SECTION_FLAGS & STYP_DATA)) */
   else {
     unsigned short v = 0;
-    unsigned n = 0;
+    unsigned int n = 0;
     while (L != NULL) {
       const char *pc = NULL;
       int value;
@@ -1486,6 +1483,7 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
       if (p->tag == PTAG_STRING) {
         pc = p->value.string;
       }
+
       for (; ; ) {
         if (p->tag == PTAG_STRING) {
           pc = convert_escape_chars(pc, &value);
@@ -1533,8 +1531,8 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
           L = TAIL(L);
           break;
         }
-      }
-    }
+      } /* for (; ; ) */
+    } /* while (L != NULL) */
 
     if (state.mpasm_compatible) {
       if (n & 1) {
@@ -1550,7 +1548,7 @@ do_db(gpasmVal r, const char *name, int arity, struct pnode *parms)
         }
       }
     }
-  }
+  } /* else */
   return r;
 }
 
@@ -3218,8 +3216,7 @@ do_org(gpasmVal r, const char *name, int arity, struct pnode *parms)
       }
       else {
         /* Default section name, this will be overwritten if a label is present. */
-        snprintf(state.obj.new_sec_name, sizeof(state.obj.new_sec_name),
-                 ".org_%x", r);
+        snprintf(state.obj.new_sec_name, sizeof(state.obj.new_sec_name), ".org_%x", r);
         state.obj.new_sec_addr = new_org;
         state.obj.new_sec_flags = STYP_TEXT | STYP_ABS;
         state.lst.line.linetype = LTY_SEC;
@@ -3294,7 +3291,6 @@ _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsign
       if (num_reloc == 0) {
         /* it is an absolute address, generate the pagesel but no relocation */
         page = gp_processor_check_page(state.device.class, maybe_evaluate(p));
-
         state.org += gp_processor_set_page(state.device.class,
                                            state.processor->num_pages,
                                            page,
@@ -3636,9 +3632,7 @@ do_udata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strncpy(state.obj.new_sec_name,
-              ".udata_acs",
-              sizeof(state.obj.new_sec_name));
+      strncpy(state.obj.new_sec_name, ".udata_acs", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_BSS | STYP_ACCESS;
       break;
@@ -3646,9 +3640,7 @@ do_udata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strncpy(state.obj.new_sec_name,
-              ".udata_acs",
-              sizeof(state.obj.new_sec_name));
+      strncpy(state.obj.new_sec_name, ".udata_acs", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_ACCESS;
       break;
@@ -3676,9 +3668,7 @@ do_udata_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strncpy(state.obj.new_sec_name,
-              ".udata_ovr",
-              sizeof(state.obj.new_sec_name));
+      strncpy(state.obj.new_sec_name, ".udata_ovr", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_BSS | STYP_OVERLAY;
       break;
@@ -3686,9 +3676,7 @@ do_udata_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strncpy(state.obj.new_sec_name,
-              ".udata_ovr",
-              sizeof(state.obj.new_sec_name));
+      strncpy(state.obj.new_sec_name, ".udata_ovr", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_OVERLAY;
       break;
@@ -3716,9 +3704,7 @@ do_udata_shr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strncpy(state.obj.new_sec_name,
-              ".udata_shr",
-              sizeof(state.obj.new_sec_name));
+      strncpy(state.obj.new_sec_name, ".udata_shr", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_BSS | STYP_SHARED;
       break;
@@ -3726,9 +3712,7 @@ do_udata_shr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strncpy(state.obj.new_sec_name,
-              ".udata_shr",
-              sizeof(state.obj.new_sec_name));
+      strncpy(state.obj.new_sec_name, ".udata_shr", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_SHARED;
       break;
@@ -3820,7 +3804,7 @@ do_while(gpasmVal r, const char *name, int arity, struct pnode *parms)
   head->parms = (enforce_arity(arity, 1)) ? HEAD(parms) : NULL;
   head->body = NULL;
 
-  /* Record data for the list, cod, and coff files */
+  /* Record data for the list, cod, and coff files. */
   head->line_number = state.src->line_number;
   head->file_symbol = state.src->file_symbol;
 
@@ -5365,7 +5349,7 @@ leave:
    is known.  Second is op_1, the set of instructions that are common
    to all processors, third is processor-family specific: op_XXX */
 
-/* Note that instructions within each group are sorted alphabetically */
+/* Note that instructions within each group are sorted alphabetically. */
 
 const struct insn op_0[] = {
   { "access_ovr", 0, 0, 0, INSN_CLASS_FUNC, 0,           do_access_ovr },
@@ -5482,7 +5466,7 @@ opcode_init(int stage)
     count = (base == NULL) ? 0 : *state.device.class->num_instructions;
 
     if (IS_SX_CORE) {
-      /* page instruction conflicts with the page directive */
+      /* The page instruction conflicts with the page directive. */
       remove_symbol(state.stBuiltin, "page");
     }
     else if (IS_PIC16E_CORE) {
@@ -5528,7 +5512,7 @@ opcode_init(int stage)
   switch (stage) {
   case 1:
     if (IS_PIC14E_CORE) {
-      /* pageselw directive not supported on pic14 enhanced devices*/
+      /* The pageselw directive not supported on pic14 enhanced devices. */
       remove_symbol(state.stBuiltin, "pageselw");
     }
     break;
@@ -5537,13 +5521,13 @@ opcode_init(int stage)
     if (state.processor) {
       const char *name = gp_processor_name(state.processor, 0);
 
-      /* Special Case, Some instructions not available on 17c42 devices */
+      /* Special case, some instructions not available on 17c42 devices. */
       if (strcmp(name, "pic17c42") == 0) {
         remove_symbol(state.stBuiltin, "mulwf");
         remove_symbol(state.stBuiltin, "movlr");
         remove_symbol(state.stBuiltin, "mullw");
       }
-      /* Special Case, Some instructions not available on 16f5x devices */
+      /* Special case, some instructions not available on 16f5x devices. */
       else if (strcmp(name, "pic16f54") == 0 ||
                strcmp(name, "pic16f57") == 0 ||
                strcmp(name, "pic16f59") == 0) {

@@ -1,4 +1,31 @@
 2014-07-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * lkr/12f629_g.lkr, lkr/12f675_g.lkr, lkr/16c61_g.lkr:
+    bugfix
+
+  * doc/gputils.lyx, gpasm/processor.c, libgputils/gpprocessor.c,
+    libgputils/gpprocessor.h:
+    New predefined constants: __ACC_RAM_LOW_END, __SHARED_START,
+    __SHARED_END, __PROGRAM_END, __VECTOR_RESET, __VECTOR_INT,
+    __VECTOR_INT_EXT, __VECTOR_INT_TMR0, __VECTOR_INT_T0CKI,
+    __VECTOR_INT_PERI, __VECTOR_INT_HIGH, __VECTOR_INT_LOW
+
+  * gputils/testsuite/test,
+    gputils/testsuite/gpdasm.project/eeprom14_2.asm:
+    A new test file to the EEPROM area.
+
+  * gputils/testsuite/gpdasm.project/eeprom16e.asm:
+    A little modification.
+
+  * gpasm/directive.c, gpasm/preprocess.c:
+    Changed text format.
+
+  * gpasm/gpasm.h, gpasm/util.c:
+    New function: stptoupper()
+
+  * gputils/gpdasm.c:
+    A little code simplification.
+
+2014-07-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * lkr/16f83_g.lkr, lkr/16f84_g.lkr, lkr/16f84a_g.lkr,
     lkr/16f526_g.lkr, lkr/16f527_g.lkr, lkr/16f570_g.lkr,
     lkr/16f818_g.lkr, lkr/16f819_g.lkr, lkr/16f870_g.lkr,

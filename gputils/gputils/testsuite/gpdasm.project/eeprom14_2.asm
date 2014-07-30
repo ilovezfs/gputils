@@ -1,5 +1,5 @@
 
-	list    p=18f4520
+	list    p=16f570
 
 Const1	equ	0xCCBBAA
 Const2	equ	0x998877

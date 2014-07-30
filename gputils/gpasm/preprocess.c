@@ -56,7 +56,7 @@ check_defines(char *symbol, int symlen, struct pnode **param_list_p)
 
   *param_list_p = NULL;
 
-  /* If not quoted, check for #define substitution */
+  /* If not quoted, check for #define substitution. */
   if ((sym = get_symbol_len(state.stDefines, symbol, symlen)) != NULL) {
     p = get_symbol_annotation(sym);
 

@@ -73,14 +73,63 @@ void select_processor(const char *name)
 
         set_global(found->defined_as, 1, PERMANENT, GVT_CONSTANT);
 
-        addr0 = found->eeprom_addrs[0];
-        addr1 = found->eeprom_addrs[1];
+        if (!state.mpasm_compatible) {
+          addr0 = found->shared_addrs[0];
+          addr1 = found->shared_addrs[1];
 
-        if ((addr0 > 0) && (addr1 > 0)) {
-          set_global("__EEPROM_START", addr0, PERMANENT, GVT_CONSTANT);
-          set_global("__EEPROM_END",   addr1, PERMANENT, GVT_CONSTANT);
-        }
-      } else if (state.processor != found) {
+          if ((addr0 > 0) && (addr1 > 0)) {
+            set_global("__SHARED_START", addr0, PERMANENT, GVT_CONSTANT);
+            set_global("__SHARED_END",   addr1, PERMANENT, GVT_CONSTANT);
+          }
+
+          if ((found->class->vector_table != NULL) || (found->class->vector_number > 0)) {
+            const vector_t *vec = found->class->vector_table;
+            unsigned int num    = found->class->vector_number;
+            char buf[BUFSIZ];
+
+            for (; num; ++vec, --num) {
+              buf[0] = '_';
+              buf[1] = '_';
+              stptoupper(&buf[2], vec->name, sizeof(buf) - 2);
+
+              if (vec->address < 0) {
+                /* This a SX type processor. */
+                addr0 = found->prog_mem_size;
+
+                if (addr0 > 0) {
+                  --addr0;
+                }
+              }
+              else {
+                addr0 = vec->address;
+              }
+
+              set_global(buf, addr0, PERMANENT, GVT_CONSTANT);
+            }
+          }
+
+          addr0 = found->prog_mem_size;
+
+          if (addr0 > 0) {
+            set_global("__PROGRAM_END", addr0 - 1, PERMANENT, GVT_CONSTANT);
+          }
+
+          addr0 = found->eeprom_addrs[0];
+          addr1 = found->eeprom_addrs[1];
+
+          if ((addr0 > 0) && (addr1 > 0)) {
+            set_global("__EEPROM_START", addr0, PERMANENT, GVT_CONSTANT);
+            set_global("__EEPROM_END",   addr1, PERMANENT, GVT_CONSTANT);
+          }
+
+          addr0 = gp_processor_bsr_boundary(found);
+
+          if (addr0 > 0) {
+            set_global("__ACC_RAM_LOW_END", addr0 - 1, PERMANENT, GVT_CONSTANT);
+          }
+        } /* if (!state.mpasm_compatible) */
+      } /* if (state.processor == NULL) */
+      else if (state.processor != found) {
         gpvwarning(GPW_REDEFINING_PROC, NULL);
         gpverror(GPE_EXTRA_PROC, NULL);
       }
@@ -93,6 +142,7 @@ void select_processor(const char *name)
         exit(1);
       }
     }
+
     /* Load the instruction sets if necessary. */
     if ((state.processor_chosen == 0) && (state.processor != NULL)) {
       opcode_init(1);   /* General directives. */
