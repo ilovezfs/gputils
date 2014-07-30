@@ -1,4 +1,10 @@
 2014-07-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/processor.c, libgputils/gpprocessor.h:
+    Renamed two predefined constants:
+    __SHARED_START ==> __COMMON_RAM_START
+    __SHARED_END   ==> __COMMON_RAM_END
+
+2014-07-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * lkr/12f629_g.lkr, lkr/12f675_g.lkr, lkr/16c61_g.lkr:
     bugfix
 

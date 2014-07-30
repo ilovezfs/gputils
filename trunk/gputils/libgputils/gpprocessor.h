@@ -267,8 +267,8 @@ struct px {
   unsigned int coff_type;
   int num_pages;
   int num_banks;
-  /* The bounds of shared (access) RAM, if exist in the PIC12, PIC14 and PIC14E families. */
-  int shared_addrs[2];
+  /* The bounds of common (access) RAM, if exist in the PIC12, PIC14 and PIC14E families. */
+  int common_ram_addrs[2];
   /* These are in org to make it easier to fill from datasheet. */
   int maxrom;
   int prog_mem_size;
