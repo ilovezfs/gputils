@@ -97,7 +97,8 @@ use constant E_COFF_COLL => 0;
 use constant E_COFF_DIFF => 1;
 use constant E_ROM_DIFF  => 2;
 use constant E_NAME_COLL => 3;
-use constant E_LKR_NAME  => 4;
+use constant E_INC_NAME  => 4;
+use constant E_LKR_NAME  => 5;
 
 my $PROGRAM = 'device-manager.pl';
 
@@ -249,6 +250,7 @@ my $px_struct_end;              # The end of the px structure in the gpprocessor
         COFF_TYPE    => 0,
         NUM_PAGES    => 0,
         NUM_BANKS    => 0,
+        COMMON_RAM   => [0, 0],
         MAXROM       => 0,
         PROGSIZE     => 0,              Size of program memory.
         BADROM       => [0, 0],
@@ -272,6 +274,10 @@ my %mp_px_rows_by_name;
 
 my %gp_px_rows_by_coff;
 my %mp_px_rows_by_coff;
+
+my $lkr_shared_start;
+my $lkr_shared_end;
+my $lkr_no_bank;
 
 my $lkr_idlocs_start;
 my $lkr_idlocs_end;
@@ -1183,6 +1189,31 @@ EOT
         } # given ($Action)
       } # when (E_NAME_COLL)
 
+    when (E_INC_NAME)
+      {
+      given ($Action)
+        {
+        when (RP_ADD)
+          {
+          ${$Array} .= sprintf "| %-17s | %-20s |\n", @_;
+          }
+
+        when (RP_PRINT)
+          {
+          return if (${$Array} eq '');      # No report.
+
+          my ($Location, $Out) = @_;
+          my $border = '+-------------------+----------------------+';
+
+          print $Out <<EOT
+\nThe following header name differ from the device name in the $Location:\n
+$border\n|      device       |     header file      |\n$border\n${$Array}$border
+EOT
+;
+          }
+        } # given ($Action)
+      } # when (E_INC_NAME)
+
     when (E_LKR_NAME)
       {
       given ($Action)
@@ -1276,6 +1307,38 @@ sub process_lkr_line($)
         $lkr_eeprom_start = $start;
         $lkr_eeprom_end   = $end;
         }
+      } # if ($sect eq 'CODEPAGE')
+    elsif ($sect eq 'SHAREBANK')
+      {
+      if ($name =~ /^[dg]prnoba?nk/io)
+        {
+        # SHAREBANK  NAME=gprnobnk   START=0x7             END=0xF
+        # SHAREBANK  NAME=gprnobnk   START=0x27            END=0x2F           PROTECTED
+        # SHAREBANK  NAME=gprnobank  START=0x70            END=0x7F
+        # SHAREBANK  NAME=gprnobank  START=0xF0            END=0xFF           PROTECTED
+        # SHAREBANK  NAME=dprnobank  START=0x70              END=0x7F           PROTECTED
+
+        if (! $lkr_no_bank || ($lkr_shared_start == -1 && $lkr_shared_end == -1))
+          {
+          $lkr_shared_start = $start;
+          $lkr_shared_end   = $end;
+          $lkr_no_bank      = TRUE;
+          }
+        }
+      elsif ($name =~ /^gpr0/io)
+        {
+        # SHAREBANK  NAME=gpr0       START=0x20            END=0x5F
+        # SHAREBANK  NAME=gpr0       START=0xA0            END=0xDF           PROTECTED
+        # SHAREBANK  NAME=gpr0       START=0xC             END=0x2F
+        # SHAREBANK  NAME=gpr0       START=0x8C            END=0xAF           PROTECTED
+        # SHAREBANK  NAME=gpr0a      START=0xD             END=0xF
+
+        if ($lkr_shared_start == -1 && $lkr_shared_end == -1)
+          {
+          $lkr_shared_start = $start;
+          $lkr_shared_end   = $end;
+          }
+        }
       }
     }
   }
@@ -1298,6 +1361,10 @@ sub read_lkr($)
 
   reset_preprocessor();
 
+  $lkr_shared_start = -1;
+  $lkr_shared_end   = -1;
+  $lkr_no_bank      = FALSE;
+
   $lkr_idlocs_start = -1;
   $lkr_idlocs_end   = -1;
 
@@ -1313,7 +1380,7 @@ sub read_lkr($)
     chomp;
     s/\r$//o;
 
-    if ($_ !~ /^\s*$/o)
+    if ($_ !~ /^\s*$/o && $_ !~ /^\/\//o)
       {
       s/^\s*|\s*$//go;
       run_preprocessor($name, \&process_lkr_line, $_) if ($_ !~ m|^//|o);
@@ -1378,7 +1445,7 @@ sub read_mcu_info_from_mplabx($)
                 CONFIGS    => hex($fields[12]),            # Number of Configuration bytes/words.
                 BANKS      => hex($fields[7]),             # Number of RAM Banks.
                 ACCESS     => hex($fields[10]),            # Last address of lower Access RAM of pic18f series.
-    	        P16E_FLAGS => (($name ~= /^18l?f\d+j\d+/o) PIC16E_FLAG_J_SUBFAMILY : 0)
+    	        P16E_FLAGS => (($name =~ /^18l?f\d+j\d+/o) ? PIC16E_FLAG_J_SUBFAMILY : 0)
                 };
         }
       elsif (defined($info))
@@ -1469,7 +1536,7 @@ sub read_all_mcu_info_from_mplabx()
               CONFIGS    => $configs,         # Number of Configuration bytes/words.
               BANKS      => $banks,           # Number of RAM Banks.
               ACCESS     => $split,           # Last address of lower Access RAM of pic18f series.
-              P16E_FLAGS => (($name ~= /^18l?f\d+j\d+/o) PIC16E_FLAG_J_SUBFAMILY : 0)
+              P16E_FLAGS => (($name =~ /^18l?f\d+j\d+/o) ? PIC16E_FLAG_J_SUBFAMILY : 0)
               };
       }
     elsif ($_ =~ /^<SWITCH_INFO_TYPE><XINST>/io)
@@ -1548,6 +1615,7 @@ sub new_px_row($$$$)
            COFF_TYPE    => $Info->{COFF},
            NUM_PAGES    => ($p16e) ? 0 : $num_pages,
            NUM_BANKS    => ($p16e) ? ($Info->{ACCESS} + 1) : $Info->{BANKS},
+           COMMON_RAM   => [ $lkr_shared_start, $lkr_shared_end ],
            MAXROM       => $rom_end,
            PROGSIZE     => $lkr_rom_end + 1,
            BADROM       => [ $bad_start, $bad_end ],
@@ -1688,11 +1756,12 @@ sub extract_px_struct()
   my $in_table;
   my $coff_error = '';
   my $name_error = '';
+  my $inc_error = '';
   my $lkr_error = '';
 
         # static struct px pics[] = {
-        #   { PROC_CLASS_PIC12E   , "__12F529T39A"  , { "pic12f529t39a"  , "p12f529t39a"    , "12f529t39a"      }, 0xE529,  3,    8, 0x0005FF, 0x000600, {       -1,       -1 }, { 0x000640, 0x000643 }, { 0x000FFF, 0x000FFF }, {       -1,       -1 }, "p12f529t39a.inc"  , "12f529t39a_g.lkr"  , 0 },
-        #   { PROC_CLASS_PIC14E   , "__16LF1517"    , { "pic16lf1517"    , "p16lf1517"      , "16lf1517"        }, 0xA517,  4,   32, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, "p16lf1517.inc"    , "16lf1517_g.lkr"    , 0 },
+        #   { PROC_CLASS_PIC12E   , "__12F529T39A"  , { "pic12f529t39a"  , "p12f529t39a"    , "12f529t39a"      }, 0xE529,  3,    8, { 0x07, 0x0F }, 0x0005FF, 0x000600, {       -1,       -1 }, { 0x000640, 0x000643 }, { 0x000FFF, 0x000FFF }, { 0x000600, 0x00063F }, "p12f529t39a.inc"  , "12f529t39a_g.lkr"  , 0 },
+        #   { PROC_CLASS_PIC14E   , "__16LF1517"    , { "pic16lf1517"    , "p16lf1517"      , "16lf1517"        }, 0xA517,  4,   32, { 0x70, 0x7F }, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, "p16lf1517.inc"    , "16lf1517_g.lkr"    , 0 },
 
   Log('Extract the table of px struct.', 4);
   $in_table = FALSE;
@@ -1707,21 +1776,21 @@ sub extract_px_struct()
     {
     if (! $in_table)
       {
-      if ($_ =~ /^\s*static\s+struct\s+px\s+pics\[\s*\]\s*=\s*\{\s*$/io)
+      if (/^\s*static\s+struct\s+px\s+pics\[\s*\]\s*=\s*\{\s*$/io)
         {
         $in_table = TRUE;
         $px_struct_begin = $n;
         }
       }
-        #                     $1                $2                 $3            $4            $5                 $6             $7             $8           $9          $10              $11         $12                  $13         $14                  $15         $16                  $17         $18                   $19                   $20              $21
-    elsif ($_ =~ /\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\S+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*\"?([\.\w]+)\"?\s*,\s*\"?([\.\w]+)\"?\s*,\s*(\d+)\s*\}/io)
+        #               $1                $2                 $3            $4            $5                 $6             $7             $8                 $9         $10              $11         $12              $13         $14                  $15         $16                  $17         $18                  $19         $20                   $21                  $22               $23
+    elsif (/\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\S+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*\"?([\.\w]+)\"?\s*,\s*\"?([\.\w]+)\"?\s*,\s*(\d+)\s*\}/io)
       {
       my $long_name   = $3;
       my $middle_name = $4;
       my $short_name  = $5;
       my $coff = str2dec($6);
-      my $header = $19;
-      my $script = $20;
+      my $header = $21;
+      my $script = $22;
       my $prev;
       my $px = {
                IGNORED      => FALSE,
@@ -1731,15 +1800,16 @@ sub extract_px_struct()
                COFF_TYPE    => $coff,
                NUM_PAGES    => str2dec($7),
                NUM_BANKS    => str2dec($8),
-               MAXROM       => str2dec($9),
-               PROGSIZE     => str2dec($10),
-               BADROM       => [ str2dec($11), str2dec($12) ],
-               IDLOCS_ADDRS => [ str2dec($13), str2dec($14) ],
-               CONFIG_ADDRS => [ str2dec($15), str2dec($16) ],
-               EEPROM_ADDRS => [ str2dec($17), str2dec($18) ],
+               COMMON_RAM   => [ str2dec($9), str2dec($10) ],
+               MAXROM       => str2dec($11),
+               PROGSIZE     => str2dec($12),
+               BADROM       => [ str2dec($13), str2dec($14) ],
+               IDLOCS_ADDRS => [ str2dec($15), str2dec($16) ],
+               CONFIG_ADDRS => [ str2dec($17), str2dec($18) ],
+               EEPROM_ADDRS => [ str2dec($19), str2dec($20) ],
                HEADER       => $header,
                SCRIPT       => $script,
-               P16E_FLAGS   => str2dec($21),
+               P16E_FLAGS   => str2dec($23),
                COMMENT      => ''
                };
 
@@ -1784,6 +1854,13 @@ sub extract_px_struct()
           }
         }
 
+        # Watches the header name error.
+
+      if ($header ne 'NULL' && $header !~ /^p${short_name}.inc$/)
+        {
+        report(RP_ADD, E_INC_NAME, \$inc_error, $long_name, $header);
+        }
+
         # Watches the script name error.
 
       if ($script ne 'NULL' && $script !~ /^${short_name}(_g)?.lkr$/)
@@ -1804,15 +1881,25 @@ sub extract_px_struct()
 
   report(RP_PRINT, E_COFF_COLL, \$coff_error, 'gputils', *STDERR);
   report(RP_PRINT, E_NAME_COLL, \$name_error, 'gputils', *STDERR);
-  report(RP_PRINT, E_LKR_NAME, \$lkr_error, 'gputils', *STDERR);
+  report(RP_PRINT, E_INC_NAME,  \$inc_error,  'gputils', *STDERR);
+  report(RP_PRINT, E_LKR_NAME,  \$lkr_error,  'gputils', *STDERR);
   sort_px_struct(\@gp_px_struct, SORT_DEFINED_AS);
   }
 
 #-------------------------------------------------------------------------------
 
-sub neg_form($)
+sub neg_form($$)
   {
-  sprintf((($_[0] < 0) ? '%8i' : '0x%06X'), $_[0]);
+  my ($Number, $Width) = @_;
+
+  if ($Number < 0)
+    {
+    sprintf('%*i', $Width + 2, $Number);
+    }
+  else
+    {
+    sprintf('0x%0*X', $Width, $Number);
+    }
   }
 
 #-------------------------------------------------------------------------------
@@ -1845,12 +1932,13 @@ EOT
       print  'num_banks   : ';
       $i = $_->{NUM_BANKS};
       printf((($i <= 32) ? "%u\n"  : "0x%02X\n"), $i);
-      print ('maxrom      : ' . neg_form($_->{MAXROM}) . "\n");
-      print ('prog_size   : ' . neg_form($_->{PROGSIZE}) . "\n");
-      print ('badrom      : ' . neg_form($_->{BADROM}->[0]) . ', ' . neg_form($_->{BADROM}->[1]) . "\n");
-      print ('idlocs_addrs: ' . neg_form($_->{IDLOCS_ADDRS}->[0]) . ', ' . neg_form($_->{IDLOCS_ADDRS}->[1]) . "\n");
-      print ('config_addrs: ' . neg_form($_->{CONFIG_ADDRS}->[0]) . ', ' . neg_form($_->{CONFIG_ADDRS}->[1]) . "\n");
-      print ('eeprom_addrs: ' . neg_form($_->{EEPROM_ADDRS}->[0]) . ', ' . neg_form($_->{EEPROM_ADDRS}->[1]) . "\n");
+      print ('common_ram  : ' . neg_form($_->{COMMON_RAM}->[0], 2) . ', ' . neg_form($_->{COMMON_RAM}->[1], 2) . "\n");
+      print ('maxrom      : ' . neg_form($_->{MAXROM}, 6) . "\n");
+      print ('prog_size   : ' . neg_form($_->{PROGSIZE}, 6) . "\n");
+      print ('badrom      : ' . neg_form($_->{BADROM}->[0], 6) . ', ' . neg_form($_->{BADROM}->[1], 6) . "\n");
+      print ('idlocs_addrs: ' . neg_form($_->{IDLOCS_ADDRS}->[0], 6) . ', ' . neg_form($_->{IDLOCS_ADDRS}->[1], 6) . "\n");
+      print ('config_addrs: ' . neg_form($_->{CONFIG_ADDRS}->[0], 6) . ', ' . neg_form($_->{CONFIG_ADDRS}->[1], 6) . "\n");
+      print ('eeprom_addrs: ' . neg_form($_->{EEPROM_ADDRS}->[0], 6) . ', ' . neg_form($_->{EEPROM_ADDRS}->[1], 6) . "\n");
       print  "header      : $_->{HEADER}\n";
       print  "script      : $_->{SCRIPT}\n";
       print  "pic16e_flags: $_->{P16E_FLAGS}\n";
@@ -1913,33 +2001,39 @@ sub create_one_px_row($$)
   $i = $Row->{NUM_BANKS};
   $line .= sprintf((($i <= 32) ? '%4u, ' : '0x%02X, '), $i);
 
-  $line .= neg_form($Row->{MAXROM});
+  $line .= '{ ';
+  $line .= neg_form($Row->{COMMON_RAM}->[0], 2);
   $line .= ', ';
-  $line .= neg_form($Row->{PROGSIZE});
+  $line .= neg_form($Row->{COMMON_RAM}->[1], 2);
+  $line .= ' }, ';
+
+  $line .= neg_form($Row->{MAXROM}, 6);
+  $line .= ', ';
+  $line .= neg_form($Row->{PROGSIZE}, 6);
   $line .= ', ';
 
   $line .= '{ ';
-  $line .= neg_form($Row->{BADROM}->[0]);
+  $line .= neg_form($Row->{BADROM}->[0], 6);
   $line .= ', ';
-  $line .= neg_form($Row->{BADROM}->[1]);
+  $line .= neg_form($Row->{BADROM}->[1], 6);
   $line .= ' }, ';
 
   $line .= '{ ';
-  $line .= neg_form($Row->{IDLOCS_ADDRS}->[0]);
+  $line .= neg_form($Row->{IDLOCS_ADDRS}->[0], 6);
   $line .= ', ';
-  $line .= neg_form($Row->{IDLOCS_ADDRS}->[1]);
+  $line .= neg_form($Row->{IDLOCS_ADDRS}->[1], 6);
   $line .= ' }, ';
 
   $line .= '{ ';
-  $line .= neg_form($Row->{CONFIG_ADDRS}->[0]);
+  $line .= neg_form($Row->{CONFIG_ADDRS}->[0], 6);
   $line .= ', ';
-  $line .= neg_form($Row->{CONFIG_ADDRS}->[1]);
+  $line .= neg_form($Row->{CONFIG_ADDRS}->[1], 6);
   $line .= ' }, ';
 
   $line .= '{ ';
-  $line .= neg_form($Row->{EEPROM_ADDRS}->[0]);
+  $line .= neg_form($Row->{EEPROM_ADDRS}->[0], 6);
   $line .= ', ';
-  $line .= neg_form($Row->{EEPROM_ADDRS}->[1]);
+  $line .= neg_form($Row->{EEPROM_ADDRS}->[1], 6);
   $line .= ' }, ';
 
   $i = $Row->{HEADER};
@@ -2294,6 +2388,7 @@ sub show_diff_px_struct()
     if ($_->{COFF_TYPE}         != $mp->{COFF_TYPE} ||
         $_->{NUM_PAGES}         != $mp->{NUM_PAGES} ||
         $_->{NUM_BANKS}         != $mp->{NUM_BANKS} ||
+        $_->{COMMON_RAM}->[0]   != $mp->{COMMON_RAM}->[0] ||
         $_->{MAXROM}            != $mp->{MAXROM} ||
         $_->{PROGSIZE}          != $mp->{PROGSIZE} ||
         $_->{BADROM}->[0]       != $mp->{BADROM}->[0] ||
