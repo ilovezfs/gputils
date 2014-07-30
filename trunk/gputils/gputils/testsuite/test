@@ -169,6 +169,11 @@ function all_test() {
   run_test eeprom14_1
   echo -e "14 bit core EEPROM 1 passed.\n"
 
+  printbanner "Testing 14 bit core EEPROM 2."
+  GPDASMFLAGS=$_GPDASMFLAGS
+  run_test eeprom14_2
+  echo -e "14 bit core EEPROM 1 passed.\n"
+
   printbanner "Testing enhanced 14 bit core 1."
   GPDASMFLAGS=$_GPDASMFLAGS
   run_test op14e_old_conf

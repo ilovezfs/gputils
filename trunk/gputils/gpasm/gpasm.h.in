@@ -380,6 +380,7 @@ void yyerror(char *s);
 
 /* util.c */
 int stringtolong(const char *string, int radix);
+char *stptoupper(char *Dest, const char *Src, unsigned int Maxlen);
 int gpasm_magic(const char *);
 const char *convert_escape_chars(const char *ps, int *value);
 char *convert_escaped_char(char *str, char c);
