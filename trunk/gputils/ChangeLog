@@ -1,4 +1,11 @@
 2014-07-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/gpasm.c:
+    Added the Common RAM unto the lister_of_devices() function.
+
+  * libgputils/gpprocessor.c, libgputils/gpprocessor.h:
+    New function: gp_processor_is_common_ram_addr()
+
+2014-07-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/processor.c, libgputils/gpprocessor.h:
     Renamed two predefined constants:
     __SHARED_START ==> __COMMON_RAM_START

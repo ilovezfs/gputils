@@ -242,6 +242,13 @@ lister_of_devices(pic_processor_t processor)
     printf("Bank Number    : %i\n", processor->num_banks);
   }
 
+  addr0 = processor->common_ram_addrs[0];
+  addr1 = processor->common_ram_addrs[1];
+
+  if ((addr0 > 0) && (addr1 > 0)) {
+    printf("Common RAM     : 0x%02X - 0x%02X\n", addr0, addr1);
+  }
+
   if (processor->class->page_size > 0) {
     printf("Page Size      : %i bytes\n", processor->class->page_size);
     printf("Page Number    : %i\n", processor->num_pages);
