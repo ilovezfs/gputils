@@ -269,6 +269,7 @@ struct px {
   int num_banks;
   /* The bounds of common (access) RAM, if exist in the PIC12, PIC14 and PIC14E families. */
   int common_ram_addrs[2];
+  int linear_ram_addrs[2];
   /* These are in org to make it easier to fill from datasheet. */
   int maxrom;
   int prog_mem_size;
@@ -323,6 +324,7 @@ const char *gp_processor_header(pic_processor_t processor);
 const char *gp_processor_script(pic_processor_t processor);
 unsigned int gp_processor_id_location(pic_processor_t processor);
 int gp_processor_is_common_ram_addr(pic_processor_t processor, int address);
+int gp_processor_is_linear_ram_addr(pic_processor_t processor, int address);
 int gp_processor_is_idlocs_addr(pic_processor_t processor, int address);
 int gp_processor_is_config_addr(pic_processor_t processor, int address);
 int gp_processor_is_eeprom_addr(pic_processor_t processor, int address);

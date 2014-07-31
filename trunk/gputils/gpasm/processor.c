@@ -82,6 +82,14 @@ void select_processor(const char *name)
             set_global("__COMMON_RAM_END",   addr1, PERMANENT, GVT_CONSTANT);
           }
 
+          addr0 = found->linear_ram_addrs[0];
+          addr1 = found->linear_ram_addrs[1];
+
+          if ((addr0 > 0) && (addr1 > 0)) {
+            set_global("__LINEAR_RAM_START", addr0, PERMANENT, GVT_CONSTANT);
+            set_global("__LINEAR_RAM_END",   addr1, PERMANENT, GVT_CONSTANT);
+          }
+
           if ((found->class->vector_table != NULL) || (found->class->vector_number > 0)) {
             const vector_t *vec = found->class->vector_table;
             unsigned int num    = found->class->vector_number;
