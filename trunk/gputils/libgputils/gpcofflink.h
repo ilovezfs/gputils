@@ -24,21 +24,21 @@ Boston, MA 02111-1307, USA.  */
 
 /*
 
-accessbank - used for access registers in internal ram for 18CXX
-codepage - used for program code, initialized data values, and constants
-databank - used for banked registers in internal ram
-sharebank - used for unbanked registers in internal ram
-linearmem - used for linear RAM access
+SECT_ACCESSBANK - used for access registers in internal ram for 18CXX
+SECT_CODEPAGE   - used for program code, initialized data values, and constants
+SECT_DATABANK   - used for banked registers in internal ram
+SECT_SHAREBANK  - used for unbanked registers in internal ram
+SECT_LINEARMEM  - used for linear RAM access
 
 */
 
 enum section_type {
-  sect_none = 0,
-  accessbank,
-  codepage,
-  databank,
-  sharebank,
-  linearmem
+  SECT_NONE = 0,
+  SECT_ACCESSBANK,
+  SECT_CODEPAGE,
+  SECT_DATABANK,
+  SECT_SHAREBANK,
+  SECT_LINEARMEM
 };
 
 /* Section definitions from the linker script are stored in the following

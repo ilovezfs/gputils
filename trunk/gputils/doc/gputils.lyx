@@ -4069,11 +4069,15 @@ __ACC_RAM_LOW_END -- e.g.
 \end_layout
 
 \begin_layout Standard
-The bounds of the Shared RAM area, 
+The bounds of the Common RAM area, 
 \emph on
 if exist
 \emph default
  this memory (in the 12 and 14 bit core: pic12xxx, pic16xxx):
+\end_layout
+
+\begin_layout Standard
+(This exists, only in the bank 0, the same can be achieved from other banks.)
 \end_layout
 
 \begin_layout LyX-Code
@@ -4082,8 +4086,18 @@ __COMMON_RAM_START -- Start address of the Common RAM area   (e.g.
 \end_layout
 
 \begin_layout LyX-Code
+                      (The implementation of the Common RAM inconsistent
+ in some old processors: pic16f72, pic16f73, ...)
+\end_layout
+
+\begin_layout LyX-Code
 __COMMON_RAM_END   -- End address of the Common RAM area     (e.g.
  0x0F, 0x2F, 0x7F)
+\end_layout
+
+\begin_layout LyX-Code
+                      (The implementation of the Common RAM inconsistent
+ in some old processors: pic16f72, pic16f73, ...)
 \end_layout
 
 \begin_layout LyX-Code

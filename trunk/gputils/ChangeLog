@@ -1,4 +1,12 @@
 2014-07-31  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx:
+    Further explanations.
+
+  * gplink/script.c, gplink/script.h, libgputils/gpcofflink.c,
+    libgputils/gpcofflink.h:
+    Renamed some constants.
+
+2014-07-31  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/gpasm.c, gpasm/processor.c,
     libgputils/gpprocessor.c, libgputils/gpprocessor.h:
     New predefined constants: __LINEAR_RAM_START, __LINEAR_RAM_END,

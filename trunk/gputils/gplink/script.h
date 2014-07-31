@@ -60,6 +60,6 @@ void script_error(const char *messg, const char *detail);
 int add_path(struct pnode *parms);
 void add_script_macro(const char *name, long value);
 long get_script_macro(const char *name);
-int execute_command(char *name, struct pnode *parms);
+int execute_command(const char *name, struct pnode *parms);
 
 #endif
