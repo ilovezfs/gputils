@@ -269,6 +269,7 @@ struct px {
   int num_banks;
   /* The bounds of common (access) RAM, if exist in the PIC12, PIC14 and PIC14E families. */
   int common_ram_addrs[2];
+  int common_ram_max;
   int linear_ram_addrs[2];
   /* These are in org to make it easier to fill from datasheet. */
   int maxrom;

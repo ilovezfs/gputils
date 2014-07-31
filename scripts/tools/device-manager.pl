@@ -160,6 +160,24 @@ my @eeprom_starts =
         -1      # PROC_CLASS_SX
   );
 
+use constant PIC12_BANK_SIZE => 32;
+use constant PIC14_BANK_SIZE => 128;
+use constant PIC16_BANK_SIZE => 256;
+
+my %bank_masks =
+  (
+  'PROC_CLASS_EEPROM8'  => -1,
+  'PROC_CLASS_EEPROM16' => -1,
+  'PROC_CLASS_GENERIC'  => -1,
+  'PROC_CLASS_PIC12'    => ~(PIC12_BANK_SIZE - 1),
+  'PROC_CLASS_PIC12E'   => ~(PIC12_BANK_SIZE - 1),
+  'PROC_CLASS_PIC14'    => ~(PIC14_BANK_SIZE - 1),
+  'PROC_CLASS_PIC14E'   => ~(PIC14_BANK_SIZE - 1),
+  'PROC_CLASS_PIC16'    => ~(PIC16_BANK_SIZE - 1),
+  'PROC_CLASS_PIC16E'   => -1,
+  'PROC_CLASS_SX'       => -1
+  );
+
 my %config_word_masks =
   (
   '16c5x'  => 0x0FFF,
@@ -251,6 +269,8 @@ my $px_struct_end;              # The end of the px structure in the gpprocessor
         NUM_PAGES    => 0,
         NUM_BANKS    => 0,
         COMMON_RAM   => [0, 0],
+        COMMON_MAX   => 0,
+        LINEAR_RAM   => [0, 0],
         MAXROM       => 0,
         PROGSIZE     => 0,              Size of program memory.
         BADROM       => [0, 0],
@@ -275,9 +295,14 @@ my %mp_px_rows_by_name;
 my %gp_px_rows_by_coff;
 my %mp_px_rows_by_coff;
 
-my $lkr_shared_start;
-my $lkr_shared_end;
+my $lkr_common_start;
+my $lkr_common_end;
+my $lkr_common_max;
 my $lkr_no_bank;
+my $lkr_data_max;
+
+my $lkr_linear_start;
+my $lkr_linear_end;
 
 my $lkr_idlocs_start;
 my $lkr_idlocs_end;
@@ -1257,10 +1282,12 @@ sub process_lkr_line($)
 
   if ($Line =~ /^(\w+)\s+NAME=(\S+)\s+START=(\w+)\s+END=(\w+)/io)
     {
-    my $sect  = uc($1);         # uc() <- paranoia
-    my $name  = $2;
-    my $start = str2dec($3);
-    my $end   = str2dec($4);
+    # uc($1) <- paranoia
+    my ($sect, $name, $start, $end) = (uc($1), $2, str2dec($3), str2dec($4));
+    my $size = $end - $start + 1;
+    my $tail = ${^POSTMATCH};
+
+    $tail =~ s/^\s+//o;
 
     if ($sect eq 'CODEPAGE')
       {
@@ -1308,6 +1335,21 @@ sub process_lkr_line($)
         $lkr_eeprom_end   = $end;
         }
       } # if ($sect eq 'CODEPAGE')
+    elsif ($sect eq 'LINEARMEM' && $tail eq 'PROTECTED')
+      {
+        # LINEARMEM  NAME=linear0    START=0x2000            END=0x21EF         PROTECTED
+        # LINEARMEM  NAME=linear0    START=0x2000            END=0x23EF         PROTECTED
+
+      $lkr_linear_start = $start;
+      $lkr_linear_end   = $end;
+      }
+    elsif ($sect eq 'DATABANK')
+      {
+      if ($name =~ /^gpr/io)
+        {
+        $lkr_data_max = $end if ($lkr_data_max < $end);
+        }
+      }
     elsif ($sect eq 'SHAREBANK')
       {
       if ($name =~ /^[dg]prnoba?nk/io)
@@ -1318,12 +1360,15 @@ sub process_lkr_line($)
         # SHAREBANK  NAME=gprnobank  START=0xF0            END=0xFF           PROTECTED
         # SHAREBANK  NAME=dprnobank  START=0x70              END=0x7F           PROTECTED
 
-        if (! $lkr_no_bank || ($lkr_shared_start == -1 && $lkr_shared_end == -1))
+        if (! $lkr_no_bank || ($lkr_common_start == -1 && $lkr_common_end == -1))
           {
-          $lkr_shared_start = $start;
-          $lkr_shared_end   = $end;
+          $lkr_common_start = $start;
+          $lkr_common_end   = $end;
           $lkr_no_bank      = TRUE;
           }
+
+        $lkr_common_max = $end if ($lkr_common_max < $end);
+        $lkr_data_max   = $end if ($lkr_data_max < $end);
         }
       elsif ($name =~ /^gpr0/io)
         {
@@ -1333,10 +1378,10 @@ sub process_lkr_line($)
         # SHAREBANK  NAME=gpr0       START=0x8C            END=0xAF           PROTECTED
         # SHAREBANK  NAME=gpr0a      START=0xD             END=0xF
 
-        if ($lkr_shared_start == -1 && $lkr_shared_end == -1)
+        if ($lkr_common_start == -1 && $lkr_common_end == -1)
           {
-          $lkr_shared_start = $start;
-          $lkr_shared_end   = $end;
+          $lkr_common_start = $start;
+          $lkr_common_end   = $end;
           }
         }
       }
@@ -1361,9 +1406,14 @@ sub read_lkr($)
 
   reset_preprocessor();
 
-  $lkr_shared_start = -1;
-  $lkr_shared_end   = -1;
+  $lkr_common_start = -1;
+  $lkr_common_end   = -1;
   $lkr_no_bank      = FALSE;
+  $lkr_data_max     = -1;
+  $lkr_common_max   = -1;
+
+  $lkr_linear_start = -1;
+  $lkr_linear_end   = -1;
 
   $lkr_idlocs_start = -1;
   $lkr_idlocs_end   = -1;
@@ -1615,7 +1665,9 @@ sub new_px_row($$$$)
            COFF_TYPE    => $Info->{COFF},
            NUM_PAGES    => ($p16e) ? 0 : $num_pages,
            NUM_BANKS    => ($p16e) ? ($Info->{ACCESS} + 1) : $Info->{BANKS},
-           COMMON_RAM   => [ $lkr_shared_start, $lkr_shared_end ],
+           COMMON_RAM   => [ $lkr_common_start, $lkr_common_end ],
+           COMMON_MAX   => $lkr_common_max,
+           LINEAR_RAM   => [ $lkr_linear_start, $lkr_linear_end ],
            MAXROM       => $rom_end,
            PROGSIZE     => $lkr_rom_end + 1,
            BADROM       => [ $bad_start, $bad_end ],
@@ -1760,8 +1812,8 @@ sub extract_px_struct()
   my $lkr_error = '';
 
         # static struct px pics[] = {
-        #   { PROC_CLASS_PIC12E   , "__12F529T39A"  , { "pic12f529t39a"  , "p12f529t39a"    , "12f529t39a"      }, 0xE529,  3,    8, { 0x07, 0x0F }, 0x0005FF, 0x000600, {       -1,       -1 }, { 0x000640, 0x000643 }, { 0x000FFF, 0x000FFF }, { 0x000600, 0x00063F }, "p12f529t39a.inc"  , "12f529t39a_g.lkr"  , 0 },
-        #   { PROC_CLASS_PIC14E   , "__16LF1517"    , { "pic16lf1517"    , "p16lf1517"      , "16lf1517"        }, 0xA517,  4,   32, { 0x70, 0x7F }, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, "p16lf1517.inc"    , "16lf1517_g.lkr"    , 0 },
+        #   { PROC_CLASS_PIC12E   , "__12F529T39A"  , { "pic12f529t39a"  , "p12f529t39a"    , "12f529t39a"      }, 0xE529,  3,    8, { 0x07, 0x0F }, 0x06F, {     -1,     -1 }, 0x0005FF, 0x000600, {       -1,       -1 }, { 0x000640, 0x000643 }, { 0x000FFF, 0x000FFF }, { 0x000600, 0x00063F }, "p12f529t39a.inc"  , "12f529t39a_g.lkr"  , 0 },
+        #   { PROC_CLASS_PIC14E   , "__16LF1517"    , { "pic16lf1517"    , "p16lf1517"      , "16lf1517"        }, 0xA517,  4,   32, { 0x70, 0x7F },    -1, { 0x2000, 0x21EF }, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, "p16lf1517.inc"    , "16lf1517_g.lkr"    , 0 },
 
   Log('Extract the table of px struct.', 4);
   $in_table = FALSE;
@@ -1782,16 +1834,14 @@ sub extract_px_struct()
         $px_struct_begin = $n;
         }
       }
-        #               $1                $2                 $3            $4            $5                 $6             $7             $8                 $9         $10              $11         $12              $13         $14                  $15         $16                  $17         $18                  $19         $20                   $21                  $22               $23
-    elsif (/\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\S+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*\"?([\.\w]+)\"?\s*,\s*\"?([\.\w]+)\"?\s*,\s*(\d+)\s*\}/io)
+        #               $1                $2                 $3            $4            $5                 $6             $7             $8                $9          $10              $11              $12         $13              $14         $15              $16         $17                  $18         $19                  $20         $21                  $22         $23                   $24                   $25              $26
+    elsif (/\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\w+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*\"?([\.\w]+)\"?\s*,\s*\"?([\.\w]+)\"?\s*,\s*(\d+)\s*\}/io)
       {
-      my $long_name   = $3;
-      my $middle_name = $4;
-      my $short_name  = $5;
-      my $coff = str2dec($6);
-      my $header = $21;
-      my $script = $22;
+      my ($long_name, $middle_name, $short_name, $coff, $header, $script) = ($3, $4, $5, str2dec($6), $24, $25);
+        # Maybe there is a comment at the end of the line.
+      my $tail = ${^POSTMATCH};
       my $prev;
+      my $bank_mask = $bank_masks{$1};
       my $px = {
                IGNORED      => FALSE,
                CLASS        => $1,
@@ -1801,19 +1851,19 @@ sub extract_px_struct()
                NUM_PAGES    => str2dec($7),
                NUM_BANKS    => str2dec($8),
                COMMON_RAM   => [ str2dec($9), str2dec($10) ],
-               MAXROM       => str2dec($11),
-               PROGSIZE     => str2dec($12),
-               BADROM       => [ str2dec($13), str2dec($14) ],
-               IDLOCS_ADDRS => [ str2dec($15), str2dec($16) ],
-               CONFIG_ADDRS => [ str2dec($17), str2dec($18) ],
-               EEPROM_ADDRS => [ str2dec($19), str2dec($20) ],
+               COMMON_MAX   => str2dec($11),
+               LINEAR_RAM   => [ str2dec($12), str2dec($13) ],
+               MAXROM       => str2dec($14),
+               PROGSIZE     => str2dec($15),
+               BADROM       => [ str2dec($16), str2dec($17) ],
+               IDLOCS_ADDRS => [ str2dec($18), str2dec($19) ],
+               CONFIG_ADDRS => [ str2dec($20), str2dec($21) ],
+               EEPROM_ADDRS => [ str2dec($22), str2dec($23) ],
                HEADER       => $header,
                SCRIPT       => $script,
-               P16E_FLAGS   => str2dec($23),
+               P16E_FLAGS   => str2dec($26),
                COMMENT      => ''
                };
-
-      my $tail = ${^POSTMATCH};         # Maybe there is a comment at the end of the line.
 
       $tail =~ s/^\s*,?\s*//o;
       $tail =~ s/^\*\/\s*$//o;
@@ -1933,6 +1983,8 @@ EOT
       $i = $_->{NUM_BANKS};
       printf((($i <= 32) ? "%u\n"  : "0x%02X\n"), $i);
       print ('common_ram  : ' . neg_form($_->{COMMON_RAM}->[0], 2) . ', ' . neg_form($_->{COMMON_RAM}->[1], 2) . "\n");
+      print ('common_max  : ' . neg_form($_->{COMMON_MAX}, 3) . "\n");
+      print ('linear_ram  : ' . neg_form($_->{LINEAR_RAM}->[0], 4) . ', ' . neg_form($_->{LINEAR_RAM}->[1], 4) . "\n");
       print ('maxrom      : ' . neg_form($_->{MAXROM}, 6) . "\n");
       print ('prog_size   : ' . neg_form($_->{PROGSIZE}, 6) . "\n");
       print ('badrom      : ' . neg_form($_->{BADROM}->[0], 6) . ', ' . neg_form($_->{BADROM}->[1], 6) . "\n");
@@ -2005,6 +2057,14 @@ sub create_one_px_row($$)
   $line .= neg_form($Row->{COMMON_RAM}->[0], 2);
   $line .= ', ';
   $line .= neg_form($Row->{COMMON_RAM}->[1], 2);
+  $line .= ' }, ';
+  $line .= neg_form($Row->{COMMON_MAX}, 3);
+  $line .= ', ';
+
+  $line .= '{ ';
+  $line .= neg_form($Row->{LINEAR_RAM}->[0], 4);
+  $line .= ', ';
+  $line .= neg_form($Row->{LINEAR_RAM}->[1], 4);
   $line .= ' }, ';
 
   $line .= neg_form($Row->{MAXROM}, 6);
@@ -2389,6 +2449,8 @@ sub show_diff_px_struct()
         $_->{NUM_PAGES}         != $mp->{NUM_PAGES} ||
         $_->{NUM_BANKS}         != $mp->{NUM_BANKS} ||
         $_->{COMMON_RAM}->[0]   != $mp->{COMMON_RAM}->[0] ||
+        $_->{COMMON_MAX}        != $mp->{COMMON_MAX} ||
+        $_->{LINEAR_RAM}->[0]   != $mp->{LINEAR_RAM}->[0] ||
         $_->{MAXROM}            != $mp->{MAXROM} ||
         $_->{PROGSIZE}          != $mp->{PROGSIZE} ||
         $_->{BADROM}->[0]       != $mp->{BADROM}->[0] ||

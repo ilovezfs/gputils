@@ -249,6 +249,10 @@ lister_of_devices(pic_processor_t processor)
     printf("Common RAM     : 0x%02X - 0x%02X\n", addr0, addr1);
   }
 
+  if (processor->common_ram_max > 0) {
+    printf("Max. Common RAM: 0x%02X\n", processor->common_ram_max);
+  }
+
   addr0 = processor->linear_ram_addrs[0];
   addr1 = processor->linear_ram_addrs[1];
 

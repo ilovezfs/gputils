@@ -82,6 +82,10 @@ void select_processor(const char *name)
             set_global("__COMMON_RAM_END",   addr1, PERMANENT, GVT_CONSTANT);
           }
 
+          if (found->common_ram_max > 0) {
+            set_global("__COMMON_RAM_MAX", found->common_ram_max, PERMANENT, GVT_CONSTANT);
+          }
+
           addr0 = found->linear_ram_addrs[0];
           addr1 = found->linear_ram_addrs[1];
 
