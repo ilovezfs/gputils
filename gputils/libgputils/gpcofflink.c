@@ -1112,7 +1112,7 @@ gp_cofflink_reloc_cinit(gp_object_type *object,
   unsigned int smallest_shadow_address;
   unsigned int smallest_address;
 
-  if (cinit_section == NULL || cinit_section->flags & STYP_RELOC) {
+  if ((cinit_section == NULL) || (cinit_section->flags & STYP_RELOC)) {
     return;
   }
 
@@ -1133,7 +1133,7 @@ gp_cofflink_reloc_cinit(gp_object_type *object,
     for (sym = sections->hash_table[i]; sym; sym = sym->next) {
       struct linker_section *section_def = get_symbol_annotation(sym);
 
-      if (section_def->type == codepage && !section_def->protected) {
+      if ((section_def->type == SECT_CODEPAGE) && !section_def->protected) {
         gp_debug("  section = %s", cinit_section->name);
         gp_debug("    name = %s", sym->name);
         gp_debug("    size = %#x", cinit_section->size);
@@ -1228,22 +1228,22 @@ gp_cofflink_reloc_unassigned(gp_object_type *object,
 
     /* determine what type of sections are being relocated */
     if ((current->flags & STYP_TEXT) || (current->flags & STYP_DATA_ROM)) {
-      type = codepage;
+      type = SECT_CODEPAGE;
       msg = "relocating codepage";
       gp_debug("  relocating code");
     }
     else if (current->flags & STYP_ACCESS) {
-      type = accessbank;
+      type = SECT_ACCESSBANK;
       msg = "relocating accessbank";
       gp_debug("  relocating accessbank");
     }
     else if (current->flags & STYP_SHARED) {
-      type = sharebank;
+      type = SECT_SHAREBANK;
       msg = "relocating sharebank";
       gp_debug("  relocating sharebank");
     }
     else {
-      type = databank;
+      type = SECT_DATABANK;
       msg = "relocating databank";
       gp_debug("  relocating data");
     }
@@ -1315,9 +1315,9 @@ next_pass:
       /* Set the relocated flag */
       current->flags |= STYP_RELOC;
     }
-    else if (gp_relocate_to_shared && (first_time == 1) && (type == databank)) {
+    else if (gp_relocate_to_shared && (first_time == 1) && (type == SECT_DATABANK)) {
       first_time = 0;
-      type = sharebank;
+      type = SECT_SHAREBANK;
       gp_warning("Relocation of section \"%s\" failed, relocating to a shared memory location.",
                  current->name);
       goto next_pass;
@@ -1395,7 +1395,7 @@ gp_cofflink_fill_pages(gp_object_type *object,
     for (sym = sections->hash_table[i]; sym; sym = sym->next) {
       section_def = get_symbol_annotation(sym);
 
-      if ((section_def->type == codepage) && (section_def->use_fill)) {
+      if ((section_def->type == SECT_CODEPAGE) && (section_def->use_fill)) {
         while (1) {
           found = _search_memory(m,
                                  object->class->org_to_byte_shift,

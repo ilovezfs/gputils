@@ -38,12 +38,14 @@ script_error(const char *messg, const char *detail)
   if (!gp_quiet) {
     if (state.src == NULL) {
       printf("%s\n", messg);
-    } else if (detail == NULL) {
+    }
+    else if (detail == NULL) {
       printf("%s:%d:Error %s\n",
              state.src->name,
              state.src->line_number,
              messg);
-    } else {
+    }
+    else {
       printf("%s:%d:Error %s (%s)\n",
              state.src->name,
              state.src->line_number,
@@ -57,7 +59,8 @@ static int enforce_simple(struct pnode *p)
 {
   if (p->tag == PTAG_SYMBOL) {
     return 1;
-  } else {
+  }
+  else {
     script_error("illegal argument", NULL);
     return 0;
   }
@@ -232,7 +235,8 @@ static int do_logsec(const char *name, enum section_type type, struct pnode *par
           script_error("illegal argument", lhs);
         }
       }
-    } else {
+    }
+    else {
       if (enforce_simple(p)) {
         script_error("illegal argument", p->value.symbol);
       }
@@ -242,24 +246,30 @@ static int do_logsec(const char *name, enum section_type type, struct pnode *par
   /* process the options */
   if (!found_secname) {
     script_error("missing argument", "name");
-  } else if (found_rom && found_ram) {
+  }
+  else if (found_rom && found_ram) {
     script_error("too many arguments", "ram or rom");
-  } else if ((!found_rom) && (!found_ram)) {
+  }
+  else if ((!found_rom) && (!found_ram)) {
     script_error("missing argument", "ram or rom");
-  } else {
+  }
+  else {
     sym = get_symbol(state.section.definition, section_name);
 
     if (sym == NULL) {
       script_error("undefined section", section_name);
-    } else {
+    }
+    else {
       section = get_symbol_annotation(sym);
       assert(section != NULL);
 
-      if ((found_ram == 1) && (section->type == codepage)) {
+      if ((found_ram == 1) && (section->type == SECT_CODEPAGE)) {
         script_error("invalid argument", "ram");
-      } else if ((found_rom == 1) && (section->type != codepage)) {
+      }
+      else if ((found_rom == 1) && (section->type != SECT_CODEPAGE)) {
         script_error("invalid argument", "rom");
-      } else {
+      }
+      else {
         sym = add_symbol(state.section.logical, logical_section_name);
         annotate_symbol(sym, section_name);
       }
@@ -349,8 +359,9 @@ static int do_secdef(const char *name, enum section_type type, struct pnode *par
 
             begin = p->value.binop.p1->value.symbol;
             if ((end = strchr(begin, ':')) != NULL) {
-              if (end == begin)
+              if (end == begin) {
                 script_error("bad shadow symbol", lhs);
+              }
               else {
                 char *shsym = (char *)malloc(end - begin + 1);
 
@@ -364,7 +375,8 @@ static int do_secdef(const char *name, enum section_type type, struct pnode *par
                   script_error("bad shadow value", lhs);
                 }
               }
-            } else {
+            }
+            else {
               script_error("bad shadow argument", lhs);
             }
           }
@@ -374,11 +386,13 @@ static int do_secdef(const char *name, enum section_type type, struct pnode *par
           script_error("illegal argument", lhs);
         }
       }
-    } else {
+    }
+    else {
       if (enforce_simple(p)) {
         if (strcasecmp(p->value.symbol, "protected") == 0) {
           found_protected = true;
-        } else {
+        }
+        else {
           script_error("illegal argument", p->value.symbol);
         }
       }
@@ -388,11 +402,14 @@ static int do_secdef(const char *name, enum section_type type, struct pnode *par
   /* process the options */
   if (NULL == section_name) {
     script_error("missing argument", "name");
-  } else if (!found_start) {
+  }
+  else if (!found_start) {
     script_error("missing argument", "start");
-  } else if (!found_end) {
+  }
+  else if (!found_end) {
     script_error("missing argument", "end");
-  } else {
+  }
+  else {
     sym = get_symbol(state.section.definition, section_name);
 
     if (sym == NULL) {
@@ -402,18 +419,18 @@ static int do_secdef(const char *name, enum section_type type, struct pnode *par
       annotate_symbol(sym, section_def);
 
       switch (type) {
-      case accessbank:
+      case SECT_ACCESSBANK:
         if (state.class != PROC_CLASS_PIC16E) {
           script_error("accessbank only valid with 18xx devices", name);
         }
         break;
 
-      case codepage:
+      case SECT_CODEPAGE:
         start = gp_processor_org_to_byte(state.class, start);
         end = gp_processor_org_to_byte(state.class, end + 1) - 1;
         break;
 
-      case sect_none:
+      case SECT_NONE:
         script_error("invalid definition type", name);
         break;
 
@@ -430,18 +447,21 @@ static int do_secdef(const char *name, enum section_type type, struct pnode *par
       section_def->fill = 0;
       section_def->use_fill = false;
 
-      if (section_def->type == codepage) {
+      if (section_def->type == SECT_CODEPAGE) {
         if ((!state.fill_enable) || found_protected) {
           section_def->fill = fill;
           section_def->use_fill = found_fill;
-        } else {
+        }
+        else {
           section_def->fill = state.fill_value;
           section_def->use_fill = true;
         }
-      } else if (found_fill == 1) {
+      }
+      else if (found_fill == 1) {
         script_error("illegal argument", "fill");
       }
-    } else if (type != sharebank) {
+    }
+    else if (type != SECT_SHAREBANK) {
       script_error("duplicate section definition", section_name);
     }
   }
@@ -472,7 +492,8 @@ static int do_stack(const char *name, enum section_type type, struct pnode *parm
   if (state.has_stack) {
     script_error("multiple stack definitions", NULL);
     return 0;
-  } else {
+  }
+  else {
     state.has_stack = true;
   }
 
@@ -510,7 +531,8 @@ static int do_stack(const char *name, enum section_type type, struct pnode *parm
           script_error("illegal argument", lhs);
         }
       }
-    } else {
+    }
+    else {
       if (enforce_simple(p)) {
         script_error("illegal argument", p->value.symbol);
       }
@@ -520,7 +542,8 @@ static int do_stack(const char *name, enum section_type type, struct pnode *parm
   /* process the options */
   if (!found_size) {
     script_error("missing argument", "size");
-  } else if (ram_name != NULL) {
+  }
+  else if (ram_name != NULL) {
     sym = add_symbol(state.section.logical, strdup(".stack"));
     annotate_symbol(sym, ram_name);
   }
@@ -528,22 +551,22 @@ static int do_stack(const char *name, enum section_type type, struct pnode *parm
   return 0;
 }
 
-int execute_command(char *name, struct pnode *parms)
+int execute_command(const char *name, struct pnode *parms)
 {
   static struct {
     const char *name;
     enum section_type type;
     int (*address)(const char *name, enum section_type type, struct pnode *parms);
   } commands[] = {
-    { "accessbank", accessbank, do_secdef  },
-    { "codepage",   codepage,   do_secdef  },
-    { "databank",   databank,   do_secdef  },
-    { "files",      sect_none,  do_files   },
-    { "include",    sect_none,  do_include },
-    { "linearmem",  linearmem,  do_secdef  },
-    { "section",    sect_none,  do_logsec  },
-    { "sharebank",  sharebank,  do_secdef  },
-    { "stack",      sect_none,  do_stack   }
+    { "accessbank", SECT_ACCESSBANK, do_secdef  },
+    { "codepage",   SECT_CODEPAGE,   do_secdef  },
+    { "databank",   SECT_DATABANK,   do_secdef  },
+    { "files",      SECT_NONE,       do_files   },
+    { "include",    SECT_NONE,       do_include },
+    { "linearmem",  SECT_LINEARMEM,  do_secdef  },
+    { "section",    SECT_NONE,       do_logsec  },
+    { "sharebank",  SECT_SHAREBANK,  do_secdef  },
+    { "stack",      SECT_NONE,       do_stack   }
   };
   int i;
 
