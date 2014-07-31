@@ -1,7 +1,11 @@
 2014-07-31  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/gpasm.c, gpasm/processor.c,
     libgputils/gpprocessor.c, libgputils/gpprocessor.h:
-    New predefined constants: __LINEAR_RAM_START, __LINEAR_RAM_END
+    New predefined constants: __LINEAR_RAM_START, __LINEAR_RAM_END,
+    __COMMON_RAM_MAX
+
+  * lkr/16f72_g.lkr, lkr/16f73_g.lkr, lkr/16f74_g.lkr:
+    bugfix
 
 2014-07-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/gpasm.c:
