@@ -249,6 +249,13 @@ lister_of_devices(pic_processor_t processor)
     printf("Common RAM     : 0x%02X - 0x%02X\n", addr0, addr1);
   }
 
+  addr0 = processor->linear_ram_addrs[0];
+  addr1 = processor->linear_ram_addrs[1];
+
+  if ((addr0 > 0) && (addr1 > 0)) {
+    printf("Linear RAM     : 0x%04X - 0x%04X\n", addr0, addr1);
+  }
+
   if (processor->class->page_size > 0) {
     printf("Page Size      : %i bytes\n", processor->class->page_size);
     printf("Page Number    : %i\n", processor->num_pages);

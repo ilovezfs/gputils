@@ -1,3 +1,8 @@
+2014-07-31  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/gpasm.c, gpasm/processor.c,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.h:
+    New predefined constants: __LINEAR_RAM_START, __LINEAR_RAM_END
+
 2014-07-30  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/gpasm.c:
     Added the Common RAM unto the lister_of_devices() function.

@@ -71,7 +71,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Jul 30, 2014
+Jul 31, 2014
 \end_layout
 
 \begin_layout Standard
@@ -4056,7 +4056,7 @@ End address of the Lower Access RAM area (
 \emph on
 only
 \emph default
- in the Extended 16 bit core -- pic18xxx):
+ in the Extended 16 bit core: pic18xxx):
 \end_layout
 
 \begin_layout LyX-Code
@@ -4069,11 +4069,11 @@ __ACC_RAM_LOW_END -- e.g.
 \end_layout
 
 \begin_layout Standard
-The bounds of the Shared RAM, 
+The bounds of the Shared RAM area, 
 \emph on
 if exist
 \emph default
- this memory area (12 and 14 bit core: pic12xxx, pic16xxx):
+ this memory (in the 12 and 14 bit core: pic12xxx, pic16xxx):
 \end_layout
 
 \begin_layout LyX-Code
@@ -4091,11 +4091,37 @@ __COMMON_RAM_END   -- End address of the Common RAM area   (e.g.
 \end_layout
 
 \begin_layout Standard
-The bounds of the EEPROM, 
+The bounds of the Linear RAM area, 
 \emph on
 if exist
 \emph default
- this memory area:
+ this memory (
+\emph on
+only
+\emph default
+ in the Enhanced 14 bit core: pic16xxx):
+\end_layout
+
+\begin_layout LyX-Code
+__LINEAR_RAM_START -- Start address of the Linear RAM area (e.g.
+ 0x2000, 0x2000)
+\end_layout
+
+\begin_layout LyX-Code
+__LINEAR_RAM_END   -- End address of the Linear RAM area   (e.g.
+ 0x202F, 0x23EF)
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The bounds of the EEPROM area, 
+\emph on
+if exist
+\emph default
+ this memory:
 \end_layout
 
 \begin_layout LyX-Code
