@@ -1,3 +1,7 @@
+2014-08-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/device-manager.pl:
+	  Improved the recognition of the Common RAM.
+
 2014-07-31  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/build-register-db.pl, tools/device-help.pl,
 	  tools/device-manager.pl:

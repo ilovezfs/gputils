@@ -1,3 +1,14 @@
+2014-08-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * lkr/12f629_g.lkr, lkr/12f675_g.lkr, lkr/16c61_g.lkr,
+    lkr/16c71_g.lkr, lkr/16f83_g.lkr, lkr/16f84_g.lkr,
+    lkr/16f84a_g.lkr, lkr/16c710_g.lkr, lkr/16c711_g.lkr,
+    lkr/16f630_g.lkr, lkr/16f676_g.lkr, lkr/rf675f_g.lkr,
+    lkr/rf675h_g.lkr, lkr/rf675k_g.lkr:
+    bugfix
+
+  * libgputils/gpprocessor.c:
+    Removed the Common RAM from the 16f73 and 16f74 devices.
+
 2014-07-31  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx:
     Further explanations.
