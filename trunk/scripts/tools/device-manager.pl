@@ -107,6 +107,8 @@ my $verbose = 0;
 my $border0 = ('-' x 70);
 my $border1 = ('=' x 60);
 
+use constant PIC_BANK_NUMBER_MAX => 32;
+
 use constant PROC_CLASS_EEPROM8  => 0;
 use constant PROC_CLASS_EEPROM16 => 1;
 use constant PROC_CLASS_GENERIC  => 2;
@@ -117,6 +119,153 @@ use constant PROC_CLASS_PIC14E   => 6;
 use constant PROC_CLASS_PIC16    => 7;
 use constant PROC_CLASS_PIC16E   => 8;
 use constant PROC_CLASS_SX       => 9;
+
+use constant PIC12_BANK_SHIFT => 5;
+use constant PIC12_BANK_SIZE  => 2 ** PIC12_BANK_SHIFT;
+use constant PIC14_BANK_SHIFT => 7;
+use constant PIC14_BANK_SIZE  => 2 ** PIC14_BANK_SHIFT;
+use constant PIC16_BANK_SHIFT => 8;
+use constant PIC16_BANK_SIZE  => 2 ** PIC16_BANK_SHIFT;
+
+my %class_features_eeprom8 =
+  (
+  CLASS      => PROC_CLASS_EEPROM8,
+  ENHANCED   => FALSE,
+  PAGE_SIZE  => -1,
+  WORD_SIZE  => 8,
+  CONF_SIZE  => -1,
+  CONF_MASK  => -1,
+  EE_START   => -1,
+  BANK_SIZE  => -1,
+  BANK_MASK  => -1,
+  BANK_SHIFT => -1
+  );
+
+my %class_features_eeprom16 =
+  (
+  CLASS      => PROC_CLASS_EEPROM16,
+  ENHANCED   => FALSE,
+  PAGE_SIZE  => -1,
+  WORD_SIZE  => 16,
+  CONF_SIZE  => -1,
+  CONF_MASK  => -1,
+  EE_START   => -1,
+  BANK_SIZE  => -1,
+  BANK_MASK  => -1,
+  BANK_SHIFT => -1
+  );
+
+my %class_features_generic =
+  (
+  CLASS      => PROC_CLASS_GENERIC,
+  ENHANCED   => FALSE,
+  PAGE_SIZE  => 512,
+  WORD_SIZE  => 12,
+  CONF_SIZE  => 12,
+  CONF_MASK  => 0x0FFF,
+  EE_START   => -1,
+  BANK_SIZE  => PIC12_BANK_SIZE,
+  BANK_MASK  => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT => PIC12_BANK_SHIFT
+  );
+
+my %class_features_p12 =
+  (
+  CLASS      => PROC_CLASS_PIC12,
+  ENHANCED   => FALSE,
+  PAGE_SIZE  => 512,
+  WORD_SIZE  => 12,
+  CONF_SIZE  => 12,
+  CONF_MASK  => 0x0FFF,
+  EE_START   => -1,
+  BANK_SIZE  => PIC12_BANK_SIZE,
+  BANK_MASK  => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT => PIC12_BANK_SHIFT
+  );
+
+my %class_features_p12e =
+  (
+  CLASS      => PROC_CLASS_PIC12E,
+  ENHANCED   => TRUE,
+  PAGE_SIZE  => 512,
+  WORD_SIZE  => 12,
+  CONF_SIZE  => 12,
+  CONF_MASK  => 0x0FFF,
+  EE_START   => -1,
+  BANK_SIZE  => PIC12_BANK_SIZE,
+  BANK_MASK  => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT => PIC12_BANK_SHIFT
+  );
+
+my %class_features_p14 =
+  (
+  CLASS      => PROC_CLASS_PIC14,
+  ENHANCED   => FALSE,
+  PAGE_SIZE  => 2048,
+  WORD_SIZE  => 14,
+  CONF_SIZE  => 14,
+  CONF_MASK  => 0x3FFF,
+  EE_START   => 0x2100,
+  BANK_SIZE  => PIC14_BANK_SIZE,
+  BANK_MASK  => ~(PIC14_BANK_SIZE - 1),
+  BANK_SHIFT => PIC14_BANK_SHIFT
+  );
+
+my %class_features_p14e =
+  (
+  CLASS      => PROC_CLASS_PIC14E,
+  ENHANCED   => TRUE,
+  PAGE_SIZE  => 2048,
+  WORD_SIZE  => 14,
+  CONF_SIZE  => 16,
+  CONF_MASK  => 0xFFFF,
+  EE_START   => 0xF000,
+  BANK_SIZE  => PIC14_BANK_SIZE,
+  BANK_MASK  => ~(PIC14_BANK_SIZE - 1),
+  BANK_SHIFT => PIC14_BANK_SHIFT
+  );
+
+my %class_features_p16 =
+  (
+  CLASS      => PROC_CLASS_PIC16,
+  ENHANCED   => FALSE,
+  PAGE_SIZE  => -1,
+  WORD_SIZE  => 16,
+  CONF_SIZE  => 8,
+  CONF_MASK  => 0x00FF,
+  EE_START   => -1,
+  BANK_SIZE  => PIC16_BANK_SIZE,
+  BANK_MASK  => ~(PIC16_BANK_SIZE - 1),
+  BANK_SHIFT => PIC16_BANK_SHIFT
+  );
+
+my %class_features_p16e =
+  (
+  CLASS      => PROC_CLASS_PIC16E,
+  ENHANCED   => TRUE,
+  PAGE_SIZE  => -1,
+  WORD_SIZE  => 16,
+  CONF_SIZE  => 8,
+  CONF_MASK  => 0x00FF,
+  EE_START   => 0xF00000,
+  BANK_SIZE  => PIC16_BANK_SIZE,
+  BANK_MASK  => ~(PIC16_BANK_SIZE - 1),
+  BANK_SHIFT => PIC16_BANK_SHIFT
+  );
+
+my %class_features_sx =
+  (
+  CLASS      => PROC_CLASS_SX,
+  ENHANCED   => FALSE,
+  PAGE_SIZE  => 512,
+  WORD_SIZE  => 12,
+  CONF_SIZE  => 12,
+  CONF_MASK  => 0x0FFF,
+  EE_START   => -1,
+  BANK_SIZE  => PIC12_BANK_SIZE,
+  BANK_MASK  => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT => PIC12_BANK_SHIFT
+  );
 
 my @classnames =
   (
@@ -132,60 +281,65 @@ my @classnames =
   'PROC_CLASS_SX'
   );
 
-my %exist_classes =
+my @class_features_list =
   (
-  'eeprom8'  => PROC_CLASS_EEPROM8,
-  'eeprom16' => PROC_CLASS_EEPROM16,
-  'generic'  => PROC_CLASS_GENERIC,
-  '16c5x'    => PROC_CLASS_PIC12,
-  '16c5xe'   => PROC_CLASS_PIC12E,
-  '16xxxx'   => PROC_CLASS_PIC14,
-  '16exxx'   => PROC_CLASS_PIC14E,
-  '17xxxx'   => PROC_CLASS_PIC16,
-  '18xxxx'   => PROC_CLASS_PIC16E,
-  'sx'       => PROC_CLASS_SX
+  \%class_features_eeprom8,     # PROC_CLASS_EEPROM8
+  \%class_features_eeprom16,    # PROC_CLASS_EEPROM16
+  \%class_features_generic,     # PROC_CLASS_GENERIC
+  \%class_features_p12,         # PROC_CLASS_PIC12
+  \%class_features_p12e,        # PROC_CLASS_PIC12E
+  \%class_features_p14,         # PROC_CLASS_PIC14
+  \%class_features_p14e,        # PROC_CLASS_PIC14E
+  \%class_features_p16,         # PROC_CLASS_PIC16
+  \%class_features_p16e,        # PROC_CLASS_PIC16E
+  \%class_features_sx           # PROC_CLASS_SX
   );
 
-my @eeprom_starts =
+my %class_features_by_gputils =
   (
-        -1,     # PROC_CLASS_EEPROM8
-        -1,     # PROC_CLASS_EEPROM16
-        -1,     # PROC_CLASS_GENERIC
-        -1,     # PROC_CLASS_PIC12
-        -1,     # PROC_CLASS_PIC12E
-  0x002100,     # PROC_CLASS_PIC14
-  0x00F000,     # PROC_CLASS_PIC14E
-        -1,     # PROC_CLASS_PIC16
-  0xF00000,     # PROC_CLASS_PIC16E
-        -1      # PROC_CLASS_SX
+  'PROC_CLASS_EEPROM8'  => \%class_features_eeprom8,
+  'PROC_CLASS_EEPROM16' => \%class_features_eeprom16,
+  'PROC_CLASS_GENERIC'  => \%class_features_generic,
+  'PROC_CLASS_PIC12'    => \%class_features_p12,
+  'PROC_CLASS_PIC12E'   => \%class_features_p12e,
+  'PROC_CLASS_PIC14'    => \%class_features_p14,
+  'PROC_CLASS_PIC14E'   => \%class_features_p14e,
+  'PROC_CLASS_PIC16'    => \%class_features_p16,
+  'PROC_CLASS_PIC16E'   => \%class_features_p16e,
+  'PROC_CLASS_SX'       => \%class_features_sx
   );
 
-use constant PIC12_BANK_SIZE => 32;
-use constant PIC14_BANK_SIZE => 128;
-use constant PIC16_BANK_SIZE => 256;
-
-my %bank_masks =
+my %class_features_by_mpasmx =
   (
-  'PROC_CLASS_EEPROM8'  => -1,
-  'PROC_CLASS_EEPROM16' => -1,
-  'PROC_CLASS_GENERIC'  => -1,
-  'PROC_CLASS_PIC12'    => ~(PIC12_BANK_SIZE - 1),
-  'PROC_CLASS_PIC12E'   => ~(PIC12_BANK_SIZE - 1),
-  'PROC_CLASS_PIC14'    => ~(PIC14_BANK_SIZE - 1),
-  'PROC_CLASS_PIC14E'   => ~(PIC14_BANK_SIZE - 1),
-  'PROC_CLASS_PIC16'    => ~(PIC16_BANK_SIZE - 1),
-  'PROC_CLASS_PIC16E'   => -1,
-  'PROC_CLASS_SX'       => -1
+  'eeprom8'  => \%class_features_eeprom8,
+  'eeprom16' => \%class_features_eeprom16,
+  'generic'  => \%class_features_generic,
+  '16c5x'    => \%class_features_p12,
+  '16c5xe'   => \%class_features_p12e,
+  '16xxxx'   => \%class_features_p14,
+  '16exxx'   => \%class_features_p14e,
+  '17xxxx'   => \%class_features_p16,
+  '18xxxx'   => \%class_features_p16e,
+  'sx'       => \%class_features_sx
   );
 
-my %config_word_masks =
+my %lost_devices =
   (
-  '16c5x'  => 0x0FFF,
-  '16c5xe' => 0x0FFF,
-  '16xxxx' => 0x3FFF,
-  '16exxx' => 0xFFFF,
-  '17xxxx' => 0x00FF,
-  '18xxxx' => 0x00FF
+  '16c52'    => \%class_features_p12,
+  '16c54b'   => \%class_features_p12,
+  '16c61'    => \%class_features_p14,
+  '16c62'    => \%class_features_p14,
+  '16c64'    => \%class_features_p14,
+  '16c65'    => \%class_features_p14,
+  '16c73'    => \%class_features_p14,
+  '16c74'    => \%class_features_p14,
+  '16c84'    => \%class_features_p14,
+  '16cr54b'  => \%class_features_p12,
+  '16f1458'  => \%class_features_p14e,
+  '16lf1458' => \%class_features_p14e,
+  '17cr43'   => \%class_features_p16,
+  'hcs1365'  => \%class_features_p12,
+  'hcs1370'  => \%class_features_p12
   );
 
 # From the gputils/libgputils/gpprocessor.h header.
@@ -295,11 +449,13 @@ my %mp_px_rows_by_name;
 my %gp_px_rows_by_coff;
 my %mp_px_rows_by_coff;
 
+my $lkr_bank_mask;
+my $lkr_bank_shift;
 my $lkr_common_start;
 my $lkr_common_end;
 my $lkr_common_max;
-my $lkr_no_bank;
 my $lkr_data_max;
+my @lkr_common_banks;
 
 my $lkr_linear_start;
 my $lkr_linear_end;
@@ -641,9 +797,9 @@ sub smartSort($$$)
 sub str2class($)
   {
   my $Str = $_[0];
-  my $class = $exist_classes{lc($Str)};
+  my $class = $class_features_by_mpasmx{lc($Str)};
 
-  return $class if (defined($class));
+  return $class->{CLASS} if (defined($class));
 
   die "str2class(): Unknown class: $Str\n";
   }
@@ -797,8 +953,7 @@ sub read_config_bits($$$)
         $config_count = hex($fields[12]);
         $switch_count = 0;
         $setting_count = 0;
-        $config_mask = $config_word_masks{$fields[3]};
-        $config_mask = 0xFFFF if (! defined($config_mask));
+        $config_mask = str2class(lc($fields[3]))->{CONF_MASK};
         $state = ST_LISTEN;
         $addr = 0;
         %{$Configs} = ();
@@ -1279,14 +1434,14 @@ EOT
 sub process_lkr_line($)
   {
   my $Line = $_[0];
+  my ($sect, $name, $start, $end, $size, $tail, $index);
 
   if ($Line =~ /^(\w+)\s+NAME=(\S+)\s+START=(\w+)\s+END=(\w+)/io)
     {
     # uc($1) <- paranoia
-    my ($sect, $name, $start, $end) = (uc($1), $2, str2dec($3), str2dec($4));
-    my $size = $end - $start + 1;
-    my $tail = ${^POSTMATCH};
-
+    ($sect, $name, $start, $end) = (uc($1), $2, str2dec($3), str2dec($4));
+    $size = $end - $start + 1;
+    $tail = ${^POSTMATCH};
     $tail =~ s/^\s+//o;
 
     if ($sect eq 'CODEPAGE')
@@ -1360,15 +1515,10 @@ sub process_lkr_line($)
         # SHAREBANK  NAME=gprnobank  START=0xF0            END=0xFF           PROTECTED
         # SHAREBANK  NAME=dprnobank  START=0x70              END=0x7F           PROTECTED
 
-        if (! $lkr_no_bank || ($lkr_common_start == -1 && $lkr_common_end == -1))
-          {
-          $lkr_common_start = $start;
-          $lkr_common_end   = $end;
-          $lkr_no_bank      = TRUE;
-          }
-
         $lkr_common_max = $end if ($lkr_common_max < $end);
         $lkr_data_max   = $end if ($lkr_data_max < $end);
+        $index = ($start & $lkr_bank_mask) >> $lkr_bank_shift;
+        $lkr_common_banks[$index] = {START => $start, END => $end};
         }
       elsif ($name =~ /^gpr0/io)
         {
@@ -1378,11 +1528,8 @@ sub process_lkr_line($)
         # SHAREBANK  NAME=gpr0       START=0x8C            END=0xAF           PROTECTED
         # SHAREBANK  NAME=gpr0a      START=0xD             END=0xF
 
-        if ($lkr_common_start == -1 && $lkr_common_end == -1)
-          {
-          $lkr_common_start = $start;
-          $lkr_common_end   = $end;
-          }
+        $index = ($start & $lkr_bank_mask) >> $lkr_bank_shift;
+        $lkr_common_banks[$index] = {START => $start, END => $end};
         }
       }
     }
@@ -1393,22 +1540,13 @@ sub process_lkr_line($)
         # Reads informations from a lkr file.
         # The work was assisted by a very simple preprocessor.
 
-sub read_lkr($)
+sub read_lkr($$$)
   {
-  my $Lkr = $_[0];
-
-  return FALSE if (! -e $Lkr);
-
-  Log("Reads the $Lkr file.", 4);
-
-  my $in = Open($Lkr, 'read_lkr');
-  my $name = basename($Lkr);
-
-  reset_preprocessor();
+  my ($McuName, $Lkr, $Info) = @_;
+  my ($class_feature, $first, $prev_start, $prev_end);
 
   $lkr_common_start = -1;
   $lkr_common_end   = -1;
-  $lkr_no_bank      = FALSE;
   $lkr_data_max     = -1;
   $lkr_common_max   = -1;
 
@@ -1424,6 +1562,35 @@ sub read_lkr($)
 
   $lkr_eeprom_start = -1;
   $lkr_eeprom_end   = -1;
+
+  return FALSE if (! -e $Lkr);
+
+  Log("Reads the $Lkr file.", 4);
+
+  if (defined($Info))
+    {
+    $class_feature = $class_features_list[$Info->{CLASS}];
+    }
+  else
+    {
+    print STDERR "The $McuName device not exist in the \"$mplabx_inc/$mplabx_dev_info\" file.\n";
+    $class_feature = $lost_devices{$McuName};
+
+    if (! defined($class_feature))
+      {
+      print STDERR "The $McuName is unknown device!\n";
+      return FALSE;
+      }
+    }
+
+  my $in = Open($Lkr, 'read_lkr');
+  my $name = basename($Lkr);
+
+  $lkr_bank_mask    = $class_feature->{BANK_MASK};
+  $lkr_bank_shift   = $class_feature->{BANK_SHIFT};
+  @lkr_common_banks = (({START => -1, END => -1}) x PIC_BANK_NUMBER_MAX);
+
+  reset_preprocessor();
 
   while (<$in>)
     {
@@ -1441,6 +1608,65 @@ sub read_lkr($)
 
   die "read_lkr(): There is no one program memory page either. ($name)\n" if (! @lkr_pages);
   close($in);
+
+  Log($Lkr, 8);
+  $prev_start = -1;
+  $prev_end   = -1;
+  $first      = TRUE;
+
+  foreach (@lkr_common_banks)
+    {
+    my ($start, $end) = ($_->{START}, $_->{END});
+
+    if ($start < 0 || $end < 0)
+      {
+      Log("    --------", 8);
+
+      if ($first)
+        {
+        # The common area not exist the first bank, therefore it does not matter
+        # that later exist or not.
+        $lkr_common_start = -1;
+        $lkr_common_end   = -1;
+        }
+      }
+    else
+      {
+      Log(sprintf("    0x%03X - 0x%03X", $start, $end), 8);
+
+      $start &= ~$lkr_bank_mask;
+      $end   &= ~$lkr_bank_mask;
+
+      if ($first)
+        {
+        $lkr_common_start = $start;
+        $lkr_common_end   = $end;
+        }
+      else
+        {
+        if ($prev_start != $start)
+          {
+          # This area in the previous bank starts on a different address.
+          Log(sprintf("    prev_start{0x%02X} != start{0x%02X}", $prev_start, $start), 8);
+          $lkr_common_start = -1;
+          $lkr_common_end   = -1;
+          }
+
+        if ($prev_end != $end)
+          {
+          # This area in the previous bank ends on a different address.
+          Log(sprintf("    prev_end{0x%02X}   != end{0x%02X}", $prev_end, $end), 8);
+          $lkr_common_start = -1;
+          $lkr_common_end   = -1;
+          }
+        }
+      }
+
+    $prev_start = $start;
+    $prev_end   = $end;
+    $first      = FALSE;
+    } # foreach (@lkr_common_banks)
+
   return TRUE;
   }
 
@@ -1451,70 +1677,6 @@ sub read_lkr($)
 #@@@@@@@@@@@@@@@@@@@@@@@                                @@@@@@@@@@@@@@@@@@@@@@@@
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-        # Reads characteristics of the $Name MCU from the $mplabx_dev_info.
-
-sub read_mcu_info_from_mplabx($)
-  {
-  my $Name = $_[0];
-  my $path = "$mplabx_inc/$mplabx_dev_info";
-
-  Log("Reads from the $path file.", 4);
-
-  my $in = Open($path, 'read_mcu_info_from_mplabx');
-
-  my $proc = 'PIC' . uc($Name);
-  my $info = undef;
-
-  while (<$in>)
-    {
-    chomp;
-    s/\r$//o;
-    s/^<|>$//go;
-
-    my @fields = split('><', $_, -1);
-
-    if ($fields[0] eq 'PART_INFO_TYPE')
-      {
-      if ($fields[2] eq $proc)
-        {
-        my $name = lc($fields[2]);
-
-        $name =~ s/^pic//o;
-        $info = {
-                NAME       => $name,
-                CLASS      => str2class($fields[3]),
-                COFF       => hex($fields[1]),             # Coff ID of device. (16 bit wide)
-                PAGES      => hex($fields[5]),             # Number of ROM/FLASH pages.
-
-                # These addresses relative, compared to the beginning of the blocks.
-                ROM        => hex($fields[6]),             # Last address of ROM/FLASH.
-                FLASHDATA  => hex($fields[11]),            # Last address of FLASH Data.
-                EEPROM     => hex($fields[9]),             # Last address of EEPROM.
-
-                CONFIGS    => hex($fields[12]),            # Number of Configuration bytes/words.
-                BANKS      => hex($fields[7]),             # Number of RAM Banks.
-                ACCESS     => hex($fields[10]),            # Last address of lower Access RAM of pic18f series.
-    	        P16E_FLAGS => (($name =~ /^18l?f\d+j\d+/o) ? PIC16E_FLAG_J_SUBFAMILY : 0)
-                };
-        }
-      elsif (defined($info))
-        {
-        last;
-        }
-      }
-    elsif ($fields[0] eq 'SWITCH_INFO_TYPE' && $fields[1] eq 'XINST')
-      {
-      $info->{P16E_FLAGS} |= PIC16E_FLAG_HAVE_EXTINST if (defined($info));
-      last;
-      }
-    } # while (<$in>)
-
-  close($in);
-  return $info;
-  }
-
-#-------------------------------------------------------------------------------
 
         # Reads characteristics of all MCUs from the $mplabx_dev_info.
 
@@ -1540,7 +1702,7 @@ sub read_all_mcu_info_from_mplabx()
         # <PART_INFO_TYPE><2620><PIC18F2620><18xxxx><6><1><ffff><10><ff><3ff><7f><0><b>
         # <PART_INFO_TYPE><2685><PIC18F2685><18xxxx><6><1><17fff><10><ff><3ff><5f><0><b>
 
-    if ($_ =~ /^<PART_INFO_TYPE><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)>/io)
+    if (/^<PART_INFO_TYPE><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)>/io)
       {
       if (defined($info))
         {
@@ -1572,6 +1734,8 @@ sub read_all_mcu_info_from_mplabx()
                $name eq 'ap7675' || $name =~ /^eeprom/o ||
                $name =~ /^mcp25/o);
 
+      Log("Read info of the $name MCU.", 9);
+
       $info = {
               NAME       => $name,
               CLASS      => $class,
@@ -1589,7 +1753,7 @@ sub read_all_mcu_info_from_mplabx()
               P16E_FLAGS => (($name =~ /^18l?f\d+j\d+/o) ? PIC16E_FLAG_J_SUBFAMILY : 0)
               };
       }
-    elsif ($_ =~ /^<SWITCH_INFO_TYPE><XINST>/io)
+    elsif (/^<SWITCH_INFO_TYPE><XINST>/io)
       {
       $info->{P16E_FLAGS} |= PIC16E_FLAG_HAVE_EXTINST if (defined($info));
       }
@@ -1638,7 +1802,7 @@ sub new_px_row($$$$)
 
   my $p18j = ($name =~ /^18l?f\d+j\d+/o);
   my $class = $Info->{CLASS};
-  my $eeprom_start = $eeprom_starts[$class];
+  my $eeprom_start = $class_features_list[$class]->{EE_START};
   my $bad_start = -1;
   my $bad_end   = -1;
 
@@ -1694,7 +1858,6 @@ sub create_px_struct_from_mplabx()
   my $coff_error = '';
   my $mem_error = '';
 
-  read_all_mcu_info_from_mplabx();
   create_dirlist(\@dir_list, $mplabx_lkr, '.lkr');
 
   Log('Creates the @mp_px_struct.', 4);
@@ -1716,7 +1879,7 @@ sub create_px_struct_from_mplabx()
 
     $script = $1 if (/^($script)$/i ~~ @dir_list);
 
-    next if (! read_lkr("$mplabx_lkr/$script"));
+    next if (! read_lkr($name, "$mplabx_lkr/$script", $info));
 
     my $px = new_px_row(\$mem_error, $info, $header, $script);
 
@@ -1738,7 +1901,7 @@ sub create_px_struct_from_mplabx()
     push(@mp_px_struct, $px);
     }
 
-  report(RP_PRINT, E_ROM_DIFF, \$mem_error, 'mplabx', *STDERR);
+  report(RP_PRINT, E_ROM_DIFF,  \$mem_error,  'mplabx', *STDERR);
   report(RP_PRINT, E_COFF_COLL, \$coff_error, 'mplabx', *STDERR);
   sort_px_struct(\@mp_px_struct, SORT_NAME0);
   }
@@ -1840,8 +2003,8 @@ sub extract_px_struct()
       my ($long_name, $middle_name, $short_name, $coff, $header, $script) = ($3, $4, $5, str2dec($6), $24, $25);
         # Maybe there is a comment at the end of the line.
       my $tail = ${^POSTMATCH};
+      my $bank_mask = $class_features_by_gputils{$1}->{BANK_MASK};
       my $prev;
-      my $bank_mask = $bank_masks{$1};
       my $px = {
                IGNORED      => FALSE,
                CLASS        => $1,
@@ -1906,9 +2069,9 @@ sub extract_px_struct()
 
         # Watches the header name error.
 
-      if ($header ne 'NULL' && $header !~ /^p${short_name}.inc$/)
+      if ($header ne 'NULL' && $header !~ /^${middle_name}.inc$/)
         {
-        report(RP_ADD, E_INC_NAME, \$inc_error, $long_name, $header);
+        report(RP_ADD, E_INC_NAME, \$inc_error, $middle_name, $header);
         }
 
         # Watches the script name error.
@@ -1918,6 +2081,8 @@ sub extract_px_struct()
         report(RP_ADD, E_LKR_NAME, \$lkr_error, $long_name, $script);
         }
 
+read_lkr($short_name, "$gputils_lkr/$script", $mp_mcus_by_name{$short_name});
+$px->{COMMON_RAM} = [ $lkr_common_start, $lkr_common_end ];
       push(@gp_px_struct, $px);
       }
     else
@@ -2234,7 +2399,7 @@ sub fabricate_more_lkr()
 
 sub addition_helper1($)
   {
-  my $Name = $_[0];
+  my ($Name, $Info) = @_;
 
   die "addition_helper1(): Miss the name of MCU!\n" if ($Name eq '');
   die "addition_helper1(): This name is wrong: \"$Name\"\n" if ($Name !~ /^(p(ic)?)?$name_filter$/io);
@@ -2244,11 +2409,11 @@ sub addition_helper1($)
 
   if ($examine_exist_device && defined($gp_px_rows_by_name{$Name}))
     {
-    print STDERR "This MCU: $Name already exist on the gputils.\n";
+    print STDERR "This MCU: $Name already exist in the gputils.\n";
     return undef;
     }
 
-  read_lkr("$mplabx_lkr/${Name}_g.lkr");
+  read_lkr($Name, "$mplabx_lkr/${Name}_g.lkr", $mp_mcus_by_name{$Name});
   return $Name;
   }
 
@@ -2260,7 +2425,7 @@ sub addition_helper2($$$$)
   {
   my ($Coff_error, $Mem_error, $Name, $Info) = @_;
 
-  die "addition_helper2(): This device: $Name not exist in $mplabx_dev_info!\n" if (! defined($Info));
+  die "addition_helper2(): This device: $Name not exist in the $mplabx_dev_info!\n" if (! defined($Info));
 
   my $coff = $Info->{COFF};
   my $px   = $gp_px_rows_by_coff{$coff};
@@ -2290,10 +2455,10 @@ sub add_mcu($)
   $Name = addition_helper1($Name);
   return if (! defined($Name));
 
-  addition_helper2(\$coff_error, \$mem_error, $Name, read_mcu_info_from_mplabx($Name));
+  addition_helper2(\$coff_error, \$mem_error, $Name, $mp_mcus_by_name{$Name});
 
   report(RP_PRINT, E_COFF_COLL, \$coff_error, 'gputils', *STDERR);
-  report(RP_PRINT, E_ROM_DIFF, \$mem_error, 'mplabx', *STDERR);
+  report(RP_PRINT, E_ROM_DIFF,  \$mem_error,  'mplabx',  *STDERR);
   sort_px_struct(\@gp_px_struct, SORT_DEFINED_AS);
   }
 
@@ -2308,8 +2473,6 @@ sub add_more_mcu()
   my $coff_error = '';
   my $mem_error = '';
 
-  read_all_mcu_info_from_mplabx();
-
   foreach my $name (sort { smartSort($a, $b, FALSE) } keys(%list_file_members))
     {
     $name = addition_helper1($name);
@@ -2320,7 +2483,7 @@ sub add_more_mcu()
     }
 
   report(RP_PRINT, E_COFF_COLL, \$coff_error, 'gputils', *STDERR);
-  report(RP_PRINT, E_ROM_DIFF, \$mem_error, 'mplabx', *STDERR);
+  report(RP_PRINT, E_ROM_DIFF,  \$mem_error,  'mplabx',  *STDERR);
   sort_px_struct(\@gp_px_struct, SORT_DEFINED_AS);
   }
 
@@ -2398,7 +2561,6 @@ sub show_ctype_differences()
   {
   my $diffs = '';
 
-  read_all_mcu_info_from_mplabx();
   Log('Shows the differences of coff_types.', 6);
 
   foreach (@gp_px_struct)
@@ -2731,6 +2893,7 @@ if ($operation == OP_LIST_MP)
   exit(0);
   }
 
+read_all_mcu_info_from_mplabx();
 read_gpproc_c_content();
 extract_px_struct();
 
@@ -2751,7 +2914,6 @@ given ($operation)
 
   when (OP_SHOWS_SPDIFF)
     {
-    read_all_mcu_info_from_mplabx();
     show_differences_mp_gp();
     show_differences_gp_mp();
     exit(0);

@@ -7,8 +7,8 @@
 //
 //=========================================================================
 //
-//      30 Jul 2014  Changed the gprs onto gpr0.
-//                   Added the gpr1.
+//      01 Aug 2014  Changed the gprs onto gprnobnk.
+//                   Added the second gprnobnk.
 //
 //// End: Added in gputils
 
@@ -23,10 +23,10 @@ DATABANK   NAME=sfr1     START=0x80     END=0x8B     PROTECTED
 
 //// Begin: Changed in gputils
 ////DATABANK   NAME=gprs     START=0xC      END=0x2F
-SHAREBANK  NAME=gpr0     START=0xC      END=0x2F
+SHAREBANK  NAME=gprnobnk START=0xC      END=0x2F
 //// End: Changed in gputils
 //// Begin: Added in gputils
-SHAREBANK  NAME=gpr1     START=0x8C     END=0xAF     PROTECTED
+SHAREBANK  NAME=gprnobnk START=0x8C     END=0xAF     PROTECTED
 //// End: Added in gputils
 
 SECTION    NAME=PROG     ROM=page       // ROM code space
