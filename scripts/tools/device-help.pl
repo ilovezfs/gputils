@@ -250,23 +250,6 @@ my @mcu_feat_names = sort {
                           $class_features_by_mpasmx{$a}->{CLASS}    <=> $class_features_by_mpasmx{$b}->{CLASS}
                           } keys %class_features_by_mpasmx;
 
-my %lost_devices =
-  (
-  'PIC16C52'    => \%class_features_p12,
-  'PIC16C54B'   => \%class_features_p12,
-  'PIC16C61'    => \%class_features_p14,
-  'PIC16C62'    => \%class_features_p14,
-  'PIC16C64'    => \%class_features_p14,
-  'PIC16C65'    => \%class_features_p14,
-  'PIC16C73'    => \%class_features_p14,
-  'PIC16C74'    => \%class_features_p14,
-  'PIC16C84'    => \%class_features_p14,
-  'PIC16CR54B'  => \%class_features_p12,
-  'PIC16F1458'  => \%class_features_p14e,
-  'PIC16LF1458' => \%class_features_p14e,
-  'PIC17CR43'   => \%class_features_p16
-  );
-
 #-----------------------------------------------------------------------------------------------------------------------
 
 =back
@@ -770,6 +753,22 @@ my %missed_directive_substitutions =
 
 my @insufficient_mcus = ();
 
+my @data_sheet_name_exception_list =
+  (
+  'PIC12LF1552',
+  'PIC12LF1840T39A',
+  'PIC12LF1840T48A',
+  'PIC16HV540',
+  'PIC16LF1554',
+  'PIC16LF1559',
+  'PIC16LF1824T39A',
+  'PIC16LF1902',
+  'PIC16LF1903',
+  'PIC16LF1904',
+  'PIC16LF1906',
+  'PIC16LF1907'
+  );
+
 ####################################################################################################
 ####################################################################################################
 
@@ -1150,7 +1149,6 @@ sub read_list_file()
 
     $n = "p$n" if ($n !~ /^rf/o);
     $name = "pic$name" if ($name =~ /^rf/o);        # rfXXX -> picrfXXX
-
     $gp_mcus_by_names{uc($name)} = $n;
     }
 
@@ -1233,7 +1231,6 @@ sub extract_mcu_names()
           $name !~ /^eeprom/o)
         {
         $name = "pic$name" if ($name =~ /^rf/o);        # rfXXX -> picrfXXX
-
         $gp_mcus_by_names{uc($name)} = '';
         }
       }
@@ -2142,13 +2139,15 @@ sub print_mcu_list($$)
       {
       aOutml($Align + 8, "${lst}instruction size (bit)</td>",
                          "${lst}config word size (bit)</td>",
-                         "${lst}class</td>");
+                         "${lst}class</td>",
+                         "${lst}data sheet</td>");
       }
 
     when ([ PRI_MENU_ENH, PRI_MENU_EXT, PRI_MENU_REG ])
       {
       aOutml($Align + 8, "${lst}instruction size (bit)</td>",
-                         "${lst}config word size (bit)</td>");
+                         "${lst}config word size (bit)</td>",
+                         "${lst}data sheet</td>");
       }
 
     when (PRI_MENU_RAM)
@@ -2156,7 +2155,8 @@ sub print_mcu_list($$)
       aOutml($Align + 8, "${lst}RAM size (byte)</th>",
                          "${lst}instruction size (bit)</td>",
                          "${lst}config word size (bit)</td>",
-                         "${lst}class</td>");
+                         "${lst}class</td>",
+                         "${lst}data sheet</td>");
       }
 
     when (PRI_MENU_ROM)
@@ -2164,7 +2164,8 @@ sub print_mcu_list($$)
       aOutml($Align + 8, "${lst}ROM size (word/byte)</td>",
                          "${lst}instruction size (bit)</td>",
                          "${lst}config word size (bit)</td>",
-                         "${lst}class</td>");
+                         "${lst}class</td>",
+                         "${lst}data sheet</td>");
       }
 
     when (PRI_MENU_EEPROM)
@@ -2172,13 +2173,15 @@ sub print_mcu_list($$)
       aOutml($Align + 8, "${lst}EEPROM size (byte)</td>",
                          "${lst}instruction size (bit)</td>",
                          "${lst}config word size (bit)</td>",
-                         "${lst}class</td>");
+                         "${lst}class</td>",
+                         "${lst}data sheet</td>");
       }
 
     default
       {
       aOutml($Align + 8, "${lst}config word size (bit)</td>",
-                         "${lst}class</td>");
+                         "${lst}class</td>",
+                         "${lst}data sheet</td>");
       }
     }
 
@@ -2212,7 +2215,7 @@ sub print_mcu_list($$)
 
   foreach my $name (@array)
     {
-    my $td_href      = "<th><a class=\"mcuLink\" href=\"${remote_url}${name}-$feat_tag.html\">$name</a></th>";
+    my $href_name    = $name;
     my $mcu_features = $mcus_by_names{$name};
     my $mcu_class    = $mcu_features->{MCU_CLASS};
     my $mcu_class_features = $class_features_list[$mcu_class];
@@ -2223,12 +2226,26 @@ sub print_mcu_list($$)
     my $td_csize     = "<td class=\"$css_class\">$mcu_class_features->{CONF_SIZE}</td>";
     my $td_class     = "<td class=\"$css_class\">" . (($mcu_class_features->{ENHANCED}) ? $enh : 'regular') . '</td>';
 
+    $name      =~ s/PICRF5/rfPIC12C5/o;
+    $href_name =~ s/PICRF5/rfPIC12C5/o;
+    $name      =~ s/PICRF6/rfPIC12F6/o;
+    $href_name =~ s/PICRF6/rfPIC12F6/o;
+
+    if (! ($href_name ~~ @data_sheet_name_exception_list))
+      {
+      # The data sheet not exist with the pic1xLFxxx or the pic1xHVxxx name.
+      $href_name =~ s/(LF|HV)/F/o;
+      }
+
+    my $td_href    = "<th><a class=\"mcuLink\" href=\"${remote_url}${name}-$feat_tag.html\">$name</a></th>";
+    my $td_sh_href = "<td><a class=\"mcuDSheet\" href=\"http://www.microchip.com/TechDoc.aspx?type=datasheet&product=$href_name\">$name</a></td>";
+
     given ($menu_class)
       {
       when (PRI_MENU_ALL)
         {
         aOutl ($Align + 6, '<tr>');
-        aOutml($Align + 8, $td_href, $td_wsize, $td_csize, $td_class);
+        aOutml($Align + 8, $td_href, $td_wsize, $td_csize, $td_class, $td_sh_href);
         aOutl ($Align + 6, '</tr>');
         }
 
@@ -2237,7 +2254,7 @@ sub print_mcu_list($$)
         if ($mcu_class == PROC_CLASS_PIC12E || $mcu_class == PROC_CLASS_PIC14E)
           {
           aOutl ($Align + 6, '<tr>');
-          aOutml($Align + 8, $td_href, $td_wsize, $td_csize);
+          aOutml($Align + 8, $td_href, $td_wsize, $td_csize, $td_sh_href);
           aOutl ($Align + 6, '</tr>');
           }
         }
@@ -2247,7 +2264,7 @@ sub print_mcu_list($$)
         if ($mcu_class == PROC_CLASS_PIC16E)
           {
           aOutl ($Align + 6, '<tr>');
-          aOutml($Align + 8, $td_href, $td_wsize, $td_csize);
+          aOutml($Align + 8, $td_href, $td_wsize, $td_csize, $td_sh_href);
           aOutl ($Align + 6, '</tr>');
           }
         }
@@ -2257,7 +2274,7 @@ sub print_mcu_list($$)
         if (! $mcu_class_features->{ENHANCED})
           {
           aOutl ($Align + 6, '<tr>');
-          aOutml($Align + 8, $td_href, $td_wsize, $td_csize);
+          aOutml($Align + 8, $td_href, $td_wsize, $td_csize, $td_sh_href);
           aOutl ($Align + 6, '</tr>');
           }
         }
@@ -2267,7 +2284,7 @@ sub print_mcu_list($$)
         if ($wsize == 12)
           {
           aOutl ($Align + 6, '<tr>');
-          aOutml($Align + 8, $td_href, $td_csize, $td_class);
+          aOutml($Align + 8, $td_href, $td_csize, $td_class, $td_sh_href);
           aOutl ($Align + 6, '</tr>');
           }
         }
@@ -2277,7 +2294,7 @@ sub print_mcu_list($$)
         if ($wsize == 14)
           {
           aOutl ($Align + 6, '<tr>');
-          aOutml($Align + 8, $td_href, $td_csize, $td_class);
+          aOutml($Align + 8, $td_href, $td_csize, $td_class, $td_sh_href);
           aOutl ($Align + 6, '</tr>');
           }
         }
@@ -2287,7 +2304,7 @@ sub print_mcu_list($$)
         if ($wsize == 16)
           {
           aOutl ($Align + 6, '<tr>');
-          aOutml($Align + 8, $td_href, $td_csize, $td_class);
+          aOutml($Align + 8, $td_href, $td_csize, $td_class, $td_sh_href);
           aOutl ($Align + 6, '</tr>');
           }
         }
@@ -2297,7 +2314,7 @@ sub print_mcu_list($$)
         aOutl ($Align + 6, '<tr>');
         aOutml($Align + 8, "<th><a class=\"mcuLink\" href=\"${remote_url}${name}-$ram_tag.html\">$name</a></th>",
                            "<td class=\"$css_class\">$mcu_features->{RAM_SIZE}</td>",
-                           $td_wsize, $td_csize, $td_class);
+                           $td_wsize, $td_csize, $td_class, $td_sh_href);
         aOutl ($Align + 6, '</tr>');
         }
 
@@ -2306,7 +2323,7 @@ sub print_mcu_list($$)
         aOutl ($Align + 6, '<tr>');
         aOutml($Align + 8, $td_href,
                            "<td class=\"$css_class\">$mcu_features->{ROM_SIZE}</td>",
-                           $td_wsize, $td_csize, $td_class);
+                           $td_wsize, $td_csize, $td_class, $td_sh_href);
         aOutl ($Align + 6, '</tr>');
         }
 
@@ -2315,7 +2332,7 @@ sub print_mcu_list($$)
         aOutl ($Align + 6, '<tr>');
         aOutl ($Align + 8, $td_href);
         aOutfl($Align + 8, "<td class=\"$css_class\">%u</td>", $mcu_features->{EEPROM} + 1);
-        aOutml($Align + 8, $td_wsize, $td_csize, $td_class);
+        aOutml($Align + 8, $td_wsize, $td_csize, $td_class, $td_sh_href);
         aOutl ($Align + 6, '</tr>');
         }
       } # given ($menu_class)
@@ -2625,6 +2642,7 @@ sub print_features($)
   my $class_pic16e  = ($mcu_class == PROC_CLASS_PIC16E) ? TRUE : FALSE;
   my $mcu_class_features = $class_features_list[$mcu_class];
 
+  $mcu_name =~ s/PICRF/rfPIC12F/o;
   $str = "$out_dir/${mcu_name}-$feat_tag.html";
   open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
 
@@ -2981,6 +2999,7 @@ sub print_all_config_word($)
 
   return if (! $count);
 
+  $mcu_name =~ s/PICRF/rfPIC12F/o;
   $str = "$out_dir/${mcu_name}-$conf_tag.html";
   open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
 
@@ -3365,6 +3384,7 @@ sub print_ram_map($)
   my @ram_array;
   my @map_array;
 
+  $mcu_name =~ s/PICRF/rfPIC12F/o;
   $t = "$out_dir/${mcu_name}-$ram_tag.html";
   open($out_handler, '>', $t) || die "Could not create the \"$t\" file!\n";
 
@@ -3718,6 +3738,7 @@ sub print_sfr_map($)
   my $accessSfr    = 0xF00 + $Features->{ACCESS} + 1;
   my @bank_array   = ();
 
+  $mcu_name =~ s/PICRF/rfPIC12F/o;
   $t = "$out_dir/${mcu_name}-$sfr_tag.html";
   open($out_handler, '>', $t) || die "Could not create the \"$t\" file!\n";
 
@@ -3971,22 +3992,24 @@ sub create_class_htmls()
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-my $page_width         = 1024;          # px
-my $content_background = '#FFFFFF';
-my $tab_color          = '#0000E0';
-my $tab_background     = '#E0E0F0';
-my $tab_border_color   = '#C0C0C0';
-my $tooltip_background = '#F0FFA1';
-my $border_width       = 1;             # px
-my $attr_background    = '#D7DEB2';
-my $header_background  = '#CAB2DE';
-my $ramSFR_color       = '#F48282';
-my $ramColumn_width    = 130;           # px
-my $stripe_color       = '#303030';
-my $expl_font_size     = 0.75;          # em
-my $expl_y_padding     = 0.2;           # em
-my $ramAccEx_height    = $expl_font_size + 2.3 * $expl_y_padding;
-my $Ex_color_width     = 50;            # px
+my $page_width          = 1024;          # px
+my $content_background  = '#FFFFFF';
+my $tab_color           = '#0000E0';
+my $tab_background      = '#E0E0F0';
+my $tab_border_color    = '#C0C0C0';
+my $tooltip_background1 = '#F0FFA1';
+my $tooltip_background2 = '#A1FFC3';
+my $border_width        = 1;             # px
+my $attr_background1    = '#D7DEB2';
+my $attr_background2    = '#B2DECD';
+my $header_background   = '#CAB2DE';
+my $ramSFR_color        = '#F48282';
+my $ramColumn_width     = 130;           # px
+my $stripe_color        = '#303030';
+my $expl_font_size      = 0.75;          # em
+my $expl_y_padding      = 0.2;           # em
+my $ramAccEx_height     = $expl_font_size + 2.3 * $expl_y_padding;
+my $Ex_color_width      = 50;            # px
 
 #---------------------------------------------------------------------------------------------------
 
@@ -4212,7 +4235,7 @@ EOT
   }
 
 .heading,
-.mcuListHeader, .mcuList, .classMenu a, .mcuLink,
+.mcuListHeader, .mcuList, .classMenu a, .mcuLink, .mcuDSheet,
 .featList, .featTableName, .featName,
 .configList, .confTableName, .configWord, .confOptName,
 .ramMap, .ramTableName, .ramBank,
@@ -4320,25 +4343,51 @@ EOT
   text-align: left;
   text-decoration: none;
   background: #49DDFF;
-  border: 2px outset $attr_background;
+  border: 2px outset $attr_background1;
 EOT
 ;
   css_border_radius(2, '0.5em');
-  css_shadow(2, "0 0 2px 4px $attr_background inset");
+  css_shadow(2, "0 0 2px 4px $attr_background1 inset");
+  print $out_handler <<EOT
+  }
+
+.mcuDSheet
+  {
+  display: block;
+  width: 12em;
+  padding: 0.14em 0 0.14em 0.6em;
+  text-align: left;
+  text-decoration: none;
+  background: #FFA949;
+  border: 2px outset $attr_background2;
+EOT
+;
+  css_border_radius(2, '0.5em');
+  css_shadow(2, "0 0 2px 4px $attr_background2 inset");
   print $out_handler <<EOT
   }
 
 .mcuLink:hover
   {
-  background: $tooltip_background;
+  background: $tooltip_background1;
 EOT
 ;
-  css_shadow(2, "0.2em 0.2em 0.8em #000000, 0 0 2px 4px $attr_background inset");
+  css_shadow(2, "0.2em 0.2em 0.8em #000000, 0 0 2px 4px $attr_background1 inset");
   print $out_handler <<EOT
   transform: scale(1.1, 1.3);
   }
 
-.mcuLink:active
+.mcuDSheet:hover
+  {
+  background: $tooltip_background2;
+EOT
+;
+  css_shadow(2, "0.2em 0.2em 0.8em #000000, 0 0 2px 4px $attr_background2 inset");
+  print $out_handler <<EOT
+  transform: scale(1.1, 1.3);
+  }
+
+.mcuLink:active, .mcuDSheet:active
   {
   border: 2px inset;
 EOT
@@ -4385,8 +4434,8 @@ EOT
 .configWord, .ramBank, .sfrBank
   {
   font-size: 1.3em;
-  background: $attr_background;
-  border-color: $attr_background;
+  background: $attr_background1;
+  border-color: $attr_background1;
   border-style: ridge;
   }
 
@@ -4440,7 +4489,7 @@ EOT
   text-align: center;
   position: relative;
   left: 20px;
-  background: $tooltip_background;
+  background: $tooltip_background1;
   padding: 0.2em 0.8em;
 EOT
 ;
@@ -4474,19 +4523,19 @@ EOT
   height: 0;
   top: 0;
   left: -15px;
-  border-right: 15px solid $tooltip_background;
+  border-right: 15px solid $tooltip_background1;
   border-bottom: 5px solid transparent;
   }
 
 .ramTt a
   {
   display: block;
-  background: $tooltip_background;
+  background: $tooltip_background1;
   text-decoration: none;
 EOT
 ;
   css_border_radius(2, '0.875em 0.875em 0.875em 1.75em');
-  css_shadow(2, "0 0 10px 10px $tooltip_background inset");
+  css_shadow(2, "0 0 10px 10px $tooltip_background1 inset");
   print $out_handler <<EOT
   }
 
@@ -4500,7 +4549,7 @@ EOT
   background: #49DDFF;
 EOT
 ;
-  css_shadow(2, "0.2em 0.2em 0.8em #000000, 0 0 10px 10px $tooltip_background inset");
+  css_shadow(2, "0.2em 0.2em 0.8em #000000, 0 0 10px 10px $tooltip_background1 inset");
   print $out_handler <<EOT
   transform: scale(1.2, 1.3);
   }
@@ -4591,7 +4640,7 @@ EOT
   display: none;
   position: absolute;
   text-align: left;
-  background: $tooltip_background;
+  background: $tooltip_background1;
   padding: 0.2em 0.4em;
 EOT
 ;

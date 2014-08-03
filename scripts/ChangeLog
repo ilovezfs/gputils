@@ -1,5 +1,9 @@
 2014-08-03  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/device-help.pl:
+	  Can to search the data sheet of the processors.
+
+2014-08-03  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/device-help.pl:
 	  Improved the recognition of the Common RAM.
 
 2014-08-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
