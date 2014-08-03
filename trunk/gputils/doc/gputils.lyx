@@ -71,7 +71,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Jul 31, 2014
+Aug 01, 2014
 \end_layout
 
 \begin_layout Standard
@@ -4060,11 +4060,11 @@ only
 \end_layout
 
 \begin_layout LyX-Code
-__ACC_RAM_LOW_END -- e.g.
+__ACC_RAM_LOW_END  -- e.g.
  0x5F, 0x7F
-\begin_inset Newline newline
-\end_inset
+\end_layout
 
+\begin_layout LyX-Code
 
 \end_layout
 
@@ -4144,12 +4144,12 @@ if exist
 \end_layout
 
 \begin_layout LyX-Code
-__EEPROM_START -- Start address of the EEPROM area (e.g.
+__EEPROM_START     -- Start address of the EEPROM area (e.g.
  0x0400, 0x2100, 0xF000, 0xF00000)
 \end_layout
 
 \begin_layout LyX-Code
-__EEPROM_END   -- End address of the EEPROM area   (e.g.
+__EEPROM_END       -- End address of the EEPROM area   (e.g.
  0x043F, 0x21FF, 0xF0FF, 0xF000FF)
 \end_layout
 
@@ -4162,10 +4162,11 @@ End of the program memory:
 \end_layout
 
 \begin_layout LyX-Code
-__PROGRAM_END
-\begin_inset Newline newline
-\end_inset
+__PROGRAM_END      -- This is the last address where may be still placed
+ a code.
+\end_layout
 
+\begin_layout LyX-Code
 
 \end_layout
 

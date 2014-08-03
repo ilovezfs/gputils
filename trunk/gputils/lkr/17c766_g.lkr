@@ -1,5 +1,15 @@
 // File: 17c766_g.lkr
 // Generic linker script for the PIC17C766 processor
+//// Begin: Added in gputils
+//=========================================================================
+//
+//      Gputils Specific Revision History
+//
+//=========================================================================
+//
+//      02 Aug 2014  Changed the registers.
+//
+//// End: Added in gputils
 
 LIBPATH  .
 
@@ -37,14 +47,24 @@ SHAREBANK  NAME=sfrprod   START=0x718    END=0x719    PROTECTED
 SHAREBANK  NAME=sfrprod   START=0x818    END=0x819    PROTECTED
 
 SHAREBANK  NAME=registers START=0x1A     END=0x1F
-SHAREBANK  NAME=registers START=0x11A    END=0x11F
-SHAREBANK  NAME=registers START=0x21A    END=0x21F
-SHAREBANK  NAME=registers START=0x31A    END=0x31F
-SHAREBANK  NAME=registers START=0x41A    END=0x41F
-SHAREBANK  NAME=registers START=0x51A    END=0x51F
-SHAREBANK  NAME=registers START=0x61A    END=0x61F
-SHAREBANK  NAME=registers START=0x71A    END=0x71F
-SHAREBANK  NAME=registers START=0x81A    END=0x81F
+//// Begin: Changed in gputils
+////SHAREBANK  NAME=registers START=0x11A    END=0x11F
+////SHAREBANK  NAME=registers START=0x21A    END=0x21F
+////SHAREBANK  NAME=registers START=0x31A    END=0x31F
+////SHAREBANK  NAME=registers START=0x41A    END=0x41F
+////SHAREBANK  NAME=registers START=0x51A    END=0x51F
+////SHAREBANK  NAME=registers START=0x61A    END=0x61F
+////SHAREBANK  NAME=registers START=0x71A    END=0x71F
+////SHAREBANK  NAME=registers START=0x81A    END=0x81F
+SHAREBANK  NAME=registers START=0x11A    END=0x11F    PROTECTED
+SHAREBANK  NAME=registers START=0x21A    END=0x21F    PROTECTED
+SHAREBANK  NAME=registers START=0x31A    END=0x31F    PROTECTED
+SHAREBANK  NAME=registers START=0x41A    END=0x41F    PROTECTED
+SHAREBANK  NAME=registers START=0x51A    END=0x51F    PROTECTED
+SHAREBANK  NAME=registers START=0x61A    END=0x61F    PROTECTED
+SHAREBANK  NAME=registers START=0x71A    END=0x71F    PROTECTED
+SHAREBANK  NAME=registers START=0x81A    END=0x81F    PROTECTED
+//// End: Changed in gputils
 
 DATABANK   NAME=gpr0     START=0x20     END=0xFF
 DATABANK   NAME=gpr1     START=0x120    END=0x1FF

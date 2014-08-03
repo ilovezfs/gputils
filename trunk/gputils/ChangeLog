@@ -1,3 +1,13 @@
+2014-08-03  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx:
+    Further explanations.
+
+  * lkr/16f570_g.lkr, lkr/17c42_g.lkr, lkr/17c42a_g.lkr,
+    lkr/17c43_g.lkr, lkr/17c44_g.lkr, lkr/17c752_g.lkr,
+    lkr/17c756_g.lkr, lkr/17c756a_g.lkr, lkr/17c762_g.lkr,
+    lkr/17c766_g.lkr:
+    bugfix
+
 2014-08-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * lkr/12f629_g.lkr, lkr/12f675_g.lkr, lkr/16c61_g.lkr,
     lkr/16c71_g.lkr, lkr/16f83_g.lkr, lkr/16f84_g.lkr,

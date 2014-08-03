@@ -93,110 +93,136 @@ use constant PROC_CLASS_PIC14E => 3;
 use constant PROC_CLASS_PIC16  => 4;
 use constant PROC_CLASS_PIC16E => 5;
 
+use constant PIC12_BANK_SHIFT  => 5;
+use constant PIC12_BANK_SIZE   => 2 ** PIC12_BANK_SHIFT;
+use constant PIC14_BANK_SHIFT  => 7;
+use constant PIC14_BANK_SIZE   => 2 ** PIC14_BANK_SHIFT;
+use constant PIC16_BANK_SHIFT  => 8;
+use constant PIC16_BANK_SIZE   => 2 ** PIC16_BANK_SHIFT;
+
 my %class_features_p12 =
   (
-  CLASS     => PROC_CLASS_PIC12,
-  NAME      => '12 bit MCU',
-  CSS_CLASS => 'mcuAttrP12',
-  CSS_BGRND => '#FFB4B4',
-  ENHANCED  => FALSE,
-  PAGE_SIZE => 512,
-  WORD_SIZE => 12,
-  CONF_SIZE => 12,
-  EE_START  => 0,
-  BANK_SIZE => 32,
-  CORE_SFRS => [
-               0x00, 0x02, 0x03, 0x04
-               ]
+  CLASS      => PROC_CLASS_PIC12,
+  NAME       => '12 bit MCU',
+  CSS_CLASS  => 'mcuAttrP12',
+  CSS_BGRND  => '#FFB4B4',
+  ENHANCED   => FALSE,
+  PAGE_SIZE  => 512,
+  WORD_SIZE  => 12,
+  CONF_SIZE  => 12,
+  EE_START   => 0,
+  BANK_MAX   => 8,
+  BANK_SIZE  => PIC12_BANK_SIZE,
+  BANK_MASK  => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT => PIC12_BANK_SHIFT,
+  CORE_SFRS  => [
+                0x00, 0x02, 0x03, 0x04
+                ]
   );
 
 my %class_features_p12e =
   (
-  CLASS     => PROC_CLASS_PIC12E,
-  NAME      => '12 bit enhanced MCU',
-  CSS_CLASS => 'mcuAttrP12E',
-  CSS_BGRND => '#FFB4FF',
-  ENHANCED  => TRUE,
-  PAGE_SIZE => 512,
-  WORD_SIZE => 12,
-  CONF_SIZE => 12,
-  EE_START  => 0,
-  BANK_SIZE => 32,
-  CORE_SFRS => [
-               0x00, 0x02, 0x03, 0x04
-               ]
+  CLASS      => PROC_CLASS_PIC12E,
+  NAME       => '12 bit enhanced MCU',
+  CSS_CLASS  => 'mcuAttrP12E',
+  CSS_BGRND  => '#FFB4FF',
+  ENHANCED   => TRUE,
+  PAGE_SIZE  => 512,
+  WORD_SIZE  => 12,
+  CONF_SIZE  => 12,
+  EE_START   => 0,
+  BANK_MAX   => 8,
+  BANK_SIZE  => PIC12_BANK_SIZE,
+  BANK_MASK  => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT => PIC12_BANK_SHIFT,
+  CORE_SFRS  => [
+                0x00, 0x02, 0x03, 0x04
+                ]
   );
 
 my %class_features_p14 =
   (
-  CLASS     => PROC_CLASS_PIC14,
-  NAME      => '14 bit MCU',
-  CSS_CLASS => 'mcuAttrP14',
-  CSS_BGRND => '#B4B4FF',
-  ENHANCED  => FALSE,
-  PAGE_SIZE => 2048,
-  WORD_SIZE => 14,
-  CONF_SIZE => 14,
-  EE_START  => 0x2100,
-  BANK_SIZE => 128,
-  CORE_SFRS => [
-               0x00, 0x02, 0x03, 0x04,
-               0x0A, 0x0B
-               ]
+  CLASS      => PROC_CLASS_PIC14,
+  NAME       => '14 bit MCU',
+  CSS_CLASS  => 'mcuAttrP14',
+  CSS_BGRND  => '#B4B4FF',
+  ENHANCED   => FALSE,
+  PAGE_SIZE  => 2048,
+  WORD_SIZE  => 14,
+  CONF_SIZE  => 14,
+  EE_START   => 0x2100,
+  BANK_MAX   => 4,
+  BANK_SIZE  => PIC14_BANK_SIZE,
+  BANK_MASK  => ~(PIC14_BANK_SIZE - 1),
+  BANK_SHIFT => PIC14_BANK_SHIFT,
+  CORE_SFRS  => [
+                0x00, 0x02, 0x03, 0x04,
+                0x0A, 0x0B
+                ]
   );
 
 my %class_features_p14e =
   (
-  CLASS     => PROC_CLASS_PIC14E,
-  NAME      => '14 bit enhanced MCU',
-  CSS_CLASS => 'mcuAttrP14E',
-  CSS_BGRND => '#9BF0F0',
-  ENHANCED  => TRUE,
-  PAGE_SIZE => 2048,
-  WORD_SIZE => 14,
-  CONF_SIZE => 16,
-  EE_START  => 0xF000,
-  BANK_SIZE => 128,
-  CORE_SFRS => [
-               0x00, 0x01, 0x02, 0x03,
-               0x04, 0x05, 0x06, 0x07,
-               0x08, 0x09, 0x0A, 0x0B
-               ]
+  CLASS      => PROC_CLASS_PIC14E,
+  NAME       => '14 bit enhanced MCU',
+  CSS_CLASS  => 'mcuAttrP14E',
+  CSS_BGRND  => '#9BF0F0',
+  ENHANCED   => TRUE,
+  PAGE_SIZE  => 2048,
+  WORD_SIZE  => 14,
+  CONF_SIZE  => 16,
+  EE_START   => 0xF000,
+  BANK_MAX   => 32,
+  BANK_SIZE  => PIC14_BANK_SIZE,
+  BANK_MASK  => ~(PIC14_BANK_SIZE - 1),
+  BANK_SHIFT => PIC14_BANK_SHIFT,
+  CORE_SFRS  => [
+                0x00, 0x01, 0x02, 0x03,
+                0x04, 0x05, 0x06, 0x07,
+                0x08, 0x09, 0x0A, 0x0B
+                ]
   );
 
 my %class_features_p16 =
   (
-  CLASS     => PROC_CLASS_PIC16,
-  NAME      => '16 bit MCU',
-  CSS_CLASS => 'mcuAttrP16',
-  CSS_BGRND => '#B4FFB4',
-  ENHANCED  => FALSE,
-  PAGE_SIZE => 0,
-  WORD_SIZE => 16,
-  CONF_SIZE => 8,
-  EE_START  => 0,
-  BANK_SIZE => 256,
-  CORE_SFRS => [
-               0x00, 0x01, 0x02, 0x03,
-               0x04, 0x05, 0x06, 0x07,
-               0x08, 0x09, 0x0A, 0x0B,
-               0x0C, 0x0D, 0x0E, 0x0F
-               ]
+  CLASS      => PROC_CLASS_PIC16,
+  NAME       => '16 bit MCU',
+  CSS_CLASS  => 'mcuAttrP16',
+  CSS_BGRND  => '#B4FFB4',
+  ENHANCED   => FALSE,
+  PAGE_SIZE  => 0,
+  WORD_SIZE  => 16,
+  CONF_SIZE  => 8,
+  EE_START   => 0,
+  BANK_MAX   => 9,
+  BANK_SIZE  => PIC16_BANK_SIZE,
+  BANK_MASK  => ~(PIC16_BANK_SIZE - 1),
+  BANK_SHIFT => PIC16_BANK_SHIFT,
+  CORE_SFRS  => [
+                0x00, 0x01, 0x02, 0x03,
+                0x04, 0x05, 0x06, 0x07,
+                0x08, 0x09, 0x0A, 0x0B,
+                0x0C, 0x0D, 0x0E, 0x0F,
+                0x18, 0x19
+                ]
   );
 
 my %class_features_p16e =
   (
-  CLASS     => PROC_CLASS_PIC16E,
-  NAME      => '16 bit extended MCU',
-  CSS_CLASS => 'mcuAttrP16E',
-  CSS_BGRND => '#EBEB81',
-  ENHANCED  => TRUE,
-  PAGE_SIZE => 0,
-  WORD_SIZE => 16,
-  CONF_SIZE => 8,
-  EE_START  => 0xF00000,
-  BANK_SIZE => 256,
-  CORE_SFRS => undef
+  CLASS      => PROC_CLASS_PIC16E,
+  NAME       => '16 bit extended MCU',
+  CSS_CLASS  => 'mcuAttrP16E',
+  CSS_BGRND  => '#EBEB81',
+  ENHANCED   => TRUE,
+  PAGE_SIZE  => 0,
+  WORD_SIZE  => 16,
+  CONF_SIZE  => 8,
+  EE_START   => 0xF00000,
+  BANK_MAX   => 16,
+  BANK_SIZE  => PIC16_BANK_SIZE,
+  BANK_MASK  => ~(PIC16_BANK_SIZE - 1),
+  BANK_SHIFT => PIC16_BANK_SHIFT,
+  CORE_SFRS  => undef
   );
 
 my @class_features_list =
@@ -223,6 +249,23 @@ my @mcu_feat_names = sort {
                           $class_features_by_mpasmx{$a}->{ENHANCED} <=> $class_features_by_mpasmx{$b}->{ENHANCED} ||
                           $class_features_by_mpasmx{$a}->{CLASS}    <=> $class_features_by_mpasmx{$b}->{CLASS}
                           } keys %class_features_by_mpasmx;
+
+my %lost_devices =
+  (
+  'PIC16C52'    => \%class_features_p12,
+  'PIC16C54B'   => \%class_features_p12,
+  'PIC16C61'    => \%class_features_p14,
+  'PIC16C62'    => \%class_features_p14,
+  'PIC16C64'    => \%class_features_p14,
+  'PIC16C65'    => \%class_features_p14,
+  'PIC16C73'    => \%class_features_p14,
+  'PIC16C74'    => \%class_features_p14,
+  'PIC16C84'    => \%class_features_p14,
+  'PIC16CR54B'  => \%class_features_p12,
+  'PIC16F1458'  => \%class_features_p14e,
+  'PIC16LF1458' => \%class_features_p14e,
+  'PIC17CR43'   => \%class_features_p16
+  );
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -268,6 +311,7 @@ my $pic16e_mcu_number = 0;
 
         {
         FEATURES => {
+                    MCU_NAME   => '',
                     MCU_CLASS  => 0,    # Class of MCU. (PROC_CLASS_PIC1yy)
                     ROM_SIZE   => 0,    # Size of program memory.
 
@@ -277,8 +321,8 @@ my $pic16e_mcu_number = 0;
                     RAM_SIZE   => 0,    # Full size of all SFR and GPR.
                     GPR_SIZE   => 0,    # Full size of all GPR.
                     SGPR_SIZE  => 0,    # Size of shared GPRs.
-                    CF_START   => 0,    # Address of first Configuration byte/word.
-                    CF_END     => 0,    # Address of last Configuration byte/word.
+                    CONF_START => 0,    # Address of first Configuration byte/word.
+                    CONF_END   => 0,    # Address of last Configuration byte/word.
                     STD_HEADER => '',   # Standard header file name of MCU.
                     STD_SCRIPT => '',   # Standard linker script file name of MCU.
 
@@ -322,8 +366,12 @@ my $pic16e_mcu_number = 0;
 
                                     {}
                                   ],
-                    CONF_MASK  => 0,    # Mask of config words.
-                    BANKS      => 0,    # Number of RAM Banks.
+                    CONF_MASK  => 0,    # Mask of the config words.
+                    BANK_MAX   => 0,    # Maximum number of the RAM Banks.
+                    BANK_NUM   => 0,    # Number of the RAM Banks.
+                    BANK_SIZE  => 0,    # Size of a RAM Banks.
+                    BANK_MASK  => 0,    # Mask of the RAM Bank address.
+                    BANK_SHIFT => 0,    # Shift value of the RAM Bank address.
                     ACCESS     => 0,    # Last address of lower Access RAM of pic18f series.
 
                     OSCVAL     => {     # Oscillator Calibration Value.
@@ -341,7 +389,7 @@ my $pic16e_mcu_number = 0;
                                   END   => 0
                                   },
 
-                    LINEARMEM  => {     # Linear RAM of enhanced pic14 MCUs.
+                    LINEARMEM  => {     # Linear RAM of the enhanced pic14 MCUs.
                                   NAME     => '',
                                   START    => 0,
                                   END      => 0,
@@ -359,7 +407,43 @@ my $pic16e_mcu_number = 0;
                                               ]
                                   },
 
-                    SHARED_RAM => [     # List of shared RAM sections.
+                    SFR_RAM =>    [     # List of SFR sections.
+                                    {
+                                    START => 0,
+                                    END   => 0
+                                    },
+
+                                    ...
+
+                                    {
+                                    }
+                                  ],
+
+                    GPR_RAM =>    [     # List of GPR sections.
+                                    {
+                                    START => 0,
+                                    END   => 0
+                                    },
+
+                                    ...
+
+                                    {
+                                    }
+                                  ],
+
+                    COMMON_RAM => [     # List of common RAM sections.
+                                    {
+                                    START => 0,
+                                    END   => 0
+                                    },
+
+                                    ...
+
+                                    {
+                                    }
+                                  ],
+
+                    MIRROR_RAM => [     # List of mirror RAM sections.
                                     {
                                     START => 0,
                                     END   => 0
@@ -428,70 +512,70 @@ my @primary_menu =
     {                                   # PRI_MENU_ALL
     HREF  => 'index.html',
     NAME  => 'All',
-    PFUNC => \&dump_mcu_list,
+    PFUNC => \&print_mcu_list,
     CLASS => PRI_MENU_ALL
     },
 
     {                                   # PRI_MENU_ENH  (12 and 14 bit)
     HREF  => 'enhanced-mcus.html',
     NAME  => 'Enhanced',
-    PFUNC => \&dump_mcu_list,
+    PFUNC => \&print_mcu_list,
     CLASS => PRI_MENU_ENH
     },
 
     {                                   # PRI_MENU_EXT  (16 bit)
     HREF  => 'extended-mcus.html',
     NAME  => 'Extended',
-    PFUNC => \&dump_mcu_list,
+    PFUNC => \&print_mcu_list,
     CLASS => PRI_MENU_EXT
     },
 
     {                                   # PRI_MENU_REG
     HREF  => 'regular-mcus.html',
     NAME  => 'Regular',
-    PFUNC => \&dump_mcu_list,
+    PFUNC => \&print_mcu_list,
     CLASS => PRI_MENU_REG
     },
 
     {                                   # PRI_MENU_12_BIT
     HREF  => '12-bits-mcus.html',
     NAME  => '12 bits',
-    PFUNC => \&dump_mcu_list,
+    PFUNC => \&print_mcu_list,
     CLASS => PRI_MENU_12_BIT
     },
 
     {                                   # PRI_MENU_14_BIT
     HREF  => '14-bits-mcus.html',
     NAME  => '14 bits',
-    PFUNC => \&dump_mcu_list,
+    PFUNC => \&print_mcu_list,
     CLASS => PRI_MENU_14_BIT
     },
 
     {                                   # PRI_MENU_16_BIT
     HREF  => '16-bits-mcus.html',
     NAME  => '16 bits',
-    PFUNC => \&dump_mcu_list,
+    PFUNC => \&print_mcu_list,
     CLASS => PRI_MENU_16_BIT
     },
 
     {                                   # PRI_MENU_RAM
     HREF  => 'mcus-by-ram-size.html',
     NAME  => 'RAM<br>size',
-    PFUNC => \&dump_mcu_list,
+    PFUNC => \&print_mcu_list,
     CLASS => PRI_MENU_RAM
     },
 
     {                                   # PRI_MENU_ROM
     HREF  => 'mcus-by-rom-size.html',
     NAME  => 'ROM<br>size',
-    PFUNC => \&dump_mcu_list,
+    PFUNC => \&print_mcu_list,
     CLASS => PRI_MENU_ROM
     },
 
     {                                   # PRI_MENU_EEPROM
     HREF  => 'mcus-by-eeprom-size.html',
     NAME  => 'EEPROM<br>size',
-    PFUNC => \&dump_mcu_list,
+    PFUNC => \&print_mcu_list,
     CLASS => PRI_MENU_EEPROM
     },
 
@@ -516,7 +600,7 @@ my @common_sfr_menu =
     HREF   => "pic12_$common_tag.html",
     NAME   => 'PIC12',
     HEAD   => 'PIC12 Common SFRs',
-    PFUNC  => \&dump_common_sfr_lists,
+    PFUNC  => \&print_common_sfr_lists,
     PARAM0 => \%pic12_common_SFRs,
     PARAM1 => \$pic12_mcu_number,
     CLASS  => PROC_CLASS_PIC12
@@ -526,7 +610,7 @@ my @common_sfr_menu =
     HREF   => "pic12e_$common_tag.html",
     NAME   => 'PIC12E',
     HEAD   => 'PIC12E Common SFRs',
-    PFUNC  => \&dump_common_sfr_lists,
+    PFUNC  => \&print_common_sfr_lists,
     PARAM0 => \%pic12e_common_SFRs,
     PARAM1 => \$pic12e_mcu_number,
     CLASS  => PROC_CLASS_PIC12E
@@ -536,7 +620,7 @@ my @common_sfr_menu =
     HREF   => "pic14_$common_tag.html",
     NAME   => 'PIC14',
     HEAD   => 'PIC14 Common SFRs',
-    PFUNC  => \&dump_common_sfr_lists,
+    PFUNC  => \&print_common_sfr_lists,
     PARAM0 => \%pic14_common_SFRs,
     PARAM1 => \$pic14_mcu_number,
     CLASS  => PROC_CLASS_PIC14
@@ -546,7 +630,7 @@ my @common_sfr_menu =
     HREF   => "pic14e_$common_tag.html",
     NAME   => 'PIC14E',
     HEAD   => 'PIC14E Common SFRs',
-    PFUNC  => \&dump_common_sfr_lists,
+    PFUNC  => \&print_common_sfr_lists,
     PARAM0 => \%pic14e_common_SFRs,
     PARAM1 => \$pic14e_mcu_number,
     CLASS  => PROC_CLASS_PIC14E
@@ -556,7 +640,7 @@ my @common_sfr_menu =
     HREF   => "pic16_$common_tag.html",
     NAME   => 'PIC16',
     HEAD   => 'PIC16 Common SFRs',
-    PFUNC  => \&dump_common_sfr_lists,
+    PFUNC  => \&print_common_sfr_lists,
     PARAM0 => \%pic16_common_SFRs,
     PARAM1 => \$pic16_mcu_number,
     CLASS  => PROC_CLASS_PIC16
@@ -566,7 +650,7 @@ my @common_sfr_menu =
     HREF   => "pic16e_$common_tag.html",
     NAME   => 'PIC16E',
     HEAD   => 'PIC16E Common SFRs',
-    PFUNC  => \&dump_common_sfr_lists,
+    PFUNC  => \&print_common_sfr_lists,
     PARAM0 => \%pic16e_common_SFRs,
     PARAM1 => \$pic16e_mcu_number,
     CLASS  => PROC_CLASS_PIC16E
@@ -608,7 +692,8 @@ my @mcu_menu_elems =
 use constant RAM_BAD    => 0;
 use constant RAM_GPR    => 1;
 use constant RAM_SFR    => 2;
-use constant RAM_SHARED => 3;
+use constant RAM_COMMON => 3;
+use constant RAM_MIRROR => 4;
 
 my @mcu_missed_debug =
   (
@@ -1388,15 +1473,16 @@ sub read_ram_features($$$)
 sub process_lkr_line($$)
   {
   my ($Line, $Features) = @_;
+  my ($section, $protected, $name, $start, $end, $size, $tail, $index);
 
   if ($Line =~ /^(\S+)\s+NAME=(\S+)\s+START=(\S+)\s+END=(\S+)/io)
     {
-    my ($section, $name, $start, $end) = ($1, $2, str2dec($3), str2dec($4));
-    my $size = $end - $start + 1;
-    my $tail = ${^POSTMATCH};
-
+    ($section, $name, $start, $end) = ($1, $2, str2dec($3), str2dec($4));
+    $size = $end - $start + 1;
+    $tail = ${^POSTMATCH};
     $tail =~ s/^\s+//o;
     swap_reverse(\$start, \$end);       # paranoia
+    $protected = ($Line =~ /\s+PROTECTED\s*$/io) ? TRUE : FALSE;
 
     if ($section eq 'CODEPAGE')
       {
@@ -1409,8 +1495,8 @@ sub process_lkr_line($$)
 
         # CODEPAGE   NAME=.idlocs    START=0x2000            END=0x2003         PROTECTED
         # CODEPAGE   NAME=.idlocs    START=0x8000            END=0x8003         PROTECTED
-        # CODEPAGE   NAME=userid     START=0x640             END=0x643          PROTECTED 
-        # CODEPAGE   NAME=.usrlocs   START=0x2000            END=0x2003         PROTECTED 
+        # CODEPAGE   NAME=userid     START=0x640             END=0x643          PROTECTED
+        # CODEPAGE   NAME=.usrlocs   START=0x2000            END=0x2003         PROTECTED
 
         # CODEPAGE   NAME=.device_id START=0x2006            END=0x2006         PROTECTED
         # CODEPAGE   NAME=.devid     START=0x2006            END=0x2006         PROTECTED
@@ -1424,8 +1510,8 @@ sub process_lkr_line($$)
           {
         # For the PIC17Cxx devices.
 
-          $Features->{CF_START} = $start;
-          $Features->{CF_END}   = $end;
+          $Features->{CONF_START} = $start;
+          $Features->{CONF_END}   = $end;
           }
 
         when (/oscval$/io)
@@ -1447,8 +1533,8 @@ sub process_lkr_line($$)
           {
           $Features->{ROM_SIZE} += $size;
           }
-        }
-      }
+        } # given ($name)
+      } # if ($section eq 'CODEPAGE')
     elsif ($section eq 'LINEARMEM' && $tail eq 'PROTECTED')
       {
         # LINEARMEM  NAME=linear0    START=0x2000            END=0x21EF         PROTECTED
@@ -1459,38 +1545,96 @@ sub process_lkr_line($$)
     elsif ($section eq 'ACCESSBANK' && $name =~ /ram$/io)
       {
       $Features->{GPR_SIZE} += $size;
+      $index = ($start & $Features->{BANK_MASK}) >> $Features->{BANK_SHIFT};
+      push(@{$Features->{GPR_RAM}->[$index]}, { START => $start, END => $end });
       }
     elsif ($section eq 'DATABANK')
       {
-      if ($tail =~ /^SHADOW=(\w+):(\w+)$/io)
+      $index = ($start & $Features->{BANK_MASK}) >> $Features->{BANK_SHIFT};
+
+      if ($name =~ /^sfr/io)
         {
-        # DATABANK   NAME=gpr0       START=0x20              END=0x6F           SHADOW=linear0:0x2000
-        # DATABANK   NAME=gpr4       START=0x220             END=0x26F          SHADOW=linear0:0x2140
-        # DATABANK   NAME=gpr12      START=0x620             END=0x64F          SHADOW=linear0:0x23C0
-
-        my ($lname, $lstart) = ($1, str2dec($2));
-        my $linear = $Features->{LINEARMEM};
-
-        die "Unknown linearmem name: $lname" if (! defined($linear->{NAME}) || $linear->{NAME} ne $lname);
-
-        push(@{$linear->{SEGMENTS}}, { RSTART => $start, LSTART => $lstart, SIZE => $size });
+        push(@{$Features->{SFR_RAM}->[$index]}, { START => $start, END => $end });
         }
+      elsif ($name =~ /^([dg]pr|reg|usbport)/io)
+        {
+        # pic16c745
+        # DATABANK   NAME=usbport    START=0x1A0             END=0x1DF          PROTECTED
 
-      $Features->{GPR_SIZE} += $size if ($name =~ /^(dpr|gpr|reg)/io);
+        push(@{$Features->{GPR_RAM}->[$index]}, { START => $start, END => $end });
+        $Features->{GPR_SIZE} += $size;
+
+        if ($tail =~ /^SHADOW=(\w+):(\w+)$/io)
+          {
+          # DATABANK   NAME=gpr0       START=0x20              END=0x6F           SHADOW=linear0:0x2000
+          # DATABANK   NAME=gpr4       START=0x220             END=0x26F          SHADOW=linear0:0x2140
+          # DATABANK   NAME=gpr12      START=0x620             END=0x64F          SHADOW=linear0:0x23C0
+
+          my ($lname, $lstart) = ($1, str2dec($2));
+          my $linear = $Features->{LINEARMEM};
+
+          die "Unknown linearmem name: $lname" if (! defined($linear->{NAME}) || $linear->{NAME} ne $lname);
+
+          push(@{$linear->{SEGMENTS}}, { RSTART => $start, LSTART => $lstart, SIZE => $size });
+          }
+        }
       }
-    elsif ($section eq 'SHAREBANK' && $name =~ /^(dpr|gpr|reg)/io)
+    elsif ($section eq 'SHAREBANK')
       {
-        # SHAREBANK  NAME=gprnobank  START=0x70            END=0x7F
-        # SHAREBANK  NAME=gprnobank  START=0xF0            END=0xFF           PROTECTED
-        # SHAREBANK  NAME=gprnobank  START=0x170           END=0x17F          PROTECTED
-        # SHAREBANK  NAME=gprnobnk   START=0x170           END=0x17F          PROTECTED
-        # SHAREBANK  NAME=sfrnobnk   START=0x300           END=0x30F          PROTECTED
-        # SHAREBANK  NAME=gprs       START=0x318           END=0x3FF
-        # SHAREBANK  NAME=registers  START=0x1A            END=0x1F
-        # SHAREBANK  NAME=dprnobank  START=0x70            END=0x7F           PROTECTED
+      $index = ($start & $Features->{BANK_MASK}) >> $Features->{BANK_SHIFT};
 
-      push(@{$Features->{SHARED_RAM}}, { START => $start, END => $end });
-      }
+      if ($name ne 'sfrs')
+        {
+        if ($protected)
+          {
+          # SHAREBANK  NAME=gprnobnk   START=0x27            END=0x2F           PROTECTED
+          # SHAREBANK  NAME=gprnobank  START=0xF0            END=0xFF           PROTECTED
+          # SHAREBANK  NAME=dprnobank  START=0x70              END=0x7F           PROTECTED
+          # SHAREBANK  NAME=gpr0       START=0xA0            END=0xDF           PROTECTED
+          # SHAREBANK  NAME=gpr0       START=0x8C            END=0xAF           PROTECTED
+
+          # pic17xxx
+          # SHAREBANK  NAME=sfrnobnk   START=0x300           END=0x30F          PROTECTED
+          # SHAREBANK  NAME=registers START=0x31A    END=0x31F    PROTECTED
+
+          if ($name =~ /^sfr(nobnk|prod)/io)
+            {
+            push(@{$Features->{SFR_RAM}->[$index]}, { START => $start, END => $end });
+            }
+          else
+            {
+            push(@{$Features->{MIRROR_RAM}->[$index]}, { START => $start, END => $end });
+            }
+          }
+        else
+          {
+          # SHAREBANK  NAME=gprnobnk   START=0x7             END=0xF
+          # SHAREBANK  NAME=gprnobank  START=0x70            END=0x7F
+          # SHAREBANK  NAME=gpr0       START=0x20            END=0x5F
+          # SHAREBANK  NAME=gpr0       START=0xC             END=0x2F
+          # SHAREBANK  NAME=gpr0a      START=0xD             END=0xF
+          # SHAREBANK  NAME=gprs       START=0x318           END=0x3FF
+
+          # pic17xxx
+          # SHAREBANK  NAME=registers START=0x1A     END=0x1F
+
+          push(@{$Features->{COMMON_RAM}->[$index]}, { START => $start, END => $end });
+          }
+        }
+      } # elsif ($section eq 'SHAREBANK')
+    } # if ($Line =~ /^(\S+)\s+NAME=(\S+)\s+START=(\S+)\s+END=(\S+)/io)
+  }
+
+#---------------------------------------------------------------------------------------------------
+
+sub init_ram_section($$)
+  {
+  my ($RamRef, $Size) = @_;
+  my $i;
+
+  for ($i = 0; $i < $Size; ++$i)
+    {
+    @{$RamRef->[$i]} = { START => -1, END => -1 };
     }
   }
 
@@ -1510,6 +1654,10 @@ sub read_ram_and_rom_features($$)
   $Features->{STD_SCRIPT} = $Lkr;
   Log("Read the RAM and ROM features from $lkr_path.", 4);
 
+  init_ram_section($Features->{SFR_RAM},    $Features->{BANK_MAX});
+  init_ram_section($Features->{GPR_RAM},    $Features->{BANK_MAX});
+  init_ram_section($Features->{COMMON_RAM}, $Features->{BANK_MAX});
+  init_ram_section($Features->{MIRROR_RAM}, $Features->{BANK_MAX});
   reset_preprocessor();
 
   while (<LKR>)
@@ -1611,6 +1759,27 @@ sub add_missing_directives()
 
 #---------------------------------------------------------------------------------------------------
 
+sub find_first_section($$)
+  {
+  my ($SectRef, $Size) = @_;
+  my $i;
+
+  for ($i = 0; $i < $Size; ++$i)
+    {
+    foreach (@{$SectRef->[$i]})
+      {
+      if ($_->{START} >= 0 && $_->{END} >= 0)
+        {
+        return $_;
+        }
+      }
+    }
+
+  return undef;
+  }
+
+#---------------------------------------------------------------------------------------------------
+
 sub read_device_informations()
   {
   my ($mcu_name, $inc, $lkr, $class_name);
@@ -1668,40 +1837,48 @@ sub read_device_informations()
 
         $mcu_features =
           {
-          MCU_CLASS  => $tr->{CLASS},     # Class of MCU. (PROC_CLASS_PIC12yy)
+          MCU_NAME   => $mcu_name,
+          MCU_CLASS  => $tr->{CLASS},     # Class of the MCU. (PROC_CLASS_PIC12yy)
           DIR_SUBST  => undef,
-          ROM_SIZE   => 0,                # Size of program memory.
+          ROM_SIZE   => 0,                # Size of the program memory.
 
-          COFF       => hex($fields[1]),  # Coff ID of device. (16 bit wide)
-          PAGES      => hex($fields[5]),  # Number of ROM/FLASH pages.
-          MAX_RAM    => 0,                # The highest address of RAM.
-          RAM_SIZE   => 0,                # Full size of all SFR and GPR.
-          GPR_SIZE   => 0,                # Full size of all GPR.
-          SGPR_SIZE  => 0,                # Size of shared GPRs.
-          CF_START   => 0,                # Address of first Configuration byte/word.
-          CF_END     => 0,                # Address of last Configuration byte/word.
-          STD_HEADER => '',               # Standard header file name of MCU.
-          STD_SCRIPT => '',               # Standard linker script file name of MCU.
+          COFF       => hex($fields[1]),  # Coff ID of the device. (16 bit wide)
+          PAGES      => hex($fields[5]),  # Number of the ROM/FLASH pages.
+          MAX_RAM    => 0,                # The highest address of the RAM.
+          RAM_SIZE   => 0,                # Full size of the all SFR and GPR.
+          GPR_SIZE   => 0,                # Full size of the all GPR.
+          SGPR_SIZE  => 0,                # Size of the shared GPRs.
+          CONF_START => 0,                # Address of the first Configuration byte/word.
+          CONF_END   => 0,                # Address of the last Configuration byte/word.
+          STD_HEADER => '',               # Standard header file name of the MCU.
+          STD_SCRIPT => '',               # Standard linker script file name of the MCU.
 
         # These addresses relative, compared to the beginning of the blocks.
           ROM        => hex($fields[6]),  # Last address of ROM/FLASH.
           FLASHDATA  => hex($fields[11]), # Last address of FLASH Data.
           EEPROM     => hex($fields[9]),  # Last address of EEPROM.
 
-          DIR_COUNT  => hex($fields[12]), # Number of Configuration bytes/words.
+          DIR_COUNT  => hex($fields[12]), # Number of the Configuration bytes/words.
           DIRECTIVES => [],
-          CONF_MASK  => 0,                # Mask of config words.
-          BANKS      => hex($fields[7]),  # Number of RAM Banks.
-          ACCESS     => hex($fields[10]), # Last address of lower Access RAM of pic18f series.
+          CONF_MASK  => 0,                # Mask of the config words.
+          BANK_MAX   => $tr->{BANK_MAX},
+          BANK_NUM   => hex($fields[7]),  # Number of the RAM Banks.
+          BANK_SIZE  => $tr->{BANK_SIZE},
+          BANK_MASK  => $tr->{BANK_MASK},
+          BANK_SHIFT => $tr->{BANK_SHIFT},
+          ACCESS     => hex($fields[10]), # Last address of the lower Access RAM of pic18f series.
           OSCVAL     => undef,            # Oscillator Calibration Value.
           USERID     => undef,            # User ID.
           DEVID      => undef,            # Device ID.
           LINEARMEM  => undef,            # Linear RAM of enhanced pic14 MCUs.
-          SHARED_RAM => [],               # List of shared RAM sections.
-          BAD_RAM    => [],               # List of bad RAM sections.
-          SFRS       => [],               # List of SFRs.
-          SFR_NAMES  => {},               # List names of SFRs by addresses.
-          SFR_ADDRS  => {}                # List addresses of SFRs by names.
+          SFR_RAM    => [],               # List of the SFR RAM sections.
+          GPR_RAM    => [],               # List of the GPR RAM sections.
+          COMMON_RAM => [],               # List of the common RAM sections.
+          MIRROR_RAM => [],               # List of the mirror RAM sections.
+          BAD_RAM    => [],               # List of the bad RAM sections.
+          SFRS       => [],               # List of the SFRs.
+          SFR_NAMES  => {},               # List names of the SFRs by addresses.
+          SFR_ADDRS  => {}                # List addresses of the SFRs by names.
           };
 
         $inc = $gp_mcus_by_names{$mcu_name};
@@ -1716,15 +1893,13 @@ sub read_device_informations()
           read_ram_and_rom_features("${lkr}_g.lkr", $mcu_features);
           read_ram_features("${inc}.inc", $mcu_features, $class_pic16);
 
-          my $shared_ram = $mcu_features->{SHARED_RAM};
+          my ($first, $size);
 
-          if (scalar(@{$shared_ram}) > 0)
+          $first = find_first_section($mcu_features->{COMMON_RAM}, $mcu_features->{BANK_MAX});
+
+          if (defined($first))
             {
-            # Present the shared GPR.
-
-            my $first = ${$shared_ram}[0];
-            my $size  = $first->{END} - $first->{START} + 1;
-
+            $size = $first->{END} - $first->{START} + 1;
             $mcu_features->{SGPR_SIZE} = $size;
             $mcu_features->{GPR_SIZE} += $size;
             }
@@ -1733,8 +1908,8 @@ sub read_device_informations()
 
           if ($class_pic16)
             {
-            $mcu_features->{CONF_SIZE} = $mcu_features->{CF_END} - $mcu_features->{CF_START} + 1;
-            $mcus_by_names{$mcu_name} = $mcu_features;
+            $mcu_features->{CONF_SIZE} = $mcu_features->{CONF_END} - $mcu_features->{CONF_START} + 1;
+            $mcus_by_names{$mcu_name}  = $mcu_features;
             }
 
           $state = ST_LISTEN;
@@ -1888,9 +2063,9 @@ sub read_device_informations()
         # All information is together.
         die "$mcu_name MCU already exist!" if (defined($mcus_by_names{$mcu_name}));
 
-        $mcu_features->{CF_START}  = $dir_addr_min;
-        $mcu_features->{CF_END}    = $dir_addr_max;
-        $mcus_by_names{$mcu_name}  = $mcu_features;
+        $mcu_features->{CONF_START} = $dir_addr_min;
+        $mcu_features->{CONF_END}   = $dir_addr_max;
+        $mcus_by_names{$mcu_name}   = $mcu_features;
         $state = ST_WAIT;
         }
       } # if ($state == ST_LISTEN)
@@ -1909,7 +2084,7 @@ sub read_device_informations()
 
         # Print the head of html file.
 
-sub dump_html_head($)
+sub print_html_head($)
   {
   print $out_handler <<EOT
 $HTML_Doctype
@@ -1926,7 +2101,7 @@ EOT
 
 #---------------------------------------------------------------------------------------------------
 
-sub dump_source_info($)
+sub print_source_info($)
   {
   my $Align = $_[0];
   my $href = "<a href=\"http://${gputils_url}#Download\">gputils</a> source package";
@@ -1947,7 +2122,7 @@ sub dump_source_info($)
 
         # Prepares multiple list of MCUs.
 
-sub dump_mcu_list($$)
+sub print_mcu_list($$)
   {
   my ($Align, $Element) = @_;
   my $menu_class = $Element->{CLASS};
@@ -2180,12 +2355,12 @@ sub dump_mcu_list($$)
   aOutl($Align + 4, '</div>') if ($level > 0);  # The closure of last div, if it miss.
   aOutl($Align + 2, '</div>');
 
-  dump_source_info($Align + 2);
+  print_source_info($Align + 2);
   }
 
 #---------------------------------------------------------------------------------------------------
 
-sub dump_class_menu($$)
+sub print_class_menu($$)
   {
   my ($Active, $Features) = @_;
   my $mcu_class = (defined($Features)) ? $Features->{MCU_CLASS} : -1;
@@ -2218,7 +2393,7 @@ sub dump_class_menu($$)
 
         # Print the local menu of $Name MCU page.
 
-sub dump_local_menu($$$)
+sub print_local_menu($$$)
   {
   my ($Menu, $Name, $Selected) = @_;
 
@@ -2288,7 +2463,7 @@ sub make_sfr_common_lists()
 
         # Dump those registers which they exist in the class of all members.
 
-sub dump_common_sfr_lists($$)
+sub print_common_sfr_lists($$)
   {
   my ($Align, $Element) = @_;
   my ($sfr_list, $number, $name, $addr, $sfr);
@@ -2302,7 +2477,7 @@ sub dump_common_sfr_lists($$)
 
   Log("Dump list of $Element->{NAME} common SFRs.", 4);
 
-  dump_local_menu(\@common_sfr_menu, '', $mcu_class);
+  print_local_menu(\@common_sfr_menu, '', $mcu_class);
 
         #------------------------------------
 
@@ -2401,14 +2576,14 @@ sub dump_common_sfr_lists($$)
   aOutl($Align + 2, '</tr>');
   aOutl($Align, '</table>');
 
-  dump_source_info(4);
+  print_source_info(4);
   }
 
 #---------------------------------------------------------------------------------------------------
 
         # Dump the device ID.
 
-sub dump_devid($$$)
+sub print_devid($$$)
   {
   my ($Align, $Devid, $Length) = @_;
 
@@ -2438,29 +2613,30 @@ sub dump_devid($$$)
 
 #---------------------------------------------------------------------------------------------------
 
-        # Dump the features of $Name MCU.
+        # Dump the features of a MCU.
 
-sub dump_features($$)
+sub print_features($)
   {
-  my ($Name, $Features) = @_;
+  my $Features = $_[0];
   my ($str, $len, $rom_size, $word_size, $i, $t);
+  my $mcu_name      = $Features->{MCU_NAME};
   my $mcu_class     = $Features->{MCU_CLASS};
   my $class_pic16   = ($mcu_class == PROC_CLASS_PIC16)  ? TRUE : FALSE;
   my $class_pic16e  = ($mcu_class == PROC_CLASS_PIC16E) ? TRUE : FALSE;
   my $mcu_class_features = $class_features_list[$mcu_class];
 
-  $str = "$out_dir/${Name}-$feat_tag.html";
+  $str = "$out_dir/${mcu_name}-$feat_tag.html";
   open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
 
-  Log("Dump the features of $Name.", 4);
+  Log("Dump the features of $mcu_name.", 4);
 
         #------------------------------------
 
-  dump_html_head($Name);
+  print_html_head($mcu_name);
   aOutl(2, '<body>');
 
-  dump_class_menu(-1, $Features);
-  dump_local_menu(\@mcu_menu_elems, $Name, MCU_MENU_FEAT);
+  print_class_menu(-1, $Features);
+  print_local_menu(\@mcu_menu_elems, $mcu_name, MCU_MENU_FEAT);
 
         #------------------------------------
 
@@ -2471,7 +2647,7 @@ sub dump_features($$)
   $rom_size = $Features->{ROM} + 1;
 
   aOutl (4, '<table class="featList">');
-  aOutml(6, "<tr><th colspan=4 class=\"featTableName\">$Name</th></tr>",
+  aOutml(6, "<tr><th colspan=4 class=\"featTableName\">$mcu_name</th></tr>",
             '<tr class="featGap"><td></td></tr>');
 
         #------------------------------------
@@ -2566,7 +2742,7 @@ sub dump_features($$)
 
         #------------------------------------
 
-  dump_devid(6, $Features->{DEVID}, $len) if ($word_size != 16);
+  print_devid(6, $Features->{DEVID}, $len) if ($word_size != 16);
 
         #------------------------------------
 
@@ -2607,19 +2783,19 @@ sub dump_features($$)
   if ($i > 1)
     {
     aOutfl(8, "<td class=\"featValue\">0x%0${len}X - 0x%0${len}X&nbsp;&nbsp;($i %s)</td>",
-               $Features->{CF_START}, $Features->{CF_END}, lc($t));
+               $Features->{CONF_START}, $Features->{CONF_END}, lc($t));
     }
   else
     {
     aOutfl(8, "<td class=\"featValue\">0x%0${len}X&nbsp;&nbsp;($i %s)</td>",
-               $Features->{CF_START}, lc($t));
+               $Features->{CONF_START}, lc($t));
     }
 
   aOutl(6, '</tr>');
 
         #------------------------------------
 
-  dump_devid(6, $Features->{DEVID}, $len) if ($word_size == 16);
+  print_devid(6, $Features->{DEVID}, $len) if ($word_size == 16);
 
         #------------------------------------
 
@@ -2638,7 +2814,7 @@ sub dump_features($$)
 
   aOutl (6, '<tr class="featLine">');
   aOutml(8, '<th class="featName">Number of RAM Banks</th>',
-            "<td class=\"featValue\">$Features->{BANKS}&nbsp;&nbsp;($mcu_class_features->{BANK_SIZE} bytes/banks)</td>");
+            "<td class=\"featValue\">$Features->{BANK_NUM}&nbsp;&nbsp;($mcu_class_features->{BANK_SIZE} bytes/banks)</td>");
   aOutl (6, '</tr>');
 
         #------------------------------------
@@ -2737,7 +2913,7 @@ sub dump_features($$)
         #------------------------------------
 
   aOutl(4, '</table>');
-  dump_source_info(4);
+  print_source_info(4);
   aOutl(2, "</body>\n</html>");
   close($out_handler);
   }
@@ -2746,7 +2922,7 @@ sub dump_features($$)
 
         # Dump the entire contents of a Config word.
 
-sub dump_config_word($$$$$)
+sub print_config_word($$$$$)
   {
   my ($Align, $Config, $Length, $Mask, $Gap) = @_;
 
@@ -2789,13 +2965,14 @@ sub dump_config_word($$$$$)
 
 #---------------------------------------------------------------------------------------------------
 
-        # Dump the entire contents of all Config word of $Name MCU.
+        # Dump the entire contents of all Config word of a MCU.
 
-sub dump_all_config_word($$)
+sub print_all_config_word($)
   {
-  my ($Name, $Features) = @_;
+  my $Features = $_[0];
   my ($addr, $dir_ref, $str, $len, $i, $head_s, $head_e, $gap);
   my $conf_bits   = $Features->{DIRECTIVES};
+  my $mcu_name    = $Features->{MCU_NAME};
   my $mcu_class   = $Features->{MCU_CLASS};
   my $mcu_class_features = $class_features_list[$mcu_class];
   my $config_mask = $Features->{CONF_MASK};
@@ -2804,10 +2981,10 @@ sub dump_all_config_word($$)
 
   return if (! $count);
 
-  $str = "$out_dir/${Name}-$conf_tag.html";
+  $str = "$out_dir/${mcu_name}-$conf_tag.html";
   open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
 
-  Log("Dump the Config Options of $Name.", 4);
+  Log("Dump the Config Options of $mcu_name.", 4);
 
   $len = 4;
   $head_s = '<tr><th colspan=4 class="configWord">';
@@ -2816,18 +2993,18 @@ sub dump_all_config_word($$)
 
         #------------------------------------
 
-  dump_html_head($Name);
+  print_html_head($mcu_name);
   aOutl(2, '<body>');
 
-  dump_class_menu(-1, $Features);
-  dump_local_menu(\@mcu_menu_elems, $Name, MCU_MENU_CONF);
+  print_class_menu(-1, $Features);
+  print_local_menu(\@mcu_menu_elems, $mcu_name, MCU_MENU_CONF);
 
         #------------------------------------
 
         # The table of Config Bits.
 
   aOutml(4, '<table class="configList">',
-            "  <tr><th colspan=5 class=\"confTableName\">$Name</th></tr>");
+            "  <tr><th colspan=5 class=\"confTableName\">$mcu_name</th></tr>");
 
   if ($count < 2)
     {
@@ -2839,7 +3016,7 @@ sub dump_all_config_word($$)
 
     if ($mcu_class == PROC_CLASS_PIC16)
       {
-      $addr = sprintf("address:0x%0${len}X-0x%0${len}X", $Features->{CF_START}, $Features->{CF_END});
+      $addr = sprintf("address:0x%0${len}X-0x%0${len}X", $Features->{CONF_START}, $Features->{CONF_END});
       }
     else
       {
@@ -2856,7 +3033,7 @@ sub dump_all_config_word($$)
       aOutfl(6, "${head_s}CONFIG ($addr)$head_e");
       }
 
-    dump_config_word(6, $dir_ref->{SWITCHES}, $len, $config_mask, $gap);
+    print_config_word(6, $dir_ref->{SWITCHES}, $len, $config_mask, $gap);
     }
   else
     {
@@ -2881,7 +3058,7 @@ sub dump_all_config_word($$)
           aOutl(6, $gap);
           aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X, <span class=\"confSwDefault\">default:0x%0${len}X</span>)$head_e",
                     $dir_ref->{DIR_ADDR}, $dir_ref->{DIR_MASK}, $dir_ref->{DIR_DEFAULT});
-          dump_config_word(6, \@{$dir_ref->{SWITCHES}}, $len, $config_mask, $gap);
+          print_config_word(6, \@{$dir_ref->{SWITCHES}}, $len, $config_mask, $gap);
           }
         }
       else
@@ -2899,7 +3076,7 @@ sub dump_all_config_word($$)
           aOutl(6, $gap);
           aOutfl(6, "$head_s$str (address:0x%06X, mask:0x%0${len}X, <span class=\"confSwDefault\">default:0x%0${len}X</span>)$head_e",
                     $addr, $dir_ref->{DIR_MASK}, $dir_ref->{DIR_DEFAULT});
-          dump_config_word(6, \@{$dir_ref->{SWITCHES}}, $len, $config_mask, $gap);
+          print_config_word(6, \@{$dir_ref->{SWITCHES}}, $len, $config_mask, $gap);
           }
         }
       }
@@ -2915,15 +3092,48 @@ sub dump_all_config_word($$)
         aOutl(6, $gap);
         aOutfl(6, "$head_s$str (address:0x%04X, mask:0x%0${len}X, <span class=\"confSwDefault\">default:0x%0${len}X</span>)$head_e",
                   $dir_ref->{DIR_ADDR}, $dir_ref->{DIR_MASK}, $dir_ref->{DIR_DEFAULT});
-        dump_config_word(6, \@{$dir_ref->{SWITCHES}}, $len, $config_mask, $gap);
+        print_config_word(6, \@{$dir_ref->{SWITCHES}}, $len, $config_mask, $gap);
         }
       }
     }
 
   aOutl(4, '</table>');
-  dump_source_info(4);
+  print_source_info(4);
   aOutl(2, "</body>\n</html>");
   close($out_handler);
+  }
+
+#---------------------------------------------------------------------------------------------------
+
+        # Marks in $Array the GPR regions of RAM.
+
+sub mark_gpr_ram($$)
+  {
+  my ($Array, $Features) = @_;
+  my ($start, $end, $size);
+  my $mcu_class_features = $class_features_list[$Features->{MCU_CLASS}];
+  my $bank_size = $mcu_class_features->{BANK_SIZE};
+  my $bank_max  = $Features->{BANK_MAX};
+  my $gpr       = $Features->{GPR_RAM};
+  my $ram_size  = $bank_max * $bank_size;
+  my $i;
+
+  @{$Array} = ((RAM_BAD) x $ram_size);
+
+  return if (! defined($gpr) || ! @{$gpr});
+
+  for ($i = 0; $i < $bank_max; ++$i)
+    {
+    foreach (@{$gpr->[$i]})
+      {
+      $start = $_->{START};
+      $end   = $_->{END};
+      next if ($start < 0 || $end < 0);
+
+      $size = $end - $start + 1;
+      splice(@{$Array}, $start, $size, ((RAM_GPR) x $size));
+      }
+    }
   }
 
 #---------------------------------------------------------------------------------------------------
@@ -2933,21 +3143,14 @@ sub dump_all_config_word($$)
 sub mark_non_gpr_ram($$)
   {
   my ($Array, $Features) = @_;
-  my ($bank, $bank_prev, $i, $k, $max_sfr, $sfr_count, $x);
-  my $bank_num  = $Features->{BANKS};
-  my $ram_size  = $Features->{MAX_RAM} + 1;
+  my ($addr, $bank, $offs, $bank_prev, $i, $k, $max_sfr, $sfr_count, $x);
+  my $bank_num  = $Features->{BANK_NUM};
+  my $bank_mask = $Features->{BANK_MASK};
   my $bad_ram   = $Features->{BAD_RAM};
   my $sfrs      = $Features->{SFRS};
   my $mcu_class_features = $class_features_list[$Features->{MCU_CLASS}];
   my $bank_size = $mcu_class_features->{BANK_SIZE};
   my $core_sfrs = $mcu_class_features->{CORE_SFRS};
-
-        # Prepares the RAM map.
-
-  @{$Array} = ((RAM_GPR) x $ram_size);
-  $k = $bank_num * $bank_size;
-        # Another deletion if the real RAM less than the possible max RAM.
-  push(@{$Array}, ((RAM_BAD) x ($k - $ram_size))) if ($ram_size < $k);
 
         # Marks the areas that do not exist.
 
@@ -2969,10 +3172,9 @@ sub mark_non_gpr_ram($$)
     $i = 0;
     while (TRUE)
       {
-      my $addr = $sfrs->[$i]->{ADDR};
-      my $offs = $addr % $bank_size;
-
-      $bank = int($addr / $bank_size);
+      $addr = $sfrs->[$i]->{ADDR};
+      $bank = $addr & $bank_mask;
+      $offs = $addr & ~$bank_mask;
 
       if ($bank_prev == $bank)
         {
@@ -2984,7 +3186,6 @@ sub mark_non_gpr_ram($$)
           {
         # In the previous bank there is no GPR before the last SFR.
 
-          $bank_prev *= $bank_size;
           ++$max_sfr;
           splice(@{$Array}, $bank_prev, $max_sfr, ((RAM_BAD) x $max_sfr));
           }
@@ -2999,26 +3200,33 @@ sub mark_non_gpr_ram($$)
         {
         # In the current bank there is no GPR before the last SFR.
 
-        $bank *= $bank_size;
         ++$max_sfr;
         splice(@{$Array}, $bank, $max_sfr, ((RAM_BAD) x $max_sfr));
         last;
         }
-      }
-
-        # None of in bank does not exists GPR before the last mirror SFR.
-
-    if (defined($core_sfrs))
-      {
-      $k = $core_sfrs->[$#{$core_sfrs}] + 1;
-      $bank = 0;
-      for ($x = 0; $x < $bank_num; ++$x)
-        {
-        splice(@{$Array}, $bank, $k, ((RAM_BAD) x $k));
-        $bank += $bank_size;
-        }
-      }
+      } # while (TRUE)
     }
+  }
+
+#---------------------------------------------------------------------------------------------------
+
+sub is_valid_sfr($$)
+  {
+  my ($ArrayRef, $SfrAddress) = @_;
+  my ($start, $end);
+
+  return FALSE if (! defined($ArrayRef) || ! @{$ArrayRef});
+
+  foreach (@{$ArrayRef})
+    {
+    $start = $_->{START};
+    $end   = $_->{END};
+    next if ($start < 0 || $end < 0);
+
+    return TRUE if ($start <= $SfrAddress && $SfrAddress <= $end);
+    }
+
+  return FALSE;
   }
 
 #---------------------------------------------------------------------------------------------------
@@ -3028,12 +3236,15 @@ sub mark_non_gpr_ram($$)
 sub mark_sfr_ram($$)
   {
   my ($Array, $Features) = @_;
-  my ($bank, $x);
-  my $bank_num  = $Features->{BANKS};
+  my ($bank, $i);
+  my $mcu_name  = $Features->{MCU_NAME};
+  my $bank_num  = $Features->{BANK_NUM};
   my $sfr_addrs = $Features->{SFR_ADDRS};
   my $mcu_class_features = $class_features_list[$Features->{MCU_CLASS}];
   my $bank_size = $mcu_class_features->{BANK_SIZE};
   my $core_sfrs = $mcu_class_features->{CORE_SFRS};
+  my $sfr       = $Features->{SFR_RAM};
+  my ($start, $end, $size);
 
         # Places the core registers. These at the same address there is in the all banks.
         # (12 and 14 bit MCU.)
@@ -3042,10 +3253,12 @@ sub mark_sfr_ram($$)
     {
     foreach (@{$core_sfrs})
       {
+      last if ($mcu_name eq 'PIC17C42' && $_ > 0x0F);
+
       $bank = 0;
-      for ($x = 0; $x < $bank_num; ++$x)
+      for ($i = 0; $i < $bank_num; ++$i)
         {
-        $Array->[$bank + $_] = RAM_SFR;
+        $Array->[$bank + $_] = RAM_SFR if (is_valid_sfr($sfr->[$i], $bank + $_));
         $bank += $bank_size;
         }
       }
@@ -3061,27 +3274,61 @@ sub mark_sfr_ram($$)
 
 #---------------------------------------------------------------------------------------------------
 
-        # Marks in $Array the shared regions of RAM.
+        # Marks in $Array the common regions of RAM.
 
-sub mark_shared_ram($$)
+sub mark_common_ram($$)
   {
   my ($Array, $Features) = @_;
-  my $shared = $Features->{SHARED_RAM};
+  my ($start, $end, $size, $i);
+  my $bank_num = $Features->{BANK_NUM};
+  my $common   = $Features->{COMMON_RAM};
 
-  return if (! defined($shared) || ! @{$shared});
+  return if (! defined($common) || ! @{$common});
 
-  foreach (@{$shared})
+  for ($i = 0; $i < $bank_num; ++$i)
     {
-    my $start = $_->{START};
-    my $size  = $_->{END} - $start + 1;
+    foreach (@{$common->[$i]})
+      {
+      $start = $_->{START};
+      $end   = $_->{END};
+      next if ($start < 0 || $end < 0);
 
-    splice(@{$Array}, $start, $size, ((RAM_SHARED) x $size));
+      $size = $end - $start + 1;
+      splice(@{$Array}, $start, $size, ((RAM_COMMON) x $size));
+      }
     }
   }
 
 #---------------------------------------------------------------------------------------------------
 
-sub dump_column_warning($$$)
+        # Marks in $Array the mirrored regions of RAM.
+
+sub mark_mirrored_ram($$)
+  {
+  my ($Array, $Features) = @_;
+  my ($start, $end, $size, $i);
+  my $bank_num = $Features->{BANK_NUM};
+  my $mirror   = $Features->{MIRROR_RAM};
+
+  return if (! defined($mirror) || ! @{$mirror});
+
+  for ($i = 0; $i < $bank_num; ++$i)
+    {
+    foreach (@{$mirror->[$i]})
+      {
+      $start = $_->{START};
+      $end   = $_->{END};
+      next if ($start < 0 || $end < 0);
+
+      $size = $end - $start + 1;
+      splice(@{$Array}, $start, $size, ((RAM_MIRROR) x $size));
+      }
+    }
+  }
+
+#---------------------------------------------------------------------------------------------------
+
+sub print_column_warning($$$)
   {
   my ($Align, $Bank_num, $Mcu16_bit) = @_;
 
@@ -3089,23 +3336,24 @@ sub dump_column_warning($$$)
     {
     aOutl($Align, '<tr class="ramGap"><td></td></tr>');
     aOutfl($Align,
-           "<tr><td colspan=%u class=\"ramSumEx\">It is possible that this colums is inaccurate due to the mirror-SFRs.</td></tr>",
+           "<tr><td colspan=%u class=\"ramSumEx\">It is possible that this colums is inaccurate due to the mirrored-SFRs.</td></tr>",
            $Bank_num * 2 + 1);
     }
   }
 
 #---------------------------------------------------------------------------------------------------
 
-        # Dump the RAM map of $Name MCU.
+        # Dump the RAM map of a MCU.
 
-sub dump_ram_map($$)
+sub print_ram_map($)
   {
-  my ($Name, $Features) = @_;
+  my $Features = $_[0];
   my ($map, $bank, $height, $k, $r, $t, $x, $y);
+  my $mcu_name     = $Features->{MCU_NAME};
   my $mcu_class    = $Features->{MCU_CLASS};
   my $class_pic16e = ($mcu_class == PROC_CLASS_PIC16E) ? TRUE : FALSE;
   my $mcu_class_features = $class_features_list[$mcu_class];
-  my $bank_num     = $Features->{BANKS};
+  my $bank_num     = $Features->{BANK_NUM};
   my $bank_size    = $mcu_class_features->{BANK_SIZE};
   my $sfrs         = $Features->{SFRS};
   my $sfr_names    = $Features->{SFR_NAMES};
@@ -3117,10 +3365,10 @@ sub dump_ram_map($$)
   my @ram_array;
   my @map_array;
 
-  $t = "$out_dir/${Name}-$ram_tag.html";
+  $t = "$out_dir/${mcu_name}-$ram_tag.html";
   open($out_handler, '>', $t) || die "Could not create the \"$t\" file!\n";
 
-  Log("Dump the RAM map of $Name.", 4);
+  Log("Dump the RAM map of $mcu_name.", 4);
 
   if (defined($linearmem))
     {
@@ -3128,9 +3376,11 @@ sub dump_ram_map($$)
     $segments = $linearmem->{SEGMENTS};
     }
 
+  mark_gpr_ram(\@ram_array, $Features);
   mark_non_gpr_ram(\@ram_array, $Features);
   mark_sfr_ram(\@ram_array, $Features);
-  mark_shared_ram(\@ram_array, $Features);
+  mark_common_ram(\@ram_array, $Features);
+  mark_mirrored_ram(\@ram_array, $Features);
 
         #------------------------------------
 
@@ -3181,22 +3431,23 @@ sub dump_ram_map($$)
 
     $bank += $bank_size;
     } # for ($x = 0; $x < $bank_num; ++$x)
+
         #------------------------------------
 
         # After a lot of work has finally can be written the html code.
 
-  dump_html_head($Name);
+  print_html_head($mcu_name);
   aOutl(2, '<body>');
 
-  dump_class_menu(-1, $Features);
-  dump_local_menu(\@mcu_menu_elems, $Name, MCU_MENU_RAM);
+  print_class_menu(-1, $Features);
+  print_local_menu(\@mcu_menu_elems, $mcu_name, MCU_MENU_RAM);
 
         #------------------------------------
 
         # The table of RAM map of MCU.
 
   aOutl(4, '<table class="ramMap">');
-  aOutfl(6, "<tr><th colspan=%u class=\"ramTableName\">$Name</th></tr>", $bank_num * 2 + 1);
+  aOutfl(6, "<tr><th colspan=%u class=\"ramTableName\">$mcu_name</th></tr>", $bank_num * 2 + 1);
   aOutl(6, '<tr class="ramGap"><td></td></tr>');
 
         #------------------------------------
@@ -3219,7 +3470,7 @@ sub dump_ram_map($$)
   $k = int(256 / $bank_size) * 3;
   for ($x = 0; $x < $bank_num; ++$x)
     {
-    my ($sfr_size, $gpr_size, $shared_size, $bad_size) = (0, 0, 0, 0);
+    my ($sfr_size, $gpr_size, $common_size, $mirror_size, $bad_size) = (0, 0, 0, 0, 0);
 
     $map = $map_array[$x];
 
@@ -3284,11 +3535,18 @@ sub dump_ram_map($$)
           $gpr_size += $size;
           }
 
-        when (RAM_SHARED)
+        when (RAM_COMMON)
           {
-          $t = 'ramSHA';
-          $r = 'Shared';
-          $shared_size += $size;
+          $t = 'ramCOM';
+          $r = 'Common';
+          $common_size += $size;
+          }
+
+        when (RAM_MIRROR)
+          {
+          $t = 'ramMIR';
+          $r = 'Mirrored';
+          $mirror_size += $size;
           }
 
         default
@@ -3326,7 +3584,7 @@ sub dump_ram_map($$)
           exit(1);
           }
 
-        Out("<a href=\"${remote_url}${Name}-$sfr_tag.html#$name\">");
+        Out("<a href=\"${remote_url}${mcu_name}-$sfr_tag.html#$name\">");
         $l_e = '</a>';
         } # if ($_->{TYPE} == RAM_SFR)
 
@@ -3369,13 +3627,13 @@ sub dump_ram_map($$)
         }
       } # foreach (@{$map})
 
-    $bank_sum[$x] = { SFR => $sfr_size, GPR => $gpr_size, SHARED => $shared_size, BAD => $bad_size };
+    $bank_sum[$x] = { SFR => $sfr_size, GPR => $gpr_size, COMMON => $common_size, MIRROR => $mirror_size, BAD => $bad_size };
 
     aOutml(8, '  </div>', '</td>');
     }
 
   aOutl(6, '</tr>');
-  dump_column_warning(6, $bank_num, $class_pic16e);
+  print_column_warning(6, $bank_num, $class_pic16e);
   aOutml(4, '</table>', '<p></p>');
 
         #------------------------------------
@@ -3395,7 +3653,8 @@ sub dump_ram_map($$)
 
     if ($bank_num > 1 && ! $class_pic16e)
       {
-      aOutl(12, "<div class=\"ramSHA ramSum\">Shared<br>$sum->{SHARED} bytes</div>");
+      aOutl(12, "<div class=\"ramCOM ramSum\">Common<br>$sum->{COMMON} bytes</div>");
+      aOutl(12, "<div class=\"ramMIR ramSum\">Mirrored<br>$sum->{MIRROR} bytes</div>");
       }
 
     aOutl(12, "<div class=\"ramBAD ramSum\">Unimplemented<br>$sum->{BAD} bytes</div>");
@@ -3404,7 +3663,7 @@ sub dump_ram_map($$)
     }
 
   aOutl(6, '</tr>');
-  dump_column_warning(6, $bank_num, $class_pic16e);
+  print_column_warning(6, $bank_num, $class_pic16e);
   aOutl(4, '</table>');
 
         #------------------------------------
@@ -3417,7 +3676,8 @@ sub dump_ram_map($$)
 
   if ($bank_num > 1 && ! $class_pic16e)
     {
-    aOutl(8, "<p class=\"ramSHAEx\">&nbsp;${c_expl}Shared RAM.</span></p>");
+    aOutl(8, "<p class=\"ramCOMEx\">&nbsp;${c_expl}Common RAM.</span></p>");
+    aOutl(8, "<p class=\"ramMIREx\">&nbsp;${c_expl}Mirrored RAM.</span></p>");
     }
 
   aOutml(6, "  <p class=\"ramBADEx\">&nbsp;${c_expl}In this place no RAM.</span></p>",
@@ -3434,7 +3694,7 @@ sub dump_ram_map($$)
 
   aOutl(4, '</div>');
 
-  dump_source_info(4);
+  print_source_info(4);
   aOutl(2, "</body>\n</html>");
   close($out_handler);
   }
@@ -3443,24 +3703,25 @@ sub dump_ram_map($$)
 
         # Dump the SFR map of $Name MCU.
 
-sub dump_sfr_map($$)
+sub print_sfr_map($)
   {
-  my ($Name, $Features) = @_;
+  my $Features = $_[0];
   my ($bank, $i, $max_x, $x, $min_y, $max_y, $y, $t);
+  my $mcu_name     = $Features->{MCU_NAME};
   my $mcu_class    = $Features->{MCU_CLASS};
   my $class_pic16e = ($mcu_class == PROC_CLASS_PIC16E) ? TRUE : FALSE;
   my $mcu_class_features = $class_features_list[$mcu_class];
-  my $bank_num     = $Features->{BANKS};
+  my $bank_num     = $Features->{BANK_NUM};
   my $bank_size    = $mcu_class_features->{BANK_SIZE};
   my $sfrs         = $Features->{SFRS};
   my $c_expl       = '<span class="explanation">';
   my $accessSfr    = 0xF00 + $Features->{ACCESS} + 1;
   my @bank_array   = ();
 
-  $t = "$out_dir/${Name}-$sfr_tag.html";
+  $t = "$out_dir/${mcu_name}-$sfr_tag.html";
   open($out_handler, '>', $t) || die "Could not create the \"$t\" file!\n";
 
-  Log("Dump the SFR map of $Name.", 4);
+  Log("Dump the SFR map of $mcu_name.", 4);
 
         #------------------------------------
 
@@ -3497,18 +3758,18 @@ sub dump_sfr_map($$)
 
         #------------------------------------
 
-  dump_html_head($Name);
+  print_html_head($mcu_name);
   aOutl(2, '<body>');
 
-  dump_class_menu(-1, $Features);
-  dump_local_menu(\@mcu_menu_elems, $Name, MCU_MENU_SFR);
+  print_class_menu(-1, $Features);
+  print_local_menu(\@mcu_menu_elems, $mcu_name, MCU_MENU_SFR);
 
         #------------------------------------
 
-        # The table of SFR map of MCU.
+        # The table of SFR map of the MCU.
 
   aOutl(4, '<table class="sfrMap">');
-  aOutfl(6, "<tr><th colspan=%u class=\"sfrTableName\">$Name</th></tr>", $max_x * 2 + 1);
+  aOutfl(6, "<tr><th colspan=%u class=\"sfrTableName\">$mcu_name</th></tr>", $max_x * 2 + 1);
   aOutl(6, '<tr class="sfrGap"><td></td></tr>');
 
         #------------------------------------
@@ -3622,7 +3883,7 @@ sub dump_sfr_map($$)
 
   aOutl(4, '</div>');
 
-  dump_source_info(4);
+  print_source_info(4);
   aOutl(2, "</body>\n</html>");
   close($out_handler);
   }
@@ -3631,7 +3892,7 @@ sub dump_sfr_map($$)
 
         # Print the menu of class of MCUs.
 
-sub dump_primary_menu($)
+sub print_primary_menu($)
   {
   my $Selected = $_[0];
 
@@ -3665,15 +3926,15 @@ sub create_class_htmls()
 
     open($out_handler, '>', $html) || die "Could not create the \"$html\" file!\n";
 
-    dump_html_head($elem->{NAME});
+    print_html_head($elem->{NAME});
     aOutml(2, '<body>',
               '  <div class="headContainer">');
     aOutml(6, '<div class="headSide">&nbsp;</div>',
               '<div class="heading">Informations about the PIC microcontrollers</div>',
               '<div class="headSide">&nbsp;</div>');
-    dump_primary_menu($elem);
+    print_primary_menu($elem);
 
-        # dump_mcu_list()
+        # print_mcu_list()
     $func->(4, $elem);
     aOutml(2, '  </div>', "</body>\n</html>");
     close($out_handler);
@@ -3689,12 +3950,12 @@ sub create_class_htmls()
 
     open($out_handler, '>', $html) || die "Could not create the \"$html\" file!\n";
 
-    dump_html_head($elem->{NAME});
+    print_html_head($elem->{NAME});
     aOutl(2, '<body>');
 
-    dump_class_menu(PRI_COMMON_SFR, undef);
+    print_class_menu(PRI_COMMON_SFR, undef);
 
-        # dump_common_sfr_lists()
+        # print_common_sfr_lists()
     $func = $elem->{PFUNC};
     $func->(4, $elem) if (defined($func));
     aOutml(2, "</body>\n</html>");
@@ -4190,7 +4451,8 @@ EOT
 
 .ramGPR:hover .ramTt,
 .ramSFR:hover .ramTt,
-.ramSHA:hover .ramTt,
+.ramCOM:hover .ramTt,
+.ramMIR:hover .ramTt,
 .ramBAD:hover .ramTt
   {
   z-index: 100;
@@ -4201,7 +4463,8 @@ EOT
 
 .ramGPR:hover .ramTt:before,
 .ramSFR:hover .ramTt:before,
-.ramSHA:hover .ramTt:before,
+.ramCOM:hover .ramTt:before,
+.ramMIR:hover .ramTt:before,
 .ramBAD:hover .ramTt:before
   {
   display: block;
@@ -4265,7 +4528,12 @@ EOT
   background: $ramSFR_color;
   }
 
-.ramSHA, .ramSHAEx
+.ramCOM, .ramCOMEx
+  {
+  background: #DFA9FF;
+  }
+
+.ramMIR, .ramMIREx
   {
   background: #76CBFF;
   }
@@ -4275,7 +4543,7 @@ EOT
   background: $tab_border_color;
   }
 
-.ramGPR, .ramSFR, .ramSHA, .ramBAD
+.ramGPR, .ramSFR, .ramCOM, .ramMIR, .ramBAD
   {
   position: relative;
   width: ${ramColumn_width}px;
@@ -4339,7 +4607,7 @@ EOT
   cursor: text;
   }
 
-.ramSFREx, .ramGPREx, .ramSHAEx, .ramBADEx,
+.ramSFREx, .ramGPREx, .ramCOMEx, .ramMIREx, .ramBADEx,
 .sfrNameEx, .sfrNameXEx, .sfrAccess, .menuEx
   {
   padding: 0;
@@ -4595,8 +4863,8 @@ create_class_htmls();
 
 foreach (sort { smartSort($a, $b) } keys %mcus_by_names)
   {
-  dump_all_config_word($_, $mcus_by_names{$_});
-  dump_features($_, $mcus_by_names{$_});
-  dump_ram_map($_, $mcus_by_names{$_});
-  dump_sfr_map($_, $mcus_by_names{$_});
+  print_all_config_word($mcus_by_names{$_});
+  print_features($mcus_by_names{$_});
+  print_ram_map($mcus_by_names{$_});
+  print_sfr_map($mcus_by_names{$_});
   }
