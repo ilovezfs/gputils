@@ -2117,6 +2117,17 @@ sub print_source_info($)
 
 #---------------------------------------------------------------------------------------------------
 
+sub mcu_name_correction($)
+  {
+  my $Name = $_[0];
+  
+  $Name =~ s/PICRF5/rfPIC12C5/o;
+  $Name =~ s/PICRF6/rfPIC12F6/o;
+  return $Name;
+  }
+
+#---------------------------------------------------------------------------------------------------
+
         # Prepares multiple list of MCUs.
 
 sub print_mcu_list($$)
@@ -2215,7 +2226,6 @@ sub print_mcu_list($$)
 
   foreach my $name (@array)
     {
-    my $href_name    = $name;
     my $mcu_features = $mcus_by_names{$name};
     my $mcu_class    = $mcu_features->{MCU_CLASS};
     my $mcu_class_features = $class_features_list[$mcu_class];
@@ -2226,10 +2236,9 @@ sub print_mcu_list($$)
     my $td_csize     = "<td class=\"$css_class\">$mcu_class_features->{CONF_SIZE}</td>";
     my $td_class     = "<td class=\"$css_class\">" . (($mcu_class_features->{ENHANCED}) ? $enh : 'regular') . '</td>';
 
-    $name      =~ s/PICRF5/rfPIC12C5/o;
-    $href_name =~ s/PICRF5/rfPIC12C5/o;
-    $name      =~ s/PICRF6/rfPIC12F6/o;
-    $href_name =~ s/PICRF6/rfPIC12F6/o;
+    $name = mcu_name_correction($name);
+
+    my $href_name = $name;
 
     if (! ($href_name ~~ @data_sheet_name_exception_list))
       {
@@ -2238,7 +2247,7 @@ sub print_mcu_list($$)
       }
 
     my $td_href    = "<th><a class=\"mcuLink\" href=\"${remote_url}${name}-$feat_tag.html\">$name</a></th>";
-    my $td_sh_href = "<td><a class=\"mcuDSheet\" href=\"http://www.microchip.com/TechDoc.aspx?type=datasheet&product=$href_name\">$name</a></td>";
+    my $td_sh_href = "<td><a class=\"mcuDSheet\" href=\"http://www.microchip.com/TechDoc.aspx?type=datasheet&product=$href_name\">search</a></td>";
 
     given ($menu_class)
       {
@@ -2636,13 +2645,12 @@ sub print_features($)
   {
   my $Features = $_[0];
   my ($str, $len, $rom_size, $word_size, $i, $t);
-  my $mcu_name      = $Features->{MCU_NAME};
+  my $mcu_name      = mcu_name_correction($Features->{MCU_NAME});
   my $mcu_class     = $Features->{MCU_CLASS};
   my $class_pic16   = ($mcu_class == PROC_CLASS_PIC16)  ? TRUE : FALSE;
   my $class_pic16e  = ($mcu_class == PROC_CLASS_PIC16E) ? TRUE : FALSE;
   my $mcu_class_features = $class_features_list[$mcu_class];
 
-  $mcu_name =~ s/PICRF/rfPIC12F/o;
   $str = "$out_dir/${mcu_name}-$feat_tag.html";
   open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
 
@@ -2990,7 +2998,7 @@ sub print_all_config_word($)
   my $Features = $_[0];
   my ($addr, $dir_ref, $str, $len, $i, $head_s, $head_e, $gap);
   my $conf_bits   = $Features->{DIRECTIVES};
-  my $mcu_name    = $Features->{MCU_NAME};
+  my $mcu_name    = mcu_name_correction($Features->{MCU_NAME});
   my $mcu_class   = $Features->{MCU_CLASS};
   my $mcu_class_features = $class_features_list[$mcu_class];
   my $config_mask = $Features->{CONF_MASK};
@@ -2999,7 +3007,6 @@ sub print_all_config_word($)
 
   return if (! $count);
 
-  $mcu_name =~ s/PICRF/rfPIC12F/o;
   $str = "$out_dir/${mcu_name}-$conf_tag.html";
   open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
 
@@ -3368,7 +3375,7 @@ sub print_ram_map($)
   {
   my $Features = $_[0];
   my ($map, $bank, $height, $k, $r, $t, $x, $y);
-  my $mcu_name     = $Features->{MCU_NAME};
+  my $mcu_name     = mcu_name_correction($Features->{MCU_NAME});
   my $mcu_class    = $Features->{MCU_CLASS};
   my $class_pic16e = ($mcu_class == PROC_CLASS_PIC16E) ? TRUE : FALSE;
   my $mcu_class_features = $class_features_list[$mcu_class];
@@ -3384,7 +3391,6 @@ sub print_ram_map($)
   my @ram_array;
   my @map_array;
 
-  $mcu_name =~ s/PICRF/rfPIC12F/o;
   $t = "$out_dir/${mcu_name}-$ram_tag.html";
   open($out_handler, '>', $t) || die "Could not create the \"$t\" file!\n";
 
@@ -3727,7 +3733,7 @@ sub print_sfr_map($)
   {
   my $Features = $_[0];
   my ($bank, $i, $max_x, $x, $min_y, $max_y, $y, $t);
-  my $mcu_name     = $Features->{MCU_NAME};
+  my $mcu_name     = mcu_name_correction($Features->{MCU_NAME});
   my $mcu_class    = $Features->{MCU_CLASS};
   my $class_pic16e = ($mcu_class == PROC_CLASS_PIC16E) ? TRUE : FALSE;
   my $mcu_class_features = $class_features_list[$mcu_class];
@@ -3738,7 +3744,6 @@ sub print_sfr_map($)
   my $accessSfr    = 0xF00 + $Features->{ACCESS} + 1;
   my @bank_array   = ();
 
-  $mcu_name =~ s/PICRF/rfPIC12F/o;
   $t = "$out_dir/${mcu_name}-$sfr_tag.html";
   open($out_handler, '>', $t) || die "Could not create the \"$t\" file!\n";
 
@@ -4356,7 +4361,7 @@ EOT
   display: block;
   width: 12em;
   padding: 0.14em 0 0.14em 0.6em;
-  text-align: left;
+  text-align: center;
   text-decoration: none;
   background: #FFA949;
   border: 2px outset $attr_background2;
