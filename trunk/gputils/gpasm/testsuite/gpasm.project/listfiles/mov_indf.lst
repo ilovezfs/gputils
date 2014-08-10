@@ -1,0 +1,1079 @@
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 
+                      00002         list p=16f1933
+                      00003         radix dec
+                      00004         include p16f1933.inc
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F1933 processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      01426         LIST
+                      00005 
+0000                  00006         org     0x0000
+                      00007 
+0000   0010           00008         MOVIW   ++INDF0
+0001   0011           00009         MOVIW   --INDF0
+0002   0010           00010         MOVIW   ++INDF0
+0003   0011           00011         MOVIW   --INDF0
+0004   3F00           00012         MOVIW   0[INDF0]
+0005   3F1F           00013         MOVIW   0x1f[INDF0]
+0006   3F20           00014         MOVIW   -0x20[INDF0]
+                      00015 
+0007   0010           00016         MOVIW   ++FSR0
+0008   0011           00017         MOVIW   --FSR0
+0009   0010           00018         MOVIW   ++FSR0
+000A   0011           00019         MOVIW   --FSR0
+000B   3F00           00020         MOVIW   0[FSR0]
+000C   3F1F           00021         MOVIW   0x1f[FSR0]
+000D   3F20           00022         MOVIW   -0x20[FSR0]
+                      00023 
+000E   0014           00024         MOVIW   ++INDF1
+000F   0015           00025         MOVIW   --INDF1
+0010   0014           00026         MOVIW   ++INDF1
+0011   0015           00027         MOVIW   --INDF1
+0012   3F40           00028         MOVIW   0[INDF1]
+0013   3F5F           00029         MOVIW   0x1f[INDF1]
+0014   3F60           00030         MOVIW   -0x20[INDF1]
+                      00031 
+0015   0014           00032         MOVIW   ++FSR1
+0016   0015           00033         MOVIW   --FSR1
+0017   0014           00034         MOVIW   ++FSR1
+0018   0015           00035         MOVIW   --FSR1
+0019   3F40           00036         MOVIW   0[FSR1]
+001A   3F5F           00037         MOVIW   0x1f[FSR1]
+001B   3F60           00038         MOVIW   -0x20[FSR1]
+                      00039 
+001C   0018           00040         MOVWI   ++INDF0
+001D   0019           00041         MOVWI   --INDF0
+001E   0018           00042         MOVWI   ++INDF0
+001F   0019           00043         MOVWI   --INDF0
+0020   3F80           00044         MOVWI   0[INDF0]
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0021   3F9F           00045         MOVWI   0x1f[INDF0]
+0022   3FA0           00046         MOVWI   -0x20[INDF0]
+                      00047 
+0023   0018           00048         MOVWI   ++FSR0
+0024   0019           00049         MOVWI   --FSR0
+0025   0018           00050         MOVWI   ++FSR0
+0026   0019           00051         MOVWI   --FSR0
+0027   3F80           00052         MOVWI   0[FSR0]
+0028   3F9F           00053         MOVWI   0x1f[FSR0]
+0029   3FA0           00054         MOVWI   -0x20[FSR0]
+                      00055 
+002A   001C           00056         MOVWI   ++INDF1
+002B   001D           00057         MOVWI   --INDF1
+002C   001C           00058         MOVWI   ++INDF1
+002D   001D           00059         MOVWI   --INDF1
+002E   3FC0           00060         MOVWI   0[INDF1]
+002F   3FDF           00061         MOVWI   0x1f[INDF1]
+0030   3FE0           00062         MOVWI   -0x20[INDF1]
+                      00063 
+0031   001C           00064         MOVWI   ++FSR1
+0032   001D           00065         MOVWI   --FSR1
+0033   001C           00066         MOVWI   ++FSR1
+0034   001D           00067         MOVWI   --FSR1
+0035   3FC0           00068         MOVWI   0[FSR1]
+0036   3FDF           00069         MOVWI   0x1f[FSR1]
+0037   3FE0           00070         MOVWI   -0x20[FSR1]
+                      00071 
+                      00072         end
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ABDEN                             00000000
+ABDOVF                            00000007
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ACKTIM                            00000007
+ADCON0                            0000009D
+ADCON1                            0000009E
+ADCS0                             00000004
+ADCS1                             00000005
+ADCS2                             00000006
+ADDEN                             00000003
+ADFM                              00000007
+ADFVR0                            00000000
+ADFVR1                            00000001
+ADGO                              00000001
+ADIE                              00000006
+ADIF                              00000006
+ADNREF                            00000002
+ADON                              00000000
+ADPREF0                           00000000
+ADPREF1                           00000001
+ADRES                             0000009B
+ADRESH                            0000009C
+ADRESL                            0000009B
+AHEN                              00000001
+ANSA0                             00000000
+ANSA1                             00000001
+ANSA2                             00000002
+ANSA3                             00000003
+ANSA4                             00000004
+ANSA5                             00000005
+ANSB0                             00000000
+ANSB1                             00000001
+ANSB2                             00000002
+ANSB3                             00000003
+ANSB4                             00000004
+ANSB5                             00000005
+ANSELA                            0000018C
+ANSELB                            0000018D
+APFCON                            0000011D
+BAUDCON                           0000019F
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BIASMD                            00000006
+BOEN                              00000004
+BORCON                            00000116
+BORRDY                            00000000
+BRG16                             00000003
+BRGH                              00000002
+BSR                               00000008
+BSR0                              00000000
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+BSR1                              00000001
+BSR2                              00000002
+BSR3                              00000003
+BSR4                              00000004
+BSR_SHAD                          00000FE6
+C                                 00000000
+C1HYS                             00000001
+C1IE                              00000005
+C1IF                              00000005
+C1INTN                            00000006
+C1INTP                            00000007
+C1NCH0                            00000000
+C1NCH1                            00000001
+C1OE                              00000005
+C1ON                              00000007
+C1OUT                             00000006
+C1PCH0                            00000004
+C1PCH1                            00000005
+C1POL                             00000004
+C1SP                              00000002
+C1SYNC                            00000000
+C1TSEL0                           00000000
+C1TSEL1                           00000001
+C2HYS                             00000001
+C2IE                              00000006
+C2IF                              00000006
+C2INTN                            00000006
+C2INTP                            00000007
+C2NCH0                            00000000
+C2NCH1                            00000001
+C2OE                              00000005
+C2ON                              00000007
+C2OUT                             00000006
+C2OUTSEL                          00000002
+C2PCH0                            00000004
+C2PCH1                            00000005
+C2POL                             00000004
+C2SP                              00000002
+C2SYNC                            00000000
+C2TSEL0                           00000002
+C2TSEL1                           00000003
+C3TSEL0                           00000004
+C3TSEL1                           00000005
+C4TSEL0                           00000006
+C4TSEL1                           00000007
+C5TSEL0                           00000000
+C5TSEL1                           00000001
+CCP1AS                            00000295
+CCP1AS0                           00000004
+CCP1AS1                           00000005
+CCP1AS2                           00000006
+CCP1ASE                           00000007
+CCP1CON                           00000293
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP2AS                            0000029C
+CCP2AS0                           00000004
+CCP2AS1                           00000005
+CCP2AS2                           00000006
+CCP2ASE                           00000007
+CCP2CON                           0000029A
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2SEL                           00000000
+CCP3AS                            00000315
+CCP3AS0                           00000004
+CCP3AS1                           00000005
+CCP3AS2                           00000006
+CCP3ASE                           00000007
+CCP3CON                           00000313
+CCP3IE                            00000004
+CCP3IF                            00000004
+CCP3M0                            00000000
+CCP3M1                            00000001
+CCP3M2                            00000002
+CCP3M3                            00000003
+CCP3SEL                           00000006
+CCP4CON                           0000031A
+CCP4IE                            00000005
+CCP4IF                            00000005
+CCP4M0                            00000000
+CCP4M1                            00000001
+CCP4M2                            00000002
+CCP4M3                            00000003
+CCP5CON                           0000031E
+CCP5IE                            00000006
+CCP5IF                            00000006
+CCP5M0                            00000000
+CCP5M1                            00000001
+CCP5M2                            00000002
+CCP5M3                            00000003
+CCPR1                             00000291
+CCPR1H                            00000292
+CCPR1L                            00000291
+CCPR2                             00000298
+CCPR2H                            00000299
+CCPR2L                            00000298
+CCPR3                             00000311
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CCPR3H                            00000312
+CCPR3L                            00000311
+CCPR4                             00000318
+CCPR4H                            00000319
+CCPR4L                            00000318
+CCPR5                             0000031C
+CCPR5H                            0000031D
+CCPR5L                            0000031C
+CCPTMRS0                          0000029E
+CCPTMRS1                          0000029F
+CDAFVR0                           00000002
+CDAFVR1                           00000003
+CFGS                              00000006
+CHS0                              00000002
+CHS1                              00000003
+CHS2                              00000004
+CHS3                              00000005
+CHS4                              00000006
+CKE                               00000006
+CKP                               00000004
+CM1CON0                           00000111
+CM1CON1                           00000112
+CM2CON0                           00000113
+CM2CON1                           00000114
+CMOUT                             00000115
+CPSCH0                            00000000
+CPSCH1                            00000001
+CPSCH2                            00000002
+CPSCON0                           0000001E
+CPSCON1                           0000001F
+CPSON                             00000007
+CPSOUT                            00000001
+CPSRM                             00000006
+CPSRNG0                           00000002
+CPSRNG1                           00000003
+CREN                              00000004
+CS0                               00000002
+CS1                               00000003
+CSRC                              00000007
+C_SHAD                            00000000
+DACCON0                           00000118
+DACCON1                           00000119
+DACEN                             00000007
+DACLPS                            00000006
+DACNSS                            00000000
+DACOE                             00000005
+DACPSS0                           00000002
+DACPSS1                           00000003
+DACR0                             00000000
+DACR1                             00000001
+DACR2                             00000002
+DACR3                             00000003
+DACR4                             00000004
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+DC                                00000001
+DC1B0                             00000004
+DC1B1                             00000005
+DC2B0                             00000004
+DC2B1                             00000005
+DC3B0                             00000004
+DC3B1                             00000005
+DC4B0                             00000004
+DC4B1                             00000005
+DC5B0                             00000004
+DC5B1                             00000005
+DC_SHAD                           00000001
+DHEN                              00000000
+D_NOT_A                           00000005
+ECCP1AS                           00000295
+ECCP2AS                           0000029C
+ECCP3AS                           00000315
+EEADR                             00000191
+EEADRH                            00000192
+EEADRL                            00000191
+EECON1                            00000195
+EECON2                            00000196
+EEDAT                             00000193
+EEDATH                            00000194
+EEDATL                            00000193
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+F                                 00000001
+FERR                              00000002
+FREE                              00000004
+FSR0                              00000004
+FSR0H                             00000005
+FSR0H_SHAD                        00000FE9
+FSR0L                             00000004
+FSR0L_SHAD                        00000FE8
+FSR1                              00000006
+FSR1H                             00000007
+FSR1H_SHAD                        00000FEB
+FSR1L                             00000006
+FSR1L_SHAD                        00000FEA
+FVRCON                            00000117
+FVREN                             00000007
+FVRRDY                            00000006
+GCEN                              00000007
+GIE                               00000007
+GO                                00000001
+GO_NOT_DONE                       00000001
+HFIOFL                            00000003
+HFIOFR                            00000004
+HFIOFS                            00000000
+INDF0                             00000000
+INDF1                             00000001
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IOCBF                             00000396
+IOCBF0                            00000000
+IOCBF1                            00000001
+IOCBF2                            00000002
+IOCBF3                            00000003
+IOCBF4                            00000004
+IOCBF5                            00000005
+IOCBF6                            00000006
+IOCBF7                            00000007
+IOCBN                             00000395
+IOCBN0                            00000000
+IOCBN1                            00000001
+IOCBN2                            00000002
+IOCBN3                            00000003
+IOCBN4                            00000004
+IOCBN5                            00000005
+IOCBN6                            00000006
+IOCBN7                            00000007
+IOCBP                             00000394
+IOCBP0                            00000000
+IOCBP1                            00000001
+IOCBP2                            00000002
+IOCBP3                            00000003
+IOCBP4                            00000004
+IOCBP5                            00000005
+IOCBP6                            00000006
+IOCBP7                            00000007
+IOCIE                             00000003
+IOCIF                             00000000
+IRCF0                             00000003
+IRCF1                             00000004
+IRCF2                             00000005
+IRCF3                             00000006
+LATA                              0000010C
+LATA0                             00000000
+LATA1                             00000001
+LATA2                             00000002
+LATA3                             00000003
+LATA4                             00000004
+LATA5                             00000005
+LATA6                             00000006
+LATA7                             00000007
+LATB                              0000010D
+LATB0                             00000000
+LATB1                             00000001
+LATB2                             00000002
+LATB3                             00000003
+LATB4                             00000004
+LATB5                             00000005
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+LATB6                             00000006
+LATB7                             00000007
+LATC                              0000010E
+LATC0                             00000000
+LATC1                             00000001
+LATC2                             00000002
+LATC3                             00000003
+LATC4                             00000004
+LATC5                             00000005
+LATC6                             00000006
+LATC7                             00000007
+LATE                              00000110
+LATE3                             00000003
+LCDA                              00000005
+LCDCON                            00000791
+LCDCST                            00000794
+LCDCST0                           00000000
+LCDCST1                           00000001
+LCDCST2                           00000002
+LCDDATA0                          000007A0
+LCDDATA1                          000007A1
+LCDDATA10                         000007AA
+LCDDATA3                          000007A3
+LCDDATA4                          000007A4
+LCDDATA6                          000007A6
+LCDDATA7                          000007A7
+LCDDATA9                          000007A9
+LCDEN                             00000007
+LCDIE                             00000002
+LCDIF                             00000002
+LCDIRE                            00000007
+LCDIRI                            00000005
+LCDIRS                            00000006
+LCDPS                             00000792
+LCDREF                            00000793
+LCDRL                             00000795
+LCDSE0                            00000798
+LCDSE1                            00000799
+LFIOFR                            00000001
+LMUX0                             00000000
+LMUX1                             00000001
+LP0                               00000000
+LP1                               00000001
+LP2                               00000002
+LP3                               00000003
+LRLAP0                            00000006
+LRLAP1                            00000007
+LRLAT0                            00000000
+LRLAT1                            00000001
+LRLAT2                            00000002
+LRLBP0                            00000004
+LRLBP1                            00000005
+LWLO                              00000005
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+MC1OUT                            00000000
+MC2OUT                            00000001
+MFIOFR                            00000002
+NOT_BOR                           00000000
+NOT_DONE                          00000001
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RI                            00000002
+NOT_RMCLR                         00000003
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_WPUEN                         00000007
+OERR                              00000001
+OPTION_REG                        00000095
+OSCCON                            00000099
+OSCSTAT                           0000009A
+OSCTUNE                           00000098
+OSFIE                             00000007
+OSFIF                             00000007
+OSTS                              00000005
+P                                 00000004
+P1DC0                             00000000
+P1DC1                             00000001
+P1DC2                             00000002
+P1DC3                             00000003
+P1DC4                             00000004
+P1DC5                             00000005
+P1DC6                             00000006
+P1M0                              00000006
+P1M1                              00000007
+P1RSEN                            00000007
+P2BSEL                            00000004
+P2DC0                             00000000
+P2DC1                             00000001
+P2DC2                             00000002
+P2DC3                             00000003
+P2DC4                             00000004
+P2DC5                             00000005
+P2DC6                             00000006
+P2M0                              00000006
+P2M1                              00000007
+P2RSEN                            00000007
+P3DC0                             00000000
+P3DC1                             00000001
+P3DC2                             00000002
+P3DC3                             00000003
+P3DC4                             00000004
+P3DC5                             00000005
+P3DC6                             00000006
+P3M0                              00000006
+P3M1                              00000007
+P3RSEN                            00000007
+PCIE                              00000006
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PCL                               00000002
+PCLATH                            0000000A
+PCLATH_SHAD                       00000FE7
+PCON                              00000096
+PEIE                              00000006
+PEN                               00000002
+PIE1                              00000091
+PIE2                              00000092
+PIE3                              00000093
+PIR1                              00000011
+PIR2                              00000012
+PIR3                              00000013
+PLLR                              00000006
+PORTA                             0000000C
+PORTB                             0000000D
+PORTC                             0000000E
+PORTE                             00000010
+PR2                               0000001B
+PR4                               00000416
+PR6                               0000041D
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSS1AC0                           00000002
+PSS1AC1                           00000003
+PSS1BD0                           00000000
+PSS1BD1                           00000001
+PSS2AC0                           00000002
+PSS2AC1                           00000003
+PSS2BD0                           00000000
+PSS2BD1                           00000001
+PSS3AC0                           00000002
+PSS3AC1                           00000003
+PSS3BD0                           00000000
+PSS3BD1                           00000001
+PSTR1CON                          00000296
+PSTR2CON                          0000029D
+PSTR3CON                          00000316
+PWM1CON                           00000294
+PWM2CON                           0000029B
+PWM3CON                           00000314
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RA6                               00000006
+RA7                               00000007
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE 12
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RCEN                              00000003
+RCIDL                             00000006
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             00000199
+RCSTA                             0000019D
+RD                                00000000
+RE3                               00000003
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+R_NOT_W                           00000002
+S                                 00000003
+SBCDE                             00000002
+SBOREN                            00000007
+SCIE                              00000005
+SCKP                              00000004
+SCS0                              00000000
+SCS1                              00000001
+SDAHT                             00000003
+SE0                               00000000
+SE1                               00000001
+SE10                              00000002
+SE11                              00000003
+SE12                              00000004
+SE13                              00000005
+SE14                              00000006
+SE15                              00000007
+SE2                               00000002
+SE3                               00000003
+SE4                               00000004
+SE5                               00000005
+SE6                               00000006
+SE7                               00000007
+SE8                               00000000
+SE9                               00000001
+SEG0COM0                          00000000
+SEG0COM1                          00000000
+SEG0COM2                          00000000
+SEG0COM3                          00000000
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE 13
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SEG10COM0                         00000002
+SEG10COM1                         00000002
+SEG10COM2                         00000002
+SEG10COM3                         00000002
+SEG11COM0                         00000003
+SEG11COM1                         00000003
+SEG11COM2                         00000003
+SEG11COM3                         00000003
+SEG12COM0                         00000004
+SEG12COM1                         00000004
+SEG12COM2                         00000004
+SEG12COM3                         00000004
+SEG13COM0                         00000005
+SEG13COM1                         00000005
+SEG13COM2                         00000005
+SEG13COM3                         00000005
+SEG14COM0                         00000006
+SEG14COM1                         00000006
+SEG14COM2                         00000006
+SEG14COM3                         00000006
+SEG15COM0                         00000007
+SEG15COM1                         00000007
+SEG15COM2                         00000007
+SEG15COM3                         00000007
+SEG1COM0                          00000001
+SEG1COM1                          00000001
+SEG1COM2                          00000001
+SEG1COM3                          00000001
+SEG2COM0                          00000002
+SEG2COM1                          00000002
+SEG2COM2                          00000002
+SEG2COM3                          00000002
+SEG3COM0                          00000003
+SEG3COM1                          00000003
+SEG3COM2                          00000003
+SEG3COM3                          00000003
+SEG4COM0                          00000004
+SEG4COM1                          00000004
+SEG4COM2                          00000004
+SEG4COM3                          00000004
+SEG5COM0                          00000005
+SEG5COM1                          00000005
+SEG5COM2                          00000005
+SEG5COM3                          00000005
+SEG6COM0                          00000006
+SEG6COM1                          00000006
+SEG6COM2                          00000006
+SEG6COM3                          00000006
+SEG7COM0                          00000007
+SEG7COM1                          00000007
+SEG7COM2                          00000007
+SEG7COM3                          00000007
+SEG8COM0                          00000000
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE 14
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SEG8COM1                          00000000
+SEG8COM2                          00000000
+SEG8COM3                          00000000
+SEG9COM0                          00000001
+SEG9COM1                          00000001
+SEG9COM2                          00000001
+SEG9COM3                          00000001
+SEN                               00000000
+SENDB                             00000003
+SLPEN                             00000006
+SMP                               00000007
+SP1BRG                            0000019B
+SP1BRGH                           0000019C
+SP1BRGL                           0000019B
+SPBRG                             0000019B
+SPBRGH                            0000019C
+SPBRGL                            0000019B
+SPEN                              00000007
+SPLLEN                            00000007
+SRCLK0                            00000004
+SRCLK1                            00000005
+SRCLK2                            00000006
+SRCON0                            0000011A
+SRCON1                            0000011B
+SREN                              00000005
+SRLEN                             00000007
+SRNQEN                            00000002
+SRNQSEL                           00000003
+SRPR                              00000000
+SRPS                              00000001
+SRQEN                             00000003
+SRRC1E                            00000000
+SRRC2E                            00000001
+SRRCKE                            00000002
+SRRPE                             00000003
+SRSC1E                            00000004
+SRSC2E                            00000005
+SRSCKE                            00000006
+SRSPE                             00000007
+SSPADD                            00000212
+SSPBUF                            00000211
+SSPCON                            00000215
+SSPCON1                           00000215
+SSPCON2                           00000216
+SSPCON3                           00000217
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPMSK                            00000213
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE 15
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SSPOV                             00000006
+SSPSTAT                           00000214
+SSSEL                             00000001
+STATUS                            00000003
+STATUS_SHAD                       00000FE4
+STKOVF                            00000007
+STKPTR                            00000FED
+STKUNF                            00000006
+STR1A                             00000000
+STR1B                             00000001
+STR1C                             00000002
+STR1D                             00000003
+STR1SYNC                          00000004
+STR2A                             00000000
+STR2B                             00000001
+STR2C                             00000002
+STR2D                             00000003
+STR2SYNC                          00000004
+STR3A                             00000000
+STR3B                             00000001
+STR3C                             00000002
+STR3D                             00000003
+STR3SYNC                          00000004
+SWDTEN                            00000000
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T0XCS                             00000000
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000018
+T1GCON                            00000019
+T1GGO                             00000003
+T1GGO_NOT_DONE                    00000003
+T1GPOL                            00000006
+T1GSEL                            00000005
+T1GSPM                            00000004
+T1GSS0                            00000000
+T1GSS1                            00000001
+T1GTM                             00000005
+T1GVAL                            00000002
+T1OSCEN                           00000003
+T1OSCR                            00000007
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             0000001C
+T2OUTPS0                          00000003
+T2OUTPS1                          00000004
+T2OUTPS2                          00000005
+T2OUTPS3                          00000006
+T4CKPS0                           00000000
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE 16
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+T4CKPS1                           00000001
+T4CON                             00000417
+T4OUTPS0                          00000003
+T4OUTPS1                          00000004
+T4OUTPS2                          00000005
+T4OUTPS3                          00000006
+T6CKPS0                           00000000
+T6CKPS1                           00000001
+T6CON                             0000041E
+T6OUTPS0                          00000003
+T6OUTPS1                          00000004
+T6OUTPS2                          00000005
+T6OUTPS3                          00000006
+TMR0                              00000015
+TMR0CS                            00000005
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR0SE                            00000004
+TMR1                              00000016
+TMR1CS0                           00000006
+TMR1CS1                           00000007
+TMR1GE                            00000007
+TMR1GIE                           00000007
+TMR1GIF                           00000007
+TMR1H                             00000017
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             00000016
+TMR1ON                            00000000
+TMR2                              0000001A
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TMR4                              00000415
+TMR4IE                            00000001
+TMR4IF                            00000001
+TMR4ON                            00000002
+TMR6                              0000041C
+TMR6IE                            00000003
+TMR6IF                            00000003
+TMR6ON                            00000002
+TOSH                              00000FEF
+TOSL                              00000FEE
+TRISA                             0000008C
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
+TRISA6                            00000006
+TRISA7                            00000007
+TRISB                             0000008D
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE 17
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+TRISC                             0000008E
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
+TRISE                             00000090
+TRISE3                            00000003
+TRMT                              00000001
+TSEN                              00000005
+TSRNG                             00000004
+TUN0                              00000000
+TUN1                              00000001
+TUN2                              00000002
+TUN3                              00000003
+TUN4                              00000004
+TUN5                              00000005
+TX9                               00000006
+TX9D                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             0000019A
+TXSTA                             0000019E
+UA                                00000001
+VLCD1PE                           00000001
+VLCD2PE                           00000002
+VLCD3PE                           00000003
+W                                 00000000
+WA                                00000004
+WCOL                              00000007
+WDTCON                            00000097
+WDTPS0                            00000001
+WDTPS1                            00000002
+WDTPS2                            00000003
+WDTPS3                            00000004
+WDTPS4                            00000005
+WERR                              00000005
+WFT                               00000007
+WPUB                              0000020D
+WPUB0                             00000000
+WPUB1                             00000001
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE 18
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+WPUB2                             00000002
+WPUB3                             00000003
+WPUB4                             00000004
+WPUB5                             00000005
+WPUB6                             00000006
+WPUB7                             00000007
+WPUE                              00000210
+WPUE3                             00000003
+WR                                00000001
+WREG                              00000009
+WREG_SHAD                         00000FE5
+WREN                              00000002
+WRERR                             00000003
+WUE                               00000001
+Z                                 00000002
+Z_SHAD                            00000002
+_BOREN_NSLEEP                     0000FDFF
+_BOREN_OFF                        0000F9FF
+_BOREN_ON                         0000FFFF
+_BOREN_SBODEN                     0000FBFF
+_BORV_19                          0000FFFF
+_BORV_25                          0000FBFF
+_BORV_HI                          0000FBFF
+_BORV_LO                          0000FFFF
+_CLKOUTEN_OFF                     0000FFFF
+_CLKOUTEN_ON                      0000F7FF
+_CONFIG1                          00008007
+_CONFIG2                          00008008
+_CPD_OFF                          0000FFFF
+_CPD_ON                           0000FEFF
+_CP_OFF                           0000FFFF
+_CP_ON                            0000FF7F
+_DEVID1                           00008006
+_FCMEN_OFF                        0000DFFF
+_FCMEN_ON                         0000FFFF
+_FOSC_ECH                         0000FFFF
+_FOSC_ECL                         0000FFFD
+_FOSC_ECM                         0000FFFE
+_FOSC_EXTRC                       0000FFFB
+_FOSC_HS                          0000FFFA
+_FOSC_INTOSC                      0000FFFC
+_FOSC_LP                          0000FFF8
+_FOSC_XT                          0000FFF9
+_IDLOC0                           00008000
+_IDLOC1                           00008001
+_IDLOC2                           00008002
+_IDLOC3                           00008003
+_IESO_OFF                         0000EFFF
+_IESO_ON                          0000FFFF
+_LVP_OFF                          0000DFFF
+_LVP_ON                           0000FFFF
+_MCLRE_OFF                        0000FFBF
+_MCLRE_ON                         0000FFFF
+MPASM 5.57                ./ASM/MOV_INDF.ASM   8-9-2014  20:50:35         PAGE 19
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_PLLEN_OFF                        0000FEFF
+_PLLEN_ON                         0000FFFF
+_PWRTE_OFF                        0000FFFF
+_PWRTE_ON                         0000FFDF
+_STVREN_OFF                       0000FDFF
+_STVREN_ON                        0000FFFF
+_VCAPEN_OFF                       0000FFFF
+_VCAPEN_RA0                       0000FFCF
+_VCAPEN_RA5                       0000FFDF
+_VCAPEN_RA6                       0000FFEF
+_WDTE_NSLEEP                      0000FFF7
+_WDTE_OFF                         0000FFE7
+_WDTE_ON                          0000FFFF
+_WDTE_SWDTEN                      0000FFEF
+_WRT_ALL                          0000FFFC
+_WRT_BOOT                         0000FFFE
+_WRT_HALF                         0000FFFD
+_WRT_OFF                          0000FFFF
+__16F1933                         00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXX--------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    56
+Program Memory Words Free:  4040
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

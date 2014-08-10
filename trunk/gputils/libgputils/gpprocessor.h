@@ -76,10 +76,12 @@ Boston, MA 02111-1307, USA.  */
 #define PIC14E_BMSK_BANK            0x001F
 #define PIC14E_BMSK_PAGE512         0x007F
 
+#define PIC14E_REG_INDF0            0x00
 #define PIC14E_REG_FSR0             0x04
 #define PIC14E_REG_FSR0L            0x04
 #define PIC14E_REG_FSR0H            0x05
 
+#define PIC14E_REG_INDF1            0x01
 #define PIC14E_REG_FSR1             0x06
 #define PIC14E_REG_FSR1L            0x06
 #define PIC14E_REG_FSR1H            0x07

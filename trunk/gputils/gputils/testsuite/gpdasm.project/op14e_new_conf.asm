@@ -75,13 +75,17 @@ insn macro file
 	LSLF	file, F
 	LSRF	file, F
 	MOVF	file, F
+	moviw_test INDF0
 	moviw_test FSR0
+	moviw_test INDF1
 	moviw_test FSR1
 	MOVLB	0x1f
 	MOVLP	0x7f
 	MOVLW	0xff
 	MOVWF	file
+	movwi_test INDF0
 	movwi_test FSR0
+	movwi_test INDF1
 	movwi_test FSR1
 	NOP 
 ;	OPTION 
