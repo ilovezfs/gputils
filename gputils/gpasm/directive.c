@@ -5218,9 +5218,20 @@ do_insn(const char *name, struct pnode *parms)
           fsr = maybe_evaluate(p);
           /* New opcode for indexed indirect,
              moviw/movwi INDFn handled as moviw/movwi 0[FSRn]. */
-          if ((fsr == PIC14E_REG_FSR0) || (fsr == PIC14E_REG_FSR1)) {
-            fsr = (fsr == PIC14E_REG_FSR1) ? 0x40 : 0x00;
-            opcode = ((icode == ICODE_MOVIW) ? PIC14E_INSN_MOVIW_IDX : PIC14E_INSN_MOVWI_IDX) | fsr;
+          file = -1;
+
+          if ((fsr == PIC14E_REG_INDF0) || (fsr == PIC14E_REG_INDF1)) {
+            file = (fsr == PIC14E_REG_INDF1) ? 0x40 : 0x00;
+          }
+
+          if (file < 0) {
+            if ((fsr == PIC14E_REG_FSR0) || (fsr == PIC14E_REG_FSR1)) {
+              file = (fsr == PIC14E_REG_FSR1) ? 0x40 : 0x00;
+            }
+          }
+
+          if (file >= 0) {
+            opcode = ((icode == ICODE_MOVIW) ? PIC14E_INSN_MOVIW_IDX : PIC14E_INSN_MOVWI_IDX) | file;
             emit(opcode, s->name);
           }
           else {
@@ -5232,23 +5243,34 @@ do_insn(const char *name, struct pnode *parms)
           p2 = HEAD(TAIL(parms));
           fsr = maybe_evaluate(p2);
 
-          if ((fsr == PIC14E_REG_FSR0) || (fsr == PIC14E_REG_FSR1)) {
-            fsr = (fsr == PIC14E_REG_FSR1) ? 0x04 : 0x00;
+          file = -1;
+
+          if ((fsr == PIC14E_REG_INDF0) || (fsr == PIC14E_REG_INDF1)) {
+            file = (fsr == PIC14E_REG_INDF1) ? 0x04 : 0x00;
+          }
+
+          if (file < 0) {
+            if ((fsr == PIC14E_REG_FSR0) || (fsr == PIC14E_REG_FSR1)) {
+              file = (fsr == PIC14E_REG_FSR1) ? 0x04 : 0x00;
+            }
+          }
+
+          if (file >= 0) {
             k = -1;
 
             switch (maybe_evaluate(p)) {
-              /* ++FSRn */
+              /* ++INDFn, ++FSRn */
             case INCREMENT:     k = 0; break;
-              /* --FSRn */
+              /* --INDFn, --FSRn */
             case DECREMENT:     k = 1; break;
-              /* FSRn++ */
+              /* INDFn++, FSRn++ */
             case POSTINCREMENT: k = 2; break;
-              /* FSRn-- */
+              /* INDFn--, FSRn-- */
             case POSTDECREMENT: k = 3; break;
             }
 
             if (k >= 0) {
-              emit(i->opcode | fsr | k, s->name);
+              emit(i->opcode | file | k, s->name);
             }
             else {
               gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
@@ -5264,8 +5286,19 @@ do_insn(const char *name, struct pnode *parms)
           p2 = HEAD(TAIL(parms));
           fsr = maybe_evaluate(p2);
 
-          if (fsr == PIC14E_REG_FSR0 || fsr == PIC14E_REG_FSR1) {
-            fsr = (fsr == PIC14E_REG_FSR1) ? 0x40 : 0x00;
+          file = -1;
+
+          if ((fsr == PIC14E_REG_INDF0) || (fsr == PIC14E_REG_INDF1)) {
+            file = (fsr == PIC14E_REG_INDF1) ? 0x40 : 0x00;
+          }
+
+          if (file < 0) {
+            if ((fsr == PIC14E_REG_FSR0) || (fsr == PIC14E_REG_FSR1)) {
+              file = (fsr == PIC14E_REG_FSR1) ? 0x40 : 0x00;
+            }
+          }
+
+          if (file >= 0) {
             switch (maybe_evaluate(p)) {
             case INDFOFFSET:
               p3 = TAIL(TAIL(parms));
@@ -5279,7 +5312,7 @@ do_insn(const char *name, struct pnode *parms)
               }
               else {
                 /* New opcode for indexed indirect. */
-                opcode = ((icode == ICODE_MOVIW) ? PIC14E_INSN_MOVIW_IDX : PIC14E_INSN_MOVWI_IDX) | fsr;
+                opcode = ((icode == ICODE_MOVIW) ? PIC14E_INSN_MOVIW_IDX : PIC14E_INSN_MOVWI_IDX) | file;
                 emit(opcode | (k & 0x3f), s->name);
               }
               break;

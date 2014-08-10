@@ -1683,11 +1683,23 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
       }
 
       if (behavior & GPDIS_SHOW_NAMES) {
-        snprintf(&buffer[length], buffer_length - length, "%-*s%s.%d[FSR%i]", TABULATOR_SIZE, instr, neg, value, tmp);
+        const char *reg = (behavior & GPDIS_SHOW_FSRN) ? "FSR" : "INDF";
+
+        snprintf(&buffer[length], buffer_length - length, "%-*s%s.%d[%s%i]", TABULATOR_SIZE, instr, neg, value, reg, tmp);
       }
       else {
-        snprintf(&buffer[length], buffer_length - length, "%-*s%s.%d[%u]", TABULATOR_SIZE, instr, neg, value,
-                 (tmp) ? PIC14E_REG_FSR1 : PIC14E_REG_FSR0);
+        if (behavior & GPDIS_SHOW_FSRN) {
+          tmp |= 2;
+        }
+
+        switch (tmp) {
+          case 0: tmp = PIC14E_REG_INDF0; break;
+          case 1: tmp = PIC14E_REG_INDF1; break;
+          case 2: tmp = PIC14E_REG_FSR0;  break;
+          case 3: tmp = PIC14E_REG_FSR1;  break;
+        }
+
+        snprintf(&buffer[length], buffer_length - length, "%-*s%s.%d[%u]", TABULATOR_SIZE, instr, neg, value, tmp);
       }
 
       return num_words;
@@ -2667,10 +2679,24 @@ _insn_class_pf:
         tmp   = opcode & 0x0003;
 
         if (behavior & GPDIS_SHOW_NAMES) {
-          PRINT_MOVINDF_S_S_S(op_pre[tmp], (file1) ? "FSR1" : "FSR0", op_post[tmp]);
+          const char *reg = (behavior & GPDIS_SHOW_FSRN) ? "FSR" : "INDF";
+
+          snprintf(&buffer[length], buffer_length - length, "%-*s%s%s%i%s", TABULATOR_SIZE, instruction->name,
+                   op_pre[tmp], reg, file1, op_post[tmp]);
         }
         else {
-          PRINT_MOVINDF_S_N_S(op_pre[tmp], (file1) ? PIC14E_REG_FSR1 : PIC14E_REG_FSR0, op_post[tmp]);
+          if (behavior & GPDIS_SHOW_FSRN) {
+            file1 |=  2;
+          }
+
+          switch (file1) {
+            case 0: file1 = PIC14E_REG_INDF0; break;
+            case 1: file1 = PIC14E_REG_INDF1; break;
+            case 2: file1 = PIC14E_REG_FSR0;  break;
+            case 3: file1 = PIC14E_REG_FSR1;  break;
+          }
+
+          PRINT_MOVINDF_S_N_S(op_pre[tmp], file1, op_post[tmp]);
         }
       }
       break;

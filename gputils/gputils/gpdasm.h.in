@@ -45,6 +45,7 @@ extern struct gpdasm_state {
   } num;
 
   gp_boolean show_names;
+  gp_boolean show_fsrn;
   gp_boolean show_config;
   gp_boolean need_sfr_equ;
 } state;

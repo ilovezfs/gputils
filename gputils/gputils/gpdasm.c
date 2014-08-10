@@ -596,6 +596,7 @@ dasm(MemBlock *memory)
   int insn_size;
   int last_loc;
   int num_words;
+  int behavior;
   int bsr_boundary;
   unsigned short data;
   unsigned char byte;
@@ -638,6 +639,17 @@ dasm(MemBlock *memory)
   if (!state.format && state.show_config) {
     show_config();
     show_idlocs();
+  }
+
+  if (state.show_names) {
+    behavior = GPDIS_SHOW_NAMES | GPDIS_SHOW_BYTES | GPDIS_SHOW_EXCLAMATION;
+
+    if (state.show_fsrn) {
+      behavior |= GPDIS_SHOW_FSRN;
+    }
+  }
+  else {
+    behavior = GPDIS_SHOW_NOTHING;
   }
 
   m = memory;
@@ -802,9 +814,7 @@ dasm(MemBlock *memory)
           }
 
           num_words = gp_disassemble(m, i, state.class, bsr_boundary, state.processor->prog_mem_size,
-                                     (state.show_names) ? (GPDIS_SHOW_NAMES | GPDIS_SHOW_BYTES | GPDIS_SHOW_EXCLAMATION) :
-                                                          GPDIS_SHOW_NOTHING,
-                                     buffer, sizeof(buffer), length);
+                                     behavior, buffer, sizeof(buffer), length);
           printf("%s\n", buffer);
 
           if (num_words != 1) {
@@ -842,6 +852,8 @@ show_usage(void)
   printf("  -c, --mnemonics                Decode special mnemonics.\n");
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -i, --hex-info                 Information of input hex file.\n");
+  printf("  -j, --mov-fsrn                 In the MOVIW or MOVWI instructions show as base\n");
+  printf("                                 the FSRn register instead of the INDFn.\n");
   printf("  -l, --list-chips               List supported processors.\n");
   printf("  -m, --dump                     Memory dump of input hex file.\n");
   printf("  -n, --show-names               For some case of SFR, shows the name of\n"
@@ -862,23 +874,24 @@ show_usage(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
-#define GET_OPTIONS "?chilmnop:svy"
+#define GET_OPTIONS "?chijlmnop:svy"
 
   /* Used: himpsv */
-  static struct option longopts[] =
+static struct option longopts[] =
   {
-    { "mnemonics",   0, 0, 'c' },
-    { "help",        0, 0, 'h' },
-    { "hex-info",    0, 0, 'i' },
-    { "list-chips",  0, 0, 'l' },
-    { "dump",        0, 0, 'm' },
-    { "show-names",  0, 0, 'n' },
-    { "show-config", 0, 0, 'o' },
-    { "processor",   1, 0, 'p' },
-    { "short",       0, 0, 's' },
-    { "version",     0, 0, 'v' },
-    { "extended",    0, 0, 'y' },
-    { "strict",      0, 0, 't' },
+    { "mnemonics",   no_argument,       NULL, 'c' },
+    { "help",        no_argument,       NULL, 'h' },
+    { "hex-info",    no_argument,       NULL, 'i' },
+    { "mov-fsrn",    no_argument,       NULL, 'j' },
+    { "list-chips",  no_argument,       NULL, 'l' },
+    { "dump",        no_argument,       NULL, 'm' },
+    { "show-names",  no_argument,       NULL, 'n' },
+    { "show-config", no_argument,       NULL, 'o' },
+    { "processor",   required_argument, NULL, 'p' },
+    { "short",       no_argument,       NULL, 's' },
+    { "version",     no_argument,       NULL, 'v' },
+    { "extended",    no_argument,       NULL, 'y' },
+    { "strict",      no_argument,       NULL, 't' },
     { 0, 0, 0, 0 }
   };
 
@@ -899,7 +912,8 @@ int main(int argc, char *argv[])
   gp_init();
 
   state.i_memory = i_memory_create();
-  state.show_names = false;
+  state.show_names  = false;
+  state.show_fsrn   = false;
   state.show_config = false;
 
   while ((c = GETOPT_FUNC) != EOF) {
@@ -915,6 +929,10 @@ int main(int argc, char *argv[])
 
     case 'i':
       print_hex_info = true;
+      break;
+
+    case 'j':
+      state.show_fsrn = true;
       break;
 
     case 'l':

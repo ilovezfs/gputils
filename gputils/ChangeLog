@@ -1,3 +1,17 @@
+2014-08-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c,
+    gpasm/testsuite/gpasm.project/asmfiles/mov_indf.asm,
+    gpasm/testsuite/gpasm.project/hexfiles/mov_indf.hex,
+    gpasm/testsuite/gpasm.project/listfiles/mov_indf.lst,
+    gputils/gpdasm.c, gputils/gpdasm.h.in,
+    gputils/testsuite/gpdasm.project/op14e_new_conf.asm,
+    libgputils/gpdis.c, libgputils/gpdis.h,
+    libgputils/gpprocessor.h:
+    Implemented this feature request: "#63 MPASM compatibility"
+
+  * gplink/scan.l:
+    Changed text format.
+
 2014-08-03  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx:
     Further explanations.

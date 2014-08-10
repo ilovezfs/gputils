@@ -44,18 +44,28 @@ gp_input(char *buf, size_t max_size)
     {
       int c = '*';
       size_t n;
-      for (n = 0; n < max_size &&
-        (c = getc(yyin)) != EOF && c != '\n'; ++n)
-        buf[n] = (char) c;
+
+      for (n = 0; (n < max_size) && ((c = getc(yyin)) != EOF) && (c != '\n'); ++n)
+        {
+          buf[n] = (char)c;
+        }
+
       if (c == '\n')
         {
           /* skip CR followed by LF */
-          if (n > 0 && '\r' == buf[n - 1])
-            --n;
-          buf[n++] = (char) c;
+          if ((n > 0) && (buf[n - 1] == '\r'))
+            {
+              --n;
+            }
+
+          buf[n++] = (char)c;
         }
-      if (c == EOF && ferror(yyin))
-        script_error("Internal error", "Input in flex scanner failed");
+
+      if ((c == EOF) && ferror(yyin))
+        {
+          script_error("Internal error", "Input in flex scanner failed");
+        }
+
       return n;
     }
   else
@@ -69,6 +79,7 @@ static inline size_t
 gp_yyinput(char *buf, size_t max_size)
 {
   size_t result = gp_input(buf, max_size);
+
   if (result)
     {
       state.src->last_char_is_nl = (buf[result - 1] == '\n');
@@ -79,6 +90,7 @@ gp_yyinput(char *buf, size_t max_size)
       result = 1;
       state.src->last_char_is_nl = true;
     }
+
   return result;
 }
 
@@ -158,30 +170,33 @@ static void bad_char(char *character)
     *character);
 
   script_error(&complaint[0], NULL);
-
-  return;
 }
 
 void open_src(const char *name, int isinclude)
 {
   extern FILE *yyin;
   struct source_context *new = malloc(sizeof(*new));
-  if (state.src)
+
+  if (state.src != NULL) {
     state.src->yybuf = YY_CURRENT_BUFFER;
+  }
 
   new->f = fopen(name, "rt");
-  if(new->f)
+
+  if (new->f != NULL) {
     new->name = strdup(name);
+  }
   else if(isinclude && (strchr(name, PATH_CHAR) == 0)) {
     /* If include file and no "/" in name, try searching include path */
     char tryname[BUFSIZ];
     int i;
 
-    for(i = 0; i < state.numpaths; i++) {
+    for (i = 0; i < state.numpaths; i++) {
       snprintf(tryname, sizeof(tryname),
                "%s" COPY_CHAR "%s", state.paths[i], name);
       new->f = fopen(tryname, "rt");
-      if(new->f) {
+
+      if (new->f != NULL) {
         new->name = strdup(tryname);
         break;
       }
@@ -191,17 +206,15 @@ void open_src(const char *name, int isinclude)
   yyin = new->f;
 
   if (new->f == NULL) {
-    if (state.src) {
-      gp_error("Unable to open file \"%s\" - %s",
-               name,
-               strerror(errno));
+    if (state.src != NULL) {
+      gp_error("Unable to open file \"%s\" - %s", name, strerror(errno));
     } else {
       perror(name);
     }
     exit(1);
   }
 
-  if (state.src) {
+  if (state.src != NULL) {
     yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
   }
 
@@ -218,13 +231,14 @@ int close_file()
 
   old = state.src;
   state.src = state.src->prev;
+
   if (old->f != NULL) {
     fclose(old->f);
     free(old->name);
   }
   free(old);
 
-  if (state.src) {
+  if (state.src != NULL) {
     /* Just an include file */
     yy_delete_buffer(YY_CURRENT_BUFFER);
     yy_switch_to_buffer(state.src->yybuf);
