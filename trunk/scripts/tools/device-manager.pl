@@ -2432,7 +2432,7 @@ sub addition_helper2($$$$)
 
   report(RP_ADD, E_COFF_COLL, $Coff_error, $coff, $px->{NAMES}->[0], "pic$Name") if (defined($px));
 
-  $px = new_px_row($Mem_error, $Info, undef, undef);
+  $px = new_px_row($Mem_error, $Info, "p${Name}.inc", "${Name}_g.lkr");
   push(@gp_px_struct, $px);
   $gp_px_rows_by_name{$Name} = $px;
   $gp_px_rows_by_coff{$coff} = $px;
