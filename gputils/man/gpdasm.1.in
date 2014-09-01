@@ -27,7 +27,7 @@ Show this usage message and exit.
 Report extra information about the input hex file. This information includes file
 size and hex format.
 .TP
-.BR \-k FILE ", "\-\-label-list FILE
+.BR "\-k FILE", " \-\-label-list FILE"
 A file which lists the names and addresses of the labels in the disassembled
 program code. (With the -n, -o and -s options.)
 .TP
@@ -37,7 +37,7 @@ List the supported processors.
 .BR \-m ", "\-\-dump
 Display the contents of instruction memory.
 .TP
-.BR "\-p PROC" , " \-\-processor PROC
+.BR "\-p PROC", " \-\-processor PROC"
 Select the processor.
 .TP
 .BR \-s ", "\-\-short

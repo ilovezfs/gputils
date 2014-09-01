@@ -39,7 +39,8 @@
 
 use strict;
 use warnings;
-use 5.12.0;                     # when (regex)
+no if $] >= 5.018, warnings => "experimental::smartmatch";        # perl 5.16
+use 5.12.0;                             # when (regex)
 use feature 'switch';
 use POSIX 'strftime', 'ULONG_MAX';
 
@@ -1336,9 +1337,8 @@ sub read_ram_features($$$)
           $Features->{MAX_RAM} = $full_ram;
           ++$full_ram;
           }
-        elsif ($line =~ /^__BADRAM\s+/io)
+        elsif ($line =~ /^__BADRAM\s+(.+)$/iop)
           {
-
         # __BADRAM  H'000F'
         # __BADRAM  H'0013'-H'0014'
         # __BADRAM  H'118'-H'1FF', H'218'-H'2FF', H'318'-H'3FF'
@@ -1366,7 +1366,7 @@ sub read_ram_features($$$)
               {
               die "Unknown value in \"$inc_path\" file: $_\n";
               }
-            } # foreach (split(/\s*,\s*/o, ${^POSTMATCH}))
+            } # foreach (split(/\s*,\s*/op, ${^POSTMATCH}))
 
           } # elsif ($line =~ /^__BADRAM\s+/io)
         elsif ($line =~ /^;\s*Configuration\s+Bits$/io)
@@ -1472,7 +1472,7 @@ sub process_lkr_line($$)
   my ($Line, $Features) = @_;
   my ($section, $protected, $name, $start, $end, $size, $tail, $index);
 
-  if ($Line =~ /^(\S+)\s+NAME=(\S+)\s+START=(\S+)\s+END=(\S+)/io)
+  if ($Line =~ /^(\S+)\s+NAME=(\S+)\s+START=(\S+)\s+END=(\S+)/iop)
     {
     ($section, $name, $start, $end) = ($1, $2, str2dec($3), str2dec($4));
     $size = $end - $start + 1;

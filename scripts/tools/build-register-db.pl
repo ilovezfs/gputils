@@ -33,6 +33,7 @@
 
 use strict;
 use warnings;
+no if $] >= 5.018, warnings => "experimental::smartmatch";        # perl 5.16
 use 5.12.0;                     # when (regex)
 use feature 'switch';           # Starting from 5.10.1.
 use POSIX 'strftime', 'UINT_MAX';
@@ -533,7 +534,7 @@ sub filter_bits_of_register($)
   for ($i = 0; $i < 8; ++$i)
     {
     $bits = $ref_bits->[$i];
-    next if (! defined(@{$bits}));
+    next if (! defined($bits));
 
     ++$bit_num;
     $bit_name_num = scalar(@{$bits});
