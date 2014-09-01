@@ -42,12 +42,15 @@ typedef union
     with the 'MemBlock' structure:
 
       typedef struct MemArg {
-        const char *first_arg;        Name of first argumentum (register).
-        int first_val;                Value of first argumentum (register address).
-
-        const char *second_arg;       Name of second argumentum (register or bit).
-        int second_val;               Value of second argumentum (register or bit address).
+        const char *arg;
+        int val;                      The value of the first argument.
+        int offs;                     If the argument is area then this the offset of the address.
       } MemArg;
+
+      typedef struct MemArg {
+        MemArg first;
+        MemArg second;
+      } MemArgList;
 
       typedef struct MemWord {
         unsigned int data;            The data byte and the attributes of.
@@ -59,7 +62,7 @@ typedef union
 
         unsigned int dest_byte_addr;  After disassembly shows the target byte-address (not org) of a branch.
 
-        MemArg args;
+        MemArgList args;
       } MemWord;
 
       typedef struct MemBlock {
@@ -468,15 +471,19 @@ i_memory_put_be(MemBlock *m, unsigned int byte_addr, unsigned short word,
 /*----------------------------------------------------------------------*/
 
 void
-print_i_memory(const MemBlock *m, proc_class_t class)
+print_i_memory(const MemBlock *m, pic_processor_t processor)
 {
+  proc_class_t class;
   int base, i, j;
+  int org;
   gp_boolean row_used;
   unsigned int w_used;
   bword_t data;
   unsigned char c;
 
 #define WORDS_IN_ROW 8
+
+  class = processor->class;
 
   while (m != NULL) {
     if (m->memory != NULL) {
@@ -493,32 +500,54 @@ print_i_memory(const MemBlock *m, proc_class_t class)
         }
 
         if (row_used) {
-          printf("%08X  ", gp_processor_byte_to_org(class, base + i));
+          org = gp_processor_byte_to_real(processor, base + i);
+          printf("%08X  ", org);
 
-          for (j = 0; j < WORDS_IN_ROW; j++) {
+          if ((gp_processor_is_eeprom_org(processor, org) >= 0) ||
+              ((class == PROC_CLASS_PIC16E) &&
+               ((gp_processor_is_idlocs_org(processor, org) >= 0) ||
+                (gp_processor_is_config_org(processor, org) >= 0)))) {
+            /* The row should be shown byte by byte. */
+            for (j = 0; j < (2 * WORDS_IN_ROW); j++) {
+              if (b_memory_get(m, base + i + j, &data.b[0], NULL, NULL)) {
+                printf("%02X ", data.b[0]);
+              }
+              else {
+                printf("-- ");
+              }
+            }
 
-            w_used = class->i_memory_get(m, base + i + (j * 2), &data.w, NULL, NULL);
-            switch (w_used & W_USED_ALL) {
-            case W_USED_ALL:
-              printf("%04X ", data.w);
-              break;
-
-            case W_USED_H:
-              printf("%02X-- ", data.b[1]);
-              break;
-
-            case W_USED_L:
-              printf("--%02X ", data.b[0]);
-              break;
-
-            default:
-              printf("---- ");
+            for (j = 0; j < (2 * WORDS_IN_ROW); j++) {
+              c = m->memory[i + j].data & 0xff;
+              putchar(isprint(c) ? c : '.');
             }
           }
+          else {
+            /* The row should be shown word by word. */
+            for (j = 0; j < WORDS_IN_ROW; j++) {
+              w_used = class->i_memory_get(m, base + i + (j * 2), &data.w, NULL, NULL);
+              switch (w_used & W_USED_ALL) {
+              case W_USED_ALL:
+                printf("%04X  ", data.w);
+                break;
 
-          for (j = 0; j < (2 * WORDS_IN_ROW); j++) {
-            c = m->memory[i + j].data & 0xff;
-            putchar(isprint(c) ? c : '.');
+              case W_USED_H:
+                printf("%02X--  ", data.b[1]);
+                break;
+
+              case W_USED_L:
+                printf("--%02X  ", data.b[0]);
+                break;
+
+              default:
+                printf("----  ");
+              }
+            }
+
+            for (j = 0; j < (2 * WORDS_IN_ROW); j++) {
+              c = m->memory[i + j].data & 0xff;
+              putchar(isprint(c) ? c : '.');
+            }
           }
           putchar('\n');
         }
@@ -694,7 +723,7 @@ b_memory_set_addr_name(MemBlock *m, unsigned int address, const char *name)
 /***********************************************************************/
 
 gp_boolean
-b_memory_set_args(MemBlock *m, unsigned int address, unsigned int type, const MemArg *Args)
+b_memory_set_args(MemBlock *m, unsigned int address, unsigned int type, const MemArgList *Args)
 {
   unsigned int block  = (address >> I_MEM_BITS) & 0xffff;
   unsigned int offset = address & I_MEM_MASK;
@@ -708,13 +737,15 @@ b_memory_set_args(MemBlock *m, unsigned int address, unsigned int type, const Me
         w->data |= type & W_ARG_T_MASK;
 
         if (type & W_ARG_T_FIRST) {
-          w->args.first_arg = Args->first_arg;
-          w->args.first_val = Args->first_val;
+          w->args.first.arg  = Args->first.arg;
+          w->args.first.val  = Args->first.val;
+          w->args.first.offs = Args->first.offs;
         }
 
         if (type & W_ARG_T_SECOND) {
-          w->args.second_arg = Args->second_arg;
-          w->args.second_val = Args->second_val;
+          w->args.second.arg  = Args->second.arg;
+          w->args.second.val  = Args->second.val;
+          w->args.second.offs = Args->second.offs;
         }
 
         return true;
@@ -732,7 +763,7 @@ b_memory_set_args(MemBlock *m, unsigned int address, unsigned int type, const Me
 /*----------------------------------------------------------------------*/
 
 unsigned int
-b_memory_get_args(const MemBlock *m, unsigned int address, MemArg *Args)
+b_memory_get_args(const MemBlock *m, unsigned int address, MemArgList *Args)
 {
   unsigned int block  = (address >> I_MEM_BITS) & 0xffff;
   unsigned int offset = address & I_MEM_MASK;
@@ -745,21 +776,25 @@ b_memory_get_args(const MemBlock *m, unsigned int address, MemArg *Args)
       if (w->data & BYTE_USED_MASK) {
         if (Args != NULL) {
           if (w->data & W_ARG_T_FIRST) {
-            Args->first_arg = w->args.first_arg;
-            Args->first_val = w->args.first_val;
+            Args->first.arg  = w->args.first.arg;
+            Args->first.val  = w->args.first.val;
+            Args->first.offs = w->args.first.offs;
           }
           else {
-            Args->first_arg = NULL;
-            Args->first_val = 0;
+            Args->first.arg  = NULL;
+            Args->first.val  = 0;
+            Args->first.offs = 0;
           }
 
           if (w->data & W_ARG_T_SECOND) {
-            Args->second_arg = w->args.second_arg;
-            Args->second_val = w->args.second_val;
+            Args->second.arg  = w->args.second.arg;
+            Args->second.val  = w->args.second.val;
+            Args->second.offs = w->args.second.offs;
           }
           else {
-            Args->second_arg = NULL;
-            Args->second_val = 0;
+            Args->second.arg  = NULL;
+            Args->second.val  = 0;
+            Args->second.offs = 0;
           }
         }
 
@@ -771,10 +806,12 @@ b_memory_get_args(const MemBlock *m, unsigned int address, MemArg *Args)
   }
 
   if (Args != NULL) {
-    Args->first_arg  = NULL;
-    Args->first_val  = 0;
-    Args->second_arg = NULL;
-    Args->second_val = 0;
+    Args->first.arg   = NULL;
+    Args->first.val   = 0;
+    Args->first.offs  = 0;
+    Args->second.arg  = NULL;
+    Args->second.val  = 0;
+    Args->second.offs = 0;
   }
 
   return 0;

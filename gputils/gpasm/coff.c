@@ -68,7 +68,7 @@ coff_close_section(void)
     return;
   }
 
-  state.obj.section->size = state.org - state.obj.section->address;
+  state.obj.section->size = state.byte_addr - state.obj.section->address;
   _update_section_symbol(state.obj.section);
 }
 
@@ -113,7 +113,7 @@ _new_config_section(const char *name, int addr, int flags, MemBlock *data, gp_bo
   state.obj.flags = flags;
 
   if (!state.obj.enabled) {
-    state.org = addr;
+    state.byte_addr = addr;
     return;
   }
 
@@ -164,7 +164,7 @@ _create_config_sections(void)
     }
 
     state.obj.section->size = conf_sec_mem->new_config ? gp_processor_org_to_byte(state.device.class, 1) : 2;
-    state.lst.line.was_org = conf_sec_mem->addr;
+    state.lst.line.was_byte_addr = conf_sec_mem->addr;
 
     if ((!state.obj.enabled) || (state.obj.section == NULL)) {
       return;
@@ -237,7 +237,7 @@ coff_new_section(const char *name, int addr, int flags)
   state.obj.flags = flags;
 
   if (!state.obj.enabled) {
-    state.org = addr;
+    state.byte_addr = addr;
     return;
   }
 
@@ -281,7 +281,7 @@ coff_new_section(const char *name, int addr, int flags)
   new_aux->type = AUX_SCN;
 
   state.i_memory = state.obj.section->data;
-  state.org = addr;
+  state.byte_addr = addr;
 }
 
 /* All coff data is generated on the second pass.  To support forward
@@ -299,7 +299,7 @@ coff_reloc(int symbol, short offset, enum gpasmValTypes type)
     return;
   }
 
-  origin = state.org - state.obj.section->address;
+  origin = state.byte_addr - state.obj.section->address;
 
   new = gp_coffgen_addreloc(state.obj.section);
   new->address       = origin;
@@ -321,7 +321,7 @@ coff_linenum(int emitted)
   }
 
   /* If the section is absolute, use the abolute address. */
-  origin = state.lst.line.was_org;
+  origin = state.lst.line.was_byte_addr;
   if (!(state.obj.section->flags & STYP_ABS)) {
     /* else use the relative address */
     origin -= state.obj.section->address;
@@ -565,7 +565,7 @@ coff_add_directsym(unsigned char command, const char *string)
   /* add .cod symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
   new->name           = strdup(".direct");
-  new->value          = gp_processor_byte_to_org(state.device.class, state.org);
+  new->value          = gp_processor_byte_to_org(state.device.class, state.byte_addr);
   new->section_number = state.obj.section_num;
   new->section        = state.obj.section;
   new->type           = T_NULL;

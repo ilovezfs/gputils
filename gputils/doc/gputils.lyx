@@ -1,5 +1,5 @@
-#LyX 2.0 created this file. For more info see http://www.lyx.org/
-\lyxformat 413
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
 \begin_document
 \begin_header
 \textclass book
@@ -12,13 +12,13 @@
 \font_roman times
 \font_sans default
 \font_typewriter default
+\font_math auto
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
-
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -29,15 +29,24 @@
 \use_hyperref false
 \papersize letterpaper
 \use_geometry true
-\use_amsmath 1
-\use_esint 0
-\use_mhchem 1
-\use_mathdots 1
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 0
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
 \cite_engine basic
+\cite_engine_type default
+\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
+\justification true
 \use_refstyle 0
 \index Index
 \shortcut idx
@@ -71,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Aug 01, 2014
+Sep 01, 2014
 \end_layout
 
 \begin_layout Standard
@@ -894,7 +903,7 @@ Where options can be one of:
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="30" columns="3">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
@@ -2457,7 +2466,7 @@ operators, based on the C operator set.
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="26" columns="2">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -3016,7 +3025,7 @@ Any symbol appearing in column 1 may be assigned a value using the assignment
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="14" columns="2">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -3352,7 +3361,7 @@ gpasm gives you several ways of specifying numbers.
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="3">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
@@ -3596,7 +3605,7 @@ Several legacy mpasm number formats are also supported.
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="8" columns="3">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
@@ -4162,7 +4171,12 @@ End of the program memory:
 \end_layout
 
 \begin_layout LyX-Code
-__PROGRAM_END      -- This is the last address where may be still placed
+__CODE_START       -- This is the first address where may be still placed
+ a code.
+\end_layout
+
+\begin_layout LyX-Code
+__CODE_END         -- This is the last address where may be still placed
  a code.
 \end_layout
 
@@ -5646,7 +5660,7 @@ Sets the types of messages that are printed.
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="2">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -6176,7 +6190,7 @@ list n=0
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="2">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -7159,7 +7173,7 @@ Create a new COFF <symbol>.
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="10" columns="2">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -7504,7 +7518,7 @@ Each directive creates a new COFF symbol
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="9" columns="2">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -7913,7 +7927,7 @@ Instruction set summary
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="35" columns="2">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <row>
@@ -8630,7 +8644,7 @@ Xor W and <f>, result in <dst>
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <row>
@@ -8727,7 +8741,7 @@ Return, maintain W
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="38" columns="2">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <row>
@@ -9504,7 +9518,7 @@ Xor W and <f>, result in <dst>
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="23" columns="2">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <row>
@@ -9994,7 +10008,7 @@ s, in addition to those listed under
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="2">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <row>
@@ -10236,7 +10250,7 @@ There are also a number of standard additional macros.
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="19" columns="2">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <row>
@@ -11342,7 +11356,7 @@ Where options can be one of:
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="19" columns="3">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
@@ -12101,7 +12115,7 @@ Where options can be one of:
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="3">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
@@ -12637,8 +12651,8 @@ Where options can be one of:
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="13" columns="3">
-<features tabularvalignment="middle">
+<lyxtabular version="3" rows="15" columns="3">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
@@ -12694,7 +12708,7 @@ Meaning
 \begin_inset Text
 
 \begin_layout Plain Layout
-Decode special mnemonics.
+Decode the special mnemonics.
 \end_layout
 
 \end_inset
@@ -12752,7 +12766,69 @@ Display the help message.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Display hex file information.
+Show the informations of the input hex file
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-j
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--mov-fsrn
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+In the MOVIW or MOVWI instructions show as base the FSRn register instead
+ of the INDFn.
+ [INDFn]
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-k <file>
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--label-list <file>
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+A file which lists the names and addresses of the labels in the disassembled
+ program code.
+ (With the -n, -o and -s options.)
 \end_layout
 
 \end_inset
@@ -12781,7 +12857,7 @@ Display hex file information.
 \begin_inset Text
 
 \begin_layout Plain Layout
-List supported processors.
+List the supported processors.
 \end_layout
 
 \end_inset
@@ -12810,7 +12886,7 @@ List supported processors.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Memory dump hex file.
+Memory dump of the input hex file.
 \end_layout
 
 \end_inset
@@ -12869,7 +12945,7 @@ For some case of SFR, shows the name of instead of the address.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Show CONFIG and IDLOCS - or __idlocs - directives.
+Show the CONFIG and IDLOCS - or __idlocs - directives.
 \end_layout
 
 \end_inset
@@ -12898,7 +12974,7 @@ Show CONFIG and IDLOCS - or __idlocs - directives.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Select processor.
+Select the processor.
 \end_layout
 
 \end_inset
@@ -12928,6 +13004,8 @@ Select processor.
 
 \begin_layout Plain Layout
 Print short form output.
+ (Creates a compilable source.
+ See also the -k, -n and -o options.)
 \end_layout
 
 \end_inset
@@ -12956,7 +13034,7 @@ Print short form output.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Print gpdasm version information and exit.
+Print the gpdasm version information and exit.
 \end_layout
 
 \end_inset
@@ -13139,6 +13217,55 @@ There are DON'T CARE bits in the instruction words.
  The value has changed and both tools are behaving correctly.
 \end_layout
 
+\begin_layout Itemize
+In this case helps the 
+\begin_inset Quotes eld
+\end_inset
+
+-k <list_file>
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+--label-list
+\begin_inset Quotes erd
+\end_inset
+
+ <list_file> command line options (with the -n, -o and -s options).
+ The description of the format of the list file can be found in the 
+\emph on
+gpdasm_sample.ulist
+\emph default
+ 
+\begin_inset Newline newline
+\end_inset
+
+For example:
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+gpdasm -nos 
+\emph on
+-k test.ulist
+\emph default
+ -p12f1822 test.hex > test.dis
+\end_layout
+
 \begin_layout Section
 gpstrip
 \begin_inset Index idx
@@ -13194,7 +13321,7 @@ Where options can be one of:
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="13" columns="3">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
@@ -13646,7 +13773,7 @@ Where options can be one of:
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="9" columns="3">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">
@@ -14058,7 +14185,7 @@ Where options can be one of:
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="3">
-<features tabularvalignment="middle">
+<features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="block" valignment="top" width="4in">

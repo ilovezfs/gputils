@@ -54,7 +54,8 @@ host_triplet = @host@
 bin_PROGRAMS = gpdasm$(EXEEXT) gplib$(EXEEXT) gpstrip$(EXEEXT) \
 	gpvc$(EXEEXT) gpvo$(EXEEXT)
 subdir = gputils
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in parse.c \
+	parse.h scan.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -65,7 +66,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_gpdasm_OBJECTS = gpdasm.$(OBJEXT)
+am_gpdasm_OBJECTS = labelset.$(OBJEXT) gpdasm.$(OBJEXT) \
+	parse.$(OBJEXT) scan.$(OBJEXT)
 gpdasm_OBJECTS = $(am_gpdasm_OBJECTS)
 gpdasm_LDADD = $(LDADD)
 gpdasm_DEPENDENCIES = ${top_builddir}/@LIBGPUTILS@ \
@@ -98,6 +100,11 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+@MAINTAINER_MODE_FALSE@am__skiplex = test -f $@ ||
+LEXCOMPILE = $(LEX) $(AM_LFLAGS) $(LFLAGS)
+YLWRAP = $(top_srcdir)/ylwrap
+@MAINTAINER_MODE_FALSE@am__skipyacc = test -f $@ ||
+YACCCOMPILE = $(YACC) $(AM_YFLAGS) $(YFLAGS)
 SOURCES = $(gpdasm_SOURCES) $(gplib_SOURCES) $(gpstrip_SOURCES) \
 	$(gpvc_SOURCES) $(gpvo_SOURCES)
 DIST_SOURCES = $(gpdasm_SOURCES) $(gplib_SOURCES) $(gpstrip_SOURCES) \
@@ -227,8 +234,13 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I${top_srcdir}/libgputils -I${top_srcdir}/include
 LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 gpdasm_SOURCES = \
-	gpdasm.c\
-	gpdasm.h.in
+	labelset.c \
+	labelset.h \
+	gpdasm.c \
+	gpdasm.h.in \
+	parse.y \
+	scan.h \
+	scan.l
 
 gplib_SOURCES = \
 	gplib.c \
@@ -246,13 +258,17 @@ gpvo_SOURCES = \
 	gpvo.c \
 	gpvo.h.in
 
-BUILT_SOURCES = gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h
-CLEANFILES = gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h
+
+# Need to have -d alone (not -dvt) for automake magic
+AM_YFLAGS = -d -vt
+AM_LFLAGS = -i
+BUILT_SOURCES = gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h parse.h scan.c
+CLEANFILES = gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h parse.c parse.h parse.output scan.c
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .o .obj
+.SUFFIXES: .c .l .o .obj .y
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -323,6 +339,9 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+parse.h: parse.c
+	@if test ! -f $@; then rm -f parse.c; else :; fi
+	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) parse.c; else :; fi
 gpdasm$(EXEEXT): $(gpdasm_OBJECTS) $(gpdasm_DEPENDENCIES) $(EXTRA_gpdasm_DEPENDENCIES) 
 	@rm -f gpdasm$(EXEEXT)
 	$(LINK) $(gpdasm_OBJECTS) $(gpdasm_LDADD) $(LIBS)
@@ -346,12 +365,15 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/block.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/labelset.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dump.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpdasm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gplib.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpstrip.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpvc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gpvo.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parse.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scan.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -366,6 +388,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+.l.c:
+	$(am__skiplex) $(SHELL) $(YLWRAP) $< $(LEX_OUTPUT_ROOT).c $@ -- $(LEXCOMPILE)
+
+.y.c:
+	$(am__skipyacc) $(SHELL) $(YLWRAP) $< y.tab.c $@ y.tab.h $*.h y.output $*.output -- $(YACCCOMPILE)
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -489,6 +517,9 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f parse.c
+	-rm -f parse.h
+	-rm -f scan.c
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 

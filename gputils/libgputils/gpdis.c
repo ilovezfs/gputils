@@ -47,20 +47,50 @@ Boston, MA 02111-1307, USA.  */
 #define PRINT_ARG1_N(W1, Arg1) \
         length += snprintf(&buffer[length], buffer_length - length, "%-*s0x%0*x", TABULATOR_SIZE, instruction->name, W1, Arg1)
 
-#define PRINT_ARG1_S(Arg1) \
-        length += snprintf(&buffer[length], buffer_length - length, "%-*s%s", TABULATOR_SIZE, instruction->name, Arg1)
+#define PRINT_ARG1_S(Arg1, Offs1) \
+	if ((Offs1) > 0) { \
+          length += snprintf(&buffer[length], buffer_length - length, "%-*s(%s + %i)", TABULATOR_SIZE, instruction->name, Arg1, Offs1); \
+	} \
+	else { \
+          length += snprintf(&buffer[length], buffer_length - length, "%-*s%s", TABULATOR_SIZE, instruction->name, Arg1); \
+	}
 
 #define PRINT_ARG2_N_N(W1, Arg1, W2, Arg2) \
         length += snprintf(&buffer[length], buffer_length - length, "%-*s0x%0*x, 0x%0*x", TABULATOR_SIZE, instruction->name, W1, Arg1, W2, Arg2)
 
-#define PRINT_ARG2_N_S(W1, Arg1, Arg2) \
-        length += snprintf(&buffer[length], buffer_length - length, "%-*s0x%0*x, %s", TABULATOR_SIZE, instruction->name, W1, Arg1, Arg2)
+#define PRINT_ARG2_N_S(W1, Arg1, Arg2, Offs2) \
+	if ((Offs2) > 0) { \
+          length += snprintf(&buffer[length], buffer_length - length, "%-*s0x%0*x, (%s + %i)", TABULATOR_SIZE, instruction->name, W1, Arg1, Arg2, Offs2); \
+	} \
+	else { \
+          length += snprintf(&buffer[length], buffer_length - length, "%-*s0x%0*x, %s", TABULATOR_SIZE, instruction->name, W1, Arg1, Arg2); \
+	}
 
-#define PRINT_ARG2_S_N(Arg1, W2, Arg2) \
-        length += snprintf(&buffer[length], buffer_length - length, "%-*s%s, 0x%0*x", TABULATOR_SIZE, instruction->name, Arg1, W2, Arg2)
+#define PRINT_ARG2_S_N(Arg1, Offs1, W2, Arg2) \
+	if ((Offs1) > 0) { \
+          length += snprintf(&buffer[length], buffer_length - length, "%-*s(%s + %i), 0x%0*x", TABULATOR_SIZE, instruction->name, Arg1, Offs1, W2, Arg2); \
+	} \
+	else { \
+          length += snprintf(&buffer[length], buffer_length - length, "%-*s%s, 0x%0*x", TABULATOR_SIZE, instruction->name, Arg1, W2, Arg2); \
+	}
 
-#define PRINT_ARG2_S_S(Arg1, Arg2) \
-        length += snprintf(&buffer[length], buffer_length - length, "%-*s%s, %s", TABULATOR_SIZE, instruction->name, Arg1, Arg2)
+#define PRINT_ARG2_S_S(Arg1, Offs1, Arg2, Offs2) \
+	if ((Offs1) > 0) { \
+	  if ((Offs2) > 0) { \
+            length += snprintf(&buffer[length], buffer_length - length, "%-*s(%s + %i), (%s + %i)", TABULATOR_SIZE, instruction->name, Arg1, Offs1, Arg2, Offs2); \
+	  } \
+	  else { \
+            length += snprintf(&buffer[length], buffer_length - length, "%-*s(%s + %i), %s", TABULATOR_SIZE, instruction->name, Arg1, Offs1, Arg2); \
+	  } \
+	} \
+	else { \
+	  if ((Offs2) > 0) { \
+            length += snprintf(&buffer[length], buffer_length - length, "%-*s%s, (%s + %i)", TABULATOR_SIZE, instruction->name, Arg1, Arg2, Offs2); \
+          } \
+	else { \
+            length += snprintf(&buffer[length], buffer_length - length, "%-*s%s, %s", TABULATOR_SIZE, instruction->name, Arg1, Arg2); \
+	  } \
+	}
 
 #define PRINT_ARG3_N_N_N(W1, Arg1, W2, Arg2, W3, Arg3) \
         length += snprintf(&buffer[length], buffer_length - length, "%-*s0x%0*x, 0x%0*x, 0x%0*x", TABULATOR_SIZE, instruction->name, W1, Arg1, W2, Arg2, W3, Arg3)
@@ -71,11 +101,21 @@ Boston, MA 02111-1307, USA.  */
 #define PRINT_ARG3_N_S_S(W1, Arg1, Arg2, Arg3) \
         length += snprintf(&buffer[length], buffer_length - length, "%-*s0x%0*x, %s, %s", TABULATOR_SIZE, instruction->name, W1, Arg1, Arg2, Arg3)
 
-#define PRINT_ARG3_S_N_S(Arg1, W2, Arg2, Arg3) \
-        length += snprintf(&buffer[length], buffer_length - length, "%-*s%s, 0x%0*x, %s", TABULATOR_SIZE, instruction->name, Arg1, W2, Arg2, Arg3)
+#define PRINT_ARG3_S_N_S(Arg1, Offs1, W2, Arg2, Arg3) \
+	if ((Offs1) > 0) { \
+          length += snprintf(&buffer[length], buffer_length - length, "%-*s(%s + %i), 0x%0*x, %s", TABULATOR_SIZE, instruction->name, Arg1, Offs1, W2, Arg2, Arg3); \
+	} \
+	else { \
+          length += snprintf(&buffer[length], buffer_length - length, "%-*s%s, 0x%0*x, %s", TABULATOR_SIZE, instruction->name, Arg1, W2, Arg2, Arg3); \
+	}
 
-#define PRINT_ARG3_S_S_S(Arg1, Arg2, Arg3) \
-        length += snprintf(&buffer[length], buffer_length - length, "%-*s%s, %s, %s", TABULATOR_SIZE, instruction->name, Arg1, Arg2, Arg3)
+#define PRINT_ARG3_S_S_S(Arg1, Offs1, Arg2, Arg3) \
+	if ((Offs1) > 0) { \
+          length += snprintf(&buffer[length], buffer_length - length, "%-*s(%s + %i), %s, %s", TABULATOR_SIZE, instruction->name, Arg1, Offs1, Arg2, Arg3); \
+	} \
+	else { \
+          length += snprintf(&buffer[length], buffer_length - length, "%-*s%s, %s, %s", TABULATOR_SIZE, instruction->name, Arg1, Arg2, Arg3); \
+	}
 
 #define PRINT_MOVINDF_S_N_S(Arg1, Arg2, Arg3) \
         length += snprintf(&buffer[length], buffer_length - length, "%-*s%s%#x%s", TABULATOR_SIZE, instruction->name, Arg1, Arg2, Arg3)
@@ -692,97 +732,115 @@ GPUTILS_GCC_DIAG_ON(switch)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-pic12_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class,
-               int file, int bit_number) {
-  MemArg args;
+pic12_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
+               int file, int bit_number, void (*user_data_finder)(MemArg *)) {
+  proc_class_t class;
+  MemArgList args;
   const gp_register_t *reg1;
   unsigned int bmask;
 
-  args.first_val  = file;
-  args.first_arg  = NULL;
-  args.second_val = bit_number;
-  args.second_arg = NULL;
-  reg1            = NULL;
+  class = processor->class;
+
+  args.first.arg   = NULL;
+  args.first.val   = file;
+  args.first.offs  = 0;
+  args.second.arg  = NULL;
+  args.second.val  = bit_number;
+  args.second.offs = 0;
+  reg1             = NULL;
 
   if (class == PROC_CLASS_SX) {
-    args.first_arg = gp_processor_find_sfr_name(class, args.first_val);
+    args.first.arg = gp_processor_find_sfr_name(class, args.first.val);
     fstate->need_sfr_equ = true;
   }
   else {
-    args.first_arg = gp_processor_find_sfr_name(class, args.first_val);
-    reg1 = gp_register_find_reg(fstate->proc_regs, args.first_val);
+    args.first.arg = gp_processor_find_sfr_name(class, args.first.val);
+    reg1 = gp_register_find_reg(fstate->proc_regs, args.first.val);
 
-    if (args.first_arg != NULL) {
+    if (args.first.arg != NULL) {
       if (reg1 == NULL) {
-        gp_debug("%s() -- The \"%s\" core SFR not exist in the register database!\n", __func__, args.first_arg);
+        gp_debug("%s() -- The \"%s\" core SFR not exist in the register database!\n", __func__, args.first.arg);
         fstate->need_sfr_equ = true;
       }
-      else if (strcmp(args.first_arg, reg1->name) != 0) {
-        gp_debug("%s() -- These SFRs there is the same address: \"%s\", \"%s\"\n", __func__, args.first_arg, reg1->name);
+      else if (strcmp(args.first.arg, reg1->name) != 0) {
+        gp_debug("%s() -- These SFRs there is the same address: \"%s\", \"%s\"\n", __func__, args.first.arg, reg1->name);
         fstate->need_sfr_equ = true;
       }
     }
     else {
-      bmask = (class == PROC_CLASS_PIC12E) ? PIC12E_BMSK_BANK : PIC12_BMSK_BANK;
+      bmask = processor->num_banks - 1;
 
       if (IS_VALID_BANK(bmask)) {
-        args.first_val += BANK12_ADDR(bmask);
-        reg1 = gp_register_find_reg(fstate->proc_regs, args.first_val);
+        args.first.val += BANK12_ADDR(bmask);
+        reg1 = gp_register_find_reg(fstate->proc_regs, args.first.val);
       }
     }
 
     if (reg1 != NULL) {
-      args.first_arg = reg1->name;
+      args.first.arg = reg1->name;
 
       if (bit_number >= 0) {
-        args.second_arg = gp_register_find_bit_name(reg1, bit_number);
+        args.second.arg = gp_register_find_bit_name(reg1, bit_number);
       }
     }
   }
 
+  if (user_data_finder != NULL) {
+    (*user_data_finder)(&args.first);
+  }
+
   b_memory_set_args(m, byte_address, W_ARG_T_BOTH, &args);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-pic14_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class,
-               int file, int bit_number) {
-  MemArg args;
+pic14_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
+               int file, int bit_number, void (*user_data_finder)(MemArg *)) {
+  proc_class_t class;
+  MemArgList args;
   const gp_register_t *reg1;
   unsigned int bmask;
 
-  args.first_val  = file;
-  args.first_arg  = gp_processor_find_sfr_name(class, args.first_val);
-  args.second_val = bit_number;
-  args.second_arg = NULL;
-  reg1            = gp_register_find_reg(fstate->proc_regs, args.first_val);
+  class = processor->class;
 
-  if (args.first_arg != NULL) {
+  args.first.arg   = gp_processor_find_sfr_name(class, file);
+  args.first.val   = file;
+  args.first.offs  = 0;
+  args.second.arg  = NULL;
+  args.second.val  = bit_number;
+  args.second.offs = 0;
+  reg1             = gp_register_find_reg(fstate->proc_regs, file);
+
+  if (args.first.arg != NULL) {
     if (reg1 == NULL) {
-      gp_debug("%s() -- The \"%s\" core SFR not exist in the register database!\n", __func__, args.first_arg);
+      gp_debug("%s() -- The \"%s\" core SFR not exist in the register database!\n", __func__, args.first.arg);
       fstate->need_sfr_equ = true;
     }
-    else if (strcmp(args.first_arg, reg1->name) != 0) {
-      gp_debug("%s() -- These SFRs there is the same address: \"%s\", \"%s\"\n", __func__, args.first_arg, reg1->name);
+    else if (strcmp(args.first.arg, reg1->name) != 0) {
+      gp_debug("%s() -- These SFRs there is the same address: \"%s\", \"%s\"\n", __func__, args.first.arg, reg1->name);
       fstate->need_sfr_equ = true;
     }
   }
   else {
-    bmask = (class == PROC_CLASS_PIC14E) ? PIC14E_BMSK_BANK : PIC14_BMSK_BANK;
+    bmask = processor->num_banks - 1;
 
     if (IS_VALID_BANK(bmask)) {
-      args.first_val += BANK14_ADDR(bmask);
-      reg1 = gp_register_find_reg(fstate->proc_regs, args.first_val);
+      args.first.val += BANK14_ADDR(bmask);
+      reg1 = gp_register_find_reg(fstate->proc_regs, args.first.val);
     }
   }
 
   if (reg1 != NULL) {
-    args.first_arg = reg1->name;
+    args.first.arg = reg1->name;
 
     if (bit_number >= 0) {
-      args.second_arg = gp_register_find_bit_name(reg1, bit_number);
+      args.second.arg = gp_register_find_bit_name(reg1, bit_number);
     }
+  }
+
+  if (user_data_finder != NULL) {
+    (*user_data_finder)(&args.first);
   }
 
   b_memory_set_args(m, byte_address, W_ARG_T_BOTH, &args);
@@ -791,39 +849,48 @@ pic14_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_clas
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-pic16_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class,
-               int file, int bit_number) {
-  MemArg args;
+pic16_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
+               int file, int bit_number, void (*user_data_finder)(MemArg *)) {
+  proc_class_t class;
+  MemArgList args;
   const gp_register_t *reg1;
 
-  args.first_val  = file;
-  args.first_arg  = NULL;
-  args.second_val = bit_number;
-  args.second_arg = NULL;
-  reg1            = NULL;
+  class = processor->class;
 
-  if (IS_UNBANKED16(args.first_val)) {
-    reg1 = gp_register_find_reg(fstate->proc_regs, args.first_val);
+  args.first.arg   = NULL;
+  args.first.val   = file;
+  args.first.offs  = 0;
+  args.second.arg  = NULL;
+  args.second.val  = bit_number;
+  args.second.offs = 0;
+  reg1             = NULL;
+
+  if (IS_UNBANKED16(args.first.val)) {
+    reg1 = gp_register_find_reg(fstate->proc_regs, args.first.val);
 
     if (reg1 == NULL) {
-      args.first_arg = gp_processor_find_sfr_name(class, args.first_val);
+      args.first.arg = gp_processor_find_sfr_name(class, args.first.val);
 
-      if (args.first_arg != NULL) {
+      if (args.first.arg != NULL) {
         fstate->need_sfr_equ = true;
       }
     }
   }
   else if (IS_VALID_BANK(PIC16_BMSK_BANK)) {
-    args.first_val += BANK16_ADDR(PIC16_BMSK_BANK);
-    reg1 = gp_register_find_reg(fstate->proc_regs, args.first_val);
+    args.first.val += BANK16_ADDR(PIC16_BMSK_BANK);
+    reg1 = gp_register_find_reg(fstate->proc_regs, args.first.val);
   }
 
   if (reg1 != NULL) {
-    args.first_arg = reg1->name;
+    args.first.arg = reg1->name;
 
     if (bit_number >= 0) {
-      args.second_arg = gp_register_find_bit_name(reg1, bit_number);
+      args.second.arg = gp_register_find_bit_name(reg1, bit_number);
     }
+  }
+
+  if (user_data_finder != NULL) {
+    (*user_data_finder)(&args.first);
   }
 
   b_memory_set_args(m, byte_address, W_ARG_T_BOTH, &args);
@@ -832,50 +899,59 @@ pic16_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_clas
 /*------------------------------------------------------------------------------------------------*/
 
 static int
-pic16e_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_class_t class,
-                int file, int bit_number, gp_boolean ram_acc) {
-  MemArg args;
+pic16e_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, pic_processor_t processor,
+                int file, int bit_number, gp_boolean ram_acc, void (*user_data_finder)(MemArg *)) {
+  proc_class_t class;
+  MemArgList args;
   const gp_register_t *reg1;
   int reg_addr;
 
-  args.first_val  = file;
-  args.first_arg  = NULL;
-  args.second_val = bit_number;
-  args.second_arg = NULL;
-  reg1            = NULL;
+  class = processor->class;
 
-  if ((ram_acc == 0) && (fstate->bsr_boundary > 0) && (args.first_val >= fstate->bsr_boundary)) {
+  args.first.arg   = NULL;
+  args.first.val   = file;
+  args.first.offs  = 0;
+  args.second.arg  = NULL;
+  args.second.val  = bit_number;
+  args.second.offs = 0;
+  reg1             = NULL;
+
+  if ((ram_acc == 0) && (fstate->bsr_boundary > 0) && (args.first.val >= fstate->bsr_boundary)) {
         /* This register in the Access Bank can be found. */
-    args.first_val += 0xF00;
-    reg1 = gp_register_find_reg(fstate->proc_regs, args.first_val);
+    args.first.val += 0xF00;
+    reg1 = gp_register_find_reg(fstate->proc_regs, args.first.val);
 
     if (reg1 == NULL) {
-      args.first_arg = gp_processor_find_sfr_name(class, args.first_val);
+      args.first.arg = gp_processor_find_sfr_name(class, args.first.val);
 
-      if (args.first_arg != NULL) {
+      if (args.first.arg != NULL) {
         fstate->need_sfr_equ = true;
       }
     }
 
-    reg_addr = args.first_val;
+    reg_addr = args.first.val;
   }
   else if (IS_VALID_BANK(PIC16E_BMSK_BANK)) {
         /* This register in the GPR Bank can be found. */
-    args.first_val += BANK16_ADDR(PIC16E_BMSK_BANK);
-    reg1 = gp_register_find_reg(fstate->proc_regs, args.first_val);
-    reg_addr = args.first_val;
+    args.first.val += BANK16_ADDR(PIC16E_BMSK_BANK);
+    reg1 = gp_register_find_reg(fstate->proc_regs, args.first.val);
+    reg_addr = args.first.val;
   }
   else {
-    args.first_arg = NULL;
+    args.first.arg = NULL;
     reg_addr = -1;
   }
 
   if (reg1 != NULL) {
-    args.first_arg = reg1->name;
+    args.first.arg = reg1->name;
 
     if (bit_number >= 0) {
-      args.second_arg = gp_register_find_bit_name(reg1, bit_number);
+      args.second.arg = gp_register_find_bit_name(reg1, bit_number);
     }
+  }
+
+  if (user_data_finder != NULL) {
+    (*user_data_finder)(&args.first);
   }
 
   b_memory_set_args(m, byte_address, W_ARG_T_BOTH, &args);
@@ -888,7 +964,7 @@ pic16e_reg_eval(MemBlock *m, int byte_address, gpdasm_fstate_t *fstate, proc_cla
 
 int
 gp_disassemble_find_registers(MemBlock *m, int byte_address, pic_processor_t processor,
-                              gpdasm_fstate_t *fstate)
+                              gpdasm_fstate_t *fstate, void (*user_data_finder)(MemArg *))
 {
   proc_class_t class;
   unsigned short opcode;
@@ -900,7 +976,7 @@ gp_disassemble_find_registers(MemBlock *m, int byte_address, pic_processor_t pro
   unsigned int tmp;
   gp_boolean ram_acc;
   int addr;
-  MemArg args;
+  MemArgList args;
 
   class = processor->class;
 
@@ -1056,25 +1132,34 @@ GPUTILS_GCC_DIAG_OFF(switch)
       /* PIC16E movff */
       if ((class->i_memory_get(m, byte_address + 2, &file2, NULL, NULL) == W_USED_ALL) &&
           ((file2 & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
-        args.first_val  = opcode & 0x0fff;
-        args.second_val = file2 & 0x0fff;
-        args.first_arg  = gp_register_find_reg_name(fstate->proc_regs, args.first_val);
-        args.second_arg = gp_register_find_reg_name(fstate->proc_regs, args.second_val);
+        args.first.val  = opcode & 0x0fff;
+        args.first.offs = 0;
+        args.second.val = file2 & 0x0fff;
+        args.first.arg  = gp_register_find_reg_name(fstate->proc_regs, args.first.val);
+        args.second.arg = gp_register_find_reg_name(fstate->proc_regs, args.second.val);
 
-        if (args.first_arg == NULL) {
-          args.first_arg = gp_processor_find_sfr_name(class, args.first_val);
+        if (args.first.arg == NULL) {
+          args.first.arg = gp_processor_find_sfr_name(class, args.first.val);
 
-          if (args.first_arg != NULL) {
+          if (args.first.arg != NULL) {
             fstate->need_sfr_equ = true;
           }
         }
 
-        if (args.second_arg == NULL) {
-          args.second_arg = gp_processor_find_sfr_name(class, args.second_val);
+        if (user_data_finder != NULL) {
+          (*user_data_finder)(&args.first);
+        }
 
-          if (args.second_arg != NULL) {
+        if (args.second.arg == NULL) {
+          args.second.arg = gp_processor_find_sfr_name(class, args.second.val);
+
+          if (args.second.arg != NULL) {
             fstate->need_sfr_equ = true;
           }
+        }
+
+        if (user_data_finder != NULL) {
+          (*user_data_finder)(&args.second);
         }
 
         b_memory_set_args(m, byte_address, W_ARG_T_BOTH, &args);
@@ -1086,47 +1171,55 @@ GPUTILS_GCC_DIAG_OFF(switch)
 
     case INSN_CLASS_FP:
       /* PIC16 movfp */
-      args.first_val  = opcode & PIC16_BMSK_FILE;
-      args.second_val = (opcode >> 8) & 0x1f;
+      args.first.val  = opcode & PIC16_BMSK_FILE;
+      args.second.val = (opcode >> 8) & 0x1f;
 
-      if (IS_UNBANKED16(args.first_val)) {
+      if (IS_UNBANKED16(args.first.val)) {
         /* This a unbanked address. */
-        args.first_arg = gp_register_find_reg_name(fstate->proc_regs, args.first_val);
+        args.first.arg = gp_register_find_reg_name(fstate->proc_regs, args.first.val);
 
-        if (args.first_arg == NULL) {
-          args.first_arg = gp_processor_find_sfr_name(class, args.first_val);
+        if (args.first.arg == NULL) {
+          args.first.arg = gp_processor_find_sfr_name(class, args.first.val);
 
-          if (args.first_arg != NULL) {
+          if (args.first.arg != NULL) {
             fstate->need_sfr_equ = true;
           }
         }
       }
       else if (IS_VALID_BANK(PIC16_BMSK_BANK)) {
-        args.first_val += BANK16_ADDR(PIC16_BMSK_BANK);
-        args.first_arg = gp_register_find_reg_name(fstate->proc_regs, args.first_val);
+        args.first.val += BANK16_ADDR(PIC16_BMSK_BANK);
+        args.first.arg = gp_register_find_reg_name(fstate->proc_regs, args.first.val);
+
+        if (user_data_finder != NULL) {
+          (*user_data_finder)(&args.first);
+        }
       }
       else {
-        args.first_arg = NULL;
+        args.first.arg = NULL;
       }
 
-      if (IS_UNBANKED16(args.second_val)) {
+      if (IS_UNBANKED16(args.second.val)) {
         /* This a unbanked address. */
-        args.second_arg = gp_register_find_reg_name(fstate->proc_regs, args.second_val);
+        args.second.arg = gp_register_find_reg_name(fstate->proc_regs, args.second.val);
 
-        if (args.second_arg == NULL) {
-          args.second_arg = gp_processor_find_sfr_name(class, args.second_val);
+        if (args.second.arg == NULL) {
+          args.second.arg = gp_processor_find_sfr_name(class, args.second.val);
 
-          if (args.second_arg != NULL) {
+          if (args.second.arg != NULL) {
             fstate->need_sfr_equ = true;
           }
         }
       }
       else if (IS_VALID_BANK(PIC16_BMSK_BANK)) {
-        args.second_val += BANK16_ADDR(PIC16_BMSK_BANK);
-        args.second_arg = gp_register_find_reg_name(fstate->proc_regs, args.second_val);
+        args.second.val += BANK16_ADDR(PIC16_BMSK_BANK);
+        args.second.arg = gp_register_find_reg_name(fstate->proc_regs, args.second.val);
+
+        if (user_data_finder != NULL) {
+          (*user_data_finder)(&args.second);
+        }
       }
       else {
-        args.second_arg = NULL;
+        args.second.arg = NULL;
       }
 
       goto _insn_class_pf;
@@ -1136,58 +1229,66 @@ GPUTILS_GCC_DIAG_OFF(switch)
 
     case INSN_CLASS_PF:
       /* PIC16 movpf */
-      args.first_val  = (opcode >> 8) & 0x1f;
-      args.second_val = opcode & PIC16_BMSK_FILE;
+      args.first.val  = (opcode >> 8) & 0x1f;
+      args.second.val = opcode & PIC16_BMSK_FILE;
 
-      if (IS_UNBANKED16(args.first_val)) {
+      if (IS_UNBANKED16(args.first.val)) {
         /* This a unbanked address. */
-        args.first_arg = gp_register_find_reg_name(fstate->proc_regs, args.first_val);
+        args.first.arg = gp_register_find_reg_name(fstate->proc_regs, args.first.val);
 
-        if (args.first_arg == NULL) {
-          args.first_arg = gp_processor_find_sfr_name(class, args.first_val);
+        if (args.first.arg == NULL) {
+          args.first.arg = gp_processor_find_sfr_name(class, args.first.val);
 
-          if (args.first_arg != NULL) {
+          if (args.first.arg != NULL) {
             fstate->need_sfr_equ = true;
           }
         }
       }
       else if (IS_VALID_BANK(PIC16_BMSK_BANK)) {
-        args.first_val += BANK16_ADDR(PIC16_BMSK_BANK);
-        args.first_arg = gp_register_find_reg_name(fstate->proc_regs, args.first_val);
+        args.first.val += BANK16_ADDR(PIC16_BMSK_BANK);
+        args.first.arg = gp_register_find_reg_name(fstate->proc_regs, args.first.val);
+
+        if (user_data_finder != NULL) {
+          (*user_data_finder)(&args.first);
+        }
       }
       else {
-        args.first_arg = NULL;
+        args.first.arg = NULL;
       }
 
-      if (IS_UNBANKED16(args.second_val)) {
+      if (IS_UNBANKED16(args.second.val)) {
         /* This a unbanked address. */
-        args.second_arg = gp_register_find_reg_name(fstate->proc_regs, args.second_val);
+        args.second.arg = gp_register_find_reg_name(fstate->proc_regs, args.second.val);
 
-        if (args.second_arg == NULL) {
-          args.second_arg = gp_processor_find_sfr_name(class, args.second_val);
+        if (args.second.arg == NULL) {
+          args.second.arg = gp_processor_find_sfr_name(class, args.second.val);
 
-          if (args.second_arg != NULL) {
+          if (args.second.arg != NULL) {
             fstate->need_sfr_equ = true;
           }
         }
       }
       else if (IS_VALID_BANK(PIC16_BMSK_BANK)) {
-        args.second_val += BANK16_ADDR(PIC16_BMSK_BANK);
-        args.second_arg = gp_register_find_reg_name(fstate->proc_regs, args.second_val);
+        args.second.val += BANK16_ADDR(PIC16_BMSK_BANK);
+        args.second.arg = gp_register_find_reg_name(fstate->proc_regs, args.second.val);
+
+        if (user_data_finder != NULL) {
+          (*user_data_finder)(&args.second);
+        }
       }
       else {
-        args.second_arg = NULL;
+        args.second.arg = NULL;
       }
 
 _insn_class_pf:
 
       b_memory_set_args(m, byte_address, W_ARG_T_BOTH, &args);
 
-      if (args.second_val == PIC16_REG_WREG) {
+      if (args.second.val == PIC16_REG_WREG) {
         /* The destination the WREG. */
         fstate->wreg = -1;
       }
-      else if ((args.first_val == PIC16_REG_WREG) && (args.second_val == PIC16_REG_BSR)) {
+      else if ((args.first.val == PIC16_REG_WREG) && (args.second.val == PIC16_REG_BSR)) {
         if (fstate->wreg < 0) {
           fstate->bank_valid = 0;
         }
@@ -1204,18 +1305,22 @@ _insn_class_pf:
       /* PIC16E movsf */
       if ((class->i_memory_get(m, byte_address + 2, &file2, NULL, NULL) == W_USED_ALL) &&
           ((file2 & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
-        args.second_val = file2 & 0x0fff;
-        args.second_arg = gp_register_find_reg_name(fstate->proc_regs, args.second_val);
+        args.second.val = file2 & 0x0fff;
+        args.second.arg = gp_register_find_reg_name(fstate->proc_regs, args.second.val);
 
-        if (args.second_arg == NULL) {
-          args.second_arg = gp_processor_find_sfr_name(class, args.second_val);
+        if (args.second.arg == NULL) {
+          args.second.arg = gp_processor_find_sfr_name(class, args.second.val);
 
-          if (args.second_arg != NULL) {
+          if (args.second.arg != NULL) {
             fstate->need_sfr_equ = true;
           }
         }
 
-        if (args.second_arg != NULL) {
+        if (user_data_finder != NULL) {
+          (*user_data_finder)(&args.second);
+        }
+
+        if (args.second.arg != NULL) {
           b_memory_set_args(m, byte_address, W_ARG_T_SECOND, &args);
         }
 
@@ -1228,7 +1333,7 @@ _insn_class_pf:
     case INSN_CLASS_OPF5:
       /* {PIC12x, SX} (clrf, movwf), SX tris */
       file1 = opcode & PIC12_BMSK_FILE;
-      pic12_reg_eval(m, byte_address, fstate, class, file1, -1);
+      pic12_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
 
       if ((class == PROC_CLASS_PIC12) && (file1 == PIC12_REG_FSR)) {
         if (icode == ICODE_CLRF) {
@@ -1255,7 +1360,7 @@ _insn_class_pf:
       file1 = opcode & PIC12_BMSK_FILE;
       /* Destination flag: 0 = W, 1 = F */
       tmp   = (opcode >> 5) & 1;
-      pic12_reg_eval(m, byte_address, fstate, class, file1, -1);
+      pic12_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
 
       if (tmp == 0) {
         /* The destination the WREG. */
@@ -1273,7 +1378,7 @@ _insn_class_pf:
       file1 = opcode & PIC12_BMSK_FILE;
       /* The bits of register. */
       tmp   = (opcode >> 5) & 7;
-      pic12_reg_eval(m, byte_address, fstate, class, file1, tmp);
+      pic12_reg_eval(m, byte_address, fstate, processor, file1, tmp, user_data_finder);
 
       if ((file1 == PIC12_REG_FSR) && ((tmp >= 5) && (tmp <= 7))) {
         tmp = 1 << (tmp - 5);
@@ -1296,7 +1401,7 @@ _insn_class_pf:
       file1 = opcode & PIC16_BMSK_FILE;
       /* The bits of register. */
       tmp   = (opcode >> 8) & 7;
-      pic16_reg_eval(m, byte_address, fstate, class, file1, tmp);
+      pic16_reg_eval(m, byte_address, fstate, processor, file1, tmp, user_data_finder);
 
       tmp = 1 << tmp;
 
@@ -1334,7 +1439,7 @@ _insn_class_pf:
       file1 = opcode & PIC14_BMSK_FILE;
 
       if ((icode == ICODE_CLRF) || (icode == ICODE_MOVWF)) {
-        pic14_reg_eval(m, byte_address, fstate, class, file1, -1);
+        pic14_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
       }
 
       if (class == PROC_CLASS_PIC14) {
@@ -1366,7 +1471,7 @@ _insn_class_pf:
     case INSN_CLASS_OPF8:
       /* PIC16 (cpfseq, cpfsgt, cpfslt, movwf, mulwf, tstfsz) */
       file1 = opcode & PIC16_BMSK_FILE;
-      pic16_reg_eval(m, byte_address, fstate, class, file1, -1);
+      pic16_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
 
       if ((icode == ICODE_MOVWF) && (file1 == PIC16_REG_BSR)) {
         if (fstate->wreg >= 0) {
@@ -1388,7 +1493,7 @@ _insn_class_pf:
       file1 = opcode & PIC14_BMSK_FILE;
       /* Destination flag: 0 = W, 1 = F */
       tmp   = (opcode >> 7) & 1;
-      pic14_reg_eval(m, byte_address, fstate, class, file1, -1);
+      pic14_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
 
       if (tmp == 0) {
         /* The destination the WREG. */
@@ -1405,7 +1510,7 @@ _insn_class_pf:
       file1 = opcode & PIC16_BMSK_FILE;
       /* Destination flag: 0 = W, 1 = F */
       tmp   = (opcode >> 8) & 1;
-      pic16_reg_eval(m, byte_address, fstate, class, file1, -1);
+      pic16_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
 
       if ((tmp == 0) || (file1 == PIC16_REG_WREG)) {
         /* The destination the WREG. */
@@ -1416,12 +1521,14 @@ _insn_class_pf:
       }
       break;
 
+    /*@@@@@@@@@@@@@@@@@@@@@@@@*/
+
     case INSN_CLASS_B7:
       /* PIC14x (bcf, bsf, btfsc, btfss) */
       file1 = opcode & PIC14_BMSK_FILE;
       /* The bits of register. */
       tmp   = (opcode >> 7) & 7;
-      pic14_reg_eval(m, byte_address, fstate, class, file1, tmp);
+      pic14_reg_eval(m, byte_address, fstate, processor, file1, tmp, user_data_finder);
 
       if (class == PROC_CLASS_PIC14E) {
         tmp = 1 << tmp;
@@ -1469,7 +1576,7 @@ _insn_class_pf:
       file1   = opcode & PIC16_BMSK_FILE;
       /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
       ram_acc = (opcode & 0x100) ? true : false;
-      addr    = pic16e_reg_eval(m, byte_address, fstate, class, file1, -1, ram_acc);
+      addr    = pic16e_reg_eval(m, byte_address, fstate, processor, file1, -1, ram_acc, user_data_finder);
 
       if (addr == PIC16E_REG_BSR) {
         /* The address of register is known. */
@@ -1496,7 +1603,7 @@ _insn_class_pf:
       tmp     = (opcode >> 9) & 7;
       /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
       ram_acc = (opcode & 0x100) ? true : false;
-      addr    = pic16e_reg_eval(m, byte_address, fstate, class, file1, tmp, ram_acc);
+      addr    = pic16e_reg_eval(m, byte_address, fstate, processor, file1, tmp, ram_acc, user_data_finder);
 
       if ((addr == PIC16E_REG_BSR) && IS_VALID_BANK(PIC16_BMSK_BANK)) {
         /* The address of register is known and known the value of. */
@@ -1525,7 +1632,7 @@ _insn_class_pf:
       tmp     = (opcode >> 9) & 1;
       /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
       ram_acc = (opcode & 0x100) ? true : false;
-      addr    = pic16e_reg_eval(m, byte_address, fstate, class, file1, -1, ram_acc);
+      addr    = pic16e_reg_eval(m, byte_address, fstate, processor, file1, -1, ram_acc, user_data_finder);
 
       if ((addr == PIC16E_REG_BSR) && (tmp != 0)) {
         fstate->bank_valid = 0;
@@ -1537,7 +1644,7 @@ _insn_class_pf:
     case INSN_CLASS_TBL2:
       /* PIC16 (tlrd, tlwt) */
       file1 = opcode & PIC16_BMSK_FILE;
-      pic16_reg_eval(m, byte_address, fstate, class, file1, -1);
+      pic16_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
 
       if (icode == ICODE_TLRD) {
         if (file1 == PIC16_REG_WREG) {
@@ -1554,7 +1661,7 @@ _insn_class_pf:
     case INSN_CLASS_TBL3:
       /* PIC16 (tablrd, tablwt) */
       file1 = opcode & PIC16_BMSK_FILE;
-      pic16_reg_eval(m, byte_address, fstate, class, file1, -1);
+      pic16_reg_eval(m, byte_address, fstate, processor, file1, -1, user_data_finder);
 
       if (icode == ICODE_TABLRD) {
         if (file1 == PIC16_REG_WREG) {
@@ -1579,6 +1686,7 @@ print_word(char *buffer, size_t buffer_length, size_t current_length,
            unsigned short opcode, int behavior) {
   int l;
   size_t length;
+  char bytes[2];
 
   l = snprintf(&buffer[current_length], buffer_length - current_length, "%-*s0x%04x",
                TABULATOR_SIZE, "dw", (unsigned int)opcode);
@@ -1588,18 +1696,123 @@ print_word(char *buffer, size_t buffer_length, size_t current_length,
   }
 
   length = current_length + l;
+  bytes[0] = (unsigned char)(opcode & 0xFF);
+  bytes[1] = (unsigned char)((opcode >> 8) & 0xFF);
 
   if (behavior & GPDIS_SHOW_BYTES) {
     if (isprint(opcode)) {
-      gp_exclamation(buffer, buffer_length, length, "; '%c'", (char)opcode);
+      gp_exclamation(buffer, buffer_length, length, "; '%c'", bytes[0]);
     }
-    else if (isprint(opcode & 0xFF) && isprint((opcode >> 8) & 0xFF)) {
-      gp_exclamation(buffer, buffer_length, length, "; '%c%c'", (char)(opcode & 0xFF),
-                  (char)((opcode >> 8) & 0xFF));
+    else if (isprint(bytes[0]) && isprint(bytes[1])) {
+      gp_exclamation(buffer, buffer_length, length, "; '%c%c'", bytes[0], bytes[1]);
     }
   }
 
   return 1;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+show_word(char *buffer, size_t buffer_length, size_t current_length, const unsigned char *bytes)
+{
+  unsigned int v;
+
+  v  = (isprint(bytes[0])) ? 1 : 0;
+  v |= (isprint(bytes[1])) ? 2 : 0;
+
+  switch (v) {
+    case 1: {
+      gp_exclamation(buffer, buffer_length, current_length, "; '%c'", bytes[0]);
+      break;
+    }
+
+    case 2: {
+      gp_exclamation(buffer, buffer_length, current_length, ";  '%c'", bytes[1]);
+      break;
+    }
+
+    case 3: {
+      gp_exclamation(buffer, buffer_length, current_length, "; '%c%c'", bytes[0], bytes[1]);
+      break;
+    }
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+gp_disassemble_show_data(MemBlock *m, int byte_address, proc_class_t class, int behavior,
+                         char *buffer, size_t buffer_length, size_t current_length)
+{
+  const struct insn *instruction;
+  enum common_insn icode;
+  unsigned short opcode;
+  unsigned char bytes[2];
+  int l;
+  size_t length;
+
+  length = current_length;
+
+  if (class->find_insn == NULL) {
+    snprintf(&buffer[length], buffer_length - length, "unsupported processor class");
+    return;
+  }
+
+  if (class->i_memory_get(m, byte_address, &opcode, NULL, NULL) == W_USED_ALL) {
+    bytes[0] = (unsigned char)(opcode & 0xFF);
+    bytes[1] = (unsigned char)((opcode >> 8) & 0xFF);
+
+    if ((class == PROC_CLASS_PIC16) || (class == PROC_CLASS_PIC16E)) {
+      l = snprintf(&buffer[current_length], buffer_length - current_length, "%-*s0x%02x, 0x%02x",
+                 TABULATOR_SIZE, "db", bytes[0], bytes[1]);
+
+      if (l <= 0) {
+        return;
+      }
+
+      length = current_length + l;
+
+      if (behavior & GPDIS_SHOW_BYTES) {
+        show_word(buffer, buffer_length, length, bytes);
+      }
+    }
+    else {
+      instruction = class->find_insn(class, opcode);
+      icode = (instruction != NULL) ? instruction->icode : -1;
+
+      if (icode == ICODE_RETLW) {
+        l = snprintf(&buffer[current_length], buffer_length - current_length, "%-*s0x%02x",
+                     TABULATOR_SIZE, "dt", bytes[0]);
+
+        if (l <= 0) {
+          return;
+        }
+
+        length = current_length + l;
+
+        if (behavior & GPDIS_SHOW_BYTES) {
+          if (isprint(bytes[0])) {
+            gp_exclamation(buffer, buffer_length, length, "; '%c'", bytes[0]);
+          }
+        }
+      }
+      else {
+        l = snprintf(&buffer[current_length], buffer_length - current_length, "%-*s0x%04x",
+                     TABULATOR_SIZE, "dw", (unsigned int)opcode);
+
+        if (l <= 0) {
+          return;
+        }
+
+        length = current_length + l;
+
+        if (behavior & GPDIS_SHOW_BYTES) {
+          show_word(buffer, buffer_length, length, bytes);
+        }
+      }
+    }
+  } /* if (class->i_memory_get(m, byte_address, &opcode, NULL, NULL) == W_USED_ALL) */
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -1609,7 +1822,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
                int prog_mem_size, int behavior, char *buffer, size_t buffer_length, size_t current_length)
 {
   int value;
-  unsigned short opcode;
+  unsigned short opcode = 0;
   const struct insn *instruction = NULL;
   enum common_insn icode;
   int prog_max_org;
@@ -1621,7 +1834,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
   unsigned short file2;
   unsigned int tmp;
   unsigned int ram_acc;
-  MemArg args;
+  MemArgList args;
   int addr_digits;
   size_t length;
 
@@ -1637,8 +1850,8 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
   addr_digits = class->addr_digits;
   type = 0;
   dest_name = NULL;
-  args.first_arg  = NULL;
-  args.second_arg = NULL;
+  args.first.arg  = NULL;
+  args.second.arg = NULL;
 
   if (class->i_memory_get(m, byte_address, &opcode, NULL, NULL) == W_USED_ALL) {
     unsigned int dest_byte_addr;
@@ -1814,7 +2027,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
       else if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
         /* The target address exist. */
         if (dest_name != NULL) {
-          PRINT_ARG1_S(dest_name);
+          PRINT_ARG1_S(dest_name, 0);
         }
         else {
           PRINT_ARG1_N(addr_digits, org);
@@ -1838,7 +2051,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
       else if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
         /* The target address exist. */
         if (dest_name != NULL) {
-          PRINT_ARG1_S(dest_name);
+          PRINT_ARG1_S(dest_name, 0);
         }
         else {
           PRINT_ARG1_N(addr_digits, org);
@@ -1862,7 +2075,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
       else if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
         /* The target address exist. */
         if (dest_name != NULL) {
-          PRINT_ARG1_S(dest_name);
+          PRINT_ARG1_S(dest_name, 0);
         }
         else {
           PRINT_ARG1_N(addr_digits, org);
@@ -1946,7 +2159,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
       else if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
         /* The target address exist. */
         if (dest_name != NULL) {
-          PRINT_ARG1_S(dest_name);
+          PRINT_ARG1_S(dest_name, 0);
         }
         else {
           PRINT_ARG1_N(addr_digits, org);
@@ -2001,7 +2214,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
       else if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
         /* The target address exist. */
         if (dest_name != NULL) {
-          PRINT_ARG1_S(dest_name);
+          PRINT_ARG1_S(dest_name, 0);
 
           if (behavior & GPDIS_SHOW_EXCLAMATION) {
             gp_exclamation(buffer, buffer_length, length, "; dest: 0x%0*x", addr_digits, org);
@@ -2037,7 +2250,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
           else if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
             /* The target address exist. */
             if (dest_name != NULL) {
-              PRINT_ARG1_S(dest_name);
+              PRINT_ARG1_S(dest_name, 0);
 
               if (behavior & GPDIS_SHOW_EXCLAMATION) {
                 gp_exclamation(buffer, buffer_length, length, "; dest: 0x%0*x", addr_digits, org);
@@ -2081,7 +2294,7 @@ GPUTILS_GCC_DIAG_OFF(switch)
           if ((prog_max_org > 0) && (org >= 0) && (org <= prog_max_org)) {
             /* The target address exist. */
             if (dest_name != NULL) {
-              PRINT_ARG2_S_N(dest_name, 1, tmp);
+              PRINT_ARG2_S_N(dest_name, 0, 1, tmp);
 
               if (behavior & GPDIS_SHOW_EXCLAMATION) {
                 gp_exclamation(buffer, buffer_length, length, "; dest: 0x%0*x", addr_digits, org);
@@ -2134,31 +2347,31 @@ GPUTILS_GCC_DIAG_OFF(switch)
           ((file2 & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
         file2 &= 0xfff;
 
-        tmp  = (args.first_arg  != NULL) ? 2 : 0;
-        tmp |= (args.second_arg != NULL) ? 1 : 0;
+        tmp  = (args.first.arg  != NULL) ? 2 : 0;
+        tmp |= (args.second.arg != NULL) ? 1 : 0;
 
         switch (tmp) {
         case 3:
-          PRINT_ARG2_S_S(args.first_arg, args.second_arg);
+          PRINT_ARG2_S_S(args.first.arg, args.first.offs, args.second.arg, args.second.offs);
 
           if (behavior & GPDIS_SHOW_EXCLAMATION) {
-            gp_exclamation(buffer, buffer_length, length, "; reg1: 0x%03x, reg2: 0x%03x", args.first_val, args.second_val);
+            gp_exclamation(buffer, buffer_length, length, "; reg1: 0x%03x, reg2: 0x%03x", args.first.val, args.second.val);
           }
           break;
 
         case 2:
-          PRINT_ARG2_S_N(args.first_arg, 3, file2);
+          PRINT_ARG2_S_N(args.first.arg, args.first.offs, 3, file2);
 
           if (behavior & GPDIS_SHOW_EXCLAMATION) {
-            gp_exclamation(buffer, buffer_length, length, "; reg1: 0x%03x", args.first_val);
+            gp_exclamation(buffer, buffer_length, length, "; reg1: 0x%03x", args.first.val);
           }
           break;
 
         case 1:
-          PRINT_ARG2_N_S(3, file1, args.second_arg);
+          PRINT_ARG2_N_S(3, file1, args.second.arg, args.second.offs);
 
           if (behavior & GPDIS_SHOW_EXCLAMATION) {
-            gp_exclamation(buffer, buffer_length, length, "; reg2: 0x%03x", args.second_val);
+            gp_exclamation(buffer, buffer_length, length, "; reg2: 0x%03x", args.second.val);
           }
           break;
 
@@ -2191,28 +2404,28 @@ GPUTILS_GCC_DIAG_OFF(switch)
 
 _insn_class_pf:
 
-      tmp  = (args.first_arg  != NULL) ? 2 : 0;
-      tmp |= (args.second_arg != NULL) ? 1 : 0;
+      tmp  = (args.first.arg  != NULL) ? 2 : 0;
+      tmp |= (args.second.arg != NULL) ? 1 : 0;
 
       switch (tmp) {
       case 3:
-        PRINT_ARG2_S_S(args.first_arg, args.second_arg);
+        PRINT_ARG2_S_S(args.first.arg, 0, args.second.arg, 0);
         break;
 
       case 2:
-        PRINT_ARG2_S_N(args.first_arg, 2, file2);
+        PRINT_ARG2_S_N(args.first.arg, 0, 2, file2);
         break;
 
       case 1:
-        PRINT_ARG2_N_S(2, file1, args.second_arg);
+        PRINT_ARG2_N_S(2, file1, args.second.arg, 0);
         break;
 
       default:
         PRINT_ARG2_N_N(2, file1, 2, file2);
       }
-  
+
       if (behavior & GPDIS_SHOW_EXCLAMATION) {
-        gp_exclamation(buffer, buffer_length, length, "; reg1: 0x%03x, reg2: 0x%03x", args.first_val, args.second_val);
+        gp_exclamation(buffer, buffer_length, length, "; reg1: 0x%03x, reg2: 0x%03x", args.first.val, args.second.val);
       }
       break;
 
@@ -2229,11 +2442,11 @@ _insn_class_pf:
             ((file2 & PIC16E_BMSK_SEC_INSN_WORD) == PIC16E_BMSK_SEC_INSN_WORD)) {
           file2 &= 0xfff;
 
-          if (args.second_arg != NULL) {
-            PRINT_ARG2_N_S(2, offset, args.second_arg);
+          if (args.second.arg != NULL) {
+            PRINT_ARG2_N_S(2, offset, args.second.arg, args.second.offs);
 
             if (behavior & GPDIS_SHOW_EXCLAMATION) {
-              gp_exclamation(buffer, buffer_length, length, "; reg2: 0x%03x", args.second_val);
+              gp_exclamation(buffer, buffer_length, length, "; reg2: 0x%03x", args.second.val);
             }
           }
           else {
@@ -2279,15 +2492,15 @@ _insn_class_pf:
       /* {PIC12x, SX} (clrf, movwf), SX tris */
       file1 = opcode & PIC12_BMSK_FILE;
 
-      if (args.first_arg != NULL) {
-        PRINT_ARG1_S(args.first_arg);
+      if (args.first.arg != NULL) {
+        PRINT_ARG1_S(args.first.arg, args.first.offs);
       }
       else {
         PRINT_ARG1_N(2, file1);
       }
 
       if (behavior & GPDIS_SHOW_EXCLAMATION) {
-        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
       }
       break;
 
@@ -2300,18 +2513,18 @@ _insn_class_pf:
       /* Destination flag: 0 = W, 1 = F */
       tmp   = (opcode >> 5) & 1;
 
-      if (args.first_arg != NULL) {
-        PRINT_ARG2_S_S(args.first_arg, FLAG_FW(tmp));
+      if (args.first.arg != NULL) {
+        PRINT_ARG2_S_S(args.first.arg, args.first.offs, FLAG_FW(tmp), 0);
       }
       else if (behavior & GPDIS_SHOW_NAMES) {
-        PRINT_ARG2_N_S(2, file1, FLAG_FW(tmp));
+        PRINT_ARG2_N_S(2, file1, FLAG_FW(tmp), 0);
       }
       else {
         PRINT_ARG2_N_N(2, file1, 1, tmp);
       }
 
       if (behavior & GPDIS_SHOW_EXCLAMATION) {
-        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
       }
       break;
 
@@ -2323,19 +2536,19 @@ _insn_class_pf:
       /* The bits of register. */
       tmp   = (opcode >> 5) & 7;
 
-      if (args.first_arg != NULL) {
-        if (args.second_arg != NULL) {
-          PRINT_ARG2_S_S(args.first_arg, args.second_arg);
+      if (args.first.arg != NULL) {
+        if (args.second.arg != NULL) {
+          PRINT_ARG2_S_S(args.first.arg, args.first.offs, args.second.arg, 0);
 
           if (behavior & GPDIS_SHOW_EXCLAMATION) {
-            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x, bit: %u", args.first_val, args.second_val);
+            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x, bit: %u", args.first.val, args.second.val);
           }
         }
         else {
-          PRINT_ARG2_S_N(args.first_arg, 1, tmp);
+          PRINT_ARG2_S_N(args.first.arg, args.first.offs, 1, tmp);
 
           if (behavior & GPDIS_SHOW_EXCLAMATION) {
-            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
           }
         }
       }
@@ -2343,7 +2556,7 @@ _insn_class_pf:
         PRINT_ARG2_N_N(2, file1, 1, tmp);
 
         if (behavior & GPDIS_SHOW_EXCLAMATION) {
-          gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+          gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
         }
       }
       break;
@@ -2356,19 +2569,19 @@ _insn_class_pf:
       /* The bits of register. */
       tmp   = (opcode >> 8) & 7;
 
-      if (args.first_arg != NULL) {
-        if (args.second_arg != NULL) {
-          PRINT_ARG2_S_S(args.first_arg, args.second_arg);
+      if (args.first.arg != NULL) {
+        if (args.second.arg != NULL) {
+          PRINT_ARG2_S_S(args.first.arg, args.first.offs, args.second.arg, 0);
 
           if (behavior & GPDIS_SHOW_EXCLAMATION) {
-            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x, bit: %u", args.first_val, args.second_val);
+            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x, bit: %u", args.first.val, args.second.val);
           }
         }
         else {
-          PRINT_ARG2_S_N(args.first_arg, 1, tmp);
+          PRINT_ARG2_S_N(args.first.arg, args.first.offs, 1, tmp);
 
           if (behavior & GPDIS_SHOW_EXCLAMATION) {
-            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
           }
         }
       }
@@ -2376,7 +2589,7 @@ _insn_class_pf:
         PRINT_ARG2_N_N(2, file1, 1, tmp);
 
         if (behavior & GPDIS_SHOW_EXCLAMATION) {
-          gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+          gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
         }
       }
       break;
@@ -2387,11 +2600,11 @@ _insn_class_pf:
       /* PIC14x (clrf, movwf, tris) */
       file1 = opcode & PIC14_BMSK_FILE;
 
-      if (args.first_arg != NULL) {
-        PRINT_ARG1_S(args.first_arg);
+      if (args.first.arg != NULL) {
+        PRINT_ARG1_S(args.first.arg, args.first.offs);
 
         if (behavior & GPDIS_SHOW_EXCLAMATION) {
-          gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+          gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
         }
       }
       else {
@@ -2399,7 +2612,7 @@ _insn_class_pf:
 
         if (icode != ICODE_TRIS) {
           if (behavior & GPDIS_SHOW_EXCLAMATION) {
-            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
           }
         }
       }
@@ -2411,15 +2624,15 @@ _insn_class_pf:
       /* PIC16 (cpfseq, cpfsgt, cpfslt, movwf, mulwf, tstfsz) */
       file1 = opcode & PIC16_BMSK_FILE;
 
-      if (args.first_arg != NULL) {
-        PRINT_ARG1_S(args.first_arg);
+      if (args.first.arg != NULL) {
+        PRINT_ARG1_S(args.first.arg, args.first.offs);
       }
       else {
         PRINT_ARG1_N(2, file1);
       }
 
       if (behavior & GPDIS_SHOW_EXCLAMATION) {
-        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
       }
       break;
 
@@ -2433,18 +2646,18 @@ _insn_class_pf:
       /* Destination flag: 0 = W, 1 = F */
       tmp   = (opcode >> 7) & 1;
 
-      if (args.first_arg != NULL) {
-        PRINT_ARG2_S_S(args.first_arg, FLAG_FW(tmp));
+      if (args.first.arg != NULL) {
+        PRINT_ARG2_S_S(args.first.arg, args.first.offs, FLAG_FW(tmp), 0);
       }
       else if (behavior & GPDIS_SHOW_NAMES) {
-        PRINT_ARG2_N_S(2, file1, FLAG_FW(tmp));
+        PRINT_ARG2_N_S(2, file1, FLAG_FW(tmp), 0);
       }
       else {
         PRINT_ARG2_N_N(2, file1, 1, tmp);
       }
 
       if (behavior & GPDIS_SHOW_EXCLAMATION) {
-        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
       }
       break;
 
@@ -2458,18 +2671,18 @@ _insn_class_pf:
       /* Destination flag: 0 = W, 1 = F */
       tmp   = (opcode >> 8) & 1;
 
-      if (args.first_arg != NULL) {
-        PRINT_ARG2_S_S(args.first_arg, FLAG_FW(tmp));
+      if (args.first.arg != NULL) {
+        PRINT_ARG2_S_S(args.first.arg, args.first.offs, FLAG_FW(tmp), 0);
       }
       else if (behavior & GPDIS_SHOW_NAMES) {
-        PRINT_ARG2_N_S(2, file1, FLAG_FW(tmp));
+        PRINT_ARG2_N_S(2, file1, FLAG_FW(tmp), 0);
       }
       else {
         PRINT_ARG2_N_N(2, file1, 1, tmp);
       }
 
       if (behavior & GPDIS_SHOW_EXCLAMATION) {
-        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
       }
       break;
 
@@ -2481,19 +2694,19 @@ _insn_class_pf:
       /* The bits of register. */
       tmp   = (opcode >> 7) & 7;
 
-      if (args.first_arg != NULL) {
-        if (args.second_arg != NULL) {
-          PRINT_ARG2_S_S(args.first_arg, args.second_arg);
+      if (args.first.arg != NULL) {
+        if (args.second.arg != NULL) {
+          PRINT_ARG2_S_S(args.first.arg, args.first.offs, args.second.arg, 0);
 
           if (behavior & GPDIS_SHOW_EXCLAMATION) {
-            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x, bit: %u", args.first_val, args.second_val);
+            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x, bit: %u", args.first.val, args.second.val);
           }
         }
         else {
-          PRINT_ARG2_S_N(args.first_arg, 1, tmp);
+          PRINT_ARG2_S_N(args.first.arg, args.first.offs, 1, tmp);
 
           if (behavior & GPDIS_SHOW_EXCLAMATION) {
-            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
           }
         }
       }
@@ -2501,7 +2714,7 @@ _insn_class_pf:
         PRINT_ARG2_N_N(2, file1, 1, tmp);
 
         if (behavior & GPDIS_SHOW_EXCLAMATION) {
-          gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+          gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
         }
       }
       break;
@@ -2514,18 +2727,18 @@ _insn_class_pf:
       /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
       ram_acc = (opcode >> 8) & 1;
 
-      if (args.first_arg != NULL) {
-        PRINT_ARG2_S_S(args.first_arg, FLAG_BA(ram_acc));
+      if (args.first.arg != NULL) {
+        PRINT_ARG2_S_S(args.first.arg, args.first.offs, FLAG_BA(ram_acc), 0);
       }
       else if (behavior & GPDIS_SHOW_NAMES) {
-        PRINT_ARG2_N_S(2, file1, FLAG_BA(ram_acc));
+        PRINT_ARG2_N_S(2, file1, FLAG_BA(ram_acc), 0);
       }
       else {
         PRINT_ARG2_N_N(2, file1, 1, ram_acc);
       }
 
       if (behavior & GPDIS_SHOW_EXCLAMATION) {
-        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
       }
       break;
 
@@ -2539,19 +2752,19 @@ _insn_class_pf:
       /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
       ram_acc = (opcode >> 8) & 1;
 
-      if (args.first_arg != NULL) {
-        if (args.second_arg != NULL) {
-          PRINT_ARG3_S_S_S(args.first_arg, args.second_arg, FLAG_BA(ram_acc));
+      if (args.first.arg != NULL) {
+        if (args.second.arg != NULL) {
+          PRINT_ARG3_S_S_S(args.first.arg, args.first.offs, args.second.arg, FLAG_BA(ram_acc));
 
           if (behavior & GPDIS_SHOW_EXCLAMATION) {
-            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x, bit: %u", args.first_val, args.second_val);
+            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x, bit: %u", args.first.val, args.second.val);
           }
         }
         else {
-          PRINT_ARG3_S_N_S(args.first_arg, 1, tmp, FLAG_BA(ram_acc));
+          PRINT_ARG3_S_N_S(args.first.arg, args.first.offs, 1, tmp, FLAG_BA(ram_acc));
 
           if (behavior & GPDIS_SHOW_EXCLAMATION) {
-            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+            gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
           }
         }
       }
@@ -2559,14 +2772,14 @@ _insn_class_pf:
         PRINT_ARG3_N_N_S(2, file1, 1, tmp, FLAG_BA(ram_acc));
 
         if (behavior & GPDIS_SHOW_EXCLAMATION) {
-          gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+          gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
         }
       }
       else {
         PRINT_ARG3_N_N_N(2, file1, 1, tmp, 1, ram_acc);
 
         if (behavior & GPDIS_SHOW_EXCLAMATION) {
-          gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+          gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
         }
       }
       break;
@@ -2583,8 +2796,8 @@ _insn_class_pf:
       /* RAM access flag: 0 = Access Bank, 1 = GPR Bank */
       ram_acc = (opcode >> 8) & 1;
 
-      if (args.first_arg != NULL) {
-        PRINT_ARG3_S_S_S(args.first_arg, FLAG_FW(tmp), FLAG_BA(ram_acc));
+      if (args.first.arg != NULL) {
+        PRINT_ARG3_S_S_S(args.first.arg, args.first.offs, FLAG_FW(tmp), FLAG_BA(ram_acc));
       }
       else if (behavior & GPDIS_SHOW_NAMES) {
         PRINT_ARG3_N_S_S(2, file1, FLAG_FW(tmp), FLAG_BA(ram_acc));
@@ -2594,7 +2807,7 @@ _insn_class_pf:
       }
 
       if (behavior & GPDIS_SHOW_EXCLAMATION) {
-        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
       }
       break;
 
@@ -2630,15 +2843,15 @@ _insn_class_pf:
       file1 = opcode & PIC16_BMSK_FILE;
       tmp   = (opcode >> 9) & 1;
 
-      if (args.first_arg != NULL) {
-        PRINT_ARG2_N_S(1, tmp, args.first_arg);
+      if (args.first.arg != NULL) {
+        PRINT_ARG2_N_S(1, tmp, args.first.arg, 0);
       }
       else {
         PRINT_ARG2_N_N(1, tmp, 2, file1);
       }
 
       if (behavior & GPDIS_SHOW_EXCLAMATION) {
-        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+        gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
       }
       break;
 
@@ -2653,8 +2866,8 @@ _insn_class_pf:
         tmp   = (opcode >> 9) & 1;
         inc   = (opcode >> 8) & 1;
 
-        if (args.first_arg != NULL) {
-          PRINT_ARG3_N_N_S(1, tmp, 1, inc, args.first_arg);
+        if (args.first.arg != NULL) {
+          PRINT_ARG3_N_N_S(1, tmp, 1, inc, args.first.arg);
         }
         else {
           PRINT_ARG3_N_N_N(1, tmp, 1, inc, 2, file1);
@@ -2662,7 +2875,7 @@ _insn_class_pf:
 
 
         if (behavior & GPDIS_SHOW_EXCLAMATION) {
-          gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first_val);
+          gp_exclamation(buffer, buffer_length, length, "; reg: 0x%03x", args.first.val);
         }
       }
       break;

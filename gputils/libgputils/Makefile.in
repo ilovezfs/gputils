@@ -65,13 +65,14 @@ LIBRARIES = $(noinst_LIBRARIES)
 ARFLAGS = cru
 libgputils_a_AR = $(AR) $(ARFLAGS)
 libgputils_a_LIBADD =
-am_libgputils_a_OBJECTS = gparchive.$(OBJEXT) gpcod.$(OBJEXT) \
-	gpcoffgen.$(OBJEXT) gpcofflink.$(OBJEXT) gpcoffopt.$(OBJEXT) \
-	gpdis.$(OBJEXT) gphash.$(OBJEXT) gpmemory.$(OBJEXT) gpmessage.$(OBJEXT) \
+am_libgputils_a_OBJECTS = gparchive.$(OBJEXT) gpcfg.$(OBJEXT) \
+	gpcfg-table.$(OBJEXT) gpcod.$(OBJEXT) gpcoffgen.$(OBJEXT) \
+	gpcofflink.$(OBJEXT) gpcoffopt.$(OBJEXT) gpdis.$(OBJEXT) \
+	gphash.$(OBJEXT) gpmemory.$(OBJEXT) gpmessage.$(OBJEXT) \
 	gpopcode.$(OBJEXT) gpprocessor.$(OBJEXT) gpreadhex.$(OBJEXT) \
-	gpreadobj.$(OBJEXT) gpsymbol.$(OBJEXT) gpsystem.$(OBJEXT) \
-	gpwritehex.$(OBJEXT) gpwriteobj.$(OBJEXT) gpcfg.$(OBJEXT) \
-	gpcfg-table.$(OBJEXT) gpreg-table.$(OBJEXT) gpregister.$(OBJEXT)
+	gpreadobj.$(OBJEXT) gpreg-table.$(OBJEXT) gpregister.$(OBJEXT) \
+	gpsymbol.$(OBJEXT) gpsystem.$(OBJEXT) gpwritehex.$(OBJEXT) \
+	gpwriteobj.$(OBJEXT)
 libgputils_a_OBJECTS = $(am_libgputils_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp

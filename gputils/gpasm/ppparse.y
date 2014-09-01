@@ -27,7 +27,7 @@ Boston, MA 02111-1307, USA.  */
 int ppresult = 0;
 
 void
-pperror(char *message)
+pperror(const char *message)
 {
   /* do nothing */
 }
@@ -69,7 +69,7 @@ exp:
   {
     struct symbol *sym;
 
-    if (NULL != (sym = get_symbol(state.stTop, $1))) {
+    if ((sym = get_symbol(state.stTop, $1)) != NULL) {
       struct variable *var = get_symbol_annotation(sym);
       assert(var != NULL);
       $$ = var->value;
@@ -83,11 +83,11 @@ exp:
   |
 
   exp LOGICAL_OR exp
-  { $$ = $1 || $3; }
+  { $$ = ($1 || $3); }
   |
 
   exp LOGICAL_AND exp
-  { $$ = $1 && $3; }
+  { $$ = ($1 && $3); }
   |
 
   exp '&' exp
@@ -107,16 +107,16 @@ exp:
   { $$ = $1 ^ $3; }
   |
   exp EQUAL exp
-  { $$ = $1 == $3; }
+  { $$ = ($1 == $3); }
   |
   exp NOT_EQUAL exp
-  { $$ = $1 != $3; }
+  { $$ = ($1 != $3); }
   |
   exp GREATER_EQUAL exp
-  { $$ = $1 >= $3; }
+  { $$ = ($1 >= $3); }
   |
   exp LESS_EQUAL exp
-  { $$ = $1 <= $3; }
+  { $$ = ($1 <= $3); }
   |
 
   exp LSH exp
@@ -165,6 +165,7 @@ exp:
   { $$ = $2; }
   |
 
-  '(' exp ')'        { $$ = $2;           }
+  '(' exp ')'
+  { $$ = $2; }
   ;
 %%

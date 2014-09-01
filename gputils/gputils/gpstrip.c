@@ -56,7 +56,7 @@ remove_sections(void)
       section = gp_coffgen_findsection(state.object, 
                                        state.object->sections,
                                        sym->name);
-      if (section) {
+      if (section != NULL) {
         if (verbose) {
           gp_message("removing section \"%s\"", sym->name);
         }
@@ -309,8 +309,8 @@ int main(int argc, char *argv[])
   for ( ; optind < argc; optind++) {
     state.input_file = argv[optind];
 
-    if (gp_identify_coff_file(state.input_file) != object_file_v2 && 
-        gp_identify_coff_file(state.input_file) != object_file) {
+    if ((gp_identify_coff_file(state.input_file) != object_file_v2) && 
+        (gp_identify_coff_file(state.input_file) != object_file)) {
       gp_error("\"%s\" is not a valid object file", state.input_file);
       exit(1);
     }
@@ -372,7 +372,6 @@ int main(int argc, char *argv[])
       /* FIXME: free state.output_file */
     }
   }
-
 
   return ((gp_num_errors != 0) ? EXIT_FAILURE : EXIT_SUCCESS);
 }

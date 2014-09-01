@@ -299,7 +299,7 @@ void next_line(int value)
   }
 }
 
-void yyerror(char *message)
+void yyerror(const char *message)
 {
   if (!IN_MACRO_WHILE_DEFINITION) {
     /* throw error if not in macro definition */
@@ -415,13 +415,13 @@ program:
         |
         program
         {
-          state.lst.line.was_org = state.org;
+          state.lst.line.was_byte_addr = state.byte_addr;
           state.lst.line.linetype = LTY_NONE;
           state.next_state = STATE_NOCHANGE;
         } line
         | program error '\n'
         {
-          state.lst.line.was_org = state.org;
+          state.lst.line.was_byte_addr = state.byte_addr;
           state.lst.line.linetype = LTY_NONE;
           state.next_state = STATE_NOCHANGE;
 
@@ -611,13 +611,9 @@ statement:
         '\n'
         {
           if (!IN_MACRO_WHILE_DEFINITION) {
-            if (!IS_RAM_ORG) {
-              /* We want to have r as the value to assign to label */
-              $$ = gp_processor_byte_to_org(state.device.class, state.org);
-            }
-            else {
-              $$ = state.org;
-            }
+            $$ = (IS_RAM_ORG) ? state.byte_addr :
+                                /* We want to have r as the value to assign to label. */
+                                gp_processor_byte_to_real(state.processor, state.byte_addr);
           } else {
             macro_append();
           }

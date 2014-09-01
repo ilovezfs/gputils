@@ -498,7 +498,7 @@ show_usage(void)
   printf("  -I DIR, --include DIR          Specify include directory.\n");
   printf("  -l, --no-list                  Disable list file output.\n");
   printf("  -m, --map                      Output a map file.\n");
-  printf("      --mplink-compatible         MPLINK compatibility mode\n");
+  printf("      --mplink-compatible        MPLINK compatibility mode\n");
   printf("  -o FILE, --output FILE         Alternate name of output file.\n");
   printf("  -O OPT, --optimize OPT         Optimization level [1].\n");
   printf("  -q, --quiet                    Quiet.\n");

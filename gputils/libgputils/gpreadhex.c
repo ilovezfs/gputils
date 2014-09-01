@@ -24,28 +24,32 @@ Boston, MA 02111-1307, USA.  */
 
 #define LINESIZ 520
 
-char linebuf[LINESIZ];
-char *linept;
-int checksum;
-FILE *infile;
+static char linebuf[LINESIZ];
+static char *linept;
+static int checksum;
+static FILE *infile;
 
-/* Converts a single ASCII character into a number */
-unsigned int a2n(char character)
+/* Converts a single ASCII character into a number. */
+static unsigned int
+a2n(unsigned char character)
 {
   unsigned int number;
-  if(character < 0x3A) {
-    number = character-0x30;
+
+  if (character <= '9') {
+    number = character - '0';
   } else {
-    /* convert lower case to upper */
-    character &= 0xDF;
-    number = character-0x37;
+    /* Convert lower case to upper. */
+    character &= ~('a' - 'A');
+    number = character - ('A' - 10);
   } 
   return number;
 }
 
-unsigned int readbyte()
+static unsigned int
+readbyte(void)
 {
   unsigned int number;
+
   linept++;
   number = a2n(*linept) << 4;
   linept++;
@@ -54,17 +58,21 @@ unsigned int readbyte()
   return number;
 } 
 
-unsigned int readword()
+static unsigned int
+readword(void)
 {
   unsigned int number;
+
   number = readbyte();  
   number = (readbyte() << 8) | number;
   return number; 
 }
 
-unsigned int swapword(unsigned int input)
+static unsigned int
+swapword(unsigned int input)
 {
   unsigned int number;
+
   number = ((input & 0xFF) << 8) | ((input & 0xFF00) >> 8);
   return number;
 }
@@ -81,34 +89,34 @@ readhex(const char *filename, MemBlock *m)
   info->size = 0;
   info->error = 0;
 
-  /* Open the input file */
+  /* Open the input file. */
   if ((infile = fopen(filename, "rt")) == NULL) {
     perror(filename);
     exit(1);
   }
     
-  /* go to the beginning of the file */
+  /* Go to the beginning of the file. */
   fseek(infile, 0L, 0);
 
-  /* set the line pointer to the beginning of the line buffer */
+  /* Set the line pointer to the beginning of the line buffer. */
   linept = linebuf;
 
-  /* read a line of data from the file, if NULL stop */
+  /* Read a line of data from the file, if NULL stop. */
   while (fgets(linept, LINESIZ, infile) != NULL)
   {
-    /* set the line pointer to the beginning of the line buffer */
+    /* Set the line pointer to the beginning of the line buffer. */
     linept = linebuf;
 
     checksum = 0;
 
-    /* fetch the number of bytes */
+    /* Fetch the number of bytes. */
     length = readbyte();
     if (length == 0) {
       fclose(infile);
       return info;
     }
 
-    /* fetch the address */
+    /* Fetch the address. */
     address = readword();
     address = swapword(address);
 
@@ -117,7 +125,7 @@ readhex(const char *filename, MemBlock *m)
       length *= 2;
     }
 
-    /* read the type of record */
+    /* Read the type of record. */
     type = readbyte();
 
     if (type == 4) {
@@ -128,11 +136,11 @@ readhex(const char *filename, MemBlock *m)
         return info;      
       }
 
-      /* INHX32 segment line*/
+      /* INHX32 segment line. */
       page = ((readbyte() << 8) + readbyte()) << 16;
       info->hex_format = INHX32;
     } else {
-      /* read the data (skipping last byte if at odd address) */
+      /* Read the data (skipping last byte if at odd address). */
       for (i = 0; i < length; ++i) {
 	data = readbyte();
 
@@ -147,16 +155,16 @@ readhex(const char *filename, MemBlock *m)
       info->size += length;
     }
 
-    /* read the checksum, data is thrown away*/
+    /* Read the checksum, data is thrown away. */
     data = readbyte();
 
     if ((checksum & 0xFF) != 0) { 
       if (info->hex_format == INHX8M) {
-        /*  first attempt at INHX8M failed, try INHX16 */
+        /*  First attempt at INHX8M failed, try INHX16. */
         fseek(infile, 0L, 0);	  
         info->hex_format = INHX16;
         info->size = 0;
-        /* data in i_memory is trash */
+        /* Data in i_memory is trash. */
         i_memory_free(m);
         m = i_memory_create();
       } else {
@@ -167,7 +175,7 @@ readhex(const char *filename, MemBlock *m)
       }
     }
 
-    /* set the line pointer to the beginning of the line buffer */
+    /* Set the line pointer to the beginning of the line buffer. */
     linept = linebuf;
   }
 

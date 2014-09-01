@@ -1,3 +1,5 @@
+%option noinput
+%option nounput
 %option noyywrap
 %option always-interactive
 

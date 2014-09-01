@@ -6,29 +6,38 @@ AM_CPPFLAGS = -I${top_srcdir}/libgputils -I${top_srcdir}/include
 
 LDADD = ${top_builddir}/@LIBGPUTILS@ ${top_builddir}/@LIBIBERTY@
 
-gpdasm_SOURCES=\
-	gpdasm.c\
-	gpdasm.h.in
+gpdasm_SOURCES= \
+	labelset.c \
+	labelset.h \
+	gpdasm.c \
+	gpdasm.h.in \
+	parse.y \
+	scan.h \
+	scan.l
 
-gplib_SOURCES=\
+gplib_SOURCES= \
 	gplib.c \
 	gplib.h.in
 
-gpstrip_SOURCES=\
+gpstrip_SOURCES= \
 	gpstrip.c \
 	gpstrip.h.in
 
-gpvc_SOURCES=\
+gpvc_SOURCES= \
 	block.c dump.c gpvc.c \
 	block.h dump.h gpvc.h.in
 
-gpvo_SOURCES=\
+gpvo_SOURCES= \
 	gpvo.c \
 	gpvo.h.in
 
-BUILT_SOURCES = gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h
+# Need to have -d alone (not -dvt) for automake magic
+AM_YFLAGS = -d -vt
+AM_LFLAGS = -i
 
-CLEANFILES = gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h
+BUILT_SOURCES = gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h parse.h scan.c
+
+CLEANFILES = gpdasm.h gplib.h gpstrip.h gpvc.h gpvo.h parse.c parse.h parse.output scan.c
 
 gpdasm.h: gpdasm.h.in
 	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" "$<" > "$@"

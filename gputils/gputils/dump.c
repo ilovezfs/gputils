@@ -39,7 +39,7 @@ substr(char *a, size_t sizeof_a, unsigned char *b, size_t n)
   int m = (n < sizeof_a) ? n : (sizeof_a - 1);
 
   memcpy(a, b, m);
-  a[m] = 0;
+  a[m] = '\0';
   return a;
 }
 
@@ -181,7 +181,7 @@ dump_index(unsigned char *block)
   for (i = 0; i < COD_CODE_IMAGE_BLOCKS; ++i) {
     int curr_block;
 
-    if (0 != (curr_block = gp_getu16(&block[i * 2]))) {
+    if ((curr_block = gp_getu16(&block[i * 2])) != 0) {
       printf("%06x-%06x: %d\n", _64k_base | (i << COD_BLOCK_BITS),
              (_64k_base | ((i + 1) << COD_BLOCK_BITS)) - 1, curr_block);
     }
@@ -205,7 +205,7 @@ dump_directory_blocks(void)
     dump_index(dbi->dir);
     block_num = gp_getl16(&dbi->dir[COD_DIR_NEXTDIR]);
     dbi = dbi->next;
-  } while (NULL != dbi);
+  } while (dbi != NULL);
 }
 
 /*---------------------------------------------*/
@@ -220,7 +220,7 @@ dump_memmap(proc_class_t proc_class)
   DirBlockInfo *dbi;
 
   unsigned short i, j, start_block, end_block;
-  int first = 1;
+  gp_boolean first = true;
 
   dbi = main_dir;
 
@@ -234,7 +234,7 @@ dump_memmap(proc_class_t proc_class)
       if (first) {
         printf("ROM Usage:\n"
                "--------------------------------\n");
-        first = 0;
+        first = false;
       }
       for (j = start_block; j <= end_block; j++) {
         read_block(temp, j);
@@ -253,14 +253,15 @@ dump_memmap(proc_class_t proc_class)
           }
         }
       }
-    } else if (first) {
+    }
+    else if (first) {
       printf("No ROM usage information available.\n");
     }
 
     putchar('\n');
 
     dbi = dbi->next;
-  } while (dbi);
+  } while (dbi != NULL);
 }
 
 /*---------------------------------------------*/
@@ -272,7 +273,8 @@ void
 dump_code(proc_class_t proc_class)
 {
   unsigned int _64k_base;
-  unsigned short i, j, k, all_zero_line, index;
+  unsigned short i, j, k, index;
+  gp_boolean all_zero_line;
   DirBlockInfo *dbi;
 
   dump_memmap(proc_class);
@@ -292,9 +294,9 @@ dump_code(proc_class_t proc_class)
 
         i = 0;
         do {
-          for (j = 0, all_zero_line = 1; j < 8; j++) {
+          for (j = 0, all_zero_line = true; j < 8; j++) {
             if (gp_getu16(&temp[(i + j) * 2])) {
-              all_zero_line = 0;
+              all_zero_line = false;
             }
           }
 
@@ -319,7 +321,7 @@ dump_code(proc_class_t proc_class)
     putchar('\n');
 
     dbi = dbi->next;
-  } while (dbi);
+  } while (dbi != NULL);
 }
 
 /*---------------------------------------------*/
@@ -335,7 +337,7 @@ dump_symbols(void)
 
   start_block = gp_getu16(&main_dir->dir[COD_DIR_SYMTAB]);
 
-  if (start_block) {
+  if (start_block != 0) {
     end_block = gp_getu16(&main_dir->dir[COD_DIR_SYMTAB + 2]);
 
     printf("Symbol Table Information:\n"
@@ -353,8 +355,9 @@ dump_symbols(void)
         }
       }
     }
-  } else {
-    printf("No symbol table info\n");
+  }
+  else {
+    printf("No symbol table info.\n");
   }
 
   putchar('\n');
@@ -376,7 +379,7 @@ dump_lsymbols(void)
 
   start_block = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB]);
 
-  if (start_block) {
+  if (start_block != 0) {
     end_block = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB + 2]);
     end_block = gp_getu16(&main_dir->dir[COD_DIR_LSYMTAB + 2]);
 
@@ -408,8 +411,9 @@ dump_lsymbols(void)
         i += length + 7;
       }
     }
-  } else {
-    printf("No long symbol table info\n");
+  }
+  else {
+    printf("No long symbol table info.\n");
   }
 
   putchar('\n');
@@ -428,7 +432,7 @@ dump_source_files(void)
 
   start_block = gp_getu16(&main_dir->dir[COD_DIR_NAMTAB]);
 
-  if (start_block) {
+  if (start_block != 0) {
     end_block = gp_getu16(&main_dir->dir[COD_DIR_NAMTAB + 2]);
     end_block = gp_getu16(&main_dir->dir[COD_DIR_NAMTAB + 2]);
 
@@ -441,17 +445,16 @@ dump_source_files(void)
       for (i = 0, offset = 0; i < FILES_PER_BLOCK; ++i, offset += FILE_SIZE) {
         substr(b, sizeof (b), &temp[offset + 1], FILE_SIZE);
 
-        if (temp[offset]) {
+        if (temp[offset] != 0) {
           source_file_names[number_of_source_files] = strdup(b);
 
-          if (!source_file_names[number_of_source_files]) {
+          if (source_file_names[number_of_source_files] == NULL) {
             fprintf(stderr, " system error\n");
             exit(1);
           }
 
           printf("%s\n", source_file_names[number_of_source_files]);
-          source_files[number_of_source_files] =
-            fopen(source_file_names[number_of_source_files], "rt");
+          source_files[number_of_source_files] = fopen(source_file_names[number_of_source_files], "rt");
           number_of_source_files++;
 
           if (number_of_source_files >= MAX_SOURCE_FILES) {
@@ -461,8 +464,9 @@ dump_source_files(void)
         }
       }
     }
-  } else {
-    printf("No source file info\n");
+  }
+  else {
+    printf("No source file info.\n");
   }
 
   putchar('\n');
@@ -481,7 +485,7 @@ smod_flags(int smod)
   f[5] = (smod & 0x04) ? 'L' : '.';
   f[6] = (smod & 0x02) ? 'N' : '.';
   f[7] = (smod & 0x01) ? 'A' : '.';
-  f[8] = 0;
+  f[8] = '\0';
 
   return f;
 }
@@ -499,7 +503,7 @@ dump_line_symbols(void)
   char buf[2048];
   unsigned short i, j, start_block, end_block;
   DirBlockInfo *dbi = main_dir;
-  int has_line_num_info = 0;
+  gp_boolean has_line_num_info = false;
   int _64k_base;
 
   do {
@@ -511,7 +515,7 @@ dump_line_symbols(void)
       end_block = gp_getu16(&dbi->dir[COD_DIR_LSTTAB + 2]);
 
       if (!has_line_num_info) {
-        has_line_num_info = 1;
+        has_line_num_info = true;
 
         printf("Line Number Information:\n"
                " LstLn  SrcLn  Addr    Flags        FileName\n"
@@ -552,7 +556,7 @@ dump_line_symbols(void)
                    source_file_name);
 
             if ((sfile < number_of_source_files) && (sline != last_src_line)) {
-              if (NULL != source_files[sfile]) {
+              if (source_files[sfile] != NULL) {
                 /*fgets(buf, sizeof(buf), source_files[sfile]);*/
                 fget_line(sline, buf, sizeof(buf), source_files[sfile]);
                 printf("%s", buf);
@@ -567,10 +571,10 @@ dump_line_symbols(void)
       } /* for */
     } /* if */
     dbi = dbi->next;
-  } while (dbi);
+  } while (dbi != NULL);
 
   if (!has_line_num_info) {
-    printf("No line number info\n");
+    printf("No line number info.\n");
   }
 
   putchar('\n');
@@ -590,7 +594,7 @@ dump_message_area(void)
 
   start_block = gp_getu16(&main_dir->dir[COD_DIR_MESSTAB]);
 
-  if (start_block) {
+  if (start_block != 0) {
     end_block = gp_getu16(&main_dir->dir[COD_DIR_MESSTAB + 2]);
 
     printf("Debug Message area:\n"
@@ -620,7 +624,8 @@ dump_message_area(void)
         printf(" %8x    %c  %s\n", laddress, DebugType, DebugMessage);
       }
     }
-  } else {
+  }
+  else {
     printf("No Debug Message information available.\n");
   }
 
@@ -640,7 +645,7 @@ dump_local_vars(proc_class_t proc_class)
 
   start_block = gp_getu16(&main_dir->dir[COD_DIR_LOCALVAR]);
 
-  if (start_block) {
+  if (start_block != 0) {
     end_block = gp_getu16(&main_dir->dir[COD_DIR_LOCALVAR + 2]);
 
     printf("Local Symbol Scoping Information:\n"
@@ -652,8 +657,8 @@ dump_local_vars(proc_class_t proc_class)
       for (j = 0; j < SYMBOLS_PER_BLOCK; j++) {
         sh = &temp[j * SSYMBOL_SIZE];
 
-        if (sh[COD_SSYMBOL_NAME]) {
-          if (0 == memcmp(&sh[COD_SSYMBOL_NAME], "__LOCAL", 7)) {
+        if (sh[COD_SSYMBOL_NAME] != '\0') {
+          if (memcmp(&sh[COD_SSYMBOL_NAME], "__LOCAL", 7) == 0) {
             unsigned int start = gp_getl32(&sh[COD_SSYMBOL_START]);
             unsigned int stop  = gp_getl32(&sh[COD_SSYMBOL_STOP]);
 
@@ -668,7 +673,8 @@ dump_local_vars(proc_class_t proc_class)
         }
       }
     }
-  } else {
+  }
+  else {
     printf("No local variable scoping info available.\n");
   }
 

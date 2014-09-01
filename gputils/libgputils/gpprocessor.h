@@ -259,7 +259,7 @@ extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices 
 #define MAX_NAMES                  3          /* Maximum number of names a processor can have. */
 #define MAX_BADROM                 (1 * 2)    /* Maximum number of BADROM ranges a processor can be initialized with. */
 
-#define PIC16E_FLAG_HAVE_EXTINST   (1 << 0)   /* The device supports 16 bit extended instruction set. */
+#define PIC16E_FLAG_HAVE_EXTINST   (1 << 0)   /* The device supports the 16 bit extended instruction set. */
 #define PIC16E_FLAG_J_SUBFAMILY    (1 << 1)   /* The device member of the "J" series. (18f..J..) */
 
 struct px {
@@ -269,7 +269,7 @@ struct px {
   unsigned int coff_type;
   int num_pages;
   int num_banks;
-  /* The bounds of common (access) RAM, if exist in the PIC12, PIC14 and PIC14E families. */
+  /* The bounds of common (access) RAM, if exist in the PIC12, PIC12E, PIC14 and PIC14E families. */
   int common_ram_addrs[2];
   int common_ram_max;
   int linear_ram_addrs[2];
@@ -326,11 +326,23 @@ const char *gp_processor_coff_name(unsigned long coff_type, unsigned int choice)
 const char *gp_processor_header(pic_processor_t processor);
 const char *gp_processor_script(pic_processor_t processor);
 unsigned int gp_processor_id_location(pic_processor_t processor);
+
+const int *gp_processor_common_ram_exist(pic_processor_t processor);
 int gp_processor_is_common_ram_addr(pic_processor_t processor, int address);
+
+const int *gp_processor_linear_ram_exist(pic_processor_t processor);
 int gp_processor_is_linear_ram_addr(pic_processor_t processor, int address);
-int gp_processor_is_idlocs_addr(pic_processor_t processor, int address);
-int gp_processor_is_config_addr(pic_processor_t processor, int address);
-int gp_processor_is_eeprom_addr(pic_processor_t processor, int address);
+
+const int *gp_processor_idlocs_exist(pic_processor_t processor);
+int gp_processor_is_idlocs_org(pic_processor_t processor, int org);
+
+const int *gp_processor_config_exist(pic_processor_t processor);
+int gp_processor_is_config_org(pic_processor_t processor, int org);
+
+const int *gp_processor_eeprom_exist(pic_processor_t processor);
+int gp_processor_is_eeprom_org(pic_processor_t processor, int org);
+int gp_processor_is_eeprom_byte_addr(pic_processor_t processor, int byte_address);
+
 int gp_processor_rom_width(proc_class_t class);
 int gp_processor_check_bank(proc_class_t class, unsigned int address);
 
@@ -359,7 +371,10 @@ int gp_processor_set_page(proc_class_t class,
 int gp_processor_retlw(proc_class_t class);
 
 int gp_processor_org_to_byte(proc_class_t class, int org);
-int gp_processor_byte_to_org(proc_class_t class, int byte);
+int gp_processor_real_to_byte(pic_processor_t processor, int org);
+
+int gp_processor_byte_to_org(proc_class_t class, int byte_address);
+int gp_processor_byte_to_real(pic_processor_t processor, int byte_address);
 
 int gp_org_to_byte(unsigned shift, int org);
 int gp_byte_to_org(unsigned shift, int byte);

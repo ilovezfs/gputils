@@ -69,7 +69,7 @@ lst_page_start(void)
   lst_throw();
   switch (state.lst.lst_state) {
   case LST_IN_MEM:
-    lst_line("LOC  OBJECT CODE     LINE SOURCE TEXT");
+    lst_line("LOC    OBJECT CODE    LINE  SOURCE TEXT");
     lst_line("  VALUE");
     break;
 
@@ -141,7 +141,7 @@ lst_err_line(const char *type, unsigned int code, const char *format, va_list ar
 {
   if (state.lst.f != NULL) {
     lst_check_page_start();
-    fprintf(state.lst.f, "%s[%03d]%s: ", type, code, (0 == strcmp(type, "Error")) ? "  " : "");
+    fprintf(state.lst.f, "%s[%03d]%s: ", type, code, (strcmp(type, "Error") == 0) ? "  " : "");
     vfprintf(state.lst.f, format, args);
     lst_eol();
   }
@@ -243,7 +243,7 @@ lst_memory_map(MemBlock *m)
       }
 
       if (row_used) {
-        if (state.show_full_addr && IS_PIC16E_CORE) {
+        if ((state.device.class != NULL) && state.show_full_addr && IS_PIC16E_CORE) {
           /* Gpasm mode: Print all address digits. */
           lst_printf("%0*X :", state.device.class->addr_digits, (i + base));
         }
@@ -280,7 +280,7 @@ lst_memory_map(MemBlock *m)
     lst_line("Memory Bytes Used: %5i", b_memory_used(state.i_memory));
   }
   else {
-    unsigned int used = gp_processor_byte_to_org(state.device.class, ((!IS_PIC16) && state.processor) ?
+    unsigned int used = gp_processor_byte_to_real(state.processor, ((!IS_PIC16) && (state.processor != NULL)) ?
       b_range_memory_used(state.i_memory, 0,
                           gp_processor_org_to_byte(state.device.class, state.processor->prog_mem_size)) :
       b_memory_used(state.i_memory));
@@ -577,39 +577,36 @@ print_reloc(unsigned short type, unsigned short current_value)
 }
 
 static unsigned int
-lst_data(unsigned int pos, MemBlock *m, unsigned int byte_org,
+lst_data(unsigned int pos, MemBlock *m, unsigned int byte_addr,
          unsigned int bytes_emitted, unsigned short reloc_type)
 {
+  unsigned char emit_byte;
+  unsigned short emit_word;
   int lst_bytes = 0;
+  gp_boolean is_eeprom_area = (gp_processor_is_eeprom_byte_addr(state.processor, byte_addr) >= 0) ? true : false;
 
-  /* when in a idata or byte packed section, print byte by byte */
-  if (IS_EEPROM8 || (state.obj.new_sec_flags & (STYP_DATA | STYP_BPACK))) {
+  /* When in a idata or byte packed section or eeprom area, print byte by byte. */
+  if (IS_EEPROM8 || is_eeprom_area || (state.obj.new_sec_flags & (STYP_DATA | STYP_BPACK))) {
     while ((bytes_emitted > lst_bytes) && ((pos + 3) <= LST_LINENUM_POS)) {
-      unsigned char emit_byte;
-
-      b_memory_get(m, byte_org, &emit_byte, NULL, NULL);
+      b_memory_get(m, byte_addr, &emit_byte, NULL, NULL);
       pos += lst_printf("%02X ", emit_byte);
-      ++byte_org;
+      ++byte_addr;
       ++lst_bytes;
     }
   }
   else {    /* non-code pack section */
     /* list first byte on odd address */
-    if (bytes_emitted && (byte_org & 1)) {
-      unsigned char emit_byte;
-
-      b_memory_get(m, byte_org, &emit_byte, NULL, NULL);
+    if (bytes_emitted && (byte_addr & 1)) {
+      b_memory_get(m, byte_addr, &emit_byte, NULL, NULL);
       pos += lst_printf("%02X ", emit_byte);
-      ++byte_org;
+      ++byte_addr;
       ++lst_bytes;
     }
     /* list full words */
     while (((bytes_emitted - lst_bytes) > 1) && ((pos + 5) <= LST_LINENUM_POS)) {
-      unsigned short emit_word;
+      state.device.class->i_memory_get(m, byte_addr, &emit_word, NULL, NULL);
 
-      state.device.class->i_memory_get(m, byte_org, &emit_word, NULL, NULL);
-
-      /* display '?' for undefined bytes if it is a relocatable code */
+      /* Display '?' for undefined bytes if it is a relocatable code. */
       if (reloc_type != 0) {
         int n = print_reloc(reloc_type, emit_word);
 
@@ -619,16 +616,14 @@ lst_data(unsigned int pos, MemBlock *m, unsigned int byte_org,
         pos += lst_printf("%04X ", emit_word);
       }
 
-      byte_org += 2;
+      byte_addr += 2;
       lst_bytes += 2;
     }
 
     if (((bytes_emitted - lst_bytes) == 1) && ((pos + 3) <= LST_LINENUM_POS)) {
-      unsigned char emit_byte;
-
-      b_memory_get(m, byte_org, &emit_byte, NULL, NULL);
+      b_memory_get(m, byte_addr, &emit_byte, NULL, NULL);
       pos += lst_printf("%02X ", emit_byte);
-      ++byte_org;
+      ++byte_addr;
       ++lst_bytes;
     }
   }
@@ -644,7 +639,7 @@ lst_format_line(const char *src_line, int value)
 {
   unsigned int emitted = 0;
   unsigned int emitted_lines = 0;
-  unsigned int byte_org = 0;
+  unsigned int byte_addr = 0;
   unsigned int bytes_emitted = 0;
   unsigned int lst_bytes;
   const char *addr_fmt = IS_PIC16E_CORE ? "%06X " : (IS_EEPROM ? "%04X " : "%04X   ");
@@ -657,12 +652,12 @@ lst_format_line(const char *src_line, int value)
 
   if ((state.mode == MODE_RELOCATABLE) && (state.obj.section != NULL) &&
       (state.obj.new_sec_flags & STYP_TEXT) && (state.obj.section->relocations_tail != NULL)) {
-      if ((state.obj.section->address + state.obj.section->relocations_tail->address) > state.lst.line.was_org) {
+      if ((state.obj.section->address + state.obj.section->relocations_tail->address) > state.lst.line.was_byte_addr) {
         /* already passed it, go back to the history */
-        gp_reloc_type *p = find_reloc_by_address(state.lst.line.was_org);
+        gp_reloc_type *p = find_reloc_by_address(state.lst.line.was_byte_addr);
         reloc_type = (p != NULL) ? p->type : 0;
       }
-      else if ((state.obj.section->address + state.obj.section->relocations_tail->address) == state.lst.line.was_org) {
+      else if ((state.obj.section->address + state.obj.section->relocations_tail->address) == state.lst.line.was_byte_addr) {
         reloc_type = state.obj.section->relocations_tail->type;
       }
       else {
@@ -675,11 +670,11 @@ lst_format_line(const char *src_line, int value)
 
   switch (state.lst.line.linetype) {
   case LTY_INSN:
-    emitted_lines = emitted = state.org - state.lst.line.was_org;
+    emitted_lines = emitted = state.byte_addr - state.lst.line.was_byte_addr;
     break;
 
   case LTY_DATA:
-    emitted = state.org - state.lst.line.was_org;
+    emitted = state.byte_addr - state.lst.line.was_byte_addr;
     if ((SECTION_FLAGS & (STYP_TEXT | (state.mpasm_compatible ? STYP_BPACK : 0))) == STYP_TEXT) {
       /* generate line numbers for data directives in program memory;
        * in mpasm compatibility mode code_pack doesn't generate line numbers */
@@ -690,11 +685,11 @@ lst_format_line(const char *src_line, int value)
   case LTY_RES:
     if (SECTION_FLAGS & STYP_DATA) {
       /* generate data listing for idata */
-      emitted = state.org - state.lst.line.was_org;
+      emitted = state.byte_addr - state.lst.line.was_byte_addr;
     }
     else if (!IS_RAM_ORG) {
       /* generate line numbers for res directives in program memory */
-      emitted_lines = emitted = state.org - state.lst.line.was_org;
+      emitted_lines = emitted = state.byte_addr - state.lst.line.was_byte_addr;
     }
     break;
 
@@ -727,29 +722,31 @@ lst_format_line(const char *src_line, int value)
     break;
 
   case LTY_ORG:
-    pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, state.org));
+    pos += lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.byte_addr));
     lst_spaces(LST_LINENUM_POS - pos);
     break;
 
   case LTY_IDLOCS:
     /* not used for 16 bit devices, config is used */
     m = state.c_memory;
-    pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, state.device.id_location));
+    pos += lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.device.id_location));
     lst_bytes = lst_data(pos, m, state.device.id_location, emitted, reloc_type);
-    byte_org = state.device.id_location + lst_bytes;
+    byte_addr = state.device.id_location + lst_bytes;
     bytes_emitted = emitted - lst_bytes;
     break;
 
   case LTY_DATA:
   case LTY_RES:
-    pos += lst_printf(addr_fmt, state.lst.line.was_org);
+    pos += lst_printf(addr_fmt, state.lst.line.was_byte_addr);
     goto lst_data;
 
   case LTY_INSN:
-    pos += lst_printf(addr_fmt, gp_processor_byte_to_org(state.device.class, state.lst.line.was_org));
+    pos += lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor, state.lst.line.was_byte_addr));
+
 lst_data:
-    lst_bytes = lst_data(pos, m, state.lst.line.was_org, emitted, reloc_type);
-    byte_org = state.lst.line.was_org + lst_bytes;
+
+    lst_bytes = lst_data(pos, m, state.lst.line.was_byte_addr, emitted, reloc_type);
+    byte_addr = state.lst.line.was_byte_addr + lst_bytes;
     bytes_emitted = emitted - lst_bytes;
     break;
 
@@ -784,7 +781,7 @@ lst_data:
       state.device.class->i_memory_get(state.c_memory,
                                        state.lst.config_address, &word, NULL, NULL);
       pos += lst_printf(addr_fmt,
-                        gp_processor_byte_to_org(state.device.class,
+                        gp_processor_byte_to_real(state.processor,
                                                  state.lst.config_address));
       pos += lst_printf("%04X", word);
       lst_spaces(LST_LINENUM_POS - pos);
@@ -849,8 +846,8 @@ lst_data:
       /* data left to print on separate lines */
 
       pos = lst_spaces(ADDR_LEN);
-      lst_bytes = lst_data(pos, m, byte_org, bytes_emitted, reloc_type);
-      byte_org += lst_bytes;
+      lst_bytes = lst_data(pos, m, byte_addr, bytes_emitted, reloc_type);
+      byte_addr += lst_bytes;
       bytes_emitted -= lst_bytes;
       lst_eol();
     }

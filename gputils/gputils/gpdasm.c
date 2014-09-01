@@ -26,14 +26,21 @@ Boston, MA 02111-1307, USA.  */
 #include "libgputils.h"
 #include "gpcfg.h"
 #include "gpdasm.h"
+#include "labelset.h"
+#include "parse.h"
+#include "scan.h"
 
-static const char *processor_name = NULL;
+#define USER_LABEL_ALIGN        15
+
+extern int yyparse(void);
 
 struct gpdasm_state state = {
   NULL,                 /* processor type */
   PROC_CLASS_GENERIC,   /* 12 bit device */
   1                     /* output format */
 };
+
+static const char *processor_name = NULL;
 
 static gp_cfg_addr_pack_t addr_pack = { 0, };
 
@@ -43,6 +50,10 @@ static struct {
   int words[PIC16E_IDLOCS_SIZE];
 } idlocs_pack = { 0, 0, { -1, } };
 
+static gp_boolean prev_empty_line = false;
+
+static char border[] = "===============================================================================";
+
 /*------------------------------------------------------------------------------------------------*/
 
 static void
@@ -51,7 +62,7 @@ select_processor(void)
   pic_processor_t found = NULL;
 
   if (processor_name == NULL) {
-    printf("error: must select processor\n");
+    fprintf(stderr, "error: Must select the processor.\n");
     exit(1);
   }
 
@@ -60,8 +71,8 @@ select_processor(void)
   if (found != NULL) {
     state.processor = found;
   } else {
-    printf("Didn't find any processor named: %s\nHere are the supported processors:\n",
-            processor_name);
+    fprintf(stderr, "error: Didn't find any processor named: %s\n", processor_name);
+    printf("Here are the supported processors:\n");
     gp_dump_processor_list(true, NULL, NULL);
     exit(1);
   }
@@ -69,7 +80,7 @@ select_processor(void)
   state.class = gp_processor_class(state.processor);
 
   if (state.class->instructions == NULL) {
-    fprintf(stderr, "error: unsupported processor class\n");
+    fprintf(stderr, "error: Unsupported processor class.\n");
     exit(1);
   }
 
@@ -106,24 +117,24 @@ write_core_sfr_list(void)
   }
 
   if (state.class == PROC_CLASS_PIC16E) {
-    printf("\nF\tequ\t1\nW\tequ\t0\nA\tequ\t0\n\n");
+    printf("\nF       equ     1\nW       equ     0\nA       equ     0\n\n");
   }
   else {
-    printf("\nF\tequ\t1\nW\tequ\t0\n\n");
+    printf("\nF       equ     1\nW       equ     0\n\n");
   }
 
   table = state.class->core_sfr_table;
   for (i = state.class->core_sfr_number; i > 0; ++table, --i) {
     if (state.class == PROC_CLASS_PIC14E) {
       if (strcmp(table->name, "FSR0L") == 0) {
-        printf("FSR0\tequ\t0x%03x\n", table->address);
+        printf("FSR0    equ     0x%03x\n", table->address);
       }
       else if (strcmp(table->name, "FSR1L") == 0) {
-        printf("FSR1\tequ\t0x%03x\n", table->address);
+        printf("FSR1    equ     0x%03x\n", table->address);
       }
     }
 
-    printf("%s\tequ\t0x%03x\n", table->name, table->address);
+    printf("%s\tequ     0x%03x\n", table->name, table->address);
   }
 }
 
@@ -140,8 +151,11 @@ end_asm(void)
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-write_org(int org, int digits, const char *title)
+write_org(int org, int addr_digits, const char *title, const char *Address_name, int offset)
 {
+  size_t length;
+  char buffer[BUFSIZ];
+
   if (!state.format) {
     printf("\n");
 
@@ -149,7 +163,23 @@ write_org(int org, int digits, const char *title)
       printf("        ; %s\n", title);
     }
 
-    printf("        org\t0x%0*x\n", digits, org);
+    if (Address_name != NULL) {
+      if (offset > 0) {
+        length = snprintf(buffer, sizeof(buffer), "        org     (%s + 0x%0*x)", Address_name,
+                          addr_digits, offset);
+      }
+      else {
+        length = snprintf(buffer, sizeof(buffer), "        org     %s", Address_name);
+      }
+
+      gp_exclamation(buffer, sizeof(buffer), length, "; address: 0x%0*x", addr_digits, org);
+      printf("\n%s\n\n", buffer);
+      prev_empty_line = true;
+    }
+    else {
+      printf("        org     0x%0*x\n\n", addr_digits, org);
+      prev_empty_line = true;
+    }
   }
 }
 
@@ -172,15 +202,15 @@ mark_false_addresses(MemBlock *memory)
 
     insn_size = 2;
     while (i < maximum) {
-      org = gp_processor_byte_to_org(state.class, i);
+      org = gp_processor_byte_to_real(state.processor, i);
 
-      if (gp_processor_is_idlocs_addr(state.processor, org) >= 0) {
+      if (gp_processor_is_idlocs_org(state.processor, org) >= 0) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
       }
-      else if (gp_processor_is_config_addr(state.processor, org) >= 0) {
+      else if (gp_processor_is_config_org(state.processor, org) >= 0) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
       }
-      else if (gp_processor_is_eeprom_addr(state.processor, org) >= 0) {
+      else if (gp_processor_is_eeprom_org(state.processor, org) >= 0) {
         insn_size = 1;
       }
       else {
@@ -205,6 +235,7 @@ recognize_labels_and_spec_words(MemBlock *memory)
   MemBlock *m;
   int i, maximum, index;
   int org;
+  int offset;
   int insn_size;
   int num_words;
   unsigned char byte;
@@ -214,11 +245,14 @@ recognize_labels_and_spec_words(MemBlock *memory)
   const gp_cfg_device_t *dev;
   gp_cfg_addr_hit_t *hit;
   unsigned int max_width;
+  unsigned int type;
+  lset_symbol_t *sym;
 
   if (state.show_config) {
     dev = gp_cfg_find_pic_multi_name(state.processor->names, ARRAY_SIZE(state.processor->names));
     if (dev == NULL) {
-      fprintf(stderr, "The %s processor has no entries in the config db.", state.processor->names[2]);
+      fprintf(stderr, "warning: The %s processor has no entries in the config db.",
+              state.processor->names[2]);
     }
   }
   else {
@@ -239,9 +273,9 @@ recognize_labels_and_spec_words(MemBlock *memory)
 
     insn_size = 2;
     while (i < maximum) {
-      org = gp_processor_byte_to_org(state.class, i);
+      org = gp_processor_byte_to_real(state.processor, i);
 
-      if ((index = gp_processor_is_idlocs_addr(state.processor, org)) >= 0) {
+      if ((index = gp_processor_is_idlocs_org(state.processor, org)) >= 0) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
 
         if (state.class == PROC_CLASS_PIC16E) {
@@ -268,7 +302,7 @@ recognize_labels_and_spec_words(MemBlock *memory)
           }
         }
       }
-      else if (gp_processor_is_config_addr(state.processor, org) >= 0) {
+      else if (gp_processor_is_config_org(state.processor, org) >= 0) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
 
         if (dev != NULL) {
@@ -301,29 +335,56 @@ recognize_labels_and_spec_words(MemBlock *memory)
             }
           }
           else {
-            fprintf(stderr, "The value of GP_CFG_ADDR_PACK_MAX too little: %u", GP_CFG_ADDR_PACK_MAX);
+            fprintf(stderr, "warning: The value of GP_CFG_ADDR_PACK_MAX too little: %u",
+                    GP_CFG_ADDR_PACK_MAX);
           }
         } /* if (dev != NULL) */
-      } /* else if (gp_processor_is_config_addr(state.processor, org) >= 0) */
-      else if (gp_processor_is_eeprom_addr(state.processor, org) >= 0) {
+      } /* else if (gp_processor_is_config_org(state.processor, org) >= 0) */
+      else if ((offset = gp_processor_is_eeprom_org(state.processor, org)) >= 0) {
+        if (b_memory_get(m, i, &byte, NULL, NULL)) {
+          sym = lset_symbol_find_addr(state.lset_root.sections[SECT_SPEC_EEDATA], offset, -1, true);
+
+          if ((sym != NULL) && !(sym->attr & CSYM_ORG)) {
+            if (sym->start == (long)offset) {
+              b_memory_set_addr_name(m, i, sym->name);
+              sym->attr |= CSYM_USED;
+            }
+          }
+        }
+
         insn_size = 1;
       }
       else {
         if (state.class->i_memory_get(m, i, &data, NULL, NULL) == W_USED_ALL) {
-          if (state.class == PROC_CLASS_SX) {
-            /* Unlike the others, the address of reset vector located the top of program memory. */
-            org = (org == state.processor->maxrom) ? -1 : org;
+          sym = lset_symbol_find_addr(state.lset_root.sections[SECT_SPEC_CODE], org, -1, true);
+
+          if ((sym != NULL) && !(sym->attr & CSYM_ORG)) {
+            type = (sym->attr & CSYM_DATA) ? W_CONST_DATA : 0;
+
+            if (sym->start == (long)org) {
+              type |= W_ADDR_T_LABEL;
+              b_memory_set_addr_name(m, i, sym->name);
+            }
+
+            b_memory_set_type(m, i, type);
+            insn_size = 2;
           }
+          else {
+            if (state.class == PROC_CLASS_SX) {
+            /* Unlike the others, the address of reset vector located the top of program memory. */
+              org = (org == state.processor->maxrom) ? -1 : org;
+            }
 
-          vector = gp_processor_find_vector(state.class, org);
+            vector = gp_processor_find_vector(state.class, org);
 
-	  if (vector != NULL) {
-            b_memory_set_addr_type(m, i, W_ADDR_T_LABEL, 0);
-            b_memory_set_addr_name(m, i, vector->name);
-	  }
+            if (vector != NULL) {
+              b_memory_set_addr_type(m, i, W_ADDR_T_LABEL, 0);
+              b_memory_set_addr_name(m, i, vector->name);
+            }
 
-          num_words = gp_disassemble_find_labels(m, i, state.processor, &fstate);
-          insn_size = (num_words != 1) ? 4 : 2;
+            num_words = gp_disassemble_find_labels(m, i, state.processor, &fstate);
+            insn_size = (num_words != 1) ? 4 : 2;
+          }
         }
       }
 
@@ -334,6 +395,27 @@ recognize_labels_and_spec_words(MemBlock *memory)
   }
 
   addr_pack.max_dir_width = max_width;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+user_data_finder(MemArg *Argument)
+{
+  lset_symbol_t *sym;
+
+  if (Argument->arg != NULL) {
+    return;
+  }
+
+  sym = lset_symbol_find_addr(state.lset_root.sections[SECT_SPEC_DATA], (long)Argument->val, -1, true);
+
+  if (sym != NULL) {
+    Argument->arg  = sym->name;
+    Argument->offs = (int)((long)Argument->val - sym->start);
+    /* This will be necessary for the later listing. */
+    sym->attr |= CSYM_USED;
+  }
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -366,20 +448,21 @@ recognize_registers(MemBlock *memory)
 
     insn_size = 2;
     while (i < maximum) {
-      org = gp_processor_byte_to_org(state.class, i);
+      org = gp_processor_byte_to_real(state.processor, i);
 
-      if (gp_processor_is_idlocs_addr(state.processor, org) >= 0) {
+      if (gp_processor_is_idlocs_org(state.processor, org) >= 0) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
       }
-      else if (gp_processor_is_config_addr(state.processor, org) >= 0) {
+      else if (gp_processor_is_config_org(state.processor, org) >= 0) {
         insn_size = (state.class == PROC_CLASS_PIC16E) ? 1 : 2;
       }
-      else if (gp_processor_is_eeprom_addr(state.processor, org) >= 0) {
+      else if (gp_processor_is_eeprom_org(state.processor, org) >= 0) {
         insn_size = 1;
       }
       else {
         if (state.class->i_memory_get(m, i, &data, NULL, NULL) == W_USED_ALL) {
-          num_words = gp_disassemble_find_registers(m, i, state.processor, &fstate);
+          num_words = gp_disassemble_find_registers(m, i, state.processor,
+                                                    &fstate, user_data_finder);
           insn_size = (num_words != 1) ? 4 : 2;
         }
       }
@@ -403,7 +486,7 @@ denominate_labels(MemBlock *memory)
   unsigned int type;
   unsigned int func_idx;
   unsigned int label_idx;
-  char buf[BUFSIZ];
+  char buffer[BUFSIZ];
 
   m = memory;
   func_idx  = 0;
@@ -416,13 +499,13 @@ denominate_labels(MemBlock *memory)
       type = b_memory_get_addr_type(m, i, NULL, NULL);
 
       if (type & W_ADDR_T_FUNC) {
-        snprintf(buf, sizeof(buf), "function_%03u", func_idx);
-        b_memory_set_addr_name(m, i, buf);
+        snprintf(buffer, sizeof(buffer), "function_%03u", func_idx);
+        b_memory_set_addr_name(m, i, buffer);
         ++func_idx;
       }
       else if (type & W_ADDR_T_LABEL) {
-        snprintf(buf, sizeof(buf), "label_%03u", label_idx);
-        b_memory_set_addr_name(m, i, buf);
+        snprintf(buffer, sizeof(buffer), "label_%03u", label_idx);
+        b_memory_set_addr_name(m, i, buffer);
         ++label_idx;
       }
 
@@ -435,8 +518,9 @@ denominate_labels(MemBlock *memory)
 
 /*------------------------------------------------------------------------------------------------*/
 
-static size_t byte_exclamation(char *buffer, size_t buffer_length, size_t current_length,
-                               unsigned char byte) {
+static size_t
+byte_exclamation(char *buffer, size_t buffer_length, size_t current_length, unsigned char byte)
+{
   int l;
   size_t length;
 
@@ -459,7 +543,8 @@ static size_t byte_exclamation(char *buffer, size_t buffer_length, size_t curren
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-show_config(void) {
+show_config(void)
+{
   gp_cfg_addr_hit_t *hit;
   unsigned int m, n;
 
@@ -481,7 +566,8 @@ show_config(void) {
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-show_idlocs(void) {
+show_idlocs(void)
+{
   unsigned int i, j;
   int word;
   gp_boolean prev_exist, act_exist, aligned;
@@ -587,12 +673,190 @@ show_idlocs(void) {
 
 /*------------------------------------------------------------------------------------------------*/
 
+static gp_boolean need_section_print(const lset_section_t *Section)
+{
+  unsigned int i;
+
+  for (i = 0; i < Section->symbol_number; ++ i) {
+    if (Section->symbol_table[i]->attr & CSYM_USED) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+list_user_labels(int Addr_digits)
+{
+  unsigned int i;
+  const lset_section_t *sect;
+  const lset_symbol_t *sym;
+  size_t length;
+  char buffer[BUFSIZ];
+
+  if (((sect = state.lset_root.sections[SECT_SPEC_DATA]) != NULL) &&
+      (sect->symbol_table != NULL)) {
+    if (need_section_print(sect)) {
+      printf("\n;%s\n; DATA address definitions\n\n", border);
+      for (i = 0; i < sect->symbol_number; ++i) {
+        sym = sect->symbol_table[i];
+
+        if (sym->attr & CSYM_USED) {
+          length = snprintf(buffer, sizeof(buffer), "%-*s equ     0x%0*lX",
+                            USER_LABEL_ALIGN, sym->name, Addr_digits, sym->start);
+
+          if (sym->attr & CSYM_END) {
+            gp_exclamation(buffer, sizeof(buffer), length, "; size: %li bytes",
+                           sym->end - sym->start + 1);
+          }
+
+          printf("%s\n", buffer);
+        }
+      }
+    }
+  }
+
+  if (((sect = state.lset_root.sections[SECT_SPEC_EEDATA]) != NULL) &&
+      (sect->symbol_table != NULL)) {
+    if (need_section_print(sect)) {
+      printf("\n;%s\n; EEDATA address definitions\n\n", border);
+      for (i = 0; i < sect->symbol_number; ++i) {
+        sym = sect->symbol_table[i];
+
+        if (sym->attr & CSYM_USED) {
+          length = snprintf(buffer, sizeof(buffer), "%-*s equ     (__EEPROM_START + 0x%0*lX)",
+                            USER_LABEL_ALIGN, sym->name, Addr_digits, sym->start);
+
+          if (sym->attr & CSYM_END) {
+            gp_exclamation(buffer, sizeof(buffer), length, "; size: %li bytes",
+                           sym->end - sym->start + 1);
+          }
+
+          printf("%s\n", buffer);
+        }
+      }
+    }
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+add_constant(lset_section_t *Section, const char *Name, long Start, unsigned int Attr)
+{
+  if (lset_symbol_find_addr(Section, Start, -1, false) != NULL) {
+    return;
+  }
+
+  lset_symbol_new(Section, Name, Start, -1, CSYM_START | Attr, 1);
+}
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+load_processor_constants(void)
+{
+  pic_processor_t processor;
+  lset_section_t *sect;
+  const int *pair;
+  int addr;
+  const vector_t *vec;
+  unsigned int num;
+  char buf[BUFSIZ];
+
+  processor = state.processor;
+
+  /* The code section. */
+
+  if ((sect = state.lset_root.sections[SECT_SPEC_CODE]) == NULL) {
+    sect = lset_section_new(&state.lset_root, "CODE", 1);
+  }
+
+  if (sect != NULL) {
+    addr = processor->prog_mem_size;
+
+    if (addr > 0) {
+      add_constant(sect, "__CODE_START", 0, CSYM_ORG);
+      add_constant(sect, "__CODE_END",   addr - 1, CSYM_ORG);
+    }
+
+    if ((processor->class->vector_table != NULL) || (processor->class->vector_number > 0)) {
+      vec = processor->class->vector_table;
+      num = processor->class->vector_number;
+
+      for (; num; ++vec, --num) {
+        buf[0] = '_';
+        buf[1] = '_';
+        gp_stptoupper(&buf[2], vec->name, sizeof(buf) - 2);
+
+        if (vec->address < 0) {
+          /* This a SX type processor. */
+          addr = processor->prog_mem_size;
+
+          if (addr > 0) {
+            --addr;
+          }
+        }
+        else {
+          addr = vec->address;
+        }
+
+        add_constant(sect, buf, addr, CSYM_ORG);
+      }
+    }
+  } /* if (sect != NULL) */
+
+  /* The data section. */
+
+  if ((sect = state.lset_root.sections[SECT_SPEC_DATA]) == NULL) {
+    sect = lset_section_new(&state.lset_root, "DATA", 1);
+  }
+
+  if (sect != NULL) {
+    if ((pair = gp_processor_common_ram_exist(processor)) != NULL) {
+      if (lset_symbol_find_addr(sect, pair[0], pair[1], false) == NULL) {
+        lset_symbol_new(sect, "Common_RAM", pair[0], pair[1], CSYM_START | CSYM_END, 1);
+      }
+    }
+
+    if ((pair = gp_processor_linear_ram_exist(processor)) != NULL) {
+      if (lset_symbol_find_addr(sect, pair[0], pair[1], false) == NULL) {
+        lset_symbol_new(sect, "Linear_RAM", pair[0], pair[1], CSYM_START | CSYM_END, 1);
+      }
+    }
+  }
+
+  /* The eedata section. */
+
+  if ((sect = state.lset_root.sections[SECT_SPEC_EEDATA]) == NULL) {
+    sect = lset_section_new(&state.lset_root, "EEDATA", 1);
+  }
+
+  if (sect != NULL) {
+    if ((pair = gp_processor_eeprom_exist(processor)) != NULL) {
+      add_constant(sect, "__EEPROM_START", pair[0], CSYM_ORG);
+      add_constant(sect, "__EEPROM_END",   pair[1], CSYM_ORG);
+    }
+  }
+
+  lset_sections_choose(&state.lset_root);
+  lset_section_make_symbol_tables(&state.lset_root);
+  lset_section_check_bounds(&state.lset_root);
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 static void
 dasm(MemBlock *memory)
 {
   MemBlock *m;
   int i, maximum;
   int org;
+  int offset;
   int insn_size;
   int last_loc;
   int num_words;
@@ -600,10 +864,12 @@ dasm(MemBlock *memory)
   int bsr_boundary;
   unsigned short data;
   unsigned char byte;
+  unsigned int type;
   const char *label_name;
   int addr_digits;
   int word_digits;
   size_t length;
+  const lset_symbol_t *sym;
   char buffer[BUFSIZ];
 
   if (state.show_names && ((state.class == PROC_CLASS_PIC12)  ||
@@ -629,8 +895,8 @@ dasm(MemBlock *memory)
   write_header();
 
   if (state.show_names) {
-    printf("\n; The recognition of labels and registers is not always good,\n"
-           "; therefore be treated cautiously the results.\n");
+    printf("\n; The recognition of labels and registers is not always good, therefore\n"
+           "; be treated cautiously the results.\n");
     if (state.need_sfr_equ) {
       write_core_sfr_list();
     }
@@ -647,6 +913,8 @@ dasm(MemBlock *memory)
     if (state.show_fsrn) {
       behavior |= GPDIS_SHOW_FSRN;
     }
+
+    list_user_labels(addr_digits);
   }
   else {
     behavior = GPDIS_SHOW_NOTHING;
@@ -660,15 +928,19 @@ dasm(MemBlock *memory)
 
     insn_size = 2;
     while (i < maximum) {
-      org = gp_processor_byte_to_org(state.class, i);
+      org = gp_processor_byte_to_real(state.processor, i);
 
-      if (gp_processor_is_idlocs_addr(state.processor, org) >= 0) {
+      if ((offset = gp_processor_is_idlocs_org(state.processor, org)) >= 0) {
         /* This is idlocs word/bytes. Not need disassemble. */
         if (state.class == PROC_CLASS_PIC16E) {
           if (!state.show_config) {
             if (b_memory_get(m, i, &byte, NULL, NULL)) {
               if (last_loc != (i - insn_size)) {
-                write_org(org, addr_digits, "idlocs");
+                if (state.show_names && (offset == 0)) {
+                  printf("\n;%s\n; IDLOCS area\n", border);
+                }
+
+                write_org(org, addr_digits, "idlocs", NULL, 0);
               }
 
               last_loc = i;
@@ -694,7 +966,7 @@ dasm(MemBlock *memory)
           if (!state.show_config) {
             if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
               if (last_loc != (i - insn_size)) {
-                write_org(org, addr_digits, "idlocs");
+                write_org(org, addr_digits, "idlocs", NULL, 0);
               }
 
               last_loc = i;
@@ -714,14 +986,18 @@ dasm(MemBlock *memory)
 
           insn_size = 2;
         }
-      } /* if (gp_processor_is_idlocs_addr(state.processor, org) >= 0) */
-      else if (gp_processor_is_config_addr(state.processor, org) >= 0) {
+      } /* if (gp_processor_is_idlocs_org(state.processor, org) >= 0) */
+      else if ((offset = gp_processor_is_config_org(state.processor, org)) >= 0) {
         /* This is config word/bytes. Not need disassemble. */
         if (state.class == PROC_CLASS_PIC16E) {
           if (!state.show_config) {
             if (b_memory_get(m, i, &byte, NULL, NULL)) {
               if (last_loc != (i - insn_size)) {
-                write_org(org, addr_digits, "config");
+                if (state.show_names && (offset == 0)) {
+                  printf("\n;%s\n; CONFIG Bits area\n", border);
+                }
+
+                write_org(org, addr_digits, "config", NULL, 0);
               }
 
               last_loc = i;
@@ -745,7 +1021,11 @@ dasm(MemBlock *memory)
           if (!state.show_config) {
             if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
               if (last_loc != (i - insn_size)) {
-                write_org(org, addr_digits, "config");
+                if (state.show_names && (offset == 0)) {
+                  printf("\n;%s\n; CONFIG Bits area\n", border);
+                }
+
+                write_org(org, addr_digits, "config", NULL, 0);
               }
 
               last_loc = i;
@@ -765,45 +1045,94 @@ dasm(MemBlock *memory)
 
           insn_size = 2;
         }
-      } /* else if (gp_processor_is_config_addr(state.processor, org) >= 0) */
-      else if (gp_processor_is_eeprom_addr(state.processor, org) >= 0) {
-        if (b_memory_get(m, i, &byte, NULL, NULL)) {
+      } /* else if (gp_processor_is_config_org(state.processor, org) >= 0) */
+      else if ((offset = gp_processor_is_eeprom_org(state.processor, org)) >= 0) {
+        if (b_memory_get(m, i, &byte, NULL, &label_name)) {
           if (last_loc != (i - insn_size)) {
-            write_org(org, addr_digits, "eeprom");
-          }
+            sym = lset_symbol_find_addr(state.lset_root.sections[SECT_SPEC_EEDATA], org, -1, true);
 
-          last_loc = i;
+            if (state.show_names && (offset == 0)) {
+              printf("\n;%s\n; EEDATA area\n", border);
+            }
 
-          if (state.format) {
-            length = snprintf(buffer, sizeof(buffer), "%0*x:  %02x  ",
-                                addr_digits, org, (unsigned int)byte);
-          } else {
-            length = snprintf(buffer, sizeof(buffer), "        ");
-          }
+            if ((sym != NULL) && (sym->attr & CSYM_ORG)) {
+              write_org(org, addr_digits, "eeprom", sym->name, 0);
+            }
+            else {
+              sym = lset_symbol_find_addr(state.lset_root.sections[SECT_SPEC_EEDATA],
+                                          state.processor->eeprom_addrs[0],
+                                          state.processor->eeprom_addrs[1], true);
 
-          byte_exclamation(buffer, sizeof(buffer), length, byte);
-          printf("%s\n", buffer);
-        }
-        else {
-          last_loc = 0;
-        }
-
-        insn_size = 1;
-      } /* else if (gp_processor_is_eeprom_addr(state.processor, org) >= 0) */
-      else {
-        /* This is program word. */
-        if (state.class->i_memory_get(m, i, &data, NULL, &label_name) == W_USED_ALL) {
-          if (last_loc != (i - insn_size)) {
-            write_org(org, addr_digits, NULL);
+              if ((sym != NULL) && (sym->attr & CSYM_ORG)) {
+                write_org(org, addr_digits, "eeprom", sym->name, offset);
+              }
+              else {
+                write_org(org, addr_digits, "eeprom", NULL, offset);
+              }
+            }
           }
 
           last_loc = i;
 
           if (state.show_names && (label_name != NULL)) {
             length = snprintf(buffer, sizeof(buffer), "%s", label_name);
-            gp_exclamation(buffer, sizeof(buffer), length, "; address: 0x%0*x", addr_digits,
-                           gp_processor_byte_to_org(state.class, i));
-            printf("\n%s\n\n", buffer);
+            gp_exclamation(buffer, sizeof(buffer), length, "; address: 0x%0*x", addr_digits, org);
+
+            if (! prev_empty_line) {
+              printf("\n");
+            }
+
+            printf("%s\n\n", buffer);
+            prev_empty_line = true;
+	  }
+
+          if (state.format) {
+            length = snprintf(buffer, sizeof(buffer), "%0*x:  %02x    ",
+                              addr_digits, org, (unsigned int)byte);
+          } else {
+            length = snprintf(buffer, sizeof(buffer), "        ");
+          }
+
+          byte_exclamation(buffer, sizeof(buffer), length, byte);
+          printf("%s\n", buffer);
+          prev_empty_line = false;
+        }
+        else {
+          last_loc = 0;
+        }
+
+        insn_size = 1;
+      } /* else if (gp_processor_is_eeprom_org(state.processor, org) >= 0) */
+      else {
+        /* This is program word. */
+        if (state.class->i_memory_get(m, i, &data, NULL, &label_name) == W_USED_ALL) {
+          if (last_loc != (i - insn_size)) {
+            sym = lset_symbol_find_addr(state.lset_root.sections[SECT_SPEC_CODE], org, -1, true);
+
+            if (state.show_names && (org == 0)) {
+              printf("\n;%s\n; CODE area\n", border);
+            }
+
+            if ((sym != NULL) && (sym->attr & CSYM_ORG)) {
+              write_org(org, addr_digits, "code", sym->name, 0);
+            }
+            else {
+              write_org(org, addr_digits, "code", NULL, 0);
+            }
+          }
+
+          last_loc = i;
+
+          if (state.show_names && (label_name != NULL)) {
+            length = snprintf(buffer, sizeof(buffer), "%s", label_name);
+            gp_exclamation(buffer, sizeof(buffer), length, "; address: 0x%0*x", addr_digits, org);
+
+            if (! prev_empty_line) {
+              printf("\n");
+            }
+
+            printf("%s\n\n", buffer);
+            prev_empty_line = true;
 	  }
 
           if (state.format) {
@@ -813,22 +1142,34 @@ dasm(MemBlock *memory)
             length = snprintf(buffer, sizeof(buffer), "        ");
           }
 
-          num_words = gp_disassemble(m, i, state.class, bsr_boundary, state.processor->prog_mem_size,
-                                     behavior, buffer, sizeof(buffer), length);
-          printf("%s\n", buffer);
+          type = b_memory_get_type(m, i);
 
-          if (num_words != 1) {
-            /* some 18xx instructions use two words */
-            if (state.format) {
-              state.class->i_memory_get(m, i + 2, &data, NULL, NULL);
-              printf("%0*x:  %0*x\n", addr_digits, gp_processor_byte_to_org(state.class, i + 2),
-                     word_digits, (unsigned int)data);
-            }
-
-            insn_size = 4;
+          if (type & W_CONST_DATA) {
+            gp_disassemble_show_data(m, i, state.class, behavior, buffer, sizeof(buffer), length);
+            printf("%s\n", buffer);
+            prev_empty_line = false;
+            num_words = 1;
           }
           else {
-            insn_size = 2;
+            num_words = gp_disassemble(m, i, state.class, bsr_boundary, state.processor->prog_mem_size,
+                                       behavior, buffer, sizeof(buffer), length);
+            printf("%s\n", buffer);
+            prev_empty_line = false;
+
+            if (num_words != 1) {
+              /* Some 18xx instructions use two words. */
+              if (state.format) {
+                state.class->i_memory_get(m, i + 2, &data, NULL, NULL);
+                printf("%0*x:  %0*x\n", addr_digits, gp_processor_byte_to_real(state.processor, i + 2),
+                       word_digits, (unsigned int)data);
+                prev_empty_line = false;
+              }
+
+              insn_size = 4;
+            }
+            else {
+              insn_size = 2;
+            }
           }
         }
       }
@@ -849,24 +1190,30 @@ show_usage(void)
 {
   printf("Usage: gpdasm [options] file\n");
   printf("Options: [defaults in brackets after descriptions]\n");
-  printf("  -c, --mnemonics                Decode special mnemonics.\n");
+  printf("  -c, --mnemonics                Decode the special mnemonics.\n");
   printf("  -h, --help                     Show this usage message.\n");
-  printf("  -i, --hex-info                 Information of input hex file.\n");
+  printf("  -i, --hex-info                 Show the informations of the input hex file.\n");
   printf("  -j, --mov-fsrn                 In the MOVIW or MOVWI instructions show as base\n");
-  printf("                                 the FSRn register instead of the INDFn.\n");
-  printf("  -l, --list-chips               List supported processors.\n");
-  printf("  -m, --dump                     Memory dump of input hex file.\n");
+  printf("                                 the FSRn register instead of the INDFn. [INDFn]\n");
+  printf("  -k FILE, --label-list FILE     A file which lists the names and addresses of\n"
+         "                                 the labels in the disassembled program code.\n"
+         "                                 (With the -n, -o and -s options.)\n");
+  printf("  -l, --list-chips               List the supported processors.\n");
+  printf("  -m, --dump                     Memory dump of the input hex file.\n");
   printf("  -n, --show-names               For some case of SFR, shows the name of\n"
          "                                 instead of the address. In addition shows\n"
          "                                 the labels also.\n");
-  printf("  -o, --show-config              Show CONFIG and IDLOCS - or __idlocs - directives.\n");
-  printf("  -p PROC, --processor PROC      Select processor.\n");
-  printf("  -s, --short                    Print short format.\n");
-  printf("  -v, --version                  Show version.\n");
+  printf("  -o, --show-config              Show the CONFIG and IDLOCS - or __idlocs -\n"
+         "                                 directives.\n");
+  printf("  -p PROC, --processor PROC      Select the processor.\n");
+  printf("  -s, --short                    Print short format output. (Creates a compilable\n"
+         "                                 source. See also the -k, -n and -o options.)\n");
+  printf("  -v, --version                  Print the gpdasm version information and exit.\n");
   printf("  -y, --extended                 Enable 18xx extended mode.\n");
   printf("      --strict                   Disassemble only opcodes generated by gpasm\n"
-         "                                 in case of instructions with several opcodes.\n");
-  printf("\n");
+         "                                 in case of instructions with several opcodes.\n\n");
+  printf("For example:\n"
+         "  gpdasm -nos -k program.ulist -p12f1822 program.hex > program.dis\n\n");
   printf("Report bugs to:\n");
   printf("%s\n", PACKAGE_BUGREPORT);
   exit(0);
@@ -874,7 +1221,7 @@ show_usage(void)
 
 /*------------------------------------------------------------------------------------------------*/
 
-#define GET_OPTIONS "?chijlmnop:svy"
+#define GET_OPTIONS "?chijk:lmnop:svy"
 
   /* Used: himpsv */
 static struct option longopts[] =
@@ -883,6 +1230,7 @@ static struct option longopts[] =
     { "help",        no_argument,       NULL, 'h' },
     { "hex-info",    no_argument,       NULL, 'i' },
     { "mov-fsrn",    no_argument,       NULL, 'j' },
+    { "label-list",  required_argument, NULL, 'k' },
     { "list-chips",  no_argument,       NULL, 'l' },
     { "dump",        no_argument,       NULL, 'm' },
     { "show-names",  no_argument,       NULL, 'n' },
@@ -892,7 +1240,7 @@ static struct option longopts[] =
     { "version",     no_argument,       NULL, 'v' },
     { "extended",    no_argument,       NULL, 'y' },
     { "strict",      no_argument,       NULL, 't' },
-    { 0, 0, 0, 0 }
+    { NULL,          0,                 NULL,  0  }
   };
 
 #define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
@@ -907,7 +1255,9 @@ int main(int argc, char *argv[])
   gp_boolean memory_dump = false;
   gp_boolean strict = false;
   gp_boolean usage = false;
-  char *filename = NULL;
+  const char *filename = NULL;
+  const char *label_list_name = NULL;
+  const int *pair;
 
   gp_init();
 
@@ -933,6 +1283,10 @@ int main(int argc, char *argv[])
 
     case 'j':
       state.show_fsrn = true;
+      break;
+
+    case 'k':
+      label_list_name = optarg;
       break;
 
     case 'l':
@@ -1019,14 +1373,47 @@ int main(int argc, char *argv[])
     printf("\n");
   }
 
+  if (label_list_name != NULL) {
+    open_label_source(label_list_name);
+    lset_init(&state.lset_root, label_list_name);
+    yyparse();
+    close_label_source();
+    lset_sections_choose(&state.lset_root);
+    lset_section_make_symbol_tables(&state.lset_root);
+    lset_section_check_bounds(&state.lset_root);
+
+    lset_symbol_check_absolute_limits(state.lset_root.sections[SECT_SPEC_CODE],
+                                      0, state.processor->prog_mem_size - 1);
+
+    if (state.class == PROC_CLASS_PIC16E) {
+      lset_symbol_check_align(state.lset_root.sections[SECT_SPEC_CODE], 2);
+    }
+
+    if (state.lset_root.sections[SECT_SPEC_EEDATA] != NULL) {
+      if ((pair = gp_processor_eeprom_exist(state.processor)) != NULL) {
+        lset_symbol_check_absolute_limits(state.lset_root.sections[SECT_SPEC_EEDATA],
+                                          0, pair[1] - pair[0]);
+      }
+      else {
+        fprintf(stderr, "error: The processor does not have EEPROM.\n");
+        exit(1);
+      }
+    }
+  }
+  else {
+    lset_init(&state.lset_root, NULL);
+  }
+
   if (state.num.errors == 0) {
     if (memory_dump) {
-      print_i_memory(state.i_memory, state.class);
+      print_i_memory(state.i_memory, state.processor);
     } else {
+      load_processor_constants();
       dasm(state.i_memory);
     }
   }
 
+  lset_delete(&state.lset_root);
   i_memory_free(state.i_memory);
 
   return ((state.num.errors > 0) ? EXIT_FAILURE : EXIT_SUCCESS);

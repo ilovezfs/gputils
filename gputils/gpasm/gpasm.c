@@ -121,7 +121,7 @@ init(void)
   state.cmd_line.lst_force = false;
 
   state.pass = 0;
-  state.org = 0;
+  state.byte_addr = 0;
   state.device.id_location = 0;
   state.dos_newlines = false;
   state.memory_dump = false;
@@ -173,9 +173,16 @@ static void
 pic16e_lister(pic_processor_t processor)
 {
   const gp_cfg_device_t *dev;
+  proc_class_t class;
+  const int *pair;
   int addr0, addr1;
 
-  if (processor->class != PROC_CLASS_PIC16E) {
+  if (processor == NULL || (class = processor->class) == NULL) {
+    fprintf(stderr, "Warning: The processor not selected!\n");
+    return;
+  }
+
+  if (class != PROC_CLASS_PIC16E) {
     fprintf(stderr, "Warning: The type of the %s processor is not PIC16E!\n", processor->names[2]);
     return;
   }
@@ -193,9 +200,9 @@ pic16e_lister(pic_processor_t processor)
 
   gp_cfg_real_config_boundaries(dev, &addr0, &addr1);
 
-  if ((addr0 > 0) && (addr1 > 0)) {
+  if ((addr0 > 0) && (addr1 >= addr0)) {
     printf("configrange 0x%06X 0x%06X\n", addr0, addr1);
-    gp_cfg_brief_device(dev, "configword  ", processor->class->addr_digits, processor->class->config_digits,
+    gp_cfg_brief_device(dev, "configword  ", class->addr_digits, class->config_digits,
                         (processor->pic16e_flags & PIC16E_FLAG_J_SUBFAMILY) ? true : false);
   }
 
@@ -203,11 +210,8 @@ pic16e_lister(pic_processor_t processor)
     printf("XINST       1\n");
   }
 
-  addr0 = processor->idlocs_addrs[0];
-  addr1 = processor->idlocs_addrs[1];
-
-  if ((addr0 > 0) && (addr1 > 0)) {
-    printf("idlocrange  0x%06X 0x%06X\n", addr0, addr1);
+  if ((pair = gp_processor_idlocs_exist(processor)) != NULL) {
+    printf("idlocrange  0x%06X 0x%06X\n", pair[0], pair[1]);
   }
 
   printf("\n");
@@ -219,9 +223,15 @@ static void
 lister_of_devices(pic_processor_t processor)
 {
   const gp_cfg_device_t *dev;
-  int addr0, addr1;
+  proc_class_t class;
+  const int *pair;
   int addr_digits;
   const char *txt;
+
+  if (processor == NULL || (class = processor->class) == NULL) {
+    fprintf(stderr, "Warning: The processor not selected!\n");
+    return;
+  }
 
   dev = gp_cfg_find_pic_multi_name(processor->names, ARRAY_SIZE(processor->names));
 
@@ -230,38 +240,32 @@ lister_of_devices(pic_processor_t processor)
     return;
   }
 
-  addr_digits = processor->class->addr_digits;
+  addr_digits = class->addr_digits;
   printf("Names          : %s, %s, %s\n", processor->names[0], processor->names[1], processor->names[2]);
-  printf("Class          : %s\n", gp_processor_class_to_str(processor->class));
-  printf("Bank Size      : %i bytes\n", processor->class->bank_size);
+  printf("Class          : %s\n", gp_processor_class_to_str(class));
+  printf("Bank Size      : %i bytes\n", class->bank_size);
 
-  if (processor->class == PROC_CLASS_PIC16E) {
+  if (class == PROC_CLASS_PIC16E) {
     printf("Access Split   : 0x%02X\n", gp_processor_bsr_boundary(processor));
   }
   else {
     printf("Bank Number    : %i\n", processor->num_banks);
   }
 
-  addr0 = processor->common_ram_addrs[0];
-  addr1 = processor->common_ram_addrs[1];
-
-  if ((addr0 > 0) && (addr1 > 0)) {
-    printf("Common RAM     : 0x%02X - 0x%02X\n", addr0, addr1);
+  if ((pair = gp_processor_common_ram_exist(processor)) != NULL) {
+    printf("Common RAM     : 0x%02X - 0x%02X\n", pair[0], pair[1]);
   }
 
   if (processor->common_ram_max > 0) {
     printf("Max. Common RAM: 0x%02X\n", processor->common_ram_max);
   }
 
-  addr0 = processor->linear_ram_addrs[0];
-  addr1 = processor->linear_ram_addrs[1];
-
-  if ((addr0 > 0) && (addr1 > 0)) {
-    printf("Linear RAM     : 0x%04X - 0x%04X\n", addr0, addr1);
+  if ((pair = gp_processor_linear_ram_exist(processor)) != NULL) {
+    printf("Linear RAM     : 0x%04X - 0x%04X\n", pair[0], pair[1]);
   }
 
-  if (processor->class->page_size > 0) {
-    printf("Page Size      : %i bytes\n", processor->class->page_size);
+  if (class->page_size > 0) {
+    printf("Page Size      : %i bytes\n", class->page_size);
     printf("Page Number    : %i\n", processor->num_pages);
   }
 
@@ -274,37 +278,28 @@ lister_of_devices(pic_processor_t processor)
 
   printf("Program Size   : %i %s\n", processor->prog_mem_size, txt);
 
-  addr0 = processor->idlocs_addrs[0];
-  addr1 = processor->idlocs_addrs[1];
-
-  if ((addr0 > 0) && (addr1 > 0)) {
-    if (addr0 != addr1) {
-      printf("Idlocs Range   : 0x%0*X - 0x%0*X\n", addr_digits, addr0, addr_digits, addr1);
+  if ((pair = gp_processor_idlocs_exist(processor)) != NULL) {
+    if (pair[0] < pair[1]) {
+      printf("Idlocs Range   : 0x%0*X - 0x%0*X\n", addr_digits, pair[0], addr_digits, pair[1]);
     }
     else {
-      printf("Idlocs         : 0x%0*X\n", addr_digits, addr0);
+      printf("Idlocs         : 0x%0*X\n", addr_digits, pair[0]);
     }
   }
 
-  addr0 = processor->config_addrs[0];
-  addr1 = processor->config_addrs[1];
-
-  if ((addr0 > 0) && (addr1 > 0)) {
-    if (addr0 != addr1) {
-      printf("Config Range   : 0x%0*X - 0x%0*X\n", addr_digits, addr0, addr_digits, addr1);
+  if ((pair = gp_processor_config_exist(processor)) != NULL) {
+    if (pair[0] < pair[1]) {
+      printf("Config Range   : 0x%0*X - 0x%0*X\n", addr_digits, pair[0], addr_digits, pair[1]);
     }
     else {
-      printf("Config         : 0x%0*X\n", addr_digits, addr0);
+      printf("Config         : 0x%0*X\n", addr_digits, pair[0]);
     }
 
-    gp_cfg_full_list_device(dev, "  Config Word  : ", addr_digits, processor->class->config_digits);
+    gp_cfg_full_list_device(dev, "  Config Word  : ", addr_digits, class->config_digits);
   }
 
-  addr0 = processor->eeprom_addrs[0];
-  addr1 = processor->eeprom_addrs[1];
-
-  if ((addr0 > 0) && (addr1 > 0)) {
-    printf("EEPROM Range   : 0x%0*X - 0x%0*X\n", addr_digits, addr0, addr_digits, addr1);
+  if ((pair = gp_processor_eeprom_exist(processor)) != NULL) {
+    printf("EEPROM Range   : 0x%0*X - 0x%0*X\n", addr_digits, pair[0], addr_digits, pair[1]);
   }
 
   printf("Max. ROM Addr. : 0x%0*X\n", addr_digits, processor->maxrom);
@@ -778,12 +773,11 @@ assemble(void)
   }
 
   /* Builtins are always case insensitive. */
-  state.stBuiltin = push_symbol_table(NULL, true);
-  state.stDirective = state.stBuiltin;
-  state.stMacros = push_symbol_table(NULL, state.case_insensitive);
-  state.stTop =
-    state.stGlobal = push_symbol_table(NULL, state.case_insensitive);
-  state.stDefines = push_symbol_table(cmd_defines, state.case_insensitive);
+  state.stBuiltin     = push_symbol_table(NULL, true);
+  state.stDirective   = state.stBuiltin;
+  state.stMacros      = push_symbol_table(NULL, state.case_insensitive);
+  state.stTop         = state.stGlobal = push_symbol_table(NULL, state.case_insensitive);
+  state.stDefines     = push_symbol_table(cmd_defines, state.case_insensitive);
   state.stMacroParams = push_symbol_table(NULL, state.case_insensitive);
   opcode_init(0);
 
@@ -799,14 +793,14 @@ assemble(void)
   yylex_destroy();
 
   state.pass++;
-  state.org = 0;
+  state.byte_addr = 0;
   state.device.id_location = 0;
   state.cblock = 0;
   state.cblock_defined = 0;
   state.preproc.do_emit = true;
   /* clean out defines for second pass */
-  state.stMacros = push_symbol_table(NULL, state.case_insensitive);
-  state.stDefines = push_symbol_table(cmd_defines, state.case_insensitive);
+  state.stMacros      = push_symbol_table(NULL, state.case_insensitive);
+  state.stDefines     = push_symbol_table(cmd_defines, state.case_insensitive);
   state.stMacroParams = push_symbol_table(NULL, state.case_insensitive);
   purge_temp_symbols(state.stTop);
 
@@ -827,9 +821,9 @@ assemble(void)
   state.obj.new_sec_flags = (state.mode == MODE_ABSOLUTE) ? STYP_TEXT : 0;
 
   state.found_config = false;
-  state.found_devid = false;
+  state.found_devid  = false;
   state.found_idlocs = false;
-  state.found_end = false;
+  state.found_end    = false;
   coff_init();
   cod_init();
   gperror_init();
@@ -848,12 +842,7 @@ assemble(void)
   }
 
   open_src(state.srcfilename, 0);
-  if (!gp_debug_disable) {
-    yydebug = 1;
-  }
-  else {
-    yydebug = 0;
-  }
+  yydebug = (!gp_debug_disable) ? 1 : 0;
   yyparse();
 
   assert(state.pass == 2);
@@ -875,7 +864,7 @@ assemble(void)
   hex_init();
 
   if (state.memory_dump) {
-    print_i_memory(state.i_memory, state.device.class);
+    print_i_memory(state.i_memory, state.processor);
   }
 
   /* Maybe produce a symbol table. */
@@ -900,11 +889,5 @@ assemble(void)
   }
 
   free_files();
-
-  if ((state.num.errors > 0) || (gp_num_errors > 0)) {
-    return EXIT_FAILURE;
-  }
-  else {
-    return EXIT_SUCCESS;
-  }
+  return (((state.num.errors > 0) || (gp_num_errors > 0)) ? EXIT_FAILURE : EXIT_SUCCESS);
 }

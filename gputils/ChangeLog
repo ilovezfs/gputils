@@ -1,3 +1,32 @@
+2014-09-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/Makefile.am, doc/Makefile.in, doc/gpdasm_sample.ulist,
+    doc/gputils.lyx, gpasm/directive.c, gpasm/evaluate.c,
+    gpasm/gpasm.c, gpasm/gpasm.h.in, gpasm/gperror.c,
+    gpasm/gperror.h, gpasm/lst.c, gpasm/processor.c,
+    gpasm/scan.l, gpasm/util.c, gputils/Makefile.am,
+    gputils/Makefile.in, gputils/dump.c, gputils/gpdasm.c,
+    gputils/gpdasm.h.in, gputils/gplib.c, gputils/gpstrip.c,
+    gputils/labelset.c, gputils/labelset.h, gputils/parse.y,
+    gputils/scan.h, gputils/scan.l,
+    gputils/testsuite/gpdasm.project/eeprom14_0.ulist,
+    gputils/testsuite/gpdasm.project/eeprom14_1.ulist,
+    gputils/testsuite/gpdasm.project/eeprom14_2.ulist,
+    libgputils/Makefile.in, libgputils/gpdis.c, libgputils/gpdis.h,
+    libgputils/gpmemory.c, libgputils/gpmemory.h,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.h,
+    libgputils/gpreadhex.c, libgputils/gpsystem.c
+    libgputils/gpsystem.h, man/gpdasm.1.in:
+    New gpdasm option: -k FILE, --label-list FILE
+      A file which lists the names and addresses of
+      the labels in the disassembled program code.
+
+  * gpasm/ppscan.l, gplink/scan.l
+    Eliminated the warning.
+
+  * gpasm/cod.c, gpasm/coff.c, gpasm/parse.y,
+    gpasm/ppparse.y, gplink/cod.c, gplink/gplink.c:
+    Changed text format.
+
 2014-08-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c,
     gpasm/testsuite/gpasm.project/asmfiles/mov_indf.asm,

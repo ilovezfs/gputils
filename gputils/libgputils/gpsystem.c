@@ -253,6 +253,30 @@ gp_upper_case(const char *name)
 
 /*------------------------------------------------------------------------------------------------*/
 
+char *
+gp_stptoupper(char *Dest, const char *Src, unsigned int Maxlen)
+{
+  char ch;
+
+  if ((Dest == NULL) || (Src == NULL) || (Maxlen == 0)) {
+    return NULL;
+  }
+
+  do {
+    if (--Maxlen == 0) {
+      *Dest = '\0';
+      break;
+    }
+
+    ch = *Src++;
+    *Dest++ = toupper(ch);
+  } while (ch != '\0');
+
+  return Dest;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 size_t
 gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t Aligned_to_length) {
   size_t len;

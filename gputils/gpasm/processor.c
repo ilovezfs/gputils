@@ -31,7 +31,11 @@ Boston, MA 02111-1307, USA.  */
 void select_processor(const char *name)
 {
   pic_processor_t found = NULL;
-  int addr0, addr1;
+  const int *pair;
+  const vector_t *vec;
+  unsigned int num;
+  int addr;
+  char buf[BUFSIZ];
 
   if (state.cmd_line.processor) {
     gpvwarning(GPW_CMDLINE_PROC, NULL);
@@ -74,70 +78,61 @@ void select_processor(const char *name)
         set_global(found->defined_as, 1, PERMANENT, GVT_CONSTANT);
 
         if (!state.mpasm_compatible) {
-          addr0 = found->common_ram_addrs[0];
-          addr1 = found->common_ram_addrs[1];
-
-          if ((addr0 > 0) && (addr1 > 0)) {
-            set_global("__COMMON_RAM_START", addr0, PERMANENT, GVT_CONSTANT);
-            set_global("__COMMON_RAM_END",   addr1, PERMANENT, GVT_CONSTANT);
+          if ((pair = gp_processor_common_ram_exist(found)) != NULL) {
+            set_global("__COMMON_RAM_START", pair[0], PERMANENT, GVT_CONSTANT);
+            set_global("__COMMON_RAM_END",   pair[1], PERMANENT, GVT_CONSTANT);
           }
 
           if (found->common_ram_max > 0) {
             set_global("__COMMON_RAM_MAX", found->common_ram_max, PERMANENT, GVT_CONSTANT);
           }
 
-          addr0 = found->linear_ram_addrs[0];
-          addr1 = found->linear_ram_addrs[1];
-
-          if ((addr0 > 0) && (addr1 > 0)) {
-            set_global("__LINEAR_RAM_START", addr0, PERMANENT, GVT_CONSTANT);
-            set_global("__LINEAR_RAM_END",   addr1, PERMANENT, GVT_CONSTANT);
+          if ((pair = gp_processor_linear_ram_exist(found)) != NULL) {
+            set_global("__LINEAR_RAM_START", pair[0], PERMANENT, GVT_CONSTANT);
+            set_global("__LINEAR_RAM_END",   pair[1], PERMANENT, GVT_CONSTANT);
           }
 
           if ((found->class->vector_table != NULL) || (found->class->vector_number > 0)) {
-            const vector_t *vec = found->class->vector_table;
-            unsigned int num    = found->class->vector_number;
-            char buf[BUFSIZ];
+            vec = found->class->vector_table;
+            num = found->class->vector_number;
 
             for (; num; ++vec, --num) {
               buf[0] = '_';
               buf[1] = '_';
-              stptoupper(&buf[2], vec->name, sizeof(buf) - 2);
+              gp_stptoupper(&buf[2], vec->name, sizeof(buf) - 2);
 
               if (vec->address < 0) {
                 /* This a SX type processor. */
-                addr0 = found->prog_mem_size;
+                addr = found->prog_mem_size;
 
-                if (addr0 > 0) {
-                  --addr0;
+                if (addr > 0) {
+                  --addr;
                 }
               }
               else {
-                addr0 = vec->address;
+                addr = vec->address;
               }
 
-              set_global(buf, addr0, PERMANENT, GVT_CONSTANT);
+              set_global(buf, addr, PERMANENT, GVT_CONSTANT);
             }
           }
 
-          addr0 = found->prog_mem_size;
+          addr = found->prog_mem_size;
 
-          if (addr0 > 0) {
-            set_global("__PROGRAM_END", addr0 - 1, PERMANENT, GVT_CONSTANT);
+          if (addr > 0) {
+            set_global("__CODE_START", 0, PERMANENT, GVT_CONSTANT);
+            set_global("__CODE_END",   addr - 1, PERMANENT, GVT_CONSTANT);
           }
 
-          addr0 = found->eeprom_addrs[0];
-          addr1 = found->eeprom_addrs[1];
-
-          if ((addr0 > 0) && (addr1 > 0)) {
-            set_global("__EEPROM_START", addr0, PERMANENT, GVT_CONSTANT);
-            set_global("__EEPROM_END",   addr1, PERMANENT, GVT_CONSTANT);
+          if ((pair = gp_processor_eeprom_exist(found)) != NULL) {
+            set_global("__EEPROM_START", pair[0], PERMANENT, GVT_CONSTANT);
+            set_global("__EEPROM_END",   pair[1], PERMANENT, GVT_CONSTANT);
           }
 
-          addr0 = gp_processor_bsr_boundary(found);
+          addr = gp_processor_bsr_boundary(found);
 
-          if (addr0 > 0) {
-            set_global("__ACC_RAM_LOW_END", addr0 - 1, PERMANENT, GVT_CONSTANT);
+          if (addr > 0) {
+            set_global("__ACC_RAM_LOW_END", addr - 1, PERMANENT, GVT_CONSTANT);
           }
         } /* if (!state.mpasm_compatible) */
       } /* if (state.processor == NULL) */
@@ -165,6 +160,7 @@ void select_processor(const char *name)
       if ((!IS_PIC16_CORE) && (!IS_PIC16E_CORE)) {
         opcode_init(3);   /* Special pseudo ops for 12 and 14 bit devices. */
       }
+
       state.processor_chosen = 1;
     }
   }

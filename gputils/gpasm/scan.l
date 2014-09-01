@@ -56,13 +56,21 @@ Boston, MA 02111-1307, USA.  */
 
 #define OPERATOR(x)  return (yylval.i = (x))
 
-enum identtype { unknown_type, macro_params, defines, directives, globals, macros, opcodes };
-enum identtype identify(const char *);
-
-static int found_eof(void);
+enum identtype {
+  ID_UNKNOWN_TYPE,
+  ID_MACRO_PARAMS,
+  ID_DEFINES,
+  ID_DIRECTIVES,
+  ID_GLOBALS,
+  ID_MACROS,
+  ID_OPCODES
+  };
 
 int force_decimal; /* Used to force radix to decimal for some directives. */
 int force_ident;   /* Used to force numbers to identifiers for processor names. */
+
+static enum identtype identify(const char *);
+static int found_eof(void);
 
 static inline size_t
 gp_input(char *buf, size_t max_size)
@@ -146,7 +154,7 @@ gp_yyinput(char *buf, size_t max_size)
 %}
 
 IDENT  [.]?[a-z_\x80-\xff?@#][a-z_0-9\x80-\xff.?@#]*
-ESCCH  \\([abfnrtv\\?'"]|0[0-7]{2}|x[0-9a-f]{2})
+ESCCH  \\([0abfnrtv\\?'"]|0[0-7]{2}|x[0-9a-f]{2})
 STR_QCHAR  ([^"\r\n]|{ESCCH})
 STR_BCHAR  ([^>\r\n]|{ESCCH})
 NUMCHAR [0-9a-z]
@@ -303,7 +311,7 @@ processor                {
                            }
                            yylval.s = strdup(yytext);
                            switch (identify(yytext)) {
-                             case directives:
+                             case ID_DIRECTIVES:
                                gpvwarning(GPW_DIR_COLUMN_ONE, NULL, yytext);
                                if (has_collon) {
                                  gpverror(GPE_BADCHAR, NULL, ':');
@@ -311,7 +319,7 @@ processor                {
                                return IDENTIFIER;
                                break;
 
-                             case macros:
+                             case ID_MACROS:
                                /* Macro invocation */
                                BEGIN(macpar);
                                sym = get_symbol(state.stMacros, yytext);
@@ -331,14 +339,14 @@ processor                {
                                }
                                break;
 
-                             case opcodes:
+                             case ID_OPCODES:
                                gpvwarning(GPW_OP_COLUMN_ONE, NULL, yytext);
                                if (has_collon)
                                  gpverror(GPE_BADCHAR, NULL, ':');
                                return IDENTIFIER;
                                break;
 
-                             case unknown_type:
+                             case ID_UNKNOWN_TYPE:
                                return LABEL;
 
                              default:
@@ -880,32 +888,32 @@ found_eof(void)
   return terminate;
 }
 
-enum identtype
+static enum identtype
 identify(const char *text)
 {
   enum identtype type;
   struct symbol *sym;
 
   if ((sym = get_symbol(state.stMacroParams, text)) != NULL) {
-    type = macro_params;
+    type = ID_MACRO_PARAMS;
   }
   else if ((sym = get_symbol(state.stDefines, text)) != NULL) {
-    type = defines;
+    type = ID_DEFINES;
   }
   else if ((sym = get_symbol(state.stDirective, text)) != NULL) {
-    type = directives;
+    type = ID_DIRECTIVES;
   }
   else if ((sym = get_symbol(state.stBuiltin, text)) != NULL) {
-    type = opcodes;
+    type = ID_OPCODES;
   }
   else if ((sym = get_symbol(state.stGlobal, text)) != NULL) {
-    type = globals;
+    type = ID_GLOBALS;
   }
   else if ((sym = get_symbol(state.stMacros, text)) != NULL) {
-    type = macros;
+    type = ID_MACROS;
   }
   else {
-    type = unknown_type;
+    type = ID_UNKNOWN_TYPE;
   }
 
   return type;

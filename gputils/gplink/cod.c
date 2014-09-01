@@ -212,7 +212,7 @@ cod_lst_line(int line_type)
 {
   unsigned char smod_flag;
   BlockList *lb;
-  int first_time;
+  gp_boolean first_time;
   int address, high_address;
   static DirBlockInfo *dbi = NULL;
   static int _64k_base = 0;
@@ -229,7 +229,7 @@ cod_lst_line(int line_type)
     dbi = find_dir_block_by_high_addr(_64k_base);
   }
 
-  first_time = (gp_blocks_get_last(&dbi->lst) == NULL);
+  first_time = (gp_blocks_get_last(&dbi->lst) == NULL) ? true : false;
 
   lb = gp_blocks_get_last_or_new(&dbi->lst);
 
@@ -241,7 +241,7 @@ cod_lst_line(int line_type)
   assert(state.lst.src->symbol != NULL);
   lb->block[dbi->lst.offset + COD_LS_SFILE] = state.lst.src->symbol->number;
 
-  smod_flag = (first_time ? 0xff : ((state.cod.emitting != 0) ? 0x80 : 0x90));
+  smod_flag = (first_time) ? 0xff : ((state.cod.emitting != 0) ? 0x80 : 0x90);
 
   lb->block[dbi->lst.offset + COD_LS_SMOD] = smod_flag;
 

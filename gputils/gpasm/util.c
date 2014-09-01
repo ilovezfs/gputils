@@ -96,27 +96,6 @@ stringtolong(const char *string, int radix)
   return value;
 }
 
-char *
-stptoupper(char *Dest, const char *Src, unsigned int Maxlen) {
-  char ch;
-
-  if ((Dest == NULL) || (Src == NULL) || (Maxlen == 0)) {
-    return NULL;
-  }
-
-  do {
-    if (--Maxlen == 0) {
-      *Dest = '\0';
-      break;
-    }
-
-    ch = *Src++;
-    *Dest++ = toupper(ch);
-  } while (ch != '\0');
-
-  return Dest;
-}
-
 int
 gpasm_magic(const char *c)
 {
