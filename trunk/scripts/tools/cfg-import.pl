@@ -34,6 +34,7 @@
 use strict;
 use warnings;
 use 5.12.0;                     # when (regex)
+no if $] >= 5.018, warnings => "experimental::smartmatch";        # perl 5.16
 use feature 'switch';
 use POSIX 'strftime';
 

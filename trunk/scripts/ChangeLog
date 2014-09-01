@@ -1,3 +1,8 @@
+2014-09-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/build-register-db.pl, tools/cfg-import.pl
+	  tools/device-help.pl, tools/device-manager.pl:
+	  Updated unto the Perl 5.16 version.
+
 2014-08-14  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/device-manager.pl: bugfix
 

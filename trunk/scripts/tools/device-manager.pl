@@ -59,6 +59,7 @@
 
 use strict;
 use warnings;
+no if $] >= 5.018, warnings => "experimental::smartmatch";        # perl 5.16
 use 5.10.1;                     # Because of her need: ${^POSTMATCH}
 use feature 'switch';           # Starting from 5.10.1.
 use POSIX qw(strftime);
@@ -1436,7 +1437,7 @@ sub process_lkr_line($)
   my $Line = $_[0];
   my ($sect, $name, $start, $end, $size, $tail, $index);
 
-  if ($Line =~ /^(\w+)\s+NAME=(\S+)\s+START=(\w+)\s+END=(\w+)/io)
+  if ($Line =~ /^(\w+)\s+NAME=(\S+)\s+START=(\w+)\s+END=(\w+)/iop)
     {
     # uc($1) <- paranoia
     ($sect, $name, $start, $end) = (uc($1), $2, str2dec($3), str2dec($4));
@@ -1998,7 +1999,7 @@ sub extract_px_struct()
         }
       }
         #               $1                $2                 $3            $4            $5                 $6             $7             $8                $9          $10              $11              $12         $13              $14         $15              $16         $17                  $18         $19                  $20         $21                  $22         $23                   $24                   $25              $26
-    elsif (/\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\w+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*\"?([\.\w]+)\"?\s*,\s*\"?([\.\w]+)\"?\s*,\s*(\d+)\s*\}/io)
+    elsif (/\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\w+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*\"?([\.\w]+)\"?\s*,\s*\"?([\.\w]+)\"?\s*,\s*(\d+)\s*\}/iop)
       {
       my ($long_name, $middle_name, $short_name, $coff, $header, $script) = ($3, $4, $5, str2dec($6), $24, $25);
         # Maybe there is a comment at the end of the line.
