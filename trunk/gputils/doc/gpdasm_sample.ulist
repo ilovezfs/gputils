@@ -1,0 +1,118 @@
+;===============================================================================
+; This list contains those symbolic names that are included in the disassembled
+; hex code. This uses only the gpdasm program. So need to refer to it in the
+; command line:
+;
+; gpdasm ... -n -s -k labels.ulist ...
+;   or
+; gpdasm ... --show-names --short --label-list labels.ulist ...
+;
+;===============================================================================
+; In the names different the lowercase and uppercase letters. It is possible to
+; refer to the existing definitions only! (The processing in one pass is made to.)
+;
+; The following operators are available (descending order of precedence):
+;
+; .      -- structure reference (a.b : "member b of object a")
+; ()     -- parentheses
+; -      -- unary minus
+; * / %  -- multiplication, division, modulo
+; + -    -- addition, substraction
+; << >>  -- bitwise left shift, bitwise right shift
+; &      -- bitwise AND
+; ^      -- bitwise Exclusive XOR
+; |      -- bitwise OR
+; =      -- assign
+;
+; With three names may be marked the individual area:
+; CODE, DATA, EEDATA
+; The GLOBAL (first) area has no name.
+;
+; There exists one type modifier, which can be used only in the CODE area
+; (elsewhere would not make sense): CDATA
+;
+
+;===============================================================================
+;===============================================================================
+;===============================================================================
+; This the GLOBAL definitions (constants) area. It is possible to use these
+; definitions any area.
+;
+
+BUFFER_SIZE = 16
+STEP = 8
+
+;===============================================================================
+[CODE]
+;
+; This the CODE (Flash) definitions (constants) area. Can be used several times
+; also. From other areas not possible use this definitions. (From elsewhere neither
+; one not visible.) The size of the codes is not interpreted, but case of the
+; data (CDATA, DATA EEDATA) it may be used.
+;
+
+function = 1
+interrupt_vector0 = 4
+interrupt_vector1 = interrupt_vector0 << 2
+
+<CDATA> {
+; This the Const DATA only on the CODE definitions (constants) area.
+; From other areas not possible use this definitions. (From elsewhere neither one
+; not visible.)
+
+;    something = starting_address
+data0 = 6
+
+;    something = starting_address : ending_address
+data1 = 9:0xE
+
+;    something = starting_address # object_size
+data2 = 0xF#6
+
+; The "other" and the "other.start" equivalent with each other.
+;    something = other + STEP / 2 + 6 # 5
+;data2 = data1 + STEP / 2 + 6 # 5
+;
+;    something = other.start + 32 # 5
+;data2 = data1.start + 32 # 5
+;
+;    something = other.end + 1 # other.size
+;data2 = data1.end + 1 # data1.size
+}
+
+;===============================================================================
+[DATA]
+;
+; This the DATA (RAM) definitions (constants) area.
+; From other areas not possible use this definitions. (From elsewhere neither one
+; not visible.)
+;
+
+; Starting address: 0x30
+; Ending address  : 0x3F
+in_buffer = 0x30:0x3F
+
+; Starting address : 0x40
+; Size of this area: BUFFER_SIZE <== From the GLOBAL area.
+out0_buffer = 0x40#BUFFER_SIZE
+
+; Starting address : out0_buffer.end + 1
+; Size of this area: out0_buffer.size
+out1_buffer = out0_buffer.end + 1 # out0_buffer.size
+
+;===============================================================================
+[EEDATA]
+;
+; This the EEDATA (EEPROM) definitions (constants) area.
+; From other areas not possible use this definitions. (From elsewhere neither one
+; not visible.)
+; Attention! Should be given the offset address inside the EEPROM area.
+;
+
+Program_ID = 0     ; 0 and not 0x2100 (case of the pic12f683) !!!
+
+String0 = 0x20 + 0 * STEP # 6   ; STEP <== From the GLOBAL area.
+String1 = 0x20 + 1 * STEP # 6
+String2 = String2 + STEP # 6
+String3 = 0x20 + 3 * STEP # 6
+String4 = 0x20 + 4 * STEP # 6

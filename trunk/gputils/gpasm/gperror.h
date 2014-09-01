@@ -170,7 +170,10 @@ enum GPM_codes {
   GPM_CBLOCK           = 313,
   GPM_W_MODIFIED       = 316,
   GPM_SPECIAL_MNEMONIC = 318,
-  GPM_UNKNOWN          = 319
+  GPM_UNKNOWN          = 319,
+
+  /* gputils special errors */
+  GPM_NOA              = 1301
 };
 
 #endif

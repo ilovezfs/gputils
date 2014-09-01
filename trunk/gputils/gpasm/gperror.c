@@ -513,6 +513,8 @@ gp_getmessage(unsigned int code)
     return "W Register modified.";
   case GPM_SPECIAL_MNEMONIC:
     return "Special Instruction Mnemonic used.";
+  case GPM_NOA:
+    return "Using default destination of 0 (Access Bank).";
   case GPM_UNKNOWN:
   default:
     return "UNKNOWN MESSAGE";

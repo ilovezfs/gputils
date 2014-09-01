@@ -35,6 +35,7 @@ Boston, MA 02111-1307, USA.  */
 #define BYTE_LISTED_MASK        (1 << 30)           /* Means already listed. */
 #define BYTE_ATTR_MASK          (BYTE_USED_MASK | BYTE_LISTED_MASK)
 
+#define W_CONST_DATA            (1 << 14)           /* Data in the code area. */
 #define W_SECOND_WORD           (1 << 13)           /* PIC16E family, second word of 32 bits instruction. (movff, ...) */
 
 #define W_ARG_T_FIRST           (1 << 12)           /* The first argumentum of instruction a known register. */
@@ -59,18 +60,22 @@ struct proc_class;
 /* See beginning of gpmemory.c for documentation. */
 
 typedef struct MemArg {
-  const char *first_arg;
-  int first_val;
-  const char *second_arg;
-  int second_val;
+  const char *arg;
+  int val;                      /* The value of the first argument. */
+  int offs;                     /* If the argument is area then this the offset of the address. */
 } MemArg;
+
+typedef struct MemArgList {
+  MemArg first;
+  MemArg second;
+} MemArgList;
 
 typedef struct MemWord {
   unsigned int data;
   char *section_name;
   char *symbol_name;
   unsigned int dest_byte_addr;
-  MemArg args;
+  MemArgList args;
 } MemWord;
 
 typedef struct MemBlock {
@@ -104,9 +109,9 @@ void b_memory_clear(MemBlock *b_memory, unsigned int byte_address);
 int b_range_memory_used(const MemBlock *m, int from, int to);
 int b_memory_used(const MemBlock *m);
 
-struct proc_class;
+struct px;
 
-void print_i_memory(const MemBlock *m, const struct proc_class *class);
+void print_i_memory(const MemBlock *m, const struct px *processor);
 
 unsigned int i_memory_get_le(const MemBlock *m, unsigned int byte_addr, unsigned short *word,
                              const char **section_name, const char **symbol_name);
@@ -128,9 +133,9 @@ unsigned int b_memory_get_addr_type(const MemBlock *m, unsigned int address, con
 
 gp_boolean b_memory_set_addr_name(MemBlock *m, unsigned int address, const char *name);
 
-gp_boolean b_memory_set_args(MemBlock *m, unsigned int address, unsigned int type, const MemArg *Args);
+gp_boolean b_memory_set_args(MemBlock *m, unsigned int address, unsigned int type, const MemArgList *Args);
 
-unsigned int b_memory_get_args(const MemBlock *m, unsigned int address, MemArg *Args);
+unsigned int b_memory_get_args(const MemBlock *m, unsigned int address, MemArgList *Args);
 
 gp_boolean b_memory_set_type(MemBlock *m, unsigned int address, unsigned int type);
 gp_boolean b_memory_clear_type(MemBlock *m, unsigned int address, unsigned int type);

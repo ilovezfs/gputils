@@ -18,14 +18,18 @@ manpage for details on other GNU PIC utilities.
 .SH OPTIONS
 .TP
 .BR \-c ", " \-\-mnemonics
-Decode special mnemonics.
+Decode the special mnemonics.
 .TP
 .BR \-h ", "\-\-help
-Show the usage message and exit.
+Show this usage message and exit.
 .TP
 .BR \-i ", "\-\-hex-info
-Report extra information about input hex file.  This information includes file
+Report extra information about the input hex file. This information includes file
 size and hex format.
+.TP
+.BR \-k FILE ", "\-\-label-list FILE
+A file which lists the names and addresses of the labels in the disassembled
+program code. (With the -n, -o and -s options.)
 .TP
 .BR \-l ", "\-\-list-chips
 List the supported processors.
@@ -37,7 +41,8 @@ Display the contents of instruction memory.
 Select the processor.
 .TP
 .BR \-s ", "\-\-short
-Output the short format.  This format can be reassembled by gpasm.
+Output the short format. This format can be reassembled by gpasm.
+(See also the -k, -n and -o options.)
 .TP
 .BR \-v ", "\-\-version
 Show the version information and exit.

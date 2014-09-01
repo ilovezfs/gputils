@@ -67,6 +67,8 @@ function printbanner() {
 }
 
 function run_test() {
+  local mcu
+
   # Test syntax.
   if (($# < 1)); then
     echo "Usage: run_test <test file> [gpasm flags]"
@@ -75,7 +77,16 @@ function run_test() {
 
   echo "$GPASMBIN $GPASMFLAGS $2 $1.asm"
   ../../$GPASMBIN $GPASMFLAGS $2 $1.asm || testfailed "$GPASMBIN $GPASMFLAGS $2 $1.asm"
+
   mcu=`sed -n '/list/Ip' $1.asm | sed -r 's/^.*p=(.*)$/\1/i'`
+
+  if [ -z $mcu ]; then
+    mcu=`sed -n '/processor/Ip' $1.asm | sed -r 's/^\s*\S+\s+(\w+)\s*$/\1/i' | tr "[:upper:]" "[:lower:]"`
+  fi
+
+  mcu=${mcu/pic/}
+  mcu=${mcu/p/}
+
   echo "$GPDASMBIN -p $mcu $GPDASMFLAGS $1.hex > $1.dis"
   ../../$GPDASMBIN -p $mcu $GPDASMFLAGS $1.hex > $1.dis || testfailed "$GPDASMBIN -p $mcu $GPDASMFLAGS $1.hex"
   echo "$GPASMBIN $GPASMFLAGS $2 $1.dis -o $1.dis.hex"
@@ -102,7 +113,7 @@ function all_test() {
   cd $TESTDIR
   # Clean the directory.
   rm -Rf *
-  cp ../*.asm .
+  cp ../*.asm ../*.ulist .
 
   printbanner "Testing 12 bit core"
   GPDASMFLAGS=$_GPDASMFLAGS
@@ -160,17 +171,17 @@ function all_test() {
   echo -e "14 bit core idlocs-b passed.\n"
 
   printbanner "Testing 14 bit core EEPROM 0."
-  GPDASMFLAGS=$_GPDASMFLAGS
+  GPDASMFLAGS="$_GPDASMFLAGS -k eeprom14_0.ulist"
   run_test eeprom14_0
   echo -e "14 bit core EEPROM 0 passed.\n"
 
   printbanner "Testing 14 bit core EEPROM 1."
-  GPDASMFLAGS=$_GPDASMFLAGS
+  GPDASMFLAGS="$_GPDASMFLAGS -k eeprom14_1.ulist"
   run_test eeprom14_1
   echo -e "14 bit core EEPROM 1 passed.\n"
 
   printbanner "Testing 14 bit core EEPROM 2."
-  GPDASMFLAGS=$_GPDASMFLAGS
+  GPDASMFLAGS="$_GPDASMFLAGS -k eeprom14_2.ulist"
   run_test eeprom14_2
   echo -e "14 bit core EEPROM 1 passed.\n"
 

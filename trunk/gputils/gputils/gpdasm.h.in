@@ -22,6 +22,8 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPDASM_H__
 #define __GPDASM_H__
 
+#include "labelset.h"
+
 #define GPDASM_VERSION_STRING ("gpdasm-" VERSION " #" @REVISION@ " (" __DATE__ ")")
 
 extern struct gpdasm_state {
@@ -48,6 +50,8 @@ extern struct gpdasm_state {
   gp_boolean show_fsrn;
   gp_boolean show_config;
   gp_boolean need_sfr_equ;
+
+  lset_section_root_t lset_root;
 } state;
 
 #endif

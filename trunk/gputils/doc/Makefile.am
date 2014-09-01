@@ -14,6 +14,6 @@ gputils.pdf: gputils.lyx
 	fi
 	lyx -e pdf gputils.lyx
 
-EXTRA_DIST = gputils.lyx gputils.ps gputils.pdf
+EXTRA_DIST = gputils.lyx gputils.ps gputils.pdf gpdasm_sample.ulist
 
 MAINTAINERCLEANFILES = gputils.ps gputils.pdf

@@ -52,7 +52,10 @@ int gp_disassemble_find_labels(MemBlock *m, int byte_address, pic_processor_t pr
                                gpdasm_fstate_t *fstate);
 
 int gp_disassemble_find_registers(MemBlock *m, int byte_address, pic_processor_t processor,
-                                  gpdasm_fstate_t *fstate);
+                                  gpdasm_fstate_t *fstate, void (*user_data_finder)(MemArg *));
+
+void gp_disassemble_show_data(MemBlock *m, int byte_address, proc_class_t class, int behavior,
+                              char *buffer, size_t buffer_length, size_t current_length);
 
 int gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_boundary,
                    int prog_mem_size, int behavior, char *buffer, size_t buffer_length, size_t current_length);

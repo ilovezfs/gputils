@@ -953,9 +953,30 @@ gp_processor_id_location(pic_processor_t processor)
   return ((processor->class->id_location != NULL) ? processor->class->id_location(processor) : 0);
 }
 
+const int *
+gp_processor_common_ram_exist(pic_processor_t processor)
+{
+  if (processor == NULL) {
+    return NULL;
+  }
+
+  if ((processor->common_ram_addrs[0] > 0) &&
+      (processor->common_ram_addrs[1] >= processor->common_ram_addrs[0])) {
+    return processor->common_ram_addrs;
+  }
+
+  return NULL;
+}
+
 int
 gp_processor_is_common_ram_addr(pic_processor_t processor, int address)
 {
+  const int *cram_addrs;
+
+  if (processor == NULL) {
+    return -1;
+  }
+
   if ((processor->class != PROC_CLASS_GENERIC) ||
       (processor->class != PROC_CLASS_PIC12) ||
       (processor->class != PROC_CLASS_PIC12E) ||
@@ -971,25 +992,141 @@ gp_processor_is_common_ram_addr(pic_processor_t processor, int address)
 
   address &= ~processor->class->bank_mask;
 
-  if ((processor->common_ram_addrs[0] > 0) && (processor->common_ram_addrs[1] > 0)) {
-    if ((processor->common_ram_addrs[0] <= address) && (address <= processor->common_ram_addrs[1])) {
-      return (address - processor->common_ram_addrs[0]);
+  if ((cram_addrs = gp_processor_common_ram_exist(processor)) != NULL) {
+    if ((cram_addrs[0] <= address) && (address <= cram_addrs[1])) {
+      return (address - cram_addrs[0]);
     }
   }
 
   return -1;
+}
+
+const int *
+gp_processor_linear_ram_exist(pic_processor_t processor)
+{
+  if (processor == NULL) {
+    return NULL;
+  }
+
+  if ((processor->linear_ram_addrs[0] > 0) &&
+      (processor->linear_ram_addrs[1] >= processor->linear_ram_addrs[0])) {
+    return processor->linear_ram_addrs;
+  }
+
+  return NULL;
 }
 
 int
 gp_processor_is_linear_ram_addr(pic_processor_t processor, int address)
 {
-  if (processor->class != PROC_CLASS_PIC14E) {
+  const int *lram_addrs;
+
+  if ((processor == NULL) || (processor->class != PROC_CLASS_PIC14E)) {
     return -1;
   }
 
-  if ((processor->linear_ram_addrs[0] > 0) && (processor->linear_ram_addrs[1] > 0)) {
-    if ((processor->linear_ram_addrs[0] <= address) && (address <= processor->linear_ram_addrs[1])) {
-      return (address - processor->linear_ram_addrs[0]);
+  if ((lram_addrs = gp_processor_linear_ram_exist(processor)) != NULL) {
+    if ((lram_addrs[0] <= address) && (address <= lram_addrs[1])) {
+      return (address - lram_addrs[0]);
+    }
+  }
+
+  return -1;
+}
+
+const int *
+gp_processor_idlocs_exist(pic_processor_t processor)
+{
+  if (processor == NULL) {
+    return NULL;
+  }
+
+  if ((processor->idlocs_addrs[0] > 0) &&
+      (processor->idlocs_addrs[1] >= processor->idlocs_addrs[0])) {
+    return processor->idlocs_addrs;
+  }
+
+  return NULL;
+}
+
+int
+gp_processor_is_idlocs_org(pic_processor_t processor, int org)
+{
+  const int *id_addrs;
+
+  if (processor == NULL) {
+    return -1;
+  }
+
+  if ((id_addrs = gp_processor_idlocs_exist(processor)) != NULL) {
+    if ((id_addrs[0] <= org) && (org <= id_addrs[1])) {
+      return (org - id_addrs[0]);
+    }
+  }
+
+  return -1;
+}
+
+const int *
+gp_processor_config_exist(pic_processor_t processor)
+{
+  if (processor == NULL) {
+    return NULL;
+  }
+
+  if ((processor->config_addrs[0] > 0) &&
+      (processor->config_addrs[1] >= processor->config_addrs[0])) {
+    return processor->config_addrs;
+  }
+
+  return NULL;
+}
+
+int
+gp_processor_is_config_org(pic_processor_t processor, int org)
+{
+  const int *cf_addrs;
+
+  if (processor == NULL) {
+    return -1;
+  }
+
+  if ((cf_addrs = gp_processor_config_exist(processor)) != NULL) {
+    if ((cf_addrs[0] <= org) && (org <= cf_addrs[1])) {
+      return (org - cf_addrs[0]);
+    }
+  }
+
+  return -1;
+}
+
+const int *
+gp_processor_eeprom_exist(pic_processor_t processor)
+{
+  if (processor == NULL) {
+    return NULL;
+  }
+
+  if ((processor->eeprom_addrs[0] > 0) &&
+      (processor->eeprom_addrs[1] >= processor->eeprom_addrs[0])) {
+    return processor->eeprom_addrs;
+  }
+
+  return NULL;
+}
+
+int
+gp_processor_is_eeprom_org(pic_processor_t processor, int org)
+{
+  const int *eeprom;
+
+  if (processor == NULL) {
+    return -1;
+  }
+
+  if ((eeprom = gp_processor_eeprom_exist(processor)) != NULL) {
+    if ((eeprom[0] <= org) && (org <= eeprom[1])) {
+      return (org - eeprom[0]);
     }
   }
 
@@ -997,35 +1134,18 @@ gp_processor_is_linear_ram_addr(pic_processor_t processor, int address)
 }
 
 int
-gp_processor_is_idlocs_addr(pic_processor_t processor, int address)
+gp_processor_is_eeprom_byte_addr(pic_processor_t processor, int byte_address)
 {
-  if ((processor->idlocs_addrs[0] > 0) && (processor->idlocs_addrs[1] > 0)) {
-    if ((processor->idlocs_addrs[0] <= address) && (address <= processor->idlocs_addrs[1])) {
-      return (address - processor->idlocs_addrs[0]);
-    }
-  }
+  const int *eeprom;
+  int start, end;
 
-  return -1;
-}
+  if ((eeprom = gp_processor_eeprom_exist(processor)) != NULL) {
+    /* There is a need an address conversion. */
+    start = eeprom[0] << processor->class->org_to_byte_shift;
+    end   = start + eeprom[1] - eeprom[0];
 
-int
-gp_processor_is_config_addr(pic_processor_t processor, int address)
-{
-  if ((processor->config_addrs[0] > 0) && (processor->config_addrs[1] > 0)) {
-    if ((processor->config_addrs[0] <= address) && (address <= processor->config_addrs[1])) {
-      return (address - processor->config_addrs[0]);
-    }
-  }
-
-  return -1;
-}
-
-int
-gp_processor_is_eeprom_addr(pic_processor_t processor, int address)
-{
-  if ((processor->eeprom_addrs[0] > 0) && (processor->eeprom_addrs[1] > 0)) {
-    if ((processor->eeprom_addrs[0] <= address) && (address <= processor->eeprom_addrs[1])) {
-      return (address - processor->eeprom_addrs[0]);
+    if ((start <= byte_address) && (byte_address <= end)) {
+      return (byte_address - start);
     }
   }
 
@@ -1097,16 +1217,64 @@ gp_processor_org_to_byte(proc_class_t class, int org)
 }
 
 int
-gp_processor_byte_to_org(proc_class_t class, int byte)
+gp_processor_real_to_byte(pic_processor_t processor, int org)
+{
+  const int *eeprom;
+  int start, end;
+  proc_class_t class;
+
+  if ((processor == NULL) || (class = processor->class) == NULL) {
+    return org;
+  }
+
+  if ((eeprom = gp_processor_eeprom_exist(processor)) != NULL) {
+    start = eeprom[0];
+    end   = eeprom[1];
+
+    if ((start <= org) && (org <= end)) {
+      /* There is a need an address conversion. */
+      return ((org - start) + (start << class->org_to_byte_shift));
+    }
+  }
+
+  return (org << class->org_to_byte_shift);
+}
+
+int
+gp_processor_byte_to_org(proc_class_t class, int byte_address)
 {
   /* FIXME: In some places we use this value before we know what the
      processor is. Rather than fix those now, I'll just return some
      value. */
   if (class == NULL) {
-    return byte;
+    return byte_address;
   }
 
-  return (byte >> class->org_to_byte_shift);
+  return (byte_address >> class->org_to_byte_shift);
+}
+
+int
+gp_processor_byte_to_real(pic_processor_t processor, int byte_address)
+{
+  const int *eeprom;
+  int start, end;
+  proc_class_t class;
+
+  if ((processor == NULL) || (class = processor->class) == NULL) {
+    return byte_address;
+  }
+
+  if ((eeprom = gp_processor_eeprom_exist(processor)) != NULL) {
+    /* There is a need an address conversion. */
+    start = eeprom[0] << processor->class->org_to_byte_shift;
+    end   = start + eeprom[1] - eeprom[0];
+
+    if ((start <= byte_address) && (byte_address <= end)) {
+      return (byte_address - start + eeprom[0]);
+    }
+  }
+
+  return (byte_address >> class->org_to_byte_shift);
 }
 
 int

@@ -48,6 +48,7 @@ void  gp_putb32(unsigned char *addr, long data);
 void  gp_date_string(char *buffer, size_t sizeof_buffer);
 char *gp_lower_case(const char *name);
 char *gp_upper_case(const char *name);
+char *gp_stptoupper(char *Dest, const char *Src, unsigned int Maxlen);
 
 size_t gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t Aligned_to_length);
 size_t gp_exclamation(char *Buffer, size_t Buffer_length, size_t Current_length, const char *Format, ...);

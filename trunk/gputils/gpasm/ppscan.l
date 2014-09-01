@@ -1,4 +1,5 @@
 /* %option debug */
+%option noinput
 %option noyywrap
 %x hv
 %x def

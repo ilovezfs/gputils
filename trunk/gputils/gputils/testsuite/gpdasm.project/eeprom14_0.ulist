@@ -1,0 +1,17 @@
+DATA_SIZE = 3
+
+[CODE]
+start = 0
+
+[EEDATA]
+Str0 = 0 # 9
+Data01 = Str0.end + 1 # DATA_SIZE
+Data02 = Data01.end + 1 # DATA_SIZE
+Data03 = Data02.end + 1 # DATA_SIZE
+Data04 = Data03.end + 1 # DATA_SIZE
+
+Str1 = 32 # 9
+Data11 = Str1.end + 1 # DATA_SIZE
+Data12 = Data11.end + 1 # DATA_SIZE
+Data13 = Data12.end + 1 # DATA_SIZE
+Data14 = Data13.end + 1 # DATA_SIZE

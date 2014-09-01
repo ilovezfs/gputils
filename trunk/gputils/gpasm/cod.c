@@ -201,7 +201,7 @@ cod_lst_line(int line_type)
     return;
   }
 
-  address = gp_processor_byte_to_org(state.device.class, state.lst.line.was_org);
+  address = gp_processor_byte_to_org(state.device.class, state.lst.line.was_byte_addr);
   high_address = (address >> 16) & 0xffff;
 
   if ((dbi == NULL) || (high_address != _64k_base)) {
