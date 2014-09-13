@@ -43,7 +43,7 @@ static const char *processor_name = NULL;
 int yyparse(void);
 extern int yydebug;
 
-#define GET_OPTIONS "?D:I:a:cCde:fghijkl::LmMno:p:qr:s::uvw:yP:"
+#define GET_OPTIONS "?D:I:a:cCde:fghijkl::LmMno:p:qr:s::tuvw:yP:"
 
 struct list_params {
   pic_processor_t processor;
@@ -80,6 +80,7 @@ static struct option longopts[] =
   { "quiet",                     no_argument,       NULL, 'q' },
   { "radix",                     required_argument, NULL, 'r' },
   { "list-processor-properties", optional_argument, NULL, 's' },
+  { "sdcc-dev14-list",           no_argument,       NULL, 't' },
   { "absolute",                  no_argument,       NULL, 'u' },
   { "version",                   no_argument,       NULL, 'v' },
   { "warning",                   required_argument, NULL, 'w' },
@@ -170,6 +171,90 @@ init(void)
 
 /* This is a sdcc specific helper function. */
 static void
+pic14_lister(pic_processor_t processor)
+{
+  const gp_cfg_device_t *dev;
+  proc_class_t class;
+  const int *pair;
+  int tmp, bank_mask;
+
+  if ((processor == NULL) || ((class = processor->class) == NULL)) {
+    fprintf(stderr, "Warning: The processor not selected!\n");
+    return;
+  }
+
+  if ((class != PROC_CLASS_PIC14) && (class != PROC_CLASS_PIC14E)) {
+    fprintf(stderr, "Warning: The type of the %s processor is not PIC14 and not PIC14E!\n",
+            processor->names[2]);
+    return;
+  }
+
+  dev = gp_cfg_find_pic_multi_name(processor->names, ARRAY_SIZE(processor->names));
+
+  if (dev == NULL) {
+    fprintf(stderr, "Warning: The %s processor has no entries in the config db.\n", processor->names[2]);
+    return;
+  }
+
+  printf("processor %s\n", processor->names[2]);
+
+  if (processor->prog_mem_size < 1024) {
+    printf("\tprogram\t\t%i\n", processor->prog_mem_size);
+  }
+  else {
+    printf("\tprogram\t\t%iK\n", processor->prog_mem_size / 1024);
+  }
+
+  printf("\tdata\t\t???\n");
+
+  if ((pair = gp_processor_eeprom_exist(processor)) != NULL) {
+    tmp = pair[1] - pair[0] + 1;
+  }
+  else {
+    tmp = 0;
+  }
+
+  printf("\teeprom\t\t%i\n", tmp);
+  printf("\tio\t\t???\n");
+  bank_mask = (processor->num_banks - 1) << class->addr_bits_in_bank;
+
+  if (class == PROC_CLASS_PIC14E) {
+    printf("\tenhanced\t1\n"
+           "\tmaxram\t\t0x07f\n");
+  }
+  else {
+    tmp = -1;
+    tmp <<= class->addr_bits_in_bank;
+    tmp ^= -1;
+    tmp |= bank_mask;
+    printf("\tmaxram\t\t0x%03x\n", tmp);
+  }
+
+  if (bank_mask > 0) {
+    printf("\tbankmsk\t\t0x%03x\n", bank_mask);
+  }
+
+  if ((pair = gp_processor_config_exist(processor)) != NULL) {
+    if (pair[0] < pair[1]) {
+      printf("\tconfig\t\t0x%04x 0x%04x\n", pair[0], pair[1]);
+    }
+    else {
+      printf("\tconfig\t\t0x%04x\n", pair[0]);
+    }
+  }
+
+  if (bank_mask > 0) {
+    printf("\tregmap\t\t???\n"
+           "\tmemmap\t\t???\n");
+  }
+
+  printf("\n");
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* This is a sdcc specific helper function. */
+static void
 pic16e_lister(pic_processor_t processor)
 {
   const gp_cfg_device_t *dev;
@@ -177,7 +262,7 @@ pic16e_lister(pic_processor_t processor)
   const int *pair;
   int addr0, addr1;
 
-  if (processor == NULL || (class = processor->class) == NULL) {
+  if ((processor == NULL) || ((class = processor->class) == NULL)) {
     fprintf(stderr, "Warning: The processor not selected!\n");
     return;
   }
@@ -250,6 +335,7 @@ lister_of_devices(pic_processor_t processor)
   }
   else {
     printf("Bank Number    : %i\n", processor->num_banks);
+    printf("Bank Mask      : 0x%03X\n", (processor->num_banks - 1) << class->addr_bits_in_bank);
   }
 
   if ((pair = gp_processor_common_ram_exist(processor)) != NULL) {
@@ -264,16 +350,16 @@ lister_of_devices(pic_processor_t processor)
     printf("Linear RAM     : 0x%04X - 0x%04X\n", pair[0], pair[1]);
   }
 
-  if (class->page_size > 0) {
-    printf("Page Size      : %i bytes\n", class->page_size);
-    printf("Page Number    : %i\n", processor->num_pages);
-  }
-
   if (processor->class == PROC_CLASS_PIC16E) {
     txt = "bytes";
   }
   else {
     txt = "words";
+  }
+
+  if (class->page_size > 0) {
+    printf("Page Size      : %i %s\n", class->page_size, txt);
+    printf("Page Number    : %i\n", processor->num_pages);
   }
 
   printf("Program Size   : %i %s\n", processor->prog_mem_size, txt);
@@ -363,6 +449,10 @@ show_usage(void)
   printf("                                 Lists properties of the processors. Using by itself, displays\n");
   printf("                                 the all devices or group of the devices. Along with the '-p'\n");
   printf("                                 option, shows only the specified device.\n");
+  printf("  -t, --sdcc-dev14-list          Help to the extension of the pic14devices.txt file\n");
+  printf("                                 in the sdcc project. Using by itself, displays the all\n");
+  printf("                                 '1e' and '14e' devices. Along with the '-p' option, shows only\n");
+  printf("                                 the specified device.\n");
   printf("  -u, --absolute                 Use absolute pathes. \n");
   printf("  -v, --version                  Show version.\n");
   printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n");
@@ -405,6 +495,7 @@ process_args( int argc, char *argv[])
   int c;
   long pic_family;
   gp_boolean usage = false;
+  gp_boolean sdcc_dev14 = false;
   gp_boolean sdcc_dev16 = false;
   gp_boolean properties = false;
   int usage_code = 0;
@@ -676,6 +767,10 @@ process_args( int argc, char *argv[])
       break;
       }
 
+    case 't':
+      sdcc_dev14 = true;
+      break;
+
     case 'u':
       state.use_absolute_path = true;
       break;
@@ -711,6 +806,18 @@ process_args( int argc, char *argv[])
     }
     else {
       gp_processor_invoke_custom_lister(list_options.class1, list_options.class2, lister_of_devices);
+    }
+
+    exit(0);
+  }
+  else if (sdcc_dev14) {
+    list_options.processor = (cmd_processor) ? gp_find_processor(processor_name) : NULL;
+
+    if (list_options.processor != NULL) {
+      pic14_lister(list_options.processor);
+    }
+    else {
+      gp_processor_invoke_custom_lister(PROC_CLASS_PIC14, PROC_CLASS_PIC14E, pic14_lister);
     }
 
     exit(0);

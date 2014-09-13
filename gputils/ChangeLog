@@ -1,3 +1,20 @@
+2014-09-13  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/directive.c, gpasm/gpasm.c,
+    A new option: -t, --sdcc-dev14-list
+    This help to the extension of the pic14devices.txt file
+    in the sdcc project.
+
+  * gpasm/ppparse.y:
+    Changed text format.
+
+  * gpasm/ppscan.l:
+    Removed a unnecessary definition.
+
+  * libgputils/gpprocessor.c, libgputils/gpprocessor.h:
+    New element in the struct proc_class.
+
+  * config.guess, config.sub, configure: regenerated
+
 2014-09-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/Makefile.am, doc/Makefile.in, doc/gpdasm_sample.ulist,
     doc/gputils.lyx, gpasm/directive.c, gpasm/evaluate.c,

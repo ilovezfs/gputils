@@ -2300,8 +2300,9 @@ static const vector_t vector_table_pic16e[] = {
 const struct proc_class proc_class_eeprom8 = {
   -1,                                   /* retlw */
   8,                                    /* rom_width */
-  0,                                    /* page size */
-  0,                                    /* bank size */
+  0,                                    /* page_size */
+  0,                                    /* bank_size */
+  0,                                    /* addr_bits_in_bank */
   0,                                    /* org_to_byte_shift */
   0,                                    /* pc_mask */
   0,                                    /* page_mask */
@@ -2340,8 +2341,9 @@ const struct proc_class proc_class_eeprom8 = {
 const struct proc_class proc_class_eeprom16 = {
   -1,                                   /* retlw */
   16,                                   /* rom_width */
-  0,                                    /* page size */
-  0,                                    /* bank size */
+  0,                                    /* page_size */
+  0,                                    /* bank_size */
+  0,                                    /* addr_bits_in_bank */
   0,                                    /* org_to_byte_shift */
   0,                                    /* pc_mask */
   0,                                    /* page_mask */
@@ -2380,8 +2382,9 @@ const struct proc_class proc_class_eeprom16 = {
 const struct proc_class proc_class_generic = {
   -1,                                   /* retlw */
   12,                                   /* rom_width */
-  PIC12_PAGE_SIZE,                      /* page size */
-  PIC12_BANK_SIZE,                      /* bank size */
+  PIC12_PAGE_SIZE,                      /* page_size */
+  PIC12_BANK_SIZE,                      /* bank_size */
+  PIC12_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   PIC12_PC_MASK,                        /* pc_mask */
   ~(PIC12_PAGE_SIZE - 1),               /* page_mask */
@@ -2420,8 +2423,9 @@ const struct proc_class proc_class_generic = {
 const struct proc_class proc_class_pic12 = {
   PIC12_INSN_RETLW,                     /* retlw */
   12,                                   /* rom_width */
-  PIC12_PAGE_SIZE,                      /* page size */
-  PIC12_BANK_SIZE,                      /* bank size */
+  PIC12_PAGE_SIZE,                      /* page_size */
+  PIC12_BANK_SIZE,                      /* bank_size */
+  PIC12_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   PIC12_PC_MASK,                        /* pc_mask */
   ~(PIC12_PAGE_SIZE - 1),               /* page_mask */
@@ -2460,8 +2464,9 @@ const struct proc_class proc_class_pic12 = {
 const struct proc_class proc_class_pic12e = {
   PIC12_INSN_RETLW,                     /* retlw */
   12,                                   /* rom_width */
-  PIC12_PAGE_SIZE,                      /* page size */
-  PIC12_BANK_SIZE,                      /* bank size */
+  PIC12_PAGE_SIZE,                      /* page_size */
+  PIC12_BANK_SIZE,                      /* bank_size */
+  PIC12_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   PIC12_PC_MASK,                        /* pc_mask */
   ~(PIC12_PAGE_SIZE - 1),               /* page_mask */
@@ -2500,8 +2505,9 @@ const struct proc_class proc_class_pic12e = {
 const struct proc_class proc_class_sx = {
   PIC12_INSN_RETLW,                     /* retlw */
   12,                                   /* rom_width */
-  PIC12_PAGE_SIZE,                      /* page size */
-  PIC12_BANK_SIZE,                      /* bank size */
+  PIC12_PAGE_SIZE,                      /* page_size */
+  PIC12_BANK_SIZE,                      /* bank_size */
+  PIC12_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   SX_PC_MASK,                           /* pc_mask */
   ~(PIC12_PAGE_SIZE - 1),               /* page_mask */
@@ -2540,8 +2546,9 @@ const struct proc_class proc_class_sx = {
 const struct proc_class proc_class_pic14 = {
   PIC14_INSN_RETLW,                     /* retlw */
   14,                                   /* rom_width */
-  PIC14_PAGE_SIZE,                      /* page size */
-  PIC14_BANK_SIZE,                      /* bank size */
+  PIC14_PAGE_SIZE,                      /* page_size */
+  PIC14_BANK_SIZE,                      /* bank_size */
+  PIC14_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   PIC14_PC_MASK,                        /* pc_mask */
   ~(PIC14_PAGE_SIZE - 1),               /* page_mask */
@@ -2580,8 +2587,9 @@ const struct proc_class proc_class_pic14 = {
 const struct proc_class proc_class_pic14e = {
   PIC14_INSN_RETLW,                     /* retlw */
   14,                                   /* rom_width */
-  PIC14_PAGE_SIZE,                      /* page size */
-  PIC14_BANK_SIZE,                      /* bank size */
+  PIC14_PAGE_SIZE,                      /* page_size */
+  PIC14_BANK_SIZE,                      /* bank_size */
+  PIC14_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   PIC14E_PC_MASK,                       /* pc_mask */
   ~(PIC14_PAGE_SIZE - 1),               /* page_mask */
@@ -2620,8 +2628,9 @@ const struct proc_class proc_class_pic14e = {
 const struct proc_class proc_class_pic16 = {
   PIC16_INSN_RETLW,                     /* retlw */
   16,                                   /* rom_width */
-  0,                                    /* page size */
-  PIC16_BANK_SIZE,                      /* bank size */
+  0,                                    /* page_size */
+  PIC16_BANK_SIZE,                      /* bank_size */
+  PIC16_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   1,                                    /* org_to_byte_shift */
   0,                                    /* pc_mask */
   0,                                    /* page_mask */
@@ -2660,8 +2669,9 @@ const struct proc_class proc_class_pic16 = {
 const struct proc_class proc_class_pic16e = {
   PIC16E_INSN_RETLW,                    /* retlw */
   8,                                    /* rom_width */
-  0,                                    /* page size */
-  PIC16_BANK_SIZE,                      /* bank size */
+  0,                                    /* page_size */
+  PIC16_BANK_SIZE,                      /* bank_size */
+  PIC16_RAM_ADDR_BITS,                  /* addr_bits_in_bank */
   0,                                    /* org_to_byte_shift */
   0,                                    /* pc_mask */
   0,                                    /* page_mask */
