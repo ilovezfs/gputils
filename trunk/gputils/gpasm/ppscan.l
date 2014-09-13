@@ -44,14 +44,6 @@ Boston, MA 02111-1307, USA.  */
 
 #define OPERATOR(x)  return (pplval.i = (x))
 
-#define YY_INPUT(buf, result, max_size) \
-do \
-  { \
-    /* This should be never used */ \
-    result = 0; \
-  } \
-while (0)
-
 #define YY_USER_ACTION ppcol_end += yyleng;
 
 int ppcol_begin;

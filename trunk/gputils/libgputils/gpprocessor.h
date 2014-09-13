@@ -28,6 +28,7 @@ Boston, MA 02111-1307, USA.  */
 
 #define PIC12_BANK_SIZE             32
 #define PIC12_BANK_SHIFT            5
+#define PIC12_RAM_ADDR_BITS         PIC12_BANK_SHIFT
 #define PIC12_BMSK_BANK             0x003
 #define PIC12_PAGE_SIZE             512
 
@@ -54,6 +55,7 @@ Boston, MA 02111-1307, USA.  */
 
 #define PIC14_BANK_SIZE             128
 #define PIC14_BANK_SHIFT            7
+#define PIC14_RAM_ADDR_BITS         PIC14_BANK_SHIFT
 #define PIC14_PAGE_SIZE             2048
 
 #define PIC14_BMSK_BANK             0x0003
@@ -94,6 +96,7 @@ Boston, MA 02111-1307, USA.  */
 
 #define PIC16_BANK_SIZE             256
 #define PIC16_BANK_SHIFT            8
+#define PIC16_RAM_ADDR_BITS         PIC16_BANK_SHIFT
 
 #define PIC16_BMSK_BANK             0x00FF
 #define PIC16_BMSK_PAGE             0x00FF
@@ -148,6 +151,8 @@ struct proc_class {
   int page_size;
   /* The bank size of the RAM memory. */
   int bank_size;
+  /* The number of address bits inside a bank. */
+  int addr_bits_in_bank;
   /* Bits to shift assembly code address for the COFF file byte address. */
   unsigned int org_to_byte_shift;
   /* Mask of address bits for the Program Counter. */
@@ -272,8 +277,9 @@ struct px {
   /* The bounds of common (access) RAM, if exist in the PIC12, PIC12E, PIC14 and PIC14E families. */
   int common_ram_addrs[2];
   int common_ram_max;
+  /* The bounds of linear RAM in the PIC14E family. */
   int linear_ram_addrs[2];
-  /* These are in org to make it easier to fill from datasheet. */
+  /* These are in org to make it easier to fill from the datasheet. */
   int maxrom;
   int prog_mem_size;
   int badrom[MAX_BADROM];
@@ -283,7 +289,7 @@ struct px {
   /* Use the gpdasm. */
   const char *header;
   const char *script;
-  /* Used ony for PROC_CLASS_PIC16E class. PIC16E_FLAG_yyyyy */
+  /* Used ony for the PROC_CLASS_PIC16E class. (PIC16E_FLAG_yyyyy) */
   unsigned int pic16e_flags;
 };
 

@@ -3200,7 +3200,6 @@ do_org(gpasmVal r, const char *name, int arity, struct pnode *parms)
       gpasmVal new_byte_addr;
 
       r = evaluate(p);
-//      new_byte_addr = gp_processor_org_to_byte(state.device.class, r);
       new_byte_addr = gp_processor_real_to_byte(state.processor, r);
       if (state.mpasm_compatible ||
           ((gp_processor_is_config_org(state.processor, r) < 0) &&

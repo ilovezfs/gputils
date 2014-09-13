@@ -4167,7 +4167,7 @@ __EEPROM_END       -- End address of the EEPROM area   (e.g.
 \end_layout
 
 \begin_layout Standard
-End of the program memory:
+The bounds of the program memory:
 \end_layout
 
 \begin_layout LyX-Code
