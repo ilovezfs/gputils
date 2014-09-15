@@ -105,6 +105,18 @@ endif
 ifdef __16F1613
   include <p16f1613.inc>
 endif
+ifdef __16F1614
+  include <p16f1614.inc>
+endif
+ifdef __16F1615
+  include <p16f1615.inc>
+endif
+ifdef __16F1618
+  include <p16f1618.inc>
+endif
+ifdef __16F1619
+  include <p16f1619.inc>
+endif
 ifdef __16F1703
   include <p16f1703.inc>
 endif
@@ -287,6 +299,18 @@ ifdef __16LF1559
 endif
 ifdef __16LF1613
   include <p16lf1613.inc>
+endif
+ifdef __16LF1614
+  include <p16lf1614.inc>
+endif
+ifdef __16LF1615
+  include <p16lf1615.inc>
+endif
+ifdef __16LF1618
+  include <p16lf1618.inc>
+endif
+ifdef __16LF1619
+  include <p16lf1619.inc>
 endif
 ifdef __16LF1703
   include <p16lf1703.inc>

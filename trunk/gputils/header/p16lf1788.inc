@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : May 28 2014
+; Build date : Aug 07 2014
 ;  MPASM PIC16LF1788 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -241,13 +241,10 @@ CLKRCON          EQU  H'051A'
 
 ;-----Bank11------------------
 DAC2CON0         EQU  H'0591'
-DAC2CON1         EQU  H'0592'
 DAC2REF          EQU  H'0592'
 DAC3CON0         EQU  H'0593'
-DAC3CON1         EQU  H'0594'
 DAC3REF          EQU  H'0594'
 DAC4CON0         EQU  H'0595'
-DAC4CON1         EQU  H'0596'
 DAC4REF          EQU  H'0596'
 
 ;-----Bank29------------------

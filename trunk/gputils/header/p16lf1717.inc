@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : May 28 2014
+; Build date : Aug 07 2014
 ;  MPASM PIC16LF1717 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -128,7 +128,6 @@ FVRCON           EQU  H'0117'
 DAC1CON0         EQU  H'0118'
 DAC1CON1         EQU  H'0119'
 DAC2CON0         EQU  H'011A'
-DAC2CON1         EQU  H'011B'
 DAC2REF          EQU  H'011B'
 ZCD1CON          EQU  H'011C'
 
@@ -146,7 +145,6 @@ PMDATL           EQU  H'0193'
 PMDATH           EQU  H'0194'
 PMCON1           EQU  H'0195'
 PMCON2           EQU  H'0196'
-VREGCON          EQU  H'0197'
 RC1REG           EQU  H'0199'
 RCREG            EQU  H'0199'
 RCREG1           EQU  H'0199'
@@ -211,7 +209,6 @@ CCPR2            EQU  H'0298'
 CCPR2L           EQU  H'0298'
 CCPR2H           EQU  H'0299'
 CCP2CON          EQU  H'029A'
-ECCP2CON         EQU  H'029A'
 CCPTMRS          EQU  H'029E'
 
 ;-----Bank6------------------
@@ -268,11 +265,9 @@ OPA2CON          EQU  H'0515'
 PWM3DCL          EQU  H'0617'
 PWM3DCH          EQU  H'0618'
 PWM3CON          EQU  H'0619'
-PWM3CON0         EQU  H'0619'
 PWM4DCL          EQU  H'061A'
 PWM4DCH          EQU  H'061B'
 PWM4CON          EQU  H'061C'
-PWM4CON0         EQU  H'061C'
 
 ;-----Bank13------------------
 COG1PHR          EQU  H'0691'
@@ -906,27 +901,6 @@ DAC2PSS0         EQU  H'0002'
 DAC2PSS1         EQU  H'0003'
 
 
-;----- DAC2CON1 Bits -----------------------------------------------------
-DACR0            EQU  H'0000'
-DACR1            EQU  H'0001'
-DACR2            EQU  H'0002'
-DACR3            EQU  H'0003'
-DACR4            EQU  H'0004'
-
-R0               EQU  H'0000'
-R1               EQU  H'0001'
-R2               EQU  H'0002'
-R3               EQU  H'0003'
-R4               EQU  H'0004'
-
-
-DAC2R0           EQU  H'0000'
-DAC2R1           EQU  H'0001'
-DAC2R2           EQU  H'0002'
-DAC2R3           EQU  H'0003'
-DAC2R4           EQU  H'0004'
-
-
 ;----- DAC2REF Bits -----------------------------------------------------
 DACR0            EQU  H'0000'
 DACR1            EQU  H'0001'
@@ -946,6 +920,20 @@ DAC2R1           EQU  H'0001'
 DAC2R2           EQU  H'0002'
 DAC2R3           EQU  H'0003'
 DAC2R4           EQU  H'0004'
+
+REF0             EQU  H'0000'
+REF1             EQU  H'0001'
+REF2             EQU  H'0002'
+REF3             EQU  H'0003'
+REF4             EQU  H'0004'
+REF5             EQU  H'0005'
+
+DAC2REF0         EQU  H'0000'
+DAC2REF1         EQU  H'0001'
+DAC2REF2         EQU  H'0002'
+DAC2REF3         EQU  H'0003'
+DAC2REF4         EQU  H'0004'
+DAC2REF5         EQU  H'0005'
 
 
 ;----- ZCD1CON Bits -----------------------------------------------------
@@ -1008,11 +996,6 @@ WRERR            EQU  H'0003'
 FREE             EQU  H'0004'
 LWLO             EQU  H'0005'
 CFGS             EQU  H'0006'
-
-
-;----- VREGCON Bits -----------------------------------------------------
-Reserved         EQU  H'0000'
-VREGPM           EQU  H'0001'
 
 
 ;----- RC1STA Bits -----------------------------------------------------
@@ -1509,18 +1492,6 @@ CCP2Y            EQU  H'0004'
 CCP2X            EQU  H'0005'
 
 
-;----- ECCP2CON Bits -----------------------------------------------------
-CCP2M0           EQU  H'0000'
-CCP2M1           EQU  H'0001'
-CCP2M2           EQU  H'0002'
-CCP2M3           EQU  H'0003'
-DC2B0            EQU  H'0004'
-DC2B1            EQU  H'0005'
-
-CCP2Y            EQU  H'0004'
-CCP2X            EQU  H'0005'
-
-
 ;----- CCPTMRS Bits -----------------------------------------------------
 C1TSEL0          EQU  H'0000'
 C1TSEL1          EQU  H'0001'
@@ -1886,12 +1857,6 @@ PWM3OUT          EQU  H'0005'
 PWM3EN           EQU  H'0007'
 
 
-;----- PWM3CON0 Bits -----------------------------------------------------
-PWM3POL          EQU  H'0004'
-PWM3OUT          EQU  H'0005'
-PWM3EN           EQU  H'0007'
-
-
 ;----- PWM4DCL Bits -----------------------------------------------------
 PWM4DCL0         EQU  H'0006'
 PWM4DCL1         EQU  H'0007'
@@ -1909,12 +1874,6 @@ PWM4DCH7         EQU  H'0007'
 
 
 ;----- PWM4CON Bits -----------------------------------------------------
-PWM4POL          EQU  H'0004'
-PWM4OUT          EQU  H'0005'
-PWM4EN           EQU  H'0007'
-
-
-;----- PWM4CON0 Bits -----------------------------------------------------
 PWM4POL          EQU  H'0004'
 PWM4OUT          EQU  H'0005'
 PWM4EN           EQU  H'0007'
@@ -2811,7 +2770,7 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'001D'-H'001F'
        __BADRAM  H'0094'
        __BADRAM  H'011D'-H'011F'
-       __BADRAM  H'0198'
+       __BADRAM  H'0197'-H'0198'
        __BADRAM  H'0218'-H'021F'
        __BADRAM  H'0294'-H'0297'
        __BADRAM  H'029B'-H'029D'

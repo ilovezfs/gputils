@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : May 28 2014
+; Build date : Aug 07 2014
 ;  MPASM PIC16F506 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -154,14 +154,14 @@ VR3              EQU  H'0003'
 PSA              EQU  H'0003'
 T0SE             EQU  H'0004'
 T0CS             EQU  H'0005'
-NOT_GPPU         EQU  H'0006'
-NOT_GPWU         EQU  H'0007'
+NOT_RBPU         EQU  H'0006'
+NOT_RBWU         EQU  H'0007'
 
 PS0              EQU  H'0000'
 PS1              EQU  H'0001'
 PS2              EQU  H'0002'
-NOT_RBPU         EQU  H'0006'
-NOT_RBWU         EQU  H'0007'
+NOT_GPPU         EQU  H'0006'
+NOT_GPWU         EQU  H'0007'
 
 
 ;----- TRISC Bits -----------------------------------------------------

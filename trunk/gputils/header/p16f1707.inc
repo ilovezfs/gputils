@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : May 28 2014
+; Build date : Aug 07 2014
 ;  MPASM PIC16F1707 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -32,7 +32,7 @@
 ;
 ;==========================================================================
 
-;       12 Jul 2014  Added the _DEBUG_ON and _DEBUG_OFF config options.
+;       14 Sep 2014  Added the _DEBUG_ON and _DEBUG_OFF config options.
 ;;;; End: Added in gputils
 
 ;==========================================================================
@@ -164,7 +164,6 @@ CCPR2            EQU  H'0298'
 CCPR2L           EQU  H'0298'
 CCPR2H           EQU  H'0299'
 CCP2CON          EQU  H'029A'
-ECCP2CON         EQU  H'029A'
 
 ;-----Bank6------------------
 SLRCONA          EQU  H'030C'
@@ -891,18 +890,6 @@ CCP1X            EQU  H'0005'
 
 
 ;----- CCP2CON Bits -----------------------------------------------------
-CCP2M0           EQU  H'0000'
-CCP2M1           EQU  H'0001'
-CCP2M2           EQU  H'0002'
-CCP2M3           EQU  H'0003'
-DC2B0            EQU  H'0004'
-DC2B1            EQU  H'0005'
-
-CCP2Y            EQU  H'0004'
-CCP2X            EQU  H'0005'
-
-
-;----- ECCP2CON Bits -----------------------------------------------------
 CCP2M0           EQU  H'0000'
 CCP2M1           EQU  H'0001'
 CCP2M2           EQU  H'0002'

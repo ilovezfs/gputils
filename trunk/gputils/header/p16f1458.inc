@@ -23,6 +23,16 @@
 ;       3. Processor Type entry in the MPASM full-screen interface
 ;       4. Setting the processor in the MPLAB Project Dialog
 ;==========================================================================
+;;;; Begin: Added in gputils
+
+;==========================================================================
+;
+;       Gputils Specific Revision History
+;
+;==========================================================================
+
+;       12 Jul 2014  Added the _DEBUG_ON and _DEBUG_OFF config options.
+;;;; End: Added in gputils
 
 ;==========================================================================
 ;
@@ -168,7 +178,6 @@ PWM1CON0         EQU  H'0613'
 PWM2DCL          EQU  H'0614'
 PWM2DCH          EQU  H'0615'
 PWM2CON          EQU  H'0616'
-PWM2CON0         EQU  H'0616'
 
 ;-----Bank13------------------
 CWG1DBR          EQU  H'0691'
@@ -890,13 +899,6 @@ PWM2OE           EQU  H'0006'
 PWM2EN           EQU  H'0007'
 
 
-;----- PWM2CON0 Bits -----------------------------------------------------
-PWM2POL          EQU  H'0004'
-PWM2OUT          EQU  H'0005'
-PWM2OE           EQU  H'0006'
-PWM2EN           EQU  H'0007'
-
-
 ;----- CWG1DBR Bits -----------------------------------------------------
 CWG1DBR0         EQU  H'0000'
 CWG1DBR1         EQU  H'0001'
@@ -1351,6 +1353,11 @@ _BORV_LO         EQU  H'FFFF'    ; Brown-out Reset Voltage (Vbor), low trip poin
 _LPBOR_ON        EQU  H'F7FF'    ; Low-Power BOR is enabled
 _LPBOR_OFF       EQU  H'FFFF'    ; Low-Power BOR is disabled
 
+;;;; Begin: Added in gputils
+_DEBUG_ON        EQU  H'2FFF'    ; In-Circuit Debugger enabled, ICSPCLK and ICSPDAT are dedicated to the debugger.
+_DEBUG_OFF       EQU  H'3FFF'    ; In-Circuit Debugger disabled, ICSPCLK and ICSPDAT are general purpose I/O pins.
+
+;;;; End: Added in gputils
 _LVP_OFF         EQU  H'DFFF'    ; High-voltage on MCLR/VPP must be used for programming
 _LVP_ON          EQU  H'FFFF'    ; Low-voltage programming enabled
 
