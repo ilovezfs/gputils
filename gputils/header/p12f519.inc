@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : May 28 2014
+; Build date : Aug 07 2014
 ;  MPASM PIC12F519 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -69,7 +69,7 @@ Z                EQU  H'0002'
 NOT_PD           EQU  H'0003'
 NOT_TO           EQU  H'0004'
 PA0              EQU  H'0005'
-RBWUF            EQU  H'0007'
+GPWUF            EQU  H'0007'
 
 
 ;----- OSCCAL Bits -----------------------------------------------------
@@ -127,8 +127,8 @@ FREE             EQU  H'0004'
 PSA              EQU  H'0003'
 T0SE             EQU  H'0004'
 T0CS             EQU  H'0005'
-NOT_RBPU         EQU  H'0006'
-NOT_RBWU         EQU  H'0007'
+NOT_GPPU         EQU  H'0006'
+NOT_GPWU         EQU  H'0007'
 
 PS0              EQU  H'0000'
 PS1              EQU  H'0001'

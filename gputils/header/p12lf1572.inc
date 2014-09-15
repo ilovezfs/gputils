@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : May 28 2014
+; Build date : Aug 07 2014
 ;  MPASM PIC12LF1572 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -201,10 +201,8 @@ PWM2TMR          EQU  H'0DA9'
 PWM2TMRL         EQU  H'0DA9'
 PWM2TMRH         EQU  H'0DAA'
 PWM2CON          EQU  H'0DAB'
-PWM2INTCON       EQU  H'0DAC'
 PWM2INTE         EQU  H'0DAC'
 PWM2INTF         EQU  H'0DAD'
-PWM2INTFLG       EQU  H'0DAD'
 PWM2CLKCON       EQU  H'0DAE'
 PWM2LDCON        EQU  H'0DAF'
 PWM2OFCON        EQU  H'0DB0'
@@ -224,10 +222,8 @@ PWM3TMR          EQU  H'0DB9'
 PWM3TMRL         EQU  H'0DB9'
 PWM3TMRH         EQU  H'0DBA'
 PWM3CON          EQU  H'0DBB'
-PWM3INTCON       EQU  H'0DBC'
 PWM3INTE         EQU  H'0DBC'
 PWM3INTF         EQU  H'0DBD'
-PWM3INTFLG       EQU  H'0DBD'
 PWM3CLKCON       EQU  H'0DBE'
 PWM3LDCON        EQU  H'0DBF'
 PWM3OFCON        EQU  H'0DC0'
@@ -1128,18 +1124,6 @@ MODE0            EQU  H'0002'
 MODE1            EQU  H'0003'
 
 
-;----- PWM2INTCON Bits -----------------------------------------------------
-PRIE             EQU  H'0000'
-DCIE             EQU  H'0001'
-PHIE             EQU  H'0002'
-OFIE             EQU  H'0003'
-
-PWM2PRIE         EQU  H'0000'
-PWM2DCIE         EQU  H'0001'
-PWM2PHIE         EQU  H'0002'
-PWM2OFIE         EQU  H'0003'
-
-
 ;----- PWM2INTE Bits -----------------------------------------------------
 PRIE             EQU  H'0000'
 DCIE             EQU  H'0001'
@@ -1153,18 +1137,6 @@ PWM2OFIE         EQU  H'0003'
 
 
 ;----- PWM2INTF Bits -----------------------------------------------------
-PRIF             EQU  H'0000'
-DCIF             EQU  H'0001'
-PHIF             EQU  H'0002'
-OFIF             EQU  H'0003'
-
-PWM2PRIF         EQU  H'0000'
-PWM2DCIF         EQU  H'0001'
-PWM2PHIF         EQU  H'0002'
-PWM2OFIF         EQU  H'0003'
-
-
-;----- PWM2INTFLG Bits -----------------------------------------------------
 PRIF             EQU  H'0000'
 DCIF             EQU  H'0001'
 PHIF             EQU  H'0002'
@@ -1359,18 +1331,6 @@ MODE0            EQU  H'0002'
 MODE1            EQU  H'0003'
 
 
-;----- PWM3INTCON Bits -----------------------------------------------------
-PRIE             EQU  H'0000'
-DCIE             EQU  H'0001'
-PHIE             EQU  H'0002'
-OFIE             EQU  H'0003'
-
-PWM3PRIE         EQU  H'0000'
-PWM3DCIE         EQU  H'0001'
-PWM3PHIE         EQU  H'0002'
-PWM3OFIE         EQU  H'0003'
-
-
 ;----- PWM3INTE Bits -----------------------------------------------------
 PRIE             EQU  H'0000'
 DCIE             EQU  H'0001'
@@ -1384,18 +1344,6 @@ PWM3OFIE         EQU  H'0003'
 
 
 ;----- PWM3INTF Bits -----------------------------------------------------
-PRIF             EQU  H'0000'
-DCIF             EQU  H'0001'
-PHIF             EQU  H'0002'
-OFIF             EQU  H'0003'
-
-PWM3PRIF         EQU  H'0000'
-PWM3DCIF         EQU  H'0001'
-PWM3PHIF         EQU  H'0002'
-PWM3OFIF         EQU  H'0003'
-
-
-;----- PWM3INTFLG Bits -----------------------------------------------------
 PRIF             EQU  H'0000'
 DCIF             EQU  H'0001'
 PHIF             EQU  H'0002'

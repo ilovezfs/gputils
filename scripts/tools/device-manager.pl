@@ -1516,7 +1516,11 @@ sub process_lkr_line($)
         # SHAREBANK  NAME=gprnobank  START=0xF0            END=0xFF           PROTECTED
         # SHAREBANK  NAME=dprnobank  START=0x70              END=0x7F           PROTECTED
 
-        $lkr_common_max = $end if ($lkr_common_max < $end);
+        if ($tail ne 'PROTECTED')
+          {
+          $lkr_common_max = $end if ($lkr_common_max < $end);
+          }
+
         $lkr_data_max   = $end if ($lkr_data_max < $end);
         $index = ($start & $lkr_bank_mask) >> $lkr_bank_shift;
         $lkr_common_banks[$index] = {START => $start, END => $end};
@@ -1667,6 +1671,8 @@ sub read_lkr($$$)
     $prev_end   = $end;
     $first      = FALSE;
     } # foreach (@lkr_common_banks)
+
+  $lkr_common_max = -1 if ($lkr_common_max == ~$lkr_bank_mask);
 
   return TRUE;
   }

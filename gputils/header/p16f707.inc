@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : May 28 2014
+; Build date : Aug 07 2014
 ;  MPASM PIC16F707 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -333,6 +333,9 @@ T1CKPS0          EQU  H'0004'
 T1CKPS1          EQU  H'0005'
 TMRCS0           EQU  H'0006'
 TMRCS1           EQU  H'0007'
+
+TMR1CS0          EQU  H'0006'
+TMR1CS1          EQU  H'0007'
 
 
 ;----- T2CON Bits -----------------------------------------------------

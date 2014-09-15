@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : May 28 2014
+; Build date : Aug 07 2014
 ;  MPASM PIC16F753 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -90,6 +90,7 @@ DAC1CON0         EQU  H'0091'
 DAC1REFL         EQU  H'0092'
 DAC1REFH         EQU  H'0093'
 OPA1CON          EQU  H'0096'
+OPA1CON0         EQU  H'0096'
 C2CON0           EQU  H'009B'
 CM2CON0          EQU  H'009B'
 C2CON1           EQU  H'009C'
@@ -370,6 +371,16 @@ DACPSS1          EQU  H'0003'
 
 
 ;----- OPA1CON Bits -----------------------------------------------------
+OPAUGM           EQU  H'0004'
+OPAEN            EQU  H'0007'
+
+OPA1PCH0         EQU  H'0000'
+OPA1PCH1         EQU  H'0001'
+OPA1NCH0         EQU  H'0002'
+OPA1NCH1         EQU  H'0003'
+
+
+;----- OPA1CON0 Bits -----------------------------------------------------
 OPAUGM           EQU  H'0004'
 OPAEN            EQU  H'0007'
 

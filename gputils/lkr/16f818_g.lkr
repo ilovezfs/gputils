@@ -1,5 +1,6 @@
 // File: 16f818_g.lkr
 // Generic linker script for the PIC16F818 processor
+//// Begin: Added in gputils
 //=========================================================================
 //
 //      Gputils Specific Revision History

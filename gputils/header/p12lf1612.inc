@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : May 28 2014
+; Build date : Aug 07 2014
 ;  MPASM PIC12LF1612 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -84,8 +84,6 @@ TMR1H            EQU  H'0017'
 T1CON            EQU  H'0018'
 T1GCON           EQU  H'0019'
 T2TMR            EQU  H'001A'
-TMR2             EQU  H'001A'
-PR2              EQU  H'001B'
 T2PR             EQU  H'001B'
 T2CON            EQU  H'001C'
 T2HLT            EQU  H'001D'
@@ -147,9 +145,7 @@ CCP1CON          EQU  H'0293'
 CCP1CAP          EQU  H'0294'
 CCP2RL           EQU  H'0298'
 CCPR2            EQU  H'0298'
-CCPR2L           EQU  H'0298'
 CCP2RH           EQU  H'0299'
-CCPR2H           EQU  H'0299'
 CCP2CON          EQU  H'029A'
 CCP2CAP          EQU  H'029B'
 CCPTMRS          EQU  H'029E'
@@ -165,16 +161,12 @@ IOCAF            EQU  H'0393'
 
 ;-----Bank8------------------
 T4TMR            EQU  H'0413'
-TMR4             EQU  H'0413'
-PR4              EQU  H'0414'
 T4PR             EQU  H'0414'
 T4CON            EQU  H'0415'
 T4HLT            EQU  H'0416'
 T4CLKCON         EQU  H'0417'
 T4RST            EQU  H'0418'
 T6TMR            EQU  H'041A'
-TMR6             EQU  H'041A'
-PR6              EQU  H'041B'
 T6PR             EQU  H'041B'
 T6CON            EQU  H'041C'
 T6HLT            EQU  H'041D'
@@ -627,7 +619,7 @@ CDAFVR1          EQU  H'0003'
 
 ;----- DAC1CON0 Bits -----------------------------------------------------
 DAC1OE           EQU  H'0005'
-D1EN             EQU  H'0007'
+DAC1EN           EQU  H'0007'
 
 D1PSS0           EQU  H'0002'
 D1PSS1           EQU  H'0003'
@@ -827,47 +819,7 @@ CCP2R6           EQU  H'0006'
 CCP2R7           EQU  H'0007'
 
 
-;----- CCPR2L Bits -----------------------------------------------------
-CCPR20           EQU  H'0000'
-CCPR21           EQU  H'0001'
-CCPR22           EQU  H'0002'
-CCPR23           EQU  H'0003'
-CCPR24           EQU  H'0004'
-CCPR25           EQU  H'0005'
-CCPR26           EQU  H'0006'
-CCPR27           EQU  H'0007'
-
-CCP2R0           EQU  H'0000'
-CCP2R1           EQU  H'0001'
-CCP2R2           EQU  H'0002'
-CCP2R3           EQU  H'0003'
-CCP2R4           EQU  H'0004'
-CCP2R5           EQU  H'0005'
-CCP2R6           EQU  H'0006'
-CCP2R7           EQU  H'0007'
-
-
 ;----- CCP2RH Bits -----------------------------------------------------
-CCPR28           EQU  H'0000'
-CCPR29           EQU  H'0001'
-CCPR210          EQU  H'0002'
-CCPR211          EQU  H'0003'
-CCPR212          EQU  H'0004'
-CCPR213          EQU  H'0005'
-CCPR214          EQU  H'0006'
-CCPR215          EQU  H'0007'
-
-CCP2R8           EQU  H'0000'
-CCP2R9           EQU  H'0001'
-CCP2R10          EQU  H'0002'
-CCP2R11          EQU  H'0003'
-CCP2R12          EQU  H'0004'
-CCP2R13          EQU  H'0005'
-CCP2R14          EQU  H'0006'
-CCP2R15          EQU  H'0007'
-
-
-;----- CCPR2H Bits -----------------------------------------------------
 CCPR28           EQU  H'0000'
 CCPR29           EQU  H'0001'
 CCPR210          EQU  H'0002'
@@ -2002,22 +1954,42 @@ SMT2CPRUP        EQU  H'0007'
 CSEL0            EQU  H'0000'
 CSEL1            EQU  H'0001'
 CSEL2            EQU  H'0002'
+CSEL3            EQU  H'0003'
+CSEL4            EQU  H'0004'
+CSEL5            EQU  H'0005'
+CSEL6            EQU  H'0006'
+CSEL7            EQU  H'0007'
 
 
 SMT2CSEL0        EQU  H'0000'
 SMT2CSEL1        EQU  H'0001'
 SMT2CSEL2        EQU  H'0002'
+SMT2CSEL3        EQU  H'0003'
+SMT2CSEL4        EQU  H'0004'
+SMT2CSEL5        EQU  H'0005'
+SMT2CSEL6        EQU  H'0006'
+SMT2CSEL7        EQU  H'0007'
 
 
 ;----- SMT2SIG Bits -----------------------------------------------------
 SSEL0            EQU  H'0000'
 SSEL1            EQU  H'0001'
 SSEL2            EQU  H'0002'
+SSEL3            EQU  H'0003'
+SSEL4            EQU  H'0004'
+SSEL5            EQU  H'0005'
+SSEL6            EQU  H'0006'
+SSEL7            EQU  H'0007'
 
 
 SMT2SSEL0        EQU  H'0000'
 SMT2SSEL1        EQU  H'0001'
 SMT2SSEL2        EQU  H'0002'
+SMT2SSEL3        EQU  H'0003'
+SMT2SSEL4        EQU  H'0004'
+SMT2SSEL5        EQU  H'0005'
+SMT2SSEL6        EQU  H'0006'
+SMT2SSEL7        EQU  H'0007'
 
 
 ;----- SMT2WIN Bits -----------------------------------------------------
@@ -2025,12 +1997,20 @@ WSEL0            EQU  H'0000'
 WSEL1            EQU  H'0001'
 WSEL2            EQU  H'0002'
 WSEL3            EQU  H'0003'
+WSEL4            EQU  H'0004'
+WSEL5            EQU  H'0005'
+WSEL6            EQU  H'0006'
+WSEL7            EQU  H'0007'
 
 
 SMT2WSEL0        EQU  H'0000'
 SMT2WSEL1        EQU  H'0001'
 SMT2WSEL2        EQU  H'0002'
 SMT2WSEL3        EQU  H'0003'
+SMT2WSEL4        EQU  H'0004'
+SMT2WSEL5        EQU  H'0005'
+SMT2WSEL6        EQU  H'0006'
+SMT2WSEL7        EQU  H'0007'
 
 
 ;----- ICDIO Bits -----------------------------------------------------

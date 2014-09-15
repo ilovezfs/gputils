@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : May 28 2014
+; Build date : Aug 07 2014
 ;  MPASM PIC18F45K50 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -139,7 +139,6 @@ TRISD            EQU  H'0F95'
 DDRE             EQU  H'0F96'
 TRISE            EQU  H'0F96'
 CCP2CON          EQU  H'0F97'
-ECCP2CON         EQU  H'0F97'
 CM1CON0          EQU  H'0F98'
 CM2CON0          EQU  H'0F99'
 CM2CON1          EQU  H'0F9A'
@@ -1031,18 +1030,6 @@ RE2              EQU  H'0002'
 
 
 ;----- CCP2CON Bits -----------------------------------------------------
-CCP2M0           EQU  H'0000'
-CCP2M1           EQU  H'0001'
-CCP2M2           EQU  H'0002'
-CCP2M3           EQU  H'0003'
-DC2B0            EQU  H'0004'
-DC2B1            EQU  H'0005'
-
-CCP2Y            EQU  H'0004'
-CCP2X            EQU  H'0005'
-
-
-;----- ECCP2CON Bits -----------------------------------------------------
 CCP2M0           EQU  H'0000'
 CCP2M1           EQU  H'0001'
 CCP2M2           EQU  H'0002'

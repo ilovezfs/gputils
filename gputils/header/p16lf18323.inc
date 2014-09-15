@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : May 28 2014
+; Build date : Aug 07 2014
 ;  MPASM PIC16LF18323 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -215,11 +215,9 @@ NCO1CLK          EQU  H'049F'
 PWM5DCL          EQU  H'0617'
 PWM5DCH          EQU  H'0618'
 PWM5CON          EQU  H'0619'
-PWM5CON0         EQU  H'0619'
 PWM6DCL          EQU  H'061A'
 PWM6DCH          EQU  H'061B'
 PWM6CON          EQU  H'061C'
-PWM6CON0         EQU  H'061C'
 
 ;-----Bank13------------------
 CWG1CLKCON       EQU  H'0691'
@@ -1399,12 +1397,6 @@ PWM5OUT          EQU  H'0005'
 PWM5EN           EQU  H'0007'
 
 
-;----- PWM5CON0 Bits -----------------------------------------------------
-PWM5POL          EQU  H'0004'
-PWM5OUT          EQU  H'0005'
-PWM5EN           EQU  H'0007'
-
-
 ;----- PWM6DCL Bits -----------------------------------------------------
 PWM6DCL0         EQU  H'0006'
 PWM6DCL1         EQU  H'0007'
@@ -1422,12 +1414,6 @@ PWM6DCH7         EQU  H'0007'
 
 
 ;----- PWM6CON Bits -----------------------------------------------------
-PWM6POL          EQU  H'0004'
-PWM6OUT          EQU  H'0005'
-PWM6EN           EQU  H'0007'
-
-
-;----- PWM6CON0 Bits -----------------------------------------------------
 PWM6POL          EQU  H'0004'
 PWM6OUT          EQU  H'0005'
 PWM6EN           EQU  H'0007'
