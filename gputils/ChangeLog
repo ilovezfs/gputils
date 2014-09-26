@@ -1,3 +1,14 @@
+2014-09-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/evaluate.c: Bugfix to the HIGH operator.
+
+  * gpasm/testsuite/gpasm.project/asmfiles/op14_high.asm,
+    gpasm/testsuite/gpasm.project/asmfiles/op14e_high.asm,
+    gpasm/testsuite/gpasm.project/hexfiles/op14_high.hex,
+    gpasm/testsuite/gpasm.project/hexfiles/op14e_high.hex,
+    gpasm/testsuite/gpasm.project/listfiles/op14_high.lst,
+    gpasm/testsuite/gpasm.project/listfiles/op14e_high.lst:
+    Testfiles to this bugfix.
+
 2014-09-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, libgputils/gpprocessor.c,
     libgputils/gpcfg-table.c, libgputils/gpreg-table.c,

@@ -211,11 +211,11 @@ static int is_program_segment(const struct pnode *p)
     struct symbol *s = get_symbol(state.stTop, p->value.symbol);
     struct variable *var = get_symbol_annotation(s);
     assert(var != NULL);
-    /* if var type is GVT_CBLOCK return 1, else return 0 */
-    return (var->type != GVT_CBLOCK);
+    /* If var type is GVT_ADDRESS return 1, else return 0. */
+    return ((var->type == GVT_ADDRESS) ? true : false);
   }
   else {
-    return 0;
+    return false;
   }
 }
 
@@ -267,8 +267,8 @@ gpasmVal evaluate(const struct pnode *p)
     case HIGH:
       {
         gpasmVal val = (evaluate(p->value.unop.p0) >> 8) & 0xff;
-        /* set 7th bit if in absolute mode and PROC_CLASS_PIC14E and not in cblock;
-         * relative mode is handeled by the linker */
+        /* set 7th bit if in absolute mode and PROC_CLASS_PIC14E and address;
+         * relative mode is handled by the linker */
         if ((state.mode == MODE_ABSOLUTE) && IS_PIC14E_CORE &&
             is_program_segment(p->value.unop.p0)) {
           val |= 0x80;

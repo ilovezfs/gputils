@@ -1,0 +1,52 @@
+MPASM 5.58               ./SRC/OP14_HIGH.ASM   9-26-2014  11:01:36         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 
+                      00002         list p=16f84
+                      00003         radix dec
+                      00004 
+  000009C3            00005 CONST   equ     2499
+                      00006 
+0000   3009           00007         movlw   high CONST
+0001   3009           00008         movlw   CONST >> 8 & 0xFF
+                      00009 
+                      00010 ; HIGH
+                      00011         cblock  0x10
+  00000010            00012         table_data: 1
+                      00013         endc
+                      00014 
+0002   0000           00015         data    HIGH table_code
+0003   0000           00016         data    HIGH table_data
+                      00017 
+0004                  00018 table_code
+                      00019         end
+MPASM 5.58               ./SRC/OP14_HIGH.ASM   9-26-2014  11:01:36         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CONST                             000009C3
+__16F84                           00000001
+table_code                        00000004
+table_data                        00000010
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXX------------ ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:     4
+Program Memory Words Free:  1020
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+
