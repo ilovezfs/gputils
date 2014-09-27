@@ -1,3 +1,7 @@
+2014-09-27  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * configure.ac, configure, doc/gputils.lyx:
+    The version changed to 1.4.0 .
+
 2014-09-26  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/evaluate.c: Bugfix to the HIGH operator.
 
