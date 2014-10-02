@@ -151,6 +151,8 @@ struct proc_class {
   int page_size;
   /* The bank size of the RAM memory. */
   int bank_size;
+  /* The shift value of bank bits in a RAM address. */
+  int bank_bits_shift;
   /* The number of address bits inside a bank. */
   int addr_bits_in_bank;
   /* Bits to shift assembly code address for the COFF file byte address. */
@@ -274,12 +276,15 @@ struct px {
   unsigned int coff_type;
   int num_pages;
   int num_banks;
+  /* These bank bits exists in the reality. */
+  int bank_bits;
   /* The bounds of common (access) RAM, if exist in the PIC12, PIC12E, PIC14 and PIC14E families. */
   int common_ram_addrs[2];
   int common_ram_max;
   /* The bounds of linear RAM in the PIC14E family. */
   int linear_ram_addrs[2];
   /* These are in org to make it easier to fill from the datasheet. */
+  int maxram;
   int maxrom;
   int prog_mem_size;
   int badrom[MAX_BADROM];
