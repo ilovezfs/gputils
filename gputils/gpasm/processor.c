@@ -52,6 +52,7 @@ void select_processor(const char *name)
         }
 
         state.processor = found;
+        state.maxram = found->maxram;
         state.maxrom = found->maxrom;
         /* Initialize badrom from internal processor info. */
         state.badrom = NULL;

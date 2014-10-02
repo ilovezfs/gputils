@@ -768,8 +768,8 @@ do_constant(gpasmVal r, const char *name, int arity, struct pnode *parms)
  * do_config() - Called by the parser when a __CONFIG assembler directive
  *               is encountered.
  *
- * do_mpasm_config() - Called by the parser to process MPASM style CONFIG xx=yy
- *                     directives for 16 bit devices.
+ * do_gpasm_config() - Called by the parser to process MPASM style CONFIG xx=yy
+ *                     directives for all devices.
  */
 
 static gp_boolean config_us_used = false;
@@ -777,7 +777,7 @@ static gp_boolean config_mpasm_used = false;
 
 /*
  * Creates the configuration or device id COFF section for do_config and
- * do_mpasm_config. Returns true when a section is created.
+ * do_gpasm_config. Returns true when a section is created.
  */
 
 static MemBlock *
@@ -1296,7 +1296,7 @@ do_12_14_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 }
 
 static gpasmVal
-do_mpasm_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
+do_gpasm_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
   struct pnode *p;
   char buf[BUFSIZ];
@@ -3845,7 +3845,7 @@ file_ok(unsigned int file)
     gpvwarning(GPW_INVALID_RAM, "Address{%#x} in BADRAM.", file);
   }
 
-  bank_bits = file & state.device.class->bank_mask;
+  bank_bits = file & state.processor->bank_bits;
 
   /* Issue bank message if necessary. */
   if (bank_bits != 0) {
@@ -4854,7 +4854,7 @@ do_insn(const char *name, struct pnode *parms)
         /* PIC16E (clrf, cpfseq, cpfsgt, cpfslt, movwf, mulwf, negf, setf, tstfsz) */
         {
           int a = 0; /* Default destination of 0 (access). */
-          struct pnode *p2; /* second parameter */
+          struct pnode *par; /* second parameter */
 
           if (arity == 0) {
             enforce_arity(arity, 2);
@@ -4906,17 +4906,17 @@ do_insn(const char *name, struct pnode *parms)
 
           switch (arity) {
           case 2:
-            p2 = HEAD(TAIL(parms));
+            par = HEAD(TAIL(parms));
             /* Prohibit "a" for BSR to select RAM bank. */
-            if ((!state.mpasm_compatible) && (p2->tag == PTAG_SYMBOL) && (strcasecmp(p2->value.symbol, "a") == 0)) {
+            if ((!state.mpasm_compatible) && (par->tag == PTAG_SYMBOL) && (strcasecmp(par->value.symbol, "a") == 0)) {
               a = 0;
             }
             /* Allow "b" for BSR to select RAM bank. */
-            else if ((p2->tag == PTAG_SYMBOL) && (strcasecmp(p2->value.symbol, "b") == 0)) {
+            else if ((par->tag == PTAG_SYMBOL) && (strcasecmp(par->value.symbol, "b") == 0)) {
               a = 1;
             }
             else {
-              a = check_flag(maybe_evaluate(p2));
+              a = check_flag(maybe_evaluate(par));
             }
             break;
 
@@ -4952,7 +4952,12 @@ do_insn(const char *name, struct pnode *parms)
           if (arity == 3) {
             par = HEAD(TAIL(TAIL(parms)));
 
-            if ((par->tag == PTAG_SYMBOL) && (strcasecmp(par->value.symbol, "b") == 0)) {
+            /* Prohibit "a" for BSR to select RAM bank. */
+            if ((!state.mpasm_compatible) && (par->tag == PTAG_SYMBOL) && (strcasecmp(par->value.symbol, "a") == 0)) {
+              a = 0;
+            }
+            /* Allow "b" for BSR to select RAM bank. */
+            else if ((par->tag == PTAG_SYMBOL) && (strcasecmp(par->value.symbol, "b") == 0)) {
               a = 1;
             }
             else {
@@ -5080,7 +5085,12 @@ do_insn(const char *name, struct pnode *parms)
           case 3:
             par = HEAD(TAIL(TAIL(parms)));
 
-            if ((par->tag == PTAG_SYMBOL) && (strcasecmp(par->value.symbol, "b") == 0)) {
+            /* Prohibit "a" for BSR to select RAM bank. */
+            if ((!state.mpasm_compatible) && (par->tag == PTAG_SYMBOL) && (strcasecmp(par->value.symbol, "a") == 0)) {
+              a = 0;
+            }
+            /* Allow "b" for BSR to select RAM bank. */
+            else if ((par->tag == PTAG_SYMBOL) && (strcasecmp(par->value.symbol, "b") == 0)) {
               a = 1;
             }
             else {
@@ -5460,7 +5470,7 @@ const struct insn op_1[] = {
   { "__maxrom",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_maxrom       },
   { "bankisel",   0, 0, 0, INSN_CLASS_FUNC, 0,           do_bankisel     },
   { "banksel",    0, 0, 0, INSN_CLASS_FUNC, 0,           do_banksel      },
-  { "config",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_mpasm_config },
+  { "config",     0, 0, 0, INSN_CLASS_FUNC, 0,           do_gpasm_config },
   { "data",       0, 0, 0, INSN_CLASS_FUNC, 0,           do_data         },
   { "da",         0, 0, 0, INSN_CLASS_FUNC, 0,           do_da           },
   { "db",         0, 0, 0, INSN_CLASS_FUNC, 0,           do_db           },
