@@ -335,7 +335,7 @@ lister_of_devices(pic_processor_t processor)
   }
   else {
     printf("Bank Number    : %i\n", processor->num_banks);
-    printf("Bank Mask      : 0x%03X\n", (processor->num_banks - 1) << class->addr_bits_in_bank);
+    printf("Bank Mask      : 0x%03X\n", processor->bank_bits);
   }
 
   if ((pair = gp_processor_common_ram_exist(processor)) != NULL) {
@@ -349,6 +349,8 @@ lister_of_devices(pic_processor_t processor)
   if ((pair = gp_processor_linear_ram_exist(processor)) != NULL) {
     printf("Linear RAM     : 0x%04X - 0x%04X\n", pair[0], pair[1]);
   }
+
+  printf("Max. RAM Addr. : 0x%03X\n", processor->maxram);
 
   if (processor->class == PROC_CLASS_PIC16E) {
     txt = "bytes";
@@ -451,7 +453,7 @@ show_usage(void)
   printf("                                 option, shows only the specified device.\n");
   printf("  -t, --sdcc-dev14-list          Help to the extension of the pic14devices.txt file\n");
   printf("                                 in the sdcc project. Using by itself, displays the all\n");
-  printf("                                 '1e' and '14e' devices. Along with the '-p' option, shows only\n");
+  printf("                                 '14' and '14e' devices. Along with the '-p' option, shows only\n");
   printf("                                 the specified device.\n");
   printf("  -u, --absolute                 Use absolute pathes. \n");
   printf("  -v, --version                  Show version.\n");
