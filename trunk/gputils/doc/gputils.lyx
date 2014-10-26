@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Sep 27, 2014
+Oct 26, 2014
 \end_layout
 
 \begin_layout Standard
@@ -907,7 +907,7 @@ Where options can be one of:
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="30" columns="3">
+<lyxtabular version="3" rows="31" columns="3">
 <features rotate="0" tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
@@ -1842,7 +1842,7 @@ Write preprocessed asm file to <file>.
 \begin_inset Text
 
 \begin_layout Plain Layout
-Quiet.
+Suppress anything sent to standard output.
 \end_layout
 
 \end_inset
@@ -1954,6 +1954,84 @@ Lists properties of the processors.
 </cell>
 </row>
 <row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-S [0|1|2]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+--strict [0|1|2]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Set the strict level of the recommended instruction-parameters (W or F and
+ A or B).
+ The "strict messages" have higher priority than the warnings.
+ (See: -w [0|1|2])
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+0: Is the default.
+ No strict messages.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+1: Show warning messages if one of is missing.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+2: Show error messages if one of is missing.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
 <cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -2016,7 +2094,7 @@ Print gpasm version information and exit.
 \begin_inset Text
 
 \begin_layout Plain Layout
--w [ 0 | 1 | 2 ]
+-w [0|1|2]
 \end_layout
 
 \end_inset
@@ -2035,6 +2113,52 @@ Print gpasm version information and exit.
 
 \begin_layout Plain Layout
 Set the message level.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+0: Is the default.
+ It will allow all messages, warnings, and errors to be reported.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+1: Will suppress the messages.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+2: Will suppress the messages and warnings.
 \end_layout
 
 \end_inset
@@ -4066,7 +4190,7 @@ not
 \begin_inset Newline newline
 \end_inset
 
-End address of the Lower Access RAM area (
+The bounds of the Lower Access RAM area (
 \emph on
 only
 \emph default
@@ -4074,7 +4198,11 @@ only
 \end_layout
 
 \begin_layout LyX-Code
-__ACC_RAM_LOW_END  -- e.g.
+__ACC_RAM_LOW_START -- 0x00
+\end_layout
+
+\begin_layout LyX-Code
+__ACC_RAM_LOW_END   -- e.g.
  0x5F, 0x7F
 \end_layout
 

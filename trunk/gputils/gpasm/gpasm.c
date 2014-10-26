@@ -43,7 +43,7 @@ static const char *processor_name = NULL;
 int yyparse(void);
 extern int yydebug;
 
-#define GET_OPTIONS "?D:I:a:cCde:fghijkl::LmMno:p:qr:s::tuvw:yP:"
+#define GET_OPTIONS "?D:I:a:cCde:fghijkl::LmMno:p:qr:s::S:tuvw:yP:"
 
 struct list_params {
   pic_processor_t processor;
@@ -80,6 +80,7 @@ static struct option longopts[] =
   { "quiet",                     no_argument,       NULL, 'q' },
   { "radix",                     required_argument, NULL, 'r' },
   { "list-processor-properties", optional_argument, NULL, 's' },
+  { "strict",                    required_argument, NULL, 'S' },
   { "sdcc-dev14-list",           no_argument,       NULL, 't' },
   { "absolute",                  no_argument,       NULL, 'u' },
   { "version",                   no_argument,       NULL, 'v' },
@@ -109,14 +110,16 @@ init(void)
   state.quiet = false;
   state.use_absolute_path = false;
   state.show_full_addr = false;
-  state.error_level = 0;
   state.debug_info = false;
+  state.error_level = 0;
+  state.strict_level = 0;
   state.path_num = 0;
   state.preproc.do_emit = true;
 
   state.cmd_line.radix = false;
   state.cmd_line.hex_format = false;
   state.cmd_line.error_level = false;
+  state.cmd_line.strict_level = false;
   state.cmd_line.macro_expand = false;
   state.cmd_line.processor = false;
   state.cmd_line.lst_force = false;
@@ -445,12 +448,18 @@ show_usage(void)
   printf("                                        (The \"FILE.hex\" should specified.)\n");
   printf("  -p PROC, --processor PROC      Select processor.\n");
   printf("  -P FILE, --preprocess FILE     Write preprocessed asm file to FILE.\n");
-  printf("  -q, --quiet                    Quiet.\n");
+  printf("  -q, --quiet                    Suppress anything sent to standard output.\n");
   printf("  -r RADIX, --radix RADIX        Select radix. [hex]\n");
   printf("  -s[12[ce]|14[ce]|16[ce]], --list-processor-properties[=([12[ce]|14[ce]|16[ce]])]\n");
   printf("                                 Lists properties of the processors. Using by itself, displays\n");
   printf("                                 the all devices or group of the devices. Along with the '-p'\n");
   printf("                                 option, shows only the specified device.\n");
+  printf("  -S [0|1|2], --strict [0|1|2]   Set the strict level of the recommended instruction-parameters\n");
+  printf("                                 (W or F and A or B). The \"strict messages\" have higher priority\n");
+  printf("                                 than the warnings. (See: -w [0|1|2]) [0]\n");
+  printf("                                     0: Is the default. No strict messages.\n");
+  printf("                                     1: Show warning messages if one of is missing.\n");
+  printf("                                     2: Show error messages if one of is missing.\n");
   printf("  -t, --sdcc-dev14-list          Help to the extension of the pic14devices.txt file\n");
   printf("                                 in the sdcc project. Using by itself, displays the all\n");
   printf("                                 '14' and '14e' devices. Along with the '-p' option, shows only\n");
@@ -458,10 +467,14 @@ show_usage(void)
   printf("  -u, --absolute                 Use absolute pathes. \n");
   printf("  -v, --version                  Show version.\n");
   printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n");
+  printf("                                     0: Is the default. It will allow all messages, warnings and\n");
+  printf("                                        errors to be reported.\n");
+  printf("                                     1: Will suppress the messages.\n");
+  printf("                                     2: Will suppress the messages and warnings.\n");
   printf("  -y, --extended                 Enable 18xx extended mode.\n");
   printf("\n");
 #ifdef USE_DEFAULT_PATHS
-  if (gp_header_path) {
+  if (gp_header_path != NULL) {
     printf("Default header file path %s\n", gp_header_path);
   }
   else {
@@ -768,6 +781,11 @@ process_args( int argc, char *argv[])
       properties = true;
       break;
       }
+
+    case 'S':
+      select_strictlevel(atoi(optarg));
+      state.cmd_line.strict_level = true;
+      break;
 
     case 't':
       sdcc_dev14 = true;

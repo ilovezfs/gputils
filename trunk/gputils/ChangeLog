@@ -1,8 +1,25 @@
+2014-10-25  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/processor.c:
+    New predefined constant: __ACC_RAM_LOW_START
+
+  * man/gpasm.1.in: updated
+
+  * doc/gputils.lyx, gpasm/directive.c, gpasm/gpasm.c,
+    gpasm/gpasm.h.in, gpasm/gperror.c, gpasm/gperror.h,
+    gpasm/processor.c, gpasm/util.c, man/gpasm.1.in:
+    New gpasm option: -S [0|1|2], --strict [0|1|2]
+      Set the strict level of the recommended instruction-parameters
+      (W or F and A or B).
+
+  * libgputils/gpcoffopt.c:
+    Changed text format.
+
 2014-10-19  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * man/gpdasm.1.in: updated
 
 2014-10-14  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
-  * gputils/parse.y: Fixed bug #273: Compilation error in the Debian based systems
+  * gputils/parse.y:
+    Fixed bug #273: Compilation error in the Debian based systems
 
 2014-10-06  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/gpasm.c:

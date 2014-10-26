@@ -69,10 +69,10 @@ add_code(int code)
     new->value = code;
     new->next  = NULL;
 
-    if (errorcodes_list) {
+    if (errorcodes_list != NULL) {
       /* the list has been started, scan the list for the end */
       list = errorcodes_list;
-      while (list->next) {
+      while (list->next != NULL) {
         list = list->next;
       }
       list->next = new;  /* append the new value to the end of list */
@@ -82,19 +82,19 @@ add_code(int code)
   }
 }
 
-static int
+static gp_boolean
 check_code(int code)
 {
   struct error_list *p;
-  int print = 1;
+  gp_boolean print = true;
 
   p = errorcodes_list;
 
   while (p != NULL) {
     if (p->value == code) {
-      print = 1;
+      print = true;
     } else if (p->value == -(code)) {
-      print = 0;
+      print = false;
     }
 
     p = p->next;
@@ -103,14 +103,14 @@ check_code(int code)
   return print;
 }
 
-enum err_type_e {
-  et_error,
-  et_warning,
-  et_message
-};
+typedef enum {
+  ET_ERROR,
+  ET_WARNING,
+  ET_MESSAGE
+} err_type_t;
 
 static void
-verr(enum err_type_e err_type, unsigned int code, const char *message, va_list ap)
+verr(err_type_t err_type, unsigned int code, const char *message, va_list ap)
 {
   va_list ap0;
 
@@ -120,17 +120,17 @@ verr(enum err_type_e err_type, unsigned int code, const char *message, va_list a
     const char *gap;
 
     switch (err_type) {
-      case et_error:
+      case ET_ERROR:
         type = "Error";
         gap  = "  ";
         break;
 
-      case et_warning:
+      case ET_WARNING:
         type = "Warning";
         gap  = "";
         break;
 
-      case et_message:
+      case ET_MESSAGE:
       default:
         type = "Message";
         gap  = "";
@@ -166,7 +166,7 @@ verr(enum err_type_e err_type, unsigned int code, const char *message, va_list a
 }
 
 static void
-err(enum err_type_e err_type, unsigned int code, const char *message)
+err(err_type_t err_type, unsigned int code, const char *message)
 {
   /* standard output */
   if (!state.quiet) {
@@ -174,17 +174,17 @@ err(enum err_type_e err_type, unsigned int code, const char *message)
     const char *gap;
 
     switch (err_type) {
-      case et_error:
+      case ET_ERROR:
         type = "Error";
         gap  = "  ";
         break;
 
-      case et_warning:
+      case ET_WARNING:
         type = "Warning";
         gap  = "";
         break;
 
-      case et_message:
+      case ET_MESSAGE:
       default:
         type = "Message";
         gap  = "";
@@ -322,6 +322,10 @@ gp_geterror(unsigned int code)
 
   case GPE_IDLOCS_P16E:
     return "IDLOCS directive use solely to the pic18 family.";
+  case GPE_NOF:
+    return "The destination of the storage is not selected (W or F).";
+  case GPE_NOA:
+    return "The access of RAM is not selected (A or B).";
 
   default:
     return "UNKNOWN";
@@ -337,7 +341,7 @@ gperror(unsigned int code, char *message)
     }
 
     /* standard output */
-    err(et_error, code, message);
+    err(ET_ERROR, code, message);
 
     /* list file output */
     lst_line("Error[%03d]  : %s", code, message);
@@ -362,7 +366,7 @@ gpverror(unsigned int code, const char *message, ...)
 
     /* standard output */
     va_start(ap, message);
-    verr(et_error, code, msg, ap);
+    verr(ET_ERROR, code, msg, ap);
     va_end(ap);
 
     /* list file output */
@@ -438,7 +442,7 @@ gpwarning(unsigned int code, char *message)
       }
 
       /* standard output */
-      err(et_warning, code, message);
+      err(ET_WARNING, code, message);
 
       /* list file output */
       lst_line("Warning[%03d]: %s", code, message);
@@ -467,7 +471,7 @@ gpvwarning(unsigned int code, const char *message, ...)
 
       /* standard output */
       va_start(ap, message);
-      verr(et_warning, code, msg, ap);
+      verr(ET_WARNING, code, msg, ap);
       va_end(ap);
 
       va_start(ap, message);
@@ -514,7 +518,7 @@ gp_getmessage(unsigned int code)
   case GPM_SPECIAL_MNEMONIC:
     return "Special Instruction Mnemonic used.";
   case GPM_NOA:
-    return "Using default destination of 0 (Access Bank).";
+    return "Using default access of 0 (Access Bank).";
   case GPM_UNKNOWN:
   default:
     return "UNKNOWN MESSAGE";
@@ -531,7 +535,7 @@ gpmessage(unsigned int code, char *message)
       }
 
       /* standard output */
-      err(et_message, code, message);
+      err(ET_MESSAGE, code, message);
 
       /* list file output */
       lst_line("Message[%03d]: %s", code, message);
@@ -559,7 +563,7 @@ gpvmessage(unsigned int code, const char *message, ...)
       }
       /* standard output */
       va_start(ap, message);
-      verr(et_message, code, msg, ap);
+      verr(ET_MESSAGE, code, msg, ap);
       va_end(ap);
 
       /* list file output */

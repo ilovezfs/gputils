@@ -47,6 +47,9 @@ directives.  This option can force either directive to be ignored.  When "ON"
 is selected the macros are always expanded regardless of the presence of
 NOEXPAND.  Likewise, "OFF" will force macros not to be expanded.
 .TP
+.BR \-f ", " \-\-full-address
+Show full address in .lst file at the memory map region.
+.TP
 .BR \-g ", " \-\-debug-info
 Use debug directives for COFF.
 .TP
@@ -63,6 +66,14 @@ contain INCLUDE directives.  These directives open the specified file and
 then its contents are assembled.  GPASM searches for these files in the local
 directory.  If the file is not located, the default header path is checked.
 Finally, all paths specified using this argument are searched.
+.TP
+.BR \-j ", " \-\-sdcc\-dev16\-list
+Help to the extension of the pic16devices.txt file in the sdcc project.
+Using by itself, displays the all '16e' devices. Along with the '-p'
+option, shows only the specified device.
+.TP
+.BR \-k ", " \-\-error
+Enables creation of the error file.
 .TP
 .BR \-l[12[ce]|14[ce]|16[ce]] ", " \-\-list-chips[=([12[ce]|14[ce]|16[ce]])]
 List supported processors based on various aspects.
@@ -87,7 +98,19 @@ programmers required a DOS formatted file.  This option will cause gpasm to
 generate a DOS formatted hex file.
 .TP
 .BR "\-o FILE", " \-\-output FILE"
-Alternate name of the output file.
+Alternate name of output files. Option effect of:
+.ti +0
+\-\- If the "\-c" option included in the command line:
+.ti +3
+FILE.o, FILE.lst, FILE.err
+.ti +3
+(The "FILE.o" should specified.)
+.ti +0
+\-\- If the "\-c" option not included in the command line:
+.ti +3
+FILE.hex, FILE.cod, FILE.lst, FILE.err
+.ti +3
+(The "FILE.hex" should specified.)
 .TP
 .BR "\-p PROC", " \-\-processor PROC"
 Select the processor.
@@ -99,7 +122,28 @@ Write preprocessed asm file to FILE.
 Suppress anything sent to standard output.
 .TP
 .BR "\-r RADIX", " \-\-radix RADIX"
-The supported radices are BIN, DEC, OCT, and HEX.  The default is HEX.
+The supported radices are BIN, DEC, OCT, and HEX. The default is HEX.
+.TP
+.BR "\-s[12[ce]|14[ce]|16[ce]]", " \-\-list\-processor\-properties[=([12[ce]|14[ce]|16[ce]])]"
+Lists properties of the processors. Using by itself, displays the all
+devices or group of the devices. Along with the '-p' option, shows
+only the specified device.
+.TP
+.BR "\-S [0|1|2]", " \-\-strict [0|1|2]"
+Set the strict level of the recommended instruction-parameters
+(W or F and A or B). The "strict messages" have higher priority
+than the warnings. (See: \-w [0|1|2]) [0]
+.ti +4
+0: Is the default. No strict messages.
+.ti +4
+1: Show warning messages if one of is missing.
+.ti +4
+2: Show error messages if one of is missing.
+.TP
+.BR \-t ", " \-\-sdcc\-dev14\-list
+Help to the extension of the pic14devices.txt file in the sdcc project.
+Using by itself, displays the all '14' and '14e' devices. Along with
+the '-p' option, shows only the specified device.
 .TP
 .BR \-u ", "\-\-absolute
 Use absolute paths.
@@ -108,9 +152,13 @@ Use absolute paths.
 Show the version information and exit.
 .TP
 .BR "\-w [0|1|2]", " \-\-warning [0|1|2]"
-This option sets the message level. "0" is the default.  It will allow all 
-messages, warnings, and errors to be reported.  "1" will suppress the messages.
-"2" will suppress the messages and warnings.
+This option sets the message level.
+.ti +4
+0: Is the default. It will allow all messages, warnings and errors to be reported.
+.ti +4
+1: Will suppress the messages.
+.ti +4
+2: Will suppress the messages and warnings.
 .TP
 .BR \-y ", "\-\-extended
 Enable 18xx extended mode.

@@ -4854,6 +4854,7 @@ do_insn(const char *name, struct pnode *parms)
         /* PIC16E (clrf, cpfseq, cpfsgt, cpfslt, movwf, mulwf, negf, setf, tstfsz) */
         {
           int a = 0; /* Default destination of 0 (access). */
+          gp_boolean isAccess = false;
           struct pnode *par; /* second parameter */
 
           if (arity == 0) {
@@ -4902,7 +4903,8 @@ do_insn(const char *name, struct pnode *parms)
            * is set on the basis of the target address. Declaring the
            * Access RAM bit in this mode will also generate an error
            * in the MPASM Assembler.": */
-          a = ((state.extended_pic16e != true) && (file >= state.device.bsr_boundary) && (file < (0xf00 + state.device.bsr_boundary))) ? 1 : 0;
+          isAccess = ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) ? true : false;
+          a = ((state.extended_pic16e != true) && (!isAccess)) ? 1 : 0;
 
           switch (arity) {
           case 2:
@@ -4922,7 +4924,19 @@ do_insn(const char *name, struct pnode *parms)
 
           case 1:
             /* use default a */
-            gpvmessage(GPM_NOA, NULL);
+            if ((!state.mpasm_compatible) && (state.strict_level > 0)) {
+              if (isAccess) {
+                if (state.strict_level == 2) {
+                  gpverror(GPE_NOA, NULL);
+                }
+                else {
+                  gpvmessage(GPM_NOA, NULL);
+                }
+              }
+              else {
+                gpvmessage(GPM_BANK, NULL);
+              }
+            }
             break;
 
           default:
@@ -4938,6 +4952,7 @@ do_insn(const char *name, struct pnode *parms)
         {
           struct pnode *f, *b, *par;
           int bit, a = 0;
+          gp_boolean isAccess = false;
 
           if ((arity != 2) && (arity != 3)) {
             enforce_arity(arity, 3);
@@ -4996,13 +5011,30 @@ do_insn(const char *name, struct pnode *parms)
              * is set on the basis of the target address. Declaring the
              * Access RAM bit in this mode will also generate an error
              * in the MPASM Assembler.": */
-            a = ((state.extended_pic16e != true) && (file >= state.device.bsr_boundary) && (file < (0xf00 + state.device.bsr_boundary))) ? 1 : 0;
+            isAccess = ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) ? true : false;
+            a = ((state.extended_pic16e != true) && (!isAccess)) ? 1 : 0;
+
+            if ((!state.mpasm_compatible) && (state.strict_level > 0)) {
+              if (isAccess) {
+                if (state.strict_level == 2) {
+                  gpverror(GPE_NOA, NULL);
+                }
+                else {
+                  gpvmessage(GPM_NOA, NULL);
+                }
+              }
+              else {
+                gpvmessage(GPM_BANK, NULL);
+              }
+            }
           }
 
           /* add relocation for the access bit, if necessary */
           if (arity < 3) {
             reloc_evaluate(f, RELOCT_ACCESS);
           }
+
+          file_ok(file);
 
           b = HEAD(TAIL(parms));
           bit = maybe_evaluate(b);
@@ -5013,8 +5045,6 @@ do_insn(const char *name, struct pnode *parms)
           else if (bit > 7) {
             gpvwarning(GPW_RANGE, "Bit{%i} > 7.", bit);
           }
-
-          file_ok(file);
 
           if ((icode == ICODE_BTFSC) || (icode == ICODE_BTFSS)) {
             is_btfsx = true;
@@ -5031,6 +5061,9 @@ do_insn(const char *name, struct pnode *parms)
         {
           int d = 1; /* Default destination of 1 (file). */
           int a = 0;
+          gp_boolean isAccess = false;
+          gp_boolean thereIsA = false;
+          gp_boolean thereIsD = false;
           struct pnode *par; /* second parameter */
 
           if (arity == 0) {
@@ -5079,7 +5112,8 @@ do_insn(const char *name, struct pnode *parms)
            * is set on the basis of the target address. Declaring the
            * Access RAM bit in this mode will also generate an error
            * in the MPASM Assembler.": */
-          a = ((state.extended_pic16e != true) && (file >= state.device.bsr_boundary) && (file < (0xf00 + state.device.bsr_boundary))) ? 1 : 0;
+          isAccess = ((file < state.device.bsr_boundary) || (file >= (0xf00 + state.device.bsr_boundary))) ? true : false;
+          a = ((state.extended_pic16e != true) && (!isAccess)) ? 1 : 0;
 
           switch (arity) {
           case 3:
@@ -5096,6 +5130,9 @@ do_insn(const char *name, struct pnode *parms)
             else {
               a = check_flag(maybe_evaluate(par));
             }
+
+            thereIsA = true;
+
             /* fall through */
           case 2:
             par = HEAD(TAIL(parms));
@@ -5109,16 +5146,43 @@ do_insn(const char *name, struct pnode *parms)
             else {
               d = check_flag(maybe_evaluate(par));
             }
+
+            thereIsD = true;
             break;
 
           case 1:
             /* use default a and d */
-            gpvmessage(GPM_NOF, NULL);
             break;
 
           default:
             enforce_arity(arity, 3);
           }
+
+          if ((!state.mpasm_compatible) && (state.strict_level > 0)) {
+            if (!thereIsD) {
+              if (state.strict_level == 2) {
+                gpverror(GPE_NOF, NULL);
+              }
+              else {
+                gpvmessage(GPM_NOF, NULL);
+              }
+            }
+
+            if (!thereIsA) {
+              if (isAccess) {
+                if (state.strict_level == 2) {
+                  gpverror(GPE_NOA, NULL);
+                }
+                else {
+                  gpvmessage(GPM_NOA, NULL);
+                }
+              }
+              else {
+                gpvmessage(GPM_BANK, NULL);
+              }
+            }
+          }
+
           emit(i->opcode | (d << 9) | (a << 8) | (file & PIC16_BMSK_FILE), s->name);
         }
         break;

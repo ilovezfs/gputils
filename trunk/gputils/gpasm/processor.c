@@ -133,6 +133,7 @@ void select_processor(const char *name)
           addr = gp_processor_bsr_boundary(found);
 
           if (addr > 0) {
+            set_global("__ACC_RAM_LOW_START",      0, PERMANENT, GVT_CONSTANT);
             set_global("__ACC_RAM_LOW_END", addr - 1, PERMANENT, GVT_CONSTANT);
           }
         } /* if (!state.mpasm_compatible) */

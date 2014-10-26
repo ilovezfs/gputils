@@ -376,18 +376,45 @@ select_errorlevel(int level)
   if (state.cmd_line.error_level) {
     gpvmessage(GPM_SUPVAL, NULL);
   } else {
-    if (level == 0) {
-      state.error_level = 0;
-    } else if (level == 1) {
-      state.error_level = 1;
-    } else if (level == 2) {
-      state.error_level = 2;
+    if ((level >= 0) && (level <= 2)) {
+      if (state.cmd_line.strict_level && (state.strict_level > 0)) {
+        /*
+        The "strict messages" more important than the other messages, therefore
+        enable each messages.
+        */
+        state.error_level = 0;
+      }
+      else {
+        state.error_level = level;
+      }
     } else {
       if (state.pass == 0) {
-        fprintf(stderr,
-                "Error: invalid warning level \"%i\"\n", level);
+        fprintf(stderr, "Error: Invalid warning level \"%i\".\n", level);
       } else {
         gperror(GPE_ILLEGAL_ARGU, "Expected w= 0, 1, 2");
+      }
+    }
+  }
+}
+
+void
+select_strictlevel(int level)
+{
+  if (state.cmd_line.strict_level) {
+    gpvmessage(GPM_SUPVAL, NULL);
+  } else {
+    if ((level >= 0) && (level <= 2)) {
+      state.strict_level = level;
+
+      if ((level > 0) && state.cmd_line.error_level) {
+        /* Enable each messages. */
+        state.error_level = 0;
+      }
+    } else {
+      if (state.pass == 0) {
+        fprintf(stderr, "Error: Invalid strict level \"%i\".\n", level);
+      } else {
+        gperror(GPE_ILLEGAL_ARGU, "Expected S= 0, 1, 2");
       }
     }
   }
@@ -407,7 +434,7 @@ select_expand(const char *expand)
       state.lst.expand = true;
 
       if (state.pass == 0) {
-        fprintf(stderr, "Error: invalid option \"%s\"\n", expand);
+        fprintf(stderr, "Error: Invalid option \"%s\".\n", expand);
       } else {
         gperror(GPE_ILLEGAL_ARGU, "Expected ON or OFF.");
       }
@@ -433,7 +460,7 @@ select_hexformat(const char *format_name)
       state.hex_format = INHX8M;
 
       if (state.pass == 0) {
-        fprintf(stderr, "Error: invalid format \"%s\"\n", format_name);
+        fprintf(stderr, "Error: Invalid format \"%s\".\n", format_name);
       } else {
         gperror(GPE_ILLEGAL_ARGU, "Expected inhx8m, inhx8s, inhx16, or inhx32.");
       }
@@ -463,7 +490,7 @@ select_radix(const char *radix_name)
       state.radix = 16;
 
       if (state.pass == 0) {
-        fprintf(stderr, "invalid radix \"%s\", will use hex.\n", radix_name);
+        fprintf(stderr, "Error: Invalid radix \"%s\", will use hex.\n", radix_name);
       } else {
         gpvwarning(GPW_RADIX, NULL);
       }
