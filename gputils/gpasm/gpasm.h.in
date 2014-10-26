@@ -106,8 +106,9 @@ extern struct gpasm_state {
   gp_boolean show_full_addr;
   gp_boolean quiet;
   gp_boolean use_absolute_path;
-  int error_level;                  /* 0, 1, 2 */
   gp_boolean debug_info;            /* use debug directives for coff outputs */
+  int error_level;                  /* 0, 1, 2 */
+  int strict_level;                 /* 0, 1 */
   int path_num;                     /* number of paths in the list */
   char *paths[MAX_PATHS];           /* the list of include paths */
 
@@ -115,6 +116,7 @@ extern struct gpasm_state {
     gp_boolean radix;               /* value is specified by the command line */
     gp_boolean hex_format;
     gp_boolean error_level;
+    gp_boolean strict_level;
     gp_boolean macro_expand;
     gp_boolean processor;
     gp_boolean lst_force;
@@ -391,6 +393,7 @@ void set_global(const char *name,
                 enum gpasmValTypes type);
 void purge_temp_symbols(struct symbol_table *table);
 void select_errorlevel(int level);
+void select_strictlevel(int level);
 void select_expand(const char *expand);
 void select_hexformat(const char *format_name);
 void select_radix(const char *name);

@@ -111,7 +111,9 @@ enum GPE_codes {
   GPE_PARSER           = 1102,  /* Parser error */
   GPE_SCANNER          = 1103,  /* Scanner error */
 
-  GPE_IDLOCS_P16E      = 1501   /* IDLOCS directive use solely to the PIC16E family. */
+  GPE_IDLOCS_P16E      = 1501,  /* IDLOCS directive use solely to the PIC16E family. */
+  GPE_NOF              = 1502,  /* The destination of the storage is not selected. */
+  GPE_NOA              = 1503   /* The access of RAM is not selected. */
 };
 
 /* Warning codes
