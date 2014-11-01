@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Oct 26, 2014
+Nov 01, 2014
 \end_layout
 
 \begin_layout Standard
@@ -4391,14 +4391,34 @@ Configuration
 \end_layout
 
 \begin_layout Standard
-You can choose the fuse settings for your PIC implementation using the __CONFIG,
- __FUSES and CONFIG (PIC18 MCUs) directive, so that the hex file set the
- fuses explicitly.
+You can choose the fuse settings, also known as Configuration Bits, for
+ your PIC implementation using the __CONFIG, __FUSES (alias for __CONFIG)
+ and CONFIG directive, so that the hex file set the fuses explicitly.
  Naturally you should make sure that these settings match your PIC hardware
  design.
- CONFIG and __CONFIG directives cannot both be used in the same project.
+ CONFIG and __CONFIG (or__FUSES) directives cannot both be used in the same
+ project.
  __CONFIG and __FUSES directives are deprecated for 16-bit PIC MCU devices
- (PIC18FXXX), CONFIG directive should be used instead.
+ (PIC18FXXX), CONFIG directive should be used instead if in the command
+ line is included the "--mpasm-compatible" option.
+ Otherwise in the 
+\begin_inset Quotes eld
+\end_inset
+
+gpasm
+\begin_inset Quotes erd
+\end_inset
+
+ mode (if in the command line is 
+\emph on
+not
+\emph default
+ included the "--mpasm-compatible" option) these directives are deprecated
+ for 
+\emph on
+all
+\emph default
+ PIC MCU devices.
 \end_layout
 
 \begin_layout Standard
@@ -4906,7 +4926,29 @@ See also: CONFIG, __FUSES
 \end_inset
 
 NOTE: __CONFIG and __FUSES directives are deprecated for 16-bit PIC MCU
- devices (PIC18FXXX), CONFIG directive should be used instead.
+ devices (PIC18FXXX), CONFIG directive should be used instead if in the
+ command line is included the "--mpasm-compatible" option.
+\end_layout
+
+\begin_layout Standard
+Otherwise in the 
+\begin_inset Quotes eld
+\end_inset
+
+gpasm
+\begin_inset Quotes erd
+\end_inset
+
+ mode (if in the command line is 
+\emph on
+not
+\emph default
+ included the "--mpasm-compatible" option) these directives are deprecated
+ for 
+\emph on
+all
+\emph default
+ PIC MCU devices.
 \end_layout
 
 \begin_layout Subsection*
@@ -4967,7 +5009,29 @@ See also: CONFIG
 \end_inset
 
 NOTE: __CONFIG and __FUSES directives are deprecated for 16-bit PIC MCU
- devices (PIC18FXXX), CONFIG directive should be used instead.
+ devices (PIC18FXXX), CONFIG directive should be used instead if in the
+ command line is included the "--mpasm-compatible" option.
+\end_layout
+
+\begin_layout Standard
+Otherwise in the 
+\begin_inset Quotes eld
+\end_inset
+
+gpasm
+\begin_inset Quotes erd
+\end_inset
+
+ mode (if in the command line is 
+\emph on
+not
+\emph default
+ included the "--mpasm-compatible" option) these directives are deprecated
+ for 
+\emph on
+all
+\emph default
+ PIC MCU devices.
 \end_layout
 
 \begin_layout Subsection*
@@ -5215,10 +5279,10 @@ CONFIG <expression>[, <expression>]*
 \begin_layout Standard
 Sets configuration fuses only on 16-bit PIC MCU devices (PIC18FXXX) if the
  command line is included the "--mpasm-compatible" option.
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout Standard
-In 
+In the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -5226,7 +5290,7 @@ gpasm
 \begin_inset Quotes erd
 \end_inset
 
- mode (if the command line is 
+ mode (if in the command line is 
 \emph on
 not
 \emph default

@@ -1,11 +1,17 @@
 2014-11-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx:
+    Applied the patch: #64 "Update Fuses section on documentation"
+    Thanks to Diego Herranz.
+
+2014-11-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gplink/testsuite/test,
     gplink/testsuite/gplink.project/asmfiles/dead_code1.asm,
     gplink/testsuite/gplink.project/asmfiles/dead_code2.asm,
     gplink/testsuite/gplink.project/hexfiles/dead_code.hex,
     gplink/testsuite/gplink.project/lkrfiles/dead_code.lkr,
     libgputils/gpcoffopt.c:
-    Fixed bug: #275 "gplink -O2 almost useless"
+    Fixed the bug: #275 "gplink -O2 almost useless"
+    Thanks to Daniel Anderberg.
 
   * gplink/map.c, gputils/gpdasm.c, libgputils/gpcofflink.c,
     libgputils/gpdis.c:
