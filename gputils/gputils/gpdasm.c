@@ -62,7 +62,7 @@ select_processor(void)
   pic_processor_t found = NULL;
 
   if (processor_name == NULL) {
-    fprintf(stderr, "error: Must select the processor.\n");
+    fprintf(stderr, "Error: Must select the processor.\n");
     exit(1);
   }
 
@@ -71,7 +71,7 @@ select_processor(void)
   if (found != NULL) {
     state.processor = found;
   } else {
-    fprintf(stderr, "error: Didn't find any processor named: %s\n", processor_name);
+    fprintf(stderr, "Error: Didn't find any processor named: %s\n", processor_name);
     printf("Here are the supported processors:\n");
     gp_dump_processor_list(true, NULL, NULL);
     exit(1);
@@ -80,7 +80,7 @@ select_processor(void)
   state.class = gp_processor_class(state.processor);
 
   if (state.class->instructions == NULL) {
-    fprintf(stderr, "error: Unsupported processor class.\n");
+    fprintf(stderr, "Error: Unsupported processor class.\n");
     exit(1);
   }
 
@@ -251,7 +251,7 @@ recognize_labels_and_spec_words(MemBlock *memory)
   if (state.show_config) {
     dev = gp_cfg_find_pic_multi_name(state.processor->names, ARRAY_SIZE(state.processor->names));
     if (dev == NULL) {
-      fprintf(stderr, "warning: The %s processor has no entries in the config db.",
+      fprintf(stderr, "Warning: The %s processor has no entries in the config db.",
               state.processor->names[2]);
     }
   }
@@ -335,7 +335,7 @@ recognize_labels_and_spec_words(MemBlock *memory)
             }
           }
           else {
-            fprintf(stderr, "warning: The value of GP_CFG_ADDR_PACK_MAX too little: %u",
+            fprintf(stderr, "Warning: The value of GP_CFG_ADDR_PACK_MAX too little: %u",
                     GP_CFG_ADDR_PACK_MAX);
           }
         } /* if (dev != NULL) */
@@ -1395,7 +1395,7 @@ int main(int argc, char *argv[])
                                           0, pair[1] - pair[0]);
       }
       else {
-        fprintf(stderr, "error: The processor does not have EEPROM.\n");
+        fprintf(stderr, "Error: The processor does not have EEPROM.\n");
         exit(1);
       }
     }

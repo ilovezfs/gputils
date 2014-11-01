@@ -195,7 +195,7 @@ gp_cofflink_clean_table(gp_object_type *object, struct symbol_table *symbols)
   struct symbol   *sym;
   gp_symbol_type  *previous = NULL;
 
-  gp_debug("cleaning symbol table");
+  gp_debug("Cleaning symbol table.");
 
   /* point all relocations to the symbol definitions */
   while (section != NULL) {
@@ -323,7 +323,7 @@ gp_cofflink_make_stack(gp_object_type *object, int num_bytes)
   new->flags = STYP_BSS;
   new->size = num_bytes;
 
-  gp_debug("allocating stack memory of size %#x", num_bytes);
+  gp_debug("Allocating stack memory of size %#x (%i).", num_bytes, num_bytes);
 
   /* mark the memory locations as used */
   for (i = 0; i < num_bytes; i++) {
@@ -783,8 +783,8 @@ _set_used(gp_object_type *object, MemBlock *m, int org_to_byte_shift, unsigned i
   const char *old_section_name;
   const char *old_symbol_name;
 
-  gp_debug("      marking %#x words from %#x to %#x as used",
-           size,
+  gp_debug("      marking %#x (%u) words from %#x to %#x as used",
+           size, size,
            gp_byte_to_org(org_to_byte_shift, address),
            gp_byte_to_org(org_to_byte_shift, address + size - 1));
 
@@ -886,7 +886,7 @@ gp_cofflink_find_big_section(gp_section_type *section,
    that is larger than the requested size.  Return the address of that
    block */
 
-static int
+static gp_boolean
 _search_memory(MemBlock *m,
                int org_to_byte_shift,
                unsigned int start,
@@ -898,40 +898,42 @@ _search_memory(MemBlock *m,
   unsigned int address;
   unsigned int current_address = 0;
   unsigned int current_size = 0;
-  int mem_used;
-  int in_block = 0;
-  int end_block = 0;
-  int success = 0;
+  gp_boolean mem_used;
+  gp_boolean in_block = false;
+  gp_boolean end_block = false;
+  gp_boolean success = false;
 
   /* set the size to max value */
   *block_size = 0xffffffff;
 
   for (address = start; address <= stop; address++) {
     unsigned char b;
+
     mem_used = b_memory_get(m, address, &b, NULL, NULL);
+
     if (address == stop) {
-      if (in_block == 1) {
+      if (in_block) {
         /* end of the section definition */
-        end_block = 1;
+        end_block = true;
         /* increment for last address */
         current_size++;
       }
       else if (start == stop) {
         /* special case, one word section */
         if (!mem_used) {
-          end_block = 1;
+          end_block = true;
           current_address = start;
           current_size = 1;
         }
       }
-      in_block = 0;
+      in_block = false;
     }
     else if (mem_used) {
-      if (in_block == 1) {
+      if (in_block) {
         /* end of an unused block of memory */
-        end_block = 1;
+        end_block = true;
       }
-      in_block = 0;
+      in_block = false;
     }
     else {
       if (in_block == 0) {
@@ -944,10 +946,10 @@ _search_memory(MemBlock *m,
         /* continuation of an unused block of memory */
         current_size++;
       }
-      in_block = 1;
+      in_block = true;
     }
 
-    if (end_block == 1) {
+    if (end_block) {
       gp_debug("    end unused block at %#x with size %#x",
                gp_byte_to_org(org_to_byte_shift, address),
                gp_byte_to_org(org_to_byte_shift, current_size));
@@ -955,16 +957,16 @@ _search_memory(MemBlock *m,
         if (stop_at_first) {
           *block_size = current_size;
           *block_address = current_address;
-          success = 1;
+          success = true;
           break;
         }
         else if (current_size < *block_size) {
           *block_size = current_size;
           *block_address = current_address;
-          success = 1;
+          success = true;
         }
       }
-      end_block = 0;
+      end_block = false;
     }
   }
 
@@ -989,7 +991,7 @@ _move_data(MemBlock *m,
     return;
   }
 
-  gp_debug("    moving %#x bytes from %#x to %#x", size, address, new_address);
+  gp_debug("    moving %#x (%u) bytes from %#x to %#x", size, size, address, new_address);
 
   for (org = address + size - 1; org >= 0; org--) {
     b_memory_assert_get(m, org, &data, &section_name, &symbol_name);
@@ -1118,7 +1120,7 @@ gp_cofflink_reloc_cinit(gp_object_type *object,
 
   size = cinit_section->size;
 
-  gp_debug("  relocating cinit code");
+  gp_debug("  Relocating cinit code.");
 
   success = 0;
   type_avail = 0;
@@ -1136,7 +1138,7 @@ gp_cofflink_reloc_cinit(gp_object_type *object,
       if ((section_def->type == SECT_CODEPAGE) && !section_def->protected) {
         gp_debug("  section = %s", cinit_section->name);
         gp_debug("    name = %s", sym->name);
-        gp_debug("    size = %#x", cinit_section->size);
+        gp_debug("    size = %#lx (%lu)", cinit_section->size, cinit_section->size);
         gp_debug("    def start = %#x", section_def->start);
         gp_debug("    def end = %#x", section_def->end);
 
@@ -1267,7 +1269,7 @@ next_pass:
         if ((section_def->type == type) && (!section_def->protected)) {
           gp_debug("  section = %s", current->name);
           gp_debug("    name = %s", sym->name);
-          gp_debug("    size = %#lx", current->size);
+          gp_debug("    size = %#lx (%lu)", current->size, current->size);
           gp_debug("    def start = %#x", section_def->start);
           gp_debug("    def end = %#x", section_def->end);
 
@@ -1342,7 +1344,7 @@ gp_cofflink_update_table(gp_object_type *object, int org_to_byte_shift)
   gp_symbol_type *symbol = object->symbols;
   gp_section_type *section = object->sections;
 
-  gp_debug("updating symbols with their new relocated values");
+  gp_debug("Updating symbols with their new relocated values.");
 
   while (symbol != NULL) {
     if (symbol->section_number > 0) {
@@ -1361,7 +1363,7 @@ gp_cofflink_update_table(gp_object_type *object, int org_to_byte_shift)
     symbol = symbol->next;
   }
 
-  gp_debug("stripping section relocated flag");
+  gp_debug("Stripping section relocated flag.");
 
   while (section != NULL) {
     section->flags &= ~(STYP_RELOC);
@@ -1388,7 +1390,7 @@ gp_cofflink_fill_pages(gp_object_type *object,
   int org;
   int end;
 
-  gp_debug("adding fill sections");
+  gp_debug("Adding fill sections.");
 
   /* search for any section definitions that have a fill */
   for (i = 0; i < HASH_SIZE; i++) {
@@ -1725,7 +1727,7 @@ gp_cofflink_make_memory(gp_object_type *object)
       org = section->address;
 
       stop = org + section->size;
-      gp_debug("   make memory: section \"%s\" (0x%06X - 0x%06X)\n", section->name, org, stop - 1);
+      gp_debug("   make memory: section \"%s\" (0x%06X - 0x%06X)", section->name, org, stop - 1);
 
       for ( ; org < stop; org++) {
         unsigned char b;
