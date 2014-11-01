@@ -29,7 +29,7 @@ gp_coffopt_remove_weak(gp_object_type *object)
 {
   gp_symbol_type *symbol;
 
-  gp_debug("removing weak symbols from %s", object->filename);
+  gp_debug("Removing weak symbols from \"%s\".", object->filename);
 
   /* Search the symbol table for extern symbols. */
   symbol = object->symbols;
@@ -53,9 +53,10 @@ gp_coffopt_remove_dead_sections(gp_object_type *object, int pass)
 {
   gp_section_type *section;
   gp_reloc_type *relocation;
+  gp_section_type *rel_sect;
   gp_boolean section_removed = false;
 
-  gp_debug("removing dead sections pass %i", pass);
+  gp_debug("Removing dead sections pass %i.", pass);
 
   section = object->sections;
   while (section != NULL) {
@@ -67,13 +68,17 @@ gp_coffopt_remove_dead_sections(gp_object_type *object, int pass)
   section = object->sections;
   while (section != NULL) {
     /* Mark all sections that relocations point to as used. */
+/*    gp_debug("  section_name: %s", section->name);*/
     relocation = section->relocations;
     while (relocation != NULL) {
-      if (relocation->symbol->section != NULL) {
-        relocation->symbol->section->is_used = true;
+      if ((rel_sect = relocation->symbol->section) != NULL) {
+        if (rel_sect != section) {
+/*          gp_debug("    reloc_section_name: %s", rel_sect->name);*/
+          rel_sect->is_used = true;
+        }
       }
       else {
-        gp_warning("relocation symbol %s has no section", relocation->symbol->name);
+        gp_warning("Relocation symbol %s has no section.", relocation->symbol->name);
       }
       relocation = relocation->next;
     }
@@ -84,7 +89,7 @@ gp_coffopt_remove_dead_sections(gp_object_type *object, int pass)
   while (section != NULL) {
     /* FIXME: Maybe don't remove if it is in protected memory. */
     if ((!section->is_used) && !(section->flags & STYP_ABS)) {
-      gp_debug("removing section %s", section->name);
+      gp_debug("Removing section \"%s\".", section->name);
       gp_coffgen_delsectionsyms(object, section);
       gp_coffgen_delsection(object, section);
       section_removed = true;

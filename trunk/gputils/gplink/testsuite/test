@@ -94,7 +94,7 @@ printversion()
   return 0
 }
 
-printheader ()
+printheader()
 {
   printversion
   echo "NAME:      $NAME"
@@ -109,7 +109,7 @@ printheader ()
 
 # gplink test functions
 
-test_gplink_compile ()
+test_gplink_compile()
 {
   for x in *.asm
     do
@@ -198,8 +198,13 @@ test_gplink_sub()
         # a hex file exists so these files must not have errors
         tested=$((tested+1))
         echo "linking $basefilename.o"
-        echo "$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
-        $GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I $LKR -s $basefilename.lkr
+        if [ $basefilename == "dead_code" ]; then
+          echo "$GPLINKBIN -O2 -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
+          $GPLINKBIN -O2 -o $basefilename.hex $GPLINKFLAGS -I $LKR -s $basefilename.lkr
+        else
+          echo "$GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I ../../$LKR $basefilename.lkr"
+          $GPLINKBIN -o $basefilename.hex $GPLINKFLAGS -I $LKR -s $basefilename.lkr
+        fi
         if test -e $basefilename.hex; then
           compiled=$((compiled+1))
           diff -s -u ../hexfiles/$basefilename.hex $basefilename.hex
