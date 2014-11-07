@@ -1,3 +1,12 @@
+2014-11-07  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gplink/gplink.c, gplink/lst.c, gplink/map.c, gputils/gplib.c,
+    gputils/gplib.h:
+    Changed text format.
+
+  * doc/gputils.lyx, gputils/gpdasm.c, gputils/gpdasm.h.in,
+    man/gpdasm.1.in: New gpdasm option: -t, --use-tab
+      Uses tabulator character in the written text.
+
 2014-11-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx:
     Applied the patch: #64 "Update Fuses section on documentation"

@@ -3,17 +3,17 @@
    Craig Franklin
 
 This file is part of gputils.
- 
+
 gputils is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
- 
+
 gputils is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
@@ -25,7 +25,7 @@ Boston, MA 02111-1307, USA.  */
 #include "gplib.h"
 
 struct gplib_state state = {
-  ar_null,            /* default mode, do nothing */              
+  AR_NULL,            /* default mode, do nothing */
   0,                  /* number of objects */
 };
 
@@ -34,7 +34,7 @@ struct symbol_table *symbol_index = NULL;
 
 void select_mode(enum lib_modes mode)
 {
-  if (state.mode == ar_null) { 
+  if (state.mode == AR_NULL) {
     state.mode = mode;
   } else {
     gp_error("multiple library operations selected");
@@ -50,7 +50,7 @@ object_name(char *file_name)
 
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
   for (name = file_name + strlen(file_name) - 1; name >= file_name; --name) {
-    if (*name == UNIX_PATH_CHAR || *name == PATH_CHAR) {
+    if ((*name == UNIX_PATH_CHAR) || (*name == PATH_CHAR)) {
       return ++name;
     }
   }
@@ -103,20 +103,19 @@ void show_usage(void)
 
 #define GET_OPTIONS "?cdhnqrstvx"
 
-  static struct option longopts[] =
-  {
-    { "create",      0, 0, 'c' },
-    { "delete",      0, 0, 'd' },
-    { "extract",     0, 0, 'x' },
-    { "help",        0, 0, 'h' },
-    { "no-index",    0, 0, 'n' },
-    { "quiet",       0, 0, 'q' },
-    { "replace",     0, 0, 'r' },
-    { "symbols",     0, 0, 's' },
-    { "list",        0, 0, 't' },
-    { "version",     0, 0, 'v' },
-    { 0, 0, 0, 0 }
-  };
+static struct option longopts[] = {
+  { "create",   no_argument, NULL, 'c' },
+  { "delete",   no_argument, NULL, 'd' },
+  { "extract",  no_argument, NULL, 'x' },
+  { "help",     no_argument, NULL, 'h' },
+  { "no-index", no_argument, NULL, 'n' },
+  { "quiet",    no_argument, NULL, 'q' },
+  { "replace",  no_argument, NULL, 'r' },
+  { "symbols",  no_argument, NULL, 's' },
+  { "list",     no_argument, NULL, 't' },
+  { "version",  no_argument, NULL, 'v' },
+  { NULL,       0,           NULL,  0  }
+};
 
 #define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
 
@@ -143,10 +142,10 @@ int main(int argc, char *argv[])
       usage = true;
       break;
     case 'c':
-      select_mode(ar_create);
+      select_mode(AR_CREATE);
       break;
     case 'd':
-      select_mode(ar_delete);
+      select_mode(AR_DELETE);
       break;
     case 'n':
       no_index = true;
@@ -155,20 +154,20 @@ int main(int argc, char *argv[])
       gp_quiet = true;
       break;
     case 'r':
-      select_mode(ar_replace);
+      select_mode(AR_REPLACE);
       break;
     case 's':
-      select_mode(ar_symbols);
+      select_mode(AR_SYMBOLS);
       break;
     case 't':
-      select_mode(ar_list);
+      select_mode(AR_LIST);
       break;
     case 'v':
       fprintf(stderr, "%s\n", GPLIB_VERSION_STRING);
       exit(0);
       break;
     case 'x':
-      select_mode(ar_extract);
+      select_mode(AR_EXTRACT);
       break;
     }
     if (usage)
@@ -192,13 +191,13 @@ int main(int argc, char *argv[])
   }
 
   /* User did not select an operation */
-  if (state.mode == ar_null) {
+  if (state.mode == AR_NULL) {
     usage = true;
   }
 
   /* User did not provide object names */
-  if ((state.mode != ar_list) && 
-      (state.mode != ar_symbols) && 
+  if ((state.mode != AR_LIST) &&
+      (state.mode != AR_SYMBOLS) &&
       (state.numobjects == 0)) {
     usage = true;
   }
@@ -208,7 +207,7 @@ int main(int argc, char *argv[])
   }
 
   /* if we are not creating a new archive, we have to read an existing one */
-  if (state.mode != ar_create) {
+  if (state.mode != AR_CREATE) {
     if (gp_identify_coff_file(state.filename) != archive_file) {
       gp_error("\"%s\" is not a valid archive file", state.filename);
       exit(1);
@@ -216,19 +215,19 @@ int main(int argc, char *argv[])
       state.archive = gp_archive_read(state.filename);
     }
   }
-    
+
   /* process the option */
   i = 0;
   switch (state.mode) {
-  case ar_create: 
-  case ar_replace:
+  case AR_CREATE:
+  case AR_REPLACE:
     while (i < state.numobjects) {
       if ((gp_identify_coff_file(state.objectname[i]) != object_file_v2) &&
           (gp_identify_coff_file(state.objectname[i]) != object_file)) {
         gp_error("\"%s\" is not a valid object file", state.objectname[i]);
         break;
       } else {
-        state.archive = gp_archive_add_member(state.archive, 
+        state.archive = gp_archive_add_member(state.archive,
                                               state.objectname[i],
                                               object_name(state.objectname[i]));
       }
@@ -237,7 +236,7 @@ int main(int argc, char *argv[])
     update_archive = true;
     break;
 
-  case ar_delete: 
+  case AR_DELETE:
     while (i < state.numobjects) {
       if (has_path(state.objectname[i])) {
         gp_error("invalid object name \"%s\"", state.objectname[i]);
@@ -248,7 +247,7 @@ int main(int argc, char *argv[])
         gp_error("object \"%s\" not found", state.objectname[i]);
         break;
       } else {
-        state.archive = gp_archive_delete_member(state.archive, 
+        state.archive = gp_archive_delete_member(state.archive,
                                                  state.objectname[i]);
       }
       i++;
@@ -256,7 +255,7 @@ int main(int argc, char *argv[])
     update_archive = true;
     break;
 
-  case ar_extract:
+  case AR_EXTRACT:
     while (i < state.numobjects) {
       if (has_path(state.objectname[i])) {
         gp_error("invalid object name \"%s\"", state.objectname[i]);
@@ -273,14 +272,14 @@ int main(int argc, char *argv[])
         }
       }
       i++;
-    } 
+    }
     break;
 
-  case ar_list:
+  case AR_LIST:
     gp_archive_list_members(state.archive);
     break;
 
-  case ar_symbols:
+  case AR_SYMBOLS:
     if (gp_archive_have_index(state.archive) == 0) {
       gp_error("this archive has no symbol index");
     } else {
@@ -289,7 +288,7 @@ int main(int argc, char *argv[])
     }
     break;
 
-  case ar_null:
+  case AR_NULL:
   default:
     assert(0);
   }
@@ -302,7 +301,7 @@ int main(int argc, char *argv[])
   /* check for duplicate symbols */
   gp_archive_make_index(state.archive, definition_tbl);
 
-  /* add the symbol index to the archive */      
+  /* add the symbol index to the archive */
   if (update_archive && (!no_index)) {
     state.archive = gp_archive_add_index(definition_tbl, state.archive);
   }

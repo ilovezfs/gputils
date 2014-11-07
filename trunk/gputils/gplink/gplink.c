@@ -678,13 +678,13 @@ process_args( int argc, char *argv[])
   }
 
   /* check if the first file is the linker script */
-  if (argv[optind]) {
+  if (argv[optind] != NULL) {
     pc = strrchr(argv[optind], '.');
 
     if ((pc != NULL) && (strcasecmp(pc, ".lkr") == 0)) {
       struct srcfns *fn;
 
-      fn = malloc(sizeof (struct srcfns));
+      fn = malloc(sizeof(struct srcfns));
       fn->filename = strdup(argv[optind++]);
       fn->next = NULL;
 
@@ -694,7 +694,7 @@ process_args( int argc, char *argv[])
       else {
         struct srcfns *p;
 
-        for (p = state.srcfilenames; p->next; p = p->next)
+        for (p = state.srcfilenames; p->next != NULL; p = p->next)
           ;
         p->next = fn;
       }
@@ -741,7 +741,7 @@ linker(void)
            "%s.cof", state.basefilename);
 
   /* Read the script. */
-  if (state.srcfilenames) {
+  if (state.srcfilenames != NULL) {
     struct srcfns *p = state.srcfilenames;
 
     do {

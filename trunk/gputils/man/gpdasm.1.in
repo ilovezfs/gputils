@@ -1,4 +1,4 @@
-.TH "GPDASM" "1" "2014-10-19" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
+.TH "GPDASM" "1" "2014-11-03" "@PACKAGE_NAME@-@PACKAGE_VERSION@" "Linux user's manual"
 .SH "NAME"
 gpdasm \- GNU PIC disassembler
 .SH "SYNOPSIS"
@@ -54,6 +54,9 @@ Select the processor.
 .BR \-s ", "\-\-short
 Output the short format. This format can be reassembled by gpasm.
 (See also the \-k, \-n and \-o options.)
+.TP 
+.BR \-t ", "\-\-use\-tab
+Uses tabulator character in the written text.
 .TP 
 .BR \-v ", "\-\-version
 Show the version information and exit.

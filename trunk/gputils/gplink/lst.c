@@ -29,6 +29,8 @@ Boston, MA 02111-1307, USA.  */
 #include <stdarg.h>
 #endif
 
+#define LINESIZ 520
+
 static gp_boolean list_enabled;
 static gp_section_type *line_section;
 
@@ -144,11 +146,11 @@ static char *
 expand(const char *buf)
 {
   int is, id;
-  static char dest[520], c;
+  static char dest[LINESIZ], c;
 
   for (is = 0, id = 0; (c = buf[is]) != '\0' && id < (sizeof(dest) - 2); ++is) {
     if (c == '\t') {
-      unsigned int n = 8 - (id % 8);
+      unsigned int n = TABULATOR_SIZE - (id % TABULATOR_SIZE);
 
       while (n-- && id < (sizeof(dest) - 2)) {
         dest[id++] = ' ';
@@ -165,7 +167,6 @@ expand(const char *buf)
 static void
 write_src(int last_line)
 {
-  #define LINESIZ 520
   char linebuf[LINESIZ];
   char dasmbuf[LINESIZ];
   char *pc;
@@ -180,7 +181,7 @@ write_src(int last_line)
 
   while (1) {
     /* when last_line is 0 print all lines, else print to last_line */
-    if ((last_line) && (state.lst.src->line_number > last_line)) {
+    if ((last_line > 0) && (state.lst.src->line_number > last_line)) {
       break;
     }
 
