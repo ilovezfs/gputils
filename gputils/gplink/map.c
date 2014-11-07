@@ -264,12 +264,13 @@ static void
 _write_symbols(void)
 {
   struct syms_s *syms;
+  gp_symbol_type *sm;
   int num_syms;
   int i;
   struct file_stack *stack = NULL;
   gp_symbol_type *symbol = NULL;
 
-  syms = malloc(sizeof (struct syms_s) * state.object->num_symbols);
+  syms = malloc(sizeof(struct syms_s) * state.object->num_symbols);
   assert(syms);
 
   symbol = state.object->symbols;
@@ -303,19 +304,20 @@ _write_symbols(void)
     symbol = symbol->next;
   }
 
-  qsort(syms, num_syms, sizeof (struct syms_s), cmp_name);
+  qsort(syms, num_syms, sizeof(struct syms_s), cmp_name);
 
   map_line("                              Symbols - Sorted by Name");
   map_line("                     Name    Address   Location    Storage File");
   map_line("                ---------  ---------  ---------  --------- ---------");
 
   for (i = 0; i < num_syms; ++i) {
+    sm = syms[i].symbol;
     map_line("%25s   0x%06x %10s %10s %s",
-             syms[i].symbol->name,
-             syms[i].symbol->value,
-             ((syms[i].symbol->section->flags & STYP_TEXT) || (syms[i].symbol->section->flags & STYP_DATA_ROM)) ? "program" : "data",
-             (syms[i].symbol->class == C_EXT) ? "extern" : "static",
-             syms[i].file ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
+             sm->name,
+             sm->value,
+             ((sm->section->flags & STYP_TEXT) || (sm->section->flags & STYP_DATA_ROM)) ? "program" : "data",
+             (sm->class == C_EXT) ? "extern" : "static",
+             (syms[i].file != NULL) ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
   }
   map_line(NULL);
   map_line(NULL);
@@ -328,12 +330,13 @@ _write_symbols(void)
   map_line("                ---------  ---------  ---------  --------- ---------");
 
   for (i = 0; i < num_syms; ++i) {
+    sm = syms[i].symbol;
     map_line("%25s   0x%06x %10s %10s %s",
-             syms[i].symbol->name,
-             syms[i].symbol->value,
-             ((syms[i].symbol->section->flags & STYP_TEXT) || (syms[i].symbol->section->flags & STYP_DATA_ROM)) ? "program" : "data",
-             (syms[i].symbol->class == C_EXT) ? "extern" : "static",
-             syms[i].file ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
+             sm->name,
+             sm->value,
+             ((sm->section->flags & STYP_TEXT) || (sm->section->flags & STYP_DATA_ROM)) ? "program" : "data",
+             (sm->class == C_EXT) ? "extern" : "static",
+             (syms[i].file != NULL) ? syms[i].file->aux_list->_aux_symbol._aux_file.filename : "");
   }
   free(syms);
   map_line(NULL);

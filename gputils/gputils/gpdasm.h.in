@@ -50,6 +50,7 @@ extern struct gpdasm_state {
   gp_boolean show_fsrn;
   gp_boolean show_config;
   gp_boolean need_sfr_equ;
+  gp_boolean use_tab;
 
   lset_section_root_t lset_root;
 } state;

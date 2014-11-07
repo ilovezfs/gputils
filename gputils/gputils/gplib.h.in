@@ -23,13 +23,13 @@ Boston, MA 02111-1307, USA.  */
 #define GPLIB_H
 
 enum lib_modes {
-  ar_create,
-  ar_delete,
-  ar_extract,
-  ar_list,
-  ar_replace,
-  ar_symbols,
-  ar_null
+  AR_CREATE,
+  AR_DELETE,
+  AR_EXTRACT,
+  AR_LIST,
+  AR_REPLACE,
+  AR_SYMBOLS,
+  AR_NULL
 };
 
 #define GPLIB_VERSION_STRING ("gplib-" VERSION " #" @REVISION@ " (" __DATE__ ")")

@@ -30,6 +30,10 @@ Boston, MA 02111-1307, USA.  */
 #include "parse.h"
 #include "scan.h"
 
+#ifdef STDC_HEADERS
+#include <stdarg.h>
+#endif
+
 #define USER_LABEL_ALIGN        15
 
 extern int yyparse(void);
@@ -53,6 +57,134 @@ static struct {
 static gp_boolean prev_empty_line = false;
 
 static char border[] = "===============================================================================";
+
+static char out_buffer[BUFSIZ];
+
+enum {
+  OPT_STRICT = 0x100
+};
+
+#define GET_OPTIONS "?chijk:lmnop:stvy"
+
+static struct option longopts[] = {
+  { "mnemonics",   no_argument,       NULL, 'c' },
+  { "help",        no_argument,       NULL, 'h' },
+  { "hex-info",    no_argument,       NULL, 'i' },
+  { "mov-fsrn",    no_argument,       NULL, 'j' },
+  { "label-list",  required_argument, NULL, 'k' },
+  { "list-chips",  no_argument,       NULL, 'l' },
+  { "dump",        no_argument,       NULL, 'm' },
+  { "show-names",  no_argument,       NULL, 'n' },
+  { "show-config", no_argument,       NULL, 'o' },
+  { "processor",   required_argument, NULL, 'p' },
+  { "short",       no_argument,       NULL, 's' },
+  { "use-tab",     no_argument,       NULL, 't' },
+  { "version",     no_argument,       NULL, 'v' },
+  { "extended",    no_argument,       NULL, 'y' },
+  { "strict",      no_argument,       NULL, OPT_STRICT },
+  { NULL,          no_argument,       NULL, 0   }
+};
+
+/*------------------------------------------------------------------------------------------------*/
+
+static size_t
+unexpand(char *Dst, size_t Size, const char *Src)
+{
+  size_t in, out;
+  size_t first_tab;
+  size_t last_char;
+  unsigned int space_num;
+
+  if (Size <= 1) {
+    return 0;
+  }
+
+  --Size;
+
+  in = 0;
+  out = 0;
+  last_char = 0;
+  space_num = 0;
+
+  while ((Src[in] != '\0') && (out < Size)) {
+    if (Src[in] == ' ') {
+      ++space_num;
+    }
+    else {
+      /* This a not-space character. */
+      if (space_num > 1) {
+        first_tab = ((last_char + TABULATOR_SIZE) / TABULATOR_SIZE) * TABULATOR_SIZE;
+
+        if (first_tab > in) {
+          first_tab = 0;
+        }
+
+        if ((last_char + 1) < first_tab) {
+          if (first_tab <= in) {
+            Dst[out++] = '\t';
+
+            if (out >= Size) {
+              goto _exit;
+            }
+
+            space_num = in - first_tab;
+          }
+
+          while (space_num >= TABULATOR_SIZE) {
+            Dst[out++] = '\t';
+
+            if (out >= Size) {
+              goto _exit;
+            }
+
+            space_num -= TABULATOR_SIZE;
+          }
+        }
+      }
+
+      while (space_num > 0) {
+        Dst[out++] = ' ';
+
+        if (out >= Size) {
+          goto _exit;
+        }
+
+        --space_num;
+      }
+
+      Dst[out++] = Src[in];
+      last_char = in;
+    }
+
+    ++in;
+  } /* while ((Src[in] != '\0') && */
+
+_exit:
+
+  Dst[out] = '\0';
+  return out;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+static void
+ux_println(const char *format, ...)
+{
+  va_list(ap);
+  char buffer[BUFSIZ];
+
+  va_start(ap, format);
+  vsnprintf(buffer, sizeof(buffer), format, ap);
+  va_end(ap);
+
+  if (state.use_tab) {
+    unexpand(out_buffer, sizeof(out_buffer), buffer);
+    puts(out_buffer);
+  }
+  else {
+    puts(buffer);
+  }
+}
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -94,11 +226,12 @@ static void
 write_header(void)
 {
   if (!state.format) {
-    printf("\n");
-    printf("        processor %s\n        radix dec\n", state.processor->names[1]);
+    ux_println("        processor %s", state.processor->names[1]);
+    ux_println("        radix dec");
 
     if (state.processor->header != NULL) {
-      printf("        include %s\n", state.processor->header);
+      ux_println("");
+      ux_println("        include %s", state.processor->header);
     }
   }
 }
@@ -116,25 +249,28 @@ write_core_sfr_list(void)
     return;
   }
 
+  ux_println("");
+  ux_println("F       equ     1");
+  ux_println("W       equ     0");
+
   if (state.class == PROC_CLASS_PIC16E) {
-    printf("\nF       equ     1\nW       equ     0\nA       equ     0\n\n");
+    ux_println("A       equ     0");
   }
-  else {
-    printf("\nF       equ     1\nW       equ     0\n\n");
-  }
+
+  ux_println("");
 
   table = state.class->core_sfr_table;
   for (i = state.class->core_sfr_number; i > 0; ++table, --i) {
     if (state.class == PROC_CLASS_PIC14E) {
       if (strcmp(table->name, "FSR0L") == 0) {
-        printf("FSR0    equ     0x%03x\n", table->address);
+        ux_println("FSR0    equ     0x%03x", table->address);
       }
       else if (strcmp(table->name, "FSR1L") == 0) {
-        printf("FSR1    equ     0x%03x\n", table->address);
+        ux_println("FSR1    equ     0x%03x", table->address);
       }
     }
 
-    printf("%s\tequ     0x%03x\n", table->name, table->address);
+    ux_println("%-7s equ     0x%03x", table->name, table->address);
   }
 }
 
@@ -144,7 +280,8 @@ static void
 end_asm(void)
 {
   if (!state.format) {
-    printf("\n        end\n");
+    ux_println("");
+    ux_println("        end");
   }
 }
 
@@ -160,7 +297,7 @@ write_org(int org, int addr_digits, const char *title, const char *Address_name,
     printf("\n");
 
     if (title != NULL) {
-      printf("        ; %s\n", title);
+      ux_println("        ; %s", title);
     }
 
     if (Address_name != NULL) {
@@ -173,13 +310,15 @@ write_org(int org, int addr_digits, const char *title, const char *Address_name,
       }
 
       gp_exclamation(buffer, sizeof(buffer), length, "; address: 0x%0*x", addr_digits, org);
-      printf("\n%s\n\n", buffer);
-      prev_empty_line = true;
     }
     else {
-      printf("        org     0x%0*x\n\n", addr_digits, org);
-      prev_empty_line = true;
+      snprintf(buffer, sizeof(buffer), "        org     0x%0*x", addr_digits, org);
     }
+
+    ux_println("");
+    ux_println("%s", buffer);
+    ux_println("");
+    prev_empty_line = true;
   }
 }
 
@@ -557,7 +696,7 @@ show_config(void)
     hit = &addr_pack.hits[m];
 
     for (n = 0; n < hit->pair_count; ++n) {
-      printf("        CONFIG  %-*s = %s\n", addr_pack.max_dir_width,
+      ux_println("        CONFIG  %-*s = %s", addr_pack.max_dir_width,
              hit->pairs[n].directive->name, hit->pairs[n].option->name);
     }
   }
@@ -612,7 +751,8 @@ show_idlocs(void)
         }
 
         buffer[j] = '\0';
-        printf("\n        IDLOCS  \"%s\"\n", buffer);
+        ux_println("");
+        ux_println("        IDLOCS  \"%s\"", buffer);
       }
       else {
         /* Not only printable characters are there in it. */
@@ -620,10 +760,10 @@ show_idlocs(void)
         for (i = 0; i < PIC16E_IDLOCS_SIZE; ++i) {
           if ((word = idlocs_pack.words[i]) >= 0) {
             if (isalnum(word)) {
-              printf("        __idlocs _IDLOC%u, '%c'\n", i, word);
+              ux_println("        __idlocs _IDLOC%u, '%c'", i, word);
             }
             else {
-              printf("        __idlocs _IDLOC%u, 0x%02X\n", i, word);
+              ux_println("        __idlocs _IDLOC%u, 0x%02X", i, word);
             }
           }
         }
@@ -639,10 +779,10 @@ show_idlocs(void)
           act_exist = true;
 
           if (isalnum(word)) {
-            printf("        __idlocs _IDLOC%u, '%c'\n", i, word);
+            ux_println("        __idlocs _IDLOC%u, '%c'", i, word);
           }
           else {
-            printf("        __idlocs _IDLOC%u, 0x%02X\n", i, word);
+            ux_println("        __idlocs _IDLOC%u, 0x%02X", i, word);
           }
         }
         else {
@@ -667,7 +807,8 @@ show_idlocs(void)
     word |= (idlocs_pack.words[1] & 0x000F) << 8;
     word |= (idlocs_pack.words[2] & 0x000F) << 4;
     word |= (idlocs_pack.words[3] & 0x000F);
-    printf("\n        __idlocs 0x%04X\n", word);
+    ux_println("");
+    ux_println("        __idlocs 0x%04X", word);
   }
 }
 
@@ -713,7 +854,7 @@ list_user_labels(int Addr_digits)
                            sym->end - sym->start + 1);
           }
 
-          printf("%s\n", buffer);
+          ux_println("%s", buffer);
         }
       }
     }
@@ -735,7 +876,7 @@ list_user_labels(int Addr_digits)
                            sym->end - sym->start + 1);
           }
 
-          printf("%s\n", buffer);
+          ux_println("%s", buffer);
         }
       }
     }
@@ -953,7 +1094,7 @@ dasm(MemBlock *memory)
               }
 
               byte_exclamation(buffer, sizeof(buffer), length, byte);
-              printf("%s\n", buffer);
+              ux_println("%s", buffer);
             }
             else {
               last_loc = 0;
@@ -977,7 +1118,7 @@ dasm(MemBlock *memory)
                 printf("        ");
               }
 
-              printf("%-*s0x%0*x\n", TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
+              ux_println("%-*s0x%0*x", TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
             }
             else {
               last_loc = 0;
@@ -1008,7 +1149,7 @@ dasm(MemBlock *memory)
                 printf("        ");
               }
 
-              printf("%-*s0x%02x\n", TABULATOR_SIZE, "db", (unsigned int)byte);
+              ux_println("%-*s0x%02x", TABULATOR_SIZE, "db", (unsigned int)byte);
             }
             else {
               last_loc = 0;
@@ -1036,7 +1177,7 @@ dasm(MemBlock *memory)
                 printf("        ");
               }
 
-              printf("%-*s0x%0*x\n", TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
+              ux_println("%-*s0x%0*x", TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
             }
             else {
               last_loc = 0;
@@ -1082,9 +1223,10 @@ dasm(MemBlock *memory)
               printf("\n");
             }
 
-            printf("%s\n\n", buffer);
+            ux_println("%s", buffer);
+            ux_println("");
             prev_empty_line = true;
-	  }
+          }
 
           if (state.format) {
             length = snprintf(buffer, sizeof(buffer), "%0*x:  %02x    ",
@@ -1094,7 +1236,7 @@ dasm(MemBlock *memory)
           }
 
           byte_exclamation(buffer, sizeof(buffer), length, byte);
-          printf("%s\n", buffer);
+          ux_println("%s", buffer);
           prev_empty_line = false;
         }
         else {
@@ -1131,9 +1273,10 @@ dasm(MemBlock *memory)
               printf("\n");
             }
 
-            printf("%s\n\n", buffer);
+            ux_println("%s", buffer);
+            ux_println("");
             prev_empty_line = true;
-	  }
+          }
 
           if (state.format) {
             length = snprintf(buffer, sizeof(buffer), "%0*x:  %0*x  ",
@@ -1146,22 +1289,22 @@ dasm(MemBlock *memory)
 
           if (type & W_CONST_DATA) {
             gp_disassemble_show_data(m, i, state.class, behavior, buffer, sizeof(buffer), length);
-            printf("%s\n", buffer);
+            ux_println("%s", buffer);
             prev_empty_line = false;
             num_words = 1;
           }
           else {
             num_words = gp_disassemble(m, i, state.class, bsr_boundary, state.processor->prog_mem_size,
                                        behavior, buffer, sizeof(buffer), length);
-            printf("%s\n", buffer);
+            ux_println("%s", buffer);
             prev_empty_line = false;
 
             if (num_words != 1) {
               /* Some 18xx instructions use two words. */
               if (state.format) {
                 state.class->i_memory_get(m, i + 2, &data, NULL, NULL);
-                printf("%0*x:  %0*x\n", addr_digits, gp_processor_byte_to_real(state.processor, i + 2),
-                       word_digits, (unsigned int)data);
+                ux_println("%0*x:  %0*x", addr_digits, gp_processor_byte_to_real(state.processor, i + 2),
+                           word_digits, (unsigned int)data);
                 prev_empty_line = false;
               }
 
@@ -1208,6 +1351,8 @@ show_usage(void)
   printf("  -p PROC, --processor PROC      Select the processor.\n");
   printf("  -s, --short                    Print short format output. (Creates a compilable\n"
          "                                 source. See also the -k, -n and -o options.)\n");
+  printf("  -t, --use-tab                  Uses tabulator character in the written disassembled\n"
+         "                                 text.\n");
   printf("  -v, --version                  Print the gpdasm version information and exit.\n");
   printf("  -y, --extended                 Enable 18xx extended mode.\n");
   printf("      --strict                   Disassemble only opcodes generated by gpasm\n"
@@ -1220,30 +1365,6 @@ show_usage(void)
 }
 
 /*------------------------------------------------------------------------------------------------*/
-
-#define GET_OPTIONS "?chijk:lmnop:svy"
-
-  /* Used: himpsv */
-static struct option longopts[] =
-  {
-    { "mnemonics",   no_argument,       NULL, 'c' },
-    { "help",        no_argument,       NULL, 'h' },
-    { "hex-info",    no_argument,       NULL, 'i' },
-    { "mov-fsrn",    no_argument,       NULL, 'j' },
-    { "label-list",  required_argument, NULL, 'k' },
-    { "list-chips",  no_argument,       NULL, 'l' },
-    { "dump",        no_argument,       NULL, 'm' },
-    { "show-names",  no_argument,       NULL, 'n' },
-    { "show-config", no_argument,       NULL, 'o' },
-    { "processor",   required_argument, NULL, 'p' },
-    { "short",       no_argument,       NULL, 's' },
-    { "version",     no_argument,       NULL, 'v' },
-    { "extended",    no_argument,       NULL, 'y' },
-    { "strict",      no_argument,       NULL, 't' },
-    { NULL,          0,                 NULL,  0  }
-  };
-
-#define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
 
 int main(int argc, char *argv[])
 {
@@ -1265,8 +1386,9 @@ int main(int argc, char *argv[])
   state.show_names  = false;
   state.show_fsrn   = false;
   state.show_config = false;
+  state.use_tab     = false;
 
-  while ((c = GETOPT_FUNC) != EOF) {
+  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
     switch (c) {
     case '?':
     case 'h':
@@ -1314,8 +1436,8 @@ int main(int argc, char *argv[])
       state.format = 0;
       break;
 
-    case 'y':
-      gp_decode_extended = true;
+    case 't':
+      state.use_tab = true;
       break;
 
     case 'v':
@@ -1323,7 +1445,11 @@ int main(int argc, char *argv[])
       exit(0);
       break;
 
-    case 't':
+    case 'y':
+      gp_decode_extended = true;
+      break;
+
+    case OPT_STRICT:
       strict = true;
       break;
     }
