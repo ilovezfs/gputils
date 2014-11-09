@@ -3,6 +3,7 @@
 # cmp_gp_mp.sh - compare gputils and mplabx .inc and .lkr files
 #
 # Copyright (c) 2012 Borut Razem
+# Copyright (c) 2014 Molnar Karoly
 #
 # This file is part of gputils.
 #
@@ -29,23 +30,33 @@
 
 if [ "$(uname)" = "CYGWIN_NT-5.1" ]
 then
-  MPLABX_PATH=/cygdrive/c/Program\ Files/Microchip/MPLABX
-  GPUTILS_PATH=/cygdrive/c/svn_snapshots/gputils/gputils/gputils
+  MPLABX_PATH="/cygdrive/c/Program Files/Microchip/MPLABX"
+  GPUTILS_PATH="/cygdrive/c/svn_snapshots/gputils/gputils/gputils"
 else
-  MPLABX_PATH=/opt/microchip/mplabx
-  GPUTILS_PATH=$HOME/svn_snapshots/gputils/gputils
+  MPLABX_PATH="/opt/microchip/mplabx"
+  GPUTILS_PATH="$HOME/svn_snapshots/gputils/gputils"
 fi
 
-MPLABX_INC=$MPLABX_PATH/mpasmx
-MPLABX_LKR=$MPLABX_PATH/mpasmx/LKR
+MPLABX_INC="$MPLABX_PATH/mpasmx"
+MPLABX_LKR="$MPLABX_PATH/mpasmx/LKR"
 
-GPUTILS_INC=$GPUTILS_PATH/header
-GPUTILS_LKR=$GPUTILS_PATH/lkr
+GPUTILS_INC="$GPUTILS_PATH/header"
+GPUTILS_LKR="$GPUTILS_PATH/lkr"
 
 # diff ignore space change and ignore space change
 BLANK_OPTS=
 
-#usage
+if [ -n "$TMP" ]; then
+  BASH_TMPHEAD="$TMP/$BASHPID"
+else
+  BASH_TMPHEAD="/tmp/$BASHPID"
+fi
+
+AD_GPUTILS="Added\s+in\s+gputils\.?"
+CH_GPUTILS="Changed\s+in\s+gputils\.?"
+RM_GPUTILS="Removed\s+in\s+gputils\.?"
+
+# usage
 usage()
 {
   echo "Usage: $(basename $0) [-mi] [-ml] [-pl] [-lp] [-pi]"
@@ -85,32 +96,43 @@ fixnl()
   fi
 }
 
+inc_build_date_filter()
+{
+  sed -r -s "s/^\s*;\s*Build\s+date\s*:.+$//" "$1" > "$2"
+}
+
+lkr_build_date_filter()
+{
+  sed -r -s "s/^\s*\/\/\s*Build\s+date\s*:.+$//" "$1" > "$2"
+}
+
 # gputils .inc specific processing:
 # process ";;;; Begin: - ;;;; End:" blocks
 inc_spec()
 {
-  local sed_cmd='/^;;;; Begin: Removed in gputils$/,/^;;;; End: Removed in gputils$/ {
-  /^;;;; [BEegind]*: Removed in gputils$/ d
-  /^;;;; [BEegind]*: Removed in gputils$/! {
-    s/^;;;;//
+  local sed_cmd="/^\s*;;;;\s*Begin\s*:\s*$RM_GPUTILS$/,/^\s*;;;;\s*End\s*:\s*$RM_GPUTILS$/ {
+  /^\s*;;;;\s*(Begin|End)\s*:\s*$RM_GPUTILS$/ d
+  /^\s*;;;;\s*(Begin|End)\s*:\s*$RM_GPUTILS$/! {
+    s/^\s*;;;;//
   }
 }
-/^;;;; Begin: Added in gputils$/,/^;;;; End: Added in gputils$/ {
+s/^\s*;\s*Build\s+date\s*:.+$//
+/^\s*;;;;\s*Begin\s*:\s*$AD_GPUTILS$/,/^\s*;;;;\s*End\s*:\s*$AD_GPUTILS$/ {
   d
 }
-/^;;;; Begin: Changed in gputils$/,/^;;;; End: Changed in gputils$/ {
-  /^;;;; [BEegind]*: Changed in gputils$/ d
-  /^;;;; [BEegind]*: Changed in gputils$/! {
+/^\s*;;;;\s*Begin\s*:\s*$CH_GPUTILS$/,/^\s*;;;;\s*End\s*:\s*$CH_GPUTILS$/ {
+  /^\s*;;;;\s*(Begin|End)\s*:\s*$CH_GPUTILS$/ d
+  /^\s*;;;;\s*(Begin|End)\s*:\s*$CH_GPUTILS$/! {
     /;;;;/! d
-    /;;;;/ s/^;;;;//
+    /;;;;/ s/^\s*;;;;//
   }
-}'
+}"
 
   if [ -n "$1" ]
   then
-    cat "$1" | sed -s "$sed_cmd"
+    cat "$1" | sed -r -s "$sed_cmd"
   else
-    sed -s "$sed_cmd"
+    sed -r -s "$sed_cmd"
   fi
 }
 
@@ -118,28 +140,29 @@ inc_spec()
 # process "//// Begin: - //// End:" blocks
 lkr_spec()
 {
-  local sed_cmd='/^\/\/\/\/ Begin: Removed in gputils$/,/^\/\/\/\/ End: Removed in gputils$/ {
-  /^\/\/\/\/ [BEegind]*: Removed in gputils$/ d
-  /^\/\/\/\/ [BEegind]*: Removed in gputils$/! {
-    s/^\/\/\/\///
+  local sed_cmd="/^\s*\/\/\/\/\s*Begin\s*:\s*$RM_GPUTILS$/,/^\s*\/\/\/\/\s*End\s*:\s*$RM_GPUTILS$/ {
+  /^\s*\/\/\/\/\s*(Begin|End)\s*:\s*$RM_GPUTILS$/ d
+  /^\s*\/\/\/\/\s*(Begin|End)\s*:\s*$RM_GPUTILS$/! {
+    s/^\s*\/\/\/\///
   }
 }
-/^\/\/\/\/ Begin: Added in gputils$/,/^\/\/\/\/ End: Added in gputils$/ {
+s/^\s*\/\/\s*Build\s+date\s*:.+$//
+/^\s*\/\/\/\/\s*Begin\s*:\s*$AD_GPUTILS$/,/^\s*\/\/\/\/\s*End\s*:\s*$AD_GPUTILS$/ {
   d
 }
-/^\/\/\/\/ Begin: Changed in gputils$/,/^\/\/\/\/ End: Changed in gputils$/ {
-  /^\/\/\/\/ [BEegind]*: Changed in gputils$/ d
-  /^\/\/\/\/ [BEegind]*: Changed in gputils$/! {
+/^\s*\/\/\/\/\s*Begin\s*:\s*$CH_GPUTILS$/,/^\s*\/\/\/\/\s*End\s*:\s*$CH_GPUTILS$/ {
+  /^\s*\/\/\/\/\s*(Begin|End)\s*:\s*$CH_GPUTILS$/ d
+  /^\s*\/\/\/\/\s*(Begin|End)\s*:\s*$CH_GPUTILS$/! {
     /\/\/\/\//! d
-    /\/\/\/\// s/^\/\/\/\///
+    /\/\/\/\// s/^\s*\/\/\/\///
   }
-}'
+}"
 
   if [ -n "$1" ]
   then
-    cat "$1" | sed -s "$sed_cmd"
+    cat "$1" | sed -r -s "$sed_cmd"
   else
-    sed -s "$sed_cmd"
+    sed -r -s "$sed_cmd"
   fi
 }
 
@@ -154,7 +177,7 @@ dev_from_proc()
 {
   local devs='' dev names i
 
-#  { PROC_CLASS_PIC12,   "__12F529T48A", { "pic12f529t48a", "p12f529t48a", "12f529t48a" }, 0xa548, 2, 8, 0x5ff, { -1, -1 },       { 0xFFF, 0xFFF },       "12f529t48a_g.lkr"   },
+#  { PROC_CLASS_PIC12E   , "__12F529T48A"  , { "pic12f529t48a"  , "p12f529t48a"    , "12f529t48a"      }, 0xD529,  3,    8, 0x00E0, { 0x07, 0x0F }, 0x06F, {     -1,     -1 }, 0x00FF, 0x0005FF, 0x000600, {       -1,       -1 }, { 0x000640, 0x000643 }, { 0x000FFF, 0x000FFF }, { 0x000600, 0x00063F }, "p12f529t48a.inc"  , "12f529t48a_g.lkr"  , 0 },
   case $1 in
   0) sed -n -e 's/  *{[^,]*,[^,]*, *{ *"\([^"]*\)" *, *"[^"]*" *, *"[^"]*" *}.*/\1/p' < $GPUTILS_PATH/libgputils/gpprocessor.c;;
   1) sed -n -e 's/  *{[^,]*,[^,]*, *{ *"[^"]*" *, *"\([^"]*\)" *, *"[^"]*" *}.*/\1/p' < $GPUTILS_PATH/libgputils/gpprocessor.c;;
@@ -165,8 +188,8 @@ dev_from_proc()
 # compare .inc with mplabx
 cmp_mp_inc()
 {
-  local equ=0 equ_spec=0 diff=0 diff_spec=0 no_ex=0
-  local mpp mpf gpp gpf
+  local equ=0 equ_bdate=0 equ_spec=0 diff=0 diff_spec=0 no_ex=0
+  local mpp mpf gpp gpf gpasm_inc mplab_inc
 
   echo "mplabx .inc files in header folder:"
   for mpp in "$MPLABX_INC"/*.[Ii][Nn][Cc]
@@ -184,20 +207,31 @@ cmp_mp_inc()
         echo "+++ $gpf is up to date."
         equ=$(expr $equ + 1)
       else
-        if inc_spec "$gpp" | diff $BLANK_OPTS --strip-trailing-cr --brief - "$mpp" > /dev/null
+        gpasm_inc="$BASH_TMPHEAD-gpasm-`basename "$gpp"`"
+        mplab_inc="$BASH_TMPHEAD-mplabx-`basename "$mpp"`"
+        inc_build_date_filter "$gpp" "$gpasm_inc"
+        inc_build_date_filter "$mpp" "$mplab_inc"
+        if diff $BLANK_OPTS --strip-trailing-cr --brief "$gpasm_inc" "$mplab_inc" > /dev/null
         then
-          echo "### $gpf is up to date with gputils specifics."
-          equ_spec=$(expr $equ_spec + 1)
+          echo "/// $gpf is up to date, but differ with build date."
+          equ_bdate=$(expr $equ_bdate + 1)
         else
-          if grep '^;;;; Begin:' $gpf > /dev/null 2>&1
+          if inc_spec "$gpp" | diff $BLANK_OPTS --strip-trailing-cr --brief - "$mplab_inc" > /dev/null
           then
-            echo "@@@ $gpf differs with gputils specifics."
-            diff_spec=$(expr $diff_spec + 1)
+            echo "### $gpf is up to date with gputils specifics."
+            equ_spec=$(expr $equ_spec + 1)
           else
-            echo "--- $gpf differs."
-            diff=$(expr $diff + 1)
+            if grep '^;;;; Begin:' $gpf > /dev/null 2>&1
+            then
+              echo "@@@ $gpf differs with gputils specifics."
+              diff_spec=$(expr $diff_spec + 1)
+            else
+              echo "--- $gpf differs."
+              diff=$(expr $diff + 1)
+            fi
           fi
         fi
+        rm -f "$gpasm_inc" "$mplab_inc"
       fi
     else
       echo "!!! $gpf does not exist in gputils."
@@ -206,7 +240,8 @@ cmp_mp_inc()
   done
 
   echo "-----------------------------------------------------------------------"
-  echo "Up to date: $equ"
+  echo "Up to build date: $equ"
+  echo "Up to date: $equ_bdate"
   echo "Up to date gp spec: $equ_spec"
   echo "Different: $diff"
   echo "Different gp spec: $diff_spec"
@@ -217,8 +252,8 @@ cmp_mp_inc()
 # compare .lkr with mplabx
 cmp_mp_lkr()
 {
-  local equ=0 equ_spec=0 diff=0 diff_spec=0 old=0 no_ex=0
-  local mpp mpf gpp gpf
+  local equ=0 equ_bdate=0 equ_spec=0 diff=0 diff_spec=0 old=0 no_ex=0
+  local mpp mpf gpp gpf gpasm_lkr mplab_lkr
 
   echo "mplabx .lkr files in lkr folder:"
   for mpp in "$MPLABX_LKR"/*.[Ll][Kk][Rr]
@@ -236,18 +271,28 @@ cmp_mp_lkr()
         echo "+++ $gpf is up to date."
         equ=$(expr $equ + 1)
       else
-        if lkr_spec "$gpp" | diff $BLANK_OPTS --strip-trailing-cr --brief - "$mpp" > /dev/null
+        gpasm_lkr="$BASH_TMPHEAD-gpasm-`basename "$gpp"`"
+        mplab_lkr="$BASH_TMPHEAD-mplabx-`basename "$mpp"`"
+        lkr_build_date_filter "$gpp" "$gpasm_lkr"
+        lkr_build_date_filter "$mpp" "$mplab_lkr"
+        if diff $BLANK_OPTS --strip-trailing-cr --brief "$gpasm_lkr" "$mplab_lkr" > /dev/null
         then
-          echo "### $gpf is up to date with gputils specifics."
-          equ_spec=$(expr $equ_spec + 1)
+          echo "/// $gpf is up to date, but differ with build date."
+          equ_bdate=$(expr $equ_bdate + 1)
         else
-          if grep '^\/\/\/\/\ Begin:' $gpf > /dev/null 2>&1
+          if lkr_spec "$gpp" | diff $BLANK_OPTS --strip-trailing-cr --brief - "$mplab_lkr" > /dev/null
           then
-            echo "@@@ $gpf differs with gputils specifics."
-            diff_spec=$(expr $diff_spec + 1)
+            echo "### $gpf is up to date with gputils specifics."
+            equ_spec=$(expr $equ_spec + 1)
           else
-            echo "--- $gpf differs."
-            diff=$(expr $diff + 1)
+            if grep '^\/\/\/\/\ Begin:' $gpf > /dev/null 2>&1
+            then
+              echo "@@@ $gpf differs with gputils specifics."
+              diff_spec=$(expr $diff_spec + 1)
+            else
+              echo "--- $gpf differs."
+              diff=$(expr $diff + 1)
+            fi
           fi
         fi
       fi
@@ -264,7 +309,8 @@ cmp_mp_lkr()
   done
 
   echo "-----------------------------------------------------------------------"
-  echo "Up to date: $equ"
+  echo "Up to build date: $equ"
+  echo "Up to date: $equ_bdate"
   echo "Up to date gp spec: $equ_spec"
   echo "Different: $diff"
   echo "Different gp spec: $diff_spec"
@@ -273,7 +319,7 @@ cmp_mp_lkr()
   echo
 }
 
-# is elemant in the list
+# is element in the list
 is_in()
 {
   local e=$1 l
