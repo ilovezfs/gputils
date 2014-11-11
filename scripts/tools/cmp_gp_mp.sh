@@ -25,6 +25,9 @@
 #
 #  Borut Razem
 #  borut.razem@gmail.com
+#
+#    $Id$
+#
 
 #set -vx
 
@@ -295,6 +298,7 @@ cmp_mp_lkr()
             fi
           fi
         fi
+        rm -f "$gpasm_lkr" "$mplab_lkr"
       fi
     else
       if ls ${gpp%_g.lkr}.lkr > /dev/null 2>&1

@@ -1,4 +1,7 @@
 2014-11-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/cmp_gp_mp.sh: bugfix
+
+2014-11-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/cfg-import.pl:
 	  Updated based on the mplabx-2.25.
 
