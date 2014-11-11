@@ -3632,7 +3632,7 @@ sub print_ram_map($)
 
             last if ($end < $rstart);
 
-            Outf("<br>$lin_name: 0x%04X<br>$lsize bytes", $lstart) if ($addr <= $rstart);
+            Outf("<br><br>$lin_name<br>0x%04X - 0x%04X<br>$lsize bytes", $lstart, $lstart + $lsize - 1) if ($addr <= $rstart);
             }
 
           Outl('</div></div>');
