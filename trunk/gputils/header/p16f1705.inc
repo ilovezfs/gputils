@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Aug 07 2014
+; Build date : Oct 14 2014
 ;  MPASM PIC16F1705 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -32,7 +32,7 @@
 ;
 ;==========================================================================
 
-;       14 Sep 2014  Added the _DEBUG_ON and _DEBUG_OFF config options.
+;       12 Jul 2014  Added the _DEBUG_ON and _DEBUG_OFF config options.
 ;;;; End: Added in gputils
 
 ;==========================================================================
@@ -190,6 +190,7 @@ CCPR2            EQU  H'0298'
 CCPR2L           EQU  H'0298'
 CCPR2H           EQU  H'0299'
 CCP2CON          EQU  H'029A'
+ECCP2CON         EQU  H'029A'
 CCPTMRS          EQU  H'029E'
 
 ;-----Bank6------------------
@@ -222,9 +223,11 @@ OPA2CON          EQU  H'0515'
 PWM3DCL          EQU  H'0617'
 PWM3DCH          EQU  H'0618'
 PWM3CON          EQU  H'0619'
+PWM3CON0         EQU  H'0619'
 PWM4DCL          EQU  H'061A'
 PWM4DCH          EQU  H'061B'
 PWM4CON          EQU  H'061C'
+PWM4CON0         EQU  H'061C'
 
 ;-----Bank13------------------
 COG1PHR          EQU  H'0691'
@@ -1167,6 +1170,18 @@ CCP2Y            EQU  H'0004'
 CCP2X            EQU  H'0005'
 
 
+;----- ECCP2CON Bits -----------------------------------------------------
+CCP2M0           EQU  H'0000'
+CCP2M1           EQU  H'0001'
+CCP2M2           EQU  H'0002'
+CCP2M3           EQU  H'0003'
+DC2B0            EQU  H'0004'
+DC2B1            EQU  H'0005'
+
+CCP2Y            EQU  H'0004'
+CCP2X            EQU  H'0005'
+
+
 ;----- CCPTMRS Bits -----------------------------------------------------
 C1TSEL0          EQU  H'0000'
 C1TSEL1          EQU  H'0001'
@@ -1329,6 +1344,12 @@ PWM3OUT          EQU  H'0005'
 PWM3EN           EQU  H'0007'
 
 
+;----- PWM3CON0 Bits -----------------------------------------------------
+PWM3POL          EQU  H'0004'
+PWM3OUT          EQU  H'0005'
+PWM3EN           EQU  H'0007'
+
+
 ;----- PWM4DCL Bits -----------------------------------------------------
 PWM4DCL0         EQU  H'0006'
 PWM4DCL1         EQU  H'0007'
@@ -1346,6 +1367,12 @@ PWM4DCH7         EQU  H'0007'
 
 
 ;----- PWM4CON Bits -----------------------------------------------------
+PWM4POL          EQU  H'0004'
+PWM4OUT          EQU  H'0005'
+PWM4EN           EQU  H'0007'
+
+
+;----- PWM4CON0 Bits -----------------------------------------------------
 PWM4POL          EQU  H'0004'
 PWM4OUT          EQU  H'0005'
 PWM4EN           EQU  H'0007'
