@@ -1,5 +1,5 @@
 
-/* This file is generated automatically by the cfg-import.pl 2014-11-11 12:59:39 UTC. */
+/* This file is generated automatically by the cfg-import.pl 2014-11-11 13:38:32 UTC. */
 
 /*  Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
 
@@ -5160,8 +5160,7 @@ static const gp_cfg_directive_t PIC16F18855_8008[] = {
   { "BORV"   , 0x0200,  2, PIC16F18855_BORV    },
   { "ZCDDIS" , 0x0400,  2, PIC16F18855_ZCDDIS  },
   { "PPS1WAY", 0x0800,  2, PIC16F18855_PPS1WAY },
-  { "STVREN" , 0x1000,  2, PIC16F18855_STVREN  },
-  { "DEBUG"  , 0x1000,  2, PIC12F1571_DEBUG    }
+  { "STVREN" , 0x1000,  2, PIC16F18855_STVREN  }
 };
 
 static const gp_cfg_directive_t PIC16F18855_8009[] = {
@@ -7463,7 +7462,7 @@ static const gp_cfg_addr_t PIC16F1782_addrs[] = {
 
 static const gp_cfg_addr_t PIC16F18855_addrs[] = {
   { 0x008007, 0x3FFF,  5, PIC16F18855_8007   },
-  { 0x008008, 0x3FFF,  9, PIC16F18855_8008   },
+  { 0x008008, 0x3FFF,  8, PIC16F18855_8008   },
   { 0x008009, 0x3FFF,  4, PIC16F18855_8009   },
   { 0x00800A, 0x3FFF,  2, PIC16F18855_800A   },
   { 0x00800B, 0x3FFF,  2, PIC16F18855_800B   }
@@ -7471,7 +7470,7 @@ static const gp_cfg_addr_t PIC16F18855_addrs[] = {
 
 static const gp_cfg_addr_t PIC16F18875_addrs[] = {
   { 0x008007, 0x3FFF,  5, PIC16F18855_8007   },
-  { 0x008008, 0x3FFF,  9, PIC16F18855_8008   },
+  { 0x008008, 0x3FFF,  8, PIC16F18855_8008   },
   { 0x008009, 0x3FFF,  4, PIC16F18855_8009   },
   { 0x00800A, 0x0FFF,  3, PIC16F18875_800A   },
   { 0x00800B, 0x3FFF,  2, PIC16F18855_800B   }

@@ -1,4 +1,7 @@
 2014-11-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpcfg-table.c: bugfix
+
+2014-11-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/p16lf18313.inc, header/p16lf18323.inc,
     lkr/16lf18313_g.lkr, lkr/16lf18323_g.lkr:
     removed
