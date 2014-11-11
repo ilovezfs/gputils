@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Aug 07 2014
+; Build date : Oct 14 2014
 ;  MPASM PIC16LF1507 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -150,12 +150,15 @@ PWM1CON0         EQU  H'0613'
 PWM2DCL          EQU  H'0614'
 PWM2DCH          EQU  H'0615'
 PWM2CON          EQU  H'0616'
+PWM2CON0         EQU  H'0616'
 PWM3DCL          EQU  H'0617'
 PWM3DCH          EQU  H'0618'
 PWM3CON          EQU  H'0619'
+PWM3CON0         EQU  H'0619'
 PWM4DCL          EQU  H'061A'
 PWM4DCH          EQU  H'061B'
 PWM4CON          EQU  H'061C'
+PWM4CON0         EQU  H'061C'
 
 ;-----Bank13------------------
 CWG1DBR          EQU  H'0691'
@@ -702,6 +705,13 @@ PWM2OE           EQU  H'0006'
 PWM2EN           EQU  H'0007'
 
 
+;----- PWM2CON0 Bits -----------------------------------------------------
+PWM2POL          EQU  H'0004'
+PWM2OUT          EQU  H'0005'
+PWM2OE           EQU  H'0006'
+PWM2EN           EQU  H'0007'
+
+
 ;----- PWM3DCL Bits -----------------------------------------------------
 PWM3DCL0         EQU  H'0006'
 PWM3DCL1         EQU  H'0007'
@@ -725,6 +735,13 @@ PWM3OE           EQU  H'0006'
 PWM3EN           EQU  H'0007'
 
 
+;----- PWM3CON0 Bits -----------------------------------------------------
+PWM3POL          EQU  H'0004'
+PWM3OUT          EQU  H'0005'
+PWM3OE           EQU  H'0006'
+PWM3EN           EQU  H'0007'
+
+
 ;----- PWM4DCL Bits -----------------------------------------------------
 PWM4DCL0         EQU  H'0006'
 PWM4DCL1         EQU  H'0007'
@@ -742,6 +759,13 @@ PWM4DCH7         EQU  H'0007'
 
 
 ;----- PWM4CON Bits -----------------------------------------------------
+PWM4POL          EQU  H'0004'
+PWM4OUT          EQU  H'0005'
+PWM4OE           EQU  H'0006'
+PWM4EN           EQU  H'0007'
+
+
+;----- PWM4CON0 Bits -----------------------------------------------------
 PWM4POL          EQU  H'0004'
 PWM4OUT          EQU  H'0005'
 PWM4OE           EQU  H'0006'

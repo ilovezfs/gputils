@@ -393,6 +393,10 @@ HEADER_FILES = \
 	p16f1717.inc \
 	p16f1718.inc \
 	p16f1719.inc \
+	p16f1764.inc \
+	p16f1765.inc \
+	p16f1768.inc \
+	p16f1769.inc \
 	p16f1782.inc \
 	p16f1783.inc \
 	p16f1784.inc \
@@ -409,6 +413,8 @@ HEADER_FILES = \
 	p16f1829.inc \
 	p16f1829lin.inc \
 	p16f1847.inc \
+	p16f18855.inc \
+	p16f18875.inc \
 	p16f1933.inc \
 	p16f1934.inc \
 	p16f1936.inc \
@@ -535,6 +541,10 @@ HEADER_FILES = \
 	p16lf1717.inc \
 	p16lf1718.inc \
 	p16lf1719.inc \
+	p16lf1764.inc \
+	p16lf1765.inc \
+	p16lf1768.inc \
+	p16lf1769.inc \
 	p16lf1782.inc \
 	p16lf1783.inc \
 	p16lf1784.inc \
@@ -550,9 +560,9 @@ HEADER_FILES = \
 	p16lf1827.inc \
 	p16lf1828.inc \
 	p16lf1829.inc \
-	p16lf18313.inc \
-	p16lf18323.inc \
 	p16lf1847.inc \
+	p16lf18855.inc \
+	p16lf18875.inc \
 	p16lf1902.inc \
 	p16lf1903.inc \
 	p16lf1904.inc \

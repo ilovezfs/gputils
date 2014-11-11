@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Aug 07 2014
+; Build date : Oct 14 2014
 ;  MPASM PIC16F1513 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -100,6 +100,7 @@ PCON             EQU  H'0096'
 WDTCON           EQU  H'0097'
 OSCCON           EQU  H'0099'
 OSCSTAT          EQU  H'009A'
+ADRES            EQU  H'009B'
 ADRES0           EQU  H'009B'
 ADRES0L          EQU  H'009B'
 ADRESL           EQU  H'009B'
@@ -187,9 +188,12 @@ AADGRD           EQU  H'0718'
 AADCAP           EQU  H'0719'
 AADRES0          EQU  H'071A'
 AADRES0L         EQU  H'071A'
+AD1RES0          EQU  H'071A'
 AADRES0H         EQU  H'071B'
 AADRES1          EQU  H'071C'
 AADRES1L         EQU  H'071C'
+AD1RES1          EQU  H'071C'
+ADRES1           EQU  H'071C'
 AADRES1H         EQU  H'071D'
 
 ;-----Bank31------------------

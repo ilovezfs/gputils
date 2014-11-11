@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Aug 07 2014
+; Build date : Oct 14 2014
 ;  MPASM PIC10LF322 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -75,6 +75,7 @@ PWM1CON0         EQU  H'0016'
 PWM2DCL          EQU  H'0017'
 PWM2DCH          EQU  H'0018'
 PWM2CON          EQU  H'0019'
+PWM2CON0         EQU  H'0019'
 IOCAP            EQU  H'001A'
 IOCAN            EQU  H'001B'
 IOCAF            EQU  H'001C'
@@ -274,6 +275,13 @@ PWM2DCH7         EQU  H'0007'
 
 
 ;----- PWM2CON Bits -----------------------------------------------------
+PWM2POL          EQU  H'0004'
+PWM2OUT          EQU  H'0005'
+PWM2OE           EQU  H'0006'
+PWM2EN           EQU  H'0007'
+
+
+;----- PWM2CON0 Bits -----------------------------------------------------
 PWM2POL          EQU  H'0004'
 PWM2OUT          EQU  H'0005'
 PWM2OE           EQU  H'0006'

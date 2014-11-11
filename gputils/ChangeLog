@@ -1,3 +1,28 @@
+2014-11-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/p16lf18313.inc, header/p16lf18323.inc,
+    lkr/16lf18313_g.lkr, lkr/16lf18323_g.lkr:
+    removed
+
+  * header/p16f1764.inc, header/p16f1765.inc,
+    header/p16f1768.inc, header/p16f1769.inc,
+    header/p16f18855.inc, header/p16f18875.inc,
+    header/p16lf1764.inc, header/p16lf1765.inc,
+    header/p16lf1768.inc, header/p16lf1769.inc,
+    header/p16lf18855.inc, header/p16lf18875.inc,
+    lkr/16f1764_g.lkr, lkr/16f1765_g.lkr,
+    lkr/16f1768_g.lkr, lkr/16f1769_g.lkr,
+    lkr/16f18855_g.lkr, lkr/16f18875_g.lkr,
+    lkr/16lf1764_g.lkr, lkr/16lf1765_g.lkr,
+    lkr/16lf1768_g.lkr, lkr/16lf1769_g.lkr,
+    lkr/16lf18855_g.lkr, lkr/16lf18875_g.lkr:
+    added
+
+  * doc/gputils.lyx, libgputils/gpprocessor.c,
+    libgputils/gpcfg-table.c, libgputils/gpreg-table.c,
+    header/Makefile.am, header/Makefile.in, header/*.inc,
+    lkr/Makefile.am, lkr/Makefile.in, lkr/*.lkr:
+    Updated based on the mplabx-2.25.
+
 2014-11-07  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gplink/gplink.c, gplink/lst.c, gplink/map.c, gputils/gplib.c,
     gputils/gplib.h:

@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Aug 07 2014
+; Build date : Oct 14 2014
 ;  MPASM PIC16LF1559 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -169,6 +169,7 @@ PWM1CON0         EQU  H'0613'
 PWM2DCL          EQU  H'0614'
 PWM2DCH          EQU  H'0615'
 PWM2CON          EQU  H'0616'
+PWM2CON0         EQU  H'0616'
 
 ;-----Bank14------------------
 AAD1CON0         EQU  H'0711'
@@ -201,12 +202,16 @@ AADCAP           EQU  H'0719'
 AD1CAPCON        EQU  H'0719'
 AAD1RES0         EQU  H'071A'
 AAD1RES0L        EQU  H'071A'
+AD1RES0          EQU  H'071A'
 AD1RES0L         EQU  H'071A'
+ADRES0           EQU  H'071A'
 AAD1RES0H        EQU  H'071B'
 AD1RES0H         EQU  H'071B'
 AAD1RES1         EQU  H'071C'
 AAD1RES1L        EQU  H'071C'
+AD1RES1          EQU  H'071C'
 AD1RES1L         EQU  H'071C'
+ADRES1           EQU  H'071C'
 AAD1RES1H        EQU  H'071D'
 AD1RES1H         EQU  H'071D'
 AAD1CH           EQU  H'071E'
@@ -232,9 +237,11 @@ AAD2CAPCON       EQU  H'0799'
 AD2CAPCON        EQU  H'0799'
 AAD2RES0         EQU  H'079A'
 AAD2RES0L        EQU  H'079A'
+AD2RES0          EQU  H'079A'
 AAD2RES0H        EQU  H'079B'
 AAD2RES1         EQU  H'079C'
 AAD2RES1L        EQU  H'079C'
+AD2RES1          EQU  H'079C'
 AAD2RES1H        EQU  H'079D'
 AAD2CH           EQU  H'079E'
 AD2CH            EQU  H'079E'
@@ -839,6 +846,13 @@ PWM2DCH7         EQU  H'0007'
 
 
 ;----- PWM2CON Bits -----------------------------------------------------
+PWM2POL          EQU  H'0004'
+PWM2OUT          EQU  H'0005'
+PWM2OE           EQU  H'0006'
+PWM2EN           EQU  H'0007'
+
+
+;----- PWM2CON0 Bits -----------------------------------------------------
 PWM2POL          EQU  H'0004'
 PWM2OUT          EQU  H'0005'
 PWM2OE           EQU  H'0006'

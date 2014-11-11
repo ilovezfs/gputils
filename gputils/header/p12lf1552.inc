@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Aug 07 2014
+; Build date : Oct 14 2014
 ;  MPASM PIC12LF1552 processor include
 ; 
 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
@@ -136,9 +136,13 @@ AADGRD           EQU  H'0718'
 AADCAP           EQU  H'0719'
 AADRES0          EQU  H'071A'
 AADRES0L         EQU  H'071A'
+AD1RES0          EQU  H'071A'
+ADRES0           EQU  H'071A'
 AADRES0H         EQU  H'071B'
 AADRES1          EQU  H'071C'
 AADRES1L         EQU  H'071C'
+AD1RES1          EQU  H'071C'
+ADRES1           EQU  H'071C'
 AADRES1H         EQU  H'071D'
 
 ;-----Bank31------------------
