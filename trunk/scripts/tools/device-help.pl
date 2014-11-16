@@ -4517,11 +4517,11 @@ EOT
 
 /* This accessories of the tooltip. This is a beak which point towards the left side. */
 
-.ramGPR:hover .ramTt:before,
-.ramSFR:hover .ramTt:before,
-.ramCOM:hover .ramTt:before,
-.ramMIR:hover .ramTt:before,
-.ramBAD:hover .ramTt:before
+.ramGPR:hover .ramTt:after,
+.ramSFR:hover .ramTt:after,
+.ramCOM:hover .ramTt:after,
+.ramMIR:hover .ramTt:after,
+.ramBAD:hover .ramTt:after
   {
   display: block;
   position: absolute;
@@ -4529,7 +4529,7 @@ EOT
   width: 0;
   height: 0;
   top: 0;
-  left: -15px;
+  right: 100%;
   border-right: 15px solid $tooltip_background1;
   border-bottom: 5px solid transparent;
   }

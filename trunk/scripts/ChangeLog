@@ -1,3 +1,6 @@
+2014-11-16  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/device-help.pl: A minor optimization.
+
 2014-11-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/device-help.pl:
 	  More information from the Linear Memory on the RAM map.
