@@ -221,7 +221,11 @@ void next_line(int value)
         (state.pass == 2) &&
         (state.lst.line.linetype != LTY_DOLIST_DIR) &&
         (state.lst.line.linetype != LTY_NOLIST_DIR)) {
-      lst_format_line(state.src->curr_src_line.line, value);
+
+      if (state.src->curr_src_line.line != NULL) {
+        /* Empty macro. */
+        lst_format_line(state.src->curr_src_line.line, value);
+      }
       preproc_emit();
     }
 
@@ -229,12 +233,15 @@ void next_line(int value)
     if (IN_MACRO_WHILE_DEFINITION) {
       state.lst.line.linetype = LTY_NONE;
 
-      if (state.mac_body) {
-        state.mac_body->src_line = strdup(state.src->m->src_line);
+      if (state.mac_body != NULL) {
+        /* Empty macro. */
+        state.mac_body->src_line = strdup(state.src->mac_body->src_line);
       }
     }
 
-    state.src->m = state.src->m->next;
+    if (state.src->mac_body != NULL) {
+      state.src->mac_body = state.src->mac_body->next;
+    }
   } else if (IN_FILE_EXPANSION) {
     if (!IN_WHILE_DEFINITION && (state.pass == 2) &&
         (state.lst.line.linetype != LTY_DOLIST_DIR) &&
@@ -249,7 +256,7 @@ void next_line(int value)
     if (IN_MACRO_WHILE_DEFINITION) {
       state.lst.line.linetype = LTY_NONE;
 
-      if (state.mac_body) {
+      if (state.mac_body != NULL) {
         state.mac_body->src_line = strdup(state.src->curr_src_line.line);
       }
     }

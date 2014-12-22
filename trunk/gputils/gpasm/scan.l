@@ -109,15 +109,15 @@ gp_input(char *buf, size_t max_size)
   else
     {
       /* in macro expansion */
-      if (state.src->m != NULL)
+      if (state.src->mac_body != NULL)
         {
-          size_t n = strlen(state.src->m->src_line);
+          size_t n = strlen(state.src->mac_body->src_line);
 
           if (n > (max_size - 1)) {
             n = max_size - 2;
           }
 
-          strncpy(buf, state.src->m->src_line, n);
+          strncpy(buf, state.src->mac_body->src_line, n);
           buf[n++] = '\n'; /* add newline */
           return n;
         }
@@ -697,7 +697,7 @@ open_src(const char *name, int isinclude)
     }
 
     new->type = SRC_FILE;
-    new->h = NULL;
+    new->mac_head = NULL;
     new->line_number = 1;
     new->loop_number = 1;
     new->file_symbol = (state.debug_info) ? NULL : coff_add_filesym(new->name, isinclude);
@@ -735,8 +735,8 @@ execute_macro(struct macro_head *h, int is_while)
   new->loop_number = 1;
   new->file_symbol = h->file_symbol;
   new->f = NULL;
-  new->h = h;
-  new->m = h->body;
+  new->mac_head = h;
+  new->mac_body = h->body;
 
   new->prev = state.src;
   state.src = new;
@@ -750,11 +750,11 @@ repeat_while(void)
 {
   struct macro_head *h;
 
-  h = state.src->h;
+  h = state.src->mac_head;
 
   state.src->line_number = h->line_number + 1;
   state.src->loop_number++;
-  state.src->m = h->body;
+  state.src->mac_body = h->body;
 
   yy_delete_buffer(YY_CURRENT_BUFFER);
   yy_switch_to_buffer(yy_create_buffer(NULL, YY_BUF_SIZE));
@@ -847,7 +847,7 @@ found_eof(void)
   enum src_types prev_type;
 
   if (IN_WHILE_EXPANSION) {
-    if (maybe_evaluate(state.src->h->parms)) {
+    if (maybe_evaluate(state.src->mac_head->parms)) {
       if (state.src->loop_number > 255) {
         gpverror(GPE_BAD_WHILE_LOOP, NULL);
       }

@@ -1,3 +1,14 @@
+2014-12-22  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/gpasm.h.in, gpasm/parse.y, gpasm/scan.l:
+    Fixed the bug: "#276 Empty macros cause segfaults with gputils-1.4.0-1"
+    Thanks to Kustaa Nyholm.
+
+  * gpasm/testsuite/test-regression, gpasm/testsuite/regression/*:
+    New regression test.
+
+  * gputils/gpdasm.c:
+    Changed text format.
+
 2014-11-11  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpcfg-table.c: bugfix
 
