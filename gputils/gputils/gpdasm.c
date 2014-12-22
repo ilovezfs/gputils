@@ -1388,7 +1388,7 @@ int main(int argc, char *argv[])
   state.show_config = false;
   state.use_tab     = false;
 
-  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
+  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
     switch (c) {
     case '?':
     case 'h':

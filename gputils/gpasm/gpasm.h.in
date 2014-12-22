@@ -365,8 +365,8 @@ struct source_context {
   char *name;
   enum src_types type;
   FILE *f;
-  struct macro_head *h;
-  struct macro_body *m;             /* Macro line to parse */
+  struct macro_head *mac_head;
+  struct macro_body *mac_body;      /* Macro line to parse */
   struct yy_buffer_state *yybuf;
   unsigned int line_number;
   unsigned int loop_number;         /* Loop number for while loops */

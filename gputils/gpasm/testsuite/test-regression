@@ -1,0 +1,107 @@
+#!/bin/sh
+
+# test-regression -- Tests the gpasm specific regressions.
+#
+# Copyright (C) 2014 Molnar Karoly
+#
+# This file is part of gputils.
+#
+# gputils is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# gputils is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with gputils; see the file COPYING.  If not, write to
+# the Free Software Foundation, 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+
+HERE="$(pwd)"
+HEADER="$HERE/../../header"
+GPASM="$HERE/../../gpasm/gpasm"
+REGRESSION="$HERE/regression"
+
+binexists()
+  {
+  # Test syntax.
+  if [ $# = 0 ]; then
+    echo "Usage: binexists {program}"
+    return 1
+  fi
+
+  echo "testing for $1"
+
+  if ! test -e $1; then
+    echo "$1 not found. Aborting."
+    return 1
+  else
+    $1 -v
+    echo "executable found."
+    echo
+    return 0
+  fi
+  }
+
+printbanner()
+  {
+  # Test syntax.
+  if [ $# = 0 ] ; then
+    echo "Usage: printbanner {message}"
+    return 1
+  fi
+
+  echo "-----------------------------------------------------------"
+  echo "    $1"
+  echo "-----------------------------------------------------------"
+  echo
+  return 0
+  }
+
+test_gpasm_regressions()
+  {
+  local cmd src out ret
+
+  for src in "$REGRESSION/test/"*.asm; do
+    out="${src%.*}.hex"
+    cmd="$GPASM -I $HEADER -I $REGRESSION/test $src -o $out"
+    echo $cmd
+    $cmd
+    ret=$?
+    [ $ret -ne 0 ] && return 1
+  done
+
+  return 0
+  }
+
+test_gpasm()
+  {
+  printbanner "Start of gpasm regression testing"
+
+  if binexists $GPASM; then
+    if test_gpasm_regressions; then
+      printbanner "The gpasm testing successful."
+    else
+      printbanner "The gpasm testing failed."
+    fi
+  fi
+  }
+
+case "$1" in
+  clean)
+    rm -rf "$REGRESSION/test"
+    ;;
+
+  *)
+    rm -rf "$REGRESSION/test"
+    mkdir -p "$REGRESSION/test"
+    cd "$REGRESSION/source"
+    cp * "../test"
+    cd ../..
+    test_gpasm
+    ;;
+esac
