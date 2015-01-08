@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Nov 11, 2014
+Jan 8, 2015
 \end_layout
 
 \begin_layout Standard
@@ -4654,6 +4654,78 @@ is the same as writing:
 \end_inset
 
         rlf     tmp,f    ; tmp = 10 * W
+\end_layout
+
+\begin_layout Standard
+It is possible to define symbols local to a macro using the 
+\family typewriter
+local
+\family default
+ directive, as shown in the 
+\family typewriter
+spin2
+\family default
+ macro below:
+\end_layout
+
+\begin_layout LyX-Code
+spin    macro   n
+\begin_inset Newline newline
+\end_inset
+
+        movlw   n
+\begin_inset Newline newline
+\end_inset
+
+        addlw   0xff
+\begin_inset Newline newline
+\end_inset
+
+        btfss   STATUS,Z
+\begin_inset Newline newline
+\end_inset
+
+        goto    $-2
+\begin_inset Newline newline
+\end_inset
+
+        endm
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+spin2   macro   a,b
+\begin_inset Newline newline
+\end_inset
+
+        local   s2s
+\begin_inset Newline newline
+\end_inset
+
+        movlw   a
+\begin_inset Newline newline
+\end_inset
+
+        movwf   spinreg
+\begin_inset Newline newline
+\end_inset
+
+s2s     spin    b
+\begin_inset Newline newline
+\end_inset
+
+        decfsz  spinreg,f
+\begin_inset Newline newline
+\end_inset
+
+        goto    s2s
+\begin_inset Newline newline
+\end_inset
+
+        endm 
 \end_layout
 
 \begin_layout Subsection
