@@ -118,7 +118,7 @@ static struct pnode *mk_1op(int op, struct pnode *p0)
 %token <s> SYMBOL
 %token <s> LIBPATH
 %token <s> LKRPATH
-%token <s> PATH
+%token <s> STRING
 %token <s> LEXEOF 0 "end of file"
 %token <s> ERROR
 %token <l> NUMBER
@@ -172,7 +172,14 @@ line:
 	    execute_command($1, $2);
 	}
 	|
-	ERROR {
+	STRING parameter_list
+	{
+	  if (state.ifdef == NULL || state.ifdef->istrue)
+	    execute_command($1, $2);
+	}
+	|
+	ERROR
+	{
 	  if (state.ifdef == NULL || state.ifdef->istrue)
 	    yyerror($1);
 	}
@@ -191,7 +198,7 @@ line:
 	    case '*': newval = lh * rh; break;
 	    case '/':
 	      if (rh == 0)
-		yyerror("Division by zero");
+		yyerror("Division by zero.");
 	      else
 		newval = lh / rh;
 	      break;
@@ -214,7 +221,7 @@ line:
 	ELSE
 	{
 	  if (state.ifdef == NULL || state.ifdef->inelse)
-	    yyerror("#ELSE without #IFDEF in linker script");
+	    yyerror("#ELSE without #IFDEF in linker script.");
 	  else {
 	    state.ifdef->istrue = (!state.ifdef->istrue &&
 				   (state.ifdef->prev == NULL ||
@@ -226,7 +233,7 @@ line:
 	FI
 	{
 	  if (state.ifdef == NULL)
-	    yyerror("#FI without #IFDEF in linker script");
+	    yyerror("#FI without #IFDEF in linker script.");
 	  else {
 	    struct ifdef *ifdef = state.ifdef;
 	    state.ifdef = state.ifdef->prev;
@@ -242,6 +249,16 @@ path_list:
 	}
 	|
 	SYMBOL ';' path_list
+	{
+	  $$ = mk_list(mk_symbol($1), $3);
+	}
+	|
+	STRING
+	{
+	  $$ = mk_list(mk_symbol($1), NULL);
+	}
+	|
+	STRING ';' path_list
 	{
 	  $$ = mk_list(mk_symbol($1), $3);
 	}
@@ -272,6 +289,11 @@ e1op:	'=' ;
 
 e0:
 	SYMBOL
+        {
+	  $$ = mk_symbol($1);
+        }
+	|
+	STRING
         {
 	  $$ = mk_symbol($1);
         }
