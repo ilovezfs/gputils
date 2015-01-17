@@ -1,3 +1,8 @@
+2015-01-17  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/coff.c, gplink/parse.y, gplink/scan.l:
+    Fixed the bug: "#278 GPLINK syntax error in .LKR"
+    Thanks to Philippe Paternotte.
+
 2015-01-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx:
     Added the macro-doc.patch. Thanks to Joe Pfeiffer.

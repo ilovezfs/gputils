@@ -90,7 +90,8 @@ _update_reloc_ptr(void)
         }
         symbol = symbol->next;
       }
-      assert(0);
+/*      assert(0);*/
+      exit(1);
 l1:
       reloc = reloc->next;
     }

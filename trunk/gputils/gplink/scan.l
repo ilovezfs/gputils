@@ -102,63 +102,73 @@ gp_yyinput(char *buf, size_t max_size)
 SYM \/?([a-z0-9_.\\:]+\/?)+
 
 %%
-<<EOF>>                  {
-                           if (close_file())
-                             return LEXEOF;
-                         }
-libpath                  {
-                           return LIBPATH;
-                         }
-lkrpath                  {
-                           return LKRPATH;
-                         }
-#define/[ \t]            {
-                           return DEFINE;
-                         }
-#ifdef/[ \t]             {
-                           return IFDEF;
-                         }
-#else/[^a-z0-9]          {
-                           return ELSE;
-                         }
-#fi/[^a-z0-9]            {
-                           return FI;
-                         }
-error([ \t].*)?          {
-                           yylval.s = strdup(yytext);
-                           return ERROR;
-                         }
-[0-9]+                   {
-                           char *endptr;
+<<EOF>>                 {
+                          if (close_file())
+                            return LEXEOF;
+                        }
+\"[^\"]*\"              {
+                          yyleng -= 2;
+                          yylval.s = strndup(yytext + 1, yyleng);
+                          return STRING;
+                        }
+\'[^\']*\'              {
+                          yyleng -= 2;
+                          yylval.s = strndup(yytext + 1, yyleng);
+                          return STRING;
+                        }
+libpath                 {
+                          return LIBPATH;
+                        }
+lkrpath                 {
+                          return LKRPATH;
+                        }
+#define/[ \t]           {
+                          return DEFINE;
+                        }
+#ifdef/[ \t]            {
+                          return IFDEF;
+                        }
+#else/[^a-z0-9]         {
+                          return ELSE;
+                        }
+#fi/[^a-z0-9]           {
+                          return FI;
+                        }
+error([ \t].*)?         {
+                          yylval.s = strdup(yytext);
+                          return ERROR;
+                        }
+[0-9]+                  {
+                          char *endptr;
 
-                           yylval.i = strtol(yytext, &endptr, 10);
-                           if ((endptr == NULL) || (*endptr != '\0')) {
-                             bad_char(endptr);
-                           }
-                           return NUMBER;
-                         }
-0x[0-9a-f]+              {
-                           char *endptr;
+                          yylval.i = strtol(yytext, &endptr, 10);
+                          if ((endptr == NULL) || (*endptr != '\0')) {
+                            bad_char(endptr);
+                          }
+                          return NUMBER;
+                        }
+0x[0-9a-f]+             {
+                          char *endptr;
 
-                           yylval.l = strtol(yytext + 2, &endptr, 16);
-                           if ((endptr == NULL) || (*endptr != '\0')) {
-                             bad_char(endptr);
-                           }
-                           return NUMBER;
-                         }
-{SYM}                    {
-                           yylval.s = strdup(yytext);
-                           return SYMBOL;
-                         }
+                          yylval.l = strtol(yytext + 2, &endptr, 16);
+                          if ((endptr == NULL) || (*endptr != '\0')) {
+                            bad_char(endptr);
+                          }
+                          return NUMBER;
+                        }
+{SYM}                   {
+                          yylval.s = strdup(yytext);
+                          return SYMBOL;
+                        }
 [ \t\r]*
-[\n]                     {
-                           return yytext[0];
-                         }
-\/\/.*                   {  }
-.                        {
-                           yylval.i = yytext[0];
-                           return yytext[0];
-                         }
+[\n]                    {
+                          return yytext[0];
+                        }
+\/\/.*                  {  }
+.                       {
+                          yylval.i = yytext[0];
+                          return yytext[0];
+                        }
 %%
 
 static void bad_char(char *character)
