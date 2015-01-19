@@ -1,3 +1,8 @@
+2015-01-19  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpprocessor.c:
+    Fixed the bug: "#279 __IDLOCS does not work for p18f26k80"
+    Thanks to Pascal.
+
 2015-01-17  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/coff.c, gplink/parse.y, gplink/scan.l:
     Fixed the bug: "#278 GPLINK syntax error in .LKR"
