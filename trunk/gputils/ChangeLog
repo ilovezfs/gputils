@@ -1,4 +1,8 @@
 2015-02-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpsystem.c:
+    More accurate investigations.
+
+2015-02-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/testsuite/test-regression, gpasm/gpasm.c,
     gplink/testsuite/test, gplink/gplink.c, gputils/testsuite/test,
     gputils/gpdasm.c, gputils/gpstrip.c, gputils/gpvo.c,

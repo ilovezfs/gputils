@@ -445,7 +445,7 @@ gp_exit_if_arg_an_option(const struct option *options, int opt_max_index, int op
 
     if (isalnum(opt->val)) {
       /* opt_string == "-X" This is a short option? */
-      if ((opt_string[1] == (char)opt->val) && (opt_string[2] == '\0')) {
+      if (opt_string[1] == (char)opt->val) {
         goto error;
       }
     }
