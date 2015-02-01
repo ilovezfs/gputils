@@ -1,5 +1,9 @@
 2015-02-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpsystem.c:
+    More accurate error messages.
+
+2015-02-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpsystem.c:
     More accurate investigations.
 
 2015-02-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>

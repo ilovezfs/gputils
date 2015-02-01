@@ -439,24 +439,21 @@ gp_exit_if_arg_an_option(const struct option *options, int opt_max_index, int op
     if ((opt_string[1] == '-') && (opt_string[2] != '\0')) {
       /* opt_string == "--." This is a long option? */
       if (strcmp(&opt_string[2], opt->name) == 0) {
-        goto error;
+        fprintf(stderr, "Error: This option may not be parameter of the \"%s\" option: \"--%s\" (\"%s\")\n",
+                command, opt->name, opt_string);
+        exit(1);
       }
     }
 
     if (isalnum(opt->val)) {
       /* opt_string == "-X" This is a short option? */
       if (opt_string[1] == (char)opt->val) {
-        goto error;
+        fprintf(stderr, "Error: This option may not be parameter of the \"%s\" option: \"-%c\" (\"%s\")\n",
+                command, (char)opt->val, opt_string);
+        exit(1);
       }
     }
 
     ++opt;
   }
-
-  return;
-
-error:
-  fprintf(stderr, "Error: This option may not be parameter of the \"%s\" option: \"%s\"\n",
-          command, opt_string);
-  exit(1);
 }
