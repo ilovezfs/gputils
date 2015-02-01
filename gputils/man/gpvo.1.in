@@ -36,6 +36,10 @@ Suppress filenames.
 .BR \-s ", "\-\-section
 Display sections.
 .TP
+.BR \-\-strict-options
+If this is set, then an option may not be parameter of an another option.
+For example: -x --symbol
+.TP
 .BR \-t ", "\-\-symbol
 Display symbol table.
 .TP

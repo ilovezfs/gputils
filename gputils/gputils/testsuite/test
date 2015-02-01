@@ -24,11 +24,11 @@
 # Defines
 TESTDIR=./test
 GPDASMBIN=../gpdasm
-_GPDASMFLAGS="-n -s"
+_GPDASMFLAGS="-n -s --strict-options"
 GPDASMFLAGS=""
 
 GPASMBIN=../../gpasm/gpasm
-GPASMFLAGS="-q -I`pwd`/../../header -f"
+GPASMFLAGS="-q -I`pwd`/../../header -f --strict-options"
 
 # General functions
 

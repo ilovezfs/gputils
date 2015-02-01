@@ -630,8 +630,7 @@ search_paths(struct source_context *new, const char *name)
   int i;
 
   for (i = 0; i < state.path_num; i++) {
-    snprintf(tryname, sizeof(tryname),
-             "%s" COPY_CHAR "%s", state.paths[i], name);
+    snprintf(tryname, sizeof(tryname), "%s" COPY_CHAR "%s", state.paths[i], name);
     new->f = fopen(tryname, "rt");
 
     if (new->f != NULL) {

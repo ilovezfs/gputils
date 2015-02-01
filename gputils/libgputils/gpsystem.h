@@ -67,4 +67,6 @@ void *gp_list_get(gp_linked_list *link);
 
 char *gp_absolute_path(char *filename);
 
+void gp_exit_if_arg_an_option(const struct option *options, int opt_max_index, int opt_index,
+                              const char *opt_string, int opt_char, const char *command);
 #endif

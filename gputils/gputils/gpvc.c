@@ -89,8 +89,7 @@ show_usage(void)
   printf("  -h, --help         Show this usage message.\n");
   printf("  -r, --rom          Display rom.\n");
   printf("  -s, --symbols      Display symbols.\n");
-  printf("  -v, --version      Show version.\n");
-  printf("\n");
+  printf("  -v, --version      Show version.\n\n");
   printf("Report bugs to:\n");
   printf("%s\n", PACKAGE_BUGREPORT);
   exit(0);
@@ -101,24 +100,22 @@ show_usage(void)
 /* Used: adhlmrsv */
 static struct option longopts[] =
 {
-  { "all",         0, 0, 'a' },
-  { "directory",   0, 0, 'd' },
-  { "help",        0, 0, 'h' },
-  { "listing",     0, 0, 'l' },
-  { "message",     0, 0, 'm' },
-  { "rom",         0, 0, 'r' },
-  { "symbols",     0, 0, 's' },
-  { "version",     0, 0, 'v' },
-  { 0, 0, 0, 0 }
+  { "all",       no_argument, NULL, 'a' },
+  { "directory", no_argument, NULL, 'd' },
+  { "help",      no_argument, NULL, 'h' },
+  { "listing",   no_argument, NULL, 'l' },
+  { "message",   no_argument, NULL, 'm' },
+  { "rom",       no_argument, NULL, 'r' },
+  { "symbols",   no_argument, NULL, 's' },
+  { "version",   no_argument, NULL, 'v' },
+  { NULL,        no_argument, NULL, '\0'}
 };
-
-#define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
 
 int
 main(int argc, char *argv[])
 {
-  extern int optind;
-  int c, usage = 0;
+  int c;
+  gp_boolean usage = false;
   int display_flags;
 
   char temp_buf[12];
@@ -137,11 +134,11 @@ main(int argc, char *argv[])
 #define DISPLAY_ALL     0xff
 
   display_flags = DISPLAY_NOTHING;
-  while ((c = GETOPT_FUNC) != EOF) {
+  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
     switch (c) {
     case '?':
     case 'h':
-      usage = 1;
+      usage = true;
       break;
 
     case 'a':

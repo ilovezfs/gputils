@@ -68,7 +68,7 @@ test_gpasm_regressions()
 
   for src in "$REGRESSION/test/"*.asm; do
     out="${src%.*}.hex"
-    cmd="$GPASM -I $HEADER -I $REGRESSION/test $src -o $out"
+    cmd="$GPASM --strict-options -I $HEADER -I $REGRESSION/test $src -o $out"
     echo $cmd
     $cmd
     ret=$?

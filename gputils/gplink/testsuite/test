@@ -38,7 +38,7 @@ GPASMBIN=${GPPATH}/gpasm/gpasm
 GPASMFLAGS="-q -c"
 GPLIBBIN=${GPPATH}/gputils/gplib
 GPLINKBIN=${GPPATH}/gplink/gplink
-GPLINKFLAGS="-m"
+GPLINKFLAGS="-m --strict-options"
 
 MPPATH=/opt/microchip/mplabx/mpasmx
 MPASMBIN=${MPPATH}/mpasmx

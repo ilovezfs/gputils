@@ -68,6 +68,10 @@ Linker script.
 .BR "\-t SIZE" , " \-\-stack SIZE
 Create a stack section.
 .TP
+.BR \-\-strict-options
+If this is set, then an option may not be parameter of an another option.
+For example: -s --quiet
+.TP
 .BR "\-u" , " \-\-macro symbol=[value]
 Add macro value for script.
 .TP

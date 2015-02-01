@@ -38,6 +38,10 @@ Preserve dates.
 .BR "\-r SECTION" , " \-\-remove-section SECTION
 Remove section.
 .TP
+.BR \-\-strict-options
+If this is set, then an option may not be parameter of an another option.
+For example: -o --version
+.TP
 .BR \-s ", "\-\-strip\-all
 Remove all symbols.
 .TP

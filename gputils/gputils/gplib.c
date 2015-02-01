@@ -85,17 +85,16 @@ void show_usage(void)
 {
   printf("Usage: gplib [options] library [member]\n");
   printf("Options: [defaults in brackets after descriptions]\n");
-  printf("  -c, --create               Create a new library.\n");
-  printf("  -d, --delete               Delete member from library.\n");
-  printf("  -h, --help                 Show this usage message.\n");
-  printf("  -n, --no-index             Don't add symbol index.\n");
-  printf("  -q, --quiet                Quiet mode.\n");
-  printf("  -r, --replace              Add or replace member from library.\n");
-  printf("  -s, --symbols              List global symbols in library.\n");
-  printf("  -t, --list                 List members in library.\n");
-  printf("  -v, --version              Show version.\n");
-  printf("  -x, --extract              Extract member from library.\n");
-  printf("\n");
+  printf("  -c, --create       Create a new library.\n");
+  printf("  -d, --delete       Delete member from library.\n");
+  printf("  -h, --help         Show this usage message.\n");
+  printf("  -n, --no-index     Don't add symbol index.\n");
+  printf("  -q, --quiet        Quiet mode.\n");
+  printf("  -r, --replace      Add or replace member from library.\n");
+  printf("  -s, --symbols      List global symbols in library.\n");
+  printf("  -t, --list         List members in library.\n");
+  printf("  -v, --version      Show version.\n");
+  printf("  -x, --extract      Extract member from library.\n\n");
   printf("Report bugs to:\n");
   printf("%s\n", PACKAGE_BUGREPORT);
   exit(0);
@@ -103,7 +102,8 @@ void show_usage(void)
 
 #define GET_OPTIONS "?cdhnqrstvx"
 
-static struct option longopts[] = {
+static struct option longopts[] =
+{
   { "create",   no_argument, NULL, 'c' },
   { "delete",   no_argument, NULL, 'd' },
   { "extract",  no_argument, NULL, 'x' },
@@ -114,19 +114,16 @@ static struct option longopts[] = {
   { "symbols",  no_argument, NULL, 's' },
   { "list",     no_argument, NULL, 't' },
   { "version",  no_argument, NULL, 'v' },
-  { NULL,       0,           NULL,  0  }
+  { NULL,       no_argument, NULL, '\0'}
 };
-
-#define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
 
 int main(int argc, char *argv[])
 {
-  extern int optind;
-  int i = 0;
   int c;
-  gp_boolean usage = false;
+  int i;
+  gp_boolean usage          = false;
   gp_boolean update_archive = false;
-  gp_boolean no_index = false;
+  gp_boolean no_index       = false;
   gp_archive_type *object = NULL;
 
   gp_init();
@@ -135,41 +132,51 @@ int main(int argc, char *argv[])
   definition_tbl = push_symbol_table(NULL, false);
   symbol_index = push_symbol_table(NULL, false);
 
-  while ((c = GETOPT_FUNC) != EOF) {
+  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
     switch (c) {
     case '?':
     case 'h':
       usage = true;
       break;
+
     case 'c':
       select_mode(AR_CREATE);
       break;
+
     case 'd':
       select_mode(AR_DELETE);
       break;
+
     case 'n':
       no_index = true;
       break;
+
     case 'q':
       gp_quiet = true;
       break;
+
     case 'r':
       select_mode(AR_REPLACE);
       break;
+
     case 's':
       select_mode(AR_SYMBOLS);
       break;
+
     case 't':
       select_mode(AR_LIST);
       break;
+
     case 'v':
       fprintf(stderr, "%s\n", GPLIB_VERSION_STRING);
       exit(0);
       break;
+
     case 'x':
       select_mode(AR_EXTRACT);
       break;
     }
+
     if (usage)
       break;
   }

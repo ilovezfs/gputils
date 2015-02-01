@@ -518,17 +518,17 @@ gpasmVal
 do_or_append_insn(char *op, struct pnode *parms)
 {
   if (IN_MACRO_WHILE_DEFINITION) {
-    if (0 == strcasecmp(op, "endm")) {
+    if (strcasecmp(op, "endm") == 0) {
       return do_insn(op, parms);
     }
     else if (IN_WHILE_DEFINITION) {
-      if (0 == strcasecmp(op, "while")) {
-        assert(0 != state.while_depth);
+      if (strcasecmp(op, "while") == 0) {
+        assert(state.while_depth != 0);
         ++state.while_depth;
       }
-      else if (state.while_head && 0 == strcasecmp(op, "endw")) {
-        assert(0 != state.while_depth);
-        if (0 == --state.while_depth) {
+      else if (state.while_head && strcasecmp(op, "endw") == 0) {
+        assert(state.while_depth != 0);
+        if (--state.while_depth == 0) {
           return do_insn(op, parms);
         }
       }
@@ -611,13 +611,13 @@ add_file(unsigned int type, const char *name)
   static unsigned int file_id = 0;
   struct file_context *new;
 
-  /* First check to make sure this file is not already in the list */
+  /* First check to make sure this file is not already in the list. */
 
   if (last != NULL) {
     new = last;
     do {
       if (strcmp(new->name, name) == 0) {
-        return(new);
+        return new;
       }
       new = new->prev;
     } while(new != NULL);
