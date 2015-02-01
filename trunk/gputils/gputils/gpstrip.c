@@ -206,43 +206,49 @@ void show_usage(void)
   printf("  -o FILE, --output FILE                Alternate name of output file.\n");
   printf("  -p, --preserve-dates                  Preserve dates.\n");
   printf("  -r SECTION, --remove-section SECTION  Remove section.\n");
+  printf("      --strict-options                  If this is set, then an option may not be parameter\n"
+         "                                        of an another option. For example: -o --version\n");
   printf("  -s, --strip-all                       Remove all symbols.\n");
   printf("  -u, --strip-unneeded                  Strip symbols not need for relocations.\n");
   printf("  -v, --version                         Show version.\n");
   printf("  -V, --verbose                         Verbose mode.\n");
-  printf("  -x, --discard-all                     Remove non-global symbols.\n");
-  printf("\n");
+  printf("  -x, --discard-all                     Remove non-global symbols.\n\n");
   printf("Report bugs to:\n");
   printf("%s\n", PACKAGE_BUGREPORT);
   exit(0);
 }
 
+enum {
+  OPT_STRICT_OPTIONS = 0x100
+};
+
 #define GET_OPTIONS "?ghk:n:o:pr:suvVx"
 
-  static struct option longopts[] =
-  {
-    { "strip-debug",    0, 0, 'g' },
-    { "help",           0, 0, 'h' },
-    { "keep-symbol",    1, 0, 'k' },
-    { "strip-symbol",   1, 0, 'n' },
-    { "output",         1, 0, 'o' },
-    { "preserve-dates", 0, 0, 'p' },
-    { "remove-section", 1, 0, 'r' },
-    { "strip-all",      0, 0, 's' },
-    { "strip-unneeded", 0, 0, 'u' },
-    { "version",        0, 0, 'v' },
-    { "verbose",        0, 0, 'V' },
-    { "discard-all",    0, 0, 'x' },
-    { 0, 0, 0, 0 }
-  };
-
-#define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
+static struct option longopts[] =
+{
+  { "strip-debug",    no_argument,       NULL, 'g' },
+  { "help",           no_argument,       NULL, 'h' },
+  { "keep-symbol",    required_argument, NULL, 'k' },
+  { "strip-symbol",   required_argument, NULL, 'n' },
+  { "output",         required_argument, NULL, 'o' },
+  { "preserve-dates", no_argument,       NULL, 'p' },
+  { "remove-section", required_argument, NULL, 'r' },
+  { "strict-options", no_argument,       NULL, OPT_STRICT_OPTIONS },
+  { "strip-all",      no_argument,       NULL, 's' },
+  { "strip-unneeded", no_argument,       NULL, 'u' },
+  { "version",        no_argument,       NULL, 'v' },
+  { "verbose",        no_argument,       NULL, 'V' },
+  { "discard-all",    no_argument,       NULL, 'x' },
+  { NULL,             no_argument,       NULL, '\0'}
+};
 
 int main(int argc, char *argv[])
 {
-  extern int optind;
+  int option_index;
+  const char *command;
   int c;
-  int usage = 0;
+  gp_boolean strict_options = false;
+  gp_boolean usage          = false;
 
   gp_init();
 
@@ -258,46 +264,83 @@ int main(int argc, char *argv[])
   state.symbol_remove = push_symbol_table(NULL, false);
   state.section_remove = push_symbol_table(NULL, false);
 
-  while ((c = GETOPT_FUNC) != EOF) {
+  /* Scan through the options for the --strict-options flag. */
+  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
+    if (c == OPT_STRICT_OPTIONS) {
+      strict_options = true;
+      break;
+    }
+  }
+
+  /* Restores the getopt_long index. */
+  optind = 1;
+  while (true) {
+    /* This is necessary for the gp_exit_is_excluded_arg() function. */
+    option_index = -1;
+    command = argv[optind];
+    if ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, &option_index)) == EOF) {
+      break;
+    }
+
+    if (strict_options) {
+      gp_exit_if_arg_an_option(longopts, ARRAY_SIZE(longopts), option_index, optarg, c, command);
+    }
+
     switch (c) {
     case '?':
     case 'h':
-      usage = 1;
+      usage = true;
       break;
+
     case 'g':
       state.strip_debug = true;
       break;
+
     case 'k':
       add_name(state.symbol_keep, optarg);
       break;
+
     case 'n':
       add_name(state.symbol_remove, optarg);
       break;
+
     case 'o':
       state.output_file = optarg;
       break;
+
     case 'p':
       state.preserve_dates = true;
       break;
+
     case 'r':
       add_name(state.section_remove, optarg);
       break;
+
     case 's':
       state.strip_all = true;
       break;
+
     case 'u':
       state.strip_unneeded = true;
       break;
+
     case 'x':
       state.discard_all = true;
       break;
+
     case 'V':
       verbose = true;
       break;
+
     case 'v':
       fprintf(stderr, "%s\n", GPSTRIP_VERSION_STRING);
       exit(0);
+
+    case OPT_STRICT_OPTIONS:
+      /* do nothing */
+      break;
     }
+
     if (usage)
       break;
   }

@@ -396,30 +396,32 @@ set_optimize_level(void)
 #define GET_OPTIONS "?a:cdf:hI:lmo:O:qrs:t:u:vw"
 
 enum {
-  OPT_MPLINK_COMPATIBLE = 0x100
+  OPT_MPLINK_COMPATIBLE = 0x100,
+  OPT_STRICT_OPTIONS
 };
 
 static struct option longopts[] =
 {
-  { "hex-format",          required_argument, NULL, 'a' },
-  { "object",              no_argument,       NULL, 'c' },
-  { "debug",               no_argument,       NULL, 'd' },
-  { "fill",                required_argument, NULL, 'f' },
-  { "help",                no_argument,       NULL, 'h' },
-  { "include",             required_argument, NULL, 'I' },
-  { "no-list",             no_argument,       NULL, 'l' },
-  { "map",                 no_argument,       NULL, 'm' },
-  { "output",              required_argument, NULL, 'o' },
-  { "optimize",            required_argument, NULL, 'O' },
-  { "quiet",               no_argument,       NULL, 'q' },
-  { "use-shared",          no_argument,       NULL, 'r' },
-  { "script",              required_argument, NULL, 's' },
-  { "stack",               required_argument, NULL, 't' },
-  { "macro",               required_argument, NULL, 'u' },
-  { "version",             no_argument,       NULL, 'v' },
-  { "processor-mismatch",  no_argument,       NULL, 'w' },
-  { "mplink-compatible",   no_argument,       NULL, OPT_MPLINK_COMPATIBLE },
-  { NULL,                  no_argument,       NULL, '\0'}
+  { "hex-format",         required_argument, NULL, 'a' },
+  { "object",             no_argument,       NULL, 'c' },
+  { "debug",              no_argument,       NULL, 'd' },
+  { "fill",               required_argument, NULL, 'f' },
+  { "help",               no_argument,       NULL, 'h' },
+  { "include",            required_argument, NULL, 'I' },
+  { "no-list",            no_argument,       NULL, 'l' },
+  { "map",                no_argument,       NULL, 'm' },
+  { "output",             required_argument, NULL, 'o' },
+  { "optimize",           required_argument, NULL, 'O' },
+  { "quiet",              no_argument,       NULL, 'q' },
+  { "use-shared",         no_argument,       NULL, 'r' },
+  { "script",             required_argument, NULL, 's' },
+  { "stack",              required_argument, NULL, 't' },
+  { "strict-options",     no_argument,       NULL, OPT_STRICT_OPTIONS },
+  { "macro",              required_argument, NULL, 'u' },
+  { "version",            no_argument,       NULL, 'v' },
+  { "processor-mismatch", no_argument,       NULL, 'w' },
+  { "mplink-compatible",  no_argument,       NULL, OPT_MPLINK_COMPATIBLE },
+  { NULL,                 no_argument,       NULL, '\0'}
 };
 
 void
@@ -488,7 +490,7 @@ parse_define(const char *optarg, void (*func)(const char* name, long value))
 void
 show_usage(void)
 {
-  printf("Usage: gplink [options] [objects] [libraries] \n");
+  printf("Usage: gplink [options] [objects] [libraries]\n");
   printf("Options: [defaults in brackets after descriptions]\n");
   printf("  -a FMT, --hex-format FMT       Select hex file format.\n");
   printf("  -c, --object                   Output executable object file.\n");
@@ -498,13 +500,15 @@ show_usage(void)
   printf("  -I DIR, --include DIR          Specify include directory.\n");
   printf("  -l, --no-list                  Disable list file output.\n");
   printf("  -m, --map                      Output a map file.\n");
-  printf("      --mplink-compatible        MPLINK compatibility mode\n");
+  printf("      --mplink-compatible        MPLINK compatibility mode.\n");
   printf("  -o FILE, --output FILE         Alternate name of output file.\n");
   printf("  -O OPT, --optimize OPT         Optimization level [1].\n");
   printf("  -q, --quiet                    Quiet.\n");
   printf("  -r, --use-shared               Use shared memory if necessary.\n");
   printf("  -s FILE, --script FILE         Linker script.\n");
   printf("  -t SIZE, --stack SIZE          Create a stack section.\n");
+  printf("      --strict-options           If this is set, then an option may not be parameter\n"
+         "                                 of an another option. For example: -s --quiet\n");
   printf("  -u, --macro symbol[=value]     Add macro value for script.\n");
   printf("  -v, --version                  Show version.\n");
   printf("  -w, --processor-mismatch       Disable \"processor mismatch\" warning.\n");
@@ -515,6 +519,7 @@ show_usage(void)
   } else {
     printf("Default linker script path NOT SET\n");
   }
+
   if (gp_lib_path != NULL) {
     printf("Default library path %s\n", gp_lib_path);
   } else {
@@ -530,16 +535,38 @@ show_usage(void)
 void
 process_args( int argc, char *argv[])
 {
-  extern char *optarg;
-  extern int optind;
+  int option_index;
+  const char *command;
   int c;
-  gp_boolean usage = false;
+  gp_boolean strict_options = false;
+  gp_boolean usage          = false;
   char *pc;
 
-  /* first pass through options */
-  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
-    switch (c) {
-    case 'O':
+  /* Scan through the options for the --strict-options flag. */
+  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
+    if (c == OPT_STRICT_OPTIONS) {
+      strict_options = true;
+      break;
+    }
+  }
+
+  /* Restores the getopt_long index. */
+  optind = 1;
+
+  /* second pass through options */
+  while (true) {
+    /* This is necessary for the gp_exit_is_excluded_arg() function. */
+    option_index = -1;
+    command = argv[optind];
+    if ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, &option_index)) == EOF) {
+      break;
+    }
+
+    if (strict_options) {
+      gp_exit_if_arg_an_option(longopts, ARRAY_SIZE(longopts), option_index, optarg, c, command);
+    }
+
+    if (c == 'O') {
       state.optimize.level = atoi(optarg);
       break;
     }
@@ -550,8 +577,8 @@ process_args( int argc, char *argv[])
 
   set_optimize_level();
 
-  /* second pass through options */
-  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
+  /* third pass through options */
+  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
     switch (c) {
     case 'a':
       if (strcasecmp(optarg, "inhx8m") == 0) {
@@ -632,7 +659,7 @@ process_args( int argc, char *argv[])
         fn->filename = strdup(optarg);
         fn->next = NULL;
 
-        if (NULL == state.srcfilenames) {
+        if (state.srcfilenames == NULL) {
           state.srcfilenames = fn;
         }
         else {
@@ -669,6 +696,10 @@ process_args( int argc, char *argv[])
 
     case OPT_MPLINK_COMPATIBLE:
       state.mplink_compatible = true;
+      break;
+
+    case OPT_STRICT_OPTIONS:
+      /* do nothing */
       break;
     }
 

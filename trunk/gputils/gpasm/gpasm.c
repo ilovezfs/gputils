@@ -52,7 +52,8 @@ struct list_params {
 };
 
 enum {
-  OPT_MPASM_COMPATIBLE = 0x100
+  OPT_MPASM_COMPATIBLE = 0x100,
+  OPT_STRICT_OPTIONS
 };
 
 static struct option longopts[] =
@@ -81,6 +82,7 @@ static struct option longopts[] =
   { "radix",                     required_argument, NULL, 'r' },
   { "list-processor-properties", optional_argument, NULL, 's' },
   { "strict",                    required_argument, NULL, 'S' },
+  { "strict-options",            no_argument,       NULL, OPT_STRICT_OPTIONS },
   { "sdcc-dev14-list",           no_argument,       NULL, 't' },
   { "absolute",                  no_argument,       NULL, 'u' },
   { "version",                   no_argument,       NULL, 'v' },
@@ -424,14 +426,14 @@ show_usage(void)
   printf("  -h, --help                     Show this usage message.\n");
   printf("  -i, --ignore-case              Case insensitive.\n");
   printf("  -I DIR, --include DIR          Specify include directory.\n");
-  printf("  -j, --sdcc-dev16-list          Help to the extension of the pic16devices.txt file\n");
-  printf("                                 in the sdcc project. Using by itself, displays the all\n");
-  printf("                                 '16e' devices. Along with the '-p' option, shows only\n");
-  printf("                                 the specified device.\n");
+  printf("  -j, --sdcc-dev16-list          Help to the extension of the pic16devices.txt file\n"
+         "                                 in the sdcc project. Using by itself, displays the all\n"
+         "                                 '16e' devices. Along with the '-p' option, shows only\n"
+         "                                 the specified device.\n");
   printf("  -k, --error                    Enables creation of the error file.\n");
-  printf("  -l[12[ce]|14[ce]|16[ce]], --list-chips[=([12[ce]|14[ce]|16[ce]])]\n");
-  printf("                                 Lists the names of the supported processors, based on\n");
-  printf("                                 various aspects.\n");
+  printf("  -l[12[ce]|14[ce]|16[ce]], --list-chips[=([12[ce]|14[ce]|16[ce]])]\n"
+         "                                 Lists the names of the supported processors, based on\n"
+         "                                 various aspects.\n");
   printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -m, --dump                     Memory dump.\n");
   printf("      --mpasm-compatible         MPASM compatibility mode.\n");
@@ -439,40 +441,41 @@ show_usage(void)
 #ifndef HAVE_DOS_BASED_FILE_SYSTEM
   printf("  -n, --dos                      Use DOS newlines in hex file.\n");
 #endif
-  printf("  -o FILE, --output FILE         Alternate name of output files. Option effect of:\n");
-  printf("                                 -- If the \"-c\" option included in the command line:\n");
-  printf("                                      FILE.o, FILE.lst, FILE.err\n");
-  printf("                                        (The \"FILE.o\" should specified.)\n");
-  printf("                                 -- If the \"-c\" option not included in the command line:\n");
-  printf("                                      FILE.hex, FILE.cod, FILE.lst, FILE.err\n");
-  printf("                                        (The \"FILE.hex\" should specified.)\n");
+  printf("  -o FILE, --output FILE         Alternate name of output files. Option effect of:\n"
+         "                                 -- If the \"-c\" option included in the command line:\n"
+         "                                      FILE.o, FILE.lst, FILE.err\n"
+         "                                        (The \"FILE.o\" should specified.)\n");
+  printf("                                 -- If the \"-c\" option not included in the command line:\n"
+         "                                      FILE.hex, FILE.cod, FILE.lst, FILE.err\n"
+         "                                        (The \"FILE.hex\" should specified.)\n");
   printf("  -p PROC, --processor PROC      Select processor.\n");
   printf("  -P FILE, --preprocess FILE     Write preprocessed asm file to FILE.\n");
   printf("  -q, --quiet                    Suppress anything sent to standard output.\n");
   printf("  -r RADIX, --radix RADIX        Select radix. [hex]\n");
-  printf("  -s[12[ce]|14[ce]|16[ce]], --list-processor-properties[=([12[ce]|14[ce]|16[ce]])]\n");
-  printf("                                 Lists properties of the processors. Using by itself, displays\n");
-  printf("                                 the all devices or group of the devices. Along with the '-p'\n");
-  printf("                                 option, shows only the specified device.\n");
-  printf("  -S [0|1|2], --strict [0|1|2]   Set the strict level of the recommended instruction-parameters\n");
-  printf("                                 (W or F and A or B). The \"strict messages\" have higher priority\n");
-  printf("                                 than the warnings. (See: -w [0|1|2]) [0]\n");
-  printf("                                     0: Is the default. No strict messages.\n");
-  printf("                                     1: Show warning messages if one of is missing.\n");
-  printf("                                     2: Show error messages if one of is missing.\n");
-  printf("  -t, --sdcc-dev14-list          Help to the extension of the pic14devices.txt file\n");
-  printf("                                 in the sdcc project. Using by itself, displays the all\n");
-  printf("                                 '14' and '14e' devices. Along with the '-p' option, shows only\n");
-  printf("                                 the specified device.\n");
+  printf("  -s[12[ce]|14[ce]|16[ce]], --list-processor-properties[=([12[ce]|14[ce]|16[ce]])]\n"
+         "                                 Lists properties of the processors. Using by itself,\n"
+         "                                 displays the all devices or group of the devices. Along\n"
+         "                                 with the '-p' option, shows only the specified device.\n");
+  printf("  -S [0|1|2], --strict [0|1|2]   Set the strict level of the recommended instruction-parameters\n"
+         "                                 (W or F and A or B). The \"strict messages\" have higher\n"
+         "                                 priority than the warnings. (See: -w [0|1|2]) [0]\n");
+  printf("                                     0: Is the default. No strict messages.\n"
+         "                                     1: Show warning messages if one of is missing.\n"
+         "                                     2: Show error messages if one of is missing.\n");
+  printf("  -t, --sdcc-dev14-list          Help to the extension of the pic14devices.txt file\n"
+         "                                 in the sdcc project. Using by itself, displays the all\n"
+         "                                 '14' and '14e' devices. Along with the '-p' option,\n"
+         "                                 shows only the specified device.\n");
+  printf("      --strict-options           If this is set, then an option may not be parameter\n"
+         "                                 of an another option. For example: -I -c\n");
   printf("  -u, --absolute                 Use absolute pathes. \n");
   printf("  -v, --version                  Show version.\n");
-  printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n");
-  printf("                                     0: Is the default. It will allow all messages, warnings and\n");
-  printf("                                        errors to be reported.\n");
-  printf("                                     1: Will suppress the messages.\n");
-  printf("                                     2: Will suppress the messages and warnings.\n");
-  printf("  -y, --extended                 Enable 18xx extended mode.\n");
-  printf("\n");
+  printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n"
+         "                                     0: Is the default. It will allow all messages,\n"
+         "                                        warnings and errors to be reported.\n"
+         "                                     1: Will suppress the messages.\n"
+         "                                     2: Will suppress the messages and warnings.\n");
+  printf("  -y, --extended                 Enable 18xx extended mode.\n\n");
 #ifdef USE_DEFAULT_PATHS
   if (gp_header_path != NULL) {
     printf("Default header file path %s\n", gp_header_path);
@@ -491,11 +494,16 @@ show_usage(void)
 void
 add_path(const char *path)
 {
+  if (path[0] == '\0') {
+    /* This is an empty path. */
+    return;
+  }
+
   if (state.path_num < MAX_PATHS) {
     state.paths[state.path_num++] = strdup(path);
   }
   else {
-    fprintf(stderr, "too many -I paths\n");
+    fprintf(stderr, "Too many -I paths.\n");
     exit(1);
   }
 }
@@ -503,16 +511,17 @@ add_path(const char *path)
 /*------------------------------------------------------------------------------------------------*/
 
 void
-process_args( int argc, char *argv[])
+process_args(int argc, char *argv[])
 {
-  extern char *optarg;
-  extern int optind;
+  int option_index;
+  const char *command;
   int c;
   long pic_family;
-  gp_boolean usage = false;
-  gp_boolean sdcc_dev14 = false;
-  gp_boolean sdcc_dev16 = false;
-  gp_boolean properties = false;
+  gp_boolean usage          = false;
+  gp_boolean sdcc_dev14     = false;
+  gp_boolean sdcc_dev16     = false;
+  gp_boolean properties     = false;
+  gp_boolean strict_options = false;
   int usage_code = 0;
   char *pc;
 
@@ -520,11 +529,32 @@ process_args( int argc, char *argv[])
   list_options.class1    = PROC_CLASS_UNKNOWN;
   list_options.class2    = PROC_CLASS_UNKNOWN;
 
+  /* Scan through the options for the --strict-options flag. */
+  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
+    if (c == OPT_STRICT_OPTIONS) {
+      strict_options = true;
+      break;
+    }
+  }
+
+  /* Restores the getopt_long index. */
+  optind = 1;
+
   /* Scan through the options for the -i flag. It must be set before the
      defines are read. */
-  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
-    switch (c) {
-    case 'i':
+  while (true) {
+    /* This is necessary for the exit_is_excluded_arg() function. */
+    option_index = -1;
+    command = argv[optind];
+    if ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, &option_index)) == EOF) {
+      break;
+    }
+
+    if (strict_options) {
+      gp_exit_if_arg_an_option(longopts, ARRAY_SIZE(longopts), option_index, optarg, c, command);
+    }
+
+    if (c == 'i') {
       state.case_insensitive = true;
       break;
     }
@@ -536,7 +566,7 @@ process_args( int argc, char *argv[])
   /* initalize the defines table for command line arguments */
   state.stDefines = push_symbol_table(NULL, state.case_insensitive);
 
-  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, 0)) != EOF) {
+  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
     switch (c) {
     case '?':
       usage_code = 1;
@@ -811,6 +841,9 @@ process_args( int argc, char *argv[])
     case OPT_MPASM_COMPATIBLE:
       state.mpasm_compatible = true;
       break;
+
+    case OPT_STRICT_OPTIONS:
+      break;
     }
 
     if (usage) {
@@ -869,7 +902,7 @@ process_args( int argc, char *argv[])
 
   /* Add the header path to the include paths list last, so that the user
      specified directories are searched first. */
-  if (gp_header_path) {
+  if (gp_header_path != NULL) {
     add_path(gp_header_path);
   }
 
@@ -974,7 +1007,7 @@ assemble(void)
 
   assert(state.pass == 2);
 
-  if (state.obj.object) {
+  if (state.obj.object != NULL) {
     /* Set F_ABSOLUTE COFF flag if absolute mode. */
     if (state.mode == MODE_ABSOLUTE) {
       state.obj.object->flags |= F_ABSOLUTE;

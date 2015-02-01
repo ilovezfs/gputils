@@ -1,3 +1,15 @@
+2015-02-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/testsuite/test-regression, gpasm/gpasm.c,
+    gplink/testsuite/test, gplink/gplink.c, gputils/testsuite/test,
+    gputils/gpdasm.c, gputils/gpstrip.c, gputils/gpvo.c,
+    libgputils/gpsystem.c, libgputils/gpsystem.h, man/gpasm.1.in,
+    man/gpdasm.1.in, man/gplink.1.in, man/gpstrip.1.in, man/gpvo.1.in:
+    Fixed the bug: "#277 GPASM outputs in the wrong directory"
+    Thanks to Philippe Paternotte.
+
+  * gpasm/scan.l, gpasm/util.c, gputils/gplib.c, gputils/gpvc.c:
+    Changed text format.
+
 2015-01-19  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpprocessor.c:
     Fixed the bug: "#279 __IDLOCS does not work for p18f26k80"

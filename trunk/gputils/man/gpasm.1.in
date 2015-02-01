@@ -124,7 +124,9 @@ Suppress anything sent to standard output.
 .BR "\-r RADIX", " \-\-radix RADIX"
 The supported radices are BIN, DEC, OCT, and HEX. The default is HEX.
 .TP
-.BR "\-s[12[ce]|14[ce]|16[ce]]", " \-\-list\-processor\-properties[=([12[ce]|14[ce]|16[ce]])]"
+.BR "\-s[12[ce]|14[ce]|16[ce]]",
+.BR "\-\-list\-processor\-properties[=([12[ce]|14[ce]|16[ce]])]"
+
 Lists properties of the processors. Using by itself, displays the all
 devices or group of the devices. Along with the '-p' option, shows
 only the specified device.
@@ -144,6 +146,10 @@ than the warnings. (See: \-w [0|1|2]) [0]
 Help to the extension of the pic14devices.txt file in the sdcc project.
 Using by itself, displays the all '14' and '14e' devices. Along with
 the '-p' option, shows only the specified device.
+.TP
+.BR \-\-strict-options
+If this is set, then an option may not be parameter of an another option.
+For example: -I -c
 .TP
 .BR \-u ", "\-\-absolute
 Use absolute paths.

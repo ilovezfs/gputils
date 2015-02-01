@@ -382,3 +382,81 @@ gp_absolute_path(char *file_name)
 
 #endif
 }
+
+/*------------------------------------------------------------------------------------------------*/
+
+void
+gp_exit_if_arg_an_option(const struct option *options, int opt_max_index, int opt_index,
+                         const char *opt_string, int opt_char, const char *command)
+{
+  const struct option *opt;
+  int i;
+  char cmd[8];
+
+  if (opt_index < 0) {
+    /* This is likely a short option. */
+    opt = options;
+    i = 0;
+
+    while (opt->name != NULL) {
+      if (opt->val == opt_char) {
+        opt_index = i;
+        cmd[0] = '-';
+        cmd[1] = (char)opt_char;
+        cmd[2] = '\0';
+        command = cmd;
+        break;
+      }
+
+      ++opt;
+      ++i;
+    }
+  }
+
+  if (opt_index < 0) {
+    /* This not an option. */
+    return;
+  }
+
+  if (opt_index >= opt_max_index) {
+    fprintf(stderr, "%s() -- Fatal error: opt_index == %i (Only valid if opt_index < %i.)\n",
+            __func__, opt_index, opt_max_index);
+    exit(1);
+  }
+
+  if (options[opt_index].has_arg == no_argument) {
+    return;
+  }
+
+  if ((opt_string == NULL) || (opt_string[0] != '-') || (opt_string[1] == '\0')) {
+    /* This opt_string can not be option. */
+    return;
+  }
+
+  /* opt_string == "-." */
+  opt = options;
+  while (opt->name != NULL) {
+    if ((opt_string[1] == '-') && (opt_string[2] != '\0')) {
+      /* opt_string == "--." This is a long option? */
+      if (strcmp(&opt_string[2], opt->name) == 0) {
+        goto error;
+      }
+    }
+
+    if (isalnum(opt->val)) {
+      /* opt_string == "-X" This is a short option? */
+      if ((opt_string[1] == (char)opt->val) && (opt_string[2] == '\0')) {
+        goto error;
+      }
+    }
+
+    ++opt;
+  }
+
+  return;
+
+error:
+  fprintf(stderr, "Error: This option may not be parameter of the \"%s\" option: \"%s\"\n",
+          command, opt_string);
+  exit(1);
+}

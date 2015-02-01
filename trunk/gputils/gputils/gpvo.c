@@ -691,47 +691,53 @@ void show_usage(void)
 {
   printf("Usage: gpvo [options] file\n");
   printf("Options: [defaults in brackets after descriptions]\n");
-  printf("  -b, --binary               Print binary data.\n");
-  printf("  -c, --mnemonics            Decode special mnemonics.\n");
-  printf("  -f, --file                 File header.\n");
-  printf("  -h, --help                 Show this usage message.\n");
-  printf("  -n, --no-names             Suppress filenames.\n");
-  printf("  -s, --section              Section data.\n");
-  printf("  -t  --symbol               Symbol table.\n");
-  printf("  -v, --version              Show version.\n");
-  printf("  -x FILE, --export FILE     Export symbols to include file.\n");
-  printf("  -y, --extended             Enable 18xx extended mode.\n");
-  printf("\n");
+  printf("  -b, --binary            Print binary data.\n");
+  printf("  -c, --mnemonics         Decode special mnemonics.\n");
+  printf("  -f, --file              File header.\n");
+  printf("  -h, --help              Show this usage message.\n");
+  printf("  -n, --no-names          Suppress filenames.\n");
+  printf("  -s, --section           Section data.\n");
+  printf("      --strict-options    If this is set, then an option may not be parameter\n"
+         "                          of an another option. For example: -x --symbol\n");
+  printf("  -t  --symbol            Symbol table.\n");
+  printf("  -v, --version           Show version.\n");
+  printf("  -x FILE, --export FILE  Export symbols to include file.\n");
+  printf("  -y, --extended          Enable 18xx extended mode.\n\n");
   printf("Report bugs to:\n");
   printf("%s\n", PACKAGE_BUGREPORT);
   exit(0);
 }
+
+enum {
+  OPT_STRICT_OPTIONS = 0x100
+};
 
 #define GET_OPTIONS "?bcfhnstvx:y"
 
 /* Used: himpsv */
 static struct option longopts[] =
 {
-  { "binary",    no_argument,       NULL, 'b' },
-  { "mnemonics", no_argument,       NULL, 'c' },
-  { "file",      no_argument,       NULL, 'f' },
-  { "help",      no_argument,       NULL, 'h' },
-  { "no-names",  no_argument,       NULL, 'n' },
-  { "section",   no_argument,       NULL, 's' },
-  { "symbol",    no_argument,       NULL, 't' },
-  { "version",   no_argument,       NULL, 'v' },
-  { "export",    required_argument, NULL, 'x' },
-  { "extended",  no_argument,       NULL, 'y' },
-  { NULL,        no_argument,       NULL, '\0'}
+  { "binary",         no_argument,       NULL, 'b' },
+  { "mnemonics",      no_argument,       NULL, 'c' },
+  { "file",           no_argument,       NULL, 'f' },
+  { "help",           no_argument,       NULL, 'h' },
+  { "no-names",       no_argument,       NULL, 'n' },
+  { "section",        no_argument,       NULL, 's' },
+  { "strict-options", no_argument,       NULL, OPT_STRICT_OPTIONS },
+  { "symbol",         no_argument,       NULL, 't' },
+  { "version",        no_argument,       NULL, 'v' },
+  { "export",         required_argument, NULL, 'x' },
+  { "extended",       no_argument,       NULL, 'y' },
+  { NULL,             no_argument,       NULL, '\0'}
 };
-
-#define GETOPT_FUNC getopt_long(argc, argv, GET_OPTIONS, longopts, 0)
 
 int main(int argc, char *argv[])
 {
-  extern int optind;
+  int option_index;
+  const char *command;
   int c;
-  int usage = 0;
+  gp_boolean strict_options = false;
+  gp_boolean usage          = false;
   char buffer[BUFSIZ];
 
   gp_init();
@@ -741,11 +747,32 @@ int main(int argc, char *argv[])
   state.suppress_names = false;
   state.export.enabled = false;
 
-  while ((c = GETOPT_FUNC) != EOF) {
+  /* Scan through the options for the --strict-options flag. */
+  while ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, NULL)) != EOF) {
+    if (c == OPT_STRICT_OPTIONS) {
+      strict_options = true;
+      break;
+    }
+  }
+
+  /* Restores the getopt_long index. */
+  optind = 1;
+  while (true) {
+    /* This is necessary for the gp_exit_is_excluded_arg() function. */
+    option_index = -1;
+    command = argv[optind];
+    if ((c = getopt_long(argc, argv, GET_OPTIONS, longopts, &option_index)) == EOF) {
+      break;
+    }
+
+    if (strict_options) {
+      gp_exit_if_arg_an_option(longopts, ARRAY_SIZE(longopts), option_index, optarg, c, command);
+    }
+
     switch (c) {
     case '?':
     case 'h':
-      usage = 1;
+      usage = true;
       break;
 
     case 'b':
@@ -784,7 +811,12 @@ int main(int argc, char *argv[])
     case 'v':
       fprintf(stderr, "%s\n", GPVO_VERSION_STRING);
       exit(0);
+
+    case OPT_STRICT_OPTIONS:
+      /* do nothing */
+      break;
     }
+
     if (usage)
       break;
   }
@@ -792,7 +824,7 @@ int main(int argc, char *argv[])
   if ((optind + 1) == argc) {
     state.filename = argv[optind];
   } else {
-    usage = 1;
+    usage = true;
   }
 
   if (usage) {
