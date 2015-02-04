@@ -1,3 +1,10 @@
+2015-02-04  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/cfg-import.pl, tools/device-help.pl:
+	  Updated based on the mplabx-2.30.
+
+	* tools/build-register-db.pl, tools/device-manager.pl:
+	  Updated the copyrights.
+
 2014-11-16  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/device-help.pl: A minor optimization.
 

@@ -1,3 +1,14 @@
+2015-02-04  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx:
+    Fixed the bug: "#280 Doc pages cut off on right side"
+    Thanks to Joseph Watson.
+
+  * doc/gputils.lyx, header/Makefile.am, header/Makefile.in,
+    header/*.inc, libgputils/gpcfg-table.c, libgputils/gpprocessor.c,
+    libgputils/gpreg-table.c, lkr/Makefile.am, lkr/Makefile.in,
+    lkr/*.lkr:
+    Updated based on the mplabx-2.30.
+
 2015-02-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpsystem.c:
     More accurate error messages.

@@ -165,6 +165,10 @@ LKR_FILES =\
 	16f1519_g.lkr \
 	16f1526_g.lkr \
 	16f1527_g.lkr \
+	16f1574_g.lkr \
+	16f1575_g.lkr \
+	16f1578_g.lkr \
+	16f1579_g.lkr \
 	16f1613_g.lkr \
 	16f1614_g.lkr \
 	16f1615_g.lkr \
@@ -200,6 +204,8 @@ LKR_FILES =\
 	16f1828_g.lkr \
 	16f1829_g.lkr \
 	16f1829lin_g.lkr \
+	16f18313_g.lkr \
+	16f18323_g.lkr \
 	16f1847_g.lkr \
 	16f18855_g.lkr \
 	16f18875_g.lkr \
@@ -311,6 +317,10 @@ LKR_FILES =\
 	16lf1527_g.lkr \
 	16lf1554_g.lkr \
 	16lf1559_g.lkr \
+	16lf1574_g.lkr \
+	16lf1575_g.lkr \
+	16lf1578_g.lkr \
+	16lf1579_g.lkr \
 	16lf1613_g.lkr \
 	16lf1614_g.lkr \
 	16lf1615_g.lkr \
@@ -346,6 +356,8 @@ LKR_FILES =\
 	16lf1827_g.lkr \
 	16lf1828_g.lkr \
 	16lf1829_g.lkr \
+	16lf18313_g.lkr \
+	16lf18323_g.lkr \
 	16lf1847_g.lkr \
 	16lf18855_g.lkr \
 	16lf18875_g.lkr \
