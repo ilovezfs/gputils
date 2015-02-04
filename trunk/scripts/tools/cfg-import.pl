@@ -2,7 +2,7 @@
 
 =back
 
-    Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2014-2015 Molnar Karoly <molnarkaroly@users.sf.net>
 
     This file is part of gputils.
 
@@ -298,6 +298,8 @@ my @mcu_missed_debug =
   'PIC16F1517', 'PIC16LF1517', 'PIC16F1518', 'PIC16LF1518',
   'PIC16F1519', 'PIC16LF1519', 'PIC16F1526', 'PIC16LF1526',
   'PIC16F1527', 'PIC16LF1527', 'PIC16LF1554', 'PIC16LF1559',
+  'PIC16F1574', 'PIC16LF1574', 'PIC16F1575', 'PIC16LF1575',
+  'PIC16F1578', 'PIC16LF1578', 'PIC16F1579', 'PIC16LF1579',
   'PIC16F1613', 'PIC16LF1613', 'PIC16F1703', 'PIC16LF1703',
   'PIC16F1704', 'PIC16LF1704', 'PIC16F1705', 'PIC16LF1705',
   'PIC16F1707', 'PIC16LF1707', 'PIC16F1708', 'PIC16LF1708',
@@ -1148,7 +1150,7 @@ sub print_device_table()
 sub print_license()
   {
   print $out_handler <<EOT
-/*  Copyright (C) 2014 Molnar Karoly <molnarkaroly\@users.sf.net>
+/*  Copyright (C) 2014-2015 Molnar Karoly <molnarkaroly\@users.sf.net>
 
 This file is part of gputils.
 
