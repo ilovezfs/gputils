@@ -21,6 +21,14 @@ along with gputils; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
+#include <config.h>
+#include <stdlib.h>
+#ifdef HAVE_SYS_IOCTL_H
+# include <sys/ioctl.h>	/* ioctl(TIOCGWINSZ) with GNU and BSD */
+#endif
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>	/* ioctl(TIOCGWINSZ) with Solaris */
+#endif
 #include "stdhdr.h"
 #include "libgputils.h"
 
@@ -765,12 +773,20 @@ void gp_dump_processor_list(gp_boolean list_all, proc_class_t class1, proc_class
   int i;
   int length;
   int column_width;
+  int columns = COLUMNS;
   int num;
   const char *name;
   gp_boolean newline = false;
+#ifdef TIOCGWINSZ
+  struct winsize ws;
+#endif
 
   column_width = 0;
   for (i = 0; i < NUM_PICS; i++) {
+    if (!list_all && (pics[i].class != class1) && (pics[i].class != class2)) {
+      continue;
+    }
+
     length = strlen(pics[i].names[FAVORITE]);
 
     if (length > column_width) {
@@ -780,12 +796,34 @@ void gp_dump_processor_list(gp_boolean list_all, proc_class_t class1, proc_class
 
   column_width += SPACE_BETWEEN;
 
+#ifdef TIOCGWINSZ
+  /* Adapt to available screen width. */
+  if ((isatty(STDOUT_FILENO) > 0) && (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == 0)) {
+    columns = ws.ws_col / column_width;
+  }
+  else
+#endif
+  {
+    /* This will in particular be executed when a pipeline
+     * is set up by a shell command.
+     */
+    const char *width = getenv("COLUMNS");
+    int w = (width != NULL) ? atoi(width) : 80;
+
+    /* Check that the line width is reasonable. */
+    if ((w <= 0) || (w > 240)) {
+      w = 80;
+    }
+
+    columns = w / column_width;
+  }
+
   num = 0;
   for (i = 0; i < NUM_PICS; i++) {
     if (list_all || (pics[i].class == class1) || (pics[i].class == class2)) {
       num++;
       name = pics[i].names[FAVORITE];
-      newline = ((num % COLUMNS) == 0) ? true : false;
+      newline = ((num % columns) == 0) ? true : false;
 
       if (i >= (NUM_PICS - 1)) {
         printf("%s", name);
@@ -799,7 +837,7 @@ void gp_dump_processor_list(gp_boolean list_all, proc_class_t class1, proc_class
     }
   }
 
-  if (!newline) {
+  if (!newline || (num == NUM_PICS)) {
     putchar('\n');
   }
 }

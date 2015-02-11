@@ -57,7 +57,7 @@ AC_CHECK_TOOL(AR, ar, :)
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([libintl.h malloc.h stdlib.h string.h strings.h unistd.h windows.h])
+AC_CHECK_HEADERS([libintl.h malloc.h stdlib.h string.h strings.h sys/ioctl.h termios.h unistd.h windows.h])
 AC_CHECK_DECLS([asprintf, basename, getopt, vasprintf])
 
 # Checks for typedefs, structures, and compiler characteristics.

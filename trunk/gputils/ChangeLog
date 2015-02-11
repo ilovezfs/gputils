@@ -1,3 +1,12 @@
+2015-02-09  Mats Erik Andersson <meand@users.sourceforge.net>
+  * configure.ac:
+    Check for headers <sys/ioctl.h> and <termios.h>.
+
+  * libgputils/gpprocessor.c:
+    Let --list-chips adapt to available screen width. Calculate
+    the maximal column_width from the desired chip selection, not
+    from all available chips. Fix a corner case for the last newline.
+
 2015-02-04  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx:
     Fixed the bug: "#280 Doc pages cut off on right side"
