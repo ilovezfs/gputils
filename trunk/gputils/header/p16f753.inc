@@ -358,8 +358,8 @@ FVROE            EQU  H'0005'
 FVRRDY           EQU  H'0006'
 FVREN            EQU  H'0007'
 
-FVRBUFSS0        EQU  H'0003'
-FVRBUFSS1        EQU  H'0004'
+FVRBUSS0         EQU  H'0003'
+FVRBUSS1         EQU  H'0004'
 
 
 ;----- DAC1CON0 Bits -----------------------------------------------------

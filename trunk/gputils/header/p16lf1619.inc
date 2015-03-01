@@ -245,6 +245,7 @@ T6CLKCON         EQU  H'041E'
 T6RST            EQU  H'041F'
 
 ;-----Bank9------------------
+TMR3             EQU  H'0493'
 TMR3L            EQU  H'0493'
 TMR3H            EQU  H'0494'
 T3CON            EQU  H'0495'
