@@ -1,10 +1,10 @@
         LIST
 
 ;==========================================================================
-; Build date : Nov 13 2014
+; Build date : Feb 13 2015
 ;  MPASM PIC16F18875 processor include
 ; 
-;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -225,22 +225,27 @@ T6CLKCON         EQU  H'029C'
 T6RST            EQU  H'029D'
 
 ;-----Bank6------------------
+CCPR1            EQU  H'030C'
 CCPR1L           EQU  H'030C'
 CCPR1H           EQU  H'030D'
 CCP1CON          EQU  H'030E'
 CCP1CAP          EQU  H'030F'
+CCPR2            EQU  H'0310'
 CCPR2L           EQU  H'0310'
 CCPR2H           EQU  H'0311'
 CCP2CON          EQU  H'0312'
 CCP2CAP          EQU  H'0313'
+CCPR3            EQU  H'0314'
 CCPR3L           EQU  H'0314'
 CCPR3H           EQU  H'0315'
 CCP3CON          EQU  H'0316'
 CCP3CAP          EQU  H'0317'
+CCPR4            EQU  H'0318'
 CCPR4L           EQU  H'0318'
 CCPR4H           EQU  H'0319'
 CCP4CON          EQU  H'031A'
 CCP4CAP          EQU  H'031B'
+CCPR5            EQU  H'031C'
 CCPR5L           EQU  H'031C'
 CCPR5H           EQU  H'031D'
 CCP5CON          EQU  H'031E'
@@ -2070,28 +2075,6 @@ T6RSEL3          EQU  H'0003'
 T6RSEL4          EQU  H'0004'
 
 
-;----- CCPR1L Bits -----------------------------------------------------
-CCPR0            EQU  H'0000'
-CCPR1            EQU  H'0001'
-CCPR2            EQU  H'0002'
-CCPR3            EQU  H'0003'
-CCPR4            EQU  H'0004'
-CCPR5            EQU  H'0005'
-CCPR6            EQU  H'0006'
-CCPR7            EQU  H'0007'
-
-
-;----- CCPR1H Bits -----------------------------------------------------
-CCPR8            EQU  H'0000'
-CCPR9            EQU  H'0001'
-CCPR10           EQU  H'0002'
-CCPR11           EQU  H'0003'
-CCPR12           EQU  H'0004'
-CCPR13           EQU  H'0005'
-CCPR14           EQU  H'0006'
-CCPR15           EQU  H'0007'
-
-
 ;----- CCP1CON Bits -----------------------------------------------------
 FMT              EQU  H'0004'
 OUT_CCP1CON      EQU  H'0005'
@@ -2123,28 +2106,6 @@ CTS2             EQU  H'0002'
 CCP1CTS0         EQU  H'0000'
 CCP1CTS1         EQU  H'0001'
 CCP1CTS2         EQU  H'0002'
-
-
-;----- CCPR2L Bits -----------------------------------------------------
-CCPR0            EQU  H'0000'
-CCPR1            EQU  H'0001'
-CCPR2            EQU  H'0002'
-CCPR3            EQU  H'0003'
-CCPR4            EQU  H'0004'
-CCPR5            EQU  H'0005'
-CCPR6            EQU  H'0006'
-CCPR7            EQU  H'0007'
-
-
-;----- CCPR2H Bits -----------------------------------------------------
-CCPR8            EQU  H'0000'
-CCPR9            EQU  H'0001'
-CCPR10           EQU  H'0002'
-CCPR11           EQU  H'0003'
-CCPR12           EQU  H'0004'
-CCPR13           EQU  H'0005'
-CCPR14           EQU  H'0006'
-CCPR15           EQU  H'0007'
 
 
 ;----- CCP2CON Bits -----------------------------------------------------
@@ -2180,28 +2141,6 @@ CCP2CTS1         EQU  H'0001'
 CCP2CTS2         EQU  H'0002'
 
 
-;----- CCPR3L Bits -----------------------------------------------------
-CCPR0            EQU  H'0000'
-CCPR1            EQU  H'0001'
-CCPR2            EQU  H'0002'
-CCPR3            EQU  H'0003'
-CCPR4            EQU  H'0004'
-CCPR5            EQU  H'0005'
-CCPR6            EQU  H'0006'
-CCPR7            EQU  H'0007'
-
-
-;----- CCPR3H Bits -----------------------------------------------------
-CCPR8            EQU  H'0000'
-CCPR9            EQU  H'0001'
-CCPR10           EQU  H'0002'
-CCPR11           EQU  H'0003'
-CCPR12           EQU  H'0004'
-CCPR13           EQU  H'0005'
-CCPR14           EQU  H'0006'
-CCPR15           EQU  H'0007'
-
-
 ;----- CCP3CON Bits -----------------------------------------------------
 FMT              EQU  H'0004'
 OUT_CCP3CON      EQU  H'0005'
@@ -2235,28 +2174,6 @@ CCP3CTS1         EQU  H'0001'
 CCP3CTS2         EQU  H'0002'
 
 
-;----- CCPR4L Bits -----------------------------------------------------
-CCPR0            EQU  H'0000'
-CCPR1            EQU  H'0001'
-CCPR2            EQU  H'0002'
-CCPR3            EQU  H'0003'
-CCPR4            EQU  H'0004'
-CCPR5            EQU  H'0005'
-CCPR6            EQU  H'0006'
-CCPR7            EQU  H'0007'
-
-
-;----- CCPR4H Bits -----------------------------------------------------
-CCPR8            EQU  H'0000'
-CCPR9            EQU  H'0001'
-CCPR10           EQU  H'0002'
-CCPR11           EQU  H'0003'
-CCPR12           EQU  H'0004'
-CCPR13           EQU  H'0005'
-CCPR14           EQU  H'0006'
-CCPR15           EQU  H'0007'
-
-
 ;----- CCP4CON Bits -----------------------------------------------------
 FMT              EQU  H'0004'
 OUT_CCP4CON      EQU  H'0005'
@@ -2288,28 +2205,6 @@ CTS2             EQU  H'0002'
 CCP4CTS0         EQU  H'0000'
 CCP4CTS1         EQU  H'0001'
 CCP4CTS2         EQU  H'0002'
-
-
-;----- CCPR5L Bits -----------------------------------------------------
-CCPR0            EQU  H'0000'
-CCPR1            EQU  H'0001'
-CCPR2            EQU  H'0002'
-CCPR3            EQU  H'0003'
-CCPR4            EQU  H'0004'
-CCPR5            EQU  H'0005'
-CCPR6            EQU  H'0006'
-CCPR7            EQU  H'0007'
-
-
-;----- CCPR5H Bits -----------------------------------------------------
-CCPR8            EQU  H'0000'
-CCPR9            EQU  H'0001'
-CCPR10           EQU  H'0002'
-CCPR11           EQU  H'0003'
-CCPR12           EQU  H'0004'
-CCPR13           EQU  H'0005'
-CCPR14           EQU  H'0006'
-CCPR15           EQU  H'0007'
 
 
 ;----- CCP5CON Bits -----------------------------------------------------
