@@ -1,10 +1,10 @@
         LIST
 
 ;==========================================================================
-; Build date : Nov 13 2014
+; Build date : Feb 13 2015
 ;  MPASM PIC16LF18313 processor include
 ; 
-;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -2254,12 +2254,10 @@ _FEXTOSC_ECL     EQU  H'3FFD'    ; EC (external clock) below 100 kHz; PFM set to
 _FEXTOSC_ECM     EQU  H'3FFE'    ; EC (external clock) for 100 kHz to 8 MHz; PFM set to medium power
 _FEXTOSC_ECH     EQU  H'3FFF'    ; EC (external clock) above 8 MHz; PFM set to high power (device manufacturing default)
 
-_RSTOSC_HFINT32  EQU  H'3F8F'    ; HFINTOSC with 2x PLL (32MHz)
+_RSTOSC_HFINT32  EQU  H'3F8F'    ; HFINTOSC (32MHz)
 _RSTOSC_EXT4X    EQU  H'3F9F'    ; EXTOSC with 4x PLL, with EXTOSC operating per FEXTOSC bits
-_RSTOSC_EXT2X    EQU  H'3FAF'    ; EXTOSC with 2x PLL, with EXTOSC operating per FEXTOSC bits
 _RSTOSC_SOSC     EQU  H'3FBF'    ; SOSC (31kHz)
 _RSTOSC_LFINT    EQU  H'3FCF'    ; LFINTOSC (31kHz)
-_RSTOSC_Unimplemented EQU  H'3FDF'    ; Unimplemented
 _RSTOSC_HFINT1   EQU  H'3FEF'    ; HFINTOSC (1MHz)
 _RSTOSC_EXT1X    EQU  H'3FFF'    ; EXTOSC operating per FEXTOSC bits (device manufacturing default)
 

@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Feb 03, 2015
+March 01, 2015
 \end_layout
 
 \begin_layout Standard
@@ -154,14 +154,17 @@ NO WARRANTY
 
 WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  FOR A PARTICULAR PURPOSE.
- See the GNU General Public License for more details.
 \end_layout
 
 \begin_layout Standard
-You should have received a copy of the GNU General Public License along
+See the GNU General Public License for more details.
+ You should have received a copy of the GNU General Public License along
  with gputils; see the file COPYING.
- If not, write to the Free Software Foundation, 59 Temple Place - Suite
- 330, Boston, MA 02111-1307, USA.
+ If not, write to the Free Software Foundation,
+\end_layout
+
+\begin_layout Standard
+59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 \end_layout
 
 \begin_layout Section
@@ -249,7 +252,7 @@ Supported processors
 \end_layout
 
 \begin_layout Standard
-gputils currently supports most processors supported by MPLABX v2.10.
+The gputils currently supports most processors supported by MPLABX v2.35.
  This includes the following processors:
 \begin_inset Newline newline
 \end_inset
@@ -1568,7 +1571,7 @@ Use DOS style newlines (CRLF) in hex file.
 \begin_inset Text
 
 \begin_layout Plain Layout
---output<file>
+--output <file>
 \end_layout
 
 \end_inset
@@ -4357,7 +4360,11 @@ __COMMON_RAM_START -- Start address of the Common RAM area   (e.g.
 
 \begin_layout LyX-Code
                       (The implementation of the Common RAM inconsistent
- in some old processors: pic16f72, pic16f73, ...)
+ in some old processors:
+\end_layout
+
+\begin_layout LyX-Code
+                       pic16f72, pic16f73, ...)
 \end_layout
 
 \begin_layout LyX-Code
@@ -4367,7 +4374,11 @@ __COMMON_RAM_END   -- End address of the Common RAM area     (e.g.
 
 \begin_layout LyX-Code
                       (The implementation of the Common RAM inconsistent
- in some old processors: pic16f72, pic16f73, ...)
+ in some old processors:
+\end_layout
+
+\begin_layout LyX-Code
+                       pic16f72, pic16f73, ...)
 \end_layout
 
 \begin_layout LyX-Code
@@ -4491,12 +4502,20 @@ __VECTOR_INT_PERI  -- Address of the Peripheral Interrupt Vector (16 bit
 
 \begin_layout LyX-Code
 __VECTOR_INT_HIGH  -- Address of the High Priority Interrupt Vector (Extended
- 16 bit core: pic18xxx)
+ 16 bit core:
+\end_layout
+
+\begin_layout LyX-Code
+                      pic18xxx)
 \end_layout
 
 \begin_layout LyX-Code
 __VECTOR_INT_LOW   -- Address of the Low Priority Interrupt Vector (Extended
- 16 bit core: pic18xxx)
+ 16 bit core:
+\end_layout
+
+\begin_layout LyX-Code
+                      pic18xxx)
 \end_layout
 
 \begin_layout Section

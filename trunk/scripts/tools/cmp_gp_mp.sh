@@ -3,7 +3,7 @@
 # cmp_gp_mp.sh - compare gputils and mplabx .inc and .lkr files
 #
 # Copyright (c) 2012 Borut Razem
-# Copyright (c) 2014 Molnar Karoly
+# Copyright (c) 2014-2015 Molnar Karoly
 #
 # This file is part of gputils.
 #
@@ -99,9 +99,12 @@ fixnl()
   fi
 }
 
-inc_build_date_filter()
+inc_build_date_and_copyright_filter()
 {
-  sed -r -s "s/^\s*;\s*Build\s+date\s*:.+$//" "$1" > "$2"
+  local sed_cmd="s/^\s*;\s*Build\s+date\s*:.+$//
+s/^\s*;\s*\(c\)\s+Copyright\s+[0-9]+\s*-\s*[0-9]+\s+Microchip\s+.+$//"
+
+  sed -r -s "$sed_cmd" "$1" > "$2"
 }
 
 lkr_build_date_filter()
@@ -120,6 +123,7 @@ inc_spec()
   }
 }
 s/^\s*;\s*Build\s+date\s*:.+$//
+s/^\s*;\s*\(c\)\s+Copyright\s+[0-9]+\s*-\s*[0-9]+\s+Microchip\s+.+$//
 /^\s*;;;;\s*Begin\s*:\s*$AD_GPUTILS$/,/^\s*;;;;\s*End\s*:\s*$AD_GPUTILS$/ {
   d
 }
@@ -199,7 +203,7 @@ cmp_mp_inc()
   do
     mpf=$(basename "$mpp")
     gpf=$(lowercase "$mpf")
-    gpp="$GPUTILS_INC"/$(lowercase "$gpf")
+    gpp="$GPUTILS_INC/$gpf"
 
     #echo "=== $mpf"
 
@@ -210,13 +214,13 @@ cmp_mp_inc()
         echo "+++ $gpf is up to date."
         equ=$(expr $equ + 1)
       else
-        gpasm_inc="$BASH_TMPHEAD-gpasm-`basename "$gpp"`"
-        mplab_inc="$BASH_TMPHEAD-mplabx-`basename "$mpp"`"
-        inc_build_date_filter "$gpp" "$gpasm_inc"
-        inc_build_date_filter "$mpp" "$mplab_inc"
+        gpasm_inc="$BASH_TMPHEAD-gpasm-$gpf"
+        mplab_inc="$BASH_TMPHEAD-mplabx-$mpf"
+        inc_build_date_and_copyright_filter "$gpp" "$gpasm_inc"
+        inc_build_date_and_copyright_filter "$mpp" "$mplab_inc"
         if diff $BLANK_OPTS --strip-trailing-cr --brief "$gpasm_inc" "$mplab_inc" > /dev/null
         then
-          echo "/// $gpf is up to date, but differ with build date."
+          echo "/// $gpf is up to date, but differ with build date or copyright."
           equ_bdate=$(expr $equ_bdate + 1)
         else
           if inc_spec "$gpp" | diff $BLANK_OPTS --strip-trailing-cr --brief - "$mplab_inc" > /dev/null
@@ -243,12 +247,13 @@ cmp_mp_inc()
   done
 
   echo "-----------------------------------------------------------------------"
-  echo "Up to build date: $equ"
-  echo "Up to date: $equ_bdate"
-  echo "Up to date gp spec: $equ_spec"
-  echo "Different: $diff"
-  echo "Different gp spec: $diff_spec"
-  echo "Non existing: $no_ex"
+  echo "Up to date                       : $equ"
+  echo "Up to date, but different"
+  echo "  the build date or copyright    : $equ_bdate"
+  echo "Up to date with gputils specifics: $equ_spec"
+  echo "Different                        : $diff"
+  echo "Different with gputils specifics : $diff_spec"
+  echo "Non existing                     : $no_ex"
   echo
 }
 
@@ -263,7 +268,7 @@ cmp_mp_lkr()
   do
     mpf=$(basename "$mpp")
     gpf=$(lowercase "$mpf")
-    gpp="$GPUTILS_LKR"/$(lowercase "$gpf")
+    gpp="$GPUTILS_LKR/$gpf"
 
     #echo "=== $mpf"
 
@@ -274,8 +279,8 @@ cmp_mp_lkr()
         echo "+++ $gpf is up to date."
         equ=$(expr $equ + 1)
       else
-        gpasm_lkr="$BASH_TMPHEAD-gpasm-`basename "$gpp"`"
-        mplab_lkr="$BASH_TMPHEAD-mplabx-`basename "$mpp"`"
+        gpasm_lkr="$BASH_TMPHEAD-gpasm-$gpf"
+        mplab_lkr="$BASH_TMPHEAD-mplabx-$mpf"
         lkr_build_date_filter "$gpp" "$gpasm_lkr"
         lkr_build_date_filter "$mpp" "$mplab_lkr"
         if diff $BLANK_OPTS --strip-trailing-cr --brief "$gpasm_lkr" "$mplab_lkr" > /dev/null
@@ -313,13 +318,14 @@ cmp_mp_lkr()
   done
 
   echo "-----------------------------------------------------------------------"
-  echo "Up to build date: $equ"
-  echo "Up to date: $equ_bdate"
-  echo "Up to date gp spec: $equ_spec"
-  echo "Different: $diff"
-  echo "Different gp spec: $diff_spec"
-  echo "Non existing: $no_ex"
-  echo "Old version: $old"
+  echo "Up to date                       : $equ"
+  echo "Up to date, but different"
+  echo "  the build date                 : $equ_bdate"
+  echo "Up to date with gputils specifics: $equ_spec"
+  echo "Different                        : $diff"
+  echo "Different with gputils specifics : $diff_spec"
+  echo "Non existing                     : $no_ex"
+  echo "Old version                      : $old"
   echo
 }
 

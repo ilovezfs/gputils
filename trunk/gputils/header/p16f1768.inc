@@ -1,10 +1,10 @@
         LIST
 
 ;==========================================================================
-; Build date : Oct 14 2014
+; Build date : Feb 13 2015
 ;  MPASM PIC16F1768 processor include
 ; 
-;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -204,10 +204,12 @@ ZCD1CON          EQU  H'021F'
 ODCONA           EQU  H'028C'
 ODCONB           EQU  H'028D'
 ODCONC           EQU  H'028E'
+CCPR1            EQU  H'0291'
 CCPR1L           EQU  H'0291'
 CCPR1H           EQU  H'0292'
 CCP1CON          EQU  H'0293'
 CCP1CAP          EQU  H'0294'
+CCPR2            EQU  H'0298'
 CCPR2L           EQU  H'0298'
 CCPR2H           EQU  H'0299'
 CCP2CON          EQU  H'029A'
@@ -1608,28 +1610,6 @@ ODC6             EQU  H'0006'
 ODC7             EQU  H'0007'
 
 
-;----- CCPR1L Bits -----------------------------------------------------
-CCPR0            EQU  H'0000'
-CCPR1            EQU  H'0001'
-CCPR2            EQU  H'0002'
-CCPR3            EQU  H'0003'
-CCPR4            EQU  H'0004'
-CCPR5            EQU  H'0005'
-CCPR6            EQU  H'0006'
-CCPR7            EQU  H'0007'
-
-
-;----- CCPR1H Bits -----------------------------------------------------
-CCPR8            EQU  H'0000'
-CCPR9            EQU  H'0001'
-CCPR10           EQU  H'0002'
-CCPR11           EQU  H'0003'
-CCPR12           EQU  H'0004'
-CCPR13           EQU  H'0005'
-CCPR14           EQU  H'0006'
-CCPR15           EQU  H'0007'
-
-
 ;----- CCP1CON Bits -----------------------------------------------------
 FMT              EQU  H'0004'
 OUT_CCP1CON      EQU  H'0005'
@@ -1659,28 +1639,6 @@ CTS2             EQU  H'0002'
 CCP1CTS0         EQU  H'0000'
 CCP1CTS1         EQU  H'0001'
 CCP1CTS2         EQU  H'0002'
-
-
-;----- CCPR2L Bits -----------------------------------------------------
-CCPR0            EQU  H'0000'
-CCPR1            EQU  H'0001'
-CCPR2            EQU  H'0002'
-CCPR3            EQU  H'0003'
-CCPR4            EQU  H'0004'
-CCPR5            EQU  H'0005'
-CCPR6            EQU  H'0006'
-CCPR7            EQU  H'0007'
-
-
-;----- CCPR2H Bits -----------------------------------------------------
-CCPR8            EQU  H'0000'
-CCPR9            EQU  H'0001'
-CCPR10           EQU  H'0002'
-CCPR11           EQU  H'0003'
-CCPR12           EQU  H'0004'
-CCPR13           EQU  H'0005'
-CCPR14           EQU  H'0006'
-CCPR15           EQU  H'0007'
 
 
 ;----- CCP2CON Bits -----------------------------------------------------
@@ -2139,11 +2097,9 @@ T6RSEL3          EQU  H'0003'
 ;----- T3CON Bits -----------------------------------------------------
 ON_T3CON         EQU  H'0000'
 NOT_SYNC         EQU  H'0002'
-OSCEN            EQU  H'0003'
 
 TMRON            EQU  H'0000'
 SYNC_T3CON       EQU  H'0002'
-SOSCEN           EQU  H'0003'
 CKPS0            EQU  H'0004'
 CKPS1            EQU  H'0005'
 CS0_T3CON        EQU  H'0006'
@@ -2151,7 +2107,6 @@ CS1_T3CON        EQU  H'0007'
 
 TMR3ON           EQU  H'0000'
 NOT_T3SYNC       EQU  H'0002'
-T3OSCEN          EQU  H'0003'
 T3CS0            EQU  H'0006'
 T3CS1            EQU  H'0007'
 
@@ -2188,11 +2143,9 @@ T3GSS1           EQU  H'0001'
 ;----- T5CON Bits -----------------------------------------------------
 ON_T5CON         EQU  H'0000'
 NOT_SYNC         EQU  H'0002'
-OSCEN            EQU  H'0003'
 
 TMRON            EQU  H'0000'
 SYNC_T5CON       EQU  H'0002'
-SOSCEN           EQU  H'0003'
 CKPS0            EQU  H'0004'
 CKPS1            EQU  H'0005'
 CS0_T5CON        EQU  H'0006'
@@ -2200,7 +2153,6 @@ CS1_T5CON        EQU  H'0007'
 
 TMR5ON           EQU  H'0000'
 NOT_T5SYNC       EQU  H'0002'
-T5OSCEN          EQU  H'0003'
 T5CS0            EQU  H'0006'
 T5CS1            EQU  H'0007'
 
