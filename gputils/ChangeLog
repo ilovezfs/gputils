@@ -1,4 +1,8 @@
 2015-03-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/p16f753.inc, header/p16hv753.inc, header/p16lf1619.inc:
+    Updated based on the mplabx-2.35.
+
+2015-03-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, header/*.inc, libgputils/gpcfg-table.c,
     libgputils/gpreg-table.c, lkr/*.lkr:
     Updated based on the mplabx-2.35.
