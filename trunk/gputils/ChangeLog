@@ -1,3 +1,18 @@
+2015-03-07  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/Makefile.in, doc/html-help/Makefile.in, gpasm/Makefile.in,
+    gplink/Makefile.in, gputils/Makefile.in, header/Makefile.in,
+    libgputils/Makefile.in, libiberty/Makefile.in, lkr/Makefile.in,
+    man/Makefile.in, man/fr/Makefile.in, Makefile.in, aclocal.m4,
+    compile, config.h.in, configure:
+    regenerated
+
+2015-03-05  Mats Erik Andersson <meand@users.sourceforge.net>
+  * configure.ac:
+    Improve the check that Flex is more recent than version 2.5.4.
+
+  * gpasm/Makefile.am, gplink/Makefile.am, gputils/Makefile.am:
+    Modify these templates to be portable for use with BSD Make.
+
 2015-03-01  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/p16f753.inc, header/p16hv753.inc, header/p16lf1619.inc:
     Updated based on the mplabx-2.35.
@@ -4563,3 +4578,4 @@ Small fix to lexical analyser to make it cope with MSDOS '\r'
 characters.
 
 $Revision$
+ChangeLog Makefile.in aclocal.m4 compile config.h.in configure configure.ac

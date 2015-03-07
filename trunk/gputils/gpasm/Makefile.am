@@ -53,11 +53,12 @@ BUILT_SOURCES = parse.c parse.h ppparse.c ppparse.h scan.c ppscan.c gpasm.h
 CLEANFILES = parse.output parse.c parse.h ppparse.output ppparse.c ppparse.h scan.c ppscan.c gpasm.h
 
 gpasm.h: gpasm.h.in
-	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" "$<" > "$@"
+	sed -e "s/@REVISION@/$$(${top_srcdir}\/get_cl_revision.sh -s ${top_srcdir}\/ChangeLog)/g" "${srcdir}/gpasm.h.in" > "$@"
 
-ppparse.c: YFLAGS += -p pp
+ppparse.c: ppparse.y
+	$(SHELL) $(YLWRAP) ${srcdir}/ppparse.y y.tab.c $@ y.tab.h ppparse.h y.output ppparse.output -- $(YACCCOMPILE) -p pp
 
 #ppscan.c: LFLAGS += -P pp
 
 ppscan.c: ppscan.l
-	$(LEX) $(AM_LFLAGS) -P pp -o $@ $<
+	$(LEX) $(AM_LFLAGS) -P pp -o $@ ${srcdir}/ppscan.l
