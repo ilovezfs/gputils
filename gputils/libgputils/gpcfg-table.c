@@ -1,5 +1,5 @@
 
-/* This file is generated automatically by the cfg-import.pl 2015-03-01 14:10:37 UTC. */
+/* This file is generated automatically by the cfg-import.pl 2015-05-19 14:36:34 UTC. */
 
 /*  Copyright (C) 2014-2015 Molnar Karoly <molnarkaroly@users.sf.net>
 
@@ -1115,6 +1115,7 @@ static const gp_cfg_option_t PIC16F18855_WRT_WRT_lower_0001         = { "WRT_low
 static const gp_cfg_option_t PIC16F18855_WRT_WRT_upper_0002         = { "WRT_upper"     , 0x0002 };
 static const gp_cfg_option_t MCV20USB_WRTC_OFF_20                   = { "OFF"           , 0x20 };
 static const gp_cfg_option_t PIC16F720_WRTEN_FULL_0000              = { "FULL"          , 0x0000 };
+static const gp_cfg_option_t PIC16F18855_ZCD_OFF_0400               = { "OFF"           , 0x0400 };
 
 static const gp_cfg_option_t *MCP19110_WDTE[] = {
   &MCP19110_WDTE_OFF_0000,
@@ -1441,12 +1442,12 @@ static const gp_cfg_option_t *PIC10F200_OSC[] = {
   &PIC10F200_OSC_IntRC_001
 };
 
-static const gp_cfg_option_t *PIC10F220_IOSCFS[] = {
+static const gp_cfg_option_t *PIC10F220_IOFSCS[] = {
   &PIC10F220_IOSCFS_4MHZ_000,
   &PIC10F220_IOSCFS_8MHZ_001
 };
 
-static const gp_cfg_option_t *PIC10F220_IOFSCS[] = {
+static const gp_cfg_option_t *PIC10F220_IOSCFS[] = {
   &PIC10F220_IOSCFS_4MHZ_000,
   &PIC10F220_IOSCFS_8MHZ_001
 };
@@ -2298,26 +2299,6 @@ static const gp_cfg_option_t *PIC16F18313_DEBUG[] = {
   &MCV18E_CP_OFF_2000
 };
 
-static const gp_cfg_option_t *PIC16F18855_MCLRE[] = {
-  &MCP19110_PWRTE_ON_0000,
-  &MCV20USB_PWRTEN_OFF_01
-};
-
-static const gp_cfg_option_t *PIC16F18855_CPn[] = {
-  &MCP19110_PWRTE_ON_0000,
-  &MCV20USB_PWRTEN_OFF_01
-};
-
-static const gp_cfg_option_t *PIC16F18855_PWRTEn[] = {
-  &MCP19110_PWRTE_ON_0000,
-  &MCV20USB_CP1_OFF_02
-};
-
-static const gp_cfg_option_t *PIC16F18855_CPDn[] = {
-  &MCP19110_PWRTE_ON_0000,
-  &MCV20USB_CP1_OFF_02
-};
-
 static const gp_cfg_option_t *PIC16F18855_WRT[] = {
   &MCP19110_PWRTE_ON_0000,
   &PIC16F18855_WRT_WRT_lower_0001,
@@ -2389,19 +2370,14 @@ static const gp_cfg_option_t *PIC16F18855_BOREN[] = {
   &PIC16F18313_BOREN_ON_00C0
 };
 
-static const gp_cfg_option_t *PIC16F18855_CLKOUTENn[] = {
-  &MCP19110_PWRTE_ON_0000,
-  &PIC12F1822_CPD_OFF_0100
-};
-
 static const gp_cfg_option_t *PIC16F18855_BORV[] = {
   &PIC10F320_BORV_HI_0000,
   &PIC16F18855_BORV_LO_0200
 };
 
-static const gp_cfg_option_t *PIC16F18855_ZCDDIS[] = {
-  &MCP19110_WDTE_OFF_0000,
-  &PIC12F635_IESO_ON_0400
+static const gp_cfg_option_t *PIC16F18855_ZCD[] = {
+  &MCP19110_PWRTE_ON_0000,
+  &PIC16F18855_ZCD_OFF_0400
 };
 
 static const gp_cfg_option_t *PIC16F18855_WDTCWS[] = {
@@ -2419,6 +2395,11 @@ static const gp_cfg_option_t *PIC16F18855_WDTCCS[] = {
   &PIC12F1612_WDTCCS_LFINTOSC_0000,
   &PIC16F18855_WDTCCS_HFINTOSC_0800,
   &PIC16F18855_WDTCCS_SC_3800
+};
+
+static const gp_cfg_option_t *PIC16F18875_ZCDDIS[] = {
+  &MCP19110_WDTE_OFF_0000,
+  &PIC12F635_IESO_ON_0400
 };
 
 static const gp_cfg_option_t *PIC16F18875_SCANE[] = {
@@ -5282,20 +5263,20 @@ static const gp_cfg_directive_t PIC16F18313_800A[] = {
 };
 
 static const gp_cfg_directive_t PIC16F18855_8007[] = {
-  { "FEXTOSC"  , 0x0007,  8, PIC16F18855_FEXTOSC   },
-  { "RSTOSC"   , 0x0070,  8, PIC16F18855_RSTOSC    },
-  { "CLKOUTENn", 0x0100,  2, PIC16F18855_CLKOUTENn },
-  { "CSWEN"    , 0x0800,  2, PIC16F18313_CSWEN     },
-  { "FCMEN"    , 0x2000,  2, PIC12F1822_FCMEN      }
+  { "FEXTOSC" , 0x0007,  8, PIC16F18855_FEXTOSC  },
+  { "RSTOSC"  , 0x0070,  8, PIC16F18855_RSTOSC   },
+  { "CLKOUTEN", 0x0100,  2, PIC16F18313_CLKOUTEN },
+  { "CSWEN"   , 0x0800,  2, PIC16F18313_CSWEN    },
+  { "FCMEN"   , 0x2000,  2, PIC12F1822_FCMEN     }
 };
 
 static const gp_cfg_directive_t PIC16F18855_8008[] = {
-  { "MCLRE"  , 0x0001,  2, PIC16F18855_MCLRE   },
-  { "PWRTEn" , 0x0002,  2, PIC16F18855_PWRTEn  },
+  { "MCLRE"  , 0x0001,  2, PIC16F18313_MCLRE   },
+  { "PWRTE"  , 0x0002,  2, PIC16F18313_PWRTE   },
   { "LPBOREN", 0x0020,  2, PIC16F18313_LPBOREN },
   { "BOREN"  , 0x00C0,  4, PIC16F18855_BOREN   },
   { "BORV"   , 0x0200,  2, PIC16F18855_BORV    },
-  { "ZCDDIS" , 0x0400,  2, PIC16F18855_ZCDDIS  },
+  { "ZCD"    , 0x0400,  2, PIC16F18855_ZCD     },
   { "PPS1WAY", 0x0800,  2, PIC16F18313_PPS1WAY },
   { "STVREN" , 0x1000,  2, PIC16F18313_STVREN  }
 };
@@ -5313,8 +5294,19 @@ static const gp_cfg_directive_t PIC16F18855_800A[] = {
 };
 
 static const gp_cfg_directive_t PIC16F18855_800B[] = {
-  { "CPn" , 0x0001,  2, PIC16F18855_CPn  },
-  { "CPDn", 0x0002,  2, PIC16F18855_CPDn }
+  { "CP" , 0x0001,  2, PIC16F18313_CP  },
+  { "CPD", 0x0002,  2, PIC16F18313_CPD }
+};
+
+static const gp_cfg_directive_t PIC16F18875_8008[] = {
+  { "MCLRE"  , 0x0001,  2, PIC16F18313_MCLRE   },
+  { "PWRTE"  , 0x0002,  2, PIC16F18313_PWRTE   },
+  { "LPBOREN", 0x0020,  2, PIC16F18313_LPBOREN },
+  { "BOREN"  , 0x00C0,  4, PIC16F18855_BOREN   },
+  { "BORV"   , 0x0200,  2, PIC16F18855_BORV    },
+  { "ZCDDIS" , 0x0400,  2, PIC16F18875_ZCDDIS  },
+  { "PPS1WAY", 0x0800,  2, PIC16F18313_PPS1WAY },
+  { "STVREN" , 0x1000,  2, PIC16F18313_STVREN  }
 };
 
 static const gp_cfg_directive_t PIC16F18875_800A[] = {
@@ -7624,7 +7616,7 @@ static const gp_cfg_addr_t PIC16F18855_addrs[] = {
 
 static const gp_cfg_addr_t PIC16F18875_addrs[] = {
   { 0x008007, 0x3FFF,  5, PIC16F18855_8007   },
-  { 0x008008, 0x3FFF,  8, PIC16F18855_8008   },
+  { 0x008008, 0x3FFF,  8, PIC16F18875_8008   },
   { 0x008009, 0x3FFF,  4, PIC16F18855_8009   },
   { 0x00800A, 0x0FFF,  3, PIC16F18875_800A   },
   { 0x00800B, 0x3FFF,  2, PIC16F18855_800B   }
@@ -7743,6 +7735,14 @@ static const gp_cfg_addr_t PIC16LF1554_addrs[] = {
 static const gp_cfg_addr_t PIC16LF1782_addrs[] = {
   { 0x008007, 0xFFFF, 10, PIC12F1822_8007    },
   { 0x008008, 0xFFFF,  7, PIC16LF1782_8008   }
+};
+
+static const gp_cfg_addr_t PIC16LF18855_addrs[] = {
+  { 0x008007, 0x3FFF,  5, PIC16F18855_8007   },
+  { 0x008008, 0x3FFF,  8, PIC16F18875_8008   },
+  { 0x008009, 0x3FFF,  4, PIC16F18855_8009   },
+  { 0x00800A, 0x3FFF,  2, PIC16F18855_800A   },
+  { 0x00800B, 0x3FFF,  2, PIC16F18855_800B   }
 };
 
 static const gp_cfg_addr_t PIC18C242_addrs[] = {
@@ -9646,6 +9646,7 @@ const gp_cfg_device_t gp_cfg_devices[] = {
   { "MCP19119"       ,  1, MCP19110_addrs      },
   { "MCP19120"       ,  1, MCP19114_addrs      },
   { "MCP19121"       ,  1, MCP19114_addrs      },
+  { "MCP19123"       ,  1, MCP19114_addrs      },
   { "MCP19124"       ,  1, MCP19114_addrs      },
   { "MCP19125"       ,  1, MCP19114_addrs      },
   { "MCP19625"       ,  1, MCP19110_addrs      },
@@ -9854,6 +9855,8 @@ const gp_cfg_device_t gp_cfg_devices[] = {
   { "PIC16F1829LIN"  ,  2, PIC12F1822_addrs    },
   { "PIC16F18313"    ,  4, PIC16F18313_addrs   },
   { "PIC16F18323"    ,  4, PIC16F18313_addrs   },
+  { "PIC16F18325"    ,  4, PIC16F18313_addrs   },
+  { "PIC16F18345"    ,  4, PIC16F18313_addrs   },
   { "PIC16F1847"     ,  2, PIC12F1822_addrs    },
   { "PIC16F18855"    ,  5, PIC16F18855_addrs   },
   { "PIC16F18875"    ,  5, PIC16F18875_addrs   },
@@ -10005,9 +10008,11 @@ const gp_cfg_device_t gp_cfg_devices[] = {
   { "PIC16LF1829"    ,  2, PIC12F1822_addrs    },
   { "PIC16LF18313"   ,  4, PIC16F18313_addrs   },
   { "PIC16LF18323"   ,  4, PIC16F18313_addrs   },
+  { "PIC16LF18325"   ,  4, PIC16F18313_addrs   },
+  { "PIC16LF18345"   ,  4, PIC16F18313_addrs   },
   { "PIC16LF1847"    ,  2, PIC12F1822_addrs    },
-  { "PIC16LF18855"   ,  5, PIC16F18855_addrs   },
-  { "PIC16LF18875"   ,  5, PIC16F18855_addrs   },
+  { "PIC16LF18855"   ,  5, PIC16LF18855_addrs  },
+  { "PIC16LF18875"   ,  5, PIC16LF18855_addrs  },
   { "PIC16LF1902"    ,  2, PIC16LF1554_addrs   },
   { "PIC16LF1903"    ,  2, PIC16LF1554_addrs   },
   { "PIC16LF1904"    ,  2, PIC16LF1554_addrs   },
@@ -10334,4 +10339,4 @@ const gp_cfg_device_t gp_cfg_devices[] = {
   { "RF675K"         ,  1, PIC12F629_addrs     }
 };
 
-const int gp_cfg_device_count = 695;
+const int gp_cfg_device_count = 700;

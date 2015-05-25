@@ -31,10 +31,12 @@
 
 #set -vx
 
-if [ "$(uname)" = "CYGWIN_NT-5.1" ]
-then
+if [ "$(uname)" = "CYGWIN_NT-5.1" ]; then
   MPLABX_PATH="/cygdrive/c/Program Files/Microchip/MPLABX"
   GPUTILS_PATH="/cygdrive/c/svn_snapshots/gputils/gputils/gputils"
+elif [ -d "/opt/microchip/mplabx/v3.00" ]; then
+  MPLABX_PATH="/opt/microchip/mplabx/v3.00"
+  GPUTILS_PATH="$HOME/svn_snapshots/gputils/gputils"
 else
   MPLABX_PATH="/opt/microchip/mplabx"
   GPUTILS_PATH="$HOME/svn_snapshots/gputils/gputils"

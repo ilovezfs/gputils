@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-March 01, 2015
+May 19, 2015
 \end_layout
 
 \begin_layout Standard
@@ -252,7 +252,7 @@ Supported processors
 \end_layout
 
 \begin_layout Standard
-The gputils currently supports most processors supported by MPLABX v2.35.
+The gputils currently supports most processors supported by MPLABX v3.00.
  This includes the following processors:
 \begin_inset Newline newline
 \end_inset
@@ -501,8 +501,13 @@ p16f1934       p16f1936       p16f1937       p16f1938       p16f1939
 \begin_inset Newline newline
 \end_inset
 
-p16f1947       p16f18313      p16f18323      p16f18855      p16f18875  
-    p16f1xxx       
+p16f1947       p16f18313      p16f18323      p16f18325      p16f18345  
+    p16f18855      
+\begin_inset Newline newline
+\end_inset
+
+p16f18875      p16f1xxx                                                
+                   
 \begin_inset Newline newline
 \end_inset
 
@@ -576,8 +581,13 @@ p16lf1933      p16lf1934      p16lf1936      p16lf1937      p16lf1938
 \begin_inset Newline newline
 \end_inset
 
-p16lf1946      p16lf1947      p16lf18313     p16lf18323     p16lf18855 
-    p16lf18875     
+p16lf1946      p16lf1947      p16lf18313     p16lf18323     p16lf18325 
+    p16lf18345     
+\begin_inset Newline newline
+\end_inset
+
+p16lf18855     p16lf18875                                              
+                   
 \begin_inset Newline newline
 \end_inset
 
