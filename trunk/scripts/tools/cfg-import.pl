@@ -51,7 +51,7 @@ my $PROGRAM = 'cfg-import.pl';
 my $limit_defaults = FALSE;
 my $verbose = 0;
 
-my $dev_info_path = '/opt/microchip/mplabx/mpasmx/8bit_device.info';
+my $dev_info_path = '/opt/microchip/mplabx/v3.00/mpasmx/8bit_device.info';
 
 my $pic_name_mask = qr/PIC1(2(C[ER]?|HV)\d+\w+|6(C[ER]?|HV)\d+\w+|7C[R]?\d+\w+|[0268](C|L?F)\d+\w+)|PICRF\d+\w+|MCP\d+|MCV\d+\w+|PS\d+/;
 

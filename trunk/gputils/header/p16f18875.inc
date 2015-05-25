@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Feb 13 2015
+; Build date : Apr 06 2015
 ;  MPASM PIC16F18875 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -2512,16 +2512,6 @@ DLEN3            EQU  H'0007'
 
 
 ;----- SMT1TMRL Bits -----------------------------------------------------
-TMR0             EQU  H'0000'
-TMR1             EQU  H'0001'
-TMR2             EQU  H'0002'
-TMR3             EQU  H'0003'
-TMR4             EQU  H'0004'
-TMR5             EQU  H'0005'
-TMR6             EQU  H'0006'
-TMR7             EQU  H'0007'
-
-
 SMT1TMR0         EQU  H'0000'
 SMT1TMR1         EQU  H'0001'
 SMT1TMR2         EQU  H'0002'
@@ -2533,16 +2523,6 @@ SMT1TMR7         EQU  H'0007'
 
 
 ;----- SMT1TMRH Bits -----------------------------------------------------
-TMR8             EQU  H'0000'
-TMR9             EQU  H'0001'
-TMR10            EQU  H'0002'
-TMR11            EQU  H'0003'
-TMR12            EQU  H'0004'
-TMR13            EQU  H'0005'
-TMR14            EQU  H'0006'
-TMR15            EQU  H'0007'
-
-
 SMT1TMR8         EQU  H'0000'
 SMT1TMR9         EQU  H'0001'
 SMT1TMR10        EQU  H'0002'
@@ -2554,16 +2534,6 @@ SMT1TMR15        EQU  H'0007'
 
 
 ;----- SMT1TMRU Bits -----------------------------------------------------
-TMR16            EQU  H'0000'
-TMR17            EQU  H'0001'
-TMR18            EQU  H'0002'
-TMR19            EQU  H'0003'
-TMR20            EQU  H'0004'
-TMR21            EQU  H'0005'
-TMR22            EQU  H'0006'
-TMR23            EQU  H'0007'
-
-
 SMT1TMR16        EQU  H'0000'
 SMT1TMR17        EQU  H'0001'
 SMT1TMR18        EQU  H'0002'
@@ -2692,16 +2662,6 @@ SMT1CPW23        EQU  H'0007'
 
 
 ;----- SMT1PRL Bits -----------------------------------------------------
-PR0              EQU  H'0000'
-PR1              EQU  H'0001'
-PR2              EQU  H'0002'
-PR3              EQU  H'0003'
-PR4              EQU  H'0004'
-PR5              EQU  H'0005'
-PR6              EQU  H'0006'
-PR7              EQU  H'0007'
-
-
 SMT1PR0          EQU  H'0000'
 SMT1PR1          EQU  H'0001'
 SMT1PR2          EQU  H'0002'
@@ -2713,16 +2673,6 @@ SMT1PR7          EQU  H'0007'
 
 
 ;----- SMT1PRH Bits -----------------------------------------------------
-PR8              EQU  H'0000'
-PR9              EQU  H'0001'
-PR10             EQU  H'0002'
-PR11             EQU  H'0003'
-PR12             EQU  H'0004'
-PR13             EQU  H'0005'
-PR14             EQU  H'0006'
-PR15             EQU  H'0007'
-
-
 SMT1PR8          EQU  H'0000'
 SMT1PR9          EQU  H'0001'
 SMT1PR10         EQU  H'0002'
@@ -2734,16 +2684,6 @@ SMT1PR15         EQU  H'0007'
 
 
 ;----- SMT1PRU Bits -----------------------------------------------------
-PR16             EQU  H'0000'
-PR17             EQU  H'0001'
-PR18             EQU  H'0002'
-PR19             EQU  H'0003'
-PR20             EQU  H'0004'
-PR21             EQU  H'0005'
-PR22             EQU  H'0006'
-PR23             EQU  H'0007'
-
-
 SMT1PR16         EQU  H'0000'
 SMT1PR17         EQU  H'0001'
 SMT1PR18         EQU  H'0002'
@@ -2788,8 +2728,8 @@ SMT1AS           EQU  H'0000'
 SMT1WS           EQU  H'0001'
 SMT1TS           EQU  H'0002'
 SMT1RESET        EQU  H'0005'
-SMT1CPWU         EQU  H'0006'
-SMT1CPRU         EQU  H'0007'
+SMT1CPWUP        EQU  H'0006'
+SMT1CPRUP        EQU  H'0007'
 
 
 ;----- SMT1CLK Bits -----------------------------------------------------
@@ -2834,16 +2774,6 @@ SMT1WSEL4        EQU  H'0004'
 
 
 ;----- SMT2TMRL Bits -----------------------------------------------------
-TMR0             EQU  H'0000'
-TMR1             EQU  H'0001'
-TMR2             EQU  H'0002'
-TMR3             EQU  H'0003'
-TMR4             EQU  H'0004'
-TMR5             EQU  H'0005'
-TMR6             EQU  H'0006'
-TMR7             EQU  H'0007'
-
-
 SMT2TMR0         EQU  H'0000'
 SMT2TMR1         EQU  H'0001'
 SMT2TMR2         EQU  H'0002'
@@ -2855,16 +2785,6 @@ SMT2TMR7         EQU  H'0007'
 
 
 ;----- SMT2TMRH Bits -----------------------------------------------------
-TMR8             EQU  H'0000'
-TMR9             EQU  H'0001'
-TMR10            EQU  H'0002'
-TMR11            EQU  H'0003'
-TMR12            EQU  H'0004'
-TMR13            EQU  H'0005'
-TMR14            EQU  H'0006'
-TMR15            EQU  H'0007'
-
-
 SMT2TMR8         EQU  H'0000'
 SMT2TMR9         EQU  H'0001'
 SMT2TMR10        EQU  H'0002'
@@ -2876,16 +2796,6 @@ SMT2TMR15        EQU  H'0007'
 
 
 ;----- SMT2TMRU Bits -----------------------------------------------------
-TMR16            EQU  H'0000'
-TMR17            EQU  H'0001'
-TMR18            EQU  H'0002'
-TMR19            EQU  H'0003'
-TMR20            EQU  H'0004'
-TMR21            EQU  H'0005'
-TMR22            EQU  H'0006'
-TMR23            EQU  H'0007'
-
-
 SMT2TMR16        EQU  H'0000'
 SMT2TMR17        EQU  H'0001'
 SMT2TMR18        EQU  H'0002'
@@ -3014,16 +2924,6 @@ SMT2CPW23        EQU  H'0007'
 
 
 ;----- SMT2PRL Bits -----------------------------------------------------
-PR0              EQU  H'0000'
-PR1              EQU  H'0001'
-PR2              EQU  H'0002'
-PR3              EQU  H'0003'
-PR4              EQU  H'0004'
-PR5              EQU  H'0005'
-PR6              EQU  H'0006'
-PR7              EQU  H'0007'
-
-
 SMT2PR0          EQU  H'0000'
 SMT2PR1          EQU  H'0001'
 SMT2PR2          EQU  H'0002'
@@ -3035,16 +2935,6 @@ SMT2PR7          EQU  H'0007'
 
 
 ;----- SMT2PRH Bits -----------------------------------------------------
-PR8              EQU  H'0000'
-PR9              EQU  H'0001'
-PR10             EQU  H'0002'
-PR11             EQU  H'0003'
-PR12             EQU  H'0004'
-PR13             EQU  H'0005'
-PR14             EQU  H'0006'
-PR15             EQU  H'0007'
-
-
 SMT2PR8          EQU  H'0000'
 SMT2PR9          EQU  H'0001'
 SMT2PR10         EQU  H'0002'
@@ -3056,16 +2946,6 @@ SMT2PR15         EQU  H'0007'
 
 
 ;----- SMT2PRU Bits -----------------------------------------------------
-PR16             EQU  H'0000'
-PR17             EQU  H'0001'
-PR18             EQU  H'0002'
-PR19             EQU  H'0003'
-PR20             EQU  H'0004'
-PR21             EQU  H'0005'
-PR22             EQU  H'0006'
-PR23             EQU  H'0007'
-
-
 SMT2PR16         EQU  H'0000'
 SMT2PR17         EQU  H'0001'
 SMT2PR18         EQU  H'0002'
@@ -3110,8 +2990,8 @@ SMT2AS           EQU  H'0000'
 SMT2WS           EQU  H'0001'
 SMT2TS           EQU  H'0002'
 SMT2RESET        EQU  H'0005'
-SMT2CPWU         EQU  H'0006'
-SMT2CPRU         EQU  H'0007'
+SMT2CPWUP        EQU  H'0006'
+SMT2CPRUP        EQU  H'0007'
 
 
 ;----- SMT2CLK Bits -----------------------------------------------------
@@ -6357,8 +6237,8 @@ _RSTOSC_LFINTOSC EQU  H'3FDF'    ; LFINTOSC
 _RSTOSC_HFINTOSC EQU  H'3FEF'    ; HFINTOSC with HFFRQ=4'b0000
 _RSTOSC_EXTOSC   EQU  H'3FFF'    ; EXTOSC operating per FEXTOSC bits
 
-_CLKOUTENn_ON    EQU  H'3EFF'    ; CLKOUT function is enabled; FOSC/4 clock appears at OSC2
-_CLKOUTENn_OFF   EQU  H'3FFF'    ; CLKOUT function is disabled; i/o or oscillator function on OSC2
+_CLKOUTEN_ON     EQU  H'3EFF'    ; CLKOUT function is enabled; FOSC/4 clock appears at OSC2
+_CLKOUTEN_OFF    EQU  H'3FFF'    ; CLKOUT function is disabled; i/o or oscillator function on OSC2
 
 _CSWEN_OFF       EQU  H'37FF'    ; The NOSC and NDIV bits cannot be changed by user software
 _CSWEN_ON        EQU  H'3FFF'    ; Writing to NOSC and NDIV is allowed
@@ -6367,11 +6247,11 @@ _FCMEN_OFF       EQU  H'1FFF'    ; FSCM timer disabled
 _FCMEN_ON        EQU  H'3FFF'    ; FSCM timer enabled
 
 ;----- CONFIG2 Options --------------------------------------------------
-_MCLRE_ON        EQU  H'3FFE'    ; MCLR pin function is port defined function
-_MCLRE_OFF       EQU  H'3FFF'    ; MCLR pin is Master Clear function
+_MCLRE_OFF       EQU  H'3FFE'    ; MCLR pin function is port defined function
+_MCLRE_ON        EQU  H'3FFF'    ; MCLR pin is Master Clear function
 
-_PWRTEn_ON       EQU  H'3FFD'    ; PWRT enabled
-_PWRTEn_OFF      EQU  H'3FFF'    ; PWRT disabled
+_PWRTE_ON        EQU  H'3FFD'    ; PWRT enabled
+_PWRTE_OFF       EQU  H'3FFF'    ; PWRT disabled
 
 _LPBOREN_ON      EQU  H'3FDF'    ; ULPBOR enabled
 _LPBOREN_OFF     EQU  H'3FFF'    ; ULPBOR disabled
@@ -6458,11 +6338,11 @@ _LVP_OFF         EQU  H'1FFF'    ; High Voltage on MCLR/Vpp must be used for pro
 _LVP_ON          EQU  H'3FFF'    ; Low Voltage programming enabled. MCLR/Vpp pin function is MCLR.
 
 ;----- CONFIG5 Options --------------------------------------------------
-_CPn_ON          EQU  H'3FFE'    ; UserNVM code protection enabled
-_CPn_OFF         EQU  H'3FFF'    ; UserNVM code protection disabled
+_CP_ON           EQU  H'3FFE'    ; UserNVM code protection enabled
+_CP_OFF          EQU  H'3FFF'    ; UserNVM code protection disabled
 
-_CPDn_ON         EQU  H'3FFD'    ; DataNVM code protection enabled
-_CPDn_OFF        EQU  H'3FFF'    ; DataNVM code protection disabled
+_CPD_ON          EQU  H'3FFD'    ; DataNVM code protection enabled
+_CPD_OFF         EQU  H'3FFF'    ; DataNVM code protection disabled
 
 ;----- DEVID Equates --------------------------------------------------
 _DEVID1          EQU  H'8006'

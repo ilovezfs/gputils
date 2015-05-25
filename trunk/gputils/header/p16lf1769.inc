@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Feb 13 2015
+; Build date : Apr 06 2015
 ;  MPASM PIC16LF1769 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -3541,10 +3541,12 @@ RG1FTSS3         EQU  H'0003'
 INS0             EQU  H'0000'
 INS1             EQU  H'0001'
 INS2             EQU  H'0002'
+INS3             EQU  H'0003'
 
 RG1INS0          EQU  H'0000'
 RG1INS1          EQU  H'0001'
 RG1INS2          EQU  H'0002'
+RG1INS3          EQU  H'0003'
 
 
 ;----- PRG1CON0 Bits -----------------------------------------------------
@@ -3620,10 +3622,12 @@ RG2FTSS3         EQU  H'0003'
 INS0             EQU  H'0000'
 INS1             EQU  H'0001'
 INS2             EQU  H'0002'
+INS3             EQU  H'0003'
 
 RG2INS0          EQU  H'0000'
 RG2INS1          EQU  H'0001'
 RG2INS2          EQU  H'0002'
+RG2INS3          EQU  H'0003'
 
 
 ;----- PRG2CON0 Bits -----------------------------------------------------

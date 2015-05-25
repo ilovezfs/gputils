@@ -1,10 +1,10 @@
         LIST
 
 ;==========================================================================
-; Build date : Aug 07 2014
+; Build date : Apr 06 2015
 ;  MPASM PIC18LF46J50 processor include
 ; 
-;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -862,6 +862,7 @@ T4OUTPS3         EQU  H'0006'
 TMR3ON           EQU  H'0000'
 RD16             EQU  H'0001'
 T3SYNC           EQU  H'0002'
+T3OSCEN          EQU  H'0003'
 
 T3CKPS0          EQU  H'0004'
 T3CKPS1          EQU  H'0005'
