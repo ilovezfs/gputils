@@ -1,4 +1,8 @@
 2015-05-19  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * configure.ac, configure:
+    Update the DEFAULT_MPLABX_PATH.
+
+2015-05-19  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, header/*, libgputils/gpcfg-table.c,
     libgputils/gpprocessor.c, libgputils/gpreg-table.c, lkr/*:
     Updated based on the mplabx-3.00.
