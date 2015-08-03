@@ -350,7 +350,7 @@ use constant PIC16E_FLAG_J_SUBFAMILY  => (1 << 1);
 my $name_filter = qr/10l?f\d+[a-z]*|1[26]((c(e|r)?)|hv)\d+[a-z]*|17c\d+[a-z]*|1[268]l?f\d+([a-z]*|[a-z]+\d+[a-z]*)/i;
 
 my $gputils_path = "$ENV{HOME}/svn_snapshots/gputils/gputils";
-my $mplabx_path  = '/opt/microchip/mplabx/v3.00';
+my $mplabx_path  = '/opt/microchip/mplabx/v3.05';
 my $mplabx_dev_info = '8bit_device.info';
 
 my $gpprocessor_c = 'gpprocessor.c';

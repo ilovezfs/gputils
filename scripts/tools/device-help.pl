@@ -30,7 +30,7 @@
     of the PIC MCU-s. The data reads from the 8bit_device.info called file of MPLAB-X.
     On Linux is usually located on this path:
 
-                /opt/microchip/mplabx/v3.00/mpasmx/8bit_device.info
+                /opt/microchip/mplabx/v3.05/mpasmx/8bit_device.info
 
     Of course for the program it is necessary to the gputils source from the svn.
 
@@ -62,7 +62,7 @@ my $gpprocessor_c = 'gpprocessor.c';
 my $gpproc_path;
 my $svn_rev = -1;
 
-my $dev_info = '/opt/microchip/mplabx/v3.00/mpasmx/8bit_device.info';
+my $dev_info = '/opt/microchip/mplabx/v3.05/mpasmx/8bit_device.info';
 my $dev_info_rev = '';
 my $list_file;
 
