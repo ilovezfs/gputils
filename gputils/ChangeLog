@@ -1,5 +1,9 @@
+2015-08-03  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * configure, configure.ac:
+    Updated based on the mplabx-3.05.
+
 2015-08-02  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
-    header/p16f870.inc, header/p16f871.inc, header/p16f872.inc:
+  * header/p16f870.inc, header/p16f871.inc, header/p16f872.inc:
     Fixed the bug: "#281 Header p16f872.inc contains macro with lower case letters"
     Thanks to Martin.
 
