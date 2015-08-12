@@ -1,3 +1,8 @@
+2015-08-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx:
+    Fixed the bug: "#282 Description of __CODE_START and __CODE_END"
+    Thanks to Kurt Deitrick.
+
 2015-08-03  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * configure, configure.ac:
     Updated based on the mplabx-3.05.
