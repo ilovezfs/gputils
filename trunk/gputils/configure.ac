@@ -66,7 +66,7 @@ AC_TYPE_SIZE_T
 AC_STRUCT_TM
 
 # Checks for library functions.
-AC_CHECK_FUNCS([strcasecmp strncasecmp stricmp strnicmp strndup])
+AC_CHECK_FUNCS([strcasecmp strncasecmp stricmp strnicmp strndup realpath])
 
 # Check for functions to compile into libiberty (getopt is always compiled).
 IBERTYOBJS=

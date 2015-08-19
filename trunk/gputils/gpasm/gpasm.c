@@ -468,8 +468,8 @@ show_usage(void)
          "                                 shows only the specified device.\n");
   printf("      --strict-options           If this is set, then an option may not be parameter\n"
          "                                 of an another option. For example: -I -c\n");
-  printf("  -u, --absolute                 Use absolute pathes. \n");
-  printf("  -v, --version                  Show version.\n");
+  printf("  -u, --absolute                 Use absolute paths. \n");
+  printf("  -v, --version                  Show version information and exit.\n");
   printf("  -w [0|1|2], --warning [0|1|2]  Set message level. [0]\n"
          "                                     0: Is the default. It will allow all messages,\n"
          "                                        warnings and errors to be reported.\n"
