@@ -361,7 +361,7 @@ gp_absolute_path(char *file_name)
   char *file_ptr;
   int num_chars;
 
-  num_chars = GetFullPathName(file_name, 
+  num_chars = GetFullPathName(file_name,
                               FILE_BUFFER_SIZE,
                               file_buffer,
                               &file_ptr);
@@ -372,6 +372,19 @@ gp_absolute_path(char *file_name)
     return strdup(file_buffer);
   }
 #else
+  #ifdef HAVE_REALPATH
+  char *resolved_name;
+
+  resolved_name = realpath(file_name, NULL);
+
+  if (resolved_name == NULL) {
+    gp_error("Can't fetch full path of %s.", file_name);
+    return file_name;
+  } else {
+    return resolved_name;
+  }
+
+  #else
 
   if (absolute_path_warning) {
     gp_warning("Host system does not support absolute paths.");
@@ -380,6 +393,7 @@ gp_absolute_path(char *file_name)
   
   return file_name;
 
+  #endif
 #endif
 }
 

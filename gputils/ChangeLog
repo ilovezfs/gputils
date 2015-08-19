@@ -1,3 +1,13 @@
+2015-08-19  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, gpasm/gpasm:
+    Fixed the bug: "#283 Option documentation"
+    Thanks to Kurt Deitrick.
+
+  * aclocal.m4, configure.ac, config.h.in, configure,
+    Makefile.in, */Makefile.in, libgputils/gpsystem.c:
+    In the gp_absolute_path() function use the realpath() library
+    function (if available).
+
 2015-08-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx:
     Fixed the bug: "#282 Description of __CODE_START and __CODE_END"
