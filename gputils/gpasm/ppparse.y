@@ -75,8 +75,7 @@ exp:
       $$ = var->value;
     }
     else {
-      /* TODO: should we throw a "Symbol not assigned a value." error? */
-      printf("Symbol %s not assigned a value.\n", $1);
+      /* The default value is 0. */
       $$ = 0;
     }
   }

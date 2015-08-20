@@ -62,7 +62,7 @@
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\tracking_changes false
+\tracking_changes true
 \output_changes false
 \html_math_output 0
 \html_css_as_file 0
@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Aug 12, 2015
+Aug 20, 2015
 \end_layout
 
 \begin_layout Standard
@@ -5740,7 +5740,7 @@ Permanently assigns the value obtained by evaluating <expression> to thesymbol
 \end_layout
 
 \begin_layout Standard
-See also: EQU, SET, VARIABLE
+(The default value is 0.) See also: EQU, SET, VARIABLE
 \end_layout
 
 \begin_layout Subsection*
@@ -6079,7 +6079,7 @@ Permanently assigns the value obtained by evaluating <expression> to the
 \end_layout
 
 \begin_layout Standard
-See also: CONSTANT, SET
+(The default value is 0.) See also: CONSTANT, SET
 \end_layout
 
 \begin_layout Subsection*
@@ -7293,7 +7293,7 @@ Temporarily assigns the value obtained by evaluating <expression> to the
 \end_layout
 
 \begin_layout Standard
-See also: SET
+(The default value is 0.) See also: CONSTANT, EQU, VARIABLE
 \end_layout
 
 \begin_layout Subsection*
@@ -7558,13 +7558,13 @@ VARIABLE <label>[=<expression>, <label>[=<expression>]]*
 \end_layout
 
 \begin_layout Standard
-Delcares variable with the name <label>.
+Declares variable with the name <label>.
  The value of <label> may later be reassigned.
  The value of <label> does not have to be assigned at declaration.
 \end_layout
 
 \begin_layout Standard
-See also: CONSTANT
+(The default value is 0.) See also: CONSTANT
 \end_layout
 
 \begin_layout Subsection*
