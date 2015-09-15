@@ -1011,12 +1011,8 @@ sub swap_reverse($$)
 sub set_subscript($$$$)
   {
   my ($Array, $Start, $End, $Value) = @_;
-  my $i;
 
-  for ($i = $Start; $i <= $End; ++$i)
-    {
-    $Array->[$i] = $Value;
-    }
+  @{$Array}[$Start .. $End] = (($Value) x ($End - $Start + 1));
   }
 
 #---------------------------------------------------------------------------------------------------
