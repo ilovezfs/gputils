@@ -1,4 +1,8 @@
 2015-09-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/*, lkr/*, man/gpasm.1.in:
+    Updated based on the mplabx-3.10, part 2.
+
+2015-09-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, configure, configure.ac, header/*,
     gpasm/gpasm.c, gpasm/list.c, gpasm/processor.c,
     gpasm/testsuite/gpasm.mchip/asmfiles/hd871.asm,
