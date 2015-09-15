@@ -47,6 +47,7 @@ extern int yydebug;
 
 struct list_params {
   pic_processor_t processor;
+  proc_class_t    class0;
   proc_class_t    class1;
   proc_class_t    class2;
 };
@@ -188,8 +189,8 @@ pic14_lister(pic_processor_t processor)
     return;
   }
 
-  if ((class != PROC_CLASS_PIC14) && (class != PROC_CLASS_PIC14E)) {
-    fprintf(stderr, "Warning: The type of the %s processor is not PIC14 and not PIC14E!\n",
+  if ((class != PROC_CLASS_PIC14) && (class != PROC_CLASS_PIC14E) && (class != PROC_CLASS_PIC14EX)) {
+    fprintf(stderr, "Warning: The type of the %s processor is not PIC14, not PIC14E and not PIC14EX!\n",
             processor->names[2]);
     return;
   }
@@ -223,7 +224,7 @@ pic14_lister(pic_processor_t processor)
   printf("\tio\t\t???\n");
   bank_mask = (processor->num_banks - 1) << class->addr_bits_in_bank;
 
-  if (class == PROC_CLASS_PIC14E) {
+  if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
     printf("\tenhanced\t1\n"
            "\tmaxram\t\t0x07f\n");
   }
@@ -431,9 +432,9 @@ show_usage(void)
          "                                 '16e' devices. Along with the '-p' option, shows only\n"
          "                                 the specified device.\n");
   printf("  -k, --error                    Enables creation of the error file.\n");
-  printf("  -l[12[ce]|14[ce]|16[ce]], --list-chips[=([12[ce]|14[ce]|16[ce]])]\n"
+  printf("  -l[12[ce]|14[cef]|16[ce]], --list-chips[=([12[ce]|14[cef]|16[ce]])]\n"
          "                                 Lists the names of the supported processors, based on\n"
-         "                                 various aspects.\n");
+         "                                 various aspects. (f => x)\n");
   printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -m, --dump                     Memory dump.\n");
   printf("      --mpasm-compatible         MPASM compatibility mode.\n");
@@ -452,10 +453,10 @@ show_usage(void)
   printf("  -P FILE, --preprocess FILE     Write preprocessed asm file to FILE.\n");
   printf("  -q, --quiet                    Suppress anything sent to standard output.\n");
   printf("  -r RADIX, --radix RADIX        Select radix. [hex]\n");
-  printf("  -s[12[ce]|14[ce]|16[ce]], --list-processor-properties[=([12[ce]|14[ce]|16[ce]])]\n"
+  printf("  -s[12[ce]|14[cef]|16[ce]], --list-processor-properties[=([12[ce]|14[cef]|16[ce]])]\n"
          "                                 Lists properties of the processors. Using by itself,\n"
          "                                 displays the all devices or group of the devices. Along\n"
-         "                                 with the '-p' option, shows only the specified device.\n");
+         "                                 with the '-p' option, shows only the specified device. (f => x)\n");
   printf("  -S [0|1|2], --strict [0|1|2]   Set the strict level of the recommended instruction-parameters\n"
          "                                 (W or F and A or B). The \"strict messages\" have higher\n"
          "                                 priority than the warnings. (See: -w [0|1|2]) [0]\n");
@@ -526,6 +527,7 @@ process_args(int argc, char *argv[])
   char *pc;
 
   list_options.processor = NULL;
+  list_options.class0    = PROC_CLASS_UNKNOWN;
   list_options.class1    = PROC_CLASS_UNKNOWN;
   list_options.class2    = PROC_CLASS_UNKNOWN;
 
@@ -667,49 +669,54 @@ process_args(int argc, char *argv[])
 
       switch (pic_family) {
         case 0x12:
-          list_options.class1 = PROC_CLASS_PIC12;
-          list_options.class2 = PROC_CLASS_PIC12E;
-          break;
-
-        case 0x12C:
-          list_options.class1 = PROC_CLASS_PIC12;
-          break;
-
-        case 0x12E:
+          list_options.class0 = PROC_CLASS_PIC12;
           list_options.class1 = PROC_CLASS_PIC12E;
           break;
 
+        case 0x12C:
+          list_options.class0 = PROC_CLASS_PIC12;
+          break;
+
+        case 0x12E:
+          list_options.class0 = PROC_CLASS_PIC12E;
+          break;
+
         case 0x14:
-          list_options.class1 = PROC_CLASS_PIC14;
-          list_options.class2 = PROC_CLASS_PIC14E;
+          list_options.class0 = PROC_CLASS_PIC14;
+          list_options.class1 = PROC_CLASS_PIC14E;
+          list_options.class2 = PROC_CLASS_PIC14EX;
           break;
 
         case 0x14C:
-          list_options.class1 = PROC_CLASS_PIC14;
+          list_options.class0 = PROC_CLASS_PIC14;
           break;
 
         case 0x14E:
-          list_options.class1 = PROC_CLASS_PIC14E;
+          list_options.class0 = PROC_CLASS_PIC14E;
+          break;
+
+        case 0x14F:
+          list_options.class0 = PROC_CLASS_PIC14EX;
           break;
 
         case 0x16:
-          list_options.class1 = PROC_CLASS_PIC16;
-          list_options.class2 = PROC_CLASS_PIC16E;
+          list_options.class0 = PROC_CLASS_PIC16;
+          list_options.class1 = PROC_CLASS_PIC16E;
           break;
 
         case 0x16C:
-          list_options.class1 = PROC_CLASS_PIC16;
+          list_options.class0 = PROC_CLASS_PIC16;
           break;
 
         case 0x16E:
-          list_options.class1 = PROC_CLASS_PIC16E;
+          list_options.class0 = PROC_CLASS_PIC16E;
           break;
 
         default:
           all = true;
         }
 
-      gp_dump_processor_list(all, list_options.class1, list_options.class2);
+      gp_dump_processor_list(all, list_options.class0, list_options.class1, list_options.class2);
       exit(0);
       break;
       }
@@ -765,45 +772,51 @@ process_args(int argc, char *argv[])
 
       switch (pic_family) {
         case 0x12:
-          list_options.class1 = PROC_CLASS_PIC12;
-          list_options.class2 = PROC_CLASS_PIC12E;
-          break;
-
-        case 0x12C:
-          list_options.class1 = PROC_CLASS_PIC12;
-          break;
-
-        case 0x12E:
+          list_options.class0 = PROC_CLASS_PIC12;
           list_options.class1 = PROC_CLASS_PIC12E;
           break;
 
+        case 0x12C:
+          list_options.class0 = PROC_CLASS_PIC12;
+          break;
+
+        case 0x12E:
+          list_options.class0 = PROC_CLASS_PIC12E;
+          break;
+
         case 0x14:
-          list_options.class1 = PROC_CLASS_PIC14;
-          list_options.class2 = PROC_CLASS_PIC14E;
+          list_options.class0 = PROC_CLASS_PIC14;
+          list_options.class1 = PROC_CLASS_PIC14E;
+          list_options.class2 = PROC_CLASS_PIC14EX;
           break;
 
         case 0x14C:
-          list_options.class1 = PROC_CLASS_PIC14;
+          list_options.class0 = PROC_CLASS_PIC14;
           break;
 
         case 0x14E:
-          list_options.class1 = PROC_CLASS_PIC14E;
+          list_options.class0 = PROC_CLASS_PIC14E;
+          break;
+
+        case 0x14F:
+          list_options.class0 = PROC_CLASS_PIC14EX;
           break;
 
         case 0x16:
-          list_options.class1 = PROC_CLASS_PIC16;
-          list_options.class2 = PROC_CLASS_PIC16E;
-          break;
-
-        case 0x16C:
-          list_options.class1 = PROC_CLASS_PIC16;
-          break;
-
-        case 0x16E:
+          list_options.class0 = PROC_CLASS_PIC16;
           list_options.class1 = PROC_CLASS_PIC16E;
           break;
 
+        case 0x16C:
+          list_options.class0 = PROC_CLASS_PIC16;
+          break;
+
+        case 0x16E:
+          list_options.class0 = PROC_CLASS_PIC16E;
+          break;
+
         default:
+          list_options.class0 = PROC_CLASS_UNKNOWN;
           list_options.class1 = PROC_CLASS_UNKNOWN;
           list_options.class2 = PROC_CLASS_UNKNOWN;
         }
@@ -858,7 +871,8 @@ process_args(int argc, char *argv[])
       lister_of_devices(list_options.processor);
     }
     else {
-      gp_processor_invoke_custom_lister(list_options.class1, list_options.class2, lister_of_devices);
+      gp_processor_invoke_custom_lister(list_options.class0, list_options.class1,
+                                        list_options.class2, lister_of_devices);
     }
 
     exit(0);
@@ -870,7 +884,7 @@ process_args(int argc, char *argv[])
       pic14_lister(list_options.processor);
     }
     else {
-      gp_processor_invoke_custom_lister(PROC_CLASS_PIC14, PROC_CLASS_PIC14E, pic14_lister);
+      gp_processor_invoke_custom_lister(PROC_CLASS_PIC14, PROC_CLASS_PIC14E, PROC_CLASS_PIC14EX, pic14_lister);
     }
 
     exit(0);
@@ -882,7 +896,7 @@ process_args(int argc, char *argv[])
       pic16e_lister(list_options.processor);
     }
     else {
-      gp_processor_invoke_custom_lister(PROC_CLASS_PIC16E, NULL, pic16e_lister);
+      gp_processor_invoke_custom_lister(PROC_CLASS_PIC16E, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN, pic16e_lister);
     }
 
     exit(0);

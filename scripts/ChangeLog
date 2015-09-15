@@ -1,3 +1,8 @@
+2015-09-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/cfg-import.pl, tools/device-help.pl,
+	  tools/device-manager.pl:
+	  Updated based on the mplabx-3.10.
+
 2015-08-03  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/cfg-import.pl, tools/device-help.pl,
 	  tools/device-manager.pl:

@@ -9,7 +9,7 @@ cat > $MAKE_FILE <<\_ACEOF
 
 pkgdatadir = @GPUTILS_HEADER_PATH@
 
-HEADER_FILES =\
+HEADER_FILES = \
 _ACEOF
 
 # compile the header check program
@@ -18,24 +18,23 @@ gcc -Wall -pedantic -g -O2 -I../include -o header_check header_check.c
 
 # count the number of items in the list
 count=0
-for x in *.inc
-  do
-    count=$(expr $count + 1)
-  done
+for x in *.inc; do
+  count=$(expr $count + 1)
+done
 
 # output the file list
 number=0
-for x in *.inc
-  do
-    number=$(expr $number + 1)
-    echo "testing $x"
-    ./header_check $x
-    if [ $number -eq $count ]; then
-      echo "	$x" >> $MAKE_FILE
-    else
-      echo "	$x \\" >> $MAKE_FILE
-    fi
-  done
+list=`ls -A1 *.inc | sort -V`
+for x in $list; do
+  number=$(expr $number + 1)
+  echo "testing $x"
+  ./header_check $x
+  if [ $number -eq $count ]; then
+    echo "	$x" >> $MAKE_FILE
+  else
+    echo "	$x \\" >> $MAKE_FILE
+  fi
+done
 
 cat >> $MAKE_FILE <<\_ACEOF
 

@@ -239,6 +239,7 @@ extern const struct proc_class proc_class_pic12e;    /* extended 12 bit devices 
 extern const struct proc_class proc_class_sx;        /* 12 bit devices */
 extern const struct proc_class proc_class_pic14;     /* 14 bit devices */
 extern const struct proc_class proc_class_pic14e;    /* enhanced 14 bit devices */
+extern const struct proc_class proc_class_pic14ex;   /* enhanced 14 bit devices */
 extern const struct proc_class proc_class_pic16;     /* 16 bit devices */
 extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices */
 
@@ -250,6 +251,7 @@ extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices 
 #define PROC_CLASS_SX       (&proc_class_sx)
 #define PROC_CLASS_PIC14    (&proc_class_pic14)
 #define PROC_CLASS_PIC14E   (&proc_class_pic14e)
+#define PROC_CLASS_PIC14EX  (&proc_class_pic14ex)
 #define PROC_CLASS_PIC16    (&proc_class_pic16)
 #define PROC_CLASS_PIC16E   (&proc_class_pic16e)
 
@@ -260,6 +262,7 @@ extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices 
 #define IS_PIC12E_CORE      (state.device.class == PROC_CLASS_PIC12E)
 #define IS_PIC14_CORE       (state.device.class == PROC_CLASS_PIC14)
 #define IS_PIC14E_CORE      (state.device.class == PROC_CLASS_PIC14E)
+#define IS_PIC14EX_CORE     (state.device.class == PROC_CLASS_PIC14EX)
 #define IS_PIC16_CORE       (state.device.class == PROC_CLASS_PIC16)
 #define IS_PIC16E_CORE      (state.device.class == PROC_CLASS_PIC16E)
 
@@ -319,9 +322,9 @@ typedef const struct px *pic_processor_t;
 #define DEVID1    0x3ffffe
 #define DEVID2    0x3fffff
 
-void gp_dump_processor_list(gp_boolean list_all, proc_class_t class1, proc_class_t class2);
+void gp_dump_processor_list(gp_boolean list_all, proc_class_t class0, proc_class_t class1, proc_class_t class2);
 
-void gp_processor_invoke_custom_lister(proc_class_t class0, proc_class_t class1,
+void gp_processor_invoke_custom_lister(proc_class_t class0, proc_class_t class1, proc_class_t class2,
                                        void (*custom_lister)(pic_processor_t));
 
 pic_processor_t gp_find_processor(const char *name);

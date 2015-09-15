@@ -2,7 +2,7 @@
    Copyright (C) 2006
    Michael Ballbach
 
-    Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2014-2015 Molnar Karoly <molnarkaroly@users.sf.net>
 
 This file is part of gputils.
 

@@ -321,7 +321,8 @@ _class_lit8c12:
          PIC16  movlb,
          PIC16x mullw,
          PIC16E pushl */
-      if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC16)) {
+      if ((class == PROC_CLASS_PIC14) || (class == PROC_CLASS_PIC14E) ||
+          (class == PROC_CLASS_PIC14EX) || (class == PROC_CLASS_PIC16)) {
         tmp = opcode & 0x00ff;
 
         if (icode == ICODE_MOVLW) {
@@ -379,7 +380,7 @@ _class_lit9:
       /* PIC14x (call, goto) */
       value   = opcode & PIC14_BMSK_BRANCH;
       dst_org = value;
-      tmp     = (class == PROC_CLASS_PIC14E) ? PIC14E_PAGE_BITS : PIC14_PAGE_BITS;
+      tmp     = ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) ? PIC14E_PAGE_BITS : PIC14_PAGE_BITS;
 
       if ((prog_max_org > 0) && (prog_max_org <= PIC14_BMSK_BRANCH)) {
         /* The PCLATH is not required. */
@@ -583,7 +584,8 @@ _class_lit11:
           pclath = 0;
           pclath_valid = 0xff;
         }
-        else if ((class == PROC_CLASS_PIC14E) && (file1 == PIC14E_REG_WREG)) {
+        else if (((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) &&
+                 (file1 == PIC14E_REG_WREG)) {
           wreg = 0;
         }
       }
@@ -626,7 +628,7 @@ _class_lit11:
         }
       }
       else {
-        /* PROC_CLASS_PIC14E */
+        /* PROC_CLASS_PIC14E or PROC_CLASS_PIC14EX */
         if ((file1 == PIC14_REG_PCLATH) && ((tmp >= 3) || (tmp <= 6))) {
           tmp = 1 << tmp;
 
@@ -1530,7 +1532,7 @@ _insn_class_pf:
       tmp   = (opcode >> 7) & 7;
       pic14_reg_eval(m, byte_address, fstate, processor, file1, tmp, user_data_finder);
 
-      if (class == PROC_CLASS_PIC14E) {
+      if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
         tmp = 1 << tmp;
 
         if (file1 == PIC14E_REG_BSR) {
@@ -1869,7 +1871,7 @@ gp_disassemble(MemBlock *m, int byte_address, proc_class_t class, int bsr_bounda
   }
 
   /* Special case for pic14 enhanced moviw k[FSRn] & movwi k[FSRn]. */
-  if (class == PROC_CLASS_PIC14E) {
+  if ((class == PROC_CLASS_PIC14E) || (class == PROC_CLASS_PIC14EX)) {
     const char *instr = NULL;
 
     tmp = opcode & PIC14E_MASK_MOVIW_IDX;

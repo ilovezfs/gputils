@@ -208,7 +208,7 @@ select_processor(void)
   } else {
     fprintf(stderr, "Error: Didn't find any processor named: %s\n", processor_name);
     printf("Here are the supported processors:\n");
-    gp_dump_processor_list(true, NULL, NULL);
+    gp_dump_processor_list(true, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN);
     exit(1);
   }
 
@@ -264,7 +264,7 @@ write_core_sfr_list(void)
 
   table = state.class->core_sfr_table;
   for (i = state.class->core_sfr_number; i > 0; ++table, --i) {
-    if (state.class == PROC_CLASS_PIC14E) {
+    if ((state.class == PROC_CLASS_PIC14E) || (state.class == PROC_CLASS_PIC14EX)) {
       if (strcmp(table->name, "FSR0L") == 0) {
         ux_println("FSR0    equ     0x%03x", table->address);
       }
@@ -1016,12 +1016,13 @@ dasm(MemBlock *memory)
   const lset_symbol_t *sym;
   char buffer[BUFSIZ];
 
-  if (state.show_names && ((state.class == PROC_CLASS_PIC12)  ||
-                           (state.class == PROC_CLASS_PIC12E) ||
-                           (state.class == PROC_CLASS_SX)     ||
-                           (state.class == PROC_CLASS_PIC14)  ||
-                           (state.class == PROC_CLASS_PIC14E) ||
-                           (state.class == PROC_CLASS_PIC16)  ||
+  if (state.show_names && ((state.class == PROC_CLASS_PIC12)   ||
+                           (state.class == PROC_CLASS_PIC12E)  ||
+                           (state.class == PROC_CLASS_SX)      ||
+                           (state.class == PROC_CLASS_PIC14)   ||
+                           (state.class == PROC_CLASS_PIC14E)  ||
+                           (state.class == PROC_CLASS_PIC14EX) ||
+                           (state.class == PROC_CLASS_PIC16)   ||
                            (state.class == PROC_CLASS_PIC16E))) {
     if (state.class == PROC_CLASS_PIC16E) {
       mark_false_addresses(memory);
@@ -1438,7 +1439,7 @@ int main(int argc, char *argv[])
       break;
 
     case 'l':
-      gp_dump_processor_list(true, NULL, NULL);
+      gp_dump_processor_list(true, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN);
       exit(0);
       break;
 

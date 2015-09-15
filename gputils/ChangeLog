@@ -1,3 +1,15 @@
+2015-09-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx, configure, configure.ac, header/*,
+    gpasm/gpasm.c, gpasm/list.c, gpasm/processor.c,
+    gpasm/testsuite/gpasm.mchip/asmfiles/hd871.asm,
+    gpasm/testsuite/gpasm.mchip/asmfiles/hd872.asm,
+    gpasm/testsuite/gpasm.mchip/asmfiles/hd873.asm,
+    gputils/gpdasm.c, libgputils/gpcfg-table.c,
+    libgputils/gpcfg.c, libgputils/gpcfg.h, libgputils/gpdis.c,
+    libgputils/gpprocessor.c, libgputils/gpprocessor.h,
+    libgputils/gpreg-table.c, lkr/*:
+    Updated based on the mplabx-3.10.
+
 2015-08-20  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/ppparse.y:
     Fixed the bug: "#284 Cannot suppress "Symbol xxx not assigned a value" message"
