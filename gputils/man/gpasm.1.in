@@ -75,8 +75,8 @@ option, shows only the specified device.
 .BR \-k ", " \-\-error
 Enables creation of the error file.
 .TP
-.BR \-l[12[ce]|14[ce]|16[ce]] ", " \-\-list-chips[=([12[ce]|14[ce]|16[ce]])]
-List supported processors based on various aspects.
+.BR \-l[12[ce]|14[cef]|16[ce]] ", " \-\-list-chips[=([12[ce]|14[cef]|16[ce]])]
+List supported processors based on various aspects. (f => x)
 .TP
 .BR \-L ", "\-\-force-list
 Ignore NOLIST directives.  This forces gpasm to print every line assembled in
@@ -124,12 +124,12 @@ Suppress anything sent to standard output.
 .BR "\-r RADIX", " \-\-radix RADIX"
 The supported radices are BIN, DEC, OCT, and HEX. The default is HEX.
 .TP
-.BR "\-s[12[ce]|14[ce]|16[ce]]",
-.BR "\-\-list\-processor\-properties[=([12[ce]|14[ce]|16[ce]])]"
+.BR "\-s[12[ce]|14[cef]|16[ce]]",
+.BR "\-\-list\-processor\-properties[=([12[ce]|14[cef]|16[ce]])]"
 
 Lists properties of the processors. Using by itself, displays the all
 devices or group of the devices. Along with the '-p' option, shows
-only the specified device.
+only the specified device. (f => x)
 .TP
 .BR "\-S [0|1|2]", " \-\-strict [0|1|2]"
 Set the strict level of the recommended instruction-parameters
