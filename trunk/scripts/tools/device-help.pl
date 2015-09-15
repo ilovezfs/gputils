@@ -62,8 +62,11 @@ my $gpprocessor_c = 'gpprocessor.c';
 my $gpproc_path;
 my $svn_rev = -1;
 
-my $dev_info = '/opt/microchip/mplabx/v3.05/mpasmx/8bit_device.info';
-my $dev_info_rev = '';
+my $mplabx_root_path = '/opt/microchip/mplabx';
+my $mplabx_dev_info  = '8bit_device.info';
+my $mplabx_path      = '';
+my $dev_info_path    = '';
+my $dev_info_rev     = '';
 my $list_file;
 
 my $pic_name_mask = qr/PIC1(2(C[ER]?|HV)\d+\w+|6(C[ER]?|HV)\d+\w+|7C[R]?\d+\w+|[0268](C|L?F)\d+\w+)|PIC(RF\d+\w+|MCV\d+\w+)|PS\d+/;
@@ -87,12 +90,13 @@ my $config_mask;
 my $addr;
 my $mask;
 
-use constant PROC_CLASS_PIC12  => 0;
-use constant PROC_CLASS_PIC12E => 1;
-use constant PROC_CLASS_PIC14  => 2;
-use constant PROC_CLASS_PIC14E => 3;
-use constant PROC_CLASS_PIC16  => 4;
-use constant PROC_CLASS_PIC16E => 5;
+use constant PROC_CLASS_PIC12   => 0;
+use constant PROC_CLASS_PIC12E  => 1;
+use constant PROC_CLASS_PIC14   => 2;
+use constant PROC_CLASS_PIC14E  => 3;
+use constant PROC_CLASS_PIC14EX => 4;
+use constant PROC_CLASS_PIC16   => 5;
+use constant PROC_CLASS_PIC16E  => 6;
 
 use constant PIC12_BANK_SHIFT  => 5;
 use constant PIC12_BANK_SIZE   => 2 ** PIC12_BANK_SHIFT;
@@ -184,6 +188,28 @@ my %class_features_p14e =
                 ]
   );
 
+my %class_features_p14ex =
+  (
+  CLASS      => PROC_CLASS_PIC14EX,
+  NAME       => '14 bit enhanced MCU',
+  CSS_CLASS  => 'mcuAttrP14E',
+  CSS_BGRND  => '#9BF0F0',
+  ENHANCED   => TRUE,
+  PAGE_SIZE  => 2048,
+  WORD_SIZE  => 14,
+  CONF_SIZE  => 16,
+  EE_START   => 0xF000,
+  BANK_MAX   => 64,
+  BANK_SIZE  => PIC14_BANK_SIZE,
+  BANK_MASK  => ~(PIC14_BANK_SIZE - 1),
+  BANK_SHIFT => PIC14_BANK_SHIFT,
+  CORE_SFRS  => [
+                0x00, 0x01, 0x02, 0x03,
+                0x04, 0x05, 0x06, 0x07,
+                0x08, 0x09, 0x0A, 0x0B
+                ]
+  );
+
 my %class_features_p16 =
   (
   CLASS      => PROC_CLASS_PIC16,
@@ -232,6 +258,7 @@ my @class_features_list =
   \%class_features_p12e,        # PROC_CLASS_PIC12E
   \%class_features_p14,         # PROC_CLASS_PIC14
   \%class_features_p14e,        # PROC_CLASS_PIC14E
+  \%class_features_p14ex,       # PROC_CLASS_PIC14EX
   \%class_features_p16,         # PROC_CLASS_PIC16
   \%class_features_p16e         # PROC_CLASS_PIC16E
   );
@@ -239,9 +266,11 @@ my @class_features_list =
 my %class_features_by_mpasmx =
   (
   '16c5x'  => \%class_features_p12,
+  '16c5ie' => \%class_features_p12e,
   '16c5xe' => \%class_features_p12e,
   '16xxxx' => \%class_features_p14,
-  '16exxx' => \%class_features_p14e,
+  '16Exxx' => \%class_features_p14e,
+  '16EXxx' => \%class_features_p14ex,
   '17xxxx' => \%class_features_p16,
   '18xxxx' => \%class_features_p16e
   );
@@ -281,6 +310,9 @@ my $pic14_mcu_number = 0;
 
 my %pic14e_common_SFRs;
 my $pic14e_mcu_number = 0;
+
+my %pic14ex_common_SFRs;
+my $pic14ex_mcu_number = 0;
 
 my %pic16_common_SFRs;
 my $pic16_mcu_number = 0;
@@ -571,12 +603,13 @@ my @primary_menu =
     }
   );
 
-#use constant COMMON_SFR_MENU_P12  => 0;
-#use constant COMMON_SFR_MENU_P12E => 1;
-#use constant COMMON_SFR_MENU_P14  => 2;
-#use constant COMMON_SFR_MENU_P14E => 3;
-#use constant COMMON_SFR_MENU_P16  => 4;
-#use constant COMMON_SFR_MENU_P16E => 5;
+#use constant COMMON_SFR_MENU_P12   => 0;
+#use constant COMMON_SFR_MENU_P12E  => 1;
+#use constant COMMON_SFR_MENU_P14   => 2;
+#use constant COMMON_SFR_MENU_P14E  => 3;
+#use constant COMMON_SFR_MENU_P14EX => 4;
+#use constant COMMON_SFR_MENU_P16   => 5;
+#use constant COMMON_SFR_MENU_P16E  => 6;
 
 my @common_sfr_menu =
   (
@@ -618,6 +651,16 @@ my @common_sfr_menu =
     PARAM0 => \%pic14e_common_SFRs,
     PARAM1 => \$pic14e_mcu_number,
     CLASS  => PROC_CLASS_PIC14E
+    },
+
+    {                                   # PROC_CLASS_P14EX
+    HREF   => "pic14ex_$common_tag.html",
+    NAME   => 'PIC14EX',
+    HEAD   => 'PIC14EX Common SFRs',
+    PFUNC  => \&print_common_sfr_lists,
+    PARAM0 => \%pic14ex_common_SFRs,
+    PARAM1 => \$pic14ex_mcu_number,
+    CLASS  => PROC_CLASS_PIC14EX
     },
 
     {                                   # COMMON_SFR_P16
@@ -681,40 +724,43 @@ use constant RAM_MIRROR => 4;
 
 my @mcu_missed_debug =
   (
-  'PIC12F1571', 'PIC12LF1571', 'PIC12F1572', 'PIC12LF1572',
-  'PIC12F1612', 'PIC12LF1612', 'PIC12F1822', 'PIC12LF1822',
-  'PIC12F1840', 'PIC12LF1840', 'PIC12LF1840T39A', 'PIC12LF1840T48A',
-  'PIC16F1454', 'PIC16LF1454', 'PIC16F1455', 'PIC16LF1455',
-  'PIC16F1458', 'PIC16LF1458', 'PIC16F1508', 'PIC16LF1508',
-  'PIC16F1509', 'PIC16LF1509', 'PIC16F1512', 'PIC16LF1512',
-  'PIC16F1513', 'PIC16LF1513', 'PIC16F1516', 'PIC16LF1516',
-  'PIC16F1517', 'PIC16LF1517', 'PIC16F1518', 'PIC16LF1518',
-  'PIC16F1519', 'PIC16LF1519', 'PIC16F1526', 'PIC16LF1526',
-  'PIC16F1527', 'PIC16LF1527', 'PIC16LF1554', 'PIC16LF1559',
-  'PIC16F1574', 'PIC16LF1574', 'PIC16F1575', 'PIC16LF1575',
-  'PIC16F1578', 'PIC16LF1578', 'PIC16F1579', 'PIC16LF1579',
-  'PIC16F1613', 'PIC16LF1613', 'PIC16F1703', 'PIC16LF1703',
-  'PIC16F1704', 'PIC16LF1704', 'PIC16F1705', 'PIC16LF1705',
-  'PIC16F1707', 'PIC16LF1707', 'PIC16F1708', 'PIC16LF1708',
-  'PIC16F1709', 'PIC16LF1709', 'PIC16F1713', 'PIC16LF1713',
-  'PIC16F1716', 'PIC16LF1716', 'PIC16F1717', 'PIC16LF1717',
-  'PIC16F1718', 'PIC16LF1718', 'PIC16F1719', 'PIC16LF1719',
-  'PIC16F1764', 'PIC16LF1764', 'PIC16F1765', 'PIC16LF1765',
-  'PIC16F1768', 'PIC16LF1768', 'PIC16F1769', 'PIC16LF1769',
-  'PIC16F1782', 'PIC16LF1782', 'PIC16F1783', 'PIC16LF1783',
-  'PIC16F1784', 'PIC16LF1784', 'PIC16F1786', 'PIC16LF1786',
-  'PIC16F1787', 'PIC16LF1787', 'PIC16F1788', 'PIC16LF1788',
-  'PIC16F1789', 'PIC16LF1789', 'PIC16F1823', 'PIC16LF1823',
-  'PIC16F1824', 'PIC16LF1824', 'PIC16LF1824T39A', 'PIC16F1825',
-  'PIC16LF1825', 'PIC16F1826', 'PIC16LF1826', 'PIC16F1827',
-  'PIC16LF1827', 'PIC16F1828', 'PIC16LF1828', 'PIC16F1829',
-  'PIC16F1829LIN', 'PIC16LF1829', 'PIC16F1847', 'PIC16LF1847',
-  'PIC16LF1902', 'PIC16LF1903', 'PIC16LF1904', 'PIC16LF1906',
-  'PIC16LF1907', 'PIC16F1933', 'PIC16LF1933', 'PIC16F1934',
-  'PIC16LF1934', 'PIC16F1936', 'PIC16LF1936', 'PIC16F1937',
-  'PIC16LF1937', 'PIC16F1938', 'PIC16LF1938', 'PIC16F1939',
-  'PIC16LF1939', 'PIC16F1946', 'PIC16LF1946', 'PIC16F1947',
-  'PIC16LF1947'
+  'PIC12F1571', 'PIC12F1572', 'PIC12F1612', 'PIC12F1822',
+  'PIC12F1840', 'PIC12LF1571', 'PIC12LF1572', 'PIC12LF1612',
+  'PIC12LF1822', 'PIC12LF1840', 'PIC12LF1840T39A', 'PIC12LF1840T48A',
+  'PIC16F1454', 'PIC16F1455', 'PIC16F1458', 'PIC16F1459',
+  'PIC16F1508', 'PIC16F1509', 'PIC16F1512', 'PIC16F1513',
+  'PIC16F1516', 'PIC16F1517', 'PIC16F1518', 'PIC16F1519',
+  'PIC16F1526', 'PIC16F1527', 'PIC16F1574', 'PIC16F1575',
+  'PIC16F1578', 'PIC16F1579', 'PIC16F1613', 'PIC16F1614',
+  'PIC16F1615', 'PIC16F1618', 'PIC16F1619', 'PIC16F1703',
+  'PIC16F1704', 'PIC16F1705', 'PIC16F1707', 'PIC16F1708',
+  'PIC16F1709', 'PIC16F1713', 'PIC16F1716', 'PIC16F1717',
+  'PIC16F1718', 'PIC16F1719', 'PIC16F1764', 'PIC16F1765',
+  'PIC16F1768', 'PIC16F1769', 'PIC16F1773', 'PIC16F1776',
+  'PIC16F1782', 'PIC16F1783', 'PIC16F1784', 'PIC16F1786',
+  'PIC16F1787', 'PIC16F1788', 'PIC16F1789', 'PIC16F1823',
+  'PIC16F1824', 'PIC16F1825', 'PIC16F1826', 'PIC16F1827',
+  'PIC16F1828', 'PIC16F1829', 'PIC16F1829LIN', 'PIC16F1847',
+  'PIC16F1933', 'PIC16F1934', 'PIC16F1936', 'PIC16F1937',
+  'PIC16F1938', 'PIC16F1939', 'PIC16F1946', 'PIC16F1947',
+  'PIC16LF1454', 'PIC16LF1455', 'PIC16LF1458', 'PIC16LF1459',
+  'PIC16LF1508', 'PIC16LF1509', 'PIC16LF1512', 'PIC16LF1513',
+  'PIC16LF1516', 'PIC16LF1517', 'PIC16LF1518', 'PIC16LF1519',
+  'PIC16LF1526', 'PIC16LF1527', 'PIC16LF1554', 'PIC16LF1559',
+  'PIC16LF1574', 'PIC16LF1575', 'PIC16LF1578', 'PIC16LF1579',
+  'PIC16LF1613', 'PIC16LF1614', 'PIC16LF1615', 'PIC16LF1618',
+  'PIC16LF1619', 'PIC16LF1703', 'PIC16LF1704', 'PIC16LF1705',
+  'PIC16LF1707', 'PIC16LF1708', 'PIC16LF1709', 'PIC16LF1713',
+  'PIC16LF1716', 'PIC16LF1717', 'PIC16LF1718', 'PIC16LF1719',
+  'PIC16LF1764', 'PIC16LF1765', 'PIC16LF1768', 'PIC16LF1769',
+  'PIC16LF1773', 'PIC16LF1776', 'PIC16LF1782', 'PIC16LF1783',
+  'PIC16LF1784', 'PIC16LF1786', 'PIC16LF1787', 'PIC16LF1788',
+  'PIC16LF1789', 'PIC16LF1823', 'PIC16LF1824', 'PIC16LF1824T39A',
+  'PIC16LF1825', 'PIC16LF1826', 'PIC16LF1827', 'PIC16LF1828',
+  'PIC16LF1829', 'PIC16LF1847', 'PIC16LF1902', 'PIC16LF1903',
+  'PIC16LF1904', 'PIC16LF1906', 'PIC16LF1907', 'PIC16LF1933',
+  'PIC16LF1934', 'PIC16LF1936', 'PIC16LF1937', 'PIC16LF1938',
+  'PIC16LF1939', 'PIC16LF1946', 'PIC16LF1947'
   );
 
 # The Microchip created faulty database: 8bit_device.info
@@ -962,6 +1008,19 @@ sub swap_reverse($$)
 
 #---------------------------------------------------------------------------------------------------
 
+sub set_subscript($$$$)
+  {
+  my ($Array, $Start, $End, $Value) = @_;
+  my $i;
+
+  for ($i = $Start; $i <= $End; ++$i)
+    {
+    $Array->[$i] = $Value;
+    }
+  }
+
+#---------------------------------------------------------------------------------------------------
+
 sub Log
   {
   return if (pop(@_) > $verbose);
@@ -1073,7 +1132,7 @@ sub aOutfl
 
 #---------------------------------------------------------------------------------------------------
 
-sub smartCompare($$)
+sub versionCompare($$)
   {
   my ($Str1, $Str2) = @_;
 
@@ -1088,7 +1147,7 @@ sub smartCompare($$)
 
 #---------------------------------------------------------------------------------------------------
 
-sub smartSort($$)
+sub versionSort($$)
   {
   my @a_s = ($_[0] =~ /(\d+|\D+)/go);
   my @b_s = ($_[1] =~ /(\d+|\D+)/go);
@@ -1115,12 +1174,27 @@ sub smartSort($$)
 
   for ($i = 0; $i < $end; ++$i)
     {
-    $k = smartCompare(\$a_s[$i], \$b_s[$i]);
+    $k = versionCompare(\$a_s[$i], \$b_s[$i]);
 
     return $k if ($k != 0);
     }
 
   return $ret;
+  }
+
+#---------------------------------------------------------------------------------------------------
+
+	# Finds path of the latest version of mplabx.
+
+sub find_latest_version($)
+  {
+  my $Dir = $_[0];
+  my @dir_list;
+
+  opendir(DIR, $Dir) || die "find_latest_version(): Can not open. -> \"$Dir\"\n";
+  @dir_list = sort { versionSort($a, $b) } grep(-d "$Dir/$_" && $_ ne '.' && $_ ne '..', readdir(DIR));
+  closedir(DIR);
+  return ((scalar(@dir_list) > 0) ? "$Dir/$dir_list[$#dir_list]" : $Dir);
   }
 
 #---------------------------------------------------------------------------------------------------
@@ -1286,7 +1360,7 @@ sub read_ram_features($$$)
   open(INC, '<', $inc_path) || die "Could not open for reading: $inc_path\n";
 
   $Features->{STD_HEADER} = $Inc;
-  Log("Read the RAM features from $inc_path.", 4);
+  Log("Read the RAM features of $Features->{MCU_NAME} from $inc_path.", 4);
 
   $full_ram    = 0;
   $config_mask = 0;   # For some PIC14E devices.
@@ -1341,7 +1415,7 @@ sub read_ram_features($$$)
           $Features->{MAX_RAM} = $full_ram;
           ++$full_ram;
           }
-        elsif ($line =~ /^__BADRAM\s+(.+)$/iop)
+        elsif ($line =~ /^__BADRAM\s+(.+)$/io)
           {
         # __BADRAM  H'000F'
         # __BADRAM  H'0013'-H'0014'
@@ -1349,7 +1423,9 @@ sub read_ram_features($$$)
         # __BADRAM  H'0F9C'
         # __BADRAM  H'0FA3'-H'0FA5'
 
-          foreach (split(/\s*,\s*/o, ${^POSTMATCH}))
+	  my $tmp = $1;
+
+          foreach (split(/\s*,\s*/o, $tmp))
             {
             if (/^H'([[:xdigit:]]+)'\s*-\s*H'([[:xdigit:]]+)'$/io)
               {
@@ -1371,7 +1447,6 @@ sub read_ram_features($$$)
               die "Unknown value in \"$inc_path\" file: $_\n";
               }
             } # foreach (split(/\s*,\s*/op, ${^POSTMATCH}))
-
           } # elsif ($line =~ /^__BADRAM\s+/io)
         elsif ($line =~ /^;\s*Configuration\s+Bits$/io)
           {
@@ -1680,10 +1755,10 @@ sub read_ram_and_rom_features($$)
 
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@                                                   @@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@  Read all informations from the $dev_info file and  @@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@  from the device specific .inc and .lkr files.      @@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@                                                   @@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@                                                        @@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@  Read all informations from the $dev_info_path file and  @@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@     from the device specific .inc and .lkr files.        @@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@                                                        @@@@@@@@@@@@@@@@@@@@@@@
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -1795,9 +1870,9 @@ sub read_device_informations()
   my ($dir_addr_min, $dir_addr_max, $directive_mask);
   my $debug_present;
 
-  open(INFO, '<', $dev_info) || die "Could not open for reading: $dev_info\n";
+  open(INFO, '<', $dev_info_path) || die "Could not open for reading: $dev_info_path\n";
 
-  Log("Reads all config options from $dev_info.", 4);
+  Log("Reads all config options from $dev_info_path.", 4);
 
   my $msg = ($list_file ne '') ? 'list file' : 'Gputils';
 
@@ -1816,15 +1891,16 @@ sub read_device_informations()
     if ($fields[0] eq 'PART_INFO_TYPE')
       {
         # <PART_INFO_TYPE><f220><PIC10F220><16c5x><0><0><ff><1><1f><0><0><0><1>
+        # <PART_INFO_TYPE><f527><PIC16F527><16c5ie><0><2><3ff><4><1f><0><0><3f><1>
         # <PART_INFO_TYPE><e529><PIC12F529T39A><16c5xe><0><3><5ff><8><1f><0><0><3f><1>
         # <PART_INFO_TYPE><6628><PIC16F628><16xxxx><0><1><7ff><4><7f><7f><0><0><1>
         # <PART_INFO_TYPE><a829><PIC16LF1829><16Exxx><2><4><1fff><20><7f><ff><0><0><2>
-        # <PART_INFO_TYPE><7752><PIC17C752><17xxxx><0><1><ffff><9><ff><0><0><0><0>
+        # <PART_INFO_TYPE><8857><PIC16F18857><16EXxx><2><10><7fff><40><7f><0><0><ff><5>
         # <PART_INFO_TYPE><1330><PIC18F1330><18xxxx><6><1><1fff><10><ff><7f><7f><0><c>
 
       if ($fields[2] =~ /^$pic_name_mask$/io)
         {
-        ($mcu_name, $class_name, $directive_count) = (uc($fields[2]), lc($fields[3]), hex($fields[12]));
+        ($mcu_name, $class_name, $directive_count) = (uc($fields[2]), $fields[3], hex($fields[12]));
         $switch_count   = 0;
         $option_count   = 0;
         $dir_addr_min   = ULONG_MAX;
@@ -2013,7 +2089,7 @@ sub read_device_informations()
 
           if ($switch_count == 0)
             {
-            if ($mcu_features->{MCU_CLASS} == PROC_CLASS_PIC14E && $directive_addr == 0x8008 &&
+            if (($mcu_features->{MCU_CLASS} == PROC_CLASS_PIC14E) && ($directive_addr == 0x8008) &&
                 ! $debug_present && $mcu_name ~~ @mcu_missed_debug)
               {
               $directive_mask |= add_missing_debug($directive);
@@ -2112,7 +2188,7 @@ sub print_source_info($)
   aOutml($Align + 2, '<p class="srcInfo">',
                      '  This page generated automatically by the',
                      "  <a href=\"https://sourceforge.net/p/gputils/code/HEAD/tree/trunk/scripts/tools/device-help.pl\"><em>$PROGRAM</em></a>",
-                     "  program ($time) from the <em>" . basename($dev_info) . "</em> file (rev: $dev_info_rev) of <em>mpasmx</em> and from the",
+                     "  program ($time) from the <em>" . basename($dev_info_path) . "</em> file (rev: $dev_info_rev) of <em>mpasmx</em> and from the",
                      "  $href (rev: svn $svn_rev). The <em>mpasmx</em>",
                      "  is included in the <a href=\"http://$mplabx_url\">MPLAB X</a>.",
                      "</p>");
@@ -2141,7 +2217,7 @@ sub print_mcu_list($$)
   my $lst        = '<td class="mcuListHeader">';
   my @array      = ();
 
-  Log("Dump the \"$Element->{NAME}\" page.", 4);
+  Log("Write the \"$Element->{NAME}\" page.", 4);
 
   aOutml($Align + 2, '<div class="mcuList">',
                      '  <table class="mcuTable">',
@@ -2206,12 +2282,12 @@ sub print_mcu_list($$)
   if ($menu_class == PRI_MENU_RAM)
     {
     @array = sort { $mcus_by_names{$a}->{RAM_SIZE} <=> $mcus_by_names{$b}->{RAM_SIZE} ||
-                    smartSort($a, $b) } keys %mcus_by_names;
+                    versionSort($a, $b) } keys %mcus_by_names;
     }
   elsif ($menu_class == PRI_MENU_ROM)
     {
     @array = sort { $mcus_by_names{$a}->{ROM_SIZE} <=> $mcus_by_names{$b}->{ROM_SIZE} ||
-                    smartSort($a, $b) } keys %mcus_by_names;
+                    versionSort($a, $b) } keys %mcus_by_names;
     }
   elsif ($menu_class == PRI_MENU_EEPROM)
     {
@@ -2221,11 +2297,11 @@ sub print_mcu_list($$)
       }
 
     @array = sort { $mcus_by_names{$a}->{EEPROM} <=> $mcus_by_names{$b}->{EEPROM} ||
-                    smartSort($a, $b) } @array;
+                    versionSort($a, $b) } @array;
     }
   else
     {
-    @array = sort { smartSort($a, $b) } keys %mcus_by_names;
+    @array = sort { versionSort($a, $b) } keys %mcus_by_names;
     }
 
   foreach my $name (@array)
@@ -2469,12 +2545,13 @@ sub make_sfr_common_lists()
   {
   my ($mcu_features, $mcu_class, $menu);
 
-  $pic12_mcu_number  = 0;
-  $pic12e_mcu_number = 0;
-  $pic14_mcu_number  = 0;
-  $pic14e_mcu_number = 0;
-  $pic16_mcu_number  = 0;
-  $pic16e_mcu_number = 0;
+  $pic12_mcu_number   = 0;
+  $pic12e_mcu_number  = 0;
+  $pic14_mcu_number   = 0;
+  $pic14e_mcu_number  = 0;
+  $pic14ex_mcu_number = 0;
+  $pic16_mcu_number   = 0;
+  $pic16e_mcu_number  = 0;
 
   Log("Make list of common SFRs.", 4);
 
@@ -2491,7 +2568,7 @@ sub make_sfr_common_lists()
 
 #---------------------------------------------------------------------------------------------------
 
-        # Dump those registers which they exist in the class of all members.
+        # Prints those registers which they exist in the class of all members.
 
 sub print_common_sfr_lists($$)
   {
@@ -2505,7 +2582,7 @@ sub print_common_sfr_lists($$)
   my @bank_array   = ();
   my %array;
 
-  Log("Dump list of $Element->{NAME} common SFRs.", 4);
+  Log("Write list of $Element->{NAME} common SFRs.", 4);
 
   print_local_menu(\@common_sfr_menu, '', $mcu_class);
 
@@ -2518,10 +2595,7 @@ sub print_common_sfr_lists($$)
     {
     $sfr = $sfr_list->{$_};
 
-    if ($sfr->{NUMBER} == $number)
-      {
-      $array{$sfr->{ADDR}} = $_;
-      }
+    $array{$sfr->{ADDR}} = $_ if ($sfr->{NUMBER} == $number);
     }
 
         #------------------------------------
@@ -2611,7 +2685,7 @@ sub print_common_sfr_lists($$)
 
 #---------------------------------------------------------------------------------------------------
 
-        # Dump the device ID.
+        # Prints the device ID.
 
 sub print_devid($$$)
   {
@@ -2643,7 +2717,7 @@ sub print_devid($$$)
 
 #---------------------------------------------------------------------------------------------------
 
-        # Dump the features of a MCU.
+        # Prints the features of a MCU.
 
 sub print_features($)
   {
@@ -2658,7 +2732,7 @@ sub print_features($)
   $str = "$out_dir/${mcu_name}-$feat_tag.html";
   open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
 
-  Log("Dump the features of $mcu_name.", 4);
+  Log("Write the features of $mcu_name.", 4);
 
         #------------------------------------
 
@@ -2950,7 +3024,7 @@ sub print_features($)
 
 #---------------------------------------------------------------------------------------------------
 
-        # Dump the entire contents of a Config word.
+        # Prints the entire contents of a Config word.
 
 sub print_config_word($$$$$)
   {
@@ -2995,7 +3069,7 @@ sub print_config_word($$$$$)
 
 #---------------------------------------------------------------------------------------------------
 
-        # Dump the entire contents of all Config word of a MCU.
+        # Prints the entire contents of all Config word of a MCU.
 
 sub print_all_config_word($)
   {
@@ -3014,7 +3088,7 @@ sub print_all_config_word($)
   $str = "$out_dir/${mcu_name}-$conf_tag.html";
   open($out_handler, '>', $str) || die "Could not create the \"$str\" file!\n";
 
-  Log("Dump the Config Options of $mcu_name.", 4);
+  Log("Write the Config Options of $mcu_name.", 4);
 
   $len = 4;
   $head_s = '<tr><th colspan=4 class="configWord">';
@@ -3140,17 +3214,12 @@ sub print_all_config_word($)
 sub mark_gpr_ram($$)
   {
   my ($Array, $Features) = @_;
-  my ($start, $end, $size);
-  my $mcu_class_features = $class_features_list[$Features->{MCU_CLASS}];
-  my $bank_size = $mcu_class_features->{BANK_SIZE};
+  my ($start, $end);
   my $bank_max  = $Features->{BANK_MAX};
   my $gpr       = $Features->{GPR_RAM};
-  my $ram_size  = $bank_max * $bank_size;
   my $i;
 
-  @{$Array} = ((RAM_BAD) x $ram_size);
-
-  return if (! defined($gpr) || ! @{$gpr});
+  return if (! defined($gpr) || scalar(@{$gpr}) == 0);
 
   for ($i = 0; $i < $bank_max; ++$i)
     {
@@ -3160,8 +3229,7 @@ sub mark_gpr_ram($$)
       $end   = $_->{END};
       next if ($start < 0 || $end < 0);
 
-      $size = $end - $start + 1;
-      splice(@{$Array}, $start, $size, ((RAM_GPR) x $size));
+      set_subscript($Array, $start, $end, RAM_GPR);
       }
     }
   }
@@ -3187,9 +3255,10 @@ sub mark_non_gpr_ram($$)
   foreach (@{$bad_ram})
     {
     my $start = $_->{START};
-    my $size  = $_->{END} - $start + 1;
+    my $end   = $_->{END};
+    my $size  = $end - $start + 1;
 
-    splice(@{$Array}, $start, $size, ((RAM_BAD) x $size));
+    set_subscript($Array, $start, $end, RAM_BAD);
     }
 
   if ($mcu_class_features->{WORD_SIZE} < 16)
@@ -3197,7 +3266,7 @@ sub mark_non_gpr_ram($$)
         # Not exist GPR before the last SFR in bank.
 
     $bank_prev = -1;
-    $max_sfr = 0;
+    $max_sfr   = 0;
     $sfr_count = @{$sfrs};
     $i = 0;
     while (TRUE)
@@ -3217,7 +3286,7 @@ sub mark_non_gpr_ram($$)
         # In the previous bank there is no GPR before the last SFR.
 
           ++$max_sfr;
-          splice(@{$Array}, $bank_prev, $max_sfr, ((RAM_BAD) x $max_sfr));
+          set_subscript($Array, $bank_prev, $bank_prev + $max_sfr, RAM_BAD);
           }
 
         $bank_prev = $bank;
@@ -3231,7 +3300,7 @@ sub mark_non_gpr_ram($$)
         # In the current bank there is no GPR before the last SFR.
 
         ++$max_sfr;
-        splice(@{$Array}, $bank, $max_sfr, ((RAM_BAD) x $max_sfr));
+        set_subscript($Array, $bank, $bank + $max_sfr, RAM_BAD);
         last;
         }
       } # while (TRUE)
@@ -3242,12 +3311,12 @@ sub mark_non_gpr_ram($$)
 
 sub is_valid_sfr($$)
   {
-  my ($ArrayRef, $SfrAddress) = @_;
+  my ($Array, $SfrAddress) = @_;
   my ($start, $end);
 
-  return FALSE if (! defined($ArrayRef) || ! @{$ArrayRef});
+  return FALSE if (! defined($Array) || scalar(@{$Array}) == 0);
 
-  foreach (@{$ArrayRef})
+  foreach (@{$Array})
     {
     $start = $_->{START};
     $end   = $_->{END};
@@ -3309,7 +3378,7 @@ sub mark_sfr_ram($$)
 sub mark_common_ram($$)
   {
   my ($Array, $Features) = @_;
-  my ($start, $end, $size, $i);
+  my ($start, $end, $i);
   my $bank_num = $Features->{BANK_NUM};
   my $common   = $Features->{COMMON_RAM};
 
@@ -3323,8 +3392,7 @@ sub mark_common_ram($$)
       $end   = $_->{END};
       next if ($start < 0 || $end < 0);
 
-      $size = $end - $start + 1;
-      splice(@{$Array}, $start, $size, ((RAM_COMMON) x $size));
+      set_subscript($Array, $start, $end, RAM_COMMON);
       }
     }
   }
@@ -3336,7 +3404,7 @@ sub mark_common_ram($$)
 sub mark_mirrored_ram($$)
   {
   my ($Array, $Features) = @_;
-  my ($start, $end, $size, $i);
+  my ($start, $end, $i);
   my $bank_num = $Features->{BANK_NUM};
   my $mirror   = $Features->{MIRROR_RAM};
 
@@ -3350,8 +3418,7 @@ sub mark_mirrored_ram($$)
       $end   = $_->{END};
       next if ($start < 0 || $end < 0);
 
-      $size = $end - $start + 1;
-      splice(@{$Array}, $start, $size, ((RAM_MIRROR) x $size));
+      set_subscript($Array, $start, $end, RAM_MIRROR);
       }
     }
   }
@@ -3373,7 +3440,7 @@ sub print_column_warning($$$)
 
 #---------------------------------------------------------------------------------------------------
 
-        # Dump the RAM map of a MCU.
+        # Prints the RAM map of a MCU.
 
 sub print_ram_map($)
   {
@@ -3384,10 +3451,12 @@ sub print_ram_map($)
   my $class_pic16e = ($mcu_class == PROC_CLASS_PIC16E) ? TRUE : FALSE;
   my $mcu_class_features = $class_features_list[$mcu_class];
   my $bank_num     = $Features->{BANK_NUM};
+  my $bank_max     = $Features->{BANK_MAX};
   my $bank_size    = $mcu_class_features->{BANK_SIZE};
   my $sfrs         = $Features->{SFRS};
   my $sfr_names    = $Features->{SFR_NAMES};
   my $linearmem    = $Features->{LINEARMEM};       # Only in the enhanced pic14 MCUs.
+  my $ram_size     = $bank_max * $bank_size;
   my $lin_name     = '';
   my $segments     = undef;
   my $c_expl       = '<span class="explanation">';
@@ -3398,7 +3467,7 @@ sub print_ram_map($)
   $t = "$out_dir/${mcu_name}-$ram_tag.html";
   open($out_handler, '>', $t) || die "Could not create the \"$t\" file!\n";
 
-  Log("Dump the RAM map of $mcu_name.", 4);
+  Log("Write the RAM map of $mcu_name.", 4);
 
   if (defined($linearmem))
     {
@@ -3406,6 +3475,7 @@ sub print_ram_map($)
     $segments = $linearmem->{SEGMENTS};
     }
 
+  set_subscript(\@ram_array, 0, $ram_size - 1, RAM_BAD);
   mark_gpr_ram(\@ram_array, $Features);
   mark_non_gpr_ram(\@ram_array, $Features);
   mark_sfr_ram(\@ram_array, $Features);
@@ -3731,7 +3801,7 @@ sub print_ram_map($)
 
 #---------------------------------------------------------------------------------------------------
 
-        # Dump the SFR map of $Name MCU.
+        # Prints the SFR map of $Name MCU.
 
 sub print_sfr_map($)
   {
@@ -3751,7 +3821,7 @@ sub print_sfr_map($)
   $t = "$out_dir/${mcu_name}-$sfr_tag.html";
   open($out_handler, '>', $t) || die "Could not create the \"$t\" file!\n";
 
-  Log("Dump the SFR map of $mcu_name.", 4);
+  Log("Write the SFR map of $mcu_name.", 4);
 
         #------------------------------------
 
@@ -4817,6 +4887,8 @@ $PROGRAM = basename($0);
 $remote_url = '';
 $list_file  = '';
 
+my $user_info_path = FALSE;
+
 for (my $i = 0; $i < scalar(@ARGV); )
   {
   my $opt = $ARGV[$i++];
@@ -4834,7 +4906,8 @@ for (my $i = 0; $i < scalar(@ARGV); )
       {
       die "This option \"$opt\" requires a parameter.\n" if ($i > $#ARGV);
 
-      $dev_info = $ARGV[$i++];
+      $dev_info_path = $ARGV[$i++];
+      $user_info_path = TRUE;
       }
 
     when (/^-(od|-out-dir)$/o)
@@ -4887,6 +4960,12 @@ for (my $i = 0; $i < scalar(@ARGV); )
 
 die "This directory - $gputils_path - not exist!" if (! -d $gputils_path);
 
+if (!$user_info_path)
+  {
+  $mplabx_path   = find_latest_version($mplabx_root_path);
+  $dev_info_path = "$mplabx_path/mpasmx/$mplabx_dev_info";
+  }
+
 read_gp_svn_version();
 
 $gpproc_path  = "$gputils_path/libgputils/$gpprocessor_c";
@@ -4919,7 +4998,7 @@ add_missing_directives();
 create_css();
 create_class_htmls();
 
-foreach (sort { smartSort($a, $b) } keys %mcus_by_names)
+foreach (sort { versionSort($a, $b) } keys %mcus_by_names)
   {
   print_all_config_word($mcus_by_names{$_});
   print_features($mcus_by_names{$_});

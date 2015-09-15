@@ -1,10 +1,10 @@
         LIST
 
 ;==========================================================================
-; Build date : Nov 13 2014
+; Build date : Aug 13 2015
 ;  MPASM PIC16F1579 processor include
 ; 
-;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
+;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
 ;==========================================================================
 
         NOLIST
@@ -308,7 +308,6 @@ RC6PPS           EQU  H'0EA6'
 RC7PPS           EQU  H'0EA7'
 
 ;-----Bank31------------------
-ICDBK0H          EQU  H'0F9E'
 STATUS_SHAD      EQU  H'0FE4'
 WREG_SHAD        EQU  H'0FE5'
 BSR_SHAD         EQU  H'0FE6'
@@ -2161,16 +2160,6 @@ RC7PPS0          EQU  H'0000'
 RC7PPS1          EQU  H'0001'
 RC7PPS2          EQU  H'0002'
 RC7PPS3          EQU  H'0003'
-
-
-;----- ICDBK0H Bits -----------------------------------------------------
-BKA8             EQU  H'0000'
-BKA9             EQU  H'0001'
-BKA10            EQU  H'0002'
-BKA11            EQU  H'0003'
-BKA12            EQU  H'0004'
-BKA13            EQU  H'0005'
-BKA14            EQU  H'0006'
 
 
 ;----- STATUS_SHAD Bits -----------------------------------------------------

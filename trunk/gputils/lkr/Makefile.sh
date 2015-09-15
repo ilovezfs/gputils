@@ -9,27 +9,26 @@ cat > $MAKE_FILE <<\_ACEOF
 
 pkgdatadir = @GPUTILS_LKR_PATH@
 
-LKR_FILES =\
+LKR_FILES = \
 _ACEOF
 
 # count the number of items in the list
 count=0
-for x in *.lkr
-  do
-    count=$(expr $count + 1)
-  done
+for x in *.lkr; do
+  count=$(expr $count + 1)
+done
 
 # output the file list
 number=0
-for x in *.lkr
-  do
-    number=$(expr $number + 1)
-    if [ $number -eq $count ]; then
-      echo "	$x" >> $MAKE_FILE
-    else
-      echo "	$x \\" >> $MAKE_FILE
-    fi
-  done
+list=`ls -A1 *.lkr | sort -V`
+for x in $list; do
+  number=$(expr $number + 1)
+  if [ $number -eq $count ]; then
+    echo "	$x" >> $MAKE_FILE
+  else
+    echo "	$x \\" >> $MAKE_FILE
+  fi
+done
 
 cat >> $MAKE_FILE <<\_ACEOF
 

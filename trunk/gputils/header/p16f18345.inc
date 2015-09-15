@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Apr 06 2015
+; Build date : Aug 13 2015
 ;  MPASM PIC16F18345 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -250,9 +250,11 @@ CCDCON           EQU  H'041F'
 CCDPA            EQU  H'048C'
 CCDPB            EQU  H'048D'
 CCDPC            EQU  H'048E'
+NCO1ACC          EQU  H'0498'
 NCO1ACCL         EQU  H'0498'
 NCO1ACCH         EQU  H'0499'
 NCO1ACCU         EQU  H'049A'
+NCO1INC          EQU  H'049B'
 NCO1INCL         EQU  H'049B'
 NCO1INCH         EQU  H'049C'
 NCO1INCU         EQU  H'049D'
@@ -522,7 +524,7 @@ CCP4IF           EQU  H'0003'
 TMR5IF           EQU  H'0004'
 TMR5GIF          EQU  H'0005'
 CWG1IF           EQU  H'0006'
-CGW2IF           EQU  H'0007'
+CWG2IF           EQU  H'0007'
 
 
 ;----- TMR0L Bits -----------------------------------------------------
@@ -1810,6 +1812,10 @@ NCO1ACC16        EQU  H'0000'
 NCO1ACC17        EQU  H'0001'
 NCO1ACC18        EQU  H'0002'
 NCO1ACC19        EQU  H'0003'
+NCO1ACC20        EQU  H'0004'
+NCO1ACC21        EQU  H'0005'
+NCO1ACC22        EQU  H'0006'
+NCO1ACC23        EQU  H'0007'
 
 
 ;----- NCO1INCL Bits -----------------------------------------------------
@@ -1834,12 +1840,15 @@ NCO1INC14        EQU  H'0006'
 NCO1INC15        EQU  H'0007'
 
 
-
 ;----- NCO1INCU Bits -----------------------------------------------------
 NCO1INC16        EQU  H'0000'
 NCO1INC17        EQU  H'0001'
 NCO1INC18        EQU  H'0002'
 NCO1INC19        EQU  H'0003'
+NCO1INC20        EQU  H'0004'
+NCO1INC21        EQU  H'0005'
+NCO1INC22        EQU  H'0006'
+NCO1INC23        EQU  H'0007'
 
 
 ;----- NCO1CON Bits -----------------------------------------------------
@@ -1852,6 +1861,8 @@ N1EN             EQU  H'0007'
 ;----- NCO1CLK Bits -----------------------------------------------------
 N1CKS0           EQU  H'0000'
 N1CKS1           EQU  H'0001'
+N1CKS2           EQU  H'0002'
+N1CKS3           EQU  H'0003'
 N1PWS0           EQU  H'0005'
 N1PWS1           EQU  H'0006'
 N1PWS2           EQU  H'0007'
@@ -2245,7 +2256,9 @@ SYSCMD           EQU  H'0007'
 TMR0MD           EQU  H'0000'
 TMR1MD           EQU  H'0001'
 TMR2MD           EQU  H'0002'
+TMR3MD           EQU  H'0003'
 TMR4MD           EQU  H'0004'
+TMR5MD           EQU  H'0005'
 TMR6MD           EQU  H'0006'
 NCOMD            EQU  H'0007'
 
@@ -3521,21 +3534,20 @@ _CONFIG3         EQU  H'8009'
 _CONFIG4         EQU  H'800A'
 
 ;----- CONFIG1 Options --------------------------------------------------
-_FEXTOSC_LP      EQU  H'3FF8'    ; LP (crystal oscillator) optimized for 32.768 kHz; PFM set to low power 
-_FEXTOSC_XT      EQU  H'3FF9'    ; XT (crystal oscillator) from 100 kHz to 4 MHz; PFM set to medium power
-_FEXTOSC_HS      EQU  H'3FFA'    ; HS (crystal oscillator) above 4 MHz; PFM set to high power
-_FEXTOSC_Unimplemented EQU  H'3FFB'    ; Unimplemented
+_FEXTOSC_LP      EQU  H'3FF8'    ; LP (crystal oscillator) optimized for 32.768 kHz
+_FEXTOSC_XT      EQU  H'3FF9'    ; XT (crystal oscillator) from 100 kHz to 4 MHz
+_FEXTOSC_HS      EQU  H'3FFA'    ; HS (crystal oscillator) above 4 MHz
 _FEXTOSC_OFF     EQU  H'3FFC'    ; Oscillator not enabled
-_FEXTOSC_ECL     EQU  H'3FFD'    ; EC (external clock) below 100 kHz; PFM set to low power
-_FEXTOSC_ECM     EQU  H'3FFE'    ; EC (external clock) for 100 kHz to 8 MHz; PFM set to medium power
-_FEXTOSC_ECH     EQU  H'3FFF'    ; EC (external clock) above 8 MHz; PFM set to high power (device manufacturing default)
+_FEXTOSC_ECL     EQU  H'3FFD'    ; EC (external clock) below 100 kHz
+_FEXTOSC_ECM     EQU  H'3FFE'    ; EC (external clock) for 100 kHz to 8 MHz
+_FEXTOSC_ECH     EQU  H'3FFF'    ; EC (external clock) above 8 MHz
 
-_RSTOSC_HFINT32  EQU  H'3F8F'    ; HFINTOSC (32MHz)
+_RSTOSC_HFINT32  EQU  H'3F8F'    ; HFINTOSC with 2x PLL (32MHz)
 _RSTOSC_EXT4X    EQU  H'3F9F'    ; EXTOSC with 4x PLL, with EXTOSC operating per FEXTOSC bits
 _RSTOSC_SOSC     EQU  H'3FBF'    ; SOSC (31kHz)
 _RSTOSC_LFINT    EQU  H'3FCF'    ; LFINTOSC (31kHz)
 _RSTOSC_HFINT1   EQU  H'3FEF'    ; HFINTOSC (1MHz)
-_RSTOSC_EXT1X    EQU  H'3FFF'    ; EXTOSC operating per FEXTOSC bits (device manufacturing default)
+_RSTOSC_EXT1X    EQU  H'3FFF'    ; EXTOSC operating per FEXTOSC bits 
 
 _CLKOUTEN_ON     EQU  H'3EFF'    ; CLKOUT function is enabled; FOSC/4 clock appears at OSC2
 _CLKOUTEN_OFF    EQU  H'3FFF'    ; CLKOUT function is disabled; I/O or oscillator function on OSC2
@@ -3579,9 +3591,9 @@ _DEBUG_ON        EQU  H'1FFF'    ; Background debugger enabled
 _DEBUG_OFF       EQU  H'3FFF'    ; Background debugger disabled
 
 ;----- CONFIG3 Options --------------------------------------------------
-_WRT_ALL         EQU  H'3FFC'    ; 0000h to 07FFh write protected, no addresses may be modified
-_WRT_HALF        EQU  H'3FFD'    ; 0000h to 03FFh write-protected, 0400h to 07FFh may be modified
-_WRT_BOOT        EQU  H'3FFE'    ; 0000h to 01FFh write-protected, 0200h to 07FFh may be modified
+_WRT_ALL         EQU  H'3FFC'    ; 0000h to 1FFFh write protected, no addresses may be modified
+_WRT_HALF        EQU  H'3FFD'    ; 0000h to 03FFh write-protected, 0400h to 1FFFh may be modified
+_WRT_BOOT        EQU  H'3FFE'    ; 0000h to 01FFh write-protected, 0200h to 1FFFh may be modified
 _WRT_OFF         EQU  H'3FFF'    ; Write protection off
 
 _LVP_OFF         EQU  H'1FFF'    ; High Voltage on MCLR/VPP must be used for programming.

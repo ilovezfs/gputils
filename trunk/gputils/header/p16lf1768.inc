@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Apr 06 2015
+; Build date : Aug 13 2015
 ;  MPASM PIC16LF1768 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -2999,6 +2999,8 @@ RIS10            EQU  H'0002'
 RIS11            EQU  H'0003'
 RIS12            EQU  H'0004'
 RIS13            EQU  H'0005'
+RIS14            EQU  H'0006'
+RIS15            EQU  H'0007'
 
 G1RIS8           EQU  H'0000'
 G1RIS9           EQU  H'0001'
@@ -3006,6 +3008,8 @@ G1RIS10          EQU  H'0002'
 G1RIS11          EQU  H'0003'
 G1RIS12          EQU  H'0004'
 G1RIS13          EQU  H'0005'
+G1RIS14          EQU  H'0006'
+G1RIS15          EQU  H'0007'
 
 
 ;----- COG1RSIM0 Bits -----------------------------------------------------
@@ -3035,6 +3039,8 @@ RSIM10           EQU  H'0002'
 RSIM11           EQU  H'0003'
 RSIM12           EQU  H'0004'
 RSIM13           EQU  H'0005'
+RSIM14           EQU  H'0006'
+RSIM15           EQU  H'0007'
 
 G1RSIM8          EQU  H'0000'
 G1RSIM9          EQU  H'0001'
@@ -3042,6 +3048,8 @@ G1RSIM10         EQU  H'0002'
 G1RSIM11         EQU  H'0003'
 G1RSIM12         EQU  H'0004'
 G1RSIM13         EQU  H'0005'
+G1RSIM14         EQU  H'0006'
+G1RSIM15         EQU  H'0007'
 
 
 ;----- COG1FIS0 Bits -----------------------------------------------------
@@ -3071,6 +3079,8 @@ FIS10            EQU  H'0002'
 FIS11            EQU  H'0003'
 FIS12            EQU  H'0004'
 FIS13            EQU  H'0005'
+FIS14            EQU  H'0006'
+FIS15            EQU  H'0007'
 
 G1FIS8           EQU  H'0000'
 G1FIS9           EQU  H'0001'
@@ -3078,6 +3088,8 @@ G1FIS10          EQU  H'0002'
 G1FIS11          EQU  H'0003'
 G1FIS12          EQU  H'0004'
 G1FIS13          EQU  H'0005'
+G1FIS14          EQU  H'0006'
+G1FIS15          EQU  H'0007'
 
 
 ;----- COG1FSIM0 Bits -----------------------------------------------------
@@ -3107,6 +3119,8 @@ FSIM10           EQU  H'0002'
 FSIM11           EQU  H'0003'
 FSIM12           EQU  H'0004'
 FSIM13           EQU  H'0005'
+FSIM14           EQU  H'0006'
+FSIM15           EQU  H'0007'
 
 G1FSIM8          EQU  H'0000'
 G1FSIM9          EQU  H'0001'
@@ -3114,6 +3128,8 @@ G1FSIM10         EQU  H'0002'
 G1FSIM11         EQU  H'0003'
 G1FSIM12         EQU  H'0004'
 G1FSIM13         EQU  H'0005'
+G1FSIM14         EQU  H'0006'
+G1FSIM15         EQU  H'0007'
 
 
 ;----- COG1ASD0 Bits -----------------------------------------------------

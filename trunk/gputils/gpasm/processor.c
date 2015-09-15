@@ -147,7 +147,7 @@ void select_processor(const char *name)
         gpverror(GPE_UNKNOWN_PROC, NULL, name);
       } else {
         printf("Didn't find any processor named: %s\nHere are the supported processors:\n", name);
-        gp_dump_processor_list(true, NULL, NULL);
+        gp_dump_processor_list(true, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN, PROC_CLASS_UNKNOWN);
         exit(1);
       }
     }

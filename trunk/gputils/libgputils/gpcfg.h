@@ -4,11 +4,11 @@
 
 /* This file is generated automatically by the cfg-import.pl 2014-07-16 07:44:01 UTC. */
 
-/* gpcfg.c - header file for pic configurations
+/* gpcfg.h - header file for pic configurations
    Copyright (C) 2006
    Michael Ballbach */
 
-/*  Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
+/*  Copyright (C) 2014-2015 Molnar Karoly <molnarkaroly@users.sf.net>
 
 This file is part of gputils.
 

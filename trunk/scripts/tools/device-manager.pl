@@ -108,18 +108,19 @@ my $verbose = 0;
 my $border0 = ('-' x 70);
 my $border1 = ('=' x 60);
 
-use constant PIC_BANK_NUMBER_MAX => 32;
+use constant PIC_BANK_NUMBER_MAX => 64;
 
-use constant PROC_CLASS_EEPROM8  => 0;
-use constant PROC_CLASS_EEPROM16 => 1;
-use constant PROC_CLASS_GENERIC  => 2;
-use constant PROC_CLASS_PIC12    => 3;
-use constant PROC_CLASS_PIC12E   => 4;
-use constant PROC_CLASS_PIC14    => 5;
-use constant PROC_CLASS_PIC14E   => 6;
-use constant PROC_CLASS_PIC16    => 7;
-use constant PROC_CLASS_PIC16E   => 8;
-use constant PROC_CLASS_SX       => 9;
+use constant PROC_CLASS_EEPROM8  =>  0;
+use constant PROC_CLASS_EEPROM16 =>  1;
+use constant PROC_CLASS_GENERIC  =>  2;
+use constant PROC_CLASS_PIC12    =>  3;
+use constant PROC_CLASS_PIC12E   =>  4;
+use constant PROC_CLASS_PIC14    =>  5;
+use constant PROC_CLASS_PIC14E   =>  6;
+use constant PROC_CLASS_PIC14EX  =>  7;
+use constant PROC_CLASS_PIC16    =>  8;
+use constant PROC_CLASS_PIC16E   =>  9;
+use constant PROC_CLASS_SX       => 10;
 
 use constant PIC12_BANK_SHIFT => 5;
 use constant PIC12_BANK_SIZE  => 2 ** PIC12_BANK_SHIFT;
@@ -226,6 +227,20 @@ my %class_features_p14e =
   BANK_SHIFT => PIC14_BANK_SHIFT
   );
 
+my %class_features_p14ex =
+  (
+  CLASS      => PROC_CLASS_PIC14EX,
+  ENHANCED   => TRUE,
+  PAGE_SIZE  => 2048,
+  WORD_SIZE  => 14,
+  CONF_SIZE  => 16,
+  CONF_MASK  => 0xFFFF,
+  EE_START   => 0xF000,
+  BANK_SIZE  => PIC14_BANK_SIZE,
+  BANK_MASK  => ~(PIC14_BANK_SIZE - 1),
+  BANK_SHIFT => PIC14_BANK_SHIFT
+  );
+
 my %class_features_p16 =
   (
   CLASS      => PROC_CLASS_PIC16,
@@ -277,6 +292,7 @@ my @classnames =
   'PROC_CLASS_PIC12E',
   'PROC_CLASS_PIC14',
   'PROC_CLASS_PIC14E',
+  'PROC_CLASS_PIC14EX',
   'PROC_CLASS_PIC16',
   'PROC_CLASS_PIC16E',
   'PROC_CLASS_SX'
@@ -291,6 +307,7 @@ my @class_features_list =
   \%class_features_p12e,        # PROC_CLASS_PIC12E
   \%class_features_p14,         # PROC_CLASS_PIC14
   \%class_features_p14e,        # PROC_CLASS_PIC14E
+  \%class_features_p14ex,       # PROC_CLASS_PIC14EX
   \%class_features_p16,         # PROC_CLASS_PIC16
   \%class_features_p16e,        # PROC_CLASS_PIC16E
   \%class_features_sx           # PROC_CLASS_SX
@@ -305,6 +322,7 @@ my %class_features_by_gputils =
   'PROC_CLASS_PIC12E'   => \%class_features_p12e,
   'PROC_CLASS_PIC14'    => \%class_features_p14,
   'PROC_CLASS_PIC14E'   => \%class_features_p14e,
+  'PROC_CLASS_PIC14EX'  => \%class_features_p14ex,
   'PROC_CLASS_PIC16'    => \%class_features_p16,
   'PROC_CLASS_PIC16E'   => \%class_features_p16e,
   'PROC_CLASS_SX'       => \%class_features_sx
@@ -312,13 +330,15 @@ my %class_features_by_gputils =
 
 my %class_features_by_mpasmx =
   (
-  'eeprom8'  => \%class_features_eeprom8,
-  'eeprom16' => \%class_features_eeprom16,
+  'EEPROM8'  => \%class_features_eeprom8,
+  'EEPROM16' => \%class_features_eeprom16,
   'generic'  => \%class_features_generic,
   '16c5x'    => \%class_features_p12,
+  '16c5ie'   => \%class_features_p12e,
   '16c5xe'   => \%class_features_p12e,
   '16xxxx'   => \%class_features_p14,
-  '16exxx'   => \%class_features_p14e,
+  '16Exxx'   => \%class_features_p14e,
+  '16EXxx'   => \%class_features_p14ex,
   '17xxxx'   => \%class_features_p16,
   '18xxxx'   => \%class_features_p16e,
   'sx'       => \%class_features_sx
@@ -349,9 +369,10 @@ use constant PIC16E_FLAG_J_SUBFAMILY  => (1 << 1);
 
 my $name_filter = qr/10l?f\d+[a-z]*|1[26]((c(e|r)?)|hv)\d+[a-z]*|17c\d+[a-z]*|1[268]l?f\d+([a-z]*|[a-z]+\d+[a-z]*)/i;
 
-my $gputils_path = "$ENV{HOME}/svn_snapshots/gputils/gputils";
-my $mplabx_path  = '/opt/microchip/mplabx/v3.05';
-my $mplabx_dev_info = '8bit_device.info';
+my $gputils_path     = "$ENV{HOME}/svn_snapshots/gputils/gputils";
+my $mplabx_root_path = '/opt/microchip/mplabx';
+my $mplabx_path      = '';
+my $mplabx_dev_info  = '8bit_device.info';
 
 my $gpprocessor_c = 'gpprocessor.c';
 my $p16f1xxx_inc  = 'p16f1xxx.inc';
@@ -739,7 +760,7 @@ sub str2dec($)
 
 #-------------------------------------------------------------------------------
 
-sub smartCompare($$)
+sub versionCompare($$)
   {
   my ($Str1, $Str2) = @_;
 
@@ -754,7 +775,7 @@ sub smartCompare($$)
 
 #-------------------------------------------------------------------------------
 
-sub smartSort($$$)
+sub versionSort($$$)
   {
   my @a_s = ($_[0] =~ /(\d+|\D+)/go);
   my @b_s = ($_[1] =~ /(\d+|\D+)/go);
@@ -788,7 +809,7 @@ sub smartSort($$$)
 
   for ($i = 0; $i < $end; ++$i)
     {
-    $k = smartCompare(\$a_s[$i], \$b_s[$i]);
+    $k = versionCompare(\$a_s[$i], \$b_s[$i]);
 
     return $k if ($k != 0);
     }
@@ -822,11 +843,26 @@ sub create_mask($)
 sub str2class($)
   {
   my $Str = $_[0];
-  my $class = $class_features_by_mpasmx{lc($Str)};
+  my $class = $class_features_by_mpasmx{$Str};
 
   return $class->{CLASS} if (defined($class));
 
   die "str2class(): Unknown class: $Str\n";
+  }
+
+#-------------------------------------------------------------------------------
+
+	# Finds path of the latest version of mplabx.
+
+sub find_latest_version($)
+  {
+  my $Dir = $_[0];
+  my @dir_list;
+
+  opendir(DIR, $Dir) || die "find_latest_version(): Can not open. -> \"$Dir\"\n";
+  @dir_list = sort { versionSort($a, $b, TRUE) } grep(-d "$Dir/$_" && $_ ne '.' && $_ ne '..', readdir(DIR));
+  closedir(DIR);
+  return ((scalar(@dir_list) > 0) ? "$Dir/$dir_list[$#dir_list]" : $Dir);
   }
 
 #-------------------------------------------------------------------------------
@@ -840,7 +876,7 @@ sub create_dirlist($$$)
   my ($Array, $Dir, $Tail) = @_;
 
   opendir(DIR, $Dir) || die "create_dirlist(): Can not open. -> \"$Dir\"\n";
-  @{$Array} = sort { smartSort($a, $b, TRUE) } grep(-f "$Dir/$_" && /^.+$Tail$/i, readdir(DIR));
+  @{$Array} = sort { versionSort($a, $b, TRUE) } grep(-f "$Dir/$_" && /^.+$Tail$/i, readdir(DIR));
   closedir(DIR);
   }
 
@@ -968,9 +1004,11 @@ sub read_config_bits($$$)
     if ($fields[0] eq 'PART_INFO_TYPE')
       {
         # <PART_INFO_TYPE><f220><PIC10F220><16c5x><0><0><ff><1><1f><0><0><0><1>
+        # <PART_INFO_TYPE><f527><PIC16F527><16c5ie><0><2><3ff><4><1f><0><0><3f><1>
         # <PART_INFO_TYPE><e529><PIC12F529T39A><16c5xe><0><3><5ff><8><1f><0><0><3f><1>
         # <PART_INFO_TYPE><6628><PIC16F628><16xxxx><0><1><7ff><4><7f><7f><0><0><1>
         # <PART_INFO_TYPE><a829><PIC16LF1829><16Exxx><2><4><1fff><20><7f><ff><0><0><2>
+        # <PART_INFO_TYPE><8857><PIC16F18857><16EXxx><2><10><7fff><40><7f><0><0><ff><5>
         # <PART_INFO_TYPE><1330><PIC18F1330><18xxxx><6><1><1fff><10><ff><7f><7f><0><c>
 
       if (lc($fields[2]) eq $Mcu)
@@ -978,7 +1016,7 @@ sub read_config_bits($$$)
         $config_count = hex($fields[12]);
         $switch_count = 0;
         $setting_count = 0;
-        $config_mask = str2class(lc($fields[3]))->{CONF_MASK};
+        $config_mask = str2class($fields[3])->{CONF_MASK};
         $state = ST_LISTEN;
         $addr = 0;
         %{$Configs} = ();
@@ -1250,25 +1288,25 @@ sub sort_px_struct($$)
     when (SORT_DEFINED_AS)
       {
         # According to the DEFINED_AS sorts the table.
-      @{$Px} = sort { smartSort($a->{DEFINED_AS}, $b->{DEFINED_AS}, FALSE) } @{$Px};
+      @{$Px} = sort { versionSort($a->{DEFINED_AS}, $b->{DEFINED_AS}, FALSE) } @{$Px};
       }
 
     when (SORT_NAME0)
       {
         # According to the NAMES0 sorts the table.
-      @{$Px} = sort { smartSort($a->{NAMES}->[0], $b->{NAMES}->[0], FALSE) } @{$Px};
+      @{$Px} = sort { versionSort($a->{NAMES}->[0], $b->{NAMES}->[0], FALSE) } @{$Px};
       }
 
     when (SORT_NAME1)
       {
         # According to the NAMES1 sorts the table.
-      @{$Px} = sort { smartSort($a->{NAMES}->[1], $b->{NAMES}->[1], FALSE) } @{$Px};
+      @{$Px} = sort { versionSort($a->{NAMES}->[1], $b->{NAMES}->[1], FALSE) } @{$Px};
       }
 
     when (SORT_NAME2)
       {
         # According to the NAMES2 sorts the table.
-      @{$Px} = sort { smartSort($a->{NAMES}->[2], $b->{NAMES}->[2], FALSE) } @{$Px};
+      @{$Px} = sort { versionSort($a->{NAMES}->[2], $b->{NAMES}->[2], FALSE) } @{$Px};
       }
 
     default
@@ -1736,11 +1774,13 @@ sub read_all_mcu_info_from_mplabx()
 
   while (<$in>)
     {
+        # <PART_INFO_TYPE><f220><PIC10F220><16c5x><0><0><ff><1><1f><0><0><0><1>
+        # <PART_INFO_TYPE><f527><PIC16F527><16c5ie><0><2><3ff><4><1f><0><0><3f><1>
         # <PART_INFO_TYPE><e529><PIC12F529T39A><16c5xe><0><3><5ff><8><1f><0><0><3f><1>
-        # <PART_INFO_TYPE><1840><PIC12F1840><16Exxx><2><2><fff><20><7f><ff><0><0><2>
-        # <PART_INFO_TYPE><a454><PIC16LF1454><16Exxx><2><4><1fff><20><7f><0><0><0><2>
-        # <PART_INFO_TYPE><2620><PIC18F2620><18xxxx><6><1><ffff><10><ff><3ff><7f><0><b>
-        # <PART_INFO_TYPE><2685><PIC18F2685><18xxxx><6><1><17fff><10><ff><3ff><5f><0><b>
+        # <PART_INFO_TYPE><6628><PIC16F628><16xxxx><0><1><7ff><4><7f><7f><0><0><1>
+        # <PART_INFO_TYPE><a829><PIC16LF1829><16Exxx><2><4><1fff><20><7f><ff><0><0><2>
+        # <PART_INFO_TYPE><8857><PIC16F18857><16EXxx><2><10><7fff><40><7f><0><0><ff><5>
+        # <PART_INFO_TYPE><1330><PIC18F1330><18xxxx><6><1><1fff><10><ff><7f><7f><0><c>
 
     if (/^<PART_INFO_TYPE><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)><(\w+)>/io)
       {
@@ -2259,7 +2299,7 @@ sub create_one_px_row($$)
     }
 
   $i = $Row->{NUM_BANKS};
-  $line .= sprintf((($i <= 32) ? '%4u, ' : '0x%02X, '), $i);
+  $line .= sprintf((($i <= PIC_BANK_NUMBER_MAX) ? '%4u, ' : '0x%02X, '), $i);
   $line .= neg_form($Row->{BANK_BITS}, 4);
   $line .= ', ';
 
@@ -2374,7 +2414,7 @@ sub remove_more_mcu()
   {
   return if (! scalar(keys(%list_file_members)));
 
-  foreach (sort { smartSort($a, $b, FALSE) } keys(%list_file_members))
+  foreach (sort { versionSort($a, $b, FALSE) } keys(%list_file_members))
     {
     remove_mcu($_);
     }
@@ -2404,7 +2444,7 @@ sub fabricate_more_inc()
   {
   return if (! scalar(keys(%list_file_members)));
 
-  foreach (sort { smartSort($a, $b, FALSE) } keys(%list_file_members))
+  foreach (sort { versionSort($a, $b, FALSE) } keys(%list_file_members))
     {
     fabricate_inc($_);
     }
@@ -2434,7 +2474,7 @@ sub fabricate_more_lkr()
   {
   return if (! scalar(keys(%list_file_members)));
 
-  foreach (sort { smartSort($a, $b, FALSE) } keys(%list_file_members))
+  foreach (sort { versionSort($a, $b, FALSE) } keys(%list_file_members))
     {
     fabricate_lkr($_);
     }
@@ -2520,7 +2560,7 @@ sub add_more_mcu()
   my $coff_error = '';
   my $mem_error = '';
 
-  foreach my $name (sort { smartSort($a, $b, FALSE) } keys(%list_file_members))
+  foreach my $name (sort { versionSort($a, $b, FALSE) } keys(%list_file_members))
     {
     $name = addition_helper1($name);
 
@@ -2692,7 +2732,7 @@ sub show_differences_mp_gp()
 
   Log('Shows the supported MCUs in the mplabx and the gputils.', 6);
 
-  foreach (sort { smartSort($a, $b, FALSE) } keys(%mp_mcus_by_name))
+  foreach (sort { versionSort($a, $b, FALSE) } keys(%mp_mcus_by_name))
     {
     $out .= "$_\n" if (! defined($gp_px_rows_by_name{$_}));
     }
@@ -2708,7 +2748,7 @@ sub show_differences_gp_mp()
 
   Log('Shows the supported MCUs in the gputils and the mplabx.', 6);
 
-  foreach (sort { smartSort($a, $b, FALSE) } keys(%gp_px_rows_by_name))
+  foreach (sort { versionSort($a, $b, FALSE) } keys(%gp_px_rows_by_name))
     {
     $out .= "$_\n" if (! defined($mp_mcus_by_name{$_}));
     }
@@ -2843,6 +2883,7 @@ $list_file = '';
 %list_file_members = ();
 $operation = OP_NULL;
 $mcu = '';
+my $user_mplabx_path = FALSE;
 
 for (my $i = 0; $i < @ARGV; )
   {
@@ -2860,6 +2901,7 @@ for (my $i = 0; $i < @ARGV; )
       {
       param_exist($opt, $i);
       $mplabx_path = $ARGV[$i++];
+      $user_mplabx_path = TRUE;
       }
 
     when (/^-(p|-processor)$/o)
@@ -2922,6 +2964,9 @@ $time_str = strftime(', %F %T UTC', gmtime) if ($timestamp);
 $gpproc_path = "$gputils_path/libgputils/$gpprocessor_c";
 $gputils_inc = "$gputils_path/header";
 $gputils_lkr = "$gputils_path/lkr";
+
+$mplabx_path = find_latest_version($mplabx_root_path) if (!$user_mplabx_path);
+
 $mplabx_inc  = "$mplabx_path/mpasmx";
 $mplabx_lkr  = "$mplabx_path/mpasmx/LKR";
 

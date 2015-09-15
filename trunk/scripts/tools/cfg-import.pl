@@ -51,18 +51,22 @@ my $PROGRAM = 'cfg-import.pl';
 my $limit_defaults = FALSE;
 my $verbose = 0;
 
-my $dev_info_path = '/opt/microchip/mplabx/v3.05/mpasmx/8bit_device.info';
+my $mplabx_root_path = '/opt/microchip/mplabx';
+my $mplabx_dev_info  = '8bit_device.info';
+my $mplabx_path      = '';
+my $dev_info_path    = '';
 
 my $pic_name_mask = qr/PIC1(2(C[ER]?|HV)\d+\w+|6(C[ER]?|HV)\d+\w+|7C[R]?\d+\w+|[0268](C|L?F)\d+\w+)|PICRF\d+\w+|MCP\d+|MCV\d+\w+|PS\d+/;
 
 my $time_str;
 
-use constant PROC_CLASS_PIC12  => 0;
-use constant PROC_CLASS_PIC12E => 1;
-use constant PROC_CLASS_PIC14  => 2;
-use constant PROC_CLASS_PIC14E => 3;
-use constant PROC_CLASS_PIC16  => 4;
-use constant PROC_CLASS_PIC16E => 5;
+use constant PROC_CLASS_PIC12   => 0;
+use constant PROC_CLASS_PIC12E  => 1;
+use constant PROC_CLASS_PIC14   => 2;
+use constant PROC_CLASS_PIC14E  => 3;
+use constant PROC_CLASS_PIC14EX => 4;
+use constant PROC_CLASS_PIC16   => 5;
+use constant PROC_CLASS_PIC16E  => 6;
 
 my %class_features_p12 =
   (
@@ -96,6 +100,14 @@ my %class_features_p14e =
   ENHANCED   => TRUE
   );
 
+my %class_features_p14ex =
+  (
+  CLASS      => PROC_CLASS_PIC14EX,
+  NAME       => '14 bit enhanced MCU',
+  DIR_DIGITS => 4,
+  ENHANCED   => TRUE
+  );
+
 my %class_features_p16 =
   (
   CLASS      => PROC_CLASS_PIC16,
@@ -115,9 +127,11 @@ my %class_features_p16e =
 my %class_features_by_mpasmx =
   (
   '16c5x'  => \%class_features_p12,
+  '16c5ie' => \%class_features_p12e,
   '16c5xe' => \%class_features_p12e,
   '16xxxx' => \%class_features_p14,
-  '16exxx' => \%class_features_p14e,
+  '16Exxx' => \%class_features_p14e,
+  '16EXxx' => \%class_features_p14ex,
   '17xxxx' => \%class_features_p16,
   '18xxxx' => \%class_features_p16e
   );
@@ -128,6 +142,7 @@ my @mcu_classes =
   \%class_features_p12e,
   \%class_features_p14,
   \%class_features_p14e,
+  \%class_features_p14ex,
   \%class_features_p16,
   \%class_features_p16e
   );
@@ -288,40 +303,43 @@ my $out_handler;
 
 my @mcu_missed_debug =
   (
-  'PIC12F1571', 'PIC12LF1571', 'PIC12F1572', 'PIC12LF1572',
-  'PIC12F1612', 'PIC12LF1612', 'PIC12F1822', 'PIC12LF1822',
-  'PIC12F1840', 'PIC12LF1840', 'PIC12LF1840T39A', 'PIC12LF1840T48A',
-  'PIC16F1454', 'PIC16LF1454', 'PIC16F1455', 'PIC16LF1455',
-  'PIC16F1458', 'PIC16LF1458', 'PIC16F1508', 'PIC16LF1508',
-  'PIC16F1509', 'PIC16LF1509', 'PIC16F1512', 'PIC16LF1512',
-  'PIC16F1513', 'PIC16LF1513', 'PIC16F1516', 'PIC16LF1516',
-  'PIC16F1517', 'PIC16LF1517', 'PIC16F1518', 'PIC16LF1518',
-  'PIC16F1519', 'PIC16LF1519', 'PIC16F1526', 'PIC16LF1526',
-  'PIC16F1527', 'PIC16LF1527', 'PIC16LF1554', 'PIC16LF1559',
-  'PIC16F1574', 'PIC16LF1574', 'PIC16F1575', 'PIC16LF1575',
-  'PIC16F1578', 'PIC16LF1578', 'PIC16F1579', 'PIC16LF1579',
-  'PIC16F1613', 'PIC16LF1613', 'PIC16F1703', 'PIC16LF1703',
-  'PIC16F1704', 'PIC16LF1704', 'PIC16F1705', 'PIC16LF1705',
-  'PIC16F1707', 'PIC16LF1707', 'PIC16F1708', 'PIC16LF1708',
-  'PIC16F1709', 'PIC16LF1709', 'PIC16F1713', 'PIC16LF1713',
-  'PIC16F1716', 'PIC16LF1716', 'PIC16F1717', 'PIC16LF1717',
-  'PIC16F1718', 'PIC16LF1718', 'PIC16F1719', 'PIC16LF1719',
-  'PIC16F1764', 'PIC16LF1764', 'PIC16F1765', 'PIC16LF1765',
-  'PIC16F1768', 'PIC16LF1768', 'PIC16F1769', 'PIC16LF1769',
-  'PIC16F1782', 'PIC16LF1782', 'PIC16F1783', 'PIC16LF1783',
-  'PIC16F1784', 'PIC16LF1784', 'PIC16F1786', 'PIC16LF1786',
-  'PIC16F1787', 'PIC16LF1787', 'PIC16F1788', 'PIC16LF1788',
-  'PIC16F1789', 'PIC16LF1789', 'PIC16F1823', 'PIC16LF1823',
-  'PIC16F1824', 'PIC16LF1824', 'PIC16LF1824T39A', 'PIC16F1825',
-  'PIC16LF1825', 'PIC16F1826', 'PIC16LF1826', 'PIC16F1827',
-  'PIC16LF1827', 'PIC16F1828', 'PIC16LF1828', 'PIC16F1829',
-  'PIC16F1829LIN', 'PIC16LF1829', 'PIC16F1847', 'PIC16LF1847',
-  'PIC16LF1902', 'PIC16LF1903', 'PIC16LF1904', 'PIC16LF1906',
-  'PIC16LF1907', 'PIC16F1933', 'PIC16LF1933', 'PIC16F1934',
-  'PIC16LF1934', 'PIC16F1936', 'PIC16LF1936', 'PIC16F1937',
-  'PIC16LF1937', 'PIC16F1938', 'PIC16LF1938', 'PIC16F1939',
-  'PIC16LF1939', 'PIC16F1946', 'PIC16LF1946', 'PIC16F1947',
-  'PIC16LF1947'
+  'PIC12F1571', 'PIC12F1572', 'PIC12F1612', 'PIC12F1822',
+  'PIC12F1840', 'PIC12LF1571', 'PIC12LF1572', 'PIC12LF1612',
+  'PIC12LF1822', 'PIC12LF1840', 'PIC12LF1840T39A', 'PIC12LF1840T48A',
+  'PIC16F1454', 'PIC16F1455', 'PIC16F1458', 'PIC16F1459',
+  'PIC16F1508', 'PIC16F1509', 'PIC16F1512', 'PIC16F1513',
+  'PIC16F1516', 'PIC16F1517', 'PIC16F1518', 'PIC16F1519',
+  'PIC16F1526', 'PIC16F1527', 'PIC16F1574', 'PIC16F1575',
+  'PIC16F1578', 'PIC16F1579', 'PIC16F1613', 'PIC16F1614',
+  'PIC16F1615', 'PIC16F1618', 'PIC16F1619', 'PIC16F1703',
+  'PIC16F1704', 'PIC16F1705', 'PIC16F1707', 'PIC16F1708',
+  'PIC16F1709', 'PIC16F1713', 'PIC16F1716', 'PIC16F1717',
+  'PIC16F1718', 'PIC16F1719', 'PIC16F1764', 'PIC16F1765',
+  'PIC16F1768', 'PIC16F1769', 'PIC16F1773', 'PIC16F1776',
+  'PIC16F1782', 'PIC16F1783', 'PIC16F1784', 'PIC16F1786',
+  'PIC16F1787', 'PIC16F1788', 'PIC16F1789', 'PIC16F1823',
+  'PIC16F1824', 'PIC16F1825', 'PIC16F1826', 'PIC16F1827',
+  'PIC16F1828', 'PIC16F1829', 'PIC16F1829LIN', 'PIC16F1847',
+  'PIC16F1933', 'PIC16F1934', 'PIC16F1936', 'PIC16F1937',
+  'PIC16F1938', 'PIC16F1939', 'PIC16F1946', 'PIC16F1947',
+  'PIC16LF1454', 'PIC16LF1455', 'PIC16LF1458', 'PIC16LF1459',
+  'PIC16LF1508', 'PIC16LF1509', 'PIC16LF1512', 'PIC16LF1513',
+  'PIC16LF1516', 'PIC16LF1517', 'PIC16LF1518', 'PIC16LF1519',
+  'PIC16LF1526', 'PIC16LF1527', 'PIC16LF1554', 'PIC16LF1559',
+  'PIC16LF1574', 'PIC16LF1575', 'PIC16LF1578', 'PIC16LF1579',
+  'PIC16LF1613', 'PIC16LF1614', 'PIC16LF1615', 'PIC16LF1618',
+  'PIC16LF1619', 'PIC16LF1703', 'PIC16LF1704', 'PIC16LF1705',
+  'PIC16LF1707', 'PIC16LF1708', 'PIC16LF1709', 'PIC16LF1713',
+  'PIC16LF1716', 'PIC16LF1717', 'PIC16LF1718', 'PIC16LF1719',
+  'PIC16LF1764', 'PIC16LF1765', 'PIC16LF1768', 'PIC16LF1769',
+  'PIC16LF1773', 'PIC16LF1776', 'PIC16LF1782', 'PIC16LF1783',
+  'PIC16LF1784', 'PIC16LF1786', 'PIC16LF1787', 'PIC16LF1788',
+  'PIC16LF1789', 'PIC16LF1823', 'PIC16LF1824', 'PIC16LF1824T39A',
+  'PIC16LF1825', 'PIC16LF1826', 'PIC16LF1827', 'PIC16LF1828',
+  'PIC16LF1829', 'PIC16LF1847', 'PIC16LF1902', 'PIC16LF1903',
+  'PIC16LF1904', 'PIC16LF1906', 'PIC16LF1907', 'PIC16LF1933',
+  'PIC16LF1934', 'PIC16LF1936', 'PIC16LF1937', 'PIC16LF1938',
+  'PIC16LF1939', 'PIC16LF1946', 'PIC16LF1947'
   );
 
 # The Microchip created faulty database: 8bit_device.info
@@ -418,7 +436,7 @@ sub fnv1a32_int32($$)
 
 #---------------------------------------------------------------------------------------------------
 
-sub smartCompare($$)
+sub versionCompare($$)
   {
   my ($Str1, $Str2) = @_;
 
@@ -433,7 +451,7 @@ sub smartCompare($$)
 
 #---------------------------------------------------------------------------------------------------
 
-sub smartSort($$)
+sub versionSort($$)
   {
   my @a_s = ($_[0] =~ /(\d+|\D+)/go);
   my @b_s = ($_[1] =~ /(\d+|\D+)/go);
@@ -460,12 +478,27 @@ sub smartSort($$)
 
   for ($i = 0; $i < $end; ++$i)
     {
-    $k = smartCompare(\$a_s[$i], \$b_s[$i]);
+    $k = versionCompare(\$a_s[$i], \$b_s[$i]);
 
     return $k if ($k != 0);
     }
 
   return $ret;
+  }
+
+#---------------------------------------------------------------------------------------------------
+
+	# Finds path of the latest version of mplabx.
+
+sub find_latest_version($)
+  {
+  my $Dir = $_[0];
+  my @dir_list;
+
+  opendir(DIR, $Dir) || die "find_latest_version(): Can not open. -> \"$Dir\"\n";
+  @dir_list = sort { versionSort($a, $b) } grep(-d "$Dir/$_" && $_ ne '.' && $_ ne '..', readdir(DIR));
+  closedir(DIR);
+  return ((scalar(@dir_list) > 0) ? "$Dir/$dir_list[$#dir_list]" : $Dir);
   }
 
 #---------------------------------------------------------------------------------------------------
@@ -584,15 +617,16 @@ sub read_device_informations()
     if ($fields[0] eq 'PART_INFO_TYPE')
       {
       # <PART_INFO_TYPE><f220><PIC10F220><16c5x><0><0><ff><1><1f><0><0><0><1>
+      # <PART_INFO_TYPE><f527><PIC16F527><16c5ie><0><2><3ff><4><1f><0><0><3f><1>
       # <PART_INFO_TYPE><e529><PIC12F529T39A><16c5xe><0><3><5ff><8><1f><0><0><3f><1>
       # <PART_INFO_TYPE><6628><PIC16F628><16xxxx><0><1><7ff><4><7f><7f><0><0><1>
       # <PART_INFO_TYPE><a829><PIC16LF1829><16Exxx><2><4><1fff><20><7f><ff><0><0><2>
-      # <PART_INFO_TYPE><7752><PIC17C752><17xxxx><0><1><ffff><9><ff><0><0><0><0>
+      # <PART_INFO_TYPE><8857><PIC16F18857><16EXxx><2><10><7fff><40><7f><0><0><ff><5>
       # <PART_INFO_TYPE><1330><PIC18F1330><18xxxx><6><1><1fff><10><ff><7f><7f><0><c>
 
       if ($fields[2] =~ /^$pic_name_mask$/io)
         {
-        ($mcu_name, $class_name, $directive_count) = (uc($fields[2]), lc($fields[3]), hex($fields[12]));
+        ($mcu_name, $class_name, $directive_count) = (uc($fields[2]), $fields[3], hex($fields[12]));
         $switch_count  = 0;
         $option_count  = 0;
         $debug_present = FALSE;
@@ -959,15 +993,15 @@ sub collect_prototypes()
 
   @sorted_mcu_prototypes = sort {$mcu_prototypes{$a}->{MCU_NAME} cmp $mcu_prototypes{$b}->{MCU_NAME}} (keys %mcu_prototypes);
 
-  @sorted_directive_prototypes = sort {smartSort($directive_prototypes{$a}->{MCU_NAME}, $directive_prototypes{$b}->{MCU_NAME}) ||
+  @sorted_directive_prototypes = sort {versionSort($directive_prototypes{$a}->{MCU_NAME}, $directive_prototypes{$b}->{MCU_NAME}) ||
                                        $directive_prototypes{$a}->{DIR_ADDR} <=> $directive_prototypes{$b}->{DIR_ADDR}} (keys %directive_prototypes);
 
-  @sorted_switch_prototypes = sort {smartSort($switch_prototypes{$a}->{MCU_NAME}, $switch_prototypes{$b}->{MCU_NAME}) ||
-                                    smartSort($switch_prototypes{$a}->{SW_MASK}, $switch_prototypes{$b}->{SW_MASK}) ||
+  @sorted_switch_prototypes = sort {versionSort($switch_prototypes{$a}->{MCU_NAME}, $switch_prototypes{$b}->{MCU_NAME}) ||
+                                    versionSort($switch_prototypes{$a}->{SW_MASK}, $switch_prototypes{$b}->{SW_MASK}) ||
                                     $switch_prototypes{$a}->{DIR_ADDR} <=> $switch_prototypes{$b}->{DIR_ADDR}} (keys %switch_prototypes);
 
-  @sorted_option_prototypes = sort {smartSort($option_prototypes{$a}->{SW_NAME}, $option_prototypes{$b}->{SW_NAME}) ||
-                                    smartSort($option_prototypes{$a}->{OPT_NAME}, $option_prototypes{$b}->{OPT_NAME}) ||
+  @sorted_option_prototypes = sort {versionSort($option_prototypes{$a}->{SW_NAME}, $option_prototypes{$b}->{SW_NAME}) ||
+                                    versionSort($option_prototypes{$a}->{OPT_NAME}, $option_prototypes{$b}->{OPT_NAME}) ||
                                     $option_prototypes{$a}->{OPT_VALUE} <=> $option_prototypes{$b}->{OPT_VALUE} ||
                                     $option_prototypes{$a}->{MCU_NAME} cmp $option_prototypes{$b}->{MCU_NAME}} (keys %option_prototypes);
 
@@ -1186,7 +1220,7 @@ sub print_header()
 
 /* This file is generated automatically by the $PROGRAM ${time_str}. */
 
-/* $output_h - header file for pic object files
+/* $output_h - header file for pic configurations
    Copyright (C) 2006
    Michael Ballbach */
 
@@ -1232,8 +1266,8 @@ typedef struct {
 } $cfg_addr_hit_pair_t;
 
 typedef struct {
-  unsigned short def_value;                 /* Default value of this $cfg_addr_t. */
   unsigned int max_dir_width;               /* The size of the longest directive name. */
+  unsigned short def_value;                 /* Default value of this $cfg_addr_t. */
   unsigned int pair_count;                  /* Number of the pairs. */
   $cfg_addr_hit_pair_t pairs[GP_CFG_ADDR_HIT_MAX];
 } $cfg_addr_hit_t;
@@ -1307,6 +1341,8 @@ EOT
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
+my $user_info_path = FALSE;
+
 for (my $i = 0; $i < @ARGV; )
   {
   my $opt = $ARGV[$i++];
@@ -1317,6 +1353,7 @@ for (my $i = 0; $i < @ARGV; )
       {
       param_exist($opt, $i);
       $dev_info_path = $ARGV[$i++];
+      $user_info_path = TRUE;
       }
 
     when (/^-(l|-limit-defaults)$/o)
@@ -1344,6 +1381,12 @@ for (my $i = 0; $i < @ARGV; )
       }
     } # given ($opt)
   } # for (my $i = 0; $i < @ARGV; )
+
+if (!$user_info_path)
+  {
+  $mplabx_path   = find_latest_version($mplabx_root_path);
+  $dev_info_path = "$mplabx_path/mpasmx/$mplabx_dev_info";
+  }
 
 read_device_informations();
 add_missing_directives();

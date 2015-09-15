@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Apr 06 2015
+; Build date : Aug 13 2015
 ;  MPASM PIC16F18855 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -65,6 +65,7 @@ INTCON           EQU  H'000B'
 PORTA            EQU  H'000C'
 PORTB            EQU  H'000D'
 PORTC            EQU  H'000E'
+PORTE            EQU  H'0010'
 TRISA            EQU  H'0011'
 TRISB            EQU  H'0012'
 TRISC            EQU  H'0013'
@@ -117,8 +118,8 @@ ADFLTR           EQU  H'0114'
 ADFLTRL          EQU  H'0114'
 ADFLTRH          EQU  H'0115'
 ADERR            EQU  H'0116'
-ADSTPEL          EQU  H'0116'
-ADSTPEH          EQU  H'0117'
+ADERRL           EQU  H'0116'
+ADERRH           EQU  H'0117'
 RC1REG           EQU  H'0119'
 RCREG            EQU  H'0119'
 RCREG1           EQU  H'0119'
@@ -588,6 +589,8 @@ IOCCN            EQU  H'0F54'
 IOCCF            EQU  H'0F55'
 CCDNC            EQU  H'0F56'
 CCDPC            EQU  H'0F57'
+WPUE             EQU  H'0F65'
+INLVLE           EQU  H'0F68'
 IOCEP            EQU  H'0F69'
 IOCEN            EQU  H'0F6A'
 IOCEF            EQU  H'0F6B'
@@ -658,6 +661,10 @@ RC4              EQU  H'0004'
 RC5              EQU  H'0005'
 RC6              EQU  H'0006'
 RC7              EQU  H'0007'
+
+
+;----- PORTE Bits -----------------------------------------------------
+RE3              EQU  H'0003'
 
 
 ;----- TRISA Bits -----------------------------------------------------
@@ -867,14 +874,15 @@ ADCS             EQU  H'0004'
 ADCONT           EQU  H'0006'
 ADON             EQU  H'0007'
 
-DONE             EQU  H'0001'
+DONE             EQU  H'0000'
 
-GO               EQU  H'0001'
+NOT_DONE         EQU  H'0000'
 
-NOT_DONE         EQU  H'0001'
+GO               EQU  H'0000'
+ADFM0            EQU  H'0002'
+ADFM1            EQU  H'0003'
 
-ADFRM0           EQU  H'0002'
-ADFRM1           EQU  H'0003'
+GO_NOT_DONE      EQU  H'0000'
 
 
 ;----- ADCON1 Bits -----------------------------------------------------
@@ -882,11 +890,6 @@ ADDSEN           EQU  H'0000'
 ADGPOL           EQU  H'0005'
 ADIPEN           EQU  H'0006'
 ADPPOL           EQU  H'0007'
-
-NVCFG0           EQU  H'0000'
-NVCFG1           EQU  H'0001'
-PVCFG0           EQU  H'0002'
-PVCFG1           EQU  H'0003'
 
 
 ;----- ADCON2 Bits -----------------------------------------------------
@@ -1097,26 +1100,26 @@ ADFLTR14         EQU  H'0006'
 ADFLTR15         EQU  H'0007'
 
 
-;----- ADSTPEL Bits -----------------------------------------------------
-ADSTPEL0         EQU  H'0000'
-ADSTPEL1         EQU  H'0001'
-ADSTPEL2         EQU  H'0002'
-ADSTPEL3         EQU  H'0003'
-ADSTPEL4         EQU  H'0004'
-ADSTPEL5         EQU  H'0005'
-ADSTPEL6         EQU  H'0006'
-ADSTPEL7         EQU  H'0007'
+;----- ADERRL Bits -----------------------------------------------------
+ADERR0           EQU  H'0000'
+ADERR1           EQU  H'0001'
+ADERR2           EQU  H'0002'
+ADERR3           EQU  H'0003'
+ADERR4           EQU  H'0004'
+ADERR5           EQU  H'0005'
+ADERR6           EQU  H'0006'
+ADERR7           EQU  H'0007'
 
 
-;----- ADSTPEH Bits -----------------------------------------------------
-ADSTPEH0         EQU  H'0000'
-ADSTPEH1         EQU  H'0001'
-ADSTPEH2         EQU  H'0002'
-ADSTPEH3         EQU  H'0003'
-ADSTPEH4         EQU  H'0004'
-ADSTPEH5         EQU  H'0005'
-ADSTPEH6         EQU  H'0006'
-ADSTPEH7         EQU  H'0007'
+;----- ADERRH Bits -----------------------------------------------------
+ADERR8           EQU  H'0000'
+ADERR9           EQU  H'0001'
+ADERR10          EQU  H'0002'
+ADERR11          EQU  H'0003'
+ADERR12          EQU  H'0004'
+ADERR13          EQU  H'0005'
+ADERR14          EQU  H'0006'
+ADERR15          EQU  H'0007'
 
 
 ;----- RC1STA Bits -----------------------------------------------------
@@ -5751,6 +5754,14 @@ CCDPC6           EQU  H'0006'
 CCDPC7           EQU  H'0007'
 
 
+;----- WPUE Bits -----------------------------------------------------
+WPUE3            EQU  H'0003'
+
+
+;----- INLVLE Bits -----------------------------------------------------
+INLVLE3          EQU  H'0003'
+
+
 ;----- IOCEP Bits -----------------------------------------------------
 IOCEP3           EQU  H'0003'
 
@@ -5777,7 +5788,6 @@ Z_SHAD           EQU  H'0002'
 ;==========================================================================
        __MAXRAM  H'0FFF'
        __BADRAM  H'000F'
-       __BADRAM  H'0010'
        __BADRAM  H'0014'
        __BADRAM  H'0015'
        __BADRAM  H'0019'
@@ -5897,7 +5907,8 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'0F28'-H'0F37'
        __BADRAM  H'0F42'
        __BADRAM  H'0F4D'
-       __BADRAM  H'0F58'-H'0F68'
+       __BADRAM  H'0F58'-H'0F64'
+       __BADRAM  H'0F66'-H'0F67'
        __BADRAM  H'0F6C'-H'0F6F'
        __BADRAM  H'0F8C'-H'0F98'
        __BADRAM  H'0F99'-H'0F9C'
@@ -5939,14 +5950,14 @@ _FEXTOSC_ECL     EQU  H'3FFD'    ; EC below 500kHz; PFM set to low power
 _FEXTOSC_ECM     EQU  H'3FFE'    ; EC for 500kHz to 8MHz; PFM set to medium power
 _FEXTOSC_ECH     EQU  H'3FFF'    ; EC above 8MHz; PFM set to high power
 
-_RSTOSC_Reserved EQU  H'3F8F'    ; Reserved
-_RSTOSC_HFINTOSC_2PLL EQU  H'3F9F'    ; HFINTOSC with 2x PLL and HFFRQ=4'b1111
-_RSTOSC_EXTOSC_4PLL EQU  H'3FAF'    ; EXTOSC with 4x PLL, with EXTOSC operating per FEXTOSC bits
-_RSTOSC_EXTOSC_2PLL EQU  H'3FBF'    ; EXTOSC with 2x PLL, with EXTOSC operating per FEXTOSC bits
+_RSTOSC_HFINT32  EQU  H'3F8F'    ; HFINTOSC with OSCFRQ= 32 MHz and CDIV = 1:1
+_RSTOSC_HFINTPLL EQU  H'3F9F'    ; HFINTOSC with 2x PLL, with OSCFRQ = 16 MHz and CDIV = 1:1 (FOSC = 32 MHz)
+_RSTOSC_EXT4X    EQU  H'3FAF'    ; EXTOSC with 4x PLL, with EXTOSC operating per FEXTOSC bits
+_RSTOSC_Reserved EQU  H'3FBF'    ; Reserved
 _RSTOSC_SOSC     EQU  H'3FCF'    ; SOSC
-_RSTOSC_LFINTOSC EQU  H'3FDF'    ; LFINTOSC
-_RSTOSC_HFINTOSC EQU  H'3FEF'    ; HFINTOSC with HFFRQ=4'b0000
-_RSTOSC_EXTOSC   EQU  H'3FFF'    ; EXTOSC operating per FEXTOSC bits
+_RSTOSC_LFINT    EQU  H'3FDF'    ; LFINTOSC
+_RSTOSC_HFINT1   EQU  H'3FEF'    ; HFINTOSC (1MHz)
+_RSTOSC_EXT1X    EQU  H'3FFF'    ; EXTOSC operating per FEXTOSC bits
 
 _CLKOUTEN_ON     EQU  H'3EFF'    ; CLKOUT function is enabled; FOSC/4 clock appears at OSC2
 _CLKOUTEN_OFF    EQU  H'3FFF'    ; CLKOUT function is disabled; i/o or oscillator function on OSC2
@@ -6041,6 +6052,9 @@ _WRT_ON          EQU  H'3FFC'    ; 0x0000 to 0x1FFF write protected
 _WRT_WRT_lower   EQU  H'3FFD'    ; 0x0000 to x0FFF write protected
 _WRT_WRT_upper   EQU  H'3FFE'    ; 0x0000 to 0x01FF write protected
 _WRT_OFF         EQU  H'3FFF'    ; Write protection off
+
+_SCANE_not_available EQU  H'2FFF'    ; Scanner module is not available for use
+_SCANE_available EQU  H'3FFF'    ; Scanner module is available for use
 
 _LVP_OFF         EQU  H'1FFF'    ; High Voltage on MCLR/Vpp must be used for programming
 _LVP_ON          EQU  H'3FFF'    ; Low Voltage programming enabled. MCLR/Vpp pin function is MCLR.
