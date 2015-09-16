@@ -836,8 +836,8 @@ int main(int argc, char *argv[])
     state.dump_flags = PRINT_HEADER | PRINT_SECTIONS | PRINT_SYMTBL;
   }
 
-  if ((gp_identify_coff_file(state.filename) != object_file_v2) &&
-      (gp_identify_coff_file(state.filename) != object_file)) {
+  if ((gp_identify_coff_file(state.filename) != GP_COFF_OBJECT_V2) &&
+      (gp_identify_coff_file(state.filename) != GP_COFF_OBJECT)) {
     gp_error("\"%s\" is not a valid object file", state.filename);
     exit(1);
   }

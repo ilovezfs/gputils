@@ -1,4 +1,9 @@
 2015-09-16  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gplink/gplink.c, gputils/gplib.c, gputils/gpstrip.c,
+    gputils/gpvo.c, libgputils/gpreadobj.c, libgputils/gpreadobj.h:
+    Changed the members name of enum gp_coff_type.
+
+2015-09-16  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gputils/gpdasm.c:
     Explicity initialize the members of gpdasm_state structure.
     The unexpand() correctly handle the newline characters.

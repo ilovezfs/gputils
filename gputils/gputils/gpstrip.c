@@ -352,8 +352,8 @@ int main(int argc, char *argv[])
   for ( ; optind < argc; optind++) {
     state.input_file = argv[optind];
 
-    if ((gp_identify_coff_file(state.input_file) != object_file_v2) && 
-        (gp_identify_coff_file(state.input_file) != object_file)) {
+    if ((gp_identify_coff_file(state.input_file) != GP_COFF_OBJECT_V2) && 
+        (gp_identify_coff_file(state.input_file) != GP_COFF_OBJECT)) {
       gp_error("\"%s\" is not a valid object file", state.input_file);
       exit(1);
     }

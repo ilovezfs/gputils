@@ -62,7 +62,7 @@ gp_identify_coff_file(const char *filename)
   int n;
 
   if ((file = fopen(filename, "rb")) == NULL) {
-    return sys_err_file;
+    return GP_COFF_SYS_ERR;
   }
 
   /* Read the magic number. Archive magic numbers are longest, so read
@@ -70,21 +70,21 @@ gp_identify_coff_file(const char *filename)
   n = fread(&magic[0], 1, SARMAG, file);
   fclose(file);
 
-  if (SARMAG == n) {
+  if (n == SARMAG) {
     if (((magic[1] << 8) + magic[0]) == MICROCHIP_MAGIC_v1) {
-      return object_file;
+      return GP_COFF_OBJECT;
     }
 
     if (((magic[1] << 8) + magic[0]) == MICROCHIP_MAGIC_v2) {
-      return object_file_v2;
+      return GP_COFF_OBJECT_V2;
     }
 
     if (strncmp(magic, ARMAG, SARMAG) == 0) {
-      return archive_file;
+      return GP_COFF_ARCHIVE;
     }
   }
 
-  return unknown_file;
+  return GP_COFF_UNKNOWN;
 }
 
 /* Read a binary file and store it in memory. */
@@ -127,8 +127,9 @@ gp_read_file(const char *filename)
 void
 gp_free_file(gp_binary_type *data)
 {
-  if (data == NULL)
+  if (data == NULL) {
     return;
+  }
 
   free(data->file);
   free(data);
@@ -203,7 +204,7 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_ty
 
   object->processor = gp_processor_coff_proc(proc_code);
 
-  if (!object->processor) {
+  if (object->processor == NULL) {
     /* Fallback to a generic processor of matching rom width */
     switch(rom_width) {
     case 8: object->processor = gp_find_processor("pic18cxx"); break;
@@ -212,7 +213,7 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_ty
     case 16: object->processor = gp_find_processor("pic17cxx"); break;
     }
 
-    if (!object->processor) {
+    if (object->processor == NULL) {
       gp_error("Invalid processor type (%#04lx) in \"%s\".",
                proc_code, object->filename);
     }
@@ -226,7 +227,7 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_ty
   object->class = gp_processor_class(object->processor);
 
   if (gp_processor_rom_width(object->class) != rom_width) {
-    if (object->class == PROC_CLASS_EEPROM8 && rom_width == 16) {
+    if ((object->class == PROC_CLASS_EEPROM8) && (rom_width == 16)) {
       object->processor = gp_find_processor("eeprom16");
       object->class = gp_processor_class(object->processor);
     }
