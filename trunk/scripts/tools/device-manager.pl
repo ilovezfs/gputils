@@ -2586,9 +2586,30 @@ sub create_p16f1xxx_inc()
   Create($name, 'create_p16f1xxx_inc');
 
   print $out_handler <<EOT
-;$border0\n;\n; p16f1xxx.inc - Common include file to PIC16XXXX enhanced families.
-;\n; This file is has been generated using $PROGRAM${time_str}.
-;\n;$border0\n\nifdef __16F1xxx\n  include <p16f1937.inc>\nendif
+;$border0
+;
+; p16f1xxx.inc - Common include file to PIC16XXXX enhanced families.
+;
+; This file is has been generated using $PROGRAM${time_str}.
+;
+;    To the usage of the PIC16F1503 MCU an example:
+;
+;	1. Command line switch:
+;	    gpasm -p pic16f1503 source.asm
+;
+;	2. The LIST directive in the source file:
+;	    list p=16f1503
+;		(It does not matter that lowercase or uppercase.)
+;
+;	3. The PROCESSOR directive in the source file:
+;	    processor 16f1503
+;		(It does not matter that lowercase or uppercase.)
+;
+;$border0
+
+ifdef __16F1xxx
+  include <p16f1937.inc>
+endif
 EOT
 ;
 
@@ -2616,9 +2637,30 @@ sub create_p18cxxx_inc()
   Create($name, 'create_p18cxxx_inc');
 
   print $out_handler <<EOT
-;$border0\n;\n; p18cxxx.inc - Common include file to PIC18XXXX families.
-;\n; This file is has been generated using $PROGRAM${time_str}.
-;\n;$border0\n
+;$border0
+;
+; p18cxxx.inc - Common include file to PIC18XXXX families.
+;
+; This file is has been generated using $PROGRAM${time_str}.
+;
+;    To the usage of the PIC18F4520 MCU an example:
+;
+;	1. Command line switch:
+;	    gpasm -p pic18f4520 source.asm
+;
+;	2. The LIST directive in the source file:
+;	    list p=18f4520
+;		(It does not matter that lowercase or uppercase.)
+;
+;	3. The PROCESSOR directive in the source file:
+;	    processor 18f4520
+;		(It does not matter that lowercase or uppercase.)
+;
+;$border0
+
+ifdef __18CXX
+  include <p18c452.inc>
+endif
 EOT
 ;
   foreach (@gp_px_struct)
@@ -2996,6 +3038,8 @@ given ($operation)
   when (OP_REGENERATE)
     {
     create_gpprocessor_c();
+    create_p16f1xxx_inc();
+    create_p18cxxx_inc();
     exit(0);
     }
 
