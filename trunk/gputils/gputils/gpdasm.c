@@ -39,9 +39,9 @@ Boston, MA 02111-1307, USA.  */
 extern int yyparse(void);
 
 struct gpdasm_state state = {
-  NULL,                 /* processor type */
-  PROC_CLASS_GENERIC,   /* 12 bit device */
-  1                     /* output format */
+  .processor = NULL,                /* processor type */
+  .class     = PROC_CLASS_GENERIC,  /* 12 bit device */
+  .format    = 1,                   /* output format */
 };
 
 static const char *processor_name = NULL;
@@ -65,7 +65,8 @@ enum {
   OPT_STRICT_OPTIONS
 };
 
-#define GET_OPTIONS "?chijk:lmnop:stvy"
+//#define GET_OPTIONS "?chijk:lmnop:stvy"
+#define GET_OPTIONS "chijk:lmnop:stvy"
 
 static struct option longopts[] =
 {
@@ -93,10 +94,12 @@ static struct option longopts[] =
 static size_t
 unexpand(char *Dst, size_t Size, const char *Src)
 {
-  size_t in, out;
+  size_t in_read_idx;
+  size_t in_read_virt_idx;
+  size_t out_write_idx;
   size_t first_tab;
   size_t last_char;
-  unsigned int space_num;
+  size_t space_num;
 
   if (Size <= 1) {
     return 0;
@@ -104,39 +107,49 @@ unexpand(char *Dst, size_t Size, const char *Src)
 
   --Size;
 
-  in = 0;
-  out = 0;
-  last_char = 0;
-  space_num = 0;
+  in_read_idx      = 0;
+  in_read_virt_idx = 0;
+  out_write_idx    = 0;
+  last_char        = 0;
+  space_num        = 0;
 
-  while ((Src[in] != '\0') && (out < Size)) {
-    if (Src[in] == ' ') {
+  while ((Src[in_read_idx] != '\0') && (out_write_idx < Size)) {
+    if (Src[in_read_idx] == ' ') {
       ++space_num;
+    }
+    else if (Src[in_read_idx] == '\n') {
+      /* This a newline character. */
+      Dst[out_write_idx++] = Src[in_read_idx];
+      in_read_virt_idx = 0;
+      last_char        = 0;
+      space_num        = 0;
+      ++in_read_idx;
+      continue;
     }
     else {
       /* This a not-space character. */
       if (space_num > 1) {
         first_tab = ((last_char + TABULATOR_SIZE) / TABULATOR_SIZE) * TABULATOR_SIZE;
 
-        if (first_tab > in) {
+        if (first_tab > in_read_virt_idx) {
           first_tab = 0;
         }
 
         if ((last_char + 1) < first_tab) {
-          if (first_tab <= in) {
-            Dst[out++] = '\t';
+          if (first_tab <= in_read_virt_idx) {
+            Dst[out_write_idx++] = '\t';
 
-            if (out >= Size) {
+            if (out_write_idx >= Size) {
               goto _exit;
             }
 
-            space_num = in - first_tab;
+            space_num = in_read_virt_idx - first_tab;
           }
 
           while (space_num >= TABULATOR_SIZE) {
-            Dst[out++] = '\t';
+            Dst[out_write_idx++] = '\t';
 
-            if (out >= Size) {
+            if (out_write_idx >= Size) {
               goto _exit;
             }
 
@@ -146,46 +159,64 @@ unexpand(char *Dst, size_t Size, const char *Src)
       }
 
       while (space_num > 0) {
-        Dst[out++] = ' ';
+        Dst[out_write_idx++] = ' ';
 
-        if (out >= Size) {
+        if (out_write_idx >= Size) {
           goto _exit;
         }
 
         --space_num;
       }
 
-      Dst[out++] = Src[in];
-      last_char = in;
+      Dst[out_write_idx++] = Src[in_read_idx];
+      last_char = in_read_idx;
     }
 
-    ++in;
-  } /* while ((Src[in] != '\0') && */
+    ++in_read_idx;
+    ++in_read_virt_idx;
+  } /* while ((Src[in_read_idx] != '\0') && */
 
 _exit:
 
-  Dst[out] = '\0';
-  return out;
+  Dst[out_write_idx] = '\0';
+  return out_write_idx;
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 static void
-ux_println(const char *format, ...)
+ux_print(gp_boolean newline, const char *format, ...)
 {
   va_list(ap);
   char buffer[BUFSIZ];
+  const char *bptr;
+  size_t len;
 
   va_start(ap, format);
-  vsnprintf(buffer, sizeof(buffer), format, ap);
+  len = (size_t)vsnprintf(buffer, sizeof(buffer), format, ap);
   va_end(ap);
 
-  if (state.use_tab) {
-    unexpand(out_buffer, sizeof(out_buffer), buffer);
-    puts(out_buffer);
+  if ((int)len < 0) {
+    return;
+  }
+
+  bptr = buffer;
+
+  if (newline) {
+    if (state.use_tab) {
+      unexpand(out_buffer, sizeof(out_buffer), buffer);
+      bptr = out_buffer;
+    }
+
+    puts(bptr);
   }
   else {
-    puts(buffer);
+    if (state.use_tab) {
+      len = unexpand(out_buffer, sizeof(out_buffer), buffer);
+      bptr = out_buffer;
+    }
+
+    write(STDOUT_FILENO, bptr, len);
   }
 }
 
@@ -229,12 +260,12 @@ static void
 write_header(void)
 {
   if (!state.format) {
-    ux_println("        processor %s", state.processor->names[1]);
-    ux_println("        radix dec");
+    ux_print(true, "        processor %s\n"
+                   "        radix dec", state.processor->names[1]);
 
     if (state.processor->header != NULL) {
-      ux_println("");
-      ux_println("        include %s", state.processor->header);
+      ux_print(true, "\n"
+                     "        include %s", state.processor->header);
     }
   }
 }
@@ -252,28 +283,29 @@ write_core_sfr_list(void)
     return;
   }
 
-  ux_println("");
-  ux_println("F       equ     1");
-  ux_println("W       equ     0");
+  ux_print(true, "\n"
+                 "F       equ     1\n"
+                 "W       equ     0");
 
   if (state.class == PROC_CLASS_PIC16E) {
-    ux_println("A       equ     0");
+    ux_print(true, "A       equ     0\n"
+                   "B       equ     1");
   }
 
-  ux_println("");
+  ux_print(true, "");
 
   table = state.class->core_sfr_table;
   for (i = state.class->core_sfr_number; i > 0; ++table, --i) {
     if ((state.class == PROC_CLASS_PIC14E) || (state.class == PROC_CLASS_PIC14EX)) {
       if (strcmp(table->name, "FSR0L") == 0) {
-        ux_println("FSR0    equ     0x%03x", table->address);
+        ux_print(true, "FSR0    equ     0x%03x", table->address);
       }
       else if (strcmp(table->name, "FSR1L") == 0) {
-        ux_println("FSR1    equ     0x%03x", table->address);
+        ux_print(true, "FSR1    equ     0x%03x", table->address);
       }
     }
 
-    ux_println("%-7s equ     0x%03x", table->name, table->address);
+    ux_print(true, "%-7s equ     0x%03x", table->name, table->address);
   }
 }
 
@@ -283,8 +315,8 @@ static void
 end_asm(void)
 {
   if (!state.format) {
-    ux_println("");
-    ux_println("        end");
+    ux_print(true, "\n"
+                   "        end");
   }
 }
 
@@ -297,10 +329,10 @@ write_org(int org, int addr_digits, const char *title, const char *Address_name,
   char buffer[BUFSIZ];
 
   if (!state.format) {
-    printf("\n");
+    ux_print(true, "");
 
     if (title != NULL) {
-      ux_println("        ; %s", title);
+      ux_print(true, "        ; %s", title);
     }
 
     if (Address_name != NULL) {
@@ -318,9 +350,7 @@ write_org(int org, int addr_digits, const char *title, const char *Address_name,
       snprintf(buffer, sizeof(buffer), "        org     0x%0*x", addr_digits, org);
     }
 
-    ux_println("");
-    ux_println("%s", buffer);
-    ux_println("");
+    ux_print(true, "\n%s\n", buffer);
     prev_empty_line = true;
   }
 }
@@ -694,13 +724,13 @@ show_config(void)
     return;
   }
 
-  printf("\n");
+  ux_print(true, "");
   for (m = 0; m < addr_pack.hit_count; ++m) {
     hit = &addr_pack.hits[m];
 
     for (n = 0; n < hit->pair_count; ++n) {
-      ux_println("        CONFIG  %-*s = %s", addr_pack.max_dir_width,
-             hit->pairs[n].directive->name, hit->pairs[n].option->name);
+      ux_print(true, "        CONFIG  %-*s = %s", addr_pack.max_dir_width,
+               hit->pairs[n].directive->name, hit->pairs[n].option->name);
     }
   }
 }
@@ -754,19 +784,19 @@ show_idlocs(void)
         }
 
         buffer[j] = '\0';
-        ux_println("");
-        ux_println("        IDLOCS  \"%s\"", buffer);
+        ux_print(true, "\n"
+                       "        IDLOCS  \"%s\"", buffer);
       }
       else {
         /* Not only printable characters are there in it. */
-        printf("\n");
+        ux_print(true, "");
         for (i = 0; i < PIC16E_IDLOCS_SIZE; ++i) {
           if ((word = idlocs_pack.words[i]) >= 0) {
             if (isalnum(word)) {
-              ux_println("        __idlocs _IDLOC%u, '%c'", i, word);
+              ux_print(true, "        __idlocs _IDLOC%u, '%c'", i, word);
             }
             else {
-              ux_println("        __idlocs _IDLOC%u, 0x%02X", i, word);
+              ux_print(true, "        __idlocs _IDLOC%u, 0x%02X", i, word);
             }
           }
         }
@@ -776,16 +806,16 @@ show_idlocs(void)
       /* There are several separate words or characters, or do not start at the beginning. */
       prev_exist = false;
       act_exist  = false;
-      printf("\n");
+      ux_print(true, "");
       for (i = 0; i < PIC16E_IDLOCS_SIZE; ++i) {
         if ((word = idlocs_pack.words[i]) >= 0) {
           act_exist = true;
 
           if (isalnum(word)) {
-            ux_println("        __idlocs _IDLOC%u, '%c'", i, word);
+            ux_print(true, "        __idlocs _IDLOC%u, '%c'", i, word);
           }
           else {
-            ux_println("        __idlocs _IDLOC%u, 0x%02X", i, word);
+            ux_print(true, "        __idlocs _IDLOC%u, 0x%02X", i, word);
           }
         }
         else {
@@ -794,7 +824,7 @@ show_idlocs(void)
 
       if ((prev_exist == true) && (act_exist == false)) {
         /* Indicates the break. */
-        printf("\n");
+        ux_print(true, "");
       }
 
       prev_exist = act_exist;
@@ -810,8 +840,8 @@ show_idlocs(void)
     word |= (idlocs_pack.words[1] & 0x000F) << 8;
     word |= (idlocs_pack.words[2] & 0x000F) << 4;
     word |= (idlocs_pack.words[3] & 0x000F);
-    ux_println("");
-    ux_println("        __idlocs 0x%04X", word);
+    ux_print(true, "\n"
+                   "        __idlocs 0x%04X", word);
   }
 }
 
@@ -857,7 +887,7 @@ list_user_labels(int Addr_digits)
                            sym->end - sym->start + 1);
           }
 
-          ux_println("%s", buffer);
+          ux_print(true, "%s", buffer);
         }
       }
     }
@@ -866,7 +896,9 @@ list_user_labels(int Addr_digits)
   if (((sect = state.lset_root.sections[SECT_SPEC_EEDATA]) != NULL) &&
       (sect->symbol_table != NULL)) {
     if (need_section_print(sect)) {
-      printf("\n;%s\n; EEDATA address definitions\n\n", border);
+      ux_print(true, "\n"
+                     ";%s\n"
+                     "; EEDATA address definitions\n", border);
       for (i = 0; i < sect->symbol_number; ++i) {
         sym = sect->symbol_table[i];
 
@@ -879,7 +911,7 @@ list_user_labels(int Addr_digits)
                            sym->end - sym->start + 1);
           }
 
-          ux_println("%s", buffer);
+          ux_print(true, "%s", buffer);
         }
       }
     }
@@ -1040,8 +1072,9 @@ dasm(MemBlock *memory)
   write_header();
 
   if (state.show_names) {
-    printf("\n; The recognition of labels and registers is not always good, therefore\n"
-           "; be treated cautiously the results.\n");
+    ux_print(true, "\n"
+                   "; The recognition of labels and registers is not always good, therefore\n"
+                   "; be treated cautiously the results.");
     if (state.need_sfr_equ) {
       write_core_sfr_list();
     }
@@ -1082,7 +1115,9 @@ dasm(MemBlock *memory)
             if (b_memory_get(m, i, &byte, NULL, NULL)) {
               if (last_loc != (i - insn_size)) {
                 if (state.show_names && (offset == 0)) {
-                  printf("\n;%s\n; IDLOCS area\n", border);
+                  ux_print(true, "\n"
+                                 ";%s\n"
+                                 "; IDLOCS area", border);
                 }
 
                 write_org(org, addr_digits, "idlocs", NULL, 0);
@@ -1098,7 +1133,7 @@ dasm(MemBlock *memory)
               }
 
               byte_exclamation(buffer, sizeof(buffer), length, byte);
-              ux_println("%s", buffer);
+              ux_print(true, "%s", buffer);
             }
             else {
               last_loc = 0;
@@ -1117,12 +1152,12 @@ dasm(MemBlock *memory)
               last_loc = i;
 
               if (state.format) {
-                printf("%0*x:  %0*x  ", addr_digits, org, word_digits, (unsigned int)data);
+                ux_print(false, "%0*x:  %0*x  ", addr_digits, org, word_digits, (unsigned int)data);
               } else {
-                printf("        ");
+                ux_print(false, "        ");
               }
 
-              ux_println("%-*s0x%0*x", TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
+              ux_print(true, "%-*s0x%0*x", TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
             }
             else {
               last_loc = 0;
@@ -1139,7 +1174,9 @@ dasm(MemBlock *memory)
             if (b_memory_get(m, i, &byte, NULL, NULL)) {
               if (last_loc != (i - insn_size)) {
                 if (state.show_names && (offset == 0)) {
-                  printf("\n;%s\n; CONFIG Bits area\n", border);
+                  ux_print(true, "\n"
+                                 ";%s\n"
+                                 "; CONFIG Bits area", border);
                 }
 
                 write_org(org, addr_digits, "config", NULL, 0);
@@ -1148,12 +1185,12 @@ dasm(MemBlock *memory)
               last_loc = i;
 
               if (state.format) {
-                printf("%0*x:  %02x  ", addr_digits, org, (unsigned int)byte);
+                ux_print(false, "%0*x:  %02x  ", addr_digits, org, (unsigned int)byte);
               } else {
-                printf("        ");
+                ux_print(false, "        ");
               }
 
-              ux_println("%-*s0x%02x", TABULATOR_SIZE, "db", (unsigned int)byte);
+              ux_print(true, "%-*s0x%02x", TABULATOR_SIZE, "db", (unsigned int)byte);
             }
             else {
               last_loc = 0;
@@ -1167,7 +1204,9 @@ dasm(MemBlock *memory)
             if (state.class->i_memory_get(m, i, &data, NULL, NULL)) {
               if (last_loc != (i - insn_size)) {
                 if (state.show_names && (offset == 0)) {
-                  printf("\n;%s\n; CONFIG Bits area\n", border);
+                  ux_print(true, "\n"
+                                 ";%s\n"
+                                 "; CONFIG Bits area", border);
                 }
 
                 write_org(org, addr_digits, "config", NULL, 0);
@@ -1176,12 +1215,12 @@ dasm(MemBlock *memory)
               last_loc = i;
 
               if (state.format) {
-                printf("%0*x:  %0*x  ", addr_digits, org, word_digits, (unsigned int)data);
+                ux_print(false, "%0*x:  %0*x  ", addr_digits, org, word_digits, (unsigned int)data);
               } else {
-                printf("        ");
+                ux_print(false, "        ");
               }
 
-              ux_println("%-*s0x%0*x", TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
+              ux_print(true, "%-*s0x%0*x", TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
             }
             else {
               last_loc = 0;
@@ -1197,7 +1236,9 @@ dasm(MemBlock *memory)
             sym = lset_symbol_find_addr(state.lset_root.sections[SECT_SPEC_EEDATA], org, -1, true);
 
             if (state.show_names && (offset == 0)) {
-              printf("\n;%s\n; EEDATA area\n", border);
+              ux_print(true, "\n"
+                             ";%s\n"
+                             "; EEDATA area", border);
             }
 
             if ((sym != NULL) && (sym->attr & CSYM_ORG)) {
@@ -1224,11 +1265,10 @@ dasm(MemBlock *memory)
             gp_exclamation(buffer, sizeof(buffer), length, "; address: 0x%0*x", addr_digits, org);
 
             if (! prev_empty_line) {
-              printf("\n");
+              ux_print(true, "");
             }
 
-            ux_println("%s", buffer);
-            ux_println("");
+            ux_print(true, "%s\n", buffer);
             prev_empty_line = true;
           }
 
@@ -1240,7 +1280,7 @@ dasm(MemBlock *memory)
           }
 
           byte_exclamation(buffer, sizeof(buffer), length, byte);
-          ux_println("%s", buffer);
+          ux_print(true, "%s", buffer);
           prev_empty_line = false;
         }
         else {
@@ -1256,7 +1296,9 @@ dasm(MemBlock *memory)
             sym = lset_symbol_find_addr(state.lset_root.sections[SECT_SPEC_CODE], org, -1, true);
 
             if (state.show_names && (org == 0)) {
-              printf("\n;%s\n; CODE area\n", border);
+              ux_print(true, "\n"
+                             ";%s\n"
+                             "; CODE area", border);
             }
 
             if ((sym != NULL) && (sym->attr & CSYM_ORG)) {
@@ -1274,11 +1316,10 @@ dasm(MemBlock *memory)
             gp_exclamation(buffer, sizeof(buffer), length, "; address: 0x%0*x", addr_digits, org);
 
             if (! prev_empty_line) {
-              printf("\n");
+              ux_print(true, "");
             }
 
-            ux_println("%s", buffer);
-            ux_println("");
+            ux_print(true, "%s\n", buffer);
             prev_empty_line = true;
           }
 
@@ -1293,22 +1334,22 @@ dasm(MemBlock *memory)
 
           if (type & W_CONST_DATA) {
             gp_disassemble_show_data(m, i, state.class, behavior, buffer, sizeof(buffer), length);
-            ux_println("%s", buffer);
+            ux_print(true, "%s", buffer);
             prev_empty_line = false;
             num_words = 1;
           }
           else {
             num_words = gp_disassemble(m, i, state.class, bsr_boundary, state.processor->prog_mem_size,
                                        behavior, buffer, sizeof(buffer), length);
-            ux_println("%s", buffer);
+            ux_print(true, "%s", buffer);
             prev_empty_line = false;
 
             if (num_words != 1) {
               /* Some 18xx instructions use two words. */
               if (state.format) {
                 state.class->i_memory_get(m, i + 2, &data, NULL, NULL);
-                ux_println("%0*x:  %0*x", addr_digits, gp_processor_byte_to_real(state.processor, i + 2),
-                           word_digits, (unsigned int)data);
+                ux_print(true, "%0*x:  %0*x", addr_digits, gp_processor_byte_to_real(state.processor, i + 2),
+                         word_digits, (unsigned int)data);
                 prev_empty_line = false;
               }
 
@@ -1526,8 +1567,7 @@ int main(int argc, char *argv[])
       printf("UNKNOWN\n");
     }
 
-    printf("number of bytes: %i\n", state.hex_info->size);
-    printf("\n");
+    printf("number of bytes: %i\n\n", state.hex_info->size);
   }
 
   if (label_list_name != NULL) {

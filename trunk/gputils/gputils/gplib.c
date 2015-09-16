@@ -25,8 +25,8 @@ Boston, MA 02111-1307, USA.  */
 #include "gplib.h"
 
 struct gplib_state state = {
-  AR_NULL,            /* default mode, do nothing */
-  0,                  /* number of objects */
+  .mode       = AR_NULL,            /* default mode, do nothing */
+  .numobjects = 0,                  /* number of objects */
 };
 
 struct symbol_table *definition_tbl = NULL;
