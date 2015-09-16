@@ -1,4 +1,15 @@
 2015-09-16  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gputils/gpdasm.c:
+    Explicity initialize the members of gpdasm_state structure.
+    The unexpand() correctly handle the newline characters.
+    Renamed the ux_println() to ux_print().
+    The ux_print() got a new parameter: "newline"
+    Changed the use of ux_print().
+
+  * gputils/gplib.c:
+    Explicity initialize the members of gplib_state structure.
+
+2015-09-16  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/p16f1xxx.inc:
     Changed to the gpasm specific version.
 
