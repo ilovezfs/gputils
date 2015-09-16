@@ -23,11 +23,11 @@ Boston, MA 02111-1307, USA.  */
 #define __GPREADOBJ_H__
 
 typedef enum gp_coff_type { 
-  archive_file, 
-  object_file, 
-  object_file_v2, 
-  sys_err_file,
-  unknown_file
+  GP_COFF_ARCHIVE, 
+  GP_COFF_OBJECT, 
+  GP_COFF_OBJECT_V2, 
+  GP_COFF_SYS_ERR,
+  GP_COFF_UNKNOWN
 } gp_coff_type;
 
 typedef struct gp_binary_type {

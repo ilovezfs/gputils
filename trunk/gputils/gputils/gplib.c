@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
 
   /* if we are not creating a new archive, we have to read an existing one */
   if (state.mode != AR_CREATE) {
-    if (gp_identify_coff_file(state.filename) != archive_file) {
+    if (gp_identify_coff_file(state.filename) != GP_COFF_ARCHIVE) {
       gp_error("\"%s\" is not a valid archive file", state.filename);
       exit(1);
     } else {
@@ -229,8 +229,8 @@ int main(int argc, char *argv[])
   case AR_CREATE:
   case AR_REPLACE:
     while (i < state.numobjects) {
-      if ((gp_identify_coff_file(state.objectname[i]) != object_file_v2) &&
-          (gp_identify_coff_file(state.objectname[i]) != object_file)) {
+      if ((gp_identify_coff_file(state.objectname[i]) != GP_COFF_OBJECT_V2) &&
+          (gp_identify_coff_file(state.objectname[i]) != GP_COFF_OBJECT)) {
         gp_error("\"%s\" is not a valid object file", state.objectname[i]);
         break;
       } else {

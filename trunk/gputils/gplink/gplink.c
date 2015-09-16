@@ -348,23 +348,27 @@ gplink_open_coff(const char *name)
   /* FIXME: Three files are opened, surely one is sufficent. */
 
   switch(gp_identify_coff_file(file_name)) {
-  case object_file_v2:
-  case object_file:
+  case GP_COFF_OBJECT_V2:
+  case GP_COFF_OBJECT:
     /* read the object */
     object = gp_read_coff(file_name);
     object_append(object, file_name);
     break;
-  case archive_file:
+
+  case GP_COFF_ARCHIVE:
     /* read the archive */
     archive = gp_archive_read(file_name);
     archive_append(archive, file_name);
     break;
-  case sys_err_file:
+
+  case GP_COFF_SYS_ERR:
     gp_error("Can't open file \"%s\".", file_name);
     break;
-  case unknown_file:
+
+  case GP_COFF_UNKNOWN:
     gp_error("\"%s\" is not a valid coff object or archive.", file_name);
     break;
+
   default:
     assert(0);
   }
@@ -878,7 +882,7 @@ linker(void)
     cinit_section = gp_coffgen_findsection(state.object,
                        state.object->sections,
                        ".cinit");
-    if (cinit_section) {
+    if (cinit_section != NULL) {
       gp_cofflink_reloc_cinit(state.object,
                               program,
                               state.class->org_to_byte_shift,
