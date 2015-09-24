@@ -434,7 +434,7 @@ show_usage(void)
   printf("  -k, --error                    Enables creation of the error file.\n");
   printf("  -l[12[ce]|14[cef]|16[ce]], --list-chips[=([12[ce]|14[cef]|16[ce]])]\n"
          "                                 Lists the names of the supported processors, based on\n"
-         "                                 various aspects. (f => x)\n");
+         "                                 various aspects. ('f' mean 'x')\n");
   printf("  -L, --force-list               Ignore nolist directives.\n");
   printf("  -m, --dump                     Memory dump.\n");
   printf("      --mpasm-compatible         MPASM compatibility mode.\n");
@@ -456,7 +456,8 @@ show_usage(void)
   printf("  -s[12[ce]|14[cef]|16[ce]], --list-processor-properties[=([12[ce]|14[cef]|16[ce]])]\n"
          "                                 Lists properties of the processors. Using by itself,\n"
          "                                 displays the all devices or group of the devices. Along\n"
-         "                                 with the '-p' option, shows only the specified device. (f => x)\n");
+         "                                 with the '-p' option, shows only the specified device.\n"
+         "                                   ('f' mean 'x')\n");
   printf("  -S [0|1|2], --strict [0|1|2]   Set the strict level of the recommended instruction-parameters\n"
          "                                 (W or F and A or B). The \"strict messages\" have higher\n"
          "                                 priority than the warnings. (See: -w [0|1|2]) [0]\n");
@@ -465,8 +466,8 @@ show_usage(void)
          "                                     2: Show error messages if one of is missing.\n");
   printf("  -t, --sdcc-dev14-list          Help to the extension of the pic14devices.txt file\n"
          "                                 in the sdcc project. Using by itself, displays the all\n"
-         "                                 '14' and '14e' devices. Along with the '-p' option,\n"
-         "                                 shows only the specified device.\n");
+         "                                 '14', '14e' and '14f' devices. Along with the '-p'\n"
+         "                                 option, shows only the specified device.\n");
   printf("      --strict-options           If this is set, then an option may not be parameter\n"
          "                                 of an another option. For example: -I -c\n");
   printf("  -u, --absolute                 Use absolute paths. \n");
