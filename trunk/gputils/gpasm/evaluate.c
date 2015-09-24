@@ -267,9 +267,9 @@ gpasmVal evaluate(const struct pnode *p)
     case HIGH:
       {
         gpasmVal val = (evaluate(p->value.unop.p0) >> 8) & 0xff;
-        /* set 7th bit if in absolute mode and PROC_CLASS_PIC14E and address;
-         * relative mode is handled by the linker */
-        if ((state.mode == MODE_ABSOLUTE) && IS_PIC14E_CORE &&
+        /* set 7th bit if in absolute mode and PROC_CLASS_PIC14E or PROC_CLASS_PIC14EX and
+         * address relative mode is handled by the linker */
+        if ((state.mode == MODE_ABSOLUTE) && (IS_PIC14E_CORE || IS_PIC14EX_CORE) &&
             is_program_segment(p->value.unop.p0)) {
           val |= 0x80;
         }
