@@ -501,7 +501,7 @@ do_bankisel(gpasmVal r, const char *name, int arity, struct pnode *parms)
   struct pnode *p;
   int num_reloc;
 
-  if (((!IS_PIC14_CORE) && (!IS_PIC14E_CORE) && (!IS_PIC16_CORE)) ||
+  if (((!IS_PIC14_CORE) && (!IS_PIC14E_CORE) && (!IS_PIC14EX_CORE) && (!IS_PIC16_CORE)) ||
       (state.processor->num_banks == 1)) {
     state.lst.line.linetype = LTY_NONE;
     gpvmessage(GPM_EXTPAGE, NULL);
@@ -537,10 +537,10 @@ do_bankisel(gpasmVal r, const char *name, int arity, struct pnode *parms)
       else {
         reloc_evaluate(p, RELOCT_IBANKSEL);
 
-        if (IS_PIC14E_CORE) {
+        if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
           unsigned int mask;
 
-          for (mask = 0x100; mask < (state.processor->num_banks << 7); mask <<= 1) {
+          for (mask = 0x100; mask < (state.processor->num_banks << PIC14_BANK_SHIFT); mask <<= 1) {
             emit(0, name);
           }
         }
@@ -610,7 +610,7 @@ do_banksel(gpasmVal r, const char *name, int arity, struct pnode *parms)
         reloc_evaluate(p, RELOCT_MOVLB);
         emit(PIC12E_INSN_MOVLB, name);
       }
-      else if (IS_PIC14E_CORE) {
+      else if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
         reloc_evaluate(p, RELOCT_MOVLB);
         emit(PIC14E_INSN_MOVLB, name);
       }
@@ -911,7 +911,7 @@ do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
       gpwarning(GPW_EXPECTED, "18cxxx devices should specify __CONFIG address.");
     }
 
-    if (IS_PIC14E_CORE) {
+    if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
       gpwarning(GPW_EXPECTED, "Enhanced 16cxxx devices should specify __CONFIG address.");
     }
 
@@ -960,7 +960,7 @@ do_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
       /* Don't complain for 14 bit enhanced devices.
          Why are the config words 16 bits long in headers?? */
-      if (!IS_PIC14E_CORE) {
+      if ((!IS_PIC14E_CORE) && (!IS_PIC14EX_CORE)) {
         if (value > state.device.class->core_mask) {
           gpvmessage(GPM_RANGE, NULL, value);
           value &= state.device.class->core_mask;
@@ -1317,7 +1317,7 @@ do_gpasm_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
   else {
     /* The gpasm compatible mode valid all PIC devices. */
     if ((!IS_PIC16_CORE) && (!IS_PIC16E_CORE) &&
-        (!IS_PIC14_CORE) && (!IS_PIC14E_CORE) &&
+        (!IS_PIC14_CORE) && (!IS_PIC14E_CORE) && (!IS_PIC14EX_CORE) &&
         (!IS_PIC12_CORE) && (!IS_PIC12E_CORE)) {
       snprintf(buf, sizeof(buf),
                "CONFIG Directive Error: Processor \"%s\" is invalid for CONFIG directive.",
@@ -1353,7 +1353,7 @@ do_gpasm_config(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_da(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  int char_shift = (IS_PIC14_CORE || IS_PIC14E_CORE) ? 7 : 8;
+  int char_shift = (IS_PIC14_CORE || IS_PIC14E_CORE || IS_PIC14EX_CORE) ? 7 : 8;
 
   if ((state.mode == MODE_RELOCATABLE) && (SECTION_FLAGS & (STYP_DATA | STYP_BPACK))) {
     /* This is a data memory not program. */
@@ -1937,7 +1937,7 @@ do_dtm(gpasmVal r, const char *name, int arity, struct pnode *parms)
   struct insn *i = get_symbol_annotation(s);
   struct pnode *p;
 
-  if (!IS_PIC14E_CORE) {
+  if ((!IS_PIC14E_CORE) && (!IS_PIC14EX_CORE)) {
     gpverror(GPE_ILLEGAL_DIR, NULL, name);
   }
 
@@ -3305,7 +3305,7 @@ _do_pagesel(gpasmVal r, const char *name, int arity, struct pnode *parms, unsign
         emit(0x0000, name);
         emit(0x0000, name);
       }
-      else if (IS_PIC14E_CORE) {
+      else if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
         if (!use_wreg) {
           reloc_evaluate(p, RELOCT_PAGESEL_MOVLP);
           emit(PIC14E_INSN_MOVLP, name);
@@ -4184,7 +4184,7 @@ do_insn(const char *name, struct pnode *parms)
           if ((state.obj.new_sec_flags & STYP_ABS) && can_evaluate_value(p)) {
             int value = evaluate(p);
 
-            if (IS_PIC14E_CORE) {
+            if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
               /* PC is 15 bits.  mpasm checks the maximum device address. */
               if (value & (~PIC14E_PC_MASK)) {
                 gpverror(GPE_RANGE, "Address{%#x} > %#x.", value, PIC14E_PC_MASK);
@@ -5597,7 +5597,7 @@ opcode_init(int stage)
         }
       }
     }
-    else if (IS_PIC14E_CORE) {
+    else if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
       for (i = 0; i < num_op_16cxx_enh; i++) {
         annotate_symbol(add_symbol(state.stBuiltin, op_16cxx_enh[i].name),
                         (void *)&op_16cxx_enh[i]);
@@ -5621,7 +5621,7 @@ opcode_init(int stage)
 
   switch (stage) {
   case 1:
-    if (IS_PIC14E_CORE) {
+    if (IS_PIC14E_CORE || IS_PIC14EX_CORE) {
       /* The pageselw directive not supported on pic14 enhanced devices. */
       remove_symbol(state.stBuiltin, "pageselw");
     }

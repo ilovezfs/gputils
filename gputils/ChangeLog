@@ -1,4 +1,8 @@
 2015-09-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/directive.c, gpasm/evaluate.c:
+    Supplement to the handling of PIC14EX type.
+
+2015-09-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * doc/gputils.lyx, gpasm/gpasm.c:
     Changed the explanations of some options.
 
