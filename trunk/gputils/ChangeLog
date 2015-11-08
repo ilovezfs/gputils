@@ -1,3 +1,14 @@
+2015-11-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpcofflink.c:
+    Fixed a bug which is related to this support request:
+        "#9 Trouble for interpreting GPLINK warning"
+    Thanks to Philippe Paternotte.
+
+  * libgputils/gpreadobj.c:
+    Fixed an another possible bug.
+
+  * Other copyright and format changes.
+
 2015-09-24  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/directive.c, gpasm/evaluate.c:
     Supplement to the handling of PIC14EX type.

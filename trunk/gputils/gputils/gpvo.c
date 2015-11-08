@@ -26,7 +26,7 @@ Boston, MA 02111-1307, USA.  */
 
 struct gpvo_state state;
 
-void print_header(gp_object_type *object)
+static void print_header(const gp_object_type *object)
 {
 #define NELEM(x)  (sizeof(x) / sizeof(*(x)))
 
@@ -68,7 +68,7 @@ void print_header(gp_object_type *object)
     printf("  File is executable.\n");
   }
 
-  if (object->flags & F_LNNO) {
+  if (object->flags & F_LINENO) {
     printf("  Line numbers have been stripped.\n");
   }
 
@@ -139,7 +139,7 @@ static const char *format_reloc_type(unsigned short type, char *buffer, size_t s
   return buffer;
 }
 
-void print_reloc_list(proc_class_t class, gp_reloc_type *relocation)
+static void print_reloc_list(proc_class_t class, const gp_reloc_type *relocation)
 {
   int word_addr = class->org_to_byte_shift;
   char buffer[32];
@@ -160,7 +160,7 @@ void print_reloc_list(proc_class_t class, gp_reloc_type *relocation)
   printf("\n");
 }
 
-void print_linenum_list(proc_class_t class, gp_linenum_type *linenumber)
+static void print_linenum_list(proc_class_t class, const gp_linenum_type *linenumber)
 {
   const char *filename;
 
@@ -185,7 +185,7 @@ void print_linenum_list(proc_class_t class, gp_linenum_type *linenumber)
   printf("\n");
 }
 
-void print_data(proc_class_t class, gp_section_type *section)
+static void print_data(proc_class_t class, const gp_section_type *section)
 {
   char buffer[BUFSIZ];
   int address;
@@ -215,7 +215,7 @@ void print_data(proc_class_t class, gp_section_type *section)
 
       address += 2 * num_words;
     }
-    else if (section->flags & STYP_DATA_ROM || (class == PROC_CLASS_EEPROM16)) {
+    else if ((section->flags & STYP_DATA_ROM) || (class == PROC_CLASS_EEPROM16)) {
       unsigned short word;
 
       if (class->i_memory_get(section->data, address, &word, NULL, NULL)) {
@@ -246,11 +246,11 @@ void print_data(proc_class_t class, gp_section_type *section)
   printf("\n");
 }
 
-void print_sec_header(proc_class_t class, gp_section_type *section)
+static void print_sec_header(proc_class_t class, const gp_section_type *section)
 {
   int org_to_byte_shift;
 
-  org_to_byte_shift = (section->flags & (STYP_TEXT|STYP_DATA_ROM)) ? class->org_to_byte_shift : 0;
+  org_to_byte_shift = (section->flags & (STYP_TEXT | STYP_DATA_ROM)) ? class->org_to_byte_shift : 0;
 
   printf("Section Header\n");
   printf("Name                    %s\n",   section->name);
@@ -300,22 +300,22 @@ void print_sec_header(proc_class_t class, gp_section_type *section)
   printf("\n");
 }
 
-void print_sec_list(gp_object_type *object)
+static void print_sec_list(const gp_object_type *object)
 {
   gp_section_type *section = object->sections;
 
   while (section != NULL) {
     print_sec_header(object->class, section);
 
-    if (section->size && section->data_ptr) {
+    if ((section->size > 0) && (section->data_ptr > 0)) {
       print_data(object->class, section);
     }
 
-    if (section->num_reloc) {
+    if ((section->num_reloc > 0)) {
       print_reloc_list(object->class, section->relocations);
     }
 
-    if (section->num_lineno) {
+    if ((section->num_lineno > 0)) {
       print_linenum_list(object->class, section->line_numbers);
     }
 
@@ -323,7 +323,7 @@ void print_sec_list(gp_object_type *object)
   }
 }
 
-void coff_type(int type, char *buffer, size_t sizeof_buffer)
+static void coff_type(int type, char *buffer, size_t sizeof_buffer)
 {
   switch (type) {
   case T_NULL:
@@ -519,7 +519,7 @@ static const char *format_sym_class(int cls, char *buffer, size_t sizeof_buffer)
   }
 }
 
-void print_sym_table(gp_object_type *object)
+static void print_sym_table(const gp_object_type *object)
 {
   gp_symbol_type *symbol;
   gp_aux_type *aux;
@@ -629,7 +629,7 @@ void print_sym_table(gp_object_type *object)
   printf("\n");
 }
 
-void export_sym_table(gp_object_type *object)
+static void export_sym_table(gp_object_type *object)
 {
   gp_symbol_type *symbol;
   char buffer[BUFSIZ];
@@ -647,7 +647,7 @@ void export_sym_table(gp_object_type *object)
   }
 }
 
-void print_binary(unsigned char *data, long int file_size)
+static void print_binary(const unsigned char *data, long file_size)
 {
 
   long int i, j;
@@ -687,7 +687,7 @@ void print_binary(unsigned char *data, long int file_size)
   printf("\n\n");
 }
 
-void show_usage(void)
+static void show_usage(void)
 {
   printf("Usage: gpvo [options] file\n");
   printf("Options: [defaults in brackets after descriptions]\n");

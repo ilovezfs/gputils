@@ -97,7 +97,7 @@ gp_read_file(const char *filename)
   struct stat statbuf;
   int n;
 
-  infile = fopen(filename,"rb");
+  infile = fopen(filename, "rb");
   if (infile == NULL) {
     perror(filename);
     exit(1);
@@ -139,17 +139,17 @@ gp_free_file(gp_binary_type *data)
 static int
 _read_file_header(gp_object_type *object, const unsigned char *file, gp_binary_type *data)
 {
-  int isnew = 0;
+  gp_boolean isnew = false;
   int opt_hdr;
 
   if (check_getl16(&file[0], data) == MICROCHIP_MAGIC_v2) {
-    isnew = 1;
+    isnew = true;
   }
   else if (check_getl16(&file[0], data) != MICROCHIP_MAGIC_v1) {
     gp_error("Invalid magic number in \"%s\".", object->filename);
   }
 
-  object->isnew = isnew;
+  object->isnew        = isnew;
   object->version      = check_getl16(&file[0], data);
   object->num_sections = check_getl16(&file[2], data);
   object->time         = check_getl32(&file[4], data);
@@ -192,7 +192,7 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_ty
     offset += 2;
   }
 
-  if (!object->isnew && vstamp != 1) {
+  if ((!object->isnew) && (vstamp != 1)) {
     gp_error("Invalid assembler version (%ld) in \"%s\".", vstamp, object->filename);
   }
 
@@ -207,7 +207,7 @@ _read_opt_header(gp_object_type *object, const unsigned char *file, gp_binary_ty
   if (object->processor == NULL) {
     /* Fallback to a generic processor of matching rom width */
     switch(rom_width) {
-    case 8: object->processor = gp_find_processor("pic18cxx"); break;
+    case 8:  object->processor = gp_find_processor("pic18cxx"); break;
     case 12: object->processor = gp_find_processor("pic16c5x"); break;
     case 14: object->processor = gp_find_processor("pic16cxx"); break;
     case 16: object->processor = gp_find_processor("pic17cxx"); break;
@@ -259,7 +259,7 @@ _read_section_header(gp_object_type *object, gp_section_type *section,
     section->name = strdup(&string_table[offset]);
   }
   else {
-    memcpy(buffer, &file[0], 8);
+    memcpy(buffer, &file[0], sizeof(buffer) - 1);
     /* the name can occupy all 8 chars without a null terminator */
     buffer[8] = '\0';
     section->name = strdup(buffer);
@@ -310,7 +310,7 @@ _read_reloc(gp_object_type *object, gp_section_type *section, gp_reloc_type *rel
   relocation->offset  = check_getl16(&file[8], data);
   relocation->type    = check_getl16(&file[10], data);
 
-  if (relocation->address > section->size) {
+  if (relocation->address >= section->size) {
     gp_error("Relocation at address %#x in section \"%s\" of \"%s\" exceeds the section size.",
              relocation->address, section->name, object->filename);
   }
@@ -360,7 +360,7 @@ _read_sections(gp_object_type *object, const unsigned char *file, gp_binary_type
     section_ptr += (object->isnew) ? SEC_HDR_SIZ_v2 : SEC_HDR_SIZ_v1;
 
     /* read the data */
-    if ((current->size) && (current->data_ptr)) {
+    if ((current->size > 0) && (current->data_ptr > 0)) {
       org = current->address;
       loc = &file[current->data_ptr];
       number = current->size;
@@ -371,7 +371,7 @@ _read_sections(gp_object_type *object, const unsigned char *file, gp_binary_type
     }
 
     /* read the relocations */
-    if ((current->num_reloc) && (current->reloc_ptr)) {
+    if ((current->num_reloc > 0) && (current->reloc_ptr > 0)) {
       loc = &file[current->reloc_ptr];
       number = current->num_reloc;
       current->relocations = gp_coffgen_blockrel(number);
@@ -386,7 +386,7 @@ _read_sections(gp_object_type *object, const unsigned char *file, gp_binary_type
     }
 
     /* read the line numbers */
-    if ((current->num_lineno) && (current->lineno_ptr)) {
+    if ((current->num_lineno > 0) && (current->lineno_ptr > 0)) {
       int org_to_byte_shift;
 
       if (current->flags & (STYP_TEXT | STYP_DATA_ROM)) {
@@ -514,7 +514,7 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol, const unsign
     symbol->derived_type = type >> 5;
   }
   else {
-    /* TODO Make sure the old format had this alignment */
+    /* TODO: Make sure the old format had this alignment. */
     unsigned int type = check_getl16(&file[file_off], data);
 
     file_off += 2;

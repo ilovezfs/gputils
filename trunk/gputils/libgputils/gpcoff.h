@@ -53,7 +53,7 @@ struct filehdr
 /* file is executable - has no unresolved external symbols */
 #define F_EXEC        0x0002
 /* line numbers have been stripped */
-#define F_LNNO        0x0004
+#define F_LINENO      0x0004
 /* the MPASM assembler object file is from absolute (as opposed to relocatable) assembly code */
 #define F_ABSOLUTE    0x0010
 /* local symbols have been stripped */
@@ -100,37 +100,35 @@ struct scnhdr
 #define SEC_HDR_SIZ_v1 40
 #define SEC_HDR_SIZ_v2 40
 
-/* Section contains executable code */
-#define STYP_TEXT     0x0020
-/* Section contains initialized data */
-#define STYP_DATA     0x0040
-/* Section contains uninitialized data */
-#define STYP_BSS      0x0080
-/* Section contains initialized data for ROM */
-#define STYP_DATA_ROM 0x0100
-/* Section is absolute */
-#define STYP_ABS      0x1000
-/* Section is shared across banks */
-#define STYP_SHARED   0x2000
-/* Section is overlaid with other sections of the same name from different
-   objects modules */
-#define STYP_OVERLAY  0x4000
-/* Section is available using access bit */
-#define STYP_ACCESS   0x8000
-/* Section contains the activation record for a function */
-#define STYP_ACTREC   0x10000
-/* Section has been relocated.  This is a temporary flag used by the linker */
-#define STYP_RELOC    0x20000
-/* Section is byte packed on 16bit devices */
-#define STYP_BPACK    0x40000
+/* Section contains executable code. */
+#define STYP_TEXT     0x00000020
+/* Section contains initialized data. */
+#define STYP_DATA     0x00000040
+/* Section contains uninitialized data. */
+#define STYP_BSS      0x00000080
+/* Section contains initialized data for ROM. */
+#define STYP_DATA_ROM 0x00000100
+/* Section is absolute. */
+#define STYP_ABS      0x00001000
+/* Section is shared across banks. */
+#define STYP_SHARED   0x00002000
+/* Section is overlaid with other sections of the same name from different objects modules. */
+#define STYP_OVERLAY  0x00004000
+/* Section is available using access bit. */
+#define STYP_ACCESS   0x00008000
+/* Section contains the activation record for a function. */
+#define STYP_ACTREC   0x00010000
+/* Section has been relocated.  This is a temporary flag used by the linker. */
+#define STYP_RELOC    0x00020000
+/* Section is byte packed on 16bit devices. */
+#define STYP_BPACK    0x00040000
 
 /* relocation entry */
 struct reloc
 {
   unsigned long   r_vaddr;     /* entry relative virtual address */
   unsigned long   r_symndx;    /* index into symbol table */
-  short           r_offset;    /* offset to be added to address of symbol
-                                  'r_symndx' */
+  short           r_offset;    /* offset to be added to address of symbol 'r_symndx' */
   unsigned short  r_type;      /* relocation type */
 };
 
@@ -147,8 +145,7 @@ struct reloc
 /* relocation for the 5 bits of address for the P operand of a 17cxx MOVFP
    or MOVPF instruction */
 #define     RELOCT_P        5
-/* relocation to generate the appropriate instruction to bank switch for a
-   symbol */
+/* relocation to generate the appropriate instruction to bank switch for a symbol */
 #define     RELOCT_BANKSEL  6
 /* relocation to generate the appropriate instruction to page switch for a
    symbol */

@@ -89,7 +89,7 @@ char *strndup (const char *s, size_t n);
   #define COPY_CHAR "/"
 #endif
 
-#define GPUTILS_COPYRIGHT_STRING "Copyright (c) 1998-2014 gputils project"
+#define GPUTILS_COPYRIGHT_STRING "Copyright (c) 1998-2015 gputils project"
 
 #if ((__GNUC__ * 100) + __GNUC_MINOR__) >= 402
   #define GPUTILS_GCC_STR(s)            #s
