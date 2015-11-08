@@ -3,7 +3,7 @@
    James Bowman, Scott Dattalo
    Copyright (C) 2013 Borut Razem
 
-    Copyright (C) 2014 Molnar Karoly <molnarkaroly@users.sf.net>
+    Copyright (C) 2014-2015 Molnar Karoly <molnarkaroly@users.sf.net>
 
 This file is part of gputils.
 
@@ -260,7 +260,7 @@ b_memory_get(const MemBlock *m, unsigned int address, unsigned char *byte,
 static void
 i_memory_store_section_name(MemWord *mw, const char *name)
 {
-  if (name != NULL && *name != '\0') {
+  if ((name != NULL) && (*name != '\0')) {
     mw->section_name = strdup(name);
   }
 }
@@ -270,7 +270,7 @@ i_memory_store_section_name(MemWord *mw, const char *name)
 static void
 i_memory_store_symbol_name(MemWord *mw, const char *name)
 {
-  if (name != NULL && *name != '\0') {
+  if ((name != NULL) && (*name != '\0')) {
     mw->symbol_name = strdup(name);
   }
 }
@@ -301,7 +301,7 @@ b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value,
   MemWord *w;
 
   do {
-    m = m ? m->next : i_memory;
+    m = (m != NULL) ? m->next : i_memory;
 
     if (m->base == block) {
       if (m->memory == NULL) {
@@ -694,6 +694,7 @@ b_memory_get_addr_type(const MemBlock *m, unsigned int address, const char **lab
 
   return 0;
 }
+
 /*----------------------------------------------------------------------*/
 
 gp_boolean

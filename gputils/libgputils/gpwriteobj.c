@@ -86,7 +86,7 @@ _gp_coffgen_addname(const char *name, FILE *fp, unsigned char *table)
 
 /* write the file header */
 static void
-_gp_coffgen_write_filehdr(gp_object_type *object, FILE *fp)
+_gp_coffgen_write_filehdr(const gp_object_type *object, FILE *fp)
 {
   gp_fputl16((object->isnew ? MICROCHIP_MAGIC_v2 : MICROCHIP_MAGIC_v1), fp);
   gp_fputl16(object->num_sections, fp);
@@ -99,7 +99,7 @@ _gp_coffgen_write_filehdr(gp_object_type *object, FILE *fp)
 
 /* write the optional header */
 static void
-_gp_coffgen_write_opthdr(gp_object_type *object, FILE *fp)
+_gp_coffgen_write_opthdr(const gp_object_type *object, FILE *fp)
 {
   unsigned long coff_type = gp_processor_coff_type(object->processor);
 
@@ -123,7 +123,7 @@ _gp_coffgen_write_opthdr(gp_object_type *object, FILE *fp)
 
 /* write the section header */
 static void
-_gp_coffgen_write_scnhdr(gp_section_type *section, int org_to_byte_shift,
+_gp_coffgen_write_scnhdr(const gp_section_type *section, int org_to_byte_shift,
                          unsigned char *table, FILE *fp)
 {
   if (!(section->flags & (STYP_TEXT | STYP_DATA_ROM))) {
@@ -139,14 +139,14 @@ _gp_coffgen_write_scnhdr(gp_section_type *section, int org_to_byte_shift,
   gp_fputl32(section->lineno_ptr, fp);
   gp_fputl16(section->num_reloc, fp);
   gp_fputl16(section->num_lineno, fp);
-  /* Don't write internal section flags */
-  gp_fputl32(section->flags & ~(STYP_RELOC|STYP_BPACK), fp);
+  /* Don't write internal section flags. */
+  gp_fputl32(section->flags & ~(STYP_RELOC | STYP_BPACK), fp);
 }
 
 /* write the section data */
 static void
 _gp_coffgen_write_data(proc_class_t class,
-                       gp_section_type *section,
+                       const gp_section_type *section,
                        FILE *fp)
 {
   unsigned int org;
@@ -170,7 +170,7 @@ _gp_coffgen_write_data(proc_class_t class,
 
 /* write the section relocations */
 static void
-_gp_coffgen_write_reloc(gp_section_type *section, FILE *fp)
+_gp_coffgen_write_reloc(const gp_section_type *section, FILE *fp)
 {
   gp_reloc_type *current = section->relocations;
 
@@ -186,7 +186,7 @@ _gp_coffgen_write_reloc(gp_section_type *section, FILE *fp)
 
 /* write the section linenumbers */
 static void
-_gp_coffgen_write_linenum(gp_section_type *section, int org_to_byte_shift, FILE *fp)
+_gp_coffgen_write_linenum(const gp_section_type *section, int org_to_byte_shift, FILE *fp)
 {
   gp_linenum_type *current = section->line_numbers;
 
@@ -207,7 +207,7 @@ _gp_coffgen_write_linenum(gp_section_type *section, int org_to_byte_shift, FILE 
 
 /* write the auxiliary symbols */
 static void
-_gp_coffgen_write_auxsymbols(gp_aux_type *aux, unsigned char *table, FILE *fp,
+_gp_coffgen_write_auxsymbols(const gp_aux_type *aux, unsigned char *table, FILE *fp,
                              int isnew)
 {
   unsigned int offset;
@@ -265,7 +265,7 @@ _gp_coffgen_write_auxsymbols(gp_aux_type *aux, unsigned char *table, FILE *fp,
 
 /* write the symbol table */
 static void
-_gp_coffgen_write_symbols(gp_object_type *object, unsigned char *table, FILE *fp)
+_gp_coffgen_write_symbols(const gp_object_type *object, unsigned char *table, FILE *fp)
 {
   gp_symbol_type *current;
 
@@ -291,7 +291,7 @@ _gp_coffgen_write_symbols(gp_object_type *object, unsigned char *table, FILE *fp
     fputc(current->class, fp);
     fputc(current->num_auxsym, fp);
 
-    if (current->num_auxsym) {
+    if (current->num_auxsym > 0) {
       _gp_coffgen_write_auxsymbols(current->aux_list, table, fp, object->isnew);
     }
 
@@ -299,27 +299,27 @@ _gp_coffgen_write_symbols(gp_object_type *object, unsigned char *table, FILE *fp
   }
 }
 
-int
-_has_data(gp_section_type *section)
+gp_boolean
+_has_data(const gp_section_type *section)
 {
 
   if (section->size == 0) {
-    return 0;
+    return false;
   }
 
   if (section->flags & STYP_TEXT) {
-    return 1;
+    return true;
   }
 
   if (section->flags & STYP_DATA) {
-    return 1;
+    return true;
   }
 
   if (section->flags & STYP_DATA_ROM) {
-    return 1;
+    return true;
   }
 
-  return 0;
+  return false;
 }
 
 /* update all the coff pointers */
@@ -466,18 +466,18 @@ gp_write_coff(gp_object_type *object, int numerrors)
   return 0;
 }
 
-/* chack if the object is absolute: all sections are absolute and there
+/* check if the object is absolute: all sections are absolute and there
    are no relocations (undefined symbols) */
-int
-gp_is_absolute_object(gp_object_type *object)
+gp_boolean
+gp_is_absolute_object(const gp_object_type *object)
 {
   gp_section_type *section;
 
   for (section = object->sections; section; section = section->next) {
     if ((section->num_reloc != 0) || !(section->flags & STYP_ABS)) {
-      return 0;
+      return false;
     }
   }
 
-  return 1;
+  return true;
 }

@@ -22,8 +22,8 @@ Boston, MA 02111-1307, USA.  */
 #ifndef __GPWRITEOBJ_H__
 #define __GPWRITEOBJ_H__
 
-int _has_data(gp_section_type *section);
+gp_boolean _has_data(const gp_section_type *section);
 int gp_write_coff(gp_object_type *object, int numerrors);
-int gp_is_absolute_object(gp_object_type *object);
+gp_boolean gp_is_absolute_object(const gp_object_type *object);
 
 #endif

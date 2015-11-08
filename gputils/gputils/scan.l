@@ -1,7 +1,7 @@
 
 /* Scanner to user label list.
 
-   Copyright (C) 2014 Molnar Karoly
+   Copyright (C) 2014-2015 Molnar Karoly
 
 This file is part of gputils.
 
