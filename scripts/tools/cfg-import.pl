@@ -301,7 +301,7 @@ my $cfg_addr_pack_t     = "${name_head}addr_pack_t";
 
 my $out_handler;
 
-my @mcu_missed_debug =
+my @mcu_missed_debug_0x8008_0x1000 =
   (
   'PIC12F1571', 'PIC12F1572', 'PIC12F1612', 'PIC12F1822',
   'PIC12F1840', 'PIC12LF1571', 'PIC12LF1572', 'PIC12LF1612',
@@ -322,7 +322,6 @@ my @mcu_missed_debug =
   'PIC16F1828', 'PIC16F1829', 'PIC16F1829LIN', 'PIC16F1847',
   'PIC16F1933', 'PIC16F1934', 'PIC16F1936', 'PIC16F1937',
   'PIC16F1938', 'PIC16F1939', 'PIC16F1946', 'PIC16F1947',
-  'PIC16F18855', 'PIC16F18875',
   'PIC16LF1454', 'PIC16LF1455', 'PIC16LF1458', 'PIC16LF1459',
   'PIC16LF1508', 'PIC16LF1509', 'PIC16LF1512', 'PIC16LF1513',
   'PIC16LF1516', 'PIC16LF1517', 'PIC16LF1518', 'PIC16LF1519',
@@ -340,7 +339,12 @@ my @mcu_missed_debug =
   'PIC16LF1829', 'PIC16LF1847', 'PIC16LF1902', 'PIC16LF1903',
   'PIC16LF1904', 'PIC16LF1906', 'PIC16LF1907', 'PIC16LF1933',
   'PIC16LF1934', 'PIC16LF1936', 'PIC16LF1937', 'PIC16LF1938',
-  'PIC16LF1939', 'PIC16LF1946', 'PIC16LF1947',
+  'PIC16LF1939', 'PIC16LF1946', 'PIC16LF1947'
+  );
+
+my @mcu_missed_debug_0x8008_0x2000 =
+  (
+  'PIC16F18855', 'PIC16F18875',
   'PIC16LF18855', 'PIC16LF18875'
   );
 
@@ -505,15 +509,15 @@ sub find_latest_version($)
 
 #---------------------------------------------------------------------------------------------------
 
-sub add_missing_debug($$$)
+sub add_missing_debug($$$$)
   {
-  my ($McuName, $DirRef, $DirAddr) = @_;
+  my ($McuName, $DirRef, $DirAddr, $Mask) = @_;
   my $sw_ref =
     {
     MCU_NAME    => $McuName,
     DIR_ADDR    => $DirAddr,
     SW_NAME     => 'DEBUG',
-    SW_MASK     => 0x1000,
+    SW_MASK     => $Mask,
     SW_DIGITS   => 4,
     OPT_COUNT   => 2,
     OPTIONS     => [
@@ -530,10 +534,10 @@ sub add_missing_debug($$$)
                      MCU_NAME    => $McuName,
                      SW_NAME     => 'DEBUG',
                      OPT_NAME    => 'OFF',
-                     OPT_VALUE   => 0x1000,
+                     OPT_VALUE   => $Mask,
                      OPT_DIGITS  => 4,
                      OPT_HASH    => 0,
-                     STRUCT_NAME => "${McuName}_DEBUG_OFF_1000"
+                     STRUCT_NAME => sprintf("${McuName}_DEBUG_OFF_%04u", $Mask)
                      }
                    ],
     SW_HASH     => 0,
@@ -765,10 +769,16 @@ sub read_device_informations()
 
           if ($switch_count == 0)
             {
-            if ($directive_addr == 0x8008 && ! $debug_present &&
-                $mcu_features->{MCU_CLASS} == PROC_CLASS_PIC14E && $mcu_name ~~ @mcu_missed_debug)
+            if ($directive_addr == 0x8008 && ! $debug_present &&$mcu_features->{MCU_CLASS} == PROC_CLASS_PIC14E)
               {
-              $directive_mask |= add_missing_debug($mcu_name, $directive, $directive_addr);
+              if ($mcu_name ~~ @mcu_missed_debug_0x8008_0x1000)
+                {
+                $directive_mask |= add_missing_debug($mcu_name, $directive, $directive_addr, 0x1000);
+                }
+              elsif ($mcu_name ~~ @mcu_missed_debug_0x8008_0x2000)
+                {
+                $directive_mask |= add_missing_debug($mcu_name, $directive, $directive_addr, 0x2000);
+                }
               }
 
             if ($directive->{SWITCH_COUNT} > 1)

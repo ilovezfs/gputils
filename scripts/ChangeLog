@@ -1,3 +1,13 @@
+2015-11-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/cfg-import.pl, tools/device-help.pl:
+	  Added the missing DEBUG config option to these MCUs. 2.)
+	  (pic16(l)f18855, pic16(l)f18875)
+
+2015-11-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/cfg-import.pl, tools/device-help.pl:
+	  Added the missing DEBUG config option to these MCUs.
+	  (pic16(l)f18855, pic16(l)f18875)
+
 2015-09-16  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/device-manager.pl:
 	  Added an example to the generated p16f1xxx.inc.gen and
