@@ -1,4 +1,9 @@
 2015-11-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * header/p18f18855.inc, header/p18f18875.inc, header/p18lf18855.inc,
+    header/p18lf18875.inc:
+    Added the missing DEBUG config option to these MCUs.
+
+2015-11-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpcofflink.c:
     Fixed a bug which is related to this support request:
         "#9 Trouble for interpreting GPLINK warning"
