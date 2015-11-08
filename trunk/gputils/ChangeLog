@@ -1,4 +1,9 @@
 2015-11-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpcfg-table.c:
+    Added the missing DEBUG config option to these MCUs. 2.)
+    (pic16(l)f18855, pic16(l)f18875)
+
+2015-11-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * header/p18f18855.inc, header/p18f18875.inc, header/p18lf18855.inc,
     header/p18lf18875.inc:
     Added the missing DEBUG config option to these MCUs.

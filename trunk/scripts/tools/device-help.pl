@@ -722,7 +722,7 @@ use constant RAM_SFR    => 2;
 use constant RAM_COMMON => 3;
 use constant RAM_MIRROR => 4;
 
-my @mcu_missed_debug =
+my @mcu_missed_debug_0x8008_0x1000 =
   (
   'PIC12F1571', 'PIC12F1572', 'PIC12F1612', 'PIC12F1822',
   'PIC12F1840', 'PIC12LF1571', 'PIC12LF1572', 'PIC12LF1612',
@@ -743,7 +743,6 @@ my @mcu_missed_debug =
   'PIC16F1828', 'PIC16F1829', 'PIC16F1829LIN', 'PIC16F1847',
   'PIC16F1933', 'PIC16F1934', 'PIC16F1936', 'PIC16F1937',
   'PIC16F1938', 'PIC16F1939', 'PIC16F1946', 'PIC16F1947',
-  'PIC16F18855', 'PIC16F18875',
   'PIC16LF1454', 'PIC16LF1455', 'PIC16LF1458', 'PIC16LF1459',
   'PIC16LF1508', 'PIC16LF1509', 'PIC16LF1512', 'PIC16LF1513',
   'PIC16LF1516', 'PIC16LF1517', 'PIC16LF1518', 'PIC16LF1519',
@@ -761,7 +760,12 @@ my @mcu_missed_debug =
   'PIC16LF1829', 'PIC16LF1847', 'PIC16LF1902', 'PIC16LF1903',
   'PIC16LF1904', 'PIC16LF1906', 'PIC16LF1907', 'PIC16LF1933',
   'PIC16LF1934', 'PIC16LF1936', 'PIC16LF1937', 'PIC16LF1938',
-  'PIC16LF1939', 'PIC16LF1946', 'PIC16LF1947',
+  'PIC16LF1939', 'PIC16LF1946', 'PIC16LF1947'
+  );
+
+my @mcu_missed_debug_0x8008_0x2000 =
+  (
+  'PIC16F18855', 'PIC16F18875',
   'PIC16LF18855', 'PIC16LF18875'
   );
 
@@ -1760,9 +1764,9 @@ sub read_ram_and_rom_features($$)
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-sub add_missing_debug($)
+sub add_missing_debug($$)
   {
-  my $DirRef = $_[0];
+  my ($DirRef, $Mask) = @_;
   my $sw_ref =
     {
     HEAD    => 'DEBUG',
@@ -1776,12 +1780,12 @@ sub add_missing_debug($)
                  },
                  {
                  NAME    => 'OFF',
-                 VALUE   => 0x1000,
+                 VALUE   => $Mask,
                  EXPL    => 'Background debugger disabled',
                  DEFAULT => TRUE
                  }
                ],
-    SW_MASK => 0x1000
+    SW_MASK => $Mask
     };
 
   push(@{$DirRef->{SWITCHES}}, $sw_ref);
@@ -2088,9 +2092,16 @@ sub read_device_informations()
           if ($switch_count == 0)
             {
             if (($mcu_features->{MCU_CLASS} == PROC_CLASS_PIC14E) && ($directive_addr == 0x8008) &&
-                ! $debug_present && $mcu_name ~~ @mcu_missed_debug)
+                ! $debug_present)
               {
-              $directive_mask |= add_missing_debug($directive);
+              if ($mcu_name ~~ @mcu_missed_debug_0x8008_0x1000)
+                {
+                $directive_mask |= add_missing_debug($directive, 0x1000);
+                }
+              elsif ($mcu_name ~~ @mcu_missed_debug_0x8008_0x2000)
+                {
+                $directive_mask |= add_missing_debug($directive, 0x2000);
+                }
               }
 
             @{$directive->{SWITCHES}} = sort {$a->{SW_MASK} <=> $b->{SW_MASK}} @{$directive->{SWITCHES}};
