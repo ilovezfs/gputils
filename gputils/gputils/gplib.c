@@ -78,7 +78,7 @@ has_path(const char *file_name)
   }
 #endif
 
-  return ((name == NULL) ? true : false);
+  return ((name == NULL) ? false : true);
 }
 
 void show_usage(void)
