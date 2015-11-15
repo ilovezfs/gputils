@@ -62,7 +62,7 @@
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\tracking_changes true
+\tracking_changes false
 \output_changes false
 \html_math_output 0
 \html_css_as_file 0
@@ -80,7 +80,7 @@ James Bowman, Craig Franklin, David Barnett, Borut Ražem and Molnár Károly
 \end_layout
 
 \begin_layout Date
-Sep 24, 2015
+Nov 15, 2015
 \end_layout
 
 \begin_layout Standard
@@ -493,148 +493,153 @@ p16f1717       p16f1718       p16f1719       p16f1764       p16f1765
 \begin_inset Newline newline
 \end_inset
 
-p16f1769       p16f1773       p16f1776       p16f1782       p16f1783   
-    p16f1784       
+p16f1769       p16f1773       p16f1776       p16f1777       p16f1778   
+    p16f1779       
 \begin_inset Newline newline
 \end_inset
 
-p16f1786       p16f1787       p16f1788       p16f1789       p16f1823   
-    p16f1824       
+p16f1782       p16f1783       p16f1784       p16f1786       p16f1787   
+    p16f1788       
 \begin_inset Newline newline
 \end_inset
 
-p16f1825       p16f1826       p16f1827       p16f1828       p16f1829   
-    p16f1829lin    
+p16f1789       p16f1823       p16f1824       p16f1825       p16f1826   
+    p16f1827       
 \begin_inset Newline newline
 \end_inset
 
-p16f1847       p16f1933       p16f1934       p16f1936       p16f1937   
-    p16f1938       
+p16f1828       p16f1829       p16f1829lin    p16f1847       p16f1933   
+    p16f1934       
 \begin_inset Newline newline
 \end_inset
 
-p16f1939       p16f1946       p16f1947       p16f18313      p16f18323  
-    p16f18324      
+p16f1936       p16f1937       p16f1938       p16f1939       p16f1946   
+    p16f1947       
 \begin_inset Newline newline
 \end_inset
 
-p16f18325      p16f18344      p16f18345      p16f18854      p16f18855  
-    p16f18856      
+p16f18313      p16f18323      p16f18324      p16f18325      p16f18326  
+    p16f18344      
 \begin_inset Newline newline
 \end_inset
 
-p16f18857      p16f18875      p16f18876      p16f18877      p16hv610   
-    p16hv616       
+p16f18345      p16f18346      p16f18854      p16f18855      p16f18856  
+    p16f18857      
 \begin_inset Newline newline
 \end_inset
 
-p16hv753       p16hv785       p16lf74        p16lf76        p16lf77    
-    p16lf83        
+p16f18875      p16f18876      p16f18877      p16hv610       p16hv616   
+    p16hv753       
 \begin_inset Newline newline
 \end_inset
 
-p16lf84        p16lf84a       p16lf87        p16lf88        p16lf627   
-    p16lf627a      
+p16hv785       p16lf74        p16lf76        p16lf77        p16lf83    
+    p16lf84        
 \begin_inset Newline newline
 \end_inset
 
-p16lf628       p16lf628a      p16lf648a      p16lf707       p16lf720   
-    p16lf721       
+p16lf84a       p16lf87        p16lf88        p16lf627       p16lf627a  
+    p16lf628       
 \begin_inset Newline newline
 \end_inset
 
-p16lf722       p16lf722a      p16lf723       p16lf723a      p16lf724   
-    p16lf726       
+p16lf628a      p16lf648a      p16lf707       p16lf720       p16lf721   
+    p16lf722       
 \begin_inset Newline newline
 \end_inset
 
-p16lf727       p16lf747       p16lf767       p16lf777       p16lf818   
-    p16lf819       
+p16lf722a      p16lf723       p16lf723a      p16lf724       p16lf726   
+    p16lf727       
 \begin_inset Newline newline
 \end_inset
 
-p16lf870       p16lf871       p16lf872       p16lf873       p16lf873a  
-    p16lf874       
+p16lf747       p16lf767       p16lf777       p16lf818       p16lf819   
+    p16lf870       
 \begin_inset Newline newline
 \end_inset
 
-p16lf874a      p16lf876       p16lf876a      p16lf877       p16lf877a  
-    p16lf1454      
+p16lf871       p16lf872       p16lf873       p16lf873a      p16lf874   
+    p16lf874a      
 \begin_inset Newline newline
 \end_inset
 
-p16lf1455      p16lf1458      p16lf1459      p16lf1503      p16lf1507  
-    p16lf1508      
+p16lf876       p16lf876a      p16lf877       p16lf877a      p16lf1454  
+    p16lf1455      
 \begin_inset Newline newline
 \end_inset
 
-p16lf1509      p16lf1512      p16lf1513      p16lf1516      p16lf1517  
-    p16lf1518      
+p16lf1458      p16lf1459      p16lf1503      p16lf1507      p16lf1508  
+    p16lf1509      
 \begin_inset Newline newline
 \end_inset
 
-p16lf1519      p16lf1526      p16lf1527      p16lf1554      p16lf1559  
-    p16lf1566      
+p16lf1512      p16lf1513      p16lf1516      p16lf1517      p16lf1518  
+    p16lf1519      
 \begin_inset Newline newline
 \end_inset
 
-p16lf1567      p16lf1574      p16lf1575      p16lf1578      p16lf1579  
-    p16lf1613      
+p16lf1526      p16lf1527      p16lf1554      p16lf1559      p16lf1566  
+    p16lf1567      
 \begin_inset Newline newline
 \end_inset
 
-p16lf1614      p16lf1615      p16lf1618      p16lf1619      p16lf1703  
-    p16lf1704      
+p16lf1574      p16lf1575      p16lf1578      p16lf1579      p16lf1613  
+    p16lf1614      
 \begin_inset Newline newline
 \end_inset
 
-p16lf1705      p16lf1707      p16lf1708      p16lf1709      p16lf1713  
-    p16lf1716      
+p16lf1615      p16lf1618      p16lf1619      p16lf1703      p16lf1704  
+    p16lf1705      
 \begin_inset Newline newline
 \end_inset
 
-p16lf1717      p16lf1718      p16lf1719      p16lf1764      p16lf1765  
-    p16lf1768      
+p16lf1707      p16lf1708      p16lf1709      p16lf1713      p16lf1716  
+    p16lf1717      
 \begin_inset Newline newline
 \end_inset
 
-p16lf1769      p16lf1773      p16lf1776      p16lf1782      p16lf1783  
-    p16lf1784      
+p16lf1718      p16lf1719      p16lf1764      p16lf1765      p16lf1768  
+    p16lf1769      
 \begin_inset Newline newline
 \end_inset
 
-p16lf1786      p16lf1787      p16lf1788      p16lf1789      p16lf1823  
-    p16lf1824      
+p16lf1773      p16lf1776      p16lf1777      p16lf1778      p16lf1779  
+    p16lf1782      
 \begin_inset Newline newline
 \end_inset
 
-p16lf1824t39a  p16lf1825      p16lf1826      p16lf1827      p16lf1828  
-    p16lf1829      
+p16lf1783      p16lf1784      p16lf1786      p16lf1787      p16lf1788  
+    p16lf1789      
 \begin_inset Newline newline
 \end_inset
 
-p16lf1847      p16lf1902      p16lf1903      p16lf1904      p16lf1906  
-    p16lf1907      
+p16lf1823      p16lf1824      p16lf1824t39a  p16lf1825      p16lf1826  
+    p16lf1827      
 \begin_inset Newline newline
 \end_inset
 
-p16lf1933      p16lf1934      p16lf1936      p16lf1937      p16lf1938  
-    p16lf1939      
+p16lf1828      p16lf1829      p16lf1847      p16lf1902      p16lf1903  
+    p16lf1904      
 \begin_inset Newline newline
 \end_inset
 
-p16lf1946      p16lf1947      p16lf18313     p16lf18323     p16lf18324 
-    p16lf18325     
+p16lf1906      p16lf1907      p16lf1933      p16lf1934      p16lf1936  
+    p16lf1937      
 \begin_inset Newline newline
 \end_inset
 
-p16lf18344     p16lf18345     p16lf18854     p16lf18855     p16lf18856 
-    p16lf18857     
+p16lf1938      p16lf1939      p16lf1946      p16lf1947      p16lf18313 
+    p16lf18323     
 \begin_inset Newline newline
 \end_inset
 
-p16lf18875     p16lf18876     p16lf18877     p16f1xxx                  
-                   
+p16lf18324     p16lf18325     p16lf18344     p16lf18345     p16lf18854 
+    p16lf18855     
+\begin_inset Newline newline
+\end_inset
+
+p16lf18856     p16lf18857     p16lf18875     p16lf18876     p16lf18877 
+    p16f1xxx       
 \begin_inset Newline newline
 \end_inset
 
@@ -693,228 +698,233 @@ p18f25k22      p18f25k40      p18f25k50      p18f25k80      p18f26j11
 \begin_inset Newline newline
 \end_inset
 
-p18f26j50      p18f26j53      p18f26k20      p18f26k22      p18f26k80  
-    p18f27j13      
+p18f26j50      p18f26j53      p18f26k20      p18f26k22      p18f26k40  
+    p18f26k80      
 \begin_inset Newline newline
 \end_inset
 
-p18f27j53      p18f43k20      p18f43k22      p18f44j10      p18f44j11  
-    p18f44j50      
+p18f27j13      p18f27j53      p18f43k20      p18f43k22      p18f44j10  
+    p18f44j11      
 \begin_inset Newline newline
 \end_inset
 
-p18f44k20      p18f44k22      p18f45j10      p18f45j11      p18f45j50  
-    p18f45k20      
+p18f44j50      p18f44k20      p18f44k22      p18f45j10      p18f45j11  
+    p18f45j50      
 \begin_inset Newline newline
 \end_inset
 
-p18f45k22      p18f45k40      p18f45k50      p18f45k80      p18f46j11  
-    p18f46j13      
+p18f45k20      p18f45k22      p18f45k40      p18f45k50      p18f45k80  
+    p18f46j11      
 \begin_inset Newline newline
 \end_inset
 
-p18f46j50      p18f46j53      p18f46k20      p18f46k22      p18f46k80  
-    p18f47j13      
+p18f46j13      p18f46j50      p18f46j53      p18f46k20      p18f46k22  
+    p18f46k40      
 \begin_inset Newline newline
 \end_inset
 
-p18f47j53      p18f63j11      p18f63j90      p18f64j11      p18f64j15  
-    p18f64j90      
+p18f46k80      p18f47j13      p18f47j53      p18f47k40      p18f63j11  
+    p18f63j90      
 \begin_inset Newline newline
 \end_inset
 
-p18f65j10      p18f65j11      p18f65j15      p18f65j50      p18f65j90  
-    p18f65j94      
+p18f64j11      p18f64j15      p18f64j90      p18f65j10      p18f65j11  
+    p18f65j15      
 \begin_inset Newline newline
 \end_inset
 
-p18f65k22      p18f65k80      p18f65k90      p18f66j10      p18f66j11  
-    p18f66j15      
+p18f65j50      p18f65j90      p18f65j94      p18f65k22      p18f65k80  
+    p18f65k90      
 \begin_inset Newline newline
 \end_inset
 
-p18f66j16      p18f66j50      p18f66j55      p18f66j60      p18f66j65  
-    p18f66j90      
+p18f66j10      p18f66j11      p18f66j15      p18f66j16      p18f66j50  
+    p18f66j55      
 \begin_inset Newline newline
 \end_inset
 
-p18f66j93      p18f66j94      p18f66j99      p18f66k22      p18f66k80  
-    p18f66k90      
+p18f66j60      p18f66j65      p18f66j90      p18f66j93      p18f66j94  
+    p18f66j99      
 \begin_inset Newline newline
 \end_inset
 
-p18f67j10      p18f67j11      p18f67j50      p18f67j60      p18f67j90  
-    p18f67j93      
+p18f66k22      p18f66k80      p18f66k90      p18f67j10      p18f67j11  
+    p18f67j50      
 \begin_inset Newline newline
 \end_inset
 
-p18f67j94      p18f67k22      p18f67k90      p18f83j11      p18f83j90  
-    p18f84j11      
+p18f67j60      p18f67j90      p18f67j93      p18f67j94      p18f67k22  
+    p18f67k90      
 \begin_inset Newline newline
 \end_inset
 
-p18f84j15      p18f84j90      p18f85j10      p18f85j11      p18f85j15  
-    p18f85j50      
+p18f83j11      p18f83j90      p18f84j11      p18f84j15      p18f84j90  
+    p18f85j10      
 \begin_inset Newline newline
 \end_inset
 
-p18f85j90      p18f85j94      p18f85k22      p18f85k90      p18f86j10  
-    p18f86j11      
+p18f85j11      p18f85j15      p18f85j50      p18f85j90      p18f85j94  
+    p18f85k22      
 \begin_inset Newline newline
 \end_inset
 
-p18f86j15      p18f86j16      p18f86j50      p18f86j55      p18f86j60  
-    p18f86j65      
+p18f85k90      p18f86j10      p18f86j11      p18f86j15      p18f86j16  
+    p18f86j50      
 \begin_inset Newline newline
 \end_inset
 
-p18f86j72      p18f86j90      p18f86j93      p18f86j94      p18f86j99  
-    p18f86k22      
+p18f86j55      p18f86j60      p18f86j65      p18f86j72      p18f86j90  
+    p18f86j93      
 \begin_inset Newline newline
 \end_inset
 
-p18f86k90      p18f87j10      p18f87j11      p18f87j50      p18f87j60  
-    p18f87j72      
+p18f86j94      p18f86j99      p18f86k22      p18f86k90      p18f87j10  
+    p18f87j11      
 \begin_inset Newline newline
 \end_inset
 
-p18f87j90      p18f87j93      p18f87j94      p18f87k22      p18f87k90  
-    p18f95j94      
+p18f87j50      p18f87j60      p18f87j72      p18f87j90      p18f87j93  
+    p18f87j94      
 \begin_inset Newline newline
 \end_inset
 
-p18f96j60      p18f96j65      p18f96j94      p18f96j99      p18f97j60  
-    p18f97j94      
+p18f87k22      p18f87k90      p18f95j94      p18f96j60      p18f96j65  
+    p18f96j94      
 \begin_inset Newline newline
 \end_inset
 
-p18f242        p18f248        p18f252        p18f258        p18f442    
-    p18f448        
+p18f96j99      p18f97j60      p18f97j94      p18f242        p18f248    
+    p18f252        
 \begin_inset Newline newline
 \end_inset
 
-p18f452        p18f458        p18f1220       p18f1230       p18f1320   
-    p18f1330       
+p18f258        p18f442        p18f448        p18f452        p18f458    
+    p18f1220       
 \begin_inset Newline newline
 \end_inset
 
-p18f2220       p18f2221       p18f2320       p18f2321       p18f2331   
-    p18f2410       
+p18f1230       p18f1320       p18f1330       p18f2220       p18f2221   
+    p18f2320       
 \begin_inset Newline newline
 \end_inset
 
-p18f2420       p18f2423       p18f2431       p18f2439       p18f2450   
-    p18f2455       
+p18f2321       p18f2331       p18f2410       p18f2420       p18f2423   
+    p18f2431       
 \begin_inset Newline newline
 \end_inset
 
-p18f2458       p18f2480       p18f2510       p18f2515       p18f2520   
-    p18f2523       
+p18f2439       p18f2450       p18f2455       p18f2458       p18f2480   
+    p18f2510       
 \begin_inset Newline newline
 \end_inset
 
-p18f2525       p18f2539       p18f2550       p18f2553       p18f2580   
-    p18f2585       
+p18f2515       p18f2520       p18f2523       p18f2525       p18f2539   
+    p18f2550       
 \begin_inset Newline newline
 \end_inset
 
-p18f2610       p18f2620       p18f2680       p18f2681       p18f2682   
-    p18f2685       
+p18f2553       p18f2580       p18f2585       p18f2610       p18f2620   
+    p18f2680       
 \begin_inset Newline newline
 \end_inset
 
-p18f4220       p18f4221       p18f4320       p18f4321       p18f4331   
-    p18f4410       
+p18f2681       p18f2682       p18f2685       p18f4220       p18f4221   
+    p18f4320       
 \begin_inset Newline newline
 \end_inset
 
-p18f4420       p18f4423       p18f4431       p18f4439       p18f4450   
-    p18f4455       
+p18f4321       p18f4331       p18f4410       p18f4420       p18f4423   
+    p18f4431       
 \begin_inset Newline newline
 \end_inset
 
-p18f4458       p18f4480       p18f4510       p18f4515       p18f4520   
-    p18f4523       
+p18f4439       p18f4450       p18f4455       p18f4458       p18f4480   
+    p18f4510       
 \begin_inset Newline newline
 \end_inset
 
-p18f4525       p18f4539       p18f4550       p18f4553       p18f4580   
-    p18f4585       
+p18f4515       p18f4520       p18f4523       p18f4525       p18f4539   
+    p18f4550       
 \begin_inset Newline newline
 \end_inset
 
-p18f4610       p18f4620       p18f4680       p18f4681       p18f4682   
-    p18f4685       
+p18f4553       p18f4580       p18f4585       p18f4610       p18f4620   
+    p18f4680       
 \begin_inset Newline newline
 \end_inset
 
-p18f6310       p18f6390       p18f6393       p18f6410       p18f6490   
-    p18f6493       
+p18f4681       p18f4682       p18f4685       p18f6310       p18f6390   
+    p18f6393       
 \begin_inset Newline newline
 \end_inset
 
-p18f6520       p18f6525       p18f6527       p18f6585       p18f6620   
-    p18f6621       
+p18f6410       p18f6490       p18f6493       p18f6520       p18f6525   
+    p18f6527       
 \begin_inset Newline newline
 \end_inset
 
-p18f6622       p18f6627       p18f6628       p18f6680       p18f6720   
-    p18f6722       
+p18f6585       p18f6620       p18f6621       p18f6622       p18f6627   
+    p18f6628       
 \begin_inset Newline newline
 \end_inset
 
-p18f6723       p18f8310       p18f8390       p18f8393       p18f8410   
-    p18f8490       
+p18f6680       p18f6720       p18f6722       p18f6723       p18f8310   
+    p18f8390       
 \begin_inset Newline newline
 \end_inset
 
-p18f8493       p18f8520       p18f8525       p18f8527       p18f8585   
-    p18f8620       
+p18f8393       p18f8410       p18f8490       p18f8493       p18f8520   
+    p18f8525       
 \begin_inset Newline newline
 \end_inset
 
-p18f8621       p18f8622       p18f8627       p18f8628       p18f8680   
-    p18f8720       
+p18f8527       p18f8585       p18f8620       p18f8621       p18f8622   
+    p18f8627       
 \begin_inset Newline newline
 \end_inset
 
-p18f8722       p18f8723       p18lf13k22     p18lf13k50     p18lf14k22 
-    p18lf14k50     
+p18f8628       p18f8680       p18f8720       p18f8722       p18f8723   
+    p18lf13k22     
 \begin_inset Newline newline
 \end_inset
 
-p18lf23k22     p18lf24j10     p18lf24j11     p18lf24j50     p18lf24k22 
-    p18lf24k40     
+p18lf13k50     p18lf14k22     p18lf14k50     p18lf23k22     p18lf24j10 
+    p18lf24j11     
 \begin_inset Newline newline
 \end_inset
 
-p18lf24k50     p18lf25j10     p18lf25j11     p18lf25j50     p18lf25k22 
-    p18lf25k40     
+p18lf24j50     p18lf24k22     p18lf24k40     p18lf24k50     p18lf25j10 
+    p18lf25j11     
 \begin_inset Newline newline
 \end_inset
 
-p18lf25k50     p18lf25k80     p18lf26j11     p18lf26j13     p18lf26j50 
-    p18lf26j53     
+p18lf25j50     p18lf25k22     p18lf25k40     p18lf25k50     p18lf25k80 
+    p18lf26j11     
 \begin_inset Newline newline
 \end_inset
 
-p18lf26k22     p18lf26k80     p18lf27j13     p18lf27j53     p18lf43k22 
-    p18lf44j10     
+p18lf26j13     p18lf26j50     p18lf26j53     p18lf26k22     p18lf26k40 
+    p18lf26k80     
 \begin_inset Newline newline
 \end_inset
 
-p18lf44j11     p18lf44j50     p18lf44k22     p18lf45j10     p18lf45j11 
-    p18lf45j50     
+p18lf27j13     p18lf27j53     p18lf43k22     p18lf44j10     p18lf44j11 
+    p18lf44j50     
 \begin_inset Newline newline
 \end_inset
 
-p18lf45k22     p18lf45k40     p18lf45k50     p18lf45k80     p18lf46j11 
-    p18lf46j13     
+p18lf44k22     p18lf45j10     p18lf45j11     p18lf45j50     p18lf45k22 
+    p18lf45k40     
 \begin_inset Newline newline
 \end_inset
 
-p18lf46j50     p18lf46j53     p18lf46k22     p18lf46k80     p18lf47j13 
-    p18lf47j53     
+p18lf45k50     p18lf45k80     p18lf46j11     p18lf46j13     p18lf46j50 
+    p18lf46j53     
+\begin_inset Newline newline
+\end_inset
+
+p18lf46k22     p18lf46k40     p18lf46k80     p18lf47j13     p18lf47j53 
+    p18lf47k40     
 \begin_inset Newline newline
 \end_inset
 
@@ -5102,7 +5112,7 @@ $ expands to the address of the instruction currently being assembled.
  it expands to the address the next instruction would occupy, since the
  assembler's idea of current address is incremented after an instruction
  is assembled.
-  $ may be manipulated just like any other number:
+ $ may be manipulated just like any other number:
 \end_layout
 
 \begin_layout LyX-Code

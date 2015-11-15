@@ -1,4 +1,8 @@
 2015-11-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * doc/gputils.lyx:
+    Updated with new devices based on the mplabx-3.15. (part 3)
+
+2015-11-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpcfg-table.c, libgputils/gpprocessor.c,
     libgputils/gpreg-table.c, header/*, lkr/*, configure.ac,
     configure:
