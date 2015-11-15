@@ -2083,8 +2083,8 @@ _WDTCWS_WDTCWS75 EQU  H'3DFF'    ; 75 percent window open time
 _WDTCWS_WDTCWS100 EQU  H'3EFF'    ; 100 percent window open time (Legacy WDT) 
 _WDTCWS_WDTCWSSW EQU  H'3FFF'    ; Software WDT window size control (WDTWS bits)
 
-_WDTCCS_LFINTOSC EQU  H'7FF'    ; 31.0 kHz LFINTOSC
-_WDTCCS_MFINTOSC EQU  H'FFF'    ; 31.25 kHz HFINTOSC (MFINTOSC)
+_WDTCCS_LFINTOSC EQU  H'07FF'    ; 31.0 kHz LFINTOSC
+_WDTCCS_MFINTOSC EQU  H'0FFF'    ; 31.25 kHz HFINTOSC (MFINTOSC)
 _WDTCCS_SWC      EQU  H'3FFF'    ; Software control, controlled by WDTCS bits
 
 ;----- DEVID Equates --------------------------------------------------

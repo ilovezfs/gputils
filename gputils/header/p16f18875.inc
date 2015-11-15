@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Aug 13 2015
+; Build date : Oct 21 2015
 ;  MPASM PIC16F18875 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -253,11 +253,9 @@ CCP5CAP          EQU  H'031F'
 
 ;-----Bank7------------------
 PWM6DCL          EQU  H'038C'
-PWM6PW           EQU  H'038C'
 PWM6DCH          EQU  H'038D'
 PWM6CON          EQU  H'038E'
 PWM7DCL          EQU  H'0390'
-PWM7PW           EQU  H'0390'
 PWM7DCH          EQU  H'0391'
 PWM7CON          EQU  H'0392'
 
@@ -440,6 +438,7 @@ MDCARH           EQU  H'089B'
 FVRCON           EQU  H'090C'
 DAC1CON0         EQU  H'090E'
 DAC1CON1         EQU  H'090F'
+ZCD1CON          EQU  H'091F'
 ZCDCON           EQU  H'091F'
 
 ;-----Bank19------------------
@@ -2237,11 +2236,35 @@ CCP5CTS2         EQU  H'0002'
 
 
 ;----- PWM6DCL Bits -----------------------------------------------------
+DC0              EQU  H'0006'
+DC1              EQU  H'0007'
+
+PWM6DC0          EQU  H'0006'
+PWM6DC1          EQU  H'0007'
+
 PWMPW0           EQU  H'0006'
 PWMPW1           EQU  H'0007'
 
 
 ;----- PWM6DCH Bits -----------------------------------------------------
+DC2              EQU  H'0000'
+DC3              EQU  H'0001'
+DC4              EQU  H'0002'
+DC5              EQU  H'0003'
+DC6              EQU  H'0004'
+DC7              EQU  H'0005'
+DC8              EQU  H'0006'
+DC9              EQU  H'0007'
+
+PWM6DC2          EQU  H'0000'
+PWM6DC3          EQU  H'0001'
+PWM6DC4          EQU  H'0002'
+PWM6DC5          EQU  H'0003'
+PWM6DC6          EQU  H'0004'
+PWM6DC7          EQU  H'0005'
+PWM6DC8          EQU  H'0006'
+PWM6DC9          EQU  H'0007'
+
 PWMPW2           EQU  H'0000'
 PWMPW3           EQU  H'0001'
 PWMPW4           EQU  H'0002'
@@ -2253,17 +2276,47 @@ PWMPW9           EQU  H'0007'
 
 
 ;----- PWM6CON Bits -----------------------------------------------------
+POL_PWM6CON      EQU  H'0004'
+OUT_PWM6CON      EQU  H'0005'
+OE               EQU  H'0006'
+EN               EQU  H'0007'
+
 PWM6POL          EQU  H'0004'
 PWM6OUT          EQU  H'0005'
+PWM6OE           EQU  H'0006'
 PWM6EN           EQU  H'0007'
 
 
 ;----- PWM7DCL Bits -----------------------------------------------------
+DC0              EQU  H'0006'
+DC1              EQU  H'0007'
+
+PWM7DC0          EQU  H'0006'
+PWM7DC1          EQU  H'0007'
+
 PWMPW0           EQU  H'0006'
 PWMPW1           EQU  H'0007'
 
 
 ;----- PWM7DCH Bits -----------------------------------------------------
+DC2              EQU  H'0000'
+DC3              EQU  H'0001'
+DC4              EQU  H'0002'
+DC5              EQU  H'0003'
+DC6              EQU  H'0004'
+DC7              EQU  H'0005'
+DC8              EQU  H'0006'
+DC9              EQU  H'0007'
+
+PWM7DC2          EQU  H'0000'
+PWM7DC3          EQU  H'0001'
+PWM7DC4          EQU  H'0002'
+PWM7DC5          EQU  H'0003'
+PWM7DC6          EQU  H'0004'
+PWM7DC7          EQU  H'0005'
+PWM7DC8          EQU  H'0006'
+PWM7DC9          EQU  H'0007'
+
 PWMPW2           EQU  H'0000'
 PWMPW3           EQU  H'0001'
 PWMPW4           EQU  H'0002'
@@ -2275,8 +2328,14 @@ PWMPW9           EQU  H'0007'
 
 
 ;----- PWM7CON Bits -----------------------------------------------------
+POL_PWM7CON      EQU  H'0004'
+OUT_PWM7CON      EQU  H'0005'
+OE               EQU  H'0006'
+EN               EQU  H'0007'
+
 PWM7POL          EQU  H'0004'
 PWM7OUT          EQU  H'0005'
+PWM7OE           EQU  H'0006'
 PWM7EN           EQU  H'0007'
 
 
@@ -3933,16 +3992,16 @@ HFTUN5           EQU  H'0005'
 HFFRQ0           EQU  H'0000'
 HFFRQ1           EQU  H'0001'
 HFFRQ2           EQU  H'0002'
-HFFRQ3           EQU  H'0003'
 
 
 ;----- CLKRCON Bits -----------------------------------------------------
+CLKREN           EQU  H'0007'
+
 CLKRDIV0         EQU  H'0000'
 CLKRDIV1         EQU  H'0001'
 CLKRDIV2         EQU  H'0002'
 CLKRDC0          EQU  H'0003'
 CLKRDC1          EQU  H'0004'
-CLKREN           EQU  H'0007'
 
 
 ;----- CLKRCLK Bits -----------------------------------------------------
@@ -3973,36 +4032,31 @@ MDMS2            EQU  H'0002'
 MDMS3            EQU  H'0003'
 MDMS4            EQU  H'0004'
 
-MDSRCS0          EQU  H'0000'
-MDSRCS1          EQU  H'0001'
-MDSRCS2          EQU  H'0002'
-MDSRCS3          EQU  H'0003'
-MDSRCS4          EQU  H'0004'
-
 
 ;----- MDCARL Bits -----------------------------------------------------
-MDCLS0           EQU  H'0000'
-MDCLS1           EQU  H'0001'
-MDCLS2           EQU  H'0002'
-MDCLS3           EQU  H'0003'
+MDCL0            EQU  H'0000'
+MDCL1            EQU  H'0001'
+MDCL2            EQU  H'0002'
+MDCL3            EQU  H'0003'
 
 
 ;----- MDCARH Bits -----------------------------------------------------
-MDCHS0           EQU  H'0000'
-MDCHS1           EQU  H'0001'
-MDCHS2           EQU  H'0002'
-MDCHS3           EQU  H'0003'
+MDCH0            EQU  H'0000'
+MDCH1            EQU  H'0001'
+MDCH2            EQU  H'0002'
+MDCH3            EQU  H'0003'
 
 
 ;----- FVRCON Bits -----------------------------------------------------
-ADFVR0           EQU  H'0000'
-ADFVR1           EQU  H'0001'
-CDAFVR0          EQU  H'0002'
-CDAFVR1          EQU  H'0003'
 TSRNG            EQU  H'0004'
 TSEN             EQU  H'0005'
 FVRRDY           EQU  H'0006'
 FVREN            EQU  H'0007'
+
+ADFVR0           EQU  H'0000'
+ADFVR1           EQU  H'0001'
+CDAFVR0          EQU  H'0002'
+CDAFVR1          EQU  H'0003'
 
 
 ;----- DAC1CON0 Bits -----------------------------------------------------
@@ -4030,12 +4084,44 @@ DAC1R3           EQU  H'0003'
 DAC1R4           EQU  H'0004'
 
 
-;----- ZCDCON Bits -----------------------------------------------------
+;----- ZCD1CON Bits -----------------------------------------------------
+INTN_ZCD1CON     EQU  H'0000'
+INTP_ZCD1CON     EQU  H'0001'
+POL_ZCD1CON      EQU  H'0004'
+OUT_ZCD1CON      EQU  H'0005'
+EN               EQU  H'0007'
+
+ZCD1INTN         EQU  H'0000'
+ZCD1INTP         EQU  H'0001'
+ZCD1POL          EQU  H'0004'
+ZCD1OUT          EQU  H'0005'
+ZCD1EN           EQU  H'0007'
+
 ZCDINTN          EQU  H'0000'
 ZCDINTP          EQU  H'0001'
 ZCDPOL           EQU  H'0004'
 ZCDOUT           EQU  H'0005'
-ZCDSEN           EQU  H'0007'
+ZCDEN            EQU  H'0007'
+
+
+;----- ZCDCON Bits -----------------------------------------------------
+INTN_ZCDCON      EQU  H'0000'
+INTP_ZCDCON      EQU  H'0001'
+POL_ZCDCON       EQU  H'0004'
+OUT_ZCDCON       EQU  H'0005'
+EN               EQU  H'0007'
+
+ZCD1INTN         EQU  H'0000'
+ZCD1INTP         EQU  H'0001'
+ZCD1POL          EQU  H'0004'
+ZCD1OUT          EQU  H'0005'
+ZCD1EN           EQU  H'0007'
+
+ZCDINTN          EQU  H'0000'
+ZCDINTP          EQU  H'0001'
+ZCDPOL           EQU  H'0004'
+ZCDOUT           EQU  H'0005'
+ZCDEN            EQU  H'0007'
 
 
 ;----- CMOUT Bits -----------------------------------------------------
@@ -6208,137 +6294,137 @@ Z_SHAD           EQU  H'0002'
 
 ; The following is an assignment of address values for all of the
 ; configuration registers for the purpose of table reads
-_CONFIG1         EQU  H'8007'
-_CONFIG2         EQU  H'8008'
-_CONFIG3         EQU  H'8009'
-_CONFIG4         EQU  H'800A'
-_CONFIG5         EQU  H'800B'
+_CONFIG1        EQU  H'8007'
+_CONFIG2        EQU  H'8008'
+_CONFIG3        EQU  H'8009'
+_CONFIG4        EQU  H'800A'
+_CONFIG5        EQU  H'800B'
 
 ;----- CONFIG1 Options --------------------------------------------------
-_FEXTOSC_LP      EQU  H'3FF8'    ; LP (crystal oscillator) optimized for 32.768kHz; PFM set to low power
-_FEXTOSC_XT      EQU  H'3FF9'    ; XT (crystal oscillator) above 500kHz, below 4MHz; PFM set to medium power
-_FEXTOSC_HS      EQU  H'3FFA'    ; HS (crystal oscillator) above 4MHz; PFM set to high power
-_FEXTOSC_Reserved EQU  H'3FFB'    ; Reserved
-_FEXTOSC_OFF     EQU  H'3FFC'    ; Oscillator not enabled
-_FEXTOSC_ECL     EQU  H'3FFD'    ; EC below 500kHz; PFM set to low power
-_FEXTOSC_ECM     EQU  H'3FFE'    ; EC for 500kHz to 8MHz; PFM set to medium power
-_FEXTOSC_ECH     EQU  H'3FFF'    ; EC above 8MHz; PFM set to high power
+_FEXTOSC_LP          EQU  H'3FF8'; LP (crystal oscillator) optimized for 32.768kHz; PFM set to low power
+_FEXTOSC_XT          EQU  H'3FF9'; XT (crystal oscillator) above 500kHz, below 4MHz; PFM set to medium power
+_FEXTOSC_HS          EQU  H'3FFA'; HS (crystal oscillator) above 4MHz; PFM set to high power
+_FEXTOSC_Reserved    EQU  H'3FFB'; Reserved
+_FEXTOSC_OFF         EQU  H'3FFC'; Oscillator not enabled
+_FEXTOSC_ECL         EQU  H'3FFD'; EC below 500kHz; PFM set to low power
+_FEXTOSC_ECM         EQU  H'3FFE'; EC for 500kHz to 8MHz; PFM set to medium power
+_FEXTOSC_ECH         EQU  H'3FFF'; EC above 8MHz; PFM set to high power
 
-_RSTOSC_HFINT32  EQU  H'3F8F'    ; HFINTOSC with OSCFRQ= 32 MHz and CDIV = 1:1
-_RSTOSC_HFINTPLL EQU  H'3F9F'    ; HFINTOSC with 2x PLL, with OSCFRQ = 16 MHz and CDIV = 1:1 (FOSC = 32 MHz)
-_RSTOSC_EXT4X    EQU  H'3FAF'    ; EXTOSC with 4x PLL, with EXTOSC operating per FEXTOSC bits
-_RSTOSC_Reserved EQU  H'3FBF'    ; Reserved
-_RSTOSC_SOSC     EQU  H'3FCF'    ; SOSC
-_RSTOSC_LFINT    EQU  H'3FDF'    ; LFINTOSC
-_RSTOSC_HFINT1   EQU  H'3FEF'    ; HFINTOSC (1MHz)
-_RSTOSC_EXT1X    EQU  H'3FFF'    ; EXTOSC operating per FEXTOSC bits
+_RSTOSC_HFINT32      EQU  H'3F8F'; HFINTOSC with OSCFRQ= 32 MHz and CDIV = 1:1
+_RSTOSC_HFINTPLL     EQU  H'3F9F'; HFINTOSC with 2x PLL, with OSCFRQ = 16 MHz and CDIV = 1:1 (FOSC = 32 MHz)
+_RSTOSC_EXT4X        EQU  H'3FAF'; EXTOSC with 4x PLL, with EXTOSC operating per FEXTOSC bits
+_RSTOSC_Reserved     EQU  H'3FBF'; Reserved
+_RSTOSC_SOSC         EQU  H'3FCF'; SOSC
+_RSTOSC_LFINT        EQU  H'3FDF'; LFINTOSC
+_RSTOSC_HFINT1       EQU  H'3FEF'; HFINTOSC (1MHz)
+_RSTOSC_EXT1X        EQU  H'3FFF'; EXTOSC operating per FEXTOSC bits
 
-_CLKOUTEN_ON     EQU  H'3EFF'    ; CLKOUT function is enabled; FOSC/4 clock appears at OSC2
-_CLKOUTEN_OFF    EQU  H'3FFF'    ; CLKOUT function is disabled; i/o or oscillator function on OSC2
+_CLKOUTEN_ON         EQU  H'3EFF'; CLKOUT function is enabled; FOSC/4 clock appears at OSC2
+_CLKOUTEN_OFF        EQU  H'3FFF'; CLKOUT function is disabled; i/o or oscillator function on OSC2
 
-_CSWEN_OFF       EQU  H'37FF'    ; The NOSC and NDIV bits cannot be changed by user software
-_CSWEN_ON        EQU  H'3FFF'    ; Writing to NOSC and NDIV is allowed
+_CSWEN_OFF           EQU  H'37FF'; The NOSC and NDIV bits cannot be changed by user software
+_CSWEN_ON            EQU  H'3FFF'; Writing to NOSC and NDIV is allowed
 
-_FCMEN_OFF       EQU  H'1FFF'    ; FSCM timer disabled
-_FCMEN_ON        EQU  H'3FFF'    ; FSCM timer enabled
+_FCMEN_OFF           EQU  H'1FFF'; FSCM timer disabled
+_FCMEN_ON            EQU  H'3FFF'; FSCM timer enabled
 
 ;----- CONFIG2 Options --------------------------------------------------
-_MCLRE_OFF       EQU  H'3FFE'    ; MCLR pin function is port defined function
-_MCLRE_ON        EQU  H'3FFF'    ; MCLR pin is Master Clear function
+_MCLRE_OFF           EQU  H'3FFE'; MCLR pin function is port defined function
+_MCLRE_ON            EQU  H'3FFF'; MCLR pin is Master Clear function
 
-_PWRTE_ON        EQU  H'3FFD'    ; PWRT enabled
-_PWRTE_OFF       EQU  H'3FFF'    ; PWRT disabled
+_PWRTE_ON            EQU  H'3FFD'; PWRT enabled
+_PWRTE_OFF           EQU  H'3FFF'; PWRT disabled
 
-_LPBOREN_ON      EQU  H'3FDF'    ; ULPBOR enabled
-_LPBOREN_OFF     EQU  H'3FFF'    ; ULPBOR disabled
+_LPBOREN_ON          EQU  H'3FDF'; ULPBOR enabled
+_LPBOREN_OFF         EQU  H'3FFF'; ULPBOR disabled
 
-_BOREN_OFF       EQU  H'3F3F'    ; Brown-out reset disabled
-_BOREN_SBOREN    EQU  H'3F7F'    ; Brown-out reset enabled according to SBOREN bit
-_BOREN_NSLEEP    EQU  H'3FBF'    ; Brown-out Reset enabled while running, disabled in sleep; SBOREN is ignored
-_BOREN_ON        EQU  H'3FFF'    ; Brown-out Reset Enabled, SBOREN bit is ignored
+_BOREN_OFF           EQU  H'3F3F'; Brown-out reset disabled
+_BOREN_SBOREN        EQU  H'3F7F'; Brown-out reset enabled according to SBOREN bit
+_BOREN_NSLEEP        EQU  H'3FBF'; Brown-out Reset enabled while running, disabled in sleep; SBOREN is ignored
+_BOREN_ON            EQU  H'3FFF'; Brown-out Reset Enabled, SBOREN bit is ignored
 
-_BORV_HI         EQU  H'3DFF'    ; Brown-out Reset Voltage (VBOR) is set to 2.7V
-_BORV_LO         EQU  H'3FFF'    ; Brown-out Reset Voltage (VBOR) set to 1.9V on LF, and 2.45V on F Devices
+_BORV_HI             EQU  H'3DFF'; Brown-out Reset Voltage (VBOR) is set to 2.7V
+_BORV_LO             EQU  H'3FFF'; Brown-out Reset Voltage (VBOR) set to 1.9V on LF, and 2.45V on F Devices
 
-_ZCDDIS_OFF      EQU  H'3BFF'    ; Zero-cross detect circuit is always enabled
-_ZCDDIS_ON       EQU  H'3FFF'    ; Zero-cross detect circuit is disabled at POR.
+_ZCDDIS_OFF          EQU  H'3BFF'; Zero-cross detect circuit is always enabled
+_ZCDDIS_ON           EQU  H'3FFF'; Zero-cross detect circuit is disabled at POR.
 
-_PPS1WAY_OFF     EQU  H'37FF'    ; The PPSLOCK bit can be set and cleared repeatedly by software
-_PPS1WAY_ON      EQU  H'3FFF'    ; The PPSLOCK bit can be cleared and set only once in software
+_PPS1WAY_OFF         EQU  H'37FF'; The PPSLOCK bit can be set and cleared repeatedly by software
+_PPS1WAY_ON          EQU  H'3FFF'; The PPSLOCK bit can be cleared and set only once in software
 
-_STVREN_OFF      EQU  H'2FFF'    ; Stack Overflow or Underflow will not cause a reset
-_STVREN_ON       EQU  H'3FFF'    ; Stack Overflow or Underflow will cause a reset
+_STVREN_OFF          EQU  H'2FFF'; Stack Overflow or Underflow will not cause a reset
+_STVREN_ON           EQU  H'3FFF'; Stack Overflow or Underflow will cause a reset
 
 ;----- CONFIG3 Options --------------------------------------------------
-_WDTCPS_WDTCPS_0 EQU  H'3FE0'    ; Divider ratio 1:32
-_WDTCPS_WDTCPS_1 EQU  H'3FE1'    ; Divider ratio 1:64
-_WDTCPS_WDTCPS_2 EQU  H'3FE2'    ; Divider ratio 1:128
-_WDTCPS_WDTCPS_3 EQU  H'3FE3'    ; Divider ratio 1:256
-_WDTCPS_WDTCPS_4 EQU  H'3FE4'    ; Divider ratio 1:512
-_WDTCPS_WDTCPS_5 EQU  H'3FE5'    ; Divider ratio 1:1024
-_WDTCPS_WDTCPS_6 EQU  H'3FE6'    ; Divider ratio 1:2048
-_WDTCPS_WDTCPS_7 EQU  H'3FE7'    ; Divider ratio 1:4096
-_WDTCPS_WDTCPS_8 EQU  H'3FE8'    ; Divider ratio 1:8192
-_WDTCPS_WDTCPS_9 EQU  H'3FE9'    ; Divider ratio 1:16384
-_WDTCPS_WDTCPS_10 EQU  H'3FEA'    ; Divider ratio 1:32768
-_WDTCPS_WDTCPS_11 EQU  H'3FEB'    ; Divider ratio 1:65536
-_WDTCPS_WDTCPS_12 EQU  H'3FEC'    ; Divider ratio 1:131072
-_WDTCPS_WDTCPS_13 EQU  H'3FED'    ; Divider ratio 1:262144
-_WDTCPS_WDTCPS_14 EQU  H'3FEE'    ; Divider ratio 1:524299
-_WDTCPS_WDTCPS_15 EQU  H'3FEF'    ; Divider ratio 1:1048576
-_WDTCPS_WDTCPS_16 EQU  H'3FF0'    ; Divider ratio 1:2097152
-_WDTCPS_WDTCPS_17 EQU  H'3FF1'    ; Divider ratio 1:4194304
-_WDTCPS_WDTCPS_18 EQU  H'3FF2'    ; Divider ratio 1:8388608
-_WDTCPS_WDTCPS_19 EQU  H'3FF3'    ; Divider ratio 1:32
-_WDTCPS_WDTCPS_20 EQU  H'3FF4'    ; Divider ratio 1:32
-_WDTCPS_WDTCPS_21 EQU  H'3FF5'    ; Divider ratio 1:32
-_WDTCPS_WDTCPS_22 EQU  H'3FF6'    ; Divider ratio 1:32
-_WDTCPS_WDTCPS_23 EQU  H'3FF7'    ; Divider ratio 1:32
-_WDTCPS_WDTCPS_24 EQU  H'3FF8'    ; Divider ratio 1:32
-_WDTCPS_WDTCPS_25 EQU  H'3FF9'    ; Divider ratio 1:32
-_WDTCPS_WDTCPS_26 EQU  H'3FFA'    ; Divider ratio 1:32
-_WDTCPS_WDTCPS_27 EQU  H'3FFB'    ; Divider ratio 1:32
-_WDTCPS_WDTCPS_28 EQU  H'3FFC'    ; Divider ratio 1:32
-_WDTCPS_WDTCPS_29 EQU  H'3FFD'    ; Divider ratio 1:32
-_WDTCPS_WDTCPS_30 EQU  H'3FFE'    ; Divider ratio 1:32
-_WDTCPS_WDTCPS_31 EQU  H'3FFF'    ; Divider ratio 1:65536; software control of WDTPS
+_WDTCPS_WDTCPS_0     EQU  H'3FE0'; Divider ratio 1:32
+_WDTCPS_WDTCPS_1     EQU  H'3FE1'; Divider ratio 1:64
+_WDTCPS_WDTCPS_2     EQU  H'3FE2'; Divider ratio 1:128
+_WDTCPS_WDTCPS_3     EQU  H'3FE3'; Divider ratio 1:256
+_WDTCPS_WDTCPS_4     EQU  H'3FE4'; Divider ratio 1:512
+_WDTCPS_WDTCPS_5     EQU  H'3FE5'; Divider ratio 1:1024
+_WDTCPS_WDTCPS_6     EQU  H'3FE6'; Divider ratio 1:2048
+_WDTCPS_WDTCPS_7     EQU  H'3FE7'; Divider ratio 1:4096
+_WDTCPS_WDTCPS_8     EQU  H'3FE8'; Divider ratio 1:8192
+_WDTCPS_WDTCPS_9     EQU  H'3FE9'; Divider ratio 1:16384
+_WDTCPS_WDTCPS_10    EQU  H'3FEA'; Divider ratio 1:32768
+_WDTCPS_WDTCPS_11    EQU  H'3FEB'; Divider ratio 1:65536
+_WDTCPS_WDTCPS_12    EQU  H'3FEC'; Divider ratio 1:131072
+_WDTCPS_WDTCPS_13    EQU  H'3FED'; Divider ratio 1:262144
+_WDTCPS_WDTCPS_14    EQU  H'3FEE'; Divider ratio 1:524299
+_WDTCPS_WDTCPS_15    EQU  H'3FEF'; Divider ratio 1:1048576
+_WDTCPS_WDTCPS_16    EQU  H'3FF0'; Divider ratio 1:2097152
+_WDTCPS_WDTCPS_17    EQU  H'3FF1'; Divider ratio 1:4194304
+_WDTCPS_WDTCPS_18    EQU  H'3FF2'; Divider ratio 1:8388608
+_WDTCPS_WDTCPS_19    EQU  H'3FF3'; Divider ratio 1:32
+_WDTCPS_WDTCPS_20    EQU  H'3FF4'; Divider ratio 1:32
+_WDTCPS_WDTCPS_21    EQU  H'3FF5'; Divider ratio 1:32
+_WDTCPS_WDTCPS_22    EQU  H'3FF6'; Divider ratio 1:32
+_WDTCPS_WDTCPS_23    EQU  H'3FF7'; Divider ratio 1:32
+_WDTCPS_WDTCPS_24    EQU  H'3FF8'; Divider ratio 1:32
+_WDTCPS_WDTCPS_25    EQU  H'3FF9'; Divider ratio 1:32
+_WDTCPS_WDTCPS_26    EQU  H'3FFA'; Divider ratio 1:32
+_WDTCPS_WDTCPS_27    EQU  H'3FFB'; Divider ratio 1:32
+_WDTCPS_WDTCPS_28    EQU  H'3FFC'; Divider ratio 1:32
+_WDTCPS_WDTCPS_29    EQU  H'3FFD'; Divider ratio 1:32
+_WDTCPS_WDTCPS_30    EQU  H'3FFE'; Divider ratio 1:32
+_WDTCPS_WDTCPS_31    EQU  H'3FFF'; Divider ratio 1:65536; software control of WDTPS
 
-_WDTE_OFF        EQU  H'3F9F'    ; WDT Disabled, SWDTEN is ignored
-_WDTE_SWDTEN     EQU  H'3FBF'    ; WDT enabled/disabled by SWDTEN bit in WDTCON0
-_WDTE_NSLEEP     EQU  H'3FDF'    ; WDT enabled while sleep=0, suspended when sleep=1; SWDTEN ignored
-_WDTE_ON         EQU  H'3FFF'    ; WDT enabled regardless of sleep; SWDTEN ignored
+_WDTE_OFF            EQU  H'3F9F'; WDT Disabled, SWDTEN is ignored
+_WDTE_SWDTEN         EQU  H'3FBF'; WDT enabled/disabled by SWDTEN bit in WDTCON0
+_WDTE_NSLEEP         EQU  H'3FDF'; WDT enabled while sleep=0, suspended when sleep=1; SWDTEN ignored
+_WDTE_ON             EQU  H'3FFF'; WDT enabled regardless of sleep; SWDTEN ignored
 
-_WDTCWS_WDTCWS_0 EQU  H'38FF'    ; window delay = 87.5 percent of time; no software control; keyed access required
-_WDTCWS_WDTCWS_1 EQU  H'39FF'    ; window delay = 75 percent of time; no software control; keyed access required
-_WDTCWS_WDTCWS_2 EQU  H'3AFF'    ; window delay = 62.5 percent of time; no software control; keyed access required
-_WDTCWS_WDTCWS_3 EQU  H'3BFF'    ; window delay = 50 percent of time; no software control; keyed access required
-_WDTCWS_WDTCWS_4 EQU  H'3CFF'    ; window delay = 37.5 percent of time; no software control; keyed access required
-_WDTCWS_WDTCWS_5 EQU  H'3DFF'    ; window delay = 25 percent of time; no software control; keyed access required
-_WDTCWS_WDTCWS_6 EQU  H'3EFF'    ; window always open (100%); no software control; keyed access required
-_WDTCWS_WDTCWS_7 EQU  H'3FFF'    ; window always open (100%); software control; keyed access not required
+_WDTCWS_WDTCWS_0     EQU  H'38FF'; window delay = 87.5 percent of time; no software control; keyed access required
+_WDTCWS_WDTCWS_1     EQU  H'39FF'; window delay = 75 percent of time; no software control; keyed access required
+_WDTCWS_WDTCWS_2     EQU  H'3AFF'; window delay = 62.5 percent of time; no software control; keyed access required
+_WDTCWS_WDTCWS_3     EQU  H'3BFF'; window delay = 50 percent of time; no software control; keyed access required
+_WDTCWS_WDTCWS_4     EQU  H'3CFF'; window delay = 37.5 percent of time; no software control; keyed access required
+_WDTCWS_WDTCWS_5     EQU  H'3DFF'; window delay = 25 percent of time; no software control; keyed access required
+_WDTCWS_WDTCWS_6     EQU  H'3EFF'; window always open (100%); no software control; keyed access required
+_WDTCWS_WDTCWS_7     EQU  H'3FFF'; window always open (100%); software control; keyed access not required
 
-_WDTCCS_LFINTOSC EQU  H'7FF'    ; WDT reference clock is the 31.0kHz LFINTOSC output
-_WDTCCS_HFINTOSC EQU  H'FFF'    ; WDT reference clock is the 31.25 kHz HFINTOSC
-_WDTCCS_SC       EQU  H'3FFF'    ; Software Control
+_WDTCCS_LFINTOSC     EQU  H'07FF'; WDT reference clock is the 31.0kHz LFINTOSC output
+_WDTCCS_HFINTOSC     EQU  H'0FFF'; WDT reference clock is the 31.25 kHz HFINTOSC
+_WDTCCS_SC           EQU  H'3FFF'; Software Control
 
 ;----- CONFIG4 Options --------------------------------------------------
-_WRT_ON          EQU  H'3FFC'    ; 0x0000 to 0x1FFF write protected
-_WRT_WRT_lower   EQU  H'3FFD'    ; 0x0000 to x0FFF write protected
-_WRT_WRT_upper   EQU  H'3FFE'    ; 0x0000 to 0x01FF write protected
-_WRT_OFF         EQU  H'3FFF'    ; Write protection off
+_WRT_ON              EQU  H'3FFC'; 0x0000 to 0x1FFF write protected
+_WRT_WRT_lower       EQU  H'3FFD'; 0x0000 to x0FFF write protected
+_WRT_WRT_upper       EQU  H'3FFE'; 0x0000 to 0x01FF write protected
+_WRT_OFF             EQU  H'3FFF'; Write protection off
 
-_SCANE_not_available EQU  H'2FFF'    ; Scanner module is not available for use
-_SCANE_available EQU  H'3FFF'    ; Scanner module is available for use
+_SCANE_not_available EQU  H'2FFF'; Scanner module is not available for use
+_SCANE_available     EQU  H'3FFF'; Scanner module is available for use
 
-_LVP_OFF         EQU  H'1FFF'    ; High Voltage on MCLR/Vpp must be used for programming
-_LVP_ON          EQU  H'3FFF'    ; Low Voltage programming enabled. MCLR/Vpp pin function is MCLR.
+_LVP_OFF             EQU  H'1FFF'; High Voltage on MCLR/Vpp must be used for programming
+_LVP_ON              EQU  H'3FFF'; Low Voltage programming enabled. MCLR/Vpp pin function is MCLR.
 
 ;----- CONFIG5 Options --------------------------------------------------
-_CP_ON           EQU  H'3FFE'    ; UserNVM code protection enabled
-_CP_OFF          EQU  H'3FFF'    ; UserNVM code protection disabled
+_CP_ON               EQU  H'3FFE'; UserNVM code protection enabled
+_CP_OFF              EQU  H'3FFF'; UserNVM code protection disabled
 
-_CPD_ON          EQU  H'3FFD'    ; DataNVM code protection enabled
-_CPD_OFF         EQU  H'3FFF'    ; DataNVM code protection disabled
+_CPD_ON              EQU  H'3FFD'; DataNVM code protection enabled
+_CPD_OFF             EQU  H'3FFF'; DataNVM code protection disabled
 
 ;----- DEVID Equates --------------------------------------------------
 _DEVID1          EQU  H'8006'

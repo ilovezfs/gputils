@@ -2776,6 +2776,9 @@ DC1              EQU  H'0007'
 PWM3DC0          EQU  H'0006'
 PWM3DC1          EQU  H'0007'
 
+PWMPW0           EQU  H'0006'
+PWMPW1           EQU  H'0007'
+
 
 ;----- PWM3DCH Bits -----------------------------------------------------
 DC2              EQU  H'0000'
@@ -2796,6 +2799,15 @@ PWM3DC7          EQU  H'0005'
 PWM3DC8          EQU  H'0006'
 PWM3DC9          EQU  H'0007'
 
+PWMPW2           EQU  H'0000'
+PWMPW3           EQU  H'0001'
+PWMPW4           EQU  H'0002'
+PWMPW5           EQU  H'0003'
+PWMPW6           EQU  H'0004'
+PWMPW7           EQU  H'0005'
+PWMPW8           EQU  H'0006'
+PWMPW9           EQU  H'0007'
+
 
 ;----- PWM3CON Bits -----------------------------------------------------
 POL_PWM3CON      EQU  H'0004'
@@ -2813,6 +2825,9 @@ DC1              EQU  H'0007'
 
 PWM4DC0          EQU  H'0006'
 PWM4DC1          EQU  H'0007'
+
+PWMPW0           EQU  H'0006'
+PWMPW1           EQU  H'0007'
 
 
 ;----- PWM4DCH Bits -----------------------------------------------------
@@ -2833,6 +2848,15 @@ PWM4DC6          EQU  H'0004'
 PWM4DC7          EQU  H'0005'
 PWM4DC8          EQU  H'0006'
 PWM4DC9          EQU  H'0007'
+
+PWMPW2           EQU  H'0000'
+PWMPW3           EQU  H'0001'
+PWMPW4           EQU  H'0002'
+PWMPW5           EQU  H'0003'
+PWMPW6           EQU  H'0004'
+PWMPW7           EQU  H'0005'
+PWMPW8           EQU  H'0006'
+PWMPW9           EQU  H'0007'
 
 
 ;----- PWM4CON Bits -----------------------------------------------------

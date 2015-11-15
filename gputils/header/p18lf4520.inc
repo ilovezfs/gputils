@@ -1374,8 +1374,8 @@ _BOREN_NOSLP_2L      EQU  H'FD'    ; Brown-out Reset enabled in hardware only an
 _BOREN_SBORDIS_2L    EQU  H'FF'    ; Brown-out Reset enabled in hardware only (SBOREN is disabled)
 
 _BORV_0_2L           EQU  H'E7'    ; Maximum setting
-_BORV_1_2L           EQU  H'EF'    ; 
-_BORV_2_2L           EQU  H'F7'    ; 
+_BORV_1_2L           EQU  H'EF'
+_BORV_2_2L           EQU  H'F7'
 _BORV_3_2L           EQU  H'FF'    ; Minimum setting
 
 ;----- CONFIG2H Options --------------------------------------------------
