@@ -133,6 +133,9 @@ endif
 ifdef __18F26K22
   include <p18f26k22.inc>
 endif
+ifdef __18F26K40
+  include <p18f26k40.inc>
+endif
 ifdef __18F26K80
   include <p18f26k80.inc>
 endif
@@ -205,6 +208,9 @@ endif
 ifdef __18F46K22
   include <p18f46k22.inc>
 endif
+ifdef __18F46K40
+  include <p18f46k40.inc>
+endif
 ifdef __18F46K80
   include <p18f46k80.inc>
 endif
@@ -213,6 +219,9 @@ ifdef __18F47J13
 endif
 ifdef __18F47J53
   include <p18f47j53.inc>
+endif
+ifdef __18F47K40
+  include <p18f47k40.inc>
 endif
 ifdef __18F63J11
   include <p18f63j11.inc>
@@ -862,6 +871,9 @@ endif
 ifdef __18LF26K22
   include <p18lf26k22.inc>
 endif
+ifdef __18LF26K40
+  include <p18lf26k40.inc>
+endif
 ifdef __18LF26K80
   include <p18lf26k80.inc>
 endif
@@ -922,6 +934,9 @@ endif
 ifdef __18LF46K22
   include <p18lf46k22.inc>
 endif
+ifdef __18LF46K40
+  include <p18lf46k40.inc>
+endif
 ifdef __18LF46K80
   include <p18lf46k80.inc>
 endif
@@ -930,6 +945,9 @@ ifdef __18LF47J13
 endif
 ifdef __18LF47J53
   include <p18lf47j53.inc>
+endif
+ifdef __18LF47K40
+  include <p18lf47k40.inc>
 endif
 ifdef __18LF65K80
   include <p18lf65k80.inc>

@@ -1,4 +1,8 @@
 2015-11-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/cfg-import.pl, tools/device-help.pl:
+	  Updated based on the mplabx-3.15.
+
+2015-11-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/cmp_gp_mp.sh:
 	  Updated the diff capabilities.
 
