@@ -1,3 +1,7 @@
+2015-11-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * libgputils/gpreg-table.c, header/*, lkr/*:
+    Updated based on the mplabx-3.15. (part 1)
+
 2015-11-10  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gputils/gplib.c:
     Fix a bug in the has_path() function.

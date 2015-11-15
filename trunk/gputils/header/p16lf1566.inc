@@ -1,7 +1,7 @@
         LIST
 
 ;==========================================================================
-; Build date : Aug 13 2015
+; Build date : Oct 21 2015
 ;  MPASM PIC16LF1566 processor include
 ; 
 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
@@ -1921,22 +1921,16 @@ Z_SHAD           EQU  H'0002'
        __BADRAM  H'020E'-H'020F'
        __BADRAM  H'028C'-H'029F'
        __BADRAM  H'030C'-H'031F'
-       __BADRAM  H'0330'-H'036F'
        __BADRAM  H'038C'-H'0390'
        __BADRAM  H'0394'-H'039F'
-       __BADRAM  H'03A0'-H'03EF'
        __BADRAM  H'040C'-H'0414'
        __BADRAM  H'0418'-H'041F'
-       __BADRAM  H'0420'-H'046F'
        __BADRAM  H'048C'-H'049F'
-       __BADRAM  H'04A0'-H'04EF'
        __BADRAM  H'050C'-H'051F'
-       __BADRAM  H'0520'-H'056F'
        __BADRAM  H'058C'-H'059F'
-       __BADRAM  H'05A0'-H'05EF'
        __BADRAM  H'060C'-H'0610'
        __BADRAM  H'0617'-H'061C'
-       __BADRAM  H'0620'-H'066F'
+       __BADRAM  H'0650'-H'066F'
        __BADRAM  H'068C'-H'0690'
        __BADRAM  H'0696'-H'069F'
        __BADRAM  H'06A0'-H'06EF'
@@ -1997,54 +1991,54 @@ Z_SHAD           EQU  H'0002'
 
 ; The following is an assignment of address values for all of the
 ; configuration registers for the purpose of table reads
-_CONFIG1         EQU  H'8007'
-_CONFIG2         EQU  H'8008'
+_CONFIG1        EQU  H'8007'
+_CONFIG2        EQU  H'8008'
 
 ;----- CONFIG1 Options --------------------------------------------------
-_FOSC_INTOSC     EQU  H'3FFC'    ; INTOSC oscillator: I/O function on CLKIN pin
-_FOSC_ECL        EQU  H'3FFD'    ; ECL, External Clock, Low Power Mode (0-0.5 MHz): device clock supplied to CLKIN pins
-_FOSC_ECM        EQU  H'3FFE'    ; ECM, External Clock, Medium Power Mode (0.5-4 MHz): device clock supplied to CLKIN pins
-_FOSC_ECH        EQU  H'3FFF'    ; ECH, External Clock, High Power Mode (4-20 MHz): device clock supplied to CLKIN pins
+_FOSC_INTOSC         EQU  H'3FFC'; INTOSC oscillator: I/O function on CLKIN pin
+_FOSC_ECL            EQU  H'3FFD'; ECL, External Clock, Low Power Mode (0-0.5 MHz): device clock supplied to CLKIN pins
+_FOSC_ECM            EQU  H'3FFE'; ECM, External Clock, Medium Power Mode (0.5-4 MHz): device clock supplied to CLKIN pins
+_FOSC_ECH            EQU  H'3FFF'; ECH, External Clock, High Power Mode (4-20 MHz): device clock supplied to CLKIN pins
 
-_WDTE_OFF        EQU  H'3FE7'    ; WDT disabled. SWDTEN bit is ignored.
-_WDTE_SWDTEN     EQU  H'3FEF'    ; WDT controlled by the SWDTEN bit in the WDTCON register
-_WDTE_NSLEEP     EQU  H'3FF7'    ; WDT enabled while running and disabled in Sleep. SWDTEN bit is ignored.
-_WDTE_ON         EQU  H'3FFF'    ; WDT enabled. SWDTEN bit is ignored.
+_WDTE_OFF            EQU  H'3FE7'; WDT disabled. SWDTEN bit is ignored.
+_WDTE_SWDTEN         EQU  H'3FEF'; WDT controlled by the SWDTEN bit in the WDTCON register
+_WDTE_NSLEEP         EQU  H'3FF7'; WDT enabled while running and disabled in Sleep. SWDTEN bit is ignored.
+_WDTE_ON             EQU  H'3FFF'; WDT enabled. SWDTEN bit is ignored.
 
-_PWRTE_ON        EQU  H'3FDF'    ; PWRT enabled
-_PWRTE_OFF       EQU  H'3FFF'    ; PWRT disabled
+_PWRTE_ON            EQU  H'3FDF'; PWRT enabled
+_PWRTE_OFF           EQU  H'3FFF'; PWRT disabled
 
-_MCLRE_OFF       EQU  H'3FBF'    ; MCLR/VPP pin function is digital input
-_MCLRE_ON        EQU  H'3FFF'    ; MCLR/VPP pin function is MCLR
+_MCLRE_OFF           EQU  H'3FBF'; MCLR/VPP pin function is digital input
+_MCLRE_ON            EQU  H'3FFF'; MCLR/VPP pin function is MCLR
 
-_CP_ON           EQU  H'3F7F'    ; Program memory code protection is enabled
-_CP_OFF          EQU  H'3FFF'    ; Program memory code protection is disabled
+_CP_ON               EQU  H'3F7F'; Program memory code protection is enabled
+_CP_OFF              EQU  H'3FFF'; Program memory code protection is disabled
 
-_BOREN_OFF       EQU  H'39FF'    ; Brown-out Reset disabled. SBOREN bit is ignored.
-_BOREN_SBODEN    EQU  H'3BFF'    ; Brown-out Reset controlled by the SBOREN bit in the BORCON register
-_BOREN_NSLEEP    EQU  H'3DFF'    ; Brown-out Reset enabled while running and disabled in Sleep. SBOREN bit is ignored.
-_BOREN_ON        EQU  H'3FFF'    ; Brown-out Reset enabled
+_BOREN_OFF           EQU  H'39FF'; Brown-out Reset disabled. SBOREN bit is ignored.
+_BOREN_SBODEN        EQU  H'3BFF'; Brown-out Reset controlled by the SBOREN bit in the BORCON register
+_BOREN_NSLEEP        EQU  H'3DFF'; Brown-out Reset enabled while running and disabled in Sleep. SBOREN bit is ignored.
+_BOREN_ON            EQU  H'3FFF'; Brown-out Reset enabled
 
-_CLKOUTEN_ON     EQU  H'37FF'    ; CLKOUT function is enabled on the CLKOUT pin
-_CLKOUTEN_OFF    EQU  H'3FFF'    ; CLKOUT function is disabled. I/O or oscillator function on the CLKOUT pin
+_CLKOUTEN_ON         EQU  H'37FF'; CLKOUT function is enabled on the CLKOUT pin
+_CLKOUTEN_OFF        EQU  H'3FFF'; CLKOUT function is disabled. I/O or oscillator function on the CLKOUT pin
 
 ;----- CONFIG2 Options --------------------------------------------------
-_WRT_ALL         EQU  H'3FFC'    ; 000h to FFFh write protected, no addresses may be modified by PMCON control
-_WRT_HALF        EQU  H'3FFD'    ; 000h to 7FFh write protected, 800h to FFFh may be modified by PMCON control
-_WRT_BOOT        EQU  H'3FFE'    ; 000h to 1FFh write protected, 200h to FFFh may be modified by PMCON control
-_WRT_OFF         EQU  H'3FFF'    ; Write protection off
+_WRT_ALL             EQU  H'3FFC'; 000h to FFFh write protected, no addresses may be modified by PMCON control
+_WRT_HALF            EQU  H'3FFD'; 000h to 7FFh write protected, 800h to FFFh may be modified by PMCON control
+_WRT_BOOT            EQU  H'3FFE'; 000h to 1FFh write protected, 200h to FFFh may be modified by PMCON control
+_WRT_OFF             EQU  H'3FFF'; Write protection off
 
-_STVREN_OFF      EQU  H'3DFF'    ; Stack Overflow or Underflow will not cause a Reset
-_STVREN_ON       EQU  H'3FFF'    ; Stack Overflow or Underflow will cause a Reset
+_STVREN_OFF          EQU  H'3DFF'; Stack Overflow or Underflow will not cause a Reset
+_STVREN_ON           EQU  H'3FFF'; Stack Overflow or Underflow will cause a Reset
 
-_BORV_HI         EQU  H'3BFF'    ; Brown-out Reset Voltage (Vbor), 2.7V trip point selected.
-_BORV_LO         EQU  H'3FFF'    ; Brown-out Reset Voltage (Vbor), 1.9V trip point selected.
+_BORV_HI             EQU  H'3BFF'; Brown-out Reset Voltage (Vbor), 2.7V trip point selected.
+_BORV_LO             EQU  H'3FFF'; Brown-out Reset Voltage (Vbor), 1.9V trip point selected.
 
-_LPBOR_ON        EQU  H'37FF'    ; Low-Power BOR is enabled
-_LPBOR_OFF       EQU  H'3FFF'    ; Low-Power BOR is disabled
+_LPBOR_ON            EQU  H'37FF'; Low-Power BOR is enabled
+_LPBOR_OFF           EQU  H'3FFF'; Low-Power BOR is disabled
 
-_LVP_OFF         EQU  H'1FFF'    ; High-voltage on MCLR/VPP must be used for programming
-_LVP_ON          EQU  H'3FFF'    ; Low-voltage programming enabled
+_LVP_OFF             EQU  H'1FFF'; High-voltage on MCLR/VPP must be used for programming
+_LVP_ON              EQU  H'3FFF'; Low-voltage programming enabled
 
 ;----- DEVID Equates --------------------------------------------------
 _DEVID1          EQU  H'8006'

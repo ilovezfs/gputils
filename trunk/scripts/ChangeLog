@@ -1,3 +1,7 @@
+2015-11-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/cmp_gp_mp.sh:
+	  Updated the diff capabilities.
+
 2015-11-08  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/cfg-import.pl, tools/device-help.pl:
 	  Added the missing DEBUG config option to these MCUs. 2.)
