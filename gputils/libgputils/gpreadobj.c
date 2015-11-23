@@ -103,14 +103,14 @@ gp_read_file(const char *filename)
     exit(1);
   }
 
-  file = (gp_binary_type *)malloc(sizeof(*file));
+  file = (gp_binary_type *)GP_Malloc(sizeof(*file));
 
   /* determine the size of the file */
   fstat(fileno(infile), &statbuf);
   file->size = statbuf.st_size;
 
   /* read the object file into memory */
-  file->file = (unsigned char *)malloc(file->size);
+  file->file = (unsigned char *)GP_Malloc(file->size);
   n = fread(file->file, 1, file->size, infile);
 
   if (n != file->size) {
@@ -256,13 +256,13 @@ _read_section_header(gp_object_type *object, gp_section_type *section,
   if (check_getl32(&file[0], data) == 0) {
     /* read name from the string table */
     offset = check_getl32(&file[4], data);
-    section->name = strdup(&string_table[offset]);
+    section->name = GP_Strdup(&string_table[offset]);
   }
   else {
     memcpy(buffer, &file[0], sizeof(buffer) - 1);
     /* the name can occupy all 8 chars without a null terminator */
     buffer[8] = '\0';
-    section->name = strdup(buffer);
+    section->name = GP_Strdup(buffer);
   }
 
   section->symbol = gp_coffgen_findsectionsymbol(object, section->name);
@@ -432,19 +432,19 @@ _read_aux(gp_object_type *object, int i, gp_aux_type *aux, int aux_type, const u
     case AUX_DIRECT:
       aux->_aux_symbol._aux_direct.command = file[0];
       aux->_aux_symbol._aux_direct.string =
-        strdup(&string_table[check_getl32(&file[4], data)]);
+        GP_Strdup(&string_table[check_getl32(&file[4], data)]);
       break;
 
     case AUX_FILE:
       aux->_aux_symbol._aux_file.filename =
-        strdup(&string_table[check_getl32(&file[0], data)]);
+        GP_Strdup(&string_table[check_getl32(&file[0], data)]);
       aux->_aux_symbol._aux_file.line_number = check_getl32(&file[4], data);
       aux->_aux_symbol._aux_file.flags = file[8];
       break;
 
     case AUX_IDENT:
       aux->_aux_symbol._aux_ident.string =
-        strdup(&string_table[check_getl32(&file[0], data)]);
+        GP_Strdup(&string_table[check_getl32(&file[0], data)]);
       break;
 
     case AUX_SCN:
@@ -491,13 +491,13 @@ _read_symbol(gp_object_type *object, int i, gp_symbol_type *symbol, const unsign
   if (check_getl32(&file[0], data) == 0) {
     /* read name from the string table */
     offset = check_getl32(&file[4], data);
-    symbol->name = strdup(&string_table[offset]);
+    symbol->name = GP_Strdup(&string_table[offset]);
   }
   else {
     memcpy(buffer, &file[0], 8);
     /* the name can occupy all 8 chars without a null terminator */
     buffer[8] = '\0';
-    symbol->name = strdup(buffer);
+    symbol->name = GP_Strdup(buffer);
   }
 
   file_off = 8;
@@ -569,7 +569,7 @@ _read_symtbl(gp_object_type *object, const unsigned char *file, gp_binary_type *
     string_table = (const char *)&file[object->symbol_ptr + (object->symbol_size * number)];
 
     /* setup lazy linking of symbol table indices */
-    lazy_linking = (struct lazy_linking_s *)calloc(number, sizeof(struct lazy_linking_s));
+    lazy_linking = (struct lazy_linking_s *)GP_Calloc(number, sizeof(struct lazy_linking_s));
 
     /* read the symbols */
     file = &file[object->symbol_ptr];
@@ -670,7 +670,7 @@ gp_convert_file(const char *filename, gp_binary_type *data)
 
   /* initialize object file */
   object = gp_coffgen_init();
-  object->filename = strdup(filename);
+  object->filename = GP_Strdup(filename);
 
   /* read the object */
   if (_read_file_header(object, data->file, data) != 0) {

@@ -322,7 +322,7 @@ emit_data(struct pnode *L, int char_shift, const char *name)
 static void
 enter_if(void)
 {
-  struct amode *new = malloc(sizeof(*new));
+  struct amode *new = GP_Malloc(sizeof(*new));
 
   new->mode = IN_THEN;
   new->prev = state.astack;
@@ -406,7 +406,7 @@ do_access_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strncpy(state.obj.new_sec_name, ".access_ovr", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".access_ovr", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_ACCESS | STYP_BSS | STYP_OVERLAY;
       break;
@@ -414,7 +414,7 @@ do_access_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strncpy(state.obj.new_sec_name, ".access_ovr", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".access_ovr", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_ACCESS | STYP_ABS | STYP_BSS | STYP_OVERLAY;
       break;
@@ -657,7 +657,7 @@ do_code(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_TEXT;
       break;
@@ -665,7 +665,7 @@ do_code(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
       state.obj.new_sec_flags = STYP_TEXT | STYP_ABS;
       break;
@@ -697,7 +697,7 @@ do_code_pack(gpasmVal r, const char *name, int arity, struct pnode *parms)
       switch (arity) {
       case 0:
         /* new relocatable section */
-        strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
+        gp_strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
         state.obj.new_sec_addr = 0;
         state.obj.new_sec_flags = STYP_TEXT | STYP_BPACK;
         break;
@@ -705,7 +705,7 @@ do_code_pack(gpasmVal r, const char *name, int arity, struct pnode *parms)
       case 1:
         /* new absolute section */
         p = HEAD(parms);
-        strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
+        gp_strncpy(state.obj.new_sec_name, ".code", sizeof(state.obj.new_sec_name));
         state.obj.new_sec_addr = gp_processor_org_to_byte(state.device.class, maybe_evaluate(p));
         state.obj.new_sec_flags = STYP_TEXT | STYP_ABS | STYP_BPACK;
         break;
@@ -798,7 +798,7 @@ find_conf_sec_mem(int ca)
 static MemBlock *
 add_conf_sec_mem(int ca, gp_boolean new_config)
 {
-  struct conf_mem_block_s *new = malloc(sizeof (struct conf_mem_block_s));
+  struct conf_mem_block_s *new = GP_Malloc(sizeof(struct conf_mem_block_s));
 
   new->addr = ((IS_PIC16_CORE || IS_PIC16E_CORE) && new_config) ? ca : (ca & ~1);
   new->m = i_memory_create();
@@ -2370,7 +2370,7 @@ do_idata(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strncpy(state.obj.new_sec_name, ".idata", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".idata", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_DATA;
       break;
@@ -2378,7 +2378,7 @@ do_idata(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strncpy(state.obj.new_sec_name, ".idata", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".idata", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_DATA | STYP_ABS;
       break;
@@ -2409,7 +2409,7 @@ do_idata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strncpy(state.obj.new_sec_name, ".idata_acs", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".idata_acs", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_DATA | STYP_ACCESS;
       break;
@@ -2417,7 +2417,7 @@ do_idata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strncpy(state.obj.new_sec_name, ".idata_acs", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".idata_acs", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_DATA | STYP_ABS | STYP_ACCESS;
       break;
@@ -2822,7 +2822,7 @@ do_include(gpasmVal r, const char *name, int arity, struct pnode *parms)
 
     if (p->tag == PTAG_STRING) {
       state.next_state = STATE_INCLUDE;
-      state.next_buffer.file = strdup(p->value.string);
+      state.next_buffer.file = GP_Strdup(p->value.string);
     }
     else {
       gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
@@ -3144,16 +3144,16 @@ do_maxrom(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_macro(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  struct macro_head *head = malloc(sizeof(*head));
+  struct macro_head *head = GP_Malloc(sizeof(*head));
 
   head->parms = parms;
   head->body = NULL;
-  head->defined = 0;
+  head->defined = false;
   /* Record data for the list, cod, and coff files. */
   head->line_number = state.src->line_number;
   head->file_symbol = state.src->file_symbol;
 
-  head->src_name = strdup(state.src->name);
+  head->src_name = GP_Strdup(state.src->name);
 
   state.lst.line.linetype = LTY_DIR;
 
@@ -3503,9 +3503,7 @@ do_subtitle(gpasmVal r, const char *name, int arity, struct pnode *parms)
     p = HEAD(parms);
 
     if (p->tag == PTAG_STRING) {
-#define LEN sizeof(state.lst.subtitle_name)
-      strncpy(state.lst.subtitle_name, p->value.string, LEN);
-#undef LEN
+      gp_strncpy(state.lst.subtitle_name, p->value.string, sizeof(state.lst.subtitle_name));
     }
     else {
       gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
@@ -3524,9 +3522,7 @@ do_title(gpasmVal r, const char *name, int arity, struct pnode *parms)
     struct pnode *p = HEAD(parms);
 
     if (p->tag == PTAG_STRING) {
-#define LEN sizeof(state.lst.title_name)
-      strncpy(state.lst.title_name, p->value.string, LEN);
-#undef LEN
+      gp_strncpy(state.lst.title_name, p->value.string, sizeof(state.lst.title_name));
     }
     else {
       gperror(GPE_ILLEGAL_ARGU, "Illegal argument.");
@@ -3595,7 +3591,7 @@ do_udata(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strncpy(state.obj.new_sec_name, ".udata", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".udata", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_BSS;
       break;
@@ -3603,7 +3599,7 @@ do_udata(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strncpy(state.obj.new_sec_name, ".udata", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".udata", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS;
       break;
@@ -3631,7 +3627,7 @@ do_udata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strncpy(state.obj.new_sec_name, ".udata_acs", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".udata_acs", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_BSS | STYP_ACCESS;
       break;
@@ -3639,7 +3635,7 @@ do_udata_acs(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strncpy(state.obj.new_sec_name, ".udata_acs", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".udata_acs", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_ACCESS;
       break;
@@ -3667,7 +3663,7 @@ do_udata_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strncpy(state.obj.new_sec_name, ".udata_ovr", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".udata_ovr", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_BSS | STYP_OVERLAY;
       break;
@@ -3675,7 +3671,7 @@ do_udata_ovr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strncpy(state.obj.new_sec_name, ".udata_ovr", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".udata_ovr", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_OVERLAY;
       break;
@@ -3703,7 +3699,7 @@ do_udata_shr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     switch (arity) {
     case 0:
       /* new relocatable section */
-      strncpy(state.obj.new_sec_name, ".udata_shr", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".udata_shr", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = 0;
       state.obj.new_sec_flags = STYP_BSS | STYP_SHARED;
       break;
@@ -3711,7 +3707,7 @@ do_udata_shr(gpasmVal r, const char *name, int arity, struct pnode *parms)
     case 1:
       /* new absolute section */
       p = HEAD(parms);
-      strncpy(state.obj.new_sec_name, ".udata_shr", sizeof(state.obj.new_sec_name));
+      gp_strncpy(state.obj.new_sec_name, ".udata_shr", sizeof(state.obj.new_sec_name));
       state.obj.new_sec_addr = maybe_evaluate(p);
       state.obj.new_sec_flags = STYP_BSS | STYP_ABS | STYP_SHARED;
       break;
@@ -3795,7 +3791,7 @@ do_variable(gpasmVal r, const char *name, int arity, struct pnode *parms)
 static gpasmVal
 do_while(gpasmVal r, const char *name, int arity, struct pnode *parms)
 {
-  struct macro_head *head = malloc(sizeof(*head));
+  struct macro_head *head = GP_Malloc(sizeof(*head));
 
   assert(state.while_depth == 0);
 
@@ -3807,7 +3803,7 @@ do_while(gpasmVal r, const char *name, int arity, struct pnode *parms)
   head->line_number = state.src->line_number;
   head->file_symbol = state.src->file_symbol;
 
-  head->src_name = strdup(state.src->name);
+  head->src_name = GP_Strdup(state.src->name);
 
   /* DON'T set up state.mac_head; this isn't a macro head. */
   state.while_head = head;
@@ -5422,7 +5418,7 @@ do_insn(const char *name, struct pnode *parms)
 
       /* Found the macro: execute it */
       if (asm_enabled()) {
-        if ((h->defined != 1) && (state.pass == 2)) {
+        if ((h->defined == false) && (state.pass == 2)) {
           gperror(GPE_UNKNOWN, "Forward references to macros are not allowed.");
         }
         else {

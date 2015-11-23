@@ -77,8 +77,8 @@ archive_append(gp_archive_type *file, char *name)
   struct archivelist *new;
 
   /* make the new entry */
-  new = (struct archivelist *)malloc(sizeof(*new));
-  new->name = strdup(name);
+  new = (struct archivelist *)GP_Malloc(sizeof(*new));
+  new->name = GP_Strdup(name);
   new->archive = file;
   new->next = NULL;
 
@@ -470,7 +470,7 @@ void
 gplink_add_path(const char *path)
 {
   if (state.numpaths < MAX_PATHS) {
-    state.paths[state.numpaths++] = strdup(path);
+    state.paths[state.numpaths++] = GP_Strdup(path);
   } else {
     gp_error("Too many -I paths.");
   }
@@ -659,8 +659,8 @@ process_args( int argc, char *argv[])
       {
         struct srcfns *fn;
 
-        fn = malloc(sizeof (struct srcfns));
-        fn->filename = strdup(optarg);
+        fn = GP_Malloc(sizeof(struct srcfns));
+        fn->filename = GP_Strdup(optarg);
         fn->next = NULL;
 
         if (state.srcfilenames == NULL) {
@@ -719,8 +719,8 @@ process_args( int argc, char *argv[])
     if ((pc != NULL) && (strcasecmp(pc, ".lkr") == 0)) {
       struct srcfns *fn;
 
-      fn = malloc(sizeof(struct srcfns));
-      fn->filename = strdup(argv[optind++]);
+      fn = GP_Malloc(sizeof(struct srcfns));
+      fn->filename = GP_Strdup(argv[optind++]);
       fn->next = NULL;
 
       if (state.srcfilenames == NULL) {
@@ -939,7 +939,7 @@ linker(void)
   gp_cofflink_patch(state.object);
 
   /* modify the executable object data */
-  state.object->filename = strdup(state.objfilename);
+  state.object->filename = GP_Strdup(state.objfilename);
   state.object->flags |= F_EXEC;
 
   if (state.objfile == OUT_NORMAL) {

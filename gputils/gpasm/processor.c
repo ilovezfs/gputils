@@ -67,7 +67,7 @@ void select_processor(const char *name)
             break;
           }
           else {
-            struct range_pair *new_pair = malloc(sizeof(struct range_pair));
+            struct range_pair *new_pair = GP_Malloc(sizeof(struct range_pair));
 
             new_pair->start = start;
             new_pair->end = end;

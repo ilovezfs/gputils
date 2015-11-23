@@ -80,7 +80,7 @@ swapword(unsigned int input)
 struct hex_data *
 readhex(const char *filename, MemBlock *m)
 {
-  struct hex_data *info = malloc(sizeof(*info));
+  struct hex_data *info = GP_Malloc(sizeof(*info));
   unsigned int length, address, type, data;
   int i;
   unsigned int page = 0;

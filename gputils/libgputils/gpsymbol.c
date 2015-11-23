@@ -68,7 +68,7 @@ static int compare_len(const char *s1, const char *s2, size_t n)
 struct symbol_table *push_symbol_table(struct symbol_table * table,
                                        gp_boolean case_insensitive)
 {
-  struct symbol_table *new = calloc(1, sizeof(struct symbol_table));
+  struct symbol_table *new = GP_Calloc(1, sizeof(struct symbol_table));
 
   new->case_insensitive = case_insensitive;
 
@@ -110,8 +110,8 @@ struct symbol *add_symbol(struct symbol_table *table, const char *name)
   }
 
   if (r == NULL) {     /* No match. */
-    r = malloc(sizeof(*r));
-    r->name = strdup(name);
+    r = GP_Malloc(sizeof(*r));
+    r->name = GP_Strdup(name);
     r->next = table->hash_table[index];
     r->annotation = NULL;
     table->hash_table[index] = r;

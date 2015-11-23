@@ -84,7 +84,7 @@ typedef union
 MemBlock *
 i_memory_create(void)
 {
-  return (MemBlock *)calloc(1, sizeof(MemBlock));
+  return (MemBlock *)GP_Calloc(1, sizeof(MemBlock));
 }
 
 /*----------------------------------------------------------------------*/
@@ -136,7 +136,7 @@ i_memory_new(MemBlock *m, MemBlock *mbp, unsigned int base_address)
   unsigned int base = (base_address >> I_MEM_BITS) & 0xffff;
 
   mbp->base   = base;
-  mbp->memory = (MemWord *)calloc(MAX_I_MEM, sizeof(MemWord));
+  mbp->memory = (MemWord *)GP_Calloc(MAX_I_MEM, sizeof(MemWord));
 
   do {
     if ((m->next == NULL) || (m->next->base > base)) {
@@ -261,7 +261,7 @@ static void
 i_memory_store_section_name(MemWord *mw, const char *name)
 {
   if ((name != NULL) && (*name != '\0')) {
-    mw->section_name = strdup(name);
+    mw->section_name = GP_Strdup(name);
   }
 }
 
@@ -271,7 +271,7 @@ static void
 i_memory_store_symbol_name(MemWord *mw, const char *name)
 {
   if ((name != NULL) && (*name != '\0')) {
-    mw->symbol_name = strdup(name);
+    mw->symbol_name = GP_Strdup(name);
   }
 }
 
@@ -305,7 +305,7 @@ b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value,
 
     if (m->base == block) {
       if (m->memory == NULL) {
-        m->memory = (MemWord *)calloc(MAX_I_MEM, sizeof(MemWord));
+        m->memory = (MemWord *)GP_Calloc(MAX_I_MEM, sizeof(MemWord));
       }
 
       w = &m->memory[offset];
@@ -326,7 +326,7 @@ b_memory_put(MemBlock *i_memory, unsigned int address, unsigned char value,
   /* Couldn't find an address to write this value. This must be
      the first time we've tried to write to high memory some place. */
 
-  m = i_memory_new(i_memory, (MemBlock *)malloc(sizeof(MemBlock)), address);
+  m = i_memory_new(i_memory, (MemBlock *)GP_Malloc(sizeof(MemBlock)), address);
   w = &m->memory[offset];
   w->data = value | BYTE_USED_MASK;
   i_memory_store_section_name(w, section_name);
@@ -574,7 +574,7 @@ b_memory_set_listed(MemBlock *m, unsigned int address, unsigned int n_bytes)
     while (m != NULL) {
       if (m->base == block) {
         if (m->memory == NULL) {
-          m->memory = (MemWord *)calloc(MAX_I_MEM, sizeof(MemWord));
+          m->memory = (MemWord *)GP_Calloc(MAX_I_MEM, sizeof(MemWord));
         }
 
         m->memory[address & I_MEM_MASK].data |= BYTE_LISTED_MASK;
@@ -694,7 +694,6 @@ b_memory_get_addr_type(const MemBlock *m, unsigned int address, const char **lab
 
   return 0;
 }
-
 /*----------------------------------------------------------------------*/
 
 gp_boolean

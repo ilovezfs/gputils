@@ -28,8 +28,7 @@ gp_coffgen_init(void)
   gp_object_type *object = NULL;
 
   /* allocate memory for the object file */
-  object = (gp_object_type *)malloc(sizeof(gp_object_type));
-  memset(object, 0, sizeof(gp_object_type));
+  object = (gp_object_type *)GP_Calloc(1, sizeof(gp_object_type));
 
   /* initialize the object */
   object->processor = gp_find_processor("generic");
@@ -70,10 +69,10 @@ gp_coffgen_newsection(const char *name, MemBlock *data)
   gp_section_type *new = NULL;
 
   /* allocate memory for the section */
-  new = (gp_section_type *)calloc(1, sizeof(gp_section_type));
+  new = (gp_section_type *)GP_Calloc(1, sizeof(gp_section_type));
 
   /* initialize section */
-  new->name = strdup(name);
+  new->name = GP_Strdup(name);
   new->data = (data != NULL) ? data : i_memory_create();
 
   return new;
@@ -181,7 +180,7 @@ gp_coffgen_addreloc(gp_section_type *section)
   gp_reloc_type *new = NULL;
 
   /* allocate memory for the relocation */
-  new = (gp_reloc_type *)calloc(1, sizeof(gp_reloc_type));
+  new = (gp_reloc_type *)GP_Calloc(1, sizeof(gp_reloc_type));
 
   if (section->relocations == NULL) {
     /* the list is empty */
@@ -203,8 +202,7 @@ gp_coffgen_addlinenum(gp_section_type *section)
   gp_linenum_type *new = NULL;
 
   /* allocate memory for the relocation */
-  new = (gp_linenum_type *)malloc(sizeof(gp_linenum_type));
-  memset(new, 0, sizeof(gp_linenum_type));
+  new = (gp_linenum_type *)GP_Calloc(1, sizeof(gp_linenum_type));
 
   if (section->line_numbers == NULL) {
     /* the list is empty */
@@ -305,7 +303,7 @@ gp_coffgen_addaux(gp_object_type *object, gp_symbol_type *symbol)
   gp_aux_type *list = NULL;
 
   /* allocate memory for the auxiliary symbol */
-  new = (gp_aux_type *)calloc(1, sizeof(gp_aux_type));
+  new = (gp_aux_type *)GP_Calloc(1, sizeof(gp_aux_type));
 
   if (symbol->aux_list == NULL) {
     /* the list is empty */
@@ -332,7 +330,7 @@ gp_coffgen_addsymbol(gp_object_type *object)
   gp_symbol_type *new = NULL;
 
   /* allocate memory for the symbol */
-  new = (gp_symbol_type *)calloc(1, sizeof(gp_symbol_type));
+  new = (gp_symbol_type *)GP_Calloc(1, sizeof(gp_symbol_type));
   new->number = object->num_symbols;
 
   if (object->symbols == NULL) {
@@ -467,7 +465,7 @@ gp_coffgen_blocksec(unsigned int number)
   }
 
   /* allocate memory for the sections */
-  new = (gp_section_type *)calloc(number, sizeof(gp_section_type));
+  new = (gp_section_type *)GP_Calloc(number, sizeof(gp_section_type));
 
   /* don't process the last entry */
   number--;
@@ -497,7 +495,7 @@ gp_coffgen_blockrel(unsigned int number)
   }
 
   /* allocate memory for the relocations */
-  new = (gp_reloc_type *)calloc(number, sizeof(gp_reloc_type));
+  new = (gp_reloc_type *)GP_Calloc(number, sizeof(gp_reloc_type));
 
   /* don't process the last entry */
   number--;
@@ -526,7 +524,7 @@ gp_coffgen_blockline(unsigned int number)
   }
 
   /* allocate memory for the symbol */
-  new = (gp_linenum_type *)calloc(number, sizeof(gp_linenum_type));
+  new = (gp_linenum_type *)GP_Calloc(number, sizeof(gp_linenum_type));
 
   /* don't process the last entry */
   number--;
@@ -556,7 +554,7 @@ gp_coffgen_blocksym(unsigned int number)
   }
 
   /* allocate memory for the symbols */
-  new = (gp_symbol_type *)calloc(sizeof(*new) * number, sizeof(gp_symbol_type));
+  new = (gp_symbol_type *)GP_Calloc(sizeof(*new) * number, sizeof(gp_symbol_type));
 
   /* don't process the last entry */
   number--;
@@ -587,7 +585,7 @@ gp_coffgen_blockaux(unsigned int number)
   }
 
   /* allocate memory for the symbols */
-  new = (gp_aux_type *)calloc(sizeof(*new) * number, sizeof(gp_aux_type));
+  new = (gp_aux_type *)GP_Calloc(sizeof(*new) * number, sizeof(gp_aux_type));
 
   /* don't process the last entry */
   number--;

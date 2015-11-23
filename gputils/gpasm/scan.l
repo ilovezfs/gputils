@@ -66,8 +66,8 @@ enum identtype {
   ID_OPCODES
   };
 
-int force_decimal; /* Used to force radix to decimal for some directives. */
-int force_ident;   /* Used to force numbers to identifiers for processor names. */
+gp_boolean force_decimal; /* Used to force radix to decimal for some directives. */
+gp_boolean force_ident;   /* Used to force numbers to identifiers for processor names. */
 
 static enum identtype identify(const char *);
 static int found_eof(void);
@@ -184,7 +184,7 @@ cblock                   {
                            return CBLOCK;
                          }
 errorlevel               {
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            return ERRORLEVEL;
                          }
 endc                     {
@@ -210,7 +210,7 @@ fill[ \t]*\(             {
                            return IDENT_BRACKET;
                          }
 <defargs>{IDENT}         {
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            return IDENTIFIER;
                          }
 <defargs>\)              {
@@ -220,12 +220,12 @@ fill[ \t]*\(             {
                          }
 <define>{IDENT}          {
                            BEGIN(definition);
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            return IDENTIFIER;
                          }
 upper                    {
                            if (force_ident) {
-                             yylval.s = strdup(yytext);
+                             yylval.s = GP_Strdup(yytext);
                              return IDENTIFIER;
                            }
                            else {
@@ -235,7 +235,7 @@ upper                    {
                          }
 high                     {
                            if (force_ident) {
-                             yylval.s = strdup(yytext);
+                             yylval.s = GP_Strdup(yytext);
                              return IDENTIFIER;
                            }
                            else {
@@ -245,7 +245,7 @@ high                     {
                          }
 low                      {
                            if (force_ident) {
-                             yylval.s = strdup(yytext);
+                             yylval.s = GP_Strdup(yytext);
                              return IDENTIFIER;
                            }
                            else {
@@ -254,66 +254,66 @@ low                      {
                            }
                          }
 list                     {
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            return LIST;
                          }
 config                   {
-                           force_ident = 1;
-                           yylval.s = strdup(yytext);
+                           force_ident = true;
+                           yylval.s = GP_Strdup(yytext);
                            return IDENTIFIER;
                          }
 processor                {
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            return PROCESSOR;
                          }
 #?if                     {
                            /* #if and if can appear in column 1 */
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            return IDENTIFIER;
                          }
 #?else                   {
                            /* #else and else can appear in column 1 */
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            return IDENTIFIER;
                          }
 #?endif                  {
                            /* #endif and endif can appear in column 1 */
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            return IDENTIFIER;
                          }
 #?ifdef                  {
                            /* #ifdef and ifdef can appear in column 1 */
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            return IDENTIFIER;
                          }
 #?ifndef                 {
                            /* #ifndef and ifndef can appear in column 1 */
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            return IDENTIFIER;
                          }
 #undefine                {
                            /* #undefine can appear in column 1 */
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            return IDENTIFIER;
                          }
 "."line                  {
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            return DEBUG_LINE;
                          }
 ^{IDENT}:?               {
-                           int has_collon = 0;
+                           gp_boolean has_colon = false;
                            struct symbol *sym;
                            struct macro_head *h;
 
                            if (yytext[strlen(yytext) - 1] == ':') {
                              yytext[strlen(yytext) - 1] = '\0';
-                             has_collon = 1;
+                             has_colon = true;
                            }
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            switch (identify(yytext)) {
                              case ID_DIRECTIVES:
                                gpvwarning(GPW_DIR_COLUMN_ONE, NULL, yytext);
-                               if (has_collon) {
+                               if (has_colon) {
                                  gpverror(GPE_BADCHAR, NULL, ':');
                                }
                                return IDENTIFIER;
@@ -332,7 +332,7 @@ processor                {
                                }
                                else {
                                  gpvwarning(GPW_MACRO_COLUMN_ONE, NULL, yytext);
-                                 if (has_collon) {
+                                 if (has_colon) {
                                    gpverror(GPE_BADCHAR, NULL, ':');
                                  }
                                  return IDENTIFIER;
@@ -341,7 +341,7 @@ processor                {
 
                              case ID_OPCODES:
                                gpvwarning(GPW_OP_COLUMN_ONE, NULL, yytext);
-                               if (has_collon)
+                               if (has_colon)
                                  gpverror(GPE_BADCHAR, NULL, ':');
                                return IDENTIFIER;
                                break;
@@ -358,7 +358,7 @@ processor                {
                              /* Macro invocation */
                              BEGIN(macpar);
                            }
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            return IDENTIFIER;
                          }
 0x{NUMCHAR}+             {
@@ -367,7 +367,7 @@ processor                {
                          }
 {NUMCHAR}+b              {
                            if (force_ident) {
-                             yylval.s = strdup(yytext);
+                             yylval.s = GP_Strdup(yytext);
                              return IDENTIFIER;
                            }
                            else if (state.radix == 16) {
@@ -387,7 +387,7 @@ b'-?{NUMCHAR}+'          {
                          }
 {NUMCHAR}+[oq]           {
                            if (force_ident) {
-                             yylval.s = strdup(yytext);
+                             yylval.s = GP_Strdup(yytext);
                              return IDENTIFIER;
                            }
                            else {
@@ -403,7 +403,7 @@ b'-?{NUMCHAR}+'          {
                          }
 {NUMCHAR}+d              {
                            if (force_ident) {
-                             yylval.s = strdup(yytext);
+                             yylval.s = GP_Strdup(yytext);
                              return IDENTIFIER;
                            }
                            else if (state.radix == 16) {
@@ -427,7 +427,7 @@ d'-?[0-9]+'              {
                          }
 {NUMCHAR}+h              {
                            if (force_ident) {
-                             yylval.s = strdup(yytext);
+                             yylval.s = GP_Strdup(yytext);
                              return IDENTIFIER;
                            }
                            else {
@@ -443,7 +443,7 @@ h'-?{NUMCHAR}+'          {
                          }
 {NUMCHAR}+               {
                            if (force_ident) {
-                             yylval.s = strdup(yytext);
+                             yylval.s = GP_Strdup(yytext);
                              return IDENTIFIER;
                            } 
                            else if (force_decimal) {
@@ -484,7 +484,7 @@ a'{STR_QCHAR}'           {
                          }
 <bquote>[^ \t<>";\r\n]+  {
                            /* unquoted (special-case) string */
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            BEGIN(INITIAL);
                            return STRING;
                          }
@@ -497,7 +497,7 @@ a'{STR_QCHAR}'           {
 <definition,lnquote>[^ \t;\r\n]+([ \t]+[^ \t;\r\n]+)* {
                            /* full-line (special-case) string */
                            /* must begin and end with non-whitespace */
-                           yylval.s = strdup(yytext);
+                           yylval.s = GP_Strdup(yytext);
                            BEGIN(INITIAL);
                            return STRING;
                          }
@@ -530,17 +530,19 @@ a'{STR_QCHAR}'           {
 
 <INITIAL,bquote,lnquote,definition,defargs,macpar>[ \t\r]*
 <macpar>.                {
-#define CHUNCK  64
-                           int len = CHUNCK;
-                           char *buf = malloc(len);
+#define CHUNK  64
+                           static gp_boolean emit_comma = false;
+
+                           int len = CHUNK;
+                           char *buf = GP_Malloc(len);
                            int i = 0;
                            int c = yytext[0];
-                           static int emit_comma = 0;
-                           int prev_esc = 0, state = 0;
+                           gp_boolean prev_esc = false;
+                           int state = 0;
 
                            if (emit_comma) {
                              unput(c);
-                             emit_comma = 0;
+                             emit_comma = false;
                              yylval.i = ',';
                              return ',';
                            }
@@ -553,20 +555,20 @@ a'{STR_QCHAR}'           {
                            for (; ; ) {
                              switch (c) {
                              case ',':
-                               if (0 != state) {
+                               if (state != 0) {
                                  goto no_esc;
                                }
 
-                               emit_comma = 1;
+                               emit_comma = true;
                                goto skip_trailing;
 
                              case ';':
-                               if (0 != state) {
+                               if (state != 0) {
                                  goto no_esc;
                                }
 
                                /* eat the rest of line */
-                               while (EOF != (c = input()) && '\n' != c)
+                               while ((c = input() != EOF) && (c != '\n'))
                                  ;
                                /* fall through */
                              case '\n':
@@ -590,27 +592,27 @@ a'{STR_QCHAR}'           {
                              case '"':
                              case '\'':
                                /* escaping out of string doesn't have any special meaning */
-                               if ((0 == state) || ((0 != state) && !prev_esc)) {
-                                 state = (0 == state) ? c : ((state == c) ? 0 : state);
+                               if ((state == 0) || ((state != 0) && !prev_esc)) {
+                                 state = (state == 0) ? c : ((state == c) ? 0 : state);
                                }
                                /* fall through */
                              default:
                              no_esc:
-                               prev_esc = 0;
+                               prev_esc = false;
                                break;
                              }
 
                              buf[i++] = c;
                              if (len <= i) {
-                               len += CHUNCK;
+                               len += CHUNK;
                                buf = realloc(buf, len);
                              }
                              c = input();
                            }
                          }
 <*>[\n]                  {
-                           force_decimal = 0;
-                           force_ident = 0;
+                           force_decimal = false;
+                           force_ident = false;
                            BEGIN(INITIAL);  /* switch to INITIAL state */
                            return yytext[0];
                          }
@@ -634,17 +636,17 @@ search_paths(struct source_context *new, const char *name)
     new->f = fopen(tryname, "rt");
 
     if (new->f != NULL) {
-      new->name = strdup(tryname);
+      new->name = GP_Strdup(tryname);
       break;
     }
   }
 }
 
 void
-open_src(const char *name, int isinclude)
+open_src(const char *name, gp_boolean isinclude)
 {
   extern FILE *yyin;
-  struct source_context *new = calloc(1, sizeof(struct source_context));
+  struct source_context *new = GP_Calloc(1, sizeof(struct source_context));
 
   if (state.src != NULL) {
     state.src->yybuf = YY_CURRENT_BUFFER;
@@ -653,15 +655,14 @@ open_src(const char *name, int isinclude)
   new->f = fopen(name, "rt");
 
   if (new->f != NULL) {
-    new->name = strdup(name);
+    new->name = GP_Strdup(name);
   }
   else if (isinclude && (strchr(name, PATH_CHAR) == 0)) {
-    /* If include file and no PATH_CHAR in name, try searching include
-       path. */
+    /* If include file and no PATH_CHAR in name, try searching include path. */
     search_paths(new, name);
 
     if (new->f == NULL) {
-      /* We didn't find a match so check for lower case.  This is mainly for
+      /* We didn't find a match so check for lower case. This is mainly for
          Microchip examples and some includes in which filenames were written
          without regard to case. */
       char *lower_case_name = gp_lower_case(name);
@@ -708,8 +709,8 @@ open_src(const char *name, int isinclude)
 
     if (!isinclude) {
       /* it is the top level file so initialize the lexer */
-      force_decimal = 0;
-      force_ident = 0;
+      force_decimal = false;
+      force_ident = false;
     }
     state.src->last_char_is_nl = true;
     state.found_end = 0;
@@ -717,7 +718,7 @@ open_src(const char *name, int isinclude)
 }
 
 void
-execute_macro(struct macro_head *h, int is_while)
+execute_macro(struct macro_head *h, gp_boolean is_while)
 {
   struct source_context *new = calloc(1, sizeof(struct source_context));
 
@@ -727,7 +728,7 @@ execute_macro(struct macro_head *h, int is_while)
   state.src->astack = state.astack;
 
   /* create new source_context */
-  new->name = strdup(h->src_name);
+  new->name = GP_Strdup(h->src_name);
   new->type = (is_while) ? SRC_WHILE : SRC_MACRO;
 
   new->line_number = h->line_number + 1;

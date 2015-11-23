@@ -118,7 +118,7 @@ SYM     [a-zA-Z_][a-zA-Z0-9_]*
 
 <sect_name>{SYM} {
         BEGIN(sect_end);
-        yylval.string = strdup(yytext);
+        yylval.string = GP_Strdup(yytext);
         return SECTION;
         }
 
@@ -153,7 +153,7 @@ SYM     [a-zA-Z_][a-zA-Z0-9_]*
 
 <type_name>{SYM} {
         BEGIN(type_start);
-        yylval.string = strdup(yytext);
+        yylval.string = GP_Strdup(yytext);
         return TYPE;
         }
 
@@ -241,7 +241,7 @@ SYM     [a-zA-Z_][a-zA-Z0-9_]*
         }
 
 {SYM}   {
-        yylval.string = strdup(yytext);
+        yylval.string = GP_Strdup(yytext);
         return SYMBOL;
         }
 

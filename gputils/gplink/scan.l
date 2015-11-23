@@ -135,7 +135,7 @@ lkrpath                 {
                           return FI;
                         }
 error([ \t].*)?         {
-                          yylval.s = strdup(yytext);
+                          yylval.s = GP_Strdup(yytext);
                           return ERROR;
                         }
 [0-9]+                  {
@@ -157,7 +157,7 @@ error([ \t].*)?         {
                           return NUMBER;
                         }
 {SYM}                   {
-                          yylval.s = strdup(yytext);
+                          yylval.s = GP_Strdup(yytext);
                           return SYMBOL;
                         }
 [ \t\r]*
@@ -187,7 +187,7 @@ static void bad_char(char *character)
 void open_src(const char *name, int isinclude)
 {
   extern FILE *yyin;
-  struct source_context *new = malloc(sizeof(*new));
+  struct source_context *new = GP_Malloc(sizeof(*new));
 
   if (state.src != NULL) {
     state.src->yybuf = YY_CURRENT_BUFFER;
@@ -196,7 +196,7 @@ void open_src(const char *name, int isinclude)
   new->f = fopen(name, "rt");
 
   if (new->f != NULL) {
-    new->name = strdup(name);
+    new->name = GP_Strdup(name);
   }
   else if(isinclude && (strchr(name, PATH_CHAR) == 0)) {
     /* If include file and no "/" in name, try searching include path */
@@ -209,7 +209,7 @@ void open_src(const char *name, int isinclude)
       new->f = fopen(tryname, "rt");
 
       if (new->f != NULL) {
-        new->name = strdup(tryname);
+        new->name = GP_Strdup(tryname);
         break;
       }
     }

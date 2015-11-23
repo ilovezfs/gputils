@@ -52,13 +52,13 @@ gp_init(void)
 
   #ifndef HAVE_DOS_BASED_FILE_SYSTEM
     if (gp_header_path == NULL) {
-      gp_header_path = strdup(HEADER_PATH);
+      gp_header_path = GP_Strdup(HEADER_PATH);
     }
     if (gp_lkr_path == NULL) {
-      gp_lkr_path = strdup(LKR_PATH);
+      gp_lkr_path = GP_Strdup(LKR_PATH);
     }
     if (gp_lib_path == NULL) {
-      gp_lib_path = strdup(LIB_PATH);
+      gp_lib_path = GP_Strdup(LIB_PATH);
     }
   #endif
 
@@ -77,10 +77,8 @@ gp_init(void)
 void 
 gp_fputl16(short data, FILE *fp) 
 {
-  fputc(data & 255, fp);
-  fputc((data >> 8) & 255, fp);
-
-  return;
+  fputc(data & 0xff, fp);
+  fputc((data >> 8) & 0xff, fp);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -88,12 +86,10 @@ gp_fputl16(short data, FILE *fp)
 void 
 gp_fputl32(long data, FILE *fp) 
 {
-  fputc(data & 255, fp);
-  fputc((data >> 8) & 255, fp);
-  fputc((data >> 16) & 255, fp);
-  fputc((data >> 24) & 255, fp);
-
-  return;
+  fputc(data & 0xff, fp);
+  fputc((data >> 8) & 0xff, fp);
+  fputc((data >> 16) & 0xff, fp);
+  fputc((data >> 24) & 0xff, fp);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -101,14 +97,12 @@ gp_fputl32(long data, FILE *fp)
 void
 gp_fputvar(const void *data_, int number, FILE *fp)
 {
-  const unsigned char *data = data_;
+  const unsigned char *data = (const unsigned char *)data_;
   int i;
   
   for (i = 0; i < number; i++) {
     fputc(data[i], fp);
   }
-
-  return;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -119,7 +113,7 @@ gp_getl16(const unsigned char *addr)
   short value;
   
   value  = addr[0];
-  value |= addr[1] << 8;
+  value |= (short)addr[1] << 8;
   
   return value;
 }
@@ -129,7 +123,7 @@ gp_getl16(const unsigned char *addr)
 unsigned short 
 gp_getu16(const unsigned char *addr)
 {
-  return (unsigned short) gp_getl16(addr);
+  return (unsigned short)gp_getl16(addr);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -140,9 +134,9 @@ gp_getl32(const unsigned char *addr)
   long value;
 
   value  = addr[0];
-  value |= addr[1] << 8;
-  value |= addr[2] << 16;
-  value |= addr[3] << 24;
+  value |= (long)addr[1] << 8;
+  value |= (long)addr[2] << 16;
+  value |= (long)addr[3] << 24;
 
   return value;
 }
@@ -150,7 +144,7 @@ gp_getl32(const unsigned char *addr)
 /*------------------------------------------------------------------------------------------------*/
 
 void 
-gp_putl16(unsigned char *addr, short data)
+gp_putl16(unsigned char *addr, unsigned short data)
 {
   addr[1] = (data >> 8) & 0xff;
   addr[0] = data & 0xff;
@@ -159,7 +153,7 @@ gp_putl16(unsigned char *addr, short data)
 /*------------------------------------------------------------------------------------------------*/
 
 void 
-gp_putl32(unsigned char *addr, long data)
+gp_putl32(unsigned char *addr, unsigned long data)
 {
   addr[0] = data & 0xff;
   addr[1] = (data >> 8)  & 0xff;
@@ -187,7 +181,7 @@ gp_getb32(const unsigned char *addr)
 /*------------------------------------------------------------------------------------------------*/
 
 void 
-gp_putb32(unsigned char *addr, long data)
+gp_putb32(unsigned char *addr, unsigned long data)
 {
   addr[0] = (data >> 24) & 0xff;
   addr[1] = (data >> 16) & 0xff;
@@ -201,18 +195,82 @@ void
 gp_date_string(char *buffer, size_t sizeof_buffer)
 {
   time_t now;
-  struct tm *now_tm;
+  const struct tm *now_tm;
 
   time(&now);
   now_tm = localtime(&now);
-  snprintf(buffer, sizeof_buffer,
-           "%d-%d-%d  %02d:%02d:%02d",
-           now_tm->tm_mon + 1,
-           now_tm->tm_mday,
-           1900 + now_tm->tm_year,
-           now_tm->tm_hour,
-           now_tm->tm_min,
-           now_tm->tm_sec);
+  if (now_tm != NULL) {
+    snprintf(buffer, sizeof_buffer,
+             "%d-%d-%d  %02d:%02d:%02d",
+             now_tm->tm_mon + 1,
+             now_tm->tm_mday,
+             1900 + now_tm->tm_year,
+             now_tm->tm_hour,
+             now_tm->tm_min,
+             now_tm->tm_sec);
+  } else if (sizeof_buffer > 0) {
+    buffer[0] = '\0';
+  }
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void *
+gp_malloc(size_t Size, const char *File, size_t Line, const char *Func)
+{
+  void *m;
+
+  if (Size == 0) {
+    return NULL;
+  }
+
+  if ((m = malloc(Size)) == NULL) {
+    fprintf(stderr, "%s() -- Could not allocate %zu bytes of memory. {%s.LINE-%zu, %s()}\n",
+            __func__, Size, File, Line, Func);
+    exit(1);
+  }
+
+  return m;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+void *
+gp_calloc(size_t Nmemb, size_t Size, const char *File, size_t Line, const char *Func)
+{
+  void *m;
+
+  if ((Nmemb == 0) || (Size == 0)) {
+    return NULL;
+  }
+
+  if ((m = calloc(Nmemb, Size)) == NULL) {
+    fprintf(stderr, "%s() -- Could not allocate %zu bytes of memory. {%s.LINE-%zu, %s()}\n",
+            __func__, Nmemb * Size, File, Line, Func);
+    exit(1);
+  }
+
+  return m;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+char *
+gp_strdup(const char *String, const char *File, size_t Line, const char *Func)
+{
+  char *s;
+
+  if (String == NULL) {
+    return NULL;
+  }
+
+  if ((s = strdup(String)) == NULL) {
+    fprintf(stderr, "%s(\"%s\") -- Could not allocate string {%s.LINE-%zu, %s()}, error: %s.\n",
+            String, File, Line, Func, strerror(errno));
+    exit(1);
+  }
+
+  return s;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -220,13 +278,14 @@ gp_date_string(char *buffer, size_t sizeof_buffer)
 char *
 gp_lower_case(const char *name)
 {
+  char ch;
   char *new;
   char *ptr;
 
-  ptr = new = strdup(name);
+  ptr = new = GP_Strdup(name);
 
-  while (*ptr != '\0') {
-    *ptr = tolower(*ptr);
+  while ((ch = *ptr) != '\0') {
+    *ptr = tolower(ch);
     ptr++;
   }
 
@@ -238,13 +297,14 @@ gp_lower_case(const char *name)
 char *
 gp_upper_case(const char *name)
 {
+  char ch;
   char *new;
   char *ptr;
 
-  ptr = new = strdup(name);
+  ptr = new = GP_Strdup(name);
 
-  while (*ptr != '\0') {
-    *ptr = toupper(*ptr);
+  while ((ch = *ptr) != '\0') {
+    *ptr = toupper(ch);
     ptr++;
   }
 
@@ -254,7 +314,31 @@ gp_upper_case(const char *name)
 /*------------------------------------------------------------------------------------------------*/
 
 char *
-gp_stptoupper(char *Dest, const char *Src, unsigned int Maxlen)
+gp_strncpy(char *Dest, const char *Src, size_t Maxlen)
+{
+  char ch;
+
+  if ((Dest == NULL) || (Src == NULL) || (Maxlen == 0)) {
+    return NULL;
+  }
+
+  do {
+    if (--Maxlen == 0) {
+      *Dest = '\0';
+      break;
+    }
+
+    ch = *Src++;
+    *Dest++ = ch;
+  } while (ch != '\0');
+
+  return Dest;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+char *
+gp_stptoupper(char *Dest, const char *Src, size_t Maxlen)
 {
   char ch;
 
@@ -278,7 +362,8 @@ gp_stptoupper(char *Dest, const char *Src, unsigned int Maxlen)
 /*------------------------------------------------------------------------------------------------*/
 
 size_t
-gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t Aligned_to_length) {
+gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t Aligned_to_length)
+{
   size_t len;
 
   if ((Current_length < (Buffer_length - 1)) && (Aligned_to_length > Current_length)) {
@@ -299,7 +384,8 @@ gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t 
 /*------------------------------------------------------------------------------------------------*/
 
 size_t
-gp_exclamation(char *Buffer, size_t Buffer_length, size_t Current_length, const char *Format, ...) {
+gp_exclamation(char *Buffer, size_t Buffer_length, size_t Current_length, const char *Format, ...)
+{
   size_t l;
   size_t length;
   va_list(ap);
@@ -320,7 +406,7 @@ gp_list_make(void)
 {
   gp_linked_list *new;
 
-  new = malloc(sizeof(*new));
+  new = GP_Malloc(sizeof(*new));
   new->annotation = NULL;
   new->prev = NULL;
   new->next = NULL;
@@ -361,22 +447,18 @@ gp_absolute_path(char *file_name)
   char *file_ptr;
   int num_chars;
 
-  num_chars = GetFullPathName(file_name,
-                              FILE_BUFFER_SIZE,
-                              file_buffer,
-                              &file_ptr);
+  num_chars = GetFullPathName(file_name, FILE_BUFFER_SIZE, file_buffer, &file_ptr);
   if (num_chars == 0) {
     gp_error("Can't fetch full path of %s.", file_name);
     return file_name;
   } else {
-    return strdup(file_buffer);
+    return GP_Strdup(file_buffer);
   }
 #else
   #ifdef HAVE_REALPATH
   char *resolved_name;
 
   resolved_name = realpath(file_name, NULL);
-
   if (resolved_name == NULL) {
     gp_error("Can't fetch full path of %s.", file_name);
     return file_name;

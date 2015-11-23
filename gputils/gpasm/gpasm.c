@@ -502,7 +502,7 @@ add_path(const char *path)
   }
 
   if (state.path_num < MAX_PATHS) {
-    state.paths[state.path_num++] = strdup(path);
+    state.paths[state.path_num++] = GP_Strdup(path);
   }
   else {
     fprintf(stderr, "Too many -I paths.\n");
@@ -604,7 +604,7 @@ process_args(int argc, char *argv[])
         struct symbol *sym;
         char *lhs, *rhs;
 
-        lhs = strdup(optarg);
+        lhs = GP_Strdup(optarg);
         rhs = strchr(lhs, '=');
 
         if (rhs != NULL) {
@@ -737,8 +737,8 @@ process_args(int argc, char *argv[])
       break;
 
     case 'o':
-      strncpy(state.objfilename, optarg, sizeof(state.objfilename));
-      strncpy(state.basefilename, optarg, sizeof(state.basefilename));
+      gp_strncpy(state.objfilename, optarg, sizeof(state.objfilename));
+      gp_strncpy(state.basefilename, optarg, sizeof(state.basefilename));
       pc = strrchr(state.basefilename, '.');
 
       if (pc != NULL) {
@@ -939,7 +939,7 @@ assemble(void)
   state.c_memory = state.i_memory = i_memory_create();
 
   if (state.basefilename[0] == '\0') {
-    strncpy(state.basefilename, state.srcfilename, sizeof(state.basefilename));
+    gp_strncpy(state.basefilename, state.srcfilename, sizeof(state.basefilename));
     pc = strrchr(state.basefilename, '.');
 
     if (pc != NULL) {
@@ -963,7 +963,7 @@ assemble(void)
   }
 
   state.pass = 1;
-  open_src(state.srcfilename, 0);
+  open_src(state.srcfilename, false);
   yyparse();
   yylex_destroy();
 
@@ -1016,7 +1016,7 @@ assemble(void)
     state.cmd_line.processor = true;
   }
 
-  open_src(state.srcfilename, 0);
+  open_src(state.srcfilename, false);
   yydebug = (!gp_debug_disable) ? 1 : 0;
   yyparse();
 

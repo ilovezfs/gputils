@@ -151,7 +151,7 @@ gp_make_hash_table(gp_object_type *Object) {
     current = current->next;
   }
 
-  table = (gp_hash_type *)calloc(num_symbols, sizeof(gp_hash_type));
+  table = (gp_hash_type *)GP_Calloc(num_symbols, sizeof(gp_hash_type));
 
   if (table == NULL) {
     return NULL;

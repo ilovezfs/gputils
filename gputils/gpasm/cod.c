@@ -32,12 +32,10 @@ static DirBlockInfo *main_dir;
 static DirBlockInfo *
 new_dir_block(void)
 {
-  DirBlockInfo *dir = malloc(sizeof (DirBlockInfo));
-  assert(dir);
   /* initialize eveything to zero */
-  memset(dir, 0, sizeof (DirBlockInfo));
-  gp_putl16(&dir->dir[COD_DIR_CODTYPE], 1);
+  DirBlockInfo *dir = GP_Calloc(1, sizeof(DirBlockInfo));
 
+  gp_putl16(&dir->dir[COD_DIR_CODTYPE], 1);
   return dir;
 }
 

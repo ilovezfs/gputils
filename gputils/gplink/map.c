@@ -107,8 +107,8 @@ _write_sections(void)
   long i;
 
   /* Some malloc implementations return NULL for malloc(0) */
-  section_list = malloc(sizeof(gp_section_type *) * state.object->num_sections);
-  if (!section_list && state.object->num_sections > 0) {
+  section_list = GP_Malloc(sizeof(gp_section_type *) * state.object->num_sections);
+  if ((section_list == NULL) && (state.object->num_sections > 0)) {
     fprintf(stderr, "Error: Out of memory.\n");
     exit(1);
   }
@@ -221,7 +221,7 @@ push_file(struct file_stack *stack, gp_symbol_type *symbol)
   struct file_stack *new;
 
   /* allocate memory for the new stack */
-  new = (struct file_stack *)malloc(sizeof(*new));
+  new = (struct file_stack *)GP_Malloc(sizeof(*new));
 
   new->previous = stack;
   new->symbol = symbol;
@@ -270,8 +270,7 @@ _write_symbols(void)
   struct file_stack *stack = NULL;
   gp_symbol_type *symbol = NULL;
 
-  syms = malloc(sizeof(struct syms_s) * state.object->num_symbols);
-  assert(syms);
+  syms = GP_Malloc(sizeof(struct syms_s) * state.object->num_symbols);
 
   symbol = state.object->symbols;
   num_syms = 0;

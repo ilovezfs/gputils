@@ -33,7 +33,7 @@ void coff_close_section(void);
 gp_symbol_type *coff_add_sym(const char *name, int value, enum gpasmValTypes type);
 void coff_reloc(int symbol, short offset, enum gpasmValTypes type);
 void coff_linenum(int emitted);
-gp_symbol_type *coff_add_filesym(const char *name, int isinclude);
+gp_symbol_type *coff_add_filesym(const char *name, gp_boolean isinclude);
 void coff_add_eofsym(void);
 void coff_add_listsym(void);
 void coff_add_nolistsym(void);

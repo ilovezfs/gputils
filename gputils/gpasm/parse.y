@@ -120,7 +120,7 @@ int yylex(void);
 
 static struct pnode *mk_pnode(enum pnode_tag tag)
 {
-  struct pnode *new = malloc(sizeof(*new));
+  struct pnode *new = (struct pnode *)GP_Malloc(sizeof(struct pnode));
 
   new->tag = tag;
   return new;
@@ -235,7 +235,7 @@ void next_line(int value)
 
       if (state.mac_body != NULL) {
         /* Empty macro. */
-        state.mac_body->src_line = strdup(state.src->mac_body->src_line);
+        state.mac_body->src_line = GP_Strdup(state.src->mac_body->src_line);
       }
     }
 
@@ -257,7 +257,7 @@ void next_line(int value)
       state.lst.line.linetype = LTY_NONE;
 
       if (state.mac_body != NULL) {
-        state.mac_body->src_line = strdup(state.src->curr_src_line.line);
+        state.mac_body->src_line = GP_Strdup(state.src->curr_src_line.line);
       }
     }
 
@@ -265,7 +265,7 @@ void next_line(int value)
       /* includes have to be evaluated here and not in the following
        * switch statetems so that the errors are reported correctly */
       state.src->line_number++;
-      open_src(state.next_buffer.file, 1);
+      open_src(state.next_buffer.file, true);
       free(state.next_buffer.file);
     }
   }
@@ -280,7 +280,7 @@ void next_line(int value)
       state.src->line_number++;
       /* push the label for local directive */
       state.stTop = push_macro_symbol_table(state.stTop);
-      execute_macro(state.next_buffer.macro, 0);
+      execute_macro(state.next_buffer.macro, false);
       break;
 
     case STATE_SECTION:
@@ -293,7 +293,7 @@ void next_line(int value)
 
     case STATE_WHILE:
       state.src->line_number++;
-      execute_macro(state.next_buffer.macro, 1);
+      execute_macro(state.next_buffer.macro, true);
       break;
 
     case STATE_INCLUDE:
@@ -495,7 +495,7 @@ line:
 
           if (asm_enabled()) {
             if (state.mac_head != NULL) {
-              /* This is a macro definition.  Set it up */
+              /* This is a macro definition. Set it up */
               struct symbol *mac;
               struct macro_head *h = NULL;
 
@@ -504,8 +504,7 @@ line:
                 h = get_symbol_annotation(mac);
               }
 
-              /* It's not an error if macro was defined on pass 1 and
-                 we're in pass 2. */
+              /* It's not an error if macro was defined on pass 1 and we're in pass 2. */
               if ((h != NULL) && !((h->pass == 1) && (state.pass == 2))) {
                 gpverror(GPE_DUPLICATE_MACRO, NULL);
               } else {
@@ -521,7 +520,7 @@ line:
 
               /* The macro is defined so allow calls. */
               if (state.pass == 2) {
-                h->defined = 1;
+                h->defined = true;
               }
 
               state.mac_head = NULL;
@@ -529,7 +528,7 @@ line:
               /* Outside a macro definition, just define the label. */
               switch (state.lst.line.linetype) {
               case LTY_SEC:
-                strncpy(state.obj.new_sec_name, $1, 78);
+                gp_strncpy(state.obj.new_sec_name, $1, sizeof(state.obj.new_sec_name));
                 break;
 
               case LTY_SET:
@@ -571,8 +570,8 @@ line:
         |
         statement
         {
-          if (state.mac_head) {
-            /* This is a macro definition, but the label was missing */
+          if (state.mac_head != NULL) {
+            /* This is a macro definition, but the label was missing. */
             state.mac_head = NULL;
             gpverror(GPE_NO_MACRO_NAME, NULL);
           } else {
@@ -626,11 +625,11 @@ statement:
           }
         }
         |
-        PROCESSOR { force_ident = 1; }
+        PROCESSOR { force_ident = true; }
         IDENTIFIER '\n'
         {
           $$ = do_or_append_insn($1, mk_list(mk_symbol($3), NULL));
-          force_ident = 0;
+          force_ident = false;
         }
         |
         LIST '\n'
@@ -638,18 +637,18 @@ statement:
           $$ = do_or_append_insn($1, NULL);
         }
         |
-        LIST { force_decimal = 1; }
+        LIST { force_decimal = true; }
         list_block '\n'
         {
           $$ = do_or_append_insn($1, $3);
-          force_decimal = 0;
+          force_decimal = false;
         }
         |
-        decimal_ops { force_decimal = 1; }
+        decimal_ops { force_decimal = true; }
         parameter_list '\n'
         {
           $$ = do_or_append_insn($1, $3);
-          force_decimal = 0;
+          force_decimal = false;
         }
         |
         DEFINE IDENTIFIER STRING '\n'
@@ -1089,13 +1088,13 @@ list_expr:
         IDENTIFIER
         {
           if ((strcasecmp($1, "p") == 0) || (strcasecmp($1, "pe") == 0)) {
-            force_ident = 1;
+            force_ident = true;
           }
         }
         e9op e8
         {
           $$ = mk_2op($3, mk_symbol($1), $4);
-          force_ident = 0;
+          force_ident = false;
         }
         |
         e8

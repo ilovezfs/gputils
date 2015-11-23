@@ -139,7 +139,7 @@ void add_script_macro(const char *name, long value)
   val = get_symbol_annotation(sym);
 
   if (val == NULL) {
-    val = malloc(sizeof value);
+    val = GP_Malloc(sizeof value);
     annotate_symbol(sym, val);
   }
 
@@ -220,14 +220,14 @@ static int do_logsec(const char *name, enum section_type type, struct pnode *par
         case ID_RAM:
           if (enforce_simple(p->value.binop.p1)) {
             found_ram = true;
-            section_name = strdup(p->value.binop.p1->value.symbol);
+            section_name = GP_Strdup(p->value.binop.p1->value.symbol);
           }
           break;
 
         case ID_ROM:
           if (enforce_simple(p->value.binop.p1)) {
             found_rom = true;
-            section_name = strdup(p->value.binop.p1->value.symbol);
+            section_name = GP_Strdup(p->value.binop.p1->value.symbol);
           }
           break;
 
@@ -363,7 +363,7 @@ static int do_secdef(const char *name, enum section_type type, struct pnode *par
                 script_error("bad shadow symbol", lhs);
               }
               else {
-                char *shsym = (char *)malloc(end - begin + 1);
+                char *shsym = (char *)GP_Malloc(end - begin + 1);
 
                 memcpy(shsym, begin, end - begin);
                 shsym[end - begin] = '\0';
@@ -414,8 +414,7 @@ static int do_secdef(const char *name, enum section_type type, struct pnode *par
 
     if (sym == NULL) {
       sym = add_symbol(state.section.definition, section_name);
-      section_def = (struct linker_section *)malloc(sizeof(struct linker_section));
-      memset(section_def, 0, sizeof(struct linker_section));
+      section_def = (struct linker_section *)GP_Calloc(1, sizeof(struct linker_section));
       annotate_symbol(sym, section_def);
 
       switch (type) {
@@ -523,7 +522,7 @@ static int do_stack(const char *name, enum section_type type, struct pnode *parm
 
         case ID_RAM:
           if (enforce_simple(p->value.binop.p1)) {
-            ram_name = strdup(p->value.binop.p1->value.symbol);
+            ram_name = GP_Strdup(p->value.binop.p1->value.symbol);
           }
           break;
 
@@ -544,7 +543,7 @@ static int do_stack(const char *name, enum section_type type, struct pnode *parm
     script_error("missing argument", "size");
   }
   else if (ram_name != NULL) {
-    sym = add_symbol(state.section.logical, strdup(".stack"));
+    sym = add_symbol(state.section.logical, GP_Strdup(".stack"));
     annotate_symbol(sym, ram_name);
   }
 
