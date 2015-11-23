@@ -823,16 +823,23 @@ gp_cofflink_reloc_abs(gp_object_type *object, MemBlock *m,
                       int org_to_byte_shift, unsigned long flags)
 {
   gp_section_type *section = object->sections;
+  int org;
   gp_boolean p16e_align_needed;
 
   while (section != NULL) {
     if ((section->flags & STYP_ABS) && (section->flags & flags)) {
+      /* Workaround for the "odd size memory problem" in the PIC16E class.
+         code_pack --> STYP_BPACK */
       p16e_align_needed = false;
 
-      if ((section->flags & STYP_TEXT) || (section->flags & STYP_DATA_ROM)) {
-        if ((object->class == PROC_CLASS_PIC16E) && (section->size & 1)) {
-          /* Workaround for the "odd size memory problem" in the PIC16E class.
-            code_pack --> STYP_BPACK */
+      if ((object->class == PROC_CLASS_PIC16E) &&
+          (section->flags & (STYP_TEXT | STYP_DATA_ROM)) &&
+          (section->size & 1)) {
+        org = gp_processor_byte_to_real(object->processor, section->address);
+
+        if ((gp_processor_is_idlocs_org(object->processor, org) < 0) &&
+            (gp_processor_is_config_org(object->processor, org) < 0) &&
+            (gp_processor_is_eeprom_org(object->processor, org) < 0)) {
           p16e_align_needed = true;
         }
       }
@@ -1064,6 +1071,7 @@ gp_cofflink_reloc_assigned(gp_object_type *object,
   struct linker_section *section_def;
   unsigned int current_shadow_address;
   unsigned int current_size;
+  int org;
   gp_boolean p16e_align_needed;
 
   while (true) {
@@ -1086,10 +1094,18 @@ gp_cofflink_reloc_assigned(gp_object_type *object,
 
     p16e_align_needed = false;
 
-    if ((current->flags & STYP_TEXT) || (current->flags & STYP_DATA_ROM)) {
-      if ((object->class == PROC_CLASS_PIC16E) && (current->size & 1)) {
-        /* Workaround for the "odd size memory problem" in the PIC16E class.
-           code_pack --> STYP_BPACK */
+    /* Workaround for the "odd size memory problem" in the PIC16E class.
+       code_pack --> STYP_BPACK */
+    if ((object->class == PROC_CLASS_PIC16E) &&
+        (current->flags & flags) &&
+        (current->flags & STYP_ABS) &&
+        (current->flags & (STYP_TEXT | STYP_DATA_ROM)) &&
+        (current->size & 1)) {
+      org = gp_processor_byte_to_real(object->processor, current->address);
+
+      if ((gp_processor_is_idlocs_org(object->processor, org) < 0) &&
+          (gp_processor_is_config_org(object->processor, org) < 0) &&
+          (gp_processor_is_eeprom_org(object->processor, org) < 0)) {
         p16e_align_needed = true;
       }
     }
@@ -1247,6 +1263,7 @@ gp_cofflink_reloc_unassigned(gp_object_type *object,
   unsigned int smallest_address;
   unsigned int smallest_size;
   const char *msg;
+  int org;
   gp_boolean p16e_align_needed;
 
   while (true) {
@@ -1260,7 +1277,7 @@ gp_cofflink_reloc_unassigned(gp_object_type *object,
     p16e_align_needed = false;
 
     /* determine what type of sections are being relocated */
-    if ((current->flags & STYP_TEXT) || (current->flags & STYP_DATA_ROM)) {
+    if (current->flags & (STYP_TEXT | STYP_DATA_ROM)) {
       type = SECT_CODEPAGE;
       msg = "relocating codepage";
       gp_debug("  relocating code");
@@ -1283,10 +1300,17 @@ gp_cofflink_reloc_unassigned(gp_object_type *object,
 
     first_time = true;
 
+    // Workaround for the "odd size memory problem" in the PIC16E class.
     if ((object->class == PROC_CLASS_PIC16E) && (type == SECT_CODEPAGE) && (size & 1)) {
-      // Workaround for the "odd size memory problem" in the PIC16E class.
-      p16e_align_needed = true;
+      org = gp_processor_byte_to_real(object->processor, current->address);
+
+      if ((gp_processor_is_idlocs_org(object->processor, org) < 0) &&
+          (gp_processor_is_config_org(object->processor, org) < 0) &&
+          (gp_processor_is_eeprom_org(object->processor, org) < 0)) {
+        p16e_align_needed = true;
+      }
     }
+
 
 next_pass:
 

@@ -1,0 +1,3 @@
+files config_overlap.o
+
+include 18f25k80_g.lkr
