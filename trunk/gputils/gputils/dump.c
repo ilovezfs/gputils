@@ -446,7 +446,7 @@ dump_source_files(void)
         substr(b, sizeof (b), &temp[offset + 1], FILE_SIZE);
 
         if (temp[offset] != 0) {
-          source_file_names[number_of_source_files] = strdup(b);
+          source_file_names[number_of_source_files] = GP_Strdup(b);
 
           if (source_file_names[number_of_source_files] == NULL) {
             fprintf(stderr, " system error\n");

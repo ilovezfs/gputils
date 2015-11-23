@@ -39,16 +39,27 @@ void  gp_fputvar(const void *data, int number, FILE *fp);
 short gp_getl16(const unsigned char *addr);
 unsigned short gp_getu16(const unsigned char *addr);
 long  gp_getl32(const unsigned char *addr);
-void  gp_putl16(unsigned char *addr, short data);
-void  gp_putl32(unsigned char *addr, long data);
+void  gp_putl16(unsigned char *addr, unsigned short data);
+void  gp_putl32(unsigned char *addr, unsigned long data);
 
 long  gp_getb32(const unsigned char *addr);
-void  gp_putb32(unsigned char *addr, long data);
+void  gp_putb32(unsigned char *addr, unsigned long data);
 
 void  gp_date_string(char *buffer, size_t sizeof_buffer);
+
+
+void *gp_malloc(size_t Size, const char *File, size_t Line, const char *Func);
+void *gp_calloc(size_t Nmemb, size_t Size, const char *File, size_t Line, const char *Func);
+char *gp_strdup(const char *String, const char *File, size_t Line, const char *Func);
+
+#define GP_Malloc(Size)                 gp_malloc(Size, __FILE__, __LINE__, __func__)
+#define GP_Calloc(Nmemb, Size)          gp_calloc(Nmemb, Size, __FILE__, __LINE__, __func__)
+#define GP_Strdup(String)               gp_strdup(String, __FILE__, __LINE__, __func__)
+
 char *gp_lower_case(const char *name);
 char *gp_upper_case(const char *name);
-char *gp_stptoupper(char *Dest, const char *Src, unsigned int Maxlen);
+char *gp_strncpy(char *Dest, const char *Src, size_t Maxlen);
+char *gp_stptoupper(char *Dest, const char *Src, size_t Maxlen);
 
 size_t gp_align_text(char *Buffer, size_t Buffer_length, size_t Current_length, size_t Aligned_to_length);
 size_t gp_exclamation(char *Buffer, size_t Buffer_length, size_t Current_length, const char *Format, ...);

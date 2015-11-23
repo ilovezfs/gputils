@@ -38,7 +38,7 @@ static void
 open_src(const char *name, gp_symbol_type *symbol)
 {
   char file_name[PATH_MAX + 1];
-  struct list_context *new = malloc(sizeof(*new));
+  struct list_context *new = GP_Malloc(sizeof(*new));
   int i;
 
   assert(name != NULL);
@@ -72,7 +72,7 @@ open_src(const char *name, gp_symbol_type *symbol)
   }
 
   if (new->f != NULL) {
-    new->name = strdup(name);
+    new->name = GP_Strdup(name);
     new->missing_source = false;
   } else {
     new->missing_source = true;

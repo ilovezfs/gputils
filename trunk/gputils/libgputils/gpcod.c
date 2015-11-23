@@ -81,26 +81,21 @@ gp_cod_create(Block *b)
 {
   assert(b != NULL);
 
-  b->block = malloc(COD_BLOCK_SIZE);
-  memset(b->block, 0, COD_BLOCK_SIZE);
+  b->block = GP_Calloc(1, COD_BLOCK_SIZE);
 }
 
 BlockList *
 gp_blocks_new(void)
 {
-  BlockList *b = malloc(sizeof (BlockList));
-  assert(b);
-  memset(b, 0, sizeof (BlockList));
-
-  return b;
+  return GP_Calloc(1, sizeof(BlockList));
 }
 
 BlockList *
 gp_blocks_append(Blocks *bl, BlockList *b)
 {
-  if (NULL == bl->blocks)
+  if (bl->blocks == NULL) {
     bl->blocks = b;
-  else {
+  } else {
     BlockList *p;
     
     for (p = bl->blocks; p->next; p = p->next)
@@ -116,9 +111,9 @@ gp_blocks_append(Blocks *bl, BlockList *b)
 BlockList *
 gp_blocks_get_last(Blocks *bl)
 {
-  if (bl->blocks == NULL)
+  if (bl->blocks == NULL) {
     return NULL;
-  else {
+  } else {
     BlockList *p;
 
     for (p = bl->blocks; p->next; p = p->next)
@@ -156,4 +151,3 @@ gp_blocks_count(Blocks *bl)
     return n;
   }
 }
-/*********************************************************************/

@@ -92,7 +92,7 @@ NUMCHAR [0-9a-z]
                            return IDENTIFIER;
                          }
 <hv>{IDENT}              {
-                           pplval.s = strdup(yytext);
+                           pplval.s = GP_Strdup(yytext);
                            return IDENTIFIER;
                          }
 <hv>0x{NUMCHAR}+         {

@@ -107,7 +107,7 @@ skip_spaces(const char *buf, int *i)
 static void
 add_arg(const char *str)
 {
-  struct arg_list_s *new = malloc(sizeof(struct arg_list_s));
+  struct arg_list_s *new = GP_Malloc(sizeof(struct arg_list_s));
 
   new->str = str;
   new->next = NULL;
@@ -612,7 +612,7 @@ check_macro_params(char *symbol, int symlen)
   struct pnode *p;
   char *subst = NULL;
 
-  if (NULL != (sym = get_symbol_len(state.stMacroParams, symbol, symlen))) {
+  if ((sym = get_symbol_len(state.stMacroParams, symbol, symlen)) != NULL) {
     p = get_symbol_annotation(sym);
     if (p != NULL) {
       struct pnode *p2 = HEAD(p);
@@ -649,7 +649,7 @@ substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, int
     return 0;
   }
 
-  if (NULL != (sub = check_macro_params(&buf[begin], mlen))) {
+  if ((sub = check_macro_params(&buf[begin], mlen)) != NULL) {
     int len = strlen(sub);
 
     if ((*n + len - mlen) >= max_size) {
@@ -671,10 +671,10 @@ set_source_line(const char *line, int len, struct src_line_s *src_line)
 {
   if (!src_line->line) {
     src_line->size = 128;
-    src_line->line = malloc(src_line->size);
+    src_line->line = GP_Malloc(src_line->size);
   }
 
-  if ('\n' == line[len - 1]) {  /* ignore trailing newline */
+  if (line[len - 1] == '\n') {  /* ignore trailing newline */
     --len;
   }
  

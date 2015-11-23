@@ -47,10 +47,9 @@ read_directory(void)
   int next_dir_block = 0;
 
   do {
-    DirBlockInfo *p = malloc(sizeof(DirBlockInfo));
-    assert(p);
+    DirBlockInfo *p = GP_Malloc(sizeof(DirBlockInfo));
 
-    if (NULL == dbi) {
+    if (dbi == NULL) {
       start = dbi = p;
     }
     else {
@@ -59,7 +58,7 @@ read_directory(void)
     }
 
     read_block(dbi->dir, next_dir_block);
-  } while (0 != (next_dir_block = gp_getl16(&dbi->dir[COD_DIR_NEXTDIR])));
+  } while ((next_dir_block = gp_getl16(&dbi->dir[COD_DIR_NEXTDIR])) != 0);
 
   dbi->next = NULL;
 

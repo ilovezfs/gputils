@@ -275,7 +275,7 @@ set_global(const char *name,
 
   if (var == NULL) {
     /* new symbol */
-    var = malloc(sizeof(*var));
+    var = GP_Malloc(sizeof(*var));
     annotate_symbol(sym, var);
     var->value = value;
     var->coff_num = state.obj.symbol_num;
@@ -504,7 +504,7 @@ select_radix(const char *radix_name)
 void
 macro_append(void)
 {
-  struct macro_body *body = malloc(sizeof(*body));
+  struct macro_body *body = GP_Malloc(sizeof(*body));
 
   body->src_line = NULL;
 
@@ -623,7 +623,7 @@ add_file(unsigned int type, const char *name)
     } while(new != NULL);
   }
 
-  new = malloc(sizeof(*new));
+  new = GP_Malloc(sizeof(*new));
 
   new->name = strdup(name);
   new->ft = type;

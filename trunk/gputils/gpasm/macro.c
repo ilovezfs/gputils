@@ -55,7 +55,7 @@ void setup_macro(struct macro_head *h, int arity, struct pnode *parms)
         assert(pToH->tag == PTAG_SYMBOL);
 
         sym = add_symbol(state.stMacroParams, pFromH->value.symbol);
-        annotate_symbol(sym, mk_list(mk_string(strdup(pToH->value.symbol)), NULL));
+        annotate_symbol(sym, mk_list(mk_string(GP_Strdup(pToH->value.symbol)), NULL));
         pTo = TAIL(pTo);
       }
     }
@@ -84,7 +84,7 @@ add_macro_table(struct symbol_table *table)
 {
   struct macro_table *new;
 
-  new = (struct macro_table *)malloc(sizeof(*new));
+  new = (struct macro_table *)GP_Malloc(sizeof(*new));
   new->table = table;
   new->line_number = state.src->line_number;
   new->next = NULL;

@@ -420,15 +420,15 @@ struct macro_head {
   int pass;                     /* Pass in which macro was defined: 1 or 2 */
   struct pnode *parms;
   struct macro_body *body;
-  int defined;                  /* 1 macro has been defined so calls are valid */
+  gp_boolean defined;           /* 1 macro has been defined so calls are valid */
   char *src_name;
   unsigned int line_number;
   gp_symbol_type *file_symbol;
 };
 
 struct macro_body {
-  char *src_line;               /* Original source line - for listing */
-  struct macro_body *next;      /* Next line in listing */
+  char *src_line;               /* Original source line - for listing. */
+  struct macro_body *next;      /* Next line in listing. */
 };
 
 struct amode {
@@ -437,7 +437,7 @@ struct amode {
     IN_ELSE
   } mode;
 
-  int enabled;  /* Are we currently enabled? */
+  int enabled;                  /* Are we currently enabled? */
   int prev_enabled;
   struct amode *prev;
 };

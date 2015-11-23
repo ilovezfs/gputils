@@ -37,7 +37,7 @@ lset_init(lset_section_root_t *Root, const char *File_name) {
     return;
   }
 
-  Root->file_name      = (File_name != NULL) ? strdup(File_name) : NULL;
+  Root->file_name      = (File_name != NULL) ? GP_Strdup(File_name) : NULL;
   Root->is_data        = 0;
   Root->section_number = 0;
   Root->section_global = NULL;
@@ -225,10 +225,7 @@ lset_symbol_new(lset_section_t *Section, const char *Name, long Start, long End,
     exit(1);
   }
 
-  if ((sym = calloc(1, sizeof(lset_symbol_t))) == NULL) {
-    yyerror("Out of memory.");
-    exit(1);
-  }
+  sym = GP_Calloc(1, sizeof(lset_symbol_t));
 
   if (Section->symbol_first == NULL) {
     Section->symbol_first = sym;
@@ -243,7 +240,7 @@ lset_symbol_new(lset_section_t *Section, const char *Name, long Start, long End,
   Section->symbol_actual = sym;
   ++Section->symbol_number;
 
-  sym->name        = strdup(Name);
+  sym->name        = GP_Strdup(Name);
   sym->start       = Start;
   sym->end         = End;
   sym->attr        = Attr;
@@ -285,10 +282,7 @@ void lset_symbol_make_table(lset_section_t *Section) {
     free(Section->symbol_table);
   }
 
-  if ((Section->symbol_table = calloc(Section->symbol_number, sizeof(lset_symbol_t *))) == NULL) {
-    yyerror("Out of memory.");
-    exit(1);
-  }
+  Section->symbol_table = GP_Calloc(Section->symbol_number, sizeof(lset_symbol_t *));
 
   i = 0;
   do {
@@ -603,12 +597,10 @@ lset_section_make_global(lset_section_root_t *Root) {
     return Root->section_global;
   }
 
-  if ((sect = calloc(1, sizeof(lset_section_t))) == NULL) {
-    return NULL;
-  }
+  sect = GP_Calloc(1, sizeof(lset_section_t));
 
   Root->section_global = sect;
-  sect->name = strdup(SECT_NAME_GLOBAL);
+  sect->name = GP_Strdup(SECT_NAME_GLOBAL);
   return sect;
 }
 
@@ -701,7 +693,7 @@ lset_section_new(lset_section_root_t *Root, const char *Name, int Line_number) {
   Root->section_actual = sect;
   ++Root->section_number;
 
-  sect->name = strdup(Name);
+  sect->name = GP_Strdup(Name);
   sect->line_number = Line_number;
   return sect;
 }

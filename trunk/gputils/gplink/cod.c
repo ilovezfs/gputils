@@ -31,12 +31,10 @@ static DirBlockInfo *main_dir;
 static DirBlockInfo *
 new_dir_block(void)
 {
-  DirBlockInfo *dir = malloc(sizeof (DirBlockInfo));
-  assert(dir);
   /* initialize eveything to zero */
-  memset(dir, 0, sizeof (DirBlockInfo));
-  gp_putl16(&dir->dir[COD_DIR_CODTYPE], 1);
+  DirBlockInfo *dir = GP_Calloc(1, sizeof(DirBlockInfo));
 
+  gp_putl16(&dir->dir[COD_DIR_CODTYPE], 1);
   return dir;
 }
 
@@ -94,7 +92,7 @@ assign_file_id(void)
         value = get_symbol_annotation(s);
       } else {
         /* the file hasn't been assigned a value */
-        value = malloc(sizeof (int));
+        value = GP_Malloc(sizeof(int));
         *value = file_id++;
         s = add_symbol(file_table, aux->_aux_symbol._aux_file.filename);
         annotate_symbol(s, value);
@@ -630,7 +628,7 @@ cod_symbol_table(struct symbol_table *table)
   int i;
   struct symbol **sym, **ps, *s;
 
-  ps = sym = malloc(table->count * sizeof(sym[0]));
+  ps = sym = GP_Malloc(table->count * sizeof(sym[0]));
 
   for (i = 0; i < HASH_SIZE; i++) {
     for (s = table->hash_table[i]; s != NULL; s = s->next) {

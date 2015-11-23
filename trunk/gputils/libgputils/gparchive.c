@@ -57,7 +57,7 @@ gp_archive_member_name(gp_archive_type *archive)
     *end = '\0';
   }
 
-  return strdup(name);
+  return GP_Strdup(name);
 }
 
 void
@@ -176,7 +176,7 @@ gp_archive_add_member(gp_archive_type *archive,
 
   newobject = gp_read_file(filename);
 
-  newmember = (gp_archive_type *)malloc(sizeof(*newmember));
+  newmember = (gp_archive_type *)GP_Malloc(sizeof(*newmember));
   newmember->next = NULL;
 
   /* Point the archive member file to the object file.  The object is never
@@ -342,7 +342,7 @@ gp_archive_read(char *filename)
     int n;
 
     /* allocate space for the next archive member */
-    new = (gp_archive_type *)malloc(sizeof(*new));
+    new = (gp_archive_type *)GP_Malloc(sizeof(gp_archive_type));
     new->next = NULL;
 
     /* read the archive header */
@@ -354,7 +354,7 @@ gp_archive_read(char *filename)
     /* read the object file or symbol index into memory */
     sscanf(new->header.ar_size, "%il", &object_size);
     new->data.size = object_size;
-    new->data.file = (unsigned char *)malloc(object_size);
+    new->data.file = (unsigned char *)GP_Malloc(object_size);
     n = fread(new->data.file, sizeof(char), object_size, infile);
     if (n != object_size) {
       gp_error("bad archive \"%s\"", filename);
@@ -466,7 +466,7 @@ gp_archive_add_index(struct symbol_table *table,
   }
 
   /* sort the index */
-  ps = lst = malloc(table->count * sizeof(lst[0]));
+  ps = lst = GP_Malloc(table->count * sizeof(lst[0]));
   for (i = 0; i < HASH_SIZE; i++) {
     for (s = table->hash_table[i]; s; s = s->next) {
       *ps++ = s;
@@ -483,16 +483,8 @@ gp_archive_add_index(struct symbol_table *table,
   }
 
   /* create a new member for the index and place it in the archive */
-  newmember = (gp_archive_type *)malloc(sizeof(*newmember));
-  if (!newmember) {
-    fprintf(stderr, " error allocating memory\n");
-    exit(1);
-  }
-  newmember->data.file = (unsigned char *)malloc(indexsize);
-  if(!newmember->data.file) {
-    fprintf(stderr, " error allocating memory\n");
-    exit(1);
-  }
+  newmember = (gp_archive_type *)GP_Malloc(sizeof(*newmember));
+  newmember->data.file = (unsigned char *)GP_Malloc(indexsize);
   newmember->data.size = indexsize;
   newmember->next = NULL;
 
@@ -624,7 +616,7 @@ gp_archive_print_table(struct symbol_table *table)
   assert(table != NULL);
 
   /* sort the index */
-  ps = lst = malloc(table->count * sizeof(lst[0]));
+  ps = lst = GP_Malloc(table->count * sizeof(lst[0]));
   for (i = 0; i < HASH_SIZE; i++) {
     for (s = table->hash_table[i]; s; s = s->next) {
       *ps++ = s;

@@ -1,6 +1,21 @@
-2015-11-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
-  * doc/gputils.lyx:
-    Updated with new devices based on the mplabx-3.15. (part 3)
+2015-11-23  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * Makefile.in, */Makefile.in:
+    Updated the copyright.
+  * gpasm/cod.c, gpasm/coff.c, gpasm/coff.h, gpasm/directive.c,
+    gpasm/gpasm.c, gpasm/gpasm.h.in, gpasm/gperror.c, gpasm/lst.c,
+    gpasm/macro.c, gpasm/parse.y, gpasm/ppscan.l,
+    gpasm/preprocess.c, gpasm/processor.c, gpasm/scan.h, gpasm/scan.l,
+    gpasm/util.c, gplink/cod.c, gplink/gplink.c, gplink/lst.c,
+    gplink/map.c, gplink/parse.y, gplink/scan.l, gplink/script.c,
+    gputils/block.c, gputils/dump.c, gputils/labelset.c,
+    gputils/scan.l, libgputils/gparchive.c, libgputils/gpcod.c,
+    libgputils/gpcoffgen.c, libgputils/gpcofflink.c,
+    libgputils/gphash.c, libgputils/gpmemory.c, libgputils/gpreadhex.c,
+    libgputils/gpreadobj.c, libgputils/gpsymbol.c,
+    libgputils/gpsystem.c, libgputils/gpsystem.h:
+    Used GP_Malloc(), GP_Calloc(), GP_Strdup() and gp_strncpy()
+    instead of malloc(), calloc(), strdup() and strncpy() functions.
+    Used gp_boolean type instead of int on some places.
 
 2015-11-15  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpcfg-table.c, libgputils/gpprocessor.c,

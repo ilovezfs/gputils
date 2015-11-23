@@ -861,7 +861,7 @@ cod_symbol_table(void)
   int i;
   struct symbol **lst, **ps, *s;
 
-  ps = lst = malloc(state.stGlobal->count * sizeof (struct symbol *));
+  ps = lst = GP_Malloc(state.stGlobal->count * sizeof (struct symbol *));
 
   for (i = 0; i < HASH_SIZE; i++) {
     for (s = state.stGlobal->hash_table[i]; s != NULL; s = s->next) {
@@ -912,7 +912,7 @@ lst_symbol_table(void)
 
   cod_symbol_table();
 
-  ps = lst = malloc(count * sizeof(struct lst_symbol_s));
+  ps = lst = GP_Malloc(count * sizeof(struct lst_symbol_s));
 
   for (i = 0; i < HASH_SIZE; i++) {
     for (s = state.stGlobal->hash_table[i]; s != NULL; s = s->next) {

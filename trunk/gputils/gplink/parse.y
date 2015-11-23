@@ -40,7 +40,7 @@ int yylex(void);
 
 static struct pnode *mk_pnode(enum pnode_tag tag)
 {
-  struct pnode *new = malloc(sizeof(*new));
+  struct pnode *new = GP_Malloc(sizeof(*new));
 
   new->tag = tag;
   return new;
@@ -209,9 +209,9 @@ line:
 	|
 	IFDEF SYMBOL
 	{
-	  struct ifdef *ifdef = malloc(sizeof *ifdef);
+	  struct ifdef *ifdef = GP_Malloc(sizeof *ifdef);
 
-	  ifdef->istrue = ((state.ifdef == NULL || state.ifdef->istrue) &&
+	  ifdef->istrue = (((state.ifdef == NULL) || state.ifdef->istrue) &&
 			   get_symbol(state.script_symbols, $2));
 	  ifdef->inelse = false;
 	  ifdef->prev = state.ifdef;

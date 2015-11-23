@@ -47,7 +47,7 @@ gp_link_add_symbol(struct symbol_table *table,
   }
 
   sym = add_symbol(table, symbol->name);
-  var = malloc(sizeof(*var));
+  var = GP_Malloc(sizeof(*var));
   var->symbol = symbol;
   var->file = file;
   annotate_symbol(sym, var);
@@ -336,7 +336,7 @@ gp_cofflink_make_stack(gp_object_type *object, int num_bytes)
   }
   else {
     symbol = gp_coffgen_addsymbol(object);
-    symbol->name           = strdup("_stack");
+    symbol->name           = GP_Strdup("_stack");
     symbol->value          = 0;
     symbol->section_number = 1;
     symbol->section        = new;
@@ -351,7 +351,7 @@ gp_cofflink_make_stack(gp_object_type *object, int num_bytes)
   }
   else {
     symbol = gp_coffgen_addsymbol(object);
-    symbol->name           = strdup("_stack_end");
+    symbol->name           = GP_Strdup("_stack_end");
     symbol->value          = num_bytes - 1;
     symbol->section_number = 1;
     symbol->section        = new;
@@ -522,7 +522,7 @@ static char *_create_i_section_name(const char *name)
 {
   /* create the new section */
   int len = strlen(name);
-  char *name_i = malloc(len + 3);
+  char *name_i = GP_Malloc(len + 3);
   memcpy(name_i, name, len);
   memcpy(name_i + len, "_i", 3);
   return name_i;
@@ -626,7 +626,7 @@ gp_cofflink_make_cinit(gp_object_type *object)
   }
   else {
     symbol = gp_coffgen_addsymbol(object);
-    symbol->name           = strdup("_cinit");
+    symbol->name           = GP_Strdup("_cinit");
     symbol->value          = 0;
     symbol->section_number = 1;
     symbol->section        = NULL;
@@ -1767,7 +1767,6 @@ gp_cofflink_make_memory(gp_object_type *object)
 
       for ( ; org < stop; org++) {
         unsigned char b;
-
         /* fetch the current contents of the memory */
         b_memory_assert_get(section->data, org, &b, &section_name, &symbol_name);
         /* write data to new memory */

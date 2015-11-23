@@ -43,7 +43,7 @@ coff_init(void)
     }
     else {
       state.obj.object = gp_coffgen_init();
-      state.obj.object->filename = strdup(state.objfilename);
+      state.obj.object->filename = GP_Strdup(state.objfilename);
       state.obj.object->processor = state.processor;
       state.obj.object->class = state.device.class;
       state.obj.object->isnew = state.obj.newcoff;
@@ -126,7 +126,7 @@ _new_config_section(const char *name, int addr, int flags, MemBlock *data, gp_bo
 
   /* add a section symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
-  new->name           = strdup(name);
+  new->name           = GP_Strdup(name);
   new->value          = IS_RAM_ORG ? addr : gp_processor_byte_to_org(state.device.class, addr);
   new->section_number = state.obj.section_num;  /* Modified later. */
   new->section        = state.obj.section;
@@ -269,7 +269,7 @@ coff_new_section(const char *name, int addr, int flags)
 
   /* add a section symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
-  new->name           = strdup(name);
+  new->name           = GP_Strdup(name);
   new->value          = IS_RAM_ORG ? addr : gp_processor_byte_to_org(state.device.class, addr);
   new->section_number = state.obj.section_num;  /* Modified later. */
   new->section        = state.obj.section;
@@ -425,7 +425,7 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
   }
   else {
     new = gp_coffgen_addsymbol(state.obj.object);
-    new->name           = strdup(name);
+    new->name           = GP_Strdup(name);
     new->value          = value;
     new->section_number = section_number;
     new->section        = state.obj.section;
@@ -439,7 +439,7 @@ coff_add_sym(const char *name, int value, enum gpasmValTypes type)
 /* add a file symbol to the coff symbol table */
 
 gp_symbol_type *
-coff_add_filesym(const char *name, int isinclude)
+coff_add_filesym(const char *name, gp_boolean isinclude)
 {
   gp_symbol_type *new = NULL;
   gp_aux_type *new_aux;
@@ -452,7 +452,7 @@ coff_add_filesym(const char *name, int isinclude)
 
   /* add .file symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
-  new->name           = strdup(".file");
+  new->name           = GP_Strdup(".file");
   new->value          = 0;
   new->section_number = N_DEBUG;
   new->section        = NULL;
@@ -461,9 +461,9 @@ coff_add_filesym(const char *name, int isinclude)
 
   new_aux = gp_coffgen_addaux(state.obj.object, new);
   new_aux->type = AUX_FILE;
-  new_aux->_aux_symbol._aux_file.filename = strdup(name);
+  new_aux->_aux_symbol._aux_file.filename = GP_Strdup(name);
 
-  if (isinclude == 1) {
+  if (isinclude) {
     new_aux->_aux_symbol._aux_file.line_number = state.src->line_number - 1;
   }
   else {
@@ -489,7 +489,7 @@ coff_add_eofsym(void)
 
   /* add .eof symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
-  new->name           = strdup(".eof");
+  new->name           = GP_Strdup(".eof");
   new->value          = 0;
   new->section_number = N_DEBUG;
   new->section        = NULL;
@@ -516,7 +516,7 @@ coff_add_listsym(void)
 
   /* add .eof symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
-  new->name           = strdup(".list");
+  new->name           = GP_Strdup(".list");
   new->value          = state.src->line_number;
   new->section_number = N_DEBUG;
   new->section        = NULL;
@@ -541,7 +541,7 @@ coff_add_nolistsym(void)
 
   /* add .nolist symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
-  new->name           = strdup(".nolist");
+  new->name           = GP_Strdup(".nolist");
   new->value          = state.src->line_number;
   new->section_number = N_DEBUG;
   new->section        = NULL;
@@ -565,7 +565,7 @@ coff_add_directsym(unsigned char command, const char *string)
 
   /* add .cod symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
-  new->name           = strdup(".direct");
+  new->name           = GP_Strdup(".direct");
   new->value          = gp_processor_byte_to_org(state.device.class, state.byte_addr);
   new->section_number = state.obj.section_num;
   new->section        = state.obj.section;
@@ -575,7 +575,7 @@ coff_add_directsym(unsigned char command, const char *string)
   new_aux = gp_coffgen_addaux(state.obj.object, new);
   new_aux->type = AUX_DIRECT;
   new_aux->_aux_symbol._aux_direct.command = command;
-  new_aux->_aux_symbol._aux_direct.string = strdup(string);
+  new_aux->_aux_symbol._aux_direct.string = GP_Strdup(string);
 }
 
 /* add a cod symbol to the coff symbol table */
@@ -594,7 +594,7 @@ coff_add_identsym(const char *string)
 
   /* add .cod symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
-  new->name           = strdup(".ident");
+  new->name           = GP_Strdup(".ident");
   new->value          = 0;
   new->section_number = N_DEBUG;
   new->section        = NULL;
@@ -603,7 +603,7 @@ coff_add_identsym(const char *string)
 
   new_aux = gp_coffgen_addaux(state.obj.object, new);
   new_aux->type = AUX_IDENT;
-  new_aux->_aux_symbol._aux_ident.string = strdup(string);
+  new_aux->_aux_symbol._aux_ident.string = GP_Strdup(string);
 }
 
 /* If the symbol is local, generate a modified name for the coff symbol
@@ -635,8 +635,8 @@ coff_local_name(const char *name)
       count++;
     }
   } else {
-    strncpy(buffer, name, sizeof(buffer));
+    gp_strncpy(buffer, name, sizeof(buffer));
   }
 
-  return strdup(buffer);
+  return GP_Strdup(buffer);
 }

@@ -65,7 +65,7 @@ add_code(int code)
   if ((code <= -100) && (code >= -199)) {
     gpvwarning(GPW_DISABLE_ERROR, NULL);
   } else {
-    new = (struct error_list *)malloc(sizeof(*new));
+    new = (struct error_list *)GP_Malloc(sizeof(*new));
     new->value = code;
     new->next  = NULL;
 
