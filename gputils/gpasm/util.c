@@ -40,23 +40,26 @@ static int
 gp_strtoi(const char *string, char **endptr, int radix)
 {
   int value = 0;
-  int sign = 1;
-  unsigned int digit;
+  int sign  = 1;
+  int digit = 0;
+  int ch;
 
-  if ('-' == *string) {
+  if (*string == '-') {
     sign = -1;
     ++string;
   }
 
   while (1) {
-    if (isdigit(*string)) {
-      digit = *string - '0';
+    ch = *string;
+
+    if (isdigit(ch)) {
+      digit = ch - '0';
     }
-    else if (islower(*string)) {
-      digit = *string - ('a' - 10);
+    else if (islower(ch)) {
+      digit = ch - ('a' - 10);
     }
-    else if (isupper(*string)) {
-      digit = *string - ('A' - 10);
+    else if (isupper(ch)) {
+      digit = ch - ('A' - 10);
     }
     else {
       break;
@@ -71,8 +74,9 @@ gp_strtoi(const char *string, char **endptr, int radix)
 
     ++string;
   }
+
   *endptr = (char *)string;
-  return value * sign;
+  return (value * sign);
 }
 
 int
@@ -88,7 +92,7 @@ stringtolong(const char *string, int radix)
     snprintf(complaint, sizeof(complaint),
              isprint(*endptr) ?
              "Illegal character '%c' in numeric constant." :
-             "Illegal character %#x in numeric constant." ,
+             "Illegal character %#x in numeric constant.",
              *endptr);
     gperror(GPE_UNKNOWN, complaint);
   }
@@ -148,7 +152,7 @@ convert_escaped_char(char *str, char c)
   }
 
   while (*src) {
-    if (*src =='\\' && src[1] == c) {
+    if ((*src =='\\') && (src[1] == c)) {
       src++;
     }
     *dest++ = *src++;
@@ -186,7 +190,7 @@ convert_escape_chars(const char *ps, int *value)
       ps++;
 
       while (count < 3) {
-        if (*ps < '0' || *ps > '7') {
+        if ((*ps < '0') || (*ps > '7')) {
           break;
         }
 
@@ -203,7 +207,7 @@ convert_escape_chars(const char *ps, int *value)
         /* return a NULL character */
         ps += 2;
 
-        if (*ps) {
+        if (*ps != '\0') {
           ++ps;
         }
       } else {
@@ -211,7 +215,7 @@ convert_escape_chars(const char *ps, int *value)
 
         buffer[0] = ps[2];
         buffer[1] = ps[3];
-        buffer[2] = 0;
+        buffer[2] = '\0';
         *value = stringtolong(buffer, 16);
         ps += 4;
       }
@@ -442,19 +446,24 @@ select_expand(const char *expand)
   }
 }
 
+#define STR_INHX8M              "inhx8m"
+#define STR_INHX8S              "inhx8s"
+#define STR_INHX16              "inhx16"
+#define STR_INHX32              "inhx32"
+
 void
 select_hexformat(const char *format_name)
 {
   if (state.cmd_line.hex_format) {
     gpvwarning(GPW_CMDLINE_HEXFMT, NULL);
   } else {
-    if (strcasecmp(format_name, "inhx8m") == 0) {
+    if (strcasecmp(format_name, STR_INHX8M) == 0) {
       state.hex_format = INHX8M;
-    } else if (strcasecmp(format_name, "inhx8s") == 0) {
+    } else if (strcasecmp(format_name, STR_INHX8S) == 0) {
       state.hex_format = INHX8S;
-    } else if (strcasecmp(format_name, "inhx16") == 0) {
+    } else if (strcasecmp(format_name, STR_INHX16) == 0) {
       state.hex_format = INHX16;
-    } else if (strcasecmp(format_name, "inhx32") == 0) {
+    } else if (strcasecmp(format_name, STR_INHX32) == 0) {
       state.hex_format = INHX32;
     } else {
       state.hex_format = INHX8M;
@@ -462,7 +471,7 @@ select_hexformat(const char *format_name)
       if (state.pass == 0) {
         fprintf(stderr, "Error: Invalid format \"%s\".\n", format_name);
       } else {
-        gperror(GPE_ILLEGAL_ARGU, "Expected inhx8m, inhx8s, inhx16, or inhx32.");
+        gperror(GPE_ILLEGAL_ARGU, "Expected " STR_INHX8M ", " STR_INHX8S ", " STR_INHX16 ", or " STR_INHX32 ".");
       }
     }
   }
@@ -474,17 +483,17 @@ select_radix(const char *radix_name)
   if (state.cmd_line.radix) {
     gpvwarning(GPW_CMDLINE_RADIX, NULL);
   } else {
-    if (strcasecmp(radix_name, "h") == 0 ||
-        strcasecmp(radix_name, "hex") == 0 ||
-        strcasecmp(radix_name, "hexadecimal") == 0) {
+    if ((strcasecmp(radix_name, "h") == 0) ||
+        (strcasecmp(radix_name, "hex") == 0) ||
+        (strcasecmp(radix_name, "hexadecimal") == 0)) {
       state.radix = 16;
-    } else if (strcasecmp(radix_name, "d") == 0 ||
-               strcasecmp(radix_name, "dec") == 0 ||
-               strcasecmp(radix_name, "decimal") == 0) {
+    } else if ((strcasecmp(radix_name, "d") == 0) ||
+               (strcasecmp(radix_name, "dec") == 0) ||
+               (strcasecmp(radix_name, "decimal") == 0)) {
       state.radix = 10;
-    } else if (strcasecmp(radix_name, "o") == 0 ||
-               strcasecmp(radix_name, "oct") == 0 ||
-               strcasecmp(radix_name, "octal") == 0) {
+    } else if ((strcasecmp(radix_name, "o") == 0) ||
+               (strcasecmp(radix_name, "oct") == 0) ||
+               (strcasecmp(radix_name, "octal") == 0)) {
       state.radix = 8;
     } else {
       state.radix = 16;
@@ -526,7 +535,7 @@ do_or_append_insn(char *op, struct pnode *parms)
         assert(state.while_depth != 0);
         ++state.while_depth;
       }
-      else if (state.while_head && strcasecmp(op, "endw") == 0) {
+      else if ((state.while_head != NULL) && (strcasecmp(op, "endw") == 0)) {
         assert(state.while_depth != 0);
         if (--state.while_depth == 0) {
           return do_insn(op, parms);
@@ -625,10 +634,10 @@ add_file(unsigned int type, const char *name)
 
   new = GP_Malloc(sizeof(*new));
 
-  new->name = strdup(name);
-  new->ft = type;
+  new->name = GP_Strdup(name);
+  new->ft   = type;
   new->prev = last;
-  new->id = file_id++;
+  new->id   = file_id++;
   new->next = NULL;
 
   if (last != NULL) {

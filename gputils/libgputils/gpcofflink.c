@@ -1768,13 +1768,14 @@ gp_cofflink_patch(gp_object_type *object)
   }
 }
 
-/* copy all executatable data to new memory */
+/* copy all executable data to new memory */
 
 MemBlock *
 gp_cofflink_make_memory(gp_object_type *object)
 {
   gp_section_type *section = object->sections;
   MemBlock *m;
+  unsigned int addr;
   unsigned int org;
   unsigned int stop;
   const char *section_name;
@@ -1784,17 +1785,34 @@ gp_cofflink_make_memory(gp_object_type *object)
 
   while (section != NULL) {
     if ((section->flags & STYP_TEXT) || (section->flags & STYP_DATA_ROM)) {
-      org = section->address;
+      addr = section->address;
 
-      stop = org + section->size;
-      gp_debug("   make memory: section \"%s\" (0x%06X - 0x%06X)", section->name, org, stop - 1);
+      stop = addr + section->size;
+      gp_debug("   make memory: section \"%s\" (0x%06X - 0x%06X)", section->name, addr, stop - 1);
 
-      for ( ; org < stop; org++) {
-        unsigned char b;
+      for ( ; addr < stop; addr++) {
+        unsigned char byte;
         /* fetch the current contents of the memory */
-        b_memory_assert_get(section->data, org, &b, &section_name, &symbol_name);
+        b_memory_assert_get(section->data, addr, &byte, &section_name, &symbol_name);
+
+        if ((object->class == PROC_CLASS_PIC12)  || (object->class == PROC_CLASS_PIC12E) ||
+            (object->class == PROC_CLASS_SX)     || (object->class == PROC_CLASS_PIC14)  ||
+            (object->class == PROC_CLASS_PIC14E) || (object->class == PROC_CLASS_PIC14EX)) {
+          org = gp_processor_byte_to_org(object->class, addr);
+
+          if (gp_processor_is_idlocs_org(object->processor, org) >= 0) {
+            if (addr & 1) {
+              // This is higher byte.
+              byte |= ((object->processor->idlocs_mask) >> 8) & 0xFF;
+            } else {
+              // This is lower byte.
+              byte |= object->processor->idlocs_mask & 0xFF;
+            }
+          }
+        }
+
         /* write data to new memory */
-        b_memory_put(m, org, b, section_name, symbol_name);
+        b_memory_put(m, addr, byte, section_name, symbol_name);
       }
     }
     section = section->next;

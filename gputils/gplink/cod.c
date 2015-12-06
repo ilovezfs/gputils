@@ -44,7 +44,7 @@ init_dir_block(void)
   DirBlockInfo *dir = new_dir_block();
 
   /* Initialize the directory block with known data. It'll be written
-   * to the .cod file after everything else */
+   * to the .cod file after everything else. */
   gp_cod_strncpy(&dir->dir[COD_DIR_SOURCE],
                  state.codfilename, COD_DIR_DATE - COD_DIR_SOURCE);
   gp_cod_date(&dir->dir[COD_DIR_DATE],
@@ -59,14 +59,14 @@ init_dir_block(void)
                  GPUTILS_COPYRIGHT_STRING,
                  COD_DIR_SYMTAB - COD_DIR_NOTICE);
 
-  /* The address is always two shorts or 4 bytes long */
+  /* The address is always two shorts or 4 bytes long. */
   dir->dir[COD_DIR_ADDRSIZE] = 0;
 
   return dir;
 }
 
-/* Assign each file name unique file number.  A file may appear in the
-   symbol table more than once.  */
+/* Assign each file name unique file number. A file may appear in the
+   symbol table more than once. */
 static void
 assign_file_id(void)
 {
@@ -141,7 +141,7 @@ cod_init(void)
 }
 
 /*
- * write_file_block - write a code block that contains a list of the
+ * write_file_block - Write a code block that contains a list of the
  * source files.
  */
 static void
@@ -454,9 +454,9 @@ cod_write_debug(void)
 static void
 enumerate_blocks(DirBlockInfo *dir, int offset, Blocks *bl, unsigned int *block_num)
 {
-  if (bl->blocks) {
+  if (bl->blocks != NULL) {
     /* enumerate block list */
-    gp_putl16(&dir->dir[offset], ++*block_num);
+    gp_putl16(&dir->dir[offset], ++(*block_num));
     *block_num += gp_blocks_count(bl) - 1;
     gp_putl16(&dir->dir[offset + 2], *block_num);
   }

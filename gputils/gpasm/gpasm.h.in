@@ -437,8 +437,8 @@ struct amode {
     IN_ELSE
   } mode;
 
-  int enabled;                  /* Are we currently enabled? */
-  int prev_enabled;
+  gp_boolean enabled;           /* Are we currently enabled? */
+  gp_boolean prev_enabled;
   struct amode *prev;
 };
 

@@ -206,7 +206,7 @@ fill[ \t]*\(             {
                          }
 <define>{IDENT}\(        {
                            BEGIN(defargs);
-                           yylval.s = strndup(yytext, yyleng - 1);
+                           yylval.s = GP_Strndup(yytext, yyleng - 1);
                            return IDENT_BRACKET;
                          }
 <defargs>{IDENT}         {
@@ -301,19 +301,19 @@ processor                {
                            return DEBUG_LINE;
                          }
 ^{IDENT}:?               {
-                           gp_boolean has_colon = false;
+                           int has_collon = 0;
                            struct symbol *sym;
                            struct macro_head *h;
 
                            if (yytext[strlen(yytext) - 1] == ':') {
                              yytext[strlen(yytext) - 1] = '\0';
-                             has_colon = true;
+                             has_collon = 1;
                            }
                            yylval.s = GP_Strdup(yytext);
                            switch (identify(yytext)) {
                              case ID_DIRECTIVES:
                                gpvwarning(GPW_DIR_COLUMN_ONE, NULL, yytext);
-                               if (has_colon) {
+                               if (has_collon) {
                                  gpverror(GPE_BADCHAR, NULL, ':');
                                }
                                return IDENTIFIER;
@@ -332,7 +332,7 @@ processor                {
                                }
                                else {
                                  gpvwarning(GPW_MACRO_COLUMN_ONE, NULL, yytext);
-                                 if (has_colon) {
+                                 if (has_collon) {
                                    gpverror(GPE_BADCHAR, NULL, ':');
                                  }
                                  return IDENTIFIER;
@@ -341,7 +341,7 @@ processor                {
 
                              case ID_OPCODES:
                                gpvwarning(GPW_OP_COLUMN_ONE, NULL, yytext);
-                               if (has_colon)
+                               if (has_collon)
                                  gpverror(GPE_BADCHAR, NULL, ':');
                                return IDENTIFIER;
                                break;
@@ -462,7 +462,7 @@ h'-?{NUMCHAR}+'          {
                            else {
                              gpwarning(GPW_MISSING_QUOTE, NULL);
                            }
-                           yylval.s = strndup(yytext + 1, yyleng - 1);
+                           yylval.s = GP_Strndup(yytext + 1, yyleng - 1);
                            BEGIN(INITIAL);
                            return STRING;
                          }
@@ -478,19 +478,19 @@ a'{STR_QCHAR}'           {
                            return NUMBER;
                          }
 <bquote>\<{STR_BCHAR}*\> {
-                           yylval.s = strndup(yytext + 1, yyleng - 2);
+                           yylval.s = GP_Strndup(yytext + 1, yyleng - 2);
                            BEGIN(INITIAL);
                            return STRING;
                          }
-<bquote>[^ \t<>";\r\n]+  {
+<bquote>[^ \t<>";\r\n]+  { /*"*/
                            /* unquoted (special-case) string */
                            yylval.s = GP_Strdup(yytext);
                            BEGIN(INITIAL);
                            return STRING;
                          }
-<lnquote>\"{STR_QCHAR}*\" {
+<lnquote>\"{STR_QCHAR}*\" { /*"*/
                            /* if valid, must match with length >= unquoted token below */
-                           yylval.s = strndup(yytext + 1, yyleng - 2);
+                           yylval.s = GP_Strndup(yytext + 1, yyleng - 2);
                            BEGIN(INITIAL);
                            return STRING;
                          }
@@ -533,9 +533,9 @@ a'{STR_QCHAR}'           {
 #define CHUNK  64
                            static gp_boolean emit_comma = false;
 
-                           int len = CHUNK;
+                           unsigned int len = CHUNK;
+                           unsigned int i = 0;
                            char *buf = GP_Malloc(len);
-                           int i = 0;
                            int c = yytext[0];
                            gp_boolean prev_esc = false;
                            int state = 0;
@@ -568,7 +568,7 @@ a'{STR_QCHAR}'           {
                                }
 
                                /* eat the rest of line */
-                               while ((c = input() != EOF) && (c != '\n'))
+                               while (((c = input()) != EOF) && (c != '\n'))
                                  ;
                                /* fall through */
                              case '\n':
@@ -581,7 +581,7 @@ a'{STR_QCHAR}'           {
                                }
                                /* fall through */
                              case EOF:
-                               yylval.s = strndup(buf, i);
+                               yylval.s = GP_Strndup(buf, i);
                                free(buf);
                                return IDENTIFIER;
 
@@ -605,14 +605,14 @@ a'{STR_QCHAR}'           {
                              buf[i++] = c;
                              if (len <= i) {
                                len += CHUNK;
-                               buf = realloc(buf, len);
+                               buf = GP_Realloc(buf, len);
                              }
                              c = input();
                            }
                          }
 <*>[\n]                  {
                            force_decimal = false;
-                           force_ident = false;
+                           force_ident   = false;
                            BEGIN(INITIAL);  /* switch to INITIAL state */
                            return yytext[0];
                          }
@@ -710,7 +710,7 @@ open_src(const char *name, gp_boolean isinclude)
     if (!isinclude) {
       /* it is the top level file so initialize the lexer */
       force_decimal = false;
-      force_ident = false;
+      force_ident   = false;
     }
     state.src->last_char_is_nl = true;
     state.found_end = 0;
@@ -720,7 +720,7 @@ open_src(const char *name, gp_boolean isinclude)
 void
 execute_macro(struct macro_head *h, gp_boolean is_while)
 {
-  struct source_context *new = calloc(1, sizeof(struct source_context));
+  struct source_context *new = GP_Calloc(1, sizeof(struct source_context));
 
   assert(state.src != NULL);
   state.src->yybuf = YY_CURRENT_BUFFER;
@@ -902,6 +902,10 @@ identify(const char *text)
   }
   else if ((sym = get_symbol(state.stDirective, text)) != NULL) {
     type = ID_DIRECTIVES;
+
+    if ((state.mpasm_compatible) && (strcasecmp(text, "idlocs") == 0)) {
+      type = ID_UNKNOWN_TYPE;
+    }
   }
   else if ((sym = get_symbol(state.stBuiltin, text)) != NULL) {
     type = ID_OPCODES;

@@ -37,7 +37,7 @@ Boston, MA 02111-1307, USA.  */
 /* YY_UNPUT not used, suppress the warning */
 #define YY_NO_UNPUT
 
-static void bad_char(char *character);
+static void bad_char(const char *character);
 
 static inline size_t
 gp_input(char *buf, size_t max_size)
@@ -108,12 +108,12 @@ SYM \/?([a-z0-9_.\\:]+\/?)+
                         }
 \"[^\"]*\"              {
                           yyleng -= 2;
-                          yylval.s = strndup(yytext + 1, yyleng);
+                          yylval.s = GP_Strndup(yytext + 1, yyleng);
                           return STRING;
                         }
 \'[^\']*\'              {
                           yyleng -= 2;
-                          yylval.s = strndup(yytext + 1, yyleng);
+                          yylval.s = GP_Strndup(yytext + 1, yyleng);
                           return STRING;
                         }
 libpath                 {
@@ -171,20 +171,19 @@ error([ \t].*)?         {
                         }
 %%
 
-static void bad_char(char *character)
+static void bad_char(const char *character)
 {
   char complaint[80];
 
   snprintf(complaint, sizeof(complaint),
-    isprint(*character) ?
-      "Illegal character '%c' in numeric constant" :
-      "Illegal character %#x in numeric constant",
-    *character);
+           isprint(*character) ? "Illegal character '%c' in numeric constant" :
+                                 "Illegal character %#x in numeric constant",
+           *character);
 
-  script_error(&complaint[0], NULL);
+  script_error(complaint, NULL);
 }
 
-void open_src(const char *name, int isinclude)
+void open_src(const char *name, gp_boolean isinclude)
 {
   extern FILE *yyin;
   struct source_context *new = GP_Malloc(sizeof(*new));
@@ -204,8 +203,7 @@ void open_src(const char *name, int isinclude)
     int i;
 
     for (i = 0; i < state.numpaths; i++) {
-      snprintf(tryname, sizeof(tryname),
-               "%s" COPY_CHAR "%s", state.paths[i], name);
+      snprintf(tryname, sizeof(tryname), "%s" COPY_CHAR "%s", state.paths[i], name);
       new->f = fopen(tryname, "rt");
 
       if (new->f != NULL) {
@@ -236,10 +234,10 @@ void open_src(const char *name, int isinclude)
   state.src = new;
 }
 
-int close_file()
+gp_boolean close_file(void)
 {
   struct source_context *old;
-  int terminate = 0;
+  gp_boolean terminate = false;
 
   old = state.src;
   state.src = state.src->prev;
@@ -255,7 +253,7 @@ int close_file()
     yy_delete_buffer(YY_CURRENT_BUFFER);
     yy_switch_to_buffer(state.src->yybuf);
   } else {
-    terminate = 1;
+    terminate = true;
   }
 
   return terminate;

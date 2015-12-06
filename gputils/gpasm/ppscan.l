@@ -86,7 +86,7 @@ NUMCHAR [0-9a-z]
                          }
 <hv>{IDENT}#v\(          {
                            int i = yyleng - 3;
-                           pplval.s = strndup(yytext, i);
+                           pplval.s = GP_Strndup(yytext, i);
                            unput('(');
                            ++brack_depth;
                            return IDENTIFIER;

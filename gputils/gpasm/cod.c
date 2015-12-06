@@ -386,7 +386,7 @@ cod_write_code(void)
 static void
 enumerate_blocks(DirBlockInfo *dir, int offset, Blocks *bl, unsigned int *block_num)
 {
-  if (bl->blocks) {
+  if (bl->blocks != NULL) {
     /* enumerate block list */
     gp_putl16(&dir->dir[offset], ++*block_num);
     *block_num += gp_blocks_count(bl) - 1;

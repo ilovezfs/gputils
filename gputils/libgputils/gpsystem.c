@@ -255,6 +255,26 @@ gp_calloc(size_t Nmemb, size_t Size, const char *File, size_t Line, const char *
 
 /*------------------------------------------------------------------------------------------------*/
 
+void *
+gp_realloc(void *Mem, size_t Size, const char *File, size_t Line, const char *Func)
+{
+  void *m;
+
+  if (Size == 0) {
+    return NULL;
+  }
+
+  if ((m = realloc(Mem, Size)) == NULL) {
+    fprintf(stderr, "%s() -- Could not reallocate %zu bytes of memory. {%s.LINE-%zu, %s()}\n",
+            __func__, Size, File, Line, Func);
+    exit(1);
+  }
+
+  return m;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
 char *
 gp_strdup(const char *String, const char *File, size_t Line, const char *Func)
 {
@@ -266,7 +286,27 @@ gp_strdup(const char *String, const char *File, size_t Line, const char *Func)
 
   if ((s = strdup(String)) == NULL) {
     fprintf(stderr, "%s(\"%s\") -- Could not allocate string {%s.LINE-%zu, %s()}, error: %s.\n",
-            String, File, Line, Func, strerror(errno));
+            __func__, String, File, Line, Func, strerror(errno));
+    exit(1);
+  }
+
+  return s;
+}
+
+/*------------------------------------------------------------------------------------------------*/
+
+char *
+gp_strndup(const char *String, size_t Length, const char *File, size_t Line, const char *Func)
+{
+  char *s;
+
+  if (String == NULL) {
+    return NULL;
+  }
+
+  if ((s = strndup(String, Length)) == NULL) {
+    fprintf(stderr, "%s(\"%s\", %zu) -- Could not allocate string {%s.LINE-%zu, %s()}, error: %s.\n",
+            __func__, String, Length, File, Line, Func, strerror(errno));
     exit(1);
   }
 

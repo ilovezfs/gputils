@@ -328,13 +328,13 @@ enter_if(void)
   new->prev = state.astack;
 
   if (state.astack == NULL) {
-    new->prev_enabled = 1;
+    new->prev_enabled = true;
   }
   else {
     new->prev_enabled = state.astack->enabled && state.astack->prev_enabled;
   }
 
-  new->enabled = 0;     /* Only the default */
+  new->enabled = false;         /* Only the default */
   state.astack = new;
 }
 
@@ -2772,7 +2772,7 @@ do_ifdef(gpasmVal r, const char *name, int arity, struct pnode *parms)
       else {
         if ((get_symbol(state.stDefines, p->value.symbol)) ||
             (get_symbol(state.stTop, p->value.symbol))) {
-          state.astack->enabled = 1;
+          state.astack->enabled = true;
         }
       }
     }
@@ -2801,7 +2801,7 @@ do_ifndef(gpasmVal r, const char *name, int arity, struct pnode *parms)
       else {
         if ((!get_symbol(state.stDefines, p->value.symbol)) &&
             (!get_symbol(state.stTop, p->value.symbol))) {
-          state.astack->enabled = 1;
+          state.astack->enabled = true;
         }
       }
     }

@@ -264,7 +264,7 @@ static void
 _write_symbols(void)
 {
   struct syms_s *syms;
-  gp_symbol_type *sm;
+  const gp_symbol_type *sm;
   int num_syms;
   int i;
   struct file_stack *stack = NULL;

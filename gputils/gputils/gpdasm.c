@@ -110,6 +110,7 @@ unexpand(char *Dst, size_t Size, const char *Src)
   in_read_idx      = 0;
   in_read_virt_idx = 0;
   out_write_idx    = 0;
+  first_tab        = 0;
   last_char        = 0;
   space_num        = 0;
 
@@ -176,6 +177,15 @@ unexpand(char *Dst, size_t Size, const char *Src)
     ++in_read_virt_idx;
   } /* while ((Src[in_read_idx] != '\0') && */
 
+  while (space_num >= TABULATOR_SIZE) {
+    Dst[out_write_idx++] = '\t';
+    if (out_write_idx >= Size) {
+      goto _exit;
+    }
+
+    space_num -= TABULATOR_SIZE;
+  }
+
 _exit:
 
   Dst[out_write_idx] = '\0';
@@ -216,7 +226,7 @@ ux_print(gp_boolean newline, const char *format, ...)
       bptr = out_buffer;
     }
 
-    write(STDOUT_FILENO, bptr, len);
+    printf(bptr);
   }
 }
 
@@ -1152,12 +1162,22 @@ dasm(MemBlock *memory)
               last_loc = i;
 
               if (state.format) {
-                ux_print(false, "%0*x:  %0*x  ", addr_digits, org, word_digits, (unsigned int)data);
+                length = snprintf(buffer, sizeof(buffer), "%0*x:  %0*x  ",
+                                  addr_digits, org, word_digits, (unsigned int)data);
               } else {
-                ux_print(false, "        ");
+                length = snprintf(buffer, sizeof(buffer), "        ");
               }
 
-              ux_print(true, "%-*s0x%0*x", TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
+              length += snprintf(buffer + length, sizeof(buffer) - length, "%-*s0x%0*x",
+                                 TABULATOR_SIZE, "dw", word_digits, (unsigned int)data);
+
+              if (state.processor->idlocs_mask != 0) {
+                unsigned int tmp = (~state.processor->idlocs_mask) & data;
+
+                gp_exclamation(buffer, sizeof(buffer), length, "; in fact: 0x%0*x", word_digits, tmp);
+              }
+
+              ux_print(true, "%s", buffer);
             }
             else {
               last_loc = 0;

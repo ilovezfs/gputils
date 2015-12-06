@@ -106,7 +106,7 @@ static int do_include(const char *name, enum section_type type, struct pnode *pa
   p = HEAD(parms);
 
   if (enforce_simple(p)) {
-    open_src(p->value.symbol, 1);
+    open_src(p->value.symbol, true);
   }
 
   return 0;
