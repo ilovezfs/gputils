@@ -226,7 +226,7 @@ ux_print(gp_boolean newline, const char *format, ...)
       bptr = out_buffer;
     }
 
-    printf(bptr);
+    printf("%s", bptr);
   }
 }
 
