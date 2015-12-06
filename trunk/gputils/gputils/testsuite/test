@@ -24,7 +24,7 @@
 # Defines
 TESTDIR=./test
 GPDASMBIN=../gpdasm
-_GPDASMFLAGS="-n -s --strict-options"
+_GPDASMFLAGS="-n -s --strict-options -t"
 GPDASMFLAGS=""
 
 GPASMBIN=../../gpasm/gpasm

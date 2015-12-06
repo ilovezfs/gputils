@@ -1,3 +1,54 @@
+2015-12-06  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/cod.c, gpasm/coff.c:
+    Changed the comments.
+
+  * gpasm/directive.c, gpasm/gpasm.h.in:
+    Use logical constants.
+
+  * gpasm/gpasm.c:
+    Print the new "Idlocs OR Mask" value.
+
+  * gpasm/ppscan.l, gpasm/preprocess.c:
+    Use GP_Strndup() function.
+
+  * gpasm/scan.l:
+    Use GP_Strndup() function. Use logical constants.
+    Use "IDLOCS CODE" in the --mpasm-compatible mode.
+    Thanks to Andrew E. Mileski for the report.
+
+  * gpasm/util.c:
+    Code cleaning.
+
+  * gplink/testsuite/gplink.project/hexfiles/reloc12.hex,
+    gplink/testsuite/test:
+    Refresh.
+
+  * gplink/cod.c:
+    Code cleaning.
+
+  * gplink/gplink.c, gplink/scan.h, gplink/script.c:
+    Use logical constants.
+
+  * gplink/lst.c, gplink/map.c:
+    Use const modifier.
+
+  * gplink/scan.l:
+    Use logical constants.
+    Use const modifier.
+
+  * gputils/gpdasm:
+    bugfix
+
+  * libgputils/gpcofflink.c, libgputils/gpprocessor.c:
+    Use "IDLOCS CODE" in the --mpasm-compatible mode.
+
+  * libgputils/gpprocessor.h:
+    New functions: gp_processor_is_idlocs_byte_addr(),
+                   gp_processor_is_config_byte_addr()
+
+  * libgputils/gpsystem.c, libgputils/gpsystem.h:
+    New functions: gp_realloc(), gp_strndup(), GP_Realloc(), GP_Strndup()
+
 2015-11-23  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * libgputils/gpcofflink.c,
     gplink/testsuite/gplink.project/asmfiles/config_overlap.asm,

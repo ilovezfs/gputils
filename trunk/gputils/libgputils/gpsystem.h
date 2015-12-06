@@ -47,14 +47,17 @@ void  gp_putb32(unsigned char *addr, unsigned long data);
 
 void  gp_date_string(char *buffer, size_t sizeof_buffer);
 
-
 void *gp_malloc(size_t Size, const char *File, size_t Line, const char *Func);
 void *gp_calloc(size_t Nmemb, size_t Size, const char *File, size_t Line, const char *Func);
+void *gp_realloc(void *Mem, size_t Size, const char *File, size_t Line, const char *Func);
 char *gp_strdup(const char *String, const char *File, size_t Line, const char *Func);
+char *gp_strndup(const char *String, size_t Length, const char *File, size_t Line, const char *Func);
 
 #define GP_Malloc(Size)                 gp_malloc(Size, __FILE__, __LINE__, __func__)
 #define GP_Calloc(Nmemb, Size)          gp_calloc(Nmemb, Size, __FILE__, __LINE__, __func__)
+#define GP_Realloc(Mem, Size)           gp_realloc(Mem, Size, __FILE__, __LINE__, __func__)
 #define GP_Strdup(String)               gp_strdup(String, __FILE__, __LINE__, __func__)
+#define GP_Strndup(String, Length)      gp_strndup(String, Length, __FILE__, __LINE__, __func__)
 
 char *gp_lower_case(const char *name);
 char *gp_upper_case(const char *name);

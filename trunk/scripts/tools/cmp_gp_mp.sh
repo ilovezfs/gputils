@@ -38,9 +38,9 @@ if [ "$(uname)" = "CYGWIN_NT-5.1" ]; then
   MPLABX_PATH="/cygdrive/c/Program Files/Microchip/MPLABX"
   GPUTILS_PATH="/cygdrive/c/svn_snapshots/gputils/gputils/gputils"
 else
-  for d in "/opt/microchip/mplabx/*"; do
+  for path in "/opt/microchip/mplabx/"* ; do
     if [ -z "$MPLABX_PATH" ]; then
-      MPLABX_PATH="$d"
+      MPLABX_PATH="$path"
     fi
   done
 

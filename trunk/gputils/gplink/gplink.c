@@ -780,7 +780,7 @@ linker(void)
     struct srcfns *p = state.srcfilenames;
 
     do {
-      open_src(p->filename, 0);
+      open_src(p->filename, false);
       yyparse();
       p = p->next;
     } while (NULL != p);
@@ -803,7 +803,7 @@ linker(void)
     snprintf(file_name, sizeof(file_name),
              "%s" COPY_CHAR "%s", gp_lkr_path, script_name);
     gp_message("Using default linker script \"%s\".", file_name);
-    open_src(file_name, 0);
+    open_src(file_name, false);
     yyparse();
 #endif
   }

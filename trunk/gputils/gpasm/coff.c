@@ -497,7 +497,7 @@ coff_add_eofsym(void)
   new->class          = C_EOF;
 }
 
-/* add an eof symbol to the coff symbol table */
+/* add a list symbol to the coff symbol table */
 
 void
 coff_add_listsym(void)
@@ -514,7 +514,7 @@ coff_add_listsym(void)
     return;
   }
 
-  /* add .eof symbol */
+  /* add .list symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
   new->name           = GP_Strdup(".list");
   new->value          = state.src->line_number;
@@ -523,6 +523,8 @@ coff_add_listsym(void)
   new->type           = T_NULL;
   new->class          = C_LIST;
 }
+
+/* add a nolist symbol to the coff symbol table */
 
 void
 coff_add_nolistsym(void)
@@ -563,7 +565,7 @@ coff_add_directsym(unsigned char command, const char *string)
     return;
   }
 
-  /* add .cod symbol */
+  /* add .direct symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
   new->name           = GP_Strdup(".direct");
   new->value          = gp_processor_byte_to_org(state.device.class, state.byte_addr);
@@ -578,7 +580,7 @@ coff_add_directsym(unsigned char command, const char *string)
   new_aux->_aux_symbol._aux_direct.string = GP_Strdup(string);
 }
 
-/* add a cod symbol to the coff symbol table */
+/* add an ident symbol to the coff symbol table */
 
 void
 coff_add_identsym(const char *string)
@@ -592,7 +594,7 @@ coff_add_identsym(const char *string)
     return;
   }
 
-  /* add .cod symbol */
+  /* add .ident symbol */
   new = gp_coffgen_addsymbol(state.obj.object);
   new->name           = GP_Strdup(".ident");
   new->value          = 0;

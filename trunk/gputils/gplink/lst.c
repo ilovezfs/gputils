@@ -32,10 +32,10 @@ Boston, MA 02111-1307, USA.  */
 #define LINESIZ 520
 
 static gp_boolean list_enabled;
-static gp_section_type *line_section;
+static const gp_section_type *line_section;
 
 static void
-open_src(const char *name, gp_symbol_type *symbol)
+open_source(const char *name, gp_symbol_type *symbol)
 {
   char file_name[PATH_MAX + 1];
   struct list_context *new = GP_Malloc(sizeof(*new));
@@ -45,7 +45,7 @@ open_src(const char *name, gp_symbol_type *symbol)
 
   new->f = fopen(name, "rt");
   if (new->f == NULL) {
-    /* Try searching include pathes */
+    /* Try searching include pathes. */
     for (i = 0; i < state.numpaths; i++) {
       snprintf(file_name, sizeof(file_name), "%s" COPY_CHAR "%s", state.paths[i], name);
       new->f = fopen(file_name, "rb");
@@ -55,7 +55,7 @@ open_src(const char *name, gp_symbol_type *symbol)
       }
     }
     if (new->f == NULL) {
-      /* The path may belong to a build procedure other than this */
+      /* The path may belong to a build procedure other than this. */
       const char *p = strrchr(name, PATH_CHAR);
 
       if (p != NULL) {
@@ -113,11 +113,11 @@ lst_line(const char *format, ...)
   }
 }
 
-gp_linenum_type *
-find_line_number(gp_symbol_type *symbol, int line_number)
+static const gp_linenum_type *
+find_line_number(const gp_symbol_type *symbol, int line_number)
 {
-  gp_section_type *section;
-  gp_linenum_type *line = NULL;
+  const gp_section_type *section;
+  const gp_linenum_type *line = NULL;
 
   section = state.object->sections;
 
@@ -170,7 +170,7 @@ write_src(int last_line)
   char linebuf[LINESIZ];
   char dasmbuf[LINESIZ];
   char *pc;
-  gp_linenum_type *line = NULL;
+  const gp_linenum_type *line = NULL;
   gp_boolean first_time;
   int org = 0;
 
@@ -334,7 +334,7 @@ void
 write_lst(void)
 {
   gp_symbol_type *symbol = state.object->symbols;
-  gp_aux_type *aux;
+  const gp_aux_type *aux;
   gp_boolean first_time = true;
 
   lst_init();
@@ -363,7 +363,7 @@ write_lst(void)
         list_enabled = true;
       }
 
-      open_src(aux->_aux_symbol._aux_file.filename, symbol);
+      open_source(aux->_aux_symbol._aux_file.filename, symbol);
 
       if (first_time) {
         /* write the line numbers for the lst file header */

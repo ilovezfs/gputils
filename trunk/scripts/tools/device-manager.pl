@@ -131,156 +131,167 @@ use constant PIC16_BANK_SIZE  => 2 ** PIC16_BANK_SHIFT;
 
 my %class_features_eeprom8 =
   (
-  CLASS      => PROC_CLASS_EEPROM8,
-  ENHANCED   => FALSE,
-  PAGE_SIZE  => -1,
-  WORD_SIZE  => 8,
-  CONF_SIZE  => -1,
-  CONF_MASK  => -1,
-  EE_START   => -1,
-  BANK_SIZE  => -1,
-  BANK_MASK  => -1,
-  BANK_SHIFT => -1
+  CLASS       => PROC_CLASS_EEPROM8,
+  ENHANCED    => FALSE,
+  PAGE_SIZE   => -1,
+  WORD_SIZE   => 8,
+  CONF_SIZE   => -1,
+  CONF_MASK   => -1,
+  EE_START    => -1,
+  BANK_SIZE   => -1,
+  BANK_MASK   => -1,
+  BANK_SHIFT  => -1,
+  IDLOCS_MASK => 0
   );
 
 my %class_features_eeprom16 =
   (
-  CLASS      => PROC_CLASS_EEPROM16,
-  ENHANCED   => FALSE,
-  PAGE_SIZE  => -1,
-  WORD_SIZE  => 16,
-  CONF_SIZE  => -1,
-  CONF_MASK  => -1,
-  EE_START   => -1,
-  BANK_SIZE  => -1,
-  BANK_MASK  => -1,
-  BANK_SHIFT => -1
+  CLASS       => PROC_CLASS_EEPROM16,
+  ENHANCED    => FALSE,
+  PAGE_SIZE   => -1,
+  WORD_SIZE   => 16,
+  CONF_SIZE   => -1,
+  CONF_MASK   => -1,
+  EE_START    => -1,
+  BANK_SIZE   => -1,
+  BANK_MASK   => -1,
+  BANK_SHIFT  => -1,
+  IDLOCS_MASK => 0
   );
 
 my %class_features_generic =
   (
-  CLASS      => PROC_CLASS_GENERIC,
-  ENHANCED   => FALSE,
-  PAGE_SIZE  => 512,
-  WORD_SIZE  => 12,
-  CONF_SIZE  => 12,
-  CONF_MASK  => 0x0FFF,
-  EE_START   => -1,
-  BANK_SIZE  => PIC12_BANK_SIZE,
-  BANK_MASK  => ~(PIC12_BANK_SIZE - 1),
-  BANK_SHIFT => PIC12_BANK_SHIFT
+  CLASS       => PROC_CLASS_GENERIC,
+  ENHANCED    => FALSE,
+  PAGE_SIZE   => 512,
+  WORD_SIZE   => 12,
+  CONF_SIZE   => 12,
+  CONF_MASK   => 0x0FFF,
+  EE_START    => -1,
+  BANK_SIZE   => PIC12_BANK_SIZE,
+  BANK_MASK   => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT  => PIC12_BANK_SHIFT,
+  IDLOCS_MASK => 0x0FF0
   );
 
 my %class_features_p12 =
   (
-  CLASS      => PROC_CLASS_PIC12,
-  ENHANCED   => FALSE,
-  PAGE_SIZE  => 512,
-  WORD_SIZE  => 12,
-  CONF_SIZE  => 12,
-  CONF_MASK  => 0x0FFF,
-  EE_START   => -1,
-  BANK_SIZE  => PIC12_BANK_SIZE,
-  BANK_MASK  => ~(PIC12_BANK_SIZE - 1),
-  BANK_SHIFT => PIC12_BANK_SHIFT
+  CLASS       => PROC_CLASS_PIC12,
+  ENHANCED    => FALSE,
+  PAGE_SIZE   => 512,
+  WORD_SIZE   => 12,
+  CONF_SIZE   => 12,
+  CONF_MASK   => 0x0FFF,
+  EE_START    => -1,
+  BANK_SIZE   => PIC12_BANK_SIZE,
+  BANK_MASK   => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT  => PIC12_BANK_SHIFT,
+  IDLOCS_MASK => 0x0FF0
   );
 
 my %class_features_p12e =
   (
-  CLASS      => PROC_CLASS_PIC12E,
-  ENHANCED   => TRUE,
-  PAGE_SIZE  => 512,
-  WORD_SIZE  => 12,
-  CONF_SIZE  => 12,
-  CONF_MASK  => 0x0FFF,
-  EE_START   => -1,
-  BANK_SIZE  => PIC12_BANK_SIZE,
-  BANK_MASK  => ~(PIC12_BANK_SIZE - 1),
-  BANK_SHIFT => PIC12_BANK_SHIFT
+  CLASS       => PROC_CLASS_PIC12E,
+  ENHANCED    => TRUE,
+  PAGE_SIZE   => 512,
+  WORD_SIZE   => 12,
+  CONF_SIZE   => 12,
+  CONF_MASK   => 0x0FFF,
+  EE_START    => -1,
+  BANK_SIZE   => PIC12_BANK_SIZE,
+  BANK_MASK   => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT  => PIC12_BANK_SHIFT,
+  IDLOCS_MASK => 0x0FF0
   );
 
 my %class_features_p14 =
   (
-  CLASS      => PROC_CLASS_PIC14,
-  ENHANCED   => FALSE,
-  PAGE_SIZE  => 2048,
-  WORD_SIZE  => 14,
-  CONF_SIZE  => 14,
-  CONF_MASK  => 0x3FFF,
-  EE_START   => 0x2100,
-  BANK_SIZE  => PIC14_BANK_SIZE,
-  BANK_MASK  => ~(PIC14_BANK_SIZE - 1),
-  BANK_SHIFT => PIC14_BANK_SHIFT
+  CLASS       => PROC_CLASS_PIC14,
+  ENHANCED    => FALSE,
+  PAGE_SIZE   => 2048,
+  WORD_SIZE   => 14,
+  CONF_SIZE   => 14,
+  CONF_MASK   => 0x3FFF,
+  EE_START    => 0x2100,
+  BANK_SIZE   => PIC14_BANK_SIZE,
+  BANK_MASK   => ~(PIC14_BANK_SIZE - 1),
+  BANK_SHIFT  => PIC14_BANK_SHIFT,
+  IDLOCS_MASK => 0x3F80
   );
 
 my %class_features_p14e =
   (
-  CLASS      => PROC_CLASS_PIC14E,
-  ENHANCED   => TRUE,
-  PAGE_SIZE  => 2048,
-  WORD_SIZE  => 14,
-  CONF_SIZE  => 16,
-  CONF_MASK  => 0xFFFF,
-  EE_START   => 0xF000,
-  BANK_SIZE  => PIC14_BANK_SIZE,
-  BANK_MASK  => ~(PIC14_BANK_SIZE - 1),
-  BANK_SHIFT => PIC14_BANK_SHIFT
+  CLASS       => PROC_CLASS_PIC14E,
+  ENHANCED    => TRUE,
+  PAGE_SIZE   => 2048,
+  WORD_SIZE   => 14,
+  CONF_SIZE   => 16,
+  CONF_MASK   => 0xFFFF,
+  EE_START    => 0xF000,
+  BANK_SIZE   => PIC14_BANK_SIZE,
+  BANK_MASK   => ~(PIC14_BANK_SIZE - 1),
+  BANK_SHIFT  => PIC14_BANK_SHIFT,
+  IDLOCS_MASK => 0x3F80
   );
 
 my %class_features_p14ex =
   (
-  CLASS      => PROC_CLASS_PIC14EX,
-  ENHANCED   => TRUE,
-  PAGE_SIZE  => 2048,
-  WORD_SIZE  => 14,
-  CONF_SIZE  => 16,
-  CONF_MASK  => 0xFFFF,
-  EE_START   => 0xF000,
-  BANK_SIZE  => PIC14_BANK_SIZE,
-  BANK_MASK  => ~(PIC14_BANK_SIZE - 1),
-  BANK_SHIFT => PIC14_BANK_SHIFT
+  CLASS       => PROC_CLASS_PIC14EX,
+  ENHANCED    => TRUE,
+  PAGE_SIZE   => 2048,
+  WORD_SIZE   => 14,
+  CONF_SIZE   => 16,
+  CONF_MASK   => 0xFFFF,
+  EE_START    => 0xF000,
+  BANK_SIZE   => PIC14_BANK_SIZE,
+  BANK_MASK   => ~(PIC14_BANK_SIZE - 1),
+  BANK_SHIFT  => PIC14_BANK_SHIFT,
+  IDLOCS_MASK => 0x3F80
   );
 
 my %class_features_p16 =
   (
-  CLASS      => PROC_CLASS_PIC16,
-  ENHANCED   => FALSE,
-  PAGE_SIZE  => -1,
-  WORD_SIZE  => 16,
-  CONF_SIZE  => 8,
-  CONF_MASK  => 0x00FF,
-  EE_START   => -1,
-  BANK_SIZE  => PIC16_BANK_SIZE,
-  BANK_MASK  => ~(PIC16_BANK_SIZE - 1),
-  BANK_SHIFT => PIC16_BANK_SHIFT
+  CLASS       => PROC_CLASS_PIC16,
+  ENHANCED    => FALSE,
+  PAGE_SIZE   => -1,
+  WORD_SIZE   => 16,
+  CONF_SIZE   => 8,
+  CONF_MASK   => 0x00FF,
+  EE_START    => -1,
+  BANK_SIZE   => PIC16_BANK_SIZE,
+  BANK_MASK   => ~(PIC16_BANK_SIZE - 1),
+  BANK_SHIFT  => PIC16_BANK_SHIFT,
+  IDLOCS_MASK => 0x00
   );
 
 my %class_features_p16e =
   (
-  CLASS      => PROC_CLASS_PIC16E,
-  ENHANCED   => TRUE,
-  PAGE_SIZE  => -1,
-  WORD_SIZE  => 16,
-  CONF_SIZE  => 8,
-  CONF_MASK  => 0x00FF,
-  EE_START   => 0xF00000,
-  BANK_SIZE  => PIC16_BANK_SIZE,
-  BANK_MASK  => ~(PIC16_BANK_SIZE - 1),
-  BANK_SHIFT => PIC16_BANK_SHIFT
+  CLASS       => PROC_CLASS_PIC16E,
+  ENHANCED    => TRUE,
+  PAGE_SIZE   => -1,
+  WORD_SIZE   => 16,
+  CONF_SIZE   => 8,
+  CONF_MASK   => 0x00FF,
+  EE_START    => 0xF00000,
+  BANK_SIZE   => PIC16_BANK_SIZE,
+  BANK_MASK   => ~(PIC16_BANK_SIZE - 1),
+  BANK_SHIFT  => PIC16_BANK_SHIFT,
+  IDLOCS_MASK => 0x00
   );
 
 my %class_features_sx =
   (
-  CLASS      => PROC_CLASS_SX,
-  ENHANCED   => FALSE,
-  PAGE_SIZE  => 512,
-  WORD_SIZE  => 12,
-  CONF_SIZE  => 12,
-  CONF_MASK  => 0x0FFF,
-  EE_START   => -1,
-  BANK_SIZE  => PIC12_BANK_SIZE,
-  BANK_MASK  => ~(PIC12_BANK_SIZE - 1),
-  BANK_SHIFT => PIC12_BANK_SHIFT
+  CLASS       => PROC_CLASS_SX,
+  ENHANCED    => FALSE,
+  PAGE_SIZE   => 512,
+  WORD_SIZE   => 12,
+  CONF_SIZE   => 12,
+  CONF_MASK   => 0x0FFF,
+  EE_START    => -1,
+  BANK_SIZE   => PIC12_BANK_SIZE,
+  BANK_MASK   => ~(PIC12_BANK_SIZE - 1),
+  BANK_SHIFT  => PIC12_BANK_SHIFT,
+  IDLOCS_MASK => 0x3F80
   );
 
 my @classnames =
@@ -455,6 +466,7 @@ my $px_struct_end;              # The end of the px structure in the gpprocessor
         IDLOCS_ADDRS => [0, 0],
         CONFIG_ADDRS => [0, 0],
         EEPROM_ADDRS => [0, 0],
+        IDLOCS_MASK  => 0,
         HEADER       => '',
         SCRIPT       => '',
         P16E_FLAGS   => 0,
@@ -1920,6 +1932,7 @@ sub new_px_row($$$$)
            IDLOCS_ADDRS => [ $lkr_idlocs_start, $lkr_idlocs_end ],
            CONFIG_ADDRS => [ $lkr_config_start, $lkr_config_end ],
            EEPROM_ADDRS => [ $lkr_eeprom_start, $lkr_eeprom_end ],
+           IDLOCS_MASK  => $Info->{IDLOCS_MASK},
            HEADER       => $Header,
            SCRIPT       => $Script,
     	   P16E_FLAGS   => $Info->{P16E_FLAGS},
@@ -2057,8 +2070,8 @@ sub extract_px_struct()
   my $lkr_error = '';
 
         # static struct px pics[] = {
-        #   { PROC_CLASS_PIC12E   , "__12F529T39A"  , { "pic12f529t39a"  , "p12f529t39a"    , "12f529t39a"      }, 0xE529,  3,    8, 0x00E0, { 0x07, 0x0F }, 0x06F, {     -1,     -1 }, 0x00FF, 0x0005FF, 0x000600, {       -1,       -1 }, { 0x000640, 0x000643 }, { 0x000FFF, 0x000FFF }, { 0x000600, 0x00063F }, "p12f529t39a.inc"  , "12f529t39a_g.lkr"  , 0 },
-        #   { PROC_CLASS_PIC14E   , "__16LF1517"    , { "pic16lf1517"    , "p16lf1517"      , "16lf1517"        }, 0xA517,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x21EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, "p16lf1517.inc"    , "16lf1517_g.lkr"    , 0 },
+        #   { PROC_CLASS_PIC12E   , "__12F529T39A"  , { "pic12f529t39a"  , "p12f529t39a"    , "12f529t39a"      }, 0xE529,  3,    8, 0x00E0, { 0x07, 0x0F }, 0x06F, {     -1,     -1 }, 0x00FF, 0x0005FF, 0x000600, {       -1,       -1 }, { 0x000640, 0x000643 }, { 0x000FFF, 0x000FFF }, { 0x000600, 0x00063F }, 0x0FF0, "p12f529t39a.inc"  , "12f529t39a_g.lkr"  , 0 },
+        #   { PROC_CLASS_PIC14E   , "__16LF1517"    , { "pic16lf1517"    , "p16lf1517"      , "16lf1517"        }, 0xA517,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x21EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16lf1517.inc"    , "16lf1517_g.lkr"    , 0 },
 
   Log('Extract the table of px struct.', 4);
   $in_table = FALSE;
@@ -2079,10 +2092,10 @@ sub extract_px_struct()
         $px_struct_begin = $n;
         }
       }
-        #               $1                $2                 $3            $4            $5                 $6             $7             $8             $9                $10         $11              $12              $13         $14              $15         $16         $17              $18         $19                  $20         $21                  $22         $23                  $24         $25                   $26                   $27              $28
-    elsif (/\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\w+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*\"?([\.\w]+)\"?\s*,\s*\"?([\.\w]+)\"?\s*,\s*(\d+)\s*\}/iop)
+        #               $1                $2                 $3            $4            $5                 $6             $7             $8             $9                $10         $11              $12              $13         $14              $15         $16         $17              $18         $19                  $20         $21                  $22         $23                  $24         $25              $26              $27                   $28              $29
+    elsif (/\{\s*(PROC_CLASS_\w+)\s*,\s*"(\w+)"\s*,\s*\{\s*"(\w+)"\s*,\s*"(\w+)"\s*,\s*"(\w+)"\s*}\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*([\w-]+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*\{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*{\s*(\S+)\s*,\s*(\S+)\s*\}\s*,\s*(\w+)\s*,\s*\"?([\.\w]+)\"?\s*,\s*\"?([\.\w]+)\"?\s*,\s*(\d+)\s*\}/iop)
       {
-      my ($class, $long_name, $middle_name, $short_name, $coff, $header, $script) = ($1, $3, $4, $5, str2dec($6), $26, $27);
+      my ($class, $long_name, $middle_name, $short_name, $coff, $header, $script) = ($1, $3, $4, $5, str2dec($6), $27, $28);
         # Maybe there is a comment at the end of the line.
       my $tail = ${^POSTMATCH};
       my $bank_mask = $class_features_by_gputils{$class}->{BANK_MASK};
@@ -2106,9 +2119,10 @@ sub extract_px_struct()
                IDLOCS_ADDRS => [ str2dec($20), str2dec($21) ],
                CONFIG_ADDRS => [ str2dec($22), str2dec($23) ],
                EEPROM_ADDRS => [ str2dec($24), str2dec($25) ],
+               IDLOCS_MASK  => str2dec($26),
                HEADER       => $header,
                SCRIPT       => $script,
-               P16E_FLAGS   => str2dec($28),
+               P16E_FLAGS   => str2dec($29),
                COMMENT      => ''
                };
 
@@ -2239,6 +2253,7 @@ EOT
       print ('idlocs_addrs: ' . neg_form($_->{IDLOCS_ADDRS}->[0], 6) . ', ' . neg_form($_->{IDLOCS_ADDRS}->[1], 6) . "\n");
       print ('config_addrs: ' . neg_form($_->{CONFIG_ADDRS}->[0], 6) . ', ' . neg_form($_->{CONFIG_ADDRS}->[1], 6) . "\n");
       print ('eeprom_addrs: ' . neg_form($_->{EEPROM_ADDRS}->[0], 6) . ', ' . neg_form($_->{EEPROM_ADDRS}->[1], 6) . "\n");
+      printf "idlocs_mask : 0x%04X\n", $_->{IDLOCS_MASK};
       print  "header      : $_->{HEADER}\n";
       print  "script      : $_->{SCRIPT}\n";
       print  "pic16e_flags: $_->{P16E_FLAGS}\n";
@@ -2347,6 +2362,8 @@ sub create_one_px_row($$)
   $line .= ', ';
   $line .= neg_form($Row->{EEPROM_ADDRS}->[1], 6);
   $line .= ' }, ';
+
+  $line .= sprintf("0x%04X, ", $Row->{IDLOCS_MASK});
 
   $i = $Row->{HEADER};
   $line .= sprintf('%-19s, ', (($i ne 'NULL') ? "\"$i\"" : $i));
@@ -2753,7 +2770,8 @@ sub show_diff_px_struct()
         $_->{CONFIG_ADDRS}->[0] != $mp->{CONFIG_ADDRS}->[0] ||
         $_->{CONFIG_ADDRS}->[1] != $mp->{CONFIG_ADDRS}->[1] ||
         $_->{EEPROM_ADDRS}->[0] != $mp->{EEPROM_ADDRS}->[0] ||
-        $_->{EEPROM_ADDRS}->[1] != $mp->{EEPROM_ADDRS}->[1])
+        $_->{EEPROM_ADDRS}->[1] != $mp->{EEPROM_ADDRS}->[1]
+        $_->{IDLOCS_MASK}       != $mp->{IDLOCS_MASK})
       {
       $out .= "$border\n";
       $out .= 'mplabx  ' . create_one_px_row($mp, FALSE) . "\n";

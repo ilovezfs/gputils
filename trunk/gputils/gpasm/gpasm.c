@@ -379,6 +379,9 @@ lister_of_devices(pic_processor_t processor)
     else {
       printf("Idlocs         : 0x%0*X\n", addr_digits, pair[0]);
     }
+    if (class != PROC_CLASS_PIC16E) {
+      printf("Idlocs OR Mask : 0x%0*X\n", addr_digits, processor->idlocs_mask);
+    }
   }
 
   if ((pair = gp_processor_config_exist(processor)) != NULL) {

@@ -247,7 +247,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
         }
         ++end1;
 
-        add_arg(strndup(&buf[start1], end1 - start1));
+        add_arg(GP_Strndup(&buf[start1], end1 - start1));
         ++n_args;
 
         if (*end < *n) {

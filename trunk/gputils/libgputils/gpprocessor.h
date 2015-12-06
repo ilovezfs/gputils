@@ -257,9 +257,9 @@ extern const struct proc_class proc_class_pic16e;    /* enhanced 16 bit devices 
 
 #define IS_EEPROM8          (state.device.class == PROC_CLASS_EEPROM8)
 #define IS_EEPROM16         (state.device.class == PROC_CLASS_EEPROM16)
-#define IS_SX_CORE          (state.device.class == PROC_CLASS_SX)
 #define IS_PIC12_CORE       (state.device.class == PROC_CLASS_PIC12)
 #define IS_PIC12E_CORE      (state.device.class == PROC_CLASS_PIC12E)
+#define IS_SX_CORE          (state.device.class == PROC_CLASS_SX)
 #define IS_PIC14_CORE       (state.device.class == PROC_CLASS_PIC14)
 #define IS_PIC14E_CORE      (state.device.class == PROC_CLASS_PIC14E)
 #define IS_PIC14EX_CORE     (state.device.class == PROC_CLASS_PIC14EX)
@@ -294,6 +294,8 @@ struct px {
   int idlocs_addrs[2];
   int config_addrs[2];
   int eeprom_addrs[2];
+  /* This is an OR mask for the PIC12, PIC12E, PIC14 and PIC14E families. PIC12x: 0x0FF0, PIC14x: 0x3F80 */
+  int idlocs_mask;
   /* Use the gpdasm. */
   const char *header;
   const char *script;
@@ -341,6 +343,9 @@ const char *gp_processor_header(pic_processor_t processor);
 const char *gp_processor_script(pic_processor_t processor);
 unsigned int gp_processor_id_location(pic_processor_t processor);
 
+int gp_org_to_byte(unsigned int shift, int org);
+int gp_byte_to_org(unsigned int shift, int byte);
+
 const int *gp_processor_common_ram_exist(pic_processor_t processor);
 int gp_processor_is_common_ram_addr(pic_processor_t processor, int address);
 
@@ -349,9 +354,11 @@ int gp_processor_is_linear_ram_addr(pic_processor_t processor, int address);
 
 const int *gp_processor_idlocs_exist(pic_processor_t processor);
 int gp_processor_is_idlocs_org(pic_processor_t processor, int org);
+int gp_processor_is_idlocs_byte_addr(pic_processor_t processor, int byte_address);
 
 const int *gp_processor_config_exist(pic_processor_t processor);
 int gp_processor_is_config_org(pic_processor_t processor, int org);
+int gp_processor_is_config_byte_addr(pic_processor_t processor, int byte_address);
 
 const int *gp_processor_eeprom_exist(pic_processor_t processor);
 int gp_processor_is_eeprom_org(pic_processor_t processor, int org);
@@ -373,6 +380,7 @@ int gp_processor_set_ibank(proc_class_t class,
                            int bank,
                            MemBlock *m,
                            unsigned int address);
+
 int gp_processor_check_page(proc_class_t class, unsigned int address);
 
 int gp_processor_set_page(proc_class_t class,
@@ -389,9 +397,6 @@ int gp_processor_real_to_byte(pic_processor_t processor, int org);
 
 int gp_processor_byte_to_org(proc_class_t class, int byte_address);
 int gp_processor_byte_to_real(pic_processor_t processor, int byte_address);
-
-int gp_org_to_byte(unsigned shift, int org);
-int gp_byte_to_org(unsigned shift, int byte);
 
 const core_sfr_t *gp_processor_find_sfr(proc_class_t class, int address);
 const char *gp_processor_find_sfr_name(proc_class_t class, int address);
