@@ -188,7 +188,7 @@ lst_init(void)
   state.lst.title_name[0] = '\0';
   state.lst.subtitle_name[0] = '\0';
   state.lst.tabstop = 8;        /* Default tabstop every 8 */
-  state.lst.line_width = 132;   /* Default line widst is 132 */
+  state.lst.line_width = 132;   /* Default line width is 132 */
 
   if (state.lstfile != OUT_NAMED) {
     snprintf(state.lstfilename, sizeof(state.lstfilename),
@@ -778,11 +778,9 @@ lst_data:
     } else {
       unsigned short word;
 
-      state.device.class->i_memory_get(state.c_memory,
-                                       state.lst.config_address, &word, NULL, NULL);
-      pos += lst_printf(addr_fmt,
-                        gp_processor_byte_to_real(state.processor,
-                                                 state.lst.config_address));
+      state.device.class->i_memory_get(state.c_memory, state.lst.config_address, &word, NULL, NULL);
+      pos += lst_printf(addr_fmt, gp_processor_byte_to_real(state.processor,
+                        state.lst.config_address));
       pos += lst_printf("%04X", word);
       lst_spaces(LST_LINENUM_POS - pos);
     }
@@ -861,7 +859,7 @@ cod_symbol_table(void)
   int i;
   struct symbol **lst, **ps, *s;
 
-  ps = lst = GP_Malloc(state.stGlobal->count * sizeof (struct symbol *));
+  ps = lst = GP_Malloc(state.stGlobal->count * sizeof(struct symbol *));
 
   for (i = 0; i < HASH_SIZE; i++) {
     for (s = state.stGlobal->hash_table[i]; s != NULL; s = s->next) {
@@ -882,7 +880,7 @@ cod_symbol_table(void)
 
 /* append the symbol table to the .lst file */
 struct lst_symbol_s {
-  struct symbol *sym;
+  const struct symbol *sym;
   enum lst_sym_type_e {
     LST_SYMBOL,
     LST_DEFINE,
@@ -943,22 +941,22 @@ lst_symbol_table(void)
   qsort(lst, count, sizeof(struct lst_symbol_s), lst_symbol_compare);
 
   for (i = 0; i < count; i++) {
-    void *p = get_symbol_annotation(lst[i].sym);
+    const void *p = get_symbol_annotation(lst[i].sym);
     const char *name = get_symbol_name(lst[i].sym);
 
     switch (lst[i].type) {
     case LST_SYMBOL:
       /* symbol */
-      lst_line("%-32s  %08X", name, (p != NULL) ? ((struct variable *)p)->value : 0);
+      lst_line("%-32s  %08X", name, (p != NULL) ? ((const struct variable *)p)->value : 0);
       break;
 
     case LST_DEFINE:
       /* define */
       if (p != NULL) {
-        assert(((struct pnode *)p)->tag == PTAG_LIST);
-        assert(HEAD((struct pnode *)p)->tag == PTAG_STRING);
+        assert(((const struct pnode *)p)->tag == PTAG_LIST);
+        assert(HEAD((const struct pnode *)p)->tag == PTAG_STRING);
       }
-      lst_line("%-32s  %s", name, (p != NULL) ? HEAD((struct pnode *)p)->value.string : "");
+      lst_line("%-32s  %s", name, (p != NULL) ? HEAD((const struct pnode *)p)->value.string : "");
       break;
 
     case LST_MACRO:
@@ -978,15 +976,15 @@ lst_symbol_table(void)
 void
 preproc_init(void)
 {
-  if (state.preproc.preprocfilename != NULL) {
-    if ((state.preproc.preprocfilename[0] == '-') && (state.preproc.preprocfilename[1] == '\0')) {
+  const char *name = state.preproc.preprocfilename;
+
+  if (name != NULL) {
+    if ((name[0] == '-') && (name[1] == '\0')) {
       state.preproc.f = stdout;
     }
-    else {
-      if ((state.preproc.f = fopen(state.preproc.preprocfilename, "wt")) == NULL) {
-        perror(state.preproc.preprocfilename);
-        exit(1);
-      }
+    else if ((state.preproc.f = fopen(name, "wt")) == NULL) {
+      perror(name);
+      exit(1);
     }
   }
 }

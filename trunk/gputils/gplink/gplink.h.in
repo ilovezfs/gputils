@@ -90,7 +90,7 @@ extern struct gplink_state {
   struct {                         /* Symbol file state: */
     FILE *f;                         /*   Symbol file output */
     gp_boolean enabled;              /*   symbol file is enabled */
-    int emitting;                    /*   flag indicating when an opcode is emitted */
+    gp_boolean emitting;             /*   flag indicating when an opcode is emitted */
   } cod;
 
   struct {                         /* List file state: */

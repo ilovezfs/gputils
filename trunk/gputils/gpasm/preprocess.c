@@ -49,12 +49,12 @@ struct arg_list_s {
   struct arg_list_s *next;
 } *arg_list = NULL, *arg_list_tail = NULL;
 
-static char *
+static const char *
 check_defines(char *symbol, int symlen, struct pnode **param_list_p)
 {
   struct symbol *sym;
   struct pnode *p;
-  char *subst = NULL;
+  const char *subst = NULL;
 
   *param_list_p = NULL;
 
@@ -182,14 +182,14 @@ static gp_boolean
 substitute_define(char *buf, int begin, int *end, int *n, int max_size, int level)
 {
   int mlen = *end - begin;
-  char *sub;
+  const char *sub;
 
   if (mlen <= 0) {
     /* nothing to substitute */
     return false;
   }
 
-  if (NULL != (sub = check_defines(&buf[begin], mlen, &param_list))) {
+  if ((sub = check_defines(&buf[begin], mlen, &param_list)) != NULL) {
     int n_params = list_length(param_list);
 
     DBG_printf("define %*.*s has %d parameters\n", mlen, mlen, &buf[begin], n_params);
@@ -262,13 +262,13 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
 
         if (*end < *n) {
           if ((bracket && (buf[*end] == ')')) || (!bracket && ((buf[*end] == '\n') || (buf[*end] == ';')))) {
-            if (';' == buf[*end]) {
+            if (buf[*end] == ';') {
               /* skip to the trailing newline */
               *end = (buf[*n - 1] == '\n') ? (*n - 1) : *n;
             }
             else {
               /* don't eat newline! */
-              if ('\n' != buf[*end]) {
+              if (buf[*end] != '\n') {
                 ++(*end);
               }
             }
@@ -615,17 +615,17 @@ preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
   DBG_printf("+++preprocess_hv_params: %*.*s\n", *end, *end, buf);
 }
 
-static char *
+static const char *
 check_macro_params(char *symbol, int symlen)
 {
-  struct symbol *sym;
-  struct pnode *p;
-  char *subst = NULL;
+  const struct symbol *sym;
+  const struct pnode *p;
+  const char *subst = NULL;
 
   if ((sym = get_symbol_len(state.stMacroParams, symbol, symlen)) != NULL) {
     p = get_symbol_annotation(sym);
     if (p != NULL) {
-      struct pnode *p2 = HEAD(p);
+      const struct pnode *p2 = HEAD(p);
 
       assert(p->tag == PTAG_LIST);
       assert(p2->tag == PTAG_STRING);
@@ -652,7 +652,7 @@ static gp_boolean
 substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, int level)
 {
   int mlen = *end - begin;
-  char *sub;
+  const char *sub;
 
   if (mlen <= 0) {
     /* nothing to substitute */
@@ -693,7 +693,7 @@ set_source_line(const char *line, int len, struct src_line_s *src_line)
       src_line->size *= 2;
     }
     while (src_line->size <= len);
-    src_line->line = realloc(src_line->line, src_line->size);
+    src_line->line = GP_Realloc(src_line->line, src_line->size);
   }
 
   if (len > 0) {
@@ -722,7 +722,7 @@ in_macro_expansion(void)
 void
 preprocess_line(char *buf, int *n, int max_size)
 {
-  int res;
+  gp_boolean res;
   int end = *n;
 
   if (IN_MACRO_WHILE_DEFINITION) {

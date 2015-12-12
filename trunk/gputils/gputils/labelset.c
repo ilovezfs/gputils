@@ -676,7 +676,7 @@ lset_section_new(lset_section_root_t *Root, const char *Name, int Line_number) {
     return NULL;
   }
 
-  if ((sect = calloc(1, sizeof(lset_section_t))) == NULL) {
+  if ((sect = GP_Calloc(1, sizeof(lset_section_t))) == NULL) {
     return NULL;
   }
 

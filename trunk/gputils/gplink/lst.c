@@ -127,8 +127,7 @@ find_line_number(const gp_symbol_type *symbol, int line_number)
     while (line != NULL) {
       if ((line->symbol == symbol) && (line->line_number == line_number)) {
         if (section != line_section) {
-          /* switching sections, so update was_org with the new
-             address */
+          /* Switching sections, so update was_org with the new address. */
           state.lst.was_org = line->address;
           line_section = section;
         }
@@ -152,7 +151,7 @@ expand(const char *buf)
     if (c == '\t') {
       unsigned int n = TABULATOR_SIZE - (id % TABULATOR_SIZE);
 
-      while (n-- && id < (sizeof(dest) - 2)) {
+      while (n-- && (id < (sizeof(dest) - 2))) {
         dest[id++] = ' ';
       }
     }
@@ -216,7 +215,7 @@ write_src(int last_line)
           linebuf[0] = '\0';
         }
 
-        state.cod.emitting = 1;
+        state.cod.emitting = true;
         org = line->address;
         len = b_memory_get_unlisted_size(line_section->data, org);
 
@@ -252,8 +251,7 @@ write_src(int last_line)
                                             state.processor->prog_mem_size, GPDIS_SHOW_ALL_BRANCH,
                                             dasmbuf, sizeof(dasmbuf), len);
             lst_line("%06lx   %04x     %-24s %s",
-                     gp_processor_byte_to_org(state.class, org), word,
-                     expand(dasmbuf), linebuf);
+                     gp_processor_byte_to_org(state.class, org), word, expand(dasmbuf), linebuf);
             b_memory_set_listed(line_section->data, org, num_bytes);
             state.lst.was_org = org;
             cod_lst_line(COD_NORMAL_LST_LINE);
@@ -279,7 +277,7 @@ write_src(int last_line)
 
       if (first_time) {
         lst_line("%42s %s", "", linebuf);
-        state.cod.emitting = 0;
+        state.cod.emitting = false;
         cod_lst_line(COD_NORMAL_LST_LINE);
       }
     }
@@ -319,7 +317,7 @@ lst_init(void)
   }
 
   state.lst.was_org = 0;
-  state.cod.emitting = 0;
+  state.cod.emitting = false;
 
   lst_line("%s", GPLINK_VERSION_STRING);
   lst_line("%s", GPUTILS_COPYRIGHT_STRING);
