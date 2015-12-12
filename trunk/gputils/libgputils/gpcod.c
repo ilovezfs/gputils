@@ -1,6 +1,7 @@
 /* .cod file support
    Copyright (C) 2003, 2004, 2005 Craig Franklin
    Copyright (C) 2012 Borut Razem
+   Copyright (C) 2015 Molnar Karoly
 
 This file is part of gputils.
 
@@ -68,7 +69,7 @@ gp_cod_time(unsigned char *buffer, size_t sizeof_buffer)
   time(&now);
   now_tm = localtime(&now);
 
-  value = ((now_tm->tm_hour) * 100) + now_tm->tm_min;
+  value = (now_tm->tm_hour * 100) + now_tm->tm_min;
   
   buffer[0] = value & 0xff;
   buffer[1] = (value >> 8) & 0xff;
@@ -93,61 +94,222 @@ gp_blocks_new(void)
 BlockList *
 gp_blocks_append(Blocks *bl, BlockList *b)
 {
-  if (bl->blocks == NULL) {
-    bl->blocks = b;
+  if (bl->first == NULL) {
+    bl->first = b;
+    bl->count = 1;
   } else {
-    BlockList *p;
-    
-    for (p = bl->blocks; p->next; p = p->next)
-      ;
-
-    p->next = b;
+    bl->last->next = b;
+    (bl->count)++;
   }
-  bl->offset = 0;
 
+  bl->last   = b;
+  bl->offset = 0;
   return b;
 }
 
 BlockList *
 gp_blocks_get_last(Blocks *bl)
 {
-  if (bl->blocks == NULL) {
-    return NULL;
-  } else {
-    BlockList *p;
-
-    for (p = bl->blocks; p->next; p = p->next)
-      ;
-
-    return p;
-  }
+  return bl->last;
 }
 
 BlockList *
 gp_blocks_get_last_or_new(Blocks *bl)
 {
-  if (bl->blocks != NULL) {
+  if (bl->first != NULL) {
     return gp_blocks_get_last(bl);
   }
   else {
+    bl->first  = gp_blocks_new();
+    bl->last   = bl->first;
     bl->offset = 0;
-    return bl->blocks = gp_blocks_new();
+    bl->count  = 1;
+    return bl->first;
   }
 }
 
 int
-gp_blocks_count(Blocks *bl)
+gp_blocks_count(const Blocks *bl)
 {
-  if (bl->blocks == NULL) {
-    return 0;
+  return ((bl->first == NULL) ? 0 : bl->count);
+}
+
+void
+gp_blocks_enumerate(DirBlockInfo *dir, unsigned int offset, Blocks *bl, unsigned int *block_num)
+{
+  if (bl->first != NULL) {
+    /* enumerate block list */
+    gp_putl16(&dir->dir[offset], ++(*block_num));
+    *block_num += gp_blocks_count(bl) - 1;
+    gp_putl16(&dir->dir[offset + 2], *block_num);
   }
-  else {
-    int n;
-    BlockList *p;
+}
 
-    for (n = 1, p = bl->blocks; p->next; ++n, p = p->next)
-      ;
+void
+gp_blocks_enumerate_directory(DirBlockInfo *main_dir)
+{
+  DirBlockInfo *dbi;
+  unsigned int block_num = 0;
+  unsigned int i;
 
-    return n;
+  /* enumerate directory blocks */
+  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_putl16(&dbi->dir[COD_DIR_NEXTDIR], (dbi->next != NULL) ? ++block_num : 0);
+  }
+
+  /* enumerate code blocks */
+  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+    for (i = 0; i < COD_CODE_IMAGE_BLOCKS; ++i) {
+      if (dbi->cod_image_blocks[i].block != NULL) {
+        gp_putl16(&dbi->dir[i * 2], ++block_num);
+      }
+    }
+  }
+
+  /* enumerate surce files blocks */
+  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_blocks_enumerate(dbi, COD_DIR_NAMTAB, &dbi->src, &block_num);
+  }
+
+  /* enumerate list lines blocks */
+  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_blocks_enumerate(dbi, COD_DIR_LSTTAB, &dbi->lst, &block_num);
+  }
+
+  /* enumerate memory map blocks */
+  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_blocks_enumerate(dbi, COD_DIR_MEMMAP, &dbi->rng, &block_num);
+  }
+
+  /* enumerate long symbol table blocks */
+  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_blocks_enumerate(dbi, COD_DIR_LSYMTAB, &dbi->sym, &block_num);
+  }
+
+  /* enumerate debug messages table blocks */
+  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_blocks_enumerate(dbi, COD_DIR_MESSTAB, &dbi->dbg, &block_num);
+  }
+}
+
+void
+gp_blocks_write(FILE *f, Blocks *bl)
+{
+  BlockList *p = bl->first;
+
+  /* write block list */
+  while (p != NULL) {
+    if (fwrite(p->block, 1, COD_BLOCK_SIZE, f) != COD_BLOCK_SIZE) {
+      fprintf(stderr, "%s() -- Could not write cod file.\n", __func__);
+      exit(1);
+    }
+    p = p->next;
+  }
+}
+
+void
+gp_blocks_write_directory(FILE *f, DirBlockInfo *main_dir)
+{
+  DirBlockInfo *dbi;
+  unsigned int i;
+
+  /* write directory blocks */
+  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+    if (fwrite(dbi->dir, 1, COD_BLOCK_SIZE, f) != COD_BLOCK_SIZE) {
+      fprintf(stderr, "%s() -- Could not write cod file.\n", __func__);
+      exit(1);
+    }
+  }
+
+  /* write code blocks */
+  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+    for (i = 0; i < COD_CODE_IMAGE_BLOCKS; ++i) {
+      if (dbi->cod_image_blocks[i].block != NULL) {
+        if (fwrite(dbi->cod_image_blocks[i].block, 1, COD_BLOCK_SIZE, f) != COD_BLOCK_SIZE) {
+          fprintf(stderr, "%s() -- Could not write cod file.\n", __func__);
+          exit(1);
+        }
+      }
+    }
+  }
+
+  /* write source files blocks */
+  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_blocks_write(f, &dbi->src);
+  }
+
+  /* write list lines blocks */
+  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_blocks_write(f, &dbi->lst);
+  }
+
+  /* write memory map blocks */
+  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_blocks_write(f, &dbi->rng);
+  }
+
+  /* write long symbol table blocks */
+  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_blocks_write(f, &dbi->sym);
+  }
+
+  /* write debug messages table blocks */
+  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
+    gp_blocks_write(f, &dbi->dbg);
+  }
+}
+
+void
+gp_blocks_free(Blocks *bl)
+{
+  BlockList *b = bl->first;
+
+  while (b != NULL) {
+    BlockList *next = b->next;
+
+    free(b);
+    b = next;
+  }
+
+  bl->first  = NULL;
+  bl->last   = NULL;
+  bl->offset = 0;
+  bl->count  = 0;
+}
+
+void
+gp_blocks_free_directory(DirBlockInfo *main_dir)
+{
+  DirBlockInfo *dbi = main_dir;
+  DirBlockInfo *next;
+  unsigned int i;
+
+  while (dbi != NULL) {
+    /* free code blocks */
+    for (i = 0; i < COD_CODE_IMAGE_BLOCKS; ++i) {
+      if (dbi->cod_image_blocks[i].block != NULL) {
+        free(dbi->cod_image_blocks[i].block);
+      }
+    }
+
+    /* free surce files blocks */
+    gp_blocks_free(&dbi->src);
+
+    /* free list lines blocks */
+    gp_blocks_free(&dbi->lst);
+
+    /* free memory map blocks */
+    gp_blocks_free(&dbi->rng);
+
+    /* free long symbol table blocks */
+    gp_blocks_free(&dbi->sym);
+
+    /* free debug messages table blocks */
+    gp_blocks_free(&dbi->dbg);
+
+    next = dbi->next;
+    /* free directory blocks */
+    free(dbi);
+    dbi = next;
   }
 }

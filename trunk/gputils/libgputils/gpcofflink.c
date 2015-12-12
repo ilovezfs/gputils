@@ -508,6 +508,7 @@ _copy_rom_section(gp_object_type *object,
   else {
     /* select "retlw" instruction */
     unsigned short insn = gp_processor_retlw(object->class);
+
     for (from = idata->address; from < last; from++, to += 2) {
       unsigned char data;
 
@@ -727,6 +728,7 @@ gp_add_cinit_section(gp_object_type *object)
       if (section->flags & STYP_DATA) {
         /* locate the rom table */
         char *prog_name = _create_i_section_name(section->name);
+
         prog_section = gp_coffgen_findsection(object, object->sections, prog_name);
         free(prog_name);
 
@@ -1223,10 +1225,10 @@ gp_cofflink_reloc_cinit(gp_object_type *object,
     cinit_section->address = smallest_address;
     _set_used(object, m, 0, smallest_shadow_address, size, "cinit", cinit_section->name, false);
 
-    /* Update the line number offsets */
+    /* Update the line number offsets. */
     _update_line_numbers(cinit_section->line_numbers, cinit_section->address);
 
-    /* Set the relocated flag */
+    /* Set the relocated flag. */
     cinit_section->flags |= STYP_RELOC;
   }
   else if (!type_avail) {
@@ -1784,7 +1786,7 @@ gp_cofflink_make_memory(gp_object_type *object)
   m = i_memory_create();
 
   while (section != NULL) {
-    if ((section->flags & STYP_TEXT) || (section->flags & STYP_DATA_ROM)) {
+    if (section->flags & (STYP_TEXT | STYP_DATA_ROM)) {
       addr = section->address;
 
       stop = addr + section->size;

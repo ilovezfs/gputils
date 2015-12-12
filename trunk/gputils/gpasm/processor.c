@@ -70,9 +70,9 @@ void select_processor(const char *name)
             struct range_pair *new_pair = GP_Malloc(sizeof(struct range_pair));
 
             new_pair->start = start;
-            new_pair->end = end;
-            new_pair->next = state.badrom;
-            state.badrom = new_pair;
+            new_pair->end   = end;
+            new_pair->next  = state.badrom;
+            state.badrom    = new_pair;
           }
         }
 
@@ -121,7 +121,7 @@ void select_processor(const char *name)
           addr = found->prog_mem_size;
 
           if (addr > 0) {
-            set_global("__CODE_START", 0, PERMANENT, GVT_CONSTANT);
+            set_global("__CODE_START",        0, PERMANENT, GVT_CONSTANT);
             set_global("__CODE_END",   addr - 1, PERMANENT, GVT_CONSTANT);
           }
 
@@ -153,7 +153,7 @@ void select_processor(const char *name)
     }
 
     /* Load the instruction sets if necessary. */
-    if ((state.processor_chosen == 0) && (state.processor != NULL)) {
+    if ((!state.processor_chosen) && (state.processor != NULL)) {
       opcode_init(1);   /* General directives. */
       /* Separate the directives from the opcodes. */
       state.stBuiltin = push_symbol_table(state.stBuiltin, true);
@@ -163,7 +163,7 @@ void select_processor(const char *name)
         opcode_init(3);   /* Special pseudo ops for 12 and 14 bit devices. */
       }
 
-      state.processor_chosen = 1;
+      state.processor_chosen = true;
     }
   }
 }
