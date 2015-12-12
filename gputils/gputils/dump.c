@@ -406,8 +406,7 @@ dump_lsymbols(void)
         value = gp_getb32(&s[length + 3]);
 
         printf("%s = %x, type = %s\n",
-               substr(b, sizeof(b), &s[1], length),
-               value, SymbolType4[type]);
+               substr(b, sizeof(b), &s[1], length), value, SymbolType4[type]);
         i += length + 7;
       }
     }
@@ -429,6 +428,7 @@ dump_source_files(void)
 {
   unsigned short i, j, start_block, end_block, offset;
   char b[FILE_SIZE];
+  char *name;
 
   start_block = gp_getu16(&main_dir->dir[COD_DIR_NAMTAB]);
 
@@ -446,19 +446,14 @@ dump_source_files(void)
         substr(b, sizeof (b), &temp[offset + 1], FILE_SIZE);
 
         if (temp[offset] != 0) {
-          source_file_names[number_of_source_files] = GP_Strdup(b);
-
-          if (source_file_names[number_of_source_files] == NULL) {
-            fprintf(stderr, " system error\n");
-            exit(1);
-          }
-
-          printf("%s\n", source_file_names[number_of_source_files]);
-          source_files[number_of_source_files] = fopen(source_file_names[number_of_source_files], "rt");
+          name = (char *)GP_Strdup(b);
+          source_file_names[number_of_source_files] = name;
+          printf("%s\n", name);
+          source_files[number_of_source_files] = fopen(name, "rt");
           number_of_source_files++;
 
           if (number_of_source_files >= MAX_SOURCE_FILES) {
-            fprintf(stderr, " too many source files; increase MAX_SOURCE_FILES and recompile\n");
+            fprintf(stderr, "Too many source files, increase MAX_SOURCE_FILES and recompile the program.\n");
             exit(1);
           }
         }
@@ -477,14 +472,14 @@ smod_flags(int smod)
 {
   static char f[9];
 
-  f[0] = (smod & 0x80) ? 'C' : '.';
-  f[1] = (smod & 0x40) ? 'F' : '.';
-  f[2] = (smod & 0x20) ? 'I' : '.';
-  f[3] = (smod & 0x10) ? 'D' : '.';
-  f[4] = (smod & 0x08) ? 'C' : '.';
-  f[5] = (smod & 0x04) ? 'L' : '.';
-  f[6] = (smod & 0x02) ? 'N' : '.';
-  f[7] = (smod & 0x01) ? 'A' : '.';
+  f[0] = (smod & COD_LS_SMOD_FLAG_C1) ? 'C' : '.';
+  f[1] = (smod & COD_LS_SMOD_FLAG_F)  ? 'F' : '.';
+  f[2] = (smod & COD_LS_SMOD_FLAG_I)  ? 'I' : '.';
+  f[3] = (smod & COD_LS_SMOD_FLAG_D)  ? 'D' : '.';
+  f[4] = (smod & COD_LS_SMOD_FLAG_C0) ? 'C' : '.';
+  f[5] = (smod & COD_LS_SMOD_FLAG_L)  ? 'L' : '.';
+  f[6] = (smod & COD_LS_SMOD_FLAG_N)  ? 'N' : '.';
+  f[7] = (smod & COD_LS_SMOD_FLAG_A)  ? 'A' : '.';
   f[8] = '\0';
 
   return f;
@@ -525,7 +520,7 @@ dump_line_symbols(void)
       for (j = start_block; j <= end_block; j++) {
         read_block(temp, j);
 
-        for (i = 0; i < 84; i++) {
+        for (i = 0; i < COD_MAX_LINE_SYM; i++) {
           unsigned int offset = i * COD_LINE_SYM_SIZE;
 
           unsigned char sfile  = temp[offset + COD_LS_SFILE];
@@ -533,8 +528,8 @@ dump_line_symbols(void)
           unsigned short sline = gp_getl16(&temp[offset + COD_LS_SLINE]);
           unsigned short sloc  = gp_getl16(&temp[offset + COD_LS_SLOC]);
 
-          if ((sfile != 0 || smod != 0 || sline != 0 || sloc != 0) &&
-              (smod & 4) == 0) {
+          if (((sfile != 0) || (smod != 0) || (sline != 0) || (sloc != 0)) &&
+              ((smod & COD_LS_SMOD_FLAG_L) == 0)) {
             char *source_file_name;
 
             if (sfile < number_of_source_files) {
@@ -609,7 +604,6 @@ dump_message_area(void)
       while (j < 504) {
         /* read big endian */
         laddress = gp_getb32(&temp[j]);
-
         j += 4;
 
         DebugType = temp[j++];

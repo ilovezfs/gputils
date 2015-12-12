@@ -132,77 +132,76 @@ struct reloc
   unsigned short  r_type;      /* relocation type */
 };
 
-#define RELOC_SIZ 12
+#define RELOC_SIZ     12
 
 /* relocation for the CALL instruction (first word only on 18cxx) */
-#define     RELOCT_CALL     1
+#define RELOCT_CALL             1
 /* relocation for the GOTO instruction (first word only on 18cxx) */
-#define     RELOCT_GOTO     2
+#define RELOCT_GOTO             2
 /* relocation for the second 8 bits of an address */
-#define     RELOCT_HIGH     3
+#define RELOCT_HIGH             3
 /* relocation for the low order 8 bits of an address */
-#define     RELOCT_LOW      4
+#define RELOCT_LOW              4
 /* relocation for the 5 bits of address for the P operand of a 17cxx MOVFP
    or MOVPF instruction */
-#define     RELOCT_P        5
+#define RELOCT_P                5
 /* relocation to generate the appropriate instruction to bank switch for a symbol */
-#define     RELOCT_BANKSEL  6
-/* relocation to generate the appropriate instruction to page switch for a
-   symbol */
-#define     RELOCT_PAGESEL  7
+#define RELOCT_BANKSEL          6
+/* relocation to generate the appropriate instruction to page switch for a symbol */
+#define RELOCT_PAGESEL          7
 /* FIXME */
-#define     RELOCT_ALL      8
+#define RELOCT_ALL              8
 /* FIXME */
-#define     RELOCT_IBANKSEL 9
+#define RELOCT_IBANKSEL         9
 /* relocation for the 8 bits of address for the F operand of a 17cxx MOVFP or
    MOVPF instruction */
-#define     RELOCT_F        10
+#define RELOCT_F                10
 /* FIXME */
-#define     RELOCT_TRIS     11
+#define RELOCT_TRIS             11
 /* relocation for the MOVLR bank 17cxx banking instruction */
-#define     RELOCT_MOVLR    12
+#define RELOCT_MOVLR            12
 /* relocation for the MOVLB 17cxx and 18cxx banking instruction */
-#define     RELOCT_MOVLB    13
+#define RELOCT_MOVLB            13
 /* relocation for the second word of an 18cxx goto instruction */
-#define     RELOCT_GOTO2    14
+#define RELOCT_GOTO2            14
 /* relocation for the second word of an 18cxx call instruction */
-#define     RELOCT_CALL2    RELOCT_GOTO2
+#define RELOCT_CALL2            RELOCT_GOTO2
 /* relocation for the source register of the 18cxx MOVFF instruction */
-#define     RELOCT_FF1      15
+#define RELOCT_FF1              15
 /* relocation for the destination register of the 18cxx MOVFF instruction */
-#define     RELOCT_FF2      16
+#define RELOCT_FF2              16
 /* relocation for the first word of the 18cxx LFSR instruction */
-#define     RELOCT_LFSR1    17
+#define RELOCT_LFSR1            17
 /* relocation for the second word of the 18cxx LFSR instruction */
-#define     RELOCT_LFSR2    18
+#define RELOCT_LFSR2            18
 /* relocation for the 18cxx BRA instruction */
-#define     RELOCT_BRA      19
+#define RELOCT_BRA              19
 /* relocation for the 18cxx RCALL instruction */
-#define     RELOCT_RCALL    RELOCT_BRA
+#define RELOCT_RCALL            RELOCT_BRA
 /* relocation for the 18cxx relative conditional branch instructions */
-#define     RELOCT_CONDBRA  20
+#define RELOCT_CONDBRA          20
 /* relocation for the highest order 8 bits of a 24-bit address */
-#define     RELOCT_UPPER    21
+#define RELOCT_UPPER            21
 /* relocation for the 18cxx access bit */
-#define     RELOCT_ACCESS   22
+#define RELOCT_ACCESS           22
 /* relocation for selecting the correct page using WREG as scratch */
-#define     RELOCT_PAGESEL_WREG    23
+#define RELOCT_PAGESEL_WREG     23
 /* relocation for selecting the correct page using bit set/clear instructions */
-#define     RELOCT_PAGESEL_BITS    24
+#define RELOCT_PAGESEL_BITS     24
 /* relocation for the size of a section */
-#define     RELOCT_SCNSZ_LOW   25
-#define     RELOCT_SCNSZ_HIGH  26
-#define     RELOCT_SCNSZ_UPPER 27
+#define RELOCT_SCNSZ_LOW        25
+#define RELOCT_SCNSZ_HIGH       26
+#define RELOCT_SCNSZ_UPPER      27
 /* relocation for the address of the end of a section */
-#define     RELOCT_SCNEND_LOW   28
-#define     RELOCT_SCNEND_HIGH  29
-#define     RELOCT_SCNEND_UPPER 30
+#define RELOCT_SCNEND_LOW       28
+#define RELOCT_SCNEND_HIGH      29
+#define RELOCT_SCNEND_UPPER     30
 /* relocation for the address of the end of a section on LFSR */
-#define     RELOCT_SCNEND_LFSR1 31
-#define     RELOCT_SCNEND_LFSR2 32
-#define     RELOCT_TRIS_3BIT    33
+#define RELOCT_SCNEND_LFSR1     31
+#define RELOCT_SCNEND_LFSR2     32
+#define RELOCT_TRIS_3BIT        33
 /* relocation for selecting the correct page using pic14 enhanced MOVLP instruction */
-#define     RELOCT_PAGESEL_MOVLP   34
+#define RELOCT_PAGESEL_MOVLP    34
 
 /* linenumber entry */
 struct lineno
@@ -215,10 +214,10 @@ struct lineno
                                   there is one */
 };
 
-#define LINENO_SIZ 16
+#define LINENO_SIZ      16
 
 /* Set if l_fcnndx is valid */
-#define  LINENO_HASFCN  0x01
+#define LINENO_HASFCN   0x01
 
 /* symbol table entry */
 struct syment
@@ -421,19 +420,19 @@ struct aux_fcn_calls {
 
 
 /* Auxiliary entries */
-#define X_DIMNUM   4
-#define AUX_NONE   0
-#define AUX_FILE   1  /* detail information for a source file */
-#define AUX_SCN    2  /* detail information for a section */
-#define AUX_TAG    3  /* detail informationfor a struct/union/enum tag */
-#define AUX_EOS    4  /* end of struct/union/enum */
-#define AUX_FCN    5  /* detail information for a function */
-#define AUX_ARR    6  /* FIXME */
-#define AUX_EOBF   7  /* end of block or function */
-#define AUX_BOBF   8  /* beginning of block or function */
-#define AUX_VAR    9  /* variable */
-#define AUX_DIRECT 10 /* direct message */
-#define AUX_IDENT  11 /* ident */
+#define X_DIMNUM      4
+#define AUX_NONE      0
+#define AUX_FILE      1   /* detail information for a source file */
+#define AUX_SCN       2   /* detail information for a section */
+#define AUX_TAG       3   /* detail informationfor a struct/union/enum tag */
+#define AUX_EOS       4   /* end of struct/union/enum */
+#define AUX_FCN       5   /* detail information for a function */
+#define AUX_ARR       6   /* FIXME */
+#define AUX_EOBF      7   /* end of block or function */
+#define AUX_BOBF      8   /* beginning of block or function */
+#define AUX_VAR       9   /* variable */
+#define AUX_DIRECT    10  /* direct message */
+#define AUX_IDENT     11  /* ident */
 #define AUX_FCN_CALLS 12  /* function called by this function */
 
 /* These definitions are for the COFF as stored in memory. */
@@ -504,7 +503,7 @@ typedef struct gp_aux_type
     } _aux_scn;
     struct {
       struct gp_symbol_type *callee; /* NULL for call through pointer */
-      unsigned long is_interrupt; /* 0 not, 1 low, 2 high */
+      unsigned long is_interrupt;    /* 0 not, 1 low, 2 high */
     } _aux_fcn_calls;
     char data[SYMBOL_SIZE_v2];
   } _aux_symbol;

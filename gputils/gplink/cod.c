@@ -238,7 +238,9 @@ cod_lst_line(int line_type)
   assert(state.lst.src->symbol != NULL);
   lb->block[dbi->lst.offset + COD_LS_SFILE] = state.lst.src->symbol->number;
 
-  smod_flag = (first_time) ? 0xff : ((state.cod.emitting != 0) ? 0x80 : 0x90);
+  smod_flag = (first_time) ? COD_LS_SMOD_FLAG_ALL :
+                             ((state.cod.emitting) ? COD_LS_SMOD_FLAG_C1 :
+                                                     (COD_LS_SMOD_FLAG_C1 | COD_LS_SMOD_FLAG_D));
 
   lb->block[dbi->lst.offset + COD_LS_SMOD] = smod_flag;
 

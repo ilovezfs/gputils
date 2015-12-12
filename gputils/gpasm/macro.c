@@ -77,7 +77,7 @@ struct macro_table {
   struct macro_table *next;
 };
 
-static struct macro_table * macro_table_list = NULL;
+static struct macro_table *macro_table_list = NULL;
 
 static void
 add_macro_table(struct symbol_table *table)

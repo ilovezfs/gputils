@@ -1,4 +1,20 @@
 2015-12-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * configure.ac, configure, doc/gputils.lyx:
+    The version changed to 1.4.2 .
+
+  * gpasm/cod.c, gplink/cod.c, gputils/dump.c, libgputils/gpcod.h:
+    Use the COD_LS_SMOD_FLAG_x defines.
+
+  * gpasm/lst.c, gpasm/preprocess.c:
+    Use more const pointer.
+
+  * gplink/gplink.h.in, gplink/lst.c:
+    Changed a variable type from int to gp_boolean.
+
+  * libgputils/gparchive.*, libgputils/gpcoff.h:
+    Minor changes.
+
+2015-12-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gpasm/cod.c, gplink/cod.c:
     These functions moved to libgputils/gpcod.c:
       enumerate_blocks()    --> gp_blocks_enumerate()

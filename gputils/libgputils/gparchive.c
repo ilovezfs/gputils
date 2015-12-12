@@ -43,7 +43,7 @@ gp_archive_count_members(const gp_archive_type *archive)
   return number;
 }
 
-/* This function is unused */
+/* This function is unused. */
 
 char *
 gp_archive_member_name(const gp_archive_type *archive)
@@ -117,10 +117,9 @@ gp_archive_find_member(gp_archive_type *archive, const char *objectname)
   return found;
 }
 
-int
+void
 gp_archive_free_member(gp_archive_type *archive)
 {
-
   if (archive->data.file != NULL) {
     free(archive->data.file);
   }
@@ -128,8 +127,6 @@ gp_archive_free_member(gp_archive_type *archive)
   if (archive != NULL) {
     free(archive);
   }
-
-  return 0;
 }
 
 gp_archive_type *
@@ -191,19 +188,11 @@ gp_archive_add_member(gp_archive_type *archive, const char *filename, const char
   snprintf(date, sizeof(date), "%il", timer);
   snprintf(size, sizeof(size), "%lil", newobject->size);
 
-  /* FIXME:  These functions overwrite the 0x20 that the header is filled with. */
-  strncpy(newmember->header.ar_name,
-          &name[0],
-          sizeof(newmember->header.ar_name));
-  strncpy(newmember->header.ar_date,
-          &date[0],
-          sizeof(newmember->header.ar_date));
-  strncpy(newmember->header.ar_size,
-          &size[0],
-          sizeof(newmember->header.ar_size));
-  strncpy(newmember->header.ar_fmag,
-          ARMAG,
-          sizeof(newmember->header.ar_fmag));
+  /* FIXME: These functions overwrite the ' ' that the header is filled with. */
+  strncpy(newmember->header.ar_name, &name[0], sizeof(newmember->header.ar_name));
+  strncpy(newmember->header.ar_date, &date[0], sizeof(newmember->header.ar_date));
+  strncpy(newmember->header.ar_size, &size[0], sizeof(newmember->header.ar_size));
+  strncpy(newmember->header.ar_fmag, ARMAG,    sizeof(newmember->header.ar_fmag));
 
   oldmember = gp_archive_find_member(archive, objectname);
 
@@ -333,15 +322,12 @@ gp_archive_read(const char *filename)
   }
 
   while (feof(infile) == 0) {
-    int n;
-
     /* allocate space for the next archive member */
     new = (gp_archive_type *)GP_Malloc(sizeof(gp_archive_type));
     new->next = NULL;
 
     /* read the archive header */
-    n = fread(&new->header, 1, AR_HDR_SIZ, infile);
-    if (AR_HDR_SIZ != n) {
+    if (fread(&new->header, 1, AR_HDR_SIZ, infile) != AR_HDR_SIZ) {
       gp_error("bad archive \"%s\"", filename);
     }
 
@@ -349,8 +335,7 @@ gp_archive_read(const char *filename)
     sscanf(new->header.ar_size, "%il", &object_size);
     new->data.size = object_size;
     new->data.file = (unsigned char *)GP_Malloc(object_size);
-    n = fread(new->data.file, sizeof(char), object_size, infile);
-    if (n != object_size) {
+    if (fread(new->data.file, sizeof(char), object_size, infile) != object_size) {
       gp_error("bad archive \"%s\"", filename);
     }
 
@@ -368,7 +353,7 @@ gp_archive_read(const char *filename)
        while eof test passes, but there are no other members.  Test for
        it. */
     fgetpos(infile, &position);
-    if (AR_HDR_SIZ != fread(&tmpheader, 1, AR_HDR_SIZ, infile)) {
+    if (fread(&tmpheader, 1, AR_HDR_SIZ, infile) != AR_HDR_SIZ) {
       break;
     }
     fsetpos(infile, &position);
@@ -383,10 +368,10 @@ gp_archive_read(const char *filename)
 
 /* Determine if the archive has a symbol index */
 
-int
+gp_boolean
 gp_archive_have_index(const gp_archive_type *archive)
 {
-  return (((archive != NULL) && (archive->header.ar_name[0] == '/')) ? 1 : 0);
+  return (((archive != NULL) && (archive->header.ar_name[0] == '/')) ? true : false);
 }
 
 /* Remove the symbol index if one exists */
@@ -483,7 +468,7 @@ gp_archive_add_index(struct symbol_table *table,
   newmember->next = NULL;
 
   /* fill in the archive header */
-  memset(&newmember->header, 0x20, AR_HDR_SIZ); /* fill the header with space */
+  memset(&newmember->header, ' ', AR_HDR_SIZ); /* fill the header with space */
 
   newmember->header.ar_name[0] = '/';
   snprintf(size, sizeof(size), "%lil", indexsize);
@@ -524,7 +509,7 @@ gp_archive_add_index(struct symbol_table *table,
 
 /* place the symbol from the archive symbol index in the archive symbol table */
 
-int
+gp_boolean
 gp_archive_add_symbol(struct symbol_table *table, const char *name,
                       gp_archive_type *member)
 {
@@ -534,12 +519,12 @@ gp_archive_add_symbol(struct symbol_table *table, const char *name,
      the global symbol table. */
   sym = get_symbol(table, name);
   if (sym != NULL) {
-    return 1;
+    return true;
   }
   sym = add_symbol(table, name);
   annotate_symbol(sym, member);
 
-  return 0;
+  return false;
 }
 
 /* This function reads the symbol index in the archive.  The symbols are
@@ -600,7 +585,6 @@ gp_archive_print_table(struct symbol_table *table)
 {
   const struct symbol **lst, **ps, *s;
   int i;
-  const char *format = "%-32s %s\n";
   const gp_archive_type *member;
   char name[256];
   char *end;
@@ -629,6 +613,6 @@ gp_archive_print_table(struct symbol_table *table)
       *end = '\0';
     }
     /* print it */
-    printf(format, get_symbol_name(lst[i]), name);
+    printf("%-32s %s\n", get_symbol_name(lst[i]), name);
   }
 }
