@@ -50,10 +50,10 @@ map_line(const char *format, ...)
   }
 }
 
-static int
+static unsigned int
 _section_value(gp_section_type *section)
 {
-  int value = 0;
+  unsigned int value = 0;
 
   if (section->flags & STYP_TEXT) {
     value = SECTION_CODE;
@@ -61,7 +61,7 @@ _section_value(gp_section_type *section)
   else if (section->flags & STYP_DATA) {
     value = SECTION_IDATA;
   }
-  else if ((section->flags & STYP_BSS) || (section->flags & STYP_OVERLAY)) {
+  else if (section->flags & (STYP_BSS | STYP_OVERLAY)) {
     value = SECTION_UDATA;
   }
   else if (section->flags & STYP_DATA_ROM) {
@@ -79,20 +79,20 @@ compare_sections(const void *a, const void *b)
 {
   gp_section_type *section_a = *((gp_section_type **)a);
   gp_section_type *section_b = *((gp_section_type **)b);
-  int value_a = _section_value(section_a);
-  int value_b = _section_value(section_b);
+  unsigned int value_a = _section_value(section_a);
+  unsigned int value_b = _section_value(section_b);
 
   if (value_a < value_b)
     return -1;
 
   if (value_a > value_b)
-    return +1;
+    return  1;
 
   if (section_a->address < section_b->address)
     return -1;
 
   if (section_a->address > section_b->address)
-    return +1;
+    return  1;
 
   return 0;
 }
@@ -105,30 +105,33 @@ _write_sections(void)
   char *type;
   char *location;
   long i;
+  long num_sections;
+
+  num_sections = state.object->num_sections;
 
   /* Some malloc implementations return NULL for malloc(0) */
-  section_list = GP_Malloc(sizeof(gp_section_type *) * state.object->num_sections);
-  if ((section_list == NULL) && (state.object->num_sections > 0)) {
+  section_list = GP_Malloc(sizeof(gp_section_type *) * num_sections);
+  if ((section_list == NULL) && (num_sections > 0)) {
     fprintf(stderr, "Error: Out of memory.\n");
     exit(1);
   }
 
   section = state.object->sections;
-  for (i = 0; i < state.object->num_sections; i++) {
+  for (i = 0; i < num_sections; i++) {
     assert(section != NULL);
     section_list[i] = section;
     section = section->next;
   }
 
-  qsort((void *)section_list, state.object->num_sections, sizeof(gp_section_type *),
-        compare_sections);
+  qsort((void *)section_list, num_sections, sizeof(gp_section_type *), compare_sections);
 
   map_line("                                 Section Info");
   map_line("                  Section       Type    Address   Location Size(Bytes)");
   map_line("                ---------  ---------  ---------  ---------  ---------");
 
-  for (i = 0; i < state.object->num_sections; i++) {
+  for (i = 0; i < num_sections; i++) {
     int org_to_byte_shift = state.class->org_to_byte_shift;
+
     section = section_list[i];
     switch (_section_value(section)) {
     case SECTION_ROMDATA:
@@ -151,7 +154,7 @@ _write_sections(void)
       type = "UNKNOWN";
     }
 
-    if ((section->flags & STYP_TEXT) || (section->flags & STYP_DATA_ROM))  {
+    if (section->flags & (STYP_TEXT | STYP_DATA_ROM)) {
       location = "program";
     }
     else {
@@ -189,8 +192,7 @@ _write_program_memory(void)
   section = state.object->sections;
 
   while (section != NULL) {
-    if (((section->flags & STYP_TEXT) ||
-         (section->flags & STYP_DATA_ROM)) && (section->size != 0)) {
+    if ((section->flags & (STYP_TEXT | STYP_DATA_ROM)) && (section->size > 0)) {
       map_line("                            0x%06x    0x%06x",
                gp_processor_byte_to_org(state.class, section->address),
                gp_processor_byte_to_org(state.class, section->address + section->size - 1));

@@ -1,3 +1,26 @@
+2015-12-12  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+  * gpasm/cod.c, gplink/cod.c:
+    These functions moved to libgputils/gpcod.c:
+      enumerate_blocks()    --> gp_blocks_enumerate()
+      enumerate_directory() --> gp_blocks_enumerate_directory()
+      write_blocks()        --> gp_blocks_write()
+      write_directory()     --> gp_blocks_write_directory()
+      free_blocks()         --> gp_blocks_free()
+      free_directory()      --> gp_blocks_free_directory()
+
+  * libgputils/gpcod.c, libgputils/gpcod.h:
+    Faster handling of the "struct Blocks" list.
+
+  * gpasm/directive.c:
+    Where possible use const pointers. (const struct pnode *)
+
+  * gpasm/preprocess.c, gpasm/processor.c, gplink/map.c,
+    libgputils/gparchive.*, libgputils/gpcoff.h:
+    Mostly changed text format.
+
+  * libgputils/gpcofflink.c:
+    Less code cleaning.
+
 2015-12-06  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
   * gputils/gpdasm:
     bugfix

@@ -41,6 +41,8 @@ Boston, MA 02111-1307, USA.  */
   } \
   while (0)
 
+typedef gp_boolean (*substitute_func_t)(char *buf, int begin, int *end, int *n, int max_size, int level);
+
 static struct pnode *param_list = NULL;
 struct arg_list_s {
   const char *str;
@@ -72,7 +74,7 @@ check_defines(char *symbol, int symlen, struct pnode **param_list_p)
       if (subst == NULL) {
         subst = "";
       }
-      else if (strlen(subst) == symlen && strncmp(symbol, subst, symlen) == 0) {
+      else if ((strlen(subst) == symlen) && (strncmp(symbol, subst, symlen) == 0)) {
         /* check for a bad subsitution */
         subst = NULL;
       }
@@ -109,15 +111,17 @@ add_arg(const char *str)
 {
   struct arg_list_s *new = GP_Malloc(sizeof(struct arg_list_s));
 
-  new->str = str;
+  new->str  = str;
   new->next = NULL;
 
-  if (arg_list_tail) {
-    arg_list_tail = arg_list_tail->next = new;
+  if (arg_list_tail != NULL) {
+    arg_list_tail->next = new;
   }
   else {
-    arg_list_tail = arg_list = new;
+    arg_list = new;
   }
+
+  arg_list_tail = new;
 }
 
 static void
@@ -138,7 +142,7 @@ free_arg_list(void)
   arg_list_tail = arg_list = NULL;
 }
 
-static int
+static gp_boolean
 substitute_define_param(char *buf, int begin, int *end, int *n, int max_size, int level)
 {
   int mlen = *end - begin;
@@ -148,33 +152,33 @@ substitute_define_param(char *buf, int begin, int *end, int *n, int max_size, in
   assert(mlen > 0);
 
   /* find argument */
-  while (parp) {
+  while (parp != NULL) {
     assert(HEAD(parp)->tag == PTAG_SYMBOL);
-    if (0 == strncmp(&buf[begin], HEAD(parp)->value.symbol, mlen)) {
+    if (strncmp(&buf[begin], HEAD(parp)->value.symbol, mlen) == 0) {
       /* substitute */
       int len = strlen(argp->str);
 
       DBG_printf("@@@substituting parameter %*.*s with %s\n", mlen, mlen, &buf[begin], argp->str);
 
-      if (*n + len - mlen >= max_size) {
+      if ((*n + len - mlen) >= max_size) {
         gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
-        return 0;
+        return false;
       }
       else {
         BUF_REPLACE(buf, begin, *end, *n, argp->str, len, max_size);
-        return 1;
+        return true;
       }
     }
     parp = TAIL(parp);
     argp = argp->next;
   }
 
-  return 0; /* no substitutuon */
+  return false; /* no substitution */
 }
 
-static int preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitute)(char *buf, int begin, int *end, int *n, int max_size, int level), int level);
+static gp_boolean preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_func_t substitute, int level);
 
-static int
+static gp_boolean
 substitute_define(char *buf, int begin, int *end, int *n, int max_size, int level)
 {
   int mlen = *end - begin;
@@ -182,14 +186,14 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
 
   if (mlen <= 0) {
     /* nothing to substitute */
-    return 0;
+    return false;
   }
 
   if (NULL != (sub = check_defines(&buf[begin], mlen, &param_list))) {
     int n_params = list_length(param_list);
 
     DBG_printf("define %*.*s has %d parameters\n", mlen, mlen, &buf[begin], n_params);
-    if (0 != n_params) {
+    if (n_params != 0) {
       /* has parameters: collect arguments */
       int bracket = 0;
       int n_args = 0;
@@ -210,28 +214,34 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
         skip_spaces(buf, end);
         start1 = *end;
 
-        while (*end < *n && (0 != state || 0 != brackdepth || (',' != buf[*end] && ';' != buf[*end] && ((bracket && ')' != buf[*end]) || (!bracket && '\n' != buf[*end]))))) {
+        while ((*end < *n) &&
+               ((state != 0) ||
+                (brackdepth != 0) ||
+                ((buf[*end] != ',') &&
+                 (buf[*end] != ';') &&
+                 ((bracket && (buf[*end] != ')')) ||
+                  (!bracket && (buf[*end] != '\n')))))) {
           switch (buf[*end]) {
           case '(':
-            if (0 == state) {
+            if (state == 0) {
               ++brackdepth;
             }
             break;
 
           case ')':
-            if (0 == state) {
+            if (state == 0) {
               --brackdepth;
             }
             break;
 
           case '\\':
-            prev_esc = (0 != state) ? !prev_esc : 0;
+            prev_esc = (state != 0) ? !prev_esc : 0;
             break;
 
           case '"':
           case '\'':
             if (!prev_esc) {
-              state = (0 == state) ? buf[*end] : ((state == buf[*end]) ? 0 : state);
+              state = (state == 0) ? buf[*end] : ((state == buf[*end]) ? 0 : state);
             }
           default:
             prev_esc = 0;
@@ -242,7 +252,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
 
         /* right trim */
         end1 = *end - 1;
-        while (end1 >= 0 && isspace(buf[end1])) {
+        while ((end1 >= 0) && isspace(buf[end1])) {
           --end1;
         }
         ++end1;
@@ -251,10 +261,10 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
         ++n_args;
 
         if (*end < *n) {
-          if ((bracket && ')' == buf[*end]) || (!bracket && ('\n' == buf[*end] || ';' == buf[*end]))) {
+          if ((bracket && (buf[*end] == ')')) || (!bracket && ((buf[*end] == '\n') || (buf[*end] == ';')))) {
             if (';' == buf[*end]) {
               /* skip to the trailing newline */
-              *end = ('\n' == buf[*n - 1]) ? *n - 1 : *n;
+              *end = (buf[*n - 1] == '\n') ? (*n - 1) : *n;
             }
             else {
               /* don't eat newline! */
@@ -269,7 +279,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
               /* substitute define parameters */
               if ((*n + len - mlen) >= max_size) {
                 gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
-                return 0;
+                return false;
               }
               else {
                 DBG_printf("@1@substituting define parameter %*.*s ", mlen, mlen, &buf[begin]);
@@ -285,19 +295,19 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
                 preprocess(buf, begin, end, n, max_size, &substitute_define, level + 1);
 
                 DBG_printf("with %*.*s\n", *end - begin, *end - begin, &buf[begin]);
-                return 1;
+                return true;
               }
             }
             else {
               /* error n_args != n_params: no substitution */
               free_arg_list();
-              return 0;
+              return false;
             }
           }
-          else if (',' != buf[*end]) {
+          else if (buf[*end] != ',') {
             /* error unknown delimiter: no substitution */
             free_arg_list();
-            return 0;
+            return false;
           }
           else {
             ++(*end);
@@ -306,7 +316,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
         if (*end >= *n) {
           /* error no ending bracket or newline: no substitution */
           free_arg_list();
-          return 0;
+          return false;
         }
       } /* for each argument */
     } /* if has parameters */
@@ -316,7 +326,7 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
       /* substitute define */
       if ((*n + len - mlen) >= max_size) {
         gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
-        return 0;
+        return false;
       }
       else {
         DBG_printf("@2@substituting define %*.*s ", mlen, mlen, &buf[begin]);
@@ -329,12 +339,12 @@ substitute_define(char *buf, int begin, int *end, int *n, int max_size, int leve
       }
     }
   }
-  return 0;
+  return false;
 }
 
 #define NELEM(x) (sizeof(x) / sizeof(*x))
 
-static int
+static gp_boolean
 no_process_iden(const char *iden, int len)
 {
   static const char * const iden_tbl[] = {
@@ -346,30 +356,30 @@ no_process_iden(const char *iden, int len)
     "ifdef",
     "ifndef",
   };
-  int i;
+  unsigned int i;
 
   for (i = 0; i < NELEM(iden_tbl); ++i) {
     if ((strlen(iden_tbl[i]) == len) && (strncasecmp(iden, iden_tbl[i], len) == 0)) {
-      return 1;
+      return true;
     }
   }
-  return 0;
+  return false;
 }
 
-static int
-preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitute)(char *buf, int begin, int *end, int *n, int max_size, int level), int level)
+static gp_boolean
+preprocess(char *buf, int begin, int *end, int *n, int max_size, substitute_func_t substitute, int level)
 {
   int start = -1;
-  int state = 0;        /* '"': in double quotes; '\'': in single quotes; ';': in comment */
-  int prev_esc = 0;     /* 1: prev char was escape */
-  int in_hv = 0;        /* in #v */
-  int number_start = 0; /* 1: possible start of a x'nnn' formatted number */
-  int substituted = 0;  /* if there was a substitution in the preprocess run */
+  int state = 0;                   /* '"': in double quotes; '\'': in single quotes; ';': in comment */
+  gp_boolean prev_esc = false;     /* true: prev char was escape */
+  int in_hv = 0;                   /* in #v */
+  gp_boolean number_start = false; /* true: possible start of a x'nnn' formatted number */
+  gp_boolean substituted = false;  /* if there was a substitution in the preprocess run */
   int i;
 
   if (level >= PREPROC_MAX_DEPTH) {
     gpverror(GPE_STRCPLX, NULL);
-    return 0;
+    return false;
   }
 
   DBG_printf("---Preprocessing %*.*s\n", *end - begin, *end - begin, &buf[begin]);
@@ -377,16 +387,16 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
   for (i = begin; i < *end; ++i) {
     int c = buf[i];
 
-    if (0 == state) {
-      if ('#' == c) {
+    if (state == 0) {
+      if (c == '#') {
         in_hv = '#';
       }
-      else if (('#' == in_hv) && (('v' == c) || ('V' == c))) {
+      else if ((in_hv == '#') && ((c == 'v') || (c == 'V'))) {
         in_hv = 'v';
       }
-      else if (('v' == in_hv) && ('(' == c)) {
-        if (-1 != start) {
-          if (start < i - 2) {
+      else if ((in_hv == 'v') && (c == '(')) {
+        if (start != -1) {
+          if (start < (i - 2)) {
             /* preprocess the identifier before #v */
             int end1 = i - 2;
             int prev_n = *n;
@@ -404,25 +414,25 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
         in_hv = 0;
       }
 
-      if (-1 == start && is_first_iden(c)) {
+      if ((start == -1) && is_first_iden(c)) {
         switch (c) {
         case 'a': case 'A':
         case 'b': case 'B':
         case 'd': case 'D':
         case 'h': case 'H':
         case 'o': case 'O':
-          number_start = 1;
+          number_start = true;
           break;
 
         default:
-          number_start = 0;
+          number_start = false;
           break;
         }
         start = i;
       }
       else {
-        if (-1 != start && !is_iden(c)) {
-          if (0 == level && no_process_iden(&buf[start], i - start)) {
+        if ((start != -1) && !is_iden(c)) {
+          if ((level == 0) && no_process_iden(&buf[start], i - start)) {
             start = -1;
             break;
           }
@@ -436,34 +446,34 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
           }
           start = -1;
         }
-        number_start = 0;
+        number_start = false;
       }
     }
 
     switch (c) {
     case '\\':
-      prev_esc = (('"' == state) || ('\'' == state)) ? !prev_esc : 0;
+      prev_esc = ((state == '"') || (state == '\'')) ? (!prev_esc) : false;
       break;
 
     case ';':
-      if (0 == state) {
+      if (state == 0) {
         state = c;
       }
-      prev_esc = 0;
+      prev_esc = false;
       break;
 
     case '"':
     case '\'':
       if (!prev_esc && (state != ';')) {
-        state = (0 == state) ? c : ((state == c) ? 0 : state);
+        state = (state == 0) ? c : ((state == c) ? 0 : state);
       }
     default:
-      prev_esc = 0;
+      prev_esc = false;
       break;
     }
   }
 
-  if (-1 != start) {
+  if (start != -1) {
     int prev_n = *n;
 
     DBG_printf("@3@Preprocessing identifier: %*.*s\n", i - start, i - start, &buf[start]);
@@ -476,11 +486,11 @@ preprocess(char *buf, int begin, int *end, int *n, int max_size, int (*substitut
   return substituted;
 }
 
-static int
+static gp_boolean
 preprocess_hv(char *buf, int begin, int *end, int *n, int max_size)
 {
   char res_buf[11];
-  int substituted = 0;
+  gp_boolean substituted = false;
 
   DBG_printf("---preprocess_hv: %*.*s\n", *end - begin, *end - begin, &buf[begin]);
 
@@ -489,13 +499,13 @@ preprocess_hv(char *buf, int begin, int *end, int *n, int max_size)
 
     DBG_printf("***Parsing chunck: %*.*s\n", *end - begin, *end - begin, &buf[begin]);
     if (ppparse_chunk(buf, begin, *end)) {
-      substituted = 1;
+      substituted = true;
       DBG_printf ("col_begin = %d; col_end = %d; result = %d\n", ppcol_begin, ppcol_end, ppresult);
-      res_len = snprintf (res_buf, sizeof (res_buf), "%d", ppresult);
+      res_len = snprintf(res_buf, sizeof(res_buf), "%d", ppresult);
 
       if ((*n + res_len - (ppcol_end - ppcol_begin)) >= max_size) {
         gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
-        return 0;
+        return false;
       }
       else {
         int prev_n = *n;
@@ -523,10 +533,10 @@ static void
 preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
 {
   int start = -1;
-  int state = 0;        /* '"': in double quotes; '\'': in single quotes; ';': in comment; '(' in #v argument */
-  int prev_esc = 0;     /* 1: prev char was escape */
-  int in_hv = 0;        /* in #v */
-  int hv_parenth = 0;   /* #v parenthesis nesting depth */
+  int state = 0;            /* '"': in double quotes; '\'': in single quotes; ';': in comment; '(' in #v argument */
+  gp_boolean prev_esc = 0;  /* true: prev char was escape */
+  int in_hv = 0;            /* in #v */
+  int hv_parenth = 0;       /* #v parenthesis nesting depth */
   int i;
 
   DBG_printf("---preprocess_hv_params: %*.*s\n", *end, *end, buf);
@@ -534,17 +544,17 @@ preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
   for (i = begin; i < *end; ++i) {
     int c = buf[i];
 
-    if ('(' == state) {
-      if ('(' == in_hv) {
+    if (state == '(') {
+      if (in_hv == '(') {
         start = i;
         in_hv = 0;
       }
 
-      if ('(' == c) {
+      if (c == '(') {
         ++hv_parenth;
       }
-      else if (')' == c) {
-        if (0 >= --hv_parenth) {
+      else if (c == ')') {
+        if (--hv_parenth <= 0) {
           int prev_n = *n;
 
           preprocess_hv_params(buf, start, &i, n, max_size);
@@ -556,14 +566,14 @@ preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
         }
       }
     }
-    else if (0 == state) {
-      if ('#' == c) {
+    else if (state == 0) {
+      if (c == '#') {
         in_hv = '#';
       }
-      else if (('#' == in_hv) && (('v' == c) || ('V' == c))) {
+      else if ((in_hv == '#') && ((c == 'v') || (c == 'V'))) {
         in_hv = 'v';
       }
-      else if (('v' == in_hv) && ('(' == c)) {
+      else if ((in_hv == 'v') && (c == '(')) {
         in_hv = '(';
         ++hv_parenth;
         state = '(';
@@ -573,31 +583,31 @@ preprocess_hv_params(char *buf, int begin, int *end, int *n, int max_size)
       }
     }
 
-    if (0 == state) {
-      if (-1 == start && is_first_iden(c)) {
+    if (state == 0) {
+      if ((start == -1) && is_first_iden(c)) {
         start = i;
       }
     }
 
     switch (c) {
     case '\\':
-      prev_esc =  (('"' == state) || ('\'' == state)) ? !prev_esc : 0;
+      prev_esc = ((state == '"') || (state == '\'')) ? (!prev_esc) : false;
       break;
 
     case ';':
-      if (0 == state) {
+      if (state == 0) {
         state = c;
       }
-      prev_esc = 0;
+      prev_esc = false;
       break;
 
     case '"':
     case '\'':
       if (!prev_esc && (state != ';')) {
-        state = (0 == state) ? c : ((state == c) ? 0 : state);
+        state = (state == 0) ? c : ((state == c) ? 0 : state);
       }
     default:
-      prev_esc = 0;
+      prev_esc = false;
       break;
     }
   }
@@ -638,7 +648,7 @@ check_macro_params(char *symbol, int symlen)
   return subst;
 }
 
-static int
+static gp_boolean
 substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, int level)
 {
   int mlen = *end - begin;
@@ -646,7 +656,7 @@ substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, int
 
   if (mlen <= 0) {
     /* nothing to substitute */
-    return 0;
+    return false;
   }
 
   if ((sub = check_macro_params(&buf[begin], mlen)) != NULL) {
@@ -654,16 +664,16 @@ substitute_macro_param(char *buf, int begin, int *end, int *n, int max_size, int
 
     if ((*n + len - mlen) >= max_size) {
       gpverror(GPE_INTERNAL, NULL, "Flex buffer too small.");
-      return 0;
+      return false;
     }
     else {
       DBG_printf("@@@substituting macro parameter %*.*s with %*.*s\n", mlen, mlen, &buf[begin], len, len, sub);
 
       BUF_REPLACE(buf, begin, *end, *n, sub, len, max_size);
-      return 1;
+      return true;
     }
   }
-  return 0;
+  return false;
 }
 
 static void
@@ -695,18 +705,18 @@ set_source_line(const char *line, int len, struct src_line_s *src_line)
   }
 }
 
-static inline int
+static inline gp_boolean
 in_macro_expansion(void)
 {
   struct source_context *p;
 
   for (p = state.src; p != NULL; p = p->prev) {
     if (p->type == SRC_MACRO) {
-      return 1;
+      return true;
     }
   }
 
-  return 0;
+  return false;
 }
 
 void
@@ -720,7 +730,7 @@ preprocess_line(char *buf, int *n, int max_size)
     set_source_line(buf, *n, &state.src->curr_src_line);
   }
   else {
-    int macro_expansion = in_macro_expansion();
+    gp_boolean macro_expansion = in_macro_expansion();
 
     if (macro_expansion) {
       /* preprocess macro parameters */
@@ -738,7 +748,7 @@ preprocess_line(char *buf, int *n, int max_size)
 
     /* preprocess line */
     do {
-      res = preprocess(buf, 0, &end, n, max_size, substitute_define, 0);
+      res  = preprocess(buf, 0, &end, n, max_size, substitute_define, 0);
       res |= preprocess_hv(buf, 0, &end, n, max_size);
     }
     while (res);

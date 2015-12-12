@@ -207,8 +207,7 @@ struct reloc
 /* linenumber entry */
 struct lineno
 {
-  unsigned long  l_srcndx;     /* symbol table index of associated source
-                                  file */
+  unsigned long  l_srcndx;     /* symbol table index of associated source file */
   unsigned short l_lnno;       /* line number */
   unsigned long  l_paddr;      /* address of code for this lineno */
   unsigned short l_flags;      /* bit flags for the line number */
@@ -225,14 +224,14 @@ struct lineno
 struct syment
 {
   union {
-    char            name[8];   /* symbol name if less then 8 characters */
+    char            name[8];   /* symbol name if less than 8 characters */
     struct {
       unsigned long s_zeros;   /* first four characters are 0 */
       unsigned long s_offset;  /* pointer to the string table */
     } ptr;
   } sym_name;
   unsigned long   value;       /* symbol value */
-  short  sec_num;              /* section number */
+  short           sec_num;     /* section number */
   unsigned long   type;        /* type */
   char            st_class;    /* storage class */
   unsigned char   num_auxsym;  /* number of auxiliary symbols */
@@ -241,11 +240,11 @@ struct syment
 #define SYMBOL_SIZE_v1 18
 #define SYMBOL_SIZE_v2 20
 
-/* Symbol section numbers */
-#define N_DEBUG -2
-#define N_ABS   -1
-#define N_UNDEF 0
-#define N_SCNUM 1
+/* Symbol section numbers. */
+#define N_DEBUG    -2
+#define N_ABS      -1
+#define N_UNDEF     0
+#define N_SCNUM     1
 
 /* Symbol types
 
@@ -488,15 +487,15 @@ typedef struct gp_aux_type
   union {
     struct {
       unsigned char command;
-      char *string;
+      const char *string;
     } _aux_direct;
     struct {
-      char *filename;
+      const char *filename;
       unsigned long line_number;
       unsigned char flags;
     } _aux_file;
     struct {
-      char *string;
+      const char *string;
     } _aux_ident;
     struct {
       unsigned long  length;
@@ -638,7 +637,7 @@ typedef struct gp_object_type
   size_t symbol_size;
 
   /* new style coff file? */
-  int isnew;
+  gp_boolean isnew;
 
   /* processor */
   pic_processor_t processor;

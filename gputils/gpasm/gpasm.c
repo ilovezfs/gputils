@@ -35,22 +35,22 @@ Boston, MA 02111-1307, USA.  */
 #include "coff.h"
 #include "gpcfg.h"
 
+extern int yyparse(void);
+extern int yydebug;
+
 struct gpasm_state state;
 
 static gp_boolean cmd_processor = false;
 static const char *processor_name = NULL;
 
-int yyparse(void);
-extern int yydebug;
-
 #define GET_OPTIONS "?D:I:a:cCde:fghijkl::LmMno:p:qr:s::S:tuvw:yP:"
 
-struct list_params {
+typedef struct {
   pic_processor_t processor;
   proc_class_t    class0;
   proc_class_t    class1;
   proc_class_t    class2;
-};
+} list_params_t;
 
 enum {
   OPT_MPASM_COMPATIBLE = 0x100,
@@ -94,7 +94,7 @@ static struct option longopts[] =
   { NULL,                        no_argument,       NULL, '\0' }
 };
 
-static struct list_params list_options;
+static list_params_t list_options;
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -104,73 +104,73 @@ init(void)
   gp_init();
 
   /* restore gpasm to its initialized state */
-  state.mode = MODE_ABSOLUTE;
-  state.extended_pic16e = false;
+  state.mode                    = MODE_ABSOLUTE;
+  state.extended_pic16e         = false;
 
-  state.radix = 16;
-  state.hex_format = INHX32;
-  state.case_insensitive = false;
-  state.quiet = false;
-  state.use_absolute_path = false;
-  state.show_full_addr = false;
-  state.debug_info = false;
-  state.error_level = 0;
-  state.strict_level = 0;
-  state.path_num = 0;
-  state.preproc.do_emit = true;
+  state.radix                   = 16;
+  state.hex_format              = INHX32;
+  state.case_insensitive        = false;
+  state.quiet                   = false;
+  state.use_absolute_path       = false;
+  state.show_full_addr          = false;
+  state.debug_info              = false;
+  state.error_level             = 0;
+  state.strict_level            = 0;
+  state.path_num                = 0;
+  state.preproc.do_emit         = true;
 
-  state.cmd_line.radix = false;
-  state.cmd_line.hex_format = false;
-  state.cmd_line.error_level = false;
-  state.cmd_line.strict_level = false;
-  state.cmd_line.macro_expand = false;
-  state.cmd_line.processor = false;
-  state.cmd_line.lst_force = false;
+  state.cmd_line.radix          = false;
+  state.cmd_line.hex_format     = false;
+  state.cmd_line.error_level    = false;
+  state.cmd_line.strict_level   = false;
+  state.cmd_line.macro_expand   = false;
+  state.cmd_line.processor      = false;
+  state.cmd_line.lst_force      = false;
 
-  state.pass = 0;
-  state.byte_addr = 0;
-  state.device.id_location = 0;
-  state.dos_newlines = false;
-  state.memory_dump = false;
-  state.found_config = false;
-  state.found_devid = false;
-  state.found_idlocs = false;
-  state.found_end = false;
-  state.maxram = (MAX_RAM - 1);
+  state.pass                    = 0;
+  state.byte_addr               = 0;
+  state.device.id_location      = 0;
+  state.dos_newlines            = false;
+  state.memory_dump             = false;
+  state.found_config            = false;
+  state.found_devid             = false;
+  state.found_idlocs            = false;
+  state.found_end               = false;
+  state.maxram                  = (MAX_RAM - 1);
 
-  state.codfile = OUT_NORMAL;
-  state.depfile = OUT_SUPPRESS;
-  state.errfile = OUT_SUPPRESS;
-  state.hexfile = OUT_NORMAL;
-  state.lstfile = OUT_NORMAL;
-  state.objfile = OUT_SUPPRESS;
+  state.codfile                 = OUT_NORMAL;
+  state.depfile                 = OUT_SUPPRESS;
+  state.errfile                 = OUT_SUPPRESS;
+  state.hexfile                 = OUT_NORMAL;
+  state.lstfile                 = OUT_NORMAL;
+  state.objfile                 = OUT_SUPPRESS;
 
-  state.num.errors    = 0;
-  state.num.warnings  = 0;
-  state.num.messages  = 0;
+  state.num.errors              = 0;
+  state.num.warnings            = 0;
+  state.num.messages            = 0;
   state.num.warnings_suppressed = 0;
   state.num.messages_suppressed = 0;
 
-  state.processor = NULL;
-  state.processor_chosen = 0;
+  state.processor               = NULL;
+  state.processor_chosen        = false;
 
-  state.cod.enabled = false;
-  state.dep.enabled = false;
-  state.err.enabled = false;
-  state.lst.enabled = false;
-  state.obj.enabled = false;
-  state.obj.newcoff = 1;  /* use new Microchip COFF format by default */
+  state.cod.enabled             = false;
+  state.dep.enabled             = false;
+  state.err.enabled             = false;
+  state.lst.enabled             = false;
+  state.obj.enabled             = false;
+  state.obj.newcoff             = true;   /* use new Microchip COFF format by default */
 
-  state.obj.object = NULL;
-  state.obj.section = NULL;
-  state.obj.symbol_num = 0;
-  state.obj.section_num = 0;
+  state.obj.object              = NULL;
+  state.obj.section             = NULL;
+  state.obj.symbol_num          = 0;
+  state.obj.section_num         = 0;
 
-  state.astack = NULL;
+  state.astack                  = NULL;
 
-  state.next_state = STATE_NOCHANGE;
+  state.next_state              = STATE_NOCHANGE;
 
-  state.while_depth = 0;
+  state.while_depth             = 0;
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -595,7 +595,7 @@ process_args(int argc, char *argv[])
       break;
 
     case 'C':
-      state.obj.newcoff = 0;
+      state.obj.newcoff = false;
       break;
 
     case 'd':
@@ -974,7 +974,7 @@ assemble(void)
   state.byte_addr = 0;
   state.device.id_location = 0;
   state.cblock = 0;
-  state.cblock_defined = 0;
+  state.cblock_defined  = false;
   state.preproc.do_emit = true;
   /* clean out defines for second pass */
   state.stMacros      = push_symbol_table(NULL, state.case_insensitive);
@@ -1011,7 +1011,7 @@ assemble(void)
 
   /* reset the processor for 2nd pass */
   state.processor = NULL;
-  state.processor_chosen = 0;
+  state.processor_chosen = false;
   state.cmd_line.processor = false;
 
   if (cmd_processor) {

@@ -38,7 +38,7 @@ coff_init(void)
     unlink(state.objfilename);
   }
   else {
-    if (state.processor_chosen == 0) {
+    if (!state.processor_chosen) {
       state.obj.enabled = false;
     }
     else {

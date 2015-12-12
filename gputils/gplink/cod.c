@@ -47,10 +47,8 @@ init_dir_block(void)
    * to the .cod file after everything else. */
   gp_cod_strncpy(&dir->dir[COD_DIR_SOURCE],
                  state.codfilename, COD_DIR_DATE - COD_DIR_SOURCE);
-  gp_cod_date(&dir->dir[COD_DIR_DATE],
-              COD_DIR_TIME - COD_DIR_DATE);
-  gp_cod_time(&dir->dir[COD_DIR_TIME],
-              COD_DIR_VERSION - COD_DIR_TIME);
+  gp_cod_date(&dir->dir[COD_DIR_DATE], COD_DIR_TIME - COD_DIR_DATE);
+  gp_cod_time(&dir->dir[COD_DIR_TIME], COD_DIR_VERSION - COD_DIR_TIME);
   gp_cod_strncpy(&dir->dir[COD_DIR_VERSION],
                  VERSION, COD_DIR_COMPILER - COD_DIR_VERSION);
   gp_cod_strncpy(&dir->dir[COD_DIR_COMPILER],
@@ -73,7 +71,7 @@ assign_file_id(void)
   struct symbol_table *file_table;
   gp_symbol_type *symbol;
   gp_aux_type *aux;
-  struct symbol *s;
+  struct symbol *sym;
   int file_id = 0;
   int *value;
 
@@ -85,17 +83,17 @@ assign_file_id(void)
     if (symbol->class == C_FILE) {
       aux = symbol->aux_list;
       assert(aux != NULL);
-      s = get_symbol(file_table, aux->_aux_symbol._aux_file.filename);
+      sym = get_symbol(file_table, aux->_aux_symbol._aux_file.filename);
 
-      if (s != NULL) {
+      if (sym != NULL) {
         /* fetch the file number */
-        value = get_symbol_annotation(s);
+        value = get_symbol_annotation(sym);
       } else {
         /* the file hasn't been assigned a value */
         value = GP_Malloc(sizeof(int));
         *value = file_id++;
-        s = add_symbol(file_table, aux->_aux_symbol._aux_file.filename);
-        annotate_symbol(s, value);
+        sym = add_symbol(file_table, aux->_aux_symbol._aux_file.filename);
+        annotate_symbol(sym, value);
       }
       symbol->number = *value;
     }
@@ -113,7 +111,7 @@ void
 cod_init(void)
 {
   if (state.codfile != OUT_NAMED) {
-    snprintf(state.codfilename, sizeof (state.codfilename),
+    snprintf(state.codfilename, sizeof(state.codfilename),
              "%s.cod", state.basefilename);
   }
 
@@ -147,7 +145,7 @@ cod_init(void)
 static void
 write_file_block(void)
 {
-  gp_symbol_type *symbol;
+  const gp_symbol_type *symbol;
   BlockList *fb = NULL;
   int file_id = 0;
 
@@ -208,12 +206,13 @@ find_dir_block_by_high_addr(int high_addr)
 void
 cod_lst_line(int line_type)
 {
+  static DirBlockInfo *dbi = NULL;
+  static int _64k_base = 0;
+
   unsigned char smod_flag;
   BlockList *lb;
   gp_boolean first_time;
   int address, high_address;
-  static DirBlockInfo *dbi = NULL;
-  static int _64k_base = 0;
 
   if (!state.cod.enabled) {
     return;
@@ -243,10 +242,8 @@ cod_lst_line(int line_type)
 
   lb->block[dbi->lst.offset + COD_LS_SMOD] = smod_flag;
 
-  /* Write the source file line number corresponding to the list file line
-     number */
-  gp_putl16(&lb->block[dbi->lst.offset + COD_LS_SLINE],
-            state.lst.src->line_number);
+  /* Write the source file line number corresponding to the list file line number. */
+  gp_putl16(&lb->block[dbi->lst.offset + COD_LS_SLINE], state.lst.src->line_number);
 
   /* Write the address of the opcode. */
   gp_putl16(&lb->block[dbi->lst.offset + COD_LS_SLOC],
@@ -266,8 +263,8 @@ void
 cod_write_symbols(struct symbol **symbol_list, int num_symbols)
 {
   int i, len, type;
-  gp_coffsymbol_type *var;
-  const char *s;
+  const gp_coffsymbol_type *var;
+  const char *name;
   BlockList *sb = NULL;
 
   if (!state.cod.enabled) {
@@ -276,8 +273,8 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
 
   for (i = 0; i < num_symbols; i++) {
     var = get_symbol_annotation(symbol_list[i]);
-    s = get_symbol_name(symbol_list[i]);
-    len = strlen(s);
+    name = get_symbol_name(symbol_list[i]);
+    len = strlen(name);
 
     /* If this symbol extends past the end of the cod block
      * then write this block out */
@@ -286,7 +283,7 @@ cod_write_symbols(struct symbol **symbol_list, int num_symbols)
       sb = gp_blocks_append(&main_dir->sym, gp_blocks_new());
     }
 
-    gp_cod_strncpy(&sb->block[main_dir->sym.offset + 1], s, MAX_SYM_LEN);
+    gp_cod_strncpy(&sb->block[main_dir->sym.offset + 1], name, MAX_SYM_LEN);
 
     assert(var->symbol != NULL);
     assert(var->symbol->section != NULL);
@@ -333,8 +330,9 @@ cod_emit_opcode(DirBlockInfo *dbi, int address, int opcode)
 
   block_index = (address >> COD_BLOCK_BITS) & (COD_CODE_IMAGE_BLOCKS - 1);
 
-  if (dbi->cod_image_blocks[block_index].block == NULL)
+  if (dbi->cod_image_blocks[block_index].block == NULL) {
     gp_cod_create(&dbi->cod_image_blocks[block_index]);
+  }
 
   gp_putl16(&dbi->cod_image_blocks[block_index].block[address & (COD_BLOCK_SIZE - 1)], opcode);
 }
@@ -344,11 +342,12 @@ cod_emit_opcode(DirBlockInfo *dbi, int address, int opcode)
 static void
 cod_write_code(void)
 {
-  MemBlock *m = state.i_memory;
+  static DirBlockInfo *dbi = NULL;
+
+  const MemBlock *m = state.i_memory;
   int mem_base, i;
   int start_address = 0, used_flag = 0;
   BlockList *rb = NULL;
-  static DirBlockInfo *dbi = NULL;
   int _64k_base = 0;
 
   while (m != NULL) {
@@ -356,6 +355,7 @@ cod_write_code(void)
 
     mem_base = m->base << I_MEM_BITS;
     high_addr = (mem_base >> 16) & 0xffff;
+
     if ((dbi == NULL) || (high_addr != _64k_base)) {
       _64k_base = high_addr;
       dbi = find_dir_block_by_high_addr(_64k_base);
@@ -409,11 +409,11 @@ static void
 cod_write_debug(void)
 {
   int len;
-  gp_symbol_type *symbol;
-  gp_aux_type *aux;
+  const gp_symbol_type *symbol;
+  const gp_aux_type *aux;
   BlockList *db = NULL;
   char command;
-  char *string;
+  const char *string;
 
   if (!state.cod.enabled) {
     return;
@@ -442,184 +442,12 @@ cod_write_debug(void)
       gp_putb32(&db->block[main_dir->dbg.offset + COD_DEBUG_ADDR], symbol->value);
 
       db->block[main_dir->dbg.offset + COD_DEBUG_CMD] = command;
-      gp_cod_strncpy(&db->block[main_dir->dbg.offset + COD_DEBUG_MSG], string,
-                     MAX_STRING_LEN);
+      gp_cod_strncpy(&db->block[main_dir->dbg.offset + COD_DEBUG_MSG], string, MAX_STRING_LEN);
 
       main_dir->dbg.offset += len + COD_DEBUG_EXTRA;
     }
     symbol = symbol->next;
   }
-}
-
-static void
-enumerate_blocks(DirBlockInfo *dir, int offset, Blocks *bl, unsigned int *block_num)
-{
-  if (bl->blocks != NULL) {
-    /* enumerate block list */
-    gp_putl16(&dir->dir[offset], ++(*block_num));
-    *block_num += gp_blocks_count(bl) - 1;
-    gp_putl16(&dir->dir[offset + 2], *block_num);
-  }
-}
-
-static void
-enumerate_directory(void)
-{
-  DirBlockInfo *dbi;
-  unsigned int block_num = 0;
-
-  /* enumerate directory blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    gp_putl16(&dbi->dir[COD_DIR_NEXTDIR], (dbi->next != NULL) ? ++block_num : 0);
-  }
-
-  /* enumerate code blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    int i;
-
-    for (i = 0; i < COD_CODE_IMAGE_BLOCKS; ++i) {
-      if (dbi->cod_image_blocks[i].block != NULL) {
-        gp_putl16(&dbi->dir[i * 2], ++block_num);
-      }
-    }
-  }
-
-  /* enumerate surce files blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    enumerate_blocks(dbi, COD_DIR_NAMTAB, &dbi->src, &block_num);
-  }
-
-  /* enumerate list lines blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    enumerate_blocks(dbi, COD_DIR_LSTTAB, &dbi->lst, &block_num);
-  }
-
-  /* enumerate memory map blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    enumerate_blocks(dbi, COD_DIR_MEMMAP, &dbi->rng, &block_num);
-  }
-
-  /* enumerate long symbol table blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    enumerate_blocks(dbi, COD_DIR_LSYMTAB, &dbi->sym, &block_num);
-  }
-
-  /* enumerate debug messages table blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    enumerate_blocks(dbi, COD_DIR_MESSTAB, &dbi->dbg, &block_num);
-  }
-}
-
-static void
-write_blocks(Blocks *bl)
-{
-  BlockList *p = bl->blocks;
-
-  /* write block list */
-  while (p != NULL) {
-    fwrite(p->block, 1, COD_BLOCK_SIZE, state.cod.f);
-    p = p->next;
-  }
-}
-
-static void
-write_directory(void)
-{
-  DirBlockInfo *dbi;
-
-  /* write directory blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    fwrite(dbi->dir, 1, COD_BLOCK_SIZE, state.cod.f);
-  }
-
-  /* write code blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    int i;
-
-    for (i = 0; i < COD_CODE_IMAGE_BLOCKS; ++i) {
-      if (dbi->cod_image_blocks[i].block != NULL) {
-        fwrite(dbi->cod_image_blocks[i].block, 1, COD_BLOCK_SIZE, state.cod.f);
-      }
-    }
-  }
-
-  /* write surce files blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    write_blocks(&dbi->src);
-  }
-
-  /* write list lines blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    write_blocks(&dbi->lst);
-  }
-
-  /* write memory map blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    write_blocks(&dbi->rng);
-  }
-
-  /* write long symbol table blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    write_blocks(&dbi->sym);
-  }
-
-  /* write debug messages table blocks */
-  for (dbi = main_dir; dbi != NULL; dbi = dbi->next) {
-    write_blocks(&dbi->dbg);
-  }
-}
-
-static void
-free_blocks(Blocks *bl)
-{
-  BlockList *b = bl->blocks;
-
-  while (b != NULL) {
-    BlockList *next = b->next;
-
-    free(b);
-    b = next;
-  }
-}
-
-static void
-free_directory(void)
-{
-  DirBlockInfo *dbi = main_dir;
-
-  while (dbi != NULL) {
-    int i;
-    DirBlockInfo *next;
-
-    /* free code blocks */
-    for (i = 0; i < COD_CODE_IMAGE_BLOCKS; ++i) {
-      if (dbi->cod_image_blocks[i].block != NULL) {
-        free(dbi->cod_image_blocks[i].block);
-      }
-    }
-
-    /* free surce files blocks */
-    free_blocks(&dbi->src);
-
-    /* free list lines blocks */
-    free_blocks(&dbi->lst);
-
-    /* free memory map blocks */
-    free_blocks(&dbi->rng);
-
-    /* free long symbol table blocks */
-    free_blocks(&dbi->sym);
-
-    /* free debug messages table blocks */
-    free_blocks(&dbi->dbg);
-
-    next = dbi->next;
-    /* free directory blocks */
-    free(dbi);
-    dbi = next;
-  }
-
-  main_dir = NULL;
 }
 
 static void
@@ -638,7 +466,7 @@ cod_symbol_table(struct symbol_table *table)
 
   assert(ps == &sym[table->count]);
 
-  qsort(sym, table->count, sizeof (sym[0]), symbol_compare);
+  qsort(sym, table->count, sizeof(sym[0]), symbol_compare);
 
   cod_write_symbols(sym, table->count);
 }
@@ -652,22 +480,18 @@ cod_close_file(void)
 
   /* processor is unknown if not defined in command line at cod_init() call
      so it should be set here */
-  gp_cod_strncpy(&main_dir->dir[COD_DIR_PROCESSOR],
-                 gp_processor_name(state.processor, 2),
+  gp_cod_strncpy(&main_dir->dir[COD_DIR_PROCESSOR], gp_processor_name(state.processor, 2),
                  COD_DIR_LSYMTAB - COD_DIR_PROCESSOR);
 
   /* All the global symbols are written.  Need to figure out what to do about
      the local symbols. */
   cod_symbol_table(state.symbol.definition);
-
   write_file_block();
-
   cod_write_code();
-
   cod_write_debug();
-
-  enumerate_directory();
-  write_directory();
-  free_directory();
+  gp_blocks_enumerate_directory(main_dir);
+  gp_blocks_write_directory(state.cod.f, main_dir);
+  gp_blocks_free_directory(main_dir);
+  main_dir = NULL;
   fclose(state.cod.f);
 }

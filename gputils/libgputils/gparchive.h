@@ -77,24 +77,20 @@ typedef struct gp_archive_type {
 #define AR_INDEX_NUMBER_SIZ 4  /* number of symbols is 4 bytes long */
 #define AR_INDEX_OFFSET_SIZ 4  /* symbol index offsets are 4 bytes long */
 
-int gp_archive_count_members(gp_archive_type *archive);
-char *gp_archive_member_name(gp_archive_type *archive);
-void gp_archive_list_members(gp_archive_type *archive);
-gp_archive_type *gp_archive_find_member(gp_archive_type *archive,
-                                        char *objectname);
+int gp_archive_count_members(const gp_archive_type *archive);
+char *gp_archive_member_name(const gp_archive_type *archive);
+void gp_archive_list_members(const gp_archive_type *archive);
+gp_archive_type *gp_archive_find_member(gp_archive_type *archive, const char *objectname);
 int gp_archive_free_member(gp_archive_type *archive);
-gp_archive_type *gp_archive_delete_member(gp_archive_type *archive,
-                                          char *objectname);
+gp_archive_type *gp_archive_delete_member(gp_archive_type *archive, const char *objectname);
 gp_archive_type *gp_archive_add_member(gp_archive_type *archive,
-                                       char *filename,
-                                       char *objectname);
-int gp_archive_extract_member(gp_archive_type *archive,
-                              char *objectname);
-int gp_archive_write(gp_archive_type *archive,
-                     char *archivename);
+                                       const char *filename,
+                                       const char *objectname);
+int gp_archive_extract_member(gp_archive_type *archive, const char *objectname);
+int gp_archive_write(gp_archive_type *archive, const char *archivename);
 void gp_archive_update_offsets(gp_archive_type *archive);
-gp_archive_type *gp_archive_read(char *filename);
-int gp_archive_have_index(gp_archive_type *archive);
+gp_archive_type *gp_archive_read(const char *filename);
+int gp_archive_have_index(const gp_archive_type *archive);
 gp_archive_type *gp_archive_remove_index(gp_archive_type *archive);
 int gp_archive_make_index(gp_archive_type *archive,
                           struct symbol_table *);

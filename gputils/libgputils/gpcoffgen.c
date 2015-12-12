@@ -156,8 +156,7 @@ gp_coffgen_delsection(gp_object_type *object, gp_section_type *section)
         previous->next = list->next;
 
         if (list->next == NULL) {
-          /* The last section in the list is being removed, so update
-             the tail. */
+          /* The last section in the list is being removed, so update the tail. */
           object->sections_tail = previous;
         }
       }

@@ -165,8 +165,10 @@ typedef struct block_list_struct {
 #define COD_CODE_IMAGE_BLOCKS 128  /* Max # of blocks for the opcodes */
 
 typedef struct {
-  BlockList *blocks;            /* pointer to the list of blocks */
-  unsigned int offset;          /* offsrt to empty slot in last block */
+  BlockList *first;             /* pointer to the first element of list of blocks */
+  BlockList *last;              /* pointer to the last element of list of blocks */
+  unsigned int count;           /* number of elements in list of blocks */
+  unsigned int offset;          /* offset to empty slot in last block */
 } Blocks;
 
 typedef struct dir_block_info {
@@ -189,6 +191,12 @@ BlockList *gp_blocks_new(void);
 BlockList *gp_blocks_append(Blocks *bl, BlockList *b);
 BlockList *gp_blocks_get_last(Blocks *bl);
 BlockList *gp_blocks_get_last_or_new(Blocks *bl);
-int gp_blocks_count(Blocks *bl);
+int gp_blocks_count(const Blocks *bl);
+void gp_blocks_enumerate(DirBlockInfo *dir, unsigned int offset, Blocks *bl, unsigned int *block_num);
+void gp_blocks_enumerate_directory(DirBlockInfo *main_dir);
+void gp_blocks_write(FILE *f, Blocks *bl);
+void gp_blocks_write_directory(FILE *f, DirBlockInfo *main_dir);
+void gp_blocks_free(Blocks *bl);
+void gp_blocks_free_directory(DirBlockInfo *main_dir);
 
 #endif

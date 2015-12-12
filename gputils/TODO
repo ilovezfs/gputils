@@ -31,6 +31,3 @@ gplink
 
 gpvc
   * Use the disassembler to decode the program memory sections.
-
-gpdasm
-  * Generate human readable outputs.
