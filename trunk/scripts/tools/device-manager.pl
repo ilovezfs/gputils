@@ -973,6 +973,7 @@ sub read_config_bits($$$)
   my $addr = 0;
   my $config_count = 0;
   my $switch_count = 0;
+  my $switch_name;
   my $setting_count = 0;
   my $switch_info = undef;
   my $state = ST_WAIT;
@@ -1065,8 +1066,12 @@ sub read_config_bits($$$)
 
           die "Too much the number of \"SWITCH_INFO_TYPE\"!\n" if ($switch_count <= 0);
 
+        # Microchip bug of the 18f47k40 and 18lf47k40 devices: nDEBUG, nXINST
+          $switch_name = $fields[1];
+          $switch_name =~ s/^n//o;
+
           $switch_info = {
-                         HEAD => $fields[1],
+                         HEAD => $switch_name,
                          BITS => [],
                          MASK => hex($fields[3]),
                          EXPL => (defined($fields[2]) ? $fields[2] : '')
@@ -1845,7 +1850,7 @@ sub read_all_mcu_info_from_mplabx()
               P16E_FLAGS => (($name =~ /^18l?f\d+j\d+/o) ? PIC16E_FLAG_J_SUBFAMILY : 0)
               };
       }
-    elsif (/^<SWITCH_INFO_TYPE><XINST>/io)
+    elsif (/^<SWITCH_INFO_TYPE><n?XINST>/io)
       {
       $info->{P16E_FLAGS} |= PIC16E_FLAG_HAVE_EXTINST if (defined($info));
       }
