@@ -2070,6 +2070,9 @@ sub read_device_informations()
 
           ($sw_name, $sw_mask, $option_count) = ($fields[1], hex($fields[3]), hex($fields[4]));
 
+        # Microchip bug of the 18f47k40 and 18lf47k40 devices: nDEBUG, nXINST
+          $sw_name =~ s/^n//o;
+
           if ($option_count <= 0)
             {
             printf STDERR "Database error in descriptor of $mcu_name at 0x%06X, $sw_name: This SWITCH_INFO_TYPE empty!\n", $directive_addr;

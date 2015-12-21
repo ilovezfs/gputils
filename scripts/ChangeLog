@@ -1,3 +1,8 @@
+2015-12-21  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
+	* tools/device-help.pl, tools/device-manager.pl:
+	  Fix the Microchip bug of the 18f47k40 and 18lf47k40 devices:
+	  nDEBUG, nXINST
+
 2015-12-06  Molnar Karoly  <molnarkaroly@users.sourceforge.net>
 	* tools/cmp_gp_mp.sh, tools/device-help.pl, tools/device-manager.pl:
 	  Use "IDLOCS CODE" in the --mpasm-compatible mode.
