@@ -452,9 +452,9 @@ sub read_all_mcu_registers($)
   open(LIB, '<', $gpproc_path) || die "read_all_mcu_registers(): Can not open. -> \"$gpproc_path\"\n";
 
         # static struct px pics[] = {
-        # { PROC_CLASS_PIC14E   , "__16F1526"     , { "pic16f1526"     , "p16f1526"       , "16f1526"         }, 0x1526,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x22EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, "p16f1526.inc"     , "16f1526_g.lkr"     , 0 },
-        # { PROC_CLASS_EEPROM8  , "__EEPROM8"     , { "eeprom8"        , "eeprom8"        , "eeprom8"         }, 0x1FFF,  0,    0, 0x0000, {   -1,   -1 },    -1, {     -1,     -1 },     -1, 0x0000FF,       -1, {       -1,       -1 }, {       -1,       -1 }, {       -1,       -1 }, {       -1,       -1 }, NULL               , NULL                , 0 },
-        # { PROC_CLASS_PIC14    , "__RF675H"      , { "rf675h"         , "rf675h"         , "rf675h"          }, 0x4675,  1,    2, 0x0080, { 0x20, 0x5F },    -1, {     -1,     -1 }, 0x00DF, 0x00217F, 0x000400, { 0x0003FF, 0x0020FF }, { 0x002000, 0x002003 }, { 0x002007, 0x002007 }, { 0x002100, 0x00217F }, "rf675h.inc"       , "rf675h_g.lkr"      , 0 },
+        # { PROC_CLASS_PIC14E   , "__16F1526"     , { "pic16f1526"     , "p16f1526"       , "16f1526"         }, 0x1526,  4,   32, 0x0F80, { 0x70, 0x7F },    -1, { 0x2000, 0x22EF }, 0x0FFF, 0x001FFF, 0x002000, {       -1,       -1 }, { 0x008000, 0x008003 }, { 0x008007, 0x008008 }, {       -1,       -1 }, 0x3F80, "p16f1526.inc"     , "16f1526_g.lkr"     , 0 },
+        # { PROC_CLASS_EEPROM8  , "__EEPROM8"     , { "eeprom8"        , "eeprom8"        , "eeprom8"         }, 0x1FFF,  0,    0, 0x0000, {   -1,   -1 },    -1, {     -1,     -1 },     -1, 0x0000FF,       -1, {       -1,       -1 }, {       -1,       -1 }, {       -1,       -1 }, {       -1,       -1 }, 0x0000, NULL               , NULL                , 0 },
+        # { PROC_CLASS_PIC14    , "__RF675K"      , { "rf675k"         , "rf675k"         , "rf675k"          }, 0x5675,  1,    2, 0x0080, { 0x20, 0x5F },    -1, {     -1,     -1 }, 0x00DF, 0x00217F, 0x000400, { 0x0003FF, 0x0020FF }, { 0x002000, 0x002003 }, { 0x002007, 0x002007 }, { 0x002100, 0x00217F }, 0x3F80, "rf675k.inc"       , "rf675k_g.lkr"      , 0 },
 
   my $in_table = FALSE;
 
@@ -468,7 +468,7 @@ sub read_all_mcu_registers($)
       {
       $in_table = TRUE if (/^\s*static\s+struct\s+px\s+pics\[\s*\]\s*=\s*\{\s*$/io);
       }
-    elsif (/\{\s*PROC_CLASS_\w+\s*,\s*"\w+"\s*,\s*\{\s*"\w+"\s*,\s*"(\w+)"\s*,\s*"\w+"\s*}\s*,\s*[\w-]+\s*,\s*[\w-]+\s*,\s*[\w-]+\s*,\s*[\w-]+\s*,\s*\{\s*\S+\s*,\s*\S+\s*\}\s*,\s*\S+\s*,\s*\{\s*\S+\s*,\s*\S+\s*\}\s*,\s*\S+\s*,\s*\S+\s*,\s*\S+\s*,\s*\{\s*\S+\s*,\s*\S+\s*\}\s*,\s*{\s*\S+\s*,\s*\S+\s*\}\s*,\s*{\s*\S+\s*,\s*\S+\s*\}\s*,\s*{\s*\S+\s*,\s*\S+\s*\}\s*,\s*\"?([\.\w]+)\"?\s*,\s*\"?[\.\w]+\"?\s*,\s*\d+\s*\}/io)
+    elsif (/\{\s*PROC_CLASS_\w+\s*,\s*"\w+"\s*,\s*\{\s*"\w+"\s*,\s*"(\w+)"\s*,\s*"\w+"\s*}\s*,\s*[\w-]+\s*,\s*[\w-]+\s*,\s*[\w-]+\s*,\s*[\w-]+\s*,\s*\{\s*\S+\s*,\s*\S+\s*\}\s*,\s*\S+\s*,\s*\{\s*\S+\s*,\s*\S+\s*\}\s*,\s*\S+\s*,\s*\S+\s*,\s*\S+\s*,\s*\{\s*\S+\s*,\s*\S+\s*\}\s*,\s*{\s*\S+\s*,\s*\S+\s*\}\s*,\s*{\s*\S+\s*,\s*\S+\s*\}\s*,\s*{\s*\S+\s*,\s*\S+\s*\}\s*,\s*\w+\s*,\s*\"?([\.\w]+)\"?\s*,\s*\"?[\.\w]+\"?\s*,\s*\d+\s*\}/iop)
       {
       my $middle_name = $1;
       my $ref_mcu = {
@@ -890,6 +890,7 @@ sub print_mcu_array()
   while (1)
     {
     $mcu_name = $mcu_name_array[$i++];
+print "$mcu_name\n";
 
     next if (! defined($mcu_name));
 

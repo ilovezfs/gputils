@@ -742,6 +742,9 @@ sub read_device_informations()
 
           ($sw_name, $sw_mask, $option_count) = ($fields[1], hex($fields[3]), hex($fields[4]));
 
+          # Microchip bug of the 18f47k40 and 18lf47k40 devices: nDEBUG, nXINST
+          $sw_name =~ s/^n//o;
+
           if ($option_count <= 0)
             {
             $directive->{SWITCH_COUNT} -= 1;
@@ -808,6 +811,11 @@ sub read_device_informations()
 
           my ($opt_name, $opt_value) = ($fields[1], hex($fields[3]));
           my $sw_name = $switch_info->{SW_NAME};
+
+          if ($opt_name =~ /^reserved$/io)
+            {
+            $opt_name = 'RESERVED';
+            }
 
           my $option =
             {
